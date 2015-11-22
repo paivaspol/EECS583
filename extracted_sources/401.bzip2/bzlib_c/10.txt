@@ -1,0 +1,24 @@
+static
+Bool copy_output_until_stop ( EState* s )
+{
+   Bool progress_out = False;
+
+   while (True) {
+
+      /*-- no output space? --*/
+      if (s->strm->avail_out == 0) break;
+
+      /*-- block done? --*/
+      if (s->state_out_pos >= s->numZ) break;
+
+      progress_out = True;
+      *(s->strm->next_out) = s->zbits[s->state_out_pos];
+      s->state_out_pos++;
+      s->strm->avail_out--;
+      s->strm->next_out++;
+      s->strm->total_out_lo32++;
+      if (s->strm->total_out_lo32 == 0) s->strm->total_out_hi32++;
+   }
+
+   return progress_out;
+}
