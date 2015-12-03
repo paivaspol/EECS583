@@ -6,7 +6,7 @@ results_path = "../valgrind_output/"
 num_buckets = 10
 
 def get_bucket(val):
-    return int(val / num_buckets) * num_buckets
+    return int((val*100) / num_buckets) * num_buckets
 
 def parse_file(input_filename, out_filename): 
     
@@ -31,11 +31,15 @@ def parse_file(input_filename, out_filename):
                             if word == words[1]:
                                 found = True
                                 #print "found instance of", words[1], "in", this_path + "/" +f
-                                out_file.write(this_path + ": " + str(get_bucket(float(words[2]))))
+                                out_file.write(this_path + f +": " + str(get_bucket(float(words[2]))) + "\n")
         
 
                 if not found:
                     print words[0],":",words[1]
+
+def do_histogram(input_file): 
+    values = []
+    
 
 def main(): 
     if(len(sys.argv) < 1):
