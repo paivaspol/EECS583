@@ -3,10 +3,52 @@ from argparse import ArgumentParser
 import os
 import subprocess
 
-def extract_sources(root_dir):
+directories = ['400.perlbench'
+        ,'401.bzip2'
+        ,'403.gcc'
+        ,'410.bwaves'
+        ,'416.gamess'
+        ,'429.mcf'
+        ,'433.milc'
+        ,'434.zeusmp'
+        ,'435.gromacs'
+        ,'436.cactusADM'
+        ,'437.leslie3d'
+        ,'444.namd'
+        ,'445.gobmk'
+        ,'447.dealII'
+        ,'450.soplex'
+        ,'453.povray'
+        ,'454.calculix'
+        ,'456.hmmer'
+        ,'458.sjeng'
+        ,'459.GemsFDTD'
+        ,'462.libquantum'
+        ,'464.h264ref'
+        ,'465.tonto'
+        ,'470.lbm'
+        ,'471.omnetpp'
+        ,'473.astar'
+        ,'481.wrf'
+        ,'482.sphinx3'
+        ,'483.xalancbmk'
+        ,'998.specrand'
+        ,'999.specrand']
+
+def extract_sources(root_dir, copy_dir):
     for path, dirs, filenames in os.walk(root_dir):
-        if len(filenames) == 0:
-            continue
+        benchmark = check_directory(path)
+        if benchmark is not None:
+            src_dir = os.path.join(path, 'src')
+            extract_sources_from_src_dir(src_dir)
+            if copy_dir is not None:
+                result_dir = os.path.join(src_dir, 'result')
+                final_copy_dir = os.path.join(copy_dir, benchmark)
+                mv_command = 'mv {0} {1}'.format(result_dir, final_copy_dir)
+                subprocess.call(mv_command, shell=True)
+
+def extract_sources_from_src_dir(src_dir):
+    for path, dirs, filenames in os.walk(src_dir):
         for filename in filenames:
             result_dir = os.path.join(path, 'result')
             if not os.path.exists(result_dir):
@@ -18,9 +60,16 @@ def extract_sources(root_dir):
                 command = 'python extract_source.py {0} --output-dir {1}'.format(full_path, result_dir)
                 subprocess.call(command, shell=True)
 
+def check_directory(path):
+    for directory in directories:
+        if path.endswith(directory):
+            return directory
+    return None
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('root_dir')
+    parser.add_argument('--copy-dir', default=None)
     args = parser.parse_args()
-    extract_sources(args.root_dir)
+    extract_sources(args.root_dir, args.copy_dir)
 
