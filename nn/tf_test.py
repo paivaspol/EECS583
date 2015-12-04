@@ -13,12 +13,18 @@ sess = tf.Session()
 #####################################################################
 # STEP 1: Configure parameters here.
 #####################################################################
-num_epochs = 1000               # how many times do we run to train the model?
-lstm_size = 200                 # size of hidden layer in LSTM
-num_functions_per_batch = 30    # num functions to analyze
-words_per_function = 900        # num of unrolled LSTM steps
+num_epochs = 500                # how many times do we run to train the model?
+lstm_size = 50                  # size of hidden layer in LSTM
+num_functions_per_batch = 100   # num functions to analyze
+words_per_function = 100        # num of unrolled LSTM steps
 vocab_size = 10000              # word embedding vocabulary size
 num_buckets = 10                # how many buckets for final labels?
+
+# TODO: haven't started test set yet so is_training is always true
+# see ptb_word_lm.py for reference on why this is used (dropout)
+is_training = True
+keep_prob = 0.7     # can make this a placeholder
+max_grad_norm = 5   # max norm for gradient
 
 #####################################################################
 # STEP 2: Initialize variables for TF.
@@ -44,15 +50,22 @@ embedding = tf.get_variable("embedding", [vocab_size, lstm_size])
 inputs = tf.split(1, words_per_function, tf.nn.embedding_lookup(embedding, words))
 inputs = [tf.squeeze(input_, [1]) for input_ in inputs]
 
+# dropout for overfitting prevention
+# see tensorflow/models/rnn/ptb/ptb_word_lm.py
+if is_training and keep_prob < 1:
+  inputs = [tf.nn.dropout(input_, keep_prob) for input_ in inputs]
+
 #####################################################################
 # STEP 4: Set up RNN. Create LSTM cell and execute it.
 # result: list of length words_per_function with
 #         [num_functions_per_batch, lstm_size] tensors
 #####################################################################
-lstm = rnn_cell.BasicLSTMCell(lstm_size, forget_bias=0.0)
+lstm = rnn_cell.BasicLSTMCell(lstm_size, forget_bias=0.5)
 
-# TODO: Could include dropout for training for overfitting issues,
+# Dropout for overfitting prevention:
 # see tensorflow/models/rnn/ptb/ptb_word_lm.py
+if is_training and keep_prob < 1:
+  lstm = rnn_cell.DropoutWrapper(lstm, output_keep_prob=keep_prob)
 
 # Initial state of the LSTM memory.
 # By default, BasicLSTMCell has a state_size of 2 * number of units.
@@ -76,12 +89,13 @@ mean_output = tf.reduce_mean(output, 0)
 #####################################################################
 # perform softmax regression
 # results in [num_functions_per_batch, num_buckets]
-logits = tf.nn.xw_plus_b(mean_output, softmax_W, softmax_b, name="logistic")
+logits = tf.nn.softmax(tf.matmul(mean_output,softmax_W) + softmax_b, name="logistic")
 
 #####################################################################
 # STEP 7: Apply loss function using cross entropy.
 #####################################################################
-cross_entropy = -tf.reduce_sum(correct_labels * tf.log(logits))
+# according to http://stackoverflow.com/questions/33712178/tensorflow-nan-bug
+cross_entropy = -tf.reduce_sum(correct_labels * tf.log(tf.clip_by_value(logits,1e-10,1.0)))
 ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
 
 #####################################################################
@@ -96,13 +110,15 @@ accuracy_summary = tf.scalar_summary("accuracy", accuracy)
 #####################################################################
 # the model does NOT train the learning rate
 # TODO: set it manually with some kind of learning rate decay
-learning_rate = tf.Variable(0.01, trainable=False)
+learning_rate = tf.Variable(0.1, trainable=False)
 tvars = tf.trainable_variables()
 
-# TODO: we could train and apply clipped gradients like in the PTB example.
-#       for now, keep it simple.
+# Apply clipped gradients like in the PTB example.
+# see ptb_word_lm.py for reference
+cost = tf.reduce_sum(cross_entropy) / num_functions_per_batch
+grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-train_step = optimizer.minimize(cross_entropy)
+train_step = optimizer.apply_gradients(zip(grads, tvars))
 
 #####################################################################
 # STEP 10: Write summaries for TensorBoard visualization.
@@ -119,14 +135,19 @@ sess.run(init)
 #####################################################################
 # STEP 11: Learn! Using num_epochs epochs.
 #####################################################################
+last_cross_entropy = None
+
 for i in range(num_epochs):
     # words, which should be ids between 0 and vocab_size
     # TODO: currently, this is generated via an artificial pattern
-    words_generated = np.tile([i, i+2, i+4], [num_functions_per_batch, words_per_function / 3])
+    words_generated = np.random.randint(0, num_buckets, [num_functions_per_batch, words_per_function])
 
     # actual labels, format is a one-hot vector of length num_buckets
-    # TODO: currently, this is generated via an artificial pattern
-    correct_label_generated = np.tile(np.eye(num_buckets), [num_functions_per_batch / num_buckets, 1])
+    # TODO: currently, this is generated via an artificial pattern, performs
+    # the sum of each row of the array mod 10 and this is the label applied.
+    words_sum = np.sum(words_generated, 1)
+    words_mod = np.mod(words_sum, num_buckets)
+    correct_label_generated = np.eye(num_buckets)[words_mod]
 
     start = time.time()
     summary_str, _, train_accuracy, ent = sess.run([merged, train_step, accuracy, cross_entropy],
@@ -138,4 +159,4 @@ for i in range(num_epochs):
 
     writer.add_summary(summary_str, i)
 
-    print "step %d, training accuracy %g, time elapsed %d" % (i, train_accuracy, exec_time)
+    print "step %d, training accuracy %g, cross-entropy %g, time elapsed %d" % (i, train_accuracy, ent, exec_time)
