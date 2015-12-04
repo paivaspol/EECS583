@@ -1,24 +1,42 @@
 static
-Bool copy_output_until_stop ( EState* s )
+Bool copy_input_until_stop ( EState* s )
 {
-   Bool progress_out = False;
+   Bool progress_in = False;
 
-   while (True) {
+   if (s->mode == BZ_M_RUNNING) {
 
-      /*-- no output space? --*/
-      if (s->strm->avail_out == 0) break;
+      /*-- fast track the common case --*/
+      while (True) {
+         /*-- block full? --*/
+         if (s->nblock >= s->nblockMAX) break;
+         /*-- no input? --*/
+         if (s->strm->avail_in == 0) break;
+         progress_in = True;
+         ADD_CHAR_TO_BLOCK ( s, (UInt32)(*((UChar*)(s->strm->next_in))) ); 
+         s->strm->next_in++;
+         s->strm->avail_in--;
+         s->strm->total_in_lo32++;
+         if (s->strm->total_in_lo32 == 0) s->strm->total_in_hi32++;
+      }
 
-      /*-- block done? --*/
-      if (s->state_out_pos >= s->numZ) break;
+   } else {
 
-      progress_out = True;
-      *(s->strm->next_out) = s->zbits[s->state_out_pos];
-      s->state_out_pos++;
-      s->strm->avail_out--;
-      s->strm->next_out++;
-      s->strm->total_out_lo32++;
-      if (s->strm->total_out_lo32 == 0) s->strm->total_out_hi32++;
+      /*-- general, uncommon case --*/
+      while (True) {
+         /*-- block full? --*/
+         if (s->nblock >= s->nblockMAX) break;
+         /*-- no input? --*/
+         if (s->strm->avail_in == 0) break;
+         /*-- flush/finish end? --*/
+         if (s->avail_in_expect == 0) break;
+         progress_in = True;
+         ADD_CHAR_TO_BLOCK ( s, (UInt32)(*((UChar*)(s->strm->next_in))) ); 
+         s->strm->next_in++;
+         s->strm->avail_in--;
+         s->strm->total_in_lo32++;
+         if (s->strm->total_in_lo32 == 0) s->strm->total_in_hi32++;
+         s->avail_in_expect--;
+      }
    }
-
-   return progress_out;
+   return progress_in;
 }

@@ -1,100 +1,58 @@
-static
-Bool unRLE_obuf_to_output_SMALL ( DState* s )
+int BZ_API(BZ2_bzCompress) ( bz_stream *strm, int action )
 {
-   UChar k1;
+   Bool progress;
+   EState* s;
+   if (strm == NULL) return BZ_PARAM_ERROR;
+   s = strm->state;
+   if (s == NULL) return BZ_PARAM_ERROR;
+   if (s->strm != strm) return BZ_PARAM_ERROR;
 
-   if (s->blockRandomised) {
+   preswitch:
+   switch (s->mode) {
 
-      while (True) {
-         /* try to finish existing run */
-         while (True) {
-            if (s->strm->avail_out == 0) return False;
-            if (s->state_out_len == 0) break;
-            *( (UChar*)(s->strm->next_out) ) = s->state_out_ch;
-            BZ_UPDATE_CRC ( s->calculatedBlockCRC, s->state_out_ch );
-            s->state_out_len--;
-            s->strm->next_out++;
-            s->strm->avail_out--;
-            s->strm->total_out_lo32++;
-            if (s->strm->total_out_lo32 == 0) s->strm->total_out_hi32++;
+      case BZ_M_IDLE:
+         return BZ_SEQUENCE_ERROR;
+
+      case BZ_M_RUNNING:
+         if (action == BZ_RUN) {
+            progress = handle_compress ( strm );
+            return progress ? BZ_RUN_OK : BZ_PARAM_ERROR;
+         } 
+         else
+	 if (action == BZ_FLUSH) {
+            s->avail_in_expect = strm->avail_in;
+            s->mode = BZ_M_FLUSHING;
+            goto preswitch;
          }
-   
-         /* can a new run be started? */
-         if (s->nblock_used == s->save_nblock+1) return False;
-
-         /* Only caused by corrupt data stream? */
-         if (s->nblock_used > s->save_nblock+1)
-            return True;
-   
-         s->state_out_len = 1;
-         s->state_out_ch = s->k0;
-         BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
-         if (s->nblock_used == s->save_nblock+1) continue;
-         if (k1 != s->k0) { s->k0 = k1; continue; };
-   
-         s->state_out_len = 2;
-         BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
-         if (s->nblock_used == s->save_nblock+1) continue;
-         if (k1 != s->k0) { s->k0 = k1; continue; };
-   
-         s->state_out_len = 3;
-         BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
-         if (s->nblock_used == s->save_nblock+1) continue;
-         if (k1 != s->k0) { s->k0 = k1; continue; };
-   
-         BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
-         s->state_out_len = ((Int32)k1) + 4;
-         BZ_GET_SMALL(s->k0); BZ_RAND_UPD_MASK; 
-         s->k0 ^= BZ_RAND_MASK; s->nblock_used++;
-      }
-
-   } else {
-
-      while (True) {
-         /* try to finish existing run */
-         while (True) {
-            if (s->strm->avail_out == 0) return False;
-            if (s->state_out_len == 0) break;
-            *( (UChar*)(s->strm->next_out) ) = s->state_out_ch;
-            BZ_UPDATE_CRC ( s->calculatedBlockCRC, s->state_out_ch );
-            s->state_out_len--;
-            s->strm->next_out++;
-            s->strm->avail_out--;
-            s->strm->total_out_lo32++;
-            if (s->strm->total_out_lo32 == 0) s->strm->total_out_hi32++;
+         else
+         if (action == BZ_FINISH) {
+            s->avail_in_expect = strm->avail_in;
+            s->mode = BZ_M_FINISHING;
+            goto preswitch;
          }
-   
-         /* can a new run be started? */
-         if (s->nblock_used == s->save_nblock+1) return False;
+         else 
+            return BZ_PARAM_ERROR;
 
-         /* Only caused by corrupt data stream? */
-         if (s->nblock_used > s->save_nblock+1)
-            return True;
-   
-         s->state_out_len = 1;
-         s->state_out_ch = s->k0;
-         BZ_GET_SMALL(k1); s->nblock_used++;
-         if (s->nblock_used == s->save_nblock+1) continue;
-         if (k1 != s->k0) { s->k0 = k1; continue; };
-   
-         s->state_out_len = 2;
-         BZ_GET_SMALL(k1); s->nblock_used++;
-         if (s->nblock_used == s->save_nblock+1) continue;
-         if (k1 != s->k0) { s->k0 = k1; continue; };
-   
-         s->state_out_len = 3;
-         BZ_GET_SMALL(k1); s->nblock_used++;
-         if (s->nblock_used == s->save_nblock+1) continue;
-         if (k1 != s->k0) { s->k0 = k1; continue; };
-   
-         BZ_GET_SMALL(k1); s->nblock_used++;
-         s->state_out_len = ((Int32)k1) + 4;
-         BZ_GET_SMALL(s->k0); s->nblock_used++;
-      }
+      case BZ_M_FLUSHING:
+         if (action != BZ_FLUSH) return BZ_SEQUENCE_ERROR;
+         if (s->avail_in_expect != s->strm->avail_in) 
+            return BZ_SEQUENCE_ERROR;
+         progress = handle_compress ( strm );
+         if (s->avail_in_expect > 0 || !isempty_RL(s) ||
+             s->state_out_pos < s->numZ) return BZ_FLUSH_OK;
+         s->mode = BZ_M_RUNNING;
+         return BZ_RUN_OK;
 
+      case BZ_M_FINISHING:
+         if (action != BZ_FINISH) return BZ_SEQUENCE_ERROR;
+         if (s->avail_in_expect != s->strm->avail_in) 
+            return BZ_SEQUENCE_ERROR;
+         progress = handle_compress ( strm );
+         if (!progress) return BZ_SEQUENCE_ERROR;
+         if (s->avail_in_expect > 0 || !isempty_RL(s) ||
+             s->state_out_pos < s->numZ) return BZ_FINISH_OK;
+         s->mode = BZ_M_IDLE;
+         return BZ_STREAM_END;
    }
+   return BZ_OK; /*--not reached--*/
 }

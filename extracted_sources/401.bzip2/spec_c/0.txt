@@ -1,8 +1,22 @@
-void spec_initbufs() {
-   smallMode               = 0;
-   verbosity               = 0;
-   blockSize100k           = 9;
-/*   bsStream                = 0; */
-   workFactor              = 30;
-/*   allocateCompressStructures(); */
+int spec_init () {
+    int i, j;
+    debug(3,"spec_init\n");
+
+    /* Clear the spec_fd structure */
+
+    /* Allocate some large chunks of memory, we can tune this later */
+    for (i = 0; i < MAX_SPEC_FD; i++) {
+	int limit = spec_fd[i].limit;
+	memset(&spec_fd[i], 0, sizeof(*spec_fd));
+	spec_fd[i].limit = limit;
+	spec_fd[i].buf = (unsigned char *)malloc(limit+FUDGE_BUF);
+	if (spec_fd[i].buf == NULL) {
+	    printf ("spec_init: Error mallocing memory!\n");
+	    exit(0);
+	}
+	for (j = 0; j < limit; j+=1024) {
+	    spec_fd[i].buf[j] = 0;
+	}
+    }
+    return 0;
 }

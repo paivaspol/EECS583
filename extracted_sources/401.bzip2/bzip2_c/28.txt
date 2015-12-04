@@ -1,9 +1,17 @@
 static 
-Bool mapSuffix ( Char* name, 
-                 Char* oldSuffix, Char* newSuffix )
+Bool containsDubiousChars ( Char* name )
 {
-   if (!hasSuffix(name,oldSuffix)) return False;
-   name[strlen(name)-strlen(oldSuffix)] = 0;
-   strcat ( name, newSuffix );
-   return True;
+#  if BZ_UNIX
+   /* On unix, files can contain any characters and the file expansion
+    * is performed by the shell.
+    */
+   return False;
+#  else /* ! BZ_UNIX */
+   /* On non-unix (Win* platforms), wildcard characters are not allowed in 
+    * filenames.
+    */
+   for (; *name != '\0'; name++)
+      if (*name == '?' || *name == '*') return True;
+   return False;
+#  endif /* BZ_UNIX */
 }

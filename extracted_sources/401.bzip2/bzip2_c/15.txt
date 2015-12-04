@@ -1,8 +1,14 @@
 static 
-void mySignalCatcher ( IntNative n )
+void compressedStreamEOF ( void )
 {
-   fprintf ( stderr,
-             "\n%s: Control-C or similar caught, quitting.\n",
-             progName );
-   cleanUpAndFail(1);
+  if (noisy) {
+    fprintf ( stderr,
+	      "\n%s: Compressed file ends unexpectedly;\n\t"
+	      "perhaps it is corrupted?  *Possible* reason follows.\n",
+	      progName );
+    perror ( progName );
+    showFileNames();
+    cadvise();
+  }
+  cleanUpAndFail( 2 );
 }

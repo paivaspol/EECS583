@@ -1,14 +1,11 @@
 static 
-struct MY_STAT fileMetaInfo;
-#endif
-
-static 
-void saveInputFileMetaInfo ( Char *srcName )
+Bool notAStandardFile ( Char* name )
 {
-#  if BZ_UNIX
-   IntNative retVal;
-   /* Note use of stat here, not lstat. */
-   retVal = MY_STAT( srcName, &fileMetaInfo );
-   ERROR_IF_NOT_ZERO ( retVal );
-#  endif
+   IntNative      i;
+   struct MY_STAT statBuf;
+
+   i = MY_LSTAT ( name, &statBuf );
+   if (i != 0) return True;
+   if (MY_S_ISREG(statBuf.st_mode)) return False;
+   return True;
 }

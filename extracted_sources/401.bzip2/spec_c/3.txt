@@ -1,0 +1,21 @@
+int spec_read (int fd, unsigned char *buf, int size) {
+    int rc = 0;
+    debug3(4,"spec_read: %d, %p, %d = ", fd, (void *)buf, size);
+    if (fd > MAX_SPEC_FD) {
+	fprintf(stderr, "spec_read: fd=%d, > MAX_SPEC_FD!\n", fd);
+	exit (0);
+    }
+    if (spec_fd[fd].pos >= spec_fd[fd].len) {
+	debug(4,"EOF\n");
+	return EOF;
+    }
+    if (spec_fd[fd].pos + size >= spec_fd[fd].len) {
+	rc = spec_fd[fd].len - spec_fd[fd].pos;
+    } else {
+	rc = size;
+    }
+    memcpy(buf, &(spec_fd[fd].buf[spec_fd[fd].pos]), rc);
+    spec_fd[fd].pos += rc;
+    debug1(4,"%d\n", rc);
+    return rc;
+}

@@ -1,0 +1,15 @@
+int spec_getc (int fd) {
+    int rc = 0;
+    debug1(4,"spec_getc: %d = ", fd);
+    if (fd > MAX_SPEC_FD) {
+	fprintf(stderr, "spec_read: fd=%d, > MAX_SPEC_FD!\n", fd);
+	exit (0);
+    }
+    if (spec_fd[fd].pos >= spec_fd[fd].len) {
+	debug(4,"EOF\n");
+	return EOF;
+    }
+    rc = spec_fd[fd].buf[spec_fd[fd].pos++];
+    debug1(4,"%d\n", rc);
+    return rc;
+}

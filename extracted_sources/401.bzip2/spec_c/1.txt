@@ -1,4 +1,28 @@
-void spec_compress(int in, int out, int lev) {
-    blockSize100k           = lev;
-    compressStream ( in, out );
+int spec_random_load (int fd) {
+    /* Now fill up the first chunk with random data, if this data is truly
+       random then we will not get much of a boost out of it */
+#define RANDOM_CHUNK_SIZE (128*1024)
+#define RANDOM_CHUNKS     (32)
+    /* First get some "chunks" of random data, because the gzip
+	algorithms do not look past 32K */
+    int i, j;
+    char random_text[RANDOM_CHUNKS][RANDOM_CHUNK_SIZE];
+
+    debug(4,"Creating Chunks\n");
+    for (i = 0; i < RANDOM_CHUNKS; i++) {
+	debug1(5,"Creating Chunk %d\n", i);
+	for (j = 0; j < RANDOM_CHUNK_SIZE; j++) {
+	    random_text[i][j] = (int)(ran()*256);
+	}
+    }
+
+    debug(4,"Filling input file\n");
+    /* Now populate the input "file" with random chunks */
+    for (i = 0 ; i < spec_fd[fd].limit; i+= RANDOM_CHUNK_SIZE) {
+	memcpy(spec_fd[fd].buf + i, random_text[(int)(ran()*RANDOM_CHUNKS)],
+		RANDOM_CHUNK_SIZE);
+    }
+    /* TODO-REMOVE: Pretend we only did 1M */
+    spec_fd[fd].len = 1024*1024;
+    return 0;
 }

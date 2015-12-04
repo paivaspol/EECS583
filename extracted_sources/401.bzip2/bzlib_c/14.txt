@@ -1,8 +1,17 @@
-static Bool myfeof ( FILE* f )
-#endif
+int BZ_API(BZ2_bzCompressEnd)  ( bz_stream *strm )
 {
-   Int32 c = fgetc ( f );
-   if (c == EOF) return True;
-   ungetc ( c, f );
-   return False;
+   EState* s;
+   if (strm == NULL) return BZ_PARAM_ERROR;
+   s = strm->state;
+   if (s == NULL) return BZ_PARAM_ERROR;
+   if (s->strm != strm) return BZ_PARAM_ERROR;
+
+   if (s->arr1 != NULL) BZFREE(s->arr1);
+   if (s->arr2 != NULL) BZFREE(s->arr2);
+   if (s->ftab != NULL) BZFREE(s->ftab);
+   BZFREE(strm->state);
+
+   strm->state = NULL;   
+
+   return BZ_OK;
 }

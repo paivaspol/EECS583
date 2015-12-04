@@ -1,0 +1,12 @@
+int spec_write(int fd, unsigned char *buf, int size) {
+    debug3(4,"spec_write: %d, %p, %d = ", fd, (void *)buf, size);
+    if (fd > MAX_SPEC_FD) {
+	fprintf(stderr, "spec_write: fd=%d, > MAX_SPEC_FD!\n", fd);
+	exit (0);
+    }
+    memcpy(&(spec_fd[fd].buf[spec_fd[fd].pos]), buf, size); 
+    spec_fd[fd].len += size;
+    spec_fd[fd].pos += size;
+    debug1(4,"%d\n", size);
+    return size;
+}

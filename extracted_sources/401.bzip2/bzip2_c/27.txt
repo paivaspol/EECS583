@@ -1,9 +1,22 @@
 static 
-Bool hasSuffix ( Char* s, Char* suffix )
+void applySavedMetaInfoToOutputFile ( Char *dstName )
 {
-   Int32 ns = strlen(s);
-   Int32 nx = strlen(suffix);
-   if (ns < nx) return False;
-   if (strcmp(s + ns - nx, suffix) == 0) return True;
-   return False;
+#  if BZ_UNIX
+   IntNative      retVal;
+   struct utimbuf uTimBuf;
+
+   uTimBuf.actime = fileMetaInfo.st_atime;
+   uTimBuf.modtime = fileMetaInfo.st_mtime;
+
+   retVal = chmod ( dstName, fileMetaInfo.st_mode );
+   ERROR_IF_NOT_ZERO ( retVal );
+
+   retVal = utime ( dstName, &uTimBuf );
+   ERROR_IF_NOT_ZERO ( retVal );
+
+   retVal = chown ( dstName, fileMetaInfo.st_uid, fileMetaInfo.st_gid );
+   /* chown() will in many cases return with EPERM, which can
+      be safely ignored.
+   */
+#  endif
 }

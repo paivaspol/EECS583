@@ -1,22 +1,10 @@
 static 
-void applySavedMetaInfoToOutputFile ( Char *dstName )
-{
-#  if BZ_UNIX
-   IntNative      retVal;
-   struct utimbuf uTimBuf;
+Int32 countHardLinks ( Char* name )
+{  
+   IntNative      i;
+   struct MY_STAT statBuf;
 
-   uTimBuf.actime = fileMetaInfo.st_atime;
-   uTimBuf.modtime = fileMetaInfo.st_mtime;
-
-   retVal = chmod ( dstName, fileMetaInfo.st_mode );
-   ERROR_IF_NOT_ZERO ( retVal );
-
-   retVal = utime ( dstName, &uTimBuf );
-   ERROR_IF_NOT_ZERO ( retVal );
-
-   retVal = chown ( dstName, fileMetaInfo.st_uid, fileMetaInfo.st_gid );
-   /* chown() will in many cases return with EPERM, which can
-      be safely ignored.
-   */
-#  endif
+   i = MY_LSTAT ( name, &statBuf );
+   if (i != 0) return 0;
+   return (statBuf.st_nlink - 1);
 }
