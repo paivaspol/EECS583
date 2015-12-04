@@ -1,0 +1,28 @@
+int
+try_tablejump (index_type, index_expr, minval, range,
+	       table_label, default_label)
+     tree index_type, index_expr, minval, range;
+     rtx table_label, default_label;
+{
+  rtx index;
+
+  if (! HAVE_tablejump)
+    return 0;
+
+  index_expr = fold (build (MINUS_EXPR, index_type,
+			    convert (index_type, index_expr),
+			    convert (index_type, minval)));
+  index = expand_expr (index_expr, NULL_RTX, VOIDmode, 0);
+  emit_queue ();
+  index = protect_from_queue (index, 0);
+  do_pending_stack_adjust ();
+
+  do_tablejump (index, TYPE_MODE (index_type),
+		convert_modes (TYPE_MODE (index_type),
+			       TYPE_MODE (TREE_TYPE (range)),
+			       expand_expr (range, NULL_RTX,
+					    VOIDmode, 0),
+			       TREE_UNSIGNED (TREE_TYPE (range))),
+		table_label, default_label);
+  return 1;
+}

@@ -1,0 +1,202 @@
+void
+P7OptimalAccuracyTrace(int L,
+		       int M,
+		       struct dpmatrix_s *posterior,
+		       struct dpmatrix_s *mx,
+		       struct p7trace_s **ret_tr)
+{
+  struct p7trace_s *tr;
+  int curralloc;		/* current allocated length of trace */
+  int tpos;			/* position in trace */
+  int i;			/* position in seq (1..L) */
+  int k;			/* position in model (1..M) */
+  int **xmx, **mmx, **imx, **dmx;
+  int sc;			/* temp var for pre-emission score */
+
+  /* Overallocate for the trace.
+   * S-N-B- ... - E-C-T  : 6 states + L is minimum trace;
+   * add L more as buffer.             
+   */
+  curralloc = L * 2 + 6; 
+  P7AllocTrace(curralloc, &tr);
+
+  xmx = mx->xmx;
+  mmx = mx->mmx;
+  imx = mx->imx;
+  dmx = mx->dmx;
+
+  /* Initialization of trace
+   * We do it back to front; ReverseTrace() is called later.
+   */
+  tr->statetype[0] = STT;
+  tr->nodeidx[0]   = 0;
+  tr->pos[0]       = 0;
+  tr->statetype[1] = STC;
+  tr->nodeidx[1]   = 0;
+  tr->pos[1]       = 0;
+  tpos = 2;
+  i    = L;			/* current i (seq pos) we're trying to assign */
+
+  /* Traceback
+   */
+  while (tr->statetype[tpos-1] != STS) {
+    switch (tr->statetype[tpos-1]) {
+    case STM:			/* M connects from i-1,k-1, or B */
+      sc = mmx[i+1][k+1];
+      if (sc == ILogsum(mmx[i][k], posterior->mmx[i+1][k+1]) && i > 0 && k > 0)
+	{
+	  tr->statetype[tpos] = STM;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (sc == ILogsum(imx[i][k], posterior->mmx[i+1][k+1]) && i > 0 && k > 0)
+	{
+	  tr->statetype[tpos] = STI;
+	  tr->nodeidx[tpos]   = k;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (sc == ILogsum(dmx[i][k], posterior->mmx[i+1][k+1]) && i > 0 && k > 1)
+	{
+	  tr->statetype[tpos] = STD;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = 0;
+	}
+      else if (sc == ILogsum(xmx[i][XMB], posterior->mmx[i+1][k+1]))
+	{
+	  tr->statetype[tpos] = STB;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else Die("traceback failed");
+      break;
+
+    case STD:			/* D connects from M,D */
+      if (dmx[i][k+1] == mmx[i][k] && i > 0 && k > 0)
+	{
+	  tr->statetype[tpos] = STM;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (dmx[i][k+1] == dmx[i][k] && k > 1)
+	{
+	  tr->statetype[tpos] = STD;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = 0;
+	}
+      else Die("traceback failed");
+      break;
+
+    case STI:			/* I connects from M,I */
+      sc = imx[i+1][k];
+      if (sc == ILogsum(mmx[i][k], posterior->imx[i+1][k]) && i > 0 && k > 0)
+	{
+	  tr->statetype[tpos] = STM;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (sc == ILogsum(imx[i][k], posterior->imx[i+1][k]) && i > 0 && k > 0)
+	{
+	  tr->statetype[tpos] = STI;
+	  tr->nodeidx[tpos]   = k;
+	  tr->pos[tpos]       = i--;
+	}
+      else Die("traceback failed");
+      break;
+
+    case STN:			/* N connects from S, N */
+      if (i == 0 && xmx[i][XMN] == -INFTY)
+	{
+	  tr->statetype[tpos] = STS;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else if (i > 0 && xmx[i+1][XMN] == ILogsum(xmx[i][XMN], posterior->xmx[i+1][XMN]) && i > 0)
+	{
+	  tr->statetype[tpos] = STN;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;    /* note convention adherence:  */
+	  tr->pos[tpos-1]     = i--;  /* first N doesn't emit        */
+	}
+      else Die("traceback failed");
+      break;
+
+    case STB:			/* B connects from N, J */
+      if (xmx[i][XMB] == xmx[i][XMN])
+	{
+	  tr->statetype[tpos] = STN;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else if (xmx[i][XMB] == xmx[i][XMJ])
+	{
+	  tr->statetype[tpos] = STJ;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else Die("traceback failed");
+      break;
+
+    case STE:			/* E connects from any M state. k set here */
+      for (k = M; k >= 1; k--)
+	if (xmx[i][XME] == mmx[i][k] && i > 0)
+	  {
+	    tr->statetype[tpos] = STM;
+	    tr->nodeidx[tpos]   = k--;
+	    tr->pos[tpos]       = i--;
+	    break;
+	  }
+      if (k <= 0) Die("traceback failed");
+      break;
+
+    case STC:			/* C comes from C, E */
+      if (xmx[i][XMC] == ILogsum(xmx[i-1][XMC], posterior->xmx[i][XMC]) && i > 0)
+	{
+	  tr->statetype[tpos] = STC;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;    /* note convention adherence: */
+	  tr->pos[tpos-1]     = i--;  /* first C doesn't emit       */
+	}
+      else if (xmx[i][XMC] == xmx[i][XME])
+	{
+	  tr->statetype[tpos] = STE;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0; /* E is a nonemitter */
+	}
+      else Die("Traceback failed.");
+      break;
+
+    case STJ:			/* J connects from E, J */
+      if (xmx[i][XMJ] == ILogsum(xmx[i-1][XMJ], posterior->xmx[i][XMJ]) && i > 0)
+	{
+	  tr->statetype[tpos] = STJ;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;    /* note convention adherence: */
+	  tr->pos[tpos-1]     = i--;  /* first J doesn't emit       */
+	}
+      else if (xmx[i][XMJ] == xmx[i][XME])
+	{
+	  tr->statetype[tpos] = STE;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0; /* E is a nonemitter */
+	}
+      else Die("Traceback failed.");
+      break;
+
+    default:
+      Die("traceback failed");
+
+    } /* end switch over statetype[tpos-1] */
+    
+    tpos++;
+    if (tpos == curralloc) 
+      {				/* grow trace if necessary  */
+	curralloc += L;
+	P7ReallocTrace(tr, curralloc);
+      }
+
+  } /* end traceback, at S state; tpos == tlen now */
+  tr->tlen = tpos;
+  P7ReverseTrace(tr);
+  *ret_tr = tr;
+
+}

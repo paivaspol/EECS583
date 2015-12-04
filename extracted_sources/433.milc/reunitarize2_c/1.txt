@@ -1,0 +1,31 @@
+void reunit_report_problem_matrix(su3_matrix *mat, int i,int dir)
+{
+  int ii,jj;
+  union {
+    double fval;
+    int ival;
+  } ifval;
+
+  printf("Unitarity problem on node %d, site %d, dir %d tolerance=%e\n",
+	 mynode(),i,dir,TOLERANCE);
+  printf("SU3 matrix:\n");
+  for(ii=0;ii<=2;ii++){
+    for(jj=0;jj<=2;jj++){
+      printf("%f ",(*mat).e[ii][jj].real); 
+      printf("%f ",(*mat).e[ii][jj].imag); 
+    }
+    printf("\n");
+  }
+  printf("repeat in hex:\n");
+  for(ii=0;ii<=2;ii++){
+    for(jj=0;jj<=2;jj++){
+      ifval.fval = (*mat).e[ii][jj].real; 
+      printf("%08x ", ifval.ival); 
+      ifval.fval = (*mat).e[ii][jj].imag; 
+      printf("%08x ", ifval.ival); 
+    }
+    printf("\n");
+  }
+  printf("  \n \n");
+  fflush(stdout); 
+} /* reunit_report_problem_matrix */

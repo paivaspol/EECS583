@@ -1,0 +1,91 @@
+static rtx
+assign_stack_local_1 (mode, size, align, function)
+     enum machine_mode mode;
+     HOST_WIDE_INT size;
+     int align;
+     struct function *function;
+{
+  rtx x, addr;
+  int bigend_correction = 0;
+  int alignment;
+  int frame_off, frame_alignment, frame_phase;
+
+  if (align == 0)
+    {
+      tree type;
+
+      if (mode == BLKmode)
+	alignment = BIGGEST_ALIGNMENT;
+      else
+	alignment = GET_MODE_ALIGNMENT (mode);
+
+      /* Allow the target to (possibly) increase the alignment of this
+	 stack slot.  */
+      type = type_for_mode (mode, 0);
+      if (type)
+	alignment = LOCAL_ALIGNMENT (type, alignment);
+
+      alignment /= BITS_PER_UNIT;
+    }
+  else if (align == -1)
+    {
+      alignment = BIGGEST_ALIGNMENT / BITS_PER_UNIT;
+      size = CEIL_ROUND (size, alignment);
+    }
+  else
+    alignment = align / BITS_PER_UNIT;
+
+#ifdef FRAME_GROWS_DOWNWARD
+  function->x_frame_offset -= size;
+#endif
+
+  /* Ignore alignment we can't do with expected alignment of the boundary.  */
+  if (alignment * BITS_PER_UNIT > PREFERRED_STACK_BOUNDARY)
+    alignment = PREFERRED_STACK_BOUNDARY / BITS_PER_UNIT;
+
+  if (function->stack_alignment_needed < alignment * BITS_PER_UNIT)
+    function->stack_alignment_needed = alignment * BITS_PER_UNIT;
+
+  /* Calculate how many bytes the start of local variables is off from
+     stack alignment.  */
+  frame_alignment = PREFERRED_STACK_BOUNDARY / BITS_PER_UNIT;
+  frame_off = STARTING_FRAME_OFFSET % frame_alignment;
+  frame_phase = frame_off ? frame_alignment - frame_off : 0;
+
+  /* Round frame offset to that alignment.
+     We must be careful here, since FRAME_OFFSET might be negative and
+     division with a negative dividend isn't as well defined as we might
+     like.  So we instead assume that ALIGNMENT is a power of two and
+     use logical operations which are unambiguous.  */
+#ifdef FRAME_GROWS_DOWNWARD
+  function->x_frame_offset = FLOOR_ROUND (function->x_frame_offset - frame_phase, alignment) + frame_phase;
+#else
+  function->x_frame_offset = CEIL_ROUND (function->x_frame_offset - frame_phase, alignment) + frame_phase;
+#endif
+
+  /* On a big-endian machine, if we are allocating more space than we will use,
+     use the least significant bytes of those that are allocated.  */
+  if (BYTES_BIG_ENDIAN && mode != BLKmode)
+    bigend_correction = size - GET_MODE_SIZE (mode);
+
+  /* If we have already instantiated virtual registers, return the actual
+     address relative to the frame pointer.  */
+  if (function == cfun && virtuals_instantiated)
+    addr = plus_constant (frame_pointer_rtx,
+			  (frame_offset + bigend_correction
+			   + STARTING_FRAME_OFFSET));
+  else
+    addr = plus_constant (virtual_stack_vars_rtx,
+			  function->x_frame_offset + bigend_correction);
+
+#ifndef FRAME_GROWS_DOWNWARD
+  function->x_frame_offset += size;
+#endif
+
+  x = gen_rtx_MEM (mode, addr);
+
+  function->x_stack_slot_list
+    = gen_rtx_EXPR_LIST (VOIDmode, x, function->x_stack_slot_list);
+
+  return x;
+}

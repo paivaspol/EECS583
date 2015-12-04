@@ -1,0 +1,32 @@
+static void
+name_and_src_coords_attributes (decl)
+    tree decl;
+{
+  tree decl_name = DECL_NAME (decl);
+
+  if (decl_name && IDENTIFIER_POINTER (decl_name))
+    {
+      name_attribute (IDENTIFIER_POINTER (decl_name));
+#ifdef DWARF_DECL_COORDINATES
+      {
+	register unsigned file_index;
+
+	/* This is annoying, but we have to pop out of the .debug section
+	   for a moment while we call `lookup_filename' because calling it
+	   may cause a temporary switch into the .debug_sfnames section and
+	   most svr4 assemblers are not smart enough to be able to nest
+	   section switches to any depth greater than one.  Note that we
+	   also can't skirt this issue by delaying all output to the
+	   .debug_sfnames section unit the end of compilation because that
+	   would cause us to have inter-section forward references and
+	   Fred Fish sez that m68k/svr4 assemblers botch those.  */
+
+	ASM_OUTPUT_POP_SECTION (asm_out_file);
+	file_index = lookup_filename (DECL_SOURCE_FILE (decl));
+	ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SECTION);
+
+        src_coords_attribute (file_index, DECL_SOURCE_LINE (decl));
+      }
+#endif /* defined(DWARF_DECL_COORDINATES) */
+    }
+}

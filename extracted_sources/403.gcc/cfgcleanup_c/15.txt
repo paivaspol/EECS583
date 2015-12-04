@@ -1,0 +1,84 @@
+static bool
+try_crossjump_bb (mode, bb)
+     int mode;
+     basic_block bb;
+{
+  edge e, e2, nexte2, nexte, fallthru;
+  bool changed;
+
+  /* Nothing to do if there is not at least two incoming edges.  */
+  if (!bb->pred || !bb->pred->pred_next)
+    return false;
+
+  /* It is always cheapest to redirect a block that ends in a branch to
+     a block that falls through into BB, as that adds no branches to the
+     program.  We'll try that combination first.  */
+  for (fallthru = bb->pred; fallthru; fallthru = fallthru->pred_next)
+    if (fallthru->flags & EDGE_FALLTHRU)
+      break;
+
+  changed = false;
+  for (e = bb->pred; e; e = nexte)
+    {
+      nexte = e->pred_next;
+
+      /* As noted above, first try with the fallthru predecessor.  */
+      if (fallthru)
+	{
+	  /* Don't combine the fallthru edge into anything else.
+	     If there is a match, we'll do it the other way around.  */
+	  if (e == fallthru)
+	    continue;
+
+	  if (try_crossjump_to_edge (mode, e, fallthru))
+	    {
+	      changed = true;
+	      nexte = bb->pred;
+	      continue;
+	    }
+	}
+
+      /* Non-obvious work limiting check: Recognize that we're going
+	 to call try_crossjump_bb on every basic block.  So if we have
+	 two blocks with lots of outgoing edges (a switch) and they
+	 share lots of common destinations, then we would do the
+	 cross-jump check once for each common destination.
+
+	 Now, if the blocks actually are cross-jump candidates, then
+	 all of their destinations will be shared.  Which means that
+	 we only need check them for cross-jump candidacy once.  We
+	 can eliminate redundant checks of crossjump(A,B) by arbitrarily
+	 choosing to do the check from the block for which the edge
+	 in question is the first successor of A.  */
+      if (e->src->succ != e)
+	continue;
+
+      for (e2 = bb->pred; e2; e2 = nexte2)
+	{
+	  nexte2 = e2->pred_next;
+
+	  if (e2 == e)
+	    continue;
+
+	  /* We've already checked the fallthru edge above.  */
+	  if (e2 == fallthru)
+	    continue;
+
+	  /* The "first successor" check above only prevents multiple
+	     checks of crossjump(A,B).  In order to prevent redundant
+	     checks of crossjump(B,A), require that A be the block
+	     with the lowest index.  */
+	  if (e->src->index > e2->src->index)
+	    continue;
+
+	  if (try_crossjump_to_edge (mode, e, e2))
+	    {
+	      changed = true;
+	      nexte = bb->pred;
+	      break;
+	    }
+	}
+    }
+
+  return changed;
+}

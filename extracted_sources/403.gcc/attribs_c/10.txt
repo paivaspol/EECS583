@@ -1,0 +1,33 @@
+static tree
+handle_unused_attribute (node, name, args, flags, no_add_attrs)
+     tree *node;
+     tree name;
+     tree args ATTRIBUTE_UNUSED;
+     int flags;
+     bool *no_add_attrs;
+{
+  if (DECL_P (*node))
+    {
+      tree decl = *node;
+
+      if (TREE_CODE (decl) == PARM_DECL
+	  || TREE_CODE (decl) == VAR_DECL
+	  || TREE_CODE (decl) == FUNCTION_DECL
+	  || TREE_CODE (decl) == LABEL_DECL
+	  || TREE_CODE (decl) == TYPE_DECL)
+	TREE_USED (decl) = 1;
+      else
+	{
+	  warning ("`%s' attribute ignored", IDENTIFIER_POINTER (name));
+	  *no_add_attrs = true;
+	}
+    }
+  else
+    {
+      if (!(flags & (int) ATTR_FLAG_TYPE_IN_PLACE))
+	*node = build_type_copy (*node);
+      TREE_USED (*node) = 1;
+    }
+
+  return NULL_TREE;
+}

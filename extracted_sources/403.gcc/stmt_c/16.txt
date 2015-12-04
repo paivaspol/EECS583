@@ -1,0 +1,19 @@
+void
+expand_label (label)
+     tree label;
+{
+  struct label_chain *p;
+
+  do_pending_stack_adjust ();
+  emit_label (label_rtx (label));
+  if (DECL_NAME (label))
+    LABEL_NAME (DECL_RTL (label)) = IDENTIFIER_POINTER (DECL_NAME (label));
+
+  if (stack_block_stack != 0)
+    {
+      p = (struct label_chain *) ggc_alloc (sizeof (struct label_chain));
+      p->next = stack_block_stack->data.block.label_chain;
+      stack_block_stack->data.block.label_chain = p;
+      p->label = label;
+    }
+}

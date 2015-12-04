@@ -1,0 +1,23 @@
+static void
+make_new_qty (reg, mode)
+     unsigned int reg;
+     enum machine_mode mode;
+{
+  int q;
+  struct qty_table_elem *ent;
+  struct reg_eqv_elem *eqv;
+
+  if (next_qty >= max_qty)
+    abort ();
+
+  q = REG_QTY (reg) = next_qty++;
+  ent = &qty_table[q];
+  ent->first_reg = reg;
+  ent->last_reg = reg;
+  ent->mode = mode;
+  ent->const_rtx = ent->const_insn = NULL_RTX;
+  ent->comparison_code = UNKNOWN;
+
+  eqv = &reg_eqv_table[reg];
+  eqv->next = eqv->prev = -1;
+}

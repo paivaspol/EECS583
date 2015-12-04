@@ -1,0 +1,24 @@
+int
+condjump_p (insn)
+     rtx insn;
+{
+  rtx x = PATTERN (insn);
+
+  if (GET_CODE (x) != SET
+      || GET_CODE (SET_DEST (x)) != PC)
+    return 0;
+
+  x = SET_SRC (x);
+  if (GET_CODE (x) == LABEL_REF)
+    return 1;
+  else
+    return (GET_CODE (x) == IF_THEN_ELSE
+	    && ((GET_CODE (XEXP (x, 2)) == PC
+		 && (GET_CODE (XEXP (x, 1)) == LABEL_REF
+		     || GET_CODE (XEXP (x, 1)) == RETURN))
+		|| (GET_CODE (XEXP (x, 1)) == PC
+		    && (GET_CODE (XEXP (x, 2)) == LABEL_REF
+			|| GET_CODE (XEXP (x, 2)) == RETURN))));
+
+  return 0;
+}

@@ -1,0 +1,69 @@
+void
+purge_addressof (insns)
+     rtx insns;
+{
+  rtx insn;
+  struct hash_table ht;
+
+  /* When we actually purge ADDRESSOFs, we turn REGs into MEMs.  That
+     requires a fixup pass over the instruction stream to correct
+     INSNs that depended on the REG being a REG, and not a MEM.  But,
+     these fixup passes are slow.  Furthermore, most MEMs are not
+     mentioned in very many instructions.  So, we speed up the process
+     by pre-calculating which REGs occur in which INSNs; that allows
+     us to perform the fixup passes much more quickly.  */
+  hash_table_init (&ht,
+		   insns_for_mem_newfunc,
+		   insns_for_mem_hash,
+		   insns_for_mem_comp);
+  compute_insns_for_mem (insns, NULL_RTX, &ht);
+
+  for (insn = insns; insn; insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == INSN || GET_CODE (insn) == JUMP_INSN
+	|| GET_CODE (insn) == CALL_INSN)
+      {
+	if (! purge_addressof_1 (&PATTERN (insn), insn,
+				 asm_noperands (PATTERN (insn)) > 0, 0, &ht))
+	  /* If we could not replace the ADDRESSOFs in the insn,
+	     something is wrong.  */
+	  abort ();
+
+	if (! purge_addressof_1 (&REG_NOTES (insn), NULL_RTX, 0, 0, &ht))
+	  {
+	    /* If we could not replace the ADDRESSOFs in the insn's notes,
+	       we can just remove the offending notes instead.  */
+	    rtx note;
+
+	    for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
+	      {
+		/* If we find a REG_RETVAL note then the insn is a libcall.
+		   Such insns must have REG_EQUAL notes as well, in order
+		   for later passes of the compiler to work.  So it is not
+		   safe to delete the notes here, and instead we abort.  */
+		if (REG_NOTE_KIND (note) == REG_RETVAL)
+		  abort ();
+		if (for_each_rtx (&note, is_addressof, NULL))
+		  remove_note (insn, note);
+	      }
+	  }
+      }
+
+  /* Clean up.  */
+  hash_table_free (&ht);
+  purge_bitfield_addressof_replacements = 0;
+  purge_addressof_replacements = 0;
+
+  /* REGs are shared.  purge_addressof will destructively replace a REG
+     with a MEM, which creates shared MEMs.
+
+     Unfortunately, the children of put_reg_into_stack assume that MEMs
+     referring to the same stack slot are shared (fixup_var_refs and
+     the associated hash table code).
+
+     So, we have to do another unsharing pass after we have flushed any
+     REGs that had their address taken into the stack.
+
+     It may be worth tracking whether or not we converted any REGs into
+     MEMs to avoid this overhead when it is not needed.  */
+  unshare_all_rtl_again (get_insns ());
+}

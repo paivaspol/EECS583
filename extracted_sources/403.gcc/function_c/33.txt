@@ -1,0 +1,35 @@
+static rtx
+fixup_memory_subreg (x, insn, promoted_mode, uncritical)
+     rtx x;
+     rtx insn;
+     enum machine_mode promoted_mode;
+     int uncritical;
+{
+  int offset;
+  rtx mem = SUBREG_REG (x);
+  rtx addr = XEXP (mem, 0);
+  enum machine_mode mode = GET_MODE (x);
+  rtx result;
+
+  /* Paradoxical SUBREGs are usually invalid during RTL generation.  */
+  if (GET_MODE_SIZE (mode) > GET_MODE_SIZE (GET_MODE (mem)) && ! uncritical)
+    abort ();
+
+  offset = SUBREG_BYTE (x);
+  if (BYTES_BIG_ENDIAN)
+    /* If the PROMOTED_MODE is wider than the mode of the MEM, adjust
+       the offset so that it points to the right location within the
+       MEM. */
+    offset -= (GET_MODE_SIZE (promoted_mode) - GET_MODE_SIZE (GET_MODE (mem)));
+
+  if (!flag_force_addr
+      && memory_address_p (mode, plus_constant (addr, offset)))
+    /* Shortcut if no insns need be emitted.  */
+    return adjust_address (mem, mode, offset);
+
+  start_sequence ();
+  result = adjust_address (mem, mode, offset);
+  emit_insn_before (gen_sequence (), insn);
+  end_sequence ();
+  return result;
+}

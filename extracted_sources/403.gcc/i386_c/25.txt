@@ -1,0 +1,39 @@
+static int
+examine_argument (mode, type, in_return, int_nregs, sse_nregs)
+     enum machine_mode mode;
+     tree type;
+     int *int_nregs, *sse_nregs;
+     int in_return;
+{
+  enum x86_64_reg_class class[MAX_CLASSES];
+  int n = classify_argument (mode, type, class, 0);
+
+  *int_nregs = 0;
+  *sse_nregs = 0;
+  if (!n)
+    return 0;
+  for (n--; n >= 0; n--)
+    switch (class[n])
+      {
+      case X86_64_INTEGER_CLASS:
+      case X86_64_INTEGERSI_CLASS:
+	(*int_nregs)++;
+	break;
+      case X86_64_SSE_CLASS:
+      case X86_64_SSESF_CLASS:
+      case X86_64_SSEDF_CLASS:
+	(*sse_nregs)++;
+	break;
+      case X86_64_NO_CLASS:
+      case X86_64_SSEUP_CLASS:
+	break;
+      case X86_64_X87_CLASS:
+      case X86_64_X87UP_CLASS:
+	if (!in_return)
+	  return 0;
+	break;
+      case X86_64_MEMORY_CLASS:
+	abort ();
+      }
+  return 1;
+}

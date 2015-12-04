@@ -1,0 +1,50 @@
+void
+emit_stack_restore (save_level, sa, after)
+     enum save_level save_level;
+     rtx after;
+     rtx sa;
+{
+  /* The default is that we use a move insn.  */
+  rtx (*fcn) PARAMS ((rtx, rtx)) = gen_move_insn;
+
+  /* See if this machine has anything special to do for this kind of save.  */
+  switch (save_level)
+    {
+#ifdef HAVE_restore_stack_block
+    case SAVE_BLOCK:
+      if (HAVE_restore_stack_block)
+	fcn = gen_restore_stack_block;
+      break;
+#endif
+#ifdef HAVE_restore_stack_function
+    case SAVE_FUNCTION:
+      if (HAVE_restore_stack_function)
+	fcn = gen_restore_stack_function;
+      break;
+#endif
+#ifdef HAVE_restore_stack_nonlocal
+    case SAVE_NONLOCAL:
+      if (HAVE_restore_stack_nonlocal)
+	fcn = gen_restore_stack_nonlocal;
+      break;
+#endif
+    default:
+      break;
+    }
+
+  if (sa != 0)
+    sa = validize_mem (sa);
+
+  if (after)
+    {
+      rtx seq;
+
+      start_sequence ();
+      emit_insn (fcn (stack_pointer_rtx, sa));
+      seq = gen_sequence ();
+      end_sequence ();
+      emit_insn_after (seq, after);
+    }
+  else
+    emit_insn (fcn (stack_pointer_rtx, sa));
+}

@@ -1,0 +1,31 @@
+static void
+do_assert (pfile)
+     cpp_reader *pfile;
+{
+  struct answer *new_answer;
+  cpp_hashnode *node;
+  
+  node = parse_assertion (pfile, &new_answer, T_ASSERT);
+  if (node)
+    {
+      /* Place the new answer in the answer list.  First check there
+         is not a duplicate.  */
+      new_answer->next = 0;
+      if (node->type == NT_ASSERTION)
+	{
+	  if (*find_answer (node, new_answer))
+	    {
+	      cpp_warning (pfile, "\"%s\" re-asserted", NODE_NAME (node) + 1);
+	      return;
+	    }
+	  new_answer->next = node->value.answers;
+	}
+
+      node->type = NT_ASSERTION;
+      node->value.answers = new_answer;
+      BUFF_FRONT (pfile->a_buff) += (sizeof (struct answer)
+				     + (new_answer->count - 1)
+				     * sizeof (cpp_token));
+      check_eol (pfile);
+    }
+}

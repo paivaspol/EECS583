@@ -1,0 +1,16 @@
+static void dump_shells(FILE *fp,rvec x[],rvec f[],real ftol,int ns,t_shell s[])
+{
+  int  i,shell;
+  real ft2,ff2;
+  
+  ft2 = sqr(ftol);
+  
+  for(i=0; (i<ns); i++) {
+    shell = s[i].shell;
+    ff2   = iprod(f[shell],f[shell]);
+    if (ff2 > ft2)
+      fprintf(fp,"SHELL %5d, force %10.5f  %10.5f  %10.5f, |f| %10.5f\n",
+	      shell,f[shell][XX],f[shell][YY],f[shell][ZZ],sqrt(ff2));
+    check_pbc(fp,x,shell);
+  }
+}

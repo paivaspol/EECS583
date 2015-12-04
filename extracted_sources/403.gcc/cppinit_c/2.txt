@@ -1,0 +1,67 @@
+static void
+append_include_chain (pfile, dir, path, cxx_aware)
+     cpp_reader *pfile;
+     char *dir;
+     int path;
+     int cxx_aware ATTRIBUTE_UNUSED;
+{
+  struct cpp_pending *pend = CPP_OPTION (pfile, pending);
+  struct search_path *new;
+  struct stat st;
+  unsigned int len;
+
+  if (*dir == '\0')
+    {
+      free (dir);
+      dir = xstrdup (".");
+    }
+  _cpp_simplify_pathname (dir);
+
+  if (stat (dir, &st))
+    {
+      /* Dirs that don't exist are silently ignored.  */
+      if (errno != ENOENT)
+	cpp_notice_from_errno (pfile, dir);
+      else if (CPP_OPTION (pfile, verbose))
+	fprintf (stderr, _("ignoring nonexistent directory \"%s\"\n"), dir);
+      free (dir);
+      return;
+    }
+
+  if (!S_ISDIR (st.st_mode))
+    {
+      cpp_notice (pfile, "%s: Not a directory", dir);
+      free (dir);
+      return;
+    }
+
+  len = strlen (dir);
+  if (len > pfile->max_include_len)
+    pfile->max_include_len = len;
+
+  new = (struct search_path *) xmalloc (sizeof (struct search_path));
+  new->name = dir;
+  new->len = len;
+  INO_T_COPY (new->ino, st.st_ino);
+  new->dev  = st.st_dev;
+  /* Both systm and after include file lists should be treated as system
+     include files since these two lists are really just a concatenation
+     of one "system" list.  */
+  if (path == SYSTEM || path == AFTER)
+#ifdef NO_IMPLICIT_EXTERN_C
+    new->sysp = 1;
+#else
+    new->sysp = cxx_aware ? 1 : 2;
+#endif
+  else
+    new->sysp = 0;
+  new->name_map = NULL;
+  new->next = NULL;
+
+  switch (path)
+    {
+    case BRACKET:	APPEND (pend, brack, new); break;
+    case SYSTEM:	APPEND (pend, systm, new); break;
+    case AFTER:		APPEND (pend, after, new); break;
+    }
+}

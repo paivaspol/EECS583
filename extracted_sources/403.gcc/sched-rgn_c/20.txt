@@ -1,0 +1,48 @@
+static int
+is_pfree (load_insn, bb_src, bb_trg)
+     rtx load_insn;
+     int bb_src, bb_trg;
+{
+  rtx back_link;
+  candidate *candp = candidate_table + bb_src;
+
+  if (candp->split_bbs.nr_members != 1)
+    /* Must have exactly one escape block.  */
+    return 0;
+
+  for (back_link = LOG_LINKS (load_insn);
+       back_link; back_link = XEXP (back_link, 1))
+    {
+      rtx insn1 = XEXP (back_link, 0);
+
+      if (GET_MODE (back_link) == VOIDmode)
+	{
+	  /* Found a DEF-USE dependence (insn1, load_insn).  */
+	  rtx fore_link;
+
+	  for (fore_link = INSN_DEPEND (insn1);
+	       fore_link; fore_link = XEXP (fore_link, 1))
+	    {
+	      rtx insn2 = XEXP (fore_link, 0);
+	      if (GET_MODE (fore_link) == VOIDmode)
+		{
+		  /* Found a DEF-USE dependence (insn1, insn2).  */
+		  if (haifa_classify_insn (insn2) != PFREE_CANDIDATE)
+		    /* insn2 not guaranteed to be a 1 base reg load.  */
+		    continue;
+
+		  if (INSN_BB (insn2) == bb_trg)
+		    /* insn2 is the similar load, in the target block.  */
+		    return 1;
+
+		  if (*(candp->split_bbs.first_member) == BLOCK_NUM (insn2))
+		    /* insn2 is a similar load, in a split-block.  */
+		    return 1;
+		}
+	    }
+	}
+    }
+
+  /* Couldn't find a similar load.  */
+  return 0;
+}				/* is_pfree */

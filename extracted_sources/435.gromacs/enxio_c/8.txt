@@ -1,0 +1,62 @@
+int open_enx(char *fn,char *mode)
+{
+  int        fp,nre,i;
+  char       **nm=NULL;
+  t_enxframe *fr;
+  bool       bDum=TRUE;
+  
+  /* Energy files should always be opened as binary files,
+   * but that is checked in gmx_fio_open.
+   */
+
+  if (mode[0]=='r') {
+    fp=gmx_fio_open(fn,mode);
+    gmx_fio_select(fp);
+    gmx_fio_setprecision(fp,FALSE);
+    do_enxnms(fp,&nre,&nm);
+    snew(fr,1);
+    do_eheader(fp,fr,&bDum);
+    
+    /* Now check whether this file is in single precision */
+    if (((fr->e_size && (fr->nre == nre) && 
+	  (nre*4*sizeof(float) == fr->e_size)) ||
+	 (fr->d_size && 
+	  (fr->ndisre*sizeof(float)*2+sizeof(int) == fr->d_size)))){
+      fprintf(stderr,"Opened %s as single precision energy file\n",fn);
+      for(i=0; (i<nre); i++)
+	sfree(nm[i]);
+      sfree(nm);
+    }
+    else {
+      gmx_fio_rewind(fp);
+      gmx_fio_select(fp);
+      gmx_fio_setprecision(fp,TRUE);
+      do_enxnms(fp,&nre,&nm);
+      do_eheader(fp,fr,&bDum);
+      if (((fr->e_size && (fr->nre == nre) && 
+	    (nre*4*sizeof(double) == fr->e_size)) ||
+	   (fr->d_size && 
+	    (fr->ndisre*sizeof(double)*2+sizeof(int) == fr->d_size))))
+	fprintf(stderr,"Opened %s as double precision energy file\n",fn);
+      else {
+	if (empty_file(fn))
+	  fatal_error(0,"File %s is empty",fn);
+	else
+	  fatal_error(0,"Energy file %s not recognized, maybe different CPU?",
+		      fn);
+      }
+      for(i=0; (i<nre); i++)
+	  sfree(nm[i]);
+      sfree(nm);
+    }
+    free_enxframe(fr);
+    sfree(fr);
+    gmx_fio_rewind(fp);
+  }
+  else 
+    fp = gmx_fio_open(fn,mode);
+    
+  framenr=0;
+    
+  return fp;
+}

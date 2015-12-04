@@ -1,0 +1,170 @@
+void SetCoeffAndReconstruction8x8 (Macroblock* currMB)
+{
+  int block, k, j, i;
+
+
+  //============= MIXED TRANSFORM SIZES FOR 8x8 PARTITION ==============
+  //--------------------------------------------------------------------
+  int l;
+  int bframe = img->type==B_SLICE;
+  int list_offset   = ((img->MbaffFrameFlag)&&(currMB->mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+
+  if (currMB->luma_transform_size_8x8_flag)
+  {
+    assert(input->AllowTransform8x8);
+
+    //============= set mode and ref. frames ==============
+    for(i=0;i<4;i++)
+    {
+      currMB->b8mode[i]   = part8x8mode[i];
+      currMB->b8pdir[i]   = part8x8pdir[i];
+    }
+
+    if (bframe)
+    {
+      for (j=0;j<4;j++)
+        for (i=0;i<4;i++)
+        {
+          k = 2*(j/2)+(i/2);
+          l = 2*(j%2)+(i%2);
+          enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = part8x8fwref[k];
+          enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j] = part8x8bwref[k];
+        }
+    }
+    else
+    {
+      for (j=0;j<4;j++)
+        for (i=0;i<4;i++)
+        {
+          k = 2*(j/2)+(i/2);
+          l = 2*(j%2)+(i%2);
+          enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = part8x8fwref[k];
+        }
+    }
+
+    for (j=0;j<4;j++)
+    {
+      for (i=0;i<4;i++)
+      {
+        enc_picture->ref_pic_id [LIST_0][img->block_x+i][img->block_y+j] =
+          (enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j]>=0 ?
+          enc_picture->ref_pic_num[LIST_0 + list_offset][enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j]]:
+        -1);
+      }
+    }
+    if (bframe)
+    {
+      for (j=0;j<4;j++)
+      {
+        for (i=0;i<4;i++)
+        {
+          enc_picture->ref_pic_id [LIST_1][img->block_x+i][img->block_y+j] =
+            (enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j]>=0 ?
+            enc_picture->ref_pic_num[LIST_1 + list_offset][enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j]]:
+          -1);
+        }
+
+      }
+    }
+
+    //====== set the mv's for 8x8 partition with transform size 8x8 ======
+    //save the mv data for 4x4 transform
+    StoreMV8x8(1);
+    //set new mv data for 8x8 transform
+    RestoreMV8x8(0);
+
+    //============= get pre-calculated data ==============
+    //restore coefficients from 8x8 transform
+    for (block=0; block<4; block++)
+    for (k=0; k<4; k++)
+    for (j=0; j<2; j++)
+    for (i=0; i<65; i++)
+      img->cofAC[block][k][j][i] = cofAC_8x8ts[block][k][j][i];
+    
+    //restore reconstruction 
+    if (cnt_nonz8_8x8ts <= _LUMA_8x8_COEFF_COST_ && 
+        ((img->qp + img->bitdepth_luma_qp_scale)!=0 || img->lossless_qpprime_flag==0))
+    {
+      currMB->cbp     = 0;
+      currMB->cbp_blk = 0;
+      for (j=0; j<16; j++)
+        for (i=0; i<16; i++)
+          // Residue Color Transform
+          if(!img->residue_transform_flag)
+            enc_picture->imgY[img->pix_y+j][img->pix_x+i] = mpr_8x8ts[j][i];
+          else
+            rec_resG[i][j] = 0;
+    }
+    else
+    {
+      currMB->cbp     = cbp8_8x8ts;
+      currMB->cbp_blk = cbp_blk8_8x8ts;
+      for (j=0; j<16; j++)
+        for (i=0; i<16; i++)
+          // Residue Color Transform
+          if(!img->residue_transform_flag)
+            enc_picture->imgY[img->pix_y+j][img->pix_x+i] = rec_mbY_8x8ts[j][i];
+          else
+            rec_resG[i][j] =  rec_resG_8x8ts[i][j];
+    }
+
+    // Residue Color Transform
+    for (j=0; j<16; j++)
+    for (i=0; i<16; i++)
+    {
+      mprRGB[0][i][j] = mprRGB_8x8ts[0][i][j];
+      mprRGB[1][i][j] = mprRGB_8x8ts[1][i][j];
+      mprRGB[2][i][j] = mprRGB_8x8ts[2][i][j];
+      resTrans_R[i][j] = resTrans_R_8x8ts[i][j];
+      resTrans_B[i][j] = resTrans_B_8x8ts[i][j];
+    }
+  }
+  else
+  {
+    //============= get pre-calculated data ==============
+    //---------------------------------------------------
+    //--- restore coefficients ---
+    for (block=0; block<4+img->num_blk8x8_uv; block++)
+    for (k=0; k<4; k++)
+    for (j=0; j<2; j++)
+    for (i=0; i<65; i++)
+      img->cofAC[block][k][j][i] = cofAC8x8[block][k][j][i];
+
+    if (cnt_nonz_8x8<=5 && img->type!=SP_SLICE &&
+        ((img->qp + img->bitdepth_luma_qp_scale)!=0 || img->lossless_qpprime_flag==0))
+    {
+      currMB->cbp     = 0;
+      currMB->cbp_blk = 0;
+      for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+        // Residue Color Transform
+        if(!img->residue_transform_flag)
+          enc_picture->imgY[img->pix_y+j][img->pix_x+i] = mpr8x8[j][i];
+        else
+          rec_resG[i][j] = 0;
+    }
+    else
+    {
+      currMB->cbp     = cbp8x8;
+      currMB->cbp_blk = cbp_blk8x8;
+      for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+        // Residue Color Transform
+        if(!img->residue_transform_flag)
+          enc_picture->imgY[img->pix_y+j][img->pix_x+i] = rec_mbY8x8[j][i];
+        else
+          rec_resG[i][j] =  rec_resG_8x8[i][j];
+    }
+
+    // Residue Color Transform
+    for (j=0; j<16; j++)
+    for (i=0; i<16; i++)
+    {
+      mprRGB[0][i][j] = mprRGB_8x8[0][i][j];
+      mprRGB[1][i][j] = mprRGB_8x8[1][i][j];
+      mprRGB[2][i][j] = mprRGB_8x8[2][i][j];
+      resTrans_R[i][j] = resTrans_R_8x8[i][j];
+      resTrans_B[i][j] = resTrans_B_8x8[i][j];
+    }
+  }
+}

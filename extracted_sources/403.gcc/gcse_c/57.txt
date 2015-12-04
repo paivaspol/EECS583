@@ -1,0 +1,12 @@
+static void
+handle_rd_kill_set (insn, regno, bb)
+     rtx insn;
+     int regno;
+     basic_block bb;
+{
+  struct reg_set *this_reg;
+
+  for (this_reg = reg_set_table[regno]; this_reg; this_reg = this_reg ->next)
+    if (BLOCK_NUM (this_reg->insn) != BLOCK_NUM (insn))
+      SET_BIT (rd_kill[bb->index], INSN_CUID (this_reg->insn));
+}

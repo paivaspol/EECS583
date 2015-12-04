@@ -1,0 +1,95 @@
+static void
+loop_regs_scan (loop, extra_size)
+     const struct loop *loop;
+     int extra_size;
+{
+  struct loop_regs *regs = LOOP_REGS (loop);
+  int old_nregs;
+  /* last_set[n] is nonzero iff reg n has been set in the current
+   basic block.  In that case, it is the insn that last set reg n.  */
+  rtx *last_set;
+  rtx insn;
+  int i;
+
+  old_nregs = regs->num;
+  regs->num = max_reg_num ();
+
+  /* Grow the regs array if not allocated or too small.  */
+  if (regs->num >= regs->size)
+    {
+      regs->size = regs->num + extra_size;
+
+      regs->array = (struct loop_reg *)
+	xrealloc (regs->array, regs->size * sizeof (*regs->array));
+
+      /* Zero the new elements.  */
+      memset (regs->array + old_nregs, 0,
+	      (regs->size - old_nregs) * sizeof (*regs->array));
+    }
+
+  /* Clear previously scanned fields but do not clear n_times_set.  */
+  for (i = 0; i < old_nregs; i++)
+    {
+      regs->array[i].set_in_loop = 0;
+      regs->array[i].may_not_optimize = 0;
+      regs->array[i].single_usage = NULL_RTX;
+    }
+
+  last_set = (rtx *) xcalloc (regs->num, sizeof (rtx));
+
+  /* Scan the loop, recording register usage.  */
+  for (insn = loop->top ? loop->top : loop->start; insn != loop->end;
+       insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	{
+	  /* Record registers that have exactly one use.  */
+	  find_single_use_in_loop (regs, insn, PATTERN (insn));
+
+	  /* Include uses in REG_EQUAL notes.  */
+	  if (REG_NOTES (insn))
+	    find_single_use_in_loop (regs, insn, REG_NOTES (insn));
+
+	  if (GET_CODE (PATTERN (insn)) == SET
+	      || GET_CODE (PATTERN (insn)) == CLOBBER)
+	    count_one_set (regs, insn, PATTERN (insn), last_set);
+	  else if (GET_CODE (PATTERN (insn)) == PARALLEL)
+	    {
+	      int i;
+	      for (i = XVECLEN (PATTERN (insn), 0) - 1; i >= 0; i--)
+		count_one_set (regs, insn, XVECEXP (PATTERN (insn), 0, i),
+			       last_set);
+	    }
+	}
+
+      if (GET_CODE (insn) == CODE_LABEL || GET_CODE (insn) == JUMP_INSN)
+	memset (last_set, 0, regs->num * sizeof (rtx));
+    }
+
+  /* Invalidate all hard registers clobbered by calls.  With one exception:
+     a call-clobbered PIC register is still function-invariant for our
+     purposes, since we can hoist any PIC calculations out of the loop.
+     Thus the call to rtx_varies_p.  */
+  if (LOOP_INFO (loop)->has_call)
+    for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+      if (TEST_HARD_REG_BIT (regs_invalidated_by_call, i)
+          && rtx_varies_p (gen_rtx_REG (Pmode, i), /*for_alias=*/1))
+        {
+          regs->array[i].may_not_optimize = 1;
+          regs->array[i].set_in_loop = 1;
+        }
+
+#ifdef AVOID_CCMODE_COPIES
+  /* Don't try to move insns which set CC registers if we should not
+     create CCmode register copies.  */
+  for (i = regs->num - 1; i >= FIRST_PSEUDO_REGISTER; i--)
+    if (GET_MODE_CLASS (GET_MODE (regno_reg_rtx[i])) == MODE_CC)
+      regs->array[i].may_not_optimize = 1;
+#endif
+
+  /* Set regs->array[I].n_times_set for the new registers.  */
+  for (i = old_nregs; i < regs->num; i++)
+    regs->array[i].n_times_set = regs->array[i].set_in_loop;
+
+  free (last_set);
+}

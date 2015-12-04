@@ -1,0 +1,121 @@
+static void
+e64toe (pe, y)
+     const UEMUSHORT *pe;
+     UEMUSHORT *y;
+{
+  UEMUSHORT yy[NI];
+  const UEMUSHORT *e;
+  UEMUSHORT *p, *q;
+  int i;
+
+  e = pe;
+  p = yy;
+  for (i = 0; i < NE - 5; i++)
+    *p++ = 0;
+/* This precision is not ordinarily supported on DEC or IBM.  */
+#ifdef DEC
+  for (i = 0; i < 5; i++)
+    *p++ = *e++;
+#endif
+#ifdef IBM
+  p = &yy[0] + (NE - 1);
+  *p-- = *e++;
+  ++e;
+  for (i = 0; i < 5; i++)
+    *p-- = *e++;
+#endif
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    {
+      for (i = 0; i < 5; i++)
+	*p++ = *e++;
+
+      /* For denormal long double Intel format, shift significand up one
+	 -- but only if the top significand bit is zero.  A top bit of 1
+	 is "pseudodenormal" when the exponent is zero.  */
+      if ((yy[NE-1] & 0x7fff) == 0 && (yy[NE-2] & 0x8000) == 0)
+	{
+	  UEMUSHORT temp[NI];
+
+	  emovi (yy, temp);
+	  eshup1 (temp);
+	  emovo (temp,y);
+	  return;
+	}
+    }
+  else
+    {
+      p = &yy[0] + (NE - 1);
+#ifdef ARM_EXTENDED_IEEE_FORMAT
+      /* For ARMs, the exponent is in the lowest 15 bits of the word.  */
+      *p-- = (e[0] & 0x8000) | (e[1] & 0x7ffff);
+      e += 2;
+#else
+      *p-- = *e++;
+      ++e;
+#endif
+      for (i = 0; i < 4; i++)
+	*p-- = *e++;
+    }
+#endif
+#ifdef INFINITY
+  /* Point to the exponent field and check max exponent cases.  */
+  p = &yy[NE - 1];
+  if ((*p & 0x7fff) == 0x7fff)
+    {
+#ifdef NANS
+      if (! REAL_WORDS_BIG_ENDIAN)
+	{
+	  for (i = 0; i < 4; i++)
+	    {
+	      if ((i != 3 && pe[i] != 0)
+		  /* Anything but 0x8000 here, including 0, is a NaN.  */
+		  || (i == 3 && pe[i] != 0x8000))
+		{
+		  enan (y, (*p & 0x8000) != 0);
+		  return;
+		}
+	    }
+	}
+      else
+	{
+#ifdef ARM_EXTENDED_IEEE_FORMAT
+	  for (i = 2; i <= 5; i++)
+	    {
+	      if (pe[i] != 0)
+		{
+		  enan (y, (*p & 0x8000) != 0);
+		  return;
+		}
+	    }
+#else /* not ARM */
+	  /* In Motorola extended precision format, the most significant
+	     bit of an infinity mantissa could be either 1 or 0.  It is
+	     the lower order bits that tell whether the value is a NaN.  */
+	  if ((pe[2] & 0x7fff) != 0)
+	    goto bigend_nan;
+
+	  for (i = 3; i <= 5; i++)
+	    {
+	      if (pe[i] != 0)
+		{
+bigend_nan:
+		  enan (y, (*p & 0x8000) != 0);
+		  return;
+		}
+	    }
+#endif /* not ARM */
+	}
+#endif /* NANS */
+      eclear (y);
+      einfin (y);
+      if (*p & 0x8000)
+	eneg (y);
+      return;
+    }
+#endif  /* INFINITY */
+  p = yy;
+  q = y;
+  for (i = 0; i < NE; i++)
+    *q++ = *p++;
+}

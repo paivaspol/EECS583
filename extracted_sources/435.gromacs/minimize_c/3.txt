@@ -1,0 +1,41 @@
+static real f_max(int left,int right,int nnodes,
+		  t_grpopts *opts,t_mdatoms *mdatoms,
+		  int start,int end,rvec grad[],int *nfmax)
+{
+  real fmax2,fmax2_0,fam,nfm;
+  int  i,m,gf;
+
+  /* This routine finds the largest force and returns it.
+   * On parallel machines the global max is taken.
+   */
+  fmax2 = 0;
+  nfm   = -1;
+  for(i=start; i<end; i++) {
+    gf = mdatoms->cFREEZE[i];
+    fam = 0;
+    for(m=0; m<DIM; m++)
+      if (!opts->nFreeze[gf][m])
+	fam += sqr(grad[i][m]);
+    if (fam > fmax2) {
+      fmax2 = fam;
+      nfm   = i;
+    }
+  }
+
+  *nfmax = nfm;
+  if (nnodes > 1) {
+    for(i=0; (i<nnodes-1); i++) {
+      gmx_tx(left,(void *)&fmax2,sizeof(fmax2));
+      gmx_rx(right,(void *)&fmax2_0,sizeof(fmax2_0));
+      gmx_wait(left,right);
+      gmx_tx(left,(void *)nfmax,sizeof(*nfmax));
+      gmx_rx(right,(void *)&nfm,sizeof(nfm));
+      gmx_wait(left,right);
+      if (fmax2_0 > fmax2) {
+	fmax2  = fmax2_0;
+	*nfmax = nfm;
+      }
+    }
+  }
+  return sqrt(fmax2);
+}

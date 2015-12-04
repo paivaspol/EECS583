@@ -1,0 +1,491 @@
+static I32
+DD_dump(pTHX_ SV *val, char *name, STRLEN namelen, SV *retval, HV *seenhv,
+	AV *postav, I32 *levelp, I32 indent, SV *pad, SV *xpad,
+	SV *apad, SV *sep, SV *pair, SV *freezer, SV *toaster, I32 purity,
+	I32 deepcopy, I32 quotekeys, SV *bless, I32 maxdepth, SV *sortkeys)
+{
+    char tmpbuf[128];
+    U32 i;
+    char *c, *r, *realpack, id[128];
+    SV **svp;
+    SV *sv, *ipad, *ival;
+    SV *blesspad = Nullsv;
+    AV *seenentry = Nullav;
+    char *iname;
+    STRLEN inamelen, idlen = 0;
+    U32 realtype;
+
+    if (!val)
+	return 0;
+
+    realtype = SvTYPE(val);
+
+    if (SvGMAGICAL(val))
+        mg_get(val);
+    if (SvROK(val)) {
+
+        /* If a freeze method is provided and the object has it, call
+           it.  Warn on errors. */
+	if (SvOBJECT(SvRV(val)) && freezer &&
+	    SvPOK(freezer) && SvCUR(freezer) &&
+            gv_fetchmeth(SvSTASH(SvRV(val)), SvPVX(freezer), 
+                         SvCUR(freezer), -1) != NULL)
+	{
+	    dSP; ENTER; SAVETMPS; PUSHMARK(sp);
+	    XPUSHs(val); PUTBACK;
+	    i = call_method(SvPVX(freezer), G_EVAL|G_VOID);
+	    SPAGAIN;
+	    if (SvTRUE(ERRSV))
+		warn("WARNING(Freezer method call failed): %"SVf"", ERRSV);
+	    PUTBACK; FREETMPS; LEAVE;
+	}
+	
+	ival = SvRV(val);
+	realtype = SvTYPE(ival);
+        (void) sprintf(id, "0x%"UVxf, PTR2UV(ival));
+	idlen = strlen(id);
+	if (SvOBJECT(ival))
+	    realpack = HvNAME(SvSTASH(ival));
+	else
+	    realpack = Nullch;
+
+	/* if it has a name, we need to either look it up, or keep a tab
+	 * on it so we know when we hit it later
+	 */
+	if (namelen) {
+	    if ((svp = hv_fetch(seenhv, id, idlen, FALSE))
+		&& (sv = *svp) && SvROK(sv) && (seenentry = (AV*)SvRV(sv)))
+	    {
+		SV *othername;
+		if ((svp = av_fetch(seenentry, 0, FALSE))
+		    && (othername = *svp))
+		{
+		    if (purity && *levelp > 0) {
+			SV *postentry;
+			
+			if (realtype == SVt_PVHV)
+			    sv_catpvn(retval, "{}", 2);
+			else if (realtype == SVt_PVAV)
+			    sv_catpvn(retval, "[]", 2);
+			else
+			    sv_catpvn(retval, "do{my $o}", 9);
+			postentry = newSVpvn(name, namelen);
+			sv_catpvn(postentry, " = ", 3);
+			sv_catsv(postentry, othername);
+			av_push(postav, postentry);
+		    }
+		    else {
+			if (name[0] == '@' || name[0] == '%') {
+			    if ((SvPVX(othername))[0] == '\\' &&
+				(SvPVX(othername))[1] == name[0]) {
+				sv_catpvn(retval, SvPVX(othername)+1,
+					  SvCUR(othername)-1);
+			    }
+			    else {
+				sv_catpvn(retval, name, 1);
+				sv_catpvn(retval, "{", 1);
+				sv_catsv(retval, othername);
+				sv_catpvn(retval, "}", 1);
+			    }
+			}
+			else
+			    sv_catsv(retval, othername);
+		    }
+		    return 1;
+		}
+		else {
+		    warn("ref name not found for %s", id);
+		    return 0;
+		}
+	    }
+	    else {   /* store our name and continue */
+		SV *namesv;
+		if (name[0] == '@' || name[0] == '%') {
+		    namesv = newSVpvn("\\", 1);
+		    sv_catpvn(namesv, name, namelen);
+		}
+		else if (realtype == SVt_PVCV && name[0] == '*') {
+		    namesv = newSVpvn("\\", 2);
+		    sv_catpvn(namesv, name, namelen);
+		    (SvPVX(namesv))[1] = '&';
+		}
+		else
+		    namesv = newSVpvn(name, namelen);
+		seenentry = newAV();
+		av_push(seenentry, namesv);
+		(void)SvREFCNT_inc(val);
+		av_push(seenentry, val);
+		(void)hv_store(seenhv, id, strlen(id),
+			       newRV_inc((SV*)seenentry), 0);
+		SvREFCNT_dec(seenentry);
+	    }
+	}
+
+	if (realpack && *realpack == 'R' && strEQ(realpack, "Regexp")) {
+	    STRLEN rlen;
+	    char *rval = SvPV(val, rlen);
+	    char *slash = strchr(rval, '/');
+	    sv_catpvn(retval, "qr/", 3);
+	    while (slash) {
+		sv_catpvn(retval, rval, slash-rval);
+		sv_catpvn(retval, "\\/", 2);
+		rlen -= slash-rval+1;
+		rval = slash+1;
+		slash = strchr(rval, '/');
+	    }
+	    sv_catpvn(retval, rval, rlen);
+	    sv_catpvn(retval, "/", 1);
+	    return 1;
+	}
+
+	/* If purity is not set and maxdepth is set, then check depth:
+	 * if we have reached maximum depth, return the string
+	 * representation of the thing we are currently examining
+	 * at this depth (i.e., 'Foo=ARRAY(0xdeadbeef)').
+	 */
+	if (!purity && maxdepth > 0 && *levelp >= maxdepth) {
+	    STRLEN vallen;
+	    char *valstr = SvPV(val,vallen);
+	    sv_catpvn(retval, "'", 1);
+	    sv_catpvn(retval, valstr, vallen);
+	    sv_catpvn(retval, "'", 1);
+	    return 1;
+	}
+
+	if (realpack) {				/* we have a blessed ref */
+	    STRLEN blesslen;
+	    char *blessstr = SvPV(bless, blesslen);
+	    sv_catpvn(retval, blessstr, blesslen);
+	    sv_catpvn(retval, "( ", 2);
+	    if (indent >= 2) {
+		blesspad = apad;
+		apad = newSVsv(apad);
+		sv_x(aTHX_ apad, " ", 1, blesslen+2);
+	    }
+	}
+
+	(*levelp)++;
+	ipad = sv_x(aTHX_ Nullsv, SvPVX(xpad), SvCUR(xpad), *levelp);
+
+	if (realtype <= SVt_PVBM) {			     /* scalar ref */
+	    SV *namesv = newSVpvn("${", 2);
+	    sv_catpvn(namesv, name, namelen);
+	    sv_catpvn(namesv, "}", 1);
+	    if (realpack) {				     /* blessed */
+		sv_catpvn(retval, "do{\\(my $o = ", 13);
+		DD_dump(aTHX_ ival, SvPVX(namesv), SvCUR(namesv), retval, seenhv,
+			postav, levelp,	indent, pad, xpad, apad, sep, pair,
+			freezer, toaster, purity, deepcopy, quotekeys, bless,
+			maxdepth, sortkeys);
+		sv_catpvn(retval, ")}", 2);
+	    }						     /* plain */
+	    else {
+		sv_catpvn(retval, "\\", 1);
+		DD_dump(aTHX_ ival, SvPVX(namesv), SvCUR(namesv), retval, seenhv,
+			postav, levelp,	indent, pad, xpad, apad, sep, pair,
+			freezer, toaster, purity, deepcopy, quotekeys, bless,
+			maxdepth, sortkeys);
+	    }
+	    SvREFCNT_dec(namesv);
+	}
+	else if (realtype == SVt_PVGV) {		     /* glob ref */
+	    SV *namesv = newSVpvn("*{", 2);
+	    sv_catpvn(namesv, name, namelen);
+	    sv_catpvn(namesv, "}", 1);
+	    sv_catpvn(retval, "\\", 1);
+	    DD_dump(aTHX_ ival, SvPVX(namesv), SvCUR(namesv), retval, seenhv,
+		    postav, levelp,	indent, pad, xpad, apad, sep, pair,
+		    freezer, toaster, purity, deepcopy, quotekeys, bless,
+		    maxdepth, sortkeys);
+	    SvREFCNT_dec(namesv);
+	}
+	else if (realtype == SVt_PVAV) {
+	    SV *totpad;
+	    I32 ix = 0;
+	    I32 ixmax = av_len((AV *)ival);
+	
+	    SV *ixsv = newSViv(0);
+	    /* allowing for a 24 char wide array index */
+	    New(0, iname, namelen+28, char);
+	    (void)strcpy(iname, name);
+	    inamelen = namelen;
+	    if (name[0] == '@') {
+		sv_catpvn(retval, "(", 1);
+		iname[0] = '$';
+	    }
+	    else {
+		sv_catpvn(retval, "[", 1);
+		/* omit "->" in $foo{bar}->[0], but not in ${$foo}->[0] */
+		/*if (namelen > 0
+		    && name[namelen-1] != ']' && name[namelen-1] != '}'
+		    && (namelen < 4 || (name[1] != '{' && name[2] != '{')))*/
+		if ((namelen > 0
+		     && name[namelen-1] != ']' && name[namelen-1] != '}')
+		    || (namelen > 4
+		        && (name[1] == '{'
+			    || (name[0] == '\\' && name[2] == '{'))))
+		{
+		    iname[inamelen++] = '-'; iname[inamelen++] = '>';
+		    iname[inamelen] = '\0';
+		}
+	    }
+	    if (iname[0] == '*' && iname[inamelen-1] == '}' && inamelen >= 8 &&
+		(instr(iname+inamelen-8, "{SCALAR}") ||
+		 instr(iname+inamelen-7, "{ARRAY}") ||
+		 instr(iname+inamelen-6, "{HASH}"))) {
+		iname[inamelen++] = '-'; iname[inamelen++] = '>';
+	    }
+	    iname[inamelen++] = '['; iname[inamelen] = '\0';
+	    totpad = newSVsv(sep);
+	    sv_catsv(totpad, pad);
+	    sv_catsv(totpad, apad);
+
+	    for (ix = 0; ix <= ixmax; ++ix) {
+		STRLEN ilen;
+		SV *elem;
+		svp = av_fetch((AV*)ival, ix, FALSE);
+		if (svp)
+		    elem = *svp;
+		else
+		    elem = &PL_sv_undef;
+		
+		ilen = inamelen;
+		sv_setiv(ixsv, ix);
+                (void) sprintf(iname+ilen, "%"IVdf, (IV)ix);
+		ilen = strlen(iname);
+		iname[ilen++] = ']'; iname[ilen] = '\0';
+		if (indent >= 3) {
+		    sv_catsv(retval, totpad);
+		    sv_catsv(retval, ipad);
+		    sv_catpvn(retval, "#", 1);
+		    sv_catsv(retval, ixsv);
+		}
+		sv_catsv(retval, totpad);
+		sv_catsv(retval, ipad);
+		DD_dump(aTHX_ elem, iname, ilen, retval, seenhv, postav,
+			levelp,	indent, pad, xpad, apad, sep, pair,
+			freezer, toaster, purity, deepcopy, quotekeys, bless,
+			maxdepth, sortkeys);
+		if (ix < ixmax)
+		    sv_catpvn(retval, ",", 1);
+	    }
+	    if (ixmax >= 0) {
+		SV *opad = sv_x(aTHX_ Nullsv, SvPVX(xpad), SvCUR(xpad), (*levelp)-1);
+		sv_catsv(retval, totpad);
+		sv_catsv(retval, opad);
+		SvREFCNT_dec(opad);
+	    }
+	    if (name[0] == '@')
+		sv_catpvn(retval, ")", 1);
+	    else
+		sv_catpvn(retval, "]", 1);
+	    SvREFCNT_dec(ixsv);
+	    SvREFCNT_dec(totpad);
+	    Safefree(iname);
+	}
+	else if (realtype == SVt_PVHV) {
+	    SV *totpad, *newapad;
+	    SV *iname, *sname;
+	    HE *entry;
+	    char *key;
+	    I32 klen;
+	    SV *hval;
+	    AV *keys = Nullav;
+	
+	    iname = newSVpvn(name, namelen);
+	    if (name[0] == '%') {
+		sv_catpvn(retval, "(", 1);
+		(SvPVX(iname))[0] = '$';
+	    }
+	    else {
+		sv_catpvn(retval, "{", 1);
+		/* omit "->" in $foo[0]->{bar}, but not in ${$foo}->{bar} */
+		if ((namelen > 0
+		     && name[namelen-1] != ']' && name[namelen-1] != '}')
+		    || (namelen > 4
+		        && (name[1] == '{'
+			    || (name[0] == '\\' && name[2] == '{'))))
+		{
+		    sv_catpvn(iname, "->", 2);
+		}
+	    }
+	    if (name[0] == '*' && name[namelen-1] == '}' && namelen >= 8 &&
+		(instr(name+namelen-8, "{SCALAR}") ||
+		 instr(name+namelen-7, "{ARRAY}") ||
+		 instr(name+namelen-6, "{HASH}"))) {
+		sv_catpvn(iname, "->", 2);
+	    }
+	    sv_catpvn(iname, "{", 1);
+	    totpad = newSVsv(sep);
+	    sv_catsv(totpad, pad);
+	    sv_catsv(totpad, apad);
+	
+	    /* If requested, get a sorted/filtered array of hash keys */
+	    if (sortkeys) {
+		if (sortkeys == &PL_sv_yes) {
+#if PERL_VERSION < 8
+                    sortkeys = sv_2mortal(newSVpvn("Data::Dumper::_sortkeys", 23));
+#else
+		    keys = newAV();
+		    (void)hv_iterinit((HV*)ival);
+		    while ((entry = hv_iternext((HV*)ival))) {
+			sv = hv_iterkeysv(entry);
+			SvREFCNT_inc(sv);
+			av_push(keys, sv);
+		    }
+# ifdef USE_LOCALE_NUMERIC
+		    sortsv(AvARRAY(keys), 
+			   av_len(keys)+1, 
+			   IN_LOCALE ? Perl_sv_cmp_locale : Perl_sv_cmp);
+# else
+		    sortsv(AvARRAY(keys), 
+			   av_len(keys)+1, 
+			   Perl_sv_cmp);
+# endif
+#endif
+		}
+		if (sortkeys != &PL_sv_yes) {
+		    dSP; ENTER; SAVETMPS; PUSHMARK(sp);
+		    XPUSHs(sv_2mortal(newRV_inc(ival))); PUTBACK;
+		    i = call_sv(sortkeys, G_SCALAR | G_EVAL);
+		    SPAGAIN;
+		    if (i) {
+			sv = POPs;
+			if (SvROK(sv) && (SvTYPE(SvRV(sv)) == SVt_PVAV))
+			    keys = (AV*)SvREFCNT_inc(SvRV(sv));
+		    }
+		    if (! keys)
+			warn("Sortkeys subroutine did not return ARRAYREF\n");
+		    PUTBACK; FREETMPS; LEAVE;
+		}
+		if (keys)
+		    sv_2mortal((SV*)keys);
+	    }
+	    else
+		(void)hv_iterinit((HV*)ival);
+
+            /* foreach (keys %hash) */
+            for (i = 0; 1; i++) {
+		char *nkey;
+                char *nkey_buffer = NULL;
+		I32 nticks = 0;
+		SV* keysv;
+		STRLEN keylen;
+                I32 nlen;
+		bool do_utf8 = FALSE;
+
+                if ((sortkeys && !(keys && (I32)i <= av_len(keys))) ||
+                    !(entry = hv_iternext((HV *)ival)))
+                    break;
+
+		if (i)
+		    sv_catpvn(retval, ",", 1);
+
+		if (sortkeys) {
+		    char *key;
+		    svp = av_fetch(keys, i, FALSE);
+		    keysv = svp ? *svp : sv_mortalcopy(&PL_sv_undef);
+		    key = SvPV(keysv, keylen);
+		    svp = hv_fetch((HV*)ival, key,
+                                   SvUTF8(keysv) ? -(I32)keylen : keylen, 0);
+		    hval = svp ? *svp : sv_mortalcopy(&PL_sv_undef);
+		}
+		else {
+		    keysv = hv_iterkeysv(entry);
+		    hval = hv_iterval((HV*)ival, entry);
+		}
+
+		do_utf8 = DO_UTF8(keysv);
+		key = SvPV(keysv, keylen);
+		klen = keylen;
+
+                sv_catsv(retval, totpad);
+                sv_catsv(retval, ipad);
+                /* old logic was first to check utf8 flag, and if utf8 always
+                   call esc_q_utf8.  This caused test to break under -Mutf8,
+                   because there even strings like 'c' have utf8 flag on.
+                   Hence with quotekeys == 0 the XS code would still '' quote
+                   them based on flags, whereas the perl code would not,
+                   based on regexps.
+                   The perl code is correct.
+                   needs_quote() decides that anything that isn't a valid
+                   perl identifier needs to be quoted, hence only correctly
+                   formed strings with no characters outside [A-Za-z0-9_:]
+                   won't need quoting.  None of those characters are used in
+                   the byte encoding of utf8, so anything with utf8
+                   encoded characters in will need quoting. Hence strings
+                   with utf8 encoded characters in will end up inside do_utf8
+                   just like before, but now strings with utf8 flag set but
+                   only ascii characters will end up in the unquoted section.
+
+                   There should also be less tests for the (probably currently)
+                   more common doesn't need quoting case.
+                   The code is also smaller (22044 vs 22260) because I've been
+                   able to pull the common logic out to both sides.  */
+                if (quotekeys || needs_quote(key)) {
+                    if (do_utf8) {
+                        STRLEN ocur = SvCUR(retval);
+                        nlen = esc_q_utf8(aTHX_ retval, key, klen);
+                        nkey = SvPVX(retval) + ocur;
+                    }
+                    else {
+		        nticks = num_q(key, klen);
+			New(0, nkey_buffer, klen+nticks+3, char);
+                        nkey = nkey_buffer;
+			nkey[0] = '\'';
+			if (nticks)
+			    klen += esc_q(nkey+1, key, klen);
+			else
+			    (void)Copy(key, nkey+1, klen, char);
+			nkey[++klen] = '\'';
+			nkey[++klen] = '\0';
+                        nlen = klen;
+                        sv_catpvn(retval, nkey, klen);
+		    }
+                }
+                else {
+                    nkey = key;
+                    nlen = klen;
+                    sv_catpvn(retval, nkey, klen);
+		}
+                sname = newSVsv(iname);
+                sv_catpvn(sname, nkey, nlen);
+                sv_catpvn(sname, "}", 1);
+
+		sv_catsv(retval, pair);
+		if (indent >= 2) {
+		    char *extra;
+		    I32 elen = 0;
+		    newapad = newSVsv(apad);
+		    New(0, extra, klen+4+1, char);
+		    while (elen < (klen+4))
+			extra[elen++] = ' ';
+		    extra[elen] = '\0';
+		    sv_catpvn(newapad, extra, elen);
+		    Safefree(extra);
+		}
+		else
+		    newapad = apad;
+
+		DD_dump(aTHX_ hval, SvPVX(sname), SvCUR(sname), retval, seenhv,
+			postav, levelp,	indent, pad, xpad, newapad, sep, pair,
+			freezer, toaster, purity, deepcopy, quotekeys, bless,
+			maxdepth, sortkeys);
+		SvREFCNT_dec(sname);
+		Safefree(nkey_buffer);
+		if (indent >= 2)
+		    SvREFCNT_dec(newapad);
+	    }
+	    if (i) {
+		SV *opad = sv_x(aTHX_ Nullsv, SvPVX(xpad), SvCUR(xpad), *levelp-1);
+		sv_catsv(retval, totpad);
+		sv_catsv(retval, opad);
+		SvREFCNT_dec(opad);
+	    }
+	    if (name[0] == '%')
+		sv_catpvn(retval, ")", 1);
+	    else
+		sv_catpvn(retval, "}", 1);
+	    SvREFCNT_dec(iname);
+	    SvREFCNT_dec(totpad);
+	}

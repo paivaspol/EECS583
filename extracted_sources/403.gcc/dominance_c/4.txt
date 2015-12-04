@@ -1,0 +1,38 @@
+static void
+calc_dfs_tree (di, reverse)
+     struct dom_info *di;
+     enum cdi_direction reverse;
+{
+  /* The first block is the ENTRY_BLOCK (or EXIT_BLOCK if REVERSE).  */
+  basic_block begin = reverse ? EXIT_BLOCK_PTR : ENTRY_BLOCK_PTR;
+  di->dfs_order[n_basic_blocks] = di->dfsnum;
+  di->dfs_to_bb[di->dfsnum] = begin;
+  di->dfsnum++;
+
+  calc_dfs_tree_nonrec (di, begin, reverse);
+
+  if (reverse)
+    {
+      /* In the post-dom case we may have nodes without a path to EXIT_BLOCK.
+         They are reverse-unreachable.  In the dom-case we disallow such
+         nodes, but in post-dom we have to deal with them, so we simply
+         include them in the DFS tree which actually becomes a forest.  */
+      int i;
+      for (i = n_basic_blocks - 1; i >= 0; i--)
+	{
+	  basic_block b = BASIC_BLOCK (i);
+	  if (di->dfs_order[b->index])
+	    continue;
+	  di->dfs_order[b->index] = di->dfsnum;
+	  di->dfs_to_bb[di->dfsnum] = b;
+	  di->dfsnum++;
+	  calc_dfs_tree_nonrec (di, b, reverse);
+	}
+    }
+
+  di->nodes = di->dfsnum - 1;
+
+  /* This aborts e.g. when there is _no_ path from ENTRY to EXIT at all.  */
+  if (di->nodes != (unsigned int) n_basic_blocks + 1)
+    abort ();
+}

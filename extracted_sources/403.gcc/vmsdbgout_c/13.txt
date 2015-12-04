@@ -1,0 +1,29 @@
+static int
+write_rtnend (rtnnum, dosizeonly)
+     int rtnnum;
+     int dosizeonly;
+{
+  DST_ROUTINE_END rtnend;
+  char label1[MAX_ARTIFICIAL_LABEL_BYTES];
+  char label2[MAX_ARTIFICIAL_LABEL_BYTES];
+  int totsize;
+
+  totsize = 0;
+
+  rtnend.dst_a_rtnend_header.dst__header_length.dst_w_length
+   = DST_K_RTNEND_SIZE - 1;
+  rtnend.dst_a_rtnend_header.dst__header_type.dst_w_type = DST_K_RTNEND;
+  rtnend.dst_b_rtnend_unused = 0;
+  rtnend.dst_l_rtnend_size = 0; /* Calculated below.  */
+
+  totsize += write_debug_header (&rtnend.dst_a_rtnend_header, "rtnend",
+				 dosizeonly);
+  totsize += write_debug_data1 (rtnend.dst_b_rtnend_unused, "unused",
+				dosizeonly);
+
+  ASM_GENERATE_INTERNAL_LABEL (label1, FUNC_BEGIN_LABEL, rtnnum);
+  ASM_GENERATE_INTERNAL_LABEL (label2, FUNC_END_LABEL, rtnnum);
+  totsize += write_debug_delta4 (label2, label1, "routine size", dosizeonly);
+
+  return totsize;
+}

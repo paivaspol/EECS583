@@ -1,0 +1,64 @@
+static char *
+reg(cp, paren, flagp)
+register struct comp *cp;
+int paren;			/* Parenthesized? */
+int *flagp;
+{
+	register char *ret = NULL;   /* SRE: NULL init added to silence gcc */
+	register char *br;
+	register char *ender;
+	register int parno = 0;	/* SRE: init added to silence gcc */
+	int flags;
+
+	*flagp = HASWIDTH;	/* Tentatively. */
+
+	if (paren) {
+		/* Make an OPEN node. */
+		if (cp->regnpar >= NSUBEXP)
+			FAIL("too many ()");
+		parno = cp->regnpar;
+		cp->regnpar++;
+		ret = regnode(cp, OPEN+parno);
+	}
+
+	/* Pick up the branches, linking them together. */
+	br = regbranch(cp, &flags);
+	if (br == NULL)
+		return(NULL);
+	if (paren)
+		regtail(cp, ret, br);	/* OPEN -> first. */
+	else
+		ret = br;
+	*flagp &= ~(~flags&HASWIDTH);	/* Clear bit if bit 0. */
+	*flagp |= flags&SPSTART;
+	while (*cp->regparse == '|') {
+		cp->regparse++;
+		br = regbranch(cp, &flags);
+		if (br == NULL)
+			return(NULL);
+		regtail(cp, ret, br);	/* BRANCH -> BRANCH. */
+		*flagp &= ~(~flags&HASWIDTH);
+		*flagp |= flags&SPSTART;
+	}
+
+	/* Make a closing node, and hook it on the end. */
+	ender = regnode(cp, (paren) ? CLOSE+parno : END);
+	regtail(cp, ret, ender);
+
+	/* Hook the tails of the branches to the closing node. */
+	for (br = ret; br != NULL; br = regnext(br))
+		regoptail(cp, br, ender);
+
+	/* Check for proper termination. */
+	if (paren && *cp->regparse++ != ')') {
+		FAIL("unterminated ()");
+	} else if (!paren && *cp->regparse != '\0') {
+		if (*cp->regparse == ')') {
+			FAIL("unmatched ()");
+		} else
+			FAIL("internal error: junk on end");
+		/* NOTREACHED */
+	}
+
+	return(ret);
+}

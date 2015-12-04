@@ -1,0 +1,97 @@
+void do_edsam(FILE *log,t_topology *top,t_inputrec *ir,int step,
+	      t_mdatoms *md,int start,int homenr,
+              rvec x[],rvec xold[],rvec x_unc[],rvec force[],matrix box,
+	      t_edsamyn *edyn,t_edpar *edi,bool bHave_force)
+{
+  int i,j,ned=edi->ned,edstep=step,iupdate=500;
+  rvec *transvec,*vdum=NULL,*fdum=NULL;
+  matrix rotmat;
+  real rmsd,mas,rad;
+  static real oldrad;
+  static bool bFirst=TRUE;
+  real dt   = ir->delta_t;
+  real dt_1 = 1.0/dt;
+  real dt_2 = 1.0/(dt*dt);
+
+  /* initialise radacc radius for slope criterion */
+  if (bFirst) {
+    oldrad=calc_radius(&edi->vecs.radacc);
+    bFirst=FALSE;
+  }
+    
+  /* calculate full conservative forces & velocities when required */
+  if (do_per_step(edstep,edi->outfrq) && bHave_force) {
+    snew(vdum,ned);
+    for(i=0; (i<ned); i++) {
+      for(j=0; (j<DIM); j++) 
+	vdum[i][j]=(x[i][j]-xold[i][j])*dt_1;
+    }
+    snew(fdum,ned);
+    for(i=0; (i<ned); i++) {
+      mas=top->atoms.atom[i].m;
+      for(j=0; (j<DIM); j++) 
+	fdum[i][j]=force[i][j]+(x[i][j]-x_unc[i][j])*dt_2*mas;
+    }
+  }
+
+  /* fit the structure */
+  snew(transvec,ned);
+  rmsd=fitit(ned,x,edi,transvec,rotmat);
+
+  /* update radsam references, when required */
+  if (do_per_step(edstep,edi->maxedsteps) && edstep > 0) {
+    project(x,edi,"x");
+    projectx(edi,x,&edi->vecs.radacc);
+    projectx(edi,x,&edi->vecs.radfix);
+    oldrad=-1.e5;
+  }
+
+  /* update radacc references, when required */
+  if (do_per_step(edstep,iupdate) && edstep > 0) {
+    rad=calc_radius(&edi->vecs.radacc);
+    if ((rad-oldrad) < edi->slope) {
+      project(x,edi,"x");
+      projectx(edi,x,&edi->vecs.radacc);
+      oldrad=0.0;
+    }
+    else
+      oldrad=rad;
+  }
+
+  /* apply the constraints */
+  ed_cons(x,edi,edstep);
+
+  /* produce output, when required */
+  if (do_per_step(edstep,edi->outfrq) && bHave_force) {
+    /* rotate forces and velocities */
+    rotate_vec(ned,vdum,rotmat);
+    rotate_vec(ned,fdum,rotmat);
+    project(vdum,edi,"v");
+    project(fdum,edi,"f");
+    project(x,edi,"x");
+    sfree(vdum);
+    sfree(fdum);
+    write_edo(edi,edstep,rmsd);
+    fflush(edi->edo);
+  }
+
+  /* write to log, when required */
+  if ((edstep > 0) && do_per_step(edstep,edi->logfrq)) {
+    fprintf(log,"ED sampling information, step %d\n",edstep);
+    project(x,edi,"x");
+    write_edidx(log,edi);
+    fprintf(log,"acceptance radius = %f\n",
+	    calc_radius(&edi->vecs.radacc));
+    fprintf(log,"fixed increment radius = %f\n",
+	    calc_radius(&edi->vecs.radfix));
+    fprintf(log,"contracting radius = %f\n",
+	    calc_radius(&edi->vecs.radcon));
+    fflush(log);
+  }
+  
+  /* undo fit */
+  rmfit(ned,x,transvec,rotmat);
+
+  if (edstep == ir->nsteps) ffclose(edi->edo);
+  sfree(transvec);
+}

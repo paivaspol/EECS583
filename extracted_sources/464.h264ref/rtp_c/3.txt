@@ -1,0 +1,31 @@
+void RTPUpdateTimestamp (int tr)
+{
+  int delta;
+  static int oldtr = -1;
+
+  if (oldtr == -1)            // First invocation
+  {
+    CurrentRTPTimestamp = 0;  //! This is a violation of the security req. of
+                              //! RTP (random timestamp), but easier to debug
+    oldtr = 0;
+    return;
+  }
+
+  /*! The following code assumes a wrap around of TR at 256, and
+      needs to be changed as soon as this is no more true.
+      
+      The support for B frames is a bit tricky, because it is not easy to distinguish
+      between a natural wrap-around of the tr, and the intentional going back of the
+      tr because of a B frame.  It is solved here by a heuristic means: It is assumed that
+      B frames are never "older" than 10 tr ticks.  Everything higher than 10 is considered
+      a wrap around.
+  */
+
+  delta = tr - oldtr;
+
+  if (delta < -10)        // wrap-around
+    delta+=256;
+
+  CurrentRTPTimestamp += delta * RTP_TR_TIMESTAMP_MULT;
+  oldtr = tr;
+}

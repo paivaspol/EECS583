@@ -1,0 +1,45 @@
+void
+rm_redundant_line_notes ()
+{
+  rtx line = 0;
+  rtx insn = get_insns ();
+  int active_insn = 0;
+  int notes = 0;
+
+  /* Walk the insns deleting redundant line-number notes.  Many of these
+     are already present.  The remainder tend to occur at basic
+     block boundaries.  */
+  for (insn = get_last_insn (); insn; insn = PREV_INSN (insn))
+    if (GET_CODE (insn) == NOTE && NOTE_LINE_NUMBER (insn) > 0)
+      {
+	/* If there are no active insns following, INSN is redundant.  */
+	if (active_insn == 0)
+	  {
+	    notes++;
+	    NOTE_SOURCE_FILE (insn) = 0;
+	    NOTE_LINE_NUMBER (insn) = NOTE_INSN_DELETED;
+	  }
+	/* If the line number is unchanged, LINE is redundant.  */
+	else if (line
+		 && NOTE_LINE_NUMBER (line) == NOTE_LINE_NUMBER (insn)
+		 && NOTE_SOURCE_FILE (line) == NOTE_SOURCE_FILE (insn))
+	  {
+	    notes++;
+	    NOTE_SOURCE_FILE (line) = 0;
+	    NOTE_LINE_NUMBER (line) = NOTE_INSN_DELETED;
+	    line = insn;
+	  }
+	else
+	  line = insn;
+	active_insn = 0;
+      }
+    else if (!((GET_CODE (insn) == NOTE
+		&& NOTE_LINE_NUMBER (insn) == NOTE_INSN_DELETED)
+	       || (GET_CODE (insn) == INSN
+		   && (GET_CODE (PATTERN (insn)) == USE
+		       || GET_CODE (PATTERN (insn)) == CLOBBER))))
+      active_insn++;
+
+  if (sched_verbose && notes)
+    fprintf (sched_dump, ";; deleted %d line-number notes\n", notes);
+}

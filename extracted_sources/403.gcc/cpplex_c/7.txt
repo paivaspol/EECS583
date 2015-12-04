@@ -1,0 +1,27 @@
+static int
+skip_line_comment (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  unsigned int orig_line = pfile->line;
+  cppchar_t c;
+
+  pfile->state.lexing_comment = 1;
+  do
+    {
+      if (buffer->cur == buffer->rlimit)
+	goto at_eof;
+
+      c = *buffer->cur++;
+      if (c == '?' || c == '\\')
+	c = skip_escaped_newlines (pfile);
+    }
+  while (!is_vspace (c));
+
+  /* Step back over the newline, except at EOF.  */
+  buffer->cur--;
+ at_eof:
+
+  pfile->state.lexing_comment = 0;
+  return orig_line != pfile->line;
+}

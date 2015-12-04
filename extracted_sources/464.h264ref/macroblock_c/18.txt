@@ -1,0 +1,215 @@
+void IntraChromaPrediction (int *mb_up, int *mb_left, int*mb_up_left)
+{
+
+  Macroblock *currMB = &img->mb_data[img->current_mb_nr];
+  int      s, s0, s1, s2, s3, i, j, k;
+  pel_t**  image;
+  int      block_x, block_y;
+  int      mb_nr = img->current_mb_nr;
+  int      mb_available_up;
+  int      mb_available_left[2];
+  int      mb_available_up_left;
+  int      ih,iv;
+  int      ib,ic,iaa;
+  int      uv;
+  int      hline[16], vline[16];
+  int      mode;
+  int      best_mode = DC_PRED_8;  //just an initilaization here, should always be overwritten
+  int      cost;
+  int      min_cost;
+  int      diff[16];
+  PixelPos up;        //!< pixel position  p(0,-1)
+  PixelPos left[17];  //!< pixel positions p(-1, -1..15)
+  int      cr_MB_x = img->mb_cr_size_x;
+  int      cr_MB_y = img->mb_cr_size_y;
+
+  //ADD-VG-07062004 
+  int      blk_x;
+  int      blk_y;
+  int      b8,b4;
+  int      yuv = img->yuv_format - 1;
+  
+  int      block_pos[3][4][4]= //[yuv][b8][b4]
+  {
+    { {0, 1, 2, 3},{0, 0, 0, 0},{0, 0, 0, 0},{0, 0, 0, 0}},
+    { {0, 1, 2, 3},{2, 3, 2, 3},{0, 0, 0, 0},{0, 0, 0, 0}},
+    { {0, 1, 2, 3},{1, 1, 3, 3},{2, 3, 2, 3},{3, 3, 3, 3}}
+  };
+  
+  //ADD-VG-07062004-END 
+  
+
+  for (i=0;i<cr_MB_y+1;i++)
+  {
+    getNeighbour(mb_nr, -1 , i-1 , 0, &left[i]);
+  }
+  
+  getNeighbour(mb_nr, 0 , -1 , 0, &up);
+
+
+  mb_available_up                             = up.available;
+  mb_available_up_left                        = left[0].available;
+  mb_available_left[0] = mb_available_left[1] = left[1].available;
+
+  if(input->UseConstrainedIntraPred)
+  {
+    mb_available_up = up.available ? img->intra_block[up.mb_addr] : 0;
+    for (i=0, mb_available_left[0]=1; i<cr_MB_y/2;i++)
+      mb_available_left[0]  &= left[i+1].available ? img->intra_block[left[i+1].mb_addr]: 0;
+    for (i=cr_MB_y/2, mb_available_left[1]=1; i<cr_MB_y;i++)
+      mb_available_left[1] &= left[i+1].available ? img->intra_block[left[i+1].mb_addr]: 0;
+    mb_available_up_left = left[0].available ? img->intra_block[left[0].mb_addr]: 0;
+  }
+
+  if (mb_up)
+    *mb_up = mb_available_up;
+  if (mb_left)
+    *mb_left = mb_available_left[0] && mb_available_left[1];
+  if (mb_up_left)
+    *mb_up_left = mb_available_up_left;
+
+
+  // compute all chroma intra prediction modes for both U and V
+  for (uv=0; uv<2; uv++)
+  {
+    image = enc_picture->imgUV[uv];
+
+    // DC prediction
+    for(b8=0; b8<img->num_blk8x8_uv/2;b8++)
+    {
+      for (b4=0; b4<4; b4++)
+      {
+        block_y = subblk_offset_y[yuv][b8][b4];
+        block_x = subblk_offset_x[yuv][b8][b4];
+        blk_x = block_x;
+        blk_y = block_y + 1;
+
+        s=img->dc_pred_value;
+        s0=s1=s2=s3=0;
+
+        //===== get prediction value =====
+        switch (block_pos[yuv][b8][b4])
+        {
+        case 0:  //===== TOP LEFT =====
+          if      (mb_available_up)       for (i=blk_x;i<(blk_x+4);i++)  s0 += image[up.pos_y][up.pos_x + i];
+          if      (mb_available_left[0])  for (i=blk_y;i<(blk_y+4);i++)  s2 += image[left[i].pos_y][left[i].pos_x];
+          if      (mb_available_up && mb_available_left[0])  s  = (s0+s2+4) >> 3;
+          else if (mb_available_up)                          s  = (s0   +2) >> 2;
+          else if (mb_available_left[0])                     s  = (s2   +2) >> 2;
+          break;
+        case 1: //===== TOP RIGHT =====
+          if      (mb_available_up)       for (i=blk_x;i<(blk_x+4);i++)  s1 += image[up.pos_y][up.pos_x + i];
+          else if (mb_available_left[0])  for (i=blk_y;i<(blk_y+4);i++)  s2 += image[left[i].pos_y][left[i].pos_x];
+          if      (mb_available_up)                          s  = (s1   +2) >> 2;
+          else if (mb_available_left[0])                     s  = (s2   +2) >> 2;
+          break;
+        case 2: //===== BOTTOM LEFT =====
+          if      (mb_available_left[1])  for (i=blk_y;i<(blk_y+4);i++)  s3 += image[left[i].pos_y][left[i].pos_x];
+          else if (mb_available_up)       for (i=blk_x;i<(blk_x+4);i++)  s0 += image[up.pos_y][up.pos_x + i];
+          if      (mb_available_left[1])                     s  = (s3   +2) >> 2;
+          else if (mb_available_up)                          s  = (s0   +2) >> 2;
+          break;
+        case 3: //===== BOTTOM RIGHT =====
+          if      (mb_available_up)       for (i=blk_x;i<(blk_x+4);i++)  s1 += image[up.pos_y][up.pos_x + i];
+          if      (mb_available_left[1])  for (i=blk_y;i<(blk_y+4);i++)  s3 += image[left[i].pos_y][left[i].pos_x];
+          if      (mb_available_up && mb_available_left[1])  s  = (s1+s3+4) >> 3;
+          else if (mb_available_up)                          s  = (s1   +2) >> 2;
+          else if (mb_available_left[1])                     s  = (s3   +2) >> 2;
+          break;
+        }
+        
+        //===== prediction =====
+        for (j=block_y; j<block_y+4; j++)
+          for (i=block_x; i<block_x+4; i++)
+          {
+            img->mprr_c[uv][DC_PRED_8][i][j] = s;
+          }
+      }
+    }
+
+    // vertical prediction
+    if (mb_available_up)
+    {
+      for (i=0; i<cr_MB_x; i++)
+        hline[i] = image[up.pos_y][up.pos_x + i];
+      for (i=0; i<cr_MB_x; i++)
+        for (j=0; j<cr_MB_y; j++)
+          img->mprr_c[uv][VERT_PRED_8][i][j] = hline[i];
+    }
+
+    // horizontal prediction 
+    if (mb_available_left[0] && mb_available_left[1])
+    {
+      for (i=0; i<cr_MB_y; i++)
+        vline[i] = image[left[i+1].pos_y][left[i+1].pos_x];
+      for (i=0; i<cr_MB_x; i++)
+        for (j=0; j<cr_MB_y; j++)
+          img->mprr_c[uv][HOR_PRED_8][i][j] = vline[j];
+    }
+
+    // plane prediction
+    if (mb_available_left[0] && mb_available_left[1] && mb_available_up && mb_available_up_left)
+    {
+      ih = cr_MB_x/2*(hline[cr_MB_x-1] - image[left[0].pos_y][left[0].pos_x]);
+      for (i=0;i<cr_MB_x/2-1;i++)
+        ih += (i+1)*(hline[cr_MB_x/2+i] - hline[cr_MB_x/2-2-i]);
+
+      iv = cr_MB_y/2*(vline[cr_MB_y-1] - image[left[0].pos_y][left[0].pos_x]);
+      for (i=0;i<cr_MB_y/2-1;i++)
+        iv += (i+1)*(vline[cr_MB_y/2+i] - vline[cr_MB_y/2-2-i]);
+
+      ib= ((cr_MB_x == 8?17:5)*ih+2*cr_MB_x)>>(cr_MB_x == 8?5:6);
+      ic= ((cr_MB_y == 8?17:5)*iv+2*cr_MB_y)>>(cr_MB_y == 8?5:6);
+
+      iaa=16*(hline[cr_MB_x-1]+vline[cr_MB_y-1]);
+      for (j=0; j<cr_MB_y; j++)
+        for (i=0; i<cr_MB_x; i++)
+          img->mprr_c[uv][PLANE_8][i][j]=max(0,min(img->max_imgpel_value_uv,
+                                                   (iaa+(i-cr_MB_x/2+1)*ib+(j-cr_MB_y/2+1)*ic+16)>>5));
+    }
+  }
+
+  if (!input->rdopt)      // the rd-opt part does not work correctly (see encode_one_macroblock)
+  {                       // since ipredmodes could be overwritten => encoder-decoder-mismatches
+    // pick lowest cost prediction mode
+    min_cost = INT_MAX;
+    for (i=0;i<cr_MB_y;i++)
+    {
+      getNeighbour(mb_nr, 0 , i, 0, &left[i]);
+    }
+    for (mode=DC_PRED_8; mode<=PLANE_8; mode++)
+    {
+        if (input->ChromaIntraDisable == 1 && mode!=DC_PRED_8)
+          continue;
+
+      if ((mode==VERT_PRED_8 && !mb_available_up) ||
+          (mode==HOR_PRED_8 && (!mb_available_left[0] || !mb_available_left[1])) ||
+          (mode==PLANE_8 && (!mb_available_left[0] || !mb_available_left[1] || !mb_available_up || !mb_available_up_left)))
+        continue;
+
+      cost = 0;
+      for (uv=0; uv<2; uv++)
+      {
+        image = imgUV_org[uv];
+        for (block_y=0; block_y<cr_MB_y; block_y+=4)
+          for (block_x=0; block_x<cr_MB_x; block_x+=4)
+          {
+            for (k=0,j=block_y; j<block_y+4; j++)
+              for (i=block_x; i<block_x+4; i++,k++)
+              {
+                diff[k] = image[left[j].pos_y][left[j].pos_x+i] - img->mprr_c[uv][mode][i][j];
+              }
+            cost += SATD(diff, input->hadamard);
+          }
+      }
+      if (cost < min_cost)
+      {
+        best_mode = mode;
+        min_cost = cost;
+      }
+    }
+
+    currMB->c_ipred_mode = best_mode;
+  }
+ 
+}

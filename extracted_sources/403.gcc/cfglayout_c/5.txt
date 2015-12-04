@@ -1,0 +1,44 @@
+static void
+change_scope (orig_insn, s1, s2)
+     rtx orig_insn;
+     tree s1, s2;
+{
+  rtx insn = orig_insn;
+  tree com = NULL_TREE;
+  tree ts1 = s1, ts2 = s2;
+  tree s;
+
+  while (ts1 != ts2)
+    {
+      if (ts1 == NULL || ts2 == NULL)
+	abort ();
+      if (BLOCK_NUMBER (ts1) > BLOCK_NUMBER (ts2))
+	ts1 = BLOCK_SUPERCONTEXT (ts1);
+      else if (BLOCK_NUMBER (ts1) < BLOCK_NUMBER (ts2))
+	ts2 = BLOCK_SUPERCONTEXT (ts2);
+      else
+	{
+	  ts1 = BLOCK_SUPERCONTEXT (ts1);
+	  ts2 = BLOCK_SUPERCONTEXT (ts2);
+	}
+    }
+  com = ts1;
+
+  /* Close scopes.  */
+  s = s1;
+  while (s != com)
+    {
+      rtx note = emit_note_before (NOTE_INSN_BLOCK_END, insn);
+      NOTE_BLOCK (note) = s;
+      s = BLOCK_SUPERCONTEXT (s);
+    }
+
+  /* Open scopes.  */
+  s = s2;
+  while (s != com)
+    {
+      insn = emit_note_before (NOTE_INSN_BLOCK_BEG, insn);
+      NOTE_BLOCK (insn) = s;
+      s = BLOCK_SUPERCONTEXT (s);
+    }
+}

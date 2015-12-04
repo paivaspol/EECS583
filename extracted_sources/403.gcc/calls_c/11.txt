@@ -1,0 +1,76 @@
+static int
+compute_argument_block_size (reg_parm_stack_space, args_size,
+			     preferred_stack_boundary)
+     int reg_parm_stack_space;
+     struct args_size *args_size;
+     int preferred_stack_boundary ATTRIBUTE_UNUSED;
+{
+  int unadjusted_args_size = args_size->constant;
+
+  /* For accumulate outgoing args mode we don't need to align, since the frame
+     will be already aligned.  Align to STACK_BOUNDARY in order to prevent
+     backends from generating misaligned frame sizes.  */
+  if (ACCUMULATE_OUTGOING_ARGS && preferred_stack_boundary > STACK_BOUNDARY)
+    preferred_stack_boundary = STACK_BOUNDARY;
+
+  /* Compute the actual size of the argument block required.  The variable
+     and constant sizes must be combined, the size may have to be rounded,
+     and there may be a minimum required size.  */
+
+  if (args_size->var)
+    {
+      args_size->var = ARGS_SIZE_TREE (*args_size);
+      args_size->constant = 0;
+
+      preferred_stack_boundary /= BITS_PER_UNIT;
+      if (preferred_stack_boundary > 1)
+	{
+	  /* We don't handle this case yet.  To handle it correctly we have
+	     to add the delta, round and subtract the delta.
+	     Currently no machine description requires this support.  */
+	  if (stack_pointer_delta & (preferred_stack_boundary - 1))
+	    abort ();
+	  args_size->var = round_up (args_size->var, preferred_stack_boundary);
+	}
+
+      if (reg_parm_stack_space > 0)
+	{
+	  args_size->var
+	    = size_binop (MAX_EXPR, args_size->var,
+			  ssize_int (reg_parm_stack_space));
+
+#ifndef OUTGOING_REG_PARM_STACK_SPACE
+	  /* The area corresponding to register parameters is not to count in
+	     the size of the block we need.  So make the adjustment.  */
+	  args_size->var
+	    = size_binop (MINUS_EXPR, args_size->var,
+			  ssize_int (reg_parm_stack_space));
+#endif
+	}
+    }
+  else
+    {
+      preferred_stack_boundary /= BITS_PER_UNIT;
+      if (preferred_stack_boundary < 1)
+	preferred_stack_boundary = 1;
+      args_size->constant = (((args_size->constant
+			       + stack_pointer_delta
+			       + preferred_stack_boundary - 1)
+			      / preferred_stack_boundary
+			      * preferred_stack_boundary)
+			     - stack_pointer_delta);
+
+      args_size->constant = MAX (args_size->constant,
+				 reg_parm_stack_space);
+
+#ifdef MAYBE_REG_PARM_STACK_SPACE
+      if (reg_parm_stack_space == 0)
+	args_size->constant = 0;
+#endif
+
+#ifndef OUTGOING_REG_PARM_STACK_SPACE
+      args_size->constant -= reg_parm_stack_space;
+#endif
+    }
+  return unadjusted_args_size;
+}

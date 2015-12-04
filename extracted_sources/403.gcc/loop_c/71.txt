@@ -1,0 +1,20 @@
+static rtx
+gen_add_mult (b, m, a, reg)
+     rtx b;          /* initial value of basic induction variable */
+     rtx m;          /* multiplicative constant */
+     rtx a;          /* additive constant */
+     rtx reg;        /* destination register */
+{
+  rtx seq;
+  rtx result;
+
+  start_sequence ();
+  /* Use unsigned arithmetic.  */
+  result = expand_mult_add (b, reg, m, a, GET_MODE (reg), 1);
+  if (reg != result)
+    emit_move_insn (reg, result);
+  seq = gen_sequence ();
+  end_sequence ();
+
+  return seq;
+}

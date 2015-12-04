@@ -1,0 +1,35 @@
+static void splay_tree_delete_helper    PARAMS((splay_tree, 
+						splay_tree_node));
+static void splay_tree_splay            PARAMS((splay_tree,
+						splay_tree_key));
+static splay_tree_node splay_tree_splay_helper     
+                                        PARAMS((splay_tree,
+						splay_tree_key,
+						splay_tree_node*,
+						splay_tree_node*,
+						splay_tree_node*));
+static int splay_tree_foreach_helper    PARAMS((splay_tree,
+					        splay_tree_node,
+						splay_tree_foreach_fn,
+						void*));
+
+/* Deallocate NODE (a member of SP), and all its sub-trees.  */
+
+static void 
+splay_tree_delete_helper (sp, node)
+     splay_tree sp;
+     splay_tree_node node;
+{
+  if (!node)
+    return;
+
+  splay_tree_delete_helper (sp, node->left);
+  splay_tree_delete_helper (sp, node->right);
+
+  if (sp->delete_key)
+    (*sp->delete_key)(node->key);
+  if (sp->delete_value)
+    (*sp->delete_value)(node->value);
+
+  (*sp->deallocate) ((char*) node, sp->allocate_data);
+}

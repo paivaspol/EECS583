@@ -1,0 +1,50 @@
+void
+LumaResidualCoding ()
+{
+  int i,j,block8x8,b8_x,b8_y;
+  int fw_mode, bw_mode;
+  short p_dir, refframe;
+  int sum_cnt_nonz;
+  Macroblock *currMB = &img->mb_data[img->current_mb_nr];
+
+  currMB->cbp     = 0 ;
+  currMB->cbp_blk = 0 ;
+  sum_cnt_nonz    = 0 ;
+
+  for (block8x8=0; block8x8<4; block8x8++)
+  {
+    short bw_ref;
+    SetModesAndRefframe (block8x8, &p_dir, &fw_mode, &bw_mode, &refframe, &bw_ref);
+    
+    sum_cnt_nonz += LumaResidualCoding8x8 (&(currMB->cbp), &(currMB->cbp_blk), block8x8,
+                                           p_dir, fw_mode, bw_mode, refframe, bw_ref);
+  }
+
+  if (sum_cnt_nonz <= _LUMA_MB_COEFF_COST_ &&
+      ((img->qp + img->bitdepth_luma_qp_scale)!=0 || img->lossless_qpprime_flag==0))
+  {
+     currMB->cbp     &= 0xfffff0 ;
+     currMB->cbp_blk &= 0xff0000 ;
+     for (i=0; i < MB_BLOCK_SIZE; i++)
+     {
+       for (j=0; j < MB_BLOCK_SIZE; j++)
+       {
+         if(!img->residue_transform_flag)
+           enc_picture->imgY[img->pix_y+j][img->pix_x+i]=img->mpr[i][j];
+         else
+           rec_resG[i][j] = 0;
+       }
+     }
+     if (img->type==SP_SLICE)
+     {
+       for(block8x8=0;block8x8<4;block8x8++)
+       {
+         b8_x=(block8x8&1)<<3;
+         b8_y=(block8x8&2)<<2;
+         for (i=0;i<8;i+=4)
+           for (j=0;j<8;j+=4)
+             copyblock_sp(b8_x+i,b8_y+j);
+       }
+     }
+   }
+}

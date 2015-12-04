@@ -1,0 +1,50 @@
+static unsigned
+lookup_filename (file_name)
+     const char *file_name;
+{
+  filename_entry *search_p;
+  filename_entry *limit_p = &filename_table[ft_entries];
+
+  for (search_p = filename_table; search_p < limit_p; search_p++)
+    if (!strcmp (file_name, search_p->name))
+      {
+	/* When we get here, we have found the filename that we were
+	   looking for in the filename_table.  Now we want to make sure
+	   that it gets moved to the zero'th entry in the table (if it
+	   is not already there) so that subsequent attempts to find the
+	   same filename will find it as quickly as possible.  */
+
+	shuffle_filename_entry (search_p);
+        return filename_table[0].number;
+      }
+
+  /* We come here whenever we have a new filename which is not registered
+     in the current table.  Here we add it to the table.  */
+
+  /* Prepare to add a new table entry by making sure there is enough space
+     in the table to do so.  If not, expand the current table.  */
+
+  if (ft_entries == ft_entries_allocated)
+    {
+      ft_entries_allocated += FT_ENTRIES_INCREMENT;
+      filename_table
+	= (filename_entry *)
+	  xrealloc (filename_table,
+		    ft_entries_allocated * sizeof (filename_entry));
+    }
+
+  /* Initially, add the new entry at the end of the filename table.  */
+
+  filename_table[ft_entries].number = ft_entries;
+  filename_table[ft_entries].name = xstrdup (file_name);
+
+  /* Shuffle the new entry into filename_table[0].  */
+
+  shuffle_filename_entry (&filename_table[ft_entries]);
+
+  if (debug_info_level >= DINFO_LEVEL_NORMAL)
+    generate_new_sfname_entry ();
+
+  ft_entries++;
+  return filename_table[0].number;
+}

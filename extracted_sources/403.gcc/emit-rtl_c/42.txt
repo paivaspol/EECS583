@@ -1,0 +1,58 @@
+void
+add_insn_after (insn, after)
+     rtx insn, after;
+{
+  rtx next = NEXT_INSN (after);
+  basic_block bb;
+
+  if (optimize && INSN_DELETED_P (after))
+    abort ();
+
+  NEXT_INSN (insn) = next;
+  PREV_INSN (insn) = after;
+
+  if (next)
+    {
+      PREV_INSN (next) = insn;
+      if (GET_CODE (next) == INSN && GET_CODE (PATTERN (next)) == SEQUENCE)
+	PREV_INSN (XVECEXP (PATTERN (next), 0, 0)) = insn;
+    }
+  else if (last_insn == after)
+    last_insn = insn;
+  else
+    {
+      struct sequence_stack *stack = seq_stack;
+      /* Scan all pending sequences too.  */
+      for (; stack; stack = stack->next)
+	if (after == stack->last)
+	  {
+	    stack->last = insn;
+	    break;
+	  }
+
+      if (stack == 0)
+	abort ();
+    }
+
+  if (basic_block_for_insn
+      && (unsigned int) INSN_UID (after) < basic_block_for_insn->num_elements
+      && (bb = BLOCK_FOR_INSN (after)))
+    {
+      set_block_for_insn (insn, bb);
+      /* Should not happen as first in the BB is always
+	 either NOTE or LABEL.  */
+      if (bb->end == after
+	  /* Avoid clobbering of structure when creating new BB.  */
+	  && GET_CODE (insn) != BARRIER
+	  && (GET_CODE (insn) != NOTE
+	      || NOTE_LINE_NUMBER (insn) != NOTE_INSN_BASIC_BLOCK))
+	bb->end = insn;
+    }
+
+  NEXT_INSN (after) = insn;
+  if (GET_CODE (after) == INSN && GET_CODE (PATTERN (after)) == SEQUENCE)
+    {
+      rtx sequence = PATTERN (after);
+      NEXT_INSN (XVECEXP (sequence, 0, XVECLEN (sequence, 0) - 1)) = insn;
+    }
+}

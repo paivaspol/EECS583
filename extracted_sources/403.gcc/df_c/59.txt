@@ -1,0 +1,19 @@
+static int
+df_rtx_reg_replace (px, data)
+     rtx *px;
+     void *data;
+{
+  rtx x = *px;
+  replace_args *args = (replace_args *) data;
+
+  if (x == NULL_RTX)
+    return 0;
+
+  if (x == args->match)
+    {
+      validate_change (args->insn, px, args->replacement, 1);
+      args->modified++;
+    }
+
+  return 0;
+}

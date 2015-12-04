@@ -1,0 +1,39 @@
+static int
+parse_gs(MSA *msa, char *buf)
+{
+  char *gs;
+  char *seqname;
+  char *featurename;
+  char *text; 
+  int   seqidx;
+  char *s;
+
+  s = buf;
+  if ((gs          = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((seqname     = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((featurename = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((text        = sre_strtok(&s, "\n",       NULL)) == NULL) return 0;
+  while (*text && (*text == ' ' || *text == '\t')) text++;
+  
+  /* GS usually follows another GS; guess lastidx+1
+   */
+  seqidx = MSAGetSeqidx(msa, seqname, msa->lastidx+1);
+  msa->lastidx = seqidx;
+
+  if (strcmp(featurename, "WT") == 0)
+    {
+      msa->wgt[seqidx]          = atof(text);
+      msa->flags |= MSA_SET_WGT;
+    }
+
+  else if (strcmp(featurename, "AC") == 0)
+    MSASetSeqAccession(msa, seqidx, text);
+
+  else if (strcmp(featurename, "DE") == 0)
+    MSASetSeqDescription(msa, seqidx, text);
+
+  else				
+    MSAAddGS(msa, featurename, seqidx, text);
+
+  return 1;
+}

@@ -1,0 +1,44 @@
+void rm_pbc(t_idef *idef,int natoms,matrix box,rvec x[],rvec x_s[])
+{
+  typedef struct {
+    int     natoms;
+    t_graph *gr;
+  } multi_graph;
+  
+  static int ngraph=0;
+  static multi_graph *mgraph=NULL;
+  static bool bFirst=TRUE;
+  rvec   sv[SHIFTS],box_size;
+  int    n,i;
+  bool   bNeedToCopy;
+
+  bNeedToCopy = (x != x_s);
+
+  if (fabs(box[0][0])>GMX_REAL_MIN) {
+    if (idef->ntypes!=-1) {
+      n=-1;
+      for(i=0; i<ngraph; i++)
+	if (mgraph[i].natoms==natoms)
+	  n=i;
+      if (n==-1) {
+	/* make a new graph if there isn't one with this number of atoms */
+	n=ngraph;
+	ngraph++;
+	srenew(mgraph,ngraph);
+	mgraph[n].natoms=natoms;
+	mgraph[n].gr=mk_graph(idef,natoms,FALSE,FALSE);
+      }
+      mk_mshift(stdout,mgraph[n].gr,box,x);
+      calc_shifts(box,box_size,sv);
+      shift_x(mgraph[n].gr,box,x,x_s);
+      bNeedToCopy=FALSE;
+    } else if (bFirst) {
+      fprintf(stderr,
+	      "\nWarning: can not make broken molecules whole without a run input file,\n         don't worry, mdrun doesn't write broken molecules\n\n");
+      bFirst=FALSE;
+    }
+  }
+  if (bNeedToCopy)
+    for (i=0; i<natoms; i++)
+      copy_rvec(x[i],x_s[i]);
+}

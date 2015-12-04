@@ -1,0 +1,46 @@
+void AppendTmpbits2Buf( Bitstream* dest, Bitstream* source )
+{
+  int i, j;
+  unsigned char mask;
+  int bits_in_last_byte;
+
+  // copy the first bytes in source buffer
+  for (i=0; i<source->byte_pos; i++)
+  {
+    mask = 0x80;
+    for (j=0; j<8; j++)
+    {
+      dest->byte_buf <<= 1;
+      if (source->streamBuffer[i] & mask)
+        dest->byte_buf |= 1;
+      dest->bits_to_go--;
+      mask >>= 1;
+      if (dest->bits_to_go==0)
+      {
+        dest->bits_to_go = 8;
+        dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+        dest->byte_buf = 0;
+      }
+    }
+  }
+  // copy the last byte, there are still (8-source->bits_to_go) bits in the source buffer
+  bits_in_last_byte = 8-source->bits_to_go;
+  if ( bits_in_last_byte > 0 )
+  {
+    mask = 1 << (bits_in_last_byte-1);
+    for (j=0; j<bits_in_last_byte; j++)
+    {
+      dest->byte_buf <<= 1;
+      if (source->byte_buf & mask)
+        dest->byte_buf |= 1;
+      dest->bits_to_go--;
+      mask >>= 1;
+      if (dest->bits_to_go==0)
+      {
+        dest->bits_to_go = 8;
+        dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+        dest->byte_buf = 0;
+      }
+    }
+  }
+}

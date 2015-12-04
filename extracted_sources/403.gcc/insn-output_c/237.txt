@@ -1,0 +1,31 @@
+static const char *
+output_636 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_IMOV:
+      return "mov{q}\t{%1, %0|%0, %1}";
+
+    case TYPE_ALU:
+      if (GET_CODE (operands[2]) == CONST_INT
+          && (INTVAL (operands[2]) == 128
+	      || (INTVAL (operands[2]) < 0
+	          && INTVAL (operands[2]) != -128)))
+	{
+	  operands[2] = GEN_INT (-INTVAL (operands[2]));
+	  return "sub{q}\t{%2, %0|%0, %2}";
+	}
+      return "add{q}\t{%2, %0|%0, %2}";
+
+    case TYPE_LEA:
+      operands[2] = SET_SRC (XVECEXP (PATTERN (insn), 0, 0));
+      return "lea{q}\t{%a2, %0|%0, %a2}";
+
+    default:
+      abort ();
+    }
+}
+}

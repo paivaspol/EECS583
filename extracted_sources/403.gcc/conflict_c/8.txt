@@ -1,0 +1,28 @@
+void
+conflict_graph_print (graph, fp)
+     conflict_graph graph;
+     FILE *fp;
+{
+  int reg;
+  struct print_context context;
+
+  context.fp = fp;
+  fprintf (fp, "Conflicts:\n");
+
+  /* Loop over registers supported in this graph.  */
+  for (reg = 0; reg < graph->num_regs; ++reg)
+    {
+      context.reg = reg;
+      context.started = 0;
+
+      /* Scan the conflicts for reg, printing as we go.  A label for
+	 this line will be printed the first time a conflict is
+	 printed for the reg; we won't start a new line if this reg
+	 has no conflicts.  */
+      conflict_graph_enum (graph, reg, &print_conflict, &context);
+
+      /* If this reg does have conflicts, end the line.  */
+      if (context.started)
+	fputc ('\n', fp);
+    }
+}

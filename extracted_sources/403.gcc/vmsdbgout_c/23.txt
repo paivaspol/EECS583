@@ -1,0 +1,19 @@
+static void
+vmsdbgout_begin_function (decl)
+     tree decl;
+{
+  const char *name = XSTR (XEXP (DECL_RTL (decl), 0), 0);
+
+  if (write_symbols == VMS_AND_DWARF2_DEBUG)
+    (*dwarf2_debug_hooks.begin_function) (decl);
+
+  if (func_table_in_use == func_table_allocated)
+    {
+      func_table_allocated += FUNC_TABLE_INCREMENT;
+      func_table = (char **) xrealloc (func_table,
+				       func_table_allocated * sizeof (char *));
+    }
+
+  /* Add the new entry to the end of the function name table.  */
+  func_table[func_table_in_use++] = xstrdup (name);
+}

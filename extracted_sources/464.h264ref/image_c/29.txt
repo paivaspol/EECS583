@@ -1,0 +1,35 @@
+static void PaddAutoCropBorders (int org_size_x, int org_size_y, int img_size_x, int img_size_y,
+                                 int org_size_x_cr, int org_size_y_cr, int img_size_x_cr, int img_size_y_cr)
+{
+  int x, y;
+  
+  //padding right border
+  for (y=0; y<org_size_y; y++)
+    for (x=org_size_x; x<img_size_x; x++)
+      imgY_org_frm [y][x] = imgY_org_frm [y][x-1];
+
+  //padding bottom border
+  for (y=org_size_y; y<img_size_y; y++)
+    for (x=0; x<img_size_x; x++)
+      imgY_org_frm [y][x] = imgY_org_frm [y-1][x];
+
+
+  if (img->yuv_format != YUV400)
+  {
+    //padding right border
+    for (y=0; y<org_size_y_cr; y++)
+      for (x=org_size_x_cr; x<img_size_x_cr; x++)
+      {
+        imgUV_org_frm [0][y][x] = imgUV_org_frm [0][y][x-1];
+        imgUV_org_frm [1][y][x] = imgUV_org_frm [1][y][x-1];
+      }
+     
+    //padding bottom border
+    for (y=org_size_y_cr; y<img_size_y_cr; y++)
+      for (x=0; x<img_size_x_cr; x++)
+      {
+        imgUV_org_frm [0][y][x] = imgUV_org_frm [0][y-1][x];
+        imgUV_org_frm [1][y][x] = imgUV_org_frm [1][y-1][x];
+      }
+  }
+}

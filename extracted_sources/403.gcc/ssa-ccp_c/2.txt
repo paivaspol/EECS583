@@ -1,0 +1,13 @@
+static void
+defs_to_varying (insn)
+     rtx insn;
+{
+  struct df_link *currdef;
+  for (currdef = DF_INSN_DEFS (df_analyzer, insn); currdef;
+       currdef = currdef->next)
+    {
+      if (values[DF_REF_REGNO (currdef->ref)].lattice_val != VARYING)
+	SET_BIT (ssa_edges, DF_REF_REGNO (currdef->ref));
+      values[DF_REF_REGNO (currdef->ref)].lattice_val = VARYING;
+    }
+}

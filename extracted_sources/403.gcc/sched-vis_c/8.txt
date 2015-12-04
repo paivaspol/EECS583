@@ -1,0 +1,65 @@
+static void
+print_insn (buf, x, verbose)
+     char *buf;
+     rtx x;
+     int verbose;
+{
+  char t[BUF_LEN];
+  rtx insn = x;
+
+  switch (GET_CODE (x))
+    {
+    case INSN:
+      print_pattern (t, PATTERN (x), verbose);
+      if (verbose)
+	sprintf (buf, "%s: %s", (*current_sched_info->print_insn) (x, 1),
+		 t);
+      else
+	sprintf (buf, "%-4d %s", INSN_UID (x), t);
+      break;
+    case JUMP_INSN:
+      print_pattern (t, PATTERN (x), verbose);
+      if (verbose)
+	sprintf (buf, "%s: jump %s", (*current_sched_info->print_insn) (x, 1),
+		 t);
+      else
+	sprintf (buf, "%-4d %s", INSN_UID (x), t);
+      break;
+    case CALL_INSN:
+      x = PATTERN (insn);
+      if (GET_CODE (x) == PARALLEL)
+	{
+	  x = XVECEXP (x, 0, 0);
+	  print_pattern (t, x, verbose);
+	}
+      else
+	strcpy (t, "call <...>");
+      if (verbose)
+	sprintf (buf, "%s: %s", (*current_sched_info->print_insn) (x, 1), t);
+      else
+	sprintf (buf, "%-4d %s", INSN_UID (insn), t);
+      break;
+    case CODE_LABEL:
+      sprintf (buf, "L%d:", INSN_UID (x));
+      break;
+    case BARRIER:
+      sprintf (buf, "i% 4d: barrier", INSN_UID (x));
+      break;
+    case NOTE:
+      if (NOTE_LINE_NUMBER (x) > 0)
+	sprintf (buf, "%4d note \"%s\" %d", INSN_UID (x),
+		 NOTE_SOURCE_FILE (x), NOTE_LINE_NUMBER (x));
+      else
+	sprintf (buf, "%4d %s", INSN_UID (x),
+		 GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (x)));
+      break;
+    default:
+      if (verbose)
+	{
+	  sprintf (buf, "Not an INSN at all\n");
+	  debug_rtx (x);
+	}
+      else
+	sprintf (buf, "i%-4d  <What?>", INSN_UID (x));
+    }
+}				/* print_insn */

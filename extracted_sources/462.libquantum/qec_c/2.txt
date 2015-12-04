@@ -1,0 +1,34 @@
+void
+quantum_qec_encode(int type, int width, quantum_reg *reg)
+{
+  int i;
+  float lambda;
+
+  lambda = quantum_get_decoherence();
+
+  quantum_set_decoherence(0);
+
+  for(i=0;i<reg->width;i++)
+    {
+      if(i==reg->width-1)
+	quantum_set_decoherence(lambda);
+
+      if(i<width)
+	{
+	  quantum_hadamard(reg->width+i, reg);
+	  quantum_hadamard(2*reg->width+i, reg);
+
+	  quantum_cnot(reg->width+i, i, reg);
+	  quantum_cnot(2*reg->width+i, i, reg);
+	}
+      else
+	{
+	  quantum_cnot(i, reg->width+i, reg);
+	  quantum_cnot(i, 2*reg->width+i, reg);
+	}
+    }
+
+  quantum_qec_set_status(1, reg->width);
+
+  reg->width *= 3;
+}

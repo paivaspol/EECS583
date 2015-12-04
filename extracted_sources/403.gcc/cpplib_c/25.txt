@@ -1,0 +1,15 @@
+static void
+do_diagnostic (pfile, code, print_dir)
+     cpp_reader *pfile;
+     enum error_type code;
+     int print_dir;
+{
+  if (_cpp_begin_message (pfile, code, 0, 0))
+    {
+      if (print_dir)
+	fprintf (stderr, "#%s ", pfile->directive->name);
+      pfile->state.prevent_expansion++;
+      cpp_output_line (pfile, stderr);
+      pfile->state.prevent_expansion--;
+    }
+}

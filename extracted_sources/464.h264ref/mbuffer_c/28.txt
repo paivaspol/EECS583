@@ -1,0 +1,47 @@
+static void idr_memory_management(StorablePicture* p)
+{
+  unsigned i;
+
+  assert (img->currentPicture->idr_flag);
+
+  if (img->no_output_of_prior_pics_flag)
+  {
+    // free all stored pictures
+    for (i=0; i<dpb.used_size; i++)
+    {
+      // reset all reference settings
+      free_frame_store(dpb.fs[i]);
+      dpb.fs[i]=alloc_frame_store();
+    }
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      dpb.fs_ref[i]=NULL;
+    }
+    for (i=0; i<dpb.ltref_frames_in_buffer; i++)
+    {
+      dpb.fs_ltref[i]=NULL;
+    }
+    dpb.used_size=0;
+  }
+  else
+  {
+    flush_dpb();
+  }
+  dpb.last_picture = NULL;
+
+  update_ref_list();
+  update_ltref_list();
+  dpb.last_output_poc = INT_MIN;
+  
+  if (img->long_term_reference_flag)
+  {
+    dpb.max_long_term_pic_idx = 0;
+    p->is_long_term           = 1;
+    p->long_term_frame_idx    = 0;
+  }
+  else
+  {
+    dpb.max_long_term_pic_idx = -1;
+    p->is_long_term           = 0;
+  }
+}

@@ -1,0 +1,19 @@
+static void
+concat_insn_mem_list (copy_insns, copy_mems, old_insns_p, old_mems_p)
+     rtx copy_insns, copy_mems;
+     rtx *old_insns_p, *old_mems_p;
+{
+  rtx new_insns = *old_insns_p;
+  rtx new_mems = *old_mems_p;
+
+  while (copy_insns)
+    {
+      new_insns = alloc_INSN_LIST (XEXP (copy_insns, 0), new_insns);
+      new_mems = alloc_EXPR_LIST (VOIDmode, XEXP (copy_mems, 0), new_mems);
+      copy_insns = XEXP (copy_insns, 1);
+      copy_mems = XEXP (copy_mems, 1);
+    }
+
+  *old_insns_p = new_insns;
+  *old_mems_p = new_mems;
+}

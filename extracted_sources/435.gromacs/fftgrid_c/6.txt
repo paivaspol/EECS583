@@ -1,0 +1,25 @@
+void print_rgrid_pdb(char *fn,int nx,int ny,int nz,real ***grid)
+{
+  FILE *fp;
+  int  ix,iy,iz,n,ig;
+  real x,y,z,g;
+
+  n=1;
+  fp=ffopen(fn,"w");  
+  for(ix=0; (ix<nx); ix++) {
+    for(iy=0; (iy<ny); iy++) {
+      for(iz=0; (iz<nz); iz++) {
+	g=grid[ix][iy][iz];
+	ig=g;
+	if ((ig != 0) || (1)) {
+	  x = 4*ix;
+	  y = 4*iy;
+	  z = 4*iz;
+	  fprintf(fp,"ATOM  %5d  Na   Na     1    %8.3f%8.3f%8.3f%6.2f%6.2f\n",
+		  n++,x,y,z,0.0,g);
+	}
+      }
+    }
+  }
+  fclose(fp);
+}

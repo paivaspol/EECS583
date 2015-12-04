@@ -1,0 +1,126 @@
+static int
+write_pclines (dosizeonly)
+     int dosizeonly;
+{
+  unsigned i;
+  int fn;
+  int ln, lastln;
+  int linestart = 0;
+  int max_line;
+  DST_LINE_NUM_HEADER line_num;
+  DST_PCLINE_COMMANDS pcline;
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char lastlabel[MAX_ARTIFICIAL_LABEL_BYTES];
+  int totsize = 0;
+  char buff[256];
+
+  max_line = file_info_table[1].max_line;
+  file_info_table[1].listing_line_start = linestart;
+  linestart = linestart + ((max_line / 100000) + 1) * 100000;
+
+  for (i = 2; i < file_info_table_in_use; i++)
+    {
+      max_line = file_info_table[i].max_line;
+      file_info_table[i].listing_line_start = linestart;
+      linestart = linestart + ((max_line / 10000) + 1) * 10000;
+    }
+
+  /* Set starting address to beginning of text section */
+  line_num.dst_a_line_num_header.dst__header_length.dst_w_length = 8;
+  line_num.dst_a_line_num_header.dst__header_type.dst_w_type = DST_K_LINE_NUM;
+  pcline.dst_b_pcline_command = DST_K_SET_ABS_PC;
+
+  totsize += write_debug_header (&line_num.dst_a_line_num_header,
+				 "line_num", dosizeonly);
+  totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+				"line_num (SET ABS PC)", dosizeonly);
+
+  if (dosizeonly)
+    totsize += 4;
+  else
+    {
+      ASM_OUTPUT_DEBUG_ADDR (asm_out_file, TEXT_SECTION_ASM_OP);
+      if (flag_verbose_asm)
+	fprintf (asm_out_file, "\t%s line_num", ASM_COMMENT_START);
+      fputc ('\n', asm_out_file);
+    }
+
+  fn = line_info_table[1].dst_file_num;
+  ln = (file_info_table[fn].listing_line_start
+	+ line_info_table[1].dst_line_num);
+  line_num.dst_a_line_num_header.dst__header_length.dst_w_length = 4 + 4;
+  pcline.dst_b_pcline_command = DST_K_SET_LINUM_L;
+
+  totsize += write_debug_header (&line_num.dst_a_line_num_header,
+				 "line_num", dosizeonly);
+  totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+				"line_num (SET LINUM LONG)", dosizeonly);
+
+  sprintf (buff, "line_num (%d)", ln - 1);
+  totsize += write_debug_data4 (ln - 1, buff, dosizeonly);
+
+  lastln = ln;
+  strcpy (lastlabel, TEXT_SECTION_ASM_OP);
+  for (i = 1; i < line_info_table_in_use; i++)
+    {
+      int extrabytes;
+
+      fn = line_info_table[i].dst_file_num;
+      ln = (file_info_table[fn].listing_line_start
+	    + line_info_table[i].dst_line_num);
+
+      if (ln - lastln > 1)
+	extrabytes = 5; /* NUMBYTES (ln - lastln - 1) + 1; */
+      else if (ln <= lastln)
+	extrabytes = 5; /* NUMBYTES (ln - 1) + 1; */
+      else
+	extrabytes = 0;
+
+      line_num.dst_a_line_num_header.dst__header_length.dst_w_length
+	= 8 + extrabytes;
+
+      totsize += write_debug_header
+	(&line_num.dst_a_line_num_header, "line_num", dosizeonly);
+
+      if (ln - lastln > 1)
+	{
+	  int lndif = ln - lastln - 1;
+
+	  /* K_INCR_LINUM (lndif); */
+	  pcline.dst_b_pcline_command = DST_K_INCR_LINUM_L;
+
+	  totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+					"line_num (INCR LINUM LONG)",
+					dosizeonly);
+
+	  sprintf (buff, "line_num (%d)", lndif);
+	  totsize += write_debug_data4 (lndif, buff, dosizeonly);
+	}
+      else if (ln <= lastln)
+	{
+	  /* K_SET_LINUM (ln-1); */
+	  pcline.dst_b_pcline_command = DST_K_SET_LINUM_L;
+
+	  totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+					"line_num (SET LINUM LONG)",
+					dosizeonly);
+
+	  sprintf (buff, "line_num (%d)", ln - 1);
+	  totsize += write_debug_data4 (ln - 1, buff, dosizeonly);
+	}
+
+      pcline.dst_b_pcline_command = DST_K_DELTA_PC_L;
+
+      totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+				    "line_num (DELTA PC LONG)", dosizeonly);
+
+      ASM_GENERATE_INTERNAL_LABEL (label, LINE_CODE_LABEL, i);
+      totsize += write_debug_delta4 (label, lastlabel, "increment line_num",
+				     dosizeonly);
+
+      lastln = ln;
+      strcpy (lastlabel, label);
+    }
+
+  return totsize;
+}

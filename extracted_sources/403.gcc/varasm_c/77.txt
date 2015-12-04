@@ -1,0 +1,15 @@
+static struct pool_constant *
+find_pool_constant (f, addr)
+     struct function *f;
+     rtx addr;
+{
+  struct pool_constant *pool;
+  const char *label = XSTR (addr, 0);
+
+  for (pool = f->varasm->x_const_rtx_sym_hash_table[SYMHASH (label)]; pool;
+       pool = pool->next_sym)
+    if (XSTR (XEXP (pool->desc->rtl, 0), 0) == label)
+      return pool;
+
+  abort ();
+}

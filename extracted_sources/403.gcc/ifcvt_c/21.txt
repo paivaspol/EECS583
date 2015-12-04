@@ -1,0 +1,211 @@
+static int
+noce_process_if_block (test_bb, then_bb, else_bb, join_bb)
+     basic_block test_bb;	/* Basic block test is in */
+     basic_block then_bb;	/* Basic block for THEN block */
+     basic_block else_bb;	/* Basic block for ELSE block */
+     basic_block join_bb;	/* Basic block the join label is in */
+{
+  /* We're looking for patterns of the form
+
+     (1) if (...) x = a; else x = b;
+     (2) x = b; if (...) x = a;
+     (3) if (...) x = a;   // as if with an initial x = x.
+
+     The later patterns require jumps to be more expensive.
+
+     ??? For future expansion, look for multiple X in such patterns.  */
+
+  struct noce_if_info if_info;
+  rtx insn_a, insn_b;
+  rtx set_a, set_b;
+  rtx orig_x, x, a, b;
+  rtx jump, cond, insn;
+
+  /* If this is not a standard conditional jump, we can't parse it.  */
+  jump = test_bb->end;
+  cond = noce_get_condition (jump, &if_info.cond_earliest);
+  if (! cond)
+    return FALSE;
+
+  /* If the conditional jump is more than just a conditional jump,
+     then we can not do if-conversion on this block.  */
+  if (! onlyjump_p (jump))
+    return FALSE;
+
+  /* We must be comparing objects whose modes imply the size.  */
+  if (GET_MODE (XEXP (cond, 0)) == BLKmode)
+    return FALSE;
+
+  /* Look for one of the potential sets.  */
+  insn_a = first_active_insn (then_bb);
+  if (! insn_a
+      || ! last_active_insn_p (then_bb, insn_a)
+      || (set_a = single_set (insn_a)) == NULL_RTX)
+    return FALSE;
+
+  x = SET_DEST (set_a);
+  a = SET_SRC (set_a);
+
+  /* Look for the other potential set.  Make sure we've got equivalent
+     destinations.  */
+  /* ??? This is overconservative.  Storing to two different mems is
+     as easy as conditionally computing the address.  Storing to a
+     single mem merely requires a scratch memory to use as one of the
+     destination addresses; often the memory immediately below the
+     stack pointer is available for this.  */
+  set_b = NULL_RTX;
+  if (else_bb)
+    {
+      insn_b = first_active_insn (else_bb);
+      if (! insn_b
+	  || ! last_active_insn_p (else_bb, insn_b)
+	  || (set_b = single_set (insn_b)) == NULL_RTX
+	  || ! rtx_equal_p (x, SET_DEST (set_b)))
+	return FALSE;
+    }
+  else
+    {
+      insn_b = prev_nonnote_insn (if_info.cond_earliest);
+      if (! insn_b
+	  || GET_CODE (insn_b) != INSN
+	  || (set_b = single_set (insn_b)) == NULL_RTX
+	  || ! rtx_equal_p (x, SET_DEST (set_b))
+	  || reg_mentioned_p (x, cond)
+	  || reg_mentioned_p (x, a)
+	  || reg_mentioned_p (x, SET_SRC (set_b)))
+	insn_b = set_b = NULL_RTX;
+    }
+  b = (set_b ? SET_SRC (set_b) : x);
+
+  /* X may not be mentioned in the range (cond_earliest, jump].  */
+  for (insn = jump; insn != if_info.cond_earliest; insn = PREV_INSN (insn))
+    if (INSN_P (insn) && reg_mentioned_p (x, insn))
+      return FALSE;
+
+  /* A and B may not be modified in the range [cond_earliest, jump).  */
+  for (insn = if_info.cond_earliest; insn != jump; insn = NEXT_INSN (insn))
+    if (INSN_P (insn)
+	&& (modified_in_p (a, insn) || modified_in_p (b, insn)))
+      return FALSE;
+
+  /* Only operate on register destinations, and even then avoid extending
+     the lifetime of hard registers on small register class machines.  */
+  orig_x = x;
+  if (GET_CODE (x) != REG
+      || (SMALL_REGISTER_CLASSES
+	  && REGNO (x) < FIRST_PSEUDO_REGISTER))
+    {
+      if (no_new_pseudos)
+	return FALSE;
+      x = gen_reg_rtx (GET_MODE (GET_CODE (x) == STRICT_LOW_PART
+				 ? XEXP (x, 0) : x));
+    }
+
+  /* Don't operate on sources that may trap or are volatile.  */
+  if (! noce_operand_ok (a) || ! noce_operand_ok (b))
+    return FALSE;
+
+  /* Set up the info block for our subroutines.  */
+  if_info.test_bb = test_bb;
+  if_info.cond = cond;
+  if_info.jump = jump;
+  if_info.insn_a = insn_a;
+  if_info.insn_b = insn_b;
+  if_info.x = x;
+  if_info.a = a;
+  if_info.b = b;
+
+  /* Try optimizations in some approximation of a useful order.  */
+  /* ??? Should first look to see if X is live incoming at all.  If it
+     isn't, we don't need anything but an unconditional set.  */
+
+  /* Look and see if A and B are really the same.  Avoid creating silly
+     cmove constructs that no one will fix up later.  */
+  if (rtx_equal_p (a, b))
+    {
+      /* If we have an INSN_B, we don't have to create any new rtl.  Just
+	 move the instruction that we already have.  If we don't have an
+	 INSN_B, that means that A == X, and we've got a noop move.  In
+	 that case don't do anything and let the code below delete INSN_A.  */
+      if (insn_b && else_bb)
+	{
+	  rtx note;
+
+	  if (else_bb && insn_b == else_bb->end)
+	    else_bb->end = PREV_INSN (insn_b);
+	  reorder_insns (insn_b, insn_b, PREV_INSN (if_info.cond_earliest));
+
+	  /* If there was a REG_EQUAL note, delete it since it may have been
+	     true due to this insn being after a jump.  */
+	  if ((note = find_reg_note (insn_b, REG_EQUAL, NULL_RTX)) != 0)
+	    remove_note (insn_b, note);
+
+	  insn_b = NULL_RTX;
+	}
+      /* If we have "x = b; if (...) x = a;", and x has side-effects, then
+	 x must be executed twice.  */
+      else if (insn_b && side_effects_p (orig_x))
+	return FALSE;
+	
+      x = orig_x;
+      goto success;
+    }
+
+  if (noce_try_store_flag (&if_info))
+    goto success;
+  if (noce_try_minmax (&if_info))
+    goto success;
+  if (noce_try_abs (&if_info))
+    goto success;
+  if (HAVE_conditional_move
+      && noce_try_cmove (&if_info))
+    goto success;
+  if (! HAVE_conditional_execution)
+    {
+      if (noce_try_store_flag_constants (&if_info))
+	goto success;
+      if (noce_try_store_flag_inc (&if_info))
+	goto success;
+      if (noce_try_store_flag_mask (&if_info))
+	goto success;
+      if (HAVE_conditional_move
+	  && noce_try_cmove_arith (&if_info))
+	goto success;
+    }
+
+  return FALSE;
+
+ success:
+  /* The original sets may now be killed.  */
+  delete_insn (insn_a);
+
+  /* Several special cases here: First, we may have reused insn_b above,
+     in which case insn_b is now NULL.  Second, we want to delete insn_b
+     if it came from the ELSE block, because follows the now correct
+     write that appears in the TEST block.  However, if we got insn_b from
+     the TEST block, it may in fact be loading data needed for the comparison.
+     We'll let life_analysis remove the insn if it's really dead.  */
+  if (insn_b && else_bb)
+    delete_insn (insn_b);
+
+  /* The new insns will have been inserted just before the jump.  We should
+     be able to remove the jump with impunity, but the condition itself may
+     have been modified by gcse to be shared across basic blocks.  */
+  delete_insn (jump);
+
+  /* If we used a temporary, fix it up now.  */
+  if (orig_x != x)
+    {
+      start_sequence ();
+      noce_emit_move_insn (copy_rtx (orig_x), x);
+      insn_b = gen_sequence ();
+      end_sequence ();
+
+      emit_insn_after (insn_b, test_bb->end);
+    }
+
+  /* Merge the blocks!  */
+  merge_if_block (test_bb, then_bb, else_bb, join_bb);
+
+  return TRUE;
+}

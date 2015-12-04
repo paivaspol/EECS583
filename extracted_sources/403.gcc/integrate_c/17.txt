@@ -1,0 +1,20 @@
+static void
+set_block_abstract_flags (stmt, setting)
+     tree stmt;
+     int setting;
+{
+  tree local_decl;
+  tree subblock;
+
+  BLOCK_ABSTRACT (stmt) = setting;
+
+  for (local_decl = BLOCK_VARS (stmt);
+       local_decl != NULL_TREE;
+       local_decl = TREE_CHAIN (local_decl))
+    set_decl_abstract_flags (local_decl, setting);
+
+  for (subblock = BLOCK_SUBBLOCKS (stmt);
+       subblock != NULL_TREE;
+       subblock = BLOCK_CHAIN (subblock))
+    set_block_abstract_flags (subblock, setting);
+}

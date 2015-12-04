@@ -1,0 +1,30 @@
+static void vithist_lmstate_dump (vithist_t *vh, kbcore_t *kbc, FILE *fp)
+{
+    glist_t gl;
+    gnode_t *lgn, *gn;
+    int32 i;
+    vh_lmstate2vithist_t *lms2vh;
+    mdef_t *mdef;
+    lm_t *lm;
+    
+    mdef = kbcore_mdef (kbc);
+    lm = kbcore_lm (kbc);
+    
+    fprintf (fp, "LMSTATE\n");
+    for (lgn = vh->lwidlist; lgn; lgn = gnode_next(lgn)) {
+	i = (int32) gnode_int32 (lgn);
+	
+	gl = vh->lmstate_root[i];
+	assert (gl);
+	
+	for (gn = gl; gn; gn = gnode_next(gn)) {
+	    lms2vh = (vh_lmstate2vithist_t *) gnode_ptr (gn);
+	    
+	    fprintf (fp, "\t%s.%s -> %d\n",
+		     lm_wordstr(lm, i), mdef_ciphone_str (mdef, lms2vh->state), lms2vh->vhid);
+	    vithist_lmstate_subtree_dump (vh, kbc, lms2vh, 1, fp);
+	}
+    }
+    fprintf (fp, "END_LMSTATE\n");
+    fflush (fp);
+}

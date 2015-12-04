@@ -1,0 +1,18 @@
+void
+set_diagnostic_context (dc, msgid, args_ptr, file, line, warn)
+     diagnostic_context *dc;
+     const char *msgid;
+     va_list *args_ptr;
+     const char *file;
+     int line;
+     int warn;
+{
+  memset (dc, 0, sizeof (diagnostic_context));
+  diagnostic_message (dc) = _(msgid);
+  diagnostic_argument_list (dc) = args_ptr;
+  diagnostic_file_location (dc) = file;
+  diagnostic_line_location (dc) = line;
+  diagnostic_is_warning (dc) = warn;
+  diagnostic_starter (dc) = diagnostic_starter (global_dc);
+  diagnostic_finalizer (dc) = diagnostic_finalizer (global_dc);
+}

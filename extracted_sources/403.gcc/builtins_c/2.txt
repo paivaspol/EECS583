@@ -1,0 +1,18 @@
+static const char *
+c_getstr (src)
+     tree src;
+{
+  tree offset_node;
+
+  src = string_constant (src, &offset_node);
+  if (src == 0)
+    return 0;
+
+  if (offset_node == 0)
+    return TREE_STRING_POINTER (src);
+  else if (!host_integerp (offset_node, 1)
+	   || compare_tree_int (offset_node, TREE_STRING_LENGTH (src) - 1) > 0)
+    return 0;
+
+  return TREE_STRING_POINTER (src) + tree_low_cst (offset_node, 1);
+}

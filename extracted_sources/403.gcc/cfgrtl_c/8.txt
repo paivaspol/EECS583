@@ -1,0 +1,17 @@
+void
+set_block_for_insn (insn, bb)
+     rtx insn;
+     basic_block bb;
+{
+  size_t uid = INSN_UID (insn);
+
+  if (uid >= basic_block_for_insn->num_elements)
+    {
+      /* Add one-eighth the size so we don't keep calling xrealloc.  */
+      size_t new_size = uid + (uid + 7) / 8;
+
+      VARRAY_GROW (basic_block_for_insn, new_size);
+    }
+
+  VARRAY_BB (basic_block_for_insn, uid) = bb;
+}

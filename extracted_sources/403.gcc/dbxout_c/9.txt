@@ -1,0 +1,18 @@
+static void
+dbxout_function_decl (decl)
+     tree decl;
+{
+#ifndef DBX_FUNCTION_FIRST
+  dbxout_begin_function (decl);
+#endif
+  dbxout_block (DECL_INITIAL (decl), 0, DECL_ARGUMENTS (decl));
+#ifdef DBX_OUTPUT_FUNCTION_END
+  DBX_OUTPUT_FUNCTION_END (asmfile, decl);
+#endif
+  if (use_gnu_debug_info_extensions
+#if defined(NO_DBX_FUNCTION_END)
+      && ! NO_DBX_FUNCTION_END
+#endif
+      && targetm.have_named_sections)
+    dbxout_function_end ();
+}

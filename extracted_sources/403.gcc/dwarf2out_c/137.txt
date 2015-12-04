@@ -1,0 +1,35 @@
+static void
+output_abbrev_section ()
+{
+  unsigned long abbrev_id;
+
+  dw_attr_ref a_attr;
+
+  for (abbrev_id = 1; abbrev_id < abbrev_die_table_in_use; ++abbrev_id)
+    {
+      dw_die_ref abbrev = abbrev_die_table[abbrev_id];
+
+      dw2_asm_output_data_uleb128 (abbrev_id, "(abbrev code)");
+      dw2_asm_output_data_uleb128 (abbrev->die_tag, "(TAG: %s)",
+				   dwarf_tag_name (abbrev->die_tag));
+
+      if (abbrev->die_child != NULL)
+	dw2_asm_output_data (1, DW_children_yes, "DW_children_yes");
+      else
+	dw2_asm_output_data (1, DW_children_no, "DW_children_no");
+
+      for (a_attr = abbrev->die_attr; a_attr != NULL;
+	   a_attr = a_attr->dw_attr_next)
+	{
+	  dw2_asm_output_data_uleb128 (a_attr->dw_attr, "(%s)",
+				       dwarf_attr_name (a_attr->dw_attr));
+	  output_value_format (a_attr);
+	}
+
+      dw2_asm_output_data (1, 0, NULL);
+      dw2_asm_output_data (1, 0, NULL);
+    }
+
+  /* Terminate the table.  */
+  dw2_asm_output_data (1, 0, NULL);
+}

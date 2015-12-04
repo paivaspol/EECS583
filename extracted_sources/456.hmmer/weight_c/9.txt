@@ -1,0 +1,36 @@
+void
+SampleAlignment(MSA *msa, int sample, MSA **ret_new)
+{
+  int    *list;                 /* array for random selection w/o replace */
+  int    *useme;                /* array of flags 0..nseq-1: TRUE to use */
+  int     i, idx;
+  int     len;
+
+  /* Allocations
+   */
+  list  = (int *) MallocOrDie (sizeof(int) * msa->nseq);
+  useme = (int *) MallocOrDie (sizeof(int) * msa->nseq);
+  for (i = 0; i < msa->nseq; i++)
+    {
+      list[i]  = i;
+      useme[i] = FALSE;
+    }
+
+  /* Sanity check.
+   */
+  if (sample >= msa->nseq) sample = msa->nseq;
+
+				/* random selection w/o replacement */
+  for (len = msa->nseq, i = 0; i < sample; i++)
+    {
+      idx = CHOOSE(len);
+      printf("chose %d: %s\n", list[idx], msa->sqname[list[idx]]);
+      useme[list[idx]] = TRUE;
+      list[idx] = list[--len];
+    }
+
+  MSASmallerAlignment(msa, useme, ret_new);
+  free(list);
+  free(useme);
+  return;
+}

@@ -1,0 +1,72 @@
+static void do_start(t_pull *pull, rvec *x, matrix box, t_mdatoms *md, 
+		     real dt, int step, t_topology *top) 
+{
+  int i,j,ii,m;
+  rvec dr,dx,tmp;     
+  bool bThereYet,bDump;
+  static int nout = 0;
+  rvec ds;
+
+  /* pull.xtarget[i] is the desired position of group i with respect
+     to the reference group */
+
+  /* bThereYet is true if all groups have reached their desired position */
+  bThereYet = check_convergence(pull);
+  
+  if (pull->bVerbose) {
+    for (i=0;i<pull->pull.n;i++) {
+      copy_rvec(pull->pull.xtarget[i],tmp);
+      fprintf(stderr,"Group %d goal:%8.3f%8.3f%8.3f from reference\n",
+	      i,tmp[0],tmp[1],tmp[2]);
+    }
+  }
+
+  /* some groups are not there yet! */
+  if (!bThereYet) { 
+    for (i=0;i<pull->pull.n;i++) {
+      /* move this group closer to its target position */
+      rvec_sub(pull->ref.x_unc[0],pull->pull.x_unc[i],tmp);
+      rvec_add(pull->pull.xtarget[i],tmp,dr);
+
+      /* multiply by pull->dims to pick the elements we want */
+      for(m=0;m<DIM;m++) 
+	dr[m] = pull->dims[m]*dr[m];
+
+      /* move over pull->xlt_rate in the direction of dr */
+      svmul(pull->xlt_rate/norm(dr),dr,dx);
+
+      if (pull->bVerbose) 
+	fprintf(stderr,"To go:%10.2e %10.2e %10.2e\n",
+		dr[XX],dr[YY],dr[ZZ]);
+
+      /* update the actual positions */
+      for (j=0;j<pull->pull.ngx[i];j++) {
+	ii = pull->pull.idx[i][j];
+	rvec_add(x[ii],dx,x[ii]);
+      }
+
+      /* get the new center of mass in pull.x_unc[i] */
+      (void)calc_com(x,pull->pull.ngx[i],pull->pull.idx[i],
+		     md,pull->pull.x_unc[i],box);
+    }
+  }
+
+  bDump = check_convergence(pull); 
+  
+  if (bDump) {
+    /* we have to write a coordinate file and reset the desired position */
+    for (i=0;i<pull->pull.n;i++) {
+      for (m=0;m<DIM;m++) {
+	pull->pull.xtarget[i][m] += pull->pull.dir[i][m]*pull->xlt_incr/
+	  norm(pull->pull.dir[i]);
+      }
+      
+      if (pull->bVerbose) 
+	fprintf(stderr,"New target position: %8.3f%8.3f%8.3f\n",
+		pull->pull.xtarget[i][0],pull->pull.xtarget[i][1],
+		pull->pull.xtarget[i][2]);
+    }
+    dump_conf(pull,x,box,top,nout,step*dt/1000); 
+    nout++;
+  }
+}

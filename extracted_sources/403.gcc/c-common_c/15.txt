@@ -1,0 +1,26 @@
+static void
+warn_for_collisions_1 (written, writer, list, only_writes)
+     tree written, writer;
+     struct tlist *list;
+     int only_writes;
+{
+  struct tlist *tmp;
+
+  /* Avoid duplicate warnings.  */
+  for (tmp = warned_ids; tmp; tmp = tmp->next)
+    if (tmp->expr == written)
+      return;
+
+  while (list)
+    {
+      if (list->expr == written
+	  && list->writer != writer
+	  && (! only_writes || list->writer))
+	{
+	  warned_ids = new_tlist (warned_ids, written, NULL_TREE);
+	  warning ("operation on `%s' may be undefined",
+		   IDENTIFIER_POINTER (DECL_NAME (list->expr)));
+	}
+      list = list->next;
+    }
+}

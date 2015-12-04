@@ -1,0 +1,61 @@
+static void
+make_nan (nan, sign, mode)
+     UEMUSHORT *nan;
+     int sign;
+     enum machine_mode mode;
+{
+  int n;
+  const UEMUSHORT *p;
+
+  switch (mode)
+    {
+/* Possibly the `reserved operand' patterns on a VAX can be
+   used like NaN's, but probably not in the same way as IEEE.  */
+#if !defined(DEC) && !defined(IBM) && !defined(C4X)
+    case TFmode:
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+      n = 8;
+      if (REAL_WORDS_BIG_ENDIAN)
+	p = TFbignan;
+      else
+	p = TFlittlenan;
+      break;
+#endif
+      /* FALLTHRU */
+
+    case XFmode:
+      n = 6;
+      if (REAL_WORDS_BIG_ENDIAN)
+	p = XFbignan;
+      else
+	p = XFlittlenan;
+      break;
+
+    case DFmode:
+      n = 4;
+      if (REAL_WORDS_BIG_ENDIAN)
+	p = DFbignan;
+      else
+	p = DFlittlenan;
+      break;
+
+    case SFmode:
+    case HFmode:
+      n = 2;
+      if (REAL_WORDS_BIG_ENDIAN)
+	p = SFbignan;
+      else
+	p = SFlittlenan;
+      break;
+#endif
+
+    default:
+      abort ();
+    }
+  if (REAL_WORDS_BIG_ENDIAN)
+    *nan++ = (sign << 15) | (*p++ & 0x7fff);
+  while (--n != 0)
+    *nan++ = *p++;
+  if (! REAL_WORDS_BIG_ENDIAN)
+    *nan = (sign << 15) | (*p & 0x7fff);
+}

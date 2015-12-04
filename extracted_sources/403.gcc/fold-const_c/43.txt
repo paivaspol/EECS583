@@ -1,0 +1,25 @@
+static int
+simple_operand_p (exp)
+     tree exp;
+{
+  /* Strip any conversions that don't change the machine mode.  */
+  while ((TREE_CODE (exp) == NOP_EXPR
+	  || TREE_CODE (exp) == CONVERT_EXPR)
+	 && (TYPE_MODE (TREE_TYPE (exp))
+	     == TYPE_MODE (TREE_TYPE (TREE_OPERAND (exp, 0)))))
+    exp = TREE_OPERAND (exp, 0);
+
+  return (TREE_CODE_CLASS (TREE_CODE (exp)) == 'c'
+	  || (DECL_P (exp)
+	      && ! TREE_ADDRESSABLE (exp)
+	      && ! TREE_THIS_VOLATILE (exp)
+	      && ! DECL_NONLOCAL (exp)
+	      /* Don't regard global variables as simple.  They may be
+		 allocated in ways unknown to the compiler (shared memory,
+		 #pragma weak, etc).  */
+	      && ! TREE_PUBLIC (exp)
+	      && ! DECL_EXTERNAL (exp)
+	      /* Loading a static variable is unduly expensive, but global
+		 registers aren't expensive.  */
+	      && (! TREE_STATIC (exp) || DECL_REGISTER (exp))));
+}

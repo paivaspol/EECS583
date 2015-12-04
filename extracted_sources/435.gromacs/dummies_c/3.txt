@@ -1,0 +1,33 @@
+static void move_construct_f(t_comm_dummies *dummycomm, rvec f[], t_commrec *cr)
+{
+  int i;
+
+  /* Spread forces to nonlocal constructing atoms.
+   */
+  /* package forces to send right */
+  for(i=0;i<dummycomm->nnextconstr;i++)
+    copy_rvec(f[dummycomm->idxnextconstr[i]],nextbuf[i]);
+  
+  /* send them off, and recieve from the right */
+  if(dummycomm->nnextconstr>0)
+    gmx_tx(cr->right,nextbuf,sizeof(rvec)*dummycomm->nnextconstr);
+  
+  if(dummycomm->nprevconstr>0)
+    gmx_rx(cr->left,prevbuf,sizeof(rvec)*dummycomm->nprevconstr);
+  
+  if(dummycomm->nnextconstr>0)
+    gmx_tx_wait(cr->right);
+
+  if(dummycomm->nprevconstr>0)
+    gmx_rx_wait(cr->left);
+  
+  /* Add them where they belong */
+  for(i=0;i<dummycomm->nprevconstr;i++)
+    rvec_inc(f[dummycomm->idxprevconstr[i]],prevbuf[i]);
+  
+  /* Zero nonlocal dummies */
+  for(i=0;i<dummycomm->nprevdum;i++)
+    clear_rvec(f[dummycomm->idxprevdum[i]]);
+  
+  /* All forces are on the home processor now */  
+}

@@ -1,0 +1,35 @@
+static void
+output_pending_types_for_scope (containing_scope)
+     tree containing_scope;
+{
+  unsigned i;
+
+  for (i = 0; i < pending_types; )
+    {
+      tree type = pending_types_list[i];
+
+      if (type_ok_for_scope (type, containing_scope))
+	{
+	  tree *mover;
+	  tree *limit;
+
+	  pending_types--;
+	  limit = &pending_types_list[pending_types];
+	  for (mover = &pending_types_list[i]; mover < limit; mover++)
+	    *mover = *(mover+1);
+
+	  /* Un-mark the type as having been output already (because it
+	     hasn't been, really).  Then call output_type to generate a
+	     Dwarf representation of it.  */
+
+	  TREE_ASM_WRITTEN (type) = 0;
+	  output_type (type, containing_scope);
+
+	  /* Don't increment the loop counter in this case because we
+	     have shifted all of the subsequent pending types down one
+	     element in the pending_types_list array.  */
+	}
+      else
+	i++;
+    }
+}

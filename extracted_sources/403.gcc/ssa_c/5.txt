@@ -1,0 +1,15 @@
+static void
+ssa_rename_from_insert (reg, r)
+     unsigned int reg;
+     rtx r;
+{
+  void **slot;
+  ssa_rename_from_pair *srfp = xmalloc (sizeof (ssa_rename_from_pair));
+  srfp->reg = reg;
+  srfp->original = r;
+  slot = htab_find_slot_with_hash (ssa_rename_from_ht, (const void *) srfp,
+				   reg, INSERT);
+  if (*slot != 0)
+    free ((void *) *slot);
+  *slot = srfp;
+}

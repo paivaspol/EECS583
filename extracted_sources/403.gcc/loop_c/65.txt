@@ -1,0 +1,98 @@
+static int
+consec_sets_giv (loop, first_benefit, p, src_reg, dest_reg,
+		 add_val, mult_val, ext_val, last_consec_insn)
+     const struct loop *loop;
+     int first_benefit;
+     rtx p;
+     rtx src_reg;
+     rtx dest_reg;
+     rtx *add_val;
+     rtx *mult_val;
+     rtx *ext_val;
+     rtx *last_consec_insn;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct loop_regs *regs = LOOP_REGS (loop);
+  int count;
+  enum rtx_code code;
+  int benefit;
+  rtx temp;
+  rtx set;
+
+  /* Indicate that this is a giv so that we can update the value produced in
+     each insn of the multi-insn sequence.
+
+     This induction structure will be used only by the call to
+     general_induction_var below, so we can allocate it on our stack.
+     If this is a giv, our caller will replace the induct var entry with
+     a new induction structure.  */
+  struct induction *v;
+
+  if (REG_IV_TYPE (ivs, REGNO (dest_reg)) != UNKNOWN_INDUCT)
+    return 0;
+
+  v = (struct induction *) alloca (sizeof (struct induction));
+  v->src_reg = src_reg;
+  v->mult_val = *mult_val;
+  v->add_val = *add_val;
+  v->benefit = first_benefit;
+  v->cant_derive = 0;
+  v->derive_adjustment = 0;
+  v->ext_dependent = NULL_RTX;
+
+  REG_IV_TYPE (ivs, REGNO (dest_reg)) = GENERAL_INDUCT;
+  REG_IV_INFO (ivs, REGNO (dest_reg)) = v;
+
+  count = regs->array[REGNO (dest_reg)].n_times_set - 1;
+
+  while (count > 0)
+    {
+      p = NEXT_INSN (p);
+      code = GET_CODE (p);
+
+      /* If libcall, skip to end of call sequence.  */
+      if (code == INSN && (temp = find_reg_note (p, REG_LIBCALL, NULL_RTX)))
+	p = XEXP (temp, 0);
+
+      if (code == INSN
+	  && (set = single_set (p))
+	  && GET_CODE (SET_DEST (set)) == REG
+	  && SET_DEST (set) == dest_reg
+	  && (general_induction_var (loop, SET_SRC (set), &src_reg,
+				     add_val, mult_val, ext_val, 0,
+				     &benefit, VOIDmode)
+	      /* Giv created by equivalent expression.  */
+	      || ((temp = find_reg_note (p, REG_EQUAL, NULL_RTX))
+		  && general_induction_var (loop, XEXP (temp, 0), &src_reg,
+					    add_val, mult_val, ext_val, 0,
+					    &benefit, VOIDmode)))
+	  && src_reg == v->src_reg)
+	{
+	  if (find_reg_note (p, REG_RETVAL, NULL_RTX))
+	    benefit += libcall_benefit (p);
+
+	  count--;
+	  v->mult_val = *mult_val;
+	  v->add_val = *add_val;
+	  v->benefit += benefit;
+	}
+      else if (code != NOTE)
+	{
+	  /* Allow insns that set something other than this giv to a
+	     constant.  Such insns are needed on machines which cannot
+	     include long constants and should not disqualify a giv.  */
+	  if (code == INSN
+	      && (set = single_set (p))
+	      && SET_DEST (set) != dest_reg
+	      && CONSTANT_P (SET_SRC (set)))
+	    continue;
+
+	  REG_IV_TYPE (ivs, REGNO (dest_reg)) = UNKNOWN_INDUCT;
+	  return 0;
+	}
+    }
+
+  REG_IV_TYPE (ivs, REGNO (dest_reg)) = UNKNOWN_INDUCT;
+  *last_consec_insn = p;
+  return v->benefit;
+}

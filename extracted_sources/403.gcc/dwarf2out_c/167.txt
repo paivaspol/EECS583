@@ -1,0 +1,36 @@
+static dw_loc_descr_ref
+loc_descriptor (rtl)
+     rtx rtl;
+{
+  dw_loc_descr_ref loc_result = NULL;
+
+  switch (GET_CODE (rtl))
+    {
+    case SUBREG:
+      /* The case of a subreg may arise when we have a local (register)
+         variable or a formal (register) parameter which doesn't quite fill
+         up an entire register.  For now, just assume that it is
+         legitimate to make the Dwarf info refer to the whole register which
+         contains the given subreg.  */
+      rtl = SUBREG_REG (rtl);
+
+      /* ... fall through ...  */
+
+    case REG:
+      loc_result = reg_loc_descriptor (rtl);
+      break;
+
+    case MEM:
+      loc_result = mem_loc_descriptor (XEXP (rtl, 0), GET_MODE (rtl));
+      break;
+
+    case CONCAT:
+      loc_result = concat_loc_descriptor (XEXP (rtl, 0), XEXP (rtl, 1));
+      break;
+
+    default:
+      abort ();
+    }
+
+  return loc_result;
+}

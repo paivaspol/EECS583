@@ -1,0 +1,381 @@
+static void
+visit_expression (insn, block)
+     rtx insn;
+     basic_block block;
+{
+  rtx src, dest, set;
+
+
+  /* Ugh.  CALL_INSNs may end a basic block and have multiple edges
+     leading out from them.
+
+     Mark all the outgoing edges as executable, then fall into the
+     normal processing below.  */
+  if (GET_CODE (insn) == CALL_INSN && block->end == insn)
+    {
+      edge curredge;
+
+      for (curredge = block->succ; curredge;
+	   curredge = curredge->succ_next)
+	{
+	  int index = EIE (curredge->src, curredge->dest);
+
+	  if (TEST_BIT (executable_edges, index))
+	    continue;
+
+	  SET_BIT (executable_edges, index);
+	  edge_info[index] = flow_edges;
+	  flow_edges = curredge;
+	}
+    }
+
+  set = single_set (insn);
+  if (! set)
+    {
+      defs_to_varying (insn);
+      return;
+    }
+
+  src = SET_SRC (set);
+  dest = SET_DEST (set);
+
+  /* We may want to refine this some day.  */
+  if (GET_CODE (dest) != REG && dest != pc_rtx)
+    {
+      defs_to_varying (insn);
+      return;
+    }
+
+  /* Hard registers are not put in SSA form and thus we must consider
+     them varying.  All the more reason to avoid hard registers in 
+     RTL until as late as possible in the compilation.  */
+  if (GET_CODE (dest) == REG && REGNO (dest) < FIRST_PSEUDO_REGISTER)
+    {
+      defs_to_varying (insn);
+      return;
+    }
+
+  /* If this is assigning DEST to a constant, record that fact.  */
+  if (GET_CODE (src) == CONST_INT && GET_CODE (insn) == INSN)
+    {
+      unsigned int resultreg = REGNO (dest);
+
+      values[resultreg].lattice_val = CONSTANT;
+      values[resultreg].const_value = SET_SRC (PATTERN (insn));
+      SET_BIT (ssa_edges, resultreg);
+    }
+
+  /* If this is a copy operation, then we can copy the lattice values.  */
+  else if (GET_CODE (src) == REG && GET_CODE (dest) == REG)
+    {
+      unsigned int old_value = REGNO (src);
+      latticevalue old_lattice_value = values[old_value].lattice_val;
+      unsigned int new_value = REGNO (dest);
+
+      /* Unless the lattice value is going to change, don't bother
+         adding the "new value" into the worklist.  */
+      if (values[new_value].lattice_val != old_lattice_value
+	  || values[new_value].const_value != values[old_value].const_value)
+	SET_BIT (ssa_edges, new_value);
+
+      /* Copy the old lattice node info into the new value lattice node.  */
+      values[new_value].lattice_val = old_lattice_value;
+      values[new_value].const_value = values[old_value].const_value;
+    }
+
+  /* Handle jumps.  */
+  else if (GET_CODE (insn) == JUMP_INSN)
+    {
+      rtx x = pc_set (insn);
+      if (GET_CODE (src) != IF_THEN_ELSE)
+	{
+	  edge curredge;
+
+	  /* This is a computed jump, table jump, or an unconditional
+	     jump.  For all these cases we want to mark all successor
+	     blocks as executable if they have not already been
+	     marked.
+
+	     One day we may try do better with swtich tables and
+	     other computed jumps.  */
+	  for (curredge = block->succ; curredge;
+	       curredge = curredge->succ_next)
+	    {
+	      int index = EIE (curredge->src, curredge->dest);
+
+	      if (TEST_BIT (executable_edges, index))
+		continue;
+
+	      SET_BIT (executable_edges, index);
+	      edge_info[index] = flow_edges;
+	      flow_edges = curredge;
+	    }
+	}
+      else
+	{
+	  edge curredge;
+	  enum rtx_code comparison_code;
+	  rtx comparison_src0;
+	  rtx comparison_src1;
+
+	  comparison_code = GET_CODE (XEXP (src, 0));
+	  comparison_src0 = XEXP (XEXP (src, 0), 0);
+	  comparison_src1 = XEXP (XEXP (src, 0), 1);
+
+	  /* If either operand is undefined, then there is nothing to
+	     do right now.  If/when operands are later defined we will
+	     revaluate the condition and take the appropriate action.  */
+	  if ((GET_CODE (comparison_src0) == REG
+	       && values[REGNO (comparison_src0)].lattice_val == UNDEFINED)
+	      || (GET_CODE (comparison_src1) == REG
+	          && values[REGNO (comparison_src1)].lattice_val == UNDEFINED))
+	    return;
+
+	  /* If either operand is varying, then we must consider all
+	     paths as executable.  */
+	  if ((GET_CODE (comparison_src0) == REG
+	       && values[REGNO (comparison_src0)].lattice_val == VARYING)
+	      || (GET_CODE (comparison_src1) == REG
+	          && values[REGNO (comparison_src1)].lattice_val == VARYING))
+	    {
+	      for (curredge = block->succ; curredge;
+	           curredge = curredge->succ_next)
+	        {
+	          int index = EIE (curredge->src, curredge->dest);
+
+	          if (TEST_BIT (executable_edges, index))
+		    continue;
+
+	          SET_BIT (executable_edges, index);
+	          edge_info[index] = flow_edges;
+	          flow_edges = curredge;
+	        }
+	      return;
+	    }
+
+	  /* Try to simplify the comparison.  */
+	  if (GET_CODE (comparison_src0) == REG
+	      && values[REGNO (comparison_src0)].lattice_val == CONSTANT)
+	    comparison_src0 = values[REGNO (comparison_src0)].const_value;
+
+	  if (GET_CODE (comparison_src1) == REG
+	      && values[REGNO (comparison_src1)].lattice_val == CONSTANT)
+	    comparison_src1 = values[REGNO (comparison_src1)].const_value;
+
+	  x = simplify_ternary_operation (IF_THEN_ELSE,
+					  VOIDmode,
+					  GET_MODE (XEXP (src, 0)),
+					  gen_rtx (comparison_code,
+						   GET_MODE (XEXP (src, 0)),
+						   comparison_src0,
+						   comparison_src1),
+					  XEXP (src, 1),
+					  XEXP (src, 2));
+
+	  /* Walk through all the outgoing edges from this block and see
+	     which (if any) we should mark as executable.  */
+	  for (curredge = block->succ; curredge;
+	       curredge = curredge->succ_next)
+	    {
+	      int index = EIE (curredge->src, curredge->dest);
+
+	      if (TEST_BIT (executable_edges, index))
+		continue;
+
+	      /* If we were unable to simplify the expression at this
+		 point, it's highly unlikely we'll be able to simplify
+		 it later.  So consider all edges as executable if the
+		 expression did not simplify.
+
+		 If the expression simplified to (pc), then we know we
+		 will take the fall-thru edge, so mark it.  Similarly,
+		 if the expression simplified to (label_ref ...), then
+		 we know the branch will be taken and we mark that
+		 edge as taken.  */
+	      if (!x
+		  || (x == pc_rtx
+		      && (curredge->flags & EDGE_FALLTHRU))
+		  || (GET_CODE (x) == LABEL_REF
+		      && ! (curredge->flags & EDGE_FALLTHRU)))
+		{
+		  SET_BIT (executable_edges, index);
+		  edge_info[index] = flow_edges;
+		  flow_edges = curredge;
+		}
+	    }
+	}
+    }
+  else if (!PHI_NODE_P (insn))
+    {
+      rtx simplified = NULL;
+
+      /* We've got some kind of INSN.  If it's simple, try to evaluate
+	 it and record the results. 
+
+	 We already know this insn is a single_set and that it sets
+	 a pseudo register.   So we just need to extract the source
+	 arguments, simplify them to constants if possible, then
+	 simplify the expression as a whole if possible.  */
+      switch (GET_RTX_CLASS (GET_CODE (src)))
+	{
+	  case '<':
+	    {
+	      rtx src0 = XEXP (src, 0);
+	      rtx src1 = XEXP (src, 1);
+	      enum machine_mode mode;
+
+	      /* If either is undefined, then the result is undefined.  */
+	      if ((GET_CODE (src0) == REG
+		   && values[REGNO (src0)].lattice_val == UNDEFINED)
+		  || (GET_CODE (src1) == REG
+		      && values[REGNO (src1)].lattice_val == UNDEFINED))
+		{
+		  defs_to_undefined (insn);
+		  break;
+		}
+
+	      /* Determine the mode for the operation before we simplify
+		 our arguments to constants.  */
+	      mode = GET_MODE (src0);
+	      if (mode == VOIDmode)
+		mode = GET_MODE (src1);
+
+	      /* Simplify source operands to whatever known values they
+		 may have.  */
+	      if (GET_CODE (src0) == REG
+		  && values[REGNO (src0)].lattice_val == CONSTANT)
+		src0 = values[REGNO (src0)].const_value;
+
+	      if (GET_CODE (src1) == REG
+		  && values[REGNO (src1)].lattice_val == CONSTANT)
+		src1 = values[REGNO (src1)].const_value;
+
+	      /* See if the simplifier can determine if this operation
+		 computes a constant value.  */
+	      simplified = simplify_relational_operation (GET_CODE (src),
+							  mode, src0, src1);
+	      break;
+
+	    }
+
+	  case '1':
+	    {
+	      rtx src0 = XEXP (src, 0);
+	      enum machine_mode mode0 = GET_MODE (src0);
+
+	      /* If the operand is undefined, then the result is undefined.  */
+	      if (GET_CODE (src0) == REG
+		   && values[REGNO (src0)].lattice_val == UNDEFINED)
+		{
+		  defs_to_undefined (insn);
+		  break;
+		}
+		
+	      /* Simplify source operands to whatever known values they
+		 may have.  */
+	      if (GET_CODE (src0) == REG
+		  && values[REGNO (src0)].lattice_val == CONSTANT)
+		src0 = values[REGNO (src0)].const_value;
+
+	      /* See if the simplifier can determine if this operation
+		 computes a constant value.  */
+	      simplified = simplify_unary_operation (GET_CODE (src),
+						     GET_MODE (src),
+						     src0,
+						     mode0);
+	      break;
+	    }
+
+	  case '2':
+	  case 'c':
+	    {
+	      rtx src0 = XEXP (src, 0);
+	      rtx src1 = XEXP (src, 1);
+
+	      /* If either is undefined, then the result is undefined.  */
+	      if ((GET_CODE (src0) == REG
+		   && values[REGNO (src0)].lattice_val == UNDEFINED)
+		  || (GET_CODE (src1) == REG
+		      && values[REGNO (src1)].lattice_val == UNDEFINED))
+		{
+		  defs_to_undefined (insn);
+		  break;
+		}
+		
+	      /* Simplify source operands to whatever known values they
+		 may have.  */
+	      if (GET_CODE (src0) == REG
+		  && values[REGNO (src0)].lattice_val == CONSTANT)
+		src0 = values[REGNO (src0)].const_value;
+
+	      if (GET_CODE (src1) == REG
+		  && values[REGNO (src1)].lattice_val == CONSTANT)
+		src1 = values[REGNO (src1)].const_value;
+
+	      /* See if the simplifier can determine if this operation
+		 computes a constant value.  */
+	      simplified = simplify_binary_operation (GET_CODE (src),
+						      GET_MODE (src),
+						      src0, src1);
+	      break;
+	    }
+
+	  case '3':
+	  case 'b':
+	    {
+	      rtx src0 = XEXP (src, 0);
+	      rtx src1 = XEXP (src, 1);
+	      rtx src2 = XEXP (src, 2);
+
+	      /* If either is undefined, then the result is undefined.  */
+	      if ((GET_CODE (src0) == REG
+		   && values[REGNO (src0)].lattice_val == UNDEFINED)
+		  || (GET_CODE (src1) == REG
+		      && values[REGNO (src1)].lattice_val == UNDEFINED)
+		  || (GET_CODE (src2) == REG
+		      && values[REGNO (src2)].lattice_val == UNDEFINED))
+		{
+		  defs_to_undefined (insn);
+		  break;
+		}
+		
+	      /* Simplify source operands to whatever known values they
+		 may have.  */
+	      if (GET_CODE (src0) == REG
+		  && values[REGNO (src0)].lattice_val == CONSTANT)
+		src0 = values[REGNO (src0)].const_value;
+
+	      if (GET_CODE (src1) == REG
+		  && values[REGNO (src1)].lattice_val == CONSTANT)
+		src1 = values[REGNO (src1)].const_value;
+
+	      if (GET_CODE (src2) == REG
+		  && values[REGNO (src2)].lattice_val == CONSTANT)
+		src2 = values[REGNO (src2)].const_value;
+
+	      /* See if the simplifier can determine if this operation
+		 computes a constant value.  */
+	      simplified = simplify_ternary_operation (GET_CODE (src),
+						       GET_MODE (src),
+						       GET_MODE (src),
+						       src0, src1, src2);
+	      break;
+	    }
+	
+	  default:
+	    defs_to_varying (insn);
+	}
+
+      if (simplified && GET_CODE (simplified) == CONST_INT)
+	{
+	  if (values[REGNO (dest)].lattice_val != CONSTANT
+	      || values[REGNO (dest)].const_value != simplified)
+	    SET_BIT (ssa_edges, REGNO (dest));
+
+	  values[REGNO (dest)].lattice_val = CONSTANT;
+	  values[REGNO (dest)].const_value = simplified;
+	}
+      else
+        defs_to_varying (insn);
+    }
+}

@@ -1,0 +1,22 @@
+static I32 DD_dump (pTHX_ SV *val, char *name, STRLEN namelen, SV *retval,
+		    HV *seenhv, AV *postav, I32 *levelp, I32 indent,
+		    SV *pad, SV *xpad, SV *apad, SV *sep, SV *pair,
+		    SV *freezer, SV *toaster,
+		    I32 purity, I32 deepcopy, I32 quotekeys, SV *bless,
+		    I32 maxdepth, SV *sortkeys);
+
+#if PERL_VERSION <= 6 /* Perl 5.6 and earlier */
+
+# ifdef EBCDIC
+#  define UNI_TO_NATIVE(ch) (((ch) > 255) ? (ch) : ASCII_TO_NATIVE(ch))
+# else
+#  define UNI_TO_NATIVE(ch) (ch)
+# endif
+
+UV
+Perl_utf8_to_uvchr(pTHX_ U8 *s, STRLEN *retlen)
+{
+    UV uv = utf8_to_uv(s, UTF8_MAXLEN, retlen,
+                    ckWARN(WARN_UTF8) ? 0 : UTF8_ALLOW_ANY);
+    return UNI_TO_NATIVE(uv);
+}

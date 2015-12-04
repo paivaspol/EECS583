@@ -1,0 +1,69 @@
+void print_perf(FILE *out,double nodetime,double realtime,real runtime,
+		t_nrnb *nrnb,int nprocs)
+{
+  int    i;
+  double nbfs,mni,frac,tfrac,mflop,tflop;
+  
+  if (nodetime < GMX_REAL_MIN) {
+    fprintf(out,"nodetime = 0! Infinite Giga flopses!\n");
+  }
+  
+  nbfs=0.0;
+  for(i=0; (i<eNR_INLOOP); i++) {
+    if (strstr(nbdata[i].name,"(WW)") != NULL)
+      nbfs += 9e-6*nrnb->n[i];
+    else if (strstr(nbdata[i].name,"(W)") != NULL)
+      nbfs += 3e-6*nrnb->n[i];
+    else
+      nbfs += 1e-6*nrnb->n[i];
+  }
+  tflop=0;
+  for(i=0; (i<eNRNB); i++) 
+    tflop+=1e-6*nrnb->n[i]*nbdata[i].flop;
+  
+  if (tflop < GMX_REAL_MIN) {
+    fprintf(out,"No MEGA Flopsen this time\n");
+    return;
+  }
+  fprintf(out,"\n\tM E G A - F L O P S   A C C O U N T I N G\n\n");
+  if (nprocs > 1) {
+    nodetime = realtime;
+    fprintf(out,"\tBased on real time for parallel computer.\n");
+  }
+
+  fprintf(out,"   RF=Reaction-field  Free=Free Energy  SC=Softcore\n");
+  fprintf(out,"   T=Tabulated        S=Solvent         W=Water     WW=Water-Water\n\n");
+  fprintf(out,"%21s  %12s  %12s  %8s\n",
+	  "Computing:","M-Number","M-Flop's","% Flop's");
+  mflop=0.0;
+  tfrac=0.0;
+  for(i=0; (i<eNRNB); i++) {
+    mni    = 1e-6*nrnb->n[i];
+    mflop += mni*nbdata[i].flop;
+    frac   = 100.0*mni*nbdata[i].flop/tflop;
+    tfrac += frac;
+    if (fabs(mni) > GMX_REAL_MIN)
+      fprintf(out,"%21s  %12.6f  %12.6f  %6.1f\n",
+	      nbdata[i].name,mni,mni*nbdata[i].flop,frac);
+  }
+  fprintf(out,"%15s  %12s  %12.5f  %6.1f\n\n",
+	  "Total","",mflop,tfrac);
+  if ((nodetime > 0) && (realtime > 0)) {
+    fprintf(out,"%12s %10s %10s %8s\n","","NODE (s)","Real (s)","(%)");
+    fprintf(out,"%12s %10.3f %10.3f %8.1f\n","Time:",
+	    nodetime, realtime, 100.0*nodetime/realtime);
+    if (nodetime > 60) {
+      fprintf(out,"%12s %10s","","");
+      pr_difftime(out,nodetime);
+    }
+    if (runtime>0) { /* runtime=0 means calc energies only */
+      mflop = mflop/nodetime;
+      fprintf(out,"%12s %10s %10s %10s %10s\n",
+	      "","(Mnbf/s)",(mflop > 1000) ? "(GFlops)" : "(MFlops)",
+	      "(ps/NODE hour)","(NODE hour/ns)");
+      fprintf(out,"%12s %10.3f %10.3f %10.3f %10.3f\n","Performance:",
+	      nbfs/nodetime,(mflop > 1000) ? (mflop/1000) : mflop,
+	      runtime*3600/nodetime,1000*nodetime/(3600*runtime));
+    }
+  }
+}

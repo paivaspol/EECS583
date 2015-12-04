@@ -1,0 +1,84 @@
+static void 
+addseq(char *s, struct ReadSeqVars *V)
+{
+  char *s0;
+  char *sq;
+  int   rpl;			/* valid residues per line */
+  int   bpl;			/* characters per line     */
+
+  if (V->ssimode == -1)
+    {				/* Normal mode: keeping the seq */
+      /* Make sure we have enough room. We know that s is <= buflen,
+       * so just make sure we've got room for a whole new buflen worth
+       * of sequence.
+       */
+      if (V->seqlen + V->buflen > V->maxseq) {
+	V->maxseq += MAX(V->buflen, kStartLength);
+	V->seq = ReallocOrDie (V->seq, V->maxseq+1);
+        /*  following added because calloc clears memory and
+             strings are null terminated. But resizing does not
+             have null termination. Joydeep found this bug and
+             has kindly provided the following fix -Kaivalya 9/15/03
+             added jray :: null termination Kaivalya 9/15/03
+             Author okayed the change.
+        */
+         V->seq[V->maxseq] = 0;  /* Kaivalya 09/15/03 */
+
+      }
+
+      sq = V->seq + V->seqlen;
+      while (*s != 0) {
+	if (! isdigit((int) *s) && ! isspace((int) *s)) { 
+	  *sq = *s;
+	  sq++;
+	}
+	s++;
+      }
+      V->seqlen = sq - V->seq;
+    }
+  else				/* else: indexing mode, discard the seq */
+    {
+      s0 = s;
+      rpl = 0;
+      while (*s != 0) {
+ 	if (! isdigit((int) *s) && ! isspace((int) *s)) {
+	  rpl++;
+	}
+	s++;
+      }
+      V->seqlen += rpl;
+      bpl = s - s0;
+
+      /* Keep track of the global rpl, bpl for the file.
+       * This is overly complicated because we have to 
+       * allow the last line of each record (e.g. the last addseq() call
+       * on each sequence) to have a different length - and sometimes
+       * we'll have one-line sequence records, too.  Thus we only
+       * do something with the global V->rpl when we have *passed over*
+       * a line - we keep the last line's rpl in last_rpl. And because
+       * a file might consist entirely of single-line records, we keep
+       * a third guy, maxrpl, that tells us the maximum rpl of any line
+       * in the file. If we reach the end of file and rpl is still unset,
+       * we'll set it to maxrpl. If we reach eof and rpl is set, but is
+       * less than maxrpl, that's a weird case where a last line in some
+       * record is longer than every other line.
+       */
+      if (V->rpl != 0) {		/* 0 means we already know rpl is invalid       */
+	if (V->lastrpl > 0) {	/* we're on something that's not the first line */
+	  if (V->rpl > 0 && V->lastrpl != V->rpl)  V->rpl = 0; 
+	  else if (V->rpl == -1)                   V->rpl = V->lastrpl;
+	}      
+	V->lastrpl = rpl;
+	if (rpl > V->maxrpl) V->maxrpl = rpl; /* make sure we check max length of final lines */
+      }
+      if (V->bpl != 0) {		/* 0 means we already know bpl is invalid       */
+	if (V->lastbpl > 0) {	/* we're on something that's not the first line */
+	  if (V->bpl > 0 && V->lastbpl != V->bpl)  V->bpl = 0; 
+	  else if (V->bpl == -1)                   V->bpl = V->lastbpl;
+	}      
+	V->lastbpl = bpl;
+	if (bpl > V->maxbpl) V->maxbpl = bpl; /* make sure we check max length of final lines */
+      }
+    } /* end of indexing mode of addseq(). */
+
+}

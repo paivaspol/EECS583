@@ -1,0 +1,47 @@
+static int
+activate_external_sort(SSIINDEX *g)
+{
+  int i;
+				/* it's a bit late to be checking this, but... */
+  if (g->external)             return 0; /* we already are external, fool */
+  if (FileExists(g->ptmpfile)) return 1;	 
+  if (FileExists(g->stmpfile)) return 1;
+  if ((g->ptmp = fopen(g->ptmpfile, "w")) == NULL) return 1;
+  if ((g->stmp = fopen(g->stmpfile, "w")) == NULL) return 1;
+
+  /* Flush the current indices.
+   */
+  SQD_DPRINTF1(("Switching to external sort - flushing ssiindex to disk...\n"));
+  for (i = 0; i < g->nprimary; i++) {
+    if (g->smode == SSI_OFFSET_I32) {
+      fprintf(g->ptmp, "%s\t%u\t%lu\t%lu\t%lu\n", 
+	      g->pkeys[i].key, (unsigned int) g->pkeys[i].fnum,
+	      (unsigned long) g->pkeys[i].r_off.off.i32, 
+	      (unsigned long) g->pkeys[i].d_off.off.i32, 
+	      (unsigned long) g->pkeys[i].len);
+    } else {
+      fprintf(g->ptmp, "%s\t%u\t%llu\t%llu\t%lu\n", 
+	      g->pkeys[i].key, (unsigned int) g->pkeys[i].fnum,
+	      (unsigned long long) g->pkeys[i].r_off.off.i64, 
+	      (unsigned long long) g->pkeys[i].d_off.off.i64, 
+	      (unsigned long) g->pkeys[i].len);
+    }
+  }
+  for (i = 0; i < g->nsecondary; i++)
+    fprintf(g->stmp, "%s\t%s\n", g->skeys[i].key, g->skeys[i].pkey);
+  
+  /* Free the memory now that we've flushed our lists to disk
+   */
+  for (i = 0; i < g->nprimary;   i++) free(g->pkeys[i].key);
+  for (i = 0; i < g->nsecondary; i++) free(g->skeys[i].key);
+  for (i = 0; i < g->nsecondary; i++) free(g->skeys[i].pkey);
+  if (g->pkeys       != NULL)         free(g->pkeys);       	
+  if (g->skeys       != NULL)         free(g->skeys);       
+  g->pkeys = NULL;
+  g->skeys = NULL;
+
+  /* Turn control over to external accumulation mode.
+   */
+  g->external = TRUE;
+  return 0;
+}

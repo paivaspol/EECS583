@@ -1,0 +1,73 @@
+int
+can_store_by_pieces (len, constfun, constfundata, align)
+     unsigned HOST_WIDE_INT len;
+     rtx (*constfun) PARAMS ((PTR, HOST_WIDE_INT, enum machine_mode));
+     PTR constfundata;
+     unsigned int align;
+{
+  unsigned HOST_WIDE_INT max_size, l;
+  HOST_WIDE_INT offset = 0;
+  enum machine_mode mode, tmode;
+  enum insn_code icode;
+  int reverse;
+  rtx cst;
+
+  if (! MOVE_BY_PIECES_P (len, align))
+    return 0;
+
+  if (! SLOW_UNALIGNED_ACCESS (word_mode, align)
+      || align > MOVE_MAX * BITS_PER_UNIT || align >= BIGGEST_ALIGNMENT)
+    align = MOVE_MAX * BITS_PER_UNIT;
+
+  /* We would first store what we can in the largest integer mode, then go to
+     successively smaller modes.  */
+
+  for (reverse = 0;
+       reverse <= (HAVE_PRE_DECREMENT || HAVE_POST_DECREMENT);
+       reverse++)
+    {
+      l = len;
+      mode = VOIDmode;
+      max_size = MOVE_MAX_PIECES + 1;
+      while (max_size > 1)
+	{
+	  for (tmode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+	       tmode != VOIDmode; tmode = GET_MODE_WIDER_MODE (tmode))
+	    if (GET_MODE_SIZE (tmode) < max_size)
+	      mode = tmode;
+
+	  if (mode == VOIDmode)
+	    break;
+
+	  icode = mov_optab->handlers[(int) mode].insn_code;
+	  if (icode != CODE_FOR_nothing
+	      && align >= GET_MODE_ALIGNMENT (mode))
+	    {
+	      unsigned int size = GET_MODE_SIZE (mode);
+
+	      while (l >= size)
+		{
+		  if (reverse)
+		    offset -= size;
+
+		  cst = (*constfun) (constfundata, offset, mode);
+		  if (!LEGITIMATE_CONSTANT_P (cst))
+		    return 0;
+
+		  if (!reverse)
+		    offset += size;
+
+		  l -= size;
+		}
+	    }
+
+	  max_size = GET_MODE_SIZE (mode);
+	}
+
+      /* The code above should have handled everything.  */
+      if (l != 0)
+	abort ();
+    }
+
+  return 1;
+}

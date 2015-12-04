@@ -1,0 +1,20 @@
+static const char *
+output_51 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_IMOVX:
+      /* movzwl is faster than movw on p2 due to partial word stalls,
+	 though not as fast as an aligned movl.  */
+      return "movz{wl|x}\t{%1, %k0|%k0, %1}";
+    default:
+      if (get_attr_mode (insn) == MODE_SI)
+        return "mov{l}\t{%k1, %k0|%k0, %k1}";
+      else
+        return "mov{w}\t{%1, %0|%0, %1}";
+    }
+}
+}

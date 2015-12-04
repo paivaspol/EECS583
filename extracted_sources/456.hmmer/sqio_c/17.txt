@@ -1,0 +1,20 @@
+static void 
+readIG(struct ReadSeqVars *V)
+{
+  char *nm;
+				/* position past ';' comments */
+  do {
+    SeqfileGetLine(V);
+  } while (! (feof(V->f) || ((*V->buf != 0) && (*V->buf != ';')) ));
+
+  if (!feof(V->f))
+    {
+      if ((nm = strtok(V->buf, "\n\t ")) != NULL)
+	SetSeqinfoString(V->sqinfo, nm, SQINFO_NAME);
+
+      readLoop(0, endIG, V);
+    }
+  
+  while (!(feof(V->f) || ((*V->buf != '\0') && (*V->buf == ';'))))
+    SeqfileGetLine(V);
+}

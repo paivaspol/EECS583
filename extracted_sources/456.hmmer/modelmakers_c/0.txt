@@ -1,0 +1,73 @@
+static int build_cij(char **aseqs, int nseq, int *insopt, int i, int j,
+		     float *wgt, float *cij);
+static int estimate_model_length(MSA *msa);
+static void matassign2hmm(MSA *msa, char **dsq,
+			  int *matassign, struct plan7_s **ret_hmm,
+			  struct p7trace_s ***ret_tr);
+static void fake_tracebacks(char **aseq, int nseq, int alen, int *matassign,
+			    struct p7trace_s ***ret_tr);
+static void trace_doctor(struct p7trace_s *tr, int M, int *ret_ndi, 
+			 int *ret_nid);
+static void annotate_model(struct plan7_s *hmm, int *matassign, MSA *msa);
+static void print_matassign(int *matassign, int alen);
+
+
+
+/* Function: P7Handmodelmaker()
+ * 
+ * Purpose:  Manual model construction:
+ *           Construct an HMM from an alignment, where the #=RF line
+ *           of a HMMER alignment file is given to indicate
+ *           the columns assigned to matches vs. inserts.
+ *           
+ *           NOTE: Handmodelmaker() will slightly revise the alignment
+ *           if necessary, if the assignment of columns implies
+ *           DI and ID transitions.
+ *           
+ *           Returns both the HMM in counts form (ready for applying
+ *           Dirichlet priors as the next step), and fake tracebacks
+ *           for each aligned sequence.
+ *           
+ * Args:     msa  - multiple sequence alignment          
+ *           dsq  - digitized unaligned aseq's
+ *           ret_hmm - RETURN: counts-form HMM
+ *           ret_tr  - RETURN: array of tracebacks for aseq's
+ *           
+ * Return:   (void)
+ *           ret_hmm and ret_tr alloc'ed here; FreeTrace(tr[i]), free(tr),
+ *           FreeHMM(hmm).
+ */            
+void
+P7Handmodelmaker(MSA *msa, char **dsq,
+		 struct plan7_s **ret_hmm, struct p7trace_s ***ret_tr)
+{
+  int     *matassign;           /* MAT state assignments if 1; 1..alen */
+  int      apos;                /* counter for aligned columns         */
+
+  /* Make sure we have all the info about the alignment that we need */
+  if (msa->rf == NULL)
+    Die("Alignment must have RF annotation to hand-build an HMM");
+
+				/* Allocation */
+  matassign = (int *) MallocOrDie (sizeof(int) * (msa->alen+1));
+  
+  /* Determine match assignment from optional annotation
+   */
+  matassign[0] = 0;
+  for (apos = 0; apos < msa->alen; apos++)
+    {
+      matassign[apos+1] = 0;
+      if (!isgap(msa->rf[apos])) 
+	matassign[apos+1] |= ASSIGN_MATCH;
+      else 
+	matassign[apos+1] |= ASSIGN_INSERT;
+    }
+
+  /* Hand matassign off for remainder of model construction
+   */
+  /*   print_matassign(matassign, msa->alen); */
+  matassign2hmm(msa, dsq, matassign, ret_hmm, ret_tr);
+
+  free(matassign);
+  return;
+}

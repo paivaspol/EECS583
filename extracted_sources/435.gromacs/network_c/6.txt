@@ -1,0 +1,17 @@
+void gmx_rxs(int nodeid,void *buf,int bufsize)
+{
+#ifndef USE_MPI
+  MYFATAL("gmx_rxs");
+#else
+  MPI_Status stat;
+  int        tag;
+
+#ifdef DEBUG
+  fprintf(stderr,"gmx_rxs: nodeid=%d, buf=%x, bufsize=%d\n",
+	  nodeid,buf,bufsize);
+#endif
+  tag = 0;
+  if (MPI_Recv( buf, bufsize, MPI_BYTE, nodeid, tag, MPI_COMM_WORLD, &stat) != 0 )
+    fatal_error(0,"MPI_Recv Failed !");
+#endif
+}

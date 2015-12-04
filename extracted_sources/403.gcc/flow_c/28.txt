@@ -1,0 +1,10 @@
+static void
+invalidate_mems_from_autoinc (pbi, insn)
+     struct propagate_block_info *pbi;
+     rtx insn;
+{
+  rtx note = REG_NOTES (insn);
+  for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
+    if (REG_NOTE_KIND (note) == REG_INC)
+      invalidate_mems_from_set (pbi, XEXP (note, 0));
+}

@@ -1,0 +1,20 @@
+static void get_smallest_poc(int *poc,int * pos)
+{
+  unsigned i;
+
+  if (dpb.used_size<1)
+  {
+    error("Cannot determine smallest POC, DPB empty.",150);
+  }
+
+  *pos=-1;
+  *poc = INT_MAX;
+  for (i=0; i<dpb.used_size; i++)
+  {
+    if ((*poc>dpb.fs[i]->poc)&&(!dpb.fs[i]->is_output))
+    {
+      *poc = dpb.fs[i]->poc;
+      *pos=i;
+    }
+  }
+}

@@ -1,0 +1,36 @@
+static int
+df_bb_refs_update (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  rtx insn;
+  int count = 0;
+
+  /* While we have to scan the chain of insns for this BB, we don't
+     need to allocate and queue a long chain of BB/INSN pairs.  Using
+     a bitmap for insns_modified saves memory and avoids queuing
+     duplicates.  */
+
+  for (insn = bb->head; ; insn = NEXT_INSN (insn))
+    {
+      unsigned int uid;
+
+      uid = INSN_UID (insn);
+
+      if (bitmap_bit_p (df->insns_modified, uid))
+	{
+	  /* Delete any allocated refs of this insn.  MPH,  FIXME.  */
+	  df_insn_refs_unlink (df, bb, insn);
+
+	  /* Scan the insn for refs.  */
+	  df_insn_refs_record (df, bb, insn);
+
+
+	  bitmap_clear_bit (df->insns_modified, uid);
+	  count++;
+	}
+      if (insn == bb->end)
+	break;
+    }
+  return count;
+}

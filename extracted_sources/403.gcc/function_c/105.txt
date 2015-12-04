@@ -1,0 +1,26 @@
+void
+ggc_mark_struct_function (f)
+     struct function *f;
+{
+  ggc_mark (f);
+  ggc_mark_tree (f->decl);
+
+  mark_function_status (f);
+  mark_eh_status (f->eh);
+  mark_stmt_status (f->stmt);
+  mark_expr_status (f->expr);
+  mark_emit_status (f->emit);
+  mark_varasm_status (f->varasm);
+
+  if (mark_machine_status)
+    (*mark_machine_status) (f);
+  if (mark_lang_status)
+    (*mark_lang_status) (f);
+
+  if (f->original_arg_vector)
+    ggc_mark_rtvec ((rtvec) f->original_arg_vector);
+  if (f->original_decl_initial)
+    ggc_mark_tree (f->original_decl_initial);
+  if (f->outer)
+    ggc_mark_struct_function (f->outer);
+}

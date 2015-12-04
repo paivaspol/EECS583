@@ -1,0 +1,21 @@
+void
+init_flow ()
+{
+  static int initialized;
+
+  first_deleted_edge = 0;
+  first_deleted_block = 0;
+  n_edges = 0;
+
+  if (!initialized)
+    {
+      gcc_obstack_init (&flow_obstack);
+      flow_firstobj = (char *) obstack_alloc (&flow_obstack, 0);
+      initialized = 1;
+    }
+  else
+    {
+      obstack_free (&flow_obstack, flow_firstobj);
+      flow_firstobj = (char *) obstack_alloc (&flow_obstack, 0);
+    }
+}

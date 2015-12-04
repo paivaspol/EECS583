@@ -1,0 +1,15 @@
+static void
+update_header_times (name)
+     const char *name;
+{
+  /* Changing files again.  This means currently collected time
+     is charged against header time, and body time starts back at 0.  */
+  if (flag_detailed_statistics)
+    {
+      int this_time = get_run_time ();
+      struct c_fileinfo *file = get_fileinfo (name);
+      header_time += this_time - body_time;
+      file->time += this_time - body_time;
+      body_time = this_time;
+    }
+}

@@ -1,0 +1,13 @@
+void
+end_protect_partials ()
+{
+  tree t;
+
+  /* Pop the topmost entry.  */
+  t = TREE_VALUE (cfun->eh->protect_list);
+  cfun->eh->protect_list = TREE_CHAIN (cfun->eh->protect_list);
+
+  /* End all the exception regions.  */
+  for (; t; t = TREE_CHAIN (t))
+    expand_eh_region_end_cleanup (TREE_VALUE (t));
+}

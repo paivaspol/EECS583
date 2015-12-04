@@ -1,0 +1,23 @@
+int
+self_promoting_args_p (parms)
+     tree parms;
+{
+  tree t;
+  for (t = parms; t; t = TREE_CHAIN (t))
+    {
+      tree type = TREE_VALUE (t);
+
+      if (TREE_CHAIN (t) == 0 && type != void_type_node)
+	return 0;
+
+      if (type == 0)
+	return 0;
+
+      if (TYPE_MAIN_VARIANT (type) == float_type_node)
+	return 0;
+
+      if (c_promoting_integer_type_p (type))
+	return 0;
+    }
+  return 1;
+}

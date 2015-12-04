@@ -1,0 +1,32 @@
+void char_num( int *dig, int *chr, int length){
+    int j;
+    int bdig[MAX_LENGTH],tenl,newv,old;
+    /* "dig" is array of directions.  "bdig" is array of directions for
+	backwards path. */
+
+  tenl=1;
+  for(j=0;j<length-1;j++) tenl=tenl*10;
+
+  *chr=dig[length-1];
+  for(j=length-2;j>=0;j--) *chr= *chr*10+dig[j];
+
+  /* forward*/
+  old=*chr;
+  for(j=length-1;j>=1;j--){
+       newv=old-tenl*dig[j];
+       newv=newv*10+dig[j];
+       if(newv < *chr) *chr=newv;
+       old=newv;           }
+
+   /* backward*/
+   for(j=0;j<length;j++)bdig[j]=7-dig[length-j-1];
+   old=bdig[length-1];
+   for(j=length-2;j>=0;j--) old=old*10+bdig[j];
+   if(old < *chr ) *chr=old;
+   for(j=length-1;j>=1;j--){
+       newv=old-tenl*bdig[j];
+       newv=newv*10+bdig[j];
+       if(newv < *chr) *chr=newv;
+       old=newv;           }
+
+} /* char_num */

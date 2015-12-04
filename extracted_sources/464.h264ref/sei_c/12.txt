@@ -1,0 +1,51 @@
+void FinalizeSpareMBMap()
+{
+  int CurrFrameNum = img->number % MAX_FN;
+  int delta_frame_num;
+  SyntaxElement sym;
+  Bitstream *dest, *source;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  source = seiSparePicturePayload.data;
+  dest = malloc(sizeof(Bitstream));
+  if ( dest == NULL ) no_mem_exit("FinalizeSpareMBMap: dest");
+  dest->streamBuffer = malloc(MAXRTPPAYLOADLEN);
+  if ( dest->streamBuffer == NULL ) no_mem_exit("FinalizeSpareMBMap: dest->streamBuffer");
+  dest->bits_to_go  = 8;
+  dest->byte_pos    = 0;
+  dest->byte_buf    = 0;
+  memset( dest->streamBuffer, 0, MAXRTPPAYLOADLEN);
+
+  //    delta_frame_num
+  delta_frame_num = CurrFrameNum - seiSparePicturePayload.target_frame_num;
+  if ( delta_frame_num < 0 ) delta_frame_num += MAX_FN;
+  sym.value1 = delta_frame_num;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+
+  // num_spare_pics_minus1
+  sym.value1 = seiSparePicturePayload.num_spare_pics - 1;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+
+  // copy the other bits
+  AppendTmpbits2Buf( dest, source);
+
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiSparePicturePayload.payloadSize = dest->byte_pos;
+
+  // the payload is ready now
+  seiSparePicturePayload.data = dest;
+  free( source->streamBuffer );
+  free( source );
+}

@@ -1,0 +1,136 @@
+void
+quantum_objcode_run(char *file, quantum_reg *reg)
+{
+  int i, j, k, l;
+  FILE *fhd;
+  unsigned char operation;
+  unsigned char buf[OBJBUF_SIZE];
+  MAX_UNSIGNED mu;
+  double d;
+
+  fhd = fopen(file, "r");
+
+  if(!fhd)
+    {
+      fprintf(stderr, "quantum_objcode_run: Could not open %s: ", file);
+      perror(0);
+      return;
+    }
+
+  for(i=0; !feof(fhd); i++)
+    {
+      for(j=0; j<OBJBUF_SIZE; j++)
+	buf[j] = 0;
+      
+      operation = fgetc(fhd);
+      switch(operation)
+	{
+	case INIT:
+	  fread(buf, sizeof(MAX_UNSIGNED), 1, fhd);
+	  mu = quantum_char2mu(buf);
+	  *reg = quantum_new_qureg(mu, 12);
+	  break;
+
+	case CNOT:
+	case COND_PHASE:
+	  fread(buf, sizeof(int), 1, fhd);
+	  j = quantum_char2int(buf);
+	  fread(buf, sizeof(int), 1, fhd);
+	  k = quantum_char2int(buf);
+	  switch(operation)
+	    {
+	    case CNOT: quantum_cnot(j, k, reg);
+	      break;
+	    case COND_PHASE: quantum_cond_phase(j, k, reg);
+	      break;
+	    }
+	  break;
+
+	case TOFFOLI:
+	  fread(buf, sizeof(int), 1, fhd);
+	  j = quantum_char2int(buf);
+	  fread(buf, sizeof(int), 1, fhd);
+	  k = quantum_char2int(buf);
+	  fread(buf, sizeof(int), 1, fhd);
+	  l = quantum_char2int(buf);
+	  quantum_toffoli(j, k, l, reg);
+	  break;
+
+	case SIGMA_X:
+	case SIGMA_Y:
+	case SIGMA_Z:
+	case HADAMARD:
+	case BMEASURE:
+	case BMEASURE_P:
+	case SWAPLEADS:
+	  fread(buf, sizeof(int), 1, fhd);
+	  j = quantum_char2int(buf);
+	  switch(operation)
+	    {
+	    case SIGMA_X: quantum_sigma_x(j, reg);
+	      break;
+	    case SIGMA_Y: quantum_sigma_y(j, reg);
+	      break;
+	    case SIGMA_Z: quantum_sigma_z(j, reg);
+	      break;
+	    case HADAMARD: quantum_hadamard(j, reg);
+	      break;
+	    case BMEASURE: quantum_bmeasure(j, reg);
+	      break;
+	    case BMEASURE_P: quantum_bmeasure_bitpreserve(j, reg);
+	      break;
+	    case SWAPLEADS: quantum_swaptheleads(j, reg);
+	      break;
+	    }
+	  break;
+
+	case ROT_X:
+	case ROT_Y:
+	case ROT_Z:
+	case PHASE_KICK:
+	case PHASE_SCALE:
+	  fread(buf, sizeof(int), 1, fhd);
+	  j = quantum_char2int(buf);
+	  fread(buf, sizeof(double), 1, fhd);
+	  d = quantum_char2double(buf);
+	  switch(operation)
+	    {
+	    case ROT_X: quantum_r_x(j, d, reg);
+	      break;
+	    case ROT_Y: quantum_r_y(j, d, reg);
+	      break;
+	    case ROT_Z: quantum_r_z(j, d, reg);
+	      break;
+	    case PHASE_KICK: quantum_phase_kick(j, d, reg);
+	      break;
+	    case PHASE_SCALE: quantum_phase_scale(j, d, reg);
+	      break;
+	    }
+	  break;
+
+	case CPHASE_KICK:
+	  fread(buf, sizeof(int), 1, fhd);
+	  j = quantum_char2int(buf);
+	  fread(buf, sizeof(int), 1, fhd);
+	  k = quantum_char2int(buf);
+	  fread(buf, sizeof(double), 1, fhd);
+	  d = quantum_char2double(buf);
+	  quantum_cond_phase_kick(j, k, d, reg);
+	  break;
+	  
+	case MEASURE: quantum_measure(*reg);
+	  break;
+
+	case NOP:
+	  break;
+
+	default:
+	  fprintf(stderr, "%i: Unknown opcode 0x(%X)!\n", i, operation);
+	  return;
+	}
+
+    }
+
+  fclose(fhd);
+
+}  

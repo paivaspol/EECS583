@@ -1,0 +1,45 @@
+static int
+flow_loop_exit_edges_find (nodes, exit_edges)
+     const sbitmap nodes;
+     edge **exit_edges;
+{
+  edge e;
+  int node;
+  int num_exits;
+
+  *exit_edges = NULL;
+
+  /* Check all nodes within the loop to see if there are any
+     successors not in the loop.  Note that a node may have multiple
+     exiting edges ?????  A node can have one jumping edge and one fallthru
+     edge so only one of these can exit the loop.  */
+  num_exits = 0;
+  EXECUTE_IF_SET_IN_SBITMAP (nodes, 0, node, {
+    for (e = BASIC_BLOCK (node)->succ; e; e = e->succ_next)
+      {
+	basic_block dest = e->dest;
+
+	if (dest == EXIT_BLOCK_PTR || ! TEST_BIT (nodes, dest->index))
+	    num_exits++;
+      }
+  });
+
+  if (! num_exits)
+    return 0;
+
+  *exit_edges = (edge *) xmalloc (num_exits * sizeof (edge));
+
+  /* Store all exiting edges into an array.  */
+  num_exits = 0;
+  EXECUTE_IF_SET_IN_SBITMAP (nodes, 0, node, {
+    for (e = BASIC_BLOCK (node)->succ; e; e = e->succ_next)
+      {
+	basic_block dest = e->dest;
+
+	if (dest == EXIT_BLOCK_PTR || ! TEST_BIT (nodes, dest->index))
+	  (*exit_edges)[num_exits++] = e;
+      }
+  });
+
+  return num_exits;
+}

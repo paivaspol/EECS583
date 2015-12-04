@@ -1,0 +1,52 @@
+void
+instantiate_virtual_regs (fndecl, insns)
+     tree fndecl;
+     rtx insns;
+{
+  rtx insn;
+  unsigned int i;
+
+  /* Compute the offsets to use for this function.  */
+  in_arg_offset = FIRST_PARM_OFFSET (fndecl);
+  var_offset = STARTING_FRAME_OFFSET;
+  dynamic_offset = STACK_DYNAMIC_OFFSET (fndecl);
+  out_arg_offset = STACK_POINTER_OFFSET;
+  cfa_offset = ARG_POINTER_CFA_OFFSET (fndecl);
+
+  /* Scan all variables and parameters of this function.  For each that is
+     in memory, instantiate all virtual registers if the result is a valid
+     address.  If not, we do it later.  That will handle most uses of virtual
+     regs on many machines.  */
+  instantiate_decls (fndecl, 1);
+
+  /* Initialize recognition, indicating that volatile is OK.  */
+  init_recog ();
+
+  /* Scan through all the insns, instantiating every virtual register still
+     present.  */
+  for (insn = insns; insn; insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == INSN || GET_CODE (insn) == JUMP_INSN
+	|| GET_CODE (insn) == CALL_INSN)
+      {
+	instantiate_virtual_regs_1 (&PATTERN (insn), insn, 1);
+	instantiate_virtual_regs_1 (&REG_NOTES (insn), NULL_RTX, 0);
+	/* Instantiate any virtual registers in CALL_INSN_FUNCTION_USAGE.  */
+	if (GET_CODE (insn) == CALL_INSN)
+	  instantiate_virtual_regs_1 (&CALL_INSN_FUNCTION_USAGE (insn),
+				      NULL_RTX, 0);
+      }
+
+  /* Instantiate the stack slots for the parm registers, for later use in
+     addressof elimination.  */
+  for (i = 0; i < max_parm_reg; ++i)
+    if (parm_reg_stack_loc[i])
+      instantiate_virtual_regs_1 (&parm_reg_stack_loc[i], NULL_RTX, 0);
+
+  /* Now instantiate the remaining register equivalences for debugging info.
+     These will not be valid addresses.  */
+  instantiate_decls (fndecl, 0);
+
+  /* Indicate that, from now on, assign_stack_local should use
+     frame_pointer_rtx.  */
+  virtuals_instantiated = 1;
+}

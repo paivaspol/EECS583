@@ -1,0 +1,31 @@
+static void
+output_die (die_specific_output_function, param)
+     void (*die_specific_output_function) PARAMS ((void *));
+     void *param;
+{
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  current_dienum = NEXT_DIE_NUM;
+  NEXT_DIE_NUM = next_unused_dienum;
+
+  sprintf (begin_label, DIE_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, DIE_END_LABEL_FMT, current_dienum);
+
+  /* Write a label which will act as the name for the start of this DIE.  */
+
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+
+  /* Write the DIE-length word.	 */
+
+  ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, end_label, begin_label);
+
+  /* Fill in the guts of the DIE.  */
+
+  next_unused_dienum++;
+  die_specific_output_function (param);
+
+  /* Write a label which will act as the name for the end of this DIE.	*/
+
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

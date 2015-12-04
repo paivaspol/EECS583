@@ -1,0 +1,122 @@
+static void
+insert_expr_in_table (x, mode, insn, antic_p, avail_p)
+     rtx x;
+     enum machine_mode mode;
+     rtx insn;
+     int antic_p, avail_p;
+{
+  int found, do_not_record_p;
+  unsigned int hash;
+  struct expr *cur_expr, *last_expr = NULL;
+  struct occr *antic_occr, *avail_occr;
+  struct occr *last_occr = NULL;
+
+  hash = hash_expr (x, mode, &do_not_record_p, expr_hash_table_size);
+
+  /* Do not insert expression in table if it contains volatile operands,
+     or if hash_expr determines the expression is something we don't want
+     to or can't handle.  */
+  if (do_not_record_p)
+    return;
+
+  cur_expr = expr_hash_table[hash];
+  found = 0;
+
+  while (cur_expr && 0 == (found = expr_equiv_p (cur_expr->expr, x)))
+    {
+      /* If the expression isn't found, save a pointer to the end of
+	 the list.  */
+      last_expr = cur_expr;
+      cur_expr = cur_expr->next_same_hash;
+    }
+
+  if (! found)
+    {
+      cur_expr = (struct expr *) gcse_alloc (sizeof (struct expr));
+      bytes_used += sizeof (struct expr);
+      if (expr_hash_table[hash] == NULL)
+	/* This is the first pattern that hashed to this index.  */
+	expr_hash_table[hash] = cur_expr;
+      else
+	/* Add EXPR to end of this hash chain.  */
+	last_expr->next_same_hash = cur_expr;
+
+      /* Set the fields of the expr element.  */ 
+      cur_expr->expr = x;
+      cur_expr->bitmap_index = n_exprs++;
+      cur_expr->next_same_hash = NULL;
+      cur_expr->antic_occr = NULL;
+      cur_expr->avail_occr = NULL;
+    }
+
+  /* Now record the occurrence(s).  */
+  if (antic_p)
+    {
+      antic_occr = cur_expr->antic_occr;
+
+      /* Search for another occurrence in the same basic block.  */
+      while (antic_occr && BLOCK_NUM (antic_occr->insn) != BLOCK_NUM (insn))
+	{
+	  /* If an occurrence isn't found, save a pointer to the end of
+	     the list.  */
+	  last_occr = antic_occr;
+	  antic_occr = antic_occr->next;
+	}
+
+      if (antic_occr)
+	/* Found another instance of the expression in the same basic block.
+	   Prefer the currently recorded one.  We want the first one in the
+	   block and the block is scanned from start to end.  */
+	; /* nothing to do */
+      else
+	{
+	  /* First occurrence of this expression in this basic block.  */
+	  antic_occr = (struct occr *) gcse_alloc (sizeof (struct occr));
+	  bytes_used += sizeof (struct occr);
+	  /* First occurrence of this expression in any block?  */
+	  if (cur_expr->antic_occr == NULL)
+	    cur_expr->antic_occr = antic_occr;
+	  else
+	    last_occr->next = antic_occr;
+
+	  antic_occr->insn = insn;
+	  antic_occr->next = NULL;
+	}
+    }
+
+  if (avail_p)
+    {
+      avail_occr = cur_expr->avail_occr;
+
+      /* Search for another occurrence in the same basic block.  */
+      while (avail_occr && BLOCK_NUM (avail_occr->insn) != BLOCK_NUM (insn))
+	{
+	  /* If an occurrence isn't found, save a pointer to the end of
+	     the list.  */
+	  last_occr = avail_occr;
+	  avail_occr = avail_occr->next;
+	}
+
+      if (avail_occr)
+	/* Found another instance of the expression in the same basic block.
+	   Prefer this occurrence to the currently recorded one.  We want
+	   the last one in the block and the block is scanned from start
+	   to end.  */
+	avail_occr->insn = insn;
+      else
+	{
+	  /* First occurrence of this expression in this basic block.  */
+	  avail_occr = (struct occr *) gcse_alloc (sizeof (struct occr));
+	  bytes_used += sizeof (struct occr);
+
+	  /* First occurrence of this expression in any block?  */
+	  if (cur_expr->avail_occr == NULL)
+	    cur_expr->avail_occr = avail_occr;
+	  else
+	    last_occr->next = avail_occr;
+
+	  avail_occr->insn = insn;
+	  avail_occr->next = NULL;
+	}
+    }
+}

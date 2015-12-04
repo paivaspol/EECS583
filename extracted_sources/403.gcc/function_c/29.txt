@@ -1,0 +1,47 @@
+static void
+fixup_var_refs_insns (insn, var, promoted_mode, unsignedp, toplevel, may_share)
+     rtx insn;
+     rtx var;
+     enum machine_mode promoted_mode;
+     int unsignedp;
+     int toplevel;
+     rtx may_share;
+{
+  while (insn)
+    {
+      /* fixup_var_refs_insn might modify insn, so save its next
+         pointer now.  */
+      rtx next = NEXT_INSN (insn);
+
+      /* CALL_PLACEHOLDERs are special; we have to switch into each of
+	 the three sequences they (potentially) contain, and process
+	 them recursively.  The CALL_INSN itself is not interesting.  */
+
+      if (GET_CODE (insn) == CALL_INSN
+	  && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	{
+	  int i;
+
+	  /* Look at the Normal call, sibling call and tail recursion
+	     sequences attached to the CALL_PLACEHOLDER.  */
+	  for (i = 0; i < 3; i++)
+	    {
+	      rtx seq = XEXP (PATTERN (insn), i);
+	      if (seq)
+		{
+		  push_to_sequence (seq);
+		  fixup_var_refs_insns (seq, var, promoted_mode, unsignedp, 0,
+					may_share);
+		  XEXP (PATTERN (insn), i) = get_insns ();
+		  end_sequence ();
+		}
+	    }
+	}
+
+      else if (INSN_P (insn))
+	fixup_var_refs_insn (insn, var, promoted_mode, unsignedp, toplevel,
+			     may_share);
+
+      insn = next;
+    }
+}

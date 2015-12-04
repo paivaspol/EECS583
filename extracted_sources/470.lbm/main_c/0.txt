@@ -1,0 +1,35 @@
+int main( int nArgs, char* arg[] ) {
+	MAIN_Param param;
+#if !defined(SPEC_CPU)
+	MAIN_Time time;
+#endif
+	int t;
+
+	MAIN_parseCommandLine( nArgs, arg, &param );
+	MAIN_printInfo( &param );
+	MAIN_initialize( &param );
+#if !defined(SPEC_CPU)
+	MAIN_startClock( &time );
+#endif
+
+	for( t = 1; t <= param.nTimeSteps; t++ ) {
+		if( param.simType == CHANNEL ) {
+			LBM_handleInOutFlow( *srcGrid );
+		}
+
+		LBM_performStreamCollide( *srcGrid, *dstGrid );
+		LBM_swapGrids( &srcGrid, &dstGrid );
+
+		if( (t & 63) == 0 ) {
+			printf( "timestep: %i\n", t );
+			LBM_showGridStatistics( *srcGrid );
+		}
+	}
+
+#if !defined(SPEC_CPU)
+	MAIN_stopClock( &time, &param );
+#endif
+	MAIN_finalize( &param );
+
+	return 0;
+}

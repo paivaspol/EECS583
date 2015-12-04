@@ -1,0 +1,78 @@
+int BIDPartitionCost (int   blocktype,
+                      int   block8x8,
+                      short fw_ref,
+                      short bw_ref,
+                      int   lambda_factor)
+{
+  static int  bx0[5][4] = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,2,0,0}, {0,2,0,2}};
+  static int  by0[5][4] = {{0,0,0,0}, {0,0,0,0}, {0,2,0,0}, {0,0,0,0}, {0,0,2,2}};
+
+  // tchen 4-29-04
+  int   diff[64];
+  int   curr_blk[MB_BLOCK_SIZE][MB_BLOCK_SIZE]; // ABT pred.error buffer
+  int   bsx       = min(input->blc_size[blocktype][0],8);
+  int   bsy       = min(input->blc_size[blocktype][1],8);
+  // tchen 4-29-04 end
+   int   pic_pix_x, pic_pix_y, block_x, block_y;
+  int   v, h, mcost, i, j, k;
+  int   mvd_bits  = 0;
+  int   parttype  = (blocktype<4?blocktype:4);
+  int   step_h0   = (input->part_size[ parttype][0]);
+  int   step_v0   = (input->part_size[ parttype][1]);
+  int   step_h    = (input->part_size[blocktype][0]);
+  int   step_v    = (input->part_size[blocktype][1]);
+  int   bxx, byy;                               // indexing curr_blk
+
+  short   ******all_mv = img->all_mv;
+  short   ******  p_mv = img->pred_mv;
+
+  //----- cost for motion vector bits -----
+  for (v=by0[parttype][block8x8]; v<by0[parttype][block8x8]+step_v0; v+=step_v)
+  for (h=bx0[parttype][block8x8]; h<bx0[parttype][block8x8]+step_h0; h+=step_h)
+  {
+    mvd_bits += mvbits[ all_mv [h][v][LIST_0][fw_ref][blocktype][0] - p_mv[h][v][LIST_0][fw_ref][blocktype][0] ];
+    mvd_bits += mvbits[ all_mv [h][v][LIST_0][fw_ref][blocktype][1] - p_mv[h][v][LIST_0][fw_ref][blocktype][1] ];
+
+    mvd_bits += mvbits[ all_mv [h][v][LIST_1][bw_ref][blocktype][0] - p_mv[h][v][LIST_1][bw_ref][blocktype][0] ];
+    mvd_bits += mvbits[ all_mv [h][v][LIST_1][bw_ref][blocktype][1] - p_mv[h][v][LIST_1][bw_ref][blocktype][1] ];
+  }
+
+  mcost = WEIGHTED_COST (lambda_factor, mvd_bits);
+
+  //----- cost of residual signal -----
+  for (byy=0, v=by0[parttype][block8x8]; v<by0[parttype][block8x8]+step_v0; byy+=4, v++)
+  {
+    pic_pix_y = img->opix_y + (block_y = (v<<2));
+
+    for (bxx=0, h=bx0[parttype][block8x8]; h<bx0[parttype][block8x8]+step_h0; bxx+=4, h++)
+    {
+      pic_pix_x = img->opix_x + (block_x = (h<<2));
+
+      LumaPrediction4x4 (block_x, block_y, 2, blocktype, blocktype, fw_ref, bw_ref);
+
+      for (k=j=0; j<4; j++)
+      for (  i=0; i<4; i++, k++)
+      {
+        diff[k] = curr_blk[byy+j][bxx+i] = 
+        imgY_org[pic_pix_y+j][pic_pix_x+i] - img->mpr[i+block_x][j+block_y];
+      }
+      if ((!input->AllowTransform8x8) || (blocktype>4)) // tchen 4-29-04
+        mcost += SATD (diff, input->hadamard);
+    }
+  }
+
+  if (input->AllowTransform8x8 && (blocktype<=4))  // tchen 4-29-04
+  {
+    for (byy=0; byy<input->blc_size[parttype][1]; byy+=bsy)
+      for (bxx=0; bxx<input->blc_size[parttype][0]; bxx+=bsx)
+      {
+        k=0;
+        for (i=0;i<8;i++)
+          for (j=0;j<8;j++)
+            diff[k++] = curr_blk[i+byy][j+bxx];
+
+        mcost += SATD8X8(diff, input->hadamard);
+      }
+  }
+  return mcost;
+}

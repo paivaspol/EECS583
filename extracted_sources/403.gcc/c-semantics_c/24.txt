@@ -1,0 +1,107 @@
+void
+expand_stmt (t)
+     tree t;
+{
+  while (t && t != error_mark_node)
+    {
+      int saved_stmts_are_full_exprs_p;
+
+      /* Set up context appropriately for handling this statement.  */
+      saved_stmts_are_full_exprs_p = stmts_are_full_exprs_p ();
+      prep_stmt (t);
+
+      switch (TREE_CODE (t))
+	{
+	case FILE_STMT:
+	  input_filename = FILE_STMT_FILENAME (t);
+	  break;
+
+	case RETURN_STMT:
+	  genrtl_return_stmt (t);
+	  break;
+
+	case EXPR_STMT:
+	  genrtl_expr_stmt_value (EXPR_STMT_EXPR (t), TREE_ADDRESSABLE (t),
+				  TREE_CHAIN (t) == NULL
+				  || (TREE_CODE (TREE_CHAIN (t)) == SCOPE_STMT
+				      && TREE_CHAIN (TREE_CHAIN (t)) == NULL));
+	  break;
+
+	case DECL_STMT:
+	  genrtl_decl_stmt (t);
+	  break;
+
+	case FOR_STMT:
+	  genrtl_for_stmt (t);
+	  break;
+
+	case WHILE_STMT:
+	  genrtl_while_stmt (t);
+	  break;
+
+	case DO_STMT:
+	  genrtl_do_stmt (t);
+	  break;
+
+	case IF_STMT:
+	  genrtl_if_stmt (t);
+	  break;
+
+	case COMPOUND_STMT:
+	  genrtl_compound_stmt (t);
+	  break;
+
+	case BREAK_STMT:
+	  genrtl_break_stmt ();
+	  break;
+
+	case CONTINUE_STMT:
+	  genrtl_continue_stmt ();
+	  break;
+
+	case SWITCH_STMT:
+	  genrtl_switch_stmt (t);
+	  break;
+
+	case CASE_LABEL:
+	  genrtl_case_label (t);
+	  break;
+
+	case LABEL_STMT:
+	  expand_label (LABEL_STMT_LABEL (t));
+	  break;
+
+	case GOTO_STMT:
+	  genrtl_goto_stmt (GOTO_DESTINATION (t));
+	  break;
+
+	case ASM_STMT:
+	  genrtl_asm_stmt (ASM_CV_QUAL (t), ASM_STRING (t),
+			   ASM_OUTPUTS (t), ASM_INPUTS (t),
+			   ASM_CLOBBERS (t), ASM_INPUT_P (t));
+	  break;
+
+	case SCOPE_STMT:
+	  genrtl_scope_stmt (t);
+	  break;
+
+	case CLEANUP_STMT:
+	  genrtl_decl_cleanup (t);
+	  break;
+
+	default:
+	  if (lang_expand_stmt)
+	    (*lang_expand_stmt) (t);
+	  else 
+	    abort ();
+	  break;
+	}
+
+      /* Restore saved state.  */
+      current_stmt_tree ()->stmts_are_full_exprs_p
+	= saved_stmts_are_full_exprs_p;
+
+      /* Go on to the next statement in this scope.  */
+      t = TREE_CHAIN (t);
+    }
+}

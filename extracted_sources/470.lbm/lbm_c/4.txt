@@ -1,0 +1,17 @@
+void LBM_loadObstacleFile( LBM_Grid grid, const char* filename ) {
+	int x,  y,  z;
+
+	FILE* file = fopen( filename, "rb" );
+
+	for( z = 0; z < SIZE_Z; z++ ) {
+		for( y = 0; y < SIZE_Y; y++ ) {
+			for( x = 0; x < SIZE_X; x++ ) {
+				if( fgetc( file ) != '.' ) SET_FLAG( grid, x, y, z, OBSTACLE );
+			}
+			fgetc( file );
+		}
+		fgetc( file );
+	}
+
+	fclose( file );
+}

@@ -1,0 +1,69 @@
+int RDCost_for_4x4Blocks_Chroma (int     b8,
+                                 int     b4,
+                                 int  chroma)
+{
+  int     rate=0;
+
+  Slice          *currSlice    =  img->currentSlice;
+  Macroblock     *currMB       = &img->mb_data[img->current_mb_nr];
+  SyntaxElement  *currSE       = &img->MB_SyntaxElements[currMB->currSEnr];
+  const int      *partMap      = assignSE2partition[input->partition_mode];
+  int uv;
+
+  //===== perform DCT, Q, IQ, IDCT, Reconstruction =====
+  if(b8 > 7) 
+    uv = 1;
+  else 
+    uv = 0;
+
+  cbp_chroma_block_temp[uv][2*((b8-4*(uv+1))%2)+(b4%2)][2*((b8-4*(uv+1))/2)+(b4/2)] = dct_chroma4x4 (chroma, b8, b4);
+
+  store_coding_state (cs_cm);
+  //===== RATE for LUMINANCE COEFFICIENTS =====
+  if (input->symbol_mode == UVLC)
+  {
+    rate  = writeCoeff4x4_CAVLC (CHROMA_AC, b8, b4, ((2*(b8%2)+b4%2)<<4) | (2*(b8/2)+(b4/2)));
+  }
+  else
+  {
+    int * ACLevel, * ACRun;
+    int level, run, k;
+    DataPartition*  dataPart;
+    int*            bitCount  = currMB->bitcounter;
+    ACLevel = img->cofAC[b8][b4][0];
+    ACRun   = img->cofAC[b8][b4][1];
+    
+    level=1;
+    
+    img->subblock_y = b4/2;
+    img->subblock_x = b4%2;
+
+    for (k=0; k < 17 && level != 0; k++)
+    {
+      level = currSE->value1 = ACLevel[k]; // level
+      run   = currSE->value2 = ACRun  [k]; // run
+
+      if (input->symbol_mode == UVLC)   currSE->mapping = levrun_linfo_inter;
+      else                              currSE->writing = writeRunLevel_CABAC;
+
+      currSE->context     = CHROMA_AC;
+      currSE->type        = SE_CHR_AC_INTRA;
+
+      img->is_intra_block =  IS_INTRA(currMB);
+      img->is_v_block     = uv;
+
+      // choose the appropriate data partition
+      dataPart = &(currSlice->partArr[partMap[currSE->type]]); 
+      dataPart->writeSyntaxElement (currSE, dataPart);
+      bitCount[BITS_COEFF_UV_MB] += currSE->len;
+      rate                       += currSE->len;
+
+      // proceed to next SE
+      currSE++;
+      currMB->currSEnr++;
+    }
+  }
+  reset_coding_state (cs_cm);
+
+  return rate;
+}

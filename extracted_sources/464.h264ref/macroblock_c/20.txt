@@ -1,0 +1,38 @@
+int
+MBType2Value (Macroblock* currMB)
+{
+  static const int dir1offset[3]    =  { 1,  2, 3};
+  static const int dir2offset[3][3] = {{ 0,  4,  8},   // 1. block forward
+                                       { 6,  2, 10},   // 1. block backward
+                                       {12, 14, 16}};  // 1. block bi-directional
+
+  int mbtype, pdir0, pdir1;
+
+  if (img->type!=B_SLICE)
+  {
+    if      (currMB->mb_type==I8MB ||currMB->mb_type==I4MB)
+      return (img->type==I_SLICE ? 0 : 6);
+    else if (currMB->mb_type==I16MB)    return (img->type==I_SLICE ? 0 : 6) + img->i16offset;
+    else if (currMB->mb_type==P8x8)
+    {
+      if (input->symbol_mode==UVLC && ZeroRef (currMB))  return 5;
+      else                                               return 4;
+    }
+    else                                return currMB->mb_type;
+  }
+  else
+  {
+    mbtype = currMB->mb_type;
+    pdir0  = currMB->b8pdir[0];
+    pdir1  = currMB->b8pdir[3];
+
+    if      (mbtype==0)       return 0;
+    else if (mbtype==I4MB || mbtype==I8MB)
+      return 23;
+    else if (mbtype==I16MB)   return 23 + img->i16offset;
+    else if (mbtype==P8x8)    return 22;
+    else if (mbtype==1)       return dir1offset[pdir0];
+    else if (mbtype==2)       return 4 + dir2offset[pdir0][pdir1];
+    else                      return 5 + dir2offset[pdir0][pdir1];
+  }
+}

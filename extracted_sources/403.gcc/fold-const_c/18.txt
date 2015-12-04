@@ -1,0 +1,23 @@
+int
+exact_real_inverse (mode, r)
+     enum machine_mode mode;
+     REAL_VALUE_TYPE *r;
+{
+  struct exact_real_inverse_args args;
+
+  /* Disable if insufficient information on the data structure.  */
+#if HOST_FLOAT_FORMAT == UNKNOWN_FLOAT_FORMAT
+  return 0;
+#endif
+
+  /* Usually disable if bounds checks are not reliable.  */
+  if ((HOST_FLOAT_FORMAT != TARGET_FLOAT_FORMAT) && !flag_pretend_float)
+    return 0;
+
+  args.mode = mode;
+  args.r = r;
+
+  if (do_float_handler (exact_real_inverse_1, (PTR) &args))
+    return args.success;
+  return 0;
+}

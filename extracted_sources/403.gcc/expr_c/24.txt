@@ -1,0 +1,36 @@
+static void
+store_by_pieces_2 (genfun, mode, data)
+     rtx (*genfun) PARAMS ((rtx, ...));
+     enum machine_mode mode;
+     struct store_by_pieces *data;
+{
+  unsigned int size = GET_MODE_SIZE (mode);
+  rtx to1, cst;
+
+  while (data->len >= size)
+    {
+      if (data->reverse)
+	data->offset -= size;
+
+      if (data->autinc_to)
+	to1 = adjust_automodify_address (data->to, mode, data->to_addr,
+					 data->offset);
+      else
+	to1 = adjust_address (data->to, mode, data->offset);
+
+      if (HAVE_PRE_DECREMENT && data->explicit_inc_to < 0)
+	emit_insn (gen_add2_insn (data->to_addr,
+				  GEN_INT (-(HOST_WIDE_INT) size)));
+
+      cst = (*data->constfun) (data->constfundata, data->offset, mode);
+      emit_insn ((*genfun) (to1, cst));
+
+      if (HAVE_POST_INCREMENT && data->explicit_inc_to > 0)
+	emit_insn (gen_add2_insn (data->to_addr, GEN_INT (size)));
+
+      if (! data->reverse)
+	data->offset += size;
+
+      data->len -= size;
+    }
+}

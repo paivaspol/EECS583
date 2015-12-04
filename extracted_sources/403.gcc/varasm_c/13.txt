@@ -1,0 +1,18 @@
+static void
+asm_output_bss (file, decl, name, size, rounded)
+     FILE *file;
+     tree decl ATTRIBUTE_UNUSED;
+     const char *name;
+     int size ATTRIBUTE_UNUSED, rounded;
+{
+  ASM_GLOBALIZE_LABEL (file, name);
+  bss_section ();
+#ifdef ASM_DECLARE_OBJECT_NAME
+  last_assemble_variable_decl = decl;
+  ASM_DECLARE_OBJECT_NAME (file, name, decl);
+#else
+  /* Standard thing is just output label for the object.  */
+  ASM_OUTPUT_LABEL (file, name);
+#endif /* ASM_DECLARE_OBJECT_NAME */
+  ASM_OUTPUT_SKIP (file, rounded ? rounded : 1);
+}

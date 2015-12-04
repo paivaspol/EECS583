@@ -1,0 +1,20 @@
+static int
+report_missing_guard (n, b)
+     splay_tree_node n;
+     void *b;
+{
+  struct include_file *f = (struct include_file *) n->value;
+  int *bannerp = (int *)b;
+
+  if (f && f->cmacro == 0 && f->include_count == 1)
+    {
+      if (*bannerp == 0)
+	{
+	  fputs (_("Multiple include guards may be useful for:\n"), stderr);
+	  *bannerp = 1;
+	}
+      fputs (f->name, stderr);
+      putc ('\n', stderr);
+    }
+  return 0;
+}

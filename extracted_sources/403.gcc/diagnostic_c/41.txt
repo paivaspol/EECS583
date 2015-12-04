@@ -1,0 +1,29 @@
+static void
+diagnostic_for_decl (decl, msgid, args_ptr, warn)
+     tree decl;
+     const char *msgid;
+     va_list *args_ptr;
+     int warn;
+{
+  output_state os;
+
+  if (diagnostic_lock++)
+    error_recursion ();
+
+  if (count_error (warn))
+    {
+      os = output_buffer_state (diagnostic_buffer);
+      report_error_function (DECL_SOURCE_FILE (decl));
+      output_set_prefix
+	(diagnostic_buffer, context_as_prefix
+	 (DECL_SOURCE_FILE (decl), DECL_SOURCE_LINE (decl), warn));
+      output_buffer_ptr_to_format_args (diagnostic_buffer) = args_ptr;
+      output_buffer_text_cursor (diagnostic_buffer) = _(msgid);
+      format_with_decl (diagnostic_buffer, decl);
+      diagnostic_finish ((output_buffer *) global_dc);
+      output_destroy_prefix (diagnostic_buffer);
+  
+      output_buffer_state (diagnostic_buffer) = os;
+    }
+  diagnostic_lock--;
+}

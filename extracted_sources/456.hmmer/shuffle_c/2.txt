@@ -1,0 +1,28 @@
+int 
+StrMarkov0(char *s1, char *s2)
+{
+  int   len;
+  int   pos; 
+  float p[26];			/* symbol probabilities */
+
+  /* First, verify that the string is entirely alphabetic.
+   */
+  len = strlen(s2);
+  for (pos = 0; pos < len; pos++)
+    if (! isalpha((int) s2[pos])) return 0;
+
+  /* Collect zeroth order counts and convert to frequencies.
+   */
+  FSet(p, 26, 0.);
+  for (pos = 0; pos < len; pos++)
+    p[(int)(toupper((int) s2[pos]) - 'A')] += 1.0;
+  FNorm(p, 26);
+
+  /* Generate a random string using those p's.
+   */
+  for (pos = 0; pos < len; pos++)
+    s1[pos] = FChoose(p, 26) + 'A';
+  s1[pos] = '\0';
+
+  return 1;
+}

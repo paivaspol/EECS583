@@ -1,0 +1,332 @@
+static float
+get_wee_midpt(struct plan7_s *hmm, char *dsq, int L, 
+	      int k1, char t1, int s1,
+	      int k3, char t3, int s3,
+	      int *ret_k2, char *ret_t2, int *ret_s2)
+{
+  struct dpmatrix_s *fwd;
+  struct dpmatrix_s *bck;
+  int        **xmx;             /* convenience ptr into special states */
+  int        **mmx;             /* convenience ptr into match states   */
+  int        **imx;             /* convenience ptr into insert states  */
+  int        **dmx;             /* convenience ptr into delete states  */
+  int          k2;
+  char         t2;
+  int          s2;
+  int          cur, prv, nxt;	/* current, previous, next row index (0 or 1)*/
+  int          i,k;		/* indices for seq, model */
+  int          sc;		/* integer score */
+  int          max;		/* maximum integer score */
+  int          start;		/* s1 to start at (need, for STS special case) */
+
+ 
+  /* Choose our midpoint.
+   * Special cases: s1, s3 adjacent and t1 == STS: s2 = s1
+   *                s1, s3 adjacent and t3 == STT: s2 = s3
+   *                (where we must replace STS, STT eventually)
+   */
+  s2 = s1 + (s3-s1) / 2;
+  if (s3-s1 == 1 && t1 == STS) s2 = s1;
+  if (s3-s1 == 1 && t3 == STT) s2 = s3;
+
+  /* STS is a special case. STS aligns to row zero by convention,
+   * but we'll be passed s1=1, t1=STS. We have to init on row
+   * zero then start DP on row 1.
+   */
+  start = (t1 == STS) ? 0 : s1;
+
+  /* Allocate our forward two rows.
+   * Initialize row zero.
+   */
+  fwd = AllocPlan7Matrix(2, hmm->M, &xmx, &mmx, &imx, &dmx);
+  cur = start%2;
+  xmx[cur][XMN] = xmx[cur][XMB] = -INFTY;
+  xmx[cur][XME] = xmx[cur][XMC] = -INFTY;  
+  for (k = k1; k <= k3; k++)
+    mmx[cur][k] = imx[cur][k] = dmx[cur][k] = -INFTY;      
+
+  /* Where to put our zero for our start point...
+   * (only possible to start on an emitting state; J disallowed)
+   */
+  switch (t1) {
+  case STM: mmx[cur][k1]  = 0; break;
+  case STI: imx[cur][k1]  = 0; break;
+  case STN: xmx[cur][XMN] = 0; break;
+  case STC: xmx[cur][XMC] = 0; break;
+  case STS: xmx[cur][XMN] = 0; break;
+  default:  Die("you can't init get_wee_midpt with a %s\n", Statetype(t1));
+  }
+
+  /* Still initializing.
+   * Deal with pulling horizontal matrix moves in initial row.
+   * These are any transitions to nonemitters:
+   *    STM-> E, D
+   *    STI-> none
+   *    STN-> B
+   *    STC-> (T, but we never observe this in the forward pass of a d&c)
+   *    STE-> C
+   *    STS-> (N, already implied by setting xmx[cur][XMN] = 0)
+   *    STB-> M
+   */ 
+  if (t1 == STM)
+    {
+      for (k = k1+1; k <= k3; k++)
+	{				/* transits into STD */
+	  dmx[cur][k] = -INFTY;
+	  if ((sc = mmx[cur][k-1] + hmm->tsc[TMD][k-1]) > -INFTY)
+	    dmx[cur][k] = sc;
+	  if ((sc = dmx[cur][k-1] + hmm->tsc[TDD][k-1]) > dmx[cur][k])
+	    dmx[cur][k] = sc;
+	}
+				/* transit into STE */
+      xmx[cur][XME] = -INFTY;
+      if ((sc = mmx[cur][k1] + hmm->esc[k1]) > -INFTY)
+	xmx[cur][XME] = sc;
+    }
+				/* transit into STB from STN */
+  xmx[cur][XMB] = -INFTY;
+  if ((sc = xmx[cur][XMN] + hmm->xsc[XTN][MOVE]) > -INFTY)
+    xmx[cur][XMB] = sc;
+				/* transit into STC from STE */
+  xmx[cur][XMC] = -INFTY;
+  if ((sc = xmx[cur][XME] + hmm->xsc[XTE][MOVE]) > -INFTY)
+    xmx[cur][XMC] = sc;
+  
+  /* Done initializing.
+   * Start recursive DP; sweep forward to chosen s2 midpoint. Done as a pull.
+   */
+  for (i = start+1; i <= s2; i++) {
+    cur = i % 2;
+    prv = !cur;
+
+    mmx[cur][k1] = imx[cur][k1] = dmx[cur][k1] = -INFTY;
+
+    /* Insert state in column k1, and B->M transition in k1.
+     */
+    if (k1 < hmm->M) {
+      imx[cur][k1] = -INFTY;
+      if ((sc = mmx[prv][k1] + hmm->tsc[TMI][k1]) > -INFTY)
+	imx[cur][k1] = sc;
+      if ((sc = imx[prv][k1] + hmm->tsc[TII][k1]) > imx[cur][k1])
+	imx[cur][k1] = sc;
+      if (hmm->isc[(int) dsq[i]][k1] != -INFTY)
+	imx[cur][k1] += hmm->isc[(int) dsq[i]][k1];
+      else
+	imx[cur][k1] = -INFTY;
+    }
+    if ((sc = xmx[prv][XMB] + hmm->bsc[k1]) > -INFTY)
+      mmx[cur][k1] = sc;
+    if (hmm->msc[(int) dsq[i]][k1] != -INFTY)
+      mmx[cur][k1] += hmm->msc[(int) dsq[i]][k1];
+    else
+      mmx[cur][k1] = -INFTY;
+
+    /* Main chunk of recursion across model positions
+     */
+    for (k = k1+1; k <= k3; k++) {
+				/* match state */
+      mmx[cur][k]  = -INFTY;
+      if ((sc = mmx[prv][k-1] + hmm->tsc[TMM][k-1]) > -INFTY)
+	mmx[cur][k] = sc;
+      if ((sc = imx[prv][k-1] + hmm->tsc[TIM][k-1]) > mmx[cur][k])
+	mmx[cur][k] = sc;
+      if ((sc = xmx[prv][XMB] + hmm->bsc[k]) > mmx[cur][k])
+	mmx[cur][k] = sc;
+      if ((sc = dmx[prv][k-1] + hmm->tsc[TDM][k-1]) > mmx[cur][k])
+	mmx[cur][k] = sc;
+      if (hmm->msc[(int) dsq[i]][k] != -INFTY)
+	mmx[cur][k] += hmm->msc[(int) dsq[i]][k];
+      else
+	mmx[cur][k] = -INFTY;
+
+				/* delete state */
+      dmx[cur][k] = -INFTY;
+      if (k < hmm->M) {
+	if ((sc = mmx[cur][k-1] + hmm->tsc[TMD][k-1]) > -INFTY)
+	  dmx[cur][k] = sc;
+	if ((sc = dmx[cur][k-1] + hmm->tsc[TDD][k-1]) > dmx[cur][k])
+	  dmx[cur][k] = sc;
+      }
+
+				/* insert state */
+      imx[cur][k] = -INFTY;
+      if (k < hmm->M) {
+	if ((sc = mmx[prv][k] + hmm->tsc[TMI][k]) > -INFTY)
+	  imx[cur][k] = sc;
+	if ((sc = imx[prv][k] + hmm->tsc[TII][k]) > imx[cur][k])
+	  imx[cur][k] = sc;
+	if (hmm->isc[(int) dsq[i]][k] != -INFTY)
+	  imx[cur][k] += hmm->isc[(int) dsq[i]][k];
+	else
+	  imx[cur][k] = -INFTY;
+      }
+    }
+				/* N state */
+    xmx[cur][XMN] = -INFTY;
+    if ((sc = xmx[prv][XMN] + hmm->xsc[XTN][LOOP]) > -INFTY)
+      xmx[cur][XMN] = sc;
+				/* E state */
+    xmx[cur][XME] = -INFTY;
+    for (k = k1; k <= k3 && k <= hmm->M; k++)
+      if ((sc =  mmx[cur][k] + hmm->esc[k]) > xmx[cur][XME])
+	xmx[cur][XME] = sc;
+				/* B state */
+    xmx[cur][XMB] = -INFTY;
+    if ((sc = xmx[cur][XMN] + hmm->xsc[XTN][MOVE]) > -INFTY)
+      xmx[cur][XMB] = sc;
+				/* C state */
+    xmx[cur][XMC] = -INFTY;
+    if ((sc = xmx[prv][XMC] + hmm->xsc[XTC][LOOP]) > -INFTY)
+      xmx[cur][XMC] = sc;
+    if ((sc = xmx[cur][XME] + hmm->xsc[XTE][MOVE]) > xmx[cur][XMC])
+      xmx[cur][XMC] = sc;
+  }
+
+  /* Row s2%2 in fwd matrix now contains valid scores from s1 (start) to s2,
+   * with J transitions disallowed (no cycles through model). 
+   */
+
+  /*****************************************************************
+   * Backwards pass.
+   *****************************************************************/ 
+
+  /* Allocate our backwards two rows. Init last row.
+   */
+  bck = AllocPlan7Matrix(2, hmm->M, &xmx, &mmx, &imx, &dmx);
+  nxt = s3%2;
+  xmx[nxt][XMN] = xmx[nxt][XMB] = -INFTY;
+  xmx[nxt][XME] = xmx[nxt][XMC] = -INFTY;  
+  for (k = k1; k <= k3 + 1; k++)
+    mmx[nxt][k] = imx[nxt][k] = dmx[nxt][k] = -INFTY;      
+  cur = !nxt;
+  mmx[cur][k3+1] = imx[cur][k3+1] = dmx[cur][k3+1] = -INFTY;      
+
+  /* Where to put the zero for our end point on last row.
+   */
+  switch (t3) {
+  case STM: mmx[nxt][k3]  = 0; break;
+  case STI: imx[nxt][k3]  = 0; break;
+  case STN: xmx[nxt][XMN] = 0; break;
+  case STC: xmx[nxt][XMC] = 0; break;   /* must be an emitting C */
+  case STT: xmx[nxt][XMC] = hmm->xsc[XTC][MOVE];  break; /* C->T implied */
+  default:  Die("you can't init get_wee_midpt with a %s\n", Statetype(t3));
+  }
+
+  /* Still initializing.
+   * In the case t3==STT, there are a few horizontal moves possible 
+   * on row s3, because STT isn't an emitter. All other states are 
+   * emitters, so their connections have to be to the previous row s3-1.
+   */
+  if (t3 == STT) 
+    {				/* E->C */
+      xmx[nxt][XME] = xmx[nxt][XMC] + hmm->xsc[XTE][MOVE];
+				/* M->E */
+      for (k = k3; k >= k1; k--) {
+	mmx[nxt][k] = xmx[nxt][XME] + hmm->esc[k];
+	if (s3 != s2)
+	  mmx[nxt][k] += hmm->msc[(int)dsq[s3]][k];
+      }
+    }
+
+  /* Start recursive DP; sweep backwards to chosen s2 midpoint.
+   * Done as a pull. M, I scores at current row do /not/ include
+   * emission scores. Be careful of integer underflow.
+   */
+  for (i = s3-1; i >= s2; i--) {
+				/* note i < L, so i+1 is always a legal index */
+    cur = i%2;
+    nxt = !cur;
+				/* C pulls from C (T is special cased) */
+    xmx[cur][XMC] = -INFTY;
+    if ((sc = xmx[nxt][XMC] + hmm->xsc[XTC][LOOP]) > -INFTY)
+      xmx[cur][XMC] = sc;
+				/* B pulls from M's */
+    xmx[cur][XMB] = -INFTY;
+    for (k = k1; k <= k3; k++)
+      if ((sc = mmx[nxt][k] + hmm->bsc[k]) > xmx[cur][XMB])
+	xmx[cur][XMB] = sc;
+				/* E pulls from C (J disallowed) */
+    xmx[cur][XME] = -INFTY;
+    if ((sc = xmx[cur][XMC] + hmm->xsc[XTE][MOVE]) > -INFTY)
+      xmx[cur][XME] = sc;
+				/* N pulls from B, N */
+    xmx[cur][XMN] = -INFTY;
+    if ((sc = xmx[cur][XMB] + hmm->xsc[XTN][MOVE]) > -INFTY)
+      xmx[cur][XMN] = sc;
+    if ((sc = xmx[nxt][XMN] + hmm->xsc[XTN][LOOP]) > xmx[cur][XMN])
+      xmx[cur][XMN] = sc;
+
+    /* Main recursion across model
+     */
+    for (k = k3; k >= k1; k--)  {
+				/* special case k == M */
+      if (k == hmm->M) {
+	mmx[cur][k] = xmx[cur][XME]; /* p=1 transition to E by definition */
+	dmx[cur][k] = -INFTY;	/* doesn't exist */
+	imx[cur][k] = -INFTY;	/* doesn't exist */
+	if (i != s2)
+	  mmx[cur][k] += hmm->msc[(int)dsq[i]][k];
+	continue;		
+      }    	/* below this k < M, so k+1 is a legal index */
+
+				/* pull into match state */
+      mmx[cur][k] = -INFTY;
+      if ((sc = xmx[cur][XME] + hmm->esc[k]) > -INFTY)
+	mmx[cur][k] = sc; 
+      if ((sc = mmx[nxt][k+1] + hmm->tsc[TMM][k]) > mmx[cur][k])
+	mmx[cur][k] = sc; 
+      if ((sc = imx[nxt][k] + hmm->tsc[TMI][k]) > mmx[cur][k])
+	mmx[cur][k] = sc; 
+      if ((sc = dmx[cur][k+1] + hmm->tsc[TMD][k]) > mmx[cur][k])
+	mmx[cur][k] = sc;
+      if (i != s2) 
+	mmx[cur][k] += hmm->msc[(int)dsq[i]][k];
+
+				/* pull into delete state */
+      dmx[cur][k] = -INFTY;
+      if ((sc = mmx[nxt][k+1] + hmm->tsc[TDM][k]) > -INFTY)
+	dmx[cur][k] = sc;
+      if ((sc = dmx[cur][k+1] + hmm->tsc[TDD][k]) > dmx[cur][k])
+	dmx[cur][k] = sc;
+				/* pull into insert state */
+      imx[cur][k] = -INFTY;
+      if ((sc = mmx[nxt][k+1] + hmm->tsc[TIM][k]) > -INFTY)
+	imx[cur][k] = sc;
+      if ((sc = imx[nxt][k] + hmm->tsc[TII][k]) > imx[cur][k])
+	imx[cur][k] = sc;
+      if (i != s2)
+	imx[cur][k] += hmm->isc[(int)dsq[i]][k];
+      
+    }
+  }
+   
+  /*****************************************************************
+   * DP complete; we have both forward and backward passes. Now we
+   * look across the s2 row and find the optimal emitting state.
+   *****************************************************************/  
+
+  cur = s2%2;
+  max = -INFTY;
+  for (k = k1; k <= k3; k++)
+    {
+      if ((sc = fwd->mmx[cur][k] + bck->mmx[cur][k]) > max)
+	{ k2 = k; t2 = STM; max = sc; }
+      if ((sc = fwd->imx[cur][k] + bck->imx[cur][k]) > max)
+	{ k2 = k; t2 = STI; max = sc; }
+    }
+  if ((sc = fwd->xmx[cur][XMN] + bck->xmx[cur][XMN]) > max)
+    { k2 = 1;        t2 = STN; max = sc; }
+  if ((sc = fwd->xmx[cur][XMC] + bck->xmx[cur][XMC]) > max)
+    { k2 = hmm->M;   t2 = STC; max = sc; }
+
+  /*****************************************************************
+   * Garbage collection, return.
+   *****************************************************************/
+  
+  FreePlan7Matrix(fwd);
+  FreePlan7Matrix(bck);
+  *ret_k2 = k2;
+  *ret_t2 = t2;
+  *ret_s2 = s2;
+  return Scorify(max);
+}

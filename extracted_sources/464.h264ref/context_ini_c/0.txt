@@ -1,0 +1,61 @@
+void create_context_memory ()
+{
+  int i, j, k;
+  int num_mb    = img->FrameSizeInMbs; // number of macroblocks for frame
+ 
+  num_mb_per_slice  = (input->slice_mode==1 ? input->slice_argument : num_mb);
+  number_of_slices  = (num_mb + num_mb_per_slice - 1) / num_mb_per_slice;
+
+  if ((initialized  = (int***) malloc (3 * sizeof(int**))) == NULL)
+  {
+    no_mem_exit ("create_context_memory: initialized");
+  }
+  if ((model_number = (int***) malloc (3 * sizeof(int**))) == NULL)
+  {
+    no_mem_exit ("create_context_memory: model_number");
+  }
+
+  for (k=0; k<3; k++)
+  {
+    if ((initialized[k] = (int**) malloc (FRAME_TYPES * sizeof(int*))) == NULL)
+    {
+      no_mem_exit ("create_context_memory: initialized");
+    }
+    if ((model_number[k]= (int**) malloc (FRAME_TYPES * sizeof(int*))) == NULL)
+    {
+      no_mem_exit ("create_context_memory: model_number");
+    }
+
+    for (i=0; i<FRAME_TYPES; i++)
+    {
+      if ((initialized[k][i] = (int*) malloc (number_of_slices * sizeof(int))) == NULL)
+      {
+        no_mem_exit ("create_context_memory: initialized");
+      }
+      if ((model_number[k][i]= (int*) malloc (number_of_slices * sizeof(int))) == NULL)
+      {
+        no_mem_exit ("create_context_memory: model_number");
+      }
+    }
+  }
+
+  //===== set all context sets as "uninitialized" =====
+  for (k=0; k<3; k++)
+  {
+    for (i=0; i<FRAME_TYPES; i++)
+    {
+      for (j=0; j<number_of_slices; j++)
+      {
+        initialized[k][i][j] = 0;
+      }
+    }
+  }
+
+  //----- init tables -----
+  for( k=0; k<64; k++ )
+  {
+    probability[k] = 1.0 - probability[127-k];
+    entropy    [k] = log10(probability[    k])/log10(2.0);
+    entropy[127-k] = log10(probability[127-k])/log10(2.0);
+  }
+}

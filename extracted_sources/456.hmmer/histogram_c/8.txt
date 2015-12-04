@@ -1,0 +1,111 @@
+int
+ExtremeValueFitHistogram(struct histogram_s *h, int censor, float high_hint) 
+{
+  float *x;                     /* array of EVD samples to fit */
+  int   *y;                     /* histogram counts            */ 
+  int    n;			/* number of observed samples  */
+  int    z;			/* number of censored samples  */
+  int    hsize;			/* size of histogram           */
+  float  lambda, mu;		/* new estimates of lambda, mu */
+  int    sc;		        /* loop index for score        */
+  int    lowbound;		/* lower bound of fitted region*/
+  int    highbound;		/* upper bound of fitted region*/
+  int    new_highbound;
+  int    iteration;
+
+  /* Determine lower bound on fitted region;
+   * if we're censoring the data, choose the peak of the histogram.
+   * if we're not, then we take the whole histogram.
+   */
+  lowbound = h->lowscore;
+  if (censor) 
+    {
+      int max = -1;
+      for (sc = h->lowscore; sc <= h->highscore; sc++)
+	if (h->histogram[sc - h->min] > max) 
+	  {
+	    max      = h->histogram[sc - h->min];
+	    lowbound = sc;
+	  }
+    }
+
+  /* Determine initial upper bound on fitted region.
+   */
+  highbound = MIN(high_hint, h->highscore);
+
+  /* Now, iteratively converge on our lambda, mu:
+   */
+  for (iteration = 0; iteration < 100; iteration++)
+    {
+      /* Construct x, y vectors.
+       */
+      x = NULL;
+      y = NULL;
+      hsize = highbound - lowbound + 1;
+      if (hsize < 5) goto FITFAILED; /* require at least 5 bins or we don't fit */
+
+      x = MallocOrDie(sizeof(float) * hsize);
+      y = MallocOrDie(sizeof(int)   * hsize);
+      n = 0;
+      for (sc = lowbound; sc <= highbound; sc++)
+	{
+	  x[sc-lowbound] = (float) sc + 0.5; /* crude, but tests OK */
+	  y[sc-lowbound] = h->histogram[sc - h->min];
+	  n             += h->histogram[sc - h->min];
+	}
+
+      if (n < 100) goto FITFAILED;  /* require fitting to at least 100 points */
+
+      /* If we're censoring, estimate z, the number of censored guys
+       * left of the bound. Our initial estimate is crudely that we're
+       * missing e^-1 of the total distribution (which would be exact
+       * if we censored exactly at mu; but we censored at the observed peak).
+       * Subsequent estimates are more exact based on our current estimate of mu.
+       */
+      if (censor)
+	{
+	  if (iteration == 0)
+	    z = MIN(h->total-n, (int) (0.58198 * (float) n));
+	  else
+	    {
+	      double psx;
+	      psx = EVDDistribution((float) lowbound, mu, lambda);
+	      z = MIN(h->total-n, (int) ((double) n * psx / (1. - psx)));
+	    }
+	}
+
+      /* Do an ML fit
+       */
+      if (censor) {
+	if (! EVDCensoredFit(x, y, hsize, z, (float) lowbound, &mu, &lambda))
+	  goto FITFAILED;
+      } else  
+	if (! EVDMaxLikelyFit(x, y, hsize, &mu, &lambda))
+	  goto FITFAILED;
+
+      /* Find the Eval = 1 point as a new highbound;
+       * the total number of samples estimated to "belong" to the EVD is n+z  
+       */
+      new_highbound = (int)
+	(mu - (log (-1. * log((double) (n+z-1) / (double)(n+z))) / lambda));
+
+      free(x);
+      free(y);
+      if (new_highbound >= highbound) break; 
+      highbound = new_highbound;
+    }
+
+  /* Set the histogram parameters;
+   * - we fit from lowbound to highbound; thus we lose 2 degrees of freedom
+   *   for fitting mu, lambda, but we get 1 back because we're unnormalized
+   *   in this interval, hence we pass 2-1 = 1 as ndegrees.
+   */    
+  ExtremeValueSetHistogram(h, mu, lambda, lowbound, highbound, 1); 
+  return 1;
+
+FITFAILED:
+  UnfitHistogram(h);
+  if (x != NULL) free(x);
+  if (y != NULL) free(y);
+  return 0;
+}

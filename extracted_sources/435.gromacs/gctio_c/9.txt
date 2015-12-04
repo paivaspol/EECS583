@@ -1,0 +1,36 @@
+static bool add_lj(int *nLJ,t_coupl_LJ **tcLJ,char *s,bool bObsUsed[])
+{
+  int       j,ati,atj,eo;
+  char      buf[256];
+  double    xi6,xi12;
+  
+  if (sscanf(s,"%s%d%d%lf%lf",buf,&ati,&atj,&xi6,&xi12) != 5) 
+    return TRUE;
+  if ((eo=Name2eo(buf)) == -1)
+    fatal_error(0,"Invalid observable for LJ coupling: %s",buf);
+  
+  for(j=0; (j<*nLJ); j++) {
+    if ((((*tcLJ)[j].at_i == ati) && ((*tcLJ)[j].at_j == atj)) &&
+	( fabs((*tcLJ)[j].xi_6)>GMX_REAL_MIN || fabs((*tcLJ)[j].xi_12)>GMX_REAL_MIN) &&
+	( fabs((*tcLJ)[j].eObs - eo)<GMX_REAL_MIN))
+      break;
+  }
+  if (j == *nLJ) {
+    ++(*nLJ);
+    srenew((*tcLJ),*nLJ);
+  }
+  else
+    fprintf(stderr,"\n*** WARNING: overwriting entry for LJ coupling '%s'\n",s);
+  
+  clear_lj(&((*tcLJ)[j]));
+  if (((*tcLJ)[j].eObs = eo) == -1) {
+    fatal_error(0,"Invalid observable for LJ coupling: %s",buf);
+  }
+  (*tcLJ)[j].at_i   = ati;
+  (*tcLJ)[j].at_j   = atj;
+  (*tcLJ)[j].xi_6   = xi6;
+  (*tcLJ)[j].xi_12  = xi12;
+  bObsUsed[eo] = TRUE;
+  
+  return FALSE;
+}

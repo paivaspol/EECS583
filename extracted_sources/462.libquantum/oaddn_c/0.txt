@@ -1,0 +1,70 @@
+void
+test_sum(int compare, int width, quantum_reg *reg)
+{
+  int i;
+
+  if (compare & ((MAX_UNSIGNED) 1 << (width - 1)))
+    {
+      quantum_cnot(2*width-1, width-1, reg);
+      quantum_sigma_x(2*width-1, reg);
+      quantum_cnot(2*width-1, 0, reg);
+    }
+  else
+    {
+      quantum_sigma_x(2*width-1, reg);
+      quantum_cnot(2*width-1,width-1, reg);
+    }
+  for (i = (width-2);i>0;i--)
+    {
+      if (compare & (1<<i))
+	{//is bit i set in compare?
+	  quantum_toffoli(i+1,width+i,i, reg);
+	  quantum_sigma_x(width+i, reg);
+	  quantum_toffoli(i+1,width+i,0, reg);
+	}
+      else
+	{
+	  quantum_sigma_x(width+i, reg);
+	  quantum_toffoli(i+1,width+i,i, reg);
+	}
+    }
+  if (compare & 1) 
+    {
+      quantum_sigma_x(width, reg);
+      quantum_toffoli(width,1,0, reg);
+    }
+  quantum_toffoli(2*width+1,0,2*width, reg);//set output to 1 if enabled and b < compare
+
+  if (compare & 1) 
+    {
+      quantum_toffoli(width,1,0, reg);
+      quantum_sigma_x(width, reg);
+    }
+
+  for (i = 1;i<=(width-2);i++)
+    {
+      if (compare & (1<<i))
+	{//is bit i set in compare?
+	  quantum_toffoli(i+1,width+i,0, reg);
+	  quantum_sigma_x(width+i, reg);
+	  quantum_toffoli(i+1,width+i,i, reg);
+	}
+      else
+	{
+	  quantum_toffoli(i+1,width+i,i, reg);
+	  quantum_sigma_x(width+i, reg);
+	}
+    }
+  if (compare & (1<<(width-1)))
+    {
+      quantum_cnot(2*width-1,0, reg);
+      quantum_sigma_x(2*width-1, reg);
+      quantum_cnot(2*width-1,width-1, reg);
+    }
+  else
+    {
+      quantum_cnot(2*width-1,width-1, reg);
+      quantum_sigma_x(2*width-1, reg);
+       }
+
+  }

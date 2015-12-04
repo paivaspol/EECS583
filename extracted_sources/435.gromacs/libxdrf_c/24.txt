@@ -1,0 +1,30 @@
+static void sendbits(int buf[], int num_of_bits, int num) {
+    
+    unsigned int cnt, lastbyte;
+    int lastbits;
+    unsigned char * cbuf;
+    
+    cbuf = ((unsigned char *)buf) + 3 * sizeof(*buf);
+    cnt = (unsigned int) buf[0];
+    lastbits = buf[1];
+    lastbyte =(unsigned int) buf[2];
+    while (num_of_bits >= 8) {
+	lastbyte = (lastbyte << 8) | ((num >> (num_of_bits -8)) /* & 0xff*/);
+	cbuf[cnt++] = lastbyte >> lastbits;
+	num_of_bits -= 8;
+    }
+    if (num_of_bits > 0) {
+	lastbyte = (lastbyte << num_of_bits) | num;
+	lastbits += num_of_bits;
+	if (lastbits >= 8) {
+	    lastbits -= 8;
+	    cbuf[cnt++] = lastbyte >> lastbits;
+	}
+    }
+    buf[0] = cnt;
+    buf[1] = lastbits;
+    buf[2] = lastbyte;
+    if (lastbits>0) {
+	cbuf[cnt] = lastbyte << (8 - lastbits);
+    }
+}

@@ -1,0 +1,18 @@
+void muln(int N, int a, int ctl, int width, quantum_reg *reg){//ctl tells, which bit is the external enable bit
+	int i;
+	int L = 2*width+1;
+
+	quantum_toffoli(ctl,2*width+2,L,reg);
+
+	emul(a%N, L, width, reg);
+
+	quantum_toffoli(ctl,2*width+2,L,reg);
+
+	for(i=1;i<width;i++){
+		quantum_toffoli(ctl,2*width+2+i,L,reg);
+		add_mod_n(N,((1<<i)*a)%N,width,reg);
+		quantum_toffoli(ctl,2*width+2+i,L,reg);
+		}
+
+
+}

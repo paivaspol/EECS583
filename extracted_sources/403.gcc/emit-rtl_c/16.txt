@@ -1,0 +1,150 @@
+void
+set_mem_attributes (ref, t, objectp)
+     rtx ref;
+     tree t;
+     int objectp;
+{
+  HOST_WIDE_INT alias = MEM_ALIAS_SET (ref);
+  tree expr = MEM_EXPR (ref);
+  rtx offset = MEM_OFFSET (ref);
+  rtx size = MEM_SIZE (ref);
+  unsigned int align = MEM_ALIGN (ref);
+  tree type;
+
+  /* It can happen that type_for_mode was given a mode for which there
+     is no language-level type.  In which case it returns NULL, which
+     we can see here.  */
+  if (t == NULL_TREE)
+    return;
+
+  type = TYPE_P (t) ? t : TREE_TYPE (t);
+
+  /* If we have already set DECL_RTL = ref, get_alias_set will get the
+     wrong answer, as it assumes that DECL_RTL already has the right alias
+     info.  Callers should not set DECL_RTL until after the call to
+     set_mem_attributes.  */
+  if (DECL_P (t) && ref == DECL_RTL_IF_SET (t))
+    abort ();
+
+  /* Get the alias set from the expression or type (perhaps using a
+     front-end routine) and use it.  */
+  alias = get_alias_set (t);
+
+  MEM_VOLATILE_P (ref) = TYPE_VOLATILE (type);
+  MEM_IN_STRUCT_P (ref) = AGGREGATE_TYPE_P (type);
+  RTX_UNCHANGING_P (ref)
+    |= ((lang_hooks.honor_readonly
+	 && (TYPE_READONLY (type) || TREE_READONLY (t)))
+	|| (! TYPE_P (t) && TREE_CONSTANT (t)));
+
+  /* If we are making an object of this type, or if this is a DECL, we know
+     that it is a scalar if the type is not an aggregate.  */
+  if ((objectp || DECL_P (t)) && ! AGGREGATE_TYPE_P (type))
+    MEM_SCALAR_P (ref) = 1;
+
+  /* We can set the alignment from the type if we are making an object,
+     this is an INDIRECT_REF, or if TYPE_ALIGN_OK.  */
+  if (objectp || TREE_CODE (t) == INDIRECT_REF || TYPE_ALIGN_OK (type))
+    align = MAX (align, TYPE_ALIGN (type));
+
+  /* If the size is known, we can set that.  */
+  if (TYPE_SIZE_UNIT (type) && host_integerp (TYPE_SIZE_UNIT (type), 1))
+    size = GEN_INT (tree_low_cst (TYPE_SIZE_UNIT (type), 1));
+
+  /* If T is not a type, we may be able to deduce some more information about
+     the expression.  */
+  if (! TYPE_P (t))
+    {
+      maybe_set_unchanging (ref, t);
+      if (TREE_THIS_VOLATILE (t))
+	MEM_VOLATILE_P (ref) = 1;
+
+      /* Now remove any conversions: they don't change what the underlying
+	 object is.  Likewise for SAVE_EXPR.  */
+      while (TREE_CODE (t) == NOP_EXPR || TREE_CODE (t) == CONVERT_EXPR
+	     || TREE_CODE (t) == NON_LVALUE_EXPR
+	     || TREE_CODE (t) == VIEW_CONVERT_EXPR
+	     || TREE_CODE (t) == SAVE_EXPR)
+	t = TREE_OPERAND (t, 0);
+
+      /* If this expression can't be addressed (e.g., it contains a reference
+	 to a non-addressable field), show we don't change its alias set.  */
+      if (! can_address_p (t))
+	MEM_KEEP_ALIAS_SET_P (ref) = 1;
+
+      /* If this is a decl, set the attributes of the MEM from it.  */
+      if (DECL_P (t))
+	{
+	  expr = t;
+	  offset = const0_rtx;
+	  size = (DECL_SIZE_UNIT (t)
+		  && host_integerp (DECL_SIZE_UNIT (t), 1)
+		  ? GEN_INT (tree_low_cst (DECL_SIZE_UNIT (t), 1)) : 0);
+	  align =  DECL_ALIGN (t);
+	}
+
+      /* If this is a constant, we know the alignment.  */
+      else if (TREE_CODE_CLASS (TREE_CODE (t)) == 'c')
+	{
+	  align = TYPE_ALIGN (type);
+#ifdef CONSTANT_ALIGNMENT
+	  align = CONSTANT_ALIGNMENT (t, align);
+#endif
+	}
+
+      /* If this is a field reference and not a bit-field, record it.  */
+      /* ??? There is some information that can be gleened from bit-fields,
+	 such as the word offset in the structure that might be modified.
+	 But skip it for now.  */
+      else if (TREE_CODE (t) == COMPONENT_REF
+	       && ! DECL_BIT_FIELD (TREE_OPERAND (t, 1)))
+	{
+	  expr = component_ref_for_mem_expr (t);
+	  offset = const0_rtx;
+	  /* ??? Any reason the field size would be different than
+	     the size we got from the type?  */
+	}
+
+      /* If this is an array reference, look for an outer field reference.  */
+      else if (TREE_CODE (t) == ARRAY_REF)
+	{
+	  tree off_tree = size_zero_node;
+
+	  do
+	    {
+	      off_tree
+		= fold (build (PLUS_EXPR, sizetype,
+			       fold (build (MULT_EXPR, sizetype,
+					    TREE_OPERAND (t, 1),
+					    TYPE_SIZE_UNIT (TREE_TYPE (t)))),
+			       off_tree));
+	      t = TREE_OPERAND (t, 0);
+	    }
+	  while (TREE_CODE (t) == ARRAY_REF);
+
+	  if (TREE_CODE (t) == COMPONENT_REF)
+	    {
+	      expr = component_ref_for_mem_expr (t);
+	      if (host_integerp (off_tree, 1))
+		offset = GEN_INT (tree_low_cst (off_tree, 1));
+	      /* ??? Any reason the field size would be different than
+		 the size we got from the type?  */
+	    }
+	}
+    }
+
+  /* Now set the attributes we computed above.  */
+  MEM_ATTRS (ref)
+    = get_mem_attrs (alias, expr, offset, size, align, GET_MODE (ref));
+
+  /* If this is already known to be a scalar or aggregate, we are done.  */
+  if (MEM_IN_STRUCT_P (ref) || MEM_SCALAR_P (ref))
+    return;
+
+  /* If it is a reference into an aggregate, this is part of an aggregate.
+     Otherwise we don't know.  */
+  else if (TREE_CODE (t) == COMPONENT_REF || TREE_CODE (t) == ARRAY_REF
+	   || TREE_CODE (t) == ARRAY_RANGE_REF
+	   || TREE_CODE (t) == BIT_FIELD_REF)
+    MEM_IN_STRUCT_P (ref) = 1;
+}

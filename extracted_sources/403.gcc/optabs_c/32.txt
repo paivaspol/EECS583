@@ -1,0 +1,352 @@
+void
+init_optabs ()
+{
+  unsigned int i, j, k;
+
+  /* Start by initializing all tables to contain CODE_FOR_nothing.  */
+
+  for (i = 0; i < ARRAY_SIZE (fixtab); i++)
+    for (j = 0; j < ARRAY_SIZE (fixtab[0]); j++)
+      for (k = 0; k < ARRAY_SIZE (fixtab[0][0]); k++)
+	fixtab[i][j][k] = CODE_FOR_nothing;
+
+  for (i = 0; i < ARRAY_SIZE (fixtrunctab); i++)
+    for (j = 0; j < ARRAY_SIZE (fixtrunctab[0]); j++)
+      for (k = 0; k < ARRAY_SIZE (fixtrunctab[0][0]); k++)
+	fixtrunctab[i][j][k] = CODE_FOR_nothing;
+
+  for (i = 0; i < ARRAY_SIZE (floattab); i++)
+    for (j = 0; j < ARRAY_SIZE (floattab[0]); j++)
+      for (k = 0; k < ARRAY_SIZE (floattab[0][0]); k++)
+	floattab[i][j][k] = CODE_FOR_nothing;
+
+  for (i = 0; i < ARRAY_SIZE (extendtab); i++)
+    for (j = 0; j < ARRAY_SIZE (extendtab[0]); j++)
+      for (k = 0; k < ARRAY_SIZE (extendtab[0][0]); k++)
+	extendtab[i][j][k] = CODE_FOR_nothing;
+
+  for (i = 0; i < NUM_RTX_CODE; i++)
+    setcc_gen_code[i] = CODE_FOR_nothing;
+
+#ifdef HAVE_conditional_move
+  for (i = 0; i < NUM_MACHINE_MODES; i++)
+    movcc_gen_code[i] = CODE_FOR_nothing;
+#endif
+
+  add_optab = init_optab (PLUS);
+  addv_optab = init_optabv (PLUS);
+  sub_optab = init_optab (MINUS);
+  subv_optab = init_optabv (MINUS);
+  smul_optab = init_optab (MULT);
+  smulv_optab = init_optabv (MULT);
+  smul_highpart_optab = init_optab (UNKNOWN);
+  umul_highpart_optab = init_optab (UNKNOWN);
+  smul_widen_optab = init_optab (UNKNOWN);
+  umul_widen_optab = init_optab (UNKNOWN);
+  sdiv_optab = init_optab (DIV);
+  sdivv_optab = init_optabv (DIV);
+  sdivmod_optab = init_optab (UNKNOWN);
+  udiv_optab = init_optab (UDIV);
+  udivmod_optab = init_optab (UNKNOWN);
+  smod_optab = init_optab (MOD);
+  umod_optab = init_optab (UMOD);
+  ftrunc_optab = init_optab (UNKNOWN);
+  and_optab = init_optab (AND);
+  ior_optab = init_optab (IOR);
+  xor_optab = init_optab (XOR);
+  ashl_optab = init_optab (ASHIFT);
+  ashr_optab = init_optab (ASHIFTRT);
+  lshr_optab = init_optab (LSHIFTRT);
+  rotl_optab = init_optab (ROTATE);
+  rotr_optab = init_optab (ROTATERT);
+  smin_optab = init_optab (SMIN);
+  smax_optab = init_optab (SMAX);
+  umin_optab = init_optab (UMIN);
+  umax_optab = init_optab (UMAX);
+
+  /* These three have codes assigned exclusively for the sake of
+     have_insn_for.  */
+  mov_optab = init_optab (SET);
+  movstrict_optab = init_optab (STRICT_LOW_PART);
+  cmp_optab = init_optab (COMPARE);
+
+  ucmp_optab = init_optab (UNKNOWN);
+  tst_optab = init_optab (UNKNOWN);
+  neg_optab = init_optab (NEG);
+  negv_optab = init_optabv (NEG);
+  abs_optab = init_optab (ABS);
+  absv_optab = init_optabv (ABS);
+  one_cmpl_optab = init_optab (NOT);
+  ffs_optab = init_optab (FFS);
+  sqrt_optab = init_optab (SQRT);
+  sin_optab = init_optab (UNKNOWN);
+  cos_optab = init_optab (UNKNOWN);
+  strlen_optab = init_optab (UNKNOWN);
+  cbranch_optab = init_optab (UNKNOWN);
+  cmov_optab = init_optab (UNKNOWN);
+  cstore_optab = init_optab (UNKNOWN);
+  push_optab = init_optab (UNKNOWN);
+
+  for (i = 0; i < NUM_MACHINE_MODES; i++)
+    {
+      movstr_optab[i] = CODE_FOR_nothing;
+      clrstr_optab[i] = CODE_FOR_nothing;
+
+#ifdef HAVE_SECONDARY_RELOADS
+      reload_in_optab[i] = reload_out_optab[i] = CODE_FOR_nothing;
+#endif
+    }
+
+  /* Fill in the optabs with the insns we support.  */
+  init_all_optabs ();
+
+#ifdef FIXUNS_TRUNC_LIKE_FIX_TRUNC
+  /* This flag says the same insns that convert to a signed fixnum
+     also convert validly to an unsigned one.  */
+  for (i = 0; i < NUM_MACHINE_MODES; i++)
+    for (j = 0; j < NUM_MACHINE_MODES; j++)
+      fixtrunctab[i][j][1] = fixtrunctab[i][j][0];
+#endif
+
+  /* Initialize the optabs with the names of the library functions.  */
+  init_integral_libfuncs (add_optab, "add", '3');
+  init_floating_libfuncs (add_optab, "add", '3');
+  init_integral_libfuncs (addv_optab, "addv", '3');
+  init_floating_libfuncs (addv_optab, "add", '3');
+  init_integral_libfuncs (sub_optab, "sub", '3');
+  init_floating_libfuncs (sub_optab, "sub", '3');
+  init_integral_libfuncs (subv_optab, "subv", '3');
+  init_floating_libfuncs (subv_optab, "sub", '3');
+  init_integral_libfuncs (smul_optab, "mul", '3');
+  init_floating_libfuncs (smul_optab, "mul", '3');
+  init_integral_libfuncs (smulv_optab, "mulv", '3');
+  init_floating_libfuncs (smulv_optab, "mul", '3');
+  init_integral_libfuncs (sdiv_optab, "div", '3');
+  init_floating_libfuncs (sdiv_optab, "div", '3');
+  init_integral_libfuncs (sdivv_optab, "divv", '3');
+  init_integral_libfuncs (udiv_optab, "udiv", '3');
+  init_integral_libfuncs (sdivmod_optab, "divmod", '4');
+  init_integral_libfuncs (udivmod_optab, "udivmod", '4');
+  init_integral_libfuncs (smod_optab, "mod", '3');
+  init_integral_libfuncs (umod_optab, "umod", '3');
+  init_floating_libfuncs (ftrunc_optab, "ftrunc", '2');
+  init_integral_libfuncs (and_optab, "and", '3');
+  init_integral_libfuncs (ior_optab, "ior", '3');
+  init_integral_libfuncs (xor_optab, "xor", '3');
+  init_integral_libfuncs (ashl_optab, "ashl", '3');
+  init_integral_libfuncs (ashr_optab, "ashr", '3');
+  init_integral_libfuncs (lshr_optab, "lshr", '3');
+  init_integral_libfuncs (smin_optab, "min", '3');
+  init_floating_libfuncs (smin_optab, "min", '3');
+  init_integral_libfuncs (smax_optab, "max", '3');
+  init_floating_libfuncs (smax_optab, "max", '3');
+  init_integral_libfuncs (umin_optab, "umin", '3');
+  init_integral_libfuncs (umax_optab, "umax", '3');
+  init_integral_libfuncs (neg_optab, "neg", '2');
+  init_floating_libfuncs (neg_optab, "neg", '2');
+  init_integral_libfuncs (negv_optab, "negv", '2');
+  init_floating_libfuncs (negv_optab, "neg", '2');
+  init_integral_libfuncs (one_cmpl_optab, "one_cmpl", '2');
+  init_integral_libfuncs (ffs_optab, "ffs", '2');
+
+  /* Comparison libcalls for integers MUST come in pairs, signed/unsigned.  */
+  init_integral_libfuncs (cmp_optab, "cmp", '2');
+  init_integral_libfuncs (ucmp_optab, "ucmp", '2');
+  init_floating_libfuncs (cmp_optab, "cmp", '2');
+
+#ifdef MULSI3_LIBCALL
+  smul_optab->handlers[(int) SImode].libfunc
+    = init_one_libfunc (MULSI3_LIBCALL);
+#endif
+#ifdef MULDI3_LIBCALL
+  smul_optab->handlers[(int) DImode].libfunc
+    = init_one_libfunc (MULDI3_LIBCALL);
+#endif
+
+#ifdef DIVSI3_LIBCALL
+  sdiv_optab->handlers[(int) SImode].libfunc
+    = init_one_libfunc (DIVSI3_LIBCALL);
+#endif
+#ifdef DIVDI3_LIBCALL
+  sdiv_optab->handlers[(int) DImode].libfunc
+    = init_one_libfunc (DIVDI3_LIBCALL);
+#endif
+
+#ifdef UDIVSI3_LIBCALL
+  udiv_optab->handlers[(int) SImode].libfunc
+    = init_one_libfunc (UDIVSI3_LIBCALL);
+#endif
+#ifdef UDIVDI3_LIBCALL
+  udiv_optab->handlers[(int) DImode].libfunc
+    = init_one_libfunc (UDIVDI3_LIBCALL);
+#endif
+
+#ifdef MODSI3_LIBCALL
+  smod_optab->handlers[(int) SImode].libfunc
+    = init_one_libfunc (MODSI3_LIBCALL);
+#endif
+#ifdef MODDI3_LIBCALL
+  smod_optab->handlers[(int) DImode].libfunc
+    = init_one_libfunc (MODDI3_LIBCALL);
+#endif
+
+#ifdef UMODSI3_LIBCALL
+  umod_optab->handlers[(int) SImode].libfunc
+    = init_one_libfunc (UMODSI3_LIBCALL);
+#endif
+#ifdef UMODDI3_LIBCALL
+  umod_optab->handlers[(int) DImode].libfunc
+    = init_one_libfunc (UMODDI3_LIBCALL);
+#endif
+
+  /* Use cabs for DC complex abs, since systems generally have cabs.
+     Don't define any libcall for SCmode, so that cabs will be used.  */
+  abs_optab->handlers[(int) DCmode].libfunc
+    = init_one_libfunc ("cabs");
+
+  /* The ffs function operates on `int'.  */
+  ffs_optab->handlers[(int) mode_for_size (INT_TYPE_SIZE, MODE_INT, 0)].libfunc
+    = init_one_libfunc ("ffs");
+
+  extendsfdf2_libfunc = init_one_libfunc ("__extendsfdf2");
+  extendsfxf2_libfunc = init_one_libfunc ("__extendsfxf2");
+  extendsftf2_libfunc = init_one_libfunc ("__extendsftf2");
+  extenddfxf2_libfunc = init_one_libfunc ("__extenddfxf2");
+  extenddftf2_libfunc = init_one_libfunc ("__extenddftf2");
+
+  truncdfsf2_libfunc = init_one_libfunc ("__truncdfsf2");
+  truncxfsf2_libfunc = init_one_libfunc ("__truncxfsf2");
+  trunctfsf2_libfunc = init_one_libfunc ("__trunctfsf2");
+  truncxfdf2_libfunc = init_one_libfunc ("__truncxfdf2");
+  trunctfdf2_libfunc = init_one_libfunc ("__trunctfdf2");
+
+  abort_libfunc = init_one_libfunc ("abort");
+  memcpy_libfunc = init_one_libfunc ("memcpy");
+  memmove_libfunc = init_one_libfunc ("memmove");
+  bcopy_libfunc = init_one_libfunc ("bcopy");
+  memcmp_libfunc = init_one_libfunc ("memcmp");
+  bcmp_libfunc = init_one_libfunc ("__gcc_bcmp");
+  memset_libfunc = init_one_libfunc ("memset");
+  bzero_libfunc = init_one_libfunc ("bzero");
+
+  unwind_resume_libfunc = init_one_libfunc (USING_SJLJ_EXCEPTIONS
+					    ? "_Unwind_SjLj_Resume"
+					    : "_Unwind_Resume");
+#ifndef DONT_USE_BUILTIN_SETJMP
+  setjmp_libfunc = init_one_libfunc ("__builtin_setjmp");
+  longjmp_libfunc = init_one_libfunc ("__builtin_longjmp");
+#else
+  setjmp_libfunc = init_one_libfunc ("setjmp");
+  longjmp_libfunc = init_one_libfunc ("longjmp");
+#endif
+  unwind_sjlj_register_libfunc = init_one_libfunc ("_Unwind_SjLj_Register");
+  unwind_sjlj_unregister_libfunc
+    = init_one_libfunc ("_Unwind_SjLj_Unregister");
+
+  eqhf2_libfunc = init_one_libfunc ("__eqhf2");
+  nehf2_libfunc = init_one_libfunc ("__nehf2");
+  gthf2_libfunc = init_one_libfunc ("__gthf2");
+  gehf2_libfunc = init_one_libfunc ("__gehf2");
+  lthf2_libfunc = init_one_libfunc ("__lthf2");
+  lehf2_libfunc = init_one_libfunc ("__lehf2");
+  unordhf2_libfunc = init_one_libfunc ("__unordhf2");
+
+  eqsf2_libfunc = init_one_libfunc ("__eqsf2");
+  nesf2_libfunc = init_one_libfunc ("__nesf2");
+  gtsf2_libfunc = init_one_libfunc ("__gtsf2");
+  gesf2_libfunc = init_one_libfunc ("__gesf2");
+  ltsf2_libfunc = init_one_libfunc ("__ltsf2");
+  lesf2_libfunc = init_one_libfunc ("__lesf2");
+  unordsf2_libfunc = init_one_libfunc ("__unordsf2");
+
+  eqdf2_libfunc = init_one_libfunc ("__eqdf2");
+  nedf2_libfunc = init_one_libfunc ("__nedf2");
+  gtdf2_libfunc = init_one_libfunc ("__gtdf2");
+  gedf2_libfunc = init_one_libfunc ("__gedf2");
+  ltdf2_libfunc = init_one_libfunc ("__ltdf2");
+  ledf2_libfunc = init_one_libfunc ("__ledf2");
+  unorddf2_libfunc = init_one_libfunc ("__unorddf2");
+
+  eqxf2_libfunc = init_one_libfunc ("__eqxf2");
+  nexf2_libfunc = init_one_libfunc ("__nexf2");
+  gtxf2_libfunc = init_one_libfunc ("__gtxf2");
+  gexf2_libfunc = init_one_libfunc ("__gexf2");
+  ltxf2_libfunc = init_one_libfunc ("__ltxf2");
+  lexf2_libfunc = init_one_libfunc ("__lexf2");
+  unordxf2_libfunc = init_one_libfunc ("__unordxf2");
+
+  eqtf2_libfunc = init_one_libfunc ("__eqtf2");
+  netf2_libfunc = init_one_libfunc ("__netf2");
+  gttf2_libfunc = init_one_libfunc ("__gttf2");
+  getf2_libfunc = init_one_libfunc ("__getf2");
+  lttf2_libfunc = init_one_libfunc ("__lttf2");
+  letf2_libfunc = init_one_libfunc ("__letf2");
+  unordtf2_libfunc = init_one_libfunc ("__unordtf2");
+
+  floatsisf_libfunc = init_one_libfunc ("__floatsisf");
+  floatdisf_libfunc = init_one_libfunc ("__floatdisf");
+  floattisf_libfunc = init_one_libfunc ("__floattisf");
+
+  floatsidf_libfunc = init_one_libfunc ("__floatsidf");
+  floatdidf_libfunc = init_one_libfunc ("__floatdidf");
+  floattidf_libfunc = init_one_libfunc ("__floattidf");
+
+  floatsixf_libfunc = init_one_libfunc ("__floatsixf");
+  floatdixf_libfunc = init_one_libfunc ("__floatdixf");
+  floattixf_libfunc = init_one_libfunc ("__floattixf");
+
+  floatsitf_libfunc = init_one_libfunc ("__floatsitf");
+  floatditf_libfunc = init_one_libfunc ("__floatditf");
+  floattitf_libfunc = init_one_libfunc ("__floattitf");
+
+  fixsfsi_libfunc = init_one_libfunc ("__fixsfsi");
+  fixsfdi_libfunc = init_one_libfunc ("__fixsfdi");
+  fixsfti_libfunc = init_one_libfunc ("__fixsfti");
+
+  fixdfsi_libfunc = init_one_libfunc ("__fixdfsi");
+  fixdfdi_libfunc = init_one_libfunc ("__fixdfdi");
+  fixdfti_libfunc = init_one_libfunc ("__fixdfti");
+
+  fixxfsi_libfunc = init_one_libfunc ("__fixxfsi");
+  fixxfdi_libfunc = init_one_libfunc ("__fixxfdi");
+  fixxfti_libfunc = init_one_libfunc ("__fixxfti");
+
+  fixtfsi_libfunc = init_one_libfunc ("__fixtfsi");
+  fixtfdi_libfunc = init_one_libfunc ("__fixtfdi");
+  fixtfti_libfunc = init_one_libfunc ("__fixtfti");
+
+  fixunssfsi_libfunc = init_one_libfunc ("__fixunssfsi");
+  fixunssfdi_libfunc = init_one_libfunc ("__fixunssfdi");
+  fixunssfti_libfunc = init_one_libfunc ("__fixunssfti");
+
+  fixunsdfsi_libfunc = init_one_libfunc ("__fixunsdfsi");
+  fixunsdfdi_libfunc = init_one_libfunc ("__fixunsdfdi");
+  fixunsdfti_libfunc = init_one_libfunc ("__fixunsdfti");
+
+  fixunsxfsi_libfunc = init_one_libfunc ("__fixunsxfsi");
+  fixunsxfdi_libfunc = init_one_libfunc ("__fixunsxfdi");
+  fixunsxfti_libfunc = init_one_libfunc ("__fixunsxfti");
+
+  fixunstfsi_libfunc = init_one_libfunc ("__fixunstfsi");
+  fixunstfdi_libfunc = init_one_libfunc ("__fixunstfdi");
+  fixunstfti_libfunc = init_one_libfunc ("__fixunstfti");
+
+  /* For function entry/exit instrumentation.  */
+  profile_function_entry_libfunc
+    = init_one_libfunc ("__cyg_profile_func_enter");
+  profile_function_exit_libfunc
+    = init_one_libfunc ("__cyg_profile_func_exit");
+
+#ifdef HAVE_conditional_trap
+  init_traps ();
+#endif
+
+#ifdef INIT_TARGET_OPTABS
+  /* Allow the target to add more libcalls or rename some, etc.  */
+  INIT_TARGET_OPTABS;
+#endif
+
+  /* Add these GC roots.  */
+  ggc_add_root (optab_table, OTI_MAX, sizeof(optab), mark_optab);
+  ggc_add_rtx_root (libfunc_table, LTI_MAX);
+}

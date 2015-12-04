@@ -1,0 +1,54 @@
+void live_initialize_decoder(char *live_args)
+{
+    static kb_t live_kb;
+    int32   maxcepvecs, maxhyplen, samprate, ceplen;
+    param_t *fe_param;
+    /*char const *uttIdNotDefined = "null";*/
+
+    parse_args_file(live_args);
+    unlimit();
+    kb_init(&live_kb);
+    kb = &live_kb;
+    kbcore = kb->kbcore;
+
+    kb->uttid = ckd_calloc(1000,sizeof(char));
+    hmmdumpfp = cmd_ln_int32("-hmmdump") ? stderr : NULL;
+    maxwpf    = cmd_ln_int32 ("-maxwpf");
+    maxhistpf = cmd_ln_int32 ("-maxhistpf");
+    maxhmmpf  = cmd_ln_int32 ("-maxhmmpf");
+    ptranskip = cmd_ln_int32 ("-ptranskip");
+
+    maxhyplen = cmd_ln_int32 ("-maxhyplen");
+    if (!parthyp) 
+        parthyp  = (partialhyp_t *) ckd_calloc(maxhyplen, sizeof(partialhyp_t));
+
+    fe_param = (param_t *) ckd_calloc(1, sizeof(param_t));
+    samprate = cmd_ln_int32 ("-samprate");
+    if (samprate != 8000 && samprate != 16000)
+	E_FATAL("Sampling rate %s not supported. Must be 8000 or 16000\n",samprate);
+
+    fe_param->SAMPLING_RATE = (float32) samprate;
+    fe_param->LOWER_FILT_FREQ = cmd_ln_float32("-lowerf");
+    fe_param->UPPER_FILT_FREQ = cmd_ln_float32("-upperf");
+    fe_param->NUM_FILTERS = cmd_ln_int32("-nfilt");
+
+    /* 20040413, by ARCHAN. Clear the hardwiring.
+       Hmm. Many people say no to do this, I just can't take it. 
+     */
+    fe_param->FRAME_RATE = cmd_ln_int32("-frate");
+
+    /*    fe_param->FRAME_RATE = 100; */
+    fe_param->PRE_EMPHASIS_ALPHA = cmd_ln_float32("-alpha");
+    fe_param->FFT_SIZE = cmd_ln_int32("-nfft");
+    fe_param->WINDOW_LENGTH = cmd_ln_float32("-wlen");
+    fe_param->doublebw=OFF;
+
+    fe = fe_init(fe_param);
+    if (!fe)
+	E_FATAL("Front end initialization fe_init() failed\n");
+
+    maxcepvecs = cmd_ln_int32 ("-maxcepvecs");
+    ceplen = kbcore->fcb->cepsize;
+
+    dummyframe = (float32*) ckd_calloc(1 * ceplen,sizeof(float32));	/*  */
+}

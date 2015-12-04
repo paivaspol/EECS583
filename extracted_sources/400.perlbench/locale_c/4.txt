@@ -1,0 +1,18 @@
+void
+Perl_new_ctype(pTHX_ char *newctype)
+{
+#ifdef USE_LOCALE_CTYPE
+
+    int i;
+
+    for (i = 0; i < 256; i++) {
+	if (isUPPER_LC(i))
+	    PL_fold_locale[i] = toLOWER_LC(i);
+	else if (isLOWER_LC(i))
+	    PL_fold_locale[i] = toUPPER_LC(i);
+	else
+	    PL_fold_locale[i] = i;
+    }
+
+#endif /* USE_LOCALE_CTYPE */
+}

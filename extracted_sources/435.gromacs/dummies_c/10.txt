@@ -1,0 +1,105 @@
+void construct_dummies(FILE *log,rvec x[],t_nrnb *nrnb,real dt, 
+		       rvec *v,t_idef *idef,t_graph *graph,t_commrec *cr,
+		       matrix box,t_comm_dummies *dummycomm)
+{
+  rvec      xd,vv;
+  real      a1,b1,c1,inv_dt;
+  int       i,ii,nra,nrd,tp,ftype;
+  t_iatom   adum,ai,aj,ak,al;
+  t_iatom   *ia;
+  t_iparams *ip;
+
+  /* Molecules always whole, but I'm not sure whether
+   * the periodicity and shift are guaranteed to be consistent
+   * between different nodes when running e.g. polymers in
+   * parallel. In this special case we thus unshift/shift, but
+   * only when necessary. This is to make sure the coordinates
+   * we move don't end up a box away...
+   */
+  if (dummycomm) {
+    unshift_self(graph,box,x);
+    move_construct_x(dummycomm,x,cr);
+    shift_self(graph,box,x);
+  }
+
+  ip     = idef->iparams;
+  if (v)
+    inv_dt = 1.0/dt;
+  else
+    inv_dt = 1.0;
+
+  for(ftype=0; (ftype<F_NRE); ftype++) {
+    if (interaction_function[ftype].flags & IF_DUMMY) {
+      nra    = interaction_function[ftype].nratoms;
+      nrd    = idef->il[ftype].nr;
+      ia     = idef->il[ftype].iatoms;
+      
+      for(i=0; (i<nrd); ) {
+	tp   = ia[0];
+	assert(ftype == idef->functype[tp]);
+	
+	/* The dummy and constructing atoms */
+	adum = ia[1];
+	ai   = ia[2];
+	aj   = ia[3];
+
+	/* Constants for constructing dummies */
+	a1   = ip[tp].dummy.a;
+	
+	/* Copy the old position */
+	copy_rvec(x[adum],xd);
+	
+	/* Construct the dummy depending on type */
+	switch (ftype) {
+	case F_DUMMY2:
+	  constr_dum2(x[ai],x[aj],x[adum],a1);
+	  break;
+	case F_DUMMY3:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  constr_dum3(x[ai],x[aj],x[ak],x[adum],a1,b1);
+	  break;
+	case F_DUMMY3FD:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  constr_dum3FD(x[ai],x[aj],x[ak],x[adum],a1,b1);
+	  break;
+	case F_DUMMY3FAD:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  constr_dum3FAD(x[ai],x[aj],x[ak],x[adum],a1,b1);
+	  break;
+	case F_DUMMY3OUT:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  c1 = ip[tp].dummy.c;
+	  constr_dum3OUT(x[ai],x[aj],x[ak],x[adum],a1,b1,c1);
+	  break;
+	case F_DUMMY4FD:
+	  ak = ia[4];
+	  al = ia[5];
+	  b1 = ip[tp].dummy.b;
+	  c1 = ip[tp].dummy.c;
+	  constr_dum4FD(x[ai],x[aj],x[ak],x[al],x[adum],a1,b1,c1);
+	  break;
+	default:
+	  fatal_error(0,"No such dummy type %d in %s, line %d",
+		      ftype,__FILE__,__LINE__);
+	}
+	if (v) {
+	  /* Calculate velocity of dummy... */
+	  rvec_sub(x[adum],xd,vv);
+	  svmul(inv_dt,vv,v[adum]);
+	}
+	/* Increment loop variables */
+	i  += nra+1;
+	ia += nra+1;
+      }
+    }
+  }
+  if (dummycomm) {
+    unshift_self(graph,box,x);
+    move_dummy_xv(dummycomm,x,NULL,cr);
+    shift_self(graph,box,x); /* maybe not necessary */
+  }
+}

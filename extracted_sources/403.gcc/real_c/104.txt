@@ -1,0 +1,33 @@
+static void
+eremain (a, b, c)
+     const UEMUSHORT a[], b[];
+     UEMUSHORT c[];
+{
+  UEMUSHORT den[NI], num[NI];
+
+#ifdef NANS
+  if (eisinf (b)
+      || (ecmp (a, ezero) == 0)
+      || eisnan (a)
+      || eisnan (b))
+    {
+      enan (c, 0);
+      return;
+    }
+#endif
+  if (ecmp (a, ezero) == 0)
+    {
+      mtherr ("eremain", SING);
+      eclear (c);
+      return;
+    }
+  emovi (a, den);
+  emovi (b, num);
+  eiremain (den, num);
+  /* Sign of remainder = sign of quotient */
+  if (a[0] == b[0])
+    num[0] = 0;
+  else
+    num[0] = 0xffff;
+  emovo (num, c);
+}

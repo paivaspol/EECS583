@@ -1,0 +1,14 @@
+int
+Perl_sv_backoff(pTHX_ register SV *sv)
+{
+    assert(SvOOK(sv));
+    if (SvIVX(sv)) {
+	char *s = SvPVX(sv);
+	SvLEN(sv) += SvIVX(sv);
+	SvPVX(sv) -= SvIVX(sv);
+	SvIV_set(sv, 0);
+	Move(s, SvPVX(sv), SvCUR(sv)+1, char);
+    }
+    SvFLAGS(sv) &= ~SVf_OOK;
+    return 0;
+}

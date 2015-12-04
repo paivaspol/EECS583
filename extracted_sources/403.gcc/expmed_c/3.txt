@@ -1,0 +1,125 @@
+static rtx
+extract_fixed_bit_field (tmode, op0, offset, bitsize, bitpos,
+			 target, unsignedp)
+     enum machine_mode tmode;
+     rtx op0, target;
+     unsigned HOST_WIDE_INT offset, bitsize, bitpos;
+     int unsignedp;
+{
+  unsigned int total_bits = BITS_PER_WORD;
+  enum machine_mode mode;
+
+  if (GET_CODE (op0) == SUBREG || GET_CODE (op0) == REG)
+    {
+      /* Special treatment for a bit field split across two registers.  */
+      if (bitsize + bitpos > BITS_PER_WORD)
+	return extract_split_bit_field (op0, bitsize, bitpos, unsignedp);
+    }
+  else
+    {
+      /* Get the proper mode to use for this field.  We want a mode that
+	 includes the entire field.  If such a mode would be larger than
+	 a word, we won't be doing the extraction the normal way.  */
+
+      mode = get_best_mode (bitsize, bitpos + offset * BITS_PER_UNIT,
+			    MEM_ALIGN (op0), word_mode, MEM_VOLATILE_P (op0));
+
+      if (mode == VOIDmode)
+	/* The only way this should occur is if the field spans word
+	   boundaries.  */
+	return extract_split_bit_field (op0, bitsize,
+					bitpos + offset * BITS_PER_UNIT,
+					unsignedp);
+
+      total_bits = GET_MODE_BITSIZE (mode);
+
+      /* Make sure bitpos is valid for the chosen mode.  Adjust BITPOS to
+	 be in the range 0 to total_bits-1, and put any excess bytes in
+	 OFFSET.  */
+      if (bitpos >= total_bits)
+	{
+	  offset += (bitpos / total_bits) * (total_bits / BITS_PER_UNIT);
+	  bitpos -= ((bitpos / total_bits) * (total_bits / BITS_PER_UNIT)
+		     * BITS_PER_UNIT);
+	}
+
+      /* Get ref to an aligned byte, halfword, or word containing the field.
+	 Adjust BITPOS to be position within a word,
+	 and OFFSET to be the offset of that word.
+	 Then alter OP0 to refer to that word.  */
+      bitpos += (offset % (total_bits / BITS_PER_UNIT)) * BITS_PER_UNIT;
+      offset -= (offset % (total_bits / BITS_PER_UNIT));
+      op0 = adjust_address (op0, mode, offset);
+    }
+
+  mode = GET_MODE (op0);
+
+  if (BYTES_BIG_ENDIAN)
+    /* BITPOS is the distance between our msb and that of OP0.
+       Convert it to the distance from the lsb.  */
+    bitpos = total_bits - bitsize - bitpos;
+
+  /* Now BITPOS is always the distance between the field's lsb and that of OP0.
+     We have reduced the big-endian case to the little-endian case.  */
+
+  if (unsignedp)
+    {
+      if (bitpos)
+	{
+	  /* If the field does not already start at the lsb,
+	     shift it so it does.  */
+	  tree amount = build_int_2 (bitpos, 0);
+	  /* Maybe propagate the target for the shift.  */
+	  /* But not if we will return it--could confuse integrate.c.  */
+	  rtx subtarget = (target != 0 && GET_CODE (target) == REG
+			   && !REG_FUNCTION_VALUE_P (target)
+			   ? target : 0);
+	  if (tmode != mode) subtarget = 0;
+	  op0 = expand_shift (RSHIFT_EXPR, mode, op0, amount, subtarget, 1);
+	}
+      /* Convert the value to the desired mode.  */
+      if (mode != tmode)
+	op0 = convert_to_mode (tmode, op0, 1);
+
+      /* Unless the msb of the field used to be the msb when we shifted,
+	 mask out the upper bits.  */
+
+      if (GET_MODE_BITSIZE (mode) != bitpos + bitsize)
+	return expand_binop (GET_MODE (op0), and_optab, op0,
+			     mask_rtx (GET_MODE (op0), 0, bitsize, 0),
+			     target, 1, OPTAB_LIB_WIDEN);
+      return op0;
+    }
+
+  /* To extract a signed bit-field, first shift its msb to the msb of the word,
+     then arithmetic-shift its lsb to the lsb of the word.  */
+  op0 = force_reg (mode, op0);
+  if (mode != tmode)
+    target = 0;
+
+  /* Find the narrowest integer mode that contains the field.  */
+
+  for (mode = GET_CLASS_NARROWEST_MODE (MODE_INT); mode != VOIDmode;
+       mode = GET_MODE_WIDER_MODE (mode))
+    if (GET_MODE_BITSIZE (mode) >= bitsize + bitpos)
+      {
+	op0 = convert_to_mode (mode, op0, 0);
+	break;
+      }
+
+  if (GET_MODE_BITSIZE (mode) != (bitsize + bitpos))
+    {
+      tree amount
+	= build_int_2 (GET_MODE_BITSIZE (mode) - (bitsize + bitpos), 0);
+      /* Maybe propagate the target for the shift.  */
+      /* But not if we will return the result--could confuse integrate.c.  */
+      rtx subtarget = (target != 0 && GET_CODE (target) == REG
+		       && ! REG_FUNCTION_VALUE_P (target)
+		       ? target : 0);
+      op0 = expand_shift (LSHIFT_EXPR, mode, op0, amount, subtarget, 1);
+    }
+
+  return expand_shift (RSHIFT_EXPR, mode, op0,
+		       build_int_2 (GET_MODE_BITSIZE (mode) - bitsize, 0),
+		       target, 0);
+}

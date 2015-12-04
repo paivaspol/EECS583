@@ -1,0 +1,31 @@
+void hash_extract_pv(int level, char str[])
+{
+  int xdummy, bm;
+  move_s moves[MOVE_BUFF];
+  int num_moves;
+  char output[STR_BUFF];
+
+  /* avoid loop on repetitions */
+  level--;
+  if (!level) return;
+
+  if(ProbeTT(&xdummy, 0, &bm, &xdummy, &xdummy, 0) != HMISS)
+    {
+      gen(&moves[0]);
+      num_moves = numb_moves;
+      if ((bm >= 0) && (bm < num_moves))
+	{
+	  comp_to_san(moves[bm], output);
+	  make(&moves[0], bm);
+	  if (check_legal(&moves[0], bm, 1))
+	    {
+	      /* only print move AFTER legal check is done */
+	      strcat(str, "<");
+	      strcat(str, output);
+	      strcat(str, "> ");
+	      hash_extract_pv(level, str);
+	    }
+	  unmake(&moves[0], bm);
+	}
+    }
+}

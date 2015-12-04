@@ -1,0 +1,96 @@
+static void
+try_copy_prop (loop, replacement, regno)
+     const struct loop *loop;
+     rtx replacement;
+     unsigned int regno;
+{
+  /* This is the reg that we are copying from.  */
+  rtx reg_rtx = regno_reg_rtx[regno];
+  rtx init_insn = 0;
+  rtx insn;
+  /* These help keep track of whether we replaced all uses of the reg.  */
+  int replaced_last = 0;
+  int store_is_first = 0;
+
+  for (insn = next_insn_in_loop (loop, loop->scan_start);
+       insn != NULL_RTX;
+       insn = next_insn_in_loop (loop, insn))
+    {
+      rtx set;
+
+      /* Only substitute within one extended basic block from the initializing
+         insn.  */
+      if (GET_CODE (insn) == CODE_LABEL && init_insn)
+	break;
+
+      if (! INSN_P (insn))
+	continue;
+
+      /* Is this the initializing insn?  */
+      set = single_set (insn);
+      if (set
+	  && GET_CODE (SET_DEST (set)) == REG
+	  && REGNO (SET_DEST (set)) == regno)
+	{
+	  if (init_insn)
+	    abort ();
+
+	  init_insn = insn;
+	  if (REGNO_FIRST_UID (regno) == INSN_UID (insn))
+	    store_is_first = 1;
+	}
+
+      /* Only substitute after seeing the initializing insn.  */
+      if (init_insn && insn != init_insn)
+	{
+	  struct note_reg_stored_arg arg;
+
+	  replace_loop_regs (insn, reg_rtx, replacement);
+	  if (REGNO_LAST_UID (regno) == INSN_UID (insn))
+	    replaced_last = 1;
+
+	  /* Stop replacing when REPLACEMENT is modified.  */
+	  arg.reg = replacement;
+	  arg.set_seen = 0;
+	  note_stores (PATTERN (insn), note_reg_stored, &arg);
+	  if (arg.set_seen)
+	    {
+	      rtx note = find_reg_note (insn, REG_EQUAL, NULL);
+
+	      /* It is possible that we've turned previously valid REG_EQUAL to
+	         invalid, as we change the REGNO to REPLACEMENT and unlike REGNO,
+	         REPLACEMENT is modified, we get different meaning.  */
+	      if (note && reg_mentioned_p (replacement, XEXP (note, 0)))
+		remove_note (insn, note);
+	      break;
+	    }
+	}
+    }
+  if (! init_insn)
+    abort ();
+  if (apply_change_group ())
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream, "  Replaced reg %d", regno);
+      if (store_is_first && replaced_last)
+	{
+	  rtx first;
+	  rtx retval_note;
+
+	  /* Assume we're just deleting INIT_INSN.  */
+	  first = init_insn;
+	  /* Look for REG_RETVAL note.  If we're deleting the end of
+	     the libcall sequence, the whole sequence can go.  */
+	  retval_note = find_reg_note (init_insn, REG_RETVAL, NULL_RTX);
+	  /* If we found a REG_RETVAL note, find the first instruction
+	     in the sequence.  */
+	  if (retval_note)
+	    first = XEXP (retval_note, 0);
+
+	  /* Delete the instructions.  */
+	  loop_delete_insns (first, init_insn);
+	}
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream, ".\n");
+    }
+}

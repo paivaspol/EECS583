@@ -1,0 +1,25 @@
+void read_edvec(FILE *in,int nr,t_eigvec *tvec)
+{
+  int i,idum;
+  double rdum;
+  char line[STRLEN+1];
+
+  tvec->neig=read_edint(in);
+  snew(tvec->ieig,tvec->neig);
+  snew(tvec->stpsz,tvec->neig);
+  snew(tvec->vec,tvec->neig);
+  snew(tvec->xproj,tvec->neig);
+  snew(tvec->vproj,tvec->neig);
+  snew(tvec->fproj,tvec->neig);
+  snew(tvec->refproj,tvec->neig);
+  for(i=0; (i < tvec->neig); i++) {
+    fgets2 (line,STRLEN,in);
+    sscanf (line,"%d%lf",&idum,&rdum);
+    tvec->ieig[i]=idum;
+    tvec->stpsz[i]=rdum;
+  }
+  for(i=0; (i < tvec->neig); i++) {
+    snew(tvec->vec[i],nr);
+    scan_edvec(in,nr,tvec->vec[i]);
+  }
+}

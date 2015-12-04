@@ -1,0 +1,13 @@
+void
+Perl_free_tied_hv_pool(pTHX)
+{
+    HE *ohe;
+    HE *he = PL_hv_fetch_ent_mh;
+    while (he) {
+	Safefree(HeKEY_hek(he));
+	ohe = he;
+	he = HeNEXT(he);
+	del_HE(ohe);
+    }
+    PL_hv_fetch_ent_mh = Nullhe;
+}

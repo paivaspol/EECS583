@@ -1,0 +1,79 @@
+void
+convert_from_ssa ()
+{
+  int bb;
+  partition reg_partition;
+  rtx insns = get_insns ();
+
+  /* Need global_live_at_{start,end} up to date.  There should not be
+     any significant dead code at this point, except perhaps dead
+     stores.  So do not take the time to perform dead code elimination. 
+
+     Register coalescing needs death notes, so generate them.  */
+  life_analysis (insns, NULL, PROP_DEATH_NOTES);
+
+  /* Figure out which regs in copies and phi nodes don't conflict and
+     therefore can be coalesced.  */
+  if (conservative_reg_partition)
+    reg_partition = compute_conservative_reg_partition ();
+  else
+    reg_partition = compute_coalesced_reg_partition ();
+
+  if (!check_hard_regs_in_partition (reg_partition))
+    /* Two separate partitions should correspond to the same hard
+       register but do not.  */
+    abort ();
+
+  rename_equivalent_regs (reg_partition);
+
+  /* Eliminate the PHI nodes.  */
+  for (bb = n_basic_blocks; --bb >= 0; )
+    {
+      basic_block b = BASIC_BLOCK (bb);
+      edge e;
+
+      for (e = b->pred; e; e = e->pred_next)
+	if (e->src != ENTRY_BLOCK_PTR)
+	  eliminate_phi (e, reg_partition);
+    }
+
+  partition_delete (reg_partition);
+
+  /* Actually delete the PHI nodes.  */
+  for (bb = n_basic_blocks; --bb >= 0; )
+    {
+      rtx insn = BLOCK_HEAD (bb);
+
+      while (1)
+	{
+	  /* If this is a PHI node delete it.  */
+	  if (PHI_NODE_P (insn))
+	    {
+	      if (insn == BLOCK_END (bb))
+		BLOCK_END (bb) = PREV_INSN (insn);
+	      insn = delete_insn (insn);
+	    }
+	  /* Since all the phi nodes come at the beginning of the
+	     block, if we find an ordinary insn, we can stop looking
+	     for more phi nodes.  */
+	  else if (INSN_P (insn))
+	    break;
+	  /* If we've reached the end of the block, stop.  */
+	  else if (insn == BLOCK_END (bb))
+	    break;
+	  else 
+	    insn = NEXT_INSN (insn);
+	}
+    }
+
+  /* Commit all the copy nodes needed to convert out of SSA form.  */
+  commit_edge_insertions ();
+
+  in_ssa_form = 0;
+
+  count_or_remove_death_notes (NULL, 1);
+
+  /* Deallocate the data structures.  */
+  VARRAY_FREE (ssa_definition);
+  ssa_rename_from_free ();
+}

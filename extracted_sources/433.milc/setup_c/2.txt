@@ -1,0 +1,108 @@
+int readin(int prompt) {
+/* read in parameters for su3 monte carlo	*/
+/* argument "prompt" is 1 if prompts are to be given for input	*/
+
+     int status;
+     double x;
+
+    /* On node zero, read parameters and send to all other nodes */
+    if(this_node==0){
+
+	printf("\n\n");
+	status=0;
+    
+	/* warms, trajecs */
+	IF_OK status += get_i(prompt,"warms", &par_buf.warms );
+	IF_OK status += get_i(prompt,"trajecs", &par_buf.trajecs );
+    
+	/* trajectories between propagator measurements */
+	IF_OK status += 
+	    get_i(prompt,"traj_between_meas", &par_buf.propinterval );
+    
+	/* get couplings and broadcast to nodes	*/
+	/* beta, mass */
+	IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+	IF_OK status += get_f(prompt,"mass", &par_buf.mass );
+	IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+
+	/* microcanonical time step */
+	IF_OK status += 
+	    get_f(prompt,"microcanonical_time_step", &par_buf.epsilon );
+    
+	/*microcanonical steps per trajectory */
+	IF_OK status += get_i(prompt,"steps_per_trajectory", &par_buf.steps );
+    
+	/* maximum no. of conjugate gradient iterations */
+	IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+    
+	/* error per site for conjugate gradient */
+	IF_OK status += get_f(prompt,"error_per_site", &x );
+	IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
+	    /* New conjugate gradient normalizes rsqmin by norm of source */
+    
+	/* error for propagator conjugate gradient */
+	IF_OK status += get_f(prompt,"error_for_propagator", &x );
+	IF_OK par_buf.rsqprop = x*x;
+
+#ifdef SPECTRUM
+        /* source time slice and increment */
+	IF_OK status += get_i(prompt,"source_start", &par_buf.source_start );
+	IF_OK status += get_i(prompt,"source_inc", &par_buf.source_inc );
+	IF_OK status += get_i(prompt,"n_sources", &par_buf.n_sources );
+#endif /*SPECTRUM*/
+
+        /* find out what kind of starting lattice to use */
+	IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+	    par_buf.startfile );
+
+        /* find out what to do with lattice at end */
+	IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+	    par_buf.savefile );
+
+	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
+    } /* end if(this_node==0) */
+
+    /* Node 0 broadcasts parameter buffer to all other nodes */
+    broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+
+    if( par_buf.stopflag != 0 )
+      normal_exit(0);
+
+    warms = par_buf.warms;
+    trajecs = par_buf.trajecs;
+    steps = par_buf.steps;
+    propinterval = par_buf.propinterval;
+    niter = par_buf.niter;
+    rsqmin = par_buf.rsqmin;
+    rsqprop = par_buf.rsqprop;
+    epsilon = par_buf.epsilon;
+    beta = par_buf.beta;
+    mass = par_buf.mass;
+    u0 = par_buf.u0;
+#ifdef SPECTRUM
+    source_start = par_buf.source_start;
+    source_inc = par_buf.source_inc;
+    n_sources = par_buf.n_sources;
+#endif /*SPECTRUM*/
+    startflag = par_buf.startflag;
+    saveflag = par_buf.saveflag;
+    strcpy(startfile,par_buf.startfile);
+    strcpy(savefile,par_buf.savefile);
+
+    /* Do whatever is needed to get lattice */
+    if( startflag == CONTINUE ){
+        rephase( OFF );
+    }
+    startlat_p = reload_lattice( startflag, startfile );
+    /* if a lattice was read in, put in KS phases and AP boundary condition */
+    valid_fatlinks = valid_longlinks = 0;
+    phases_in = OFF;
+    rephase( ON );
+
+    /* make table of coefficients and permutations of loops in gauge action */
+    make_loop_table();
+    /* make table of coefficients and permutations of paths in quark action */
+    make_path_table();
+
+    return(0);
+}

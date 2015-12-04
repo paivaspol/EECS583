@@ -1,0 +1,40 @@
+void *
+fibheap_replace_key_data (heap, node, key, data)
+     fibheap_t heap;
+     fibnode_t node;
+     fibheapkey_t key;
+     void *data;
+{
+  void *odata;
+  int okey;
+  fibnode_t y;
+
+  /* If we wanted to, we could actually do a real increase by redeleting and
+     inserting. However, this would require O (log n) time. So just bail out
+     for now.  */
+  if (fibheap_comp_data (heap, key, data, node) > 0)
+    return NULL;
+
+  odata = node->data;
+  okey = node->key;
+  node->data = data;
+  node->key = key;
+  y = node->parent;
+
+  if (okey == key)
+    return odata;
+
+  /* These two compares are specifically <= 0 to make sure that in the case
+     of equality, a node we replaced the data on, becomes the new min.  This
+     is needed so that delete's call to extractmin gets the right node.  */
+  if (y != NULL && fibheap_compare (heap, node, y) <= 0)
+    {
+      fibheap_cut (heap, node, y);
+      fibheap_cascading_cut (heap, y);
+    }
+
+  if (fibheap_compare (heap, node, heap->min) <= 0)
+    heap->min = node;
+
+  return odata;
+}

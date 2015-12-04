@@ -1,0 +1,19 @@
+static sqd_uint64 
+current_index_size(SSIINDEX *g) 
+{
+  sqd_uint64 frecsize, precsize, srecsize;
+  sqd_uint64 total;
+
+  /* Magic-looking numbers come from adding up sizes 
+   * of things in bytes
+   */
+  frecsize = 16 + g->flen;
+  precsize = (g->smode == SSI_OFFSET_I64) ? 22+g->plen : 14+g->plen;
+  srecsize = g->plen+g->slen;
+  total = (66L +		       /* header size, if 64bit index offsets */
+	   frecsize * g->nfiles +      /* file section size                   */
+	   precsize * g->nprimary +    /* primary key section size            */
+	   srecsize * g->nsecondary) / /* secondary key section size          */
+          1048576L;
+  return total;
+}

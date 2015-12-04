@@ -1,0 +1,81 @@
+static void
+insert_set_in_table (x, insn)
+     rtx x;
+     rtx insn;
+{
+  int found;
+  unsigned int hash;
+  struct expr *cur_expr, *last_expr = NULL;
+  struct occr *cur_occr, *last_occr = NULL;
+
+  if (GET_CODE (x) != SET
+      || GET_CODE (SET_DEST (x)) != REG)
+    abort ();
+
+  hash = hash_set (REGNO (SET_DEST (x)), set_hash_table_size);
+
+  cur_expr = set_hash_table[hash];
+  found = 0;
+
+  while (cur_expr && 0 == (found = expr_equiv_p (cur_expr->expr, x)))
+    {
+      /* If the expression isn't found, save a pointer to the end of
+	 the list.  */
+      last_expr = cur_expr;
+      cur_expr = cur_expr->next_same_hash;
+    }
+
+  if (! found)
+    {
+      cur_expr = (struct expr *) gcse_alloc (sizeof (struct expr));
+      bytes_used += sizeof (struct expr);
+      if (set_hash_table[hash] == NULL)
+	/* This is the first pattern that hashed to this index.  */
+	set_hash_table[hash] = cur_expr;
+      else
+	/* Add EXPR to end of this hash chain.  */
+	last_expr->next_same_hash = cur_expr;
+
+      /* Set the fields of the expr element.
+	 We must copy X because it can be modified when copy propagation is
+	 performed on its operands.  */
+      cur_expr->expr = copy_rtx (x);
+      cur_expr->bitmap_index = n_sets++;
+      cur_expr->next_same_hash = NULL;
+      cur_expr->antic_occr = NULL;
+      cur_expr->avail_occr = NULL;
+    }
+
+  /* Now record the occurrence.  */
+  cur_occr = cur_expr->avail_occr;
+
+  /* Search for another occurrence in the same basic block.  */
+  while (cur_occr && BLOCK_NUM (cur_occr->insn) != BLOCK_NUM (insn))
+    {
+      /* If an occurrence isn't found, save a pointer to the end of
+	 the list.  */
+      last_occr = cur_occr;
+      cur_occr = cur_occr->next;
+    }
+
+  if (cur_occr)
+    /* Found another instance of the expression in the same basic block.
+       Prefer this occurrence to the currently recorded one.  We want the
+       last one in the block and the block is scanned from start to end.  */
+    cur_occr->insn = insn;
+  else
+    {
+      /* First occurrence of this expression in this basic block.  */
+      cur_occr = (struct occr *) gcse_alloc (sizeof (struct occr));
+      bytes_used += sizeof (struct occr);
+
+      /* First occurrence of this expression in any block?  */
+      if (cur_expr->avail_occr == NULL)
+	cur_expr->avail_occr = cur_occr;
+      else
+	last_occr->next = cur_occr;
+
+      cur_occr->insn = insn;
+      cur_occr->next = NULL;
+    }
+}

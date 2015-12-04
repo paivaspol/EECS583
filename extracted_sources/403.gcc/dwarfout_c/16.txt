@@ -1,0 +1,24 @@
+static tree
+root_type_1 (type, count)
+     tree type;
+     int count;
+{
+  /* Give up after searching 1000 levels, in case this is a recursive
+     pointer type.  Such types are possible in Ada, but it is not possible
+     to represent them in DWARF1 debug info.  */
+  if (count > 1000)
+    return error_mark_node;
+
+  switch (TREE_CODE (type))
+    {
+      case ERROR_MARK:
+	return error_mark_node;
+
+      case POINTER_TYPE:
+      case REFERENCE_TYPE:
+	return root_type_1 (TREE_TYPE (type), count+1);
+
+      default:
+	return type;
+    }
+}

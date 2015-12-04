@@ -1,0 +1,90 @@
+static void ReadOneFrame (int FrameNoInFile, int HeaderSize, int xs, int ys, int xs_cr, int ys_cr)
+{
+  unsigned int symbol_size_in_bytes = img->pic_unit_size_on_disk/8;
+  
+  const int imgsize_y = xs*ys;
+  const int imgsize_uv = xs_cr*ys_cr;
+
+  const int bytes_y = imgsize_y * symbol_size_in_bytes;
+  const int bytes_uv = imgsize_uv * symbol_size_in_bytes;
+
+  const int64 framesize_in_bytes = bytes_y + 2*bytes_uv;
+  unsigned char *buf;
+
+  Boolean rgb_input = (input->rgb_input_flag==1 && input->yuv_format==3);
+
+
+  assert (p_in != -1);
+
+  // KS: this buffer should actually be allocated only once, but this is still much faster than the previous version
+  if (NULL==(buf = malloc (xs*ys * symbol_size_in_bytes))) no_mem_exit("ReadOneFrame: buf");
+
+  // skip Header
+  if (lseek (p_in, HeaderSize, SEEK_SET) != HeaderSize)
+  {
+    error ("ReadOneFrame: cannot fseek to (Header size) in p_in", -1);
+  }
+
+  // skip starting frames
+  if (lseek (p_in, framesize_in_bytes * input->start_frame, SEEK_CUR) == -1) 
+  {
+    snprintf(errortext, ET_SIZE, "ReadOneFrame: cannot advance file pointer in p_in beyond frame %d\n", input->start_frame);
+    error (errortext,-1);
+  } 
+
+  // seek to current frame 
+  if (lseek (p_in, framesize_in_bytes * FrameNoInFile, SEEK_CUR) == -1) 
+  {
+    snprintf(errortext, ET_SIZE, "ReadOneFrame: cannot advance file pointer in p_in beyond frame %d\n", input->start_frame + FrameNoInFile);
+    error (errortext,-1);
+  }
+
+  // Here we are at the correct position for the source frame in the file.  Now
+  // read it.
+  if (img->pic_unit_size_on_disk%8 == 0)
+  {
+    if(rgb_input)
+      lseek (p_in, framesize_in_bytes/3, SEEK_CUR);
+
+    if (read(p_in, buf, bytes_y) != bytes_y)
+    {
+      printf ("ReadOneFrame: cannot read %d bytes from input file, unexpected EOF?, exiting", bytes_y);
+      report_stats_on_error();
+      exit (-1);
+    }
+
+    buf2img(imgY_org_frm, buf, xs, ys, symbol_size_in_bytes);
+    
+    if (img->yuv_format != YUV400)
+    {
+      if (read(p_in, buf, bytes_uv) != bytes_uv)
+      {
+        printf ("ReadOneFrame: cannot read %d bytes from input file, unexpected EOF?, exiting", bytes_y);
+        report_stats_on_error();
+        exit (-1);
+      }
+      buf2img(imgUV_org_frm[0], buf, xs_cr, ys_cr, symbol_size_in_bytes);
+      
+      if(rgb_input)
+        lseek (p_in, -framesize_in_bytes, SEEK_CUR);
+      
+      if (read(p_in, buf, bytes_uv) != bytes_uv)
+      {
+        printf ("ReadOneFrame: cannot read %d bytes from input file, unexpected EOF?, exiting", bytes_y);
+        report_stats_on_error();
+        exit (-1);
+      }
+      buf2img(imgUV_org_frm[1], buf, xs_cr, ys_cr, symbol_size_in_bytes);
+
+      if(rgb_input)
+        lseek (p_in, framesize_in_bytes*2/3, SEEK_CUR);
+    }
+  }
+  else
+  {
+    printf ("ReadOneFrame (NOT IMPLEMENTED): pic unit size on disk must be divided by 8");
+    exit (-1);
+  }
+  free (buf);
+  
+}

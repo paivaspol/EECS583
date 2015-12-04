@@ -1,0 +1,13 @@
+void
+MSAFileClose(MSAFILE *afp)
+{
+#ifndef SRE_STRICT_ANSI
+/* gzip functionality only on POSIX systems */
+  if (afp->do_gzip)    pclose(afp->f);
+#endif
+  if (! afp->do_stdin) fclose(afp->f);
+  if (afp->buf  != NULL) free(afp->buf);
+  if (afp->ssi  != NULL) SSIClose(afp->ssi);
+  if (afp->fname != NULL) free(afp->fname);
+  free(afp);
+}

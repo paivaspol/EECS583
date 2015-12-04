@@ -1,0 +1,40 @@
+void
+finish_fname_decls ()
+{
+  unsigned ix;
+  tree body = NULL_TREE;
+  tree stack = saved_function_name_decls;
+
+  for (; stack && TREE_VALUE (stack); stack = TREE_CHAIN (stack))
+    body = chainon (TREE_VALUE (stack), body);
+  
+  if (body)
+    {
+      /* They were called into existence, so add to statement tree.  */
+      body = chainon (body,
+		      TREE_CHAIN (DECL_SAVED_TREE (current_function_decl)));
+      body = build_stmt (COMPOUND_STMT, body);
+      
+      COMPOUND_STMT_NO_SCOPE (body) = 1;
+      TREE_CHAIN (DECL_SAVED_TREE (current_function_decl)) = body;
+    }
+  
+  for (ix = 0; fname_vars[ix].decl; ix++)
+    *fname_vars[ix].decl = NULL_TREE;
+  
+  if (stack)
+    {
+      /* We had saved values, restore them.  */
+      tree saved;
+
+      for (saved = TREE_PURPOSE (stack); saved; saved = TREE_CHAIN (saved))
+	{
+	  tree decl = TREE_PURPOSE (saved);
+	  unsigned ix = TREE_INT_CST_LOW (TREE_VALUE (saved));
+	  
+	  *fname_vars[ix].decl = decl;
+	}
+      stack = TREE_CHAIN (stack);
+    }
+  saved_function_name_decls = stack;
+}

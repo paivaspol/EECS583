@@ -1,0 +1,60 @@
+int
+Perl_get_debug_opts_flags(pTHX_ char **s, int flags)
+{
+    static char *usage_msgd[] = {
+      " Debugging flag values: (see also -d)",
+      "  p  Tokenizing and parsing (with v, displays parse stack)",
+      "  s  Stack snapshots (with v, displays all stacks)",
+      "  l  Context (loop) stack processing",
+      "  t  Trace execution",
+      "  o  Method and overloading resolution",
+      "  c  String/numeric conversions",
+      "  P  Print profiling info, preprocessor command for -P, source file input state",
+      "  m  Memory allocation",
+      "  f  Format processing",
+      "  r  Regular expression parsing and execution",
+      "  x  Syntax tree dump",
+      "  u  Tainting checks",
+      "  H  Hash dump -- usurps values()",
+      "  X  Scratchpad allocation",
+      "  D  Cleaning up",
+      "  S  Thread synchronization",
+      "  T  Tokenising",
+      "  R  Include reference counts of dumped variables (eg when using -Ds)",
+      "  J  Do not s,t,P-debug (Jump over) opcodes within package DB",
+      "  v  Verbose: use in conjunction with other flags",
+      "  C  Copy On Write",
+      "  A  Consistency checks on internal structures",
+      "  q  quiet - currently only suppresses the 'EXECUTING' message",
+      NULL
+    };
+    int i = 0;
+    if (isALPHA(**s)) {
+	/* if adding extra options, remember to update DEBUG_MASK */
+	static char debopts[] = "psltocPmfrxu HXDSTRJvC";
+
+	for (; isALNUM(**s); (*s)++) {
+	    char *d = strchr(debopts,**s);
+	    if (d)
+		i |= 1 << (d - debopts);
+	    else if (ckWARN_d(WARN_DEBUGGING))
+	        Perl_warner(aTHX_ packWARN(WARN_DEBUGGING),
+		    "invalid option -D%c, use -D'' to see choices\n", **s);
+	}
+    }
+    else if (isDIGIT(**s)) {
+	i = atoi(*s);
+	for (; isALNUM(**s); (*s)++) ;
+    }
+    else if (flags & 1) {
+      /* Give help.  */
+      char **p = usage_msgd;
+      while (*p) PerlIO_printf(PerlIO_stdout(), "%s\n", *p++);
+    }
+#  ifdef EBCDIC
+    if ((i & DEBUG_p_FLAG) && ckWARN_d(WARN_DEBUGGING))
+	Perl_warner(aTHX_ packWARN(WARN_DEBUGGING),
+		"-Dp not implemented on this platform\n");
+#  endif
+    return i;
+}

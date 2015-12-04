@@ -1,0 +1,154 @@
+void inl3001(
+	            int nri,
+	            int iinr[],
+	            int jindex[],
+	            int jjnr[],
+	            int shift[],
+	           real shiftvec[],
+	           real fshift[],
+	            int gid[],
+	           real pos[],
+	           real faction[],
+	           real charge[],
+	           real facel,
+	           real Vc[],
+	           real tabscale,
+	           real VFtab[],
+	           real lambda,
+	           real *dvdlambda,
+	           real chargeB[])
+{
+  int        ii;
+  int        k;
+  int        n;
+  int        nj0;
+  int        nj1;
+  int        is3;
+  int        ggid;
+  int        ii3;
+  int        n0;
+  int        n1;
+  int        nnn;
+  real       qqA;
+  real       qqB;
+  real       qqq;
+  real       vctot;
+  real       vcoul;
+  real       rt;
+  real       eps;
+  real       eps2;
+  real       Y;
+  real       F;
+  real       Geps;
+  real       Heps2;
+  real       Fp;
+  real       VV;
+  real       FF;
+  real       fijC;
+  real       dvdl;
+  real       L1;
+  int        j3;
+  int        jnr;
+  real       shX;
+  real       shY;
+  real       shZ;
+  const real nul  =  0.0000000000000000;
+  const real one  =  1.0000000000000000;
+  const real two  =  2.0000000000000000;
+  real       ix1;
+  real       iy1;
+  real       iz1;
+  real       iqA;
+  real       iqB;
+  real       fix1;
+  real       fiy1;
+  real       fiz1;
+  real       jx1;
+  real       jy1;
+  real       jz1;
+  real       dx11;
+  real       dy11;
+  real       dz11;
+  real       rsq11;
+  real       rinv11;
+  real       r11;
+  real       fs11;
+  real       tx11;
+  real       ty11;
+  real       tz11;
+
+  dvdl              = nul;
+  L1                = one - lambda;
+
+  for(n=0; (n<nri); n++) {
+    is3               = 3*shift[n];
+    shX               = shiftvec[is3];
+    shY               = shiftvec[is3+1];
+    shZ               = shiftvec[is3+2];
+    ii                = iinr[n];
+    ii3               = 3*ii;
+    vctot             = nul;
+    nj0               = jindex[n];
+    nj1               = jindex[n+1];
+    ix1               = shX + pos[ii3];
+    iy1               = shY + pos[ii3+1];
+    iz1               = shZ + pos[ii3+2];
+    iqA               = facel*charge[ii];
+    iqB               = facel*chargeB[ii];
+    fix1              = nul;
+    fiy1              = nul;
+    fiz1              = nul;
+    for(k=nj0; (k<nj1); k++) {
+      jnr               = jjnr[k];
+      j3                = 3*jnr;
+      jx1               = pos[j3];
+      jy1               = pos[j3+1];
+      jz1               = pos[j3+2];
+      dx11              = ix1 - jx1;
+      dy11              = iy1 - jy1;
+      dz11              = iz1 - jz1;
+      rsq11             = dx11*dx11+dy11*dy11+dz11*dz11;
+      rinv11            = 1.0/sqrt(rsq11);
+      r11               = rsq11*rinv11;
+      rt                = r11*tabscale;
+      n0                = rt;
+      eps               = rt-n0;
+      eps2              = eps*eps;
+      n1                = 4*n0;
+      qqA               = iqA*charge[jnr];
+      qqB               = iqB*chargeB[jnr];
+      qqq               = L1*qqA + lambda*qqB;
+      nnn               = n1;
+      Y                 = VFtab[nnn];
+      F                 = VFtab[nnn+1];
+      Geps              = eps*VFtab[nnn+2];
+      Heps2             = eps2*VFtab[nnn+3];
+      Fp                = F+Geps+Heps2;
+      VV                = Y+eps*Fp;
+      FF                = Fp+Geps+two*Heps2;
+      vcoul             = qqq*VV;
+      fijC              = qqq*FF;
+      dvdl              = dvdl + (qqB - qqA)*VV;
+      fs11              = -((fijC)*tabscale)*rinv11;
+      vctot             = vctot + vcoul;
+      tx11              = dx11*fs11;
+      ty11              = dy11*fs11;
+      tz11              = dz11*fs11;
+      fix1              = fix1 + tx11;
+      fiy1              = fiy1 + ty11;
+      fiz1              = fiz1 + tz11;
+      faction[j3]       = faction[j3]-tx11;
+      faction[j3+1]     = faction[j3+1]-ty11;
+      faction[j3+2]     = faction[j3+2]-tz11;
+    }
+    faction[ii3]      = faction[ii3] + fix1;
+    faction[ii3+1]    = faction[ii3+1] + fiy1;
+    faction[ii3+2]    = faction[ii3+2] + fiz1;
+    fshift[is3]       = fshift[is3] + fix1;
+    fshift[is3+1]     = fshift[is3+1] + fiy1;
+    fshift[is3+2]     = fshift[is3+2] + fiz1;
+    ggid              = gid[n];
+    Vc[ggid]          = Vc[ggid] + vctot;
+  }
+  *dvdlambda        = *dvdlambda + dvdl;
+}

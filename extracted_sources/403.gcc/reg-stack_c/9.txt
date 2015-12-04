@@ -1,0 +1,20 @@
+static int
+get_asm_operand_n_inputs (body)
+     rtx body;
+{
+  if (GET_CODE (body) == SET && GET_CODE (SET_SRC (body)) == ASM_OPERANDS)
+    return ASM_OPERANDS_INPUT_LENGTH (SET_SRC (body));
+
+  else if (GET_CODE (body) == ASM_OPERANDS)
+    return ASM_OPERANDS_INPUT_LENGTH (body);
+
+  else if (GET_CODE (body) == PARALLEL
+	   && GET_CODE (XVECEXP (body, 0, 0)) == SET)
+    return ASM_OPERANDS_INPUT_LENGTH (SET_SRC (XVECEXP (body, 0, 0)));
+
+  else if (GET_CODE (body) == PARALLEL
+	   && GET_CODE (XVECEXP (body, 0, 0)) == ASM_OPERANDS)
+    return ASM_OPERANDS_INPUT_LENGTH (XVECEXP (body, 0, 0));
+
+  abort ();
+}

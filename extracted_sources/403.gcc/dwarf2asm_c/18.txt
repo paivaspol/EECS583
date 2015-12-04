@@ -1,0 +1,17 @@
+static int
+dw2_output_indirect_constant_1 (node, data)
+     splay_tree_node node;
+     void* data ATTRIBUTE_UNUSED;
+{
+  const char *sym;
+  rtx sym_ref;
+
+  sym = (const char *) node->key;
+  sym_ref = gen_rtx_SYMBOL_REF (Pmode, sym);
+  if (USE_LINKONCE_INDIRECT)
+    fprintf (asm_out_file, "\t.hidden DW.ref.%s\n", sym);
+  assemble_variable ((tree) node->value, 1, 1, 1);
+  assemble_integer (sym_ref, POINTER_SIZE / BITS_PER_UNIT, POINTER_SIZE, 1);
+
+  return 0;
+}

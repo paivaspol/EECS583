@@ -1,0 +1,56 @@
+static void
+ephi_create (t, visited, pred, succ, nodes)
+     int t;
+     sbitmap visited, *pred, *succ;
+     rtx *nodes;
+{
+  rtx reg_u = NULL_RTX;
+  int unvisited_predecessors = 0;
+  int p;
+
+  /* Iterate through the predecessor list looking for unvisited nodes.
+     If there are any, we have a cycle, and must deal with that.  At 
+     the same time, look for a visited predecessor.  If there is one,
+     we won't need to create a temporary.  */
+
+  EXECUTE_IF_SET_IN_SBITMAP (pred[t], 0, p,
+    {
+      if (! TEST_BIT (visited, p))
+	unvisited_predecessors = 1;
+      else if (!reg_u)
+	reg_u = nodes[p];
+    });
+
+  if (unvisited_predecessors)
+    {
+      /* We found a cycle.  Copy out one element of the ring (if necessary),
+	 then traverse the ring copying as we go.  */
+
+      if (!reg_u)
+	{
+	  reg_u = gen_reg_rtx (GET_MODE (nodes[t]));
+	  emit_move_insn (reg_u, nodes[t]);
+	}
+
+      EXECUTE_IF_SET_IN_SBITMAP (pred[t], 0, p,
+	{
+	  if (! TEST_BIT (visited, p))
+	    {
+	      ephi_backward (p, visited, pred, nodes);
+	      emit_move_insn (nodes[p], reg_u);
+	    }
+	});
+    }  
+  else 
+    {
+      /* No cycle.  Just copy the value from a successor.  */
+
+      int s;
+      EXECUTE_IF_SET_IN_SBITMAP (succ[t], 0, s,
+	{
+	  SET_BIT (visited, t);
+	  emit_move_insn (nodes[t], nodes[s]);
+	  return;
+	});
+    }
+}

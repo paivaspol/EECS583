@@ -1,0 +1,96 @@
+void
+life_analysis (f, file, flags)
+     rtx f;
+     FILE *file;
+     int flags;
+{
+#ifdef ELIMINABLE_REGS
+  int i;
+  static const struct {const int from, to; } eliminables[] = ELIMINABLE_REGS;
+#endif
+
+  /* Record which registers will be eliminated.  We use this in
+     mark_used_regs.  */
+
+  CLEAR_HARD_REG_SET (elim_reg_set);
+
+#ifdef ELIMINABLE_REGS
+  for (i = 0; i < (int) ARRAY_SIZE (eliminables); i++)
+    SET_HARD_REG_BIT (elim_reg_set, eliminables[i].from);
+#else
+  SET_HARD_REG_BIT (elim_reg_set, FRAME_POINTER_REGNUM);
+#endif
+
+  if (! optimize)
+    flags &= ~(PROP_LOG_LINKS | PROP_AUTOINC | PROP_ALLOW_CFG_CHANGES);
+
+  /* The post-reload life analysis have (on a global basis) the same
+     registers live as was computed by reload itself.  elimination
+     Otherwise offsets and such may be incorrect.
+
+     Reload will make some registers as live even though they do not
+     appear in the rtl.
+
+     We don't want to create new auto-incs after reload, since they
+     are unlikely to be useful and can cause problems with shared
+     stack slots.  */
+  if (reload_completed)
+    flags &= ~(PROP_REG_INFO | PROP_AUTOINC);
+
+  /* We want alias analysis information for local dead store elimination.  */
+  if (optimize && (flags & PROP_SCAN_DEAD_CODE))
+    init_alias_analysis ();
+
+  /* Always remove no-op moves.  Do this before other processing so
+     that we don't have to keep re-scanning them.  */
+  delete_noop_moves (f);
+  purge_all_dead_edges (false);
+
+  /* Some targets can emit simpler epilogues if they know that sp was
+     not ever modified during the function.  After reload, of course,
+     we've already emitted the epilogue so there's no sense searching.  */
+  if (! reload_completed)
+    notice_stack_pointer_modification (f);
+
+  /* Allocate and zero out data structures that will record the
+     data from lifetime analysis.  */
+  allocate_reg_life_data ();
+  allocate_bb_life_data ();
+
+  /* Find the set of registers live on function exit.  */
+  mark_regs_live_at_end (EXIT_BLOCK_PTR->global_live_at_start);
+
+  /* "Update" life info from zero.  It'd be nice to begin the
+     relaxation with just the exit and noreturn blocks, but that set
+     is not immediately handy.  */
+
+  if (flags & PROP_REG_INFO)
+    memset (regs_ever_live, 0, sizeof (regs_ever_live));
+  update_life_info (NULL, UPDATE_LIFE_GLOBAL, flags);
+
+  /* Clean up.  */
+  if (optimize && (flags & PROP_SCAN_DEAD_CODE))
+    end_alias_analysis ();
+
+  if (file)
+    dump_flow_info (file);
+
+  free_basic_block_vars (1);
+
+#ifdef ENABLE_CHECKING
+  {
+    rtx insn;
+
+    /* Search for any REG_LABEL notes which reference deleted labels.  */
+    for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+      {
+	rtx inote = find_reg_note (insn, REG_LABEL, NULL_RTX);
+
+	if (inote && GET_CODE (inote) == NOTE_INSN_DELETED_LABEL)
+	  abort ();
+      }
+  }
+#endif
+  /* Removing dead insns should've made jumptables really dead.  */
+  delete_dead_jumptables ();
+}

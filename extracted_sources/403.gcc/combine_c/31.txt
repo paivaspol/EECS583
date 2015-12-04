@@ -1,0 +1,120 @@
+static rtx
+apply_distributive_law (x)
+     rtx x;
+{
+  enum rtx_code code = GET_CODE (x);
+  rtx lhs, rhs, other;
+  rtx tem;
+  enum rtx_code inner_code;
+
+  /* Distributivity is not true for floating point.
+     It can change the value.  So don't do it.
+     -- rms and moshier@world.std.com.  */
+  if (FLOAT_MODE_P (GET_MODE (x)))
+    return x;
+
+  /* The outer operation can only be one of the following:  */
+  if (code != IOR && code != AND && code != XOR
+      && code != PLUS && code != MINUS)
+    return x;
+
+  lhs = XEXP (x, 0), rhs = XEXP (x, 1);
+
+  /* If either operand is a primitive we can't do anything, so get out
+     fast.  */
+  if (GET_RTX_CLASS (GET_CODE (lhs)) == 'o'
+      || GET_RTX_CLASS (GET_CODE (rhs)) == 'o')
+    return x;
+
+  lhs = expand_compound_operation (lhs);
+  rhs = expand_compound_operation (rhs);
+  inner_code = GET_CODE (lhs);
+  if (inner_code != GET_CODE (rhs))
+    return x;
+
+  /* See if the inner and outer operations distribute.  */
+  switch (inner_code)
+    {
+    case LSHIFTRT:
+    case ASHIFTRT:
+    case AND:
+    case IOR:
+      /* These all distribute except over PLUS.  */
+      if (code == PLUS || code == MINUS)
+	return x;
+      break;
+
+    case MULT:
+      if (code != PLUS && code != MINUS)
+	return x;
+      break;
+
+    case ASHIFT:
+      /* This is also a multiply, so it distributes over everything.  */
+      break;
+
+    case SUBREG:
+      /* Non-paradoxical SUBREGs distributes over all operations, provided
+	 the inner modes and byte offsets are the same, this is an extraction
+	 of a low-order part, we don't convert an fp operation to int or
+	 vice versa, and we would not be converting a single-word
+	 operation into a multi-word operation.  The latter test is not
+	 required, but it prevents generating unneeded multi-word operations.
+	 Some of the previous tests are redundant given the latter test, but
+	 are retained because they are required for correctness.
+
+	 We produce the result slightly differently in this case.  */
+
+      if (GET_MODE (SUBREG_REG (lhs)) != GET_MODE (SUBREG_REG (rhs))
+	  || SUBREG_BYTE (lhs) != SUBREG_BYTE (rhs)
+	  || ! subreg_lowpart_p (lhs)
+	  || (GET_MODE_CLASS (GET_MODE (lhs))
+	      != GET_MODE_CLASS (GET_MODE (SUBREG_REG (lhs))))
+	  || (GET_MODE_SIZE (GET_MODE (lhs))
+	      > GET_MODE_SIZE (GET_MODE (SUBREG_REG (lhs))))
+	  || GET_MODE_SIZE (GET_MODE (SUBREG_REG (lhs))) > UNITS_PER_WORD)
+	return x;
+
+      tem = gen_binary (code, GET_MODE (SUBREG_REG (lhs)),
+			SUBREG_REG (lhs), SUBREG_REG (rhs));
+      return gen_lowpart_for_combine (GET_MODE (x), tem);
+
+    default:
+      return x;
+    }
+
+  /* Set LHS and RHS to the inner operands (A and B in the example
+     above) and set OTHER to the common operand (C in the example).
+     These is only one way to do this unless the inner operation is
+     commutative.  */
+  if (GET_RTX_CLASS (inner_code) == 'c'
+      && rtx_equal_p (XEXP (lhs, 0), XEXP (rhs, 0)))
+    other = XEXP (lhs, 0), lhs = XEXP (lhs, 1), rhs = XEXP (rhs, 1);
+  else if (GET_RTX_CLASS (inner_code) == 'c'
+	   && rtx_equal_p (XEXP (lhs, 0), XEXP (rhs, 1)))
+    other = XEXP (lhs, 0), lhs = XEXP (lhs, 1), rhs = XEXP (rhs, 0);
+  else if (GET_RTX_CLASS (inner_code) == 'c'
+	   && rtx_equal_p (XEXP (lhs, 1), XEXP (rhs, 0)))
+    other = XEXP (lhs, 1), lhs = XEXP (lhs, 0), rhs = XEXP (rhs, 1);
+  else if (rtx_equal_p (XEXP (lhs, 1), XEXP (rhs, 1)))
+    other = XEXP (lhs, 1), lhs = XEXP (lhs, 0), rhs = XEXP (rhs, 0);
+  else
+    return x;
+
+  /* Form the new inner operation, seeing if it simplifies first.  */
+  tem = gen_binary (code, GET_MODE (x), lhs, rhs);
+
+  /* There is one exception to the general way of distributing:
+     (a ^ b) | (a ^ c) -> (~a) & (b ^ c)  */
+  if (code == XOR && inner_code == IOR)
+    {
+      inner_code = AND;
+      other = simplify_gen_unary (NOT, GET_MODE (x), other, GET_MODE (x));
+    }
+
+  /* We may be able to continuing distributing the result, so call
+     ourselves recursively on the inner operation before forming the
+     outer operation, which we return.  */
+  return gen_binary (inner_code, GET_MODE (x),
+		     apply_distributive_law (tem), other);
+}

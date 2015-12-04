@@ -1,0 +1,22 @@
+static void
+flow_loops_tree_build (loops)
+     struct loops *loops;
+{
+  int i;
+  int num_loops;
+
+  num_loops = loops->num;
+  if (! num_loops)
+    return;
+
+  /* Root the loop hierarchy tree with the first loop found.
+     Since we used a depth first search this should be the
+     outermost loop.  */
+  loops->tree_root = &loops->array[0];
+  loops->tree_root->outer = loops->tree_root->inner
+    = loops->tree_root->next = NULL;
+
+  /* Add the remaining loops to the tree.  */
+  for (i = 1; i < num_loops; i++)
+    flow_loop_tree_node_add (&loops->array[i - 1], &loops->array[i]);
+}

@@ -1,0 +1,135 @@
+static int
+expand_fixup (tree_label, rtl_label, last_insn)
+     tree tree_label;
+     rtx rtl_label;
+     rtx last_insn;
+{
+  struct nesting *block, *end_block;
+
+  /* See if we can recognize which block the label will be output in.
+     This is possible in some very common cases.
+     If we succeed, set END_BLOCK to that block.
+     Otherwise, set it to 0.  */
+
+  if (cond_stack
+      && (rtl_label == cond_stack->data.cond.endif_label
+	  || rtl_label == cond_stack->data.cond.next_label))
+    end_block = cond_stack;
+  /* If we are in a loop, recognize certain labels which
+     are likely targets.  This reduces the number of fixups
+     we need to create.  */
+  else if (loop_stack
+      && (rtl_label == loop_stack->data.loop.start_label
+	  || rtl_label == loop_stack->data.loop.end_label
+	  || rtl_label == loop_stack->data.loop.continue_label))
+    end_block = loop_stack;
+  else
+    end_block = 0;
+
+  /* Now set END_BLOCK to the binding level to which we will return.  */
+
+  if (end_block)
+    {
+      struct nesting *next_block = end_block->all;
+      block = block_stack;
+
+      /* First see if the END_BLOCK is inside the innermost binding level.
+	 If so, then no cleanups or stack levels are relevant.  */
+      while (next_block && next_block != block)
+	next_block = next_block->all;
+
+      if (next_block)
+	return 0;
+
+      /* Otherwise, set END_BLOCK to the innermost binding level
+	 which is outside the relevant control-structure nesting.  */
+      next_block = block_stack->next;
+      for (block = block_stack; block != end_block; block = block->all)
+	if (block == next_block)
+	  next_block = next_block->next;
+      end_block = next_block;
+    }
+
+  /* Does any containing block have a stack level or cleanups?
+     If not, no fixup is needed, and that is the normal case
+     (the only case, for standard C).  */
+  for (block = block_stack; block != end_block; block = block->next)
+    if (block->data.block.stack_level != 0
+	|| block->data.block.cleanups != 0)
+      break;
+
+  if (block != end_block)
+    {
+      /* Ok, a fixup is needed.  Add a fixup to the list of such.  */
+      struct goto_fixup *fixup
+	= (struct goto_fixup *) ggc_alloc (sizeof (struct goto_fixup));
+      /* In case an old stack level is restored, make sure that comes
+	 after any pending stack adjust.  */
+      /* ?? If the fixup isn't to come at the present position,
+	 doing the stack adjust here isn't useful.  Doing it with our
+	 settings at that location isn't useful either.  Let's hope
+	 someone does it!  */
+      if (last_insn == 0)
+	do_pending_stack_adjust ();
+      fixup->target = tree_label;
+      fixup->target_rtl = rtl_label;
+
+      /* Create a BLOCK node and a corresponding matched set of
+	 NOTE_INSN_BLOCK_BEG and NOTE_INSN_BLOCK_END notes at
+	 this point.  The notes will encapsulate any and all fixup
+	 code which we might later insert at this point in the insn
+	 stream.  Also, the BLOCK node will be the parent (i.e. the
+	 `SUPERBLOCK') of any other BLOCK nodes which we might create
+	 later on when we are expanding the fixup code.
+
+	 Note that optimization passes (including expand_end_loop)
+	 might move the *_BLOCK notes away, so we use a NOTE_INSN_DELETED
+	 as a placeholder.  */
+
+      {
+        rtx original_before_jump
+          = last_insn ? last_insn : get_last_insn ();
+	rtx start;
+	rtx end;
+	tree block;
+
+	block = make_node (BLOCK);
+	TREE_USED (block) = 1;
+
+	if (!cfun->x_whole_function_mode_p)
+	  insert_block (block);
+	else
+	  {
+	    BLOCK_CHAIN (block)
+	      = BLOCK_CHAIN (DECL_INITIAL (current_function_decl));
+	    BLOCK_CHAIN (DECL_INITIAL (current_function_decl))
+	      = block;
+	  }
+
+        start_sequence ();
+        start = emit_note (NULL, NOTE_INSN_BLOCK_BEG);
+	if (cfun->x_whole_function_mode_p)
+	  NOTE_BLOCK (start) = block;
+	fixup->before_jump = emit_note (NULL, NOTE_INSN_DELETED);
+	end = emit_note (NULL, NOTE_INSN_BLOCK_END);
+	if (cfun->x_whole_function_mode_p)
+	  NOTE_BLOCK (end) = block;
+        fixup->context = block;
+        end_sequence ();
+        emit_insns_after (start, original_before_jump);
+      }
+
+      fixup->block_start_count = current_block_start_count;
+      fixup->stack_level = 0;
+      fixup->cleanup_list_list
+	= ((block->data.block.outer_cleanups
+	    || block->data.block.cleanups)
+	   ? tree_cons (NULL_TREE, block->data.block.cleanups,
+			block->data.block.outer_cleanups)
+	   : 0);
+      fixup->next = goto_fixup_chain;
+      goto_fixup_chain = fixup;
+    }
+
+  return block != 0;
+}

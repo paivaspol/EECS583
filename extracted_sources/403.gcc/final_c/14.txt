@@ -1,0 +1,562 @@
+void
+shorten_branches (first)
+     rtx first ATTRIBUTE_UNUSED;
+{
+  rtx insn;
+  int max_uid;
+  int i;
+  int max_log;
+  int max_skip;
+#ifdef HAVE_ATTR_length
+#define MAX_CODE_ALIGN 16
+  rtx seq;
+  int something_changed = 1;
+  char *varying_length;
+  rtx body;
+  int uid;
+  rtx align_tab[MAX_CODE_ALIGN];
+
+#endif
+
+  /* Compute maximum UID and allocate label_align / uid_shuid.  */
+  max_uid = get_max_uid ();
+
+  uid_shuid = (int *) xmalloc (max_uid * sizeof *uid_shuid);
+
+  if (max_labelno != max_label_num ())
+    {
+      int old = max_labelno;
+      int n_labels;
+      int n_old_labels;
+
+      max_labelno = max_label_num ();
+
+      n_labels = max_labelno - min_labelno + 1;
+      n_old_labels = old - min_labelno + 1;
+
+      label_align = (struct label_alignment *) xrealloc
+	(label_align, n_labels * sizeof (struct label_alignment));
+
+      /* Range of labels grows monotonically in the function.  Abort here
+         means that the initialization of array got lost.  */
+      if (n_old_labels > n_labels)
+	abort ();
+
+      memset (label_align + n_old_labels, 0,
+	      (n_labels - n_old_labels) * sizeof (struct label_alignment));
+    }
+
+  /* Initialize label_align and set up uid_shuid to be strictly
+     monotonically rising with insn order.  */
+  /* We use max_log here to keep track of the maximum alignment we want to
+     impose on the next CODE_LABEL (or the current one if we are processing
+     the CODE_LABEL itself).  */
+
+  max_log = 0;
+  max_skip = 0;
+
+  for (insn = get_insns (), i = 1; insn; insn = NEXT_INSN (insn))
+    {
+      int log;
+
+      INSN_SHUID (insn) = i++;
+      if (INSN_P (insn))
+	{
+	  /* reorg might make the first insn of a loop being run once only,
+             and delete the label in front of it.  Then we want to apply
+             the loop alignment to the new label created by reorg, which
+             is separated by the former loop start insn from the
+	     NOTE_INSN_LOOP_BEG.  */
+	}
+      else if (GET_CODE (insn) == CODE_LABEL)
+	{
+	  rtx next;
+
+	  /* Merge in alignments computed by compute_alignments.  */
+	  log = LABEL_TO_ALIGNMENT (insn);
+	  if (max_log < log)
+	    {
+	      max_log = log;
+	      max_skip = LABEL_TO_MAX_SKIP (insn);
+	    }
+
+	  log = LABEL_ALIGN (insn);
+	  if (max_log < log)
+	    {
+	      max_log = log;
+	      max_skip = LABEL_ALIGN_MAX_SKIP;
+	    }
+	  next = NEXT_INSN (insn);
+	  /* ADDR_VECs only take room if read-only data goes into the text
+	     section.  */
+	  if (JUMP_TABLES_IN_TEXT_SECTION
+#if !defined(READONLY_DATA_SECTION)
+	      || 1
+#endif
+	      )
+	    if (next && GET_CODE (next) == JUMP_INSN)
+	      {
+		rtx nextbody = PATTERN (next);
+		if (GET_CODE (nextbody) == ADDR_VEC
+		    || GET_CODE (nextbody) == ADDR_DIFF_VEC)
+		  {
+		    log = ADDR_VEC_ALIGN (next);
+		    if (max_log < log)
+		      {
+			max_log = log;
+			max_skip = LABEL_ALIGN_MAX_SKIP;
+		      }
+		  }
+	      }
+	  LABEL_TO_ALIGNMENT (insn) = max_log;
+	  LABEL_TO_MAX_SKIP (insn) = max_skip;
+	  max_log = 0;
+	  max_skip = 0;
+	}
+      else if (GET_CODE (insn) == BARRIER)
+	{
+	  rtx label;
+
+	  for (label = insn; label && ! INSN_P (label);
+	       label = NEXT_INSN (label))
+	    if (GET_CODE (label) == CODE_LABEL)
+	      {
+		log = LABEL_ALIGN_AFTER_BARRIER (insn);
+		if (max_log < log)
+		  {
+		    max_log = log;
+		    max_skip = LABEL_ALIGN_AFTER_BARRIER_MAX_SKIP;
+		  }
+		break;
+	      }
+	}
+    }
+#ifdef HAVE_ATTR_length
+
+  /* Allocate the rest of the arrays.  */
+  insn_lengths = (int *) xmalloc (max_uid * sizeof (*insn_lengths));
+  insn_lengths_max_uid = max_uid;
+  /* Syntax errors can lead to labels being outside of the main insn stream.
+     Initialize insn_addresses, so that we get reproducible results.  */
+  INSN_ADDRESSES_ALLOC (max_uid);
+
+  varying_length = (char *) xcalloc (max_uid, sizeof (char));
+
+  /* Initialize uid_align.  We scan instructions
+     from end to start, and keep in align_tab[n] the last seen insn
+     that does an alignment of at least n+1, i.e. the successor
+     in the alignment chain for an insn that does / has a known
+     alignment of n.  */
+  uid_align = (rtx *) xcalloc (max_uid, sizeof *uid_align);
+
+  for (i = MAX_CODE_ALIGN; --i >= 0;)
+    align_tab[i] = NULL_RTX;
+  seq = get_last_insn ();
+  for (; seq; seq = PREV_INSN (seq))
+    {
+      int uid = INSN_UID (seq);
+      int log;
+      log = (GET_CODE (seq) == CODE_LABEL ? LABEL_TO_ALIGNMENT (seq) : 0);
+      uid_align[uid] = align_tab[0];
+      if (log)
+	{
+	  /* Found an alignment label.  */
+	  uid_align[uid] = align_tab[log];
+	  for (i = log - 1; i >= 0; i--)
+	    align_tab[i] = seq;
+	}
+    }
+#ifdef CASE_VECTOR_SHORTEN_MODE
+  if (optimize)
+    {
+      /* Look for ADDR_DIFF_VECs, and initialize their minimum and maximum
+         label fields.  */
+
+      int min_shuid = INSN_SHUID (get_insns ()) - 1;
+      int max_shuid = INSN_SHUID (get_last_insn ()) + 1;
+      int rel;
+
+      for (insn = first; insn != 0; insn = NEXT_INSN (insn))
+	{
+	  rtx min_lab = NULL_RTX, max_lab = NULL_RTX, pat;
+	  int len, i, min, max, insn_shuid;
+	  int min_align;
+	  addr_diff_vec_flags flags;
+
+	  if (GET_CODE (insn) != JUMP_INSN
+	      || GET_CODE (PATTERN (insn)) != ADDR_DIFF_VEC)
+	    continue;
+	  pat = PATTERN (insn);
+	  len = XVECLEN (pat, 1);
+	  if (len <= 0)
+	    abort ();
+	  min_align = MAX_CODE_ALIGN;
+	  for (min = max_shuid, max = min_shuid, i = len - 1; i >= 0; i--)
+	    {
+	      rtx lab = XEXP (XVECEXP (pat, 1, i), 0);
+	      int shuid = INSN_SHUID (lab);
+	      if (shuid < min)
+		{
+		  min = shuid;
+		  min_lab = lab;
+		}
+	      if (shuid > max)
+		{
+		  max = shuid;
+		  max_lab = lab;
+		}
+	      if (min_align > LABEL_TO_ALIGNMENT (lab))
+		min_align = LABEL_TO_ALIGNMENT (lab);
+	    }
+	  XEXP (pat, 2) = gen_rtx_LABEL_REF (VOIDmode, min_lab);
+	  XEXP (pat, 3) = gen_rtx_LABEL_REF (VOIDmode, max_lab);
+	  insn_shuid = INSN_SHUID (insn);
+	  rel = INSN_SHUID (XEXP (XEXP (pat, 0), 0));
+	  flags.min_align = min_align;
+	  flags.base_after_vec = rel > insn_shuid;
+	  flags.min_after_vec  = min > insn_shuid;
+	  flags.max_after_vec  = max > insn_shuid;
+	  flags.min_after_base = min > rel;
+	  flags.max_after_base = max > rel;
+	  ADDR_DIFF_VEC_FLAGS (pat) = flags;
+	}
+    }
+#endif /* CASE_VECTOR_SHORTEN_MODE */
+
+  /* Compute initial lengths, addresses, and varying flags for each insn.  */
+  for (insn_current_address = FIRST_INSN_ADDRESS, insn = first;
+       insn != 0;
+       insn_current_address += insn_lengths[uid], insn = NEXT_INSN (insn))
+    {
+      uid = INSN_UID (insn);
+
+      insn_lengths[uid] = 0;
+
+      if (GET_CODE (insn) == CODE_LABEL)
+	{
+	  int log = LABEL_TO_ALIGNMENT (insn);
+	  if (log)
+	    {
+	      int align = 1 << log;
+	      int new_address = (insn_current_address + align - 1) & -align;
+	      insn_lengths[uid] = new_address - insn_current_address;
+	    }
+	}
+
+      INSN_ADDRESSES (uid) = insn_current_address;
+
+      if (GET_CODE (insn) == NOTE || GET_CODE (insn) == BARRIER
+	  || GET_CODE (insn) == CODE_LABEL)
+	continue;
+      if (INSN_DELETED_P (insn))
+	continue;
+
+      body = PATTERN (insn);
+      if (GET_CODE (body) == ADDR_VEC || GET_CODE (body) == ADDR_DIFF_VEC)
+	{
+	  /* This only takes room if read-only data goes into the text
+	     section.  */
+	  if (JUMP_TABLES_IN_TEXT_SECTION
+#if !defined(READONLY_DATA_SECTION)
+	      || 1
+#endif
+	      )
+	    insn_lengths[uid] = (XVECLEN (body,
+					  GET_CODE (body) == ADDR_DIFF_VEC)
+				 * GET_MODE_SIZE (GET_MODE (body)));
+	  /* Alignment is handled by ADDR_VEC_ALIGN.  */
+	}
+      else if (GET_CODE (body) == ASM_INPUT || asm_noperands (body) >= 0)
+	insn_lengths[uid] = asm_insn_count (body) * insn_default_length (insn);
+      else if (GET_CODE (body) == SEQUENCE)
+	{
+	  int i;
+	  int const_delay_slots;
+#ifdef DELAY_SLOTS
+	  const_delay_slots = const_num_delay_slots (XVECEXP (body, 0, 0));
+#else
+	  const_delay_slots = 0;
+#endif
+	  /* Inside a delay slot sequence, we do not do any branch shortening
+	     if the shortening could change the number of delay slots
+	     of the branch.  */
+	  for (i = 0; i < XVECLEN (body, 0); i++)
+	    {
+	      rtx inner_insn = XVECEXP (body, 0, i);
+	      int inner_uid = INSN_UID (inner_insn);
+	      int inner_length;
+
+	      if (GET_CODE (body) == ASM_INPUT
+		  || asm_noperands (PATTERN (XVECEXP (body, 0, i))) >= 0)
+		inner_length = (asm_insn_count (PATTERN (inner_insn))
+				* insn_default_length (inner_insn));
+	      else
+		inner_length = insn_default_length (inner_insn);
+
+	      insn_lengths[inner_uid] = inner_length;
+	      if (const_delay_slots)
+		{
+		  if ((varying_length[inner_uid]
+		       = insn_variable_length_p (inner_insn)) != 0)
+		    varying_length[uid] = 1;
+		  INSN_ADDRESSES (inner_uid) = (insn_current_address
+						+ insn_lengths[uid]);
+		}
+	      else
+		varying_length[inner_uid] = 0;
+	      insn_lengths[uid] += inner_length;
+	    }
+	}
+      else if (GET_CODE (body) != USE && GET_CODE (body) != CLOBBER)
+	{
+	  insn_lengths[uid] = insn_default_length (insn);
+	  varying_length[uid] = insn_variable_length_p (insn);
+	}
+
+      /* If needed, do any adjustment.  */
+#ifdef ADJUST_INSN_LENGTH
+      ADJUST_INSN_LENGTH (insn, insn_lengths[uid]);
+      if (insn_lengths[uid] < 0)
+	fatal_insn ("negative insn length", insn);
+#endif
+    }
+
+  /* Now loop over all the insns finding varying length insns.  For each,
+     get the current insn length.  If it has changed, reflect the change.
+     When nothing changes for a full pass, we are done.  */
+
+  while (something_changed)
+    {
+      something_changed = 0;
+      insn_current_align = MAX_CODE_ALIGN - 1;
+      for (insn_current_address = FIRST_INSN_ADDRESS, insn = first;
+	   insn != 0;
+	   insn = NEXT_INSN (insn))
+	{
+	  int new_length;
+#ifdef ADJUST_INSN_LENGTH
+	  int tmp_length;
+#endif
+	  int length_align;
+
+	  uid = INSN_UID (insn);
+
+	  if (GET_CODE (insn) == CODE_LABEL)
+	    {
+	      int log = LABEL_TO_ALIGNMENT (insn);
+	      if (log > insn_current_align)
+		{
+		  int align = 1 << log;
+		  int new_address= (insn_current_address + align - 1) & -align;
+		  insn_lengths[uid] = new_address - insn_current_address;
+		  insn_current_align = log;
+		  insn_current_address = new_address;
+		}
+	      else
+		insn_lengths[uid] = 0;
+	      INSN_ADDRESSES (uid) = insn_current_address;
+	      continue;
+	    }
+
+	  length_align = INSN_LENGTH_ALIGNMENT (insn);
+	  if (length_align < insn_current_align)
+	    insn_current_align = length_align;
+
+	  insn_last_address = INSN_ADDRESSES (uid);
+	  INSN_ADDRESSES (uid) = insn_current_address;
+
+#ifdef CASE_VECTOR_SHORTEN_MODE
+	  if (optimize && GET_CODE (insn) == JUMP_INSN
+	      && GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC)
+	    {
+	      rtx body = PATTERN (insn);
+	      int old_length = insn_lengths[uid];
+	      rtx rel_lab = XEXP (XEXP (body, 0), 0);
+	      rtx min_lab = XEXP (XEXP (body, 2), 0);
+	      rtx max_lab = XEXP (XEXP (body, 3), 0);
+	      int rel_addr = INSN_ADDRESSES (INSN_UID (rel_lab));
+	      int min_addr = INSN_ADDRESSES (INSN_UID (min_lab));
+	      int max_addr = INSN_ADDRESSES (INSN_UID (max_lab));
+	      rtx prev;
+	      int rel_align = 0;
+	      addr_diff_vec_flags flags;
+
+	      /* Avoid automatic aggregate initialization.  */
+	      flags = ADDR_DIFF_VEC_FLAGS (body);
+
+	      /* Try to find a known alignment for rel_lab.  */
+	      for (prev = rel_lab;
+		   prev
+		   && ! insn_lengths[INSN_UID (prev)]
+		   && ! (varying_length[INSN_UID (prev)] & 1);
+		   prev = PREV_INSN (prev))
+		if (varying_length[INSN_UID (prev)] & 2)
+		  {
+		    rel_align = LABEL_TO_ALIGNMENT (prev);
+		    break;
+		  }
+
+	      /* See the comment on addr_diff_vec_flags in rtl.h for the
+		 meaning of the flags values.  base: REL_LAB   vec: INSN  */
+	      /* Anything after INSN has still addresses from the last
+		 pass; adjust these so that they reflect our current
+		 estimate for this pass.  */
+	      if (flags.base_after_vec)
+		rel_addr += insn_current_address - insn_last_address;
+	      if (flags.min_after_vec)
+		min_addr += insn_current_address - insn_last_address;
+	      if (flags.max_after_vec)
+		max_addr += insn_current_address - insn_last_address;
+	      /* We want to know the worst case, i.e. lowest possible value
+		 for the offset of MIN_LAB.  If MIN_LAB is after REL_LAB,
+		 its offset is positive, and we have to be wary of code shrink;
+		 otherwise, it is negative, and we have to be vary of code
+		 size increase.  */
+	      if (flags.min_after_base)
+		{
+		  /* If INSN is between REL_LAB and MIN_LAB, the size
+		     changes we are about to make can change the alignment
+		     within the observed offset, therefore we have to break
+		     it up into two parts that are independent.  */
+		  if (! flags.base_after_vec && flags.min_after_vec)
+		    {
+		      min_addr -= align_fuzz (rel_lab, insn, rel_align, 0);
+		      min_addr -= align_fuzz (insn, min_lab, 0, 0);
+		    }
+		  else
+		    min_addr -= align_fuzz (rel_lab, min_lab, rel_align, 0);
+		}
+	      else
+		{
+		  if (flags.base_after_vec && ! flags.min_after_vec)
+		    {
+		      min_addr -= align_fuzz (min_lab, insn, 0, ~0);
+		      min_addr -= align_fuzz (insn, rel_lab, 0, ~0);
+		    }
+		  else
+		    min_addr -= align_fuzz (min_lab, rel_lab, 0, ~0);
+		}
+	      /* Likewise, determine the highest lowest possible value
+		 for the offset of MAX_LAB.  */
+	      if (flags.max_after_base)
+		{
+		  if (! flags.base_after_vec && flags.max_after_vec)
+		    {
+		      max_addr += align_fuzz (rel_lab, insn, rel_align, ~0);
+		      max_addr += align_fuzz (insn, max_lab, 0, ~0);
+		    }
+		  else
+		    max_addr += align_fuzz (rel_lab, max_lab, rel_align, ~0);
+		}
+	      else
+		{
+		  if (flags.base_after_vec && ! flags.max_after_vec)
+		    {
+		      max_addr += align_fuzz (max_lab, insn, 0, 0);
+		      max_addr += align_fuzz (insn, rel_lab, 0, 0);
+		    }
+		  else
+		    max_addr += align_fuzz (max_lab, rel_lab, 0, 0);
+		}
+	      PUT_MODE (body, CASE_VECTOR_SHORTEN_MODE (min_addr - rel_addr,
+							max_addr - rel_addr,
+							body));
+	      if (JUMP_TABLES_IN_TEXT_SECTION
+#if !defined(READONLY_DATA_SECTION)
+		  || 1
+#endif
+		  )
+		{
+		  insn_lengths[uid]
+		    = (XVECLEN (body, 1) * GET_MODE_SIZE (GET_MODE (body)));
+		  insn_current_address += insn_lengths[uid];
+		  if (insn_lengths[uid] != old_length)
+		    something_changed = 1;
+		}
+
+	      continue;
+	    }
+#endif /* CASE_VECTOR_SHORTEN_MODE */
+
+	  if (! (varying_length[uid]))
+	    {
+	      if (GET_CODE (insn) == INSN
+		  && GET_CODE (PATTERN (insn)) == SEQUENCE)
+		{
+		  int i;
+
+		  body = PATTERN (insn);
+		  for (i = 0; i < XVECLEN (body, 0); i++)
+		    {
+		      rtx inner_insn = XVECEXP (body, 0, i);
+		      int inner_uid = INSN_UID (inner_insn);
+
+		      INSN_ADDRESSES (inner_uid) = insn_current_address;
+
+		      insn_current_address += insn_lengths[inner_uid];
+		    }
+                }
+	      else
+		insn_current_address += insn_lengths[uid];
+
+	      continue;
+	    }
+
+	  if (GET_CODE (insn) == INSN && GET_CODE (PATTERN (insn)) == SEQUENCE)
+	    {
+	      int i;
+
+	      body = PATTERN (insn);
+	      new_length = 0;
+	      for (i = 0; i < XVECLEN (body, 0); i++)
+		{
+		  rtx inner_insn = XVECEXP (body, 0, i);
+		  int inner_uid = INSN_UID (inner_insn);
+		  int inner_length;
+
+		  INSN_ADDRESSES (inner_uid) = insn_current_address;
+
+		  /* insn_current_length returns 0 for insns with a
+		     non-varying length.  */
+		  if (! varying_length[inner_uid])
+		    inner_length = insn_lengths[inner_uid];
+		  else
+		    inner_length = insn_current_length (inner_insn);
+
+		  if (inner_length != insn_lengths[inner_uid])
+		    {
+		      insn_lengths[inner_uid] = inner_length;
+		      something_changed = 1;
+		    }
+		  insn_current_address += insn_lengths[inner_uid];
+		  new_length += inner_length;
+		}
+	    }
+	  else
+	    {
+	      new_length = insn_current_length (insn);
+	      insn_current_address += new_length;
+	    }
+
+#ifdef ADJUST_INSN_LENGTH
+	  /* If needed, do any adjustment.  */
+	  tmp_length = new_length;
+	  ADJUST_INSN_LENGTH (insn, new_length);
+	  insn_current_address += (new_length - tmp_length);
+#endif
+
+	  if (new_length != insn_lengths[uid])
+	    {
+	      insn_lengths[uid] = new_length;
+	      something_changed = 1;
+	    }
+	}
+      /* For a non-optimizing compile, do only a single pass.  */
+      if (!optimize)
+	break;
+    }
+
+  free (varying_length);
+
+#endif /* HAVE_ATTR_length */
+}

@@ -1,0 +1,83 @@
+static int
+load_indexfile(SSIFILE *sfp)
+{
+  sqd_uint32   magic;
+  sqd_uint16   i;		/* counter over files */
+  int          status;		/* overall return status if an error is thrown */
+
+  status = SSI_ERR_BADFORMAT; /* default: almost every kind of error is a bad format error */
+
+  sfp->filename   = NULL;
+  sfp->fileformat = NULL;
+  sfp->fileflags  = NULL;
+  sfp->bpl        = NULL;
+  sfp->rpl        = NULL;
+  sfp->nfiles     = 0;          
+  if (! read_i32(sfp->fp, &magic))               {status = SSI_ERR_BADMAGIC;  goto FAILURE; }
+  if (magic != v20magic && magic != v20swap)     {status = SSI_ERR_BADMAGIC;  goto FAILURE; }
+  if (! read_i32(sfp->fp, &(sfp->flags))) goto FAILURE; 
+
+  /* If we have 64-bit offsets, make sure we can deal with them.
+   */
+#ifndef HAS_64BIT_FILE_OFFSETS  
+  if ((sfp->flags & SSI_USE64_INDEX) ||
+      (sfp->flags & SSI_USE64))
+    { status = SSI_ERR_NO64BIT; goto FAILURE; }
+#endif
+
+  sfp->imode = (sfp->flags & SSI_USE64_INDEX) ? SSI_OFFSET_I64 : SSI_OFFSET_I32;
+  sfp->smode = (sfp->flags & SSI_USE64) ?       SSI_OFFSET_I64 : SSI_OFFSET_I32;
+
+  if (! read_i16(sfp->fp, &(sfp->nfiles)))     goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->nprimary)))   goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->nsecondary))) goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->flen)))       goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->plen)))       goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->slen)))       goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->frecsize)))   goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->precsize)))   goto FAILURE;
+  if (! read_i32(sfp->fp, &(sfp->srecsize)))   goto FAILURE;
+  
+  if (! read_offset(sfp->fp, sfp->imode, &(sfp->foffset))) goto FAILURE;
+  if (! read_offset(sfp->fp, sfp->imode, &(sfp->poffset))) goto FAILURE;
+  if (! read_offset(sfp->fp, sfp->imode, &(sfp->soffset))) goto FAILURE;
+
+  /* Read the file information and keep it.
+   * We expect the number of files to be small, so reading it
+   * once should be advantageous overall. If SSI ever had to
+   * deal with large numbers of files, you'd probably want to
+   * read file information on demand.
+   */
+  if (sfp->nfiles == 0)                                                   goto FAILURE;
+  if ((sfp->filename=malloc(sizeof(char *)    *sfp->nfiles)) == NULL)   {status = SSI_ERR_MALLOC; goto FAILURE; }
+  for (i = 0; i < sfp->nfiles; i++) sfp->filename[i] = NULL; 
+  if ((sfp->fileformat=malloc(sizeof(sqd_uint32)*sfp->nfiles)) == NULL) {status = SSI_ERR_MALLOC; goto FAILURE; }
+  if ((sfp->fileflags =malloc(sizeof(sqd_uint32)*sfp->nfiles)) == NULL) {status = SSI_ERR_MALLOC; goto FAILURE; }
+  if ((sfp->bpl     =malloc(sizeof(sqd_uint32)*sfp->nfiles)) == NULL)   {status = SSI_ERR_MALLOC; goto FAILURE; }
+  if ((sfp->rpl     =malloc(sizeof(sqd_uint32)*sfp->nfiles)) == NULL)   {status = SSI_ERR_MALLOC; goto FAILURE; }
+
+  for (i = 0; i < sfp->nfiles; i++) 
+    {
+      /* We have to explicitly position, because header and file 
+       * records may expand in the future; frecsize and foffset 
+       * give us forwards compatibility. 
+       */ 
+      if (indexfile_position(sfp, &(sfp->foffset), sfp->frecsize, i) !=0)  goto FAILURE;
+      if ((sfp->filename[i] =malloc(sizeof(char)*sfp->flen)) == NULL)        {status = SSI_ERR_MALLOC; goto FAILURE; }
+      if (fread(sfp->filename[i],sizeof(char),sfp->flen, sfp->fp)!=sfp->flen) goto FAILURE;
+      if (! read_i32(sfp->fp, &(sfp->fileformat[i])))                             goto FAILURE;
+      if (! read_i32(sfp->fp, &(sfp->fileflags[i])))                              goto FAILURE;
+      if (! read_i32(sfp->fp, &(sfp->bpl[i])))                                    goto FAILURE;
+      if (! read_i32(sfp->fp, &(sfp->rpl[i])))                                    goto FAILURE;
+    }
+  
+  /* Success. Return 0.
+   */
+  return 0;			
+
+ FAILURE:
+  /* Failure: free the damaged structure, return status code.
+   */
+  SSIClose(sfp);
+  return status;
+}

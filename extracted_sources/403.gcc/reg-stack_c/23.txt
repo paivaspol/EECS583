@@ -1,0 +1,100 @@
+static void
+change_stack (insn, old, new, where)
+     rtx insn;
+     stack old;
+     stack new;
+     enum emit_where where;
+{
+  int reg;
+  int update_end = 0;
+
+  /* We will be inserting new insns "backwards".  If we are to insert
+     after INSN, find the next insn, and insert before it.  */
+
+  if (where == EMIT_AFTER)
+    {
+      if (current_block && current_block->end == insn)
+	update_end = 1;
+      insn = NEXT_INSN (insn);
+    }
+
+  /* Pop any registers that are not needed in the new block.  */
+
+  for (reg = old->top; reg >= 0; reg--)
+    if (! TEST_HARD_REG_BIT (new->reg_set, old->reg[reg]))
+      emit_pop_insn (insn, old, FP_MODE_REG (old->reg[reg], DFmode),
+		     EMIT_BEFORE);
+
+  if (new->top == -2)
+    {
+      /* If the new block has never been processed, then it can inherit
+	 the old stack order.  */
+
+      new->top = old->top;
+      memcpy (new->reg, old->reg, sizeof (new->reg));
+    }
+  else
+    {
+      /* This block has been entered before, and we must match the
+	 previously selected stack order.  */
+
+      /* By now, the only difference should be the order of the stack,
+	 not their depth or liveliness.  */
+
+      GO_IF_HARD_REG_EQUAL (old->reg_set, new->reg_set, win);
+      abort ();
+    win:
+      if (old->top != new->top)
+	abort ();
+
+      /* If the stack is not empty (new->top != -1), loop here emitting
+	 swaps until the stack is correct. 
+
+	 The worst case number of swaps emitted is N + 2, where N is the
+	 depth of the stack.  In some cases, the reg at the top of
+	 stack may be correct, but swapped anyway in order to fix
+	 other regs.  But since we never swap any other reg away from
+	 its correct slot, this algorithm will converge.  */
+
+      if (new->top != -1)
+	do
+	  {
+	    /* Swap the reg at top of stack into the position it is
+	       supposed to be in, until the correct top of stack appears.  */
+
+	    while (old->reg[old->top] != new->reg[new->top])
+	      {
+		for (reg = new->top; reg >= 0; reg--)
+		  if (new->reg[reg] == old->reg[old->top])
+		    break;
+
+		if (reg == -1)
+		  abort ();
+
+		emit_swap_insn (insn, old,
+				FP_MODE_REG (old->reg[reg], DFmode));
+	      }
+
+	    /* See if any regs remain incorrect.  If so, bring an
+	     incorrect reg to the top of stack, and let the while loop
+	     above fix it.  */
+
+	    for (reg = new->top; reg >= 0; reg--)
+	      if (new->reg[reg] != old->reg[reg])
+		{
+		  emit_swap_insn (insn, old,
+				  FP_MODE_REG (old->reg[reg], DFmode));
+		  break;
+		}
+	  } while (reg >= 0);
+
+      /* At this point there must be no differences.  */
+
+      for (reg = old->top; reg >= 0; reg--)
+	if (old->reg[reg] != new->reg[reg])
+	  abort ();
+    }
+
+  if (update_end)
+    current_block->end = PREV_INSN (insn);
+}

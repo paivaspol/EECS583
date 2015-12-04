@@ -1,0 +1,181 @@
+static unsigned int
+hash_expr_1 (x, mode, do_not_record_p)
+     rtx x;
+     enum machine_mode mode;
+     int *do_not_record_p;
+{
+  int i, j;
+  unsigned hash = 0;
+  enum rtx_code code;
+  const char *fmt;
+
+  /* Used to turn recursion into iteration.  We can't rely on GCC's
+     tail-recursion eliminatio since we need to keep accumulating values
+     in HASH.  */
+
+  if (x == 0)
+    return hash;
+
+ repeat:
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case REG:
+      hash += ((unsigned int) REG << 7) + REGNO (x);
+      return hash;
+
+    case CONST_INT:
+      hash += (((unsigned int) CONST_INT << 7) + (unsigned int) mode
+	       + (unsigned int) INTVAL (x));
+      return hash;
+
+    case CONST_DOUBLE:
+      /* This is like the general case, except that it only counts
+	 the integers representing the constant.  */
+      hash += (unsigned int) code + (unsigned int) GET_MODE (x);
+      if (GET_MODE (x) != VOIDmode)
+	for (i = 2; i < GET_RTX_LENGTH (CONST_DOUBLE); i++)
+	  hash += (unsigned int) XWINT (x, i);
+      else
+	hash += ((unsigned int) CONST_DOUBLE_LOW (x)
+		 + (unsigned int) CONST_DOUBLE_HIGH (x));
+      return hash;
+
+    case CONST_VECTOR:
+      {
+	int units;
+	rtx elt;
+
+	units = CONST_VECTOR_NUNITS (x);
+
+	for (i = 0; i < units; ++i)
+	  {
+	    elt = CONST_VECTOR_ELT (x, i);
+	    hash += hash_expr_1 (elt, GET_MODE (elt), do_not_record_p);
+	  }
+
+	return hash;
+      }
+
+      /* Assume there is only one rtx object for any given label.  */
+    case LABEL_REF:
+      /* We don't hash on the address of the CODE_LABEL to avoid bootstrap
+	 differences and differences between each stage's debugging dumps.  */
+      hash += (((unsigned int) LABEL_REF << 7)
+	       + CODE_LABEL_NUMBER (XEXP (x, 0)));
+      return hash;
+
+    case SYMBOL_REF:
+      {
+	/* Don't hash on the symbol's address to avoid bootstrap differences.
+	   Different hash values may cause expressions to be recorded in
+	   different orders and thus different registers to be used in the
+	   final assembler.  This also avoids differences in the dump files
+	   between various stages.  */
+	unsigned int h = 0;
+	const unsigned char *p = (const unsigned char *) XSTR (x, 0);
+
+	while (*p)
+	  h += (h << 7) + *p++; /* ??? revisit */
+
+	hash += ((unsigned int) SYMBOL_REF << 7) + h;
+	return hash;
+      }
+
+    case MEM:
+      if (MEM_VOLATILE_P (x))
+	{
+	  *do_not_record_p = 1;
+	  return 0;
+	}
+
+      hash += (unsigned int) MEM;
+      hash += MEM_ALIAS_SET (x);
+      x = XEXP (x, 0);
+      goto repeat;
+
+    case PRE_DEC:
+    case PRE_INC:
+    case POST_DEC:
+    case POST_INC:
+    case PC:
+    case CC0:
+    case CALL:
+    case UNSPEC_VOLATILE:
+      *do_not_record_p = 1;
+      return 0;
+
+    case ASM_OPERANDS:
+      if (MEM_VOLATILE_P (x))
+	{
+	  *do_not_record_p = 1;
+	  return 0;
+	}
+      else
+	{
+	  /* We don't want to take the filename and line into account.  */
+	  hash += (unsigned) code + (unsigned) GET_MODE (x)
+	    + hash_string_1 (ASM_OPERANDS_TEMPLATE (x))
+	    + hash_string_1 (ASM_OPERANDS_OUTPUT_CONSTRAINT (x))
+	    + (unsigned) ASM_OPERANDS_OUTPUT_IDX (x);
+
+	  if (ASM_OPERANDS_INPUT_LENGTH (x))
+	    {
+	      for (i = 1; i < ASM_OPERANDS_INPUT_LENGTH (x); i++)
+		{
+		  hash += (hash_expr_1 (ASM_OPERANDS_INPUT (x, i),
+					GET_MODE (ASM_OPERANDS_INPUT (x, i)),
+					do_not_record_p)
+			   + hash_string_1 (ASM_OPERANDS_INPUT_CONSTRAINT
+					    (x, i)));
+		}
+
+	      hash += hash_string_1 (ASM_OPERANDS_INPUT_CONSTRAINT (x, 0));
+	      x = ASM_OPERANDS_INPUT (x, 0);
+	      mode = GET_MODE (x);
+	      goto repeat;
+	    }
+	  return hash;
+	}
+
+    default:
+      break;
+    }
+
+  hash += (unsigned) code + (unsigned) GET_MODE (x);
+  for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    {
+	      x = XEXP (x, i);
+	      goto repeat;
+	    }
+
+	  hash += hash_expr_1 (XEXP (x, i), 0, do_not_record_p);
+	  if (*do_not_record_p)
+	    return 0;
+	}
+
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  {
+	    hash += hash_expr_1 (XVECEXP (x, i, j), 0, do_not_record_p);
+	    if (*do_not_record_p)
+	      return 0;
+	  }
+
+      else if (fmt[i] == 's')
+	hash += hash_string_1 (XSTR (x, i));
+      else if (fmt[i] == 'i')
+	hash += (unsigned int) XINT (x, i);
+      else
+	abort ();
+    }
+
+  return hash;
+}

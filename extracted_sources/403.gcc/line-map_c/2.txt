@@ -1,0 +1,35 @@
+void
+print_containing_files (set, map)
+     struct line_maps *set;
+     const struct line_map *map;
+{
+  if (MAIN_FILE_P (map) || set->last_listed == map->included_from)
+    return;
+
+  set->last_listed = map->included_from;
+  map = INCLUDED_FROM (set, map);
+
+  fprintf (stderr,  _("In file included from %s:%u"),
+	   map->to_file, LAST_SOURCE_LINE (map));
+
+  while (! MAIN_FILE_P (map))
+    {
+      map = INCLUDED_FROM (set, map);
+      /* Translators note: this message is used in conjunction
+	 with "In file included from %s:%ld" and some other
+	 tricks.  We want something like this:
+
+	 | In file included from sys/select.h:123,
+	 |                  from sys/types.h:234,
+	 |                  from userfile.c:31:
+	 | bits/select.h:45: <error message here>
+
+	 with all the "from"s lined up.
+	 The trailing comma is at the beginning of this message,
+	 and the trailing colon is not translated.  */
+      fprintf (stderr, _(",\n                 from %s:%u"),
+	       map->to_file, LAST_SOURCE_LINE (map));
+    }
+
+  fputs (":\n", stderr);
+}

@@ -1,0 +1,69 @@
+int
+c_cannot_inline_tree_fn (fnp)
+     tree *fnp;
+{
+  tree fn = *fnp;
+  tree t;
+
+  if (flag_really_no_inline
+      && lookup_attribute ("always_inline", DECL_ATTRIBUTES (fn)) == NULL)
+    return 1;
+
+  if (! function_attribute_inlinable_p (fn))
+    {
+      DECL_UNINLINABLE (fn) = 1;
+      return 1;
+    }
+
+  /* If a function has pending sizes, we must not defer its
+     compilation, and we can't inline it as a tree.  */
+  if (fn == current_function_decl)
+    {
+      t = get_pending_sizes ();
+      put_pending_sizes (t);
+
+      if (t)
+	{
+	  DECL_UNINLINABLE (fn) = 1;
+	  return 1;
+	}
+    }
+
+  if (DECL_CONTEXT (fn))
+    {
+      /* If a nested function has pending sizes, we may have already
+         saved them.  */
+      if (DECL_LANG_SPECIFIC (fn)->pending_sizes)
+	{
+	  DECL_UNINLINABLE (fn) = 1;
+	  return 1;
+	}
+    }
+  else
+    {
+      /* We rely on the fact that this function is called upfront,
+	 just before we start expanding a function.  If FN is active
+	 (i.e., it's the current_function_decl or a parent thereof),
+	 we have to walk FN's saved tree.  Otherwise, we can safely
+	 assume we have done it before and, if we didn't mark it as
+	 uninlinable (in which case we wouldn't have been called), it
+	 is inlinable.  Unfortunately, this strategy doesn't work for
+	 nested functions, because they're only expanded as part of
+	 their enclosing functions, so the inlinability test comes in
+	 late.  */
+      t = current_function_decl;
+
+      while (t && t != fn)
+	t = DECL_CONTEXT (t);
+      if (! t)
+	return 0;
+    }
+    
+  if (walk_tree (&DECL_SAVED_TREE (fn), inline_forbidden_p, fn, NULL))
+    {
+      DECL_UNINLINABLE (fn) = 1;
+      return 1;
+    }
+
+  return 0;
+}

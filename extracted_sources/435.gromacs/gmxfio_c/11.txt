@@ -1,0 +1,71 @@
+static bool do_ascread(void *item,int nitem,int eio,
+		       char *desc,char *srcfile,int line)
+{
+  FILE   *fp = curfio->fp;
+  int    i,m,res=0,*iptr,ix;
+  double d,x;
+  real   *ptr;
+  unsigned char *ucptr;
+  char   *cptr;
+  
+  check_nitem();  
+  switch (eio) {
+  case eioREAL:
+    res = sscanf(next_item(fp),"%lf",&d);
+    if (item) *((real *)item) = d;
+    break;
+  case eioINT:
+    res = sscanf(next_item(fp),"%d",&i);
+    if (item) *((int *)item) = i;
+    break;
+  case eioNUCHAR:
+    ucptr = (unsigned char *)item;
+    for(i=0; (i<nitem); i++) {
+      res = sscanf(next_item(fp),"%d",&ix);
+      if (item) ucptr[i] = ix;
+    }
+    break;
+  case eioUSHORT:
+    res = sscanf(next_item(fp),"%d",&i);
+    if (item) *((unsigned short *)item) = i;
+    break;
+  case eioRVEC:
+    ptr = (real *)item;
+    for(m=0; (m<DIM); m++) {
+      res = sscanf(next_item(fp),"%lf\n",&x);
+      ptr[m] = x;
+    }
+    break;
+  case eioNRVEC:
+    for(i=0; (i<nitem); i++) {
+      ptr = ((rvec *)item)[i];
+      for(m=0; (m<DIM); m++) {
+	res = sscanf(next_item(fp),"%lf\n",&x);
+	if (item) ptr[m] = x;
+      }
+    }
+    break;
+  case eioIVEC:
+    iptr = (int *)item;
+    for(m=0; (m<DIM); m++) {
+      res = sscanf(next_item(fp),"%d\n",&ix);
+      if (item) iptr[m] = ix;
+    }
+    break;
+  case eioSTRING:
+    cptr = next_item(fp);
+    if (item) {
+      decode_string(strlen(cptr)+1,(char *)item,cptr);
+      /* res = sscanf(cptr,"%s",(char *)item);*/
+      res = 1;
+    }
+    break;
+  default:
+    FE();
+  }
+  if ((res <= 0) && curfio->bDebug)
+    fprintf(stderr,"Error reading %s %s from file %s (source %s, line %d)\n",
+	    eioNames[eio],desc,curfio->fn,srcfile,line);
+  
+  return (res > 0);
+}

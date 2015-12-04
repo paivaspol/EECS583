@@ -1,0 +1,62 @@
+void dsdu_qhb_subl(int dir, int subl)
+{
+register site *st;
+register int i;
+int iloop, ln, k, j;
+int dirs[MAX_LENGTH], length;
+int path_dir[MAX_LENGTH], path_length;
+su3_matrix tmat1;
+int fsubl;
+
+ assert(NREPS==1);   /* This procedure designed only for NREPS = 1 */
+
+    FORSOMESUBLATTICE(i,st,subl) {
+	clear_su3mat(&(st->staple));
+    }
+
+    for(iloop=0;iloop<NLOOP;iloop++){
+	length=loop_length[iloop];
+	for(ln=0;ln<loop_num[iloop];ln++){
+	    /* set up dirs.  we are looking at loop starting in "XUP"
+	       direction, rotate so it starts in "dir" direction. */
+	    for(k=0;k<length;k++){
+		if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
+		    dirs[k]=(dir+loop_table[iloop][ln][k] )% 4;
+		}
+		else {
+		    dirs[k]=OPP_DIR(
+			(dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
+		}
+	    }
+
+	    path_length = length-1;	/* generalized "staple" */
+	    /* The path starts at the forward end of the link */
+	    fsubl = neighsubl[subl][dir];
+
+	    /* check for links in direction of link to be updated.
+	       Note the direction of the path - opposite the link. */
+	    for(k=0;k<length;k++)if( dirs[k]==dir||dirs[k]==OPP_DIR(dir)) {
+		if( GOES_FORWARDS(dirs[k]) ) for(j=0;j<path_length;j++) {
+		    path_dir[j] = dirs[(k+j+1)%length];
+		}
+		if( GOES_BACKWARDS(dirs[k]) ) for(j=0;j<path_length;j++) {
+		    path_dir[path_length-1-j] =
+			OPP_DIR(dirs[(k+j+1)%length]);
+		}
+		path_prod_subl(path_dir, path_length, fsubl);
+
+		/* We took the path in the other direction from our old
+		   convention in order to get it to end up "at our site".
+		   So now take adjoint */
+		FORSOMESUBLATTICE(i,st,subl) {
+		    su3_adjoint(&(st->tempmat1), &tmat1 );
+		    scalar_mult_add_su3_matrix(&(st->staple), &tmat1,
+			loop_coeff[iloop][0], &(st->staple) );
+		}
+	    } /* k (location in path) */
+	} /* ln */
+    } /* iloop */
+
+    g_sync();
+
+} /* dsdu_qhb */

@@ -1,0 +1,120 @@
+static void
+combine_movables (movables, regs)
+     struct loop_movables *movables;
+     struct loop_regs *regs;
+{
+  struct movable *m;
+  char *matched_regs = (char *) xmalloc (regs->num);
+  enum machine_mode mode;
+
+  /* Regs that are set more than once are not allowed to match
+     or be matched.  I'm no longer sure why not.  */
+  /* Perhaps testing m->consec_sets would be more appropriate here?  */
+
+  for (m = movables->head; m; m = m->next)
+    if (m->match == 0 && regs->array[m->regno].n_times_set == 1
+	&& !m->partial)
+      {
+	struct movable *m1;
+	int regno = m->regno;
+
+	memset (matched_regs, 0, regs->num);
+	matched_regs[regno] = 1;
+
+	/* We want later insns to match the first one.  Don't make the first
+	   one match any later ones.  So start this loop at m->next.  */
+	for (m1 = m->next; m1; m1 = m1->next)
+	  /* ??? HACK!  move_movables does not verify that the replacement
+	     is valid, which can have disasterous effects with hard regs
+	     and match_dup.  Turn combination off for now.  */
+	  if (0 && m != m1 && m1->match == 0
+	      && regs->array[m1->regno].n_times_set == 1
+	      /* A reg used outside the loop mustn't be eliminated.  */
+	      && !m1->global
+	      /* A reg used for zero-extending mustn't be eliminated.  */
+	      && !m1->partial
+	      && (matched_regs[m1->regno]
+		  ||
+		  (
+		   /* Can combine regs with different modes loaded from the
+		      same constant only if the modes are the same or
+		      if both are integer modes with M wider or the same
+		      width as M1.  The check for integer is redundant, but
+		      safe, since the only case of differing destination
+		      modes with equal sources is when both sources are
+		      VOIDmode, i.e., CONST_INT.  */
+		   (GET_MODE (m->set_dest) == GET_MODE (m1->set_dest)
+		    || (GET_MODE_CLASS (GET_MODE (m->set_dest)) == MODE_INT
+			&& GET_MODE_CLASS (GET_MODE (m1->set_dest)) == MODE_INT
+			&& (GET_MODE_BITSIZE (GET_MODE (m->set_dest))
+			    >= GET_MODE_BITSIZE (GET_MODE (m1->set_dest)))))
+		   /* See if the source of M1 says it matches M.  */
+		   && ((GET_CODE (m1->set_src) == REG
+			&& matched_regs[REGNO (m1->set_src)])
+		       || rtx_equal_for_loop_p (m->set_src, m1->set_src,
+						movables, regs))))
+	      && ((m->dependencies == m1->dependencies)
+		  || rtx_equal_p (m->dependencies, m1->dependencies)))
+	    {
+	      m->lifetime += m1->lifetime;
+	      m->savings += m1->savings;
+	      m1->done = 1;
+	      m1->match = m;
+	      matched_regs[m1->regno] = 1;
+	    }
+      }
+
+  /* Now combine the regs used for zero-extension.
+     This can be done for those not marked `global'
+     provided their lives don't overlap.  */
+
+  for (mode = GET_CLASS_NARROWEST_MODE (MODE_INT); mode != VOIDmode;
+       mode = GET_MODE_WIDER_MODE (mode))
+    {
+      struct movable *m0 = 0;
+
+      /* Combine all the registers for extension from mode MODE.
+	 Don't combine any that are used outside this loop.  */
+      for (m = movables->head; m; m = m->next)
+	if (m->partial && ! m->global
+	    && mode == GET_MODE (SET_SRC (PATTERN (NEXT_INSN (m->insn)))))
+	  {
+	    struct movable *m1;
+
+	    int first = REGNO_FIRST_LUID (m->regno);
+	    int last = REGNO_LAST_LUID (m->regno);
+
+	    if (m0 == 0)
+	      {
+		/* First one: don't check for overlap, just record it.  */
+		m0 = m;
+		continue;
+	      }
+
+	    /* Make sure they extend to the same mode.
+	       (Almost always true.)  */
+	    if (GET_MODE (m->set_dest) != GET_MODE (m0->set_dest))
+	      continue;
+
+	    /* We already have one: check for overlap with those
+	       already combined together.  */
+	    for (m1 = movables->head; m1 != m; m1 = m1->next)
+	      if (m1 == m0 || (m1->partial && m1->match == m0))
+		if (! (REGNO_FIRST_LUID (m1->regno) > last
+		       || REGNO_LAST_LUID (m1->regno) < first))
+		  goto overlap;
+
+	    /* No overlap: we can combine this with the others.  */
+	    m0->lifetime += m->lifetime;
+	    m0->savings += m->savings;
+	    m->done = 1;
+	    m->match = m0;
+
+	  overlap:
+	    ;
+	  }
+    }
+
+  /* Clean up.  */
+  free (matched_regs);
+}

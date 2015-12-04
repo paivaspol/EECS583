@@ -1,0 +1,33 @@
+static void
+record_dead_and_set_regs_1 (dest, setter, data)
+     rtx dest, setter;
+     void *data;
+{
+  rtx record_dead_insn = (rtx) data;
+
+  if (GET_CODE (dest) == SUBREG)
+    dest = SUBREG_REG (dest);
+
+  if (GET_CODE (dest) == REG)
+    {
+      /* If we are setting the whole register, we know its value.  Otherwise
+	 show that we don't know the value.  We can handle SUBREG in
+	 some cases.  */
+      if (GET_CODE (setter) == SET && dest == SET_DEST (setter))
+	record_value_for_reg (dest, record_dead_insn, SET_SRC (setter));
+      else if (GET_CODE (setter) == SET
+	       && GET_CODE (SET_DEST (setter)) == SUBREG
+	       && SUBREG_REG (SET_DEST (setter)) == dest
+	       && GET_MODE_BITSIZE (GET_MODE (dest)) <= BITS_PER_WORD
+	       && subreg_lowpart_p (SET_DEST (setter)))
+	record_value_for_reg (dest, record_dead_insn,
+			      gen_lowpart_for_combine (GET_MODE (dest),
+						       SET_SRC (setter)));
+      else
+	record_value_for_reg (dest, record_dead_insn, NULL_RTX);
+    }
+  else if (GET_CODE (dest) == MEM
+	   /* Ignore pushes, they clobber nothing.  */
+	   && ! push_operand (dest, GET_MODE (dest)))
+    mem_last_set = INSN_CUID (record_dead_insn);
+}

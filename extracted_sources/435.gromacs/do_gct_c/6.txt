@@ -1,0 +1,31 @@
+void gprod(t_commrec *cr,int n,real f[])
+{
+  /* Compute the global product of all elements in an array 
+   * such that after gprod f[i] = PROD_j=1,nprocs f[i][j]
+   */
+  static int  nbuf=0;
+  static real *buf[2] = { NULL, NULL };
+  int  i,j,cur=0;
+#define next (1-cur)
+
+  if (n > nbuf) {
+    nbuf = n;
+    srenew(buf[cur], nbuf);
+    srenew(buf[next],nbuf);
+  }
+  
+  for(j=0; (j<n); j++) 
+    buf[cur][j] = f[j];
+  
+  for(i=0; (i<cr->nnodes-1); i++) {
+    gmx_tx(cr->left, array(buf[cur],n));
+    gmx_rx(cr->right,array(buf[next],n));
+    gmx_wait(cr->left,cr->right);
+    /* Multiply f by factor read */
+    for(j=0; (j<n); j++)
+      f[j] *= buf[next][j];
+    /* Swap buffers */
+    cur = next;
+  }
+#undef next
+}

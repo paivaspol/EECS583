@@ -1,0 +1,38 @@
+void SetImgType()
+{
+  if (input->intra_period == 0)
+  {
+    if (IMG_NUMBER == 0)
+    {
+      img->type = I_SLICE;        // set image type for first image to I-frame
+    }
+    else
+    {
+      img->type = P_SLICE;        // P-frame
+
+      if (input->sp_periodicity)
+      {
+        if ((IMG_NUMBER % input->sp_periodicity) ==0)
+        {
+          img->type=SP_SLICE;
+        }
+      }
+    }
+  }
+  else
+  {
+    if ((IMG_NUMBER%input->intra_period) == 0)
+    {
+      img->type = I_SLICE;
+    }
+    else
+    {
+      img->type = P_SLICE;        // P-frame
+      if (input->sp_periodicity)
+      {
+        if ((IMG_NUMBER % input->sp_periodicity) ==0)
+            img->type=SP_SLICE;
+      }
+    }
+  }
+}

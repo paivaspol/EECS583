@@ -1,0 +1,37 @@
+void
+set_init_label (fieldname)
+     tree fieldname;
+{
+  tree tail;
+
+  if (set_designator (0))
+    return;
+
+  designator_errorneous = 1;
+
+  if (TREE_CODE (constructor_type) != RECORD_TYPE
+      && TREE_CODE (constructor_type) != UNION_TYPE)
+    {
+      error_init ("field name not in record or union initializer");
+      return;
+    }
+    
+  for (tail = TYPE_FIELDS (constructor_type); tail;
+       tail = TREE_CHAIN (tail))
+    {
+      if (DECL_NAME (tail) == fieldname)
+	break;
+    }
+
+  if (tail == 0)
+    error ("unknown field `%s' specified in initializer",
+	   IDENTIFIER_POINTER (fieldname));
+  else
+    {
+      constructor_fields = tail;
+      designator_depth++;
+      designator_errorneous = 0;
+      if (constructor_range_stack)
+	push_range_stack (NULL_TREE);
+    }
+}

@@ -1,0 +1,18 @@
+static void
+add_mem_for_addr (addr_elt, mem_elt, x)
+     cselib_val *addr_elt, *mem_elt;
+     rtx x;
+{
+  struct elt_loc_list *l;
+
+  /* Avoid duplicates.  */
+  for (l = mem_elt->locs; l; l = l->next)
+    if (GET_CODE (l->loc) == MEM
+	&& CSELIB_VAL_PTR (XEXP (l->loc, 0)) == addr_elt)
+      return;
+
+  addr_elt->addr_list = new_elt_list (addr_elt->addr_list, mem_elt);
+  mem_elt->locs
+    = new_elt_loc_list (mem_elt->locs,
+			replace_equiv_address_nv (x, addr_elt->u.val_rtx));
+}

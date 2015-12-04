@@ -1,0 +1,44 @@
+void
+visualize_scheduled_insns (clock)
+     int clock;
+{
+  int i, unit;
+
+  /* If no more room, split table into two.  */
+  if (n_visual_lines >= MAX_VISUAL_LINES)
+    {
+      print_block_visualization ("(incomplete)");
+      init_block_visualization ();
+    }
+
+  n_visual_lines++;
+
+  sprintf (visual_tbl + strlen (visual_tbl), ";;   %-8d", clock);
+  for (unit = 0; unit < FUNCTION_UNITS_SIZE; unit++)
+    if (function_units[unit].bitmask & target_units)
+      for (i = 0; i < function_units[unit].multiplicity; i++)
+	{
+	  int instance = unit + i * FUNCTION_UNITS_SIZE;
+	  rtx insn = get_unit_last_insn (instance);
+
+	  /* Print insns that still keep the unit busy.  */
+	  if (insn
+	      && actual_hazard_this_instance (unit, instance, insn, clock, 0))
+	    {
+	      char str[BUF_LEN];
+	      print_insn (str, insn, 0);
+	      str[INSN_LEN] = '\0';
+	      sprintf (visual_tbl + strlen (visual_tbl), "  %-33s", str);
+	    }
+	  else
+	    sprintf (visual_tbl + strlen (visual_tbl), "  %-33s", "------------------------------");
+	}
+
+  /* Print insns that are not assigned to any unit.  */
+  for (i = 0; i < n_vis_no_unit; i++)
+    sprintf (visual_tbl + strlen (visual_tbl), "  %-8d",
+	     INSN_UID (vis_no_unit[i]));
+  n_vis_no_unit = 0;
+
+  sprintf (visual_tbl + strlen (visual_tbl), "\n");
+}

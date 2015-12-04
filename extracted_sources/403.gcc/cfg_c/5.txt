@@ -1,0 +1,33 @@
+void
+remove_edge (e)
+     edge e;
+{
+  edge last_pred = NULL;
+  edge last_succ = NULL;
+  edge tmp;
+  basic_block src, dest;
+
+  src = e->src;
+  dest = e->dest;
+  for (tmp = src->succ; tmp && tmp != e; tmp = tmp->succ_next)
+    last_succ = tmp;
+
+  if (!tmp)
+    abort ();
+  if (last_succ)
+    last_succ->succ_next = e->succ_next;
+  else
+    src->succ = e->succ_next;
+
+  for (tmp = dest->pred; tmp && tmp != e; tmp = tmp->pred_next)
+    last_pred = tmp;
+
+  if (!tmp)
+    abort ();
+  if (last_pred)
+    last_pred->pred_next = e->pred_next;
+  else
+    dest->pred = e->pred_next;
+
+  free_edge (e);
+}

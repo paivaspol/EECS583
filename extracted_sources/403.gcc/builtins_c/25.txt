@@ -1,0 +1,41 @@
+static rtx
+expand_builtin_strchr (arglist, target, mode)
+     tree arglist;
+     rtx target;
+     enum machine_mode mode;
+{
+  if (!validate_arglist (arglist, POINTER_TYPE, INTEGER_TYPE, VOID_TYPE))
+    return 0;
+  else
+    {
+      tree s1 = TREE_VALUE (arglist), s2 = TREE_VALUE (TREE_CHAIN (arglist));
+      const char *p1;
+
+      if (TREE_CODE (s2) != INTEGER_CST)
+	return 0;
+
+      p1 = c_getstr (s1);
+      if (p1 != NULL)
+	{
+	  char c;
+	  const char *r;
+
+	  if (target_char_cast (s2, &c))
+	    return 0;
+
+	  r = strchr (p1, c);
+
+	  if (r == NULL)
+	    return const0_rtx;
+
+	  /* Return an offset into the constant string argument.  */
+	  return expand_expr (fold (build (PLUS_EXPR, TREE_TYPE (s1),
+					   s1, ssize_int (r - p1))),
+			      target, mode, EXPAND_NORMAL);
+	}
+
+      /* FIXME: Should use here strchrM optab so that ports can optimize
+	 this.  */
+      return 0;
+    }
+}

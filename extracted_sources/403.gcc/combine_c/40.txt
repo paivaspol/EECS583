@@ -1,0 +1,1146 @@
+static enum rtx_code
+simplify_comparison (code, pop0, pop1)
+     enum rtx_code code;
+     rtx *pop0;
+     rtx *pop1;
+{
+  rtx op0 = *pop0;
+  rtx op1 = *pop1;
+  rtx tem, tem1;
+  int i;
+  enum machine_mode mode, tmode;
+
+  /* Try a few ways of applying the same transformation to both operands.  */
+  while (1)
+    {
+#ifndef WORD_REGISTER_OPERATIONS
+      /* The test below this one won't handle SIGN_EXTENDs on these machines,
+	 so check specially.  */
+      if (code != GTU && code != GEU && code != LTU && code != LEU
+	  && GET_CODE (op0) == ASHIFTRT && GET_CODE (op1) == ASHIFTRT
+	  && GET_CODE (XEXP (op0, 0)) == ASHIFT
+	  && GET_CODE (XEXP (op1, 0)) == ASHIFT
+	  && GET_CODE (XEXP (XEXP (op0, 0), 0)) == SUBREG
+	  && GET_CODE (XEXP (XEXP (op1, 0), 0)) == SUBREG
+	  && (GET_MODE (SUBREG_REG (XEXP (XEXP (op0, 0), 0)))
+	      == GET_MODE (SUBREG_REG (XEXP (XEXP (op1, 0), 0))))
+	  && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	  && GET_CODE (XEXP (op1, 1)) == CONST_INT
+	  && GET_CODE (XEXP (XEXP (op0, 0), 1)) == CONST_INT
+	  && GET_CODE (XEXP (XEXP (op1, 0), 1)) == CONST_INT
+	  && INTVAL (XEXP (op0, 1)) == INTVAL (XEXP (op1, 1))
+	  && INTVAL (XEXP (op0, 1)) == INTVAL (XEXP (XEXP (op0, 0), 1))
+	  && INTVAL (XEXP (op0, 1)) == INTVAL (XEXP (XEXP (op1, 0), 1))
+	  && (INTVAL (XEXP (op0, 1))
+	      == (GET_MODE_BITSIZE (GET_MODE (op0))
+		  - (GET_MODE_BITSIZE
+		     (GET_MODE (SUBREG_REG (XEXP (XEXP (op0, 0), 0))))))))
+	{
+	  op0 = SUBREG_REG (XEXP (XEXP (op0, 0), 0));
+	  op1 = SUBREG_REG (XEXP (XEXP (op1, 0), 0));
+	}
+#endif
+
+      /* If both operands are the same constant shift, see if we can ignore the
+	 shift.  We can if the shift is a rotate or if the bits shifted out of
+	 this shift are known to be zero for both inputs and if the type of
+	 comparison is compatible with the shift.  */
+      if (GET_CODE (op0) == GET_CODE (op1)
+	  && GET_MODE_BITSIZE (GET_MODE (op0)) <= HOST_BITS_PER_WIDE_INT
+	  && ((GET_CODE (op0) == ROTATE && (code == NE || code == EQ))
+	      || ((GET_CODE (op0) == LSHIFTRT || GET_CODE (op0) == ASHIFT)
+		  && (code != GT && code != LT && code != GE && code != LE))
+	      || (GET_CODE (op0) == ASHIFTRT
+		  && (code != GTU && code != LTU
+		      && code != GEU && code != LEU)))
+	  && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	  && INTVAL (XEXP (op0, 1)) >= 0
+	  && INTVAL (XEXP (op0, 1)) < HOST_BITS_PER_WIDE_INT
+	  && XEXP (op0, 1) == XEXP (op1, 1))
+	{
+	  enum machine_mode mode = GET_MODE (op0);
+	  unsigned HOST_WIDE_INT mask = GET_MODE_MASK (mode);
+	  int shift_count = INTVAL (XEXP (op0, 1));
+
+	  if (GET_CODE (op0) == LSHIFTRT || GET_CODE (op0) == ASHIFTRT)
+	    mask &= (mask >> shift_count) << shift_count;
+	  else if (GET_CODE (op0) == ASHIFT)
+	    mask = (mask & (mask << shift_count)) >> shift_count;
+
+	  if ((nonzero_bits (XEXP (op0, 0), mode) & ~mask) == 0
+	      && (nonzero_bits (XEXP (op1, 0), mode) & ~mask) == 0)
+	    op0 = XEXP (op0, 0), op1 = XEXP (op1, 0);
+	  else
+	    break;
+	}
+
+      /* If both operands are AND's of a paradoxical SUBREG by constant, the
+	 SUBREGs are of the same mode, and, in both cases, the AND would
+	 be redundant if the comparison was done in the narrower mode,
+	 do the comparison in the narrower mode (e.g., we are AND'ing with 1
+	 and the operand's possibly nonzero bits are 0xffffff01; in that case
+	 if we only care about QImode, we don't need the AND).  This case
+	 occurs if the output mode of an scc insn is not SImode and
+	 STORE_FLAG_VALUE == 1 (e.g., the 386).
+
+	 Similarly, check for a case where the AND's are ZERO_EXTEND
+	 operations from some narrower mode even though a SUBREG is not
+	 present.  */
+
+      else if (GET_CODE (op0) == AND && GET_CODE (op1) == AND
+	       && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	       && GET_CODE (XEXP (op1, 1)) == CONST_INT)
+	{
+	  rtx inner_op0 = XEXP (op0, 0);
+	  rtx inner_op1 = XEXP (op1, 0);
+	  HOST_WIDE_INT c0 = INTVAL (XEXP (op0, 1));
+	  HOST_WIDE_INT c1 = INTVAL (XEXP (op1, 1));
+	  int changed = 0;
+
+	  if (GET_CODE (inner_op0) == SUBREG && GET_CODE (inner_op1) == SUBREG
+	      && (GET_MODE_SIZE (GET_MODE (inner_op0))
+		  > GET_MODE_SIZE (GET_MODE (SUBREG_REG (inner_op0))))
+	      && (GET_MODE (SUBREG_REG (inner_op0))
+		  == GET_MODE (SUBREG_REG (inner_op1)))
+	      && (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (inner_op0)))
+		  <= HOST_BITS_PER_WIDE_INT)
+	      && (0 == ((~c0) & nonzero_bits (SUBREG_REG (inner_op0),
+					     GET_MODE (SUBREG_REG (inner_op0)))))
+	      && (0 == ((~c1) & nonzero_bits (SUBREG_REG (inner_op1),
+					     GET_MODE (SUBREG_REG (inner_op1))))))
+	    {
+	      op0 = SUBREG_REG (inner_op0);
+	      op1 = SUBREG_REG (inner_op1);
+
+	      /* The resulting comparison is always unsigned since we masked
+		 off the original sign bit.  */
+	      code = unsigned_condition (code);
+
+	      changed = 1;
+	    }
+
+	  else if (c0 == c1)
+	    for (tmode = GET_CLASS_NARROWEST_MODE
+		 (GET_MODE_CLASS (GET_MODE (op0)));
+		 tmode != GET_MODE (op0); tmode = GET_MODE_WIDER_MODE (tmode))
+	      if ((unsigned HOST_WIDE_INT) c0 == GET_MODE_MASK (tmode))
+		{
+		  op0 = gen_lowpart_for_combine (tmode, inner_op0);
+		  op1 = gen_lowpart_for_combine (tmode, inner_op1);
+		  code = unsigned_condition (code);
+		  changed = 1;
+		  break;
+		}
+
+	  if (! changed)
+	    break;
+	}
+
+      /* If both operands are NOT, we can strip off the outer operation
+	 and adjust the comparison code for swapped operands; similarly for
+	 NEG, except that this must be an equality comparison.  */
+      else if ((GET_CODE (op0) == NOT && GET_CODE (op1) == NOT)
+	       || (GET_CODE (op0) == NEG && GET_CODE (op1) == NEG
+		   && (code == EQ || code == NE)))
+	op0 = XEXP (op0, 0), op1 = XEXP (op1, 0), code = swap_condition (code);
+
+      else
+	break;
+    }
+
+  /* If the first operand is a constant, swap the operands and adjust the
+     comparison code appropriately, but don't do this if the second operand
+     is already a constant integer.  */
+  if (swap_commutative_operands_p (op0, op1))
+    {
+      tem = op0, op0 = op1, op1 = tem;
+      code = swap_condition (code);
+    }
+
+  /* We now enter a loop during which we will try to simplify the comparison.
+     For the most part, we only are concerned with comparisons with zero,
+     but some things may really be comparisons with zero but not start
+     out looking that way.  */
+
+  while (GET_CODE (op1) == CONST_INT)
+    {
+      enum machine_mode mode = GET_MODE (op0);
+      unsigned int mode_width = GET_MODE_BITSIZE (mode);
+      unsigned HOST_WIDE_INT mask = GET_MODE_MASK (mode);
+      int equality_comparison_p;
+      int sign_bit_comparison_p;
+      int unsigned_comparison_p;
+      HOST_WIDE_INT const_op;
+
+      /* We only want to handle integral modes.  This catches VOIDmode,
+	 CCmode, and the floating-point modes.  An exception is that we
+	 can handle VOIDmode if OP0 is a COMPARE or a comparison
+	 operation.  */
+
+      if (GET_MODE_CLASS (mode) != MODE_INT
+	  && ! (mode == VOIDmode
+		&& (GET_CODE (op0) == COMPARE
+		    || GET_RTX_CLASS (GET_CODE (op0)) == '<')))
+	break;
+
+      /* Get the constant we are comparing against and turn off all bits
+	 not on in our mode.  */
+      const_op = trunc_int_for_mode (INTVAL (op1), mode);
+      op1 = GEN_INT (const_op);
+
+      /* If we are comparing against a constant power of two and the value
+	 being compared can only have that single bit nonzero (e.g., it was
+	 `and'ed with that bit), we can replace this with a comparison
+	 with zero.  */
+      if (const_op
+	  && (code == EQ || code == NE || code == GE || code == GEU
+	      || code == LT || code == LTU)
+	  && mode_width <= HOST_BITS_PER_WIDE_INT
+	  && exact_log2 (const_op) >= 0
+	  && nonzero_bits (op0, mode) == (unsigned HOST_WIDE_INT) const_op)
+	{
+	  code = (code == EQ || code == GE || code == GEU ? NE : EQ);
+	  op1 = const0_rtx, const_op = 0;
+	}
+
+      /* Similarly, if we are comparing a value known to be either -1 or
+	 0 with -1, change it to the opposite comparison against zero.  */
+
+      if (const_op == -1
+	  && (code == EQ || code == NE || code == GT || code == LE
+	      || code == GEU || code == LTU)
+	  && num_sign_bit_copies (op0, mode) == mode_width)
+	{
+	  code = (code == EQ || code == LE || code == GEU ? NE : EQ);
+	  op1 = const0_rtx, const_op = 0;
+	}
+
+      /* Do some canonicalizations based on the comparison code.  We prefer
+	 comparisons against zero and then prefer equality comparisons.
+	 If we can reduce the size of a constant, we will do that too.  */
+
+      switch (code)
+	{
+	case LT:
+	  /* < C is equivalent to <= (C - 1) */
+	  if (const_op > 0)
+	    {
+	      const_op -= 1;
+	      op1 = GEN_INT (const_op);
+	      code = LE;
+	      /* ... fall through to LE case below.  */
+	    }
+	  else
+	    break;
+
+	case LE:
+	  /* <= C is equivalent to < (C + 1); we do this for C < 0  */
+	  if (const_op < 0)
+	    {
+	      const_op += 1;
+	      op1 = GEN_INT (const_op);
+	      code = LT;
+	    }
+
+	  /* If we are doing a <= 0 comparison on a value known to have
+	     a zero sign bit, we can replace this with == 0.  */
+	  else if (const_op == 0
+		   && mode_width <= HOST_BITS_PER_WIDE_INT
+		   && (nonzero_bits (op0, mode)
+		       & ((HOST_WIDE_INT) 1 << (mode_width - 1))) == 0)
+	    code = EQ;
+	  break;
+
+	case GE:
+	  /* >= C is equivalent to > (C - 1).  */
+	  if (const_op > 0)
+	    {
+	      const_op -= 1;
+	      op1 = GEN_INT (const_op);
+	      code = GT;
+	      /* ... fall through to GT below.  */
+	    }
+	  else
+	    break;
+
+	case GT:
+	  /* > C is equivalent to >= (C + 1); we do this for C < 0.  */
+	  if (const_op < 0)
+	    {
+	      const_op += 1;
+	      op1 = GEN_INT (const_op);
+	      code = GE;
+	    }
+
+	  /* If we are doing a > 0 comparison on a value known to have
+	     a zero sign bit, we can replace this with != 0.  */
+	  else if (const_op == 0
+		   && mode_width <= HOST_BITS_PER_WIDE_INT
+		   && (nonzero_bits (op0, mode)
+		       & ((HOST_WIDE_INT) 1 << (mode_width - 1))) == 0)
+	    code = NE;
+	  break;
+
+	case LTU:
+	  /* < C is equivalent to <= (C - 1).  */
+	  if (const_op > 0)
+	    {
+	      const_op -= 1;
+	      op1 = GEN_INT (const_op);
+	      code = LEU;
+	      /* ... fall through ...  */
+	    }
+
+	  /* (unsigned) < 0x80000000 is equivalent to >= 0.  */
+	  else if ((mode_width <= HOST_BITS_PER_WIDE_INT)
+		   && (const_op == (HOST_WIDE_INT) 1 << (mode_width - 1)))
+	    {
+	      const_op = 0, op1 = const0_rtx;
+	      code = GE;
+	      break;
+	    }
+	  else
+	    break;
+
+	case LEU:
+	  /* unsigned <= 0 is equivalent to == 0 */
+	  if (const_op == 0)
+	    code = EQ;
+
+	  /* (unsigned) <= 0x7fffffff is equivalent to >= 0.  */
+	  else if ((mode_width <= HOST_BITS_PER_WIDE_INT)
+		   && (const_op == ((HOST_WIDE_INT) 1 << (mode_width - 1)) - 1))
+	    {
+	      const_op = 0, op1 = const0_rtx;
+	      code = GE;
+	    }
+	  break;
+
+	case GEU:
+	  /* >= C is equivalent to < (C - 1).  */
+	  if (const_op > 1)
+	    {
+	      const_op -= 1;
+	      op1 = GEN_INT (const_op);
+	      code = GTU;
+	      /* ... fall through ...  */
+	    }
+
+	  /* (unsigned) >= 0x80000000 is equivalent to < 0.  */
+	  else if ((mode_width <= HOST_BITS_PER_WIDE_INT)
+		   && (const_op == (HOST_WIDE_INT) 1 << (mode_width - 1)))
+	    {
+	      const_op = 0, op1 = const0_rtx;
+	      code = LT;
+	      break;
+	    }
+	  else
+	    break;
+
+	case GTU:
+	  /* unsigned > 0 is equivalent to != 0 */
+	  if (const_op == 0)
+	    code = NE;
+
+	  /* (unsigned) > 0x7fffffff is equivalent to < 0.  */
+	  else if ((mode_width <= HOST_BITS_PER_WIDE_INT)
+		    && (const_op == ((HOST_WIDE_INT) 1 << (mode_width - 1)) - 1))
+	    {
+	      const_op = 0, op1 = const0_rtx;
+	      code = LT;
+	    }
+	  break;
+
+	default:
+	  break;
+	}
+
+      /* Compute some predicates to simplify code below.  */
+
+      equality_comparison_p = (code == EQ || code == NE);
+      sign_bit_comparison_p = ((code == LT || code == GE) && const_op == 0);
+      unsigned_comparison_p = (code == LTU || code == LEU || code == GTU
+			       || code == GEU);
+
+      /* If this is a sign bit comparison and we can do arithmetic in
+	 MODE, say that we will only be needing the sign bit of OP0.  */
+      if (sign_bit_comparison_p
+	  && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT)
+	op0 = force_to_mode (op0, mode,
+			     ((HOST_WIDE_INT) 1
+			      << (GET_MODE_BITSIZE (mode) - 1)),
+			     NULL_RTX, 0);
+
+      /* Now try cases based on the opcode of OP0.  If none of the cases
+	 does a "continue", we exit this loop immediately after the
+	 switch.  */
+
+      switch (GET_CODE (op0))
+	{
+	case ZERO_EXTRACT:
+	  /* If we are extracting a single bit from a variable position in
+	     a constant that has only a single bit set and are comparing it
+	     with zero, we can convert this into an equality comparison
+	     between the position and the location of the single bit.  */
+
+	  if (GET_CODE (XEXP (op0, 0)) == CONST_INT
+	      && XEXP (op0, 1) == const1_rtx
+	      && equality_comparison_p && const_op == 0
+	      && (i = exact_log2 (INTVAL (XEXP (op0, 0)))) >= 0)
+	    {
+	      if (BITS_BIG_ENDIAN)
+		{
+		  enum machine_mode new_mode
+		    = mode_for_extraction (EP_extzv, 1);
+		  if (new_mode == MAX_MACHINE_MODE)
+		    i = BITS_PER_WORD - 1 - i;
+		  else
+		    {
+		      mode = new_mode;
+		      i = (GET_MODE_BITSIZE (mode) - 1 - i);
+		    }
+		}
+
+	      op0 = XEXP (op0, 2);
+	      op1 = GEN_INT (i);
+	      const_op = i;
+
+	      /* Result is nonzero iff shift count is equal to I.  */
+	      code = reverse_condition (code);
+	      continue;
+	    }
+
+	  /* ... fall through ...  */
+
+	case SIGN_EXTRACT:
+	  tem = expand_compound_operation (op0);
+	  if (tem != op0)
+	    {
+	      op0 = tem;
+	      continue;
+	    }
+	  break;
+
+	case NOT:
+	  /* If testing for equality, we can take the NOT of the constant.  */
+	  if (equality_comparison_p
+	      && (tem = simplify_unary_operation (NOT, mode, op1, mode)) != 0)
+	    {
+	      op0 = XEXP (op0, 0);
+	      op1 = tem;
+	      continue;
+	    }
+
+	  /* If just looking at the sign bit, reverse the sense of the
+	     comparison.  */
+	  if (sign_bit_comparison_p)
+	    {
+	      op0 = XEXP (op0, 0);
+	      code = (code == GE ? LT : GE);
+	      continue;
+	    }
+	  break;
+
+	case NEG:
+	  /* If testing for equality, we can take the NEG of the constant.  */
+	  if (equality_comparison_p
+	      && (tem = simplify_unary_operation (NEG, mode, op1, mode)) != 0)
+	    {
+	      op0 = XEXP (op0, 0);
+	      op1 = tem;
+	      continue;
+	    }
+
+	  /* The remaining cases only apply to comparisons with zero.  */
+	  if (const_op != 0)
+	    break;
+
+	  /* When X is ABS or is known positive,
+	     (neg X) is < 0 if and only if X != 0.  */
+
+	  if (sign_bit_comparison_p
+	      && (GET_CODE (XEXP (op0, 0)) == ABS
+		  || (mode_width <= HOST_BITS_PER_WIDE_INT
+		      && (nonzero_bits (XEXP (op0, 0), mode)
+			  & ((HOST_WIDE_INT) 1 << (mode_width - 1))) == 0)))
+	    {
+	      op0 = XEXP (op0, 0);
+	      code = (code == LT ? NE : EQ);
+	      continue;
+	    }
+
+	  /* If we have NEG of something whose two high-order bits are the
+	     same, we know that "(-a) < 0" is equivalent to "a > 0".  */
+	  if (num_sign_bit_copies (op0, mode) >= 2)
+	    {
+	      op0 = XEXP (op0, 0);
+	      code = swap_condition (code);
+	      continue;
+	    }
+	  break;
+
+	case ROTATE:
+	  /* If we are testing equality and our count is a constant, we
+	     can perform the inverse operation on our RHS.  */
+	  if (equality_comparison_p && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && (tem = simplify_binary_operation (ROTATERT, mode,
+						   op1, XEXP (op0, 1))) != 0)
+	    {
+	      op0 = XEXP (op0, 0);
+	      op1 = tem;
+	      continue;
+	    }
+
+	  /* If we are doing a < 0 or >= 0 comparison, it means we are testing
+	     a particular bit.  Convert it to an AND of a constant of that
+	     bit.  This will be converted into a ZERO_EXTRACT.  */
+	  if (const_op == 0 && sign_bit_comparison_p
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && mode_width <= HOST_BITS_PER_WIDE_INT)
+	    {
+	      op0 = simplify_and_const_int (NULL_RTX, mode, XEXP (op0, 0),
+					    ((HOST_WIDE_INT) 1
+					     << (mode_width - 1
+						 - INTVAL (XEXP (op0, 1)))));
+	      code = (code == LT ? NE : EQ);
+	      continue;
+	    }
+
+	  /* Fall through.  */
+
+	case ABS:
+	  /* ABS is ignorable inside an equality comparison with zero.  */
+	  if (const_op == 0 && equality_comparison_p)
+	    {
+	      op0 = XEXP (op0, 0);
+	      continue;
+	    }
+	  break;
+
+	case SIGN_EXTEND:
+	  /* Can simplify (compare (zero/sign_extend FOO) CONST)
+	     to (compare FOO CONST) if CONST fits in FOO's mode and we
+	     are either testing inequality or have an unsigned comparison
+	     with ZERO_EXTEND or a signed comparison with SIGN_EXTEND.  */
+	  if (! unsigned_comparison_p
+	      && (GET_MODE_BITSIZE (GET_MODE (XEXP (op0, 0)))
+		  <= HOST_BITS_PER_WIDE_INT)
+	      && ((unsigned HOST_WIDE_INT) const_op
+		  < (((unsigned HOST_WIDE_INT) 1
+		      << (GET_MODE_BITSIZE (GET_MODE (XEXP (op0, 0))) - 1)))))
+	    {
+	      op0 = XEXP (op0, 0);
+	      continue;
+	    }
+	  break;
+
+	case SUBREG:
+	  /* Check for the case where we are comparing A - C1 with C2,
+	     both constants are smaller than 1/2 the maximum positive
+	     value in MODE, and the comparison is equality or unsigned.
+	     In that case, if A is either zero-extended to MODE or has
+	     sufficient sign bits so that the high-order bit in MODE
+	     is a copy of the sign in the inner mode, we can prove that it is
+	     safe to do the operation in the wider mode.  This simplifies
+	     many range checks.  */
+
+	  if (mode_width <= HOST_BITS_PER_WIDE_INT
+	      && subreg_lowpart_p (op0)
+	      && GET_CODE (SUBREG_REG (op0)) == PLUS
+	      && GET_CODE (XEXP (SUBREG_REG (op0), 1)) == CONST_INT
+	      && INTVAL (XEXP (SUBREG_REG (op0), 1)) < 0
+	      && (-INTVAL (XEXP (SUBREG_REG (op0), 1))
+		  < (HOST_WIDE_INT) (GET_MODE_MASK (mode) / 2))
+	      && (unsigned HOST_WIDE_INT) const_op < GET_MODE_MASK (mode) / 2
+	      && (0 == (nonzero_bits (XEXP (SUBREG_REG (op0), 0),
+				      GET_MODE (SUBREG_REG (op0)))
+			& ~GET_MODE_MASK (mode))
+		  || (num_sign_bit_copies (XEXP (SUBREG_REG (op0), 0),
+					   GET_MODE (SUBREG_REG (op0)))
+		      > (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (op0)))
+			 - GET_MODE_BITSIZE (mode)))))
+	    {
+	      op0 = SUBREG_REG (op0);
+	      continue;
+	    }
+
+	  /* If the inner mode is narrower and we are extracting the low part,
+	     we can treat the SUBREG as if it were a ZERO_EXTEND.  */
+	  if (subreg_lowpart_p (op0)
+	      && GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (op0))) < mode_width)
+	    /* Fall through */ ;
+	  else
+	    break;
+
+	  /* ... fall through ...  */
+
+	case ZERO_EXTEND:
+	  if ((unsigned_comparison_p || equality_comparison_p)
+	      && (GET_MODE_BITSIZE (GET_MODE (XEXP (op0, 0)))
+		  <= HOST_BITS_PER_WIDE_INT)
+	      && ((unsigned HOST_WIDE_INT) const_op
+		  < GET_MODE_MASK (GET_MODE (XEXP (op0, 0)))))
+	    {
+	      op0 = XEXP (op0, 0);
+	      continue;
+	    }
+	  break;
+
+	case PLUS:
+	  /* (eq (plus X A) B) -> (eq X (minus B A)).  We can only do
+	     this for equality comparisons due to pathological cases involving
+	     overflows.  */
+	  if (equality_comparison_p
+	      && 0 != (tem = simplify_binary_operation (MINUS, mode,
+							op1, XEXP (op0, 1))))
+	    {
+	      op0 = XEXP (op0, 0);
+	      op1 = tem;
+	      continue;
+	    }
+
+	  /* (plus (abs X) (const_int -1)) is < 0 if and only if X == 0.  */
+	  if (const_op == 0 && XEXP (op0, 1) == constm1_rtx
+	      && GET_CODE (XEXP (op0, 0)) == ABS && sign_bit_comparison_p)
+	    {
+	      op0 = XEXP (XEXP (op0, 0), 0);
+	      code = (code == LT ? EQ : NE);
+	      continue;
+	    }
+	  break;
+
+	case MINUS:
+	  /* We used to optimize signed comparisons against zero, but that
+	     was incorrect.  Unsigned comparisons against zero (GTU, LEU)
+	     arrive here as equality comparisons, or (GEU, LTU) are
+	     optimized away.  No need to special-case them.  */
+
+	  /* (eq (minus A B) C) -> (eq A (plus B C)) or
+	     (eq B (minus A C)), whichever simplifies.  We can only do
+	     this for equality comparisons due to pathological cases involving
+	     overflows.  */
+	  if (equality_comparison_p
+	      && 0 != (tem = simplify_binary_operation (PLUS, mode,
+							XEXP (op0, 1), op1)))
+	    {
+	      op0 = XEXP (op0, 0);
+	      op1 = tem;
+	      continue;
+	    }
+
+	  if (equality_comparison_p
+	      && 0 != (tem = simplify_binary_operation (MINUS, mode,
+							XEXP (op0, 0), op1)))
+	    {
+	      op0 = XEXP (op0, 1);
+	      op1 = tem;
+	      continue;
+	    }
+
+	  /* The sign bit of (minus (ashiftrt X C) X), where C is the number
+	     of bits in X minus 1, is one iff X > 0.  */
+	  if (sign_bit_comparison_p && GET_CODE (XEXP (op0, 0)) == ASHIFTRT
+	      && GET_CODE (XEXP (XEXP (op0, 0), 1)) == CONST_INT
+	      && INTVAL (XEXP (XEXP (op0, 0), 1)) == mode_width - 1
+	      && rtx_equal_p (XEXP (XEXP (op0, 0), 0), XEXP (op0, 1)))
+	    {
+	      op0 = XEXP (op0, 1);
+	      code = (code == GE ? LE : GT);
+	      continue;
+	    }
+	  break;
+
+	case XOR:
+	  /* (eq (xor A B) C) -> (eq A (xor B C)).  This is a simplification
+	     if C is zero or B is a constant.  */
+	  if (equality_comparison_p
+	      && 0 != (tem = simplify_binary_operation (XOR, mode,
+							XEXP (op0, 1), op1)))
+	    {
+	      op0 = XEXP (op0, 0);
+	      op1 = tem;
+	      continue;
+	    }
+	  break;
+
+	case EQ:  case NE:
+	case UNEQ:  case LTGT:
+	case LT:  case LTU:  case UNLT:  case LE:  case LEU:  case UNLE:
+	case GT:  case GTU:  case UNGT:  case GE:  case GEU:  case UNGE:
+        case UNORDERED: case ORDERED:
+	  /* We can't do anything if OP0 is a condition code value, rather
+	     than an actual data value.  */
+	  if (const_op != 0
+#ifdef HAVE_cc0
+	      || XEXP (op0, 0) == cc0_rtx
+#endif
+	      || GET_MODE_CLASS (GET_MODE (XEXP (op0, 0))) == MODE_CC)
+	    break;
+
+	  /* Get the two operands being compared.  */
+	  if (GET_CODE (XEXP (op0, 0)) == COMPARE)
+	    tem = XEXP (XEXP (op0, 0), 0), tem1 = XEXP (XEXP (op0, 0), 1);
+	  else
+	    tem = XEXP (op0, 0), tem1 = XEXP (op0, 1);
+
+	  /* Check for the cases where we simply want the result of the
+	     earlier test or the opposite of that result.  */
+	  if (code == NE || code == EQ
+	      || (GET_MODE_BITSIZE (GET_MODE (op0)) <= HOST_BITS_PER_WIDE_INT
+		  && GET_MODE_CLASS (GET_MODE (op0)) == MODE_INT
+		  && (STORE_FLAG_VALUE
+		      & (((HOST_WIDE_INT) 1
+			  << (GET_MODE_BITSIZE (GET_MODE (op0)) - 1))))
+		  && (code == LT || code == GE)))
+	    {
+	      enum rtx_code new_code;
+	      if (code == LT || code == NE)
+		new_code = GET_CODE (op0);
+	      else
+		new_code = combine_reversed_comparison_code (op0);
+
+	      if (new_code != UNKNOWN)
+		{
+		  code = new_code;
+		  op0 = tem;
+		  op1 = tem1;
+		  continue;
+		}
+	    }
+	  break;
+
+	case IOR:
+	  /* The sign bit of (ior (plus X (const_int -1)) X) is non-zero
+	     iff X <= 0.  */
+	  if (sign_bit_comparison_p && GET_CODE (XEXP (op0, 0)) == PLUS
+	      && XEXP (XEXP (op0, 0), 1) == constm1_rtx
+	      && rtx_equal_p (XEXP (XEXP (op0, 0), 0), XEXP (op0, 1)))
+	    {
+	      op0 = XEXP (op0, 1);
+	      code = (code == GE ? GT : LE);
+	      continue;
+	    }
+	  break;
+
+	case AND:
+	  /* Convert (and (xshift 1 X) Y) to (and (lshiftrt Y X) 1).  This
+	     will be converted to a ZERO_EXTRACT later.  */
+	  if (const_op == 0 && equality_comparison_p
+	      && GET_CODE (XEXP (op0, 0)) == ASHIFT
+	      && XEXP (XEXP (op0, 0), 0) == const1_rtx)
+	    {
+	      op0 = simplify_and_const_int
+		(op0, mode, gen_rtx_LSHIFTRT (mode,
+					      XEXP (op0, 1),
+					      XEXP (XEXP (op0, 0), 1)),
+		 (HOST_WIDE_INT) 1);
+	      continue;
+	    }
+
+	  /* If we are comparing (and (lshiftrt X C1) C2) for equality with
+	     zero and X is a comparison and C1 and C2 describe only bits set
+	     in STORE_FLAG_VALUE, we can compare with X.  */
+	  if (const_op == 0 && equality_comparison_p
+	      && mode_width <= HOST_BITS_PER_WIDE_INT
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && GET_CODE (XEXP (op0, 0)) == LSHIFTRT
+	      && GET_CODE (XEXP (XEXP (op0, 0), 1)) == CONST_INT
+	      && INTVAL (XEXP (XEXP (op0, 0), 1)) >= 0
+	      && INTVAL (XEXP (XEXP (op0, 0), 1)) < HOST_BITS_PER_WIDE_INT)
+	    {
+	      mask = ((INTVAL (XEXP (op0, 1)) & GET_MODE_MASK (mode))
+		      << INTVAL (XEXP (XEXP (op0, 0), 1)));
+	      if ((~STORE_FLAG_VALUE & mask) == 0
+		  && (GET_RTX_CLASS (GET_CODE (XEXP (XEXP (op0, 0), 0))) == '<'
+		      || ((tem = get_last_value (XEXP (XEXP (op0, 0), 0))) != 0
+			  && GET_RTX_CLASS (GET_CODE (tem)) == '<')))
+		{
+		  op0 = XEXP (XEXP (op0, 0), 0);
+		  continue;
+		}
+	    }
+
+	  /* If we are doing an equality comparison of an AND of a bit equal
+	     to the sign bit, replace this with a LT or GE comparison of
+	     the underlying value.  */
+	  if (equality_comparison_p
+	      && const_op == 0
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && mode_width <= HOST_BITS_PER_WIDE_INT
+	      && ((INTVAL (XEXP (op0, 1)) & GET_MODE_MASK (mode))
+		  == (unsigned HOST_WIDE_INT) 1 << (mode_width - 1)))
+	    {
+	      op0 = XEXP (op0, 0);
+	      code = (code == EQ ? GE : LT);
+	      continue;
+	    }
+
+	  /* If this AND operation is really a ZERO_EXTEND from a narrower
+	     mode, the constant fits within that mode, and this is either an
+	     equality or unsigned comparison, try to do this comparison in
+	     the narrower mode.  */
+	  if ((equality_comparison_p || unsigned_comparison_p)
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && (i = exact_log2 ((INTVAL (XEXP (op0, 1))
+				   & GET_MODE_MASK (mode))
+				  + 1)) >= 0
+	      && const_op >> i == 0
+	      && (tmode = mode_for_size (i, MODE_INT, 1)) != BLKmode)
+	    {
+	      op0 = gen_lowpart_for_combine (tmode, XEXP (op0, 0));
+	      continue;
+	    }
+
+	  /* If this is (and:M1 (subreg:M2 X 0) (const_int C1)) where C1 fits
+	     in both M1 and M2 and the SUBREG is either paradoxical or
+	     represents the low part, permute the SUBREG and the AND and
+	     try again.  */
+	  if (GET_CODE (XEXP (op0, 0)) == SUBREG
+	      && (0
+#ifdef WORD_REGISTER_OPERATIONS
+		  || ((mode_width
+		       > (GET_MODE_BITSIZE
+			   (GET_MODE (SUBREG_REG (XEXP (op0, 0))))))
+		      && mode_width <= BITS_PER_WORD)
+#endif
+		  || ((mode_width
+		       <= (GET_MODE_BITSIZE
+			   (GET_MODE (SUBREG_REG (XEXP (op0, 0))))))
+		      && subreg_lowpart_p (XEXP (op0, 0))))
+#ifndef WORD_REGISTER_OPERATIONS
+	      /* It is unsafe to commute the AND into the SUBREG if the SUBREG
+		 is paradoxical and WORD_REGISTER_OPERATIONS is not defined.
+		 As originally written the upper bits have a defined value
+		 due to the AND operation.  However, if we commute the AND
+		 inside the SUBREG then they no longer have defined values
+		 and the meaning of the code has been changed.  */
+	      && (GET_MODE_SIZE (GET_MODE (XEXP (op0, 0)))
+		  <= GET_MODE_SIZE (GET_MODE (SUBREG_REG (XEXP (op0, 0)))))
+#endif
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && mode_width <= HOST_BITS_PER_WIDE_INT
+	      && (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (XEXP (op0, 0))))
+		  <= HOST_BITS_PER_WIDE_INT)
+	      && (INTVAL (XEXP (op0, 1)) & ~mask) == 0
+	      && 0 == (~GET_MODE_MASK (GET_MODE (SUBREG_REG (XEXP (op0, 0))))
+		       & INTVAL (XEXP (op0, 1)))
+	      && (unsigned HOST_WIDE_INT) INTVAL (XEXP (op0, 1)) != mask
+	      && ((unsigned HOST_WIDE_INT) INTVAL (XEXP (op0, 1))
+		  != GET_MODE_MASK (GET_MODE (SUBREG_REG (XEXP (op0, 0))))))
+
+	    {
+	      op0
+		= gen_lowpart_for_combine
+		  (mode,
+		   gen_binary (AND, GET_MODE (SUBREG_REG (XEXP (op0, 0))),
+			       SUBREG_REG (XEXP (op0, 0)), XEXP (op0, 1)));
+	      continue;
+	    }
+
+	  /* Convert (ne (and (lshiftrt (not X)) 1) 0) to
+	     (eq (and (lshiftrt X) 1) 0).  */
+	  if (const_op == 0 && equality_comparison_p
+	      && XEXP (op0, 1) == const1_rtx
+	      && GET_CODE (XEXP (op0, 0)) == LSHIFTRT
+	      && GET_CODE (XEXP (XEXP (op0, 0), 0)) == NOT)
+	    {
+	      op0 = simplify_and_const_int
+		(op0, mode,
+		 gen_rtx_LSHIFTRT (mode, XEXP (XEXP (XEXP (op0, 0), 0), 0),
+				   XEXP (XEXP (op0, 0), 1)),
+		 (HOST_WIDE_INT) 1);
+	      code = (code == NE ? EQ : NE);
+	      continue;
+	    }
+	  break;
+
+	case ASHIFT:
+	  /* If we have (compare (ashift FOO N) (const_int C)) and
+	     the high order N bits of FOO (N+1 if an inequality comparison)
+	     are known to be zero, we can do this by comparing FOO with C
+	     shifted right N bits so long as the low-order N bits of C are
+	     zero.  */
+	  if (GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && INTVAL (XEXP (op0, 1)) >= 0
+	      && ((INTVAL (XEXP (op0, 1)) + ! equality_comparison_p)
+		  < HOST_BITS_PER_WIDE_INT)
+	      && ((const_op
+		   & (((HOST_WIDE_INT) 1 << INTVAL (XEXP (op0, 1))) - 1)) == 0)
+	      && mode_width <= HOST_BITS_PER_WIDE_INT
+	      && (nonzero_bits (XEXP (op0, 0), mode)
+		  & ~(mask >> (INTVAL (XEXP (op0, 1))
+			       + ! equality_comparison_p))) == 0)
+	    {
+	      /* We must perform a logical shift, not an arithmetic one,
+		 as we want the top N bits of C to be zero.  */
+	      unsigned HOST_WIDE_INT temp = const_op & GET_MODE_MASK (mode);
+
+	      temp >>= INTVAL (XEXP (op0, 1));
+	      op1 = GEN_INT (trunc_int_for_mode (temp, mode));
+	      op0 = XEXP (op0, 0);
+	      continue;
+	    }
+
+	  /* If we are doing a sign bit comparison, it means we are testing
+	     a particular bit.  Convert it to the appropriate AND.  */
+	  if (sign_bit_comparison_p && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && mode_width <= HOST_BITS_PER_WIDE_INT)
+	    {
+	      op0 = simplify_and_const_int (NULL_RTX, mode, XEXP (op0, 0),
+					    ((HOST_WIDE_INT) 1
+					     << (mode_width - 1
+						 - INTVAL (XEXP (op0, 1)))));
+	      code = (code == LT ? NE : EQ);
+	      continue;
+	    }
+
+	  /* If this an equality comparison with zero and we are shifting
+	     the low bit to the sign bit, we can convert this to an AND of the
+	     low-order bit.  */
+	  if (const_op == 0 && equality_comparison_p
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && INTVAL (XEXP (op0, 1)) == mode_width - 1)
+	    {
+	      op0 = simplify_and_const_int (NULL_RTX, mode, XEXP (op0, 0),
+					    (HOST_WIDE_INT) 1);
+	      continue;
+	    }
+	  break;
+
+	case ASHIFTRT:
+	  /* If this is an equality comparison with zero, we can do this
+	     as a logical shift, which might be much simpler.  */
+	  if (equality_comparison_p && const_op == 0
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT)
+	    {
+	      op0 = simplify_shift_const (NULL_RTX, LSHIFTRT, mode,
+					  XEXP (op0, 0),
+					  INTVAL (XEXP (op0, 1)));
+	      continue;
+	    }
+
+	  /* If OP0 is a sign extension and CODE is not an unsigned comparison,
+	     do the comparison in a narrower mode.  */
+	  if (! unsigned_comparison_p
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && GET_CODE (XEXP (op0, 0)) == ASHIFT
+	      && XEXP (op0, 1) == XEXP (XEXP (op0, 0), 1)
+	      && (tmode = mode_for_size (mode_width - INTVAL (XEXP (op0, 1)),
+					 MODE_INT, 1)) != BLKmode
+	      && (((unsigned HOST_WIDE_INT) const_op
+		   + (GET_MODE_MASK (tmode) >> 1) + 1)
+		  <= GET_MODE_MASK (tmode)))
+	    {
+	      op0 = gen_lowpart_for_combine (tmode, XEXP (XEXP (op0, 0), 0));
+	      continue;
+	    }
+
+	  /* Likewise if OP0 is a PLUS of a sign extension with a
+	     constant, which is usually represented with the PLUS
+	     between the shifts.  */
+	  if (! unsigned_comparison_p
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && GET_CODE (XEXP (op0, 0)) == PLUS
+	      && GET_CODE (XEXP (XEXP (op0, 0), 1)) == CONST_INT
+	      && GET_CODE (XEXP (XEXP (op0, 0), 0)) == ASHIFT
+	      && XEXP (op0, 1) == XEXP (XEXP (XEXP (op0, 0), 0), 1)
+	      && (tmode = mode_for_size (mode_width - INTVAL (XEXP (op0, 1)),
+					 MODE_INT, 1)) != BLKmode
+	      && (((unsigned HOST_WIDE_INT) const_op
+		   + (GET_MODE_MASK (tmode) >> 1) + 1)
+		  <= GET_MODE_MASK (tmode)))
+	    {
+	      rtx inner = XEXP (XEXP (XEXP (op0, 0), 0), 0);
+	      rtx add_const = XEXP (XEXP (op0, 0), 1);
+	      rtx new_const = gen_binary (ASHIFTRT, GET_MODE (op0), add_const,
+					  XEXP (op0, 1));
+
+	      op0 = gen_binary (PLUS, tmode,
+				gen_lowpart_for_combine (tmode, inner),
+				new_const);
+	      continue;
+	    }
+
+	  /* ... fall through ...  */
+	case LSHIFTRT:
+	  /* If we have (compare (xshiftrt FOO N) (const_int C)) and
+	     the low order N bits of FOO are known to be zero, we can do this
+	     by comparing FOO with C shifted left N bits so long as no
+	     overflow occurs.  */
+	  if (GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && INTVAL (XEXP (op0, 1)) >= 0
+	      && INTVAL (XEXP (op0, 1)) < HOST_BITS_PER_WIDE_INT
+	      && mode_width <= HOST_BITS_PER_WIDE_INT
+	      && (nonzero_bits (XEXP (op0, 0), mode)
+		  & (((HOST_WIDE_INT) 1 << INTVAL (XEXP (op0, 1))) - 1)) == 0
+	      && (((unsigned HOST_WIDE_INT) const_op
+		   + (GET_CODE (op0) != LSHIFTRT
+		      ? ((GET_MODE_MASK (mode) >> INTVAL (XEXP (op0, 1)) >> 1)
+			 + 1)
+		      : 0))
+		  <= GET_MODE_MASK (mode) >> INTVAL (XEXP (op0, 1))))
+	    {
+	      /* If the shift was logical, then we must make the condition
+		 unsigned.  */
+	      if (GET_CODE (op0) == LSHIFTRT)
+		code = unsigned_condition (code);
+
+	      const_op <<= INTVAL (XEXP (op0, 1));
+	      op1 = GEN_INT (const_op);
+	      op0 = XEXP (op0, 0);
+	      continue;
+	    }
+
+	  /* If we are using this shift to extract just the sign bit, we
+	     can replace this with an LT or GE comparison.  */
+	  if (const_op == 0
+	      && (equality_comparison_p || sign_bit_comparison_p)
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && INTVAL (XEXP (op0, 1)) == mode_width - 1)
+	    {
+	      op0 = XEXP (op0, 0);
+	      code = (code == NE || code == GT ? LT : GE);
+	      continue;
+	    }
+	  break;
+
+	default:
+	  break;
+	}
+
+      break;
+    }
+
+  /* Now make any compound operations involved in this comparison.  Then,
+     check for an outmost SUBREG on OP0 that is not doing anything or is
+     paradoxical.  The latter transformation must only be performed when
+     it is known that the "extra" bits will be the same in op0 and op1 or
+     that they don't matter.  There are three cases to consider:
+
+     1. SUBREG_REG (op0) is a register.  In this case the bits are don't
+     care bits and we can assume they have any convenient value.  So
+     making the transformation is safe.
+
+     2. SUBREG_REG (op0) is a memory and LOAD_EXTEND_OP is not defined.
+     In this case the upper bits of op0 are undefined.  We should not make
+     the simplification in that case as we do not know the contents of
+     those bits.
+
+     3. SUBREG_REG (op0) is a memory and LOAD_EXTEND_OP is defined and not
+     NIL.  In that case we know those bits are zeros or ones.  We must
+     also be sure that they are the same as the upper bits of op1.
+
+     We can never remove a SUBREG for a non-equality comparison because
+     the sign bit is in a different place in the underlying object.  */
+
+  op0 = make_compound_operation (op0, op1 == const0_rtx ? COMPARE : SET);
+  op1 = make_compound_operation (op1, SET);
+
+  if (GET_CODE (op0) == SUBREG && subreg_lowpart_p (op0)
+      /* Case 3 above, to sometimes allow (subreg (mem x)), isn't
+	 implemented.  */
+      && GET_CODE (SUBREG_REG (op0)) == REG
+      && GET_MODE_CLASS (GET_MODE (op0)) == MODE_INT
+      && GET_MODE_CLASS (GET_MODE (SUBREG_REG (op0))) == MODE_INT
+      && (code == NE || code == EQ))
+    {
+      if (GET_MODE_SIZE (GET_MODE (op0))
+	  > GET_MODE_SIZE (GET_MODE (SUBREG_REG (op0))))
+	{
+	  op0 = SUBREG_REG (op0);
+	  op1 = gen_lowpart_for_combine (GET_MODE (op0), op1);
+	}
+      else if ((GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (op0)))
+		<= HOST_BITS_PER_WIDE_INT)
+	       && (nonzero_bits (SUBREG_REG (op0),
+				 GET_MODE (SUBREG_REG (op0)))
+		   & ~GET_MODE_MASK (GET_MODE (op0))) == 0)
+	{
+	  tem = gen_lowpart_for_combine (GET_MODE (SUBREG_REG (op0)), op1);
+
+	  if ((nonzero_bits (tem, GET_MODE (SUBREG_REG (op0)))
+	       & ~GET_MODE_MASK (GET_MODE (op0))) == 0)
+	    op0 = SUBREG_REG (op0), op1 = tem;
+	}
+    }
+
+  /* We now do the opposite procedure: Some machines don't have compare
+     insns in all modes.  If OP0's mode is an integer mode smaller than a
+     word and we can't do a compare in that mode, see if there is a larger
+     mode for which we can do the compare.  There are a number of cases in
+     which we can use the wider mode.  */
+
+  mode = GET_MODE (op0);
+  if (mode != VOIDmode && GET_MODE_CLASS (mode) == MODE_INT
+      && GET_MODE_SIZE (mode) < UNITS_PER_WORD
+      && ! have_insn_for (COMPARE, mode))
+    for (tmode = GET_MODE_WIDER_MODE (mode);
+	 (tmode != VOIDmode
+	  && GET_MODE_BITSIZE (tmode) <= HOST_BITS_PER_WIDE_INT);
+	 tmode = GET_MODE_WIDER_MODE (tmode))
+      if (have_insn_for (COMPARE, tmode))
+	{
+	  int zero_extended;
+
+	  /* If the only nonzero bits in OP0 and OP1 are those in the
+	     narrower mode and this is an equality or unsigned comparison,
+	     we can use the wider mode.  Similarly for sign-extended
+	     values, in which case it is true for all comparisons.  */
+	  zero_extended = ((code == EQ || code == NE
+			    || code == GEU || code == GTU
+			    || code == LEU || code == LTU)
+			   && (nonzero_bits (op0, tmode)
+			       & ~GET_MODE_MASK (mode)) == 0
+			   && ((GET_CODE (op1) == CONST_INT
+				|| (nonzero_bits (op1, tmode)
+				    & ~GET_MODE_MASK (mode)) == 0)));
+
+	  if (zero_extended
+	      || ((num_sign_bit_copies (op0, tmode)
+		   > GET_MODE_BITSIZE (tmode) - GET_MODE_BITSIZE (mode))
+		  && (num_sign_bit_copies (op1, tmode)
+		      > GET_MODE_BITSIZE (tmode) - GET_MODE_BITSIZE (mode))))
+	    {
+	      /* If OP0 is an AND and we don't have an AND in MODE either,
+		 make a new AND in the proper mode.  */
+	      if (GET_CODE (op0) == AND
+		  && !have_insn_for (AND, mode))
+		op0 = gen_binary (AND, tmode,
+				  gen_lowpart_for_combine (tmode,
+							   XEXP (op0, 0)),
+				  gen_lowpart_for_combine (tmode,
+							   XEXP (op0, 1)));
+
+	      op0 = gen_lowpart_for_combine (tmode, op0);
+	      if (zero_extended && GET_CODE (op1) == CONST_INT)
+		op1 = GEN_INT (INTVAL (op1) & GET_MODE_MASK (mode));
+	      op1 = gen_lowpart_for_combine (tmode, op1);
+	      break;
+	    }
+
+	  /* If this is a test for negative, we can make an explicit
+	     test of the sign bit.  */
+
+	  if (op1 == const0_rtx && (code == LT || code == GE)
+	      && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT)
+	    {
+	      op0 = gen_binary (AND, tmode,
+				gen_lowpart_for_combine (tmode, op0),
+				GEN_INT ((HOST_WIDE_INT) 1
+					 << (GET_MODE_BITSIZE (mode) - 1)));
+	      code = (code == LT) ? NE : EQ;
+	      break;
+	    }
+	}
+
+#ifdef CANONICALIZE_COMPARISON
+  /* If this machine only supports a subset of valid comparisons, see if we
+     can convert an unsupported one into a supported one.  */
+  CANONICALIZE_COMPARISON (code, op0, op1);
+#endif
+
+  *pop0 = op0;
+  *pop1 = op1;
+
+  return code;
+}

@@ -1,0 +1,19 @@
+void
+rebuild_jump_labels (f)
+     rtx f;
+{
+  rtx insn;
+  int max_uid = 0;
+
+  max_uid = init_label_info (f) + 1;
+
+  mark_all_labels (f);
+
+  /* Keep track of labels used from static data; we don't track them
+     closely enough to delete them here, so make sure their reference
+     count doesn't drop to zero.  */
+
+  for (insn = forced_labels; insn; insn = XEXP (insn, 1))
+    if (GET_CODE (XEXP (insn, 0)) == CODE_LABEL)
+      LABEL_NUSES (XEXP (insn, 0))++;
+}

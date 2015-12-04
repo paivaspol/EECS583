@@ -1,0 +1,31 @@
+static void
+handle_pragma_weak (dummy)
+     cpp_reader *dummy ATTRIBUTE_UNUSED;
+{
+  tree name, value, x, decl;
+  enum cpp_ttype t;
+
+  value = 0;
+
+  if (c_lex (&name) != CPP_NAME)
+    GCC_BAD ("malformed #pragma weak, ignored");
+  t = c_lex (&x);
+  if (t == CPP_EQ)
+    {
+      if (c_lex (&value) != CPP_NAME)
+	GCC_BAD ("malformed #pragma weak, ignored");
+      t = c_lex (&x);
+    }
+  if (t != CPP_EOF)
+    warning ("junk at end of #pragma weak");
+
+  decl = identifier_global_value (name);
+  if (decl && TREE_CODE_CLASS (TREE_CODE (decl)) == 'd')
+    {
+      apply_pragma_weak (decl, value);
+      if (value)
+	assemble_alias (decl, value);
+    }
+  else
+    pending_weaks = tree_cons (name, value, pending_weaks);
+}

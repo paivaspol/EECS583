@@ -1,0 +1,654 @@
+int
+perl_destruct(pTHXx)
+{
+    volatile int destruct_level;  /* 0=none, 1=full, 2=full with checks */
+    HV *hv;
+#ifdef USE_5005THREADS
+    Thread t;
+    dTHX;
+#endif /* USE_5005THREADS */
+
+    /* wait for all pseudo-forked children to finish */
+    PERL_WAIT_FOR_CHILDREN;
+
+#ifdef USE_5005THREADS
+#ifndef FAKE_THREADS
+    /* Pass 1 on any remaining threads: detach joinables, join zombies */
+  retry_cleanup:
+    MUTEX_LOCK(&PL_threads_mutex);
+    DEBUG_S(PerlIO_printf(Perl_debug_log,
+			  "perl_destruct: waiting for %d threads...\n",
+			  PL_nthreads - 1));
+    for (t = thr->next; t != thr; t = t->next) {
+	MUTEX_LOCK(&t->mutex);
+	switch (ThrSTATE(t)) {
+	    AV *av;
+	case THRf_ZOMBIE:
+	    DEBUG_S(PerlIO_printf(Perl_debug_log,
+				  "perl_destruct: joining zombie %p\n", t));
+	    ThrSETSTATE(t, THRf_DEAD);
+	    MUTEX_UNLOCK(&t->mutex);
+	    PL_nthreads--;
+	    /*
+	     * The SvREFCNT_dec below may take a long time (e.g. av
+	     * may contain an object scalar whose destructor gets
+	     * called) so we have to unlock threads_mutex and start
+	     * all over again.
+	     */
+	    MUTEX_UNLOCK(&PL_threads_mutex);
+	    JOIN(t, &av);
+	    SvREFCNT_dec((SV*)av);
+	    DEBUG_S(PerlIO_printf(Perl_debug_log,
+				  "perl_destruct: joined zombie %p OK\n", t));
+	    goto retry_cleanup;
+	case THRf_R_JOINABLE:
+	    DEBUG_S(PerlIO_printf(Perl_debug_log,
+				  "perl_destruct: detaching thread %p\n", t));
+	    ThrSETSTATE(t, THRf_R_DETACHED);
+	    /*
+	     * We unlock threads_mutex and t->mutex in the opposite order
+	     * from which we locked them just so that DETACH won't
+	     * deadlock if it panics. It's only a breach of good style
+	     * not a bug since they are unlocks not locks.
+	     */
+	    MUTEX_UNLOCK(&PL_threads_mutex);
+	    DETACH(t);
+	    MUTEX_UNLOCK(&t->mutex);
+	    goto retry_cleanup;
+	default:
+	    DEBUG_S(PerlIO_printf(Perl_debug_log,
+				  "perl_destruct: ignoring %p (state %u)\n",
+				  t, ThrSTATE(t)));
+	    MUTEX_UNLOCK(&t->mutex);
+	    /* fall through and out */
+	}
+    }
+    /* We leave the above "Pass 1" loop with threads_mutex still locked */
+
+    /* Pass 2 on remaining threads: wait for the thread count to drop to one */
+    while (PL_nthreads > 1)
+    {
+	DEBUG_S(PerlIO_printf(Perl_debug_log,
+			      "perl_destruct: final wait for %d threads\n",
+			      PL_nthreads - 1));
+	COND_WAIT(&PL_nthreads_cond, &PL_threads_mutex);
+    }
+    /* At this point, we're the last thread */
+    MUTEX_UNLOCK(&PL_threads_mutex);
+    DEBUG_S(PerlIO_printf(Perl_debug_log, "perl_destruct: armageddon has arrived\n"));
+    MUTEX_DESTROY(&PL_threads_mutex);
+    COND_DESTROY(&PL_nthreads_cond);
+    PL_nthreads--;
+#endif /* !defined(FAKE_THREADS) */
+#endif /* USE_5005THREADS */
+
+    destruct_level = PL_perl_destruct_level;
+#ifdef DEBUGGING
+    {
+	char *s;
+	if ((s = PerlEnv_getenv("PERL_DESTRUCT_LEVEL"))) {
+	    int i = atoi(s);
+	    if (destruct_level < i)
+		destruct_level = i;
+	}
+    }
+#endif
+
+
+    if(PL_exit_flags & PERL_EXIT_DESTRUCT_END) {
+        dJMPENV;
+        int x = 0;
+
+        JMPENV_PUSH(x);
+        if (PL_endav && !PL_minus_c)
+            call_list(PL_scopestack_ix, PL_endav);
+        JMPENV_POP;
+    }
+    LEAVE;
+    FREETMPS;
+
+    /* Need to flush since END blocks can produce output */
+    my_fflush_all();
+
+    if (CALL_FPTR(PL_threadhook)(aTHX)) {
+        /* Threads hook has vetoed further cleanup */
+        return STATUS_NATIVE_EXPORT;
+    }
+
+    /* We must account for everything.  */
+
+    /* Destroy the main CV and syntax tree */
+    if (PL_main_root) {
+	/* ensure comppad/curpad to refer to main's pad */
+	if (CvPADLIST(PL_main_cv)) {
+	    PAD_SET_CUR_NOSAVE(CvPADLIST(PL_main_cv), 1);
+	}
+	op_free(PL_main_root);
+	PL_main_root = Nullop;
+    }
+    PL_curcop = &PL_compiling;
+    PL_main_start = Nullop;
+    SvREFCNT_dec(PL_main_cv);
+    PL_main_cv = Nullcv;
+    PL_dirty = TRUE;
+
+    /* Tell PerlIO we are about to tear things apart in case
+       we have layers which are using resources that should
+       be cleaned up now.
+     */
+
+    PerlIO_destruct(aTHX);
+
+    if (PL_sv_objcount) {
+	/*
+	 * Try to destruct global references.  We do this first so that the
+	 * destructors and destructees still exist.  Some sv's might remain.
+	 * Non-referenced objects are on their own.
+	 */
+	sv_clean_objs();
+	PL_sv_objcount = 0;
+    }
+
+    /* unhook hooks which will soon be, or use, destroyed data */
+    SvREFCNT_dec(PL_warnhook);
+    PL_warnhook = Nullsv;
+    SvREFCNT_dec(PL_diehook);
+    PL_diehook = Nullsv;
+
+    /* call exit list functions */
+    while (PL_exitlistlen-- > 0)
+	PL_exitlist[PL_exitlistlen].fn(aTHX_ PL_exitlist[PL_exitlistlen].ptr);
+
+    Safefree(PL_exitlist);
+
+    PL_exitlist = NULL;
+    PL_exitlistlen = 0;
+
+    if (destruct_level == 0){
+
+	DEBUG_P(debprofdump());
+
+#if defined(PERLIO_LAYERS)
+	/* No more IO - including error messages ! */
+	PerlIO_cleanup(aTHX);
+#endif
+
+	/* The exit() function will do everything that needs doing. */
+        return STATUS_NATIVE_EXPORT;
+    }
+
+    /* jettison our possibly duplicated environment */
+    /* if PERL_USE_SAFE_PUTENV is defined environ will not have been copied
+     * so we certainly shouldn't free it here
+     */
+#ifndef PERL_MICRO
+#if defined(USE_ENVIRON_ARRAY) && !defined(PERL_USE_SAFE_PUTENV)
+    if (environ != PL_origenviron && !PL_use_safe_putenv
+#ifdef USE_ITHREADS
+	/* only main thread can free environ[0] contents */
+	&& PL_curinterp == aTHX
+#endif
+	)
+    {
+	I32 i;
+
+	for (i = 0; environ[i]; i++)
+	    safesysfree(environ[i]);
+
+	/* Must use safesysfree() when working with environ. */
+	safesysfree(environ);		
+
+	environ = PL_origenviron;
+    }
+#endif
+#endif /* !PERL_MICRO */
+
+    /* reset so print() ends up where we expect */
+    setdefout(Nullgv);
+
+#ifdef USE_ITHREADS
+    /* the syntax tree is shared between clones
+     * so op_free(PL_main_root) only ReREFCNT_dec's
+     * REGEXPs in the parent interpreter
+     * we need to manually ReREFCNT_dec for the clones
+     */
+    {
+        I32 i = AvFILLp(PL_regex_padav) + 1;
+        SV **ary = AvARRAY(PL_regex_padav);
+
+        while (i) {
+            SV *resv = ary[--i];
+            REGEXP *re = INT2PTR(REGEXP *,SvIVX(resv));
+
+            if (SvFLAGS(resv) & SVf_BREAK) {
+                /* this is PL_reg_curpm, already freed
+                 * flag is set in regexec.c:S_regtry
+                 */
+                SvFLAGS(resv) &= ~SVf_BREAK;
+            }
+	    else if(SvREPADTMP(resv)) {
+	      SvREPADTMP_off(resv);
+	    }
+            else {
+                ReREFCNT_dec(re);
+            }
+        }
+    }
+    SvREFCNT_dec(PL_regex_padav);
+    PL_regex_padav = Nullav;
+    PL_regex_pad = NULL;
+#endif
+
+    SvREFCNT_dec((SV*) PL_stashcache);
+    PL_stashcache = NULL;
+
+    /* loosen bonds of global variables */
+
+    if(PL_rsfp) {
+	(void)PerlIO_close(PL_rsfp);
+	PL_rsfp = Nullfp;
+    }
+
+    /* Filters for program text */
+    SvREFCNT_dec(PL_rsfp_filters);
+    PL_rsfp_filters = Nullav;
+
+    /* switches */
+    PL_preprocess   = FALSE;
+    PL_minus_n      = FALSE;
+    PL_minus_p      = FALSE;
+    PL_minus_l      = FALSE;
+    PL_minus_a      = FALSE;
+    PL_minus_F      = FALSE;
+    PL_doswitches   = FALSE;
+    PL_dowarn       = G_WARN_OFF;
+    PL_doextract    = FALSE;
+    PL_sawampersand = FALSE;	/* must save all match strings */
+    PL_unsafe       = FALSE;
+
+    Safefree(PL_inplace);
+    PL_inplace = Nullch;
+    SvREFCNT_dec(PL_patchlevel);
+
+    if (PL_e_script) {
+	SvREFCNT_dec(PL_e_script);
+	PL_e_script = Nullsv;
+    }
+
+    PL_perldb = 0;
+
+    /* magical thingies */
+
+    SvREFCNT_dec(PL_ofs_sv);	/* $, */
+    PL_ofs_sv = Nullsv;
+
+    SvREFCNT_dec(PL_ors_sv);	/* $\ */
+    PL_ors_sv = Nullsv;
+
+    SvREFCNT_dec(PL_rs);	/* $/ */
+    PL_rs = Nullsv;
+
+    PL_multiline = 0;		/* $* */
+    Safefree(PL_osname);	/* $^O */
+    PL_osname = Nullch;
+
+    SvREFCNT_dec(PL_statname);
+    PL_statname = Nullsv;
+    PL_statgv = Nullgv;
+
+    /* defgv, aka *_ should be taken care of elsewhere */
+
+    /* clean up after study() */
+    SvREFCNT_dec(PL_lastscream);
+    PL_lastscream = Nullsv;
+    Safefree(PL_screamfirst);
+    PL_screamfirst = 0;
+    Safefree(PL_screamnext);
+    PL_screamnext  = 0;
+
+    /* float buffer */
+    Safefree(PL_efloatbuf);
+    PL_efloatbuf = Nullch;
+    PL_efloatsize = 0;
+
+    /* startup and shutdown function lists */
+    SvREFCNT_dec(PL_beginav);
+    SvREFCNT_dec(PL_beginav_save);
+    SvREFCNT_dec(PL_endav);
+    SvREFCNT_dec(PL_checkav);
+    SvREFCNT_dec(PL_checkav_save);
+    SvREFCNT_dec(PL_initav);
+    PL_beginav = Nullav;
+    PL_beginav_save = Nullav;
+    PL_endav = Nullav;
+    PL_checkav = Nullav;
+    PL_checkav_save = Nullav;
+    PL_initav = Nullav;
+
+    /* shortcuts just get cleared */
+    PL_envgv = Nullgv;
+    PL_incgv = Nullgv;
+    PL_hintgv = Nullgv;
+    PL_errgv = Nullgv;
+    PL_argvgv = Nullgv;
+    PL_argvoutgv = Nullgv;
+    PL_stdingv = Nullgv;
+    PL_stderrgv = Nullgv;
+    PL_last_in_gv = Nullgv;
+    PL_replgv = Nullgv;
+    PL_DBgv = Nullgv;
+    PL_DBline = Nullgv;
+    PL_DBsub = Nullgv;
+    PL_DBsingle = Nullsv;
+    PL_DBtrace = Nullsv;
+    PL_DBsignal = Nullsv;
+    PL_DBcv = Nullcv;
+    PL_dbargs = Nullav;
+    PL_debstash = Nullhv;
+
+    SvREFCNT_dec(PL_argvout_stack);
+    PL_argvout_stack = Nullav;
+
+    SvREFCNT_dec(PL_modglobal);
+    PL_modglobal = Nullhv;
+    SvREFCNT_dec(PL_preambleav);
+    PL_preambleav = Nullav;
+    SvREFCNT_dec(PL_subname);
+    PL_subname = Nullsv;
+    SvREFCNT_dec(PL_linestr);
+    PL_linestr = Nullsv;
+    SvREFCNT_dec(PL_pidstatus);
+    PL_pidstatus = Nullhv;
+    SvREFCNT_dec(PL_toptarget);
+    PL_toptarget = Nullsv;
+    SvREFCNT_dec(PL_bodytarget);
+    PL_bodytarget = Nullsv;
+    PL_formtarget = Nullsv;
+
+    /* free locale stuff */
+#ifdef USE_LOCALE_COLLATE
+    Safefree(PL_collation_name);
+    PL_collation_name = Nullch;
+#endif
+
+#ifdef USE_LOCALE_NUMERIC
+    Safefree(PL_numeric_name);
+    PL_numeric_name = Nullch;
+    SvREFCNT_dec(PL_numeric_radix_sv);
+    PL_numeric_radix_sv = Nullsv;
+#endif
+
+    /* clear utf8 character classes */
+    SvREFCNT_dec(PL_utf8_alnum);
+    SvREFCNT_dec(PL_utf8_alnumc);
+    SvREFCNT_dec(PL_utf8_ascii);
+    SvREFCNT_dec(PL_utf8_alpha);
+    SvREFCNT_dec(PL_utf8_space);
+    SvREFCNT_dec(PL_utf8_cntrl);
+    SvREFCNT_dec(PL_utf8_graph);
+    SvREFCNT_dec(PL_utf8_digit);
+    SvREFCNT_dec(PL_utf8_upper);
+    SvREFCNT_dec(PL_utf8_lower);
+    SvREFCNT_dec(PL_utf8_print);
+    SvREFCNT_dec(PL_utf8_punct);
+    SvREFCNT_dec(PL_utf8_xdigit);
+    SvREFCNT_dec(PL_utf8_mark);
+    SvREFCNT_dec(PL_utf8_toupper);
+    SvREFCNT_dec(PL_utf8_totitle);
+    SvREFCNT_dec(PL_utf8_tolower);
+    SvREFCNT_dec(PL_utf8_tofold);
+    SvREFCNT_dec(PL_utf8_idstart);
+    SvREFCNT_dec(PL_utf8_idcont);
+    PL_utf8_alnum	= Nullsv;
+    PL_utf8_alnumc	= Nullsv;
+    PL_utf8_ascii	= Nullsv;
+    PL_utf8_alpha	= Nullsv;
+    PL_utf8_space	= Nullsv;
+    PL_utf8_cntrl	= Nullsv;
+    PL_utf8_graph	= Nullsv;
+    PL_utf8_digit	= Nullsv;
+    PL_utf8_upper	= Nullsv;
+    PL_utf8_lower	= Nullsv;
+    PL_utf8_print	= Nullsv;
+    PL_utf8_punct	= Nullsv;
+    PL_utf8_xdigit	= Nullsv;
+    PL_utf8_mark	= Nullsv;
+    PL_utf8_toupper	= Nullsv;
+    PL_utf8_totitle	= Nullsv;
+    PL_utf8_tolower	= Nullsv;
+    PL_utf8_tofold	= Nullsv;
+    PL_utf8_idstart	= Nullsv;
+    PL_utf8_idcont	= Nullsv;
+
+    if (!specialWARN(PL_compiling.cop_warnings))
+	SvREFCNT_dec(PL_compiling.cop_warnings);
+    PL_compiling.cop_warnings = Nullsv;
+    if (!specialCopIO(PL_compiling.cop_io))
+	SvREFCNT_dec(PL_compiling.cop_io);
+    PL_compiling.cop_io = Nullsv;
+    CopFILE_free(&PL_compiling);
+    CopSTASH_free(&PL_compiling);
+
+    /* Prepare to destruct main symbol table.  */
+
+    hv = PL_defstash;
+    PL_defstash = 0;
+    SvREFCNT_dec(hv);
+    SvREFCNT_dec(PL_curstname);
+    PL_curstname = Nullsv;
+
+    /* clear queued errors */
+    SvREFCNT_dec(PL_errors);
+    PL_errors = Nullsv;
+
+    FREETMPS;
+    if (destruct_level >= 2 && ckWARN_d(WARN_INTERNAL)) {
+	if (PL_scopestack_ix != 0)
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
+	         "Unbalanced scopes: %ld more ENTERs than LEAVEs\n",
+		 (long)PL_scopestack_ix);
+	if (PL_savestack_ix != 0)
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
+		 "Unbalanced saves: %ld more saves than restores\n",
+		 (long)PL_savestack_ix);
+	if (PL_tmps_floor != -1)
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),"Unbalanced tmps: %ld more allocs than frees\n",
+		 (long)PL_tmps_floor + 1);
+	if (cxstack_ix != -1)
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),"Unbalanced context: %ld more PUSHes than POPs\n",
+		 (long)cxstack_ix + 1);
+    }
+
+    /* Now absolutely destruct everything, somehow or other, loops or no. */
+    SvFLAGS(PL_fdpid) |= SVTYPEMASK;		/* don't clean out pid table now */
+    SvFLAGS(PL_strtab) |= SVTYPEMASK;		/* don't clean out strtab now */
+
+    /* the 2 is for PL_fdpid and PL_strtab */
+    while (PL_sv_count > 2 && sv_clean_all())
+	;
+
+    SvFLAGS(PL_fdpid) &= ~SVTYPEMASK;
+    SvFLAGS(PL_fdpid) |= SVt_PVAV;
+    SvFLAGS(PL_strtab) &= ~SVTYPEMASK;
+    SvFLAGS(PL_strtab) |= SVt_PVHV;
+
+    AvREAL_off(PL_fdpid);		/* no surviving entries */
+    SvREFCNT_dec(PL_fdpid);		/* needed in io_close() */
+    PL_fdpid = Nullav;
+
+#ifdef HAVE_INTERP_INTERN
+    sys_intern_clear();
+#endif
+
+    /* Destruct the global string table. */
+    {
+	/* Yell and reset the HeVAL() slots that are still holding refcounts,
+	 * so that sv_free() won't fail on them.
+	 */
+	I32 riter;
+	I32 max;
+	HE *hent;
+	HE **array;
+
+	riter = 0;
+	max = HvMAX(PL_strtab);
+	array = HvARRAY(PL_strtab);
+	hent = array[0];
+	for (;;) {
+	    if (hent && ckWARN_d(WARN_INTERNAL)) {
+		Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
+		     "Unbalanced string table refcount: (%d) for \"%s\"",
+		     HeVAL(hent) - Nullsv, HeKEY(hent));
+		HeVAL(hent) = Nullsv;
+		hent = HeNEXT(hent);
+	    }
+	    if (!hent) {
+		if (++riter > max)
+		    break;
+		hent = array[riter];
+	    }
+	}
+    }
+    SvREFCNT_dec(PL_strtab);
+
+#ifdef USE_ITHREADS
+    /* free the pointer table used for cloning */
+    ptr_table_free(PL_ptr_table);
+    PL_ptr_table = (PTR_TBL_t*)NULL;
+#endif
+
+    /* free special SVs */
+
+    SvREFCNT(&PL_sv_yes) = 0;
+    sv_clear(&PL_sv_yes);
+    SvANY(&PL_sv_yes) = NULL;
+    SvFLAGS(&PL_sv_yes) = 0;
+
+    SvREFCNT(&PL_sv_no) = 0;
+    sv_clear(&PL_sv_no);
+    SvANY(&PL_sv_no) = NULL;
+    SvFLAGS(&PL_sv_no) = 0;
+
+    {
+        int i;
+        for (i=0; i<=2; i++) {
+            SvREFCNT(PERL_DEBUG_PAD(i)) = 0;
+            sv_clear(PERL_DEBUG_PAD(i));
+            SvANY(PERL_DEBUG_PAD(i)) = NULL;
+            SvFLAGS(PERL_DEBUG_PAD(i)) = 0;
+        }
+    }
+
+    if (PL_sv_count != 0 && ckWARN_d(WARN_INTERNAL))
+	Perl_warner(aTHX_ packWARN(WARN_INTERNAL),"Scalars leaked: %ld\n", (long)PL_sv_count);
+
+#ifdef DEBUG_LEAKING_SCALARS
+    if (PL_sv_count != 0) {
+	SV* sva;
+	SV* sv;
+	register SV* svend;
+
+	for (sva = PL_sv_arenaroot; sva; sva = (SV*)SvANY(sva)) {
+	    svend = &sva[SvREFCNT(sva)];
+	    for (sv = sva + 1; sv < svend; ++sv) {
+		if (SvTYPE(sv) != SVTYPEMASK) {
+		    PerlIO_printf(Perl_debug_log, "leaked: sv=0x%p"
+			" flags=0x08%"UVxf
+			" refcnt=%"UVuf pTHX__FORMAT "\n",
+			sv, sv->sv_flags, sv->sv_refcnt pTHX__VALUE);
+		}
+	    }
+	}
+    }
+#endif
+    PL_sv_count = 0;
+
+
+#if defined(PERLIO_LAYERS)
+    /* No more IO - including error messages ! */
+    PerlIO_cleanup(aTHX);
+#endif
+
+    /* sv_undef needs to stay immortal until after PerlIO_cleanup
+       as currently layers use it rather than Nullsv as a marker
+       for no arg - and will try and SvREFCNT_dec it.
+     */
+    SvREFCNT(&PL_sv_undef) = 0;
+    SvREADONLY_off(&PL_sv_undef);
+
+    Safefree(PL_origfilename);
+    PL_origfilename = Nullch;
+    Safefree(PL_reg_start_tmp);
+    PL_reg_start_tmp = (char**)NULL;
+    PL_reg_start_tmpl = 0;
+    if (PL_reg_curpm)
+	Safefree(PL_reg_curpm);
+    Safefree(PL_reg_poscache);
+    free_tied_hv_pool();
+    Safefree(PL_op_mask);
+    Safefree(PL_psig_ptr);
+    PL_psig_ptr = (SV**)NULL;
+    Safefree(PL_psig_name);
+    PL_psig_name = (SV**)NULL;
+    Safefree(PL_bitcount);
+    PL_bitcount = Nullch;
+    Safefree(PL_psig_pend);
+    PL_psig_pend = (int*)NULL;
+    PL_formfeed = Nullsv;
+    Safefree(PL_ofmt);
+    PL_ofmt = Nullch;
+    nuke_stacks();
+    PL_tainting = FALSE;
+    PL_taint_warn = FALSE;
+    PL_hints = 0;		/* Reset hints. Should hints be per-interpreter ? */
+    PL_debug = 0;
+
+    DEBUG_P(debprofdump());
+#ifdef USE_5005THREADS
+    MUTEX_DESTROY(&PL_strtab_mutex);
+    MUTEX_DESTROY(&PL_sv_mutex);
+    MUTEX_DESTROY(&PL_eval_mutex);
+    MUTEX_DESTROY(&PL_cred_mutex);
+    MUTEX_DESTROY(&PL_fdpid_mutex);
+    COND_DESTROY(&PL_eval_cond);
+#ifdef EMULATE_ATOMIC_REFCOUNTS
+    MUTEX_DESTROY(&PL_svref_mutex);
+#endif /* EMULATE_ATOMIC_REFCOUNTS */
+
+    /* As the penultimate thing, free the non-arena SV for thrsv */
+    Safefree(SvPVX(PL_thrsv));
+    Safefree(SvANY(PL_thrsv));
+    Safefree(PL_thrsv);
+    PL_thrsv = Nullsv;
+#endif /* USE_5005THREADS */
+
+#ifdef USE_REENTRANT_API
+    Perl_reentrant_free(aTHX);
+#endif
+
+    sv_free_arenas();
+
+    /* As the absolutely last thing, free the non-arena SV for mess() */
+
+    if (PL_mess_sv) {
+	/* it could have accumulated taint magic */
+	if (SvTYPE(PL_mess_sv) >= SVt_PVMG) {
+	    MAGIC* mg;
+	    MAGIC* moremagic;
+	    for (mg = SvMAGIC(PL_mess_sv); mg; mg = moremagic) {
+		moremagic = mg->mg_moremagic;
+		if (mg->mg_ptr && mg->mg_type != PERL_MAGIC_regex_global
+						&& mg->mg_len >= 0)
+		    Safefree(mg->mg_ptr);
+		Safefree(mg);
+	    }
+	}
+	/* we know that type >= SVt_PV */
+	SvOOK_off(PL_mess_sv);
+	Safefree(SvPVX(PL_mess_sv));
+	Safefree(SvANY(PL_mess_sv));
+	Safefree(PL_mess_sv);
+	PL_mess_sv = Nullsv;
+    }
+    return STATUS_NATIVE_EXPORT;
+}

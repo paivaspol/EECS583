@@ -1,0 +1,53 @@
+static int
+flow_loop_nodes_find (header, latch, nodes)
+     basic_block header;
+     basic_block latch;
+     sbitmap nodes;
+{
+  basic_block *stack;
+  int sp;
+  int num_nodes = 0;
+
+  stack = (basic_block *) xmalloc (n_basic_blocks * sizeof (basic_block));
+  sp = 0;
+
+  /* Start with only the loop header in the set of loop nodes.  */
+  sbitmap_zero (nodes);
+  SET_BIT (nodes, header->index);
+  num_nodes++;
+  header->loop_depth++;
+
+  /* Push the loop latch on to the stack.  */
+  if (! TEST_BIT (nodes, latch->index))
+    {
+      SET_BIT (nodes, latch->index);
+      latch->loop_depth++;
+      num_nodes++;
+      stack[sp++] = latch;
+    }
+
+  while (sp)
+    {
+      basic_block node;
+      edge e;
+
+      node = stack[--sp];
+      for (e = node->pred; e; e = e->pred_next)
+	{
+	  basic_block ancestor = e->src;
+
+	  /* If each ancestor not marked as part of loop, add to set of
+	     loop nodes and push on to stack.  */
+	  if (ancestor != ENTRY_BLOCK_PTR
+	      && ! TEST_BIT (nodes, ancestor->index))
+	    {
+	      SET_BIT (nodes, ancestor->index);
+	      ancestor->loop_depth++;
+	      num_nodes++;
+	      stack[sp++] = ancestor;
+	    }
+	}
+    }
+  free (stack);
+  return num_nodes;
+}

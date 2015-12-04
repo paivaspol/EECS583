@@ -1,0 +1,181 @@
+static void
+prescan_loop (loop)
+     struct loop *loop;
+{
+  int level = 1;
+  rtx insn;
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  rtx start = loop->start;
+  rtx end = loop->end;
+  /* The label after END.  Jumping here is just like falling off the
+     end of the loop.  We use next_nonnote_insn instead of next_label
+     as a hedge against the (pathological) case where some actual insn
+     might end up between the two.  */
+  rtx exit_target = next_nonnote_insn (end);
+
+  loop_info->has_indirect_jump = indirect_jump_in_function;
+  loop_info->pre_header_has_call = 0;
+  loop_info->has_call = 0;
+  loop_info->has_nonconst_call = 0;
+  loop_info->has_volatile = 0;
+  loop_info->has_tablejump = 0;
+  loop_info->has_multiple_exit_targets = 0;
+  loop->level = 1;
+
+  loop_info->unknown_address_altered = 0;
+  loop_info->unknown_constant_address_altered = 0;
+  loop_info->store_mems = NULL_RTX;
+  loop_info->first_loop_store_insn = NULL_RTX;
+  loop_info->mems_idx = 0;
+  loop_info->num_mem_sets = 0;
+
+
+  for (insn = start; insn && GET_CODE (insn) != CODE_LABEL;
+       insn = PREV_INSN (insn))
+    {
+      if (GET_CODE (insn) == CALL_INSN)
+	{
+	  loop_info->pre_header_has_call = 1;
+	  break;
+	}
+    }
+
+  for (insn = NEXT_INSN (start); insn != NEXT_INSN (end);
+       insn = NEXT_INSN (insn))
+    {
+      switch (GET_CODE (insn))
+	{
+	case NOTE:
+	  if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG)
+	    {
+	      ++level;
+	      /* Count number of loops contained in this one.  */
+	      loop->level++;
+	    }
+	  else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END)
+	    --level;
+	  break;
+
+	case CALL_INSN:
+	  if (! CONST_OR_PURE_CALL_P (insn))
+	    {
+	      loop_info->unknown_address_altered = 1;
+	      loop_info->has_nonconst_call = 1;
+	    }
+	  else if (pure_call_p (insn))
+	    loop_info->has_nonconst_call = 1;
+	  loop_info->has_call = 1;
+	  if (can_throw_internal (insn))
+	    loop_info->has_multiple_exit_targets = 1;
+	  break;
+
+	case JUMP_INSN:
+	  if (! loop_info->has_multiple_exit_targets)
+	    {
+	      rtx set = pc_set (insn);
+
+	      if (set)
+		{
+		  rtx src = SET_SRC (set);
+		  rtx label1, label2;
+
+		  if (GET_CODE (src) == IF_THEN_ELSE)
+		    {
+		      label1 = XEXP (src, 1);
+		      label2 = XEXP (src, 2);
+		    }
+		  else
+		    {
+		      label1 = src;
+		      label2 = NULL_RTX;
+		    }
+
+		  do
+		    {
+		      if (label1 && label1 != pc_rtx)
+			{
+			  if (GET_CODE (label1) != LABEL_REF)
+			    {
+			      /* Something tricky.  */
+			      loop_info->has_multiple_exit_targets = 1;
+			      break;
+			    }
+			  else if (XEXP (label1, 0) != exit_target
+				   && LABEL_OUTSIDE_LOOP_P (label1))
+			    {
+			      /* A jump outside the current loop.  */
+			      loop_info->has_multiple_exit_targets = 1;
+			      break;
+			    }
+			}
+
+		      label1 = label2;
+		      label2 = NULL_RTX;
+		    }
+		  while (label1);
+		}
+	      else
+		{
+		  /* A return, or something tricky.  */
+		  loop_info->has_multiple_exit_targets = 1;
+		}
+	    }
+	  /* FALLTHRU */
+
+	case INSN:
+	  if (volatile_refs_p (PATTERN (insn)))
+	    loop_info->has_volatile = 1;
+
+	  if (GET_CODE (insn) == JUMP_INSN
+	      && (GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC
+		  || GET_CODE (PATTERN (insn)) == ADDR_VEC))
+	    loop_info->has_tablejump = 1;
+
+	  note_stores (PATTERN (insn), note_addr_stored, loop_info);
+	  if (! loop_info->first_loop_store_insn && loop_info->store_mems)
+	    loop_info->first_loop_store_insn = insn;
+
+	  if (flag_non_call_exceptions && can_throw_internal (insn))
+	    loop_info->has_multiple_exit_targets = 1;
+	  break;
+
+	default:
+	  break;
+	}
+    }
+
+  /* Now, rescan the loop, setting up the LOOP_MEMS array.  */
+  if (/* An exception thrown by a called function might land us
+	 anywhere.  */
+      ! loop_info->has_nonconst_call
+      /* We don't want loads for MEMs moved to a location before the
+	 one at which their stack memory becomes allocated.  (Note
+	 that this is not a problem for malloc, etc., since those
+	 require actual function calls.  */
+      && ! current_function_calls_alloca
+      /* There are ways to leave the loop other than falling off the
+	 end.  */
+      && ! loop_info->has_multiple_exit_targets)
+    for (insn = NEXT_INSN (start); insn != NEXT_INSN (end);
+	 insn = NEXT_INSN (insn))
+      for_each_rtx (&insn, insert_loop_mem, loop_info);
+
+  /* BLKmode MEMs are added to LOOP_STORE_MEM as necessary so
+     that loop_invariant_p and load_mems can use true_dependence
+     to determine what is really clobbered.  */
+  if (loop_info->unknown_address_altered)
+    {
+      rtx mem = gen_rtx_MEM (BLKmode, const0_rtx);
+
+      loop_info->store_mems
+	= gen_rtx_EXPR_LIST (VOIDmode, mem, loop_info->store_mems);
+    }
+  if (loop_info->unknown_constant_address_altered)
+    {
+      rtx mem = gen_rtx_MEM (BLKmode, const0_rtx);
+
+      RTX_UNCHANGING_P (mem) = 1;
+      loop_info->store_mems
+	= gen_rtx_EXPR_LIST (VOIDmode, mem, loop_info->store_mems);
+    }
+}

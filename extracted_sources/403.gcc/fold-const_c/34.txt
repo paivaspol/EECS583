@@ -1,0 +1,89 @@
+static int
+twoval_comparison_p (arg, cval1, cval2, save_p)
+     tree arg;
+     tree *cval1, *cval2;
+     int *save_p;
+{
+  enum tree_code code = TREE_CODE (arg);
+  char class = TREE_CODE_CLASS (code);
+
+  /* We can handle some of the 'e' cases here.  */
+  if (class == 'e' && code == TRUTH_NOT_EXPR)
+    class = '1';
+  else if (class == 'e'
+	   && (code == TRUTH_ANDIF_EXPR || code == TRUTH_ORIF_EXPR
+	       || code == COMPOUND_EXPR))
+    class = '2';
+
+  else if (class == 'e' && code == SAVE_EXPR && SAVE_EXPR_RTL (arg) == 0
+	   && ! TREE_SIDE_EFFECTS (TREE_OPERAND (arg, 0)))
+    {
+      /* If we've already found a CVAL1 or CVAL2, this expression is
+	 two complex to handle.  */
+      if (*cval1 || *cval2)
+	return 0;
+
+      class = '1';
+      *save_p = 1;
+    }
+
+  switch (class)
+    {
+    case '1':
+      return twoval_comparison_p (TREE_OPERAND (arg, 0), cval1, cval2, save_p);
+
+    case '2':
+      return (twoval_comparison_p (TREE_OPERAND (arg, 0), cval1, cval2, save_p)
+	      && twoval_comparison_p (TREE_OPERAND (arg, 1),
+				      cval1, cval2, save_p));
+
+    case 'c':
+      return 1;
+
+    case 'e':
+      if (code == COND_EXPR)
+	return (twoval_comparison_p (TREE_OPERAND (arg, 0),
+				     cval1, cval2, save_p)
+		&& twoval_comparison_p (TREE_OPERAND (arg, 1),
+					cval1, cval2, save_p)
+		&& twoval_comparison_p (TREE_OPERAND (arg, 2),
+					cval1, cval2, save_p));
+      return 0;
+
+    case '<':
+      /* First see if we can handle the first operand, then the second.  For
+	 the second operand, we know *CVAL1 can't be zero.  It must be that
+	 one side of the comparison is each of the values; test for the
+	 case where this isn't true by failing if the two operands
+	 are the same.  */
+
+      if (operand_equal_p (TREE_OPERAND (arg, 0),
+			   TREE_OPERAND (arg, 1), 0))
+	return 0;
+
+      if (*cval1 == 0)
+	*cval1 = TREE_OPERAND (arg, 0);
+      else if (operand_equal_p (*cval1, TREE_OPERAND (arg, 0), 0))
+	;
+      else if (*cval2 == 0)
+	*cval2 = TREE_OPERAND (arg, 0);
+      else if (operand_equal_p (*cval2, TREE_OPERAND (arg, 0), 0))
+	;
+      else
+	return 0;
+
+      if (operand_equal_p (*cval1, TREE_OPERAND (arg, 1), 0))
+	;
+      else if (*cval2 == 0)
+	*cval2 = TREE_OPERAND (arg, 1);
+      else if (operand_equal_p (*cval2, TREE_OPERAND (arg, 1), 0))
+	;
+      else
+	return 0;
+
+      return 1;
+
+    default:
+      return 0;
+    }
+}

@@ -1,0 +1,130 @@
+static SV *retrieve_flag_hash(pTHX_ stcxt_t *cxt, char *cname)
+{
+    I32 len;
+    I32 size;
+    I32 i;
+    HV *hv;
+    SV *sv;
+    int hash_flags;
+
+    GETMARK(hash_flags);
+    TRACEME(("retrieve_flag_hash (#%d)", cxt->tagnum));
+    /*
+     * Read length, allocate table.
+     */
+
+#ifndef HAS_RESTRICTED_HASHES
+    if (hash_flags & SHV_RESTRICTED) {
+        if (cxt->derestrict < 0)
+            cxt->derestrict
+                = (SvTRUE(get_sv("Storable::downgrade_restricted", TRUE))
+                   ? 1 : 0);
+        if (cxt->derestrict == 0)
+            RESTRICTED_HASH_CROAK();
+    }
+#endif
+
+    RLEN(len);
+    TRACEME(("size = %d, flags = %d", len, hash_flags));
+    hv = newHV();
+    SEEN(hv, cname, 0);		/* Will return if table not allocated properly */
+    if (len == 0)
+        return (SV *) hv;	/* No data follow if table empty */
+    hv_ksplit(hv, len);		/* pre-extend hash to save multiple splits */
+
+    /*
+     * Now get each key/value pair in turn...
+     */
+
+    for (i = 0; i < len; i++) {
+        int flags;
+        int store_flags = 0;
+        /*
+         * Get value first.
+         */
+
+        TRACEME(("(#%d) value", i));
+        sv = retrieve(aTHX_ cxt, 0);
+        if (!sv)
+            return (SV *) 0;
+
+        GETMARK(flags);
+#ifdef HAS_RESTRICTED_HASHES
+        if ((hash_flags & SHV_RESTRICTED) && (flags & SHV_K_LOCKED))
+            SvREADONLY_on(sv);
+#endif
+
+        if (flags & SHV_K_ISSV) {
+            /* XXX you can't set a placeholder with an SV key.
+               Then again, you can't get an SV key.
+               Without messing around beyond what the API is supposed to do.
+            */
+            SV *keysv;
+            TRACEME(("(#%d) keysv, flags=%d", i, flags));
+            keysv = retrieve(aTHX_ cxt, 0);
+            if (!keysv)
+                return (SV *) 0;
+
+            if (!hv_store_ent(hv, keysv, sv, 0))
+                return (SV *) 0;
+        } else {
+            /*
+             * Get key.
+             * Since we're reading into kbuf, we must ensure we're not
+             * recursing between the read and the hv_store() where it's used.
+             * Hence the key comes after the value.
+             */
+
+            if (flags & SHV_K_PLACEHOLDER) {
+                SvREFCNT_dec (sv);
+                sv = &PL_sv_placeholder;
+		store_flags |= HVhek_PLACEHOLD;
+	    }
+            if (flags & SHV_K_UTF8) {
+#ifdef HAS_UTF8_HASHES
+                store_flags |= HVhek_UTF8;
+#else
+                if (cxt->use_bytes < 0)
+                    cxt->use_bytes
+                        = (SvTRUE(get_sv("Storable::drop_utf8", TRUE))
+                           ? 1 : 0);
+                if (cxt->use_bytes == 0)
+                    UTF8_CROAK();
+#endif
+            }
+#ifdef HAS_UTF8_HASHES
+            if (flags & SHV_K_WASUTF8)
+		store_flags |= HVhek_WASUTF8;
+#endif
+
+            RLEN(size);						/* Get key size */
+            KBUFCHK((STRLEN)size);				/* Grow hash key read pool if needed */
+            if (size)
+                READ(kbuf, size);
+            kbuf[size] = '\0';				/* Mark string end, just in case */
+            TRACEME(("(#%d) key '%s' flags %X store_flags %X", i, kbuf,
+		     flags, store_flags));
+
+            /*
+             * Enter key/value pair into hash table.
+             */
+
+#ifdef HAS_RESTRICTED_HASHES
+            if (hv_store_flags(hv, kbuf, size, sv, 0, store_flags) == 0)
+                return (SV *) 0;
+#else
+            if (!(store_flags & HVhek_PLACEHOLD))
+                if (hv_store(hv, kbuf, size, sv, 0) == 0)
+                    return (SV *) 0;
+#endif
+	}
+    }
+#ifdef HAS_RESTRICTED_HASHES
+    if (hash_flags & SHV_RESTRICTED)
+        SvREADONLY_on(hv);
+#endif
+
+    TRACEME(("ok (retrieve_hash at 0x%"UVxf")", PTR2UV(hv)));
+
+    return (SV *) hv;
+}

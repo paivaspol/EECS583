@@ -1,0 +1,28 @@
+void side_link_force(int mu, int nu, double coeff, 
+		     su3_vector *Path   , su3_vector *Path_nu, 
+		     su3_vector *Path_mu, su3_vector *Path_numu) {
+  if(GOES_FORWARDS(mu))
+    {
+      /*                    nu           * 
+       * Add the force :  +----+         *
+       *               mu |    |         *
+       *                  x    (x)       *
+       *                  o    o         */
+      if(GOES_FORWARDS(nu))
+	add_force_to_mom(Path_numu, Path, mu, coeff ) ;
+      else
+	add_force_to_mom(Path, Path_numu, OPP_DIR(mu), -coeff );/* ? extra - */
+    }
+  else /*GOES_BACKWARDS(mu)*/
+    {
+      /* Add the force :  o    o         *
+       *               mu |    |         *
+       *                  x    (x)       *
+       *                  +----+         *
+       *                    nu           */ 
+      if(GOES_FORWARDS(nu))
+	add_force_to_mom(Path_nu, Path_mu, mu, -coeff) ; /* ? extra - */
+      else
+	add_force_to_mom(Path_mu, Path_nu, OPP_DIR(mu), coeff) ;
+    }
+}

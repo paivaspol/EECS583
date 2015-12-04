@@ -1,0 +1,197 @@
+static void
+sched_analyze_2 (deps, x, insn)
+     struct deps *deps;
+     rtx x;
+     rtx insn;
+{
+  int i;
+  int j;
+  enum rtx_code code;
+  const char *fmt;
+
+  if (x == 0)
+    return;
+
+  code = GET_CODE (x);
+
+  switch (code)
+    {
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case CONST:
+    case LABEL_REF:
+      /* Ignore constants.  Note that we must handle CONST_DOUBLE here
+         because it may have a cc0_rtx in its CONST_DOUBLE_CHAIN field, but
+         this does not mean that this insn is using cc0.  */
+      return;
+
+#ifdef HAVE_cc0
+    case CC0:
+      /* User of CC0 depends on immediately preceding insn.  */
+      set_sched_group_p (insn);
+      return;
+#endif
+
+    case REG:
+      {
+	int regno = REGNO (x);
+	if (regno < FIRST_PSEUDO_REGISTER)
+	  {
+	    int i = HARD_REGNO_NREGS (regno, GET_MODE (x));
+	    while (--i >= 0)
+	      SET_REGNO_REG_SET (reg_pending_uses, regno + i);
+	  }
+	/* ??? Reload sometimes emits USEs and CLOBBERs of pseudos that
+	   it does not reload.  Ignore these as they have served their
+	   purpose already.  */
+	else if (regno >= deps->max_reg)
+	  {
+	    if (GET_CODE (PATTERN (insn)) != USE
+		&& GET_CODE (PATTERN (insn)) != CLOBBER)
+	      abort ();
+	  }
+	else
+	  {
+	    SET_REGNO_REG_SET (reg_pending_uses, regno);
+
+	    /* Pseudos that are REG_EQUIV to something may be replaced
+	       by that during reloading.  We need only add dependencies for
+	       the address in the REG_EQUIV note.  */
+	    if (!reload_completed
+		&& reg_known_equiv_p[regno]
+		&& GET_CODE (reg_known_value[regno]) == MEM)
+	      sched_analyze_2 (deps, XEXP (reg_known_value[regno], 0), insn);
+
+	    /* If the register does not already cross any calls, then add this
+	       insn to the sched_before_next_call list so that it will still
+	       not cross calls after scheduling.  */
+	    if (REG_N_CALLS_CROSSED (regno) == 0)
+	      deps->sched_before_next_call
+		= alloc_INSN_LIST (insn, deps->sched_before_next_call);
+	  }
+	return;
+      }
+
+    case MEM:
+      {
+	/* Reading memory.  */
+	rtx u;
+	rtx pending, pending_mem;
+	rtx t = x;
+
+	if (current_sched_info->use_cselib)
+	  {
+	    t = shallow_copy_rtx (t);
+	    cselib_lookup (XEXP (t, 0), Pmode, 1);
+	    XEXP (t, 0) = cselib_subst_to_values (XEXP (t, 0));
+	  }
+	pending = deps->pending_read_insns;
+	pending_mem = deps->pending_read_mems;
+	while (pending)
+	  {
+	    if (read_dependence (XEXP (pending_mem, 0), t))
+	      add_dependence (insn, XEXP (pending, 0), REG_DEP_ANTI);
+
+	    pending = XEXP (pending, 1);
+	    pending_mem = XEXP (pending_mem, 1);
+	  }
+
+	pending = deps->pending_write_insns;
+	pending_mem = deps->pending_write_mems;
+	while (pending)
+	  {
+	    if (true_dependence (XEXP (pending_mem, 0), VOIDmode,
+				 t, rtx_varies_p))
+	      add_dependence (insn, XEXP (pending, 0), 0);
+
+	    pending = XEXP (pending, 1);
+	    pending_mem = XEXP (pending_mem, 1);
+	  }
+
+	for (u = deps->last_pending_memory_flush; u; u = XEXP (u, 1))
+	  if (GET_CODE (XEXP (u, 0)) != JUMP_INSN
+	      || deps_may_trap_p (x))
+	    add_dependence (insn, XEXP (u, 0), REG_DEP_ANTI);
+
+	/* Always add these dependencies to pending_reads, since
+	   this insn may be followed by a write.  */
+	add_insn_mem_dependence (deps, &deps->pending_read_insns,
+				 &deps->pending_read_mems, insn, x);
+
+	/* Take advantage of tail recursion here.  */
+	sched_analyze_2 (deps, XEXP (x, 0), insn);
+	return;
+      }
+
+    /* Force pending stores to memory in case a trap handler needs them.  */
+    case TRAP_IF:
+      flush_pending_lists (deps, insn, true, false);
+      break;
+
+    case ASM_OPERANDS:
+    case ASM_INPUT:
+    case UNSPEC_VOLATILE:
+      {
+	/* Traditional and volatile asm instructions must be considered to use
+	   and clobber all hard registers, all pseudo-registers and all of
+	   memory.  So must TRAP_IF and UNSPEC_VOLATILE operations.
+
+	   Consider for instance a volatile asm that changes the fpu rounding
+	   mode.  An insn should not be moved across this even if it only uses
+	   pseudo-regs because it might give an incorrectly rounded result.  */
+	if (code != ASM_OPERANDS || MEM_VOLATILE_P (x))
+	  reg_pending_barrier = true;
+
+	/* For all ASM_OPERANDS, we must traverse the vector of input operands.
+	   We can not just fall through here since then we would be confused
+	   by the ASM_INPUT rtx inside ASM_OPERANDS, which do not indicate
+	   traditional asms unlike their normal usage.  */
+
+	if (code == ASM_OPERANDS)
+	  {
+	    for (j = 0; j < ASM_OPERANDS_INPUT_LENGTH (x); j++)
+	      sched_analyze_2 (deps, ASM_OPERANDS_INPUT (x, j), insn);
+	    return;
+	  }
+	break;
+      }
+
+    case PRE_DEC:
+    case POST_DEC:
+    case PRE_INC:
+    case POST_INC:
+      /* These both read and modify the result.  We must handle them as writes
+         to get proper dependencies for following instructions.  We must handle
+         them as reads to get proper dependencies from this to previous
+         instructions.  Thus we need to pass them to both sched_analyze_1
+         and sched_analyze_2.  We must call sched_analyze_2 first in order
+         to get the proper antecedent for the read.  */
+      sched_analyze_2 (deps, XEXP (x, 0), insn);
+      sched_analyze_1 (deps, x, insn);
+      return;
+
+    case POST_MODIFY:
+    case PRE_MODIFY:
+      /* op0 = op0 + op1 */
+      sched_analyze_2 (deps, XEXP (x, 0), insn);
+      sched_analyze_2 (deps, XEXP (x, 1), insn);
+      sched_analyze_1 (deps, x, insn);
+      return;
+
+    default:
+      break;
+    }
+
+  /* Other cases: walk the insn.  */
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	sched_analyze_2 (deps, XEXP (x, i), insn);
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  sched_analyze_2 (deps, XVECEXP (x, i, j), insn);
+    }
+}

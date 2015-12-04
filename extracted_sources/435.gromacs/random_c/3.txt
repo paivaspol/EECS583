@@ -1,0 +1,20 @@
+void stop_cm(FILE *log,int natoms,real mass[],rvec x[],rvec v[])
+{
+  rvec   xcm,vcm,acm;
+  tensor L;
+  int    i,m;
+
+#ifdef DEBUG
+  fprintf(log,"stopping center of mass motion...\n");
+#endif
+  (void)calc_cm(log,natoms,mass,x,v,xcm,vcm,acm,L);
+  
+  /* Subtract center of mass velocity */
+  for(i=0; (i<natoms); i++)
+    for(m=0; (m<DIM); m++)
+      v[i][m]-=vcm[m];
+
+#ifdef DEBUG
+  (void)calc_cm(log,natoms,mass,x,v,xcm,vcm,acm,L);
+#endif
+}

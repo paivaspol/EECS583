@@ -1,0 +1,24 @@
+void
+verify_insn_chain ()
+{
+  rtx x, prevx, nextx;
+  int insn_cnt1, insn_cnt2;
+
+  for (prevx = NULL, insn_cnt1 = 1, x = get_insns ();
+       x != 0;
+       prevx = x, insn_cnt1++, x = NEXT_INSN (x))
+    if (PREV_INSN (x) != prevx)
+      abort ();
+
+  if (prevx != get_last_insn ())
+    abort ();
+
+  for (nextx = NULL, insn_cnt2 = 1, x = get_last_insn ();
+       x != 0;
+       nextx = x, insn_cnt2++, x = PREV_INSN (x))
+    if (NEXT_INSN (x) != nextx)
+      abort ();
+
+  if (insn_cnt1 != insn_cnt2)
+    abort ();
+}

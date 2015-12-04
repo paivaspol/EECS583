@@ -1,0 +1,129 @@
+static inline struct df_link *df_link_create PARAMS((struct ref *,
+						     struct df_link *));
+static struct df_link *df_ref_unlink PARAMS((struct df_link **, struct ref *));
+static void df_def_unlink PARAMS((struct df *, struct ref *));
+static void df_use_unlink PARAMS((struct df *, struct ref *));
+static void df_insn_refs_unlink PARAMS ((struct df *, basic_block, rtx));
+#if 0
+static void df_bb_refs_unlink PARAMS ((struct df *, basic_block));
+static void df_refs_unlink PARAMS ((struct df *, bitmap));
+#endif
+
+static struct ref *df_ref_create PARAMS((struct df *,
+					 rtx, rtx *, rtx,
+					 enum df_ref_type, enum df_ref_flags));
+static void df_ref_record_1 PARAMS((struct df *, rtx, rtx *,
+				    rtx, enum df_ref_type,
+				    enum df_ref_flags));
+static void df_ref_record PARAMS((struct df *, rtx, rtx *,
+				  rtx, enum df_ref_type,
+				  enum df_ref_flags));
+static void df_def_record_1 PARAMS((struct df *, rtx, basic_block, rtx));
+static void df_defs_record PARAMS((struct df *, rtx, basic_block, rtx));
+static void df_uses_record PARAMS((struct df *, rtx *,
+				   enum df_ref_type, basic_block, rtx,
+				   enum df_ref_flags));
+static void df_insn_refs_record PARAMS((struct df *, basic_block, rtx));
+static void df_bb_refs_record PARAMS((struct df *, basic_block));
+static void df_refs_record PARAMS((struct df *, bitmap));
+
+static void df_bb_reg_def_chain_create PARAMS((struct df *, basic_block));
+static void df_reg_def_chain_create PARAMS((struct df *, bitmap));
+static void df_bb_reg_use_chain_create PARAMS((struct df *, basic_block));
+static void df_reg_use_chain_create PARAMS((struct df *, bitmap));
+static void df_bb_du_chain_create PARAMS((struct df *, basic_block, bitmap));
+static void df_du_chain_create PARAMS((struct df *, bitmap));
+static void df_bb_ud_chain_create PARAMS((struct df *, basic_block));
+static void df_ud_chain_create PARAMS((struct df *, bitmap));
+static void df_bb_rd_local_compute PARAMS((struct df *, basic_block));
+static void df_rd_local_compute PARAMS((struct df *, bitmap));
+static void df_bb_ru_local_compute PARAMS((struct df *, basic_block));
+static void df_ru_local_compute PARAMS((struct df *, bitmap));
+static void df_bb_lr_local_compute PARAMS((struct df *, basic_block));
+static void df_lr_local_compute PARAMS((struct df *, bitmap));
+static void df_bb_reg_info_compute PARAMS((struct df *, basic_block, bitmap));
+static void df_reg_info_compute PARAMS((struct df *, bitmap));
+
+static int df_bb_luids_set PARAMS((struct df *df, basic_block));
+static int df_luids_set PARAMS((struct df *df, bitmap));
+
+static int df_modified_p PARAMS ((struct df *, bitmap));
+static int df_refs_queue PARAMS ((struct df *));
+static int df_refs_process PARAMS ((struct df *));
+static int df_bb_refs_update PARAMS ((struct df *, basic_block));
+static int df_refs_update PARAMS ((struct df *));
+static void df_analyse_1 PARAMS((struct df *, bitmap, int, int));
+
+static void df_insns_modify PARAMS((struct df *, basic_block,
+				    rtx, rtx));
+static int df_rtx_mem_replace PARAMS ((rtx *, void *));
+static int df_rtx_reg_replace PARAMS ((rtx *, void *));
+void df_refs_reg_replace PARAMS ((struct df *, bitmap,
+					 struct df_link *, rtx, rtx));
+
+static int df_def_dominates_all_uses_p PARAMS((struct df *, struct ref *def));
+static int df_def_dominates_uses_p PARAMS((struct df *,
+					   struct ref *def, bitmap));
+static struct ref *df_bb_regno_last_use_find PARAMS((struct df *, basic_block,
+						     unsigned int));
+static struct ref *df_bb_regno_first_def_find PARAMS((struct df *, basic_block,
+						      unsigned int));
+static struct ref *df_bb_insn_regno_last_use_find PARAMS((struct df *,
+							  basic_block,
+							  rtx, unsigned int));
+static struct ref *df_bb_insn_regno_first_def_find PARAMS((struct df *,
+							   basic_block,
+							   rtx, unsigned int));
+
+static void df_chain_dump PARAMS((struct df_link *, FILE *file));
+static void df_chain_dump_regno PARAMS((struct df_link *, FILE *file));
+static void df_regno_debug PARAMS ((struct df *, unsigned int, FILE *));
+static void df_ref_debug PARAMS ((struct df *, struct ref *, FILE *));
+static void df_rd_transfer_function PARAMS ((int, int *, bitmap, bitmap, 
+					     bitmap, bitmap, void *));
+static void df_ru_transfer_function PARAMS ((int, int *, bitmap, bitmap, 
+					     bitmap, bitmap, void *));
+static void df_lr_transfer_function PARAMS ((int, int *, bitmap, bitmap, 
+					     bitmap, bitmap, void *));
+static void hybrid_search_bitmap PARAMS ((basic_block, bitmap *, bitmap *, 
+					  bitmap *, bitmap *, enum df_flow_dir, 
+					  enum df_confluence_op, 
+					  transfer_function_bitmap, 
+					  sbitmap, sbitmap, void *));
+static void hybrid_search_sbitmap PARAMS ((basic_block, sbitmap *, sbitmap *,
+					   sbitmap *, sbitmap *, enum df_flow_dir,
+					   enum df_confluence_op,
+					   transfer_function_sbitmap,
+					   sbitmap, sbitmap, void *));
+static inline bool read_modify_subreg_p PARAMS ((rtx));
+
+
+/* Local memory allocation/deallocation routines.  */
+
+
+/* Increase the insn info table by SIZE more elements.  */
+static void
+df_insn_table_realloc (df, size)
+     struct df *df;
+     int size;
+{
+  /* Make table 25 percent larger by default.  */
+  if (! size)
+    size = df->insn_size / 4;
+
+  size += df->insn_size;
+
+  df->insns = (struct insn_info *)
+    xrealloc (df->insns, size * sizeof (struct insn_info));
+
+  memset (df->insns + df->insn_size, 0,
+	  (size - df->insn_size) * sizeof (struct insn_info));
+
+  df->insn_size = size;
+
+  if (! df->insns_modified)
+    {
+      df->insns_modified = BITMAP_XMALLOC ();
+      bitmap_zero (df->insns_modified);
+    }
+}

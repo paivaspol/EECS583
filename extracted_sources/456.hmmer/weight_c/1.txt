@@ -1,0 +1,12 @@
+static void 
+upweight(struct phylo_s *tree, int nseq, float *lwt, float *rwt, int node)
+{
+  int ld,rd;
+
+  ld = tree[node-nseq].left;
+  if (ld >= nseq) upweight(tree, nseq, lwt, rwt, ld);
+  rd = tree[node-nseq].right;
+  if (rd >= nseq) upweight(tree, nseq, lwt, rwt, rd);
+  lwt[node] = lwt[ld] + rwt[ld] + tree[node-nseq].lblen;
+  rwt[node] = lwt[rd] + rwt[rd] + tree[node-nseq].rblen;
+}

@@ -1,0 +1,74 @@
+static void
+ssa_fast_dce (df)
+     struct df *df;
+{
+  sbitmap worklist = sbitmap_alloc (VARRAY_SIZE (ssa_definition));
+  sbitmap_ones (worklist);
+
+  /* Iterate on the worklist until there's no definitions left to
+     examine.  */
+  while (sbitmap_first_set_bit (worklist) >= 0)
+    {
+      struct df_link *curruse;
+      int reg, found_use;
+
+      /* Remove an item from the worklist.  */
+      reg = sbitmap_first_set_bit (worklist);
+      RESET_BIT (worklist, reg);
+
+      /* We never consider deleting assignments to hard regs or things
+	 which do not have SSA definitions, or things we have already
+	 deleted, or things with unusual side effects.  */
+      if (reg < FIRST_PSEUDO_REGISTER
+	  || ! VARRAY_RTX (ssa_definition, reg)
+	  || INSN_DELETED_P (VARRAY_RTX (ssa_definition, reg))
+	  || (GET_CODE (VARRAY_RTX (ssa_definition, reg)) == NOTE
+	      && (NOTE_LINE_NUMBER (VARRAY_RTX (ssa_definition, reg))
+		  == NOTE_INSN_DELETED))
+	  || side_effects_p (PATTERN (VARRAY_RTX (ssa_definition, reg))))
+	continue;
+      
+      /* Iterate over the uses of this register.  If we can not find
+	 any uses that have not been deleted, then the definition of
+	 this register is dead.  */
+      found_use = 0;
+      for (curruse = df->regs[reg].uses; curruse; curruse = curruse->next)
+	{
+	  if (curruse->ref
+	      && DF_REF_INSN (curruse->ref)
+	      && ! INSN_DELETED_P (DF_REF_INSN (curruse->ref))
+	      && ! (GET_CODE (DF_REF_INSN (curruse->ref)) == NOTE
+		    && (NOTE_LINE_NUMBER (DF_REF_INSN (curruse->ref))
+			== NOTE_INSN_DELETED))
+	      && DF_REF_INSN (curruse->ref) != VARRAY_RTX (ssa_definition, reg))
+	    {
+	      found_use = 1;
+	      break;
+	    }
+	}
+
+      /* If we did not find a use of this register, then the definition
+	 of this register is dead.  */
+	     
+      if (! found_use)
+	{
+	  rtx def = VARRAY_RTX (ssa_definition, reg);
+
+	  /* Add all registers referenced by INSN to the work
+	     list.  */
+	  for_each_rtx (&PATTERN (def), mark_references, worklist);
+
+	  /* Inform the analyzer that this insn is going to be
+	     deleted.  */
+	  df_insn_delete (df, BLOCK_FOR_INSN (def), def);
+
+	  VARRAY_RTX (ssa_definition, reg) = NULL;
+	}
+    }
+
+  sbitmap_free (worklist);
+
+  /* Update the use-def chains in the df_analyzer as needed.  */
+  df_analyse (df_analyzer, 0,
+              DF_RD_CHAIN | DF_RU_CHAIN | DF_REG_INFO | DF_HARD_REGS);
+}

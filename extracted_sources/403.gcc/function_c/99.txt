@@ -1,0 +1,65 @@
+static void
+handle_epilogue_set (set, p)
+     rtx set;
+     struct epi_info *p;
+{
+  /* First handle the case where we are setting SP.  Record what it is being
+     set from.  If unknown, abort.  */
+  if (reg_set_p (stack_pointer_rtx, set))
+    {
+      if (SET_DEST (set) != stack_pointer_rtx)
+	abort ();
+
+      if (GET_CODE (SET_SRC (set)) == PLUS
+	  && GET_CODE (XEXP (SET_SRC (set), 1)) == CONST_INT)
+	{
+	  p->new_sp_equiv_reg = XEXP (SET_SRC (set), 0);
+	  p->new_sp_offset = INTVAL (XEXP (SET_SRC (set), 1));
+	}
+      else
+	p->new_sp_equiv_reg = SET_SRC (set), p->new_sp_offset = 0;
+
+      /* If we are adjusting SP, we adjust from the old data.  */
+      if (p->new_sp_equiv_reg == stack_pointer_rtx)
+	{
+	  p->new_sp_equiv_reg = p->sp_equiv_reg;
+	  p->new_sp_offset += p->sp_offset;
+	}
+
+      if (p->new_sp_equiv_reg == 0 || GET_CODE (p->new_sp_equiv_reg) != REG)
+	abort ();
+
+      return;
+    }
+
+  /* Next handle the case where we are setting SP's equivalent register.
+     If we already have a value to set it to, abort.  We could update, but
+     there seems little point in handling that case.  Note that we have
+     to allow for the case where we are setting the register set in
+     the previous part of a PARALLEL inside a single insn.  But use the
+     old offset for any updates within this insn.  */
+  else if (p->new_sp_equiv_reg != 0 && reg_set_p (p->new_sp_equiv_reg, set))
+    {
+      if (!rtx_equal_p (p->new_sp_equiv_reg, SET_DEST (set))
+	  || p->equiv_reg_src != 0)
+	abort ();
+      else
+	p->equiv_reg_src
+	  = simplify_replace_rtx (SET_SRC (set), stack_pointer_rtx,
+				  plus_constant (p->sp_equiv_reg,
+						 p->sp_offset));
+    }
+
+  /* Otherwise, replace any references to SP in the insn to its new value
+     and emit the insn.  */
+  else
+    {
+      SET_SRC (set) = simplify_replace_rtx (SET_SRC (set), stack_pointer_rtx,
+					    plus_constant (p->sp_equiv_reg,
+							   p->sp_offset));
+      SET_DEST (set) = simplify_replace_rtx (SET_DEST (set), stack_pointer_rtx,
+					     plus_constant (p->sp_equiv_reg,
+							    p->sp_offset));
+      emit_insn (set);
+    }
+}

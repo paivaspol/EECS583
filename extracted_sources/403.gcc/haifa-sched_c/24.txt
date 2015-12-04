@@ -1,0 +1,27 @@
+int
+set_priorities (head, tail)
+     rtx head, tail;
+{
+  rtx insn;
+  int n_insn;
+
+  rtx prev_head;
+
+  prev_head = PREV_INSN (head);
+
+  if (head == tail && (! INSN_P (head)))
+    return 0;
+
+  n_insn = 0;
+  for (insn = tail; insn != prev_head; insn = PREV_INSN (insn))
+    {
+      if (GET_CODE (insn) == NOTE)
+	continue;
+
+      if (!(SCHED_GROUP_P (insn)))
+	n_insn++;
+      (void) priority (insn);
+    }
+
+  return n_insn;
+}

@@ -1,0 +1,32 @@
+static void
+directive_diagnostics (pfile, dir, indented)
+     cpp_reader *pfile;
+     const directive *dir;
+     int indented;
+{
+  /* Issue -pedantic warnings for extensions.  */
+  if (CPP_PEDANTIC (pfile)
+      && ! pfile->state.skipping
+      && dir->origin == EXTENSION)
+    cpp_pedwarn (pfile, "#%s is a GCC extension", dir->name);
+
+  /* Traditionally, a directive is ignored unless its # is in
+     column 1.  Therefore in code intended to work with K+R
+     compilers, directives added by C89 must have their #
+     indented, and directives present in traditional C must not.
+     This is true even of directives in skipped conditional
+     blocks.  #elif cannot be used at all.  */
+  if (CPP_WTRADITIONAL (pfile))
+    {
+      if (dir == &dtable[T_ELIF])
+	cpp_warning (pfile, "suggest not using #elif in traditional C");
+      else if (indented && dir->origin == KANDR)
+	cpp_warning (pfile,
+		     "traditional C ignores #%s with the # indented",
+		     dir->name);
+      else if (!indented && dir->origin != KANDR)
+	cpp_warning (pfile,
+		     "suggest hiding #%s from traditional C with an indented #",
+		     dir->name);
+    }
+}

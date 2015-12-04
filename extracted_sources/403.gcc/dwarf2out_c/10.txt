@@ -1,0 +1,21 @@
+static void
+lookup_cfa (loc)
+     dw_cfa_location *loc;
+{
+  dw_cfi_ref cfi;
+
+  loc->reg = (unsigned long) -1;
+  loc->offset = 0;
+  loc->indirect = 0;
+  loc->base_offset = 0;
+
+  for (cfi = cie_cfi_head; cfi; cfi = cfi->dw_cfi_next)
+    lookup_cfa_1 (cfi, loc);
+
+  if (fde_table_in_use)
+    {
+      dw_fde_ref fde = &fde_table[fde_table_in_use - 1];
+      for (cfi = fde->dw_fde_cfi; cfi; cfi = cfi->dw_cfi_next)
+	lookup_cfa_1 (cfi, loc);
+    }
+}

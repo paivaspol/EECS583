@@ -1,0 +1,25 @@
+static SV *retrieve_tied_key(pTHX_ stcxt_t *cxt, char *cname)
+{
+	SV *tv;
+	SV *sv;
+	SV *key;
+
+	TRACEME(("retrieve_tied_key (#%d)", cxt->tagnum));
+
+	tv = NEWSV(10002, 0);
+	SEEN(tv, cname, 0);			/* Will return if tv is null */
+	sv = retrieve(aTHX_ cxt, 0);		/* Retrieve <object> */
+	if (!sv)
+		return (SV *) 0;		/* Failed */
+
+	key = retrieve(aTHX_ cxt, 0);		/* Retrieve <key> */
+	if (!key)
+		return (SV *) 0;		/* Failed */
+
+	sv_upgrade(tv, SVt_PVMG);
+	sv_magic(tv, sv, 'p', (char *)key, HEf_SVKEY);
+	SvREFCNT_dec(key);			/* Undo refcnt inc from sv_magic() */
+	SvREFCNT_dec(sv);			/* Undo refcnt inc from sv_magic() */
+
+	return tv;
+}

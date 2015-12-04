@@ -1,0 +1,49 @@
+void
+pop_function_context_from (context)
+     tree context ATTRIBUTE_UNUSED;
+{
+  struct function *p = outer_function_chain;
+  struct var_refs_queue *queue;
+
+  cfun = p;
+  outer_function_chain = p->outer;
+
+  current_function_decl = p->decl;
+  reg_renumber = 0;
+
+  restore_emit_status (p);
+
+  if (restore_lang_status)
+    (*restore_lang_status) (p);
+
+  /* Finish doing put_var_into_stack for any of our variables which became
+     addressable during the nested function.  If only one entry has to be
+     fixed up, just do that one.  Otherwise, first make a list of MEMs that
+     are not to be unshared.  */
+  if (p->fixup_var_refs_queue == 0)
+    ;
+  else if (p->fixup_var_refs_queue->next == 0)
+    fixup_var_refs (p->fixup_var_refs_queue->modified,
+		    p->fixup_var_refs_queue->promoted_mode,
+		    p->fixup_var_refs_queue->unsignedp,
+		    p->fixup_var_refs_queue->modified, 0);
+  else
+    {
+      rtx list = 0;
+
+      for (queue = p->fixup_var_refs_queue; queue; queue = queue->next)
+	list = gen_rtx_EXPR_LIST (VOIDmode, queue->modified, list);
+
+      for (queue = p->fixup_var_refs_queue; queue; queue = queue->next)
+	fixup_var_refs (queue->modified, queue->promoted_mode,
+			queue->unsignedp, list, 0);
+
+    }
+
+  p->fixup_var_refs_queue = 0;
+
+  /* Reset variables that have known state during rtx generation.  */
+  rtx_equal_function_value_matters = 1;
+  virtuals_instantiated = 0;
+  generating_concat_p = 1;
+}

@@ -1,0 +1,18 @@
+static void
+gen_inheritance_die (binfo, context_die)
+     tree binfo;
+     dw_die_ref context_die;
+{
+  dw_die_ref die = new_die (DW_TAG_inheritance, context_die, binfo);
+
+  add_type_attribute (die, BINFO_TYPE (binfo), 0, 0, context_die);
+  add_data_member_location_attribute (die, binfo);
+
+  if (TREE_VIA_VIRTUAL (binfo))
+    add_AT_unsigned (die, DW_AT_virtuality, DW_VIRTUALITY_virtual);
+
+  if (TREE_VIA_PUBLIC (binfo))
+    add_AT_unsigned (die, DW_AT_accessibility, DW_ACCESS_public);
+  else if (TREE_VIA_PROTECTED (binfo))
+    add_AT_unsigned (die, DW_AT_accessibility, DW_ACCESS_protected);
+}

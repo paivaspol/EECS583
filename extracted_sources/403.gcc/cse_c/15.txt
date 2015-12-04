@@ -1,0 +1,15 @@
+static struct table_elt *
+lookup (x, hash, mode)
+     rtx x;
+     unsigned hash;
+     enum machine_mode mode;
+{
+  struct table_elt *p;
+
+  for (p = table[hash]; p; p = p->next_same_hash)
+    if (mode == p->mode && ((x == p->exp && GET_CODE (x) == REG)
+			    || exp_equiv_p (x, p->exp, GET_CODE (x) != REG, 0)))
+      return p;
+
+  return 0;
+}

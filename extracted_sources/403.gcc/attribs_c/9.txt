@@ -1,0 +1,19 @@
+static tree
+handle_used_attribute (node, name, args, flags, no_add_attrs)
+     tree *node;
+     tree name;
+     tree args ATTRIBUTE_UNUSED;
+     int flags ATTRIBUTE_UNUSED;
+     bool *no_add_attrs;
+{
+  if (TREE_CODE (*node) == FUNCTION_DECL)
+    TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (*node))
+      = TREE_USED (*node) = 1;
+  else
+    {
+      warning ("`%s' attribute ignored", IDENTIFIER_POINTER (name));
+      *no_add_attrs = true;
+    }
+
+  return NULL_TREE;
+}

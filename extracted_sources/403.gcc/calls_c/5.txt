@@ -1,0 +1,39 @@
+static int
+flags_from_decl_or_type (exp)
+     tree exp;
+{
+  int flags = 0;
+  tree type = exp;
+  /* ??? We can't set IS_MALLOC for function types?  */
+  if (DECL_P (exp))
+    {
+      type = TREE_TYPE (exp);
+
+      /* The function exp may have the `malloc' attribute.  */
+      if (DECL_P (exp) && DECL_IS_MALLOC (exp))
+	flags |= ECF_MALLOC;
+
+      /* The function exp may have the `pure' attribute.  */
+      if (DECL_P (exp) && DECL_IS_PURE (exp))
+	flags |= ECF_PURE | ECF_LIBCALL_BLOCK;
+
+      if (TREE_NOTHROW (exp))
+	flags |= ECF_NOTHROW;
+    }
+
+  if (TREE_READONLY (exp) && ! TREE_THIS_VOLATILE (exp))
+    flags |= ECF_CONST | ECF_LIBCALL_BLOCK;
+
+  if (TREE_THIS_VOLATILE (exp))
+    flags |= ECF_NORETURN;
+
+  /* Mark if the function returns with the stack pointer depressed.   We
+     cannot consider it pure or constant in that case.  */
+  if (TREE_CODE (type) == FUNCTION_TYPE && TYPE_RETURNS_STACK_DEPRESSED (type))
+    {
+      flags |= ECF_SP_DEPRESSED;
+      flags &= ~(ECF_PURE | ECF_CONST | ECF_LIBCALL_BLOCK);
+    }
+
+  return flags;
+}

@@ -1,0 +1,18 @@
+static int
+output_indirect_string (pfile, h, v)
+     struct cpp_reader *pfile ATTRIBUTE_UNUSED;
+     hashnode h;
+     const PTR v ATTRIBUTE_UNUSED;
+{
+  struct indirect_string_node *node = (struct indirect_string_node *) h;
+
+  if (node->form == DW_FORM_strp)
+    {
+      named_section_flags (DEBUG_STR_SECTION, DEBUG_STR_SECTION_FLAGS);
+      ASM_OUTPUT_LABEL (asm_out_file, node->label);
+      assemble_string ((const char *) HT_STR (&node->id),
+		       HT_LEN (&node->id) + 1);
+    }
+
+  return 1;
+}

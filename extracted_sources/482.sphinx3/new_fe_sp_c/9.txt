@@ -1,0 +1,30 @@
+void fe_mel_cep(fe_t *FE, double *mfspec, double *mfcep)
+{
+    int32 i,j;
+    int32 period;
+    float beta;
+
+    period = FE->MEL_FB->num_filters;
+
+    for (i=0;i<FE->MEL_FB->num_filters; ++i)
+    {
+	if (mfspec[i]>0)
+	    mfspec[i] = log(mfspec[i]);
+	else
+	    mfspec[i] = -1.0e+5;
+
+    }
+    
+    for (i=0; i< FE->NUM_CEPSTRA; ++i){
+	mfcep[i] = 0;
+	for (j=0;j<FE->MEL_FB->num_filters; j++){
+	    if (j==0)
+		beta = 0.5;
+	    else
+		beta = 1.0;
+	    mfcep[i] += beta*mfspec[j]*FE->MEL_FB->mel_cosine[i][j];
+	}
+		mfcep[i] /= (float)period;
+    }
+    return;
+}

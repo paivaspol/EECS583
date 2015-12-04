@@ -1,0 +1,52 @@
+void
+record_alias_subset (superset, subset)
+     HOST_WIDE_INT superset;
+     HOST_WIDE_INT subset;
+{
+  alias_set_entry superset_entry;
+  alias_set_entry subset_entry;
+
+  /* It is possible in complex type situations for both sets to be the same,
+     in which case we can ignore this operation.  */
+  if (superset == subset)
+    return;
+
+  if (superset == 0)
+    abort ();
+
+  superset_entry = get_alias_set_entry (superset);
+  if (superset_entry == 0) 
+    {
+      /* Create an entry for the SUPERSET, so that we have a place to
+	 attach the SUBSET.  */
+      superset_entry
+	= (alias_set_entry) xmalloc (sizeof (struct alias_set_entry));
+      superset_entry->alias_set = superset;
+      superset_entry->children 
+	= splay_tree_new (splay_tree_compare_ints, 0, 0);
+      superset_entry->has_zero_child = 0;
+      splay_tree_insert (alias_sets, (splay_tree_key) superset,
+			 (splay_tree_value) superset_entry);
+    }
+
+  if (subset == 0)
+    superset_entry->has_zero_child = 1;
+  else
+    {
+      subset_entry = get_alias_set_entry (subset);
+      /* If there is an entry for the subset, enter all of its children
+	 (if they are not already present) as children of the SUPERSET.  */
+      if (subset_entry) 
+	{
+	  if (subset_entry->has_zero_child)
+	    superset_entry->has_zero_child = 1;
+
+	  splay_tree_foreach (subset_entry->children, insert_subset_children,
+			      superset_entry->children);
+	}
+
+      /* Enter the SUBSET itself as a child of the SUPERSET.  */
+      splay_tree_insert (superset_entry->children, 
+			 (splay_tree_key) subset, 0);
+    }
+}

@@ -1,0 +1,25 @@
+static struct answer **
+find_answer (node, candidate)
+     cpp_hashnode *node;
+     const struct answer *candidate;
+{
+  unsigned int i;
+  struct answer **result;
+
+  for (result = &node->value.answers; *result; result = &(*result)->next)
+    {
+      struct answer *answer = *result;
+
+      if (answer->count == candidate->count)
+	{
+	  for (i = 0; i < answer->count; i++)
+	    if (! _cpp_equiv_tokens (&answer->first[i], &candidate->first[i]))
+	      break;
+
+	  if (i == answer->count)
+	    break;
+	}
+    }
+
+  return result;
+}

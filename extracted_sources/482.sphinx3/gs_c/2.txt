@@ -1,0 +1,69 @@
+int gs_display(char *file,gs_t *gs)
+{
+  int32 i;
+  int32 code_id;
+  int32 m_id,s_id,c_id;
+  float32 tmp;
+  bitvec_t bv;
+
+  E_INFO("Reading gaussian selector map: %s\n", file);
+  gs = (gs_t *) ckd_calloc (1, sizeof(gs_t));
+
+  if((gs->fp = fopen(file,"rb"))==NULL)
+    E_FATAL("fopen(%s,rb) failed\n",file);
+
+  gs->n_mgau=gs_fread_int32(gs);
+
+  E_INFO("The number of mixtures of gaussian: %d\n", gs->n_mgau);
+  gs->n_feat=gs_fread_int32(gs);
+  E_INFO("The number of features stream: %d\n", gs->n_feat);
+  gs->n_density=gs_fread_int32(gs);
+  E_INFO("The number of density: %d\n", gs->n_density);
+  gs->n_code=gs_fread_int32(gs);
+  E_INFO("The number of code word: %d\n", gs->n_code);
+  gs->n_featlen=gs_fread_int32(gs);
+  E_INFO("The feature length: %d\n", gs->n_featlen);
+
+  gs->n_mbyte=bitvec_uint32size(gs->n_density)*sizeof(uint32);
+  E_INFO("The number of byte to read: %d\n", gs->n_mbyte);
+
+  /* allocate the bit vector here */
+  bv=bitvec_alloc(gs->n_density);
+
+  /*  for(i=0;i<gs->n_code;i++)*/
+  for(code_id=0;code_id<gs->n_code;code_id++)
+    {
+      printf("Code idx: %d\n",code_id);
+      for (c_id=0;c_id<gs->n_featlen;c_id++)
+	{
+	  tmp=gs_fread_float32(gs);
+	  printf("%f ",tmp);
+	}
+      printf("\n");
+      for(m_id=0;m_id<gs->n_mgau;m_id++)
+	{
+	  for(s_id=0;s_id<gs->n_feat;s_id++)
+	    {
+	      /*The writer currently doesn't support the byte order*/
+	      gs_fread_bitvec_t(bv,gs);
+	      printf("%d %d ",m_id,s_id);
+
+	      for(i=0;i<gs->n_density;i++)
+		{
+		  if(bitvec_is_set(bv,i))
+		    {
+		      printf("%d ",i);
+		    }
+		}
+	      printf("\n");
+	    }
+	}
+    }
+
+  printf("\n");
+  /*  bitvec_free(bv);*/
+  /* destroy the bit vector here */
+  
+  gs_free(gs);
+  return 1;
+}

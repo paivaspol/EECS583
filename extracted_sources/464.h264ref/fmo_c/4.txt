@@ -1,0 +1,16 @@
+static void FmoGenerateType0MapUnitMap (ImageParameters * img, pic_parameter_set_rbsp_t * pps )
+{
+  unsigned iGroup, j;
+  unsigned i = 0;
+  do
+  {
+    for( iGroup = 0; 
+    (iGroup <= pps->num_slice_groups_minus1) && (i < PicSizeInMapUnits); 
+    i += pps->run_length_minus1[iGroup++] + 1)
+    {
+      for( j = 0; j <= pps->run_length_minus1[ iGroup ] && i + j < PicSizeInMapUnits; j++ )
+        MapUnitToSliceGroupMap[i+j] = iGroup;
+    }
+  }
+  while( i < PicSizeInMapUnits );
+}

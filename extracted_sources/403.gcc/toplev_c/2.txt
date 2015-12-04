@@ -1,0 +1,601 @@
+static void close_dump_file PARAMS ((enum dump_file_index,
+				     void (*) (FILE *, rtx), rtx));
+
+/* Other flags saying which kinds of debugging dump have been requested.  */
+
+int rtl_dump_and_exit;
+int flag_print_asm_name;
+static int version_flag;
+static char *filename;
+enum graph_dump_types graph_dump_format;
+
+/* Name for output file of assembly code, specified with -o.  */
+
+char *asm_file_name;
+
+/* Value of the -G xx switch, and whether it was passed or not.  */
+int g_switch_value;
+int g_switch_set;
+
+/* Type(s) of debugging information we are producing (if any).
+   See flags.h for the definitions of the different possible
+   types of debugging information.  */
+enum debug_info_type write_symbols = NO_DEBUG;
+
+/* Level of debugging information we are producing.  See flags.h
+   for the definitions of the different possible levels.  */
+enum debug_info_level debug_info_level = DINFO_LEVEL_NONE;
+
+/* Nonzero means use GNU-only extensions in the generated symbolic
+   debugging information.  */
+/* Currently, this only has an effect when write_symbols is set to
+   DBX_DEBUG, XCOFF_DEBUG, or DWARF_DEBUG.  */
+int use_gnu_debug_info_extensions = 0;
+
+/* Nonzero means do optimizations.  -O.
+   Particular numeric values stand for particular amounts of optimization;
+   thus, -O2 stores 2 here.  However, the optimizations beyond the basic
+   ones are not controlled directly by this variable.  Instead, they are
+   controlled by individual `flag_...' variables that are defaulted
+   based on this variable.  */
+
+int optimize = 3;	/* MJP */
+
+/* Nonzero means optimize for size.  -Os.
+   The only valid values are zero and non-zero. When optimize_size is
+   non-zero, optimize defaults to 2, but certain individual code
+   bloating optimizations are disabled.  */
+
+int optimize_size = 0;
+
+/* Nonzero if we should exit after parsing options.  */
+static int exit_after_options = 0;
+
+/* The FUNCTION_DECL for the function currently being compiled,
+   or 0 if between functions.  */
+tree current_function_decl;
+
+/* Set to the FUNC_BEGIN label of the current function, or NULL_TREE
+   if none.  */
+tree current_function_func_begin_label;
+
+/* Pointer to function to compute the name to use to print a declaration.
+   DECL is the declaration in question.
+   VERBOSITY determines what information will be printed:
+     0: DECL_NAME, demangled as necessary.
+     1: and scope information.
+     2: and any other information that might be interesting, such as function
+        parameter types in C++.  */
+
+const char *(*decl_printable_name)	PARAMS ((tree, int));
+
+/* Pointer to function to compute rtl for a language-specific tree code.  */
+
+typedef rtx (*lang_expand_expr_t)
+  PARAMS ((union tree_node *, rtx, enum machine_mode,
+	  enum expand_modifier modifier));
+
+lang_expand_expr_t lang_expand_expr = 0;
+
+/* Pointer to function to finish handling an incomplete decl at the
+   end of compilation.  */
+
+void (*incomplete_decl_finalize_hook) PARAMS ((tree)) = 0;
+
+/* Nonzero if doing dwarf2 duplicate elimination.  */
+
+int flag_eliminate_dwarf2_dups = 0;
+
+/* Nonzero if generating code to do profiling.  */
+
+int profile_flag = 0;
+
+/* Nonzero if generating code to profile program flow graph arcs.  */
+
+int profile_arc_flag = 0;
+
+/* Nonzero if generating info for gcov to calculate line test coverage.  */
+
+int flag_test_coverage = 0;
+
+/* Nonzero indicates that branch taken probabilities should be calculated.  */
+
+int flag_branch_probabilities = 0;
+
+/* Nonzero if basic blocks should be reordered.  */
+
+int flag_reorder_blocks = 0;
+
+/* Nonzero if registers should be renamed.  */
+
+int flag_rename_registers = 0;
+int flag_cprop_registers = 0;
+
+/* Nonzero for -pedantic switch: warn about anything
+   that standard spec forbids.  */
+
+int pedantic = 0;
+
+/* Temporarily suppress certain warnings.
+   This is set while reading code from a system header file.  */
+
+int in_system_header = 0;
+
+/* Don't print functions as they are compiled.  -quiet.  */
+
+int quiet_flag = 1;	/* SPEC_CPU */ /* MJP */
+
+/* Print times taken by the various passes.  -ftime-report.  */
+
+int time_report = 0;
+
+/* Print memory still in use at end of compilation (which may have little
+   to do with peak memory consumption).  -fmem-report.  */
+
+int mem_report = 0;
+
+/* Non-zero means to collect statistics which might be expensive
+   and to print them when we are done.  */
+int flag_detailed_statistics = 0;
+
+
+/* -f flags.  */
+
+/* Nonzero means `char' should be signed.  */
+
+int flag_signed_char;
+
+/* Nonzero means give an enum type only as many bytes as it needs.  */
+
+int flag_short_enums;
+
+/* Nonzero for -fcaller-saves: allocate values in regs that need to
+   be saved across function calls, if that produces overall better code.
+   Optional now, so people can test it.  */
+
+#ifdef DEFAULT_CALLER_SAVES
+int flag_caller_saves = 1;
+#else
+int flag_caller_saves = 0;
+#endif
+
+/* Nonzero if structures and unions should be returned in memory.
+
+   This should only be defined if compatibility with another compiler or
+   with an ABI is needed, because it results in slower code.  */
+
+#ifndef DEFAULT_PCC_STRUCT_RETURN
+#define DEFAULT_PCC_STRUCT_RETURN 1
+#endif
+
+/* Nonzero for -fpcc-struct-return: return values the same way PCC does.  */
+
+int flag_pcc_struct_return = DEFAULT_PCC_STRUCT_RETURN;
+
+/* Nonzero for -fforce-mem: load memory value into a register
+   before arithmetic on it.  This makes better cse but slower compilation.  */
+
+int flag_force_mem = 0;
+
+/* Nonzero for -fforce-addr: load memory address into a register before
+   reference to memory.  This makes better cse but slower compilation.  */
+
+int flag_force_addr = 1;	/* MJP */
+
+/* Nonzero for -fdefer-pop: don't pop args after each function call;
+   instead save them up to pop many calls' args with one insns.  */
+
+int flag_defer_pop = 0;
+
+/* Nonzero for -ffloat-store: don't allocate floats and doubles
+   in extended-precision registers.  */
+
+int flag_float_store = 0;
+
+/* Nonzero for -fcse-follow-jumps:
+   have cse follow jumps to do a more extensive job.  */
+
+int flag_cse_follow_jumps;
+
+/* Nonzero for -fcse-skip-blocks:
+   have cse follow a branch around a block.  */
+int flag_cse_skip_blocks;
+
+/* Nonzero for -fexpensive-optimizations:
+   perform miscellaneous relatively-expensive optimizations.  */
+int flag_expensive_optimizations;
+
+/* Nonzero for -fthread-jumps:
+   have jump optimize output of loop.  */
+
+int flag_thread_jumps;
+
+/* Nonzero enables strength-reduction in loop.c.  */
+
+int flag_strength_reduce = 0;
+
+/* Nonzero enables loop unrolling in unroll.c.  Only loops for which the
+   number of iterations can be calculated at compile-time (UNROLL_COMPLETELY,
+   UNROLL_MODULO) or at run-time (preconditioned to be UNROLL_MODULO) are
+   unrolled.  */
+
+int flag_unroll_loops;
+
+/* Nonzero enables loop unrolling in unroll.c.  All loops are unrolled.
+   This is generally not a win.  */
+
+int flag_unroll_all_loops;
+
+/* Nonzero enables prefetch optimizations for arrays in loops.  */
+
+int flag_prefetch_loop_arrays;
+
+/* Nonzero forces all invariant computations in loops to be moved
+   outside the loop.  */
+
+int flag_move_all_movables = 0;
+
+/* Nonzero forces all general induction variables in loops to be
+   strength reduced.  */
+
+int flag_reduce_all_givs = 0;
+
+/* Nonzero to perform full register move optimization passes.  This is the
+   default for -O2.  */
+
+int flag_regmove = 0;
+
+/* Nonzero for -fwritable-strings:
+   store string constants in data segment and don't uniquize them.  */
+
+int flag_writable_strings = 0;
+
+/* Nonzero means don't put addresses of constant functions in registers.
+   Used for compiling the Unix kernel, where strange substitutions are
+   done on the assembly output.  */
+
+int flag_no_function_cse = 0;
+
+/* Nonzero for -fomit-frame-pointer:
+   don't make a frame pointer in simple functions that don't require one.  */
+
+int flag_omit_frame_pointer = 1;	/* MJP */
+
+/* Nonzero means place each function into its own section on those platforms
+   which support arbitrary section names and unlimited numbers of sections.  */
+
+int flag_function_sections = 0;
+
+/* ... and similar for data.  */
+
+int flag_data_sections = 0;
+
+/* Nonzero to inhibit use of define_optimization peephole opts.  */
+
+int flag_no_peephole = 0;
+
+/* Nonzero allows GCC to optimize sibling and tail recursive calls.  */
+
+int flag_optimize_sibling_calls = 0;
+
+/* Nonzero means the front end generally wants `errno' maintained by math
+   operations, like built-in SQRT.  */
+
+int flag_errno_math = 1;
+
+/* Nonzero means that unsafe floating-point math optimizations are allowed
+   for the sake of speed.  IEEE compliance is not guaranteed, and operations
+   are allowed to assume that their arguments and results are "normal"
+   (e.g., nonnegative for SQRT).  */
+
+int flag_unsafe_math_optimizations = 1;		/* MJP */
+
+/* Zero means that floating-point math operations cannot generate a
+   (user-visible) trap.  This is the case, for example, in nonstop
+   IEEE 754 arithmetic.  */
+
+int flag_trapping_math = 1;
+
+/* 0 means straightforward implementation of complex divide acceptable.
+   1 means wide ranges of inputs must work for complex divide.
+   2 means C99-like requirements for complex divide (not yet implemented).  */
+
+int flag_complex_divide_method = 0;
+
+/* Nonzero means all references through pointers are volatile.  */
+
+int flag_volatile;
+
+/* Nonzero means treat all global and extern variables as volatile.  */
+
+int flag_volatile_global;
+
+/* Nonzero means treat all static variables as volatile.  */
+
+int flag_volatile_static;
+
+/* Nonzero means just do syntax checking; don't output anything.  */
+
+int flag_syntax_only = 0;
+
+/* Nonzero means perform global cse.  */
+
+static int flag_gcse;
+
+/* Nonzero means to use global dataflow analysis to eliminate
+   useless null pointer tests.  */
+
+static int flag_delete_null_pointer_checks;
+
+/* Nonzero means to do the enhanced load motion during gcse, which trys
+   to hoist loads by not killing them when a store to the same location
+   is seen.  */
+
+int flag_gcse_lm = 1;
+
+/* Nonzero means to perform store motion after gcse, which will try to
+   move stores closer to the exit block.  Its not very effective without
+   flag_gcse_lm.  */
+
+int flag_gcse_sm = 1;
+
+/* Nonzero means to rerun cse after loop optimization.  This increases
+   compilation time about 20% and picks up a few more common expressions.  */
+
+static int flag_rerun_cse_after_loop = 1;	/* MJP */
+
+/* Nonzero means to run loop optimizations twice.  */
+
+int flag_rerun_loop_opt = 1;			/* MJP */
+
+/* Nonzero for -finline-functions: ok to inline functions that look like
+   good inline candidates.  */
+
+int flag_inline_functions;
+
+/* Nonzero for -fkeep-inline-functions: even if we make a function
+   go inline everywhere, keep its definition around for debugging
+   purposes.  */
+
+int flag_keep_inline_functions;
+
+/* Nonzero means that functions will not be inlined.  */
+
+int flag_no_inline = 2;
+
+/* Nonzero means that we don't want inlining by virtue of -fno-inline,
+   not just because the tree inliner turned us off.  */
+
+int flag_really_no_inline = 2;
+
+/* Nonzero means that we should emit static const variables
+   regardless of whether or not optimization is turned on.  */
+
+int flag_keep_static_consts = 1;
+
+/* Nonzero means we should be saving declaration info into a .X file.  */
+
+int flag_gen_aux_info = 0;
+
+/* Specified name of aux-info file.  */
+
+static char *aux_info_file_name;
+
+/* Nonzero means make the text shared if supported.  */
+
+int flag_shared_data;
+
+/* Nonzero means schedule into delayed branch slots if supported.  */
+
+int flag_delayed_branch;
+
+/* Nonzero if we are compiling pure (sharable) code.
+   Value is 1 if we are doing reasonable (i.e. simple
+   offset into offset table) pic.  Value is 2 if we can
+   only perform register offsets.  */
+
+int flag_pic;
+
+/* Nonzero means generate extra code for exception handling and enable
+   exception handling.  */
+
+int flag_exceptions;
+
+/* Nonzero means generate frame unwind info table when supported.  */
+
+int flag_unwind_tables = 0;
+
+/* Nonzero means generate frame unwind info table exact at each insn boundary */
+
+int flag_asynchronous_unwind_tables = 0;
+
+/* Nonzero means don't place uninitialized global data in common storage
+   by default.  */
+
+int flag_no_common;
+
+/* Nonzero means pretend it is OK to examine bits of target floats,
+   even if that isn't true.  The resulting code will have incorrect constants,
+   but the same series of instructions that the native compiler would make.  */
+
+int flag_pretend_float;
+
+/* Nonzero means change certain warnings into errors.
+   Usually these are warnings about failure to conform to some standard.  */
+
+int flag_pedantic_errors = 0;
+
+/* flag_schedule_insns means schedule insns within basic blocks (before
+   local_alloc).
+   flag_schedule_insns_after_reload means schedule insns after
+   global_alloc.  */
+
+int flag_schedule_insns = 0;
+int flag_schedule_insns_after_reload = 0;
+
+/* The following flags have effect only for scheduling before register
+   allocation:
+
+   flag_schedule_interblock means schedule insns accross basic blocks.
+   flag_schedule_speculative means allow speculative motion of non-load insns.
+   flag_schedule_speculative_load means allow speculative motion of some
+   load insns.
+   flag_schedule_speculative_load_dangerous allows speculative motion of more
+   load insns.  */
+
+int flag_schedule_interblock = 1;
+int flag_schedule_speculative = 1;
+int flag_schedule_speculative_load = 0;
+int flag_schedule_speculative_load_dangerous = 0;
+
+int flag_single_precision_constant;
+
+/* flag_branch_on_count_reg means try to replace add-1,compare,branch tupple
+   by a cheaper branch on a count register.  */
+int flag_branch_on_count_reg = 1;
+
+/* -finhibit-size-directive inhibits output of .size for ELF.
+   This is used only for compiling crtstuff.c,
+   and it may be extended to other effects
+   needed for crtstuff.c on other systems.  */
+int flag_inhibit_size_directive = 0;
+
+/* -fverbose-asm causes extra commentary information to be produced in
+   the generated assembly code (to make it more readable).  This option
+   is generally only of use to those who actually need to read the
+   generated assembly code (perhaps while debugging the compiler itself).
+   -fno-verbose-asm, the default, causes the extra information
+   to be omitted and is useful when comparing two assembler files.  */
+
+int flag_verbose_asm = 0;
+
+/* -dA causes debug commentary information to be produced in
+   the generated assembly code (to make it more readable).  This option
+   is generally only of use to those who actually need to read the
+   generated assembly code (perhaps while debugging the compiler itself).
+   Currently, this switch is only used by dwarfout.c; however, it is intended
+   to be a catchall for printing debug information in the assembler file.  */
+
+int flag_debug_asm = 0;
+
+/* -dP causes the rtl to be emitted as a comment in assembly.  */
+
+int flag_dump_rtl_in_asm = 0;
+
+/* -fgnu-linker specifies use of the GNU linker for initializations.
+   (Or, more generally, a linker that handles initializations.)
+   -fno-gnu-linker says that collect2 will be used.  */
+#ifdef USE_COLLECT2
+int flag_gnu_linker = 0;
+#else
+int flag_gnu_linker = 1;
+#endif
+
+/* Enable SSA.  */
+int flag_ssa = 1;		/* MJP */
+
+/* Enable ssa conditional constant propagation.  */
+int flag_ssa_ccp = 0;		/* MJP */
+				/* wanted to set this, */
+				/* but it gave output errors */
+
+/* Enable ssa aggressive dead code elimination.  */
+int flag_ssa_dce = 1;		/* MJP */
+
+/* Tag all structures with __attribute__(packed).  */
+int flag_pack_struct = 0;
+
+/* Emit code to check for stack overflow; also may cause large objects
+   to be allocated dynamically.  */
+int flag_stack_check;
+
+/* When non-NULL, indicates that whenever space is allocated on the
+   stack, the resulting stack pointer must not pass this
+   address---that is, for stacks that grow downward, the stack pointer
+   must always be greater than or equal to this address; for stacks
+   that grow upward, the stack pointer must be less than this address.
+   At present, the rtx may be either a REG or a SYMBOL_REF, although
+   the support provided depends on the backend.  */
+rtx stack_limit_rtx;
+
+/* 0 if pointer arguments may alias each other.  True in C.
+   1 if pointer arguments may not alias each other but may alias
+   global variables.
+   2 if pointer arguments may not alias each other and may not
+   alias global variables.  True in Fortran.
+   This defaults to 0 for C.  */
+int flag_argument_noalias = 0;
+
+/* Nonzero if we should do (language-dependent) alias analysis.
+   Typically, this analysis will assume that expressions of certain
+   types do not alias expressions of certain other types.  Only used
+   if alias analysis (in general) is enabled.  */
+int flag_strict_aliasing = 0;
+
+/* Instrument functions with calls at entry and exit, for profiling.  */
+int flag_instrument_function_entry_exit = 0;
+
+/* Nonzero means ignore `#ident' directives.  0 means handle them.
+   On SVR4 targets, it also controls whether or not to emit a
+   string identifying the compiler.  */
+
+int flag_no_ident = 0;
+
+/* This will perform a peephole pass before sched2.  */
+int flag_peephole2 = 0;
+
+/* This will try to guess branch probabilities.  */
+int flag_guess_branch_prob = 0;
+
+/* -fbounded-pointers causes gcc to compile pointers as composite
+   objects occupying three words: the pointer value, the base address
+   of the referent object, and the address immediately beyond the end
+   of the referent object.  The base and extent allow us to perform
+   runtime bounds checking.  -fbounded-pointers implies -fcheck-bounds.  */
+int flag_bounded_pointers = 0;
+
+/* -fcheck-bounds causes gcc to generate array bounds checks.
+   For C, C++: defaults to value of flag_bounded_pointers.
+   For ObjC: defaults to off.
+   For Java: defaults to on.
+   For Fortran: defaults to off.
+   For CHILL: defaults to off.  */
+int flag_bounds_check = 0;
+
+/* This will attempt to merge constant section constants, if 1 only
+   string constants and constants from constant pool, if 2 also constant
+   variables.  */
+int flag_merge_constants = 1;
+
+/* If one, renumber instruction UIDs to reduce the number of
+   unused UIDs if there are a lot of instructions.  If greater than
+   one, unconditionally renumber instruction UIDs.  */
+int flag_renumber_insns = 1;
+
+/* Values of the -falign-* flags: how much to align labels in code.
+   0 means `use default', 1 means `don't align'.
+   For each variable, there is an _log variant which is the power
+   of two not less than the variable, for .align output.  */
+
+int align_loops;
+int align_loops_log;
+int align_loops_max_skip;
+int align_jumps;
+int align_jumps_log;
+int align_jumps_max_skip;
+int align_labels;
+int align_labels_log;
+int align_labels_max_skip;
+int align_functions;
+int align_functions_log;
+
+/* Table of supported debugging formats.  */
+static const struct
+{
+  const char *const arg;
+  /* Since PREFERRED_DEBUGGING_TYPE isn't necessarily a
+     constant expression, we use NO_DEBUG in its place.  */
+  const enum debug_info_type debug_type;
+  const int use_extensions_p;
+  const char *const description;
+} *da,

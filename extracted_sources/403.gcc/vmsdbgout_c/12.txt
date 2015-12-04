@@ -1,0 +1,94 @@
+static int
+write_rtnbeg (rtnnum, dosizeonly)
+     int rtnnum;
+     int dosizeonly;
+{
+  char *rtnname;
+  int rtnnamelen, rtnentrynamelen;
+  char *rtnentryname;
+  int totsize = 0;
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+  DST_ROUTINE_BEGIN rtnbeg;
+  DST_PROLOG prolog;
+
+  rtnname = func_table[rtnnum];
+  rtnnamelen = strlen (rtnname);
+  rtnentrynamelen = rtnnamelen + 4; /* "..en" */
+  rtnentryname = (char *) xmalloc (rtnentrynamelen + 1);
+  strcpy (rtnentryname, rtnname);
+  strcat (rtnentryname, "..en");
+
+  if (!strcmp (rtnname, "main"))
+    {
+      DST_HEADER header;
+      const char *go = "TRANSFER$BREAK$GO";
+
+      /* This command isn't documented in DSTRECORDS, so it's made to
+	 look like what DEC C does */
+
+      /* header size - 1st byte + flag byte + STO_LW size
+	 + string count byte + string length */
+      header.dst__header_length.dst_w_length
+        = DST_K_DST_HEADER_SIZE - 1 + 1 + 4 + 1 + strlen (go);
+      header.dst__header_type.dst_w_type = 0x17;
+
+      totsize += write_debug_header (&header, "transfer", dosizeonly);
+
+      /* I think this is a flag byte, but I don't know what this flag means */
+      totsize += write_debug_data1 (0x1, "flags ???", dosizeonly);
+
+      /* Routine Begin PD Address */
+      totsize += write_debug_addr (rtnname, "main procedure descriptor",
+				   dosizeonly);
+      totsize += write_debug_data1 (strlen (go), "length of main_name",
+				    dosizeonly);
+      totsize += write_debug_string ((char *) go, "main name", dosizeonly);
+    }
+
+  /* The header length never includes the length byte */
+  rtnbeg.dst_a_rtnbeg_header.dst__header_length.dst_w_length
+   = DST_K_RTNBEG_SIZE + rtnnamelen - 1;
+  rtnbeg.dst_a_rtnbeg_header.dst__header_type.dst_w_type = DST_K_RTNBEG;
+  rtnbeg.dst_b_rtnbeg_flags.dst_v_rtnbeg_unused = 0;
+  rtnbeg.dst_b_rtnbeg_flags.dst_v_rtnbeg_unalloc = 0;
+  rtnbeg.dst_b_rtnbeg_flags.dst_v_rtnbeg_prototype = 0;
+  rtnbeg.dst_b_rtnbeg_flags.dst_v_rtnbeg_inlined = 0;
+  rtnbeg.dst_b_rtnbeg_flags.dst_v_rtnbeg_no_call = 1;
+  rtnbeg.dst_b_rtnbeg_name = rtnnamelen;
+
+  totsize += write_debug_header (&rtnbeg.dst_a_rtnbeg_header, "rtnbeg",
+				 dosizeonly);
+  totsize += write_debug_data1 (*((char *) &rtnbeg.dst_b_rtnbeg_flags),
+				"flags", dosizeonly);
+
+  /* Routine Begin Address */
+  totsize += write_debug_addr (rtnentryname, "routine entry name", dosizeonly);
+
+  /* Routine Begin PD Address */
+  totsize += write_debug_addr (rtnname, "routine procedure descriptor",
+			       dosizeonly);
+
+  /* Routine Begin Name */
+  totsize += write_debug_data1 (rtnbeg.dst_b_rtnbeg_name,
+				"length of routine name", dosizeonly);
+
+  totsize += write_debug_string (rtnname, "routine name", dosizeonly);
+
+  free (rtnentryname);
+
+  if (debug_info_level > DINFO_LEVEL_TERSE)
+    {
+      prolog.dst_a_prolog_header.dst__header_length.dst_w_length
+	= DST_K_PROLOG_SIZE - 1;
+      prolog.dst_a_prolog_header.dst__header_type.dst_w_type = DST_K_PROLOG;
+
+      totsize += write_debug_header (&prolog.dst_a_prolog_header, "prolog",
+				     dosizeonly);
+
+      ASM_GENERATE_INTERNAL_LABEL (label, FUNC_PROLOG_LABEL, rtnnum);
+      totsize += write_debug_addr (label, "prolog breakpoint addr",
+				   dosizeonly);
+    }
+
+  return totsize;
+}

@@ -1,0 +1,85 @@
+void
+schedule_ebbs (dump_file)
+     FILE *dump_file;
+{
+  int i;
+
+  /* Taking care of this degenerate case makes the rest of
+     this code simpler.  */
+  if (n_basic_blocks == 0)
+    return;
+
+  scope_to_insns_initialize ();
+
+  sched_init (dump_file);
+
+  current_sched_info = &ebb_sched_info;
+
+  allocate_reg_life_data ();
+  compute_bb_for_insn (get_max_uid ());
+
+  /* Schedule every region in the subroutine.  */
+  for (i = 0; i < n_basic_blocks; i++)
+    { 
+      rtx head = BASIC_BLOCK (i)->head;
+      rtx tail;
+
+      for (;;)
+	{
+	  basic_block b = BASIC_BLOCK (i);
+	  edge e;
+	  tail = b->end;
+	  if (i + 1 == n_basic_blocks
+	      || GET_CODE (BLOCK_HEAD (i + 1)) == CODE_LABEL)
+	    break;
+	  for (e = b->succ; e; e = e->succ_next)
+	    if ((e->flags & EDGE_FALLTHRU) != 0)
+	      break;
+	  if (! e)
+	    break;
+	  if (GET_CODE (tail) == JUMP_INSN)
+	    {
+	      rtx x = find_reg_note (tail, REG_BR_PROB, 0);
+	      if (x)
+		{
+		  int pred_val = INTVAL (XEXP (x, 0));
+		  if (pred_val > REG_BR_PROB_BASE / 2)
+		    break;
+		}
+	    }
+
+	  i++;
+	}
+
+      /* Blah.  We should fix the rest of the code not to get confused by
+	 a note or two.  */
+      while (head != tail)
+	{
+	  if (GET_CODE (head) == NOTE)
+	    head = NEXT_INSN (head);
+	  else if (GET_CODE (tail) == NOTE)
+	    tail = PREV_INSN (tail);
+	  else if (GET_CODE (head) == CODE_LABEL)
+	    head = NEXT_INSN (head);
+	  else
+	    break;
+	}
+
+      schedule_ebb (head, tail);
+    }
+
+  /* It doesn't make much sense to try and update life information here - we
+     probably messed up even the flow graph.  */
+
+  /* Reposition the prologue and epilogue notes in case we moved the
+     prologue/epilogue insns.  */
+  if (reload_completed)
+    reposition_prologue_and_epilogue_notes (get_insns ());
+
+  if (write_symbols != NO_DEBUG)
+    rm_redundant_line_notes ();
+
+  scope_to_insns_finalize ();
+
+  sched_finish ();
+}

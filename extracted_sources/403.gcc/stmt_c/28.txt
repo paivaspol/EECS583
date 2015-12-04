@@ -1,0 +1,38 @@
+static bool
+check_unique_operand_names (outputs, inputs)
+     tree outputs, inputs;
+{
+  tree i, j;
+
+  for (i = outputs; i ; i = TREE_CHAIN (i))
+    {
+      tree i_name = TREE_PURPOSE (TREE_PURPOSE (i));
+      if (! i_name)
+	continue;
+
+      for (j = TREE_CHAIN (i); j ; j = TREE_CHAIN (j))
+	if (i_name == TREE_PURPOSE (TREE_PURPOSE (j)))
+	  goto failure;
+    }
+
+  for (i = inputs; i ; i = TREE_CHAIN (i))
+    {
+      tree i_name = TREE_PURPOSE (TREE_PURPOSE (i));
+      if (! i_name)
+	continue;
+
+      for (j = TREE_CHAIN (i); j ; j = TREE_CHAIN (j))
+	if (i_name == TREE_PURPOSE (TREE_PURPOSE (j)))
+	  goto failure;
+      for (j = outputs; j ; j = TREE_CHAIN (j))
+	if (i_name == TREE_PURPOSE (TREE_PURPOSE (j)))
+	  goto failure;
+    }
+
+  return true;
+
+ failure:
+  error ("duplicate asm operand name '%s'",
+	 IDENTIFIER_POINTER (TREE_PURPOSE (TREE_PURPOSE (i))));
+  return false;
+}

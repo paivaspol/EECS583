@@ -1,0 +1,39 @@
+void
+internal_error VPARAMS ((const char *msgid, ...))
+{
+  diagnostic_context dc;
+
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  if (diagnostic_lock)
+    error_recursion ();
+
+#ifndef ENABLE_CHECKING
+  if (errorcount > 0 || sorrycount > 0)
+    {
+      fnotice (stderr, "%s:%d: confused by earlier errors, bailing out\n",
+	       input_filename, lineno);
+      exit (FATAL_EXIT_CODE);
+    }
+#endif
+
+  if (internal_error_function != 0)
+    (*internal_error_function) (_(msgid), &ap);
+  
+  set_diagnostic_context
+    (&dc, msgid, &ap, input_filename, lineno, /* warn = */0);
+  report_diagnostic (&dc);
+  VA_CLOSE (ap);
+
+  fnotice (stderr,
+"It is possible that you may be trying to use SPEC's version of gcc \n\
+without first defining the appropriate flags.  Please check the flags \n\
+that are in the config files from recently-published results on your \n\
+platform, and check that you are using an up-to-date compiler.  If\n\
+you still need help, please contact SPEC, reporting your hw/os \n\
+platform, your compiler version, and your compilation flags.\n\
+Contact SPEC at %s\n", GCCBUGURL);
+/* MJP credit to Alexey */
+  exit (FATAL_EXIT_CODE);
+}

@@ -1,0 +1,43 @@
+void
+debug_bitmap_file (file, head)
+     FILE *file;
+     bitmap head;
+{
+  bitmap_element *ptr;
+
+  fprintf (file, "\nfirst = ");
+  fprintf (file, HOST_PTR_PRINTF, (PTR) head->first);
+  fprintf (file, " current = ");
+  fprintf (file, HOST_PTR_PRINTF, (PTR) head->current);
+  fprintf (file, " indx = %u\n", head->indx);
+
+  for (ptr = head->first; ptr; ptr = ptr->next)
+    {
+      int i, j, col = 26;
+
+      fprintf (file, "\t");
+      fprintf (file, HOST_PTR_PRINTF, (PTR) ptr);
+      fprintf (file, " next = ");
+      fprintf (file, HOST_PTR_PRINTF, (PTR) ptr->next);
+      fprintf (file, " prev = ");
+      fprintf (file, HOST_PTR_PRINTF, (PTR) ptr->prev);
+      fprintf (file, " indx = %u\n\t\tbits = {", ptr->indx);
+
+      for (i = 0; i < BITMAP_ELEMENT_WORDS; i++)
+	for (j = 0; j < HOST_BITS_PER_WIDE_INT; j++)
+	  if ((ptr->bits[i] >> j) & 1)
+	    {
+	      if (col > 70)
+		{
+		  fprintf (file, "\n\t\t\t");
+		  col = 24;
+		}
+
+	      fprintf (file, " %u", (ptr->indx * BITMAP_ELEMENT_ALL_BITS
+				     + i * HOST_BITS_PER_WIDE_INT + j));
+	      col += 4;
+	    }
+
+      fprintf (file, " }\n");
+    }
+}

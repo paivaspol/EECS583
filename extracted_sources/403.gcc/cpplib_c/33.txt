@@ -1,0 +1,43 @@
+static void
+do_pragma (pfile)
+     cpp_reader *pfile;
+{
+  const struct pragma_entry *p = NULL;
+  const cpp_token *token;
+  unsigned int count = 1;
+
+  pfile->state.prevent_expansion++;
+
+  token = cpp_get_token (pfile);
+  if (token->type == CPP_NAME)
+    {
+      p = lookup_pragma_entry (pfile->pragmas, token->val.node);
+      if (p && p->is_nspace)
+	{
+	  count = 2;
+	  token = cpp_get_token (pfile);
+	  if (token->type == CPP_NAME)
+	    p = lookup_pragma_entry (p->u.space, token->val.node);
+	  else
+	    p = NULL;
+	}
+    }
+
+  /* FIXME.  This is an awful kludge to get the front ends to update
+     their notion of line number for diagnostic purposes.  The line
+     number should be passed to the handler and they should do it
+     themselves.  Stand-alone CPP must ignore us, otherwise it will
+     prefix the directive with spaces, hence the 1.  Ugh.  */
+  if (pfile->cb.line_change)
+    (*pfile->cb.line_change)(pfile, token, 1);
+
+  if (p)
+    (*p->u.handler) (pfile);
+  else if (pfile->cb.def_pragma)
+    {
+      _cpp_backup_tokens (pfile, count);
+      (*pfile->cb.def_pragma) (pfile, pfile->directive_line);
+    }
+
+  pfile->state.prevent_expansion--;
+}

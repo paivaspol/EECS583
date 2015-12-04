@@ -1,0 +1,31 @@
+static tree
+strip_compound_expr (t, s)
+     tree t;
+     tree s;
+{
+  enum tree_code code = TREE_CODE (t);
+
+  /* See if this is the COMPOUND_EXPR we want to eliminate.  */
+  if (code == COMPOUND_EXPR && TREE_CODE (TREE_OPERAND (t, 0)) == CONVERT_EXPR
+      && TREE_OPERAND (TREE_OPERAND (t, 0), 0) == s)
+    return TREE_OPERAND (t, 1);
+
+  /* See if this is a COND_EXPR or a simple arithmetic operator.   We
+     don't bother handling any other types.  */
+  else if (code == COND_EXPR)
+    {
+      TREE_OPERAND (t, 0) = strip_compound_expr (TREE_OPERAND (t, 0), s);
+      TREE_OPERAND (t, 1) = strip_compound_expr (TREE_OPERAND (t, 1), s);
+      TREE_OPERAND (t, 2) = strip_compound_expr (TREE_OPERAND (t, 2), s);
+    }
+  else if (TREE_CODE_CLASS (code) == '1')
+    TREE_OPERAND (t, 0) = strip_compound_expr (TREE_OPERAND (t, 0), s);
+  else if (TREE_CODE_CLASS (code) == '<'
+	   || TREE_CODE_CLASS (code) == '2')
+    {
+      TREE_OPERAND (t, 0) = strip_compound_expr (TREE_OPERAND (t, 0), s);
+      TREE_OPERAND (t, 1) = strip_compound_expr (TREE_OPERAND (t, 1), s);
+    }
+
+  return t;
+}

@@ -1,0 +1,15 @@
+static void
+flush_queued_reg_saves ()
+{
+  struct queued_reg_save *q, *next;
+
+  for (q = queued_reg_saves; q ; q = next)
+    {
+      dwarf2out_reg_save (last_reg_save_label, REGNO (q->reg), q->cfa_offset);
+      next = q->next;
+      free (q);
+    }
+
+  queued_reg_saves = NULL;
+  last_reg_save_label = NULL;
+}

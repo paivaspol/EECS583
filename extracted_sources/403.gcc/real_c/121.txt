@@ -1,0 +1,79 @@
+static void
+etoudi (x, i)
+     const UEMUSHORT *x;
+     UEMUSHORT *i;
+{
+  UEMUSHORT xi[NI];
+  int j, k;
+
+  emovi (x, xi);
+  if (xi[0])
+    {
+      xi[M] = 0;
+      goto noshift;
+    }
+  k = (int) xi[E] - (EXONE - 1);
+  if (k <= 0)
+    {
+      for (j = 0; j < 4; j++)
+	*i++ = 0;
+      return;
+    }
+  if (k > 64)
+    {
+      for (j = 0; j < 4; j++)
+	*i++ = 0xffff;
+      if (extra_warnings)
+	warning ("overflow on truncation to integer");
+      return;
+    }
+  if (k > 16)
+    {
+      /* Shift more than 16 bits: first shift up k-16 mod 16,
+	 then shift up by 16's.  */
+      j = k - ((k >> 4) << 4);
+      if (j == 0)
+	j = 16;
+      eshift (xi, j);
+      if (WORDS_BIG_ENDIAN)
+	*i++ = xi[M];
+      else
+	{
+	  i += 3;
+	  *i-- = xi[M];
+	}
+      k -= j;
+      do
+	{
+	  eshup6 (xi);
+	  if (WORDS_BIG_ENDIAN)
+	    *i++ = xi[M];
+	  else
+	    *i-- = xi[M];
+	}
+      while ((k -= 16) > 0);
+    }
+  else
+    {
+        /* shift not more than 16 bits */
+      eshift (xi, k);
+
+noshift:
+
+      if (WORDS_BIG_ENDIAN)
+	{
+	  i += 3;
+	  *i-- = xi[M];
+	  *i-- = 0;
+	  *i-- = 0;
+	  *i = 0;
+	}
+      else
+	{
+	  *i++ = xi[M];
+	  *i++ = 0;
+	  *i++ = 0;
+	  *i = 0;
+	}
+    }
+}

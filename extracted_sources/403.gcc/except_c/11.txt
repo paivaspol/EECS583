@@ -1,0 +1,15 @@
+static struct eh_region *
+expand_eh_region_end ()
+{
+  struct eh_region *cur_region = cfun->eh->cur_region;
+  rtx note;
+
+  /* Create a note marking the end of this region.  */
+  note = emit_note (NULL, NOTE_INSN_EH_REGION_END);
+  NOTE_EH_HANDLER (note) = cur_region->region_number;
+
+  /* Pop.  */
+  cfun->eh->cur_region = cur_region->outer;
+
+  return cur_region;
+}

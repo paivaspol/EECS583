@@ -1,0 +1,92 @@
+static int
+special_function_p (fndecl, flags)
+     tree fndecl;
+     int flags;
+{
+  if (! (flags & ECF_MALLOC)
+      && fndecl && DECL_NAME (fndecl)
+      && IDENTIFIER_LENGTH (DECL_NAME (fndecl)) <= 17
+      /* Exclude functions not at the file scope, or not `extern',
+	 since they are not the magic functions we would otherwise
+	 think they are.  */
+      && DECL_CONTEXT (fndecl) == NULL_TREE && TREE_PUBLIC (fndecl))
+    {
+      const char *name = IDENTIFIER_POINTER (DECL_NAME (fndecl));
+      const char *tname = name;
+
+      /* We assume that alloca will always be called by name.  It
+	 makes no sense to pass it as a pointer-to-function to
+	 anything that does not understand its behavior.  */
+      if (((IDENTIFIER_LENGTH (DECL_NAME (fndecl)) == 6
+	    && name[0] == 'a'
+	    && ! strcmp (name, "alloca"))
+	   || (IDENTIFIER_LENGTH (DECL_NAME (fndecl)) == 16
+	       && name[0] == '_'
+	       && ! strcmp (name, "__builtin_alloca"))))
+	flags |= ECF_MAY_BE_ALLOCA;
+
+      /* Disregard prefix _, __ or __x.  */
+      if (name[0] == '_')
+	{
+	  if (name[1] == '_' && name[2] == 'x')
+	    tname += 3;
+	  else if (name[1] == '_')
+	    tname += 2;
+	  else
+	    tname += 1;
+	}
+
+      if (tname[0] == 's')
+	{
+	  if ((tname[1] == 'e'
+	       && (! strcmp (tname, "setjmp")
+		   || ! strcmp (tname, "setjmp_syscall")))
+	      || (tname[1] == 'i'
+		  && ! strcmp (tname, "sigsetjmp"))
+	      || (tname[1] == 'a'
+		  && ! strcmp (tname, "savectx")))
+	    flags |= ECF_RETURNS_TWICE;
+
+	  if (tname[1] == 'i'
+	      && ! strcmp (tname, "siglongjmp"))
+	    flags |= ECF_LONGJMP;
+	}
+      else if ((tname[0] == 'q' && tname[1] == 's'
+		&& ! strcmp (tname, "qsetjmp"))
+	       || (tname[0] == 'v' && tname[1] == 'f'
+		   && ! strcmp (tname, "vfork")))
+	flags |= ECF_RETURNS_TWICE;
+
+      else if (tname[0] == 'l' && tname[1] == 'o'
+	       && ! strcmp (tname, "longjmp"))
+	flags |= ECF_LONGJMP;
+
+      else if ((tname[0] == 'f' && tname[1] == 'o'
+		&& ! strcmp (tname, "fork"))
+	       /* Linux specific: __clone.  check NAME to insist on the
+		  leading underscores, to avoid polluting the ISO / POSIX
+		  namespace.  */
+	       || (name[0] == '_' && name[1] == '_'
+		   && ! strcmp (tname, "clone"))
+	       || (tname[0] == 'e' && tname[1] == 'x' && tname[2] == 'e'
+		   && tname[3] == 'c' && (tname[4] == 'l' || tname[4] == 'v')
+		   && (tname[5] == '\0'
+		       || ((tname[5] == 'p' || tname[5] == 'e')
+			   && tname[6] == '\0'))))
+	flags |= ECF_FORK_OR_EXEC;
+
+      /* Do not add any more malloc-like functions to this list,
+         instead mark them as malloc functions using the malloc attribute.
+         Note, realloc is not suitable for attribute malloc since
+         it may return the same address across multiple calls.
+         C++ operator new is not suitable because it is not required
+         to return a unique pointer; indeed, the standard placement new
+	 just returns its argument.  */
+      else if (TYPE_MODE (TREE_TYPE (TREE_TYPE (fndecl))) == Pmode
+	       && (! strcmp (tname, "malloc")
+		   || ! strcmp (tname, "calloc")
+		   || ! strcmp (tname, "strdup")))
+	flags |= ECF_MALLOC;
+    }
+  return flags;
+}

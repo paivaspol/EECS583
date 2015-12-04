@@ -1,0 +1,45 @@
+static tree
+handle_alias_attribute (node, name, args, flags, no_add_attrs)
+     tree *node;
+     tree name;
+     tree args;
+     int flags ATTRIBUTE_UNUSED;
+     bool *no_add_attrs;
+{
+  tree decl = *node;
+
+  if ((TREE_CODE (decl) == FUNCTION_DECL && DECL_INITIAL (decl))
+      || (TREE_CODE (decl) != FUNCTION_DECL && ! DECL_EXTERNAL (decl)))
+    {
+      error_with_decl (decl,
+		       "`%s' defined both normally and as an alias");
+      *no_add_attrs = true;
+    }
+  else if (decl_function_context (decl) == 0)
+    {
+      tree id;
+
+      id = TREE_VALUE (args);
+      if (TREE_CODE (id) != STRING_CST)
+	{
+	  error ("alias arg not a string");
+	  *no_add_attrs = true;
+	  return NULL_TREE;
+	}
+      id = get_identifier (TREE_STRING_POINTER (id));
+      /* This counts as a use of the object pointed to.  */
+      TREE_USED (id) = 1;
+
+      if (TREE_CODE (decl) == FUNCTION_DECL)
+	DECL_INITIAL (decl) = error_mark_node;
+      else
+	DECL_EXTERNAL (decl) = 0;
+    }
+  else
+    {
+      warning ("`%s' attribute ignored", IDENTIFIER_POINTER (name));
+      *no_add_attrs = true;
+    }
+
+  return NULL_TREE;
+}

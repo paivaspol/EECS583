@@ -1,0 +1,19 @@
+int
+sre_strcat(char **dest, int ldest, char *src, int lsrc)
+{
+  int   len1, len2;
+
+  if (ldest < 0) len1 = ((*dest == NULL) ? 0 : strlen(*dest));
+  else           len1 = ldest;
+
+  if (lsrc < 0)  len2 = ((  src == NULL) ? 0 : strlen(src)); 
+  else           len2 = lsrc;
+
+  if (len2 == 0) return len1;
+
+  if (*dest == NULL) *dest = MallocOrDie(sizeof(char) * (len2+1));
+  else               *dest = ReallocOrDie(*dest, sizeof(char) * (len1+len2+1));
+
+  memcpy((*dest)+len1, src, len2+1);
+  return len1+len2;
+}

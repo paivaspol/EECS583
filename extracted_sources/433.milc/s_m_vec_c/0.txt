@@ -1,0 +1,24 @@
+void scalar_mult_su3_vector( su3_vector *a, double s, su3_vector *c){
+
+#ifndef NATIVEDOUBLE
+register int i;
+    for(i=0;i<3;i++){
+	c->c[i].real = s*a->c[i].real;
+	c->c[i].imag = s*a->c[i].imag;
+    }
+
+#else /* RS6000 version */
+
+  register double ss;
+
+  ss = s;
+
+  c->c[0].real = ss*a->c[0].real;
+  c->c[0].imag = ss*a->c[0].imag;
+  c->c[1].real = ss*a->c[1].real;
+  c->c[1].imag = ss*a->c[1].imag;
+  c->c[2].real = ss*a->c[2].real;
+  c->c[2].imag = ss*a->c[2].imag;
+
+#endif
+}

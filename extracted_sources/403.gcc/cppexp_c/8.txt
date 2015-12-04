@@ -1,0 +1,23 @@
+static HOST_WIDEST_INT
+left_shift (pfile, a, unsignedp, b)
+     cpp_reader *pfile;
+     HOST_WIDEST_INT a;
+     unsigned int unsignedp;
+     unsigned HOST_WIDEST_INT b;
+{
+  if (b >= HOST_BITS_PER_WIDEST_INT)
+    {
+      if (! unsignedp && a != 0)
+	integer_overflow (pfile);
+      return 0;
+    }
+  else if (unsignedp)
+    return (unsigned HOST_WIDEST_INT) a << b;
+  else
+    {
+      HOST_WIDEST_INT l = a << b;
+      if (l >> b != a)
+	integer_overflow (pfile);
+      return l;
+    }
+}

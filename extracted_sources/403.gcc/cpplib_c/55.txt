@@ -1,0 +1,32 @@
+static void
+do_unassert (pfile)
+     cpp_reader *pfile;
+{
+  cpp_hashnode *node;
+  struct answer *answer;
+  
+  node = parse_assertion (pfile, &answer, T_UNASSERT);
+  /* It isn't an error to #unassert something that isn't asserted.  */
+  if (node && node->type == NT_ASSERTION)
+    {
+      if (answer)
+	{
+	  struct answer **p = find_answer (node, answer), *temp;
+
+	  /* Remove the answer from the list.  */
+	  temp = *p;
+	  if (temp)
+	    *p = temp->next;
+
+	  /* Did we free the last answer?  */
+	  if (node->value.answers == 0)
+	    node->type = NT_VOID;
+
+	  check_eol (pfile);
+	}
+      else
+	_cpp_free_definition (node);
+    }
+
+  /* We don't commit the memory for the answer - it's temporary only.  */
+}

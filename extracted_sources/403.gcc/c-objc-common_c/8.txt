@@ -1,0 +1,38 @@
+void
+c_objc_common_finish_file ()
+{
+  expand_deferred_fns ();
+
+  if (static_ctors)
+    {
+      tree body = start_cdtor ('I');
+
+      for (; static_ctors; static_ctors = TREE_CHAIN (static_ctors))
+	c_expand_expr_stmt (build_function_call (TREE_VALUE (static_ctors),
+						 NULL_TREE));
+
+      finish_cdtor (body);
+    }
+
+  if (static_dtors)
+    {
+      tree body = start_cdtor ('D');
+
+      for (; static_dtors; static_dtors = TREE_CHAIN (static_dtors))
+	c_expand_expr_stmt (build_function_call (TREE_VALUE (static_dtors),
+						 NULL_TREE));
+
+      finish_cdtor (body);
+    }
+
+  {
+    int flags;
+    FILE *stream = dump_begin (TDI_all, &flags);
+
+    if (stream)
+      {
+	dump_node (getdecls (), flags & ~TDF_SLIM, stream);
+	dump_end (TDI_all, stream);
+      }
+  }
+}

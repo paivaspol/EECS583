@@ -1,0 +1,80 @@
+int
+main(int argc, char **argv)
+{
+  char      name[32], accession[32];
+  SSIINDEX *ssi;
+  int       mode;
+  SSIOFFSET r_off, d_off;
+  FILE     *ofp;
+  int       i;
+  int       fh;			/* a file handle */
+  int       status;		/* return status from a SSI call */
+  
+  mode = SSI_OFFSET_I32;
+  if ((ssi = SSICreateIndex(mode)) == NULL)
+    Die("Failed to allocate SSI index");
+
+  /* Generate two FASTA files, tmp.0 and tmp.1, and index them.
+   */
+  if ((ofp = fopen("tmp.0", "w")) == NULL) 
+    Die("failed to open tmp.0");
+  if ((status = SSIAddFileToIndex(ssi, "tmp.0", SQFILE_FASTA, &fh)) != 0)
+    Die("SSIAddFileToIndex() failed: %s", SSIErrorString(status));
+  for (i = 0; i < 10; i++) {
+    if ((status = SSIGetFilePosition(ofp, mode, &r_off)) != 0)
+      Die("SSIGetFilePosition() failed: %s", SSIErrorString(status));
+    sprintf(name, "seq%d", i);
+    sprintf(accession, "ac%d", i);
+    fprintf(ofp, ">%s [%s] Description? we don't need no steenking description.\n", 
+	    name, accession);
+    if ((status = SSIGetFilePosition(ofp, mode, &d_off)) != 0) 
+      Die("SSIGetFilePosition() failed: %s", SSIErrorString(status));
+    fprintf(ofp, "AAAAAAAAAA\n");
+    fprintf(ofp, "CCCCCCCCCC\n");
+    fprintf(ofp, "GGGGGGGGGG\n");
+    fprintf(ofp, "TTTTTTTTTT\n");
+
+    if ((status = SSIAddPrimaryKeyToIndex(ssi, name, fh, &r_off, &d_off, 40)) != 0)
+      Die("SSIAddPrimaryKeyToIndex() failed: %s", SSIErrorString(status));
+    if ((status = SSIAddSecondaryKeyToIndex(ssi, accession, name)) != 0)
+      Die("SSIAddSecondaryKeyToIndex() failed: %s", SSIErrorString(status));
+  }
+  SSISetFileForSubseq(ssi, fh, 11, 10);
+  fclose(ofp);
+  
+  if ((ofp = fopen("tmp.1", "w")) == NULL) 
+    Die("failed to open tmp.1");
+  if ((status = SSIAddFileToIndex(ssi, "tmp.1", SQFILE_FASTA, &fh)) != 0)
+    Die("SSIAddFileToIndex() failed: %s", SSIErrorString(status));
+  for (i = 10; i < 20; i++) {
+    if ((status = SSIGetFilePosition(ofp, mode, &r_off)) != 0)
+      Die("SSIGetFilePosition() failed: %s", SSIErrorString(status));
+    sprintf(name, "seq%d", i);
+    sprintf(accession, "ac%d", i);
+    fprintf(ofp, ">%s [%s] i/o, i/o, it's off to disk we go.\n", 
+	    name, accession);
+    if ((status = SSIGetFilePosition(ofp, mode, &d_off)) != 0)
+      Die("SSIGetFilePosition() failed: %s", SSIErrorString(status));
+    fprintf(ofp, "AAAAAAAAAA 10\n");
+    fprintf(ofp, "CCCCCCCCCC 20\n");
+    fprintf(ofp, "GGGGGGGGGG 30\n");
+    fprintf(ofp, "TTTTTTTTTT 40\n");
+
+    if ((status = SSIAddPrimaryKeyToIndex(ssi, name, fh, &r_off, &d_off, 40)) != 0)
+      Die("SSIAddPrimaryKeyToIndex() failed: %s", SSIErrorString(status));
+    if ((status = SSIAddSecondaryKeyToIndex(ssi, accession, name)) != 0)
+      Die("SSIAddSecondaryKeyToIndex() failed: %s", SSIErrorString(status));
+  }
+  SSISetFileForSubseq(ssi, fh, 14, 10);
+  fclose(ofp);
+  
+  /* Write the index to tmp.ssi
+   */  
+  if ((status = SSIWriteIndex("tmp.ssi", ssi)) != 0) 
+    Die("SSIWriteIndex() failed: %s", SSIErrorString(status));
+  SSIFreeIndex(ssi);
+
+  /* Now reopen the index and run some tests.
+   */
+  exit(0);
+}

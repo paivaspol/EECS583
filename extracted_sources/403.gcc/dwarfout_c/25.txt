@@ -1,0 +1,30 @@
+static void
+output_loc_descriptor (rtl)
+     rtx rtl;
+{
+  switch (GET_CODE (rtl))
+    {
+    case SUBREG:
+
+	/* The case of a subreg may arise when we have a local (register)
+	   variable or a formal (register) parameter which doesn't quite
+	   fill up an entire register.	For now, just assume that it is
+	   legitimate to make the Dwarf info refer to the whole register
+	   which contains the given subreg.  */
+
+	rtl = SUBREG_REG (rtl);
+	/* Drop thru.  */
+
+    case REG:
+	ASM_OUTPUT_DWARF_STACK_OP (asm_out_file, OP_REG);
+	output_reg_number (rtl);
+	break;
+
+    case MEM:
+      output_mem_loc_descriptor (XEXP (rtl, 0));
+      break;
+
+    default:
+      abort ();		/* Should never happen */
+    }
+}

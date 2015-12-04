@@ -1,0 +1,34 @@
+static heapnode_t *subheap_pop (heapnode_t *root)
+{
+    heapnode_t *l, *r;
+
+    /* Propagate best value from below into root, if any */
+    l = root->l;
+    r = root->r;
+
+    if (! l) {
+	if (! r) {
+	    myfree ((char *) root, sizeof(heapnode_t));
+	    return NULL;
+	} else {
+	    root->data = r->data;
+	    root->val = r->val;
+	    root->r = subheap_pop (r);
+	    root->nr--;
+	}
+    } else {
+	if ((! r) || (l->val < r->val)) {
+	    root->data = l->data;
+	    root->val = l->val;
+	    root->l = subheap_pop (l);
+	    root->nl--;
+	} else {
+	    root->data = r->data;
+	    root->val = r->val;
+	    root->r = subheap_pop (r);
+	    root->nr--;
+	}
+    }
+
+    return root;
+}

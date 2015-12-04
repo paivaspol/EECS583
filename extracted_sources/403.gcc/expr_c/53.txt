@@ -1,0 +1,279 @@
+static rtx
+do_store_flag (exp, target, mode, only_cheap)
+     tree exp;
+     rtx target;
+     enum machine_mode mode;
+     int only_cheap;
+{
+  enum rtx_code code;
+  tree arg0, arg1, type;
+  tree tem;
+  enum machine_mode operand_mode;
+  int invert = 0;
+  int unsignedp;
+  rtx op0, op1;
+  enum insn_code icode;
+  rtx subtarget = target;
+  rtx result, label;
+
+  /* If this is a TRUTH_NOT_EXPR, set a flag indicating we must invert the
+     result at the end.  We can't simply invert the test since it would
+     have already been inverted if it were valid.  This case occurs for
+     some floating-point comparisons.  */
+
+  if (TREE_CODE (exp) == TRUTH_NOT_EXPR)
+    invert = 1, exp = TREE_OPERAND (exp, 0);
+
+  arg0 = TREE_OPERAND (exp, 0);
+  arg1 = TREE_OPERAND (exp, 1);
+
+  /* Don't crash if the comparison was erroneous.  */
+  if (arg0 == error_mark_node || arg1 == error_mark_node)
+    return const0_rtx;
+
+  type = TREE_TYPE (arg0);
+  operand_mode = TYPE_MODE (type);
+  unsignedp = TREE_UNSIGNED (type);
+
+  /* We won't bother with BLKmode store-flag operations because it would mean
+     passing a lot of information to emit_store_flag.  */
+  if (operand_mode == BLKmode)
+    return 0;
+
+  /* We won't bother with store-flag operations involving function pointers
+     when function pointers must be canonicalized before comparisons.  */
+#ifdef HAVE_canonicalize_funcptr_for_compare
+  if (HAVE_canonicalize_funcptr_for_compare
+      && ((TREE_CODE (TREE_TYPE (TREE_OPERAND (exp, 0))) == POINTER_TYPE
+	   && (TREE_CODE (TREE_TYPE (TREE_TYPE (TREE_OPERAND (exp, 0))))
+	       == FUNCTION_TYPE))
+	  || (TREE_CODE (TREE_TYPE (TREE_OPERAND (exp, 1))) == POINTER_TYPE
+	      && (TREE_CODE (TREE_TYPE (TREE_TYPE (TREE_OPERAND (exp, 1))))
+		  == FUNCTION_TYPE))))
+    return 0;
+#endif
+
+  STRIP_NOPS (arg0);
+  STRIP_NOPS (arg1);
+
+  /* Get the rtx comparison code to use.  We know that EXP is a comparison
+     operation of some type.  Some comparisons against 1 and -1 can be
+     converted to comparisons with zero.  Do so here so that the tests
+     below will be aware that we have a comparison with zero.   These
+     tests will not catch constants in the first operand, but constants
+     are rarely passed as the first operand.  */
+
+  switch (TREE_CODE (exp))
+    {
+    case EQ_EXPR:
+      code = EQ;
+      break;
+    case NE_EXPR:
+      code = NE;
+      break;
+    case LT_EXPR:
+      if (integer_onep (arg1))
+	arg1 = integer_zero_node, code = unsignedp ? LEU : LE;
+      else
+	code = unsignedp ? LTU : LT;
+      break;
+    case LE_EXPR:
+      if (! unsignedp && integer_all_onesp (arg1))
+	arg1 = integer_zero_node, code = LT;
+      else
+	code = unsignedp ? LEU : LE;
+      break;
+    case GT_EXPR:
+      if (! unsignedp && integer_all_onesp (arg1))
+	arg1 = integer_zero_node, code = GE;
+      else
+	code = unsignedp ? GTU : GT;
+      break;
+    case GE_EXPR:
+      if (integer_onep (arg1))
+	arg1 = integer_zero_node, code = unsignedp ? GTU : GT;
+      else
+	code = unsignedp ? GEU : GE;
+      break;
+
+    case UNORDERED_EXPR:
+      code = UNORDERED;
+      break;
+    case ORDERED_EXPR:
+      code = ORDERED;
+      break;
+    case UNLT_EXPR:
+      code = UNLT;
+      break;
+    case UNLE_EXPR:
+      code = UNLE;
+      break;
+    case UNGT_EXPR:
+      code = UNGT;
+      break;
+    case UNGE_EXPR:
+      code = UNGE;
+      break;
+    case UNEQ_EXPR:
+      code = UNEQ;
+      break;
+
+    default:
+      abort ();
+    }
+
+  /* Put a constant second.  */
+  if (TREE_CODE (arg0) == REAL_CST || TREE_CODE (arg0) == INTEGER_CST)
+    {
+      tem = arg0; arg0 = arg1; arg1 = tem;
+      code = swap_condition (code);
+    }
+
+  /* If this is an equality or inequality test of a single bit, we can
+     do this by shifting the bit being tested to the low-order bit and
+     masking the result with the constant 1.  If the condition was EQ,
+     we xor it with 1.  This does not require an scc insn and is faster
+     than an scc insn even if we have it.  */
+
+  if ((code == NE || code == EQ)
+      && TREE_CODE (arg0) == BIT_AND_EXPR && integer_zerop (arg1)
+      && integer_pow2p (TREE_OPERAND (arg0, 1)))
+    {
+      tree inner = TREE_OPERAND (arg0, 0);
+      int bitnum = tree_log2 (TREE_OPERAND (arg0, 1));
+      int ops_unsignedp;
+
+      /* If INNER is a right shift of a constant and it plus BITNUM does
+	 not overflow, adjust BITNUM and INNER.  */
+
+      if (TREE_CODE (inner) == RSHIFT_EXPR
+	  && TREE_CODE (TREE_OPERAND (inner, 1)) == INTEGER_CST
+	  && TREE_INT_CST_HIGH (TREE_OPERAND (inner, 1)) == 0
+	  && bitnum < TYPE_PRECISION (type)
+	  && 0 > compare_tree_int (TREE_OPERAND (inner, 1),
+				   bitnum - TYPE_PRECISION (type)))
+	{
+	  bitnum += TREE_INT_CST_LOW (TREE_OPERAND (inner, 1));
+	  inner = TREE_OPERAND (inner, 0);
+	}
+
+      /* If we are going to be able to omit the AND below, we must do our
+	 operations as unsigned.  If we must use the AND, we have a choice.
+	 Normally unsigned is faster, but for some machines signed is.  */
+      ops_unsignedp = (bitnum == TYPE_PRECISION (type) - 1 ? 1
+#ifdef LOAD_EXTEND_OP
+		       : (LOAD_EXTEND_OP (operand_mode) == SIGN_EXTEND ? 0 : 1)
+#else
+		       : 1
+#endif
+		       );
+
+      if (! get_subtarget (subtarget)
+	  || GET_MODE (subtarget) != operand_mode
+	  || ! safe_from_p (subtarget, inner, 1))
+	subtarget = 0;
+
+      op0 = expand_expr (inner, subtarget, VOIDmode, 0);
+
+      if (bitnum != 0)
+	op0 = expand_shift (RSHIFT_EXPR, operand_mode, op0,
+			    size_int (bitnum), subtarget, ops_unsignedp);
+
+      if (GET_MODE (op0) != mode)
+	op0 = convert_to_mode (mode, op0, ops_unsignedp);
+
+      if ((code == EQ && ! invert) || (code == NE && invert))
+	op0 = expand_binop (mode, xor_optab, op0, const1_rtx, subtarget,
+			    ops_unsignedp, OPTAB_LIB_WIDEN);
+
+      /* Put the AND last so it can combine with more things.  */
+      if (bitnum != TYPE_PRECISION (type) - 1)
+	op0 = expand_and (mode, op0, const1_rtx, subtarget);
+
+      return op0;
+    }
+
+  /* Now see if we are likely to be able to do this.  Return if not.  */
+  if (! can_compare_p (code, operand_mode, ccp_store_flag))
+    return 0;
+
+  icode = setcc_gen_code[(int) code];
+  if (icode == CODE_FOR_nothing
+      || (only_cheap && insn_data[(int) icode].operand[0].mode != mode))
+    {
+      /* We can only do this if it is one of the special cases that
+	 can be handled without an scc insn.  */
+      if ((code == LT && integer_zerop (arg1))
+	  || (! only_cheap && code == GE && integer_zerop (arg1)))
+	;
+      else if (BRANCH_COST >= 0
+	       && ! only_cheap && (code == NE || code == EQ)
+	       && TREE_CODE (type) != REAL_TYPE
+	       && ((abs_optab->handlers[(int) operand_mode].insn_code
+		    != CODE_FOR_nothing)
+		   || (ffs_optab->handlers[(int) operand_mode].insn_code
+		       != CODE_FOR_nothing)))
+	;
+      else
+	return 0;
+    }
+
+  if (! get_subtarget (target)
+      || GET_MODE (subtarget) != operand_mode
+      || ! safe_from_p (subtarget, arg1, 1))
+    subtarget = 0;
+
+  op0 = expand_expr (arg0, subtarget, VOIDmode, 0);
+  op1 = expand_expr (arg1, NULL_RTX, VOIDmode, 0);
+
+  if (target == 0)
+    target = gen_reg_rtx (mode);
+
+  /* Pass copies of OP0 and OP1 in case they contain a QUEUED.  This is safe
+     because, if the emit_store_flag does anything it will succeed and
+     OP0 and OP1 will not be used subsequently.  */
+
+  result = emit_store_flag (target, code,
+			    queued_subexp_p (op0) ? copy_rtx (op0) : op0,
+			    queued_subexp_p (op1) ? copy_rtx (op1) : op1,
+			    operand_mode, unsignedp, 1);
+
+  if (result)
+    {
+      if (invert)
+	result = expand_binop (mode, xor_optab, result, const1_rtx,
+			       result, 0, OPTAB_LIB_WIDEN);
+      return result;
+    }
+
+  /* If this failed, we have to do this with set/compare/jump/set code.  */
+  if (GET_CODE (target) != REG
+      || reg_mentioned_p (target, op0) || reg_mentioned_p (target, op1))
+    target = gen_reg_rtx (GET_MODE (target));
+
+  emit_move_insn (target, invert ? const0_rtx : const1_rtx);
+  result = compare_from_rtx (op0, op1, code, unsignedp,
+			     operand_mode, NULL_RTX);
+  if (GET_CODE (result) == CONST_INT)
+    return (((result == const0_rtx && ! invert)
+	     || (result != const0_rtx && invert))
+	    ? const0_rtx : const1_rtx);
+
+  /* The code of RESULT may not match CODE if compare_from_rtx
+     decided to swap its operands and reverse the original code.
+
+     We know that compare_from_rtx returns either a CONST_INT or
+     a new comparison code, so it is safe to just extract the
+     code from RESULT.  */
+  code = GET_CODE (result);
+
+  label = gen_label_rtx ();
+  if (bcc_gen_fctn[(int) code] == 0)
+    abort ();
+
+  emit_jump_insn ((*bcc_gen_fctn[(int) code]) (label));
+  emit_move_insn (target, invert ? const1_rtx : const0_rtx);
+  emit_label (label);
+
+  return target;
+}

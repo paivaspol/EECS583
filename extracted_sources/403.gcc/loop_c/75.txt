@@ -1,0 +1,19 @@
+void
+loop_iv_add_mult_hoist (loop, b, m, a, reg)
+     const struct loop *loop;
+     rtx b;          /* initial value of basic induction variable */
+     rtx m;          /* multiplicative constant */
+     rtx a;          /* additive constant */
+     rtx reg;        /* destination register */
+{
+  rtx seq;
+
+  /* Use copy_rtx to prevent unexpected sharing of these rtx.  */
+  seq = gen_add_mult (copy_rtx (b), copy_rtx (m), copy_rtx (a), reg);
+
+  loop_insn_hoist (loop, seq);
+
+  /* It is possible that the expansion created lots of new registers.
+     Iterate over the sequence we just created and record them all.  */
+  loop_regs_update (loop, seq);
+}

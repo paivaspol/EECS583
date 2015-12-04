@@ -1,0 +1,12 @@
+int
+HMMFileRead(HMMFILE *hmmfp, struct plan7_s **ret_hmm)
+{
+  int status;
+				/* Set the disk position marker. */
+  if (hmmfp->is_seekable) {
+    status = SSIGetFilePosition(hmmfp->f, hmmfp->mode, &(hmmfp->offset));
+    if (status != 0) Die("SSIGetFilePosition() failed");
+  }
+				/* Parse the HMM and return it. */
+  return (*hmmfp->parser)(hmmfp, ret_hmm);
+}

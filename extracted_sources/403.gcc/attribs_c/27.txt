@@ -1,0 +1,70 @@
+void
+split_specs_attrs (specs_attrs, declspecs, prefix_attributes)
+     tree specs_attrs;
+     tree *declspecs, *prefix_attributes;
+{
+  tree t, s, a, next, specs, attrs;
+
+  /* This can happen after an __extension__ in pedantic mode.  */
+  if (specs_attrs != NULL_TREE 
+      && TREE_CODE (specs_attrs) == INTEGER_CST)
+    {
+      *declspecs = NULL_TREE;
+      *prefix_attributes = NULL_TREE;
+      return;
+    }
+
+  /* This can happen in c++ (eg: decl: typespec initdecls ';').  */
+  if (specs_attrs != NULL_TREE
+      && TREE_CODE (specs_attrs) != TREE_LIST)
+    {
+      *declspecs = specs_attrs;
+      *prefix_attributes = NULL_TREE;
+      return;
+    }
+
+  /* Remember to keep the lists in the same order, element-wise.  */
+
+  specs = s = NULL_TREE;
+  attrs = a = NULL_TREE;
+  for (t = specs_attrs; t; t = next)
+    {
+      next = TREE_CHAIN (t);
+      /* Declspecs have a non-NULL TREE_VALUE.  */
+      if (TREE_VALUE (t) != NULL_TREE)
+	{
+	  if (specs == NULL_TREE)
+	    specs = s = t;
+	  else
+	    {
+	      TREE_CHAIN (s) = t;
+	      s = t;
+	    }
+	}
+      /* The TREE_PURPOSE may also be empty in the case of
+	 __attribute__(()).  */
+      else if (TREE_PURPOSE (t) != NULL_TREE)
+	{
+	  if (attrs == NULL_TREE)
+	    attrs = a = TREE_PURPOSE (t);
+	  else
+	    {
+	      TREE_CHAIN (a) = TREE_PURPOSE (t);
+	      a = TREE_PURPOSE (t);
+	    }
+	  /* More attrs can be linked here, move A to the end.  */
+	  while (TREE_CHAIN (a) != NULL_TREE)
+	    a = TREE_CHAIN (a);
+	}
+    }
+
+  /* Terminate the lists.  */
+  if (s != NULL_TREE)
+    TREE_CHAIN (s) = NULL_TREE;
+  if (a != NULL_TREE)
+    TREE_CHAIN (a) = NULL_TREE;
+
+  /* All done.  */
+  *declspecs = specs;
+  *prefix_attributes = attrs;
+}

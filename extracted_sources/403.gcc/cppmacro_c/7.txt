@@ -1,0 +1,166 @@
+static _cpp_buff *
+collect_args (pfile, node)
+     cpp_reader *pfile;
+     const cpp_hashnode *node;
+{
+  _cpp_buff *buff, *base_buff;
+  cpp_macro *macro;
+  macro_arg *args, *arg;
+  const cpp_token *token;
+  unsigned int argc;
+  bool error = false;
+
+  macro = node->value.macro;
+  if (macro->paramc)
+    argc = macro->paramc;
+  else
+    argc = 1;
+  buff = _cpp_get_buff (pfile, argc * (50 * sizeof (cpp_token *)
+				       + sizeof (macro_arg)));
+  base_buff = buff;
+  args = (macro_arg *) buff->base;
+  memset (args, 0, argc * sizeof (macro_arg));
+  buff->cur = (unsigned char *) &args[argc];
+  arg = args, argc = 0;
+
+  /* Collect the tokens making up each argument.  We don't yet know
+     how many arguments have been supplied, whether too many or too
+     few.  Hence the slightly bizarre usage of "argc" and "arg".  */
+  do
+    {
+      unsigned int paren_depth = 0;
+      unsigned int ntokens = 0;
+
+      argc++;
+      arg->first = (const cpp_token **) buff->cur;
+
+      for (;;)
+	{
+	  /* Require space for 2 new tokens (including a CPP_EOF).  */
+	  if ((unsigned char *) &arg->first[ntokens + 2] > buff->limit)
+	    {
+	      buff = _cpp_append_extend_buff (pfile, buff,
+					      1000 * sizeof (cpp_token *));
+	      arg->first = (const cpp_token **) buff->cur;
+	    }
+
+	  token = cpp_get_token (pfile);
+
+	  if (token->type == CPP_PADDING)
+	    {
+	      /* Drop leading padding.  */
+	      if (ntokens == 0)
+		continue;
+	    }
+	  else if (token->type == CPP_OPEN_PAREN)
+	    paren_depth++;
+	  else if (token->type == CPP_CLOSE_PAREN)
+	    {
+	      if (paren_depth-- == 0)
+		break;
+	    }
+	  else if (token->type == CPP_COMMA)
+	    {
+	      /* A comma does not terminate an argument within
+		 parentheses or as part of a variable argument.  */
+	      if (paren_depth == 0
+		  && ! (macro->variadic && argc == macro->paramc))
+		break;
+	    }
+	  else if (token->type == CPP_EOF
+		   || (token->type == CPP_HASH && token->flags & BOL))
+	    break;
+
+	  arg->first[ntokens++] = token;
+	}
+
+      /* Drop trailing padding.  */
+      while (ntokens > 0 && arg->first[ntokens - 1]->type == CPP_PADDING)
+	ntokens--;
+
+      arg->count = ntokens;
+      arg->first[ntokens] = &pfile->eof;
+
+      /* Terminate the argument.  Excess arguments loop back and
+	 overwrite the final legitimate argument, before failing.  */
+      if (argc <= macro->paramc)
+	{
+	  buff->cur = (unsigned char *) &arg->first[ntokens + 1];
+	  if (argc != macro->paramc)
+	    arg++;
+	}
+    }
+  while (token->type != CPP_CLOSE_PAREN
+	 && token->type != CPP_EOF
+	 && token->type != CPP_HASH);
+
+  if (token->type == CPP_EOF || token->type == CPP_HASH)
+    {
+      bool step_back = false;
+
+      /* 6.10.3 paragraph 11: If there are sequences of preprocessing
+	 tokens within the list of arguments that would otherwise act
+	 as preprocessing directives, the behavior is undefined.
+
+	 This implementation will report a hard error, terminate the
+	 macro invocation, and proceed to process the directive.  */
+      if (token->type == CPP_HASH)
+	{
+	  cpp_error (pfile,
+		     "directives may not be used inside a macro argument");
+	  step_back = true;
+	}
+      else
+	step_back = (pfile->context->prev || pfile->state.in_directive);
+
+      /* We still need the CPP_EOF to end directives, and to end
+	 pre-expansion of a macro argument.  Step back is not
+	 unconditional, since we don't want to return a CPP_EOF to our
+	 callers at the end of an -include-d file.  */
+      if (step_back)
+	_cpp_backup_tokens (pfile, 1);
+      cpp_error (pfile, "unterminated argument list invoking macro \"%s\"",
+		 NODE_NAME (node));
+      error = true;
+    }
+  else if (argc < macro->paramc)
+    {
+      /* As an extension, a rest argument is allowed to not appear in
+	 the invocation at all.
+	 e.g. #define debug(format, args...) something
+	 debug("string");
+	 
+	 This is exactly the same as if there had been an empty rest
+	 argument - debug("string", ).  */
+
+      if (argc + 1 == macro->paramc && macro->variadic)
+	{
+	  if (CPP_PEDANTIC (pfile) && ! macro->syshdr)
+	    cpp_pedwarn (pfile, "ISO C99 requires rest arguments to be used");
+	}
+      else
+	{
+	  cpp_error (pfile,
+		     "macro \"%s\" requires %u arguments, but only %u given",
+		     NODE_NAME (node), macro->paramc, argc);
+	  error = true;
+	}
+    }
+  else if (argc > macro->paramc)
+    {
+      /* Empty argument to a macro taking no arguments is OK.  */
+      if (argc != 1 || arg->count)
+	{
+	  cpp_error (pfile,
+		     "macro \"%s\" passed %u arguments, but takes just %u",
+		     NODE_NAME (node), argc, macro->paramc);
+	  error = true;
+	}
+    }
+
+  if (!error)
+    return base_buff;
+
+  _cpp_release_buff (pfile, base_buff);
+  return NULL;
+}

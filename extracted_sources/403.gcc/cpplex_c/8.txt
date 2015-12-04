@@ -1,0 +1,12 @@
+static void
+adjust_column (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  unsigned int col = CPP_BUF_COL (buffer) - 1; /* Zero-based column.  */
+
+  /* Round it up to multiple of the tabstop, but subtract 1 since the
+     tab itself occupies a character position.  */
+  buffer->col_adjust += (CPP_OPTION (pfile, tabstop)
+			 - col % CPP_OPTION (pfile, tabstop)) - 1;
+}

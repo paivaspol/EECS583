@@ -1,0 +1,39 @@
+static int
+parse_pkey_info(char *buf, char mode, struct ssipkey_s *pkey)
+{
+  char *s, *tok;
+  int   n;
+  
+  s = buf;
+  if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;  
+  pkey->key  = tok;
+  if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;  
+  pkey->fnum = (sqd_uint16) atoi(tok);
+
+  if (mode == SSI_OFFSET_I32) {
+    if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;  
+    pkey->r_off.mode = mode;
+    pkey->r_off.off.i32  = (sqd_uint32) strtoul(tok, NULL, 10);
+    if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;  
+    pkey->d_off.mode = mode;
+    pkey->d_off.off.i32  = (sqd_uint32) strtoul(tok, NULL, 10);
+  }
+#ifdef HAS_64BIT_FILE_OFFSETS
+  else {
+    if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;  
+    pkey->r_off.mode = mode;
+    pkey->r_off.off.i64  = (sqd_uint64) strtoull(tok, NULL, 10);
+    if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;  
+    pkey->d_off.mode = mode;
+    pkey->d_off.off.i64  = (sqd_uint64) strtoull(tok, NULL, 10);
+  }
+#else
+  else {
+    return SSI_ERR_NO64BIT;
+  }
+#endif
+  if ((tok = sre_strtok(&s, "\t\n", &n)) == NULL) return SSI_ERR_BADFORMAT;
+  pkey->len = (sqd_uint32) strtoul(tok, NULL, 10);
+
+  return 0;
+}

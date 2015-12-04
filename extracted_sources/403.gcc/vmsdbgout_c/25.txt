@@ -1,0 +1,94 @@
+static unsigned int
+lookup_filename (file_name)
+     const char *file_name;
+{
+  static unsigned int last_file_lookup_index = 0;
+  register char *fn;
+  register unsigned i;
+  char *fnam;
+  long long cdt;
+  long ebk;
+  short ffb;
+  char rfo;
+  char flen;
+  struct stat statbuf;
+
+  if (stat (file_name, &statbuf) == 0)
+    {
+      long gmtoff;
+#ifdef VMS
+      struct tm *ts;
+
+      /* Adjust for GMT */
+      ts = (struct tm *) localtime (&statbuf.st_ctime);
+      gmtoff = ts->tm_gmtoff;
+
+      /* VMS has multiple file format types */
+      rfo = statbuf.st_fab_rfm;
+#else
+      /* Is GMT adjustment an issue with a cross-compiler? */
+      gmtoff = 0;
+
+      /* Assume stream LF type file */
+      rfo = 2;
+#endif
+      cdt = 10000000 * (statbuf.st_ctime + gmtoff + vms_epoch_offset);
+      ebk = statbuf.st_size / 512 + 1;
+      ffb = statbuf.st_size - ((statbuf.st_size / 512) * 512);
+      fnam = full_name (file_name);
+      flen = strlen (fnam);
+    }
+  else
+    {
+      cdt = 0;
+      ebk = 0;
+      ffb = 0;
+      rfo = 0;
+      fnam = (char *) "";
+      flen = 0;
+    }
+
+  /* Check to see if the file name that was searched on the previous call
+     matches this file name. If so, return the index.  */
+  if (last_file_lookup_index != 0)
+    {
+      fn = file_info_table[last_file_lookup_index].file_name;
+      if (strcmp (fnam, fn) == 0)
+	return last_file_lookup_index;
+    }
+
+  /* Didn't match the previous lookup, search the table */
+  for (i = 1; i < file_info_table_in_use; ++i)
+    {
+      fn = file_info_table[i].file_name;
+      if (strcmp (fnam, fn) == 0)
+	{
+	  last_file_lookup_index = i;
+	  return i;
+	}
+    }
+
+  /* Prepare to add a new table entry by making sure there is enough space in 
+     the table to do so.  If not, expand the current table.  */
+  if (file_info_table_in_use == file_info_table_allocated)
+    {
+
+      file_info_table_allocated += FILE_TABLE_INCREMENT;
+      file_info_table
+	= (dst_file_info_ref) xrealloc (file_info_table,
+					(file_info_table_allocated
+					 * sizeof (dst_file_info_entry)));
+    }
+
+  /* Add the new entry to the end of the filename table.  */
+  file_info_table[file_info_table_in_use].file_name = xstrdup (fnam);
+  file_info_table[file_info_table_in_use].max_line = 0;
+  file_info_table[file_info_table_in_use].cdt = cdt;
+  file_info_table[file_info_table_in_use].ebk = ebk;
+  file_info_table[file_info_table_in_use].ffb = ffb;
+  file_info_table[file_info_table_in_use].rfo = rfo;
+  file_info_table[file_info_table_in_use].flen = flen;
+
+  last_file_lookup_index = file_info_table_in_use++;
+  return last_file_lookup_index;
+}

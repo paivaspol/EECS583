@@ -1,0 +1,46 @@
+void CalculateOffset8Param()
+{
+
+  int i, j, k, temp;
+   int q_bits;
+   
+   if(input->OffsetMatrixPresentFlag)
+   {
+     for(k=0; k<13; k++)
+     {
+       q_bits = Q_BITS_8 + k - 10;
+       for(j=0; j<8; j++)
+       {
+         for(i=0; i<8; i++)
+         {           
+           temp = (i<<3)+j;
+           if (img->type == I_SLICE)
+             LevelOffset8x8Luma_Intra[k][j][i] = (int)OffsetList8x8input[0][temp] << q_bits;
+           else
+             LevelOffset8x8Luma_Intra[k][j][i] = (int)OffsetList8x8input[1][temp] << q_bits;
+
+           LevelOffset8x8Luma_Inter[k][j][i] = (int)OffsetList8x8input[2][temp] << q_bits;
+         }
+       }
+     }
+   }
+   else
+   {
+     for(k=0; k<13; k++)
+     {
+       q_bits = Q_BITS_8 + k - 10;
+       for(j=0; j<8; j++)
+       {
+         for(i=0; i<8; i++)
+         {
+           temp = (i<<3)+j;
+           if (img->type == I_SLICE)
+             LevelOffset8x8Luma_Intra[k][j][i] = (int)Offset8_intra_default_intra[temp] << q_bits;
+           else
+             LevelOffset8x8Luma_Intra[k][j][i] = (int)Offset8_intra_default_inter[temp] << q_bits;
+           LevelOffset8x8Luma_Inter[k][j][i] = (int)Offset8_inter_default[temp] << q_bits;
+         }
+       }
+     }
+   }
+}

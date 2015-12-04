@@ -1,0 +1,55 @@
+static void
+simplify_binary_real (p)
+     PTR p;
+{
+  REAL_VALUE_TYPE f0, f1, value;
+  struct simplify_binary_real_args *args =
+    (struct simplify_binary_real_args *) p;
+
+  REAL_VALUE_FROM_CONST_DOUBLE (f0, args->trueop0);
+  REAL_VALUE_FROM_CONST_DOUBLE (f1, args->trueop1);
+  f0 = real_value_truncate (args->mode, f0);
+  f1 = real_value_truncate (args->mode, f1);
+
+#ifdef REAL_ARITHMETIC
+#ifndef REAL_INFINITY
+  if (args->code == DIV && REAL_VALUES_EQUAL (f1, dconst0))
+    {
+      args->result = 0;
+      return;
+    }
+#endif
+  REAL_ARITHMETIC (value, rtx_to_tree_code (args->code), f0, f1);
+#else
+  switch (args->code)
+    {
+    case PLUS:
+      value = f0 + f1;
+      break;
+    case MINUS:
+      value = f0 - f1;
+      break;
+    case MULT:
+      value = f0 * f1;
+      break;
+    case DIV:
+#ifndef REAL_INFINITY
+      if (f1 == 0)
+	return 0;
+#endif
+      value = f0 / f1;
+      break;
+    case SMIN:
+      value = MIN (f0, f1);
+      break;
+    case SMAX:
+      value = MAX (f0, f1);
+      break;
+    default:
+      abort ();
+    }
+#endif
+
+  value = real_value_truncate (args->mode, value);
+  args->result = CONST_DOUBLE_FROM_REAL_VALUE (value, args->mode);
+}

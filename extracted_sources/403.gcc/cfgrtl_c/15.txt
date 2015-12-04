@@ -1,0 +1,24 @@
+static bool
+back_edge_of_syntactic_loop_p (bb1, bb2)
+	basic_block bb1, bb2;
+{
+  rtx insn;
+  int count = 0;
+
+  if (bb1->index > bb2->index)
+    return false;
+  else if (bb1->index == bb2->index)
+    return true;
+
+  for (insn = bb1->end; insn != bb2->head && count >= 0;
+       insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == NOTE)
+      {
+	if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG)
+	  count++;
+	else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END)
+	  count--;
+      }
+
+  return count >= 0;
+}

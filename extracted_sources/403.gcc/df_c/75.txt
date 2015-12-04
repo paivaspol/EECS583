@@ -1,0 +1,21 @@
+static struct ref *
+df_bb_regno_first_def_find (df, bb, regno)
+     struct df * df;
+     basic_block bb ATTRIBUTE_UNUSED;
+     unsigned int regno;
+{
+  struct df_link *link;
+
+  /* This assumes that the reg-def list is ordered such that for any
+     BB, the first def is found first.  However, since the BBs are not
+     ordered, the first def in the chain is not necessarily the first
+     def in the function.  */
+  for (link = df->regs[regno].defs; link; link = link->next)
+    {
+      struct ref *def = link->ref;
+
+      if (DF_REF_BB (def) == bb)
+	return def;
+    }
+  return 0;
+}

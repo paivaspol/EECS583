@@ -1,0 +1,25 @@
+void print_umbrella(t_pull *pull, int step) 
+{
+  int i,m;
+  if (pull->bVerbose) {
+    fprintf(pull->out,"%d ",step); 
+    for (i=0;i<pull->pull.n;i++) {
+      for (m=0;m<3;m++) {
+	if (fabs(pull->dims[m])>GMX_REAL_MIN) 
+	  fprintf(pull->out,"%e %e %e ",pull->pull.x_ref[i][m],
+		  pull->pull.x_unc[i][m], pull->pull.f[i][m]);
+      }
+    }
+    fprintf(pull->out,"\n"); 
+  } else {
+    /*  fprintf(pull->out,"%d ",step); */
+    for (i=0;i<pull->pull.n;i++) {
+      for (m=0;m<3;m++) {
+	if (fabs(pull->dims[m])>GMX_REAL_MIN) 
+	  fprintf(pull->out,"%e %e ",
+		  pull->pull.x_unc[i][m], pull->pull.f[i][m]);
+      }
+    }
+    fprintf(pull->out,"\n"); 
+  }
+}

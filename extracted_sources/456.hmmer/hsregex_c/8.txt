@@ -1,0 +1,21 @@
+static void
+reginsert(cp, op, opnd)
+register struct comp *cp;
+char op;
+char *opnd;
+{
+	register char *place;
+
+	if (!EMITTING(cp)) {
+		cp->regsize += 3;
+		return;
+	}
+
+	(void) memmove(opnd+3, opnd, (size_t)(cp->regcode - opnd));
+	cp->regcode += 3;
+
+	place = opnd;		/* Op node, where operand used to be. */
+	*place++ = op;
+	*place++ = '\0';
+	*place++ = '\0';
+}

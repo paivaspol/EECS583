@@ -1,0 +1,31 @@
+void free_dpb()
+{
+  unsigned i;
+  if (dpb.fs)
+  {
+    for (i=0; i<dpb.size; i++)
+    {
+      free_frame_store(dpb.fs[i]);
+    }
+    free (dpb.fs);
+    dpb.fs=NULL;
+  }
+  if (dpb.fs_ref)
+  {
+    free (dpb.fs_ref);
+  }
+  if (dpb.fs_ltref)
+  {
+    free (dpb.fs_ltref);
+  }
+  dpb.last_output_poc = INT_MIN;
+
+  for (i=0; i<6; i++)
+    if (listX[i])
+    {
+      free (listX[i]);
+      listX[i] = NULL;
+    }
+
+  dpb.init_done = 0;
+}

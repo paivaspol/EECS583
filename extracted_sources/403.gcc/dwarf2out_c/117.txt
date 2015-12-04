@@ -1,0 +1,16 @@
+static void
+die_checksum (die, ctx)
+     dw_die_ref die;
+     struct md5_ctx *ctx;
+{
+  dw_die_ref c;
+  dw_attr_ref a;
+
+  CHECKSUM (die->die_tag);
+
+  for (a = die->die_attr; a; a = a->dw_attr_next)
+    attr_checksum (a, ctx);
+
+  for (c = die->die_child; c; c = c->die_sib)
+    die_checksum (c, ctx);
+}

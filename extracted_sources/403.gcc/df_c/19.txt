@@ -1,0 +1,27 @@
+static void
+df_defs_record (df, x, bb, insn)
+     struct df *df;
+     rtx x;
+     basic_block bb;
+     rtx insn;
+{
+  RTX_CODE code = GET_CODE (x);
+
+  if (code == SET || code == CLOBBER)
+    {
+      /* Mark the single def within the pattern.  */
+      df_def_record_1 (df, x, bb, insn);
+    }
+  else if (code == PARALLEL)
+    {
+      int i;
+
+      /* Mark the multiple defs within the pattern.  */
+      for (i = XVECLEN (x, 0) - 1; i >= 0; i--)
+	{
+	  code = GET_CODE (XVECEXP (x, 0, i));
+	  if (code == SET || code == CLOBBER)
+	    df_def_record_1 (df, XVECEXP (x, 0, i), bb, insn);
+	}
+    }
+}

@@ -1,0 +1,53 @@
+int
+mul_double (l1, h1, l2, h2, lv, hv)
+     unsigned HOST_WIDE_INT l1, l2;
+     HOST_WIDE_INT h1, h2;
+     unsigned HOST_WIDE_INT *lv;
+     HOST_WIDE_INT *hv;
+{
+  HOST_WIDE_INT arg1[4];
+  HOST_WIDE_INT arg2[4];
+  HOST_WIDE_INT prod[4 * 2];
+  unsigned HOST_WIDE_INT carry;
+  int i, j, k;
+  unsigned HOST_WIDE_INT toplow, neglow;
+  HOST_WIDE_INT tophigh, neghigh;
+
+  encode (arg1, l1, h1);
+  encode (arg2, l2, h2);
+
+  memset ((char *) prod, 0, sizeof prod);
+
+  for (i = 0; i < 4; i++)
+    {
+      carry = 0;
+      for (j = 0; j < 4; j++)
+	{
+	  k = i + j;
+	  /* This product is <= 0xFFFE0001, the sum <= 0xFFFF0000.  */
+	  carry += arg1[i] * arg2[j];
+	  /* Since prod[p] < 0xFFFF, this sum <= 0xFFFFFFFF.  */
+	  carry += prod[k];
+	  prod[k] = LOWPART (carry);
+	  carry = HIGHPART (carry);
+	}
+      prod[i + 4] = carry;
+    }
+
+  decode (prod, lv, hv);	/* This ignores prod[4] through prod[4*2-1] */
+
+  /* Check for overflow by calculating the top half of the answer in full;
+     it should agree with the low half's sign bit.  */
+  decode (prod + 4, &toplow, &tophigh);
+  if (h1 < 0)
+    {
+      neg_double (l2, h2, &neglow, &neghigh);
+      add_double (neglow, neghigh, toplow, tophigh, &toplow, &tophigh);
+    }
+  if (h2 < 0)
+    {
+      neg_double (l1, h1, &neglow, &neghigh);
+      add_double (neglow, neghigh, toplow, tophigh, &toplow, &tophigh);
+    }
+  return (*hv < 0 ? ~(toplow & tophigh) : toplow | tophigh) != 0;
+}

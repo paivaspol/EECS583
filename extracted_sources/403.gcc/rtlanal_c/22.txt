@@ -1,0 +1,107 @@
+int
+refers_to_regno_p (regno, endregno, x, loc)
+     unsigned int regno, endregno;
+     rtx x;
+     rtx *loc;
+{
+  int i;
+  unsigned int x_regno;
+  RTX_CODE code;
+  const char *fmt;
+
+ repeat:
+  /* The contents of a REG_NONNEG note is always zero, so we must come here
+     upon repeat in case the last REG_NOTE is a REG_NONNEG note.  */
+  if (x == 0)
+    return 0;
+
+  code = GET_CODE (x);
+
+  switch (code)
+    {
+    case REG:
+      x_regno = REGNO (x);
+
+      /* If we modifying the stack, frame, or argument pointer, it will
+	 clobber a virtual register.  In fact, we could be more precise,
+	 but it isn't worth it.  */
+      if ((x_regno == STACK_POINTER_REGNUM
+#if FRAME_POINTER_REGNUM != ARG_POINTER_REGNUM
+	   || x_regno == ARG_POINTER_REGNUM
+#endif
+	   || x_regno == FRAME_POINTER_REGNUM)
+	  && regno >= FIRST_VIRTUAL_REGISTER && regno <= LAST_VIRTUAL_REGISTER)
+	return 1;
+
+      return (endregno > x_regno
+	      && regno < x_regno + (x_regno < FIRST_PSEUDO_REGISTER 
+				    ? HARD_REGNO_NREGS (x_regno, GET_MODE (x))
+			      : 1));
+
+    case SUBREG:
+      /* If this is a SUBREG of a hard reg, we can see exactly which
+	 registers are being modified.  Otherwise, handle normally.  */
+      if (GET_CODE (SUBREG_REG (x)) == REG
+	  && REGNO (SUBREG_REG (x)) < FIRST_PSEUDO_REGISTER)
+	{
+	  unsigned int inner_regno = subreg_regno (x);
+	  unsigned int inner_endregno
+	    = inner_regno + (inner_regno < FIRST_PSEUDO_REGISTER
+			     ? HARD_REGNO_NREGS (regno, GET_MODE (x)) : 1);
+
+	  return endregno > inner_regno && regno < inner_endregno;
+	}
+      break;
+
+    case CLOBBER:
+    case SET:
+      if (&SET_DEST (x) != loc
+	  /* Note setting a SUBREG counts as referring to the REG it is in for
+	     a pseudo but not for hard registers since we can
+	     treat each word individually.  */
+	  && ((GET_CODE (SET_DEST (x)) == SUBREG
+	       && loc != &SUBREG_REG (SET_DEST (x))
+	       && GET_CODE (SUBREG_REG (SET_DEST (x))) == REG
+	       && REGNO (SUBREG_REG (SET_DEST (x))) >= FIRST_PSEUDO_REGISTER
+	       && refers_to_regno_p (regno, endregno,
+				     SUBREG_REG (SET_DEST (x)), loc))
+	      || (GET_CODE (SET_DEST (x)) != REG
+		  && refers_to_regno_p (regno, endregno, SET_DEST (x), loc))))
+	return 1;
+
+      if (code == CLOBBER || loc == &SET_SRC (x))
+	return 0;
+      x = SET_SRC (x);
+      goto repeat;
+
+    default:
+      break;
+    }
+
+  /* X does not match, so try its subexpressions.  */
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e' && loc != &XEXP (x, i))
+	{
+	  if (i == 0)
+	    {
+	      x = XEXP (x, 0);
+	      goto repeat;
+	    }
+	  else
+	    if (refers_to_regno_p (regno, endregno, XEXP (x, i), loc))
+	      return 1;
+	}
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = XVECLEN (x, i) - 1; j >=0; j--)
+	    if (loc != &XVECEXP (x, i, j)
+		&& refers_to_regno_p (regno, endregno, XVECEXP (x, i, j), loc))
+	      return 1;
+	}
+    }
+  return 0;
+}

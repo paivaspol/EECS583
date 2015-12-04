@@ -1,0 +1,37 @@
+static int store_array(pTHX_ stcxt_t *cxt, AV *av)
+{
+	SV **sav;
+	I32 len = av_len(av) + 1;
+	I32 i;
+	int ret;
+
+	TRACEME(("store_array (0x%"UVxf")", PTR2UV(av)));
+
+	/* 
+	 * Signal array by emitting SX_ARRAY, followed by the array length.
+	 */
+
+	PUTMARK(SX_ARRAY);
+	WLEN(len);
+	TRACEME(("size = %d", len));
+
+	/*
+	 * Now store each item recursively.
+	 */
+
+	for (i = 0; i < len; i++) {
+		sav = av_fetch(av, i, 0);
+		if (!sav) {
+			TRACEME(("(#%d) undef item", i));
+			STORE_SV_UNDEF();
+			continue;
+		}
+		TRACEME(("(#%d) item", i));
+		if ((ret = store(aTHX_ cxt, *sav)))	/* Extra () for -Wall, grr... */
+			return ret;
+	}
+
+	TRACEME(("ok (array)"));
+
+	return 0;
+}

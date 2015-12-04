@@ -1,0 +1,16 @@
+void
+dump_time_statistics ()
+{
+  struct c_fileinfo *file = get_fileinfo (input_filename);
+  int this_time = get_run_time ();
+  file->time += this_time - body_time;
+
+  fprintf (stderr, "\n******\n");
+  print_time ("header files (total)", header_time);
+  print_time ("main file (total)", this_time - body_time);
+  fprintf (stderr, "ratio = %g : 1\n",
+	   (double)header_time / (double)(this_time - body_time));
+  fprintf (stderr, "\n******\n");
+
+  splay_tree_foreach (file_info_tree, dump_one_header, 0);
+}

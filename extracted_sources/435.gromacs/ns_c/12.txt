@@ -1,0 +1,47 @@
+static inline void new_i_nblist(t_nblist *nlist,
+				    int ftype,atom_id i_atom,int shift,int gid,
+				    int *mno)
+{
+  int    i,k,nri,nshift;
+    
+  if (nlist->maxnrj <= nlist->nrj + NLJ_INC-1) {
+    if (debug)
+      fprintf(debug,"Adding %5d J particles for nblist %s\n",NLJ_INC,
+	      interaction_function[ftype].longname);
+
+    nlist->maxnrj += NLJ_INC;
+    srenew(nlist->jjnr,nlist->maxnrj);
+  }
+
+  nri = nlist->nri;
+
+  /* Check whether we have to increase the i counter */
+  if ((nlist->iinr[nri]  != i_atom) || 
+      (nlist->shift[nri] != shift) || 
+      (nlist->gid[nri]   != gid)) {
+    /* This is something else. Now see if any entries have 
+     * been added in the list of the previous atom.
+     */
+    if ((nlist->jindex[nri+1] > nlist->jindex[nri]) && 
+	(nlist->gid[nri] != -1)) {
+      
+      /* If so increase the counter */
+      nlist->nri++;
+      nri++;
+      if (nlist->nri >= nlist->maxnri) {
+	nlist->maxnri += NLI_INC;
+	reallocate_nblist(nlist);
+      }
+    }
+    /* Set the number of neighbours and the atom number */
+    nlist->jindex[nri+1] = nlist->jindex[nri];
+    nlist->iinr[nri]     = i_atom;
+    nlist->gid[nri]      = gid;
+    nlist->shift[nri]    = shift;
+    if (mno) {
+      /* Three here comes from M, N, O, not number of particles */
+      for(k=0; k<3; k++)
+	nlist->nsatoms[3*nri+k] = mno[k];
+    }
+  }
+}

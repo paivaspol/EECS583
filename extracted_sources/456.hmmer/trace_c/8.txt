@@ -1,0 +1,61 @@
+void
+TraceDecompose(struct p7trace_s *otr, struct p7trace_s ***ret_tr, int *ret_ntr)
+{
+  struct p7trace_s **tr;        /* array of new traces          */
+  int ntr;			/* number of traces             */
+  int i,j;			/* position counters in traces  */
+  int idx;			/* index over ntr subtraces     */
+
+  /* First pass: count begin states to get ntr.
+   */
+  for (ntr = 0, i = 0; i < otr->tlen; i++)
+    if (otr->statetype[i] == STB) ntr++;
+
+  /* Allocations.
+   */
+  if (ntr == 0) {
+    *ret_ntr = 0;
+    *ret_tr  = NULL;
+    return;
+  }
+  tr = (struct p7trace_s **) MallocOrDie (sizeof(struct p7trace_s *) * ntr);
+
+  for (idx = 0, i = 0; i < otr->tlen; i++) /* i = position in old trace */
+    if (otr->statetype[i] == STB)
+      {
+	for (j = i+1; j < otr->tlen; j++) /* j = tmp; get length of subtrace */
+	  if (otr->statetype[j] == STE) break;
+			/* trace = S-N-(B..E)-C-T : len + 4 : j-i+1 + 4*/
+	P7AllocTrace(j-i+5, &(tr[idx]));
+	tr[idx]->tlen = j-i+5;
+
+	tr[idx]->statetype[0] = STS;
+	tr[idx]->nodeidx[0]   = 0;
+	tr[idx]->pos[0]       = 0;
+	tr[idx]->statetype[1] = STN;
+	tr[idx]->nodeidx[1]   = 0;
+	tr[idx]->pos[1]       = 0;
+	j = 2;			/* now j = position in new subtrace */
+	while (1)		/* copy subtrace */
+	  {
+	    tr[idx]->statetype[j] = otr->statetype[i];
+	    tr[idx]->nodeidx[j]   = otr->nodeidx[i];
+	    tr[idx]->pos[j]       = otr->pos[i];
+	    if (otr->statetype[i] == STE) break;
+	    i++; j++;
+	  }
+	j++;
+	tr[idx]->statetype[j] = STC;
+	tr[idx]->nodeidx[j]   = 0;
+	tr[idx]->pos[j]       = 0;
+	j++;
+	tr[idx]->statetype[j] = STT;
+	tr[idx]->nodeidx[j]   = 0;
+	tr[idx]->pos[j]       = 0;
+	idx++;
+      }
+
+  *ret_tr  = tr;
+  *ret_ntr = ntr;
+  return;
+}

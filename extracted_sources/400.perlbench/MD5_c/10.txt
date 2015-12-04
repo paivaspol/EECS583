@@ -1,0 +1,25 @@
+static SV* make_mortal_sv(pTHX_ const unsigned char *src, int type)
+{
+    STRLEN len;
+    char result[33];
+    char *ret;
+    
+    switch (type) {
+    case F_BIN:
+	ret = (char*)src;
+	len = 16;
+	break;
+    case F_HEX:
+	ret = hex_16(src, result);
+	len = 32;
+	break;
+    case F_B64:
+	ret = base64_16(src, result);
+	len = 22;
+	break;
+    default:
+	croak("Bad convertion type (%d)", type);
+	break;
+    }
+    return sv_2mortal(newSVpv(ret,len));
+}

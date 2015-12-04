@@ -1,0 +1,26 @@
+void reset_x(int ncm,atom_id ind_cm[],
+	     int nreset,atom_id *ind_reset,rvec x[],real mass[])
+{
+  int  i,m,ai;
+  rvec xcm;
+  real tm,mm;
+  
+  tm=0.0;
+  clear_rvec(xcm);
+  for(i=0; i<ncm; i++) {
+    ai=ind_cm[i];
+    mm=mass[ai];
+    for(m=0; m<DIM; m++)
+      xcm[m]+=mm*x[ai][m];
+    tm+=mm;
+  }
+  for(m=0; m<DIM; m++)
+    xcm[m]/=tm;
+    
+  if (ind_reset)
+    for(i=0; i<nreset; i++)
+      rvec_dec(x[ind_reset[i]],xcm);
+  else
+    for(i=0; i<nreset; i++)
+      rvec_dec(x[i],xcm);
+}

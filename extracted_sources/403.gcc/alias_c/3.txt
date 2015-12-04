@@ -1,0 +1,33 @@
+int
+alias_sets_conflict_p (set1, set2)
+     HOST_WIDE_INT set1, set2;
+{
+  alias_set_entry ase;
+
+  /* If have no alias set information for one of the operands, we have
+     to assume it can alias anything.  */
+  if (set1 == 0 || set2 == 0
+      /* If the two alias sets are the same, they may alias.  */
+      || set1 == set2)
+    return 1;
+
+  /* See if the first alias set is a subset of the second.  */
+  ase = get_alias_set_entry (set1);
+  if (ase != 0
+      && (ase->has_zero_child
+	  || splay_tree_lookup (ase->children,
+				(splay_tree_key) set2)))
+    return 1;
+
+  /* Now do the same, but with the alias sets reversed.  */
+  ase = get_alias_set_entry (set2);
+  if (ase != 0
+      && (ase->has_zero_child
+	  || splay_tree_lookup (ase->children,
+				(splay_tree_key) set1)))
+    return 1;
+
+  /* The two alias sets are distinct and neither one is the
+     child of the other.  Therefore, they cannot alias.  */
+  return 0;
+}

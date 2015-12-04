@@ -1,0 +1,162 @@
+void setup_epd_line(char* inbuff)
+{
+  int i = 0;
+  int rankp = 0;   /* a8 */
+  int rankoffset = 0;
+  int fileoffset = 0;
+  int j;
+
+  /* 0 : FEN data */
+  /* 1 : Active color */
+  /* 2 : Castling status */
+  /* 3 : EP info */
+  /* 4 : 50 move */
+  /* 5 : movenumber */
+  /* 6 : EPD data */
+  int stage = 0;
+
+  static int rankoffsets[] = {110, 98, 86, 74, 62, 50, 38, 26};
+ 
+  /* conversion from algebraic to sjeng internal for ep squares */
+  int converterf = (int) 'a';
+  int converterr = (int) '1';
+  int ep_file, ep_rank, norm_file, norm_rank;
+  
+  memset(board, frame, sizeof(board));
+  
+  white_castled = no_castle;
+  black_castled = no_castle;
+
+  book_ply = 50;
+
+  rankoffset = rankoffsets[0];
+
+  while (inbuff[i] == ' ') {i++;};
+
+  while((inbuff[i] != '\n') && (inbuff[i] != '\0'))
+    {
+      if(stage == 0 && isdigit(inbuff[i]))
+	{
+	  for (j = 0; j < atoi(&inbuff[i]); j++)
+	    board[rankoffset + j + fileoffset] = npiece;
+	  
+	  fileoffset += atoi(&inbuff[i]);
+	}
+      else if (stage == 0 && inbuff[i] == '/')
+	{
+	  rankp++;
+	  rankoffset = rankoffsets[rankp];	
+	  fileoffset = 0;
+	}
+      else if (stage == 0 && isalpha(inbuff[i]))
+	{
+	  switch (inbuff[i])
+	    {
+	    case 'p' : board[rankoffset + fileoffset] = bpawn; break;
+	    case 'P' : board[rankoffset + fileoffset] = wpawn; break;	
+	    case 'n' : board[rankoffset + fileoffset] = bknight; break;
+	    case 'N' : board[rankoffset + fileoffset] = wknight; break;	
+	    case 'b' : board[rankoffset + fileoffset] = bbishop; break;
+	    case 'B' : board[rankoffset + fileoffset] = wbishop; break;	
+	    case 'r' : board[rankoffset + fileoffset] = brook; break;
+	    case 'R' : board[rankoffset + fileoffset] = wrook; break;	
+	    case 'q' : board[rankoffset + fileoffset] = bqueen; break;
+	    case 'Q' : board[rankoffset + fileoffset] = wqueen; break;	
+	    case 'k' : 
+	      bking_loc = rankoffset + fileoffset;
+	      board[bking_loc] = bking; 
+	      break;
+	    case 'K' :
+	      wking_loc = rankoffset + fileoffset;
+	      board[wking_loc] = wking; 
+	      break;	
+	    }
+	  fileoffset++;
+	}
+      else if (inbuff[i] == ' ')
+	{
+	  stage++;
+
+	  if (stage == 1)
+	    {
+	      /* skip spaces */
+	      while (inbuff[i] == ' ') i++;
+	      
+	      if (inbuff[i] == 'w') 
+		white_to_move = 1;
+	      else
+		white_to_move = 0;
+	    }
+	  else if (stage == 2)
+	    {
+	      /* assume no castling at all */
+	      moved[26] = moved[33] = moved[30] = 1;
+	      moved[110] = moved[114] = moved[117] = 1;
+
+	      while(inbuff[i] == ' ') i++;
+	     
+	      while (inbuff[i] != ' ')
+		{
+		  switch (inbuff[i])
+		    {
+		    case '-' :
+		      break;
+		    case 'K' :
+		      moved[30] = moved[33] = 0;
+		      break;
+		    case 'Q' :
+		      moved[30] = moved[26] = 0;
+		      break;
+		    case 'k' :
+		      moved[114] = moved[117] = 0;
+		      break;
+		    case 'q' :
+		      moved[114] = moved[110] = 0;
+		      break;
+		    }
+		  i++;
+		}
+	      i--; /* go back to space so we move to next stage */
+	      
+	    }
+	  else if (stage == 3)
+	    {
+	      /* skip spaces */
+	      while (inbuff[i] == ' ') i++;
+	      
+	      if (inbuff[i] == '-')
+		{
+		  ep_square = 0;
+		}
+	      else
+		{
+		  ep_file = inbuff[i++];
+		  ep_rank = inbuff[i++];
+		  
+		  norm_file = ep_file - converterf;
+		  norm_rank = ep_rank - converterr;
+		  
+		  ep_square = ((norm_rank * 12) + 26) + (norm_file);		  
+		}
+	    }
+	  else if (stage == 4)
+	    {
+	      /* ignore this for now */
+	    }
+	  else if (stage == 5)
+	    {
+	      /* ignore this for now */
+	    }
+	  else if (stage == 6)
+	    {
+	      /* ignore this for now */
+	    }	  
+	};
+      
+      i++;
+    }
+
+  reset_piece_square();
+  initialize_hash();
+
+}

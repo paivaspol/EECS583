@@ -1,0 +1,23 @@
+void
+mark_emit_status (es)
+     struct emit_status *es;
+{
+  rtx *r;
+  tree *t;
+  int i;
+
+  if (es == 0)
+    return;
+
+  for (i = es->regno_pointer_align_length, r = es->x_regno_reg_rtx,
+       t = es->regno_decl;
+       i > 0; --i, ++r, ++t)
+    {
+      ggc_mark_rtx (*r);
+      ggc_mark_tree (*t);
+    }
+
+  mark_sequence_stack (es->sequence_stack);
+  ggc_mark_tree (es->sequence_rtl_expr);
+  ggc_mark_rtx (es->x_first_insn);
+}

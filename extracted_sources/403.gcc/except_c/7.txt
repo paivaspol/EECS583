@@ -1,0 +1,61 @@
+void
+mark_eh_status (eh)
+     struct eh_status *eh;
+{
+  int i;
+
+  if (eh == 0)
+    return;
+
+  /* If we've called collect_eh_region_array, use it.  Otherwise walk
+     the tree non-recursively.  */
+  if (eh->region_array)
+    {
+      for (i = eh->last_region_number; i > 0; --i)
+	{
+	  struct eh_region *r = eh->region_array[i];
+	  if (r && r->region_number == i)
+	    mark_eh_region (r);
+	}
+    }
+  else if (eh->region_tree)
+    {
+      struct eh_region *r = eh->region_tree;
+      while (1)
+	{
+	  mark_eh_region (r);
+	  if (r->inner)
+	    r = r->inner;
+	  else if (r->next_peer)
+	    r = r->next_peer;
+	  else
+	    {
+	      do {
+		r = r->outer;
+		if (r == NULL)
+		  goto tree_done;
+	      } while (r->next_peer == NULL);
+	      r = r->next_peer;
+	    }
+	}
+    tree_done:;
+    }
+
+  ggc_mark_tree (eh->protect_list);
+  ggc_mark_rtx (eh->filter);
+  ggc_mark_rtx (eh->exc_ptr);
+  ggc_mark_tree_varray (eh->ttype_data);
+
+  if (eh->call_site_data)
+    {
+      for (i = eh->call_site_data_used - 1; i >= 0; --i)
+	ggc_mark_rtx (eh->call_site_data[i].landing_pad);
+    }
+
+  ggc_mark_rtx (eh->ehr_stackadj);
+  ggc_mark_rtx (eh->ehr_handler);
+  ggc_mark_rtx (eh->ehr_label);
+
+  ggc_mark_rtx (eh->sjlj_fc);
+  ggc_mark_rtx (eh->sjlj_exit_after);
+}

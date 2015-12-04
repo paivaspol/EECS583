@@ -1,0 +1,96 @@
+static int
+recog_for_combine (pnewpat, insn, pnotes)
+     rtx *pnewpat;
+     rtx insn;
+     rtx *pnotes;
+{
+  rtx pat = *pnewpat;
+  int insn_code_number;
+  int num_clobbers_to_add = 0;
+  int i;
+  rtx notes = 0;
+  rtx dummy_insn;
+
+  /* If PAT is a PARALLEL, check to see if it contains the CLOBBER
+     we use to indicate that something didn't match.  If we find such a
+     thing, force rejection.  */
+  if (GET_CODE (pat) == PARALLEL)
+    for (i = XVECLEN (pat, 0) - 1; i >= 0; i--)
+      if (GET_CODE (XVECEXP (pat, 0, i)) == CLOBBER
+	  && XEXP (XVECEXP (pat, 0, i), 0) == const0_rtx)
+	return -1;
+
+  /* *pnewpat does not have to be actual PATTERN (insn), so make a dummy
+     instruction for pattern recognition.  */
+  dummy_insn = shallow_copy_rtx (insn);
+  PATTERN (dummy_insn) = pat;
+  REG_NOTES (dummy_insn) = 0;
+
+  insn_code_number = recog (pat, dummy_insn, &num_clobbers_to_add);
+
+  /* If it isn't, there is the possibility that we previously had an insn
+     that clobbered some register as a side effect, but the combined
+     insn doesn't need to do that.  So try once more without the clobbers
+     unless this represents an ASM insn.  */
+
+  if (insn_code_number < 0 && ! check_asm_operands (pat)
+      && GET_CODE (pat) == PARALLEL)
+    {
+      int pos;
+
+      for (pos = 0, i = 0; i < XVECLEN (pat, 0); i++)
+	if (GET_CODE (XVECEXP (pat, 0, i)) != CLOBBER)
+	  {
+	    if (i != pos)
+	      SUBST (XVECEXP (pat, 0, pos), XVECEXP (pat, 0, i));
+	    pos++;
+	  }
+
+      SUBST_INT (XVECLEN (pat, 0), pos);
+
+      if (pos == 1)
+	pat = XVECEXP (pat, 0, 0);
+
+      PATTERN (dummy_insn) = pat;
+      insn_code_number = recog (pat, dummy_insn, &num_clobbers_to_add);
+    }
+
+  /* Recognize all noop sets, these will be killed by followup pass.  */
+  if (insn_code_number < 0 && GET_CODE (pat) == SET && set_noop_p (pat))
+    insn_code_number = NOOP_MOVE_INSN_CODE, num_clobbers_to_add = 0;
+
+  /* If we had any clobbers to add, make a new pattern than contains
+     them.  Then check to make sure that all of them are dead.  */
+  if (num_clobbers_to_add)
+    {
+      rtx newpat = gen_rtx_PARALLEL (VOIDmode,
+				     rtvec_alloc (GET_CODE (pat) == PARALLEL
+						  ? (XVECLEN (pat, 0)
+						     + num_clobbers_to_add)
+						  : num_clobbers_to_add + 1));
+
+      if (GET_CODE (pat) == PARALLEL)
+	for (i = 0; i < XVECLEN (pat, 0); i++)
+	  XVECEXP (newpat, 0, i) = XVECEXP (pat, 0, i);
+      else
+	XVECEXP (newpat, 0, 0) = pat;
+
+      add_clobbers (newpat, insn_code_number);
+
+      for (i = XVECLEN (newpat, 0) - num_clobbers_to_add;
+	   i < XVECLEN (newpat, 0); i++)
+	{
+	  if (GET_CODE (XEXP (XVECEXP (newpat, 0, i), 0)) == REG
+	      && ! reg_dead_at_p (XEXP (XVECEXP (newpat, 0, i), 0), insn))
+	    return -1;
+	  notes = gen_rtx_EXPR_LIST (REG_UNUSED,
+				     XEXP (XVECEXP (newpat, 0, i), 0), notes);
+	}
+      pat = newpat;
+    }
+
+  *pnewpat = pat;
+  *pnotes = notes;
+
+  return insn_code_number;
+}

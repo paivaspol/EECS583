@@ -1,0 +1,201 @@
+static rtx
+redundant_insn (insn, target, delay_list)
+     rtx insn;
+     rtx target;
+     rtx delay_list;
+{
+  rtx target_main = target;
+  rtx ipat = PATTERN (insn);
+  rtx trial, pat;
+  struct resources needed, set;
+  int i;
+  unsigned insns_to_search;
+
+  /* If INSN has any REG_UNUSED notes, it can't match anything since we
+     are allowed to not actually assign to such a register.  */
+  if (find_reg_note (insn, REG_UNUSED, NULL_RTX) != 0)
+    return 0;
+
+  /* Scan backwards looking for a match.  */
+  for (trial = PREV_INSN (target),
+	 insns_to_search = MAX_DELAY_SLOT_INSN_SEARCH;
+       trial && insns_to_search > 0;
+       trial = PREV_INSN (trial), --insns_to_search)
+    {
+      if (GET_CODE (trial) == CODE_LABEL)
+	return 0;
+
+      if (! INSN_P (trial))
+	continue;
+
+      pat = PATTERN (trial);
+      if (GET_CODE (pat) == USE || GET_CODE (pat) == CLOBBER)
+	continue;
+
+      if (GET_CODE (pat) == SEQUENCE)
+	{
+	  /* Stop for a CALL and its delay slots because it is difficult to
+	     track its resource needs correctly.  */
+	  if (GET_CODE (XVECEXP (pat, 0, 0)) == CALL_INSN)
+	    return 0;
+
+	  /* Stop for an INSN or JUMP_INSN with delayed effects and its delay
+	     slots because it is difficult to track its resource needs
+	     correctly.  */
+
+#ifdef INSN_SETS_ARE_DELAYED
+	  if (INSN_SETS_ARE_DELAYED (XVECEXP (pat, 0, 0)))
+	    return 0;
+#endif
+
+#ifdef INSN_REFERENCES_ARE_DELAYED
+	  if (INSN_REFERENCES_ARE_DELAYED (XVECEXP (pat, 0, 0)))
+	    return 0;
+#endif
+
+	  /* See if any of the insns in the delay slot match, updating
+	     resource requirements as we go.  */
+	  for (i = XVECLEN (pat, 0) - 1; i > 0; i--)
+	    if (GET_CODE (XVECEXP (pat, 0, i)) == GET_CODE (insn)
+		&& rtx_equal_p (PATTERN (XVECEXP (pat, 0, i)), ipat)
+		&& ! find_reg_note (XVECEXP (pat, 0, i), REG_UNUSED, NULL_RTX))
+	      break;
+
+	  /* If found a match, exit this loop early.  */
+	  if (i > 0)
+	    break;
+	}
+
+      else if (GET_CODE (trial) == GET_CODE (insn) && rtx_equal_p (pat, ipat)
+	       && ! find_reg_note (trial, REG_UNUSED, NULL_RTX))
+	break;
+    }
+
+  /* If we didn't find an insn that matches, return 0.  */
+  if (trial == 0)
+    return 0;
+
+  /* See what resources this insn sets and needs.  If they overlap, or
+     if this insn references CC0, it can't be redundant.  */
+
+  CLEAR_RESOURCE (&needed);
+  CLEAR_RESOURCE (&set);
+  mark_set_resources (insn, &set, 0, MARK_SRC_DEST_CALL);
+  mark_referenced_resources (insn, &needed, 1);
+
+  /* If TARGET is a SEQUENCE, get the main insn.  */
+  if (GET_CODE (target) == INSN && GET_CODE (PATTERN (target)) == SEQUENCE)
+    target_main = XVECEXP (PATTERN (target), 0, 0);
+
+  if (resource_conflicts_p (&needed, &set)
+#ifdef HAVE_cc0
+      || reg_mentioned_p (cc0_rtx, ipat)
+#endif
+      /* The insn requiring the delay may not set anything needed or set by
+	 INSN.  */
+      || insn_sets_resource_p (target_main, &needed, 1)
+      || insn_sets_resource_p (target_main, &set, 1))
+    return 0;
+
+  /* Insns we pass may not set either NEEDED or SET, so merge them for
+     simpler tests.  */
+  needed.memory |= set.memory;
+  needed.unch_memory |= set.unch_memory;
+  IOR_HARD_REG_SET (needed.regs, set.regs);
+
+  /* This insn isn't redundant if it conflicts with an insn that either is
+     or will be in a delay slot of TARGET.  */
+
+  while (delay_list)
+    {
+      if (insn_sets_resource_p (XEXP (delay_list, 0), &needed, 1))
+	return 0;
+      delay_list = XEXP (delay_list, 1);
+    }
+
+  if (GET_CODE (target) == INSN && GET_CODE (PATTERN (target)) == SEQUENCE)
+    for (i = 1; i < XVECLEN (PATTERN (target), 0); i++)
+      if (insn_sets_resource_p (XVECEXP (PATTERN (target), 0, i), &needed, 1))
+	return 0;
+
+  /* Scan backwards until we reach a label or an insn that uses something
+     INSN sets or sets something insn uses or sets.  */
+
+  for (trial = PREV_INSN (target),
+	 insns_to_search = MAX_DELAY_SLOT_INSN_SEARCH;
+       trial && GET_CODE (trial) != CODE_LABEL && insns_to_search > 0;
+       trial = PREV_INSN (trial), --insns_to_search)
+    {
+      if (GET_CODE (trial) != INSN && GET_CODE (trial) != CALL_INSN
+	  && GET_CODE (trial) != JUMP_INSN)
+	continue;
+
+      pat = PATTERN (trial);
+      if (GET_CODE (pat) == USE || GET_CODE (pat) == CLOBBER)
+	continue;
+
+      if (GET_CODE (pat) == SEQUENCE)
+	{
+	  /* If this is a CALL_INSN and its delay slots, it is hard to track
+	     the resource needs properly, so give up.  */
+	  if (GET_CODE (XVECEXP (pat, 0, 0)) == CALL_INSN)
+	    return 0;
+
+	  /* If this is an INSN or JUMP_INSN with delayed effects, it
+	     is hard to track the resource needs properly, so give up.  */
+
+#ifdef INSN_SETS_ARE_DELAYED
+	  if (INSN_SETS_ARE_DELAYED (XVECEXP (pat, 0, 0)))
+	    return 0;
+#endif
+
+#ifdef INSN_REFERENCES_ARE_DELAYED
+	  if (INSN_REFERENCES_ARE_DELAYED (XVECEXP (pat, 0, 0)))
+	    return 0;
+#endif
+
+	  /* See if any of the insns in the delay slot match, updating
+	     resource requirements as we go.  */
+	  for (i = XVECLEN (pat, 0) - 1; i > 0; i--)
+	    {
+	      rtx candidate = XVECEXP (pat, 0, i);
+
+	      /* If an insn will be annulled if the branch is false, it isn't
+		 considered as a possible duplicate insn.  */
+	      if (rtx_equal_p (PATTERN (candidate), ipat)
+		  && ! (INSN_ANNULLED_BRANCH_P (XVECEXP (pat, 0, 0))
+			&& INSN_FROM_TARGET_P (candidate)))
+		{
+		  /* Show that this insn will be used in the sequel.  */
+		  INSN_FROM_TARGET_P (candidate) = 0;
+		  return candidate;
+		}
+
+	      /* Unless this is an annulled insn from the target of a branch,
+		 we must stop if it sets anything needed or set by INSN.  */
+	      if ((! INSN_ANNULLED_BRANCH_P (XVECEXP (pat, 0, 0))
+		   || ! INSN_FROM_TARGET_P (candidate))
+		  && insn_sets_resource_p (candidate, &needed, 1))
+		return 0;
+	    }
+
+	  /* If the insn requiring the delay slot conflicts with INSN, we
+	     must stop.  */
+	  if (insn_sets_resource_p (XVECEXP (pat, 0, 0), &needed, 1))
+	    return 0;
+	}
+      else
+	{
+	  /* See if TRIAL is the same as INSN.  */
+	  pat = PATTERN (trial);
+	  if (rtx_equal_p (pat, ipat))
+	    return trial;
+
+	  /* Can't go any further if TRIAL conflicts with INSN.  */
+	  if (insn_sets_resource_p (trial, &needed, 1))
+	    return 0;
+	}
+    }
+
+  return 0;
+}

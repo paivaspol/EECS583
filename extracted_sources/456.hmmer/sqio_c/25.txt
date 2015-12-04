@@ -1,0 +1,25 @@
+static void 
+readPearson(struct ReadSeqVars *V)
+{
+  char *sptr;
+
+  if (V->ssimode >= 0) V->r_off = V->ssioffset;
+
+  if (*V->buf != '>') 
+    Die("\
+File %s does not appear to be in FASTA format at line %d.\n\
+You may want to specify the file format on the command line.\n\
+Usually this is done with an option --informat <fmt>.\n", 
+	V->fname, V->linenumber);
+
+  if ((sptr = strtok(V->buf+1, "\n\t ")) != NULL)
+    SetSeqinfoString(V->sqinfo, sptr, SQINFO_NAME);
+  if ((sptr = strtok(NULL, "\n")) != NULL)
+    SetSeqinfoString(V->sqinfo, sptr, SQINFO_DESC);
+
+  readLoop(0, endPearson, V);
+
+  while (!(feof(V->f) || ((*V->buf != 0) && (*V->buf == '>')))) {
+    SeqfileGetLine(V);
+  }
+}

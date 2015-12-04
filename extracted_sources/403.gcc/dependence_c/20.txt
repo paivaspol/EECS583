@@ -1,0 +1,33 @@
+static void
+dump_array_ref (node)
+     tree node;
+{
+  enum tree_code  tree_op = TREE_CODE (node);
+
+  if (tree_op == VAR_DECL)
+    {
+      printf ("%s", IDENTIFIER_POINTER (DECL_NAME (node)));
+    }
+  else if (tree_op == INTEGER_CST)
+    {
+      printf ("%d", (int)TREE_INT_CST_LOW (node));
+    }
+  else if (tree_op == PLUS_EXPR)
+    {
+      dump_array_ref (TREE_OPERAND (node, 0));
+      printf ("+");
+      dump_array_ref (TREE_OPERAND (node, 1));
+    }
+  else if (tree_op == MINUS_EXPR)
+    {
+      dump_array_ref (TREE_OPERAND (node, 0));
+      printf ("-");
+      dump_array_ref (TREE_OPERAND (node, 1));
+    }
+  else if (tree_op == MULT_EXPR)
+    {
+      dump_array_ref (TREE_OPERAND (node, 0));
+      printf ("*");
+      dump_array_ref (TREE_OPERAND (node, 1));
+    }
+}

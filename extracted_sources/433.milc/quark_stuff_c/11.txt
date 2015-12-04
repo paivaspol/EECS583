@@ -1,0 +1,176 @@
+void eo_fermion_force( double eps, int nflavors, field_offset x_off ){
+  /* note CG_solution and Dslash * solution are combined in "x_off" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need x_off transported from both ends of path. */
+  register int i ;
+  register site *s;
+  int mu,nu,rho,sig ;
+  int DirectLinks[8] ;
+  double ferm_epsilon, coeff;
+  double OneLink, Lepage, Naik, FiveSt, ThreeSt, SevenSt ;
+  su3_vector *tempvec[8] ;
+  su3_vector *temp_x ;
+
+#ifdef FFTIME
+  double dtime;
+
+  dtime=-dclock();
+#endif
+  ferm_epsilon = 2.0*(nflavors/4.0)*eps;
+  
+  /* Path coefficients times fermion epsilon */
+  OneLink = act_path_coeff[0]*ferm_epsilon ; 
+  Naik    = act_path_coeff[1]*ferm_epsilon ;
+  ThreeSt = act_path_coeff[2]*ferm_epsilon ;
+  FiveSt  = act_path_coeff[3]*ferm_epsilon ;
+  SevenSt = act_path_coeff[4]*ferm_epsilon ;
+  Lepage  = act_path_coeff[5]*ferm_epsilon ;
+  /* *************************************** */
+
+  /* Initialize the DirectLink flags */
+  for(mu=0;mu<8;mu++)
+    DirectLinks[mu] = 0 ;
+
+  /* Allocate temporary vectors */
+  for(mu=0;mu<8;mu++)
+    tempvec[mu] = (su3_vector *)calloc(sites_on_node, sizeof(su3_vector));
+
+  /*copy x_off to a temporary vector */
+  temp_x = (su3_vector *)calloc(sites_on_node, sizeof(su3_vector));
+  FORALLSITES(i,s) temp_x[i] = *(su3_vector *)F_PT(s,x_off) ;
+
+  for(sig=0;sig<8;sig++)
+    {
+      for(mu=0;mu<8;mu++)if((mu!=sig)&&(mu!=OPP_DIR(sig)))
+	{
+	  u_shift_fermion(temp_x, Pmu, OPP_DIR(mu));
+	  u_shift_fermion(Pmu, P3, sig);
+	  if(GOES_FORWARDS(sig))
+	    {
+	      /* Add the force F_sig[x+mu]:         x--+             *
+	       *                                   |   |             *
+	       *                                   o   o             *
+	       * the 1 link in the path: - (numbering starts form 0) */
+	      add_force_to_mom(P3, Pmu, sig, -ThreeSt) ;
+	    }
+	  for(nu=0;nu<8;nu++)if((nu!=mu )&&(nu!=OPP_DIR(mu ))&&
+				(nu!=sig)&&(nu!=OPP_DIR(sig)))
+	    {
+	      u_shift_fermion(Pmu, Pnumu, OPP_DIR(nu));
+	      u_shift_fermion(Pnumu, P5, sig);
+	      if(GOES_FORWARDS(sig))
+		{
+		  /* Add the force F_sig[x+mu+nu]:      x--+             *
+		   *                                   |   |             *
+		   *                                   o   o             *
+		   * the 2 link in the path: + (numbering starts form 0) */
+		  add_force_to_mom(P5, Pnumu, sig, FiveSt);
+		}
+	      for(rho=0;rho<8;rho++)if((rho!=mu )&&(rho!=OPP_DIR(mu ))&&
+				       (rho!=nu )&&(rho!=OPP_DIR(nu ))&&
+				       (rho!=sig)&&(rho!=OPP_DIR(sig)))
+		{
+		  u_shift_fermion(Pnumu, Prhonumu, OPP_DIR(rho));
+		  /* Length 7 paths */
+		  u_shift_fermion(Prhonumu, P7,sig);
+		  if(GOES_FORWARDS(sig))
+		    {
+		      /* Add the force F_sig[x+mu+nu+rho]:  x--+             *
+		       *                                   |   |             *
+		       *                                   o   o             *
+		       * the 3 link in the path: - (numbering starts form 0) */
+		      add_force_to_mom(P7, Prhonumu, sig, -SevenSt ) ;
+		    }
+		  /*Add the force F_rho the 2(4) link in the path: +     */
+		  u_shift_fermion(P7, P7rho, rho);
+		  side_link_force(rho,sig,SevenSt, Pnumu, P7, Prhonumu, P7rho);
+		  /* Add the P7rho vector to P5 */
+		  coeff = SevenSt/FiveSt ; 
+		  FORALLSITES(i,s)
+		    scalar_mult_add_su3_vector(&(P5[i]),&(P7rho[i]),coeff,
+					       &(P5[i]));
+		}/* rho */
+	      /* Length 5 paths */
+	      /*Add the force F_nu the 1(3) link in the path: -     */
+	      u_shift_fermion(P5,P5nu, nu);
+	      side_link_force(nu,sig,-FiveSt,Pmu,P5, 
+			      Pnumu,P5nu) ;
+	      /* Add the P5nu vector to P3 */
+	      coeff = FiveSt/ThreeSt ; 
+	      FORALLSITES(i,s)
+		scalar_mult_add_su3_vector(&(P3[i]),&(P5nu[i]),coeff,&(P3[i]));
+	    }/* nu */
+
+	  /* Now the Lepage term... It is the same with 5-link paths with
+             nu=mu and FiveSt=Lepage. So Pnumu is really Pmumu */
+	  u_shift_fermion(Pmu, Pnumu, OPP_DIR(mu));
+	  u_shift_fermion(Pnumu, P5, sig);
+	  if(GOES_FORWARDS(sig))
+	    {
+	      /* Add the force F_sig[x+mu+nu]:      x--+             *
+	       *                                   |   |             *
+	       *                                   o   o             *
+	       * the 2 link in the path: + (numbering starts form 0) */
+	      add_force_to_mom(P5, Pnumu, sig, Lepage) ;
+	    }
+	  /*Add the force F_nu the 1(3) link in the path: -     */
+	  u_shift_fermion(P5,P5nu, mu);
+	  side_link_force(mu, sig, -Lepage, Pmu, P5, Pnumu, P5nu) ;
+	  /* Add the P5nu vector to P3 */
+	  coeff = Lepage/ThreeSt ; 
+	  FORALLSITES(i,s)
+	    scalar_mult_add_su3_vector(&(P3[i]),&(P5nu[i]),coeff,&(P3[i]));
+
+	  /* Length 3 paths (Not the Naik term) */
+	  /*Add the force F_mu the 0(2) link in the path: +     */
+	  if(GOES_FORWARDS(mu)) 
+	    u_shift_fermion(P3,P3mu, mu );
+	  /* The above shift is not needed if mu is backwards */
+	  side_link_force(mu, sig, ThreeSt, temp_x, P3, Pmu, P3mu);
+
+	  /* Finally the OneLink and the Naik term */
+	  /* Check if this direction is not already done */
+	  if( (!DirectLinks[mu]) ){
+	    DirectLinks[mu]=1 ;
+	    if(GOES_BACKWARDS(mu))/* Do only the forward terms in the Dslash */
+	      {
+		/* Because I have shifted with OPP_DIR(mu) Pmu is a forward *
+		 * shift.                                                   */
+		/* The one link */
+		add_force_to_mom(Pmu, temp_x, OPP_DIR(mu), OneLink) ;
+		/* For the same reason Pnumu is the forward double link */
+
+		/* Popmu is a backward shift */
+		u_shift_fermion(temp_x, Popmu, mu);
+		/* The Naik */
+		/* link no 1: - */
+		add_force_to_mom(Pnumu, Popmu, OPP_DIR(mu), -Naik) ;
+		/*Pmumumu can overwrite Popmu which is no longer needed */
+		u_shift_fermion(Pnumu, Pmumumu, OPP_DIR(mu));
+		/* link no 0: + */
+		add_force_to_mom(Pmumumu, temp_x, OPP_DIR(mu), Naik);
+	      }
+	    else /* The rest of the Naik terms */
+	      {
+		u_shift_fermion(temp_x, Popmu, mu);
+		/* link no 2: + */
+		/* Pnumu is double backward shift */
+		add_force_to_mom(Popmu, Pnumu, mu, Naik) ;
+	      }
+	  }
+	}/* mu */
+      /* Here we have to do together the Naik term and the one link term */
+    }/*sig */
+
+  /* Free temporary vectors */
+  free(temp_x) ;
+  for(mu=0;mu<8;mu++)
+    free(tempvec[mu]) ;
+
+#ifdef FFTIME
+  dtime += dclock();
+node0_printf("FFTIME:  %e\n",dtime);
+/**printf("TLENGTH: %d\n",tlength);**/
+#endif
+} /* eo_fermion_force(version 6) */

@@ -1,0 +1,51 @@
+void init_pme(FILE *log,t_commrec *cr,
+	      int nkx,int nky,int nkz,int pme_order,int homenr,
+	      bool bOptFFT,int ewald_geometry)
+{
+  int i;
+  bool bPar;
+
+#ifdef WITHOUT_FFTW
+  fatal_error(0,"PME used, but GROMACS was compiled without FFTW support!\n");
+#endif
+  fprintf(log,"Will do PME sum in reciprocal space.\n");
+  please_cite(log,"Essman95a");
+
+  if(ewald_geometry==eewg3DC) {
+    fprintf(log,"Using the Ewald3DC correction for systems with a slab geometry.\n");
+    please_cite(log,"In-Chul99a");
+  }
+
+  bPar = cr && (cr->nnodes>1);
+  if (bPar) {
+    fprintf(log,"Parallelized PME sum used.\n");
+    if ((nkx % cr->nnodes) != 0)
+      fprintf(log,"Warning: For load balance, "
+	      "fourier_nx should be divisible by NNODES\n");
+  } 
+ 
+  /* allocate space for things */
+  snew(bsp_mod[XX],nkx);
+  snew(bsp_mod[YY],nky);
+  snew(bsp_mod[ZZ],nkz);
+  for(i=0;i<DIM;i++) {
+    snew(theta[i],pme_order*homenr); 
+    snew(dtheta[i],pme_order*homenr);
+  }
+  snew(fractx,homenr); 
+
+  snew(idx,homenr);
+  snew(nnx,3*nkx);
+  snew(nny,3*nky);
+  snew(nnz,3*nkz);
+  for(i=0; (i<3*nkx); i++)
+    nnx[i] = i % nkx;
+  for(i=0; (i<3*nky); i++)
+    nny[i] = i % nky;
+  for(i=0; (i<3*nkz); i++)
+    nnz[i] = i % nkz;
+
+  grid=mk_fftgrid(log,bPar,nkx,nky,nkz,bOptFFT);
+
+  make_bspline_moduli(bsp_mod,nkx,nky,nkz,pme_order);   
+}

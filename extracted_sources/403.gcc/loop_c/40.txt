@@ -1,0 +1,45 @@
+static void
+loop_bivs_find (loop)
+     struct loop *loop;
+{
+  struct loop_regs *regs = LOOP_REGS (loop);
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  /* Temporary list pointers for traversing ivs->list.  */
+  struct iv_class *bl, **backbl;
+
+  ivs->list = 0;
+
+  for_each_insn_in_loop (loop, check_insn_for_bivs);
+
+  /* Scan ivs->list to remove all regs that proved not to be bivs.
+     Make a sanity check against regs->n_times_set.  */
+  for (backbl = &ivs->list, bl = *backbl; bl; bl = bl->next)
+    {
+      if (REG_IV_TYPE (ivs, bl->regno) != BASIC_INDUCT
+	  /* Above happens if register modified by subreg, etc.  */
+	  /* Make sure it is not recognized as a basic induction var: */
+	  || regs->array[bl->regno].n_times_set != bl->biv_count
+	  /* If never incremented, it is invariant that we decided not to
+	     move.  So leave it alone.  */
+	  || ! bl->incremented)
+	{
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "Biv %d: discarded, %s\n",
+		     bl->regno,
+		     (REG_IV_TYPE (ivs, bl->regno) != BASIC_INDUCT
+		      ? "not induction variable"
+		      : (! bl->incremented ? "never incremented"
+			 : "count error")));
+
+	  REG_IV_TYPE (ivs, bl->regno) = NOT_BASIC_INDUCT;
+	  *backbl = bl->next;
+	}
+      else
+	{
+	  backbl = &bl->next;
+
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "Biv %d: verified\n", bl->regno);
+	}
+    }
+}

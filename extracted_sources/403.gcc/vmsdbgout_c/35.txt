@@ -1,0 +1,48 @@
+static void
+vmsdbgout_finish (input_filename)
+     const char *input_filename ATTRIBUTE_UNUSED;
+{
+  unsigned int i;
+  int totsize;
+
+  if (write_symbols == VMS_AND_DWARF2_DEBUG)
+    (*dwarf2_debug_hooks.finish) (input_filename);
+
+  if (debug_info_level == DINFO_LEVEL_NONE)
+    return;
+
+  /* Output a terminator label for the .text section.  */
+  text_section ();
+  ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, TEXT_END_LABEL, 0);
+
+  /* Output debugging information.
+     Warning! Do not change the name of the .vmsdebug section without
+     changing it in the assembler also.  */
+  named_section (NULL_TREE, ".vmsdebug", 0);
+  ASM_OUTPUT_ALIGN (asm_out_file, 0);
+
+  totsize = write_modbeg (1);
+  for (i = 1; i < func_table_in_use; i++)
+    {
+      totsize += write_rtnbeg (i, 1);
+      totsize += write_rtnend (i, 1);
+    }
+  totsize += write_pclines (1);
+
+  write_modbeg (0);
+  for (i = 1; i < func_table_in_use; i++)
+    {
+      write_rtnbeg (i, 0);
+      write_rtnend (i, 0);
+    }
+  write_pclines (0);
+
+  if (debug_info_level > DINFO_LEVEL_TERSE)
+    {
+      totsize = write_srccorrs (1);
+      write_srccorrs (0);
+    }
+
+  totsize = write_modend (1);
+  write_modend (0);
+}

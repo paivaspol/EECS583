@@ -1,0 +1,19 @@
+static tree
+valid_compound_expr_initializer (value, endtype)
+     tree value;
+     tree endtype;
+{
+  if (TREE_CODE (value) == COMPOUND_EXPR)
+    {
+      if (valid_compound_expr_initializer (TREE_OPERAND (value, 0), endtype)
+	  == error_mark_node)
+	return error_mark_node;
+      return valid_compound_expr_initializer (TREE_OPERAND (value, 1),
+					      endtype);
+    }
+  else if (! TREE_CONSTANT (value)
+	   && ! initializer_constant_valid_p (value, endtype))
+    return error_mark_node;
+  else
+    return value;
+}

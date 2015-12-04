@@ -1,0 +1,46 @@
+static void
+mark_reg_store (reg, setter, data)
+     rtx reg, setter;
+     void *data ATTRIBUTE_UNUSED;
+{
+  int regno;
+
+  if (GET_CODE (reg) == SUBREG)
+    reg = SUBREG_REG (reg);
+
+  if (GET_CODE (reg) != REG)
+    return;
+
+  regs_set[n_regs_set++] = reg;
+
+  if (setter && GET_CODE (setter) != CLOBBER)
+    set_preference (reg, SET_SRC (setter));
+
+  regno = REGNO (reg);
+
+  /* Either this is one of the max_allocno pseudo regs not allocated,
+     or it is or has a hardware reg.  First handle the pseudo-regs.  */
+  if (regno >= FIRST_PSEUDO_REGISTER)
+    {
+      if (reg_allocno[regno] >= 0)
+	{
+	  SET_ALLOCNO_LIVE (reg_allocno[regno]);
+	  record_one_conflict (regno);
+	}
+    }
+
+  if (reg_renumber[regno] >= 0)
+    regno = reg_renumber[regno];
+
+  /* Handle hardware regs (and pseudos allocated to hard regs).  */
+  if (regno < FIRST_PSEUDO_REGISTER && ! fixed_regs[regno])
+    {
+      int last = regno + HARD_REGNO_NREGS (regno, GET_MODE (reg));
+      while (regno < last)
+	{
+	  record_one_conflict (regno);
+	  SET_HARD_REG_BIT (hard_regs_live, regno);
+	  regno++;
+	}
+    }
+}

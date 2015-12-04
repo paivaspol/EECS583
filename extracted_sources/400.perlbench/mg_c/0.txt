@@ -1,0 +1,16 @@
+void
+Perl_mg_magical(pTHX_ SV *sv)
+{
+    MAGIC* mg;
+    for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
+	MGVTBL* vtbl = mg->mg_virtual;
+	if (vtbl) {
+	    if (vtbl->svt_get && !(mg->mg_flags & MGf_GSKIP))
+		SvGMAGICAL_on(sv);
+	    if (vtbl->svt_set)
+		SvSMAGICAL_on(sv);
+	    if (!(SvFLAGS(sv) & (SVs_GMG|SVs_SMG)) || vtbl->svt_clear)
+		SvRMAGICAL_on(sv);
+	}
+    }
+}

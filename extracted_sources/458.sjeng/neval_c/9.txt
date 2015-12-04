@@ -1,0 +1,36 @@
+void check_phase(void)
+{
+  int xnum_pieces = 0;
+  int j, a, i;
+
+  for (j = 1, a = 1; (a <= piece_count); j++)
+    {
+      i = pieces[j];
+
+      if (!i)
+	continue;
+      else
+	a++;
+
+      if (board[i] != wpawn && board[i] != bpawn &&
+	  board[i] != npiece && board[i] != frame)
+	{
+	  xnum_pieces++;
+	}
+    };
+  if ((xnum_pieces >= 12)
+      /* not both have castled */
+      && (!white_castled || !black_castled)
+      /* no both lost castling priveledges */
+      && (board[30] == wking || board[114] == bking))
+    {
+      phase = Opening;
+    }
+  else if (xnum_pieces <= 6)
+    {
+      phase = Endgame;
+    }
+  else
+    phase = Middlegame;
+
+}

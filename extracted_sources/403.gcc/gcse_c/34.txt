@@ -1,0 +1,23 @@
+static void
+record_last_mem_set_info (insn)
+     rtx insn;
+{
+  int bb = BLOCK_NUM (insn);
+
+  /* load_killed_in_block_p will handle the case of calls clobbering
+     everything.  */
+  modify_mem_list[bb] = alloc_INSN_LIST (insn, modify_mem_list[bb]);
+  bitmap_set_bit (modify_mem_list_set, bb);
+
+  if (GET_CODE (insn) == CALL_INSN)
+    {
+      /* Note that traversals of this loop (other than for free-ing)
+	 will break after encountering a CALL_INSN.  So, there's no
+	 need to insert a pair of items, as canon_list_insert does.  */
+      canon_modify_mem_list[bb] = 
+        alloc_INSN_LIST (insn, canon_modify_mem_list[bb]);
+      bitmap_set_bit (canon_modify_mem_list_set, bb);
+    }
+  else
+    note_stores (PATTERN (insn), canon_list_insert, (void*) insn);
+}

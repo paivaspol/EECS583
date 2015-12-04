@@ -1,0 +1,27 @@
+void
+get_block_head_tail (b, headp, tailp)
+     int b;
+     rtx *headp;
+     rtx *tailp;
+{
+  /* HEAD and TAIL delimit the basic block being scheduled.  */
+  rtx head = BLOCK_HEAD (b);
+  rtx tail = BLOCK_END (b);
+
+  /* Don't include any notes or labels at the beginning of the
+     basic block, or notes at the ends of basic blocks.  */
+  while (head != tail)
+    {
+      if (GET_CODE (head) == NOTE)
+	head = NEXT_INSN (head);
+      else if (GET_CODE (tail) == NOTE)
+	tail = PREV_INSN (tail);
+      else if (GET_CODE (head) == CODE_LABEL)
+	head = NEXT_INSN (head);
+      else
+	break;
+    }
+
+  *headp = head;
+  *tailp = tail;
+}

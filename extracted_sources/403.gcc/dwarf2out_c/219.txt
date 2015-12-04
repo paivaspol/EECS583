@@ -1,0 +1,30 @@
+static void
+gen_field_die (decl, context_die)
+     tree decl;
+     dw_die_ref context_die;
+{
+  dw_die_ref decl_die = new_die (DW_TAG_member, context_die, decl);
+
+  add_name_and_src_coords_attributes (decl_die, decl);
+  add_type_attribute (decl_die, member_declared_type (decl),
+		      TREE_READONLY (decl), TREE_THIS_VOLATILE (decl),
+		      context_die);
+
+  if (DECL_BIT_FIELD_TYPE (decl))
+    {
+      add_byte_size_attribute (decl_die, decl);
+      add_bit_size_attribute (decl_die, decl);
+      add_bit_offset_attribute (decl_die, decl);
+    }
+
+  if (TREE_CODE (DECL_FIELD_CONTEXT (decl)) != UNION_TYPE)
+    add_data_member_location_attribute (decl_die, decl);
+
+  if (DECL_ARTIFICIAL (decl))
+    add_AT_flag (decl_die, DW_AT_artificial, 1);
+
+  if (TREE_PROTECTED (decl))
+    add_AT_unsigned (decl_die, DW_AT_accessibility, DW_ACCESS_protected);
+  else if (TREE_PRIVATE (decl))
+    add_AT_unsigned (decl_die, DW_AT_accessibility, DW_ACCESS_private);
+}

@@ -1,0 +1,16 @@
+static int xtc_header(XDR *xd,int *magic,int *natoms,int *step,real *time,
+		      bool *bOK)
+{
+  int result;
+
+  if (xdr_int(xd,magic) == 0)
+    return 0;
+  result=XTC_CHECK("natoms", xdr_int(xd,natoms));  /* number of atoms */
+  if (result)
+    result=XTC_CHECK("step",   xdr_int(xd,step));    /* frame number    */
+  if (result)
+    result=XTC_CHECK("time",   xdr_real(xd,time));   /* time            */
+  *bOK=(result!=0);
+
+  return result;
+}

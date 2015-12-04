@@ -1,0 +1,21 @@
+static void mv_symtab(int dest,t_symtab *symtab)
+{
+  int i,nr,len;
+  struct symbuf *symbuf;
+  
+  blocktx(dest,symtab->nr);
+  nr=symtab->nr;
+  symbuf=symtab->symbuf;
+  while (symbuf!=NULL)
+    {
+      for (i=0; (i<symbuf->bufsize)&&(i<nr); i++)
+        {
+          len=strlen(symbuf->buf[i])+1;
+          blocktx(dest,len);
+          nblocktx(dest,len,symbuf->buf[i]);
+        }
+      nr-=i;
+      symbuf=symbuf->next;
+    }
+  assert(nr==0);
+}

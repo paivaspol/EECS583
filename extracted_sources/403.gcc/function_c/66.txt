@@ -1,0 +1,17 @@
+static rtx
+round_trampoline_addr (tramp)
+     rtx tramp;
+{
+#ifdef TRAMPOLINE_ALIGNMENT
+  /* Round address up to desired boundary.  */
+  rtx temp = gen_reg_rtx (Pmode);
+  rtx addend = GEN_INT (TRAMPOLINE_ALIGNMENT / BITS_PER_UNIT - 1);
+  rtx mask = GEN_INT (-TRAMPOLINE_ALIGNMENT / BITS_PER_UNIT);
+
+  temp  = expand_simple_binop (Pmode, PLUS, tramp, addend,
+			       temp, 0, OPTAB_LIB_WIDEN);
+  tramp = expand_simple_binop (Pmode, AND, temp, mask,
+			       temp, 0, OPTAB_LIB_WIDEN);
+#endif
+  return tramp;
+}

@@ -1,0 +1,43 @@
+static void
+merge_blocks_move_predecessor_nojumps (a, b)
+     basic_block a, b;
+{
+  rtx barrier;
+  int index;
+
+  barrier = next_nonnote_insn (a->end);
+  if (GET_CODE (barrier) != BARRIER)
+    abort ();
+  delete_insn (barrier);
+
+  /* Move block and loop notes out of the chain so that we do not
+     disturb their order.
+
+     ??? A better solution would be to squeeze out all the non-nested notes
+     and adjust the block trees appropriately.   Even better would be to have
+     a tighter connection between block trees and rtl so that this is not
+     necessary.  */
+  if (squeeze_notes (&a->head, &a->end))
+    abort ();
+
+  /* Scramble the insn chain.  */
+  if (a->end != PREV_INSN (b->head))
+    reorder_insns_nobb (a->head, a->end, PREV_INSN (b->head));
+  BB_SET_FLAG (a, BB_UPDATE_LIFE);
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Moved block %d before %d and merged.\n",
+	     a->index, b->index);
+
+  /* Swap the records for the two blocks around.  Although we are deleting B,
+     A is now where B was and we want to compact the BB array from where
+     A used to be.  */
+  BASIC_BLOCK (a->index) = b;
+  BASIC_BLOCK (b->index) = a;
+  index = a->index;
+  a->index = b->index;
+  b->index = index;
+
+  /* Now blocks A and B are contiguous.  Merge them.  */
+  merge_blocks_nomove (a, b);
+}

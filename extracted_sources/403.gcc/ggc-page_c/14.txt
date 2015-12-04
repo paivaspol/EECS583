@@ -1,0 +1,108 @@
+void *
+ggc_alloc (size)
+     size_t size;
+{
+  unsigned order, word, bit, object_offset;
+  struct page_entry *entry;
+  void *result;
+
+  if (size <= 256)
+    order = size_lookup[size];
+  else
+    {
+      order = 9;
+      while (size > OBJECT_SIZE (order))
+	order++;
+    }
+
+  /* If there are non-full pages for this size allocation, they are at
+     the head of the list.  */
+  entry = G.pages[order];
+
+  /* If there is no page for this object size, or all pages in this
+     context are full, allocate a new page.  */
+  if (entry == NULL || entry->num_free_objects == 0)
+    {
+      struct page_entry *new_entry;
+      new_entry = alloc_page (order);
+      
+      /* If this is the only entry, it's also the tail.  */
+      if (entry == NULL)
+	G.page_tails[order] = new_entry;
+     
+      /* Put new pages at the head of the page list.  */
+      new_entry->next = entry;
+      entry = new_entry;
+      G.pages[order] = new_entry;
+
+      /* For a new page, we know the word and bit positions (in the
+	 in_use bitmap) of the first available object -- they're zero.  */
+      new_entry->next_bit_hint = 1;
+      word = 0;
+      bit = 0;
+      object_offset = 0;
+    }
+  else
+    {
+      /* First try to use the hint left from the previous allocation
+	 to locate a clear bit in the in-use bitmap.  We've made sure
+	 that the one-past-the-end bit is always set, so if the hint
+	 has run over, this test will fail.  */
+      unsigned hint = entry->next_bit_hint;
+      word = hint / HOST_BITS_PER_LONG;
+      bit = hint % HOST_BITS_PER_LONG;
+      
+      /* If the hint didn't work, scan the bitmap from the beginning.  */
+      if ((entry->in_use_p[word] >> bit) & 1)
+	{
+	  word = bit = 0;
+	  while (~entry->in_use_p[word] == 0)
+	    ++word;
+	  while ((entry->in_use_p[word] >> bit) & 1)
+	    ++bit;
+	  hint = word * HOST_BITS_PER_LONG + bit;
+	}
+
+      /* Next time, try the next bit.  */
+      entry->next_bit_hint = hint + 1;
+
+      object_offset = hint * OBJECT_SIZE (order);
+    }
+
+  /* Set the in-use bit.  */
+  entry->in_use_p[word] |= ((unsigned long) 1 << bit);
+
+  /* Keep a running total of the number of free objects.  If this page
+     fills up, we may have to move it to the end of the list if the
+     next page isn't full.  If the next page is full, all subsequent
+     pages are full, so there's no need to move it.  */
+  if (--entry->num_free_objects == 0
+      && entry->next != NULL
+      && entry->next->num_free_objects > 0)
+    {
+      G.pages[order] = entry->next;
+      entry->next = NULL;
+      G.page_tails[order]->next = entry;
+      G.page_tails[order] = entry;
+    }
+
+  /* Calculate the object's address.  */
+  result = entry->page + object_offset;
+
+#ifdef GGC_POISON
+  /* `Poison' the entire allocated object, including any padding at
+     the end.  */
+  memset (result, 0xaf, OBJECT_SIZE (order));
+#endif
+
+  /* Keep track of how many bytes are being allocated.  This
+     information is used in deciding when to collect.  */
+  G.allocated += OBJECT_SIZE (order);
+
+  if (GGC_DEBUG_LEVEL >= 3)
+    fprintf (G.debug_file, 
+	     "Allocating object, requested size=%ld, actual=%ld at %p on %p\n",
+	     (long) size, (long) OBJECT_SIZE (order), result, (PTR) entry);
+
+  return result;
+}

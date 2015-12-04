@@ -1,0 +1,17 @@
+static void
+sdbout_source_line (line, filename)
+     unsigned int line;
+     const char *filename ATTRIBUTE_UNUSED;
+{
+  /* COFF relative line numbers must be positive.  */
+  if ((int) line > sdb_begin_function_line)
+    {
+#ifdef ASM_OUTPUT_SOURCE_LINE
+      ASM_OUTPUT_SOURCE_LINE (asm_out_file, line);
+#else
+      fprintf (asm_out_file, "\t.ln\t%d\n",
+	       ((sdb_begin_function_line > -1)
+		? line - sdb_begin_function_line : 1));
+#endif
+    }
+}

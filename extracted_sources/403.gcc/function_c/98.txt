@@ -1,0 +1,168 @@
+static rtx
+keep_stack_depressed (seq)
+     rtx seq;
+{
+  int i, j;
+  struct epi_info info;
+
+  /* If the epilogue is just a single instruction, it ust be OK as is.  */
+
+  if (GET_CODE (seq) != SEQUENCE)
+    return seq;
+
+  /* Otherwise, start a sequence, initialize the information we have, and
+     process all the insns we were given.  */
+  start_sequence ();
+
+  info.sp_equiv_reg = stack_pointer_rtx;
+  info.sp_offset = 0;
+  info.equiv_reg_src = 0;
+
+  for (i = 0; i < XVECLEN (seq, 0); i++)
+    {
+      rtx insn = XVECEXP (seq, 0, i);
+
+      if (!INSN_P (insn))
+	{
+	  add_insn (insn);
+	  continue;
+	}
+
+      /* If this insn references the register that SP is equivalent to and
+	 we have a pending load to that register, we must force out the load
+	 first and then indicate we no longer know what SP's equivalent is.  */
+      if (info.equiv_reg_src != 0
+	  && reg_referenced_p (info.sp_equiv_reg, PATTERN (insn)))
+	{
+	  emit_equiv_load (&info);
+	  info.sp_equiv_reg = 0;
+	}
+
+      info.new_sp_equiv_reg = info.sp_equiv_reg;
+      info.new_sp_offset = info.sp_offset;
+
+      /* If this is a (RETURN) and the return address is on the stack,
+	 update the address and change to an indirect jump.  */
+      if (GET_CODE (PATTERN (insn)) == RETURN
+	  || (GET_CODE (PATTERN (insn)) == PARALLEL
+	      && GET_CODE (XVECEXP (PATTERN (insn), 0, 0)) == RETURN))
+	{
+	  rtx retaddr = INCOMING_RETURN_ADDR_RTX;
+	  rtx base = 0;
+	  HOST_WIDE_INT offset = 0;
+	  rtx jump_insn, jump_set;
+
+	  /* If the return address is in a register, we can emit the insn
+	     unchanged.  Otherwise, it must be a MEM and we see what the
+	     base register and offset are.  In any case, we have to emit any
+	     pending load to the equivalent reg of SP, if any.  */
+	  if (GET_CODE (retaddr) == REG)
+	    {
+	      emit_equiv_load (&info);
+	      add_insn (insn);
+	      continue;
+	    }
+	  else if (GET_CODE (retaddr) == MEM
+		   && GET_CODE (XEXP (retaddr, 0)) == REG)
+	    base = gen_rtx_REG (Pmode, REGNO (XEXP (retaddr, 0))), offset = 0;
+	  else if (GET_CODE (retaddr) == MEM
+		   && GET_CODE (XEXP (retaddr, 0)) == PLUS
+		   && GET_CODE (XEXP (XEXP (retaddr, 0), 0)) == REG
+		   && GET_CODE (XEXP (XEXP (retaddr, 0), 1)) == CONST_INT)
+	    {
+	      base = gen_rtx_REG (Pmode, REGNO (XEXP (XEXP (retaddr, 0), 0)));
+	      offset = INTVAL (XEXP (XEXP (retaddr, 0), 1));
+	    }
+	  else
+	    abort ();
+
+	  /* If the base of the location containing the return pointer
+	     is SP, we must update it with the replacement address.  Otherwise,
+	     just build the necessary MEM.  */
+	  retaddr = plus_constant (base, offset);
+	  if (base == stack_pointer_rtx)
+	    retaddr = simplify_replace_rtx (retaddr, stack_pointer_rtx,
+					    plus_constant (info.sp_equiv_reg,
+							   info.sp_offset));
+
+	  retaddr = gen_rtx_MEM (Pmode, retaddr);
+
+	  /* If there is a pending load to the equivalent register for SP
+	     and we reference that register, we must load our address into
+	     a scratch register and then do that load.  */
+	  if (info.equiv_reg_src
+	      && reg_overlap_mentioned_p (info.equiv_reg_src, retaddr))
+	    {
+	      unsigned int regno;
+	      rtx reg;
+
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (HARD_REGNO_MODE_OK (regno, Pmode)
+		    && !fixed_regs[regno]
+		    && TEST_HARD_REG_BIT (regs_invalidated_by_call, regno)
+		    && !REGNO_REG_SET_P (EXIT_BLOCK_PTR->global_live_at_start,
+					 regno)
+		    && !refers_to_regno_p (regno,
+					   regno + HARD_REGNO_NREGS (regno,
+								     Pmode),
+					   info.equiv_reg_src, NULL))
+		  break;
+
+	      if (regno == FIRST_PSEUDO_REGISTER)
+		abort ();
+
+	      reg = gen_rtx_REG (Pmode, regno);
+	      emit_move_insn (reg, retaddr);
+	      retaddr = reg;
+	    }
+
+	  emit_equiv_load (&info);
+	  jump_insn = emit_jump_insn (gen_indirect_jump (retaddr));
+
+	  /* Show the SET in the above insn is a RETURN.  */
+	  jump_set = single_set (jump_insn);
+	  if (jump_set == 0)
+	    abort ();
+	  else
+	    SET_IS_RETURN_P (jump_set) = 1;
+	}
+
+      /* If SP is not mentioned in the pattern and its equivalent register, if
+	 any, is not modified, just emit it.  Otherwise, if neither is set,
+	 replace the reference to SP and emit the insn.  If none of those are
+	 true, handle each SET individually.  */
+      else if (!reg_mentioned_p (stack_pointer_rtx, PATTERN (insn))
+	       && (info.sp_equiv_reg == stack_pointer_rtx
+		   || !reg_set_p (info.sp_equiv_reg, insn)))
+	add_insn (insn);
+      else if (! reg_set_p (stack_pointer_rtx, insn)
+	       && (info.sp_equiv_reg == stack_pointer_rtx
+		   || !reg_set_p (info.sp_equiv_reg, insn)))
+	{
+	  if (! validate_replace_rtx (stack_pointer_rtx,
+				      plus_constant (info.sp_equiv_reg,
+						     info.sp_offset),
+				      insn))
+	    abort ();
+
+	  add_insn (insn);
+	}
+      else if (GET_CODE (PATTERN (insn)) == SET)
+	handle_epilogue_set (PATTERN (insn), &info);
+      else if (GET_CODE (PATTERN (insn)) == PARALLEL)
+	{
+	  for (j = 0; j < XVECLEN (PATTERN (insn), 0); j++)
+	    if (GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == SET)
+	      handle_epilogue_set (XVECEXP (PATTERN (insn), 0, j), &info);
+	}
+      else
+	add_insn (insn);
+
+      info.sp_equiv_reg = info.new_sp_equiv_reg;
+      info.sp_offset = info.new_sp_offset;
+    }
+
+  seq = gen_sequence ();
+  end_sequence ();
+  return seq;
+}

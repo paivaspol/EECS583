@@ -1,0 +1,20 @@
+static int fixup_match_1 PARAMS ((rtx, rtx, rtx, rtx, rtx, int, int, int, FILE *))
+;
+static int reg_is_remote_constant_p PARAMS ((rtx, rtx, rtx));
+static int stable_and_no_regs_but_for_p PARAMS ((rtx, rtx, rtx));
+static int regclass_compatible_p PARAMS ((int, int));
+static int replacement_quality PARAMS ((rtx));
+static int fixup_match_2 PARAMS ((rtx, rtx, rtx, rtx, FILE *));
+
+/* Return non-zero if registers with CLASS1 and CLASS2 can be merged without
+   causing too much register allocation problems.  */
+static int
+regclass_compatible_p (class0, class1)
+     int class0, class1;
+{
+  return (class0 == class1
+	  || (reg_class_subset_p (class0, class1)
+	      && ! CLASS_LIKELY_SPILLED_P (class0))
+	  || (reg_class_subset_p (class1, class0)
+	      && ! CLASS_LIKELY_SPILLED_P (class1)));
+}

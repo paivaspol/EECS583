@@ -1,0 +1,30 @@
+void
+compute_use_by_pseudos (to, from)
+     HARD_REG_SET *to;
+     regset from;
+{
+  unsigned int regno;
+
+  EXECUTE_IF_SET_IN_REG_SET
+    (from, FIRST_PSEUDO_REGISTER, regno,
+     {
+       int r = reg_renumber[regno];
+       int nregs;
+
+       if (r < 0)
+	 {
+	   /* reload_combine uses the information from
+	      BASIC_BLOCK->global_live_at_start, which might still
+	      contain registers that have not actually been allocated
+	      since they have an equivalence.  */
+	   if (! reload_completed)
+	     abort ();
+	 }
+       else
+	 {
+	   nregs = HARD_REGNO_NREGS (r, PSEUDO_REGNO_MODE (regno));
+	   while (nregs-- > 0)
+	     SET_HARD_REG_BIT (*to, r + nregs);
+	 }
+     });
+}

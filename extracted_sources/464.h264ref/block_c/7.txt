@@ -1,0 +1,31 @@
+int dct_chroma_DC(int uv, int cr_cbp)
+{
+  int run, scan_pos, coeff_ctr, level, i, j;
+  int*  DCLevel = img->cofDC[uv+1][0];
+  int*  DCRun   = img->cofDC[uv+1][1];
+
+  run=-1;
+  scan_pos=0;
+
+  for (coeff_ctr=0; coeff_ctr < 16; coeff_ctr++)
+  {
+    i=SNGL_SCAN[coeff_ctr][0];
+    j=SNGL_SCAN[coeff_ctr][1];
+
+    run++;
+
+    level = abs(dc_level[uv][i][j]);
+
+    if (level  != 0)
+    {
+      cr_cbp=max(1,cr_cbp);
+      DCLevel[scan_pos] = sign(level ,dc_level[uv][i][j]);
+      DCRun  [scan_pos] = run;
+      scan_pos++;
+      run=-1;
+    }
+  }
+  DCLevel[scan_pos] = 0;
+
+  return cr_cbp;
+}

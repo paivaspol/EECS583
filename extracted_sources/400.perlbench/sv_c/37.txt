@@ -1,0 +1,19 @@
+void
+Perl_sv_catpv(pTHX_ register SV *sv, register const char *ptr)
+{
+    register STRLEN len;
+    STRLEN tlen;
+    char *junk;
+
+    if (!ptr)
+	return;
+    junk = SvPV_force(sv, tlen);
+    len = strlen(ptr);
+    SvGROW(sv, tlen + len + 1);
+    if (ptr == junk)
+	ptr = SvPVX(sv);
+    Move(ptr,SvPVX(sv)+tlen,len+1,char);
+    SvCUR(sv) += len;
+    (void)SvPOK_only_UTF8(sv);		/* validate pointer */
+    SvTAINT(sv);
+}

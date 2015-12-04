@@ -1,0 +1,24 @@
+void
+init_dependency_caches (luid)
+     int luid;
+{
+  /* ?!? We could save some memory by computing a per-region luid mapping
+     which could reduce both the number of vectors in the cache and the size
+     of each vector.  Instead we just avoid the cache entirely unless the
+     average number of instructions in a basic block is very high.  See
+     the comment before the declaration of true_dependency_cache for
+     what we consider "very high".  */
+  if (luid / n_basic_blocks > 100 * 5)
+    {
+      true_dependency_cache = sbitmap_vector_alloc (luid, luid);
+      sbitmap_vector_zero (true_dependency_cache, luid);
+      anti_dependency_cache = sbitmap_vector_alloc (luid, luid);
+      sbitmap_vector_zero (anti_dependency_cache, luid);
+      output_dependency_cache = sbitmap_vector_alloc (luid, luid);
+      sbitmap_vector_zero (output_dependency_cache, luid);
+#ifdef ENABLE_CHECKING
+      forward_dependency_cache = sbitmap_vector_alloc (luid, luid);
+      sbitmap_vector_zero (forward_dependency_cache, luid);
+#endif
+    }
+}

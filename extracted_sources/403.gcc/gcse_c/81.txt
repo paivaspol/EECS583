@@ -1,0 +1,21 @@
+static int
+cprop_cc0_jump (bb, insn, reg_used, src)
+     basic_block bb;
+     rtx insn;
+     struct reg_use *reg_used;
+     rtx src;
+{
+  /* First substitute in the SET_SRC of INSN, then substitute that for
+     CC0 in JUMP.  */
+  rtx jump = NEXT_INSN (insn);
+  rtx new_src = simplify_replace_rtx (SET_SRC (PATTERN (insn)),
+				      reg_used->reg_rtx, src);
+
+  if (! cprop_jump (bb, jump, cc0_rtx, new_src))
+    return 0;
+
+  /* If we succeeded, delete the cc0 setter.  */
+  delete_insn (insn);
+
+  return 1;
+}

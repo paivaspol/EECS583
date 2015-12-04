@@ -1,0 +1,86 @@
+static int
+get_one_coefficient (node, coefficients, du, type)
+     tree node;
+     subscript *coefficients;
+     def_use *du;
+     enum tree_code *type;
+{
+  enum tree_code  tree_op, tree_op_code;
+  int index, value;
+
+  tree_op = TREE_CODE (node);
+  if (type)
+    *type = tree_op;
+
+  if (tree_op == VAR_DECL)
+    {
+      index = have_induction_variable (du->outer_loop,
+				       IDENTIFIER_POINTER (DECL_NAME (node)));
+      if (index >= 0)
+	{
+	  coefficients->position = index;
+	  coefficients->variable = IDENTIFIER_POINTER (DECL_NAME (node));
+	  coefficients->coefficient = 1;
+	  if (coefficients->offset == INT_MIN)
+	    coefficients->offset = 0;
+	}
+      return index;
+    }
+  else if (tree_op == INTEGER_CST)
+    {
+      return TREE_INT_CST_LOW (node);
+    }
+  else if (tree_op == NON_LVALUE_EXPR)
+    {
+      return get_one_coefficient (TREE_OPERAND (node, 0), coefficients, du,
+				  &tree_op_code);
+    }
+  else if (tree_op == PLUS_EXPR)
+    {
+      value = get_one_coefficient (TREE_OPERAND (node, 0), coefficients, du,
+				   &tree_op_code);
+      if (tree_op_code == INTEGER_CST)
+	coefficients->offset = value;
+
+      value = get_one_coefficient (TREE_OPERAND (node, 1), coefficients, du,
+				   &tree_op_code);
+      if (tree_op_code == INTEGER_CST)
+	coefficients->offset = value;
+
+      return 0;
+    }
+  else if (tree_op == MINUS_EXPR)
+    {
+      value = get_one_coefficient (TREE_OPERAND (node, 0), coefficients, du,
+				   &tree_op_code);
+      if (tree_op_code == INTEGER_CST)
+	coefficients->offset = value;
+
+      value = get_one_coefficient (TREE_OPERAND (node, 1), coefficients, du,
+				   &tree_op_code);
+      if (tree_op_code == INTEGER_CST)
+	coefficients->offset = -value;
+
+      return 0;
+    }
+  else if (tree_op == MULT_EXPR)
+    {
+      int value0, value1, value0_is_idx = 0, value1_is_idx = 0;
+
+      value0 = get_one_coefficient (TREE_OPERAND (node, 0), coefficients, du,
+				    &tree_op_code);
+      if (tree_op_code == VAR_DECL)
+	value0_is_idx = 1;
+
+      value1 = get_one_coefficient (TREE_OPERAND (node, 1), coefficients, du,
+				    &tree_op_code);
+      if (tree_op_code == VAR_DECL)
+	value1_is_idx = 1;
+
+      if (value0_is_idx)
+	coefficients->coefficient = value1;
+      else if (value1_is_idx)
+	coefficients->coefficient = value0;
+    }
+  return 0;
+}

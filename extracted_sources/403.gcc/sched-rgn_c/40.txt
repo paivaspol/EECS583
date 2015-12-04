@@ -1,0 +1,20 @@
+static void
+compute_block_backward_dependences (bb)
+     int bb;
+{
+  rtx head, tail;
+  struct deps tmp_deps;
+
+  tmp_deps = bb_deps[bb];
+
+  /* Do the analysis for this block.  */
+  get_block_head_tail (BB_TO_BLOCK (bb), &head, &tail);
+  sched_analyze (&tmp_deps, head, tail);
+  add_branch_dependences (head, tail);
+
+  if (current_nr_blocks > 1)
+    propagate_deps (bb, &tmp_deps);
+
+  /* Free up the INSN_LISTs.  */
+  free_deps (&tmp_deps);
+}

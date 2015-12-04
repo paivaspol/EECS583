@@ -1,0 +1,228 @@
+static void
+prepare_float_lib_cmp (px, py, pcomparison, pmode, punsignedp)
+     rtx *px, *py;
+     enum rtx_code *pcomparison;
+     enum machine_mode *pmode;
+     int *punsignedp;
+{
+  enum rtx_code comparison = *pcomparison;
+  rtx x = *px = protect_from_queue (*px, 0);
+  rtx y = *py = protect_from_queue (*py, 0);
+  enum machine_mode mode = GET_MODE (x);
+  rtx libfunc = 0;
+  rtx result;
+
+  if (mode == HFmode)
+    switch (comparison)
+      {
+      case EQ:
+	libfunc = eqhf2_libfunc;
+	break;
+
+      case NE:
+	libfunc = nehf2_libfunc;
+	break;
+
+      case GT:
+	libfunc = gthf2_libfunc;
+	break;
+
+      case GE:
+	libfunc = gehf2_libfunc;
+	break;
+
+      case LT:
+	libfunc = lthf2_libfunc;
+	break;
+
+      case LE:
+	libfunc = lehf2_libfunc;
+	break;
+
+      case UNORDERED:
+	libfunc = unordhf2_libfunc;
+	break;
+
+      default:
+	break;
+      }
+  else if (mode == SFmode)
+    switch (comparison)
+      {
+      case EQ:
+	libfunc = eqsf2_libfunc;
+	break;
+
+      case NE:
+	libfunc = nesf2_libfunc;
+	break;
+
+      case GT:
+	libfunc = gtsf2_libfunc;
+	break;
+
+      case GE:
+	libfunc = gesf2_libfunc;
+	break;
+
+      case LT:
+	libfunc = ltsf2_libfunc;
+	break;
+
+      case LE:
+	libfunc = lesf2_libfunc;
+	break;
+
+      case UNORDERED:
+	libfunc = unordsf2_libfunc;
+	break;
+
+      default:
+	break;
+      }
+  else if (mode == DFmode)
+    switch (comparison)
+      {
+      case EQ:
+	libfunc = eqdf2_libfunc;
+	break;
+
+      case NE:
+	libfunc = nedf2_libfunc;
+	break;
+
+      case GT:
+	libfunc = gtdf2_libfunc;
+	break;
+
+      case GE:
+	libfunc = gedf2_libfunc;
+	break;
+
+      case LT:
+	libfunc = ltdf2_libfunc;
+	break;
+
+      case LE:
+	libfunc = ledf2_libfunc;
+	break;
+
+      case UNORDERED:
+	libfunc = unorddf2_libfunc;
+	break;
+
+      default:
+	break;
+      }
+  else if (mode == XFmode)
+    switch (comparison)
+      {
+      case EQ:
+	libfunc = eqxf2_libfunc;
+	break;
+
+      case NE:
+	libfunc = nexf2_libfunc;
+	break;
+
+      case GT:
+	libfunc = gtxf2_libfunc;
+	break;
+
+      case GE:
+	libfunc = gexf2_libfunc;
+	break;
+
+      case LT:
+	libfunc = ltxf2_libfunc;
+	break;
+
+      case LE:
+	libfunc = lexf2_libfunc;
+	break;
+
+      case UNORDERED:
+	libfunc = unordxf2_libfunc;
+	break;
+
+      default:
+	break;
+      }
+  else if (mode == TFmode)
+    switch (comparison)
+      {
+      case EQ:
+	libfunc = eqtf2_libfunc;
+	break;
+
+      case NE:
+	libfunc = netf2_libfunc;
+	break;
+
+      case GT:
+	libfunc = gttf2_libfunc;
+	break;
+
+      case GE:
+	libfunc = getf2_libfunc;
+	break;
+
+      case LT:
+	libfunc = lttf2_libfunc;
+	break;
+
+      case LE:
+	libfunc = letf2_libfunc;
+	break;
+
+      case UNORDERED:
+	libfunc = unordtf2_libfunc;
+	break;
+
+      default:
+	break;
+      }
+  else
+    {
+      enum machine_mode wider_mode;
+
+      for (wider_mode = GET_MODE_WIDER_MODE (mode); wider_mode != VOIDmode;
+	   wider_mode = GET_MODE_WIDER_MODE (wider_mode))
+	{
+	  if ((cmp_optab->handlers[(int) wider_mode].insn_code
+	       != CODE_FOR_nothing)
+	      || (cmp_optab->handlers[(int) wider_mode].libfunc != 0))
+	    {
+	      x = protect_from_queue (x, 0);
+	      y = protect_from_queue (y, 0);
+	      *px = convert_to_mode (wider_mode, x, 0);
+	      *py = convert_to_mode (wider_mode, y, 0);
+	      prepare_float_lib_cmp (px, py, pcomparison, pmode, punsignedp);
+	      return;
+	    }
+	}
+      abort ();
+    }
+
+  if (libfunc == 0)
+    abort ();
+
+  emit_library_call (libfunc, LCT_CONST_MAKE_BLOCK, word_mode, 2, x, mode, y,
+		     mode);
+
+  /* Immediately move the result of the libcall into a pseudo
+     register so reload doesn't clobber the value if it needs
+     the return register for a spill reg.  */
+  result = gen_reg_rtx (word_mode);
+  emit_move_insn (result, hard_libcall_value (word_mode));
+  *px = result;
+  *py = const0_rtx;
+  *pmode = word_mode;
+  if (comparison == UNORDERED)
+    *pcomparison = NE;
+#ifdef FLOAT_LIB_COMPARE_RETURNS_BOOL
+  else if (FLOAT_LIB_COMPARE_RETURNS_BOOL (mode, comparison))
+    *pcomparison = NE;
+#endif
+  *punsignedp = 0;
+}

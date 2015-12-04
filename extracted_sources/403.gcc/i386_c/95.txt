@@ -1,0 +1,112 @@
+static void
+output_pic_addr_const (file, x, code)
+     FILE *file;
+     rtx x;
+     int code;
+{
+  char buf[256];
+
+  switch (GET_CODE (x))
+    {
+    case PC:
+      if (flag_pic)
+	putc ('.', file);
+      else
+	abort ();
+      break;
+
+    case SYMBOL_REF:
+      assemble_name (file, XSTR (x, 0));
+      if (code == 'P' && ! SYMBOL_REF_FLAG (x))
+	fputs ("@PLT", file);
+      break;
+
+    case LABEL_REF:
+      x = XEXP (x, 0);
+      /* FALLTHRU */
+    case CODE_LABEL:
+      ASM_GENERATE_INTERNAL_LABEL (buf, "L", CODE_LABEL_NUMBER (x));
+      assemble_name (asm_out_file, buf);
+      break;
+
+    case CONST_INT:
+      fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (x));
+      break;
+
+    case CONST:
+      /* This used to output parentheses around the expression,
+	 but that does not work on the 386 (either ATT or BSD assembler).  */
+      output_pic_addr_const (file, XEXP (x, 0), code);
+      break;
+
+    case CONST_DOUBLE:
+      if (GET_MODE (x) == VOIDmode)
+	{
+	  /* We can use %d if the number is <32 bits and positive.  */
+	  if (CONST_DOUBLE_HIGH (x) || CONST_DOUBLE_LOW (x) < 0)
+	    fprintf (file, "0x%lx%08lx",
+		     (unsigned long) CONST_DOUBLE_HIGH (x),
+		     (unsigned long) CONST_DOUBLE_LOW (x));
+	  else
+	    fprintf (file, HOST_WIDE_INT_PRINT_DEC, CONST_DOUBLE_LOW (x));
+	}
+      else
+	/* We can't handle floating point constants;
+	   PRINT_OPERAND must handle them.  */
+	output_operand_lossage ("floating constant misused");
+      break;
+
+    case PLUS:
+      /* Some assemblers need integer constants to appear first.  */
+      if (GET_CODE (XEXP (x, 0)) == CONST_INT)
+	{
+	  output_pic_addr_const (file, XEXP (x, 0), code);
+	  putc ('+', file);
+	  output_pic_addr_const (file, XEXP (x, 1), code);
+	}
+      else if (GET_CODE (XEXP (x, 1)) == CONST_INT)
+	{
+	  output_pic_addr_const (file, XEXP (x, 1), code);
+	  putc ('+', file);
+	  output_pic_addr_const (file, XEXP (x, 0), code);
+	}
+      else
+	abort ();
+      break;
+
+    case MINUS:
+      putc (ASSEMBLER_DIALECT == ASM_INTEL ? '(' : '[', file);
+      output_pic_addr_const (file, XEXP (x, 0), code);
+      putc ('-', file);
+      output_pic_addr_const (file, XEXP (x, 1), code);
+      putc (ASSEMBLER_DIALECT == ASM_INTEL ? ')' : ']', file);
+      break;
+
+     case UNSPEC:
+       if (XVECLEN (x, 0) != 1)
+	abort ();
+       output_pic_addr_const (file, XVECEXP (x, 0, 0), code);
+       switch (XINT (x, 1))
+	{
+	case 6:
+	  fputs ("@GOT", file);
+	  break;
+	case 7:
+	  fputs ("@GOTOFF", file);
+	  break;
+	case 8:
+	  fputs ("@PLT", file);
+	  break;
+	case 15:
+	  fputs ("@GOTPCREL(%RIP)", file);
+	  break;
+	default:
+	  output_operand_lossage ("invalid UNSPEC as operand");
+	  break;
+	}
+       break;
+
+    default:
+      output_operand_lossage ("invalid expression as operand");
+    }
+}

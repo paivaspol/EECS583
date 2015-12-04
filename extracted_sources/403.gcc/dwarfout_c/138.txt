@@ -1,0 +1,186 @@
+static void
+dwarfout_init (main_input_filename)
+     const char *main_input_filename;
+{
+  /* Remember the name of the primary input file.  */
+
+  primary_filename = main_input_filename;
+
+  /* Allocate the initial hunk of the pending_sibling_stack.  */
+
+  pending_sibling_stack
+    = (unsigned *)
+	xmalloc (PENDING_SIBLINGS_INCREMENT * sizeof (unsigned));
+  pending_siblings_allocated = PENDING_SIBLINGS_INCREMENT;
+  pending_siblings = 1;
+
+  /* Allocate the initial hunk of the filename_table.  */
+
+  filename_table
+    = (filename_entry *)
+	xmalloc (FT_ENTRIES_INCREMENT * sizeof (filename_entry));
+  ft_entries_allocated = FT_ENTRIES_INCREMENT;
+  ft_entries = 0;
+
+  /* Allocate the initial hunk of the pending_types_list.  */
+
+  pending_types_list
+    = (tree *) xmalloc (PENDING_TYPES_INCREMENT * sizeof (tree));
+  pending_types_allocated = PENDING_TYPES_INCREMENT;
+  pending_types = 0;
+
+  /* Create an artificial RECORD_TYPE node which we can use in our hack
+     to get the DIEs representing types of formal parameters to come out
+     only *after* the DIEs for the formal parameters themselves.  */
+
+  fake_containing_scope = make_node (RECORD_TYPE);
+
+  /* Output a starting label for the .text section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, TEXT_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, TEXT_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  /* Output a starting label for the .data section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DATA_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, DATA_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+#if 0 /* GNU C doesn't currently use .data1.  */
+  /* Output a starting label for the .data1 section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DATA1_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, DATA1_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+#endif
+
+  /* Output a starting label for the .rodata section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, RODATA_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, RODATA_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+#if 0 /* GNU C doesn't currently use .rodata1.  */
+  /* Output a starting label for the .rodata1 section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, RODATA1_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, RODATA1_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+#endif
+
+  /* Output a starting label for the .bss section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, BSS_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, BSS_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  if (debug_info_level >= DINFO_LEVEL_NORMAL)
+    {
+      if (use_gnu_debug_info_extensions)
+	{
+	  /* Output a starting label and an initial (compilation directory)
+	     entry for the .debug_sfnames section.  The starting label will be
+	     referenced by the initial entry in the .debug_srcinfo section.  */
+    
+	  fputc ('\n', asm_out_file);
+	  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SFNAMES_SECTION);
+	  ASM_OUTPUT_LABEL (asm_out_file, SFNAMES_BEGIN_LABEL);
+	  {
+	    const char *pwd = getpwd ();
+	    char *dirname;
+
+	    if (!pwd)
+	      fatal_io_error ("can't get current directory");
+
+	    dirname = concat (pwd, "/", NULL);
+	    ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, dirname);
+	    free (dirname);
+	  }
+	  ASM_OUTPUT_POP_SECTION (asm_out_file);
+	}
+    
+      if (debug_info_level >= DINFO_LEVEL_VERBOSE
+	  && use_gnu_debug_info_extensions)
+	{
+          /* Output a starting label for the .debug_macinfo section.  This
+	     label will be referenced by the AT_mac_info attribute in the
+	     TAG_compile_unit DIE.  */
+        
+          fputc ('\n', asm_out_file);
+          ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_MACINFO_SECTION);
+          ASM_OUTPUT_LABEL (asm_out_file, MACINFO_BEGIN_LABEL);
+          ASM_OUTPUT_POP_SECTION (asm_out_file);
+	}
+
+      /* Generate the initial entry for the .line section.  */
+    
+      fputc ('\n', asm_out_file);
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, LINE_SECTION);
+      ASM_OUTPUT_LABEL (asm_out_file, LINE_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, LINE_END_LABEL, LINE_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, TEXT_BEGIN_LABEL);
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+    
+      if (use_gnu_debug_info_extensions)
+	{
+	  /* Generate the initial entry for the .debug_srcinfo section.  */
+
+	  fputc ('\n', asm_out_file);
+	  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SRCINFO_SECTION);
+	  ASM_OUTPUT_LABEL (asm_out_file, SRCINFO_BEGIN_LABEL);
+	  ASM_OUTPUT_DWARF_ADDR (asm_out_file, LINE_BEGIN_LABEL);
+	  ASM_OUTPUT_DWARF_ADDR (asm_out_file, SFNAMES_BEGIN_LABEL);
+	  ASM_OUTPUT_DWARF_ADDR (asm_out_file, TEXT_BEGIN_LABEL);
+	  ASM_OUTPUT_DWARF_ADDR (asm_out_file, TEXT_END_LABEL);
+#ifdef DWARF_TIMESTAMPS
+	  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, time (NULL));
+#else
+	  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, -1);
+#endif
+	  ASM_OUTPUT_POP_SECTION (asm_out_file);
+	}
+    
+      /* Generate the initial entry for the .debug_pubnames section.  */
+    
+      fputc ('\n', asm_out_file);
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_PUBNAMES_SECTION);
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, DEBUG_BEGIN_LABEL);
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+    
+      /* Generate the initial entry for the .debug_aranges section.  */
+    
+      fputc ('\n', asm_out_file);
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_ARANGES_SECTION);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file,
+			       DEBUG_ARANGES_END_LABEL,
+			       DEBUG_ARANGES_BEGIN_LABEL);
+      ASM_OUTPUT_LABEL (asm_out_file, DEBUG_ARANGES_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DATA1 (asm_out_file, 1);
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, DEBUG_BEGIN_LABEL);
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+    }
+
+  /* Setup first DIE number == 1.  */
+  NEXT_DIE_NUM = next_unused_dienum++;
+
+  /* Generate the initial DIE for the .debug section.  Note that the
+     (string) value given in the AT_name attribute of the TAG_compile_unit
+     DIE will (typically) be a relative pathname and that this pathname
+     should be taken as being relative to the directory from which the
+     compiler was invoked when the given (base) source file was compiled.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SECTION);
+  ASM_OUTPUT_LABEL (asm_out_file, DEBUG_BEGIN_LABEL);
+  output_die (output_compile_unit_die, (PTR) main_input_filename);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  fputc ('\n', asm_out_file);
+}

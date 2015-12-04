@@ -1,0 +1,27 @@
+static void check_cons(FILE *log,int nc,rvec x[],rvec xp[],
+		       t_iparams ip[],t_iatom *iatom,
+		       real invmass[])
+{
+  t_iatom *ia;
+  int     ai,aj;
+  int     i;
+  real    d,dp;
+  rvec    dx;
+
+  if(log)
+      fprintf(log,
+              "    i     mi      j     mj      before       after   should be\n");
+  ia=iatom;
+  for(i=0; (i<nc); i++,ia+=3) {
+    ai=ia[1];
+    aj=ia[2];
+    rvec_sub(x[ai],x[aj],dx);
+    d=norm(dx);
+    rvec_sub(xp[ai],xp[aj],dx);
+    dp=norm(dx);
+    if(log)
+        fprintf(log,"%5d  %5.2f  %5d  %5.2f  %10.5f  %10.5f  %10.5f\n",
+                ai+1,1.0/invmass[ai],
+                aj+1,1.0/invmass[aj],d,dp,ip[ia[0]].shake.dA);
+  }
+}

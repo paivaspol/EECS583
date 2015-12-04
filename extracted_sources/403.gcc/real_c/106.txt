@@ -1,0 +1,43 @@
+static void
+mtherr (name, code)
+     const char *name;
+     int code;
+{
+  /* The string passed by the calling program is supposed to be the
+     name of the function in which the error occurred.
+     The code argument selects which error message string will be printed.  */
+
+  if (strcmp (name, "esub") == 0)
+    name = "subtraction";
+  else if (strcmp (name, "ediv") == 0)
+    name = "division";
+  else if (strcmp (name, "emul") == 0)
+    name = "multiplication";
+  else if (strcmp (name, "enormlz") == 0)
+    name = "normalization";
+  else if (strcmp (name, "etoasc") == 0)
+    name = "conversion to text";
+  else if (strcmp (name, "asctoe") == 0)
+    name = "parsing";
+  else if (strcmp (name, "eremain") == 0)
+    name = "modulus";
+  else if (strcmp (name, "esqrt") == 0)
+    name = "square root";
+  if (extra_warnings)
+    {
+      switch (code)
+	{
+	case DOMAIN:    warning ("%s: argument domain error"    , name); break;
+	case SING:      warning ("%s: function singularity"     , name); break;
+	case OVERFLOW:  warning ("%s: overflow range error"     , name); break;
+	case UNDERFLOW: warning ("%s: underflow range error"    , name); break;
+	case TLOSS:     warning ("%s: total loss of precision"  , name); break;
+	case PLOSS:     warning ("%s: partial loss of precision", name); break;
+	case INVALID:   warning ("%s: NaN - producing operation", name); break;
+	default:        abort ();
+	}
+    }
+
+  /* Set global error message word */
+  merror = code + 1;
+}

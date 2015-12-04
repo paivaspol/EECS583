@@ -1,0 +1,43 @@
+static dw_die_ref
+gen_formal_parameter_die (node, context_die)
+     tree node;
+     dw_die_ref context_die;
+{
+  dw_die_ref parm_die
+    = new_die (DW_TAG_formal_parameter, context_die, node);
+  tree origin;
+
+  switch (TREE_CODE_CLASS (TREE_CODE (node)))
+    {
+    case 'd':
+      origin = decl_ultimate_origin (node);
+      if (origin != NULL)
+	add_abstract_origin_attribute (parm_die, origin);
+      else
+	{
+	  add_name_and_src_coords_attributes (parm_die, node);
+	  add_type_attribute (parm_die, TREE_TYPE (node),
+			      TREE_READONLY (node),
+			      TREE_THIS_VOLATILE (node),
+			      context_die);
+	  if (DECL_ARTIFICIAL (node))
+	    add_AT_flag (parm_die, DW_AT_artificial, 1);
+	}
+
+      equate_decl_number_to_die (node, parm_die);
+      if (! DECL_ABSTRACT (node))
+	add_location_or_const_value_attribute (parm_die, node);
+
+      break;
+
+    case 't':
+      /* We were called with some kind of a ..._TYPE node.  */
+      add_type_attribute (parm_die, node, 0, 0, context_die);
+      break;
+
+    default:
+      abort ();
+    }
+
+  return parm_die;
+}

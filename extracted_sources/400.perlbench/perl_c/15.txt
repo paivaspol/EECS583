@@ -1,0 +1,37 @@
+void
+Perl_init_argv_symbols(pTHX_ register int argc, register char **argv)
+{
+    char *s;
+    argc--,argv++;	/* skip name of script */
+    if (PL_doswitches) {
+	for (; argc > 0 && **argv == '-'; argc--,argv++) {
+	    if (!argv[0][1])
+		break;
+	    if (argv[0][1] == '-' && !argv[0][2]) {
+		argc--,argv++;
+		break;
+	    }
+	    if ((s = strchr(argv[0], '='))) {
+		*s++ = '\0';
+		sv_setpv(GvSV(gv_fetchpv(argv[0]+1,TRUE, SVt_PV)),s);
+	    }
+	    else
+		sv_setiv(GvSV(gv_fetchpv(argv[0]+1,TRUE, SVt_PV)),1);
+	}
+    }
+    if ((PL_argvgv = gv_fetchpv("ARGV",TRUE, SVt_PVAV))) {
+	GvMULTI_on(PL_argvgv);
+	(void)gv_AVadd(PL_argvgv);
+	av_clear(GvAVn(PL_argvgv));
+	for (; argc > 0; argc--,argv++) {
+	    SV *sv = newSVpv(argv[0],0);
+	    av_push(GvAVn(PL_argvgv),sv);
+	    if (!(PL_unicode & PERL_UNICODE_LOCALE_FLAG) || PL_utf8locale) {
+		 if (PL_unicode & PERL_UNICODE_ARGV_FLAG)
+		      SvUTF8_on(sv);
+	    }
+	    if (PL_unicode & PERL_UNICODE_WIDESYSCALLS_FLAG) /* Sarathy? */
+		 (void)sv_utf8_decode(sv);
+	}
+    }
+}

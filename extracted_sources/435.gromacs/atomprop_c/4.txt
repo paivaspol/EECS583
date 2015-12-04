@@ -1,0 +1,42 @@
+static bool get_prop(real *p, char *resname, char *atomnm, 
+		     int nprop, t_prop *props)
+{
+  int  i,j=0,alen,rlen,malen,mrlen;
+  char *atomname;
+  
+  malen = NOTFOUND;
+  mrlen = NOTFOUND;
+  
+  if (isdigit(atomnm[0])) {
+    /* put digit after atomname */
+    snew(atomname,strlen(atomnm)+1);
+    for (i=1; (i<strlen(atomnm)); i++)
+      atomname[i-1]=atomnm[i];
+    atomname[i++]=atomnm[0];
+    atomname[i]='\0';
+  } else 
+    atomname=atomnm;
+      
+  for(i=0; (i<nprop); i++) {
+    if ( (strcmp(props[i].resname,"*")==0) ||
+	 (strcmp(props[i].resname,"???")==0) )
+      rlen=WILDCARD;
+    else if ( is_protein(resname) && (strcmp(props[i].resname,"AAA")==0) )
+      rlen=PROTEIN;
+    else {
+      rlen = dbcmp_len(resname, props[i].resname);
+    }
+    alen = dbcmp_len(atomname, props[i].atomname);
+    if ( alen>=malen && rlen>=mrlen ) {
+      malen=alen;
+      mrlen=rlen;
+      *p = props[i].prop;
+      j=i;
+    }
+  }
+  if (debug)
+    fprintf(debug,"search: %4s %4s match: %4s %4s %8g\n",
+	    resname, atomname, props[j].resname, props[j].atomname, *p);
+  
+  return (malen!=NOTFOUND && mrlen!=NOTFOUND);
+}

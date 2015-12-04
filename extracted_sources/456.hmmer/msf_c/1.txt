@@ -1,0 +1,145 @@
+void
+WriteMSF(FILE *fp, MSA *msa)
+{
+  time_t now;			/* current time as a time_t */
+  char   date[64];		/* today's date in GCG's format "October 3, 1996 15:57" */
+  char **gcg_aseq;              /* aligned sequences with gaps converted to GCG format */
+  char **gcg_sqname;		/* sequence names with GCG-valid character sets */
+  int    idx;			/* counter for sequences         */
+  char  *s;                     /* pointer into sqname or seq    */
+  int    len;			/* tmp variable for name lengths */
+  int    namelen;		/* maximum name length used      */
+  int    pos;			/* position counter              */
+  char   buffer[51];		/* buffer for writing seq        */
+  int    i;			/* another position counter */
+
+  /*****************************************************************
+   * Make copies of sequence names and sequences.
+   *   GCG recommends that name characters should only contain
+   *   alphanumeric characters, -, or _
+   *   Some GCG and GCG-compatible software is sensitive to this.
+   *   We silently convert all other characters to '_'.
+   *   
+   *   For sequences, GCG allows only ~ and . for gaps.
+   *   Otherwise, everthing is interpreted as a residue;
+   *   so squid's IUPAC-restricted chars are fine. ~ means
+   *   an external gap. . means an internal gap.
+   *****************************************************************/ 
+   
+				/* make copies that we can edit */
+   gcg_aseq   = MallocOrDie(sizeof(char *) * msa->nseq);
+   gcg_sqname = MallocOrDie(sizeof(char *) * msa->nseq);
+   for (idx = 0; idx < msa->nseq; idx++)
+     {
+       gcg_aseq[idx]   = sre_strdup(msa->aseq[idx],   msa->alen);
+       gcg_sqname[idx] = sre_strdup(msa->sqname[idx], -1);
+     }
+				/* alter names as needed  */
+   for (idx = 0; idx < msa->nseq; idx++)
+     for (s = gcg_sqname[idx]; *s != '\0'; s++)
+       if (! isalnum((int) *s) && *s != '-' && *s != '_')
+	 *s = '_';
+				/* alter gap chars in seq  */
+   for (idx = 0; idx < msa->nseq; idx++)
+     {
+       for (s = gcg_aseq[idx]; *s != '\0' && isgap(*s); s++)
+	 *s = '~';
+       for (; *s != '\0'; s++)
+	 if (isgap(*s)) *s = '.';
+       for (pos = msa->alen-1; pos > 0 && isgap(gcg_aseq[idx][pos]); pos--)
+	 gcg_aseq[idx][pos] = '~';
+     }
+				/* calculate max namelen used */
+  namelen = 0;
+  for (idx = 0; idx < msa->nseq; idx++)
+    if ((len = strlen(msa->sqname[idx])) > namelen) 
+      namelen = len;
+
+  /*****************************************************
+   * Write the MSF header
+   *****************************************************/
+				/* required file type line */
+  if (msa->type == kOtherSeq)
+    msa->type = GuessAlignmentSeqtype(msa->aseq, msa->nseq);
+
+  if      (msa->type == kRNA)   fprintf(fp, "!!NA_MULTIPLE_ALIGNMENT 1.0\n");
+  else if (msa->type == kDNA)   fprintf(fp, "!!NA_MULTIPLE_ALIGNMENT 1.0\n");
+  else if (msa->type == kAmino) fprintf(fp, "!!AA_MULTIPLE_ALIGNMENT 1.0\n");
+  else if (msa->type == kOtherSeq) 
+    Die("WriteMSF(): couldn't guess whether that alignment is RNA or protein.\n"); 
+  else    
+    Die("Invalid sequence type %d in WriteMSF()\n", msa->type); 
+
+				/* free text comments */
+  if (msa->ncomment > 0)
+    {
+      for (idx = 0; idx < msa->ncomment; idx++)
+	fprintf(fp, "%s\n", msa->comment[idx]);
+      fprintf(fp, "\n");
+    }
+				/* required checksum line */
+  now = time(NULL);
+  if (strftime(date, 64, "%B %d, %Y %H:%M", localtime(&now)) == 0)
+    Die("What time is it on earth? strftime() failed in WriteMSF().\n");
+  fprintf(fp, " %s  MSF: %d  Type: %c  %s  Check: %d  ..\n", 
+	  msa->name != NULL ? msa->name : "squid.msf",
+	  msa->alen,
+	  msa->type == kRNA ? 'N' : 'P',
+	  date,
+	  GCGMultchecksum(gcg_aseq, msa->nseq));
+  fprintf(fp, "\n");
+
+  /*****************************************************
+   * Names/weights section
+   *****************************************************/
+
+  for (idx = 0; idx < msa->nseq; idx++)
+    {
+      fprintf(fp, " Name: %-*.*s  Len:  %5d  Check: %4d  Weight: %.2f\n",
+	      namelen, namelen,
+	      gcg_sqname[idx],
+	      msa->alen,
+	      GCGchecksum(gcg_aseq[idx], msa->alen),
+	      msa->wgt[idx]);
+    }
+  fprintf(fp, "\n");
+  fprintf(fp, "//\n");
+
+  /*****************************************************
+   * Write the sequences
+   *****************************************************/
+
+  for (pos = 0; pos < msa->alen; pos += 50)
+    {
+      fprintf(fp, "\n");	/* Blank line between sequence blocks */
+
+				/* Coordinate line */
+      len = (pos + 50) > msa->alen ? msa->alen - pos : 50;
+      if (len > 10)
+	fprintf(fp, "%*s  %-6d%*s%6d\n", namelen, "", 
+		pos+1,
+		len + ((len-1)/10) - 12, "",
+		pos + len);
+      else
+	fprintf(fp, "%*s  %-6d\n", namelen, "", pos+1);
+
+      for (idx = 0; idx < msa->nseq; idx++)
+	{
+	  fprintf(fp, "%-*s ", namelen, gcg_sqname[idx]);
+				/* get next line's worth of 50 from seq */
+	  strncpy(buffer, gcg_aseq[idx] + pos, 50);
+	  buffer[50] = '\0';
+				/* draw the sequence line */
+	  for (i = 0; i < len; i++)
+	    {
+	      if (! (i % 10)) fputc(' ', fp);
+	      fputc(buffer[i], fp);
+	    }
+	  fputc('\n', fp);
+	}
+    }
+
+  Free2DArray((void **) gcg_aseq,   msa->nseq);
+  Free2DArray((void **) gcg_sqname, msa->nseq);
+  return;
+}

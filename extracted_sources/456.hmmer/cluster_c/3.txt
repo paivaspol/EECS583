@@ -1,0 +1,19 @@
+void
+MakeIdentityMx(char **aseqs, int num, float ***ret_imx)
+{
+  float **imx;          /* RETURN: identity matrix           */
+  int     i,j;		/* counters over sequences           */
+
+  /* Allocate 2D float matrix
+   */
+  imx = FMX2Alloc(num, num);
+
+  /* Calculate distances, symmetric matrix
+   */
+  for (i = 0; i < num; i++)
+    for (j = i; j < num; j++)
+      imx[i][j] = imx[j][i] = PairwiseIdentity(aseqs[i], aseqs[j]);
+
+  *ret_imx = imx;
+  return;
+}

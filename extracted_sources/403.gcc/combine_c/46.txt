@@ -1,0 +1,49 @@
+static void
+record_dead_and_set_regs (insn)
+     rtx insn;
+{
+  rtx link;
+  unsigned int i;
+
+  for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+    {
+      if (REG_NOTE_KIND (link) == REG_DEAD
+	  && GET_CODE (XEXP (link, 0)) == REG)
+	{
+	  unsigned int regno = REGNO (XEXP (link, 0));
+	  unsigned int endregno
+	    = regno + (regno < FIRST_PSEUDO_REGISTER
+		       ? HARD_REGNO_NREGS (regno, GET_MODE (XEXP (link, 0)))
+		       : 1);
+
+	  for (i = regno; i < endregno; i++)
+	    reg_last_death[i] = insn;
+	}
+      else if (REG_NOTE_KIND (link) == REG_INC)
+	record_value_for_reg (XEXP (link, 0), insn, NULL_RTX);
+    }
+
+  if (GET_CODE (insn) == CALL_INSN)
+    {
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	if (TEST_HARD_REG_BIT (regs_invalidated_by_call, i))
+	  {
+	    reg_last_set_value[i] = 0;
+	    reg_last_set_mode[i] = 0;
+	    reg_last_set_nonzero_bits[i] = 0;
+	    reg_last_set_sign_bit_copies[i] = 0;
+	    reg_last_death[i] = 0;
+	  }
+
+      last_call_cuid = mem_last_set = INSN_CUID (insn);
+
+      /* Don't bother recording what this insn does.  It might set the
+	 return value register, but we can't combine into a call
+	 pattern anyway, so there's no point trying (and it may cause
+	 a crash, if e.g. we wind up asking for last_set_value of a
+	 SUBREG of the return value register).  */
+      return;
+    }
+
+  note_stores (PATTERN (insn), record_dead_and_set_regs_1, insn);
+}

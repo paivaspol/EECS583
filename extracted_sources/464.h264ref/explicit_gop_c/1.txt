@@ -1,0 +1,28 @@
+void gop_pyramid(int level, int frm_no, int frames, GOP_DATA *pyramid_structure)
+{
+  
+  if (level == 0 )
+  {
+    if (frm_no>=0 && frm_no<input->successive_Bframe && pyramid_structure[frm_no].display_no == 0)
+    {
+        pyramid_structure[frm_no].slice_type = B_SLICE;
+        pyramid_structure[frm_no].display_no = frm_no;
+        pyramid_structure[frm_no].pyramid_layer = 0;
+        pyramid_structure[frm_no].reference_idc = NALU_PRIORITY_DISPOSABLE;
+    }
+  }
+  else
+  {
+    if (frm_no>=0 && frm_no<input->successive_Bframe)
+    {
+      pyramid_structure[frm_no].slice_type = B_SLICE;
+      pyramid_structure[frm_no].display_no = frm_no;
+      pyramid_structure[frm_no].pyramid_layer = level;
+      pyramid_structure[frm_no].reference_idc = NALU_PRIORITY_HIGH;
+    }
+
+    
+    gop_pyramid(level - 1, frm_no - (frames+1)/2,(frames+1)/2,pyramid_structure);
+    gop_pyramid(level - 1, frm_no + (frames+1)/2,(frames+1)/2,pyramid_structure);
+  }  
+}

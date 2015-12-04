@@ -1,0 +1,37 @@
+static void
+expand_arg (pfile, arg)
+     cpp_reader *pfile;
+     macro_arg *arg;
+{
+  unsigned int capacity;
+
+  if (arg->count == 0)
+    return;
+
+  /* Loop, reading in the arguments.  */
+  capacity = 256;
+  arg->expanded = (const cpp_token **)
+    xmalloc (capacity * sizeof (cpp_token *));
+
+  push_ptoken_context (pfile, NULL, NULL, arg->first, arg->count + 1);
+  for (;;)
+    {
+      const cpp_token *token;
+
+      if (arg->expanded_count + 1 >= capacity)
+	{
+	  capacity *= 2;
+	  arg->expanded = (const cpp_token **)
+	    xrealloc (arg->expanded, capacity * sizeof (cpp_token *));
+	}
+
+      token = cpp_get_token (pfile);
+
+      if (token->type == CPP_EOF)
+	break;
+
+      arg->expanded[arg->expanded_count++] = token;
+    }
+
+  _cpp_pop_context (pfile);
+}

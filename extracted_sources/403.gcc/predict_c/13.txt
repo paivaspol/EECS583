@@ -1,0 +1,23 @@
+static void
+counts_to_freqs ()
+{
+  HOST_WIDEST_INT count_max = 1;
+  int i;
+
+  for (i = 0; i < n_basic_blocks; i++)
+    count_max = MAX (BASIC_BLOCK (i)->count, count_max);
+
+  for (i = -2; i < n_basic_blocks; i++)
+    {
+      basic_block bb;
+
+      if (i == -2)
+	bb = ENTRY_BLOCK_PTR;
+      else if (i == -1)
+	bb = EXIT_BLOCK_PTR;
+      else
+	bb = BASIC_BLOCK (i);
+
+      bb->frequency = (bb->count * BB_FREQ_MAX + count_max / 2) / count_max;
+    }
+}

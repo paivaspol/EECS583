@@ -1,0 +1,34 @@
+static void
+follow_def_use_chains ()
+{
+  /* Iterate over all the entries on the SSA_EDGES worklist.  */
+  while (sbitmap_first_set_bit (ssa_edges) >= 0)
+    {
+      int member;
+      struct df_link *curruse;
+
+      /* Pick an entry off the worklist (it does not matter which
+	 entry we pick).  */
+      member = sbitmap_first_set_bit (ssa_edges); 
+      RESET_BIT (ssa_edges, member);
+
+      /* Iterate through all the uses of this entry.  */
+      for (curruse = df_analyzer->regs[member].uses; curruse;
+	   curruse = curruse->next)
+	{
+	  rtx useinsn;
+
+	  useinsn = DF_REF_INSN (curruse->ref);
+	  if (PHI_NODE_P (useinsn))
+	    {
+	      if (TEST_BIT (executable_blocks, BLOCK_NUM (useinsn)))
+		visit_phi_node (useinsn, BLOCK_FOR_INSN (useinsn));
+	    }	  
+	  else
+	    {
+	      if (TEST_BIT (executable_blocks, BLOCK_NUM (useinsn)))
+		visit_expression (useinsn, BLOCK_FOR_INSN (useinsn));
+	    }
+	}
+    }
+}

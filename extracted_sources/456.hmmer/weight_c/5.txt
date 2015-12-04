@@ -1,0 +1,27 @@
+static int
+simple_diffmx(char    **aseqs,
+	      int       num,
+	      float ***ret_dmx)
+{
+  float **dmx;                 /* RETURN: distance matrix           */
+  int      i,j;			/* counters over sequences           */
+
+  /* Allocate
+   */
+  if ((dmx = (float **) malloc (sizeof(float *) * num)) == NULL)
+    Die("malloc failed");
+  for (i = 0; i < num; i++)
+    if ((dmx[i] = (float *) malloc (sizeof(float) * num)) == NULL)
+      Die("malloc failed");
+
+  /* Calculate distances, symmetric matrix
+   */
+  for (i = 0; i < num; i++)
+    for (j = i; j < num; j++)
+      dmx[i][j] = dmx[j][i] = simple_distance(aseqs[i], aseqs[j]);
+
+  /* Return
+   */
+  *ret_dmx = dmx;
+  return 1;
+}

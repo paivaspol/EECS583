@@ -1,0 +1,15 @@
+int gmx_rx_probe(int nodeid)
+{
+#ifndef USE_MPI
+  MYFATAL("gmx_rx_probe");
+  return 0;
+#else
+  MPI_Status  status;
+  int mpi_result,flag=0;
+  
+  if ((mpi_result = MPI_Test(&mpi_req_rx,&flag,&status)) != MPI_SUCCESS)
+    fatal_error(0,"MPI_Test: result=%d",mpi_result);
+    
+  return flag;
+#endif
+}

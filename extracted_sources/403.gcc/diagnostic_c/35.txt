@@ -1,0 +1,117 @@
+static void
+output_format (buffer)
+     output_buffer *buffer;
+{
+  for (; *output_buffer_text_cursor (buffer);
+       ++output_buffer_text_cursor (buffer))
+    {
+      int long_integer = 0;
+
+      /* Ignore text.  */
+      {
+        const char *p = output_buffer_text_cursor (buffer);
+        while (*p && *p != '%')
+          ++p;
+        wrap_text (buffer, output_buffer_text_cursor (buffer), p);
+        output_buffer_text_cursor (buffer) = p;
+      }
+
+      if (!*output_buffer_text_cursor (buffer))
+        break;
+
+      /* We got a '%'.  Let's see what happens. Record whether we're
+         parsing a long integer format specifier.  */
+      if (*++output_buffer_text_cursor (buffer) == 'l')
+        {
+          long_integer = 1;
+          ++output_buffer_text_cursor (buffer);
+        }
+
+      /* Handle %c, %d, %i, %ld, %li, %lo, %lu, %lx, %o, %s, %u,
+         %x, %.*s; %%.  And nothing else.  Front-ends should install
+         printers to grok language specific format specifiers.  */
+      switch (*output_buffer_text_cursor (buffer))
+        {
+        case 'c':
+          output_add_character
+            (buffer, va_arg (output_buffer_format_args (buffer), int));
+          break;
+          
+        case 'd':
+        case 'i':
+          if (long_integer)
+            output_long_decimal
+              (buffer, va_arg (output_buffer_format_args (buffer), long int));
+          else
+            output_decimal
+              (buffer, va_arg (output_buffer_format_args (buffer), int));
+          break;
+
+        case 'o':
+          if (long_integer)
+            output_long_octal (buffer,
+                               va_arg (output_buffer_format_args (buffer),
+                                       unsigned long int));
+          else
+            output_octal (buffer,
+                          va_arg (output_buffer_format_args (buffer),
+                                  unsigned int));
+          break;
+
+        case 's':
+          output_add_string (buffer,
+                             va_arg (output_buffer_format_args (buffer),
+                                     const char *));
+          break;
+
+        case 'u':
+          if (long_integer)
+            output_long_unsigned_decimal
+              (buffer, va_arg (output_buffer_format_args (buffer),
+                               long unsigned int));
+          else
+            output_unsigned_decimal
+              (buffer, va_arg (output_buffer_format_args (buffer),
+                               unsigned int));
+          break;
+          
+        case 'x':
+          if (long_integer)
+            output_long_hexadecimal
+              (buffer, va_arg (output_buffer_format_args (buffer),
+                               unsigned long int));
+          else
+            output_hexadecimal
+              (buffer, va_arg (output_buffer_format_args (buffer),
+                               unsigned int));
+          break;
+
+        case '%':
+          output_add_character (buffer, '%');
+          break;
+
+        case '.':
+          {
+            int n;
+            const char *s;
+            /* We handle no precision specifier but `%.*s'.  */
+            if (*++output_buffer_text_cursor (buffer) != '*')
+              abort ();
+            else if (*++output_buffer_text_cursor (buffer) != 's')
+              abort ();
+            n = va_arg (output_buffer_format_args (buffer), int);
+            s = va_arg (output_buffer_format_args (buffer), const char *);
+            output_append (buffer, s, s + n);
+          }
+          break;
+
+        default:
+          if (!buffer->format_decoder || !(*buffer->format_decoder) (buffer))
+            {
+              /* Hmmm.  The front-end failed to install a format translator
+                 but called us with an unrecognized format.  Sorry.  */
+              abort ();
+            }
+        }
+    }
+}

@@ -1,0 +1,48 @@
+void setup_layout(){
+register int i,j,dir;
+    if(mynode()==0){
+	printf("LAYOUT = Hypercubes, options = ");
+	printf("EVENFIRST,");
+	printf("\n");
+    }
+
+    /* Figure out dimensions of rectangle */
+    squaresize[XUP] = nx; squaresize[YUP] = ny;
+    squaresize[ZUP] = nz; squaresize[TUP] = nt;
+    nsquares[XUP] = nsquares[YUP] = nsquares[ZUP] = nsquares[TUP] = 1;
+
+    i = 1;	/* current number of hypercubes */
+    while(i<numnodes()){
+	/* figure out which direction to divide */
+
+	/* find largest even dimension of h-cubes */
+	for(j=1,dir=XUP;dir<=TUP;dir++)
+	    if( squaresize[dir]>j && squaresize[dir]%2==0 ) j=squaresize[dir];
+
+	/* if one direction with largest dimension has already been
+	   divided, divide it again.  Otherwise divide first direction
+	   with largest dimension. */
+	for(dir=XUP;dir<=TUP;dir++)
+	    if( squaresize[dir]==j && nsquares[dir]>1 )break;
+	if( dir > TUP)for(dir=XUP;dir<=TUP;dir++)
+	    if( squaresize[dir]==j )break;
+	/* This can fail if I run out of factors of 2 in the dimensions */
+	if(dir > TUP){
+	    if(mynode()==0)printf(
+	    "LAYOUT: Can't lay out this lattice, not enough factors of 2\n");
+	    terminate(1);
+	}
+
+	/* do the surgery */
+	i*=2; squaresize[dir] /= 2; nsquares[dir] *= 2;
+    }
+
+    sites_on_node =
+	    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
+    /* Need even number of sites per hypercube */
+    if( mynode()==0)if( sites_on_node%2 != 0){
+	printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
+	terminate(0);
+    }
+    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+}

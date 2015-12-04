@@ -1,0 +1,21 @@
+static rtx
+skip_stack_adjustment (orig_insn)
+     rtx orig_insn;
+{
+  rtx insn, set = NULL_RTX;
+
+  insn = next_nonnote_insn (orig_insn);
+
+  if (insn)
+    set = single_set (insn);
+
+  if (insn
+      && set
+      && GET_CODE (SET_SRC (set)) == PLUS
+      && XEXP (SET_SRC (set), 0) == stack_pointer_rtx
+      && GET_CODE (XEXP (SET_SRC (set), 1)) == CONST_INT
+      && SET_DEST (set) == stack_pointer_rtx)
+    return insn;
+
+  return orig_insn;
+}

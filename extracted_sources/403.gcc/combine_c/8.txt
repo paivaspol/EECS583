@@ -1,0 +1,112 @@
+static int
+combinable_i3pat (i3, loc, i2dest, i1dest, i1_not_in_src, pi3dest_killed)
+     rtx i3;
+     rtx *loc;
+     rtx i2dest;
+     rtx i1dest;
+     int i1_not_in_src;
+     rtx *pi3dest_killed;
+{
+  rtx x = *loc;
+
+  if (GET_CODE (x) == SET)
+    {
+      rtx set = expand_field_assignment (x);
+      rtx dest = SET_DEST (set);
+      rtx src = SET_SRC (set);
+      rtx inner_dest = dest;
+
+#if 0
+      rtx inner_src = src;
+#endif
+
+      SUBST (*loc, set);
+
+      while (GET_CODE (inner_dest) == STRICT_LOW_PART
+	     || GET_CODE (inner_dest) == SUBREG
+	     || GET_CODE (inner_dest) == ZERO_EXTRACT)
+	inner_dest = XEXP (inner_dest, 0);
+
+  /* We probably don't need this any more now that LIMIT_RELOAD_CLASS
+     was added.  */
+#if 0
+      while (GET_CODE (inner_src) == STRICT_LOW_PART
+	     || GET_CODE (inner_src) == SUBREG
+	     || GET_CODE (inner_src) == ZERO_EXTRACT)
+	inner_src = XEXP (inner_src, 0);
+
+      /* If it is better that two different modes keep two different pseudos,
+	 avoid combining them.  This avoids producing the following pattern
+	 on a 386:
+	  (set (subreg:SI (reg/v:QI 21) 0)
+	       (lshiftrt:SI (reg/v:SI 20)
+	           (const_int 24)))
+	 If that were made, reload could not handle the pair of
+	 reg 20/21, since it would try to get any GENERAL_REGS
+	 but some of them don't handle QImode.  */
+
+      if (rtx_equal_p (inner_src, i2dest)
+	  && GET_CODE (inner_dest) == REG
+	  && ! MODES_TIEABLE_P (GET_MODE (i2dest), GET_MODE (inner_dest)))
+	return 0;
+#endif
+
+      /* Check for the case where I3 modifies its output, as
+	 discussed above.  */
+      if ((inner_dest != dest
+	   && (reg_overlap_mentioned_p (i2dest, inner_dest)
+	       || (i1dest && reg_overlap_mentioned_p (i1dest, inner_dest))))
+
+	  /* This is the same test done in can_combine_p except we can't test
+	     all_adjacent; we don't have to, since this instruction will stay
+	     in place, thus we are not considering increasing the lifetime of
+	     INNER_DEST.
+
+	     Also, if this insn sets a function argument, combining it with
+	     something that might need a spill could clobber a previous
+	     function argument; the all_adjacent test in can_combine_p also
+	     checks this; here, we do a more specific test for this case.  */
+
+	  || (GET_CODE (inner_dest) == REG
+	      && REGNO (inner_dest) < FIRST_PSEUDO_REGISTER
+	      && (! HARD_REGNO_MODE_OK (REGNO (inner_dest),
+					GET_MODE (inner_dest))))
+	  || (i1_not_in_src && reg_overlap_mentioned_p (i1dest, src)))
+	return 0;
+
+      /* If DEST is used in I3, it is being killed in this insn,
+	 so record that for later.
+	 Never add REG_DEAD notes for the FRAME_POINTER_REGNUM or the
+	 STACK_POINTER_REGNUM, since these are always considered to be
+	 live.  Similarly for ARG_POINTER_REGNUM if it is fixed.  */
+      if (pi3dest_killed && GET_CODE (dest) == REG
+	  && reg_referenced_p (dest, PATTERN (i3))
+	  && REGNO (dest) != FRAME_POINTER_REGNUM
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+	  && REGNO (dest) != HARD_FRAME_POINTER_REGNUM
+#endif
+#if ARG_POINTER_REGNUM != FRAME_POINTER_REGNUM
+	  && (REGNO (dest) != ARG_POINTER_REGNUM
+	      || ! fixed_regs [REGNO (dest)])
+#endif
+	  && REGNO (dest) != STACK_POINTER_REGNUM)
+	{
+	  if (*pi3dest_killed)
+	    return 0;
+
+	  *pi3dest_killed = dest;
+	}
+    }
+
+  else if (GET_CODE (x) == PARALLEL)
+    {
+      int i;
+
+      for (i = 0; i < XVECLEN (x, 0); i++)
+	if (! combinable_i3pat (i3, &XVECEXP (x, 0, i), i2dest, i1dest,
+				i1_not_in_src, pi3dest_killed))
+	  return 0;
+    }
+
+  return 1;
+}

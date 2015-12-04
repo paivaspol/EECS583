@@ -1,0 +1,37 @@
+int32 lm_tglist (lm_t *lm, s3lmwid_t lw1, s3lmwid_t lw2, tg_t **tgptr, int32 *bowt)
+{
+    tginfo_t *tginfo, *prev_tginfo;
+
+    if (lm->n_tg <= 0) {
+	*tgptr = NULL;
+	*bowt = 0;
+	return 0;
+    }
+    
+    if (NOT_S3LMWID(lw1) || (lw1 >= lm->n_ug))
+	E_FATAL("Bad lw1 argument (%d) to lm_tglist\n", lw1);
+    if (NOT_S3LMWID(lw2) || (lw2 >= lm->n_ug))
+	E_FATAL("Bad lw2 argument (%d) to lm_tglist\n", lw2);
+
+    prev_tginfo = NULL;
+    for (tginfo = lm->tginfo[lw2]; tginfo; tginfo = tginfo->next) {
+	if (tginfo->w1 == lw1)
+	    break;
+	prev_tginfo = tginfo;
+    }
+    
+    if (! tginfo) {
+    	load_tg (lm, lw1, lw2);
+	tginfo = lm->tginfo[lw2];
+    } else if (prev_tginfo) {
+	prev_tginfo->next = tginfo->next;
+	tginfo->next = lm->tginfo[lw2];
+	lm->tginfo[lw2] = tginfo;
+    }
+    tginfo->used = 1;
+
+    *tgptr = tginfo->tg;
+    *bowt = tginfo->bowt;
+
+    return (tginfo->n_tg);
+}

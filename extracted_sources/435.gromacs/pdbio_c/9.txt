@@ -1,0 +1,123 @@
+int read_pdbfile(FILE *in,char *title,int *model_nr,
+		 t_atoms *atoms,rvec x[],matrix box,bool bChange)
+{
+  static t_symtab symtab;
+  static bool bFirst=TRUE;
+  bool bCOMPND;
+  char line[STRLEN+1];
+  char sa[12],sb[12],sc[12];
+  double fa,fb,fc,alpha,beta,gamma;
+  int  line_type;
+  char *c,*d;
+  int  natom;
+  bool bStop=FALSE;
+
+  if (box != NULL) 
+    clear_mat(box);
+
+  if (bFirst) {
+    open_symtab(&symtab);
+    bFirst=FALSE;
+  }
+
+  bCOMPND=FALSE;
+  title[0]='\0';
+  natom=0;
+  while (!bStop && (fgets2(line,STRLEN,in) != NULL)) {
+    line_type = line2type(line);
+    
+    switch(line_type) {
+    case epdbATOM:
+    case epdbHETATM:
+      natom = read_atom(&symtab,line,line_type,natom,atoms,x,bChange);
+      break;
+      
+    case epdbANISOU:
+      if (atoms->pdbinfo)
+	read_anisou(line,natom,atoms);
+      break;
+
+    case epdbCRYST1:      
+      if (box) {
+	sscanf(line,"%*s%s%s%s%lf%lf%lf",sa,sb,sc,&alpha,&beta,&gamma);
+	fa = atof(sa)*0.1;
+	fb = atof(sb)*0.1;
+	fc = atof(sc)*0.1;
+	clear_mat(box);
+	box[XX][XX] = fa;
+	if (fabs(alpha-90.0)>GMX_REAL_MIN || 
+	    fabs(beta -90.0)>GMX_REAL_MIN || 
+	    fabs(gamma-90.0)>GMX_REAL_MIN) {
+	  alpha *= DEG2RAD;
+	  beta  *= DEG2RAD;
+	  gamma *= DEG2RAD;
+	  box[YY][XX] = fb*cos(gamma);
+	  box[YY][YY] = fb*sin(gamma);
+	  box[ZZ][XX] = fc*cos(beta);
+	  box[ZZ][YY] = fc*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma);
+	  box[ZZ][ZZ] = sqrt(fc*fc
+			     -box[ZZ][XX]*box[ZZ][XX]-box[ZZ][YY]*box[ZZ][YY]);
+	} else {
+	  box[YY][YY] = fb;
+	  box[ZZ][ZZ] = fc;
+	}
+      }
+      break;
+
+    case epdbTITLE:
+    case epdbHEADER:      
+      c=line+6;
+      /* skip HEADER or TITLE and spaces */
+      while (c && (c[0]!=' ')) c++;
+      while (c && (c[0]==' ')) c++;
+      /* truncate after title */
+      d=strstr(c,"      ");
+      if (d) {
+	d[0]='\0';
+      }
+      if (strlen(c)>0)
+	strcpy(title,c);
+      break;
+      
+    case epdbCOMPND:
+      if ((!strstr(line,": ")) || (strstr(line+6,"MOLECULE:"))) {
+	if ( !(c=strstr(line+6,"MOLECULE:")) )
+	  c=line;
+	/* skip 'MOLECULE:' and spaces */
+	while (c && (c[0]!=' ')) c++;
+	while (c && (c[0]==' ')) c++;
+	/* truncate after title */
+	d=strstr(c,"   ");
+	if (d) {
+	  while ( (d[-1]==';') && d>c)  d--;
+	  d[0]='\0';
+	}
+	if (strlen(c) > 0) {
+	  if (bCOMPND) {
+	    strcat(title,"; ");
+	    strcat(title,c);
+	  } else
+	    strcpy(title,c);
+	}
+	bCOMPND=TRUE;
+      } 
+      break;
+      
+    case epdbTER:
+      if (bTER)
+	bStop=TRUE;
+      break;
+    case epdbMODEL:
+      if(model_nr)
+	sscanf(line,"%*s%d",model_nr);
+      break;
+    case epdbENDMDL:
+      bStop=TRUE;
+      break;
+    default:
+      break;
+    }
+  }
+  
+  return natom;
+}

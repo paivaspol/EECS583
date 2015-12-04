@@ -1,0 +1,75 @@
+static int
+parse_answer (pfile, answerp, type)
+     cpp_reader *pfile;
+     struct answer **answerp;
+     int type;
+{
+  const cpp_token *paren;
+  struct answer *answer;
+  unsigned int acount;
+
+  /* In a conditional, it is legal to not have an open paren.  We
+     should save the following token in this case.  */
+  paren = cpp_get_token (pfile);
+
+  /* If not a paren, see if we're OK.  */
+  if (paren->type != CPP_OPEN_PAREN)
+    {
+      /* In a conditional no answer is a test for any answer.  It
+         could be followed by any token.  */
+      if (type == T_IF)
+	{
+	  _cpp_backup_tokens (pfile, 1);
+	  return 0;
+	}
+
+      /* #unassert with no answer is valid - it removes all answers.  */
+      if (type == T_UNASSERT && paren->type == CPP_EOF)
+	return 0;
+
+      cpp_error (pfile, "missing '(' after predicate");
+      return 1;
+    }
+
+  for (acount = 0;; acount++)
+    {
+      size_t room_needed;
+      const cpp_token *token = cpp_get_token (pfile);
+      cpp_token *dest;
+
+      if (token->type == CPP_CLOSE_PAREN)
+	break;
+
+      if (token->type == CPP_EOF)
+	{
+	  cpp_error (pfile, "missing ')' to complete answer");
+	  return 1;
+	}
+
+      /* struct answer includes the space for one token.  */
+      room_needed = (sizeof (struct answer) + acount * sizeof (cpp_token));
+
+      if (BUFF_ROOM (pfile->a_buff) < room_needed)
+	_cpp_extend_buff (pfile, &pfile->a_buff, sizeof (struct answer));
+
+      dest = &((struct answer *) BUFF_FRONT (pfile->a_buff))->first[acount];
+      *dest = *token;
+
+      /* Drop whitespace at start, for answer equivalence purposes.  */
+      if (acount == 0)
+	dest->flags &= ~PREV_WHITE;
+    }
+
+  if (acount == 0)
+    {
+      cpp_error (pfile, "predicate's answer is empty");
+      return 1;
+    }
+
+  answer = (struct answer *) BUFF_FRONT (pfile->a_buff);
+  answer->count = acount;
+  answer->next = NULL;
+  *answerp = answer;
+
+  return 0;
+}

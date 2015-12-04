@@ -1,0 +1,133 @@
+static void
+find_basic_blocks_1 (f)
+     rtx f;
+{
+  rtx insn, next;
+  int i = 0;
+  rtx bb_note = NULL_RTX;
+  rtx lvl = NULL_RTX;
+  rtx trll = NULL_RTX;
+  rtx head = NULL_RTX;
+  rtx end = NULL_RTX;
+
+  /* We process the instructions in a slightly different way than we did
+     previously.  This is so that we see a NOTE_BASIC_BLOCK after we have
+     closed out the previous block, so that it gets attached at the proper
+     place.  Since this form should be equivalent to the previous,
+     count_basic_blocks continues to use the old form as a check.  */
+
+  for (insn = f; insn; insn = next)
+    {
+      enum rtx_code code = GET_CODE (insn);
+
+      next = NEXT_INSN (insn);
+
+      if ((GET_CODE (insn) == CODE_LABEL || GET_CODE (insn) == BARRIER)
+	  && head)
+	{
+	  create_basic_block_structure (i++, head, end, bb_note);
+	  head = end = NULL_RTX;
+	  bb_note = NULL_RTX;
+	}
+
+      if (inside_basic_block_p (insn))
+	{
+	  if (head == NULL_RTX)
+	    head = insn;
+	  end = insn;
+	}
+
+      if (head && control_flow_insn_p (insn))
+	{
+	  create_basic_block_structure (i++, head, end, bb_note);
+	  head = end = NULL_RTX;
+	  bb_note = NULL_RTX;
+	}
+
+      switch (code)
+	{
+	case NOTE:
+	  {
+	    int kind = NOTE_LINE_NUMBER (insn);
+
+	    /* Look for basic block notes with which to keep the
+	       basic_block_info pointers stable.  Unthread the note now;
+	       we'll put it back at the right place in create_basic_block.
+	       Or not at all if we've already found a note in this block.  */
+	    if (kind == NOTE_INSN_BASIC_BLOCK)
+	      {
+		if (bb_note == NULL_RTX)
+		  bb_note = insn;
+		else
+		  next = delete_insn (insn);
+	      }
+	    break;
+	  }
+
+	case CODE_LABEL:
+	case JUMP_INSN:
+	case INSN:
+	case BARRIER:
+	  break;
+
+	case CALL_INSN:
+	  if (GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	    {
+	      /* Scan each of the alternatives for label refs.  */
+	      lvl = find_label_refs (XEXP (PATTERN (insn), 0), lvl);
+	      lvl = find_label_refs (XEXP (PATTERN (insn), 1), lvl);
+	      lvl = find_label_refs (XEXP (PATTERN (insn), 2), lvl);
+	      /* Record its tail recursion label, if any.  */
+	      if (XEXP (PATTERN (insn), 3) != NULL_RTX)
+		trll = alloc_EXPR_LIST (0, XEXP (PATTERN (insn), 3), trll);
+	    }
+	  break;
+
+	default:
+	  abort ();
+	}
+
+      if (GET_CODE (insn) == INSN || GET_CODE (insn) == CALL_INSN)
+	{
+	  rtx note;
+
+	  /* Make a list of all labels referred to other than by jumps.
+
+	     Make a special exception for labels followed by an ADDR*VEC,
+	     as this would be a part of the tablejump setup code.
+
+	     Make a special exception to registers loaded with label
+	     values just before jump insns that use them.  */
+
+	  for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
+	    if (REG_NOTE_KIND (note) == REG_LABEL)
+	      {
+		rtx lab = XEXP (note, 0), next;
+
+		if ((next = next_nonnote_insn (lab)) != NULL
+			 && GET_CODE (next) == JUMP_INSN
+			 && (GET_CODE (PATTERN (next)) == ADDR_VEC
+			     || GET_CODE (PATTERN (next)) == ADDR_DIFF_VEC))
+		  ;
+		else if (GET_CODE (lab) == NOTE)
+		  ;
+		else if (GET_CODE (NEXT_INSN (insn)) == JUMP_INSN
+			 && find_reg_note (NEXT_INSN (insn), REG_LABEL, lab))
+		  ;
+		else
+		  lvl = alloc_EXPR_LIST (0, XEXP (note, 0), lvl);
+	      }
+	}
+    }
+
+  if (head != NULL_RTX)
+    create_basic_block_structure (i++, head, end, bb_note);
+  else if (bb_note)
+    delete_insn (bb_note);
+
+  if (i != n_basic_blocks)
+    abort ();
+
+  label_value_list = lvl;
+  tail_recursion_label_list = trll;
+}

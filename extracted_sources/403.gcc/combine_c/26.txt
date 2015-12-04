@@ -1,0 +1,534 @@
+static rtx
+force_to_mode (x, mode, mask, reg, just_select)
+     rtx x;
+     enum machine_mode mode;
+     unsigned HOST_WIDE_INT mask;
+     rtx reg;
+     int just_select;
+{
+  enum rtx_code code = GET_CODE (x);
+  int next_select = just_select || code == XOR || code == NOT || code == NEG;
+  enum machine_mode op_mode;
+  unsigned HOST_WIDE_INT fuller_mask, nonzero;
+  rtx op0, op1, temp;
+
+  /* If this is a CALL or ASM_OPERANDS, don't do anything.  Some of the
+     code below will do the wrong thing since the mode of such an
+     expression is VOIDmode.
+
+     Also do nothing if X is a CLOBBER; this can happen if X was
+     the return value from a call to gen_lowpart_for_combine.  */
+  if (code == CALL || code == ASM_OPERANDS || code == CLOBBER)
+    return x;
+
+  /* We want to perform the operation is its present mode unless we know
+     that the operation is valid in MODE, in which case we do the operation
+     in MODE.  */
+  op_mode = ((GET_MODE_CLASS (mode) == GET_MODE_CLASS (GET_MODE (x))
+	      && have_insn_for (code, mode))
+	     ? mode : GET_MODE (x));
+
+  /* It is not valid to do a right-shift in a narrower mode
+     than the one it came in with.  */
+  if ((code == LSHIFTRT || code == ASHIFTRT)
+      && GET_MODE_BITSIZE (mode) < GET_MODE_BITSIZE (GET_MODE (x)))
+    op_mode = GET_MODE (x);
+
+  /* Truncate MASK to fit OP_MODE.  */
+  if (op_mode)
+    mask &= GET_MODE_MASK (op_mode);
+
+  /* When we have an arithmetic operation, or a shift whose count we
+     do not know, we need to assume that all bit the up to the highest-order
+     bit in MASK will be needed.  This is how we form such a mask.  */
+  if (op_mode)
+    fuller_mask = (GET_MODE_BITSIZE (op_mode) >= HOST_BITS_PER_WIDE_INT
+		   ? GET_MODE_MASK (op_mode)
+		   : (((unsigned HOST_WIDE_INT) 1 << (floor_log2 (mask) + 1))
+		      - 1));
+  else
+    fuller_mask = ~(HOST_WIDE_INT) 0;
+
+  /* Determine what bits of X are guaranteed to be (non)zero.  */
+  nonzero = nonzero_bits (x, mode);
+
+  /* If none of the bits in X are needed, return a zero.  */
+  if (! just_select && (nonzero & mask) == 0)
+    return const0_rtx;
+
+  /* If X is a CONST_INT, return a new one.  Do this here since the
+     test below will fail.  */
+  if (GET_CODE (x) == CONST_INT)
+    return gen_int_mode (INTVAL (x) & mask, mode);
+
+  /* If X is narrower than MODE and we want all the bits in X's mode, just
+     get X in the proper mode.  */
+  if (GET_MODE_SIZE (GET_MODE (x)) < GET_MODE_SIZE (mode)
+      && (GET_MODE_MASK (GET_MODE (x)) & ~mask) == 0)
+    return gen_lowpart_for_combine (mode, x);
+
+  /* If we aren't changing the mode, X is not a SUBREG, and all zero bits in
+     MASK are already known to be zero in X, we need not do anything.  */
+  if (GET_MODE (x) == mode && code != SUBREG && (~mask & nonzero) == 0)
+    return x;
+
+  switch (code)
+    {
+    case CLOBBER:
+      /* If X is a (clobber (const_int)), return it since we know we are
+	 generating something that won't match.  */
+      return x;
+
+    case USE:
+      /* X is a (use (mem ..)) that was made from a bit-field extraction that
+	 spanned the boundary of the MEM.  If we are now masking so it is
+	 within that boundary, we don't need the USE any more.  */
+      if (! BITS_BIG_ENDIAN
+	  && (mask & ~GET_MODE_MASK (GET_MODE (XEXP (x, 0)))) == 0)
+	return force_to_mode (XEXP (x, 0), mode, mask, reg, next_select);
+      break;
+
+    case SIGN_EXTEND:
+    case ZERO_EXTEND:
+    case ZERO_EXTRACT:
+    case SIGN_EXTRACT:
+      x = expand_compound_operation (x);
+      if (GET_CODE (x) != code)
+	return force_to_mode (x, mode, mask, reg, next_select);
+      break;
+
+    case REG:
+      if (reg != 0 && (rtx_equal_p (get_last_value (reg), x)
+		       || rtx_equal_p (reg, get_last_value (x))))
+	x = reg;
+      break;
+
+    case SUBREG:
+      if (subreg_lowpart_p (x)
+	  /* We can ignore the effect of this SUBREG if it narrows the mode or
+	     if the constant masks to zero all the bits the mode doesn't
+	     have.  */
+	  && ((GET_MODE_SIZE (GET_MODE (x))
+	       < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x))))
+	      || (0 == (mask
+			& GET_MODE_MASK (GET_MODE (x))
+			& ~GET_MODE_MASK (GET_MODE (SUBREG_REG (x)))))))
+	return force_to_mode (SUBREG_REG (x), mode, mask, reg, next_select);
+      break;
+
+    case AND:
+      /* If this is an AND with a constant, convert it into an AND
+	 whose constant is the AND of that constant with MASK.  If it
+	 remains an AND of MASK, delete it since it is redundant.  */
+
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT)
+	{
+	  x = simplify_and_const_int (x, op_mode, XEXP (x, 0),
+				      mask & INTVAL (XEXP (x, 1)));
+
+	  /* If X is still an AND, see if it is an AND with a mask that
+	     is just some low-order bits.  If so, and it is MASK, we don't
+	     need it.  */
+
+	  if (GET_CODE (x) == AND && GET_CODE (XEXP (x, 1)) == CONST_INT
+	      && ((INTVAL (XEXP (x, 1)) & GET_MODE_MASK (GET_MODE (x)))
+		  == (HOST_WIDE_INT) mask))
+	    x = XEXP (x, 0);
+
+	  /* If it remains an AND, try making another AND with the bits
+	     in the mode mask that aren't in MASK turned on.  If the
+	     constant in the AND is wide enough, this might make a
+	     cheaper constant.  */
+
+	  if (GET_CODE (x) == AND && GET_CODE (XEXP (x, 1)) == CONST_INT
+	      && GET_MODE_MASK (GET_MODE (x)) != mask
+	      && GET_MODE_BITSIZE (GET_MODE (x)) <= HOST_BITS_PER_WIDE_INT)
+	    {
+	      HOST_WIDE_INT cval = (INTVAL (XEXP (x, 1))
+				    | (GET_MODE_MASK (GET_MODE (x)) & ~mask));
+	      int width = GET_MODE_BITSIZE (GET_MODE (x));
+	      rtx y;
+
+	      /* If MODE is narrower that HOST_WIDE_INT and CVAL is a negative
+		 number, sign extend it.  */
+	      if (width > 0 && width < HOST_BITS_PER_WIDE_INT
+		  && (cval & ((HOST_WIDE_INT) 1 << (width - 1))) != 0)
+		cval |= (HOST_WIDE_INT) -1 << width;
+
+	      y = gen_binary (AND, GET_MODE (x), XEXP (x, 0), GEN_INT (cval));
+	      if (rtx_cost (y, SET) < rtx_cost (x, SET))
+		x = y;
+	    }
+
+	  break;
+	}
+
+      goto binop;
+
+    case PLUS:
+      /* In (and (plus FOO C1) M), if M is a mask that just turns off
+	 low-order bits (as in an alignment operation) and FOO is already
+	 aligned to that boundary, mask C1 to that boundary as well.
+	 This may eliminate that PLUS and, later, the AND.  */
+
+      {
+	unsigned int width = GET_MODE_BITSIZE (mode);
+	unsigned HOST_WIDE_INT smask = mask;
+
+	/* If MODE is narrower than HOST_WIDE_INT and mask is a negative
+	   number, sign extend it.  */
+
+	if (width < HOST_BITS_PER_WIDE_INT
+	    && (smask & ((HOST_WIDE_INT) 1 << (width - 1))) != 0)
+	  smask |= (HOST_WIDE_INT) -1 << width;
+
+	if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	    && exact_log2 (- smask) >= 0
+	    && (nonzero_bits (XEXP (x, 0), mode) & ~smask) == 0
+	    && (INTVAL (XEXP (x, 1)) & ~smask) != 0)
+	  return force_to_mode (plus_constant (XEXP (x, 0),
+					       (INTVAL (XEXP (x, 1)) & smask)),
+				mode, smask, reg, next_select);
+      }
+
+      /* ... fall through ...  */
+
+    case MULT:
+      /* For PLUS, MINUS and MULT, we need any bits less significant than the
+	 most significant bit in MASK since carries from those bits will
+	 affect the bits we are interested in.  */
+      mask = fuller_mask;
+      goto binop;
+
+    case MINUS:
+      /* If X is (minus C Y) where C's least set bit is larger than any bit
+	 in the mask, then we may replace with (neg Y).  */
+      if (GET_CODE (XEXP (x, 0)) == CONST_INT
+	  && (((unsigned HOST_WIDE_INT) (INTVAL (XEXP (x, 0))
+					& -INTVAL (XEXP (x, 0))))
+	      > mask))
+	{
+	  x = simplify_gen_unary (NEG, GET_MODE (x), XEXP (x, 1),
+				  GET_MODE (x));
+	  return force_to_mode (x, mode, mask, reg, next_select);
+	}
+
+      /* Similarly, if C contains every bit in the mask, then we may
+	 replace with (not Y).  */
+      if (GET_CODE (XEXP (x, 0)) == CONST_INT
+	  && ((INTVAL (XEXP (x, 0)) | (HOST_WIDE_INT) mask)
+	      == INTVAL (XEXP (x, 0))))
+	{
+	  x = simplify_gen_unary (NOT, GET_MODE (x),
+				  XEXP (x, 1), GET_MODE (x));
+	  return force_to_mode (x, mode, mask, reg, next_select);
+	}
+
+      mask = fuller_mask;
+      goto binop;
+
+    case IOR:
+    case XOR:
+      /* If X is (ior (lshiftrt FOO C1) C2), try to commute the IOR and
+	 LSHIFTRT so we end up with an (and (lshiftrt (ior ...) ...) ...)
+	 operation which may be a bitfield extraction.  Ensure that the
+	 constant we form is not wider than the mode of X.  */
+
+      if (GET_CODE (XEXP (x, 0)) == LSHIFTRT
+	  && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT
+	  && INTVAL (XEXP (XEXP (x, 0), 1)) >= 0
+	  && INTVAL (XEXP (XEXP (x, 0), 1)) < HOST_BITS_PER_WIDE_INT
+	  && GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && ((INTVAL (XEXP (XEXP (x, 0), 1))
+	       + floor_log2 (INTVAL (XEXP (x, 1))))
+	      < GET_MODE_BITSIZE (GET_MODE (x)))
+	  && (INTVAL (XEXP (x, 1))
+	      & ~nonzero_bits (XEXP (x, 0), GET_MODE (x))) == 0)
+	{
+	  temp = GEN_INT ((INTVAL (XEXP (x, 1)) & mask)
+			  << INTVAL (XEXP (XEXP (x, 0), 1)));
+	  temp = gen_binary (GET_CODE (x), GET_MODE (x),
+			     XEXP (XEXP (x, 0), 0), temp);
+	  x = gen_binary (LSHIFTRT, GET_MODE (x), temp,
+			  XEXP (XEXP (x, 0), 1));
+	  return force_to_mode (x, mode, mask, reg, next_select);
+	}
+
+    binop:
+      /* For most binary operations, just propagate into the operation and
+	 change the mode if we have an operation of that mode.  */
+
+      op0 = gen_lowpart_for_combine (op_mode,
+				     force_to_mode (XEXP (x, 0), mode, mask,
+						    reg, next_select));
+      op1 = gen_lowpart_for_combine (op_mode,
+				     force_to_mode (XEXP (x, 1), mode, mask,
+						    reg, next_select));
+
+      if (op_mode != GET_MODE (x) || op0 != XEXP (x, 0) || op1 != XEXP (x, 1))
+	x = gen_binary (code, op_mode, op0, op1);
+      break;
+
+    case ASHIFT:
+      /* For left shifts, do the same, but just for the first operand.
+	 However, we cannot do anything with shifts where we cannot
+	 guarantee that the counts are smaller than the size of the mode
+	 because such a count will have a different meaning in a
+	 wider mode.  */
+
+      if (! (GET_CODE (XEXP (x, 1)) == CONST_INT
+	     && INTVAL (XEXP (x, 1)) >= 0
+	     && INTVAL (XEXP (x, 1)) < GET_MODE_BITSIZE (mode))
+	  && ! (GET_MODE (XEXP (x, 1)) != VOIDmode
+		&& (nonzero_bits (XEXP (x, 1), GET_MODE (XEXP (x, 1)))
+		    < (unsigned HOST_WIDE_INT) GET_MODE_BITSIZE (mode))))
+	break;
+
+      /* If the shift count is a constant and we can do arithmetic in
+	 the mode of the shift, refine which bits we need.  Otherwise, use the
+	 conservative form of the mask.  */
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) >= 0
+	  && INTVAL (XEXP (x, 1)) < GET_MODE_BITSIZE (op_mode)
+	  && GET_MODE_BITSIZE (op_mode) <= HOST_BITS_PER_WIDE_INT)
+	mask >>= INTVAL (XEXP (x, 1));
+      else
+	mask = fuller_mask;
+
+      op0 = gen_lowpart_for_combine (op_mode,
+				     force_to_mode (XEXP (x, 0), op_mode,
+						    mask, reg, next_select));
+
+      if (op_mode != GET_MODE (x) || op0 != XEXP (x, 0))
+	x = gen_binary (code, op_mode, op0, XEXP (x, 1));
+      break;
+
+    case LSHIFTRT:
+      /* Here we can only do something if the shift count is a constant,
+	 this shift constant is valid for the host, and we can do arithmetic
+	 in OP_MODE.  */
+
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) < HOST_BITS_PER_WIDE_INT
+	  && GET_MODE_BITSIZE (op_mode) <= HOST_BITS_PER_WIDE_INT)
+	{
+	  rtx inner = XEXP (x, 0);
+	  unsigned HOST_WIDE_INT inner_mask;
+
+	  /* Select the mask of the bits we need for the shift operand.  */
+	  inner_mask = mask << INTVAL (XEXP (x, 1));
+
+	  /* We can only change the mode of the shift if we can do arithmetic
+	     in the mode of the shift and INNER_MASK is no wider than the
+	     width of OP_MODE.  */
+	  if (GET_MODE_BITSIZE (op_mode) > HOST_BITS_PER_WIDE_INT
+	      || (inner_mask & ~GET_MODE_MASK (op_mode)) != 0)
+	    op_mode = GET_MODE (x);
+
+	  inner = force_to_mode (inner, op_mode, inner_mask, reg, next_select);
+
+	  if (GET_MODE (x) != op_mode || inner != XEXP (x, 0))
+	    x = gen_binary (LSHIFTRT, op_mode, inner, XEXP (x, 1));
+	}
+
+      /* If we have (and (lshiftrt FOO C1) C2) where the combination of the
+	 shift and AND produces only copies of the sign bit (C2 is one less
+	 than a power of two), we can do this with just a shift.  */
+
+      if (GET_CODE (x) == LSHIFTRT
+	  && GET_CODE (XEXP (x, 1)) == CONST_INT
+	  /* The shift puts one of the sign bit copies in the least significant
+	     bit.  */
+	  && ((INTVAL (XEXP (x, 1))
+	       + num_sign_bit_copies (XEXP (x, 0), GET_MODE (XEXP (x, 0))))
+	      >= GET_MODE_BITSIZE (GET_MODE (x)))
+	  && exact_log2 (mask + 1) >= 0
+	  /* Number of bits left after the shift must be more than the mask
+	     needs.  */
+	  && ((INTVAL (XEXP (x, 1)) + exact_log2 (mask + 1))
+	      <= GET_MODE_BITSIZE (GET_MODE (x)))
+	  /* Must be more sign bit copies than the mask needs.  */
+	  && ((int) num_sign_bit_copies (XEXP (x, 0), GET_MODE (XEXP (x, 0)))
+	      >= exact_log2 (mask + 1)))
+	x = gen_binary (LSHIFTRT, GET_MODE (x), XEXP (x, 0),
+			GEN_INT (GET_MODE_BITSIZE (GET_MODE (x))
+				 - exact_log2 (mask + 1)));
+
+      goto shiftrt;
+
+    case ASHIFTRT:
+      /* If we are just looking for the sign bit, we don't need this shift at
+	 all, even if it has a variable count.  */
+      if (GET_MODE_BITSIZE (GET_MODE (x)) <= HOST_BITS_PER_WIDE_INT
+	  && (mask == ((unsigned HOST_WIDE_INT) 1
+		       << (GET_MODE_BITSIZE (GET_MODE (x)) - 1))))
+	return force_to_mode (XEXP (x, 0), mode, mask, reg, next_select);
+
+      /* If this is a shift by a constant, get a mask that contains those bits
+	 that are not copies of the sign bit.  We then have two cases:  If
+	 MASK only includes those bits, this can be a logical shift, which may
+	 allow simplifications.  If MASK is a single-bit field not within
+	 those bits, we are requesting a copy of the sign bit and hence can
+	 shift the sign bit to the appropriate location.  */
+
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT && INTVAL (XEXP (x, 1)) >= 0
+	  && INTVAL (XEXP (x, 1)) < HOST_BITS_PER_WIDE_INT)
+	{
+	  int i = -1;
+
+	  /* If the considered data is wider than HOST_WIDE_INT, we can't
+	     represent a mask for all its bits in a single scalar.
+	     But we only care about the lower bits, so calculate these.  */
+
+	  if (GET_MODE_BITSIZE (GET_MODE (x)) > HOST_BITS_PER_WIDE_INT)
+	    {
+	      nonzero = ~(HOST_WIDE_INT) 0;
+
+	      /* GET_MODE_BITSIZE (GET_MODE (x)) - INTVAL (XEXP (x, 1))
+		 is the number of bits a full-width mask would have set.
+		 We need only shift if these are fewer than nonzero can
+		 hold.  If not, we must keep all bits set in nonzero.  */
+
+	      if (GET_MODE_BITSIZE (GET_MODE (x)) - INTVAL (XEXP (x, 1))
+		  < HOST_BITS_PER_WIDE_INT)
+		nonzero >>= INTVAL (XEXP (x, 1))
+			    + HOST_BITS_PER_WIDE_INT
+			    - GET_MODE_BITSIZE (GET_MODE (x)) ;
+	    }
+	  else
+	    {
+	      nonzero = GET_MODE_MASK (GET_MODE (x));
+	      nonzero >>= INTVAL (XEXP (x, 1));
+	    }
+
+	  if ((mask & ~nonzero) == 0
+	      || (i = exact_log2 (mask)) >= 0)
+	    {
+	      x = simplify_shift_const
+		(x, LSHIFTRT, GET_MODE (x), XEXP (x, 0),
+		 i < 0 ? INTVAL (XEXP (x, 1))
+		 : GET_MODE_BITSIZE (GET_MODE (x)) - 1 - i);
+
+	      if (GET_CODE (x) != ASHIFTRT)
+		return force_to_mode (x, mode, mask, reg, next_select);
+	    }
+	}
+
+      /* If MASK is 1, convert this to a LSHIFTRT.  This can be done
+	 even if the shift count isn't a constant.  */
+      if (mask == 1)
+	x = gen_binary (LSHIFTRT, GET_MODE (x), XEXP (x, 0), XEXP (x, 1));
+
+    shiftrt:
+
+      /* If this is a zero- or sign-extension operation that just affects bits
+	 we don't care about, remove it.  Be sure the call above returned
+	 something that is still a shift.  */
+
+      if ((GET_CODE (x) == LSHIFTRT || GET_CODE (x) == ASHIFTRT)
+	  && GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) >= 0
+	  && (INTVAL (XEXP (x, 1))
+	      <= GET_MODE_BITSIZE (GET_MODE (x)) - (floor_log2 (mask) + 1))
+	  && GET_CODE (XEXP (x, 0)) == ASHIFT
+	  && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT
+	  && INTVAL (XEXP (XEXP (x, 0), 1)) == INTVAL (XEXP (x, 1)))
+	return force_to_mode (XEXP (XEXP (x, 0), 0), mode, mask,
+			      reg, next_select);
+
+      break;
+
+    case ROTATE:
+    case ROTATERT:
+      /* If the shift count is constant and we can do computations
+	 in the mode of X, compute where the bits we care about are.
+	 Otherwise, we can't do anything.  Don't change the mode of
+	 the shift or propagate MODE into the shift, though.  */
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) >= 0)
+	{
+	  temp = simplify_binary_operation (code == ROTATE ? ROTATERT : ROTATE,
+					    GET_MODE (x), GEN_INT (mask),
+					    XEXP (x, 1));
+	  if (temp && GET_CODE(temp) == CONST_INT)
+	    SUBST (XEXP (x, 0),
+		   force_to_mode (XEXP (x, 0), GET_MODE (x),
+				  INTVAL (temp), reg, next_select));
+	}
+      break;
+
+    case NEG:
+      /* If we just want the low-order bit, the NEG isn't needed since it
+	 won't change the low-order bit.  */
+      if (mask == 1)
+	return force_to_mode (XEXP (x, 0), mode, mask, reg, just_select);
+
+      /* We need any bits less significant than the most significant bit in
+	 MASK since carries from those bits will affect the bits we are
+	 interested in.  */
+      mask = fuller_mask;
+      goto unop;
+
+    case NOT:
+      /* (not FOO) is (xor FOO CONST), so if FOO is an LSHIFTRT, we can do the
+	 same as the XOR case above.  Ensure that the constant we form is not
+	 wider than the mode of X.  */
+
+      if (GET_CODE (XEXP (x, 0)) == LSHIFTRT
+	  && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT
+	  && INTVAL (XEXP (XEXP (x, 0), 1)) >= 0
+	  && (INTVAL (XEXP (XEXP (x, 0), 1)) + floor_log2 (mask)
+	      < GET_MODE_BITSIZE (GET_MODE (x)))
+	  && INTVAL (XEXP (XEXP (x, 0), 1)) < HOST_BITS_PER_WIDE_INT)
+	{
+	  temp = GEN_INT (mask << INTVAL (XEXP (XEXP (x, 0), 1)));
+	  temp = gen_binary (XOR, GET_MODE (x), XEXP (XEXP (x, 0), 0), temp);
+	  x = gen_binary (LSHIFTRT, GET_MODE (x), temp, XEXP (XEXP (x, 0), 1));
+
+	  return force_to_mode (x, mode, mask, reg, next_select);
+	}
+
+      /* (and (not FOO) CONST) is (not (or FOO (not CONST))), so we must
+	 use the full mask inside the NOT.  */
+      mask = fuller_mask;
+
+    unop:
+      op0 = gen_lowpart_for_combine (op_mode,
+				     force_to_mode (XEXP (x, 0), mode, mask,
+						    reg, next_select));
+      if (op_mode != GET_MODE (x) || op0 != XEXP (x, 0))
+	x = simplify_gen_unary (code, op_mode, op0, op_mode);
+      break;
+
+    case NE:
+      /* (and (ne FOO 0) CONST) can be (and FOO CONST) if CONST is included
+	 in STORE_FLAG_VALUE and FOO has a single bit that might be nonzero,
+	 which is equal to STORE_FLAG_VALUE.  */
+      if ((mask & ~STORE_FLAG_VALUE) == 0 && XEXP (x, 1) == const0_rtx
+	  && exact_log2 (nonzero_bits (XEXP (x, 0), mode)) >= 0
+	  && nonzero_bits (XEXP (x, 0), mode) == STORE_FLAG_VALUE)
+	return force_to_mode (XEXP (x, 0), mode, mask, reg, next_select);
+
+      break;
+
+    case IF_THEN_ELSE:
+      /* We have no way of knowing if the IF_THEN_ELSE can itself be
+	 written in a narrower mode.  We play it safe and do not do so.  */
+
+      SUBST (XEXP (x, 1),
+	     gen_lowpart_for_combine (GET_MODE (x),
+				      force_to_mode (XEXP (x, 1), mode,
+						     mask, reg, next_select)));
+      SUBST (XEXP (x, 2),
+	     gen_lowpart_for_combine (GET_MODE (x),
+				      force_to_mode (XEXP (x, 2), mode,
+						     mask, reg,next_select)));
+      break;
+
+    default:
+      break;
+    }
+
+  /* Ensure we return a value of the proper mode.  */
+  return gen_lowpart_for_combine (mode, x);
+}

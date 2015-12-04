@@ -1,0 +1,81 @@
+static char*
+parse_marked_section(PSTATE* p_state, char *beg, char *end, U32 utf8, SV* self)
+{
+    dTHX;
+    char *s = beg;
+    AV* tokens = 0;
+
+    if (!p_state->marked_sections)
+	return 0;
+
+FIND_NAMES:
+    while (isHSPACE(*s))
+	s++;
+    while (isHNAME_FIRST(*s)) {
+	char *name_start = s;
+	char *name_end;
+	SV *name;
+	s++;
+	while (isHNAME_CHAR(*s))
+	    s++;
+	name_end = s;
+	while (isHSPACE(*s))
+	    s++;
+	if (s == end)
+	    goto PREMATURE;
+
+	if (!tokens)
+	    tokens = newAV();
+	name = newSVpvn(name_start, name_end - name_start);
+	if (utf8)
+	    SvUTF8_on(name);
+	av_push(tokens, sv_lower(aTHX_ name));
+    }
+    if (*s == '-') {
+	s++;
+	if (*s == '-') {
+	    /* comment */
+	    s++;
+	    while (1) {
+		while (s < end && *s != '-')
+		    s++;
+		if (s == end)
+		    goto PREMATURE;
+
+		s++;  /* skip first '-' */
+		if (*s == '-') {
+		    s++;
+		    /* comment finished */
+		    goto FIND_NAMES;
+		}
+	    }      
+	}
+	else
+	    goto FAIL;
+      
+    }
+    if (*s == '[') {
+	s++;
+	/* yup */
+
+	if (!tokens) {
+	    tokens = newAV();
+	    av_push(tokens, newSVpvn("include", 7));
+	}
+
+	if (!p_state->ms_stack)
+	    p_state->ms_stack = newAV();
+	av_push(p_state->ms_stack, newRV_noinc((SV*)tokens));
+	marked_section_update(p_state);
+	report_event(p_state, E_NONE, beg, s, utf8, 0, 0, self);
+	return s;
+    }
+
+FAIL:
+    SvREFCNT_dec(tokens);
+    return 0; /* not yet implemented */
+  
+PREMATURE:
+    SvREFCNT_dec(tokens);
+    return beg;
+}

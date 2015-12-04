@@ -1,0 +1,26 @@
+static unsigned HOST_WIDE_INT
+invert_mod2n (x, n)
+     unsigned HOST_WIDE_INT x;
+     int n;
+{
+  /* Solve x*y == 1 (mod 2^n), where x is odd.  Return y.  */
+
+  /* The algorithm notes that the choice y = x satisfies
+     x*y == 1 mod 2^3, since x is assumed odd.
+     Each iteration doubles the number of bits of significance in y.  */
+
+  unsigned HOST_WIDE_INT mask;
+  unsigned HOST_WIDE_INT y = x;
+  int nbit = 3;
+
+  mask = (n == HOST_BITS_PER_WIDE_INT
+	  ? ~(unsigned HOST_WIDE_INT) 0
+	  : ((unsigned HOST_WIDE_INT) 1 << n) - 1);
+
+  while (nbit < n)
+    {
+      y = y * (2 - x*y) & mask;		/* Modulo 2^N */
+      nbit *= 2;
+    }
+  return y;
+}

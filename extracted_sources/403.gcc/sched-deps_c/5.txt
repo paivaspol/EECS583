@@ -1,0 +1,14 @@
+static void
+add_dependence_list_and_free (insn, listp, dep_type)
+     rtx insn;
+     rtx *listp;
+     enum reg_note dep_type;
+{
+  rtx list, next;
+  for (list = *listp, *listp = NULL; list ; list = next)
+    {
+      next = XEXP (list, 1);
+      add_dependence (insn, XEXP (list, 0), dep_type);
+      free_INSN_LIST_node (list);
+    }
+}

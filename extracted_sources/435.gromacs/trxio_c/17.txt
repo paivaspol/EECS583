@@ -1,0 +1,25 @@
+static int xyz_first_x(FILE *status, real *t, rvec **x, matrix box)
+/* Reads status, mallocs x, and returns x and box
+ * Returns natoms when succesful, FALSE otherwise
+ */
+{
+  int    m;
+  
+  INITCOUNT;
+
+  clear_mat(box);
+  choose_ff(status);
+
+  for(m=0; (m<DIM); m++)
+    box[m][m]=BOX[m];
+
+  snew(*x,NATOMS);
+  *t=DT;
+  if (!xyz_next_x(status,t,NATOMS,*x,box)) 
+    return 0;
+  *t=0.0;
+
+  init_pbc(box);
+  
+  return NATOMS;
+}

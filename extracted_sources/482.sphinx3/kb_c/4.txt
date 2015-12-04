@@ -1,0 +1,49 @@
+void kb_free (kb_t *kb)
+{
+  vithist_t *vithist = kb->vithist;
+
+  if (kb->sen_active)
+    ckd_free ((void *)kb->sen_active);
+  if (kb->ssid_active) 
+    ckd_free ((void *)kb->ssid_active);
+  if (kb->comssid_active)
+    ckd_free ((void *)kb->comssid_active);
+  if (kb->fillertree) 
+    ckd_free ((void *)kb->fillertree);
+  if (kb->hmm_hist) 
+    ckd_free ((void *)kb->hmm_hist);
+  
+
+  /* vithist */
+  if (vithist) {
+    ckd_free ((void *) vithist->entry);
+    ckd_free ((void *) vithist->frame_start);
+    ckd_free ((void *) vithist->bestscore);
+    ckd_free ((void *) vithist->bestvh);
+    ckd_free ((void *) vithist->lms2vh_root);    
+    ckd_free ((void *) kb->vithist);
+  }
+
+
+  kbcore_free (kb->kbcore);
+
+  if (kb->feat) {
+    ckd_free ((void *)kb->feat[0][0]);
+    ckd_free_2d ((void **)kb->feat);
+  }
+
+  if (kb->cache_ci_senscr) {
+    ckd_free_2d ((void **)kb->cache_ci_senscr);
+  }
+  if( kb->cache_best_list) {
+    ckd_free((void*) kb->cache_best_list);
+  }
+  if(kb->phn_heur_list) {
+    ckd_free((void*) kb->phn_heur_list);
+  }
+
+  if (kb->matchsegfp) fclose(kb->matchsegfp);
+  if (kb->matchfp) fclose(kb->matchfp);
+
+  kb_freehyps(kb);
+}

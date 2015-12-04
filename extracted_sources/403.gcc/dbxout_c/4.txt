@@ -1,0 +1,13 @@
+static void
+dbxout_end_source_file (line)
+     unsigned int line ATTRIBUTE_UNUSED;
+{
+#ifdef DBX_USE_BINCL
+  struct dbx_file *next;
+
+  fprintf (asmfile, "%s%d,0,0,0\n", ASM_STABN_OP, N_EINCL);
+  next = current_file->next;
+  free (current_file);
+  current_file = next;
+#endif
+}

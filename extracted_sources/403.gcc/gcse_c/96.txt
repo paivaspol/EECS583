@@ -1,0 +1,42 @@
+static int
+pre_gcse ()
+{
+  unsigned int i;
+  int did_insert, changed;
+  struct expr **index_map;
+  struct expr *expr;
+
+  /* Compute a mapping from expression number (`bitmap_index') to
+     hash table entry.  */
+
+  index_map = (struct expr **) xcalloc (n_exprs, sizeof (struct expr *));
+  for (i = 0; i < expr_hash_table_size; i++)
+    for (expr = expr_hash_table[i]; expr != NULL; expr = expr->next_same_hash)
+      index_map[expr->bitmap_index] = expr;
+
+  /* Reset bitmap used to track which insns are redundant.  */
+  pre_redundant_insns = sbitmap_alloc (max_cuid);
+  sbitmap_zero (pre_redundant_insns);
+
+  /* Delete the redundant insns first so that
+     - we know what register to use for the new insns and for the other
+       ones with reaching expressions
+     - we know which insns are redundant when we go to create copies  */
+
+  changed = pre_delete ();
+
+  did_insert = pre_edge_insert (edge_list, index_map);
+
+  /* In other places with reaching expressions, copy the expression to the
+     specially allocated pseudo-reg that reaches the redundant expr.  */
+  pre_insert_copies ();
+  if (did_insert)
+    {
+      commit_edge_insertions ();
+      changed = 1;
+    }
+
+  free (index_map);
+  sbitmap_free (pre_redundant_insns);
+  return changed;
+}

@@ -1,0 +1,15 @@
+static void
+flush_reg_cond_reg (pbi, regno)
+     struct propagate_block_info *pbi;
+     int regno;
+{
+  int pair[2];
+
+  pair[0] = regno;
+  pair[1] = -1;
+  while (splay_tree_foreach (pbi->reg_cond_dead,
+			     flush_reg_cond_reg_1, pair) == -1)
+    splay_tree_remove (pbi->reg_cond_dead, pair[1]);
+
+  CLEAR_REGNO_REG_SET (pbi->reg_cond_reg, regno);
+}

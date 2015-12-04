@@ -1,0 +1,152 @@
+static void init_frame ()
+{
+  int i;
+  int prevP_no, nextP_no;
+  
+  last_P_no = last_P_no_frm;
+
+  img->current_mb_nr = 0;
+  img->current_slice_nr = 0;
+  stats->bit_slice = 0;
+
+  img->mb_y = img->mb_x = 0;
+  img->block_y = img->pix_y = img->pix_c_y = 0; 
+  img->block_x = img->pix_x = img->block_c_x = img->pix_c_x = 0;
+
+  // The 'slice_nr' of each macroblock is set to -1 here, to guarantee the correct encoding 
+  // with FMO (if no FMO, encoding is correct without following assignment), 
+  // for which MBs may not be encoded with scan order
+  for(i=0;i< ((img->width/MB_BLOCK_SIZE)*(img->height/MB_BLOCK_SIZE));i++)
+    img->mb_data[i].slice_nr=-1;
+	
+  //if (img->type != B_SLICE)
+  if (img->b_frame_to_code == 0)
+  {
+    img->tr = start_tr_in_this_IGOP + IMG_NUMBER * (input->jumpd + 1);
+    
+    img->imgtr_last_P_frm = img->imgtr_next_P_frm;
+    img->imgtr_next_P_frm = img->tr;
+    
+#ifdef _ADAPT_LAST_GROUP_
+    if (input->last_frame && img->number + 1 == input->no_frames)
+      img->tr = input->last_frame;
+#endif
+    
+    if (IMG_NUMBER != 0 && input->successive_Bframe != 0)     // B pictures to encode
+      nextP_tr_frm = img->tr;
+    
+    //Rate control
+    if(!input->RCEnable)                  // without using rate control
+    {
+      if (img->type == I_SLICE)
+#ifdef _CHANGE_QP_
+        if (input->qp2start > 0 && img->tr >= input->qp2start)
+          img->qp = input->qp02;
+        else
+#endif    
+        img->qp = input->qp0;   // set quant. parameter for I-frame
+      else
+      {
+#ifdef _CHANGE_QP_
+        if (input->qp2start > 0 && img->tr >= input->qp2start)
+          img->qp = input->qpN2;
+        else
+#endif
+          img->qp = input->qpN;
+        
+        if (img->type == SP_SLICE)
+        {
+          img->qp = input->qpsp;
+          img->qpsp = input->qpsp_pred;
+        }   
+      }
+    }
+
+    img->mb_y_intra = img->mb_y_upd;  //  img->mb_y_intra indicates which GOB to intra code for this frame
+    
+    if (input->intra_upd > 0) // if error robustness, find next GOB to update
+    {
+      img->mb_y_upd = (IMG_NUMBER / input->intra_upd) % (img->height / MB_BLOCK_SIZE);
+    }
+  }
+  else
+  {
+    img->p_interval = input->jumpd + 1;
+    prevP_no = start_tr_in_this_IGOP + (IMG_NUMBER - 1) * img->p_interval;
+    nextP_no = start_tr_in_this_IGOP + (IMG_NUMBER) * img->p_interval;
+    
+#ifdef _ADAPT_LAST_GROUP_
+    last_P_no[0] = prevP_no;
+    for (i = 1; i < img->buf_cycle; i++)
+      last_P_no[i] = last_P_no[i - 1] - img->p_interval;
+    
+    if (input->last_frame && img->number + 1 == input->no_frames)
+    {
+      nextP_no = input->last_frame;
+      img->p_interval = nextP_no - prevP_no;
+    }
+#endif
+    
+    img->b_interval =
+      ((double) (input->jumpd + 1) / (input->successive_Bframe + 1.0) );
+
+    if (input->PyramidCoding == 3)
+      img->b_interval = 1.0;
+
+    if (input->PyramidCoding)
+      img->tr = prevP_no + (int) (img->b_interval  * (double) (1 + gop_structure[img->b_frame_to_code - 1].display_no));      // from prev_P
+    else      
+      img->tr = prevP_no + (int) (img->b_interval * (double) img->b_frame_to_code);      // from prev_P
+    
+
+    if (img->tr >= nextP_no)
+      img->tr = nextP_no - 1;
+    //Rate control
+    if(!input->RCEnable && input->PyramidCoding !=3)                  // without using rate control
+    {    
+#ifdef _CHANGE_QP_
+      if (input->qp2start > 0 && img->tr >= input->qp2start)
+      {
+        img->qp = input->qpB2;
+      }
+      else
+#endif
+      {
+        img->qp = input->qpB;
+      }
+
+      if (img->nal_reference_idc)
+      {
+#ifdef _CHANGE_QP_
+        if (input->qp2start > 0 && img->tr >= input->qp2start)
+        {
+          img->qp = Clip3(0,51,input->qpB2 + input->qpBRS2Offset);
+        }
+        else
+#endif
+        {
+          img->qp = Clip3(0,51,input->qpB + input->qpBRSOffset);
+        }
+      }
+    }
+    else if (input->PyramidCoding ==3)  
+    {
+      img->qp =  gop_structure[img->b_frame_to_code - 1].slice_qp;
+
+    }
+
+  }
+  
+  UpdateSubseqInfo (img->layer);        // Tian Dong (Sept 2002)
+  UpdateSceneInformation (0, 0, 0, -1); // JVT-D099, scene information SEI, nothing included by default
+
+  //! Commented out by StW, needs fixing in SEI.h to keep the trace file clean
+  //  PrepareAggregationSEIMessage ();
+
+  img->total_number_mb = (img->width * img->height) / (MB_BLOCK_SIZE * MB_BLOCK_SIZE);
+
+  img->no_output_of_prior_pics_flag = 0;
+  img->long_term_reference_flag = 0;
+
+  init_dec_ref_pic_marking_buffer();
+}

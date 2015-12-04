@@ -1,0 +1,40 @@
+static unsigned int
+queue (di, t, flags)
+     dump_info_p di;
+     tree t;
+     int flags;
+{
+  dump_queue_p dq;
+  dump_node_info_p dni;
+  unsigned int index;
+
+  /* Assign the next available index to T.  */
+  index = ++di->index;
+
+  /* Obtain a new queue node.  */
+  if (di->free_list)
+    {
+      dq = di->free_list;
+      di->free_list = dq->next;
+    }
+  else
+    dq = (dump_queue_p) xmalloc (sizeof (struct dump_queue));
+
+  /* Create a new entry in the splay-tree.  */
+  dni = (dump_node_info_p) xmalloc (sizeof (struct dump_node_info));
+  dni->index = index;
+  dni->binfo_p = ((flags & DUMP_BINFO) != 0);
+  dq->node = splay_tree_insert (di->nodes, (splay_tree_key) t, 
+				(splay_tree_value) dni);
+
+  /* Add it to the end of the queue.  */
+  dq->next = 0;
+  if (!di->queue_end)
+    di->queue = dq;
+  else
+    di->queue_end->next = dq;
+  di->queue_end = dq;
+
+  /* Return the index.  */
+  return index;
+}

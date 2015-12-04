@@ -1,0 +1,12 @@
+static void
+note_modified_parmregs (reg, x, data)
+     rtx reg;
+     rtx x ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  if (GET_CODE (reg) == REG && in_nonparm_insns
+      && REGNO (reg) < max_parm_reg
+      && REGNO (reg) >= FIRST_PSEUDO_REGISTER
+      && parmdecl_map[REGNO (reg)] != 0)
+    TREE_READONLY (parmdecl_map[REGNO (reg)]) = 0;
+}

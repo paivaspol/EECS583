@@ -1,0 +1,18 @@
+static inline void close_i_nblist(t_nblist *nlist) 
+{
+  int nri = nlist->nri;
+  int len;
+  
+  nlist->jindex[nri+1] = nlist->nrj;
+
+  len=nlist->nrj -  nlist->jindex[nri];
+  /* Three here comes from M, N, O, not number of particles */
+  if (nlist->solvent==esolMNO)
+    len *= nlist->nsatoms[3*nri];
+  
+  /* nlist length for water i molecules is treated statically 
+   * in the innerloops 
+   */
+  if(len > nlist->maxlen)
+    nlist->maxlen = len;
+}

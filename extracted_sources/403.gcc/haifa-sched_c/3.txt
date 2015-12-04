@@ -1,0 +1,33 @@
+int
+actual_hazard_this_instance (unit, instance, insn, clock, cost)
+     int unit, instance, clock, cost;
+     rtx insn;
+{
+  int tick = unit_tick[instance]; /* Issue time of the last issued insn.  */
+
+  if (tick - clock > cost)
+    {
+      /* The scheduler is operating forward, so unit's last insn is the
+         executing insn and INSN is the candidate insn.  We want a
+         more exact measure of the blockage if we execute INSN at CLOCK
+         given when we committed the execution of the unit's last insn.
+
+         The blockage value is given by either the unit's max blockage
+         constant, blockage range function, or blockage function.  Use
+         the most exact form for the given unit.  */
+
+      if (function_units[unit].blockage_range_function)
+	{
+	  if (function_units[unit].blockage_function)
+	    tick += (function_units[unit].blockage_function
+		     (unit_last_insn[instance], insn)
+		     - function_units[unit].max_blockage);
+	  else
+	    tick += ((int) MAX_BLOCKAGE_COST (blockage_range (unit, insn))
+		     - function_units[unit].max_blockage);
+	}
+      if (tick - clock > cost)
+	cost = tick - clock;
+    }
+  return cost;
+}

@@ -1,0 +1,25 @@
+void ld_data(int left,int right,t_parm *parm,t_nsborder *nsb,
+	     t_topology *top,rvec **x,rvec **v)
+{
+  int i;
+  
+  ld_parm(left,parm);
+  if (debug) fprintf(stdlog,"after ld_parm");
+  ld_nsb(left,nsb);
+  if (debug) fprintf(stdlog,"after ld_nsb");
+  ld_symtab(left,&top->symtab);
+  if (debug) fprintf(stdlog,"after ld_symtab");
+  top->name=ld_string(left,&top->symtab);
+  if (debug) fprintf(stdlog,"after ld_name");
+  ld_atoms(left,&top->symtab,&top->atoms);
+  if (debug) fprintf(stdlog,"after ld_atoms");
+  ld_idef(left,&top->idef);
+  if (debug) fprintf(stdlog,"after ld_idef");
+  for (i=0; (i<ebNR); i++) 
+    ld_block(left,&top->blocks[i]);
+  if (debug) fprintf(stdlog,"after ld_block");
+  snew(*x,top->atoms.nr);
+  snew(*v,top->atoms.nr);
+  ld_vectors(left,*x,*v);
+  if (debug) fprintf(stdlog,"after ld_vectors");
+}

@@ -1,0 +1,43 @@
+static void integrate_parm_decls	PARAMS ((tree, struct inline_remap *,
+						 rtvec));
+static tree integrate_decl_tree		PARAMS ((tree,
+						 struct inline_remap *));
+static void subst_constants		PARAMS ((rtx *, rtx,
+						 struct inline_remap *, int));
+static void set_block_origin_self	PARAMS ((tree));
+static void set_block_abstract_flags	PARAMS ((tree, int));
+static void process_reg_param		PARAMS ((struct inline_remap *, rtx,
+						 rtx));
+void set_decl_abstract_flags		PARAMS ((tree, int));
+static void mark_stores                 PARAMS ((rtx, rtx, void *));
+static void save_parm_insns		PARAMS ((rtx, rtx));
+static void copy_insn_list              PARAMS ((rtx, struct inline_remap *,
+						 rtx));
+static void copy_insn_notes		PARAMS ((rtx, struct inline_remap *,
+						 int));
+static int compare_blocks               PARAMS ((const PTR, const PTR));
+static int find_block                   PARAMS ((const PTR, const PTR));
+
+/* Used by copy_rtx_and_substitute; this indicates whether the function is
+   called for the purpose of inlining or some other purpose (i.e. loop
+   unrolling).  This affects how constant pool references are handled.
+   This variable contains the FUNCTION_DECL for the inlined function.  */
+static struct function *inlining = 0;
+
+/* Returns the Ith entry in the label_map contained in MAP.  If the
+   Ith entry has not yet been set, return a fresh label.  This function
+   performs a lazy initialization of label_map, thereby avoiding huge memory
+   explosions when the label_map gets very large.  */
+
+rtx
+get_label_from_map (map, i)
+     struct inline_remap *map;
+     int i;
+{
+  rtx x = map->label_map[i];
+
+  if (x == NULL_RTX)
+    x = map->label_map[i] = gen_label_rtx ();
+
+  return x;
+}

@@ -1,0 +1,15 @@
+void mm_update_max_long_term_frame_idx(int max_long_term_frame_idx_plus1)
+{
+  unsigned i;
+
+  dpb.max_long_term_pic_idx = max_long_term_frame_idx_plus1 - 1;
+
+  // check for invalid frames
+  for (i=0; i<dpb.ltref_frames_in_buffer; i++)
+  {
+    if (dpb.fs_ltref[i]->long_term_frame_idx > dpb.max_long_term_pic_idx)
+    {
+      unmark_for_long_term_reference(dpb.fs_ltref[i]);
+    }
+  }
+}

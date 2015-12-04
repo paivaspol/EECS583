@@ -1,0 +1,20 @@
+void calc_shifts(matrix box,rvec box_size,rvec shift_vec[])
+{
+  int k,l,m,d,n,test;
+  
+  init_pbc(box);
+  for (m=0; (m<DIM); m++)
+    box_size[m]=box[m][m];
+  
+  n=0;
+  
+  for(m = -D_BOX_Z; m <= D_BOX_Z; m++)
+    for(l = -D_BOX_Y; l <= D_BOX_Y; l++) 
+      for(k = -D_BOX_X; k <= D_BOX_X; k++,n++) {
+	test=XYZ2IS(k,l,m);
+	if (n != test && stdlog) 
+	  fprintf(stdlog,"n=%d, test=%d\n",n,test);
+	for(d = 0; d < DIM; d++)
+	  shift_vec[n][d]=k*box[XX][d] + l*box[YY][d] + m*box[ZZ][d];
+      }
+}

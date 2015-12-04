@@ -1,0 +1,23 @@
+void
+quantum_sigma_x_ft(int target, quantum_reg *reg)
+{
+  int tmp;
+  float lambda;
+
+  tmp = type;
+  type = 0;
+
+  lambda = quantum_get_decoherence();
+  quantum_set_decoherence(0);
+
+  /* These operations can be performed simultaneously */
+  
+  quantum_sigma_x(target, reg);
+  quantum_sigma_x(target+width, reg);
+  quantum_set_decoherence(lambda);
+  quantum_sigma_x(target+2*width, reg);
+
+  quantum_qec_counter(1, 0, reg);
+
+  type = tmp;
+}

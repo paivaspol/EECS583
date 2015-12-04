@@ -1,0 +1,62 @@
+static cppchar_t
+skip_escaped_newlines (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  cppchar_t next = buffer->cur[-1];
+
+  /* Only do this if we apply stages 1 and 2.  */
+  if (!buffer->from_stage3)
+    {
+      const unsigned char *saved_cur;
+      cppchar_t next1;
+
+      do
+	{
+	  if (next == '?')
+	    {
+	      if (buffer->cur[0] != '?' || !trigraph_p (pfile))
+		break;
+
+	      /* Translate the trigraph.  */
+	      next = _cpp_trigraph_map[buffer->cur[1]];
+	      buffer->cur += 2;
+	      if (next != '\\')
+		break;
+	    }
+
+	  if (buffer->cur == buffer->rlimit)
+	    break;
+
+	  /* We have a backslash, and room for at least one more
+	     character.  Skip horizontal whitespace.  */
+	  saved_cur = buffer->cur;
+	  do
+	    next1 = *buffer->cur++;
+	  while (is_nvspace (next1) && buffer->cur < buffer->rlimit);
+
+	  if (!is_vspace (next1))
+	    {
+	      buffer->cur = saved_cur;
+	      break;
+	    }
+
+	  if (saved_cur != buffer->cur - 1
+	      && !pfile->state.lexing_comment)
+	    cpp_warning (pfile, "backslash and newline separated by space");
+
+	  handle_newline (pfile);
+	  buffer->backup_to = buffer->cur;
+	  if (buffer->cur == buffer->rlimit)
+	    {
+	      cpp_pedwarn (pfile, "backslash-newline at end of file");
+	      next = EOF;
+	    }
+	  else
+	    next = *buffer->cur++;
+	}
+      while (next == '\\' || next == '?');
+    }
+
+  return next;
+}

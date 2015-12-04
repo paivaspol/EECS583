@@ -1,0 +1,28 @@
+static void
+check_promoted_subreg (insn, x)
+     rtx insn;
+     rtx x;
+{
+  if (GET_CODE (x) == SUBREG && SUBREG_PROMOTED_VAR_P (x)
+      && GET_CODE (SUBREG_REG (x)) == REG)
+    record_promoted_value (insn, x);
+  else
+    {
+      const char *format = GET_RTX_FORMAT (GET_CODE (x));
+      int i, j;
+
+      for (i = 0; i < GET_RTX_LENGTH (GET_CODE (x)); i++)
+	switch (format[i])
+	  {
+	  case 'e':
+	    check_promoted_subreg (insn, XEXP (x, i));
+	    break;
+	  case 'V':
+	  case 'E':
+	    if (XVEC (x, i) != 0)
+	      for (j = 0; j < XVECLEN (x, i); j++)
+		check_promoted_subreg (insn, XVECEXP (x, i, j));
+	    break;
+	  }
+    }
+}

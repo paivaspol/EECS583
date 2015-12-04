@@ -1,0 +1,30 @@
+static void
+splice_child_die (parent, child)
+     dw_die_ref parent, child;
+{
+  dw_die_ref *p;
+
+  /* We want the declaration DIE from inside the class, not the
+     specification DIE at toplevel.  */
+  if (child->die_parent != parent)
+    {
+      dw_die_ref tmp = get_AT_ref (child, DW_AT_specification);
+
+      if (tmp)
+	child = tmp;
+    }
+
+  if (child->die_parent != parent
+      && child->die_parent != get_AT_ref (parent, DW_AT_specification))
+    abort ();
+
+  for (p = &(child->die_parent->die_child); *p; p = &((*p)->die_sib))
+    if (*p == child)
+      {
+	*p = child->die_sib;
+	break;
+      }
+
+  child->die_sib = parent->die_child;
+  parent->die_child = child;
+}

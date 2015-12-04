@@ -1,0 +1,38 @@
+void
+uninitialized_vars_warning (block)
+     tree block;
+{
+  tree decl, sub;
+  for (decl = BLOCK_VARS (block); decl; decl = TREE_CHAIN (decl))
+    {
+      if (warn_uninitialized
+          && TREE_CODE (decl) == VAR_DECL
+	  /* These warnings are unreliable for and aggregates
+	     because assigning the fields one by one can fail to convince
+	     flow.c that the entire aggregate was initialized.
+	     Unions are troublesome because members may be shorter.  */
+	  && ! AGGREGATE_TYPE_P (TREE_TYPE (decl))
+	  && DECL_RTL (decl) != 0
+	  && GET_CODE (DECL_RTL (decl)) == REG
+	  /* Global optimizations can make it difficult to determine if a
+	     particular variable has been initialized.  However, a VAR_DECL
+	     with a nonzero DECL_INITIAL had an initializer, so do not
+	     claim it is potentially uninitialized.
+
+	     We do not care about the actual value in DECL_INITIAL, so we do
+	     not worry that it may be a dangling pointer.  */
+	  && DECL_INITIAL (decl) == NULL_TREE
+	  && regno_uninitialized (REGNO (DECL_RTL (decl))))
+	warning_with_decl (decl,
+			   "`%s' might be used uninitialized in this function");
+      if (extra_warnings
+          && TREE_CODE (decl) == VAR_DECL
+	  && DECL_RTL (decl) != 0
+	  && GET_CODE (DECL_RTL (decl)) == REG
+	  && regno_clobbered_at_setjmp (REGNO (DECL_RTL (decl))))
+	warning_with_decl (decl,
+			   "variable `%s' might be clobbered by `longjmp' or `vfork'");
+    }
+  for (sub = BLOCK_SUBBLOCKS (block); sub; sub = TREE_CHAIN (sub))
+    uninitialized_vars_warning (sub);
+}

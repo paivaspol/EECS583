@@ -1,0 +1,18 @@
+static void log_action(int bMal,char *what,char *file,int line,
+                       int nelem,int size,void *ptr)
+{
+  static int btot=0;
+  char *NN = "NULL";
+  int        bytes;
+  
+  bytes=size*nelem;
+  if (!bMal)
+    bytes=-bytes;
+  btot+=bytes;
+    
+  bytes/=1024;
+  if ((stdlog != NULL) && (bytes != 0))
+    fprintf(stdlog,"%30s:%6d kb (%7d kb) [%s, line %d, nelem %d, size %d]\n",
+	    what ? what : NN,bytes,btot/1024,
+	    file ? file : NN,line,nelem,size);
+}

@@ -1,0 +1,18 @@
+void checkmul_imp( field_offset src, double mass ) {
+register int i,j;
+register site *s;
+    dslash( src, F_OFFSET(ttt), EVENANDODD);
+    scalar_mult_add_latvec( F_OFFSET(ttt), src, 2.0*mass,
+	F_OFFSET(ttt), EVENANDODD );
+    FORALLSITES(i,s){
+	printf("Site %d %d %d %d\n",s->x,s->y,s->z,s->t);
+	for(j=0;j<3;j++){
+	    printf("%d %d\t%e\t%e\t%e\n",i,j,(double)s->g_rand.c[j].real,
+		(double)s->ttt.c[j].real,(double)s->g_rand.c[j].real - (double)s->ttt.c[j].real);
+	    printf("%d %d\t%e\t%e\t%e\n",i,j,(double)s->g_rand.c[j].imag,
+		(double)s->ttt.c[j].imag,(double)s->g_rand.c[j].imag - (double)s->ttt.c[j].imag);
+	}
+	printf("\n");
+/**sleep(2);**/
+    }
+}/* checkmul */

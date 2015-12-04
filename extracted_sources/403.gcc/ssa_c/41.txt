@@ -1,0 +1,20 @@
+static int
+mark_reg_in_phi (ptr, data)
+     rtx *ptr;
+     void *data;
+{
+  rtx expr = *ptr;
+  regset set = (regset) data;
+
+  switch (GET_CODE (expr))
+    {
+    case REG:
+      SET_REGNO_REG_SET (set, REGNO (expr));
+      /* Fall through.  */
+    case CONST_INT:
+    case PHI:
+      return 0;
+    default:
+      abort ();
+    }
+}

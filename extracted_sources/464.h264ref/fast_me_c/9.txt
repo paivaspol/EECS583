@@ -1,0 +1,24 @@
+int PartCalMad(pel_t *ref_pic,pel_t** orig_pic,pel_t *(*get_ref_line)(int, pel_t*, int, int, int, int), int blocksize_y,int blocksize_x, int blocksize_x4,int mcost,int min_mcost,int cand_x,int cand_y)
+{
+  int y,x4;
+  int height=((img->MbaffFrameFlag)&&(img->mb_data[img->current_mb_nr].mb_field))?img->height/2:img->height;
+  pel_t *orig_line, *ref_line;
+  for (y=0; y<blocksize_y; y++)
+    {
+    ref_line  = get_ref_line (blocksize_x, ref_pic, cand_y+y, cand_x, /*img->*/height, img->width);//2004.3.3
+    orig_line = orig_pic [y];
+    
+    for (x4=0; x4<blocksize_x4; x4++)
+    {
+      mcost += byte_abs[ *orig_line++ - *ref_line++ ];
+      mcost += byte_abs[ *orig_line++ - *ref_line++ ];
+      mcost += byte_abs[ *orig_line++ - *ref_line++ ];
+      mcost += byte_abs[ *orig_line++ - *ref_line++ ];
+    }
+    if (mcost >= min_mcost)
+    {
+      break;
+    }
+    }
+    return mcost;
+}

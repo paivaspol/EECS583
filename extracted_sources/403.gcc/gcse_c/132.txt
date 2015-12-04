@@ -1,0 +1,116 @@
+static void
+build_store_vectors () 
+{
+  basic_block bb;
+  int b;
+  rtx insn, st;
+  struct ls_expr * ptr;
+
+  /* Build the gen_vector. This is any store in the table which is not killed
+     by aliasing later in its block.  */
+  ae_gen = (sbitmap *) sbitmap_vector_alloc (n_basic_blocks, num_stores);
+  sbitmap_vector_zero (ae_gen, n_basic_blocks);
+
+  st_antloc = (sbitmap *) sbitmap_vector_alloc (n_basic_blocks, num_stores);
+  sbitmap_vector_zero (st_antloc, n_basic_blocks);
+
+  for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
+    { 
+      /* Put all the stores into either the antic list, or the avail list,
+	 or both.  */
+      rtx store_list = ptr->stores;
+      ptr->stores = NULL_RTX;
+
+      for (st = store_list; st != NULL; st = XEXP (st, 1))
+	{
+	  insn = XEXP (st, 0);
+	  bb = BLOCK_FOR_INSN (insn);
+	  
+	  if (!store_killed_after (ptr->pattern, insn, bb))
+	    {
+	      /* If we've already seen an availale expression in this block,
+		 we can delete the one we saw already (It occurs earlier in
+		 the block), and replace it with this one). We'll copy the
+		 old SRC expression to an unused register in case there
+		 are any side effects.  */
+	      if (TEST_BIT (ae_gen[bb->index], ptr->index))
+		{
+		  /* Find previous store.  */
+		  rtx st;
+		  for (st = AVAIL_STORE_LIST (ptr); st ; st = XEXP (st, 1))
+		    if (BLOCK_FOR_INSN (XEXP (st, 0)) == bb)
+		      break;
+		  if (st)
+		    {
+		      rtx r = gen_reg_rtx (GET_MODE (ptr->pattern));
+		      if (gcse_file)
+			fprintf (gcse_file, "Removing redundant store:\n");
+		      replace_store_insn (r, XEXP (st, 0), bb);
+		      XEXP (st, 0) = insn;
+		      continue;
+		    }
+		}
+	      SET_BIT (ae_gen[bb->index], ptr->index);
+	      AVAIL_STORE_LIST (ptr) = alloc_INSN_LIST (insn,
+							AVAIL_STORE_LIST (ptr));
+	    }
+	  
+	  if (!store_killed_before (ptr->pattern, insn, bb))
+	    {
+	      SET_BIT (st_antloc[BLOCK_NUM (insn)], ptr->index);
+	      ANTIC_STORE_LIST (ptr) = alloc_INSN_LIST (insn,
+							ANTIC_STORE_LIST (ptr));
+	    }
+	}
+      
+      /* Free the original list of store insns.  */
+      free_INSN_LIST_list (&store_list);
+    }
+	  
+  ae_kill = (sbitmap *) sbitmap_vector_alloc (n_basic_blocks, num_stores);
+  sbitmap_vector_zero (ae_kill, n_basic_blocks);
+
+  transp = (sbitmap *) sbitmap_vector_alloc (n_basic_blocks, num_stores);
+  sbitmap_vector_zero (transp, n_basic_blocks);
+
+  for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
+    for (b = 0; b < n_basic_blocks; b++)
+      {
+	if (store_killed_after (ptr->pattern, BLOCK_HEAD (b), BASIC_BLOCK (b)))
+	  {
+	    /* The anticipatable expression is not killed if it's gen'd.  */
+	    /*
+	      We leave this check out for now. If we have a code sequence 
+	      in a block which looks like:
+			ST MEMa = x
+			L     y = MEMa
+			ST MEMa = z
+	      We should flag this as having an ANTIC expression, NOT
+	      transparent, NOT killed, and AVAIL.
+	      Unfortunately, since we haven't re-written all loads to
+	      use the reaching reg, we'll end up doing an incorrect 
+	      Load in the middle here if we push the store down. It happens in
+		    gcc.c-torture/execute/960311-1.c with -O3
+	      If we always kill it in this case, we'll sometimes do
+	      uneccessary work, but it shouldn't actually hurt anything.
+	    if (!TEST_BIT (ae_gen[b], ptr->index)).  */
+	    SET_BIT (ae_kill[b], ptr->index);
+	  }
+	else
+	  SET_BIT (transp[b], ptr->index);
+      }
+
+  /* Any block with no exits calls some non-returning function, so
+     we better mark the store killed here, or we might not store to
+     it at all.  If we knew it was abort, we wouldn't have to store,
+     but we don't know that for sure.  */
+  if (gcse_file) 
+    {
+      fprintf (gcse_file, "ST_avail and ST_antic (shown under loads..)\n");
+      print_ldst_list (gcse_file);
+      dump_sbitmap_vector (gcse_file, "st_antloc", "", st_antloc, n_basic_blocks);
+      dump_sbitmap_vector (gcse_file, "st_kill", "", ae_kill, n_basic_blocks);
+      dump_sbitmap_vector (gcse_file, "Transpt", "", transp, n_basic_blocks);
+      dump_sbitmap_vector (gcse_file, "st_avloc", "", ae_gen, n_basic_blocks);
+    }
+}

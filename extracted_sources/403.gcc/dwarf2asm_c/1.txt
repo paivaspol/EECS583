@@ -1,0 +1,23 @@
+void
+dw2_asm_output_data VPARAMS ((int size, unsigned HOST_WIDE_INT value,
+			      const char *comment, ...))
+{
+  VA_OPEN (ap, comment);
+  VA_FIXEDARG (ap, int, size);
+  VA_FIXEDARG (ap, unsigned HOST_WIDE_INT, value);
+  VA_FIXEDARG (ap, const char *, comment);
+
+  if (size * 8 < HOST_BITS_PER_WIDE_INT)
+    value &= ~(~(unsigned HOST_WIDE_INT) 0 << (size * 8));
+
+  dw2_assemble_integer (size, GEN_INT (value));
+
+  if (flag_debug_asm && comment)
+    {
+      fprintf (asm_out_file, "\t%s ", ASM_COMMENT_START);
+      vfprintf (asm_out_file, comment, ap);
+    }
+  fputc ('\n', asm_out_file);
+
+  VA_CLOSE (ap);
+}

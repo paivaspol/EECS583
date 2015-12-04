@@ -1,0 +1,24 @@
+static void
+loop_biv_dump (v, file, verbose)
+     const struct induction *v;
+     FILE *file;
+     int verbose;
+{
+  if (! v || ! file)
+    return;
+
+  fprintf (file,
+	   "Biv %d: insn %d",
+	   REGNO (v->dest_reg), INSN_UID (v->insn));
+  fprintf (file, " const ");
+  print_simple_rtl (file, v->add_val);
+
+  if (verbose && v->final_value)
+    {
+      fputc ('\n', file);
+      fprintf (file, " final ");
+      print_simple_rtl (file, v->final_value);
+    }
+
+  fputc ('\n', file);
+}

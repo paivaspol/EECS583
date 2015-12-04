@@ -1,0 +1,1176 @@
+static tree
+grokdeclarator (declarator, declspecs, decl_context, initialized)
+     tree declspecs;
+     tree declarator;
+     enum decl_context decl_context;
+     int initialized;
+{
+  int specbits = 0;
+  tree spec;
+  tree type = NULL_TREE;
+  int longlong = 0;
+  int constp;
+  int restrictp;
+  int volatilep;
+  int type_quals = TYPE_UNQUALIFIED;
+  int inlinep;
+  int explicit_int = 0;
+  int explicit_char = 0;
+  int defaulted_int = 0;
+  tree typedef_decl = 0;
+  const char *name;
+  tree typedef_type = 0;
+  int funcdef_flag = 0;
+  enum tree_code innermost_code = ERROR_MARK;
+  int bitfield = 0;
+  int size_varies = 0;
+  tree decl_attr = NULL_TREE;
+  tree array_ptr_quals = NULL_TREE;
+  int array_parm_static = 0;
+  tree returned_attrs = NULL_TREE;
+
+  if (decl_context == BITFIELD)
+    bitfield = 1, decl_context = FIELD;
+
+  if (decl_context == FUNCDEF)
+    funcdef_flag = 1, decl_context = NORMAL;
+
+  /* Look inside a declarator for the name being declared
+     and get it as a string, for an error message.  */
+  {
+    tree decl = declarator;
+    name = 0;
+
+    while (decl)
+      switch (TREE_CODE (decl))
+	{
+	case ARRAY_REF:
+	case INDIRECT_REF:
+	case CALL_EXPR:
+	  innermost_code = TREE_CODE (decl);
+	  decl = TREE_OPERAND (decl, 0);
+	  break;
+
+	case TREE_LIST:
+	  decl = TREE_VALUE (decl);
+	  break;
+
+	case IDENTIFIER_NODE:
+	  name = IDENTIFIER_POINTER (decl);
+	  decl = 0;
+	  break;
+
+	default:
+	  abort ();
+	}
+    if (name == 0)
+      name = "type name";
+  }
+
+  /* A function definition's declarator must have the form of
+     a function declarator.  */
+
+  if (funcdef_flag && innermost_code != CALL_EXPR)
+    return 0;
+
+  /* Anything declared one level down from the top level
+     must be one of the parameters of a function
+     (because the body is at least two levels down).  */
+
+  /* If this looks like a function definition, make it one,
+     even if it occurs where parms are expected.
+     Then store_parm_decls will reject it and not use it as a parm.  */
+  if (decl_context == NORMAL && !funcdef_flag
+      && current_binding_level->parm_flag)
+    decl_context = PARM;
+
+  /* Look through the decl specs and record which ones appear.
+     Some typespecs are defined as built-in typenames.
+     Others, the ones that are modifiers of other types,
+     are represented by bits in SPECBITS: set the bits for
+     the modifiers that appear.  Storage class keywords are also in SPECBITS.
+
+     If there is a typedef name or a type, store the type in TYPE.
+     This includes builtin typedefs such as `int'.
+
+     Set EXPLICIT_INT or EXPLICIT_CHAR if the type is `int' or `char'
+     and did not come from a user typedef.
+
+     Set LONGLONG if `long' is mentioned twice.  */
+
+  for (spec = declspecs; spec; spec = TREE_CHAIN (spec))
+    {
+      tree id = TREE_VALUE (spec);
+
+      /* If the entire declaration is itself tagged as deprecated then
+         suppress reports of deprecated items.  */
+      if (id && TREE_DEPRECATED (id))
+        {
+	  if (deprecated_state != DEPRECATED_SUPPRESS)
+	    warn_deprecated_use (id);
+        }
+
+      if (id == ridpointers[(int) RID_INT])
+	explicit_int = 1;
+      if (id == ridpointers[(int) RID_CHAR])
+	explicit_char = 1;
+
+      if (TREE_CODE (id) == IDENTIFIER_NODE && C_IS_RESERVED_WORD (id))
+	{
+	  enum rid i = C_RID_CODE (id);
+	  if ((int) i <= (int) RID_LAST_MODIFIER)
+	    {
+	      if (i == RID_LONG && (specbits & (1 << (int) i)))
+		{
+		  if (longlong)
+		    error ("`long long long' is too long for GCC");
+		  else
+		    {
+		      if (pedantic && !flag_isoc99 && ! in_system_header
+			  && warn_long_long)
+			pedwarn ("ISO C89 does not support `long long'");
+		      longlong = 1;
+		    }
+		}
+	      else if (specbits & (1 << (int) i))
+		pedwarn ("duplicate `%s'", IDENTIFIER_POINTER (id));
+	      specbits |= 1 << (int) i;
+	      goto found;
+	    }
+	}
+      if (type)
+	error ("two or more data types in declaration of `%s'", name);
+      /* Actual typedefs come to us as TYPE_DECL nodes.  */
+      else if (TREE_CODE (id) == TYPE_DECL)
+	{
+	  if (TREE_TYPE (id) == error_mark_node)
+	    ; /* Allow the type to default to int to avoid cascading errors.  */
+	  else
+	    {
+	      type = TREE_TYPE (id);
+	      decl_attr = DECL_ATTRIBUTES (id);
+	      typedef_decl = id;
+	    }
+	}
+      /* Built-in types come as identifiers.  */
+      else if (TREE_CODE (id) == IDENTIFIER_NODE)
+	{
+	  tree t = lookup_name (id);
+	  if (TREE_TYPE (t) == error_mark_node)
+	    ;
+	  else if (!t || TREE_CODE (t) != TYPE_DECL)
+	    error ("`%s' fails to be a typedef or built in type",
+		   IDENTIFIER_POINTER (id));
+	  else
+	    {
+	      type = TREE_TYPE (t);
+	      typedef_decl = t;
+	    }
+	}
+      else if (TREE_CODE (id) != ERROR_MARK)
+	type = id;
+
+    found:
+      ;
+    }
+
+  typedef_type = type;
+  if (type)
+    size_varies = C_TYPE_VARIABLE_SIZE (type);
+
+  /* No type at all: default to `int', and set DEFAULTED_INT
+     because it was not a user-defined typedef.  */
+
+  if (type == 0)
+    {
+      if ((! (specbits & ((1 << (int) RID_LONG) | (1 << (int) RID_SHORT)
+			  | (1 << (int) RID_SIGNED)
+			  | (1 << (int) RID_UNSIGNED)
+			  | (1 << (int) RID_COMPLEX))))
+	  /* Don't warn about typedef foo = bar.  */
+	  && ! (specbits & (1 << (int) RID_TYPEDEF) && initialized)
+	  && ! in_system_header)
+	{
+	  /* Issue a warning if this is an ISO C 99 program or if -Wreturn-type
+	     and this is a function, or if -Wimplicit; prefer the former
+	     warning since it is more explicit.  */
+	  if ((warn_implicit_int || warn_return_type || flag_isoc99)
+	      && funcdef_flag)
+	    warn_about_return_type = 1;
+	  else if (warn_implicit_int || flag_isoc99)
+	    pedwarn_c99 ("type defaults to `int' in declaration of `%s'",
+			 name);
+	}
+
+      defaulted_int = 1;
+      type = integer_type_node;
+    }
+
+  /* Now process the modifiers that were specified
+     and check for invalid combinations.  */
+
+  /* Long double is a special combination.  */
+
+  if ((specbits & 1 << (int) RID_LONG) && ! longlong
+      && TYPE_MAIN_VARIANT (type) == double_type_node)
+    {
+      specbits &= ~(1 << (int) RID_LONG);
+      type = long_double_type_node;
+    }
+
+  /* Check all other uses of type modifiers.  */
+
+  if (specbits & ((1 << (int) RID_LONG) | (1 << (int) RID_SHORT)
+		  | (1 << (int) RID_UNSIGNED) | (1 << (int) RID_SIGNED)))
+    {
+      int ok = 0;
+
+      if ((specbits & 1 << (int) RID_LONG)
+	  && (specbits & 1 << (int) RID_SHORT))
+	error ("both long and short specified for `%s'", name);
+      else if (((specbits & 1 << (int) RID_LONG)
+		|| (specbits & 1 << (int) RID_SHORT))
+	       && explicit_char)
+	error ("long or short specified with char for `%s'", name);
+      else if (((specbits & 1 << (int) RID_LONG)
+		|| (specbits & 1 << (int) RID_SHORT))
+	       && TREE_CODE (type) == REAL_TYPE)
+	{
+	  static int already = 0;
+
+	  error ("long or short specified with floating type for `%s'", name);
+	  if (! already && ! pedantic)
+	    {
+	      error ("the only valid combination is `long double'");
+	      already = 1;
+	    }
+	}
+      else if ((specbits & 1 << (int) RID_SIGNED)
+	       && (specbits & 1 << (int) RID_UNSIGNED))
+	error ("both signed and unsigned specified for `%s'", name);
+      else if (TREE_CODE (type) != INTEGER_TYPE)
+	error ("long, short, signed or unsigned invalid for `%s'", name);
+      else
+	{
+	  ok = 1;
+	  if (!explicit_int && !defaulted_int && !explicit_char && pedantic)
+	    {
+	      pedwarn ("long, short, signed or unsigned used invalidly for `%s'",
+		       name);
+	      if (flag_pedantic_errors)
+		ok = 0;
+	    }
+	}
+
+      /* Discard the type modifiers if they are invalid.  */
+      if (! ok)
+	{
+	  specbits &= ~((1 << (int) RID_LONG) | (1 << (int) RID_SHORT)
+			| (1 << (int) RID_UNSIGNED) | (1 << (int) RID_SIGNED));
+	  longlong = 0;
+	}
+    }
+
+  if ((specbits & (1 << (int) RID_COMPLEX))
+      && TREE_CODE (type) != INTEGER_TYPE && TREE_CODE (type) != REAL_TYPE)
+    {
+      error ("complex invalid for `%s'", name);
+      specbits &= ~(1 << (int) RID_COMPLEX);
+    }
+
+  /* Decide whether an integer type is signed or not.
+     Optionally treat bitfields as signed by default.  */
+  if (specbits & 1 << (int) RID_UNSIGNED
+      /* Traditionally, all bitfields are unsigned.  */
+      || (bitfield && flag_traditional
+	  && (! explicit_flag_signed_bitfields || !flag_signed_bitfields))
+      || (bitfield && ! flag_signed_bitfields
+	  && (explicit_int || defaulted_int || explicit_char
+	      /* A typedef for plain `int' without `signed'
+		 can be controlled just like plain `int'.  */
+	      || ! (typedef_decl != 0
+		    && C_TYPEDEF_EXPLICITLY_SIGNED (typedef_decl)))
+	  && TREE_CODE (type) != ENUMERAL_TYPE
+	  && !(specbits & 1 << (int) RID_SIGNED)))
+    {
+      if (longlong)
+	type = long_long_unsigned_type_node;
+      else if (specbits & 1 << (int) RID_LONG)
+	type = long_unsigned_type_node;
+      else if (specbits & 1 << (int) RID_SHORT)
+	type = short_unsigned_type_node;
+      else if (type == char_type_node)
+	type = unsigned_char_type_node;
+      else if (typedef_decl)
+	type = unsigned_type (type);
+      else
+	type = unsigned_type_node;
+    }
+  else if ((specbits & 1 << (int) RID_SIGNED)
+	   && type == char_type_node)
+    type = signed_char_type_node;
+  else if (longlong)
+    type = long_long_integer_type_node;
+  else if (specbits & 1 << (int) RID_LONG)
+    type = long_integer_type_node;
+  else if (specbits & 1 << (int) RID_SHORT)
+    type = short_integer_type_node;
+
+  if (specbits & 1 << (int) RID_COMPLEX)
+    {
+      if (pedantic && !flag_isoc99)
+	pedwarn ("ISO C89 does not support complex types");
+      /* If we just have "complex", it is equivalent to
+	 "complex double", but if any modifiers at all are specified it is
+	 the complex form of TYPE.  E.g, "complex short" is
+	 "complex short int".  */
+
+      if (defaulted_int && ! longlong
+	  && ! (specbits & ((1 << (int) RID_LONG) | (1 << (int) RID_SHORT)
+			    | (1 << (int) RID_SIGNED)
+			    | (1 << (int) RID_UNSIGNED))))
+	{
+	  if (pedantic)
+	    pedwarn ("ISO C does not support plain `complex' meaning `double complex'");
+	  type = complex_double_type_node;
+	}
+      else if (type == integer_type_node)
+	{
+	  if (pedantic)
+	    pedwarn ("ISO C does not support complex integer types");
+	  type = complex_integer_type_node;
+	}
+      else if (type == float_type_node)
+	type = complex_float_type_node;
+      else if (type == double_type_node)
+	type = complex_double_type_node;
+      else if (type == long_double_type_node)
+	type = complex_long_double_type_node;
+      else
+	{
+	  if (pedantic)
+	    pedwarn ("ISO C does not support complex integer types");
+	  type = build_complex_type (type);
+	}
+    }
+
+  /* Figure out the type qualifiers for the declaration.  There are
+     two ways a declaration can become qualified.  One is something
+     like `const int i' where the `const' is explicit.  Another is
+     something like `typedef const int CI; CI i' where the type of the
+     declaration contains the `const'.  */
+  constp = !! (specbits & 1 << (int) RID_CONST) + TYPE_READONLY (type);
+  restrictp = !! (specbits & 1 << (int) RID_RESTRICT) + TYPE_RESTRICT (type);
+  volatilep = !! (specbits & 1 << (int) RID_VOLATILE) + TYPE_VOLATILE (type);
+  inlinep = !! (specbits & (1 << (int) RID_INLINE));
+  if (constp > 1 && ! flag_isoc99)
+    pedwarn ("duplicate `const'");
+  if (restrictp > 1 && ! flag_isoc99)
+    pedwarn ("duplicate `restrict'");
+  if (volatilep > 1 && ! flag_isoc99)
+    pedwarn ("duplicate `volatile'");
+  if (! flag_gen_aux_info && (TYPE_QUALS (type)))
+    type = TYPE_MAIN_VARIANT (type);
+  type_quals = ((constp ? TYPE_QUAL_CONST : 0)
+		| (restrictp ? TYPE_QUAL_RESTRICT : 0)
+		| (volatilep ? TYPE_QUAL_VOLATILE : 0));
+
+  /* Warn if two storage classes are given. Default to `auto'.  */
+
+  {
+    int nclasses = 0;
+
+    if (specbits & 1 << (int) RID_AUTO) nclasses++;
+    if (specbits & 1 << (int) RID_STATIC) nclasses++;
+    if (specbits & 1 << (int) RID_EXTERN) nclasses++;
+    if (specbits & 1 << (int) RID_REGISTER) nclasses++;
+    if (specbits & 1 << (int) RID_TYPEDEF) nclasses++;
+
+    /* Warn about storage classes that are invalid for certain
+       kinds of declarations (parameters, typenames, etc.).  */
+
+    if (nclasses > 1)
+      error ("multiple storage classes in declaration of `%s'", name);
+    else if (funcdef_flag
+	     && (specbits
+		 & ((1 << (int) RID_REGISTER)
+		    | (1 << (int) RID_AUTO)
+		    | (1 << (int) RID_TYPEDEF))))
+      {
+	if (specbits & 1 << (int) RID_AUTO
+	    && (pedantic || current_binding_level == global_binding_level))
+	  pedwarn ("function definition declared `auto'");
+	if (specbits & 1 << (int) RID_REGISTER)
+	  error ("function definition declared `register'");
+	if (specbits & 1 << (int) RID_TYPEDEF)
+	  error ("function definition declared `typedef'");
+	specbits &= ~((1 << (int) RID_TYPEDEF) | (1 << (int) RID_REGISTER)
+		      | (1 << (int) RID_AUTO));
+      }
+    else if (decl_context != NORMAL && nclasses > 0)
+      {
+	if (decl_context == PARM && specbits & 1 << (int) RID_REGISTER)
+	  ;
+	else
+	  {
+	    switch (decl_context)
+	      {
+	      case FIELD:
+		error ("storage class specified for structure field `%s'",
+		       name);
+		break;
+	      case PARM:
+		error ("storage class specified for parameter `%s'", name);
+		break;
+	      default:
+		error ("storage class specified for typename");
+		break;
+	      }
+	    specbits &= ~((1 << (int) RID_TYPEDEF) | (1 << (int) RID_REGISTER)
+			  | (1 << (int) RID_AUTO) | (1 << (int) RID_STATIC)
+			  | (1 << (int) RID_EXTERN));
+	  }
+      }
+    else if (specbits & 1 << (int) RID_EXTERN && initialized && ! funcdef_flag)
+      {
+	/* `extern' with initialization is invalid if not at top level.  */
+	if (current_binding_level == global_binding_level)
+	  warning ("`%s' initialized and declared `extern'", name);
+	else
+	  error ("`%s' has both `extern' and initializer", name);
+      }
+    else if (specbits & 1 << (int) RID_EXTERN && funcdef_flag
+	     && current_binding_level != global_binding_level)
+      error ("nested function `%s' declared `extern'", name);
+    else if (current_binding_level == global_binding_level
+	     && specbits & (1 << (int) RID_AUTO))
+      error ("top-level declaration of `%s' specifies `auto'", name);
+  }
+
+  /* Now figure out the structure of the declarator proper.
+     Descend through it, creating more complex types, until we reach
+     the declared identifier (or NULL_TREE, in an absolute declarator).  */
+
+  while (declarator && TREE_CODE (declarator) != IDENTIFIER_NODE)
+    {
+      if (type == error_mark_node)
+	{
+	  declarator = TREE_OPERAND (declarator, 0);
+	  continue;
+	}
+
+      /* Each level of DECLARATOR is either an ARRAY_REF (for ...[..]),
+	 an INDIRECT_REF (for *...),
+	 a CALL_EXPR (for ...(...)),
+	 a TREE_LIST (for nested attributes),
+	 an identifier (for the name being declared)
+	 or a null pointer (for the place in an absolute declarator
+	 where the name was omitted).
+	 For the last two cases, we have just exited the loop.
+
+	 At this point, TYPE is the type of elements of an array,
+	 or for a function to return, or for a pointer to point to.
+	 After this sequence of ifs, TYPE is the type of the
+	 array or function or pointer, and DECLARATOR has had its
+	 outermost layer removed.  */
+
+      if (array_ptr_quals != NULL_TREE || array_parm_static)
+	{
+	  /* Only the innermost declarator (making a parameter be of
+	     array type which is converted to pointer type)
+	     may have static or type qualifiers.  */
+	  error ("static or type qualifiers in non-parameter array declarator");
+	  array_ptr_quals = NULL_TREE;
+	  array_parm_static = 0;
+	}
+
+      if (TREE_CODE (declarator) == TREE_LIST)
+	{
+	  /* We encode a declarator with embedded attributes using
+	     a TREE_LIST.  */
+	  tree attrs = TREE_PURPOSE (declarator);
+	  tree inner_decl;
+	  int attr_flags = 0;
+	  declarator = TREE_VALUE (declarator);
+	  inner_decl = declarator;
+	  while (inner_decl != NULL_TREE
+		 && TREE_CODE (inner_decl) == TREE_LIST)
+	    inner_decl = TREE_VALUE (inner_decl);
+	  if (inner_decl == NULL_TREE
+	      || TREE_CODE (inner_decl) == IDENTIFIER_NODE)
+	    attr_flags |= (int) ATTR_FLAG_DECL_NEXT;
+	  else if (TREE_CODE (inner_decl) == CALL_EXPR)
+	    attr_flags |= (int) ATTR_FLAG_FUNCTION_NEXT;
+	  else if (TREE_CODE (inner_decl) == ARRAY_REF)
+	    attr_flags |= (int) ATTR_FLAG_ARRAY_NEXT;
+	  returned_attrs = decl_attributes (&type,
+					    chainon (returned_attrs, attrs),
+					    attr_flags);
+	}
+      else if (TREE_CODE (declarator) == ARRAY_REF)
+	{
+	  tree itype = NULL_TREE;
+	  tree size = TREE_OPERAND (declarator, 1);
+	  /* The index is a signed object `sizetype' bits wide.  */
+	  tree index_type = signed_type (sizetype);
+
+	  array_ptr_quals = TREE_TYPE (declarator);
+	  array_parm_static = TREE_STATIC (declarator);
+
+	  declarator = TREE_OPERAND (declarator, 0);
+
+	  /* Check for some types that there cannot be arrays of.  */
+
+	  if (VOID_TYPE_P (type))
+	    {
+	      error ("declaration of `%s' as array of voids", name);
+	      type = error_mark_node;
+	    }
+
+	  if (TREE_CODE (type) == FUNCTION_TYPE)
+	    {
+	      error ("declaration of `%s' as array of functions", name);
+	      type = error_mark_node;
+	    }
+
+	  if (size == error_mark_node)
+	    type = error_mark_node;
+
+	  if (type == error_mark_node)
+	    continue;
+
+	  /* If size was specified, set ITYPE to a range-type for that size.
+	     Otherwise, ITYPE remains null.  finish_decl may figure it out
+	     from an initial value.  */
+
+	  if (size)
+	    {
+	      /* Strip NON_LVALUE_EXPRs since we aren't using as an lvalue.  */
+	      STRIP_TYPE_NOPS (size);
+
+	      if (! INTEGRAL_TYPE_P (TREE_TYPE (size)))
+		{
+		  error ("size of array `%s' has non-integer type", name);
+		  size = integer_one_node;
+		}
+
+	      if (pedantic && integer_zerop (size))
+		pedwarn ("ISO C forbids zero-size array `%s'", name);
+
+	      if (TREE_CODE (size) == INTEGER_CST)
+		{
+		  constant_expression_warning (size);
+		  if (tree_int_cst_sgn (size) < 0)
+		    {
+		      error ("size of array `%s' is negative", name);
+		      size = integer_one_node;
+		    }
+		}
+	      else
+		{
+		  /* Make sure the array size remains visibly nonconstant
+		     even if it is (eg) a const variable with known value.  */
+		  size_varies = 1;
+
+		  if (!flag_isoc99 && pedantic)
+		    {
+		      if (TREE_CONSTANT (size))
+			pedwarn ("ISO C89 forbids array `%s' whose size can't be evaluated",
+				 name);
+		      else
+			pedwarn ("ISO C89 forbids variable-size array `%s'",
+				 name);
+		    }
+		}
+
+	      if (integer_zerop (size))
+		{
+		  /* A zero-length array cannot be represented with an
+		     unsigned index type, which is what we'll get with
+		     build_index_type.  Create an open-ended range instead.  */
+		  itype = build_range_type (sizetype, size, NULL_TREE);
+		}
+	      else
+		{
+		  /* Compute the maximum valid index, that is, size - 1.
+		     Do the calculation in index_type, so that if it is
+		     a variable the computations will be done in the
+		     proper mode.  */
+	          itype = fold (build (MINUS_EXPR, index_type,
+				       convert (index_type, size),
+				       convert (index_type, size_one_node)));
+
+	          /* If that overflowed, the array is too big.
+		     ??? While a size of INT_MAX+1 technically shouldn't
+		     cause an overflow (because we subtract 1), the overflow
+		     is recorded during the conversion to index_type, before
+		     the subtraction.  Handling this case seems like an
+		     unnecessary complication.  */
+		  if (TREE_OVERFLOW (itype))
+		    {
+		      error ("size of array `%s' is too large", name);
+		      type = error_mark_node;
+		      continue;
+		    }
+
+		  if (size_varies)
+		    itype = variable_size (itype);
+		  itype = build_index_type (itype);
+		}
+	    }
+	  else if (decl_context == FIELD)
+	    {
+	      if (pedantic && !flag_isoc99 && !in_system_header)
+		pedwarn ("ISO C89 does not support flexible array members");
+
+	      /* ISO C99 Flexible array members are effectively identical
+		 to GCC's zero-length array extension.  */
+	      itype = build_range_type (sizetype, size_zero_node, NULL_TREE);
+	    }
+
+	  /* If pedantic, complain about arrays of incomplete types.  */
+
+	  if (pedantic && !COMPLETE_TYPE_P (type))
+	    pedwarn ("array type has incomplete element type");
+
+#if 0
+	  /* We shouldn't have a function type here at all!
+	     Functions aren't allowed as array elements.  */
+	  if (pedantic && TREE_CODE (type) == FUNCTION_TYPE
+	      && (constp || volatilep))
+	    pedwarn ("ISO C forbids const or volatile function types");
+#endif
+
+	  /* Build the array type itself, then merge any constancy or
+	     volatility into the target type.  We must do it in this order
+	     to ensure that the TYPE_MAIN_VARIANT field of the array type
+	     is set correctly.  */
+
+	  type = build_array_type (type, itype);
+	  if (type_quals)
+	    type = c_build_qualified_type (type, type_quals);
+
+	  if (size_varies)
+	    C_TYPE_VARIABLE_SIZE (type) = 1;
+
+	  /* The GCC extension for zero-length arrays differs from
+	     ISO flexible array members in that sizeof yields zero.  */
+	  if (size && integer_zerop (size))
+	    {
+	      layout_type (type);
+	      TYPE_SIZE (type) = bitsize_zero_node;
+	      TYPE_SIZE_UNIT (type) = size_zero_node;
+	    }
+	  if (decl_context != PARM
+	      && (array_ptr_quals != NULL_TREE || array_parm_static))
+	    {
+	      error ("static or type qualifiers in non-parameter array declarator");
+	      array_ptr_quals = NULL_TREE;
+	      array_parm_static = 0;
+	    }
+	}
+      else if (TREE_CODE (declarator) == CALL_EXPR)
+	{
+	  tree arg_types;
+
+	  /* Declaring a function type.
+	     Make sure we have a valid type for the function to return.  */
+	  if (type == error_mark_node)
+	    continue;
+
+	  size_varies = 0;
+
+	  /* Warn about some types functions can't return.  */
+
+	  if (TREE_CODE (type) == FUNCTION_TYPE)
+	    {
+	      error ("`%s' declared as function returning a function", name);
+	      type = integer_type_node;
+	    }
+	  if (TREE_CODE (type) == ARRAY_TYPE)
+	    {
+	      error ("`%s' declared as function returning an array", name);
+	      type = integer_type_node;
+	    }
+
+#ifndef TRADITIONAL_RETURN_FLOAT
+	  /* Traditionally, declaring return type float means double.  */
+
+	  if (flag_traditional && TYPE_MAIN_VARIANT (type) == float_type_node)
+	    type = double_type_node;
+#endif /* TRADITIONAL_RETURN_FLOAT */
+
+	  /* Construct the function type and go to the next
+	     inner layer of declarator.  */
+
+	  arg_types = grokparms (TREE_OPERAND (declarator, 1),
+				 funcdef_flag
+				 /* Say it's a definition
+				    only for the CALL_EXPR
+				    closest to the identifier.  */
+				 && TREE_CODE (TREE_OPERAND (declarator, 0)) == IDENTIFIER_NODE);
+	  /* Type qualifiers before the return type of the function
+	     qualify the return type, not the function type.  */
+	  if (type_quals)
+	    {
+	      /* Type qualifiers on a function return type are normally
+		 permitted by the standard but have no effect, so give a
+		 warning at -W.  Qualifiers on a void return type have
+		 meaning as a GNU extension, and are banned on function
+		 definitions in ISO C.  FIXME: strictly we shouldn't
+		 pedwarn for qualified void return types except on function
+		 definitions, but not doing so could lead to the undesirable
+		 state of a "volatile void" function return type not being
+		 warned about, and a use of the function being compiled
+		 with GNU semantics, with no diagnostics under -pedantic.  */
+	      if (VOID_TYPE_P (type) && pedantic && !in_system_header)
+		pedwarn ("ISO C forbids qualified void function return type");
+	      else if (extra_warnings
+		       && !(VOID_TYPE_P (type)
+			    && type_quals == TYPE_QUAL_VOLATILE))
+		warning ("type qualifiers ignored on function return type");
+
+	      type = c_build_qualified_type (type, type_quals);
+	    }
+	  type_quals = TYPE_UNQUALIFIED;
+
+	  type = build_function_type (type, arg_types);
+	  declarator = TREE_OPERAND (declarator, 0);
+
+	  /* Set the TYPE_CONTEXTs for each tagged type which is local to
+	     the formal parameter list of this FUNCTION_TYPE to point to
+	     the FUNCTION_TYPE node itself.  */
+
+	  {
+	    tree link;
+
+	    for (link = last_function_parm_tags;
+		 link;
+		 link = TREE_CHAIN (link))
+	      TYPE_CONTEXT (TREE_VALUE (link)) = type;
+	  }
+	}
+      else if (TREE_CODE (declarator) == INDIRECT_REF)
+	{
+	  /* Merge any constancy or volatility into the target type
+	     for the pointer.  */
+
+	  if (pedantic && TREE_CODE (type) == FUNCTION_TYPE
+	      && type_quals)
+	    pedwarn ("ISO C forbids qualified function types");
+	  if (type_quals)
+	    type = c_build_qualified_type (type, type_quals);
+	  type_quals = TYPE_UNQUALIFIED;
+	  size_varies = 0;
+
+	  type = build_pointer_type (type);
+
+	  /* Process a list of type modifier keywords
+	     (such as const or volatile) that were given inside the `*'.  */
+
+	  if (TREE_TYPE (declarator))
+	    {
+	      tree typemodlist;
+	      int erred = 0;
+
+	      constp = 0;
+	      volatilep = 0;
+	      restrictp = 0;
+	      for (typemodlist = TREE_TYPE (declarator); typemodlist;
+		   typemodlist = TREE_CHAIN (typemodlist))
+		{
+		  tree qualifier = TREE_VALUE (typemodlist);
+
+		  if (C_IS_RESERVED_WORD (qualifier))
+		    {
+		      if (C_RID_CODE (qualifier) == RID_CONST)
+			constp++;
+		      else if (C_RID_CODE (qualifier) == RID_VOLATILE)
+			volatilep++;
+		      else if (C_RID_CODE (qualifier) == RID_RESTRICT)
+			restrictp++;
+		      else
+			erred++;
+		    }
+		  else
+		    erred++;
+		}
+
+	      if (erred)
+		error ("invalid type modifier within pointer declarator");
+	      if (constp > 1 && ! flag_isoc99)
+		pedwarn ("duplicate `const'");
+	      if (volatilep > 1 && ! flag_isoc99)
+		pedwarn ("duplicate `volatile'");
+	      if (restrictp > 1 && ! flag_isoc99)
+		pedwarn ("duplicate `restrict'");
+
+	      type_quals = ((constp ? TYPE_QUAL_CONST : 0)
+			    | (restrictp ? TYPE_QUAL_RESTRICT : 0)
+			    | (volatilep ? TYPE_QUAL_VOLATILE : 0));
+	    }
+
+	  declarator = TREE_OPERAND (declarator, 0);
+	}
+      else
+	abort ();
+
+    }
+
+  /* Now TYPE has the actual type.  */
+
+  /* Did array size calculations overflow?  */
+
+  if (TREE_CODE (type) == ARRAY_TYPE
+      && COMPLETE_TYPE_P (type)
+      && TREE_OVERFLOW (TYPE_SIZE (type)))
+    {
+      error ("size of array `%s' is too large", name);
+      /* If we proceed with the array type as it is, we'll eventually
+	 crash in tree_low_cst().  */
+      type = error_mark_node;
+    }
+
+  /* If this is declaring a typedef name, return a TYPE_DECL.  */
+
+  if (specbits & (1 << (int) RID_TYPEDEF))
+    {
+      tree decl;
+      /* Note that the grammar rejects storage classes
+	 in typenames, fields or parameters */
+      if (pedantic && TREE_CODE (type) == FUNCTION_TYPE
+	  && type_quals)
+	pedwarn ("ISO C forbids qualified function types");
+      if (type_quals)
+	type = c_build_qualified_type (type, type_quals);
+      decl = build_decl (TYPE_DECL, declarator, type);
+      if ((specbits & (1 << (int) RID_SIGNED))
+	  || (typedef_decl && C_TYPEDEF_EXPLICITLY_SIGNED (typedef_decl)))
+	C_TYPEDEF_EXPLICITLY_SIGNED (decl) = 1;
+      decl_attributes (&decl, returned_attrs, 0);
+      return decl;
+    }
+
+  /* Detect the case of an array type of unspecified size
+     which came, as such, direct from a typedef name.
+     We must copy the type, so that each identifier gets
+     a distinct type, so that each identifier's size can be
+     controlled separately by its own initializer.  */
+
+  if (type != 0 && typedef_type != 0
+      && TREE_CODE (type) == ARRAY_TYPE && TYPE_DOMAIN (type) == 0
+      && TYPE_MAIN_VARIANT (type) == TYPE_MAIN_VARIANT (typedef_type))
+    {
+      type = build_array_type (TREE_TYPE (type), 0);
+      if (size_varies)
+	C_TYPE_VARIABLE_SIZE (type) = 1;
+    }
+
+  /* If this is a type name (such as, in a cast or sizeof),
+     compute the type and return it now.  */
+
+  if (decl_context == TYPENAME)
+    {
+      /* Note that the grammar rejects storage classes
+	 in typenames, fields or parameters */
+      if (pedantic && TREE_CODE (type) == FUNCTION_TYPE
+	  && type_quals)
+	pedwarn ("ISO C forbids const or volatile function types");
+      if (type_quals)
+	type = c_build_qualified_type (type, type_quals);
+      decl_attributes (&type, returned_attrs, 0);
+      return type;
+    }
+
+  /* Aside from typedefs and type names (handle above),
+     `void' at top level (not within pointer)
+     is allowed only in public variables.
+     We don't complain about parms either, but that is because
+     a better error message can be made later.  */
+
+  if (VOID_TYPE_P (type) && decl_context != PARM
+      && ! ((decl_context != FIELD && TREE_CODE (type) != FUNCTION_TYPE)
+	    && ((specbits & (1 << (int) RID_EXTERN))
+		|| (current_binding_level == global_binding_level
+		    && !(specbits
+			 & ((1 << (int) RID_STATIC) | (1 << (int) RID_REGISTER)))))))
+    {
+      error ("variable or field `%s' declared void", name);
+      type = integer_type_node;
+    }
+
+  /* Now create the decl, which may be a VAR_DECL, a PARM_DECL
+     or a FUNCTION_DECL, depending on DECL_CONTEXT and TYPE.  */
+
+  {
+    tree decl;
+
+    if (decl_context == PARM)
+      {
+	tree type_as_written;
+	tree promoted_type;
+
+	/* A parameter declared as an array of T is really a pointer to T.
+	   One declared as a function is really a pointer to a function.  */
+
+	if (TREE_CODE (type) == ARRAY_TYPE)
+	  {
+	    /* Transfer const-ness of array into that of type pointed to.  */
+	    type = TREE_TYPE (type);
+	    if (type_quals)
+	      type = c_build_qualified_type (type, type_quals);
+	    type = build_pointer_type (type);
+	    type_quals = TYPE_UNQUALIFIED;
+	    if (array_ptr_quals)
+	      {
+		tree new_ptr_quals, new_ptr_attrs;
+		int erred = 0;
+		split_specs_attrs (array_ptr_quals, &new_ptr_quals, &new_ptr_attrs);
+		/* We don't yet implement attributes in this context.  */
+		if (new_ptr_attrs != NULL_TREE)
+		  warning ("attributes in parameter array declarator ignored");
+
+		constp = 0;
+		volatilep = 0;
+		restrictp = 0;
+		for (; new_ptr_quals; new_ptr_quals = TREE_CHAIN (new_ptr_quals))
+		  {
+		    tree qualifier = TREE_VALUE (new_ptr_quals);
+
+		    if (C_IS_RESERVED_WORD (qualifier))
+		      {
+			if (C_RID_CODE (qualifier) == RID_CONST)
+			  constp++;
+			else if (C_RID_CODE (qualifier) == RID_VOLATILE)
+			  volatilep++;
+			else if (C_RID_CODE (qualifier) == RID_RESTRICT)
+			  restrictp++;
+			else
+			  erred++;
+		      }
+		    else
+		      erred++;
+		  }
+
+		if (erred)
+		  error ("invalid type modifier within array declarator");
+
+		type_quals = ((constp ? TYPE_QUAL_CONST : 0)
+			      | (restrictp ? TYPE_QUAL_RESTRICT : 0)
+			      | (volatilep ? TYPE_QUAL_VOLATILE : 0));
+	      }
+	    size_varies = 0;
+	  }
+	else if (TREE_CODE (type) == FUNCTION_TYPE)
+	  {
+	    if (pedantic && type_quals)
+	      pedwarn ("ISO C forbids qualified function types");
+	    if (type_quals)
+	      type = c_build_qualified_type (type, type_quals);
+	    type = build_pointer_type (type);
+	    type_quals = TYPE_UNQUALIFIED;
+	  }
+	else if (type_quals)
+	  type = c_build_qualified_type (type, type_quals);
+	  
+	type_as_written = type;
+
+	decl = build_decl (PARM_DECL, declarator, type);
+	if (size_varies)
+	  C_DECL_VARIABLE_SIZE (decl) = 1;
+
+	/* Compute the type actually passed in the parmlist,
+	   for the case where there is no prototype.
+	   (For example, shorts and chars are passed as ints.)
+	   When there is a prototype, this is overridden later.  */
+
+	if (type == error_mark_node)
+	  promoted_type = type;
+	else
+	  {
+	    promoted_type = simple_type_promotes_to (type);
+	    if (! promoted_type)
+	      promoted_type = type;
+	  }
+
+	DECL_ARG_TYPE (decl) = promoted_type;
+	DECL_ARG_TYPE_AS_WRITTEN (decl) = type_as_written;
+      }
+    else if (decl_context == FIELD)
+      {
+	/* Structure field.  It may not be a function.  */
+
+	if (TREE_CODE (type) == FUNCTION_TYPE)
+	  {
+	    error ("field `%s' declared as a function", name);
+	    type = build_pointer_type (type);
+	  }
+	else if (TREE_CODE (type) != ERROR_MARK
+	         && !COMPLETE_OR_UNBOUND_ARRAY_TYPE_P (type))
+	  {
+	    error ("field `%s' has incomplete type", name);
+	    type = error_mark_node;
+	  }
+	/* Move type qualifiers down to element of an array.  */
+	if (TREE_CODE (type) == ARRAY_TYPE && type_quals)
+	  {
+	    type = build_array_type (c_build_qualified_type (TREE_TYPE (type),
+							     type_quals),
+				     TYPE_DOMAIN (type));
+#if 0
+	    /* Leave the field const or volatile as well.  */
+	    type_quals = TYPE_UNQUALIFIED;
+#endif
+	  }
+	decl = build_decl (FIELD_DECL, declarator, type);
+	DECL_NONADDRESSABLE_P (decl) = bitfield;
+
+	if (size_varies)
+	  C_DECL_VARIABLE_SIZE (decl) = 1;
+      }
+    else if (TREE_CODE (type) == FUNCTION_TYPE)
+      {
+	/* Every function declaration is "external"
+	   except for those which are inside a function body
+	   in which `auto' is used.
+	   That is a case not specified by ANSI C,
+	   and we use it for forward declarations for nested functions.  */
+	int extern_ref = (!(specbits & (1 << (int) RID_AUTO))
+			  || current_binding_level == global_binding_level);
+
+	if (specbits & (1 << (int) RID_AUTO)
+	    && (pedantic || current_binding_level == global_binding_level))
+	  pedwarn ("invalid storage class for function `%s'", name);
+	if (specbits & (1 << (int) RID_REGISTER))
+	  error ("invalid storage class for function `%s'", name);
+	/* Function declaration not at top level.
+	   Storage classes other than `extern' are not allowed
+	   and `extern' makes no difference.  */
+	if (current_binding_level != global_binding_level
+	    && (specbits & ((1 << (int) RID_STATIC) | (1 << (int) RID_INLINE)))
+	    && pedantic)
+	  pedwarn ("invalid storage class for function `%s'", name);
+
+	decl = build_decl (FUNCTION_DECL, declarator, type);
+	decl = build_decl_attribute_variant (decl, decl_attr);
+
+	DECL_LANG_SPECIFIC (decl) = (struct lang_decl *)
+	  ggc_alloc_cleared (sizeof (struct lang_decl));
+
+	if (pedantic && type_quals && ! DECL_IN_SYSTEM_HEADER (decl))
+	  pedwarn ("ISO C forbids qualified function types");
+
+	/* GNU C interprets a `volatile void' return type to indicate
+	   that the function does not return.  */
+	if ((type_quals & TYPE_QUAL_VOLATILE)
+	    && !VOID_TYPE_P (TREE_TYPE (TREE_TYPE (decl))))
+	  warning ("`noreturn' function returns non-void value");
+
+	if (extern_ref)
+	  DECL_EXTERNAL (decl) = 1;
+	/* Record absence of global scope for `static' or `auto'.  */
+	TREE_PUBLIC (decl)
+	  = !(specbits & ((1 << (int) RID_STATIC) | (1 << (int) RID_AUTO)));
+
+	if (defaulted_int)
+	  C_FUNCTION_IMPLICIT_INT (decl) = 1;
+
+	/* Record presence of `inline', if it is reasonable.  */
+	if (MAIN_NAME_P (declarator))
+	  {
+	    if (inlinep)
+	      warning ("cannot inline function `main'");
+	  }
+	else if (inlinep)
+	  {
+	    /* Assume that otherwise the function can be inlined.  */
+	    DECL_DECLARED_INLINE_P (decl) = 1;
+
+	    /* Do not mark bare declarations as DECL_INLINE.  Doing so
+	       in the presence of multiple declarations can result in
+	       the abstract origin pointing between the declarations,
+	       which will confuse dwarf2out.  */
+	    if (initialized)
+	      {
+		DECL_INLINE (decl) = 1;
+		if (specbits & (1 << (int) RID_EXTERN))
+		  current_extern_inline = 1;
+	      }
+	  }
+	/* If -finline-functions, assume it can be inlined.  This does
+	   two things: let the function be deferred until it is actually
+	   needed, and let dwarf2 know that the function is inlinable.  */
+	else if (flag_inline_trees == 2 && initialized)
+	  {
+	    DECL_INLINE (decl) = 1;
+	    DECL_DECLARED_INLINE_P (decl) = 0;
+	  }
+      }
+    else
+      {
+	/* It's a variable.  */
+	/* An uninitialized decl with `extern' is a reference.  */
+	int extern_ref = !initialized && (specbits & (1 << (int) RID_EXTERN));
+
+	/* Move type qualifiers down to element of an array.  */
+	if (TREE_CODE (type) == ARRAY_TYPE && type_quals)
+	  {
+	    int saved_align = TYPE_ALIGN(type);
+	    type = build_array_type (c_build_qualified_type (TREE_TYPE (type),
+							     type_quals),
+				     TYPE_DOMAIN (type));
+	    TYPE_ALIGN (type) = saved_align;
+#if 0 /* Leave the variable const or volatile as well.  */
+	    type_quals = TYPE_UNQUALIFIED;
+#endif
+	  }
+	else if (type_quals)
+	  type = c_build_qualified_type (type, type_quals);
+	  
+	decl = build_decl (VAR_DECL, declarator, type);
+	if (size_varies)
+	  C_DECL_VARIABLE_SIZE (decl) = 1;
+
+	if (inlinep)
+	  pedwarn_with_decl (decl, "variable `%s' declared `inline'");
+
+	DECL_EXTERNAL (decl) = extern_ref;
+	/* At top level, the presence of a `static' or `register' storage
+	   class specifier, or the absence of all storage class specifiers
+	   makes this declaration a definition (perhaps tentative).  Also,
+	   the absence of both `static' and `register' makes it public.  */
+	if (current_binding_level == global_binding_level)
+	  {
+	    TREE_PUBLIC (decl)
+	      = !(specbits
+		  & ((1 << (int) RID_STATIC) | (1 << (int) RID_REGISTER)));
+	    TREE_STATIC (decl) = ! DECL_EXTERNAL (decl);
+	  }
+	/* Not at top level, only `static' makes a static definition.  */
+	else
+	  {
+	    TREE_STATIC (decl) = (specbits & (1 << (int) RID_STATIC)) != 0;
+	    TREE_PUBLIC (decl) = DECL_EXTERNAL (decl);
+	  }
+      }
+
+    /* Record `register' declaration for warnings on &
+       and in case doing stupid register allocation.  */
+
+    if (specbits & (1 << (int) RID_REGISTER))
+      DECL_REGISTER (decl) = 1;
+
+    /* Record constancy and volatility.  */
+    c_apply_type_quals_to_decl (type_quals, decl);
+
+    /* If a type has volatile components, it should be stored in memory.
+       Otherwise, the fact that those components are volatile
+       will be ignored, and would even crash the compiler.  */
+    if (C_TYPE_FIELDS_VOLATILE (TREE_TYPE (decl)))
+      mark_addressable (decl);
+
+    decl_attributes (&decl, returned_attrs, 0);
+
+    return decl;
+  }
+}

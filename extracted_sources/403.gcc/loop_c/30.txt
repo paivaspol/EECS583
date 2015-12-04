@@ -1,0 +1,68 @@
+static int
+consec_sets_invariant_p (loop, reg, n_sets, insn)
+     const struct loop *loop;
+     int n_sets;
+     rtx reg, insn;
+{
+  struct loop_regs *regs = LOOP_REGS (loop);
+  rtx p = insn;
+  unsigned int regno = REGNO (reg);
+  rtx temp;
+  /* Number of sets we have to insist on finding after INSN.  */
+  int count = n_sets - 1;
+  int old = regs->array[regno].set_in_loop;
+  int value = 0;
+  int this;
+
+  /* If N_SETS hit the limit, we can't rely on its value.  */
+  if (n_sets == 127)
+    return 0;
+
+  regs->array[regno].set_in_loop = 0;
+
+  while (count > 0)
+    {
+      enum rtx_code code;
+      rtx set;
+
+      p = NEXT_INSN (p);
+      code = GET_CODE (p);
+
+      /* If library call, skip to end of it.  */
+      if (code == INSN && (temp = find_reg_note (p, REG_LIBCALL, NULL_RTX)))
+	p = XEXP (temp, 0);
+
+      this = 0;
+      if (code == INSN
+	  && (set = single_set (p))
+	  && GET_CODE (SET_DEST (set)) == REG
+	  && REGNO (SET_DEST (set)) == regno)
+	{
+	  this = loop_invariant_p (loop, SET_SRC (set));
+	  if (this != 0)
+	    value |= this;
+	  else if ((temp = find_reg_note (p, REG_EQUAL, NULL_RTX)))
+	    {
+	      /* If this is a libcall, then any invariant REG_EQUAL note is OK.
+		 If this is an ordinary insn, then only CONSTANT_P REG_EQUAL
+		 notes are OK.  */
+	      this = (CONSTANT_P (XEXP (temp, 0))
+		      || (find_reg_note (p, REG_RETVAL, NULL_RTX)
+			  && loop_invariant_p (loop, XEXP (temp, 0))));
+	      if (this != 0)
+		value |= this;
+	    }
+	}
+      if (this != 0)
+	count--;
+      else if (code != NOTE)
+	{
+	  regs->array[regno].set_in_loop = old;
+	  return 0;
+	}
+    }
+
+  regs->array[regno].set_in_loop = old;
+  /* If loop_invariant_p ever returned 2, we return 2.  */
+  return 1 + (value & 2);
+}

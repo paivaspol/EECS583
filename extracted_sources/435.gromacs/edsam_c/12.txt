@@ -1,0 +1,17 @@
+void do_project(rvec *x,t_eigvec *vec,t_edpar *edi,char *mode)
+{
+  int i,j,k;
+  real proj;
+
+  for (i=0;(i<vec->neig);i++) { 
+    proj=0.0;
+    for (j=0;(j<edi->sav.nr);j++) {
+      for (k=0;(k<DIM);k++)
+	proj+=vec->vec[i][j][k]*x[edi->sav.anrs[j]][k];
+    }
+    /*fprintf(stderr,"Projection on ev[%d]=%15.10f\n",vec->ieig[i],proj);*/
+    if (strcmp(mode,"x") == 0)  vec->xproj[i]=proj;
+    else if (strcmp(mode,"v") == 0) vec->vproj[i]=proj;
+    else if (strcmp(mode,"f") == 0) vec->fproj[i]=proj;
+  }
+}

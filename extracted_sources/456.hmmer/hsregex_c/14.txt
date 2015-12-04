@@ -1,0 +1,33 @@
+static size_t
+regrepeat(ep, node)
+register struct exec *ep;
+char *node;
+{
+	register size_t count;
+	register char *scan;
+	register char ch;
+
+	switch (OP(node)) {
+	case ANY:
+		return(strlen(ep->reginput));
+		break;
+	case EXACTLY:
+		ch = *OPERAND(node);
+		count = 0;
+		for (scan = ep->reginput; *scan == ch; scan++)
+			count++;
+		return(count);
+		break;
+	case ANYOF:
+		return(strspn(ep->reginput, OPERAND(node)));
+		break;
+	case ANYBUT:
+		return(strcspn(ep->reginput, OPERAND(node)));
+		break;
+	default:		/* Oh dear.  Called inappropriately. */
+		sqd_regerror("internal error: bad call of regrepeat");
+		return(0);	/* Best compromise. */
+		break;
+	}
+	/* NOTREACHED */
+}

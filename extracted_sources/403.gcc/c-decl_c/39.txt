@@ -1,0 +1,42 @@
+void
+parmlist_tags_warning ()
+{
+  tree elt;
+  static int already;
+
+  for (elt = current_binding_level->tags; elt; elt = TREE_CHAIN (elt))
+    {
+      enum tree_code code = TREE_CODE (TREE_VALUE (elt));
+      /* An anonymous union parm type is meaningful as a GNU extension.
+	 So don't warn for that.  */
+      if (code == UNION_TYPE && TREE_PURPOSE (elt) == 0 && !pedantic)
+	continue;
+      if (TREE_PURPOSE (elt) != 0)
+        {
+          if (code == RECORD_TYPE)
+            warning ("`struct %s' declared inside parameter list",
+                     IDENTIFIER_POINTER (TREE_PURPOSE (elt)));
+          else if (code == UNION_TYPE)
+            warning ("`union %s' declared inside parameter list",
+                     IDENTIFIER_POINTER (TREE_PURPOSE (elt)));
+          else
+            warning ("`enum %s' declared inside parameter list",
+                     IDENTIFIER_POINTER (TREE_PURPOSE (elt)));
+        }
+      else
+	{
+	  /* For translation these need to be separate warnings */
+	  if (code == RECORD_TYPE)
+	    warning ("anonymous struct declared inside parameter list");
+	  else if (code == UNION_TYPE)
+	    warning ("anonymous union declared inside parameter list");
+	  else
+	    warning ("anonymous enum declared inside parameter list");
+	}
+      if (! already)
+	{
+	  warning ("its scope is only this definition or declaration, which is probably not what you want");
+	  already = 1;
+	}
+    }
+}

@@ -1,0 +1,29 @@
+void update_field_frame_contexts (int field)
+{
+  int i, j;
+
+  if (field)
+  {
+    // set frame contexts
+    for (j=0; j<FRAME_TYPES; j++)
+    {
+      for (i=0; i<number_of_slices; i++)
+      {
+        initialized [0][j][i] = initialized [1][j][i>>1];
+        model_number[0][j][i] = model_number[1][j][i>>1];
+      }
+    }
+  }
+  else
+  {
+    // set field contexts
+    for (j=0; j<FRAME_TYPES; j++)
+    {
+      for (i=0; i<((number_of_slices+1)>>1); i++)
+      {
+        initialized [1][j][i] = initialized [0][j][i<<1];
+        model_number[1][j][i] = model_number[0][j][i<<1];
+      }
+    }
+  }
+}

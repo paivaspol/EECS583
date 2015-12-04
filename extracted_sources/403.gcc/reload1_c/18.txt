@@ -1,0 +1,145 @@
+static void
+alter_reg (i, from_reg)
+     int i;
+     int from_reg;
+{
+  /* When outputting an inline function, this can happen
+     for a reg that isn't actually used.  */
+  if (regno_reg_rtx[i] == 0)
+    return;
+
+  /* If the reg got changed to a MEM at rtl-generation time,
+     ignore it.  */
+  if (GET_CODE (regno_reg_rtx[i]) != REG)
+    return;
+
+  /* Modify the reg-rtx to contain the new hard reg
+     number or else to contain its pseudo reg number.  */
+  REGNO (regno_reg_rtx[i])
+    = reg_renumber[i] >= 0 ? reg_renumber[i] : i;
+
+  /* If we have a pseudo that is needed but has no hard reg or equivalent,
+     allocate a stack slot for it.  */
+
+  if (reg_renumber[i] < 0
+      && REG_N_REFS (i) > 0
+      && reg_equiv_constant[i] == 0
+      && reg_equiv_memory_loc[i] == 0)
+    {
+      rtx x;
+      unsigned int inherent_size = PSEUDO_REGNO_BYTES (i);
+      unsigned int total_size = MAX (inherent_size, reg_max_ref_width[i]);
+      int adjust = 0;
+
+      /* Each pseudo reg has an inherent size which comes from its own mode,
+	 and a total size which provides room for paradoxical subregs
+	 which refer to the pseudo reg in wider modes.
+
+	 We can use a slot already allocated if it provides both
+	 enough inherent space and enough total space.
+	 Otherwise, we allocate a new slot, making sure that it has no less
+	 inherent space, and no less total space, then the previous slot.  */
+      if (from_reg == -1)
+	{
+	  /* No known place to spill from => no slot to reuse.  */
+	  x = assign_stack_local (GET_MODE (regno_reg_rtx[i]), total_size,
+				  inherent_size == total_size ? 0 : -1);
+	  if (BYTES_BIG_ENDIAN)
+	    /* Cancel the  big-endian correction done in assign_stack_local.
+	       Get the address of the beginning of the slot.
+	       This is so we can do a big-endian correction unconditionally
+	       below.  */
+	    adjust = inherent_size - total_size;
+
+	  RTX_UNCHANGING_P (x) = RTX_UNCHANGING_P (regno_reg_rtx[i]);
+
+	  /* Nothing can alias this slot except this pseudo.  */
+	  set_mem_alias_set (x, new_alias_set ());
+	}
+
+      /* Reuse a stack slot if possible.  */
+      else if (spill_stack_slot[from_reg] != 0
+	       && spill_stack_slot_width[from_reg] >= total_size
+	       && (GET_MODE_SIZE (GET_MODE (spill_stack_slot[from_reg]))
+		   >= inherent_size))
+	x = spill_stack_slot[from_reg];
+
+      /* Allocate a bigger slot.  */
+      else
+	{
+	  /* Compute maximum size needed, both for inherent size
+	     and for total size.  */
+	  enum machine_mode mode = GET_MODE (regno_reg_rtx[i]);
+	  rtx stack_slot;
+
+	  if (spill_stack_slot[from_reg])
+	    {
+	      if (GET_MODE_SIZE (GET_MODE (spill_stack_slot[from_reg]))
+		  > inherent_size)
+		mode = GET_MODE (spill_stack_slot[from_reg]);
+	      if (spill_stack_slot_width[from_reg] > total_size)
+		total_size = spill_stack_slot_width[from_reg];
+	    }
+
+	  /* Make a slot with that size.  */
+	  x = assign_stack_local (mode, total_size,
+				  inherent_size == total_size ? 0 : -1);
+	  stack_slot = x;
+
+	  /* All pseudos mapped to this slot can alias each other.  */
+	  if (spill_stack_slot[from_reg])
+	    set_mem_alias_set (x, MEM_ALIAS_SET (spill_stack_slot[from_reg]));
+	  else
+	    set_mem_alias_set (x, new_alias_set ());
+
+	  if (BYTES_BIG_ENDIAN)
+	    {
+	      /* Cancel the  big-endian correction done in assign_stack_local.
+		 Get the address of the beginning of the slot.
+		 This is so we can do a big-endian correction unconditionally
+		 below.  */
+	      adjust = GET_MODE_SIZE (mode) - total_size;
+	      if (adjust)
+		stack_slot
+		  = adjust_address_nv (x, mode_for_size (total_size
+							 * BITS_PER_UNIT,
+							 MODE_INT, 1),
+				       adjust);
+	    }
+
+	  spill_stack_slot[from_reg] = stack_slot;
+	  spill_stack_slot_width[from_reg] = total_size;
+	}
+
+      /* On a big endian machine, the "address" of the slot
+	 is the address of the low part that fits its inherent mode.  */
+      if (BYTES_BIG_ENDIAN && inherent_size < total_size)
+	adjust += (total_size - inherent_size);
+
+      /* If we have any adjustment to make, or if the stack slot is the
+	 wrong mode, make a new stack slot.  */
+      x = adjust_address_nv (x, GET_MODE (regno_reg_rtx[i]), adjust);
+
+      /* If we have a decl for the original register, set it for the
+	 memory.  If this is a shared MEM, make a copy.  */
+      if (REGNO_DECL (i))
+	{
+	  rtx decl = DECL_RTL_IF_SET (REGNO_DECL (i));
+
+	  /* We can do this only for the DECLs home pseudo, not for
+	     any copies of it, since otherwise when the stack slot
+	     is reused, nonoverlapping_memrefs_p might think they
+	     cannot overlap.  */
+	  if (decl && GET_CODE (decl) == REG && REGNO (decl) == (unsigned) i)
+	    {
+	      if (from_reg != -1 && spill_stack_slot[from_reg] == x)
+		x = copy_rtx (x);
+
+	      set_mem_expr (x, REGNO_DECL (i));
+	    }
+	}
+
+      /* Save the stack slot for later.  */
+      reg_equiv_memory_loc[i] = x;
+    }
+}

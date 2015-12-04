@@ -1,0 +1,15 @@
+static void
+sdbout_end_epilogue ()
+{
+  const char *const name ATTRIBUTE_UNUSED
+    = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (current_function_decl));
+
+#ifdef PUT_SDB_EPILOGUE_END
+  PUT_SDB_EPILOGUE_END (name);
+#else
+  fprintf (asm_out_file, "\t.def\t");
+  assemble_name (asm_out_file, name);
+  fprintf (asm_out_file, "%s\t.val\t.%s\t.scl\t-1%s\t.endef\n",
+	   SDB_DELIM, SDB_DELIM, SDB_DELIM);
+#endif
+}

@@ -1,0 +1,129 @@
+static void
+loop_givs_reduce (loop, bl)
+     struct loop *loop;
+     struct iv_class *bl;
+{
+  struct induction *v;
+
+  for (v = bl->giv; v; v = v->next_iv)
+    {
+      struct induction *tv;
+      if (! v->ignore && v->same == 0)
+	{
+	  int auto_inc_opt = 0;
+
+	  /* If the code for derived givs immediately below has already
+	     allocated a new_reg, we must keep it.  */
+	  if (! v->new_reg)
+	    v->new_reg = gen_reg_rtx (v->mode);
+
+#ifdef AUTO_INC_DEC
+	  /* If the target has auto-increment addressing modes, and
+	     this is an address giv, then try to put the increment
+	     immediately after its use, so that flow can create an
+	     auto-increment addressing mode.  */
+	  if (v->giv_type == DEST_ADDR && bl->biv_count == 1
+	      && bl->biv->always_executed && ! bl->biv->maybe_multiple
+	      /* We don't handle reversed biv's because bl->biv->insn
+		 does not have a valid INSN_LUID.  */
+	      && ! bl->reversed
+	      && v->always_executed && ! v->maybe_multiple
+	      && INSN_UID (v->insn) < max_uid_for_loop)
+	    {
+	      /* If other giv's have been combined with this one, then
+		 this will work only if all uses of the other giv's occur
+		 before this giv's insn.  This is difficult to check.
+
+		 We simplify this by looking for the common case where
+		 there is one DEST_REG giv, and this giv's insn is the
+		 last use of the dest_reg of that DEST_REG giv.  If the
+		 increment occurs after the address giv, then we can
+		 perform the optimization.  (Otherwise, the increment
+		 would have to go before other_giv, and we would not be
+		 able to combine it with the address giv to get an
+		 auto-inc address.)  */
+	      if (v->combined_with)
+		{
+		  struct induction *other_giv = 0;
+
+		  for (tv = bl->giv; tv; tv = tv->next_iv)
+		    if (tv->same == v)
+		      {
+			if (other_giv)
+			  break;
+			else
+			  other_giv = tv;
+		      }
+		  if (! tv && other_giv
+		      && REGNO (other_giv->dest_reg) < max_reg_before_loop
+		      && (REGNO_LAST_UID (REGNO (other_giv->dest_reg))
+			  == INSN_UID (v->insn))
+		      && INSN_LUID (v->insn) < INSN_LUID (bl->biv->insn))
+		    auto_inc_opt = 1;
+		}
+	      /* Check for case where increment is before the address
+		 giv.  Do this test in "loop order".  */
+	      else if ((INSN_LUID (v->insn) > INSN_LUID (bl->biv->insn)
+			&& (INSN_LUID (v->insn) < INSN_LUID (loop->scan_start)
+			    || (INSN_LUID (bl->biv->insn)
+				> INSN_LUID (loop->scan_start))))
+		       || (INSN_LUID (v->insn) < INSN_LUID (loop->scan_start)
+			   && (INSN_LUID (loop->scan_start)
+			       < INSN_LUID (bl->biv->insn))))
+		auto_inc_opt = -1;
+	      else
+		auto_inc_opt = 1;
+
+#ifdef HAVE_cc0
+	      {
+		rtx prev;
+
+		/* We can't put an insn immediately after one setting
+		   cc0, or immediately before one using cc0.  */
+		if ((auto_inc_opt == 1 && sets_cc0_p (PATTERN (v->insn)))
+		    || (auto_inc_opt == -1
+			&& (prev = prev_nonnote_insn (v->insn)) != 0
+			&& INSN_P (prev)
+			&& sets_cc0_p (PATTERN (prev))))
+		  auto_inc_opt = 0;
+	      }
+#endif
+
+	      if (auto_inc_opt)
+		v->auto_inc_opt = 1;
+	    }
+#endif
+
+	  /* For each place where the biv is incremented, add an insn
+	     to increment the new, reduced reg for the giv.  */
+	  for (tv = bl->biv; tv; tv = tv->next_iv)
+	    {
+	      rtx insert_before;
+
+	      if (! auto_inc_opt)
+		insert_before = tv->insn;
+	      else if (auto_inc_opt == 1)
+		insert_before = NEXT_INSN (v->insn);
+	      else
+		insert_before = v->insn;
+
+	      if (tv->mult_val == const1_rtx)
+		loop_iv_add_mult_emit_before (loop, tv->add_val, v->mult_val,
+					      v->new_reg, v->new_reg,
+					      0, insert_before);
+	      else /* tv->mult_val == const0_rtx */
+		/* A multiply is acceptable here
+		   since this is presumed to be seldom executed.  */
+		loop_iv_add_mult_emit_before (loop, tv->add_val, v->mult_val,
+					      v->add_val, v->new_reg,
+					      0, insert_before);
+	    }
+
+	  /* Add code at loop start to initialize giv's reduced reg.  */
+
+	  loop_iv_add_mult_hoist (loop,
+				  extend_value_for_giv (v, bl->initial_value),
+				  v->mult_val, v->add_val, v->new_reg);
+	}
+    }
+}

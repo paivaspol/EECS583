@@ -1,0 +1,258 @@
+static rtx
+make_compound_operation (x, in_code)
+     rtx x;
+     enum rtx_code in_code;
+{
+  enum rtx_code code = GET_CODE (x);
+  enum machine_mode mode = GET_MODE (x);
+  int mode_width = GET_MODE_BITSIZE (mode);
+  rtx rhs, lhs;
+  enum rtx_code next_code;
+  int i;
+  rtx new = 0;
+  rtx tem;
+  const char *fmt;
+
+  /* Select the code to be used in recursive calls.  Once we are inside an
+     address, we stay there.  If we have a comparison, set to COMPARE,
+     but once inside, go back to our default of SET.  */
+
+  next_code = (code == MEM || code == PLUS || code == MINUS ? MEM
+	       : ((code == COMPARE || GET_RTX_CLASS (code) == '<')
+		  && XEXP (x, 1) == const0_rtx) ? COMPARE
+	       : in_code == COMPARE ? SET : in_code);
+
+  /* Process depending on the code of this operation.  If NEW is set
+     non-zero, it will be returned.  */
+
+  switch (code)
+    {
+    case ASHIFT:
+      /* Convert shifts by constants into multiplications if inside
+	 an address.  */
+      if (in_code == MEM && GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) < HOST_BITS_PER_WIDE_INT
+	  && INTVAL (XEXP (x, 1)) >= 0)
+	{
+	  new = make_compound_operation (XEXP (x, 0), next_code);
+	  new = gen_rtx_MULT (mode, new,
+			      GEN_INT ((HOST_WIDE_INT) 1
+				       << INTVAL (XEXP (x, 1))));
+	}
+      break;
+
+    case AND:
+      /* If the second operand is not a constant, we can't do anything
+	 with it.  */
+      if (GET_CODE (XEXP (x, 1)) != CONST_INT)
+	break;
+
+      /* If the constant is a power of two minus one and the first operand
+	 is a logical right shift, make an extraction.  */
+      if (GET_CODE (XEXP (x, 0)) == LSHIFTRT
+	  && (i = exact_log2 (INTVAL (XEXP (x, 1)) + 1)) >= 0)
+	{
+	  new = make_compound_operation (XEXP (XEXP (x, 0), 0), next_code);
+	  new = make_extraction (mode, new, 0, XEXP (XEXP (x, 0), 1), i, 1,
+				 0, in_code == COMPARE);
+	}
+
+      /* Same as previous, but for (subreg (lshiftrt ...)) in first op.  */
+      else if (GET_CODE (XEXP (x, 0)) == SUBREG
+	       && subreg_lowpart_p (XEXP (x, 0))
+	       && GET_CODE (SUBREG_REG (XEXP (x, 0))) == LSHIFTRT
+	       && (i = exact_log2 (INTVAL (XEXP (x, 1)) + 1)) >= 0)
+	{
+	  new = make_compound_operation (XEXP (SUBREG_REG (XEXP (x, 0)), 0),
+					 next_code);
+	  new = make_extraction (GET_MODE (SUBREG_REG (XEXP (x, 0))), new, 0,
+				 XEXP (SUBREG_REG (XEXP (x, 0)), 1), i, 1,
+				 0, in_code == COMPARE);
+	}
+      /* Same as previous, but for (xor/ior (lshiftrt...) (lshiftrt...)).  */
+      else if ((GET_CODE (XEXP (x, 0)) == XOR
+		|| GET_CODE (XEXP (x, 0)) == IOR)
+	       && GET_CODE (XEXP (XEXP (x, 0), 0)) == LSHIFTRT
+	       && GET_CODE (XEXP (XEXP (x, 0), 1)) == LSHIFTRT
+	       && (i = exact_log2 (INTVAL (XEXP (x, 1)) + 1)) >= 0)
+	{
+	  /* Apply the distributive law, and then try to make extractions.  */
+	  new = gen_rtx_fmt_ee (GET_CODE (XEXP (x, 0)), mode,
+				gen_rtx_AND (mode, XEXP (XEXP (x, 0), 0),
+					     XEXP (x, 1)),
+				gen_rtx_AND (mode, XEXP (XEXP (x, 0), 1),
+					     XEXP (x, 1)));
+	  new = make_compound_operation (new, in_code);
+	}
+
+      /* If we are have (and (rotate X C) M) and C is larger than the number
+	 of bits in M, this is an extraction.  */
+
+      else if (GET_CODE (XEXP (x, 0)) == ROTATE
+	       && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT
+	       && (i = exact_log2 (INTVAL (XEXP (x, 1)) + 1)) >= 0
+	       && i <= INTVAL (XEXP (XEXP (x, 0), 1)))
+	{
+	  new = make_compound_operation (XEXP (XEXP (x, 0), 0), next_code);
+	  new = make_extraction (mode, new,
+				 (GET_MODE_BITSIZE (mode)
+				  - INTVAL (XEXP (XEXP (x, 0), 1))),
+				 NULL_RTX, i, 1, 0, in_code == COMPARE);
+	}
+
+      /* On machines without logical shifts, if the operand of the AND is
+	 a logical shift and our mask turns off all the propagated sign
+	 bits, we can replace the logical shift with an arithmetic shift.  */
+      else if (GET_CODE (XEXP (x, 0)) == LSHIFTRT
+	       && !have_insn_for (LSHIFTRT, mode)
+	       && have_insn_for (ASHIFTRT, mode)
+	       && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT
+	       && INTVAL (XEXP (XEXP (x, 0), 1)) >= 0
+	       && INTVAL (XEXP (XEXP (x, 0), 1)) < HOST_BITS_PER_WIDE_INT
+	       && mode_width <= HOST_BITS_PER_WIDE_INT)
+	{
+	  unsigned HOST_WIDE_INT mask = GET_MODE_MASK (mode);
+
+	  mask >>= INTVAL (XEXP (XEXP (x, 0), 1));
+	  if ((INTVAL (XEXP (x, 1)) & ~mask) == 0)
+	    SUBST (XEXP (x, 0),
+		   gen_rtx_ASHIFTRT (mode,
+				     make_compound_operation
+				     (XEXP (XEXP (x, 0), 0), next_code),
+				     XEXP (XEXP (x, 0), 1)));
+	}
+
+      /* If the constant is one less than a power of two, this might be
+	 representable by an extraction even if no shift is present.
+	 If it doesn't end up being a ZERO_EXTEND, we will ignore it unless
+	 we are in a COMPARE.  */
+      else if ((i = exact_log2 (INTVAL (XEXP (x, 1)) + 1)) >= 0)
+	new = make_extraction (mode,
+			       make_compound_operation (XEXP (x, 0),
+							next_code),
+			       0, NULL_RTX, i, 1, 0, in_code == COMPARE);
+
+      /* If we are in a comparison and this is an AND with a power of two,
+	 convert this into the appropriate bit extract.  */
+      else if (in_code == COMPARE
+	       && (i = exact_log2 (INTVAL (XEXP (x, 1)))) >= 0)
+	new = make_extraction (mode,
+			       make_compound_operation (XEXP (x, 0),
+							next_code),
+			       i, NULL_RTX, 1, 1, 0, 1);
+
+      break;
+
+    case LSHIFTRT:
+      /* If the sign bit is known to be zero, replace this with an
+	 arithmetic shift.  */
+      if (have_insn_for (ASHIFTRT, mode)
+	  && ! have_insn_for (LSHIFTRT, mode)
+	  && mode_width <= HOST_BITS_PER_WIDE_INT
+	  && (nonzero_bits (XEXP (x, 0), mode) & (1 << (mode_width - 1))) == 0)
+	{
+	  new = gen_rtx_ASHIFTRT (mode,
+				  make_compound_operation (XEXP (x, 0),
+							   next_code),
+				  XEXP (x, 1));
+	  break;
+	}
+
+      /* ... fall through ...  */
+
+    case ASHIFTRT:
+      lhs = XEXP (x, 0);
+      rhs = XEXP (x, 1);
+
+      /* If we have (ashiftrt (ashift foo C1) C2) with C2 >= C1,
+	 this is a SIGN_EXTRACT.  */
+      if (GET_CODE (rhs) == CONST_INT
+	  && GET_CODE (lhs) == ASHIFT
+	  && GET_CODE (XEXP (lhs, 1)) == CONST_INT
+	  && INTVAL (rhs) >= INTVAL (XEXP (lhs, 1)))
+	{
+	  new = make_compound_operation (XEXP (lhs, 0), next_code);
+	  new = make_extraction (mode, new,
+				 INTVAL (rhs) - INTVAL (XEXP (lhs, 1)),
+				 NULL_RTX, mode_width - INTVAL (rhs),
+				 code == LSHIFTRT, 0, in_code == COMPARE);
+	  break;
+	}
+
+      /* See if we have operations between an ASHIFTRT and an ASHIFT.
+	 If so, try to merge the shifts into a SIGN_EXTEND.  We could
+	 also do this for some cases of SIGN_EXTRACT, but it doesn't
+	 seem worth the effort; the case checked for occurs on Alpha.  */
+
+      if (GET_RTX_CLASS (GET_CODE (lhs)) != 'o'
+	  && ! (GET_CODE (lhs) == SUBREG
+		&& (GET_RTX_CLASS (GET_CODE (SUBREG_REG (lhs))) == 'o'))
+	  && GET_CODE (rhs) == CONST_INT
+	  && INTVAL (rhs) < HOST_BITS_PER_WIDE_INT
+	  && (new = extract_left_shift (lhs, INTVAL (rhs))) != 0)
+	new = make_extraction (mode, make_compound_operation (new, next_code),
+			       0, NULL_RTX, mode_width - INTVAL (rhs),
+			       code == LSHIFTRT, 0, in_code == COMPARE);
+
+      break;
+
+    case SUBREG:
+      /* Call ourselves recursively on the inner expression.  If we are
+	 narrowing the object and it has a different RTL code from
+	 what it originally did, do this SUBREG as a force_to_mode.  */
+
+      tem = make_compound_operation (SUBREG_REG (x), in_code);
+      if (GET_CODE (tem) != GET_CODE (SUBREG_REG (x))
+	  && GET_MODE_SIZE (mode) < GET_MODE_SIZE (GET_MODE (tem))
+	  && subreg_lowpart_p (x))
+	{
+	  rtx newer = force_to_mode (tem, mode, ~(HOST_WIDE_INT) 0,
+				     NULL_RTX, 0);
+
+	  /* If we have something other than a SUBREG, we might have
+	     done an expansion, so rerun ourselves.  */
+	  if (GET_CODE (newer) != SUBREG)
+	    newer = make_compound_operation (newer, in_code);
+
+	  return newer;
+	}
+
+      /* If this is a paradoxical subreg, and the new code is a sign or
+	 zero extension, omit the subreg and widen the extension.  If it
+	 is a regular subreg, we can still get rid of the subreg by not
+	 widening so much, or in fact removing the extension entirely.  */
+      if ((GET_CODE (tem) == SIGN_EXTEND
+	   || GET_CODE (tem) == ZERO_EXTEND)
+	  && subreg_lowpart_p (x))
+	{
+	  if (GET_MODE_SIZE (mode) > GET_MODE_SIZE (GET_MODE (tem))
+	      || (GET_MODE_SIZE (mode) >
+		  GET_MODE_SIZE (GET_MODE (XEXP (tem, 0)))))
+	    tem = gen_rtx_fmt_e (GET_CODE (tem), mode, XEXP (tem, 0));
+	  else
+	    tem = gen_lowpart_for_combine (mode, XEXP (tem, 0));
+	  return tem;
+	}
+      break;
+
+    default:
+      break;
+    }
+
+  if (new)
+    {
+      x = gen_lowpart_for_combine (mode, new);
+      code = GET_CODE (x);
+    }
+
+  /* Now recursively process each operand of this operation.  */
+  fmt = GET_RTX_FORMAT (code);
+  for (i = 0; i < GET_RTX_LENGTH (code); i++)
+    if (fmt[i] == 'e')
+      {
+	new = make_compound_operation (XEXP (x, i), next_code);
+	SUBST (XEXP (x, i), new);
+      }
+
+  return x;
+}

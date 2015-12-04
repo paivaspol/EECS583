@@ -1,0 +1,59 @@
+static void
+do_cmp_and_jump (arg1, arg2, op, mode, label)
+     rtx arg1, arg2, label;
+     enum rtx_code op;
+     enum machine_mode mode;
+{
+  /* If this mode is an integer too wide to compare properly,
+     compare word by word.  Rely on cse to optimize constant cases.  */
+
+  if (GET_MODE_CLASS (mode) == MODE_INT
+      && ! can_compare_p (op, mode, ccp_jump))
+    {
+      rtx label2 = gen_label_rtx ();
+
+      switch (op)
+	{
+	case LTU:
+	  do_jump_by_parts_greater_rtx (mode, 1, arg2, arg1, label2, label);
+	  break;
+
+	case LEU:
+	  do_jump_by_parts_greater_rtx (mode, 1, arg1, arg2, label, label2);
+	  break;
+
+	case LT:
+	  do_jump_by_parts_greater_rtx (mode, 0, arg2, arg1, label2, label);
+	  break;
+
+	case GT:
+	  do_jump_by_parts_greater_rtx (mode, 0, arg1, arg2, label2, label);
+	  break;
+
+	case GE:
+	  do_jump_by_parts_greater_rtx (mode, 0, arg2, arg1, label, label2);
+	  break;
+
+	  /* do_jump_by_parts_equality_rtx compares with zero.  Luckily
+	     that's the only equality operations we do */
+	case EQ:
+	  if (arg2 != const0_rtx || mode != GET_MODE(arg1))
+	    abort ();
+	  do_jump_by_parts_equality_rtx (arg1, label2, label);
+	  break;
+
+	case NE:
+	  if (arg2 != const0_rtx || mode != GET_MODE(arg1))
+	    abort ();
+	  do_jump_by_parts_equality_rtx (arg1, label, label2);
+	  break;
+
+	default:
+	  abort ();
+	}
+
+      emit_label (label2);
+    }
+  else
+    emit_cmp_and_jump_insns (arg1, arg2, op, NULL_RTX, mode, 0, label);
+}

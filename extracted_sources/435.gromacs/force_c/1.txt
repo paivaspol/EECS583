@@ -1,0 +1,27 @@
+static real *mk_nbfp(t_idef *idef,bool bBHAM)
+{
+  real *nbfp;
+  int  i,j,k,atnr;
+  
+  atnr=idef->atnr;
+  if (bBHAM) {
+    snew(nbfp,3*atnr*atnr);
+    for(i=k=0; (i<atnr); i++) {
+      for(j=0; (j<atnr); j++,k++) {
+	BHAMA(nbfp,atnr,i,j) = idef->iparams[k].bham.a;
+	BHAMB(nbfp,atnr,i,j) = idef->iparams[k].bham.b;
+	BHAMC(nbfp,atnr,i,j) = idef->iparams[k].bham.c;
+      }
+    }
+  }
+  else {
+    snew(nbfp,2*atnr*atnr);
+    for(i=k=0; (i<atnr); i++) {
+      for(j=0; (j<atnr); j++,k++) {
+	C6(nbfp,atnr,i,j)   = idef->iparams[k].lj.c6;
+	C12(nbfp,atnr,i,j)  = idef->iparams[k].lj.c12;
+      }
+    }
+  }
+  return nbfp;
+}

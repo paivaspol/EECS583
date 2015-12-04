@@ -1,0 +1,50 @@
+static struct eh_region *
+duplicate_eh_region_1 (o, map)
+     struct eh_region *o;
+     struct inline_remap *map;
+{
+  struct eh_region *n
+    = (struct eh_region *) xcalloc (1, sizeof (struct eh_region));
+
+  n->region_number = o->region_number + cfun->eh->last_region_number;
+  n->type = o->type;
+
+  switch (n->type)
+    {
+    case ERT_CLEANUP:
+    case ERT_MUST_NOT_THROW:
+      break;
+
+    case ERT_TRY:
+      if (o->u.try.continue_label)
+	n->u.try.continue_label
+	  = get_label_from_map (map,
+				CODE_LABEL_NUMBER (o->u.try.continue_label));
+      break;
+
+    case ERT_CATCH:
+      n->u.catch.type_list = o->u.catch.type_list;
+      break;
+
+    case ERT_ALLOWED_EXCEPTIONS:
+      n->u.allowed.type_list = o->u.allowed.type_list;
+      break;
+
+    case ERT_THROW:
+      n->u.throw.type = o->u.throw.type;
+
+    default:
+      abort ();
+    }
+
+  if (o->label)
+    n->label = get_label_from_map (map, CODE_LABEL_NUMBER (o->label));
+  if (o->resume)
+    {
+      n->resume = map->insn_map[INSN_UID (o->resume)];
+      if (n->resume == NULL)
+	abort ();
+    }
+
+  return n;
+}

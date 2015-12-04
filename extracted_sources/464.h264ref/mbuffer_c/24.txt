@@ -1,0 +1,19 @@
+static void reorder_long_term(StorablePicture **RefPicListX, int num_ref_idx_lX_active_minus1, int LongTermPicNum, int *refIdxLX)
+{
+  int cIdx, nIdx;
+
+  StorablePicture *picLX;
+
+  picLX = get_long_term_pic(LongTermPicNum);
+
+  for( cIdx = num_ref_idx_lX_active_minus1+1; cIdx > *refIdxLX; cIdx-- )
+    RefPicListX[ cIdx ] = RefPicListX[ cIdx - 1];
+  
+  RefPicListX[ (*refIdxLX)++ ] = picLX;
+
+  nIdx = *refIdxLX;
+
+  for( cIdx = *refIdxLX; cIdx <= num_ref_idx_lX_active_minus1+1; cIdx++ )
+    if( (!RefPicListX[ cIdx ]->is_long_term ) ||  (RefPicListX[ cIdx ]->long_term_pic_num != LongTermPicNum ))
+      RefPicListX[ nIdx++ ] = RefPicListX[ cIdx ];
+}

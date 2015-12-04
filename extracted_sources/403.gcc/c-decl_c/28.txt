@@ -1,0 +1,114 @@
+void
+c_init_decl_processing ()
+{
+  tree endlink;
+  tree ptr_ftype_void, ptr_ftype_ptr;
+
+  /* Adds some ggc roots, and reserved words for c-parse.in.  */
+  c_parse_init ();
+
+  current_function_decl = NULL;
+  named_labels = NULL;
+  current_binding_level = NULL_BINDING_LEVEL;
+  free_binding_level = NULL_BINDING_LEVEL;
+
+  /* Make the binding_level structure for global names.  */
+  pushlevel (0);
+  global_binding_level = current_binding_level;
+
+  build_common_tree_nodes (flag_signed_char);
+
+  c_common_nodes_and_builtins ();
+
+  boolean_type_node = integer_type_node;
+  boolean_true_node = integer_one_node;
+  boolean_false_node = integer_zero_node;
+
+  c_bool_type_node = make_unsigned_type (BOOL_TYPE_SIZE);
+  TREE_SET_CODE (c_bool_type_node, BOOLEAN_TYPE);
+  TYPE_MAX_VALUE (c_bool_type_node) = build_int_2 (1, 0);
+  TREE_TYPE (TYPE_MAX_VALUE (c_bool_type_node)) = c_bool_type_node;
+  TYPE_PRECISION (c_bool_type_node) = 1;
+  pushdecl (build_decl (TYPE_DECL, get_identifier ("_Bool"),
+			c_bool_type_node));
+  c_bool_false_node = build_int_2 (0, 0);
+  TREE_TYPE (c_bool_false_node) = c_bool_type_node;
+  c_bool_true_node = build_int_2 (1, 0);
+  TREE_TYPE (c_bool_true_node) = c_bool_type_node;
+
+  endlink = void_list_node;
+  ptr_ftype_void = build_function_type (ptr_type_node, endlink);
+  ptr_ftype_ptr
+    = build_function_type (ptr_type_node,
+			   tree_cons (NULL_TREE, ptr_type_node, endlink));
+
+  /* Types which are common to the fortran compiler and libf2c.  When
+     changing these, you also need to be concerned with f/com.h.  */
+
+  if (TYPE_PRECISION (float_type_node)
+      == TYPE_PRECISION (long_integer_type_node))
+    {
+      g77_integer_type_node = long_integer_type_node;
+      g77_uinteger_type_node = long_unsigned_type_node;
+    }
+  else if (TYPE_PRECISION (float_type_node)
+	   == TYPE_PRECISION (integer_type_node))
+    {
+      g77_integer_type_node = integer_type_node;
+      g77_uinteger_type_node = unsigned_type_node;
+    }
+  else
+    g77_integer_type_node = g77_uinteger_type_node = NULL_TREE;
+
+  if (g77_integer_type_node != NULL_TREE)
+    {
+      pushdecl (build_decl (TYPE_DECL, get_identifier ("__g77_integer"),
+			    g77_integer_type_node));
+      pushdecl (build_decl (TYPE_DECL, get_identifier ("__g77_uinteger"),
+			    g77_uinteger_type_node));
+    }
+
+  if (TYPE_PRECISION (float_type_node) * 2
+      == TYPE_PRECISION (long_integer_type_node))
+    {
+      g77_longint_type_node = long_integer_type_node;
+      g77_ulongint_type_node = long_unsigned_type_node;
+    }
+  else if (TYPE_PRECISION (float_type_node) * 2
+	   == TYPE_PRECISION (long_long_integer_type_node))
+    {
+      g77_longint_type_node = long_long_integer_type_node;
+      g77_ulongint_type_node = long_long_unsigned_type_node;
+    }
+  else
+    g77_longint_type_node = g77_ulongint_type_node = NULL_TREE;
+
+  if (g77_longint_type_node != NULL_TREE)
+    {
+      pushdecl (build_decl (TYPE_DECL, get_identifier ("__g77_longint"),
+			    g77_longint_type_node));
+      pushdecl (build_decl (TYPE_DECL, get_identifier ("__g77_ulongint"),
+			    g77_ulongint_type_node));
+    }
+
+  pedantic_lvalues = pedantic;
+
+  make_fname_decl = c_make_fname_decl;
+  start_fname_decls ();
+
+  incomplete_decl_finalize_hook = finish_incomplete_decl;
+
+  /* Record our roots.  */
+
+  ggc_add_tree_root (c_global_trees, CTI_MAX);
+  ggc_add_root (&c_stmt_tree, 1, sizeof c_stmt_tree, mark_stmt_tree);
+  ggc_add_tree_root (&c_scope_stmt_stack, 1);
+  ggc_add_tree_root (&named_labels, 1);
+  ggc_add_tree_root (&shadowed_labels, 1);
+  ggc_add_root (&current_binding_level, 1, sizeof current_binding_level,
+		mark_binding_level);
+  ggc_add_root (&label_level_chain, 1, sizeof label_level_chain,
+		mark_binding_level);
+  ggc_add_tree_root (&static_ctors, 1);
+  ggc_add_tree_root (&static_dtors, 1);
+}

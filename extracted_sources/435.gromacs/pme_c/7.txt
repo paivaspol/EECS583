@@ -1,0 +1,18 @@
+void make_dft_mod(real *mod,real *data,int ndata)
+{
+  int i,j;
+  real sc,ss,arg;
+    
+  for(i=0;i<ndata;i++) {
+    sc=ss=0;
+    for(j=0;j<ndata;j++) {
+      arg=(2.0*M_PI*i*j)/ndata;
+      sc+=data[j]*cos(arg);
+      ss+=data[j]*sin(arg);
+    }
+    mod[i]=sc*sc+ss*ss;
+  }
+  for(i=0;i<ndata;i++)
+    if(mod[i]<1e-7)
+      mod[i]=(mod[i-1]+mod[i+1])*0.5;
+}

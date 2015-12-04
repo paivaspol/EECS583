@@ -1,0 +1,20 @@
+void
+add_insn_mem_dependence (deps, insn_list, mem_list, insn, mem)
+     struct deps *deps;
+     rtx *insn_list, *mem_list, insn, mem;
+{
+  rtx link;
+
+  link = alloc_INSN_LIST (insn, *insn_list);
+  *insn_list = link;
+
+  if (current_sched_info->use_cselib)
+    {
+      mem = shallow_copy_rtx (mem);
+      XEXP (mem, 0) = cselib_subst_to_values (XEXP (mem, 0));
+    }
+  link = alloc_EXPR_LIST (VOIDmode, mem, *mem_list);
+  *mem_list = link;
+
+  deps->pending_lists_length++;
+}

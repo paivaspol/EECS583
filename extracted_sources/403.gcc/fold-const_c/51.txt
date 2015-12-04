@@ -1,0 +1,93 @@
+static tree
+optimize_minmax_comparison (t)
+     tree t;
+{
+  tree type = TREE_TYPE (t);
+  tree arg0 = TREE_OPERAND (t, 0);
+  enum tree_code op_code;
+  tree comp_const = TREE_OPERAND (t, 1);
+  tree minmax_const;
+  int consts_equal, consts_lt;
+  tree inner;
+
+  STRIP_SIGN_NOPS (arg0);
+
+  op_code = TREE_CODE (arg0);
+  minmax_const = TREE_OPERAND (arg0, 1);
+  consts_equal = tree_int_cst_equal (minmax_const, comp_const);
+  consts_lt = tree_int_cst_lt (minmax_const, comp_const);
+  inner = TREE_OPERAND (arg0, 0);
+
+  /* If something does not permit us to optimize, return the original tree.  */
+  if ((op_code != MIN_EXPR && op_code != MAX_EXPR)
+      || TREE_CODE (comp_const) != INTEGER_CST
+      || TREE_CONSTANT_OVERFLOW (comp_const)
+      || TREE_CODE (minmax_const) != INTEGER_CST
+      || TREE_CONSTANT_OVERFLOW (minmax_const))
+    return t;
+
+  /* Now handle all the various comparison codes.  We only handle EQ_EXPR
+     and GT_EXPR, doing the rest with recursive calls using logical
+     simplifications.  */
+  switch (TREE_CODE (t))
+    {
+    case NE_EXPR:  case LT_EXPR:  case LE_EXPR:
+      return
+	invert_truthvalue (optimize_minmax_comparison (invert_truthvalue (t)));
+
+    case GE_EXPR:
+      return
+	fold (build (TRUTH_ORIF_EXPR, type,
+		     optimize_minmax_comparison
+		     (build (EQ_EXPR, type, arg0, comp_const)),
+		     optimize_minmax_comparison
+		     (build (GT_EXPR, type, arg0, comp_const))));
+
+    case EQ_EXPR:
+      if (op_code == MAX_EXPR && consts_equal)
+	/* MAX (X, 0) == 0  ->  X <= 0  */
+	return fold (build (LE_EXPR, type, inner, comp_const));
+
+      else if (op_code == MAX_EXPR && consts_lt)
+	/* MAX (X, 0) == 5  ->  X == 5   */
+	return fold (build (EQ_EXPR, type, inner, comp_const));
+
+      else if (op_code == MAX_EXPR)
+	/* MAX (X, 0) == -1  ->  false  */
+	return omit_one_operand (type, integer_zero_node, inner);
+
+      else if (consts_equal)
+	/* MIN (X, 0) == 0  ->  X >= 0  */
+	return fold (build (GE_EXPR, type, inner, comp_const));
+
+      else if (consts_lt)
+	/* MIN (X, 0) == 5  ->  false  */
+	return omit_one_operand (type, integer_zero_node, inner);
+
+      else
+	/* MIN (X, 0) == -1  ->  X == -1  */
+	return fold (build (EQ_EXPR, type, inner, comp_const));
+
+    case GT_EXPR:
+      if (op_code == MAX_EXPR && (consts_equal || consts_lt))
+	/* MAX (X, 0) > 0  ->  X > 0
+	   MAX (X, 0) > 5  ->  X > 5  */
+	return fold (build (GT_EXPR, type, inner, comp_const));
+
+      else if (op_code == MAX_EXPR)
+	/* MAX (X, 0) > -1  ->  true  */
+	return omit_one_operand (type, integer_one_node, inner);
+
+      else if (op_code == MIN_EXPR && (consts_equal || consts_lt))
+	/* MIN (X, 0) > 0  ->  false
+	   MIN (X, 0) > 5  ->  false  */
+	return omit_one_operand (type, integer_zero_node, inner);
+
+      else
+	/* MIN (X, 0) > -1  ->  X > -1  */
+	return fold (build (GT_EXPR, type, inner, comp_const));
+
+    default:
+      return t;
+    }
+}

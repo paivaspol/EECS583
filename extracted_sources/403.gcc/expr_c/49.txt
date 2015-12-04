@@ -1,0 +1,26 @@
+static void
+do_jump_by_parts_equality (exp, if_false_label, if_true_label)
+     tree exp;
+     rtx if_false_label, if_true_label;
+{
+  rtx op0 = expand_expr (TREE_OPERAND (exp, 0), NULL_RTX, VOIDmode, 0);
+  rtx op1 = expand_expr (TREE_OPERAND (exp, 1), NULL_RTX, VOIDmode, 0);
+  enum machine_mode mode = TYPE_MODE (TREE_TYPE (TREE_OPERAND (exp, 0)));
+  int nwords = (GET_MODE_SIZE (mode) / UNITS_PER_WORD);
+  int i;
+  rtx drop_through_label = 0;
+
+  if (! if_false_label)
+    drop_through_label = if_false_label = gen_label_rtx ();
+
+  for (i = 0; i < nwords; i++)
+    do_compare_rtx_and_jump (operand_subword_force (op0, i, mode),
+			     operand_subword_force (op1, i, mode),
+			     EQ, TREE_UNSIGNED (TREE_TYPE (exp)),
+			     word_mode, NULL_RTX, if_false_label, NULL_RTX);
+
+  if (if_true_label)
+    emit_jump (if_true_label);
+  if (drop_through_label)
+    emit_label (drop_through_label);
+}

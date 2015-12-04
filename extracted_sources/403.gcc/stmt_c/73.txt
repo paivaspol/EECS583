@@ -1,0 +1,46 @@
+static void
+expand_cleanups (list, dont_do, in_fixup, reachable)
+     tree list;
+     tree dont_do;
+     int in_fixup;
+     int reachable;
+{
+  tree tail;
+  for (tail = list; tail; tail = TREE_CHAIN (tail))
+    if (dont_do == 0 || TREE_PURPOSE (tail) != dont_do)
+      {
+	if (TREE_CODE (TREE_VALUE (tail)) == TREE_LIST)
+	  expand_cleanups (TREE_VALUE (tail), dont_do, in_fixup, reachable);
+	else
+	  {
+	    if (! in_fixup && using_eh_for_cleanups_p)
+	      expand_eh_region_end_cleanup (TREE_VALUE (tail));
+
+	    if (reachable && !CLEANUP_EH_ONLY (tail))
+	      {
+		/* Cleanups may be run multiple times.  For example,
+		   when exiting a binding contour, we expand the
+		   cleanups associated with that contour.  When a goto
+		   within that binding contour has a target outside that
+		   contour, it will expand all cleanups from its scope to
+		   the target.  Though the cleanups are expanded multiple
+		   times, the control paths are non-overlapping so the
+		   cleanups will not be executed twice.  */
+
+		/* We may need to protect from outer cleanups.  */
+		if (in_fixup && using_eh_for_cleanups_p)
+		  {
+		    expand_eh_region_start ();
+
+		    expand_expr (TREE_VALUE (tail), const0_rtx, VOIDmode, 0);
+
+		    expand_eh_region_end_fixup (TREE_VALUE (tail));
+		  }
+		else
+		  expand_expr (TREE_VALUE (tail), const0_rtx, VOIDmode, 0);
+
+		free_temp_slots ();
+	      }
+	  }
+      }
+}

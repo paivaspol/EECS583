@@ -1,0 +1,318 @@
+static int store_hash(pTHX_ stcxt_t *cxt, HV *hv)
+{
+	I32 len = 
+#ifdef HAS_RESTRICTED_HASHES
+            HvTOTALKEYS(hv);
+#else
+            HvKEYS(hv);
+#endif
+	I32 i;
+	int ret = 0;
+	I32 riter;
+	HE *eiter;
+        int flagged_hash = ((SvREADONLY(hv)
+#ifdef HAS_HASH_KEY_FLAGS
+                             || HvHASKFLAGS(hv)
+#endif
+                                ) ? 1 : 0);
+        unsigned char hash_flags = (SvREADONLY(hv) ? SHV_RESTRICTED : 0);
+
+        if (flagged_hash) {
+            /* needs int cast for C++ compilers, doesn't it?  */
+            TRACEME(("store_hash (0x%"UVxf") (flags %x)", PTR2UV(hv),
+                     (int) hash_flags));
+        } else {
+            TRACEME(("store_hash (0x%"UVxf")", PTR2UV(hv)));
+        }
+
+	/* 
+	 * Signal hash by emitting SX_HASH, followed by the table length.
+	 */
+
+        if (flagged_hash) {
+            PUTMARK(SX_FLAG_HASH);
+            PUTMARK(hash_flags);
+        } else {
+            PUTMARK(SX_HASH);
+        }
+	WLEN(len);
+	TRACEME(("size = %d", len));
+
+	/*
+	 * Save possible iteration state via each() on that table.
+	 */
+
+	riter = HvRITER(hv);
+	eiter = HvEITER(hv);
+	hv_iterinit(hv);
+
+	/*
+	 * Now store each item recursively.
+	 *
+     * If canonical is defined to some true value then store each
+     * key/value pair in sorted order otherwise the order is random.
+	 * Canonical order is irrelevant when a deep clone operation is performed.
+	 *
+	 * Fetch the value from perl only once per store() operation, and only
+	 * when needed.
+	 */
+
+	if (
+		!(cxt->optype & ST_CLONE) && (cxt->canonical == 1 ||
+		(cxt->canonical < 0 && (cxt->canonical =
+			(SvTRUE(get_sv("Storable::canonical", TRUE)) ? 1 : 0))))
+	) {
+		/*
+		 * Storing in order, sorted by key.
+		 * Run through the hash, building up an array of keys in a
+		 * mortal array, sort the array and then run through the
+		 * array.  
+		 */
+
+		AV *av = newAV();
+
+                /*av_extend (av, len);*/
+
+		TRACEME(("using canonical order"));
+
+		for (i = 0; i < len; i++) {
+#ifdef HAS_RESTRICTED_HASHES
+			HE *he = hv_iternext_flags(hv, HV_ITERNEXT_WANTPLACEHOLDERS);
+#else
+			HE *he = hv_iternext(hv);
+#endif
+			SV *key = hv_iterkeysv(he);
+			av_store(av, AvFILLp(av)+1, key);	/* av_push(), really */
+		}
+			
+		STORE_HASH_SORT;
+
+		for (i = 0; i < len; i++) {
+#ifdef HAS_RESTRICTED_HASHES
+			int placeholders = HvPLACEHOLDERS(hv);
+#endif
+                        unsigned char flags = 0;
+			char *keyval;
+			STRLEN keylen_tmp;
+                        I32 keylen;
+			SV *key = av_shift(av);
+			/* This will fail if key is a placeholder.
+			   Track how many placeholders we have, and error if we
+			   "see" too many.  */
+			HE *he  = hv_fetch_ent(hv, key, 0, 0);
+			SV *val;
+
+			if (he) {
+				if (!(val =  HeVAL(he))) {
+					/* Internal error, not I/O error */
+					return 1;
+				}
+			} else {
+#ifdef HAS_RESTRICTED_HASHES
+				/* Should be a placeholder.  */
+				if (placeholders-- < 0) {
+					/* This should not happen - number of
+					   retrieves should be identical to
+					   number of placeholders.  */
+			  		return 1;
+				}
+				/* Value is never needed, and PL_sv_undef is
+				   more space efficient to store.  */
+				val = &PL_sv_undef;
+				ASSERT (flags == 0,
+					("Flags not 0 but %d", flags));
+				flags = SHV_K_PLACEHOLDER;
+#else
+				return 1;
+#endif
+			}
+			
+			/*
+			 * Store value first.
+			 */
+			
+			TRACEME(("(#%d) value 0x%"UVxf, i, PTR2UV(val)));
+
+			if ((ret = store(aTHX_ cxt, val)))	/* Extra () for -Wall, grr... */
+				goto out;
+
+			/*
+			 * Write key string.
+			 * Keys are written after values to make sure retrieval
+			 * can be optimal in terms of memory usage, where keys are
+			 * read into a fixed unique buffer called kbuf.
+			 * See retrieve_hash() for details.
+			 */
+			 
+                        /* Implementation of restricted hashes isn't nicely
+                           abstracted:  */
+			if ((hash_flags & SHV_RESTRICTED) && SvREADONLY(val)) {
+				flags |= SHV_K_LOCKED;
+			}
+
+			keyval = SvPV(key, keylen_tmp);
+                        keylen = keylen_tmp;
+#ifdef HAS_UTF8_HASHES
+                        /* If you build without optimisation on pre 5.6
+                           then nothing spots that SvUTF8(key) is always 0,
+                           so the block isn't optimised away, at which point
+                           the linker dislikes the reference to
+                           bytes_from_utf8.  */
+			if (SvUTF8(key)) {
+                            const char *keysave = keyval;
+                            bool is_utf8 = TRUE;
+
+                            /* Just casting the &klen to (STRLEN) won't work
+                               well if STRLEN and I32 are of different widths.
+                               --jhi */
+                            keyval = (char*)bytes_from_utf8((U8*)keyval,
+                                                            &keylen_tmp,
+                                                            &is_utf8);
+
+                            /* If we were able to downgrade here, then than
+                               means that we have  a key which only had chars
+                               0-255, but was utf8 encoded.  */
+
+                            if (keyval != keysave) {
+                                keylen = keylen_tmp;
+                                flags |= SHV_K_WASUTF8;
+                            } else {
+                                /* keylen_tmp can't have changed, so no need
+                                   to assign back to keylen.  */
+                                flags |= SHV_K_UTF8;
+                            }
+                        }
+#endif
+
+                        if (flagged_hash) {
+                            PUTMARK(flags);
+                            TRACEME(("(#%d) key '%s' flags %x %u", i, keyval, flags, *keyval));
+                        } else {
+                            /* This is a workaround for a bug in 5.8.0
+                               that causes the HEK_WASUTF8 flag to be
+                               set on an HEK without the hash being
+                               marked as having key flags. We just
+                               cross our fingers and drop the flag.
+                               AMS 20030901 */
+                            assert (flags == 0 || flags == SHV_K_WASUTF8);
+                            TRACEME(("(#%d) key '%s'", i, keyval));
+                        }
+			WLEN(keylen);
+			if (keylen)
+				WRITE(keyval, keylen);
+                        if (flags & SHV_K_WASUTF8)
+                            Safefree (keyval);
+		}
+
+		/* 
+		 * Free up the temporary array
+		 */
+
+		av_undef(av);
+		sv_free((SV *) av);
+
+	} else {
+
+		/*
+		 * Storing in "random" order (in the order the keys are stored
+		 * within the hash).  This is the default and will be faster!
+		 */
+  
+		for (i = 0; i < len; i++) {
+			char *key;
+			I32 len;
+                        unsigned char flags;
+#ifdef HV_ITERNEXT_WANTPLACEHOLDERS
+                        HE *he = hv_iternext_flags(hv, HV_ITERNEXT_WANTPLACEHOLDERS);
+#else
+                        HE *he = hv_iternext(hv);
+#endif
+			SV *val = (he ? hv_iterval(hv, he) : 0);
+                        SV *key_sv = NULL;
+                        HEK *hek;
+
+			if (val == 0)
+				return 1;		/* Internal error, not I/O error */
+
+                        /* Implementation of restricted hashes isn't nicely
+                           abstracted:  */
+                        flags
+                            = (((hash_flags & SHV_RESTRICTED)
+                                && SvREADONLY(val))
+                                             ? SHV_K_LOCKED : 0);
+
+                        if (val == &PL_sv_placeholder) {
+                            flags |= SHV_K_PLACEHOLDER;
+			    val = &PL_sv_undef;
+			}
+
+			/*
+			 * Store value first.
+			 */
+
+			TRACEME(("(#%d) value 0x%"UVxf, i, PTR2UV(val)));
+
+			if ((ret = store(aTHX_ cxt, val)))	/* Extra () for -Wall, grr... */
+				goto out;
+
+
+                        hek = HeKEY_hek(he);
+                        len = HEK_LEN(hek);
+                        if (len == HEf_SVKEY) {
+                            /* This is somewhat sick, but the internal APIs are
+                             * such that XS code could put one of these in in
+                             * a regular hash.
+                             * Maybe we should be capable of storing one if
+                             * found.
+                             */
+                            key_sv = HeKEY_sv(he);
+                            flags |= SHV_K_ISSV;
+                        } else {
+                            /* Regular string key. */
+#ifdef HAS_HASH_KEY_FLAGS
+                            if (HEK_UTF8(hek))
+                                flags |= SHV_K_UTF8;
+                            if (HEK_WASUTF8(hek))
+                                flags |= SHV_K_WASUTF8;
+#endif
+                            key = HEK_KEY(hek);
+                        }
+			/*
+			 * Write key string.
+			 * Keys are written after values to make sure retrieval
+			 * can be optimal in terms of memory usage, where keys are
+			 * read into a fixed unique buffer called kbuf.
+			 * See retrieve_hash() for details.
+			 */
+
+                        if (flagged_hash) {
+                            PUTMARK(flags);
+                            TRACEME(("(#%d) key '%s' flags %x", i, key, flags));
+                        } else {
+                            /* This is a workaround for a bug in 5.8.0
+                               that causes the HEK_WASUTF8 flag to be
+                               set on an HEK without the hash being
+                               marked as having key flags. We just
+                               cross our fingers and drop the flag.
+                               AMS 20030901 */
+                            assert (flags == 0 || flags == SHV_K_WASUTF8);
+                            TRACEME(("(#%d) key '%s'", i, key));
+                        }
+                        if (flags & SHV_K_ISSV) {
+                            store(aTHX_ cxt, key_sv);
+                        } else {
+                            WLEN(len);
+                            if (len)
+				WRITE(key, len);
+                        }
+		}
+    }
+
+	TRACEME(("ok (hash 0x%"UVxf")", PTR2UV(hv)));
+
+out:
+	HvRITER(hv) = riter;		/* Restore hash iterator state */
+	HvEITER(hv) = eiter;
+
+	return ret;
+}

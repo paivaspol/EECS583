@@ -1,0 +1,19 @@
+static void
+record_effective_endpoints ()
+{
+  rtx next_insn = get_insns ();
+  int i;
+  
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      rtx end;
+
+      RBI (bb)->eff_head = next_insn;
+      end = skip_insns_after_block (bb);
+      RBI (bb)->eff_end = end;
+      next_insn = NEXT_INSN (end);
+    }
+
+  function_tail_eff_head = next_insn;
+}

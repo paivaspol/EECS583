@@ -1,0 +1,29 @@
+static void
+verify_wide_reg (regno, bb)
+     int regno;
+     basic_block bb;
+{
+  rtx head = bb->head, end = bb->end;
+
+  while (1)
+    {
+      if (INSN_P (head))
+	{
+	  int r = for_each_rtx (&PATTERN (head), verify_wide_reg_1, &regno);
+	  if (r == 1)
+	    return;
+	  if (r == 2)
+	    break;
+	}
+      if (head == end)
+	break;
+      head = NEXT_INSN (head);
+    }
+
+  if (rtl_dump_file)
+    {
+      fprintf (rtl_dump_file, "Register %d died unexpectedly.\n", regno);
+      dump_bb (bb, rtl_dump_file);
+    }
+  abort ();
+}

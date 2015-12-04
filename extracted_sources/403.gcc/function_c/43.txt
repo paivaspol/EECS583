@@ -1,0 +1,30 @@
+static int
+insns_for_mem_walk (r, data)
+     rtx *r;
+     void *data;
+{
+  struct insns_for_mem_walk_info *ifmwi
+    = (struct insns_for_mem_walk_info *) data;
+
+  if (ifmwi->pass == 0 && *r && GET_CODE (*r) == ADDRESSOF
+      && GET_CODE (XEXP (*r, 0)) == REG)
+    hash_lookup (ifmwi->ht, XEXP (*r, 0), /*create=*/1, /*copy=*/0);
+  else if (ifmwi->pass == 1 && *r && GET_CODE (*r) == REG)
+    {
+      /* Lookup this MEM in the hashtable, creating it if necessary.  */
+      struct insns_for_mem_entry *ifme
+	= (struct insns_for_mem_entry *) hash_lookup (ifmwi->ht,
+						      *r,
+						      /*create=*/0,
+						      /*copy=*/0);
+
+      /* If we have not already recorded this INSN, do so now.  Since
+	 we process the INSNs in order, we know that if we have
+	 recorded it it must be at the front of the list.  */
+      if (ifme && (!ifme->insns || XEXP (ifme->insns, 0) != ifmwi->insn))
+	ifme->insns = gen_rtx_EXPR_LIST (VOIDmode, ifmwi->insn,
+					 ifme->insns);
+    }
+
+  return 0;
+}

@@ -1,0 +1,140 @@
+static void
+check_final_value (loop, v)
+     const struct loop *loop;
+     struct induction *v;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct iv_class *bl;
+  rtx final_value = 0;
+
+  bl = REG_IV_CLASS (ivs, REGNO (v->src_reg));
+
+  /* DEST_ADDR givs will never reach here, because they are always marked
+     replaceable above in record_giv.  */
+
+  /* The giv can be replaced outright by the reduced register only if all
+     of the following conditions are true:
+     - the insn that sets the giv is always executed on any iteration
+       on which the giv is used at all
+       (there are two ways to deduce this:
+        either the insn is executed on every iteration,
+        or all uses follow that insn in the same basic block),
+     - its final value can be calculated (this condition is different
+       than the one above in record_giv)
+     - it's not used before the it's set
+     - no assignments to the biv occur during the giv's lifetime.  */
+
+#if 0
+  /* This is only called now when replaceable is known to be false.  */
+  /* Clear replaceable, so that it won't confuse final_giv_value.  */
+  v->replaceable = 0;
+#endif
+
+  if ((final_value = final_giv_value (loop, v))
+      && (v->always_executed || last_use_this_basic_block (v->dest_reg, v->insn)))
+    {
+      int biv_increment_seen = 0, before_giv_insn = 0;
+      rtx p = v->insn;
+      rtx last_giv_use;
+
+      v->replaceable = 1;
+
+      /* When trying to determine whether or not a biv increment occurs
+	 during the lifetime of the giv, we can ignore uses of the variable
+	 outside the loop because final_value is true.  Hence we can not
+	 use regno_last_uid and regno_first_uid as above in record_giv.  */
+
+      /* Search the loop to determine whether any assignments to the
+	 biv occur during the giv's lifetime.  Start with the insn
+	 that sets the giv, and search around the loop until we come
+	 back to that insn again.
+
+	 Also fail if there is a jump within the giv's lifetime that jumps
+	 to somewhere outside the lifetime but still within the loop.  This
+	 catches spaghetti code where the execution order is not linear, and
+	 hence the above test fails.  Here we assume that the giv lifetime
+	 does not extend from one iteration of the loop to the next, so as
+	 to make the test easier.  Since the lifetime isn't known yet,
+	 this requires two loops.  See also record_giv above.  */
+
+      last_giv_use = v->insn;
+
+      while (1)
+	{
+	  p = NEXT_INSN (p);
+	  if (p == loop->end)
+	    {
+	      before_giv_insn = 1;
+	      p = NEXT_INSN (loop->start);
+	    }
+	  if (p == v->insn)
+	    break;
+
+	  if (GET_CODE (p) == INSN || GET_CODE (p) == JUMP_INSN
+	      || GET_CODE (p) == CALL_INSN)
+	    {
+	      /* It is possible for the BIV increment to use the GIV if we
+		 have a cycle.  Thus we must be sure to check each insn for
+		 both BIV and GIV uses, and we must check for BIV uses
+		 first.  */
+
+	      if (! biv_increment_seen
+		  && reg_set_p (v->src_reg, PATTERN (p)))
+		biv_increment_seen = 1;
+
+	      if (reg_mentioned_p (v->dest_reg, PATTERN (p)))
+		{
+		  if (biv_increment_seen || before_giv_insn)
+		    {
+		      v->replaceable = 0;
+		      v->not_replaceable = 1;
+		      break;
+		    }
+		  last_giv_use = p;
+		}
+	    }
+	}
+
+      /* Now that the lifetime of the giv is known, check for branches
+	 from within the lifetime to outside the lifetime if it is still
+	 replaceable.  */
+
+      if (v->replaceable)
+	{
+	  p = v->insn;
+	  while (1)
+	    {
+	      p = NEXT_INSN (p);
+	      if (p == loop->end)
+		p = NEXT_INSN (loop->start);
+	      if (p == last_giv_use)
+		break;
+
+	      if (GET_CODE (p) == JUMP_INSN && JUMP_LABEL (p)
+		  && LABEL_NAME (JUMP_LABEL (p))
+		  && ((loop_insn_first_p (JUMP_LABEL (p), v->insn)
+		       && loop_insn_first_p (loop->start, JUMP_LABEL (p)))
+		      || (loop_insn_first_p (last_giv_use, JUMP_LABEL (p))
+			  && loop_insn_first_p (JUMP_LABEL (p), loop->end))))
+		{
+		  v->replaceable = 0;
+		  v->not_replaceable = 1;
+
+		  if (loop_dump_stream)
+		    fprintf (loop_dump_stream,
+			     "Found branch outside giv lifetime.\n");
+
+		  break;
+		}
+	    }
+	}
+
+      /* If it is replaceable, then save the final value.  */
+      if (v->replaceable)
+	v->final_value = final_value;
+    }
+
+  if (loop_dump_stream && v->replaceable)
+    fprintf (loop_dump_stream, "Insn %d: giv reg %d final_value replaceable\n",
+	     INSN_UID (v->insn), REGNO (v->dest_reg));
+}

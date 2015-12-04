@@ -1,0 +1,25 @@
+void
+remove_note (insn, note)
+     rtx insn;
+     rtx note;
+{
+  rtx link;
+
+  if (note == NULL_RTX)
+    return;
+
+  if (REG_NOTES (insn) == note)
+    {
+      REG_NOTES (insn) = XEXP (note, 1);
+      return;
+    }
+
+  for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+    if (XEXP (link, 1) == note)
+      {
+	XEXP (link, 1) = XEXP (note, 1);
+	return;
+      }
+
+  abort ();
+}

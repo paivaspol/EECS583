@@ -1,0 +1,32 @@
+void plot_qtab(char *fn,int nx,int ny,int nz,real ***qtab)
+{
+  rvec box;
+  rvec *xx;
+  real *phi;
+  int  i,npt,ix,iy,iz;
+  
+  box[XX]=nx;
+  box[YY]=ny;
+  box[ZZ]=nz;
+
+  npt=(box[XX]*box[YY]*box[ZZ]);
+  snew(xx,npt);
+  snew(phi,npt);
+  nx/=2;
+  ny/=2;
+  nz/=2;
+  i=0;
+  for(ix=-nx; (ix<nx); ix++)
+    for(iy=-ny; (iy<ny); iy++)
+      for(iz=-nz; (iz<nz); iz++,i++) {
+	xx[i][XX]=ix+nx+0.5;
+	xx[i][YY]=iy+ny+0.5;
+	xx[i][ZZ]=iz+nz+0.5; /* onzin */
+	phi[i]=qtab[ix+nx][iy+ny][iz+nz];
+      }
+  
+  plot_phi(fn,box,npt,xx,phi);
+  
+  sfree(xx);
+  sfree(phi);
+}

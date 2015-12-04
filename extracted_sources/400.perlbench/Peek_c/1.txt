@@ -1,0 +1,13 @@
+void
+fill_mstats(SV *sv, int level)
+{
+    dTHX;
+
+    if (SvREADONLY(sv))
+	croak("Cannot modify a readonly value");
+    SvGROW(sv, sizeof(struct mstats_buffer)+1);
+    _fill_mstats((struct mstats_buffer*)SvPVX(sv),level);
+    SvCUR_set(sv, sizeof(struct mstats_buffer));
+    *SvEND(sv) = '\0';
+    SvPOK_only(sv);
+}

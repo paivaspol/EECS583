@@ -1,0 +1,57 @@
+static void
+forget_old_reloads_1 (x, ignored, data)
+     rtx x;
+     rtx ignored ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  unsigned int regno;
+  unsigned int nr;
+  int offset = 0;
+
+  /* note_stores does give us subregs of hard regs,
+     subreg_regno_offset will abort if it is not a hard reg.  */
+  while (GET_CODE (x) == SUBREG)
+    {
+      offset += subreg_regno_offset (REGNO (SUBREG_REG (x)),
+				     GET_MODE (SUBREG_REG (x)),
+				     SUBREG_BYTE (x),
+				     GET_MODE (x));
+      x = SUBREG_REG (x);
+    }
+
+  if (GET_CODE (x) != REG)
+    return;
+
+  regno = REGNO (x) + offset;
+
+  if (regno >= FIRST_PSEUDO_REGISTER)
+    nr = 1;
+  else
+    {
+      unsigned int i;
+
+      nr = HARD_REGNO_NREGS (regno, GET_MODE (x));
+      /* Storing into a spilled-reg invalidates its contents.
+	 This can happen if a block-local pseudo is allocated to that reg
+	 and it wasn't spilled because this block's total need is 0.
+	 Then some insn might have an optional reload and use this reg.  */
+      for (i = 0; i < nr; i++)
+	/* But don't do this if the reg actually serves as an output
+	   reload reg in the current instruction.  */
+	if (n_reloads == 0
+	    || ! TEST_HARD_REG_BIT (reg_is_output_reload, regno + i))
+	  {
+	    CLEAR_HARD_REG_BIT (reg_reloaded_valid, regno + i);
+	    spill_reg_store[regno + i] = 0;
+	  }
+    }
+
+  /* Since value of X has changed,
+     forget any value previously copied from it.  */
+
+  while (nr-- > 0)
+    /* But don't forget a copy if this is the output reload
+       that establishes the copy's validity.  */
+    if (n_reloads == 0 || reg_has_output_reload[regno + nr] == 0)
+      reg_last_reload_reg[regno + nr] = 0;
+}

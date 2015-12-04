@@ -1,0 +1,42 @@
+int
+df_analyse (df, blocks, flags)
+     struct df *df;
+     bitmap blocks;
+     int flags;
+{
+  int update;
+
+  /* We could deal with additional basic blocks being created by
+     rescanning everything again.  */
+  if (df->n_bbs && df->n_bbs != (unsigned int)n_basic_blocks)
+    abort ();
+
+  update = df_modified_p (df, blocks);
+  if (update || (flags != df->flags))
+    {
+      if (! blocks)
+	{
+	  if (df->n_bbs)
+	    {
+	      /* Recompute everything from scratch.  */
+	      df_free (df);
+	    }
+	  /* Allocate and initialise data structures.  */
+	  df_alloc (df, max_reg_num ());
+	  df_analyse_1 (df, 0, flags, 0);
+	  update = 1;
+	}
+      else
+	{
+	  if (blocks == (bitmap) -1)
+	    blocks = df->bbs_modified;
+
+	  if (! df->n_bbs)
+	    abort ();
+
+	  df_analyse_1 (df, blocks, flags, 1);
+	  bitmap_zero (df->bbs_modified);
+	}
+    }
+  return update;
+}

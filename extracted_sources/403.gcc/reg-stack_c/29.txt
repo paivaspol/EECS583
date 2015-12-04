@@ -1,0 +1,34 @@
+static int
+convert_regs_2 (file, block)
+     FILE *file;
+     basic_block block;
+{
+  basic_block *stack, *sp;
+  int inserted;
+
+  stack = (basic_block *) xmalloc (sizeof (*stack) * n_basic_blocks);
+  sp = stack;
+
+  *sp++ = block;
+
+  inserted = 0;
+  do
+    {
+      edge e;
+
+      block = *--sp;
+      inserted |= convert_regs_1 (file, block);
+      BLOCK_INFO (block)->done = 1;
+
+      for (e = block->succ; e ; e = e->succ_next)
+	if (! (e->flags & EDGE_DFS_BACK))
+	  {
+	    BLOCK_INFO (e->dest)->predecessors--;
+	    if (!BLOCK_INFO (e->dest)->predecessors)
+	       *sp++ = e->dest;
+	  }
+    }
+  while (sp != stack);
+
+  return inserted;
+}

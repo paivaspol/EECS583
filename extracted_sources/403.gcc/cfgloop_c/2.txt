@@ -1,0 +1,44 @@
+void
+flow_loop_dump (loop, file, loop_dump_aux, verbose)
+     const struct loop *loop;
+     FILE *file;
+     void (*loop_dump_aux) PARAMS((const struct loop *, FILE *, int));
+     int verbose;
+{
+  if (! loop || ! loop->header)
+    return;
+
+  if (loop->first->head && loop->last->end)
+    fprintf (file, ";;\n;; Loop %d (%d to %d):%s%s\n",
+	    loop->num, INSN_UID (loop->first->head),
+	    INSN_UID (loop->last->end),
+	    loop->shared ? " shared" : "", loop->invalid ? " invalid" : "");
+  else
+    fprintf (file, ";;\n;; Loop %d:%s%s\n", loop->num,
+	     loop->shared ? " shared" : "", loop->invalid ? " invalid" : "");
+
+  fprintf (file, ";;  header %d, latch %d, pre-header %d, first %d, last %d\n",
+	   loop->header->index, loop->latch->index,
+	   loop->pre_header ? loop->pre_header->index : -1,
+	   loop->first->index, loop->last->index);
+  fprintf (file, ";;  depth %d, level %d, outer %ld\n",
+	   loop->depth, loop->level,
+	   (long) (loop->outer ? loop->outer->num : -1));
+
+  if (loop->pre_header_edges)
+    flow_edge_list_print (";;  pre-header edges", loop->pre_header_edges,
+			  loop->num_pre_header_edges, file);
+
+  flow_edge_list_print (";;  entry edges", loop->entry_edges,
+			loop->num_entries, file);
+  fprintf (file, ";;  %d", loop->num_nodes);
+  flow_nodes_print (" nodes", loop->nodes, file);
+  flow_edge_list_print (";;  exit edges", loop->exit_edges,
+			loop->num_exits, file);
+
+  if (loop->exits_doms)
+    flow_nodes_print (";;  exit doms", loop->exits_doms, file);
+
+  if (loop_dump_aux)
+    loop_dump_aux (loop, file, verbose);
+}

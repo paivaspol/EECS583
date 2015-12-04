@@ -1,0 +1,60 @@
+void
+restore_line_notes (head, tail)
+     rtx head, tail;
+{
+  rtx line, note, prev, new;
+  int added_notes = 0;
+  rtx next_tail, insn;
+
+  head = head;
+  next_tail = NEXT_INSN (tail);
+
+  /* Determine the current line-number.  We want to know the current
+     line number of the first insn of the block here, in case it is
+     different from the true line number that was saved earlier.  If
+     different, then we need a line number note before the first insn
+     of this block.  If it happens to be the same, then we don't want to
+     emit another line number note here.  */
+  for (line = head; line; line = PREV_INSN (line))
+    if (GET_CODE (line) == NOTE && NOTE_LINE_NUMBER (line) > 0)
+      break;
+
+  /* Walk the insns keeping track of the current line-number and inserting
+     the line-number notes as needed.  */
+  for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == NOTE && NOTE_LINE_NUMBER (insn) > 0)
+      line = insn;
+  /* This used to emit line number notes before every non-deleted note.
+     However, this confuses a debugger, because line notes not separated
+     by real instructions all end up at the same address.  I can find no
+     use for line number notes before other notes, so none are emitted.  */
+    else if (GET_CODE (insn) != NOTE
+	     && INSN_UID (insn) < old_max_uid
+	     && (note = LINE_NOTE (insn)) != 0
+	     && note != line
+	     && (line == 0
+		 || NOTE_LINE_NUMBER (note) != NOTE_LINE_NUMBER (line)
+		 || NOTE_SOURCE_FILE (note) != NOTE_SOURCE_FILE (line)))
+      {
+	line = note;
+	prev = PREV_INSN (insn);
+	if (LINE_NOTE (note))
+	  {
+	    /* Re-use the original line-number note.  */
+	    LINE_NOTE (note) = 0;
+	    PREV_INSN (note) = prev;
+	    NEXT_INSN (prev) = note;
+	    PREV_INSN (insn) = note;
+	    NEXT_INSN (note) = insn;
+	  }
+	else
+	  {
+	    added_notes++;
+	    new = emit_note_after (NOTE_LINE_NUMBER (note), prev);
+	    NOTE_SOURCE_FILE (new) = NOTE_SOURCE_FILE (note);
+	    RTX_INTEGRATED_P (new) = RTX_INTEGRATED_P (note);
+	  }
+      }
+  if (sched_verbose && added_notes)
+    fprintf (sched_dump, ";; added %d line-number notes\n", added_notes);
+}

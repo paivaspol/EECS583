@@ -1,0 +1,21 @@
+int
+insn_dependent_p (x, y)
+     rtx x, y;
+{
+  rtx tmp;
+
+  if (! INSN_P (x) || ! INSN_P (y))
+    abort ();
+
+  tmp = PATTERN (y);
+  note_stores (PATTERN (x), insn_dependent_p_1, &tmp);
+  if (tmp == NULL_RTX)
+    return 1;
+
+  tmp = PATTERN (x);
+  note_stores (PATTERN (y), insn_dependent_p_1, &tmp);
+  if (tmp == NULL_RTX)
+    return 1;
+
+  return 0;
+}

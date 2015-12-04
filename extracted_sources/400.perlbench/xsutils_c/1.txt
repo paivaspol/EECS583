@@ -1,0 +1,98 @@
+static int
+modify_SV_attributes(pTHX_ SV *sv, SV **retlist, SV **attrlist, int numattrs)
+{
+    SV *attr;
+    char *name;
+    STRLEN len;
+    bool negated;
+    int nret;
+
+    for (nret = 0 ; numattrs && (attr = *attrlist++); numattrs--) {
+	name = SvPV(attr, len);
+	if ((negated = (*name == '-'))) {
+	    name++;
+	    len--;
+	}
+	switch (SvTYPE(sv)) {
+	case SVt_PVCV:
+	    switch ((int)len) {
+#ifdef CVf_ASSERTION
+	    case 9:
+		if (memEQ(name, "assertion", 9)) {
+		    if (negated)
+			CvFLAGS((CV*)sv) &= ~CVf_ASSERTION;
+		    else
+			CvFLAGS((CV*)sv) |= CVf_ASSERTION;
+		    continue;
+		}
+		break;
+#endif
+	    case 6:
+		switch (name[3]) {
+		case 'l':
+#ifdef CVf_LVALUE
+		    if (memEQ(name, "lvalue", 6)) {
+			if (negated)
+			    CvFLAGS((CV*)sv) &= ~CVf_LVALUE;
+			else
+			    CvFLAGS((CV*)sv) |= CVf_LVALUE;
+			continue;
+		    }
+		    break;
+		case 'k':
+#endif /* defined CVf_LVALUE */
+		    if (memEQ(name, "locked", 6)) {
+			if (negated)
+			    CvFLAGS((CV*)sv) &= ~CVf_LOCKED;
+			else
+			    CvFLAGS((CV*)sv) |= CVf_LOCKED;
+			continue;
+		    }
+		    break;
+		case 'h':
+		    if (memEQ(name, "method", 6)) {
+			if (negated)
+			    CvFLAGS((CV*)sv) &= ~CVf_METHOD;
+			else
+			    CvFLAGS((CV*)sv) |= CVf_METHOD;
+			continue;
+		    }
+		    break;
+		}
+		break;
+	    }
+	    break;
+	default:
+	    switch ((int)len) {
+	    case 6:
+		switch (name[5]) {
+		case 'd':
+		    if (memEQ(name, "share", 5)) {
+			if (negated)
+			    Perl_croak(aTHX_ "A variable may not be unshared");
+			SvSHARE(sv);
+                        continue;
+                    }
+		    break;
+		case 'e':
+		    if (memEQ(name, "uniqu", 5)) {
+			if (SvTYPE(sv) == SVt_PVGV) {
+			    if (negated)
+				GvUNIQUE_off(sv);
+			    else
+				GvUNIQUE_on(sv);
+			}
+			/* Hope this came from toke.c if not a GV. */
+                        continue;
+                    }
+                }
+            }
+	    break;
+	}
+	/* anything recognized had a 'continue' above */
+	*retlist++ = attr;
+	nret++;
+    }
+
+    return nret;
+}

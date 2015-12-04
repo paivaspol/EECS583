@@ -1,0 +1,17 @@
+void
+quantum_sigma_z(int target, quantum_reg *reg)
+{
+  int i;
+
+  if(quantum_objcode_put(SIGMA_Z, target))
+    return;
+
+  for(i=0; i<reg->size; i++)
+    {
+      /* Multiply with -1 if the target bit is set */
+
+      if(reg->node[i].state & ((MAX_UNSIGNED) 1 << target))
+	reg->node[i].amplitude *= -1;
+    }
+  quantum_decohere(reg);
+}

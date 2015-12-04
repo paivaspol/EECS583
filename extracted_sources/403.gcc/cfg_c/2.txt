@@ -1,0 +1,38 @@
+void
+clear_edges ()
+{
+  int i;
+  edge e;
+
+  for (i = 0; i < n_basic_blocks; ++i)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      edge e = bb->succ;
+
+      while (e)
+	{
+	  edge next = e->succ_next;
+
+	  free_edge (e);
+	  e = next;
+	}
+
+      bb->succ = NULL;
+      bb->pred = NULL;
+    }
+
+  e = ENTRY_BLOCK_PTR->succ;
+  while (e)
+    {
+      edge next = e->succ_next;
+
+      free_edge (e);
+      e = next;
+    }
+
+  EXIT_BLOCK_PTR->pred = NULL;
+  ENTRY_BLOCK_PTR->succ = NULL;
+
+  if (n_edges)
+    abort ();
+}

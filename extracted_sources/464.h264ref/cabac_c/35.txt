@@ -1,0 +1,32 @@
+void unary_exp_golomb_mv_encode(EncodingEnvironmentPtr eep_dp,
+                                unsigned int symbol,
+                                BiContextTypePtr ctx,
+                                unsigned int max_bin)
+{
+  unsigned int l,k;
+  unsigned int bin=1;
+  BiContextTypePtr ictx=ctx;
+  unsigned int exp_start = 8; // 9-1 : 0 mvd decision always sent
+
+  if (symbol==0)
+  {
+    biari_encode_symbol(eep_dp, 0, ictx );
+    return;
+  }
+  else
+  {
+    biari_encode_symbol(eep_dp, 1, ictx );
+    l=symbol;
+    k=1;
+    ictx++;
+    while (((--l)>0) && (++k <= exp_start))
+    {
+      biari_encode_symbol(eep_dp, 1, ictx  );
+      if ((++bin)==2) ictx++;
+      if (bin==max_bin) ictx++;
+    }
+    if (symbol < exp_start) biari_encode_symbol(eep_dp, 0, ictx);
+    else exp_golomb_encode_eq_prob(eep_dp,symbol-exp_start,3);
+  }
+  return;
+}

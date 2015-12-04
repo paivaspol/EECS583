@@ -1,0 +1,52 @@
+static int
+is_cfg_nonregular ()
+{
+  int b;
+  rtx insn;
+  RTX_CODE code;
+
+  /* If we have a label that could be the target of a nonlocal goto, then
+     the cfg is not well structured.  */
+  if (nonlocal_goto_handler_labels)
+    return 1;
+
+  /* If we have any forced labels, then the cfg is not well structured.  */
+  if (forced_labels)
+    return 1;
+
+  /* If this function has a computed jump, then we consider the cfg
+     not well structured.  */
+  if (current_function_has_computed_jump)
+    return 1;
+
+  /* If we have exception handlers, then we consider the cfg not well
+     structured.  ?!?  We should be able to handle this now that flow.c
+     computes an accurate cfg for EH.  */
+  if (current_function_has_exception_handlers ())
+    return 1;
+
+  /* If we have non-jumping insns which refer to labels, then we consider
+     the cfg not well structured.  */
+  /* Check for labels referred to other thn by jumps.  */
+  for (b = 0; b < n_basic_blocks; b++)
+    for (insn = BLOCK_HEAD (b);; insn = NEXT_INSN (insn))
+      {
+	code = GET_CODE (insn);
+	if (GET_RTX_CLASS (code) == 'i' && code != JUMP_INSN)
+	  {
+	    rtx note = find_reg_note (insn, REG_LABEL, NULL_RTX);
+
+	    if (note
+		&& ! (GET_CODE (NEXT_INSN (insn)) == JUMP_INSN
+		      && find_reg_note (NEXT_INSN (insn), REG_LABEL,
+					XEXP (note, 0))))
+	      return 1;
+	  }
+
+	if (insn == BLOCK_END (b))
+	  break;
+      }
+
+  /* All the tests passed.  Consider the cfg well structured.  */
+  return 0;
+}

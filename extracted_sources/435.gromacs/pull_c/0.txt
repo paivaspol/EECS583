@@ -1,0 +1,20 @@
+static bool check_convergence(t_pull *pull) {
+  bool bTest = TRUE;
+  real tol;
+  int i,m;
+  rvec tmp1;
+  rvec dr; /* distance between target and current position */
+
+  tol = pull->tolerance;
+
+  for (i=0;i<pull->pull.n;i++) {
+    rvec_sub(pull->ref.x_unc[0],pull->pull.x_unc[i],tmp1);
+    rvec_add(pull->pull.xtarget[i],tmp1,dr);
+    /* multiply by pull->dims to pick the elements we want */
+    for(m=0;m<DIM;m++) 
+      dr[m] = pull->dims[m]*dr[m];
+    bTest = bTest && (norm(dr) < tol);
+  }
+  
+  return bTest;
+}

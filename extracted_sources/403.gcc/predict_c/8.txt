@@ -1,0 +1,95 @@
+static void
+combine_predictions_for_insn (insn, bb)
+     rtx insn;
+     basic_block bb;
+{
+  rtx prob_note = find_reg_note (insn, REG_BR_PROB, 0);
+  rtx *pnote = &REG_NOTES (insn);
+  rtx note;
+  int best_probability = PROB_EVEN;
+  int best_predictor = END_PREDICTORS;
+  int combined_probability = REG_BR_PROB_BASE / 2;
+  int d;
+  bool first_match = false;
+  bool found = false;
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Predictions for insn %i bb %i\n", INSN_UID (insn),
+	     bb->index);
+
+  /* We implement "first match" heuristics and use probability guessed
+     by predictor with smallest index.  In the future we will use better
+     probability combination techniques.  */
+  for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
+    if (REG_NOTE_KIND (note) == REG_BR_PRED)
+      {
+	int predictor = INTVAL (XEXP (XEXP (note, 0), 0));
+	int probability = INTVAL (XEXP (XEXP (note, 0), 1));
+
+	found = true;
+	if (best_predictor > predictor)
+	  best_probability = probability, best_predictor = predictor;
+
+	d = (combined_probability * probability
+	     + (REG_BR_PROB_BASE - combined_probability)
+	     * (REG_BR_PROB_BASE - probability));
+
+	/* Use FP math to avoid overflows of 32bit integers.  */
+	if (d == 0)
+	  /* If one probability is 0% and one 100%, avoid division by zero.  */
+	  combined_probability = REG_BR_PROB_BASE / 2;
+	else
+	  combined_probability = (((double) combined_probability) * probability
+				  * REG_BR_PROB_BASE / d + 0.5);
+      }
+
+  /* Decide which heuristic to use.  In case we didn't match anything,
+     use no_prediction heuristic, in case we did match, use either
+     first match or Dempster-Shaffer theory depending on the flags.  */
+
+  if (predictor_info [best_predictor].flags & PRED_FLAG_FIRST_MATCH)
+    first_match = true;
+
+  if (!found)
+    dump_prediction (PRED_NO_PREDICTION, combined_probability, bb, true);
+  else
+    {
+      dump_prediction (PRED_DS_THEORY, combined_probability, bb, !first_match);
+      dump_prediction (PRED_FIRST_MATCH, best_probability, bb, first_match);
+    }
+
+  if (first_match)
+    combined_probability = best_probability;
+  dump_prediction (PRED_COMBINED, combined_probability, bb, true);
+
+  while (*pnote)
+    {
+      if (REG_NOTE_KIND (*pnote) == REG_BR_PRED)
+	{
+	  int predictor = INTVAL (XEXP (XEXP (*pnote, 0), 0));
+	  int probability = INTVAL (XEXP (XEXP (*pnote, 0), 1));
+
+	  dump_prediction (predictor, probability, bb,
+			   !first_match || best_predictor == predictor);
+          *pnote = XEXP (*pnote, 1);
+	}
+      else
+        pnote = &XEXP (*pnote, 1);
+    }
+
+  if (!prob_note)
+    {
+      REG_NOTES (insn)
+	= gen_rtx_EXPR_LIST (REG_BR_PROB,
+			     GEN_INT (combined_probability), REG_NOTES (insn));
+
+      /* Save the prediction into CFG in case we are seeing non-degenerated
+	 conditional jump.  */
+      if (bb->succ->succ_next)
+	{
+	  BRANCH_EDGE (bb)->probability = combined_probability;
+	  FALLTHRU_EDGE (bb)->probability
+	    = REG_BR_PROB_BASE - combined_probability;
+	}
+    }
+}

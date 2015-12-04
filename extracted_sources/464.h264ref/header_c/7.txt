@@ -1,0 +1,30 @@
+int Partition_BC_Header(int PartNo)
+{
+  DataPartition *partition = &((img->currentSlice)->partArr[PartNo]);
+  SyntaxElement symbol, *sym = &symbol;
+
+  int len = 0;
+
+  assert (input->of_mode == PAR_OF_RTP);
+  assert (PartNo > 0 && PartNo < img->currentSlice->max_part_nr);
+
+  sym->type = SE_HEADER;         // This will be true for all symbols generated here
+  sym->mapping = ue_linfo;       // Mapping rule: Simple code number to len/info
+  sym->value2  = 0;
+
+  //ZL 
+  //changed according to the g050r1
+  SYMTRACESTRING("RTP-PH: Slice ID");
+  sym->value1 = img->current_slice_nr;
+  len += writeSyntaxElement_UVLC (sym, partition);
+
+  if(active_pps->redundant_pic_cnt_present_flag)
+  {
+  SYMTRACESTRING("RTP-PH: Picture ID");
+  sym->value1 = img->currentSlice->picture_id;
+  len += writeSyntaxElement_UVLC (sym, partition);
+  }
+
+
+  return len;
+}

@@ -1,0 +1,39 @@
+void correct_t0_pbc(t_pull *pull, rvec x[], t_mdatoms *md, matrix box) {
+  int i,ii,j,m;
+  real tm;
+  rvec com,dx;
+
+  /* loop over all atoms in index for group i. Check if they moved
+     more than half a box with respect to xp. If so add/subtract a box 
+     from x0. Copy x to xp.
+   */
+  for (i=0;i<pull->ref.ngx[0];i++) {
+    ii = pull->ref.idx[0][i];
+    
+    /* correct for jumps across the box */
+    rvec_sub(x[ii],pull->ref.xp[0][i],dx);
+    for (m=DIM-1; m>=0; m--) {
+      if (dx[m] < -0.5*box[m][m]) {
+	rvec_inc(dx,box[m]);
+	if (pull->bVerbose && fabs(pull->dims[m])>GMX_REAL_MIN)
+	  fprintf(stderr,"Jumped +box: nr %d dir: %d old:%8.3f\n",ii,m,
+		  pull->ref.x0[0][i][m]); 
+      }
+      
+      if (dx[m] >  0.5*box[m][m]) {
+	rvec_dec(dx,box[m]);
+	if (pull->bVerbose && fabs(pull->dims[m])>GMX_REAL_MIN)
+	  fprintf(stderr,"Jumped -box: nr %d dir: %d old:%8.3f\n",ii,m,
+		  pull->ref.x0[0][i][m]); 
+      }
+
+      pull->ref.x0[0][i][m] += dx[m];
+      pull->ref.xp[0][i][m]  = x[ii][m];
+    }
+  }
+  tm = calc_com2(pull->ref.x0[0],pull->ref.ngx[0],pull->ref.idx[0],
+		 md,com,box);
+  if (pull->bVerbose) 
+    fprintf(stderr,"correct_t0: Group %s: mass:%8.3f com:%8.3f%8.3f%8.3f\n",
+	    pull->ref.grps[0],tm,com[0],com[1],com[2]);
+}

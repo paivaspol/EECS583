@@ -1,0 +1,21 @@
+static int perhaps_ends_bb_p (insn)
+     rtx insn;
+{
+  switch (GET_CODE (insn))
+    {
+    case CODE_LABEL:
+    case JUMP_INSN:
+      /* These always end a basic block.  */
+      return 1;
+
+    case CALL_INSN:
+      /* A CALL_INSN might be the last insn of a basic block, if it is inside
+	 an EH region or if there are nonlocal gotos.  Note that this test is
+	 very conservative.  */
+      if (nonlocal_goto_handler_labels)
+	return 1;
+      /* FALLTHRU */
+    default:
+      return can_throw_internal (insn);
+    }
+}

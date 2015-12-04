@@ -1,0 +1,55 @@
+static int
+make_ref_alilist(int *ref, char *k1, char *k2,
+		 char *s1, char *s2, int **ret_s1_list, int *ret_listlen)
+{
+  int *s1_list;
+  int  col;			/* column position in alignment */
+  int  r1, r2;			/* raw symbol index at current col in s1, s2 */
+  int *canons1;			/* flag array, 1 if position i in s1 raw seq is canonical */
+  int  lpos;			/* position in list */
+  
+  /* Allocations. No arrays can exceed the length of their
+   * appropriate parent (s1 or s2)
+   */
+  s1_list = (int *) MallocOrDie (sizeof(int) * strlen(s1));
+  canons1 = (int *) MallocOrDie (sizeof(int) * strlen(s1));
+
+  /* First we use refcoords and k1,k2 to construct an array of 1's 
+   * and 0's, telling us whether s1's raw symbol number i is countable.
+   * It's countable simply if it's under a canonical column.
+   */
+  r1 =  0;
+  for (col = 0; k1[col] != '\0'; col++)
+    {
+      if (! isgap(k1[col]))
+	{
+	  canons1[r1] = ref[col] ? 1 : 0;
+	  r1++;
+	}
+    }
+
+  /* Now we can construct the list. We don't count pairs if the sym in s1
+   * is non-canonical.
+   * We have to keep separate track of our position in the list (lpos)
+   * from our positions in the raw sequences (r1,r2)
+   */
+  r1 = r2 = lpos = 0;
+  for (col = 0; s1[col] != '\0'; col++)
+    {
+      if (! isgap(s1[col]) && canons1[r1])
+	{
+	  s1_list[lpos] = isgap(s2[col]) ? -1 : r2;
+	  lpos++;
+	}
+      
+      if (! isgap(s1[col]))
+	r1++;
+      if (! isgap(s2[col]))
+	r2++;
+    }
+
+  free(canons1);
+  *ret_listlen = lpos;
+  *ret_s1_list = s1_list;
+  return 1;
+}

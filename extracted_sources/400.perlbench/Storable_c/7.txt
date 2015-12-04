@@ -1,0 +1,41 @@
+static void init_retrieve_context(pTHX_ stcxt_t *cxt, int optype, int is_tainted)
+{
+	TRACEME(("init_retrieve_context"));
+
+	/*
+	 * The hook hash table is used to keep track of the references on
+	 * the STORABLE_thaw hook routines, when found in some class name.
+	 *
+	 * It is assumed that the inheritance tree will not be changed during
+	 * storing, and that no new method will be dynamically created by the
+	 * hooks.
+	 */
+
+	cxt->hook  = newHV();			/* Caches STORABLE_thaw */
+
+	/*
+	 * If retrieving an old binary version, the cxt->retrieve_vtbl variable
+	 * was set to sv_old_retrieve. We'll need a hash table to keep track of
+	 * the correspondance between the tags and the tag number used by the
+	 * new retrieve routines.
+	 */
+
+	cxt->hseen = (((void*)cxt->retrieve_vtbl == (void*)sv_old_retrieve)
+		      ? newHV() : 0);
+
+	cxt->aseen = newAV();			/* Where retrieved objects are kept */
+	cxt->where_is_undef = -1;		/* Special case for PL_sv_undef */
+	cxt->aclass = newAV();			/* Where seen classnames are kept */
+	cxt->tagnum = 0;				/* Have to count objects... */
+	cxt->classnum = 0;				/* ...and class names as well */
+	cxt->optype = optype;
+	cxt->s_tainted = is_tainted;
+	cxt->entry = 1;					/* No recursion yet */
+#ifndef HAS_RESTRICTED_HASHES
+        cxt->derestrict = -1;		/* Fetched from perl if needed */
+#endif
+#ifndef HAS_UTF8_ALL
+        cxt->use_bytes = -1;		/* Fetched from perl if needed */
+#endif
+        cxt->accept_future_minor = -1;	/* Fetched from perl if needed */
+}

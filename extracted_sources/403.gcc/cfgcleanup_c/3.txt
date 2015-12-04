@@ -1,0 +1,48 @@
+static bool
+mark_effect (exp, nonequal)
+  rtx exp;
+  regset nonequal;
+{
+  int regno;
+  rtx dest;
+  switch (GET_CODE (exp))
+    {
+      /* In case we do clobber the register, mark it as equal, as we know the
+         value is dead so it don't have to match.  */
+      case CLOBBER:
+	if (REG_P (XEXP (exp, 0)))
+	  {
+	    dest = XEXP (exp, 0);
+	    regno = REGNO (dest);
+	    CLEAR_REGNO_REG_SET (nonequal, regno);
+	    if (regno < FIRST_PSEUDO_REGISTER)
+	      {
+		int n = HARD_REGNO_NREGS (regno, GET_MODE (dest));
+		while (--n > 0)
+		  CLEAR_REGNO_REG_SET (nonequal, regno + n);
+	      }
+	  }
+	return false;
+
+      case SET:
+	if (rtx_equal_for_cselib_p (SET_DEST (exp), SET_SRC (exp)))
+	  return false;
+	dest = SET_DEST (exp);
+	if (dest == pc_rtx)
+	  return false;
+	if (!REG_P (dest))
+	  return true;
+	regno = REGNO (dest);
+	SET_REGNO_REG_SET (nonequal, regno);
+	if (regno < FIRST_PSEUDO_REGISTER)
+	  {
+	    int n = HARD_REGNO_NREGS (regno, GET_MODE (dest));
+	    while (--n > 0)
+	      SET_REGNO_REG_SET (nonequal, regno + n);
+	  }
+	return false;
+
+      default:
+	return false;
+    }
+}

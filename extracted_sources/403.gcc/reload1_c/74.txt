@@ -1,0 +1,16 @@
+static HOST_WIDE_INT
+sext_for_mode (mode, value)
+     enum machine_mode mode;
+     HOST_WIDE_INT value;
+{
+  HOST_WIDE_INT cval = value & GET_MODE_MASK (mode);
+  int width = GET_MODE_BITSIZE (mode);
+
+  /* If MODE is narrower than HOST_WIDE_INT and CVAL is a negative number,
+     sign extend it.  */
+  if (width > 0 && width < HOST_BITS_PER_WIDE_INT
+      && (cval & ((HOST_WIDE_INT) 1 << (width - 1))) != 0)
+    cval |= (HOST_WIDE_INT) -1 << width;
+
+  return cval;
+}

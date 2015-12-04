@@ -1,0 +1,44 @@
+static void
+insert_phi_node (regno, bb)
+     int regno, bb;
+{
+  basic_block b = BASIC_BLOCK (bb);
+  edge e;
+  int npred, i;
+  rtvec vec;
+  rtx phi, reg;
+  rtx insn;
+  int end_p;
+
+  /* Find out how many predecessors there are.  */
+  for (e = b->pred, npred = 0; e; e = e->pred_next)
+    if (e->src != ENTRY_BLOCK_PTR)
+      npred++;
+
+  /* If this block has no "interesting" preds, then there is nothing to
+     do.  Consider a block that only has the entry block as a pred.  */
+  if (npred == 0)
+    return;
+
+  /* This is the register to which the phi function will be assigned.  */
+  reg = regno_reg_rtx[regno];
+
+  /* Construct the arguments to the PHI node.  The use of pc_rtx is just
+     a placeholder; we'll insert the proper value in rename_registers.  */
+  vec = rtvec_alloc (npred * 2);
+  for (e = b->pred, i = 0; e ; e = e->pred_next, i += 2)
+    if (e->src != ENTRY_BLOCK_PTR)
+      {
+	RTVEC_ELT (vec, i + 0) = pc_rtx;
+	RTVEC_ELT (vec, i + 1) = GEN_INT (e->src->index);
+      }
+
+  phi = gen_rtx_PHI (VOIDmode, vec);
+  phi = gen_rtx_SET (VOIDmode, reg, phi);
+
+  insn = first_insn_after_basic_block_note (b);
+  end_p = PREV_INSN (insn) == b->end;
+  emit_insn_before (phi, insn);
+  if (end_p)
+    b->end = PREV_INSN (insn);
+}

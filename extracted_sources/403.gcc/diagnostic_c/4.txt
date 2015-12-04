@@ -1,0 +1,16 @@
+void
+diagnostic_initialize (context)
+     diagnostic_context *context;
+{
+  memset (context, 0, sizeof *context);
+  obstack_init (&context->buffer.obstack);
+
+  /* By default, diagnostics are sent to stderr.  */
+  output_buffer_attached_stream (&context->buffer) = stderr;
+
+  /* By default, we emit prefixes once per message.  */
+  diagnostic_prefixing_rule (context) = DIAGNOSTICS_SHOW_PREFIX_ONCE;
+
+  diagnostic_starter (context) = default_diagnostic_starter;
+  diagnostic_finalizer (context) = default_diagnostic_finalizer;
+}

@@ -1,0 +1,17 @@
+static int
+flow_loops_level_compute (loops)
+     struct loops *loops;
+{
+  int levels = 0;
+  struct loop *loop;
+  int level;
+
+  /* Traverse all the outer level loops.  */
+  for (loop = loops->tree_root; loop; loop = loop->next)
+    {
+      level = flow_loop_level_compute (loop, 1);
+      levels = MAX (levels, level);
+    }
+
+  return levels;
+}

@@ -1,0 +1,19 @@
+void
+output_deferred_addressed_constants ()
+{
+  struct deferred_constant *p, *next;
+
+  defer_addressed_constants_flag--;
+
+  if (defer_addressed_constants_flag > 0)
+    return;
+
+  for (p = deferred_constants; p; p = next)
+    {
+      output_constant_def_contents (p->exp, p->reloc, p->labelno);
+      next = p->next;
+      free (p);
+    }
+
+  deferred_constants = 0;
+}

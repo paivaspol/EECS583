@@ -1,0 +1,20 @@
+static void
+dbxout_function_end ()
+{
+  static int scope_labelno = 0;
+  char lscope_label_name[100];
+  /* Convert Ltext into the appropriate format for local labels in case
+     the system doesn't insert underscores in front of user generated
+     labels.  */
+  ASM_GENERATE_INTERNAL_LABEL (lscope_label_name, "Lscope", scope_labelno);
+  ASM_OUTPUT_INTERNAL_LABEL (asmfile, "Lscope", scope_labelno);
+  scope_labelno++;
+
+  /* By convention, GCC will mark the end of a function with an N_FUN
+     symbol and an empty string.  */
+  fprintf (asmfile, "%s\"\",%d,0,0,", ASM_STABS_OP, N_FUN);
+  assemble_name (asmfile, lscope_label_name);
+  putc ('-', asmfile);
+  assemble_name (asmfile, XSTR (XEXP (DECL_RTL (current_function_decl), 0), 0));
+  fprintf (asmfile, "\n");
+}

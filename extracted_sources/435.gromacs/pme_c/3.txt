@@ -1,0 +1,42 @@
+void sum_qgrid(t_commrec *cr,t_nsborder *nsb,t_fftgrid *grid,bool bForward)
+{
+  static bool bFirst=TRUE;
+  static t_fft_r *tmp;
+  int i;
+  static int localsize;
+  static int maxproc;
+
+#if (defined USE_MPI && ! defined WITHOUT_FFTW)
+  if(bFirst) {
+    localsize=grid->la12r*grid->pfft.local_nx;
+    if(!grid->workspace)
+      snew(tmp,localsize);
+    maxproc=grid->nx/grid->pfft.local_nx;
+  }
+  /* NOTE: FFTW doesnt necessarily use all processors for the fft;
+     * above I assume that the ones that do have equal amounts of data.
+     * this is bad since its not guaranteed by fftw, but works for now...
+     * This will be fixed in the next release.
+     */
+  bFirst=FALSE;
+  if(grid->workspace)
+    tmp=grid->workspace;
+  if(bForward) { /* sum contributions to local grid */
+    for(i=0;i<maxproc;i++) {
+      MPI_Reduce(grid->ptr+i*localsize, /*ptr arithm.     */
+		 tmp,localsize,      
+		 GMX_MPI_REAL,MPI_SUM,i,MPI_COMM_WORLD);
+    }
+    if(cr->nodeid<maxproc)
+      memcpy(grid->ptr+cr->nodeid*localsize,tmp,localsize*sizeof(t_fft_r));
+  }
+  else { /* distribute local grid to all processors */
+    for(i=0;i<maxproc;i++)
+      MPI_Bcast(grid->ptr+i*localsize, /* ptr arithm     */
+		localsize,       
+		GMX_MPI_REAL,i,MPI_COMM_WORLD);
+  }
+#else
+  fatal_error(0,"Parallel grid summation requires MPI and FFTW.\n");    
+#endif
+}

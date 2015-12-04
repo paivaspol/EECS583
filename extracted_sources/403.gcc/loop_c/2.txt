@@ -1,0 +1,23 @@
+static int
+compute_luids (start, end, prev_luid)
+     rtx start, end;
+     int prev_luid;
+{
+  int i;
+  rtx insn;
+
+  for (insn = start, i = prev_luid; insn != end; insn = NEXT_INSN (insn))
+    {
+      if (INSN_UID (insn) >= max_uid_for_loop)
+	continue;
+      /* Don't assign luids to line-number NOTEs, so that the distance in
+	 luids between two insns is not affected by -g.  */
+      if (GET_CODE (insn) != NOTE
+	  || NOTE_LINE_NUMBER (insn) <= 0)
+	uid_luid[INSN_UID (insn)] = ++i;
+      else
+	/* Give a line number note the same luid as preceding insn.  */
+	uid_luid[INSN_UID (insn)] = i;
+    }
+  return i + 1;
+}

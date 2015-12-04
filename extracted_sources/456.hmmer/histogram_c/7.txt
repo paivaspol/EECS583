@@ -1,0 +1,57 @@
+void
+EVDBasicFit(struct histogram_s *h)
+{
+  float *d;            /* distribution P(S < x)          */
+  float *x;            /* x-axis of P(S<x) for Linefit() */
+  int    hsize;
+  int    sum;
+  int    sc, idx;		/* loop indices for score or score-h->min   */
+  float  slope, intercept;	/* m,b fit from Linefit()                   */
+  float  corr;			/* correlation coeff of line fit, not used  */
+  float  lambda, mu;		/* slope, intercept converted to EVD params */
+
+  /* Allocations for x, y axes
+   * distribution d runs from min..max with indices 0..max-min
+   *     i.e. score - min = index into d, x, histogram, and expect
+   */
+  hsize = h->highscore - h->lowscore + 1;
+  d         = (float *) MallocOrDie(sizeof(float) * hsize);
+  x         = (float *) MallocOrDie(sizeof(float) * hsize);
+  for (idx = 0; idx < hsize; idx++)
+    d[idx] = x[idx] = 0.;
+
+  /* Calculate P(S < x) distribution from histogram.
+   * note off-by-one of sc, because histogram bin contains scores between
+   * x and x+1. 
+   */ 
+  sum = 0;
+  for (sc = h->lowscore; sc <= h->highscore; sc++)
+    {
+      sum += h->histogram[sc - h->min];
+      d[sc - h->lowscore] = (float) sum / (float) h->total;
+      x[sc - h->lowscore] = (float) (sc + 1);
+    }
+
+  /* Do a linear regression fit to the log[-log(P(S<x))] "line".
+   * we have log[-log(1-P(S>x))]  = -lambda * x + lambda * mu
+   * so lambda = -m  and mu = b/lambda
+   */
+				/* convert y axis to log[-log(P(S<x))]  */
+  for (sc = h->lowscore; sc < h->highscore; sc++)
+    d[sc - h->lowscore] = log(-1. * log(d[sc - h->lowscore]));
+
+				/* do the linear regression */
+  Linefit(x, d, hsize-1, &intercept, &slope, &corr);
+				/* calc mu, lambda */
+  lambda = -1. * slope;
+  mu     = intercept / lambda;
+
+  /* Set the EVD parameters in the histogram;
+   * pass 2 for additional lost degrees of freedom because we fit mu, lambda.
+   */
+  ExtremeValueSetHistogram(h, mu, lambda, h->lowscore, h->highscore, 2);
+
+  free(x);
+  free(d);
+  return;
+}

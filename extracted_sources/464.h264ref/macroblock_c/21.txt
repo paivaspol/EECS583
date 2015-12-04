@@ -1,0 +1,64 @@
+int writeIntra4x4Modes(int only_this_block)
+{
+  int i,j,bs_x,bs_y,ii,jj;
+  int block8x8;
+  int rate;
+  int ipred_array[16],cont_array[16],ipred_number;
+  Macroblock    *currMB     = &img->mb_data[img->current_mb_nr];
+  SyntaxElement *currSE     = &img->MB_SyntaxElements[currMB->currSEnr];
+  int           *bitCount   = currMB->bitcounter;
+  Slice         *currSlice  = img->currentSlice;
+  DataPartition *dataPart;
+  const int     *partMap    = assignSE2partition[input->partition_mode];
+
+  ipred_number=0;
+  for(block8x8=0;block8x8<4;block8x8++)
+  {
+    if((( currMB->b8mode[block8x8]==IBLOCK && (only_this_block<0||only_this_block==block8x8)) ||
+      ((currMB->b8mode[block8x8]==I8MB) && (only_this_block<0||only_this_block==block8x8))))
+    {
+      bs_x = bs_y = (currMB->b8mode[block8x8] == I8MB)?8:4; 
+      ii=(bs_x>>2); // bug fix for solaris. mwi 
+      jj=(bs_y>>2); // bug fix for solaris. mwi
+      
+      for(j=0;j<2;j+=jj)
+      {
+        for(i=0;i<2;i+=ii)
+        {
+          ipred_array[ipred_number]=currMB->intra_pred_modes[(block8x8<<2)|(j<<1)|i];
+          cont_array[ipred_number]=(block8x8<<2)+(j<<1)+i;
+          ipred_number++;
+        }
+      }
+    }
+  }
+  rate=0;
+
+  for(i=0;i<ipred_number;i++)
+  {
+    currMB->IntraChromaPredModeFlag = 1;
+    currSE->context = cont_array[i];
+    currSE->value1  = ipred_array[i];
+    currSE->value2  = 0;
+
+#if TRACE
+    snprintf(currSE->tracestring, TRACESTRING_SIZE, "Intra mode     = %3d %d",currSE->value1,currSE->context);
+#endif
+
+    /*--- set symbol type and function pointers ---*/
+    if (input->symbol_mode != UVLC)    currSE->writing = writeIntraPredMode_CABAC;
+    currSE->type = SE_INTRAPREDMODE;
+
+    /*--- choose data partition ---*/
+    dataPart = &(currSlice->partArr[partMap[SE_INTRAPREDMODE]]);   
+    /*--- encode and update rate ---*/
+    if (input->symbol_mode == UVLC)    writeSyntaxElement_Intra4x4PredictionMode(currSE, dataPart);
+    else                               dataPart->writeSyntaxElement (currSE, dataPart);
+    bitCount[BITS_COEFF_Y_MB]+=currSE->len;
+    rate += currSE->len;
+    currSE++;
+    currMB->currSEnr++;
+  }
+
+  return rate;
+}

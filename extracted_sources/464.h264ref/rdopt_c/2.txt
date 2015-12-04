@@ -1,0 +1,31 @@
+void UpdatePixelMap()
+{
+  int mx,my,y,x,i,j;
+  if (img->type==I_SLICE)
+  {
+    for (y=0; y<img->height; y++)
+    for (x=0; x<img->width; x++)
+    {
+      pixel_map[y][x]=1;
+    }
+  }
+  else
+  {
+    for (my=0; my<img->height/8; my++)
+    for (mx=0; mx<img->width/8;  mx++)
+    {
+      j = my*8 + 8;
+      i = mx*8 + 8;
+      if (refresh_map[my][mx])
+      {
+        for (y=my*8; y<j; y++)
+        for (x=mx*8; x<i; x++)  pixel_map[y][x] = 1;
+      }
+      else
+      {
+        for (y=my*8; y<j; y++)
+        for (x=mx*8; x<i; x++)  pixel_map[y][x] = min(pixel_map[y][x]+1, input->num_ref_frames+1);
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+static void lookup_cfa_1		PARAMS ((dw_cfi_ref,
+						 dw_cfa_location *));
+static void lookup_cfa			PARAMS ((dw_cfa_location *));
+static void reg_save			PARAMS ((const char *, unsigned,
+						 unsigned, long));
+static void initial_return_save		PARAMS ((rtx));
+static long stack_adjust_offset		PARAMS ((rtx));
+static void output_cfi			PARAMS ((dw_cfi_ref, dw_fde_ref, int));
+static void output_call_frame_info	PARAMS ((int));
+static void dwarf2out_stack_adjust	PARAMS ((rtx));
+static void queue_reg_save		PARAMS ((const char *, rtx, long));
+static void flush_queued_reg_saves	PARAMS ((void));
+static bool clobbers_queued_reg_save	PARAMS ((rtx));
+static void dwarf2out_frame_debug_expr	PARAMS ((rtx, const char *));
+
+/* Support for complex CFA locations.  */
+static void output_cfa_loc 		PARAMS ((dw_cfi_ref));
+static void get_cfa_from_loc_descr 	PARAMS ((dw_cfa_location *,
+					        struct dw_loc_descr_struct *));
+static struct dw_loc_descr_struct *build_cfa_loc
+					PARAMS ((dw_cfa_location *));
+static void def_cfa_1		 	PARAMS ((const char *,
+						 dw_cfa_location *));
+
+/* How to start an assembler comment.  */
+#ifndef ASM_COMMENT_START
+#define ASM_COMMENT_START ";#"
+#endif
+
+/* Data and reference forms for relocatable data.  */
+#define DW_FORM_data (DWARF_OFFSET_SIZE == 8 ? DW_FORM_data8 : DW_FORM_data4)
+#define DW_FORM_ref (DWARF_OFFSET_SIZE == 8 ? DW_FORM_ref8 : DW_FORM_ref4)
+
+/* Pseudo-op for defining a new section.  */
+#ifndef SECTION_ASM_OP
+#define SECTION_ASM_OP	"\t.section\t"
+#endif
+
+#ifndef DEBUG_FRAME_SECTION
+#define DEBUG_FRAME_SECTION	".debug_frame"
+#endif
+
+#ifndef FUNC_BEGIN_LABEL
+#define FUNC_BEGIN_LABEL	"LFB"
+#endif
+
+#ifndef FUNC_END_LABEL
+#define FUNC_END_LABEL		"LFE"
+#endif
+
+#define FRAME_BEGIN_LABEL	"Lframe"
+#define CIE_AFTER_SIZE_LABEL	"LSCIE"
+#define CIE_END_LABEL		"LECIE"
+#define CIE_LENGTH_LABEL	"LLCIE"
+#define FDE_LABEL		"LSFDE"
+#define FDE_AFTER_SIZE_LABEL	"LASFDE"
+#define FDE_END_LABEL		"LEFDE"
+#define FDE_LENGTH_LABEL	"LLFDE"
+#define LINE_NUMBER_BEGIN_LABEL	"LSLT"
+#define LINE_NUMBER_END_LABEL	"LELT"
+#define LN_PROLOG_AS_LABEL	"LASLTP"
+#define LN_PROLOG_END_LABEL	"LELTP"
+#define DIE_LABEL_PREFIX	"DW"
+
+/* Definitions of defaults for various types of primitive assembly language
+   output operations.  These may be overridden from within the tm.h file,
+   but typically, that is unnecessary.  */
+
+#ifdef SET_ASM_OP
+#ifndef ASM_OUTPUT_DEFINE_LABEL_DIFFERENCE_SYMBOL
+#define ASM_OUTPUT_DEFINE_LABEL_DIFFERENCE_SYMBOL(FILE, SY, HI, LO)    	\
+ do {									\
+  fprintf (FILE, "%s", SET_ASM_OP);					\
+  assemble_name (FILE, SY);						\
+  fputc (',', FILE);							\
+  assemble_name (FILE, HI);						\
+  fputc ('-', FILE);							\
+  assemble_name (FILE, LO);						\
+ } while (0)

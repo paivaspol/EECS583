@@ -1,0 +1,373 @@
+static int store_hook(
+        pTHX_
+	stcxt_t *cxt,
+	SV *sv,
+	int type,
+	HV *pkg,
+	SV *hook)
+{
+	I32 len;
+	char *class;
+	STRLEN len2;
+	SV *ref;
+	AV *av;
+	SV **ary;
+	int count;				/* really len3 + 1 */
+	unsigned char flags;
+	char *pv;
+	int i;
+	int recursed = 0;		/* counts recursion */
+	int obj_type;			/* object type, on 2 bits */
+	I32 classnum;
+	int ret;
+	int clone = cxt->optype & ST_CLONE;
+	char mtype = '\0';				/* for blessed ref to tied structures */
+	unsigned char eflags = '\0';	/* used when object type is SHT_EXTRA */
+
+	TRACEME(("store_hook, class \"%s\", tagged #%d", HvNAME(pkg), cxt->tagnum));
+
+	/*
+	 * Determine object type on 2 bits.
+	 */
+
+	switch (type) {
+	case svis_SCALAR:
+		obj_type = SHT_SCALAR;
+		break;
+	case svis_ARRAY:
+		obj_type = SHT_ARRAY;
+		break;
+	case svis_HASH:
+		obj_type = SHT_HASH;
+		break;
+	case svis_TIED:
+		/*
+		 * Produced by a blessed ref to a tied data structure, $o in the
+		 * following Perl code.
+		 *
+		 * 	my %h;
+		 *  tie %h, 'FOO';
+		 *	my $o = bless \%h, 'BAR';
+		 *
+		 * Signal the tie-ing magic by setting the object type as SHT_EXTRA
+		 * (since we have only 2 bits in <flags> to store the type), and an
+		 * <extra> byte flag will be emitted after the FIRST <flags> in the
+		 * stream, carrying what we put in `eflags'.
+		 */
+		obj_type = SHT_EXTRA;
+		switch (SvTYPE(sv)) {
+		case SVt_PVHV:
+			eflags = (unsigned char) SHT_THASH;
+			mtype = 'P';
+			break;
+		case SVt_PVAV:
+			eflags = (unsigned char) SHT_TARRAY;
+			mtype = 'P';
+			break;
+		default:
+			eflags = (unsigned char) SHT_TSCALAR;
+			mtype = 'q';
+			break;
+		}
+		break;
+	default:
+		CROAK(("Unexpected object type (%d) in store_hook()", type));
+	}
+	flags = SHF_NEED_RECURSE | obj_type;
+
+	class = HvNAME(pkg);
+	len = strlen(class);
+
+	/*
+	 * To call the hook, we need to fake a call like:
+	 *
+	 *    $object->STORABLE_freeze($cloning);
+	 *
+	 * but we don't have the $object here.  For instance, if $object is
+	 * a blessed array, what we have in `sv' is the array, and we can't
+	 * call a method on those.
+	 *
+	 * Therefore, we need to create a temporary reference to the object and
+	 * make the call on that reference.
+	 */
+
+	TRACEME(("about to call STORABLE_freeze on class %s", class));
+
+	ref = newRV_noinc(sv);				/* Temporary reference */
+	av = array_call(aTHX_ ref, hook, clone);	/* @a = $object->STORABLE_freeze($c) */
+	SvRV(ref) = 0;
+	SvREFCNT_dec(ref);					/* Reclaim temporary reference */
+
+	count = AvFILLp(av) + 1;
+	TRACEME(("store_hook, array holds %d items", count));
+
+	/*
+	 * If they return an empty list, it means they wish to ignore the
+	 * hook for this class (and not just this instance -- that's for them
+	 * to handle if they so wish).
+	 *
+	 * Simply disable the cached entry for the hook (it won't be recomputed
+	 * since it's present in the cache) and recurse to store_blessed().
+	 */
+
+	if (!count) {
+		/*
+		 * They must not change their mind in the middle of a serialization.
+		 */
+
+		if (hv_fetch(cxt->hclass, class, len, FALSE))
+			CROAK(("Too late to ignore hooks for %s class \"%s\"",
+				(cxt->optype & ST_CLONE) ? "cloning" : "storing", class));
+	
+		pkg_hide(aTHX_ cxt->hook, pkg, "STORABLE_freeze");
+
+		ASSERT(!pkg_can(aTHX_ cxt->hook, pkg, "STORABLE_freeze"), ("hook invisible"));
+		TRACEME(("ignoring STORABLE_freeze in class \"%s\"", class));
+
+		return store_blessed(aTHX_ cxt, sv, type, pkg);
+	}
+
+	/*
+	 * Get frozen string.
+	 */
+
+	ary = AvARRAY(av);
+	pv = SvPV(ary[0], len2);
+
+	/*
+	 * If they returned more than one item, we need to serialize some
+	 * extra references if not already done.
+	 *
+	 * Loop over the array, starting at position #1, and for each item,
+	 * ensure it is a reference, serialize it if not already done, and
+	 * replace the entry with the tag ID of the corresponding serialized
+	 * object.
+	 *
+	 * We CHEAT by not calling av_fetch() and read directly within the
+	 * array, for speed.
+	 */
+
+	for (i = 1; i < count; i++) {
+		SV **svh;
+		SV *rsv = ary[i];
+		SV *xsv;
+		AV *av_hook = cxt->hook_seen;
+
+		if (!SvROK(rsv))
+			CROAK(("Item #%d returned by STORABLE_freeze "
+				"for %s is not a reference", i, class));
+		xsv = SvRV(rsv);		/* Follow ref to know what to look for */
+
+		/*
+		 * Look in hseen and see if we have a tag already.
+		 * Serialize entry if not done already, and get its tag.
+		 */
+
+		if ((svh = hv_fetch(cxt->hseen, (char *) &xsv, sizeof(xsv), FALSE)))
+			goto sv_seen;		/* Avoid moving code too far to the right */
+
+		TRACEME(("listed object %d at 0x%"UVxf" is unknown", i-1, PTR2UV(xsv)));
+
+		/*
+		 * We need to recurse to store that object and get it to be known
+		 * so that we can resolve the list of object-IDs at retrieve time.
+		 *
+		 * The first time we do this, we need to emit the proper header
+		 * indicating that we recursed, and what the type of object is (the
+		 * object we're storing via a user-hook).  Indeed, during retrieval,
+		 * we'll have to create the object before recursing to retrieve the
+		 * others, in case those would point back at that object.
+		 */
+
+		/* [SX_HOOK] <flags> [<extra>] <object>*/
+		if (!recursed++) {
+			PUTMARK(SX_HOOK);
+			PUTMARK(flags);
+			if (obj_type == SHT_EXTRA)
+				PUTMARK(eflags);
+		} else
+			PUTMARK(flags);
+
+		if ((ret = store(aTHX_ cxt, xsv)))	/* Given by hook for us to store */
+			return ret;
+
+		svh = hv_fetch(cxt->hseen, (char *) &xsv, sizeof(xsv), FALSE);
+		if (!svh)
+			CROAK(("Could not serialize item #%d from hook in %s", i, class));
+
+		/*
+		 * It was the first time we serialized `xsv'.
+		 *
+		 * Keep this SV alive until the end of the serialization: if we
+		 * disposed of it right now by decrementing its refcount, and it was
+		 * a temporary value, some next temporary value allocated during
+		 * another STORABLE_freeze might take its place, and we'd wrongly
+		 * assume that new SV was already serialized, based on its presence
+		 * in cxt->hseen.
+		 *
+		 * Therefore, push it away in cxt->hook_seen.
+		 */
+
+		av_store(av_hook, AvFILLp(av_hook)+1, SvREFCNT_inc(xsv));
+
+	sv_seen:
+		/*
+		 * Dispose of the REF they returned.  If we saved the `xsv' away
+		 * in the array of returned SVs, that will not cause the underlying
+		 * referenced SV to be reclaimed.
+		 */
+
+		ASSERT(SvREFCNT(xsv) > 1, ("SV will survive disposal of its REF"));
+		SvREFCNT_dec(rsv);			/* Dispose of reference */
+
+		/*
+		 * Replace entry with its tag (not a real SV, so no refcnt increment)
+		 */
+
+		ary[i] = *svh;
+		TRACEME(("listed object %d at 0x%"UVxf" is tag #%"UVuf,
+			 i-1, PTR2UV(xsv), PTR2UV(*svh)));
+	}
+
+	/*
+	 * Allocate a class ID if not already done.
+	 *
+	 * This needs to be done after the recursion above, since at retrieval
+	 * time, we'll see the inner objects first.  Many thanks to
+	 * Salvador Ortiz Garcia <sog@msg.com.mx> who spot that bug and
+	 * proposed the right fix.  -- RAM, 15/09/2000
+	 */
+
+	if (!known_class(aTHX_ cxt, class, len, &classnum)) {
+		TRACEME(("first time we see class %s, ID = %d", class, classnum));
+		classnum = -1;				/* Mark: we must store classname */
+	} else {
+		TRACEME(("already seen class %s, ID = %d", class, classnum));
+	}
+
+	/*
+	 * Compute leading flags.
+	 */
+
+	flags = obj_type;
+	if (((classnum == -1) ? len : classnum) > LG_SCALAR)
+		flags |= SHF_LARGE_CLASSLEN;
+	if (classnum != -1)
+		flags |= SHF_IDX_CLASSNAME;
+	if (len2 > LG_SCALAR)
+		flags |= SHF_LARGE_STRLEN;
+	if (count > 1)
+		flags |= SHF_HAS_LIST;
+	if (count > (LG_SCALAR + 1))
+		flags |= SHF_LARGE_LISTLEN;
+
+	/* 
+	 * We're ready to emit either serialized form:
+	 *
+	 *   SX_HOOK <flags> <len> <classname> <len2> <str> [<len3> <object-IDs>]
+	 *   SX_HOOK <flags> <index>           <len2> <str> [<len3> <object-IDs>]
+	 *
+	 * If we recursed, the SX_HOOK has already been emitted.
+	 */
+
+	TRACEME(("SX_HOOK (recursed=%d) flags=0x%x "
+			"class=%"IVdf" len=%"IVdf" len2=%"IVdf" len3=%d",
+		 recursed, flags, (IV)classnum, (IV)len, (IV)len2, count-1));
+
+	/* SX_HOOK <flags> [<extra>] */
+	if (!recursed) {
+		PUTMARK(SX_HOOK);
+		PUTMARK(flags);
+		if (obj_type == SHT_EXTRA)
+			PUTMARK(eflags);
+	} else
+		PUTMARK(flags);
+
+	/* <len> <classname> or <index> */
+	if (flags & SHF_IDX_CLASSNAME) {
+		if (flags & SHF_LARGE_CLASSLEN)
+			WLEN(classnum);
+		else {
+			unsigned char cnum = (unsigned char) classnum;
+			PUTMARK(cnum);
+		}
+	} else {
+		if (flags & SHF_LARGE_CLASSLEN)
+			WLEN(len);
+		else {
+			unsigned char clen = (unsigned char) len;
+			PUTMARK(clen);
+		}
+		WRITE(class, len);		/* Final \0 is omitted */
+	}
+
+	/* <len2> <frozen-str> */
+	if (flags & SHF_LARGE_STRLEN) {
+		I32 wlen2 = len2;		/* STRLEN might be 8 bytes */
+		WLEN(wlen2);			/* Must write an I32 for 64-bit machines */
+	} else {
+		unsigned char clen = (unsigned char) len2;
+		PUTMARK(clen);
+	}
+	if (len2)
+		WRITE(pv, (SSize_t)len2);	/* Final \0 is omitted */
+
+	/* [<len3> <object-IDs>] */
+	if (flags & SHF_HAS_LIST) {
+		int len3 = count - 1;
+		if (flags & SHF_LARGE_LISTLEN)
+			WLEN(len3);
+		else {
+			unsigned char clen = (unsigned char) len3;
+			PUTMARK(clen);
+		}
+
+		/*
+		 * NOTA BENE, for 64-bit machines: the ary[i] below does not yield a
+		 * real pointer, rather a tag number, well under the 32-bit limit.
+		 */
+
+		for (i = 1; i < count; i++) {
+			I32 tagval = htonl(LOW_32BITS(ary[i]));
+			WRITE_I32(tagval);
+			TRACEME(("object %d, tag #%d", i-1, ntohl(tagval)));
+		}
+	}
+
+	/*
+	 * Free the array.  We need extra care for indices after 0, since they
+	 * don't hold real SVs but integers cast.
+	 */
+
+	if (count > 1)
+		AvFILLp(av) = 0;	/* Cheat, nothing after 0 interests us */
+	av_undef(av);
+	sv_free((SV *) av);
+
+	/*
+	 * If object was tied, need to insert serialization of the magic object.
+	 */
+
+	if (obj_type == SHT_EXTRA) {
+		MAGIC *mg;
+
+		if (!(mg = mg_find(sv, mtype))) {
+			int svt = SvTYPE(sv);
+			CROAK(("No magic '%c' found while storing ref to tied %s with hook",
+				mtype, (svt == SVt_PVHV) ? "hash" :
+					(svt == SVt_PVAV) ? "array" : "scalar"));
+		}
+
+		TRACEME(("handling the magic object 0x%"UVxf" part of 0x%"UVxf,
+			PTR2UV(mg->mg_obj), PTR2UV(sv)));
+
+		/*
+		 * [<magic object>]
+		 */
+
+		if ((ret = store(aTHX_ cxt, mg->mg_obj)))	/* Extra () for -Wall, grr... */
+			return ret;
+	}
+
+	return 0;
+}

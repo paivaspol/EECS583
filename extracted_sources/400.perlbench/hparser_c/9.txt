@@ -1,0 +1,57 @@
+static char*
+parse_end(PSTATE* p_state, char *beg, char *end, U32 utf8, SV* self)
+{
+    char *s = beg+2;
+    hctype_t name_first, name_char;
+
+    if (p_state->strict_names || p_state->xml_mode) {
+	name_first = HCTYPE_NAME_FIRST;
+	name_char  = HCTYPE_NAME_CHAR;
+    }
+    else {
+	name_first = name_char = HCTYPE_NOT_SPACE_GT;
+    }
+
+    if (isHCTYPE(*s, name_first)) {
+	token_pos_t tagname;
+	tagname.beg = s;
+	s++;
+	while (s < end && isHCTYPE(*s, name_char))
+	    s++;
+	tagname.end = s;
+
+	if (p_state->strict_end) {
+	    while (isHSPACE(*s))
+		s++;
+	}
+	else {
+	    s = skip_until_gt(s, end);
+	}
+	if (s < end) {
+	    if (*s == '>') {
+		s++;
+		/* a complete end tag has been recognized */
+		report_event(p_state, E_END, beg, s, utf8, &tagname, 1, self);
+		return s;
+	    }
+	}
+	else {
+	    return beg;
+	}
+    }
+    else if (!p_state->strict_comment) {
+	s = skip_until_gt(s, end);
+	if (s < end) {
+	    token_pos_t token;
+	    token.beg = beg + 2;
+	    token.end = s;
+	    s++;
+	    report_event(p_state, E_COMMENT, beg, s, utf8, &token, 1, self);
+	    return s;
+	}
+	else {
+	    return beg;
+	}
+    }
+    return 0;
+}

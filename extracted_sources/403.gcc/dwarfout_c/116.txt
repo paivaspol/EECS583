@@ -1,0 +1,369 @@
+static void
+output_decl (decl, containing_scope)
+     tree decl;
+     tree containing_scope;
+{
+  /* Make a note of the decl node we are going to be working on.  We may
+     need to give the user the source coordinates of where it appeared in
+     case we notice (later on) that something about it looks screwy.  */
+
+  dwarf_last_decl = decl;
+
+  if (TREE_CODE (decl) == ERROR_MARK)
+    return;
+
+  /* If a structure is declared within an initialization, e.g. as the
+     operand of a sizeof, then it will not have a name.  We don't want
+     to output a DIE for it, as the tree nodes are in the temporary obstack */
+
+  if ((TREE_CODE (TREE_TYPE (decl)) == RECORD_TYPE
+       || TREE_CODE (TREE_TYPE (decl)) == UNION_TYPE)
+      && ((DECL_NAME (decl) == 0 && TYPE_NAME (TREE_TYPE (decl)) == 0)
+	  || (TYPE_FIELDS (TREE_TYPE (decl)) 
+	      && (TREE_CODE (TYPE_FIELDS (TREE_TYPE (decl))) == ERROR_MARK))))
+    return;
+  
+  /* If this ..._DECL node is marked to be ignored, then ignore it.  */
+
+  if (DECL_IGNORED_P (decl))
+    return;
+
+  switch (TREE_CODE (decl))
+    {
+    case CONST_DECL:
+      /* The individual enumerators of an enum type get output when we
+	 output the Dwarf representation of the relevant enum type itself.  */
+      break;
+
+    case FUNCTION_DECL:
+      /* If we are in terse mode, don't output any DIEs to represent
+	 mere function declarations.  Also, if we are conforming
+	 to the DWARF version 1 specification, don't output DIEs for
+	 mere function declarations.  */
+
+      if (DECL_INITIAL (decl) == NULL_TREE)
+#if (DWARF_VERSION > 1)
+	if (debug_info_level <= DINFO_LEVEL_TERSE)
+#endif
+	  break;
+
+      /* Before we describe the FUNCTION_DECL itself, make sure that we
+	 have described its return type.  */
+
+      output_type (TREE_TYPE (TREE_TYPE (decl)), containing_scope);
+
+      {
+	/* And its containing type.  */
+	register tree origin = decl_class_context (decl);
+	if (origin)
+	  output_type (origin, containing_scope);
+      }
+
+      /* If we're emitting an out-of-line copy of an inline function,
+	 set up to refer to the abstract instance emitted from
+	 dwarfout_deferred_inline_function.  */
+      if (DECL_INLINE (decl) && ! DECL_ABSTRACT (decl)
+	  && ! (containing_scope && TYPE_P (containing_scope)))
+	set_decl_origin_self (decl);
+
+      /* If the following DIE will represent a function definition for a
+	 function with "extern" linkage, output a special "pubnames" DIE
+	 label just ahead of the actual DIE.  A reference to this label
+	 was already generated in the .debug_pubnames section sub-entry
+	 for this function definition.  */
+
+      if (TREE_PUBLIC (decl))
+	{
+	  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+	  sprintf (label, PUB_DIE_LABEL_FMT, next_pubname_number++);
+	  ASM_OUTPUT_LABEL (asm_out_file, label);
+	}
+
+      /* Now output a DIE to represent the function itself.  */
+
+      output_die (TREE_PUBLIC (decl) || DECL_EXTERNAL (decl)
+				? output_global_subroutine_die
+				: output_local_subroutine_die,
+		  decl);
+
+      /* Now output descriptions of the arguments for this function.
+	 This gets (unnecessarily?) complex because of the fact that
+	 the DECL_ARGUMENT list for a FUNCTION_DECL doesn't indicate
+	 cases where there was a trailing `...' at the end of the formal
+	 parameter list.  In order to find out if there was a trailing
+	 ellipsis or not, we must instead look at the type associated
+	 with the FUNCTION_DECL.  This will be a node of type FUNCTION_TYPE.
+	 If the chain of type nodes hanging off of this FUNCTION_TYPE node
+	 ends with a void_type_node then there should *not* be an ellipsis
+	 at the end.  */
+
+      /* In the case where we are describing a mere function declaration, all
+	 we need to do here (and all we *can* do here) is to describe
+	 the *types* of its formal parameters.  */
+
+      if (decl != current_function_decl || in_class)
+	output_formal_types (TREE_TYPE (decl));
+      else
+	{
+	  /* Generate DIEs to represent all known formal parameters */
+
+	  tree arg_decls = DECL_ARGUMENTS (decl);
+	  tree parm;
+
+	  /* WARNING!  Kludge zone ahead!  Here we have a special
+	     hack for svr4 SDB compatibility.  Instead of passing the
+	     current FUNCTION_DECL node as the second parameter (i.e.
+	     the `containing_scope' parameter) to `output_decl' (as
+	     we ought to) we instead pass a pointer to our own private
+	     fake_containing_scope node.  That node is a RECORD_TYPE
+	     node which NO OTHER TYPE may ever actually be a member of.
+
+	     This pointer will ultimately get passed into `output_type'
+	     as its `containing_scope' parameter.  `Output_type' will
+	     then perform its part in the hack... i.e. it will pend
+	     the type of the formal parameter onto the pending_types
+	     list.  Later on, when we are done generating the whole
+	     sequence of formal parameter DIEs for this function
+	     definition, we will un-pend all previously pended types
+	     of formal parameters for this function definition.
+
+	     This whole kludge prevents any type DIEs from being
+	     mixed in with the formal parameter DIEs.  That's good
+	     because svr4 SDB believes that the list of formal
+	     parameter DIEs for a function ends wherever the first
+	     non-formal-parameter DIE appears.  Thus, we have to
+	     keep the formal parameter DIEs segregated.  They must
+	     all appear (consecutively) at the start of the list of
+	     children for the DIE representing the function definition.
+	     Then (and only then) may we output any additional DIEs
+	     needed to represent the types of these formal parameters.
+	  */
+
+	  /*
+	     When generating DIEs, generate the unspecified_parameters
+	     DIE instead if we come across the arg "__builtin_va_alist"
+	  */
+
+	  for (parm = arg_decls; parm; parm = TREE_CHAIN (parm))
+	    if (TREE_CODE (parm) == PARM_DECL)
+              {
+		if (DECL_NAME(parm) &&
+		    !strcmp(IDENTIFIER_POINTER(DECL_NAME(parm)),
+			    "__builtin_va_alist") )
+		  output_die (output_unspecified_parameters_die, decl);
+	        else
+		  output_decl (parm, fake_containing_scope);
+	      }
+
+	  /*
+	     Now that we have finished generating all of the DIEs to
+	     represent the formal parameters themselves, force out
+	     any DIEs needed to represent their types.  We do this
+	     simply by un-pending all previously pended types which
+	     can legitimately go into the chain of children DIEs for
+	     the current FUNCTION_DECL.
+	  */
+
+	  output_pending_types_for_scope (decl);
+
+	  /*
+	    Decide whether we need an unspecified_parameters DIE at the end.
+	    There are 2 more cases to do this for:
+	    1) the ansi ... declaration - this is detectable when the end
+		of the arg list is not a void_type_node
+	    2) an unprototyped function declaration (not a definition).  This
+		just means that we have no info about the parameters at all.
+	  */
+
+	  {
+	    tree fn_arg_types = TYPE_ARG_TYPES (TREE_TYPE (decl));
+
+	    if (fn_arg_types)
+	      {
+	      /* this is the prototyped case, check for ...  */
+	      if (TREE_VALUE (tree_last (fn_arg_types)) != void_type_node)
+	        output_die (output_unspecified_parameters_die, decl);
+              }
+            else
+              {
+	      /* this is unprototyped, check for undefined (just declaration) */
+              if (!DECL_INITIAL (decl))
+                output_die (output_unspecified_parameters_die, decl);
+              }
+	  }
+
+	  /* Output Dwarf info for all of the stuff within the body of the
+	     function (if it has one - it may be just a declaration).  */
+
+	  {
+	    tree outer_scope = DECL_INITIAL (decl);
+
+	    if (outer_scope && TREE_CODE (outer_scope) != ERROR_MARK)
+	      {
+		/* Note that here, `outer_scope' is a pointer to the outermost
+		   BLOCK node created to represent a function.
+		   This outermost BLOCK actually represents the outermost
+		   binding contour for the function, i.e. the contour in which
+		   the function's formal parameters and labels get declared.
+
+		   Curiously, it appears that the front end doesn't actually
+		   put the PARM_DECL nodes for the current function onto the
+		   BLOCK_VARS list for this outer scope.  (They are strung
+		   off of the DECL_ARGUMENTS list for the function instead.)
+		   The BLOCK_VARS list for the `outer_scope' does provide us
+		   with a list of the LABEL_DECL nodes for the function however,
+		   and we output DWARF info for those here.
+
+		   Just within the `outer_scope' there will be a BLOCK node
+		   representing the function's outermost pair of curly braces,
+		   and any blocks used for the base and member initializers of
+		   a C++ constructor function.  */
+
+		output_decls_for_scope (outer_scope, 0);
+
+		/* Finally, force out any pending types which are local to the
+		   outermost block of this function definition.  These will
+		   all have a TYPE_CONTEXT which points to the FUNCTION_DECL
+		   node itself.  */
+
+		output_pending_types_for_scope (decl);
+	      }
+	  }
+	}
+
+      /* Generate a terminator for the list of stuff `owned' by this
+	 function.  */
+
+      end_sibling_chain ();
+
+      break;
+
+    case TYPE_DECL:
+      /* If we are in terse mode, don't generate any DIEs to represent
+	 any actual typedefs.  Note that even when we are in terse mode,
+	 we must still output DIEs to represent those tagged types which
+	 are used (directly or indirectly) in the specification of either
+	 a return type or a formal parameter type of some function.  */
+
+      if (debug_info_level <= DINFO_LEVEL_TERSE)
+	if (! TYPE_DECL_IS_STUB (decl)
+	    || (! TYPE_USED_FOR_FUNCTION (TREE_TYPE (decl)) && ! in_class))
+          return;
+
+      /* In the special case of a TYPE_DECL node representing
+	 the declaration of some type tag, if the given TYPE_DECL is
+	 marked as having been instantiated from some other (original)
+	 TYPE_DECL node (e.g. one which was generated within the original
+	 definition of an inline function) we have to generate a special
+	 (abbreviated) TAG_structure_type, TAG_union_type, or
+	 TAG_enumeration-type DIE here.  */
+
+      if (TYPE_DECL_IS_STUB (decl) && DECL_ABSTRACT_ORIGIN (decl))
+	{
+	  output_tagged_type_instantiation (TREE_TYPE (decl));
+	  return;
+	}
+
+      output_type (TREE_TYPE (decl), containing_scope);
+
+      if (! is_redundant_typedef (decl))
+	/* Output a DIE to represent the typedef itself.  */
+	output_die (output_typedef_die, decl);
+      break;
+
+    case LABEL_DECL:
+      if (debug_info_level >= DINFO_LEVEL_NORMAL)
+	output_die (output_label_die, decl);
+      break;
+
+    case VAR_DECL:
+      /* If we are conforming to the DWARF version 1 specification, don't
+	 generated any DIEs to represent mere external object declarations.  */
+
+#if (DWARF_VERSION <= 1)
+      if (DECL_EXTERNAL (decl) && ! TREE_PUBLIC (decl))
+	break;
+#endif
+
+      /* If we are in terse mode, don't generate any DIEs to represent
+	 any variable declarations or definitions.  */
+
+      if (debug_info_level <= DINFO_LEVEL_TERSE)
+        break;
+
+      /* Output any DIEs that are needed to specify the type of this data
+	 object.  */
+
+      output_type (TREE_TYPE (decl), containing_scope);
+
+      {
+	/* And its containing type.  */
+	register tree origin = decl_class_context (decl);
+	if (origin)
+	  output_type (origin, containing_scope);
+      }
+
+      /* If the following DIE will represent a data object definition for a
+	 data object with "extern" linkage, output a special "pubnames" DIE
+	 label just ahead of the actual DIE.  A reference to this label
+	 was already generated in the .debug_pubnames section sub-entry
+	 for this data object definition.  */
+
+      if (TREE_PUBLIC (decl) && ! DECL_ABSTRACT (decl))
+	{
+	  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+	  sprintf (label, PUB_DIE_LABEL_FMT, next_pubname_number++);
+	  ASM_OUTPUT_LABEL (asm_out_file, label);
+	}
+
+      /* Now output the DIE to represent the data object itself.  This gets
+	 complicated because of the possibility that the VAR_DECL really
+	 represents an inlined instance of a formal parameter for an inline
+	 function.  */
+
+      {
+        void (*func) PARAMS ((void *));
+	register tree origin = decl_ultimate_origin (decl);
+
+	if (origin != NULL && TREE_CODE (origin) == PARM_DECL)
+	  func = output_formal_parameter_die;
+	else
+	  {
+	    if (TREE_PUBLIC (decl) || DECL_EXTERNAL (decl))
+	      func = output_global_variable_die;
+	    else
+	      func = output_local_variable_die;
+	  }
+	output_die (func, decl);
+      }
+      break;
+
+    case FIELD_DECL:
+      /* Ignore the nameless fields that are used to skip bits.  */
+      if (DECL_NAME (decl) != 0)
+	{
+	  output_type (member_declared_type (decl), containing_scope);
+          output_die (output_member_die, decl);
+	}
+      break;
+
+    case PARM_DECL:
+     /* Force out the type of this formal, if it was not forced out yet.
+	Note that here we can run afoul of a bug in "classic" svr4 SDB.
+	It should be able to grok the presence of type DIEs within a list
+	of TAG_formal_parameter DIEs, but it doesn't.  */
+
+      output_type (TREE_TYPE (decl), containing_scope);
+      output_die (output_formal_parameter_die, decl);
+      break;
+
+    case NAMESPACE_DECL:
+      /* Ignore for now.  */
+      break;
+
+    default:
+      abort ();
+    }
+}

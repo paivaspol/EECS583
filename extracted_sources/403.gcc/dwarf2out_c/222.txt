@@ -1,0 +1,14 @@
+static void
+gen_ptr_to_mbr_type_die (type, context_die)
+     tree type;
+     dw_die_ref context_die;
+{
+  dw_die_ref ptr_die
+    = new_die (DW_TAG_ptr_to_member_type,
+	       scope_die_for (type, context_die), type);
+
+  equate_type_number_to_die (type, ptr_die);
+  add_AT_die_ref (ptr_die, DW_AT_containing_type,
+		  lookup_type_die (TYPE_OFFSET_BASETYPE (type)));
+  add_type_attribute (ptr_die, TREE_TYPE (type), 0, 0, context_die);
+}

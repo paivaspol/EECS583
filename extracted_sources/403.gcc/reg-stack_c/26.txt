@@ -1,0 +1,31 @@
+static void
+convert_regs_exit ()
+{
+  int value_reg_low, value_reg_high;
+  stack output_stack;
+  rtx retvalue;
+
+  retvalue = stack_result (current_function_decl);
+  value_reg_low = value_reg_high = -1;
+  if (retvalue)
+    {
+      value_reg_low = REGNO (retvalue);
+      value_reg_high = value_reg_low
+	+ HARD_REGNO_NREGS (value_reg_low, GET_MODE (retvalue)) - 1;
+    }
+
+  output_stack = &BLOCK_INFO (EXIT_BLOCK_PTR)->stack_in;
+  if (value_reg_low == -1)
+    output_stack->top = -1;
+  else
+    {
+      int reg;
+
+      output_stack->top = value_reg_high - value_reg_low;
+      for (reg = value_reg_low; reg <= value_reg_high; ++reg)
+	{
+	  output_stack->reg[value_reg_high - reg] = reg;
+	  SET_HARD_REG_BIT (output_stack->reg_set, reg);
+	}
+    }
+}

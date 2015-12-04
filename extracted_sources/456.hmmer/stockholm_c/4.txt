@@ -1,0 +1,60 @@
+static int
+parse_gf(MSA *msa, char *buf)
+{
+  char *gf;
+  char *featurename;
+  char *text;
+  char *s;
+
+  s = buf;
+  if ((gf          = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((featurename = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((text        = sre_strtok(&s, "\n",       NULL)) == NULL) return 0;
+  while (*text && (*text == ' ' || *text == '\t')) text++;
+
+  if      (strcmp(featurename, "ID") == 0) 
+    msa->name                 = sre_strdup(text, -1);
+  else if (strcmp(featurename, "AC") == 0) 
+    msa->acc                  = sre_strdup(text, -1);
+  else if (strcmp(featurename, "DE") == 0) 
+    msa->desc                 = sre_strdup(text, -1);
+  else if (strcmp(featurename, "AU") == 0) 
+    msa->au                   = sre_strdup(text, -1);
+  else if (strcmp(featurename, "GA") == 0) 
+    {				/* Pfam has GA1, GA2. Rfam just has GA1. */
+      s = text;
+      if ((text = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+      msa->cutoff[MSA_CUTOFF_GA1]        = atof(text);
+      msa->cutoff_is_set[MSA_CUTOFF_GA1] = TRUE;
+      if ((text = sre_strtok(&s, WHITESPACE, NULL)) != NULL) {
+	msa->cutoff[MSA_CUTOFF_GA2]        = atof(text);
+	msa->cutoff_is_set[MSA_CUTOFF_GA2] = TRUE;
+      }
+    }
+  else if (strcmp(featurename, "NC") == 0) 
+    {
+      s = text;
+      if ((text = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+      msa->cutoff[MSA_CUTOFF_NC1]        = atof(text);
+      msa->cutoff_is_set[MSA_CUTOFF_NC1] = TRUE;
+      if ((text = sre_strtok(&s, WHITESPACE, NULL)) != NULL) {
+	msa->cutoff[MSA_CUTOFF_NC2]        = atof(text);
+	msa->cutoff_is_set[MSA_CUTOFF_NC2] = TRUE;
+      }
+    }
+  else if (strcmp(featurename, "TC") == 0) 
+    {
+      s = text;
+      if ((text = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+      msa->cutoff[MSA_CUTOFF_TC1]        = atof(text);
+      msa->cutoff_is_set[MSA_CUTOFF_TC1] = TRUE;
+      if ((text = sre_strtok(&s, WHITESPACE, NULL)) != NULL) {
+	msa->cutoff[MSA_CUTOFF_TC2]        = atof(text);
+	msa->cutoff_is_set[MSA_CUTOFF_TC2] = TRUE;
+      }
+    }
+  else 
+    MSAAddGF(msa, featurename, text);
+
+  return 1;
+}

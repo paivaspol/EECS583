@@ -1,0 +1,65 @@
+void
+incomplete_type_error (value, type)
+     tree value;
+     tree type;
+{
+  const char *type_code_string;
+
+  /* Avoid duplicate error message.  */
+  if (TREE_CODE (type) == ERROR_MARK)
+    return;
+
+  if (value != 0 && (TREE_CODE (value) == VAR_DECL
+		     || TREE_CODE (value) == PARM_DECL))
+    error ("`%s' has an incomplete type",
+	   IDENTIFIER_POINTER (DECL_NAME (value)));
+  else
+    {
+    retry:
+      /* We must print an error message.  Be clever about what it says.  */
+
+      switch (TREE_CODE (type))
+	{
+	case RECORD_TYPE:
+	  type_code_string = "struct";
+	  break;
+
+	case UNION_TYPE:
+	  type_code_string = "union";
+	  break;
+
+	case ENUMERAL_TYPE:
+	  type_code_string = "enum";
+	  break;
+
+	case VOID_TYPE:
+	  error ("invalid use of void expression");
+	  return;
+
+	case ARRAY_TYPE:
+	  if (TYPE_DOMAIN (type))
+	    {
+	      if (TYPE_MAX_VALUE (TYPE_DOMAIN (type)) == NULL)
+		{
+		  error ("invalid use of flexible array member");
+		  return;
+		}
+	      type = TREE_TYPE (type);
+	      goto retry;
+	    }
+	  error ("invalid use of array with unspecified bounds");
+	  return;
+
+	default:
+	  abort ();
+	}
+
+      if (TREE_CODE (TYPE_NAME (type)) == IDENTIFIER_NODE)
+	error ("invalid use of undefined type `%s %s'",
+	       type_code_string, IDENTIFIER_POINTER (TYPE_NAME (type)));
+      else
+	/* If this type has a typedef-name, the TYPE_NAME is a TYPE_DECL.  */
+	error ("invalid use of incomplete typedef `%s'",
+	       IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (type))));
+    }
+}

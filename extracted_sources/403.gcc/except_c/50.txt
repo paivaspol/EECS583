@@ -1,0 +1,113 @@
+static void
+build_post_landing_pads ()
+{
+  int i;
+
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      struct eh_region *region = cfun->eh->region_array[i];
+      rtx seq;
+
+      /* Mind we don't process a region more than once.  */
+      if (!region || region->region_number != i)
+	continue;
+
+      switch (region->type)
+	{
+	case ERT_TRY:
+	  /* ??? Collect the set of all non-overlapping catch handlers
+	       all the way up the chain until blocked by a cleanup.  */
+	  /* ??? Outer try regions can share landing pads with inner
+	     try regions if the types are completely non-overlapping,
+	     and there are no intervening cleanups.  */
+
+	  region->post_landing_pad = gen_label_rtx ();
+
+	  start_sequence ();
+
+	  emit_label (region->post_landing_pad);
+
+	  /* ??? It is mighty inconvenient to call back into the
+	     switch statement generation code in expand_end_case.
+	     Rapid prototyping sez a sequence of ifs.  */
+	  {
+	    struct eh_region *c;
+	    for (c = region->u.try.catch; c ; c = c->u.catch.next_catch)
+	      {
+		/* ??? _Unwind_ForcedUnwind wants no match here.  */
+		if (c->u.catch.type_list == NULL)
+		  emit_jump (c->label);
+		else
+		  {
+		    /* Need for one cmp/jump per type caught. Each type
+		       list entry has a matching entry in the filter list
+		       (see assign_filter_values).  */
+		    tree tp_node = c->u.catch.type_list;
+		    tree flt_node = c->u.catch.filter_list;
+
+		    for (; tp_node; )
+		      {
+			emit_cmp_and_jump_insns
+			  (cfun->eh->filter,
+			   GEN_INT (tree_low_cst (TREE_VALUE (flt_node), 0)),
+			   EQ, NULL_RTX, word_mode, 0, c->label);
+
+			tp_node = TREE_CHAIN (tp_node);
+			flt_node = TREE_CHAIN (flt_node);
+		      }
+		  }
+	      }
+	  }
+
+	  /* We delay the generation of the _Unwind_Resume until we generate
+	     landing pads.  We emit a marker here so as to get good control
+	     flow data in the meantime.  */
+	  region->resume
+	    = emit_jump_insn (gen_rtx_RESX (VOIDmode, region->region_number));
+	  emit_barrier ();
+
+	  seq = get_insns ();
+	  end_sequence ();
+
+	  emit_insns_before (seq, region->u.try.catch->label);
+	  break;
+
+	case ERT_ALLOWED_EXCEPTIONS:
+	  region->post_landing_pad = gen_label_rtx ();
+
+	  start_sequence ();
+
+	  emit_label (region->post_landing_pad);
+
+	  emit_cmp_and_jump_insns (cfun->eh->filter,
+				   GEN_INT (region->u.allowed.filter),
+				   EQ, NULL_RTX, word_mode, 0, region->label);
+
+	  /* We delay the generation of the _Unwind_Resume until we generate
+	     landing pads.  We emit a marker here so as to get good control
+	     flow data in the meantime.  */
+	  region->resume
+	    = emit_jump_insn (gen_rtx_RESX (VOIDmode, region->region_number));
+	  emit_barrier ();
+
+	  seq = get_insns ();
+	  end_sequence ();
+
+	  emit_insns_before (seq, region->label);
+	  break;
+
+	case ERT_CLEANUP:
+	case ERT_MUST_NOT_THROW:
+	  region->post_landing_pad = region->label;
+	  break;
+
+	case ERT_CATCH:
+	case ERT_THROW:
+	  /* Nothing to do.  */
+	  break;
+
+	default:
+	  abort ();
+	}
+    }
+}

@@ -1,0 +1,614 @@
+static void
+fixup_var_refs_1 (var, promoted_mode, loc, insn, replacements, no_share)
+     rtx var;
+     enum machine_mode promoted_mode;
+     rtx *loc;
+     rtx insn;
+     struct fixup_replacement **replacements;
+     rtx no_share;
+{
+  int i;
+  rtx x = *loc;
+  RTX_CODE code = GET_CODE (x);
+  const char *fmt;
+  rtx tem, tem1;
+  struct fixup_replacement *replacement;
+
+  switch (code)
+    {
+    case ADDRESSOF:
+      if (XEXP (x, 0) == var)
+	{
+	  /* Prevent sharing of rtl that might lose.  */
+	  rtx sub = copy_rtx (XEXP (var, 0));
+
+	  if (! validate_change (insn, loc, sub, 0))
+	    {
+	      rtx y = gen_reg_rtx (GET_MODE (sub));
+	      rtx seq, new_insn;
+
+	      /* We should be able to replace with a register or all is lost.
+		 Note that we can't use validate_change to verify this, since
+		 we're not caring for replacing all dups simultaneously.  */
+	      if (! validate_replace_rtx (*loc, y, insn))
+		abort ();
+
+	      /* Careful!  First try to recognize a direct move of the
+		 value, mimicking how things are done in gen_reload wrt
+		 PLUS.  Consider what happens when insn is a conditional
+		 move instruction and addsi3 clobbers flags.  */
+
+	      start_sequence ();
+	      new_insn = emit_insn (gen_rtx_SET (VOIDmode, y, sub));
+	      seq = gen_sequence ();
+	      end_sequence ();
+
+	      if (recog_memoized (new_insn) < 0)
+		{
+		  /* That failed.  Fall back on force_operand and hope.  */
+
+		  start_sequence ();
+		  sub = force_operand (sub, y);
+		  if (sub != y)
+		    emit_insn (gen_move_insn (y, sub));
+		  seq = gen_sequence ();
+		  end_sequence ();
+		}
+
+#ifdef HAVE_cc0
+	      /* Don't separate setter from user.  */
+	      if (PREV_INSN (insn) && sets_cc0_p (PREV_INSN (insn)))
+		insn = PREV_INSN (insn);
+#endif
+
+	      emit_insn_before (seq, insn);
+	    }
+	}
+      return;
+
+    case MEM:
+      if (var == x)
+	{
+	  /* If we already have a replacement, use it.  Otherwise,
+	     try to fix up this address in case it is invalid.  */
+
+	  replacement = find_fixup_replacement (replacements, var);
+	  if (replacement->new)
+	    {
+	      *loc = replacement->new;
+	      return;
+	    }
+
+	  *loc = replacement->new = x = fixup_stack_1 (x, insn);
+
+	  /* Unless we are forcing memory to register or we changed the mode,
+	     we can leave things the way they are if the insn is valid.  */
+
+	  INSN_CODE (insn) = -1;
+	  if (! flag_force_mem && GET_MODE (x) == promoted_mode
+	      && recog_memoized (insn) >= 0)
+	    return;
+
+	  *loc = replacement->new = gen_reg_rtx (promoted_mode);
+	  return;
+	}
+
+      /* If X contains VAR, we need to unshare it here so that we update
+	 each occurrence separately.  But all identical MEMs in one insn
+	 must be replaced with the same rtx because of the possibility of
+	 MATCH_DUPs.  */
+
+      if (reg_mentioned_p (var, x))
+	{
+	  replacement = find_fixup_replacement (replacements, x);
+	  if (replacement->new == 0)
+	    replacement->new = copy_most_rtx (x, no_share);
+
+	  *loc = x = replacement->new;
+	  code = GET_CODE (x);
+	}
+      break;
+
+    case REG:
+    case CC0:
+    case PC:
+    case CONST_INT:
+    case CONST:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+      return;
+
+    case SIGN_EXTRACT:
+    case ZERO_EXTRACT:
+      /* Note that in some cases those types of expressions are altered
+	 by optimize_bit_field, and do not survive to get here.  */
+      if (XEXP (x, 0) == var
+	  || (GET_CODE (XEXP (x, 0)) == SUBREG
+	      && SUBREG_REG (XEXP (x, 0)) == var))
+	{
+	  /* Get TEM as a valid MEM in the mode presently in the insn.
+
+	     We don't worry about the possibility of MATCH_DUP here; it
+	     is highly unlikely and would be tricky to handle.  */
+
+	  tem = XEXP (x, 0);
+	  if (GET_CODE (tem) == SUBREG)
+	    {
+	      if (GET_MODE_BITSIZE (GET_MODE (tem))
+		  > GET_MODE_BITSIZE (GET_MODE (var)))
+		{
+		  replacement = find_fixup_replacement (replacements, var);
+		  if (replacement->new == 0)
+		    replacement->new = gen_reg_rtx (GET_MODE (var));
+		  SUBREG_REG (tem) = replacement->new;
+
+		  /* The following code works only if we have a MEM, so we
+		     need to handle the subreg here.  We directly substitute
+		     it assuming that a subreg must be OK here.  We already
+		     scheduled a replacement to copy the mem into the
+		     subreg.  */
+		  XEXP (x, 0) = tem;
+		  return;
+		}
+	      else
+		tem = fixup_memory_subreg (tem, insn, promoted_mode, 0);
+	    }
+	  else
+	    tem = fixup_stack_1 (tem, insn);
+
+	  /* Unless we want to load from memory, get TEM into the proper mode
+	     for an extract from memory.  This can only be done if the
+	     extract is at a constant position and length.  */
+
+	  if (! flag_force_mem && GET_CODE (XEXP (x, 1)) == CONST_INT
+	      && GET_CODE (XEXP (x, 2)) == CONST_INT
+	      && ! mode_dependent_address_p (XEXP (tem, 0))
+	      && ! MEM_VOLATILE_P (tem))
+	    {
+	      enum machine_mode wanted_mode = VOIDmode;
+	      enum machine_mode is_mode = GET_MODE (tem);
+	      HOST_WIDE_INT pos = INTVAL (XEXP (x, 2));
+
+	      if (GET_CODE (x) == ZERO_EXTRACT)
+		{
+		  enum machine_mode new_mode
+		    = mode_for_extraction (EP_extzv, 1);
+		  if (new_mode != MAX_MACHINE_MODE)
+		    wanted_mode = new_mode;
+		}
+	      else if (GET_CODE (x) == SIGN_EXTRACT)
+		{
+		  enum machine_mode new_mode
+		    = mode_for_extraction (EP_extv, 1);
+		  if (new_mode != MAX_MACHINE_MODE)
+		    wanted_mode = new_mode;
+		}
+
+	      /* If we have a narrower mode, we can do something.  */
+	      if (wanted_mode != VOIDmode
+		  && GET_MODE_SIZE (wanted_mode) < GET_MODE_SIZE (is_mode))
+		{
+		  HOST_WIDE_INT offset = pos / BITS_PER_UNIT;
+		  rtx old_pos = XEXP (x, 2);
+		  rtx newmem;
+
+		  /* If the bytes and bits are counted differently, we
+		     must adjust the offset.  */
+		  if (BYTES_BIG_ENDIAN != BITS_BIG_ENDIAN)
+		    offset = (GET_MODE_SIZE (is_mode)
+			      - GET_MODE_SIZE (wanted_mode) - offset);
+
+		  pos %= GET_MODE_BITSIZE (wanted_mode);
+
+		  newmem = adjust_address_nv (tem, wanted_mode, offset);
+
+		  /* Make the change and see if the insn remains valid.  */
+		  INSN_CODE (insn) = -1;
+		  XEXP (x, 0) = newmem;
+		  XEXP (x, 2) = GEN_INT (pos);
+
+		  if (recog_memoized (insn) >= 0)
+		    return;
+
+		  /* Otherwise, restore old position.  XEXP (x, 0) will be
+		     restored later.  */
+		  XEXP (x, 2) = old_pos;
+		}
+	    }
+
+	  /* If we get here, the bitfield extract insn can't accept a memory
+	     reference.  Copy the input into a register.  */
+
+	  tem1 = gen_reg_rtx (GET_MODE (tem));
+	  emit_insn_before (gen_move_insn (tem1, tem), insn);
+	  XEXP (x, 0) = tem1;
+	  return;
+	}
+      break;
+
+    case SUBREG:
+      if (SUBREG_REG (x) == var)
+	{
+	  /* If this is a special SUBREG made because VAR was promoted
+	     from a wider mode, replace it with VAR and call ourself
+	     recursively, this time saying that the object previously
+	     had its current mode (by virtue of the SUBREG).  */
+
+	  if (SUBREG_PROMOTED_VAR_P (x))
+	    {
+	      *loc = var;
+	      fixup_var_refs_1 (var, GET_MODE (var), loc, insn, replacements,
+				no_share);
+	      return;
+	    }
+
+	  /* If this SUBREG makes VAR wider, it has become a paradoxical
+	     SUBREG with VAR in memory, but these aren't allowed at this
+	     stage of the compilation.  So load VAR into a pseudo and take
+	     a SUBREG of that pseudo.  */
+	  if (GET_MODE_SIZE (GET_MODE (x)) > GET_MODE_SIZE (GET_MODE (var)))
+	    {
+	      replacement = find_fixup_replacement (replacements, var);
+	      if (replacement->new == 0)
+		replacement->new = gen_reg_rtx (promoted_mode);
+	      SUBREG_REG (x) = replacement->new;
+	      return;
+	    }
+
+	  /* See if we have already found a replacement for this SUBREG.
+	     If so, use it.  Otherwise, make a MEM and see if the insn
+	     is recognized.  If not, or if we should force MEM into a register,
+	     make a pseudo for this SUBREG.  */
+	  replacement = find_fixup_replacement (replacements, x);
+	  if (replacement->new)
+	    {
+	      *loc = replacement->new;
+	      return;
+	    }
+
+	  replacement->new = *loc = fixup_memory_subreg (x, insn, 
+							 promoted_mode, 0);
+
+	  INSN_CODE (insn) = -1;
+	  if (! flag_force_mem && recog_memoized (insn) >= 0)
+	    return;
+
+	  *loc = replacement->new = gen_reg_rtx (GET_MODE (x));
+	  return;
+	}
+      break;
+
+    case SET:
+      /* First do special simplification of bit-field references.  */
+      if (GET_CODE (SET_DEST (x)) == SIGN_EXTRACT
+	  || GET_CODE (SET_DEST (x)) == ZERO_EXTRACT)
+	optimize_bit_field (x, insn, 0);
+      if (GET_CODE (SET_SRC (x)) == SIGN_EXTRACT
+	  || GET_CODE (SET_SRC (x)) == ZERO_EXTRACT)
+	optimize_bit_field (x, insn, 0);
+
+      /* For a paradoxical SUBREG inside a ZERO_EXTRACT, load the object
+	 into a register and then store it back out.  */
+      if (GET_CODE (SET_DEST (x)) == ZERO_EXTRACT
+	  && GET_CODE (XEXP (SET_DEST (x), 0)) == SUBREG
+	  && SUBREG_REG (XEXP (SET_DEST (x), 0)) == var
+	  && (GET_MODE_SIZE (GET_MODE (XEXP (SET_DEST (x), 0)))
+	      > GET_MODE_SIZE (GET_MODE (var))))
+	{
+	  replacement = find_fixup_replacement (replacements, var);
+	  if (replacement->new == 0)
+	    replacement->new = gen_reg_rtx (GET_MODE (var));
+
+	  SUBREG_REG (XEXP (SET_DEST (x), 0)) = replacement->new;
+	  emit_insn_after (gen_move_insn (var, replacement->new), insn);
+	}
+
+      /* If SET_DEST is now a paradoxical SUBREG, put the result of this
+	 insn into a pseudo and store the low part of the pseudo into VAR.  */
+      if (GET_CODE (SET_DEST (x)) == SUBREG
+	  && SUBREG_REG (SET_DEST (x)) == var
+	  && (GET_MODE_SIZE (GET_MODE (SET_DEST (x)))
+	      > GET_MODE_SIZE (GET_MODE (var))))
+	{
+	  SET_DEST (x) = tem = gen_reg_rtx (GET_MODE (SET_DEST (x)));
+	  emit_insn_after (gen_move_insn (var, gen_lowpart (GET_MODE (var),
+							    tem)),
+			   insn);
+	  break;
+	}
+
+      {
+	rtx dest = SET_DEST (x);
+	rtx src = SET_SRC (x);
+	rtx outerdest = dest;
+
+	while (GET_CODE (dest) == SUBREG || GET_CODE (dest) == STRICT_LOW_PART
+	       || GET_CODE (dest) == SIGN_EXTRACT
+	       || GET_CODE (dest) == ZERO_EXTRACT)
+	  dest = XEXP (dest, 0);
+
+	if (GET_CODE (src) == SUBREG)
+	  src = SUBREG_REG (src);
+
+	/* If VAR does not appear at the top level of the SET
+	   just scan the lower levels of the tree.  */
+
+	if (src != var && dest != var)
+	  break;
+
+	/* We will need to rerecognize this insn.  */
+	INSN_CODE (insn) = -1;
+
+	if (GET_CODE (outerdest) == ZERO_EXTRACT && dest == var
+	    && mode_for_extraction (EP_insv, -1) != MAX_MACHINE_MODE)
+	  {
+	    /* Since this case will return, ensure we fixup all the
+	       operands here.  */
+	    fixup_var_refs_1 (var, promoted_mode, &XEXP (outerdest, 1),
+			      insn, replacements, no_share);
+	    fixup_var_refs_1 (var, promoted_mode, &XEXP (outerdest, 2),
+			      insn, replacements, no_share);
+	    fixup_var_refs_1 (var, promoted_mode, &SET_SRC (x),
+			      insn, replacements, no_share);
+
+	    tem = XEXP (outerdest, 0);
+
+	    /* Clean up (SUBREG:SI (MEM:mode ...) 0)
+	       that may appear inside a ZERO_EXTRACT.
+	       This was legitimate when the MEM was a REG.  */
+	    if (GET_CODE (tem) == SUBREG
+		&& SUBREG_REG (tem) == var)
+	      tem = fixup_memory_subreg (tem, insn, promoted_mode, 0);
+	    else
+	      tem = fixup_stack_1 (tem, insn);
+
+	    if (GET_CODE (XEXP (outerdest, 1)) == CONST_INT
+		&& GET_CODE (XEXP (outerdest, 2)) == CONST_INT
+		&& ! mode_dependent_address_p (XEXP (tem, 0))
+		&& ! MEM_VOLATILE_P (tem))
+	      {
+		enum machine_mode wanted_mode;
+		enum machine_mode is_mode = GET_MODE (tem);
+		HOST_WIDE_INT pos = INTVAL (XEXP (outerdest, 2));
+
+		wanted_mode = mode_for_extraction (EP_insv, 0);
+
+		/* If we have a narrower mode, we can do something.  */
+		if (GET_MODE_SIZE (wanted_mode) < GET_MODE_SIZE (is_mode))
+		  {
+		    HOST_WIDE_INT offset = pos / BITS_PER_UNIT;
+		    rtx old_pos = XEXP (outerdest, 2);
+		    rtx newmem;
+
+		    if (BYTES_BIG_ENDIAN != BITS_BIG_ENDIAN)
+		      offset = (GET_MODE_SIZE (is_mode)
+				- GET_MODE_SIZE (wanted_mode) - offset);
+
+		    pos %= GET_MODE_BITSIZE (wanted_mode);
+
+		    newmem = adjust_address_nv (tem, wanted_mode, offset);
+
+		    /* Make the change and see if the insn remains valid.  */
+		    INSN_CODE (insn) = -1;
+		    XEXP (outerdest, 0) = newmem;
+		    XEXP (outerdest, 2) = GEN_INT (pos);
+
+		    if (recog_memoized (insn) >= 0)
+		      return;
+
+		    /* Otherwise, restore old position.  XEXP (x, 0) will be
+		       restored later.  */
+		    XEXP (outerdest, 2) = old_pos;
+		  }
+	      }
+
+	    /* If we get here, the bit-field store doesn't allow memory
+	       or isn't located at a constant position.  Load the value into
+	       a register, do the store, and put it back into memory.  */
+
+	    tem1 = gen_reg_rtx (GET_MODE (tem));
+	    emit_insn_before (gen_move_insn (tem1, tem), insn);
+	    emit_insn_after (gen_move_insn (tem, tem1), insn);
+	    XEXP (outerdest, 0) = tem1;
+	    return;
+	  }
+
+	/* STRICT_LOW_PART is a no-op on memory references
+	   and it can cause combinations to be unrecognizable,
+	   so eliminate it.  */
+
+	if (dest == var && GET_CODE (SET_DEST (x)) == STRICT_LOW_PART)
+	  SET_DEST (x) = XEXP (SET_DEST (x), 0);
+
+	/* A valid insn to copy VAR into or out of a register
+	   must be left alone, to avoid an infinite loop here.
+	   If the reference to VAR is by a subreg, fix that up,
+	   since SUBREG is not valid for a memref.
+	   Also fix up the address of the stack slot.
+
+	   Note that we must not try to recognize the insn until
+	   after we know that we have valid addresses and no
+	   (subreg (mem ...) ...) constructs, since these interfere
+	   with determining the validity of the insn.  */
+
+	if ((SET_SRC (x) == var
+	     || (GET_CODE (SET_SRC (x)) == SUBREG
+		 && SUBREG_REG (SET_SRC (x)) == var))
+	    && (GET_CODE (SET_DEST (x)) == REG
+		|| (GET_CODE (SET_DEST (x)) == SUBREG
+		    && GET_CODE (SUBREG_REG (SET_DEST (x))) == REG))
+	    && GET_MODE (var) == promoted_mode
+	    && x == single_set (insn))
+	  {
+	    rtx pat, last;
+
+	    if (GET_CODE (SET_SRC (x)) == SUBREG
+		&& (GET_MODE_SIZE (GET_MODE (SET_SRC (x)))
+		    > GET_MODE_SIZE (GET_MODE (var))))
+	      {
+		/* This (subreg VAR) is now a paradoxical subreg.  We need
+		   to replace VAR instead of the subreg.  */
+		replacement = find_fixup_replacement (replacements, var);
+		if (replacement->new == NULL_RTX)
+		  replacement->new = gen_reg_rtx (GET_MODE (var));
+		SUBREG_REG (SET_SRC (x)) = replacement->new;
+	      }
+	    else
+	      {
+		replacement = find_fixup_replacement (replacements, SET_SRC (x));
+		if (replacement->new)
+		  SET_SRC (x) = replacement->new;
+		else if (GET_CODE (SET_SRC (x)) == SUBREG)
+		  SET_SRC (x) = replacement->new
+		    = fixup_memory_subreg (SET_SRC (x), insn, promoted_mode,
+					   0);
+		else
+		  SET_SRC (x) = replacement->new
+		    = fixup_stack_1 (SET_SRC (x), insn);
+	      }
+
+	    if (recog_memoized (insn) >= 0)
+	      return;
+
+	    /* INSN is not valid, but we know that we want to
+	       copy SET_SRC (x) to SET_DEST (x) in some way.  So
+	       we generate the move and see whether it requires more
+	       than one insn.  If it does, we emit those insns and
+	       delete INSN.  Otherwise, we an just replace the pattern
+	       of INSN; we have already verified above that INSN has
+	       no other function that to do X.  */
+
+	    pat = gen_move_insn (SET_DEST (x), SET_SRC (x));
+	    if (GET_CODE (pat) == SEQUENCE)
+	      {
+		last = emit_insn_before (pat, insn);
+
+		/* INSN might have REG_RETVAL or other important notes, so
+		   we need to store the pattern of the last insn in the
+		   sequence into INSN similarly to the normal case.  LAST
+		   should not have REG_NOTES, but we allow them if INSN has
+		   no REG_NOTES.  */
+		if (REG_NOTES (last) && REG_NOTES (insn))
+		  abort ();
+		if (REG_NOTES (last))
+		  REG_NOTES (insn) = REG_NOTES (last);
+		PATTERN (insn) = PATTERN (last);
+
+		delete_insn (last);
+	      }
+	    else
+	      PATTERN (insn) = pat;
+
+	    return;
+	  }
+
+	if ((SET_DEST (x) == var
+	     || (GET_CODE (SET_DEST (x)) == SUBREG
+		 && SUBREG_REG (SET_DEST (x)) == var))
+	    && (GET_CODE (SET_SRC (x)) == REG
+		|| (GET_CODE (SET_SRC (x)) == SUBREG
+		    && GET_CODE (SUBREG_REG (SET_SRC (x))) == REG))
+	    && GET_MODE (var) == promoted_mode
+	    && x == single_set (insn))
+	  {
+	    rtx pat, last;
+
+	    if (GET_CODE (SET_DEST (x)) == SUBREG)
+	      SET_DEST (x) = fixup_memory_subreg (SET_DEST (x), insn, 
+						  promoted_mode, 0);
+	    else
+	      SET_DEST (x) = fixup_stack_1 (SET_DEST (x), insn);
+
+	    if (recog_memoized (insn) >= 0)
+	      return;
+
+	    pat = gen_move_insn (SET_DEST (x), SET_SRC (x));
+	    if (GET_CODE (pat) == SEQUENCE)
+	      {
+		last = emit_insn_before (pat, insn);
+
+		/* INSN might have REG_RETVAL or other important notes, so
+		   we need to store the pattern of the last insn in the
+		   sequence into INSN similarly to the normal case.  LAST
+		   should not have REG_NOTES, but we allow them if INSN has
+		   no REG_NOTES.  */
+		if (REG_NOTES (last) && REG_NOTES (insn))
+		  abort ();
+		if (REG_NOTES (last))
+		  REG_NOTES (insn) = REG_NOTES (last);
+		PATTERN (insn) = PATTERN (last);
+
+		delete_insn (last);
+	      }
+	    else
+	      PATTERN (insn) = pat;
+
+	    return;
+	  }
+
+	/* Otherwise, storing into VAR must be handled specially
+	   by storing into a temporary and copying that into VAR
+	   with a new insn after this one.  Note that this case
+	   will be used when storing into a promoted scalar since
+	   the insn will now have different modes on the input
+	   and output and hence will be invalid (except for the case
+	   of setting it to a constant, which does not need any
+	   change if it is valid).  We generate extra code in that case,
+	   but combine.c will eliminate it.  */
+
+	if (dest == var)
+	  {
+	    rtx temp;
+	    rtx fixeddest = SET_DEST (x);
+	    enum machine_mode temp_mode;
+
+	    /* STRICT_LOW_PART can be discarded, around a MEM.  */
+	    if (GET_CODE (fixeddest) == STRICT_LOW_PART)
+	      fixeddest = XEXP (fixeddest, 0);
+	    /* Convert (SUBREG (MEM)) to a MEM in a changed mode.  */
+	    if (GET_CODE (fixeddest) == SUBREG)
+	      {
+		fixeddest = fixup_memory_subreg (fixeddest, insn, 
+						 promoted_mode, 0);
+		temp_mode = GET_MODE (fixeddest);
+	      }
+	    else
+	      {
+		fixeddest = fixup_stack_1 (fixeddest, insn);
+		temp_mode = promoted_mode;
+	      }
+
+	    temp = gen_reg_rtx (temp_mode);
+
+	    emit_insn_after (gen_move_insn (fixeddest,
+					    gen_lowpart (GET_MODE (fixeddest),
+							 temp)),
+			     insn);
+
+	    SET_DEST (x) = temp;
+	  }
+      }
+
+    default:
+      break;
+    }
+
+  /* Nothing special about this RTX; fix its operands.  */
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	fixup_var_refs_1 (var, promoted_mode, &XEXP (x, i), insn, replacements,
+			  no_share);
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    fixup_var_refs_1 (var, promoted_mode, &XVECEXP (x, i, j),
+			      insn, replacements, no_share);
+	}
+    }
+}

@@ -1,0 +1,18 @@
+static void
+output_unsigned_leb128 (value)
+     unsigned long value;
+{
+  unsigned long orig_value = value;
+
+  do
+    {
+      unsigned byte = (value & 0x7f);
+
+      value >>= 7;
+      if (value != 0)	/* more bytes to follow */
+	byte |= 0x80;
+      dw2_asm_output_data (1, byte, "\t%s ULEB128 number - value = %lu",
+			   orig_value);
+    }
+  while (value != 0);
+}

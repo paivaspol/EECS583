@@ -1,0 +1,24 @@
+static inline unsigned
+simple_field_decl_align_in_bits (field)
+     tree field;
+{
+  unsigned align;
+
+  if (TREE_CODE (field) == ERROR_MARK)
+    return BITS_PER_WORD;
+
+  align = DECL_ALIGN (field);
+
+#ifdef BIGGEST_FIELD_ALIGNMENT
+  /* Some targets (i.e. i386) limit union field alignment
+     to a lower boundary than alignment of variables unless
+     it was overridden by attribute aligned.  */
+  if (! DECL_USER_ALIGN (field))
+    align = MIN (align, (unsigned) BIGGEST_FIELD_ALIGNMENT);
+#endif
+
+#ifdef ADJUST_FIELD_ALIGN
+  align = ADJUST_FIELD_ALIGN (field, align);
+#endif
+  return align;                          
+}

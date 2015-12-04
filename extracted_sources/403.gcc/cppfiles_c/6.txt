@@ -1,0 +1,58 @@
+static struct include_file *
+open_file (pfile, filename)
+     cpp_reader *pfile;
+     const char *filename;
+{
+  splay_tree_node nd = find_or_create_entry (pfile, filename);
+  struct include_file *file = (struct include_file *) nd->value;
+
+  if (file->err_no)
+    {
+      /* Ugh.  handle_missing_header () needs errno to be set.  */
+      errno = file->err_no;
+      return 0;
+    }
+
+  /* Don't reopen an idempotent file.  */
+  if (DO_NOT_REREAD (file))
+    return file;
+      
+  /* Don't reopen one which is already loaded.  */
+  if (file->buffer != NULL)
+    return file;
+
+  /* We used to open files in nonblocking mode, but that caused more
+     problems than it solved.  Do take care not to acquire a
+     controlling terminal by mistake (this can't happen on sane
+     systems, but paranoia is a virtue).
+
+     Use the three-argument form of open even though we aren't
+     specifying O_CREAT, to defend against broken system headers.
+
+     O_BINARY tells some runtime libraries (notably DJGPP) not to do
+     newline translation; we can handle DOS line breaks just fine
+     ourselves.
+
+     Special case: the empty string is translated to stdin.  */
+
+  if (filename[0] == '\0')
+    file->fd = 0;
+  else
+    file->fd = open (file->name, O_RDONLY | O_NOCTTY | O_BINARY, 0666);
+
+  if (file->fd != -1 && fstat (file->fd, &file->st) == 0)
+    {
+      if (!S_ISDIR (file->st.st_mode))
+	return file;
+
+      /* If it's a directory, we return null and continue the search
+	 as the file we're looking for may appear elsewhere in the
+	 search path.  */
+      errno = ENOENT;
+      close (file->fd);
+      file->fd = -1;
+    }
+
+  file->err_no = errno;
+  return 0;
+}

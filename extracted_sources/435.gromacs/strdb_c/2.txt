@@ -1,0 +1,24 @@
+int fget_lines(FILE *in,char ***strings)
+{
+  char **ptr;
+  char buf[256];
+  int  i,nstr;
+  
+  fgets(buf,255,in);  
+  if (sscanf(buf,"%d",&nstr) != 1) {
+    sprintf(warn_buf,"File is empty");
+    warning(NULL);
+    fclose(in);
+    
+    return 0;
+  }
+  snew(ptr,nstr);
+  for(i=0; (i<nstr); i++) {
+    fgets2(buf,255,in);
+    ptr[i] = strdup(buf);
+  }
+  
+  (*strings) = ptr;
+  
+  return nstr;
+}

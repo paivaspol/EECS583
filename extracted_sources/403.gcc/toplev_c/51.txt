@@ -1,0 +1,45 @@
+static int
+lang_dependent_init (name)
+     const char *name;
+{
+  if (dump_base_name == 0)
+    dump_base_name = name ? name : "gccdump";
+
+  /* Front-end initialization.  This hook can assume that GC,
+     identifier hashes etc. are set up, but debug initialization is
+     not done yet.  This routine must return the original filename
+     (e.g. foo.i -> foo.c) so can correctly initialize debug output.  */
+  name = (*lang_hooks.init) (name);
+  if (name == NULL)
+    return 0;
+
+  /* Is this duplication necessary?  */
+  name = ggc_strdup (name);
+  main_input_filename = input_filename = name;
+  init_asm_output (name);
+
+  /* These create various _DECL nodes, so need to be called after the
+     front end is initialized.  */
+  init_eh ();
+  init_optabs ();
+
+  /* Put an entry on the input file stack for the main input file.  */
+  push_srcloc (input_filename, 0);
+
+  /* If dbx symbol table desired, initialize writing it and output the
+     predefined types.  */
+  timevar_push (TV_SYMOUT);
+
+#ifdef DWARF2_UNWIND_INFO
+  if (dwarf2out_do_frame ())
+    dwarf2out_frame_init ();
+#endif
+
+  /* Now we have the correct original filename, we can initialize
+     debug output.  */
+  (*debug_hooks->init) (name);
+
+  timevar_pop (TV_SYMOUT);
+
+  return 1;
+}

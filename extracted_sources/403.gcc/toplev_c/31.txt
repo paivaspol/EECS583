@@ -1,0 +1,116 @@
+static void
+compile_file ()
+{
+  tree globals;
+
+  /* Initialize yet another pass.  */
+
+  init_final (main_input_filename);
+  init_branch_prob (dump_base_name);
+
+  timevar_push (TV_PARSE);
+
+  /* Call the parser, which parses the entire file
+     (calling rest_of_compilation for each function).  */
+  yyparse ();
+
+  /* In case there were missing block closers,
+     get us back to the global binding level.  */
+  (*lang_hooks.clear_binding_stack) ();
+
+  /* Compilation is now finished except for writing
+     what's left of the symbol table output.  */
+
+  timevar_pop (TV_PARSE);
+
+  if (flag_syntax_only)
+    return;
+
+  globals = getdecls ();
+
+  /* Really define vars that have had only a tentative definition.
+     Really output inline functions that must actually be callable
+     and have not been output so far.  */
+
+  {
+    int len = list_length (globals);
+    tree *vec = (tree *) xmalloc (sizeof (tree) * len);
+    int i;
+    tree decl;
+
+    /* Process the decls in reverse order--earliest first.
+       Put them into VEC from back to front, then take out from front.  */
+
+    for (i = 0, decl = globals; i < len; i++, decl = TREE_CHAIN (decl))
+      vec[len - i - 1] = decl;
+
+    wrapup_global_declarations (vec, len);
+
+    /* This must occur after the loop to output deferred functions.  Else
+       the profiler initializer would not be emitted if all the functions
+       in this compilation unit were deferred.
+
+       output_func_start_profiler can not cause any additional functions or
+       data to need to be output, so it need not be in the deferred function
+       loop above.  */
+    output_func_start_profiler ();
+
+    check_global_declarations (vec, len);
+
+    /* Clean up.  */
+    free (vec);
+  }
+
+  /* Write out any pending weak symbol declarations.  */
+
+  weak_finish ();
+
+  /* Do dbx symbols.  */
+  timevar_push (TV_SYMOUT);
+
+#ifdef DWARF2_UNWIND_INFO
+  if (dwarf2out_do_frame ())
+    dwarf2out_frame_finish ();
+#endif
+
+  (*debug_hooks->finish) (main_input_filename);
+  timevar_pop (TV_SYMOUT);
+
+  /* Output some stuff at end of file if nec.  */
+
+  dw2_output_indirect_constants ();
+
+  end_final (dump_base_name);
+
+  if (profile_arc_flag || flag_test_coverage || flag_branch_probabilities)
+    {
+      timevar_push (TV_DUMP);
+      open_dump_file (DFI_bp, NULL);
+
+      end_branch_prob ();
+
+      close_dump_file (DFI_bp, NULL, NULL_RTX);
+      timevar_pop (TV_DUMP);
+    }
+
+#ifdef ASM_FILE_END
+  ASM_FILE_END (asm_out_file);
+#endif
+
+  /* Attach a special .ident directive to the end of the file to identify
+     the version of GCC which compiled this code.  The format of the .ident
+     string is patterned after the ones produced by native SVR4 compilers.  */
+#ifdef IDENT_ASM_OP
+  if (!flag_no_ident)
+    fprintf (asm_out_file, "%s\"GCC: (GNU) %s\"\n",
+	     IDENT_ASM_OP, version_string);
+#endif
+
+  if (optimize > 0 && open_dump_file (DFI_combine, NULL))
+    {
+      timevar_push (TV_DUMP);
+      dump_combine_total_stats (rtl_dump_file);
+      close_dump_file (DFI_combine, NULL, NULL_RTX);
+      timevar_pop (TV_DUMP);
+    }
+}

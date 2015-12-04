@@ -1,0 +1,46 @@
+static void
+format_with_decl (buffer, decl)
+     output_buffer *buffer;
+     tree decl;
+{
+  const char *p;
+  
+  /* Do magic to get around lack of varargs support for insertion
+     of arguments into existing list.  We know that the decl is first;
+     we ass_u_me that it will be printed with "%s".  */
+  for (p = output_buffer_text_cursor (buffer); *p; ++p)
+    {
+      if (*p == '%')
+	{
+	  if (*(p + 1) == '%')
+	    ++p;
+	  else if (*(p + 1) != 's')
+	    abort ();
+	  else
+	    break;
+	}
+    }
+
+  /* Print the left-hand substring.  */
+  maybe_wrap_text (buffer, output_buffer_text_cursor (buffer), p);
+  
+  if (*p == '%')		/* Print the name.  */
+    {
+      const char *const n = (DECL_NAME (decl)
+			     ? (*decl_printable_name) (decl, 2)
+			     : _("((anonymous))"));
+      output_add_string (buffer, n);
+      while (*p)
+	{
+	  ++p;
+	  if (ISALPHA (*(p - 1) & 0xFF))
+	    break;
+	}
+    }
+
+  if (*p)			/* Print the rest of the message.  */
+    {
+      output_buffer_text_cursor (buffer) = p;
+      output_format (buffer);
+    }
+}

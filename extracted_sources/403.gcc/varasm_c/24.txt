@@ -1,0 +1,17 @@
+void
+assemble_constant_align (exp)
+     tree exp;
+{
+  int align;
+
+  /* Align the location counter as required by EXP's data type.  */
+  align = TYPE_ALIGN (TREE_TYPE (exp));
+#ifdef CONSTANT_ALIGNMENT
+  align = CONSTANT_ALIGNMENT (exp, align);
+#endif
+
+  if (align > BITS_PER_UNIT)
+    {
+      ASM_OUTPUT_ALIGN (asm_out_file, floor_log2 (align / BITS_PER_UNIT));
+    }
+}

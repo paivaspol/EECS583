@@ -1,0 +1,24 @@
+void
+Perl_sortsv(pTHX_ SV **array, size_t nmemb, SVCOMPARE_t cmp)
+{
+    void (*sortsvp)(pTHX_ SV **array, size_t nmemb, SVCOMPARE_t cmp, U32 flags)
+      = S_mergesortsv;
+    SV *hintsv;
+    I32 hints;
+
+    /*  Sun's Compiler (cc: WorkShop Compilers 4.2 30 Oct 1996 C 4.2) used 
+	to miscompile this function under optimization -O.  If you get test 
+	errors related to picking the correct sort() function, try recompiling 
+	this file without optimiziation.  -- A.D.  4/2002.
+    */
+    hints = SORTHINTS(hintsv);
+    if (hints & HINT_SORT_QUICKSORT) {
+	sortsvp = S_qsortsv;
+    }
+    else {
+	/* The default as of 5.8.0 is mergesort */
+	sortsvp = S_mergesortsv;
+    }
+
+    sortsvp(aTHX_ array, nmemb, cmp, 0);
+}

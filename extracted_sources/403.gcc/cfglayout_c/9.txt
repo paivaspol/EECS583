@@ -1,0 +1,25 @@
+static void
+fixup_fallthru_exit_predecessor ()
+{
+  edge e;
+  basic_block bb = NULL;
+
+  for (e = EXIT_BLOCK_PTR->pred; e; e = e->pred_next)
+    if (e->flags & EDGE_FALLTHRU)
+      bb = e->src;
+
+  if (bb && RBI (bb)->next)
+    {
+      basic_block c = BASIC_BLOCK (0);
+
+      while (RBI (c)->next != bb)
+	c = RBI (c)->next;
+
+      RBI (c)->next = RBI (bb)->next;
+      while (RBI (c)->next)
+	c = RBI (c)->next;
+
+      RBI (c)->next = bb;
+      RBI (bb)->next = NULL;
+    }
+}

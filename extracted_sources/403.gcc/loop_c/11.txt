@@ -1,0 +1,36 @@
+static void
+force_movables (movables)
+     struct loop_movables *movables;
+{
+  struct movable *m, *m1;
+
+  for (m1 = movables->head; m1; m1 = m1->next)
+    /* Omit this if moving just the (SET (REG) 0) of a zero-extend.  */
+    if (!m1->partial && !m1->done)
+      {
+	int regno = m1->regno;
+	for (m = m1->next; m; m = m->next)
+	  /* ??? Could this be a bug?  What if CSE caused the
+	     register of M1 to be used after this insn?
+	     Since CSE does not update regno_last_uid,
+	     this insn M->insn might not be where it dies.
+	     But very likely this doesn't matter; what matters is
+	     that M's reg is computed from M1's reg.  */
+	  if (INSN_UID (m->insn) == REGNO_LAST_UID (regno)
+	      && !m->done)
+	    break;
+	if (m != 0 && m->set_src == m1->set_dest
+	    /* If m->consec, m->set_src isn't valid.  */
+	    && m->consec == 0)
+	  m = 0;
+
+	/* Increase the priority of the moving the first insn
+	   since it permits the second to be moved as well.  */
+	if (m != 0)
+	  {
+	    m->forces = m1;
+	    m1->lifetime += m->lifetime;
+	    m1->savings += m->savings;
+	  }
+      }
+}

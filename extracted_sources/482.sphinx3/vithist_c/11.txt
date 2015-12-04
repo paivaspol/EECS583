@@ -1,0 +1,52 @@
+int32 vithist_partialutt_end (vithist_t *vh, kbcore_t *kbc)
+{
+    int32 f, i, b, l;
+    int32 sv, nsv, scr, bestscore, bestvh;
+    vithist_entry_t *ve, *bestve;
+    s3lmwid_t endwid;
+    lm_t *lm;
+    dict_t *dict;
+
+    /* Find last frame with entries in vithist table */
+    for (f = vh->n_frm-1; f >= 0; --f) {
+	sv = vh->frame_start[f];	/* First vithist entry in frame f */
+	nsv = vh->frame_start[f+1];	/* First vithist entry in next frame (f+1) */
+	
+	if (sv < nsv)
+	    break;
+    }
+    if (f < 0)
+	return -1;
+    
+    if (f != vh->n_frm-1){
+	#ifndef SPEC_CPU
+	E_ERROR("No word exits from last frame in block %d\n",vh->n_frm-1);
+	#endif
+	return -1;
+    }
+    
+    /* Terminate in a final </s> node (make this optional?) */
+    lm = kbcore_lm (kbc);
+    dict = kbcore_dict (kbc);    
+    endwid = lm_finishwid (lm);
+    
+    bestscore = MAX_NEG_INT32;
+    bestvh = -1;
+    
+    for (i = sv; i < nsv; i++) {
+	b = VITHIST_ID2BLK (i);
+	l = VITHIST_ID2BLKOFFSET (i);
+	ve = vh->entry[b] + l;
+	
+	scr = ve->score;
+	scr += lm_tg_score (lm, ve->lmstate.lm3g.lwid[1], ve->lmstate.lm3g.lwid[0], endwid, dict_finishwid(dict));
+	
+	if (bestscore < scr) {
+	    bestscore = scr;
+	    bestvh = i;
+	    bestve = ve;
+	}
+    }
+
+    return bestvh;
+}

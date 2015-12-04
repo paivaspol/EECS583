@@ -1,0 +1,91 @@
+static int
+find_cond_trap (test_bb, then_edge, else_edge)
+     basic_block test_bb;
+     edge then_edge, else_edge;
+{
+  basic_block then_bb, else_bb, trap_bb, other_bb;
+  rtx trap, jump, cond, cond_earliest, seq;
+  enum rtx_code code;
+
+  then_bb = then_edge->dest;
+  else_bb = else_edge->dest;
+
+  /* Locate the block with the trap instruction.  */
+  /* ??? While we look for no successors, we really ought to allow
+     EH successors.  Need to fix merge_if_block for that to work.  */
+  if ((trap = block_has_only_trap (then_bb)) != NULL)
+    trap_bb = then_bb, other_bb = else_bb;
+  else if ((trap = block_has_only_trap (else_bb)) != NULL)
+    trap_bb = else_bb, other_bb = then_bb;
+  else
+    return FALSE;
+
+  if (rtl_dump_file)
+    {
+      fprintf (rtl_dump_file, "\nTRAP-IF block found, start %d, trap %d\n",
+	       test_bb->index, trap_bb->index);
+    }
+
+  /* If this is not a standard conditional jump, we can't parse it.  */
+  jump = test_bb->end;
+  cond = noce_get_condition (jump, &cond_earliest);
+  if (! cond)
+    return FALSE;
+
+  /* If the conditional jump is more than just a conditional jump,
+     then we can not do if-conversion on this block.  */
+  if (! onlyjump_p (jump))
+    return FALSE;
+
+  /* We must be comparing objects whose modes imply the size.  */
+  if (GET_MODE (XEXP (cond, 0)) == BLKmode)
+    return FALSE;
+
+  /* Reverse the comparison code, if necessary.  */
+  code = GET_CODE (cond);
+  if (then_bb == trap_bb)
+    {
+      code = reversed_comparison_code (cond, jump);
+      if (code == UNKNOWN)
+	return FALSE;
+    }
+
+  /* Attempt to generate the conditional trap.  */
+  seq = gen_cond_trap (code, XEXP (cond, 0), XEXP (cond, 1),
+		       TRAP_CODE (PATTERN (trap)));
+  if (seq == NULL)
+    return FALSE;
+
+  /* Emit the new insns before cond_earliest.  */
+  emit_insn_before (seq, cond_earliest);
+
+  /* Delete the trap block if possible.  */
+  remove_edge (trap_bb == then_bb ? then_edge : else_edge);
+  if (trap_bb->pred == NULL)
+    {
+      flow_delete_block (trap_bb);
+      num_removed_blocks++;
+    }
+
+  /* If the non-trap block and the test are now adjacent, merge them.
+     Otherwise we must insert a direct branch.  */
+  if (test_bb->index + 1 == other_bb->index)
+    {
+      delete_insn (jump);
+      merge_if_block (test_bb, NULL, NULL, other_bb);
+    }
+  else
+    {
+      rtx lab, newjump;
+
+      lab = JUMP_LABEL (jump);
+      newjump = emit_jump_insn_after (gen_jump (lab), jump);
+      LABEL_NUSES (lab) += 1;
+      JUMP_LABEL (newjump) = lab;
+      emit_barrier_after (newjump);
+
+      delete_insn (jump);
+    }
+
+  return TRUE;
+}

@@ -1,0 +1,23 @@
+void add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,double coeff) {
+  register site *s ;
+  register int i ;  
+  register double tmp_coeff ;
+
+  su3_matrix tmat,tmat2;
+
+  if(GOES_BACKWARDS(dir))
+    {
+      dir = OPP_DIR(dir) ; 
+      coeff = -coeff ;
+    }
+  FORALLSITES(i,s){
+    if(s->parity==ODD) 
+      tmp_coeff = -coeff ;
+    else
+      tmp_coeff = coeff ;
+    uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
+    su3_projector(&(back[i]), &(forw[i]), &tmat);
+    scalar_mult_add_su3_matrix(&tmat2, &tmat,  tmp_coeff, &tmat2 );
+    make_anti_hermitian( &tmat2, &(s->mom[dir]) ); 
+  }
+}

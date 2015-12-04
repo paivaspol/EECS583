@@ -1,0 +1,19 @@
+static void
+link_loops ()
+{
+  unsigned int loop_idx = 0;
+  loop *loop_ptr, *prev_loop_ptr = 0;
+
+  prev_loop_ptr = VARRAY_GENERIC_PTR (loop_chain, loop_idx);
+  for (loop_ptr = VARRAY_GENERIC_PTR (loop_chain, ++loop_idx);
+       loop_ptr && loop_idx < VARRAY_SIZE (loop_chain);
+       loop_ptr = VARRAY_GENERIC_PTR (loop_chain, ++loop_idx))
+    {
+      if (prev_loop_ptr->outer_loop == loop_ptr->outer_loop)
+	{
+	  if (prev_loop_ptr->depth == loop_ptr->depth - 1)
+	    prev_loop_ptr->next_nest = loop_ptr;
+	  prev_loop_ptr = loop_ptr;
+	}
+    }
+}

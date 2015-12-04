@@ -1,0 +1,28 @@
+static void
+update_table_tick (x)
+     rtx x;
+{
+  enum rtx_code code = GET_CODE (x);
+  const char *fmt = GET_RTX_FORMAT (code);
+  int i;
+
+  if (code == REG)
+    {
+      unsigned int regno = REGNO (x);
+      unsigned int endregno
+	= regno + (regno < FIRST_PSEUDO_REGISTER
+		   ? HARD_REGNO_NREGS (regno, GET_MODE (x)) : 1);
+      unsigned int r;
+
+      for (r = regno; r < endregno; r++)
+	reg_last_set_table_tick[r] = label_tick;
+
+      return;
+    }
+
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    /* Note that we can't have an "E" in values stored; see
+       get_last_value_validate.  */
+    if (fmt[i] == 'e')
+      update_table_tick (XEXP (x, i));
+}

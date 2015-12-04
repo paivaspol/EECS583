@@ -1,0 +1,82 @@
+void pr_block(FILE *fp,int indent,char *title,t_block *block)
+{
+  int i,j,ok,size,start,end;
+  
+  if (available(fp,block,title))
+    {
+      indent=pr_block_title(fp,indent,title,block);
+      start=0;
+      end=start;
+      if ((ok=(block->index[start]==0))==0)
+        (void) fprintf(fp,"block->index[%d] should be 0\n",start);
+      else
+        for (i=0; i<block->nr; i++)
+          {
+            end=block->index[i+1];
+            size=pr_indent(fp,indent);
+            if (end<=start)
+              size+=fprintf(fp,"%s[%d]={",title,i);
+            else
+              size+=fprintf(fp,"%s[%d][%d..%d]={",
+			    title,bShowNumbers?i:-1,
+			    bShowNumbers?start:-1,bShowNumbers?end-1:-1);
+            for (j=start; j<end; j++)
+              {
+                if (j>start) size+=fprintf(fp,", ");
+                if ((size)>(USE_WIDTH))
+                  {
+                    (void) fprintf(fp,"\n");
+                    size=pr_indent(fp,indent+INDENT);
+                  }
+                size+=fprintf(fp,"%u",block->a[j]);
+              }
+            (void) fprintf(fp,"}\n");
+            start=end;
+          }
+      if ((end!=block->nra)||(!ok)) 
+        {
+          (void) pr_indent(fp,indent);
+          (void) fprintf(fp,"tables inconsistent, dumping complete tables:\n");
+          low_pr_block(fp,indent,title,block);
+        }
+    }
+}
+
+static void pr_blocks(FILE *fp,int indent,char *title,
+                      t_block block[],int n,char *block_names[])
+{
+  int i;
+  char s[STRLEN];
+  
+  if (available(fp,block,title))
+    {
+      indent=pr_title_n(fp,indent,title,n);
+      for (i=0; i<n; i++)
+        {
+          if (block_names==NULL)
+            sprintf(s,"%s[%d]",title,i);
+          else
+            sprintf(s,"%s[%s]",title,block_names[i]);
+          pr_block(fp,indent,s,&(block[i]));
+        }
+    }
+}
+
+static void pr_atom(FILE *fp,int indent,char *title,t_atom *atom,int n)
+{
+  int i,j;
+  
+  if (available(fp,atom,title)) {  
+    indent=pr_title_n(fp,indent,title,n);
+    for (i=0; i<n; i++) {
+      (void) pr_indent(fp,indent);
+      fprintf(fp,"%s[%6d]={type=%3d, typeB=%3d, ptype=%8s, m=%12.5e, "
+	      "q=%12.5e, mB=%12.5e, qB=%12.5e, resnr=%5d} grpnrs=[",
+	      title,i,atom[i].type,atom[i].typeB,ptype_str[atom[i].ptype],
+	      atom[i].m,atom[i].q,atom[i].mB,atom[i].qB,atom[i].resnr);
+      for(j=0; (j<egcNR); j++)
+	fprintf(fp," %d",(int)atom[i].grpnr[j]);
+      fprintf(fp," ]}\n");
+    }
+  }
+}

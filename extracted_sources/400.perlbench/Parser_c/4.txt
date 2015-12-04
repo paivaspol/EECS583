@@ -1,0 +1,26 @@
+static void
+free_pstate(pTHX_ PSTATE* pstate)
+{
+    int i;
+    SvREFCNT_dec(pstate->buf);
+    SvREFCNT_dec(pstate->pend_text);
+    SvREFCNT_dec(pstate->skipped_text);
+#ifdef MARKED_SECTION
+    SvREFCNT_dec(pstate->ms_stack);
+#endif
+    SvREFCNT_dec(pstate->bool_attr_val);
+    for (i = 0; i < EVENT_COUNT; i++) {
+	SvREFCNT_dec(pstate->handlers[i].cb);
+	SvREFCNT_dec(pstate->handlers[i].argspec);
+    }
+
+    SvREFCNT_dec(pstate->report_tags);
+    SvREFCNT_dec(pstate->ignore_tags);
+    SvREFCNT_dec(pstate->ignore_elements);
+    SvREFCNT_dec(pstate->ignoring_element);
+
+    SvREFCNT_dec(pstate->tmp);
+
+    pstate->signature = 0;
+    Safefree(pstate);
+}

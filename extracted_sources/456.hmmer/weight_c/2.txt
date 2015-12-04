@@ -1,0 +1,24 @@
+static void 
+downweight(struct phylo_s *tree, int nseq, float *lwt, float *rwt, float *fwt, int node)
+{
+  int ld,rd;
+  float lnum, rnum;
+
+  ld = tree[node-nseq].left;
+  rd = tree[node-nseq].right;
+  if (lwt[node] + rwt[node] > 0.0)
+    {
+      fwt[ld] = fwt[node] * (lwt[node] / (lwt[node] + rwt[node]));
+      fwt[rd] = fwt[node] * (rwt[node] / (lwt[node] + rwt[node]));
+    }
+  else
+    {
+      lnum = (ld >= nseq) ? tree[ld-nseq].incnum : 1.0;
+      rnum = (rd >= nseq) ? tree[rd-nseq].incnum : 1.0;
+      fwt[ld] = fwt[node] * lnum / (lnum + rnum);
+      fwt[rd] = fwt[node] * rnum / (lnum + rnum);
+    }
+
+  if (ld >= nseq) downweight(tree, nseq, lwt, rwt, fwt, ld);
+  if (rd >= nseq) downweight(tree, nseq, lwt, rwt, fwt, rd);
+}

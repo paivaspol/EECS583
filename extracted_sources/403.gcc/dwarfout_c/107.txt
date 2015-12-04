@@ -1,0 +1,25 @@
+static inline int
+type_ok_for_scope (type, scope)
+    tree type;
+    tree scope;
+{
+  /* Tagged types (i.e. struct, union, and enum types) must always be
+     output only in the scopes where they actually belong (or else the
+     scoping of their own tag names and the scoping of their member
+     names will be incorrect).  Non-tagged-types on the other hand can
+     generally be output anywhere, except that svr4 SDB really doesn't
+     want to see them nested within struct or union types, so here we
+     say it is always OK to immediately output any such a (non-tagged)
+     type, so long as we are not within such a context.  Note that the
+     only kinds of non-tagged types which we will be dealing with here
+     (for C and C++ anyway) will be array types and function types.  */
+
+  return is_tagged_type (type)
+	 ? (TYPE_CONTEXT (type) == scope
+	    /* Ignore namespaces for the moment.  */
+	    || (scope == NULL_TREE
+		&& TREE_CODE (TYPE_CONTEXT (type)) == NAMESPACE_DECL)
+	    || (scope == NULL_TREE && is_tagged_type (TYPE_CONTEXT (type))
+		&& TREE_ASM_WRITTEN (TYPE_CONTEXT (type))))
+	 : (scope == NULL_TREE || ! is_tagged_type (scope));
+}

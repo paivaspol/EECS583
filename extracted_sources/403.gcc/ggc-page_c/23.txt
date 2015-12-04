@@ -1,0 +1,33 @@
+static inline void
+poison_pages ()
+{
+  unsigned order;
+
+  for (order = 2; order < NUM_ORDERS; order++)
+    {
+      size_t num_objects = OBJECTS_PER_PAGE (order);
+      size_t size = OBJECT_SIZE (order);
+      page_entry *p;
+
+      for (p = G.pages[order]; p != NULL; p = p->next)
+	{
+	  size_t i;
+
+	  if (p->context_depth != G.context_depth)
+	    /* Since we don't do any collection for pages in pushed
+	       contexts, there's no need to do any poisoning.  And
+	       besides, the IN_USE_P array isn't valid until we pop
+	       contexts.  */
+	    continue;
+
+	  for (i = 0; i < num_objects; i++)
+	    {
+	      size_t word, bit;
+	      word = i / HOST_BITS_PER_LONG;
+	      bit = i % HOST_BITS_PER_LONG;
+	      if (((p->in_use_p[word] >> bit) & 1) == 0)
+		memset (p->page + i * size, 0xa5, size);
+	    }
+	}
+    }
+}

@@ -1,0 +1,510 @@
+static void
+move_movables (loop, movables, threshold, insn_count)
+     struct loop *loop;
+     struct loop_movables *movables;
+     int threshold;
+     int insn_count;
+{
+  struct loop_regs *regs = LOOP_REGS (loop);
+  int nregs = regs->num;
+  rtx new_start = 0;
+  struct movable *m;
+  rtx p;
+  rtx loop_start = loop->start;
+  rtx loop_end = loop->end;
+  /* Map of pseudo-register replacements to handle combining
+     when we move several insns that load the same value
+     into different pseudo-registers.  */
+  rtx *reg_map = (rtx *) xcalloc (nregs, sizeof (rtx));
+  char *already_moved = (char *) xcalloc (nregs, sizeof (char));
+
+  for (m = movables->head; m; m = m->next)
+    {
+      /* Describe this movable insn.  */
+
+      if (loop_dump_stream)
+	{
+	  fprintf (loop_dump_stream, "Insn %d: regno %d (life %d), ",
+		   INSN_UID (m->insn), m->regno, m->lifetime);
+	  if (m->consec > 0)
+	    fprintf (loop_dump_stream, "consec %d, ", m->consec);
+	  if (m->cond)
+	    fprintf (loop_dump_stream, "cond ");
+	  if (m->force)
+	    fprintf (loop_dump_stream, "force ");
+	  if (m->global)
+	    fprintf (loop_dump_stream, "global ");
+	  if (m->done)
+	    fprintf (loop_dump_stream, "done ");
+	  if (m->move_insn)
+	    fprintf (loop_dump_stream, "move-insn ");
+	  if (m->match)
+	    fprintf (loop_dump_stream, "matches %d ",
+		     INSN_UID (m->match->insn));
+	  if (m->forces)
+	    fprintf (loop_dump_stream, "forces %d ",
+		     INSN_UID (m->forces->insn));
+	}
+
+      /* Ignore the insn if it's already done (it matched something else).
+	 Otherwise, see if it is now safe to move.  */
+
+      if (!m->done
+	  && (! m->cond
+	      || (1 == loop_invariant_p (loop, m->set_src)
+		  && (m->dependencies == 0
+		      || 1 == loop_invariant_p (loop, m->dependencies))
+		  && (m->consec == 0
+		      || 1 == consec_sets_invariant_p (loop, m->set_dest,
+						       m->consec + 1,
+						       m->insn))))
+	  && (! m->forces || m->forces->done))
+	{
+	  int regno;
+	  rtx p;
+	  int savings = m->savings;
+
+	  /* We have an insn that is safe to move.
+	     Compute its desirability.  */
+
+	  p = m->insn;
+	  regno = m->regno;
+
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "savings %d ", savings);
+
+	  if (regs->array[regno].moved_once && loop_dump_stream)
+	    fprintf (loop_dump_stream, "halved since already moved ");
+
+	  /* An insn MUST be moved if we already moved something else
+	     which is safe only if this one is moved too: that is,
+	     if already_moved[REGNO] is nonzero.  */
+
+	  /* An insn is desirable to move if the new lifetime of the
+	     register is no more than THRESHOLD times the old lifetime.
+	     If it's not desirable, it means the loop is so big
+	     that moving won't speed things up much,
+	     and it is liable to make register usage worse.  */
+
+	  /* It is also desirable to move if it can be moved at no
+	     extra cost because something else was already moved.  */
+
+	  if (already_moved[regno]
+	      || flag_move_all_movables
+	      || (threshold * savings * m->lifetime) >=
+		 (regs->array[regno].moved_once ? insn_count * 2 : insn_count)
+	      || (m->forces && m->forces->done
+		  && regs->array[m->forces->regno].n_times_set == 1))
+	    {
+	      int count;
+	      struct movable *m1;
+	      rtx first = NULL_RTX;
+
+	      /* Now move the insns that set the reg.  */
+
+	      if (m->partial && m->match)
+		{
+		  rtx newpat, i1;
+		  rtx r1, r2;
+		  /* Find the end of this chain of matching regs.
+		     Thus, we load each reg in the chain from that one reg.
+		     And that reg is loaded with 0 directly,
+		     since it has ->match == 0.  */
+		  for (m1 = m; m1->match; m1 = m1->match);
+		  newpat = gen_move_insn (SET_DEST (PATTERN (m->insn)),
+					  SET_DEST (PATTERN (m1->insn)));
+		  i1 = loop_insn_hoist (loop, newpat);
+
+		  /* Mark the moved, invariant reg as being allowed to
+		     share a hard reg with the other matching invariant.  */
+		  REG_NOTES (i1) = REG_NOTES (m->insn);
+		  r1 = SET_DEST (PATTERN (m->insn));
+		  r2 = SET_DEST (PATTERN (m1->insn));
+		  regs_may_share
+		    = gen_rtx_EXPR_LIST (VOIDmode, r1,
+					 gen_rtx_EXPR_LIST (VOIDmode, r2,
+							    regs_may_share));
+		  delete_insn (m->insn);
+
+		  if (new_start == 0)
+		    new_start = i1;
+
+		  if (loop_dump_stream)
+		    fprintf (loop_dump_stream, " moved to %d", INSN_UID (i1));
+		}
+	      /* If we are to re-generate the item being moved with a
+		 new move insn, first delete what we have and then emit
+		 the move insn before the loop.  */
+	      else if (m->move_insn)
+		{
+		  rtx i1, temp, seq;
+
+		  for (count = m->consec; count >= 0; count--)
+		    {
+		      /* If this is the first insn of a library call sequence,
+			 skip to the end.  */
+		      if (GET_CODE (p) != NOTE
+			  && (temp = find_reg_note (p, REG_LIBCALL, NULL_RTX)))
+			p = XEXP (temp, 0);
+
+		      /* If this is the last insn of a libcall sequence, then
+			 delete every insn in the sequence except the last.
+			 The last insn is handled in the normal manner.  */
+		      if (GET_CODE (p) != NOTE
+			  && (temp = find_reg_note (p, REG_RETVAL, NULL_RTX)))
+			{
+			  temp = XEXP (temp, 0);
+			  while (temp != p)
+			    temp = delete_insn (temp);
+			}
+
+		      temp = p;
+		      p = delete_insn (p);
+
+		      /* simplify_giv_expr expects that it can walk the insns
+			 at m->insn forwards and see this old sequence we are
+			 tossing here.  delete_insn does preserve the next
+			 pointers, but when we skip over a NOTE we must fix
+			 it up.  Otherwise that code walks into the non-deleted
+			 insn stream.  */
+		      while (p && GET_CODE (p) == NOTE)
+			p = NEXT_INSN (temp) = NEXT_INSN (p);
+		    }
+
+		  start_sequence ();
+		  emit_move_insn (m->set_dest, m->set_src);
+		  temp = get_insns ();
+		  seq = gen_sequence ();
+		  end_sequence ();
+
+		  add_label_notes (m->set_src, temp);
+
+		  i1 = loop_insn_hoist (loop, seq);
+		  if (! find_reg_note (i1, REG_EQUAL, NULL_RTX))
+		    set_unique_reg_note (i1,
+					 m->is_equiv ? REG_EQUIV : REG_EQUAL,
+					 m->set_src);
+
+		  if (loop_dump_stream)
+		    fprintf (loop_dump_stream, " moved to %d", INSN_UID (i1));
+
+		  /* The more regs we move, the less we like moving them.  */
+		  threshold -= 3;
+		}
+	      else
+		{
+		  for (count = m->consec; count >= 0; count--)
+		    {
+		      rtx i1, temp;
+
+		      /* If first insn of libcall sequence, skip to end.  */
+		      /* Do this at start of loop, since p is guaranteed to
+			 be an insn here.  */
+		      if (GET_CODE (p) != NOTE
+			  && (temp = find_reg_note (p, REG_LIBCALL, NULL_RTX)))
+			p = XEXP (temp, 0);
+
+		      /* If last insn of libcall sequence, move all
+			 insns except the last before the loop.  The last
+			 insn is handled in the normal manner.  */
+		      if (GET_CODE (p) != NOTE
+			  && (temp = find_reg_note (p, REG_RETVAL, NULL_RTX)))
+			{
+			  rtx fn_address = 0;
+			  rtx fn_reg = 0;
+			  rtx fn_address_insn = 0;
+
+			  first = 0;
+			  for (temp = XEXP (temp, 0); temp != p;
+			       temp = NEXT_INSN (temp))
+			    {
+			      rtx body;
+			      rtx n;
+			      rtx next;
+
+			      if (GET_CODE (temp) == NOTE)
+				continue;
+
+			      body = PATTERN (temp);
+
+			      /* Find the next insn after TEMP,
+				 not counting USE or NOTE insns.  */
+			      for (next = NEXT_INSN (temp); next != p;
+				   next = NEXT_INSN (next))
+				if (! (GET_CODE (next) == INSN
+				       && GET_CODE (PATTERN (next)) == USE)
+				    && GET_CODE (next) != NOTE)
+				  break;
+
+			      /* If that is the call, this may be the insn
+				 that loads the function address.
+
+				 Extract the function address from the insn
+				 that loads it into a register.
+				 If this insn was cse'd, we get incorrect code.
+
+				 So emit a new move insn that copies the
+				 function address into the register that the
+				 call insn will use.  flow.c will delete any
+				 redundant stores that we have created.  */
+			      if (GET_CODE (next) == CALL_INSN
+				  && GET_CODE (body) == SET
+				  && GET_CODE (SET_DEST (body)) == REG
+				  && (n = find_reg_note (temp, REG_EQUAL,
+							 NULL_RTX)))
+				{
+				  fn_reg = SET_SRC (body);
+				  if (GET_CODE (fn_reg) != REG)
+				    fn_reg = SET_DEST (body);
+				  fn_address = XEXP (n, 0);
+				  fn_address_insn = temp;
+				}
+			      /* We have the call insn.
+				 If it uses the register we suspect it might,
+				 load it with the correct address directly.  */
+			      if (GET_CODE (temp) == CALL_INSN
+				  && fn_address != 0
+				  && reg_referenced_p (fn_reg, body))
+				loop_insn_emit_after (loop, 0, fn_address_insn,
+						      gen_move_insn
+						      (fn_reg, fn_address));
+
+			      if (GET_CODE (temp) == CALL_INSN)
+				{
+				  i1 = loop_call_insn_hoist (loop, body);
+				  /* Because the USAGE information potentially
+				     contains objects other than hard registers
+				     we need to copy it.  */
+				  if (CALL_INSN_FUNCTION_USAGE (temp))
+				    CALL_INSN_FUNCTION_USAGE (i1)
+				      = copy_rtx (CALL_INSN_FUNCTION_USAGE (temp));
+				}
+			      else
+				i1 = loop_insn_hoist (loop, body);
+			      if (first == 0)
+				first = i1;
+			      if (temp == fn_address_insn)
+				fn_address_insn = i1;
+			      REG_NOTES (i1) = REG_NOTES (temp);
+			      REG_NOTES (temp) = NULL;
+			      delete_insn (temp);
+			    }
+			  if (new_start == 0)
+			    new_start = first;
+			}
+		      if (m->savemode != VOIDmode)
+			{
+			  /* P sets REG to zero; but we should clear only
+			     the bits that are not covered by the mode
+			     m->savemode.  */
+			  rtx reg = m->set_dest;
+			  rtx sequence;
+			  rtx tem;
+
+			  start_sequence ();
+			  tem = expand_simple_binop
+			    (GET_MODE (reg), AND, reg,
+			     GEN_INT ((((HOST_WIDE_INT) 1
+					<< GET_MODE_BITSIZE (m->savemode)))
+				      - 1),
+			     reg, 1, OPTAB_LIB_WIDEN);
+			  if (tem == 0)
+			    abort ();
+			  if (tem != reg)
+			    emit_move_insn (reg, tem);
+			  sequence = gen_sequence ();
+			  end_sequence ();
+			  i1 = loop_insn_hoist (loop, sequence);
+			}
+		      else if (GET_CODE (p) == CALL_INSN)
+			{
+			  i1 = loop_call_insn_hoist (loop, PATTERN (p));
+			  /* Because the USAGE information potentially
+			     contains objects other than hard registers
+			     we need to copy it.  */
+			  if (CALL_INSN_FUNCTION_USAGE (p))
+			    CALL_INSN_FUNCTION_USAGE (i1)
+			      = copy_rtx (CALL_INSN_FUNCTION_USAGE (p));
+			}
+		      else if (count == m->consec && m->move_insn_first)
+			{
+			  rtx seq;
+			  /* The SET_SRC might not be invariant, so we must
+			     use the REG_EQUAL note.  */
+			  start_sequence ();
+			  emit_move_insn (m->set_dest, m->set_src);
+			  temp = get_insns ();
+			  seq = gen_sequence ();
+			  end_sequence ();
+
+			  add_label_notes (m->set_src, temp);
+
+			  i1 = loop_insn_hoist (loop, seq);
+			  if (! find_reg_note (i1, REG_EQUAL, NULL_RTX))
+			    set_unique_reg_note (i1, m->is_equiv ? REG_EQUIV
+						     : REG_EQUAL, m->set_src);
+			}
+		      else
+			i1 = loop_insn_hoist (loop, PATTERN (p));
+
+		      if (REG_NOTES (i1) == 0)
+			{
+			  REG_NOTES (i1) = REG_NOTES (p);
+			  REG_NOTES (p) = NULL;
+
+			  /* If there is a REG_EQUAL note present whose value
+			     is not loop invariant, then delete it, since it
+			     may cause problems with later optimization passes.
+			     It is possible for cse to create such notes
+			     like this as a result of record_jump_cond.  */
+
+			  if ((temp = find_reg_note (i1, REG_EQUAL, NULL_RTX))
+			      && ! loop_invariant_p (loop, XEXP (temp, 0)))
+			    remove_note (i1, temp);
+			}
+
+		      if (new_start == 0)
+			new_start = i1;
+
+		      if (loop_dump_stream)
+			fprintf (loop_dump_stream, " moved to %d",
+				 INSN_UID (i1));
+
+		      /* If library call, now fix the REG_NOTES that contain
+			 insn pointers, namely REG_LIBCALL on FIRST
+			 and REG_RETVAL on I1.  */
+		      if ((temp = find_reg_note (i1, REG_RETVAL, NULL_RTX)))
+			{
+			  XEXP (temp, 0) = first;
+			  temp = find_reg_note (first, REG_LIBCALL, NULL_RTX);
+			  XEXP (temp, 0) = i1;
+			}
+
+		      temp = p;
+		      delete_insn (p);
+		      p = NEXT_INSN (p);
+
+		      /* simplify_giv_expr expects that it can walk the insns
+			 at m->insn forwards and see this old sequence we are
+			 tossing here.  delete_insn does preserve the next
+			 pointers, but when we skip over a NOTE we must fix
+			 it up.  Otherwise that code walks into the non-deleted
+			 insn stream.  */
+		      while (p && GET_CODE (p) == NOTE)
+			p = NEXT_INSN (temp) = NEXT_INSN (p);
+		    }
+
+		  /* The more regs we move, the less we like moving them.  */
+		  threshold -= 3;
+		}
+
+	      /* Any other movable that loads the same register
+		 MUST be moved.  */
+	      already_moved[regno] = 1;
+
+	      /* This reg has been moved out of one loop.  */
+	      regs->array[regno].moved_once = 1;
+
+	      /* The reg set here is now invariant.  */
+	      if (! m->partial)
+		{
+		  int i;
+		  for (i = 0; i < LOOP_REGNO_NREGS (regno, m->set_dest); i++)
+		    regs->array[regno+i].set_in_loop = 0;
+		}
+
+	      m->done = 1;
+
+	      /* Change the length-of-life info for the register
+		 to say it lives at least the full length of this loop.
+		 This will help guide optimizations in outer loops.  */
+
+	      if (REGNO_FIRST_LUID (regno) > INSN_LUID (loop_start))
+		/* This is the old insn before all the moved insns.
+		   We can't use the moved insn because it is out of range
+		   in uid_luid.  Only the old insns have luids.  */
+		REGNO_FIRST_UID (regno) = INSN_UID (loop_start);
+	      if (REGNO_LAST_LUID (regno) < INSN_LUID (loop_end))
+		REGNO_LAST_UID (regno) = INSN_UID (loop_end);
+
+	      /* Combine with this moved insn any other matching movables.  */
+
+	      if (! m->partial)
+		for (m1 = movables->head; m1; m1 = m1->next)
+		  if (m1->match == m)
+		    {
+		      rtx temp;
+
+		      /* Schedule the reg loaded by M1
+			 for replacement so that shares the reg of M.
+			 If the modes differ (only possible in restricted
+			 circumstances, make a SUBREG.
+
+			 Note this assumes that the target dependent files
+			 treat REG and SUBREG equally, including within
+			 GO_IF_LEGITIMATE_ADDRESS and in all the
+			 predicates since we never verify that replacing the
+			 original register with a SUBREG results in a
+			 recognizable insn.  */
+		      if (GET_MODE (m->set_dest) == GET_MODE (m1->set_dest))
+			reg_map[m1->regno] = m->set_dest;
+		      else
+			reg_map[m1->regno]
+			  = gen_lowpart_common (GET_MODE (m1->set_dest),
+						m->set_dest);
+
+		      /* Get rid of the matching insn
+			 and prevent further processing of it.  */
+		      m1->done = 1;
+
+		      /* if library call, delete all insns.  */
+		      if ((temp = find_reg_note (m1->insn, REG_RETVAL,
+						 NULL_RTX)))
+			delete_insn_chain (XEXP (temp, 0), m1->insn);
+		      else
+		        delete_insn (m1->insn);
+
+		      /* Any other movable that loads the same register
+			 MUST be moved.  */
+		      already_moved[m1->regno] = 1;
+
+		      /* The reg merged here is now invariant,
+			 if the reg it matches is invariant.  */
+		      if (! m->partial)
+			{
+			  int i;
+			  for (i = 0;
+			       i < LOOP_REGNO_NREGS (regno, m1->set_dest);
+			       i++)
+			    regs->array[m1->regno+i].set_in_loop = 0;
+			}
+		    }
+	    }
+	  else if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "not desirable");
+	}
+      else if (loop_dump_stream && !m->match)
+	fprintf (loop_dump_stream, "not safe");
+
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream, "\n");
+    }
+
+  if (new_start == 0)
+    new_start = loop_start;
+
+  /* Go through all the instructions in the loop, making
+     all the register substitutions scheduled in REG_MAP.  */
+  for (p = new_start; p != loop_end; p = NEXT_INSN (p))
+    if (GET_CODE (p) == INSN || GET_CODE (p) == JUMP_INSN
+	|| GET_CODE (p) == CALL_INSN)
+      {
+	replace_regs (PATTERN (p), reg_map, nregs, 0);
+	replace_regs (REG_NOTES (p), reg_map, nregs, 0);
+	INSN_CODE (p) = -1;
+      }
+
+  /* Clean up.  */
+  free (reg_map);
+  free (already_moved);
+}

@@ -1,0 +1,18 @@
+static void
+reg_dead_at_p_1 (dest, x, data)
+     rtx dest;
+     rtx x;
+     void *data ATTRIBUTE_UNUSED;
+{
+  unsigned int regno, endregno;
+
+  if (GET_CODE (dest) != REG)
+    return;
+
+  regno = REGNO (dest);
+  endregno = regno + (regno < FIRST_PSEUDO_REGISTER
+		      ? HARD_REGNO_NREGS (regno, GET_MODE (dest)) : 1);
+
+  if (reg_dead_endregno > regno && reg_dead_regno < endregno)
+    reg_dead_flag = (GET_CODE (x) == CLOBBER) ? 1 : -1;
+}

@@ -1,0 +1,317 @@
+void
+expand_function_end (filename, line, end_bindings)
+     const char *filename;
+     int line;
+     int end_bindings;
+{
+  tree link;
+  rtx clobber_after;
+
+#ifdef TRAMPOLINE_TEMPLATE
+  static rtx initial_trampoline;
+#endif
+
+  finish_expr_for_function ();
+
+  /* If arg_pointer_save_area was referenced only from a nested
+     function, we will not have initialized it yet.  Do that now.  */
+  if (arg_pointer_save_area && ! cfun->arg_pointer_save_area_init)
+    get_arg_pointer_save_area (cfun);
+
+#ifdef NON_SAVING_SETJMP
+  /* Don't put any variables in registers if we call setjmp
+     on a machine that fails to restore the registers.  */
+  if (NON_SAVING_SETJMP && current_function_calls_setjmp)
+    {
+      if (DECL_INITIAL (current_function_decl) != error_mark_node)
+	setjmp_protect (DECL_INITIAL (current_function_decl));
+
+      setjmp_protect_args ();
+    }
+#endif
+
+  /* Initialize any trampolines required by this function.  */
+  for (link = trampoline_list; link; link = TREE_CHAIN (link))
+    {
+      tree function = TREE_PURPOSE (link);
+      rtx context ATTRIBUTE_UNUSED = lookup_static_chain (function);
+      rtx tramp = RTL_EXPR_RTL (TREE_VALUE (link));
+#ifdef TRAMPOLINE_TEMPLATE
+      rtx blktramp;
+#endif
+      rtx seq;
+
+#ifdef TRAMPOLINE_TEMPLATE
+      /* First make sure this compilation has a template for
+	 initializing trampolines.  */
+      if (initial_trampoline == 0)
+	{
+	  initial_trampoline
+	    = gen_rtx_MEM (BLKmode, assemble_trampoline_template ());
+	  set_mem_align (initial_trampoline, TRAMPOLINE_ALIGNMENT);
+
+	  ggc_add_rtx_root (&initial_trampoline, 1);
+	}
+#endif
+
+      /* Generate insns to initialize the trampoline.  */
+      start_sequence ();
+      tramp = round_trampoline_addr (XEXP (tramp, 0));
+#ifdef TRAMPOLINE_TEMPLATE
+      blktramp = replace_equiv_address (initial_trampoline, tramp);
+      emit_block_move (blktramp, initial_trampoline,
+		       GEN_INT (TRAMPOLINE_SIZE));
+#endif
+      INITIALIZE_TRAMPOLINE (tramp, XEXP (DECL_RTL (function), 0), context);
+      seq = get_insns ();
+      end_sequence ();
+
+      /* Put those insns at entry to the containing function (this one).  */
+      emit_insns_before (seq, tail_recursion_reentry);
+    }
+
+  /* If we are doing stack checking and this function makes calls,
+     do a stack probe at the start of the function to ensure we have enough
+     space for another stack frame.  */
+  if (flag_stack_check && ! STACK_CHECK_BUILTIN)
+    {
+      rtx insn, seq;
+
+      for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+	if (GET_CODE (insn) == CALL_INSN)
+	  {
+	    start_sequence ();
+	    probe_stack_range (STACK_CHECK_PROTECT,
+			       GEN_INT (STACK_CHECK_MAX_FRAME_SIZE));
+	    seq = get_insns ();
+	    end_sequence ();
+	    emit_insns_before (seq, tail_recursion_reentry);
+	    break;
+	  }
+    }
+
+  /* Warn about unused parms if extra warnings were specified.  */
+  /* Either ``-W -Wunused'' or ``-Wunused-parameter'' enables this
+     warning.  WARN_UNUSED_PARAMETER is negative when set by
+     -Wunused.  */
+  if (warn_unused_parameter > 0
+      || (warn_unused_parameter < 0 && extra_warnings))
+    {
+      tree decl;
+
+      for (decl = DECL_ARGUMENTS (current_function_decl);
+	   decl; decl = TREE_CHAIN (decl))
+	if (! TREE_USED (decl) && TREE_CODE (decl) == PARM_DECL
+	    && DECL_NAME (decl) && ! DECL_ARTIFICIAL (decl))
+	  warning_with_decl (decl, "unused parameter `%s'");
+    }
+
+  /* Delete handlers for nonlocal gotos if nothing uses them.  */
+  if (nonlocal_goto_handler_slots != 0
+      && ! current_function_has_nonlocal_label)
+    delete_handlers ();
+
+  /* End any sequences that failed to be closed due to syntax errors.  */
+  while (in_sequence_p ())
+    end_sequence ();
+
+  /* Outside function body, can't compute type's actual size
+     until next function's body starts.  */
+  immediate_size_expand--;
+
+  clear_pending_stack_adjust ();
+  do_pending_stack_adjust ();
+
+  /* Mark the end of the function body.
+     If control reaches this insn, the function can drop through
+     without returning a value.  */
+  emit_note (NULL, NOTE_INSN_FUNCTION_END);
+
+  /* Must mark the last line number note in the function, so that the test
+     coverage code can avoid counting the last line twice.  This just tells
+     the code to ignore the immediately following line note, since there
+     already exists a copy of this note somewhere above.  This line number
+     note is still needed for debugging though, so we can't delete it.  */
+  if (flag_test_coverage)
+    emit_note (NULL, NOTE_INSN_REPEATED_LINE_NUMBER);
+
+  /* Output a linenumber for the end of the function.
+     SDB depends on this.  */
+  emit_line_note_force (filename, line);
+
+  /* Before the return label (if any), clobber the return
+     registers so that they are not propagated live to the rest of
+     the function.  This can only happen with functions that drop
+     through; if there had been a return statement, there would
+     have either been a return rtx, or a jump to the return label.
+
+     We delay actual code generation after the current_function_value_rtx
+     is computed.  */
+  clobber_after = get_last_insn ();
+
+  /* Output the label for the actual return from the function,
+     if one is expected.  This happens either because a function epilogue
+     is used instead of a return instruction, or because a return was done
+     with a goto in order to run local cleanups, or because of pcc-style
+     structure returning.  */
+  if (return_label)
+    emit_label (return_label);
+
+  /* C++ uses this.  */
+  if (end_bindings)
+    expand_end_bindings (0, 0, 0);
+
+  if (current_function_instrument_entry_exit)
+    {
+      rtx fun = DECL_RTL (current_function_decl);
+      if (GET_CODE (fun) == MEM)
+	fun = XEXP (fun, 0);
+      else
+	abort ();
+      emit_library_call (profile_function_exit_libfunc, LCT_NORMAL, VOIDmode,
+			 2, fun, Pmode,
+			 expand_builtin_return_addr (BUILT_IN_RETURN_ADDRESS,
+						     0,
+						     hard_frame_pointer_rtx),
+			 Pmode);
+    }
+
+  /* Let except.c know where it should emit the call to unregister
+     the function context for sjlj exceptions.  */
+  if (flag_exceptions && USING_SJLJ_EXCEPTIONS)
+    sjlj_emit_function_exit_after (get_last_insn ());
+
+  /* If we had calls to alloca, and this machine needs
+     an accurate stack pointer to exit the function,
+     insert some code to save and restore the stack pointer.  */
+#ifdef EXIT_IGNORE_STACK
+  if (! EXIT_IGNORE_STACK)
+#endif
+    if (current_function_calls_alloca)
+      {
+	rtx tem = 0;
+
+	emit_stack_save (SAVE_FUNCTION, &tem, parm_birth_insn);
+	emit_stack_restore (SAVE_FUNCTION, tem, NULL_RTX);
+      }
+
+  /* If scalar return value was computed in a pseudo-reg, or was a named
+     return value that got dumped to the stack, copy that to the hard
+     return register.  */
+  if (DECL_RTL_SET_P (DECL_RESULT (current_function_decl)))
+    {
+      tree decl_result = DECL_RESULT (current_function_decl);
+      rtx decl_rtl = DECL_RTL (decl_result);
+
+      if (REG_P (decl_rtl)
+	  ? REGNO (decl_rtl) >= FIRST_PSEUDO_REGISTER
+	  : DECL_REGISTER (decl_result))
+	{
+	  rtx real_decl_rtl = current_function_return_rtx;
+
+	  /* This should be set in assign_parms.  */
+	  if (! REG_FUNCTION_VALUE_P (real_decl_rtl))
+	    abort ();
+
+	  /* If this is a BLKmode structure being returned in registers,
+	     then use the mode computed in expand_return.  Note that if
+	     decl_rtl is memory, then its mode may have been changed, 
+	     but that current_function_return_rtx has not.  */
+	  if (GET_MODE (real_decl_rtl) == BLKmode)
+	    PUT_MODE (real_decl_rtl, GET_MODE (decl_rtl));
+
+	  /* If a named return value dumped decl_return to memory, then
+	     we may need to re-do the PROMOTE_MODE signed/unsigned 
+	     extension.  */
+	  if (GET_MODE (real_decl_rtl) != GET_MODE (decl_rtl))
+	    {
+	      int unsignedp = TREE_UNSIGNED (TREE_TYPE (decl_result));
+
+#ifdef PROMOTE_FUNCTION_RETURN
+	      promote_mode (TREE_TYPE (decl_result), GET_MODE (decl_rtl),
+			    &unsignedp, 1);
+#endif
+
+	      convert_move (real_decl_rtl, decl_rtl, unsignedp);
+	    }
+	  else if (GET_CODE (real_decl_rtl) == PARALLEL)
+	    emit_group_load (real_decl_rtl, decl_rtl,
+			     int_size_in_bytes (TREE_TYPE (decl_result)));
+	  else
+	    emit_move_insn (real_decl_rtl, decl_rtl);
+	}
+    }
+
+  /* If returning a structure, arrange to return the address of the value
+     in a place where debuggers expect to find it.
+
+     If returning a structure PCC style,
+     the caller also depends on this value.
+     And current_function_returns_pcc_struct is not necessarily set.  */
+  if (current_function_returns_struct
+      || current_function_returns_pcc_struct)
+    {
+      rtx value_address
+	= XEXP (DECL_RTL (DECL_RESULT (current_function_decl)), 0);
+      tree type = TREE_TYPE (DECL_RESULT (current_function_decl));
+#ifdef FUNCTION_OUTGOING_VALUE
+      rtx outgoing
+	= FUNCTION_OUTGOING_VALUE (build_pointer_type (type),
+				   current_function_decl);
+#else
+      rtx outgoing
+	= FUNCTION_VALUE (build_pointer_type (type), current_function_decl);
+#endif
+
+      /* Mark this as a function return value so integrate will delete the
+	 assignment and USE below when inlining this function.  */
+      REG_FUNCTION_VALUE_P (outgoing) = 1;
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+      /* The address may be ptr_mode and OUTGOING may be Pmode.  */
+      if (GET_MODE (outgoing) != GET_MODE (value_address))
+	value_address = convert_memory_address (GET_MODE (outgoing),
+						value_address);
+#endif
+
+      emit_move_insn (outgoing, value_address);
+
+      /* Show return register used to hold result (in this case the address
+	 of the result.  */
+      current_function_return_rtx = outgoing;
+    }
+
+  /* If this is an implementation of throw, do what's necessary to
+     communicate between __builtin_eh_return and the epilogue.  */
+  expand_eh_return ();
+
+  /* Emit the actual code to clobber return register.  */
+  {
+    rtx seq, after;
+    
+    start_sequence ();
+    clobber_return_register ();
+    seq = gen_sequence ();
+    end_sequence ();
+
+    after = emit_insn_after (seq, clobber_after);
+    
+    if (clobber_after != after)
+      cfun->x_clobber_return_insn = after;
+  }
+
+  /* ??? This should no longer be necessary since stupid is no longer with
+     us, but there are some parts of the compiler (eg reload_combine, and
+     sh mach_dep_reorg) that still try and compute their own lifetime info
+     instead of using the general framework.  */
+  use_return_register ();
+
+  /* Fix up any gotos that jumped out to the outermost
+     binding level of the function.
+     Must follow emitting RETURN_LABEL.  */
+
+  /* If you have any cleanups to do at this point,
+     and they need to create temporary variables,
+     then you will lose.  */
+  expand_fixups (get_insns ());
+}

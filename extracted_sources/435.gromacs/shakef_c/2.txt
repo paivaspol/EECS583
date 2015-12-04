@@ -1,0 +1,76 @@
+int vec_shakef(FILE *log,
+	       int natoms,real invmass[],int ncon,
+	       t_iparams ip[],t_iatom *iatom,
+	       real tol,rvec x[],rvec xp[],real omega,
+	       bool bFEP,real lambda,real lagr[])
+{
+  static  rvec *rij=NULL;
+  static  real *M2=NULL,*tt=NULL,*dist2=NULL;
+  static  int  maxcon=0;
+  int     maxnit=1000;
+  int     nit,ll,i,j,type;
+  t_iatom *ia;
+  real    L1,tol2,toler;
+  real    mm;
+  int     error;
+    
+  if (ncon > maxcon) {
+    srenew(rij,ncon);
+    srenew(M2,ncon);
+    srenew(tt,ncon);
+    srenew(dist2,ncon);
+    maxcon=ncon;
+#ifdef DEBUG
+    fprintf(log,"shake: maxcon = %d\n",maxcon);
+#endif
+  }
+
+  L1=1.0-lambda;
+  tol2=2.0*tol;
+  ia=iatom;
+  for(ll=0; (ll<ncon); ll++,ia+=3) {
+    type  = ia[0];
+    i=ia[1];
+    j=ia[2];
+    
+    mm=2*(invmass[i]+invmass[j]);
+    rij[ll][XX]=x[i][XX]-x[j][XX];
+    rij[ll][YY]=x[i][YY]-x[j][YY];
+    rij[ll][ZZ]=x[i][ZZ]-x[j][ZZ];
+    M2[ll]=1.0/mm;
+    if (bFEP) 
+      toler = sqr(L1*ip[type].shake.dA + lambda*ip[type].shake.dB);
+    else
+      toler = sqr(ip[type].shake.dA);
+    dist2[ll] = toler;
+    tt[ll] = 1.0/(toler*tol2);
+  }
+
+  /* We have a FORTRAN shake now! */  
+#ifdef USE_FORTRAN
+#ifdef DOUBLE
+  F77_FUNC(fshaked,FSHAKED)(iatom,&ncon,&nit,&maxnit,dist2,xp[0],
+			  rij[0],M2,&omega,invmass,tt,lagr,&error);
+#else
+  F77_FUNC(fshake,FSHAKE)(iatom,&ncon,&nit,&maxnit,dist2,xp[0],
+			  rij[0],M2,&omega,invmass,tt,lagr,&error);
+#endif
+#else
+  /* And a c shake also ! */
+  cshake(iatom,ncon,&nit,maxnit,dist2,xp[0],rij[0],M2,omega,invmass,tt,lagr,&error);
+#endif
+  if (nit >= maxnit) {
+      if(log)
+          fprintf(log,"Shake did not converge in %d steps\n",maxnit);
+    nit=0;
+  }
+  else if (error != 0) {
+      if(log)
+          fprintf(log,"Inner product between old and new vector <= 0.0!\n"
+                  "constraint #%d atoms %u and %u\n",
+                  error-1,iatom[3*(error-1)+1]+1,iatom[3*(error-1)+2]+1);
+    nit=0;
+  }
+  
+  return nit;
+}

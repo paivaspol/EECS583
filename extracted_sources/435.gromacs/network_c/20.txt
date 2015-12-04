@@ -1,0 +1,46 @@
+void gmx_sumd(int nr,double r[],t_commrec *cr)
+{
+#ifndef USE_MPI
+  MYFATAL("gmx_sumd");
+#else
+  /*#define TEST_MPI_SUM*/
+#ifdef TEST_MPI_SUM
+  static double *buf;
+  static int nalloc=0;
+  int i;
+  
+  if (nr > nalloc) {
+    nalloc = nr;
+    srenew(buf,nalloc);
+  }
+  MPI_Allreduce(r,buf,nr,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+  for(i=0; i<nr; i++)
+    r[i] = buf[i];
+#else
+  double *buf[2];
+  int  NR,bufs,j,i,cur=0;
+#define next (1-cur)
+
+  bufs=nr*sizeof(buf[0][0]);
+  NR=nr;
+
+  snew(buf[0],NR);
+  snew(buf[1],NR);
+
+  for(i=0; (i<nr); i++)
+    buf[cur][i]=r[i];
+  for(j=0; (j<cr->nnodes-1); j++) {
+    gmx_tx(cr->left,buf[cur],bufs);
+    gmx_rx(cr->right,buf[next],bufs);
+    gmx_tx_wait(cr->left);
+    gmx_rx_wait(cr->right);
+    for(i=0; (i<nr); i++)
+      r[i]+=buf[next][i];
+
+    cur=next;
+  }
+  sfree(buf[1]);
+  sfree(buf[0]);
+#endif
+#endif
+}

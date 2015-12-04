@@ -1,0 +1,33 @@
+static void
+xcoffout_block (block, depth, args)
+     tree block;
+     int depth;
+     tree args;
+{
+  while (block)
+    {
+      /* Ignore blocks never expanded or otherwise marked as real.  */
+      if (TREE_USED (block))
+	{
+	  /* When we reach the specified block, output its symbols.  */
+	  if (BLOCK_NUMBER (block) == do_block)
+	    {
+	      /* Output the syms of the block.  */
+	      if (debug_info_level != DINFO_LEVEL_TERSE || depth == 0)
+		dbxout_syms (BLOCK_VARS (block));
+	      if (args)
+		dbxout_reg_parms (args);
+
+	      /* We are now done with the block.  Don't go to inner blocks.  */
+	      return;
+	    }
+	  /* If we are past the specified block, stop the scan.  */
+	  else if (BLOCK_NUMBER (block) >= do_block)
+	    return;
+
+	  /* Output the subblocks.  */
+	  xcoffout_block (BLOCK_SUBBLOCKS (block), depth + 1, NULL_TREE);
+	}
+      block = BLOCK_CHAIN (block);
+    }
+}

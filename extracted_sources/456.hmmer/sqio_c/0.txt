@@ -1,0 +1,118 @@
+static SQFILE *
+seqfile_open(char *filename, int format, char *env, int ssimode)
+{
+  SQFILE *dbfp;
+
+  dbfp = (SQFILE *) MallocOrDie (sizeof(SQFILE));
+
+  dbfp->ssimode  = ssimode;
+  dbfp->rpl      = -1;		/* flag meaning "unset" */
+  dbfp->lastrpl  = 0;
+  dbfp->maxrpl   = 0;
+  dbfp->bpl      = -1;		/* flag meaning "unset" */
+  dbfp->lastbpl  = 0;
+  dbfp->maxbpl   = 0;
+
+  /* Open our file handle.
+   * Three possibilities:
+   *    1. normal file open
+   *    2. filename = "-";    read from stdin
+   *    3. filename = "*.gz"; read thru pipe from gzip 
+   * If we're reading from stdin or a pipe, we can't reliably
+   * back up, so we can't do two-pass parsers like the interleaved alignment   
+   * formats.
+   */
+  if (strcmp(filename, "-") == 0)
+    {
+      dbfp->f         = stdin;
+      dbfp->do_stdin  = TRUE; 
+      dbfp->do_gzip   = FALSE;
+      dbfp->fname     = sre_strdup("[STDIN]", -1);
+    }
+#ifndef SRE_STRICT_ANSI
+  /* popen(), pclose() aren't portable to non-POSIX systems; disable */
+  else if (Strparse("^.*\\.gz$", filename, 0))
+    {
+      char cmd[256];
+
+      /* Note that popen() will return "successfully"
+       * if file doesn't exist, because gzip works fine
+       * and prints an error! So we have to check for
+       * existence of file ourself.
+       */
+      if (! FileExists(filename))
+	Die("%s: file does not exist", filename);
+
+      if (strlen(filename) + strlen("gzip -dc ") >= 256)
+	Die("filename > 255 char in SeqfileOpen()"); 
+      sprintf(cmd, "gzip -dc %s", filename);
+      if ((dbfp->f = popen(cmd, "r")) == NULL)
+	return NULL;
+
+      dbfp->do_stdin = FALSE;
+      dbfp->do_gzip  = TRUE;
+      dbfp->fname    = sre_strdup(filename, -1);
+    }
+#endif /*SRE_STRICT_ANSI*/
+  else
+    {
+      if ((dbfp->f = fopen(filename, "r")) == NULL &&
+	  (dbfp->f = EnvFileOpen(filename, env, NULL)) == NULL)
+	return NULL;
+
+      dbfp->do_stdin = FALSE;
+      dbfp->do_gzip  = FALSE;
+      dbfp->fname    = sre_strdup(filename, -1);
+    }
+  
+
+  /* Invoke autodetection if we haven't already been told what
+   * to expect.
+   */
+  if (format == SQFILE_UNKNOWN)
+    {
+      if (dbfp->do_stdin == TRUE || dbfp->do_gzip)
+	Die("Can't autodetect sequence file format from a stdin or gzip pipe");
+      format = SeqfileFormat(dbfp->f);
+      if (format == SQFILE_UNKNOWN)
+	Die("Can't determine format of sequence file %s", dbfp->fname);
+    }
+
+  /* The hack for sequential access of an interleaved alignment file:
+   * read the alignment in, we'll copy sequences out one at a time.
+   */
+  dbfp->msa        = NULL;
+  dbfp->afp        = NULL;
+  dbfp->format     = format;
+  dbfp->linenumber = 0;
+  dbfp->buf        = NULL;
+  dbfp->buflen     = 0;
+  if (IsAlignmentFormat(format))	
+    {
+      /* We'll be reading from the MSA interface. Copy our data
+       * to the MSA afp's structure.
+       */
+      dbfp->afp           = MallocOrDie(sizeof(MSAFILE));
+      dbfp->afp->f        = dbfp->f;            /* just a ptr, don't close */
+      dbfp->afp->do_stdin = dbfp->do_stdin;
+      dbfp->afp->do_gzip  = dbfp->do_gzip;
+      dbfp->afp->fname    = dbfp->fname;        /* just a ptr, don't free */
+      dbfp->afp->format   = dbfp->format;       /* e.g. format */
+      dbfp->afp->linenumber = dbfp->linenumber;	/* e.g. 0 */
+      dbfp->afp->buf      = NULL;
+      dbfp->afp->buflen   = 0;
+
+      if ((dbfp->msa = MSAFileRead(dbfp->afp)) == NULL)
+	Die("Failed to read any alignment data from file %s", dbfp->fname);
+				/* hack: overload/reuse msa->lastidx; indicates
+				   next seq to return upon a ReadSeq() call */
+      dbfp->msa->lastidx = 0;
+
+      return dbfp;
+    }
+
+  /* Load the first line.
+   */
+  SeqfileGetLine(dbfp); 
+  return dbfp;
+}

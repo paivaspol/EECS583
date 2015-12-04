@@ -1,0 +1,20 @@
+void
+allocate_bb_life_data ()
+{
+  int i;
+
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+
+      bb->global_live_at_start = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+      bb->global_live_at_end = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+    }
+
+  ENTRY_BLOCK_PTR->global_live_at_end
+    = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+  EXIT_BLOCK_PTR->global_live_at_start
+    = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+
+  regs_live_at_setjmp = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+}

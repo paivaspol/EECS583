@@ -1,0 +1,49 @@
+void parse_file_args(int *argc,char *argv[],int nf,t_filenm fnm[],
+		     bool bKeep)
+{
+  int  i,j;
+  bool *bRemove;
+
+  check_opts(nf,fnm);
+  
+  for(i=0; (i<nf); i++)
+    UN_SET(fnm[i]);
+    
+  if (*argc > 1) {
+    snew(bRemove,(*argc)+1);
+    i=1;
+    do {
+      for(j=0; (j<nf); j++) {
+	if (strcmp(argv[i],fnm[j].opt) == 0) {
+	  DO_SET(fnm[j]);
+	  bRemove[i]=TRUE;
+	  i++;
+	  if ((i < *argc) && (argv[i][0] != '-')) {
+	    set_filenm(&fnm[j],argv[i],TRUE);
+	    bRemove[i]=TRUE;
+	    i++;
+	  }
+	  else
+	    set_filenm(&fnm[j],fnm[j].fn,FALSE);
+
+	  break;
+	}
+      }
+      /* No file found corresponding to option argv[i] */
+      if (j == nf)
+	i++;
+    } while (i < *argc);
+    
+    if (!bKeep) {
+      /* Remove used entries */
+      for(i=j=0; (i<=*argc); i++) {
+	if (!bRemove[i])
+	  argv[j++]=argv[i];
+      }
+      (*argc)=j-1;
+    }
+    sfree(bRemove);
+  }
+  
+  set_filenms(nf,fnm);
+}

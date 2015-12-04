@@ -1,0 +1,91 @@
+int32 cmd_ln_parse (arg_t *defn, int32 argc, char *argv[])
+{
+    int32 i, j, n;
+    
+    if (argval)
+	E_FATAL("Multiple sets of argument definitions not supported\n");
+    
+    /* Echo command line */
+    E_INFO("Parsing command line:\n");
+    #ifndef SPEC_CPU
+    for (i = 0; i < argc; i++) {
+	if (argv[i][0] == '-')
+	    fprintf (stderr, "\\\n\t");
+	fprintf (stderr, "%s ", argv[i]);
+    }
+    fprintf (stderr, "\n\n");
+    fflush (stderr);
+    #endif
+    
+    /* Find number of argument names in definition */
+    for (n = 0; defn[n].name; n++);
+    
+    /* Allocate memory for argument values */
+    ht = hash_new (n, 0 /* argument names are case-sensitive */);
+    argval = (argval_t *) ckd_calloc (n, sizeof(argval_t));
+    
+    /* Enter argument names into hash table */
+    for (i = 0; i < n; i++) {
+	/* Associate argument name with index i */
+	if (hash_enter (ht, defn[i].name, i) != i)
+	    E_FATAL("Duplicate argument name: %s\n", defn[i].name);
+    }
+    
+    /* Parse command line arguments (name-value pairs); skip argv[0] if argc is odd */
+    for (j = 1; j < argc; j += 2) {
+	if (hash_lookup(ht, argv[j], &i) < 0) {
+	    E_ERROR("Unknown argument: %s\n", argv[j]);
+	    cmd_ln_print_help (stderr, defn);
+	    exit(-1);
+	}
+	
+	/* Check if argument has already been parsed before */
+	if (argval[i].ptr)
+	    E_FATAL("Multiple occurrences of argument %s\n", argv[j]);
+	
+	if (j+1 >= argc) {
+	    E_ERROR("Argument value for '%s' missing\n", argv[j]);
+	    cmd_ln_print_help (stderr, defn);
+	    exit(-1);
+	}
+	
+	/* Enter argument value */
+	if (arg_str2val (argval+i, defn[i].type, argv[j+1]) < 0) {
+	    E_ERROR("Bad argument value for %s: %s\n", argv[j], argv[j+1]);
+	    cmd_ln_print_help (stderr, defn);
+	    exit(-1);
+	}
+
+	assert (argval[i].ptr);
+    }
+    
+    /* Fill in default values, if any, for unspecified arguments */
+    for (i = 0; i < n; i++) {
+	if (! argval[i].ptr) {
+	    if (arg_str2val (argval+i, defn[i].type, defn[i].deflt) < 0)
+		E_FATAL("Bad default argument value for %s: %s\n",
+			defn[i].name, defn[i].deflt);
+	}
+    }
+    
+    /* Check for required arguments; exit if any missing */
+    j = 0;
+    for (i = 0; i < n; i++) {
+	if ((defn[i].type & ARG_REQUIRED) && (! argval[i].ptr)) {
+	    E_ERROR("Missing required argument %s\n", defn[i].name);
+	    j++;
+	}
+    }
+    if (j > 0) {
+	cmd_ln_print_help (stderr, defn);
+	exit(-1);
+    }
+    
+    #ifndef SPEC_CPU
+    /* Print configuration */
+    fprintf (stderr, "Configuration in effect:\n");
+    arg_dump (stderr, defn, 0);
+    #endif
+    
+    return 0;
+}

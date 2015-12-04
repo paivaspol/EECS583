@@ -1,0 +1,41 @@
+void calc_ener(FILE *fp,char *title,bool bHeader,int nmol,
+	       int natoms,real phi[],real charge[],t_block *excl)
+{
+  int  i,i1,i2,j,k;
+  real qq,qi,vv,V,Vex,Vc,Vt;
+  
+  qq   = 0;
+  V    = 0;
+  for(i=0; (i<natoms); i++) {
+    vv   = charge[i]*phi[i];
+    V   += vv;
+    qq  += charge[i]*charge[i];
+  }
+  V  = 0.5*V;
+  Vc = 0.5*C*ONE_4PI_EPS0*qq;
+  
+  qq = 0;
+  for(i=0; (i<excl->nr); i++) {
+    i1 = excl->index[i];
+    i2 = excl->index[i+1];
+    qi = charge[i];
+    for(j=i1; (j<i2); j++) {
+      k = excl->a[j];
+      if (k != i)
+	qq+=qi*charge[k];
+    }
+  }
+  Vex = qq*0.5*C*ONE_4PI_EPS0;
+  
+  Vt = V - Vc - Vex;
+  
+  if (bHeader && fp) {
+    fprintf(fp,"%12s  %12s  %12s  %12s  %12s  %12s\n",
+	    "","Vphi","Vself","Vexcl","Vtot","1Mol");
+    
+  }
+  
+  if(fp)
+      fprintf(fp,"%12s  %12.5e  %12.5e  %12.5e  %12.5e  %12.5e\n",
+              title,V,Vc,Vex,Vt,Vt/nmol);
+}

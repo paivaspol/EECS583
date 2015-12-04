@@ -1,0 +1,27 @@
+static void
+pad_below (offset_ptr, passed_mode, sizetree)
+     struct args_size *offset_ptr;
+     enum machine_mode passed_mode;
+     tree sizetree;
+{
+  if (passed_mode != BLKmode)
+    {
+      if (GET_MODE_BITSIZE (passed_mode) % PARM_BOUNDARY)
+	offset_ptr->constant
+	  += (((GET_MODE_BITSIZE (passed_mode) + PARM_BOUNDARY - 1)
+	       / PARM_BOUNDARY * PARM_BOUNDARY / BITS_PER_UNIT)
+	      - GET_MODE_SIZE (passed_mode));
+    }
+  else
+    {
+      if (TREE_CODE (sizetree) != INTEGER_CST
+	  || (TREE_INT_CST_LOW (sizetree) * BITS_PER_UNIT) % PARM_BOUNDARY)
+	{
+	  /* Round the size up to multiple of PARM_BOUNDARY bits.  */
+	  tree s2 = round_up (sizetree, PARM_BOUNDARY / BITS_PER_UNIT);
+	  /* Add it in.  */
+	  ADD_PARM_SIZE (*offset_ptr, s2);
+	  SUB_PARM_SIZE (*offset_ptr, sizetree);
+	}
+    }
+}

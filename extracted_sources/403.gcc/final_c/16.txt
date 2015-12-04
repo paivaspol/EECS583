@@ -1,0 +1,80 @@
+void
+final_start_function (first, file, optimize)
+     rtx first;
+     FILE *file;
+     int optimize ATTRIBUTE_UNUSED;
+{
+  block_depth = 0;
+
+  this_is_asm_operands = 0;
+
+#ifdef NON_SAVING_SETJMP
+  /* A function that calls setjmp should save and restore all the
+     call-saved registers on a system where longjmp clobbers them.  */
+  if (NON_SAVING_SETJMP && current_function_calls_setjmp)
+    {
+      int i;
+
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	if (!call_used_regs[i])
+	  regs_ever_live[i] = 1;
+    }
+#endif
+
+  if (NOTE_LINE_NUMBER (first) != NOTE_INSN_DELETED)
+    notice_source_line (first);
+  high_block_linenum = high_function_linenum = last_linenum;
+
+  (*debug_hooks->begin_prologue) (last_linenum, last_filename);
+
+#if defined (DWARF2_UNWIND_INFO) || defined (IA64_UNWIND_INFO)
+  if (write_symbols != DWARF2_DEBUG && write_symbols != VMS_AND_DWARF2_DEBUG)
+    dwarf2out_begin_prologue (0, NULL);
+#endif
+
+#ifdef LEAF_REG_REMAP
+  if (current_function_uses_only_leaf_regs)
+    leaf_renumber_regs (first);
+#endif
+
+  /* The Sun386i and perhaps other machines don't work right
+     if the profiling code comes after the prologue.  */
+#ifdef PROFILE_BEFORE_PROLOGUE
+  if (current_function_profile)
+    profile_function (file);
+#endif /* PROFILE_BEFORE_PROLOGUE */
+
+#if defined (DWARF2_UNWIND_INFO) && defined (HAVE_prologue)
+  if (dwarf2out_do_frame ())
+    dwarf2out_frame_debug (NULL_RTX);
+#endif
+
+  /* If debugging, assign block numbers to all of the blocks in this
+     function.  */
+  if (write_symbols)
+    {
+      remove_unnecessary_notes ();
+      reorder_blocks ();
+      number_blocks (current_function_decl);
+      /* We never actually put out begin/end notes for the top-level
+	 block in the function.  But, conceptually, that block is
+	 always needed.  */
+      TREE_ASM_WRITTEN (DECL_INITIAL (current_function_decl)) = 1;
+    }
+
+  /* First output the function prologue: code to set up the stack frame.  */
+  (*targetm.asm_out.function_prologue) (file, get_frame_size ());
+
+#ifdef VMS_DEBUGGING_INFO
+  /* Output label after the prologue of the function.  */
+  if (write_symbols == VMS_DEBUG || write_symbols == VMS_AND_DWARF2_DEBUG)
+    vmsdbgout_after_prologue ();
+#endif
+
+  /* If the machine represents the prologue as RTL, the profiling code must
+     be emitted when NOTE_INSN_PROLOGUE_END is scanned.  */
+#ifdef HAVE_prologue
+  if (! HAVE_prologue)
+#endif
+    profile_after_prologue (file);
+}

@@ -1,0 +1,17 @@
+void
+cleanup_barriers ()
+{
+  rtx insn, next, prev;
+  for (insn = get_insns (); insn; insn = next)
+    {
+      next = NEXT_INSN (insn);
+      if (GET_CODE (insn) == BARRIER)
+	{
+	  prev = prev_nonnote_insn (insn);
+	  if (GET_CODE (prev) == BARRIER)
+	    delete_barrier (insn);
+	  else if (prev != PREV_INSN (insn))
+	    reorder_insns (insn, insn, prev);
+	}
+    }
+}

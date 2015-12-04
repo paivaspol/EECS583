@@ -1,0 +1,27 @@
+static int
+rgn_rank (insn1, insn2)
+     rtx insn1, insn2;
+{
+  /* Some comparison make sense in interblock scheduling only.  */
+  if (INSN_BB (insn1) != INSN_BB (insn2))
+    {
+      int spec_val, prob_val;
+
+      /* Prefer an inblock motion on an interblock motion.  */
+      if ((INSN_BB (insn2) == target_bb) && (INSN_BB (insn1) != target_bb))
+	return 1;
+      if ((INSN_BB (insn1) == target_bb) && (INSN_BB (insn2) != target_bb))
+	return -1;
+
+      /* Prefer a useful motion on a speculative one.  */
+      spec_val = IS_SPECULATIVE_INSN (insn1) - IS_SPECULATIVE_INSN (insn2);
+      if (spec_val)
+	return spec_val;
+
+      /* Prefer a more probable (speculative) insn.  */
+      prob_val = INSN_PROBABILITY (insn2) - INSN_PROBABILITY (insn1);
+      if (prob_val)
+	return prob_val;
+    }
+  return 0;
+}

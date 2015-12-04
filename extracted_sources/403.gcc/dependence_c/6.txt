@@ -1,0 +1,23 @@
+static int
+have_induction_variable (outer_loop, ind_var)
+     tree outer_loop;
+     const char *ind_var;
+{
+  induction *ind_ptr;
+  loop *loop_ptr;
+  unsigned int ind_idx = 0;
+  unsigned int loop_idx = 0;
+
+  for (loop_ptr = VARRAY_GENERIC_PTR (loop_chain, loop_idx);
+       loop_ptr && loop_idx < VARRAY_SIZE (loop_chain);
+       loop_ptr = VARRAY_GENERIC_PTR (loop_chain, ++loop_idx))
+    if (loop_ptr->outer_loop == outer_loop)
+      for (ind_ptr = loop_ptr->ind;
+	   ind_ptr && ind_idx < VARRAY_SIZE (induction_chain);
+	   ind_ptr = ind_ptr->next)
+	{
+	  if (! strcmp (ind_ptr->variable, ind_var))
+	    return loop_idx + 1;
+	}
+  return -1;
+}

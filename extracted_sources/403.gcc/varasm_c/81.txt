@@ -1,0 +1,22 @@
+static void
+mark_constant_pool ()
+{
+  rtx insn;
+  struct pool_constant *pool;
+
+  if (first_pool == 0 && htab_elements (const_str_htab) == 0)
+    return;
+
+  for (pool = first_pool; pool; pool = pool->next)
+    pool->mark = 0;
+
+  for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn))
+      mark_constants (PATTERN (insn));
+
+  for (insn = current_function_epilogue_delay_list;
+       insn;
+       insn = XEXP (insn, 1))
+    if (INSN_P (insn))
+      mark_constants (PATTERN (insn));
+}

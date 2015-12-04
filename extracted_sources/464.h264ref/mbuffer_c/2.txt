@@ -1,0 +1,63 @@
+void init_dpb()
+{
+  unsigned i,j;
+
+  if (dpb.init_done)
+  {
+    free_dpb();
+  }
+
+  dpb.size      = getDpbSize();
+  
+  if (dpb.size < (unsigned int)input->num_ref_frames)
+  {
+    error ("DPB size at specified level is smaller than the specified number of reference frames. This is not allowed.\n", 1000);
+  }
+
+  dpb.used_size = 0;
+  dpb.last_picture = NULL;
+
+  dpb.ref_frames_in_buffer = 0;
+  dpb.ltref_frames_in_buffer = 0;
+  
+  dpb.fs = calloc(dpb.size, sizeof (FrameStore*));
+  if (NULL==dpb.fs) 
+    no_mem_exit("init_dpb: dpb->fs");
+
+  dpb.fs_ref = calloc(dpb.size, sizeof (FrameStore*));
+  if (NULL==dpb.fs_ref) 
+    no_mem_exit("init_dpb: dpb->fs_ref");
+
+  dpb.fs_ltref = calloc(dpb.size, sizeof (FrameStore*));
+  if (NULL==dpb.fs_ltref) 
+    no_mem_exit("init_dpb: dpb->fs_ltref");
+
+  for (i=0; i<dpb.size; i++)
+  {
+    dpb.fs[i]       = alloc_frame_store();
+    dpb.fs_ref[i]   = NULL;
+    dpb.fs_ltref[i] = NULL;
+  }
+  
+  for (i=0; i<6; i++)
+  {
+    listX[i] = calloc(MAX_LIST_SIZE, sizeof (StorablePicture*)); // +1 for reordering
+    if (NULL==listX[i]) 
+      no_mem_exit("init_dpb: listX[i]");
+  }
+
+  for (j=0;j<6;j++)
+  {
+    for (i=0; i<MAX_LIST_SIZE; i++)
+    {
+      listX[j][i] = NULL;
+    }
+    listXsize[j]=0;
+  }
+
+  dpb.last_output_poc = INT_MIN;
+
+  img->last_has_mmco_5 = 0;
+
+  dpb.init_done = 1;
+}

@@ -1,0 +1,20 @@
+static void
+do_clean_objs(pTHX_ SV *sv)
+{
+    SV* rv;
+
+    if (SvROK(sv) && SvOBJECT(rv = SvRV(sv))) {
+	DEBUG_D((PerlIO_printf(Perl_debug_log, "Cleaning object ref:\n "), sv_dump(sv)));
+	if (SvWEAKREF(sv)) {
+	    sv_del_backref(sv);
+	    SvWEAKREF_off(sv);
+	    SvRV(sv) = 0;
+	} else {
+	    SvROK_off(sv);
+	    SvRV(sv) = 0;
+	    SvREFCNT_dec(rv);
+	}
+    }
+
+    /* XXX Might want to check arrays, etc. */
+}

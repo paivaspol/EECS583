@@ -1,0 +1,310 @@
+static void
+find_reg (num, losers, alt_regs_p, accept_call_clobbered, retrying)
+     int num;
+     HARD_REG_SET losers;
+     int alt_regs_p;
+     int accept_call_clobbered;
+     int retrying;
+{
+  int i, best_reg, pass;
+#ifdef HARD_REG_SET
+  register		/* Declare it register if it's a scalar.  */
+#endif
+    HARD_REG_SET used, used1, used2;
+
+  enum reg_class class = (alt_regs_p
+			  ? reg_alternate_class (allocno[num].reg)
+			  : reg_preferred_class (allocno[num].reg));
+  enum machine_mode mode = PSEUDO_REGNO_MODE (allocno[num].reg);
+
+  if (accept_call_clobbered)
+    COPY_HARD_REG_SET (used1, call_fixed_reg_set);
+  else if (allocno[num].calls_crossed == 0)
+    COPY_HARD_REG_SET (used1, fixed_reg_set);
+  else
+    COPY_HARD_REG_SET (used1, call_used_reg_set);
+
+  /* Some registers should not be allocated in global-alloc.  */
+  IOR_HARD_REG_SET (used1, no_global_alloc_regs);
+  if (losers)
+    IOR_HARD_REG_SET (used1, losers);
+
+  IOR_COMPL_HARD_REG_SET (used1, reg_class_contents[(int) class]);
+  COPY_HARD_REG_SET (used2, used1);
+
+  IOR_HARD_REG_SET (used1, allocno[num].hard_reg_conflicts);
+
+#ifdef CLASS_CANNOT_CHANGE_MODE
+  if (REG_CHANGES_MODE (allocno[num].reg))
+    IOR_HARD_REG_SET (used1,
+		      reg_class_contents[(int) CLASS_CANNOT_CHANGE_MODE]);
+#endif
+
+  /* Try each hard reg to see if it fits.  Do this in two passes.
+     In the first pass, skip registers that are preferred by some other pseudo
+     to give it a better chance of getting one of those registers.  Only if
+     we can't get a register when excluding those do we take one of them.
+     However, we never allocate a register for the first time in pass 0.  */
+
+  COPY_HARD_REG_SET (used, used1);
+  IOR_COMPL_HARD_REG_SET (used, regs_used_so_far);
+  IOR_HARD_REG_SET (used, allocno[num].regs_someone_prefers);
+  
+  best_reg = -1;
+  for (i = FIRST_PSEUDO_REGISTER, pass = 0;
+       pass <= 1 && i >= FIRST_PSEUDO_REGISTER;
+       pass++)
+    {
+      if (pass == 1)
+	COPY_HARD_REG_SET (used, used1);
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	{
+#ifdef REG_ALLOC_ORDER
+	  int regno = reg_alloc_order[i];
+#else
+	  int regno = i;
+#endif
+	  if (! TEST_HARD_REG_BIT (used, regno)
+	      && HARD_REGNO_MODE_OK (regno, mode)
+	      && (allocno[num].calls_crossed == 0
+		  || accept_call_clobbered
+		  || ! HARD_REGNO_CALL_PART_CLOBBERED (regno, mode)))
+	    {
+	      int j;
+	      int lim = regno + HARD_REGNO_NREGS (regno, mode);
+	      for (j = regno + 1;
+		   (j < lim
+		    && ! TEST_HARD_REG_BIT (used, j));
+		   j++);
+	      if (j == lim)
+		{
+		  best_reg = regno;
+		  break;
+		}
+#ifndef REG_ALLOC_ORDER
+	      i = j;			/* Skip starting points we know will lose */
+#endif
+	    }
+	  }
+      }
+
+  /* See if there is a preferred register with the same class as the register
+     we allocated above.  Making this restriction prevents register
+     preferencing from creating worse register allocation.
+
+     Remove from the preferred registers and conflicting registers.  Note that
+     additional conflicts may have been added after `prune_preferences' was
+     called. 
+
+     First do this for those register with copy preferences, then all
+     preferred registers.  */
+
+  AND_COMPL_HARD_REG_SET (allocno[num].hard_reg_copy_preferences, used);
+  GO_IF_HARD_REG_SUBSET (allocno[num].hard_reg_copy_preferences,
+			 reg_class_contents[(int) NO_REGS], no_copy_prefs);
+
+  if (best_reg >= 0)
+    {
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	if (TEST_HARD_REG_BIT (allocno[num].hard_reg_copy_preferences, i)
+	    && HARD_REGNO_MODE_OK (i, mode)
+	    && (allocno[num].calls_crossed == 0
+		|| accept_call_clobbered
+		|| ! HARD_REGNO_CALL_PART_CLOBBERED (i, mode))
+	    && (REGNO_REG_CLASS (i) == REGNO_REG_CLASS (best_reg)
+		|| reg_class_subset_p (REGNO_REG_CLASS (i),
+				       REGNO_REG_CLASS (best_reg))
+		|| reg_class_subset_p (REGNO_REG_CLASS (best_reg),
+				       REGNO_REG_CLASS (i))))
+	    {
+	      int j;
+	      int lim = i + HARD_REGNO_NREGS (i, mode);
+	      for (j = i + 1;
+		   (j < lim
+		    && ! TEST_HARD_REG_BIT (used, j)
+		    && (REGNO_REG_CLASS (j)
+		    	== REGNO_REG_CLASS (best_reg + (j - i))
+			|| reg_class_subset_p (REGNO_REG_CLASS (j),
+					       REGNO_REG_CLASS (best_reg + (j - i)))
+			|| reg_class_subset_p (REGNO_REG_CLASS (best_reg + (j - i)),
+					       REGNO_REG_CLASS (j))));
+		   j++);
+	      if (j == lim)
+		{
+		  best_reg = i;
+		  goto no_prefs;
+		}
+	    }
+    }
+ no_copy_prefs:
+
+  AND_COMPL_HARD_REG_SET (allocno[num].hard_reg_preferences, used);
+  GO_IF_HARD_REG_SUBSET (allocno[num].hard_reg_preferences,
+			 reg_class_contents[(int) NO_REGS], no_prefs);
+
+  if (best_reg >= 0)
+    {
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	if (TEST_HARD_REG_BIT (allocno[num].hard_reg_preferences, i)
+	    && HARD_REGNO_MODE_OK (i, mode)
+	    && (allocno[num].calls_crossed == 0
+		|| accept_call_clobbered
+		|| ! HARD_REGNO_CALL_PART_CLOBBERED (i, mode))
+	    && (REGNO_REG_CLASS (i) == REGNO_REG_CLASS (best_reg)
+		|| reg_class_subset_p (REGNO_REG_CLASS (i),
+				       REGNO_REG_CLASS (best_reg))
+		|| reg_class_subset_p (REGNO_REG_CLASS (best_reg),
+				       REGNO_REG_CLASS (i))))
+	    {
+	      int j;
+	      int lim = i + HARD_REGNO_NREGS (i, mode);
+	      for (j = i + 1;
+		   (j < lim
+		    && ! TEST_HARD_REG_BIT (used, j)
+		    && (REGNO_REG_CLASS (j)
+		    	== REGNO_REG_CLASS (best_reg + (j - i))
+			|| reg_class_subset_p (REGNO_REG_CLASS (j),
+					       REGNO_REG_CLASS (best_reg + (j - i)))
+			|| reg_class_subset_p (REGNO_REG_CLASS (best_reg + (j - i)),
+					       REGNO_REG_CLASS (j))));
+		   j++);
+	      if (j == lim)
+		{
+		  best_reg = i;
+		  break;
+		}
+	    }
+    }
+ no_prefs:
+
+  /* If we haven't succeeded yet, try with caller-saves. 
+     We need not check to see if the current function has nonlocal
+     labels because we don't put any pseudos that are live over calls in
+     registers in that case.  */
+
+  if (flag_caller_saves && best_reg < 0)
+    {
+      /* Did not find a register.  If it would be profitable to
+	 allocate a call-clobbered register and save and restore it
+	 around calls, do that.  */
+      if (! accept_call_clobbered
+	  && allocno[num].calls_crossed != 0
+	  && CALLER_SAVE_PROFITABLE (allocno[num].n_refs,
+				     allocno[num].calls_crossed))
+	{
+	  HARD_REG_SET new_losers;
+	  if (! losers)
+	    CLEAR_HARD_REG_SET (new_losers);
+	  else
+	    COPY_HARD_REG_SET (new_losers, losers);
+	    
+	  IOR_HARD_REG_SET(new_losers, losing_caller_save_reg_set);
+	  find_reg (num, new_losers, alt_regs_p, 1, retrying);
+	  if (reg_renumber[allocno[num].reg] >= 0)
+	    {
+	      caller_save_needed = 1;
+	      return;
+	    }
+	}
+    }
+
+  /* If we haven't succeeded yet,
+     see if some hard reg that conflicts with us
+     was utilized poorly by local-alloc.
+     If so, kick out the regs that were put there by local-alloc
+     so we can use it instead.  */
+  if (best_reg < 0 && !retrying
+      /* Let's not bother with multi-reg allocnos.  */
+      && allocno[num].size == 1)
+    {
+      /* Count from the end, to find the least-used ones first.  */
+      for (i = FIRST_PSEUDO_REGISTER - 1; i >= 0; i--)
+	{
+#ifdef REG_ALLOC_ORDER
+	  int regno = reg_alloc_order[i];
+#else
+	  int regno = i;
+#endif
+
+	  if (local_reg_n_refs[regno] != 0
+	      /* Don't use a reg no good for this pseudo.  */
+	      && ! TEST_HARD_REG_BIT (used2, regno)
+	      && HARD_REGNO_MODE_OK (regno, mode)
+	      && (allocno[num].calls_crossed == 0
+		  || accept_call_clobbered
+		  || ! HARD_REGNO_CALL_PART_CLOBBERED (regno, mode))
+#ifdef CLASS_CANNOT_CHANGE_MODE
+	      && ! (REG_CHANGES_MODE (allocno[num].reg)
+		    && (TEST_HARD_REG_BIT
+			(reg_class_contents[(int) CLASS_CANNOT_CHANGE_MODE],
+			 regno)))
+#endif
+	      )
+	    {
+	      /* We explicitly evaluate the divide results into temporary
+		 variables so as to avoid excess precision problems that occur
+		 on an i386-unknown-sysv4.2 (unixware) host.  */
+		 
+	      double tmp1 = ((double) local_reg_freq[regno]
+			    / local_reg_live_length[regno]);
+	      double tmp2 = ((double) allocno[num].freq
+			     / allocno[num].live_length);
+
+	      if (tmp1 < tmp2)
+		{
+		  /* Hard reg REGNO was used less in total by local regs
+		     than it would be used by this one allocno!  */
+		  int k;
+		  for (k = 0; k < max_regno; k++)
+		    if (reg_renumber[k] >= 0)
+		      {
+			int r = reg_renumber[k];
+			int endregno
+			  = r + HARD_REGNO_NREGS (r, PSEUDO_REGNO_MODE (k));
+
+			if (regno >= r && regno < endregno)
+			  reg_renumber[k] = -1;
+		      }
+
+		  best_reg = regno;
+		  break;
+		}
+	    }
+	}
+    }
+
+  /* Did we find a register?  */
+
+  if (best_reg >= 0)
+    {
+      int lim, j;
+      HARD_REG_SET this_reg;
+
+      /* Yes.  Record it as the hard register of this pseudo-reg.  */
+      reg_renumber[allocno[num].reg] = best_reg;
+      /* Also of any pseudo-regs that share with it.  */
+      if (reg_may_share[allocno[num].reg])
+	for (j = FIRST_PSEUDO_REGISTER; j < max_regno; j++)
+	  if (reg_allocno[j] == num)
+	    reg_renumber[j] = best_reg;
+
+      /* Make a set of the hard regs being allocated.  */
+      CLEAR_HARD_REG_SET (this_reg);
+      lim = best_reg + HARD_REGNO_NREGS (best_reg, mode);
+      for (j = best_reg; j < lim; j++)
+	{
+	  SET_HARD_REG_BIT (this_reg, j);
+	  SET_HARD_REG_BIT (regs_used_so_far, j);
+	  /* This is no longer a reg used just by local regs.  */
+	  local_reg_n_refs[j] = 0;
+	  local_reg_freq[j] = 0;
+	}
+      /* For each other pseudo-reg conflicting with this one,
+	 mark it as conflicting with the hard regs this one occupies.  */
+      lim = num;
+      EXECUTE_IF_SET_IN_ALLOCNO_SET (conflicts + lim * allocno_row_words, j,
+	{
+	  IOR_HARD_REG_SET (allocno[j].hard_reg_conflicts, this_reg);
+	});
+    }
+}

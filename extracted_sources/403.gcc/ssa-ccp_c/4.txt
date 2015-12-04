@@ -1,0 +1,64 @@
+static void
+examine_flow_edges ()
+{
+  while (flow_edges != NULL)
+    {
+      basic_block succ_block;
+      rtx curr_phi_node;
+
+      /* Pull the next block to simulate off the worklist.  */
+      succ_block = flow_edges->dest;
+      flow_edges = edge_info[EIE (flow_edges->src, flow_edges->dest)];
+
+      /* There is nothing to do for the exit block.  */
+      if (succ_block == EXIT_BLOCK_PTR)
+	continue;
+
+      /* Always simulate PHI nodes, even if we have simulated this block
+	 before.  Note that all PHI nodes are consecutive within a block.  */
+      for (curr_phi_node = first_insn_after_basic_block_note (succ_block);
+	   PHI_NODE_P (curr_phi_node);
+	   curr_phi_node = NEXT_INSN (curr_phi_node))
+	visit_phi_node (curr_phi_node, succ_block);
+
+      /* If this is the first time we've simulated this block, then we
+	 must simulate each of its insns.  */
+      if (!TEST_BIT (executable_blocks, succ_block->index))
+	{
+	  rtx currinsn;
+	  edge succ_edge = succ_block->succ;
+
+	  /* Note that we have simulated this block.  */
+	  SET_BIT (executable_blocks, succ_block->index);
+
+	  /* Simulate each insn within the block.  */
+	  currinsn = succ_block->head;
+	  while (currinsn != succ_block->end)
+	    {
+	      if (INSN_P (currinsn))
+		visit_expression (currinsn, succ_block);
+
+	      currinsn = NEXT_INSN (currinsn);
+	    }
+	  
+	  /* Don't forget the last insn in the block.  */
+	  if (INSN_P (currinsn))
+	    visit_expression (currinsn, succ_block);
+	  
+	  /* If we haven't looked at the next block, and it has a
+	     single successor, add it onto the worklist.  This is because
+	     if we only have one successor, we know it gets executed,
+	     so we don't have to wait for cprop to tell us.  */
+	  if (succ_edge != NULL
+	      && succ_edge->succ_next == NULL
+	      && !TEST_BIT (executable_edges,
+			    EIE (succ_edge->src, succ_edge->dest)))
+	    {
+	      SET_BIT (executable_edges,
+		       EIE (succ_edge->src, succ_edge->dest));
+	      edge_info[EIE (succ_edge->src, succ_edge->dest)] = flow_edges;
+	      flow_edges = succ_edge;
+	    }
+	}
+    }
+}

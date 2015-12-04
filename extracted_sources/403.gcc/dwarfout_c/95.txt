@@ -1,0 +1,26 @@
+static void
+output_inheritance_die (arg)
+     void *arg;
+{
+  tree binfo = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_inheritance);
+  sibling_attribute ();
+  type_attribute (BINFO_TYPE (binfo), 0, 0);
+  data_member_location_attribute (binfo);
+  if (TREE_VIA_VIRTUAL (binfo))
+    {
+      ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_virtual);
+      ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, "");
+    }
+  if (TREE_VIA_PUBLIC (binfo))
+    {
+      ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_public);
+      ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, "");
+    }
+  else if (TREE_VIA_PROTECTED (binfo))
+    {
+      ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_protected);
+      ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, "");
+    }
+}  

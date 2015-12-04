@@ -1,0 +1,27 @@
+static rtx
+cond_exec_get_condition (jump)
+     rtx jump;
+{
+  rtx test_if, cond;
+
+  if (any_condjump_p (jump))
+    test_if = SET_SRC (pc_set (jump));
+  else
+    return NULL_RTX;
+  cond = XEXP (test_if, 0);
+
+  /* If this branches to JUMP_LABEL when the condition is false,
+     reverse the condition.  */
+  if (GET_CODE (XEXP (test_if, 2)) == LABEL_REF
+      && XEXP (XEXP (test_if, 2), 0) == JUMP_LABEL (jump))
+    {
+      enum rtx_code rev = reversed_comparison_code (cond, jump);
+      if (rev == UNKNOWN)
+	return NULL_RTX;
+
+      cond = gen_rtx_fmt_ee (rev, GET_MODE (cond), XEXP (cond, 0),
+			     XEXP (cond, 1));
+    }
+
+  return cond;
+}

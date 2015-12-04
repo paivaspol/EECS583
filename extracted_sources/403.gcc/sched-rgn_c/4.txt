@@ -1,0 +1,25 @@
+void
+debug_regions ()
+{
+  int rgn, bb;
+
+  fprintf (sched_dump, "\n;;   ------------ REGIONS ----------\n\n");
+  for (rgn = 0; rgn < nr_regions; rgn++)
+    {
+      fprintf (sched_dump, ";;\trgn %d nr_blocks %d:\n", rgn,
+	       rgn_table[rgn].rgn_nr_blocks);
+      fprintf (sched_dump, ";;\tbb/block: ");
+
+      for (bb = 0; bb < rgn_table[rgn].rgn_nr_blocks; bb++)
+	{
+	  current_blocks = RGN_BLOCKS (rgn);
+
+	  if (bb != BLOCK_TO_BB (BB_TO_BLOCK (bb)))
+	    abort ();
+
+	  fprintf (sched_dump, " %d/%d ", bb, BB_TO_BLOCK (bb));
+	}
+
+      fprintf (sched_dump, "\n\n");
+    }
+}

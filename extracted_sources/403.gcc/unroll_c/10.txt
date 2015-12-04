@@ -1,0 +1,153 @@
+static int
+find_splittable_regs (loop, unroll_type, unroll_number)
+     const struct loop *loop;
+     enum unroll_types unroll_type;
+     int unroll_number;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct iv_class *bl;
+  struct induction *v;
+  rtx increment, tem;
+  rtx biv_final_value;
+  int biv_splittable;
+  int result = 0;
+
+  for (bl = ivs->list; bl; bl = bl->next)
+    {
+      /* Biv_total_increment must return a constant value,
+	 otherwise we can not calculate the split values.  */
+
+      increment = biv_total_increment (bl);
+      if (! increment || GET_CODE (increment) != CONST_INT)
+	continue;
+
+      /* The loop must be unrolled completely, or else have a known number
+	 of iterations and only one exit, or else the biv must be dead
+	 outside the loop, or else the final value must be known.  Otherwise,
+	 it is unsafe to split the biv since it may not have the proper
+	 value on loop exit.  */
+
+      /* loop_number_exit_count is non-zero if the loop has an exit other than
+	 a fall through at the end.  */
+
+      biv_splittable = 1;
+      biv_final_value = 0;
+      if (unroll_type != UNROLL_COMPLETELY
+	  && (loop->exit_count || unroll_type == UNROLL_NAIVE)
+	  && (REGNO_LAST_LUID (bl->regno) >= INSN_LUID (loop->end)
+	      || ! bl->init_insn
+	      || INSN_UID (bl->init_insn) >= max_uid_for_loop
+	      || (REGNO_FIRST_LUID (bl->regno)
+		  < INSN_LUID (bl->init_insn))
+	      || reg_mentioned_p (bl->biv->dest_reg, SET_SRC (bl->init_set)))
+	  && ! (biv_final_value = final_biv_value (loop, bl)))
+	biv_splittable = 0;
+
+      /* If any of the insns setting the BIV don't do so with a simple
+	 PLUS, we don't know how to split it.  */
+      for (v = bl->biv; biv_splittable && v; v = v->next_iv)
+	if ((tem = single_set (v->insn)) == 0
+	    || GET_CODE (SET_DEST (tem)) != REG
+	    || REGNO (SET_DEST (tem)) != bl->regno
+	    || GET_CODE (SET_SRC (tem)) != PLUS)
+	  biv_splittable = 0;
+
+      /* If final value is non-zero, then must emit an instruction which sets
+	 the value of the biv to the proper value.  This is done after
+	 handling all of the givs, since some of them may need to use the
+	 biv's value in their initialization code.  */
+
+      /* This biv is splittable.  If completely unrolling the loop, save
+	 the biv's initial value.  Otherwise, save the constant zero.  */
+
+      if (biv_splittable == 1)
+	{
+	  if (unroll_type == UNROLL_COMPLETELY)
+	    {
+	      /* If the initial value of the biv is itself (i.e. it is too
+		 complicated for strength_reduce to compute), or is a hard
+		 register, or it isn't invariant, then we must create a new
+		 pseudo reg to hold the initial value of the biv.  */
+
+	      if (GET_CODE (bl->initial_value) == REG
+		  && (REGNO (bl->initial_value) == bl->regno
+		      || REGNO (bl->initial_value) < FIRST_PSEUDO_REGISTER
+		      || ! loop_invariant_p (loop, bl->initial_value)))
+		{
+		  rtx tem = gen_reg_rtx (bl->biv->mode);
+
+		  record_base_value (REGNO (tem), bl->biv->add_val, 0);
+		  loop_insn_hoist (loop, 
+				   gen_move_insn (tem, bl->biv->src_reg));
+
+		  if (loop_dump_stream)
+		    fprintf (loop_dump_stream,
+			     "Biv %d initial value remapped to %d.\n",
+			     bl->regno, REGNO (tem));
+
+		  splittable_regs[bl->regno] = tem;
+		}
+	      else
+		splittable_regs[bl->regno] = bl->initial_value;
+	    }
+	  else
+	    splittable_regs[bl->regno] = const0_rtx;
+
+	  /* Save the number of instructions that modify the biv, so that
+	     we can treat the last one specially.  */
+
+	  splittable_regs_updates[bl->regno] = bl->biv_count;
+	  result += bl->biv_count;
+
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Biv %d safe to split.\n", bl->regno);
+	}
+
+      /* Check every giv that depends on this biv to see whether it is
+	 splittable also.  Even if the biv isn't splittable, givs which
+	 depend on it may be splittable if the biv is live outside the
+	 loop, and the givs aren't.  */
+
+      result += find_splittable_givs (loop, bl, unroll_type, increment,
+				      unroll_number);
+
+      /* If final value is non-zero, then must emit an instruction which sets
+	 the value of the biv to the proper value.  This is done after
+	 handling all of the givs, since some of them may need to use the
+	 biv's value in their initialization code.  */
+      if (biv_final_value)
+	{
+	  /* If the loop has multiple exits, emit the insns before the
+	     loop to ensure that it will always be executed no matter
+	     how the loop exits.  Otherwise emit the insn after the loop,
+	     since this is slightly more efficient.  */
+	  if (! loop->exit_count)
+	    loop_insn_sink (loop, gen_move_insn (bl->biv->src_reg,
+						 biv_final_value));
+	  else
+	    {
+	      /* Create a new register to hold the value of the biv, and then
+		 set the biv to its final value before the loop start.  The biv
+		 is set to its final value before loop start to ensure that
+		 this insn will always be executed, no matter how the loop
+		 exits.  */
+	      rtx tem = gen_reg_rtx (bl->biv->mode);
+	      record_base_value (REGNO (tem), bl->biv->add_val, 0);
+
+	      loop_insn_hoist (loop, gen_move_insn (tem, bl->biv->src_reg));
+	      loop_insn_hoist (loop, gen_move_insn (bl->biv->src_reg,
+						    biv_final_value));
+
+	      if (loop_dump_stream)
+		fprintf (loop_dump_stream, "Biv %d mapped to %d for split.\n",
+			 REGNO (bl->biv->src_reg), REGNO (tem));
+
+	      /* Set up the mapping from the original biv register to the new
+		 register.  */
+	      bl->biv->src_reg = tem;
+	    }
+	}
+    }
+  return result;
+}

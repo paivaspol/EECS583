@@ -1,0 +1,47 @@
+void path_transport( field_offset src, field_offset dest, int parity,
+    int *dir, int length );
+void path_transport_hwv( field_offset src, field_offset dest, int parity,
+    int *dir, int length );
+#ifdef  ASQ_OPTIMIZED_FATTENING
+void compute_gen_staple(field_offset staple, int mu, int nu,
+                        field_offset link, double coef ) ;
+#endif
+#ifdef  ASQ_OPTIMIZED_FORCE
+#ifndef FN
+BOMB THE COMPILE
+#endif
+void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) ;
+void add_force_to_mom(su3_vector *back, su3_vector *forw, int dir, double coef);
+void side_link_force(int mu, int nu, double coeff, su3_vector *Path,
+		     su3_vector *Path_nu, su3_vector *Path_mu, 
+		     su3_vector *Path_numu) ;
+
+void u_shift_hw_fermion(half_wilson_vector *src, 
+			half_wilson_vector *dest, int dir ) ;
+void add_3f_force_to_mom(half_wilson_vector *back,
+			 half_wilson_vector *forw, int dir, double coeff[2]) ;
+void side_link_3f_force(int mu, int nu, double coeff[2], 
+			half_wilson_vector *Path   , 
+			half_wilson_vector *Path_nu, 
+			half_wilson_vector *Path_mu, 
+			half_wilson_vector *Path_numu) ;
+#endif
+
+int path_num[MAX_BASIC_PATHS];	/* number of rotations/reflections for each 
+					kind */
+static double act_path_coeff[MAX_BASIC_PATHS]; /* actual path coefficient     *
+                                               * it is equal to path_coeff   *
+                                               * if not tadpole improvement  *
+                                               * is specified                *
+                                               * or path_coeff*u_0^(L-1) when*
+                                               * tadpole improvement is      *
+                                               * specified                   */
+
+/* Array of structures, for each rotation and reflection of each kind of
+	path.  */
+struct {
+    int dir[MAX_LENGTH];	/* directions in path */
+    int length;		/* length of path */
+    double coeff;	/* coefficient, including minus sign if backwards */
+    double forwback;	/* +1 if in forward Dslash, -1 if in backward */
+}   q_paths[MAX_NUM];

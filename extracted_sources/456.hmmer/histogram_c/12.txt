@@ -1,0 +1,30 @@
+void
+Lawless416(float *x, int *y, int n, float lambda, float *ret_f, float *ret_df)
+{
+
+  double esum;			/* \sum e^(-lambda xi)      */
+  double xesum;			/* \sum xi e^(-lambda xi)   */
+  double xxesum;		/* \sum xi^2 e^(-lambda xi) */
+  double xsum;			/* \sum xi                  */
+  double mult;			/* histogram count multiplier */
+  double total;			/* total samples            */
+  int i;
+
+
+  esum = xesum = xsum  = xxesum = total = 0.;
+  for (i = 0; i < n; i++)
+    {
+      mult = (y == NULL) ? 1. : (double) y[i];
+      xsum   += mult * x[i];
+      xesum  += mult * x[i] * exp(-1. * lambda * x[i]);
+      xxesum += mult * x[i] * x[i] * exp(-1. * lambda * x[i]);
+      esum   += mult * exp(-1. * lambda * x[i]);
+      total  += mult;
+    }
+  *ret_f  = 1./lambda - xsum / total + xesum / esum;
+  *ret_df = ((xesum / esum) * (xesum / esum))
+    - (xxesum / esum)
+    - (1. / (lambda * lambda));
+
+  return;
+}

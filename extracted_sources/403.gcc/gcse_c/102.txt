@@ -1,0 +1,91 @@
+void
+delete_null_pointer_checks (f)
+     rtx f ATTRIBUTE_UNUSED;
+{
+  sbitmap *nonnull_avin, *nonnull_avout;
+  unsigned int *block_reg;
+  int bb;
+  int reg;
+  int regs_per_pass;
+  int max_reg;
+  struct null_pointer_info npi;
+
+  /* If we have only a single block, then there's nothing to do.  */
+  if (n_basic_blocks <= 1)
+    return;
+
+  /* Trying to perform global optimizations on flow graphs which have
+     a high connectivity will take a long time and is unlikely to be
+     particularly useful.
+
+     In normal circumstances a cfg should have about twice as many edges
+     as blocks.  But we do not want to punish small functions which have
+     a couple switch statements.  So we require a relatively large number
+     of basic blocks and the ratio of edges to blocks to be high.  */
+  if (n_basic_blocks > 1000 && n_edges / n_basic_blocks >= 20)
+    return;
+
+  /* We need four bitmaps, each with a bit for each register in each
+     basic block.  */
+  max_reg = max_reg_num ();
+  regs_per_pass = get_bitmap_width (4, n_basic_blocks, max_reg);
+
+  /* Allocate bitmaps to hold local and global properties.  */
+  npi.nonnull_local = sbitmap_vector_alloc (n_basic_blocks, regs_per_pass);
+  npi.nonnull_killed = sbitmap_vector_alloc (n_basic_blocks, regs_per_pass);
+  nonnull_avin = sbitmap_vector_alloc (n_basic_blocks, regs_per_pass);
+  nonnull_avout = sbitmap_vector_alloc (n_basic_blocks, regs_per_pass);
+
+  /* Go through the basic blocks, seeing whether or not each block
+     ends with a conditional branch whose condition is a comparison
+     against zero.  Record the register compared in BLOCK_REG.  */
+  block_reg = (unsigned int *) xcalloc (n_basic_blocks, sizeof (int));
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    {
+      rtx last_insn = BLOCK_END (bb);
+      rtx condition, earliest, reg;
+
+      /* We only want conditional branches.  */
+      if (GET_CODE (last_insn) != JUMP_INSN
+	  || !any_condjump_p (last_insn)
+	  || !onlyjump_p (last_insn))
+	continue;
+
+      /* LAST_INSN is a conditional jump.  Get its condition.  */
+      condition = get_condition (last_insn, &earliest);
+
+      /* If we were unable to get the condition, or it is not an equality
+	 comparison against zero then there's nothing we can do.  */
+      if (!condition
+	  || (GET_CODE (condition) != NE && GET_CODE (condition) != EQ)
+	  || GET_CODE (XEXP (condition, 1)) != CONST_INT
+	  || (XEXP (condition, 1) 
+	      != CONST0_RTX (GET_MODE (XEXP (condition, 0)))))
+	continue;
+
+      /* We must be checking a register against zero.  */
+      reg = XEXP (condition, 0);
+      if (GET_CODE (reg) != REG)
+	continue;
+
+      block_reg[bb] = REGNO (reg);
+    }
+
+  /* Go through the algorithm for each block of registers.  */
+  for (reg = FIRST_PSEUDO_REGISTER; reg < max_reg; reg += regs_per_pass)
+    {
+      npi.min_reg = reg;
+      npi.max_reg = MIN (reg + regs_per_pass, max_reg);
+      delete_null_pointer_checks_1 (block_reg, nonnull_avin,
+				    nonnull_avout, &npi);
+    }
+
+  /* Free the table of registers compared at the end of every block.  */
+  free (block_reg);
+
+  /* Free bitmaps.  */
+  sbitmap_vector_free (npi.nonnull_local);
+  sbitmap_vector_free (npi.nonnull_killed);
+  sbitmap_vector_free (nonnull_avin);
+  sbitmap_vector_free (nonnull_avout);
+}

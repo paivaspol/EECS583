@@ -1,0 +1,447 @@
+static int classify_argument PARAMS ((enum machine_mode, tree,
+				      enum x86_64_reg_class [MAX_CLASSES],
+				      int));
+static int examine_argument PARAMS ((enum machine_mode, tree, int, int *,
+				     int *));
+static rtx construct_container PARAMS ((enum machine_mode, tree, int, int, int,
+					const int *, int));
+static enum x86_64_reg_class merge_classes PARAMS ((enum x86_64_reg_class,
+						    enum x86_64_reg_class));
+
+/* Initialize the GCC target structure.  */
+#undef TARGET_ATTRIBUTE_TABLE
+#define TARGET_ATTRIBUTE_TABLE ix86_attribute_table
+#ifdef TARGET_DLLIMPORT_DECL_ATTRIBUTES
+#  undef TARGET_MERGE_DECL_ATTRIBUTES
+#  define TARGET_MERGE_DECL_ATTRIBUTES merge_dllimport_decl_attributes
+#endif
+
+#undef TARGET_COMP_TYPE_ATTRIBUTES
+#define TARGET_COMP_TYPE_ATTRIBUTES ix86_comp_type_attributes
+
+#undef TARGET_INIT_BUILTINS
+#define TARGET_INIT_BUILTINS ix86_init_builtins
+
+#undef TARGET_EXPAND_BUILTIN
+#define TARGET_EXPAND_BUILTIN ix86_expand_builtin
+
+#if defined (OSF_OS) || defined (TARGET_OSF1ELF)
+   static void ix86_osf_output_function_prologue PARAMS ((FILE *,
+							  HOST_WIDE_INT));
+#  undef TARGET_ASM_FUNCTION_PROLOGUE
+#  define TARGET_ASM_FUNCTION_PROLOGUE ix86_osf_output_function_prologue
+#endif
+
+#undef TARGET_ASM_OPEN_PAREN
+#define TARGET_ASM_OPEN_PAREN ""
+#undef TARGET_ASM_CLOSE_PAREN
+#define TARGET_ASM_CLOSE_PAREN ""
+
+#undef TARGET_ASM_ALIGNED_HI_OP
+#define TARGET_ASM_ALIGNED_HI_OP ASM_SHORT
+#undef TARGET_ASM_ALIGNED_SI_OP
+#define TARGET_ASM_ALIGNED_SI_OP ASM_LONG
+#ifdef ASM_QUAD
+#undef TARGET_ASM_ALIGNED_DI_OP
+#define TARGET_ASM_ALIGNED_DI_OP ASM_QUAD
+#endif
+
+#undef TARGET_ASM_UNALIGNED_HI_OP
+#define TARGET_ASM_UNALIGNED_HI_OP TARGET_ASM_ALIGNED_HI_OP
+#undef TARGET_ASM_UNALIGNED_SI_OP
+#define TARGET_ASM_UNALIGNED_SI_OP TARGET_ASM_ALIGNED_SI_OP
+#undef TARGET_ASM_UNALIGNED_DI_OP
+#define TARGET_ASM_UNALIGNED_DI_OP TARGET_ASM_ALIGNED_DI_OP
+
+#undef TARGET_SCHED_ADJUST_COST
+#define TARGET_SCHED_ADJUST_COST ix86_adjust_cost
+#undef TARGET_SCHED_ISSUE_RATE
+#define TARGET_SCHED_ISSUE_RATE ix86_issue_rate
+#undef TARGET_SCHED_VARIABLE_ISSUE
+#define TARGET_SCHED_VARIABLE_ISSUE ix86_variable_issue
+#undef TARGET_SCHED_INIT
+#define TARGET_SCHED_INIT ix86_sched_init
+#undef TARGET_SCHED_REORDER
+#define TARGET_SCHED_REORDER ix86_sched_reorder
+
+struct gcc_target targetm = TARGET_INITIALIZER;
+
+/* Sometimes certain combinations of command options do not make
+   sense on a particular target machine.  You can define a macro
+   `OVERRIDE_OPTIONS' to take account of this.  This macro, if
+   defined, is executed once just after all the command options have
+   been parsed.
+
+   Don't use this macro to turn on various extra optimizations for
+   `-O'.  That is what `OPTIMIZATION_OPTIONS' is for.  */
+
+void
+override_options ()
+{
+  int i;
+  /* Comes from final.c -- no real reason to change it.  */
+#define MAX_CODE_ALIGN 16
+
+  static struct ptt
+    {
+      const struct processor_costs *cost;	/* Processor costs */
+      const int target_enable;			/* Target flags to enable.  */
+      const int target_disable;			/* Target flags to disable.  */
+      const int align_loop;			/* Default alignments.  */
+      const int align_loop_max_skip;
+      const int align_jump;
+      const int align_jump_max_skip;
+      const int align_func;
+      const int branch_cost;
+    }
+  const processor_target_table[PROCESSOR_max] =
+    {
+      {&i386_cost, 0, 0, 4, 3, 4, 3, 4, 1},
+      {&i486_cost, 0, 0, 16, 15, 16, 15, 16, 1},
+      {&pentium_cost, 0, 0, 16, 7, 16, 7, 16, 1},
+      {&pentiumpro_cost, 0, 0, 16, 15, 16, 7, 16, 1},
+      {&k6_cost, 0, 0, 32, 7, 32, 7, 32, 1},
+      {&athlon_cost, 0, 0, 16, 7, 64, 7, 16, 1},
+      {&pentium4_cost, 0, 0, 0, 0, 0, 0, 0, 1}
+    };
+
+  static const char * const cpu_names[] = TARGET_CPU_DEFAULT_NAMES;
+  static struct pta
+    {
+      const char *const name;		/* processor name or nickname.  */
+      const enum processor_type processor;
+      const enum pta_flags
+	{
+	  PTA_SSE = 1,
+	  PTA_SSE2 = 2,
+	  PTA_MMX = 4,
+	  PTA_PREFETCH_SSE = 8,
+	  PTA_3DNOW = 16,
+	  PTA_3DNOW_A = 64
+	} flags;
+    }
+  const processor_alias_table[] =
+    {
+      {"i386", PROCESSOR_I386, 0},
+      {"i486", PROCESSOR_I486, 0},
+      {"i586", PROCESSOR_PENTIUM, 0},
+      {"pentium", PROCESSOR_PENTIUM, 0},
+      {"pentium-mmx", PROCESSOR_PENTIUM, PTA_MMX},
+      {"i686", PROCESSOR_PENTIUMPRO, 0},
+      {"pentiumpro", PROCESSOR_PENTIUMPRO, 0},
+      {"pentium2", PROCESSOR_PENTIUMPRO, PTA_MMX},
+      {"pentium3", PROCESSOR_PENTIUMPRO, PTA_MMX | PTA_SSE | PTA_PREFETCH_SSE},
+      {"pentium4", PROCESSOR_PENTIUM4, PTA_SSE | PTA_SSE2 |
+				       PTA_MMX | PTA_PREFETCH_SSE},
+      {"k6", PROCESSOR_K6, PTA_MMX},
+      {"k6-2", PROCESSOR_K6, PTA_MMX | PTA_3DNOW},
+      {"k6-3", PROCESSOR_K6, PTA_MMX | PTA_3DNOW},
+      {"athlon", PROCESSOR_ATHLON, PTA_MMX | PTA_PREFETCH_SSE | PTA_3DNOW
+				   | PTA_3DNOW_A},
+      {"athlon-tbird", PROCESSOR_ATHLON, PTA_MMX | PTA_PREFETCH_SSE
+					 | PTA_3DNOW | PTA_3DNOW_A},
+      {"athlon-4", PROCESSOR_ATHLON, PTA_MMX | PTA_PREFETCH_SSE | PTA_3DNOW
+				    | PTA_3DNOW_A | PTA_SSE},
+      {"athlon-xp", PROCESSOR_ATHLON, PTA_MMX | PTA_PREFETCH_SSE | PTA_3DNOW
+				      | PTA_3DNOW_A | PTA_SSE},
+      {"athlon-mp", PROCESSOR_ATHLON, PTA_MMX | PTA_PREFETCH_SSE | PTA_3DNOW
+				      | PTA_3DNOW_A | PTA_SSE},
+    };
+
+  int const pta_size = sizeof (processor_alias_table) / sizeof (struct pta);
+
+#ifdef SUBTARGET_OVERRIDE_OPTIONS
+  SUBTARGET_OVERRIDE_OPTIONS;
+#endif
+
+  if (!ix86_cpu_string && ix86_arch_string)
+    ix86_cpu_string = ix86_arch_string;
+  if (!ix86_cpu_string)
+    ix86_cpu_string = cpu_names [TARGET_CPU_DEFAULT];
+  if (!ix86_arch_string)
+    ix86_arch_string = TARGET_64BIT ? "athlon-4" : "i386";
+
+  if (ix86_cmodel_string != 0)
+    {
+      if (!strcmp (ix86_cmodel_string, "small"))
+	ix86_cmodel = flag_pic ? CM_SMALL_PIC : CM_SMALL;
+      else if (flag_pic)
+	sorry ("code model %s not supported in PIC mode", ix86_cmodel_string);
+      else if (!strcmp (ix86_cmodel_string, "32"))
+	ix86_cmodel = CM_32;
+      else if (!strcmp (ix86_cmodel_string, "kernel") && !flag_pic)
+	ix86_cmodel = CM_KERNEL;
+      else if (!strcmp (ix86_cmodel_string, "medium") && !flag_pic)
+	ix86_cmodel = CM_MEDIUM;
+      else if (!strcmp (ix86_cmodel_string, "large") && !flag_pic)
+	ix86_cmodel = CM_LARGE;
+      else
+	error ("bad value (%s) for -mcmodel= switch", ix86_cmodel_string);
+    }
+  else
+    {
+      ix86_cmodel = CM_32;
+      if (TARGET_64BIT)
+	ix86_cmodel = flag_pic ? CM_SMALL_PIC : CM_SMALL;
+    }
+  if (ix86_asm_string != 0)
+    {
+      if (!strcmp (ix86_asm_string, "intel"))
+	ix86_asm_dialect = ASM_INTEL;
+      else if (!strcmp (ix86_asm_string, "att"))
+	ix86_asm_dialect = ASM_ATT;
+      else
+	error ("bad value (%s) for -masm= switch", ix86_asm_string);
+    }
+  if ((TARGET_64BIT == 0) != (ix86_cmodel == CM_32))
+    error ("code model `%s' not supported in the %s bit mode",
+	   ix86_cmodel_string, TARGET_64BIT ? "64" : "32");
+  if (ix86_cmodel == CM_LARGE)
+    sorry ("code model `large' not supported yet");
+  if ((TARGET_64BIT != 0) != ((target_flags & MASK_64BIT) != 0))
+    sorry ("%i-bit mode not compiled in",
+	   (target_flags & MASK_64BIT) ? 64 : 32);
+
+  for (i = 0; i < pta_size; i++)
+    if (! strcmp (ix86_arch_string, processor_alias_table[i].name))
+      {
+	ix86_arch = processor_alias_table[i].processor;
+	/* Default cpu tuning to the architecture.  */
+	ix86_cpu = ix86_arch;
+	if (processor_alias_table[i].flags & PTA_MMX
+	    && !(target_flags & MASK_MMX_SET))
+	  target_flags |= MASK_MMX;
+	if (processor_alias_table[i].flags & PTA_3DNOW
+	    && !(target_flags & MASK_3DNOW_SET))
+	  target_flags |= MASK_3DNOW;
+	if (processor_alias_table[i].flags & PTA_3DNOW_A
+	    && !(target_flags & MASK_3DNOW_A_SET))
+	  target_flags |= MASK_3DNOW_A;
+	if (processor_alias_table[i].flags & PTA_SSE
+	    && !(target_flags & MASK_SSE_SET))
+	  target_flags |= MASK_SSE;
+	if (processor_alias_table[i].flags & PTA_SSE2
+	    && !(target_flags & MASK_SSE2_SET))
+	  target_flags |= MASK_SSE2;
+	if (processor_alias_table[i].flags & PTA_PREFETCH_SSE)
+	  x86_prefetch_sse = true;
+	break;
+      }
+
+  if (i == pta_size)
+    error ("bad value (%s) for -march= switch", ix86_arch_string);
+
+  for (i = 0; i < pta_size; i++)
+    if (! strcmp (ix86_cpu_string, processor_alias_table[i].name))
+      {
+	ix86_cpu = processor_alias_table[i].processor;
+	break;
+      }
+  if (processor_alias_table[i].flags & PTA_PREFETCH_SSE)
+    x86_prefetch_sse = true;
+  if (i == pta_size)
+    error ("bad value (%s) for -mcpu= switch", ix86_cpu_string);
+
+  if (optimize_size)
+    ix86_cost = &size_cost;
+  else
+    ix86_cost = processor_target_table[ix86_cpu].cost;
+  target_flags |= processor_target_table[ix86_cpu].target_enable;
+  target_flags &= ~processor_target_table[ix86_cpu].target_disable;
+
+  /* Arrange to set up i386_stack_locals for all functions.  */
+  init_machine_status = ix86_init_machine_status;
+  mark_machine_status = ix86_mark_machine_status;
+  free_machine_status = ix86_free_machine_status;
+
+  /* Validate -mregparm= value.  */
+  if (ix86_regparm_string)
+    {
+      i = atoi (ix86_regparm_string);
+      if (i < 0 || i > REGPARM_MAX)
+	error ("-mregparm=%d is not between 0 and %d", i, REGPARM_MAX);
+      else
+	ix86_regparm = i;
+    }
+  else
+   if (TARGET_64BIT)
+     ix86_regparm = REGPARM_MAX;
+
+  /* If the user has provided any of the -malign-* options,
+     warn and use that value only if -falign-* is not set.
+     Remove this code in GCC 3.2 or later.  */
+  if (ix86_align_loops_string)
+    {
+      warning ("-malign-loops is obsolete, use -falign-loops");
+      if (align_loops == 0)
+	{
+	  i = atoi (ix86_align_loops_string);
+	  if (i < 0 || i > MAX_CODE_ALIGN)
+	    error ("-malign-loops=%d is not between 0 and %d", i, MAX_CODE_ALIGN);
+	  else
+	    align_loops = 1 << i;
+	}
+    }
+
+  if (ix86_align_jumps_string)
+    {
+      warning ("-malign-jumps is obsolete, use -falign-jumps");
+      if (align_jumps == 0)
+	{
+	  i = atoi (ix86_align_jumps_string);
+	  if (i < 0 || i > MAX_CODE_ALIGN)
+	    error ("-malign-loops=%d is not between 0 and %d", i, MAX_CODE_ALIGN);
+	  else
+	    align_jumps = 1 << i;
+	}
+    }
+
+  if (ix86_align_funcs_string)
+    {
+      warning ("-malign-functions is obsolete, use -falign-functions");
+      if (align_functions == 0)
+	{
+	  i = atoi (ix86_align_funcs_string);
+	  if (i < 0 || i > MAX_CODE_ALIGN)
+	    error ("-malign-loops=%d is not between 0 and %d", i, MAX_CODE_ALIGN);
+	  else
+	    align_functions = 1 << i;
+	}
+    }
+
+  /* Default align_* from the processor table.  */
+  if (align_loops == 0)
+    {
+      align_loops = processor_target_table[ix86_cpu].align_loop;
+      align_loops_max_skip = processor_target_table[ix86_cpu].align_loop_max_skip;
+    }
+  if (align_jumps == 0)
+    {
+      align_jumps = processor_target_table[ix86_cpu].align_jump;
+      align_jumps_max_skip = processor_target_table[ix86_cpu].align_jump_max_skip;
+    }
+  if (align_functions == 0)
+    {
+      align_functions = processor_target_table[ix86_cpu].align_func;
+    }
+
+  /* Validate -mpreferred-stack-boundary= value, or provide default.
+     The default of 128 bits is for Pentium III's SSE __m128, but we
+     don't want additional code to keep the stack aligned when
+     optimizing for code size.  */
+  ix86_preferred_stack_boundary = (optimize_size
+				   ? TARGET_64BIT ? 128 : 32
+				   : 128);
+  if (ix86_preferred_stack_boundary_string)
+    {
+      i = atoi (ix86_preferred_stack_boundary_string);
+      if (i < (TARGET_64BIT ? 4 : 2) || i > 12)
+	error ("-mpreferred-stack-boundary=%d is not between %d and 12", i,
+	       TARGET_64BIT ? 4 : 2);
+      else
+	ix86_preferred_stack_boundary = (1 << i) * BITS_PER_UNIT;
+    }
+
+  /* Validate -mbranch-cost= value, or provide default.  */
+  ix86_branch_cost = processor_target_table[ix86_cpu].branch_cost;
+  if (ix86_branch_cost_string)
+    {
+      i = atoi (ix86_branch_cost_string);
+      if (i < 0 || i > 5)
+	error ("-mbranch-cost=%d is not between 0 and 5", i);
+      else
+	ix86_branch_cost = i;
+    }
+
+  /* Keep nonleaf frame pointers.  */
+  if (TARGET_OMIT_LEAF_FRAME_POINTER)
+    flag_omit_frame_pointer = 1;
+
+  /* If we're doing fast math, we don't care about comparison order
+     wrt NaNs.  This lets us use a shorter comparison sequence.  */
+  if (flag_unsafe_math_optimizations)
+    target_flags &= ~MASK_IEEE_FP;
+
+  /* If the architecture always has an FPU, turn off NO_FANCY_MATH_387,
+     since the insns won't need emulation.  */
+  if (x86_arch_always_fancy_math_387 & (1 << ix86_arch))
+    target_flags &= ~MASK_NO_FANCY_MATH_387;
+
+  if (TARGET_64BIT)
+    {
+      if (TARGET_ALIGN_DOUBLE)
+	error ("-malign-double makes no sense in the 64bit mode");
+      if (TARGET_RTD)
+	error ("-mrtd calling convention not supported in the 64bit mode");
+      /* Enable by default the SSE and MMX builtins.  */
+      target_flags |= (MASK_SSE2 | MASK_SSE | MASK_MMX | MASK_128BIT_LONG_DOUBLE);
+      ix86_fpmath = FPMATH_SSE;
+     }
+  else
+    ix86_fpmath = FPMATH_387;
+
+  if (ix86_fpmath_string != 0)
+    {
+      if (! strcmp (ix86_fpmath_string, "387"))
+	ix86_fpmath = FPMATH_387;
+      else if (! strcmp (ix86_fpmath_string, "sse"))
+	{
+	  if (!TARGET_SSE)
+	    {
+	      warning ("SSE instruction set disabled, using 387 arithmetics");
+	      ix86_fpmath = FPMATH_387;
+	    }
+	  else
+	    ix86_fpmath = FPMATH_SSE;
+	}
+      else if (! strcmp (ix86_fpmath_string, "387,sse")
+	       || ! strcmp (ix86_fpmath_string, "sse,387"))
+	{
+	  if (!TARGET_SSE)
+	    {
+	      warning ("SSE instruction set disabled, using 387 arithmetics");
+	      ix86_fpmath = FPMATH_387;
+	    }
+	  else if (!TARGET_80387)
+	    {
+	      warning ("387 instruction set disabled, using SSE arithmetics");
+	      ix86_fpmath = FPMATH_SSE;
+	    }
+	  else
+	    ix86_fpmath = FPMATH_SSE | FPMATH_387;
+	}
+      else 
+	error ("bad value (%s) for -mfpmath= switch", ix86_fpmath_string);
+    }
+
+  /* It makes no sense to ask for just SSE builtins, so MMX is also turned
+     on by -msse.  */
+  if (TARGET_SSE)
+    {
+      target_flags |= MASK_MMX;
+      x86_prefetch_sse = true;
+    }
+
+  /* If it has 3DNow! it also has MMX so MMX is also turned on by -m3dnow */
+  if (TARGET_3DNOW)
+    {
+      target_flags |= MASK_MMX;
+      /* If we are targetting the Athlon architecture, enable the 3Dnow/MMX
+	 extensions it adds.  */
+      if (x86_3dnow_a & (1 << ix86_arch))
+	target_flags |= MASK_3DNOW_A;
+    }
+  if ((x86_accumulate_outgoing_args & CPUMASK)
+      && !(target_flags & MASK_ACCUMULATE_OUTGOING_ARGS_SET)
+      && !optimize_size)
+    target_flags |= MASK_ACCUMULATE_OUTGOING_ARGS;
+
+  /* Figure out what ASM_GENERATE_INTERNAL_LABEL builds as a prefix.  */
+  {
+    char *p;
+    ASM_GENERATE_INTERNAL_LABEL (internal_label_prefix, "LX", 0);
+    p = strchr (internal_label_prefix, 'X');
+    internal_label_prefix_len = p - internal_label_prefix;
+    *p = '\0';
+  }
+}

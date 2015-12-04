@@ -1,0 +1,51 @@
+static void
+dw2_output_call_site_table ()
+{
+  const char *const function_start_lab
+    = IDENTIFIER_POINTER (current_function_func_begin_label);
+  int n = cfun->eh->call_site_data_used;
+  int i;
+
+  for (i = 0; i < n; ++i)
+    {
+      struct call_site_record *cs = &cfun->eh->call_site_data[i];
+      char reg_start_lab[32];
+      char reg_end_lab[32];
+      char landing_pad_lab[32];
+
+      ASM_GENERATE_INTERNAL_LABEL (reg_start_lab, "LEHB", call_site_base + i);
+      ASM_GENERATE_INTERNAL_LABEL (reg_end_lab, "LEHE", call_site_base + i);
+
+      if (cs->landing_pad)
+	ASM_GENERATE_INTERNAL_LABEL (landing_pad_lab, "L",
+				     CODE_LABEL_NUMBER (cs->landing_pad));
+
+      /* ??? Perhaps use insn length scaling if the assembler supports
+	 generic arithmetic.  */
+      /* ??? Perhaps use attr_length to choose data1 or data2 instead of
+	 data4 if the function is small enough.  */
+#ifdef HAVE_AS_LEB128
+      dw2_asm_output_delta_uleb128 (reg_start_lab, function_start_lab,
+				    "region %d start", i);
+      dw2_asm_output_delta_uleb128 (reg_end_lab, reg_start_lab,
+				    "length");
+      if (cs->landing_pad)
+	dw2_asm_output_delta_uleb128 (landing_pad_lab, function_start_lab,
+				      "landing pad");
+      else
+	dw2_asm_output_data_uleb128 (0, "landing pad");
+#else
+      dw2_asm_output_delta (4, reg_start_lab, function_start_lab,
+			    "region %d start", i);
+      dw2_asm_output_delta (4, reg_end_lab, reg_start_lab, "length");
+      if (cs->landing_pad)
+	dw2_asm_output_delta (4, landing_pad_lab, function_start_lab,
+			      "landing pad");
+      else
+	dw2_asm_output_data (4, 0, "landing pad");
+#endif
+      dw2_asm_output_data_uleb128 (cs->action, "action");
+    }
+
+  call_site_base += n;
+}

@@ -1,0 +1,83 @@
+static real gather_f(FILE *log,bool bVerbose,
+		     int start,int nr,rvec x[],rvec f[],real charge[],rvec box,
+		     real pot[],t_fftgrid *grid,rvec beta,t_nrnb *nrnb)
+{
+  static bool bFirst=TRUE;
+  static int  *nnx,*nny,*nnz;
+  static int  JCXYZ[81];
+  int    i,m;
+  real   energy;
+  real   qi,pi;
+  ivec   ixyz;
+  rvec   invh,c1,c2;
+  real   WXYZ[27];
+  real   c1x,c1y,c1z,c2x,c2y,c2z;
+  int    ixw[7],iyw[7],izw[7];
+  int    ll;
+  int    nx,ny,nz,la2,la12;
+  t_fft_r *ptr;
+  
+  unpack_fftgrid(grid,&nx,&ny,&nz,&la2,&la12,TRUE,&ptr);
+  
+  calc_invh(box,nx,ny,nz,invh);
+  
+  for(m=0; (m<DIM); m++) {
+    c1[m] = (beta[m]/2.0)*invh[m];
+    c2[m] = ((1.0-beta[m])/4.0)*invh[m];
+  }
+  c1x = c1[XX];
+  c1y = c1[YY];
+  c1z = c1[ZZ];
+  c2x = c2[XX];
+  c2y = c2[YY];
+  c2z = c2[ZZ];
+
+  if (bFirst) {
+    fprintf(log,"Gathering Forces using Triangle Shaped on %dx%dx%d grid\n",
+	    nx,ny,nz);
+    fprintf(log,"beta = %10g,%10g,%10g\n",beta[XX],beta[YY],beta[ZZ]);
+    fprintf(log,"c1   = %10g,%10g,%10g\n",c1[XX],c1[YY],c1[ZZ]);
+    fprintf(log,"c2   = %10g,%10g,%10g\n",c2[XX],c2[YY],c2[ZZ]);
+    fprintf(log,"invh = %10g,%10g,%10g\n",invh[XX],invh[YY],invh[ZZ]);
+
+    calc_nxyz(nx,ny,nz,&nnx,&nny,&nnz);
+
+    for(i=0; (i<27); i++) {
+      JCXYZ[3*i]   = 2 + (i/9);
+      JCXYZ[3*i+1] = 2 + (i/3) % 3;
+      JCXYZ[3*i+2] = 2 + (i % 3); 
+    }
+    
+    bFirst = FALSE;
+  }
+
+  energy=0.0;  	  
+  for(i=start; (i<start+nr); i++) {
+    /* Each charge is spread over the nearest 27 grid cells,
+     * thus we loop over -1..1 in X,Y and Z direction
+     * We apply the TSC (triangle shaped charge)
+     * see Luty et. al, JCP 103 (1995) 3014
+     */
+     
+    calc_weights(i,nx,ny,nz,x[i],box,invh,ixyz,WXYZ);
+
+    for(ll=llim2; (ll<=ulim2); ll++) {
+      ixw[ll-llim2] = nnx[ixyz[XX]+ll+nx];
+      iyw[ll-llim2] = nny[ixyz[YY]+ll+ny];
+      izw[ll-llim2] = nnz[ixyz[ZZ]+ll+nz];
+    }
+    
+    qi      = charge[i];
+    pi      = gather_inner(JCXYZ,WXYZ,ixw,iyw,izw,la2,la12,
+			   c1x,c1y,c1z,c2x,c2y,c2z,
+			   qi,f[i],ptr);
+    
+    energy += pi*qi;
+    pot[i]  = pi;
+  }
+  
+  inc_nrnb(nrnb,eNR_GATHERF,27*nr);
+  inc_nrnb(nrnb,eNR_WEIGHTS,3*nr);
+  
+  return energy*0.5;
+}

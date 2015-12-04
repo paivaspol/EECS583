@@ -1,0 +1,24 @@
+static tree
+block_ultimate_origin (block)
+     tree block;
+{
+  tree immediate_origin = BLOCK_ABSTRACT_ORIGIN (block);
+
+  if (immediate_origin == NULL)
+    return NULL;
+  else
+    {
+      tree ret_val;
+      tree lookahead = immediate_origin;
+
+      do
+	{
+	  ret_val = lookahead;
+	  lookahead = (TREE_CODE (ret_val) == BLOCK)
+		       ? BLOCK_ABSTRACT_ORIGIN (ret_val)
+		       : NULL;
+	}
+      while (lookahead != NULL && lookahead != ret_val);
+      return ret_val;
+    }
+}

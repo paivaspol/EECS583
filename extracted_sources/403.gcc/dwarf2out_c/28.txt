@@ -1,0 +1,266 @@
+static void
+output_call_frame_info (for_eh)
+     int for_eh;
+{
+  unsigned int i;
+  dw_fde_ref fde;
+  dw_cfi_ref cfi;
+  char l1[20], l2[20], section_start_label[20];
+  int any_lsda_needed = 0;
+  char augmentation[6];
+  int augmentation_size;
+  int fde_encoding = DW_EH_PE_absptr;
+  int per_encoding = DW_EH_PE_absptr;
+  int lsda_encoding = DW_EH_PE_absptr;
+
+  /* If we don't have any functions we'll want to unwind out of, don't emit any
+     EH unwind information.  */
+  if (for_eh)
+    {
+      int any_eh_needed = flag_asynchronous_unwind_tables;
+
+      for (i = 0; i < fde_table_in_use; i++)
+	if (fde_table[i].uses_eh_lsda)
+	  any_eh_needed = any_lsda_needed = 1;
+	else if (! fde_table[i].nothrow)
+	  any_eh_needed = 1;
+
+      if (! any_eh_needed)
+	return;
+    }
+
+  /* We're going to be generating comments, so turn on app.  */
+  if (flag_debug_asm)
+    app_enable ();
+
+  if (for_eh)
+    (*targetm.asm_out.eh_frame_section) ();
+  else
+    named_section_flags (DEBUG_FRAME_SECTION, SECTION_DEBUG);
+
+  ASM_GENERATE_INTERNAL_LABEL (section_start_label, FRAME_BEGIN_LABEL, for_eh);
+  ASM_OUTPUT_LABEL (asm_out_file, section_start_label);
+
+  /* Output the CIE.  */
+  ASM_GENERATE_INTERNAL_LABEL (l1, CIE_AFTER_SIZE_LABEL, for_eh);
+  ASM_GENERATE_INTERNAL_LABEL (l2, CIE_END_LABEL, for_eh);
+  dw2_asm_output_delta (for_eh ? 4 : DWARF_OFFSET_SIZE, l2, l1,
+			"Length of Common Information Entry");
+  ASM_OUTPUT_LABEL (asm_out_file, l1);
+
+  /* Now that the CIE pointer is PC-relative for EH,
+     use 0 to identify the CIE.  */
+  dw2_asm_output_data ((for_eh ? 4 : DWARF_OFFSET_SIZE),
+		       (for_eh ? 0 : DW_CIE_ID),
+		       "CIE Identifier Tag");
+
+  dw2_asm_output_data (1, DW_CIE_VERSION, "CIE Version");
+
+  augmentation[0] = 0;
+  augmentation_size = 0;
+  if (for_eh)
+    {
+      char *p;
+
+      /* Augmentation:
+	 z	Indicates that a uleb128 is present to size the
+	 	augmentation section.
+	 L	Indicates the encoding (and thus presence) of
+		an LSDA pointer in the FDE augmentation.
+	 R	Indicates a non-default pointer encoding for
+		FDE code pointers.
+	 P	Indicates the presence of an encoding + language
+		personality routine in the CIE augmentation.  */
+
+      fde_encoding = ASM_PREFERRED_EH_DATA_FORMAT (/*code=*/1, /*global=*/0);
+      per_encoding = ASM_PREFERRED_EH_DATA_FORMAT (/*code=*/2, /*global=*/1);
+      lsda_encoding = ASM_PREFERRED_EH_DATA_FORMAT (/*code=*/0, /*global=*/0);
+
+      p = augmentation + 1;
+      if (eh_personality_libfunc)
+	{
+	  *p++ = 'P';
+	  augmentation_size += 1 + size_of_encoded_value (per_encoding);
+	}
+      if (any_lsda_needed)
+	{
+	  *p++ = 'L';
+	  augmentation_size += 1;
+	}
+      if (fde_encoding != DW_EH_PE_absptr)
+	{
+	  *p++ = 'R';
+	  augmentation_size += 1;
+	}
+      if (p > augmentation + 1)
+	{
+	  augmentation[0] = 'z';
+          *p = '\0';
+	}
+
+      /* Ug.  Some platforms can't do unaligned dynamic relocations at all.  */
+      if (eh_personality_libfunc && per_encoding == DW_EH_PE_aligned)
+	{
+	  int offset = (  4		/* Length */
+			+ 4		/* CIE Id */
+			+ 1		/* CIE version */
+			+ strlen (augmentation) + 1	/* Augmentation */
+			+ size_of_uleb128 (1)		/* Code alignment */
+			+ size_of_sleb128 (DWARF_CIE_DATA_ALIGNMENT)
+			+ 1		/* RA column */
+			+ 1		/* Augmentation size */
+			+ 1		/* Personality encoding */ );
+	  int pad = -offset & (PTR_SIZE - 1);
+
+	  augmentation_size += pad;
+
+	  /* Augmentations should be small, so there's scarce need to
+	     iterate for a solution.  Die if we exceed one uleb128 byte.  */
+	  if (size_of_uleb128 (augmentation_size) != 1)
+	    abort ();
+	}
+    }
+
+  dw2_asm_output_nstring (augmentation, -1, "CIE Augmentation");
+  dw2_asm_output_data_uleb128 (1, "CIE Code Alignment Factor");
+  dw2_asm_output_data_sleb128 (DWARF_CIE_DATA_ALIGNMENT,
+			       "CIE Data Alignment Factor");
+  dw2_asm_output_data (1, DWARF_FRAME_RETURN_COLUMN, "CIE RA Column");
+
+  if (augmentation[0])
+    {
+      dw2_asm_output_data_uleb128 (augmentation_size, "Augmentation size");
+      if (eh_personality_libfunc)
+	{
+	  dw2_asm_output_data (1, per_encoding, "Personality (%s)",
+			       eh_data_format_name (per_encoding));
+	  dw2_asm_output_encoded_addr_rtx (per_encoding,
+					   eh_personality_libfunc, NULL);
+	}
+
+      if (any_lsda_needed)
+	dw2_asm_output_data (1, lsda_encoding, "LSDA Encoding (%s)",
+			     eh_data_format_name (lsda_encoding));
+
+      if (fde_encoding != DW_EH_PE_absptr)
+	dw2_asm_output_data (1, fde_encoding, "FDE Encoding (%s)",
+			     eh_data_format_name (fde_encoding));
+    }
+
+  for (cfi = cie_cfi_head; cfi != NULL; cfi = cfi->dw_cfi_next)
+    output_cfi (cfi, NULL, for_eh);
+
+  /* Pad the CIE out to an address sized boundary.  */
+  ASM_OUTPUT_ALIGN (asm_out_file, 
+		    floor_log2 (for_eh ? PTR_SIZE : DWARF2_ADDR_SIZE));
+  ASM_OUTPUT_LABEL (asm_out_file, l2);
+
+  /* Loop through all of the FDE's.  */
+  for (i = 0; i < fde_table_in_use; i++)
+    {
+      fde = &fde_table[i];
+
+      /* Don't emit EH unwind info for leaf functions that don't need it.  */
+      if (!flag_asynchronous_unwind_tables && for_eh && fde->nothrow
+	  && !  fde->uses_eh_lsda)
+	continue;
+
+      ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, FDE_LABEL, for_eh + i * 2);
+      ASM_GENERATE_INTERNAL_LABEL (l1, FDE_AFTER_SIZE_LABEL, for_eh + i * 2);
+      ASM_GENERATE_INTERNAL_LABEL (l2, FDE_END_LABEL, for_eh + i * 2);
+      dw2_asm_output_delta (for_eh ? 4 : DWARF_OFFSET_SIZE, l2, l1,
+			    "FDE Length");
+      ASM_OUTPUT_LABEL (asm_out_file, l1);
+
+      if (for_eh)
+	dw2_asm_output_delta (4, l1, section_start_label, "FDE CIE offset");
+      else
+	dw2_asm_output_offset (DWARF_OFFSET_SIZE, section_start_label,
+			       "FDE CIE offset");
+
+      if (for_eh)
+	{
+	  dw2_asm_output_encoded_addr_rtx (fde_encoding,
+		   gen_rtx_SYMBOL_REF (Pmode, fde->dw_fde_begin),
+		   "FDE initial location");
+	  dw2_asm_output_delta (size_of_encoded_value (fde_encoding),
+				fde->dw_fde_end, fde->dw_fde_begin, 
+				"FDE address range");
+	}
+      else
+	{
+	  dw2_asm_output_addr (DWARF2_ADDR_SIZE, fde->dw_fde_begin,
+			       "FDE initial location");
+	  dw2_asm_output_delta (DWARF2_ADDR_SIZE, 
+				fde->dw_fde_end, fde->dw_fde_begin, 
+				"FDE address range");
+	}
+
+      if (augmentation[0])
+	{
+	  if (any_lsda_needed)
+	    {
+	      int size = size_of_encoded_value (lsda_encoding);
+
+	      if (lsda_encoding == DW_EH_PE_aligned)
+		{
+		  int offset = (  4		/* Length */
+				+ 4		/* CIE offset */
+				+ 2 * size_of_encoded_value (fde_encoding)
+				+ 1		/* Augmentation size */ );
+		  int pad = -offset & (PTR_SIZE - 1);
+
+		  size += pad;
+		  if (size_of_uleb128 (size) != 1)
+		    abort ();
+		}
+
+	      dw2_asm_output_data_uleb128 (size, "Augmentation size");
+
+	      if (fde->uses_eh_lsda)
+	        {
+	          ASM_GENERATE_INTERNAL_LABEL (l1, "LLSDA",
+					       fde->funcdef_number);
+	          dw2_asm_output_encoded_addr_rtx (
+			lsda_encoding, gen_rtx_SYMBOL_REF (Pmode, l1),
+		 	"Language Specific Data Area");
+	        }
+	      else
+		{
+		  if (lsda_encoding == DW_EH_PE_aligned)
+		    ASM_OUTPUT_ALIGN (asm_out_file, floor_log2 (PTR_SIZE));
+		  dw2_asm_output_data
+		    (size_of_encoded_value (lsda_encoding), 0,
+		     "Language Specific Data Area (none)");
+		}
+	    }
+	  else
+	    dw2_asm_output_data_uleb128 (0, "Augmentation size");
+	}
+
+      /* Loop through the Call Frame Instructions associated with
+	 this FDE.  */
+      fde->dw_fde_current_label = fde->dw_fde_begin;
+      for (cfi = fde->dw_fde_cfi; cfi != NULL; cfi = cfi->dw_cfi_next)
+	output_cfi (cfi, fde, for_eh);
+
+      /* Pad the FDE out to an address sized boundary.  */
+      ASM_OUTPUT_ALIGN (asm_out_file, 
+		        floor_log2 ((for_eh ? PTR_SIZE : DWARF2_ADDR_SIZE)));
+      ASM_OUTPUT_LABEL (asm_out_file, l2);
+    }
+
+#ifndef EH_FRAME_SECTION_NAME
+  if (for_eh)
+    dw2_asm_output_data (4, 0, "End of Table");
+#endif
+#ifdef MIPS_DEBUGGING_INFO
+  /* Work around Irix 6 assembler bug whereby labels at the end of a section
+     get a value of 0.  Putting .align 0 after the label fixes it.  */
+  ASM_OUTPUT_ALIGN (asm_out_file, 0);
+#endif
+
+  /* Turn off app to make assembly quicker.  */
+  if (flag_debug_asm)
+    app_disable ();
+}

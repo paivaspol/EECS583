@@ -1,0 +1,150 @@
+static void
+start_bb (fp, bb)
+     FILE *fp;
+     int bb;
+{
+  switch (graph_dump_format)
+    {
+    case vcg:
+      fprintf (fp, "\
+graph: {\ntitle: \"%s.BB%d\"\nfolding: 1\ncolor: lightblue\n\
+label: \"basic block %d",
+	       current_function_name, bb, bb);
+      break;
+    case no_graph:
+      break;
+    }
+
+#if 0
+  /* FIXME Should this be printed?  It makes the graph significantly larger.  */
+
+  /* Print the live-at-start register list.  */
+  fputc ('\n', fp);
+  EXECUTE_IF_SET_IN_REG_SET (basic_block_live_at_start[bb], 0, i,
+			     {
+			       fprintf (fp, " %d", i);
+			       if (i < FIRST_PSEUDO_REGISTER)
+				 fprintf (fp, " [%s]",
+					  reg_names[i]);
+			     });
+#endif
+
+  switch (graph_dump_format)
+    {
+    case vcg:
+      fputs ("\"\n\n", fp);
+      break;
+    case no_graph:
+      break;
+    }
+}
+
+static void
+node_data (fp, tmp_rtx)
+     FILE *fp;
+     rtx tmp_rtx;
+{
+
+  if (PREV_INSN (tmp_rtx) == 0)
+    {
+      /* This is the first instruction.  Add an edge from the starting
+	 block.  */
+      switch (graph_dump_format)
+	{
+	case vcg:
+	  fprintf (fp, "\
+edge: { sourcename: \"%s.0\" targetname: \"%s.%d\" }\n",
+		   current_function_name,
+		   current_function_name, XINT (tmp_rtx, 0));
+	  break;
+	case no_graph:
+	  break;
+	}
+    }
+
+  switch (graph_dump_format)
+    {
+    case vcg:
+      fprintf (fp, "node: {\n  title: \"%s.%d\"\n  color: %s\n  \
+label: \"%s %d\n",
+	       current_function_name, XINT (tmp_rtx, 0),
+	       GET_CODE (tmp_rtx) == NOTE ? "lightgrey"
+	       : GET_CODE (tmp_rtx) == INSN ? "green"
+	       : GET_CODE (tmp_rtx) == JUMP_INSN ? "darkgreen"
+	       : GET_CODE (tmp_rtx) == CALL_INSN ? "darkgreen"
+	       : GET_CODE (tmp_rtx) == CODE_LABEL ?  "\
+darkgrey\n  shape: ellipse" : "white",
+	       GET_RTX_NAME (GET_CODE (tmp_rtx)), XINT (tmp_rtx, 0));
+      break;
+    case no_graph:
+      break;
+    }
+
+  /* Print the RTL.  */
+  if (GET_CODE (tmp_rtx) == NOTE)
+    {
+      const char *name = "";
+      if (NOTE_LINE_NUMBER (tmp_rtx) < 0)
+	name =  GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (tmp_rtx));
+      fprintf (fp, " %s", name);
+    }
+  else if (INSN_P (tmp_rtx))
+    print_rtl_single (fp, PATTERN (tmp_rtx));
+  else
+    print_rtl_single (fp, tmp_rtx);
+
+  switch (graph_dump_format)
+    {
+    case vcg:
+      fputs ("\"\n}\n", fp);
+      break;
+    case no_graph:
+      break;
+    }
+}
+
+static void
+draw_edge (fp, from, to, bb_edge, class)
+     FILE *fp;
+     int from;
+     int to;
+     int bb_edge;
+     int class;
+{
+  const char * color;
+  switch (graph_dump_format)
+    {
+    case vcg:
+      color = "";
+      if (class == 2)
+	color = "color: red ";
+      else if (bb_edge)
+	color = "color: blue ";
+      else if (class == 3)
+	color = "color: green ";
+      fprintf (fp,
+	       "edge: { sourcename: \"%s.%d\" targetname: \"%s.%d\" %s",
+	       current_function_name, from,
+	       current_function_name, to, color);
+      if (class)
+	fprintf (fp, "class: %d ", class);
+      fputs ("}\n", fp);
+      break;
+    case no_graph:
+      break;
+    }
+}
+
+static void
+end_bb (fp)
+     FILE *fp;
+{
+  switch (graph_dump_format)
+    {
+    case vcg:
+      fputs ("}\n", fp);
+      break;
+    case no_graph:
+      break;
+    }
+}

@@ -1,0 +1,47 @@
+static void
+df_alloc (df, n_regs)
+     struct df *df;
+     int n_regs;
+{
+  int n_insns;
+  int i;
+
+  gcc_obstack_init (&df_ref_obstack);
+
+  /* Perhaps we should use LUIDs to save memory for the insn_refs
+     table.  This is only a small saving; a few pointers.  */
+  n_insns = get_max_uid () + 1;
+
+  df->def_id = 0;
+  df->n_defs = 0;
+  /* Approximate number of defs by number of insns.  */
+  df->def_size = n_insns;
+  df->defs = xmalloc (df->def_size * sizeof (*df->defs));
+
+  df->use_id = 0;
+  df->n_uses = 0;
+  /* Approximate number of uses by twice number of insns.  */
+  df->use_size = n_insns * 2;
+  df->uses = xmalloc (df->use_size * sizeof (*df->uses));
+
+  df->n_regs = n_regs;
+  df->n_bbs = n_basic_blocks;
+
+  /* Allocate temporary working array used during local dataflow analysis.  */
+  df->reg_def_last = xmalloc (df->n_regs * sizeof (struct ref *));
+
+  df_insn_table_realloc (df, n_insns);
+
+  df_reg_table_realloc (df, df->n_regs);
+
+  df->bbs_modified = BITMAP_XMALLOC ();
+  bitmap_zero (df->bbs_modified);
+
+  df->flags = 0;
+
+  df->bbs = xcalloc (df->n_bbs, sizeof (struct bb_info));
+
+  df->all_blocks = BITMAP_XMALLOC ();
+  for (i = 0; i < n_basic_blocks; i++)
+    bitmap_set_bit (df->all_blocks, i);
+}

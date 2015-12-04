@@ -1,0 +1,27 @@
+void
+df_insn_debug (df, insn, file)
+     struct df *df;
+     rtx insn;
+     FILE *file;
+{
+  unsigned int uid;
+  int bbi;
+
+  uid = INSN_UID (insn);
+  if (uid >= df->insn_size)
+    return;
+
+  if (df->insns[uid].defs)
+    bbi = DF_REF_BBNO (df->insns[uid].defs->ref);
+  else  if (df->insns[uid].uses)
+    bbi = DF_REF_BBNO (df->insns[uid].uses->ref);
+  else
+    bbi = -1;
+
+  fprintf (file, "insn %d bb %d luid %d defs ",
+	   uid, bbi, DF_INSN_LUID (df, insn));
+  df_chain_dump (df->insns[uid].defs, file);
+  fprintf (file, " uses ");
+  df_chain_dump (df->insns[uid].uses, file);
+  fprintf (file, "\n");
+}

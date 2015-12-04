@@ -1,0 +1,37 @@
+int
+quantum_bmeasure(int pos, quantum_reg *reg)
+{
+  int i;
+  int result=0;
+  double pa=0, r;
+  MAX_UNSIGNED pos2;
+  quantum_reg out;
+  
+  if(quantum_objcode_put(BMEASURE, pos))
+     return 0;
+
+  pos2 = (MAX_UNSIGNED) 1 << pos;
+
+  /* Sum up the probability for 0 being the result */
+
+  for(i=0; i<reg->size; i++)
+    {
+      if(!(reg->node[i].state & pos2))
+	pa += quantum_prob_inline(reg->node[i].amplitude);
+    }
+
+  /* Compare the probability for 0 with a random number and determine
+     the result of the measurement */
+
+  r = quantum_frand();
+  
+  if (r > pa)
+    result = 1;
+
+  out = quantum_state_collapse(pos, result, *reg);
+
+  quantum_delete_qureg_hashpreserve(reg);
+  *reg = out;
+
+  return result;
+}

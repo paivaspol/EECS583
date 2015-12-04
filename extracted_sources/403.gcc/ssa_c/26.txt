@@ -1,0 +1,20 @@
+static void
+rename_registers (nregs, idom)
+     int nregs;
+     int *idom;
+{
+  VARRAY_RTX_INIT (ssa_definition, nregs * 3, "ssa_definition");
+  ssa_rename_from_initialize ();
+
+  ssa_rename_to_pseudo = (rtx *) alloca (nregs * sizeof(rtx));
+  memset ((char *) ssa_rename_to_pseudo, 0, nregs * sizeof(rtx));
+  memset ((char *) ssa_rename_to_hard, 0, 
+	 FIRST_PSEUDO_REGISTER * NUM_MACHINE_MODES * sizeof (rtx));
+
+  rename_block (0, idom);
+
+  /* ??? Update basic_block_live_at_start, and other flow info 
+     as needed.  */
+
+  ssa_rename_to_pseudo = NULL;
+}

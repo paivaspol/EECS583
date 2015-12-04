@@ -1,0 +1,13 @@
+void
+expand_end_all_catch ()
+{
+  struct eh_region *try_region;
+
+  if (! doing_eh (0))
+    return;
+
+  try_region = cfun->eh->try_region;
+  cfun->eh->try_region = try_region->u.try.prev_try;
+
+  emit_label (try_region->u.try.continue_label);
+}

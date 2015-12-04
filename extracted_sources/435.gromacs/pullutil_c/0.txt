@@ -1,0 +1,62 @@
+void calc_running_com(t_pull *pull) {
+  int i,j,n;
+  rvec ave;
+  real tm;
+  
+  /* for group i, we have nhist[i] points of history. The maximum nr of points
+     is pull->reflag. The array comhist[i][0..nhist[i]-1] has the positions
+     of the center of mass over the last nhist[i] steps. x_unc[i] has the
+     new ones. Remove the oldest one from the list, add the new one, calculate
+     the average, put that in x_unc instead and return. We just move all coms
+     1 down in the list and add the latest one to the top. 
+   */
+  
+  if (pull->bCyl) {
+    /* act on dyna groups */
+    for (i=0;i<pull->pull.n;i++) {
+      clear_rvec(ave);
+      for (j=0;j<(pull->reflag-1);j++) {
+	copy_rvec(pull->dyna.comhist[i][j+1],pull->dyna.comhist[i][j]);
+	rvec_add(ave,pull->dyna.comhist[i][j],ave);
+      }
+      copy_rvec(pull->dyna.x_unc[i],pull->dyna.comhist[i][j]);
+      rvec_add(ave,pull->dyna.x_unc[i],ave);
+      svmul(1.0/pull->reflag,ave,ave); 
+
+      /* now ave has the running com for group i, copy it to x_unc[i] */
+      copy_rvec(ave,pull->dyna.x_unc[i]);
+
+#ifdef DEBUG
+      if (pull->bVerbose) 
+	for (n=0;n<pull->reflag;n++) 
+	  fprintf(stderr,"Comhist %d, grp %d: %8.3f%8.3f%8.3f\n",n,i,
+		  pull->dyna.comhist[i][n][XX],
+		  pull->dyna.comhist[i][n][YY],
+  		  pull->dyna.comhist[i][n][ZZ]);
+#endif
+    }
+  } else {
+    /* act on ref group */
+    clear_rvec(ave);
+    
+    for (j=0;j<(pull->reflag-1);j++) {
+      copy_rvec(pull->ref.comhist[0][j+1],pull->ref.comhist[0][j]);
+      rvec_add(ave,pull->ref.comhist[0][j],ave);
+    }
+    
+    copy_rvec(pull->ref.x_unc[0],pull->ref.comhist[0][j]);
+    rvec_add(ave,pull->ref.x_unc[0],ave);
+    svmul(1.0/pull->reflag,ave,ave); 
+    /* now ave has the running com for group i, copy it to x_unc[0] */
+    copy_rvec(ave,pull->ref.x_unc[0]);
+
+#ifdef DEBUG
+    if (pull->bVerbose) 
+      for (i=0;i<pull->reflag;i++) 
+	fprintf(stderr,"Comhist %d: %8.3f%8.3f%8.3f\n",i,
+		pull->ref.comhist[0][i][XX],
+		pull->ref.comhist[0][i][YY],
+		pull->ref.comhist[0][i][ZZ]);
+#endif
+  }
+}

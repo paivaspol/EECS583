@@ -1,0 +1,36 @@
+static int
+no_conflict_p (insn, r0, r1)
+     rtx insn, r0 ATTRIBUTE_UNUSED, r1;
+{
+  int ok = 0;
+  rtx note = find_reg_note (insn, REG_LIBCALL, NULL_RTX);
+  rtx p, last;
+
+  /* If R1 is a hard register, return 0 since we handle this case
+     when we scan the insns that actually use it.  */
+
+  if (note == 0
+      || (GET_CODE (r1) == REG && REGNO (r1) < FIRST_PSEUDO_REGISTER)
+      || (GET_CODE (r1) == SUBREG && GET_CODE (SUBREG_REG (r1)) == REG
+	  && REGNO (SUBREG_REG (r1)) < FIRST_PSEUDO_REGISTER))
+    return 0;
+
+  last = XEXP (note, 0);
+
+  for (p = NEXT_INSN (insn); p && p != last; p = NEXT_INSN (p))
+    if (INSN_P (p))
+      {
+	if (find_reg_note (p, REG_DEAD, r1))
+	  ok = 1;
+
+	/* There must be a REG_NO_CONFLICT note on every insn, otherwise
+	   some earlier optimization pass has inserted instructions into
+	   the sequence, and it is not safe to perform this optimization.
+	   Note that emit_no_conflict_block always ensures that this is
+	   true when these sequences are created.  */
+	if (! find_reg_note (p, REG_NO_CONFLICT, r1))
+	  return 0;
+      }
+
+  return ok;
+}

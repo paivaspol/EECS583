@@ -1,0 +1,16 @@
+static INLINE int
+bitmap_element_zerop (element)
+     bitmap_element *element;
+{
+#if BITMAP_ELEMENT_WORDS == 2
+  return (element->bits[0] | element->bits[1]) == 0;
+#else
+  int i;
+
+  for (i = 0; i < BITMAP_ELEMENT_WORDS; i++)
+    if (element->bits[i] != 0)
+      return 0;
+
+  return 1;
+#endif
+}

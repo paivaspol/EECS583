@@ -1,0 +1,65 @@
+static int
+maybe_read_ucs (pfile, pstr, limit, pc)
+     cpp_reader *pfile;
+     const unsigned char **pstr;
+     const unsigned char *limit;
+     unsigned int *pc;
+{
+  const unsigned char *p = *pstr;
+  unsigned int code = 0;
+  unsigned int c = *pc, length;
+
+  /* Only attempt to interpret a UCS for C++ and C99.  */
+  if (! (CPP_OPTION (pfile, cplusplus) || CPP_OPTION (pfile, c99)))
+    return 1;
+
+  if (CPP_WTRADITIONAL (pfile))
+    cpp_warning (pfile, "the meaning of '\\%c' varies with -traditional", c);
+
+  length = (c == 'u' ? 4: 8);
+
+  if ((size_t) (limit - p) < length)
+    {
+      cpp_error (pfile, "incomplete universal-character-name");
+      /* Skip to the end to avoid more diagnostics.  */
+      p = limit;
+    }
+  else
+    {
+      for (; length; length--, p++)
+	{
+	  c = *p;
+	  if (ISXDIGIT (c))
+	    code = (code << 4) + hex_digit_value (c);
+	  else
+	    {
+	      cpp_error (pfile,
+			 "non-hex digit '%c' in universal-character-name", c);
+	      /* We shouldn't skip in case there are multibyte chars.  */
+	      break;
+	    }
+	}
+    }
+
+#ifdef TARGET_EBCDIC
+  cpp_error (pfile, "universal-character-name on EBCDIC target");
+  code = 0x3f;  /* EBCDIC invalid character */
+#else
+ /* True extended characters are OK.  */
+  if (code >= 0xa0
+      && !(code & 0x80000000)
+      && !(code >= 0xD800 && code <= 0xDFFF))
+    ;
+  /* The standard permits $, @ and ` to be specified as UCNs.  We use
+     hex escapes so that this also works with EBCDIC hosts.  */
+  else if (code == 0x24 || code == 0x40 || code == 0x60)
+    ;
+  /* Don't give another error if one occurred above.  */
+  else if (length == 0)
+    cpp_error (pfile, "universal-character-name out of range");
+#endif
+
+  *pstr = p;
+  *pc = code;
+  return 0;
+}

@@ -1,0 +1,21 @@
+static char *
+full_name (filename)
+     const char *filename;
+{
+#ifdef VMS
+  FILE *fp = fopen (filename, "r");
+
+  fgetname (fp, fullname_buff, 1);
+  fclose (fp);
+#else
+  getcwd (fullname_buff, sizeof (fullname_buff));
+
+  strcat (fullname_buff, "/");
+  strcat (fullname_buff, filename);
+
+  /* ??? Insert hairy code here to translate Unix style file specification
+     to VMS style.  */
+#endif
+
+  return fullname_buff;
+}

@@ -1,0 +1,34 @@
+static void
+collect_eh_region_array ()
+{
+  struct eh_region **array, *i;
+
+  i = cfun->eh->region_tree;
+  if (! i)
+    return;
+
+  array = xcalloc (cfun->eh->last_region_number + 1, sizeof (*array));
+  cfun->eh->region_array = array;
+
+  while (1)
+    {
+      array[i->region_number] = i;
+
+      /* If there are sub-regions, process them.  */
+      if (i->inner)
+	i = i->inner;
+      /* If there are peers, process them.  */
+      else if (i->next_peer)
+	i = i->next_peer;
+      /* Otherwise, step back up the tree to the next peer.  */
+      else
+	{
+	  do {
+	    i = i->outer;
+	    if (i == NULL)
+	      return;
+	  } while (i->next_peer == NULL);
+	  i = i->next_peer;
+	}
+    }
+}

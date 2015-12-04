@@ -1,0 +1,99 @@
+static void encode		PARAMS ((HOST_WIDE_INT *,
+					 unsigned HOST_WIDE_INT,
+					 HOST_WIDE_INT));
+static void decode		PARAMS ((HOST_WIDE_INT *,
+					 unsigned HOST_WIDE_INT *,
+					 HOST_WIDE_INT *));
+#ifndef REAL_ARITHMETIC
+static void exact_real_inverse_1 PARAMS ((PTR));
+#endif
+static tree negate_expr		PARAMS ((tree));
+static tree split_tree		PARAMS ((tree, enum tree_code, tree *, tree *,
+					 tree *, int));
+static tree associate_trees	PARAMS ((tree, tree, enum tree_code, tree));
+static tree int_const_binop	PARAMS ((enum tree_code, tree, tree, int));
+static void const_binop_1	PARAMS ((PTR));
+static tree const_binop		PARAMS ((enum tree_code, tree, tree, int));
+static hashval_t size_htab_hash	PARAMS ((const void *));
+static int size_htab_eq		PARAMS ((const void *, const void *));
+static void fold_convert_1	PARAMS ((PTR));
+static tree fold_convert	PARAMS ((tree, tree));
+static enum tree_code invert_tree_comparison PARAMS ((enum tree_code));
+static enum tree_code swap_tree_comparison PARAMS ((enum tree_code));
+static int truth_value_p	PARAMS ((enum tree_code));
+static int operand_equal_for_comparison_p PARAMS ((tree, tree, tree));
+static int twoval_comparison_p	PARAMS ((tree, tree *, tree *, int *));
+static tree eval_subst		PARAMS ((tree, tree, tree, tree, tree));
+static tree omit_one_operand	PARAMS ((tree, tree, tree));
+static tree pedantic_omit_one_operand PARAMS ((tree, tree, tree));
+static tree distribute_bit_expr PARAMS ((enum tree_code, tree, tree, tree));
+static tree make_bit_field_ref	PARAMS ((tree, tree, int, int, int));
+static tree optimize_bit_field_compare PARAMS ((enum tree_code, tree,
+						tree, tree));
+static tree decode_field_reference PARAMS ((tree, HOST_WIDE_INT *,
+					    HOST_WIDE_INT *,
+					    enum machine_mode *, int *,
+					    int *, tree *, tree *));
+static int all_ones_mask_p	PARAMS ((tree, int));
+static int simple_operand_p	PARAMS ((tree));
+static tree range_binop		PARAMS ((enum tree_code, tree, tree, int,
+					 tree, int));
+static tree make_range		PARAMS ((tree, int *, tree *, tree *));
+static tree build_range_check	PARAMS ((tree, tree, int, tree, tree));
+static int merge_ranges		PARAMS ((int *, tree *, tree *, int, tree, tree,
+				       int, tree, tree));
+static tree fold_range_test	PARAMS ((tree));
+static tree unextend		PARAMS ((tree, int, int, tree));
+static tree fold_truthop	PARAMS ((enum tree_code, tree, tree, tree));
+static tree optimize_minmax_comparison PARAMS ((tree));
+static tree extract_muldiv	PARAMS ((tree, tree, enum tree_code, tree));
+static tree strip_compound_expr PARAMS ((tree, tree));
+static int multiple_of_p	PARAMS ((tree, tree, tree));
+static tree constant_boolean_node PARAMS ((int, tree));
+static int count_cond		PARAMS ((tree, int));
+static tree fold_binary_op_with_conditional_arg 
+  PARAMS ((enum tree_code, tree, tree, tree, int));
+							 
+#if defined(HOST_EBCDIC)
+/* bit 8 is significant in EBCDIC */
+#define CHARMASK 0xff
+#else
+#define CHARMASK 0x7f
+#endif
+
+/* We know that A1 + B1 = SUM1, using 2's complement arithmetic and ignoring
+   overflow.  Suppose A, B and SUM have the same respective signs as A1, B1,
+   and SUM1.  Then this yields nonzero if overflow occurred during the
+   addition.
+
+   Overflow occurs if A and B have the same sign, but A and SUM differ in
+   sign.  Use `^' to test whether signs differ, and `< 0' to isolate the
+   sign.  */
+#define OVERFLOW_SUM_SIGN(a, b, sum) ((~((a) ^ (b)) & ((a) ^ (sum))) < 0)
+
+/* To do constant folding on INTEGER_CST nodes requires two-word arithmetic.
+   We do that by representing the two-word integer in 4 words, with only
+   HOST_BITS_PER_WIDE_INT / 2 bits stored in each word, as a positive
+   number.  The value of the word is LOWPART + HIGHPART * BASE.  */
+
+#define LOWPART(x) \
+  ((x) & (((unsigned HOST_WIDE_INT) 1 << (HOST_BITS_PER_WIDE_INT / 2)) - 1))
+#define HIGHPART(x) \
+  ((unsigned HOST_WIDE_INT) (x) >> HOST_BITS_PER_WIDE_INT / 2)
+#define BASE ((unsigned HOST_WIDE_INT) 1 << HOST_BITS_PER_WIDE_INT / 2)
+
+/* Unpack a two-word integer into 4 words.
+   LOW and HI are the integer, as two `HOST_WIDE_INT' pieces.
+   WORDS points to the array of HOST_WIDE_INTs.  */
+
+static void
+encode (words, low, hi)
+     HOST_WIDE_INT *words;
+     unsigned HOST_WIDE_INT low;
+     HOST_WIDE_INT hi;
+{
+  words[0] = LOWPART (low);
+  words[1] = HIGHPART (low);
+  words[2] = LOWPART (hi);
+  words[3] = HIGHPART (hi);
+}

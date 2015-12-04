@@ -1,0 +1,103 @@
+static inline void
+sweep_pages ()
+{
+  unsigned order;
+
+  for (order = 2; order < NUM_ORDERS; order++)
+    {
+      /* The last page-entry to consider, regardless of entries
+	 placed at the end of the list.  */
+      page_entry * const last = G.page_tails[order];
+
+      size_t num_objects = OBJECTS_PER_PAGE (order);
+      size_t live_objects;
+      page_entry *p, *previous;
+      int done;
+	
+      p = G.pages[order];
+      if (p == NULL)
+	continue;
+
+      previous = NULL;
+      do
+	{
+	  page_entry *next = p->next;
+
+	  /* Loop until all entries have been examined.  */
+	  done = (p == last);
+
+	  /* Add all live objects on this page to the count of
+             allocated memory.  */
+	  live_objects = num_objects - p->num_free_objects;
+
+	  G.allocated += OBJECT_SIZE (order) * live_objects;
+
+	  /* Only objects on pages in the topmost context should get
+	     collected.  */
+	  if (p->context_depth < G.context_depth)
+	    ;
+
+	  /* Remove the page if it's empty.  */
+	  else if (live_objects == 0)
+	    {
+	      if (! previous)
+		G.pages[order] = next;
+	      else
+		previous->next = next;
+
+	      /* Are we removing the last element?  */
+	      if (p == G.page_tails[order])
+		G.page_tails[order] = previous;
+	      free_page (p);
+	      p = previous;
+	    }
+
+	  /* If the page is full, move it to the end.  */
+	  else if (p->num_free_objects == 0)
+	    {
+	      /* Don't move it if it's already at the end.  */
+	      if (p != G.page_tails[order])
+		{
+		  /* Move p to the end of the list.  */
+		  p->next = NULL;
+		  G.page_tails[order]->next = p;
+
+		  /* Update the tail pointer...  */
+		  G.page_tails[order] = p;
+
+		  /* ... and the head pointer, if necessary.  */
+		  if (! previous)
+		    G.pages[order] = next;
+		  else
+		    previous->next = next;
+		  p = previous;
+		}
+	    }
+
+	  /* If we've fallen through to here, it's a page in the
+	     topmost context that is neither full nor empty.  Such a
+	     page must precede pages at lesser context depth in the
+	     list, so move it to the head.  */
+	  else if (p != G.pages[order])
+	    {
+	      previous->next = p->next;
+	      p->next = G.pages[order];
+	      G.pages[order] = p;
+	      /* Are we moving the last element?  */
+	      if (G.page_tails[order] == p)
+	        G.page_tails[order] = previous;
+	      p = previous;
+	    }
+
+	  previous = p;
+	  p = next;
+	} 
+      while (! done);
+
+      /* Now, restore the in_use_p vectors for any pages from contexts
+         other than the current one.  */
+      for (p = G.pages[order]; p; p = p->next)
+	if (p->context_depth != G.context_depth)
+	  ggc_recalculate_in_use_p (p);
+    }
+}

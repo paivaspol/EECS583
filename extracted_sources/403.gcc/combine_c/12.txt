@@ -1,0 +1,23 @@
+static void
+undo_all ()
+{
+  struct undo *undo, *next;
+
+  for (undo = undobuf.undos; undo; undo = next)
+    {
+      next = undo->next;
+      if (undo->is_int)
+	*undo->where.i = undo->old_contents.i;
+      else
+	*undo->where.r = undo->old_contents.r;
+
+      undo->next = undobuf.frees;
+      undobuf.frees = undo;
+    }
+
+  undobuf.undos = 0;
+
+  /* Clear this here, so that subsequent get_last_value calls are not
+     affected.  */
+  subst_prev_insn = NULL_RTX;
+}

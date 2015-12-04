@@ -1,0 +1,25 @@
+static void
+c_init_attributes ()
+{
+  /* Fill in the built_in_attributes array.  */
+#define DEF_ATTR_NULL_TREE(ENUM)		\
+  built_in_attributes[(int) ENUM] = NULL_TREE;
+#define DEF_ATTR_INT(ENUM, VALUE)					     \
+  built_in_attributes[(int) ENUM] = build_int_2 (VALUE, VALUE < 0 ? -1 : 0);
+#define DEF_ATTR_IDENT(ENUM, STRING)				\
+  built_in_attributes[(int) ENUM] = get_identifier (STRING);
+#define DEF_ATTR_TREE_LIST(ENUM, PURPOSE, VALUE, CHAIN)	\
+  built_in_attributes[(int) ENUM]			\
+    = tree_cons (built_in_attributes[(int) PURPOSE],	\
+		 built_in_attributes[(int) VALUE],	\
+		 built_in_attributes[(int) CHAIN]);
+#define DEF_FN_ATTR(NAME, ATTRS, PREDICATE) /* No initialization needed.  */
+#include "builtin-attrs.def"
+#undef DEF_ATTR_NULL_TREE
+#undef DEF_ATTR_INT
+#undef DEF_ATTR_IDENT
+#undef DEF_ATTR_TREE_LIST
+#undef DEF_FN_ATTR
+  ggc_add_tree_root (built_in_attributes, (int) ATTR_LAST);
+  c_attrs_initialized = true;
+}

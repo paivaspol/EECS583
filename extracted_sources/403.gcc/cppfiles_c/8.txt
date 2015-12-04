@@ -1,0 +1,108 @@
+static int
+read_include_file (pfile, inc)
+     cpp_reader *pfile;
+     struct include_file *inc;
+{
+  ssize_t size, offset, count;
+  U_CHAR *buf;
+#if MMAP_THRESHOLD
+  static int pagesize = -1;
+#endif
+
+  if (S_ISREG (inc->st.st_mode))
+    {
+      /* off_t might have a wider range than ssize_t - in other words,
+	 the max size of a file might be bigger than the address
+	 space.  We can't handle a file that large.  (Anyone with
+	 a single source file bigger than 2GB needs to rethink
+	 their coding style.)  Some systems (e.g. AIX 4.1) define
+	 SSIZE_MAX to be much smaller than the actual range of the
+	 type.  Use INTTYPE_MAXIMUM unconditionally to ensure this
+	 does not bite us.  */
+      if (inc->st.st_size > INTTYPE_MAXIMUM (ssize_t))
+	{
+	  cpp_error (pfile, "%s is too large", inc->name);
+	  goto fail;
+	}
+      size = inc->st.st_size;
+
+      inc->mapped = 0;
+#if MMAP_THRESHOLD
+      if (pagesize == -1)
+	pagesize = getpagesize ();
+
+      if (SHOULD_MMAP (size, pagesize))
+	{
+	  buf = (U_CHAR *) mmap (0, size, PROT_READ, MAP_PRIVATE, inc->fd, 0);
+	  if (buf == (U_CHAR *)-1)
+	    goto perror_fail;
+	  inc->mapped = 1;
+	}
+      else
+#endif
+	{
+	  buf = (U_CHAR *) xmalloc (size + 1);
+	  offset = 0;
+	  while (offset < size)
+	    {
+	      count = read (inc->fd, buf + offset, size - offset);
+	      if (count < 0)
+		goto perror_fail;
+	      if (count == 0)
+		{
+		  if (!STAT_SIZE_TOO_BIG (inc->st))
+		    cpp_warning
+		      (pfile, "%s is shorter than expected", inc->name);
+		  size = offset;
+		  buf = xrealloc (buf, size + 1);
+		  inc->st.st_size = size;
+		  break;
+		}
+	      offset += count;
+	    }
+	  /* The lexer requires that the buffer be NUL-terminated.  */
+	  buf[size] = '\0';
+	}
+    }
+  else if (S_ISBLK (inc->st.st_mode))
+    {
+      cpp_error (pfile, "%s is a block device", inc->name);
+      goto fail;
+    }
+  else
+    {
+      /* 8 kilobytes is a sensible starting size.  It ought to be
+	 bigger than the kernel pipe buffer, and it's definitely
+	 bigger than the majority of C source files.  */
+      size = 8 * 1024;
+
+      buf = (U_CHAR *) xmalloc (size + 1);
+      offset = 0;
+      while ((count = read (inc->fd, buf + offset, size - offset)) > 0)
+	{
+	  offset += count;
+	  if (offset == size)
+	    {
+	      size *= 2;
+	      buf = xrealloc (buf, size + 1);
+	    }
+	}
+      if (count < 0)
+	goto perror_fail;
+
+      if (offset + 1 < size)
+	buf = xrealloc (buf, offset + 1);
+
+      /* The lexer requires that the buffer be NUL-terminated.  */
+      buf[offset] = '\0';
+      inc->st.st_size = offset;
+    }
+
+  inc->buffer = buf;
+  return 0;
+
+ perror_fail:
+  cpp_error_from_errno (pfile, inc->name);
+ fail:
+  return 1;
+}

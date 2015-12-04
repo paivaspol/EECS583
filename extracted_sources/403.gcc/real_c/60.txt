@@ -1,0 +1,55 @@
+static void
+toe113 (a, b)
+     UEMUSHORT *a, *b;
+{
+  UEMUSHORT *p, *q;
+  UEMUSHORT i;
+
+#ifdef NANS
+  if (eiisnan (a))
+    {
+      make_nan (b, eiisneg (a), TFmode);
+      return;
+    }
+#endif
+  p = a;
+  if (REAL_WORDS_BIG_ENDIAN)
+    q = b;
+  else
+    q = b + 7;			/* point to output exponent */
+
+  /* If not denormal, delete the implied bit.  */
+  if (a[E] != 0)
+    {
+      eshup1 (a);
+    }
+  /* combine sign and exponent */
+  i = *p++;
+  if (REAL_WORDS_BIG_ENDIAN)
+    {
+      if (i)
+	*q++ = *p++ | 0x8000;
+      else
+	*q++ = *p++;
+    }
+  else
+    {
+      if (i)
+	*q-- = *p++ | 0x8000;
+      else
+	*q-- = *p++;
+    }
+  /* skip over guard word */
+  ++p;
+  /* move the significand */
+  if (REAL_WORDS_BIG_ENDIAN)
+    {
+      for (i = 0; i < 7; i++)
+	*q++ = *p++;
+    }
+  else
+    {
+      for (i = 0; i < 7; i++)
+	*q-- = *p++;
+    }
+}

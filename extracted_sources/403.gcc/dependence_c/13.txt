@@ -1,0 +1,69 @@
+static void
+classify_dependence (icoefficients, ocoefficients, complexity, separability,
+		     count)
+     subscript icoefficients [MAX_SUBSCRIPTS];
+     subscript ocoefficients [MAX_SUBSCRIPTS];
+     enum complexity_type complexity [MAX_SUBSCRIPTS];
+     int *separability;
+     int count;
+{
+  const char *iiv_used [MAX_SUBSCRIPTS];
+  const char *oiv_used [MAX_SUBSCRIPTS];
+  int ocoeff [MAX_SUBSCRIPTS];
+  int icoeff [MAX_SUBSCRIPTS];
+  int idx, cidx;
+
+  memset (iiv_used, 0, sizeof (tree) * MAX_SUBSCRIPTS);
+  memset (oiv_used, 0, sizeof (tree) * MAX_SUBSCRIPTS);
+  memset (icoeff, 0, sizeof (int) * MAX_SUBSCRIPTS);
+  memset (ocoeff, 0, sizeof (int) * MAX_SUBSCRIPTS);
+  for (idx = 1; idx <= count; idx++)
+    {
+      if (icoefficients[idx].variable != 0)
+	{
+	  if (! iiv_used[idx])
+	    {
+	      iiv_used[idx] = icoefficients[idx].variable;
+	      icoeff[idx] = icoefficients[idx].coefficient;
+	    }
+	}
+      if (ocoefficients[idx].variable != 0)
+	{
+	  if (! oiv_used[idx])
+	    {
+	      oiv_used[idx] = ocoefficients[idx].variable;
+	      ocoeff[idx] = ocoefficients[idx].coefficient;
+	    }
+	}
+    }
+  
+  for (idx = 1; idx <= count; idx++)
+    {
+      if (iiv_used[idx] == 0 && oiv_used[idx] == 0)
+	complexity[idx] = ziv;
+      else if (iiv_used[idx] == oiv_used[idx])
+	{
+	  if (icoeff[idx] == ocoeff[idx])
+	    complexity[idx] = strong_siv;
+	  else if (icoeff[idx] == -1 * ocoeff[idx])
+	    complexity[idx] = weak_crossing_siv;
+	  else
+	    complexity[idx] = weak_siv;
+	}
+      else if (icoeff[idx] == 0 || ocoeff[idx] == 0)
+	complexity[idx] = weak_zero_siv;
+      else complexity[idx] = miv;
+    }
+
+  *separability = 1;
+  for (idx = 1; idx <= count; idx++)
+    {
+      for (cidx = 1; cidx <= count; cidx++)
+	{
+	  if (idx != cidx
+	      && iiv_used[idx] && oiv_used[cidx]
+	      && iiv_used[idx] == oiv_used[cidx])
+	    *separability = 0;
+	}
+    }
+}

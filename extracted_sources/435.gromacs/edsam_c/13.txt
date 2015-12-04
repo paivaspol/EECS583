@@ -1,0 +1,24 @@
+void projectx(t_edpar *edi,rvec *x,t_eigvec *vec)
+{
+  int i,j,k;
+  real rad=0.0;
+
+  /* subtract average positions */
+  for (i=0;(i<edi->sav.nr);i++)
+    rvec_dec(x[edi->sav.anrs[i]],edi->sav.x[i]);
+
+  for (i=0;(i<vec->neig);i++) {
+    vec->refproj[i]=0.0;
+    for (j=0;(j<edi->sav.nr);j++) { 
+      for (k=0;(k<DIM);k++)
+	vec->refproj[i]+=vec->vec[i][j][k]*x[edi->sav.anrs[j]][k];
+    }
+    rad+=pow((vec->refproj[i]-vec->xproj[i]),2);
+    /*fprintf(stderr,"Proj[%d]=%f\n",vec->ieig[i],vec->refproj[i]);*/
+  }
+  vec->radius=sqrt(rad);
+    
+  /* add average positions */
+  for (i=0;(i<edi->sav.nr);i++) 
+    rvec_inc(x[edi->sav.anrs[i]],edi->sav.x[i]);
+}

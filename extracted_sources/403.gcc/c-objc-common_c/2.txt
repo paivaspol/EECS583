@@ -1,0 +1,73 @@
+static tree
+inline_forbidden_p (nodep, walk_subtrees, fn)
+     tree *nodep;
+     int *walk_subtrees ATTRIBUTE_UNUSED;
+     void *fn;
+{
+  tree node = *nodep;
+  tree t;
+
+  switch (TREE_CODE (node))
+    {
+    case CALL_EXPR:
+      t = get_callee_fndecl (node);
+
+      if (! t)
+	break;
+
+      /* We cannot inline functions that call setjmp.  */
+      if (setjmp_call_p (t))
+	return node;
+
+      if (DECL_BUILT_IN_CLASS (t) == BUILT_IN_NORMAL)  /* Thanks Alexey! :-) MJP */
+      switch (DECL_FUNCTION_CODE (t))
+	{
+	  /* We cannot inline functions that take a variable number of
+	     arguments.  */
+	case BUILT_IN_VARARGS_START:
+	case BUILT_IN_STDARG_START:
+#if 0
+	  /* Functions that need information about the address of the
+             caller can't (shouldn't?) be inlined.  */
+	case BUILT_IN_RETURN_ADDRESS:
+#endif
+	  return node;
+
+	default:
+	  break;
+	}
+
+      break;
+
+    case DECL_STMT:
+      /* We cannot inline functions that contain other functions.  */
+      if (TREE_CODE (TREE_OPERAND (node, 0)) == FUNCTION_DECL
+	  && DECL_INITIAL (TREE_OPERAND (node, 0)))
+	return node;
+      break;
+
+    case GOTO_STMT:
+    case GOTO_EXPR:
+      t = TREE_OPERAND (node, 0);
+
+      /* We will not inline a function which uses computed goto.  The
+	 addresses of its local labels, which may be tucked into
+	 global storage, are of course not constant across
+	 instantiations, which causes unexpected behaviour.  */
+      if (TREE_CODE (t) != LABEL_DECL)
+	return node;
+
+      /* We cannot inline a nested function that jumps to a nonlocal
+         label.  */
+      if (TREE_CODE (t) == LABEL_DECL
+	  && DECL_CONTEXT (t) && DECL_CONTEXT (t) != fn)
+	return node;
+
+      break;
+
+    default:
+      break;
+    }
+
+  return NULL_TREE;
+}

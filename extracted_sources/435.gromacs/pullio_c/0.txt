@@ -1,0 +1,25 @@
+void dump_conf(t_pull *pull,rvec x[],matrix box,t_topology *top, 
+	       int nout, real time) 
+{
+  char buf[128],buf2[128];
+  rvec tmp,tmp1,tmp2;
+
+  sprintf(buf,"out_%d.gro",nout);
+  nout++;
+
+  /* calculate the current positions of the center of mass of the grps 
+     printed is pull - reference, so position with respect to reference
+     group 
+   */
+  if (pull->pull.n == 2) {
+    rvec_sub(pull->pull.x_unc[0],pull->ref.x_unc[0],tmp1);
+    rvec_sub(pull->pull.x_unc[1],pull->ref.x_unc[0],tmp2);
+    sprintf(buf2,"grp1:%8.3f%8.3f%8.3f grp2:%8.3f%8.3f%8.3f t:%8.3f",
+	    tmp1[0],tmp1[1],tmp1[2],tmp2[0],tmp2[1],tmp2[2],time);
+  } else {
+    rvec_sub(pull->pull.x_unc[0],pull->ref.x_unc[0],tmp1);
+    sprintf(buf2,"grp1:%8.3f%8.3f%8.3f t:%8.3f",
+	    tmp1[XX],tmp1[YY],tmp1[ZZ],time);
+  }
+  write_sto_conf(buf,buf2,&top->atoms,x,NULL,box);  
+}

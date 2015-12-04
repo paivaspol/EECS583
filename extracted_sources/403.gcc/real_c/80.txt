@@ -1,0 +1,31 @@
+static void
+ultoe (lp, y)
+     const unsigned HOST_WIDE_INT *lp;
+     UEMUSHORT *y;
+{
+  UEMUSHORT yi[NI];
+  unsigned HOST_WIDE_INT ll;
+  int k;
+
+  ecleaz (yi);
+  ll = *lp;
+
+  /* move the long integer to ayi significand area */
+#if HOST_BITS_PER_WIDE_INT == 64
+  yi[M] = (UEMUSHORT) (ll >> 48);
+  yi[M + 1] = (UEMUSHORT) (ll >> 32);
+  yi[M + 2] = (UEMUSHORT) (ll >> 16);
+  yi[M + 3] = (UEMUSHORT) ll;
+  yi[E] = EXONE + 47;		/* exponent if normalize shift count were 0 */
+#else
+  yi[M] = (UEMUSHORT) (ll >> 16);
+  yi[M + 1] = (UEMUSHORT) ll;
+  yi[E] = EXONE + 15;		/* exponent if normalize shift count were 0 */
+#endif
+
+  if ((k = enormlz (yi)) > NBITS)/* normalize the significand */
+    ecleaz (yi);		/* it was zero */
+  else
+    yi[E] -= (UEMUSHORT) k;  /* subtract shift count from exponent */
+  emovo (yi, y);		/* output the answer */
+}

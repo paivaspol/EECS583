@@ -1,0 +1,20 @@
+void
+predict_edge (e, predictor, probability)
+     edge e;
+     int probability;
+     enum br_predictor predictor;
+{
+  rtx last_insn;
+  last_insn = e->src->end;
+
+  /* We can store the branch prediction information only about
+     conditional jumps.  */
+  if (!any_condjump_p (last_insn))
+    return;
+
+  /* We always store probability of branching.  */
+  if (e->flags & EDGE_FALLTHRU)
+    probability = REG_BR_PROB_BASE - probability;
+
+  predict_insn (last_insn, predictor, probability);
+}

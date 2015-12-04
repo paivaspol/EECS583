@@ -1,0 +1,29 @@
+void
+queue_and_dump_index (di, field, t, flags)
+     dump_info_p di;
+     const char *field;
+     tree t;
+     int flags;
+{
+  unsigned int index;
+  splay_tree_node n;
+
+  /* If there's no node, just return.  This makes for fewer checks in
+     our callers.  */
+  if (!t)
+    return;
+
+  /* See if we've already queued or dumped this node.  */
+  n = splay_tree_lookup (di->nodes, (splay_tree_key) t);
+  if (n)
+    index = ((dump_node_info_p) n->value)->index;
+  else
+    /* If we haven't, add it to the queue.  */
+    index = queue (di, t, flags);
+
+  /* Print the index of the node.  */
+  dump_maybe_newline (di);
+  fprintf (di->stream, "%-4s: ", field);
+  di->column += 6;
+  dump_index (di, index);
+}

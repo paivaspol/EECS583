@@ -1,0 +1,32 @@
+static int
+print_conflict (reg1, reg2, contextp)
+     int reg1;
+     int reg2;
+     void *contextp;
+{
+  struct print_context *context = (struct print_context *) contextp;
+  int reg;
+
+  /* If this is the first conflict printed for this reg, start a new
+     line.  */
+  if (! context->started)
+    {
+      fprintf (context->fp, " %d:", context->reg);
+      context->started = 1;
+    }
+
+  /* Figure out the reg whose conflicts we're printing.  The other reg
+     is the interesting one.  */
+  if (reg1 == context->reg)
+    reg = reg2;
+  else if (reg2 == context->reg)
+    reg = reg1;
+  else
+    abort ();
+
+  /* Print the conflict.  */
+  fprintf (context->fp, " %d", reg);
+
+  /* Continue enumerating.  */
+  return 0;
+}

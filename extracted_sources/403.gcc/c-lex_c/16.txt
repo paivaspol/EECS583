@@ -1,0 +1,102 @@
+static tree
+lex_string (str, len, wide)
+     const unsigned char *str;
+     unsigned int len;
+     int wide;
+{
+  tree value;
+  char *buf = alloca ((len + 1) * (wide ? WCHAR_BYTES : 1));
+  char *q = buf;
+  const unsigned char *p = str, *limit = str + len;
+  unsigned int c;
+  unsigned width = wide ? WCHAR_TYPE_SIZE
+			: TYPE_PRECISION (char_type_node);
+
+#ifdef MULTIBYTE_CHARS
+  /* Reset multibyte conversion state.  */
+  (void) local_mbtowc (NULL, NULL, 0);
+#endif
+
+  while (p < limit)
+    {
+#ifdef MULTIBYTE_CHARS
+      wchar_t wc;
+      int char_len;
+
+      char_len = local_mbtowc (&wc, (const char *) p, limit - p);
+      if (char_len == -1)
+	{
+	  warning ("ignoring invalid multibyte character");
+	  char_len = 1;
+	  c = *p++;
+	}
+      else
+	{
+	  p += char_len;
+	  c = wc;
+	}
+#else
+      c = *p++;
+#endif
+
+      if (c == '\\' && !ignore_escape_flag)
+	{
+	  unsigned int mask;
+
+	  if (width < HOST_BITS_PER_INT)
+	    mask = ((unsigned int) 1 << width) - 1;
+	  else
+	    mask = ~0;
+	  c = cpp_parse_escape (parse_in, &p, limit,
+				mask, flag_traditional);
+	}
+	
+      /* Add this single character into the buffer either as a wchar_t
+	 or as a single byte.  */
+      if (wide)
+	{
+	  unsigned charwidth = TYPE_PRECISION (char_type_node);
+	  unsigned bytemask = (1 << charwidth) - 1;
+	  int byte;
+
+	  for (byte = 0; byte < WCHAR_BYTES; ++byte)
+	    {
+	      int n;
+	      if (byte >= (int) sizeof (c))
+		n = 0;
+	      else
+		n = (c >> (byte * charwidth)) & bytemask;
+	      if (BYTES_BIG_ENDIAN)
+		q[WCHAR_BYTES - byte - 1] = n;
+	      else
+		q[byte] = n;
+	    }
+	  q += WCHAR_BYTES;
+	}
+      else
+	{
+	  *q++ = c;
+	}
+    }
+
+  /* Terminate the string value, either with a single byte zero
+     or with a wide zero.  */
+
+  if (wide)
+    {
+      memset (q, 0, WCHAR_BYTES);
+      q += WCHAR_BYTES;
+    }
+  else
+    {
+      *q++ = '\0';
+    }
+
+  value = build_string (q - buf, buf);
+
+  if (wide)
+    TREE_TYPE (value) = wchar_array_type_node;
+  else
+    TREE_TYPE (value) = char_array_type_node;
+  return value;
+}

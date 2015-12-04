@@ -1,0 +1,68 @@
+static void
+assign_filter_values ()
+{
+  int i;
+  htab_t ttypes, ehspec;
+
+  VARRAY_TREE_INIT (cfun->eh->ttype_data, 16, "ttype_data");
+  VARRAY_UCHAR_INIT (cfun->eh->ehspec_data, 64, "ehspec_data");
+
+  ttypes = htab_create (31, ttypes_filter_hash, ttypes_filter_eq, free);
+  ehspec = htab_create (31, ehspec_filter_hash, ehspec_filter_eq, free);
+
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      struct eh_region *r = cfun->eh->region_array[i];
+
+      /* Mind we don't process a region more than once.  */
+      if (!r || r->region_number != i)
+	continue;
+
+      switch (r->type)
+	{
+	case ERT_CATCH:
+	  /* Whatever type_list is (NULL or true list), we build a list
+	     of filters for the region.  */
+	  r->u.catch.filter_list = NULL_TREE;
+
+	  if (r->u.catch.type_list != NULL)
+	    {
+	      /* Get a filter value for each of the types caught and store
+		 them in the region's dedicated list.  */
+	      tree tp_node = r->u.catch.type_list;
+
+	      for (;tp_node; tp_node = TREE_CHAIN (tp_node))
+		{
+		  int flt = add_ttypes_entry (ttypes, TREE_VALUE (tp_node));
+		  tree flt_node = build_int_2 (flt, 0);
+
+		  r->u.catch.filter_list
+		    = tree_cons (NULL_TREE, flt_node, r->u.catch.filter_list);
+		}
+	    }
+	  else
+	    {
+	      /* Get a filter value for the NULL list also since it will need
+		 an action record anyway.  */
+	      int flt = add_ttypes_entry (ttypes, NULL);
+	      tree flt_node = build_int_2 (flt, 0);
+
+	      r->u.catch.filter_list
+		= tree_cons (NULL_TREE, flt_node, r->u.catch.filter_list);
+	    }
+
+	  break;
+
+	case ERT_ALLOWED_EXCEPTIONS:
+	  r->u.allowed.filter
+	    = add_ehspec_entry (ehspec, ttypes, r->u.allowed.type_list);
+	  break;
+
+	default:
+	  break;
+	}
+    }
+
+  htab_delete (ttypes);
+  htab_delete (ehspec);
+}

@@ -1,0 +1,48 @@
+void
+flow_loops_dump (loops, file, loop_dump_aux, verbose)
+     const struct loops *loops;
+     FILE *file;
+     void (*loop_dump_aux) PARAMS((const struct loop *, FILE *, int));
+     int verbose;
+{
+  int i, j;
+  int num_loops;
+
+  num_loops = loops->num;
+  if (! num_loops || ! file)
+    return;
+
+  fprintf (file, ";; %d loops found, %d levels\n", num_loops, loops->levels);
+  for (i = 0; i < num_loops; i++)
+    {
+      struct loop *loop = &loops->array[i];
+
+      flow_loop_dump (loop, file, loop_dump_aux, verbose);
+      if (loop->shared)
+	for (j = 0; j < i; j++)
+	  {
+	    struct loop *oloop = &loops->array[j];
+
+	    if (loop->header == oloop->header)
+	      {
+		int disjoint;
+		int smaller;
+
+		smaller = loop->num_nodes < oloop->num_nodes;
+
+		/* If the union of LOOP and OLOOP is different than
+		   the larger of LOOP and OLOOP then LOOP and OLOOP
+		   must be disjoint.  */
+		disjoint = ! flow_loop_nested_p (smaller ? loop : oloop,
+						 smaller ? oloop : loop);
+		fprintf (file,
+			 ";; loop header %d shared by loops %d, %d %s\n",
+			 loop->header->index, i, j,
+			 disjoint ? "disjoint" : "nested");
+	      }
+	  }
+    }
+
+  if (verbose)
+    flow_loops_cfg_dump (loops, file);
+}

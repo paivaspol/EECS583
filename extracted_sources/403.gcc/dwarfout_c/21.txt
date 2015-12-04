@@ -1,0 +1,18 @@
+static void
+equate_decl_number_to_die_number (decl)
+     tree decl;
+{
+  /* In the case where we are generating a DIE for some ..._DECL node
+     which represents either some inline function declaration or some
+     entity declared within an inline function declaration/definition,
+     setup a symbolic name for the current DIE so that we have a name
+     for this DIE that we can easily refer to later on within
+     AT_abstract_origin attributes.  */
+
+  char decl_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char die_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  sprintf (decl_label, DECL_NAME_FMT, DECL_UID (decl));
+  sprintf (die_label, DIE_BEGIN_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DEF (asm_out_file, decl_label, die_label);
+}

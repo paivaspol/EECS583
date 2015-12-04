@@ -1,0 +1,131 @@
+static struct plan9_s *
+read_plan9_binhmm(FILE *fp, int version, int swapped)
+{
+  struct plan9_s *hmm;
+  int   M;                      /* length of model  */
+  int   k;                      /* state number  */
+  int   x;                      /* symbol or transition number */
+  int   len;                    /* length of variable length string */
+  int   asize;			/* alphabet size */
+  int   atype;			/* alphabet type (read but ignored) */
+  char  abet[20];		/* alphabet (read but ignored) */
+  
+ /* read M and alphabet size */
+  if (! fread((char *) &(M), sizeof(int), 1, fp))  return NULL;
+  if (! fread((char *) &asize, sizeof(int), 1, fp)) return NULL;
+  if (swapped) { 
+    byteswap((char *) &M, sizeof(int));
+    byteswap((char *) &asize, sizeof(int));
+  }
+  
+  /* Set global alphabet information
+   */
+  if      (asize == 4)  atype = hmmNUCLEIC;
+  else if (asize == 20) atype = hmmAMINO;
+  else Die("A nonbiological alphabet size of %d; so I can't convert plan9 to plan7", asize);
+  if (Alphabet_type == hmmNOTSETYET) SetAlphabet(atype);
+  else if (atype != Alphabet_type) 
+    Die("Alphabet mismatch error.\nI thought we were working with %s, but tried to read a %s HMM.\n", AlphabetType2String(Alphabet_type), AlphabetType2String(atype));
+
+  /* now, create space for hmm */
+  if ((hmm = P9AllocHMM(M)) == NULL)
+    Die("malloc failed for reading hmm in\n");
+  
+  /* version 1.9+ files have a name */
+  if (version == HMMER1_9B) {
+    if (! fread((char *) &len, sizeof(int), 1, fp))  return NULL;
+    if (swapped) byteswap((char *) &len, sizeof(int));
+    hmm->name = (char *) ReallocOrDie (hmm->name, sizeof(char) * (len+1));
+    if (! fread((char *) hmm->name, sizeof(char), len, fp)) return NULL;
+    hmm->name[len] = '\0';
+  }
+
+  /* read alphabet_type and alphabet, but ignore: we've already set them */
+  if (! fread((char *) &atype, sizeof(int), 1, fp)) return NULL;
+  if (! fread((char *) abet, sizeof(char), Alphabet_size, fp)) return NULL;
+  
+  /* skip the random symbol frequencies in V1.0 */
+  if (version == HMMER1_0B)
+    fseek(fp, (long) (sizeof(float) * Alphabet_size), SEEK_CUR);
+  
+  /* Get optional info in V1.7 and later
+   */
+  if (version == HMMER1_7B || version == HMMER1_9B)
+    {
+      if (! fread((char *) &(hmm->flags), sizeof(int), 1, fp)) return NULL;
+      if (swapped) byteswap((char *) &hmm->flags, sizeof(int));
+      if ((hmm->flags & HMM_REF) &&
+          ! fread((char *) hmm->ref, sizeof(char), hmm->M+1, fp)) return NULL;
+      hmm->ref[hmm->M+1] = '\0';
+      if ((hmm->flags & HMM_CS) &&
+          ! fread((char *) hmm->cs,  sizeof(char), hmm->M+1, fp)) return NULL;
+      hmm->cs[hmm->M+1]  = '\0';
+    }
+
+  /* Get the null model in V1.9 and later
+   */
+  if (version == HMMER1_9B)
+    {
+      if (! fread((char *) hmm->null, sizeof(float), Alphabet_size, fp)) return NULL;
+      if (swapped)
+        for (x = 0; x < Alphabet_size; x++)
+          byteswap((char *) &(hmm->null[x]), sizeof(float));
+    }
+  else P9DefaultNullModel(hmm->null);
+
+  /* everything else is states */
+  for (k = 0; k <= hmm->M; k++)
+    {
+      /* get match state info */
+      if (! fread((char *) &(hmm->mat[k].t[MATCH]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) &(hmm->mat[k].t[DELETE]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) &(hmm->mat[k].t[INSERT]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) hmm->mat[k].p, sizeof(float), Alphabet_size, fp)) return NULL
+;
+      if (swapped) {
+        byteswap((char *) &(hmm->mat[k].t[MATCH]),  sizeof(float));
+        byteswap((char *) &(hmm->mat[k].t[DELETE]), sizeof(float));
+        byteswap((char *) &(hmm->mat[k].t[INSERT]), sizeof(float));
+        for (x = 0; x < Alphabet_size; x++)
+          byteswap((char *) &(hmm->mat[k].p[x]), sizeof(float));
+      }
+      
+      /* skip the regularizer info in V1.0 */
+      if (version == HMMER1_0B)
+        fseek(fp, (long)(sizeof(float) * (3 + Alphabet_size)), SEEK_CUR);
+      
+      /* get delete state info */
+      if (! fread((char *) &(hmm->del[k].t[MATCH]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) &(hmm->del[k].t[DELETE]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) &(hmm->del[k].t[INSERT]), sizeof(float), 1, fp)) return NULL;
+      if (swapped) {
+        byteswap((char *) &(hmm->del[k].t[MATCH]),  sizeof(float));
+        byteswap((char *) &(hmm->del[k].t[DELETE]), sizeof(float));
+        byteswap((char *) &(hmm->del[k].t[INSERT]), sizeof(float));
+      }
+      
+      /* skip the regularizer info in V1.0 */
+      if (version == HMMER1_0B)
+        fseek(fp, (long)(sizeof(float) * 3), SEEK_CUR);
+      
+      /* get insert state info */
+      if (! fread((char *) &(hmm->ins[k].t[MATCH]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) &(hmm->ins[k].t[DELETE]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) &(hmm->ins[k].t[INSERT]), sizeof(float), 1, fp)) return NULL;
+      if (! fread((char *) hmm->ins[k].p, sizeof(float), Alphabet_size, fp)) return NULL
+;
+      if (swapped) {
+        byteswap((char *) &(hmm->ins[k].t[MATCH]),  sizeof(float));
+        byteswap((char *) &(hmm->ins[k].t[DELETE]), sizeof(float));
+        byteswap((char *) &(hmm->ins[k].t[INSERT]), sizeof(float));
+        for (x = 0; x < Alphabet_size; x++)
+          byteswap((char *) &(hmm->ins[k].p[x]), sizeof(float));
+      }
+      
+      /* skip the regularizer info in V1.0 */
+      if (version == HMMER1_0B)
+        fseek(fp, (long)(sizeof(float) * (3 + Alphabet_size)), SEEK_CUR);
+    }
+  P9Renormalize(hmm);
+  return hmm;
+}

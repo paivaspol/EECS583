@@ -1,0 +1,22 @@
+static void
+noce_emit_move_insn (x, y)
+     rtx x, y;
+{
+  enum machine_mode outmode, inmode;
+  rtx outer, inner;
+  int bitpos;
+
+  if (GET_CODE (x) != STRICT_LOW_PART)
+    {
+      emit_move_insn (x, y);
+      return;
+    }
+
+  outer = XEXP (x, 0);
+  inner = XEXP (outer, 0);
+  outmode = GET_MODE (outer);
+  inmode = GET_MODE (inner);
+  bitpos = SUBREG_BYTE (outer) * BITS_PER_UNIT;
+  store_bit_field (inner, GET_MODE_BITSIZE (outmode), bitpos, outmode, y,
+		   GET_MODE_BITSIZE (inmode));
+}

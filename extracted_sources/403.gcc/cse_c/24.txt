@@ -1,0 +1,27 @@
+static void
+remove_invalid_subreg_refs (regno, offset, mode)
+     unsigned int regno;
+     unsigned int offset;
+     enum machine_mode mode;
+{
+  unsigned int i;
+  struct table_elt *p, *next;
+  unsigned int end = offset + (GET_MODE_SIZE (mode) - 1);
+
+  for (i = 0; i < HASH_SIZE; i++)
+    for (p = table[i]; p; p = next)
+      {
+	rtx exp = p->exp;
+	next = p->next_same_hash;
+
+	if (GET_CODE (exp) != REG
+	    && (GET_CODE (exp) != SUBREG
+		|| GET_CODE (SUBREG_REG (exp)) != REG
+		|| REGNO (SUBREG_REG (exp)) != regno
+		|| (((SUBREG_BYTE (exp)
+		      + (GET_MODE_SIZE (GET_MODE (exp)) - 1)) >= offset)
+		    && SUBREG_BYTE (exp) <= end))
+	    && refers_to_regno_p (regno, regno + 1, p->exp, (rtx*) 0))
+	  remove_from_table (p, i);
+      }
+}

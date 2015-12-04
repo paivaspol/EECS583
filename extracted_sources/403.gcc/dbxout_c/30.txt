@@ -1,0 +1,25 @@
+void
+dbxout_reg_parms (parms)
+     tree parms;
+{
+  for (; parms; parms = TREE_CHAIN (parms))
+    if (DECL_NAME (parms) && PARM_PASSED_IN_MEMORY (parms))
+      {
+	dbxout_prepare_symbol (parms);
+
+	/* Report parms that live in registers during the function
+	   but were passed in memory.  */
+	if (GET_CODE (DECL_RTL (parms)) == REG
+	    && REGNO (DECL_RTL (parms)) < FIRST_PSEUDO_REGISTER)
+	  dbxout_symbol_location (parms, TREE_TYPE (parms),
+				  0, DECL_RTL (parms));
+	else if (GET_CODE (DECL_RTL (parms)) == CONCAT)
+	  dbxout_symbol_location (parms, TREE_TYPE (parms),
+				  0, DECL_RTL (parms));
+	/* Report parms that live in memory but not where they were passed.  */
+	else if (GET_CODE (DECL_RTL (parms)) == MEM
+		 && ! rtx_equal_p (DECL_RTL (parms), DECL_INCOMING_RTL (parms)))
+	  dbxout_symbol_location (parms, TREE_TYPE (parms),
+				  0, DECL_RTL (parms));
+      }
+}

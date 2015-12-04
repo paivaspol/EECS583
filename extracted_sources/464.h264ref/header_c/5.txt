@@ -1,0 +1,80 @@
+static int pred_weight_table()
+{
+  int dP_nr = assignSE2partition[input->partition_mode][SE_HEADER];
+  DataPartition *partition = &((img->currentSlice)->partArr[dP_nr]);
+
+  int len = 0;
+  int i,j;
+
+  len += ue_v("SH: luma_log_weight_denom", luma_log_weight_denom, partition);
+  
+  len += ue_v("SH: chroma_log_weight_denom", chroma_log_weight_denom, partition);
+
+  for (i=0; i< img->num_ref_idx_l0_active; i++)
+  {
+    if ( (wp_weight[0][i][0] != 1<<luma_log_weight_denom) || (wp_offset[0][i][0] != 0) )
+    {
+      len += u_1 ("SH: luma_weight_flag_l0", 1, partition);
+      
+      len += se_v ("SH: luma_weight_l0", wp_weight[0][i][0], partition);
+        
+      len += se_v ("SH: luma_offset_l0", wp_offset[0][i][0], partition);
+    }
+    else
+    {
+        len += u_1 ("SH: luma_weight_flag_l0", 0, partition);
+    }
+
+    if ( (wp_weight[0][i][1] != 1<<chroma_log_weight_denom) || (wp_offset[0][i][1] != 0) || 
+     (wp_weight[0][i][2] != 1<<chroma_log_weight_denom) || (wp_offset[0][i][2] != 0)  )
+    {
+      len += u_1 ("chroma_weight_flag_l0", 1, partition);
+      for (j=1; j<3; j++)
+      {
+        len += se_v ("chroma_weight_l0", wp_weight[0][i][j] ,partition);
+      
+        len += se_v ("chroma_offset_l0", wp_offset[0][i][j] ,partition);
+      }
+    }
+    else
+    {
+      len += u_1 ("chroma_weight_flag_l0", 0, partition);
+    }
+  }
+
+  if (img->type == B_SLICE)
+  {
+    for (i=0; i< img->num_ref_idx_l1_active; i++)
+    {
+      if ( (wp_weight[1][i][0] != 1<<luma_log_weight_denom) || (wp_offset[1][i][0] != 0) )
+      {
+        len += u_1 ("SH: luma_weight_flag_l1", 1, partition);
+        
+        len += se_v ("SH: luma_weight_l1", wp_weight[1][i][0], partition);
+        
+        len += se_v ("SH: luma_offset_l1", wp_offset[1][i][0], partition);
+      }
+      else
+      {
+        len += u_1 ("SH: luma_weight_flag_l1", 0, partition);
+      }
+      
+      if ( (wp_weight[1][i][1] != 1<<chroma_log_weight_denom) || (wp_offset[1][i][1] != 0) || 
+      (wp_weight[1][i][2] != 1<<chroma_log_weight_denom) || (wp_offset[1][i][2] != 0) )
+      {
+        len += u_1 ("chroma_weight_flag_l1", 1, partition);
+        for (j=1; j<3; j++)
+        {
+          len += se_v ("chroma_weight_l1", wp_weight[1][i][j] ,partition);
+          
+          len += se_v ("chroma_offset_l1", wp_offset[1][i][j] ,partition);
+        }
+      }
+      else
+      {
+        len += u_1 ("chroma_weight_flag_l1", 0, partition);
+      }
+    }
+  }
+  return len;
+}

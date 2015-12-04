@@ -1,0 +1,53 @@
+static void
+break_out_includes (die)
+     dw_die_ref die;
+{
+  dw_die_ref *ptr;
+  dw_die_ref unit = NULL;
+  limbo_die_node *node;
+
+  for (ptr = &(die->die_child); *ptr; )
+    {
+      dw_die_ref c = *ptr;
+
+      if (c->die_tag == DW_TAG_GNU_BINCL || c->die_tag == DW_TAG_GNU_EINCL
+	  || (unit && is_comdat_die (c)))
+	{
+	  /* This DIE is for a secondary CU; remove it from the main one.  */
+	  *ptr = c->die_sib;
+
+	  if (c->die_tag == DW_TAG_GNU_BINCL)
+	    {
+	      unit = push_new_compile_unit (unit, c);
+	      free_die (c);
+	    }
+	  else if (c->die_tag == DW_TAG_GNU_EINCL)
+	    {
+	      unit = pop_compile_unit (unit);
+	      free_die (c);
+	    }
+	  else
+	    add_child_die (unit, c);
+	}
+      else
+	{
+	  /* Leave this DIE in the main CU.  */
+	  ptr = &(c->die_sib);
+	  continue;
+	}
+    }
+
+#if 0
+  /* We can only use this in debugging, since the frontend doesn't check
+     to make sure that we leave every include file we enter.  */
+  if (unit != NULL)
+    abort ();
+#endif
+
+  assign_symbol_names (die);
+  for (node = limbo_die_list; node; node = node->next)
+    {
+      compute_section_prefix (node->die);
+      assign_symbol_names (node->die);
+    }
+}

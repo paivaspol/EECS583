@@ -1,0 +1,126 @@
+void updateRCModel ()
+{
+
+  int n_windowSize;
+  int i;
+  double error[20], std = 0.0, threshold;
+  int m_Nc;
+  Boolean MADModelFlag = FALSE;
+
+  if(img->type==P_SLICE)
+  {
+    /*frame layer rate control*/
+    if(img->BasicUnit==img->Frame_Total_Number_MB)
+    {
+      CurrentFrameMAD=ComputeFrameMAD();
+      m_Nc=img->NumberofCodedPFrame;
+    }
+    /*basic unit layer rate control*/
+    else
+    {
+      /*compute the MAD of the current basic unit*/
+      if((input->MbInterlace)&&(img->FieldControl==0))
+        CurrentFrameMAD=img->TotalMADBasicUnit/img->BasicUnit/2;
+      else
+        CurrentFrameMAD=img->TotalMADBasicUnit/img->BasicUnit;
+      
+      
+      img->TotalMADBasicUnit=0;
+              
+      /* compute the average number of header bits*/
+      
+      CodedBasicUnit=TotalNumberofBasicUnit-NumberofBasicUnit;
+      if(CodedBasicUnit>0)
+      {
+        PAveHeaderBits1=(int)(1.0*(PAveHeaderBits1*(CodedBasicUnit-1)+\
+          +img->NumberofBasicUnitHeaderBits)/CodedBasicUnit+0.5);
+        if(PAveHeaderBits3==0)
+          PAveHeaderBits2=PAveHeaderBits1;
+        else
+          PAveHeaderBits2=(int)(1.0*(PAveHeaderBits1*CodedBasicUnit+\
+          +PAveHeaderBits3*NumberofBasicUnit)/TotalNumberofBasicUnit+0.5);
+      }
+      /*update the record of MADs for reference*/
+      if(((input->PicInterlace==ADAPTIVE_CODING)||(input->MbInterlace))\
+        &&(img->FieldControl==1))
+        FCBUCFMAD[TotalNumberofBasicUnit-1-NumberofBasicUnit]=CurrentFrameMAD;
+      else
+        BUCFMAD[TotalNumberofBasicUnit-1-NumberofBasicUnit]=CurrentFrameMAD;
+      
+      if(NumberofBasicUnit!=0)
+        m_Nc=img->NumberofCodedPFrame*TotalNumberofBasicUnit+CodedBasicUnit;
+      else
+        m_Nc=(img->NumberofCodedPFrame-1)*TotalNumberofBasicUnit+CodedBasicUnit;
+      
+    }
+    
+    if(m_Nc>1)
+      MADModelFlag=TRUE;
+    
+    PPreHeader=img->NumberofHeaderBits;
+    for (i = 19; i > 0; i--) 
+    {// update the history
+      Pm_rgQp[i] = Pm_rgQp[i - 1];
+      m_rgQp[i]=Pm_rgQp[i];
+      Pm_rgRp[i] = Pm_rgRp[i - 1];
+      m_rgRp[i]=Pm_rgRp[i];
+    }
+    Pm_rgQp[0] = QP2Qstep(m_Qc); //*1.0/CurrentFrameMAD;
+    /*frame layer rate control*/
+    if(img->BasicUnit==img->Frame_Total_Number_MB)
+      Pm_rgRp[0] = img->NumberofTextureBits*1.0/CurrentFrameMAD;
+    /*basic unit layer rate control*/
+    else
+      Pm_rgRp[0]=img->NumberofBasicUnitTextureBits*1.0/CurrentFrameMAD;
+    
+    m_rgQp[0]=Pm_rgQp[0];
+    m_rgRp[0]=Pm_rgRp[0];
+    m_X1=Pm_X1;
+    m_X2=Pm_X2;
+    
+    
+    /*compute the size of window*/
+    n_windowSize = (CurrentFrameMAD>PreviousFrameMAD)?(int)(PreviousFrameMAD/CurrentFrameMAD*20)\
+                   :(int)(CurrentFrameMAD/PreviousFrameMAD*20);
+    n_windowSize=MAX(n_windowSize, 1);
+    n_windowSize=MIN(n_windowSize,m_Nc);
+    n_windowSize=MIN(n_windowSize,m_windowSize+1);
+    n_windowSize=MIN(n_windowSize,20);
+    
+    /*update the previous window size*/
+    m_windowSize=n_windowSize;
+    
+    for (i = 0; i < 20; i++) 
+    {
+      m_rgRejected[i] = FALSE;
+    }
+    
+    // initial RD model estimator
+    RCModelEstimator (n_windowSize);
+    
+    n_windowSize = m_windowSize;
+    // remove outlier 
+    
+    for (i = 0; i < (int) n_windowSize; i++) 
+    {
+      error[i] = m_X1 / m_rgQp[i] + m_X2 / (m_rgQp[i] * m_rgQp[i]) - m_rgRp[i];
+      std += error[i] * error[i]; 
+    }
+    threshold = (n_windowSize == 2) ? 0 : sqrt (std / n_windowSize);
+    for (i = 0; i < (int) n_windowSize; i++) 
+    {
+      if (fabs(error[i]) > threshold)
+        m_rgRejected[i] = TRUE;
+    }
+    // always include the last data point
+    m_rgRejected[0] = FALSE;
+    
+    // second RD model estimator
+    RCModelEstimator (n_windowSize);
+    
+    if(MADModelFlag)
+      updateMADModel();
+    else if(img->type==P_SLICE)
+      PPictureMAD[0]=CurrentFrameMAD;
+  } 
+}

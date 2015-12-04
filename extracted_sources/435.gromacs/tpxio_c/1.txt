@@ -1,0 +1,247 @@
+static void do_inputrec(t_inputrec *ir,bool bRead)
+{
+  int  i,j,*tmp,idum=0; 
+  bool bDum=TRUE;
+  real rdum;
+  rvec vdum;
+
+  if (file_version != tpx_version) {
+    /* Give a warning about features that are not accessible */
+    fprintf(stderr,"Note: tpx file_version %d, software version %d\n",
+	    file_version,tpx_version);
+  }
+
+  if (file_version >= 1) {  
+    /* Basic inputrec stuff */  
+    do_int(ir->eI); 
+    do_int(ir->nsteps); 
+    do_int(ir->ePBC);
+    if (file_version <= 15 && ir->ePBC == 2)
+      ir->ePBC = epbcNONE;
+    do_int(ir->ns_type); 
+    do_int(ir->nstlist); 
+    do_int(ir->ndelta); 
+    do_int(ir->bDomDecomp);
+    do_int(ir->decomp_dir);
+    do_int(ir->nstcomm); 
+    do_int(ir->nstcgsteep); 
+    do_int(ir->nstlog); 
+    do_int(ir->nstxout); 
+    do_int(ir->nstvout); 
+    do_int(ir->nstfout); 
+    do_int(ir->nstenergy); 
+    do_int(ir->nstxtcout); 
+    do_real(ir->init_t); 
+    do_real(ir->delta_t); 
+    do_real(ir->xtcprec); 
+    if (file_version < 19) {
+      do_int(idum); 
+      do_int(idum);
+    }
+    if(file_version < 18)
+      do_int(idum); 
+    do_real(ir->rlist); 
+    do_int(ir->coulombtype); 
+    do_real(ir->rcoulomb_switch); 
+    do_real(ir->rcoulomb); 
+    do_int(ir->vdwtype);
+    do_real(ir->rvdw_switch); 
+    do_real(ir->rvdw); 
+    do_int(ir->eDispCorr); 
+    do_real(ir->epsilon_r);
+    do_int(ir->nkx); 
+    do_int(ir->nky); 
+    do_int(ir->nkz);
+    do_int(ir->pme_order);
+    do_real(ir->ewald_rtol);
+
+    if (file_version >=24) 
+      do_int(ir->ewald_geometry);
+    else
+      ir->ewald_geometry=eewg3D;
+
+    if (file_version <=17) {
+      ir->epsilon_surface=0;
+      if (file_version==17)
+	do_int(idum);
+    } 
+    else
+      do_real(ir->epsilon_surface);
+    
+    do_int(ir->bOptFFT);
+    do_int(ir->bUncStart); 
+    do_int(ir->etc);
+    /* before version 18, ir->etc was a bool (ir->btc),
+     * but the values 0 and 1 still mean no and
+     * berendsen temperature coupling, respectively.
+     */
+    if (file_version <= 15)
+      do_int(idum);
+    if (file_version <=17) {
+      do_int(ir->epct); 
+      if (file_version <= 15) {
+	if (ir->epct == 5)
+	  ir->epct = epctSURFACETENSION;
+	do_int(idum);
+      }
+      ir->epct -= 1;
+      /* we have removed the NO alternative at the beginning */
+      if(ir->epct==-1) {
+	ir->epc=epcNO;
+	ir->epct=epctISOTROPIC;
+      } 
+      else
+	ir->epc=epcBERENDSEN;
+    } 
+    else {
+      do_int(ir->epc);
+      do_int(ir->epct);
+    }
+    do_real(ir->tau_p); 
+    if (file_version <= 15) {
+      do_rvec(vdum);
+      clear_mat(ir->ref_p);
+      for(i=0; i<DIM; i++)
+	ir->ref_p[i][i] = vdum[i];
+    } else {
+      do_rvec(ir->ref_p[XX]);
+      do_rvec(ir->ref_p[YY]);
+      do_rvec(ir->ref_p[ZZ]);
+    }
+    if (file_version <= 15) {
+      do_rvec(vdum);
+      clear_mat(ir->compress);
+      for(i=0; i<DIM; i++)
+	ir->compress[i][i] = vdum[i];
+    } 
+    else {
+      do_rvec(ir->compress[XX]);
+      do_rvec(ir->compress[YY]);
+      do_rvec(ir->compress[ZZ]);
+    }
+    do_int(ir->bSimAnn); 
+    do_real(ir->zero_temp_time); 
+    do_real(ir->epsilon_r); 
+    do_real(ir->shake_tol);
+    do_real(ir->fudgeQQ);
+    do_int(ir->efep);
+    if (file_version <= 14 && ir->efep > efepNO)
+      ir->efep = efepYES;
+    do_real(ir->init_lambda); 
+    do_real(ir->delta_lambda);
+    if (file_version >= 13)
+      do_real(ir->sc_alpha);
+    else
+      ir->sc_alpha = 0;
+    if (file_version >= 15)
+      do_real(ir->sc_sigma);
+    else
+      ir->sc_sigma = 0.3;
+    do_int(ir->eDisreWeighting); 
+    if (file_version < 22) {
+      if (ir->eDisreWeighting == 0)
+	ir->eDisreWeighting = edrwEqual;
+      else
+	ir->eDisreWeighting = edrwConservative;
+    }
+    do_int(ir->bDisreMixed); 
+    do_real(ir->dr_fc); 
+    do_real(ir->dr_tau); 
+    do_int(ir->nstdisreout);
+    if (file_version >= 22) {
+      do_real(ir->orires_fc);
+      do_real(ir->orires_tau);
+      do_int(ir->nstorireout);
+    } else {
+      ir->orires_fc = 0;
+      ir->orires_tau = 0;
+      ir->nstorireout = 0;
+    }
+    do_real(ir->em_stepsize); 
+    do_real(ir->em_tol); 
+    if (file_version >= 22) 
+      do_int(ir->bShakeSOR);
+    else if (bRead)
+      ir->bShakeSOR = TRUE;
+    if (file_version >= 11)
+      do_int(ir->niter);
+    else if (bRead) {
+      ir->niter = 25;
+      fprintf(stderr,"Note: niter not in run input file, setting it to %d\n",
+	      ir->niter);
+    }
+    if (file_version >= 21)
+      do_real(ir->fc_stepsize);
+    else
+      ir->fc_stepsize = 0;
+    do_int(ir->eConstrAlg);
+    do_int(ir->nProjOrder);
+    do_real(ir->LincsWarnAngle);
+    if (file_version <= 14)
+      do_int(idum);
+    do_real(ir->bd_temp);
+    do_real(ir->bd_fric);
+    do_int(ir->ld_seed);
+    if (file_version >= 14)
+      do_real(ir->cos_accel);
+    else if (bRead)
+      ir->cos_accel = 0;
+    do_int(ir->userint1); 
+    do_int(ir->userint2); 
+    do_int(ir->userint3); 
+    do_int(ir->userint4); 
+    do_real(ir->userreal1); 
+    do_real(ir->userreal2); 
+    do_real(ir->userreal3); 
+    do_real(ir->userreal4); 
+    
+    /* grpopts stuff */
+    do_int(ir->opts.ngtc); 
+    do_int(ir->opts.ngacc); 
+    do_int(ir->opts.ngfrz); 
+    do_int(ir->opts.ngener); 
+    if (bRead) {
+      snew(ir->opts.nrdf,   ir->opts.ngtc); 
+      snew(ir->opts.ref_t,  ir->opts.ngtc); 
+      snew(ir->opts.tau_t,  ir->opts.ngtc); 
+      snew(ir->opts.nFreeze,ir->opts.ngfrz); 
+      snew(ir->opts.acc,    ir->opts.ngacc); 
+      snew(ir->opts.eg_excl,ir->opts.ngener*ir->opts.ngener);
+    } 
+    if (ir->opts.ngtc > 0) {
+      if (bRead && file_version<13) {
+	snew(tmp,ir->opts.ngtc);
+	ndo_int (tmp, ir->opts.ngtc,bDum);
+	for(i=0; i<ir->opts.ngtc; i++)
+	  ir->opts.nrdf[i] = tmp[i];
+	sfree(tmp);
+      } else {
+	ndo_real(ir->opts.nrdf, ir->opts.ngtc,bDum);
+      }
+      ndo_real(ir->opts.ref_t,ir->opts.ngtc,bDum); 
+      ndo_real(ir->opts.tau_t,ir->opts.ngtc,bDum); 
+    }
+    if (ir->opts.ngfrz > 0) 
+      ndo_ivec(ir->opts.nFreeze,ir->opts.ngfrz,bDum);
+    if (ir->opts.ngacc > 0) 
+      ndo_rvec(ir->opts.acc,ir->opts.ngacc); 
+    if (file_version >= 12)
+      ndo_int(ir->opts.eg_excl,ir->opts.ngener*ir->opts.ngener,bDum);
+
+    /* Cosine stuff for electric fields */
+    for(j=0; (j<DIM); j++) {
+      do_int  (ir->ex[j].n);
+      do_int  (ir->et[j].n);
+      if (bRead) {
+	snew(ir->ex[j].a,  ir->ex[j].n);
+	snew(ir->ex[j].phi,ir->ex[j].n);
+	snew(ir->et[j].a,  ir->et[j].n);
+	snew(ir->et[j].phi,ir->et[j].n);
+      }
+      ndo_real(ir->ex[j].a,  ir->ex[j].n,bDum);
+      ndo_real(ir->ex[j].phi,ir->ex[j].n,bDum);
+      ndo_real(ir->et[j].a,  ir->et[j].n,bDum);
+      ndo_real(ir->et[j].phi,ir->et[j].n,bDum);
+    }
+  }
+}

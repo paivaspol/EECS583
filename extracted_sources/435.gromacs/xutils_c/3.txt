@@ -1,0 +1,20 @@
+static real value_range(t_range *r,int n)
+{
+  real logrmin,logrmax;
+  
+  if ((n < 0) || (n > r->np))
+    fatal_error(0,"Value (%d) out of range for value_range (max %d)",n,r->np);
+
+  if (r->np == 1)
+    r->rval = r->rmin;
+  else {
+    if ((r->ptype == eseEPSILON) && bLogEps) {
+      logrmin = log(r->rmin);
+      logrmax = log(r->rmax);
+      r->rval = exp(logrmin + (n*(logrmax-logrmin))/(r->np-1));
+    }
+    else
+      r->rval = r->rmin+(n*(r->dr))/(r->np-1);
+  }
+  return r->rval;
+}

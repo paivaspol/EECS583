@@ -1,0 +1,22 @@
+static void
+do_SUBST_INT (into, newval)
+     unsigned int *into, newval;
+{
+  struct undo *buf;
+  unsigned int oldval = *into;
+
+  if (oldval == newval)
+    return;
+
+  if (undobuf.frees)
+    buf = undobuf.frees, undobuf.frees = buf->next;
+  else
+    buf = (struct undo *) xmalloc (sizeof (struct undo));
+
+  buf->is_int = 1;
+  buf->where.i = into;
+  buf->old_contents.i = oldval;
+  *into = newval;
+
+  buf->next = undobuf.undos, undobuf.undos = buf;
+}

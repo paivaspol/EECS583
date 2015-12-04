@@ -1,0 +1,29 @@
+static INLINE void
+bitmap_element_free (head, elt)
+     bitmap head;
+     bitmap_element *elt;
+{
+  bitmap_element *next = elt->next;
+  bitmap_element *prev = elt->prev;
+
+  if (prev)
+    prev->next = next;
+
+  if (next)
+    next->prev = prev;
+
+  if (head->first == elt)
+    head->first = next;
+
+  /* Since the first thing we try is to insert before current,
+     make current the next entry in preference to the previous.  */
+  if (head->current == elt)
+    {
+      head->current = next != 0 ? next : prev;
+      if (head->current)
+	head->indx = head->current->indx;
+    }
+
+  elt->next = bitmap_free;
+  bitmap_free = elt;
+}

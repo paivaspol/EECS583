@@ -1,0 +1,28 @@
+void mdef_dump (FILE *fp, mdef_t *m)
+{
+    int32 i, j;
+    int32 ssid;
+    char buf[1024];
+    
+    fprintf (fp, "%d ciphone\n", m->n_ciphone);
+    fprintf (fp, "%d phone\n", m->n_phone);
+    fprintf (fp, "%d emitstate\n", m->n_emit_state);
+    fprintf (fp, "%d cisen\n", m->n_ci_sen);
+    fprintf (fp, "%d sen\n", m->n_sen);
+    fprintf (fp, "%d tmat\n", m->n_tmat);
+    
+    for (i = 0; i < m->n_phone; i++) {
+	mdef_phone_str (m, i, buf);
+	ssid = m->phone[i].ssid;
+	
+	fprintf (fp, "%3d %5d", m->phone[i].tmat, ssid);
+	for (j = 0; j < m->n_emit_state; j++)
+	    fprintf (fp, " %5d", m->sseq[ssid][j]);
+	fprintf (fp, "\t");
+	for (j = 0; j < m->n_emit_state; j++)
+	    fprintf (fp, " %3d", m->cd2cisen[m->sseq[ssid][j]]);
+	fprintf (fp, "\t%s\n", buf);
+    }
+    
+    fflush (fp);
+}

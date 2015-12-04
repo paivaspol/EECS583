@@ -1,0 +1,15 @@
+static void mm_mark_current_picture_long_term(StorablePicture *p, int long_term_frame_idx)
+{
+  // remove long term pictures with same long_term_frame_idx
+  if (p->structure == FRAME)
+  {
+    unmark_long_term_frame_for_reference_by_frame_idx(long_term_frame_idx);
+  }
+  else
+  {
+    unmark_long_term_field_for_reference_by_frame_idx(p->structure, long_term_frame_idx, 1, p->pic_num, 0);
+  }
+
+  p->is_long_term = 1;
+  p->long_term_frame_idx = long_term_frame_idx;
+}

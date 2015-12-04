@@ -1,0 +1,55 @@
+static int
+parse_gr(MSA *msa, char *buf)
+{
+  char *gr;
+  char *seqname;
+  char *featurename;
+  char *text;
+  int   seqidx;
+  int   len;
+  int   j;
+  char *s;
+
+  s = buf;
+  if ((gr          = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((seqname     = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((featurename = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((text        = sre_strtok(&s, WHITESPACE, &len)) == NULL) return 0;
+
+  /* GR usually follows sequence it refers to; guess msa->lastidx */
+  seqidx = MSAGetSeqidx(msa, seqname, msa->lastidx);
+  msa->lastidx = seqidx;
+
+  if (strcmp(featurename, "SS") == 0) 
+    {
+      if (msa->ss == NULL)
+	{
+	  msa->ss    = MallocOrDie(sizeof(char *) * msa->nseqalloc);
+	  msa->sslen = MallocOrDie(sizeof(int)    * msa->nseqalloc);
+	  for (j = 0; j < msa->nseqalloc; j++)
+	    {
+	      msa->ss[j]    = NULL;
+	      msa->sslen[j] = 0;
+	    }
+	}
+      msa->sslen[seqidx] = sre_strcat(&(msa->ss[seqidx]), msa->sslen[seqidx], text, len);
+    }
+  else if (strcmp(featurename, "SA") == 0)
+    {
+      if (msa->sa == NULL)
+	{
+	  msa->sa    = MallocOrDie(sizeof(char *) * msa->nseqalloc);
+	  msa->salen = MallocOrDie(sizeof(int)    * msa->nseqalloc);
+	  for (j = 0; j < msa->nseqalloc; j++) 
+	    {
+	      msa->sa[j]    = NULL;
+	      msa->salen[j] = 0;
+	    }
+	}
+      msa->salen[seqidx] = sre_strcat(&(msa->sa[seqidx]), msa->salen[seqidx], text, len);
+    }
+  else 
+    MSAAppendGR(msa, featurename, seqidx, text);
+
+  return 1;
+}

@@ -1,0 +1,58 @@
+static tree
+decode_field_reference (exp, pbitsize, pbitpos, pmode, punsignedp,
+			pvolatilep, pmask, pand_mask)
+     tree exp;
+     HOST_WIDE_INT *pbitsize, *pbitpos;
+     enum machine_mode *pmode;
+     int *punsignedp, *pvolatilep;
+     tree *pmask;
+     tree *pand_mask;
+{
+  tree and_mask = 0;
+  tree mask, inner, offset;
+  tree unsigned_type;
+  unsigned int precision;
+
+  /* All the optimizations using this function assume integer fields.
+     There are problems with FP fields since the type_for_size call
+     below can fail for, e.g., XFmode.  */
+  if (! INTEGRAL_TYPE_P (TREE_TYPE (exp)))
+    return 0;
+
+  STRIP_NOPS (exp);
+
+  if (TREE_CODE (exp) == BIT_AND_EXPR)
+    {
+      and_mask = TREE_OPERAND (exp, 1);
+      exp = TREE_OPERAND (exp, 0);
+      STRIP_NOPS (exp); STRIP_NOPS (and_mask);
+      if (TREE_CODE (and_mask) != INTEGER_CST)
+	return 0;
+    }
+
+  inner = get_inner_reference (exp, pbitsize, pbitpos, &offset, pmode,
+			       punsignedp, pvolatilep);
+  if ((inner == exp && and_mask == 0)
+      || *pbitsize < 0 || offset != 0
+      || TREE_CODE (inner) == PLACEHOLDER_EXPR)
+    return 0;
+
+  /* Compute the mask to access the bitfield.  */
+  unsigned_type = type_for_size (*pbitsize, 1);
+  precision = TYPE_PRECISION (unsigned_type);
+
+  mask = build_int_2 (~0, ~0);
+  TREE_TYPE (mask) = unsigned_type;
+  force_fit_type (mask, 0);
+  mask = const_binop (LSHIFT_EXPR, mask, size_int (precision - *pbitsize), 0);
+  mask = const_binop (RSHIFT_EXPR, mask, size_int (precision - *pbitsize), 0);
+
+  /* Merge it with the mask we found in the BIT_AND_EXPR, if any.  */
+  if (and_mask != 0)
+    mask = fold (build (BIT_AND_EXPR, unsigned_type,
+			convert (unsigned_type, and_mask), mask));
+
+  *pmask = mask;
+  *pand_mask = and_mask;
+  return inner;
+}

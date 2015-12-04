@@ -1,0 +1,26 @@
+static void
+remove_children (die)
+     dw_die_ref die;
+{
+  dw_die_ref child_die = die->die_child;
+
+  die->die_child = NULL;
+
+  while (child_die != NULL)
+    {
+      dw_die_ref tmp_die = child_die;
+      dw_attr_ref a;
+
+      child_die = child_die->die_sib;
+
+      for (a = tmp_die->die_attr; a != NULL;)
+	{
+	  dw_attr_ref tmp_a = a;
+
+	  a = a->dw_attr_next;
+	  free_AT (tmp_a);
+	}
+
+      free_die (tmp_die);
+    }
+}

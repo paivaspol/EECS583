@@ -1,0 +1,50 @@
+static int
+classic_gcse ()
+{
+  int bb, changed;
+  rtx insn;
+
+  /* Note we start at block 1.  */
+
+  changed = 0;
+  for (bb = 1; bb < n_basic_blocks; bb++)
+    {
+      /* Reset tables used to keep track of what's still valid [since the
+	 start of the block].  */
+      reset_opr_set_tables ();
+
+      for (insn = BLOCK_HEAD (bb);
+	   insn != NULL && insn != NEXT_INSN (BLOCK_END (bb));
+	   insn = NEXT_INSN (insn))
+	{
+	  /* Is insn of form (set (pseudo-reg) ...)?  */
+	  if (GET_CODE (insn) == INSN
+	      && GET_CODE (PATTERN (insn)) == SET
+	      && GET_CODE (SET_DEST (PATTERN (insn))) == REG
+	      && REGNO (SET_DEST (PATTERN (insn))) >= FIRST_PSEUDO_REGISTER)
+	    {
+	      rtx pat = PATTERN (insn);
+	      rtx src = SET_SRC (pat);
+	      struct expr *expr;
+
+	      if (want_to_gcse_p (src)
+		  /* Is the expression recorded?  */
+		  && ((expr = lookup_expr (src)) != NULL)
+		  /* Is the expression available [at the start of the
+		     block]?  */
+		  && TEST_BIT (ae_in[bb], expr->bitmap_index)
+		  /* Are the operands unchanged since the start of the
+		     block?  */
+		  && oprs_not_set_p (src, insn))
+		changed |= handle_avail_expr (insn, expr);
+	    }
+
+	  /* Keep track of everything modified by this insn.  */
+	  /* ??? Need to be careful w.r.t. mods done to INSN.  */
+	  if (INSN_P (insn))
+	    mark_oprs_set (insn);
+	}
+    }
+
+  return changed;
+}

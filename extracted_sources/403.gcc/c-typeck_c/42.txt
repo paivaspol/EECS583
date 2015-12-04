@@ -1,0 +1,33 @@
+static void
+set_nonincremental_init ()
+{
+  tree chain;
+
+  if (TREE_CODE (constructor_type) != RECORD_TYPE
+      && TREE_CODE (constructor_type) != ARRAY_TYPE)
+    return;
+
+  for (chain = constructor_elements; chain; chain = TREE_CHAIN (chain))
+    add_pending_init (TREE_PURPOSE (chain), TREE_VALUE (chain));
+  constructor_elements = 0;
+  if (TREE_CODE (constructor_type) == RECORD_TYPE)
+    {
+      constructor_unfilled_fields = TYPE_FIELDS (constructor_type);
+      /* Skip any nameless bit fields at the beginning.  */
+      while (constructor_unfilled_fields != 0
+	     && DECL_C_BIT_FIELD (constructor_unfilled_fields)
+	     && DECL_NAME (constructor_unfilled_fields) == 0)
+	constructor_unfilled_fields = TREE_CHAIN (constructor_unfilled_fields);
+      
+    }
+  else if (TREE_CODE (constructor_type) == ARRAY_TYPE)
+    {
+      if (TYPE_DOMAIN (constructor_type))
+	constructor_unfilled_index
+	    = convert (bitsizetype,
+		       TYPE_MIN_VALUE (TYPE_DOMAIN (constructor_type)));
+      else
+	constructor_unfilled_index = bitsize_zero_node;
+    }
+  constructor_incremental = 0;
+}

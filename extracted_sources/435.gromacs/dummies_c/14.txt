@@ -1,0 +1,54 @@
+static void spread_dum3FAD(rvec xi,rvec xj,rvec xk,
+			   rvec fi,rvec fj,rvec fk,rvec f,real a,real b)
+{
+  rvec xij,xjk,xperp,Fpij,Fppp,f1,f2,f3;
+  real a1,b1,c1,c2,invdij,invdij2,invdp,fproj;
+  int d;
+  
+  rvec_sub(xj,xi,xij);
+  rvec_sub(xk,xj,xjk);
+  /* 6 flops */
+  
+  invdij = invsqrt(iprod(xij,xij));
+  invdij2 = invdij * invdij;
+  c1 = iprod(xij,xjk) * invdij2;
+  xperp[XX] = xjk[XX] - c1*xij[XX];
+  xperp[YY] = xjk[YY] - c1*xij[YY];
+  xperp[ZZ] = xjk[ZZ] - c1*xij[ZZ];
+  /* xperp in plane ijk, perp. to ij */
+  invdp = invsqrt(iprod(xperp,xperp));
+  a1 = a*invdij;
+  b1 = b*invdp;
+  /* 45 flops */
+  
+  /* a1, b1 and c1 are already calculated in constr_dum3FAD
+     storing them somewhere will save 45 flops!     */
+  
+  fproj=iprod(xij  ,f)*invdij2;
+  svmul(fproj,                     xij,  Fpij); /* proj. f on xij */
+  svmul(iprod(xperp,f)*invdp*invdp,xperp,Fppp); /* proj. f on xperp */
+  svmul(b1*fproj,                  xperp,f3);
+  /* 23 flops */
+  
+  rvec_sub(f,Fpij,f1);  /* f1 = f - Fpij */
+  rvec_sub(f1,Fppp,f2); /* f2 = f - Fpij - Fppp */
+  for (d=0; (d<DIM); d++) {
+    f1[d]*=a1;
+    f2[d]*=b1;
+  }
+  /* 12 flops */
+  
+  c2=1+c1;
+  fi[XX] += f[XX] - f1[XX] + c1*f2[XX] + f3[XX];
+  fi[YY] += f[YY] - f1[YY] + c1*f2[YY] + f3[YY];
+  fi[ZZ] += f[ZZ] - f1[ZZ] + c1*f2[ZZ] + f3[ZZ];
+  fj[XX] +=         f1[XX] - c2*f2[XX] - f3[XX];
+  fj[YY] +=         f1[YY] - c2*f2[YY] - f3[YY];
+  fj[ZZ] +=         f1[ZZ] - c2*f2[ZZ] - f3[ZZ];
+  fk[XX] +=                     f2[XX];
+  fk[YY] +=                     f2[YY];
+  fk[ZZ] +=                     f2[ZZ];
+  /* 30 Flops */
+  
+  /* TOTAL: 113 flops */
+}

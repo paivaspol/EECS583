@@ -1,0 +1,15 @@
+void
+GSIAddFileToIndex(struct gsiindex_s *g, char *filename, int fmt)
+{
+  int len;
+
+  len = strlen(filename);
+  if (len >= GSI_KEYSIZE) Die("File name too long to be indexed.");
+  g->filenames[g->nfiles] = sre_strdup(filename, len);
+  g->fmt[g->nfiles]       = fmt;
+  g->nfiles++;
+  if (g->nfiles % 10 == 0) {
+    g->filenames = ReallocOrDie(g->filenames, sizeof(char *) * (g->nfiles + 10)); 
+    g->fmt       = ReallocOrDie(g->fmt,       sizeof(int)    * (g->nfiles + 10)); 
+  }
+}

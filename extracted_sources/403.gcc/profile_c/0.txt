@@ -1,0 +1,42 @@
+static void
+instrument_edges (el)
+     struct edge_list *el;
+{
+  int i;
+  int num_instr_edges = 0;
+  int num_edges = NUM_EDGES (el);
+  remove_fake_edges ();
+
+  for (i = 0; i < n_basic_blocks + 2; i++)
+    {
+      basic_block bb = GCOV_INDEX_TO_BB (i);
+      edge e = bb->succ;
+      while (e)
+	{
+	  struct edge_info *inf = EDGE_INFO (e);
+	  if (!inf->ignore && !inf->on_tree)
+	    {
+	      if (e->flags & EDGE_ABNORMAL)
+		abort ();
+	      if (rtl_dump_file)
+		fprintf (rtl_dump_file, "Edge %d to %d instrumented%s\n",
+			 e->src->index, e->dest->index,
+			 EDGE_CRITICAL_P (e) ? " (and split)" : "");
+	      need_func_profiler = 1;
+	      insert_insn_on_edge (
+			 gen_edge_profiler (total_num_edges_instrumented
+					    + num_instr_edges++), e);
+	    }
+	  e = e->succ_next;
+	}
+    }
+
+  total_num_edges_instrumented += num_instr_edges;
+  count_instrumented_edges = total_num_edges_instrumented;
+
+  total_num_blocks_created += num_edges;
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "%d edges instrumented\n", num_instr_edges);
+
+  commit_edge_insertions ();
+}

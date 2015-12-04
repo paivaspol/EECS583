@@ -1,0 +1,238 @@
+void order_moves (move_s moves[], int move_ordering[], int see_values[], int num_moves, int best) {
+
+  int promoted, captured;
+  int i, from, target, seev;
+  /* fill the move ordering array: */
+
+  /* if searching the pv, give it the highest move ordering, and if not, rely
+     on the other heuristics: */
+  if (searching_pv) {
+    searching_pv = FALSE;
+    for (i = 0; i < num_moves; i++) {
+      from = moves[i].from;
+      target = moves[i].target;
+      promoted = moves[i].promoted;
+      captured = moves[i].captured;
+      
+      /* give captures precedence in move ordering, and order captures by
+	 material gain */
+      if (captured != npiece)
+	{
+	  /* No SEE for 'obviously not losing' captures */
+	  if (abs(material[captured])+15 >= abs(material[board[from]]))
+	  {
+	  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);
+	  	move_ordering[i] = CAPTURE + see_values[i];	  		  	
+	  }
+	  else
+	  {
+		  seev = see(ToMove, target, from);
+	
+		  if (seev >= -50)
+		    move_ordering[i] = CAPTURE + seev;
+		  else
+		    move_ordering[i] = seev;
+		  
+		  see_values[i] = seev;
+	  }	  
+	}      
+      else
+	move_ordering[i] = 0;
+      
+      /* make the pv have highest move ordering: */
+      if (from == pv[1][ply].from 
+	  && target == pv[1][ply].target
+	  && promoted == pv[1][ply].promoted) {
+	  	
+	searching_pv = TRUE;
+	move_ordering[i] = MAINVAR;
+
+	if (captured != npiece)
+	{
+	  /* No SEE for 'obviously not losing' captures */
+	  if (abs(material[captured])+15 >= abs(material[board[from]]))
+	  {
+	  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);	  	
+	  }
+	  else
+	  {
+		seev = see(ToMove, target, from);		  		  
+		see_values[i] = seev;
+	  }	  
+	}
+      } 
+      else if ((best != -1) && (best != -2) && (i == best))
+	{
+	  move_ordering[i] = MAINVAR;
+
+	  if (captured != npiece)
+	  {
+	  	/* No SEE for 'obviously not losing' captures */
+		  if (abs(material[captured])+15 >= abs(material[board[from]]))
+		  {
+		  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);
+		  }
+		  else
+		  {
+			  seev = see(ToMove, target, from);		
+			  see_values[i] = seev;
+		  }	  
+	  }
+	}
+      else if (best == -2)
+	{
+	  /* we have an iterative deepening move */
+	  if (from == pv[ply+1][ply+1].from 
+	      && target == pv[ply+1][ply+1].target 
+	      && promoted == pv[ply+1][ply+1].promoted)
+	    {
+	      move_ordering[i] = MAINVAR;
+	      
+	      if (captured != npiece)
+	  	{
+	  	/* No SEE for 'obviously not losing' captures */
+		  if (abs(material[captured])+15 >= abs(material[board[from]]))
+		  {
+		  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);
+		  }
+		  else
+		  {
+			  seev = see(ToMove, target, from);		
+			  see_values[i] = seev;
+		  }	  
+	  	}
+	    }
+	}
+      
+      /* heuristics other than pv (no need to use them on the pv move - it is
+	 already ordered highest) */
+      else 
+	{
+
+	  if (ply != 1 || i_depth < 2)
+	    {
+	      /* add the history heuristic bonus: */
+	      move_ordering[i] += history_h[from][target];
+
+	      /* add the killer move heuristic bonuses: */
+	      if (from == killer1[ply].from && target == killer1[ply].target
+		  && promoted == killer1[ply].promoted)
+		move_ordering[i] += KILLER1;
+	      else if (from == killer2[ply].from && target == killer2[ply].target
+		       && promoted == killer2[ply].promoted)
+		move_ordering[i] += KILLER2;
+	      else if (from == killer3[ply].from && target == killer3[ply].target
+		       && promoted == killer3[ply].promoted)
+		move_ordering[i] += KILLER3;
+	    }
+	  else
+	    {
+	      if ((nodes / 100) > MAINVAR)
+		{
+		  move_ordering[i] = rootnodecount[i] / 1000;
+		}
+	      else
+		{
+		  move_ordering[i] = rootnodecount[i] / 100;
+		}
+	    }
+	}
+    }
+  }
+
+  /* if not searching the pv: */
+  else {
+    for (i = 0; i < num_moves; i++) {
+      from = moves[i].from;
+      target = moves[i].target;
+      promoted = moves[i].promoted;
+      captured = moves[i].captured;
+      
+      /* give captures precedence in move ordering, and order captures by
+	 material gain */
+      if ((best != -1) && (i == best))
+	{
+	  move_ordering[i] = MAINVAR;
+
+	  /* make sure we have SEE data */
+	  if (captured != npiece)
+	    {
+	    	/* No SEE for 'obviously not losing' captures */
+		  if (abs(material[captured])+15 >= abs(material[board[from]]))
+		  {
+		  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);		  	
+		  }
+		  else
+		  {
+			  seev = see(ToMove, target, from);			  
+			  see_values[i] = seev;
+		  }	  
+	    }
+	  
+	}
+      else if (best == -2)
+	{
+	  /* we have an iterative deepening move */
+	  if (from == pv[ply+1][ply+1].from 
+	      && target == pv[ply+1][ply+1].target 
+	      && promoted == pv[ply+1][ply+1].promoted)
+	    {
+	      move_ordering[i] = MAINVAR;
+	     
+	      if (captured != npiece)
+	      {
+	      	/* No SEE for 'obviously not losing' captures */
+		  if (abs(material[captured])+15 >= abs(material[board[from]]))
+		  {
+		  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);		  
+		  }
+		  else
+		  {
+			  seev = see(ToMove, target, from);					  
+			  see_values[i] = seev;
+		  }	  
+	      }
+	    }
+	}
+      else if (captured != npiece)
+	{	  
+	  /* No SEE for 'obviously not losing' captures */
+	  if (abs(material[captured])+15 >= abs(material[board[from]]))
+	  {
+	  	see_values[i] = abs(material[captured]) - (abs(material[board[from]])>>4);
+	  	move_ordering[i] = CAPTURE + see_values[i];	  		  	
+	  }
+	  else
+	  {
+		  seev = see(ToMove, target, from);
+	
+		  if (seev >= -50)
+		    move_ordering[i] = CAPTURE + seev;
+		  else
+		    move_ordering[i] = seev;
+		  
+		  see_values[i] = seev;
+	  }	  	  	  
+	}      
+      else
+	move_ordering[i] = 0;
+      
+      /* heuristics other than pv */
+      
+      /* add the history heuristic bonus: */
+      move_ordering[i] += history_h[from][target];
+
+      /* add the killer move heuristic bonuses: */
+      if (from == killer1[ply].from && target == killer1[ply].target
+	  && promoted == killer1[ply].promoted)
+	move_ordering[i] += KILLER1;
+      else if (from == killer2[ply].from && target == killer2[ply].target
+	       && promoted == killer2[ply].promoted)
+	move_ordering[i] += KILLER2;
+      else if (from == killer3[ply].from && target == killer3[ply].target
+	       && promoted == killer3[ply].promoted)
+	move_ordering[i] += KILLER3;
+    }
+  }
+
+}

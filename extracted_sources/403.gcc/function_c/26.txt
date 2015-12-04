@@ -1,0 +1,26 @@
+static void
+schedule_fixup_var_refs (function, reg, type, promoted_mode, ht)
+     struct function *function;
+     rtx reg;
+     tree type;
+     enum machine_mode promoted_mode;
+     struct hash_table *ht;
+{
+  int unsigned_p = type ? TREE_UNSIGNED (type) : 0;
+
+  if (function != 0)
+    {
+      struct var_refs_queue *temp;
+
+      temp
+	= (struct var_refs_queue *) ggc_alloc (sizeof (struct var_refs_queue));
+      temp->modified = reg;
+      temp->promoted_mode = promoted_mode;
+      temp->unsignedp = unsigned_p;
+      temp->next = function->fixup_var_refs_queue;
+      function->fixup_var_refs_queue = temp;
+    }
+  else
+    /* Variable is local; fix it up now.  */
+    fixup_var_refs (reg, promoted_mode, unsigned_p, reg, ht);
+}

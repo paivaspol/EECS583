@@ -1,0 +1,106 @@
+static int
+find_induction_variable (init_node, cond_node, incr_node, loop_def)
+     tree init_node;
+     tree cond_node;
+     tree incr_node;
+     loop *loop_def;
+{
+  induction *ind_ptr;
+  enum tree_code incr_code;
+  tree incr;
+
+  if (! init_node || ! incr_node || ! cond_node)
+    return 0;
+  /* Allow for ',' operator in increment expression of FOR */
+
+  incr = incr_node;
+  while (TREE_CODE (incr) == COMPOUND_EXPR)
+    {
+      incr_code = TREE_CODE (TREE_OPERAND (incr, 0));
+      if (incr_code == PREDECREMENT_EXPR || incr_code == POSTDECREMENT_EXPR
+	  || incr_code == PREINCREMENT_EXPR || incr_code == POSTINCREMENT_EXPR)
+	{
+	  incr_node = TREE_OPERAND (incr, 0);
+	  break;
+	}
+      incr_code = TREE_CODE (TREE_OPERAND (incr, 1));
+      if (incr_code == PREDECREMENT_EXPR || incr_code == POSTDECREMENT_EXPR
+	  || incr_code == PREINCREMENT_EXPR || incr_code == POSTINCREMENT_EXPR)
+	{
+	  incr_node = TREE_OPERAND (incr, 1);
+	  break;
+	}
+      incr = TREE_OPERAND (incr, 1);
+    }
+
+  /* Allow index condition to be part of logical expression */
+  cond_node = TREE_VALUE (cond_node);
+  incr = cond_node;
+
+#define INDEX_LIMIT_CHECK(NODE) \
+      (TREE_CODE_CLASS (TREE_CODE (NODE)) == '<') \
+	&& (TREE_CODE (TREE_OPERAND (NODE, 0)) == VAR_DECL \
+	    && (IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (NODE, 0))) \
+		== IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (incr_node, 0))))) \
+      ? 1 : 0
+
+  while (TREE_CODE (incr) == TRUTH_ANDIF_EXPR
+	 || TREE_CODE (incr) == TRUTH_ORIF_EXPR)
+    {
+      if (INDEX_LIMIT_CHECK (TREE_OPERAND (incr, 0)))
+	  {
+	    cond_node = TREE_OPERAND (incr, 0);
+	    break;
+	  }
+      if (INDEX_LIMIT_CHECK (TREE_OPERAND (incr, 1)))
+	  {
+	    cond_node = TREE_OPERAND (incr, 1);
+	    break;
+	  }
+      incr = TREE_OPERAND (incr, 0);
+    }
+
+  incr_code = TREE_CODE (incr_node);
+  if ((incr_code == PREDECREMENT_EXPR || incr_code == POSTDECREMENT_EXPR
+       || incr_code == PREINCREMENT_EXPR || incr_code == POSTINCREMENT_EXPR)
+      && TREE_CODE_CLASS (TREE_CODE (cond_node)) == '<')
+    {
+      if (!INDEX_LIMIT_CHECK (cond_node))
+	return 0;
+
+      VARRAY_PUSH_GENERIC_PTR (induction_chain, xmalloc (sizeof (induction)));
+      ind_ptr = VARRAY_TOP (induction_chain, generic);
+      loop_def->ind = ind_ptr;
+      ind_ptr->variable = IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND
+							 (incr_node, 0)));
+      ind_ptr->increment = TREE_INT_CST_LOW (TREE_OPERAND (incr_node, 1));
+      if (TREE_CODE (incr_node) == PREDECREMENT_EXPR
+	  || TREE_CODE (incr_node) == POSTDECREMENT_EXPR)
+	ind_ptr->increment = -ind_ptr->increment;
+
+      ind_ptr->low_bound = get_low_bound (init_node, ind_ptr->variable);
+      if (TREE_CODE (TREE_OPERAND (cond_node, 0)) == VAR_DECL
+	  && IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (cond_node, 0))) 
+	     == ind_ptr->variable)
+	{
+	  if (TREE_CODE (TREE_OPERAND (cond_node, 1)) == INTEGER_CST)
+	    ind_ptr->high_bound =
+	      TREE_INT_CST_LOW (TREE_OPERAND (cond_node, 1));
+	  else
+	    ind_ptr->high_bound = ind_ptr->increment < 0 ? INT_MIN : INT_MAX;
+	}
+      else if (TREE_CODE (TREE_OPERAND (cond_node, 1)) == VAR_DECL
+	  && IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (cond_node, 1)))
+	       == ind_ptr->variable)
+	{
+	  if (TREE_CODE (TREE_OPERAND (cond_node, 0)) == INTEGER_CST)
+	    ind_ptr->high_bound =
+	      TREE_INT_CST_LOW (TREE_OPERAND (cond_node, 0));
+	  else
+	    ind_ptr->high_bound = ind_ptr->increment < 0 ? INT_MIN : INT_MAX;
+	}
+      ind_ptr->next = 0;
+      return 1;
+    }
+  return 0;
+}

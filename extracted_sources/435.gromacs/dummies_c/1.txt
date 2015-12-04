@@ -1,0 +1,44 @@
+static void move_dummy_xv(t_comm_dummies *dummycomm, rvec x[], rvec v[],t_commrec *cr)
+{
+  int i;
+  int sendsize,recvsize;
+
+  sendsize=sizeof(rvec)*dummycomm->nnextdum;
+  recvsize=sizeof(rvec)*dummycomm->nprevdum;
+
+  if(v!=NULL) {
+    sendsize=sendsize*2;
+    recvsize=recvsize*2;
+  }
+
+  /* Package nonlocal constructed dummies */
+  for(i=0;i<dummycomm->nnextdum;i++)
+    copy_rvec(x[dummycomm->idxnextdum[i]],nextbuf[i]);
+
+  if(v!=NULL)
+    for(i=0;i<dummycomm->nnextdum;i++)
+      copy_rvec(v[dummycomm->idxnextdum[i]],nextbuf[dummycomm->nnextdum+i]);
+  
+  /* send them off, and recieve from the right */
+  if(dummycomm->nnextdum>0)
+    gmx_tx(cr->right,nextbuf,sendsize);
+  
+  if(dummycomm->nprevdum>0)
+    gmx_rx(cr->left,prevbuf,recvsize);
+  
+  if(dummycomm->nnextdum>0)
+    gmx_tx_wait(cr->right);
+  
+  if(dummycomm->nprevdum>0)
+    gmx_rx_wait(cr->left);
+  
+  /* Put them where they belong */
+  for(i=0;i<dummycomm->nprevdum;i++)
+    copy_rvec(prevbuf[i],x[dummycomm->idxprevdum[i]]);
+
+  if(v!=NULL)
+    for(i=0;i<dummycomm->nprevdum;i++)
+      copy_rvec(prevbuf[dummycomm->nprevdum+i],v[dummycomm->idxprevdum[i]]);
+
+  /* All coordinates are in place on the respective home node now */
+}

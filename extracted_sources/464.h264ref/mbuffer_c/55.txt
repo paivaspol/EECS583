@@ -1,0 +1,122 @@
+void dpb_combine_field(FrameStore *fs)
+{
+  int i,j;
+  int dummylist0, dummylist1;
+
+  fs->frame = alloc_storable_picture(FRAME, fs->top_field->size_x, fs->top_field->size_y*2, fs->top_field->size_x_cr, fs->top_field->size_y_cr*2);
+
+  for (i=0; i<fs->top_field->size_y; i++)
+  {
+    memcpy(fs->frame->imgY[i*2],     fs->top_field->imgY[i]   , fs->top_field->size_x*sizeof(imgpel));     // top field
+    memcpy(fs->frame->imgY[i*2 + 1], fs->bottom_field->imgY[i], fs->bottom_field->size_x*sizeof(imgpel)); // bottom field
+  }
+
+  for (i=0; i<fs->top_field->size_y_cr; i++)
+  {
+    memcpy(fs->frame->imgUV[0][i*2],     fs->top_field->imgUV[0][i],    fs->top_field->size_x_cr*sizeof(imgpel));
+    memcpy(fs->frame->imgUV[0][i*2 + 1], fs->bottom_field->imgUV[0][i], fs->bottom_field->size_x_cr*sizeof(imgpel));
+    memcpy(fs->frame->imgUV[1][i*2],     fs->top_field->imgUV[1][i],    fs->top_field->size_x_cr*sizeof(imgpel));
+    memcpy(fs->frame->imgUV[1][i*2 + 1], fs->bottom_field->imgUV[1][i], fs->bottom_field->size_x_cr*sizeof(imgpel));
+  }
+  
+  UnifiedOneForthPix(fs->frame);
+  
+  fs->poc=fs->frame->poc =fs->frame->frame_poc = min (fs->top_field->poc, fs->bottom_field->poc);
+
+  fs->bottom_field->frame_poc=fs->top_field->frame_poc=
+  fs->bottom_field->top_poc=fs->frame->frame_poc=fs->frame->top_poc=fs->top_field->poc;
+  fs->top_field->bottom_poc=fs->bottom_field->poc;
+
+  fs->frame->bottom_poc=fs->bottom_field->poc;
+
+  fs->frame->used_for_reference = (fs->top_field->used_for_reference && fs->bottom_field->used_for_reference );
+  fs->frame->is_long_term = (fs->top_field->is_long_term && fs->bottom_field->is_long_term );
+
+  if (fs->frame->is_long_term) 
+    fs->frame->long_term_frame_idx = fs->long_term_frame_idx;
+
+  fs->frame->top_field    = fs->top_field;
+  fs->frame->bottom_field = fs->bottom_field;
+  
+  fs->frame->coded_frame = 0;
+
+  fs->frame->chroma_format_idc = fs->top_field->chroma_format_idc;
+  fs->frame->frame_cropping_flag = fs->top_field->frame_cropping_flag;
+  if (fs->frame->frame_cropping_flag)
+  {
+    fs->frame->frame_cropping_rect_top_offset = fs->top_field->frame_cropping_rect_top_offset;
+    fs->frame->frame_cropping_rect_bottom_offset = fs->top_field->frame_cropping_rect_bottom_offset;
+    fs->frame->frame_cropping_rect_left_offset = fs->top_field->frame_cropping_rect_left_offset;
+    fs->frame->frame_cropping_rect_right_offset = fs->top_field->frame_cropping_rect_right_offset;
+  }
+  
+  fs->top_field->frame = fs->bottom_field->frame = fs->frame;
+
+  //combine field for frame
+  for (i=0;i<(listXsize[LIST_1]+1)/2;i++)
+  {
+    fs->frame->ref_pic_num[LIST_1][i]=   min ((fs->top_field->ref_pic_num[LIST_1][2*i]/2)*2, (fs->bottom_field->ref_pic_num[LIST_1][2*i]/2)*2);
+  }
+
+  for (i=0;i<(listXsize[LIST_0]+1)/2;i++)
+  {
+    fs->frame->ref_pic_num[LIST_0][i]=   min ((fs->top_field->ref_pic_num[LIST_0][2*i]/2)*2, (fs->bottom_field->ref_pic_num[LIST_0][2*i]/2)*2);
+  }
+
+   //! Use inference flag to remap mvs/references 
+  
+    //! Generate Frame parameters from field information.
+  for (i=0 ; i<fs->top_field->size_x/4 ; i++)
+  {
+  	for (j=0 ; j<fs->top_field->size_y/4 ; j++)
+    {
+      fs->frame->field_frame[i][8*(j/4) + (j%4)]= fs->frame->field_frame[i][8*(j/4) + (j%4) + 4]=1;
+      
+        fs->frame->mv[LIST_0][i][8*(j/4) + (j%4)][0] = fs->top_field->mv[LIST_0][i][j][0];
+        fs->frame->mv[LIST_0][i][8*(j/4) + (j%4)][1] = fs->top_field->mv[LIST_0][i][j][1] ;
+        fs->frame->mv[LIST_1][i][8*(j/4) + (j%4)][0] = fs->top_field->mv[LIST_1][i][j][0];
+        fs->frame->mv[LIST_1][i][8*(j/4) + (j%4)][1] = fs->top_field->mv[LIST_1][i][j][1] ; 
+        
+        dummylist0=fs->frame->ref_idx[LIST_0][i][8*(j/4) + (j%4)]  = fs->top_field->ref_idx[LIST_0][i][j];
+        dummylist1=fs->frame->ref_idx[LIST_1][i][8*(j/4) + (j%4)]  = fs->top_field->ref_idx[LIST_1][i][j];
+         
+        //! association with id already known for fields.
+        fs->top_field->ref_id[LIST_0][i][j] = (dummylist0>=0)? fs->top_field->ref_pic_num[LIST_0][dummylist0] : 0;
+        fs->top_field->ref_id[LIST_1][i][j] = (dummylist1>=0)? fs->top_field->ref_pic_num[LIST_1][dummylist1] : 0;          
+        
+        //! need to make association with frames
+        fs->frame->ref_id[LIST_0][i][8*(j/4) + (j%4)] = (dummylist0>=0)? fs->top_field->frm_ref_pic_num[LIST_0][dummylist0] : 0;
+        fs->frame->ref_id[LIST_1][i][8*(j/4) + (j%4)] = (dummylist1>=0)? fs->top_field->frm_ref_pic_num[LIST_1][dummylist1] : 0;          
+        
+        fs->frame->mv[LIST_0][i][8*(j/4) + (j%4) + 4][0] = fs->bottom_field->mv[LIST_0][i][j][0];
+        fs->frame->mv[LIST_0][i][8*(j/4) + (j%4) + 4][1] = fs->bottom_field->mv[LIST_0][i][j][1] ;
+        fs->frame->mv[LIST_1][i][8*(j/4) + (j%4) + 4][0] = fs->bottom_field->mv[LIST_1][i][j][0];
+        fs->frame->mv[LIST_1][i][8*(j/4) + (j%4) + 4][1] = fs->bottom_field->mv[LIST_1][i][j][1] ; 
+
+        dummylist0=fs->frame->ref_idx[LIST_0][i][8*(j/4) + (j%4) + 4]  = fs->bottom_field->ref_idx[LIST_0][i][j];
+        dummylist1=fs->frame->ref_idx[LIST_1][i][8*(j/4) + (j%4) + 4]  = fs->bottom_field->ref_idx[LIST_1][i][j];
+
+        fs->bottom_field->ref_id[LIST_0][i][j] = (dummylist0>=0)? fs->bottom_field->ref_pic_num[LIST_0][dummylist0] : 0;
+        fs->bottom_field->ref_id[LIST_1][i][j] = (dummylist1>=0)? fs->bottom_field->ref_pic_num[LIST_1][dummylist1] : 0;          
+        
+        //! need to make association with frames
+      fs->frame->ref_id[LIST_0][i][8*(j/4) + (j%4) + 4] = (dummylist0>=0)? fs->bottom_field->frm_ref_pic_num[LIST_0][dummylist0] : -1;
+      fs->frame->ref_id[LIST_1][i][8*(j/4) + (j%4) + 4] = (dummylist1>=0)? fs->bottom_field->frm_ref_pic_num[LIST_1][dummylist1] : -1;          
+
+
+    }     
+  }  			
+
+  if (!active_sps->frame_mbs_only_flag || active_sps->direct_8x8_inference_flag)      
+  {        
+    for (i=0 ; i<fs->top_field->size_x/4 ; i++)
+    {
+      for (j=0 ; j<fs->top_field->size_y/4 ; j++)
+      {        
+        fs->top_field->field_frame[i][j]=1;
+        fs->bottom_field->field_frame[i][j]=1;
+      }
+    }    
+    
+  }
+}

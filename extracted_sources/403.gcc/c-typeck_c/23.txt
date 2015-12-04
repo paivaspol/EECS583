@@ -1,0 +1,85 @@
+void
+store_init_value (decl, init)
+     tree decl, init;
+{
+  tree value, type;
+
+  /* If variable's type was invalidly declared, just ignore it.  */
+
+  type = TREE_TYPE (decl);
+  if (TREE_CODE (type) == ERROR_MARK)
+    return;
+
+  /* Digest the specified initializer into an expression.  */
+
+  value = digest_init (type, init, TREE_STATIC (decl),
+		       TREE_STATIC (decl) || (pedantic && !flag_isoc99));
+
+  /* Store the expression if valid; else report error.  */
+
+#if 0
+  /* Note that this is the only place we can detect the error
+     in a case such as   struct foo bar = (struct foo) { x, y };
+     where there is one initial value which is a constructor expression.  */
+  if (value == error_mark_node)
+    ;
+  else if (TREE_STATIC (decl) && ! TREE_CONSTANT (value))
+    {
+      error ("initializer for static variable is not constant");
+      value = error_mark_node;
+    }
+  else if (TREE_STATIC (decl)
+	   && initializer_constant_valid_p (value, TREE_TYPE (value)) == 0)
+    {
+      error ("initializer for static variable uses complicated arithmetic");
+      value = error_mark_node;
+    }
+  else
+    {
+      if (pedantic && TREE_CODE (value) == CONSTRUCTOR)
+	{
+	  if (! TREE_CONSTANT (value))
+	    pedwarn ("aggregate initializer is not constant");
+	  else if (! TREE_STATIC (value))
+	    pedwarn ("aggregate initializer uses complicated arithmetic");
+	}
+    }
+#endif
+
+  if (warn_traditional && !in_system_header
+      && AGGREGATE_TYPE_P (TREE_TYPE (decl)) && ! TREE_STATIC (decl))
+    warning ("traditional C rejects automatic aggregate initialization");
+
+  DECL_INITIAL (decl) = value;
+
+  /* ANSI wants warnings about out-of-range constant initializers.  */
+  STRIP_TYPE_NOPS (value);
+  constant_expression_warning (value);
+
+  /* Check if we need to set array size from compound literal size.  */
+  if (TREE_CODE (type) == ARRAY_TYPE
+      && TYPE_DOMAIN (type) == 0
+      && value != error_mark_node)
+    {
+      tree inside_init = init;
+
+      if (TREE_CODE (init) == NON_LVALUE_EXPR)
+	inside_init = TREE_OPERAND (init, 0);
+      inside_init = fold (inside_init);
+
+      if (TREE_CODE (inside_init) == COMPOUND_LITERAL_EXPR)
+	{
+	  tree decl = COMPOUND_LITERAL_EXPR_DECL (inside_init);
+
+	  if (TYPE_DOMAIN (TREE_TYPE (decl)))
+	    {
+	      /* For int foo[] = (int [3]){1}; we need to set array size
+		 now since later on array initializer will be just the
+		 brace enclosed list of the compound literal.  */
+	      TYPE_DOMAIN (type) = TYPE_DOMAIN (TREE_TYPE (decl));
+	      layout_type (type);
+	      layout_decl (decl, 0);
+	    }
+	}
+    }
+}

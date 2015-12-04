@@ -1,0 +1,95 @@
+static void
+update_giv_derive (loop, p)
+     const struct loop *loop;
+     rtx p;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct iv_class *bl;
+  struct induction *biv, *giv;
+  rtx tem;
+  int dummy;
+
+  /* Search all IV classes, then all bivs, and finally all givs.
+
+     There are three cases we are concerned with.  First we have the situation
+     of a giv that is only updated conditionally.  In that case, it may not
+     derive any givs after a label is passed.
+
+     The second case is when a biv update occurs, or may occur, after the
+     definition of a giv.  For certain biv updates (see below) that are
+     known to occur between the giv definition and use, we can adjust the
+     giv definition.  For others, or when the biv update is conditional,
+     we must prevent the giv from deriving any other givs.  There are two
+     sub-cases within this case.
+
+     If this is a label, we are concerned with any biv update that is done
+     conditionally, since it may be done after the giv is defined followed by
+     a branch here (actually, we need to pass both a jump and a label, but
+     this extra tracking doesn't seem worth it).
+
+     If this is a jump, we are concerned about any biv update that may be
+     executed multiple times.  We are actually only concerned about
+     backward jumps, but it is probably not worth performing the test
+     on the jump again here.
+
+     If this is a biv update, we must adjust the giv status to show that a
+     subsequent biv update was performed.  If this adjustment cannot be done,
+     the giv cannot derive further givs.  */
+
+  for (bl = ivs->list; bl; bl = bl->next)
+    for (biv = bl->biv; biv; biv = biv->next_iv)
+      if (GET_CODE (p) == CODE_LABEL || GET_CODE (p) == JUMP_INSN
+	  || biv->insn == p)
+	{
+	  for (giv = bl->giv; giv; giv = giv->next_iv)
+	    {
+	      /* If cant_derive is already true, there is no point in
+		 checking all of these conditions again.  */
+	      if (giv->cant_derive)
+		continue;
+
+	      /* If this giv is conditionally set and we have passed a label,
+		 it cannot derive anything.  */
+	      if (GET_CODE (p) == CODE_LABEL && ! giv->always_computable)
+		giv->cant_derive = 1;
+
+	      /* Skip givs that have mult_val == 0, since
+		 they are really invariants.  Also skip those that are
+		 replaceable, since we know their lifetime doesn't contain
+		 any biv update.  */
+	      else if (giv->mult_val == const0_rtx || giv->replaceable)
+		continue;
+
+	      /* The only way we can allow this giv to derive another
+		 is if this is a biv increment and we can form the product
+		 of biv->add_val and giv->mult_val.  In this case, we will
+		 be able to compute a compensation.  */
+	      else if (biv->insn == p)
+		{
+		  rtx ext_val_dummy;
+
+		  tem = 0;
+		  if (biv->mult_val == const1_rtx)
+		    tem = simplify_giv_expr (loop,
+					     gen_rtx_MULT (giv->mode,
+							   biv->add_val,
+							   giv->mult_val),
+					     &ext_val_dummy, &dummy);
+
+		  if (tem && giv->derive_adjustment)
+		    tem = simplify_giv_expr
+		      (loop,
+		       gen_rtx_PLUS (giv->mode, tem, giv->derive_adjustment),
+		       &ext_val_dummy, &dummy);
+
+		  if (tem)
+		    giv->derive_adjustment = tem;
+		  else
+		    giv->cant_derive = 1;
+		}
+	      else if ((GET_CODE (p) == CODE_LABEL && ! biv->always_computable)
+		       || (GET_CODE (p) == JUMP_INSN && biv->maybe_multiple))
+		giv->cant_derive = 1;
+	    }
+	}
+}

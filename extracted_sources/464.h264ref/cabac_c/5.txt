@@ -1,0 +1,27 @@
+void writeFieldModeInfo_CABAC(SyntaxElement *se, EncodingEnvironmentPtr eep_dp)
+{
+  int a,b,act_ctx;
+  MotionInfoContexts *ctx         = (img->currentSlice)->mot_ctx;
+  Macroblock         *currMB      = &img->mb_data[img->current_mb_nr];
+  int                mb_field = se->value1;
+  
+  if (currMB->mbAvailA)
+    a = img->mb_data[currMB->mbAddrA].mb_field;
+  else
+    a = 0;
+  if (currMB->mbAvailB)
+    b = img->mb_data[currMB->mbAddrB].mb_field;
+  else
+    b=0;
+
+  act_ctx = a + b;
+
+  if (mb_field==0) // frame
+    biari_encode_symbol(eep_dp, 0,&ctx->mb_aff_contexts[act_ctx]);
+  else
+    biari_encode_symbol(eep_dp, 1,&ctx->mb_aff_contexts[act_ctx]);
+  
+  se->context = act_ctx;
+  
+  return;
+}

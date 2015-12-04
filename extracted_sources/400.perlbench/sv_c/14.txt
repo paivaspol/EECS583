@@ -1,0 +1,28 @@
+void
+Perl_sv_setnv(pTHX_ register SV *sv, NV num)
+{
+    SV_CHECK_THINKFIRST(sv);
+    switch (SvTYPE(sv)) {
+    case SVt_NULL:
+    case SVt_IV:
+	sv_upgrade(sv, SVt_NV);
+	break;
+    case SVt_RV:
+    case SVt_PV:
+    case SVt_PVIV:
+	sv_upgrade(sv, SVt_PVNV);
+	break;
+
+    case SVt_PVGV:
+    case SVt_PVAV:
+    case SVt_PVHV:
+    case SVt_PVCV:
+    case SVt_PVFM:
+    case SVt_PVIO:
+	Perl_croak(aTHX_ "Can't coerce %s to number in %s", sv_reftype(sv,0),
+		   OP_NAME(PL_op));
+    }
+    SvNVX(sv) = num;
+    (void)SvNOK_only(sv);			/* validate number */
+    SvTAINT(sv);
+}

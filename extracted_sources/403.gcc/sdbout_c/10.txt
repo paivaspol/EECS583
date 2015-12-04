@@ -1,0 +1,19 @@
+static void
+sdbout_dequeue_anonymous_types ()
+{
+  tree types, link;
+
+  while (anonymous_types)
+    {
+      types = nreverse (anonymous_types);
+      anonymous_types = NULL_TREE;
+
+      for (link = types; link; link = TREE_CHAIN (link))
+	{
+	  tree type = TREE_VALUE (link);
+
+	  if (type && ! TREE_ASM_WRITTEN (type))
+	    sdbout_one_type (type);
+	}
+    }
+}

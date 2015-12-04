@@ -1,0 +1,95 @@
+int
+ReadSeq(SQFILE *V, int format, char **ret_seq, SQINFO *sqinfo)
+{
+  int    gotuw;
+
+  squid_errno = SQERR_OK;
+
+  /* Here's the hack for sequential access of sequences from
+   * the multiple sequence alignment formats
+   */
+  if (IsAlignmentFormat(V->format))
+    {
+      if (V->msa->lastidx >= V->msa->nseq) 
+	{ /* out of data. try to read another alignment */				
+	  MSAFree(V->msa);
+	  if ((V->msa = MSAFileRead(V->afp)) == NULL)
+	    return 0;
+	  V->msa->lastidx = 0;
+	}
+				/* copy and dealign the appropriate aligned seq */
+      MakeDealignedString(V->msa->aseq[V->msa->lastidx], V->msa->alen, 
+			  V->msa->aseq[V->msa->lastidx], &(V->seq));
+      V->seqlen = strlen(V->seq);
+
+      /* Extract sqinfo stuff for this sequence from the msa.
+       * Tedious; code that should be cleaned.
+       */
+      sqinfo->flags = 0;
+      if (V->msa->sqname[V->msa->lastidx] != NULL) 
+	SetSeqinfoString(sqinfo, V->msa->sqname[V->msa->lastidx], SQINFO_NAME);
+      if (V->msa->sqacc != NULL && V->msa->sqacc[V->msa->lastidx] != NULL) 
+	SetSeqinfoString(sqinfo, V->msa->sqacc[V->msa->lastidx], SQINFO_ACC);
+      if (V->msa->sqdesc != NULL && V->msa->sqdesc[V->msa->lastidx] != NULL) 
+	SetSeqinfoString(sqinfo, V->msa->sqdesc[V->msa->lastidx], SQINFO_DESC);
+      if (V->msa->ss != NULL && V->msa->ss[V->msa->lastidx] != NULL) {
+	MakeDealignedString(V->msa->aseq[V->msa->lastidx], V->msa->alen, 
+			    V->msa->ss[V->msa->lastidx], &(sqinfo->ss));
+	sqinfo->flags |= SQINFO_SS;
+      }
+      if (V->msa->sa != NULL && V->msa->sa[V->msa->lastidx] != NULL) {
+	MakeDealignedString(V->msa->aseq[V->msa->lastidx], V->msa->alen, 
+			    V->msa->sa[V->msa->lastidx], &(sqinfo->sa));
+	sqinfo->flags |= SQINFO_SA;
+      }
+      V->msa->lastidx++;
+    } 
+  else {
+    if (feof(V->f)) return 0;
+
+    if (V->ssimode == -1) {	/* normal mode */
+      V->seq           = (char*) calloc (kStartLength+1, sizeof(char));
+      V->maxseq        = kStartLength;
+    } else {			/* index mode: discarding seq */
+      V->seq           = NULL;
+      V->maxseq        = 0;
+    }
+    V->seqlen        = 0;
+    V->sqinfo        = sqinfo;
+    V->sqinfo->flags = 0;
+
+    switch (V->format) {
+    case SQFILE_IG      : readIG(V);      break;
+    case SQFILE_STRIDER : readStrider(V); break;
+    case SQFILE_GENBANK : readGenBank(V); break;
+    case SQFILE_FASTA   : readPearson(V); break;
+    case SQFILE_EMBL    : readEMBL(V);    break;
+    case SQFILE_ZUKER   : readZuker(V);   break;
+    case SQFILE_PIR     : readPIR(V);     break;
+    case SQFILE_GCGDATA : readGCGdata(V); break; 
+	
+    case SQFILE_GCG :
+      do {			/* skip leading comments on GCG file */
+	gotuw = (strstr(V->buf,"..") != NULL);
+	if (gotuw) readUWGCG(V);
+	SeqfileGetLine(V);
+      } while (! feof(V->f));
+      break;
+
+    case SQFILE_IDRAW:   /* SRE: no attempt to read idraw postscript */
+    default:
+      squid_errno = SQERR_FORMAT;
+      free(V->seq);
+      return 0;
+    }
+    if (V->seq != NULL)		/* (it can be NULL in indexing mode) */
+      V->seq[V->seqlen] = 0; /* stick a string terminator on it */
+  }
+
+  /* Cleanup
+   */
+  sqinfo->len    = V->seqlen; 
+  sqinfo->flags |= SQINFO_LEN;
+  *ret_seq = V->seq;
+  if (squid_errno == SQERR_OK) return 1; else return 0;
+}  

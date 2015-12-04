@@ -1,0 +1,29 @@
+static inline int
+ggc_allocated_p (p)
+     const void *p;
+{
+  page_entry ***base;
+  size_t L1, L2;
+
+#if HOST_BITS_PER_PTR <= 32
+  base = &G.lookup[0];
+#else
+  page_table table = G.lookup;
+  size_t high_bits = (size_t) p & ~ (size_t) 0xffffffff;
+  while (1)
+    {
+      if (table == NULL)
+	return 0;
+      if (table->high_bits == high_bits)
+	break;
+      table = table->next;
+    }
+  base = &table->table[0];
+#endif
+
+  /* Extract the level 1 and 2 indices.  */
+  L1 = LOOKUP_L1 (p);
+  L2 = LOOKUP_L2 (p);
+
+  return base[L1] && base[L1][L2];
+}

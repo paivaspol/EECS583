@@ -1,0 +1,37 @@
+static bool add_bu(int *nBU,t_coupl_BU **tcBU,char *s,bool bObsUsed[])
+{
+  int       j,ati,atj,eo;
+  char      buf[256];
+  double    xia,xib,xic;
+  
+  if (sscanf(s,"%s%d%d%lf%lf%lf",buf,&ati,&atj,&xia,&xib,&xic) != 6) 
+    return TRUE;
+  if ((eo=Name2eo(buf)) == -1)
+    fatal_error(0,"Invalid observable for BU coupling: %s",buf);
+  
+  for(j=0; (j<*nBU); j++) {
+    if ((((*tcBU)[j].at_i == ati) && ((*tcBU)[j].at_j == atj)) &&
+	( fabs((*tcBU)[j].xi_a)>GMX_REAL_MIN || fabs((*tcBU)[j].xi_b)>GMX_REAL_MIN || fabs((*tcBU)[j].xi_c)>GMX_REAL_MIN ) &&
+	( fabs((*tcBU)[j].eObs - eo)<GMX_REAL_MIN))
+      break;
+  }
+  if (j == *nBU) {
+    ++(*nBU);
+    srenew((*tcBU),*nBU);
+  }
+  else
+    fprintf(stderr,"\n*** WARNING: overwriting entry for BU coupling '%s'\n",s);
+  
+  clear_bu(&((*tcBU)[j]));
+  if (((*tcBU)[j].eObs = eo) == -1) {
+    fatal_error(0,"Invalid observable for BU coupling: %s",buf);
+  }
+  (*tcBU)[j].at_i   = ati;
+  (*tcBU)[j].at_j   = atj;
+  (*tcBU)[j].xi_a   = xia;
+  (*tcBU)[j].xi_b   = xib;
+  (*tcBU)[j].xi_c   = xic;
+  bObsUsed[eo] = TRUE;
+
+  return FALSE;
+}

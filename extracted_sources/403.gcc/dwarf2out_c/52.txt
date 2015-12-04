@@ -1,0 +1,19 @@
+static tree
+decl_ultimate_origin (decl)
+     tree decl;
+{
+  /* output_inline_function sets DECL_ABSTRACT_ORIGIN for all the
+     nodes in the function to point to themselves; ignore that if
+     we're trying to output the abstract instance of this function.  */
+  if (DECL_ABSTRACT (decl) && DECL_ABSTRACT_ORIGIN (decl) == decl)
+    return NULL_TREE;
+
+#ifdef ENABLE_CHECKING
+  if (DECL_FROM_INLINE (DECL_ORIGIN (decl)))
+    /* Since the DECL_ABSTRACT_ORIGIN for a DECL is supposed to be the
+       most distant ancestor, this should never happen.  */
+    abort ();
+#endif
+
+  return DECL_ABSTRACT_ORIGIN (decl);
+}

@@ -1,0 +1,38 @@
+int Rook(int sq,int c) {
+  static const int square_d1[2] = {D1,D8};
+  int s = 0;
+  int mob;
+  int xside = c^1;
+
+  s += 500;
+
+  s += std_r_tropism[rookdistance[sq][king_locs[xside]]];
+
+  mob = rook_mobility(sq) << 1;
+  if (mob <= 2) mob -= 5;
+  s += mob;
+
+  /* horizontal blocked */
+  if (board[sq-1] != npiece && board[sq+1] != npiece) {
+      s -= 5;
+  }
+
+  /* Maximize center control */
+  if( wmat != ENDGAME_MAT || bmat != ENDGAME_MAT ) {
+    if( sq == square_d1[c] ) {
+      s += 10;
+       if ( piecet(square_d1[c]+1) == rook
+          && pieceside(square_d1[c]+1) == c)
+       {
+         s += 5;
+       }
+      }
+    if( sq == square_d1[c]+1 ) {
+      s += 10;
+    }
+  }
+  
+  if( c == BLACK )
+    s = -s;
+  return s;
+}

@@ -1,0 +1,23 @@
+static void
+record_initial (dest, set, data)
+     rtx dest;
+     rtx set;
+     void *data ATTRIBUTE_UNUSED;
+{
+  struct loop_ivs *ivs = (struct loop_ivs *) data;
+  struct iv_class *bl;
+
+  if (GET_CODE (dest) != REG
+      || REGNO (dest) >= ivs->n_regs
+      || REG_IV_TYPE (ivs, REGNO (dest)) != BASIC_INDUCT)
+    return;
+
+  bl = REG_IV_CLASS (ivs, REGNO (dest));
+
+  /* If this is the first set found, record it.  */
+  if (bl->init_insn == 0)
+    {
+      bl->init_insn = note_insn;
+      bl->init_set = set;
+    }
+}

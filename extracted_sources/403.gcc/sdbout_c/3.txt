@@ -1,0 +1,42 @@
+static void
+sdbout_record_type_name (type)
+     tree type;
+{
+  const char *name = 0;
+  int no_name;
+
+  if (KNOWN_TYPE_TAG (type))
+    return;
+
+  if (TYPE_NAME (type) != 0)
+    {
+      tree t = 0;
+
+      /* Find the IDENTIFIER_NODE for the type name.  */
+      if (TREE_CODE (TYPE_NAME (type)) == IDENTIFIER_NODE)
+	t = TYPE_NAME (type);
+      else if (TREE_CODE (TYPE_NAME (type)) == TYPE_DECL)
+	{
+	  t = DECL_NAME (TYPE_NAME (type));
+	  /* The DECL_NAME for templates includes "<>", which breaks
+	     most assemblers.  Use its assembler name instead, which
+	     has been mangled into being safe.  */
+	  if (t && template_name_p (t))
+	    t = DECL_ASSEMBLER_NAME (TYPE_NAME (type));
+	}
+
+      /* Now get the name as a string, or invent one.  */
+      if (t != NULL_TREE)
+	name = IDENTIFIER_POINTER (t);
+    }
+
+  no_name = (name == 0 || *name == 0);
+  if (no_name)
+    name = gen_fake_label ();
+
+  SET_KNOWN_TYPE_TAG (type, name);
+#ifdef SDB_ALLOW_FORWARD_REFERENCES
+  if (no_name)
+    sdbout_queue_anonymous_type (type);
+#endif
+}

@@ -1,0 +1,60 @@
+static void lo_fcv(int i0,int i1,int g0,
+		   real x[],real f[],tensor vir,
+		   int is[],real box[], bool bTriclinic)
+{
+  int      i,i3,gg,g3,tx,ty,tz;
+  real     xx,yy,zz;
+  real     dvxx=0,dvxy=0,dvxz=0,dvyx=0,dvyy=0,dvyz=0,dvzx=0,dvzy=0,dvzz=0;
+
+  if(bTriclinic) {
+      for(i=i0,gg=g0; (i<i1); i++,gg++) {
+	  i3=DIM*i;
+	  g3=DIM*gg;
+	  tx=is[g3+XX];
+	  ty=is[g3+YY];
+	  tz=is[g3+ZZ];
+	  
+	  xx=x[i3+XX]-tx*box[XXXX]-ty*box[YYXX]-tz*box[ZZXX];
+	  dvxx+=xx*f[i3+XX];
+	  dvxy+=xx*f[i3+YY];
+	  dvxz+=xx*f[i3+ZZ];
+	  
+	  yy=x[i3+YY]-ty*box[YYYY]-tz*box[ZZYY];
+	  dvyx+=yy*f[i3+XX];
+	  dvyy+=yy*f[i3+YY];
+	  dvyz+=yy*f[i3+ZZ];
+	  
+	  zz=x[i3+ZZ]-tz*box[ZZZZ]; 
+	  dvzx+=zz*f[i3+XX];
+	  dvzy+=zz*f[i3+YY];
+	  dvzz+=zz*f[i3+ZZ];
+      }
+  } else {
+      for(i=i0,gg=g0; (i<i1); i++,gg++) {
+	  i3=DIM*i;
+	  g3=DIM*gg;
+	  tx=is[g3+XX];
+	  ty=is[g3+YY];
+	  tz=is[g3+ZZ];
+	  
+	  xx=x[i3+XX]-tx*box[XXXX];
+	  dvxx+=xx*f[i3+XX];
+	  dvxy+=xx*f[i3+YY];
+	  dvxz+=xx*f[i3+ZZ];
+	  
+	  yy=x[i3+YY]-ty*box[YYYY];
+	  dvyx+=yy*f[i3+XX];
+	  dvyy+=yy*f[i3+YY];
+	  dvyz+=yy*f[i3+ZZ];
+	  
+	  zz=x[i3+ZZ]-tz*box[ZZZZ]; 
+	  dvzx+=zz*f[i3+XX];
+	  dvzy+=zz*f[i3+YY];
+	  dvzz+=zz*f[i3+ZZ];
+      }
+  }
+  
+  upd_vir(vir[XX],dvxx,dvxy,dvxz);
+  upd_vir(vir[YY],dvyx,dvyy,dvyz);
+  upd_vir(vir[ZZ],dvzx,dvzy,dvzz);
+}

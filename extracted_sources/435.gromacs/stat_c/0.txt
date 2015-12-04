@@ -1,0 +1,96 @@
+void global_stat(FILE *log,
+		 t_commrec *cr,real ener[],
+		 tensor fvir,tensor svir,
+		 t_grpopts *opts,t_groups *grps,
+		 t_nrnb *mynrnb,t_nrnb nrnb[],
+		 t_vcm *vcm,real *terminate)
+{
+  static t_bin *rb=NULL; 
+  static int   *itc;
+  int    iterminate,imu,ie,ifv,isv,icm,imass,ica;
+  int    icj=-1,ici=-1,icx=-1;
+  int    in[MAXNODES];
+  int    inn[egNR];
+  int    j;
+  
+  if (rb==NULL) {
+    rb=mk_bin();
+    snew(itc,opts->ngtc);
+  }
+  else
+    reset_bin(rb);
+  
+  /* Reset nrnb stuff */
+  for(j=0; (j<cr->nnodes); j++)
+    init_nrnb(&(nrnb[j]));
+  cp_nrnb(&(nrnb[cr->nodeid]),mynrnb);
+  
+  /* This routine copies all the data to be summed to one big buffer
+   * using the t_bin struct. 
+   */
+  where();
+  ie  = add_binr(log,rb,F_NRE,ener);
+  where();
+  ifv = add_binr(log,rb,DIM*DIM,fvir[0]);
+  where();
+  isv = add_binr(log,rb,DIM*DIM,svir[0]);
+  where();
+  for(j=0; (j<cr->nnodes); j++)
+    in[j] = add_bind(log,rb,eNRNB,nrnb[j].n);
+  where();
+  for(j=0; (j<opts->ngtc); j++) 
+    itc[j]=add_binr(log,rb,DIM*DIM,grps->tcstat[j].ekin[0]);
+  where();
+  for(j=0; (j<egNR); j++)
+    inn[j]=add_binr(log,rb,grps->estat.nn,grps->estat.ee[j]);
+  where();
+  icm   = add_binr(log,rb,DIM*vcm->nr,vcm->group_p[0]);
+  where();
+  imass = add_binr(log,rb,vcm->nr,vcm->group_mass);
+  where();
+  if (vcm->mode == ecmANGULAR) {
+    icj   = add_binr(log,rb,DIM*vcm->nr,vcm->group_j[0]);
+    where();
+    icx   = add_binr(log,rb,DIM*vcm->nr,vcm->group_x[0]);
+    where();
+    ici   = add_binr(log,rb,DIM*DIM*vcm->nr,vcm->group_i[0][0]);
+    where();
+  }
+  ica   = add_binr(log,rb,1,&(grps->cosacc.mvcos));
+  where();
+  iterminate = add_binr(log,rb,1,terminate);
+  
+  /* Global sum it all */
+  sum_bin(rb,cr);
+  where();
+  
+  /* Extract all the data locally */
+  extract_binr(rb,ie  ,F_NRE,ener);
+  extract_binr(rb,ifv ,DIM*DIM,fvir[0]);
+  extract_binr(rb,isv ,DIM*DIM,svir[0]);
+  for(j=0; (j<cr->nnodes); j++)
+    extract_bind(rb,in[j],eNRNB,nrnb[j].n);
+  for(j=0; (j<opts->ngtc); j++) 
+    extract_binr(rb,itc[j],DIM*DIM,grps->tcstat[j].ekin[0]);
+  for(j=0; (j<egNR); j++)
+    extract_binr(rb,inn[j],grps->estat.nn,grps->estat.ee[j]);
+  extract_binr(rb,icm,DIM*vcm->nr,vcm->group_p[0]);
+  where();
+  extract_binr(rb,imass,vcm->nr,vcm->group_mass);
+  where();
+  if (vcm->mode == ecmANGULAR) {
+    extract_binr(rb,icj,DIM*vcm->nr,vcm->group_j[0]);
+    where();
+    extract_binr(rb,icx,DIM*vcm->nr,vcm->group_x[0]);
+    where();
+    extract_binr(rb,ici,DIM*DIM*vcm->nr,vcm->group_i[0][0]);
+    where();
+  }
+  extract_binr(rb,ica,1,&(grps->cosacc.mvcos));
+  where();
+  extract_binr(rb,iterminate,1,terminate);
+  where();
+
+  /* Small hack for temp only */
+  ener[F_TEMP]/=cr->nnodes;
+}

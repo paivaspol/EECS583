@@ -1,0 +1,40 @@
+void FinalizePanScanRectInfo()
+{
+  SyntaxElement sym;
+  Bitstream *dest = seiPanScanRectInfo.data;
+
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  sym.value1 = seiPanScanRectInfo.pan_scan_rect_id;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.value1 = seiPanScanRectInfo.pan_scan_rect_left_offset;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.value1 = seiPanScanRectInfo.pan_scan_rect_right_offset;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.value1 = seiPanScanRectInfo.pan_scan_rect_top_offset;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.value1 = seiPanScanRectInfo.pan_scan_rect_bottom_offset;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+
+// #define PRINT_PAN_SCAN_RECT
+#ifdef PRINT_PAN_SCAN_RECT
+  printf("Pan Scan Id %d Left %d Right %d Top %d Bottom %d \n", seiPanScanRectInfo.pan_scan_rect_id, seiPanScanRectInfo.pan_scan_rect_left_offset, seiPanScanRectInfo.pan_scan_rect_right_offset, seiPanScanRectInfo.pan_scan_rect_top_offset, seiPanScanRectInfo.pan_scan_rect_bottom_offset);
+#endif
+#ifdef PRINT_PAN_SCAN_RECT
+#undef PRINT_PAN_SCAN_RECT
+#endif
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiPanScanRectInfo.payloadSize = dest->byte_pos;
+}

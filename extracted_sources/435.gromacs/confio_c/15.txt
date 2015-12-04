@@ -1,0 +1,47 @@
+void write_sto_conf(char *outfile, char *title,t_atoms *atoms, 
+		   rvec x[],rvec *v, matrix box)
+{
+  FILE       *out;
+  int        ftp;
+  t_trxframe fr;
+
+  ftp=fn2ftp(outfile);
+  switch (ftp) {
+  case efGRO:
+    write_conf(outfile, title, atoms, x, v, box);
+    break;
+  case efG96:
+    clear_trxframe(&fr,TRUE);
+    fr.bTitle = TRUE;
+    fr.title = title;
+    fr.natoms = atoms->nr;
+    fr.bAtoms = TRUE;
+    fr.atoms = atoms;
+    fr.bX = TRUE;
+    fr.x = x;
+    if (v) {
+      fr.bV = TRUE;
+      fr.v = v;
+    }
+    fr.bBox = TRUE;
+    copy_mat(box,fr.box);
+    out=ffopen(outfile,"w");
+    write_g96_conf(out, &fr, -1, NULL);
+    fclose(out);
+    break;
+  case efPDB:
+  case efBRK:
+  case efENT:
+    out=ffopen(outfile,"w");
+    write_pdbfile(out, title, atoms, x, box, 0, 0);
+    fclose(out);
+    break;
+  case efTPR:
+  case efTPB:
+  case efTPA:
+    fatal_error(0,"Sorry, can not write a topology to %s",outfile);
+    break;
+  default:
+    fatal_error(0,"Not supported in write_sto_conf: %s",outfile);
+  }
+}

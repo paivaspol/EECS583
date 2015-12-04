@@ -1,0 +1,71 @@
+void
+debug_dependencies ()
+{
+  int bb;
+
+  fprintf (sched_dump, ";;   --------------- forward dependences: ------------ \n");
+  for (bb = 0; bb < current_nr_blocks; bb++)
+    {
+      if (1)
+	{
+	  rtx head, tail;
+	  rtx next_tail;
+	  rtx insn;
+
+	  get_block_head_tail (BB_TO_BLOCK (bb), &head, &tail);
+	  next_tail = NEXT_INSN (tail);
+	  fprintf (sched_dump, "\n;;   --- Region Dependences --- b %d bb %d \n",
+		   BB_TO_BLOCK (bb), bb);
+
+	  fprintf (sched_dump, ";;   %7s%6s%6s%6s%6s%6s%11s%6s\n",
+	  "insn", "code", "bb", "dep", "prio", "cost", "blockage", "units");
+	  fprintf (sched_dump, ";;   %7s%6s%6s%6s%6s%6s%11s%6s\n",
+	  "----", "----", "--", "---", "----", "----", "--------", "-----");
+	  for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
+	    {
+	      rtx link;
+	      int unit, range;
+
+	      if (! INSN_P (insn))
+		{
+		  int n;
+		  fprintf (sched_dump, ";;   %6d ", INSN_UID (insn));
+		  if (GET_CODE (insn) == NOTE)
+		    {
+		      n = NOTE_LINE_NUMBER (insn);
+		      if (n < 0)
+			fprintf (sched_dump, "%s\n", GET_NOTE_INSN_NAME (n));
+		      else
+			fprintf (sched_dump, "line %d, file %s\n", n,
+				 NOTE_SOURCE_FILE (insn));
+		    }
+		  else
+		    fprintf (sched_dump, " {%s}\n", GET_RTX_NAME (GET_CODE (insn)));
+		  continue;
+		}
+
+	      unit = insn_unit (insn);
+	      range = (unit < 0
+		 || function_units[unit].blockage_range_function == 0) ? 0 :
+		function_units[unit].blockage_range_function (insn);
+	      fprintf (sched_dump,
+		       ";;   %s%5d%6d%6d%6d%6d%6d  %3d -%3d   ",
+		       (SCHED_GROUP_P (insn) ? "+" : " "),
+		       INSN_UID (insn),
+		       INSN_CODE (insn),
+		       INSN_BB (insn),
+		       INSN_DEP_COUNT (insn),
+		       INSN_PRIORITY (insn),
+		       insn_cost (insn, 0, 0),
+		       (int) MIN_BLOCKAGE_COST (range),
+		       (int) MAX_BLOCKAGE_COST (range));
+	      insn_print_units (insn);
+	      fprintf (sched_dump, "\t: ");
+	      for (link = INSN_DEPEND (insn); link; link = XEXP (link, 1))
+		fprintf (sched_dump, "%d ", INSN_UID (XEXP (link, 0)));
+	      fprintf (sched_dump, "\n");
+	    }
+	}
+    }
+  fprintf (sched_dump, "\n");
+}

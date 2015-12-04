@@ -1,0 +1,40 @@
+void biari_encode_symbol_final(EncodingEnvironmentPtr eep, signed short symbol)
+{
+  register unsigned int range = Erange-2;
+  register unsigned int low = Elow;
+  
+#if TRACE
+//  extern int cabac_encoding;
+//  if (cabac_encoding)
+//    fprintf(p_trace, "%d  0x%04x\n", binCount++, Erange);
+#endif
+  
+  if (symbol) {
+    low += range;
+    range = 2;
+  }
+  
+  while (range < QUARTER)
+  {
+    if (low >= HALF)
+    {
+      put_one_bit_plus_outstanding(1);
+      low -= HALF;
+    }
+    else 
+      if (low < QUARTER)
+      {
+        put_one_bit_plus_outstanding(0);
+      }
+      else
+      {
+        Ebits_to_follow++;
+        low -= QUARTER;
+      }
+      low <<= 1;
+      range <<= 1;
+  }
+  Erange = range;
+  Elow = low;
+  eep->C++;
+}

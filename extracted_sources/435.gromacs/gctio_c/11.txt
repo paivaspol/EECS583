@@ -1,0 +1,42 @@
+static bool add_ip(int *nIP,t_coupl_iparams **tIP,char *s,int ftype,bool bObsUsed[])
+{
+  int    i,eo,type;
+  char   buf[256];
+  double kb,b0;
+  
+  switch (ftype) {
+  case F_BONDS:
+    /* Pick out the type */
+    if (sscanf(s,"%s%d",buf,&type) != 2)
+      return TRUE;
+    if ((eo=Name2eo(buf)) == -1)
+      fatal_error(0,"Invalid observable for IP coupling: %s",buf);
+      
+    /* Check whether this entry is there already */
+    for(i=0; (i<*nIP); i++) {
+      if ((*tIP)[i].type == type)
+	break;
+    }
+    if (i < *nIP) {
+      fprintf(stderr,"*** WARNING: overwriting entry for type %d\n",type);
+    }
+    else {
+      i=*nIP;
+      srenew((*tIP),i+1);
+      (*nIP)++;
+    }
+    if (sscanf(s,"%s%d%lf%lf",buf,&type,&kb,&b0) != 4)
+      return TRUE;
+    (*tIP)[i].type=type;
+    (*tIP)[i].eObs=eo;
+    (*tIP)[i].xi.harmonic.krA = kb;
+    (*tIP)[i].xi.harmonic.rA  = b0;
+    bObsUsed[eo] = TRUE;
+    break;
+  default:
+    fprintf(stderr,"ftype %s not supported (yet)\n",
+	    interaction_function[ftype].longname);
+    return TRUE;
+  }
+  return FALSE;
+}

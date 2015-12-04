@@ -1,0 +1,27 @@
+static int
+contains_muldiv (x)
+     rtx x;
+{
+  switch (GET_CODE (x))
+    {
+    case MOD:  case DIV:  case UMOD:  case UDIV:
+      return 1;
+
+    case MULT:
+      return ! (GET_CODE (XEXP (x, 1)) == CONST_INT
+		&& exact_log2 (INTVAL (XEXP (x, 1))) >= 0);
+    default:
+      switch (GET_RTX_CLASS (GET_CODE (x)))
+	{
+	case 'c':  case '<':  case '2':
+	  return contains_muldiv (XEXP (x, 0))
+	    || contains_muldiv (XEXP (x, 1));
+
+	case '1':
+	  return contains_muldiv (XEXP (x, 0));
+
+	default:
+	  return 0;
+	}
+    }
+}

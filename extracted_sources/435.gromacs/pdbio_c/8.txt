@@ -1,0 +1,100 @@
+static int read_atom(t_symtab *symtab,char line[],int type,int natom,
+		     t_atoms *atoms,rvec x[],bool bChange)
+{
+  t_atom *atomn;
+  int  j,k;
+  char nc='\0';
+  char anr[12],anm[12],altloc,resnm[12],chain[12],resnr[12];
+  char xc[12],yc[12],zc[12],occup[12],bfac[12],pdbresnr[12];
+  static char oldresnm[12],oldresnr[12];
+  int  newres;
+
+  if (natom>=atoms->nr)
+    fatal_error(0,"\nFound more atoms (%d) in pdb file than expected (%d)",
+		natom+1,atoms->nr);
+
+  /* Skip over type */  
+  j=6;
+  for(k=0; (k<5); k++,j++) anr[k]=line[j];
+  anr[k]=nc;
+  trim(anr);
+  j++;
+  for(k=0; (k<4); k++,j++) anm[k]=line[j];
+  anm[k]=nc;
+  trim(anm);
+  altloc=line[j];
+  j++;
+  for(k=0; (k<4); k++,j++) 
+    resnm[k]=line[j];
+  resnm[k]=nc;
+  trim(resnm);
+
+  for(k=0; (k<1); k++,j++)
+    chain[k]=line[j];
+  chain[k]=nc;
+  
+  for(k=0; (k<4); k++,j++) {
+    resnr[k]=line[j];
+    pdbresnr[k]=line[j];
+  }
+  resnr[k]=nc;
+  trim(resnr);
+  pdbresnr[k]=line[j];
+  pdbresnr[k+1]=nc;
+  trim(pdbresnr);
+  j+=4;
+
+  /* X,Y,Z Coordinate */
+  for(k=0; (k<8); k++,j++) xc[k]=line[j];
+  xc[k]=nc;
+  for(k=0; (k<8); k++,j++) yc[k]=line[j];
+  yc[k]=nc;
+  for(k=0; (k<8); k++,j++) zc[k]=line[j];
+  zc[k]=nc;
+  
+  /* Weight */
+  for(k=0; (k<6); k++,j++) occup[k]=line[j];
+  occup[k]=nc;
+  
+  /* B-Factor */
+  for(k=0; (k<7); k++,j++) bfac[k]=line[j];
+  bfac[k]=nc;
+
+  if (atoms->atom) {
+    atomn=&(atoms->atom[natom]);
+    if ((natom==0) || (strcmp(oldresnr,pdbresnr)!=0) || 
+	(strcmp(oldresnm,resnm)!=0)) {
+      strcpy(oldresnr,pdbresnr);
+      strcpy(oldresnm,resnm);
+      if (natom==0)
+	newres=0;
+      else
+	newres=atoms->atom[natom-1].resnr+1;
+      atoms->nres=newres+1;
+      atoms->resname[newres]=put_symtab(symtab,resnm);
+    }
+    else
+      newres=atoms->atom[natom-1].resnr;
+    if (bChange)
+      gromacs_name(anm); 
+    atoms->atomname[natom]=put_symtab(symtab,anm);
+    atomn->chain=chain[0];
+    atomn->resnr=newres;
+    atomn->m = 0.0;
+    atomn->q = 0.0;
+  }
+  x[natom][XX]=atof(xc)*0.1;
+  x[natom][YY]=atof(yc)*0.1;
+  x[natom][ZZ]=atof(zc)*0.1;
+  if (atoms->pdbinfo) {
+    atoms->pdbinfo[natom].type=type;
+    atoms->pdbinfo[natom].atomnr=atoi(anr);
+    atoms->pdbinfo[natom].altloc=altloc;
+    strcpy(atoms->pdbinfo[natom].pdbresnr,pdbresnr);
+    atoms->pdbinfo[natom].bfac=atof(bfac);
+    atoms->pdbinfo[natom].occup=atof(occup);
+  }
+  natom++;
+  
+  return natom;
+}

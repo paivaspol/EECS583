@@ -1,0 +1,18 @@
+static int
+df_modified_p (df, blocks)
+     struct df *df;
+     bitmap blocks;
+{
+  unsigned int j;
+  int update = 0;
+
+  for (j = 0; j < df->n_bbs; j++)
+    if (bitmap_bit_p (df->bbs_modified, j)
+	&& (! blocks || (blocks == (bitmap) -1) || bitmap_bit_p (blocks, j)))
+    {
+      update = 1;
+      break;
+    }
+
+  return update;
+}

@@ -1,0 +1,18 @@
+static void
+init_reg_map (map, maxregnum)
+     struct inline_remap *map;
+     int maxregnum;
+{
+  int i;
+
+  for (i = maxregnum - 1; i > LAST_VIRTUAL_REGISTER; i--)
+    map->reg_map[i] = regno_reg_rtx[i];
+  /* Just clear the rest of the entries.  */
+  for (i = LAST_VIRTUAL_REGISTER; i >= 0; i--)
+    map->reg_map[i] = 0;
+
+  map->reg_map[VIRTUAL_STACK_VARS_REGNUM]
+    = regno_reg_rtx[VIRTUAL_STACK_VARS_REGNUM];
+  map->reg_map[VIRTUAL_INCOMING_ARGS_REGNUM]
+    = regno_reg_rtx[VIRTUAL_INCOMING_ARGS_REGNUM];
+}

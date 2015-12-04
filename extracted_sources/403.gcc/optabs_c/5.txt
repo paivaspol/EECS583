@@ -1,0 +1,40 @@
+void
+emit_unop_insn (icode, target, op0, code)
+     int icode;
+     rtx target;
+     rtx op0;
+     enum rtx_code code;
+{
+  rtx temp;
+  enum machine_mode mode0 = insn_data[icode].operand[1].mode;
+  rtx pat;
+
+  temp = target = protect_from_queue (target, 1);
+
+  op0 = protect_from_queue (op0, 0);
+
+  /* Sign and zero extension from memory is often done specially on
+     RISC machines, so forcing into a register here can pessimize
+     code.  */
+  if (flag_force_mem && code != SIGN_EXTEND && code != ZERO_EXTEND)
+    op0 = force_not_mem (op0);
+
+  /* Now, if insn does not accept our operands, put them into pseudos.  */
+
+  if (! (*insn_data[icode].operand[1].predicate) (op0, mode0))
+    op0 = copy_to_mode_reg (mode0, op0);
+
+  if (! (*insn_data[icode].operand[0].predicate) (temp, GET_MODE (temp))
+      || (flag_force_mem && GET_CODE (temp) == MEM))
+    temp = gen_reg_rtx (GET_MODE (temp));
+
+  pat = GEN_FCN (icode) (temp, op0);
+
+  if (GET_CODE (pat) == SEQUENCE && code != UNKNOWN)
+    add_equal_note (pat, temp, code, op0, NULL_RTX);
+  
+  emit_insn (pat);
+
+  if (temp != target)
+    emit_move_insn (target, temp);
+}

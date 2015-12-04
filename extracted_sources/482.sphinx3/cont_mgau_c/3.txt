@@ -1,0 +1,18 @@
+static void mgau_var_floor (mgau_model_t *g, float64 floor)
+{
+  int32 m, c, i, n;
+  
+  E_INFO("Applying variance floor\n");
+  n = 0;
+  for (m = 0; m < mgau_n_mgau(g); m++) {
+    for (c = 0; c < mgau_n_comp(g,m); c++) {
+      for (i = 0; i < mgau_veclen(g); i++) {
+	if (g->mgau[m].var[c][i] < floor) {
+	  g->mgau[m].var[c][i] = (float32) floor;
+	  n++;
+	}
+      }
+    }
+  }
+  E_INFO("%d variance values floored\n", n);
+}

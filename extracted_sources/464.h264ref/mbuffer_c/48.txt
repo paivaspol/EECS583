@@ -1,0 +1,45 @@
+static void remove_frame_from_dpb(int pos)
+{
+  FrameStore* fs = dpb.fs[pos];
+  FrameStore* tmp;
+  unsigned i;
+  
+//  printf ("remove frame with frame_num #%d\n", fs->frame_num);
+  switch (fs->is_used)
+  {
+  case 3:
+    free_storable_picture(fs->frame);
+    free_storable_picture(fs->top_field);
+    free_storable_picture(fs->bottom_field);
+    fs->frame=NULL;
+    fs->top_field=NULL;
+    fs->bottom_field=NULL;
+    break;
+  case 2:
+    free_storable_picture(fs->bottom_field);
+    fs->bottom_field=NULL;
+    break;
+  case 1:
+    free_storable_picture(fs->top_field);
+    fs->top_field=NULL;
+    break;
+  case 0:
+    break;
+  default:
+    error("invalid frame store type",500);
+  }
+  fs->is_used = 0;
+  fs->is_long_term = 0;
+  fs->is_reference = 0;
+  fs->is_orig_reference = 0;
+
+  // move empty framestore to end of buffer
+  tmp = dpb.fs[pos];
+
+  for (i=pos; i<dpb.used_size-1;i++)
+  {
+    dpb.fs[i] = dpb.fs[i+1];
+  }
+  dpb.fs[dpb.used_size-1] = tmp;
+  dpb.used_size--;
+}

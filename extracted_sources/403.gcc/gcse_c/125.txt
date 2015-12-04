@@ -1,0 +1,26 @@
+static void
+find_moveable_store (insn)
+     rtx insn;
+{
+  struct ls_expr * ptr;
+  rtx dest = PATTERN (insn);
+
+  if (GET_CODE (dest) != SET
+      || GET_CODE (SET_SRC (dest)) == ASM_OPERANDS)
+    return;
+
+  dest = SET_DEST (dest);
+  
+  if (GET_CODE (dest) != MEM || MEM_VOLATILE_P (dest)
+      || GET_MODE (dest) == BLKmode)
+    return;
+
+  if (GET_CODE (XEXP (dest, 0)) != SYMBOL_REF)
+      return;
+
+  if (rtx_varies_p (XEXP (dest, 0), 0))
+    return;
+
+  ptr = ldst_entry (dest);
+  ptr->stores = alloc_INSN_LIST (insn, ptr->stores);
+}

@@ -1,0 +1,26 @@
+void
+Perl_new_numeric(pTHX_ char *newnum)
+{
+#ifdef USE_LOCALE_NUMERIC
+
+    if (! newnum) {
+	if (PL_numeric_name) {
+	    Safefree(PL_numeric_name);
+	    PL_numeric_name = NULL;
+	}
+	PL_numeric_standard = TRUE;
+	PL_numeric_local = TRUE;
+	return;
+    }
+
+    if (! PL_numeric_name || strNE(PL_numeric_name, newnum)) {
+	Safefree(PL_numeric_name);
+	PL_numeric_name = stdize_locale(savepv(newnum));
+	PL_numeric_standard = ((*newnum == 'C' && newnum[1] == '\0')
+			       || strEQ(newnum, "POSIX"));
+	PL_numeric_local = TRUE;
+	set_numeric_radix();
+    }
+
+#endif /* USE_LOCALE_NUMERIC */
+}

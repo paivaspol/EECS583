@@ -1,0 +1,74 @@
+static rtx
+optimize_skip (insn)
+     rtx insn;
+{
+  rtx trial = next_nonnote_insn (insn);
+  rtx next_trial = next_active_insn (trial);
+  rtx delay_list = 0;
+  rtx target_label;
+  int flags;
+
+  flags = get_jump_flags (insn, JUMP_LABEL (insn));
+
+  if (trial == 0
+      || GET_CODE (trial) != INSN
+      || GET_CODE (PATTERN (trial)) == SEQUENCE
+      || recog_memoized (trial) < 0
+      || (! eligible_for_annul_false (insn, 0, trial, flags)
+	  && ! eligible_for_annul_true (insn, 0, trial, flags))
+      || can_throw_internal (trial))
+    return 0;
+
+  /* There are two cases where we are just executing one insn (we assume
+     here that a branch requires only one insn; this should be generalized
+     at some point):  Where the branch goes around a single insn or where
+     we have one insn followed by a branch to the same label we branch to.
+     In both of these cases, inverting the jump and annulling the delay
+     slot give the same effect in fewer insns.  */
+  if ((next_trial == next_active_insn (JUMP_LABEL (insn))
+       && ! (next_trial == 0 && current_function_epilogue_delay_list != 0))
+      || (next_trial != 0
+	  && GET_CODE (next_trial) == JUMP_INSN
+	  && JUMP_LABEL (insn) == JUMP_LABEL (next_trial)
+	  && (simplejump_p (next_trial)
+	      || GET_CODE (PATTERN (next_trial)) == RETURN)))
+    {
+      if (eligible_for_annul_false (insn, 0, trial, flags))
+	{
+	  if (invert_jump (insn, JUMP_LABEL (insn), 1))
+	    INSN_FROM_TARGET_P (trial) = 1;
+	  else if (! eligible_for_annul_true (insn, 0, trial, flags))
+	    return 0;
+	}
+
+      delay_list = add_to_delay_list (trial, NULL_RTX);
+      next_trial = next_active_insn (trial);
+      update_block (trial, trial);
+      delete_related_insns (trial);
+
+      /* Also, if we are targeting an unconditional
+	 branch, thread our jump to the target of that branch.  Don't
+	 change this into a RETURN here, because it may not accept what
+	 we have in the delay slot.  We'll fix this up later.  */
+      if (next_trial && GET_CODE (next_trial) == JUMP_INSN
+	  && (simplejump_p (next_trial)
+	      || GET_CODE (PATTERN (next_trial)) == RETURN))
+	{
+	  target_label = JUMP_LABEL (next_trial);
+	  if (target_label == 0)
+	    target_label = find_end_label ();
+
+	  /* Recompute the flags based on TARGET_LABEL since threading
+	     the jump to TARGET_LABEL may change the direction of the
+	     jump (which may change the circumstances in which the
+	     delay slot is nullified).  */
+	  flags = get_jump_flags (insn, target_label);
+	  if (eligible_for_annul_true (insn, 0, trial, flags))
+	    reorg_redirect_jump (insn, target_label);
+	}
+
+      INSN_ANNULLED_BRANCH_P (insn) = 1;
+    }
+
+  return delay_list;
+}

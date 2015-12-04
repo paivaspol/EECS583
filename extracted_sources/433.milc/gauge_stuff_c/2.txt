@@ -1,0 +1,114 @@
+void imp_gauge_force( double eps, field_offset mom_off ){
+    register int i,dir;
+    register site *st;
+    su3_matrix tmat1,tmat2;
+    register double eb3;
+    register anti_hermitmat* momentum;
+#ifdef GFTIME
+    double dtime;
+#endif
+
+    int j,k;
+    int dirs[MAX_LENGTH],length;
+    int path_dir[MAX_LENGTH],path_length;
+
+    int ln,iloop;
+    double action,act2,new_term;
+
+    int ncount;
+
+#ifdef GFTIME
+dtime=-dclock();
+#endif
+    eb3 = eps*beta/3.0;
+
+    /* Loop over directions, update mom[dir] */
+    for(dir=XUP; dir<=TUP; dir++){
+
+	FORALLSITES(i,st)for(j=0;j<3;j++)for(k=0;k<3;k++){
+			st->staple.e[j][k]=cmplx(0.0,0.0);
+	} END_LOOP
+
+	ncount=0;
+	for(iloop=0;iloop<NLOOP;iloop++){
+	    length=loop_length[iloop];
+	    for(ln=0;ln<loop_num[iloop];ln++){
+/**printf("UPD:  "); printpath( loop_table[iloop][ln], length );**/
+		/* set up dirs.  we are looking at loop starting in "XUP"
+		   direction, rotate so it starts in "dir" direction. */
+		for(k=0;k<length;k++){
+                    if( GOES_FORWARDS(loop_table[iloop][ln][k]) ){
+                	dirs[k]=(dir+loop_table[iloop][ln][k] )% 4;
+		    }
+            	    else {
+                        dirs[k]=OPP_DIR(
+			    (dir+OPP_DIR(loop_table[iloop][ln][k]))%4 );
+		    }
+		}
+
+		path_length= length-1;  /* generalized "staple" */
+
+		/* check for links in direction of momentum to be
+		   updated, each such link gives a contribution. Note
+		   the direction of the path - opposite the link. */
+		for(k=0;k<length;k++)if( dirs[k]==dir||dirs[k]==OPP_DIR(dir)) {
+		    if( GOES_FORWARDS(dirs[k]) ) for(j=0;j<path_length;j++) {
+			path_dir[j] = dirs[(k+j+1)%length];
+		    }
+		    if( GOES_BACKWARDS(dirs[k]) ) for(j=0;j<path_length;j++) {
+			path_dir[path_length-1-j] =
+			    OPP_DIR(dirs[(k+j+1)%length]);
+		    }
+/**if(dir==XUP)printf("X_UPDATE PATH: "); printpath( path_dir, path_length );**/
+		    path_product(path_dir,path_length);
+
+		    /* We took the path in the other direction from our
+			old convention in order to get it to end up
+			"at our site", so now take adjoint */
+		    /* then compute "single_action" contribution to
+			staple */
+		    FORALLSITES(i,st){
+			su3_adjoint( &(st->tempmat1), &tmat1 );
+			/* first we compute the fundamental term */
+			new_term = loop_coeff[iloop][0];
+
+			/* now we add in the higher representations */
+			if(NREPS > 1){
+node0_printf("WARNING: THIS CODE IS NOT TESTED\n"); exit(0);
+			    act2=1.0;
+			    action = 3.0 - realtrace_su3(&(st->link[dir]),
+				&tmat1 ); 
+
+			    for(j=1;j<NREPS;j++){
+				act2 *= action;
+				new_term +=
+				    loop_coeff[iloop][j]*act2*(double)(j+1);
+			    }
+			}  /* end if NREPS > 1 */
+
+			scalar_mult_add_su3_matrix( &(st->staple), &tmat1,
+				new_term, &(st->staple) );
+
+		    } END_LOOP
+
+		    ncount++;
+
+		} /* k (location in path) */
+	    } /* ln */
+	} /* iloop */
+
+	/* Now multiply the staple sum by the link, then update momentum */
+	FORALLSITES(i,st){
+	    mult_su3_na( &(st->link[dir]), &(st->staple), &tmat1 );
+	    momentum = (anti_hermitmat *)F_PT(st,mom_off);
+	    uncompress_anti_hermitian( &momentum[dir], &tmat2 );
+	    scalar_mult_sub_su3_matrix( &tmat2, &tmat1,
+		eb3, &(st->staple) );
+	    make_anti_hermitian( &(st->staple), &momentum[dir] );
+	} END_LOOP
+    } /* dir loop */
+#ifdef GFTIME
+dtime+=dclock();
+node0_printf("GFTIME:  %e\n",dtime);
+#endif
+} /* imp_gauge_force.c */

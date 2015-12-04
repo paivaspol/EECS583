@@ -1,0 +1,184 @@
+int
+SSIWriteIndex(char *file, SSIINDEX *g)
+{
+  FILE      *fp;
+  int        status;
+  int        i;
+  sqd_uint32 header_flags, file_flags;
+  sqd_uint32 frecsize, precsize, srecsize;
+  sqd_uint64 foffset, poffset, soffset;
+  char       *s, *s2;
+
+  if ((fp = fopen(file,"wb")) == NULL) return SSI_ERR_NOFILE;
+  status = 0;
+
+  /* How big is the index? If it's going to be > 2GB, we need
+   * to flip to 64-bit index mode. 2047 (instead of 2048) gives us
+   * some slop room.
+   * die'ing here is pretty brutal - if we flip to 64-bit index
+   * mode, we hve 100's of millions of keys, so we've processed
+   * a long time before reaching this point. Ah well.
+   */
+  if (current_index_size(g) >= 2047) {
+    g->imode = SSI_OFFSET_I64;
+#ifndef HAS_64BIT_FILE_OFFSETS
+    Die("\
+Can't switch to 64-bit SSI index mode on this system, sorry;\n\
+I don't have 64-bit file offset functions available.\n");
+#endif
+  }
+
+  /* Magic-looking numbers come from adding up sizes 
+   * of things in bytes
+   */
+  frecsize = 16 + g->flen;
+  precsize = (g->smode == SSI_OFFSET_I64) ? 22+g->plen : 14+g->plen;
+  srecsize = g->slen + g->plen;
+
+  header_flags = 0;
+  if (g->smode == SSI_OFFSET_I64) header_flags |= SSI_USE64;
+  if (g->imode == SSI_OFFSET_I64) header_flags |= SSI_USE64_INDEX;
+
+  /* Magic-looking numbers again come from adding up sizes 
+   * of things in bytes
+   */
+  foffset = (header_flags & SSI_USE64_INDEX) ? 66 : 54;
+  poffset = foffset + frecsize*g->nfiles;
+  soffset = poffset + precsize*g->nprimary;
+  
+  /* Sort the keys
+   * If external mode, make system calls to UNIX/POSIX "sort" in place, then
+   * open new sorted files for reading thru ptmp and stmp handles.
+   * If internal mode, call qsort.
+   * 
+   * Note that you'd better force a POSIX locale for the sort; else,
+   * some silly distro (e.g. Mandrake Linux >=8.1) may have specified
+   * LC_COLLATE=en_US, and this'll give a sort "bug" in which it doesn't
+   * sort by byte order.
+   */
+  if (g->external) {
+    char cmd[1024];
+
+    fclose(g->ptmp);
+    g->ptmp = NULL;
+    sprintf(cmd, "env LC_ALL=POSIX sort -o %s %s\n", g->ptmpfile, g->ptmpfile);
+    if ((status = system(cmd)) != 0) return SSI_ERR_EXTERNAL_SORT;
+    if ((g->ptmp = fopen(g->ptmpfile, "r")) == NULL) return SSI_ERR_EXTERNAL_SORT;
+
+    fclose(g->stmp);
+    g->stmp = NULL;
+    sprintf(cmd, "env LC_ALL=POSIX sort -o %s %s\n", g->stmpfile, g->stmpfile);
+    if ((status = system(cmd)) != 0) return SSI_ERR_EXTERNAL_SORT;
+    if ((g->stmp = fopen(g->stmpfile, "r")) == NULL) return SSI_ERR_EXTERNAL_SORT;
+  } else {
+    specqsort((void *) g->pkeys, g->nprimary,   sizeof(struct ssipkey_s), pkeysort); 
+    specqsort((void *) g->skeys, g->nsecondary, sizeof(struct ssiskey_s), skeysort); 
+  }
+
+  /* Write the header
+   */
+  if (! write_i32(fp, v20magic))      return SSI_ERR_FWRITE;
+  if (! write_i32(fp, header_flags))  return SSI_ERR_FWRITE;
+  if (! write_i16(fp, g->nfiles))     return SSI_ERR_FWRITE;
+  if (! write_i32(fp, g->nprimary))   return SSI_ERR_FWRITE;
+  if (! write_i32(fp, g->nsecondary)) return SSI_ERR_FWRITE;
+  if (! write_i32(fp, g->flen))       return SSI_ERR_FWRITE;
+  if (! write_i32(fp, g->plen))       return SSI_ERR_FWRITE;
+  if (! write_i32(fp, g->slen))       return SSI_ERR_FWRITE;
+  if (! write_i32(fp, frecsize))      return SSI_ERR_FWRITE;
+  if (! write_i32(fp, precsize))      return SSI_ERR_FWRITE;
+  if (! write_i32(fp, srecsize))      return SSI_ERR_FWRITE;
+  if (g->imode == SSI_OFFSET_I32) {
+    if (! write_i32(fp, foffset))     return SSI_ERR_FWRITE;
+    if (! write_i32(fp, poffset))     return SSI_ERR_FWRITE;
+    if (! write_i32(fp, soffset))     return SSI_ERR_FWRITE;
+  } else {
+    if (! write_i64(fp, foffset))     return SSI_ERR_FWRITE;
+    if (! write_i64(fp, poffset))     return SSI_ERR_FWRITE;
+    if (! write_i64(fp, soffset))     return SSI_ERR_FWRITE;
+  }
+
+  /* The file section
+   */
+  if ((s = malloc(sizeof(char) * g->flen)) == NULL) return SSI_ERR_MALLOC;
+  for (i = 0; i < g->nfiles; i++)
+    {
+      file_flags = 0;
+      if (g->bpl[i] > 0 && g->rpl[i] > 0) file_flags |= SSI_FAST_SUBSEQ;
+      
+      strcpy(s, g->filenames[i]);
+      if (fwrite(s, sizeof(char), g->flen, fp) != g->flen) return SSI_ERR_FWRITE;
+      if (! write_i32(fp, g->fileformat[i]))               return SSI_ERR_FWRITE;
+      if (! write_i32(fp, file_flags))                     return SSI_ERR_FWRITE;
+      if (! write_i32(fp, g->bpl[i]))                      return SSI_ERR_FWRITE;
+      if (! write_i32(fp, g->rpl[i]))                      return SSI_ERR_FWRITE;
+    }
+  free(s);
+
+  /* The primary key section
+   */
+  if ((s = malloc(sizeof(char) * g->plen)) == NULL) return SSI_ERR_MALLOC;
+  if (g->external) {
+    char *buf    = NULL;
+    int   buflen = 0;
+    struct ssipkey_s pkey;
+    for (i = 0; i < g->nprimary; i++) 
+      {
+	if (sre_fgets(&buf, &buflen, g->ptmp) == NULL)       return SSI_ERR_NODATA;
+	if (parse_pkey_info(buf, g->smode, &pkey) != 0)      return SSI_ERR_BADFORMAT;
+	strcpy(s, pkey.key);
+	if (fwrite(s, sizeof(char), g->plen, fp) != g->plen) return SSI_ERR_FWRITE;
+	if (! write_i16(   fp, pkey.fnum))                   return SSI_ERR_FWRITE;
+	if (! write_offset(fp, &(pkey.r_off)))               return SSI_ERR_FWRITE;
+	if (! write_offset(fp, &(pkey.d_off)))               return SSI_ERR_FWRITE;
+	if (! write_i32(   fp, pkey.len))                    return SSI_ERR_FWRITE;
+      }
+    free(buf);
+  } else {
+    for (i = 0; i < g->nprimary; i++)
+      {
+	strcpy(s, g->pkeys[i].key);
+	if (fwrite(s, sizeof(char), g->plen, fp) != g->plen) return SSI_ERR_FWRITE;
+	if (! write_i16(   fp, g->pkeys[i].fnum))            return SSI_ERR_FWRITE;
+	if (! write_offset(fp, &(g->pkeys[i].r_off)))        return SSI_ERR_FWRITE;
+	if (! write_offset(fp, &(g->pkeys[i].d_off)))        return SSI_ERR_FWRITE;
+	if (! write_i32(   fp, g->pkeys[i].len))             return SSI_ERR_FWRITE;
+      }
+  }
+
+  /* The secondary key section
+   */
+  if (g->nsecondary > 0) {
+    if ((s2  = malloc(sizeof(char) * g->slen)) == NULL) return SSI_ERR_MALLOC;
+
+    if (g->external) {
+      struct ssiskey_s skey;
+      char *buf  = NULL;
+      int   n    = 0;
+
+      for (i = 0; i < g->nsecondary; i++)
+	{
+	  if (sre_fgets(&buf, &n, g->stmp) == NULL)  return SSI_ERR_NODATA;
+	  if (parse_skey_info(buf, &skey) != 0)           return SSI_ERR_BADFORMAT;
+	  strcpy(s2, skey.key);
+	  strcpy(s,  skey.pkey);
+	  if (fwrite(s2, sizeof(char), g->slen, fp) != g->slen) return SSI_ERR_FWRITE;
+	  if (fwrite(s,  sizeof(char), g->plen, fp) != g->plen) return SSI_ERR_FWRITE;
+	}
+      free(buf);
+    } else {
+      for (i = 0; i < g->nsecondary; i++)
+	{
+	  strcpy(s2, g->skeys[i].key);
+	  strcpy(s,  g->skeys[i].pkey);
+	  if (fwrite(s2, sizeof(char), g->slen, fp) != g->slen) return SSI_ERR_FWRITE;
+	  if (fwrite(s,  sizeof(char), g->plen, fp) != g->plen) return SSI_ERR_FWRITE;
+	} 
+    }
+    free(s2);
+  }
+
+  free(s);
+  fclose(fp);
+  return status;
+}

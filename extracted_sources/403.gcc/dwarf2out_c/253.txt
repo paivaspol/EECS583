@@ -1,0 +1,176 @@
+static void
+dwarf2out_finish (input_filename)
+     const char *input_filename ATTRIBUTE_UNUSED;
+{
+  limbo_die_node *node, *next_node;
+  dw_die_ref die = 0;
+
+  /* Traverse the limbo die list, and add parent/child links.  The only
+     dies without parents that should be here are concrete instances of
+     inline functions, and the comp_unit_die.  We can ignore the comp_unit_die.
+     For concrete instances, we can get the parent die from the abstract
+     instance.  */
+  for (node = limbo_die_list; node; node = next_node)
+    {
+      next_node = node->next;
+      die = node->die;
+
+      if (die->die_parent == NULL)
+	{
+	  dw_die_ref origin = get_AT_ref (die, DW_AT_abstract_origin);
+	  tree context;
+
+	  if (origin)
+	    add_child_die (origin->die_parent, die);
+	  else if (die == comp_unit_die)
+	    ;
+	  /* If this was an expression for a bound involved in a function
+	     return type, it may be a SAVE_EXPR for which we weren't able
+	     to find a DIE previously.  So try now.  */
+	  else if (node->created_for
+		   && TREE_CODE (node->created_for) == SAVE_EXPR
+		   && 0 != (origin = (lookup_decl_die
+				      (SAVE_EXPR_CONTEXT
+				       (node->created_for)))))
+	    add_child_die (origin, die);
+	  else if (errorcount > 0 || sorrycount > 0)
+	    /* It's OK to be confused by errors in the input.  */
+	    add_child_die (comp_unit_die, die);
+	  else if (node->created_for
+		   && ((DECL_P (node->created_for)
+		        && (context = DECL_CONTEXT (node->created_for)))
+		       || (TYPE_P (node->created_for)
+			   && (context = TYPE_CONTEXT (node->created_for))))
+		   && TREE_CODE (context) == FUNCTION_DECL)
+	    {
+	      /* In certain situations, the lexical block containing a
+		 nested function can be optimized away, which results
+		 in the nested function die being orphaned.  Likewise
+		 with the return type of that nested function.  Force
+		 this to be a child of the containing function.  */
+	      origin = lookup_decl_die (context);
+	      if (! origin)
+		abort ();
+	      add_child_die (origin, die);
+	    }
+	  else
+	    abort ();
+	}
+
+      free (node);
+    }
+
+  limbo_die_list = NULL;
+
+  /* Walk through the list of incomplete types again, trying once more to
+     emit full debugging info for them.  */
+  retry_incomplete_types ();
+
+  /* We need to reverse all the dies before break_out_includes, or
+     we'll see the end of an include file before the beginning.  */
+  reverse_all_dies (comp_unit_die);
+
+  /* Generate separate CUs for each of the include files we've seen.
+     They will go into limbo_die_list.  */
+  if (flag_eliminate_dwarf2_dups)
+    break_out_includes (comp_unit_die);
+
+  /* Traverse the DIE's and add add sibling attributes to those DIE's
+     that have children.  */
+  add_sibling_attributes (comp_unit_die);
+  for (node = limbo_die_list; node; node = node->next)
+    add_sibling_attributes (node->die);
+
+  /* Output a terminator label for the .text section.  */
+  text_section ();
+  ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, TEXT_END_LABEL, 0);
+
+  /* Output the source line correspondence table.  We must do this
+     even if there is no line information.  Otherwise, on an empty
+     translation unit, we will generate a present, but empty,
+     .debug_info section.  IRIX 6.5 `nm' will then complain when
+     examining the file.  */
+  if (! DWARF2_ASM_LINE_DEBUG_INFO)
+    {
+      named_section_flags (DEBUG_LINE_SECTION, SECTION_DEBUG);
+      output_line_info ();
+    }
+
+  /* Output location list section if necessary.  */
+  if (have_location_lists)
+    {
+      /* Output the location lists info.  */
+      named_section_flags (DEBUG_LOC_SECTION, SECTION_DEBUG);
+      ASM_GENERATE_INTERNAL_LABEL (loc_section_label,
+				   DEBUG_LOC_SECTION_LABEL, 0);
+      ASM_OUTPUT_LABEL (asm_out_file, loc_section_label);
+      output_location_lists (die);
+      have_location_lists = 0;
+    }
+
+  /* We can only use the low/high_pc attributes if all of the code was
+     in .text.  */
+  if (separate_line_info_table_in_use == 0)
+    {
+      add_AT_lbl_id (comp_unit_die, DW_AT_low_pc, text_section_label);
+      add_AT_lbl_id (comp_unit_die, DW_AT_high_pc, text_end_label);
+    }
+
+  /* If it wasn't, we need to give .debug_loc and .debug_ranges an appropriate
+     "base address".  Use zero so that these addresses become absolute.  */
+  else if (have_location_lists || ranges_table_in_use)
+    add_AT_addr (comp_unit_die, DW_AT_entry_pc, const0_rtx);
+
+  if (debug_info_level >= DINFO_LEVEL_NORMAL)
+    add_AT_lbl_offset (comp_unit_die, DW_AT_stmt_list,
+		       debug_line_section_label);
+
+  if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+    add_AT_lbl_offset (comp_unit_die, DW_AT_macro_info, macinfo_section_label);
+
+  /* Output all of the compilation units.  We put the main one last so that
+     the offsets are available to output_pubnames.  */
+  for (node = limbo_die_list; node; node = node->next)
+    output_comp_unit (node->die);
+
+  output_comp_unit (comp_unit_die);
+
+  /* Output the abbreviation table.  */
+  named_section_flags (DEBUG_ABBREV_SECTION, SECTION_DEBUG);
+  output_abbrev_section ();
+
+  /* Output public names table if necessary.  */
+  if (pubname_table_in_use)
+    {
+      named_section_flags (DEBUG_PUBNAMES_SECTION, SECTION_DEBUG);
+      output_pubnames ();
+    }
+
+  /* Output the address range information.  We only put functions in the arange
+     table, so don't write it out if we don't have any.  */
+  if (fde_table_in_use)
+    {
+      named_section_flags (DEBUG_ARANGES_SECTION, SECTION_DEBUG);
+      output_aranges ();
+    }
+
+  /* Output ranges section if necessary.  */
+  if (ranges_table_in_use)
+    {
+      named_section_flags (DEBUG_RANGES_SECTION, SECTION_DEBUG);
+      ASM_OUTPUT_LABEL (asm_out_file, ranges_section_label);
+      output_ranges ();
+    }
+
+  /* Have to end the primary source file.  */
+  if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+    { 
+      named_section_flags (DEBUG_MACINFO_SECTION, SECTION_DEBUG);
+      dw2_asm_output_data (1, DW_MACINFO_end_file, "End file");
+    }
+
+  /* If we emitted any DW_FORM_strp form attribute, output the string
+     table too.  */
+  if (debug_str_hash)
+    ht_forall (debug_str_hash, output_indirect_string, NULL);
+}

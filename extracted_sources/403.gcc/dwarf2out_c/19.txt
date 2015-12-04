@@ -1,0 +1,58 @@
+static void
+initial_return_save (rtl)
+     rtx rtl;
+{
+  unsigned int reg = (unsigned int) -1;
+  HOST_WIDE_INT offset = 0;
+
+  switch (GET_CODE (rtl))
+    {
+    case REG:
+      /* RA is in a register.  */
+      reg = DWARF_FRAME_REGNUM (REGNO (rtl));
+      break;
+
+    case MEM:
+      /* RA is on the stack.  */
+      rtl = XEXP (rtl, 0);
+      switch (GET_CODE (rtl))
+	{
+	case REG:
+	  if (REGNO (rtl) != STACK_POINTER_REGNUM)
+	    abort ();
+	  offset = 0;
+	  break;
+
+	case PLUS:
+	  if (REGNO (XEXP (rtl, 0)) != STACK_POINTER_REGNUM)
+	    abort ();
+	  offset = INTVAL (XEXP (rtl, 1));
+	  break;
+
+	case MINUS:
+	  if (REGNO (XEXP (rtl, 0)) != STACK_POINTER_REGNUM)
+	    abort ();
+	  offset = -INTVAL (XEXP (rtl, 1));
+	  break;
+
+	default:
+	  abort ();
+	}
+
+      break;
+
+    case PLUS:
+      /* The return address is at some offset from any value we can
+	 actually load.  For instance, on the SPARC it is in %i7+8. Just
+	 ignore the offset for now; it doesn't matter for unwinding frames.  */
+      if (GET_CODE (XEXP (rtl, 1)) != CONST_INT)
+	abort ();
+      initial_return_save (XEXP (rtl, 0));
+      return;
+
+    default:
+      abort ();
+    }
+
+  reg_save (NULL, DWARF_FRAME_RETURN_COLUMN, reg, offset - cfa.offset);
+}

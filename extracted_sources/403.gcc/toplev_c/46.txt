@@ -1,0 +1,50 @@
+static void
+init_asm_output (name)
+     const char *name;
+{
+  if (name == NULL && asm_file_name == 0)
+    asm_out_file = stdout;
+  else
+    {
+      if (asm_file_name == 0)
+        {
+          int len = strlen (dump_base_name);
+          char *dumpname = (char *) xmalloc (len + 6);
+          memcpy (dumpname, dump_base_name, len + 1);
+          strip_off_ending (dumpname, len);
+          strcat (dumpname, ".s");
+          asm_file_name = dumpname;
+        }
+      if (!strcmp (asm_file_name, "-"))
+        asm_out_file = stdout;
+      else
+        asm_out_file = fopen (asm_file_name, "w");
+      if (asm_out_file == 0)
+	fatal_io_error ("can't open %s for writing", asm_file_name);
+    }
+
+#ifdef IO_BUFFER_SIZE
+  setvbuf (asm_out_file, (char *) xmalloc (IO_BUFFER_SIZE),
+           _IOFBF, IO_BUFFER_SIZE);
+#endif
+
+  if (!flag_syntax_only)
+    {
+#ifdef ASM_FILE_START
+      ASM_FILE_START (asm_out_file);
+#endif
+
+#ifdef ASM_COMMENT_START
+      if (flag_verbose_asm)
+	{
+	  /* Print the list of options in effect.  */
+	  print_version (asm_out_file, ASM_COMMENT_START);
+	  print_switch_values (asm_out_file, 0, MAX_LINE,
+			       ASM_COMMENT_START, " ", "\n");
+	  /* Add a blank line here so it appears in assembler output but not
+	     screen output.  */
+	  fprintf (asm_out_file, "\n");
+	}
+#endif
+    }
+}

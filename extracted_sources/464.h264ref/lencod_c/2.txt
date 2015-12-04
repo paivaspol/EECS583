@@ -1,0 +1,37 @@
+void init_poc()
+{
+  //the following should probably go in sequence parameters
+  // frame poc's increase by 2, field poc's by 1
+
+  img->pic_order_cnt_type=input->pic_order_cnt_type;
+
+  img->delta_pic_order_always_zero_flag=0;
+  img->num_ref_frames_in_pic_order_cnt_cycle= 1;
+
+  if (input->BRefPictures)
+  {
+    img->offset_for_non_ref_pic  =  0;
+    img->offset_for_ref_frame[0] =   2;
+  }
+  else
+  {
+    img->offset_for_non_ref_pic  =  -2*(input->successive_Bframe);
+    img->offset_for_ref_frame[0] =   2*(input->successive_Bframe+1);
+  }
+
+  if ((input->PicInterlace==FRAME_CODING)&&(input->MbInterlace==FRAME_CODING))
+    img->offset_for_top_to_bottom_field=0;
+  else    
+    img->offset_for_top_to_bottom_field=1;
+
+  if ((input->PicInterlace==FRAME_CODING)&&(input->MbInterlace==FRAME_CODING))
+  {
+    img->pic_order_present_flag=0;
+    img->delta_pic_order_cnt_bottom = 0;
+  }
+  else    
+  {
+    img->pic_order_present_flag=1;
+    img->delta_pic_order_cnt_bottom = 1;
+  }
+}

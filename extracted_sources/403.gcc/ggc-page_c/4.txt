@@ -1,0 +1,35 @@
+static void
+set_page_table_entry(p, entry)
+     void *p;
+     page_entry *entry;
+{
+  page_entry ***base;
+  size_t L1, L2;
+
+#if HOST_BITS_PER_PTR <= 32
+  base = &G.lookup[0];
+#else
+  page_table table;
+  size_t high_bits = (size_t) p & ~ (size_t) 0xffffffff;
+  for (table = G.lookup; table; table = table->next)
+    if (table->high_bits == high_bits)
+      goto found;
+
+  /* Not found -- allocate a new table.  */
+  table = (page_table) xcalloc (1, sizeof(*table));
+  table->next = G.lookup;
+  table->high_bits = high_bits;
+  G.lookup = table;
+found:
+  base = &table->table[0];
+#endif
+
+  /* Extract the level 1 and 2 indices.  */
+  L1 = LOOKUP_L1 (p);
+  L2 = LOOKUP_L2 (p);
+
+  if (base[L1] == NULL)
+    base[L1] = (page_entry **) xcalloc (PAGE_L2_SIZE, sizeof (page_entry *));
+
+  base[L1][L2] = entry;
+}

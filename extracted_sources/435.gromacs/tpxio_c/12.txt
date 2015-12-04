@@ -1,0 +1,30 @@
+static void do_symtab(t_symtab *symtab,bool bRead)
+{
+  int i,nr;
+  t_symbuf *symbuf;
+  char buf[STRLEN];
+  
+  do_int(symtab->nr);
+  nr     = symtab->nr;
+  if (bRead) {
+    snew(symtab->symbuf,1);
+    symbuf = symtab->symbuf;
+    symbuf->bufsize = nr;
+    snew(symbuf->buf,nr);
+    for (i=0; (i<nr); i++) {
+      do_string(buf);
+      symbuf->buf[i]=strdup(buf);
+    }
+  }
+  else {
+    symbuf = symtab->symbuf;
+    while (symbuf!=NULL) {
+      for (i=0; (i<symbuf->bufsize) && (i<nr); i++) 
+	do_string(symbuf->buf[i]);
+      nr-=i;
+      symbuf=symbuf->next;
+    }
+    if (nr != 0)
+      fatal_error(0,"nr of symtab strings left: %d",nr);
+  }
+}

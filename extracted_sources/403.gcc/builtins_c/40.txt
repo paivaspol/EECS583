@@ -1,0 +1,47 @@
+static rtx
+expand_builtin_strncat (arglist, target, mode)
+     tree arglist;
+     rtx target;
+     enum machine_mode mode;
+{
+  if (!validate_arglist (arglist,
+			 POINTER_TYPE, POINTER_TYPE, INTEGER_TYPE, VOID_TYPE))
+    return 0;
+  else
+    {
+      tree dst = TREE_VALUE (arglist),
+	src = TREE_VALUE (TREE_CHAIN (arglist)),
+	len = TREE_VALUE (TREE_CHAIN (TREE_CHAIN (arglist)));
+      const char *p = c_getstr (src);
+
+      /* If the requested length is zero, or the src parameter string
+          length is zero, return the dst parameter.  */
+      if (integer_zerop (len) || (p && *p == '\0'))
+        {
+	  /* Evaluate and ignore the src and len parameters in case
+	     they have side-effects.  */
+	  expand_expr (src, const0_rtx, VOIDmode, EXPAND_NORMAL);
+	  expand_expr (len, const0_rtx, VOIDmode, EXPAND_NORMAL);
+	  return expand_expr (dst, target, mode, EXPAND_NORMAL);
+	}
+
+      /* If the requested len is greater than or equal to the string
+         length, call strcat.  */
+      if (TREE_CODE (len) == INTEGER_CST && p
+	  && compare_tree_int (len, strlen (p)) >= 0)
+        {
+	  tree newarglist
+	    = tree_cons (NULL_TREE, dst, build_tree_list (NULL_TREE, src));
+	  tree fn = built_in_decls[BUILT_IN_STRCAT];
+
+	  /* If the replacement _DECL isn't initialized, don't do the
+	     transformation.  */
+	  if (!fn)
+	    return 0;
+
+	  return expand_expr (build_function_call_expr (fn, newarglist),
+			      target, mode, EXPAND_NORMAL);
+	}
+      return 0;
+    }
+}

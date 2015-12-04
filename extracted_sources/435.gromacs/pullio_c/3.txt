@@ -1,0 +1,49 @@
+void print_constraint(t_pull *pull, rvec *f, int step, matrix box, int niter) 
+{
+  int i,ii,m; 
+  rvec tmp,tmp2,tmp3;
+
+  for (i=0;i<pull->pull.n;i++) {
+    if (pull->bCyl) 
+      rvec_sub(pull->pull.x_con[i],pull->dyna.x_con[i],tmp);
+    else 
+      rvec_sub(pull->pull.x_con[i],pull->ref.x_con[0],tmp);
+    for (m=DIM-1; m>=0; m--) {
+      if (tmp[m] < -0.5*box[m][m]) rvec_inc(tmp,box[m]);
+      if (tmp[m] >  0.5*box[m][m]) rvec_dec(tmp,box[m]);
+      tmp[m] *= pull->dims[m];
+    }
+    if (pull->bVerbose) 
+      fprintf(pull->out,"%d:%d ds:%e f:%e n:%d\n", step,i,norm(tmp),
+	      pull->pull.f[i][ZZ],niter);
+    else
+      fprintf(pull->out,"%e ",pull->pull.f[i][ZZ]);
+  }
+
+  if (!pull->bVerbose)
+    fprintf(pull->out,"\n");
+
+  /* DEBUG */ /* this code doesn't correct for pbc, needs improvement */
+  if (pull->bVerbose) {
+    for (i=0;i<pull->pull.n;i++) {
+      if (pull->bCyl) 
+	fprintf(pull->out,"eConstraint: step %d. Refgroup = dynamic (%f,%f\n"
+		"Group %d (%s): ref. dist = %8.3f, unconstr. dist = %8.3f"
+		" con. dist = %8.3f f_i = %8.3f\n", step, pull->r,pull->rc,
+		i,pull->pull.grps[i],
+		pull->dyna.x_ref[i][ZZ]-pull->pull.x_ref[i][ZZ],
+		pull->dyna.x_unc[i][ZZ]-pull->pull.x_unc[i][ZZ],
+		pull->dyna.x_con[i][ZZ]-pull->pull.x_con[i][ZZ],
+		pull->pull.f[i][ZZ]);
+      else {
+	rvec_sub(pull->ref.x_ref[0],pull->pull.x_ref[i],tmp);
+	rvec_sub(pull->ref.x_unc[0],pull->pull.x_unc[i],tmp2);
+	rvec_sub(pull->ref.x_con[0],pull->pull.x_con[i],tmp3);
+	fprintf(stderr,"grp %d:ref (%8.3f,%8.3f,%8.3f) unc(%8.3f%8.3f%8.3f\n"
+		"con (%8.3f%8.3f%8.3f)\n",i, tmp[0],tmp[1],tmp[2],
+		tmp2[0],tmp2[1],tmp2[2],tmp3[0],tmp3[1],tmp3[2]);
+      }
+    }
+  } /* END DEBUG */
+
+}

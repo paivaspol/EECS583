@@ -1,0 +1,23 @@
+void  writeUVLC2buffer(SyntaxElement *se, Bitstream *currStream)
+{
+
+  int i;
+  unsigned int mask = 1 << (se->len-1);
+
+  // Add the new bits to the bitstream.
+  // Write out a byte if it is full
+  for (i=0; i<se->len; i++)
+  {
+    currStream->byte_buf <<= 1;
+    if (se->bitpattern & mask)
+      currStream->byte_buf |= 1;
+    currStream->bits_to_go--;
+    mask >>= 1;
+    if (currStream->bits_to_go==0)
+    {
+      currStream->bits_to_go = 8;
+      currStream->streamBuffer[currStream->byte_pos++]=currStream->byte_buf;
+      currStream->byte_buf = 0;
+    }
+  }
+}

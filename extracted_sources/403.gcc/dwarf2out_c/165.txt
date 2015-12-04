@@ -1,0 +1,173 @@
+static dw_loc_descr_ref
+mem_loc_descriptor (rtl, mode)
+     rtx rtl;
+     enum machine_mode mode;
+{
+  dw_loc_descr_ref mem_loc_result = NULL;
+
+  /* Note that for a dynamically sized array, the location we will generate a
+     description of here will be the lowest numbered location which is
+     actually within the array.  That's *not* necessarily the same as the
+     zeroth element of the array.  */
+
+#ifdef ASM_SIMPLIFY_DWARF_ADDR
+  rtl = ASM_SIMPLIFY_DWARF_ADDR (rtl);
+#endif
+
+  switch (GET_CODE (rtl))
+    {
+    case POST_INC:
+    case POST_DEC:
+    case POST_MODIFY:
+      /* POST_INC and POST_DEC can be handled just like a SUBREG.  So we
+	 just fall into the SUBREG code.  */
+
+      /* ... fall through ...  */
+
+    case SUBREG:
+      /* The case of a subreg may arise when we have a local (register)
+         variable or a formal (register) parameter which doesn't quite fill
+         up an entire register.  For now, just assume that it is
+         legitimate to make the Dwarf info refer to the whole register which
+         contains the given subreg.  */
+      rtl = SUBREG_REG (rtl);
+
+      /* ... fall through ...  */
+
+    case REG:
+      /* Whenever a register number forms a part of the description of the
+         method for calculating the (dynamic) address of a memory resident
+         object, DWARF rules require the register number be referred to as
+         a "base register".  This distinction is not based in any way upon
+         what category of register the hardware believes the given register
+         belongs to.  This is strictly DWARF terminology we're dealing with
+         here. Note that in cases where the location of a memory-resident
+         data object could be expressed as: OP_ADD (OP_BASEREG (basereg),
+         OP_CONST (0)) the actual DWARF location descriptor that we generate
+         may just be OP_BASEREG (basereg).  This may look deceptively like
+         the object in question was allocated to a register (rather than in
+         memory) so DWARF consumers need to be aware of the subtle
+         distinction between OP_REG and OP_BASEREG.  */
+      if (REGNO (rtl) < FIRST_PSEUDO_REGISTER)
+	mem_loc_result = based_loc_descr (reg_number (rtl), 0);
+      break;
+
+    case MEM:
+      mem_loc_result = mem_loc_descriptor (XEXP (rtl, 0), GET_MODE (rtl));
+      if (mem_loc_result != 0)
+	add_loc_descr (&mem_loc_result, new_loc_descr (DW_OP_deref, 0, 0));
+      break;
+
+    case LABEL_REF:
+      /* Some ports can transform a symbol ref into a label ref, because
+ 	 the symbol ref is too far away and has to be dumped into a constant
+ 	 pool.  */
+    case CONST:
+    case SYMBOL_REF:
+      /* Alternatively, the symbol in the constant pool might be referenced
+	 by a different symbol.  */
+      if (GET_CODE (rtl) == SYMBOL_REF && CONSTANT_POOL_ADDRESS_P (rtl))
+	{
+	  bool marked;
+	  rtx tmp = get_pool_constant_mark (rtl, &marked);
+
+	  if (GET_CODE (tmp) == SYMBOL_REF)
+	    {
+	      rtl = tmp;
+	      if (CONSTANT_POOL_ADDRESS_P (tmp))
+		get_pool_constant_mark (tmp, &marked);
+	      else
+		marked = true;
+	    }
+
+	  /* If all references to this pool constant were optimized away,
+	     it was not output and thus we can't represent it.
+	     FIXME: might try to use DW_OP_const_value here, though
+	     DW_OP_piece complicates it.  */
+	  if (!marked)
+	    return 0;
+	}
+
+      mem_loc_result = new_loc_descr (DW_OP_addr, 0, 0);
+      mem_loc_result->dw_loc_oprnd1.val_class = dw_val_class_addr;
+      mem_loc_result->dw_loc_oprnd1.v.val_addr = rtl;
+      VARRAY_PUSH_RTX (used_rtx_varray, rtl);
+      break;
+
+    case PRE_MODIFY:
+      /* Extract the PLUS expression nested inside and fall into
+         PLUS code below.  */
+      rtl = XEXP (rtl, 1);
+      goto plus;
+
+    case PRE_INC:
+    case PRE_DEC:
+      /* Turn these into a PLUS expression and fall into the PLUS code
+	 below.  */
+      rtl = gen_rtx_PLUS (word_mode, XEXP (rtl, 0),
+			  GEN_INT (GET_CODE (rtl) == PRE_INC
+				   ? GET_MODE_UNIT_SIZE (mode)
+				   : -GET_MODE_UNIT_SIZE (mode)));
+
+      /* ... fall through ...  */
+
+    case PLUS:
+    plus:
+      if (is_based_loc (rtl))
+	mem_loc_result = based_loc_descr (reg_number (XEXP (rtl, 0)),
+					  INTVAL (XEXP (rtl, 1)));
+      else
+	{
+	  mem_loc_result = mem_loc_descriptor (XEXP (rtl, 0), mode);
+	  if (mem_loc_result == 0)
+	    break;
+
+	  if (GET_CODE (XEXP (rtl, 1)) == CONST_INT
+	      && INTVAL (XEXP (rtl, 1)) >= 0)
+	    add_loc_descr (&mem_loc_result,
+			   new_loc_descr (DW_OP_plus_uconst,
+					  INTVAL (XEXP (rtl, 1)), 0));
+	  else
+	    {
+	      add_loc_descr (&mem_loc_result,
+			     mem_loc_descriptor (XEXP (rtl, 1), mode));
+	      add_loc_descr (&mem_loc_result,
+			     new_loc_descr (DW_OP_plus, 0, 0));
+	    }
+	}
+      break;
+
+    case MULT:
+      {
+	/* If a pseudo-reg is optimized away, it is possible for it to
+	   be replaced with a MEM containing a multiply.  */
+	dw_loc_descr_ref op0 = mem_loc_descriptor (XEXP (rtl, 0), mode);
+	dw_loc_descr_ref op1 = mem_loc_descriptor (XEXP (rtl, 1), mode);
+
+	if (op0 == 0 || op1 == 0)
+	  break;
+
+	mem_loc_result = op0;
+	add_loc_descr (&mem_loc_result, op1);
+	add_loc_descr (&mem_loc_result, new_loc_descr (DW_OP_mul, 0, 0));
+	break;
+      }
+
+    case CONST_INT:
+      mem_loc_result = int_loc_descriptor (INTVAL (rtl));
+      break;
+
+    case ADDRESSOF:
+      /* If this is a MEM, return its address.  Otherwise, we can't
+	 represent this.  */
+      if (GET_CODE (XEXP (rtl, 0)) == MEM)
+	return mem_loc_descriptor (XEXP (XEXP (rtl, 0), 0), mode);
+      else
+	return 0;
+
+    default:
+      abort ();
+    }
+
+  return mem_loc_result;
+}

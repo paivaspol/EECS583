@@ -1,0 +1,15 @@
+int u_v (int n, char *tracestring, int value, DataPartition *part)
+{
+  SyntaxElement symbol, *sym=&symbol;
+
+  sym->bitpattern = value;
+  sym->len = n;
+  sym->type = SE_HEADER;
+  sym->value1 = value;
+  sym->value2 = 0;
+#if TRACE
+  strncpy(sym->tracestring,tracestring,TRACESTRING_SIZE);
+#endif
+  assert (part->bitstream->streamBuffer != NULL);
+  return writeSyntaxElement_fixed(sym, part);
+}

@@ -1,0 +1,28 @@
+static const char *
+output_92 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (which_alternative)
+    {
+    case 0:
+      /* %%% We loose REG_DEAD notes for controling pops if we split late.  */
+      operands[0] = gen_rtx_MEM (DFmode, stack_pointer_rtx);
+      operands[2] = stack_pointer_rtx;
+      operands[3] = GEN_INT (8);
+      if (find_regno_note (insn, REG_DEAD, REGNO (operands[1])))
+	return "sub{l}\t{%3, %2|%2, %3}\n\tfstp%z0\t%y0";
+      else
+	return "sub{l}\t{%3, %2|%2, %3}\n\tfst%z0\t%y0";
+
+    case 1:
+    case 2:
+    case 3:
+      return "#";
+
+    default:
+      abort ();
+    }
+}
+}

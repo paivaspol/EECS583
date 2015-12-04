@@ -1,0 +1,113 @@
+static rtx
+make_field_assignment (x)
+     rtx x;
+{
+  rtx dest = SET_DEST (x);
+  rtx src = SET_SRC (x);
+  rtx assign;
+  rtx rhs, lhs;
+  HOST_WIDE_INT c1;
+  HOST_WIDE_INT pos;
+  unsigned HOST_WIDE_INT len = 0;
+  rtx other;
+  enum machine_mode mode;
+
+  /* If SRC was (and (not (ashift (const_int 1) POS)) DEST), this is
+     a clear of a one-bit field.  We will have changed it to
+     (and (rotate (const_int -2) POS) DEST), so check for that.  Also check
+     for a SUBREG.  */
+
+  if (GET_CODE (src) == AND && GET_CODE (XEXP (src, 0)) == ROTATE
+      && GET_CODE (XEXP (XEXP (src, 0), 0)) == CONST_INT
+      && INTVAL (XEXP (XEXP (src, 0), 0)) == -2
+      && rtx_equal_for_field_assignment_p (dest, XEXP (src, 1)))
+    {
+      assign = make_extraction (VOIDmode, dest, 0, XEXP (XEXP (src, 0), 1),
+				1, 1, 1, 0);
+      if (assign != 0)
+	return gen_rtx_SET (VOIDmode, assign, const0_rtx);
+      return x;
+    }
+
+  else if (GET_CODE (src) == AND && GET_CODE (XEXP (src, 0)) == SUBREG
+	   && subreg_lowpart_p (XEXP (src, 0))
+	   && (GET_MODE_SIZE (GET_MODE (XEXP (src, 0)))
+	       < GET_MODE_SIZE (GET_MODE (SUBREG_REG (XEXP (src, 0)))))
+	   && GET_CODE (SUBREG_REG (XEXP (src, 0))) == ROTATE
+	   && INTVAL (XEXP (SUBREG_REG (XEXP (src, 0)), 0)) == -2
+	   && rtx_equal_for_field_assignment_p (dest, XEXP (src, 1)))
+    {
+      assign = make_extraction (VOIDmode, dest, 0,
+				XEXP (SUBREG_REG (XEXP (src, 0)), 1),
+				1, 1, 1, 0);
+      if (assign != 0)
+	return gen_rtx_SET (VOIDmode, assign, const0_rtx);
+      return x;
+    }
+
+  /* If SRC is (ior (ashift (const_int 1) POS) DEST), this is a set of a
+     one-bit field.  */
+  else if (GET_CODE (src) == IOR && GET_CODE (XEXP (src, 0)) == ASHIFT
+	   && XEXP (XEXP (src, 0), 0) == const1_rtx
+	   && rtx_equal_for_field_assignment_p (dest, XEXP (src, 1)))
+    {
+      assign = make_extraction (VOIDmode, dest, 0, XEXP (XEXP (src, 0), 1),
+				1, 1, 1, 0);
+      if (assign != 0)
+	return gen_rtx_SET (VOIDmode, assign, const1_rtx);
+      return x;
+    }
+
+  /* The other case we handle is assignments into a constant-position
+     field.  They look like (ior/xor (and DEST C1) OTHER).  If C1 represents
+     a mask that has all one bits except for a group of zero bits and
+     OTHER is known to have zeros where C1 has ones, this is such an
+     assignment.  Compute the position and length from C1.  Shift OTHER
+     to the appropriate position, force it to the required mode, and
+     make the extraction.  Check for the AND in both operands.  */
+
+  if (GET_CODE (src) != IOR && GET_CODE (src) != XOR)
+    return x;
+
+  rhs = expand_compound_operation (XEXP (src, 0));
+  lhs = expand_compound_operation (XEXP (src, 1));
+
+  if (GET_CODE (rhs) == AND
+      && GET_CODE (XEXP (rhs, 1)) == CONST_INT
+      && rtx_equal_for_field_assignment_p (XEXP (rhs, 0), dest))
+    c1 = INTVAL (XEXP (rhs, 1)), other = lhs;
+  else if (GET_CODE (lhs) == AND
+	   && GET_CODE (XEXP (lhs, 1)) == CONST_INT
+	   && rtx_equal_for_field_assignment_p (XEXP (lhs, 0), dest))
+    c1 = INTVAL (XEXP (lhs, 1)), other = rhs;
+  else
+    return x;
+
+  pos = get_pos_from_mask ((~c1) & GET_MODE_MASK (GET_MODE (dest)), &len);
+  if (pos < 0 || pos + len > GET_MODE_BITSIZE (GET_MODE (dest))
+      || GET_MODE_BITSIZE (GET_MODE (dest)) > HOST_BITS_PER_WIDE_INT
+      || (c1 & nonzero_bits (other, GET_MODE (dest))) != 0)
+    return x;
+
+  assign = make_extraction (VOIDmode, dest, pos, NULL_RTX, len, 1, 1, 0);
+  if (assign == 0)
+    return x;
+
+  /* The mode to use for the source is the mode of the assignment, or of
+     what is inside a possible STRICT_LOW_PART.  */
+  mode = (GET_CODE (assign) == STRICT_LOW_PART
+	  ? GET_MODE (XEXP (assign, 0)) : GET_MODE (assign));
+
+  /* Shift OTHER right POS places and make it the source, restricting it
+     to the proper length and mode.  */
+
+  src = force_to_mode (simplify_shift_const (NULL_RTX, LSHIFTRT,
+					     GET_MODE (src), other, pos),
+		       mode,
+		       GET_MODE_BITSIZE (mode) >= HOST_BITS_PER_WIDE_INT
+		       ? ~(unsigned HOST_WIDE_INT) 0
+		       : ((unsigned HOST_WIDE_INT) 1 << len) - 1,
+		       dest, 0);
+
+  return gen_rtx_SET (VOIDmode, assign, src);
+}

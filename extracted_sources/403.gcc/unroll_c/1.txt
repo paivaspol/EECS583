@@ -1,0 +1,155 @@
+int
+precondition_loop_p (loop, initial_value, final_value, increment, mode)
+     const struct loop *loop;
+     rtx *initial_value, *final_value, *increment;
+     enum machine_mode *mode;
+{
+  rtx loop_start = loop->start;
+  struct loop_info *loop_info = LOOP_INFO (loop);
+
+  if (loop_info->n_iterations > 0)
+    {
+      if (INTVAL (loop_info->increment) > 0)
+	{
+	  *initial_value = const0_rtx;
+	  *increment = const1_rtx;
+	  *final_value = GEN_INT (loop_info->n_iterations);
+	}
+      else
+	{
+	  *initial_value = GEN_INT (loop_info->n_iterations);
+	  *increment = constm1_rtx;
+	  *final_value = const0_rtx;
+	}
+      *mode = word_mode;
+
+      if (loop_dump_stream)
+	{
+	  fputs ("Preconditioning: Success, number of iterations known, ",
+		 loop_dump_stream);
+	  fprintf (loop_dump_stream, HOST_WIDE_INT_PRINT_DEC,
+		   loop_info->n_iterations);
+	  fputs (".\n", loop_dump_stream);
+	}
+      return 1;
+    }
+
+  if (loop_info->iteration_var == 0)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Could not find iteration variable.\n");
+      return 0;
+    }
+  else if (loop_info->initial_value == 0)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Could not find initial value.\n");
+      return 0;
+    }
+  else if (loop_info->increment == 0)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Could not find increment value.\n");
+      return 0;
+    }
+  else if (GET_CODE (loop_info->increment) != CONST_INT)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Increment not a constant.\n");
+      return 0;
+    }
+  else if ((exact_log2 (INTVAL (loop_info->increment)) < 0)
+	   && (exact_log2 (-INTVAL (loop_info->increment)) < 0))
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Increment not a constant power of 2.\n");
+      return 0;
+    }
+
+  /* Unsigned_compare and compare_dir can be ignored here, since they do
+     not matter for preconditioning.  */
+
+  if (loop_info->final_value == 0)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: EQ comparison loop.\n");
+      return 0;
+    }
+
+  /* Must ensure that final_value is invariant, so call
+     loop_invariant_p to check.  Before doing so, must check regno
+     against max_reg_before_loop to make sure that the register is in
+     the range covered by loop_invariant_p.  If it isn't, then it is
+     most likely a biv/giv which by definition are not invariant.  */
+  if ((GET_CODE (loop_info->final_value) == REG
+       && REGNO (loop_info->final_value) >= max_reg_before_loop)
+      || (GET_CODE (loop_info->final_value) == PLUS
+	  && REGNO (XEXP (loop_info->final_value, 0)) >= max_reg_before_loop)
+      || ! loop_invariant_p (loop, loop_info->final_value))
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Final value not invariant.\n");
+      return 0;
+    }
+
+  /* Fail for floating point values, since the caller of this function
+     does not have code to deal with them.  */
+  if (GET_MODE_CLASS (GET_MODE (loop_info->final_value)) == MODE_FLOAT
+      || GET_MODE_CLASS (GET_MODE (loop_info->initial_value)) == MODE_FLOAT)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Floating point final or initial value.\n");
+      return 0;
+    }
+
+  /* Fail if loop_info->iteration_var is not live before loop_start,
+     since we need to test its value in the preconditioning code.  */
+
+  if (REGNO_FIRST_LUID (REGNO (loop_info->iteration_var))
+      > INSN_LUID (loop_start))
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Preconditioning: Iteration var not live before loop start.\n");
+      return 0;
+    }
+
+  /* Note that loop_iterations biases the initial value for GIV iterators
+     such as "while (i-- > 0)" so that we can calculate the number of
+     iterations just like for BIV iterators.
+
+     Also note that the absolute values of initial_value and
+     final_value are unimportant as only their difference is used for
+     calculating the number of loop iterations.  */
+  *initial_value = loop_info->initial_value;
+  *increment = loop_info->increment;
+  *final_value = loop_info->final_value;
+
+  /* Decide what mode to do these calculations in.  Choose the larger
+     of final_value's mode and initial_value's mode, or a full-word if
+     both are constants.  */
+  *mode = GET_MODE (*final_value);
+  if (*mode == VOIDmode)
+    {
+      *mode = GET_MODE (*initial_value);
+      if (*mode == VOIDmode)
+	*mode = word_mode;
+    }
+  else if (*mode != GET_MODE (*initial_value)
+	   && (GET_MODE_SIZE (*mode)
+	       < GET_MODE_SIZE (GET_MODE (*initial_value))))
+    *mode = GET_MODE (*initial_value);
+
+  /* Success!  */
+  if (loop_dump_stream)
+    fprintf (loop_dump_stream, "Preconditioning: Successful.\n");
+  return 1;
+}

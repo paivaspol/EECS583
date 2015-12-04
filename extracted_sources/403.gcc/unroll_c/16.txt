@@ -1,0 +1,32 @@
+static rtx
+find_common_reg_term (op0, op1)
+     rtx op0, op1;
+{
+  if ((GET_CODE (op0) == REG || GET_CODE (op0) == PLUS)
+      && (GET_CODE (op1) == REG || GET_CODE (op1) == PLUS))
+    {
+      rtx op00;
+      rtx op01;
+      rtx op10;
+      rtx op11;
+
+      if (GET_CODE (op0) == PLUS)
+	op01 = XEXP (op0, 1), op00 = XEXP (op0, 0);
+      else
+	op01 = const0_rtx, op00 = op0;
+
+      if (GET_CODE (op1) == PLUS)
+	op11 = XEXP (op1, 1), op10 = XEXP (op1, 0);
+      else
+	op11 = const0_rtx, op10 = op1;
+
+      /* Find and return common register term if present.  */
+      if (REG_P (op00) && (op00 == op10 || op00 == op11))
+	return op00;
+      else if (REG_P (op01) && (op01 == op10 || op01 == op11))
+	return op01;
+    }
+
+  /* No common register term found.  */
+  return NULL_RTX;
+}

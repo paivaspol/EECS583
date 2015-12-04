@@ -1,0 +1,19 @@
+static inline dw_loc_descr_ref
+new_loc_descr (op, oprnd1, oprnd2)
+     enum dwarf_location_atom op;
+     unsigned long oprnd1;
+     unsigned long oprnd2;
+{
+  /* Use xcalloc here so we clear out all of the long_long constant in
+     the union.  */
+  dw_loc_descr_ref descr
+    = (dw_loc_descr_ref) xcalloc (1, sizeof (dw_loc_descr_node));
+
+  descr->dw_loc_opc = op;
+  descr->dw_loc_oprnd1.val_class = dw_val_class_unsigned_const;
+  descr->dw_loc_oprnd1.v.val_unsigned = oprnd1;
+  descr->dw_loc_oprnd2.val_class = dw_val_class_unsigned_const;
+  descr->dw_loc_oprnd2.v.val_unsigned = oprnd2;
+
+  return descr;
+}

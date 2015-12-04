@@ -1,0 +1,70 @@
+void
+shadow_tag_warned (declspecs, warned)
+     tree declspecs;
+     int warned;
+     /* 1 => we have done a pedwarn.  2 => we have done a warning, but
+	no pedwarn.  */
+{
+  int found_tag = 0;
+  tree link;
+  tree specs, attrs;
+
+  pending_invalid_xref = 0;
+
+  /* Remove the attributes from declspecs, since they will confuse the
+     following code.  */
+  split_specs_attrs (declspecs, &specs, &attrs);
+
+  for (link = specs; link; link = TREE_CHAIN (link))
+    {
+      tree value = TREE_VALUE (link);
+      enum tree_code code = TREE_CODE (value);
+
+      if (code == RECORD_TYPE || code == UNION_TYPE || code == ENUMERAL_TYPE)
+	/* Used to test also that TYPE_SIZE (value) != 0.
+	   That caused warning for `struct foo;' at top level in the file.  */
+	{
+	  tree name = lookup_tag_reverse (value);
+	  tree t;
+
+	  found_tag++;
+
+	  if (name == 0)
+	    {
+	      if (warned != 1 && code != ENUMERAL_TYPE)
+		/* Empty unnamed enum OK */
+		{
+		  pedwarn ("unnamed struct/union that defines no instances");
+		  warned = 1;
+		}
+	    }
+	  else
+	    {
+	      t = lookup_tag (code, name, current_binding_level, 1);
+
+	      if (t == 0)
+		{
+		  t = make_node (code);
+		  pushtag (name, t);
+		}
+	    }
+	}
+      else
+	{
+	  if (!warned && ! in_system_header)
+	    {
+	      warning ("useless keyword or type name in empty declaration");
+	      warned = 2;
+	    }
+	}
+    }
+
+  if (found_tag > 1)
+    error ("two types specified in one empty declaration");
+
+  if (warned != 1)
+    {
+      if (found_tag == 0)
+	pedwarn ("empty declaration");
+    }
+}

@@ -1,0 +1,173 @@
+static void
+record_constant_1 (exp)
+     tree exp;
+{
+  const unsigned char *strp;
+  int len;
+  enum tree_code code = TREE_CODE (exp);
+
+  obstack_1grow (&permanent_obstack, (unsigned int) code);
+
+  switch (code)
+    {
+    case INTEGER_CST:
+      obstack_1grow (&permanent_obstack, TYPE_PRECISION (TREE_TYPE (exp)));
+      strp = (unsigned char *) &TREE_INT_CST (exp);
+      len = sizeof TREE_INT_CST (exp);
+      break;
+
+    case REAL_CST:
+      obstack_1grow (&permanent_obstack, TYPE_PRECISION (TREE_TYPE (exp)));
+      strp = (unsigned char *) &TREE_REAL_CST (exp);
+      len = sizeof TREE_REAL_CST (exp);
+      break;
+
+    case STRING_CST:
+      if (flag_writable_strings)
+	return;
+
+      obstack_1grow (&permanent_obstack, TYPE_MODE (TREE_TYPE (exp)));
+      strp = (const unsigned char *) TREE_STRING_POINTER (exp);
+      len = TREE_STRING_LENGTH (exp);
+      obstack_grow (&permanent_obstack, (char *) &TREE_STRING_LENGTH (exp),
+		    sizeof TREE_STRING_LENGTH (exp));
+      break;
+
+    case COMPLEX_CST:
+      record_constant_1 (TREE_REALPART (exp));
+      record_constant_1 (TREE_IMAGPART (exp));
+      return;
+
+    case CONSTRUCTOR:
+      if (TREE_CODE (TREE_TYPE (exp)) == SET_TYPE)
+	{
+	  int nbytes = int_size_in_bytes (TREE_TYPE (exp));
+	  obstack_grow (&permanent_obstack, &nbytes, sizeof (nbytes));
+	  obstack_blank (&permanent_obstack, nbytes);
+	  get_set_constructor_bytes
+	    (exp, (unsigned char *) permanent_obstack.next_free-nbytes,
+	     nbytes);
+	  return;
+	}
+      else
+	{
+	  tree link;
+	  int length = list_length (CONSTRUCTOR_ELTS (exp));
+	  enum machine_mode mode = TYPE_MODE (TREE_TYPE (exp));
+	  tree type;
+	  int have_purpose = 0;
+
+	  for (link = CONSTRUCTOR_ELTS (exp); link; link = TREE_CHAIN (link))
+	    if (TREE_PURPOSE (link))
+	      have_purpose = 1;
+
+	  obstack_grow (&permanent_obstack, (char *) &length, sizeof length);
+
+	  /* For record constructors, insist that the types match.
+	     For arrays, just verify both constructors are for arrays
+	     of the same mode.  Then insist that either both or none
+	     have any TREE_PURPOSE values.  */
+	  if (TREE_CODE (TREE_TYPE (exp)) == RECORD_TYPE)
+	    type = TREE_TYPE (exp);
+	  else
+	    type = 0;
+
+	  obstack_grow (&permanent_obstack, (char *) &type, sizeof type);
+	  if (TREE_CODE (TREE_TYPE (exp)) == ARRAY_TYPE)
+	    obstack_grow (&permanent_obstack, &mode, sizeof mode);
+
+	  obstack_grow (&permanent_obstack, (char *) &have_purpose,
+			sizeof have_purpose);
+
+	  /* For arrays, insist that the size in bytes match.  */
+	  if (TREE_CODE (TREE_TYPE (exp)) == ARRAY_TYPE)
+	    {
+	      HOST_WIDE_INT size = int_size_in_bytes (TREE_TYPE (exp));
+	      obstack_grow (&permanent_obstack, (char *) &size, sizeof size);
+	    }
+
+	  for (link = CONSTRUCTOR_ELTS (exp); link; link = TREE_CHAIN (link))
+	    {
+	      if (TREE_VALUE (link))
+		record_constant_1 (TREE_VALUE (link));
+	      else
+		{
+		  tree zero = 0;
+
+		  obstack_grow (&permanent_obstack,
+				(char *) &zero, sizeof zero);
+		}
+
+	      if (TREE_PURPOSE (link)
+		  && TREE_CODE (TREE_PURPOSE (link)) == FIELD_DECL)
+		obstack_grow (&permanent_obstack,
+			      (char *) &TREE_PURPOSE (link),
+			      sizeof TREE_PURPOSE (link));
+	      else if (TREE_PURPOSE (link))
+		record_constant_1 (TREE_PURPOSE (link));
+	      else if (have_purpose)
+		{
+		  int zero = 0;
+
+		  obstack_grow (&permanent_obstack,
+				(char *) &zero, sizeof zero);
+		}
+	    }
+	}
+      return;
+
+    case ADDR_EXPR:
+      {
+	struct addr_const value;
+
+	decode_addr_const (exp, &value);
+	/* Record the offset.  */
+	obstack_grow (&permanent_obstack,
+		      (char *) &value.offset, sizeof value.offset);
+
+	switch (GET_CODE (value.base))
+	  {
+	  case SYMBOL_REF:
+	    /* Record the symbol name.  */
+	    obstack_grow (&permanent_obstack, XSTR (value.base, 0),
+			  strlen (XSTR (value.base, 0)) + 1);
+	    break;
+	  case LABEL_REF:
+	    /* Record the address of the CODE_LABEL.  It may not have
+	       been emitted yet, so it's UID may be zero.  But pointer
+	       identity is good enough.  */
+	    obstack_grow (&permanent_obstack, &XEXP (value.base, 0),
+			  sizeof (rtx));
+	    break;
+	  default:
+	    abort ();
+	  }
+      }
+      return;
+
+    case PLUS_EXPR:
+    case MINUS_EXPR:
+    case RANGE_EXPR:
+      record_constant_1 (TREE_OPERAND (exp, 0));
+      record_constant_1 (TREE_OPERAND (exp, 1));
+      return;
+
+    case NOP_EXPR:
+    case CONVERT_EXPR:
+    case NON_LVALUE_EXPR:
+      record_constant_1 (TREE_OPERAND (exp, 0));
+      return;
+
+    default:
+      {
+	tree new = (*lang_hooks.expand_constant) (exp);
+
+	if (new != exp)
+          record_constant_1 (new);
+	return;
+      }
+    }
+
+  /* Record constant contents.  */
+  obstack_grow (&permanent_obstack, strp, len);
+}

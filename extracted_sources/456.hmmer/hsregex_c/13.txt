@@ -1,0 +1,151 @@
+static int			/* 0 failure, 1 success */
+regmatch(ep, prog)
+register struct exec *ep;
+char *prog;
+{
+	register char *scan;	/* Current node. */
+	char *next;		/* Next node. */
+
+#ifdef DEBUG
+	if (prog != NULL && regnarrate)
+		fprintf(stderr, "%s(\n", regprop(prog));
+#endif
+	for (scan = prog; scan != NULL; scan = next) {
+#ifdef DEBUG
+		if (regnarrate)
+			fprintf(stderr, "%s...\n", regprop(scan));
+#endif
+		next = regnext(scan);
+
+		switch (OP(scan)) {
+		case BOL:
+			if (ep->reginput != ep->regbol)
+				return(0);
+			break;
+		case EOL:
+			if (*ep->reginput != '\0')
+				return(0);
+			break;
+		case ANY:
+			if (*ep->reginput == '\0')
+				return(0);
+			ep->reginput++;
+			break;
+		case EXACTLY: {
+			register size_t len;
+			register char *const opnd = OPERAND(scan);
+
+			/* Inline the first character, for speed. */
+			if (*opnd != *ep->reginput)
+				return(0);
+			len = strlen(opnd);
+			if (len > 1 && strncmp(opnd, ep->reginput, len) != 0)
+				return(0);
+			ep->reginput += len;
+			break;
+			}
+		case ANYOF:
+			if (*ep->reginput == '\0' ||
+					strchr(OPERAND(scan), *ep->reginput) == NULL)
+				return(0);
+			ep->reginput++;
+			break;
+		case ANYBUT:
+			if (*ep->reginput == '\0' ||
+					strchr(OPERAND(scan), *ep->reginput) != NULL)
+				return(0);
+			ep->reginput++;
+			break;
+		case NOTHING:
+			break;
+		case BACK:
+			break;
+		case OPEN+1: case OPEN+2: case OPEN+3:
+		case OPEN+4: case OPEN+5: case OPEN+6:
+		case OPEN+7: case OPEN+8: case OPEN+9: {
+			register const int no = OP(scan) - OPEN;
+			register char *const input = ep->reginput;
+
+			if (regmatch(ep, next)) {
+				/*
+				 * Don't set startp if some later
+				 * invocation of the same parentheses
+				 * already has.
+				 */
+				if (ep->regstartp[no] == NULL)
+					ep->regstartp[no] = input;
+				return(1);
+			} else
+				return(0);
+			break;
+			}
+		case CLOSE+1: case CLOSE+2: case CLOSE+3:
+		case CLOSE+4: case CLOSE+5: case CLOSE+6:
+		case CLOSE+7: case CLOSE+8: case CLOSE+9: {
+			register const int no = OP(scan) - CLOSE;
+			register char *const input = ep->reginput;
+
+			if (regmatch(ep, next)) {
+				/*
+				 * Don't set endp if some later
+				 * invocation of the same parentheses
+				 * already has.
+				 */
+				if (ep->regendp[no] == NULL)
+					ep->regendp[no] = input;
+				return(1);
+			} else
+				return(0);
+			break;
+			}
+		case BRANCH: {
+			register char *const save = ep->reginput;
+
+			if (OP(next) != BRANCH)		/* No choice. */
+				next = OPERAND(scan);	/* Avoid recursion. */
+			else {
+				while (OP(scan) == BRANCH) {
+					if (regmatch(ep, OPERAND(scan)))
+						return(1);
+					ep->reginput = save;
+					scan = regnext(scan);
+				}
+				return(0);
+				/* NOTREACHED */
+			}
+			break;
+			}
+		case STAR: case PLUS: {
+			register const char nextch =
+				(OP(next) == EXACTLY) ? *OPERAND(next) : '\0';
+			register size_t no;
+			register char *const save = ep->reginput;
+			register const size_t min = (OP(scan) == STAR) ? 0 : 1;
+
+			for (no = regrepeat(ep, OPERAND(scan)) + 1; no > min; no--) {
+				ep->reginput = save + no - 1;
+				/* If it could work, try it. */
+				if (nextch == '\0' || *ep->reginput == nextch)
+					if (regmatch(ep, next))
+						return(1);
+			}
+			return(0);
+			break;
+			}
+		case END:
+			return(1);	/* Success! */
+			break;
+		default:
+			sqd_regerror("regexp corruption");
+			return(0);
+			break;
+		}
+	}
+
+	/*
+	 * We get here only if there's trouble -- normally "case END" is
+	 * the terminating point.
+	 */
+	sqd_regerror("corrupted pointers");
+	return(0);
+}

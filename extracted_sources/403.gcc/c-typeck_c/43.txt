@@ -1,0 +1,80 @@
+static void
+set_nonincremental_init_from_string (str)
+     tree str;
+{
+  tree value, purpose, type;
+  HOST_WIDE_INT val[2];
+  const char *p, *end;
+  int byte, wchar_bytes, charwidth, bitpos;
+
+  if (TREE_CODE (constructor_type) != ARRAY_TYPE)
+    abort ();
+
+  if (TYPE_PRECISION (TREE_TYPE (TREE_TYPE (str)))
+      == TYPE_PRECISION (char_type_node))
+    wchar_bytes = 1;
+  else if (TYPE_PRECISION (TREE_TYPE (TREE_TYPE (str)))
+	   == TYPE_PRECISION (wchar_type_node))
+    wchar_bytes = TYPE_PRECISION (wchar_type_node) / BITS_PER_UNIT;
+  else
+    abort ();
+
+  charwidth = TYPE_PRECISION (char_type_node);
+  type = TREE_TYPE (constructor_type);
+  p = TREE_STRING_POINTER (str);
+  end = p + TREE_STRING_LENGTH (str);
+
+  for (purpose = bitsize_zero_node;
+       p < end && !tree_int_cst_lt (constructor_max_index, purpose);
+       purpose = size_binop (PLUS_EXPR, purpose, bitsize_one_node))
+    {
+      if (wchar_bytes == 1)
+	{
+	  val[1] = (unsigned char) *p++;
+	  val[0] = 0;
+	}
+      else
+	{
+	  val[0] = 0;
+	  val[1] = 0;
+	  for (byte = 0; byte < wchar_bytes; byte++)
+	    {
+	      if (BYTES_BIG_ENDIAN)
+		bitpos = (wchar_bytes - byte - 1) * charwidth;
+	      else
+		bitpos = byte * charwidth;
+	      val[bitpos < HOST_BITS_PER_WIDE_INT]
+		|= ((unsigned HOST_WIDE_INT) ((unsigned char) *p++))
+		   << (bitpos % HOST_BITS_PER_WIDE_INT);
+	    }
+	}
+
+      if (!TREE_UNSIGNED (type))
+	{
+	  bitpos = ((wchar_bytes - 1) * charwidth) + HOST_BITS_PER_CHAR;
+	  if (bitpos < HOST_BITS_PER_WIDE_INT)
+	    {
+	      if (val[1] & (((HOST_WIDE_INT) 1) << (bitpos - 1)))
+		{
+		  val[1] |= ((HOST_WIDE_INT) -1) << bitpos;
+		  val[0] = -1;
+		}
+	    }
+	  else if (bitpos == HOST_BITS_PER_WIDE_INT)
+	    {
+	      if (val[1] < 0)
+	        val[0] = -1;
+	    }
+	  else if (val[0] & (((HOST_WIDE_INT) 1)
+			     << (bitpos - 1 - HOST_BITS_PER_WIDE_INT)))
+	    val[0] |= ((HOST_WIDE_INT) -1)
+		      << (bitpos - HOST_BITS_PER_WIDE_INT);
+	}
+
+      value = build_int_2 (val[1], val[0]);
+      TREE_TYPE (value) = type;
+      add_pending_init (purpose, value);
+    }
+
+  constructor_incremental = 0;
+}

@@ -1,0 +1,187 @@
+static int
+write_srccorr (fileid, file_info_entry, dosizeonly)
+     int fileid;
+     dst_file_info_entry file_info_entry;
+     int dosizeonly;
+{
+  int src_command_size;
+  int linesleft = file_info_entry.max_line;
+  int linestart = file_info_entry.listing_line_start;
+  int flen = file_info_entry.flen;
+  int linestodo = 0;
+  DST_SOURCE_CORR src_header;
+  DST_SRC_COMMAND src_command;
+  DST_SRC_COMMAND src_command_sf;
+  DST_SRC_COMMAND src_command_sl;
+  DST_SRC_COMMAND src_command_sr;
+  DST_SRC_COMMAND src_command_dl;
+  DST_SRC_CMDTRLR src_cmdtrlr;
+  char buff[256];
+  int totsize = 0;
+
+  if (fileid == 1)
+    {
+      src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
+	= DST_K_SOURCE_CORR_HEADER_SIZE + 1 - 1;
+      src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
+	= DST_K_SOURCE;
+      src_command.dst_b_src_command = DST_K_SRC_FORMFEED;
+
+      totsize += write_debug_header (&src_header.dst_a_source_corr_header,
+				     "source corr", dosizeonly);
+
+      totsize += write_debug_data1 (src_command.dst_b_src_command,
+				    "source_corr (SRC FORMFEED)",
+				    dosizeonly);
+    }
+
+  src_command_size
+    = DST_K_SRC_COMMAND_SIZE + flen + DST_K_SRC_CMDTRLR_SIZE;
+  src_command.dst_b_src_command = DST_K_SRC_DECLFILE;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_length
+    = src_command_size - 2;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_flags = 0;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_w_src_df_fileid
+    = fileid;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_q_src_df_rms_cdt
+    = file_info_entry.cdt;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_l_src_df_rms_ebk
+    = file_info_entry.ebk;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_w_src_df_rms_ffb
+    = file_info_entry.ffb;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_rms_rfo
+    = file_info_entry.rfo;
+  src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_filename
+    = file_info_entry.flen;
+
+  src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
+    = DST_K_SOURCE_CORR_HEADER_SIZE + src_command_size - 1;
+  src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
+    = DST_K_SOURCE;
+
+  src_cmdtrlr.dst_b_src_df_libmodname = 0;
+  
+  totsize += write_debug_header (&src_header.dst_a_source_corr_header,
+				 "source corr", dosizeonly);
+  totsize += write_debug_data1 (src_command.dst_b_src_command,
+				"source_corr (DECL SRC FILE)", dosizeonly);
+  totsize += write_debug_data1
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_length,
+     "source_corr (length)", dosizeonly);
+
+  totsize += write_debug_data1
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_flags,
+     "source_corr (flags)", dosizeonly);
+
+  totsize += write_debug_data2
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_w_src_df_fileid,
+     "source_corr (fileid)", dosizeonly);
+
+  totsize += write_debug_data8
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_q_src_df_rms_cdt,
+     "source_corr (creation date)", dosizeonly);
+  
+  totsize += write_debug_data4
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_l_src_df_rms_ebk,
+     "source_corr (EOF block number)", dosizeonly);
+
+  totsize += write_debug_data2
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_w_src_df_rms_ffb,
+     "source_corr (first free byte)", dosizeonly);
+
+  totsize += write_debug_data1
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_rms_rfo,
+     "source_corr (record and file organization)", dosizeonly);
+
+  totsize += write_debug_data1
+    (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_filename,
+     "source_corr (filename length)", dosizeonly);
+
+  totsize += write_debug_string (file_info_entry.file_name,
+				 "source file name", dosizeonly);
+  totsize += write_debug_data1 (src_cmdtrlr.dst_b_src_df_libmodname,
+				"source_corr (libmodname)", dosizeonly);
+
+  src_command_sf.dst_b_src_command = DST_K_SRC_SETFILE;
+  src_command_sf.dst_a_src_cmd_fields.dst_w_src_unsword = fileid;
+
+  src_command_sr.dst_b_src_command = DST_K_SRC_SETREC_W;
+  src_command_sr.dst_a_src_cmd_fields.dst_w_src_unsword = 1;
+
+  src_command_sl.dst_b_src_command = DST_K_SRC_SETLNUM_L;
+  src_command_sl.dst_a_src_cmd_fields.dst_l_src_unslong = linestart + 1;
+
+  src_command_dl.dst_b_src_command = DST_K_SRC_DEFLINES_W;
+
+  if (linesleft > 65534)
+    linesleft = linesleft - 65534, linestodo = 65534;
+  else
+    linestodo = linesleft, linesleft = 0;
+
+  src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword = linestodo;
+
+  src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
+    = DST_K_SOURCE_CORR_HEADER_SIZE + 3 + 3 + 5 + 3 - 1;
+  src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
+    = DST_K_SOURCE;
+
+  totsize += write_debug_header (&src_header.dst_a_source_corr_header,
+				 "source corr", dosizeonly);
+
+  totsize += write_debug_data1 (src_command_sf.dst_b_src_command,
+				"source_corr (src setfile)", dosizeonly);
+
+  totsize += write_debug_data2
+    (src_command_sf.dst_a_src_cmd_fields.dst_w_src_unsword,
+     "source_corr (fileid)", dosizeonly);
+
+  totsize += write_debug_data1 (src_command_sr.dst_b_src_command,
+				"source_corr (setrec)", dosizeonly);
+
+  totsize += write_debug_data2
+    (src_command_sr.dst_a_src_cmd_fields.dst_w_src_unsword,
+     "source_corr (recnum)", dosizeonly);
+
+  totsize += write_debug_data1 (src_command_sl.dst_b_src_command,
+				"source_corr (setlnum)", dosizeonly);
+
+  totsize += write_debug_data4
+    (src_command_sl.dst_a_src_cmd_fields.dst_l_src_unslong,
+     "source_corr (linenum)", dosizeonly);
+
+  totsize += write_debug_data1 (src_command_dl.dst_b_src_command,
+				"source_corr (deflines)", dosizeonly);
+
+  sprintf (buff, "source_corr (%d)",
+	   src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword);
+  totsize += write_debug_data2
+    (src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword, buff, dosizeonly);
+
+  while (linesleft > 0)
+    {
+      src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
+	= DST_K_SOURCE_CORR_HEADER_SIZE + 3 - 1;
+      src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
+	= DST_K_SOURCE;
+      src_command_dl.dst_b_src_command = DST_K_SRC_DEFLINES_W;
+
+      if (linesleft > 65534)
+	linesleft = linesleft - 65534, linestodo = 65534;
+      else
+	linestodo = linesleft, linesleft = 0;
+
+      src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword = linestodo;
+
+      totsize += write_debug_header (&src_header.dst_a_source_corr_header,
+				     "source corr", dosizeonly);
+      totsize += write_debug_data1 (src_command_dl.dst_b_src_command,
+				    "source_corr (deflines)", dosizeonly);
+      sprintf (buff, "source_corr (%d)",
+	       src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword);
+      totsize += write_debug_data2
+	(src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword,
+	 buff, dosizeonly);
+    }
+
+  return totsize;
+}

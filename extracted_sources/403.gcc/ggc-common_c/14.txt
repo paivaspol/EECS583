@@ -1,0 +1,141 @@
+static void
+ggc_mark_trees ()
+{
+  while (ggc_pending_trees->elements_used)
+    {
+      tree t;
+      enum tree_code code;
+
+      t = VARRAY_TOP_TREE (ggc_pending_trees);
+      VARRAY_POP (ggc_pending_trees);
+      code = TREE_CODE (t);
+
+      /* Collect statistics, if appropriate.  */
+      if (ggc_stats)
+	{
+	  ++ggc_stats->num_trees[(int) code];
+	  ggc_stats->size_trees[(int) code] += ggc_get_size (t);
+	}
+
+      /* Bits from common.  */
+      ggc_mark_tree (TREE_TYPE (t));
+      ggc_mark_tree (TREE_CHAIN (t));
+
+      /* Some nodes require special handling.  */
+      switch (code)
+	{
+	case TREE_LIST:
+	  ggc_mark_tree (TREE_PURPOSE (t));
+	  ggc_mark_tree (TREE_VALUE (t));
+	  continue;
+
+	case TREE_VEC:
+	  {
+	    int i = TREE_VEC_LENGTH (t);
+
+	    while (--i >= 0)
+	      ggc_mark_tree (TREE_VEC_ELT (t, i));
+	    continue;
+	  }
+
+	case COMPLEX_CST:
+	  ggc_mark_tree (TREE_REALPART (t));
+	  ggc_mark_tree (TREE_IMAGPART (t));
+	  break;
+
+	case PARM_DECL:
+	  ggc_mark_rtx (DECL_INCOMING_RTL (t));
+	  break;
+
+	case FIELD_DECL:
+	  ggc_mark_tree (DECL_FIELD_BIT_OFFSET (t));
+	  break;
+
+	case IDENTIFIER_NODE:
+	  lang_mark_tree (t);
+	  continue;
+
+	default:
+	  break;
+	}
+  
+      /* But in general we can handle them by class.  */
+      switch (TREE_CODE_CLASS (code))
+	{
+	case 'd': /* A decl node.  */
+	  ggc_mark_tree (DECL_SIZE (t));
+	  ggc_mark_tree (DECL_SIZE_UNIT (t));
+	  ggc_mark_tree (DECL_NAME (t));
+	  ggc_mark_tree (DECL_CONTEXT (t));
+	  ggc_mark_tree (DECL_ARGUMENTS (t));
+	  ggc_mark_tree (DECL_RESULT_FLD (t));
+	  ggc_mark_tree (DECL_INITIAL (t));
+	  ggc_mark_tree (DECL_ABSTRACT_ORIGIN (t));
+	  ggc_mark_tree (DECL_SECTION_NAME (t));
+	  ggc_mark_tree (DECL_ATTRIBUTES (t));
+	  if (DECL_RTL_SET_P (t))
+	    ggc_mark_rtx (DECL_RTL (t));
+	  ggc_mark_rtx (DECL_LIVE_RANGE_RTL (t));
+	  ggc_mark_tree (DECL_VINDEX (t));
+	  if (DECL_ASSEMBLER_NAME_SET_P (t))
+	    ggc_mark_tree (DECL_ASSEMBLER_NAME (t));
+	  if (TREE_CODE (t) == FUNCTION_DECL)
+	    {
+	      ggc_mark_tree (DECL_SAVED_TREE (t));
+	      ggc_mark_tree (DECL_INLINED_FNS (t));
+	      if (DECL_SAVED_INSNS (t))
+		ggc_mark_struct_function (DECL_SAVED_INSNS (t));
+	    }
+	  lang_mark_tree (t);
+	  break;
+
+	case 't': /* A type node.  */
+	  ggc_mark_tree (TYPE_SIZE (t));
+	  ggc_mark_tree (TYPE_SIZE_UNIT (t));
+	  ggc_mark_tree (TYPE_ATTRIBUTES (t));
+	  ggc_mark_tree (TYPE_VALUES (t));
+	  ggc_mark_tree (TYPE_POINTER_TO (t));
+	  ggc_mark_tree (TYPE_REFERENCE_TO (t));
+	  ggc_mark_tree (TYPE_NAME (t));
+	  ggc_mark_tree (TYPE_MIN_VALUE (t));
+	  ggc_mark_tree (TYPE_MAX_VALUE (t));
+	  ggc_mark_tree (TYPE_NEXT_VARIANT (t));
+	  ggc_mark_tree (TYPE_MAIN_VARIANT (t));
+	  ggc_mark_tree (TYPE_BINFO (t));
+	  ggc_mark_tree (TYPE_CONTEXT (t));
+	  lang_mark_tree (t);
+	  break;
+
+	case 'b': /* A lexical block.  */
+	  ggc_mark_tree (BLOCK_VARS (t));
+	  ggc_mark_tree (BLOCK_SUBBLOCKS (t));
+	  ggc_mark_tree (BLOCK_SUPERCONTEXT (t));
+	  ggc_mark_tree (BLOCK_ABSTRACT_ORIGIN (t));
+	  break;
+
+	case 'c': /* A constant.  */
+	  ggc_mark_rtx (TREE_CST_RTL (t));
+	  break;
+
+	case 'r': case '<': case '1':
+	case '2': case 'e': case 's': /* Expressions.  */
+	  {
+	    int i = TREE_CODE_LENGTH (TREE_CODE (t));
+	    int first_rtl = first_rtl_op (TREE_CODE (t));
+
+	    while (--i >= 0)
+	      {
+		if (i >= first_rtl)
+		  ggc_mark_rtx ((rtx) TREE_OPERAND (t, i));
+		else
+		  ggc_mark_tree (TREE_OPERAND (t, i));
+	      }
+	    break;	
+	  }
+
+	case 'x':
+	  lang_mark_tree (t);
+	  break;
+	}
+    }
+}

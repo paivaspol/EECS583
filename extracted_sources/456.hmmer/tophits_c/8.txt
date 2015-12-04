@@ -1,0 +1,54 @@
+void
+TophitsReport(struct tophit_s *h, double E, int nseq)
+{
+  int i;
+  int memused;
+  int x;
+  int n;
+
+  /* Count up how much memory is used
+   * in the whole list.
+   */
+  memused = sizeof(struct hit_s) * h->alloc + sizeof(struct tophit_s);
+  for (i = 0; i < h->num; i++)
+    {
+      if (h->unsrt[i].name != NULL)
+	memused += strlen(h->unsrt[i].name) + 1;
+      if (h->unsrt[i].acc != NULL)
+	memused += strlen(h->unsrt[i].acc)  + 1;
+      if (h->unsrt[i].desc != NULL)
+	memused += strlen(h->unsrt[i].desc) + 1;
+      if (h->unsrt[i].ali != NULL)
+	{
+	  memused += sizeof(struct fancyali_s);
+	  x = 0;
+	  if (h->unsrt[i].ali->rfline != NULL) x++;
+	  if (h->unsrt[i].ali->csline != NULL) x++;
+  	  if (h->unsrt[i].ali->model  != NULL) x++;
+	  if (h->unsrt[i].ali->mline  != NULL) x++;
+	  if (h->unsrt[i].ali->aseq   != NULL) x++;
+	  memused += x * (h->unsrt[i].ali->len + 1);
+	  
+	  if (h->unsrt[i].ali->query  != NULL) 
+	    memused += strlen(h->unsrt[i].ali->query) + 1;
+	  if (h->unsrt[i].ali->target != NULL) 
+	    memused += strlen(h->unsrt[i].ali->target) + 1;
+	}
+    }
+
+  /* Count how many hits actually satisfy the E cutoff.
+   */
+  n = 0;
+  for (i = 0; i < h->num; i++)
+    {
+      if (h->hit[i]->pvalue * (double) nseq >= E) break;
+      n++;
+    }
+
+  /* Format and print a summary
+   */
+  printf("tophits_s report:\n");
+  printf("     Total hits:           %d\n", h->num);
+  printf("     Satisfying E cutoff:  %d\n", n);
+  printf("     Total memory:         %dK\n", memused / 1000);
+}

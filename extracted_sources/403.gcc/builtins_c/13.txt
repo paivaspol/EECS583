@@ -1,0 +1,70 @@
+static int
+apply_result_size ()
+{
+  static int size = -1;
+  int align, regno;
+  enum machine_mode mode;
+
+  /* The values computed by this function never change.  */
+  if (size < 0)
+    {
+      size = 0;
+
+      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+	if (FUNCTION_VALUE_REGNO_P (regno))
+	  {
+	    /* Search for the proper mode for copying this register's
+	       value.  I'm not sure this is right, but it works so far.  */
+	    enum machine_mode best_mode = VOIDmode;
+
+	    for (mode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+		 mode != TImode;
+		 mode = GET_MODE_WIDER_MODE (mode))
+	      if (HARD_REGNO_MODE_OK (regno, mode))
+		best_mode = mode;
+
+	    if (best_mode == VOIDmode)
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_FLOAT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		if (HARD_REGNO_MODE_OK (regno, mode)
+		    && have_insn_for (SET, mode))
+		  best_mode = mode;
+
+	    if (best_mode == VOIDmode)
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_VECTOR_FLOAT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		if (HARD_REGNO_MODE_OK (regno, mode)
+		    && have_insn_for (SET, mode))
+		      best_mode = mode;
+
+	    if (best_mode == VOIDmode)
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_VECTOR_INT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		if (HARD_REGNO_MODE_OK (regno, mode)
+		    && have_insn_for (SET, mode))
+		  best_mode = mode;
+
+	    mode = best_mode;
+	    if (mode == VOIDmode)
+	      abort ();
+
+	    align = GET_MODE_ALIGNMENT (mode) / BITS_PER_UNIT;
+	    if (size % align != 0)
+	      size = CEIL (size, align) * align;
+	    size += GET_MODE_SIZE (mode);
+	    apply_result_mode[regno] = mode;
+	  }
+	else
+	  apply_result_mode[regno] = VOIDmode;
+
+      /* Allow targets that use untyped_call and untyped_return to override
+	 the size so that machine-specific information can be stored here.  */
+#ifdef APPLY_RESULT_SIZE
+      size = APPLY_RESULT_SIZE;
+#endif
+    }
+  return size;
+}

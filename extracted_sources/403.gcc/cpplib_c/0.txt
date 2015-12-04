@@ -1,0 +1,87 @@
+static void directive_diagnostics
+	PARAMS ((cpp_reader *, const directive *, int));
+static void run_directive	PARAMS ((cpp_reader *, int,
+					 const char *, size_t));
+static const cpp_token *glue_header_name PARAMS ((cpp_reader *));
+static const cpp_token *parse_include PARAMS ((cpp_reader *));
+static void push_conditional	PARAMS ((cpp_reader *, int, int,
+					 const cpp_hashnode *));
+static unsigned int read_flag	PARAMS ((cpp_reader *, unsigned int));
+static U_CHAR *dequote_string	PARAMS ((cpp_reader *, const U_CHAR *,
+					 unsigned int));
+static int  strtoul_for_line	PARAMS ((const U_CHAR *, unsigned int,
+					 unsigned long *));
+static void do_diagnostic	PARAMS ((cpp_reader *, enum error_type, int));
+static cpp_hashnode *lex_macro_node	PARAMS ((cpp_reader *));
+static void do_include_common	PARAMS ((cpp_reader *, enum include_type));
+static struct pragma_entry *lookup_pragma_entry
+  PARAMS ((struct pragma_entry *, const cpp_hashnode *pragma));
+static struct pragma_entry *insert_pragma_entry
+  PARAMS ((cpp_reader *, struct pragma_entry **, const cpp_hashnode *,
+	   pragma_cb));
+static void do_pragma_once	PARAMS ((cpp_reader *));
+static void do_pragma_poison	PARAMS ((cpp_reader *));
+static void do_pragma_system_header	PARAMS ((cpp_reader *));
+static void do_pragma_dependency	PARAMS ((cpp_reader *));
+static void do_linemarker		PARAMS ((cpp_reader *));
+static const cpp_token *get_token_no_padding PARAMS ((cpp_reader *));
+static const cpp_token *get__Pragma_string PARAMS ((cpp_reader *));
+static void destringize_and_run PARAMS ((cpp_reader *, const cpp_string *));
+static int parse_answer PARAMS ((cpp_reader *, struct answer **, int));
+static cpp_hashnode *parse_assertion PARAMS ((cpp_reader *, struct answer **,
+					      int));
+static struct answer ** find_answer PARAMS ((cpp_hashnode *,
+					     const struct answer *));
+static void handle_assertion	PARAMS ((cpp_reader *, const char *, int));
+
+/* This is the table of directive handlers.  It is ordered by
+   frequency of occurrence; the numbers at the end are directive
+   counts from all the source code I have lying around (egcs and libc
+   CVS as of 1999-05-18, plus grub-0.5.91, linux-2.2.9, and
+   pcmcia-cs-3.0.9).  This is no longer important as directive lookup
+   is now O(1).  All extensions other than #warning and #include_next
+   are deprecated.  The name is where the extension appears to have
+   come from.  */
+
+#define DIRECTIVE_TABLE							\
+D(define,	T_DEFINE = 0,	KANDR,     IN_I)	   /* 270554 */ \
+D(include,	T_INCLUDE,	KANDR,     INCL)	   /*  52262 */ \
+D(endif,	T_ENDIF,	KANDR,     COND)	   /*  45855 */ \
+D(ifdef,	T_IFDEF,	KANDR,     COND | IF_COND) /*  22000 */ \
+D(if,		T_IF,		KANDR,     COND | IF_COND) /*  18162 */ \
+D(else,		T_ELSE,		KANDR,     COND)	   /*   9863 */ \
+D(ifndef,	T_IFNDEF,	KANDR,     COND | IF_COND) /*   9675 */ \
+D(undef,	T_UNDEF,	KANDR,     IN_I)	   /*   4837 */ \
+D(line,		T_LINE,		KANDR,     0)		   /*   2465 */ \
+D(elif,		T_ELIF,		STDC89,    COND)	   /*    610 */ \
+D(error,	T_ERROR,	STDC89,    0)		   /*    475 */ \
+D(pragma,	T_PRAGMA,	STDC89,    IN_I)	   /*    195 */ \
+D(warning,	T_WARNING,	EXTENSION, 0)		   /*     22 */ \
+D(include_next,	T_INCLUDE_NEXT,	EXTENSION, INCL)	   /*     19 */ \
+D(ident,	T_IDENT,	EXTENSION, IN_I)	   /*     11 */ \
+D(import,	T_IMPORT,	EXTENSION, INCL)	   /* 0 ObjC */	\
+D(assert,	T_ASSERT,	EXTENSION, 0)		   /* 0 SVR4 */	\
+D(unassert,	T_UNASSERT,	EXTENSION, 0)		   /* 0 SVR4 */	\
+SCCS_ENTRY						   /* 0 SVR4? */
+
+/* #sccs is not always recognized.  */
+#ifdef SCCS_DIRECTIVE
+# define SCCS_ENTRY D(sccs, T_SCCS, EXTENSION, 0)
+#else
+# define SCCS_ENTRY /* nothing */
+#endif
+
+/* Use the table to generate a series of prototypes, an enum for the
+   directive names, and an array of directive handlers.  */
+
+/* Don't invoke CONCAT2 with any whitespace or K&R cc will fail.  */
+#define D(name, t, o, f) static void CONCAT2(do_,name) PARAMS ((cpp_reader *));
+DIRECTIVE_TABLE
+#undef D
+
+#define D(n, tag, o, f) tag,
+enum
+{
+  DIRECTIVE_TABLE
+  N_DIRECTIVES
+};

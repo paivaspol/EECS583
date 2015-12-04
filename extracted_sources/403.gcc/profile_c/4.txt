@@ -1,0 +1,18 @@
+static basic_block
+find_group (bb)
+     basic_block bb;
+{
+  basic_block group = bb, bb1;
+
+  while ((basic_block) group->aux != group)
+    group = (basic_block) group->aux;
+
+  /* Compress path.  */
+  while ((basic_block) bb->aux != group)
+    {
+      bb1 = (basic_block) bb->aux;
+      bb->aux = (void *) group;
+      bb = bb1;
+    }
+  return group;
+}

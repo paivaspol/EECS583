@@ -1,0 +1,91 @@
+static void
+ggc_mark_rtx_children_1 (r)
+     rtx r;
+{
+  const char *fmt;
+  int i;
+  rtx next_rtx;
+
+  do 
+    {
+      enum rtx_code code = GET_CODE (r);
+      /* This gets set to a child rtx to eliminate tail recursion.  */
+      next_rtx = NULL;
+
+      /* Collect statistics, if appropriate.  */
+      if (ggc_stats)
+	{
+	  ++ggc_stats->num_rtxs[(int) code];
+	  ggc_stats->size_rtxs[(int) code] += ggc_get_size (r);
+	}
+
+      /* ??? If (some of) these are really pass-dependent info, do we
+	 have any right poking our noses in?  */
+      switch (code)
+	{
+	case MEM:
+	  ggc_mark (MEM_ATTRS (r));
+	  break;
+	case JUMP_INSN:
+	  ggc_mark_rtx (JUMP_LABEL (r));
+	  break;
+	case CODE_LABEL:
+	  ggc_mark_rtx (LABEL_REFS (r));
+	  break;
+	case LABEL_REF:
+	  ggc_mark_rtx (LABEL_NEXTREF (r));
+	  ggc_mark_rtx (CONTAINING_INSN (r));
+	  break;
+	case ADDRESSOF:
+	  ggc_mark_tree (ADDRESSOF_DECL (r));
+	  break;
+	case CONST_DOUBLE:
+	  ggc_mark_rtx (CONST_DOUBLE_CHAIN (r));
+	  break;
+	case NOTE:
+	  switch (NOTE_LINE_NUMBER (r))
+	    {
+	    case NOTE_INSN_RANGE_BEG:
+	    case NOTE_INSN_RANGE_END:
+	    case NOTE_INSN_LIVE:
+	    case NOTE_INSN_EXPECTED_VALUE:
+	      ggc_mark_rtx (NOTE_RANGE_INFO (r));
+	      break;
+
+	    case NOTE_INSN_BLOCK_BEG:
+	    case NOTE_INSN_BLOCK_END:
+	      ggc_mark_tree (NOTE_BLOCK (r));
+	      break;
+
+	    default:
+	      break;
+	    }
+	  break;
+
+	default:
+	  break;
+	}
+
+      for (fmt = GET_RTX_FORMAT (GET_CODE (r)), i = 0; *fmt ; ++fmt, ++i)
+	{
+	  rtx exp;
+	  switch (*fmt)
+	    {
+	    case 'e': case 'u':
+	      exp = XEXP (r, i);
+	      if (ggc_test_and_set_mark (exp))
+		{ 
+		  if (next_rtx == NULL) 
+		    next_rtx = exp; 
+		  else 
+		    ggc_mark_rtx_children (exp);
+		} 
+	      break;
+	    case 'V': case 'E':
+	      ggc_mark_rtvec (XVEC (r, i));
+	      break;
+	    }
+	}
+    }
+  while ((r = next_rtx) != NULL);
+}

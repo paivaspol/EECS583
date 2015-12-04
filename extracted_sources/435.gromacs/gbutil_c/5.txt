@@ -1,0 +1,42 @@
+void gen_box(int NTB,int natoms,rvec *x, matrix box,rvec box_space,
+	     bool bCenter)
+{
+  int i,m;
+  rvec xmin, xmax;
+  real max_box;
+  
+  /*calculate minimum and maximum x[0..DIM-1]*/
+  for (m=0;(m<DIM);m++)
+    xmin[m]=xmax[m]=x[0][m];
+  for (i=1;(i < natoms); i++) 
+    for (m=0;m<DIM;m++) {
+      xmin[m]=min(xmin[m],x[i][m]);
+      xmax[m]=max(xmax[m],x[i][m]);
+    }
+    
+  /*calculate the new box sizes for cubic and octahedral ...*/
+  for (m=0; (m<DIM);m++)
+    box[m][m]=xmax[m]-xmin[m]+2*box_space[m];
+ 
+  /*calculate the box size if NTB=1 (truncated octahedron)*/
+  if (NTB==1) {
+    max_box=box[0][0];
+    for(m=0;(m<DIM);m++)
+      max_box=max(max_box,box[m][m]); 
+    for (m=0;(m<DIM);m++)
+      box[m][m]=max_box;
+  }
+  
+  /*move the molecule to the center of the box*/
+  if (bCenter)
+    for(i=0;(i<natoms);i++)
+      for (m=0;(m<DIM);m++) {
+	x[i][m]+=0.5*(box[m][m]-xmin[m]-xmax[m]);
+      }
+
+
+#ifdef DEBUG 
+  /* print data to check this */
+  print_stat(x,natoms,box);
+#endif
+}/*gen_box()*/

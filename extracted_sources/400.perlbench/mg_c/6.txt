@@ -1,0 +1,33 @@
+int
+Perl_magic_regdatum_get(pTHX_ SV *sv, MAGIC *mg)
+{
+    register I32 paren;
+    register I32 s;
+    register I32 i;
+    register REGEXP *rx;
+    I32 t;
+
+    if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	paren = mg->mg_len;
+	if (paren < 0)
+	    return 0;
+	if (paren <= (I32)rx->nparens &&
+	    (s = rx->startp[paren]) != -1 &&
+	    (t = rx->endp[paren]) != -1)
+	    {
+		if (mg->mg_obj)		/* @+ */
+		    i = t;
+		else			/* @- */
+		    i = s;
+
+		if (i > 0 && RX_MATCH_UTF8(rx)) {
+		    char *b = rx->subbeg;
+		    if (b)
+		        i = Perl_utf8_length(aTHX_ (U8*)b, (U8*)(b+i));
+		}
+
+		sv_setiv(sv, i);
+	    }
+    }
+    return 0;
+}

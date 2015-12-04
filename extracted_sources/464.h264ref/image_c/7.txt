@@ -1,0 +1,112 @@
+void field_picture (Picture *top, Picture *bottom)
+{
+  //Rate control
+  int old_pic_type;              // picture type of top field used for rate control    
+  int TopFieldBits;
+  
+  //Rate control
+  old_pic_type = img->type;
+
+  stats->em_prev_bits_fld = 0;
+  stats->em_prev_bits = &stats->em_prev_bits_fld;
+  img->number *= 2;
+  img->buf_cycle *= 2;
+  img->height = (input->img_height+img->auto_crop_bottom) / 2; 
+  img->height_cr = img->height_cr_frame / 2;
+  img->fld_flag = 1;
+  img->PicSizeInMbs = img->FrameSizeInMbs/2;
+  // Top field
+  
+//  img->bottom_field_flag = 0;
+  enc_top_picture  = alloc_storable_picture (img->structure, img->width, img->height, img->width_cr, img->height_cr);
+  enc_top_picture->poc=img->toppoc;
+  enc_top_picture->frame_poc = img->toppoc;
+  enc_top_picture->pic_num = img->frame_num;
+  enc_top_picture->frame_num = img->frame_num;
+  enc_top_picture->coded_frame = 0;
+  enc_top_picture->MbaffFrameFlag = img->MbaffFrameFlag = FALSE;
+  img->ThisPOC = img->toppoc;
+  
+  img->structure = TOP_FIELD;
+  enc_picture = enc_top_picture;
+  copy_params();
+
+  put_buffer_top ();
+  init_field ();
+  if (img->type == B_SLICE)       //all I- and P-frames
+    nextP_tr_fld--;
+
+
+  img->fld_flag = 1;
+//  img->bottom_field_flag = 0;
+ 
+  //Rate control
+  if(input->RCEnable)
+  {
+    img->BasicUnit=input->basicunit;
+
+    if(input->PicInterlace==FIELD_CODING)
+      rc_init_pict(0,1,1); 
+    else
+      rc_init_pict(0,1,0);
+
+    img->qp  = updateQuantizationParameter(1); 
+   }
+  img->TopFieldFlag=1;
+
+  code_a_picture(top_pic);
+  enc_picture->structure = 1;
+    
+  store_picture_in_dpb(enc_top_picture);
+
+  top->bits_per_picture = 8 * ((((img->currentSlice)->partArr[0]).bitstream)->byte_pos);
+
+  //Rate control
+  TopFieldBits=top->bits_per_picture;
+
+  //  Bottom field
+//  img->bottom_field_flag = 0;
+  enc_bottom_picture  = alloc_storable_picture (img->structure, img->width, img->height, img->width_cr, img->height_cr);
+  enc_bottom_picture->poc=img->bottompoc;
+  enc_bottom_picture->frame_poc = img->bottompoc;
+  enc_bottom_picture->pic_num = img->frame_num;
+  enc_bottom_picture->frame_num = img->frame_num;
+  enc_bottom_picture->coded_frame = 0;
+  enc_bottom_picture->MbaffFrameFlag = img->MbaffFrameFlag = FALSE;
+  img->ThisPOC = img->bottompoc;
+  img->structure = BOTTOM_FIELD;
+  enc_picture = enc_bottom_picture;
+  copy_params();
+  put_buffer_bot ();
+  img->number++;
+
+  init_field ();
+
+  if (img->type == B_SLICE)       //all I- and P-frames
+    nextP_tr_fld++;             //check once coding B field
+
+ if (img->type == I_SLICE && input->IntraBottom!=1)
+    img->type = P_SLICE;
+
+  img->fld_flag = 1;
+//  img->bottom_field_flag = 1;
+
+  //Rate control
+  if(input->RCEnable)  setbitscount(TopFieldBits);
+  if(input->RCEnable)
+  {
+    rc_init_pict(0,0,0); 
+    img->qp  = updateQuantizationParameter(0); 
+  }
+  img->TopFieldFlag=0;
+
+  enc_picture->structure = 2;
+  code_a_picture(bottom_pic);
+
+  bottom->bits_per_picture = 8 * ((((img->currentSlice)->partArr[0]).bitstream)->byte_pos);
+
+  // the distortion for a field coded frame (consisting of top and bottom field)
+  // lives in the top->distortion varaibles, thye bottom-> are dummies
+  distortion_fld (&top->distortion_y, &top->distortion_u, &top->distortion_v);
+
+}

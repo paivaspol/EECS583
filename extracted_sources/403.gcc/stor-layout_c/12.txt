@@ -1,0 +1,61 @@
+static void
+place_union_field (rli, field)
+     record_layout_info rli;
+     tree field;
+{
+  unsigned int desired_align;
+
+  layout_decl (field, 0);
+  
+  DECL_FIELD_OFFSET (field) = size_zero_node;
+  DECL_FIELD_BIT_OFFSET (field) = bitsize_zero_node;
+  SET_DECL_OFFSET_ALIGN (field, BIGGEST_ALIGNMENT);
+
+  desired_align = DECL_ALIGN (field);
+
+#ifdef BIGGEST_FIELD_ALIGNMENT
+  /* Some targets (i.e. i386) limit union field alignment
+     to a lower boundary than alignment of variables unless
+     it was overridden by attribute aligned.  */
+  if (! DECL_USER_ALIGN (field))
+    desired_align =
+      MIN (desired_align, (unsigned) BIGGEST_FIELD_ALIGNMENT);
+#endif
+
+#ifdef ADJUST_FIELD_ALIGN
+  if (! DECL_USER_ALIGN (field))
+    desired_align = ADJUST_FIELD_ALIGN (field, desired_align);
+#endif
+
+  TYPE_USER_ALIGN (rli->t) |= DECL_USER_ALIGN (field);
+
+  /* Union must be at least as aligned as any field requires.  */
+  rli->record_align = MAX (rli->record_align, desired_align);
+  rli->unpadded_align = MAX (rli->unpadded_align, desired_align);
+
+#ifdef PCC_BITFIELD_TYPE_MATTERS
+  /* On the m88000, a bit field of declare type `int' forces the
+     entire union to have `int' alignment.  */
+  if (PCC_BITFIELD_TYPE_MATTERS && DECL_BIT_FIELD_TYPE (field))
+    {
+      unsigned int type_align = TYPE_ALIGN (TREE_TYPE (field));
+
+#ifdef ADJUST_FIELD_ALIGN
+      if (! TYPE_USER_ALIGN (TREE_TYPE (field)))
+	type_align = ADJUST_FIELD_ALIGN (field, type_align);
+#endif
+      rli->record_align = MAX (rli->record_align, type_align);
+      rli->unpadded_align = MAX (rli->unpadded_align, type_align);
+      TYPE_USER_ALIGN (rli->t) |= TYPE_USER_ALIGN (TREE_TYPE (field));
+    }
+#endif
+
+  /* We assume the union's size will be a multiple of a byte so we don't
+     bother with BITPOS.  */
+  if (TREE_CODE (rli->t) == UNION_TYPE)
+    rli->offset = size_binop (MAX_EXPR, rli->offset, DECL_SIZE_UNIT (field));
+  else if (TREE_CODE (rli->t) == QUAL_UNION_TYPE)
+    rli->offset = fold (build (COND_EXPR, sizetype, 
+			       DECL_QUALIFIER (field),
+			       DECL_SIZE_UNIT (field), rli->offset));
+}

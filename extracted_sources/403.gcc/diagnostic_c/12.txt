@@ -1,0 +1,15 @@
+void
+init_output_buffer (buffer, prefix, maximum_length)
+     output_buffer *buffer;
+     const char *prefix;
+     int maximum_length;
+{
+  memset (buffer, 0, sizeof (output_buffer));
+  obstack_init (&buffer->obstack);
+  output_buffer_attached_stream (buffer) = stderr;
+  diagnostic_line_cutoff (buffer) = maximum_length;
+  diagnostic_prefixing_rule (buffer) = diagnostic_prefixing_rule (global_dc);
+  output_set_prefix (buffer, prefix);
+  output_text_length (buffer) = 0;
+  clear_diagnostic_info (buffer);  
+}

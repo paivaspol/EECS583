@@ -1,0 +1,20 @@
+int
+Perl_mg_clear(pTHX_ SV *sv)
+{
+    I32 mgs_ix;
+    MAGIC* mg;
+
+    mgs_ix = SSNEW(sizeof(MGS));
+    save_magic(mgs_ix, sv);
+
+    for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
+	MGVTBL* vtbl = mg->mg_virtual;
+	/* omit GSKIP -- never set here */
+
+	if (vtbl && vtbl->svt_clear)
+	    CALL_FPTR(vtbl->svt_clear)(aTHX_ sv, mg);
+    }
+
+    restore_magic(aTHX_ INT2PTR(void*, (IV)mgs_ix));
+    return 0;
+}

@@ -1,0 +1,69 @@
+int add_basic_path( int *basic_vec, int length, double coeff ) {
+
+    int perm[8],pp[8],ir[4];
+    int j,path_num;
+    int vec[MAX_LENGTH];
+    int flag;
+
+    path_num = 0;
+    /* now fill the long table with all rotations and reflections
+	of the fundamental path.  The path presented to us is for
+        the positive x component of dslash, so if the x coordinate
+        is reflected it will appear with a negative sign. */
+      /* permutations */
+      for(perm[0]=0;perm[0]<4;perm[0]++)
+      for(perm[1]=0;perm[1]<4;perm[1]++)
+      for(perm[2]=0;perm[2]<4;perm[2]++)
+      for(perm[3]=0;perm[3]<4;perm[3]++){
+	if(perm[0] != perm[1] && perm[0] != perm[2] 
+	  && perm[0] != perm[3] && perm[1] != perm[2]
+	  && perm[1] != perm[3] && perm[2] != perm[3] ) {
+	  /* reflections*/
+	  for(ir[0]=0;ir[0]<2;ir[0]++)
+	  for(ir[1]=0;ir[1]<2;ir[1]++)
+	  for(ir[2]=0;ir[2]<2;ir[2]++)
+	  for(ir[3]=0;ir[3]<2;ir[3]++){
+	    for(j=0;j<4;j++){
+	      pp[j]=perm[j];
+
+	      if(ir[j] == 1) pp[j]=OPP_DIR(pp[j]);
+	      pp[OPP_DIR(j)]=OPP_DIR(pp[j]);
+	    }
+	    /* create new vector*/
+	    for(j=0;j<length;j++) vec[j]=pp[basic_vec[j]];
+	    for(j=length;j<MAX_LENGTH;j++) vec[j]=NODIR;
+
+            flag=0;
+	    /* check if it's a new set: */
+	    for(j=0;j<num_q_paths;j++){
+	      flag = is_path_equal( vec, q_paths[j].dir, MAX_LENGTH );
+	      if(flag==1)break;
+	    }
+	    if(flag == 0 ){
+	      if(num_q_paths>=MAX_NUM){
+		node0_printf("OOPS: MAX_NUM too small\n");
+		exit(0);
+	      }
+	      q_paths[num_q_paths].length=length;
+	      for(j=0;j<MAX_LENGTH;j++) q_paths[num_q_paths].dir[j]=vec[j];
+		/* remember to copy NODIR's, or comparison will get confused */
+	      if(ir[0]==0){
+		q_paths[num_q_paths].coeff =  coeff;
+		q_paths[num_q_paths].forwback =  +1;
+	      }
+	      else{
+		q_paths[num_q_paths].coeff = -coeff;
+		q_paths[num_q_paths].forwback = -1;
+	      }
+	      num_q_paths++;
+	      path_num++;
+	      /**node0_printf("ADD PATH %d:  rx=%d ",num_q_paths-1,ir[0]);
+		 printpath( vec, length );**/
+	    }
+
+	  } /* end reflection*/
+        } /* end permutation if block */
+      } /* end permutation */
+    num_basic_paths++;
+    return(path_num);
+} /* add_basic_path */

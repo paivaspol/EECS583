@@ -1,0 +1,21 @@
+static int
+libcall_benefit (last)
+     rtx last;
+{
+  rtx insn;
+  int benefit = 0;
+
+  for (insn = XEXP (find_reg_note (last, REG_RETVAL, NULL_RTX), 0);
+       insn != last; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == CALL_INSN)
+	benefit += 10;		/* Assume at least this many insns in a library
+				   routine.  */
+      else if (GET_CODE (insn) == INSN
+	       && GET_CODE (PATTERN (insn)) != USE
+	       && GET_CODE (PATTERN (insn)) != CLOBBER)
+	benefit++;
+    }
+
+  return benefit;
+}

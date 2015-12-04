@@ -1,0 +1,40 @@
+int
+STORE_PIECE_OF_FIELD_C ( char * buf , int varname[], int * chunksize, int *retval )
+{
+  int i, n ;
+  int found ;
+  char vname[256] ;
+
+  n = varname[0] ;
+  for ( i = 1; i <= n ; i++ ) { vname[i-1] = varname[i] ; }
+  vname[n] = '\0' ;
+
+  found = -1 ;
+  for ( i = 0 ; i < numflds ; i++ ) { if ( !strcmp( fld_name[i], vname ) ) { found = i ; break ; } }
+  if ( found == -1 ) { 
+    fprintf(stderr,"frame/pack_utils.c: field (%s) not found; was not set up with add_to_bufsize_for_field\n",vname ) ;
+    *retval = 1 ;
+    return(0)  ;
+  }
+
+  if ( fld_cache[found] == NULL ) {
+     fld_cache[found] = (char *) malloc( fld_bufsize[found] ) ;
+     fld_curs[found] = 0 ;
+  }
+
+  if ( fld_curs[found] + *chunksize > fld_bufsize[found] ) {
+    fprintf(stderr,
+"frame/pack_utils.c: %s would overwrite %d + %d  > %d [%d]\n",vname, fld_curs[found], *chunksize, fld_bufsize[found], found ) ;
+    *retval = 1 ;
+    return(0)  ;
+  }
+
+#if !defined(SPEC_CPU)
+  bcopy( buf, fld_cache[found]+fld_curs[found], *chunksize ) ;
+#else
+  memcpy( fld_cache[found]+fld_curs[found], buf, *chunksize ) ;
+#endif
+  fld_curs[found] += *chunksize ;
+  *retval = 0 ;
+  return(0) ;
+}

@@ -1,0 +1,34 @@
+static char **enter_buf(t_symtab *symtab,char *name)
+{
+  int      i;
+  t_symbuf *symbuf;
+  bool     bCont;
+  
+  if (symtab->symbuf == NULL)
+    symtab->symbuf=new_symbuf();
+
+  symbuf=symtab->symbuf;
+  do {
+    for(i=0; (i < symbuf->bufsize); i++) {
+      if (symbuf->buf[i]==NULL) {
+	symtab->nr++;
+	symbuf->buf[i]=strdup(name);
+	return &(symbuf->buf[i]);
+      } else if (strcmp(symbuf->buf[i],name)==0)
+	return &(symbuf->buf[i]);
+    }
+    if (symbuf->next != NULL) {
+      symbuf=symbuf->next;
+      bCont = TRUE;
+    }
+    else
+      bCont = FALSE;
+  } while (bCont);
+
+  symbuf->next=new_symbuf();
+  symbuf=symbuf->next;
+
+  symtab->nr++;
+  symbuf->buf[0]=strdup(name);
+  return &(symbuf->buf[0]);
+}

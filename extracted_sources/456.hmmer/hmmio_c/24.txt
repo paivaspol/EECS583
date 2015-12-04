@@ -1,0 +1,164 @@
+static struct plan9_s *
+read_plan9_aschmm(FILE *fp, int version)
+{
+  struct plan9_s *hmm;
+  int   M;			/* length of model  */
+  char buffer[512];
+  char *statetype;
+  char *s;
+  int   k;			/* state number  */
+  int   i;			/* symbol number */
+  int   asize;			/* Alphabet size */
+  int   atype;			/* Alphabet type */
+
+				/* read M from first line */
+  if (fgets(buffer, 512, fp) == NULL) return NULL;
+  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+  if (!isdigit((int) (*s))) return NULL;
+  M = atoi(s);
+				/* read alphabet_length */
+  if (fgets(buffer, 512, fp) == NULL) return NULL;
+  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+  if (!isdigit((int) (*s))) return NULL;
+  asize = atoi(s);
+
+  /* Set global alphabet information
+   */
+  if      (asize == 4)  atype = hmmNUCLEIC;
+  else if (asize == 20) atype = hmmAMINO;
+  else Die("A nonbiological alphabet size of %d; so I can't convert plan9 to plan7", asize);
+  if      (Alphabet_type == hmmNOTSETYET) SetAlphabet(atype);
+  else if (atype != Alphabet_type) 
+    Die("Alphabet mismatch error.\nI thought we were working with %s, but tried to read a %s HMM.\n", AlphabetType2String(Alphabet_type), AlphabetType2String(atype));
+
+				/* now, create space for hmm */
+  if ((hmm = P9AllocHMM(M)) == NULL)
+    Die("malloc failed for reading hmm in\n");
+  
+				/* read alphabet_type but ignore */
+  if (fgets(buffer, 512, fp) == NULL) return NULL;
+  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+  if (!isdigit((int) (*s))) return NULL;
+				/* read alphabet but ignore */
+  if (fgets(buffer, 512, fp) == NULL) return NULL;
+  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+				
+  /* skip the random symbol frequencies in V1.0 files. now unused */
+  if (version == HMMER1_0F)
+    for (i = 0; i < Alphabet_size; i++)
+      if (fgets(buffer, 512, fp) == NULL) return NULL;
+
+  /* V1.7 has lines for whether we have valid ref, cs info
+   */
+  if (version == HMMER1_7F)
+    {
+      if (fgets(buffer, 512, fp) == NULL) return NULL;
+      if (strncmp(buffer, "yes", 3) == 0) hmm->flags |= HMM_REF;
+      if (fgets(buffer, 512, fp) == NULL) return NULL;
+      if (strncmp(buffer, "yes", 3) == 0) hmm->flags |= HMM_CS;
+    }
+
+				/* everything else is states */
+  while (fgets(buffer, 512, fp) != NULL)
+    {
+				/* get state type and index info */
+      if ((statetype = strtok(buffer, " \t\n")) == NULL) return NULL;
+      if ((s = strtok((char *) NULL, " \t\n")) == NULL) return NULL;
+      if (!isdigit((int) (*s))) return NULL;
+      k = atoi(s);
+      if (k < 0 || k > hmm->M+1) return NULL;
+      
+      if (strcmp(statetype, "###MATCH_STATE") == 0)
+	{
+				/* V1.7: get ref, cs info:   */
+	                        /* ###MATCH_STATE 16 (x) (H) */
+	  if (version == HMMER1_7F)
+	    {
+	      s = strtok(NULL, "\n");
+	      while (*s != '(' && *s != '\0') s++;
+	      if (*s != '(') return NULL;
+	      hmm->ref[k] = *(s+1);
+	      while (*s != '(' && *s != '\0') s++;
+	      if (*s != '(') return NULL;
+	      hmm->cs[k] = *(s+1);
+	    }
+
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->mat[k].t[MATCH] = (float) atof(s);
+	  
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->mat[k].t[DELETE] = (float) atof(s);
+	  
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->mat[k].t[INSERT] = (float) atof(s);
+	  
+	  for (i = 0; i < Alphabet_size; i++)
+	    {
+	      if (fgets(buffer, 512, fp) == NULL) return NULL;
+	      if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	      hmm->mat[k].p[i] = (float) atof(s);
+	    }
+
+				/* Skip all regularizer info for V1.0 */
+	  if (version == HMMER1_0F)
+	    for (i = 0; i < Alphabet_size + 3; i++)
+	      if (fgets(buffer, 512, fp) == NULL) return NULL;
+
+	}
+      else if (strcmp(statetype, "###INSERT_STATE") == 0)
+	{
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->ins[k].t[MATCH] = (float) atof(s);
+	  
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->ins[k].t[DELETE] = (float) atof(s);
+	  
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->ins[k].t[INSERT] = (float) atof(s);
+	  
+	  for (i = 0; i < Alphabet_size; i++)
+	    {
+	      if (fgets(buffer, 512, fp) == NULL) return NULL;
+	      if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	      hmm->ins[k].p[i] = (float) atof(s);
+	    }
+	  
+	  /* Skip all regularizer info in V1.0 files */
+	  if (version == HMMER1_0F)
+	    for (i = 0; i < Alphabet_size + 3; i++)
+	      if (fgets(buffer, 512, fp) == NULL) return NULL;
+
+	}
+      else if (strcmp(statetype, "###DELETE_STATE") == 0)
+	{
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->del[k].t[MATCH] = (float) atof(s);
+	  
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->del[k].t[DELETE] = (float) atof(s);
+	  
+	  if (fgets(buffer, 512, fp) == NULL) return NULL;
+	  if ((s = strtok(buffer, " \t\n")) == NULL) return NULL;
+	  hmm->del[k].t[INSERT] = (float) atof(s);
+	  
+	  /* Skip all regularizer info in V1.0 files*/
+	  if (version == HMMER1_0F)
+	    for (i = 0; i < 3; i++)
+	      if (fgets(buffer, 512, fp) == NULL) return NULL;
+	}
+      else
+	return NULL;
+    }
+  
+  P9DefaultNullModel(hmm->null);
+  P9Renormalize(hmm);
+  return hmm;
+}

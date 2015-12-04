@@ -1,0 +1,19 @@
+void
+fatal_io_error VPARAMS ((const char *msgid, ...))
+{
+  output_state os;
+
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  os = output_buffer_state (diagnostic_buffer);
+
+  output_printf (diagnostic_buffer, "%s: %s: ", progname, xstrerror (errno));
+  output_buffer_ptr_to_format_args (diagnostic_buffer) = &ap;
+  output_buffer_text_cursor (diagnostic_buffer) = _(msgid);
+  output_format (diagnostic_buffer);
+  diagnostic_finish ((output_buffer *) global_dc);
+  output_buffer_state (diagnostic_buffer) = os;
+  VA_CLOSE (ap);
+  exit (FATAL_EXIT_CODE);
+}

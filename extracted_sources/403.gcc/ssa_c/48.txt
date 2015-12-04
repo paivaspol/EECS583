@@ -1,0 +1,54 @@
+int
+for_each_successor_phi (bb, fn, data)
+     basic_block bb;
+     successor_phi_fn fn;
+     void *data;
+{
+  edge e;
+  
+  if (bb == EXIT_BLOCK_PTR)
+    return 0;
+
+  /* Scan outgoing edges.  */
+  for (e = bb->succ; e != NULL; e = e->succ_next)
+    {
+      rtx insn;
+
+      basic_block successor = e->dest;
+      if (successor == ENTRY_BLOCK_PTR 
+	  || successor == EXIT_BLOCK_PTR)
+	continue;
+
+      /* Advance to the first non-label insn of the successor block.  */
+      insn = first_insn_after_basic_block_note (successor);
+
+      if (insn == NULL)
+	continue;
+
+      /* Scan phi nodes in the successor.  */
+      for ( ; PHI_NODE_P (insn); insn = NEXT_INSN (insn))
+	{
+	  int result;
+	  rtx phi_set = PATTERN (insn);
+	  rtx *alternative = phi_alternative (phi_set, bb->index);
+	  rtx phi_src;
+	  
+	  /* This phi function may not have an alternative
+	     corresponding to the incoming edge, indicating the
+	     assigned variable is not defined along the edge.  */
+	  if (alternative == NULL)
+	    continue;
+	  phi_src = *alternative;
+
+	  /* Invoke the callback.  */
+	  result = (*fn) (insn, REGNO (SET_DEST (phi_set)), 
+			  REGNO (phi_src), data);
+
+	  /* Terminate if requested.  */
+	  if (result != 0)
+	    return result;
+	}
+    }
+
+  return 0;
+}

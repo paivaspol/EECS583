@@ -1,0 +1,266 @@
+void update(int          natoms, 
+            int      	 start,
+            int          homenr,	
+            int          step,
+            real         lambda,
+            real         *dvdlambda, 
+            t_parm       *parm,      
+            real         SAfactor,   
+            t_mdatoms    *md,
+            rvec         x[],	     
+            t_graph      *graph,	
+            rvec         force[], 	
+            rvec         delta_f[],
+            rvec         vold[],	
+            rvec         vt[], 		
+            rvec         v[],  	    
+            t_topology   *top,
+            t_groups     *grps,
+            tensor       vir_part,
+            t_commrec    *cr,
+            t_nrnb       *nrnb,
+            bool         bTYZ,
+            bool         bDoUpdate,
+            t_edsamyn    *edyn,
+            t_pull       *pulldata,
+            bool         bNEMD)
+{
+    static bool      bFirst=TRUE;
+    static rvec      *xprime,*x_unc=NULL;
+    static int       ngtc,ngacc;
+    static rvec      *lamb;
+    static t_edpar   edpar;
+    static bool      bHaveConstr,bExtended;
+    double           dt;
+    real             dt_1,dt_2,mdt_2;
+    int              i,n,m,g;
+    matrix           M;
+    t_inputrec       *ir=&(parm->ir);
+    
+    if (bFirst) {
+        bHaveConstr = init_constraints(stdlog,top,&(parm->ir),md,start,homenr,
+                                       ir->eI!=eiSteep,cr);
+        bHaveConstr = bHaveConstr || pulldata->bPull;
+        bExtended   = (ir->etc==etcNOSEHOOVER) || (ir->epc==epcPARRINELLORAHMAN);
+        
+        if (edyn->bEdsam) 
+            init_edsam(stdlog,top,md,start,homenr,x,parm->box,
+                       edyn,&edpar);
+        
+        /* Allocate memory for xold, original atomic positions
+            * and for xprime.
+            */
+        snew(xprime,natoms);
+        snew(x_unc,homenr);
+        /* Copy the pointer to the external acceleration in the opts */
+        ngacc=ir->opts.ngacc;    
+        ngtc=ir->opts.ngtc;    
+        
+        snew(lamb,ngtc);
+        
+        /* done with initializing */
+        bFirst=FALSE;
+    }
+    
+    dt   = ir->delta_t;
+    dt_1 = 1.0/dt;
+    dt_2 = 1.0/(dt*dt);
+    
+    for(i=0; i<ngtc; i++) {
+        real l=grps->tcstat[i].lambda;
+        
+        if (bTYZ)
+            lamb[i][XX]=1;
+        else
+            lamb[i][XX]=l;
+        lamb[i][YY]=l;
+        lamb[i][ZZ]=l;
+    }
+    if (bDoUpdate) {
+        /* update mean velocities */
+        for (g=0; g<ngacc; g++) {
+            copy_rvec(grps->grpstat[g].u,grps->grpstat[g].uold);
+            clear_rvec(grps->grpstat[g].u);
+        }
+        clear_mat(M);
+        
+        if(ir->epc == epcPARRINELLORAHMAN)
+            parrinellorahman_pcoupl(&(parm->ir),step,parm->pres,parm->box,parm->boxv,M);
+        /* Now do the actual update of velocities and positions */
+        where();
+        if(stdlog)
+            dump_it_all(stdlog,"Before update",natoms,x,xprime,v,vold,force);
+        if (ir->eI==eiMD) {
+            if (fabs(grps->cosacc.cos_accel) < GMX_REAL_MIN)
+                /* use normal version of update */
+                do_update_md(start,homenr,dt,lamb,grps->grpstat,grps->tcstat,
+                             ir->opts.acc,ir->opts.nFreeze,md->invmass,md->ptype,
+                             md->cFREEZE,md->cACC,md->cTC,x,xprime,v,vold,force,M,
+                             bExtended);
+            else
+                do_update_visc(start,homenr,dt,lamb,md->invmass,grps->tcstat,
+                               md->ptype,md->cTC,x,xprime,v,vold,force,M,
+                               parm->box,grps->cosacc.cos_accel,grps->cosacc.vcos,bExtended);
+        } else if (ir->eI==eiSD) {
+            /* The SD update is done in 2 parts, because an extra constraint step
+            * is needed 
+            */
+            do_update_sd(start,homenr,
+                         ir->opts.acc,ir->opts.nFreeze,
+                         md->invmass,md->ptype,
+                         md->cFREEZE,md->cACC,md->cTC,SAfactor,
+                         x,xprime,v,vold,force,
+                         ir->opts.ngtc,ir->opts.tau_t,ir->opts.ref_t,
+                         &ir->ld_seed,TRUE);
+            if (bHaveConstr) {
+                for(n=start; n<start+homenr; n++)
+                    copy_rvec(xprime[n],x_unc[n-start]);
+                /* Constrain the coordinates xprime */
+                constrain(stdlog,top,ir,step,md,start,homenr,x,xprime,NULL,
+                          parm->box,lambda,dvdlambda,nrnb,TRUE);
+                
+                for(n=start; n<start+homenr; n++) {
+                    /* A correction factor eph is needed for the SD constraint force */
+                    mdt_2 = dt_2*md->massT[n]*sdc[md->cTC[n]].eph;
+                    for(i=0; i<DIM; i++)
+                        delta_f[n][i] = (xprime[n][i] - x_unc[n-start][i])*mdt_2;
+                }
+            }
+            do_update_sd(start,homenr,
+                         ir->opts.acc,ir->opts.nFreeze,
+                         md->invmass,md->ptype,
+                         md->cFREEZE,md->cACC,md->cTC,SAfactor,
+                         x,xprime,v,vold,force,
+                         ir->opts.ngtc,ir->opts.tau_t,ir->opts.ref_t,
+                         &ir->ld_seed,FALSE);
+        } else if (ir->eI==eiBD) 
+            do_update_bd(start,homenr,dt,
+                         ir->opts.nFreeze,md->invmass,md->ptype,
+                         md->cFREEZE,md->cTC,
+                         x,xprime,v,vold,force,
+                         ir->bd_temp,ir->bd_fric,
+                         ir->opts.ngtc,ir->opts.tau_t,ir->opts.ref_t,
+                         &ir->ld_seed);
+        else
+            fatal_error(0,"Don't know how to update coordinates");
+        
+        where();
+        inc_nrnb(nrnb, bExtended ? eNR_EXTUPDATE : eNR_UPDATE,homenr);
+        if(stdlog)
+            dump_it_all(stdlog,"After update",natoms,x,xprime,v,vold,force);
+    }
+    else {
+        /* If we're not updating we're doing shakefirst!
+        * In this case the extra coordinates are passed in v array
+        */
+        for(n=start; (n<start+homenr); n++) {
+            copy_rvec(v[n],xprime[n]);
+        }
+    }
+    
+    /* 
+     *  Steps (7C, 8C)
+     *  APPLY CONSTRAINTS:
+     *  BLOCK SHAKE 
+     */
+    
+    /* When doing PR pressure coupling we have to constrain the
+     * bonds in each iteration. If we are only using Nose-Hoover tcoupling
+     * it is enough to do this once though, since the relative velocities 
+     * after this will be normal to the bond vector
+     */
+    if (bHaveConstr) {
+        if (ir->eI != eiSD)
+            /* Copy Unconstrained X to temp array */
+            for(n=start; n<start+homenr; n++)
+                copy_rvec(xprime[n],x_unc[n-start]);
+        
+        /* Constrain the coordinates xprime */
+        constrain(stdlog,top,ir,step,md,start,homenr,x,xprime,NULL,
+                  parm->box,lambda,dvdlambda,nrnb,TRUE);
+        
+        where();
+        
+        if(stdlog)
+            dump_it_all(stdlog,"After Shake",natoms,x,xprime,v,vold,force);
+        
+        /* apply Essential Dynamics constraints when required */
+        if (edyn->bEdsam)
+            do_edsam(stdlog,top,ir,step,md,start,homenr,xprime,x,
+                     x_unc,force,parm->box,edyn,&edpar,bDoUpdate);
+        
+        /* apply pull constraints when required. Act on xprime, the SHAKED
+            coordinates.  Don't do anything to f */
+        if (pulldata->bPull && pulldata->runtype != eAfm && 
+            pulldata->runtype != eUmbrella &&
+            pulldata->runtype != eTest) 
+            pull(pulldata,xprime,force,parm->box,top,dt,step,homenr,md); 
+        
+        where();      
+        
+        if (bDoUpdate) {
+            if (ir->eI != eiSD) {
+                /* The constraint virial and the velocities are incorrect for BD */
+                for(n=start; n<start+homenr; n++) {
+                    mdt_2 = dt_2*md->massT[n];
+                    for(i=0; i<DIM; i++) {
+                        delta_f[n][i] = (xprime[n][i] - x_unc[n-start][i])*mdt_2;
+                        /* recalculate the velocities from the old and new positions */
+                        v[n][i]       = (xprime[n][i] - x[n][i])*dt_1;
+                    }
+                }
+                where();
+            }
+            
+            inc_nrnb(nrnb,eNR_SHAKE_V,homenr);
+            
+            if(stdlog)
+                dump_it_all(stdlog,"After Shake-V",natoms,x,xprime,v,vold,force);
+            where();
+            
+            /* Calculate virial due to constraints (for this node) */
+            calc_vir(stdlog,homenr,&(x[start]),&(delta_f[start]),vir_part);
+            inc_nrnb(nrnb,eNR_SHAKE_VIR,homenr);
+            where();
+        }  
+    }
+    
+    /* We must always unshift here, also if we did not shake
+     * x was shifted in do_force */
+    where();
+    if ((graph->nnodes > 0) && bDoUpdate && (ir->ePBC != epbcNONE)) {
+        unshift_x(graph,parm->box,x,xprime);
+        if(TRICLINIC(parm->box))
+            inc_nrnb(nrnb,eNR_SHIFTX,2*graph->nnodes);
+        else
+            inc_nrnb(nrnb,eNR_SHIFTX,graph->nnodes);	  
+        for(n=start; (n<graph->start); n++)
+            copy_rvec(xprime[n],x[n]);
+        for(n=graph->start+graph->nnodes; (n<start+homenr); n++)
+            copy_rvec(xprime[n],x[n]);
+    }
+    else {
+        for(n=start; (n<start+homenr); n++)
+            copy_rvec(xprime[n],x[n]);
+    }
+    if(stdlog)
+        dump_it_all(stdlog,"After unshift",natoms,x,xprime,v,vold,force);
+    where();
+    
+    if (bDoUpdate) {
+        update_grps(start,homenr,grps,&(ir->opts),v,md,bNEMD);
+        if (ir->epc == epcBERENDSEN)
+            berendsen_pcoupl(ir,step,parm->pres,parm->box,start,homenr,x,md->cFREEZE,nrnb,
+                             ir->opts.nFreeze);
+        else if (ir->epc == epcPARRINELLORAHMAN) {
+            /* The box velocities were updated in do_pr_pcoupl in the update
+            * iteration, but we dont change the box vectors until we get here
+            * since we need to be able to shift/unshift above.
+            */
+            for(i=0;i<DIM;i++)
+                for(m=0;m<=i;m++)
+                    parm->box[i][m] += dt*parm->boxv[i][m];
+        }
+        where();
+    }
+}

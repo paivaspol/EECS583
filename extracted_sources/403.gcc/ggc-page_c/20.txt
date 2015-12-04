@@ -1,0 +1,30 @@
+void
+ggc_pop_context ()
+{
+  unsigned order, depth;
+
+  depth = --G.context_depth;
+
+  /* Any remaining pages in the popped context are lowered to the new
+     current context; i.e. objects allocated in the popped context and
+     left over are imported into the previous context.  */
+  for (order = 2; order < NUM_ORDERS; order++)
+    {
+      page_entry *p;
+
+      for (p = G.pages[order]; p != NULL; p = p->next)
+	{
+	  if (p->context_depth > depth)
+	    p->context_depth = depth;
+
+	  /* If this page is now in the topmost context, and we'd
+	     saved its allocation state, restore it.  */
+	  else if (p->context_depth == depth && p->save_in_use_p)
+	    {
+	      ggc_recalculate_in_use_p (p);
+	      free (p->save_in_use_p);
+	      p->save_in_use_p = 0;
+	    }
+	}
+    }
+}

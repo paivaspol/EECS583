@@ -1,0 +1,51 @@
+void
+deps_write (d, fp, colmax)
+     const struct deps *d;
+     FILE *fp;
+     unsigned int colmax;
+{
+  unsigned int size, i, column;
+
+  column = 0;
+  if (colmax && colmax < 34)
+    colmax = 34;
+
+  for (i = 0; i < d->ntargets; i++)
+    {
+      size = strlen (d->targetv[i]);
+      column += size;
+      if (colmax && column > colmax)
+	{
+	  fputs (" \\\n ", fp);
+	  column = 1 + size;
+	}
+      if (i)
+	{
+	  putc (' ', fp);
+	  column++;
+	}
+      fputs (d->targetv[i], fp);
+    }
+
+  putc (':', fp);
+  putc (' ', fp);
+  column += 2;
+
+  for (i = 0; i < d->ndeps; i++)
+    {
+      size = strlen (d->depv[i]);
+      column += size;
+      if (colmax && column > colmax)
+	{
+	  fputs (" \\\n ", fp);
+	  column = 1 + size;
+	}
+      if (i)
+	{
+	  putc (' ', fp);
+	  column++;
+	}
+      fputs (d->depv[i], fp);
+    }
+  putc ('\n', fp);
+}

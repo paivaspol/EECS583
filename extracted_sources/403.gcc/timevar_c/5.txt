@@ -1,0 +1,20 @@
+void
+timevar_start (timevar)
+     timevar_id_t timevar;
+{
+  struct timevar_def *tv = &timevars[timevar];
+
+  if (!TIMEVAR_ENABLE)
+    return;
+
+  /* Mark this timing variable as used.  */
+  tv->used = 1;
+
+  /* Don't allow the same timing variable to be started more than
+     once.  */
+  if (tv->standalone)
+    abort ();
+  tv->standalone = 1;
+
+  get_time (&tv->start_time);
+}

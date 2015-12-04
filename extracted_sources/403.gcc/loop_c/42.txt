@@ -1,0 +1,52 @@
+static void
+loop_bivs_check (loop)
+     struct loop *loop;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  /* Temporary list pointers for traversing ivs->list.  */
+  struct iv_class *bl;
+  struct iv_class **backbl;
+
+  for (backbl = &ivs->list; (bl = *backbl); backbl = &bl->next)
+    {
+      rtx src;
+      rtx note;
+
+      if (! bl->init_insn)
+	continue;
+
+      /* IF INIT_INSN has a REG_EQUAL or REG_EQUIV note and the value
+	 is a constant, use the value of that.  */
+      if (((note = find_reg_note (bl->init_insn, REG_EQUAL, 0)) != NULL
+	   && CONSTANT_P (XEXP (note, 0)))
+	  || ((note = find_reg_note (bl->init_insn, REG_EQUIV, 0)) != NULL
+	      && CONSTANT_P (XEXP (note, 0))))
+	src = XEXP (note, 0);
+      else
+	src = SET_SRC (bl->init_set);
+
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Biv %d: initialized at insn %d: initial value ",
+		 bl->regno, INSN_UID (bl->init_insn));
+
+      if ((GET_MODE (src) == GET_MODE (regno_reg_rtx[bl->regno])
+	   || GET_MODE (src) == VOIDmode)
+	  && valid_initial_value_p (src, bl->init_insn,
+				    LOOP_INFO (loop)->pre_header_has_call,
+				    loop->start))
+	{
+	  bl->initial_value = src;
+
+	  if (loop_dump_stream)
+	    {
+	      print_simple_rtl (loop_dump_stream, src);
+	      fputc ('\n', loop_dump_stream);
+	    }
+	}
+      /* If we can't make it a giv,
+	 let biv keep initial value of "itself".  */
+      else if (loop_dump_stream)
+	fprintf (loop_dump_stream, "is complex\n");
+    }
+}

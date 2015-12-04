@@ -1,0 +1,95 @@
+int gmx_fio_open(char *fn,char *mode)
+{
+  t_fileio *fio=NULL;
+  int      i,nfio=0;
+  char     *bf,newmode[5];
+  bool     bRead;
+
+  
+  if (fn2ftp(fn)==efTPA)
+    strcpy(newmode,mode);
+  else {
+    if (mode[0]=='r')
+      strcpy(newmode,"r");
+    else if (mode[0]=='w')
+      strcpy(newmode,"w");
+    else if (mode[0]=='a')
+      strcpy(newmode,"a");
+    else
+      fatal_error(0,"DEATH HORROR in gmx_fio_open, mode is '%s'",mode);
+  }
+
+  /* Check if it should be opened as a binary file */
+  if(strncmp(ftp2ftype(fn2ftp(fn)),"ASCII",5)) {
+    /* Not ascii, add b to file mode */
+    if(strchr(newmode,'b')==NULL && strchr(newmode,'B')==NULL)
+      strcat(newmode,"b");
+  }
+
+  /* Determine whether we have to make a new one */
+  for(i=0; (i<nFIO); i++)
+    if (!FIO[i].bOpen) {
+      fio  = &(FIO[i]);
+      nfio = i;
+      break;
+    }
+  if (i == nFIO) {
+    nFIO++;
+    srenew(FIO,nFIO);
+    fio  = &(FIO[nFIO-1]);
+    nfio = nFIO-1;
+  }
+
+  bRead = (newmode[0]=='r');
+  fio->fp  = NULL;
+  fio->xdr = NULL;
+  if (fn) {
+    fio->iFTP   = fn2ftp(fn);
+    fio->fn     = strdup(fn);
+    fio->bStdio = FALSE;
+    
+    /* If this file type is in the list of XDR files, open it like that */
+    if (in_ftpset(fio->iFTP,asize(ftpXDR),ftpXDR)) {
+      /* First check whether we have to make a backup,
+       * only for writing, not for read or append.
+       */
+      if (newmode[0]=='w') {
+#ifndef SPEC_CPU
+	if (fexist(fn)) {
+	  bf=(char *)backup_fn(fn);
+	  if (rename(fn,bf) == 0) {
+	    fprintf(stderr,"\nBack Off! I just backed up %s to %s\n",fn,bf);
+	  }
+	  else
+	    fprintf(stderr,"Sorry, I couldn't backup %s to %s\n",fn,bf);
+	}
+#endif
+      }
+      else {
+	/* Check whether file exists */
+	if (!fexist(fn))
+	  fatal_error(0,"File %s not found",fn);
+      }
+      snew(fio->xdr,1);
+      if (!xdropen(fio->xdr,fn,newmode))
+	fatal_error(-1,"Could not open %s",fn);
+    }
+    else {
+      /* If it is not, open it as a regular file */
+      fio->fp = ffopen(fn,newmode);
+    }
+  }
+  else {
+    /* Use stdin/stdout for I/O */
+    fio->iFTP   = efTPA;
+    fio->fp     = bRead ? stdin : stdout;
+    fio->fn     = strdup("STDIO");
+    fio->bStdio = TRUE;
+  }
+  fio->bRead  = bRead;
+  fio->bDouble= (sizeof(real) == sizeof(double));
+  fio->bDebug = FALSE;
+  fio->bOpen  = TRUE;
+
+  return nfio;
+}

@@ -1,0 +1,14 @@
+static void add_simple(t_ns_buf *nsbuf,int nrj,atom_id cg_j,
+		       bool bHaveLJ[],int ngid,t_mdatoms *md,
+		       int icg,int jgid,t_block *cgs,t_excl bexcl[],
+		       int shift,t_forcerec *fr)
+{
+  if (nsbuf->ncg >= MAX_CG) {
+    put_in_list(bHaveLJ,ngid,md,icg,jgid,nsbuf->ncg,nsbuf->jcg,
+		cgs->index,/* cgs->a, */ bexcl,shift,fr,FALSE,FALSE,FALSE);
+    /* Reset buffer contents */
+    nsbuf->ncg = nsbuf->nj = 0;
+  }
+  nsbuf->jcg[nsbuf->ncg++]=cg_j;
+  nsbuf->nj += nrj;
+}

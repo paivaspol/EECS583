@@ -1,0 +1,41 @@
+static void
+mark_phi_and_copy_regs (phi_set)
+     regset phi_set;
+{
+  unsigned int reg;
+
+  /* Scan the definitions of all regs.  */
+  for (reg = 0; reg < VARRAY_SIZE (ssa_definition); ++reg)
+    if (CONVERT_REGISTER_TO_SSA_P (reg))
+      {
+	rtx insn = VARRAY_RTX (ssa_definition, reg);
+	rtx pattern;
+	rtx src;
+
+	if (insn == NULL
+	    || (GET_CODE (insn) == NOTE
+		&& NOTE_LINE_NUMBER (insn) == NOTE_INSN_DELETED))
+	  continue;
+	pattern = PATTERN (insn);
+	/* Sometimes we get PARALLEL insns.  These aren't phi nodes or
+	   copies.  */
+	if (GET_CODE (pattern) != SET)
+	  continue;
+	src = SET_SRC (pattern);
+
+	if (GET_CODE (src) == REG)
+	  {
+	    /* It's a reg copy.  */
+	    SET_REGNO_REG_SET (phi_set, reg);
+	    SET_REGNO_REG_SET (phi_set, REGNO (src));
+	  }
+	else if (GET_CODE (src) == PHI)
+	  {
+	    /* It's a phi node.  Mark the reg being set.  */
+	    SET_REGNO_REG_SET (phi_set, reg);
+	    /* Mark the regs used in the phi function.  */
+	    for_each_rtx (&src, mark_reg_in_phi, phi_set);
+	  }
+	/* ... else nothing to do.  */
+      }
+}

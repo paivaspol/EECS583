@@ -1,0 +1,49 @@
+void
+copyprop_hardreg_forward ()
+{
+  struct value_data *all_vd;
+  bool need_refresh;
+  int b;
+
+  need_refresh = false;
+
+  all_vd = xmalloc (sizeof (struct value_data) * n_basic_blocks);
+
+  for (b = 0; b < n_basic_blocks; b++)
+    {
+      basic_block bb = BASIC_BLOCK (b);
+
+      /* If a block has a single predecessor, that we've already
+	 processed, begin with the value data that was live at
+	 the end of the predecessor block.  */
+      /* ??? Ought to use more intelligent queueing of blocks.  */
+      if (bb->pred
+	  && ! bb->pred->pred_next 
+	  && ! (bb->pred->flags & (EDGE_ABNORMAL_CALL | EDGE_EH))
+	  && bb->pred->src->index != ENTRY_BLOCK
+	  && bb->pred->src->index < b)
+	all_vd[b] = all_vd[bb->pred->src->index];
+      else
+        init_value_data (all_vd + b);
+
+      if (copyprop_hardreg_forward_1 (bb, all_vd + b))
+	need_refresh = true;
+    }
+
+  if (need_refresh)
+    {
+      if (rtl_dump_file)
+	fputs ("\n\n", rtl_dump_file);
+
+      /* ??? Irritatingly, delete_noop_moves does not take a set of blocks
+	 to scan, so we have to do a life update with no initial set of
+	 blocks Just In Case.  */
+      delete_noop_moves (get_insns ());
+      update_life_info (NULL, UPDATE_LIFE_GLOBAL_RM_NOTES,
+			PROP_DEATH_NOTES
+			| PROP_SCAN_DEAD_CODE
+			| PROP_KILL_DEAD_CODE);
+    }
+
+  free (all_vd);
+}

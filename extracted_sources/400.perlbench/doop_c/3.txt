@@ -1,0 +1,68 @@
+void
+Perl_do_chop(pTHX_ register SV *astr, register SV *sv)
+{
+    STRLEN len;
+    char *s;
+
+    if (SvTYPE(sv) == SVt_PVAV) {
+	register I32 i;
+        I32 max;
+	AV* av = (AV*)sv;
+        max = AvFILL(av);
+        for (i = 0; i <= max; i++) {
+	    sv = (SV*)av_fetch(av, i, FALSE);
+	    if (sv && ((sv = *(SV**)sv), sv != &PL_sv_undef))
+		do_chop(astr, sv);
+	}
+        return;
+    }
+    else if (SvTYPE(sv) == SVt_PVHV) {
+        HV* hv = (HV*)sv;
+	HE* entry;
+        (void)hv_iterinit(hv);
+        /*SUPPRESS 560*/
+        while ((entry = hv_iternext(hv)))
+            do_chop(astr,hv_iterval(hv,entry));
+        return;
+    }
+    else if (SvREADONLY(sv)) {
+        if (SvFAKE(sv)) {
+            /* SV is copy-on-write */
+	    sv_force_normal_flags(sv, 0);
+        }
+        if (SvREADONLY(sv))
+            Perl_croak(aTHX_ PL_no_modify);
+    }
+    s = SvPV(sv, len);
+    if (len && !SvPOK(sv))
+	s = SvPV_force(sv, len);
+    if (DO_UTF8(sv)) {
+	if (s && len) {
+	    char *send = s + len;
+	    char *start = s;
+	    s = send - 1;
+	    while (s > start && UTF8_IS_CONTINUATION(*s))
+		s--;
+	    if (utf8_to_uvchr((U8*)s, 0)) {
+		sv_setpvn(astr, s, send - s);
+		*s = '\0';
+		SvCUR_set(sv, s - start);
+		SvNIOK_off(sv);
+		SvUTF8_on(astr);
+	    }
+	}
+	else
+	    sv_setpvn(astr, "", 0);
+    }
+    else if (s && len) {
+	s += --len;
+	sv_setpvn(astr, s, 1);
+	*s = '\0';
+	SvCUR_set(sv, len);
+	SvUTF8_off(sv);
+	SvNIOK_off(sv);
+    }
+    else
+	sv_setpvn(astr, "", 0);
+    SvSETMAGIC(sv);
+}

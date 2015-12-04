@@ -1,0 +1,72 @@
+void fe_parse_melfb_params(param_t *P, melfb_t *MEL)
+{
+    if (P->SAMPLING_RATE != 0) 
+	MEL->sampling_rate = P->SAMPLING_RATE;
+    else 
+	MEL->sampling_rate = DEFAULT_SAMPLING_RATE;
+
+    if (P->FFT_SIZE != 0) 
+	MEL->fft_size = P->FFT_SIZE;
+    else {
+      if (MEL->sampling_rate == BB_SAMPLING_RATE)
+	MEL->fft_size = DEFAULT_BB_FFT_SIZE;
+      if (MEL->sampling_rate == NB_SAMPLING_RATE)
+	MEL->fft_size = DEFAULT_NB_FFT_SIZE;
+    else 
+	MEL->fft_size = DEFAULT_FFT_SIZE;
+    }
+ 
+    if (P->NUM_CEPSTRA != 0) 
+	MEL->num_cepstra = P->NUM_CEPSTRA;
+    else 
+	MEL->num_cepstra = DEFAULT_NUM_CEPSTRA;
+ 
+    if (P->NUM_FILTERS != 0)	
+	MEL->num_filters = P->NUM_FILTERS;
+    else {
+      if (MEL->sampling_rate == BB_SAMPLING_RATE)
+	MEL->num_filters = DEFAULT_BB_NUM_FILTERS;
+      else if (MEL->sampling_rate == NB_SAMPLING_RATE)
+	MEL->num_filters = DEFAULT_NB_NUM_FILTERS;
+      else {
+	fprintf(stderr,"Please define the number of MEL filters needed\n");
+	fprintf(stderr,"Modify include/new_fe.h and new_fe_sp.c\n");
+	fflush(stderr); exit(0);
+      }
+    }
+
+    if (P->UPPER_FILT_FREQ != 0)	
+      MEL->upper_filt_freq = P->UPPER_FILT_FREQ;
+    else{
+      if (MEL->sampling_rate == BB_SAMPLING_RATE)
+	MEL->upper_filt_freq = (float) DEFAULT_BB_UPPER_FILT_FREQ; /* RAH, typecast */
+      else if (MEL->sampling_rate == NB_SAMPLING_RATE)
+	MEL->upper_filt_freq = DEFAULT_NB_UPPER_FILT_FREQ;
+      else {
+	fprintf(stderr,"Please define the upper filt frequency needed\n");
+	fprintf(stderr,"Modify include/new_fe.h and new_fe_sp.c\n");
+	fflush(stderr); exit(0);
+      }
+    } 
+    
+    
+    if (P->LOWER_FILT_FREQ != 0)	
+      MEL->lower_filt_freq = P->LOWER_FILT_FREQ;
+    else {
+      if (MEL->sampling_rate == BB_SAMPLING_RATE)
+	MEL->lower_filt_freq = (float) DEFAULT_BB_LOWER_FILT_FREQ; /*RAH, typecast  */
+      else if (MEL->sampling_rate == NB_SAMPLING_RATE)
+	MEL->lower_filt_freq = DEFAULT_NB_LOWER_FILT_FREQ;
+      else {
+	fprintf(stderr,"Please define the lower filt frequency needed\n");
+	fprintf(stderr,"Modify include/new_fe.h and new_fe_sp.c\n");
+	fflush(stderr); exit(0);
+      }
+    } 
+
+    if (P->doublebw == ON)
+	MEL->doublewide = ON;
+    else
+	MEL->doublewide = OFF;
+
+}

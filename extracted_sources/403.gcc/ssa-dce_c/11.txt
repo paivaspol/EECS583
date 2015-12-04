@@ -1,0 +1,28 @@
+static int
+propagate_necessity_through_operand (current_rtx, data)
+     rtx *current_rtx;
+     void *data;
+{
+  rtx x = *current_rtx;
+  varray_type *unprocessed_instructions = (varray_type *) data;
+
+  if (x == NULL_RTX)
+    return 0;
+  switch ( GET_CODE (x))
+    {
+    case REG:
+      if (CONVERT_REGISTER_TO_SSA_P (REGNO (x)))
+	{
+	  rtx insn = VARRAY_RTX (ssa_definition, REGNO (x));
+	  if (insn != NULL_RTX && UNNECESSARY_P (insn))
+	    {
+	      RESURRECT_INSN (insn);
+	      VARRAY_PUSH_RTX (*unprocessed_instructions, insn);
+	    }
+	}
+      return 0;
+
+    default:
+      return 0;
+    }
+}

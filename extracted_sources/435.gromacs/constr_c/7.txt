@@ -1,0 +1,190 @@
+static bool low_constrain(FILE *log,t_topology *top,t_inputrec *ir,
+			  int step,t_mdatoms *md,int start,int homenr,
+			  rvec *x,rvec *xprime,rvec *min_proj,matrix box,
+			  real lambda,real *dvdlambda,t_nrnb *nrnb,
+			  bool bCoordinates,bool bInit)
+{
+  static int       nblocks=0;
+  static int       *sblock=NULL;
+  static int       nsettle,settle_type;
+  static int       *owptr;
+  static bool      bDumpOnError = TRUE;
+  
+  char        buf[STRLEN];
+  bool        bOK;
+  t_sortblock *sb;
+  t_block     *blocks=&(top->blocks[ebSBLOCKS]);
+  t_idef      *idef=&(top->idef);
+  t_iatom     *iatom;
+  atom_id     *inv_sblock;
+  int         i,j,m,bnr;
+  int         ncons,bstart,error;
+  
+  bOK = TRUE;
+  if (bInit) {
+    /* Output variables, initiate them right away */
+    
+    if ((ir->etc==etcBERENDSEN) || (ir->epc==epcBERENDSEN))
+      please_cite(log,"Berendsen84a");
+
+#ifdef SPEC_CPU
+    bDumpOnError = TRUE;
+#else    
+    bDumpOnError = (getenv("NO_SHAKE_ERROR") == NULL);
+#endif
+    /* Put the oxygen atoms in the owptr array */
+    nsettle=idef->il[F_SETTLE].nr/2;
+    if (nsettle > 0) {
+      snew(owptr,nsettle);
+      settle_type=idef->il[F_SETTLE].iatoms[0];
+      for (j=0; (j<idef->il[F_SETTLE].nr); j+=2) {
+	if (idef->il[F_SETTLE].iatoms[j] != settle_type)
+	  fatal_error(0,"More than one settle type (%d and %d)",
+		      settle_type,idef->il[F_SETTLE].iatoms[j]);
+	owptr[j/2]=idef->il[F_SETTLE].iatoms[j+1];
+#ifdef DEBUG
+	fprintf(log,"owptr[%d]=%d\n",j/2,owptr[j/2]);
+#endif
+      }
+      /* We used to free this memory, but ED sampling needs it later on 
+       *  sfree(idef->il[F_SETTLE].iatoms);
+       */
+      
+      please_cite(log,"Miyamoto92a");
+    }
+    
+    ncons=idef->il[F_SHAKE].nr/3;
+    if (ncons > 0) 
+    {
+        bstart=(idef->nodeid > 0) ? blocks->multinr[idef->nodeid-1] : 0;
+        nblocks=blocks->multinr[idef->nodeid] - bstart;
+        if (debug) 
+            fprintf(debug,"ncons: %d, bstart: %d, nblocks: %d\n",
+                    ncons,bstart,nblocks);
+        
+        /* Calculate block number for each atom */
+        inv_sblock=make_invblock(blocks,md->nr);
+        
+        /* Store the block number in temp array and
+         * sort the constraints in order of the sblock number 
+         * and the atom numbers, really sorting a segment of the array!
+         */
+#ifdef DEBUGIDEF 
+        pr_idef(stdlog,0,"Before Sort",idef);
+#endif
+        iatom=idef->il[F_SHAKE].iatoms;
+        snew(sb,ncons);
+        for(i=0; (i<ncons); i++,iatom+=3) {
+            for(m=0; (m<3); m++)
+                sb[i].iatom[m]=iatom[m];
+            sb[i].blocknr=inv_sblock[iatom[1]];
+        }
+        
+        /* Now sort the blocks */
+        if (debug) {
+            pr_sortblock(debug,"Before sorting",ncons,sb);
+            fprintf(debug,"Going to sort constraints\n");
+        }
+      
+        qsort(sb,ncons,(size_t)sizeof(*sb),pcomp);
+        
+        if (debug) {
+            fprintf(debug,"I used %d calls to pcomp\n",pcount);
+            pr_sortblock(debug,"After sorting",ncons,sb);
+        }
+        
+        iatom=idef->il[F_SHAKE].iatoms;
+        for(i=0; (i<ncons); i++,iatom+=3) 
+            for(m=0; (m<DIM); m++)
+                iatom[m]=sb[i].iatom[m];
+#ifdef DEBUGIDEF
+        pr_idef(stdlog,0,"After Sort",idef);
+#endif
+        
+        j=0;
+        snew(sblock,nblocks+1);
+        bnr=-2;
+        for(i=0; (i<ncons); i++) {
+            if (sb[i].blocknr != bnr) {
+                bnr=sb[i].blocknr;
+                sblock[j++]=3*i;
+            }
+        }
+        /* Last block... */
+        sblock[j++]=3*ncons;
+        
+        if (j != (nblocks+1) && log) {
+            fprintf(log,"bstart: %d\n",bstart);
+            fprintf(log,"j: %d, nblocks: %d, ncons: %d\n",
+                    j,nblocks,ncons);
+            for(i=0; (i<ncons); i++)
+                fprintf(log,"i: %5d  sb[i].blocknr: %5u\n",i,sb[i].blocknr);
+            for(j=0; (j<=nblocks); j++)
+                fprintf(log,"sblock[%3d]=%5d\n",j,(int) sblock[j]);
+            fatal_error(0,"DEATH HORROR: "
+                        "top->blocks[ebSBLOCKS] does not match idef->il[F_SHAKE]");
+        }
+        sfree(sb);
+        sfree(inv_sblock);
+    }
+    
+    if (idef->il[F_SHAKE].nr) {
+        if (ir->eConstrAlg == estLINCS || !bCoordinates) {
+            please_cite(stdlog,"Hess97a");
+            bOK = constrain_lincs(stdlog,top,ir,0,md,start,homenr,&nblocks,&sblock,
+                                  NULL,NULL,NULL,NULL,0,NULL,bCoordinates,TRUE,nrnb,
+                                  bDumpOnError);
+        } 
+        else
+            please_cite(stdlog,"Ryckaert77a");
+    }
+  } 
+  else {
+      /* !bInit */
+      if (nblocks > 0) {
+          where();
+          
+          if (ir->eConstrAlg == estSHAKE)
+              bOK = bshakef(stdlog,homenr,md->invmass,nblocks,sblock,idef,
+                            ir,box,x,xprime,nrnb,lambda,dvdlambda,bDumpOnError);
+          else if (ir->eConstrAlg == estLINCS)
+              bOK = constrain_lincs(stdlog,top,ir,step,md,
+                                    start,homenr,&nblocks,&sblock,
+                                    x,xprime,min_proj,box,lambda,dvdlambda,
+                                    bCoordinates,FALSE,nrnb,bDumpOnError);
+          if (!bOK && bDumpOnError && stdlog)
+              fprintf(stdlog,"Constraint error in algorithm %s at step %d\n",
+                      eshake_names[ir->eConstrAlg],step);
+      }
+      if (nsettle > 0) {
+          int  ow1;
+          real mO,mH,dOH,dHH;
+          
+          ow1  = owptr[0];
+          mO   = md->massA[ow1];
+          mH   = md->massA[ow1+1];
+          dOH  = top->idef.iparams[settle_type].settle.doh;
+          dHH  = top->idef.iparams[settle_type].settle.dhh;
+#ifdef USE_FORTRAN
+#ifdef DOUBLE
+          F77_FUNC(fsettled,FSETTLED)(&nsettle,owptr,x[0],xprime[0],
+                                      &dOH,&dHH,&mO,&mH,&error);
+#else
+          F77_FUNC(fsettle,FSETTLE)(&nsettle,owptr,x[0],xprime[0],
+                                    &dOH,&dHH,&mO,&mH,&error);
+#endif
+#else
+          csettle(stdlog,nsettle,owptr,x[0],xprime[0],dOH,dHH,mO,mH,&error);
+#endif
+          inc_nrnb(nrnb,eNR_SETTLE,nsettle);
+          bOK = (error < 0);
+          if (!bOK && bDumpOnError && stdlog)
+              fprintf(stdlog,"\nt = %.3f ps: Water molecule starting at atom %d can not be "
+                      "settled.\nCheck for bad contacts and/or reduce the timestep.",
+                      ir->init_t+step*ir->delta_t,owptr[error]+1);
+      }
+      if (!bOK && bDumpOnError) 
+          dump_confs(step,&(top->atoms),x,xprime,box);
+  }
+  return bOK;
+}

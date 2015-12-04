@@ -1,0 +1,96 @@
+static void
+mark_flags_life_zones (flags)
+     rtx flags;
+{
+  int flags_regno;
+  int flags_nregs;
+  int block;
+
+#ifdef HAVE_cc0
+  /* If we found a flags register on a cc0 host, bail.  */
+  if (flags == NULL_RTX)
+    flags = cc0_rtx;
+  else if (flags != cc0_rtx)
+    flags = pc_rtx;
+#endif
+
+  /* Simple cases first: if no flags, clear all modes.  If confusing,
+     mark the entire function as being in a flags shadow.  */
+  if (flags == NULL_RTX || flags == pc_rtx)
+    {
+      enum machine_mode mode = (flags ? HImode : VOIDmode);
+      rtx insn;
+      for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+	PUT_MODE (insn, mode);
+      return;
+    }
+
+#ifdef HAVE_cc0
+  flags_regno = -1;
+  flags_nregs = 1;
+#else
+  flags_regno = REGNO (flags);
+  flags_nregs = HARD_REGNO_NREGS (flags_regno, GET_MODE (flags));
+#endif
+  flags_set_1_rtx = flags;
+
+  /* Process each basic block.  */
+  for (block = n_basic_blocks - 1; block >= 0; block--)
+    {
+      rtx insn, end;
+      int live;
+
+      insn = BLOCK_HEAD (block);
+      end = BLOCK_END (block);
+
+      /* Look out for the (unlikely) case of flags being live across
+	 basic block boundaries.  */
+      live = 0;
+#ifndef HAVE_cc0
+      {
+	int i;
+	for (i = 0; i < flags_nregs; ++i)
+          live |= REGNO_REG_SET_P (BASIC_BLOCK (block)->global_live_at_start,
+				   flags_regno + i);
+      }
+#endif
+
+      while (1)
+	{
+	  /* Process liveness in reverse order of importance --
+	     alive, death, birth.  This lets more important info
+	     overwrite the mode of lesser info.  */
+
+	  if (INSN_P (insn))
+	    {
+#ifdef HAVE_cc0
+	      /* In the cc0 case, death is not marked in reg notes,
+		 but is instead the mere use of cc0 when it is alive.  */
+	      if (live && reg_mentioned_p (cc0_rtx, PATTERN (insn)))
+		live = 0;
+#else
+	      /* In the hard reg case, we watch death notes.  */
+	      if (live && find_regno_note (insn, REG_DEAD, flags_regno))
+		live = 0;
+#endif
+	      PUT_MODE (insn, (live ? HImode : VOIDmode));
+
+	      /* In either case, birth is denoted simply by it's presence
+		 as the destination of a set.  */
+	      flags_set_1_set = 0;
+	      note_stores (PATTERN (insn), flags_set_1, NULL);
+	      if (flags_set_1_set)
+		{
+		  live = 1;
+		  PUT_MODE (insn, QImode);
+		}
+	    }
+	  else
+	    PUT_MODE (insn, (live ? HImode : VOIDmode));
+
+	  if (insn == end)
+	    break;
+	  insn = NEXT_INSN (insn);
+	}
+    }
+}

@@ -1,0 +1,20 @@
+static rtx
+break_out_memory_refs (x)
+     rtx x;
+{
+  if (GET_CODE (x) == MEM
+      || (CONSTANT_P (x) && CONSTANT_ADDRESS_P (x)
+	  && GET_MODE (x) != VOIDmode))
+    x = force_reg (GET_MODE (x), x);
+  else if (GET_CODE (x) == PLUS || GET_CODE (x) == MINUS
+	   || GET_CODE (x) == MULT)
+    {
+      rtx op0 = break_out_memory_refs (XEXP (x, 0));
+      rtx op1 = break_out_memory_refs (XEXP (x, 1));
+
+      if (op0 != XEXP (x, 0) || op1 != XEXP (x, 1))
+	x = gen_rtx_fmt_ee (GET_CODE (x), Pmode, op0, op1);
+    }
+
+  return x;
+}

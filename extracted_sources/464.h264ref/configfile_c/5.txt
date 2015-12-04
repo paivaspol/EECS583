@@ -1,0 +1,63 @@
+static int TestEncoderParams(int bitdepth_qp_scale)
+{
+  int i = 0;
+
+  while (Map[i].TokenName != NULL)
+  {
+    if (Map[i].param_limits == 1)
+    {
+      if (Map[i].Type == 0)
+      {
+        if ( * (int *) (Map[i].Place) < (int) Map[i].min_limit || * (int *) (Map[i].Place) > (int) Map[i].max_limit )
+        {
+          snprintf(errortext, ET_SIZE, "Error in input parameter %s. Check configuration file. Value should be in [%d, %d] range.", Map[i].TokenName, (int) Map[i].min_limit,(int)Map[i].max_limit );
+          error (errortext, 400);
+        }
+        
+      }
+      else if (Map[i].Type == 2)
+      {
+        if ( * (double *) (Map[i].Place) < Map[i].min_limit || * (double *) (Map[i].Place) > Map[i].max_limit )
+        {
+          snprintf(errortext, ET_SIZE, "Error in input parameter %s. Check configuration file. Value should be in [%.2f, %.2f] range.", Map[i].TokenName,Map[i].min_limit ,Map[i].max_limit );
+          error (errortext, 400);
+        }        
+      }            
+    }
+    else if (Map[i].param_limits == 2)
+    {
+      if (Map[i].Type == 0)
+      {
+        if ( * (int *) (Map[i].Place) < (int) Map[i].min_limit )
+        {
+          snprintf(errortext, ET_SIZE, "Error in input parameter %s. Check configuration file. Value should not be smaller than %d.", Map[i].TokenName, (int) Map[i].min_limit);
+          error (errortext, 400);
+        }
+        
+      }
+      else if (Map[i].Type == 2)
+      {
+        if ( * (double *) (Map[i].Place) < Map[i].min_limit )
+        {
+          snprintf(errortext, ET_SIZE, "Error in input parameter %s. Check configuration file. Value should not be smaller than %2.f.", Map[i].TokenName,Map[i].min_limit);
+          error (errortext, 400);
+        }        
+      }
+    }
+    else if (Map[i].param_limits == 3) // Only used for QPs
+    {
+      if (Map[i].Type == 0)
+      {
+        if ( * (int *) (Map[i].Place) < (int) (Map[i].min_limit - bitdepth_qp_scale) || * (int *) (Map[i].Place) > (int) Map[i].max_limit )
+        {
+          snprintf(errortext, ET_SIZE, "Error in input parameter %s. Check configuration file. Value should be in [%d, %d] range.", Map[i].TokenName, (int) (Map[i].min_limit - bitdepth_qp_scale),(int)Map[i].max_limit );
+          error (errortext, 400);
+        }
+        
+      }
+    }
+ 
+    i++;
+  }
+  return -1;
+};

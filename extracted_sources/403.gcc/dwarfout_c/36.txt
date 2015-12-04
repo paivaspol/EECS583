@@ -1,0 +1,72 @@
+static void
+const_value_attribute (rtl)
+     rtx rtl;
+{
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_const_value_block4);
+  sprintf (begin_label, LOC_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, LOC_END_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, end_label, begin_label);
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+
+  switch (GET_CODE (rtl))
+    {
+      case CONST_INT:
+	/* Note that a CONST_INT rtx could represent either an integer or
+	   a floating-point constant.  A CONST_INT is used whenever the
+	   constant will fit into a single word.  In all such cases, the
+	   original mode of the constant value is wiped out, and the
+	   CONST_INT rtx is assigned VOIDmode.  Since we no longer have
+	   precise mode information for these constants, we always just
+	   output them using 4 bytes.  */
+
+	ASM_OUTPUT_DWARF_DATA4 (asm_out_file, (unsigned) INTVAL (rtl));
+	break;
+
+      case CONST_DOUBLE:
+	/* Note that a CONST_DOUBLE rtx could represent either an integer
+	   or a floating-point constant.  A CONST_DOUBLE is used whenever
+	   the constant requires more than one word in order to be adequately
+	   represented.  In all such cases, the original mode of the constant
+	   value is preserved as the mode of the CONST_DOUBLE rtx, but for
+	   simplicity we always just output CONST_DOUBLEs using 8 bytes.  */
+
+	ASM_OUTPUT_DWARF_DATA8 (asm_out_file,
+				(unsigned int) CONST_DOUBLE_HIGH (rtl),
+				(unsigned int) CONST_DOUBLE_LOW (rtl));
+	break;
+
+      case CONST_STRING:
+	ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, XSTR (rtl, 0));
+	break;
+
+      case SYMBOL_REF:
+      case LABEL_REF:
+      case CONST:
+	ASM_OUTPUT_DWARF_ADDR_CONST (asm_out_file, rtl);
+	break;
+
+      case PLUS:
+	/* In cases where an inlined instance of an inline function is passed
+	   the address of an `auto' variable (which is local to the caller)
+	   we can get a situation where the DECL_RTL of the artificial
+	   local variable (for the inlining) which acts as a stand-in for
+	   the corresponding formal parameter (of the inline function)
+	   will look like (plus:SI (reg:SI FRAME_PTR) (const_int ...)).
+	   This is not exactly a compile-time constant expression, but it
+	   isn't the address of the (artificial) local variable either.
+	   Rather, it represents the *value* which the artificial local
+	   variable always has during its lifetime.  We currently have no
+	   way to represent such quasi-constant values in Dwarf, so for now
+	   we just punt and generate an AT_const_value attribute with form
+	   FORM_BLOCK4 and a length of zero.  */
+	break;
+
+      default:
+	abort ();  /* No other kinds of rtx should be possible here.  */
+    }
+
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

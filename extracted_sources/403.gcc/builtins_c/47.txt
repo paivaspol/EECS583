@@ -1,0 +1,26 @@
+static rtx
+expand_builtin_va_start (stdarg_p, arglist)
+     int stdarg_p;
+     tree arglist;
+{
+  rtx nextarg;
+  tree chain = arglist, valist;
+
+  if (stdarg_p)
+    nextarg = expand_builtin_next_arg (chain = TREE_CHAIN (arglist));
+  else
+    nextarg = expand_builtin_next_arg (NULL_TREE);
+
+  if (TREE_CHAIN (chain))
+    error ("too many arguments to function `va_start'");
+
+  valist = stabilize_va_list (TREE_VALUE (arglist), 1);
+
+#ifdef EXPAND_BUILTIN_VA_START
+  EXPAND_BUILTIN_VA_START (stdarg_p, valist, nextarg);
+#else
+  std_expand_builtin_va_start (stdarg_p, valist, nextarg);
+#endif
+
+  return const0_rtx;
+}

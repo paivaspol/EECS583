@@ -1,0 +1,16 @@
+static void
+reg_dies (reg, live)
+     rtx reg;
+     HARD_REG_SET live;
+{
+  int regno, nregs;
+
+  if (GET_CODE (reg) != REG)
+    return;
+
+  regno = REGNO (reg);
+  if (regno < FIRST_PSEUDO_REGISTER)
+    for (nregs = HARD_REGNO_NREGS (regno, GET_MODE (reg)) - 1; nregs >= 0;
+	 nregs--)
+      CLEAR_HARD_REG_BIT (live, regno + nregs);
+}

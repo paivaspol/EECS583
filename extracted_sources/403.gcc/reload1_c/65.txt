@@ -1,0 +1,75 @@
+static void
+reload_cse_simplify (insn)
+     rtx insn;
+{
+  rtx body = PATTERN (insn);
+
+  if (GET_CODE (body) == SET)
+    {
+      int count = 0;
+
+      /* Simplify even if we may think it is a no-op.
+         We may think a memory load of a value smaller than WORD_SIZE
+         is redundant because we haven't taken into account possible
+         implicit extension.  reload_cse_simplify_set() will bring
+         this out, so it's safer to simplify before we delete.  */
+      count += reload_cse_simplify_set (body, insn);
+
+      if (!count && reload_cse_noop_set_p (body))
+	{
+	  rtx value = SET_DEST (body);
+	  if (! REG_FUNCTION_VALUE_P (SET_DEST (body)))
+	    value = 0;
+	  reload_cse_delete_noop_set (insn, value);
+	  return;
+	}
+
+      if (count > 0)
+	apply_change_group ();
+      else
+	reload_cse_simplify_operands (insn);
+    }
+  else if (GET_CODE (body) == PARALLEL)
+    {
+      int i;
+      int count = 0;
+      rtx value = NULL_RTX;
+
+      /* If every action in a PARALLEL is a noop, we can delete
+	 the entire PARALLEL.  */
+      for (i = XVECLEN (body, 0) - 1; i >= 0; --i)
+	{
+	  rtx part = XVECEXP (body, 0, i);
+	  if (GET_CODE (part) == SET)
+	    {
+	      if (! reload_cse_noop_set_p (part))
+		break;
+	      if (REG_FUNCTION_VALUE_P (SET_DEST (part)))
+		{
+		  if (value)
+		    break;
+		  value = SET_DEST (part);
+		}
+	    }
+	  else if (GET_CODE (part) != CLOBBER)
+	    break;
+	}
+
+      if (i < 0)
+	{
+	  reload_cse_delete_noop_set (insn, value);
+	  /* We're done with this insn.  */
+	  return;
+	}
+
+      /* It's not a no-op, but we can try to simplify it.  */
+      for (i = XVECLEN (body, 0) - 1; i >= 0; --i)
+	if (GET_CODE (XVECEXP (body, 0, i)) == SET)
+	  count += reload_cse_simplify_set (XVECEXP (body, 0, i), insn);
+
+      if (count > 0)
+	apply_change_group ();
+      else
+	reload_cse_simplify_operands (insn);
+    }
+}

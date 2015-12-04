@@ -1,0 +1,28 @@
+int
+df_insn_mem_replace (df, bb, insn, mem, reg)
+     struct df *df;
+     basic_block bb;
+     rtx insn;
+     rtx mem;
+     rtx reg;
+{
+  replace_args args;
+
+  args.insn = insn;
+  args.match = mem;
+  args.replacement = reg;
+  args.modified = 0;
+
+  /* Search and replace all matching mems within insn.  */
+  for_each_rtx (&insn, df_rtx_mem_replace, &args);
+
+  if (args.modified)
+    df_insn_modify (df, bb, insn);
+
+  /* ???? FIXME.  We may have a new def or one or more new uses of REG
+     in INSN.  REG should be a new pseudo so it won't affect the
+     dataflow information that we currently have.  We should add
+     the new uses and defs to INSN and then recreate the chains
+     when df_analyse is called.  */
+  return args.modified;
+}

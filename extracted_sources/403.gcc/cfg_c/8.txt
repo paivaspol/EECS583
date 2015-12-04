@@ -1,0 +1,81 @@
+void
+dump_flow_info (file)
+     FILE *file;
+{
+  int i;
+  static const char * const reg_class_names[] = REG_CLASS_NAMES;
+
+  fprintf (file, "%d registers.\n", max_regno);
+  for (i = FIRST_PSEUDO_REGISTER; i < max_regno; i++)
+    if (REG_N_REFS (i))
+      {
+	enum reg_class class, altclass;
+
+	fprintf (file, "\nRegister %d used %d times across %d insns",
+		 i, REG_N_REFS (i), REG_LIVE_LENGTH (i));
+	if (REG_BASIC_BLOCK (i) >= 0)
+	  fprintf (file, " in block %d", REG_BASIC_BLOCK (i));
+	if (REG_N_SETS (i))
+	  fprintf (file, "; set %d time%s", REG_N_SETS (i),
+		   (REG_N_SETS (i) == 1) ? "" : "s");
+	if (REG_USERVAR_P (regno_reg_rtx[i]))
+	  fprintf (file, "; user var");
+	if (REG_N_DEATHS (i) != 1)
+	  fprintf (file, "; dies in %d places", REG_N_DEATHS (i));
+	if (REG_N_CALLS_CROSSED (i) == 1)
+	  fprintf (file, "; crosses 1 call");
+	else if (REG_N_CALLS_CROSSED (i))
+	  fprintf (file, "; crosses %d calls", REG_N_CALLS_CROSSED (i));
+	if (PSEUDO_REGNO_BYTES (i) != UNITS_PER_WORD)
+	  fprintf (file, "; %d bytes", PSEUDO_REGNO_BYTES (i));
+
+	class = reg_preferred_class (i);
+	altclass = reg_alternate_class (i);
+	if (class != GENERAL_REGS || altclass != ALL_REGS)
+	  {
+	    if (altclass == ALL_REGS || class == ALL_REGS)
+	      fprintf (file, "; pref %s", reg_class_names[(int) class]);
+	    else if (altclass == NO_REGS)
+	      fprintf (file, "; %s or none", reg_class_names[(int) class]);
+	    else
+	      fprintf (file, "; pref %s, else %s",
+		       reg_class_names[(int) class],
+		       reg_class_names[(int) altclass]);
+	  }
+
+	if (REG_POINTER (regno_reg_rtx[i]))
+	  fprintf (file, "; pointer");
+	fprintf (file, ".\n");
+      }
+
+  fprintf (file, "\n%d basic blocks, %d edges.\n", n_basic_blocks, n_edges);
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      edge e;
+
+      fprintf (file, "\nBasic block %d: first insn %d, last %d, ",
+	       i, INSN_UID (bb->head), INSN_UID (bb->end));
+      fprintf (file, "loop_depth %d, count ", bb->loop_depth);
+      fprintf (file, HOST_WIDEST_INT_PRINT_DEC, bb->count);
+      fprintf (file, ", freq %i.\n", bb->frequency);
+
+      fprintf (file, "Predecessors: ");
+      for (e = bb->pred; e; e = e->pred_next)
+	dump_edge_info (file, e, 0);
+
+      fprintf (file, "\nSuccessors: ");
+      for (e = bb->succ; e; e = e->succ_next)
+	dump_edge_info (file, e, 1);
+
+      fprintf (file, "\nRegisters live at start:");
+      dump_regset (bb->global_live_at_start, file);
+
+      fprintf (file, "\nRegisters live at end:");
+      dump_regset (bb->global_live_at_end, file);
+
+      putc ('\n', file);
+    }
+
+  putc ('\n', file);
+}

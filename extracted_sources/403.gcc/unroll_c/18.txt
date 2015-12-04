@@ -1,0 +1,45 @@
+int
+set_dominates_use (regno, first_uid, last_uid, copy_start, copy_end)
+     int regno;
+     int first_uid;
+     int last_uid;
+     rtx copy_start;
+     rtx copy_end;
+{
+  int passed_jump = 0;
+  rtx p = NEXT_INSN (copy_start);
+
+  while (INSN_UID (p) != first_uid)
+    {
+      if (GET_CODE (p) == JUMP_INSN)
+	passed_jump = 1;
+      /* Could not find FIRST_UID.  */
+      if (p == copy_end)
+	return 0;
+      p = NEXT_INSN (p);
+    }
+
+  /* Verify that FIRST_UID is an insn that entirely sets REGNO.  */
+  if (! INSN_P (p) || ! dead_or_set_regno_p (p, regno))
+    return 0;
+
+  /* FIRST_UID is always executed.  */
+  if (passed_jump == 0)
+    return 1;
+
+  while (INSN_UID (p) != last_uid)
+    {
+      /* If we see a CODE_LABEL between FIRST_UID and LAST_UID, then we
+	 can not be sure that FIRST_UID dominates LAST_UID.  */
+      if (GET_CODE (p) == CODE_LABEL)
+	return 0;
+      /* Could not find LAST_UID, but we reached the end of the loop, so
+	 it must be safe.  */
+      else if (p == copy_end)
+	return 1;
+      p = NEXT_INSN (p);
+    }
+
+  /* FIRST_UID is always executed if LAST_UID is executed.  */
+  return 1;
+}

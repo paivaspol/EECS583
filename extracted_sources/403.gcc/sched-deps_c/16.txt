@@ -1,0 +1,22 @@
+void
+init_deps (deps)
+     struct deps *deps;
+{
+  int max_reg = (reload_completed ? FIRST_PSEUDO_REGISTER : max_reg_num ());
+
+  deps->max_reg = max_reg;
+  deps->reg_last = (struct deps_reg *)
+    xcalloc (max_reg, sizeof (struct deps_reg));
+  INIT_REG_SET (&deps->reg_last_in_use);
+
+  deps->pending_read_insns = 0;
+  deps->pending_read_mems = 0;
+  deps->pending_write_insns = 0;
+  deps->pending_write_mems = 0;
+  deps->pending_lists_length = 0;
+  deps->pending_flush_length = 0;
+  deps->last_pending_memory_flush = 0;
+  deps->last_function_call = 0;
+  deps->sched_before_next_call = 0;
+  deps->in_post_call_group_p = false;
+}

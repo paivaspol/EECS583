@@ -1,0 +1,17 @@
+int
+MSAFileFormat(MSAFILE *afp)
+{
+  int fmt;
+
+  fmt = SeqfileFormat(afp->f);
+
+  if (fmt == SQFILE_FASTA) fmt = MSAFILE_A2M;
+
+  if (fmt != MSAFILE_UNKNOWN && ! IsAlignmentFormat(fmt)) 
+    Die("File %s does not appear to be an alignment file;\n\
+rather, it appears to be an unaligned file in %s format.\n\
+I'm expecting an alignment file in this context.\n",
+	afp->fname,
+	SeqfileFormat2String(fmt));
+  return fmt;
+}

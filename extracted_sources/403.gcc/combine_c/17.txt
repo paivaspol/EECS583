@@ -1,0 +1,319 @@
+static rtx
+simplify_if_then_else (x)
+     rtx x;
+{
+  enum machine_mode mode = GET_MODE (x);
+  rtx cond = XEXP (x, 0);
+  rtx true_rtx = XEXP (x, 1);
+  rtx false_rtx = XEXP (x, 2);
+  enum rtx_code true_code = GET_CODE (cond);
+  int comparison_p = GET_RTX_CLASS (true_code) == '<';
+  rtx temp;
+  int i;
+  enum rtx_code false_code;
+  rtx reversed;
+
+  /* Simplify storing of the truth value.  */
+  if (comparison_p && true_rtx == const_true_rtx && false_rtx == const0_rtx)
+    return gen_binary (true_code, mode, XEXP (cond, 0), XEXP (cond, 1));
+
+  /* Also when the truth value has to be reversed.  */
+  if (comparison_p
+      && true_rtx == const0_rtx && false_rtx == const_true_rtx
+      && (reversed = reversed_comparison (cond, mode, XEXP (cond, 0),
+					  XEXP (cond, 1))))
+    return reversed;
+
+  /* Sometimes we can simplify the arm of an IF_THEN_ELSE if a register used
+     in it is being compared against certain values.  Get the true and false
+     comparisons and see if that says anything about the value of each arm.  */
+
+  if (comparison_p
+      && ((false_code = combine_reversed_comparison_code (cond))
+	  != UNKNOWN)
+      && GET_CODE (XEXP (cond, 0)) == REG)
+    {
+      HOST_WIDE_INT nzb;
+      rtx from = XEXP (cond, 0);
+      rtx true_val = XEXP (cond, 1);
+      rtx false_val = true_val;
+      int swapped = 0;
+
+      /* If FALSE_CODE is EQ, swap the codes and arms.  */
+
+      if (false_code == EQ)
+	{
+	  swapped = 1, true_code = EQ, false_code = NE;
+	  temp = true_rtx, true_rtx = false_rtx, false_rtx = temp;
+	}
+
+      /* If we are comparing against zero and the expression being tested has
+	 only a single bit that might be nonzero, that is its value when it is
+	 not equal to zero.  Similarly if it is known to be -1 or 0.  */
+
+      if (true_code == EQ && true_val == const0_rtx
+	  && exact_log2 (nzb = nonzero_bits (from, GET_MODE (from))) >= 0)
+	false_code = EQ, false_val = GEN_INT (nzb);
+      else if (true_code == EQ && true_val == const0_rtx
+	       && (num_sign_bit_copies (from, GET_MODE (from))
+		   == GET_MODE_BITSIZE (GET_MODE (from))))
+	false_code = EQ, false_val = constm1_rtx;
+
+      /* Now simplify an arm if we know the value of the register in the
+	 branch and it is used in the arm.  Be careful due to the potential
+	 of locally-shared RTL.  */
+
+      if (reg_mentioned_p (from, true_rtx))
+	true_rtx = subst (known_cond (copy_rtx (true_rtx), true_code,
+				      from, true_val),
+		      pc_rtx, pc_rtx, 0, 0);
+      if (reg_mentioned_p (from, false_rtx))
+	false_rtx = subst (known_cond (copy_rtx (false_rtx), false_code,
+				   from, false_val),
+		       pc_rtx, pc_rtx, 0, 0);
+
+      SUBST (XEXP (x, 1), swapped ? false_rtx : true_rtx);
+      SUBST (XEXP (x, 2), swapped ? true_rtx : false_rtx);
+
+      true_rtx = XEXP (x, 1);
+      false_rtx = XEXP (x, 2);
+      true_code = GET_CODE (cond);
+    }
+
+  /* If we have (if_then_else FOO (pc) (label_ref BAR)) and FOO can be
+     reversed, do so to avoid needing two sets of patterns for
+     subtract-and-branch insns.  Similarly if we have a constant in the true
+     arm, the false arm is the same as the first operand of the comparison, or
+     the false arm is more complicated than the true arm.  */
+
+  if (comparison_p
+      && combine_reversed_comparison_code (cond) != UNKNOWN
+      && (true_rtx == pc_rtx
+	  || (CONSTANT_P (true_rtx)
+	      && GET_CODE (false_rtx) != CONST_INT && false_rtx != pc_rtx)
+	  || true_rtx == const0_rtx
+	  || (GET_RTX_CLASS (GET_CODE (true_rtx)) == 'o'
+	      && GET_RTX_CLASS (GET_CODE (false_rtx)) != 'o')
+	  || (GET_CODE (true_rtx) == SUBREG
+	      && GET_RTX_CLASS (GET_CODE (SUBREG_REG (true_rtx))) == 'o'
+	      && GET_RTX_CLASS (GET_CODE (false_rtx)) != 'o')
+	  || reg_mentioned_p (true_rtx, false_rtx)
+	  || rtx_equal_p (false_rtx, XEXP (cond, 0))))
+    {
+      true_code = reversed_comparison_code (cond, NULL);
+      SUBST (XEXP (x, 0),
+	     reversed_comparison (cond, GET_MODE (cond), XEXP (cond, 0),
+				  XEXP (cond, 1)));
+
+      SUBST (XEXP (x, 1), false_rtx);
+      SUBST (XEXP (x, 2), true_rtx);
+
+      temp = true_rtx, true_rtx = false_rtx, false_rtx = temp;
+      cond = XEXP (x, 0);
+
+      /* It is possible that the conditional has been simplified out.  */
+      true_code = GET_CODE (cond);
+      comparison_p = GET_RTX_CLASS (true_code) == '<';
+    }
+
+  /* If the two arms are identical, we don't need the comparison.  */
+
+  if (rtx_equal_p (true_rtx, false_rtx) && ! side_effects_p (cond))
+    return true_rtx;
+
+  /* Convert a == b ? b : a to "a".  */
+  if (true_code == EQ && ! side_effects_p (cond)
+      && (! FLOAT_MODE_P (mode) || flag_unsafe_math_optimizations)
+      && rtx_equal_p (XEXP (cond, 0), false_rtx)
+      && rtx_equal_p (XEXP (cond, 1), true_rtx))
+    return false_rtx;
+  else if (true_code == NE && ! side_effects_p (cond)
+	   && (! FLOAT_MODE_P (mode) || flag_unsafe_math_optimizations)
+	   && rtx_equal_p (XEXP (cond, 0), true_rtx)
+	   && rtx_equal_p (XEXP (cond, 1), false_rtx))
+    return true_rtx;
+
+  /* Look for cases where we have (abs x) or (neg (abs X)).  */
+
+  if (GET_MODE_CLASS (mode) == MODE_INT
+      && GET_CODE (false_rtx) == NEG
+      && rtx_equal_p (true_rtx, XEXP (false_rtx, 0))
+      && comparison_p
+      && rtx_equal_p (true_rtx, XEXP (cond, 0))
+      && ! side_effects_p (true_rtx))
+    switch (true_code)
+      {
+      case GT:
+      case GE:
+	return simplify_gen_unary (ABS, mode, true_rtx, mode);
+      case LT:
+      case LE:
+	return
+	  simplify_gen_unary (NEG, mode,
+			      simplify_gen_unary (ABS, mode, true_rtx, mode),
+			      mode);
+      default:
+	break;
+      }
+
+  /* Look for MIN or MAX.  */
+
+  if ((! FLOAT_MODE_P (mode) || flag_unsafe_math_optimizations)
+      && comparison_p
+      && rtx_equal_p (XEXP (cond, 0), true_rtx)
+      && rtx_equal_p (XEXP (cond, 1), false_rtx)
+      && ! side_effects_p (cond))
+    switch (true_code)
+      {
+      case GE:
+      case GT:
+	return gen_binary (SMAX, mode, true_rtx, false_rtx);
+      case LE:
+      case LT:
+	return gen_binary (SMIN, mode, true_rtx, false_rtx);
+      case GEU:
+      case GTU:
+	return gen_binary (UMAX, mode, true_rtx, false_rtx);
+      case LEU:
+      case LTU:
+	return gen_binary (UMIN, mode, true_rtx, false_rtx);
+      default:
+	break;
+      }
+
+  /* If we have (if_then_else COND (OP Z C1) Z) and OP is an identity when its
+     second operand is zero, this can be done as (OP Z (mult COND C2)) where
+     C2 = C1 * STORE_FLAG_VALUE. Similarly if OP has an outer ZERO_EXTEND or
+     SIGN_EXTEND as long as Z is already extended (so we don't destroy it).
+     We can do this kind of thing in some cases when STORE_FLAG_VALUE is
+     neither 1 or -1, but it isn't worth checking for.  */
+
+  if ((STORE_FLAG_VALUE == 1 || STORE_FLAG_VALUE == -1)
+      && comparison_p && mode != VOIDmode && ! side_effects_p (x))
+    {
+      rtx t = make_compound_operation (true_rtx, SET);
+      rtx f = make_compound_operation (false_rtx, SET);
+      rtx cond_op0 = XEXP (cond, 0);
+      rtx cond_op1 = XEXP (cond, 1);
+      enum rtx_code op = NIL, extend_op = NIL;
+      enum machine_mode m = mode;
+      rtx z = 0, c1 = NULL_RTX;
+
+      if ((GET_CODE (t) == PLUS || GET_CODE (t) == MINUS
+	   || GET_CODE (t) == IOR || GET_CODE (t) == XOR
+	   || GET_CODE (t) == ASHIFT
+	   || GET_CODE (t) == LSHIFTRT || GET_CODE (t) == ASHIFTRT)
+	  && rtx_equal_p (XEXP (t, 0), f))
+	c1 = XEXP (t, 1), op = GET_CODE (t), z = f;
+
+      /* If an identity-zero op is commutative, check whether there
+	 would be a match if we swapped the operands.  */
+      else if ((GET_CODE (t) == PLUS || GET_CODE (t) == IOR
+		|| GET_CODE (t) == XOR)
+	       && rtx_equal_p (XEXP (t, 1), f))
+	c1 = XEXP (t, 0), op = GET_CODE (t), z = f;
+      else if (GET_CODE (t) == SIGN_EXTEND
+	       && (GET_CODE (XEXP (t, 0)) == PLUS
+		   || GET_CODE (XEXP (t, 0)) == MINUS
+		   || GET_CODE (XEXP (t, 0)) == IOR
+		   || GET_CODE (XEXP (t, 0)) == XOR
+		   || GET_CODE (XEXP (t, 0)) == ASHIFT
+		   || GET_CODE (XEXP (t, 0)) == LSHIFTRT
+		   || GET_CODE (XEXP (t, 0)) == ASHIFTRT)
+	       && GET_CODE (XEXP (XEXP (t, 0), 0)) == SUBREG
+	       && subreg_lowpart_p (XEXP (XEXP (t, 0), 0))
+	       && rtx_equal_p (SUBREG_REG (XEXP (XEXP (t, 0), 0)), f)
+	       && (num_sign_bit_copies (f, GET_MODE (f))
+		   > (GET_MODE_BITSIZE (mode)
+		      - GET_MODE_BITSIZE (GET_MODE (XEXP (XEXP (t, 0), 0))))))
+	{
+	  c1 = XEXP (XEXP (t, 0), 1); z = f; op = GET_CODE (XEXP (t, 0));
+	  extend_op = SIGN_EXTEND;
+	  m = GET_MODE (XEXP (t, 0));
+	}
+      else if (GET_CODE (t) == SIGN_EXTEND
+	       && (GET_CODE (XEXP (t, 0)) == PLUS
+		   || GET_CODE (XEXP (t, 0)) == IOR
+		   || GET_CODE (XEXP (t, 0)) == XOR)
+	       && GET_CODE (XEXP (XEXP (t, 0), 1)) == SUBREG
+	       && subreg_lowpart_p (XEXP (XEXP (t, 0), 1))
+	       && rtx_equal_p (SUBREG_REG (XEXP (XEXP (t, 0), 1)), f)
+	       && (num_sign_bit_copies (f, GET_MODE (f))
+		   > (GET_MODE_BITSIZE (mode)
+		      - GET_MODE_BITSIZE (GET_MODE (XEXP (XEXP (t, 0), 1))))))
+	{
+	  c1 = XEXP (XEXP (t, 0), 0); z = f; op = GET_CODE (XEXP (t, 0));
+	  extend_op = SIGN_EXTEND;
+	  m = GET_MODE (XEXP (t, 0));
+	}
+      else if (GET_CODE (t) == ZERO_EXTEND
+	       && (GET_CODE (XEXP (t, 0)) == PLUS
+		   || GET_CODE (XEXP (t, 0)) == MINUS
+		   || GET_CODE (XEXP (t, 0)) == IOR
+		   || GET_CODE (XEXP (t, 0)) == XOR
+		   || GET_CODE (XEXP (t, 0)) == ASHIFT
+		   || GET_CODE (XEXP (t, 0)) == LSHIFTRT
+		   || GET_CODE (XEXP (t, 0)) == ASHIFTRT)
+	       && GET_CODE (XEXP (XEXP (t, 0), 0)) == SUBREG
+	       && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	       && subreg_lowpart_p (XEXP (XEXP (t, 0), 0))
+	       && rtx_equal_p (SUBREG_REG (XEXP (XEXP (t, 0), 0)), f)
+	       && ((nonzero_bits (f, GET_MODE (f))
+		    & ~GET_MODE_MASK (GET_MODE (XEXP (XEXP (t, 0), 0))))
+		   == 0))
+	{
+	  c1 = XEXP (XEXP (t, 0), 1); z = f; op = GET_CODE (XEXP (t, 0));
+	  extend_op = ZERO_EXTEND;
+	  m = GET_MODE (XEXP (t, 0));
+	}
+      else if (GET_CODE (t) == ZERO_EXTEND
+	       && (GET_CODE (XEXP (t, 0)) == PLUS
+		   || GET_CODE (XEXP (t, 0)) == IOR
+		   || GET_CODE (XEXP (t, 0)) == XOR)
+	       && GET_CODE (XEXP (XEXP (t, 0), 1)) == SUBREG
+	       && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	       && subreg_lowpart_p (XEXP (XEXP (t, 0), 1))
+	       && rtx_equal_p (SUBREG_REG (XEXP (XEXP (t, 0), 1)), f)
+	       && ((nonzero_bits (f, GET_MODE (f))
+		    & ~GET_MODE_MASK (GET_MODE (XEXP (XEXP (t, 0), 1))))
+		   == 0))
+	{
+	  c1 = XEXP (XEXP (t, 0), 0); z = f; op = GET_CODE (XEXP (t, 0));
+	  extend_op = ZERO_EXTEND;
+	  m = GET_MODE (XEXP (t, 0));
+	}
+
+      if (z)
+	{
+	  temp = subst (gen_binary (true_code, m, cond_op0, cond_op1),
+			pc_rtx, pc_rtx, 0, 0);
+	  temp = gen_binary (MULT, m, temp,
+			     gen_binary (MULT, m, c1, const_true_rtx));
+	  temp = subst (temp, pc_rtx, pc_rtx, 0, 0);
+	  temp = gen_binary (op, m, gen_lowpart_for_combine (m, z), temp);
+
+	  if (extend_op != NIL)
+	    temp = simplify_gen_unary (extend_op, mode, temp, m);
+
+	  return temp;
+	}
+    }
+
+  /* If we have (if_then_else (ne A 0) C1 0) and either A is known to be 0 or
+     1 and C1 is a single bit or A is known to be 0 or -1 and C1 is the
+     negation of a single bit, we can convert this operation to a shift.  We
+     can actually do this more generally, but it doesn't seem worth it.  */
+
+  if (true_code == NE && XEXP (cond, 1) == const0_rtx
+      && false_rtx == const0_rtx && GET_CODE (true_rtx) == CONST_INT
+      && ((1 == nonzero_bits (XEXP (cond, 0), mode)
+	   && (i = exact_log2 (INTVAL (true_rtx))) >= 0)
+	  || ((num_sign_bit_copies (XEXP (cond, 0), mode)
+	       == GET_MODE_BITSIZE (mode))
+	      && (i = exact_log2 (-INTVAL (true_rtx))) >= 0)))
+    return
+      simplify_shift_const (NULL_RTX, ASHIFT, mode,
+			    gen_lowpart_for_combine (mode, XEXP (cond, 0)), i);
+
+  return x;
+}

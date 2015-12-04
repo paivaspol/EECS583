@@ -1,0 +1,34 @@
+int
+cpp_included (pfile, fname)
+     cpp_reader *pfile;
+     const char *fname;
+{
+  struct search_path *path;
+  char *name, *n;
+  splay_tree_node nd;
+
+  if (IS_ABSOLUTE_PATHNAME (fname))
+    {
+      /* Just look it up.  */
+      nd = splay_tree_lookup (pfile->all_include_files, (splay_tree_key) fname);
+      return (nd && nd->value);
+    }
+      
+  /* Search directory path for the file.  */
+  name = (char *) alloca (strlen (fname) + pfile->max_include_len + 2);
+  for (path = CPP_OPTION (pfile, quote_include); path; path = path->next)
+    {
+      memcpy (name, path->name, path->len);
+      name[path->len] = '/';
+      strcpy (&name[path->len + 1], fname);
+      if (CPP_OPTION (pfile, remap))
+	n = remap_filename (pfile, name, path);
+      else
+	n = name;
+
+      nd = splay_tree_lookup (pfile->all_include_files, (splay_tree_key) n);
+      if (nd && nd->value)
+	return 1;
+    }
+  return 0;
+}

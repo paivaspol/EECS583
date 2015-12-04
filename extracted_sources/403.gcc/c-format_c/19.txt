@@ -1,0 +1,44 @@
+static void check_format_info_recurse PARAMS ((int *, format_check_results *,
+					       function_format_info *, tree,
+					       tree, unsigned HOST_WIDE_INT));
+static void check_format_info_main PARAMS ((int *, format_check_results *,
+					    function_format_info *,
+					    const char *, int, tree,
+					    unsigned HOST_WIDE_INT));
+static void status_warning PARAMS ((int *, const char *, ...))
+     ATTRIBUTE_PRINTF_2;
+
+static void init_dollar_format_checking		PARAMS ((int, tree));
+static int maybe_read_dollar_number		PARAMS ((int *, const char **, int,
+							 tree, tree *,
+							 const format_kind_info *));
+static void finish_dollar_format_checking	PARAMS ((int *, format_check_results *, int));
+
+static const format_flag_spec *get_flag_spec	PARAMS ((const format_flag_spec *,
+							 int, const char *));
+
+static void check_format_types	PARAMS ((int *, format_wanted_type *));
+
+/* Decode a format type from a string, returning the type, or
+   format_type_error if not valid, in which case the caller should print an
+   error message.  */
+static enum format_type
+decode_format_type (s)
+     const char *s;
+{
+  int i;
+  int slen;
+  slen = strlen (s);
+  for (i = 0; i < (int) format_type_error; i++)
+    {
+      int alen;
+      if (!strcmp (s, format_types[i].name))
+	break;
+      alen = strlen (format_types[i].name);
+      if (slen == alen + 4 && s[0] == '_' && s[1] == '_'
+	  && s[slen - 1] == '_' && s[slen - 2] == '_'
+	  && !strncmp (s + 2, format_types[i].name, alen))
+	break;
+    }
+  return ((enum format_type) i);
+}

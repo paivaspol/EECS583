@@ -1,0 +1,140 @@
+static void
+set_label_offsets (x, insn, initial_p)
+     rtx x;
+     rtx insn;
+     int initial_p;
+{
+  enum rtx_code code = GET_CODE (x);
+  rtx tem;
+  unsigned int i;
+  struct elim_table *p;
+
+  switch (code)
+    {
+    case LABEL_REF:
+      if (LABEL_REF_NONLOCAL_P (x))
+	return;
+
+      x = XEXP (x, 0);
+
+      /* ... fall through ...  */
+
+    case CODE_LABEL:
+      /* If we know nothing about this label, set the desired offsets.  Note
+	 that this sets the offset at a label to be the offset before a label
+	 if we don't know anything about the label.  This is not correct for
+	 the label after a BARRIER, but is the best guess we can make.  If
+	 we guessed wrong, we will suppress an elimination that might have
+	 been possible had we been able to guess correctly.  */
+
+      if (! offsets_known_at[CODE_LABEL_NUMBER (x)])
+	{
+	  for (i = 0; i < NUM_ELIMINABLE_REGS; i++)
+	    offsets_at[CODE_LABEL_NUMBER (x)][i]
+	      = (initial_p ? reg_eliminate[i].initial_offset
+		 : reg_eliminate[i].offset);
+	  offsets_known_at[CODE_LABEL_NUMBER (x)] = 1;
+	}
+
+      /* Otherwise, if this is the definition of a label and it is
+	 preceded by a BARRIER, set our offsets to the known offset of
+	 that label.  */
+
+      else if (x == insn
+	       && (tem = prev_nonnote_insn (insn)) != 0
+	       && GET_CODE (tem) == BARRIER)
+	set_offsets_for_label (insn);
+      else
+	/* If neither of the above cases is true, compare each offset
+	   with those previously recorded and suppress any eliminations
+	   where the offsets disagree.  */
+
+	for (i = 0; i < NUM_ELIMINABLE_REGS; i++)
+	  if (offsets_at[CODE_LABEL_NUMBER (x)][i]
+	      != (initial_p ? reg_eliminate[i].initial_offset
+		  : reg_eliminate[i].offset))
+	    reg_eliminate[i].can_eliminate = 0;
+
+      return;
+
+    case JUMP_INSN:
+      set_label_offsets (PATTERN (insn), insn, initial_p);
+
+      /* ... fall through ...  */
+
+    case INSN:
+    case CALL_INSN:
+      /* Any labels mentioned in REG_LABEL notes can be branched to indirectly
+	 and hence must have all eliminations at their initial offsets.  */
+      for (tem = REG_NOTES (x); tem; tem = XEXP (tem, 1))
+	if (REG_NOTE_KIND (tem) == REG_LABEL)
+	  set_label_offsets (XEXP (tem, 0), insn, 1);
+      return;
+
+    case PARALLEL:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      /* Each of the labels in the parallel or address vector must be
+	 at their initial offsets.  We want the first field for PARALLEL
+	 and ADDR_VEC and the second field for ADDR_DIFF_VEC.  */
+
+      for (i = 0; i < (unsigned) XVECLEN (x, code == ADDR_DIFF_VEC); i++)
+	set_label_offsets (XVECEXP (x, code == ADDR_DIFF_VEC, i),
+			   insn, initial_p);
+      return;
+
+    case SET:
+      /* We only care about setting PC.  If the source is not RETURN,
+	 IF_THEN_ELSE, or a label, disable any eliminations not at
+	 their initial offsets.  Similarly if any arm of the IF_THEN_ELSE
+	 isn't one of those possibilities.  For branches to a label,
+	 call ourselves recursively.
+
+	 Note that this can disable elimination unnecessarily when we have
+	 a non-local goto since it will look like a non-constant jump to
+	 someplace in the current function.  This isn't a significant
+	 problem since such jumps will normally be when all elimination
+	 pairs are back to their initial offsets.  */
+
+      if (SET_DEST (x) != pc_rtx)
+	return;
+
+      switch (GET_CODE (SET_SRC (x)))
+	{
+	case PC:
+	case RETURN:
+	  return;
+
+	case LABEL_REF:
+	  set_label_offsets (XEXP (SET_SRC (x), 0), insn, initial_p);
+	  return;
+
+	case IF_THEN_ELSE:
+	  tem = XEXP (SET_SRC (x), 1);
+	  if (GET_CODE (tem) == LABEL_REF)
+	    set_label_offsets (XEXP (tem, 0), insn, initial_p);
+	  else if (GET_CODE (tem) != PC && GET_CODE (tem) != RETURN)
+	    break;
+
+	  tem = XEXP (SET_SRC (x), 2);
+	  if (GET_CODE (tem) == LABEL_REF)
+	    set_label_offsets (XEXP (tem, 0), insn, initial_p);
+	  else if (GET_CODE (tem) != PC && GET_CODE (tem) != RETURN)
+	    break;
+	  return;
+
+	default:
+	  break;
+	}
+
+      /* If we reach here, all eliminations must be at their initial
+	 offset because we are doing a jump to a variable address.  */
+      for (p = reg_eliminate; p < &reg_eliminate[NUM_ELIMINABLE_REGS]; p++)
+	if (p->offset != p->initial_offset)
+	  p->can_eliminate = 0;
+      break;
+
+    default:
+      break;
+    }
+}

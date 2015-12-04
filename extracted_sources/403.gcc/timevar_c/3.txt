@@ -1,0 +1,46 @@
+void
+timevar_push (timevar)
+     timevar_id_t timevar;
+{
+  struct timevar_def *tv = &timevars[timevar];
+  struct timevar_stack_def *context;
+  struct timevar_time_def now;
+
+  if (!TIMEVAR_ENABLE)
+    return;
+
+  /* Mark this timing variable as used.  */
+  tv->used = 1;
+
+  /* Can't push a standalone timer.  */
+  if (tv->standalone)
+    abort ();
+
+  /* What time is it?  */
+  get_time (&now);
+
+  /* If the stack isn't empty, attribute the current elapsed time to
+     the old topmost element.  */
+  if (stack)
+    timevar_accumulate (&stack->timevar->elapsed, &start_time, &now);
+
+  /* Reset the start time; from now on, time is attributed to
+     TIMEVAR.  */
+  start_time = now;
+
+  /* See if we have a previously-allocated stack instance.  If so,
+     take it off the list.  If not, malloc a new one.  */
+  if (unused_stack_instances != NULL) 
+    {
+      context = unused_stack_instances;
+      unused_stack_instances = unused_stack_instances->next;
+    }
+  else
+    context = (struct timevar_stack_def *) 
+      xmalloc (sizeof (struct timevar_stack_def));
+
+  /* Fill it in and put it on the stack.  */
+  context->timevar = tv;
+  context->next = stack;
+  stack = context;
+}

@@ -1,0 +1,61 @@
+static void parse_tri_line (mdef_t *m, char *line, s3pid_t p)
+{
+    int32 wlen;
+    char word[1024], *lp;
+    s3cipid_t ci, lc, rc;
+    word_posn_t wpos = WORD_POSN_BEGIN;
+
+    lp = line;
+    
+    /* Read base phone name */
+    if (sscanf (lp, "%s%n", word, &wlen) != 1)
+	E_FATAL("Missing base phone name: %s\n", line);
+    lp += wlen;
+
+    ci = mdef_ciphone_id (m, word);
+    if (NOT_S3CIPID(ci))
+        E_FATAL("Unknown base phone: %s\n", line);
+
+    /* Read lc */
+    if (sscanf (lp, "%s%n", word, &wlen) != 1)
+	E_FATAL("Missing left context: %s\n", line);
+    lp += wlen;
+    lc = mdef_ciphone_id (m, word);
+    if (NOT_S3CIPID(lc))
+        E_FATAL("Unknown left context: %s\n", line);
+
+    /* Read rc */
+    if (sscanf (lp, "%s%n", word, &wlen) != 1)
+	E_FATAL("Missing right context: %s\n", line);
+    lp += wlen;
+    rc = mdef_ciphone_id (m, word);
+    if (NOT_S3CIPID(rc))
+        E_FATAL("Unknown right  context: %s\n", line);
+    
+    /* Read tripone word-position within word */
+    if ((sscanf (lp, "%s%n", word, &wlen) != 1) || (word[1] != '\0'))
+        E_FATAL("Missing or bad word-position spec: %s\n", line);
+    lp += wlen;
+    switch (word[0]) {
+    case 'b': wpos = WORD_POSN_BEGIN; break;
+    case 'e': wpos = WORD_POSN_END; break;
+    case 's': wpos = WORD_POSN_SINGLE; break;
+    case 'i': wpos = WORD_POSN_INTERNAL; break;
+    default: E_FATAL("Bad word-position spec: %s\n", line);
+    }
+
+    /* Read filler attribute, if present.  Must match base phone attribute */
+    if (sscanf (lp, "%s%n", word, &wlen) != 1)
+	E_FATAL("Missing filler attribute field: %s\n", line);
+    lp += wlen;
+    if (((strcmp (word, "filler") == 0) && (m->ciphone[(int)ci].filler)) ||
+	((strcmp (word, "n/a") == 0) && (! m->ciphone[(int)ci].filler))) {
+	/* Everything is fine */
+    } else
+        E_FATAL("Bad filler attribute field: %s\n", line);
+    
+    triphone_add (m, ci, lc, rc, wpos, p);
+
+    /* Parse remainder of line: transition matrix and state->senone mappings */
+    parse_tmat_senmap (m, line, lp-line, p);
+}

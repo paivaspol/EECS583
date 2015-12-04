@@ -1,0 +1,120 @@
+static rtx
+expand_builtin_memcmp (exp, arglist, target, mode)
+     tree exp ATTRIBUTE_UNUSED;
+     tree arglist;
+     rtx target;
+     enum machine_mode mode;
+{
+  tree arg1, arg2, len;
+  const char *p1, *p2;
+
+  if (!validate_arglist (arglist,
+		      POINTER_TYPE, POINTER_TYPE, INTEGER_TYPE, VOID_TYPE))
+    return 0;
+
+  arg1 = TREE_VALUE (arglist);
+  arg2 = TREE_VALUE (TREE_CHAIN (arglist));
+  len = TREE_VALUE (TREE_CHAIN (TREE_CHAIN (arglist)));
+
+  /* If the len parameter is zero, return zero.  */
+  if (host_integerp (len, 1) && tree_low_cst (len, 1) == 0)
+    {
+      /* Evaluate and ignore arg1 and arg2 in case they have
+         side-effects.  */
+      expand_expr (arg1, const0_rtx, VOIDmode, EXPAND_NORMAL);
+      expand_expr (arg2, const0_rtx, VOIDmode, EXPAND_NORMAL);
+      return const0_rtx;
+    }
+
+  p1 = c_getstr (arg1);
+  p2 = c_getstr (arg2);
+
+  /* If all arguments are constant, and the value of len is not greater
+     than the lengths of arg1 and arg2, evaluate at compile-time.  */
+  if (host_integerp (len, 1) && p1 && p2
+      && compare_tree_int (len, strlen (p1) + 1) <= 0
+      && compare_tree_int (len, strlen (p2) + 1) <= 0)
+    {
+      const int r = memcmp (p1, p2, tree_low_cst (len, 1));
+
+      return (r < 0 ? constm1_rtx : (r > 0 ? const1_rtx : const0_rtx));
+    }
+
+  /* If len parameter is one, return an expression corresponding to
+     (*(const unsigned char*)arg1 - (const unsigned char*)arg2).  */
+  if (host_integerp (len, 1) && tree_low_cst (len, 1) == 1)
+    {
+      tree cst_uchar_node = build_type_variant (unsigned_char_type_node, 1, 0);
+      tree cst_uchar_ptr_node = build_pointer_type (cst_uchar_node);
+      tree ind1 =
+      fold (build1 (CONVERT_EXPR, integer_type_node,
+                    build1 (INDIRECT_REF, cst_uchar_node,
+                            build1 (NOP_EXPR, cst_uchar_ptr_node, arg1))));
+      tree ind2 =
+      fold (build1 (CONVERT_EXPR, integer_type_node,
+                    build1 (INDIRECT_REF, cst_uchar_node,
+                            build1 (NOP_EXPR, cst_uchar_ptr_node, arg2))));
+      tree result = fold (build (MINUS_EXPR, integer_type_node, ind1, ind2));
+      return expand_expr (result, target, mode, EXPAND_NORMAL);
+    }
+
+#ifdef HAVE_cmpstrsi
+  {
+    rtx arg1_rtx, arg2_rtx, arg3_rtx;
+    rtx result;
+    rtx insn;
+
+    int arg1_align
+      = get_pointer_alignment (arg1, BIGGEST_ALIGNMENT) / BITS_PER_UNIT;
+    int arg2_align
+      = get_pointer_alignment (arg2, BIGGEST_ALIGNMENT) / BITS_PER_UNIT;
+    enum machine_mode insn_mode
+      = insn_data[(int) CODE_FOR_cmpstrsi].operand[0].mode;
+
+    /* If we don't have POINTER_TYPE, call the function.  */
+    if (arg1_align == 0 || arg2_align == 0)
+      return 0;
+
+    /* Make a place to write the result of the instruction.  */
+    result = target;
+    if (! (result != 0
+	   && GET_CODE (result) == REG && GET_MODE (result) == insn_mode
+	   && REGNO (result) >= FIRST_PSEUDO_REGISTER))
+      result = gen_reg_rtx (insn_mode);
+
+    arg1_rtx = get_memory_rtx (arg1);
+    arg2_rtx = get_memory_rtx (arg2);
+    arg3_rtx = expand_expr (len, NULL_RTX, VOIDmode, 0);
+    if (!HAVE_cmpstrsi)
+      insn = NULL_RTX;
+    else
+      insn = gen_cmpstrsi (result, arg1_rtx, arg2_rtx, arg3_rtx,
+			   GEN_INT (MIN (arg1_align, arg2_align)));
+
+    if (insn)
+      emit_insn (insn);
+    else
+      emit_library_call_value (memcmp_libfunc, result, LCT_PURE_MAKE_BLOCK,
+			       TYPE_MODE (integer_type_node), 3,
+			       XEXP (arg1_rtx, 0), Pmode,
+			       XEXP (arg2_rtx, 0), Pmode,
+			       convert_to_mode (TYPE_MODE (sizetype), arg3_rtx,
+						TREE_UNSIGNED (sizetype)),
+			       TYPE_MODE (sizetype));
+
+    /* Return the value in the proper mode for this function.  */
+    mode = TYPE_MODE (TREE_TYPE (exp));
+    if (GET_MODE (result) == mode)
+      return result;
+    else if (target != 0)
+      {
+	convert_move (target, result, 0);
+	return target;
+      }
+    else
+      return convert_to_mode (mode, result, 0);
+  }
+#endif
+
+  return 0;
+}

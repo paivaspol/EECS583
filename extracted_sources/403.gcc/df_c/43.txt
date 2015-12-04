@@ -1,0 +1,21 @@
+static int
+df_bb_luids_set (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  rtx insn;
+  int luid = 0;
+
+  /* The LUIDs are monotonically increasing for each basic block.  */
+
+  for (insn = bb->head; ; insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	DF_INSN_LUID (df, insn) = luid++;
+      DF_INSN_LUID (df, insn) = luid;
+
+      if (insn == bb->end)
+	break;
+    }
+  return luid;
+}

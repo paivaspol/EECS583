@@ -1,0 +1,51 @@
+int
+cpp_avoid_paste (pfile, token1, token2)
+     cpp_reader *pfile;
+     const cpp_token *token1, *token2;
+{
+  enum cpp_ttype a = token1->type, b = token2->type;
+  cppchar_t c;
+
+  if (token1->flags & NAMED_OP)
+    a = CPP_NAME;
+  if (token2->flags & NAMED_OP)
+    b = CPP_NAME;
+
+  c = EOF;
+  if (token2->flags & DIGRAPH)
+    c = digraph_spellings[(int) b - (int) CPP_FIRST_DIGRAPH][0];
+  else if (token_spellings[b].category == SPELL_OPERATOR)
+    c = token_spellings[b].name[0];
+
+  /* Quickly get everything that can paste with an '='.  */
+  if ((int) a <= (int) CPP_LAST_EQ && c == '=')
+    return 1;
+
+  switch (a)
+    {
+    case CPP_GREATER:	return c == '>' || c == '?';
+    case CPP_LESS:	return c == '<' || c == '?' || c == '%' || c == ':';
+    case CPP_PLUS:	return c == '+';
+    case CPP_MINUS:	return c == '-' || c == '>';
+    case CPP_DIV:	return c == '/' || c == '*'; /* Comments.  */
+    case CPP_MOD:	return c == ':' || c == '>';
+    case CPP_AND:	return c == '&';
+    case CPP_OR:	return c == '|';
+    case CPP_COLON:	return c == ':' || c == '>';
+    case CPP_DEREF:	return c == '*';
+    case CPP_DOT:	return c == '.' || c == '%' || b == CPP_NUMBER;
+    case CPP_HASH:	return c == '#' || c == '%'; /* Digraph form.  */
+    case CPP_NAME:	return ((b == CPP_NUMBER
+				 && name_p (pfile, &token2->val.str))
+				|| b == CPP_NAME
+				|| b == CPP_CHAR || b == CPP_STRING); /* L */
+    case CPP_NUMBER:	return (b == CPP_NUMBER || b == CPP_NAME
+				|| c == '.' || c == '+' || c == '-');
+    case CPP_OTHER:	return (CPP_OPTION (pfile, objc)
+				&& token1->val.c == '@'
+				&& (b == CPP_NAME || b == CPP_STRING));
+    default:		break;
+    }
+
+  return 0;
+}

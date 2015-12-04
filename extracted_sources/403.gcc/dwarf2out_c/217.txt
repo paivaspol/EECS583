@@ -1,0 +1,39 @@
+static void
+gen_lexical_block_die (stmt, context_die, depth)
+     tree stmt;
+     dw_die_ref context_die;
+     int depth;
+{
+  dw_die_ref stmt_die = new_die (DW_TAG_lexical_block, context_die, stmt);
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  if (! BLOCK_ABSTRACT (stmt))
+    {
+      if (BLOCK_FRAGMENT_CHAIN (stmt))
+	{
+	  tree chain;
+
+	  add_AT_range_list (stmt_die, DW_AT_ranges, add_ranges (stmt));
+
+	  chain = BLOCK_FRAGMENT_CHAIN (stmt);
+	  do
+	    {
+	      add_ranges (chain);
+	      chain = BLOCK_FRAGMENT_CHAIN (chain);
+	    }
+	  while (chain);
+	  add_ranges (NULL);
+	}
+      else
+	{
+	  ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_BEGIN_LABEL,
+				       BLOCK_NUMBER (stmt));
+	  add_AT_lbl_id (stmt_die, DW_AT_low_pc, label);
+	  ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_END_LABEL,
+				       BLOCK_NUMBER (stmt));
+	  add_AT_lbl_id (stmt_die, DW_AT_high_pc, label);
+	}
+    }
+
+  decls_for_scope (stmt, stmt_die, depth);
+}

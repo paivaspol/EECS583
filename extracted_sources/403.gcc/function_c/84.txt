@@ -1,0 +1,15 @@
+void
+expand_pending_sizes (pending_sizes)
+     tree pending_sizes;
+{
+  tree tem;
+
+  /* Evaluate now the sizes of any types declared among the arguments.  */
+  for (tem = pending_sizes; tem; tem = TREE_CHAIN (tem))
+    {
+      expand_expr (TREE_VALUE (tem), const0_rtx, VOIDmode, 0);
+      /* Flush the queue in case this parameter declaration has
+	 side-effects.  */
+      emit_queue ();
+    }
+}

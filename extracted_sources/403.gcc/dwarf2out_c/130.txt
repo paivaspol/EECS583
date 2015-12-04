@@ -1,0 +1,16 @@
+static void
+calc_die_sizes (die)
+     dw_die_ref die;
+{
+  dw_die_ref c;
+
+  die->die_offset = next_die_offset;
+  next_die_offset += size_of_die (die);
+
+  for (c = die->die_child; c != NULL; c = c->die_sib)
+    calc_die_sizes (c);
+
+  if (die->die_child != NULL)
+    /* Count the null byte used to terminate sibling lists.  */
+    next_die_offset += 1;
+}

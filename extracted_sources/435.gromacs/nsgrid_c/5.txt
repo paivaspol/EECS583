@@ -1,0 +1,37 @@
+void grid_first(FILE *log,t_grid *grid,matrix box,real rlistlong)
+{
+  int    *nra=grid->nra;
+  int    i,k,ncells;
+  ivec   cx;
+
+  for(k=0; (k<DIM); k++)
+    cx[k]=(grid->delta*box[k][k])/rlistlong;
+
+  grid->nrx    = cx[XX];
+  grid->nry    = cx[YY];
+  grid->nrz    = cx[ZZ];
+  ncells       = cx[XX]*cx[YY]*cx[ZZ];
+
+  if (grid->ncells != ncells) {
+      if(log)
+          fprintf(log,"Grid: %d x %d x %d cells\n",
+                  grid->nrx,grid->nry,grid->nrz);
+      if (ncells > grid->maxcells) { 
+          srenew(grid->nra,ncells);
+          srenew(grid->index,ncells);
+          for(i=grid->maxcells; (i<ncells); i++) {
+              grid->nra[i] = 0;
+              grid->index[i] = 0;
+          }
+          
+          if(log)
+              fprintf(log,"WARNING: your box is exploding! (ncells = %d)\n",ncells);
+          grid->maxcells = ncells;
+      }
+      grid->ncells = ncells;
+      nra = grid->nra;
+  }
+  
+  for(i=0; (i<ncells); i++)
+      nra[i]=0;
+}

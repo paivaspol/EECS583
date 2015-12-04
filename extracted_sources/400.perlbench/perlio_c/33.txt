@@ -1,0 +1,26 @@
+void
+PerlIO_cleanup(pTHX)
+{
+    int i;
+#ifdef USE_ITHREADS
+    PerlIO_debug("Cleanup layers for %p\n",aTHX);
+#else
+    PerlIO_debug("Cleanup layers\n");
+#endif
+    /* Raise STDIN..STDERR refcount so we don't close them */
+    for (i=0; i < 3; i++)
+	PerlIOUnix_refcnt_inc(i);
+    PerlIO_cleantable(aTHX_ &PL_perlio);
+    /* Restore STDIN..STDERR refcount */
+    for (i=0; i < 3; i++)
+	PerlIOUnix_refcnt_dec(i);
+
+    if (PL_known_layers) {
+	PerlIO_list_free(aTHX_ PL_known_layers);
+	PL_known_layers = NULL;
+    }
+    if(PL_def_layerlist) {
+	PerlIO_list_free(aTHX_ PL_def_layerlist);
+	PL_def_layerlist = NULL;
+    }
+}

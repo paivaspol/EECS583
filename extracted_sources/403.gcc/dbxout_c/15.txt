@@ -1,0 +1,43 @@
+static void
+dbxout_type_method_1 (decl, debug_name)
+     tree decl;
+     const char *debug_name;
+{
+  char c1 = 'A', c2;
+
+  if (TREE_CODE (TREE_TYPE (decl)) == FUNCTION_TYPE)
+    c2 = '?';
+  else /* it's a METHOD_TYPE.  */
+    {
+      tree firstarg = TREE_VALUE (TYPE_ARG_TYPES (TREE_TYPE (decl)));
+      /* A for normal functions.
+	 B for `const' member functions.
+	 C for `volatile' member functions.
+	 D for `const volatile' member functions.  */
+      if (TYPE_READONLY (TREE_TYPE (firstarg)))
+	c1 += 1;
+      if (TYPE_VOLATILE (TREE_TYPE (firstarg)))
+	c1 += 2;
+
+      if (DECL_VINDEX (decl))
+	c2 = '*';
+      else
+	c2 = '.';
+    }
+
+  fprintf (asmfile, ":%s;%c%c%c", debug_name,
+	   TREE_PRIVATE (decl) ? '0'
+	   : TREE_PROTECTED (decl) ? '1' : '2', c1, c2);
+  CHARS (IDENTIFIER_LENGTH (DECL_ASSEMBLER_NAME (decl)) + 6
+	 - (debug_name - IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl))));
+
+  if (DECL_VINDEX (decl) && host_integerp (DECL_VINDEX (decl), 0))
+    {
+      print_wide_int (tree_low_cst (DECL_VINDEX (decl), 0));
+      putc (';', asmfile);
+      CHARS (1);
+      dbxout_type (DECL_CONTEXT (decl), 0);
+      fprintf (asmfile, ";");
+      CHARS (1);
+    }
+}

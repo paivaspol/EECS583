@@ -1,0 +1,31 @@
+int
+indirect_operand (op, mode)
+     rtx op;
+     enum machine_mode mode;
+{
+  /* Before reload, a SUBREG isn't in memory (see memory_operand, above).  */
+  if (! reload_completed
+      && GET_CODE (op) == SUBREG && GET_CODE (SUBREG_REG (op)) == MEM)
+    {
+      int offset = SUBREG_BYTE (op);
+      rtx inner = SUBREG_REG (op);
+
+      if (mode != VOIDmode && GET_MODE (op) != mode)
+	return 0;
+
+      /* The only way that we can have a general_operand as the resulting
+	 address is if OFFSET is zero and the address already is an operand
+	 or if the address is (plus Y (const_int -OFFSET)) and Y is an
+	 operand.  */
+
+      return ((offset == 0 && general_operand (XEXP (inner, 0), Pmode))
+	      || (GET_CODE (XEXP (inner, 0)) == PLUS
+		  && GET_CODE (XEXP (XEXP (inner, 0), 1)) == CONST_INT
+		  && INTVAL (XEXP (XEXP (inner, 0), 1)) == -offset
+		  && general_operand (XEXP (XEXP (inner, 0), 0), Pmode)));
+    }
+
+  return (GET_CODE (op) == MEM
+	  && memory_operand (op, mode)
+	  && general_operand (XEXP (op, 0), Pmode));
+}

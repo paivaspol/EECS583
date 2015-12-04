@@ -1,0 +1,18 @@
+int
+bitmap_union_of_diff (dst, a, b, c)
+     bitmap dst;
+     bitmap a;
+     bitmap b;
+     bitmap c;
+{
+  bitmap_head tmp;
+  int changed;
+
+  tmp.first = tmp.current = 0;
+
+  bitmap_operation (&tmp, b, c, BITMAP_AND_COMPL);
+  changed = bitmap_operation (dst, &tmp, a, BITMAP_IOR);
+  bitmap_clear (&tmp);
+
+  return changed;
+}

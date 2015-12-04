@@ -1,0 +1,31 @@
+int
+DealignAseqs(char **aseqs, int num, char ***ret_rseqs)
+{
+  char **rseqs;                 /* de-aligned sequence array   */
+  int    idx;			/* counter for sequences       */
+  int    depos; 		/* position counter for dealigned seq*/
+  int    apos;			/* position counter for aligned seq */
+  int    seqlen;		/* length of aligned seq */
+
+				/* alloc space */
+  rseqs = (char **) MallocOrDie (num * sizeof(char *));
+				/* main loop */
+  for (idx = 0; idx < num; idx++)
+    {
+      seqlen = strlen(aseqs[idx]);
+				/* alloc space */
+      rseqs[idx] = (char *) MallocOrDie ((seqlen + 1) * sizeof(char));
+
+				/* strip gaps */
+      depos = 0;
+      for (apos = 0; aseqs[idx][apos] != '\0'; apos++)
+	if (!isgap(aseqs[idx][apos]))
+	  {
+	    rseqs[idx][depos] = aseqs[idx][apos];
+	    depos++;
+	  }
+      rseqs[idx][depos] = '\0';
+    }
+  *ret_rseqs = rseqs;
+  return 1;
+}

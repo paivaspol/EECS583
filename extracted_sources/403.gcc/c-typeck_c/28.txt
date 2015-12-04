@@ -1,0 +1,24 @@
+static char *
+print_spelling (buffer)
+     char *buffer;
+{
+  char *d = buffer;
+  struct spelling *p;
+
+  for (p = spelling_base; p < spelling; p++)
+    if (p->kind == SPELLING_BOUNDS)
+      {
+	sprintf (d, "[%d]", p->u.i);
+	d += strlen (d);
+      }
+    else
+      {
+	const char *s;
+	if (p->kind == SPELLING_MEMBER)
+	  *d++ = '.';
+	for (s = p->u.s; (*d = *s++); d++)
+	  ;
+      }
+  *d++ = '\0';
+  return buffer;
+}

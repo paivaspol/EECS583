@@ -1,0 +1,42 @@
+static void move_construct_x(t_comm_dummies *dummycomm, rvec x[], t_commrec *cr)
+{
+  static bool bFirst=TRUE;
+  int i;
+   
+  if (bFirst) {
+    /* Make the larger than necessary to avoid cache sharing */
+    snew(nextbuf,2*(dummycomm->nnextdum+dummycomm->nnextconstr)+100);
+    snew(prevbuf,2*(dummycomm->nprevdum+dummycomm->nprevconstr)+100);
+    bFirst=FALSE;
+  }
+   
+  /* package coords to send left. Dummy coords are needed to create v */
+  for(i=0;i<dummycomm->nprevconstr;i++)
+    copy_rvec(x[dummycomm->idxprevconstr[i]],prevbuf[i]);
+  for(i=0;i<dummycomm->nprevdum;i++)
+    copy_rvec(x[dummycomm->idxprevdum[i]],prevbuf[dummycomm->nprevconstr+i]);
+  
+  /* send them off, and recieve from the right */
+  if(dummycomm->nprevconstr>0 || dummycomm->nprevdum>0)
+    gmx_tx(cr->left,prevbuf,
+	   sizeof(rvec)*(dummycomm->nprevconstr+dummycomm->nprevdum));
+  
+  if(dummycomm->nnextconstr>0 || dummycomm->nnextdum>0)
+    gmx_rx(cr->right,nextbuf,
+	   sizeof(rvec)*(dummycomm->nnextconstr+dummycomm->nnextdum));
+  
+  if(dummycomm->nprevconstr>0 || dummycomm->nprevdum>0)
+    gmx_tx_wait(cr->left);
+  
+  if(dummycomm->nnextconstr>0 || dummycomm->nnextdum>0)
+    gmx_rx_wait(cr->right);
+  
+  /* Put them where they belong */
+  for(i=0;i<dummycomm->nnextconstr;i++)
+    copy_rvec(nextbuf[i],x[dummycomm->idxnextconstr[i]]);
+  for(i=0;i<dummycomm->nnextdum;i++)
+    copy_rvec(nextbuf[dummycomm->nnextconstr+i],
+	      x[dummycomm->idxnextdum[i]]);
+
+  /* Now we are ready to do the constructing business ! */
+}

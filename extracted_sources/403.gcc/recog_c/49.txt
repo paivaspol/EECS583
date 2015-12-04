@@ -1,0 +1,62 @@
+void
+split_all_insns (upd_life)
+     int upd_life;
+{
+  sbitmap blocks;
+  int changed;
+  int i;
+
+  blocks = sbitmap_alloc (n_basic_blocks);
+  sbitmap_zero (blocks);
+  changed = 0;
+
+  for (i = n_basic_blocks - 1; i >= 0; --i)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      rtx insn, next;
+
+      for (insn = bb->head; insn ; insn = next)
+	{
+	  rtx last;
+
+	  /* Can't use `next_real_insn' because that might go across
+	     CODE_LABELS and short-out basic blocks.  */
+	  next = NEXT_INSN (insn);
+	  last = split_insn (insn);
+	  if (last)
+	    {
+	      /* The split sequence may include barrier, but the
+		 BB boundary we are interested in will be set to previous
+		 one.  */
+
+	      while (GET_CODE (last) == BARRIER)
+		last = PREV_INSN (last);
+	      SET_BIT (blocks, i);
+	      changed = 1;
+	      insn = last;
+	    }
+
+	  if (insn == bb->end)
+	    break;
+	}
+
+      if (insn == NULL)
+	abort ();
+    }
+
+  if (changed)
+    {
+      find_many_sub_basic_blocks (blocks);
+    }
+
+  if (changed && upd_life)
+    {
+      count_or_remove_death_notes (blocks, 1);
+      update_life_info (blocks, UPDATE_LIFE_LOCAL, PROP_DEATH_NOTES);
+    }
+#ifdef ENABLE_CHECKING
+  verify_flow_info ();
+#endif
+
+  sbitmap_free (blocks);
+}

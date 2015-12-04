@@ -1,0 +1,15 @@
+void
+ggc_add_deletable_htab (x, marked_p, mark)
+     PTR x;
+     ggc_htab_marked_p marked_p;
+     ggc_htab_mark mark;
+{
+  struct d_htab_root *r
+    = (struct d_htab_root *) xmalloc (sizeof (struct d_htab_root));
+
+  r->next = d_htab_roots;
+  r->htab = (htab_t) x;
+  r->marked_p = marked_p ? marked_p : ggc_marked_p;
+  r->mark = mark;
+  d_htab_roots = r;
+}

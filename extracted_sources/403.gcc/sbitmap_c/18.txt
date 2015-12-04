@@ -1,0 +1,36 @@
+void
+sbitmap_union_of_preds (dst, src, bb)
+     sbitmap dst;
+     sbitmap *src;
+     int bb;
+{
+  basic_block b = BASIC_BLOCK (bb);
+  unsigned int set_size = dst->size;
+  edge e;
+
+  for (e = b->pred; e != 0; e = e->pred_next)
+    {
+      if (e->src== ENTRY_BLOCK_PTR)
+        continue;
+
+      sbitmap_copy (dst, src[e->src->index]);
+      break;
+    }
+
+  if (e == 0)
+    sbitmap_zero (dst);
+  else
+    for (e = e->pred_next; e != 0; e = e->pred_next)
+      {
+	unsigned int i;
+	sbitmap_ptr p, r;
+
+	if (e->src == ENTRY_BLOCK_PTR)
+	  continue;
+	
+	p = src[e->src->index]->elms;
+	r = dst->elms;
+	for (i = 0; i < set_size; i++)
+	  *r++ |= *p++;
+      }
+}

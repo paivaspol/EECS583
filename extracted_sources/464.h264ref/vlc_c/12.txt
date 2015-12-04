@@ -1,0 +1,17 @@
+int writeSyntaxElement_UVLC(SyntaxElement *se, DataPartition *this_dataPart)
+{
+  se->mapping(se->value1,se->value2,&(se->len),&(se->inf));
+  symbol2uvlc(se);
+
+  writeUVLC2buffer(se, this_dataPart->bitstream);
+
+  if(se->type != SE_HEADER)
+    this_dataPart->bitstream->write_flag = 1;
+
+#if TRACE
+  if(se->type <= 1)
+    trace2out (se);
+#endif
+
+  return (se->len);
+}

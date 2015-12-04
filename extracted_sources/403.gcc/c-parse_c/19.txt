@@ -1,0 +1,39 @@
+static int
+yylexname ()
+{
+  tree decl;
+  
+  
+  if (C_IS_RESERVED_WORD (yylval.ttype))
+    {
+      enum rid rid_code = C_RID_CODE (yylval.ttype);
+
+      {
+	int yycode = rid_to_yy[(int) rid_code];
+	if (yycode == STRING_FUNC_NAME)
+	  {
+	    /* __FUNCTION__ and __PRETTY_FUNCTION__ get converted
+	       to string constants.  */
+	    const char *name = fname_string (rid_code);
+	  
+	    yylval.ttype = build_string (strlen (name) + 1, name);
+	    C_ARTIFICIAL_STRING_P (yylval.ttype) = 1;
+	    last_token = CPP_STRING;  /* so yyerror won't choke */
+	    return STRING;
+	  }
+      
+	/* Return the canonical spelling for this keyword.  */
+	yylval.ttype = ridpointers[(int) rid_code];
+	return yycode;
+      }
+    }
+
+  decl = lookup_name (yylval.ttype);
+  if (decl)
+    {
+      if (TREE_CODE (decl) == TYPE_DECL)
+	return TYPENAME;
+    }
+
+  return IDENTIFIER;
+}

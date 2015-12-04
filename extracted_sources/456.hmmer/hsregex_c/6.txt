@@ -1,0 +1,21 @@
+static char *			/* Location. */
+regnode(cp, op)
+register struct comp *cp;
+char op;
+{
+	register char *const ret = cp->regcode;
+	register char *ptr;
+
+	if (!EMITTING(cp)) {
+		cp->regsize += 3;
+		return(ret);
+	}
+
+	ptr = ret;
+	*ptr++ = op;
+	*ptr++ = '\0';		/* Null next pointer. */
+	*ptr++ = '\0';
+	cp->regcode = ptr;
+
+	return(ret);
+}

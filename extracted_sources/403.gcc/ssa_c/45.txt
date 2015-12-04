@@ -1,0 +1,40 @@
+static int
+check_hard_regs_in_partition (reg_partition)
+     partition reg_partition;
+{
+  /* CANONICAL_ELEMENTS has a nonzero bit if a class with the given register
+     number and machine mode has already been seen.  This is a
+     problem with the partition.  */
+  sbitmap canonical_elements;
+  int element_index;
+  int already_seen[FIRST_PSEUDO_REGISTER][NUM_MACHINE_MODES];
+  int reg;
+  int mach_mode;
+
+  /* Collect a list of canonical elements.  */
+  canonical_elements = sbitmap_alloc (max_reg_num ());
+  sbitmap_zero (canonical_elements);
+  ssa_rename_from_traverse (&record_canonical_element_1,
+			    canonical_elements, reg_partition);
+
+  /* We have not seen any hard register uses.  */
+  for (reg = 0; reg < FIRST_PSEUDO_REGISTER; ++reg)
+    for (mach_mode = 0; mach_mode < NUM_MACHINE_MODES; ++mach_mode)
+      already_seen[reg][mach_mode] = 0;
+
+  /* Check for classes with the same hard register and machine mode.  */
+  EXECUTE_IF_SET_IN_SBITMAP (canonical_elements, 0, element_index,
+  {
+    rtx hard_reg_rtx = ssa_rename_from_lookup (element_index);
+    if (hard_reg_rtx != NULL_RTX &&
+	HARD_REGISTER_P (hard_reg_rtx) &&
+	already_seen[REGNO (hard_reg_rtx)][GET_MODE (hard_reg_rtx)] != 0)
+	  /* Two distinct partition classes should be mapped to the same
+	     hard register.  */
+	  return 0;
+  });
+
+  sbitmap_free (canonical_elements);
+
+  return 1;
+}

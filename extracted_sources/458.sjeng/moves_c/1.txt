@@ -1,0 +1,66 @@
+int extended_in_check(void)
+{
+  register int sq;
+  static const int knight_o[8] = {10, -10, 14, -14, 23, -23, 25, -25};
+  
+  if (Variant == Suicide) return 0;
+  
+  if (white_to_move == 1) 
+  {
+    sq = board[wking_loc-12];
+    if (sq == brook || sq == bqueen) return 2;
+    sq = board[wking_loc-1];
+    if (sq == brook || sq == bqueen) return 2;
+    sq = board[wking_loc+1];
+    if (sq == brook || sq == bqueen) return 2;
+    sq = board[wking_loc+12];
+    if (sq == brook || sq == bqueen) return 2;
+    sq = board[wking_loc+13];
+    if (sq == bbishop || sq == bqueen || sq == bpawn) return 2;
+    sq = board[wking_loc+11];
+    if (sq == bbishop || sq == bqueen || sq == bpawn) return 2;
+    sq = board[wking_loc-11];
+    if (sq == bbishop || sq == bqueen) return 2;
+    sq = board[wking_loc-13];
+    if (sq == bbishop || sq == bqueen) return 2;
+    for (sq = 0; sq < 8; sq++) 
+    {
+      if (board[wking_loc + knight_o[sq]] == bknight) return 2;
+    }
+    if (is_attacked (wking_loc, 0)) 
+    {
+      if (Variant == Normal || Variant == Losers) return 2;
+      else return 1;
+    }
+  }
+  else 
+  {
+    sq = board[bking_loc-12];
+    if (sq == wrook || sq == wqueen) return 2;
+    sq = board[bking_loc-1];
+    if (sq == wrook || sq == wqueen) return 2;
+    sq = board[bking_loc+1];
+    if (sq == wrook || sq == wqueen) return 2;
+    sq = board[bking_loc+12];
+    if (sq == wrook || sq == wqueen) return 2;
+    sq = board[bking_loc-13];
+    if (sq == wbishop || sq == wqueen || sq == wpawn) return 2;
+    sq = board[bking_loc-11];
+    if (sq == wbishop || sq == wqueen || sq == wpawn) return 2;
+    sq = board[bking_loc+11];
+    if (sq == wbishop || sq == wqueen) return 2;
+    sq = board[bking_loc+13];
+    if (sq == wbishop || sq == wqueen) return 2;
+    for (sq = 0; sq < 8; sq++) 
+    {
+      if (board[bking_loc + knight_o[sq]] == wknight) return 2;
+    }
+    if (is_attacked (bking_loc, 1)) 
+    {
+      if (Variant == Normal || Variant == Losers) return 2;
+      else return 1;
+    }
+  }
+
+  return 0;
+}

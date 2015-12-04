@@ -1,0 +1,47 @@
+void
+PrintFancyAli(FILE *fp, struct fancyali_s *ali)
+{
+  char  buffer[ALILENGTH+1];	/* output line buffer                 */
+  int   starti, endi;
+  int   pos;
+  int   i;
+
+  buffer[ALILENGTH] = '\0';
+  endi = ali->sqfrom - 1;
+  for (pos = 0; pos < ali->len; pos += ALILENGTH)
+    {
+				/* coords of target seq for this line */
+      starti = endi + 1;
+      for (i = pos; ali->aseq[i] != '\0' && i < pos + ALILENGTH; i++)
+	if (!isgap(ali->aseq[i])) endi++;
+	    
+      if (ali->csline != NULL) {
+	strncpy(buffer, ali->csline+pos, ALILENGTH);
+	fprintf(fp, "  %16s %s\n", "CS", buffer);
+      }
+      if (ali->rfline != NULL) {
+	strncpy(buffer, ali->rfline+pos, ALILENGTH);
+	fprintf(fp, "  %16s %s\n", "RF", buffer);
+      }
+      if (ali->model  != NULL) {
+	strncpy(buffer, ali->model+pos, ALILENGTH);
+	fprintf(fp, "  %16s %s\n", " ", buffer);
+      }
+      if (ali->mline  != NULL) {
+	strncpy(buffer, ali->mline+pos, ALILENGTH);
+	fprintf(fp, "  %16s %s\n", " ", buffer);
+      }
+      if (ali->aseq   != NULL) { 
+	strncpy(buffer, ali->aseq+pos, ALILENGTH);
+	if (endi >= starti)
+	  fprintf(fp, "  %10.10s %5d %s %-5d\n\n", ali->target, starti, buffer, endi);
+	else
+	  fprintf(fp, "  %10.10s %5s %s %-5s\n\n", ali->target, "-", buffer, "-"); 
+      }
+    }
+
+  /* Cleanup and return
+   */
+  fflush(fp);
+  return;
+} 

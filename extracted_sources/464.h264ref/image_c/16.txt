@@ -1,0 +1,134 @@
+void UnifiedOneForthPix (StorablePicture *s)
+{
+  int is;
+  int i, j, j4;
+  int ie2, je2, jj, maxy;
+  
+  imgpel **out4Y;
+  imgpel  *ref11;
+  imgpel  **imgY = s->imgY;
+  
+  int img_width =s->size_x;
+  int img_height=s->size_y;
+  
+  // don't upsample twice
+  if (s->imgY_ups || s->imgY_11)
+    return;
+  
+  s->imgY_11 = malloc ((s->size_x * s->size_y) * sizeof (imgpel));
+  if (NULL == s->imgY_11)
+    no_mem_exit("alloc_storable_picture: s->imgY_11");
+  
+  get_mem2Dpel (&(s->imgY_ups), (2*IMG_PAD_SIZE + s->size_y)*4, (2*IMG_PAD_SIZE + s->size_x)*4);
+  
+  if (input->WeightedPrediction || input->WeightedBiprediction || input->GenerateMultiplePPS)
+  {
+    s->imgY_11_w = malloc ((s->size_x * s->size_y) * sizeof (imgpel));
+    if (NULL == s->imgY_11_w)
+      no_mem_exit("alloc_storable_picture: s->imgY_11_w");
+    get_mem2Dpel (&(s->imgY_ups_w), (2*IMG_PAD_SIZE + s->size_y)*4, (2*IMG_PAD_SIZE + s->size_x)*4);
+  }
+  out4Y = s->imgY_ups;
+  ref11 = s->imgY_11;
+  
+  for (j = -IMG_PAD_SIZE; j < s->size_y + IMG_PAD_SIZE; j++)
+  {
+    for (i = -IMG_PAD_SIZE; i < s->size_x + IMG_PAD_SIZE; i++)
+    {
+      jj = max (0, min (s->size_y - 1, j));
+      is =
+        (ONE_FOURTH_TAP[0][0] *
+        (imgY[jj][max (0, min (s->size_x - 1, i))] +
+         imgY[jj][max (0, min (s->size_x - 1, i + 1))]) +
+        ONE_FOURTH_TAP[1][0] *
+        (imgY[jj][max (0, min (s->size_x - 1, i - 1))] +
+         imgY[jj][max (0, min (s->size_x - 1, i + 2))]) +
+        ONE_FOURTH_TAP[2][0] *
+        (imgY[jj][max (0, min (s->size_x - 1, i - 2))] +
+         imgY[jj][max (0, min (s->size_x - 1, i + 3))]));
+      img4Y_tmp[j + IMG_PAD_SIZE][(i + IMG_PAD_SIZE) * 2] = imgY[jj][max (0, min (s->size_x - 1, i))] * 1024;    // 1/1 pix pos
+      img4Y_tmp[j + IMG_PAD_SIZE][(i + IMG_PAD_SIZE) * 2 + 1] = is * 32;  // 1/2 pix pos
+    }
+  }
+  
+  for (i = 0; i < (s->size_x + 2 * IMG_PAD_SIZE) * 2; i++)
+  {
+    for (j = 0; j < s->size_y + 2 * IMG_PAD_SIZE; j++)
+    {
+      j4 = j * 4;
+      maxy = s->size_y + 2 * IMG_PAD_SIZE - 1;
+      // change for TML4, use 6 TAP vertical filter
+      is =
+        (ONE_FOURTH_TAP[0][0] *
+        (img4Y_tmp[j][i] + img4Y_tmp[min (maxy, j + 1)][i]) +
+         ONE_FOURTH_TAP[1][0] * (img4Y_tmp[max (0, j - 1)][i] +
+         img4Y_tmp[min (maxy, j + 2)][i]) +
+        ONE_FOURTH_TAP[2][0] * (img4Y_tmp[max (0, j - 2)][i] +
+         img4Y_tmp[min (maxy, j + 3)][i])) / 32;
+      
+      PutPel_14 (out4Y, (j - IMG_PAD_SIZE) * 4, (i - IMG_PAD_SIZE * 2) * 2, 
+        (pel_t) max (0, min(img->max_imgpel_value , 
+        (int) ((img4Y_tmp[j][i] + 512) / 1024))));  // 1/2 pix
+      PutPel_14 (out4Y, (j - IMG_PAD_SIZE) * 4 + 2, (i - IMG_PAD_SIZE * 2) * 2, 
+        (pel_t) max (0, min(img->max_imgpel_value, 
+        (int) ((is + 512) / 1024))));   // 1/2 pix
+    }
+  }
+  
+  /* 1/4 pix */
+  /* luma */
+  ie2 = (s->size_x + 2 * IMG_PAD_SIZE - 1) * 4;
+  je2 = (s->size_y + 2 * IMG_PAD_SIZE - 1) * 4;
+  
+  for (j = 0; j < je2 + 4; j += 2)
+    for (i = 0; i < ie2 + 3; i += 2)
+    {
+      /*  '-'  */
+      PutPel_14 (out4Y, j - IMG_PAD_SIZE * 4, i - IMG_PAD_SIZE * 4 + 1,
+        (pel_t) (max (0, min (img->max_imgpel_value,(int) (FastPelY_14 (out4Y, j - IMG_PAD_SIZE * 4,
+        i - IMG_PAD_SIZE * 4, img_height, img_width) + FastPelY_14 (out4Y,
+        j - IMG_PAD_SIZE * 4, min (ie2 + 2, i + 2) - IMG_PAD_SIZE * 4, img_height, img_width)+1) / 2))));
+    }
+    for (i = 0; i < ie2 + 4; i++)
+    {
+      for (j = 0; j < je2 + 3; j += 2)
+      {
+        if (i % 2 == 0)
+        {
+          /*  '|'  */
+          PutPel_14 (out4Y, j - IMG_PAD_SIZE * 4 + 1, i - IMG_PAD_SIZE * 4,
+            (pel_t) (max (0, min (img->max_imgpel_value, (int) (FastPelY_14 (out4Y, j - IMG_PAD_SIZE * 4,
+            i - IMG_PAD_SIZE * 4, img_height, img_width) + FastPelY_14 (out4Y,
+            min (je2 + 2, j + 2) - IMG_PAD_SIZE * 4, i - IMG_PAD_SIZE * 4, img_height, img_width)+1) / 2))));
+        }
+        else if ((j % 4 == 0 && i % 4 == 1) || (j % 4 == 2 && i % 4 == 3))
+        {
+          /*  '/'  */
+          PutPel_14 (out4Y, j - IMG_PAD_SIZE * 4 + 1, i - IMG_PAD_SIZE * 4,
+            (pel_t) (max (0, min (img->max_imgpel_value, (int) (FastPelY_14 (out4Y, j - IMG_PAD_SIZE * 4,
+            min (ie2 + 2, i + 1) - IMG_PAD_SIZE * 4, img_height, img_width) + FastPelY_14 (out4Y,
+            min (je2 + 2, j + 2) - IMG_PAD_SIZE * 4, i - IMG_PAD_SIZE * 4 - 1, img_height, img_width) + 1) / 2))));
+        }
+        else
+        {
+          /*  '\'  */
+          PutPel_14 (out4Y, j - IMG_PAD_SIZE * 4 + 1, i - IMG_PAD_SIZE * 4,
+            (pel_t) (max (0, min (img->max_imgpel_value, (int) (FastPelY_14 (out4Y, j - IMG_PAD_SIZE * 4,
+            i - IMG_PAD_SIZE * 4 - 1, img_height, img_width) + FastPelY_14 (out4Y,
+            min (je2 + 2, j + 2) - IMG_PAD_SIZE * 4, 
+            min (ie2 + 2, i + 1) - IMG_PAD_SIZE * 4, img_height, img_width) + 1) / 2))));
+        }
+      }
+    }
+    
+    /*  Chroma: */
+    /*    for (j = 0; j < img->height_cr; j++)
+    {
+    memcpy (outU[j], imgU[j], img->width_cr);       // just copy 1/1 pix, interpolate "online" 
+    memcpy (outV[j], imgV[j], img->width_cr);
+    }
+    */
+    // Generate 1/1th pel representation (used for integer pel MV search)
+    GenerateFullPelRepresentation (out4Y, ref11, s->size_x, s->size_y);
+    
+}

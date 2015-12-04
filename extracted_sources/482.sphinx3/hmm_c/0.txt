@@ -1,0 +1,30 @@
+void hmm_dump (hmm_t *hmm, int32 n_state, s3senid_t *senid, int32 *senscr, FILE *fp)
+{
+    int32 i;
+    
+    fprintf (fp, " %11d    ", hmm->in.score);
+    for (i = 0; i < n_state; i++)
+	fprintf (fp, " %11d", hmm->state[i].score);
+    fprintf (fp, "     %11d\n", hmm->out.score);
+    
+    fprintf (fp, " %11d    ", hmm->in.history);
+    for (i = 0; i < n_state; i++)
+	fprintf (fp, " %11d", hmm->state[i].history);
+    fprintf (fp, "     %11d\n", hmm->out.history);
+    
+    if (senid) {
+	fprintf (fp, " %-11s    ", "senid");
+	for (i = 0; i < n_state; i++)
+	    fprintf (fp, " %11d", senid[i]);
+	fprintf (fp, "\n");
+	
+	if (senscr) {
+	    fprintf (fp, " %-11s    ", "senscr");
+	    for (i = 0; i < n_state; i++)
+		fprintf (fp, " %11d", senscr[senid[i]]);
+	    fprintf (fp, "\n");
+	}
+    }
+    
+    fflush (fp);
+}

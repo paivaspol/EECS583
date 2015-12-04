@@ -1,0 +1,62 @@
+static void
+loop_giv_dump (v, file, verbose)
+     const struct induction *v;
+     FILE *file;
+     int verbose;
+{
+  if (! v || ! file)
+    return;
+
+  if (v->giv_type == DEST_REG)
+    fprintf (file, "Giv %d: insn %d",
+	     REGNO (v->dest_reg),  INSN_UID (v->insn));
+  else
+    fprintf (file, "Dest address: insn %d",
+	     INSN_UID (v->insn));
+
+  fprintf (file, " src reg %d benefit %d",
+	   REGNO (v->src_reg), v->benefit);
+  fprintf (file, " lifetime %d",
+	   v->lifetime);
+
+  if (v->replaceable)
+    fprintf (file, " replaceable");
+
+  if (v->no_const_addval)
+    fprintf (file, " ncav");
+
+  if (v->ext_dependent)
+    {
+      switch (GET_CODE (v->ext_dependent))
+	{
+	case SIGN_EXTEND:
+	  fprintf (file, " ext se");
+	  break;
+	case ZERO_EXTEND:
+	  fprintf (file, " ext ze");
+	  break;
+	case TRUNCATE:
+	  fprintf (file, " ext tr");
+	  break;
+	default:
+	  abort ();
+	}
+    }
+
+  fputc ('\n', file);
+  fprintf (file, " mult ");
+  print_simple_rtl (file, v->mult_val);
+
+  fputc ('\n', file);
+  fprintf (file, " add  ");
+  print_simple_rtl (file, v->add_val);
+
+  if (verbose && v->final_value)
+    {
+      fputc ('\n', file);
+      fprintf (file, " final ");
+      print_simple_rtl (file, v->final_value);
+    }
+
+  fputc ('\n', file);
+}

@@ -1,0 +1,30 @@
+static int
+valid_initial_value_p (x, insn, call_seen, loop_start)
+     rtx x;
+     rtx insn;
+     int call_seen;
+     rtx loop_start;
+{
+  if (CONSTANT_P (x))
+    return 1;
+
+  /* Only consider pseudos we know about initialized in insns whose luids
+     we know.  */
+  if (GET_CODE (x) != REG
+      || REGNO (x) >= max_reg_before_loop)
+    return 0;
+
+  /* Don't use call-clobbered registers across a call which clobbers it.  On
+     some machines, don't use any hard registers at all.  */
+  if (REGNO (x) < FIRST_PSEUDO_REGISTER
+      && (SMALL_REGISTER_CLASSES
+	  || (call_used_regs[REGNO (x)] && call_seen)))
+    return 0;
+
+  /* Don't use registers that have been clobbered before the start of the
+     loop.  */
+  if (reg_set_between_p (x, insn, loop_start))
+    return 0;
+
+  return 1;
+}

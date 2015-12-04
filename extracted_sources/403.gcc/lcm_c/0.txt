@@ -1,0 +1,115 @@
+static void compute_antinout_edge	PARAMS ((sbitmap *, sbitmap *,
+						 sbitmap *, sbitmap *));
+static void compute_earliest		PARAMS ((struct edge_list *, int,
+						 sbitmap *, sbitmap *,
+						 sbitmap *, sbitmap *,
+						 sbitmap *));
+static void compute_laterin		PARAMS ((struct edge_list *, sbitmap *,
+						 sbitmap *, sbitmap *,
+						 sbitmap *));
+static void compute_insert_delete	PARAMS ((struct edge_list *edge_list,
+						 sbitmap *, sbitmap *,
+						 sbitmap *, sbitmap *,
+						 sbitmap *));
+
+/* Edge based LCM routines on a reverse flowgraph.  */
+static void compute_farthest		PARAMS ((struct edge_list *, int,
+						 sbitmap *, sbitmap *,
+						 sbitmap*, sbitmap *,
+						 sbitmap *));
+static void compute_nearerout		PARAMS ((struct edge_list *, sbitmap *,
+						 sbitmap *, sbitmap *,
+						 sbitmap *));
+static void compute_rev_insert_delete	PARAMS ((struct edge_list *edge_list,
+						 sbitmap *, sbitmap *,
+						 sbitmap *, sbitmap *,
+						 sbitmap *));
+
+/* Edge based lcm routines.  */
+
+/* Compute expression anticipatability at entrance and exit of each block.
+   This is done based on the flow graph, and not on the pred-succ lists.
+   Other than that, its pretty much identical to compute_antinout.  */
+
+static void
+compute_antinout_edge (antloc, transp, antin, antout)
+     sbitmap *antloc;
+     sbitmap *transp;
+     sbitmap *antin;
+     sbitmap *antout;
+{
+  int bb;
+  edge e;
+  basic_block *worklist, *qin, *qout, *qend;
+  unsigned int qlen;
+
+  /* Allocate a worklist array/queue.  Entries are only added to the
+     list if they were not already on the list.  So the size is
+     bounded by the number of basic blocks.  */
+  qin = qout = worklist
+    = (basic_block *) xmalloc (sizeof (basic_block) * n_basic_blocks);
+
+  /* We want a maximal solution, so make an optimistic initialization of
+     ANTIN.  */
+  sbitmap_vector_ones (antin, n_basic_blocks);
+
+  /* Put every block on the worklist; this is necessary because of the
+     optimistic initialization of ANTIN above.  */
+  for (bb = n_basic_blocks - 1; bb >= 0; bb--)
+    {
+      *qin++ = BASIC_BLOCK (bb);
+      BASIC_BLOCK (bb)->aux = BASIC_BLOCK (bb);
+    }
+
+  qin = worklist;
+  qend = &worklist[n_basic_blocks];
+  qlen = n_basic_blocks;
+
+  /* Mark blocks which are predecessors of the exit block so that we
+     can easily identify them below.  */
+  for (e = EXIT_BLOCK_PTR->pred; e; e = e->pred_next)
+    e->src->aux = EXIT_BLOCK_PTR;
+
+  /* Iterate until the worklist is empty.  */
+  while (qlen)
+    {
+      /* Take the first entry off the worklist.  */
+      basic_block b = *qout++;
+      bb = b->index;
+      qlen--;
+
+      if (qout >= qend)
+        qout = worklist;
+
+      if (b->aux == EXIT_BLOCK_PTR)
+	/* Do not clear the aux field for blocks which are predecessors of
+	   the EXIT block.  That way we never add then to the worklist
+	   again.  */
+	sbitmap_zero (antout[bb]);
+      else
+	{
+	  /* Clear the aux field of this block so that it can be added to
+	     the worklist again if necessary.  */
+	  b->aux = NULL;
+	  sbitmap_intersection_of_succs (antout[bb], antin, bb);
+	}
+
+      if (sbitmap_a_or_b_and_c (antin[bb], antloc[bb], transp[bb], antout[bb]))
+	/* If the in state of this block changed, then we need
+	   to add the predecessors of this block to the worklist
+	   if they are not already on the worklist.  */
+	for (e = b->pred; e; e = e->pred_next)
+	  if (!e->src->aux && e->src != ENTRY_BLOCK_PTR)
+	    {
+	      *qin++ = e->src;
+	      e->src->aux = e;
+	      qlen++;
+	      if (qin >= qend)
+	        qin = worklist;
+	    }
+    }
+
+  clear_aux_for_edges ();
+  clear_aux_for_blocks ();
+  free (worklist);
+}

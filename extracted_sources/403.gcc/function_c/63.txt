@@ -1,0 +1,12 @@
+void
+setjmp_args_warning ()
+{
+  tree decl;
+  for (decl = DECL_ARGUMENTS (current_function_decl);
+       decl; decl = TREE_CHAIN (decl))
+    if (DECL_RTL (decl) != 0
+	&& GET_CODE (DECL_RTL (decl)) == REG
+	&& regno_clobbered_at_setjmp (REGNO (DECL_RTL (decl))))
+      warning_with_decl (decl,
+			 "argument `%s' might be clobbered by `longjmp' or `vfork'");
+}

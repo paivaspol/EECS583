@@ -1,0 +1,27 @@
+static void
+clear_table (clear_all)
+     int clear_all;
+{
+  unsigned int i;
+
+  if (clear_all)
+    for (i = 0; i < cselib_nregs; i++)
+      REG_VALUES (i) = 0;
+  else
+    for (i = 0; i < VARRAY_ACTIVE_SIZE (used_regs); i++)
+      REG_VALUES (VARRAY_UINT (used_regs, i)) = 0;
+
+  max_value_regs = 0;
+
+  VARRAY_POP_ALL (used_regs);
+
+  htab_empty (hash_table);
+  obstack_free (&cselib_obstack, cselib_startobj);
+
+  empty_vals = 0;
+  empty_elt_lists = 0;
+  empty_elt_loc_lists = 0;
+  n_useless_values = 0;
+
+  next_unknown_value = 0;
+}

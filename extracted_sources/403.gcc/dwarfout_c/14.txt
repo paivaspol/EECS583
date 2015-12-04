@@ -1,0 +1,28 @@
+static void
+output_signed_leb128 (value)
+     long value;
+{
+  long orig_value = value;
+  int negative = (value < 0);
+  int more;
+
+  do
+    {
+      unsigned byte = (value & 0x7f);
+
+      value >>= 7;
+      if (negative)
+	value |= 0xfe000000;  /* manually sign extend */
+      if (((value == 0) && ((byte & 0x40) == 0))
+          || ((value == -1) && ((byte & 0x40) == 1)))
+	more = 0;
+      else
+	{
+	  byte |= 0x80;
+	  more = 1;
+	}
+      dw2_asm_output_data (1, byte, "\t%s SLEB128 number - value = %ld",
+			   orig_value);
+    }
+  while (more);
+}

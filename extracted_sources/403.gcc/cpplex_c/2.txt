@@ -1,0 +1,15 @@
+static void
+handle_newline (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+
+  /* Handle CR-LF and LF-CR.  Most other implementations (e.g. java)
+     only accept CR-LF; maybe we should fall back to that behaviour?  */
+  if (buffer->cur[-1] + buffer->cur[0] == '\r' + '\n')
+    buffer->cur++;
+
+  buffer->line_base = buffer->cur;
+  buffer->col_adjust = 0;
+  pfile->line++;
+}

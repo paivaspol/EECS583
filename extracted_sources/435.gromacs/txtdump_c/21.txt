@@ -1,0 +1,41 @@
+static void pr_ilist(FILE *fp,int indent,char *title,
+                     t_idef *idef,t_ilist *ilist)
+{
+  int i,j,k,type,ftype;
+  t_iatom *iatoms;
+
+  if (available(fp,ilist,title))
+    {  
+      indent=pr_title(fp,indent,title);
+      (void) pr_indent(fp,indent);
+      fprintf(fp,"nr: %d\n",ilist->nr);
+      if (ilist->nr > 0) {
+	(void) pr_indent(fp,indent);
+	fprintf(fp,"multinr[division over processors]:");
+	for (i=0; (i<MAXNODES) && (ilist->multinr[i] > 0); i++) 
+	  (void) fprintf(fp," %d",ilist->multinr[i]);
+	fprintf(fp,"\n");
+	(void) pr_indent(fp,indent);
+	fprintf(fp,"iatoms:\n");
+	iatoms=ilist->iatoms;
+	for (i=j=0; i<ilist->nr;) {
+#ifndef DEBUG
+	  (void) pr_indent(fp,indent+INDENT);
+	  type=*(iatoms++);
+	  ftype=idef->functype[type];
+	  (void) fprintf(fp,"%d type=%d (%s)",
+			 bShowNumbers?j:-1,bShowNumbers?type:-1,
+			 interaction_function[ftype].name);
+	  j++;
+	  for (k=0; k<interaction_function[ftype].nratoms; k++)
+	    (void) fprintf(fp," %u",*(iatoms++));
+	  (void) fprintf(fp,"\n");
+	  i+=1+interaction_function[ftype].nratoms;
+#else
+	  fprintf(fp,"%5d%5d\n",i,iatoms[i]);
+	  i++;
+#endif
+	}
+      }
+    }
+}

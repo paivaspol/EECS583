@@ -1,0 +1,41 @@
+static void read_anisou(char line[],int natom,t_atoms *atoms)
+{
+  int  i,j,k,atomnr;
+  char nc='\0';
+  char anr[12],anm[12];
+
+  /* Skip over type */  
+  j=6;
+  for(k=0; (k<5); k++,j++) anr[k]=line[j];
+  anr[k]=nc;
+  j++;
+  for(k=0; (k<4); k++,j++) anm[k]=line[j];
+  anm[k]=nc;
+  j++;
+  
+  /* Strip off spaces */
+  trim(anm);
+  
+  /* Search backwards for number and name only */
+  atomnr = atoi(anr);
+  for(i=natom-1; (i>=0); i--)
+    if ((strcmp(anm,*(atoms->atomname[i])) == 0) && 
+	(atomnr == atoms->pdbinfo[i].atomnr))
+      break;
+  if (i < 0)
+    fprintf(stderr,"Skipping ANISOU record (atom %s %d not found)\n",
+	    anm,atomnr);
+  else {
+    if (sscanf(line+29,"%d%d%d%d%d%d",
+	       &atoms->pdbinfo[i].uij[U11],&atoms->pdbinfo[i].uij[U22],
+	       &atoms->pdbinfo[i].uij[U33],&atoms->pdbinfo[i].uij[U12],
+	       &atoms->pdbinfo[i].uij[U13],&atoms->pdbinfo[i].uij[U23])
+	         == 6) {
+      atoms->pdbinfo[i].bAnisotropic = TRUE;
+    }
+    else {
+      fprintf(stderr,"Invalid ANISOU record for atom %d\n",i);
+      atoms->pdbinfo[i].bAnisotropic = FALSE;
+    }     
+  }
+}

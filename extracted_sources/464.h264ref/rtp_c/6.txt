@@ -1,0 +1,68 @@
+int aggregationRTPWriteBits (int Marker, int PacketType, int subPacketType, void * bitstream, 
+                    int BitStreamLenInByte, FILE *out)
+{
+  RTPpacket_t *p;
+  int offset;
+
+//  printf( "writing aggregation packet...\n");
+  assert (out != NULL);
+  assert (BitStreamLenInByte < 65000);
+  assert (bitstream != NULL);
+  assert ((PacketType&0xf) == 4);
+
+  // Set RTP structure elements and alloca() memory foor the buffers
+  p = (RTPpacket_t *) alloca (sizeof (RTPpacket_t));
+  p->packet=alloca (MAXRTPPACKETSIZE);
+  p->payload=alloca (MAXRTPPACKETSIZE);
+  p->v=2;
+  p->p=0;
+  p->x=0;
+  p->cc=0;
+  p->m=Marker&1;
+  p->pt=H26LPAYLOADTYPE;
+  p->seq=CurrentRTPSequenceNumber++;
+  p->timestamp=CurrentRTPTimestamp;
+  p->ssrc=H26LSSRC;
+
+  offset = 0;
+  p->payload[offset++] = PacketType; // This is the first byte of the compound packet
+
+  // FIRST, write the sei message to aggregation packet, if it is available
+  if ( HaveAggregationSEI() )
+  {
+    p->payload[offset++] = sei_message[AGGREGATION_SEI].subPacketType; // this is the first byte of the first subpacket
+    *(short*)&(p->payload[offset]) = sei_message[AGGREGATION_SEI].payloadSize;
+    offset += 2;
+    memcpy (&p->payload[offset], sei_message[AGGREGATION_SEI].data, sei_message[AGGREGATION_SEI].payloadSize);
+    offset += sei_message[AGGREGATION_SEI].payloadSize;
+
+    clear_sei_message(AGGREGATION_SEI);
+  }
+
+  // SECOND, write other payload to the aggregation packet
+  // to do ...
+
+  // LAST, write the slice data to the aggregation packet
+  p->payload[offset++] = subPacketType;  // this is the first byte of the second subpacket
+  *(short*)&(p->payload[offset]) = BitStreamLenInByte;
+  offset += 2;
+  memcpy (&p->payload[offset], bitstream, BitStreamLenInByte);
+  offset += BitStreamLenInByte;
+
+  p->paylen = offset;  // 1 +3 +seiPayload.payloadSize +3 +BitStreamLenInByte
+
+  // Now the payload is ready, we can ...
+  // Generate complete RTP packet
+  if (ComposeRTPPacket (p) < 0)
+  {
+    printf ("Cannot compose RTP packet, exit\n");
+    exit (-1);
+  }
+  if (WriteRTPPacket (p, out) < 0)
+  {
+    printf ("Cannot write %d bytes of RTP packet to outfile, exit\n", p->packlen);
+    exit (-1);
+  }
+  return (p->packlen);
+
+}

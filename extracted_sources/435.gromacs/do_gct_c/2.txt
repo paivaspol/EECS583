@@ -1,0 +1,130 @@
+static void pr_ff(t_coupl_rec *tcr,real time,t_idef *idef,
+		  t_commrec *cr,int nfile,t_filenm fnm[])
+{
+  static FILE *prop;
+  static FILE **out=NULL;
+  static FILE **qq=NULL;
+  static FILE **ip=NULL;
+  t_coupl_LJ  *tclj;
+  t_coupl_BU  *tcbu;
+  char        buf[256];
+  char        *leg[] =  { "C12", "C6" };
+  char        *bleg[] = { "A", "B", "C" };
+  char        **raleg;
+  int         i,j,index;
+  
+  if ((prop == NULL) && (out == NULL) && (qq == NULL) && (ip == NULL)) {
+    prop=xvgropen(opt2fn("-runav",nfile,fnm),
+		  "Properties and Running Averages","Time (ps)","");
+    snew(raleg,2*eoObsNR);
+    for(i=j=0; (i<eoObsNR); i++) {
+      if (tcr->bObsUsed[i]) {
+	raleg[j++] = strdup(eoNames[i]);
+	sprintf(buf,"RA-%s",eoNames[i]);
+	raleg[j++] = strdup(buf);
+      }
+    }
+    xvgr_legend(prop,j,raleg);
+    for(i=0; (i<j); i++) 
+      sfree(raleg[i]);
+    sfree(raleg);
+      
+    if (tcr->nLJ) {
+      snew(out,tcr->nLJ);
+      for(i=0; (i<tcr->nLJ); i++) {
+	if (tcr->tcLJ[i].bPrint) {
+	  tclj   = &(tcr->tcLJ[i]);
+	  out[i] = 
+	    xvgropen(mk_gct_nm(opt2fn("-ffout",nfile,fnm),
+			       efXVG,tclj->at_i,tclj->at_j),
+		     "General Coupling Lennard Jones","Time (ps)",
+		     "Force constant (units)");
+	  fprintf(out[i],"@ subtitle \"Interaction between types %d and %d\"\n",
+		  tclj->at_i,tclj->at_j);
+	  xvgr_legend(out[i],asize(leg),leg);
+	  fflush(out[i]);
+	}
+      }
+    }
+    else if (tcr->nBU) {
+      snew(out,tcr->nBU);
+      for(i=0; (i<tcr->nBU); i++) {
+	if (tcr->tcBU[i].bPrint) {
+	  tcbu=&(tcr->tcBU[i]);
+	  out[i] = 
+	    xvgropen(mk_gct_nm(opt2fn("-ffout",nfile,fnm),efXVG,
+			       tcbu->at_i,tcbu->at_j),
+		     "General Coupling Buckingham","Time (ps)",
+		     "Force constant (units)");
+	  fprintf(out[i],"@ subtitle \"Interaction between types %d and %d\"\n",
+		  tcbu->at_i,tcbu->at_j);
+	  xvgr_legend(out[i],asize(bleg),bleg);
+	  fflush(out[i]);
+	}
+      }
+    }
+    snew(qq,tcr->nQ);
+    for(i=0; (i<tcr->nQ); i++) {
+      if (tcr->tcQ[i].bPrint) {
+	qq[i] = xvgropen(mk_gct_nm(opt2fn("-ffout",nfile,fnm),efXVG,
+				   tcr->tcQ[i].at_i,-1),
+			 "General Coupling Charge","Time (ps)","Charge (e)");
+	fprintf(qq[i],"@ subtitle \"Type %d\"\n",tcr->tcQ[i].at_i);
+	fflush(qq[i]);
+      }
+    }
+    snew(ip,tcr->nIP);
+    for(i=0; (i<tcr->nIP); i++) {
+      sprintf(buf,"gctIP%d",tcr->tIP[i].type);
+      ip[i]=xvgropen(mk_gct_nm(opt2fn("-ffout",nfile,fnm),efXVG,0,-1),
+		     "General Coupling iparams","Time (ps)","ip ()");
+      index=tcr->tIP[i].type;
+      fprintf(ip[i],"@ subtitle \"Coupling to %s\"\n",
+	      interaction_function[idef->functype[index]].longname);
+      fflush(ip[i]);
+    }
+  }
+  /* Write properties to file */
+  fprintf(prop,"%10.3f",time);
+  for(i=0; (i<eoObsNR); i++) 
+    if (tcr->bObsUsed[i])
+      fprintf(prop,"  %10.3e  %10.3e",tcr->act_value[i],tcr->av_value[i]);
+  fprintf(prop,"\n");
+  fflush(prop);
+  
+  for(i=0; (i<tcr->nLJ); i++) {
+    tclj=&(tcr->tcLJ[i]);
+    if (tclj->bPrint) {
+      fprintf(out[i],"%14.7e  %14.7e  %14.7e\n",
+	      time,tclj->c12,tclj->c6);
+      fflush(out[i]);
+    }
+  }
+  for(i=0; (i<tcr->nBU); i++) {
+    tcbu=&(tcr->tcBU[i]);
+    if (tcbu->bPrint) {
+      fprintf(out[i],"%14.7e  %14.7e  %14.7e  %14.7e\n",
+	      time,tcbu->a,tcbu->b,tcbu->c);
+      fflush(out[i]);
+    }
+  }
+  for(i=0; (i<tcr->nQ); i++) {
+    if (tcr->tcQ[i].bPrint) {
+      fprintf(qq[i],"%14.7e  %14.7e\n",time,tcr->tcQ[i].Q);
+      fflush(qq[i]);
+    }
+  }
+  for(i=0; (i<tcr->nIP); i++) {
+    fprintf(ip[i],"%10g  ",time);
+    index=tcr->tIP[i].type;
+    switch(idef->functype[index]) {
+    case F_BONDS:
+      fprintf(ip[i],"%10g  %10g\n",tcr->tIP[i].iprint.harmonic.krA,
+	      tcr->tIP[i].iprint.harmonic.rA);
+      break;
+    default:
+      break;
+    }
+    fflush(ip[i]);
+  }
+}

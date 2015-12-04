@@ -1,0 +1,165 @@
+static char*
+parse_decl(PSTATE* p_state, char *beg, char *end, U32 utf8, SV* self)
+{
+    char *s = beg + 2;
+
+    if (*s == '-') {
+	/* comment? */
+
+	char *tmp;
+	s++;
+	if (s == end)
+	    return beg;
+
+	if (*s != '-')
+	    goto DECL_FAIL;  /* nope, illegal */
+
+	/* yes, two dashes seen */
+	s++;
+
+	tmp = parse_comment(p_state, s, end, utf8, self);
+	return (tmp == s) ? beg : tmp;
+    }
+
+#ifdef MARKED_SECTION
+    if (*s == '[') {
+	/* marked section */
+	char *tmp;
+	s++;
+	tmp = parse_marked_section(p_state, s, end, utf8, self);
+	if (!tmp)
+	    goto DECL_FAIL;
+	return (tmp == s) ? beg : tmp;
+    }
+#endif
+
+    if (*s == '>') {
+	/* make <!> into empty comment <SGML Handbook 36:32> */
+	token_pos_t token;
+	token.beg = s;
+	token.end = s;
+	s++;
+	report_event(p_state, E_COMMENT, beg, s, utf8, &token, 1, self);
+	return s;
+    }
+
+    if (isALPHA(*s)) {
+	dTOKENS(8);
+	char *decl_id = s;
+	STRLEN decl_id_len;
+
+	s++;
+	/* declaration */
+	while (s < end && isHNAME_CHAR(*s))
+	    s++;
+	decl_id_len = s - decl_id;
+
+	/* just hardcode a few names as the recognized declarations */
+	if (!((decl_id_len == 7 &&
+	       strnEQx(decl_id, "DOCTYPE", 7, !p_state->xml_mode)) ||
+	      (decl_id_len == 6 &&
+	       strnEQx(decl_id, "ENTITY",  6, !p_state->xml_mode))
+	    )
+	    )
+	{
+	    goto FAIL;
+	}
+
+	/* first word available */
+	PUSH_TOKEN(decl_id, s);
+
+	while (s < end && isHSPACE(*s)) {
+	    s++;
+	    while (s < end && isHSPACE(*s))
+		s++;
+
+	    if (s == end)
+		goto PREMATURE;
+
+	    if (*s == '"' || *s == '\'') {
+		char *str_beg = s;
+		s++;
+		while (s < end && *s != *str_beg)
+		    s++;
+		if (s == end)
+		    goto PREMATURE;
+		s++;
+		PUSH_TOKEN(str_beg, s);
+	    }
+	    else if (*s == '-') {
+		/* comment */
+		char *com_beg = s;
+		s++;
+		if (s == end)
+		    goto PREMATURE;
+		if (*s != '-')
+		    goto FAIL;
+		s++;
+
+		while (1) {
+		    while (s < end && *s != '-')
+			s++;
+		    if (s == end)
+			goto PREMATURE;
+		    s++;
+		    if (s == end)
+			goto PREMATURE;
+		    if (*s == '-') {
+			s++;
+			PUSH_TOKEN(com_beg, s);
+			break;
+		    }
+		}
+	    }
+	    else if (*s != '>') {
+		/* plain word */
+		char *word_beg = s;
+		s++;
+		while (s < end && isHNOT_SPACE_GT(*s))
+		    s++;
+		if (s == end)
+		    goto PREMATURE;
+		PUSH_TOKEN(word_beg, s);
+	    }
+	    else {
+		break;
+	    }
+	}
+
+	if (s == end)
+	    goto PREMATURE;
+	if (*s == '>') {
+	    s++;
+	    report_event(p_state, E_DECLARATION, beg, s, utf8, tokens, num_tokens, self);
+	    FREE_TOKENS;
+	    return s;
+	}
+
+    FAIL:
+	FREE_TOKENS;
+	goto DECL_FAIL;
+
+    PREMATURE:
+	FREE_TOKENS;
+	return beg;
+
+    }
+
+DECL_FAIL:
+    if (p_state->strict_comment)
+	return 0;
+
+    /* consider everything up to the first '>' a comment */
+    s = skip_until_gt(s, end);
+    if (s < end) {
+	token_pos_t token;
+	token.beg = beg + 2;
+	token.end = s;
+	s++;
+	report_event(p_state, E_COMMENT, beg, s, utf8, &token, 1, self);
+	return s;
+    }
+    else {
+	return beg;
+    }
+}

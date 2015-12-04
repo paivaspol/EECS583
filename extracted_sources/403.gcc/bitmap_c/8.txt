@@ -1,0 +1,21 @@
+void
+bitmap_set_bit (head, bit)
+     bitmap head;
+     int bit;
+{
+  bitmap_element *ptr = bitmap_find_bit (head, bit);
+  unsigned word_num
+    = ((bit / (unsigned) HOST_BITS_PER_WIDE_INT) % BITMAP_ELEMENT_WORDS);
+  unsigned bit_num  = bit % (unsigned) HOST_BITS_PER_WIDE_INT;
+  unsigned HOST_WIDE_INT bit_val = ((unsigned HOST_WIDE_INT) 1) << bit_num;
+
+  if (ptr == 0)
+    {
+      ptr = bitmap_element_allocate ();
+      ptr->indx = bit / BITMAP_ELEMENT_ALL_BITS;
+      ptr->bits[word_num] = bit_val;
+      bitmap_element_link (head, ptr);
+    }
+  else
+    ptr->bits[word_num] |= bit_val;
+}

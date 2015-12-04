@@ -1,0 +1,17 @@
+static void
+update_block (insn, where)
+     rtx insn;
+     rtx where;
+{
+  /* Ignore if this was in a delay slot and it came from the target of
+     a branch.  */
+  if (INSN_FROM_TARGET_P (insn))
+    return;
+
+  emit_insn_before (gen_rtx_USE (VOIDmode, insn), where);
+
+  /* INSN might be making a value live in a block where it didn't use to
+     be.  So recompute liveness information for this block.  */
+
+  incr_ticks_for_insn (insn);
+}

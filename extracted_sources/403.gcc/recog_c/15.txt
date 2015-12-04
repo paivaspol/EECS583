@@ -1,0 +1,15 @@
+int
+next_insn_tests_no_inequality (insn)
+     rtx insn;
+{
+  rtx next = next_cc0_user (insn);
+
+  /* If there is no next insn, we have to take the conservative choice.  */
+  if (next == 0)
+    return 0;
+
+  return ((GET_CODE (next) == JUMP_INSN
+	   || GET_CODE (next) == INSN
+	   || GET_CODE (next) == CALL_INSN)
+	  && ! inequality_comparisons_p (PATTERN (next)));
+}

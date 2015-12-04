@@ -1,0 +1,40 @@
+static void
+compute_farthest (edge_list, n_exprs, st_avout, st_avin, st_antin,
+		  kill, farthest)
+     struct edge_list *edge_list;
+     int n_exprs;
+     sbitmap *st_avout, *st_avin, *st_antin, *kill, *farthest;
+{
+  sbitmap difference, temp_bitmap;
+  int x, num_edges;
+  basic_block pred, succ;
+
+  num_edges = NUM_EDGES (edge_list);
+
+  difference = sbitmap_alloc (n_exprs);
+  temp_bitmap = sbitmap_alloc (n_exprs);
+
+  for (x = 0; x < num_edges; x++)
+    {
+      pred = INDEX_EDGE_PRED_BB (edge_list, x);
+      succ = INDEX_EDGE_SUCC_BB (edge_list, x);
+      if (succ == EXIT_BLOCK_PTR)
+	sbitmap_copy (farthest[x], st_avout[pred->index]);
+      else
+	{
+	  if (pred == ENTRY_BLOCK_PTR)
+	    sbitmap_zero (farthest[x]);
+	  else
+	    {
+	      sbitmap_difference (difference, st_avout[pred->index],
+				  st_antin[succ->index]);
+	      sbitmap_not (temp_bitmap, st_avin[succ->index]);
+	      sbitmap_a_and_b_or_c (farthest[x], difference,
+				    kill[succ->index], temp_bitmap);
+	    }
+	}
+    }
+
+  sbitmap_free (temp_bitmap);
+  sbitmap_free (difference);
+}

@@ -1,0 +1,88 @@
+void writeB8_typeInfo_CABAC(SyntaxElement *se, EncodingEnvironmentPtr eep_dp)
+{
+  int act_ctx;
+  int act_sym, csym;
+  int bframe=(img->type==B_SLICE);
+
+  MotionInfoContexts *ctx    = (img->currentSlice)->mot_ctx;
+
+  act_sym = se->value1;
+  act_ctx = 0;
+
+  if (!bframe)  
+  {
+    switch (act_sym)
+    {
+    case 0:
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[0][1]);
+      break;
+    case 1:
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[0][1]);
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[0][3]);
+      break;
+    case 2:
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[0][1]);
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[0][3]);
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[0][4]);
+      break;
+    case 3:
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[0][1]);
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[0][3]);
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[0][4]);
+      break;
+    }
+  }
+  else //===== B-FRAME =====
+  {
+    if (act_sym==0)
+    {
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][0]);
+      return;
+    }
+    else
+    {
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][0]);
+      act_sym--;
+    }
+    if (act_sym<2)
+    {
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][1]);
+      if (act_sym==0)   biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+      else              biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+    }
+    else if (act_sym<6)
+    {
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][1]);
+      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][2]);
+      csym=(((act_sym-2)>>1)&0x01);
+      if (csym) biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+      else      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+      csym=((act_sym-2)&0x01);
+      if (csym) biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+      else      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+    }
+    else
+    {
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][1]);
+      biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][2]);
+      csym=(((act_sym-6)>>2)&0x01);
+      if (csym)
+      {
+        biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+        csym=((act_sym-6)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+      }
+      else
+      {
+        biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+        csym=(((act_sym-6)>>1)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+        csym=((act_sym-6)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->b8_type_contexts[1][3]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->b8_type_contexts[1][3]);
+      }
+    }
+  }
+}

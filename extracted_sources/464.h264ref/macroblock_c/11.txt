@@ -1,0 +1,50 @@
+void
+SetModesAndRefframe (int b8, short* p_dir, int* fw_mode, int* bw_mode, short* fw_ref, short* bw_ref)
+{
+  Macroblock* currMB = &img->mb_data[img->current_mb_nr];
+  int         j      = 2*(b8/2);
+  int         i      = 2*(b8%2);
+
+  *fw_mode = *bw_mode = *fw_ref = *bw_ref = -1;
+
+  *p_dir  = currMB->b8pdir[b8];
+
+  if (img->type!=B_SLICE)
+  {
+    *fw_ref = enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j];
+    *bw_ref = 0;
+    *fw_mode  = currMB->b8mode[b8];
+    *bw_mode  = 0;
+  }
+  else
+  {
+    if (currMB->b8pdir[b8]==-1)
+    {
+      *fw_ref   = -1;
+      *bw_ref   = -1;
+      *fw_mode  =  0;
+      *bw_mode  =  0;
+    }
+    else if (currMB->b8pdir[b8]==0)
+    {
+      *fw_ref   = enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j];
+      *bw_ref   = 0;
+      *fw_mode  = currMB->b8mode[b8];
+      *bw_mode  = 0;
+    }
+    else if (currMB->b8pdir[b8]==1)
+    {
+      *fw_ref   = 0;
+      *bw_ref   = enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j];
+      *fw_mode  = 0;
+      *bw_mode  = currMB->b8mode[b8];
+    }
+    else
+    {
+      *fw_ref   = enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j];
+      *bw_ref   = enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j];
+      *fw_mode  = currMB->b8mode[b8];
+      *bw_mode  = currMB->b8mode[b8];
+    }
+  }
+}

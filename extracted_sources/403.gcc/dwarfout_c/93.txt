@@ -1,0 +1,52 @@
+static void
+output_compile_unit_die (arg)
+     void *arg;
+{
+  const char *main_input_filename = arg;
+  const char *language_string = lang_hooks.name;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_compile_unit);
+  sibling_attribute ();
+  dienum_push ();
+  name_attribute (main_input_filename);
+
+  {
+    char producer[250];
+
+    sprintf (producer, "%s %s", language_string, version_string);
+    producer_attribute (producer);
+  }
+
+  if (strcmp (language_string, "GNU C++") == 0)
+    language_attribute (LANG_C_PLUS_PLUS);
+  else if (strcmp (language_string, "GNU Ada") == 0)
+    language_attribute (LANG_ADA83);
+  else if (strcmp (language_string, "GNU F77") == 0)
+    language_attribute (LANG_FORTRAN77);
+  else if (strcmp (language_string, "GNU Pascal") == 0)
+    language_attribute (LANG_PASCAL83);
+  else if (strcmp (language_string, "GNU Java") == 0)
+    language_attribute (LANG_JAVA);
+  else if (flag_traditional)
+    language_attribute (LANG_C);
+  else
+    language_attribute (LANG_C89);
+  low_pc_attribute (TEXT_BEGIN_LABEL);
+  high_pc_attribute (TEXT_END_LABEL);
+  if (debug_info_level >= DINFO_LEVEL_NORMAL)
+    stmt_list_attribute (LINE_BEGIN_LABEL);
+
+  {
+    const char *wd = getpwd ();
+    if (wd)
+      comp_dir_attribute (wd);
+  }
+
+  if (debug_info_level >= DINFO_LEVEL_NORMAL && use_gnu_debug_info_extensions)
+    {
+      sf_names_attribute (SFNAMES_BEGIN_LABEL);
+      src_info_attribute (SRCINFO_BEGIN_LABEL);
+      if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+        mac_info_attribute (MACINFO_BEGIN_LABEL);
+    }
+}

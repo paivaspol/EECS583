@@ -1,0 +1,29 @@
+static void
+equate_decl_number_to_die (decl, decl_die)
+     tree decl;
+     dw_die_ref decl_die;
+{
+  unsigned int decl_id = DECL_UID (decl);
+  unsigned int num_allocated;
+
+  if (decl_id >= decl_die_table_allocated)
+    {
+      num_allocated
+	= ((decl_id + 1 + DECL_DIE_TABLE_INCREMENT - 1)
+	   / DECL_DIE_TABLE_INCREMENT)
+	  * DECL_DIE_TABLE_INCREMENT;
+
+      decl_die_table
+	= (dw_die_ref *) xrealloc (decl_die_table,
+				   sizeof (dw_die_ref) * num_allocated);
+
+      memset ((char *) &decl_die_table[decl_die_table_allocated], 0,
+	     (num_allocated - decl_die_table_allocated) * sizeof (dw_die_ref));
+      decl_die_table_allocated = num_allocated;
+    }
+
+  if (decl_id >= decl_die_table_in_use)
+    decl_die_table_in_use = (decl_id + 1);
+
+  decl_die_table[decl_id] = decl_die;
+}

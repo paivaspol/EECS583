@@ -1,0 +1,129 @@
+int32 hmm_vit_eval_3st (hmm_t *hmm, s3senid_t *senid, int32 *senscr)
+{
+    int32 s0, s1, s2, best, *tp;
+
+#ifdef _CHECKUNDERFLOW_
+    /*    int32 st0, st1, st2, sen0, sen1, sen2;*/
+#endif
+    
+    tp = hmm->tp[0];	/* Hack!! We know the 2-D tp is a contiguous block */
+    
+    /* 2 = max(0,1,2); */
+    /*s2 = hmm->state[2].score + tp[10];*/
+    s2 = NO_UFLOW_ADD(hmm->state[2].score,tp[10]);
+
+    /*s1 = hmm->state[1].score + tp[ 6];*/
+    s1 = NO_UFLOW_ADD(hmm->state[1].score,tp[6]);
+
+    if (tp[2] > S3_LOGPROB_ZERO) { /* Only if skip(0->2) is allowed */
+      /*s0 = hmm->state[0].score + tp[ 2]; */
+        s0 = NO_UFLOW_ADD(hmm->state[0].score,tp[ 2]);
+
+        if (s2 < s1) {
+	    if (s1 >= s0) {
+	        s2 = s1;
+	        hmm->state[2].history = hmm->state[1].history;
+	    } else {
+	        s2 = s0;
+	        hmm->state[2].history = hmm->state[0].history;
+	    }
+        } else if (s2 < s0) {
+	    s2 = s0;
+	    hmm->state[2].history = hmm->state[0].history;
+        }
+    } else {
+        if (s2 < s1) {
+	    s2 = s1;
+	    hmm->state[2].history = hmm->state[1].history;
+        } 
+    } 
+
+/* #ifdef _CHECKUNDERFLOW_ */
+/*     sen2 = senscr[senid[2]]; */
+/*     st2 = s2 + sen2; */
+/*     s2 = (st2 > 0 && s2 < 0 && sen2 < 0) ? MAX_NEG_INT32 : st2; */
+/* #else */
+/*     s2 += senscr[senid[2]]; */
+/* #endif  */
+    s2= NO_UFLOW_ADD(s2,senscr[senid[2]]);
+
+    hmm->state[2].score = s2;
+
+    /* 1 = max(0,1); */
+    /*    s1 = hmm->state[1].score + tp[ 5];*/
+    /*s0 = hmm->state[0].score + tp[ 1];*/
+    s1= NO_UFLOW_ADD(hmm->state[1].score,tp[5]);
+    s0 = NO_UFLOW_ADD(hmm->state[0].score,tp[ 1]);
+    
+    if (s1 < s0) {
+	s1 = s0;
+	hmm->state[1].history = hmm->state[0].history;
+    }
+
+/* #ifdef _CHECKUNDERFLOW_ */
+/*     sen1 = senscr[senid[1]]; */
+/*     st1 = s1 + sen1; */
+/*     s1 = (st1 > 0 && s1 < 0 && sen1 < 0) ? MAX_NEG_INT32 : st1; */
+/* #else */
+/*     s1 += senscr[senid[1]]; */
+/* #endif  */
+    s1 = NO_UFLOW_ADD(s1,senscr[senid[1]]);
+    hmm->state[1].score = s1;
+ 
+    best = (s2 > s1) ? s2 : s1;
+
+    /* Exit state score */
+
+/* #ifdef _CHECKUNDERFLOW_ */
+/*     st2 = s2 + tp[11]; */
+/*     s2 = (st2 > 0 && s2 < 0) ? MAX_NEG_INT32 : st2; */
+/* #else */
+/*     s2 += tp[11]; */
+/* #endif */
+
+    s2 = NO_UFLOW_ADD(s2,tp[11]);
+
+    if (tp[7] > S3_LOGPROB_ZERO) { /* Only if skip(1->4) is allowed */
+      /*  s1 += tp[ 7];*/
+      s1 = NO_UFLOW_ADD(s1,tp[7]);
+
+        if (s2 < s1) {
+	    hmm->out.score = s1;
+	    hmm->out.history = hmm->state[1].history;
+        } else {
+	    hmm->out.score = s2;
+	    hmm->out.history = hmm->state[2].history;
+        }
+    } else {
+        hmm->out.score = s2;
+        hmm->out.history = hmm->state[2].history;
+    }
+    /* 0 = max(0,in); */
+    /*s0 = hmm->state[0].score + tp[ 0];*/
+
+    s0 = NO_UFLOW_ADD(hmm->state[0].score,tp[0]);
+
+    if (s0 < hmm->in.score) {
+	s0 = hmm->in.score;
+	hmm->state[0].history = hmm->in.history;
+    }
+
+/* #ifdef _CHECKUNDERFLOW_ */
+/*     sen0 = senscr[senid[0]]; */
+/*     st0 = s0 + sen0; */
+/*     s0 = (st0 > 0 && s0 < 0 && sen0 < 0) ? MAX_NEG_INT32 : st0; */
+/* #else */
+/*     s0 += senscr[senid[0]]; */
+/* #endif  */
+    s0 = NO_UFLOW_ADD(s0,senscr[senid[0]]);
+
+    hmm->state[0].score = s0;
+
+    if (best < s0)
+	best = s0;
+
+    hmm->in.score = S3_LOGPROB_ZERO;	/* Consumed */
+    hmm->bestscore = best;
+
+    return best;
+}

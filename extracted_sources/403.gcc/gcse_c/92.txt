@@ -1,0 +1,81 @@
+static int
+pre_edge_insert (edge_list, index_map)
+     struct edge_list *edge_list;
+     struct expr **index_map;
+{
+  int e, i, j, num_edges, set_size, did_insert = 0;
+  sbitmap *inserted;
+
+  /* Where PRE_INSERT_MAP is nonzero, we add the expression on that edge
+     if it reaches any of the deleted expressions.  */
+
+  set_size = pre_insert_map[0]->size;
+  num_edges = NUM_EDGES (edge_list);
+  inserted = sbitmap_vector_alloc (num_edges, n_exprs);
+  sbitmap_vector_zero (inserted, num_edges);
+
+  for (e = 0; e < num_edges; e++)
+    {
+      int indx;
+      basic_block bb = INDEX_EDGE_PRED_BB (edge_list, e);
+
+      for (i = indx = 0; i < set_size; i++, indx += SBITMAP_ELT_BITS)
+	{
+	  SBITMAP_ELT_TYPE insert = pre_insert_map[e]->elms[i];
+
+	  for (j = indx; insert && j < n_exprs; j++, insert >>= 1)
+	    if ((insert & 1) != 0 && index_map[j]->reaching_reg != NULL_RTX)
+	      {
+		struct expr *expr = index_map[j];
+		struct occr *occr;
+
+		/* Now look at each deleted occurrence of this expression.  */
+		for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+		  {
+		    if (! occr->deleted_p)
+		      continue;
+
+		    /* Insert this expression on this edge if if it would
+		       reach the deleted occurrence in BB.  */
+		    if (!TEST_BIT (inserted[e], j))
+		      {
+			rtx insn;
+			edge eg = INDEX_EDGE (edge_list, e);
+
+			/* We can't insert anything on an abnormal and
+			   critical edge, so we insert the insn at the end of
+			   the previous block. There are several alternatives
+			   detailed in Morgans book P277 (sec 10.5) for
+			   handling this situation.  This one is easiest for
+			   now.  */
+
+			if ((eg->flags & EDGE_ABNORMAL) == EDGE_ABNORMAL)
+			  insert_insn_end_bb (index_map[j], bb, 0);
+			else
+			  {
+			    insn = process_insert_insn (index_map[j]);
+			    insert_insn_on_edge (insn, eg);
+			  }
+
+			if (gcse_file)
+			  {
+			    fprintf (gcse_file, "PRE/HOIST: edge (%d,%d), ",
+				     bb->index,
+				     INDEX_EDGE_SUCC_BB (edge_list, e)->index);
+			    fprintf (gcse_file, "copy expression %d\n",
+				     expr->bitmap_index);
+			  }
+
+			update_ld_motion_stores (expr);
+			SET_BIT (inserted[e], j);
+			did_insert = 1;
+			gcse_create_count++;
+		      }
+		  }
+	      }
+	}
+    }
+
+  sbitmap_vector_free (inserted);
+  return did_insert;
+}

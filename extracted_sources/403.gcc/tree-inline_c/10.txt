@@ -1,0 +1,13 @@
+static void
+expand_calls_inline (tp, id)
+     tree *tp;
+     inline_data *id;
+{
+  /* Search through *TP, replacing all calls to inline functions by
+     appropriate equivalents.  Use walk_tree in no-duplicates mode
+     to avoid exponential time complexity.  (We can't just use
+     walk_tree_without_duplicates, because of the special TARGET_EXPR
+     handling in expand_calls.  The hash table is set up in
+     optimize_function.  */
+  walk_tree (tp, expand_call_inline, id, id->tree_pruner);
+}

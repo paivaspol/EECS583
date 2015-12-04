@@ -1,0 +1,84 @@
+static void
+e113toe (pe, y)
+     const UEMUSHORT *pe;
+     UEMUSHORT *y;
+{
+  UEMUSHORT r;
+  const UEMUSHORT *e;
+  UEMUSHORT *p;
+  UEMUSHORT yy[NI];
+  int denorm, i;
+
+  e = pe;
+  denorm = 0;
+  ecleaz (yy);
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    e += 7;
+#endif
+  r = *e;
+  yy[0] = 0;
+  if (r & 0x8000)
+    yy[0] = 0xffff;
+  r &= 0x7fff;
+#ifdef INFINITY
+  if (r == 0x7fff)
+    {
+#ifdef NANS
+      if (! REAL_WORDS_BIG_ENDIAN)
+	{
+	  for (i = 0; i < 7; i++)
+	    {
+	      if (pe[i] != 0)
+		{
+		  enan (y, yy[0] != 0);
+		  return;
+		}
+	    }
+	}
+      else
+	{
+	  for (i = 1; i < 8; i++)
+	    {
+	      if (pe[i] != 0)
+		{
+		  enan (y, yy[0] != 0);
+		  return;
+		}
+	    }
+	}
+#endif /* NANS */
+      eclear (y);
+      einfin (y);
+      if (yy[0])
+	eneg (y);
+      return;
+    }
+#endif  /* INFINITY */
+  yy[E] = r;
+  p = &yy[M + 1];
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    {
+      for (i = 0; i < 7; i++)
+	*p++ = *(--e);
+    }
+  else
+    {
+      ++e;
+      for (i = 0; i < 7; i++)
+	*p++ = *e++;
+    }
+#endif
+/* If denormal, remove the implied bit; else shift down 1.  */
+  if (r == 0)
+    {
+      yy[M] = 0;
+    }
+  else
+    {
+      yy[M] = 1;
+      eshift (yy, -1);
+    }
+  emovo (yy, y);
+}

@@ -1,0 +1,27 @@
+void
+push_label_level ()
+{
+  struct binding_level *newlevel;
+
+  /* Reuse or create a struct for this binding level.  */
+
+  if (free_binding_level)
+    {
+      newlevel = free_binding_level;
+      free_binding_level = free_binding_level->level_chain;
+    }
+  else
+    {
+      newlevel = make_binding_level ();
+    }
+
+  /* Add this level to the front of the chain (stack) of label levels.  */
+
+  newlevel->level_chain = label_level_chain;
+  label_level_chain = newlevel;
+
+  newlevel->names = named_labels;
+  newlevel->shadowed = shadowed_labels;
+  named_labels = 0;
+  shadowed_labels = 0;
+}

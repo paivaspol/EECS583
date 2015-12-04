@@ -1,0 +1,294 @@
+static void
+output_type (type, containing_scope)
+     tree type;
+     tree containing_scope;
+{
+  if (type == 0 || type == error_mark_node)
+    return;
+
+  /* We are going to output a DIE to represent the unqualified version of
+     this type (i.e. without any const or volatile qualifiers) so get
+     the main variant (i.e. the unqualified version) of this type now.  */
+
+  type = type_main_variant (type);
+
+  if (TREE_ASM_WRITTEN (type))
+    {
+      if (finalizing && AGGREGATE_TYPE_P (type))
+	{
+	  tree member;
+
+	  /* Some of our nested types might not have been defined when we
+	     were written out before; force them out now.  */
+
+	  for (member = TYPE_FIELDS (type); member;
+	       member = TREE_CHAIN (member))
+	    if (TREE_CODE (member) == TYPE_DECL
+		&& ! TREE_ASM_WRITTEN (TREE_TYPE (member)))
+	      output_type (TREE_TYPE (member), containing_scope);
+	}
+      return;
+    }
+
+  /* If this is a nested type whose containing class hasn't been
+     written out yet, writing it out will cover this one, too.  */
+
+  if (TYPE_CONTEXT (type)
+      && TYPE_P (TYPE_CONTEXT (type))
+      && ! TREE_ASM_WRITTEN (TYPE_CONTEXT (type)))
+    {
+      output_type (TYPE_CONTEXT (type), containing_scope);
+      return;
+    }
+
+  /* Don't generate any DIEs for this type now unless it is OK to do so
+     (based upon what `type_ok_for_scope' tells us).  */
+
+  if (! type_ok_for_scope (type, containing_scope))
+    {
+      pend_type (type);
+      return;
+    }
+
+  switch (TREE_CODE (type))
+    {
+      case ERROR_MARK:
+	break;
+
+      case VECTOR_TYPE:
+	output_type (TYPE_DEBUG_REPRESENTATION_TYPE (type), containing_scope);
+	break;
+
+      case POINTER_TYPE:
+      case REFERENCE_TYPE:
+	/* Prevent infinite recursion in cases where this is a recursive
+	   type.  Recursive types are possible in Ada.  */
+	TREE_ASM_WRITTEN (type) = 1;
+	/* For these types, all that is required is that we output a DIE
+	   (or a set of DIEs) to represent the "basis" type.  */
+	output_type (TREE_TYPE (type), containing_scope);
+	break;
+
+      case OFFSET_TYPE:
+	/* This code is used for C++ pointer-to-data-member types.  */
+	/* Output a description of the relevant class type.  */
+	output_type (TYPE_OFFSET_BASETYPE (type), containing_scope);
+	/* Output a description of the type of the object pointed to.  */
+	output_type (TREE_TYPE (type), containing_scope);
+	/* Now output a DIE to represent this pointer-to-data-member type
+	   itself.  */
+	output_die (output_ptr_to_mbr_type_die, type);
+	break;
+
+      case SET_TYPE:
+	output_type (TYPE_DOMAIN (type), containing_scope);
+	output_die (output_set_type_die, type);
+	break;
+
+      case FILE_TYPE:
+	output_type (TREE_TYPE (type), containing_scope);
+	abort ();	/* No way to represent these in Dwarf yet!  */
+	break;
+
+      case FUNCTION_TYPE:
+	/* Force out return type (in case it wasn't forced out already).  */
+	output_type (TREE_TYPE (type), containing_scope);
+	output_die (output_subroutine_type_die, type);
+	output_formal_types (type);
+	end_sibling_chain ();
+	break;
+
+      case METHOD_TYPE:
+	/* Force out return type (in case it wasn't forced out already).  */
+	output_type (TREE_TYPE (type), containing_scope);
+	output_die (output_subroutine_type_die, type);
+	output_formal_types (type);
+	end_sibling_chain ();
+	break;
+
+      case ARRAY_TYPE:	
+	if (TYPE_STRING_FLAG (type) && TREE_CODE(TREE_TYPE(type)) == CHAR_TYPE)
+	  {
+	    output_type (TREE_TYPE (type), containing_scope);
+	    output_die (output_string_type_die, type);
+	  }
+	else
+	  {
+	    tree element_type;
+
+	    element_type = TREE_TYPE (type);
+	    while (TREE_CODE (element_type) == ARRAY_TYPE)
+	      element_type = TREE_TYPE (element_type);
+
+	    output_type (element_type, containing_scope);
+	    output_die (output_array_type_die, type);
+	  }
+	break;
+
+      case ENUMERAL_TYPE:
+      case RECORD_TYPE:
+      case UNION_TYPE:
+      case QUAL_UNION_TYPE:
+
+	/* For a non-file-scope tagged type, we can always go ahead and
+	   output a Dwarf description of this type right now, even if
+	   the type in question is still incomplete, because if this
+	   local type *was* ever completed anywhere within its scope,
+	   that complete definition would already have been attached to
+	   this RECORD_TYPE, UNION_TYPE, QUAL_UNION_TYPE or ENUMERAL_TYPE
+	   node by the time we reach this point.  That's true because of the
+	   way the front-end does its processing of file-scope declarations (of
+	   functions and class types) within which other types might be
+	   nested.  The C and C++ front-ends always gobble up such "local
+	   scope" things en-mass before they try to output *any* debugging
+	   information for any of the stuff contained inside them and thus,
+	   we get the benefit here of what is (in effect) a pre-resolution
+	   of forward references to tagged types in local scopes.
+
+	   Note however that for file-scope tagged types we cannot assume
+	   that such pre-resolution of forward references has taken place.
+	   A given file-scope tagged type may appear to be incomplete when
+	   we reach this point, but it may yet be given a full definition
+	   (at file-scope) later on during compilation.  In order to avoid
+	   generating a premature (and possibly incorrect) set of Dwarf
+	   DIEs for such (as yet incomplete) file-scope tagged types, we
+	   generate nothing at all for as-yet incomplete file-scope tagged
+	   types here unless we are making our special "finalization" pass
+	   for file-scope things at the very end of compilation.  At that
+	   time, we will certainly know as much about each file-scope tagged
+	   type as we are ever going to know, so at that point in time, we
+	   can safely generate correct Dwarf descriptions for these file-
+	   scope tagged types.  */
+
+	if (!COMPLETE_TYPE_P (type)
+	    && (TYPE_CONTEXT (type) == NULL
+		|| AGGREGATE_TYPE_P (TYPE_CONTEXT (type))
+		|| TREE_CODE (TYPE_CONTEXT (type)) == NAMESPACE_DECL)
+	    && !finalizing)
+	  {
+	    /* We don't need to do this for function-local types.  */
+	    if (! decl_function_context (TYPE_STUB_DECL (type)))
+	      add_incomplete_type (type);
+	    return;	/* EARLY EXIT!  Avoid setting TREE_ASM_WRITTEN.  */
+	  }
+
+	/* Prevent infinite recursion in cases where the type of some
+	   member of this type is expressed in terms of this type itself.  */
+
+	TREE_ASM_WRITTEN (type) = 1;
+
+	/* Output a DIE to represent the tagged type itself.  */
+
+	switch (TREE_CODE (type))
+	  {
+	  case ENUMERAL_TYPE:
+	    output_die (output_enumeration_type_die, type);
+	    return;  /* a special case -- nothing left to do so just return */
+
+	  case RECORD_TYPE:
+	    output_die (output_structure_type_die, type);
+	    break;
+
+	  case UNION_TYPE:
+	  case QUAL_UNION_TYPE:
+	    output_die (output_union_type_die, type);
+	    break;
+
+	  default:
+	    abort ();	/* Should never happen.  */
+	  }
+
+	/* If this is not an incomplete type, output descriptions of
+	   each of its members.
+
+	   Note that as we output the DIEs necessary to represent the
+	   members of this record or union type, we will also be trying
+	   to output DIEs to represent the *types* of those members.
+	   However the `output_type' function (above) will specifically
+	   avoid generating type DIEs for member types *within* the list
+	   of member DIEs for this (containing) type except for those
+	   types (of members) which are explicitly marked as also being
+	   members of this (containing) type themselves.  The g++ front-
+	   end can force any given type to be treated as a member of some
+	   other (containing) type by setting the TYPE_CONTEXT of the
+	   given (member) type to point to the TREE node representing the
+	   appropriate (containing) type.
+	*/
+
+	if (COMPLETE_TYPE_P (type))
+	  {
+	    /* First output info about the base classes.  */
+	    if (TYPE_BINFO (type) && TYPE_BINFO_BASETYPES (type))
+	      {
+		register tree bases = TYPE_BINFO_BASETYPES (type);
+		register int n_bases = TREE_VEC_LENGTH (bases);
+		register int i;
+
+		for (i = 0; i < n_bases; i++)
+		  {
+		    tree binfo = TREE_VEC_ELT (bases, i);
+		    output_type (BINFO_TYPE (binfo), containing_scope);
+		    output_die (output_inheritance_die, binfo);
+		  }
+	      }
+
+	    ++in_class;
+
+	    {
+	      tree normal_member;
+
+	      /* Now output info about the data members and type members.  */
+
+	      for (normal_member = TYPE_FIELDS (type);
+		   normal_member;
+		   normal_member = TREE_CHAIN (normal_member))
+	        output_decl (normal_member, type);
+	    }
+
+	    {
+	      tree func_member;
+
+	      /* Now output info about the function members (if any).  */
+
+	      for (func_member = TYPE_METHODS (type);
+		   func_member;
+		   func_member = TREE_CHAIN (func_member))
+		{
+		  /* Don't include clones in the member list.  */
+		  if (DECL_ABSTRACT_ORIGIN (func_member))
+		    continue;
+
+		  output_decl (func_member, type);
+		}
+	    }
+
+	    --in_class;
+
+	    /* RECORD_TYPEs, UNION_TYPEs, and QUAL_UNION_TYPEs are themselves
+	       scopes (at least in C++) so we must now output any nested
+	       pending types which are local just to this type.  */
+
+	    output_pending_types_for_scope (type);
+
+	    end_sibling_chain ();	/* Terminate member chain.  */
+	  }
+
+	break;
+
+      case VOID_TYPE:
+      case INTEGER_TYPE:
+      case REAL_TYPE:
+      case COMPLEX_TYPE:
+      case BOOLEAN_TYPE:
+      case CHAR_TYPE:
+	break;		/* No DIEs needed for fundamental types.  */
+
+      case LANG_TYPE:	/* No Dwarf representation currently defined.  */
+	break;
+
+      default:
+	abort ();
+    }
+
+  TREE_ASM_WRITTEN (type) = 1;
+}

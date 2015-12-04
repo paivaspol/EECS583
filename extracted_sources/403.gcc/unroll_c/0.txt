@@ -1,0 +1,1172 @@
+static void copy_loop_body PARAMS ((struct loop *, rtx, rtx,
+				    struct inline_remap *, rtx, int,
+				    enum unroll_types, rtx, rtx, rtx, rtx));
+static int find_splittable_regs PARAMS ((const struct loop *,
+					 enum unroll_types, int));
+static int find_splittable_givs PARAMS ((const struct loop *,
+					 struct iv_class *, enum unroll_types,
+					 rtx, int));
+static int reg_dead_after_loop PARAMS ((const struct loop *, rtx));
+static rtx fold_rtx_mult_add PARAMS ((rtx, rtx, rtx, enum machine_mode));
+static int verify_addresses PARAMS ((struct induction *, rtx, int));
+static rtx remap_split_bivs PARAMS ((struct loop *, rtx));
+static rtx find_common_reg_term PARAMS ((rtx, rtx));
+static rtx subtract_reg_term PARAMS ((rtx, rtx));
+static rtx loop_find_equiv_value PARAMS ((const struct loop *, rtx));
+static rtx ujump_to_loop_cont PARAMS ((rtx, rtx));
+
+/* Try to unroll one loop and split induction variables in the loop.
+
+   The loop is described by the arguments LOOP and INSN_COUNT.
+   STRENGTH_REDUCTION_P indicates whether information generated in the
+   strength reduction pass is available.
+
+   This function is intended to be called from within `strength_reduce'
+   in loop.c.  */
+
+void
+unroll_loop (loop, insn_count, strength_reduce_p)
+     struct loop *loop;
+     int insn_count;
+     int strength_reduce_p;
+{
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  int i, j;
+  unsigned int r;
+  unsigned HOST_WIDE_INT temp;
+  int unroll_number = 1;
+  rtx copy_start, copy_end;
+  rtx insn, sequence, pattern, tem;
+  int max_labelno, max_insnno;
+  rtx insert_before;
+  struct inline_remap *map;
+  char *local_label = NULL;
+  char *local_regno;
+  unsigned int max_local_regnum;
+  unsigned int maxregnum;
+  rtx exit_label = 0;
+  rtx start_label;
+  struct iv_class *bl;
+  int splitting_not_safe = 0;
+  enum unroll_types unroll_type = UNROLL_NAIVE;
+  int loop_preconditioned = 0;
+  rtx safety_label;
+  /* This points to the last real insn in the loop, which should be either
+     a JUMP_INSN (for conditional jumps) or a BARRIER (for unconditional
+     jumps).  */
+  rtx last_loop_insn;
+  rtx loop_start = loop->start;
+  rtx loop_end = loop->end;
+
+  /* Don't bother unrolling huge loops.  Since the minimum factor is
+     two, loops greater than one half of MAX_UNROLLED_INSNS will never
+     be unrolled.  */
+  if (insn_count > MAX_UNROLLED_INSNS / 2)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream, "Unrolling failure: Loop too big.\n");
+      return;
+    }
+
+  /* When emitting debugger info, we can't unroll loops with unequal numbers
+     of block_beg and block_end notes, because that would unbalance the block
+     structure of the function.  This can happen as a result of the
+     "if (foo) bar; else break;" optimization in jump.c.  */
+  /* ??? Gcc has a general policy that -g is never supposed to change the code
+     that the compiler emits, so we must disable this optimization always,
+     even if debug info is not being output.  This is rare, so this should
+     not be a significant performance problem.  */
+
+  if (1 /* write_symbols != NO_DEBUG */)
+    {
+      int block_begins = 0;
+      int block_ends = 0;
+
+      for (insn = loop_start; insn != loop_end; insn = NEXT_INSN (insn))
+	{
+	  if (GET_CODE (insn) == NOTE)
+	    {
+	      if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_BEG)
+		block_begins++;
+	      else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_END)
+		block_ends++;
+	      if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_EH_REGION_BEG
+		  || NOTE_LINE_NUMBER (insn) == NOTE_INSN_EH_REGION_END)
+		{
+		  /* Note, would be nice to add code to unroll EH
+		     regions, but until that time, we punt (don't
+		     unroll).  For the proper way of doing it, see
+		     expand_inline_function.  */
+
+		  if (loop_dump_stream)
+		    fprintf (loop_dump_stream,
+			     "Unrolling failure: cannot unroll EH regions.\n");
+		  return;
+		}
+	    }
+	}
+
+      if (block_begins != block_ends)
+	{
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Unrolling failure: Unbalanced block notes.\n");
+	  return;
+	}
+    }
+
+  /* Determine type of unroll to perform.  Depends on the number of iterations
+     and the size of the loop.  */
+
+  /* If there is no strength reduce info, then set
+     loop_info->n_iterations to zero.  This can happen if
+     strength_reduce can't find any bivs in the loop.  A value of zero
+     indicates that the number of iterations could not be calculated.  */
+
+  if (! strength_reduce_p)
+    loop_info->n_iterations = 0;
+
+  if (loop_dump_stream && loop_info->n_iterations > 0)
+    {
+      fputs ("Loop unrolling: ", loop_dump_stream);
+      fprintf (loop_dump_stream, HOST_WIDE_INT_PRINT_DEC,
+	       loop_info->n_iterations);
+      fputs (" iterations.\n", loop_dump_stream);
+    }
+
+  /* Find and save a pointer to the last nonnote insn in the loop.  */
+
+  last_loop_insn = prev_nonnote_insn (loop_end);
+
+  /* Calculate how many times to unroll the loop.  Indicate whether or
+     not the loop is being completely unrolled.  */
+
+  if (loop_info->n_iterations == 1)
+    {
+      /* Handle the case where the loop begins with an unconditional
+	 jump to the loop condition.  Make sure to delete the jump
+	 insn, otherwise the loop body will never execute.  */
+
+      rtx ujump = ujump_to_loop_cont (loop->start, loop->cont);
+      if (ujump)
+	delete_related_insns (ujump);
+
+      /* If number of iterations is exactly 1, then eliminate the compare and
+	 branch at the end of the loop since they will never be taken.
+	 Then return, since no other action is needed here.  */
+
+      /* If the last instruction is not a BARRIER or a JUMP_INSN, then
+	 don't do anything.  */
+
+      if (GET_CODE (last_loop_insn) == BARRIER)
+	{
+	  /* Delete the jump insn.  This will delete the barrier also.  */
+	  delete_related_insns (PREV_INSN (last_loop_insn));
+	}
+      else if (GET_CODE (last_loop_insn) == JUMP_INSN)
+	{
+#ifdef HAVE_cc0
+	  rtx prev = PREV_INSN (last_loop_insn);
+#endif
+	  delete_related_insns (last_loop_insn);
+#ifdef HAVE_cc0
+	  /* The immediately preceding insn may be a compare which must be
+	     deleted.  */
+	  if (only_sets_cc0_p (prev))
+	    delete_related_insns (prev);
+#endif
+	}
+
+      /* Remove the loop notes since this is no longer a loop.  */
+      if (loop->vtop)
+	delete_related_insns (loop->vtop);
+      if (loop->cont)
+	delete_related_insns (loop->cont);
+      if (loop_start)
+	delete_related_insns (loop_start);
+      if (loop_end)
+	delete_related_insns (loop_end);
+
+      return;
+    }
+  else if (loop_info->n_iterations > 0
+	   /* Avoid overflow in the next expression.  */
+	   && loop_info->n_iterations < MAX_UNROLLED_INSNS
+	   && loop_info->n_iterations * insn_count < MAX_UNROLLED_INSNS)
+    {
+      unroll_number = loop_info->n_iterations;
+      unroll_type = UNROLL_COMPLETELY;
+    }
+  else if (loop_info->n_iterations > 0)
+    {
+      /* Try to factor the number of iterations.  Don't bother with the
+	 general case, only using 2, 3, 5, and 7 will get 75% of all
+	 numbers theoretically, and almost all in practice.  */
+
+      for (i = 0; i < NUM_FACTORS; i++)
+	factors[i].count = 0;
+
+      temp = loop_info->n_iterations;
+      for (i = NUM_FACTORS - 1; i >= 0; i--)
+	while (temp % factors[i].factor == 0)
+	  {
+	    factors[i].count++;
+	    temp = temp / factors[i].factor;
+	  }
+
+      /* Start with the larger factors first so that we generally
+	 get lots of unrolling.  */
+
+      unroll_number = 1;
+      temp = insn_count;
+      for (i = 3; i >= 0; i--)
+	while (factors[i].count--)
+	  {
+	    if (temp * factors[i].factor < MAX_UNROLLED_INSNS)
+	      {
+		unroll_number *= factors[i].factor;
+		temp *= factors[i].factor;
+	      }
+	    else
+	      break;
+	  }
+
+      /* If we couldn't find any factors, then unroll as in the normal
+	 case.  */
+      if (unroll_number == 1)
+	{
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "Loop unrolling: No factors found.\n");
+	}
+      else
+	unroll_type = UNROLL_MODULO;
+    }
+
+  /* Default case, calculate number of times to unroll loop based on its
+     size.  */
+  if (unroll_type == UNROLL_NAIVE)
+    {
+      if (8 * insn_count < MAX_UNROLLED_INSNS)
+	unroll_number = 8;
+      else if (4 * insn_count < MAX_UNROLLED_INSNS)
+	unroll_number = 4;
+      else
+	unroll_number = 2;
+    }
+
+  /* Now we know how many times to unroll the loop.  */
+
+  if (loop_dump_stream)
+    fprintf (loop_dump_stream, "Unrolling loop %d times.\n", unroll_number);
+
+  if (unroll_type == UNROLL_COMPLETELY || unroll_type == UNROLL_MODULO)
+    {
+      /* Loops of these types can start with jump down to the exit condition
+	 in rare circumstances.
+
+	 Consider a pair of nested loops where the inner loop is part
+	 of the exit code for the outer loop.
+
+	 In this case jump.c will not duplicate the exit test for the outer
+	 loop, so it will start with a jump to the exit code.
+
+	 Then consider if the inner loop turns out to iterate once and
+	 only once.  We will end up deleting the jumps associated with
+	 the inner loop.  However, the loop notes are not removed from
+	 the instruction stream.
+
+	 And finally assume that we can compute the number of iterations
+	 for the outer loop.
+
+	 In this case unroll may want to unroll the outer loop even though
+	 it starts with a jump to the outer loop's exit code.
+
+	 We could try to optimize this case, but it hardly seems worth it.
+	 Just return without unrolling the loop in such cases.  */
+
+      insn = loop_start;
+      while (GET_CODE (insn) != CODE_LABEL && GET_CODE (insn) != JUMP_INSN)
+	insn = NEXT_INSN (insn);
+      if (GET_CODE (insn) == JUMP_INSN)
+	return;
+    }
+
+  if (unroll_type == UNROLL_COMPLETELY)
+    {
+      /* Completely unrolling the loop:  Delete the compare and branch at
+	 the end (the last two instructions).   This delete must done at the
+	 very end of loop unrolling, to avoid problems with calls to
+	 back_branch_in_range_p, which is called by find_splittable_regs.
+	 All increments of splittable bivs/givs are changed to load constant
+	 instructions.  */
+
+      copy_start = loop_start;
+
+      /* Set insert_before to the instruction immediately after the JUMP_INSN
+	 (or BARRIER), so that any NOTEs between the JUMP_INSN and the end of
+	 the loop will be correctly handled by copy_loop_body.  */
+      insert_before = NEXT_INSN (last_loop_insn);
+
+      /* Set copy_end to the insn before the jump at the end of the loop.  */
+      if (GET_CODE (last_loop_insn) == BARRIER)
+	copy_end = PREV_INSN (PREV_INSN (last_loop_insn));
+      else if (GET_CODE (last_loop_insn) == JUMP_INSN)
+	{
+	  copy_end = PREV_INSN (last_loop_insn);
+#ifdef HAVE_cc0
+	  /* The instruction immediately before the JUMP_INSN may be a compare
+	     instruction which we do not want to copy.  */
+	  if (sets_cc0_p (PREV_INSN (copy_end)))
+	    copy_end = PREV_INSN (copy_end);
+#endif
+	}
+      else
+	{
+	  /* We currently can't unroll a loop if it doesn't end with a
+	     JUMP_INSN.  There would need to be a mechanism that recognizes
+	     this case, and then inserts a jump after each loop body, which
+	     jumps to after the last loop body.  */
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Unrolling failure: loop does not end with a JUMP_INSN.\n");
+	  return;
+	}
+    }
+  else if (unroll_type == UNROLL_MODULO)
+    {
+      /* Partially unrolling the loop:  The compare and branch at the end
+	 (the last two instructions) must remain.  Don't copy the compare
+	 and branch instructions at the end of the loop.  Insert the unrolled
+	 code immediately before the compare/branch at the end so that the
+	 code will fall through to them as before.  */
+
+      copy_start = loop_start;
+
+      /* Set insert_before to the jump insn at the end of the loop.
+	 Set copy_end to before the jump insn at the end of the loop.  */
+      if (GET_CODE (last_loop_insn) == BARRIER)
+	{
+	  insert_before = PREV_INSN (last_loop_insn);
+	  copy_end = PREV_INSN (insert_before);
+	}
+      else if (GET_CODE (last_loop_insn) == JUMP_INSN)
+	{
+	  insert_before = last_loop_insn;
+#ifdef HAVE_cc0
+	  /* The instruction immediately before the JUMP_INSN may be a compare
+	     instruction which we do not want to copy or delete.  */
+	  if (sets_cc0_p (PREV_INSN (insert_before)))
+	    insert_before = PREV_INSN (insert_before);
+#endif
+	  copy_end = PREV_INSN (insert_before);
+	}
+      else
+	{
+	  /* We currently can't unroll a loop if it doesn't end with a
+	     JUMP_INSN.  There would need to be a mechanism that recognizes
+	     this case, and then inserts a jump after each loop body, which
+	     jumps to after the last loop body.  */
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Unrolling failure: loop does not end with a JUMP_INSN.\n");
+	  return;
+	}
+    }
+  else
+    {
+      /* Normal case: Must copy the compare and branch instructions at the
+	 end of the loop.  */
+
+      if (GET_CODE (last_loop_insn) == BARRIER)
+	{
+	  /* Loop ends with an unconditional jump and a barrier.
+	     Handle this like above, don't copy jump and barrier.
+	     This is not strictly necessary, but doing so prevents generating
+	     unconditional jumps to an immediately following label.
+
+	     This will be corrected below if the target of this jump is
+	     not the start_label.  */
+
+	  insert_before = PREV_INSN (last_loop_insn);
+	  copy_end = PREV_INSN (insert_before);
+	}
+      else if (GET_CODE (last_loop_insn) == JUMP_INSN)
+	{
+	  /* Set insert_before to immediately after the JUMP_INSN, so that
+	     NOTEs at the end of the loop will be correctly handled by
+	     copy_loop_body.  */
+	  insert_before = NEXT_INSN (last_loop_insn);
+	  copy_end = last_loop_insn;
+	}
+      else
+	{
+	  /* We currently can't unroll a loop if it doesn't end with a
+	     JUMP_INSN.  There would need to be a mechanism that recognizes
+	     this case, and then inserts a jump after each loop body, which
+	     jumps to after the last loop body.  */
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Unrolling failure: loop does not end with a JUMP_INSN.\n");
+	  return;
+	}
+
+      /* If copying exit test branches because they can not be eliminated,
+	 then must convert the fall through case of the branch to a jump past
+	 the end of the loop.  Create a label to emit after the loop and save
+	 it for later use.  Do not use the label after the loop, if any, since
+	 it might be used by insns outside the loop, or there might be insns
+	 added before it later by final_[bg]iv_value which must be after
+	 the real exit label.  */
+      exit_label = gen_label_rtx ();
+
+      insn = loop_start;
+      while (GET_CODE (insn) != CODE_LABEL && GET_CODE (insn) != JUMP_INSN)
+	insn = NEXT_INSN (insn);
+
+      if (GET_CODE (insn) == JUMP_INSN)
+	{
+	  /* The loop starts with a jump down to the exit condition test.
+	     Start copying the loop after the barrier following this
+	     jump insn.  */
+	  copy_start = NEXT_INSN (insn);
+
+	  /* Splitting induction variables doesn't work when the loop is
+	     entered via a jump to the bottom, because then we end up doing
+	     a comparison against a new register for a split variable, but
+	     we did not execute the set insn for the new register because
+	     it was skipped over.  */
+	  splitting_not_safe = 1;
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Splitting not safe, because loop not entered at top.\n");
+	}
+      else
+	copy_start = loop_start;
+    }
+
+  /* This should always be the first label in the loop.  */
+  start_label = NEXT_INSN (copy_start);
+  /* There may be a line number note and/or a loop continue note here.  */
+  while (GET_CODE (start_label) == NOTE)
+    start_label = NEXT_INSN (start_label);
+  if (GET_CODE (start_label) != CODE_LABEL)
+    {
+      /* This can happen as a result of jump threading.  If the first insns in
+	 the loop test the same condition as the loop's backward jump, or the
+	 opposite condition, then the backward jump will be modified to point
+	 to elsewhere, and the loop's start label is deleted.
+
+	 This case currently can not be handled by the loop unrolling code.  */
+
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Unrolling failure: unknown insns between BEG note and loop label.\n");
+      return;
+    }
+  if (LABEL_NAME (start_label))
+    {
+      /* The jump optimization pass must have combined the original start label
+	 with a named label for a goto.  We can't unroll this case because
+	 jumps which go to the named label must be handled differently than
+	 jumps to the loop start, and it is impossible to differentiate them
+	 in this case.  */
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Unrolling failure: loop start label is gone\n");
+      return;
+    }
+
+  if (unroll_type == UNROLL_NAIVE
+      && GET_CODE (last_loop_insn) == BARRIER
+      && GET_CODE (PREV_INSN (last_loop_insn)) == JUMP_INSN
+      && start_label != JUMP_LABEL (PREV_INSN (last_loop_insn)))
+    {
+      /* In this case, we must copy the jump and barrier, because they will
+	 not be converted to jumps to an immediately following label.  */
+
+      insert_before = NEXT_INSN (last_loop_insn);
+      copy_end = last_loop_insn;
+    }
+
+  if (unroll_type == UNROLL_NAIVE
+      && GET_CODE (last_loop_insn) == JUMP_INSN
+      && start_label != JUMP_LABEL (last_loop_insn))
+    {
+      /* ??? The loop ends with a conditional branch that does not branch back
+	 to the loop start label.  In this case, we must emit an unconditional
+	 branch to the loop exit after emitting the final branch.
+	 copy_loop_body does not have support for this currently, so we
+	 give up.  It doesn't seem worthwhile to unroll anyways since
+	 unrolling would increase the number of branch instructions
+	 executed.  */
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Unrolling failure: final conditional branch not to loop start\n");
+      return;
+    }
+
+  /* Allocate a translation table for the labels and insn numbers.
+     They will be filled in as we copy the insns in the loop.  */
+
+  max_labelno = max_label_num ();
+  max_insnno = get_max_uid ();
+
+  /* Various paths through the unroll code may reach the "egress" label
+     without initializing fields within the map structure.
+
+     To be safe, we use xcalloc to zero the memory.  */
+  map = (struct inline_remap *) xcalloc (1, sizeof (struct inline_remap));
+
+  /* Allocate the label map.  */
+
+  if (max_labelno > 0)
+    {
+      map->label_map = (rtx *) xcalloc (max_labelno, sizeof (rtx));
+      local_label = (char *) xcalloc (max_labelno, sizeof (char));
+    }
+
+  /* Search the loop and mark all local labels, i.e. the ones which have to
+     be distinct labels when copied.  For all labels which might be
+     non-local, set their label_map entries to point to themselves.
+     If they happen to be local their label_map entries will be overwritten
+     before the loop body is copied.  The label_map entries for local labels
+     will be set to a different value each time the loop body is copied.  */
+
+  for (insn = copy_start; insn != loop_end; insn = NEXT_INSN (insn))
+    {
+      rtx note;
+
+      if (GET_CODE (insn) == CODE_LABEL)
+	local_label[CODE_LABEL_NUMBER (insn)] = 1;
+      else if (GET_CODE (insn) == JUMP_INSN)
+	{
+	  if (JUMP_LABEL (insn))
+	    set_label_in_map (map,
+			      CODE_LABEL_NUMBER (JUMP_LABEL (insn)),
+			      JUMP_LABEL (insn));
+	  else if (GET_CODE (PATTERN (insn)) == ADDR_VEC
+		   || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC)
+	    {
+	      rtx pat = PATTERN (insn);
+	      int diff_vec_p = GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC;
+	      int len = XVECLEN (pat, diff_vec_p);
+	      rtx label;
+
+	      for (i = 0; i < len; i++)
+		{
+		  label = XEXP (XVECEXP (pat, diff_vec_p, i), 0);
+		  set_label_in_map (map, CODE_LABEL_NUMBER (label), label);
+		}
+	    }
+	}
+      if ((note = find_reg_note (insn, REG_LABEL, NULL_RTX)))
+	set_label_in_map (map, CODE_LABEL_NUMBER (XEXP (note, 0)),
+			  XEXP (note, 0));
+    }
+
+  /* Allocate space for the insn map.  */
+
+  map->insn_map = (rtx *) xmalloc (max_insnno * sizeof (rtx));
+
+  /* Set this to zero, to indicate that we are doing loop unrolling,
+     not function inlining.  */
+  map->inline_target = 0;
+
+  /* The register and constant maps depend on the number of registers
+     present, so the final maps can't be created until after
+     find_splittable_regs is called.  However, they are needed for
+     preconditioning, so we create temporary maps when preconditioning
+     is performed.  */
+
+  /* The preconditioning code may allocate two new pseudo registers.  */
+  maxregnum = max_reg_num ();
+
+  /* local_regno is only valid for regnos < max_local_regnum.  */
+  max_local_regnum = maxregnum;
+
+  /* Allocate and zero out the splittable_regs and addr_combined_regs
+     arrays.  These must be zeroed here because they will be used if
+     loop preconditioning is performed, and must be zero for that case.
+
+     It is safe to do this here, since the extra registers created by the
+     preconditioning code and find_splittable_regs will never be used
+     to access the splittable_regs[] and addr_combined_regs[] arrays.  */
+
+  splittable_regs = (rtx *) xcalloc (maxregnum, sizeof (rtx));
+  splittable_regs_updates = (int *) xcalloc (maxregnum, sizeof (int));
+  addr_combined_regs
+    = (struct induction **) xcalloc (maxregnum, sizeof (struct induction *));
+  local_regno = (char *) xcalloc (maxregnum, sizeof (char));
+
+  /* Mark all local registers, i.e. the ones which are referenced only
+     inside the loop.  */
+  if (INSN_UID (copy_end) < max_uid_for_loop)
+    {
+      int copy_start_luid = INSN_LUID (copy_start);
+      int copy_end_luid = INSN_LUID (copy_end);
+
+      /* If a register is used in the jump insn, we must not duplicate it
+	 since it will also be used outside the loop.  */
+      if (GET_CODE (copy_end) == JUMP_INSN)
+	copy_end_luid--;
+
+      /* If we have a target that uses cc0, then we also must not duplicate
+	 the insn that sets cc0 before the jump insn, if one is present.  */
+#ifdef HAVE_cc0
+      if (GET_CODE (copy_end) == JUMP_INSN
+	  && sets_cc0_p (PREV_INSN (copy_end)))
+	copy_end_luid--;
+#endif
+
+      /* If copy_start points to the NOTE that starts the loop, then we must
+	 use the next luid, because invariant pseudo-regs moved out of the loop
+	 have their lifetimes modified to start here, but they are not safe
+	 to duplicate.  */
+      if (copy_start == loop_start)
+	copy_start_luid++;
+
+      /* If a pseudo's lifetime is entirely contained within this loop, then we
+	 can use a different pseudo in each unrolled copy of the loop.  This
+	 results in better code.  */
+      /* We must limit the generic test to max_reg_before_loop, because only
+	 these pseudo registers have valid regno_first_uid info.  */
+      for (r = FIRST_PSEUDO_REGISTER; r < max_reg_before_loop; ++r)
+	if (REGNO_FIRST_UID (r) > 0 && REGNO_FIRST_UID (r) <= max_uid_for_loop
+	    && REGNO_FIRST_LUID (r) >= copy_start_luid
+	    && REGNO_LAST_UID (r) > 0 && REGNO_LAST_UID (r) <= max_uid_for_loop
+	    && REGNO_LAST_LUID (r) <= copy_end_luid)
+	  {
+	    /* However, we must also check for loop-carried dependencies.
+	       If the value the pseudo has at the end of iteration X is
+	       used by iteration X+1, then we can not use a different pseudo
+	       for each unrolled copy of the loop.  */
+	    /* A pseudo is safe if regno_first_uid is a set, and this
+	       set dominates all instructions from regno_first_uid to
+	       regno_last_uid.  */
+	    /* ??? This check is simplistic.  We would get better code if
+	       this check was more sophisticated.  */
+	    if (set_dominates_use (r, REGNO_FIRST_UID (r), REGNO_LAST_UID (r),
+				   copy_start, copy_end))
+	      local_regno[r] = 1;
+
+	    if (loop_dump_stream)
+	      {
+		if (local_regno[r])
+		  fprintf (loop_dump_stream, "Marked reg %d as local\n", r);
+		else
+		  fprintf (loop_dump_stream, "Did not mark reg %d as local\n",
+			   r);
+	      }
+	  }
+    }
+
+  /* If this loop requires exit tests when unrolled, check to see if we
+     can precondition the loop so as to make the exit tests unnecessary.
+     Just like variable splitting, this is not safe if the loop is entered
+     via a jump to the bottom.  Also, can not do this if no strength
+     reduce info, because precondition_loop_p uses this info.  */
+
+  /* Must copy the loop body for preconditioning before the following
+     find_splittable_regs call since that will emit insns which need to
+     be after the preconditioned loop copies, but immediately before the
+     unrolled loop copies.  */
+
+  /* Also, it is not safe to split induction variables for the preconditioned
+     copies of the loop body.  If we split induction variables, then the code
+     assumes that each induction variable can be represented as a function
+     of its initial value and the loop iteration number.  This is not true
+     in this case, because the last preconditioned copy of the loop body
+     could be any iteration from the first up to the `unroll_number-1'th,
+     depending on the initial value of the iteration variable.  Therefore
+     we can not split induction variables here, because we can not calculate
+     their value.  Hence, this code must occur before find_splittable_regs
+     is called.  */
+
+  if (unroll_type == UNROLL_NAIVE && ! splitting_not_safe && strength_reduce_p)
+    {
+      rtx initial_value, final_value, increment;
+      enum machine_mode mode;
+
+      if (precondition_loop_p (loop,
+			       &initial_value, &final_value, &increment,
+			       &mode))
+	{
+	  rtx diff;
+	  rtx *labels;
+	  int abs_inc, neg_inc;
+	  enum rtx_code cc = loop_info->comparison_code;
+	  int less_p     = (cc == LE  || cc == LEU || cc == LT  || cc == LTU);
+	  int unsigned_p = (cc == LEU || cc == GEU || cc == LTU || cc == GTU);
+
+	  map->reg_map = (rtx *) xmalloc (maxregnum * sizeof (rtx));
+
+	  VARRAY_CONST_EQUIV_INIT (map->const_equiv_varray, maxregnum,
+				   "unroll_loop_precondition");
+	  global_const_equiv_varray = map->const_equiv_varray;
+
+	  init_reg_map (map, maxregnum);
+
+	  /* Limit loop unrolling to 4, since this will make 7 copies of
+	     the loop body.  */
+	  if (unroll_number > 4)
+	    unroll_number = 4;
+
+	  /* Save the absolute value of the increment, and also whether or
+	     not it is negative.  */
+	  neg_inc = 0;
+	  abs_inc = INTVAL (increment);
+	  if (abs_inc < 0)
+	    {
+	      abs_inc = -abs_inc;
+	      neg_inc = 1;
+	    }
+
+	  start_sequence ();
+
+	  /* Final value may have form of (PLUS val1 const1_rtx).  We need
+	     to convert it into general operand, so compute the real value.  */
+
+	  if (GET_CODE (final_value) == PLUS)
+	    {
+	      final_value = expand_simple_binop (mode, PLUS,
+						 copy_rtx (XEXP (final_value, 0)),
+						 copy_rtx (XEXP (final_value, 1)),
+						 NULL_RTX, 0, OPTAB_LIB_WIDEN);
+	    }
+	  if (!nonmemory_operand (final_value, VOIDmode))
+	    final_value = force_reg (mode, copy_rtx (final_value));
+
+	  /* Calculate the difference between the final and initial values.
+	     Final value may be a (plus (reg x) (const_int 1)) rtx.
+	     Let the following cse pass simplify this if initial value is
+	     a constant.
+
+	     We must copy the final and initial values here to avoid
+	     improperly shared rtl.
+
+	     We have to deal with for (i = 0; --i < 6;) type loops.
+	     For such loops the real final value is the first time the
+	     loop variable overflows, so the diff we calculate is the
+	     distance from the overflow value.  This is 0 or ~0 for
+	     unsigned loops depending on the direction, or INT_MAX,
+	     INT_MAX+1 for signed loops.  We really do not need the
+	     exact value, since we are only interested in the diff
+	     modulo the increment, and the increment is a power of 2,
+	     so we can pretend that the overflow value is 0/~0.  */
+
+	  if (cc == NE || less_p != neg_inc)
+	    diff = expand_simple_binop (mode, MINUS, final_value,
+					copy_rtx (initial_value), NULL_RTX, 0,
+					OPTAB_LIB_WIDEN);
+	  else
+	    diff = expand_simple_unop (mode, neg_inc ? NOT : NEG,
+				       copy_rtx (initial_value), NULL_RTX, 0);
+
+	  /* Now calculate (diff % (unroll * abs (increment))) by using an
+	     and instruction.  */
+	  diff = expand_simple_binop (GET_MODE (diff), AND, diff,
+				      GEN_INT (unroll_number * abs_inc - 1),
+				      NULL_RTX, 0, OPTAB_LIB_WIDEN);
+
+	  /* Now emit a sequence of branches to jump to the proper precond
+	     loop entry point.  */
+
+	  labels = (rtx *) xmalloc (sizeof (rtx) * unroll_number);
+	  for (i = 0; i < unroll_number; i++)
+	    labels[i] = gen_label_rtx ();
+
+	  /* Check for the case where the initial value is greater than or
+	     equal to the final value.  In that case, we want to execute
+	     exactly one loop iteration.  The code below will fail for this
+	     case.  This check does not apply if the loop has a NE
+	     comparison at the end.  */
+
+	  if (cc != NE)
+	    {
+	      rtx incremented_initval;
+	      incremented_initval = expand_simple_binop (mode, PLUS,
+							 initial_value,
+							 increment,
+							 NULL_RTX, 0,
+							 OPTAB_LIB_WIDEN);
+	      emit_cmp_and_jump_insns (incremented_initval, final_value,
+				       less_p ? GE : LE, NULL_RTX,
+				       mode, unsigned_p, labels[1]);
+	      predict_insn_def (get_last_insn (), PRED_LOOP_CONDITION,
+				TAKEN);
+	      JUMP_LABEL (get_last_insn ()) = labels[1];
+	      LABEL_NUSES (labels[1])++;
+	    }
+
+	  /* Assuming the unroll_number is 4, and the increment is 2, then
+	     for a negative increment:	for a positive increment:
+	     diff = 0,1   precond 0	diff = 0,7   precond 0
+	     diff = 2,3   precond 3     diff = 1,2   precond 1
+	     diff = 4,5   precond 2     diff = 3,4   precond 2
+	     diff = 6,7   precond 1     diff = 5,6   precond 3  */
+
+	  /* We only need to emit (unroll_number - 1) branches here, the
+	     last case just falls through to the following code.  */
+
+	  /* ??? This would give better code if we emitted a tree of branches
+	     instead of the current linear list of branches.  */
+
+	  for (i = 0; i < unroll_number - 1; i++)
+	    {
+	      int cmp_const;
+	      enum rtx_code cmp_code;
+
+	      /* For negative increments, must invert the constant compared
+		 against, except when comparing against zero.  */
+	      if (i == 0)
+		{
+		  cmp_const = 0;
+		  cmp_code = EQ;
+		}
+	      else if (neg_inc)
+		{
+		  cmp_const = unroll_number - i;
+		  cmp_code = GE;
+		}
+	      else
+		{
+		  cmp_const = i;
+		  cmp_code = LE;
+		}
+
+	      emit_cmp_and_jump_insns (diff, GEN_INT (abs_inc * cmp_const),
+				       cmp_code, NULL_RTX, mode, 0, labels[i]);
+	      JUMP_LABEL (get_last_insn ()) = labels[i];
+	      LABEL_NUSES (labels[i])++;
+	      predict_insn (get_last_insn (), PRED_LOOP_PRECONDITIONING,
+			    REG_BR_PROB_BASE / (unroll_number - i));
+	    }
+
+	  /* If the increment is greater than one, then we need another branch,
+	     to handle other cases equivalent to 0.  */
+
+	  /* ??? This should be merged into the code above somehow to help
+	     simplify the code here, and reduce the number of branches emitted.
+	     For the negative increment case, the branch here could easily
+	     be merged with the `0' case branch above.  For the positive
+	     increment case, it is not clear how this can be simplified.  */
+
+	  if (abs_inc != 1)
+	    {
+	      int cmp_const;
+	      enum rtx_code cmp_code;
+
+	      if (neg_inc)
+		{
+		  cmp_const = abs_inc - 1;
+		  cmp_code = LE;
+		}
+	      else
+		{
+		  cmp_const = abs_inc * (unroll_number - 1) + 1;
+		  cmp_code = GE;
+		}
+
+	      emit_cmp_and_jump_insns (diff, GEN_INT (cmp_const), cmp_code,
+				       NULL_RTX, mode, 0, labels[0]);
+	      JUMP_LABEL (get_last_insn ()) = labels[0];
+	      LABEL_NUSES (labels[0])++;
+	    }
+
+	  sequence = gen_sequence ();
+	  end_sequence ();
+	  loop_insn_hoist (loop, sequence);
+
+	  /* Only the last copy of the loop body here needs the exit
+	     test, so set copy_end to exclude the compare/branch here,
+	     and then reset it inside the loop when get to the last
+	     copy.  */
+
+	  if (GET_CODE (last_loop_insn) == BARRIER)
+	    copy_end = PREV_INSN (PREV_INSN (last_loop_insn));
+	  else if (GET_CODE (last_loop_insn) == JUMP_INSN)
+	    {
+	      copy_end = PREV_INSN (last_loop_insn);
+#ifdef HAVE_cc0
+	      /* The immediately preceding insn may be a compare which
+		 we do not want to copy.  */
+	      if (sets_cc0_p (PREV_INSN (copy_end)))
+		copy_end = PREV_INSN (copy_end);
+#endif
+	    }
+	  else
+	    abort ();
+
+	  for (i = 1; i < unroll_number; i++)
+	    {
+	      emit_label_after (labels[unroll_number - i],
+				PREV_INSN (loop_start));
+
+	      memset ((char *) map->insn_map, 0, max_insnno * sizeof (rtx));
+	      memset ((char *) &VARRAY_CONST_EQUIV (map->const_equiv_varray, 0),
+		      0, (VARRAY_SIZE (map->const_equiv_varray)
+			  * sizeof (struct const_equiv_data)));
+	      map->const_age = 0;
+
+	      for (j = 0; j < max_labelno; j++)
+		if (local_label[j])
+		  set_label_in_map (map, j, gen_label_rtx ());
+
+	      for (r = FIRST_PSEUDO_REGISTER; r < max_local_regnum; r++)
+		if (local_regno[r])
+		  {
+		    map->reg_map[r]
+		      = gen_reg_rtx (GET_MODE (regno_reg_rtx[r]));
+		    record_base_value (REGNO (map->reg_map[r]),
+				       regno_reg_rtx[r], 0);
+		  }
+	      /* The last copy needs the compare/branch insns at the end,
+		 so reset copy_end here if the loop ends with a conditional
+		 branch.  */
+
+	      if (i == unroll_number - 1)
+		{
+		  if (GET_CODE (last_loop_insn) == BARRIER)
+		    copy_end = PREV_INSN (PREV_INSN (last_loop_insn));
+		  else
+		    copy_end = last_loop_insn;
+		}
+
+	      /* None of the copies are the `last_iteration', so just
+		 pass zero for that parameter.  */
+	      copy_loop_body (loop, copy_start, copy_end, map, exit_label, 0,
+			      unroll_type, start_label, loop_end,
+			      loop_start, copy_end);
+	    }
+	  emit_label_after (labels[0], PREV_INSN (loop_start));
+
+	  if (GET_CODE (last_loop_insn) == BARRIER)
+	    {
+	      insert_before = PREV_INSN (last_loop_insn);
+	      copy_end = PREV_INSN (insert_before);
+	    }
+	  else
+	    {
+	      insert_before = last_loop_insn;
+#ifdef HAVE_cc0
+	      /* The instruction immediately before the JUMP_INSN may
+		 be a compare instruction which we do not want to copy
+		 or delete.  */
+	      if (sets_cc0_p (PREV_INSN (insert_before)))
+		insert_before = PREV_INSN (insert_before);
+#endif
+	      copy_end = PREV_INSN (insert_before);
+	    }
+
+	  /* Set unroll type to MODULO now.  */
+	  unroll_type = UNROLL_MODULO;
+	  loop_preconditioned = 1;
+
+	  /* Clean up.  */
+	  free (labels);
+	}
+    }
+
+  /* If reach here, and the loop type is UNROLL_NAIVE, then don't unroll
+     the loop unless all loops are being unrolled.  */
+  if (unroll_type == UNROLL_NAIVE && ! flag_unroll_all_loops)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Unrolling failure: Naive unrolling not being done.\n");
+      goto egress;
+    }
+
+  /* At this point, we are guaranteed to unroll the loop.  */
+
+  /* Keep track of the unroll factor for the loop.  */
+  loop_info->unroll_number = unroll_number;
+
+  /* For each biv and giv, determine whether it can be safely split into
+     a different variable for each unrolled copy of the loop body.
+     We precalculate and save this info here, since computing it is
+     expensive.
+
+     Do this before deleting any instructions from the loop, so that
+     back_branch_in_range_p will work correctly.  */
+
+  if (splitting_not_safe)
+    temp = 0;
+  else
+    temp = find_splittable_regs (loop, unroll_type, unroll_number);
+
+  /* find_splittable_regs may have created some new registers, so must
+     reallocate the reg_map with the new larger size, and must realloc
+     the constant maps also.  */
+
+  maxregnum = max_reg_num ();
+  map->reg_map = (rtx *) xmalloc (maxregnum * sizeof (rtx));
+
+  init_reg_map (map, maxregnum);
+
+  if (map->const_equiv_varray == 0)
+    VARRAY_CONST_EQUIV_INIT (map->const_equiv_varray,
+			     maxregnum + temp * unroll_number * 2,
+			     "unroll_loop");
+  global_const_equiv_varray = map->const_equiv_varray;
+
+  /* Search the list of bivs and givs to find ones which need to be remapped
+     when split, and set their reg_map entry appropriately.  */
+
+  for (bl = ivs->list; bl; bl = bl->next)
+    {
+      if (REGNO (bl->biv->src_reg) != bl->regno)
+	map->reg_map[bl->regno] = bl->biv->src_reg;
+#if 0
+      /* Currently, non-reduced/final-value givs are never split.  */
+      for (v = bl->giv; v; v = v->next_iv)
+	if (REGNO (v->src_reg) != bl->regno)
+	  map->reg_map[REGNO (v->dest_reg)] = v->src_reg;
+#endif
+    }
+
+  /* Use our current register alignment and pointer flags.  */
+  map->regno_pointer_align = cfun->emit->regno_pointer_align;
+  map->x_regno_reg_rtx = cfun->emit->x_regno_reg_rtx;
+
+  /* If the loop is being partially unrolled, and the iteration variables
+     are being split, and are being renamed for the split, then must fix up
+     the compare/jump instruction at the end of the loop to refer to the new
+     registers.  This compare isn't copied, so the registers used in it
+     will never be replaced if it isn't done here.  */
+
+  if (unroll_type == UNROLL_MODULO)
+    {
+      insn = NEXT_INSN (copy_end);
+      if (GET_CODE (insn) == INSN || GET_CODE (insn) == JUMP_INSN)
+	PATTERN (insn) = remap_split_bivs (loop, PATTERN (insn));
+    }
+
+  /* For unroll_number times, make a copy of each instruction
+     between copy_start and copy_end, and insert these new instructions
+     before the end of the loop.  */
+
+  for (i = 0; i < unroll_number; i++)
+    {
+      memset ((char *) map->insn_map, 0, max_insnno * sizeof (rtx));
+      memset ((char *) &VARRAY_CONST_EQUIV (map->const_equiv_varray, 0), 0,
+	      VARRAY_SIZE (map->const_equiv_varray) * sizeof (struct const_equiv_data));
+      map->const_age = 0;
+
+      for (j = 0; j < max_labelno; j++)
+	if (local_label[j])
+	  set_label_in_map (map, j, gen_label_rtx ());
+
+      for (r = FIRST_PSEUDO_REGISTER; r < max_local_regnum; r++)
+	if (local_regno[r])
+	  {
+	    map->reg_map[r] = gen_reg_rtx (GET_MODE (regno_reg_rtx[r]));
+	    record_base_value (REGNO (map->reg_map[r]),
+			       regno_reg_rtx[r], 0);
+	  }
+
+      /* If loop starts with a branch to the test, then fix it so that
+	 it points to the test of the first unrolled copy of the loop.  */
+      if (i == 0 && loop_start != copy_start)
+	{
+	  insn = PREV_INSN (copy_start);
+	  pattern = PATTERN (insn);
+
+	  tem = get_label_from_map (map,
+				    CODE_LABEL_NUMBER
+				    (XEXP (SET_SRC (pattern), 0)));
+	  SET_SRC (pattern) = gen_rtx_LABEL_REF (VOIDmode, tem);
+
+	  /* Set the jump label so that it can be used by later loop unrolling
+	     passes.  */
+	  JUMP_LABEL (insn) = tem;
+	  LABEL_NUSES (tem)++;
+	}
+
+      copy_loop_body (loop, copy_start, copy_end, map, exit_label,
+		      i == unroll_number - 1, unroll_type, start_label,
+		      loop_end, insert_before, insert_before);
+    }
+
+  /* Before deleting any insns, emit a CODE_LABEL immediately after the last
+     insn to be deleted.  This prevents any runaway delete_insn call from
+     more insns that it should, as it always stops at a CODE_LABEL.  */
+
+  /* Delete the compare and branch at the end of the loop if completely
+     unrolling the loop.  Deleting the backward branch at the end also
+     deletes the code label at the start of the loop.  This is done at
+     the very end to avoid problems with back_branch_in_range_p.  */
+
+  if (unroll_type == UNROLL_COMPLETELY)
+    safety_label = emit_label_after (gen_label_rtx (), last_loop_insn);
+  else
+    safety_label = emit_label_after (gen_label_rtx (), copy_end);
+
+  /* Delete all of the original loop instructions.  Don't delete the
+     LOOP_BEG note, or the first code label in the loop.  */
+
+  insn = NEXT_INSN (copy_start);
+  while (insn != safety_label)
+    {
+      /* ??? Don't delete named code labels.  They will be deleted when the
+	 jump that references them is deleted.  Otherwise, we end up deleting
+	 them twice, which causes them to completely disappear instead of turn
+	 into NOTE_INSN_DELETED_LABEL notes.  This in turn causes aborts in
+	 dwarfout.c/dwarf2out.c.  We could perhaps fix the dwarf*out.c files
+	 to handle deleted labels instead.  Or perhaps fix DECL_RTL of the
+	 associated LABEL_DECL to point to one of the new label instances.  */
+      /* ??? Likewise, we can't delete a NOTE_INSN_DELETED_LABEL note.  */
+      if (insn != start_label
+	  && ! (GET_CODE (insn) == CODE_LABEL && LABEL_NAME (insn))
+	  && ! (GET_CODE (insn) == NOTE
+		&& NOTE_LINE_NUMBER (insn) == NOTE_INSN_DELETED_LABEL))
+	insn = delete_related_insns (insn);
+      else
+	insn = NEXT_INSN (insn);
+    }
+
+  /* Can now delete the 'safety' label emitted to protect us from runaway
+     delete_related_insns calls.  */
+  if (INSN_DELETED_P (safety_label))
+    abort ();
+  delete_related_insns (safety_label);
+
+  /* If exit_label exists, emit it after the loop.  Doing the emit here
+     forces it to have a higher INSN_UID than any insn in the unrolled loop.
+     This is needed so that mostly_true_jump in reorg.c will treat jumps
+     to this loop end label correctly, i.e. predict that they are usually
+     not taken.  */
+  if (exit_label)
+    emit_label_after (exit_label, loop_end);
+
+ egress:
+  if (unroll_type == UNROLL_COMPLETELY)
+    {
+      /* Remove the loop notes since this is no longer a loop.  */
+      if (loop->vtop)
+	delete_related_insns (loop->vtop);
+      if (loop->cont)
+	delete_related_insns (loop->cont);
+      if (loop_start)
+	delete_related_insns (loop_start);
+      if (loop_end)
+	delete_related_insns (loop_end);
+    }
+
+  if (map->const_equiv_varray)
+    VARRAY_FREE (map->const_equiv_varray);
+  if (map->label_map)
+    {
+      free (map->label_map);
+      free (local_label);
+    }
+  free (map->insn_map);
+  free (splittable_regs);
+  free (splittable_regs_updates);
+  free (addr_combined_regs);
+  free (local_regno);
+  if (map->reg_map)
+    free (map->reg_map);
+  free (map);
+}

@@ -1,0 +1,91 @@
+void run_epd_testsuite(void)
+{
+  FILE *testsuite;
+  char readbuff[2000];
+  char testname[FILENAME_MAX];
+  char tempbuff[2000];
+  int nps;
+  int thinktime;
+	move_s comp_move;
+  int tested, found;	
+  
+  tested = 0;
+  found = 0;
+  
+  printf("\nName of EPD testsuite: ");
+  rinput(testname, STR_BUFF, stdin);
+  printf("\nTime per move (s): ");
+  rinput(readbuff, STR_BUFF, stdin);
+  thinktime = atol(readbuff);
+  printf("\n");
+
+  thinktime *= 100;
+
+  testsuite = fopen(testname, "r");
+
+  while (fgets(readbuff, 2000, testsuite) != NULL)
+    {
+      tested++;
+
+      setup_epd_line(readbuff);
+
+      root_to_move = ToMove;
+      
+      clear_tt();
+      initialize_hash();
+      
+      display_board(stdout, 1); 
+ 
+      forcedwin = FALSE;    
+       
+     if (interrupt()) rinput(tempbuff, STR_BUFF, stdin);
+      
+      fixed_time = thinktime;
+      
+       comp_move = think();
+      
+
+      printf ("\nNodes: %i (%0.2f%% qnodes)\n", nodes,
+	      (float) ((float) qnodes / (float) nodes * 100.0));
+    
+      printf("ECacheProbes : %u   ECacheHits : %u   HitRate : %f%%\n", 
+	     ECacheProbes, ECacheHits, 
+	     ((float)ECacheHits/((float)ECacheProbes+1)) * 100);
+      
+      printf("TTStores : %u TTProbes : %u   TTHits : %u   HitRate : %f%%\n", 
+	     TTStores, TTProbes, TTHits, 
+	     ((float)TTHits/((float)TTProbes+1)) * 100);
+      
+      printf("NTries : %u  NCuts : %u  CutRate : %f%%  TExt: %u\n", 
+	     NTries, NCuts, (((float)NCuts*100)/((float)NTries+1)), TExt);
+      
+      printf("Check extensions: %u  Razor drops : %u  Razor Material : %u\n", ext_check, razor_drop, razor_material);
+      
+      printf("Move ordering : %f%%\n", (((float)FHF*100)/(float)FH+1));
+      
+      printf("Material score: %d  Eval : %d  MaxPosDiff: %d\n", Material, eval(-INF,INF), maxposdiff);
+      printf("\n");
+     
+      if (!forcedwin)
+      {
+      if(check_solution(readbuff, comp_move))
+	{
+	  found++;
+	  printf("Solution found.\n");
+	}
+      else
+	{
+	  printf("Solution not found.\n");
+	}
+      }
+      else
+      {
+	found++;
+      }
+      
+      printf("Solved: %d/%d\n", found, tested);
+      
+    };
+ 
+  printf("\n");
+}

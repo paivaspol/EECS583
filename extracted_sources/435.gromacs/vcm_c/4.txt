@@ -1,0 +1,95 @@
+void check_cm_grp(FILE *fp,t_vcm *vcm)
+{
+  int    m,g;
+  real   ekcm,ekrot,max_vcm,tm,tm_1;
+  rvec   jcm;
+  tensor Icm,Tcm;
+    
+  /* First analyse the total results */
+  if (vcm->mode != ecmNO) {
+    for(g=0; (g<vcm->nr); g++) {
+      tm = vcm->group_mass[g];
+      if (fabs(tm) > GMX_REAL_MIN) {
+	tm_1 = 1.0/tm;
+	svmul(tm_1,vcm->group_p[g],vcm->group_v[g]);
+      }
+      /* Else it's zero anyway! */
+    }
+    if (vcm->mode == ecmANGULAR) {
+      for(g=0; (g<vcm->nr); g++) {
+	tm = vcm->group_mass[g];
+	if (fabs(tm) > GMX_REAL_MIN) {
+	  tm_1 = 1.0/tm;
+	  
+	  /* Compute center of mass for this group */
+	  for(m=0; (m<DIM); m++)
+	    vcm->group_x[g][m] *= tm_1;
+	  
+	  /* Subtract the center of mass contribution to the 
+	   * angular momentum 
+	   */
+ 	  oprod(vcm->group_x[g],vcm->group_v[g],jcm);
+	  for(m=0; (m<DIM); m++)
+	    vcm->group_j[g][m] -= tm*jcm[m];
+	  
+	  /* Subtract the center of mass contribution from the inertia 
+	   * tensor (this is not as trivial as it seems, but due to
+	   * some cancellation we can still do it, even in parallel).
+	   */
+	  clear_mat(Icm);
+	  update_tensor(vcm->group_x[g],tm,Icm);
+	  m_sub(vcm->group_i[g],Icm,vcm->group_i[g]);
+	  
+	  /* Compute angular velocity, using matrix operation 
+	   * Since J = I w
+	   * we have
+	   * w = I^-1 J
+	   */
+	  get_minv(vcm->group_i[g],Icm);
+	  mvmul(Icm,vcm->group_j[g],vcm->group_w[g]);
+	}
+	/* Else it's zero anyway! */
+      }
+    }
+  }
+  for(g=0; (g<vcm->nr); g++) {
+    ekcm    = 0;
+    max_vcm = 0;
+    if (fabs(vcm->group_mass[g]) > GMX_REAL_MIN) {
+      for(m=0; (m<DIM); m++) 
+	ekcm += sqr(vcm->group_v[g][m]);
+      ekcm *= 0.5*vcm->group_mass[g];
+      
+      if ((ekcm > 1) || debug)
+      {
+          if(fp)
+              fprintf(fp,"Large VCM(group %s): %12.5f, %12.5f, %12.5f, ekin-cm: %12.5f\n",
+                      vcm->group_name[g],vcm->group_v[g][XX],
+                      vcm->group_v[g][YY],vcm->group_v[g][ZZ],ekcm);
+      }
+      
+      if (vcm->mode == ecmANGULAR) {
+          ekrot = 0.5*iprod(vcm->group_j[g],vcm->group_w[g]);
+          if ((ekrot > 1) || debug) {
+              if(fp)
+              {
+                  tm    = vcm->group_mass[g];
+                  fprintf(fp,"Group %s with mass %12.5f, Ekrot %12.5f Det(I) = %12.5f\n",
+                          vcm->group_name[g],tm,ekrot,det(vcm->group_i[g]));
+                  fprintf(fp,"  COM: %12.5f  %12.5f  %12.5f\n",
+                          vcm->group_x[g][XX],vcm->group_x[g][YY],vcm->group_x[g][ZZ]);
+                  fprintf(fp,"  P:   %12.5f  %12.5f  %12.5f\n",
+                          vcm->group_p[g][XX],vcm->group_p[g][YY],vcm->group_p[g][ZZ]);
+                  fprintf(fp,"  V:   %12.5f  %12.5f  %12.5f\n",
+                          vcm->group_v[g][XX],vcm->group_v[g][YY],vcm->group_v[g][ZZ]);
+                  fprintf(fp,"  J:   %12.5f  %12.5f  %12.5f\n",
+                          vcm->group_j[g][XX],vcm->group_j[g][YY],vcm->group_j[g][ZZ]);
+                  fprintf(fp,"  w:   %12.5f  %12.5f  %12.5f\n",
+                          vcm->group_w[g][XX],vcm->group_w[g][YY],vcm->group_w[g][ZZ]);
+                  pr_rvecs(fp,0,"Inertia tensor",vcm->group_i[g],DIM);
+              }
+          }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+static void
+finish_cdtor (body)
+     tree body;
+{
+  tree scope;
+  tree block;
+
+  scope = add_scope_stmt (/*begin_p=*/0, /*partial_p=*/0);
+  block = poplevel (0, 0, 0);
+  SCOPE_STMT_BLOCK (TREE_PURPOSE (scope)) = block;
+  SCOPE_STMT_BLOCK (TREE_VALUE (scope)) = block;
+
+  RECHAIN_STMTS (body, COMPOUND_BODY (body));
+
+  finish_function (0, 0);
+}

@@ -1,0 +1,21 @@
+int
+memory_operand (op, mode)
+     rtx op;
+     enum machine_mode mode;
+{
+  rtx inner;
+
+  if (! reload_completed)
+    /* Note that no SUBREG is a memory operand before end of reload pass,
+       because (SUBREG (MEM...)) forces reloading into a register.  */
+    return GET_CODE (op) == MEM && general_operand (op, mode);
+
+  if (mode != VOIDmode && GET_MODE (op) != mode)
+    return 0;
+
+  inner = op;
+  if (GET_CODE (inner) == SUBREG)
+    inner = SUBREG_REG (inner);
+
+  return (GET_CODE (inner) == MEM && general_operand (op, mode));
+}

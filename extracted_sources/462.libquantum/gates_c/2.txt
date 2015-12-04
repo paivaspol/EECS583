@@ -1,0 +1,40 @@
+void
+quantum_unbounded_toffoli(int controlling, quantum_reg *reg, ...)
+{
+  va_list bits;
+  int target;
+  int *controls;
+  int i, j;
+
+  controls = malloc(controlling * sizeof(int));
+  if(!controls)
+    {
+      printf("Error allocating %i-element int array!\n", controlling);
+      exit(1);
+    }
+  quantum_memman(controlling * sizeof(int));
+
+  va_start(bits, reg);
+  
+  for(i=0; i<controlling; i++)
+    controls[i] = va_arg(bits, int);
+
+  target = va_arg(bits, int);
+
+  va_end(bits);
+
+  for(i=0; i<reg->size; i++)
+    {
+      for(j=0; (j < controlling) && 
+	    (reg->node[i].state & (MAX_UNSIGNED) 1 << controls[j]); j++);
+      
+      if(j == controlling) /* all control bits are set */
+	reg->node[i].state ^= ((MAX_UNSIGNED) 1 << target);
+    }
+
+  free(controls);
+  quantum_memman(-controlling * sizeof(int));
+
+  quantum_decohere(reg);
+
+}

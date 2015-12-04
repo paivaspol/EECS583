@@ -1,0 +1,38 @@
+static rtx
+expand_builtin_expect (arglist, target)
+     tree arglist;
+     rtx target;
+{
+  tree exp, c;
+  rtx note, rtx_c;
+
+  if (arglist == NULL_TREE
+      || TREE_CHAIN (arglist) == NULL_TREE)
+    return const0_rtx;
+  exp = TREE_VALUE (arglist);
+  c = TREE_VALUE (TREE_CHAIN (arglist));
+
+  if (TREE_CODE (c) != INTEGER_CST)
+    {
+      error ("second arg to `__builtin_expect' must be a constant");
+      c = integer_zero_node;
+    }
+
+  target = expand_expr (exp, target, VOIDmode, EXPAND_NORMAL);
+
+  /* Don't bother with expected value notes for integral constants.  */
+  if (GET_CODE (target) != CONST_INT)
+    {
+      /* We do need to force this into a register so that we can be
+	 moderately sure to be able to correctly interpret the branch
+	 condition later.  */
+      target = force_reg (GET_MODE (target), target);
+
+      rtx_c = expand_expr (c, NULL_RTX, GET_MODE (target), EXPAND_NORMAL);
+
+      note = emit_note (NULL, NOTE_INSN_EXPECTED_VALUE);
+      NOTE_EXPECTED_VALUE (note) = gen_rtx_EQ (VOIDmode, target, rtx_c);
+    }
+
+  return target;
+}

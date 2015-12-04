@@ -1,0 +1,33 @@
+static void flow_dfs_compute_reverse_init
+  PARAMS ((depth_first_search_ds));
+static void flow_dfs_compute_reverse_add_bb
+  PARAMS ((depth_first_search_ds, basic_block));
+static basic_block flow_dfs_compute_reverse_execute
+  PARAMS ((depth_first_search_ds));
+static void flow_dfs_compute_reverse_finish
+  PARAMS ((depth_first_search_ds));
+static void remove_fake_successors	PARAMS ((basic_block));
+static bool need_fake_edge_p		PARAMS ((rtx));
+static bool keep_with_call_p		PARAMS ((rtx));
+
+/* Return true if the block has no effect and only forwards control flow to
+   its single destination.  */
+
+bool
+forwarder_block_p (bb)
+     basic_block bb;
+{
+  rtx insn;
+
+  if (bb == EXIT_BLOCK_PTR || bb == ENTRY_BLOCK_PTR
+      || !bb->succ || bb->succ->succ_next)
+    return false;
+
+  for (insn = bb->head; insn != bb->end; insn = NEXT_INSN (insn))
+    if (INSN_P (insn) && active_insn_p (insn))
+      return false;
+
+  return (!INSN_P (insn)
+	  || (GET_CODE (insn) == JUMP_INSN && simplejump_p (insn))
+	  || !active_insn_p (insn));
+}

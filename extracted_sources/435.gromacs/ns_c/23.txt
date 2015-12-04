@@ -1,0 +1,36 @@
+static real calc_image_rect(rvec xi,rvec xj,rvec box_size,
+			    rvec b_inv,int *shift)
+{
+  const real h15=1.5;
+  real ddx,ddy,ddz;
+  real dx,dy,dz;
+  real r2;
+  int  tx,ty,tz;
+  
+  /* Compute diff vector */
+  dx=xj[XX]-xi[XX];
+  dy=xj[YY]-xi[YY];
+  dz=xj[ZZ]-xi[ZZ];
+  
+  /* Perform NINT operation, using trunc operation, therefore
+   * we first add 1.5 then subtract 1 again
+   */
+  tx=dx*b_inv[XX]+h15;
+  ty=dy*b_inv[YY]+h15;
+  tz=dz*b_inv[ZZ]+h15;
+  tx--;
+  ty--;
+  tz--;
+  
+  /* Correct diff vector for translation */
+  ddx=tx*box_size[XX]-dx;
+  ddy=ty*box_size[YY]-dy;
+  ddz=tz*box_size[ZZ]-dz;
+  
+  /* Distance squared */
+  r2=(ddx*ddx)+(ddy*ddy)+(ddz*ddz);
+  
+  *shift=XYZ2IS(tx,ty,tz);
+
+  return r2;
+}

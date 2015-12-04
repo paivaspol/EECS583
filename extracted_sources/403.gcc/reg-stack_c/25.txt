@@ -1,0 +1,59 @@
+static int
+convert_regs_entry ()
+{
+  int inserted = 0, i;
+  edge e;
+
+  for (i = n_basic_blocks - 1; i >= 0; --i)
+    {
+      basic_block block = BASIC_BLOCK (i);
+      block_info bi = BLOCK_INFO (block);
+      int reg;
+      
+      /* Set current register status at last instruction `uninitialized'.  */
+      bi->stack_in.top = -2;
+  
+      /* Copy live_at_end and live_at_start into temporaries.  */
+      for (reg = FIRST_STACK_REG; reg <= LAST_STACK_REG; reg++)
+	{
+	  if (REGNO_REG_SET_P (block->global_live_at_end, reg))
+	    SET_HARD_REG_BIT (bi->out_reg_set, reg);
+	  if (REGNO_REG_SET_P (block->global_live_at_start, reg))
+	    SET_HARD_REG_BIT (bi->stack_in.reg_set, reg);
+	}
+    }
+
+  /* Load something into each stack register live at function entry. 
+     Such live registers can be caused by uninitialized variables or
+     functions not returning values on all paths.  In order to keep 
+     the push/pop code happy, and to not scrog the register stack, we
+     must put something in these registers.  Use a QNaN.  
+
+     Note that we are insertting converted code here.  This code is
+     never seen by the convert_regs pass.  */
+
+  for (e = ENTRY_BLOCK_PTR->succ; e ; e = e->succ_next)
+    {
+      basic_block block = e->dest;
+      block_info bi = BLOCK_INFO (block);
+      int reg, top = -1;
+
+      for (reg = LAST_STACK_REG; reg >= FIRST_STACK_REG; --reg)
+	if (TEST_HARD_REG_BIT (bi->stack_in.reg_set, reg))
+	  {
+	    rtx init;
+
+	    bi->stack_in.reg[++top] = reg;
+
+	    init = gen_rtx_SET (VOIDmode,
+				FP_MODE_REG (FIRST_STACK_REG, SFmode),
+				nan);
+	    insert_insn_on_edge (init, e);
+	    inserted = 1;
+	  }
+
+      bi->stack_in.top = top;
+    }
+
+  return inserted;
+}

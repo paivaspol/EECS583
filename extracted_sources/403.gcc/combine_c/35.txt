@@ -1,0 +1,115 @@
+static int
+merge_outer_ops (pop0, pconst0, op1, const1, mode, pcomp_p)
+     enum rtx_code *pop0;
+     HOST_WIDE_INT *pconst0;
+     enum rtx_code op1;
+     HOST_WIDE_INT const1;
+     enum machine_mode mode;
+     int *pcomp_p;
+{
+  enum rtx_code op0 = *pop0;
+  HOST_WIDE_INT const0 = *pconst0;
+
+  const0 &= GET_MODE_MASK (mode);
+  const1 &= GET_MODE_MASK (mode);
+
+  /* If OP0 is an AND, clear unimportant bits in CONST1.  */
+  if (op0 == AND)
+    const1 &= const0;
+
+  /* If OP0 or OP1 is NIL, this is easy.  Similarly if they are the same or
+     if OP0 is SET.  */
+
+  if (op1 == NIL || op0 == SET)
+    return 1;
+
+  else if (op0 == NIL)
+    op0 = op1, const0 = const1;
+
+  else if (op0 == op1)
+    {
+      switch (op0)
+	{
+	case AND:
+	  const0 &= const1;
+	  break;
+	case IOR:
+	  const0 |= const1;
+	  break;
+	case XOR:
+	  const0 ^= const1;
+	  break;
+	case PLUS:
+	  const0 += const1;
+	  break;
+	case NEG:
+	  op0 = NIL;
+	  break;
+	default:
+	  break;
+	}
+    }
+
+  /* Otherwise, if either is a PLUS or NEG, we can't do anything.  */
+  else if (op0 == PLUS || op1 == PLUS || op0 == NEG || op1 == NEG)
+    return 0;
+
+  /* If the two constants aren't the same, we can't do anything.  The
+     remaining six cases can all be done.  */
+  else if (const0 != const1)
+    return 0;
+
+  else
+    switch (op0)
+      {
+      case IOR:
+	if (op1 == AND)
+	  /* (a & b) | b == b */
+	  op0 = SET;
+	else /* op1 == XOR */
+	  /* (a ^ b) | b == a | b */
+	  {;}
+	break;
+
+      case XOR:
+	if (op1 == AND)
+	  /* (a & b) ^ b == (~a) & b */
+	  op0 = AND, *pcomp_p = 1;
+	else /* op1 == IOR */
+	  /* (a | b) ^ b == a & ~b */
+	  op0 = AND, *pconst0 = ~const0;
+	break;
+
+      case AND:
+	if (op1 == IOR)
+	  /* (a | b) & b == b */
+	op0 = SET;
+	else /* op1 == XOR */
+	  /* (a ^ b) & b) == (~a) & b */
+	  *pcomp_p = 1;
+	break;
+      default:
+	break;
+      }
+
+  /* Check for NO-OP cases.  */
+  const0 &= GET_MODE_MASK (mode);
+  if (const0 == 0
+      && (op0 == IOR || op0 == XOR || op0 == PLUS))
+    op0 = NIL;
+  else if (const0 == 0 && op0 == AND)
+    op0 = SET;
+  else if ((unsigned HOST_WIDE_INT) const0 == GET_MODE_MASK (mode)
+	   && op0 == AND)
+    op0 = NIL;
+
+  /* ??? Slightly redundant with the above mask, but not entirely.
+     Moving this above means we'd have to sign-extend the mode mask
+     for the final test.  */
+  const0 = trunc_int_for_mode (const0, mode);
+
+  *pop0 = op0;
+  *pconst0 = const0;
+
+  return 1;
+}

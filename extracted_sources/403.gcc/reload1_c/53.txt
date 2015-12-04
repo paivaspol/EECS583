@@ -1,0 +1,483 @@
+static void
+emit_input_reload_insns (chain, rl, old, j)
+     struct insn_chain *chain;
+     struct reload *rl;
+     rtx old;
+     int j;
+{
+  rtx insn = chain->insn;
+  rtx reloadreg = rl->reg_rtx;
+  rtx oldequiv_reg = 0;
+  rtx oldequiv = 0;
+  int special = 0;
+  enum machine_mode mode;
+  rtx *where;
+
+  /* Determine the mode to reload in.
+     This is very tricky because we have three to choose from.
+     There is the mode the insn operand wants (rl->inmode).
+     There is the mode of the reload register RELOADREG.
+     There is the intrinsic mode of the operand, which we could find
+     by stripping some SUBREGs.
+     It turns out that RELOADREG's mode is irrelevant:
+     we can change that arbitrarily.
+
+     Consider (SUBREG:SI foo:QI) as an operand that must be SImode;
+     then the reload reg may not support QImode moves, so use SImode.
+     If foo is in memory due to spilling a pseudo reg, this is safe,
+     because the QImode value is in the least significant part of a
+     slot big enough for a SImode.  If foo is some other sort of
+     memory reference, then it is impossible to reload this case,
+     so previous passes had better make sure this never happens.
+
+     Then consider a one-word union which has SImode and one of its
+     members is a float, being fetched as (SUBREG:SF union:SI).
+     We must fetch that as SFmode because we could be loading into
+     a float-only register.  In this case OLD's mode is correct.
+
+     Consider an immediate integer: it has VOIDmode.  Here we need
+     to get a mode from something else.
+
+     In some cases, there is a fourth mode, the operand's
+     containing mode.  If the insn specifies a containing mode for
+     this operand, it overrides all others.
+
+     I am not sure whether the algorithm here is always right,
+     but it does the right things in those cases.  */
+
+  mode = GET_MODE (old);
+  if (mode == VOIDmode)
+    mode = rl->inmode;
+
+#ifdef SECONDARY_INPUT_RELOAD_CLASS
+  /* If we need a secondary register for this operation, see if
+     the value is already in a register in that class.  Don't
+     do this if the secondary register will be used as a scratch
+     register.  */
+
+  if (rl->secondary_in_reload >= 0
+      && rl->secondary_in_icode == CODE_FOR_nothing
+      && optimize)
+    oldequiv
+      = find_equiv_reg (old, insn,
+			rld[rl->secondary_in_reload].class,
+			-1, NULL, 0, mode);
+#endif
+
+  /* If reloading from memory, see if there is a register
+     that already holds the same value.  If so, reload from there.
+     We can pass 0 as the reload_reg_p argument because
+     any other reload has either already been emitted,
+     in which case find_equiv_reg will see the reload-insn,
+     or has yet to be emitted, in which case it doesn't matter
+     because we will use this equiv reg right away.  */
+
+  if (oldequiv == 0 && optimize
+      && (GET_CODE (old) == MEM
+	  || (GET_CODE (old) == REG
+	      && REGNO (old) >= FIRST_PSEUDO_REGISTER
+	      && reg_renumber[REGNO (old)] < 0)))
+    oldequiv = find_equiv_reg (old, insn, ALL_REGS, -1, NULL, 0, mode);
+
+  if (oldequiv)
+    {
+      unsigned int regno = true_regnum (oldequiv);
+
+      /* Don't use OLDEQUIV if any other reload changes it at an
+	 earlier stage of this insn or at this stage.  */
+      if (! free_for_value_p (regno, rl->mode, rl->opnum, rl->when_needed,
+			      rl->in, const0_rtx, j, 0))
+	oldequiv = 0;
+
+      /* If it is no cheaper to copy from OLDEQUIV into the
+	 reload register than it would be to move from memory,
+	 don't use it. Likewise, if we need a secondary register
+	 or memory.  */
+
+      if (oldequiv != 0
+	  && ((REGNO_REG_CLASS (regno) != rl->class
+	       && (REGISTER_MOVE_COST (mode, REGNO_REG_CLASS (regno),
+				       rl->class)
+		   >= MEMORY_MOVE_COST (mode, rl->class, 1)))
+#ifdef SECONDARY_INPUT_RELOAD_CLASS
+	      || (SECONDARY_INPUT_RELOAD_CLASS (rl->class,
+						mode, oldequiv)
+		  != NO_REGS)
+#endif
+#ifdef SECONDARY_MEMORY_NEEDED
+	      || SECONDARY_MEMORY_NEEDED (REGNO_REG_CLASS (regno),
+					  rl->class,
+					  mode)
+#endif
+	      ))
+	oldequiv = 0;
+    }
+
+  /* delete_output_reload is only invoked properly if old contains
+     the original pseudo register.  Since this is replaced with a
+     hard reg when RELOAD_OVERRIDE_IN is set, see if we can
+     find the pseudo in RELOAD_IN_REG.  */
+  if (oldequiv == 0
+      && reload_override_in[j]
+      && GET_CODE (rl->in_reg) == REG)
+    {
+      oldequiv = old;
+      old = rl->in_reg;
+    }
+  if (oldequiv == 0)
+    oldequiv = old;
+  else if (GET_CODE (oldequiv) == REG)
+    oldequiv_reg = oldequiv;
+  else if (GET_CODE (oldequiv) == SUBREG)
+    oldequiv_reg = SUBREG_REG (oldequiv);
+
+  /* If we are reloading from a register that was recently stored in
+     with an output-reload, see if we can prove there was
+     actually no need to store the old value in it.  */
+
+  if (optimize && GET_CODE (oldequiv) == REG
+      && REGNO (oldequiv) < FIRST_PSEUDO_REGISTER
+      && spill_reg_store[REGNO (oldequiv)]
+      && GET_CODE (old) == REG
+      && (dead_or_set_p (insn, spill_reg_stored_to[REGNO (oldequiv)])
+	  || rtx_equal_p (spill_reg_stored_to[REGNO (oldequiv)],
+			  rl->out_reg)))
+    delete_output_reload (insn, j, REGNO (oldequiv));
+
+  /* Encapsulate both RELOADREG and OLDEQUIV into that mode,
+     then load RELOADREG from OLDEQUIV.  Note that we cannot use
+     gen_lowpart_common since it can do the wrong thing when
+     RELOADREG has a multi-word mode.  Note that RELOADREG
+     must always be a REG here.  */
+
+  if (GET_MODE (reloadreg) != mode)
+    reloadreg = gen_rtx_REG (mode, REGNO (reloadreg));
+  while (GET_CODE (oldequiv) == SUBREG && GET_MODE (oldequiv) != mode)
+    oldequiv = SUBREG_REG (oldequiv);
+  if (GET_MODE (oldequiv) != VOIDmode
+      && mode != GET_MODE (oldequiv))
+    oldequiv = gen_lowpart_SUBREG (mode, oldequiv);
+
+  /* Switch to the right place to emit the reload insns.  */
+  switch (rl->when_needed)
+    {
+    case RELOAD_OTHER:
+      where = &other_input_reload_insns;
+      break;
+    case RELOAD_FOR_INPUT:
+      where = &input_reload_insns[rl->opnum];
+      break;
+    case RELOAD_FOR_INPUT_ADDRESS:
+      where = &input_address_reload_insns[rl->opnum];
+      break;
+    case RELOAD_FOR_INPADDR_ADDRESS:
+      where = &inpaddr_address_reload_insns[rl->opnum];
+      break;
+    case RELOAD_FOR_OUTPUT_ADDRESS:
+      where = &output_address_reload_insns[rl->opnum];
+      break;
+    case RELOAD_FOR_OUTADDR_ADDRESS:
+      where = &outaddr_address_reload_insns[rl->opnum];
+      break;
+    case RELOAD_FOR_OPERAND_ADDRESS:
+      where = &operand_reload_insns;
+      break;
+    case RELOAD_FOR_OPADDR_ADDR:
+      where = &other_operand_reload_insns;
+      break;
+    case RELOAD_FOR_OTHER_ADDRESS:
+      where = &other_input_address_reload_insns;
+      break;
+    default:
+      abort ();
+    }
+
+  push_to_sequence (*where);
+
+  /* Auto-increment addresses must be reloaded in a special way.  */
+  if (rl->out && ! rl->out_reg)
+    {
+      /* We are not going to bother supporting the case where a
+	 incremented register can't be copied directly from
+	 OLDEQUIV since this seems highly unlikely.  */
+      if (rl->secondary_in_reload >= 0)
+	abort ();
+
+      if (reload_inherited[j])
+	oldequiv = reloadreg;
+
+      old = XEXP (rl->in_reg, 0);
+
+      if (optimize && GET_CODE (oldequiv) == REG
+	  && REGNO (oldequiv) < FIRST_PSEUDO_REGISTER
+	  && spill_reg_store[REGNO (oldequiv)]
+	  && GET_CODE (old) == REG
+	  && (dead_or_set_p (insn,
+			     spill_reg_stored_to[REGNO (oldequiv)])
+	      || rtx_equal_p (spill_reg_stored_to[REGNO (oldequiv)],
+			      old)))
+	delete_output_reload (insn, j, REGNO (oldequiv));
+
+      /* Prevent normal processing of this reload.  */
+      special = 1;
+      /* Output a special code sequence for this case.  */
+      new_spill_reg_store[REGNO (reloadreg)]
+	= inc_for_reload (reloadreg, oldequiv, rl->out,
+			  rl->inc);
+    }
+
+  /* If we are reloading a pseudo-register that was set by the previous
+     insn, see if we can get rid of that pseudo-register entirely
+     by redirecting the previous insn into our reload register.  */
+
+  else if (optimize && GET_CODE (old) == REG
+	   && REGNO (old) >= FIRST_PSEUDO_REGISTER
+	   && dead_or_set_p (insn, old)
+	   /* This is unsafe if some other reload
+	      uses the same reg first.  */
+	   && ! conflicts_with_override (reloadreg)
+	   && free_for_value_p (REGNO (reloadreg), rl->mode, rl->opnum,
+				rl->when_needed, old, rl->out, j, 0))
+    {
+      rtx temp = PREV_INSN (insn);
+      while (temp && GET_CODE (temp) == NOTE)
+	temp = PREV_INSN (temp);
+      if (temp
+	  && GET_CODE (temp) == INSN
+	  && GET_CODE (PATTERN (temp)) == SET
+	  && SET_DEST (PATTERN (temp)) == old
+	  /* Make sure we can access insn_operand_constraint.  */
+	  && asm_noperands (PATTERN (temp)) < 0
+	  /* This is unsafe if prev insn rejects our reload reg.  */
+	  && constraint_accepts_reg_p (insn_data[recog_memoized (temp)].operand[0].constraint,
+				       reloadreg)
+	  /* This is unsafe if operand occurs more than once in current
+	     insn.  Perhaps some occurrences aren't reloaded.  */
+	  && count_occurrences (PATTERN (insn), old, 0) == 1
+	  /* Don't risk splitting a matching pair of operands.  */
+	  && ! reg_mentioned_p (old, SET_SRC (PATTERN (temp))))
+	{
+	  /* Store into the reload register instead of the pseudo.  */
+	  SET_DEST (PATTERN (temp)) = reloadreg;
+
+	  /* If the previous insn is an output reload, the source is
+	     a reload register, and its spill_reg_store entry will
+	     contain the previous destination.  This is now
+	     invalid.  */
+	  if (GET_CODE (SET_SRC (PATTERN (temp))) == REG
+	      && REGNO (SET_SRC (PATTERN (temp))) < FIRST_PSEUDO_REGISTER)
+	    {
+	      spill_reg_store[REGNO (SET_SRC (PATTERN (temp)))] = 0;
+	      spill_reg_stored_to[REGNO (SET_SRC (PATTERN (temp)))] = 0;
+	    }
+
+	  /* If these are the only uses of the pseudo reg,
+	     pretend for GDB it lives in the reload reg we used.  */
+	  if (REG_N_DEATHS (REGNO (old)) == 1
+	      && REG_N_SETS (REGNO (old)) == 1)
+	    {
+	      reg_renumber[REGNO (old)] = REGNO (rl->reg_rtx);
+	      alter_reg (REGNO (old), -1);
+	    }
+	  special = 1;
+	}
+    }
+
+  /* We can't do that, so output an insn to load RELOADREG.  */
+
+#ifdef SECONDARY_INPUT_RELOAD_CLASS
+  /* If we have a secondary reload, pick up the secondary register
+     and icode, if any.  If OLDEQUIV and OLD are different or
+     if this is an in-out reload, recompute whether or not we
+     still need a secondary register and what the icode should
+     be.  If we still need a secondary register and the class or
+     icode is different, go back to reloading from OLD if using
+     OLDEQUIV means that we got the wrong type of register.  We
+     cannot have different class or icode due to an in-out reload
+     because we don't make such reloads when both the input and
+     output need secondary reload registers.  */
+
+  if (! special && rl->secondary_in_reload >= 0)
+    {
+      rtx second_reload_reg = 0;
+      int secondary_reload = rl->secondary_in_reload;
+      rtx real_oldequiv = oldequiv;
+      rtx real_old = old;
+      rtx tmp;
+      enum insn_code icode;
+
+      /* If OLDEQUIV is a pseudo with a MEM, get the real MEM
+	 and similarly for OLD.
+	 See comments in get_secondary_reload in reload.c.  */
+      /* If it is a pseudo that cannot be replaced with its
+	 equivalent MEM, we must fall back to reload_in, which
+	 will have all the necessary substitutions registered.
+	 Likewise for a pseudo that can't be replaced with its
+	 equivalent constant.
+
+	 Take extra care for subregs of such pseudos.  Note that
+	 we cannot use reg_equiv_mem in this case because it is
+	 not in the right mode.  */
+
+      tmp = oldequiv;
+      if (GET_CODE (tmp) == SUBREG)
+	tmp = SUBREG_REG (tmp);
+      if (GET_CODE (tmp) == REG
+	  && REGNO (tmp) >= FIRST_PSEUDO_REGISTER
+	  && (reg_equiv_memory_loc[REGNO (tmp)] != 0
+	      || reg_equiv_constant[REGNO (tmp)] != 0))
+	{
+	  if (! reg_equiv_mem[REGNO (tmp)]
+	      || num_not_at_initial_offset
+	      || GET_CODE (oldequiv) == SUBREG)
+	    real_oldequiv = rl->in;
+	  else
+	    real_oldequiv = reg_equiv_mem[REGNO (tmp)];
+	}
+
+      tmp = old;
+      if (GET_CODE (tmp) == SUBREG)
+	tmp = SUBREG_REG (tmp);
+      if (GET_CODE (tmp) == REG
+	  && REGNO (tmp) >= FIRST_PSEUDO_REGISTER
+	  && (reg_equiv_memory_loc[REGNO (tmp)] != 0
+	      || reg_equiv_constant[REGNO (tmp)] != 0))
+	{
+	  if (! reg_equiv_mem[REGNO (tmp)]
+	      || num_not_at_initial_offset
+	      || GET_CODE (old) == SUBREG)
+	    real_old = rl->in;
+	  else
+	    real_old = reg_equiv_mem[REGNO (tmp)];
+	}
+
+      second_reload_reg = rld[secondary_reload].reg_rtx;
+      icode = rl->secondary_in_icode;
+
+      if ((old != oldequiv && ! rtx_equal_p (old, oldequiv))
+	  || (rl->in != 0 && rl->out != 0))
+	{
+	  enum reg_class new_class
+	    = SECONDARY_INPUT_RELOAD_CLASS (rl->class,
+					    mode, real_oldequiv);
+
+	  if (new_class == NO_REGS)
+	    second_reload_reg = 0;
+	  else
+	    {
+	      enum insn_code new_icode;
+	      enum machine_mode new_mode;
+
+	      if (! TEST_HARD_REG_BIT (reg_class_contents[(int) new_class],
+				       REGNO (second_reload_reg)))
+		oldequiv = old, real_oldequiv = real_old;
+	      else
+		{
+		  new_icode = reload_in_optab[(int) mode];
+		  if (new_icode != CODE_FOR_nothing
+		      && ((insn_data[(int) new_icode].operand[0].predicate
+			   && ! ((*insn_data[(int) new_icode].operand[0].predicate)
+				 (reloadreg, mode)))
+			  || (insn_data[(int) new_icode].operand[1].predicate
+			      && ! ((*insn_data[(int) new_icode].operand[1].predicate)
+				    (real_oldequiv, mode)))))
+		    new_icode = CODE_FOR_nothing;
+
+		  if (new_icode == CODE_FOR_nothing)
+		    new_mode = mode;
+		  else
+		    new_mode = insn_data[(int) new_icode].operand[2].mode;
+
+		  if (GET_MODE (second_reload_reg) != new_mode)
+		    {
+		      if (!HARD_REGNO_MODE_OK (REGNO (second_reload_reg),
+					       new_mode))
+			oldequiv = old, real_oldequiv = real_old;
+		      else
+			second_reload_reg
+			  = gen_rtx_REG (new_mode,
+					 REGNO (second_reload_reg));
+		    }
+		}
+	    }
+	}
+
+      /* If we still need a secondary reload register, check
+	 to see if it is being used as a scratch or intermediate
+	 register and generate code appropriately.  If we need
+	 a scratch register, use REAL_OLDEQUIV since the form of
+	 the insn may depend on the actual address if it is
+	 a MEM.  */
+
+      if (second_reload_reg)
+	{
+	  if (icode != CODE_FOR_nothing)
+	    {
+	      emit_insn (GEN_FCN (icode) (reloadreg, real_oldequiv,
+					  second_reload_reg));
+	      special = 1;
+	    }
+	  else
+	    {
+	      /* See if we need a scratch register to load the
+		 intermediate register (a tertiary reload).  */
+	      enum insn_code tertiary_icode
+		= rld[secondary_reload].secondary_in_icode;
+
+	      if (tertiary_icode != CODE_FOR_nothing)
+		{
+		  rtx third_reload_reg
+		    = rld[rld[secondary_reload].secondary_in_reload].reg_rtx;
+
+		  emit_insn ((GEN_FCN (tertiary_icode)
+			      (second_reload_reg, real_oldequiv,
+			       third_reload_reg)));
+		}
+	      else
+		gen_reload (second_reload_reg, real_oldequiv,
+			    rl->opnum,
+			    rl->when_needed);
+
+	      oldequiv = second_reload_reg;
+	    }
+	}
+    }
+#endif
+
+  if (! special && ! rtx_equal_p (reloadreg, oldequiv))
+    {
+      rtx real_oldequiv = oldequiv;
+
+      if ((GET_CODE (oldequiv) == REG
+	   && REGNO (oldequiv) >= FIRST_PSEUDO_REGISTER
+	   && (reg_equiv_memory_loc[REGNO (oldequiv)] != 0
+	       || reg_equiv_constant[REGNO (oldequiv)] != 0))
+	  || (GET_CODE (oldequiv) == SUBREG
+	      && GET_CODE (SUBREG_REG (oldequiv)) == REG
+	      && (REGNO (SUBREG_REG (oldequiv))
+		  >= FIRST_PSEUDO_REGISTER)
+	      && ((reg_equiv_memory_loc
+		   [REGNO (SUBREG_REG (oldequiv))] != 0)
+		  || (reg_equiv_constant
+		      [REGNO (SUBREG_REG (oldequiv))] != 0)))
+	  || (CONSTANT_P (oldequiv)
+	      && (PREFERRED_RELOAD_CLASS (oldequiv,
+					  REGNO_REG_CLASS (REGNO (reloadreg)))
+		  == NO_REGS)))
+	real_oldequiv = rl->in;
+      gen_reload (reloadreg, real_oldequiv, rl->opnum,
+		  rl->when_needed);
+    }
+
+  if (flag_non_call_exceptions)
+    copy_eh_notes (insn, get_insns ());
+
+  /* End this sequence.  */
+  *where = get_insns ();
+  end_sequence ();
+				 
+  /* Update reload_override_in so that delete_address_reloads_1
+     can see the actual register usage.  */
+  if (oldequiv_reg)
+    reload_override_in[j] = oldequiv;
+}

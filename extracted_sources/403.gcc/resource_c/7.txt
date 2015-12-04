@@ -1,0 +1,73 @@
+void
+init_resource_info (epilogue_insn)
+     rtx epilogue_insn;
+{
+  int i;
+
+  /* Indicate what resources are required to be valid at the end of the current
+     function.  The condition code never is and memory always is.  If the
+     frame pointer is needed, it is and so is the stack pointer unless
+     EXIT_IGNORE_STACK is non-zero.  If the frame pointer is not needed, the
+     stack pointer is.  Registers used to return the function value are
+     needed.  Registers holding global variables are needed.  */
+
+  end_of_function_needs.cc = 0;
+  end_of_function_needs.memory = 1;
+  end_of_function_needs.unch_memory = 0;
+  CLEAR_HARD_REG_SET (end_of_function_needs.regs);
+
+  if (frame_pointer_needed)
+    {
+      SET_HARD_REG_BIT (end_of_function_needs.regs, FRAME_POINTER_REGNUM);
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+      SET_HARD_REG_BIT (end_of_function_needs.regs, HARD_FRAME_POINTER_REGNUM);
+#endif
+#ifdef EXIT_IGNORE_STACK
+      if (! EXIT_IGNORE_STACK
+	  || current_function_sp_is_unchanging)
+#endif
+	SET_HARD_REG_BIT (end_of_function_needs.regs, STACK_POINTER_REGNUM);
+    }
+  else
+    SET_HARD_REG_BIT (end_of_function_needs.regs, STACK_POINTER_REGNUM);
+
+  if (current_function_return_rtx != 0)
+    mark_referenced_resources (current_function_return_rtx,
+			       &end_of_function_needs, 1);
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    if (global_regs[i]
+#ifdef EPILOGUE_USES
+	|| EPILOGUE_USES (i)
+#endif
+	)
+      SET_HARD_REG_BIT (end_of_function_needs.regs, i);
+
+  /* The registers required to be live at the end of the function are
+     represented in the flow information as being dead just prior to
+     reaching the end of the function.  For example, the return of a value
+     might be represented by a USE of the return register immediately
+     followed by an unconditional jump to the return label where the
+     return label is the end of the RTL chain.  The end of the RTL chain
+     is then taken to mean that the return register is live.
+
+     This sequence is no longer maintained when epilogue instructions are
+     added to the RTL chain.  To reconstruct the original meaning, the
+     start of the epilogue (NOTE_INSN_EPILOGUE_BEG) is regarded as the
+     point where these registers become live (start_of_epilogue_needs).
+     If epilogue instructions are present, the registers set by those
+     instructions won't have been processed by flow.  Thus, those
+     registers are additionally required at the end of the RTL chain
+     (end_of_function_needs).  */
+
+  start_of_epilogue_needs = end_of_function_needs;
+
+  while ((epilogue_insn = next_nonnote_insn (epilogue_insn)))
+    mark_set_resources (epilogue_insn, &end_of_function_needs, 0,
+			MARK_SRC_DEST_CALL);
+
+  /* Allocate and initialize the tables used by mark_target_live_regs.  */
+  target_hash_table = (struct target_info **)
+    xcalloc (TARGET_HASH_PRIME, sizeof (struct target_info *));
+  bb_ticks = (int *) xcalloc (n_basic_blocks, sizeof (int));
+}

@@ -1,0 +1,203 @@
+static void
+sdbout_one_type (type)
+     tree type;
+{
+  if (current_function_decl != NULL_TREE
+      && DECL_SECTION_NAME (current_function_decl) != NULL_TREE)
+    ; /* Don't change section amid function.  */
+  else
+    text_section ();
+
+  switch (TREE_CODE (type))
+    {
+    case RECORD_TYPE:
+    case UNION_TYPE:
+    case QUAL_UNION_TYPE:
+    case ENUMERAL_TYPE:
+      type = TYPE_MAIN_VARIANT (type);
+      /* Don't output a type twice.  */
+      if (TREE_ASM_WRITTEN (type))
+	/* James said test TREE_ASM_BEING_WRITTEN here.  */
+	return;
+
+      /* Output nothing if type is not yet defined.  */
+      if (!COMPLETE_TYPE_P (type))
+	return;
+
+      TREE_ASM_WRITTEN (type) = 1;
+#if 1
+      /* This is reputed to cause trouble with the following case,
+	 but perhaps checking TYPE_SIZE above will fix it.  */
+
+      /* Here is a test case:
+
+	struct foo {
+	  struct badstr *bbb;
+	} forwardref;
+
+	typedef struct intermediate {
+	  int aaaa;
+	} intermediate_ref;
+
+	typedef struct badstr {
+	  int ccccc;
+	} badtype;   */
+
+#if 0
+      TREE_ASM_BEING_WRITTEN (type) = 1;
+#endif
+      /* This change, which ought to make better output,
+	 used to make the COFF assembler unhappy.
+	 Changes involving KNOWN_TYPE_TAG may fix the problem.  */
+      /* Before really doing anything, output types we want to refer to.  */
+      /* Note that in version 1 the following two lines
+	 are not used if forward references are in use.  */
+      if (TREE_CODE (type) != ENUMERAL_TYPE)
+	sdbout_field_types (type);
+#if 0
+      TREE_ASM_WRITTEN (type) = 1;
+#endif
+#endif
+
+      /* Output a structure type.  */
+      {
+	int size = int_size_in_bytes (type);
+	int member_scl = 0;
+	tree tem;
+	int i, n_baseclasses = 0;
+
+	/* Record the type tag, but not in its permanent place just yet.  */
+	sdbout_record_type_name (type);
+
+	PUT_SDB_DEF (KNOWN_TYPE_TAG (type));
+
+	switch (TREE_CODE (type))
+	  {
+	  case UNION_TYPE:
+	  case QUAL_UNION_TYPE:
+	    PUT_SDB_SCL (C_UNTAG);
+	    PUT_SDB_TYPE (T_UNION);
+	    member_scl = C_MOU;
+	    break;
+
+	  case RECORD_TYPE:
+	    PUT_SDB_SCL (C_STRTAG);
+	    PUT_SDB_TYPE (T_STRUCT);
+	    member_scl = C_MOS;
+	    break;
+
+	  case ENUMERAL_TYPE:
+	    PUT_SDB_SCL (C_ENTAG);
+	    PUT_SDB_TYPE (T_ENUM);
+	    member_scl = C_MOE;
+	    break;
+
+	  default:
+	    break;
+	  }
+
+	PUT_SDB_SIZE (size);
+	PUT_SDB_ENDEF;
+
+	/* Print out the base class information with fields
+	   named after the types they hold.  */
+	/* This is only relevant to aggregate types.  TYPE_BINFO is used
+	   for other purposes in an ENUMERAL_TYPE, so we must exclude that
+	   case.  */
+	if (TREE_CODE (type) != ENUMERAL_TYPE)
+	  {
+	    if (TYPE_BINFO (type)
+		&& TYPE_BINFO_BASETYPES (type))
+	      n_baseclasses = TREE_VEC_LENGTH (TYPE_BINFO_BASETYPES (type));
+	    for (i = 0; i < n_baseclasses; i++)
+	      {
+		tree child = TREE_VEC_ELT (BINFO_BASETYPES (TYPE_BINFO (type)),
+					   i);
+		tree child_type = BINFO_TYPE (child);
+		tree child_type_name;
+		if (TYPE_NAME (child_type) == 0)
+		  continue;
+		if (TREE_CODE (TYPE_NAME (child_type)) == IDENTIFIER_NODE)
+		  child_type_name = TYPE_NAME (child_type);
+		else if (TREE_CODE (TYPE_NAME (child_type)) == TYPE_DECL)
+		  {
+		    child_type_name = DECL_NAME (TYPE_NAME (child_type));
+		    if (child_type_name && template_name_p (child_type_name))
+		      child_type_name
+			= DECL_ASSEMBLER_NAME (TYPE_NAME (child_type));
+		  }
+		else
+		  continue;
+
+		CONTIN;
+		PUT_SDB_DEF (IDENTIFIER_POINTER (child_type_name));
+		PUT_SDB_INT_VAL (tree_low_cst (BINFO_OFFSET (child), 0));
+		PUT_SDB_SCL (member_scl);
+		sdbout_type (BINFO_TYPE (child));
+		PUT_SDB_ENDEF;
+	      }
+	  }
+
+	/* output the individual fields */
+
+	if (TREE_CODE (type) == ENUMERAL_TYPE)
+	  {
+	    for (tem = TYPE_FIELDS (type); tem; tem = TREE_CHAIN (tem))
+	      if (host_integerp (TREE_VALUE (tem), 0))
+		{
+		  PUT_SDB_DEF (IDENTIFIER_POINTER (TREE_PURPOSE (tem)));
+		  PUT_SDB_INT_VAL (tree_low_cst (TREE_VALUE (tem), 0));
+		  PUT_SDB_SCL (C_MOE);
+		  PUT_SDB_TYPE (T_MOE);
+		  PUT_SDB_ENDEF;
+		}
+	  }
+	else			/* record or union type */
+	  for (tem = TYPE_FIELDS (type); tem; tem = TREE_CHAIN (tem))
+	    /* Output the name, type, position (in bits), size (in bits)
+	       of each field.  */
+
+	    /* Omit here the nameless fields that are used to skip bits.
+	       Also omit fields with variable size or position.
+	       Also omit non FIELD_DECL nodes that GNU C++ may put here.  */
+	    if (TREE_CODE (tem) == FIELD_DECL
+		&& DECL_NAME (tem)
+		&& DECL_SIZE (tem)
+		&& host_integerp (DECL_SIZE (tem), 1)
+		&& host_integerp (bit_position (tem), 0))
+	      {
+		const char *name;
+
+		CONTIN;
+		name = IDENTIFIER_POINTER (DECL_NAME (tem));
+		PUT_SDB_DEF (name);
+		if (DECL_BIT_FIELD_TYPE (tem))
+		  {
+		    PUT_SDB_INT_VAL (int_bit_position (tem));
+		    PUT_SDB_SCL (C_FIELD);
+		    sdbout_type (DECL_BIT_FIELD_TYPE (tem));
+		    PUT_SDB_SIZE (tree_low_cst (DECL_SIZE (tem), 1));
+		  }
+		else
+		  {
+		    PUT_SDB_INT_VAL (int_bit_position (tem) / BITS_PER_UNIT);
+		    PUT_SDB_SCL (member_scl);
+		    sdbout_type (TREE_TYPE (tem));
+		  }
+		PUT_SDB_ENDEF;
+	      }
+	/* output end of a structure,union, or enumeral definition */
+
+	PUT_SDB_PLAIN_DEF ("eos");
+	PUT_SDB_INT_VAL (size);
+	PUT_SDB_SCL (C_EOS);
+	PUT_SDB_TAG (KNOWN_TYPE_TAG (type));
+	PUT_SDB_SIZE (size);
+	PUT_SDB_ENDEF;
+	break;
+
+      default:
+	break;
+      }
+    }
+}

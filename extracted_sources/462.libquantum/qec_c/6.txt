@@ -1,0 +1,24 @@
+void
+quantum_cnot_ft(int control, int target, quantum_reg *reg)
+{
+  int tmp;
+  float lambda;
+
+  tmp = type;
+  type = 0;
+
+  /* These operations can be performed simultaneously */
+  
+  lambda = quantum_get_decoherence();
+  quantum_set_decoherence(0);
+
+  quantum_cnot(control, target, reg);
+  quantum_cnot(control+width, target+width, reg);
+  quantum_set_decoherence(lambda);
+  quantum_cnot(control+2*width, target+2*width, reg);
+
+  quantum_qec_counter(1, 0, reg);
+
+  type = tmp;
+
+}

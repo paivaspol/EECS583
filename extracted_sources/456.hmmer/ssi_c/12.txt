@@ -1,0 +1,29 @@
+int
+SSIAddFileToIndex(SSIINDEX *g, char *filename, int fmt, int *ret_fh)
+{
+  int n;
+  
+  if (g->nfiles >= SSI_MAXFILES) return SSI_ERR_TOOMANY_FILES;
+
+  n = strlen(filename);
+  if ((n+1) > g->flen) g->flen = n+1;
+
+  g->filenames[g->nfiles]  = FileTail(filename, FALSE);
+  g->fileformat[g->nfiles] = fmt;
+  g->bpl[g->nfiles]        = 0;
+  g->rpl[g->nfiles]        = 0;
+  *ret_fh                  = g->nfiles;   /* handle is simply = file number */
+  g->nfiles++;
+
+  if (g->nfiles % SSI_FILE_BLOCK == 0) {
+    g->filenames = realloc(g->filenames,  sizeof(char *) * (g->nfiles+SSI_FILE_BLOCK));
+    if (g->filenames == NULL) return SSI_ERR_MALLOC;
+    g->fileformat= realloc(g->fileformat, sizeof(sqd_uint32) * (g->nfiles+SSI_FILE_BLOCK));
+    if (g->fileformat == NULL) return SSI_ERR_MALLOC;
+    g->bpl       = realloc(g->bpl,        sizeof(sqd_uint32) * (g->nfiles+SSI_FILE_BLOCK));
+    if (g->bpl == NULL) return SSI_ERR_MALLOC;
+    g->rpl       = realloc(g->rpl,        sizeof(sqd_uint32) * (g->nfiles+SSI_FILE_BLOCK));
+    if (g->rpl == NULL) return SSI_ERR_MALLOC;
+  }
+  return 0;
+}

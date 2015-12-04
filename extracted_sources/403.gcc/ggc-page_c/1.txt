@@ -1,0 +1,47 @@
+static struct globals
+{
+  /* The Nth element in this array is a page with objects of size 2^N.
+     If there are any pages with free objects, they will be at the
+     head of the list.  NULL if there are no page-entries for this
+     object size.  */
+  page_entry *pages[NUM_ORDERS];
+
+  /* The Nth element in this array is the last page with objects of
+     size 2^N.  NULL if there are no page-entries for this object
+     size.  */
+  page_entry *page_tails[NUM_ORDERS];
+
+  /* Lookup table for associating allocation pages with object addresses.  */
+  page_table lookup;
+
+  /* The system's page size.  */
+  size_t pagesize;
+  size_t lg_pagesize;
+
+  /* Bytes currently allocated.  */
+  size_t allocated;
+
+  /* Bytes currently allocated at the end of the last collection.  */
+  size_t allocated_last_gc;
+
+  /* Total amount of memory mapped.  */
+  size_t bytes_mapped;
+
+  /* The current depth in the context stack.  */
+  unsigned short context_depth;
+
+  /* A file descriptor open to /dev/zero for reading.  */
+#if defined (HAVE_MMAP_DEV_ZERO)
+  int dev_zero_fd;
+#endif
+
+  /* A cache of free system pages.  */
+  page_entry *free_pages;
+
+#ifdef USING_MALLOC_PAGE_GROUPS
+  page_group *page_groups;
+#endif
+
+  /* The file descriptor for debugging output.  */
+  FILE *debug_file;
+} G;

@@ -1,0 +1,21 @@
+static void
+extract_bitlst (set, bl)
+     sbitmap set;
+     bitlst *bl;
+{
+  int i;
+
+  /* bblst table space is reused in each call to extract_bitlst.  */
+  bitlst_table_last = 0;
+
+  bl->first_member = &bitlst_table[bitlst_table_last];
+  bl->nr_members = 0;
+
+  /* Iterate over each word in the bitset.  */
+  EXECUTE_IF_SET_IN_SBITMAP (set, 0, i,
+  {
+    bitlst_table[bitlst_table_last++] = i;
+    (bl->nr_members)++;
+  });
+
+}

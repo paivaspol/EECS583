@@ -1,0 +1,24 @@
+void
+reorder_insns_nobb (from, to, after)
+     rtx from, to, after;
+{
+  /* Splice this bunch out of where it is now.  */
+  if (PREV_INSN (from))
+    NEXT_INSN (PREV_INSN (from)) = NEXT_INSN (to);
+  if (NEXT_INSN (to))
+    PREV_INSN (NEXT_INSN (to)) = PREV_INSN (from);
+  if (last_insn == to)
+    last_insn = PREV_INSN (from);
+  if (first_insn == from)
+    first_insn = NEXT_INSN (to);
+
+  /* Make the new neighbors point to it and it to them.  */
+  if (NEXT_INSN (after))
+    PREV_INSN (NEXT_INSN (after)) = to;
+
+  NEXT_INSN (to) = NEXT_INSN (after);
+  PREV_INSN (from) = after;
+  NEXT_INSN (after) = from;
+  if (after == last_insn)
+    last_insn = to;
+}

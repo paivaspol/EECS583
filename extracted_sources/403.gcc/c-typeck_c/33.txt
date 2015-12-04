@@ -1,0 +1,67 @@
+void
+start_init (decl, asmspec_tree, top_level)
+     tree decl;
+     tree asmspec_tree;
+     int top_level;
+{
+  const char *locus;
+  struct initializer_stack *p
+    = (struct initializer_stack *) xmalloc (sizeof (struct initializer_stack));
+  const char *asmspec = 0;
+
+  if (asmspec_tree)
+    asmspec = TREE_STRING_POINTER (asmspec_tree);
+
+  p->decl = constructor_decl;
+  p->asmspec = constructor_asmspec;
+  p->require_constant_value = require_constant_value;
+  p->require_constant_elements = require_constant_elements;
+  p->constructor_stack = constructor_stack;
+  p->constructor_range_stack = constructor_range_stack;
+  p->elements = constructor_elements;
+  p->spelling = spelling;
+  p->spelling_base = spelling_base;
+  p->spelling_size = spelling_size;
+  p->deferred = constructor_subconstants_deferred;
+  p->top_level = constructor_top_level;
+  p->next = initializer_stack;
+  initializer_stack = p;
+
+  constructor_decl = decl;
+  constructor_asmspec = asmspec;
+  constructor_subconstants_deferred = 0;
+  constructor_designated = 0;
+  constructor_top_level = top_level;
+
+  if (decl != 0)
+    {
+      require_constant_value = TREE_STATIC (decl);
+      require_constant_elements
+	= ((TREE_STATIC (decl) || (pedantic && !flag_isoc99))
+	   /* For a scalar, you can always use any value to initialize,
+	      even within braces.  */
+	   && (TREE_CODE (TREE_TYPE (decl)) == ARRAY_TYPE
+	       || TREE_CODE (TREE_TYPE (decl)) == RECORD_TYPE
+	       || TREE_CODE (TREE_TYPE (decl)) == UNION_TYPE
+	       || TREE_CODE (TREE_TYPE (decl)) == QUAL_UNION_TYPE));
+      locus = IDENTIFIER_POINTER (DECL_NAME (decl));
+    }
+  else
+    {
+      require_constant_value = 0;
+      require_constant_elements = 0;
+      locus = "(anonymous)";
+    }
+
+  constructor_stack = 0;
+  constructor_range_stack = 0;
+
+  missing_braces_mentioned = 0;
+
+  spelling_base = 0;
+  spelling_size = 0;
+  RESTORE_SPELLING_DEPTH (0);
+
+  if (locus)
+    push_string (locus);
+}

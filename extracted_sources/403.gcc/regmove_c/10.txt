@@ -1,0 +1,109 @@
+static void
+copy_src_to_dest (insn, src, dest, old_max_uid)
+     rtx insn;
+     rtx src;
+     rtx dest;
+     int old_max_uid;
+{
+  rtx seq;
+  rtx link;
+  rtx next;
+  rtx set;
+  rtx move_insn;
+  rtx *p_insn_notes;
+  rtx *p_move_notes;
+  int src_regno;
+  int dest_regno;
+  int bb;
+  int insn_uid;
+  int move_uid;
+
+  /* A REG_LIVE_LENGTH of -1 indicates the register is equivalent to a constant
+     or memory location and is used infrequently; a REG_LIVE_LENGTH of -2 is
+     parameter when there is no frame pointer that is not allocated a register.
+     For now, we just reject them, rather than incrementing the live length.  */
+
+  if (GET_CODE (src) == REG
+      && REG_LIVE_LENGTH (REGNO (src)) > 0
+      && GET_CODE (dest) == REG
+      && !RTX_UNCHANGING_P (dest)
+      && REG_LIVE_LENGTH (REGNO (dest)) > 0
+      && (set = single_set (insn)) != NULL_RTX
+      && !reg_mentioned_p (dest, SET_SRC (set))
+      && GET_MODE (src) == GET_MODE (dest))
+    {
+      int old_num_regs = reg_rtx_no;
+
+      /* Generate the src->dest move.  */
+      start_sequence ();
+      emit_move_insn (dest, src);
+      seq = gen_sequence ();
+      end_sequence ();
+      /* If this sequence uses new registers, we may not use it.  */
+      if (old_num_regs != reg_rtx_no
+	  || ! validate_replace_rtx (src, dest, insn))
+	{
+	  /* We have to restore reg_rtx_no to its old value, lest
+	     recompute_reg_usage will try to compute the usage of the
+	     new regs, yet reg_n_info is not valid for them.  */
+	  reg_rtx_no = old_num_regs;
+	  return;
+	}
+      emit_insn_before (seq, insn);
+      move_insn = PREV_INSN (insn);
+      p_move_notes = &REG_NOTES (move_insn);
+      p_insn_notes = &REG_NOTES (insn);
+
+      /* Move any notes mentioning src to the move instruction */
+      for (link = REG_NOTES (insn); link != NULL_RTX; link = next)
+	{
+	  next = XEXP (link, 1);
+	  if (XEXP (link, 0) == src)
+	    {
+	      *p_move_notes = link;
+	      p_move_notes = &XEXP (link, 1);
+	    }
+	  else
+	    {
+	      *p_insn_notes = link;
+	      p_insn_notes = &XEXP (link, 1);
+	    }
+	}
+
+      *p_move_notes = NULL_RTX;
+      *p_insn_notes = NULL_RTX;
+
+      /* Is the insn the head of a basic block?  If so extend it */
+      insn_uid = INSN_UID (insn);
+      move_uid = INSN_UID (move_insn);
+      if (insn_uid < old_max_uid)
+	{
+	  bb = regmove_bb_head[insn_uid];
+	  if (bb >= 0)
+	    {
+	      BLOCK_HEAD (bb) = move_insn;
+	      regmove_bb_head[insn_uid] = -1;
+	    }
+	}
+
+      /* Update the various register tables.  */
+      dest_regno = REGNO (dest);
+      REG_N_SETS (dest_regno) ++;
+      REG_LIVE_LENGTH (dest_regno)++;
+      if (REGNO_FIRST_UID (dest_regno) == insn_uid)
+	REGNO_FIRST_UID (dest_regno) = move_uid;
+
+      src_regno = REGNO (src);
+      if (! find_reg_note (move_insn, REG_DEAD, src))
+	REG_LIVE_LENGTH (src_regno)++;
+
+      if (REGNO_FIRST_UID (src_regno) == insn_uid)
+	REGNO_FIRST_UID (src_regno) = move_uid;
+
+      if (REGNO_LAST_UID (src_regno) == insn_uid)
+	REGNO_LAST_UID (src_regno) = move_uid;
+
+      if (REGNO_LAST_NOTE_UID (src_regno) == insn_uid)
+	REGNO_LAST_NOTE_UID (src_regno) = move_uid;
+    }
+}

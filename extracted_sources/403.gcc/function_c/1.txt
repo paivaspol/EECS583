@@ -1,0 +1,30 @@
+void
+push_function_context_to (context)
+     tree context;
+{
+  struct function *p;
+
+  if (context)
+    {
+      if (context == current_function_decl)
+	cfun->contains_functions = 1;
+      else
+	{
+	  struct function *containing = find_function_data (context);
+	  containing->contains_functions = 1;
+	}
+    }
+
+  if (cfun == 0)
+    init_dummy_function_start ();
+  p = cfun;
+
+  p->outer = outer_function_chain;
+  outer_function_chain = p;
+  p->fixup_var_refs_queue = 0;
+
+  if (save_lang_status)
+    (*save_lang_status) (p);
+
+  cfun = 0;
+}

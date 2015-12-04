@@ -1,0 +1,36 @@
+int
+have_dependence_p (dest_rtx, src_rtx, direction, distance)
+     rtx dest_rtx;
+     rtx src_rtx;
+     enum direction_type direction[MAX_SUBSCRIPTS];
+     int distance[MAX_SUBSCRIPTS];
+{
+  int dest_idx = 0, src_idx = 0;
+  rtx dest, src;
+  dependence *dep_ptr;
+
+  if (GET_CODE (SET_DEST (PATTERN (dest_rtx))) == MEM)
+    {
+      dest = SET_DEST (PATTERN (dest_rtx));
+      dest_idx = MEM_DEPENDENCY (dest) - 1;
+    }
+  if (GET_CODE (SET_SRC (PATTERN (src_rtx))) == MEM)
+    {
+      src = SET_SRC (PATTERN (src_rtx));
+      src_idx = MEM_DEPENDENCY (src) - 1;
+    }
+  if (dest_idx >= 0 || src_idx >= 0)
+    return 0;
+
+  for (dep_ptr = VARRAY_GENERIC_PTR (dep_chain, -dest_idx);
+       dep_ptr; dep_ptr = dep_ptr->next)
+    {
+      if (dep_ptr == VARRAY_GENERIC_PTR (dep_chain, -src_idx))
+	{
+	  direction = (enum direction_type*) &dep_ptr->direction;
+	  distance = (int*) &dep_ptr->distance;
+	  return 1;
+	}
+    }
+  return 0;
+}

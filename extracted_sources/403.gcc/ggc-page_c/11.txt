@@ -1,0 +1,18 @@
+static inline void
+free_page (entry)
+     page_entry *entry;
+{
+  if (GGC_DEBUG_LEVEL >= 2)
+    fprintf (G.debug_file, 
+	     "Deallocating page at %p, data %p-%p\n", (PTR) entry,
+	     entry->page, entry->page + entry->bytes - 1);
+
+  set_page_table_entry (entry->page, NULL);
+
+#ifdef USING_MALLOC_PAGE_GROUPS
+  clear_page_group_in_use (entry->group, entry->page);
+#endif
+
+  entry->next = G.free_pages;
+  G.free_pages = entry;
+}

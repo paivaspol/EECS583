@@ -1,0 +1,20 @@
+static int
+unescaped_terminator_p (pfile, dest)
+     cpp_reader *pfile;
+     const unsigned char *dest;
+{
+  const unsigned char *start, *temp;
+
+  /* In #include-style directives, terminators are not escapeable.  */
+  if (pfile->state.angled_headers)
+    return 1;
+
+  start = BUFF_FRONT (pfile->u_buff);
+
+  /* An odd number of consecutive backslashes represents an escaped
+     terminator.  */
+  for (temp = dest; temp > start && temp[-1] == '\\'; temp--)
+    ;
+
+  return ((dest - temp) & 1) == 0;
+}

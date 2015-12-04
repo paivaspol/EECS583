@@ -1,0 +1,15 @@
+static void
+push_uleb128 (data_area, value)
+     varray_type *data_area;
+     unsigned int value;
+{
+  do
+    {
+      unsigned char byte = value & 0x7f;
+      value >>= 7;
+      if (value)
+	byte |= 0x80;
+      VARRAY_PUSH_UCHAR (*data_area, byte);
+    }
+  while (value);
+}

@@ -1,0 +1,18 @@
+static void
+main_loop_threaded(struct plan7_s *hmm, SQFILE *sqfp, struct threshold_s *thresh, int do_forward,
+		   int do_null2, int do_xnu, int num_threads,
+		   struct histogram_s *histogram, 
+		   struct tophit_s *ghit, struct tophit_s *dhit, int *ret_nseq)
+{
+  struct workpool_s *wpool;	/* pool of worker threads                  */
+  int    nseq;			/* number of sequences searched            */
+ 
+  wpool = workpool_start(hmm, sqfp, do_xnu, do_forward, do_null2, thresh,
+			 ghit, dhit, histogram, num_threads);
+  workpool_stop(wpool);
+  nseq = wpool->nseq;
+  workpool_free(wpool);
+
+  *ret_nseq = nseq;
+  return;
+}

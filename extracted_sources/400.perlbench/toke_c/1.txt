@@ -1,0 +1,15 @@
+void
+Perl_deprecate_old(pTHX_ char *s)
+{
+    /* This function should NOT be called for any new deprecated warnings */
+    /* Use Perl_deprecate instead                                         */
+    /*                                                                    */
+    /* It is here to maintain backward compatibility with the pre-5.8     */
+    /* warnings category hierarchy. The "deprecated" category used to     */
+    /* live under the "syntax" category. It is now a top-level category   */
+    /* in its own right.                                                  */
+
+    if (ckWARN2(WARN_DEPRECATED, WARN_SYNTAX))
+	Perl_warner(aTHX_ packWARN2(WARN_DEPRECATED, WARN_SYNTAX), 
+			"Use of %s is deprecated", s);
+}

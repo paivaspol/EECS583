@@ -1,0 +1,78 @@
+static void
+update_eliminables (pset)
+     HARD_REG_SET *pset;
+{
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+  int previous_frame_pointer_needed = frame_pointer_needed;
+#endif
+  struct elim_table *ep;
+
+  for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS]; ep++)
+    if ((ep->from == HARD_FRAME_POINTER_REGNUM && FRAME_POINTER_REQUIRED)
+#ifdef ELIMINABLE_REGS
+	|| ! CAN_ELIMINATE (ep->from, ep->to)
+#endif
+	)
+      ep->can_eliminate = 0;
+
+  /* Look for the case where we have discovered that we can't replace
+     register A with register B and that means that we will now be
+     trying to replace register A with register C.  This means we can
+     no longer replace register C with register B and we need to disable
+     such an elimination, if it exists.  This occurs often with A == ap,
+     B == sp, and C == fp.  */
+
+  for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS]; ep++)
+    {
+      struct elim_table *op;
+      int new_to = -1;
+
+      if (! ep->can_eliminate && ep->can_eliminate_previous)
+	{
+	  /* Find the current elimination for ep->from, if there is a
+	     new one.  */
+	  for (op = reg_eliminate;
+	       op < &reg_eliminate[NUM_ELIMINABLE_REGS]; op++)
+	    if (op->from == ep->from && op->can_eliminate)
+	      {
+		new_to = op->to;
+		break;
+	      }
+
+	  /* See if there is an elimination of NEW_TO -> EP->TO.  If so,
+	     disable it.  */
+	  for (op = reg_eliminate;
+	       op < &reg_eliminate[NUM_ELIMINABLE_REGS]; op++)
+	    if (op->from == new_to && op->to == ep->to)
+	      op->can_eliminate = 0;
+	}
+    }
+
+  /* See if any registers that we thought we could eliminate the previous
+     time are no longer eliminable.  If so, something has changed and we
+     must spill the register.  Also, recompute the number of eliminable
+     registers and see if the frame pointer is needed; it is if there is
+     no elimination of the frame pointer that we can perform.  */
+
+  frame_pointer_needed = 1;
+  for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS]; ep++)
+    {
+      if (ep->can_eliminate && ep->from == FRAME_POINTER_REGNUM
+	  && ep->to != HARD_FRAME_POINTER_REGNUM)
+	frame_pointer_needed = 0;
+
+      if (! ep->can_eliminate && ep->can_eliminate_previous)
+	{
+	  ep->can_eliminate_previous = 0;
+	  SET_HARD_REG_BIT (*pset, ep->from);
+	  num_eliminable--;
+	}
+    }
+
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+  /* If we didn't need a frame pointer last time, but we do now, spill
+     the hard frame pointer.  */
+  if (frame_pointer_needed && ! previous_frame_pointer_needed)
+    SET_HARD_REG_BIT (*pset, HARD_FRAME_POINTER_REGNUM);
+#endif
+}

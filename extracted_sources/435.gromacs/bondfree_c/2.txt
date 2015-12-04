@@ -1,0 +1,58 @@
+void calc_bonds(FILE *log,t_commrec *cr,t_commrec *mcr,t_idef *idef,
+		rvec x_s[],rvec f[],
+		t_forcerec *fr,t_graph *g,
+		real epot[],t_nrnb *nrnb,
+		matrix box,real lambda,
+		t_mdatoms *md,int ngrp,real egnb[],real egcoul[],
+		t_fcdata *fcd,
+		int step,bool bSepDVDL)
+{
+  static bool bFirst=TRUE;
+  int    ftype,nbonds,ind,nat;
+  real   v,dvdl;
+
+  if (bSepDVDL && log)
+    fprintf(log,"Step %d: bonded V and dVdl for node %d:\n",step,cr->nodeid);
+
+  if (bFirst) {
+    set_gmx_full_pbc(log);
+    bFirst = FALSE;
+#ifdef DEBUG
+    p_graph(debug,"Bondage is fun",g);
+#endif
+  }
+  /* Do pre force calculation stuff which might require communication */
+  if (idef->il[F_ORIRES].nr)
+    epot[F_ORIRESDEV] = calc_orires_dev(mcr,idef->il[F_ORIRES].nr,
+					idef->il[F_ORIRES].iatoms,
+					idef->iparams,md,x_s,fcd);
+  if (idef->il[F_DISRES].nr)
+    calc_disres_R_6(mcr,idef->il[F_DISRES].nr,
+		    idef->il[F_DISRES].iatoms,
+		    idef->iparams,x_s,fcd);
+  
+  /* Loop over all bonded force types to calculate the bonded forces */
+  for(ftype=0; (ftype<F_NRE); ftype++) {
+    if (interaction_function[ftype].flags & IF_BOND && ftype!=F_CONNBONDS) {
+      nbonds=idef->il[ftype].nr;
+      if (nbonds > 0) {
+	dvdl = 0;
+	v = interaction_function[ftype].ifunc(nbonds,idef->il[ftype].iatoms,
+					      idef->iparams,x_s,f,fr,g,box,
+					      lambda,&dvdl,
+					      md,ngrp,egnb,egcoul,fcd);
+	ind = interaction_function[ftype].nrnb_ind;
+	nat = interaction_function[ftype].nratoms+1;
+	if (ind != -1)
+	  inc_nrnb(nrnb,ind,nbonds/nat);
+	epot[ftype]  += v;
+	epot[F_DVDL] += dvdl;
+	if (bSepDVDL && log)
+	  fprintf(log,"  %-15s #%4d  V %12.5e  dVdl %12.5e\n",
+		  interaction_function[ftype].longname,nbonds/nat,v,dvdl);
+      }
+    }
+  }
+  /* Copy the sum of violations for the distance restraints from fcd */
+  epot[F_DISRESVIOL] = fcd->disres.sumviol;
+}

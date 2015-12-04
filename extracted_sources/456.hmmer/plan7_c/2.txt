@@ -1,0 +1,19 @@
+void
+ZeroPlan7(struct plan7_s *hmm)
+{
+  int k;
+  for (k = 1; k < hmm->M; k++)
+    {
+      FSet(hmm->t[k], 7, 0.);
+      FSet(hmm->mat[k], Alphabet_size, 0.);
+      FSet(hmm->ins[k], Alphabet_size, 0.);
+    }
+  FSet(hmm->mat[hmm->M], Alphabet_size, 0.);
+  hmm->tbd1 = 0.;
+  FSet(hmm->begin+1, hmm->M, 0.);
+  FSet(hmm->end+1, hmm->M, 0.);
+  for (k = 0; k < 4; k++)
+    FSet(hmm->xt[k], 2, 0.);
+  hmm->flags &= ~PLAN7_HASBITS;	/* invalidates scores */
+  hmm->flags &= ~PLAN7_HASPROB;	/* invalidates probabilities */
+}

@@ -1,0 +1,215 @@
+static void check_solvent(FILE *fp,t_topology *top,t_forcerec *fr,
+			  t_mdatoms *md,t_nsborder *nsb)
+{
+  /* This routine finds out whether a charge group can be used as
+   * solvent in the innerloops. The routine should be called once
+   * at the beginning of the MD program.
+   */
+  t_block *cgs,*excl,*mols;
+  atom_id *cgid;
+  int     i,j,m,j0,j1,nj,k,aj,ak,tjA,tjB,nl_m,nl_n,nl_o;
+  int     warncount;
+  bool    bOneCG;
+  bool    *bAllExcl,bAE,bOrder;
+  bool    *bHaveLJ,*bHaveCoul;
+  
+  cgs  = &(top->blocks[ebCGS]);
+  excl = &(top->atoms.excl);
+  mols = &(top->blocks[ebMOLS]);
+
+  if (fp)
+    fprintf(fp,"Going to determine what solvent types we have.\n");
+  snew(fr->solvent_type,cgs->nr+1);
+  snew(fr->mno_index,(cgs->nr+1)*3);
+  
+  /* Generate charge group number for all atoms */
+  cgid = make_invblock(cgs,cgs->nra);
+  
+  warncount=0;
+
+  /* Loop over molecules */
+  if (fp)
+    fprintf(fp,"There are %d molecules, %d charge groups and %d atoms\n",
+	    mols->nr,cgs->nr,cgs->nra);
+  for(i=0; (i<mols->nr); i++) {
+    /* Set boolean that determines whether the molecules consists of one CG */
+    bOneCG = TRUE;
+    /* Set some counters */
+    j0     = mols->index[i];
+    j1     = mols->index[i+1];
+    nj     = j1-j0;
+    for(j=j0+1; (j<j1); j++) {
+      bOneCG = bOneCG && (cgid[mols->a[j]] == cgid[mols->a[j-1]]);
+    }
+    if (fr->bSolvOpt && bOneCG && nj>1) {
+      /* Check whether everything is excluded */
+      snew(bAllExcl,nj);
+      bAE = TRUE;
+      /* Loop over all atoms in molecule */
+      for(j=j0; (j<j1) && bAE; j++) {
+	/* Set a flag for each atom in the molecule that determines whether
+	 * it is excluded or not 
+	 */
+	for(k=0; (k<nj); k++)
+	  bAllExcl[k] = FALSE;
+	/* Now check all the exclusions of this atom */
+	for(k=excl->index[j]; (k<excl->index[j+1]); k++) {
+	  ak = excl->a[k];
+	  /* Consistency and range check */
+	  if ((ak < j0) || (ak >= j1)) 
+	    fatal_error(0,"Exclusion outside molecule? ak = %d, j0 = %d, j1 = 5d, mol is %d",ak,j0,j1,i);
+	  bAllExcl[ak-j0] = TRUE;
+	}
+	/* Now sum up the booleans */
+	for(k=0; (k<nj); k++)
+	  bAE = bAE && bAllExcl[k];
+      }
+      if (bAE) {
+	snew(bHaveCoul,nj);
+	snew(bHaveLJ,nj);
+	for(j=j0; (j<j1); j++) {
+	  /* Check for coulomb */
+	  aj = mols->a[j];
+	  bHaveCoul[j-j0] = ( (fabs(top->atoms.atom[aj].q ) > GMX_REAL_MIN) ||
+			      (fabs(top->atoms.atom[aj].qB) > GMX_REAL_MIN));
+	  /* Check for LJ. */
+	  tjA = top->atoms.atom[aj].type;
+	  tjB = top->atoms.atom[aj].typeB;
+	  bHaveLJ[j-j0] = FALSE;
+	  for(k=0; (k<fr->ntype); k++) {
+	    if (fr->bBHAM) 
+	      bHaveLJ[j-j0] = (bHaveLJ[j-j0] || 
+			       (fabs(BHAMA(fr->nbfp,fr->ntype,tjA,k)) > GMX_REAL_MIN) ||
+			       (fabs(BHAMB(fr->nbfp,fr->ntype,tjA,k)) > GMX_REAL_MIN) ||
+			       (fabs(BHAMC(fr->nbfp,fr->ntype,tjA,k)) > GMX_REAL_MIN) ||
+			       (fabs(BHAMA(fr->nbfp,fr->ntype,tjB,k)) > GMX_REAL_MIN) ||
+			       (fabs(BHAMB(fr->nbfp,fr->ntype,tjB,k)) > GMX_REAL_MIN) ||
+			       (fabs(BHAMC(fr->nbfp,fr->ntype,tjB,k)) > GMX_REAL_MIN));
+	    else
+	      bHaveLJ[j-j0] = (bHaveLJ[j-j0] || 
+			       (fabs(C6(fr->nbfp,fr->ntype,tjA,k))  > GMX_REAL_MIN) ||
+			       (fabs(C12(fr->nbfp,fr->ntype,tjA,k)) > GMX_REAL_MIN) ||
+			       (fabs(C6(fr->nbfp,fr->ntype,tjB,k))  > GMX_REAL_MIN) ||
+			       (fabs(C12(fr->nbfp,fr->ntype,tjB,k)) > GMX_REAL_MIN));
+	  }
+	}
+	/* Now we have determined what particles have which interactions 
+	 * In the case of water-like molecules we only check for the number
+	 * of particles and the LJ, not for the Coulomb. Let's just assume
+	 * that the water loops are faster than the MNO loops anyway. DvdS
+	 */
+	/* No - there's another problem: To optimize the water
+	 * innerloop assumes the charge of the first i atom is constant
+	 * qO, and charge on atoms 2/3 is constant qH. /EL
+	 */
+	/* I won't write any altivec versions of the general solvent inner 
+         * loops. Thus, when USE_PPC_ALTIVEC is defined it is faster 
+	 * to use the normal loops instead of the MNO solvent version. /EL
+	 */
+	aj=mols->a[j0];
+	if((nj==3) && bHaveCoul[0] && bHaveLJ[0] &&
+	   !bHaveLJ[1] && !bHaveLJ[2] &&
+	   fabs(top->atoms.atom[aj+1].q - top->atoms.atom[aj+2].q) < GMX_REAL_MIN)
+	  fr->solvent_type[cgid[aj]] = esolWATER;
+	else {
+#ifdef USE_PPC_ALTIVEC
+          fr->solvent_type[cgid[aj]] = esolNO;
+#else
+	  /* Time to compute M & N & O */
+	  for(k=0; (k<nj) && (bHaveLJ[k] && bHaveCoul[k]); k++)
+	    ;
+	  nl_n = k;
+	  for(; (k<nj) && (!bHaveLJ[k] && bHaveCoul[k]); k++)
+	    ;
+	  nl_o = k;
+	  for(; (k<nj) && (bHaveLJ[k] && !bHaveCoul[k]); k++)
+	    ;
+	  nl_m = k;
+	  /* Now check whether we're at the end of the pack */
+	  bOrder = FALSE;
+	  for(; (k<nj); k++)
+	    bOrder = bOrder || (bHaveLJ[k] || bHaveCoul[k]);
+	  if (bOrder) {
+	    /* If we have a solvent molecule with LJC everywhere, then
+	     * we shouldn't issue a warning. Only if we suspect something
+	     * could be better.
+	     */
+	    if (nl_n != nj) {
+	      warncount++;
+	      if(warncount<11 && fp) 
+ 	        fprintf(fp,"The order in molecule %d could be optimized"
+		        " for better performance\n",i);
+	      if(warncount==10 && fp)
+              fprintf(fp,"(More than 10 molecules where the order can be optimized)\n");
+	    }
+	    nl_m = nl_n = nl_o = nj;
+	  }
+	  fr->mno_index[cgid[aj]*3]   = nl_m;
+	  fr->mno_index[cgid[aj]*3+1] = nl_n;
+	  fr->mno_index[cgid[aj]*3+2] = nl_o;
+	  fr->solvent_type[cgid[aj]]  = esolMNO;
+#endif /* MNO solvent if not using altivec */
+	}
+
+	/* Last check for perturbed atoms */
+	for(j=j0; (j<j1); j++)
+	  if (md->bPerturbed[mols->a[j]])
+	    fr->solvent_type[cgid[mols->a[j0]]] = esolNO;
+	
+	sfree(bHaveLJ);
+	sfree(bHaveCoul);
+      }
+      else {
+	/* Turn off solvent optimization for all cg's in the molecule,
+	 * here there is only one.
+	 */
+	fr->solvent_type[cgid[mols->a[j0]]] = esolNO;
+      }
+      sfree(bAllExcl);
+    }
+    else {
+      /* Turn off solvent optimization for all cg's in the molecule */
+      for(j=mols->index[i]; (j<mols->index[i+1]); j++) {
+	fr->solvent_type[cgid[mols->a[j]]] = esolNO;
+      }
+    }
+  }
+  if (debug) {
+    for(i=0; (i<cgs->nr); i++) 
+      fprintf(debug,"MNO: cg = %5d, m = %2d, n = %2d, o = %2d\n",
+	      i,fr->mno_index[3*i],fr->mno_index[3*i+1],fr->mno_index[3*i+2]);
+  }
+
+  /* Now compute the number of solvent molecules, could be merged with code above */
+  fr->nMNOMol = 0;
+  fr->nWatMol = 0;
+  for(m=0; m<3; m++)
+    fr->nMNOav[m] = 0;
+  for(i=0; i<mols->nr; i++) {
+    j = mols->a[mols->index[i]];
+    if (j>=START(nsb) && j<START(nsb)+HOMENR(nsb)) {
+	if (fr->solvent_type[cgid[j]] == esolMNO) {
+	  fr->nMNOMol++;
+	  for(m=0; m<3; m++)
+	    fr->nMNOav[m] += fr->mno_index[3*cgid[j]+m];
+	}
+	else if (fr->solvent_type[cgid[j]] == esolWATER)
+	  fr->nWatMol++;
+    }
+  }
+  if (fr->nMNOMol > 0)
+    for(m=0; (m<3); m++)
+      fr->nMNOav[m] /= fr->nMNOMol;
+  
+  sfree(cgid);
+
+  if (fp) {
+    fprintf(fp,"There are %d optimized solvent molecules on node %d\n",
+	    fr->nMNOMol,nsb->nodeid);
+    if (fr->nMNOMol > 0)
+      fprintf(fp,"  aver. nr. of atoms per molecule: vdwc %.1f coul %.1f vdw %.1f\n",
+	      fr->nMNOav[1],fr->nMNOav[2]-fr->nMNOav[1],fr->nMNOav[0]-fr->nMNOav[2]);
+    fprintf(fp,"There are %d optimized water molecules on node %d\n",
+	    fr->nWatMol,nsb->nodeid);
+  }
+}

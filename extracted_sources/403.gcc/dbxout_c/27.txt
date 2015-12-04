@@ -1,0 +1,19 @@
+static void
+dbxout_finish_symbol (sym)
+     tree sym;
+{
+#ifdef DBX_FINISH_SYMBOL
+  DBX_FINISH_SYMBOL (sym);
+#else
+  int line = 0;
+  if (use_gnu_debug_info_extensions && sym != 0)
+    line = DECL_SOURCE_LINE (sym);
+
+  fprintf (asmfile, "\",%d,0,%d,", current_sym_code, line);
+  if (current_sym_addr)
+    output_addr_const (asmfile, current_sym_addr);
+  else
+    fprintf (asmfile, "%d", current_sym_value);
+  putc ('\n', asmfile);
+#endif
+}

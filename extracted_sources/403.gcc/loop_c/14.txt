@@ -1,0 +1,22 @@
+static int
+regs_match_p (x, y, movables)
+     rtx x, y;
+     struct loop_movables *movables;
+{
+  unsigned int xn = REGNO (x);
+  unsigned int yn = REGNO (y);
+  struct movable *mx, *my;
+
+  for (mx = movables->head; mx; mx = mx->next)
+    if (mx->regno == xn)
+      break;
+
+  for (my = movables->head; my; my = my->next)
+    if (my->regno == yn)
+      break;
+
+  return (mx && my
+	  && ((mx->match == my->match && mx->match != 0)
+	      || mx->match == my
+	      || mx == my->match));
+}

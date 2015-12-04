@@ -1,0 +1,58 @@
+static void 
+compute_ld_motion_mems ()
+{
+  struct ls_expr * ptr;
+  int bb;
+  rtx insn;
+  
+  pre_ldst_mems = NULL;
+
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    {
+      for (insn = BLOCK_HEAD (bb);
+	   insn && insn != NEXT_INSN (BLOCK_END (bb));
+	   insn = NEXT_INSN (insn))
+	{
+	  if (GET_RTX_CLASS (GET_CODE (insn)) == 'i')
+	    {
+	      if (GET_CODE (PATTERN (insn)) == SET)
+		{
+		  rtx src = SET_SRC (PATTERN (insn));
+		  rtx dest = SET_DEST (PATTERN (insn));
+
+		  /* Check for a simple LOAD...  */
+		  if (GET_CODE (src) == MEM && simple_mem (src))
+		    {
+		      ptr = ldst_entry (src);
+		      if (GET_CODE (dest) == REG)
+			ptr->loads = alloc_INSN_LIST (insn, ptr->loads);
+		      else
+			ptr->invalid = 1;
+		    }
+		  else
+		    {
+		      /* Make sure there isn't a buried load somewhere.  */
+		      invalidate_any_buried_refs (src);
+		    }
+		  
+		  /* Check for stores. Don't worry about aliased ones, they
+		     will block any movement we might do later. We only care
+		     about this exact pattern since those are the only
+		     circumstance that we will ignore the aliasing info.  */
+		  if (GET_CODE (dest) == MEM && simple_mem (dest))
+		    {
+		      ptr = ldst_entry (dest);
+		      
+		      if (GET_CODE (src) != MEM
+			  && GET_CODE (src) != ASM_OPERANDS)
+			ptr->stores = alloc_INSN_LIST (insn, ptr->stores);
+		      else
+			ptr->invalid = 1;
+		    }
+		}
+	      else
+		invalidate_any_buried_refs (PATTERN (insn));
+	    }
+	}
+    }
+}

@@ -1,0 +1,20 @@
+static int
+eisnan (x)
+     const UEMUSHORT x[] ATTRIBUTE_UNUSED;
+{
+#ifdef NANS
+  int i;
+
+  /* NaN has maximum exponent */
+  if ((x[NE - 1] & 0x7fff) != 0x7fff)
+    return (0);
+  /* ... and non-zero significand field.  */
+  for (i = 0; i < NE - 1; i++)
+    {
+      if (*x++ != 0)
+        return (1);
+    }
+#endif
+
+  return (0);
+}

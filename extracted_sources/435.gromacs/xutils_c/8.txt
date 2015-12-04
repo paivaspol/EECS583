@@ -1,0 +1,21 @@
+void print_forcefield(FILE *fp,real energy,int natoms,rvec f[],rvec fshake[],
+		      rvec x[],t_block *mols,real mass[])
+{
+  int  i;
+  real msf,rmsf;
+
+  if (ga) {
+    msf=0;
+    for(i=0; (i<natoms); i++)
+      msf += iprod(f[i],f[i]);
+    rmsf = sqrt(msf/natoms);
+    if (print_ga(fp,ga,rmsf,energy,range,tol)) {
+      if (gmx_parallel)
+	gmx_finalize();
+      fprintf(stderr,"\n");
+      exit(0);
+    }
+  }
+  else
+    print_grid(fp,energy,natoms,f,fshake,x,mols,mass);
+}

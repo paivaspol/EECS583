@@ -1,0 +1,33 @@
+static rtx
+rtx_for_function_call (fndecl, exp)
+     tree fndecl;
+     tree exp;
+{
+  rtx funexp;
+
+  /* Get the function to call, in the form of RTL.  */
+  if (fndecl)
+    {
+      /* If this is the first use of the function, see if we need to
+	 make an external definition for it.  */
+      if (! TREE_USED (fndecl))
+	{
+	  assemble_external (fndecl);
+	  TREE_USED (fndecl) = 1;
+	}
+
+      /* Get a SYMBOL_REF rtx for the function address.  */
+      funexp = XEXP (DECL_RTL (fndecl), 0);
+    }
+  else
+    /* Generate an rtx (probably a pseudo-register) for the address.  */
+    {
+      rtx funaddr;
+      push_temp_slots ();
+      funaddr = funexp
+	= expand_expr (TREE_OPERAND (exp, 0), NULL_RTX, VOIDmode, 0);
+      pop_temp_slots ();	/* FUNEXP can't be BLKmode.  */
+      emit_queue ();
+    }
+  return funexp;
+}

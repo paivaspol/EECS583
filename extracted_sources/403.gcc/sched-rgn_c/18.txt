@@ -1,0 +1,22 @@
+static int
+find_conditional_protection (insn, load_insn_bb)
+     rtx insn;
+     int load_insn_bb;
+{
+  rtx link;
+
+  /* Iterate through DEF-USE forward dependences.  */
+  for (link = INSN_DEPEND (insn); link; link = XEXP (link, 1))
+    {
+      rtx next = XEXP (link, 0);
+      if ((CONTAINING_RGN (BLOCK_NUM (next)) ==
+	   CONTAINING_RGN (BB_TO_BLOCK (load_insn_bb)))
+	  && IS_REACHABLE (INSN_BB (next), load_insn_bb)
+	  && load_insn_bb != INSN_BB (next)
+	  && GET_MODE (link) == VOIDmode
+	  && (GET_CODE (next) == JUMP_INSN
+	      || find_conditional_protection (next, load_insn_bb)))
+	return 1;
+    }
+  return 0;
+}				/* find_conditional_protection */

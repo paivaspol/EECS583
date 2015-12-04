@@ -1,0 +1,24 @@
+static lmclass_set_t lmclass_add (lmclass_set_t set, lmclass_t new)
+{
+    lmclass_t cl, prev;
+    
+    assert (set != NULL);
+    assert (new != NULL);
+    
+    prev = NULL;
+    for (cl = set->lmclass_list;
+	 cl && (strcmp (cl->name, new->name) != 0);
+	 cl = cl->next) {
+	prev = cl;
+    }
+    if (cl)
+	return NULL;	/* Duplicate */
+    
+    if (prev)
+	prev->next = new;
+    else
+	set->lmclass_list = new;
+    new->next = NULL;
+    
+    return set;
+}

@@ -1,0 +1,56 @@
+int
+QRNAShuffle(char *xs, char *ys, char *x, char *y)
+{
+  int  L;
+  int *xycol, *xcol, *ycol;
+  int  nxy, nx, ny;
+  int  i;
+  int  pos, c;
+  char xsym, ysym;
+
+  if (xs != x) strcpy(xs, x);
+  if (ys != y) strcpy(ys, y);
+
+  /* First, construct three arrays containing lists of the column positions
+   * of the three types of columns. (If a column contains gaps in both x and y,
+   * we've already simply copied it to the shuffled sequence.)
+   */
+  L = strlen(x);
+  xycol = MallocOrDie(sizeof(int) * L);
+  xcol  = MallocOrDie(sizeof(int) * L);
+  ycol  = MallocOrDie(sizeof(int) * L);
+  nxy = nx = ny = 0;
+
+  for (i = 0; i < L; i++)
+    {
+      if      (isgap(x[i]) && isgap(y[i]))     { continue; }
+      else if (! isgap(x[i]) && ! isgap(y[i])) { xycol[nxy] = i; nxy++; }
+      else if (isgap(x[i]))                    { ycol[ny] = i;   ny++;  }
+      else if (isgap(y[i]))                    { xcol[nx] = i;   nx++;  }
+    }
+
+  /* Second, shuffle the sequences indirectly, via shuffling these arrays.
+   * Yow, careful with those indices, and with order of the statements...
+   */
+  for (; nxy > 1; nxy--) {
+    pos          = CHOOSE(nxy);
+    xsym             = xs[xycol[pos]];   ysym             = ys[xycol[pos]];    c            = xycol[pos];   
+    xs[xycol[pos]]   = xs[xycol[nxy-1]]; ys[xycol[pos]]   = ys[xycol[nxy-1]];  xycol[pos]   = xycol[nxy-1];
+    xs[xycol[nxy-1]] = xsym;             ys[xycol[nxy-1]] = ysym;              xycol[pos]   = xycol[nxy-1];
+  }
+  for (; nx > 1; nx--) {
+    pos        = CHOOSE(nx); 
+    xsym           = xs[xcol[pos]];  ysym           = ys[xcol[pos]];  c          = xcol[pos];  
+    xs[xcol[pos]]  = xs[xcol[nx-1]]; ys[xcol[pos]]  = ys[xcol[nx-1]]; xcol[pos]  = xcol[nx-1]; 
+    xs[xcol[nx-1]] = xsym;           ys[xcol[nx-1]] = ysym;           xcol[nx-1] = c;          
+  }
+  for (; ny > 1; ny--) {
+    pos        = CHOOSE(ny); 
+    xsym           = xs[ycol[pos]];  ysym           = ys[ycol[pos]];  c          = ycol[pos]; 
+    xs[ycol[pos]]  = xs[ycol[ny-1]]; ys[ycol[pos]]  = ys[ycol[ny-1]]; ycol[pos]  = ycol[ny-1];
+    xs[ycol[ny-1]] = xsym;           ys[ycol[ny-1]] = ysym;           ycol[ny-1] = c;          
+  }
+
+  free(xycol); free(xcol); free(ycol);
+  return 1;
+}

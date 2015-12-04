@@ -1,0 +1,36 @@
+static rtx
+discover_flags_reg ()
+{
+  rtx tmp;
+  tmp = gen_rtx_REG (word_mode, 10000);
+  tmp = gen_add3_insn (tmp, tmp, GEN_INT (2));
+
+  /* If we get something that isn't a simple set, or a
+     [(set ..) (clobber ..)], this whole function will go wrong.  */
+  if (GET_CODE (tmp) == SET)
+    return NULL_RTX;
+  else if (GET_CODE (tmp) == PARALLEL)
+    {
+      int found;
+
+      if (XVECLEN (tmp, 0) != 2)
+	return pc_rtx;
+      tmp = XVECEXP (tmp, 0, 1);
+      if (GET_CODE (tmp) != CLOBBER)
+	return pc_rtx;
+      tmp = XEXP (tmp, 0);
+
+      /* Don't do anything foolish if the md wanted to clobber a
+	 scratch or something.  We only care about hard regs.
+	 Moreover we don't like the notion of subregs of hard regs.  */
+      if (GET_CODE (tmp) == SUBREG
+	  && GET_CODE (SUBREG_REG (tmp)) == REG
+	  && REGNO (SUBREG_REG (tmp)) < FIRST_PSEUDO_REGISTER)
+	return pc_rtx;
+      found = (GET_CODE (tmp) == REG && REGNO (tmp) < FIRST_PSEUDO_REGISTER);
+
+      return (found ? tmp : NULL_RTX);
+    }
+
+  return pc_rtx;
+}

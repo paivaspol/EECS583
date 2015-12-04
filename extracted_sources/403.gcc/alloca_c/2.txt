@@ -1,0 +1,70 @@
+static long
+i00afunc (long address)
+{
+  long stkl = 0;
+
+  long size, pseg, this_segment, stack;
+  long result = 0;
+
+  struct stack_segment_linkage *ssptr;
+
+  /* Register B67 contains the address of the end of the
+     current stack segment.  If you (as a subprogram) store
+     your registers on the stack and find that you are past
+     the contents of B67, you have overflowed the segment.
+
+     B67 also points to the stack segment linkage control
+     area, which is what we are really interested in.  */
+
+  stkl = CRAY_STACKSEG_END ();
+  ssptr = (struct stack_segment_linkage *) stkl;
+
+  /* If one subtracts 'size' from the end of the segment,
+     one has the address of the first word of the segment.
+
+     If this is not the first segment, 'pseg' will be
+     nonzero.  */
+
+  pseg = ssptr->sspseg;
+  size = ssptr->sssize;
+
+  this_segment = stkl - size;
+
+  /* It is possible that calling this routine itself caused
+     a stack overflow.  Discard stack segments which do not
+     contain the target address.  */
+
+  while (!(this_segment <= address && address <= stkl))
+    {
+#ifdef DEBUG_I00AFUNC
+      fprintf (stderr, "%011o %011o %011o\n", this_segment, address, stkl);
+#endif
+      if (pseg == 0)
+	break;
+      stkl = stkl - pseg;
+      ssptr = (struct stack_segment_linkage *) stkl;
+      size = ssptr->sssize;
+      pseg = ssptr->sspseg;
+      this_segment = stkl - size;
+    }
+
+  result = address - this_segment;
+
+  /* If you subtract pseg from the current end of the stack,
+     you get the address of the previous stack segment's end.
+     This seems a little convoluted to me, but I'll bet you save
+     a cycle somewhere.  */
+
+  while (pseg != 0)
+    {
+#ifdef DEBUG_I00AFUNC
+      fprintf (stderr, "%011o %011o\n", pseg, size);
+#endif
+      stkl = stkl - pseg;
+      ssptr = (struct stack_segment_linkage *) stkl;
+      size = ssptr->sssize;
+      pseg = ssptr->sspseg;
+      result += size;
+    }
+  return (result);
+}

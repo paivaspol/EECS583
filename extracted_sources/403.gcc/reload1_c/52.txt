@@ -1,0 +1,96 @@
+static void
+merge_assigned_reloads (insn)
+     rtx insn;
+{
+  int i, j;
+
+  /* Scan all the reloads looking for ones that only load values and
+     are not already RELOAD_OTHER and ones whose reload_reg_rtx are
+     assigned and not modified by INSN.  */
+
+  for (i = 0; i < n_reloads; i++)
+    {
+      int conflicting_input = 0;
+      int max_input_address_opnum = -1;
+      int min_conflicting_input_opnum = MAX_RECOG_OPERANDS;
+
+      if (rld[i].in == 0 || rld[i].when_needed == RELOAD_OTHER
+	  || rld[i].out != 0 || rld[i].reg_rtx == 0
+	  || reg_set_p (rld[i].reg_rtx, insn))
+	continue;
+
+      /* Look at all other reloads.  Ensure that the only use of this
+	 reload_reg_rtx is in a reload that just loads the same value
+	 as we do.  Note that any secondary reloads must be of the identical
+	 class since the values, modes, and result registers are the
+	 same, so we need not do anything with any secondary reloads.  */
+
+      for (j = 0; j < n_reloads; j++)
+	{
+	  if (i == j || rld[j].reg_rtx == 0
+	      || ! reg_overlap_mentioned_p (rld[j].reg_rtx,
+					    rld[i].reg_rtx))
+	    continue;
+
+	  if (rld[j].when_needed == RELOAD_FOR_INPUT_ADDRESS
+	      && rld[j].opnum > max_input_address_opnum)
+	    max_input_address_opnum = rld[j].opnum;
+
+	  /* If the reload regs aren't exactly the same (e.g, different modes)
+	     or if the values are different, we can't merge this reload.
+	     But if it is an input reload, we might still merge
+	     RELOAD_FOR_INPUT_ADDRESS and RELOAD_FOR_OTHER_ADDRESS reloads.  */
+
+	  if (! rtx_equal_p (rld[i].reg_rtx, rld[j].reg_rtx)
+	      || rld[j].out != 0 || rld[j].in == 0
+	      || ! rtx_equal_p (rld[i].in, rld[j].in))
+	    {
+	      if (rld[j].when_needed != RELOAD_FOR_INPUT
+		  || ((rld[i].when_needed != RELOAD_FOR_INPUT_ADDRESS
+		       || rld[i].opnum > rld[j].opnum)
+		      && rld[i].when_needed != RELOAD_FOR_OTHER_ADDRESS))
+		break;
+	      conflicting_input = 1;
+	      if (min_conflicting_input_opnum > rld[j].opnum)
+		min_conflicting_input_opnum = rld[j].opnum;
+	    }
+	}
+
+      /* If all is OK, merge the reloads.  Only set this to RELOAD_OTHER if
+	 we, in fact, found any matching reloads.  */
+
+      if (j == n_reloads
+	  && max_input_address_opnum <= min_conflicting_input_opnum)
+	{
+	  for (j = 0; j < n_reloads; j++)
+	    if (i != j && rld[j].reg_rtx != 0
+		&& rtx_equal_p (rld[i].reg_rtx, rld[j].reg_rtx)
+		&& (! conflicting_input
+		    || rld[j].when_needed == RELOAD_FOR_INPUT_ADDRESS
+		    || rld[j].when_needed == RELOAD_FOR_OTHER_ADDRESS))
+	      {
+		rld[i].when_needed = RELOAD_OTHER;
+		rld[j].in = 0;
+		reload_spill_index[j] = -1;
+		transfer_replacements (i, j);
+	      }
+
+	  /* If this is now RELOAD_OTHER, look for any reloads that load
+	     parts of this operand and set them to RELOAD_FOR_OTHER_ADDRESS
+	     if they were for inputs, RELOAD_OTHER for outputs.  Note that
+	     this test is equivalent to looking for reloads for this operand
+	     number.  */
+
+	  if (rld[i].when_needed == RELOAD_OTHER)
+	    for (j = 0; j < n_reloads; j++)
+	      if (rld[j].in != 0
+		  && rld[j].when_needed != RELOAD_OTHER
+		  && reg_overlap_mentioned_for_reload_p (rld[j].in,
+							 rld[i].in))
+		rld[j].when_needed
+		  = ((rld[j].when_needed == RELOAD_FOR_INPUT_ADDRESS
+		      || rld[j].when_needed == RELOAD_FOR_INPADDR_ADDRESS)
+		     ? RELOAD_FOR_OTHER_ADDRESS : RELOAD_OTHER);
+	}
+    }
+}

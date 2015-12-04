@@ -1,0 +1,20 @@
+int_size_in_bytes (type)
+     tree type;
+{
+  tree t;
+
+  if (type == error_mark_node)
+    return 0;
+
+  type = TYPE_MAIN_VARIANT (type);
+  t = TYPE_SIZE_UNIT (type);
+  if (t == 0
+      || TREE_CODE (t) != INTEGER_CST
+      || TREE_OVERFLOW (t)
+      || TREE_INT_CST_HIGH (t) != 0
+      /* If the result would appear negative, it's too big to represent.  */
+      || (HOST_WIDE_INT) TREE_INT_CST_LOW (t) < 0)
+    return -1;
+
+  return TREE_INT_CST_LOW (t);
+}

@@ -1,0 +1,40 @@
+static void
+output_comp_unit (die)
+     dw_die_ref die;
+{
+  const char *secname;
+
+  /* Even if there are no children of this DIE, we must output the information
+     about the compilation unit.  Otherwise, on an empty translation unit, we
+     will generate a present, but empty, .debug_info section.  IRIX 6.5 `nm'
+     will then complain when examining the file.  First mark all the DIEs in
+     this CU so we know which get local refs.  */
+  mark_dies (die);
+
+  build_abbrev_table (die);
+
+  /* Initialize the beginning DIE offset - and calculate sizes/offsets.  */
+  next_die_offset = DWARF_COMPILE_UNIT_HEADER_SIZE;
+  calc_die_sizes (die);
+
+  if (die->die_symbol)
+    {
+      char *tmp = (char *) alloca (strlen (die->die_symbol) + 24);
+
+      sprintf (tmp, ".gnu.linkonce.wi.%s", die->die_symbol);
+      secname = tmp;
+      die->die_symbol = NULL;
+    }
+  else
+    secname = (const char *) DEBUG_INFO_SECTION;
+
+  /* Output debugging information.  */
+  named_section_flags (secname, SECTION_DEBUG);
+  output_compilation_unit_header ();
+  output_die (die);
+
+  /* Leave the marks on the main CU, so we can check them in
+     output_pubnames.  */
+  if (die->die_symbol)
+    unmark_dies (die);
+}

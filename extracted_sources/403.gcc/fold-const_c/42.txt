@@ -1,0 +1,20 @@
+static int
+all_ones_mask_p (mask, size)
+     tree mask;
+     int size;
+{
+  tree type = TREE_TYPE (mask);
+  unsigned int precision = TYPE_PRECISION (type);
+  tree tmask;
+
+  tmask = build_int_2 (~0, ~0);
+  TREE_TYPE (tmask) = signed_type (type);
+  force_fit_type (tmask, 0);
+  return
+    tree_int_cst_equal (mask,
+			const_binop (RSHIFT_EXPR,
+				     const_binop (LSHIFT_EXPR, tmask,
+						  size_int (precision - size),
+						  0),
+				     size_int (precision - size), 0));
+}

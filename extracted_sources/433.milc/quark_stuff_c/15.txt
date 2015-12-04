@@ -1,0 +1,33 @@
+void u_shift_hw_fermion(half_wilson_vector *src, 
+			half_wilson_vector *dest, int dir ) {
+  half_wilson_vector *tmpvec ; 
+  msg_tag *mtag ;
+  register site *s ;
+  register int i ;
+  
+  if(GOES_FORWARDS(dir)) /* forward shift */
+    {
+      mtag = start_gather_from_temp(src, sizeof(half_wilson_vector), 
+				    dir, EVENANDODD, gen_pt[0]);
+      wait_gather(mtag);
+      FORALLSITES(i,s)
+	mult_su3_mat_hwvec(&(s->link[dir]),
+			   (half_wilson_vector *)(gen_pt[0][i]), &(dest[i]));
+      cleanup_gather(mtag);
+    }
+  else /* backward shift */
+    {
+      tmpvec = 
+	(half_wilson_vector *)calloc(sites_on_node, sizeof(half_wilson_vector));
+      FORALLSITES(i,s)
+	mult_adj_su3_mat_hwvec(&(s->link[OPP_DIR(dir)]),&(src[i]), &tmpvec[i]);
+      mtag = start_gather_from_temp(tmpvec, sizeof(half_wilson_vector), dir, 
+				    EVENANDODD, gen_pt[0]);
+      wait_gather(mtag);
+      /* copy the gen_pt to the dest */
+      FORALLSITES(i,s)
+	dest[i] = *(half_wilson_vector *)gen_pt[0][i];
+      cleanup_gather(mtag);
+      free(tmpvec) ;
+    }
+}

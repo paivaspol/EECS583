@@ -1,0 +1,107 @@
+int GenerateSeq_parameter_set_rbsp (seq_parameter_set_rbsp_t *sps, char *rbsp)
+{
+  DataPartition *partition;
+  int len = 0, LenInBytes;
+  unsigned i;
+
+  assert (rbsp != NULL);
+  // In order to use the entropy coding functions from golomb.c we need 
+  // to allocate a partition structure.  It will be freed later in this
+  // function
+  if ((partition=calloc(1,sizeof(DataPartition)))==NULL) no_mem_exit("SeqParameterSet:partition");
+  if ((partition->bitstream=calloc(1, sizeof(Bitstream)))==NULL) no_mem_exit("SeqParameterSet:bitstream");
+  // .. and use the rbsp provided (or allocated above) for the data
+  partition->bitstream->streamBuffer = rbsp;
+  partition->bitstream->bits_to_go = 8;
+
+  len+=u_v  (8, "SPS: profile_idc",                             sps->profile_idc,                               partition);
+
+  len+=u_1  ("SPS: constrained_set0_flag",                      sps->constrained_set0_flag,    partition);
+  len+=u_1  ("SPS: constrained_set1_flag",                      sps->constrained_set1_flag,    partition);
+  len+=u_1  ("SPS: constrained_set2_flag",                      sps->constrained_set2_flag,    partition);
+  len+=u_1  ("SPS: constrained_set3_flag",                      sps->constrained_set3_flag,    partition);
+  len+=u_v  (4, "SPS: reserved_zero_4bits",                     0,                             partition);
+
+  len+=u_v  (8, "SPS: level_idc",                               sps->level_idc,                                 partition);
+
+  len+=ue_v ("SPS: seq_parameter_set_id",                    sps->seq_parameter_set_id,                      partition);
+
+  // Fidelity Range Extensions stuff
+  if((sps->profile_idc==FREXT_HP) || 
+     (sps->profile_idc==FREXT_Hi10P) ||
+     (sps->profile_idc==FREXT_Hi422) ||
+     (sps->profile_idc==FREXT_Hi444))
+  {
+    len+=ue_v ("SPS: chroma_format_idc",                        sps->chroma_format_idc,                          partition);
+    if(img->yuv_format == 3)
+      len+=u_1  ("SPS: residue_transform_flag",                 img->residue_transform_flag,                     partition);
+    len+=ue_v ("SPS: bit_depth_luma_minus8",                    sps->bit_depth_luma_minus8,                      partition);
+    len+=ue_v ("SPS: bit_depth_chroma_minus8",                  sps->bit_depth_chroma_minus8,                    partition);
+    len+=u_1  ("SPS: lossless_qpprime_y_zero_flag",             img->lossless_qpprime_flag,                      partition);
+    //other chroma info to be added in the future
+
+    len+=u_1 ("SPS: seq_scaling_matrix_present_flag",           sps->seq_scaling_matrix_present_flag,            partition);
+
+    if(sps->seq_scaling_matrix_present_flag)
+    {
+      for(i=0; i<8; i++)
+      {
+        len+=u_1 ("SPS: seq_scaling_list_present_flag",         sps->seq_scaling_list_present_flag[i],           partition);
+        if(sps->seq_scaling_list_present_flag[i])
+        {
+          if(i<6)
+            len+=Scaling_List(ScalingList4x4input[i], ScalingList4x4[i], 16, &UseDefaultScalingMatrix4x4Flag[i], partition);
+          else
+            len+=Scaling_List(ScalingList8x8input[i-6], ScalingList8x8[i-6], 64, &UseDefaultScalingMatrix8x8Flag[i-6], partition);
+        }
+      }
+    }
+  }
+
+  len+=ue_v ("SPS: log2_max_frame_num_minus4",               sps->log2_max_frame_num_minus4,                 partition);
+  len+=ue_v ("SPS: pic_order_cnt_type",                      sps->pic_order_cnt_type,                        partition);
+
+  if (sps->pic_order_cnt_type == 0)
+    len+=ue_v ("SPS: log2_max_pic_order_cnt_lsb_minus4",     sps->log2_max_pic_order_cnt_lsb_minus4,         partition);
+  else if (sps->pic_order_cnt_type == 1)
+  {
+    len+=u_1  ("SPS: delta_pic_order_always_zero_flag",        sps->delta_pic_order_always_zero_flag,          partition);
+    len+=se_v ("SPS: offset_for_non_ref_pic",                  sps->offset_for_non_ref_pic,                    partition);
+    len+=se_v ("SPS: offset_for_top_to_bottom_field",          sps->offset_for_top_to_bottom_field,            partition);
+    len+=ue_v ("SPS: num_ref_frames_in_pic_order_cnt_cycle",   sps->num_ref_frames_in_pic_order_cnt_cycle,     partition);
+    for (i=0; i<sps->num_ref_frames_in_pic_order_cnt_cycle; i++)
+      len+=se_v ("SPS: offset_for_ref_frame",                  sps->offset_for_ref_frame[i],                      partition);
+  }
+  len+=ue_v ("SPS: num_ref_frames",                          sps->num_ref_frames,                            partition);
+  len+=u_1  ("SPS: gaps_in_frame_num_value_allowed_flag",    sps->gaps_in_frame_num_value_allowed_flag,      partition);
+  len+=ue_v ("SPS: pic_width_in_mbs_minus1",                 sps->pic_width_in_mbs_minus1,                   partition);
+  len+=ue_v ("SPS: pic_height_in_map_units_minus1",          sps->pic_height_in_map_units_minus1,            partition);
+  len+=u_1  ("SPS: frame_mbs_only_flag",                     sps->frame_mbs_only_flag,                       partition);
+  if (!sps->frame_mbs_only_flag)
+  {
+    len+=u_1  ("SPS: mb_adaptive_frame_field_flag",            sps->mb_adaptive_frame_field_flag,              partition);
+  }
+  len+=u_1  ("SPS: direct_8x8_inference_flag",               sps->direct_8x8_inference_flag,                 partition);
+
+  len+=u_1  ("SPS: frame_cropping_flag",                      sps->frame_cropping_flag,                       partition);
+  if (sps->frame_cropping_flag)
+  {
+    len+=ue_v ("SPS: frame_cropping_rect_left_offset",          sps->frame_cropping_rect_left_offset,           partition);
+    len+=ue_v ("SPS: frame_cropping_rect_right_offset",         sps->frame_cropping_rect_right_offset,          partition);
+    len+=ue_v ("SPS: frame_cropping_rect_top_offset",           sps->frame_cropping_rect_top_offset,            partition);
+    len+=ue_v ("SPS: frame_cropping_rect_bottom_offset",        sps->frame_cropping_rect_bottom_offset,         partition);
+  }
+
+  len+=u_1  ("SPS: vui_parameters_present_flag",             sps->vui_parameters_present_flag,               partition);
+  if (sps->vui_parameters_present_flag)
+    len+=GenerateVUISequenceParameters(partition);    // currently a dummy, asserting
+
+  SODBtoRBSP(partition->bitstream);     // copies the last couple of bits into the byte buffer
+  
+  LenInBytes=partition->bitstream->byte_pos;
+
+  free (partition->bitstream);
+  free (partition);
+  
+  return LenInBytes;
+}

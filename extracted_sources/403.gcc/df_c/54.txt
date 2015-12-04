@@ -1,0 +1,19 @@
+static void
+df_bb_refs_unlink (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  rtx insn;
+
+  /* Scan the block an insn at a time from beginning to end.  */
+  for (insn = bb->head; ; insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	{
+	  /* Unlink refs for INSN.  */
+	  df_insn_refs_unlink (df, bb, insn);
+	}
+      if (insn == bb->end)
+	break;
+    }
+}

@@ -1,0 +1,96 @@
+static rtx assign_stack_local_1 PARAMS ((enum machine_mode, HOST_WIDE_INT,
+					 int, struct function *));
+static struct temp_slot *find_temp_slot_from_address  PARAMS ((rtx));
+static void put_reg_into_stack	PARAMS ((struct function *, rtx, tree,
+					 enum machine_mode, enum machine_mode,
+					 int, unsigned int, int,
+					 struct hash_table *));
+static void schedule_fixup_var_refs PARAMS ((struct function *, rtx, tree,
+					     enum machine_mode,
+					     struct hash_table *));
+static void fixup_var_refs	PARAMS ((rtx, enum machine_mode, int, rtx,
+					 struct hash_table *));
+static struct fixup_replacement
+  *find_fixup_replacement	PARAMS ((struct fixup_replacement **, rtx));
+static void fixup_var_refs_insns PARAMS ((rtx, rtx, enum machine_mode,
+					  int, int, rtx));
+static void fixup_var_refs_insns_with_hash
+				PARAMS ((struct hash_table *, rtx,
+					 enum machine_mode, int, rtx));
+static void fixup_var_refs_insn PARAMS ((rtx, rtx, enum machine_mode,
+					 int, int, rtx));
+static void fixup_var_refs_1	PARAMS ((rtx, enum machine_mode, rtx *, rtx,
+					 struct fixup_replacement **, rtx));
+static rtx fixup_memory_subreg	PARAMS ((rtx, rtx, enum machine_mode, int));
+static rtx walk_fixup_memory_subreg  PARAMS ((rtx, rtx, enum machine_mode, 
+					      int));
+static rtx fixup_stack_1	PARAMS ((rtx, rtx));
+static void optimize_bit_field	PARAMS ((rtx, rtx, rtx *));
+static void instantiate_decls	PARAMS ((tree, int));
+static void instantiate_decls_1	PARAMS ((tree, int));
+static void instantiate_decl	PARAMS ((rtx, HOST_WIDE_INT, int));
+static rtx instantiate_new_reg	PARAMS ((rtx, HOST_WIDE_INT *));
+static int instantiate_virtual_regs_1 PARAMS ((rtx *, rtx, int));
+static void delete_handlers	PARAMS ((void));
+static void pad_to_arg_alignment PARAMS ((struct args_size *, int,
+					  struct args_size *));
+#ifndef ARGS_GROW_DOWNWARD
+static void pad_below		PARAMS ((struct args_size *, enum machine_mode,
+					 tree));
+#endif
+static rtx round_trampoline_addr PARAMS ((rtx));
+static rtx adjust_trampoline_addr PARAMS ((rtx));
+static tree *identify_blocks_1	PARAMS ((rtx, tree *, tree *, tree *));
+static void reorder_blocks_0	PARAMS ((tree));
+static void reorder_blocks_1	PARAMS ((rtx, tree, varray_type *));
+static void reorder_fix_fragments PARAMS ((tree));
+static tree blocks_nreverse	PARAMS ((tree));
+static int all_blocks		PARAMS ((tree, tree *));
+static tree *get_block_vector   PARAMS ((tree, int *));
+extern tree debug_find_var_in_block_tree PARAMS ((tree, tree));
+/* We always define `record_insns' even if its not used so that we
+   can always export `prologue_epilogue_contains'.  */
+static void record_insns	PARAMS ((rtx, varray_type *)) ATTRIBUTE_UNUSED;
+static int contains		PARAMS ((rtx, varray_type));
+#ifdef HAVE_return
+static void emit_return_into_block PARAMS ((basic_block, rtx));
+#endif
+static void put_addressof_into_stack PARAMS ((rtx, struct hash_table *));
+static bool purge_addressof_1 PARAMS ((rtx *, rtx, int, int,
+					  struct hash_table *));
+static void purge_single_hard_subreg_set PARAMS ((rtx));
+#if defined(HAVE_epilogue) && defined(INCOMING_RETURN_ADDR_RTX)
+static rtx keep_stack_depressed PARAMS ((rtx));
+#endif
+static int is_addressof		PARAMS ((rtx *, void *));
+static struct hash_entry *insns_for_mem_newfunc PARAMS ((struct hash_entry *,
+							 struct hash_table *,
+							 hash_table_key));
+static unsigned long insns_for_mem_hash PARAMS ((hash_table_key));
+static bool insns_for_mem_comp PARAMS ((hash_table_key, hash_table_key));
+static int insns_for_mem_walk   PARAMS ((rtx *, void *));
+static void compute_insns_for_mem PARAMS ((rtx, rtx, struct hash_table *));
+static void mark_function_status PARAMS ((struct function *));
+static void maybe_mark_struct_function PARAMS ((void *));
+static void prepare_function_start PARAMS ((void));
+static void do_clobber_return_reg PARAMS ((rtx, void *));
+static void do_use_return_reg PARAMS ((rtx, void *));
+
+/* Pointer to chain of `struct function' for containing functions.  */
+static struct function *outer_function_chain;
+
+/* Given a function decl for a containing function,
+   return the `struct function' for it.  */
+
+struct function *
+find_function_data (decl)
+     tree decl;
+{
+  struct function *p;
+
+  for (p = outer_function_chain; p; p = p->outer)
+    if (p->decl == decl)
+      return p;
+
+  abort ();
+}

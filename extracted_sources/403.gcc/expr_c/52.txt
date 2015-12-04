@@ -1,0 +1,72 @@
+static void
+do_compare_and_jump (exp, signed_code, unsigned_code, if_false_label,
+		     if_true_label)
+     tree exp;
+     enum rtx_code signed_code, unsigned_code;
+     rtx if_false_label, if_true_label;
+{
+  rtx op0, op1;
+  tree type;
+  enum machine_mode mode;
+  int unsignedp;
+  enum rtx_code code;
+
+  /* Don't crash if the comparison was erroneous.  */
+  op0 = expand_expr (TREE_OPERAND (exp, 0), NULL_RTX, VOIDmode, 0);
+  if (TREE_CODE (TREE_OPERAND (exp, 0)) == ERROR_MARK)
+    return;
+
+  op1 = expand_expr (TREE_OPERAND (exp, 1), NULL_RTX, VOIDmode, 0);
+  if (TREE_CODE (TREE_OPERAND (exp, 1)) == ERROR_MARK)
+    return;
+
+  type = TREE_TYPE (TREE_OPERAND (exp, 0));
+  mode = TYPE_MODE (type);
+  if (TREE_CODE (TREE_OPERAND (exp, 0)) == INTEGER_CST
+      && (TREE_CODE (TREE_OPERAND (exp, 1)) != INTEGER_CST
+	  || (GET_MODE_BITSIZE (mode)
+	      > GET_MODE_BITSIZE (TYPE_MODE (TREE_TYPE (TREE_OPERAND (exp,
+								      1)))))))
+    {
+      /* op0 might have been replaced by promoted constant, in which
+	 case the type of second argument should be used.  */
+      type = TREE_TYPE (TREE_OPERAND (exp, 1));
+      mode = TYPE_MODE (type);
+    }
+  unsignedp = TREE_UNSIGNED (type);
+  code = unsignedp ? unsigned_code : signed_code;
+
+#ifdef HAVE_canonicalize_funcptr_for_compare
+  /* If function pointers need to be "canonicalized" before they can
+     be reliably compared, then canonicalize them.  */
+  if (HAVE_canonicalize_funcptr_for_compare
+      && TREE_CODE (TREE_TYPE (TREE_OPERAND (exp, 0))) == POINTER_TYPE
+      && (TREE_CODE (TREE_TYPE (TREE_TYPE (TREE_OPERAND (exp, 0))))
+	  == FUNCTION_TYPE))
+    {
+      rtx new_op0 = gen_reg_rtx (mode);
+
+      emit_insn (gen_canonicalize_funcptr_for_compare (new_op0, op0));
+      op0 = new_op0;
+    }
+
+  if (HAVE_canonicalize_funcptr_for_compare
+      && TREE_CODE (TREE_TYPE (TREE_OPERAND (exp, 1))) == POINTER_TYPE
+      && (TREE_CODE (TREE_TYPE (TREE_TYPE (TREE_OPERAND (exp, 1))))
+	  == FUNCTION_TYPE))
+    {
+      rtx new_op1 = gen_reg_rtx (mode);
+
+      emit_insn (gen_canonicalize_funcptr_for_compare (new_op1, op1));
+      op1 = new_op1;
+    }
+#endif
+
+  /* Do any postincrements in the expression that was tested.  */
+  emit_queue ();
+
+  do_compare_rtx_and_jump (op0, op1, code, unsignedp, mode,
+			   ((mode == BLKmode)
+			    ? expr_size (TREE_OPERAND (exp, 0)) : NULL_RTX),
+			   if_false_label, if_true_label);
+}

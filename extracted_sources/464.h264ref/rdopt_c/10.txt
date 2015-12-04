@@ -1,0 +1,84 @@
+void
+Intra16x16_Mode_Decision (Macroblock* currMB, int* i16mode)
+{
+  // Residue Color Transform
+  int residue_R, residue_G, residue_B;
+  int c_ipmode = img->mb_data[img->current_mb_nr].c_ipred_mode;
+  int i, j, temp;
+  int pic_pix_x   = img->pix_x;
+  int pic_pix_y   = img->pix_y;
+  pel_t   **imgY_orig  = imgY_org;
+  pel_t   ***imgUV_orig  = imgUV_org;
+  int cr_cbp;
+
+  intrapred_luma_16x16 ();   /* make intra pred for all 4 new modes */
+
+  if(!img->residue_transform_flag)
+    find_sad_16x16 (i16mode);   /* get best new intra mode */
+
+  // Residue Color Transform
+  if(img->residue_transform_flag)
+  {
+    for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+      {
+        residue_B = imgUV_orig[0][pic_pix_y+j][pic_pix_x+i] - img->mprr_c[0][c_ipmode][i][j];
+        residue_G = imgY_orig[pic_pix_y+j][pic_pix_x+i] - img->mprr_2[*i16mode][j][i];
+        residue_R = imgUV_orig[1][pic_pix_y+j][pic_pix_x+i] - img->mprr_c[1][c_ipmode][i][j];
+        
+        /* Forward Residue Transform */
+        resTrans_R[i][j] = residue_R-residue_B;
+        temp = residue_B+(resTrans_R[i][j]>>1);
+        resTrans_B[i][j] = residue_G-temp;
+        resTrans_G[i][j] = temp+(resTrans_B[i][j]>>1);
+        
+        img->m7[i][j]  = resTrans_G[i][j];
+      }
+  }
+
+  currMB->cbp = dct_luma_16x16 (*i16mode);
+
+  // Residue Color Transform
+  if(img->residue_transform_flag)
+  {
+    for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+      {
+        rec_resG[i][j] = img->m7[i][j];
+        img->m7[i][j]  = resTrans_R[i][j];
+      }
+
+    cr_cbp = dct_chroma(0, 0);
+
+    for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+      {
+        rec_resR[i][j] = img->m7[i][j];
+        img->m7[i][j]  = resTrans_B[i][j];
+      }
+      
+    cr_cbp = dct_chroma(1, cr_cbp);
+
+    for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+      {
+        rec_resB[i][j] = img->m7[i][j];
+      }
+
+    currMB->cbp += (cr_cbp<<4);
+
+    /* Inverse Residue Transform */
+    for (j=0; j<16; j++)
+      for (i=0; i<16; i++)
+      {
+        temp      = rec_resG[i][j]-(rec_resB[i][j]>>1);
+        residue_G = rec_resB[i][j]+temp;
+        residue_B = temp - (rec_resR[i][j]>>1);
+        residue_R = residue_B+rec_resR[i][j];
+        
+        enc_picture->imgUV[0][pic_pix_y+j][pic_pix_x+i] = min(img->max_imgpel_value_uv,max(0,residue_B+(int)img->mprr_c[0][c_ipmode][i][j]));
+        enc_picture->imgY[pic_pix_y+j][pic_pix_x+i]     = min(img->max_imgpel_value,max(0,residue_G+(int)img->mprr_2[*i16mode][j][i]));
+        enc_picture->imgUV[1][pic_pix_y+j][pic_pix_x+i] = min(img->max_imgpel_value_uv,max(0,residue_R+(int)img->mprr_c[1][c_ipmode][i][j]));
+      }
+  }
+}

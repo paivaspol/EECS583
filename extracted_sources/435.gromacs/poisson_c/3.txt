@@ -1,0 +1,43 @@
+void symmetrize_PSgrid(FILE *fp,t_PSgrid *grid,real sum)
+{
+  int  i,j,k;
+  int  nx,ny,nz;
+  real ***ptr;
+  real ming=0,maxg=0;
+  ivec imin={-1,-1,-1},imax={-1,-1,-1};
+  
+  unpack_PSgrid(grid,&nx,&ny,&nz,&ptr);
+
+  ming = maxg = 0;  
+  if (fabs(sum) < GMX_REAL_MIN) {
+    sum  = 0;
+    ming = maxg = ptr[0][0][0];
+    for(i=0; (i<nx); i++)
+      for(j=0; (j<ny); j++)
+	for(k=0; (k<nz); k++) {
+	  sum += ptr[i][j][k];
+	  if (ptr[i][j][k] < ming) {
+	    ming     = ptr[i][j][k];
+	    imin[XX] = i;
+	    imin[YY] = j;
+	    imin[ZZ] = k;
+	  }
+	  else if (ptr[i][j][k] > maxg) {
+	    maxg     = ptr[i][j][k];
+	    imax[XX] = i;
+	    imax[YY] = j;
+	    imax[ZZ] = k;
+	  }
+	}
+  }
+  sum /= (nx*ny*nz);
+  for(i=0; (i<nx); i++)
+    for(j=0; (j<ny); j++)
+      for(k=0; (k<nz); k++)
+	ptr[i][j][k] -= sum;
+  if (fp)
+    fprintf(fp,"Symmetrize_PSgrid: sum = %g, ming = %g(%d,%d,%d), maxg = %g(%d,%d,%d)\n",
+	    sum,
+	    ming,imin[XX],imin[YY],imin[ZZ],
+	    maxg,imax[XX],imax[YY],imax[ZZ]);
+}

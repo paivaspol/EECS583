@@ -1,0 +1,24 @@
+static void
+sdbout_block (block)
+     tree block;
+{
+  while (block)
+    {
+      /* Ignore blocks never expanded or otherwise marked as real.  */
+      if (TREE_USED (block))
+	{
+	  /* When we reach the specified block, output its symbols.  */
+	  if (BLOCK_NUMBER (block) == do_block)
+	    sdbout_syms (BLOCK_VARS (block));
+
+	  /* If we are past the specified block, stop the scan.  */
+	  if (BLOCK_NUMBER (block) > do_block)
+	    return;
+
+	  /* Scan the blocks within this block.  */
+	  sdbout_block (BLOCK_SUBBLOCKS (block));
+	}
+
+      block = BLOCK_CHAIN (block);
+    }
+}

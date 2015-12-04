@@ -1,0 +1,76 @@
+int
+GaussianFitHistogram(struct histogram_s *h, float high_hint)
+{
+  float sum;
+  float sqsum;
+  float delta;
+  int   sc;
+  int   nbins;
+  int   hsize, idx;
+  
+  /* Clear any previous fitting from the histogram.
+   */
+  UnfitHistogram(h);
+
+  /* Determine if we have enough hits to fit the histogram;
+   * arbitrarily require 1000.
+   */
+  if (h->total < 1000) { h->fit_type = HISTFIT_NONE; return 0; }
+
+  /* Simplest algorithm for mean and sd;
+   * no outlier detection yet (not even using high_hint)
+   * 
+   * Magic 0.5 correction is because our histogram is for
+   * scores between x and x+1; we estimate the expectation
+   * (roughly) as x + 0.5. 
+   */
+  sum = sqsum = 0.;
+  for (sc = h->lowscore; sc <= h->highscore; sc++)
+    {
+      delta  = (float) sc + 0.5;
+      sum   += (float) h->histogram[sc-h->min] * delta;
+      sqsum += (float) h->histogram[sc-h->min] * delta * delta;
+    }
+  h->fit_type          = HISTFIT_GAUSSIAN;
+  h->param[GAUSS_MEAN] = sum / (float) h->total;
+  h->param[GAUSS_SD]   = sqrt((sqsum - (sum*sum/(float)h->total)) / 
+			      (float)(h->total-1));
+  
+  /* Calculate the expected values for the histogram.
+   * Note that the magic 0.5 correction appears again.
+   * Calculating difference between distribution functions for Gaussian 
+   * would be correct but hard.
+   */
+  hsize     = h->max - h->min + 1;
+  h->expect = (float *) MallocOrDie(sizeof(float) * hsize);
+  for (idx = 0; idx < hsize; idx++)
+    h->expect[idx] = 0.;
+
+  for (sc = h->min; sc <= h->max; sc++)
+    {
+      delta = (float) sc + 0.5 - h->param[GAUSS_MEAN];
+      h->expect[sc - h->min] =
+	(float) h->total * ((1. / (h->param[GAUSS_SD] * sqrt(2.*3.14159))) * 
+        (exp(-1.* delta*delta / (2. * h->param[GAUSS_SD] * h->param[GAUSS_SD]))));
+    }
+
+  /* Calculate the goodness-of-fit (within region that was fitted)
+   */
+  h->chisq = 0.;
+  nbins    = 0;
+  for (sc = h->lowscore; sc <= h->highscore; sc++)
+    if (h->expect[sc-h->min] >= 5. && h->histogram[sc-h->min] >= 5)
+      {
+	delta = (float) h->histogram[sc-h->min] - h->expect[sc-h->min];
+	h->chisq += delta * delta / h->expect[sc-h->min];
+	nbins++;
+      }
+	/* -1 d.f. for normalization; -2 d.f. for two free parameters */
+  if (nbins > 3)
+    h->chip = (float) IncompleteGamma((double)(nbins-3)/2., 
+				      (double) h->chisq/2.);
+  else
+    h->chip = 0.;		
+
+  return 1;
+}

@@ -1,0 +1,31 @@
+void
+PrintXMGRDistribution(FILE *fp, struct histogram_s *h)
+{
+  int sc;			/* integer score in histogram structure */
+  int cum;			/* cumulative count */
+  double val;
+
+  /* First data set is the observed distribution;
+   * histogram bin x contains # of scores between x and x+1,
+   * hence the sc+1 offset. 
+   */
+  for (cum = 0, sc = h->lowscore; sc <= h->highscore; sc++)
+    {
+      cum += h->histogram[sc - h->min];
+      fprintf(fp, "%-6d %f\n", sc + 1, (float) cum / (float) h->total);
+    }
+  fprintf(fp, "&\n");
+
+  /* Second data set is the theoretical histogram
+   */
+  if (h->fit_type != HISTFIT_NONE)
+    {
+      for (sc = h->lowscore; sc <= h->highscore; sc++)
+	{
+	  val = (1. - ExtremeValueP((float) sc, h->param[EVD_MU], 
+				    h->param[EVD_LAMBDA]));
+	  fprintf(fp, "%-6d %f\n", sc, val);
+	}
+      fprintf(fp, "&\n");
+    }
+}

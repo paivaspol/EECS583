@@ -1,0 +1,24 @@
+static void
+gen_type_die_for_member (type, member, context_die)
+     tree type, member;
+     dw_die_ref context_die;
+{
+  gen_type_die (type, context_die);
+
+  /* If we're trying to avoid duplicate debug info, we may not have
+     emitted the member decl for this function.  Emit it now.  */
+  if (TYPE_DECL_SUPPRESS_DEBUG (TYPE_STUB_DECL (type))
+      && ! lookup_decl_die (member))
+    {
+      if (decl_ultimate_origin (member))
+	abort ();
+
+      push_decl_scope (type);
+      if (TREE_CODE (member) == FUNCTION_DECL)
+	gen_subprogram_die (member, lookup_type_die (type));
+      else
+	gen_variable_die (member, lookup_type_die (type));
+
+      pop_decl_scope ();
+    }
+}

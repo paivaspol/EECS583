@@ -1,0 +1,56 @@
+static int
+memory_address_length (addr)
+     rtx addr;
+{
+  struct ix86_address parts;
+  rtx base, index, disp;
+  int len;
+
+  if (GET_CODE (addr) == PRE_DEC
+      || GET_CODE (addr) == POST_INC
+      || GET_CODE (addr) == PRE_MODIFY
+      || GET_CODE (addr) == POST_MODIFY)
+    return 0;
+
+  if (! ix86_decompose_address (addr, &parts))
+    abort ();
+
+  base = parts.base;
+  index = parts.index;
+  disp = parts.disp;
+  len = 0;
+
+  /* Register Indirect.  */
+  if (base && !index && !disp)
+    {
+      /* Special cases: ebp and esp need the two-byte modrm form.  */
+      if (addr == stack_pointer_rtx
+	  || addr == arg_pointer_rtx
+	  || addr == frame_pointer_rtx
+	  || addr == hard_frame_pointer_rtx)
+	len = 1;
+    }
+
+  /* Direct Addressing.  */
+  else if (disp && !base && !index)
+    len = 4;
+
+  else
+    {
+      /* Find the length of the displacement constant.  */
+      if (disp)
+	{
+	  if (GET_CODE (disp) == CONST_INT
+	      && CONST_OK_FOR_LETTER_P (INTVAL (disp), 'K'))
+	    len = 1;
+	  else
+	    len = 4;
+	}
+
+      /* An index requires the two-byte modrm form.  */
+      if (index)
+	len += 1;
+    }
+
+  return len;
+}

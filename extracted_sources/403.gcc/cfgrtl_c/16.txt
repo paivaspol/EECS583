@@ -1,0 +1,20 @@
+void
+insert_insn_on_edge (pattern, e)
+     rtx pattern;
+     edge e;
+{
+  /* We cannot insert instructions on an abnormal critical edge.
+     It will be easier to find the culprit if we die now.  */
+  if ((e->flags & EDGE_ABNORMAL) && EDGE_CRITICAL_P (e))
+    abort ();
+
+  if (e->insns == NULL_RTX)
+    start_sequence ();
+  else
+    push_to_sequence (e->insns);
+
+  emit_insn (pattern);
+
+  e->insns = get_insns ();
+  end_sequence ();
+}

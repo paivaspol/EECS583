@@ -1,0 +1,21 @@
+static void
+check_fold_consts (data)
+  PTR data;
+{
+  struct cfc_args *args = (struct cfc_args *) data;
+  REAL_VALUE_TYPE d0, d1;
+
+  /* We may possibly raise an exception while reading the value.  */
+  args->unordered = 1;
+  REAL_VALUE_FROM_CONST_DOUBLE (d0, args->op0);
+  REAL_VALUE_FROM_CONST_DOUBLE (d1, args->op1);
+
+  /* Comparisons of Inf versus Inf are ordered.  */
+  if (REAL_VALUE_ISNAN (d0)
+      || REAL_VALUE_ISNAN (d1))
+    return;
+  args->equal = REAL_VALUES_EQUAL (d0, d1);
+  args->op0lt = REAL_VALUES_LESS (d0, d1);
+  args->op1lt = REAL_VALUES_LESS (d1, d0);
+  args->unordered = 0;
+}

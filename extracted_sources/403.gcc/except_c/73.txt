@@ -1,0 +1,33 @@
+void
+expand_builtin_eh_return (stackadj_tree, handler_tree)
+    tree stackadj_tree, handler_tree;
+{
+  rtx stackadj, handler;
+
+  stackadj = expand_expr (stackadj_tree, cfun->eh->ehr_stackadj, VOIDmode, 0);
+  handler = expand_expr (handler_tree, cfun->eh->ehr_handler, VOIDmode, 0);
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+  if (GET_MODE (stackadj) != Pmode)
+    stackadj = convert_memory_address (Pmode, stackadj);
+
+  if (GET_MODE (handler) != Pmode)
+    handler = convert_memory_address (Pmode, handler);
+#endif
+
+  if (! cfun->eh->ehr_label)
+    {
+      cfun->eh->ehr_stackadj = copy_to_reg (stackadj);
+      cfun->eh->ehr_handler = copy_to_reg (handler);
+      cfun->eh->ehr_label = gen_label_rtx ();
+    }
+  else
+    {
+      if (stackadj != cfun->eh->ehr_stackadj)
+	emit_move_insn (cfun->eh->ehr_stackadj, stackadj);
+      if (handler != cfun->eh->ehr_handler)
+	emit_move_insn (cfun->eh->ehr_handler, handler);
+    }
+
+  emit_jump (cfun->eh->ehr_label);
+}

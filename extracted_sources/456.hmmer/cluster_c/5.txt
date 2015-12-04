@@ -1,0 +1,21 @@
+void
+PrintPhylo(FILE *fp, AINFO *ainfo, struct phylo_s *tree, int N)
+{
+  int idx;
+
+  for (idx = 0; idx < N-1; idx++)
+    {
+      fprintf(fp, "Interior node %d (code %d)\n", idx, idx+N);
+      fprintf(fp, "\tParent: %d (code %d)\n", tree[idx].parent-N, tree[idx].parent);
+      fprintf(fp, "\tLeft:   %d (%s) %f\n", 
+	      tree[idx].left < N ? tree[idx].left-N : tree[idx].left,
+	      tree[idx].left < N ? ainfo->sqinfo[tree[idx].left].name : "interior",
+	      tree[idx].lblen);
+      fprintf(fp, "\tRight:   %d (%s) %f\n", 
+	      tree[idx].right < N ? tree[idx].right-N : tree[idx].right,
+	      tree[idx].right < N ? ainfo->sqinfo[tree[idx].right].name : "interior",
+	      tree[idx].rblen);
+      fprintf(fp, "\tHeight:  %f\n", tree[idx].diff);
+      fprintf(fp, "\tIncludes:%d seqs\n", tree[idx].incnum);
+    }
+}

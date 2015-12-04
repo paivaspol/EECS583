@@ -1,0 +1,15 @@
+void write_pqr(char *fn,t_atoms *atoms,rvec x[],real phi[],real dx)
+{
+  FILE *fp;
+  int  i,rnr;
+  
+  fp=ffopen(fn,"w");
+  for(i=0; (i<atoms->nr); i++) {
+    rnr=atoms->atom[i].resnr;
+    fprintf(fp,"%-6s%5d  %-4.4s%3.3s %c%4d    %8.3f%8.3f%8.3f%6.2f%6.2f\n",
+	    "ATOM",(i+1),*atoms->atomname[i],*atoms->resname[rnr],' ',
+	    (rnr+1) % 10000,
+	    10*(dx+x[i][XX]),10*x[i][YY],10*(x[i][ZZ]),0.0,phi[i]);
+  }
+  fclose(fp);
+}

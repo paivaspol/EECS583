@@ -1,0 +1,49 @@
+static int
+count_nonfixed_reads (loop, x)
+     const struct loop *loop;
+     rtx x;
+{
+  enum rtx_code code;
+  int i;
+  const char *fmt;
+  int value;
+
+  if (x == 0)
+    return 0;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case PC:
+    case CC0:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case REG:
+      return 0;
+
+    case MEM:
+      return ((loop_invariant_p (loop, XEXP (x, 0)) != 1)
+	      + count_nonfixed_reads (loop, XEXP (x, 0)));
+
+    default:
+      break;
+    }
+
+  value = 0;
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	value += count_nonfixed_reads (loop, XEXP (x, i));
+      if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    value += count_nonfixed_reads (loop, XVECEXP (x, i, j));
+	}
+    }
+  return value;
+}

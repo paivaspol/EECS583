@@ -1,0 +1,61 @@
+void LowPassForIntra8x8Pred(int *PredPel, int block_up_left, int block_up, int block_left)
+{
+  int i;
+  int LoopArray[25];
+ 
+
+  for(i = 0; i < 25; i++)
+     LoopArray[i] = PredPel[i] ;
+
+ 	if(block_up)
+	{
+		if(block_up_left) 
+		{
+			LoopArray[1] = ((&P_Z)[0] + ((&P_Z)[1]<<1) + (&P_Z)[2] + 2)>>2;
+		}
+		else
+			LoopArray[1] = ((&P_Z)[1] + ((&P_Z)[1]<<1) + (&P_Z)[2] + 2)>>2; 
+
+
+		for(i = 2; i <16; i++)
+		{
+			LoopArray[i] = ((&P_Z)[i-1] + ((&P_Z)[i]<<1) + (&P_Z)[i+1] + 2)>>2;
+		}
+		LoopArray[16] = (P_P + (P_P<<1) + P_O + 2)>>2;
+	}
+
+	if(block_up_left) 
+	{
+		
+		if(block_up && block_left)
+		{
+				LoopArray[0] = (P_Q + (P_Z<<1) + P_A +2)>>2;
+		}
+		else
+		{
+			if(block_up)
+				LoopArray[0] = (P_Z + (P_Z<<1) + P_A +2)>>2;
+			else
+				if(block_left)
+					LoopArray[0] = (P_Z + (P_Z<<1) + P_Q +2)>>2;
+		}
+
+	}
+
+	if(block_left)
+	{
+		if(block_up_left)
+			LoopArray[17] = (P_Z + (P_Q<<1) + P_R + 2)>>2; 
+		else
+			LoopArray[17] = (P_Q + (P_Q<<1) + P_R + 2)>>2;
+
+		for(i = 18; i <24; i++)
+		{
+			LoopArray[i] = ((&P_Z)[i-1] + ((&P_Z)[i]<<1) + (&P_Z)[i+1] + 2)>>2;
+		}
+		LoopArray[24] = (P_W + (P_X<<1) + P_X + 2)>>2;
+	}
+
+  for(i = 0; i < 25; i++)
+    PredPel[i] = LoopArray[i];
+}

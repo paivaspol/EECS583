@@ -1,0 +1,18 @@
+static void
+fixup_var_refs_insns_with_hash (ht, var, promoted_mode, unsignedp, may_share)
+     struct hash_table *ht;
+     rtx var;
+     enum machine_mode promoted_mode;
+     int unsignedp;
+     rtx may_share;
+{
+  struct insns_for_mem_entry *ime
+    = (struct insns_for_mem_entry *) hash_lookup (ht, var,
+						  /*create=*/0, /*copy=*/0);
+  rtx insn_list;
+
+  for (insn_list = ime->insns; insn_list != 0; insn_list = XEXP (insn_list, 1))
+    if (INSN_P (XEXP (insn_list, 0)))
+      fixup_var_refs_insn (XEXP (insn_list, 0), var, promoted_mode,
+			   unsignedp, 1, may_share);
+}

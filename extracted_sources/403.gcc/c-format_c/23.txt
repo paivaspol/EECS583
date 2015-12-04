@@ -1,0 +1,100 @@
+static int
+maybe_read_dollar_number (status, format, dollar_needed, params, param_ptr,
+			  fki)
+     int *status;
+     const char **format;
+     int dollar_needed;
+     tree params;
+     tree *param_ptr;
+     const format_kind_info *fki;
+{
+  int argnum;
+  int overflow_flag;
+  const char *fcp = *format;
+  if (! ISDIGIT (*fcp))
+    {
+      if (dollar_needed)
+	{
+	  status_warning (status, "missing $ operand number in format");
+	  return -1;
+	}
+      else
+	return 0;
+    }
+  argnum = 0;
+  overflow_flag = 0;
+  while (ISDIGIT (*fcp))
+    {
+      int nargnum;
+      nargnum = 10 * argnum + (*fcp - '0');
+      if (nargnum < 0 || nargnum / 10 != argnum)
+	overflow_flag = 1;
+      argnum = nargnum;
+      fcp++;
+    }
+  if (*fcp != '$')
+    {
+      if (dollar_needed)
+	{
+	  status_warning (status, "missing $ operand number in format");
+	  return -1;
+	}
+      else
+	return 0;
+    }
+  *format = fcp + 1;
+  if (pedantic && !dollar_format_warned)
+    {
+      status_warning (status,
+		      "%s does not support %%n$ operand number formats",
+		      C_STD_NAME (STD_EXT));
+      dollar_format_warned = 1;
+    }
+  if (overflow_flag || argnum == 0
+      || (dollar_first_arg_num && argnum > dollar_arguments_count))
+    {
+      status_warning (status, "operand number out of range in format");
+      return -1;
+    }
+  if (argnum > dollar_max_arg_used)
+    dollar_max_arg_used = argnum;
+  /* For vprintf-style functions we may need to allocate more memory to
+     track which arguments are used.  */
+  while (dollar_arguments_alloc < dollar_max_arg_used)
+    {
+      int nalloc;
+      nalloc = 2 * dollar_arguments_alloc + 16;
+      dollar_arguments_used = xrealloc (dollar_arguments_used, nalloc);
+      dollar_arguments_pointer_p = xrealloc (dollar_arguments_pointer_p,
+					     nalloc);
+      memset (dollar_arguments_used + dollar_arguments_alloc, 0,
+	      nalloc - dollar_arguments_alloc);
+      dollar_arguments_alloc = nalloc;
+    }
+  if (!(fki->flags & (int) FMT_FLAG_DOLLAR_MULTIPLE)
+      && dollar_arguments_used[argnum - 1] == 1)
+    {
+      dollar_arguments_used[argnum - 1] = 2;
+      status_warning (status,
+		      "format argument %d used more than once in %s format",
+		      argnum, fki->name);
+    }
+  else
+    dollar_arguments_used[argnum - 1] = 1;
+  if (dollar_first_arg_num)
+    {
+      int i;
+      *param_ptr = params;
+      for (i = 1; i < argnum && *param_ptr != 0; i++)
+	*param_ptr = TREE_CHAIN (*param_ptr);
+
+      if (*param_ptr == 0)
+	{
+	  /* This case shouldn't be caught here.  */
+	  abort ();
+	}
+    }
+  else
+    *param_ptr = 0;
+  return argnum;
+}

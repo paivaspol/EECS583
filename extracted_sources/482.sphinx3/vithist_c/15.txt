@@ -1,0 +1,60 @@
+void vithist_dump (vithist_t *vh, int32 frm, kbcore_t *kbc, FILE *fp)
+{
+    int32 b, l, i, j;
+    dict_t *dict;
+    lm_t *lm;
+    vithist_entry_t *ve;
+    s3lmwid_t lwid;
+    int32 sf, ef;
+    
+    dict = kbcore_dict (kbc);
+    lm = kbcore_lm (kbc);
+    
+    if (frm >= 0) {
+	sf = frm;
+	ef = frm;
+	
+	fprintf (fp, "VITHIST  frame %d  #entries %d\n",
+		 frm, vh->frame_start[sf+1] - vh->frame_start[sf]);
+    } else {
+	sf = 0;
+	ef = vh->n_frm - 1;
+	
+	fprintf (fp, "VITHIST  #frames %d  #entries %d\n", vh->n_frm, vh->n_entry);
+    }
+    fprintf (fp, "\t%7s %5s %5s %11s %9s %8s %7s %4s Word (LM-state)\n",
+	     "Seq/Val", "SFrm", "EFrm", "PathScr", "SegAScr", "SegLScr", "Pred", "Type");
+    
+    for (i = sf; i <= ef; i++) {
+	fprintf (fp, "%5d BS: %11d BV: %8d\n", i, vh->bestscore[i], vh->bestvh[i]);
+	
+	for (j = vh->frame_start[i]; j < vh->frame_start[i+1]; j++) {
+	    /* This entry */
+	    b = VITHIST_ID2BLK(j);
+	    l = VITHIST_ID2BLKOFFSET (j);
+	    ve = vh->entry[b] + l;
+	    
+	    fprintf (fp, "\t%c%6d %5d %5d %11d %9d %8d %7d %4d %s",
+		     (ve->valid ? ' ' : '*'), j,
+		     ve->sf, ve->ef, ve->score, ve->ascr, ve->lscr, ve->pred, ve->type,
+		     dict_wordstr (dict, ve->wid));
+	    
+	    fprintf (fp, " (%s", lm_wordstr (lm, ve->lmstate.lm3g.lwid[0]));
+	    lwid = ve->lmstate.lm3g.lwid[1];
+	    if (IS_S3LMWID(lwid))
+		fprintf (fp, ", %s", lm_wordstr (lm, lwid));
+	    fprintf (fp, ")\n");
+	}
+	
+	if (j == vh->frame_start[i])
+	    fprintf (fp, "\n");
+    }
+
+#if 0    
+    if (vh->lwidlist)
+	vithist_lmstate_dump (vh, kbc, fp);
+#endif
+
+    fprintf (fp, "END_VITHIST\n");
+    fflush (fp);
+}

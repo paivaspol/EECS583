@@ -1,0 +1,18 @@
+static void
+leaf_renumber_regs (first)
+     rtx first;
+{
+  rtx insn;
+
+  /* Renumber only the actual patterns.
+     The reg-notes can contain frame pointer refs,
+     and renumbering them could crash, and should not be needed.  */
+  for (insn = first; insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn))
+      leaf_renumber_regs_insn (PATTERN (insn));
+  for (insn = current_function_epilogue_delay_list;
+       insn;
+       insn = XEXP (insn, 1))
+    if (INSN_P (XEXP (insn, 0)))
+      leaf_renumber_regs_insn (PATTERN (XEXP (insn, 0)));
+}

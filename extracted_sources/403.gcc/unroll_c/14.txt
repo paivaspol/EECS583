@@ -1,0 +1,44 @@
+static rtx
+loop_find_equiv_value (loop, reg)
+     const struct loop *loop;
+     rtx reg;
+{
+  rtx loop_start = loop->start;
+  rtx insn, set;
+  rtx ret;
+
+  ret = reg;
+  for (insn = PREV_INSN (loop_start); insn; insn = PREV_INSN (insn))
+    {
+      if (GET_CODE (insn) == CODE_LABEL)
+	break;
+
+      else if (INSN_P (insn) && reg_set_p (reg, insn))
+	{
+	  /* We found the last insn before the loop that sets the register.
+	     If it sets the entire register, and has a REG_EQUAL note,
+	     then use the value of the REG_EQUAL note.  */
+	  if ((set = single_set (insn))
+	      && (SET_DEST (set) == reg))
+	    {
+	      rtx note = find_reg_note (insn, REG_EQUAL, NULL_RTX);
+
+	      /* Only use the REG_EQUAL note if it is a constant.
+		 Other things, divide in particular, will cause
+		 problems later if we use them.  */
+	      if (note && GET_CODE (XEXP (note, 0)) != EXPR_LIST
+		  && CONSTANT_P (XEXP (note, 0)))
+		ret = XEXP (note, 0);
+	      else
+		ret = SET_SRC (set);
+
+	      /* We cannot do this if it changes between the
+		 assignment and loop start though.  */
+	      if (modified_between_p (ret, insn, loop_start))
+		ret = reg;
+	    }
+	  break;
+	}
+    }
+  return ret;
+}

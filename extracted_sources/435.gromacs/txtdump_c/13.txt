@@ -1,0 +1,48 @@
+void pr_grp_opts(FILE *out,int indent,char *title,t_grpopts *opts)
+{
+  int i,m;
+
+  fprintf(out,"%s:\n",title);
+  
+  pr_indent(out,indent);
+  fprintf(out,"nrdf:\t");
+  for(i=0; (i<opts->ngtc); i++)
+    fprintf(out,"  %10g",opts->nrdf[i]);
+  fprintf(out,"\n");
+  
+  pr_indent(out,indent);
+  fprintf(out,"ref_t:\t");
+  for(i=0; (i<opts->ngtc); i++)
+    fprintf(out,"  %10g",opts->ref_t[i]);
+  fprintf(out,"\n");
+  
+  pr_indent(out,indent);
+  fprintf(out,"tau_t:\t");
+  for(i=0; (i<opts->ngtc); i++)
+    fprintf(out,"  %10g",opts->tau_t[i]);
+  fprintf(out,"\n");  
+  
+  pr_indent(out,indent);
+  fprintf(out,"acc:\t");
+  for(i=0; (i<opts->ngacc); i++)
+    for(m=0; (m<DIM); m++)
+      fprintf(out,"  %10g",opts->acc[i][m]);
+  fprintf(out,"\n");
+
+  pr_indent(out,indent);
+  fprintf(out,"nfreeze:");
+  for(i=0; (i<opts->ngfrz); i++)
+    for(m=0; (m<DIM); m++)
+      fprintf(out,"  %10s",opts->nFreeze[i][m] ? "Y" : "N");
+  fprintf(out,"\n");
+
+  for(i=0; (i<opts->ngener); i++) {
+    pr_indent(out,indent);
+    fprintf(out,"energygrp_excl[%3d]:",i);
+    for(m=0; (m<opts->ngener); m++)
+      fprintf(out," %d",opts->eg_excl[opts->ngener*i+m]);
+    fprintf(out,"\n");
+  }
+
+  fflush(out);
+}

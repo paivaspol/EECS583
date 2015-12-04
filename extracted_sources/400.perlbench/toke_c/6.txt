@@ -1,0 +1,18 @@
+int
+Perl_yylex_r(pTHX_ YYSTYPE *lvalp, int *lcharp)
+{
+    int r;
+
+    yyactlevel++;
+    yylval_pointer[yyactlevel] = lvalp;
+    yychar_pointer[yyactlevel] = lcharp;
+    if (yyactlevel >= YYMAXLEVEL)
+	Perl_croak(aTHX_ "panic: YYMAXLEVEL");
+
+    r = Perl_yylex(aTHX);
+
+    if (yyactlevel > 0)
+       yyactlevel--;
+
+    return r;
+}

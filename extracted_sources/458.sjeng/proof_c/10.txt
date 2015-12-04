@@ -1,0 +1,37 @@
+void 
+pn2_eval (node_t * root)
+{
+  node_t *mostproving;
+#ifdef PN2
+  node_t *newroot;
+#endif
+  node_t *currentnode;
+  node_t *oldparent;
+
+  nodecount2 = 0;
+  pn2 = TRUE;
+
+  oldparent = root->parent;
+  root->parent = 0;
+
+  pn_eval (root);
+  
+  set_proof_and_disproof_numbers (root);
+
+  currentnode = root;
+
+  while (root->proof != 0 && root->disproof != 0 && nodecount2 < nodecount )
+    {
+      mostproving = select_most_proving (root);
+      develop_node (mostproving);
+      update_ancestors (mostproving);
+    };
+
+  root->expanded = FALSE;
+  root->num_children = 0;
+
+  root->parent = oldparent;
+
+  pn2 = FALSE;
+  
+}

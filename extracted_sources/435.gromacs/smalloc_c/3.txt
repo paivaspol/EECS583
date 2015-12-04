@@ -1,0 +1,23 @@
+void *save_realloc(char *name,char *file,int line,void *ptr,unsigned size)
+{
+  void *p;
+  
+  p=NULL;
+  if (size==0)
+    p=NULL;
+  else
+    {
+      if (ptr==NULL) 
+	p=malloc((size_t)size); 
+      else 
+	p=realloc(ptr,(size_t)size);
+      if (p==NULL) 
+        fatal_error(errno,
+                    "realloc for %s (%d bytes, file %s, line %d, %s=0x%8x)",
+                    name,size,file,line,name,ptr);
+    }
+#ifdef DEBUG
+  log_action(1,name,file,line,1,size,p);
+#endif
+  return p;
+}

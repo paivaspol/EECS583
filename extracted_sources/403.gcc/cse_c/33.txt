@@ -1,0 +1,83 @@
+static rtx
+canon_reg (x, insn)
+     rtx x;
+     rtx insn;
+{
+  int i;
+  enum rtx_code code;
+  const char *fmt;
+
+  if (x == 0)
+    return x;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case PC:
+    case CC0:
+    case CONST:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      return x;
+
+    case REG:
+      {
+	int first;
+	int q;
+	struct qty_table_elem *ent;
+
+	/* Never replace a hard reg, because hard regs can appear
+	   in more than one machine mode, and we must preserve the mode
+	   of each occurrence.  Also, some hard regs appear in
+	   MEMs that are shared and mustn't be altered.  Don't try to
+	   replace any reg that maps to a reg of class NO_REGS.  */
+	if (REGNO (x) < FIRST_PSEUDO_REGISTER
+	    || ! REGNO_QTY_VALID_P (REGNO (x)))
+	  return x;
+
+	q = REG_QTY (REGNO (x));
+	ent = &qty_table[q];
+	first = ent->first_reg;
+	return (first >= FIRST_PSEUDO_REGISTER ? regno_reg_rtx[first]
+		: REGNO_REG_CLASS (first) == NO_REGS ? x
+		: gen_rtx_REG (ent->mode, first));
+      }
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      int j;
+
+      if (fmt[i] == 'e')
+	{
+	  rtx new = canon_reg (XEXP (x, i), insn);
+	  int insn_code;
+
+	  /* If replacing pseudo with hard reg or vice versa, ensure the
+	     insn remains valid.  Likewise if the insn has MATCH_DUPs.  */
+	  if (insn != 0 && new != 0
+	      && GET_CODE (new) == REG && GET_CODE (XEXP (x, i)) == REG
+	      && (((REGNO (new) < FIRST_PSEUDO_REGISTER)
+		   != (REGNO (XEXP (x, i)) < FIRST_PSEUDO_REGISTER))
+		  || (insn_code = recog_memoized (insn)) < 0
+		  || insn_data[insn_code].n_dups > 0))
+	    validate_change (insn, &XEXP (x, i), new, 1);
+	  else
+	    XEXP (x, i) = new;
+	}
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  XVECEXP (x, i, j) = canon_reg (XVECEXP (x, i, j), insn);
+    }
+
+  return x;
+}

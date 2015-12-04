@@ -1,0 +1,34 @@
+void
+expand_eh_region_end_allowed (allowed, failure)
+     tree allowed, failure;
+{
+  struct eh_region *region;
+  rtx around_label;
+
+  if (! doing_eh (0))
+    return;
+
+  region = expand_eh_region_end ();
+  region->type = ERT_ALLOWED_EXCEPTIONS;
+  region->u.allowed.type_list = allowed;
+  region->label = gen_label_rtx ();
+
+  for (; allowed ; allowed = TREE_CHAIN (allowed))
+    add_type_for_runtime (TREE_VALUE (allowed));
+
+  /* We must emit the call to FAILURE here, so that if this function
+     throws a different exception, that it will be processed by the
+     correct region.  */
+
+  around_label = gen_label_rtx ();
+  emit_jump (around_label);
+
+  emit_label (region->label);
+  expand_expr (failure, const0_rtx, VOIDmode, EXPAND_NORMAL);
+  /* We must adjust the stack before we reach the AROUND_LABEL because
+     the call to FAILURE does not occur on all paths to the
+     AROUND_LABEL.  */
+  do_pending_stack_adjust ();
+
+  emit_label (around_label);
+}

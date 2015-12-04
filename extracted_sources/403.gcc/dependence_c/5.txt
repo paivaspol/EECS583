@@ -1,0 +1,32 @@
+static int
+get_low_bound (node, variable)
+     tree node;
+     const char *variable;
+{
+
+  if (TREE_CODE (node) == SCOPE_STMT)
+    node = TREE_CHAIN (node);
+
+  if (! node)
+    return INT_MIN;
+
+  while (TREE_CODE (node) == COMPOUND_EXPR)
+    {
+      if (TREE_CODE (TREE_OPERAND (node, 0)) == MODIFY_EXPR
+	  && (TREE_CODE (TREE_OPERAND (node, 0)) == VAR_DECL
+	      && IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (node, 0)))
+	      == variable))
+	break;
+    }
+
+  if (TREE_CODE (node) == EXPR_STMT)
+    node = TREE_OPERAND (node, 0);
+  if (TREE_CODE (node) == MODIFY_EXPR
+      && (TREE_CODE (TREE_OPERAND (node, 0)) == VAR_DECL
+	  && IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (node, 0)))
+	  == variable))
+    {
+      return TREE_INT_CST_LOW (TREE_OPERAND (node, 1));
+    }
+  return INT_MIN;
+}

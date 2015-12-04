@@ -1,0 +1,186 @@
+static enum machine_mode 
+  regno_save_mode[FIRST_PSEUDO_REGISTER][MAX_MOVE_MAX / MIN_UNITS_PER_WORD + 1];
+
+/* For each hard register, a place on the stack where it can be saved,
+   if needed.  */
+
+static rtx 
+  regno_save_mem[FIRST_PSEUDO_REGISTER][MAX_MOVE_MAX / MIN_UNITS_PER_WORD + 1];
+
+/* We will only make a register eligible for caller-save if it can be
+   saved in its widest mode with a simple SET insn as long as the memory
+   address is valid.  We record the INSN_CODE is those insns here since
+   when we emit them, the addresses might not be valid, so they might not
+   be recognized.  */
+
+static int
+  reg_save_code[FIRST_PSEUDO_REGISTER][MAX_MACHINE_MODE];
+static int 
+  reg_restore_code[FIRST_PSEUDO_REGISTER][MAX_MACHINE_MODE];
+
+/* Set of hard regs currently residing in save area (during insn scan).  */
+
+static HARD_REG_SET hard_regs_saved;
+
+/* Number of registers currently in hard_regs_saved.  */
+
+static int n_regs_saved;
+
+/* Computed by mark_referenced_regs, all regs referenced in a given
+   insn.  */
+static HARD_REG_SET referenced_regs;
+
+/* Computed in mark_set_regs, holds all registers set by the current
+   instruction.  */
+static HARD_REG_SET this_insn_sets;
+
+
+static void mark_set_regs		PARAMS ((rtx, rtx, void *));
+static void mark_referenced_regs	PARAMS ((rtx));
+static int insert_save			PARAMS ((struct insn_chain *, int, int,
+						 HARD_REG_SET *,
+						 enum machine_mode *));
+static int insert_restore		PARAMS ((struct insn_chain *, int, int,
+						 int, enum machine_mode *));
+static struct insn_chain *insert_one_insn PARAMS ((struct insn_chain *, int,
+						   int, rtx));
+static void add_stored_regs		PARAMS ((rtx, rtx, void *));
+
+/* Initialize for caller-save.
+
+   Look at all the hard registers that are used by a call and for which
+   regclass.c has not already excluded from being used across a call.
+
+   Ensure that we can find a mode to save the register and that there is a 
+   simple insn to save and restore the register.  This latter check avoids
+   problems that would occur if we tried to save the MQ register of some
+   machines directly into memory.  */
+
+void
+init_caller_save ()
+{
+  rtx addr_reg;
+  int offset;
+  rtx address;
+  int i, j;
+  enum machine_mode mode;
+
+  /* First find all the registers that we need to deal with and all
+     the modes that they can have.  If we can't find a mode to use,
+     we can't have the register live over calls.  */
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    {
+      if (call_used_regs[i] && ! call_fixed_regs[i])
+	{
+	  for (j = 1; j <= MOVE_MAX_WORDS; j++)
+	    {
+	      regno_save_mode[i][j] = HARD_REGNO_CALLER_SAVE_MODE (i, j,
+								   VOIDmode);
+	      if (regno_save_mode[i][j] == VOIDmode && j == 1)
+		{
+		  call_fixed_regs[i] = 1;
+		  SET_HARD_REG_BIT (call_fixed_reg_set, i);
+		}
+	    }
+	}
+      else
+	regno_save_mode[i][1] = VOIDmode;
+    }
+
+  /* The following code tries to approximate the conditions under which
+     we can easily save and restore a register without scratch registers or
+     other complexities.  It will usually work, except under conditions where
+     the validity of an insn operand is dependent on the address offset.
+     No such cases are currently known.
+
+     We first find a typical offset from some BASE_REG_CLASS register.
+     This address is chosen by finding the first register in the class
+     and by finding the smallest power of two that is a valid offset from
+     that register in every mode we will use to save registers.  */
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    if (TEST_HARD_REG_BIT
+	(reg_class_contents
+	 [(int) MODE_BASE_REG_CLASS (regno_save_mode [i][1])], i))
+      break;
+
+  if (i == FIRST_PSEUDO_REGISTER)
+    abort ();
+
+  addr_reg = gen_rtx_REG (Pmode, i);
+
+  for (offset = 1 << (HOST_BITS_PER_INT / 2); offset; offset >>= 1)
+    {
+      address = gen_rtx_PLUS (Pmode, addr_reg, GEN_INT (offset));
+
+      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	if (regno_save_mode[i][1] != VOIDmode
+	  && ! strict_memory_address_p (regno_save_mode[i][1], address))
+	  break;
+
+      if (i == FIRST_PSEUDO_REGISTER)
+	break;
+    }
+
+  /* If we didn't find a valid address, we must use register indirect.  */
+  if (offset == 0)
+    address = addr_reg;
+
+  /* Next we try to form an insn to save and restore the register.  We
+     see if such an insn is recognized and meets its constraints.  */
+
+  start_sequence ();
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    for (mode = 0 ; mode < MAX_MACHINE_MODE; mode++)
+      if (HARD_REGNO_MODE_OK (i, mode))
+        {
+	  rtx mem = gen_rtx_MEM (mode, address);
+	  rtx reg = gen_rtx_REG (mode, i);
+	  rtx savepat = gen_rtx_SET (VOIDmode, mem, reg);
+	  rtx restpat = gen_rtx_SET (VOIDmode, reg, mem);
+	  rtx saveinsn = emit_insn (savepat);
+	  rtx restinsn = emit_insn (restpat);
+	  int ok;
+
+	  reg_save_code[i][mode] = recog_memoized (saveinsn);
+	  reg_restore_code[i][mode] = recog_memoized (restinsn);
+
+	  /* Now extract both insns and see if we can meet their
+             constraints.  */
+	  ok = (reg_save_code[i][mode] != -1
+		&& reg_restore_code[i][mode] != -1);
+	  if (ok)
+	    {
+	      extract_insn (saveinsn);
+	      ok = constrain_operands (1);
+	      extract_insn (restinsn);
+	      ok &= constrain_operands (1);
+	    }
+
+	  if (! ok)
+	    {
+	      reg_save_code[i][mode] = -1;
+	      reg_restore_code[i][mode] = -1;
+	    }
+        }
+      else
+	{
+	  reg_save_code[i][mode] = -1;
+	  reg_restore_code[i][mode] = -1;
+	}
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    for (j = 1; j <= MOVE_MAX_WORDS; j++)
+      if (reg_save_code [i][regno_save_mode[i][j]] == -1)
+	{
+	  regno_save_mode[i][j] = VOIDmode;
+	  if (j == 1)
+	    {
+	      call_fixed_regs[i] = 1;
+	      SET_HARD_REG_BIT (call_fixed_reg_set, i);
+	    }
+	}
+
+  end_sequence ();
+}

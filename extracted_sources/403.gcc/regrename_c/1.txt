@@ -1,0 +1,37 @@
+static void scan_rtx_reg PARAMS ((rtx, rtx *, enum reg_class,
+				  enum scan_actions, enum op_type, int));
+static void scan_rtx_address PARAMS ((rtx, rtx *, enum reg_class,
+				      enum scan_actions, enum machine_mode));
+static void scan_rtx PARAMS ((rtx, rtx *, enum reg_class,
+			      enum scan_actions, enum op_type, int));
+static struct du_chain *build_def_use PARAMS ((basic_block));
+static void dump_def_use_chain PARAMS ((struct du_chain *));
+static void note_sets PARAMS ((rtx, rtx, void *));
+static void clear_dead_regs PARAMS ((HARD_REG_SET *, enum machine_mode, rtx));
+static void merge_overlapping_regs PARAMS ((basic_block, HARD_REG_SET *,
+					    struct du_chain *));
+
+/* Called through note_stores from update_life.  Find sets of registers, and
+   record them in *DATA (which is actually a HARD_REG_SET *).  */
+
+static void
+note_sets (x, set, data)
+     rtx x;
+     rtx set ATTRIBUTE_UNUSED;
+     void *data;
+{
+  HARD_REG_SET *pset = (HARD_REG_SET *) data;
+  unsigned int regno;
+  int nregs;
+  if (GET_CODE (x) != REG)
+    return;
+  regno = REGNO (x);
+  nregs = HARD_REGNO_NREGS (regno, GET_MODE (x));
+
+  /* There must not be pseudos at this point.  */
+  if (regno + nregs > FIRST_PSEUDO_REGISTER)
+    abort ();
+
+  while (nregs-- > 0)
+    SET_HARD_REG_BIT (*pset, regno + nregs);
+}

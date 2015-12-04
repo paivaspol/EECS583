@@ -1,0 +1,42 @@
+static int
+skip_block_comment (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  cppchar_t c = EOF, prevc = EOF;
+
+  pfile->state.lexing_comment = 1;
+  while (buffer->cur != buffer->rlimit)
+    {
+      prevc = c, c = *buffer->cur++;
+
+      /* FIXME: For speed, create a new character class of characters
+	 of interest inside block comments.  */
+      if (c == '?' || c == '\\')
+	c = skip_escaped_newlines (pfile);
+
+      /* People like decorating comments with '*', so check for '/'
+	 instead for efficiency.  */
+      if (c == '/')
+	{
+	  if (prevc == '*')
+	    break;
+
+	  /* Warn about potential nested comments, but not if the '/'
+	     comes immediately before the true comment delimiter.
+	     Don't bother to get it right across escaped newlines.  */
+	  if (CPP_OPTION (pfile, warn_comments)
+	      && buffer->cur[0] == '*' && buffer->cur[1] != '/')
+	    cpp_warning_with_line (pfile,
+				   pfile->line, CPP_BUF_COL (buffer),
+				   "\"/*\" within comment");
+	}
+      else if (is_vspace (c))
+	handle_newline (pfile);
+      else if (c == '\t')
+	adjust_column (pfile);
+    }
+
+  pfile->state.lexing_comment = 0;
+  return c != '/' || prevc != '*';
+}

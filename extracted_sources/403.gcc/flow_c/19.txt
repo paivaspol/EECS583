@@ -1,0 +1,54 @@
+static void
+propagate_block_delete_insn (bb, insn)
+     basic_block bb;
+     rtx insn;
+{
+  rtx inote = find_reg_note (insn, REG_LABEL, NULL_RTX);
+  bool purge = false;
+
+  /* If the insn referred to a label, and that label was attached to
+     an ADDR_VEC, it's safe to delete the ADDR_VEC.  In fact, it's
+     pretty much mandatory to delete it, because the ADDR_VEC may be
+     referencing labels that no longer exist.
+
+     INSN may reference a deleted label, particularly when a jump
+     table has been optimized into a direct jump.  There's no
+     real good way to fix up the reference to the deleted label
+     when the label is deleted, so we just allow it here.
+
+     After dead code elimination is complete, we do search for
+     any REG_LABEL notes which reference deleted labels as a
+     sanity check.  */
+
+  if (inote && GET_CODE (inote) == CODE_LABEL)
+    {
+      rtx label = XEXP (inote, 0);
+      rtx next;
+
+      /* The label may be forced if it has been put in the constant
+	 pool.  If that is the only use we must discard the table
+	 jump following it, but not the label itself.  */
+      if (LABEL_NUSES (label) == 1 + LABEL_PRESERVE_P (label)
+	  && (next = next_nonnote_insn (label)) != NULL
+	  && GET_CODE (next) == JUMP_INSN
+	  && (GET_CODE (PATTERN (next)) == ADDR_VEC
+	      || GET_CODE (PATTERN (next)) == ADDR_DIFF_VEC))
+	{
+	  rtx pat = PATTERN (next);
+	  int diff_vec_p = GET_CODE (pat) == ADDR_DIFF_VEC;
+	  int len = XVECLEN (pat, diff_vec_p);
+	  int i;
+
+	  for (i = 0; i < len; i++)
+	    LABEL_NUSES (XEXP (XVECEXP (pat, diff_vec_p, i), 0))--;
+
+	  delete_insn (next);
+	}
+    }
+
+  if (bb->end == insn)
+    purge = true;
+  delete_insn (insn);
+  if (purge)
+    purge_dead_edges (bb);
+}

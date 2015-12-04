@@ -1,0 +1,47 @@
+static void
+parse_float (data)
+  PTR data;
+{
+  struct pf_args * args = (struct pf_args *) data;
+  const char *typename;
+
+  args->conversion_errno = 0;
+  args->type = double_type_node;
+  typename = "double";
+
+  /* The second argument, machine_mode, of REAL_VALUE_ATOF
+     tells the desired precision of the binary result
+     of decimal-to-binary conversion.  */
+
+  if (args->fflag)
+    {
+      if (args->lflag)
+	error ("both 'f' and 'l' suffixes on floating constant");
+
+      args->type = float_type_node;
+      typename = "float";
+    }
+  else if (args->lflag)
+    {
+      args->type = long_double_type_node;
+      typename = "long double";
+    }
+  else if (flag_single_precision_constant)
+    {
+      args->type = float_type_node;
+      typename = "float";
+    }
+
+  errno = 0;
+  if (args->base == 16)
+    args->value = REAL_VALUE_HTOF (args->str, TYPE_MODE (args->type));
+  else
+    args->value = REAL_VALUE_ATOF (args->str, TYPE_MODE (args->type));
+
+  args->conversion_errno = errno;
+  /* A diagnostic is required here by some ISO C testsuites.
+     This is not pedwarn, because some people don't want
+     an error for this.  */
+  if (REAL_VALUE_ISINF (args->value) && pedantic)
+    warning ("floating point number exceeds range of '%s'", typename);
+}

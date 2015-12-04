@@ -1,0 +1,21 @@
+void
+quantum_cond_phase_kick(int control, int target, float gamma, quantum_reg *reg)
+{
+  int i;
+  COMPLEX_FLOAT z;
+
+  if(quantum_objcode_put(COND_PHASE, control, target, (double) gamma))
+    return;  
+
+  z = quantum_cexp(gamma);
+
+  for(i=0; i<reg->size; i++)
+    {
+      if(reg->node[i].state & ((MAX_UNSIGNED) 1 << control))
+	{
+	  if(reg->node[i].state & ((MAX_UNSIGNED) 1 << target))
+	    reg->node[i].amplitude *= z;
+	}
+     }
+  quantum_decohere(reg);
+}

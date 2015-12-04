@@ -1,0 +1,18 @@
+static const char *
+output_519 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  if (GET_CODE (operands[1]) == LABEL_REF)
+    operands[1] = XEXP (operands[1], 0);
+  output_asm_insn ("call\t%X1", operands);
+  if (! TARGET_DEEP_BRANCH_PREDICTION)
+    {
+      ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "L",
+				 CODE_LABEL_NUMBER (operands[1]));
+      return "pop{l}\t%0";
+    }
+  RET;
+}
+}

@@ -1,0 +1,112 @@
+static void
+add_const_value_attribute (die, rtl)
+     dw_die_ref die;
+     rtx rtl;
+{
+  switch (GET_CODE (rtl))
+    {
+    case CONST_INT:
+      /* Note that a CONST_INT rtx could represent either an integer
+	 or a floating-point constant.  A CONST_INT is used whenever
+	 the constant will fit into a single word.  In all such
+	 cases, the original mode of the constant value is wiped
+	 out, and the CONST_INT rtx is assigned VOIDmode.  */
+      {
+	HOST_WIDE_INT val = INTVAL (rtl);
+	
+	/* ??? We really should be using HOST_WIDE_INT throughout.  */
+	if (val < 0 && (long) val == val)
+	  add_AT_int (die, DW_AT_const_value, (long) val);
+	else if ((unsigned long) val == (unsigned HOST_WIDE_INT) val)
+	  add_AT_unsigned (die, DW_AT_const_value, (unsigned long) val);
+	else
+	  {
+#if HOST_BITS_PER_LONG * 2 == HOST_BITS_PER_WIDE_INT
+	    add_AT_long_long (die, DW_AT_const_value,
+			      val >> HOST_BITS_PER_LONG, val);
+#else
+	    abort ();
+#endif
+	  }
+      }
+      break;
+
+    case CONST_DOUBLE:
+      /* Note that a CONST_DOUBLE rtx could represent either an integer or a
+         floating-point constant.  A CONST_DOUBLE is used whenever the
+         constant requires more than one word in order to be adequately
+         represented.  We output CONST_DOUBLEs as blocks.  */
+      {
+	enum machine_mode mode = GET_MODE (rtl);
+
+	if (GET_MODE_CLASS (mode) == MODE_FLOAT)
+	  {
+	    unsigned length = GET_MODE_SIZE (mode) / 4;
+ 	    long *array = (long *) xmalloc (sizeof (long) * length);
+	    REAL_VALUE_TYPE rv;
+
+	    REAL_VALUE_FROM_CONST_DOUBLE (rv, rtl);
+	    switch (mode)
+	      {
+	      case SFmode:
+		REAL_VALUE_TO_TARGET_SINGLE (rv, array[0]);
+		break;
+
+	      case DFmode:
+		REAL_VALUE_TO_TARGET_DOUBLE (rv, array);
+		break;
+
+	      case XFmode:
+	      case TFmode:
+		REAL_VALUE_TO_TARGET_LONG_DOUBLE (rv, array);
+		break;
+
+	      default:
+		abort ();
+	      }
+
+	    add_AT_float (die, DW_AT_const_value, length, array);
+	  }
+	else
+	  {
+	    /* ??? We really should be using HOST_WIDE_INT throughout.  */
+	    if (HOST_BITS_PER_LONG != HOST_BITS_PER_WIDE_INT)
+	      abort ();
+
+	    add_AT_long_long (die, DW_AT_const_value,
+			      CONST_DOUBLE_HIGH (rtl), CONST_DOUBLE_LOW (rtl));
+	  }
+      }
+      break;
+
+    case CONST_STRING:
+      add_AT_string (die, DW_AT_const_value, XSTR (rtl, 0));
+      break;
+
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case CONST:
+      add_AT_addr (die, DW_AT_const_value, rtl);
+      VARRAY_PUSH_RTX (used_rtx_varray, rtl);
+      break;
+
+    case PLUS:
+      /* In cases where an inlined instance of an inline function is passed
+         the address of an `auto' variable (which is local to the caller) we
+         can get a situation where the DECL_RTL of the artificial local
+         variable (for the inlining) which acts as a stand-in for the
+         corresponding formal parameter (of the inline function) will look
+         like (plus:SI (reg:SI FRAME_PTR) (const_int ...)).  This is not
+         exactly a compile-time constant expression, but it isn't the address
+         of the (artificial) local variable either.  Rather, it represents the
+         *value* which the artificial local variable always has during its
+         lifetime.  We currently have no way to represent such quasi-constant
+         values in Dwarf, so for now we just punt and generate nothing.  */
+      break;
+
+    default:
+      /* No other kinds of rtx should be possible here.  */
+      abort ();
+    }
+
+}

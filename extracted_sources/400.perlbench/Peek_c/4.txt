@@ -1,0 +1,11 @@
+void
+mstats2hash(SV *sv, SV *rv, int level)
+{
+    if (!(SvROK(rv) && SvTYPE(SvRV(rv)) == SVt_PVHV))
+	croak("Not a hash reference");
+    if (!SvPOK(sv))
+	croak("Undefined value when expecting mstats buffer");
+    if (SvCUR(sv) != sizeof(struct mstats_buffer))
+	croak("Wrong size for a value with a mstats buffer");
+    _mstats_to_hv((HV *)SvRV(rv), (struct mstats_buffer*)SvPVX(sv), level);
+}

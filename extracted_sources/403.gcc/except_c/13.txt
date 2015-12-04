@@ -1,0 +1,17 @@
+void
+expand_start_all_catch ()
+{
+  struct eh_region *region;
+
+  if (! doing_eh (1))
+    return;
+
+  region = expand_eh_region_end ();
+  region->type = ERT_TRY;
+  region->u.try.prev_try = cfun->eh->try_region;
+  region->u.try.continue_label = gen_label_rtx ();
+
+  cfun->eh->try_region = region;
+
+  emit_jump (region->u.try.continue_label);
+}

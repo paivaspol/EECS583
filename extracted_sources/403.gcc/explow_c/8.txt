@@ -1,0 +1,13 @@
+static void
+emit_stack_probe (address)
+     rtx address;
+{
+  rtx memref = gen_rtx_MEM (word_mode, address);
+
+  MEM_VOLATILE_P (memref) = 1;
+
+  if (STACK_CHECK_PROBE_LOAD)
+    emit_move_insn (gen_reg_rtx (word_mode), memref);
+  else
+    emit_move_insn (memref, const0_rtx);
+}

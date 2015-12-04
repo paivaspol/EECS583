@@ -1,0 +1,39 @@
+static void triphone_add (mdef_t *m,
+			  s3cipid_t ci, s3cipid_t lc, s3cipid_t rc, word_posn_t wpos,
+			  s3pid_t p)
+{
+    ph_lc_t *lcptr;
+    ph_rc_t *rcptr;
+    
+    assert (p < m->n_phone);
+
+    /* Fill in phone[p] information (state and tmat mappings added later) */
+    m->phone[p].ci = ci;
+    m->phone[p].lc = lc;
+    m->phone[p].rc = rc;
+    m->phone[p].wpos = wpos;
+
+    /* Create <ci,lc,rc,wpos> -> p mapping if not a CI phone */
+    if (p >= m->n_ciphone) {
+	if ((lcptr = find_ph_lc (m->wpos_ci_lclist[wpos][(int)ci], lc)) 
+	    == NULL)
+	{
+	lcptr = (ph_lc_t *) ckd_calloc (1, sizeof(ph_lc_t)); /* freed at mdef_free, I believe */
+	    lcptr->lc = lc;
+	    lcptr->next = m->wpos_ci_lclist[wpos][(int)ci];
+	    m->wpos_ci_lclist[wpos][(int)ci] = lcptr; /* This is what needs to be freed */
+	}
+	if ((rcptr = find_ph_rc (lcptr->rclist, rc)) != NULL) {
+	    char buf[4096];
+	    
+	    mdef_phone_str (m, rcptr->pid, buf);
+	    E_FATAL("Duplicate triphone: %s\n", buf);
+	}
+	
+      rcptr = (ph_rc_t *) ckd_calloc (1, sizeof(ph_rc_t)); /* freed in mdef_free, I believe */
+	rcptr->rc = rc;
+	rcptr->pid = p;
+	rcptr->next = lcptr->rclist;
+	lcptr->rclist = rcptr;
+    }
+}

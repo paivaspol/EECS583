@@ -1,0 +1,78 @@
+void PatchMatrix(void)
+{
+  short *ScalingList;
+  int i, cnt, fail;
+
+  for(i=0; i<6; i++)
+  {
+    if(input->ScalingListPresentFlag[i])
+    {
+      ScalingList=ScalingList4x4input[i];
+      if(matrix4x4_check[i])
+      {
+        fail=0;
+        for(cnt=0; cnt<16; cnt++)
+        {
+          if(ScalingList[cnt]<0 || ScalingList[cnt]>255) // ScalingList[0]=0 to indicate use default matrix
+          {
+            fail=1;
+            break;
+          }
+        }
+
+        if(fail) //value of matrix exceed range
+        {
+          printf("\n%s value exceed range. (Value must be 1 to 255)\n", MatrixType4x4[i]);
+          printf("Setting default values for this matrix.");
+          if(i>2)
+            memcpy(ScalingList, Quant_inter_default, sizeof(short)*16);
+          else
+            memcpy(ScalingList, Quant_intra_default, sizeof(short)*16);
+        }
+      }
+      else //matrix not found, pad with default value
+      {
+        printf("\n%s matrix definition not found. Setting default values.", MatrixType4x4[i]);
+        if(i>2)
+          memcpy(ScalingList, Quant_inter_default, sizeof(short)*16);
+        else
+          memcpy(ScalingList, Quant_intra_default, sizeof(short)*16);
+      }
+    }
+
+    if((i<2) && input->ScalingListPresentFlag[i+6])
+    {
+      ScalingList=ScalingList8x8input[i];
+      if(matrix8x8_check[i])
+      {
+        fail=0;
+        for(cnt=0; cnt<64; cnt++)
+        {
+          if(ScalingList[cnt]<0 || ScalingList[cnt]>255) // ScalingList[0]=0 to indicate use default matrix
+          {
+            fail=1;
+            break;
+          }
+        }
+
+        if(fail) //value of matrix exceed range
+        {
+          printf("\n%s value exceed range. (Value must be 1 to 255)\n", MatrixType8x8[i]);
+          printf("Setting default values for this matrix.");
+          if(i==7)
+            memcpy(ScalingList, Quant8_inter_default, sizeof(short)*64);
+          else
+            memcpy(ScalingList, Quant8_intra_default, sizeof(short)*64);
+        }
+      }
+      else //matrix not found, pad with default value
+      {
+        printf("\n%s matrix definition not found. Setting default values.", MatrixType8x8[i]);
+        if(i==7)
+          memcpy(ScalingList, Quant8_inter_default, sizeof(short)*64);
+        else
+          memcpy(ScalingList, Quant8_intra_default, sizeof(short)*64);
+      }
+    }
+  }
+}

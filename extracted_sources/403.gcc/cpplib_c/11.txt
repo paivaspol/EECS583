@@ -1,0 +1,13 @@
+static void
+do_define (pfile)
+     cpp_reader *pfile;
+{
+  cpp_hashnode *node = lex_macro_node (pfile);
+
+  if (node)
+    {
+      if (_cpp_create_definition (pfile, node))
+	if (pfile->cb.define)
+	  (*pfile->cb.define) (pfile, pfile->directive_line, node);
+    }
+}

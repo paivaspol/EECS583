@@ -1,0 +1,21 @@
+int
+df_ref_reg_replace (df, ref, oldreg, newreg)
+     struct df *df;
+     struct ref *ref;
+     rtx oldreg;
+     rtx newreg;
+{
+  /* Check that insn was deleted by being converted into a NOTE.  If
+   so ignore this insn.  */
+  if (! INSN_P (DF_REF_INSN (ref)))
+    return 0;
+
+  if (oldreg && oldreg != DF_REF_REG (ref))
+    abort ();
+
+  if (! validate_change (DF_REF_INSN (ref), DF_REF_LOC (ref), newreg, 1))
+    return 0;
+
+  df_insn_modify (df, DF_REF_BB (ref), DF_REF_INSN (ref));
+  return 1;
+}

@@ -1,0 +1,22 @@
+int
+sbitmap_a_or_b (dst, a, b)
+     sbitmap dst, a, b;
+{
+  unsigned int i;
+  sbitmap_ptr dstp, ap, bp;
+  int changed = 0;
+
+  for (dstp = dst->elms, ap = a->elms, bp = b->elms, i = 0; i < dst->size;
+       i++, dstp++)
+    {
+      SBITMAP_ELT_TYPE tmp = *ap++ | *bp++;
+
+      if (*dstp != tmp)
+	{
+	  changed = 1;
+	  *dstp = tmp;
+	}
+    }
+
+  return changed;
+}

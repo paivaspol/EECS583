@@ -1,0 +1,18 @@
+static int
+biv_elimination_giv_has_0_offset (biv, giv, insn)
+     struct induction *biv, *giv;
+     rtx insn;
+{
+  /* If the giv V had the auto-inc address optimization applied
+     to it, and INSN occurs between the giv insn and the biv
+     insn, then we'd have to adjust the value used here.
+     This is rare, so we don't bother to make this possible.  */
+  if (giv->auto_inc_opt
+      && ((loop_insn_first_p (giv->insn, insn)
+	   && loop_insn_first_p (insn, biv->insn))
+	  || (loop_insn_first_p (biv->insn, insn)
+	      && loop_insn_first_p (insn, giv->insn))))
+    return 0;
+
+  return 1;
+}

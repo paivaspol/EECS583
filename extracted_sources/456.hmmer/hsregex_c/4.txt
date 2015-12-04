@@ -1,0 +1,60 @@
+static char *
+regpiece(cp, flagp)
+register struct comp *cp;
+int *flagp;
+{
+	register char *ret;
+	register char op;
+	register char *next;
+	int flags;
+
+	ret = regatom(cp, &flags);
+	if (ret == NULL)
+		return(NULL);
+
+	op = *cp->regparse;
+	if (!ISREPN(op)) {
+		*flagp = flags;
+		return(ret);
+	}
+
+	if (!(flags&HASWIDTH) && op != '?')
+		FAIL("*+ operand could be empty");
+	switch (op) {
+	case '*':	*flagp = WORST|SPSTART;			break;
+	case '+':	*flagp = WORST|SPSTART|HASWIDTH;	break;
+	case '?':	*flagp = WORST;				break;
+	}
+
+	if (op == '*' && (flags&SIMPLE))
+		reginsert(cp, STAR, ret);
+	else if (op == '*') {
+		/* Emit x* as (x&|), where & means "self". */
+		reginsert(cp, BRANCH, ret);		/* Either x */
+		regoptail(cp, ret, regnode(cp, BACK));	/* and loop */
+		regoptail(cp, ret, ret);		/* back */
+		regtail(cp, ret, regnode(cp, BRANCH));	/* or */
+		regtail(cp, ret, regnode(cp, NOTHING));	/* null. */
+	} else if (op == '+' && (flags&SIMPLE))
+		reginsert(cp, PLUS, ret);
+	else if (op == '+') {
+		/* Emit x+ as x(&|), where & means "self". */
+		next = regnode(cp, BRANCH);		/* Either */
+		regtail(cp, ret, next);
+		regtail(cp, regnode(cp, BACK), ret);	/* loop back */
+		regtail(cp, next, regnode(cp, BRANCH));	/* or */
+		regtail(cp, ret, regnode(cp, NOTHING));	/* null. */
+	} else if (op == '?') {
+		/* Emit x? as (x|) */
+		reginsert(cp, BRANCH, ret);		/* Either x */
+		regtail(cp, ret, regnode(cp, BRANCH));	/* or */
+		next = regnode(cp, NOTHING);		/* null. */
+		regtail(cp, ret, next);
+		regoptail(cp, ret, next);
+	}
+	cp->regparse++;
+	if (ISREPN(*cp->regparse))
+		FAIL("nested *?+");
+
+	return(ret);
+}

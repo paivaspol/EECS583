@@ -1,0 +1,173 @@
+int
+StrDPShuffle(char *s1, char *s2)
+{
+  int    len;
+  int    pos;	/* a position in s1 or s2 */
+  int    x,y;   /* indices of two characters */
+  char **E;     /* edge lists: E[0] is the edge list from vertex A */
+  int   *nE;    /* lengths of edge lists */
+  int   *iE;    /* positions in edge lists */
+  int    n;	/* tmp: remaining length of an edge list to be shuffled */
+  char   sf;    /* last character in s2 */
+  char   Z[26]; /* connectivity in last edge graph Z */ 
+  int    keep_connecting; /* flag used in Z connectivity algorithm */
+  int    is_eulerian;		/* flag used for when we've got a good Z */
+  
+  /* First, verify that the string is entirely alphabetic.
+   */
+  len = strlen(s2);
+  for (pos = 0; pos < len; pos++)
+    if (! isalpha((int) s2[pos])) return 0;
+
+  /* "(1) Construct the doublet graph G and edge ordering E
+   *      corresponding to S."
+   * 
+   * Note that these also imply the graph G; and note,
+   * for any list x with nE[x] = 0, vertex x is not part
+   * of G.
+   */
+  E  = MallocOrDie(sizeof(char *) * 26);
+  nE = MallocOrDie(sizeof(int)    * 26);
+  for (x = 0; x < 26; x++)
+    {
+      E[x]  = MallocOrDie(sizeof(char) * (len-1));
+      nE[x] = 0; 
+    }
+
+  x = toupper((int) s2[0]) - 'A';
+  for (pos = 1; pos < len; pos++)
+    {
+      y = toupper((int) s2[pos]) - 'A';
+      E[x][nE[x]] = y;
+      nE[x]++;
+      x = y;
+    }
+  
+  /* Now we have to find a random Eulerian edge ordering.
+   */
+  sf = toupper((int) s2[len-1]) - 'A'; 
+  is_eulerian = 0;
+  while (! is_eulerian)
+    {
+      /* "(2) For each vertex s in G except s_f, randomly select
+       *      one edge from the s edge list of E(S) to be the
+       *      last edge of the s list in a new edge ordering."
+       *
+       * select random edges and move them to the end of each 
+       * edge list.
+       */
+      for (x = 0; x < 26; x++)
+	{
+	  if (nE[x] == 0 || x == sf) continue;
+	  
+	  pos           = CHOOSE(nE[x]);
+	  y             = E[x][pos];		
+	  E[x][pos]     = E[x][nE[x]-1];
+	  E[x][nE[x]-1] = y;
+	}
+
+      /* "(3) From this last set of edges, construct the last-edge
+       *      graph Z and determine whether or not all of its
+       *      vertices are connected to s_f."
+       * 
+       * a probably stupid algorithm for looking at the
+       * connectivity in Z: iteratively sweep through the
+       * edges in Z, and build up an array (confusing called Z[x])
+       * whose elements are 1 if x is connected to sf, else 0.
+       */
+      for (x = 0; x < 26; x++) Z[x] = 0;
+      Z[(int) sf] = keep_connecting = 1;
+
+      while (keep_connecting) {
+	keep_connecting = 0;
+	for (x = 0; x < 26; x++)
+	  {
+	    y = E[x][nE[x]-1];            /* xy is an edge in Z */
+	    if (Z[x] == 0 && Z[y] == 1)   /* x is connected to sf in Z */
+	      {
+		Z[x] = 1;
+		keep_connecting = 1;
+	      }
+	  }
+      }
+
+      /* if any vertex in Z is tagged with a 0, it's
+       * not connected to sf, and we won't have a Eulerian
+       * walk.
+       */
+      is_eulerian = 1;
+      for (x = 0; x < 26; x++)
+	{
+	  if (nE[x] == 0 || x == sf) continue;
+	  if (Z[x] == 0) {
+	    is_eulerian = 0;
+	    break;
+	  }
+	}
+
+      /* "(4) If any vertex is not connected in Z to s_f, the
+       *      new edge ordering will not be Eulerian, so return to
+       *      (2). If all vertices are connected in Z to s_f, 
+       *      the new edge ordering will be Eulerian, so
+       *      continue to (5)."
+       *      
+       * e.g. note infinite loop while is_eulerian is FALSE.
+       */
+    }
+
+  /* "(5) For each vertex s in G, randomly permute the remaining
+   *      edges of the s edge list of E(S) to generate the s
+   *      edge list of the new edge ordering E(S')."
+   *      
+   * Essentially a StrShuffle() on the remaining nE[x]-1 elements
+   * of each edge list; unfortunately our edge lists are arrays,
+   * not strings, so we can't just call out to StrShuffle().
+   */
+  for (x = 0; x < 26; x++)
+    for (n = nE[x] - 1; n > 1; n--)
+      {
+	pos       = CHOOSE(n);
+	y         = E[x][pos];
+	E[x][pos] = E[x][n-1];
+	E[x][n-1] = y;
+      }
+
+  /* "(6) Construct sequence S', a random DP permutation of
+   *      S, from E(S') as follows. Start at the s_1 edge list.
+   *      At each s_i edge list, add s_i to S', delete the
+   *      first edge s_i,s_j of the edge list, and move to
+   *      the s_j edge list. Continue this process until
+   *      all edge lists are exhausted."
+   */ 
+  iE = MallocOrDie(sizeof(int) * 26);
+  for (x = 0; x < 26; x++) iE[x] = 0; 
+
+  pos = 0; 
+  x = toupper((int) s2[0]) - 'A';
+  while (1) 
+    {
+      s1[pos++] = 'A' + x;	/* add s_i to S' */
+      
+      y = E[x][iE[x]];
+      iE[x]++;			/* "delete" s_i,s_j from edge list */
+  
+      x = y;			/* move to s_j edge list. */
+
+      if (iE[x] == nE[x])
+	break;			/* the edge list is exhausted. */
+    }
+  s1[pos++] = 'A' + sf;
+  s1[pos]   = '\0';  
+
+  /* Reality checks.
+   */
+  if (x   != sf)  Die("hey, you didn't end on s_f.");
+  if (pos != len) Die("hey, pos (%d) != len (%d).", pos, len);
+  
+  /* Free and return.
+   */
+  Free2DArray((void **) E, 26);
+  free(nE);
+  free(iE);
+  return 1;
+}

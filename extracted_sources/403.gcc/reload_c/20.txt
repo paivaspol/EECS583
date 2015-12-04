@@ -1,0 +1,184 @@
+static rtx
+find_reloads_toplev (x, opnum, type, ind_levels, is_set_dest, insn,
+		     address_reloaded)
+     rtx x;
+     int opnum;
+     enum reload_type type;
+     int ind_levels;
+     int is_set_dest;
+     rtx insn;
+     int *address_reloaded;
+{
+  RTX_CODE code = GET_CODE (x);
+
+  const char *fmt = GET_RTX_FORMAT (code);
+  int i;
+  int copied;
+
+  if (code == REG)
+    {
+      /* This code is duplicated for speed in find_reloads.  */
+      int regno = REGNO (x);
+      if (reg_equiv_constant[regno] != 0 && !is_set_dest)
+	x = reg_equiv_constant[regno];
+#if 0
+      /*  This creates (subreg (mem...)) which would cause an unnecessary
+	  reload of the mem.  */
+      else if (reg_equiv_mem[regno] != 0)
+	x = reg_equiv_mem[regno];
+#endif
+      else if (reg_equiv_memory_loc[regno]
+	       && (reg_equiv_address[regno] != 0 || num_not_at_initial_offset))
+	{
+	  rtx mem = make_memloc (x, regno);
+	  if (reg_equiv_address[regno]
+	      || ! rtx_equal_p (mem, reg_equiv_mem[regno]))
+	    {
+	      /* If this is not a toplevel operand, find_reloads doesn't see
+		 this substitution.  We have to emit a USE of the pseudo so
+		 that delete_output_reload can see it.  */
+	      if (replace_reloads && recog_data.operand[opnum] != x)
+		/* We mark the USE with QImode so that we recognize it
+		   as one that can be safely deleted at the end of
+		   reload.  */
+		PUT_MODE (emit_insn_before (gen_rtx_USE (VOIDmode, x), insn),
+			  QImode);
+	      x = mem;
+	      i = find_reloads_address (GET_MODE (x), &x, XEXP (x, 0), &XEXP (x, 0),
+					opnum, type, ind_levels, insn);
+	      if (address_reloaded)
+		*address_reloaded = i;
+	    }
+	}
+      return x;
+    }
+  if (code == MEM)
+    {
+      rtx tem = x;
+
+      i = find_reloads_address (GET_MODE (x), &tem, XEXP (x, 0), &XEXP (x, 0),
+				opnum, type, ind_levels, insn);
+      if (address_reloaded)
+	*address_reloaded = i;
+
+      return tem;
+    }
+
+  if (code == SUBREG && GET_CODE (SUBREG_REG (x)) == REG)
+    {
+      /* Check for SUBREG containing a REG that's equivalent to a constant.
+	 If the constant has a known value, truncate it right now.
+	 Similarly if we are extracting a single-word of a multi-word
+	 constant.  If the constant is symbolic, allow it to be substituted
+	 normally.  push_reload will strip the subreg later.  If the
+	 constant is VOIDmode, abort because we will lose the mode of
+	 the register (this should never happen because one of the cases
+	 above should handle it).  */
+
+      int regno = REGNO (SUBREG_REG (x));
+      rtx tem;
+
+      if (subreg_lowpart_p (x)
+	  && regno >= FIRST_PSEUDO_REGISTER && reg_renumber[regno] < 0
+	  && reg_equiv_constant[regno] != 0
+	  && (tem = gen_lowpart_common (GET_MODE (x),
+					reg_equiv_constant[regno])) != 0)
+	return tem;
+
+      if (GET_MODE_BITSIZE (GET_MODE (x)) == BITS_PER_WORD
+	  && regno >= FIRST_PSEUDO_REGISTER && reg_renumber[regno] < 0
+	  && reg_equiv_constant[regno] != 0
+	  && (tem = operand_subword (reg_equiv_constant[regno],
+				     SUBREG_BYTE (x) / UNITS_PER_WORD, 0,
+				     GET_MODE (SUBREG_REG (x)))) != 0)
+	{
+	  /* TEM is now a word sized constant for the bits from X that
+	     we wanted.  However, TEM may be the wrong representation.
+
+	     Use gen_lowpart_common to convert a CONST_INT into a
+	     CONST_DOUBLE and vice versa as needed according to by the mode
+	     of the SUBREG.  */
+	  tem = gen_lowpart_common (GET_MODE (x), tem);
+	  if (!tem)
+	    abort ();
+	  return tem;
+	}
+
+      /* If the SUBREG is wider than a word, the above test will fail.
+	 For example, we might have a SImode SUBREG of a DImode SUBREG_REG
+	 for a 16 bit target, or a DImode SUBREG of a TImode SUBREG_REG for
+	 a 32 bit target.  We still can - and have to - handle this
+	 for non-paradoxical subregs of CONST_INTs.  */
+      if (regno >= FIRST_PSEUDO_REGISTER && reg_renumber[regno] < 0
+	  && reg_equiv_constant[regno] != 0
+	  && GET_CODE (reg_equiv_constant[regno]) == CONST_INT
+	  && (GET_MODE_SIZE (GET_MODE (x))
+	      < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
+	{
+	  int shift = SUBREG_BYTE (x) * BITS_PER_UNIT;
+	  if (WORDS_BIG_ENDIAN)
+	    shift = (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (x)))
+		     - GET_MODE_BITSIZE (GET_MODE (x))
+		     - shift);
+	  /* Here we use the knowledge that CONST_INTs have a
+	     HOST_WIDE_INT field.  */
+	  if (shift >= HOST_BITS_PER_WIDE_INT)
+	    shift = HOST_BITS_PER_WIDE_INT - 1;
+	  return GEN_INT (INTVAL (reg_equiv_constant[regno]) >> shift);
+	}
+
+      if (regno >= FIRST_PSEUDO_REGISTER && reg_renumber[regno] < 0
+	  && reg_equiv_constant[regno] != 0
+	  && GET_MODE (reg_equiv_constant[regno]) == VOIDmode)
+	abort ();
+
+      /* If the subreg contains a reg that will be converted to a mem,
+	 convert the subreg to a narrower memref now.
+	 Otherwise, we would get (subreg (mem ...) ...),
+	 which would force reload of the mem.
+
+	 We also need to do this if there is an equivalent MEM that is
+	 not offsettable.  In that case, alter_subreg would produce an
+	 invalid address on big-endian machines.
+
+	 For machines that extend byte loads, we must not reload using
+	 a wider mode if we have a paradoxical SUBREG.  find_reloads will
+	 force a reload in that case.  So we should not do anything here.  */
+
+      else if (regno >= FIRST_PSEUDO_REGISTER
+#ifdef LOAD_EXTEND_OP
+	       && (GET_MODE_SIZE (GET_MODE (x))
+		   <= GET_MODE_SIZE (GET_MODE (SUBREG_REG (x))))
+#endif
+	       && (reg_equiv_address[regno] != 0
+		   || (reg_equiv_mem[regno] != 0
+		       && (! strict_memory_address_p (GET_MODE (x),
+						      XEXP (reg_equiv_mem[regno], 0))
+			   || ! offsettable_memref_p (reg_equiv_mem[regno])
+			   || num_not_at_initial_offset))))
+	x = find_reloads_subreg_address (x, 1, opnum, type, ind_levels,
+					 insn);
+    }
+
+  for (copied = 0, i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  rtx new_part = find_reloads_toplev (XEXP (x, i), opnum, type,
+					      ind_levels, is_set_dest, insn,
+					      address_reloaded);
+	  /* If we have replaced a reg with it's equivalent memory loc -
+	     that can still be handled here e.g. if it's in a paradoxical
+	     subreg - we must make the change in a copy, rather than using
+	     a destructive change.  This way, find_reloads can still elect
+	     not to do the change.  */
+	  if (new_part != XEXP (x, i) && ! CONSTANT_P (new_part) && ! copied)
+	    {
+	      x = shallow_copy_rtx (x);
+	      copied = 1;
+	    }
+	  XEXP (x, i) = new_part;
+	}
+    }
+  return x;
+}

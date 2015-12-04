@@ -1,0 +1,62 @@
+static int
+eshift (x, sc)
+     UEMUSHORT *x;
+     int sc;
+{
+  UEMUSHORT lost;
+  UEMUSHORT *p;
+
+  if (sc == 0)
+    return (0);
+
+  lost = 0;
+  p = x + NI - 1;
+
+  if (sc < 0)
+    {
+      sc = -sc;
+      while (sc >= 16)
+	{
+	  lost |= *p;		/* remember lost bits */
+	  eshdn6 (x);
+	  sc -= 16;
+	}
+
+      while (sc >= 8)
+	{
+	  lost |= *p & 0xff;
+	  eshdn8 (x);
+	  sc -= 8;
+	}
+
+      while (sc > 0)
+	{
+	  lost |= *p & 1;
+	  eshdn1 (x);
+	  sc -= 1;
+	}
+    }
+  else
+    {
+      while (sc >= 16)
+	{
+	  eshup6 (x);
+	  sc -= 16;
+	}
+
+      while (sc >= 8)
+	{
+	  eshup8 (x);
+	  sc -= 8;
+	}
+
+      while (sc > 0)
+	{
+	  eshup1 (x);
+	  sc -= 1;
+	}
+    }
+  if (lost)
+    lost = 1;
+  return ((int) lost);
+}

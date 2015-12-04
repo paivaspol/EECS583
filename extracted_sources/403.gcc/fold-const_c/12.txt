@@ -1,0 +1,37 @@
+int
+target_isnan (x)
+     REAL_VALUE_TYPE x;
+{
+  /* The IEEE 64-bit double format.  */
+  union {
+    REAL_VALUE_TYPE d;
+    struct {
+      unsigned sign      :  1;
+      unsigned exponent  : 11;
+      unsigned mantissa1 : 20;
+      unsigned mantissa2 : 32;
+    } little_endian;
+    struct {
+      unsigned mantissa2 : 32;
+      unsigned mantissa1 : 20;
+      unsigned exponent  : 11;
+      unsigned sign      :  1;
+    } big_endian;
+  } u;
+
+  u.d = dconstm1;
+  if (u.big_endian.sign == 1)
+    {
+      u.d = x;
+      return (u.big_endian.exponent == 2047
+	      && (u.big_endian.mantissa1 != 0
+		  || u.big_endian.mantissa2 != 0));
+    }
+  else
+    {
+      u.d = x;
+      return (u.little_endian.exponent == 2047
+	      && (u.little_endian.mantissa1 != 0
+		  || u.little_endian.mantissa2 != 0));
+    }
+}

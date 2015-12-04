@@ -1,0 +1,52 @@
+static void mm_unmark_short_term_for_reference(StorablePicture *p, int difference_of_pic_nums_minus1)
+{
+  int picNumX;
+
+  unsigned i;
+
+  picNumX = get_pic_num_x(p, difference_of_pic_nums_minus1);
+
+  for (i=0; i<dpb.ref_frames_in_buffer; i++)
+  {
+    if (p->structure == FRAME)
+    {
+      if ((dpb.fs_ref[i]->is_reference==3) && (dpb.fs_ref[i]->is_long_term==0))
+      {
+        if (dpb.fs_ref[i]->frame->pic_num == picNumX)
+        {
+          unmark_for_reference(dpb.fs_ref[i]);
+          return;
+        }
+      }
+    }
+    else
+    {
+      if ((dpb.fs_ref[i]->is_reference & 1) && (!(dpb.fs_ref[i]->is_long_term & 1)))
+      {
+        if (dpb.fs_ref[i]->top_field->pic_num == picNumX)
+        {
+          dpb.fs_ref[i]->top_field->used_for_reference = 0;
+          dpb.fs_ref[i]->is_reference &= 2;
+          if (dpb.fs_ref[i]->is_used == 3)
+          {
+            dpb.fs_ref[i]->frame->used_for_reference = 0;
+          }
+          return;
+        }
+      }
+      if ((dpb.fs_ref[i]->is_reference & 2) && (!(dpb.fs_ref[i]->is_long_term & 2)))
+      {
+        if (dpb.fs_ref[i]->bottom_field->pic_num == picNumX)
+        {
+          dpb.fs_ref[i]->bottom_field->used_for_reference = 0;
+          dpb.fs_ref[i]->is_reference &= 1;
+          if (dpb.fs_ref[i]->is_used == 3)
+          {
+            dpb.fs_ref[i]->frame->used_for_reference = 0;
+          }
+          return;
+        }
+      }
+    }
+  }
+}

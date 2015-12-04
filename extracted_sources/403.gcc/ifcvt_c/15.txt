@@ -1,0 +1,154 @@
+static int
+noce_try_cmove_arith (if_info)
+     struct noce_if_info *if_info;
+{
+  rtx a = if_info->a;
+  rtx b = if_info->b;
+  rtx x = if_info->x;
+  rtx insn_a, insn_b;
+  rtx tmp, target;
+  int is_mem = 0;
+  enum rtx_code code;
+
+  /* A conditional move from two memory sources is equivalent to a
+     conditional on their addresses followed by a load.  Don't do this
+     early because it'll screw alias analysis.  Note that we've
+     already checked for no side effects.  */
+  if (! no_new_pseudos && cse_not_expected
+      && GET_CODE (a) == MEM && GET_CODE (b) == MEM
+      && BRANCH_COST >= 5)
+    {
+      a = XEXP (a, 0);
+      b = XEXP (b, 0);
+      x = gen_reg_rtx (Pmode);
+      is_mem = 1;
+    }
+
+  /* ??? We could handle this if we knew that a load from A or B could
+     not fault.  This is also true if we've already loaded
+     from the address along the path from ENTRY.  */
+  else if (may_trap_p (a) || may_trap_p (b))
+    return FALSE;
+
+  /* if (test) x = a + b; else x = c - d;
+     => y = a + b;
+        x = c - d;
+	if (test)
+	  x = y;
+  */
+  
+  code = GET_CODE (if_info->cond);
+  insn_a = if_info->insn_a;
+  insn_b = if_info->insn_b;
+
+  /* Possibly rearrange operands to make things come out more natural.  */
+  if (reversed_comparison_code (if_info->cond, if_info->jump) != UNKNOWN)
+    {
+      int reversep = 0;
+      if (rtx_equal_p (b, x))
+	reversep = 1;
+      else if (general_operand (b, GET_MODE (b)))
+	reversep = 1;
+
+      if (reversep)
+	{
+	  code = reversed_comparison_code (if_info->cond, if_info->jump);
+	  tmp = a, a = b, b = tmp;
+	  tmp = insn_a, insn_a = insn_b, insn_b = tmp;
+	}
+    }
+
+  start_sequence ();
+
+  /* If either operand is complex, load it into a register first.
+     The best way to do this is to copy the original insn.  In this
+     way we preserve any clobbers etc that the insn may have had.  
+     This is of course not possible in the IS_MEM case.  */
+  if (! general_operand (a, GET_MODE (a)))
+    {
+      rtx set;
+
+      if (no_new_pseudos)
+	goto end_seq_and_fail;
+
+      if (is_mem)
+	{
+	  tmp = gen_reg_rtx (GET_MODE (a));
+	  tmp = emit_insn (gen_rtx_SET (VOIDmode, tmp, a));
+	}
+      else if (! insn_a)
+	goto end_seq_and_fail;
+      else
+	{
+	  a = gen_reg_rtx (GET_MODE (a));
+	  tmp = copy_rtx (insn_a);
+	  set = single_set (tmp);
+	  SET_DEST (set) = a;
+	  tmp = emit_insn (PATTERN (tmp));
+	}
+      if (recog_memoized (tmp) < 0)
+	goto end_seq_and_fail;
+    }
+  if (! general_operand (b, GET_MODE (b)))
+    {
+      rtx set;
+
+      if (no_new_pseudos)
+	goto end_seq_and_fail;
+
+      if (is_mem)
+	{
+          tmp = gen_reg_rtx (GET_MODE (b));
+	  tmp = emit_insn (gen_rtx_SET (VOIDmode, tmp, b));
+	}
+      else if (! insn_b)
+	goto end_seq_and_fail;
+      else
+	{
+          b = gen_reg_rtx (GET_MODE (b));
+	  tmp = copy_rtx (insn_b);
+	  set = single_set (tmp);
+	  SET_DEST (set) = b;
+	  tmp = emit_insn (PATTERN (tmp));
+	}
+      if (recog_memoized (tmp) < 0)
+	goto end_seq_and_fail;
+    }
+
+  target = noce_emit_cmove (if_info, x, code, XEXP (if_info->cond, 0),
+			    XEXP (if_info->cond, 1), a, b);
+
+  if (! target)
+    goto end_seq_and_fail;
+
+  /* If we're handling a memory for above, emit the load now.  */
+  if (is_mem)
+    {
+      tmp = gen_rtx_MEM (GET_MODE (if_info->x), target);
+
+      /* Copy over flags as appropriate.  */
+      if (MEM_VOLATILE_P (if_info->a) || MEM_VOLATILE_P (if_info->b))
+	MEM_VOLATILE_P (tmp) = 1;
+      if (MEM_IN_STRUCT_P (if_info->a) && MEM_IN_STRUCT_P (if_info->b))
+	MEM_IN_STRUCT_P (tmp) = 1;
+      if (MEM_SCALAR_P (if_info->a) && MEM_SCALAR_P (if_info->b))
+	MEM_SCALAR_P (tmp) = 1;
+      if (MEM_ALIAS_SET (if_info->a) == MEM_ALIAS_SET (if_info->b))
+	set_mem_alias_set (tmp, MEM_ALIAS_SET (if_info->a));
+      set_mem_align (tmp,
+		     MIN (MEM_ALIGN (if_info->a), MEM_ALIGN (if_info->b)));
+
+      noce_emit_move_insn (if_info->x, tmp);
+    }
+  else if (target != x)
+    noce_emit_move_insn (x, target);
+
+  tmp = get_insns ();
+  end_sequence ();
+  emit_insns_before (tmp, if_info->jump);
+  return TRUE;
+
+ end_seq_and_fail:
+  end_sequence ();
+  return FALSE;
+}

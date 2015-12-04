@@ -1,0 +1,26 @@
+static void vithist_lmstate_enter (vithist_t *vh, int32 vhid, vithist_entry_t *ve)
+{
+    vh_lms2vh_t *lms2vh, *child;
+    s3lmwid_t lwid;
+    
+    lwid = ve->lmstate.lm3g.lwid[0];
+    if ((lms2vh = vh->lms2vh_root[lwid]) == NULL) {
+	lms2vh = (vh_lms2vh_t *) ckd_calloc (1, sizeof(vh_lms2vh_t));
+	vh->lms2vh_root[lwid] = lms2vh;
+	
+	lms2vh->state = lwid;
+	lms2vh->children = NULL;
+	
+	vh->lwidlist = glist_add_int32 (vh->lwidlist, (int32) lwid);
+    } else {
+	assert (lms2vh->state == lwid);
+    }
+    
+    child = (vh_lms2vh_t *) ckd_calloc (1, sizeof(vh_lms2vh_t));
+    child->state = ve->lmstate.lm3g.lwid[1];
+    child->children = NULL;
+    child->vhid = vhid;
+    child->ve = ve;
+    
+    lms2vh->children = glist_add_ptr (lms2vh->children, (void *)child);
+}

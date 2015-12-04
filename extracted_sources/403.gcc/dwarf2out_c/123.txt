@@ -1,0 +1,23 @@
+static void
+assign_symbol_names (die)
+     dw_die_ref die;
+{
+  dw_die_ref c;
+
+  if (is_symbol_die (die))
+    {
+      if (comdat_symbol_id)
+	{
+	  char *p = alloca (strlen (comdat_symbol_id) + 64);
+
+	  sprintf (p, "%s.%s.%x", DIE_LABEL_PREFIX,
+		   comdat_symbol_id, comdat_symbol_number++);
+	  die->die_symbol = xstrdup (p);
+	}
+      else
+	die->die_symbol = gen_internal_sym ("LDIE");
+    }
+
+  for (c = die->die_child; c != NULL; c = c->die_sib)
+    assign_symbol_names (c);
+}

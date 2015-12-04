@@ -1,0 +1,17 @@
+void
+dwarf2out_frame_init ()
+{
+  /* Allocate the initial hunk of the fde_table.  */
+  fde_table = (dw_fde_ref) xcalloc (FDE_TABLE_INCREMENT, sizeof (dw_fde_node));
+  fde_table_allocated = FDE_TABLE_INCREMENT;
+  fde_table_in_use = 0;
+
+  /* Generate the CFA instructions common to all FDE's.  Do it now for the
+     sake of lookup_cfa.  */
+
+#ifdef DWARF2_UNWIND_INFO
+  /* On entry, the Canonical Frame Address is at SP.  */
+  dwarf2out_def_cfa (NULL, STACK_POINTER_REGNUM, INCOMING_FRAME_SP_OFFSET);
+  initial_return_save (INCOMING_RETURN_ADDR_RTX);
+#endif
+}

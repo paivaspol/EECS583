@@ -1,0 +1,244 @@
+static void endian	PARAMS ((const UEMUSHORT *, long *,
+			       enum machine_mode));
+static void eclear	PARAMS ((UEMUSHORT *));
+static void emov	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#if 0
+static void eabs	PARAMS ((UEMUSHORT *));
+#endif
+static void eneg	PARAMS ((UEMUSHORT *));
+static int eisneg	PARAMS ((const UEMUSHORT *));
+static int eisinf	PARAMS ((const UEMUSHORT *));
+static int eisnan	PARAMS ((const UEMUSHORT *));
+static void einfin	PARAMS ((UEMUSHORT *));
+#ifdef NANS
+static void enan	PARAMS ((UEMUSHORT *, int));
+static void einan	PARAMS ((UEMUSHORT *));
+static int eiisnan	PARAMS ((const UEMUSHORT *));
+static int eiisneg	PARAMS ((const UEMUSHORT *));
+static void make_nan	PARAMS ((UEMUSHORT *, int, enum machine_mode));
+#endif
+static void emovi	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void emovo	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void ecleaz	PARAMS ((UEMUSHORT *));
+static void ecleazs	PARAMS ((UEMUSHORT *));
+static void emovz	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#if 0
+static void eiinfin	PARAMS ((UEMUSHORT *));
+#endif
+#ifdef INFINITY
+static int eiisinf	PARAMS ((const UEMUSHORT *));
+#endif
+static int ecmpm	PARAMS ((const UEMUSHORT *, const UEMUSHORT *));
+static void eshdn1	PARAMS ((UEMUSHORT *));
+static void eshup1	PARAMS ((UEMUSHORT *));
+static void eshdn8	PARAMS ((UEMUSHORT *));
+static void eshup8	PARAMS ((UEMUSHORT *));
+static void eshup6	PARAMS ((UEMUSHORT *));
+static void eshdn6	PARAMS ((UEMUSHORT *));
+static void eaddm	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void esubm	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void m16m	PARAMS ((unsigned int, const UEMUSHORT *, UEMUSHORT *));
+static int edivm	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static int emulm	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void emdnorm	PARAMS ((UEMUSHORT *, int, int, EMULONG, int));
+static void esub	PARAMS ((const UEMUSHORT *, const UEMUSHORT *,
+				 UEMUSHORT *));
+static void eadd	PARAMS ((const UEMUSHORT *, const UEMUSHORT *,
+				 UEMUSHORT *));
+static void eadd1	PARAMS ((const UEMUSHORT *, const UEMUSHORT *,
+				 UEMUSHORT *));
+static void ediv	PARAMS ((const UEMUSHORT *, const UEMUSHORT *,
+				 UEMUSHORT *));
+static void emul	PARAMS ((const UEMUSHORT *, const UEMUSHORT *,
+				 UEMUSHORT *));
+static void e53toe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void e64toe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+static void e113toe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#endif
+static void e24toe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+static void etoe113	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void toe113	PARAMS ((UEMUSHORT *, UEMUSHORT *));
+#endif
+static void etoe64	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void toe64	PARAMS ((UEMUSHORT *, UEMUSHORT *));
+static void etoe53	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void toe53	PARAMS ((UEMUSHORT *, UEMUSHORT *));
+static void etoe24	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void toe24	PARAMS ((UEMUSHORT *, UEMUSHORT *));
+static int ecmp		PARAMS ((const UEMUSHORT *, const UEMUSHORT *));
+#if 0
+static void eround	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#endif
+static void ltoe	PARAMS ((const HOST_WIDE_INT *, UEMUSHORT *));
+static void ultoe	PARAMS ((const unsigned HOST_WIDE_INT *, UEMUSHORT *));
+static void eifrac	PARAMS ((const UEMUSHORT *, HOST_WIDE_INT *,
+				 UEMUSHORT *));
+static void euifrac	PARAMS ((const UEMUSHORT *, unsigned HOST_WIDE_INT *,
+				 UEMUSHORT *));
+static int eshift	PARAMS ((UEMUSHORT *, int));
+static int enormlz	PARAMS ((UEMUSHORT *));
+#if 0
+static void e24toasc	PARAMS ((const UEMUSHORT *, char *, int));
+static void e53toasc	PARAMS ((const UEMUSHORT *, char *, int));
+static void e64toasc	PARAMS ((const UEMUSHORT *, char *, int));
+static void e113toasc	PARAMS ((const UEMUSHORT *, char *, int));
+#endif /* 0 */
+static void etoasc	PARAMS ((const UEMUSHORT *, char *, int));
+static void asctoe24	PARAMS ((const char *, UEMUSHORT *));
+static void asctoe53	PARAMS ((const char *, UEMUSHORT *));
+static void asctoe64	PARAMS ((const char *, UEMUSHORT *));
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+static void asctoe113	PARAMS ((const char *, UEMUSHORT *));
+#endif
+static void asctoe	PARAMS ((const char *, UEMUSHORT *));
+static void asctoeg	PARAMS ((const char *, UEMUSHORT *, int));
+static void efloor	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#if 0
+static void efrexp	PARAMS ((const UEMUSHORT *, int *,
+				 UEMUSHORT *));
+#endif
+static void eldexp	PARAMS ((const UEMUSHORT *, int, UEMUSHORT *));
+#if 0
+static void eremain	PARAMS ((const UEMUSHORT *, const UEMUSHORT *,
+				 UEMUSHORT *));
+#endif
+static void eiremain	PARAMS ((UEMUSHORT *, UEMUSHORT *));
+static void mtherr	PARAMS ((const char *, int));
+#ifdef DEC
+static void dectoe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void etodec	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void todec	PARAMS ((UEMUSHORT *, UEMUSHORT *));
+#endif
+#ifdef IBM
+static void ibmtoe	PARAMS ((const UEMUSHORT *, UEMUSHORT *,
+				 enum machine_mode));
+static void etoibm	PARAMS ((const UEMUSHORT *, UEMUSHORT *,
+				 enum machine_mode));
+static void toibm	PARAMS ((UEMUSHORT *, UEMUSHORT *,
+				 enum machine_mode));
+#endif
+#ifdef C4X
+static void c4xtoe	PARAMS ((const UEMUSHORT *, UEMUSHORT *,
+				 enum machine_mode));
+static void etoc4x	PARAMS ((const UEMUSHORT *, UEMUSHORT *,
+				 enum machine_mode));
+static void toc4x	PARAMS ((UEMUSHORT *, UEMUSHORT *,
+				 enum machine_mode));
+#endif
+#if 0
+static void uditoe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void ditoe	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void etoudi	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void etodi	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+static void esqrt	PARAMS ((const UEMUSHORT *, UEMUSHORT *));
+#endif
+
+/* Copy 32-bit numbers obtained from array containing 16-bit numbers,
+   swapping ends if required, into output array of longs.  The
+   result is normally passed to fprintf by the ASM_OUTPUT_ macros.  */
+
+static void
+endian (e, x, mode)
+     const UEMUSHORT e[];
+     long x[];
+     enum machine_mode mode;
+{
+  unsigned long th, t;
+
+  if (REAL_WORDS_BIG_ENDIAN)
+    {
+      switch (mode)
+	{
+	case TFmode:
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+	  /* Swap halfwords in the fourth long.  */
+	  th = (unsigned long) e[6] & 0xffff;
+	  t = (unsigned long) e[7] & 0xffff;
+	  t |= th << 16;
+	  x[3] = (long) t;
+#else
+	  x[3] = 0;
+#endif
+	  /* FALLTHRU */
+
+	case XFmode:
+	  /* Swap halfwords in the third long.  */
+	  th = (unsigned long) e[4] & 0xffff;
+	  t = (unsigned long) e[5] & 0xffff;
+	  t |= th << 16;
+	  x[2] = (long) t;
+	  /* FALLTHRU */
+
+	case DFmode:
+	  /* Swap halfwords in the second word.  */
+	  th = (unsigned long) e[2] & 0xffff;
+	  t = (unsigned long) e[3] & 0xffff;
+	  t |= th << 16;
+	  x[1] = (long) t;
+	  /* FALLTHRU */
+
+	case SFmode:
+	case HFmode:
+	  /* Swap halfwords in the first word.  */
+	  th = (unsigned long) e[0] & 0xffff;
+	  t = (unsigned long) e[1] & 0xffff;
+	  t |= th << 16;
+	  x[0] = (long) t;
+	  break;
+
+	default:
+	  abort ();
+	}
+    }
+  else
+    {
+      /* Pack the output array without swapping.  */
+
+      switch (mode)
+	{
+	case TFmode:
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+	  /* Pack the fourth long.  */
+	  th = (unsigned long) e[7] & 0xffff;
+	  t = (unsigned long) e[6] & 0xffff;
+	  t |= th << 16;
+	  x[3] = (long) t;
+#else
+	  x[3] = 0;
+#endif
+	  /* FALLTHRU */
+
+	case XFmode:
+	  /* Pack the third long.
+	     Each element of the input REAL_VALUE_TYPE array has 16 useful bits
+	     in it.  */
+	  th = (unsigned long) e[5] & 0xffff;
+	  t = (unsigned long) e[4] & 0xffff;
+	  t |= th << 16;
+	  x[2] = (long) t;
+	  /* FALLTHRU */
+
+	case DFmode:
+	  /* Pack the second long */
+	  th = (unsigned long) e[3] & 0xffff;
+	  t = (unsigned long) e[2] & 0xffff;
+	  t |= th << 16;
+	  x[1] = (long) t;
+	  /* FALLTHRU */
+
+	case SFmode:
+	case HFmode:
+	  /* Pack the first long */
+	  th = (unsigned long) e[1] & 0xffff;
+	  t = (unsigned long) e[0] & 0xffff;
+	  t |= th << 16;
+	  x[0] = (long) t;
+	  break;
+
+	default:
+	  abort ();
+	}
+    }
+}

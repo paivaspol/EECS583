@@ -1,0 +1,36 @@
+void print_time(FILE *out,time_t start,int step,t_inputrec *ir)
+{
+  static real time_per_step;
+  static time_t end;
+  time_t finish;
+  double dt;
+  char buf[48];
+
+  if(out)
+      fprintf(out,"\rstep %d",step);
+  if ((step >= ir->nstlist)) {
+    if ((ir->nstlist == 0) || ((step % ir->nstlist) == 0)) {
+      /* We have done a full cycle let's update time_per_step */
+      end=time(NULL);
+      dt=difftime(end,start);
+      time_per_step=dt/(step+1);
+    }
+    dt=(ir->nsteps-step)*time_per_step;
+
+    if (dt >= 300) {    
+      finish = end+(time_t)dt;
+      sprintf(buf,"%s",ctime(&finish));
+      buf[strlen(buf)-1]='\0';
+      if(out)
+          fprintf(out,", will finish at %s",buf);
+    }
+    else
+        if(out)
+            fprintf(out,", remaining runtime: %5d s               ",(int)dt);
+  }
+#ifdef USE_MPI
+  if (gmx_parallel)
+    fprintf(out,"\n");
+#endif
+  fflush(out);
+}

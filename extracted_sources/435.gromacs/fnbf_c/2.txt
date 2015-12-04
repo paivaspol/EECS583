@@ -1,0 +1,33 @@
+static real *mk_14parm(int ntype,int nbonds,t_iatom iatoms[],
+		       t_iparams *iparams,int type[])
+{
+  /* This routine fills a matrix with interaction parameters for
+   * 1-4 interaction. It is assumed that these are atomtype dependent
+   * only... (but this is checked for...)
+   */
+  real *nbfp,c6sav,c12sav;
+  int  i,ip,ti,tj;
+  
+  snew(nbfp,2*ntype*ntype);
+  for(i=0; (i<nbonds); i+= 3) {
+    ip = iatoms[i];
+    ti = type[iatoms[i+1]];
+    tj = type[iatoms[i+2]];
+    c6sav  = C6(nbfp,ntype,ti,tj);
+    c12sav = C12(nbfp,ntype,ti,tj);
+    C6(nbfp,ntype,ti,tj)  = iparams[ip].lj14.c6A;
+    C12(nbfp,ntype,ti,tj) = iparams[ip].lj14.c12A;
+    if (fabs(c6sav)>GMX_REAL_MIN || fabs(c12sav)>GMX_REAL_MIN) {
+      if ( (fabs(c6sav  -  C6(nbfp,ntype,ti,tj)) > GMX_REAL_MIN) || 
+	   (fabs(c12sav - C12(nbfp,ntype,ti,tj)) > GMX_REAL_MIN)) {
+	fatal_error(0,"Force field inconsistency: 1-4 interaction parameters "
+		    "for atoms %d-%d not the same as for other atoms "
+		    "with the same atom type",iatoms[i+1],iatoms[i+2]);
+      }
+    }
+  }
+	
+
+
+  return nbfp;
+}

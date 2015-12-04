@@ -1,0 +1,142 @@
+void
+for_each_insn_in_loop (loop, fncall)
+     struct loop *loop;
+     loop_insn_callback fncall;
+{
+  /* This is 1 if current insn is not executed at least once for every loop
+     iteration.  */
+  int not_every_iteration = 0;
+  int maybe_multiple = 0;
+  int past_loop_latch = 0;
+  int loop_depth = 0;
+  rtx p;
+
+  /* If loop_scan_start points to the loop exit test, we have to be wary of
+     subversive use of gotos inside expression statements.  */
+  if (prev_nonnote_insn (loop->scan_start) != prev_nonnote_insn (loop->start))
+    maybe_multiple = back_branch_in_range_p (loop, loop->scan_start);
+
+  /* Scan through loop to find all possible bivs.  */
+
+  for (p = next_insn_in_loop (loop, loop->scan_start);
+       p != NULL_RTX;
+       p = next_insn_in_loop (loop, p))
+    {
+      p = fncall (loop, p, not_every_iteration, maybe_multiple);
+
+      /* Past CODE_LABEL, we get to insns that may be executed multiple
+         times.  The only way we can be sure that they can't is if every
+         jump insn between here and the end of the loop either
+         returns, exits the loop, is a jump to a location that is still
+         behind the label, or is a jump to the loop start.  */
+
+      if (GET_CODE (p) == CODE_LABEL)
+	{
+	  rtx insn = p;
+
+	  maybe_multiple = 0;
+
+	  while (1)
+	    {
+	      insn = NEXT_INSN (insn);
+	      if (insn == loop->scan_start)
+		break;
+	      if (insn == loop->end)
+		{
+		  if (loop->top != 0)
+		    insn = loop->top;
+		  else
+		    break;
+		  if (insn == loop->scan_start)
+		    break;
+		}
+
+	      if (GET_CODE (insn) == JUMP_INSN
+		  && GET_CODE (PATTERN (insn)) != RETURN
+		  && (!any_condjump_p (insn)
+		      || (JUMP_LABEL (insn) != 0
+			  && JUMP_LABEL (insn) != loop->scan_start
+			  && !loop_insn_first_p (p, JUMP_LABEL (insn)))))
+		{
+		  maybe_multiple = 1;
+		  break;
+		}
+	    }
+	}
+
+      /* Past a jump, we get to insns for which we can't count
+         on whether they will be executed during each iteration.  */
+      /* This code appears twice in strength_reduce.  There is also similar
+         code in scan_loop.  */
+      if (GET_CODE (p) == JUMP_INSN
+      /* If we enter the loop in the middle, and scan around to the
+         beginning, don't set not_every_iteration for that.
+         This can be any kind of jump, since we want to know if insns
+         will be executed if the loop is executed.  */
+	  && !(JUMP_LABEL (p) == loop->top
+	     && ((NEXT_INSN (NEXT_INSN (p)) == loop->end
+		  && any_uncondjump_p (p))
+		 || (NEXT_INSN (p) == loop->end && any_condjump_p (p)))))
+	{
+	  rtx label = 0;
+
+	  /* If this is a jump outside the loop, then it also doesn't
+	     matter.  Check to see if the target of this branch is on the
+	     loop->exits_labels list.  */
+
+	  for (label = loop->exit_labels; label; label = LABEL_NEXTREF (label))
+	    if (XEXP (label, 0) == JUMP_LABEL (p))
+	      break;
+
+	  if (!label)
+	    not_every_iteration = 1;
+	}
+
+      else if (GET_CODE (p) == NOTE)
+	{
+	  /* At the virtual top of a converted loop, insns are again known to
+	     be executed each iteration: logically, the loop begins here
+	     even though the exit code has been duplicated.
+
+	     Insns are also again known to be executed each iteration at
+	     the LOOP_CONT note.  */
+	  if ((NOTE_LINE_NUMBER (p) == NOTE_INSN_LOOP_VTOP
+	       || NOTE_LINE_NUMBER (p) == NOTE_INSN_LOOP_CONT)
+	      && loop_depth == 0)
+	    not_every_iteration = 0;
+	  else if (NOTE_LINE_NUMBER (p) == NOTE_INSN_LOOP_BEG)
+	    loop_depth++;
+	  else if (NOTE_LINE_NUMBER (p) == NOTE_INSN_LOOP_END)
+	    loop_depth--;
+	}
+
+      /* Note if we pass a loop latch.  If we do, then we can not clear
+         NOT_EVERY_ITERATION below when we pass the last CODE_LABEL in
+         a loop since a jump before the last CODE_LABEL may have started
+         a new loop iteration.
+
+         Note that LOOP_TOP is only set for rotated loops and we need
+         this check for all loops, so compare against the CODE_LABEL
+         which immediately follows LOOP_START.  */
+      if (GET_CODE (p) == JUMP_INSN
+	  && JUMP_LABEL (p) == NEXT_INSN (loop->start))
+	past_loop_latch = 1;
+
+      /* Unlike in the code motion pass where MAYBE_NEVER indicates that
+         an insn may never be executed, NOT_EVERY_ITERATION indicates whether
+         or not an insn is known to be executed each iteration of the
+         loop, whether or not any iterations are known to occur.
+
+         Therefore, if we have just passed a label and have no more labels
+         between here and the test insn of the loop, and we have not passed
+         a jump to the top of the loop, then we know these insns will be
+         executed each iteration.  */
+
+      if (not_every_iteration
+	  && !past_loop_latch
+	  && GET_CODE (p) == CODE_LABEL
+	  && no_labels_between_p (p, loop->end)
+	  && loop_insn_first_p (p, loop->cont))
+	not_every_iteration = 0;
+    }
+}

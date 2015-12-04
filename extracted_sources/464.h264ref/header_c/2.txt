@@ -1,0 +1,172 @@
+int SliceHeader()
+{
+  int dP_nr = assignSE2partition[input->partition_mode][SE_HEADER];
+  DataPartition *partition = &((img->currentSlice)->partArr[dP_nr]);
+  Slice* currSlice = img->currentSlice;
+  int len = 0;
+  unsigned int field_pic_flag = 0, bottom_field_flag = 0;
+
+  int num_bits_slice_group_change_cycle;
+  float numtmp;	
+	
+  if (img->MbaffFrameFlag)
+    len  = ue_v("SH: first_mb_in_slice", img->current_mb_nr >> 1,   partition);
+  else
+    len  = ue_v("SH: first_mb_in_slice", img->current_mb_nr,   partition);
+
+  len += ue_v("SH: slice_type",        get_picture_type (),   partition);
+
+  len += ue_v("SH: pic_parameter_set_id" , active_pps->pic_parameter_set_id ,partition);
+
+  // frame_num
+  len += u_v (log2_max_frame_num_minus4 + 4,"SH: frame_num", img->frame_num, partition);
+
+  if (!active_sps->frame_mbs_only_flag)
+  {
+    // field_pic_flag    u(1)
+    field_pic_flag = (img->structure ==TOP_FIELD || img->structure ==BOTTOM_FIELD)?1:0;
+    assert( field_pic_flag == img->fld_flag );
+    len += u_1("SH: field_pic_flag", field_pic_flag, partition);
+
+    if (field_pic_flag)
+    {
+      //bottom_field_flag     u(1)
+      bottom_field_flag = (img->structure == BOTTOM_FIELD)?1:0;
+      len += u_1("SH: bottom_field_flag" , bottom_field_flag ,partition);
+    }
+  }
+
+  if (img->currentPicture->idr_flag)
+  {
+    // idr_pic_id
+    len += ue_v ("SH: idr_pic_id", (img->number % 2), partition);
+  }
+
+  if (img->pic_order_cnt_type == 0)
+  {
+    if (active_sps->frame_mbs_only_flag)
+    {
+      img->pic_order_cnt_lsb = (img->toppoc & ~((((unsigned int)(-1)) << (log2_max_pic_order_cnt_lsb_minus4+4))) );
+    }
+    else
+    {
+      if (!field_pic_flag || img->structure == TOP_FIELD)
+        img->pic_order_cnt_lsb = (img->toppoc & ~((((unsigned int)(-1)) << (log2_max_pic_order_cnt_lsb_minus4+4))) );
+      else if ( img->structure == BOTTOM_FIELD )
+        img->pic_order_cnt_lsb = (img->bottompoc & ~((((unsigned int)(-1)) << (log2_max_pic_order_cnt_lsb_minus4+4))) );
+    }
+
+    len += u_v (log2_max_pic_order_cnt_lsb_minus4+4, "SH: pic_order_cnt_lsb", img->pic_order_cnt_lsb, partition);
+
+    if (img->pic_order_present_flag && !field_pic_flag)  // img->fld_flag
+    {
+      len += se_v ("SH: delta_pic_order_cnt_bottom", img->delta_pic_order_cnt_bottom, partition);
+    }
+  }
+  if (img->pic_order_cnt_type == 1 && !img->delta_pic_order_always_zero_flag)
+  {
+    len += se_v ("SH: delta_pic_order_cnt[0]", img->delta_pic_order_cnt[0], partition);
+
+    if (img->pic_order_present_flag && !field_pic_flag)  // img->fld_flag
+    {
+      len += se_v ("SH: delta_pic_order_cnt[1]", img->delta_pic_order_cnt[1], partition);
+    }
+  }
+
+  // redundant slice info redundant_pic_cnt is missing here
+  if (input->redundant_slice_flag)
+  {
+    len += ue_v ("SH: redundant_pic_cnt", img->redundant_pic_cnt, partition);
+  }
+
+  // Direct Mode Type selection for B pictures
+  if (img->type==B_SLICE)
+  {
+    len +=  u_1 ("SH: direct_spatial_mv_pred_flag", img->direct_spatial_mv_pred_flag, partition);  	
+  }
+
+  if ((img->type == P_SLICE) || (img->type == B_SLICE) || (img->type==SP_SLICE))
+  {
+    int override_flag;
+    if ((img->type == P_SLICE) || (img->type==SP_SLICE))
+    {
+      override_flag = (img->num_ref_idx_l0_active != (active_pps->num_ref_idx_l0_active_minus1 +1)) ? 1 : 0;
+    }
+    else
+    {
+      override_flag = ((img->num_ref_idx_l0_active != (active_pps->num_ref_idx_l0_active_minus1 +1)) 
+                      || (img->num_ref_idx_l1_active != (active_pps->num_ref_idx_l1_active_minus1 +1))) ? 1 : 0;
+    }
+
+    len +=  u_1 ("SH: num_ref_idx_active_override_flag", override_flag, partition);
+    
+    if (override_flag) 
+    {
+      len += ue_v ("SH: num_ref_idx_l0_active_minus1", img->num_ref_idx_l0_active-1, partition);
+      if (img->type==B_SLICE)
+      {
+        len += ue_v ("SH: num_ref_idx_l1_active_minus1", img->num_ref_idx_l1_active-1, partition);
+      }
+    }
+
+  }
+  len += ref_pic_list_reordering();
+
+  if (((img->type == P_SLICE || img->type == SP_SLICE) && active_pps->weighted_pred_flag) || 
+     ((img->type == B_SLICE) && active_pps->weighted_bipred_idc == 1))  
+  {
+    len += pred_weight_table();
+  }
+
+  if (img->nal_reference_idc)
+    len += dec_ref_pic_marking();
+
+  if(input->symbol_mode==CABAC && img->type!=I_SLICE /*&& img->type!=SI_IMG*/)
+  {
+    len += ue_v("SH: cabac_init_idc", img->model_number, partition);
+  }
+
+  len += se_v("SH: slice_qp_delta", (currSlice->qp - 26 - active_pps->pic_init_qp_minus26), partition);  
+
+  if (img->type==SP_SLICE /*|| img->type==SI_SLICE*/)
+  {
+    if (img->type==SP_SLICE) // Switch Flag only for SP pictures
+    {
+      len += u_1 ("SH: sp_for_switch_flag", 0, partition);   // 1 for switching SP, 0 for normal SP
+    }
+    len += se_v ("SH: slice_qs_delta", (img->qpsp - 26), partition );
+  }
+
+  if (active_pps->deblocking_filter_control_present_flag)
+  {
+    len += ue_v("SH: disable_deblocking_filter_idc",img->LFDisableIdc, partition);  // Turn loop filter on/off on slice basis 
+
+    if (img->LFDisableIdc!=1)
+    {
+      len += se_v ("SH: slice_alpha_c0_offset_div2", img->LFAlphaC0Offset / 2, partition);
+
+      len += se_v ("SH: slice_beta_offset_div2", img->LFBetaOffset / 2, partition);
+    }
+  }
+
+	
+  if ( active_pps->num_slice_groups_minus1>0 &&
+    active_pps->slice_group_map_type>=3 && active_pps->slice_group_map_type<=5)
+  {
+    numtmp=img->PicHeightInMapUnits*img->PicWidthInMbs/(float)(active_pps->slice_group_change_rate_minus1+1)+1;
+    num_bits_slice_group_change_cycle = (int)ceil(log(numtmp)/log(2));
+
+    //! img->slice_group_change_cycle can be changed before calling FmoInit()
+    len += u_v (num_bits_slice_group_change_cycle, "SH: slice_group_change_cycle", img->slice_group_change_cycle, partition);
+  }
+
+  // NOTE: The following syntax element is actually part 
+  //        Slice data partition A RBSP syntax
+
+  if(input->partition_mode&&!img->currentPicture->idr_flag)
+  {
+    len += ue_v("DPA: slice_id", img->current_slice_nr, partition);
+  }
+
+  return len;
+}

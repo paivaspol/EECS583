@@ -1,0 +1,22 @@
+static cselib_val *
+new_cselib_val (value, mode)
+     unsigned int value;
+     enum machine_mode mode;
+{
+  cselib_val *e = empty_vals;
+
+  if (e)
+    empty_vals = e->u.next_free;
+  else
+    e = (cselib_val *) obstack_alloc (&cselib_obstack, sizeof (cselib_val));
+
+  if (value == 0)
+    abort ();
+
+  e->value = value;
+  e->u.val_rtx = gen_rtx_VALUE (mode);
+  CSELIB_VAL_PTR (e->u.val_rtx) = e;
+  e->addr_list = 0;
+  e->locs = 0;
+  return e;
+}

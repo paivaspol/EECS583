@@ -1,0 +1,84 @@
+static rtx widen_operand	PARAMS ((rtx, enum machine_mode,
+				       enum machine_mode, int, int));
+static int expand_cmplxdiv_straight PARAMS ((rtx, rtx, rtx, rtx,
+					   rtx, rtx, enum machine_mode,
+					   int, enum optab_methods,
+					   enum mode_class, optab));
+static int expand_cmplxdiv_wide PARAMS ((rtx, rtx, rtx, rtx,
+				       rtx, rtx, enum machine_mode,
+				       int, enum optab_methods,
+				       enum mode_class, optab));
+static void prepare_cmp_insn PARAMS ((rtx *, rtx *, enum rtx_code *, rtx,
+				      enum machine_mode *, int *,
+				      enum can_compare_purpose));
+static enum insn_code can_fix_p	PARAMS ((enum machine_mode, enum machine_mode,
+				       int, int *));
+static enum insn_code can_float_p PARAMS ((enum machine_mode,
+					   enum machine_mode,
+					   int));
+static rtx ftruncify	PARAMS ((rtx));
+static optab new_optab	PARAMS ((void));
+static inline optab init_optab	PARAMS ((enum rtx_code));
+static inline optab init_optabv	PARAMS ((enum rtx_code));
+static void init_libfuncs PARAMS ((optab, int, int, const char *, int));
+static void init_integral_libfuncs PARAMS ((optab, const char *, int));
+static void init_floating_libfuncs PARAMS ((optab, const char *, int));
+#ifdef HAVE_conditional_trap
+static void init_traps PARAMS ((void));
+#endif
+static void emit_cmp_and_jump_insn_1 PARAMS ((rtx, rtx, enum machine_mode,
+					    enum rtx_code, int, rtx));
+static void prepare_float_lib_cmp PARAMS ((rtx *, rtx *, enum rtx_code *,
+					 enum machine_mode *, int *));
+
+/* Add a REG_EQUAL note to the last insn in SEQ.  TARGET is being set to
+   the result of operation CODE applied to OP0 (and OP1 if it is a binary
+   operation).
+
+   If the last insn does not set TARGET, don't do anything, but return 1.
+
+   If a previous insn sets TARGET and TARGET is one of OP0 or OP1,
+   don't add the REG_EQUAL note but return 0.  Our caller can then try
+   again, ensuring that TARGET is not one of the operands.  */
+
+static int
+add_equal_note (seq, target, code, op0, op1)
+     rtx seq;
+     rtx target;
+     enum rtx_code code;
+     rtx op0, op1;
+{
+  rtx set;
+  int i;
+  rtx note;
+
+  if ((GET_RTX_CLASS (code) != '1' && GET_RTX_CLASS (code) != '2'
+       && GET_RTX_CLASS (code) != 'c' && GET_RTX_CLASS (code) != '<')
+      || GET_CODE (seq) != SEQUENCE
+      || (set = single_set (XVECEXP (seq, 0, XVECLEN (seq, 0) - 1))) == 0
+      || GET_CODE (target) == ZERO_EXTRACT
+      || (! rtx_equal_p (SET_DEST (set), target)
+	  /* For a STRICT_LOW_PART, the REG_NOTE applies to what is inside the
+	     SUBREG.  */
+	  && (GET_CODE (SET_DEST (set)) != STRICT_LOW_PART
+	      || ! rtx_equal_p (SUBREG_REG (XEXP (SET_DEST (set), 0)),
+				target))))
+    return 1;
+
+  /* If TARGET is in OP0 or OP1, check if anything in SEQ sets TARGET
+     besides the last insn.  */
+  if (reg_overlap_mentioned_p (target, op0)
+      || (op1 && reg_overlap_mentioned_p (target, op1)))
+    for (i = XVECLEN (seq, 0) - 2; i >= 0; i--)
+      if (reg_set_p (target, XVECEXP (seq, 0, i)))
+	return 0;
+
+  if (GET_RTX_CLASS (code) == '1')
+    note = gen_rtx_fmt_e (code, GET_MODE (target), copy_rtx (op0));
+  else
+    note = gen_rtx_fmt_ee (code, GET_MODE (target), copy_rtx (op0), copy_rtx (op1));
+
+  set_unique_reg_note (XVECEXP (seq, 0, XVECLEN (seq, 0) - 1), REG_EQUAL, note);
+
+  return 1;
+}

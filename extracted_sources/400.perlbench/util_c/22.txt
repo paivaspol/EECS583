@@ -1,0 +1,11 @@
+int
+Perl_rsignal_restore(pTHX_ int signo, Sigsave_t *save)
+{
+#ifdef USE_ITHREADS
+    /* only "parent" interpreter can diddle signals */
+    if (PL_curinterp != aTHX)
+	return -1;
+#endif
+
+    return sigaction(signo, save, (struct sigaction *)NULL);
+}

@@ -1,0 +1,40 @@
+static void
+m16m (a, b, c)
+     unsigned int a;
+     const UEMUSHORT b[];
+     UEMUSHORT c[];
+{
+  UEMUSHORT *pp;
+  unsigned EMULONG carry;
+  const UEMUSHORT *ps;
+  UEMUSHORT p[NI];
+  unsigned EMULONG aa, m;
+  int i;
+
+  aa = a;
+  pp = &p[NI-2];
+  *pp++ = 0;
+  *pp = 0;
+  ps = &b[NI-1];
+
+  for (i=M+1; i<NI; i++)
+    {
+      if (*ps == 0)
+	{
+	  --ps;
+	  --pp;
+	  *(pp-1) = 0;
+	}
+      else
+	{
+	  m = (unsigned EMULONG) aa * *ps--;
+	  carry = (m & 0xffff) + *pp;
+	  *pp-- = (UEMUSHORT) carry;
+	  carry = (carry >> 16) + (m >> 16) + *pp;
+	  *pp = (UEMUSHORT) carry;
+	  *(pp-1) = carry >> 16;
+	}
+    }
+  for (i=M; i<NI; i++)
+    c[i] = p[i];
+}

@@ -1,0 +1,26 @@
+static void
+ignore_some_movables (movables)
+     struct loop_movables *movables;
+{
+  struct movable *m, *m1;
+
+  for (m = movables->head; m; m = m->next)
+    {
+      /* Is this a movable for the value of a libcall?  */
+      rtx note = find_reg_note (m->insn, REG_RETVAL, NULL_RTX);
+      if (note)
+	{
+	  rtx insn;
+	  /* Check for earlier movables inside that range,
+	     and mark them invalid.  We cannot use LUIDs here because
+	     insns created by loop.c for prior loops don't have LUIDs.
+	     Rather than reject all such insns from movables, we just
+	     explicitly check each insn in the libcall (since invariant
+	     libcalls aren't that common).  */
+	  for (insn = XEXP (note, 0); insn != m->insn; insn = NEXT_INSN (insn))
+	    for (m1 = movables->head; m1 != m; m1 = m1->next)
+	      if (m1->insn == insn)
+		m1->done = 1;
+	}
+    }
+}

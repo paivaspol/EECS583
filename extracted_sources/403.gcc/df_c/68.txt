@@ -1,0 +1,23 @@
+int
+df_insn_dominates_uses_p (df, bb, insn, blocks)
+     struct df *df;
+     basic_block bb ATTRIBUTE_UNUSED;
+     rtx insn;
+     bitmap blocks;
+{
+  unsigned int uid;
+  struct df_link *link;
+
+  uid = INSN_UID (insn);
+
+  for (link = df->insns[uid].defs; link; link = link->next)
+    {
+      struct ref *def = link->ref;
+
+      /* Only consider the defs within BLOCKS.  */
+      if (bitmap_bit_p (blocks, DF_REF_BBNO (def))
+	  && ! df_def_dominates_uses_p (df, def, blocks))
+	return 0;
+    }
+  return 1;
+}

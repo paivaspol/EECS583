@@ -1,0 +1,22 @@
+void
+SeqfileClose(SQFILE *sqfp)
+{
+  /* note: don't test for sqfp->msa being NULL. Now that
+   * we're holding afp open and allowing access to multi-MSA
+   * databases (e.g. Stockholm format, Pfam), msa ends
+   * up being NULL when we run out of alignments.
+   */
+  if (sqfp->afp != NULL) {
+    if (sqfp->msa      != NULL) MSAFree(sqfp->msa);
+    if (sqfp->afp->buf != NULL) free(sqfp->afp->buf);
+    free(sqfp->afp);
+  }
+#ifndef SRE_STRICT_ANSI
+/* gunzip functionality only on POSIX systems */
+  if (sqfp->do_gzip)         pclose(sqfp->f);
+#endif  
+  else if (! sqfp->do_stdin) fclose(sqfp->f);
+  if (sqfp->buf   != NULL) free(sqfp->buf);
+  if (sqfp->fname != NULL) free(sqfp->fname);
+  free(sqfp);
+}

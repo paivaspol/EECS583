@@ -1,0 +1,89 @@
+void
+compute_record_mode (type)
+     tree type;
+{
+  tree field;
+  enum machine_mode mode = VOIDmode;
+
+  /* Most RECORD_TYPEs have BLKmode, so we start off assuming that.
+     However, if possible, we use a mode that fits in a register
+     instead, in order to allow for better optimization down the
+     line.  */
+  TYPE_MODE (type) = BLKmode;
+
+  if (! host_integerp (TYPE_SIZE (type), 1))
+    return;
+
+  /* A record which has any BLKmode members must itself be
+     BLKmode; it can't go in a register.  Unless the member is
+     BLKmode only because it isn't aligned.  */
+  for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
+    {
+      unsigned HOST_WIDE_INT bitpos;
+
+      if (TREE_CODE (field) != FIELD_DECL)
+	continue;
+
+      if (TREE_CODE (TREE_TYPE (field)) == ERROR_MARK
+	  || (TYPE_MODE (TREE_TYPE (field)) == BLKmode
+	      && ! TYPE_NO_FORCE_BLK (TREE_TYPE (field)))
+	  || ! host_integerp (bit_position (field), 1)
+	  || DECL_SIZE (field) == 0
+	  || ! host_integerp (DECL_SIZE (field), 1))
+	return;
+
+      bitpos = int_bit_position (field);
+	  
+      /* Must be BLKmode if any field crosses a word boundary,
+	 since extract_bit_field can't handle that in registers.  */
+      if (bitpos / BITS_PER_WORD
+	  != ((tree_low_cst (DECL_SIZE (field), 1) + bitpos - 1)
+	      / BITS_PER_WORD)
+	  /* But there is no problem if the field is entire words.  */
+	  && tree_low_cst (DECL_SIZE (field), 1) % BITS_PER_WORD != 0)
+	return;
+
+      /* If this field is the whole struct, remember its mode so
+	 that, say, we can put a double in a class into a DF
+	 register instead of forcing it to live in the stack.  */
+      if (simple_cst_equal (TYPE_SIZE (type), DECL_SIZE (field)))
+	mode = DECL_MODE (field);
+
+#ifdef MEMBER_TYPE_FORCES_BLK
+      /* With some targets, eg. c4x, it is sub-optimal
+	 to access an aligned BLKmode structure as a scalar.  */
+
+      /* On ia64-*-hpux we need to ensure that we don't change the
+	 mode of a structure containing a single field or else we
+	 will pass it incorrectly.  Since a structure with a single
+	 field causes mode to get set above we can't allow the
+	 check for mode == VOIDmode in this case.  Perhaps
+	 MEMBER_TYPE_FORCES_BLK should be extended to include mode
+	 as an argument and the check could be put in there for c4x.  */
+
+      if ((mode == VOIDmode || FUNCTION_ARG_REG_LITTLE_ENDIAN)
+	  && MEMBER_TYPE_FORCES_BLK (field))
+	return;
+#endif /* MEMBER_TYPE_FORCES_BLK  */
+    }
+
+  /* If we only have one real field; use its mode.  This only applies to
+     RECORD_TYPE.  This does not apply to unions.  */
+  if (TREE_CODE (type) == RECORD_TYPE && mode != VOIDmode)
+    TYPE_MODE (type) = mode;
+  else
+    TYPE_MODE (type) = mode_for_size_tree (TYPE_SIZE (type), MODE_INT, 1);
+
+  /* If structure's known alignment is less than what the scalar
+     mode would need, and it matters, then stick with BLKmode.  */
+  if (TYPE_MODE (type) != BLKmode
+      && STRICT_ALIGNMENT
+      && ! (TYPE_ALIGN (type) >= BIGGEST_ALIGNMENT
+	    || TYPE_ALIGN (type) >= GET_MODE_ALIGNMENT (TYPE_MODE (type))))
+    {
+      /* If this is the only reason this type is BLKmode, then
+	 don't force containing types to be BLKmode.  */
+      TYPE_NO_FORCE_BLK (type) = 1;
+      TYPE_MODE (type) = BLKmode;
+    }
+}

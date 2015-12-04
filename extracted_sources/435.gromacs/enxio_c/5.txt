@@ -1,0 +1,14 @@
+void do_enxnms(int fp,int *nre,char ***nms)
+{
+  bool bRead;
+  
+  bRead = gmx_fio_getread(fp);
+  if (gmx_fio_getftp(fp) == efEDR) {
+    gmx_fio_select(fp);
+    edr_nms(fp,nre,nms);
+  }
+  else if (bRead)
+    rd_ener_nms(gmx_fio_getfp(fp),nre,nms);
+  else
+    wr_ener_nms(gmx_fio_getfp(fp),*nre,*nms);
+}

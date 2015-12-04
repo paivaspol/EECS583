@@ -1,0 +1,22 @@
+static int read_props(char *propdata,t_prop **props,int *maxprop) 
+{
+  FILE   *fp;
+  char   line[STRLEN],resname[10],atomname[10];
+  double pp;
+  int    i;
+  
+  fp=libopen(propdata);
+  *props=NULL;
+  *maxprop = 0;
+  i=0;
+  while(get_a_line(fp,line,STRLEN)) {
+    if (sscanf(line,"%s %s %lf",resname,atomname,&pp)==3)
+      add_prop(pp,resname,atomname,&i,props,maxprop);
+    else
+      if (debug)
+	fprintf(stderr,"ERROR in file %s at line %d\n",propdata,i);
+  }
+  fclose(fp);
+  
+  return i;
+}

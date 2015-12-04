@@ -1,0 +1,84 @@
+void free_storable_picture(StorablePicture* p)
+{
+  if (p)
+  {
+    if (p->ref_idx)
+    {
+      free_mem3Dshort (p->ref_idx, 2);
+      p->ref_idx = NULL;
+    }
+    
+    if (p->ref_pic_id)
+    {
+      free_mem3Dint64 (p->ref_pic_id, 6);
+      p->ref_pic_id = NULL;
+    }
+    if (p->ref_id)
+    {
+      free_mem3Dint64 (p->ref_id, 6);
+      p->ref_id = NULL;
+    }
+    if (p->mv)
+    {
+      free_mem4Dshort (p->mv, 2, p->size_x / BLOCK_SIZE);
+      p->mv = NULL;
+    }
+
+    if (p->moving_block)
+    {
+      free_mem2D (p->moving_block);
+      p->moving_block=NULL;
+    }
+
+    if (p->field_frame)
+    {
+      free_mem2D (p->field_frame);
+      p->field_frame=NULL;
+    }
+
+    
+    if (p->imgY)
+    {
+      free_mem2Dpel (p->imgY);
+      p->imgY=NULL;
+    }
+    if (p->imgY_11)
+    {
+      free (p->imgY_11);
+      p->imgY_11=NULL;
+    }
+    if (p->imgY_ups)
+    {
+      free_mem2Dpel (p->imgY_ups);
+      p->imgY_ups=NULL;
+    }
+    if (p->imgUV)
+    {
+      free_mem3Dpel (p->imgUV, 2);
+      p->imgUV=NULL;
+    }
+
+    if (input->WeightedPrediction || input->WeightedBiprediction || input->GenerateMultiplePPS)
+    {
+      if (p->imgY_11_w)
+      {
+        free (p->imgY_11_w);
+        p->imgY_11_w=NULL;
+      }
+      if (p->imgY_ups_w)
+      {
+        free_mem2Dpel (p->imgY_ups_w);
+        p->imgY_ups_w=NULL;
+      }
+    }
+    
+    if (p->mb_field)
+    {
+      free(p->mb_field);
+      p->mb_field=NULL;
+    }
+
+    free(p);
+    p = NULL;
+  }
+}

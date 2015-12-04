@@ -1,0 +1,21 @@
+void
+ggc_del_root (base)
+     void *base;
+{
+  struct ggc_root *x, **p;
+
+  p = &roots, x = roots;
+  while (x)
+    {
+      if (x->base == base)
+	{
+	  *p = x->next;
+	  free (x);
+	  return;
+	}
+      p = &x->next;
+      x = x->next;
+    }
+
+  abort ();
+}

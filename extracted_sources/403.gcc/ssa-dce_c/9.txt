@@ -1,0 +1,19 @@
+static void
+note_inherently_necessary_set (dest, set, data)
+     rtx set ATTRIBUTE_UNUSED;
+     rtx dest;
+     void *data;
+{
+  int *inherently_necessary_set_p = (int *) data;
+
+  while (GET_CODE (dest) == SUBREG
+	 || GET_CODE (dest) == STRICT_LOW_PART
+	 || GET_CODE (dest) == ZERO_EXTRACT
+	 || GET_CODE (dest) == SIGN_EXTRACT)
+    dest = XEXP (dest, 0);
+
+  if (GET_CODE (dest) == MEM
+      || GET_CODE (dest) == UNSPEC
+      || GET_CODE (dest) == UNSPEC_VOLATILE)
+    *inherently_necessary_set_p = 1;
+}

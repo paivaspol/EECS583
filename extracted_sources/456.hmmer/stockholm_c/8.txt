@@ -1,0 +1,13 @@
+static int
+parse_comment(MSA *msa, char *buf)
+{
+  char *s;
+  char *comment;
+
+  s = buf + 1;			               /* skip leading '#' */
+  if (*s == '\n') { *s = '\0'; comment = s; }  /* deal with blank comment */
+  else if ((comment = sre_strtok(&s, "\n", NULL)) == NULL) return 0;
+  
+  MSAAddComment(msa, comment);
+  return 1;
+}

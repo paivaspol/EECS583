@@ -1,0 +1,24 @@
+void LBM_initializeSpecialCellsForChannel( LBM_Grid grid ) {
+	int x,  y,  z;
+
+	/*voption indep*/
+#if !defined(SPEC_CPU)
+#ifdef _OPENMP
+#pragma omp parallel for private( x, y )
+#endif
+#endif
+	for( z = -2; z < SIZE_Z+2; z++ ) {
+		for( y = 0; y < SIZE_Y; y++ ) {
+			for( x = 0; x < SIZE_X; x++ ) {
+				if( x == 0 || x == SIZE_X-1 ||
+				    y == 0 || y == SIZE_Y-1 ) {
+					SET_FLAG( grid, x, y, z, OBSTACLE );
+
+					if( (z == 0 || z == SIZE_Z-1) &&
+					    ! TEST_FLAG( grid, x, y, z, OBSTACLE ))
+						SET_FLAG( grid, x, y, z, IN_OUT_FLOW );
+				}
+			}
+		}
+	}
+}

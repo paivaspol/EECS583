@@ -1,0 +1,27 @@
+static bool
+dead_libcall_p (insn)
+     rtx insn;
+{
+  rtx note;
+  /* See if there's a REG_EQUAL note on this insn and try to
+     replace the source with the REG_EQUAL expression.
+
+     We assume that insns with REG_RETVALs can only be reg->reg
+     copies at this point.  */
+  note = find_reg_note (insn, REG_EQUAL, NULL_RTX);
+  if (note)
+    {
+      rtx set = single_set (insn);
+      rtx new = simplify_rtx (XEXP (note, 0));
+
+      if (!new)
+	new = XEXP (note, 0);
+
+      if (set && validate_change (insn, &SET_SRC (set), new, 0))
+	{
+	  remove_note (insn, find_reg_note (insn, REG_RETVAL, NULL_RTX));
+	  return true;
+	}
+    }
+  return false;
+}

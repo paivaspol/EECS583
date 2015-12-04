@@ -1,0 +1,108 @@
+void PrintTransition(char src,
+		     int isrc,
+		     int ksrc,
+		     char dest,
+		     int idest,
+		     int kdest,
+		     int sc,
+		     struct p7trace_s **alignment,
+		     int *min,
+		     int *max,
+		     int *on,
+		     int A)
+{
+  char src_str[6];     /* buffer for source state label        */
+  char dest_str[6];    /* buffer for destination state label   */
+  int j;
+  int tpos;
+  int tnext;
+  int pos;
+  int next;
+  int near;
+
+  near = 0;
+
+  for (j = 0; j < A; j++) {
+    on[j] = 0;
+    for (pos = 0, tpos = min[j]; tpos <= max[j]; tpos++) {
+
+      if (alignment[j]->pos[tpos] != 0)
+	pos = alignment[j]->pos[tpos];
+
+      if (src == alignment[j]->statetype[tpos]
+	  && ksrc == alignment[j]->nodeidx[tpos]
+	  && isrc == pos)
+	near = TRUE;
+      
+      if (dest == alignment[j]->statetype[tpos]
+	  && kdest == alignment[j]->nodeidx[tpos]
+	  && idest == pos)
+	near = TRUE;
+      
+      if (tpos < alignment[j]->tlen - 1)
+	{
+	  tnext = tpos + 1;
+
+	  /* fold up B->D->M transitions into pseudo- B->M transitions */
+
+	  if (alignment[j]->statetype[tpos] == STB)
+	    while (alignment[j]->statetype[tnext] == STD && tnext < alignment[j]->tlen - 1)
+	      tnext++;
+
+	  next = alignment[j]->pos[tnext];
+	  if (next == 0)
+	    next = pos;
+
+	  if (src == alignment[j]->statetype[tpos]
+	      && ksrc == alignment[j]->nodeidx[tpos]
+	      && isrc == pos
+	      && dest == alignment[j]->statetype[tnext]
+	      && kdest == alignment[j]->nodeidx[tnext]
+	      && idest == next)
+	    on[j] = TRUE;
+	}
+    }
+  }
+
+  if (!near) return;
+  
+  switch (src)
+    {
+    case STM: sprintf (src_str, "M%d", ksrc); break;
+    case STD: sprintf (src_str, "D%d", ksrc); break;
+    case STI: sprintf (src_str, "I%d", ksrc); break;
+    case STS: sprintf (src_str, "S"); break;
+    case STN: sprintf (src_str, "N"); break;
+    case STB: sprintf (src_str, "B"); break;
+    case STE: sprintf (src_str, "E"); break;
+    case STC: sprintf (src_str, "C"); break;
+    case STJ: sprintf (src_str, "J"); break;
+    case STT: sprintf (src_str, "T"); break;
+    default: Die ("bad transition");
+    }
+
+  switch (dest)
+    {
+    case STM: sprintf (dest_str, "M%d", kdest); break;
+    case STD: sprintf (dest_str, "D%d", kdest); break;
+    case STI: sprintf (dest_str, "I%d", kdest); break;
+    case STS: sprintf (dest_str, "S"); break;
+    case STN: sprintf (dest_str, "N"); break;
+    case STB: sprintf (dest_str, "B"); break;
+    case STE: sprintf (dest_str, "E"); break;
+    case STC: sprintf (dest_str, "C"); break;
+    case STJ: sprintf (dest_str, "J"); break;
+    case STT: sprintf (dest_str, "T"); break;
+    default: Die ("bad transition");
+    }
+
+  printf ("%d\t%s\t%d\t%s\t%-14.7g\t", isrc, src_str, idest, dest_str, (double) Score2Prob(sc,1.));
+
+  for (j = 0; j < A; j++) {
+    if (on[j]) printf ("*");
+    if (j < A - 1) printf ("\t");
+  }
+
+  printf ("\n");
+
+}

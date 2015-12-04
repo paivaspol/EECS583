@@ -1,0 +1,45 @@
+static void mm_assign_long_term_frame_idx(StorablePicture* p, int difference_of_pic_nums_minus1, int long_term_frame_idx)
+{
+  int picNumX;
+
+  picNumX = get_pic_num_x(p, difference_of_pic_nums_minus1);
+
+  // remove frames/fields with same long_term_frame_idx
+  if (p->structure == FRAME)
+  {
+    unmark_long_term_frame_for_reference_by_frame_idx(long_term_frame_idx);
+  }
+  else
+  {
+    unsigned i;
+    PictureStructure structure = FRAME;
+
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      if (dpb.fs_ref[i]->is_reference & 1)
+      {
+        if (dpb.fs_ref[i]->top_field->pic_num == picNumX)
+        {
+          structure = TOP_FIELD;
+          break;
+        }
+      }
+      if (dpb.fs_ref[i]->is_reference & 2)
+      {
+        if (dpb.fs_ref[i]->bottom_field->pic_num == picNumX)
+        {
+          structure = BOTTOM_FIELD;
+          break;
+        }
+      }
+    }
+    if (structure==FRAME)
+    {
+      error ("field for long term marking not found",200);
+    }
+    
+    unmark_long_term_field_for_reference_by_frame_idx(structure, long_term_frame_idx, 0, 0, picNumX);
+  }
+
+  mark_pic_long_term(p, long_term_frame_idx, picNumX);
+}

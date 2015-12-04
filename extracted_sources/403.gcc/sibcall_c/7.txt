@@ -1,0 +1,53 @@
+static int
+call_ends_block_p (insn, end)
+     rtx insn;
+     rtx end;
+{
+  rtx new_insn;
+  /* END might be a note, so get the last nonnote insn of the block.  */
+  end = next_nonnote_insn (PREV_INSN (end));
+
+  /* If the call was the end of the block, then we're OK.  */
+  if (insn == end)
+    return 1;
+
+  /* Skip over copying from the call's return value pseudo into
+     this function's hard return register and if that's the end
+     of the block, we're OK.  */
+  new_insn = skip_copy_to_return_value (insn);
+
+  /* In case we return value in pseudo, we must set the pseudo to
+     return value of called function, otherwise we are returning
+     something else.  */
+  if (return_value_pseudo && insn == new_insn)
+    return 0;
+  insn = new_insn;
+
+  if (insn == end)
+    return 1;
+
+  /* Skip any stack adjustment.  */
+  insn = skip_stack_adjustment (insn);
+  if (insn == end)
+    return 1;
+
+  /* Skip over a CLOBBER of the return value as a hard reg.  */
+  insn = skip_use_of_return_value (insn, CLOBBER);
+  if (insn == end)
+    return 1;
+
+  /* Skip over a CLOBBER of the return value as a hard reg.  */
+  insn = skip_unreturned_value (insn);
+  if (insn == end)
+    return 1;
+
+  /* Skip over a USE of the return value (as a hard reg).  */
+  insn = skip_use_of_return_value (insn, USE);
+  if (insn == end)
+    return 1;
+
+  /* Skip over a JUMP_INSN at the end of the block.  If that doesn't end the
+     block, the original CALL_INSN didn't.  */
+  insn = skip_jump_insn (insn);
+  return insn == end;
+}

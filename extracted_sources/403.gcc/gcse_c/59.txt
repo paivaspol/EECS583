@@ -1,0 +1,25 @@
+static void
+compute_rd ()
+{
+  int bb, changed, passes;
+
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    sbitmap_copy (rd_out[bb] /*dst*/, rd_gen[bb] /*src*/);
+
+  passes = 0;
+  changed = 1;
+  while (changed)
+    {
+      changed = 0;
+      for (bb = 0; bb < n_basic_blocks; bb++)
+	{
+	  sbitmap_union_of_preds (reaching_defs[bb], rd_out, bb);
+	  changed |= sbitmap_union_of_diff (rd_out[bb], rd_gen[bb],
+					    reaching_defs[bb], rd_kill[bb]);
+	}
+      passes++;
+    }
+
+  if (gcse_file)
+    fprintf (gcse_file, "reaching def computation: %d passes\n", passes);
+}

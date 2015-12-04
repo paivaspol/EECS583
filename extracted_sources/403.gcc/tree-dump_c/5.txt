@@ -1,0 +1,16 @@
+static void
+dump_maybe_newline (di)
+     dump_info_p di;
+{
+  int extra;
+  
+  /* See if we need a new line.  */
+  if (di->column > EOL_COLUMN)
+    dump_new_line (di);
+  /* See if we need any padding.  */
+  else if ((extra = (di->column - SOL_COLUMN) % COLUMN_ALIGNMENT) != 0)
+    {
+      fprintf (di->stream, "%*s", COLUMN_ALIGNMENT - extra, "");
+      di->column += COLUMN_ALIGNMENT - extra;
+    }
+}

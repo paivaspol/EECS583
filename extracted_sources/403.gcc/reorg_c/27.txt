@@ -1,0 +1,23 @@
+static void
+fix_reg_dead_note (start_insn, stop_insn)
+     rtx start_insn, stop_insn;
+{
+  rtx p, link, next;
+
+  for (p = next_nonnote_insn (start_insn); p != stop_insn;
+       p = next_nonnote_insn (p))
+    for (link = REG_NOTES (p); link; link = next)
+      {
+	next = XEXP (link, 1);
+
+	if (REG_NOTE_KIND (link) != REG_DEAD
+	    || GET_CODE (XEXP (link, 0)) != REG)
+	  continue;
+
+	if (reg_set_p (XEXP (link, 0), PATTERN (start_insn)))
+	  {
+	    remove_note (p, link);
+	    return;
+	  }
+      }
+}

@@ -1,0 +1,93 @@
+static void
+cse_set_around_loop (x, insn, loop_start)
+     rtx x;
+     rtx insn;
+     rtx loop_start;
+{
+  struct table_elt *src_elt;
+
+  /* If this is a SET, see if we can replace SET_SRC, but ignore SETs that
+     are setting PC or CC0 or whose SET_SRC is already a register.  */
+  if (GET_CODE (x) == SET
+      && GET_CODE (SET_DEST (x)) != PC && GET_CODE (SET_DEST (x)) != CC0
+      && GET_CODE (SET_SRC (x)) != REG)
+    {
+      src_elt = lookup (SET_SRC (x),
+			HASH (SET_SRC (x), GET_MODE (SET_DEST (x))),
+			GET_MODE (SET_DEST (x)));
+
+      if (src_elt)
+	for (src_elt = src_elt->first_same_value; src_elt;
+	     src_elt = src_elt->next_same_value)
+	  if (GET_CODE (src_elt->exp) == REG && REG_LOOP_TEST_P (src_elt->exp)
+	      && COST (src_elt->exp) < COST (SET_SRC (x)))
+	    {
+	      rtx p, set;
+
+	      /* Look for an insn in front of LOOP_START that sets
+		 something in the desired mode to SET_SRC (x) before we hit
+		 a label or CALL_INSN.  */
+
+	      for (p = prev_nonnote_insn (loop_start);
+		   p && GET_CODE (p) != CALL_INSN
+		   && GET_CODE (p) != CODE_LABEL;
+		   p = prev_nonnote_insn  (p))
+		if ((set = single_set (p)) != 0
+		    && GET_CODE (SET_DEST (set)) == REG
+		    && GET_MODE (SET_DEST (set)) == src_elt->mode
+		    && rtx_equal_p (SET_SRC (set), SET_SRC (x)))
+		  {
+		    /* We now have to ensure that nothing between P
+		       and LOOP_START modified anything referenced in
+		       SET_SRC (x).  We know that nothing within the loop
+		       can modify it, or we would have invalidated it in
+		       the hash table.  */
+		    rtx q;
+		    rtx cse_check_loop_start_value = SET_SRC (x);
+		    for (q = p; q != loop_start; q = NEXT_INSN (q))
+		      if (INSN_P (q))
+			note_stores (PATTERN (q),
+				     cse_check_loop_start,
+				     &cse_check_loop_start_value);
+
+		    /* If nothing was changed and we can replace our
+		       SET_SRC, add an insn after P to copy its destination
+		       to what we will be replacing SET_SRC with.  */
+		    if (cse_check_loop_start_value
+			&& validate_change (insn, &SET_SRC (x),
+					    src_elt->exp, 0))
+		      {
+			/* If this creates new pseudos, this is unsafe,
+			   because the regno of new pseudo is unsuitable
+			   to index into reg_qty when cse_insn processes
+			   the new insn.  Therefore, if a new pseudo was
+			   created, discard this optimization.  */
+			int nregs = max_reg_num ();
+			rtx move
+			  = gen_move_insn (src_elt->exp, SET_DEST (set));
+			if (nregs != max_reg_num ())
+			  {
+			    if (! validate_change (insn, &SET_SRC (x),
+						   SET_SRC (set), 0))
+			      abort ();
+			  }
+			else
+			  emit_insn_after (move, p);
+		      }
+		    break;
+		  }
+	    }
+    }
+
+  /* Deal with the destination of X affecting the stack pointer.  */
+  addr_affects_sp_p (SET_DEST (x));
+
+  /* See comment on similar code in cse_insn for explanation of these
+     tests.  */
+  if (GET_CODE (SET_DEST (x)) == REG || GET_CODE (SET_DEST (x)) == SUBREG
+      || GET_CODE (SET_DEST (x)) == MEM)
+    invalidate (SET_DEST (x), VOIDmode);
+  else if (GET_CODE (SET_DEST (x)) == STRICT_LOW_PART
+	   || GET_CODE (SET_DEST (x)) == ZERO_EXTRACT)
+    invalidate (XEXP (SET_DEST (x), 0), GET_MODE (SET_DEST (x)));
+}

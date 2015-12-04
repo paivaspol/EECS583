@@ -1,0 +1,39 @@
+static int FmoGenerateMBAmap (ImageParameters * img, seq_parameter_set_rbsp_t* sps)
+{
+  unsigned i;
+  
+  // allocate memory for MBAmap
+  if (MBAmap)
+    free (MBAmap);
+  
+  
+  if ((MBAmap = malloc ((img->PicSizeInMbs) * sizeof (byte))) == NULL)
+  {
+    printf ("cannot allocated %d bytes for MBAmap, exit\n", (img->PicSizeInMbs) * sizeof (byte));
+    exit (-1);
+  }
+  
+  if ((sps->frame_mbs_only_flag) || img->field_picture)
+  {
+    for (i=0; i<img->PicSizeInMbs; i++)
+    {
+      MBAmap[i] = MapUnitToSliceGroupMap[i];
+    }
+  }
+  else
+    if (sps->mb_adaptive_frame_field_flag  &&  (! img->field_picture))
+    {
+      for (i=0; i<img->PicSizeInMbs; i++)
+      {
+        MBAmap[i] = MapUnitToSliceGroupMap[i/2];
+      }
+    }
+    else
+    {
+      for (i=0; i<img->PicSizeInMbs; i++)
+      {
+        MBAmap[i] = MapUnitToSliceGroupMap[(i/(2*img->PicWidthInMbs))*img->PicWidthInMbs+(i%img->PicWidthInMbs)];
+      }
+    }
+    return 0;
+}

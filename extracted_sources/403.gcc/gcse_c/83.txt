@@ -1,0 +1,36 @@
+static int
+cprop (alter_jumps)
+     int alter_jumps;
+{
+  int bb, changed;
+  rtx insn;
+
+  /* Note we start at block 1.  */
+
+  changed = 0;
+  for (bb = 1; bb < n_basic_blocks; bb++)
+    {
+      /* Reset tables used to keep track of what's still valid [since the
+	 start of the block].  */
+      reset_opr_set_tables ();
+
+      for (insn = BLOCK_HEAD (bb);
+	   insn != NULL && insn != NEXT_INSN (BLOCK_END (bb));
+	   insn = NEXT_INSN (insn))
+	if (INSN_P (insn))
+	  {
+	    changed |= cprop_insn (BASIC_BLOCK (bb), insn, alter_jumps);
+
+	    /* Keep track of everything modified by this insn.  */
+	    /* ??? Need to be careful w.r.t. mods done to INSN.  Don't
+	       call mark_oprs_set if we turned the insn into a NOTE.  */
+	    if (GET_CODE (insn) != NOTE)
+	      mark_oprs_set (insn);
+	  }
+    }
+
+  if (gcse_file != NULL)
+    fprintf (gcse_file, "\n");
+
+  return changed;
+}

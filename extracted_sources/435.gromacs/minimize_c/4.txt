@@ -1,0 +1,22 @@
+static real f_norm(t_commrec *cr,
+		   t_grpopts *opts,t_mdatoms *mdatoms,
+		   int start,int end,rvec grad[])
+{
+  double fnorm2;
+  int    i,m,gf;
+
+  /* This routine returns the norm of the force */
+  fnorm2 = 0;
+  
+  for(i=start; i<end; i++) {
+    gf = mdatoms->cFREEZE[i];
+    for(m=0; m<DIM; m++)
+      if (!opts->nFreeze[gf][m])
+	fnorm2 += sqr(grad[i][m]); 
+  } 
+  
+  if (PAR(cr))
+    gmx_sumd(1,&fnorm2,cr);
+
+  return sqrt(fnorm2); 
+} 

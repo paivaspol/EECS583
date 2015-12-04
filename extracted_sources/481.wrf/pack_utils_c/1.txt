@@ -1,0 +1,31 @@
+int
+INT_GET_TI_HEADER_C ( char * hdrbuf, int * hdrbufsize, int * n,  /* hdrbufsize and n are in bytes */
+                    int * itypesize, int * typesize,
+                    int * DataHandle, char * Data,
+                    int * Count, int * code )
+{
+  int i ;
+  char * p ;
+  p = hdrbuf ;
+#if !defined(SPEC_CPU)
+  bcopy( p, hdrbufsize, sizeof(int) ) ;     p += sizeof(int) ;        /* 1 */
+  bcopy( p, code, sizeof(int) ) ;           p += sizeof(int) ;        /* 2 */
+  bcopy( p, DataHandle, sizeof(int) ) ;     p += sizeof(int) ;        /* 3 */
+  bcopy( p, typesize, sizeof(int) ) ;       p += sizeof(int) ;        /* 4 */
+  bcopy( p, Count, sizeof(int) ) ;          p += sizeof(int) ;        /* 5 */
+  if ( *Count * *typesize > 0 ) {
+  bcopy( p, Data, *Count * *typesize ) ;  p += *Count * *typesize ; /* 6++ */
+  }
+#else
+  memcpy( hdrbufsize, p, sizeof(int) ) ;     p += sizeof(int) ;        /* 1 */
+  memcpy( code, p, sizeof(int) ) ;           p += sizeof(int) ;        /* 2 */
+  memcpy( DataHandle, p, sizeof(int) ) ;     p += sizeof(int) ;        /* 3 */
+  memcpy( typesize, p, sizeof(int) ) ;       p += sizeof(int) ;        /* 4 */
+  memcpy( Count, p, sizeof(int) ) ;          p += sizeof(int) ;        /* 5 */
+  if ( *Count * *typesize > 0 ) {
+    memcpy( Data, p, *Count * *typesize ) ;  p += *Count * *typesize ; /* 6++ */
+  }
+#endif /* SPEC_CPU */
+  *n = (int)( p - hdrbuf ) ;
+  return(0) ;
+}

@@ -1,0 +1,50 @@
+void fe_spec_magnitude(double *data, int32 data_len, double *spec, int32 fftsize)
+{
+    int32  j,wrap;
+    complex  *FFT, *IN;
+    
+    /*fftsize defined at top of file*/
+    FFT = (complex *) calloc(fftsize,sizeof(complex));
+    IN = (complex *) calloc(fftsize,sizeof(complex));
+    
+    if (FFT==NULL || IN==NULL){
+	fprintf(stderr,"memory alloc failed in fe_spec_magnitude()\n...exiting\n");
+	exit(0);
+    }
+	
+    if (data_len > fftsize)  /*aliasing */
+    {
+	
+	for (j=0; j<fftsize;j++) {
+	    IN[j].r = data[j];
+	    IN[j].i = 0.0;
+	}
+	for (wrap=0; j<data_len; wrap++,j++) {
+	    IN[wrap].r += data[j];
+	    IN[wrap].i += 0.0;
+	}
+    }
+    else
+    {
+	for (j=0; j < data_len; j++){
+		IN[j].r = data[j];
+		IN[j].i = 0.0;
+	}
+        for ( ;j<fftsize;j++) {  /*pad zeros if necessary */
+		IN[j].r = 0.0;
+		IN[j].i = 0.0;
+	}
+    }
+    
+
+    fe_fft(IN,FFT,fftsize,FORWARD_FFT);
+    
+    for (j=0; j <= fftsize/2; j++)
+    {	
+	spec[j] = FFT[j].r*FFT[j].r + FFT[j].i*FFT[j].i;
+    }
+
+    free(FFT);
+    free(IN);
+    return;
+}

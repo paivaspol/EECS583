@@ -1,0 +1,20 @@
+void
+MakeDiffMx(char **aseqs, int num, float ***ret_dmx)
+{
+  float **dmx;                  /* RETURN: distance matrix           */
+  int      i,j;			/* counters over sequences           */
+
+  /* Allocate 2D float matrix
+   */
+  dmx = FMX2Alloc(num, num);
+
+  /* Calculate distances; symmetric matrix
+   * record difference, not identity (1 - identity)
+   */
+  for (i = 0; i < num; i++)
+    for (j = i; j < num; j++)
+      dmx[i][j] = dmx[j][i] = 1.0 - PairwiseIdentity(aseqs[i], aseqs[j]);
+
+  *ret_dmx = dmx;
+  return;
+}

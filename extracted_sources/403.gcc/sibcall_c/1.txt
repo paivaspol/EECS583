@@ -1,0 +1,73 @@
+static rtx
+skip_copy_to_return_value (orig_insn)
+     rtx orig_insn;
+{
+  rtx insn, set = NULL_RTX;
+  rtx hardret, softret;
+
+  /* If there is no return value, we have nothing to do.  */
+  if (! identify_call_return_value (PATTERN (orig_insn), &hardret, &softret))
+    return orig_insn;
+
+  insn = next_nonnote_insn (orig_insn);
+  if (! insn)
+    return orig_insn;
+
+  set = single_set (insn);
+  if (! set)
+    return orig_insn;
+
+  if (return_value_pseudo)
+    {
+      if (SET_DEST (set) == return_value_pseudo
+	  && SET_SRC (set) == softret)
+	return insn;
+      return orig_insn;
+    }
+
+  /* The destination must be the same as the called function's return
+     value to ensure that any return value is put in the same place by the
+     current function and the function we're calling. 
+
+     Further, the source must be the same as the pseudo into which the
+     called function's return value was copied.  Otherwise we're returning
+     some other value.  */
+
+#ifndef OUTGOING_REGNO
+#define OUTGOING_REGNO(N) (N)
+#endif
+
+  if (SET_DEST (set) == current_function_return_rtx
+      && REG_P (SET_DEST (set))
+      && OUTGOING_REGNO (REGNO (SET_DEST (set))) == REGNO (hardret)
+      && SET_SRC (set) == softret)
+    return insn;
+
+  /* Recognize the situation when the called function's return value
+     is copied in two steps: first into an intermediate pseudo, then
+     the into the calling functions return value register.  */
+
+  if (REG_P (SET_DEST (set))
+      && SET_SRC (set) == softret)
+    {
+      rtx x = SET_DEST (set);
+
+      insn = next_nonnote_insn (insn);
+      if (! insn)
+	return orig_insn;
+
+      set = single_set (insn);
+      if (! set)
+	return orig_insn;
+
+      if (SET_DEST (set) == current_function_return_rtx
+	  && REG_P (SET_DEST (set))
+	  && OUTGOING_REGNO (REGNO (SET_DEST (set))) == REGNO (hardret)
+	  && SET_SRC (set) == x)
+	return insn;
+    }
+
+  /* It did not look like a copy of the return value, so return the
+     same insn we were passed.  */
+  return orig_insn;
+}

@@ -1,0 +1,66 @@
+static int
+write_dependence_p (mem, x, writep)
+     rtx mem;
+     rtx x;
+     int writep;
+{
+  rtx x_addr, mem_addr;
+  rtx fixed_scalar;
+  rtx base;
+
+  if (MEM_VOLATILE_P (x) && MEM_VOLATILE_P (mem))
+    return 1;
+
+  /* (mem:BLK (scratch)) is a special mechanism to conflict with everything.
+     This is used in epilogue deallocation functions.  */
+  if (GET_MODE (x) == BLKmode && GET_CODE (XEXP (x, 0)) == SCRATCH)
+    return 1;
+  if (GET_MODE (mem) == BLKmode && GET_CODE (XEXP (mem, 0)) == SCRATCH)
+    return 1;
+
+  if (DIFFERENT_ALIAS_SETS_P (x, mem))
+    return 0;
+
+  /* Unchanging memory can't conflict with non-unchanging memory.  */
+  if (RTX_UNCHANGING_P (x) != RTX_UNCHANGING_P (mem))
+    return 0;
+
+  /* If MEM is an unchanging read, then it can't possibly conflict with
+     the store to X, because there is at most one store to MEM, and it must
+     have occurred somewhere before MEM.  */
+  if (! writep && RTX_UNCHANGING_P (mem))
+    return 0;
+
+  if (nonoverlapping_memrefs_p (x, mem))
+    return 0;
+
+  x_addr = get_addr (XEXP (x, 0));
+  mem_addr = get_addr (XEXP (mem, 0));
+
+  if (! writep)
+    {
+      base = find_base_term (mem_addr);
+      if (base && (GET_CODE (base) == LABEL_REF
+		   || (GET_CODE (base) == SYMBOL_REF
+		       && CONSTANT_POOL_ADDRESS_P (base))))
+	return 0;
+    }
+
+  if (! base_alias_check (x_addr, mem_addr, GET_MODE (x),
+			  GET_MODE (mem)))
+    return 0;
+
+  x_addr = canon_rtx (x_addr);
+  mem_addr = canon_rtx (mem_addr);
+
+  if (!memrefs_conflict_p (SIZE_FOR_MODE (mem), mem_addr,
+			   SIZE_FOR_MODE (x), x_addr, 0))
+    return 0;
+
+  fixed_scalar 
+    = fixed_scalar_and_varying_struct_p (mem, x, mem_addr, x_addr,
+					 rtx_addr_varies_p);
+
+  return (!(fixed_scalar == mem && !aliases_everything_p (x))
+	  && !(fixed_scalar == x && !aliases_everything_p (mem)));
+}

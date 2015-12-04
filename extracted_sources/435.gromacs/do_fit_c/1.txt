@@ -1,0 +1,20 @@
+void do_fit(int natoms,real *w_rls,rvec *xp,rvec *x)
+{
+  int    i,j,m,r,c;
+  matrix R;
+  rvec   x_old;
+
+  /* Calculate the rotation matrix R */
+  calc_fit_R(natoms,w_rls,xp,x,R);
+
+  /*rotate X*/
+  for(j=0; j<natoms; j++) {
+    for(m=0; m<DIM; m++)
+      x_old[m]=x[j][m];
+    for(r=0; r<DIM; r++) {
+      x[j][r]=0;
+      for(c=0; c<DIM; c++)
+        x[j][r]+=R[r][c]*x_old[c];
+    }
+  }
+}

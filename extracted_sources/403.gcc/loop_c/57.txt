@@ -1,0 +1,203 @@
+static void
+record_giv (loop, v, insn, src_reg, dest_reg, mult_val, add_val, ext_val,
+	    benefit, type, not_every_iteration, maybe_multiple, location)
+     const struct loop *loop;
+     struct induction *v;
+     rtx insn;
+     rtx src_reg;
+     rtx dest_reg;
+     rtx mult_val, add_val, ext_val;
+     int benefit;
+     enum g_types type;
+     int not_every_iteration, maybe_multiple;
+     rtx *location;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct induction *b;
+  struct iv_class *bl;
+  rtx set = single_set (insn);
+  rtx temp;
+
+  /* Attempt to prove constantness of the values.  Don't let simplity_rtx
+     undo the MULT canonicalization that we performed earlier.  */
+  temp = simplify_rtx (add_val);
+  if (temp
+      && ! (GET_CODE (add_val) == MULT
+	    && GET_CODE (temp) == ASHIFT))
+    add_val = temp;
+
+  v->insn = insn;
+  v->src_reg = src_reg;
+  v->giv_type = type;
+  v->dest_reg = dest_reg;
+  v->mult_val = mult_val;
+  v->add_val = add_val;
+  v->ext_dependent = ext_val;
+  v->benefit = benefit;
+  v->location = location;
+  v->cant_derive = 0;
+  v->combined_with = 0;
+  v->maybe_multiple = maybe_multiple;
+  v->maybe_dead = 0;
+  v->derive_adjustment = 0;
+  v->same = 0;
+  v->ignore = 0;
+  v->new_reg = 0;
+  v->final_value = 0;
+  v->same_insn = 0;
+  v->auto_inc_opt = 0;
+  v->unrolled = 0;
+  v->shared = 0;
+
+  /* The v->always_computable field is used in update_giv_derive, to
+     determine whether a giv can be used to derive another giv.  For a
+     DEST_REG giv, INSN computes a new value for the giv, so its value
+     isn't computable if INSN insn't executed every iteration.
+     However, for a DEST_ADDR giv, INSN merely uses the value of the giv;
+     it does not compute a new value.  Hence the value is always computable
+     regardless of whether INSN is executed each iteration.  */
+
+  if (type == DEST_ADDR)
+    v->always_computable = 1;
+  else
+    v->always_computable = ! not_every_iteration;
+
+  v->always_executed = ! not_every_iteration;
+
+  if (type == DEST_ADDR)
+    {
+      v->mode = GET_MODE (*location);
+      v->lifetime = 1;
+    }
+  else /* type == DEST_REG */
+    {
+      v->mode = GET_MODE (SET_DEST (set));
+
+      v->lifetime = LOOP_REG_LIFETIME (loop, REGNO (dest_reg));
+
+      /* If the lifetime is zero, it means that this register is
+	 really a dead store.  So mark this as a giv that can be
+	 ignored.  This will not prevent the biv from being eliminated.  */
+      if (v->lifetime == 0)
+	v->ignore = 1;
+
+      REG_IV_TYPE (ivs, REGNO (dest_reg)) = GENERAL_INDUCT;
+      REG_IV_INFO (ivs, REGNO (dest_reg)) = v;
+    }
+
+  /* Add the giv to the class of givs computed from one biv.  */
+
+  bl = REG_IV_CLASS (ivs, REGNO (src_reg));
+  if (bl)
+    {
+      v->next_iv = bl->giv;
+      bl->giv = v;
+      /* Don't count DEST_ADDR.  This is supposed to count the number of
+	 insns that calculate givs.  */
+      if (type == DEST_REG)
+	bl->giv_count++;
+      bl->total_benefit += benefit;
+    }
+  else
+    /* Fatal error, biv missing for this giv?  */
+    abort ();
+
+  if (type == DEST_ADDR)
+    v->replaceable = 1;
+  else
+    {
+      /* The giv can be replaced outright by the reduced register only if all
+	 of the following conditions are true:
+	 - the insn that sets the giv is always executed on any iteration
+	   on which the giv is used at all
+	   (there are two ways to deduce this:
+	    either the insn is executed on every iteration,
+	    or all uses follow that insn in the same basic block),
+	 - the giv is not used outside the loop
+	 - no assignments to the biv occur during the giv's lifetime.  */
+
+      if (REGNO_FIRST_UID (REGNO (dest_reg)) == INSN_UID (insn)
+	  /* Previous line always fails if INSN was moved by loop opt.  */
+	  && REGNO_LAST_LUID (REGNO (dest_reg))
+	  < INSN_LUID (loop->end)
+	  && (! not_every_iteration
+	      || last_use_this_basic_block (dest_reg, insn)))
+	{
+	  /* Now check that there are no assignments to the biv within the
+	     giv's lifetime.  This requires two separate checks.  */
+
+	  /* Check each biv update, and fail if any are between the first
+	     and last use of the giv.
+
+	     If this loop contains an inner loop that was unrolled, then
+	     the insn modifying the biv may have been emitted by the loop
+	     unrolling code, and hence does not have a valid luid.  Just
+	     mark the biv as not replaceable in this case.  It is not very
+	     useful as a biv, because it is used in two different loops.
+	     It is very unlikely that we would be able to optimize the giv
+	     using this biv anyways.  */
+
+	  v->replaceable = 1;
+	  for (b = bl->biv; b; b = b->next_iv)
+	    {
+	      if (INSN_UID (b->insn) >= max_uid_for_loop
+		  || ((INSN_LUID (b->insn)
+		       >= REGNO_FIRST_LUID (REGNO (dest_reg)))
+		      && (INSN_LUID (b->insn)
+			  <= REGNO_LAST_LUID (REGNO (dest_reg)))))
+		{
+		  v->replaceable = 0;
+		  v->not_replaceable = 1;
+		  break;
+		}
+	    }
+
+	  /* If there are any backwards branches that go from after the
+	     biv update to before it, then this giv is not replaceable.  */
+	  if (v->replaceable)
+	    for (b = bl->biv; b; b = b->next_iv)
+	      if (back_branch_in_range_p (loop, b->insn))
+		{
+		  v->replaceable = 0;
+		  v->not_replaceable = 1;
+		  break;
+		}
+	}
+      else
+	{
+	  /* May still be replaceable, we don't have enough info here to
+	     decide.  */
+	  v->replaceable = 0;
+	  v->not_replaceable = 0;
+	}
+    }
+
+  /* Record whether the add_val contains a const_int, for later use by
+     combine_givs.  */
+  {
+    rtx tem = add_val;
+
+    v->no_const_addval = 1;
+    if (tem == const0_rtx)
+      ;
+    else if (CONSTANT_P (add_val))
+      v->no_const_addval = 0;
+    if (GET_CODE (tem) == PLUS)
+      {
+	while (1)
+	  {
+	    if (GET_CODE (XEXP (tem, 0)) == PLUS)
+	      tem = XEXP (tem, 0);
+	    else if (GET_CODE (XEXP (tem, 1)) == PLUS)
+	      tem = XEXP (tem, 1);
+	    else
+	      break;
+	  }
+	if (CONSTANT_P (XEXP (tem, 1)))
+	  v->no_const_addval = 0;
+      }
+  }
+
+  if (loop_dump_stream)
+    loop_giv_dump (v, loop_dump_stream, 0);
+}

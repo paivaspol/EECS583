@@ -1,0 +1,73 @@
+int                                                   //  ==> minimum motion cost after search
+FastFullPelBlockMotionSearch (pel_t**   orig_pic,     // <--  not used
+                              short     ref,          // <--  reference frame (0... or -1 (backward))
+                              int       list,
+                              int       pic_pix_x,    // <--  absolute x-coordinate of regarded AxB block
+                              int       pic_pix_y,    // <--  absolute y-coordinate of regarded AxB block
+                              int       blocktype,    // <--  block type (1-16x16 ... 7-4x4)
+                              short     pred_mv_x,    // <--  motion vector predictor (x) in sub-pel units
+                              short     pred_mv_y,    // <--  motion vector predictor (y) in sub-pel units
+                              short*    mv_x,         //  --> motion vector (x) - in pel units
+                              short*    mv_y,         //  --> motion vector (y) - in pel units
+                              int       search_range, // <--  1-d search range in pel units
+                              int       min_mcost,    // <--  minimum motion cost (cost for center or huge value)
+                              double    lambda)       // <--  lagrangian parameter for determining motion cost
+{
+  int   pos, offset_x, offset_y, cand_x, cand_y, mcost;
+
+  int   max_pos       = (2*search_range+1)*(2*search_range+1);              // number of search positions
+  int   lambda_factor = LAMBDA_FACTOR (lambda);                             // factor for determining lagragian motion cost
+  int   best_pos      = 0;                                                  // position with minimum motion cost
+  int   block_index;                                                        // block index for indexing SAD array
+  int*  block_sad;                                                          // pointer to SAD array
+
+  block_index   = (pic_pix_y-img->opix_y)+((pic_pix_x-img->opix_x)>>2); // block index for indexing SAD array
+  block_sad     = BlockSAD[list][ref][blocktype][block_index];         // pointer to SAD array
+
+  //===== set up fast full integer search if needed / set search center =====
+  if (!search_setup_done[list][ref])
+  {
+    SetupFastFullPelSearch (ref, list);
+  }
+
+  offset_x = search_center_x[list][ref] - img->opix_x;
+  offset_y = search_center_y[list][ref] - img->opix_y;
+
+  //===== cost for (0,0)-vector: it is done before, because MVCost can be negative =====
+  if (!input->rdopt)
+  {
+    mcost = block_sad[pos_00[list][ref]] + MV_COST (lambda_factor, 2, 0, 0, pred_mv_x, pred_mv_y);
+
+    if (mcost < min_mcost)
+    {
+      min_mcost = mcost;
+      best_pos  = pos_00[list][ref];
+    }
+  }
+
+  //===== loop over all search positions =====
+  for (pos=0; pos<max_pos; pos++, block_sad++)
+  {
+    //--- check residual cost ---
+    if (*block_sad < min_mcost)
+    {
+      //--- get motion vector cost ---
+      cand_x = offset_x + spiral_search_x[pos];
+      cand_y = offset_y + spiral_search_y[pos];
+      mcost  = *block_sad;
+      mcost += MV_COST (lambda_factor, 2, cand_x, cand_y, pred_mv_x, pred_mv_y);
+
+      //--- check motion cost ---
+      if (mcost < min_mcost)
+      {
+        min_mcost = mcost;
+        best_pos  = pos;
+      }
+    }
+  }
+
+  //===== set best motion vector and return minimum motion cost =====
+  *mv_x = offset_x + spiral_search_x[best_pos];
+  *mv_y = offset_y + spiral_search_y[best_pos];
+  return min_mcost;
+}

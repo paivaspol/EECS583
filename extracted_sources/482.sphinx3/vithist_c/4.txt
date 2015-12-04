@@ -1,0 +1,26 @@
+static void vithist_enter (vithist_t *vh, kbcore_t *kbc, vithist_entry_t *tve)
+{
+    vithist_entry_t *ve;
+    int32 vhid;
+    
+    /* Check if an entry with this LM state already exists in current frame */
+    vhid = vh_lmstate_find (vh, &(tve->lmstate));
+    if (vhid < 0) {	/* Not found; allocate new entry */
+	vhid = vh->n_entry;
+	ve = vithist_entry_alloc (vh);
+	
+	*ve = *tve;
+	vithist_lmstate_enter (vh, vhid, ve);	/* Enter new vithist info into LM state tree */
+    } else {
+	ve = vh->entry[VITHIST_ID2BLK(vhid)] + VITHIST_ID2BLKOFFSET(vhid);
+	
+	if (ve->score < tve->score)
+	    *ve = *tve;
+    }
+    
+    /* Update best exit score in this frame */
+    if (vh->bestscore[vh->n_frm] < tve->score) {
+	vh->bestscore[vh->n_frm] = tve->score;
+	vh->bestvh[vh->n_frm] = vhid;
+    }
+}

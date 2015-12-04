@@ -1,0 +1,75 @@
+void init_pppm(FILE *log,t_commrec *cr,t_nsborder *nsb,
+	       bool bVerbose,bool bOld,rvec box,char *ghatfn,t_inputrec *ir)
+{
+  int   nx,ny,nz,m,porder;
+  ivec  grids;
+  real  r1,rc;
+  const real tol = 1e-5;
+  rvec  spacing;
+
+#ifdef WITHOUT_FFTW
+  fatal_error(0,"PPPM used, but GROMACS was compiled without FFTW support!\n");
+#endif
+
+  if (cr != NULL) {
+    if (cr->nnodes > 1)
+	fprintf(log,"Initializing parallel PPPM.\n");
+  }
+  fprintf(log,"Will use the PPPM algorithm for long-range electrostatics\n");
+ 
+  if (!fexist(ghatfn)) {    
+    beta[XX]=beta[YY]=beta[ZZ]= 1.85;
+    nx     = ir->nkx;
+    ny     = ir->nky;
+    nz     = ir->nkz;
+    
+    fprintf(log,"Generating Ghat function\n");
+    fprintf(log,"Grid size is %d x %d x %d\n",nx,ny,nz);
+
+    if ((nx < 4) || (ny < 4) || (nz < 4)) 
+      fatal_error(0,"Grid must be at least 4 points in all directions");
+      
+    ghat   = mk_rgrid(nx,ny,nz);
+    mk_ghat(NULL,nx,ny,nz,ghat,box,ir->rcoulomb_switch,ir->rcoulomb,TRUE,bOld);
+    
+    if (bVerbose)
+      pr_scalar_gk("generghat.xvg",nx,ny,nz,box,ghat);
+  }
+  else {
+    fprintf(stderr,"Reading Ghat function from %s\n",ghatfn);
+    ghat = rd_ghat(log,ghatfn,grids,spacing,beta,&porder,&r1,&rc);
+    
+    /* Check whether cut-offs correspond */
+    if ((fabs(r1-ir->rcoulomb_switch)>tol) || (fabs(rc-ir->rcoulomb)>tol)) {
+      fprintf(log,"rcoulomb_switch = %10.3e  rcoulomb = %10.3e"
+	          "  r1 = %10.3e  rc = %10.3e\n",
+	      ir->rcoulomb_switch,ir->rcoulomb,r1,rc);
+      fflush(log);
+      fatal_error(0,"Cut-off lengths in tpb file and Ghat file %s "
+		  "do not match\nCheck your log file!",ghatfn);
+    }
+      
+    /* Check whether boxes correspond */
+    for(m=0; (m<DIM); m++)
+      if (fabs(box[m]-grids[m]*spacing[m]) > tol) {
+	pr_rvec(log,0,"box",box,DIM);
+	pr_rvec(log,0,"grid-spacing",spacing,DIM);
+	pr_ivec(log,0,"grid size",grids,DIM);
+	fflush(log);
+	fatal_error(0,"Box sizes in tpb file and Ghat file %s do not match\n"
+		    "Check your log file!",ghatfn);
+      }
+
+    if (porder != 2)
+      fatal_error(0,"porder = %d, should be 2 in %s",porder,ghatfn);
+      
+    nx = grids[XX];
+    ny = grids[YY];
+    nz = grids[ZZ];
+    
+    if (bVerbose)
+      pr_scalar_gk("optimghat.xvg",nx,ny,nz,box,ghat);
+  }
+  /* Now setup the FFT things */
+  grid = mk_fftgrid(log,PAR(cr),nx,ny,nz,ir->bOptFFT);
+}

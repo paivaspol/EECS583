@@ -1,0 +1,18 @@
+void
+Perl_csighandler_init(void)
+{
+    int sig;
+    if (sig_handlers_initted) return;
+
+    for (sig = 1; sig < SIG_SIZE; sig++) {
+#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+        dTHX;
+        sig_defaulting[sig] = 1;
+        (void) rsignal(sig, PL_csighandlerp);
+#endif
+#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+        sig_ignoring[sig] = 0;
+#endif
+    }
+    sig_handlers_initted = 1;
+}

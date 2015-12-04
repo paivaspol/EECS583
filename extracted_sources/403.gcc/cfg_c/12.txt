@@ -1,0 +1,27 @@
+void
+alloc_aux_for_blocks (size)
+     int size;
+{
+  static int initialized;
+
+  if (!initialized)
+    {
+      gcc_obstack_init (&block_aux_obstack);
+      initialized = 1;
+    }
+
+  /* Check whether AUX data are still allocated.  */
+  else if (first_block_aux_obj)
+    abort ();
+  first_block_aux_obj = (char *) obstack_alloc (&block_aux_obstack, 0);
+  if (size)
+    {
+      int i;
+
+      for (i = 0; i < n_basic_blocks; i++)
+	alloc_aux_for_block (BASIC_BLOCK (i), size);
+
+      alloc_aux_for_block (ENTRY_BLOCK_PTR, size);
+      alloc_aux_for_block (EXIT_BLOCK_PTR, size);
+    }
+}

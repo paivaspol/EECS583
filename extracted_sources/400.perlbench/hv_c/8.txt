@@ -1,0 +1,22 @@
+void
+Perl_hv_undef(pTHX_ HV *hv)
+{
+    register XPVHV* xhv;
+    if (!hv)
+	return;
+    xhv = (XPVHV*)SvANY(hv);
+    hfreeentries(hv);
+    Safefree(xhv->xhv_array /* HvARRAY(hv) */);
+    if (HvNAME(hv)) {
+        if(PL_stashcache)
+	    hv_delete(PL_stashcache, HvNAME(hv), strlen(HvNAME(hv)), G_DISCARD);
+	Safefree(HvNAME(hv));
+	HvNAME(hv) = 0;
+    }
+    xhv->xhv_max   = 7;	/* HvMAX(hv) = 7 (it's a normal hash) */
+    xhv->xhv_array = 0;	/* HvARRAY(hv) = 0 */
+    xhv->xhv_placeholders = 0; /* HvPLACEHOLDERS(hv) = 0 */
+
+    if (SvRMAGICAL(hv))
+	mg_clear((SV*)hv);
+}

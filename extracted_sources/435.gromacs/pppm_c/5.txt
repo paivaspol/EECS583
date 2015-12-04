@@ -1,0 +1,67 @@
+void convolution(FILE *fp,bool bVerbose,t_fftgrid *grid,real ***ghat,
+		 t_commrec *cr)
+{
+  int      i,j,k,index;
+  real     gk;
+  int      nx,ny,nz,la2,la12;
+  t_fft_c  *ptr;
+  int      *nTest;
+  int jstart,jend;
+  
+  unpack_fftgrid(grid,&nx,&ny,&nz,&la2,&la12,FALSE,(t_fft_r **)&ptr);
+  snew(nTest,grid->nptr);
+  
+  if(PAR(cr)) {
+#if (defined USE_MPI && !defined WITHOUT_FFTW)
+    jstart=grid->pfft.local_y_start_after_transpose;
+    jend=jstart+grid->pfft.local_ny_after_transpose;
+
+    for(j=jstart; (j<jend); j++) { /* local cells */
+	for(i=0; (i<nx); i++) {
+	    for(k=0;k<(nz/2+1); k++) {
+		gk    = ghat[i][j][k];
+		index = INDEX(j,i,k);
+		ptr[index].re *= gk;
+		ptr[index].im *= gk;
+		nTest[index]++;
+	    }
+	}
+    }
+#ifdef DEBUG
+    for(j=jstart; (j<jend); j++) {
+	for(i=0; (i<nx); i++) {
+	    for(k=0; k<(nz/2+1); k++) {
+		index = INDEX(j,i,k);
+		if (nTest[index] != 1)
+		    fprintf(fp,"Index %d sucks, set %d times\n",index,nTest[index]);
+	    }
+	}
+    }
+#endif /* DEBUG */
+#endif /* USE_MPI */
+  } else { /* if not running in parallel */
+      for(i=0; (i<nx); i++) {
+	  for(j=0; (j<ny); j++) {
+	      for(k=0;k<(nz/2+1); k++) {
+		  gk    = ghat[i][j][k];
+		  index = INDEX(i,j,k);
+		  ptr[index].re *= gk;
+		  ptr[index].im *= gk;
+		  nTest[index]++;
+	      }
+	  }
+      }
+#ifdef DEBUG
+      for(i=0; (i<nx); i++) {
+	  for(j=0; (j<ny); j++) {
+	      for(k=0; k<(nz/2+1); k++) {
+		  index = INDEX(i,j,k);
+		  if (nTest[index] != 1)
+		      fprintf(fp,"Index %d sucks, set %d times\n",index,nTest[index]);
+	      }
+	  }
+      }
+#endif	
+  }
+  sfree(nTest);
+}

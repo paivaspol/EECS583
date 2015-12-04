@@ -1,0 +1,153 @@
+static tree
+optimize_bit_field_compare (code, compare_type, lhs, rhs)
+     enum tree_code code;
+     tree compare_type;
+     tree lhs, rhs;
+{
+  HOST_WIDE_INT lbitpos, lbitsize, rbitpos, rbitsize, nbitpos, nbitsize;
+  tree type = TREE_TYPE (lhs);
+  tree signed_type, unsigned_type;
+  int const_p = TREE_CODE (rhs) == INTEGER_CST;
+  enum machine_mode lmode, rmode, nmode;
+  int lunsignedp, runsignedp;
+  int lvolatilep = 0, rvolatilep = 0;
+  tree linner, rinner = NULL_TREE;
+  tree mask;
+  tree offset;
+
+  /* Get all the information about the extractions being done.  If the bit size
+     if the same as the size of the underlying object, we aren't doing an
+     extraction at all and so can do nothing.  We also don't want to
+     do anything if the inner expression is a PLACEHOLDER_EXPR since we
+     then will no longer be able to replace it.  */
+  linner = get_inner_reference (lhs, &lbitsize, &lbitpos, &offset, &lmode,
+				&lunsignedp, &lvolatilep);
+  if (linner == lhs || lbitsize == GET_MODE_BITSIZE (lmode) || lbitsize < 0
+      || offset != 0 || TREE_CODE (linner) == PLACEHOLDER_EXPR)
+    return 0;
+
+ if (!const_p)
+   {
+     /* If this is not a constant, we can only do something if bit positions,
+	sizes, and signedness are the same.  */
+     rinner = get_inner_reference (rhs, &rbitsize, &rbitpos, &offset, &rmode,
+				   &runsignedp, &rvolatilep);
+
+     if (rinner == rhs || lbitpos != rbitpos || lbitsize != rbitsize
+	 || lunsignedp != runsignedp || offset != 0
+	 || TREE_CODE (rinner) == PLACEHOLDER_EXPR)
+       return 0;
+   }
+
+  /* See if we can find a mode to refer to this field.  We should be able to,
+     but fail if we can't.  */
+  nmode = get_best_mode (lbitsize, lbitpos,
+			 const_p ? TYPE_ALIGN (TREE_TYPE (linner))
+			 : MIN (TYPE_ALIGN (TREE_TYPE (linner)),
+				TYPE_ALIGN (TREE_TYPE (rinner))),
+			 word_mode, lvolatilep || rvolatilep);
+  if (nmode == VOIDmode)
+    return 0;
+
+  /* Set signed and unsigned types of the precision of this mode for the
+     shifts below.  */
+  signed_type = type_for_mode (nmode, 0);
+  unsigned_type = type_for_mode (nmode, 1);
+
+  /* Compute the bit position and size for the new reference and our offset
+     within it. If the new reference is the same size as the original, we
+     won't optimize anything, so return zero.  */
+  nbitsize = GET_MODE_BITSIZE (nmode);
+  nbitpos = lbitpos & ~ (nbitsize - 1);
+  lbitpos -= nbitpos;
+  if (nbitsize == lbitsize)
+    return 0;
+
+  if (BYTES_BIG_ENDIAN)
+    lbitpos = nbitsize - lbitsize - lbitpos;
+
+  /* Make the mask to be used against the extracted field.  */
+  mask = build_int_2 (~0, ~0);
+  TREE_TYPE (mask) = unsigned_type;
+  force_fit_type (mask, 0);
+  mask = convert (unsigned_type, mask);
+  mask = const_binop (LSHIFT_EXPR, mask, size_int (nbitsize - lbitsize), 0);
+  mask = const_binop (RSHIFT_EXPR, mask,
+		      size_int (nbitsize - lbitsize - lbitpos), 0);
+
+  if (! const_p)
+    /* If not comparing with constant, just rework the comparison
+       and return.  */
+    return build (code, compare_type,
+		  build (BIT_AND_EXPR, unsigned_type,
+			 make_bit_field_ref (linner, unsigned_type,
+					     nbitsize, nbitpos, 1),
+			 mask),
+		  build (BIT_AND_EXPR, unsigned_type,
+			 make_bit_field_ref (rinner, unsigned_type,
+					     nbitsize, nbitpos, 1),
+			 mask));
+
+  /* Otherwise, we are handling the constant case. See if the constant is too
+     big for the field.  Warn and return a tree of for 0 (false) if so.  We do
+     this not only for its own sake, but to avoid having to test for this
+     error case below.  If we didn't, we might generate wrong code.
+
+     For unsigned fields, the constant shifted right by the field length should
+     be all zero.  For signed fields, the high-order bits should agree with
+     the sign bit.  */
+
+  if (lunsignedp)
+    {
+      if (! integer_zerop (const_binop (RSHIFT_EXPR,
+					convert (unsigned_type, rhs),
+					size_int (lbitsize), 0)))
+	{
+	  warning ("comparison is always %d due to width of bit-field",
+		   code == NE_EXPR);
+	  return convert (compare_type,
+			  (code == NE_EXPR
+			   ? integer_one_node : integer_zero_node));
+	}
+    }
+  else
+    {
+      tree tem = const_binop (RSHIFT_EXPR, convert (signed_type, rhs),
+			      size_int (lbitsize - 1), 0);
+      if (! integer_zerop (tem) && ! integer_all_onesp (tem))
+	{
+	  warning ("comparison is always %d due to width of bit-field",
+		   code == NE_EXPR);
+	  return convert (compare_type,
+			  (code == NE_EXPR
+			   ? integer_one_node : integer_zero_node));
+	}
+    }
+
+  /* Single-bit compares should always be against zero.  */
+  if (lbitsize == 1 && ! integer_zerop (rhs))
+    {
+      code = code == EQ_EXPR ? NE_EXPR : EQ_EXPR;
+      rhs = convert (type, integer_zero_node);
+    }
+
+  /* Make a new bitfield reference, shift the constant over the
+     appropriate number of bits and mask it with the computed mask
+     (in case this was a signed field).  If we changed it, make a new one.  */
+  lhs = make_bit_field_ref (linner, unsigned_type, nbitsize, nbitpos, 1);
+  if (lvolatilep)
+    {
+      TREE_SIDE_EFFECTS (lhs) = 1;
+      TREE_THIS_VOLATILE (lhs) = 1;
+    }
+
+  rhs = fold (const_binop (BIT_AND_EXPR,
+			   const_binop (LSHIFT_EXPR,
+					convert (unsigned_type, rhs),
+					size_int (lbitpos), 0),
+			   mask, 0));
+
+  return build (code, compare_type,
+		build (BIT_AND_EXPR, unsigned_type, lhs, mask),
+		rhs);
+}

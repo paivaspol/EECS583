@@ -1,0 +1,38 @@
+int writeSyntaxElement_Level_VLC1(SyntaxElement *se, DataPartition *this_dataPart)
+{
+  int level, levabs, sign;
+
+  level = se->value1;
+  levabs = abs(level);
+  sign = (level < 0 ? 1 : 0);
+
+  
+  if (levabs < 8)
+  {
+    se->len = levabs * 2 + sign - 1;
+    se->inf = 1;
+  }
+  else if (levabs < 8+8)
+  {
+    // escape code1
+    se->len = 14 + 1 + 4;
+    se->inf = (1 << 4) | ((levabs - 8) << 1) | sign;
+  }
+  else
+  {
+    // escape code2
+    se->len = 14 + 2 + 12;
+    se->inf = (0x1 << 12) | ((levabs - 16)<< 1) | sign;
+  }
+
+
+  symbol2vlc(se);
+
+  writeUVLC2buffer(se, this_dataPart->bitstream);
+#if TRACE
+  if (se->type <= 1)
+    trace2out (se);
+#endif
+
+  return (se->len);
+}

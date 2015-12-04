@@ -1,0 +1,167 @@
+static SV *magic_check(pTHX_ stcxt_t *cxt)
+{
+    /* The worst case for a malicious header would be old magic (which is
+       longer), major, minor, byteorder length byte of 255, 255 bytes of
+       garbage, sizeof int, long, pointer, NV.
+       So the worse of that we can read is 255 bytes of garbage plus 4.
+       Err, I am assuming 8 bit bytes here. Please file a bug report if you're
+       compiling perl on a system with chars that are larger than 8 bits.
+       (Even Crays aren't *that* perverse).
+    */
+    unsigned char buf[4 + 255];
+    unsigned char *current;
+    int c;
+    int length;
+    int use_network_order;
+    int use_NV_size;
+    int version_major;
+    int version_minor = 0;
+
+    TRACEME(("magic_check"));
+
+    /*
+     * The "magic number" is only for files, not when freezing in memory.
+     */
+
+    if (cxt->fio) {
+        /* This includes the '\0' at the end.  I want to read the extra byte,
+           which is usually going to be the major version number.  */
+        STRLEN len = sizeof(magicstr);
+        STRLEN old_len;
+
+        READ(buf, (SSize_t)(len));	/* Not null-terminated */
+
+        /* Point at the byte after the byte we read.  */
+        current = buf + --len;	/* Do the -- outside of macros.  */
+
+        if (memNE(buf, magicstr, len)) {
+            /*
+             * Try to read more bytes to check for the old magic number, which
+             * was longer.
+             */
+
+            TRACEME(("trying for old magic number"));
+
+            old_len = sizeof(old_magicstr) - 1;
+            READ(current + 1, (SSize_t)(old_len - len));
+            
+            if (memNE(buf, old_magicstr, old_len))
+                CROAK(("File is not a perl storable"));
+            current = buf + old_len;
+        }
+        use_network_order = *current;
+    } else
+	GETMARK(use_network_order);
+        
+    /*
+     * Starting with 0.6, the "use_network_order" byte flag is also used to
+     * indicate the version number of the binary, and therefore governs the
+     * setting of sv_retrieve_vtbl. See magic_write().
+     */
+
+    version_major = use_network_order >> 1;
+    cxt->retrieve_vtbl = version_major ? sv_retrieve : sv_old_retrieve;
+
+    TRACEME(("magic_check: netorder = 0x%x", use_network_order));
+
+
+    /*
+     * Starting with 0.7 (binary major 2), a full byte is dedicated to the
+     * minor version of the protocol.  See magic_write().
+     */
+
+    if (version_major > 1)
+        GETMARK(version_minor);
+
+    cxt->ver_major = version_major;
+    cxt->ver_minor = version_minor;
+
+    TRACEME(("binary image version is %d.%d", version_major, version_minor));
+
+    /*
+     * Inter-operability sanity check: we can't retrieve something stored
+     * using a format more recent than ours, because we have no way to
+     * know what has changed, and letting retrieval go would mean a probable
+     * failure reporting a "corrupted" storable file.
+     */
+
+    if (
+        version_major > STORABLE_BIN_MAJOR ||
+        (version_major == STORABLE_BIN_MAJOR &&
+         version_minor > STORABLE_BIN_MINOR)
+        ) {
+        int croak_now = 1;
+        TRACEME(("but I am version is %d.%d", STORABLE_BIN_MAJOR,
+                 STORABLE_BIN_MINOR));
+
+        if (version_major == STORABLE_BIN_MAJOR) {
+            TRACEME(("cxt->accept_future_minor is %d",
+                     cxt->accept_future_minor));
+            if (cxt->accept_future_minor < 0)
+                cxt->accept_future_minor
+                    = (SvTRUE(get_sv("Storable::accept_future_minor",
+                                          TRUE))
+                       ? 1 : 0);
+            if (cxt->accept_future_minor == 1)
+                croak_now = 0;  /* Don't croak yet.  */
+        }
+        if (croak_now) {
+            CROAK(("Storable binary image v%d.%d more recent than I am (v%d.%d)",
+                   version_major, version_minor,
+                   STORABLE_BIN_MAJOR, STORABLE_BIN_MINOR));
+        }
+    }
+
+    /*
+     * If they stored using network order, there's no byte ordering
+     * information to check.
+     */
+
+    if ((cxt->netorder = (use_network_order & 0x1)))	/* Extra () for -Wall */
+        return &PL_sv_undef;			/* No byte ordering info */
+
+    /* In C truth is 1, falsehood is 0. Very convienient.  */
+    use_NV_size = version_major >= 2 && version_minor >= 2;
+
+    GETMARK(c);
+    length = c + 3 + use_NV_size;
+    READ(buf, length);	/* Not null-terminated */
+
+    TRACEME(("byte order '%.*s' %d", c, buf, c));
+
+#ifdef USE_56_INTERWORK_KLUDGE
+    /* No point in caching this in the context as we only need it once per
+       retrieve, and we need to recheck it each read.  */
+    if (SvTRUE(get_sv("Storable::interwork_56_64bit", TRUE))) {
+        if ((c != (sizeof (byteorderstr_56) - 1))
+            || memNE(buf, byteorderstr_56, c))
+            CROAK(("Byte order is not compatible"));
+    } else
+#endif
+    {
+        if ((c != (sizeof (byteorderstr) - 1)) || memNE(buf, byteorderstr, c))
+            CROAK(("Byte order is not compatible"));
+    }
+
+    current = buf + c;
+    
+    /* sizeof(int) */
+    if ((int) *current++ != sizeof(int))
+        CROAK(("Integer size is not compatible"));
+
+    /* sizeof(long) */
+    if ((int) *current++ != sizeof(long))
+        CROAK(("Long integer size is not compatible"));
+
+    /* sizeof(char *) */
+    if ((int) *current != sizeof(char *))
+        CROAK(("Pointer size is not compatible"));
+
+    if (use_NV_size) {
+        /* sizeof(NV) */
+        if ((int) *++current != sizeof(NV))
+            CROAK(("Double size is not compatible"));
+    }
+
+    return &PL_sv_undef;	/* OK */
+}

@@ -1,0 +1,78 @@
+void
+leaf_renumber_regs_insn (in_rtx)
+     rtx in_rtx;
+{
+  int i, j;
+  const char *format_ptr;
+
+  if (in_rtx == 0)
+    return;
+
+  /* Renumber all input-registers into output-registers.
+     renumbered_regs would be 1 for an output-register;
+     they  */
+
+  if (GET_CODE (in_rtx) == REG)
+    {
+      int newreg;
+
+      /* Don't renumber the same reg twice.  */
+      if (in_rtx->used)
+	return;
+
+      newreg = REGNO (in_rtx);
+      /* Don't try to renumber pseudo regs.  It is possible for a pseudo reg
+	 to reach here as part of a REG_NOTE.  */
+      if (newreg >= FIRST_PSEUDO_REGISTER)
+	{
+	  in_rtx->used = 1;
+	  return;
+	}
+      newreg = LEAF_REG_REMAP (newreg);
+      if (newreg < 0)
+	abort ();
+      regs_ever_live[REGNO (in_rtx)] = 0;
+      regs_ever_live[newreg] = 1;
+      REGNO (in_rtx) = newreg;
+      in_rtx->used = 1;
+    }
+
+  if (INSN_P (in_rtx))
+    {
+      /* Inside a SEQUENCE, we find insns.
+	 Renumber just the patterns of these insns,
+	 just as we do for the top-level insns.  */
+      leaf_renumber_regs_insn (PATTERN (in_rtx));
+      return;
+    }
+
+  format_ptr = GET_RTX_FORMAT (GET_CODE (in_rtx));
+
+  for (i = 0; i < GET_RTX_LENGTH (GET_CODE (in_rtx)); i++)
+    switch (*format_ptr++)
+      {
+      case 'e':
+	leaf_renumber_regs_insn (XEXP (in_rtx, i));
+	break;
+
+      case 'E':
+	if (NULL != XVEC (in_rtx, i))
+	  {
+	    for (j = 0; j < XVECLEN (in_rtx, i); j++)
+	      leaf_renumber_regs_insn (XVECEXP (in_rtx, i, j));
+	  }
+	break;
+
+      case 'S':
+      case 's':
+      case '0':
+      case 'i':
+      case 'w':
+      case 'n':
+      case 'u':
+	break;
+
+      default:
+	abort ();
+      }
+}

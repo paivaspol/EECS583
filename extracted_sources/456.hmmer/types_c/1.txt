@@ -1,0 +1,41 @@
+int
+IsReal(char *s)
+{
+  int gotdecimal = 0;
+  int gotexp     = 0;
+  int gotreal    = 0;
+
+  if (s == NULL) return 0;
+
+  while (isspace((int) (*s))) s++;         /* skip leading whitespace */
+  if (*s == '-' || *s == '+') s++; /* skip leading sign */
+
+  /* Examine remainder for garbage. Allowed one '.' and
+   * one 'e' or 'E'; if both '.' and e/E occur, '.'
+   * must be first.
+   */
+  while (*s != '\0')
+    {
+      if (isdigit((int) (*s))) 
+	gotreal++;
+      else if (*s == '.')
+	{
+	  if (gotdecimal) return 0; /* can't have two */
+	  if (gotexp) return 0;	/* e/E preceded . */
+	  else gotdecimal++;
+	}
+      else if (*s == 'e' || *s == 'E')
+	{
+	  if (gotexp) return 0;	/* can't have two */
+	  else gotexp++;
+	}
+      else if (isspace((int) (*s)))
+	break;
+
+      s++;
+    }
+
+  while (isspace((int) (*s))) s++;         /* skip trailing whitespace */
+  if (*s == '\0' && gotreal) return 1;
+  else return 0;
+}

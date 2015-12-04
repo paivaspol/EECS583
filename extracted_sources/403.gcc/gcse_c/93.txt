@@ -1,0 +1,28 @@
+static void
+pre_insert_copy_insn (expr, insn)
+     struct expr *expr;
+     rtx insn;
+{
+  rtx reg = expr->reaching_reg;
+  int regno = REGNO (reg);
+  int indx = expr->bitmap_index;
+  rtx set = single_set (insn);
+  rtx new_insn;
+
+  if (!set)
+    abort ();
+
+  new_insn = emit_insn_after (gen_move_insn (reg, SET_DEST (set)), insn);
+
+  /* Keep register set table up to date.  */
+  record_one_set (regno, new_insn);
+
+  gcse_create_count++;
+
+  if (gcse_file)
+    fprintf (gcse_file,
+	     "PRE: bb %d, insn %d, copy expression %d in insn %d to reg %d\n",
+	      BLOCK_NUM (insn), INSN_UID (new_insn), indx,
+	      INSN_UID (insn), regno);
+  update_ld_motion_stores (expr);
+}

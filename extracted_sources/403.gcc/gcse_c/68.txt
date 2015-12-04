@@ -1,0 +1,30 @@
+static int
+def_reaches_here_p (insn, def_insn)
+     rtx insn, def_insn;
+{
+  rtx reg;
+
+  if (TEST_BIT (reaching_defs[BLOCK_NUM (insn)], INSN_CUID (def_insn)))
+    return 1;
+
+  if (BLOCK_NUM (insn) == BLOCK_NUM (def_insn))
+    {
+      if (INSN_CUID (def_insn) < INSN_CUID (insn))
+	{
+	  if (GET_CODE (PATTERN (def_insn)) == PARALLEL)
+	    return 1;
+	  else if (GET_CODE (PATTERN (def_insn)) == CLOBBER)
+	    reg = XEXP (PATTERN (def_insn), 0);
+	  else if (GET_CODE (PATTERN (def_insn)) == SET)
+	    reg = SET_DEST (PATTERN (def_insn));
+	  else
+	    abort ();
+
+	  return ! reg_set_between_p (reg, NEXT_INSN (def_insn), insn);
+	}
+      else
+	return 0;
+    }
+
+  return 0;
+}

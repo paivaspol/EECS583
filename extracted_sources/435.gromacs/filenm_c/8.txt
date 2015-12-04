@@ -1,0 +1,45 @@
+void pr_def(FILE *fp,int ftp)
+{
+  t_deffile *df;
+  char *s=NULL,*ext,*desc,*flst;
+  
+  df=&(deffile[ftp]);
+  /* find default file extension and \tt-ify description */
+  flst="";
+  if (df->ntps) {
+    ext = deffile[df->tps[0]].ext;
+    desc= strdup(df->descr);
+    s = strstr(desc,": ")+1;
+    if (s) {
+      s[0] = '\0';
+      s++;
+      snew(flst,strlen(s)+6);
+      strcpy(flst, " \\tt ");
+      strcat(flst, s);
+    }
+  } else {
+    ext = df->ext;
+    desc= df->descr;
+  }
+  /* now skip dot */
+  if (ext[0])
+    ext++;
+  else
+    ext="";
+  /* set file contents type */
+  switch (df->ftype) {
+  case eftASC: s="Asc";
+    break;
+  case eftBIN: s="Bin";
+    break;
+  case eftXDR: s="xdr";
+    break;
+  case eftGEN: s="";
+    break;
+  default: 
+    fatal_error(0,"Unimplemented filetype %d %d",ftp,df->ftype);
+  }
+  fprintf(fp,"\\tt %8s & \\tt %3s & %3s & \\tt %2s & %s%s \\\\[-0.1ex]\n",
+	  df->defnm, ext, s, df->defopt ? df->defopt : "", 
+	  check_tex(desc),check_tex(flst));
+}

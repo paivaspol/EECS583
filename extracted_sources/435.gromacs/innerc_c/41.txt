@@ -1,0 +1,238 @@
+void inl2210(
+	            int nri,
+	            int iinr[],
+	            int jindex[],
+	            int jjnr[],
+	            int shift[],
+	           real shiftvec[],
+	           real fshift[],
+	            int gid[],
+	           real pos[],
+	           real faction[],
+	           real charge[],
+	           real facel,
+	           real Vc[],
+	           real krf,
+	           real crf,
+	            int type[],
+	            int ntype,
+	           real nbfp[],
+	           real Vnb[],
+	            int nsatoms[])
+{
+  int        ii;
+  int        k;
+  int        n;
+  int        nj0;
+  int        nj1;
+  int        is3;
+  int        ggid;
+  int        ii3;
+  int        s;
+  real       krsq;
+  real       qq;
+  real       rinvsix;
+  real       vctot;
+  real       vcoul;
+  real       vnb6;
+  real       vnbexp;
+  real       vnbtot;
+  real       br;
+  int        j3;
+  int        jnr;
+  real       shX;
+  real       shY;
+  real       shZ;
+  const real nul  =  0.0000000000000000;
+  const real two  =  2.0000000000000000;
+  const real six  =  6.0000000000000000;
+  real       ix1;
+  real       iy1;
+  real       iz1;
+  real       iqA;
+  int        ntiA;
+  int        tjA;
+  real       fix1;
+  real       fiy1;
+  real       fiz1;
+  real       jx1;
+  real       jy1;
+  real       jz1;
+  real       dx11;
+  real       dy11;
+  real       dz11;
+  real       rsq11;
+  real       rinv11;
+  real       rinvsq11;
+  real       r11;
+  real       fs11;
+  real       tx11;
+  real       ty11;
+  real       tz11;
+  int        nstot;
+  int        nsvdwc;
+  int        nscoul;
+
+
+  for(n=0; (n<nri); n++) {
+    nstot             = nsatoms[3*n];
+    nsvdwc            = nsatoms[3*n+1];
+    nscoul            = nsatoms[3*n+2];
+    is3               = 3*shift[n];
+    shX               = shiftvec[is3];
+    shY               = shiftvec[is3+1];
+    shZ               = shiftvec[is3+2];
+    ii                = iinr[n];
+    ii3               = 3*ii;
+    vctot             = nul;
+    vnbtot            = nul;
+    nj0               = jindex[n];
+    nj1               = jindex[n+1];
+    for(s=0; (s<nsvdwc); s++) {
+      ix1               = shX + pos[ii3];
+      iy1               = shY + pos[ii3+1];
+      iz1               = shZ + pos[ii3+2];
+      iqA               = facel*charge[ii];
+      ntiA              = 3*ntype*type[ii];
+      fix1              = nul;
+      fiy1              = nul;
+      fiz1              = nul;
+      for(k=nj0; (k<nj1); k++) {
+        jnr               = jjnr[k];
+        j3                = 3*jnr;
+        jx1               = pos[j3];
+        jy1               = pos[j3+1];
+        jz1               = pos[j3+2];
+        dx11              = ix1 - jx1;
+        dy11              = iy1 - jy1;
+        dz11              = iz1 - jz1;
+        rsq11             = dx11*dx11+dy11*dy11+dz11*dz11;
+        rinv11            = 1.0/sqrt(rsq11);
+        r11               = rsq11*rinv11;
+        rinvsq11          = rinv11*rinv11;
+        rinvsix           = rinvsq11*rinvsq11*rinvsq11;
+        tjA               = ntiA+3*type[jnr];
+        vnb6              = rinvsix*nbfp[tjA];
+        br                = r11*nbfp[tjA+2];
+        vnbexp            = exp(-br)*nbfp[tjA+1];
+        vnbtot            = vnbtot + vnbexp-vnb6;
+        qq                = iqA*charge[jnr];
+        krsq              = krf*rsq11;
+        vcoul             = qq*(rinv11+krsq-crf);
+        fs11              = (br*vnbexp-six*vnb6+qq*(rinv11-two*krsq))*rinvsq11;
+        vctot             = vctot + vcoul;
+        tx11              = dx11*fs11;
+        ty11              = dy11*fs11;
+        tz11              = dz11*fs11;
+        fix1              = fix1 + tx11;
+        fiy1              = fiy1 + ty11;
+        fiz1              = fiz1 + tz11;
+        faction[j3]       = faction[j3]-tx11;
+        faction[j3+1]     = faction[j3+1]-ty11;
+        faction[j3+2]     = faction[j3+2]-tz11;
+      }
+      faction[ii3]      = faction[ii3] + fix1;
+      faction[ii3+1]    = faction[ii3+1] + fiy1;
+      faction[ii3+2]    = faction[ii3+2] + fiz1;
+      fshift[is3]       = fshift[is3] + fix1;
+      fshift[is3+1]     = fshift[is3+1] + fiy1;
+      fshift[is3+2]     = fshift[is3+2] + fiz1;
+      ii                = ii + 1;
+      ii3               = ii3 + 3;
+    }
+    for(s=nsvdwc; (s<nscoul); s++) {
+      ix1               = shX + pos[ii3];
+      iy1               = shY + pos[ii3+1];
+      iz1               = shZ + pos[ii3+2];
+      iqA               = facel*charge[ii];
+      fix1              = nul;
+      fiy1              = nul;
+      fiz1              = nul;
+      for(k=nj0; (k<nj1); k++) {
+        jnr               = jjnr[k];
+        j3                = 3*jnr;
+        jx1               = pos[j3];
+        jy1               = pos[j3+1];
+        jz1               = pos[j3+2];
+        dx11              = ix1 - jx1;
+        dy11              = iy1 - jy1;
+        dz11              = iz1 - jz1;
+        rsq11             = dx11*dx11+dy11*dy11+dz11*dz11;
+        rinv11            = 1.0/sqrt(rsq11);
+        rinvsq11          = rinv11*rinv11;
+        qq                = iqA*charge[jnr];
+        krsq              = krf*rsq11;
+        vcoul             = qq*(rinv11+krsq-crf);
+        fs11              = (qq*(rinv11-two*krsq))*rinvsq11;
+        vctot             = vctot + vcoul;
+        tx11              = dx11*fs11;
+        ty11              = dy11*fs11;
+        tz11              = dz11*fs11;
+        fix1              = fix1 + tx11;
+        fiy1              = fiy1 + ty11;
+        fiz1              = fiz1 + tz11;
+        faction[j3]       = faction[j3]-tx11;
+        faction[j3+1]     = faction[j3+1]-ty11;
+        faction[j3+2]     = faction[j3+2]-tz11;
+      }
+      faction[ii3]      = faction[ii3] + fix1;
+      faction[ii3+1]    = faction[ii3+1] + fiy1;
+      faction[ii3+2]    = faction[ii3+2] + fiz1;
+      fshift[is3]       = fshift[is3] + fix1;
+      fshift[is3+1]     = fshift[is3+1] + fiy1;
+      fshift[is3+2]     = fshift[is3+2] + fiz1;
+      ii                = ii + 1;
+      ii3               = ii3 + 3;
+    }
+    for(s=nscoul; (s<nstot); s++) {
+      ix1               = shX + pos[ii3];
+      iy1               = shY + pos[ii3+1];
+      iz1               = shZ + pos[ii3+2];
+      ntiA              = 3*ntype*type[ii];
+      fix1              = nul;
+      fiy1              = nul;
+      fiz1              = nul;
+      for(k=nj0; (k<nj1); k++) {
+        jnr               = jjnr[k];
+        j3                = 3*jnr;
+        jx1               = pos[j3];
+        jy1               = pos[j3+1];
+        jz1               = pos[j3+2];
+        dx11              = ix1 - jx1;
+        dy11              = iy1 - jy1;
+        dz11              = iz1 - jz1;
+        rsq11             = dx11*dx11+dy11*dy11+dz11*dz11;
+        rinv11            = 1.0/sqrt(rsq11);
+        r11               = rsq11*rinv11;
+        rinvsq11          = rinv11*rinv11;
+        rinvsix           = rinvsq11*rinvsq11*rinvsq11;
+        tjA               = ntiA+3*type[jnr];
+        vnb6              = rinvsix*nbfp[tjA];
+        br                = r11*nbfp[tjA+2];
+        vnbexp            = exp(-br)*nbfp[tjA+1];
+        vnbtot            = vnbtot + vnbexp-vnb6;
+        fs11              = (br*vnbexp-six*vnb6)*rinvsq11;
+        tx11              = dx11*fs11;
+        ty11              = dy11*fs11;
+        tz11              = dz11*fs11;
+        fix1              = fix1 + tx11;
+        fiy1              = fiy1 + ty11;
+        fiz1              = fiz1 + tz11;
+        faction[j3]       = faction[j3]-tx11;
+        faction[j3+1]     = faction[j3+1]-ty11;
+        faction[j3+2]     = faction[j3+2]-tz11;
+      }
+      faction[ii3]      = faction[ii3] + fix1;
+      faction[ii3+1]    = faction[ii3+1] + fiy1;
+      faction[ii3+2]    = faction[ii3+2] + fiz1;
+      fshift[is3]       = fshift[is3] + fix1;
+      fshift[is3+1]     = fshift[is3+1] + fiy1;
+      fshift[is3+2]     = fshift[is3+2] + fiz1;
+      ii                = ii + 1;
+      ii3               = ii3 + 3;
+    }
+    ggid              = gid[n];
+    Vc[ggid]          = Vc[ggid] + vctot;
+    Vnb[ggid]         = Vnb[ggid] + vnbtot;
+  }
+}

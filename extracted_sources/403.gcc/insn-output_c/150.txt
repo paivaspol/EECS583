@@ -1,0 +1,30 @@
+static const char *
+output_408 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_ALU:
+      if (operands[2] != const1_rtx)
+	abort ();
+      if (!rtx_equal_p (operands[0], operands[1]))
+	abort ();
+      return "add{l}\t{%0, %0|%0, %0}";
+
+    case TYPE_LEA:
+      return "#";
+
+    default:
+      if (REG_P (operands[2]))
+	return "sal{l}\t{%b2, %0|%0, %b2}";
+      else if (GET_CODE (operands[2]) == CONST_INT
+	       && INTVAL (operands[2]) == 1
+	       && (TARGET_PENTIUM || TARGET_PENTIUMPRO))
+	return "sal{l}\t%0";
+      else
+	return "sal{l}\t{%2, %0|%0, %2}";
+    }
+}
+}

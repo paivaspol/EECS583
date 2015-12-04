@@ -1,0 +1,58 @@
+static void classify_dependence PARAMS ((subscript[], subscript[],
+				 enum complexity_type[], int*, int));
+static void ziv_test PARAMS ((subscript[], subscript[],
+			      enum direction_type[][MAX_SUBSCRIPTS],
+			      int[][MAX_SUBSCRIPTS], loop*, int));
+static void siv_test PARAMS ((subscript[], subscript[],
+			      enum direction_type[][MAX_SUBSCRIPTS],
+			      int[][MAX_SUBSCRIPTS], loop*, int));
+static int check_subscript_induction PARAMS ((subscript*, subscript*, loop*));
+static void gcd_test PARAMS ((subscript[], subscript[], enum
+			      direction_type[][MAX_SUBSCRIPTS],
+			      int[][MAX_SUBSCRIPTS], loop*, int));
+static int find_gcd PARAMS ((int, int));
+static void merge_dependencies PARAMS ((enum direction_type[][MAX_SUBSCRIPTS],
+					int[][MAX_SUBSCRIPTS], int, int));
+static void dump_array_ref PARAMS ((tree));
+#if 0
+static void dump_one_node PARAMS ((def_use*, varray_type*));
+static void dump_node_dependence PARAMS ((void));
+#endif
+int search_dependence PARAMS ((tree));
+void remember_dest_for_dependence PARAMS ((tree));
+int have_dependence_p PARAMS ((rtx, rtx, enum direction_type[], int[]));
+void end_dependence_analysis PARAMS ((void));
+
+/* Build dependence chain 'dep_chain', which is used by have_dependence_p,
+   for the function given by EXP.  */
+
+void
+init_dependence_analysis (exp)
+     tree exp;
+{
+  def_use *du_ptr;
+
+  VARRAY_GENERIC_PTR_INIT (def_use_chain, 50, "def_use_chain");
+  VARRAY_GENERIC_PTR_INIT (dep_chain, 50, "dep_chain");
+  VARRAY_GENERIC_PTR_INIT (loop_chain, 50, "loop_chain");
+  VARRAY_GENERIC_PTR_INIT (induction_chain, 50, "induction_chain");
+
+  build_def_use (exp, init_def_use);
+
+  link_loops ();
+
+  get_node_dependence ();
+
+  /* dump_node_dependence (&def_use_chain);*/
+
+  for (du_ptr = VARRAY_TOP (def_use_chain, generic);
+       VARRAY_POP (def_use_chain);
+       du_ptr = VARRAY_TOP (def_use_chain, generic))
+    {
+      free (du_ptr);
+    }
+
+  VARRAY_FREE (def_use_chain);
+  VARRAY_FREE (loop_chain);
+  VARRAY_FREE (induction_chain);
+}

@@ -1,0 +1,45 @@
+static void
+ditoe (di, e)
+     const UEMUSHORT *di;  /* Address of the 64-bit int.  */
+     UEMUSHORT *e;
+{
+  unsigned EMULONG acc;
+  UEMUSHORT yi[NI];
+  UEMUSHORT carry;
+  int k, sign;
+
+  ecleaz (yi);
+  if (WORDS_BIG_ENDIAN)
+    {
+      for (k = M; k < M + 4; k++)
+	yi[k] = *di++;
+    }
+  else
+    {
+      for (k = M + 3; k >= M; k--)
+	yi[k] = *di++;
+    }
+  /* Take absolute value */
+  sign = 0;
+  if (yi[M] & 0x8000)
+    {
+      sign = 1;
+      carry = 0;
+      for (k = M + 3; k >= M; k--)
+	{
+	  acc = (unsigned EMULONG) (~yi[k] & 0xffff) + carry;
+	  yi[k] = acc;
+	  carry = 0;
+	  if (acc & 0x10000)
+	    carry = 1;
+	}
+    }
+  yi[E] = EXONE + 47;	/* exponent if normalize shift count were 0 */
+  if ((k = enormlz (yi)) > NBITS)/* normalize the significand */
+    ecleaz (yi);		/* it was zero */
+  else
+    yi[E] -= (UEMUSHORT) k;/* subtract shift count from exponent */
+  emovo (yi, e);
+  if (sign)
+	eneg (e);
+}

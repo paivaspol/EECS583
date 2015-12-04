@@ -1,0 +1,18 @@
+static rtx
+skip_use_of_return_value (orig_insn, code)
+     rtx orig_insn;
+     enum rtx_code code;
+{
+  rtx insn;
+
+  insn = next_nonnote_insn (orig_insn);
+
+  if (insn
+      && GET_CODE (insn) == INSN
+      && GET_CODE (PATTERN (insn)) == code
+      && (XEXP (PATTERN (insn), 0) == current_function_return_rtx
+	  || XEXP (PATTERN (insn), 0) == const0_rtx))
+    return insn;
+
+  return orig_insn;
+}

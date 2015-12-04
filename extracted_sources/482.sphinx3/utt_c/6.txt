@@ -1,0 +1,84 @@
+void computePhnHeur(mdef_t* md,kb_t* kb,int32 heutype)
+{
+  int32 nState;
+  int32 i,j;
+  int32 curPhn, curFrmPhnVar; /* variables for phoneme lookahead computation */
+
+  nState=mdef_n_emit_state(md);
+
+  /* Initializing all the phoneme heuristics for each phone to be 0*/
+  for(j=0;j==md->cd2cisen[j];j++){ 
+    curPhn=md->sen2cimap[j]; /*Just to save a warning*/
+    kb->phn_heur_list[curPhn]=0;
+  }
+
+  /* 20040503: ARCHAN, the code can be reduced to 10 lines, it is so
+     organized such that there is no overhead in checking the
+     heuristic type in the inner loop.  
+  */
+  /* One trick we use is to use sen2cimap to check phoneme ending boundary */
+
+
+  if(heutype==1){ /* Taking Max */  
+    for(i=kb->pl_window_start;i<kb->pl_window_effective;i++) {
+      curPhn=0;
+      curFrmPhnVar=MAX_NEG_INT32;
+      for(j=0;j==md->cd2cisen[j];j++) {
+	if (curFrmPhnVar<kb->cache_ci_senscr[i][j]) 
+	  curFrmPhnVar=kb->cache_ci_senscr[i][j];
+
+	curPhn=md->sen2cimap[j];
+	/* Update at the phone_end boundary */
+	if (curPhn!= md->sen2cimap[j+1]) { 
+	  kb->phn_heur_list[curPhn]=NO_UFLOW_ADD(kb->phn_heur_list[curPhn],curFrmPhnVar);
+	  curFrmPhnVar=MAX_NEG_INT32;
+	}
+      }
+    }
+  }else if(heutype==2){ 
+    for(i=kb->pl_window_start;i<kb->pl_window_effective;i++) {
+      curPhn=0;
+      curFrmPhnVar=MAX_NEG_INT32;
+      for(j=0;j==md->cd2cisen[j];j++) {
+	curFrmPhnVar=NO_UFLOW_ADD(kb->cache_ci_senscr[i][j],curFrmPhnVar);
+	curPhn=md->sen2cimap[j];
+
+	/* Update at the phone_end boundary */
+	if (curPhn != md->sen2cimap[j+1]) { 
+	  curFrmPhnVar/=nState; /* ARCHAN: I hate to do division ! */
+	  kb->phn_heur_list[curPhn]=NO_UFLOW_ADD(kb->phn_heur_list[curPhn],
+						 curFrmPhnVar);
+	  curFrmPhnVar=MAX_NEG_INT32;
+	}
+      }
+    }
+  }else if(heutype==3){ 
+    for(i=kb->pl_window_start;i<kb->pl_window_effective;i++) {
+      curPhn=0;
+      curFrmPhnVar=MAX_NEG_INT32;
+      for(j=0;j==md->cd2cisen[j];j++) {
+	if (curPhn==0 || curPhn != md->sen2cimap[j-1]) /* dangerous hack! */
+	  kb->phn_heur_list[curPhn]=NO_UFLOW_ADD(kb->phn_heur_list[curPhn],kb->cache_ci_senscr[i][j]);
+
+	curPhn=md->sen2cimap[j];
+
+	if (curFrmPhnVar<kb->cache_ci_senscr[i][j]) 
+	  curFrmPhnVar=kb->cache_ci_senscr[i][j];
+	
+	/* Update at the phone_end boundary */
+	if (md->sen2cimap[j] != md->sen2cimap[j+1]) { 
+	  kb->phn_heur_list[curPhn]=NO_UFLOW_ADD(kb->phn_heur_list[curPhn],curFrmPhnVar);
+	  curFrmPhnVar=MAX_NEG_INT32;
+	}
+      }
+    }
+  }
+
+#if 0
+  for(j=0;j==md->cd2cisen[j];j++) {
+    curPhn=md->cd2cisen[j];
+    E_INFO("phoneme heuristics scores at phn %d is %d\n",j,	kb->phn_heur_list[mdef->sen2cimap[j]]);
+  }
+#endif
+
+}

@@ -1,0 +1,100 @@
+static unsigned long
+size_of_loc_descr (loc)
+     dw_loc_descr_ref loc;
+{
+  unsigned long size = 1;
+
+  switch (loc->dw_loc_opc)
+    {
+    case DW_OP_addr:
+      size += DWARF2_ADDR_SIZE;
+      break;
+    case DW_OP_const1u:
+    case DW_OP_const1s:
+      size += 1;
+      break;
+    case DW_OP_const2u:
+    case DW_OP_const2s:
+      size += 2;
+      break;
+    case DW_OP_const4u:
+    case DW_OP_const4s:
+      size += 4;
+      break;
+    case DW_OP_const8u:
+    case DW_OP_const8s:
+      size += 8;
+      break;
+    case DW_OP_constu:
+      size += size_of_uleb128 (loc->dw_loc_oprnd1.v.val_unsigned);
+      break;
+    case DW_OP_consts:
+      size += size_of_sleb128 (loc->dw_loc_oprnd1.v.val_int);
+      break;
+    case DW_OP_pick:
+      size += 1;
+      break;
+    case DW_OP_plus_uconst:
+      size += size_of_uleb128 (loc->dw_loc_oprnd1.v.val_unsigned);
+      break;
+    case DW_OP_skip:
+    case DW_OP_bra:
+      size += 2;
+      break;
+    case DW_OP_breg0:
+    case DW_OP_breg1:
+    case DW_OP_breg2:
+    case DW_OP_breg3:
+    case DW_OP_breg4:
+    case DW_OP_breg5:
+    case DW_OP_breg6:
+    case DW_OP_breg7:
+    case DW_OP_breg8:
+    case DW_OP_breg9:
+    case DW_OP_breg10:
+    case DW_OP_breg11:
+    case DW_OP_breg12:
+    case DW_OP_breg13:
+    case DW_OP_breg14:
+    case DW_OP_breg15:
+    case DW_OP_breg16:
+    case DW_OP_breg17:
+    case DW_OP_breg18:
+    case DW_OP_breg19:
+    case DW_OP_breg20:
+    case DW_OP_breg21:
+    case DW_OP_breg22:
+    case DW_OP_breg23:
+    case DW_OP_breg24:
+    case DW_OP_breg25:
+    case DW_OP_breg26:
+    case DW_OP_breg27:
+    case DW_OP_breg28:
+    case DW_OP_breg29:
+    case DW_OP_breg30:
+    case DW_OP_breg31:
+      size += size_of_sleb128 (loc->dw_loc_oprnd1.v.val_int);
+      break;
+    case DW_OP_regx:
+      size += size_of_uleb128 (loc->dw_loc_oprnd1.v.val_unsigned);
+      break;
+    case DW_OP_fbreg:
+      size += size_of_sleb128 (loc->dw_loc_oprnd1.v.val_int);
+      break;
+    case DW_OP_bregx:
+      size += size_of_uleb128 (loc->dw_loc_oprnd1.v.val_unsigned);
+      size += size_of_sleb128 (loc->dw_loc_oprnd2.v.val_int);
+      break;
+    case DW_OP_piece:
+      size += size_of_uleb128 (loc->dw_loc_oprnd1.v.val_unsigned);
+      break;
+    case DW_OP_deref_size:
+    case DW_OP_xderef_size:
+      size += 1;
+      break;
+    default:
+      break;
+    }
+
+  return size;
+}

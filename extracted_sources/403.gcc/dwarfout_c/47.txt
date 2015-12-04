@@ -1,0 +1,16 @@
+static inline void
+bit_size_attribute (decl)
+    tree decl;
+{
+  /* Must be a field and a bit field.  */
+  if (TREE_CODE (decl) != FIELD_DECL
+      || ! DECL_BIT_FIELD_TYPE (decl))
+    abort ();
+
+  if (host_integerp (DECL_SIZE (decl), 1))
+    {
+      ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_bit_size);
+      ASM_OUTPUT_DWARF_DATA4 (asm_out_file,
+			      tree_low_cst (DECL_SIZE (decl), 1));
+    }
+}

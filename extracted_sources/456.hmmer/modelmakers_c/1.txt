@@ -1,0 +1,39 @@
+void
+P7Fastmodelmaker(MSA *msa, char **dsq, float maxgap,
+		 struct plan7_s **ret_hmm, struct p7trace_s ***ret_tr)
+{
+  int     *matassign;           /* MAT state assignments if 1; 1..alen */
+  int      idx;                 /* counter over sequences              */
+  int      apos;                /* counter for aligned columns         */
+  int      ngap;		/* number of gaps in a column          */
+
+  /* Allocations: matassign is 1..alen array of bit flags
+   */
+  matassign = (int *) MallocOrDie (sizeof(int) * (msa->alen+1));
+  
+  /* Determine match assignment by counting symbols in columns
+   */
+  matassign[0] = 0;
+  for (apos = 0; apos < msa->alen; apos++) {
+      matassign[apos+1] = 0;
+
+      ngap = 0;
+      for (idx = 0; idx < msa->nseq; idx++) 
+	if (isgap(msa->aseq[idx][apos])) 
+	  ngap++;
+      
+      if ((float) ngap / (float) msa->nseq > maxgap)
+	matassign[apos+1] |= ASSIGN_INSERT;
+      else
+	matassign[apos+1] |= ASSIGN_MATCH;
+  }
+
+  /* Once we have matassign calculated, all modelmakers behave
+   * the same; matassign2hmm() does this stuff (traceback construction,
+   * trace counting) and sets up ret_hmm and ret_tr.
+   */
+  matassign2hmm(msa, dsq, matassign, ret_hmm, ret_tr);
+
+  free(matassign);
+  return;
+}

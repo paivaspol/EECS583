@@ -1,0 +1,87 @@
+void
+subst_reloads (insn)
+     rtx insn;
+{
+  int i;
+
+  for (i = 0; i < n_replacements; i++)
+    {
+      struct replacement *r = &replacements[i];
+      rtx reloadreg = rld[r->what].reg_rtx;
+      if (reloadreg)
+	{
+#ifdef ENABLE_CHECKING
+	  /* Internal consistency test.  Check that we don't modify
+	     anything in the equivalence arrays.  Whenever something from
+	     those arrays needs to be reloaded, it must be unshared before
+	     being substituted into; the equivalence must not be modified.
+	     Otherwise, if the equivalence is used after that, it will
+	     have been modified, and the thing substituted (probably a
+	     register) is likely overwritten and not a usable equivalence.  */
+	  int check_regno;
+
+	  for (check_regno = 0; check_regno < max_regno; check_regno++)
+	    {
+#define CHECK_MODF(ARRAY)						\
+	      if (ARRAY[check_regno]					\
+		  && loc_mentioned_in_p (r->where,			\
+					 ARRAY[check_regno]))		\
+		abort ()
+
+	      CHECK_MODF (reg_equiv_constant);
+	      CHECK_MODF (reg_equiv_memory_loc);
+	      CHECK_MODF (reg_equiv_address);
+	      CHECK_MODF (reg_equiv_mem);
+#undef CHECK_MODF
+	    }
+#endif /* ENABLE_CHECKING */
+
+	  /* If we're replacing a LABEL_REF with a register, add a
+	     REG_LABEL note to indicate to flow which label this
+	     register refers to.  */
+	  if (GET_CODE (*r->where) == LABEL_REF
+	      && GET_CODE (insn) == JUMP_INSN)
+	    REG_NOTES (insn) = gen_rtx_INSN_LIST (REG_LABEL,
+						  XEXP (*r->where, 0),
+						  REG_NOTES (insn));
+
+	  /* Encapsulate RELOADREG so its machine mode matches what
+	     used to be there.  Note that gen_lowpart_common will
+	     do the wrong thing if RELOADREG is multi-word.  RELOADREG
+	     will always be a REG here.  */
+	  if (GET_MODE (reloadreg) != r->mode && r->mode != VOIDmode)
+	    reloadreg = gen_rtx_REG (r->mode, REGNO (reloadreg));
+
+	  /* If we are putting this into a SUBREG and RELOADREG is a
+	     SUBREG, we would be making nested SUBREGs, so we have to fix
+	     this up.  Note that r->where == &SUBREG_REG (*r->subreg_loc).  */
+
+	  if (r->subreg_loc != 0 && GET_CODE (reloadreg) == SUBREG)
+	    {
+	      if (GET_MODE (*r->subreg_loc)
+		  == GET_MODE (SUBREG_REG (reloadreg)))
+		*r->subreg_loc = SUBREG_REG (reloadreg);
+	      else
+		{
+		  int final_offset =
+		    SUBREG_BYTE (*r->subreg_loc) + SUBREG_BYTE (reloadreg);
+
+		  /* When working with SUBREGs the rule is that the byte
+		     offset must be a multiple of the SUBREG's mode.  */
+		  final_offset = (final_offset /
+				  GET_MODE_SIZE (GET_MODE (*r->subreg_loc)));
+		  final_offset = (final_offset *
+				  GET_MODE_SIZE (GET_MODE (*r->subreg_loc)));
+
+		  *r->where = SUBREG_REG (reloadreg);
+		  SUBREG_BYTE (*r->subreg_loc) = final_offset;
+		}
+	    }
+	  else
+	    *r->where = reloadreg;
+	}
+      /* If reload got no reg and isn't optional, something's wrong.  */
+      else if (! rld[r->what].optional)
+	abort ();
+    }
+}

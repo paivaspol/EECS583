@@ -1,0 +1,22 @@
+static void
+dwarf2out_start_source_file (lineno, filename)
+     unsigned int lineno;
+     const char *filename;
+{
+  if (flag_eliminate_dwarf2_dups)
+    {
+      /* Record the beginning of the file for break_out_includes.  */
+      dw_die_ref bincl_die = new_die (DW_TAG_GNU_BINCL, comp_unit_die, NULL);
+      add_AT_string (bincl_die, DW_AT_name, filename);
+    }
+
+  if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+    {
+      named_section_flags (DEBUG_MACINFO_SECTION, SECTION_DEBUG);
+      dw2_asm_output_data (1, DW_MACINFO_start_file, "Start new file");
+      dw2_asm_output_data_uleb128 (lineno, "Included from line number %d",
+				   lineno);
+      dw2_asm_output_data_uleb128 (lookup_filename (filename),
+				   "Filename we just started");
+    }
+}

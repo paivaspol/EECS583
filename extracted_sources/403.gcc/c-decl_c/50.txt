@@ -1,0 +1,15 @@
+void
+mark_c_function_context (f)
+     struct function *f;
+{
+  struct c_language_function *p
+    = (struct c_language_function *) f->language;
+
+  if (p == 0)
+    return;
+
+  mark_c_language_function (&p->base);
+  ggc_mark_tree (p->shadowed_labels);
+  ggc_mark_tree (p->named_labels);
+  mark_binding_level (&p->binding_level);
+}

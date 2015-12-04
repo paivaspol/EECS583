@@ -1,0 +1,19 @@
+int32 hmm_dump_vit_eval (hmm_t *hmm, int32 n_state, s3senid_t *senid, int32 *senscr, FILE *fp)
+{
+    int32 bs=0;
+    
+    if (fp)
+	hmm_dump (hmm, n_state, senid, senscr, fp);
+    
+    if (n_state == 5)
+	bs = hmm_vit_eval_5st (hmm, senid, senscr);
+    else if (n_state == 3)
+	bs = hmm_vit_eval_3st (hmm, senid, senscr);
+    else
+	E_FATAL("#States= %d unsupported\n", n_state);
+    
+    if (fp)
+	hmm_dump (hmm, n_state, senid, senscr, fp);
+    
+    return bs;
+}

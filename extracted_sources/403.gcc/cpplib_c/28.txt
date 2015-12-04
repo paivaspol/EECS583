@@ -1,0 +1,13 @@
+static void
+do_ident (pfile)
+     cpp_reader *pfile;
+{
+  const cpp_token *str = cpp_get_token (pfile);
+
+  if (str->type != CPP_STRING)
+    cpp_error (pfile, "invalid #ident directive");
+  else if (pfile->cb.ident)
+    (*pfile->cb.ident) (pfile, pfile->directive_line, &str->val.str);
+
+  check_eol (pfile);
+}

@@ -1,0 +1,26 @@
+static void feat_s3_cep_dcep (feat_t *fcb, float32 **mfc, float32 **feat)
+{
+    float32 *f;
+    float32 *w, *_w;
+    int32 i;
+    
+    assert (fcb);
+    assert (feat_cepsize (fcb) == 13);
+    assert ((feat_cepsize_used (fcb) <= 13) && (feat_cepsize_used(fcb) > 0));
+    assert (feat_n_stream (fcb) == 1);
+    assert (feat_stream_len (fcb, 0) == (feat_cepsize_used(fcb) * 2));
+    assert (feat_window_size (fcb) == 2);
+    
+    /* CEP */
+    memcpy (feat[0], mfc[0], feat_cepsize_used(fcb) * sizeof(float32));
+    
+    /*
+     * DCEP: mfc[2] - mfc[-2];
+     */
+    f = feat[0] + feat_cepsize_used(fcb);
+    w  = mfc[2];
+    _w = mfc[-2];
+
+    for (i = 0; i < feat_cepsize_used(fcb); i++)
+	f[i] = w[i] - _w[i];
+}

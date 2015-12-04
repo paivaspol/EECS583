@@ -1,0 +1,30 @@
+static int 
+build_cij(char **aseqs, int nseq, int *insopt, int i, int j,
+          float *wgt, float *cij)
+{
+  int idx;			/* counter for seqs */
+
+  i--;				/* make i,j relative to aseqs [0..alen-1] */
+  j--;
+  FSet(cij, 8, 0.);		/* zero cij */
+  for (idx = 0; idx < nseq; idx++) {
+    if (insopt[idx] > 0) {
+      if (isgap(aseqs[idx][i])) return -1; /* D->I prohibited. */
+      if (isgap(aseqs[idx][j])) return 0;  /* I->D prohibited. */
+      cij[TMI] += wgt[idx];
+      cij[TII] += (insopt[idx]-1) * wgt[idx];
+      cij[TIM] += wgt[idx];
+    } else {
+      if (!isgap(aseqs[idx][i])) {
+	if (aseqs[idx][j] == '_')      ; /* YO! what to do with trailer? */
+	else if (isgap(aseqs[idx][j])) cij[TMD] += wgt[idx];
+	else                           cij[TMM] += wgt[idx];
+      } else {			/* ignores B->E possibility */
+	if (aseqs[idx][j] == '_')      continue;
+	else if (isgap(aseqs[idx][j])) cij[TDD] += wgt[idx];
+	else                           cij[TDM] += wgt[idx];
+      }
+    }
+  }
+  return 1;
+}

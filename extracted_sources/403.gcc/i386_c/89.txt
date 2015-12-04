@@ -1,0 +1,164 @@
+void
+ix86_expand_epilogue (style)
+     int style;
+{
+  int regno;
+  int sp_valid = !frame_pointer_needed || current_function_sp_is_unchanging;
+  struct ix86_frame frame;
+  HOST_WIDE_INT offset;
+
+  ix86_compute_frame_layout (&frame);
+
+  /* Calculate start of saved registers relative to ebp.  Special care
+     must be taken for the normal return case of a function using
+     eh_return: the eax and edx registers are marked as saved, but not
+     restored along this path.  */
+  offset = frame.nregs;
+  if (current_function_calls_eh_return && style != 2)
+    offset -= 2;
+  offset *= -UNITS_PER_WORD;
+
+  /* If we're only restoring one register and sp is not valid then
+     using a move instruction to restore the register since it's
+     less work than reloading sp and popping the register.
+
+     The default code result in stack adjustment using add/lea instruction,
+     while this code results in LEAVE instruction (or discrete equivalent),
+     so it is profitable in some other cases as well.  Especially when there
+     are no registers to restore.  We also use this code when TARGET_USE_LEAVE
+     and there is exactly one register to pop. This heruistic may need some
+     tuning in future.  */
+  if ((!sp_valid && frame.nregs <= 1)
+      || (TARGET_EPILOGUE_USING_MOVE
+	  && use_fast_prologue_epilogue
+	  && (frame.nregs > 1 || frame.to_allocate))
+      || (frame_pointer_needed && !frame.nregs && frame.to_allocate)
+      || (frame_pointer_needed && TARGET_USE_LEAVE
+	  && use_fast_prologue_epilogue && frame.nregs == 1)
+      || current_function_calls_eh_return)
+    {
+      /* Restore registers.  We can use ebp or esp to address the memory
+	 locations.  If both are available, default to ebp, since offsets
+	 are known to be small.  Only exception is esp pointing directly to the
+	 end of block of saved registers, where we may simplify addressing
+	 mode.  */
+
+      if (!frame_pointer_needed || (sp_valid && !frame.to_allocate))
+	ix86_emit_restore_regs_using_mov (stack_pointer_rtx,
+					  frame.to_allocate, style == 2);
+      else
+	ix86_emit_restore_regs_using_mov (hard_frame_pointer_rtx,
+					  offset, style == 2);
+
+      /* eh_return epilogues need %ecx added to the stack pointer.  */
+      if (style == 2)
+	{
+	  rtx tmp, sa = EH_RETURN_STACKADJ_RTX;
+
+	  if (frame_pointer_needed)
+	    {
+	      tmp = gen_rtx_PLUS (Pmode, hard_frame_pointer_rtx, sa);
+	      tmp = plus_constant (tmp, UNITS_PER_WORD);
+	      emit_insn (gen_rtx_SET (VOIDmode, sa, tmp));
+
+	      tmp = gen_rtx_MEM (Pmode, hard_frame_pointer_rtx);
+	      emit_move_insn (hard_frame_pointer_rtx, tmp);
+
+	      emit_insn (gen_pro_epilogue_adjust_stack
+			 (stack_pointer_rtx, sa, const0_rtx));
+	    }
+	  else
+	    {
+	      tmp = gen_rtx_PLUS (Pmode, stack_pointer_rtx, sa);
+	      tmp = plus_constant (tmp, (frame.to_allocate
+                                         + frame.nregs * UNITS_PER_WORD));
+	      emit_insn (gen_rtx_SET (VOIDmode, stack_pointer_rtx, tmp));
+	    }
+	}
+      else if (!frame_pointer_needed)
+	emit_insn (gen_pro_epilogue_adjust_stack
+		   (stack_pointer_rtx, stack_pointer_rtx,
+		    GEN_INT (frame.to_allocate
+			     + frame.nregs * UNITS_PER_WORD)));
+      /* If not an i386, mov & pop is faster than "leave".  */
+      else if (TARGET_USE_LEAVE || optimize_size || !use_fast_prologue_epilogue)
+	emit_insn (TARGET_64BIT ? gen_leave_rex64 () : gen_leave ());
+      else
+	{
+	  emit_insn (gen_pro_epilogue_adjust_stack (stack_pointer_rtx,
+						    hard_frame_pointer_rtx,
+						    const0_rtx));
+	  if (TARGET_64BIT)
+	    emit_insn (gen_popdi1 (hard_frame_pointer_rtx));
+	  else
+	    emit_insn (gen_popsi1 (hard_frame_pointer_rtx));
+	}
+    }
+  else
+    {
+      /* First step is to deallocate the stack frame so that we can
+	 pop the registers.  */
+      if (!sp_valid)
+	{
+	  if (!frame_pointer_needed)
+	    abort ();
+          emit_insn (gen_pro_epilogue_adjust_stack (stack_pointer_rtx,
+						    hard_frame_pointer_rtx,
+						    GEN_INT (offset)));
+	}
+      else if (frame.to_allocate)
+	emit_insn (gen_pro_epilogue_adjust_stack
+		   (stack_pointer_rtx, stack_pointer_rtx,
+		    GEN_INT (frame.to_allocate)));
+
+      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+	if (ix86_save_reg (regno, false))
+	  {
+	    if (TARGET_64BIT)
+	      emit_insn (gen_popdi1 (gen_rtx_REG (Pmode, regno)));
+	    else
+	      emit_insn (gen_popsi1 (gen_rtx_REG (Pmode, regno)));
+	  }
+      if (frame_pointer_needed)
+	{
+	  /* Leave results in shorter dependency chains on CPUs that are
+	     able to grok it fast.  */
+	  if (TARGET_USE_LEAVE)
+	    emit_insn (TARGET_64BIT ? gen_leave_rex64 () : gen_leave ());
+	  else if (TARGET_64BIT)
+	    emit_insn (gen_popdi1 (hard_frame_pointer_rtx));
+	  else
+	    emit_insn (gen_popsi1 (hard_frame_pointer_rtx));
+	}
+    }
+
+  /* Sibcall epilogues don't want a return instruction.  */
+  if (style == 0)
+    return;
+
+  if (current_function_pops_args && current_function_args_size)
+    {
+      rtx popc = GEN_INT (current_function_pops_args);
+
+      /* i386 can only pop 64K bytes.  If asked to pop more, pop
+	 return address, do explicit add, and jump indirectly to the
+	 caller.  */
+
+      if (current_function_pops_args >= 65536)
+	{
+	  rtx ecx = gen_rtx_REG (SImode, 2);
+
+	  /* There are is no "pascal" calling convention in 64bit ABI.  */
+	  if (TARGET_64BIT)
+	    abort ();
+
+	  emit_insn (gen_popsi1 (ecx));
+	  emit_insn (gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx, popc));
+	  emit_jump_insn (gen_return_indirect_internal (ecx));
+	}
+      else
+	emit_jump_insn (gen_return_pop_internal (popc));
+    }
+  else
+    emit_jump_insn (gen_return_internal ());
+}

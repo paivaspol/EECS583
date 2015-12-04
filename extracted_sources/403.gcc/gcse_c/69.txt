@@ -1,0 +1,42 @@
+static int
+can_disregard_other_sets (addr_this_reg, insn, for_combine)
+     struct reg_set **addr_this_reg;
+     rtx insn;
+     int for_combine;
+{
+  int number_of_reaching_defs = 0;
+  struct reg_set *this_reg;
+
+  for (this_reg = *addr_this_reg; this_reg != 0; this_reg = this_reg->next)
+    if (def_reaches_here_p (insn, this_reg->insn))
+      {
+	number_of_reaching_defs++;
+	/* Ignore parallels for now.  */
+	if (GET_CODE (PATTERN (this_reg->insn)) == PARALLEL)
+	  return 0;
+
+	if (!for_combine
+	    && (GET_CODE (PATTERN (this_reg->insn)) == CLOBBER
+		|| ! rtx_equal_p (SET_SRC (PATTERN (this_reg->insn)),
+				  SET_SRC (PATTERN (insn)))))
+	  /* A setting of the reg to a different value reaches INSN.  */
+	  return 0;
+
+	if (number_of_reaching_defs > 1)
+	  {
+	    /* If in this setting the value the register is being set to is
+	       equal to the previous value the register was set to and this
+	       setting reaches the insn we are trying to do the substitution
+	       on then we are ok.  */
+	    if (GET_CODE (PATTERN (this_reg->insn)) == CLOBBER)
+	      return 0;
+	    else if (! rtx_equal_p (SET_SRC (PATTERN (this_reg->insn)),
+				    SET_SRC (PATTERN (insn))))
+	      return 0;
+	  }
+
+	*addr_this_reg = this_reg; 
+      }
+
+  return number_of_reaching_defs;
+}

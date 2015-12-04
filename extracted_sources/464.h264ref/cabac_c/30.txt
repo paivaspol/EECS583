@@ -1,0 +1,37 @@
+void writeRunLevel_CABAC (SyntaxElement *se, EncodingEnvironmentPtr eep_dp)
+{
+  static int  coeff[64];
+  static int  coeff_ctr = 0;
+  static int  pos       = 0;
+
+  Macroblock* currMB    = &img->mb_data[img->current_mb_nr];
+  int         i;
+
+  //--- accumulate run-level information ---
+  if (se->value1 != 0)
+  {
+    for (i=0; i<se->value2; i++) coeff[pos++] = 0; coeff[pos++] = se->value1; coeff_ctr++;
+    return;
+  }
+  else
+  {
+    for (; pos<64; pos++) coeff[pos] = 0;
+  }
+
+  assert(pos < 65);
+  
+  //===== encode CBP-BIT =====
+  write_and_store_CBP_block_bit     (currMB, eep_dp, se->context, coeff_ctr>0?1:0);
+
+  if (coeff_ctr>0)
+  {
+    //===== encode significance map =====
+    write_significance_map          (currMB, eep_dp, se->context, coeff, coeff_ctr);
+
+    //===== encode significant coefficients =====
+    write_significant_coefficients  (currMB, eep_dp, se->context, coeff);
+  }
+
+  //--- reset counters ---
+  pos = coeff_ctr = 0;
+}

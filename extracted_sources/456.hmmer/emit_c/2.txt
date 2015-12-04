@@ -1,0 +1,89 @@
+void
+EmitConsensusSequence(struct plan7_s *hmm, char **ret_seq, char **ret_dsq, int *ret_L, struct p7trace_s **ret_tr)
+{
+  struct p7trace_s *tr;         /* RETURN: traceback */
+  char *dsq, *seq;              /* sequence in digitized and undigitized form */
+  float *mp, *ip, *dp;          /* state occupancies from StateOccupancy() */
+  int    nmat, ndel, nins;	/* number of matches, deletes, inserts used */
+  int    k;			/* counter for nodes */
+  int    tpos;			/* position in trace */
+  int    i;                     /* position in seq (equiv pos in dsq is i+1 */
+  int    x;			/* symbol choice (M) or # symbols (I) */
+  float  mthresh;		/* >= this, show symbol as upper case */
+
+  if (Alphabet_type == hmmAMINO) mthresh = 0.5;
+  else                           mthresh = 0.9;
+
+  StateOccupancy(hmm, &mp, &ip, &dp);
+
+  /* First pass: how many states do we need in the trace?
+   *             how long will the sequence be?
+   */
+  nmat = ndel = nins = 0;
+  for (k = 1; k <= hmm->M; k++)
+    {
+      if (mp[k] >= 0.5) nmat++; else ndel++;
+      if (k < hmm->M && ip[k] >= 0.5) 
+	nins += (int) (1.f / (1.f - hmm->t[k][TII]));
+    }
+  
+  /* Allocations
+   */
+  P7AllocTrace(6 + nmat + ndel + nins, &tr);
+  dsq = MallocOrDie(sizeof(char) * (nmat+nins+3));
+  seq = MallocOrDie(sizeof(char) * (nmat+nins+1));
+
+  /* Main pass.
+   * Construct consensus trace, seq, and dsq.
+   */
+  TraceSet(tr, 0, STS, 0, 0);
+  TraceSet(tr, 1, STN, 0, 0);
+  TraceSet(tr, 2, STB, 0, 0);
+  dsq[0] = Alphabet_iupac;	/* guard byte */
+  tpos = 3;
+  i    = 0;
+  for (k = 1; k <= hmm->M; k++)
+    {
+      if (mp[k] >= 0.5)
+	{
+	  x = FArgMax(hmm->mat[k], Alphabet_size);
+	  TraceSet(tr, tpos, STM, k, i+1);
+	  seq[i]   = Alphabet[x];
+	  dsq[i+1] = x;
+	  if (hmm->mat[k][x] < mthresh)
+	    seq[i] = tolower((int) seq[i]);
+	  i++;
+	  tpos++;
+	}
+      else
+	{
+	  TraceSet(tr, tpos, STD, k, 0);
+	  tpos++;
+	}
+
+      if (k < hmm->M && ip[k] >= 0.5)
+	{
+	  x = (int) (1.f / (1.f - hmm->t[k][TII]));
+	  while (x--) 
+	    {
+	      TraceSet(tr, tpos, STI, k, i+1);
+	      seq[i]   = 'x';
+	      dsq[i+1] = Alphabet_iupac - 1;
+	      i++; 
+	      tpos++;
+	    }
+	}
+    }
+  TraceSet(tr, tpos, STE, 0, 0); tpos++;
+  TraceSet(tr, tpos, STC, 0, 0); tpos++;
+  TraceSet(tr, tpos, STT, 0, 0); tpos++;
+  dsq[i+1] = Alphabet_iupac;
+    
+  free(mp);
+  free(ip);
+  free(dp);
+  if (ret_seq != NULL) *ret_seq = seq; else free(seq);
+  if (ret_dsq != NULL) *ret_dsq = dsq; else free(dsq);
+  if (ret_L   != NULL) *ret_L   = i;   
+  if (ret_tr  != NULL) *ret_tr  = tr;  else P7FreeTrace(tr);
+}

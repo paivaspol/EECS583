@@ -1,0 +1,27 @@
+static int
+write_debug_header (header, comment, dosizeonly)
+     DST_HEADER *header;
+     const char *comment;
+     int dosizeonly;
+{
+  if (!dosizeonly)
+    {
+      ASM_OUTPUT_DEBUG_DATA2 (asm_out_file,
+			      header->dst__header_length.dst_w_length);
+
+      if (flag_verbose_asm)
+	fprintf (asm_out_file, "\t%s record length", ASM_COMMENT_START);
+      fputc ('\n', asm_out_file);
+
+      ASM_OUTPUT_DEBUG_DATA2 (asm_out_file,
+			      header->dst__header_type.dst_w_type);
+
+      if (flag_verbose_asm)
+	fprintf (asm_out_file, "\t%s record type (%s)", ASM_COMMENT_START,
+		 comment);
+
+      fputc ('\n', asm_out_file);
+    }
+
+  return 4;
+}

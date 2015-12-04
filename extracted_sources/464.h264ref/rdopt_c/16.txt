@@ -1,0 +1,113 @@
+void SetRefAndMotionVectors (int block, int mode, int pdir, int fwref, int bwref)
+{
+  int     i, j=0;
+  int     bslice  = (img->type==B_SLICE);
+  int     pmode   = (mode==1||mode==2||mode==3?mode:4);
+  int     j0      = ((block/2)<<1);
+  int     i0      = ((block%2)<<1);
+  int     j1      = j0 + (input->part_size[pmode][1]);
+  int     i1      = i0 + (input->part_size[pmode][0]);
+
+  int list_offset   = ((img->MbaffFrameFlag)&&(img->mb_data[img->current_mb_nr].mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+  Macroblock  *currMB  = &img->mb_data[img->current_mb_nr];
+
+  if (pdir<0)
+  {
+    for (j=j0; j<j1; j++)
+    for (i=i0; i<i1; i++)
+    {
+      enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][0] = 0;
+      enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][1] = 0;
+      enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][0] = 0;
+      enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][1] = 0;
+      enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = -1;
+      enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j] = -1;
+      enc_picture->ref_pic_id[LIST_0][img->block_x+i][img->block_y+j] = -1;
+      enc_picture->ref_pic_id[LIST_1][img->block_x+i][img->block_y+j] = -1;
+    }
+    return;
+  }
+
+  if (!bslice)
+  {
+    for (j=j0; j<j1; j++)
+    for (i=i0; i<i1; i++)
+    {
+      enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][0] = img->all_mv[i][j][LIST_0][fwref][mode][0];
+      enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][1] = img->all_mv[i][j][LIST_0][fwref][mode][1];
+      enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = fwref;
+      enc_picture->ref_pic_id[LIST_0][img->block_x+i][img->block_y+j] = enc_picture->ref_pic_num[LIST_0+list_offset][enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j]];
+    }
+  }
+  else
+  {
+    for (j=j0; j<j1; j++)
+      for (i=i0; i<i1; i++)
+      {
+        if (mode==0)
+        {
+          pdir  =direct_pdir[img->block_x+i][img->block_y+j];
+          fwref =direct_ref_idx[LIST_0][img->block_x+i][img->block_y+j];
+          bwref =direct_ref_idx[LIST_1][img->block_x+i][img->block_y+j];
+        }
+
+        if ((pdir==0 || pdir==2))
+        {
+#if BI_PREDICTION
+          if (currMB->bi_pred_me && (pdir == 2) && mode == 1)
+          {
+            short   ******bipred_mv = currMB->bi_pred_me == 1 ? img->bipred_mv1 : img->bipred_mv2;
+
+              enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][0] = bipred_mv[i][j][LIST_0][0][mode][0];
+              enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][1] = bipred_mv[i][j][LIST_0][0][mode][1];
+              enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = 0;            
+              enc_picture->ref_pic_id[LIST_0][img->block_x+i][img->block_y+j] = enc_picture->ref_pic_num[LIST_0+list_offset][0];
+          }
+          else
+#endif
+          {
+            enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][0] = img->all_mv[i][j][LIST_0][fwref][mode][0];
+            enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][1] = img->all_mv[i][j][LIST_0][fwref][mode][1];
+            enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = fwref;
+            enc_picture->ref_pic_id[LIST_0][img->block_x+i][img->block_y+j] = enc_picture->ref_pic_num[LIST_0+list_offset][enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j]];
+          }
+        }
+        else
+        {
+          enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][0] = 0;
+          enc_picture->mv[LIST_0][img->block_x+i][img->block_y+j][1] = 0;
+          enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j] = -1;
+          enc_picture->ref_pic_id[LIST_0][img->block_x+i][img->block_y+j] = -1;
+        }
+
+        if ((pdir==1 || pdir==2))
+        {
+#if BI_PREDICTION
+          if (currMB->bi_pred_me && (pdir == 2) && mode == 1)
+          {
+            short   ******bipred_mv = currMB->bi_pred_me == 1 ? img->bipred_mv1 : img->bipred_mv2;
+            
+            enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][0] = bipred_mv[i][j][LIST_1][0][mode][0];
+            enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][1] = bipred_mv[i][j][LIST_1][0][mode][1];
+            enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j] = 0;            
+            enc_picture->ref_pic_id[LIST_1][img->block_x+i][img->block_y+j] = enc_picture->ref_pic_num[LIST_1+list_offset][0];
+          }
+          else
+#endif
+          {
+            enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][0] = img->all_mv[i][j][LIST_1][bwref][mode][0];
+            enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][1] = img->all_mv[i][j][LIST_1][bwref][mode][1];
+            enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j] = bwref;
+            enc_picture->ref_pic_id[LIST_1][img->block_x+i][img->block_y+j] = enc_picture->ref_pic_num[LIST_1+list_offset][enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j]];
+          }
+        }
+        else
+        {
+          enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][0] = 0;
+          enc_picture->mv[LIST_1][img->block_x+i][img->block_y+j][1] = 0;
+          enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j] = -1;
+          enc_picture->ref_pic_id[LIST_1][img->block_x+i][img->block_y+j] = -1;
+        }
+      }
+  }
+}

@@ -1,0 +1,22 @@
+static void add_gbond(t_graph *g,t_iatom ia[],int np)
+{
+  int     j,k,l;
+  atom_id aa,inda;
+
+  for(j=0; (j<np); j++) {
+    aa=ia[j];
+    inda=aa-g->start;
+    for(k=0; (k<np); k++)
+      if (j != k) {
+	for(l=0; (l<g->nedge[inda]); l++)
+	  if (g->edge[inda][l] == ia[k])
+	    break;
+	if (l == g->nedge[inda]) {
+	  if (g->nedge[inda] == g->maxbond)
+	    fatal_error(0,"More than %d bonds per atom (atom %d)\n",
+			g->maxbond,aa+1);
+	  g->edge[inda][g->nedge[inda]++]=ia[k];
+	}
+      }
+  }
+}

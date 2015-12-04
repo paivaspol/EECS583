@@ -1,0 +1,25 @@
+static void
+spill_hard_reg (regno, cant_eliminate)
+     unsigned int regno;
+     int cant_eliminate;
+{
+  int i;
+
+  if (cant_eliminate)
+    {
+      SET_HARD_REG_BIT (bad_spill_regs_global, regno);
+      regs_ever_live[regno] = 1;
+    }
+
+  /* Spill every pseudo reg that was allocated to this reg
+     or to something that overlaps this reg.  */
+
+  for (i = FIRST_PSEUDO_REGISTER; i < max_regno; i++)
+    if (reg_renumber[i] >= 0
+	&& (unsigned int) reg_renumber[i] <= regno
+	&& ((unsigned int) reg_renumber[i]
+	    + HARD_REGNO_NREGS ((unsigned int) reg_renumber[i],
+				PSEUDO_REGNO_MODE (i))
+	    > regno))
+      SET_REGNO_REG_SET (&spilled_pseudos, i);
+}

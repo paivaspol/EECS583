@@ -1,0 +1,14 @@
+int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
+		   double mass ){
+    int cgn;
+    double finalrsq;
+    clear_latvec( dest, EVENANDODD );
+    cgn = ks_congrad( src, dest, mass,
+        niter,rsqprop,EVENANDODD,&finalrsq);
+    /* Multiply by Madjoint */
+    dslash( dest, F_OFFSET(ttt), EVENANDODD);
+    scalar_mult_add_latvec( F_OFFSET(ttt), dest,
+       -2.0*mass, F_OFFSET(ttt), EVENANDODD);
+    scalar_mult_latvec( F_OFFSET(ttt), -1.0, dest, EVENANDODD );
+    return(cgn);
+}

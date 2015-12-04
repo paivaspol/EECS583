@@ -1,0 +1,24 @@
+static void
+reg_dies (regno, mode, chain)
+     int regno;
+     enum machine_mode mode;
+     struct insn_chain *chain;
+{
+  if (regno < FIRST_PSEUDO_REGISTER)
+    {
+      int nregs = HARD_REGNO_NREGS (regno, mode);
+      while (nregs-- > 0)
+	{
+	  CLEAR_REGNO_REG_SET (live_relevant_regs, regno);
+	  if (! fixed_regs[regno])
+	    SET_REGNO_REG_SET (&chain->dead_or_set, regno);
+	  regno++;
+	}
+    }
+  else
+    {
+      CLEAR_REGNO_REG_SET (live_relevant_regs, regno);
+      if (reg_renumber[regno] >= 0)
+	SET_REGNO_REG_SET (&chain->dead_or_set, regno);
+    }
+}

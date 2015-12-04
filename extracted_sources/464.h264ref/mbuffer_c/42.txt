@@ -1,0 +1,109 @@
+void store_picture_in_dpb(StorablePicture* p)
+{
+  unsigned i;
+  int poc, pos;
+  // diagnostics
+  //printf ("Storing (%s) non-ref pic with frame_num #%d\n", (p->type == FRAME)?"FRAME":(p->type == TOP_FIELD)?"TOP_FIELD":"BOTTOM_FIELD", p->pic_num);
+  // if frame, check for new store, 
+  assert (p!=NULL);
+
+  p->used_for_reference = (img->nal_reference_idc != 0);
+  
+  img->last_has_mmco_5=0;
+  img->last_pic_bottom_field = (img->structure == BOTTOM_FIELD);
+
+  if (img->currentPicture->idr_flag)
+    idr_memory_management(p);
+  else
+  {
+    // adaptive memory management
+    if (p->used_for_reference && (img->adaptive_ref_pic_buffering_flag))
+      adaptive_memory_management(p);
+  }
+
+  if ((p->structure==TOP_FIELD)||(p->structure==BOTTOM_FIELD))
+  {
+    // check for frame store with same pic_number
+    if (dpb.last_picture)
+    {
+      if ((int)dpb.last_picture->frame_num == p->pic_num)
+      {
+        if (((p->structure==TOP_FIELD)&&(dpb.last_picture->is_used==2))||((p->structure==BOTTOM_FIELD)&&(dpb.last_picture->is_used==1)))
+        {
+          if ((p->used_for_reference && (dpb.last_picture->is_orig_reference!=0))||
+              (!p->used_for_reference && (dpb.last_picture->is_orig_reference==0)))
+          {
+            insert_picture_in_dpb(dpb.last_picture, p);
+            update_ref_list();
+            update_ltref_list();
+            dump_dpb();
+            dpb.last_picture = NULL;
+            return;
+          }
+        }
+      }
+    }
+  }
+  
+  // this is a frame or a field which has no stored complementatry field
+
+  // sliding window, if necessary
+  if ((!img->currentPicture->idr_flag)&&(p->used_for_reference && (!img->adaptive_ref_pic_buffering_flag)))
+  {
+    sliding_window_memory_management(p);
+  } 
+
+  // first try to remove unused frames
+  if (dpb.used_size==dpb.size)
+  {
+    remove_unused_frame_from_dpb();
+  }
+  
+  // then output frames until one can be removed
+  while (dpb.used_size==dpb.size)
+  {
+    // non-reference frames may be output directly
+    if (!p->used_for_reference)
+    {
+      get_smallest_poc(&poc, &pos);
+      if ((-1==pos) || (p->poc < poc))
+      {
+        direct_output(p, p_dec);
+        return;
+      }
+    }
+    // flush a frame
+    output_one_frame_from_dpb();
+  }
+  
+  // check for duplicate frame number in short term reference buffer
+  if ((p->used_for_reference)&&(!p->is_long_term))
+  {
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      if (dpb.fs_ref[i]->frame_num == p->frame_num)
+      {
+        error("duplicate frame_num im short-term reference picture buffer", 500);
+      }
+    }
+
+  }
+  // store at end of buffer
+//  printf ("store frame/field at pos %d\n",dpb.used_size);
+  insert_picture_in_dpb(dpb.fs[dpb.used_size],p);
+  
+  if (p->structure != FRAME)
+  {
+    dpb.last_picture = dpb.fs[dpb.used_size];
+  }
+  else
+  {
+    dpb.last_picture = NULL;
+  }
+
+  dpb.used_size++;
+
+  update_ref_list();
+  update_ltref_list();
+  dump_dpb();
+}

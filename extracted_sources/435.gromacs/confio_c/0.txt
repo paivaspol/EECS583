@@ -1,0 +1,78 @@
+static int read_g96_pos(char line[],t_symtab *symtab,FILE *fp,char *infile,
+			t_trxframe *fr)
+{
+  t_atoms *atoms;
+  bool   bEnd;
+  int    nwanted,natoms,atnr,resnr,oldres,newres,shift;
+  char   anm[STRLEN],resnm[STRLEN];
+  char   c1,c2;
+  double db1,db2,db3;
+  
+  nwanted = fr->natoms;
+
+  atoms = fr->atoms;
+
+  natoms = 0;
+
+  if (fr->bX) {
+    if (fr->bAtoms)
+      shift = CHAR_SHIFT;
+    else
+      shift = 0;
+    newres  = 0;
+    oldres  = -666; /* Unlikely number for the first residue! */
+    bEnd    = FALSE;
+    while (!bEnd && fgets2(line,STRLEN,fp)) {
+      bEnd = (strncmp(line,"END",3) == 0);
+      if (!bEnd  && (line[0] != '#')) {
+	if (sscanf(line+shift,"%15lf%15lf%15lf",&db1,&db2,&db3) != 3)
+	  fatal_error(0,"Did not find 3 coordinates for atom %d in %s\n",
+		      natoms+1,infile);
+	if ((nwanted != -1) && (natoms >= nwanted))
+	  fatal_error(0,
+		      "Found more coordinates (%d) in %s than expected %d\n",
+		      natoms,infile,nwanted);
+	if (atoms) {
+	  if (atoms && fr->bAtoms &&
+	      (sscanf(line,"%5d%c%5s%c%5s%7d",&resnr,&c1,resnm,&c2,anm,&atnr) 
+	       != 6)) {
+	    if (oldres>=0)
+	      resnr = oldres;
+	    else {
+	      resnr    = 1;
+	      strcpy(resnm,"???"); 
+	    }
+	    strcpy(anm,"???"); 
+	  }
+	  atoms->atomname[natoms]=put_symtab(symtab,anm);
+	  if (resnr != oldres) {
+	    oldres = resnr;
+	    if (newres >= atoms->nr)
+	      fatal_error(0,"More residues than atoms in %s (natoms = %d)",
+			  infile,atoms->nr);
+	    atoms->resname[newres] = put_symtab(symtab,resnm);
+	    newres++;
+	    if (newres > atoms->nres)
+	      atoms->nres = newres;
+	  }
+	  resnr = newres;
+	  atoms->atom[natoms].resnr = resnr-1;
+	}
+	if (fr->x) {
+	  fr->x[natoms][0] = db1;
+	  fr->x[natoms][1] = db2;
+	  fr->x[natoms][2] = db3;
+	}
+	natoms++;
+      }
+    }
+    if ((nwanted != -1) && natoms != nwanted)
+      fprintf(stderr,
+	      "Warning: found less coordinates (%d) in %s than expected %d\n",
+	      natoms,infile,nwanted);
+  }
+
+  fr->natoms = natoms;
+
+  return natoms;
+}

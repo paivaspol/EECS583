@@ -1,0 +1,45 @@
+static void
+df_free (df)
+     struct df *df;
+{
+  df_bitmaps_free (df, DF_ALL);
+
+  if (df->bbs)
+    free (df->bbs);
+  df->bbs = 0;
+
+  if (df->insns)
+    free (df->insns);
+  df->insns = 0;
+  df->insn_size = 0;
+
+  if (df->defs)
+    free (df->defs);
+  df->defs = 0;
+  df->def_size = 0;
+  df->def_id = 0;
+
+  if (df->uses)
+    free (df->uses);
+  df->uses = 0;
+  df->use_size = 0;
+  df->use_id = 0;
+
+  if (df->regs)
+    free (df->regs);
+  df->regs = 0;
+  df->reg_size = 0;
+
+  if (df->bbs_modified)
+    BITMAP_XFREE (df->bbs_modified);
+  df->bbs_modified = 0;
+
+  if (df->insns_modified)
+    BITMAP_XFREE (df->insns_modified);
+  df->insns_modified = 0;
+
+  BITMAP_XFREE (df->all_blocks);
+  df->all_blocks = 0;
+
+  obstack_free (&df_ref_obstack, NULL);
+}

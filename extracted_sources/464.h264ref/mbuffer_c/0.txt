@@ -1,0 +1,37 @@
+void dump_dpb()
+{
+  unsigned i;
+
+  return;
+  
+  for (i=0; i<dpb.used_size;i++)
+  {
+    printf("(");
+    printf("fn=%d  ", dpb.fs[i]->frame_num);
+    if (dpb.fs[i]->is_used & 1)
+    {
+      if (dpb.fs[i]->top_field)
+        printf("T: poc=%d  ", dpb.fs[i]->top_field->poc);
+      else
+        printf("T: poc=%d  ", dpb.fs[i]->frame->top_poc);
+    }
+    if (dpb.fs[i]->is_used & 2)
+    {
+      if (dpb.fs[i]->bottom_field)
+        printf("B: poc=%d  ", dpb.fs[i]->bottom_field->poc);
+      else
+        printf("B: poc=%d  ", dpb.fs[i]->frame->bottom_poc);
+    }
+    if (dpb.fs[i]->is_used == 3)
+      printf("F: poc=%d  ", dpb.fs[i]->frame->poc);
+    printf("G: poc=%d)  ", dpb.fs[i]->poc);
+    if (dpb.fs[i]->is_reference) printf ("ref (%d) ", dpb.fs[i]->is_reference);
+    if (dpb.fs[i]->is_long_term) printf ("lt_ref (%d) ", dpb.fs[i]->is_reference);
+    if (dpb.fs[i]->is_output) printf ("out  ");
+    if (dpb.fs[i]->is_used == 3)
+    {
+      if (dpb.fs[i]->frame->non_existing) printf ("ne  ");
+    }
+    printf ("\n");
+  }
+}

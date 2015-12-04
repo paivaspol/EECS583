@@ -1,0 +1,35 @@
+void pr_ebin(FILE *fp,t_ebin *eb,int index,int nener,int nperline,
+	     int prmode,int tsteps,bool bPrHead)
+{
+  int  i,j,i0;
+  real ee=0;
+    
+  if (index < 0)
+    fatal_error(0,"Invalid index in pr_ebin: %d",index);
+  if (nener == -1)
+    nener=eb->nener;
+  else
+    nener=index+nener;
+  for(i=index; (i<nener); ) {
+    if (bPrHead) {
+      i0=i;
+      for(j=0; (j<nperline) && (i<nener); j++,i++)
+	fprintf(fp,"%15s",eb->enm[i]);
+      fprintf(fp,"\n");
+      i=i0;
+    }
+    for(j=0; (j<nperline) && (i<nener); j++,i++) {
+      if (prmode == eprNORMAL)
+	ee=eb->e[i].e;
+      else if (prmode == eprRMS)
+	ee=rms_ener(&(eb->e[i]),tsteps);
+      else if (prmode == eprAVER)
+	ee=eb->e[i].esum/tsteps;
+      else
+	fatal_error(0,"Invalid print mode %d in pr_ebin",prmode);
+      
+      fprintf(fp,"   %12.5e",ee);
+    }
+    fprintf(fp,"\n");
+  }
+}

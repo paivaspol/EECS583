@@ -1,0 +1,45 @@
+static void
+reload_combine_note_store (dst, set, data)
+     rtx dst, set;
+     void *data ATTRIBUTE_UNUSED;
+{
+  int regno = 0;
+  int i;
+  enum machine_mode mode = GET_MODE (dst);
+
+  if (GET_CODE (dst) == SUBREG)
+    {
+      regno = subreg_regno_offset (REGNO (SUBREG_REG (dst)),
+				   GET_MODE (SUBREG_REG (dst)),
+				   SUBREG_BYTE (dst),
+				   GET_MODE (dst));
+      dst = SUBREG_REG (dst);
+    }
+  if (GET_CODE (dst) != REG)
+    return;
+  regno += REGNO (dst);
+
+  /* note_stores might have stripped a STRICT_LOW_PART, so we have to be
+     careful with registers / register parts that are not full words.
+
+     Similarly for ZERO_EXTRACT and SIGN_EXTRACT.  */
+  if (GET_CODE (set) != SET
+      || GET_CODE (SET_DEST (set)) == ZERO_EXTRACT
+      || GET_CODE (SET_DEST (set)) == SIGN_EXTRACT
+      || GET_CODE (SET_DEST (set)) == STRICT_LOW_PART)
+    {
+      for (i = HARD_REGNO_NREGS (regno, mode) - 1 + regno; i >= regno; i--)
+	{
+	  reg_state[i].use_index = -1;
+	  reg_state[i].store_ruid = reload_combine_ruid;
+	}
+    }
+  else
+    {
+      for (i = HARD_REGNO_NREGS (regno, mode) - 1 + regno; i >= regno; i--)
+	{
+	  reg_state[i].store_ruid = reload_combine_ruid;
+	  reg_state[i].use_index = RELOAD_COMBINE_MAX_USES;
+	}
+    }
+}

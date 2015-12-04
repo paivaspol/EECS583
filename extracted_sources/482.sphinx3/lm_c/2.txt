@@ -1,0 +1,17 @@
+static void lm_uw (lm_t *lm, float64 uw)
+{
+    int32 i, loguw, loguw_, loguniform, p1, p2;
+
+    /* Interpolate unigram probs with uniform PDF, with weight uw */
+    loguw = logs3 (uw);
+    loguw_ = logs3 (1.0 - uw);
+    loguniform = logs3 (1.0/(lm->n_ug-1));	/* Skipping S3_START_WORD */
+    
+    for (i = 0; i < lm->n_ug; i++) {
+	if (strcmp (lm->wordstr[i], S3_START_WORD) != 0) {
+	    p1 = lm->ug[i].prob.l + loguw;
+	    p2 = loguniform + loguw_;
+	    lm->ug[i].prob.l = logs3_add (p1, p2);
+	}
+    }
+}

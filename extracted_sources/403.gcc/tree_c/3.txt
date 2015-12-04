@@ -1,0 +1,16 @@
+void
+init_obstacks ()
+{
+  gcc_obstack_init (&permanent_obstack);
+
+  /* Initialize the hash table of types.  */
+  type_hash_table = htab_create (TYPE_HASH_INITIAL_SIZE, type_hash_hash,
+				 type_hash_eq, 0);
+  ggc_add_deletable_htab (type_hash_table, type_hash_marked_p,
+			  type_hash_mark);
+  ggc_add_tree_root (global_trees, TI_MAX);
+  ggc_add_tree_root (integer_types, itk_none);
+
+  /* Set lang_set_decl_set_assembler_name to a default value.  */
+  lang_set_decl_assembler_name = set_decl_assembler_name;
+}

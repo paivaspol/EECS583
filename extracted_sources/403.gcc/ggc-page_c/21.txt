@@ -1,0 +1,40 @@
+static inline void
+clear_marks ()
+{
+  unsigned order;
+
+  for (order = 2; order < NUM_ORDERS; order++)
+    {
+      size_t num_objects = OBJECTS_PER_PAGE (order);
+      size_t bitmap_size = BITMAP_SIZE (num_objects + 1);
+      page_entry *p;
+
+      for (p = G.pages[order]; p != NULL; p = p->next)
+	{
+#ifdef ENABLE_CHECKING
+	  /* The data should be page-aligned.  */
+	  if ((size_t) p->page & (G.pagesize - 1))
+	    abort ();
+#endif
+
+	  /* Pages that aren't in the topmost context are not collected;
+	     nevertheless, we need their in-use bit vectors to store GC
+	     marks.  So, back them up first.  */
+	  if (p->context_depth < G.context_depth)
+	    {
+	      if (! p->save_in_use_p)
+		p->save_in_use_p = xmalloc (bitmap_size);
+	      memcpy (p->save_in_use_p, p->in_use_p, bitmap_size);
+	    }
+
+	  /* Reset reset the number of free objects and clear the
+             in-use bits.  These will be adjusted by mark_obj.  */
+	  p->num_free_objects = num_objects;
+	  memset (p->in_use_p, 0, bitmap_size);
+
+	  /* Make sure the one-past-the-end bit is always set.  */
+	  p->in_use_p[num_objects / HOST_BITS_PER_LONG] 
+	    = ((unsigned long) 1 << (num_objects % HOST_BITS_PER_LONG));
+	}
+    }
+}

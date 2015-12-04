@@ -1,0 +1,24 @@
+static void
+save_comment (pfile, token, from)
+     cpp_reader *pfile;
+     cpp_token *token;
+     const unsigned char *from;
+{
+  unsigned char *buffer;
+  unsigned int len;
+  
+  len = pfile->buffer->cur - from + 1; /* + 1 for the initial '/'.  */
+
+  /* C++ comments probably (not definitely) have moved past a new
+     line, which we don't want to save in the comment.  */
+  if (is_vspace (pfile->buffer->cur[-1]))
+    len--;
+  buffer = _cpp_unaligned_alloc (pfile, len);
+  
+  token->type = CPP_COMMENT;
+  token->val.str.len = len;
+  token->val.str.text = buffer;
+
+  buffer[0] = '/';
+  memcpy (buffer + 1, from, len - 1);
+}

@@ -1,0 +1,49 @@
+static int
+coalesce_regs_in_copies (bb, p, conflicts)
+     basic_block bb;
+     partition p;
+     conflict_graph conflicts;
+{
+  int changed = 0;
+  rtx insn;
+  rtx end = bb->end;
+
+  /* Scan the instruction stream of the block.  */
+  for (insn = bb->head; insn != end; insn = NEXT_INSN (insn))
+    {
+      rtx pattern;
+      rtx src;
+      rtx dest;
+
+      /* If this isn't a set insn, go to the next insn.  */
+      if (GET_CODE (insn) != INSN)
+	continue;
+      pattern = PATTERN (insn);
+      if (GET_CODE (pattern) != SET)
+	continue;
+
+      src = SET_SRC (pattern);
+      dest = SET_DEST (pattern);
+
+      /* We're only looking for copies.  */
+      if (GET_CODE (src) != REG || GET_CODE (dest) != REG)
+	continue;
+
+      /* Coalesce only if the reg modes are the same.  As long as
+	 each reg's rtx is unique, it can have only one mode, so two
+	 pseudos of different modes can't be coalesced into one.  
+
+         FIXME: We can probably get around this by inserting SUBREGs
+         where appropriate, but for now we don't bother.  */
+      if (GET_MODE (src) != GET_MODE (dest))
+	continue;
+
+      /* Found a copy; see if we can use the same reg for both the
+	 source and destination (and thus eliminate the copy,
+	 ultimately).  */
+      changed += coalesce_if_unconflicting (p, conflicts, 
+					    REGNO (src), REGNO (dest));
+    }
+
+  return changed;
+}

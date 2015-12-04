@@ -1,0 +1,16 @@
+void
+init_varasm_once ()
+{
+  const_str_htab = htab_create (128, const_str_htab_hash, const_str_htab_eq,
+  				const_str_htab_del);
+  in_named_htab = htab_create (31, in_named_entry_hash,
+			       in_named_entry_eq, NULL);
+
+  ggc_add_root (const_hash_table, MAX_HASH_TABLE, sizeof const_hash_table[0],
+		mark_const_hash_entry);
+  ggc_add_root (&const_str_htab, 1, sizeof const_str_htab,
+		mark_const_str_htab);
+  ggc_add_tree_root (&weak_decls, 1);
+
+  const_alias_set = new_alias_set ();
+}

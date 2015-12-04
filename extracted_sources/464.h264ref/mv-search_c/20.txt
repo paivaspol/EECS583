@@ -1,0 +1,77 @@
+void FindSkipModeMotionVector ()
+{
+  int   bx, by;
+  short ******all_mv = img->all_mv;
+
+  short pmv[2];
+
+  int zeroMotionAbove;
+  int zeroMotionLeft;
+  PixelPos mb_a, mb_b;
+  int      a_mv_y = 0;
+  int      a_ref_idx = 0;
+  int      b_mv_y = 0;
+  int      b_ref_idx = 0;
+
+  Macroblock *currMB = &img->mb_data[img->current_mb_nr];
+  
+  getLuma4x4Neighbour(img->current_mb_nr,0,0,-1, 0,&mb_a);
+  getLuma4x4Neighbour(img->current_mb_nr,0,0, 0,-1,&mb_b);
+  
+  if (mb_a.available)
+  {
+    a_mv_y    = enc_picture->mv[LIST_0][mb_a.pos_x][mb_a.pos_y][1];
+    a_ref_idx = enc_picture->ref_idx[LIST_0][mb_a.pos_x][mb_a.pos_y];
+    
+    if (currMB->mb_field && !img->mb_data[mb_a.mb_addr].mb_field)
+    {
+      a_mv_y    /=2;
+      a_ref_idx *=2;
+    }
+    if (!currMB->mb_field && img->mb_data[mb_a.mb_addr].mb_field)
+    {
+      a_mv_y    *=2;
+      a_ref_idx >>=1;
+    }
+  }
+  
+  if (mb_b.available)
+  {
+    b_mv_y    = enc_picture->mv[LIST_0][mb_b.pos_x][mb_b.pos_y][1];
+    b_ref_idx = enc_picture->ref_idx[LIST_0][mb_b.pos_x][mb_b.pos_y];
+    
+    if (currMB->mb_field && !img->mb_data[mb_b.mb_addr].mb_field)
+    {
+      b_mv_y    /=2;
+      b_ref_idx *=2;
+    }
+    if (!currMB->mb_field && img->mb_data[mb_b.mb_addr].mb_field)
+    {
+      b_mv_y    *=2;
+      b_ref_idx >>=1;
+    }
+  }
+  
+  zeroMotionLeft  = !mb_a.available ? 1 : a_ref_idx==0 && enc_picture->mv[LIST_0][mb_a.pos_x][mb_a.pos_y][0]==0 && a_mv_y==0 ? 1 : 0;
+  zeroMotionAbove = !mb_b.available ? 1 : b_ref_idx==0 && enc_picture->mv[LIST_0][mb_b.pos_x][mb_b.pos_y][0]==0 && b_mv_y==0 ? 1 : 0;
+  
+  if (zeroMotionAbove || zeroMotionLeft)
+  {
+    for (by = 0;by < 4;by++)
+      for (bx = 0;bx < 4;bx++)
+      {
+        all_mv [bx][by][0][0][0][0] = 0;
+        all_mv [bx][by][0][0][0][1] = 0;
+      }
+  }
+  else
+  {
+    SetMotionVectorPredictor (pmv, enc_picture->ref_idx, enc_picture->mv, 0, LIST_0, 0, 0, 16, 16);
+    for (by = 0;by < 4;by++)
+      for (bx = 0;bx < 4;bx++)
+      {
+        all_mv [bx][by][0][0][0][0] = pmv[0];
+        all_mv [bx][by][0][0][0][1] = pmv[1];
+      }
+  }
+}

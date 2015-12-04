@@ -1,0 +1,26 @@
+static bool
+label_is_jump_target_p (label, jump_insn)
+     rtx label, jump_insn;
+{
+  rtx tmp = JUMP_LABEL (jump_insn);
+
+  if (label == tmp)
+    return true;
+
+  if (tmp != NULL_RTX
+      && (tmp = NEXT_INSN (tmp)) != NULL_RTX
+      && GET_CODE (tmp) == JUMP_INSN
+      && (tmp = PATTERN (tmp),
+	  GET_CODE (tmp) == ADDR_VEC
+	  || GET_CODE (tmp) == ADDR_DIFF_VEC))
+    {
+      rtvec vec = XVEC (tmp, GET_CODE (tmp) == ADDR_DIFF_VEC);
+      int i, veclen = GET_NUM_ELEM (vec);
+
+      for (i = 0; i < veclen; ++i)
+	if (XEXP (RTVEC_ELT (vec, i), 0) == label)
+	  return true;
+    }
+
+  return false;
+}

@@ -1,0 +1,46 @@
+static void main_loop_serial(struct plan7_s *hmm, SQFILE *sqfp, struct threshold_s *thresh,
+			     int do_forward, int do_null2, int do_xnu, 
+			     struct histogram_s *histogram, struct tophit_s *ghit, 
+			     struct tophit_s *dhit, int *ret_nseq);
+static void main_loop_pvm(struct plan7_s *hmm, SQFILE *sqfp, struct threshold_s *thresh, 
+			  int do_forward, int do_null2, int do_xnu, 
+			  struct histogram_s *histogram, struct tophit_s *ghit, 
+			  struct tophit_s *dhit, int *ret_nseq);
+static void main_loop_threaded(struct plan7_s *hmm, SQFILE *sqfp, struct threshold_s *thresh,
+			       int do_forward, int do_null2, int do_xnu, int num_threads,
+			       struct histogram_s *histogram, struct tophit_s *ghit, 
+			       struct tophit_s *dhit, int *ret_nseq);
+
+#ifdef HMMER_THREADS
+/* POSIX threads version:
+ * the threads share a workpool_s structure amongst themselves,
+ * for obtaining locks on input HMM file and output histogram and
+ * tophits structures.
+ */
+struct workpool_s {
+  /* Shared configuration resources which don't change:
+   */
+  struct plan7_s *hmm;		/* HMM to search with              */
+  int    do_xnu;		/* TRUE to apply XNU filter  */
+  int    do_forward;		/* TRUE to score using Forward     */
+  int    do_null2;		/* TRUE to apply null2 ad hoc correction */
+  struct threshold_s *thresh;   /* score/evalue threshold info     */
+  
+  /* Shared (mutex-protected) input resources:
+   */
+  SQFILE *sqfp;                 /* ptr to open sequence file      */
+  int nseq;			/* number of seqs searched so far */
+  pthread_mutex_t input_lock;   /* mutex for locking input        */
+
+  /* Shared (mutex-protected) output resources:
+   */
+  struct tophit_s *ghit;        /* per-sequence top hits */
+  struct tophit_s *dhit;        /* per-domain top hits */
+  struct histogram_s *hist;     /* histogram of scores */
+  pthread_mutex_t output_lock;  /* mutex for locking output */
+
+  /* Thread pool information
+   */
+  pthread_t *thread;            /* our pool of threads */
+  int        num_threads;       /* number of threads   */
+};

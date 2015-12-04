@@ -1,0 +1,41 @@
+static int
+one_classic_gcse_pass (pass)
+     int pass;
+{
+  int changed = 0;
+
+  gcse_subst_count = 0;
+  gcse_create_count = 0;
+
+  alloc_expr_hash_table (max_cuid);
+  alloc_rd_mem (n_basic_blocks, max_cuid);
+  compute_expr_hash_table ();
+  if (gcse_file)
+    dump_hash_table (gcse_file, "Expression", expr_hash_table,
+		     expr_hash_table_size, n_exprs);
+
+  if (n_exprs > 0)
+    {
+      compute_kill_rd ();
+      compute_rd ();
+      alloc_avail_expr_mem (n_basic_blocks, n_exprs);
+      compute_ae_gen ();
+      compute_ae_kill (ae_gen, ae_kill);
+      compute_available (ae_gen, ae_kill, ae_out, ae_in);
+      changed = classic_gcse ();
+      free_avail_expr_mem ();
+    }
+
+  free_rd_mem ();
+  free_expr_hash_table ();
+
+  if (gcse_file)
+    {
+      fprintf (gcse_file, "\n");
+      fprintf (gcse_file, "GCSE of %s, pass %d: %d bytes needed, %d substs,",
+	       current_function_name, pass, bytes_used, gcse_subst_count);
+      fprintf (gcse_file, "%d insns created\n", gcse_create_count);
+    }
+
+  return changed;
+}

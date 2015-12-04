@@ -1,0 +1,28 @@
+void
+output_file_directive (asm_file, input_name)
+     FILE *asm_file;
+     const char *input_name;
+{
+  int len = strlen (input_name);
+  const char *na = input_name + len;
+
+  /* NA gets INPUT_NAME sans directory names.  */
+  while (na > input_name)
+    {
+      if (IS_DIR_SEPARATOR (na[-1]))
+        break;
+      na--;
+    }
+
+#ifdef ASM_OUTPUT_MAIN_SOURCE_FILENAME
+  ASM_OUTPUT_MAIN_SOURCE_FILENAME (asm_file, na);
+#else
+#ifdef ASM_OUTPUT_SOURCE_FILENAME
+  ASM_OUTPUT_SOURCE_FILENAME (asm_file, na);
+#else
+  fprintf (asm_file, "\t.file\t");
+  output_quoted_string (asm_file, na);
+  fputc ('\n', asm_file);
+#endif
+#endif
+}

@@ -1,0 +1,120 @@
+static rtx
+simplify_and_const_int (x, mode, varop, constop)
+     rtx x;
+     enum machine_mode mode;
+     rtx varop;
+     unsigned HOST_WIDE_INT constop;
+{
+  unsigned HOST_WIDE_INT nonzero;
+  int i;
+
+  /* Simplify VAROP knowing that we will be only looking at some of the
+     bits in it.
+
+     Note by passing in CONSTOP, we guarantee that the bits not set in
+     CONSTOP are not significant and will never be examined.  We must
+     ensure that is the case by explicitly masking out those bits
+     before returning.  */
+  varop = force_to_mode (varop, mode, constop, NULL_RTX, 0);
+
+  /* If VAROP is a CLOBBER, we will fail so return it.  */
+  if (GET_CODE (varop) == CLOBBER)
+    return varop;
+
+  /* If VAROP is a CONST_INT, then we need to apply the mask in CONSTOP
+     to VAROP and return the new constant.  */
+  if (GET_CODE (varop) == CONST_INT)
+    return GEN_INT (trunc_int_for_mode (INTVAL (varop) & constop, mode));
+
+  /* See what bits may be nonzero in VAROP.  Unlike the general case of
+     a call to nonzero_bits, here we don't care about bits outside
+     MODE.  */
+
+  nonzero = nonzero_bits (varop, mode) & GET_MODE_MASK (mode);
+
+  /* Turn off all bits in the constant that are known to already be zero.
+     Thus, if the AND isn't needed at all, we will have CONSTOP == NONZERO_BITS
+     which is tested below.  */
+
+  constop &= nonzero;
+
+  /* If we don't have any bits left, return zero.  */
+  if (constop == 0)
+    return const0_rtx;
+
+  /* If VAROP is a NEG of something known to be zero or 1 and CONSTOP is
+     a power of two, we can replace this with a ASHIFT.  */
+  if (GET_CODE (varop) == NEG && nonzero_bits (XEXP (varop, 0), mode) == 1
+      && (i = exact_log2 (constop)) >= 0)
+    return simplify_shift_const (NULL_RTX, ASHIFT, mode, XEXP (varop, 0), i);
+
+  /* If VAROP is an IOR or XOR, apply the AND to both branches of the IOR
+     or XOR, then try to apply the distributive law.  This may eliminate
+     operations if either branch can be simplified because of the AND.
+     It may also make some cases more complex, but those cases probably
+     won't match a pattern either with or without this.  */
+
+  if (GET_CODE (varop) == IOR || GET_CODE (varop) == XOR)
+    return
+      gen_lowpart_for_combine
+	(mode,
+	 apply_distributive_law
+	 (gen_binary (GET_CODE (varop), GET_MODE (varop),
+		      simplify_and_const_int (NULL_RTX, GET_MODE (varop),
+					      XEXP (varop, 0), constop),
+		      simplify_and_const_int (NULL_RTX, GET_MODE (varop),
+					      XEXP (varop, 1), constop))));
+
+  /* If VAROP is PLUS, and the constant is a mask of low bite, distribute
+     the AND and see if one of the operands simplifies to zero.  If so, we
+     may eliminate it.  */
+
+  if (GET_CODE (varop) == PLUS
+      && exact_log2 (constop + 1) >= 0)
+    {
+      rtx o0, o1;
+
+      o0 = simplify_and_const_int (NULL_RTX, mode, XEXP (varop, 0), constop);
+      o1 = simplify_and_const_int (NULL_RTX, mode, XEXP (varop, 1), constop);
+      if (o0 == const0_rtx)
+	return o1;
+      if (o1 == const0_rtx)
+	return o0;
+    }
+
+  /* Get VAROP in MODE.  Try to get a SUBREG if not.  Don't make a new SUBREG
+     if we already had one (just check for the simplest cases).  */
+  if (x && GET_CODE (XEXP (x, 0)) == SUBREG
+      && GET_MODE (XEXP (x, 0)) == mode
+      && SUBREG_REG (XEXP (x, 0)) == varop)
+    varop = XEXP (x, 0);
+  else
+    varop = gen_lowpart_for_combine (mode, varop);
+
+  /* If we can't make the SUBREG, try to return what we were given.  */
+  if (GET_CODE (varop) == CLOBBER)
+    return x ? x : varop;
+
+  /* If we are only masking insignificant bits, return VAROP.  */
+  if (constop == nonzero)
+    x = varop;
+  else
+    {
+      /* Otherwise, return an AND.  */
+      constop = trunc_int_for_mode (constop, mode);
+      /* See how much, if any, of X we can use.  */
+      if (x == 0 || GET_CODE (x) != AND || GET_MODE (x) != mode)
+	x = gen_binary (AND, mode, varop, GEN_INT (constop));
+
+      else
+	{
+	  if (GET_CODE (XEXP (x, 1)) != CONST_INT
+	      || (unsigned HOST_WIDE_INT) INTVAL (XEXP (x, 1)) != constop)
+	    SUBST (XEXP (x, 1), GEN_INT (constop));
+
+	  SUBST (XEXP (x, 0), varop);
+	}
+    }
+
+  return x;
+}

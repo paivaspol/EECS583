@@ -1,0 +1,25 @@
+static int
+add_call_site (landing_pad, action)
+     rtx landing_pad;
+     int action;
+{
+  struct call_site_record *data = cfun->eh->call_site_data;
+  int used = cfun->eh->call_site_data_used;
+  int size = cfun->eh->call_site_data_size;
+
+  if (used >= size)
+    {
+      size = (size ? size * 2 : 64);
+      data = (struct call_site_record *)
+	xrealloc (data, sizeof (*data) * size);
+      cfun->eh->call_site_data = data;
+      cfun->eh->call_site_data_size = size;
+    }
+
+  data[used].landing_pad = landing_pad;
+  data[used].action = action;
+
+  cfun->eh->call_site_data_used = used + 1;
+
+  return used + call_site_base;
+}

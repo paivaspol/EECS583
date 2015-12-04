@@ -1,0 +1,70 @@
+static void
+load_register_parameters (args, num_actuals, call_fusage, flags)
+     struct arg_data *args;
+     int num_actuals;
+     rtx *call_fusage;
+     int flags;
+{
+  int i, j;
+
+#ifdef LOAD_ARGS_REVERSED
+  for (i = num_actuals - 1; i >= 0; i--)
+#else
+  for (i = 0; i < num_actuals; i++)
+#endif
+    {
+      rtx reg = ((flags & ECF_SIBCALL)
+		 ? args[i].tail_call_reg : args[i].reg);
+      int partial = args[i].partial;
+      int nregs;
+
+      if (reg)
+	{
+	  /* Set to non-negative if must move a word at a time, even if just
+	     one word (e.g, partial == 1 && mode == DFmode).  Set to -1 if
+	     we just use a normal move insn.  This value can be zero if the
+	     argument is a zero size structure with no fields.  */
+	  nregs = (partial ? partial
+		   : (TYPE_MODE (TREE_TYPE (args[i].tree_value)) == BLKmode
+		      ? ((int_size_in_bytes (TREE_TYPE (args[i].tree_value))
+			  + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD)
+		      : -1));
+
+	  /* Handle calls that pass values in multiple non-contiguous
+	     locations.  The Irix 6 ABI has examples of this.  */
+
+	  if (GET_CODE (reg) == PARALLEL)
+	    emit_group_load (reg, args[i].value,
+			     int_size_in_bytes (TREE_TYPE (args[i].tree_value)));
+
+	  /* If simple case, just do move.  If normal partial, store_one_arg
+	     has already loaded the register for us.  In all other cases,
+	     load the register(s) from memory.  */
+
+	  else if (nregs == -1)
+	    emit_move_insn (reg, args[i].value);
+
+	  /* If we have pre-computed the values to put in the registers in
+	     the case of non-aligned structures, copy them in now.  */
+
+	  else if (args[i].n_aligned_regs != 0)
+	    for (j = 0; j < args[i].n_aligned_regs; j++)
+	      emit_move_insn (gen_rtx_REG (word_mode, REGNO (reg) + j),
+			      args[i].aligned_regs[j]);
+
+	  else if (partial == 0 || args[i].pass_on_stack)
+	    move_block_to_reg (REGNO (reg),
+			       validize_mem (args[i].value), nregs,
+			       args[i].mode);
+
+	  /* Handle calls that pass values in multiple non-contiguous
+	     locations.  The Irix 6 ABI has examples of this.  */
+	  if (GET_CODE (reg) == PARALLEL)
+	    use_group_regs (call_fusage, reg);
+	  else if (nregs == -1)
+	    use_reg (call_fusage, reg);
+	  else
+	    use_regs (call_fusage, REGNO (reg), nregs == 0 ? 1 : nregs);
+	}
+    }
+}

@@ -1,0 +1,30 @@
+static void 
+insert_insn_start_bb (insn, bb)
+     rtx insn;
+     basic_block bb;
+{
+  /* Insert at start of successor block.  */
+  rtx prev = PREV_INSN (bb->head);
+  rtx before = bb->head;
+  while (before != 0)
+    {
+      if (GET_CODE (before) != CODE_LABEL
+	  && (GET_CODE (before) != NOTE
+	      || NOTE_LINE_NUMBER (before) != NOTE_INSN_BASIC_BLOCK))
+	break;
+      prev = before;
+      if (prev == bb->end)
+	break;
+      before = NEXT_INSN (before);
+    }
+
+  insn = emit_insn_after (insn, prev);
+
+  if (gcse_file)
+    {
+      fprintf (gcse_file, "STORE_MOTION  insert store at start of BB %d:\n",
+	       bb->index);
+      print_inline_rtx (gcse_file, insn, 6);
+      fprintf (gcse_file, "\n");
+    }
+}

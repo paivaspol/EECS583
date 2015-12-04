@@ -1,0 +1,23 @@
+static struct expr *
+lookup_set (regno, pat)
+     unsigned int regno;
+     rtx pat;
+{
+  unsigned int hash = hash_set (regno, set_hash_table_size);
+  struct expr *expr;
+
+  expr = set_hash_table[hash];
+
+  if (pat)
+    {
+      while (expr && ! expr_equiv_p (expr->expr, pat))
+	expr = expr->next_same_hash;
+    }
+  else
+    {
+      while (expr && REGNO (SET_DEST (expr->expr)) != regno)
+	expr = expr->next_same_hash;
+    }
+
+  return expr;
+}

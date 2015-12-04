@@ -1,0 +1,57 @@
+void g_measure( ){
+    double ss_plaquette, st_plaquette;
+    complex p_loop;
+    register int i;
+    register site *s;
+    complex trace;
+    double average[NREPS],action,act2,total_action;
+    int length;
+    /* these are for loop_table  */
+    int ln,iloop,rep;
+
+    /* KS and BC minus signs should be out for this routine */
+    d_plaquette( &ss_plaquette, &st_plaquette );
+    if(this_node==0)printf("PLAQ:\t%f\t%f\n", ss_plaquette, st_plaquette );
+
+    p_loop = ploop();
+    if(this_node==0)printf("P_LOOP:\t%e\t%e\n", p_loop.real, p_loop.imag );
+
+    /* gauge action, all loops that contribute */
+    total_action=0.0;
+    for(iloop=0;iloop<NLOOP;iloop++){
+	length=loop_length[iloop];
+	/* loop over rotations and reflections */
+	for(ln=0;ln<loop_num[iloop];ln++){
+
+	    path_product( loop_table[iloop][ln] , length );
+
+	    for(rep=0;rep<NREPS;rep++)average[rep] = 0.0;
+	    FORALLSITES(i,s){
+		trace=trace_su3( &s->tempmat1 );
+		average[0] += (double)trace.real;
+		action =  3.0 - (double)trace.real;
+		total_action += (double)loop_coeff[iloop][0]*action;
+		/* need the "3 -" for higher characters */
+        	act2=action;
+		for(rep=1;rep<NREPS;rep++){
+		    act2 *= action;
+		    average[rep] += act2;
+		    total_action += (double)loop_coeff[iloop][rep]*act2;
+		} /* reps */
+	    } END_LOOP /* sites */
+	    g_vecdoublesum( average, NREPS );
+	    /* dump the loop */
+	    node0_printf("G_LOOP:  %d  %d  %d   ",iloop,ln,length);
+	    for(rep=0;rep<NREPS;rep++)node0_printf("\t%e",average[rep]/volume);
+	    node0_printf("\t( ");
+	    for(i=0;i<length;i++)node0_printf("%d ",loop_table[iloop][ln][i]);
+	    node0_printf(" )\n");
+	} /* ln */
+    } /* iloop */
+    g_doublesum( &total_action );
+    node0_printf("GACTION: %e\n",total_action/volume);
+    /**node0_printf("CHECK:   %e   %e\n",total_action,imp_gauge_action() );**/
+
+    if(this_node==0)fflush(stdout);
+
+}

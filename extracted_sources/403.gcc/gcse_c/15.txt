@@ -1,0 +1,79 @@
+static int
+oprs_unchanged_p (x, insn, avail_p)
+     rtx x, insn;
+     int avail_p;
+{
+  int i, j;
+  enum rtx_code code;
+  const char *fmt;
+
+  if (x == 0)
+    return 1;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case REG:
+      {
+	struct reg_avail_info *info = &reg_avail_info[REGNO (x)];
+
+	if (info->last_bb != current_bb)
+	  return 1;
+        if (avail_p)
+	  return info->last_set < INSN_CUID (insn);
+	else
+	  return info->first_set >= INSN_CUID (insn);
+      }
+
+    case MEM:
+      if (load_killed_in_block_p (BASIC_BLOCK (current_bb), INSN_CUID (insn),
+				  x, avail_p))
+	return 0;
+      else
+	return oprs_unchanged_p (XEXP (x, 0), insn, avail_p);
+
+    case PRE_DEC:
+    case PRE_INC:
+    case POST_DEC:
+    case POST_INC:
+    case PRE_MODIFY:
+    case POST_MODIFY:
+      return 0;
+
+    case PC:
+    case CC0: /*FIXME*/
+    case CONST:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      return 1;
+
+    default:
+      break;
+    }
+
+  for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  /* If we are about to do the last recursive call needed at this
+	     level, change it into iteration.  This function is called enough
+	     to be worth it.  */
+	  if (i == 0)
+	    return oprs_unchanged_p (XEXP (x, i), insn, avail_p);
+
+	  else if (! oprs_unchanged_p (XEXP (x, i), insn, avail_p))
+	    return 0;
+	}
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  if (! oprs_unchanged_p (XVECEXP (x, i, j), insn, avail_p))
+	    return 0;
+    }
+
+  return 1;
+}

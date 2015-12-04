@@ -1,0 +1,35 @@
+static inline void
+add_abstract_origin_attribute (die, origin)
+     dw_die_ref die;
+     tree origin;
+{
+  dw_die_ref origin_die = NULL;
+
+  if (TREE_CODE (origin) != FUNCTION_DECL)
+    {
+      /* We may have gotten separated from the block for the inlined
+	 function, if we're in an exception handler or some such; make
+	 sure that the abstract function has been written out.
+
+         Doing this for nested functions is wrong, however; functions are
+	 distinct units, and our context might not even be inline.  */
+      tree fn = origin;
+
+      if (TYPE_P (fn))
+	fn = TYPE_STUB_DECL (fn);
+
+      fn = decl_function_context (fn);
+      if (fn)
+	dwarf2out_abstract_function (fn);
+    }
+
+  if (DECL_P (origin))
+    origin_die = lookup_decl_die (origin);
+  else if (TYPE_P (origin))
+    origin_die = lookup_type_die (origin);
+
+  if (origin_die == NULL)
+    abort ();
+
+  add_AT_die_ref (die, DW_AT_abstract_origin, origin_die);
+}

@@ -1,0 +1,58 @@
+static void
+mark_function_status (p)
+     struct function *p;
+{
+  struct var_refs_queue *q;
+  struct temp_slot *t;
+  int i;
+  rtx *r;
+
+  if (p == 0)
+    return;
+
+  ggc_mark_rtx (p->arg_offset_rtx);
+
+  if (p->x_parm_reg_stack_loc)
+    for (i = p->x_max_parm_reg, r = p->x_parm_reg_stack_loc;
+	 i > 0; --i, ++r)
+      ggc_mark_rtx (*r);
+
+  ggc_mark_rtx (p->return_rtx);
+  ggc_mark_rtx (p->x_cleanup_label);
+  ggc_mark_rtx (p->x_return_label);
+  ggc_mark_rtx (p->x_save_expr_regs);
+  ggc_mark_rtx (p->x_stack_slot_list);
+  ggc_mark_rtx (p->x_parm_birth_insn);
+  ggc_mark_rtx (p->x_tail_recursion_label);
+  ggc_mark_rtx (p->x_tail_recursion_reentry);
+  ggc_mark_rtx (p->internal_arg_pointer);
+  ggc_mark_rtx (p->x_arg_pointer_save_area);
+  ggc_mark_tree (p->x_rtl_expr_chain);
+  ggc_mark_rtx (p->x_last_parm_insn);
+  ggc_mark_tree (p->x_context_display);
+  ggc_mark_tree (p->x_trampoline_list);
+  ggc_mark_rtx (p->epilogue_delay_list);
+  ggc_mark_rtx (p->x_clobber_return_insn);
+
+  for (t = p->x_temp_slots; t != 0; t = t->next)
+    {
+      ggc_mark (t);
+      ggc_mark_rtx (t->slot);
+      ggc_mark_rtx (t->address);
+      ggc_mark_tree (t->rtl_expr);
+      ggc_mark_tree (t->type);
+    }
+
+  for (q = p->fixup_var_refs_queue; q != 0; q = q->next)
+    {
+      ggc_mark (q);
+      ggc_mark_rtx (q->modified);
+      }
+
+  ggc_mark_rtx (p->x_nonlocal_goto_handler_slots);
+  ggc_mark_rtx (p->x_nonlocal_goto_handler_labels);
+  ggc_mark_rtx (p->x_nonlocal_goto_stack_level);
+  ggc_mark_tree (p->x_nonlocal_labels);
+
+  mark_hard_reg_initial_vals (p);
+}

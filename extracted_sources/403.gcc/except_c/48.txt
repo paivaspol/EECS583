@@ -1,0 +1,32 @@
+static int
+add_ehspec_entry (ehspec_hash, ttypes_hash, list)
+     htab_t ehspec_hash;
+     htab_t ttypes_hash;
+     tree list;
+{
+  struct ttypes_filter **slot, *n;
+  struct ttypes_filter dummy;
+
+  dummy.t = list;
+  slot = (struct ttypes_filter **)
+    htab_find_slot (ehspec_hash, &dummy, INSERT);
+
+  if ((n = *slot) == NULL)
+    {
+      /* Filter value is a -1 based byte index into a uleb128 buffer.  */
+
+      n = (struct ttypes_filter *) xmalloc (sizeof (*n));
+      n->t = list;
+      n->filter = -(VARRAY_ACTIVE_SIZE (cfun->eh->ehspec_data) + 1);
+      *slot = n;
+
+      /* Look up each type in the list and encode its filter
+	 value as a uleb128.  Terminate the list with 0.  */
+      for (; list ; list = TREE_CHAIN (list))
+	push_uleb128 (&cfun->eh->ehspec_data,
+		      add_ttypes_entry (ttypes_hash, TREE_VALUE (list)));
+      VARRAY_PUSH_UCHAR (cfun->eh->ehspec_data, 0);
+    }
+
+  return n->filter;
+}

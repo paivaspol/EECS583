@@ -1,0 +1,22 @@
+static void
+no_equiv (reg, store, data)
+     rtx reg, store ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  int regno;
+  rtx list;
+
+  if (GET_CODE (reg) != REG)
+    return;
+  regno = REGNO (reg);
+  list = reg_equiv[regno].init_insns;
+  if (list == const0_rtx)
+    return;
+  for (; list; list =  XEXP (list, 1))
+    {
+      rtx insn = XEXP (list, 0);
+      remove_note (insn, find_reg_note (insn, REG_EQUIV, NULL_RTX));
+    }
+  reg_equiv[regno].init_insns = const0_rtx;
+  reg_equiv[regno].replacement = NULL_RTX;
+}

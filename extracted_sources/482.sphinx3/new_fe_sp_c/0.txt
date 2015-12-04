@@ -1,0 +1,99 @@
+int32 fe_build_melfilters(melfb_t *MEL_FB)
+{    
+    int32 i, whichfilt, start_pt;
+    float leftfr, centerfr, rightfr, fwidth, height, *filt_edge;
+    float melmax, melmin, dmelbw, freq, dfreq, leftslope,rightslope;
+
+    /*estimate filter coefficients*/
+    MEL_FB->filter_coeffs = (float **)fe_create_2d(MEL_FB->num_filters, MEL_FB->fft_size, sizeof(float));
+    MEL_FB->left_apex = (float *) calloc(MEL_FB->num_filters,sizeof(float));
+    MEL_FB->width = (int32 *) calloc(MEL_FB->num_filters,sizeof(int32));
+    
+    if (MEL_FB->doublewide==ON)
+	filt_edge = (float32 *) calloc(MEL_FB->num_filters+4,sizeof(float32));
+    else	
+	filt_edge = (float32 *) calloc(MEL_FB->num_filters+2,sizeof(float32));
+
+    if (MEL_FB->filter_coeffs==NULL || MEL_FB->left_apex==NULL || MEL_FB->width==NULL || filt_edge==NULL){
+	fprintf(stderr,"memory alloc failed in fe_build_mel_filters()\n...exiting\n");
+	exit(0);
+    }
+    
+    dfreq = MEL_FB->sampling_rate/(float)MEL_FB->fft_size;
+    
+    melmax = fe_mel(MEL_FB->upper_filt_freq);
+    melmin = fe_mel(MEL_FB->lower_filt_freq);
+    dmelbw = (melmax-melmin)/(MEL_FB->num_filters+1);
+    
+    if (MEL_FB->doublewide==ON){
+        for (i=0;i<=MEL_FB->num_filters+3; ++i){
+	    filt_edge[i] = fe_melinv(i*dmelbw + melmin);
+        }
+    }
+    else {
+	for (i=0;i<=MEL_FB->num_filters+1; ++i){
+	    filt_edge[i] = fe_melinv(i*dmelbw + melmin);   
+	}
+    }
+    
+    
+
+    for (whichfilt=0;whichfilt<MEL_FB->num_filters; ++whichfilt) {
+      /*line triangle edges up with nearest dft points... */
+
+      if (MEL_FB->doublewide==ON){
+	leftfr   = (float)((int32)((filt_edge[whichfilt]/dfreq)+0.5))*dfreq;
+	centerfr = (float)((int32)((filt_edge[whichfilt+2]/dfreq)+0.5))*dfreq;
+	rightfr  = (float)((int32)((filt_edge[whichfilt+4]/dfreq)+0.5))*dfreq; 
+      }else{
+	leftfr   = (float)((int32)((filt_edge[whichfilt]/dfreq)+0.5))*dfreq;
+	centerfr = (float)((int32)((filt_edge[whichfilt+1]/dfreq)+0.5))*dfreq;
+	rightfr  = (float)((int32)((filt_edge[whichfilt+2]/dfreq)+0.5))*dfreq;
+      }
+      
+      
+      
+      MEL_FB->left_apex[whichfilt] = leftfr;
+      
+      fwidth = rightfr - leftfr;
+      
+      /* 2/fwidth for triangles of area 1 */
+      height = 2/(float)fwidth;
+      if (centerfr != leftfr) {
+        leftslope = height/(centerfr-leftfr);
+      }
+      if (centerfr != rightfr) {
+        rightslope = height/(centerfr-rightfr);
+      }
+      /* Round to the nearest integer instead of truncating and adding
+	 one, which breaks if the divide is already an integer */      
+      start_pt = (int32)(leftfr/dfreq + 0.5);
+      freq = (float32)start_pt*dfreq;
+      i=0;
+      
+      while (freq<centerfr){
+	MEL_FB->filter_coeffs[whichfilt][i] = (freq-leftfr)*leftslope;	    
+//      fprintf (stderr, "         MEL_FB->filter_coeffs[%d][%d]=%14f\n", whichfilt,i,MEL_FB->filter_coeffs[whichfilt][i]);
+	freq += dfreq;
+	i++;
+      }
+      /* If the two floats are equal, the leftslope computation above
+	 results in Inf, so we handle the case here. */
+      if (freq==centerfr){
+	MEL_FB->filter_coeffs[whichfilt][i] = height;	    
+	freq += dfreq;
+	i++;
+      }
+      while (freq<rightfr){
+	MEL_FB->filter_coeffs[whichfilt][i] = (freq-rightfr)*rightslope;
+//      fprintf (stderr, "     ....MEL_FB->filter_coeffs[%d][%d]=%14f\n", whichfilt,i,MEL_FB->filter_coeffs[whichfilt][i]);
+	freq += dfreq;
+	i++;
+      }
+      
+      MEL_FB->width[whichfilt] = i;
+    }
+    
+    free(filt_edge);
+    return(0);
+}

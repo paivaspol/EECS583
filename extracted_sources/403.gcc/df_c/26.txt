@@ -1,0 +1,29 @@
+static void
+df_bb_reg_use_chain_create (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  rtx insn;
+
+  /* Scan in forward order so that the last uses appear at the
+	 start of the chain.  */
+
+  for (insn = bb->head; insn && insn != NEXT_INSN (bb->end);
+       insn = NEXT_INSN (insn))
+    {
+      struct df_link *link;
+      unsigned int uid = INSN_UID (insn);
+
+      if (! INSN_P (insn))
+	continue;
+
+      for (link = df->insns[uid].uses; link; link = link->next)
+	{
+	  struct ref *use = link->ref;
+	  unsigned int uregno = DF_REF_REGNO (use);
+
+	  df->regs[uregno].uses
+	    = df_link_create (use, df->regs[uregno].uses);
+	}
+    }
+}

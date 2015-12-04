@@ -1,0 +1,30 @@
+void
+dump_tree_statistics ()
+{
+#ifdef GATHER_STATISTICS
+  int i;
+  int total_nodes, total_bytes;
+#endif
+
+  fprintf (stderr, "\n??? tree nodes created\n\n");
+#ifdef GATHER_STATISTICS
+  fprintf (stderr, "Kind                  Nodes     Bytes\n");
+  fprintf (stderr, "-------------------------------------\n");
+  total_nodes = total_bytes = 0;
+  for (i = 0; i < (int) all_kinds; i++)
+    {
+      fprintf (stderr, "%-20s %6d %9d\n", tree_node_kind_names[i],
+	       tree_node_counts[i], tree_node_sizes[i]);
+      total_nodes += tree_node_counts[i];
+      total_bytes += tree_node_sizes[i];
+    }
+  fprintf (stderr, "-------------------------------------\n");
+  fprintf (stderr, "%-20s %6d %9d\n", "Total", total_nodes, total_bytes);
+  fprintf (stderr, "-------------------------------------\n");
+#else
+  fprintf (stderr, "(No per-node statistics)\n");
+#endif
+  print_obstack_statistics ("permanent_obstack", &permanent_obstack);
+  print_type_hash_statistics ();
+  (*lang_hooks.print_statistics) ();
+}

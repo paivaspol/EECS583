@@ -1,0 +1,559 @@
+static void
+copy_loop_body (loop, copy_start, copy_end, map, exit_label, last_iteration,
+		unroll_type, start_label, loop_end, insert_before,
+		copy_notes_from)
+     struct loop *loop;
+     rtx copy_start, copy_end;
+     struct inline_remap *map;
+     rtx exit_label;
+     int last_iteration;
+     enum unroll_types unroll_type;
+     rtx start_label, loop_end, insert_before, copy_notes_from;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  rtx insn, pattern;
+  rtx set, tem, copy = NULL_RTX;
+  int dest_reg_was_split, i;
+#ifdef HAVE_cc0
+  rtx cc0_insn = 0;
+#endif
+  rtx final_label = 0;
+  rtx giv_inc, giv_dest_reg, giv_src_reg;
+
+  /* If this isn't the last iteration, then map any references to the
+     start_label to final_label.  Final label will then be emitted immediately
+     after the end of this loop body if it was ever used.
+
+     If this is the last iteration, then map references to the start_label
+     to itself.  */
+  if (! last_iteration)
+    {
+      final_label = gen_label_rtx ();
+      set_label_in_map (map, CODE_LABEL_NUMBER (start_label), final_label);
+    }
+  else
+    set_label_in_map (map, CODE_LABEL_NUMBER (start_label), start_label);
+
+  start_sequence ();
+
+  /* Emit a NOTE_INSN_DELETED to force at least two insns onto the sequence.
+     Else gen_sequence could return a raw pattern for a jump which we pass
+     off to emit_insn_before (instead of emit_jump_insn_before) which causes
+     a variety of losing behaviors later.  */
+  emit_note (0, NOTE_INSN_DELETED);
+
+  insn = copy_start;
+  do
+    {
+      insn = NEXT_INSN (insn);
+
+      map->orig_asm_operands_vector = 0;
+
+      switch (GET_CODE (insn))
+	{
+	case INSN:
+	  pattern = PATTERN (insn);
+	  copy = 0;
+	  giv_inc = 0;
+
+	  /* Check to see if this is a giv that has been combined with
+	     some split address givs.  (Combined in the sense that
+	     `combine_givs' in loop.c has put two givs in the same register.)
+	     In this case, we must search all givs based on the same biv to
+	     find the address givs.  Then split the address givs.
+	     Do this before splitting the giv, since that may map the
+	     SET_DEST to a new register.  */
+
+	  if ((set = single_set (insn))
+	      && GET_CODE (SET_DEST (set)) == REG
+	      && addr_combined_regs[REGNO (SET_DEST (set))])
+	    {
+	      struct iv_class *bl;
+	      struct induction *v, *tv;
+	      unsigned int regno = REGNO (SET_DEST (set));
+
+	      v = addr_combined_regs[REGNO (SET_DEST (set))];
+	      bl = REG_IV_CLASS (ivs, REGNO (v->src_reg));
+
+	      /* Although the giv_inc amount is not needed here, we must call
+		 calculate_giv_inc here since it might try to delete the
+		 last insn emitted.  If we wait until later to call it,
+		 we might accidentally delete insns generated immediately
+		 below by emit_unrolled_add.  */
+
+	      giv_inc = calculate_giv_inc (set, insn, regno);
+
+	      /* Now find all address giv's that were combined with this
+		 giv 'v'.  */
+	      for (tv = bl->giv; tv; tv = tv->next_iv)
+		if (tv->giv_type == DEST_ADDR && tv->same == v)
+		  {
+		    int this_giv_inc;
+
+		    /* If this DEST_ADDR giv was not split, then ignore it.  */
+		    if (*tv->location != tv->dest_reg)
+		      continue;
+
+		    /* Scale this_giv_inc if the multiplicative factors of
+		       the two givs are different.  */
+		    this_giv_inc = INTVAL (giv_inc);
+		    if (tv->mult_val != v->mult_val)
+		      this_giv_inc = (this_giv_inc / INTVAL (v->mult_val)
+				      * INTVAL (tv->mult_val));
+
+		    tv->dest_reg = plus_constant (tv->dest_reg, this_giv_inc);
+		    *tv->location = tv->dest_reg;
+
+		    if (last_iteration && unroll_type != UNROLL_COMPLETELY)
+		      {
+			/* Must emit an insn to increment the split address
+			   giv.  Add in the const_adjust field in case there
+			   was a constant eliminated from the address.  */
+			rtx value, dest_reg;
+
+			/* tv->dest_reg will be either a bare register,
+			   or else a register plus a constant.  */
+			if (GET_CODE (tv->dest_reg) == REG)
+			  dest_reg = tv->dest_reg;
+			else
+			  dest_reg = XEXP (tv->dest_reg, 0);
+
+			/* Check for shared address givs, and avoid
+			   incrementing the shared pseudo reg more than
+			   once.  */
+			if (! tv->same_insn && ! tv->shared)
+			  {
+			    /* tv->dest_reg may actually be a (PLUS (REG)
+			       (CONST)) here, so we must call plus_constant
+			       to add the const_adjust amount before calling
+			       emit_unrolled_add below.  */
+			    value = plus_constant (tv->dest_reg,
+						   tv->const_adjust);
+
+			    if (GET_CODE (value) == PLUS)
+			      {
+				/* The constant could be too large for an add
+				   immediate, so can't directly emit an insn
+				   here.  */
+				emit_unrolled_add (dest_reg, XEXP (value, 0),
+						   XEXP (value, 1));
+			      }
+			  }
+
+			/* Reset the giv to be just the register again, in case
+			   it is used after the set we have just emitted.
+			   We must subtract the const_adjust factor added in
+			   above.  */
+			tv->dest_reg = plus_constant (dest_reg,
+						      -tv->const_adjust);
+			*tv->location = tv->dest_reg;
+		      }
+		  }
+	    }
+
+	  /* If this is a setting of a splittable variable, then determine
+	     how to split the variable, create a new set based on this split,
+	     and set up the reg_map so that later uses of the variable will
+	     use the new split variable.  */
+
+	  dest_reg_was_split = 0;
+
+	  if ((set = single_set (insn))
+	      && GET_CODE (SET_DEST (set)) == REG
+	      && splittable_regs[REGNO (SET_DEST (set))])
+	    {
+	      unsigned int regno = REGNO (SET_DEST (set));
+	      unsigned int src_regno;
+
+	      dest_reg_was_split = 1;
+
+	      giv_dest_reg = SET_DEST (set);
+	      giv_src_reg = giv_dest_reg;
+	      /* Compute the increment value for the giv, if it wasn't
+		 already computed above.  */
+	      if (giv_inc == 0)
+		giv_inc = calculate_giv_inc (set, insn, regno);
+
+	      src_regno = REGNO (giv_src_reg);
+
+	      if (unroll_type == UNROLL_COMPLETELY)
+		{
+		  /* Completely unrolling the loop.  Set the induction
+		     variable to a known constant value.  */
+
+		  /* The value in splittable_regs may be an invariant
+		     value, so we must use plus_constant here.  */
+		  splittable_regs[regno]
+		    = plus_constant (splittable_regs[src_regno],
+				     INTVAL (giv_inc));
+
+		  if (GET_CODE (splittable_regs[regno]) == PLUS)
+		    {
+		      giv_src_reg = XEXP (splittable_regs[regno], 0);
+		      giv_inc = XEXP (splittable_regs[regno], 1);
+		    }
+		  else
+		    {
+		      /* The splittable_regs value must be a REG or a
+			 CONST_INT, so put the entire value in the giv_src_reg
+			 variable.  */
+		      giv_src_reg = splittable_regs[regno];
+		      giv_inc = const0_rtx;
+		    }
+		}
+	      else
+		{
+		  /* Partially unrolling loop.  Create a new pseudo
+		     register for the iteration variable, and set it to
+		     be a constant plus the original register.  Except
+		     on the last iteration, when the result has to
+		     go back into the original iteration var register.  */
+
+		  /* Handle bivs which must be mapped to a new register
+		     when split.  This happens for bivs which need their
+		     final value set before loop entry.  The new register
+		     for the biv was stored in the biv's first struct
+		     induction entry by find_splittable_regs.  */
+
+		  if (regno < ivs->n_regs
+		      && REG_IV_TYPE (ivs, regno) == BASIC_INDUCT)
+		    {
+		      giv_src_reg = REG_IV_CLASS (ivs, regno)->biv->src_reg;
+		      giv_dest_reg = giv_src_reg;
+		    }
+
+#if 0
+		  /* If non-reduced/final-value givs were split, then
+		     this would have to remap those givs also.  See
+		     find_splittable_regs.  */
+#endif
+
+		  splittable_regs[regno]
+		    = simplify_gen_binary (PLUS, GET_MODE (giv_src_reg),
+					   giv_inc,
+					   splittable_regs[src_regno]);
+		  giv_inc = splittable_regs[regno];
+
+		  /* Now split the induction variable by changing the dest
+		     of this insn to a new register, and setting its
+		     reg_map entry to point to this new register.
+
+		     If this is the last iteration, and this is the last insn
+		     that will update the iv, then reuse the original dest,
+		     to ensure that the iv will have the proper value when
+		     the loop exits or repeats.
+
+		     Using splittable_regs_updates here like this is safe,
+		     because it can only be greater than one if all
+		     instructions modifying the iv are always executed in
+		     order.  */
+
+		  if (! last_iteration
+		      || (splittable_regs_updates[regno]-- != 1))
+		    {
+		      tem = gen_reg_rtx (GET_MODE (giv_src_reg));
+		      giv_dest_reg = tem;
+		      map->reg_map[regno] = tem;
+		      record_base_value (REGNO (tem),
+					 giv_inc == const0_rtx
+					 ? giv_src_reg
+					 : gen_rtx_PLUS (GET_MODE (giv_src_reg),
+							 giv_src_reg, giv_inc),
+					 1);
+		    }
+		  else
+		    map->reg_map[regno] = giv_src_reg;
+		}
+
+	      /* The constant being added could be too large for an add
+		 immediate, so can't directly emit an insn here.  */
+	      emit_unrolled_add (giv_dest_reg, giv_src_reg, giv_inc);
+	      copy = get_last_insn ();
+	      pattern = PATTERN (copy);
+	    }
+	  else
+	    {
+	      pattern = copy_rtx_and_substitute (pattern, map, 0);
+	      copy = emit_insn (pattern);
+	    }
+	  REG_NOTES (copy) = initial_reg_note_copy (REG_NOTES (insn), map);
+
+#ifdef HAVE_cc0
+	  /* If this insn is setting CC0, it may need to look at
+	     the insn that uses CC0 to see what type of insn it is.
+	     In that case, the call to recog via validate_change will
+	     fail.  So don't substitute constants here.  Instead,
+	     do it when we emit the following insn.
+
+	     For example, see the pyr.md file.  That machine has signed and
+	     unsigned compares.  The compare patterns must check the
+	     following branch insn to see which what kind of compare to
+	     emit.
+
+	     If the previous insn set CC0, substitute constants on it as
+	     well.  */
+	  if (sets_cc0_p (PATTERN (copy)) != 0)
+	    cc0_insn = copy;
+	  else
+	    {
+	      if (cc0_insn)
+		try_constants (cc0_insn, map);
+	      cc0_insn = 0;
+	      try_constants (copy, map);
+	    }
+#else
+	  try_constants (copy, map);
+#endif
+
+	  /* Make split induction variable constants `permanent' since we
+	     know there are no backward branches across iteration variable
+	     settings which would invalidate this.  */
+	  if (dest_reg_was_split)
+	    {
+	      int regno = REGNO (SET_DEST (set));
+
+	      if ((size_t) regno < VARRAY_SIZE (map->const_equiv_varray)
+		  && (VARRAY_CONST_EQUIV (map->const_equiv_varray, regno).age
+		      == map->const_age))
+		VARRAY_CONST_EQUIV (map->const_equiv_varray, regno).age = -1;
+	    }
+	  break;
+
+	case JUMP_INSN:
+	  pattern = copy_rtx_and_substitute (PATTERN (insn), map, 0);
+	  copy = emit_jump_insn (pattern);
+	  REG_NOTES (copy) = initial_reg_note_copy (REG_NOTES (insn), map);
+
+	  if (JUMP_LABEL (insn))
+	    {
+	      JUMP_LABEL (copy) = get_label_from_map (map,
+						      CODE_LABEL_NUMBER
+						      (JUMP_LABEL (insn)));
+	      LABEL_NUSES (JUMP_LABEL (copy))++;
+	    }
+	  if (JUMP_LABEL (insn) == start_label && insn == copy_end
+	      && ! last_iteration)
+	    {
+
+	      /* This is a branch to the beginning of the loop; this is the
+		 last insn being copied; and this is not the last iteration.
+		 In this case, we want to change the original fall through
+		 case to be a branch past the end of the loop, and the
+		 original jump label case to fall_through.  */
+
+	      if (!invert_jump (copy, exit_label, 0))
+		{
+		  rtx jmp;
+		  rtx lab = gen_label_rtx ();
+		  /* Can't do it by reversing the jump (probably because we
+		     couldn't reverse the conditions), so emit a new
+		     jump_insn after COPY, and redirect the jump around
+		     that.  */
+		  jmp = emit_jump_insn_after (gen_jump (exit_label), copy);
+		  JUMP_LABEL (jmp) = exit_label;
+		  LABEL_NUSES (exit_label)++;
+		  jmp = emit_barrier_after (jmp);
+		  emit_label_after (lab, jmp);
+		  LABEL_NUSES (lab) = 0;
+		  if (!redirect_jump (copy, lab, 0))
+		    abort ();
+		}
+	    }
+
+#ifdef HAVE_cc0
+	  if (cc0_insn)
+	    try_constants (cc0_insn, map);
+	  cc0_insn = 0;
+#endif
+	  try_constants (copy, map);
+
+	  /* Set the jump label of COPY correctly to avoid problems with
+	     later passes of unroll_loop, if INSN had jump label set.  */
+	  if (JUMP_LABEL (insn))
+	    {
+	      rtx label = 0;
+
+	      /* Can't use the label_map for every insn, since this may be
+		 the backward branch, and hence the label was not mapped.  */
+	      if ((set = single_set (copy)))
+		{
+		  tem = SET_SRC (set);
+		  if (GET_CODE (tem) == LABEL_REF)
+		    label = XEXP (tem, 0);
+		  else if (GET_CODE (tem) == IF_THEN_ELSE)
+		    {
+		      if (XEXP (tem, 1) != pc_rtx)
+			label = XEXP (XEXP (tem, 1), 0);
+		      else
+			label = XEXP (XEXP (tem, 2), 0);
+		    }
+		}
+
+	      if (label && GET_CODE (label) == CODE_LABEL)
+		JUMP_LABEL (copy) = label;
+	      else
+		{
+		  /* An unrecognizable jump insn, probably the entry jump
+		     for a switch statement.  This label must have been mapped,
+		     so just use the label_map to get the new jump label.  */
+		  JUMP_LABEL (copy)
+		    = get_label_from_map (map,
+					  CODE_LABEL_NUMBER (JUMP_LABEL (insn)));
+		}
+
+	      /* If this is a non-local jump, then must increase the label
+		 use count so that the label will not be deleted when the
+		 original jump is deleted.  */
+	      LABEL_NUSES (JUMP_LABEL (copy))++;
+	    }
+	  else if (GET_CODE (PATTERN (copy)) == ADDR_VEC
+		   || GET_CODE (PATTERN (copy)) == ADDR_DIFF_VEC)
+	    {
+	      rtx pat = PATTERN (copy);
+	      int diff_vec_p = GET_CODE (pat) == ADDR_DIFF_VEC;
+	      int len = XVECLEN (pat, diff_vec_p);
+	      int i;
+
+	      for (i = 0; i < len; i++)
+		LABEL_NUSES (XEXP (XVECEXP (pat, diff_vec_p, i), 0))++;
+	    }
+
+	  /* If this used to be a conditional jump insn but whose branch
+	     direction is now known, we must do something special.  */
+	  if (any_condjump_p (insn) && onlyjump_p (insn) && map->last_pc_value)
+	    {
+#ifdef HAVE_cc0
+	      /* If the previous insn set cc0 for us, delete it.  */
+	      if (only_sets_cc0_p (PREV_INSN (copy)))
+		delete_related_insns (PREV_INSN (copy));
+#endif
+
+	      /* If this is now a no-op, delete it.  */
+	      if (map->last_pc_value == pc_rtx)
+		{
+		  delete_insn (copy);
+		  copy = 0;
+		}
+	      else
+		/* Otherwise, this is unconditional jump so we must put a
+		   BARRIER after it.  We could do some dead code elimination
+		   here, but jump.c will do it just as well.  */
+		emit_barrier ();
+	    }
+	  break;
+
+	case CALL_INSN:
+	  pattern = copy_rtx_and_substitute (PATTERN (insn), map, 0);
+	  copy = emit_call_insn (pattern);
+	  REG_NOTES (copy) = initial_reg_note_copy (REG_NOTES (insn), map);
+	  SIBLING_CALL_P (copy) = SIBLING_CALL_P (insn);
+
+	  /* Because the USAGE information potentially contains objects other
+	     than hard registers, we need to copy it.  */
+	  CALL_INSN_FUNCTION_USAGE (copy)
+	    = copy_rtx_and_substitute (CALL_INSN_FUNCTION_USAGE (insn),
+				       map, 0);
+
+#ifdef HAVE_cc0
+	  if (cc0_insn)
+	    try_constants (cc0_insn, map);
+	  cc0_insn = 0;
+#endif
+	  try_constants (copy, map);
+
+	  /* Be lazy and assume CALL_INSNs clobber all hard registers.  */
+	  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	    VARRAY_CONST_EQUIV (map->const_equiv_varray, i).rtx = 0;
+	  break;
+
+	case CODE_LABEL:
+	  /* If this is the loop start label, then we don't need to emit a
+	     copy of this label since no one will use it.  */
+
+	  if (insn != start_label)
+	    {
+	      copy = emit_label (get_label_from_map (map,
+						     CODE_LABEL_NUMBER (insn)));
+	      map->const_age++;
+	    }
+	  break;
+
+	case BARRIER:
+	  copy = emit_barrier ();
+	  break;
+
+	case NOTE:
+	  /* VTOP and CONT notes are valid only before the loop exit test.
+	     If placed anywhere else, loop may generate bad code.  */
+	  /* BASIC_BLOCK notes exist to stabilize basic block structures with
+	     the associated rtl.  We do not want to share the structure in
+	     this new block.  */
+
+	  if (NOTE_LINE_NUMBER (insn) != NOTE_INSN_DELETED
+	      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_DELETED_LABEL
+	      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_BASIC_BLOCK
+	      && ((NOTE_LINE_NUMBER (insn) != NOTE_INSN_LOOP_VTOP
+		   && NOTE_LINE_NUMBER (insn) != NOTE_INSN_LOOP_CONT)
+		  || (last_iteration && unroll_type != UNROLL_COMPLETELY)))
+	    copy = emit_note (NOTE_SOURCE_FILE (insn),
+			      NOTE_LINE_NUMBER (insn));
+	  else
+	    copy = 0;
+	  break;
+
+	default:
+	  abort ();
+	}
+
+      map->insn_map[INSN_UID (insn)] = copy;
+    }
+  while (insn != copy_end);
+
+  /* Now finish coping the REG_NOTES.  */
+  insn = copy_start;
+  do
+    {
+      insn = NEXT_INSN (insn);
+      if ((GET_CODE (insn) == INSN || GET_CODE (insn) == JUMP_INSN
+	   || GET_CODE (insn) == CALL_INSN)
+	  && map->insn_map[INSN_UID (insn)])
+	final_reg_note_copy (&REG_NOTES (map->insn_map[INSN_UID (insn)]), map);
+    }
+  while (insn != copy_end);
+
+  /* There may be notes between copy_notes_from and loop_end.  Emit a copy of
+     each of these notes here, since there may be some important ones, such as
+     NOTE_INSN_BLOCK_END notes, in this group.  We don't do this on the last
+     iteration, because the original notes won't be deleted.
+
+     We can't use insert_before here, because when from preconditioning,
+     insert_before points before the loop.  We can't use copy_end, because
+     there may be insns already inserted after it (which we don't want to
+     copy) when not from preconditioning code.  */
+
+  if (! last_iteration)
+    {
+      for (insn = copy_notes_from; insn != loop_end; insn = NEXT_INSN (insn))
+	{
+	  /* VTOP notes are valid only before the loop exit test.
+	     If placed anywhere else, loop may generate bad code.
+	     There is no need to test for NOTE_INSN_LOOP_CONT notes
+	     here, since COPY_NOTES_FROM will be at most one or two (for cc0)
+	     instructions before the last insn in the loop, and if the
+	     end test is that short, there will be a VTOP note between
+	     the CONT note and the test.  */
+	  if (GET_CODE (insn) == NOTE
+	      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_DELETED
+	      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_BASIC_BLOCK
+	      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_LOOP_VTOP)
+	    emit_note (NOTE_SOURCE_FILE (insn), NOTE_LINE_NUMBER (insn));
+	}
+    }
+
+  if (final_label && LABEL_NUSES (final_label) > 0)
+    emit_label (final_label);
+
+  tem = gen_sequence ();
+  end_sequence ();
+  loop_insn_emit_before (loop, 0, insert_before, tem);
+}

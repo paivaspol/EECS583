@@ -1,0 +1,38 @@
+static void
+einfin (x)
+     UEMUSHORT *x;
+{
+  int i;
+
+#ifdef INFINITY
+  for (i = 0; i < NE - 1; i++)
+    *x++ = 0;
+  *x |= 32767;
+#else
+  for (i = 0; i < NE - 1; i++)
+    *x++ = 0xffff;
+  *x |= 32766;
+  if (rndprc < NBITS)
+    {
+      if (rndprc == 113)
+	{
+	  *(x - 9) = 0;
+	  *(x - 8) = 0;
+	}
+      if (rndprc == 64)
+	{
+	  *(x - 5) = 0;
+	}
+      if (rndprc == 53)
+	{
+	  *(x - 4) = 0xf800;
+	}
+      else
+	{
+	  *(x - 4) = 0;
+	  *(x - 3) = 0;
+	  *(x - 2) = 0xff00;
+	}
+    }
+#endif
+}

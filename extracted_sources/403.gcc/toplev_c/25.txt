@@ -1,0 +1,50 @@
+static int
+open_dump_file (index, decl)
+     enum dump_file_index index;
+     tree decl;
+{
+  char *dump_name;
+  const char *open_arg;
+  char seq[16];
+
+  if (! dump_file[index].enabled)
+    return 0;
+
+  timevar_push (TV_DUMP);
+  if (rtl_dump_file != NULL)
+    fclose (rtl_dump_file);
+
+  sprintf (seq, DUMPFILE_FORMAT, index);
+
+  if (! dump_file[index].initialized)
+    {
+      /* If we've not initialized the files, do so now.  */
+      if (graph_dump_format != no_graph
+	  && dump_file[index].graph_dump_p)
+	{
+	  dump_name = concat (seq, dump_file[index].extension, NULL);
+	  clean_graph_dump_file (dump_base_name, dump_name);
+	  free (dump_name);
+	}
+      dump_file[index].initialized = 1;
+      open_arg = "w";
+    }
+  else
+    open_arg = "a";
+
+  dump_name = concat (dump_base_name, seq,
+		      dump_file[index].extension, NULL);
+
+  rtl_dump_file = fopen (dump_name, open_arg);
+  if (rtl_dump_file == NULL)
+    fatal_io_error ("can't open %s", dump_name);
+
+  free (dump_name);
+
+  if (decl)
+    fprintf (rtl_dump_file, "\n;; Function %s\n\n",
+	     decl_printable_name (decl, 2));
+
+  timevar_pop (TV_DUMP);
+  return 1;
+}

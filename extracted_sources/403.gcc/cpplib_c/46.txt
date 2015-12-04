@@ -1,0 +1,31 @@
+static void
+do_else (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  struct if_stack *ifs = buffer->if_stack;
+
+  if (ifs == NULL)
+    cpp_error (pfile, "#else without #if");
+  else
+    {
+      if (ifs->type == T_ELSE)
+	{
+	  cpp_error (pfile, "#else after #else");
+	  cpp_error_with_line (pfile, ifs->line, 0,
+			       "the conditional began here");
+	}
+      ifs->type = T_ELSE;
+
+      /* Skip any future (erroneous) #elses or #elifs.  */
+      pfile->state.skipping = ifs->skip_elses;
+      ifs->skip_elses = true;
+
+      /* Invalidate any controlling macro.  */
+      ifs->mi_cmacro = 0;
+
+      /* Only check EOL if was not originally skipping.  */
+      if (!ifs->was_skipping)
+	check_eol (pfile);
+    }
+}

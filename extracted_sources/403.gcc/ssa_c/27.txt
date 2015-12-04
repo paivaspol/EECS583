@@ -1,0 +1,84 @@
+void
+convert_to_ssa ()
+{
+  /* Element I is the set of blocks that set register I.  */
+  sbitmap *evals;
+
+  /* Dominator bitmaps.  */
+  sbitmap *dfs;
+  sbitmap *idfs;
+
+  /* Element I is the immediate dominator of block I.  */
+  int *idom;
+
+  int nregs;
+
+  /* Don't do it twice.  */
+  if (in_ssa_form)
+    abort ();
+
+  /* Need global_live_at_{start,end} up to date.  Do not remove any
+     dead code.  We'll let the SSA optimizers do that.  */
+  life_analysis (get_insns (), NULL, 0);
+
+  idom = (int *) alloca (n_basic_blocks * sizeof (int));
+  memset ((void *) idom, -1, (size_t) n_basic_blocks * sizeof (int));
+  calculate_dominance_info (idom, NULL, CDI_DOMINATORS);
+
+  if (rtl_dump_file)
+    {
+      int i;
+      fputs (";; Immediate Dominators:\n", rtl_dump_file);
+      for (i = 0; i < n_basic_blocks; ++i)
+	fprintf (rtl_dump_file, ";\t%3d = %3d\n", i, idom[i]);
+      fflush (rtl_dump_file);
+    }
+
+  /* Compute dominance frontiers.  */
+
+  dfs = sbitmap_vector_alloc (n_basic_blocks, n_basic_blocks);
+  compute_dominance_frontiers (dfs, idom);
+
+  if (rtl_dump_file)
+    {
+      dump_sbitmap_vector (rtl_dump_file, ";; Dominance Frontiers:",
+			   "; Basic Block", dfs, n_basic_blocks);
+      fflush (rtl_dump_file);
+    }
+
+  /* Compute register evaluations.  */
+
+  ssa_max_reg_num = max_reg_num ();
+  nregs = ssa_max_reg_num;
+  evals = sbitmap_vector_alloc (nregs, n_basic_blocks);
+  find_evaluations (evals, nregs);
+
+  /* Compute the iterated dominance frontier for each register.  */
+
+  idfs = sbitmap_vector_alloc (nregs, n_basic_blocks);
+  compute_iterated_dominance_frontiers (idfs, dfs, evals, nregs);
+
+  if (rtl_dump_file)
+    {
+      dump_sbitmap_vector (rtl_dump_file, ";; Iterated Dominance Frontiers:",
+			   "; Register", idfs, nregs);
+      fflush (rtl_dump_file);
+    }
+
+  /* Insert the phi nodes.  */
+
+  insert_phi_nodes (idfs, evals, nregs);
+
+  /* Rename the registers to satisfy SSA.  */
+
+  rename_registers (nregs, idom);
+
+  /* All done!  Clean up and go home.  */
+
+  sbitmap_vector_free (dfs);
+  sbitmap_vector_free (evals);
+  sbitmap_vector_free (idfs);
+  in_ssa_form = 1;
+
+  reg_scan (get_insns (), max_reg_num (), 1);
+}

@@ -1,0 +1,21 @@
+void
+F77_FUNC(xdrfstring,XDRFSTRING)(int *xdrid, char * sp_ptr,
+				int *maxsize, int *ret, int sp_len)
+{
+	char *tsp;
+
+	tsp = (char*) malloc((size_t)(((sp_len) + 1) * sizeof(char)));
+	if (tsp == NULL) {
+	    *ret = -1;
+	    return;
+	}
+	if (ftocstr(tsp, *maxsize+1, sp_ptr, sp_len)) {
+	    *ret = -1;
+	    free(tsp);
+	    return;
+	}
+        *ret = xdr_string(xdridptr[*xdrid], (char **) &tsp, (unsigned int) *maxsize);
+	ctofstr( sp_ptr, sp_len , tsp);
+	cnt += *maxsize;
+	free(tsp);
+}

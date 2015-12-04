@@ -1,0 +1,40 @@
+void
+ereal_to_int (low, high, rr)
+     HOST_WIDE_INT *low, *high;
+     REAL_VALUE_TYPE rr;
+{
+  UEMUSHORT d[NE], df[NE], dg[NE], dh[NE];
+  int s;
+
+  GET_REAL (&rr, d);
+#ifdef NANS
+  if (eisnan (d))
+    {
+      warning ("conversion from NaN to int");
+      *low = -1;
+      *high = -1;
+      return;
+    }
+#endif
+  /* convert positive value */
+  s = 0;
+  if (eisneg (d))
+    {
+      eneg (d);
+      s = 1;
+    }
+  eldexp (eone, HOST_BITS_PER_WIDE_INT, df);
+  ediv (df, d, dg);		/* dg = d / 2^32 is the high word */
+  euifrac (dg, (unsigned HOST_WIDE_INT *) high, dh);
+  emul (df, dh, dg);		/* fractional part is the low word */
+  euifrac (dg, (unsigned HOST_WIDE_INT *) low, dh);
+  if (s)
+    {
+      /* complement and add 1 */
+      *high = ~(*high);
+      if (*low)
+	*low = -(*low);
+      else
+	*high += 1;
+    }
+}

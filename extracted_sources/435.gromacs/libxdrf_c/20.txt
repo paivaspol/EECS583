@@ -1,0 +1,21 @@
+void
+F77_FUNC(xdrfopen,XDRFOPEN)(int *xdrid, char *fp_ptr, char *mode_ptr,
+			    int *ret, int fp_len, int mode_len)
+{
+	char fname[512];
+	char fmode[3];
+
+	if (ftocstr(fname, sizeof(fname), fp_ptr, fp_len)) {
+		*ret = 0;
+	}
+	if (ftocstr(fmode, sizeof(fmode), mode_ptr,
+			mode_len)) {
+		*ret = 0;
+	}
+
+	*xdrid = xdropen(NULL, fname, fmode);
+	if (*xdrid == 0)
+		*ret = 0;
+	else 
+		*ret = 1;	
+}

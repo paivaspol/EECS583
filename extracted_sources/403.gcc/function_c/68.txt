@@ -1,0 +1,29 @@
+void
+identify_blocks ()
+{
+  int n_blocks;
+  tree *block_vector, *last_block_vector;
+  tree *block_stack;
+  tree block = DECL_INITIAL (current_function_decl);
+
+  if (block == 0)
+    return;
+
+  /* Fill the BLOCK_VECTOR with all of the BLOCKs in this function, in
+     depth-first order.  */
+  block_vector = get_block_vector (block, &n_blocks);
+  block_stack = (tree *) xmalloc (n_blocks * sizeof (tree));
+
+  last_block_vector = identify_blocks_1 (get_insns (),
+					 block_vector + 1,
+					 block_vector + n_blocks,
+					 block_stack);
+
+  /* If we didn't use all of the subblocks, we've misplaced block notes.  */
+  /* ??? This appears to happen all the time.  Latent bugs elsewhere?  */
+  if (0 && last_block_vector != block_vector + n_blocks)
+    abort ();
+
+  free (block_vector);
+  free (block_stack);
+}

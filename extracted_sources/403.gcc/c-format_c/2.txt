@@ -1,0 +1,68 @@
+static bool
+decode_format_attr (args, info, validated_p)
+     tree args;
+     function_format_info *info;
+     int validated_p;
+{
+  tree format_type_id = TREE_VALUE (args);
+  tree format_num_expr = TREE_VALUE (TREE_CHAIN (args));
+  tree first_arg_num_expr
+    = TREE_VALUE (TREE_CHAIN (TREE_CHAIN (args)));
+
+  if (TREE_CODE (format_type_id) != IDENTIFIER_NODE)
+    {
+      if (validated_p)
+	abort ();
+      error ("unrecognized format specifier");
+      return false;
+    }
+  else
+    {
+      const char *p = IDENTIFIER_POINTER (format_type_id);
+
+      info->format_type = decode_format_type (p);
+
+      if (info->format_type == format_type_error)
+	{
+	  if (validated_p)
+	    abort ();
+	  warning ("`%s' is an unrecognized format function type", p);
+	  return false;
+	}
+    }
+
+  /* Strip any conversions from the string index and first arg number
+     and verify they are constants.  */
+  while (TREE_CODE (format_num_expr) == NOP_EXPR
+	 || TREE_CODE (format_num_expr) == CONVERT_EXPR
+	 || TREE_CODE (format_num_expr) == NON_LVALUE_EXPR)
+    format_num_expr = TREE_OPERAND (format_num_expr, 0);
+
+  while (TREE_CODE (first_arg_num_expr) == NOP_EXPR
+	 || TREE_CODE (first_arg_num_expr) == CONVERT_EXPR
+	 || TREE_CODE (first_arg_num_expr) == NON_LVALUE_EXPR)
+    first_arg_num_expr = TREE_OPERAND (first_arg_num_expr, 0);
+
+  if (TREE_CODE (format_num_expr) != INTEGER_CST
+      || TREE_INT_CST_HIGH (format_num_expr) != 0
+      || TREE_CODE (first_arg_num_expr) != INTEGER_CST
+      || TREE_INT_CST_HIGH (first_arg_num_expr) != 0)
+    {
+      if (validated_p)
+	abort ();
+      error ("format string has invalid operand number");
+      return false;
+    }
+
+  info->format_num = TREE_INT_CST_LOW (format_num_expr);
+  info->first_arg_num = TREE_INT_CST_LOW (first_arg_num_expr);
+  if (info->first_arg_num != 0 && info->first_arg_num <= info->format_num)
+    {
+      if (validated_p)
+	abort ();
+      error ("format string arg follows the args to be formatted");
+      return false;
+    }
+
+  return true;
+}

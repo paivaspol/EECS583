@@ -1,0 +1,156 @@
+void
+asm_fprintf VPARAMS ((FILE *file, const char *p, ...))
+{
+  char buf[10];
+  char *q, c;
+
+  VA_OPEN (argptr, p);
+  VA_FIXEDARG (argptr, FILE *, file);
+  VA_FIXEDARG (argptr, const char *, p);
+
+  buf[0] = '%';
+
+  while ((c = *p++))
+    switch (c)
+      {
+#ifdef ASSEMBLER_DIALECT
+      case '{':
+	{
+	  int i;
+
+	  /* If we want the first dialect, do nothing.  Otherwise, skip
+	     DIALECT_NUMBER of strings ending with '|'.  */
+	  for (i = 0; i < dialect_number; i++)
+	    {
+	      while (*p && *p++ != '|')
+		;
+
+	      if (*p == '|')
+		p++;
+	    }
+	}
+	break;
+
+      case '|':
+	/* Skip to close brace.  */
+	while (*p && *p++ != '}')
+	  ;
+	break;
+
+      case '}':
+	break;
+#endif
+
+      case '%':
+	c = *p++;
+	q = &buf[1];
+	while (ISDIGIT (c) || c == '.')
+	  {
+	    *q++ = c;
+	    c = *p++;
+	  }
+	switch (c)
+	  {
+	  case '%':
+	    fprintf (file, "%%");
+	    break;
+
+	  case 'd':  case 'i':  case 'u':
+	  case 'x':  case 'p':  case 'X':
+	  case 'o':
+	    *q++ = c;
+	    *q = 0;
+	    fprintf (file, buf, va_arg (argptr, int));
+	    break;
+
+	  case 'w':
+	    /* This is a prefix to the 'd', 'i', 'u', 'x', 'p', and 'X' cases,
+	       but we do not check for those cases.  It means that the value
+	       is a HOST_WIDE_INT, which may be either `int' or `long'.  */
+
+#if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_INT
+#else
+#if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_LONG
+	    *q++ = 'l';
+#else
+	    *q++ = 'l';
+	    *q++ = 'l';
+#endif
+#endif
+
+	    *q++ = *p++;
+	    *q = 0;
+	    fprintf (file, buf, va_arg (argptr, HOST_WIDE_INT));
+	    break;
+
+	  case 'l':
+	    *q++ = c;
+	    *q++ = *p++;
+	    *q = 0;
+	    fprintf (file, buf, va_arg (argptr, long));
+	    break;
+
+	  case 'e':
+	  case 'f':
+	  case 'g':
+	    *q++ = c;
+	    *q = 0;
+	    fprintf (file, buf, va_arg (argptr, double));
+	    break;
+
+	  case 's':
+	    *q++ = c;
+	    *q = 0;
+	    fprintf (file, buf, va_arg (argptr, char *));
+	    break;
+
+	  case 'O':
+#ifdef ASM_OUTPUT_OPCODE
+	    ASM_OUTPUT_OPCODE (asm_out_file, p);
+#endif
+	    break;
+
+	  case 'R':
+#ifdef REGISTER_PREFIX
+	    fprintf (file, "%s", REGISTER_PREFIX);
+#endif
+	    break;
+
+	  case 'I':
+#ifdef IMMEDIATE_PREFIX
+	    fprintf (file, "%s", IMMEDIATE_PREFIX);
+#endif
+	    break;
+
+	  case 'L':
+#ifdef LOCAL_LABEL_PREFIX
+	    fprintf (file, "%s", LOCAL_LABEL_PREFIX);
+#endif
+	    break;
+
+	  case 'U':
+	    fputs (user_label_prefix, file);
+	    break;
+
+#ifdef ASM_FPRINTF_EXTENSIONS
+	    /* Upper case letters are reserved for general use by asm_fprintf
+	       and so are not available to target specific code.  In order to
+	       prevent the ASM_FPRINTF_EXTENSIONS macro from using them then,
+	       they are defined here.  As they get turned into real extensions
+	       to asm_fprintf they should be removed from this list.  */
+	  case 'A': case 'B': case 'C': case 'D': case 'E':
+	  case 'F': case 'G': case 'H': case 'J': case 'K':
+	  case 'M': case 'N': case 'P': case 'Q': case 'S':
+	  case 'T': case 'V': case 'W': case 'Y': case 'Z':
+	    break;
+
+	  ASM_FPRINTF_EXTENSIONS (file, argptr, p)
+#endif
+	  default:
+	    abort ();
+	  }
+	break;
+
+      default:
+	fputc (c, file);
+      }

@@ -1,0 +1,26 @@
+void utt_begin (kb_t *kb)
+{
+    kbcore_t *kbc;
+    int32 n, pred;
+    
+    kbc = kb->kbcore;
+    
+    /* Insert initial <s> into vithist structure */
+    pred = vithist_utt_begin (kb->vithist, kbc);
+    assert (pred == 0);	/* Vithist entry ID for <s> */
+    
+    /* Enter into unigram lextree[0] */
+    n = lextree_n_next_active(kb->ugtree[0]);
+    assert (n == 0);
+    lextree_enter (kb->ugtree[0], mdef_silphone(kbc->mdef), -1, 0, pred,
+		   kb->beam->hmm);
+    
+    /* Enter into filler lextree */
+    n = lextree_n_next_active(kb->fillertree[0]);
+    assert (n == 0);
+    lextree_enter (kb->fillertree[0], BAD_S3CIPID, -1, 0, pred, kb->beam->hmm);
+    
+    kb->n_lextrans = 1;
+    
+    kb_lextree_active_swap (kb);
+}

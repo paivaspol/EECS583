@@ -1,0 +1,13 @@
+static void
+clear_limbo_values (block)
+     tree block;
+{
+  tree tem;
+
+  for (tem = BLOCK_VARS (block); tem; tem = TREE_CHAIN (tem))
+    if (DECL_NAME (tem) != 0)
+      IDENTIFIER_LIMBO_VALUE (DECL_NAME (tem)) = 0;
+
+  for (tem = BLOCK_SUBBLOCKS (block); tem; tem = TREE_CHAIN (tem))
+    clear_limbo_values (tem);
+}

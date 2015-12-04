@@ -1,0 +1,55 @@
+static void
+optimize_reg_copy_2 (insn, dest, src)
+     rtx insn;
+     rtx dest;
+     rtx src;
+{
+  rtx p, q;
+  rtx set;
+  int sregno = REGNO (src);
+  int dregno = REGNO (dest);
+
+  for (p = NEXT_INSN (insn); p; p = NEXT_INSN (p))
+    {
+      /* ??? We can't scan past the end of a basic block without updating
+	 the register lifetime info (REG_DEAD/basic_block_live_at_start).  */
+      if (perhaps_ends_bb_p (p))
+	break;
+      else if (! INSN_P (p))
+	continue;
+
+      set = single_set (p);
+      if (set && SET_SRC (set) == dest && SET_DEST (set) == src
+	  && find_reg_note (p, REG_DEAD, dest))
+	{
+	  /* We can do the optimization.  Scan forward from INSN again,
+	     replacing regs as we go.  */
+
+	  /* Set to stop at next insn.  */
+	  for (q = insn; q != NEXT_INSN (p); q = NEXT_INSN (q))
+	    if (INSN_P (q))
+	      {
+		if (reg_mentioned_p (dest, PATTERN (q)))
+		  PATTERN (q) = replace_rtx (PATTERN (q), dest, src);
+
+
+	      if (GET_CODE (q) == CALL_INSN)
+		{
+		  REG_N_CALLS_CROSSED (dregno)--;
+		  REG_N_CALLS_CROSSED (sregno)++;
+		}
+	      }
+
+	  remove_note (p, find_reg_note (p, REG_DEAD, dest));
+	  REG_N_DEATHS (dregno)--;
+	  remove_note (insn, find_reg_note (insn, REG_DEAD, src));
+	  REG_N_DEATHS (sregno)--;
+	  return;
+	}
+
+      if (reg_set_p (src, p)
+	  || find_reg_note (p, REG_DEAD, dest)
+	  || (GET_CODE (p) == CALL_INSN && REG_N_CALLS_CROSSED (sregno) == 0))
+	break;
+    }
+}

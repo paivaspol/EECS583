@@ -1,0 +1,98 @@
+static rtx
+express_from_1 (a, b, mult)
+     rtx a, b, mult;
+{
+  /* If MULT is zero, then A*MULT is zero, and our expression is B.  */
+
+  if (mult == const0_rtx)
+    return b;
+
+  /* If MULT is not 1, we cannot handle A with non-constants, since we
+     would then be required to subtract multiples of the registers in A.
+     This is theoretically possible, and may even apply to some Fortran
+     constructs, but it is a lot of work and we do not attempt it here.  */
+
+  if (mult != const1_rtx && GET_CODE (a) != CONST_INT)
+    return NULL_RTX;
+
+  /* In general these structures are sorted top to bottom (down the PLUS
+     chain), but not left to right across the PLUS.  If B is a higher
+     order giv than A, we can strip one level and recurse.  If A is higher
+     order, we'll eventually bail out, but won't know that until the end.
+     If they are the same, we'll strip one level around this loop.  */
+
+  while (GET_CODE (a) == PLUS && GET_CODE (b) == PLUS)
+    {
+      rtx ra, rb, oa, ob, tmp;
+
+      ra = XEXP (a, 0), oa = XEXP (a, 1);
+      if (GET_CODE (ra) == PLUS)
+	tmp = ra, ra = oa, oa = tmp;
+
+      rb = XEXP (b, 0), ob = XEXP (b, 1);
+      if (GET_CODE (rb) == PLUS)
+	tmp = rb, rb = ob, ob = tmp;
+
+      if (rtx_equal_p (ra, rb))
+	/* We matched: remove one reg completely.  */
+	a = oa, b = ob;
+      else if (GET_CODE (ob) != PLUS && rtx_equal_p (ra, ob))
+	/* An alternate match.  */
+	a = oa, b = rb;
+      else if (GET_CODE (oa) != PLUS && rtx_equal_p (oa, rb))
+	/* An alternate match.  */
+	a = ra, b = ob;
+      else
+	{
+	  /* Indicates an extra register in B.  Strip one level from B and
+	     recurse, hoping B was the higher order expression.  */
+	  ob = express_from_1 (a, ob, mult);
+	  if (ob == NULL_RTX)
+	    return NULL_RTX;
+	  return gen_rtx_PLUS (GET_MODE (b), rb, ob);
+	}
+    }
+
+  /* Here we are at the last level of A, go through the cases hoping to
+     get rid of everything but a constant.  */
+
+  if (GET_CODE (a) == PLUS)
+    {
+      rtx ra, oa;
+
+      ra = XEXP (a, 0), oa = XEXP (a, 1);
+      if (rtx_equal_p (oa, b))
+	oa = ra;
+      else if (!rtx_equal_p (ra, b))
+	return NULL_RTX;
+
+      if (GET_CODE (oa) != CONST_INT)
+	return NULL_RTX;
+
+      return GEN_INT (-INTVAL (oa) * INTVAL (mult));
+    }
+  else if (GET_CODE (a) == CONST_INT)
+    {
+      return plus_constant (b, -INTVAL (a) * INTVAL (mult));
+    }
+  else if (CONSTANT_P (a))
+    {
+      enum machine_mode mode_a = GET_MODE (a);
+      enum machine_mode mode_b = GET_MODE (b);
+      enum machine_mode mode = mode_b == VOIDmode ? mode_a : mode_b;
+      return simplify_gen_binary (MINUS, mode, b, a);
+    }
+  else if (GET_CODE (b) == PLUS)
+    {
+      if (rtx_equal_p (a, XEXP (b, 0)))
+	return XEXP (b, 1);
+      else if (rtx_equal_p (a, XEXP (b, 1)))
+	return XEXP (b, 0);
+      else
+	return NULL_RTX;
+    }
+  else if (rtx_equal_p (a, b))
+    return const0_rtx;
+
+  return NULL_RTX;
+}

@@ -1,0 +1,60 @@
+static rtx
+c_expand_builtin (exp, target, tmode, modifier)
+     tree exp;
+     rtx target;
+     enum machine_mode tmode;
+     enum expand_modifier modifier;
+{
+  tree type = TREE_TYPE (exp);
+  tree fndecl = TREE_OPERAND (TREE_OPERAND (exp, 0), 0);
+  tree arglist = TREE_OPERAND (exp, 1);
+  enum built_in_function fcode = DECL_FUNCTION_CODE (fndecl);
+  enum tree_code code = TREE_CODE (exp);
+  const int ignore = (target == const0_rtx
+		      || ((code == NON_LVALUE_EXPR || code == NOP_EXPR
+			   || code == CONVERT_EXPR || code == REFERENCE_EXPR
+			   || code == COND_EXPR)
+			  && TREE_CODE (type) == VOID_TYPE));
+
+  if (! optimize && ! CALLED_AS_BUILT_IN (fndecl))
+    return expand_call (exp, target, ignore);
+
+  switch (fcode)
+    {
+    case BUILT_IN_PRINTF:
+      target = c_expand_builtin_printf (arglist, target, tmode,
+					modifier, ignore, /*unlocked=*/ 0);
+      if (target)
+	return target;
+      break;
+
+    case BUILT_IN_PRINTF_UNLOCKED:
+      target = c_expand_builtin_printf (arglist, target, tmode,
+					modifier, ignore, /*unlocked=*/ 1);
+      if (target)
+	return target;
+      break;
+
+    case BUILT_IN_FPRINTF:
+      target = c_expand_builtin_fprintf (arglist, target, tmode,
+					 modifier, ignore, /*unlocked=*/ 0);
+      if (target)
+	return target;
+      break;
+
+    case BUILT_IN_FPRINTF_UNLOCKED:
+      target = c_expand_builtin_fprintf (arglist, target, tmode,
+					 modifier, ignore, /*unlocked=*/ 1);
+      if (target)
+	return target;
+      break;
+
+    default:			/* just do library call, if unknown builtin */
+      error ("built-in function `%s' not currently supported",
+	     IDENTIFIER_POINTER (DECL_NAME (fndecl)));
+    }
+
+  /* The switch statement above can drop through to cause the function
+     to be called normally.  */
+  return expand_call (exp, target, ignore);
+}

@@ -1,0 +1,150 @@
+static void
+main_loop_pvm(struct plan7_s *hmm, int seed, int nsample, int lumpsize,
+	      float lenmean, float lensd, int fixedlen,
+	      struct histogram_s **ret_hist, float *ret_max, 
+	      Stopwatch_t *extrawatch, int *ret_nslaves)
+{
+  struct histogram_s *hist;
+  int                 master_tid;
+  int                *slave_tid;
+  int                 nslaves;
+  int                 nsent;	/* # of seqs we've asked for so far       */
+  int                 ndone;	/* # of seqs we've got results for so far */
+  int		      packet;	/* # of seqs to have a slave do           */
+  float               max;
+  int                 slaveidx;	/* id of a slave */
+  float              *sc;        /* scores returned by a slave */
+  Stopwatch_t         slavewatch;
+  int                 i;
+  
+  StopwatchZero(extrawatch);
+  hist = AllocHistogram(-200, 200, 100);
+  max  = -FLT_MAX;
+
+  /* Initialize PVM
+   */
+  if ((master_tid = pvm_mytid()) < 0)
+    Die("pvmd not responding -- do you have PVM running?");
+#if DEBUGLEVEL >= 1
+  pvm_catchout(stderr);		/* catch output for debugging */
+#endif
+  PVMSpawnSlaves("hmmcalibrate-pvm", &slave_tid, &nslaves);
+
+  /* Initialize the slaves
+   */
+  pvm_initsend(PvmDataDefault);
+  pvm_pkfloat(&lenmean,       1, 1);
+  pvm_pkfloat(&lensd,         1, 1);
+  pvm_pkint(  &fixedlen,      1, 1);
+  pvm_pkint(  &Alphabet_type, 1, 1);
+  pvm_pkint(  &seed,          1, 1);
+  if (! PVMPackHMM(hmm)) Die("Failed to pack the HMM");
+  pvm_mcast(slave_tid, nslaves, HMMPVM_INIT);
+  SQD_DPRINTF1(("Initialized %d slaves\n", nslaves));
+
+  /* Confirm slaves' OK status.
+   */
+  PVMConfirmSlaves(slave_tid, nslaves);
+  SQD_DPRINTF1(("Slaves confirm that they're ok...\n"));
+ 
+  /* Load the slaves
+   */
+  nsent = ndone = 0;
+  for (slaveidx = 0; slaveidx < nslaves; slaveidx++)
+    {
+      packet    = (nsample - nsent > lumpsize ? lumpsize : nsample - nsent);
+
+      pvm_initsend(PvmDataDefault);
+      pvm_pkint(&packet,    1, 1);
+      pvm_pkint(&slaveidx,  1, 1);
+      pvm_send(slave_tid[slaveidx], HMMPVM_WORK);
+      nsent += packet;
+    }
+  SQD_DPRINTF1(("Loaded %d slaves\n", nslaves));
+
+  /* Receive/send loop
+   */
+  sc = MallocOrDie(sizeof(float) * lumpsize);
+  while (nsent < nsample)
+    {
+				/* integrity check of slaves */
+      PVMCheckSlaves(slave_tid, nslaves);
+
+				/* receive results */
+      SQD_DPRINTF2(("Waiting for results...\n"));
+      pvm_recv(-1, HMMPVM_RESULTS);
+      pvm_upkint(&slaveidx,   1, 1);
+      pvm_upkint(&packet,     1, 1);
+      pvm_upkfloat(sc,   packet, 1);
+      SQD_DPRINTF2(("Got results.\n"));
+      ndone += packet;
+
+				/* store results */
+      for (i = 0; i < packet; i++) {
+	AddToHistogram(hist, sc[i]);
+	if (sc[i] > max) max = sc[i];
+      }
+				/* send new work */
+      packet    = (nsample - nsent > lumpsize ? lumpsize : nsample - nsent);
+
+      pvm_initsend(PvmDataDefault);
+      pvm_pkint(&packet,    1, 1);
+      pvm_pkint(&slaveidx,  1, 1);
+      pvm_send(slave_tid[slaveidx], HMMPVM_WORK);
+      SQD_DPRINTF2(("Told slave %d to do %d more seqs.\n", slaveidx, packet));
+      nsent += packet;
+    }
+      
+  /* Wait for the last output to come in.
+   */
+  while (ndone < nsample)
+    {
+				/* integrity check of slaves */
+      PVMCheckSlaves(slave_tid, nslaves);
+
+				/* receive results */
+      SQD_DPRINTF1(("Waiting for final results...\n"));
+      pvm_recv(-1, HMMPVM_RESULTS);
+      pvm_upkint(&slaveidx, 1, 1);
+      pvm_upkint(&packet,   1, 1);
+      pvm_upkfloat(sc, packet, 1);
+      SQD_DPRINTF2(("Got some final results.\n"));
+      ndone += packet;
+				/* store results */
+      for (i = 0; i < packet; i++) {
+	AddToHistogram(hist, sc[i]);
+	if (sc[i] > max) max = sc[i];
+      }
+    }
+
+  /* Shut down the slaves: send -1,-1,-1.
+   */
+  pvm_initsend(PvmDataDefault);
+  packet = -1;
+  pvm_pkint(&packet, 1, 1);
+  pvm_pkint(&packet, 1, 1);
+  pvm_pkint(&packet, 1, 1);
+  pvm_mcast(slave_tid, nslaves, HMMPVM_WORK);
+
+  /* Collect stopwatch results; quit the VM; return.
+   */
+  for (i = 0; i < nslaves; i++)
+    {
+      pvm_recv(-1, HMMPVM_RESULTS);
+      pvm_upkint(&slaveidx, 1, 1);
+      StopwatchPVMUnpack(&slavewatch);
+
+      SQD_DPRINTF1(("Slave %d finished; says it used %.2f cpu, %.2f sys\n",
+		    slaveidx, slavewatch.user, slavewatch.sys));
+
+      StopwatchInclude(extrawatch, &slavewatch);
+    }
+
+  free(slave_tid);
+  free(sc);
+  pvm_exit();
+  *ret_hist    = hist;
+  *ret_max     = max;
+  *ret_nslaves = nslaves;
+  return;
+}

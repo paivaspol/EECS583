@@ -1,0 +1,17 @@
+static void
+dwarfout_start_source_file (line, filename)
+     unsigned int line ATTRIBUTE_UNUSED;
+     const char *filename;
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+  const char *label1, *label2;
+
+  sprintf (label, SFNAMES_ENTRY_LABEL_FMT, lookup_filename (filename));
+  label1 = (*label == '*') + label;
+  label2 = (*SFNAMES_BEGIN_LABEL == '*') + SFNAMES_BEGIN_LABEL;
+  generate_macinfo_entry (MACINFO_start,
+			  gen_rtx_MINUS (Pmode,
+					 gen_rtx_SYMBOL_REF (Pmode, label1),
+					 gen_rtx_SYMBOL_REF (Pmode, label2)),
+			  "");
+}

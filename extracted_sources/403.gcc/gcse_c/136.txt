@@ -1,0 +1,27 @@
+static void
+delete_store (expr, bb)
+     struct ls_expr * expr;
+     basic_block bb;
+{
+  rtx reg, i, del;
+
+  if (expr->reaching_reg == NULL_RTX)
+    expr->reaching_reg = gen_reg_rtx (GET_MODE (expr->pattern));
+  
+
+  /* If there is more than 1 store, the earlier ones will be dead, 
+     but it doesn't hurt to replace them here.  */  
+  reg = expr->reaching_reg;
+  
+  for (i = AVAIL_STORE_LIST (expr); i; i = XEXP (i, 1))
+    {
+      del = XEXP (i, 0);
+      if (BLOCK_FOR_INSN (del) == bb)
+	{
+	  /* We know there is only one since we deleted redundant 
+	     ones during the available computation.  */
+	  replace_store_insn (reg, del, bb);
+	  break;
+	}
+    }
+}

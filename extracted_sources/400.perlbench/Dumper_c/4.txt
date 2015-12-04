@@ -1,0 +1,88 @@
+static I32
+esc_q_utf8(pTHX_ SV* sv, register char *src, register STRLEN slen)
+{
+    char *s, *send, *r, *rstart;
+    STRLEN j, cur = SvCUR(sv);
+    /* Could count 128-255 and 256+ in two variables, if we want to
+       be like &qquote and make a distinction.  */
+    STRLEN grow = 0;	/* bytes needed to represent chars 128+ */
+    /* STRLEN topbit_grow = 0;	bytes needed to represent chars 128-255 */
+    STRLEN backslashes = 0;
+    STRLEN single_quotes = 0;
+    STRLEN qq_escapables = 0;	/* " $ @ will need a \ in "" strings.  */
+    STRLEN normal = 0;
+
+    /* this will need EBCDICification */
+    for (s = src, send = src + slen; s < send; s += UTF8SKIP(s)) {
+        UV k = utf8_to_uvchr((U8*)s, NULL);
+
+        if (k > 127) {
+            /* 4: \x{} then count the number of hex digits.  */
+            grow += 4 + (k <= 0xFF ? 2 : k <= 0xFFF ? 3 : k <= 0xFFFF ? 4 :
+#if UVSIZE == 4
+                8 /* We may allocate a bit more than the minimum here.  */
+#else
+                k <= 0xFFFFFFFF ? 8 : UVSIZE * 4
+#endif
+                );
+        } else if (k == '\\') {
+            backslashes++;
+        } else if (k == '\'') {
+            single_quotes++;
+        } else if (k == '"' || k == '$' || k == '@') {
+            qq_escapables++;
+        } else {
+            normal++;
+        }
+    }
+    if (grow) {
+        /* We have something needing hex. 3 is ""\0 */
+        sv_grow(sv, cur + 3 + grow + 2*backslashes + single_quotes
+		+ 2*qq_escapables + normal);
+        rstart = r = SvPVX(sv) + cur;
+
+        *r++ = '"';
+
+        for (s = src; s < send; s += UTF8SKIP(s)) {
+            UV k = utf8_to_uvchr((U8*)s, NULL);
+
+            if (k == '"' || k == '\\' || k == '$' || k == '@') {
+                *r++ = '\\';
+                *r++ = (char)k;
+            }
+            else if (k < 0x80)
+                *r++ = (char)k;
+            else {
+	      /* The return value of sprintf() is unportable.
+	       * In modern systems it returns (int) the number of characters,
+	       * but in older systems it might return (char*) the original
+	       * buffer, or it might even be (void).  The easiest portable
+	       * thing to do is probably use sprintf() in void context and
+	       * then strlen(buffer) for the length.  The more proper way
+	       * would of course be to figure out the prototype of sprintf.
+	       * --jhi */
+	        sprintf(r, "\\x{%"UVxf"}", k);
+                r += strlen(r);
+            }
+        }
+        *r++ = '"';
+    } else {
+        /* Single quotes.  */
+        sv_grow(sv, cur + 3 + 2*backslashes + 2*single_quotes
+		+ qq_escapables + normal);
+        rstart = r = SvPVX(sv) + cur;
+        *r++ = '\'';
+        for (s = src; s < send; s ++) {
+            char k = *s;
+            if (k == '\'' || k == '\\')
+                *r++ = '\\';
+            *r++ = k;
+        }
+        *r++ = '\'';
+    }
+    *r = '\0';
+    j = r - rstart;
+    SvCUR_set(sv, cur + j);
+
+    return j;
+}

@@ -1,0 +1,19 @@
+void
+init_target_units ()
+{
+  rtx insn;
+  int unit;
+
+  for (insn = get_last_insn (); insn; insn = PREV_INSN (insn))
+    {
+      if (! INSN_P (insn))
+	continue;
+
+      unit = insn_unit (insn);
+
+      if (unit < 0)
+	target_units |= ~unit;
+      else
+	target_units |= (1 << unit);
+    }
+}

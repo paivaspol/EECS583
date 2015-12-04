@@ -1,0 +1,15 @@
+static rtx
+ix86_expand_aligntest (variable, value)
+     rtx variable;
+     int value;
+{
+  rtx label = gen_label_rtx ();
+  rtx tmpcount = gen_reg_rtx (GET_MODE (variable));
+  if (GET_MODE (variable) == DImode)
+    emit_insn (gen_anddi3 (tmpcount, variable, GEN_INT (value)));
+  else
+    emit_insn (gen_andsi3 (tmpcount, variable, GEN_INT (value)));
+  emit_cmp_and_jump_insns (tmpcount, const0_rtx, EQ, 0, GET_MODE (variable),
+			   1, label);
+  return label;
+}

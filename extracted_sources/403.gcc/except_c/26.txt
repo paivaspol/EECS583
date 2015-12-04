@@ -1,0 +1,26 @@
+static void
+resolve_fixup_regions ()
+{
+  int i, j, n = cfun->eh->last_region_number;
+
+  for (i = 1; i <= n; ++i)
+    {
+      struct eh_region *fixup = cfun->eh->region_array[i];
+      struct eh_region *cleanup = 0;
+
+      if (! fixup || fixup->type != ERT_FIXUP)
+	continue;
+
+      for (j = 1; j <= n; ++j)
+	{
+	  cleanup = cfun->eh->region_array[j];
+	  if (cleanup->type == ERT_CLEANUP
+	      && cleanup->u.cleanup.exp == fixup->u.fixup.cleanup_exp)
+	    break;
+	}
+      if (j > n)
+	abort ();
+
+      fixup->u.fixup.real_region = cleanup->outer;
+    }
+}

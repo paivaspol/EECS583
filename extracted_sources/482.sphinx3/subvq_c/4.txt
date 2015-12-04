@@ -1,0 +1,13 @@
+void subvq_subvec_eval_logs3 (subvq_t *vq, float32 *feat, int32 s)
+{
+    int32 i;
+    int32 *featdim;
+    
+    /* Extract subvector from feat */
+    featdim = vq->featdim[s];
+    for (i = 0; i < vq->gautbl[s].veclen; i++)
+	vq->subvec[i] = feat[featdim[i]];
+    
+    /* Evaluate distances between extracted subvector and corresponding codebook */
+    vector_gautbl_eval_logs3(&(vq->gautbl[s]), 0, vq->vqsize, vq->subvec, vq->vqdist[s]);
+}

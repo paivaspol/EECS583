@@ -1,0 +1,41 @@
+static bool gmx_next_frame(int status,t_trxframe *fr)
+{
+  t_trnheader sh;
+  bool bOK,bRet;
+  
+  bRet = FALSE;
+
+  if (fread_trnheader(status,&sh,&bOK)) {
+    fr->natoms=sh.natoms;
+    fr->bStep=TRUE;
+    fr->step=sh.step;
+    fr->bTime=TRUE;
+    fr->time=sh.t;
+    fr->bLambda = TRUE;
+    fr->lambda = sh.lambda;
+    fr->bBox = sh.box_size>0;
+    if (fr->flags & (TRX_READ_X | TRX_NEED_X)) {
+      if (fr->x==NULL)
+	snew(fr->x,sh.natoms);
+      fr->bX = sh.x_size>0;
+    }
+    if (fr->flags & (TRX_READ_V | TRX_NEED_V)) {
+      if (fr->v==NULL)
+	snew(fr->v,sh.natoms);
+      fr->bV = sh.v_size>0;
+    }
+    if (fr->flags & (TRX_READ_F | TRX_NEED_F)) {
+      if (fr->f==NULL)
+	snew(fr->f,sh.natoms);
+      fr->bF = sh.f_size;
+    }
+    if (fread_htrn(status,&sh,fr->box,fr->x,fr->v,fr->f))
+      bRet = TRUE;
+    else
+      fr->not_ok = DATA_NOT_OK;
+  } else
+    if (!bOK)
+      fr->not_ok = HEADER_NOT_OK;
+
+  return bRet;    
+}

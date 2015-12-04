@@ -1,0 +1,63 @@
+void
+combine_temp_slots ()
+{
+  struct temp_slot *p, *q;
+  struct temp_slot *prev_p, *prev_q;
+  int num_slots;
+
+  /* We can't combine slots, because the information about which slot
+     is in which alias set will be lost.  */
+  if (flag_strict_aliasing)
+    return;
+
+  /* If there are a lot of temp slots, don't do anything unless
+     high levels of optimization.  */
+  if (! flag_expensive_optimizations)
+    for (p = temp_slots, num_slots = 0; p; p = p->next, num_slots++)
+      if (num_slots > 100 || (num_slots > 10 && optimize == 0))
+	return;
+
+  for (p = temp_slots, prev_p = 0; p; p = prev_p ? prev_p->next : temp_slots)
+    {
+      int delete_p = 0;
+
+      if (! p->in_use && GET_MODE (p->slot) == BLKmode)
+	for (q = p->next, prev_q = p; q; q = prev_q->next)
+	  {
+	    int delete_q = 0;
+	    if (! q->in_use && GET_MODE (q->slot) == BLKmode)
+	      {
+		if (p->base_offset + p->full_size == q->base_offset)
+		  {
+		    /* Q comes after P; combine Q into P.  */
+		    p->size += q->size;
+		    p->full_size += q->full_size;
+		    delete_q = 1;
+		  }
+		else if (q->base_offset + q->full_size == p->base_offset)
+		  {
+		    /* P comes after Q; combine P into Q.  */
+		    q->size += p->size;
+		    q->full_size += p->full_size;
+		    delete_p = 1;
+		    break;
+		  }
+	      }
+	    /* Either delete Q or advance past it.  */
+	    if (delete_q)
+	      prev_q->next = q->next;
+	    else
+	      prev_q = q;
+	  }
+      /* Either delete P or advance past it.  */
+      if (delete_p)
+	{
+	  if (prev_p)
+	    prev_p->next = p->next;
+	  else
+	    temp_slots = p->next;
+	}
+      else
+	prev_p = p;
+    }
+}

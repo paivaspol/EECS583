@@ -1,0 +1,20 @@
+void pwrite_gauge_hdr(FILE *fp, gauge_header *gh)
+{
+
+  char myname[] = "pwrite_gauge_hdr";
+
+  pwrite_data(fp,(void *)&gh->magic_number,sizeof(gh->magic_number),
+	      myname,"magic_number");
+  pwrite_data(fp,(void *)gh->dims,sizeof(gh->dims),
+	      myname,"dimensions");
+  pwrite_data(fp,(void *)gh->time_stamp,sizeof(gh->time_stamp),
+	      myname,"time_stamp");
+  pwrite_data(fp,&gh->order,sizeof(gh->order),
+	      myname,"order");
+
+  /* Header byte length */
+
+  gh->header_bytes = sizeof(gh->magic_number) + sizeof(gh->dims) + 
+    sizeof(gh->time_stamp) + sizeof(gh->order);
+
+} /* pwrite_gauge_hdr */

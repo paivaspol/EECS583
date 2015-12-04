@@ -1,0 +1,40 @@
+int
+pushcase (value, converter, label, duplicate)
+     tree value;
+     tree (*converter) PARAMS ((tree, tree));
+     tree label;
+     tree *duplicate;
+{
+  tree index_type;
+  tree nominal_type;
+
+  /* Fail if not inside a real case statement.  */
+  if (! (case_stack && case_stack->data.case_stmt.start))
+    return 1;
+
+  if (stack_block_stack
+      && stack_block_stack->depth > case_stack->depth)
+    return 5;
+
+  index_type = TREE_TYPE (case_stack->data.case_stmt.index_expr);
+  nominal_type = case_stack->data.case_stmt.nominal_type;
+
+  /* If the index is erroneous, avoid more problems: pretend to succeed.  */
+  if (index_type == error_mark_node)
+    return 0;
+
+  /* Convert VALUE to the type in which the comparisons are nominally done.  */
+  if (value != 0)
+    value = (*converter) (nominal_type, value);
+
+  check_seenlabel ();
+
+  /* Fail if this value is out of range for the actual type of the index
+     (which may be narrower than NOMINAL_TYPE).  */
+  if (value != 0
+      && (TREE_CONSTANT_OVERFLOW (value)
+	  || ! int_fits_type_p (value, index_type)))
+    return 3;
+
+  return add_case_node (value, value, label, duplicate);
+}

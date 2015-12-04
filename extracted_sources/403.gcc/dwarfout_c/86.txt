@@ -1,0 +1,20 @@
+static void
+output_lexical_block_die (arg)
+     void *arg;
+{
+  tree stmt = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_lexical_block);
+  sibling_attribute ();
+  dienum_push ();
+  if (! BLOCK_ABSTRACT (stmt))
+    {
+      char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+      char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+      sprintf (begin_label, BLOCK_BEGIN_LABEL_FMT, BLOCK_NUMBER (stmt));
+      low_pc_attribute (begin_label);
+      sprintf (end_label, BLOCK_END_LABEL_FMT, BLOCK_NUMBER (stmt));
+      high_pc_attribute (end_label);
+    }
+}

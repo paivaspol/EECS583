@@ -1,0 +1,20 @@
+void accumulate_u(t_commrec *cr,t_grpopts *opts,t_groups *grps)
+{
+  /* This routine will only be called when it's necessary */
+  static t_bin *rb=NULL;
+  int          g;
+
+  if (rb == NULL) {
+    rb=mk_bin();
+  }
+  else
+    reset_bin(rb);
+
+  for(g=0; (g<opts->ngacc); g++) 
+    add_binr(stdlog,rb,DIM,grps->grpstat[g].u);
+    
+  sum_bin(rb,cr);
+  
+  for(g=0; (g<opts->ngacc); g++) 
+    extract_binr(rb,DIM*g,DIM,grps->grpstat[g].u);
+}       

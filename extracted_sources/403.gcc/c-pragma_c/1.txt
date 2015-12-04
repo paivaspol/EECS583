@@ -1,0 +1,45 @@
+static void
+pop_alignment (id)
+     tree id;
+{
+  align_stack * entry;
+      
+  if (alignment_stack == NULL)
+    {
+      warning ("\
+#pragma pack (pop) encountered without matching #pragma pack (push, <n>)"
+	       );
+      return;
+    }
+
+  /* If we got an identifier, strip away everything above the target
+     entry so that the next step will restore the state just below it.  */
+  if (id)
+    {
+      for (entry = alignment_stack; entry; entry = entry->prev)
+	if (entry->id == id)
+	  {
+	    entry->num_pushes = 1;
+	    alignment_stack = entry;
+	    break;
+	  }
+      if (entry == NULL)
+	warning ("\
+#pragma pack(pop, %s) encountered without matching #pragma pack(push, %s, <n>)"
+		 , IDENTIFIER_POINTER (id), IDENTIFIER_POINTER (id));
+    }
+
+  if (-- alignment_stack->num_pushes == 0)
+    {
+      entry = alignment_stack->prev;
+
+      if (entry == NULL)
+	maximum_field_alignment = default_alignment;
+      else
+	maximum_field_alignment = entry->alignment;
+
+      free (alignment_stack);
+
+      alignment_stack = entry;
+    }
+}

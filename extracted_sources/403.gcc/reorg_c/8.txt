@@ -1,0 +1,45 @@
+static void
+delete_scheduled_jump (insn)
+     rtx insn;
+{
+  /* Delete the insn that sets cc0 for us.  On machines without cc0, we could
+     delete the insn that sets the condition code, but it is hard to find it.
+     Since this case is rare anyway, don't bother trying; there would likely
+     be other insns that became dead anyway, which we wouldn't know to
+     delete.  */
+
+#ifdef HAVE_cc0
+  if (reg_mentioned_p (cc0_rtx, insn))
+    {
+      rtx note = find_reg_note (insn, REG_CC_SETTER, NULL_RTX);
+
+      /* If a reg-note was found, it points to an insn to set CC0.  This
+	 insn is in the delay list of some other insn.  So delete it from
+	 the delay list it was in.  */
+      if (note)
+	{
+	  if (! FIND_REG_INC_NOTE (XEXP (note, 0), NULL_RTX)
+	      && sets_cc0_p (PATTERN (XEXP (note, 0))) == 1)
+	    delete_from_delay_slot (XEXP (note, 0));
+	}
+      else
+	{
+	  /* The insn setting CC0 is our previous insn, but it may be in
+	     a delay slot.  It will be the last insn in the delay slot, if
+	     it is.  */
+	  rtx trial = previous_insn (insn);
+	  if (GET_CODE (trial) == NOTE)
+	    trial = prev_nonnote_insn (trial);
+	  if (sets_cc0_p (PATTERN (trial)) != 1
+	      || FIND_REG_INC_NOTE (trial, NULL_RTX))
+	    return;
+	  if (PREV_INSN (NEXT_INSN (trial)) == trial)
+	    delete_related_insns (trial);
+	  else
+	    delete_from_delay_slot (trial);
+	}
+    }
+#endif
+
+  delete_related_insns (insn);
+}

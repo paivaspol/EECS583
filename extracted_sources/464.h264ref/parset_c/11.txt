@@ -1,0 +1,33 @@
+static int GenerateVUISequenceParameters(DataPartition *partition)
+{
+  int len=0;
+
+  // special case to signal the RGB format
+  if(input->rgb_input_flag && input->yuv_format==3)
+  { 
+    //still pretty much a dummy VUI
+    printf ("test: writing Sequence Parameter VUI to signal RGB format\n");
+    len+=u_1 ("VUI: aspect_ratio_info_present_flag", 0, partition);
+    len+=u_1 ("VUI: overscan_info_present_flag", 0, partition);
+    len+=u_1 ("VUI: video_signal_type_present_flag", 1, partition);
+    len+=u_v (3, "VUI: video format", 2, partition);
+    len+=u_1 ("VUI: video_full_range_flag", 1, partition);
+    len+=u_1 ("VUI: color_description_present_flag", 1, partition);
+    len+=u_v (8, "VUI: colour primaries", 2, partition);
+    len+=u_v (8, "VUI: transfer characteristics", 2, partition);
+    len+=u_v (8, "VUI: matrix coefficients", 0, partition);
+    len+=u_1 ("VUI: chroma_loc_info_present_flag", 0, partition);
+    len+=u_1 ("VUI: timing_info_present_flag", 0, partition);
+    len+=u_1 ("VUI: nal_hrd_parameters_present_flag", 0, partition);
+    len+=u_1 ("VUI: vcl_hrd_parameters_present_flag", 0, partition);
+    len+=u_1 ("VUI: pic_struc_present_flag", 0, partition);
+    len+=u_1 ("VUI: bitstream_restriction_flag", 0, partition);
+
+    return len;
+  }
+  else 
+  {
+    printf ("Sequence Parameter VUI not yet implemented, this should never happen, exit\n");
+    exit (-1);
+  }
+}

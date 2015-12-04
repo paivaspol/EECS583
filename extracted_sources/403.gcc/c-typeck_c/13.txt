@@ -1,0 +1,34 @@
+int
+lvalue_p (ref)
+     tree ref;
+{
+  enum tree_code code = TREE_CODE (ref);
+
+  switch (code)
+    {
+    case REALPART_EXPR:
+    case IMAGPART_EXPR:
+    case COMPONENT_REF:
+      return lvalue_p (TREE_OPERAND (ref, 0));
+
+    case COMPOUND_LITERAL_EXPR:
+    case STRING_CST:
+      return 1;
+
+    case INDIRECT_REF:
+    case ARRAY_REF:
+    case VAR_DECL:
+    case PARM_DECL:
+    case RESULT_DECL:
+    case ERROR_MARK:
+      return (TREE_CODE (TREE_TYPE (ref)) != FUNCTION_TYPE
+	      && TREE_CODE (TREE_TYPE (ref)) != METHOD_TYPE);
+
+    case BIND_EXPR:
+    case RTL_EXPR:
+      return TREE_CODE (TREE_TYPE (ref)) == ARRAY_TYPE;
+
+    default:
+      return 0;
+    }
+}

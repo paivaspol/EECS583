@@ -1,0 +1,76 @@
+static int
+apply_args_size ()
+{
+  static int size = -1;
+  int align;
+  unsigned int regno;
+  enum machine_mode mode;
+
+  /* The values computed by this function never change.  */
+  if (size < 0)
+    {
+      /* The first value is the incoming arg-pointer.  */
+      size = GET_MODE_SIZE (Pmode);
+
+      /* The second value is the structure value address unless this is
+	 passed as an "invisible" first argument.  */
+      if (struct_value_rtx)
+	size += GET_MODE_SIZE (Pmode);
+
+      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+	if (FUNCTION_ARG_REGNO_P (regno))
+	  {
+	    /* Search for the proper mode for copying this register's
+	       value.  I'm not sure this is right, but it works so far.  */
+	    enum machine_mode best_mode = VOIDmode;
+
+	    for (mode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+		 mode != VOIDmode;
+		 mode = GET_MODE_WIDER_MODE (mode))
+	      if (HARD_REGNO_MODE_OK (regno, mode)
+		  && HARD_REGNO_NREGS (regno, mode) == 1)
+		best_mode = mode;
+
+	    if (best_mode == VOIDmode)
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_FLOAT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		if (HARD_REGNO_MODE_OK (regno, mode)
+		    && have_insn_for (SET, mode))
+		  best_mode = mode;
+
+	    if (best_mode == VOIDmode)
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_VECTOR_FLOAT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		if (HARD_REGNO_MODE_OK (regno, mode)
+		    && have_insn_for (SET, mode))
+		  best_mode = mode;
+
+	    if (best_mode == VOIDmode)
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_VECTOR_INT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		if (HARD_REGNO_MODE_OK (regno, mode)
+		    && have_insn_for (SET, mode))
+		  best_mode = mode;
+
+	    mode = best_mode;
+	    if (mode == VOIDmode)
+	      abort ();
+
+	    align = GET_MODE_ALIGNMENT (mode) / BITS_PER_UNIT;
+	    if (size % align != 0)
+	      size = CEIL (size, align) * align;
+	    apply_args_reg_offset[regno] = size;
+	    size += GET_MODE_SIZE (mode);
+	    apply_args_mode[regno] = mode;
+	  }
+	else
+	  {
+	    apply_args_mode[regno] = VOIDmode;
+	    apply_args_reg_offset[regno] = 0;
+	  }
+    }
+  return size;
+}

@@ -1,0 +1,21 @@
+static void
+reload_cse_regs_1 (first)
+     rtx first;
+{
+  rtx insn;
+
+  cselib_init ();
+  init_alias_analysis ();
+
+  for (insn = first; insn; insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	reload_cse_simplify (insn);
+
+      cselib_process_insn (insn);
+    }
+
+  /* Clean up.  */
+  end_alias_analysis ();
+  cselib_finish ();
+}

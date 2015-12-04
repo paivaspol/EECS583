@@ -1,0 +1,21 @@
+int
+local_mb_cur_max ()
+{
+  if (literal_codeset == NULL || strlen (literal_codeset) <= 1)
+    ;
+  else if (! strcmp (literal_codeset, "C-SJIS"))
+    return 2;
+  else if (! strcmp (literal_codeset, "C-EUCJP"))
+    return 2;
+  else if (! strcmp (literal_codeset, "C-JIS"))
+    return 8; /* 3 + 2 + 3 */
+
+#ifdef CROSS_COMPILE
+  return 1;
+#else
+  if (MB_CUR_MAX > 0)
+    return MB_CUR_MAX;
+
+  return 1; /* default */
+#endif
+}

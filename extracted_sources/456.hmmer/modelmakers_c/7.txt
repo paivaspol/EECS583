@@ -1,0 +1,82 @@
+static void
+trace_doctor(struct p7trace_s *tr, int mlen, int *ret_ndi, int *ret_nid)
+{
+  int opos;			/* position in old trace                 */
+  int npos;			/* position in new trace (<= opos)       */
+  int ndi, nid;			/* number of DI, ID transitions doctored */
+
+				/* overwrite the trace from left to right */
+  ndi  = nid  = 0;
+  opos = npos = 0;
+  while (opos < tr->tlen) {
+      /* fix implied D->I transitions; D transforms to M, I pulled in */
+    if (tr->statetype[opos] == STD && tr->statetype[opos+1] == STI) {
+      tr->statetype[npos] = STM;
+      tr->nodeidx[npos]   = tr->nodeidx[opos]; /* D transforms to M      */
+      tr->pos[npos]       = tr->pos[opos+1];   /* insert char moves back */
+      opos += 2;
+      npos += 1;
+      ndi++;
+    } /* fix implied I->D transitions; D transforms to M, I is pushed in */
+    else if (tr->statetype[opos]== STI && tr->statetype[opos+1]== STD) {
+      tr->statetype[npos] = STM;
+      tr->nodeidx[npos]   = tr->nodeidx[opos+1];/* D transforms to M    */
+      tr->pos[npos]       = tr->pos[opos];      /* insert char moves up */
+      opos += 2;
+      npos += 1;
+      nid++; 
+    } /* fix implied B->I transitions; pull I back to its M */
+    else if (tr->statetype[opos]== STI && tr->statetype[opos-1]== STB) {
+      tr->statetype[npos] = STM;
+      tr->nodeidx[npos]   = tr->nodeidx[opos]; /* offending I transforms to M */
+      tr->pos[npos]       = tr->pos[opos];
+      opos++;
+      npos++;
+    } /* fix implied I->E transitions; push I to next M */
+    else if (tr->statetype[opos]== STI && tr->statetype[opos+1]== STE) {
+      tr->statetype[npos] = STM;
+      tr->nodeidx[npos]   = tr->nodeidx[opos]+1;/* offending I transforms to M */
+      tr->pos[npos]       = tr->pos[opos];
+      opos++;
+      npos++;
+    } /* rare: N-N-B-E becomes N-B-M_1-E (swap B,N) */
+    else if (tr->statetype[opos]==STB && tr->statetype[opos+1]==STE
+	     && tr->statetype[opos-1]==STN && tr->pos[opos-1] > 0) {   
+      tr->statetype[npos]   = STM;
+      tr->nodeidx[npos]     = 1;
+      tr->pos[npos]         = tr->pos[opos-1];
+      tr->statetype[npos-1] = STB;
+      tr->nodeidx[npos-1]   = 0;
+      tr->pos[npos-1]       = 0;
+      opos++;
+      npos++;
+    } /* rare: B-E-C-C-x becomes B-M_M-E-C-x (swap E,C) */
+    else if (tr->statetype[opos]==STE && tr->statetype[opos-1]==STB
+	     && tr->statetype[opos+1]==STC 
+	     && tr->statetype[opos+2]==STC) { 
+      tr->statetype[npos]   = STM;
+      tr->nodeidx[npos]     = mlen;
+      tr->pos[npos]         = tr->pos[opos+2];
+      tr->statetype[npos+1] = STE;
+      tr->nodeidx[npos+1]   = 0;
+      tr->pos[npos+1]       = 0;
+      tr->statetype[npos+2] = STC; /* first C must be a nonemitter  */
+      tr->nodeidx[npos+2]   = 0;
+      tr->pos[npos+2]       = 0;
+      opos+=3;
+      npos+=3;
+    } /* everything else is just copied */
+    else {
+      tr->statetype[npos] = tr->statetype[opos];
+      tr->nodeidx[npos]   = tr->nodeidx[opos];
+      tr->pos[npos]       = tr->pos[opos];
+      opos++;
+      npos++;
+    }
+  }
+  tr->tlen = npos;
+
+  if (ret_ndi != NULL) *ret_ndi = ndi;
+  if (ret_nid != NULL) *ret_nid = nid;
+  return;
+}

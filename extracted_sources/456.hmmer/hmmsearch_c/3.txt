@@ -1,0 +1,93 @@
+static void
+main_loop_serial(struct plan7_s *hmm, SQFILE *sqfp, struct threshold_s *thresh, int do_forward,
+		 int do_null2, int do_xnu,
+		 struct histogram_s *histogram, 
+		 struct tophit_s *ghit, struct tophit_s *dhit, int *ret_nseq)
+{
+  struct dpmatrix_s *mx;        /* DP matrix, growable                     */
+  struct p7trace_s *tr;         /* traceback                               */
+  char   *seq;                  /* target sequence                         */
+  char   *dsq;		        /* digitized target sequence               */
+  SQINFO sqinfo;		/* optional info for seq                   */
+  float  sc;	        	/* score of an HMM search                  */
+  double pvalue;		/* pvalue of an HMM score                  */
+  double evalue;		/* evalue of an HMM score                  */
+  int    nseq;			/* number of sequences searched            */
+ 
+  /* Create a DP matrix; initially only two rows big, but growable;
+   * we overalloc by 25 rows (L dimension) when we grow; not growable
+   * in model dimension, since we know the hmm size
+   */
+  mx = CreatePlan7Matrix(1, hmm->M, 25, 0); 
+
+  nseq = 0;
+  while (ReadSeq(sqfp, sqfp->format, &seq, &sqinfo))
+    {
+      /* Silently skip length 0 seqs. 
+       * What, you think this doesn't occur? Welcome to genomics, 
+       * young grasshopper.
+       */
+      if (sqinfo.len == 0) continue;
+
+      nseq++;
+      dsq = DigitizeSequence(seq, sqinfo.len);
+      
+      if (do_xnu && Alphabet_type == hmmAMINO) XNU(dsq, sqinfo.len);
+      
+      /* 1. Recover a trace by Viterbi.
+       *    In extreme cases, the alignment may be literally impossible;
+       *    in which case, the score comes out ridiculously small (but not
+       *    necessarily <= -INFTY, because we're not terribly careful
+       *    about underflow issues), and tr will be returned as NULL.
+       */
+      if (P7ViterbiSize(sqinfo.len, hmm->M) <= RAMLIMIT)
+	sc = P7Viterbi(dsq, sqinfo.len, hmm, mx, &tr);
+      else
+	sc = P7SmallViterbi(dsq, sqinfo.len, hmm, mx, &tr);
+
+      /* 2. If we're using Forward scores, calculate the
+       *    whole sequence score; this overrides anything
+       *    PostprocessSignificantHit() is going to do to the per-seq score.
+       */
+      if (do_forward) {
+	sc  = P7Forward(dsq, sqinfo.len, hmm, NULL);
+	if (do_null2)   sc -= TraceScoreCorrection(hmm, tr, dsq); 
+      }
+
+#if DEBUGLEVEL >= 2
+      P7PrintTrace(stdout, tr, hmm, dsq); 
+#endif
+
+      /* 2. Store score/pvalue for global alignment; will sort on score,
+       *    which in hmmsearch is monotonic with E-value. 
+       *    Keep all domains in a significant sequence hit.
+       *    We can only make a lower bound estimate of E-value since
+       *    we don't know the final value of nseq yet, so the list
+       *    of hits we keep in memory is >= the list we actually
+       *    output. 
+       */
+      pvalue = PValue(hmm, sc);
+      evalue = thresh->Z ? (double) thresh->Z * pvalue : (double) nseq * pvalue;
+      if (sc >= thresh->globT && evalue <= thresh->globE) 
+	{
+	  sc = PostprocessSignificantHit(ghit, dhit, 
+					 tr, hmm, dsq, sqinfo.len,
+					 sqinfo.name, 
+					 sqinfo.flags & SQINFO_ACC  ? sqinfo.acc  : NULL, 
+					 sqinfo.flags & SQINFO_DESC ? sqinfo.desc : NULL, 
+					 do_forward, sc,
+					 do_null2,
+					 thresh,
+					 FALSE); /* FALSE-> not hmmpfam mode, hmmsearch mode */
+	}
+      SQD_DPRINTF2(("AddToHistogram: %s\t%f\n", sqinfo.name, sc));
+      AddToHistogram(histogram, sc);
+      FreeSequence(seq, &sqinfo); 
+      P7FreeTrace(tr);
+      free(dsq);
+    }
+
+  FreePlan7Matrix(mx);
+  *ret_nseq = nseq;
+  return;
+}

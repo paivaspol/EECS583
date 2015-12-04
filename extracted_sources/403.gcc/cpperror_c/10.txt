@@ -1,0 +1,15 @@
+void
+cpp_pedwarn_with_line VPARAMS ((cpp_reader * pfile, int line, int column,
+			       const char *msgid, ...))
+{
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, cpp_reader *, pfile);
+  VA_FIXEDARG (ap, int, line);
+  VA_FIXEDARG (ap, int, column);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  if (_cpp_begin_message (pfile, PEDWARN, line, column))
+    v_message (msgid, ap);
+
+  VA_CLOSE (ap);
+}

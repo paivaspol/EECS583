@@ -1,0 +1,38 @@
+static tree
+ix86_handle_regparm_attribute (node, name, args, flags, no_add_attrs)
+     tree *node;
+     tree name;
+     tree args;
+     int flags ATTRIBUTE_UNUSED;
+     bool *no_add_attrs;
+{
+  if (TREE_CODE (*node) != FUNCTION_TYPE
+      && TREE_CODE (*node) != METHOD_TYPE
+      && TREE_CODE (*node) != FIELD_DECL
+      && TREE_CODE (*node) != TYPE_DECL)
+    {
+      warning ("`%s' attribute only applies to functions",
+	       IDENTIFIER_POINTER (name));
+      *no_add_attrs = true;
+    }
+  else
+    {
+      tree cst;
+
+      cst = TREE_VALUE (args);
+      if (TREE_CODE (cst) != INTEGER_CST)
+	{
+	  warning ("`%s' attribute requires an integer constant argument",
+		   IDENTIFIER_POINTER (name));
+	  *no_add_attrs = true;
+	}
+      else if (compare_tree_int (cst, REGPARM_MAX) > 0)
+	{
+	  warning ("argument to `%s' attribute larger than %d",
+		   IDENTIFIER_POINTER (name), REGPARM_MAX);
+	  *no_add_attrs = true;
+	}
+    }
+
+  return NULL_TREE;
+}

@@ -1,0 +1,15 @@
+static int remove_unused_frame_from_dpb()
+{
+  unsigned i;
+
+  // check for frames that were already output and no longer used for reference
+  for (i=0; i<dpb.used_size; i++)
+  {
+    if (dpb.fs[i]->is_output && (!is_used_for_reference(dpb.fs[i])))
+    {
+      remove_frame_from_dpb(i);
+      return 1;
+    }
+  }
+  return 0;
+}

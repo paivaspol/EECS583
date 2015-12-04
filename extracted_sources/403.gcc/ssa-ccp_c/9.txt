@@ -1,0 +1,115 @@
+void
+ssa_const_prop ()
+{
+  unsigned int i;
+  edge curredge;
+
+  /* We need alias analysis (for what?) */
+  init_alias_analysis ();
+
+  df_analyzer = df_init ();
+  df_analyse (df_analyzer, 0,
+	      DF_RD_CHAIN | DF_RU_CHAIN | DF_REG_INFO | DF_HARD_REGS);
+
+  /* We need mappings from insn to its containing block.  */
+  compute_bb_for_insn (get_max_uid ());
+
+  /* Perform a quick and dirty dead code elimination pass.  This is not
+     as aggressive as it could be, but it's good enough to clean up a
+     lot of unwanted junk and it is fast.  */
+  ssa_fast_dce (df_analyzer);
+
+  /* Build an edge list from the CFG.  */
+  edges = create_edge_list ();
+
+  /* Initialize the values array with everything as undefined.  */
+  values = (value *) xmalloc (VARRAY_SIZE (ssa_definition) * sizeof (value));
+  for (i = 0; i < VARRAY_SIZE (ssa_definition); i++)
+    {
+      if (i < FIRST_PSEUDO_REGISTER)
+        values[i].lattice_val = VARYING;
+      else
+	values[i].lattice_val = UNDEFINED;
+      values[i].const_value = NULL;
+    }
+
+  ssa_edges = sbitmap_alloc (VARRAY_SIZE (ssa_definition));
+  sbitmap_zero (ssa_edges);
+
+  executable_blocks = sbitmap_alloc (n_basic_blocks);
+  sbitmap_zero (executable_blocks);
+
+  executable_edges = sbitmap_alloc (NUM_EDGES (edges));
+  sbitmap_zero (executable_edges);
+
+  edge_info = (edge *) xmalloc (NUM_EDGES (edges) * sizeof (edge));
+  flow_edges = ENTRY_BLOCK_PTR->succ;
+
+  /* Add the successors of the entry block to the edge worklist.  That
+     is enough of a seed to get SSA-CCP started.  */
+  for (curredge = ENTRY_BLOCK_PTR->succ; curredge;
+       curredge = curredge->succ_next)
+    {
+      int index = EIE (curredge->src, curredge->dest);
+      SET_BIT (executable_edges, index);
+      edge_info[index] = curredge->succ_next;
+    }
+
+  /* Iterate until until the worklists are empty.  */
+  do
+    {
+      examine_flow_edges ();
+      follow_def_use_chains ();
+    }
+  while (flow_edges != NULL);
+
+  /* Now perform substitutions based on the known constant values.  */
+  ssa_ccp_substitute_constants ();
+
+  /* Remove unexecutable edges from the CFG and make appropriate
+     adjustments to PHI nodes.  */
+  optimize_unexecutable_edges (edges, executable_edges);
+
+  /* Now remove all unreachable insns and update the DF information.
+     as appropriate.  */
+  ssa_ccp_df_delete_unreachable_insns ();
+
+#if 0
+  /* The DF analyzer expects the number of blocks to remain constant,
+     so we can't remove unreachable blocks.
+
+     Code the DF analyzer calls expects there to be no unreachable
+     blocks in the CFG.  So we can't leave unreachable blocks in the
+     CFG.
+
+     So, there is no way to do an incremental update of the DF data
+     at this point.  */
+  df_analyse (df_analyzer, 0,
+	      DF_RD_CHAIN | DF_RU_CHAIN | DF_REG_INFO | DF_HARD_REGS);
+#endif
+
+  /* Clean up any dead code exposed by SSA-CCP, do this after updating
+     the dataflow information!  */
+  ssa_fast_dce (df_analyzer);
+
+  free (values);
+  values = NULL;
+
+  free (edge_info);
+  edge_info = NULL;
+
+  sbitmap_free (executable_blocks);
+  executable_blocks = NULL;
+
+  sbitmap_free (ssa_edges);
+  ssa_edges = NULL;
+  
+  free_edge_list (edges);
+  edges = NULL;
+
+  sbitmap_free (executable_edges);
+  executable_edges = NULL;
+
+  df_finish (df_analyzer);
+  end_alias_analysis ();
+}

@@ -1,0 +1,25 @@
+static I32
+needs_quote(register char *s)
+{
+TOP:
+    if (s[0] == ':') {
+	if (*++s) {
+	    if (*s++ != ':')
+		return 1;
+	}
+	else
+	    return 1;
+    }
+    if (isIDFIRST(*s)) {
+	while (*++s)
+	    if (!isALNUM(*s)) {
+		if (*s == ':')
+		    goto TOP;
+		else
+		    return 1;
+	    }
+    }
+    else
+	return 1;
+    return 0;
+}

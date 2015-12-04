@@ -1,0 +1,392 @@
+static void generate_macinfo_entry	PARAMS ((unsigned int, rtx,
+						 const char *));
+static int is_pseudo_reg		PARAMS ((rtx));
+static tree type_main_variant		PARAMS ((tree));
+static int is_tagged_type		PARAMS ((tree));
+static int is_redundant_typedef		PARAMS ((tree));
+static void add_incomplete_type		PARAMS ((tree));
+static void retry_incomplete_types	PARAMS ((void));
+
+/* Definitions of defaults for assembler-dependent names of various
+   pseudo-ops and section names.
+
+   Theses may be overridden in your tm.h file (if necessary) for your
+   particular assembler.  The default values provided here correspond to
+   what is expected by "standard" AT&T System V.4 assemblers.  */
+
+#ifndef FILE_ASM_OP
+#define FILE_ASM_OP		"\t.file\t"
+#endif
+#ifndef VERSION_ASM_OP
+#define VERSION_ASM_OP		"\t.version\t"
+#endif
+#ifndef SET_ASM_OP
+#define SET_ASM_OP		"\t.set\t"
+#endif
+
+/* Pseudo-ops for pushing the current section onto the section stack (and
+   simultaneously changing to a new section) and for poping back to the
+   section we were in immediately before this one.  Note that most svr4
+   assemblers only maintain a one level stack... you can push all the
+   sections you want, but you can only pop out one level.  (The sparc
+   svr4 assembler is an exception to this general rule.)  That's
+   OK because we only use at most one level of the section stack herein.  */
+
+#ifndef PUSHSECTION_ASM_OP
+#define PUSHSECTION_ASM_OP	"\t.section\t"
+#endif
+#ifndef POPSECTION_ASM_OP
+#define POPSECTION_ASM_OP	"\t.previous"
+#endif
+
+/* The default format used by the ASM_OUTPUT_PUSH_SECTION macro (see below)
+   to print the PUSHSECTION_ASM_OP and the section name.  The default here
+   works for almost all svr4 assemblers, except for the sparc, where the
+   section name must be enclosed in double quotes.  (See sparcv4.h.)  */
+
+#ifndef PUSHSECTION_FORMAT
+#define PUSHSECTION_FORMAT	"%s%s\n"
+#endif
+
+#ifndef DEBUG_SECTION
+#define DEBUG_SECTION		".debug"
+#endif
+#ifndef LINE_SECTION
+#define LINE_SECTION		".line"
+#endif
+#ifndef DEBUG_SFNAMES_SECTION
+#define DEBUG_SFNAMES_SECTION	".debug_sfnames"
+#endif
+#ifndef DEBUG_SRCINFO_SECTION
+#define DEBUG_SRCINFO_SECTION	".debug_srcinfo"
+#endif
+#ifndef DEBUG_MACINFO_SECTION
+#define DEBUG_MACINFO_SECTION	".debug_macinfo"
+#endif
+#ifndef DEBUG_PUBNAMES_SECTION
+#define DEBUG_PUBNAMES_SECTION	".debug_pubnames"
+#endif
+#ifndef DEBUG_ARANGES_SECTION
+#define DEBUG_ARANGES_SECTION	".debug_aranges"
+#endif
+#ifndef TEXT_SECTION_NAME
+#define TEXT_SECTION_NAME	".text"
+#endif
+#ifndef DATA_SECTION_NAME
+#define DATA_SECTION_NAME	".data"
+#endif
+#ifndef DATA1_SECTION_NAME
+#define DATA1_SECTION_NAME	".data1"
+#endif
+#ifndef RODATA_SECTION_NAME
+#define RODATA_SECTION_NAME	".rodata"
+#endif
+#ifndef RODATA1_SECTION_NAME
+#define RODATA1_SECTION_NAME	".rodata1"
+#endif
+#ifndef BSS_SECTION_NAME
+#define BSS_SECTION_NAME	".bss"
+#endif
+
+/* Definitions of defaults for formats and names of various special
+   (artificial) labels which may be generated within this file (when
+   the -g options is used and DWARF_DEBUGGING_INFO is in effect.
+
+   If necessary, these may be overridden from within your tm.h file,
+   but typically, you should never need to override these.
+
+   These labels have been hacked (temporarily) so that they all begin with
+   a `.L' sequence so as to appease the stock sparc/svr4 assembler and the
+   stock m88k/svr4 assembler, both of which need to see .L at the start of
+   a label in order to prevent that label from going into the linker symbol
+   table).  When I get time, I'll have to fix this the right way so that we
+   will use ASM_GENERATE_INTERNAL_LABEL and ASM_OUTPUT_INTERNAL_LABEL herein,
+   but that will require a rather massive set of changes.  For the moment,
+   the following definitions out to produce the right results for all svr4
+   and svr3 assemblers. -- rfg
+*/
+
+#ifndef TEXT_BEGIN_LABEL
+#define TEXT_BEGIN_LABEL	"*.L_text_b"
+#endif
+#ifndef TEXT_END_LABEL
+#define TEXT_END_LABEL		"*.L_text_e"
+#endif
+
+#ifndef DATA_BEGIN_LABEL
+#define DATA_BEGIN_LABEL	"*.L_data_b"
+#endif
+#ifndef DATA_END_LABEL
+#define DATA_END_LABEL		"*.L_data_e"
+#endif
+
+#ifndef DATA1_BEGIN_LABEL
+#define DATA1_BEGIN_LABEL	"*.L_data1_b"
+#endif
+#ifndef DATA1_END_LABEL
+#define DATA1_END_LABEL		"*.L_data1_e"
+#endif
+
+#ifndef RODATA_BEGIN_LABEL
+#define RODATA_BEGIN_LABEL	"*.L_rodata_b"
+#endif
+#ifndef RODATA_END_LABEL
+#define RODATA_END_LABEL	"*.L_rodata_e"
+#endif
+
+#ifndef RODATA1_BEGIN_LABEL
+#define RODATA1_BEGIN_LABEL	"*.L_rodata1_b"
+#endif
+#ifndef RODATA1_END_LABEL
+#define RODATA1_END_LABEL	"*.L_rodata1_e"
+#endif
+
+#ifndef BSS_BEGIN_LABEL
+#define BSS_BEGIN_LABEL		"*.L_bss_b"
+#endif
+#ifndef BSS_END_LABEL
+#define BSS_END_LABEL		"*.L_bss_e"
+#endif
+
+#ifndef LINE_BEGIN_LABEL
+#define LINE_BEGIN_LABEL	"*.L_line_b"
+#endif
+#ifndef LINE_LAST_ENTRY_LABEL
+#define LINE_LAST_ENTRY_LABEL	"*.L_line_last"
+#endif
+#ifndef LINE_END_LABEL
+#define LINE_END_LABEL		"*.L_line_e"
+#endif
+
+#ifndef DEBUG_BEGIN_LABEL
+#define DEBUG_BEGIN_LABEL	"*.L_debug_b"
+#endif
+#ifndef SFNAMES_BEGIN_LABEL
+#define SFNAMES_BEGIN_LABEL	"*.L_sfnames_b"
+#endif
+#ifndef SRCINFO_BEGIN_LABEL
+#define SRCINFO_BEGIN_LABEL	"*.L_srcinfo_b"
+#endif
+#ifndef MACINFO_BEGIN_LABEL
+#define MACINFO_BEGIN_LABEL	"*.L_macinfo_b"
+#endif
+
+#ifndef DEBUG_ARANGES_BEGIN_LABEL
+#define DEBUG_ARANGES_BEGIN_LABEL "*.L_debug_aranges_begin"
+#endif
+#ifndef DEBUG_ARANGES_END_LABEL
+#define DEBUG_ARANGES_END_LABEL "*.L_debug_aranges_end"
+#endif
+
+#ifndef DIE_BEGIN_LABEL_FMT
+#define DIE_BEGIN_LABEL_FMT	"*.L_D%u"
+#endif
+#ifndef DIE_END_LABEL_FMT
+#define DIE_END_LABEL_FMT	"*.L_D%u_e"
+#endif
+#ifndef PUB_DIE_LABEL_FMT
+#define PUB_DIE_LABEL_FMT	"*.L_P%u"
+#endif
+#ifndef BLOCK_BEGIN_LABEL_FMT
+#define BLOCK_BEGIN_LABEL_FMT	"*.L_B%u"
+#endif
+#ifndef BLOCK_END_LABEL_FMT
+#define BLOCK_END_LABEL_FMT	"*.L_B%u_e"
+#endif
+#ifndef SS_BEGIN_LABEL_FMT
+#define SS_BEGIN_LABEL_FMT	"*.L_s%u"
+#endif
+#ifndef SS_END_LABEL_FMT
+#define SS_END_LABEL_FMT	"*.L_s%u_e"
+#endif
+#ifndef EE_BEGIN_LABEL_FMT
+#define EE_BEGIN_LABEL_FMT	"*.L_e%u"
+#endif
+#ifndef EE_END_LABEL_FMT
+#define EE_END_LABEL_FMT	"*.L_e%u_e"
+#endif
+#ifndef MT_BEGIN_LABEL_FMT
+#define MT_BEGIN_LABEL_FMT	"*.L_t%u"
+#endif
+#ifndef MT_END_LABEL_FMT
+#define MT_END_LABEL_FMT	"*.L_t%u_e"
+#endif
+#ifndef LOC_BEGIN_LABEL_FMT
+#define LOC_BEGIN_LABEL_FMT	"*.L_l%u"
+#endif
+#ifndef LOC_END_LABEL_FMT
+#define LOC_END_LABEL_FMT	"*.L_l%u_e"
+#endif
+#ifndef BOUND_BEGIN_LABEL_FMT
+#define BOUND_BEGIN_LABEL_FMT	"*.L_b%u_%u_%c"
+#endif
+#ifndef BOUND_END_LABEL_FMT
+#define BOUND_END_LABEL_FMT	"*.L_b%u_%u_%c_e"
+#endif
+#ifndef DERIV_BEGIN_LABEL_FMT
+#define DERIV_BEGIN_LABEL_FMT	"*.L_d%u"
+#endif
+#ifndef DERIV_END_LABEL_FMT
+#define DERIV_END_LABEL_FMT	"*.L_d%u_e"
+#endif
+#ifndef SL_BEGIN_LABEL_FMT
+#define SL_BEGIN_LABEL_FMT	"*.L_sl%u"
+#endif
+#ifndef SL_END_LABEL_FMT
+#define SL_END_LABEL_FMT	"*.L_sl%u_e"
+#endif
+#ifndef BODY_BEGIN_LABEL_FMT
+#define BODY_BEGIN_LABEL_FMT	"*.L_b%u"
+#endif
+#ifndef BODY_END_LABEL_FMT
+#define BODY_END_LABEL_FMT	"*.L_b%u_e"
+#endif
+#ifndef FUNC_END_LABEL_FMT
+#define FUNC_END_LABEL_FMT	"*.L_f%u_e"
+#endif
+#ifndef TYPE_NAME_FMT
+#define TYPE_NAME_FMT		"*.L_T%u"
+#endif
+#ifndef DECL_NAME_FMT
+#define DECL_NAME_FMT		"*.L_E%u"
+#endif
+#ifndef LINE_CODE_LABEL_FMT
+#define LINE_CODE_LABEL_FMT	"*.L_LC%u"
+#endif
+#ifndef SFNAMES_ENTRY_LABEL_FMT
+#define SFNAMES_ENTRY_LABEL_FMT	"*.L_F%u"
+#endif
+#ifndef LINE_ENTRY_LABEL_FMT
+#define LINE_ENTRY_LABEL_FMT	"*.L_LE%u"
+#endif
+
+/* Definitions of defaults for various types of primitive assembly language
+   output operations.
+
+   If necessary, these may be overridden from within your tm.h file,
+   but typically, you shouldn't need to override these.  */
+
+#ifndef ASM_OUTPUT_PUSH_SECTION
+#define ASM_OUTPUT_PUSH_SECTION(FILE, SECTION) \
+  fprintf ((FILE), PUSHSECTION_FORMAT, PUSHSECTION_ASM_OP, SECTION)
+#endif
+
+#ifndef ASM_OUTPUT_POP_SECTION
+#define ASM_OUTPUT_POP_SECTION(FILE) \
+  fprintf ((FILE), "%s\n", POPSECTION_ASM_OP)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_DELTA2
+#define ASM_OUTPUT_DWARF_DELTA2(FILE,LABEL1,LABEL2)			\
+  dw2_asm_output_delta (2, LABEL1, LABEL2, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_DELTA4
+#define ASM_OUTPUT_DWARF_DELTA4(FILE,LABEL1,LABEL2)			\
+  dw2_asm_output_delta (4, LABEL1, LABEL2, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_TAG
+#define ASM_OUTPUT_DWARF_TAG(FILE,TAG)					\
+  dw2_asm_output_data (2, TAG, "%s", dwarf_tag_name (TAG));
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_ATTRIBUTE
+#define ASM_OUTPUT_DWARF_ATTRIBUTE(FILE,ATTR)				\
+  dw2_asm_output_data (2, ATTR, "%s", dwarf_attr_name (ATTR))
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_STACK_OP
+#define ASM_OUTPUT_DWARF_STACK_OP(FILE,OP)				\
+  dw2_asm_output_data (1, OP, "%s", dwarf_stack_op_name (OP))
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_FUND_TYPE
+#define ASM_OUTPUT_DWARF_FUND_TYPE(FILE,FT)				\
+  dw2_asm_output_data (2, FT, "%s", dwarf_fund_type_name (FT))
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_FMT_BYTE
+#define ASM_OUTPUT_DWARF_FMT_BYTE(FILE,FMT)				\
+  dw2_asm_output_data (1, FMT, "%s", dwarf_fmt_byte_name (FMT));
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_TYPE_MODIFIER
+#define ASM_OUTPUT_DWARF_TYPE_MODIFIER(FILE,MOD)			\
+  dw2_asm_output_data (1, MOD, "%s", dwarf_typemod_name (MOD));
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_ADDR
+#define ASM_OUTPUT_DWARF_ADDR(FILE,LABEL)				\
+  dw2_asm_output_addr (4, LABEL, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_ADDR_CONST
+#define ASM_OUTPUT_DWARF_ADDR_CONST(FILE,RTX)				\
+  dw2_asm_output_addr_rtx (4, RTX, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_REF
+#define ASM_OUTPUT_DWARF_REF(FILE,LABEL)				\
+  dw2_asm_output_addr (4, LABEL, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_DATA1
+#define ASM_OUTPUT_DWARF_DATA1(FILE,VALUE) \
+  dw2_asm_output_data (1, VALUE, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_DATA2
+#define ASM_OUTPUT_DWARF_DATA2(FILE,VALUE) \
+  dw2_asm_output_data (2, VALUE, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_DATA4
+#define ASM_OUTPUT_DWARF_DATA4(FILE,VALUE) \
+  dw2_asm_output_data (4, VALUE, NULL)
+#endif
+
+#ifndef ASM_OUTPUT_DWARF_DATA8
+#define ASM_OUTPUT_DWARF_DATA8(FILE,HIGH_VALUE,LOW_VALUE)		\
+  dw2_asm_output_data (8, VALUE, NULL)
+#endif
+
+/* ASM_OUTPUT_DWARF_STRING is defined to output an ascii string, but to
+   NOT issue a trailing newline. We define ASM_OUTPUT_DWARF_STRING_NEWLINE
+   based on whether ASM_OUTPUT_DWARF_STRING is defined or not. If it is
+   defined, we call it, then issue the line feed. If not, we supply a
+   default definition of calling ASM_OUTPUT_ASCII */
+
+#ifndef ASM_OUTPUT_DWARF_STRING
+#define ASM_OUTPUT_DWARF_STRING_NEWLINE(FILE,P) \
+  ASM_OUTPUT_ASCII ((FILE), P, strlen (P)+1)
+#else
+#define ASM_OUTPUT_DWARF_STRING_NEWLINE(FILE,P) \
+  ASM_OUTPUT_DWARF_STRING (FILE,P), ASM_OUTPUT_DWARF_STRING (FILE,"\n") 
+#endif
+
+
+/* The debug hooks structure.  */
+struct gcc_debug_hooks dwarf_debug_hooks =
+{
+  dwarfout_init,
+  dwarfout_finish,
+  dwarfout_define,
+  dwarfout_undef,
+  dwarfout_start_source_file_check,
+  dwarfout_end_source_file_check,
+  dwarfout_begin_block,
+  dwarfout_end_block,
+  debug_true_tree,		/* ignore_block */
+  dwarfout_source_line,		/* source_line */
+  dwarfout_source_line,		/* begin_prologue */
+  dwarfout_end_prologue,
+  dwarfout_end_epilogue,
+  debug_nothing_tree,		/* begin_function */
+  dwarfout_end_function,
+  dwarfout_function_decl,
+  dwarfout_global_decl,
+  dwarfout_deferred_inline_function,
+  debug_nothing_tree,		/* outlining_inline_function */
+  debug_nothing_rtx		/* label */
+};

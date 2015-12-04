@@ -1,0 +1,353 @@
+void init_lists(int currSliceType, PictureStructure currPicStructure)
+{
+  int add_top = 0, add_bottom = 0;
+  unsigned i;
+  int j;
+  int MaxFrameNum = 1 << (log2_max_frame_num_minus4 + 4);
+  int diff;
+
+  int list0idx = 0;
+  int list0idx_1 = 0;
+  int listltidx = 0;
+
+  FrameStore **fs_list0;
+  FrameStore **fs_list1;
+  FrameStore **fs_listlt;
+
+  StorablePicture *tmp_s;
+
+  if (currPicStructure == FRAME)  
+  {
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      if (dpb.fs_ref[i]->is_used==3)
+      {
+        if ((dpb.fs_ref[i]->frame->used_for_reference)&&(!dpb.fs_ref[i]->frame->is_long_term))
+        {
+          if( dpb.fs_ref[i]->frame_num > img->frame_num )
+          {
+            dpb.fs_ref[i]->frame_num_wrap = dpb.fs_ref[i]->frame_num - MaxFrameNum;
+          }
+          else
+          {
+            dpb.fs_ref[i]->frame_num_wrap = dpb.fs_ref[i]->frame_num;
+          }
+          dpb.fs_ref[i]->frame->pic_num = dpb.fs_ref[i]->frame_num_wrap;
+          dpb.fs_ref[i]->frame->order_num=list0idx;
+        }
+      }
+    }
+  }
+  else
+  {
+    if (currPicStructure == TOP_FIELD)
+    {
+      add_top    = 1;
+      add_bottom = 0;
+    }
+    else
+    {
+      add_top    = 0;
+      add_bottom = 1;
+    }
+    
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      if (dpb.fs_ref[i]->is_reference)
+      {
+        if( dpb.fs_ref[i]->frame_num > img->frame_num )
+        {
+          dpb.fs_ref[i]->frame_num_wrap = dpb.fs_ref[i]->frame_num - MaxFrameNum;
+        }
+        else
+        {
+          dpb.fs_ref[i]->frame_num_wrap = dpb.fs_ref[i]->frame_num;
+        }
+        if (dpb.fs_ref[i]->is_reference & 1)
+        {
+          dpb.fs_ref[i]->top_field->pic_num = (2 * dpb.fs_ref[i]->frame_num_wrap) + add_top;
+        }
+        if (dpb.fs_ref[i]->is_reference & 2)
+        {
+          dpb.fs_ref[i]->bottom_field->pic_num = (2 * dpb.fs_ref[i]->frame_num_wrap) + add_bottom;
+        }
+      }
+    }
+  }
+
+  if ((currSliceType == I_SLICE)||(currSliceType == SI_SLICE))
+  {
+    listXsize[0] = 0;
+    listXsize[1] = 0;
+    return;
+  }
+
+  if ((currSliceType == P_SLICE)||(currSliceType == SP_SLICE))
+  {
+    // Calculate FrameNumWrap and PicNum
+    if (currPicStructure == FRAME)  
+    {
+      for (i=0; i<dpb.ref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ref[i]->is_used==3)
+        {
+          if ((dpb.fs_ref[i]->frame->used_for_reference)&&(!dpb.fs_ref[i]->frame->is_long_term))
+          {
+            listX[0][list0idx++] = dpb.fs_ref[i]->frame;
+          }
+        }
+      }
+      // order list 0 by PicNum
+      qsort((void *)listX[0], list0idx, sizeof(StorablePicture*), compare_pic_by_pic_num_desc);
+      listXsize[0] = list0idx;
+//      printf("listX[0] (PicNum): "); for (i=0; i<list0idx; i++){printf ("%d  ", listX[0][i]->pic_num);} printf("\n");
+
+      // long term handling
+      for (i=0; i<dpb.ltref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ltref[i]->is_used==3)
+        {
+          if (dpb.fs_ltref[i]->frame->is_long_term)
+          {
+            dpb.fs_ltref[i]->frame->long_term_pic_num = dpb.fs_ltref[i]->frame->long_term_frame_idx;
+            dpb.fs_ltref[i]->frame->order_num=list0idx;
+            listX[0][list0idx++]=dpb.fs_ltref[i]->frame;
+          }
+        }
+      }
+      qsort((void *)&listX[0][listXsize[0]], list0idx-listXsize[0], sizeof(StorablePicture*), compare_pic_by_lt_pic_num_asc);
+      listXsize[0] = list0idx;
+    }
+    else
+    {
+      fs_list0 = calloc(dpb.size, sizeof (FrameStore*));
+      if (NULL==fs_list0) 
+         no_mem_exit("init_lists: fs_list0");
+      fs_listlt = calloc(dpb.size, sizeof (FrameStore*));
+      if (NULL==fs_listlt) 
+         no_mem_exit("init_lists: fs_listlt");
+
+      for (i=0; i<dpb.ref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ref[i]->is_reference)
+        {
+          fs_list0[list0idx++] = dpb.fs_ref[i];
+        }
+      }
+
+      qsort((void *)fs_list0, list0idx, sizeof(FrameStore*), compare_fs_by_frame_num_desc);
+
+//      printf("fs_list0 (FrameNum): "); for (i=0; i<list0idx; i++){printf ("%d  ", fs_list0[i]->frame_num_wrap);} printf("\n");
+
+      listXsize[0] = 0;
+      gen_pic_list_from_frame_list(currPicStructure, fs_list0, list0idx, listX[0], &listXsize[0], 0);
+
+//      printf("listX[0] (PicNum): "); for (i=0; i<listXsize[0]; i++){printf ("%d  ", listX[0][i]->pic_num);} printf("\n");
+
+      // long term handling
+      for (i=0; i<dpb.ltref_frames_in_buffer; i++)
+      {
+        fs_listlt[listltidx++]=dpb.fs_ltref[i];
+        if (dpb.fs_ltref[i]->is_long_term & 1)
+        {
+          dpb.fs_ltref[i]->top_field->long_term_pic_num = 2 * dpb.fs_ltref[i]->top_field->long_term_frame_idx + add_top;
+        }
+        if (dpb.fs_ltref[i]->is_long_term & 2)
+        {
+          dpb.fs_ltref[i]->bottom_field->long_term_pic_num = 2 * dpb.fs_ltref[i]->bottom_field->long_term_frame_idx + add_bottom;
+        }
+      }
+
+      qsort((void *)fs_listlt, listltidx, sizeof(FrameStore*), compare_fs_by_lt_pic_idx_asc);
+
+      gen_pic_list_from_frame_list(currPicStructure, fs_listlt, listltidx, listX[0], &listXsize[0], 1);
+
+      free(fs_list0);
+      free(fs_listlt);
+    }
+    listXsize[1] = 0;
+  }
+  else
+  {
+    // B-Slice
+    if (currPicStructure == FRAME)  
+    {
+      for (i=0; i<dpb.ref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ref[i]->is_used==3)
+        {
+          if ((dpb.fs_ref[i]->frame->used_for_reference)&&(!dpb.fs_ref[i]->frame->is_long_term))
+          {
+            if (img->framepoc > dpb.fs_ref[i]->frame->poc)
+            {
+              dpb.fs_ref[i]->frame->order_num=list0idx;
+              listX[0][list0idx++] = dpb.fs_ref[i]->frame;
+            }
+          }
+        }
+      }
+      qsort((void *)listX[0], list0idx, sizeof(StorablePicture*), compare_pic_by_poc_desc);
+      list0idx_1 = list0idx;
+      for (i=0; i<dpb.ref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ref[i]->is_used==3)
+        {
+          if ((dpb.fs_ref[i]->frame->used_for_reference)&&(!dpb.fs_ref[i]->frame->is_long_term))
+          {
+            if (img->framepoc < dpb.fs_ref[i]->frame->poc)
+            {
+              dpb.fs_ref[i]->frame->order_num=list0idx;
+              listX[0][list0idx++] = dpb.fs_ref[i]->frame;
+            }
+          }
+        }
+      }
+      qsort((void *)&listX[0][list0idx_1], list0idx-list0idx_1, sizeof(StorablePicture*), compare_pic_by_poc_asc);
+
+      for (j=0; j<list0idx_1; j++)
+      {
+        listX[1][list0idx-list0idx_1+j]=listX[0][j];
+      }
+      for (j=list0idx_1; j<list0idx; j++)
+      {
+        listX[1][j-list0idx_1]=listX[0][j];
+      }
+
+      listXsize[0] = listXsize[1] = list0idx;
+
+//      printf("listX[0] currPoc=%d (Poc): ", img->framepoc); for (i=0; i<listXsize[0]; i++){printf ("%d  ", listX[0][i]->poc);} printf("\n");
+//      printf("listX[1] currPoc=%d (Poc): ", img->framepoc); for (i=0; i<listXsize[1]; i++){printf ("%d  ", listX[1][i]->poc);} printf("\n");
+
+      // long term handling
+      for (i=0; i<dpb.ltref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ltref[i]->is_used==3)
+        {
+          if (dpb.fs_ltref[i]->frame->is_long_term)
+          {
+            dpb.fs_ltref[i]->frame->long_term_pic_num = dpb.fs_ltref[i]->frame->long_term_frame_idx;
+            dpb.fs_ltref[i]->frame->order_num=list0idx;
+
+            listX[0][list0idx]  =dpb.fs_ltref[i]->frame;
+            listX[1][list0idx++]=dpb.fs_ltref[i]->frame;
+          }
+        }
+      }
+      qsort((void *)&listX[0][listXsize[0]], list0idx-listXsize[0], sizeof(StorablePicture*), compare_pic_by_lt_pic_num_asc);
+      qsort((void *)&listX[1][listXsize[0]], list0idx-listXsize[0], sizeof(StorablePicture*), compare_pic_by_lt_pic_num_asc);
+      listXsize[0] = listXsize[1] = list0idx;
+    }
+    else
+    {
+      fs_list0 = calloc(dpb.size, sizeof (FrameStore*));
+      if (NULL==fs_list0) 
+         no_mem_exit("init_lists: fs_list0");
+      fs_list1 = calloc(dpb.size, sizeof (FrameStore*));
+      if (NULL==fs_list1) 
+         no_mem_exit("init_lists: fs_list1");
+      fs_listlt = calloc(dpb.size, sizeof (FrameStore*));
+      if (NULL==fs_listlt) 
+         no_mem_exit("init_lists: fs_listlt");
+
+      listXsize[0] = 0;
+      listXsize[1] = 1;
+
+      for (i=0; i<dpb.ref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ref[i]->is_used)
+        {
+          if (img->ThisPOC >= dpb.fs_ref[i]->poc)
+          {
+            fs_list0[list0idx++] = dpb.fs_ref[i];
+          }
+        }
+      }
+      qsort((void *)fs_list0, list0idx, sizeof(FrameStore*), compare_fs_by_poc_desc);
+      list0idx_1 = list0idx;
+      for (i=0; i<dpb.ref_frames_in_buffer; i++)
+      {
+        if (dpb.fs_ref[i]->is_used)
+        {
+          if (img->ThisPOC < dpb.fs_ref[i]->poc)
+          {
+            fs_list0[list0idx++] = dpb.fs_ref[i];
+          }
+        }
+      }
+      qsort((void *)&fs_list0[list0idx_1], list0idx-list0idx_1, sizeof(FrameStore*), compare_fs_by_poc_asc);
+
+      for (j=0; j<list0idx_1; j++)
+      {
+        fs_list1[list0idx-list0idx_1+j]=fs_list0[j];
+      }
+      for (j=list0idx_1; j<list0idx; j++)
+      {
+        fs_list1[j-list0idx_1]=fs_list0[j];
+      }
+      
+//      printf("fs_list0 currPoc=%d (Poc): ", img->ThisPOC); for (i=0; i<list0idx; i++){printf ("%d  ", fs_list0[i]->poc);} printf("\n");
+//      printf("fs_list1 currPoc=%d (Poc): ", img->ThisPOC); for (i=0; i<list0idx; i++){printf ("%d  ", fs_list1[i]->poc);} printf("\n");
+
+      listXsize[0] = 0;
+      listXsize[1] = 0;
+      gen_pic_list_from_frame_list(currPicStructure, fs_list0, list0idx, listX[0], &listXsize[0], 0);
+      gen_pic_list_from_frame_list(currPicStructure, fs_list1, list0idx, listX[1], &listXsize[1], 0);
+
+//      printf("listX[0] currPoc=%d (Poc): ", img->framepoc); for (i=0; i<listXsize[0]; i++){printf ("%d  ", listX[0][i]->poc);} printf("\n");
+//      printf("listX[1] currPoc=%d (Poc): ", img->framepoc); for (i=0; i<listXsize[1]; i++){printf ("%d  ", listX[1][i]->poc);} printf("\n");
+
+      // long term handling
+      for (i=0; i<dpb.ltref_frames_in_buffer; i++)
+      {
+        fs_listlt[listltidx++]=dpb.fs_ltref[i];
+        if (dpb.fs_ltref[i]->is_long_term & 1)
+        {
+          dpb.fs_ltref[i]->top_field->long_term_pic_num = 2 * dpb.fs_ltref[i]->top_field->long_term_frame_idx + add_top;
+        }
+        if (dpb.fs_ltref[i]->is_long_term & 2)
+        {
+          dpb.fs_ltref[i]->bottom_field->long_term_pic_num = 2 * dpb.fs_ltref[i]->bottom_field->long_term_frame_idx + add_bottom;
+        }
+      }
+
+      qsort((void *)fs_listlt, listltidx, sizeof(FrameStore*), compare_fs_by_lt_pic_idx_asc);
+
+      gen_pic_list_from_frame_list(currPicStructure, fs_listlt, listltidx, listX[0], &listXsize[0], 1);
+      gen_pic_list_from_frame_list(currPicStructure, fs_listlt, listltidx, listX[1], &listXsize[1], 1);
+
+      free(fs_list0);
+      free(fs_list1);
+      free(fs_listlt);
+    }
+  } 
+
+  if ((listXsize[0] == listXsize[1]) && (listXsize[0] > 1))
+  {
+    // check if lists are identical, if yes swap first two elements of listX[1]
+    diff=0;
+    for (j = 0; j< listXsize[0]; j++)
+    {
+      if (listX[0][j]!=listX[1][j])
+        diff=1;
+    }
+    if (!diff)
+    {
+      tmp_s = listX[1][0];
+      listX[1][0]=listX[1][1];
+      listX[1][1]=tmp_s;
+    }
+  }
+  // set max size
+  listXsize[0] = min (listXsize[0], img->num_ref_idx_l0_active);
+  listXsize[1] = min (listXsize[1], img->num_ref_idx_l1_active);
+
+  // set the unused list entries to NULL
+  for (i=listXsize[0]; i< (MAX_LIST_SIZE) ; i++)
+  {
+    listX[0][i] = NULL;
+  }
+  for (i=listXsize[1]; i< (MAX_LIST_SIZE) ; i++)
+  {
+    listX[1][i] = NULL;
+  }
+}

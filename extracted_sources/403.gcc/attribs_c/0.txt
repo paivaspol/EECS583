@@ -1,0 +1,109 @@
+static tree handle_packed_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_nocommon_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_common_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_noreturn_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_noinline_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_always_inline_attribute PARAMS ((tree *, tree, tree, int,
+						    bool *));
+static tree handle_used_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_unused_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_const_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_transparent_union_attribute PARAMS ((tree *, tree, tree,
+							int, bool *));
+static tree handle_constructor_attribute PARAMS ((tree *, tree, tree, int,
+						  bool *));
+static tree handle_destructor_attribute PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_mode_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_section_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_aligned_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_weak_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_alias_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_no_instrument_function_attribute PARAMS ((tree *, tree,
+							     tree, int,
+							     bool *));
+static tree handle_malloc_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_no_limit_stack_attribute PARAMS ((tree *, tree, tree, int,
+						     bool *));
+static tree handle_pure_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_deprecated_attribute	PARAMS ((tree *, tree, tree, int,
+						 bool *));
+static tree handle_vector_size_attribute PARAMS ((tree *, tree, tree, int,
+						  bool *));
+static tree vector_size_helper PARAMS ((tree, tree));
+
+/* Table of machine-independent attributes common to all C-like languages.  */
+static const struct attribute_spec c_common_attribute_table[] =
+{
+  /* { name, min_len, max_len, decl_req, type_req, fn_type_req, handler } */
+  { "packed",                 0, 0, false, false, false,
+      			      handle_packed_attribute },
+  { "nocommon",               0, 0, true,  false, false,
+			      handle_nocommon_attribute },
+  { "common",                 0, 0, true,  false, false,
+			      handle_common_attribute },
+  /* FIXME: logically, noreturn attributes should be listed as
+     "false, true, true" and apply to function types.  But implementing this
+     would require all the places in the compiler that use TREE_THIS_VOLATILE
+     on a decl to identify non-returning functions to be located and fixed
+     to check the function type instead.  */
+  { "noreturn",               0, 0, true,  false, false,
+			      handle_noreturn_attribute },
+  { "volatile",               0, 0, true,  false, false,
+			      handle_noreturn_attribute },
+  { "noinline",               0, 0, true,  false, false,
+			      handle_noinline_attribute },
+  { "always_inline",          0, 0, true,  false, false,
+			      handle_always_inline_attribute },
+  { "used",                   0, 0, true,  false, false,
+			      handle_used_attribute },
+  { "unused",                 0, 0, false, false, false,
+			      handle_unused_attribute },
+  /* The same comments as for noreturn attributes apply to const ones.  */
+  { "const",                  0, 0, true,  false, false,
+			      handle_const_attribute },
+  { "transparent_union",      0, 0, false, false, false,
+			      handle_transparent_union_attribute },
+  { "constructor",            0, 0, true,  false, false,
+			      handle_constructor_attribute },
+  { "destructor",             0, 0, true,  false, false,
+			      handle_destructor_attribute },
+  { "mode",                   1, 1, false,  true, false,
+			      handle_mode_attribute },
+  { "section",                1, 1, true,  false, false,
+			      handle_section_attribute },
+  { "aligned",                0, 1, false, false, false,
+			      handle_aligned_attribute },
+  { "weak",                   0, 0, true,  false, false,
+			      handle_weak_attribute },
+  { "alias",                  1, 1, true,  false, false,
+			      handle_alias_attribute },
+  { "no_instrument_function", 0, 0, true,  false, false,
+			      handle_no_instrument_function_attribute },
+  { "malloc",                 0, 0, true,  false, false,
+			      handle_malloc_attribute },
+  { "no_stack_limit",         0, 0, true,  false, false,
+			      handle_no_limit_stack_attribute },
+  { "pure",                   0, 0, true,  false, false,
+			      handle_pure_attribute },
+  { "deprecated",             0, 0, false, false, false,
+			      handle_deprecated_attribute },
+  { "vector_size",	      1, 1, false, true, false,
+			      handle_vector_size_attribute },
+  { NULL,                     0, 0, false, false, false, NULL }
+};

@@ -1,0 +1,54 @@
+void
+compute_forward_dependences (head, tail)
+     rtx head, tail;
+{
+  rtx insn, link;
+  rtx next_tail;
+  enum reg_note dep_type;
+
+  next_tail = NEXT_INSN (tail);
+  for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
+    {
+      if (! INSN_P (insn))
+	continue;
+
+      insn = group_leader (insn);
+
+      for (link = LOG_LINKS (insn); link; link = XEXP (link, 1))
+	{
+	  rtx x = group_leader (XEXP (link, 0));
+	  rtx new_link;
+
+	  if (x != XEXP (link, 0))
+	    continue;
+
+#ifdef ENABLE_CHECKING
+	  /* If add_dependence is working properly there should never
+	     be notes, deleted insns or duplicates in the backward
+	     links.  Thus we need not check for them here.
+
+	     However, if we have enabled checking we might as well go
+	     ahead and verify that add_dependence worked properly.  */
+	  if (GET_CODE (x) == NOTE
+	      || INSN_DELETED_P (x)
+	      || (forward_dependency_cache != NULL
+		  && TEST_BIT (forward_dependency_cache[INSN_LUID (x)],
+			       INSN_LUID (insn)))
+	      || (forward_dependency_cache == NULL
+		  && find_insn_list (insn, INSN_DEPEND (x))))
+	    abort ();
+	  if (forward_dependency_cache != NULL)
+	    SET_BIT (forward_dependency_cache[INSN_LUID (x)],
+		     INSN_LUID (insn));
+#endif
+
+	  new_link = alloc_INSN_LIST (insn, INSN_DEPEND (x));
+
+	  dep_type = REG_NOTE_KIND (link);
+	  PUT_REG_NOTE_KIND (new_link, dep_type);
+
+	  INSN_DEPEND (x) = new_link;
+	  INSN_DEP_COUNT (insn) += 1;
+	}
+    }
+}

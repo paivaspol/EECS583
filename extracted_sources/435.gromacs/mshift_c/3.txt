@@ -1,0 +1,40 @@
+static void calc_1se(t_graph *g,t_ilist *il,t_functype ftype[],
+		     short nbond[],int natoms)
+{
+  int     k,nratoms,nbonded,tp,end,j;
+  t_iatom *ia,iaa;
+
+  end=il->nr;
+
+  ia=il->iatoms;
+  for(j=0; (j<end); j+=nratoms+1,ia+=nratoms+1) {
+    tp      = ftype[ia[0]];
+    nratoms = interaction_function[tp].nratoms;
+    
+    if (tp == F_SETTLE) {
+      iaa          = ia[1];
+      if (iaa<natoms) {
+	nbond[iaa]   = 2;
+	nbond[iaa+1] = 2;
+	nbond[iaa+2] = 2;
+	g->start     = min(g->start,iaa);
+	g->end       = max(g->end,iaa+2);
+      }
+    } else {
+      if (interaction_function[tp].flags & IF_DUMMY)
+	/* Bond a dummy only to the first constructing atom */
+	nbonded = 2;
+      else
+	nbonded = nratoms;
+      for(k=0; (k<nbonded); k++) {
+	iaa=ia[k+1];
+	if (iaa<natoms) {
+	  g->start=min(g->start,iaa);
+	  g->end  =max(g->end,  iaa);
+	  if (interaction_function[tp].flags & IF_CONNECT)
+	    nbond[iaa]++;
+	}
+      }
+    }
+  }
+}

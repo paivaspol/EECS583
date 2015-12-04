@@ -1,0 +1,15 @@
+void
+htab_clear_slot (htab, slot)
+     htab_t htab;
+     PTR *slot;
+{
+  if (slot < htab->entries || slot >= htab->entries + htab->size
+      || *slot == EMPTY_ENTRY || *slot == DELETED_ENTRY)
+    abort ();
+
+  if (htab->del_f)
+    (*htab->del_f) (*slot);
+
+  *slot = DELETED_ENTRY;
+  htab->n_deleted++;
+}

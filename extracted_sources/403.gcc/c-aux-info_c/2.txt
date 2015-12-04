@@ -1,0 +1,16 @@
+static int
+deserves_ellipsis (fntype)
+     tree fntype;
+{
+  tree formal_type;
+
+  formal_type = TYPE_ARG_TYPES (fntype);
+  while (formal_type && TREE_VALUE (formal_type) != void_type_node)
+    formal_type = TREE_CHAIN (formal_type);
+
+  /* If there were at least some parameters, and if the formals-types-list
+     petered out to a NULL (i.e. without being terminated by a void_type_node)
+     then we need to tack on an ellipsis.  */
+
+  return (!formal_type && TYPE_ARG_TYPES (fntype));
+}

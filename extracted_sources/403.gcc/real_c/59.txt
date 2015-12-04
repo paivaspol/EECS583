@@ -1,0 +1,32 @@
+static void
+etoe113 (x, e)
+     const UEMUSHORT *x;
+     UEMUSHORT *e;
+{
+  UEMUSHORT xi[NI];
+  EMULONG exp;
+  int rndsav;
+
+#ifdef NANS
+  if (eisnan (x))
+    {
+      make_nan (e, eisneg (x), TFmode);
+      return;
+    }
+#endif
+  emovi (x, xi);
+  exp = (EMULONG) xi[E];
+#ifdef INFINITY
+  if (eisinf (x))
+    goto nonorm;
+#endif
+  /* round off to nearest or even */
+  rndsav = rndprc;
+  rndprc = 113;
+  emdnorm (xi, 0, 0, exp, 64);
+  rndprc = rndsav;
+#ifdef INFINITY
+ nonorm:
+#endif
+  toe113 (xi, e);
+}

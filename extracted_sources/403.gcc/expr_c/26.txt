@@ -1,0 +1,350 @@
+void
+emit_push_insn (x, mode, type, size, align, partial, reg, extra,
+		args_addr, args_so_far, reg_parm_stack_space,
+                alignment_pad)
+     rtx x;
+     enum machine_mode mode;
+     tree type;
+     rtx size;
+     unsigned int align;
+     int partial;
+     rtx reg;
+     int extra;
+     rtx args_addr;
+     rtx args_so_far;
+     int reg_parm_stack_space;
+     rtx alignment_pad;
+{
+  rtx xinner;
+  enum direction stack_direction
+#ifdef STACK_GROWS_DOWNWARD
+    = downward;
+#else
+    = upward;
+#endif
+
+  /* Decide where to pad the argument: `downward' for below,
+     `upward' for above, or `none' for don't pad it.
+     Default is below for small data on big-endian machines; else above.  */
+  enum direction where_pad = FUNCTION_ARG_PADDING (mode, type);
+
+  /* Invert direction if stack is post-decrement. 
+     FIXME: why?  */
+  if (STACK_PUSH_CODE == POST_DEC)
+    if (where_pad != none)
+      where_pad = (where_pad == downward ? upward : downward);
+
+  xinner = x = protect_from_queue (x, 0);
+
+  if (mode == BLKmode)
+    {
+      /* Copy a block into the stack, entirely or partially.  */
+
+      rtx temp;
+      int used = partial * UNITS_PER_WORD;
+      int offset = used % (PARM_BOUNDARY / BITS_PER_UNIT);
+      int skip;
+
+      if (size == 0)
+	abort ();
+
+      used -= offset;
+
+      /* USED is now the # of bytes we need not copy to the stack
+	 because registers will take care of them.  */
+
+      if (partial != 0)
+	xinner = adjust_address (xinner, BLKmode, used);
+
+      /* If the partial register-part of the arg counts in its stack size,
+	 skip the part of stack space corresponding to the registers.
+	 Otherwise, start copying to the beginning of the stack space,
+	 by setting SKIP to 0.  */
+      skip = (reg_parm_stack_space == 0) ? 0 : used;
+
+#ifdef PUSH_ROUNDING
+      /* Do it with several push insns if that doesn't take lots of insns
+	 and if there is no difficulty with push insns that skip bytes
+	 on the stack for alignment purposes.  */
+      if (args_addr == 0
+	  && PUSH_ARGS
+	  && GET_CODE (size) == CONST_INT
+	  && skip == 0
+	  && (MOVE_BY_PIECES_P ((unsigned) INTVAL (size) - used, align))
+	  /* Here we avoid the case of a structure whose weak alignment
+	     forces many pushes of a small amount of data,
+	     and such small pushes do rounding that causes trouble.  */
+	  && ((! SLOW_UNALIGNED_ACCESS (word_mode, align))
+	      || align >= BIGGEST_ALIGNMENT
+	      || (PUSH_ROUNDING (align / BITS_PER_UNIT)
+		  == (align / BITS_PER_UNIT)))
+	  && PUSH_ROUNDING (INTVAL (size)) == INTVAL (size))
+	{
+	  /* Push padding now if padding above and stack grows down,
+	     or if padding below and stack grows up.
+	     But if space already allocated, this has already been done.  */
+	  if (extra && args_addr == 0
+	      && where_pad != none && where_pad != stack_direction)
+	    anti_adjust_stack (GEN_INT (extra));
+
+	  move_by_pieces (NULL, xinner, INTVAL (size) - used, align);
+	}
+      else
+#endif /* PUSH_ROUNDING  */
+	{
+	  rtx target;
+
+	  /* Otherwise make space on the stack and copy the data
+	     to the address of that space.  */
+
+	  /* Deduct words put into registers from the size we must copy.  */
+	  if (partial != 0)
+	    {
+	      if (GET_CODE (size) == CONST_INT)
+		size = GEN_INT (INTVAL (size) - used);
+	      else
+		size = expand_binop (GET_MODE (size), sub_optab, size,
+				     GEN_INT (used), NULL_RTX, 0,
+				     OPTAB_LIB_WIDEN);
+	    }
+
+	  /* Get the address of the stack space.
+	     In this case, we do not deal with EXTRA separately.
+	     A single stack adjust will do.  */
+	  if (! args_addr)
+	    {
+	      temp = push_block (size, extra, where_pad == downward);
+	      extra = 0;
+	    }
+	  else if (GET_CODE (args_so_far) == CONST_INT)
+	    temp = memory_address (BLKmode,
+				   plus_constant (args_addr,
+						  skip + INTVAL (args_so_far)));
+	  else
+	    temp = memory_address (BLKmode,
+				   plus_constant (gen_rtx_PLUS (Pmode,
+								args_addr,
+								args_so_far),
+						  skip));
+	  target = gen_rtx_MEM (BLKmode, temp);
+
+	  if (type != 0)
+	    {
+	      set_mem_attributes (target, type, 1);
+	      /* Function incoming arguments may overlap with sibling call
+		 outgoing arguments and we cannot allow reordering of reads
+		 from function arguments with stores to outgoing arguments
+		 of sibling calls.  */
+	      set_mem_alias_set (target, 0);
+	    }
+	  else
+	    set_mem_align (target, align);
+
+	  /* TEMP is the address of the block.  Copy the data there.  */
+	  if (GET_CODE (size) == CONST_INT
+	      && MOVE_BY_PIECES_P ((unsigned) INTVAL (size), align))
+	    {
+	      move_by_pieces (target, xinner, INTVAL (size), align);
+	      goto ret;
+	    }
+	  else
+	    {
+	      rtx opalign = GEN_INT (align / BITS_PER_UNIT);
+	      enum machine_mode mode;
+
+	      for (mode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+		   mode != VOIDmode;
+		   mode = GET_MODE_WIDER_MODE (mode))
+		{
+		  enum insn_code code = movstr_optab[(int) mode];
+		  insn_operand_predicate_fn pred;
+
+		  if (code != CODE_FOR_nothing
+		      && ((GET_CODE (size) == CONST_INT
+			   && ((unsigned HOST_WIDE_INT) INTVAL (size)
+			       <= (GET_MODE_MASK (mode) >> 1)))
+			  || GET_MODE_BITSIZE (mode) >= BITS_PER_WORD)
+		      && (!(pred = insn_data[(int) code].operand[0].predicate)
+			  || ((*pred) (target, BLKmode)))
+		      && (!(pred = insn_data[(int) code].operand[1].predicate)
+			  || ((*pred) (xinner, BLKmode)))
+		      && (!(pred = insn_data[(int) code].operand[3].predicate)
+			  || ((*pred) (opalign, VOIDmode))))
+		    {
+		      rtx op2 = convert_to_mode (mode, size, 1);
+		      rtx last = get_last_insn ();
+		      rtx pat;
+
+		      pred = insn_data[(int) code].operand[2].predicate;
+		      if (pred != 0 && ! (*pred) (op2, mode))
+			op2 = copy_to_mode_reg (mode, op2);
+
+		      pat = GEN_FCN ((int) code) (target, xinner,
+						  op2, opalign);
+		      if (pat)
+			{
+			  emit_insn (pat);
+			  goto ret;
+			}
+		      else
+			delete_insns_since (last);
+		    }
+		}
+	    }
+
+	  if (!ACCUMULATE_OUTGOING_ARGS)
+	    {
+	      /* If the source is referenced relative to the stack pointer,
+		 copy it to another register to stabilize it.  We do not need
+		 to do this if we know that we won't be changing sp.  */
+
+	      if (reg_mentioned_p (virtual_stack_dynamic_rtx, temp)
+		  || reg_mentioned_p (virtual_outgoing_args_rtx, temp))
+		temp = copy_to_reg (temp);
+	    }
+
+	  /* Make inhibit_defer_pop nonzero around the library call
+	     to force it to pop the bcopy-arguments right away.  */
+	  NO_DEFER_POP;
+#ifdef TARGET_MEM_FUNCTIONS
+	  emit_library_call (memcpy_libfunc, LCT_NORMAL,
+			     VOIDmode, 3, temp, Pmode, XEXP (xinner, 0), Pmode,
+			     convert_to_mode (TYPE_MODE (sizetype),
+					      size, TREE_UNSIGNED (sizetype)),
+			     TYPE_MODE (sizetype));
+#else
+	  emit_library_call (bcopy_libfunc, LCT_NORMAL,
+			     VOIDmode, 3, XEXP (xinner, 0), Pmode, temp, Pmode,
+			     convert_to_mode (TYPE_MODE (integer_type_node),
+					      size,
+					      TREE_UNSIGNED (integer_type_node)),
+			     TYPE_MODE (integer_type_node));
+#endif
+	  OK_DEFER_POP;
+	}
+    }
+  else if (partial > 0)
+    {
+      /* Scalar partly in registers.  */
+
+      int size = GET_MODE_SIZE (mode) / UNITS_PER_WORD;
+      int i;
+      int not_stack;
+      /* # words of start of argument
+	 that we must make space for but need not store.  */
+      int offset = partial % (PARM_BOUNDARY / BITS_PER_WORD);
+      int args_offset = INTVAL (args_so_far);
+      int skip;
+
+      /* Push padding now if padding above and stack grows down,
+	 or if padding below and stack grows up.
+	 But if space already allocated, this has already been done.  */
+      if (extra && args_addr == 0
+	  && where_pad != none && where_pad != stack_direction)
+	anti_adjust_stack (GEN_INT (extra));
+
+      /* If we make space by pushing it, we might as well push
+	 the real data.  Otherwise, we can leave OFFSET nonzero
+	 and leave the space uninitialized.  */
+      if (args_addr == 0)
+	offset = 0;
+
+      /* Now NOT_STACK gets the number of words that we don't need to
+	 allocate on the stack.  */
+      not_stack = partial - offset;
+
+      /* If the partial register-part of the arg counts in its stack size,
+	 skip the part of stack space corresponding to the registers.
+	 Otherwise, start copying to the beginning of the stack space,
+	 by setting SKIP to 0.  */
+      skip = (reg_parm_stack_space == 0) ? 0 : not_stack;
+
+      if (CONSTANT_P (x) && ! LEGITIMATE_CONSTANT_P (x))
+	x = validize_mem (force_const_mem (mode, x));
+
+      /* If X is a hard register in a non-integer mode, copy it into a pseudo;
+	 SUBREGs of such registers are not allowed.  */
+      if ((GET_CODE (x) == REG && REGNO (x) < FIRST_PSEUDO_REGISTER
+	   && GET_MODE_CLASS (GET_MODE (x)) != MODE_INT))
+	x = copy_to_reg (x);
+
+      /* Loop over all the words allocated on the stack for this arg.  */
+      /* We can do it by words, because any scalar bigger than a word
+	 has a size a multiple of a word.  */
+#ifndef PUSH_ARGS_REVERSED
+      for (i = not_stack; i < size; i++)
+#else
+      for (i = size - 1; i >= not_stack; i--)
+#endif
+	if (i >= not_stack + offset)
+	  emit_push_insn (operand_subword_force (x, i, mode),
+			  word_mode, NULL_TREE, NULL_RTX, align, 0, NULL_RTX,
+			  0, args_addr,
+			  GEN_INT (args_offset + ((i - not_stack + skip)
+						  * UNITS_PER_WORD)),
+			  reg_parm_stack_space, alignment_pad);
+    }
+  else
+    {
+      rtx addr;
+      rtx target = NULL_RTX;
+      rtx dest;
+
+      /* Push padding now if padding above and stack grows down,
+	 or if padding below and stack grows up.
+	 But if space already allocated, this has already been done.  */
+      if (extra && args_addr == 0
+	  && where_pad != none && where_pad != stack_direction)
+	anti_adjust_stack (GEN_INT (extra));
+
+#ifdef PUSH_ROUNDING
+      if (args_addr == 0 && PUSH_ARGS)
+	emit_single_push_insn (mode, x, type);
+      else
+#endif
+	{
+	  if (GET_CODE (args_so_far) == CONST_INT)
+	    addr
+	      = memory_address (mode,
+				plus_constant (args_addr,
+					       INTVAL (args_so_far)));
+	  else
+	    addr = memory_address (mode, gen_rtx_PLUS (Pmode, args_addr,
+						       args_so_far));
+	  target = addr;
+	  dest = gen_rtx_MEM (mode, addr);
+	  if (type != 0)
+	    {
+	      set_mem_attributes (dest, type, 1);
+	      /* Function incoming arguments may overlap with sibling call
+		 outgoing arguments and we cannot allow reordering of reads
+		 from function arguments with stores to outgoing arguments
+		 of sibling calls.  */
+	      set_mem_alias_set (dest, 0);
+	    }
+
+	  emit_move_insn (dest, x);
+	}
+
+    }
+
+ ret:
+  /* If part should go in registers, copy that part
+     into the appropriate registers.  Do this now, at the end,
+     since mem-to-mem copies above may do function calls.  */
+  if (partial > 0 && reg != 0)
+    {
+      /* Handle calls that pass values in multiple non-contiguous locations.
+	 The Irix 6 ABI has examples of this.  */
+      if (GET_CODE (reg) == PARALLEL)
+	emit_group_load (reg, x, -1);  /* ??? size? */
+      else
+	move_block_to_reg (REGNO (reg), x, partial, mode);
+    }
+
+  if (extra && args_addr == 0 && where_pad == stack_direction)
+    anti_adjust_stack (GEN_INT (extra));
+
+  if (alignment_pad && args_addr == 0)
+    anti_adjust_stack (alignment_pad);
+}

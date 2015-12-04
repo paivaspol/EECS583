@@ -1,0 +1,11 @@
+void
+_fill_mstats(struct mstats_buffer *b, int level)
+{
+    dTHX;
+    b->buffer.nfree  = b->buf;
+    b->buffer.ntotal = b->buf + _NBUCKETS;
+    b->buffer.bucket_mem_size = b->buf + 2*_NBUCKETS;
+    b->buffer.bucket_available_size = b->buf + 3*_NBUCKETS;
+    Zero(b->buf, (level ? 4*_NBUCKETS: 2*_NBUCKETS), unsigned long);
+    get_mstats(&(b->buffer), _NBUCKETS, level);
+}

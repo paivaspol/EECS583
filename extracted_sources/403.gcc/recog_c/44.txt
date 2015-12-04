@@ -1,0 +1,96 @@
+void
+extract_insn (insn)
+     rtx insn;
+{
+  int i;
+  int icode;
+  int noperands;
+  rtx body = PATTERN (insn);
+
+  recog_data.insn = NULL;
+  recog_data.n_operands = 0;
+  recog_data.n_alternatives = 0;
+  recog_data.n_dups = 0;
+  which_alternative = -1;
+
+  switch (GET_CODE (body))
+    {
+    case USE:
+    case CLOBBER:
+    case ASM_INPUT:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      return;
+
+    case SET:
+      if (GET_CODE (SET_SRC (body)) == ASM_OPERANDS)
+	goto asm_insn;
+      else
+	goto normal_insn;
+    case PARALLEL:
+      if ((GET_CODE (XVECEXP (body, 0, 0)) == SET
+	   && GET_CODE (SET_SRC (XVECEXP (body, 0, 0))) == ASM_OPERANDS)
+	  || GET_CODE (XVECEXP (body, 0, 0)) == ASM_OPERANDS)
+	goto asm_insn;
+      else
+	goto normal_insn;
+    case ASM_OPERANDS:
+    asm_insn:
+      recog_data.n_operands = noperands = asm_noperands (body);
+      if (noperands >= 0)
+	{
+	  /* This insn is an `asm' with operands.  */
+
+	  /* expand_asm_operands makes sure there aren't too many operands.  */
+	  if (noperands > MAX_RECOG_OPERANDS)
+	    abort ();
+
+	  /* Now get the operand values and constraints out of the insn.  */
+	  decode_asm_operands (body, recog_data.operand,
+			       recog_data.operand_loc,
+			       recog_data.constraints,
+			       recog_data.operand_mode);
+	  if (noperands > 0)
+	    {
+	      const char *p =  recog_data.constraints[0];
+	      recog_data.n_alternatives = 1;
+	      while (*p)
+		recog_data.n_alternatives += (*p++ == ',');
+	    }
+	  break;
+	}
+      fatal_insn_not_found (insn);
+
+    default:
+    normal_insn:
+      /* Ordinary insn: recognize it, get the operands via insn_extract
+	 and get the constraints.  */
+
+      icode = recog_memoized (insn);
+      if (icode < 0)
+	fatal_insn_not_found (insn);
+
+      recog_data.n_operands = noperands = insn_data[icode].n_operands;
+      recog_data.n_alternatives = insn_data[icode].n_alternatives;
+      recog_data.n_dups = insn_data[icode].n_dups;
+
+      insn_extract (insn);
+
+      for (i = 0; i < noperands; i++)
+	{
+	  recog_data.constraints[i] = insn_data[icode].operand[i].constraint;
+	  recog_data.operand_mode[i] = insn_data[icode].operand[i].mode;
+	  /* VOIDmode match_operands gets mode from their real operand.  */
+	  if (recog_data.operand_mode[i] == VOIDmode)
+	    recog_data.operand_mode[i] = GET_MODE (recog_data.operand[i]);
+	}
+    }
+  for (i = 0; i < noperands; i++)
+    recog_data.operand_type[i]
+      = (recog_data.constraints[i][0] == '=' ? OP_OUT
+	 : recog_data.constraints[i][0] == '+' ? OP_INOUT
+	 : OP_IN);
+
+  if (recog_data.n_alternatives > MAX_RECOG_ALTERNATIVES)
+    abort ();
+}

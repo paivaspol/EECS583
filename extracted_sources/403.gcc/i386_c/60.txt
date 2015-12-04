@@ -1,0 +1,21 @@
+int
+promotable_binary_operator (op, mode)
+     register rtx op;
+     enum machine_mode mode ATTRIBUTE_UNUSED;
+{
+  switch (GET_CODE (op))
+    {
+    case MULT:
+      /* Modern CPUs have same latency for HImode and SImode multiply,
+         but 386 and 486 do HImode multiply faster.  */
+      return ix86_cpu > PROCESSOR_I486;
+    case PLUS:
+    case AND:
+    case IOR:
+    case XOR:
+    case ASHIFT:
+      return 1;
+    default:
+      return 0;
+    }
+}

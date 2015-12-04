@@ -1,0 +1,24 @@
+static void
+loop_givs_dead_check (loop, bl)
+     struct loop *loop ATTRIBUTE_UNUSED;
+     struct iv_class *bl;
+{
+  struct induction *v;
+
+  for (v = bl->giv; v; v = v->next_iv)
+    {
+      if (v->ignore
+	  || (v->same && v->same->ignore))
+	continue;
+
+      if (v->giv_type == DEST_REG
+	  && REGNO_FIRST_UID (REGNO (v->dest_reg)) == INSN_UID (v->insn))
+	{
+	  struct induction *v1;
+
+	  for (v1 = bl->giv; v1; v1 = v1->next_iv)
+	    if (REGNO_LAST_UID (REGNO (v->dest_reg)) == INSN_UID (v1->insn))
+	      v->maybe_dead = 1;
+	}
+    }
+}

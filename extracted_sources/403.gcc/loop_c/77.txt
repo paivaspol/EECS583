@@ -1,0 +1,63 @@
+static int
+product_cheap_p (a, b)
+     rtx a;
+     rtx b;
+{
+  int i;
+  rtx tmp;
+  int win = 1;
+
+  /* If only one is constant, make it B.  */
+  if (GET_CODE (a) == CONST_INT)
+    tmp = a, a = b, b = tmp;
+
+  /* If first constant, both constant, so don't need multiply.  */
+  if (GET_CODE (a) == CONST_INT)
+    return 1;
+
+  /* If second not constant, neither is constant, so would need multiply.  */
+  if (GET_CODE (b) != CONST_INT)
+    return 0;
+
+  /* One operand is constant, so might not need multiply insn.  Generate the
+     code for the multiply and see if a call or multiply, or long sequence
+     of insns is generated.  */
+
+  start_sequence ();
+  expand_mult (GET_MODE (a), a, b, NULL_RTX, 1);
+  tmp = gen_sequence ();
+  end_sequence ();
+
+  if (GET_CODE (tmp) == SEQUENCE)
+    {
+      if (XVEC (tmp, 0) == 0)
+	win = 1;
+      else if (XVECLEN (tmp, 0) > 3)
+	win = 0;
+      else
+	for (i = 0; i < XVECLEN (tmp, 0); i++)
+	  {
+	    rtx insn = XVECEXP (tmp, 0, i);
+
+	    if (GET_CODE (insn) != INSN
+		|| (GET_CODE (PATTERN (insn)) == SET
+		    && GET_CODE (SET_SRC (PATTERN (insn))) == MULT)
+		|| (GET_CODE (PATTERN (insn)) == PARALLEL
+		    && GET_CODE (XVECEXP (PATTERN (insn), 0, 0)) == SET
+		    && GET_CODE (SET_SRC (XVECEXP (PATTERN (insn), 0, 0))) == MULT))
+	      {
+		win = 0;
+		break;
+	      }
+	  }
+    }
+  else if (GET_CODE (tmp) == SET
+	   && GET_CODE (SET_SRC (tmp)) == MULT)
+    win = 0;
+  else if (GET_CODE (tmp) == PARALLEL
+	   && GET_CODE (XVECEXP (tmp, 0, 0)) == SET
+	   && GET_CODE (SET_SRC (XVECEXP (tmp, 0, 0))) == MULT)
+    win = 0;
+
+  return win;
+}

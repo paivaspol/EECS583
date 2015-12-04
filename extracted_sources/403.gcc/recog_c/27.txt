@@ -1,0 +1,48 @@
+int
+nonmemory_operand (op, mode)
+     rtx op;
+     enum machine_mode mode;
+{
+  if (CONSTANT_P (op))
+    {
+      /* Don't accept CONST_INT or anything similar
+	 if the caller wants something floating.  */
+      if (GET_MODE (op) == VOIDmode && mode != VOIDmode
+	  && GET_MODE_CLASS (mode) != MODE_INT
+	  && GET_MODE_CLASS (mode) != MODE_PARTIAL_INT)
+	return 0;
+
+      if (GET_CODE (op) == CONST_INT
+	  && trunc_int_for_mode (INTVAL (op), mode) != INTVAL (op))
+	return 0;
+
+      return ((GET_MODE (op) == VOIDmode || GET_MODE (op) == mode
+	       || mode == VOIDmode)
+#ifdef LEGITIMATE_PIC_OPERAND_P
+	      && (! flag_pic || LEGITIMATE_PIC_OPERAND_P (op))
+#endif
+	      && LEGITIMATE_CONSTANT_P (op));
+    }
+
+  if (GET_MODE (op) != mode && mode != VOIDmode)
+    return 0;
+
+  if (GET_CODE (op) == SUBREG)
+    {
+      /* Before reload, we can allow (SUBREG (MEM...)) as a register operand
+	 because it is guaranteed to be reloaded into one.
+	 Just make sure the MEM is valid in itself.
+	 (Ideally, (SUBREG (MEM)...) should not exist after reload,
+	 but currently it does result from (SUBREG (REG)...) where the
+	 reg went on the stack.)  */
+      if (! reload_completed && GET_CODE (SUBREG_REG (op)) == MEM)
+	return general_operand (op, mode);
+      op = SUBREG_REG (op);
+    }
+
+  /* We don't consider registers whose class is NO_REGS
+     to be a register operand.  */
+  return (GET_CODE (op) == REG
+	  && (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	      || REGNO_REG_CLASS (REGNO (op)) != NO_REGS));
+}

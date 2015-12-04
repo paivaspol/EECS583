@@ -1,0 +1,25 @@
+static inline dw_die_ref
+new_die (tag_value, parent_die, t)
+     enum dwarf_tag tag_value;
+     dw_die_ref parent_die;
+     tree t;
+{
+  dw_die_ref die = (dw_die_ref) xcalloc (1, sizeof (die_node));
+
+  die->die_tag = tag_value;
+
+  if (parent_die != NULL)
+    add_child_die (parent_die, die);
+  else
+    {
+      limbo_die_node *limbo_node;
+
+      limbo_node = (limbo_die_node *) xmalloc (sizeof (limbo_die_node));
+      limbo_node->die = die;
+      limbo_node->created_for = t;
+      limbo_node->next = limbo_die_list;
+      limbo_die_list = limbo_node;
+    }
+
+  return die;
+}

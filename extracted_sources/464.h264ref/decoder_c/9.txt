@@ -1,0 +1,142 @@
+void Conceal_Error(imgpel **inY, int mb_y, int mb_x, imgpel ***refY, byte **s_map)
+{
+  int i,j,block_x, block_y;
+  int ref_inx = (IMG_NUMBER-1)%img->num_ref_frames;
+  int pos_y = mb_y*MB_BLOCK_SIZE, pos_x = mb_x*MB_BLOCK_SIZE;
+  int mv[2][BLOCK_MULTIPLE][BLOCK_MULTIPLE];
+  int resY[MB_BLOCK_SIZE][MB_BLOCK_SIZE];
+  int copy  = (decs->dec_mb_mode[mb_x][mb_y]==0 && (img->type==P_SLICE || (img->type==B_SLICE && img->nal_reference_idc>0)));
+  int inter = (((decs->dec_mb_mode[mb_x][mb_y]>=1 && decs->dec_mb_mode[mb_x][mb_y]<=3) || decs->dec_mb_mode[mb_x][mb_y]==P8x8) && (img->type==P_SLICE || (img->type==B_SLICE && img->nal_reference_idc>0)));
+  short ***tmp_mv = enc_picture->mv[LIST_0];
+  
+  switch(s_map[mb_y][mb_x])
+  {
+  case 1: //! whole slice lost (at least partition A lost)
+    if (img->type!=I_SLICE)
+    {
+      for (j=0;j<MB_BLOCK_SIZE;j++)
+        for (i=0;i<MB_BLOCK_SIZE;i++)
+          inY[pos_y+j][pos_x+i] = refY[ref_inx][pos_y+j][pos_x+i];
+    }
+    else
+    {
+      for (j=0;j<MB_BLOCK_SIZE;j++)
+        for (i=0;i<MB_BLOCK_SIZE;i++)
+          inY[pos_y+j][pos_x+i] = 127;
+    }
+    break;
+  case 5: //! partition B and partition C lost
+    
+    //! Copy motion vectors 
+    for (block_y=0; block_y<BLOCK_MULTIPLE; block_y++)
+      for (block_x=0; block_x<BLOCK_MULTIPLE; block_x++)
+        for (i=0;i<2;i++)
+          mv[i][block_y][block_x]=tmp_mv[mb_x*BLOCK_SIZE+block_x+4][mb_y*BLOCK_SIZE+block_y][i];
+    
+    //! Residuum ist set to zero    
+    for(i=0;i<MB_BLOCK_SIZE;i++)
+      for(j=0;j<MB_BLOCK_SIZE;j++)
+        resY[j][i]=0;
+    
+    //! not first frame
+    if (img->type!=I_SLICE)
+    {
+      //! if copy mb
+      if (copy)
+      {
+        for (j=0;j<MB_BLOCK_SIZE;j++)
+          for (i=0;i<MB_BLOCK_SIZE;i++)
+            inY[pos_y+j][pos_x+i] = refY[ref_inx][pos_y+j][pos_x+i];
+      }
+      //! if inter mb
+      else if (inter)  
+      {
+        for (block_y = mb_y*BLOCK_SIZE ; block_y < (mb_y*BLOCK_SIZE + BLOCK_MULTIPLE) ; block_y++)
+          for (block_x = mb_x*BLOCK_SIZE ; block_x < (mb_x*BLOCK_SIZE + BLOCK_MULTIPLE) ; block_x++)
+          {
+            Get_Reference_Block(refY[ref_inx],
+                                block_y, block_x,
+                                mv[0][block_y - mb_y*BLOCK_SIZE][block_x - mb_x*BLOCK_SIZE],
+                                mv[1][block_y - mb_y*BLOCK_SIZE][block_x - mb_x*BLOCK_SIZE],
+                                decs->RefBlock);
+            for (j=0;j<BLOCK_SIZE;j++)
+              for (i=0;i<BLOCK_SIZE;i++)
+              {
+                inY[block_y*BLOCK_SIZE + j][block_x*BLOCK_SIZE + i] = decs->RefBlock[j][i];
+              }
+          }
+      }
+      else //intra; up to now only copy mb, may integrate nokia EC 
+      {
+        for (j=0;j<MB_BLOCK_SIZE;j++)
+          for (i=0;i<MB_BLOCK_SIZE;i++)
+            inY[pos_y+j][pos_x+i] = refY[ref_inx][pos_y+j][pos_x+i];
+      }
+    }
+    else //! first frame; up to now set value to grey, may integrate nokia EC 
+    {
+      for (j=0;j<MB_BLOCK_SIZE;j++)
+        for (i=0;i<MB_BLOCK_SIZE;i++)
+          inY[pos_y+j][pos_x+i] = 127;
+    }
+    break;
+  case 3: //! Partition C lost
+    if(img->type!=I_SLICE)
+    {
+      //! Copy motion vectors 
+      for (block_y=0; block_y<BLOCK_MULTIPLE; block_y++)
+        for (block_x=0; block_x<BLOCK_MULTIPLE; block_x++)
+          for (i=0;i<2;i++)
+            mv[i][block_y][block_x]=tmp_mv[mb_x*BLOCK_SIZE+block_x+4][mb_y*BLOCK_SIZE+block_y][i];
+    
+      //! Residuum ist set to zero    
+      for(i=0;i<MB_BLOCK_SIZE;i++)
+        for(j=0;j<MB_BLOCK_SIZE;j++)
+          resY[j][i]=0;
+
+      //! if copy mb
+      if (copy)
+      {
+        for (j=0;j<MB_BLOCK_SIZE;j++)
+          for (i=0;i<MB_BLOCK_SIZE;i++)
+            inY[pos_y+j][pos_x+i] = refY[ref_inx][pos_y+j][pos_x+i];
+      }
+      //! if inter mb
+      else if (inter)  
+      {
+        for (block_y = mb_y*BLOCK_SIZE ; block_y < (mb_y*BLOCK_SIZE + BLOCK_MULTIPLE) ; block_y++)
+          for (block_x = mb_x*BLOCK_SIZE ; block_x < (mb_x*BLOCK_SIZE + BLOCK_MULTIPLE) ; block_x++)
+            {
+              Get_Reference_Block(refY[ref_inx],
+                                  block_y, block_x,
+                                  mv[0][block_y - mb_y*BLOCK_SIZE][block_x - mb_x*BLOCK_SIZE],
+                                  mv[1][block_y - mb_y*BLOCK_SIZE][block_x - mb_x*BLOCK_SIZE],
+                                  decs->RefBlock);
+              for (j=0;j<BLOCK_SIZE;j++)
+                for (i=0;i<BLOCK_SIZE;i++)
+                {
+                  inY[block_y*BLOCK_SIZE + j][block_x*BLOCK_SIZE + i] = decs->RefBlock[j][i];
+                }
+            }
+      }
+    }
+    break;
+  case 2: //! Partition B lost
+    if(img->type!=I_SLICE)
+    {
+      if(!inter)
+      {
+        for (j=0;j<MB_BLOCK_SIZE;j++)
+          for (i=0;i<MB_BLOCK_SIZE;i++)
+            inY[pos_y+j][pos_x+i] = refY[ref_inx][pos_y+j][pos_x+i];
+      }
+    }
+    else //! first frame; up to now set value to grey, may integrate nokia EC 
+    {
+      for (j=0;j<MB_BLOCK_SIZE;j++)
+        for (i=0;i<MB_BLOCK_SIZE;i++)
+          inY[pos_y+j][pos_x+i] = 127;
+    }
+    break;
+  } //! End Switch
+}

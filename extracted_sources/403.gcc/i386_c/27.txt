@@ -1,0 +1,58 @@
+void
+function_arg_advance (cum, mode, type, named)
+     CUMULATIVE_ARGS *cum;	/* current arg information */
+     enum machine_mode mode;	/* current arg mode */
+     tree type;			/* type of the argument or 0 if lib support */
+     int named;			/* whether or not the argument was named */
+{
+  int bytes =
+    (mode == BLKmode) ? int_size_in_bytes (type) : (int) GET_MODE_SIZE (mode);
+  int words = (bytes + UNITS_PER_WORD - 1) / UNITS_PER_WORD;
+
+  if (TARGET_DEBUG_ARG)
+    fprintf (stderr,
+	     "function_adv (sz=%d, wds=%2d, nregs=%d, mode=%s, named=%d)\n\n",
+	     words, cum->words, cum->nregs, GET_MODE_NAME (mode), named);
+  if (TARGET_64BIT)
+    {
+      int int_nregs, sse_nregs;
+      if (!examine_argument (mode, type, 0, &int_nregs, &sse_nregs))
+	cum->words += words;
+      else if (sse_nregs <= cum->sse_nregs && int_nregs <= cum->nregs)
+	{
+	  cum->nregs -= int_nregs;
+	  cum->sse_nregs -= sse_nregs;
+	  cum->regno += int_nregs;
+	  cum->sse_regno += sse_nregs;
+	}
+      else
+	cum->words += words;
+    }
+  else
+    {
+      if (TARGET_SSE && mode == TImode)
+	{
+	  cum->sse_words += words;
+	  cum->sse_nregs -= 1;
+	  cum->sse_regno += 1;
+	  if (cum->sse_nregs <= 0)
+	    {
+	      cum->sse_nregs = 0;
+	      cum->sse_regno = 0;
+	    }
+	}
+      else
+	{
+	  cum->words += words;
+	  cum->nregs -= words;
+	  cum->regno += words;
+
+	  if (cum->nregs <= 0)
+	    {
+	      cum->nregs = 0;
+	      cum->regno = 0;
+	    }
+	}
+    }
+  return;
+}

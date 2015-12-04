@@ -1,0 +1,20 @@
+void
+GKIFree(GKI *hash)
+{
+  struct gki_elem *ptr;
+  int       i;
+
+  if (hash == NULL) return;	/* tolerate a NULL */
+
+  for (i = 0; i < hash->nhash; i++)
+    while (hash->table[i] != NULL)
+      {
+	ptr = hash->table[i]->nxt;
+				/* NULL keys can occur after we've gki_upsize'd */
+	if (hash->table[i]->key != NULL) free(hash->table[i]->key);
+	free(hash->table[i]);
+	hash->table[i] = ptr;
+      }
+  free(hash->table);
+  free(hash);
+}

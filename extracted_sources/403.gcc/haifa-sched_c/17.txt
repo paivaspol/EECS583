@@ -1,0 +1,46 @@
+static void
+find_insn_reg_weight (b)
+     int b;
+{
+  rtx insn, next_tail, head, tail;
+
+  get_block_head_tail (b, &head, &tail);
+  next_tail = NEXT_INSN (tail);
+
+  for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
+    {
+      int reg_weight = 0;
+      rtx x;
+
+      /* Handle register life information.  */
+      if (! INSN_P (insn))
+	continue;
+
+      /* Increment weight for each register born here.  */
+      x = PATTERN (insn);
+      if ((GET_CODE (x) == SET || GET_CODE (x) == CLOBBER)
+	  && register_operand (SET_DEST (x), VOIDmode))
+	reg_weight++;
+      else if (GET_CODE (x) == PARALLEL)
+	{
+	  int j;
+	  for (j = XVECLEN (x, 0) - 1; j >= 0; j--)
+	    {
+	      x = XVECEXP (PATTERN (insn), 0, j);
+	      if ((GET_CODE (x) == SET || GET_CODE (x) == CLOBBER)
+		  && register_operand (SET_DEST (x), VOIDmode))
+		reg_weight++;
+	    }
+	}
+
+      /* Decrement weight for each register that dies here.  */
+      for (x = REG_NOTES (insn); x; x = XEXP (x, 1))
+	{
+	  if (REG_NOTE_KIND (x) == REG_DEAD
+	      || REG_NOTE_KIND (x) == REG_UNUSED)
+	    reg_weight--;
+	}
+
+      INSN_REG_WEIGHT (insn) = reg_weight;
+    }
+}

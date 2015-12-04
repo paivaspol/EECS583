@@ -1,0 +1,54 @@
+static rtx ix86_expand_sse_comi PARAMS ((const struct builtin_description *,
+					 tree, rtx));
+static rtx ix86_expand_sse_compare PARAMS ((const struct builtin_description *,
+					    tree, rtx));
+static rtx ix86_expand_unop1_builtin PARAMS ((enum insn_code, tree, rtx));
+static rtx ix86_expand_unop_builtin PARAMS ((enum insn_code, tree, rtx, int));
+static rtx ix86_expand_binop_builtin PARAMS ((enum insn_code, tree, rtx));
+static rtx ix86_expand_timode_binop_builtin PARAMS ((enum insn_code,
+						     tree, rtx));
+static rtx ix86_expand_store_builtin PARAMS ((enum insn_code, tree));
+static rtx safe_vector_operand PARAMS ((rtx, enum machine_mode));
+static enum rtx_code ix86_fp_compare_code_to_integer PARAMS ((enum rtx_code));
+static void ix86_fp_comparison_codes PARAMS ((enum rtx_code code,
+					      enum rtx_code *,
+					      enum rtx_code *,
+					      enum rtx_code *));
+static rtx ix86_expand_fp_compare PARAMS ((enum rtx_code, rtx, rtx, rtx,
+					  rtx *, rtx *));
+static int ix86_fp_comparison_arithmetics_cost PARAMS ((enum rtx_code code));
+static int ix86_fp_comparison_fcomi_cost PARAMS ((enum rtx_code code));
+static int ix86_fp_comparison_sahf_cost PARAMS ((enum rtx_code code));
+static int ix86_fp_comparison_cost PARAMS ((enum rtx_code code));
+static int ix86_save_reg PARAMS ((int, int));
+static void ix86_compute_frame_layout PARAMS ((struct ix86_frame *));
+static int ix86_comp_type_attributes PARAMS ((tree, tree));
+const struct attribute_spec ix86_attribute_table[];
+static tree ix86_handle_cdecl_attribute PARAMS ((tree *, tree, tree, int, bool *));
+static tree ix86_handle_regparm_attribute PARAMS ((tree *, tree, tree, int, bool *));
+
+#ifdef DO_GLOBAL_CTORS_BODY
+static void ix86_svr3_asm_out_constructor PARAMS ((rtx, int));
+#endif
+
+/* Register class used for passing given 64bit part of the argument.
+   These represent classes as documented by the PS ABI, with the exception
+   of SSESF, SSEDF classes, that are basically SSE class, just gcc will
+   use SF or DFmode move instead of DImode to avoid reformating penalties.
+
+   Similary we play games with INTEGERSI_CLASS to use cheaper SImode moves
+   whenever possible (upper half does contain padding).
+ */
+enum x86_64_reg_class
+  {
+    X86_64_NO_CLASS,
+    X86_64_INTEGER_CLASS,
+    X86_64_INTEGERSI_CLASS,
+    X86_64_SSE_CLASS,
+    X86_64_SSESF_CLASS,
+    X86_64_SSEDF_CLASS,
+    X86_64_SSEUP_CLASS,
+    X86_64_X87_CLASS,
+    X86_64_X87UP_CLASS,
+    X86_64_MEMORY_CLASS
+  };

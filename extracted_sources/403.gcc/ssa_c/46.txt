@@ -1,0 +1,45 @@
+static void
+rename_equivalent_regs (reg_partition)
+     partition reg_partition;
+{
+  int bb;
+
+  for (bb = n_basic_blocks; --bb >= 0; )
+    {
+      basic_block b = BASIC_BLOCK (bb);
+      rtx next = b->head;
+      rtx last = b->end;
+      rtx insn;
+
+      do
+	{
+	  insn = next;
+	  if (INSN_P (insn))
+	    {
+	      for_each_rtx (&PATTERN (insn), 
+			    rename_equivalent_regs_in_insn, 
+			    reg_partition);
+	      for_each_rtx (&REG_NOTES (insn), 
+			    rename_equivalent_regs_in_insn, 
+			    reg_partition);
+
+	      if (GET_CODE (PATTERN (insn)) == SEQUENCE)
+		{
+		  rtx s = PATTERN (insn);
+		  int slen = XVECLEN (s, 0);
+		  int i;
+
+		  if (slen <= 1)
+		    abort ();
+
+		  PATTERN (insn) = XVECEXP (s, 0, slen-1);
+		  for (i = 0; i < slen - 1; i++)
+		    emit_insn_before (XVECEXP (s, 0, i), insn);
+		}
+	    }
+
+	  next = NEXT_INSN (insn);
+	}
+      while (insn != last);
+    }
+}

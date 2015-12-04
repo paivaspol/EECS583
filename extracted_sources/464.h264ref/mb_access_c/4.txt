@@ -1,0 +1,64 @@
+void getNonAffNeighbour(unsigned int curr_mb_nr, int xN, int yN, int luma, PixelPos *pix)
+{
+  Macroblock *currMb = &img->mb_data[curr_mb_nr];
+  int maxW, maxH;
+
+  if (luma)
+  {
+    maxW = 16;
+    maxH = 16;
+  }
+  else
+  {
+    assert(img->yuv_format != 0);
+    maxW = img->mb_cr_size_x;
+    maxH = img->mb_cr_size_y;
+  }
+
+  if ((xN<0)&&(yN<0))
+  {
+    pix->mb_addr   = currMb->mbAddrD;
+    pix->available = currMb->mbAvailD;
+  }
+  else if ((xN<0)&&((yN>=0)&&(yN<maxH)))
+  {
+    pix->mb_addr  = currMb->mbAddrA;
+    pix->available = currMb->mbAvailA;
+  }
+  else if (((xN>=0)&&(xN<maxW))&&(yN<0))
+  {
+    pix->mb_addr  = currMb->mbAddrB;
+    pix->available = currMb->mbAvailB;
+  }
+  else if (((xN>=0)&&(xN<maxW))&&((yN>=0)&&(yN<maxH)))
+  {
+    pix->mb_addr  = curr_mb_nr;
+    pix->available = 1;
+  }
+  else if ((xN>=maxW)&&(yN<0))
+  {
+    pix->mb_addr  = currMb->mbAddrC;
+    pix->available = currMb->mbAvailC;
+  }
+  else 
+  {
+    pix->available = 0;
+  }
+
+  if (pix->available || img->DeblockCall)
+  {
+    pix->x = (xN + maxW) % maxW;
+    pix->y = (yN + maxH) % maxH;
+    get_mb_pos(pix->mb_addr, &(pix->pos_x), &(pix->pos_y));
+    if (luma)
+    {
+      pix->pos_x += pix->x;
+      pix->pos_y += pix->y;
+    }
+    else
+    {
+      pix->pos_x = pix->pos_x/(16/img->mb_cr_size_x) + pix->x;
+      pix->pos_y = pix->pos_y/(16/img->mb_cr_size_y) + pix->y;
+    }
+  }
+}

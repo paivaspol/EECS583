@@ -1,0 +1,44 @@
+static rtx
+check_insn_for_bivs (loop, p, not_every_iteration, maybe_multiple)
+     struct loop *loop;
+     rtx p;
+     int not_every_iteration;
+     int maybe_multiple;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  rtx set;
+  rtx dest_reg;
+  rtx inc_val;
+  rtx mult_val;
+  rtx *location;
+
+  if (GET_CODE (p) == INSN
+      && (set = single_set (p))
+      && GET_CODE (SET_DEST (set)) == REG)
+    {
+      dest_reg = SET_DEST (set);
+      if (REGNO (dest_reg) < max_reg_before_loop
+	  && REGNO (dest_reg) >= FIRST_PSEUDO_REGISTER
+	  && REG_IV_TYPE (ivs, REGNO (dest_reg)) != NOT_BASIC_INDUCT)
+	{
+	  if (basic_induction_var (loop, SET_SRC (set),
+				   GET_MODE (SET_SRC (set)),
+				   dest_reg, p, &inc_val, &mult_val,
+				   &location))
+	    {
+	      /* It is a possible basic induction variable.
+	         Create and initialize an induction structure for it.  */
+
+	      struct induction *v
+		= (struct induction *) xmalloc (sizeof (struct induction));
+
+	      record_biv (loop, v, p, dest_reg, inc_val, mult_val, location,
+			  not_every_iteration, maybe_multiple);
+	      REG_IV_TYPE (ivs, REGNO (dest_reg)) = BASIC_INDUCT;
+	    }
+	  else if (REGNO (dest_reg) < ivs->n_regs)
+	    REG_IV_TYPE (ivs, REGNO (dest_reg)) = NOT_BASIC_INDUCT;
+	}
+    }
+  return p;
+}

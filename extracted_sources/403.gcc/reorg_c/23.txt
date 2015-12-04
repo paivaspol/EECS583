@@ -1,0 +1,37 @@
+static int
+own_thread_p (thread, label, allow_fallthrough)
+     rtx thread;
+     rtx label;
+     int allow_fallthrough;
+{
+  rtx active_insn;
+  rtx insn;
+
+  /* We don't own the function end.  */
+  if (thread == 0)
+    return 0;
+
+  /* Get the first active insn, or THREAD, if it is an active insn.  */
+  active_insn = next_active_insn (PREV_INSN (thread));
+
+  for (insn = thread; insn != active_insn; insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == CODE_LABEL
+	&& (insn != label || LABEL_NUSES (insn) != 1))
+      return 0;
+
+  if (allow_fallthrough)
+    return 1;
+
+  /* Ensure that we reach a BARRIER before any insn or label.  */
+  for (insn = prev_nonnote_insn (thread);
+       insn == 0 || GET_CODE (insn) != BARRIER;
+       insn = prev_nonnote_insn (insn))
+    if (insn == 0
+	|| GET_CODE (insn) == CODE_LABEL
+	|| (GET_CODE (insn) == INSN
+	    && GET_CODE (PATTERN (insn)) != USE
+	    && GET_CODE (PATTERN (insn)) != CLOBBER))
+      return 0;
+
+  return 1;
+}

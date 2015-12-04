@@ -1,0 +1,55 @@
+static void
+compute_iterated_dominance_frontiers (idfs, frontiers, evals, nregs)
+     sbitmap *idfs;
+     sbitmap *frontiers;
+     sbitmap *evals;
+     int nregs;
+{
+  sbitmap worklist;
+  int reg, passes = 0;
+
+  worklist = sbitmap_alloc (n_basic_blocks);
+
+  for (reg = 0; reg < nregs; ++reg)
+    {
+      sbitmap idf = idfs[reg];
+      int b, changed;
+
+      /* Start the iterative process by considering those blocks that
+	 evaluate REG.  We'll add their dominance frontiers to the
+	 IDF, and then consider the blocks we just added.  */
+      sbitmap_copy (worklist, evals[reg]);
+
+      /* Morgan's algorithm is incorrect here.  Blocks that evaluate
+	 REG aren't necessarily in REG's IDF.  Start with an empty IDF.  */
+      sbitmap_zero (idf);
+
+      /* Iterate until the worklist is empty.  */
+      do
+	{
+	  changed = 0;
+	  passes++;
+	  EXECUTE_IF_SET_IN_SBITMAP (worklist, 0, b,
+	    {
+	      RESET_BIT (worklist, b);
+	      /* For each block on the worklist, add to the IDF all
+		 blocks on its dominance frontier that aren't already
+		 on the IDF.  Every block that's added is also added
+		 to the worklist.  */
+	      sbitmap_union_of_diff (worklist, worklist, frontiers[b], idf);
+	      sbitmap_a_or_b (idf, idf, frontiers[b]);
+	      changed = 1;
+	    });
+	}
+      while (changed);
+    }
+
+  sbitmap_free (worklist);
+
+  if (rtl_dump_file)
+    {
+      fprintf (rtl_dump_file,
+	       "Iterated dominance frontier: %d passes on %d regs.\n",
+	       passes, nregs);
+    }
+}

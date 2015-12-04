@@ -1,0 +1,64 @@
+void
+clean_graph_dump_file (base, suffix)
+     const char *base;
+     const char *suffix;
+{
+  size_t namelen = strlen (base);
+  size_t suffixlen = strlen (suffix);
+  size_t extlen = strlen (graph_ext[graph_dump_format]) + 1;
+  char *buf = (char *) alloca (namelen + extlen + suffixlen);
+  FILE *fp;
+
+  memcpy (buf, base, namelen);
+  memcpy (buf + namelen, suffix, suffixlen);
+  memcpy (buf + namelen + suffixlen, graph_ext[graph_dump_format], extlen);
+
+  fp = fopen (buf, "w");
+
+  if (fp == NULL)
+    fatal_io_error ("can't open %s", buf);
+
+  switch (graph_dump_format)
+    {
+    case vcg:
+      fputs ("graph: {\nport_sharing: no\n", fp);
+      break;
+    case no_graph:
+      abort ();
+    }
+
+  fclose (fp);
+}
+
+
+/* Do final work on the graph output file.  */
+void
+finish_graph_dump_file (base, suffix)
+     const char *base;
+     const char *suffix;
+{
+  size_t namelen = strlen (base);
+  size_t suffixlen = strlen (suffix);
+  size_t extlen = strlen (graph_ext[graph_dump_format]) + 1;
+  char *buf = (char *) alloca (namelen + suffixlen + extlen);
+  FILE *fp;
+
+  memcpy (buf, base, namelen);
+  memcpy (buf + namelen, suffix, suffixlen);
+  memcpy (buf + namelen + suffixlen, graph_ext[graph_dump_format], extlen);
+
+  fp = fopen (buf, "a");
+  if (fp != NULL)
+    {
+      switch (graph_dump_format)
+	{
+	case vcg:
+	  fputs ("}\n", fp);
+	  break;
+	case no_graph:
+	  abort ();
+	}
+
+      fclose (fp);
+    }
+}

@@ -1,0 +1,68 @@
+void MADModelEstimator (int n_windowSize)
+{
+  int n_realSize = n_windowSize;
+  int i;
+  double oneSampleQ;
+  double a00 = 0.0, a01 = 0.0, a10 = 0.0, a11 = 0.0, b0 = 0.0, b1 = 0.0;
+  double MatrixValue;
+  Boolean estimateX2 = FALSE;
+  
+  for (i = 0; i < n_windowSize; i++) 
+  {// find the number of samples which are not rejected
+    if (PictureRejected[i])
+      n_realSize--;
+  }
+  
+  // default MAD model estimation results
+  
+  MADPictureC1 = MADPictureC2 = 0.0;
+  
+  for (i = 0; i < n_windowSize; i++)  
+  {
+    if (!PictureRejected[i])
+      oneSampleQ = PictureMAD[i];
+  }
+
+  for (i = 0; i < n_windowSize; i++)  
+  {// if all non-rejected MAD are the same, take 1st order model
+    if ((PictureMAD[i] != oneSampleQ) && !PictureRejected[i])
+      estimateX2 = TRUE;
+    if (!PictureRejected[i])
+      MADPictureC1 += PictureMAD[i] / (ReferenceMAD[i]*n_realSize);
+  }
+  
+  // take 2nd order model to estimate X1 and X2
+  if ((n_realSize >= 1) && estimateX2) 
+  {
+    for (i = 0; i < n_windowSize; i++) 
+    {
+      if (!PictureRejected[i]) 
+      {
+        a00 = a00 + 1.0;
+        a01 += ReferenceMAD[i];
+        a10 = a01;
+        a11 += ReferenceMAD[i]*ReferenceMAD[i];
+        b0 += PictureMAD[i];
+        b1 += PictureMAD[i]*ReferenceMAD[i];
+      }
+    }
+    // solve the equation of AX = B
+    MatrixValue=a00*a11-a01*a10;
+    if(fabs(MatrixValue)>0.000001)
+    {
+      MADPictureC2=(b0*a11-b1*a01)/MatrixValue;
+      MADPictureC1=(b1*a00-b0*a10)/MatrixValue;
+    }
+    else
+    {
+      MADPictureC1=b0/a01;
+      MADPictureC2=0.0;
+    }
+    
+  }
+  if(img->type==P_SLICE)
+  {
+    PMADPictureC1=MADPictureC1;
+    PMADPictureC2=MADPictureC2;
+  }
+}

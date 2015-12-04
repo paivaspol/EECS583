@@ -1,0 +1,29 @@
+static rtx
+ujump_to_loop_cont (loop_start, loop_cont)
+     rtx loop_start;
+     rtx loop_cont;
+{
+  rtx x, label, label_ref;
+
+  /* See if loop start, or the next insn is an unconditional jump.  */
+  loop_start = next_nonnote_insn (loop_start);
+
+  x = pc_set (loop_start);
+  if (!x)
+    return NULL_RTX;
+
+  label_ref = SET_SRC (x);
+  if (!label_ref)
+    return NULL_RTX;
+
+  /* Examine insn after loop continuation note.  Return if not a label.  */
+  label = next_nonnote_insn (loop_cont);
+  if (label == 0 || GET_CODE (label) != CODE_LABEL)
+    return NULL_RTX;
+
+  /* Return the loop start if the branch label matches the code label.  */
+  if (CODE_LABEL_NUMBER (label) == CODE_LABEL_NUMBER (XEXP (label_ref, 0)))
+    return loop_start;
+  else
+    return NULL_RTX;
+}

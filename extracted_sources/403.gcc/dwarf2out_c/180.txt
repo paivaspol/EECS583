@@ -1,0 +1,29 @@
+static void
+tree_add_const_value_attribute (var_die, decl)
+     dw_die_ref var_die;
+     tree decl;
+{
+  tree init = DECL_INITIAL (decl);
+  tree type = TREE_TYPE (decl);
+
+  if (TREE_READONLY (decl) && ! TREE_THIS_VOLATILE (decl) && init
+      && initializer_constant_valid_p (init, type) == null_pointer_node)
+    /* OK */;
+  else
+    return;
+
+  switch (TREE_CODE (type))
+    {
+    case INTEGER_TYPE:
+      if (host_integerp (init, 0))
+	add_AT_unsigned (var_die, DW_AT_const_value,
+			 tree_low_cst (init, 0));
+      else
+	add_AT_long_long (var_die, DW_AT_const_value,
+			  TREE_INT_CST_HIGH (init),
+			  TREE_INT_CST_LOW (init));
+      break;
+
+    default:;
+    }
+}

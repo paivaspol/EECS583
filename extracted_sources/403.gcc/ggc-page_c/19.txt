@@ -1,0 +1,34 @@
+static void
+ggc_recalculate_in_use_p (p)
+     page_entry *p;
+{
+  unsigned int i;
+  size_t num_objects;
+
+  /* Because the past-the-end bit in in_use_p is always set, we 
+     pretend there is one additional object.  */
+  num_objects = OBJECTS_PER_PAGE (p->order) + 1;
+
+  /* Reset the free object count.  */
+  p->num_free_objects = num_objects;
+
+  /* Combine the IN_USE_P and SAVE_IN_USE_P arrays.  */
+  for (i = 0; 
+       i < CEIL (BITMAP_SIZE (num_objects),
+		 sizeof (*p->in_use_p));
+       ++i)
+    {
+      unsigned long j;
+
+      /* Something is in use if it is marked, or if it was in use in a
+	 context further down the context stack.  */
+      p->in_use_p[i] |= p->save_in_use_p[i];
+
+      /* Decrement the free object count for every object allocated.  */
+      for (j = p->in_use_p[i]; j; j >>= 1)
+	p->num_free_objects -= (j & 1);
+    }
+
+  if (p->num_free_objects >= num_objects)
+    abort ();
+}

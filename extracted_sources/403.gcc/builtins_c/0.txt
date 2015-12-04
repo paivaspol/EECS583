@@ -1,0 +1,142 @@
+static rtx c_readstr			PARAMS ((const char *,
+						 enum machine_mode));
+static int target_char_cast		PARAMS ((tree, char *));
+static rtx get_memory_rtx		PARAMS ((tree));
+static int apply_args_size		PARAMS ((void));
+static int apply_result_size		PARAMS ((void));
+#if defined (HAVE_untyped_call) || defined (HAVE_untyped_return)
+static rtx result_vector		PARAMS ((int, rtx));
+#endif
+static rtx expand_builtin_setjmp	PARAMS ((tree, rtx));
+static void expand_builtin_prefetch	PARAMS ((tree));
+static rtx expand_builtin_apply_args	PARAMS ((void));
+static rtx expand_builtin_apply_args_1	PARAMS ((void));
+static rtx expand_builtin_apply		PARAMS ((rtx, rtx, rtx));
+static void expand_builtin_return	PARAMS ((rtx));
+static enum type_class type_to_class	PARAMS ((tree));
+static rtx expand_builtin_classify_type	PARAMS ((tree));
+static rtx expand_builtin_mathfn	PARAMS ((tree, rtx, rtx));
+static rtx expand_builtin_constant_p	PARAMS ((tree));
+static rtx expand_builtin_args_info	PARAMS ((tree));
+static rtx expand_builtin_next_arg	PARAMS ((tree));
+static rtx expand_builtin_va_start	PARAMS ((int, tree));
+static rtx expand_builtin_va_end	PARAMS ((tree));
+static rtx expand_builtin_va_copy	PARAMS ((tree));
+static rtx expand_builtin_memcmp	PARAMS ((tree, tree, rtx,
+                                                 enum machine_mode));
+static rtx expand_builtin_strcmp	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strncmp	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx builtin_memcpy_read_str	PARAMS ((PTR, HOST_WIDE_INT,
+						 enum machine_mode));
+static rtx expand_builtin_strcat	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strncat	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strspn	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strcspn	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_memcpy	PARAMS ((tree, rtx,
+                                                 enum machine_mode));
+static rtx expand_builtin_strcpy	PARAMS ((tree, rtx,
+                                                 enum machine_mode));
+static rtx builtin_strncpy_read_str	PARAMS ((PTR, HOST_WIDE_INT,
+						 enum machine_mode));
+static rtx expand_builtin_strncpy	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx builtin_memset_read_str	PARAMS ((PTR, HOST_WIDE_INT,
+						 enum machine_mode));
+static rtx expand_builtin_memset	PARAMS ((tree, rtx,
+                                                 enum machine_mode));
+static rtx expand_builtin_bzero		PARAMS ((tree));
+static rtx expand_builtin_strlen	PARAMS ((tree, rtx));
+static rtx expand_builtin_strstr	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strpbrk	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strchr	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_strrchr	PARAMS ((tree, rtx,
+						 enum machine_mode));
+static rtx expand_builtin_alloca	PARAMS ((tree, rtx));
+static rtx expand_builtin_ffs		PARAMS ((tree, rtx, rtx));
+static rtx expand_builtin_frame_address	PARAMS ((tree));
+static rtx expand_builtin_fputs		PARAMS ((tree, int, int));
+static tree stabilize_va_list		PARAMS ((tree, int));
+static rtx expand_builtin_expect	PARAMS ((tree, rtx));
+static tree fold_builtin_constant_p	PARAMS ((tree));
+static tree fold_builtin_classify_type	PARAMS ((tree));
+static tree build_function_call_expr	PARAMS ((tree, tree));
+static int validate_arglist		PARAMS ((tree, ...));
+
+/* Return the alignment in bits of EXP, a pointer valued expression.
+   But don't return more than MAX_ALIGN no matter what.
+   The alignment returned is, by default, the alignment of the thing that
+   EXP points to.  If it is not a POINTER_TYPE, 0 is returned.
+
+   Otherwise, look at the expression to see if we can do better, i.e., if the
+   expression is actually pointing at an object whose alignment is tighter.  */
+
+static int
+get_pointer_alignment (exp, max_align)
+     tree exp;
+     unsigned int max_align;
+{
+  unsigned int align, inner;
+
+  if (TREE_CODE (TREE_TYPE (exp)) != POINTER_TYPE)
+    return 0;
+
+  align = TYPE_ALIGN (TREE_TYPE (TREE_TYPE (exp)));
+  align = MIN (align, max_align);
+
+  while (1)
+    {
+      switch (TREE_CODE (exp))
+	{
+	case NOP_EXPR:
+	case CONVERT_EXPR:
+	case NON_LVALUE_EXPR:
+	  exp = TREE_OPERAND (exp, 0);
+	  if (TREE_CODE (TREE_TYPE (exp)) != POINTER_TYPE)
+	    return align;
+
+	  inner = TYPE_ALIGN (TREE_TYPE (TREE_TYPE (exp)));
+	  align = MIN (inner, max_align);
+	  break;
+
+	case PLUS_EXPR:
+	  /* If sum of pointer + int, restrict our maximum alignment to that
+	     imposed by the integer.  If not, we can't do any better than
+	     ALIGN.  */
+	  if (! host_integerp (TREE_OPERAND (exp, 1), 1))
+	    return align;
+
+	  while (((tree_low_cst (TREE_OPERAND (exp, 1), 1))
+		  & (max_align / BITS_PER_UNIT - 1))
+		 != 0)
+	    max_align >>= 1;
+
+	  exp = TREE_OPERAND (exp, 0);
+	  break;
+
+	case ADDR_EXPR:
+	  /* See what we are pointing at and look at its alignment.  */
+	  exp = TREE_OPERAND (exp, 0);
+	  if (TREE_CODE (exp) == FUNCTION_DECL)
+	    align = FUNCTION_BOUNDARY;
+	  else if (DECL_P (exp))
+	    align = DECL_ALIGN (exp);
+#ifdef CONSTANT_ALIGNMENT
+	  else if (TREE_CODE_CLASS (TREE_CODE (exp)) == 'c')
+	    align = CONSTANT_ALIGNMENT (exp, align);
+#endif
+	  return MIN (align, max_align);
+
+	default:
+	  return align;
+	}
+    }
+}

@@ -1,0 +1,85 @@
+int ProbeTT(int *score, int beta, int *best, int *threat, int *donull, int depth)
+{
+
+  unsigned int ttindex;
+
+  *donull = TRUE;
+
+  TTProbes++;
+
+  ttindex = hash % TTSize;
+  
+  if ((DP_TTable[ttindex].HashKey == hash) 
+      && (DP_TTable[ttindex].Hold_hash == hold_hash) 
+      && (DP_TTable[ttindex].OnMove == (char)ToMove))
+    {
+      TTHits++;
+      
+      if ((DP_TTable[ttindex].Type == UPPER) 
+      	   && ((depth-2-1) <= (int) DP_TTable[ttindex].Depth) 
+      	   && (DP_TTable[ttindex].Bound < beta)) 
+      	  *donull = FALSE;
+
+      if (DP_TTable[ttindex].Threat) depth++;
+      
+      if ((int) DP_TTable[ttindex].Depth >= depth)
+	{
+	  *score = DP_TTable[ttindex].Bound;
+	  
+	  if (*score > (INF-500))
+	   *score -= ply;
+	  else if (*score < (-INF+500))
+	    *score += ply;
+
+	  *best = DP_TTable[ttindex].Bestmove;
+	  *threat = DP_TTable[ttindex].Threat;
+
+	  return DP_TTable[ttindex].Type;
+	}
+      else
+	{
+	  *best = DP_TTable[ttindex].Bestmove;
+	  *threat = DP_TTable[ttindex].Threat;
+
+	  return DUMMY;
+	}
+    }
+  else if ((AS_TTable[ttindex].HashKey == hash) 
+      && (AS_TTable[ttindex].Hold_hash == hold_hash) 
+      && (AS_TTable[ttindex].OnMove == (char)ToMove))
+    {
+      TTHits++;
+      
+      if ((AS_TTable[ttindex].Type == UPPER) 
+      	   && ((depth-2-1) <= (int) AS_TTable[ttindex].Depth) 
+      	   && (AS_TTable[ttindex].Bound < beta)) 
+      	  *donull = FALSE;
+
+      if (AS_TTable[ttindex].Threat) depth++;
+      
+      if ((int) AS_TTable[ttindex].Depth >= depth)
+	{
+	  *score = AS_TTable[ttindex].Bound;
+	  
+	  if (*score > (INF-500))
+	   *score -= ply;
+	  else if (*score < (-INF+500))
+	    *score += ply;
+
+	  *best = AS_TTable[ttindex].Bestmove;
+	  *threat = AS_TTable[ttindex].Threat;
+
+	  return AS_TTable[ttindex].Type;
+	}
+      else
+	{
+	  *best = AS_TTable[ttindex].Bestmove;
+	  *threat = AS_TTable[ttindex].Threat;
+
+	  return DUMMY;
+	}
+    }
+  else
+    return HMISS;
+
+}

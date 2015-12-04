@@ -1,0 +1,51 @@
+int GetSkipCostMB (double lambda)
+{
+  int block_y, block_x, pic_pix_y, pic_pix_x, i, j, k;
+  int diff[16];
+  int cost = 0;
+
+  //T.Nishi(MEI ACC) 04-28-2004
+  int curr_diff[8][8], diff8x8[64];
+  int mb_x, mb_y;
+  int block;  
+  for(block=0;block<4;block++)
+  {
+    mb_y    = (block/2)<<3;
+    mb_x    = (block%2)<<3;
+    for (block_y=mb_y; block_y<mb_y+8; block_y+=4)
+    {
+      pic_pix_y = img->opix_y + block_y;
+
+      for (block_x=mb_x; block_x<mb_x+8; block_x+=4)
+      {
+        pic_pix_x = img->opix_x + block_x;
+
+        //===== prediction of 4x4 block =====
+        LumaPrediction4x4 (block_x, block_y, 0, 0, 0, 0, 0);
+
+        //===== get displaced frame difference ======                
+        for (k=j=0; j<4; j++)
+        for (i=0; i<4; i++, k++)
+        {
+          diff[k] = curr_diff[block_y-mb_y+j][block_x-mb_x+i] = imgY_org[pic_pix_y+j][pic_pix_x+i] - img->mpr[i+block_x][j+block_y];
+        }
+
+        if(!((input->rdopt==0)&&(input->AllowTransform8x8)))
+          cost += SATD (diff, input->hadamard);
+      }
+    }
+
+    if((input->rdopt==0)&&(input->AllowTransform8x8))
+    {
+      k=0;
+      for(j=0; j<8; j++)
+        for(i=0; i<8; i++, k++)
+          diff8x8[k]=curr_diff[j][i];
+
+      cost += SATD8X8 (diff8x8, input->hadamard);
+    }
+  }
+
+  return cost;
+  //T.Nishi(MEI ACC) 04-28-2004 end
+}

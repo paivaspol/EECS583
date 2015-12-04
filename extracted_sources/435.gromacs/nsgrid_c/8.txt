@@ -1,0 +1,22 @@
+void calc_ptrs(t_grid *grid)
+{
+  int *index = grid->index;
+  int *nra   = grid->nra;
+  int ix,iy,iz,ci,nr;
+  int nnra,ncells;
+  int gmax     = 0;
+
+  ncells=grid->ncells;
+  ci=nr=0;
+  for(ix=0; (ix < grid->nrx); ix++)
+    for(iy=0; (iy < grid->nry); iy++) 
+      for(iz=0; (iz < grid->nrz); iz++,ci++) {
+	range_check(ci,ncells);
+	index[ci] = nr;
+	nnra      = nra[ci];
+	nr       += nnra;
+	gmax      = max(gmax,nnra);
+	nra[ci]   = 0;
+      }
+  grid->gmax=gmax;
+}

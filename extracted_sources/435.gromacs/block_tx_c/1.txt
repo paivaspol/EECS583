@@ -1,0 +1,17 @@
+void _blockrx(int src,int nelem,int size,void *data)
+{
+  int i,len;
+  char *buf=data;
+  
+  if ((data==NULL) && (size > 0))
+    fatal_error(0,"RX: Null pointer (size=%d)!\n",size);
+  for (i=0; i<nelem; i++) {
+    gmx_rxs(src,&len,sizeof(len));
+    if (size!=len)
+      fatal_error(0,"%d: size=%d, len=%d, rx_count=%d\n",
+		  0,size,len,0);
+    if (len > 0)
+      gmx_rxs(src,buf,len);
+    buf+=len;      
+  }
+}

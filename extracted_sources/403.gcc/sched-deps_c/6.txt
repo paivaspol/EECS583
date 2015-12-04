@@ -1,0 +1,47 @@
+static void
+remove_dependence (insn, elem)
+     rtx insn;
+     rtx elem;
+{
+  rtx prev, link, next;
+  int found = 0;
+
+  for (prev = 0, link = LOG_LINKS (insn); link; link = next)
+    {
+      next = XEXP (link, 1);
+      if (XEXP (link, 0) == elem)
+	{
+	  if (prev)
+	    XEXP (prev, 1) = next;
+	  else
+	    LOG_LINKS (insn) = next;
+
+#ifdef INSN_SCHEDULING
+	  /* If we are removing a dependency from the LOG_LINKS list,
+	     make sure to remove it from the cache too.  */
+	  if (true_dependency_cache != NULL)
+	    {
+	      if (REG_NOTE_KIND (link) == 0)
+		RESET_BIT (true_dependency_cache[INSN_LUID (insn)],
+			   INSN_LUID (elem));
+	      else if (REG_NOTE_KIND (link) == REG_DEP_ANTI)
+		RESET_BIT (anti_dependency_cache[INSN_LUID (insn)],
+			   INSN_LUID (elem));
+	      else if (REG_NOTE_KIND (link) == REG_DEP_OUTPUT)
+		RESET_BIT (output_dependency_cache[INSN_LUID (insn)],
+			   INSN_LUID (elem));
+	    }
+#endif
+
+	  free_INSN_LIST_node (link);
+
+	  found = 1;
+	}
+      else
+	prev = link;
+    }
+
+  if (!found)
+    abort ();
+  return;
+}

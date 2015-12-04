@@ -1,0 +1,135 @@
+static void
+rename_block (bb, idom)
+     int bb;
+     int *idom;
+{
+  basic_block b = BASIC_BLOCK (bb);
+  edge e;
+  rtx insn, next, last;
+  struct rename_set_data *set_data = NULL;
+  int c;
+
+  /* Step One: Walk the basic block, adding new names for sets and
+     replacing uses.  */
+     
+  next = b->head;
+  last = b->end;
+  do
+    {
+      insn = next;
+      if (INSN_P (insn))
+	{
+	  struct rename_context context;
+	  context.done_renames = set_data;
+	  context.new_renames = NULL;
+	  context.current_insn = insn;
+
+	  start_sequence ();
+	  for_each_rtx (&PATTERN (insn), rename_insn_1, &context);
+	  for_each_rtx (&REG_NOTES (insn), rename_insn_1, &context);
+
+	  /* Sometimes, we end up with a sequence of insns that
+	     SSA needs to treat as a single insn.  Wrap these in a
+	     SEQUENCE.  (Any notes now get attached to the SEQUENCE,
+	     not to the old version inner insn.)  */
+	  if (get_insns () != NULL_RTX)
+	    {
+	      rtx seq;
+	      int i;
+	      
+	      emit (PATTERN (insn));
+	      seq = gen_sequence ();
+	      /* We really want a SEQUENCE of SETs, not a SEQUENCE
+		 of INSNs.  */
+	      for (i = 0; i < XVECLEN (seq, 0); i++)
+		XVECEXP (seq, 0, i) = PATTERN (XVECEXP (seq, 0, i));
+	      PATTERN (insn) = seq;
+	    }
+	  end_sequence ();
+	  
+	  apply_delayed_renames (&context);
+	  set_data = context.done_renames;
+	}
+
+      next = NEXT_INSN (insn);
+    }
+  while (insn != last);
+
+  /* Step Two: Update the phi nodes of this block's successors.  */
+
+  for (e = b->succ; e; e = e->succ_next)
+    {
+      if (e->dest == EXIT_BLOCK_PTR)
+	continue;
+
+      insn = first_insn_after_basic_block_note (e->dest);
+
+      while (PHI_NODE_P (insn))
+	{
+	  rtx phi = PATTERN (insn);
+	  rtx reg;
+
+	  /* Find out which of our outgoing registers this node is
+	     intended to replace.  Note that if this is not the first PHI
+	     node to have been created for this register, we have to
+	     jump through rename links to figure out which register
+	     we're talking about.  This can easily be recognized by
+	     noting that the regno is new to this pass.  */
+	  reg = SET_DEST (phi);
+	  if (REGNO (reg) >= ssa_max_reg_num)
+	    reg = ssa_rename_from_lookup (REGNO (reg));
+	  if (reg == NULL_RTX)
+	    abort ();
+	  reg = ssa_rename_to_lookup (reg);
+
+	  /* It is possible for the variable to be uninitialized on
+	     edges in.  Reduce the arity of the PHI so that we don't
+	     consider those edges.  */
+	  if (reg == NULL || reg == RENAME_NO_RTX)
+	    {
+	      if (! remove_phi_alternative (phi, b))
+		abort ();
+	    }
+	  else
+	    {
+	      /* When we created the PHI nodes, we did not know what mode
+		 the register should be.  Now that we've found an original,
+		 we can fill that in.  */
+	      if (GET_MODE (SET_DEST (phi)) == VOIDmode)
+		PUT_MODE (SET_DEST (phi), GET_MODE (reg));
+	      else if (GET_MODE (SET_DEST (phi)) != GET_MODE (reg))
+		abort ();
+
+	      *phi_alternative (phi, bb) = reg;
+	    }
+
+	  insn = NEXT_INSN (insn);
+	}
+    }
+
+  /* Step Three: Do the same to the children of this block in
+     dominator order.  */
+
+  for (c = 0; c < n_basic_blocks; ++c)
+    if (idom[c] == bb)
+      rename_block (c, idom);
+
+  /* Step Four: Update the sets to refer to their new register,
+     and restore ssa_rename_to to its previous state.  */
+
+  while (set_data)
+    {
+      struct rename_set_data *next;
+      rtx old_reg = *set_data->reg_loc;
+
+      if (*set_data->reg_loc != set_data->old_reg)
+	abort ();
+      *set_data->reg_loc = set_data->new_reg;
+
+      ssa_rename_to_insert (old_reg, set_data->prev_reg);
+
+      next = set_data->next;
+      free (set_data);
+      set_data = next;
+    }      
+}

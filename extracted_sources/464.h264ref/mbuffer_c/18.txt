@@ -1,0 +1,81 @@
+static void gen_pic_list_from_frame_list(PictureStructure currStrcture, FrameStore **fs_list, int list_idx, StorablePicture **list, int *list_size, int long_term)
+{
+  int top_idx = 0;
+  int bot_idx = 0;
+
+  int (*is_ref)(StorablePicture *s);
+
+  if (long_term)
+    is_ref=is_long_ref;
+  else
+    is_ref=is_short_ref;
+
+  if (currStrcture == TOP_FIELD)
+  {
+    while ((top_idx<list_idx)||(bot_idx<list_idx))
+    {
+      for ( ; top_idx<list_idx; top_idx++)
+      {
+        if(fs_list[top_idx]->is_used & 1)
+        {
+          if(is_ref(fs_list[top_idx]->top_field))
+          {
+            // short term ref pic
+            list[*list_size] = fs_list[top_idx]->top_field;
+            (*list_size)++;
+            top_idx++;
+            break;
+          }
+        }
+      }
+      for ( ; bot_idx<list_idx; bot_idx++)
+      {
+        if(fs_list[bot_idx]->is_used & 2)
+        {
+          if(is_ref(fs_list[bot_idx]->bottom_field))
+          {
+            // short term ref pic
+            list[*list_size] = fs_list[bot_idx]->bottom_field;
+            (*list_size)++;
+            bot_idx++;
+            break;
+          }
+        }
+      }
+    }
+  }
+  if (currStrcture == BOTTOM_FIELD)
+  {
+    while ((top_idx<list_idx)||(bot_idx<list_idx))
+    {
+      for ( ; bot_idx<list_idx; bot_idx++)
+      {
+        if(fs_list[bot_idx]->is_used & 2)
+        {
+          if(is_ref(fs_list[bot_idx]->bottom_field))
+          {
+            // short term ref pic
+            list[*list_size] = fs_list[bot_idx]->bottom_field;
+            (*list_size)++;
+            bot_idx++;
+            break;
+          }
+        }
+      }
+      for ( ; top_idx<list_idx; top_idx++)
+      {
+        if(fs_list[top_idx]->is_used & 1)
+        {
+          if(is_ref(fs_list[top_idx]->top_field))
+          {
+            // short term ref pic
+            list[*list_size] = fs_list[top_idx]->top_field;
+            (*list_size)++;
+            top_idx++;
+            break;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+int
+remove_phi_alternative (set, block)
+     rtx set;
+     basic_block block;
+{
+  rtvec phi_vec = XVEC (SET_SRC (set), 0);
+  int num_elem = GET_NUM_ELEM (phi_vec);
+  int v, c;
+
+  c = block->index;
+  for (v = num_elem - 2; v >= 0; v -= 2)
+    if (INTVAL (RTVEC_ELT (phi_vec, v + 1)) == c)
+      {
+	if (v < num_elem - 2)
+	  {
+	    RTVEC_ELT (phi_vec, v) = RTVEC_ELT (phi_vec, num_elem - 2);
+	    RTVEC_ELT (phi_vec, v + 1) = RTVEC_ELT (phi_vec, num_elem - 1);
+	  }
+	PUT_NUM_ELEM (phi_vec, num_elem - 2);
+	return 1;
+      }
+
+  return 0;
+}

@@ -1,0 +1,159 @@
+void comp_to_san (move_s move, char str[])
+{
+  move_s moves[MOVE_BUFF];
+  move_s evade_moves[MOVE_BUFF];
+  const int type_to_char[14] = { 'F', 'P', 'P', 'N', 'N', 'K', 'K', 'R', 'R', 'Q', 'Q', 'B', 'B', 'E' };
+  int i, num_moves, evasions, ambig, mate;
+  int f_rank, t_rank, converter;
+  char f_file, t_file;
+  int ic;
+
+  f_rank = rank (move.from);
+  t_rank = rank (move.target);
+  converter = (int) 'a';
+  f_file = file (move.from)+converter-1;
+  t_file = file (move.target)+converter-1;
+
+  if (move.from == 0)
+    {
+      sprintf (str, "%c@%c%d", type_to_char[move.promoted], t_file, t_rank);
+    }
+  else if ((board[move.from] == wpawn) || (board[move.from] == bpawn))
+    {
+      if (board[move.target] == npiece && !move.ep)
+	{
+	  if(!move.promoted)
+	    {
+	      sprintf (str, "%c%d", t_file, t_rank);
+	    }
+	  else
+	    {
+	      sprintf (str, "%c%d=%c", t_file, t_rank, type_to_char[move.promoted]);
+	    }
+	}
+      else
+	{
+	  if (!move.promoted)
+	    {
+	      sprintf (str, "%cx%c%d", f_file, t_file, t_rank);
+	    }
+	  else
+	    {
+	      sprintf (str, "%cx%c%d=%c", f_file, t_file, t_rank,
+		       type_to_char[move.promoted]);
+	    }
+	}
+    }
+  else if (move.castled != no_castle)
+    {
+      if (move.castled == wck || move.castled == bck)
+	{
+	  sprintf (str, "O-O");
+	}
+      else
+	{
+	  sprintf(str, "O-O-O");
+	}
+    }
+  else
+    {
+      ambig = -1;
+      num_moves = 0;
+
+      gen(&moves[0]);
+      num_moves = numb_moves;
+
+      ic = in_check();
+
+      /* check whether there is another, identical piece that
+	 could also move to this square */
+      for(i = 0; i < num_moves; i++)
+	{
+	  if ((moves[i].target == move.target) &&
+	      (board[moves[i].from] == board[move.from]) &&
+	      (moves[i].from != move.from))
+	    {
+	      /* would it be a legal move ? */
+	      make(&moves[0], i);
+	      if (check_legal(&moves[0], i, ic))
+		{
+		  unmake(&moves[0], i);
+		  ambig = i;
+		  break;
+		}
+	      unmake(&moves[0], i);
+	    }
+	}
+
+      if (ambig != -1)
+	{
+
+	  if (board[move.target] == npiece)
+	    {
+	      if (file(moves[ambig].from) != file(move.from))
+		sprintf(str, "%c%c%c%d", type_to_char[board[move.from]],
+			f_file, t_file, t_rank);
+	      else
+		sprintf(str, "%c%d%c%d", type_to_char[board[move.from]],
+			f_rank, t_file, t_rank);
+	    }
+	  else
+	    {
+	      if (file(moves[ambig].from) != file(move.from))
+		sprintf(str, "%c%cx%c%d", type_to_char[board[move.from]],
+			f_file, t_file, t_rank);
+	      else
+		sprintf(str, "%c%dx%c%d", type_to_char[board[move.from]],
+			f_rank, t_file, t_rank);
+	    }
+	}
+      else
+	{
+	  if (board[move.target] == npiece)
+	    {
+	      sprintf(str, "%c%c%d", type_to_char[board[move.from]],
+		      t_file, t_rank);
+	    }
+	  else
+	    {
+	      sprintf(str, "%cx%c%d", type_to_char[board[move.from]],
+		      t_file, t_rank);
+	    }
+	}
+    }
+
+  make(&move, 0);
+
+  if (!check_legal(&move, 0, 1))
+  {
+    strcpy(str, "illg");
+    unmake(&move, 0);
+    return;
+  }
+
+  if (in_check())
+    {
+      mate = TRUE;
+      evasions = 0;
+      gen(&evade_moves[0]);
+      evasions = numb_moves;
+
+      for (i = 0; i < evasions; i++)
+	{
+	  make(&evade_moves[0], i);
+	  if (check_legal(&evade_moves[0], i, TRUE))
+	    {
+	      mate = FALSE;
+	      unmake(&evade_moves[0], i);
+	      break;
+	    }
+	  unmake(&evade_moves[0], i);
+	}
+      if (mate == TRUE)
+	strcat(str, "#");
+      else
+	strcat(str, "+");
+    }
+  unmake(&move, 0);
+
+}

@@ -1,0 +1,27 @@
+void
+reorder_blocks ()
+{
+  tree block = DECL_INITIAL (current_function_decl);
+  varray_type block_stack;
+
+  if (block == NULL_TREE)
+    return;
+
+  VARRAY_TREE_INIT (block_stack, 10, "block_stack");
+
+  /* Reset the TREE_ASM_WRITTEN bit for all blocks.  */
+  reorder_blocks_0 (block);
+
+  /* Prune the old trees away, so that they don't get in the way.  */
+  BLOCK_SUBBLOCKS (block) = NULL_TREE;
+  BLOCK_CHAIN (block) = NULL_TREE;
+
+  /* Recreate the block tree from the note nesting.  */
+  reorder_blocks_1 (get_insns (), block, &block_stack);
+  BLOCK_SUBBLOCKS (block) = blocks_nreverse (BLOCK_SUBBLOCKS (block));
+
+  /* Remove deleted blocks from the block fragment chains.  */
+  reorder_fix_fragments (block);
+
+  VARRAY_FREE (block_stack);
+}

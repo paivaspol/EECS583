@@ -1,0 +1,21 @@
+static rtx
+next_insn_no_annul (insn)
+     rtx insn;
+{
+  if (insn)
+    {
+      /* If INSN is an annulled branch, skip any insns from the target
+	 of the branch.  */
+      if (INSN_ANNULLED_BRANCH_P (insn)
+	  && NEXT_INSN (PREV_INSN (insn)) != insn)
+	while (INSN_FROM_TARGET_P (NEXT_INSN (insn)))
+	  insn = NEXT_INSN (insn);
+
+      insn = NEXT_INSN (insn);
+      if (insn && GET_CODE (insn) == INSN
+	  && GET_CODE (PATTERN (insn)) == SEQUENCE)
+	insn = XVECEXP (PATTERN (insn), 0, 0);
+    }
+
+  return insn;
+}

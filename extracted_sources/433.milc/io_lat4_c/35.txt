@@ -1,0 +1,242 @@
+void r_parallel(gauge_file *gf)
+{
+  /* gf  = gauge configuration file structure */
+
+  FILE *fp;
+  gauge_header *gh;
+  char *filename;
+  int byterevflag;
+  su3_matrix *lbuf;
+  struct {
+    short x,y,z,t;
+    su3_matrix link[4];
+  } msg;
+
+  int buf_length,where_in_buf;
+  gauge_check test_gc;
+  u_int32type *val;
+  int rank29,rank31;
+  int destnode,sendnode,isite,ksite,site_block;
+  int x,y,z,t;
+  int rcv_rank,rcv_coords;
+  register int i,k;
+
+  off_t offset ;            /* File stream pointer */
+  off_t gauge_node_size;   /* Size of a gauge configuration block for
+                              all sites on one node */
+  off_t gauge_check_size;  /* Size of gauge configuration checksum record */
+  off_t coord_list_size;    /* Size of coordinate list in bytes */
+  off_t head_size;          /* Size of header plus coordinate list */
+  off_t checksum_offset;    /* Where we put the checksum */
+  char myname[] = "r_parallel";
+
+  fp = gf->fp;
+  gh = gf->header;
+
+  filename = gf->filename;
+  byterevflag = gf->byterevflag;
+
+  if(!gf->parallel)
+    printf("%s: Attempting parallel read from serial file.\n",myname);
+
+  /* Allocate read buffer */
+  lbuf = (su3_matrix *)calloc(MAX_BUF_LENGTH*4, sizeof(su3_matrix));
+  if(lbuf == NULL)
+    {
+      printf("%s: Node %d can't malloc lbuf\n",myname,this_node); 
+      fflush(stdout);terminate(1);
+    }
+
+  gauge_node_size = sites_on_node*4*sizeof(su3_matrix) ;
+
+  /* (1996 gauge configuration files had a 32-bit unused checksum 
+     record before the gauge link data) */
+  if(gh->magic_number == GAUGE_VERSION_NUMBER)
+    gauge_check_size = sizeof(gf->check.sum29) + 
+      sizeof(gf->check.sum31);
+  else if(gh->magic_number == GAUGE_VERSION_NUMBER_1996)
+    gauge_check_size =  4;
+  else
+    gauge_check_size = 0;
+
+  if(gf->header->order == NATURAL_ORDER)coord_list_size = 0;
+  else coord_list_size = sizeof(int32type)*volume;
+  checksum_offset = gf->header->header_bytes + coord_list_size;
+  head_size = checksum_offset + gauge_check_size;
+
+  offset = head_size;
+
+  /* Position file for reading gauge configuration */
+  /* Each node reads */
+
+  offset += gauge_node_size*this_node;
+  
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
+    {
+      printf("%s: Node %d g_seek %ld failed error %d file %s\n",
+	     myname,this_node,(long)offset,errno,filename);
+      fflush(stdout);terminate(1);   
+    }
+
+  /* initialize checksums */
+  test_gc.sum29 = 0;
+  test_gc.sum31 = 0;
+  /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
+  /* Here all nodes use these values */
+  rank29 = 4*sizeof(su3_matrix)/sizeof(int32type)*sites_on_node*this_node % 29;
+  rank31 = 4*sizeof(su3_matrix)/sizeof(int32type)*sites_on_node*this_node % 31;
+
+  /* Read and deal */
+
+  g_sync();
+  buf_length = 0;
+  where_in_buf = 0;
+  
+  /* Cycle through nodes, dealing 4 values from each node in sequence.
+     (We don't know if this pattern is generally optimal.)
+
+     It is possible that messages arrive at a node in an order
+     different from the order of dealing so we include the site
+     coordinates in the message to specify where it goes */
+  
+  site_block = 4;
+  for(ksite=0; ksite<sites_on_node; ksite += site_block)
+    {
+    for(sendnode=0; sendnode<number_of_nodes; sendnode++)
+      for(isite=ksite; 
+	  isite<sites_on_node && isite<ksite+site_block; isite++)
+	{
+	  /* Compute destination coordinate for the next field 
+	     
+	     In coordinate natural order (typewriter order)
+	     the rank order of data for site (x,y,z,t) on the 
+	     file is given by
+	     
+	     rcv_coords = x+nx*(y+ny*(z+nz*t))
+	     
+	     For purposes of reading, the data is divided
+	     equally among the nodes with node 0 taking the 1st block,
+	     node 1 the second, etc.  */
+	  
+	  rcv_rank = sendnode*sites_on_node + isite;
+	  
+	  /* If sites are not in natural order, use the
+	     site list */
+	  
+	  if(gf->header->order == NATURAL_ORDER)
+	    rcv_coords = rcv_rank;
+	  else
+	    rcv_coords = gf->rank2rcv[rcv_rank];
+	  
+	  x = rcv_coords % nx; rcv_coords /= nx;
+	  y = rcv_coords % ny; rcv_coords /= ny;
+	  z = rcv_coords % nz; rcv_coords /= nz;
+	  t = rcv_coords % nt;
+	  
+	  
+	  /* Destination node for this value */
+	  destnode=node_number(x,y,z,t);
+	  
+	  /* Node sendnode reads, and sends site to correct node */
+	  if(this_node==sendnode){
+	    
+	    if(where_in_buf == buf_length)
+	      
+	      {  /* get new buffer */
+		
+		/* new buffer length  = remaining sites, but never bigger 
+		   than MAX_BUF_LENGTH */
+		buf_length = sites_on_node - isite;
+		if(buf_length > MAX_BUF_LENGTH) buf_length = MAX_BUF_LENGTH; 
+		/* then do read */
+		/* each node reads its sites */
+		
+		if( g_read(lbuf,buf_length*4*sizeof(su3_matrix),1,fp) != 1)
+		  {
+		    printf("%s: node %d gauge configuration read error %d file %s\n",
+			   myname,this_node,errno,filename); 
+		    fflush(stdout); terminate(1);
+		  }
+		where_in_buf = 0;  /* reset counter */
+	      }  /*** end of the buffer read ****/
+	    
+	    /* Do byte reversal if needed */
+	    if(gf->byterevflag==1)
+	      byterevn((int32type *)&lbuf[4*where_in_buf],
+		       4*sizeof(su3_matrix)/sizeof(int32type));
+
+	    /* Accumulate checksums - contribution from next site */
+	    for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
+		k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
+	      {
+		test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
+		test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
+		rank29++; if(rank29 >= 29)rank29 = 0;
+		rank31++; if(rank31 >= 31)rank31 = 0;
+	      }
+
+	    if(destnode==sendnode){	/* just copy links */
+	      i = node_index(x,y,z,t);
+	      memcpy((void *)lattice[i].link,
+		     (void *)&lbuf[4*where_in_buf],4*sizeof(su3_matrix));
+	    }
+	    else {		/* send to correct node */
+	      /* Message consists of site coordinates and 4 link matrices */
+	      msg.x = x; msg.y = y; msg.z = z; msg.t = t;
+	      memcpy((void *)msg.link,
+		     (void *)&lbuf[4*where_in_buf],4*sizeof(su3_matrix));
+	      
+	      send_field((char *)&msg,sizeof(msg),destnode);
+	    }
+	    where_in_buf++;
+	  }
+	  /* The node which contains this site reads a message */
+	  else {	/* for all nodes other than node sendnode */
+	    if(this_node==destnode){
+	      get_field((char *)&msg,sizeof(msg));
+	      i = node_index(msg.x,msg.y,msg.z,msg.t);
+	      if(this_node!= node_number(msg.x,msg.y,msg.z,msg.t))
+		{
+		  printf("BOTCH. Node %d received %d %d %d %d\n",
+			 this_node,msg.x,msg.y,msg.z,msg.t);
+		  fflush(stdout); terminate(1);
+		}
+	      memcpy((void *)lattice[i].link,
+		     (void *)msg.link,4*sizeof(su3_matrix));
+	    }
+	  }
+	} /** end over the lattice sites in block on all nodes ***/
+
+    g_sync(); /* To prevent incoming message pileups */
+  }  /** end over blocks **/
+
+  free(lbuf);
+
+  /* Combine node checksum contributions with global exclusive or */
+  g_xor32(&test_gc.sum29);
+  g_xor32(&test_gc.sum31);
+
+  /* Read and verify checksum */
+  
+  if(this_node == 0)
+    {
+      /* Node 0 positions file for reading checksum */
+      
+      printf("Restored binary gauge configuration in parallel from file %s\n",
+	       filename);
+      if(gh->magic_number == GAUGE_VERSION_NUMBER)
+	{
+	  printf("Time stamp %s\n",gh->time_stamp);
+	  if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
+	    {
+	      printf("%s: Node 0 g_seek %ld for checksum failed error %d file %s\n",
+		     myname,(long)offset,errno,filename);
+	      fflush(stdout);terminate(1);   
+	    }
+	  
+	  read_checksum(PARALLEL,gf,&test_gc);
+	}
+      fflush(stdout);
+    }  
+  
+} /* r_parallel */

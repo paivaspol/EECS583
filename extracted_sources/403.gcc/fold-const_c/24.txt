@@ -1,0 +1,135 @@
+static tree
+const_binop (code, arg1, arg2, notrunc)
+     enum tree_code code;
+     tree arg1, arg2;
+     int notrunc;
+{
+  STRIP_NOPS (arg1);
+  STRIP_NOPS (arg2);
+
+  if (TREE_CODE (arg1) == INTEGER_CST)
+    return int_const_binop (code, arg1, arg2, notrunc);
+
+#if ! defined (REAL_IS_NOT_DOUBLE) || defined (REAL_ARITHMETIC)
+  if (TREE_CODE (arg1) == REAL_CST)
+    {
+      REAL_VALUE_TYPE d1;
+      REAL_VALUE_TYPE d2;
+      int overflow = 0;
+      tree t;
+      struct cb_args args;
+
+      d1 = TREE_REAL_CST (arg1);
+      d2 = TREE_REAL_CST (arg2);
+
+      /* If either operand is a NaN, just return it.  Otherwise, set up
+	 for floating-point trap; we return an overflow.  */
+      if (REAL_VALUE_ISNAN (d1))
+	return arg1;
+      else if (REAL_VALUE_ISNAN (d2))
+	return arg2;
+
+      /* Setup input for const_binop_1() */
+      args.type = TREE_TYPE (arg1);
+      args.d1 = d1;
+      args.d2 = d2;
+      args.code = code;
+
+      if (do_float_handler (const_binop_1, (PTR) &args))
+	/* Receive output from const_binop_1.  */
+	t = args.t;
+      else
+	{
+	  /* We got an exception from const_binop_1.  */
+	  t = copy_node (arg1);
+	  overflow = 1;
+	}
+
+      TREE_OVERFLOW (t)
+	= (force_fit_type (t, overflow)
+	   | TREE_OVERFLOW (arg1) | TREE_OVERFLOW (arg2));
+      TREE_CONSTANT_OVERFLOW (t)
+	= TREE_OVERFLOW (t)
+	  | TREE_CONSTANT_OVERFLOW (arg1)
+	  | TREE_CONSTANT_OVERFLOW (arg2);
+      return t;
+    }
+#endif /* not REAL_IS_NOT_DOUBLE, or REAL_ARITHMETIC */
+  if (TREE_CODE (arg1) == COMPLEX_CST)
+    {
+      tree type = TREE_TYPE (arg1);
+      tree r1 = TREE_REALPART (arg1);
+      tree i1 = TREE_IMAGPART (arg1);
+      tree r2 = TREE_REALPART (arg2);
+      tree i2 = TREE_IMAGPART (arg2);
+      tree t;
+
+      switch (code)
+	{
+	case PLUS_EXPR:
+	  t = build_complex (type,
+			     const_binop (PLUS_EXPR, r1, r2, notrunc),
+			     const_binop (PLUS_EXPR, i1, i2, notrunc));
+	  break;
+
+	case MINUS_EXPR:
+	  t = build_complex (type,
+			     const_binop (MINUS_EXPR, r1, r2, notrunc),
+			     const_binop (MINUS_EXPR, i1, i2, notrunc));
+	  break;
+
+	case MULT_EXPR:
+	  t = build_complex (type,
+			     const_binop (MINUS_EXPR,
+					  const_binop (MULT_EXPR,
+						       r1, r2, notrunc),
+					  const_binop (MULT_EXPR,
+						       i1, i2, notrunc),
+					  notrunc),
+			     const_binop (PLUS_EXPR,
+					  const_binop (MULT_EXPR,
+						       r1, i2, notrunc),
+					  const_binop (MULT_EXPR,
+						       i1, r2, notrunc),
+					  notrunc));
+	  break;
+
+	case RDIV_EXPR:
+	  {
+	    tree magsquared
+	      = const_binop (PLUS_EXPR,
+			     const_binop (MULT_EXPR, r2, r2, notrunc),
+			     const_binop (MULT_EXPR, i2, i2, notrunc),
+			     notrunc);
+
+	    t = build_complex (type,
+			       const_binop
+			       (INTEGRAL_TYPE_P (TREE_TYPE (r1))
+				? TRUNC_DIV_EXPR : RDIV_EXPR,
+				const_binop (PLUS_EXPR,
+					     const_binop (MULT_EXPR, r1, r2,
+							  notrunc),
+					     const_binop (MULT_EXPR, i1, i2,
+							  notrunc),
+					     notrunc),
+				magsquared, notrunc),
+			       const_binop
+			       (INTEGRAL_TYPE_P (TREE_TYPE (r1))
+				? TRUNC_DIV_EXPR : RDIV_EXPR,
+				const_binop (MINUS_EXPR,
+					     const_binop (MULT_EXPR, i1, r2,
+							  notrunc),
+					     const_binop (MULT_EXPR, r1, i2,
+							  notrunc),
+					     notrunc),
+				magsquared, notrunc));
+	  }
+	  break;
+
+	default:
+	  abort ();
+	}
+      return t;
+    }
+  return 0;
+}

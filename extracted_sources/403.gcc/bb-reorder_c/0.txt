@@ -1,0 +1,33 @@
+static void
+make_reorder_chain ()
+{
+  basic_block prev = NULL;
+  int nbb_m1 = n_basic_blocks - 1;
+  basic_block next;
+
+  /* Loop until we've placed every block.  */
+  do
+    {
+      int i;
+
+      next = NULL;
+
+      /* Find the next unplaced block.  */
+      /* ??? Get rid of this loop, and track which blocks are not yet
+	 placed more directly, so as to avoid the O(N^2) worst case.
+	 Perhaps keep a doubly-linked list of all to-be-placed blocks;
+	 remove from the list as we place.  The head of that list is
+	 what we're looking for here.  */
+
+      for (i = 0; i <= nbb_m1 && !next; ++i)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  if (! RBI (bb)->visited)
+	    next = bb;
+	}
+      if (next)
+        prev = make_reorder_chain_1 (next, prev);
+    }
+  while (next);
+  RBI (prev)->next = NULL;
+}

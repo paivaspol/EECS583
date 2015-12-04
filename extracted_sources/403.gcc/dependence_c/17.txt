@@ -1,0 +1,30 @@
+static void
+gcd_test (icoefficients, ocoefficients, direction, distance, loop_ptr, sub)
+     subscript icoefficients [MAX_SUBSCRIPTS];
+     subscript ocoefficients [MAX_SUBSCRIPTS];
+     enum direction_type direction[MAX_SUBSCRIPTS][MAX_SUBSCRIPTS];
+     int distance[MAX_SUBSCRIPTS][MAX_SUBSCRIPTS] ATTRIBUTE_UNUSED;
+     loop *loop_ptr;
+     int sub;
+{
+  int coef_diff;
+  int g, gg;
+
+  if (! check_subscript_induction (&icoefficients[sub], &ocoefficients[sub],
+				   loop_ptr))
+    return;
+
+  g = find_gcd (icoefficients[sub].coefficient,
+		ocoefficients[sub].coefficient);
+  if (g > 1)
+    {
+      coef_diff = icoefficients[sub].offset - ocoefficients[sub].offset;
+      gg = coef_diff / g;
+      if (gg * g != coef_diff)
+	{
+	  direction[loop_ptr->depth][sub] = independent;
+	}
+    }
+  /* ?? gcd does not yield direction and distance.  Wolfe's direction
+     vector hierarchy can be used to give this.  */
+}     

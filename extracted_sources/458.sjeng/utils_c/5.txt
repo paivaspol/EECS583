@@ -1,0 +1,53 @@
+void perft_debug (void) {
+
+  /* A function to debug the move gen by doing perft's, showing the board, and
+     accepting move input */
+
+  char input[STR_BUFF], *p;
+  move_s move;
+  int depth;
+
+  init_game ();
+
+  /* go into a loop of doing a perft(), then making the moves the user inputs
+     until the user enters "exit" or "quit" */
+  while (TRUE) {
+    /* get the desired depth to generate to: */
+    printf ("\n\nPlease enter the desired depth for perft():\n");
+    rinput (input, STR_BUFF, stdin);
+    depth = atoi (input);
+
+    /* print out the number of raw nodes for this depth: */
+    raw_nodes = 0;
+    perft (depth);
+    printf ("\n\nRaw nodes for depth %d: %i\n\n", depth, raw_nodes);
+
+    /* print out the board: */
+    display_board (stdout, 1);
+
+    printf ("\nPlease input a move/command:\n");
+    rinput (input, STR_BUFF, stdin);
+
+    /* check to see if we have an exit/quit: */
+    for (p = input; *p; p++) *p = tolower (*p);
+    if (!strcmp (input, "exit") || !strcmp (input, "quit")) {
+      exit (EXIT_SUCCESS);
+    }
+
+    if (!verify_coord (input, &move)) {
+      /* loop until we get a legal move or an exit/quit: */
+      do {
+	printf ("\nIllegal move/command!  Please input a new move/command:\n");
+	rinput (input, STR_BUFF, stdin);
+
+	/* check to see if we have an exit/quit: */
+	for (p = input; *p; p++) *p = tolower (*p);
+	if (!strcmp (input, "exit") || !strcmp (input, "quit")) {
+	  exit (EXIT_SUCCESS);
+	}
+      } while (!verify_coord (input, &move));
+    }
+
+    make (&move, 0);
+  }
+}

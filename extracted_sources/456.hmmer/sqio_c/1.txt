@@ -1,0 +1,10 @@
+void
+SeqfilePosition(SQFILE *sqfp, SSIOFFSET *offset)
+{
+  if (sqfp->do_stdin || sqfp->do_gzip || IsAlignmentFormat(sqfp->format))
+    Die("SeqfilePosition() failed: in a nonrewindable data file or stream");
+
+  if (SSISetFilePosition(sqfp->f, offset) != 0)
+    Die("SSISetFilePosition failed, but that shouldn't happen.");
+  SeqfileGetLine(sqfp);
+}

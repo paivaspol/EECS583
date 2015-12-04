@@ -1,0 +1,164 @@
+static tree
+fold_convert (t, arg1)
+     tree t;
+     tree arg1;
+{
+  tree type = TREE_TYPE (t);
+  int overflow = 0;
+
+  if (POINTER_TYPE_P (type) || INTEGRAL_TYPE_P (type))
+    {
+      if (TREE_CODE (arg1) == INTEGER_CST)
+	{
+	  /* If we would build a constant wider than GCC supports,
+	     leave the conversion unfolded.  */
+	  if (TYPE_PRECISION (type) > 2 * HOST_BITS_PER_WIDE_INT)
+	    return t;
+
+	  /* If we are trying to make a sizetype for a small integer, use
+	     size_int to pick up cached types to reduce duplicate nodes.  */
+	  if (TREE_CODE (type) == INTEGER_TYPE && TYPE_IS_SIZETYPE (type)
+	      && !TREE_CONSTANT_OVERFLOW (arg1)
+	      && compare_tree_int (arg1, 10000) < 0)
+	    return size_int_type_wide (TREE_INT_CST_LOW (arg1), type);
+
+	  /* Given an integer constant, make new constant with new type,
+	     appropriately sign-extended or truncated.  */
+	  t = build_int_2 (TREE_INT_CST_LOW (arg1),
+			   TREE_INT_CST_HIGH (arg1));
+	  TREE_TYPE (t) = type;
+	  /* Indicate an overflow if (1) ARG1 already overflowed,
+	     or (2) force_fit_type indicates an overflow.
+	     Tell force_fit_type that an overflow has already occurred
+	     if ARG1 is a too-large unsigned value and T is signed.
+	     But don't indicate an overflow if converting a pointer.  */
+	  TREE_OVERFLOW (t)
+	    = ((force_fit_type (t,
+				(TREE_INT_CST_HIGH (arg1) < 0
+				 && (TREE_UNSIGNED (type)
+				    < TREE_UNSIGNED (TREE_TYPE (arg1)))))
+		&& ! POINTER_TYPE_P (TREE_TYPE (arg1)))
+	       || TREE_OVERFLOW (arg1));
+	  TREE_CONSTANT_OVERFLOW (t)
+	    = TREE_OVERFLOW (t) | TREE_CONSTANT_OVERFLOW (arg1);
+	}
+#if !defined (REAL_IS_NOT_DOUBLE) || defined (REAL_ARITHMETIC)
+      else if (TREE_CODE (arg1) == REAL_CST)
+	{
+	  /* Don't initialize these, use assignments.
+	     Initialized local aggregates don't work on old compilers.  */
+	  REAL_VALUE_TYPE x;
+	  REAL_VALUE_TYPE l;
+	  REAL_VALUE_TYPE u;
+	  tree type1 = TREE_TYPE (arg1);
+	  int no_upper_bound;
+
+	  x = TREE_REAL_CST (arg1);
+	  l = real_value_from_int_cst (type1, TYPE_MIN_VALUE (type));
+
+	  no_upper_bound = (TYPE_MAX_VALUE (type) == NULL);
+	  if (!no_upper_bound)
+	    u = real_value_from_int_cst (type1, TYPE_MAX_VALUE (type));
+
+	  /* See if X will be in range after truncation towards 0.
+	     To compensate for truncation, move the bounds away from 0,
+	     but reject if X exactly equals the adjusted bounds.  */
+#ifdef REAL_ARITHMETIC
+	  REAL_ARITHMETIC (l, MINUS_EXPR, l, dconst1);
+	  if (!no_upper_bound)
+	    REAL_ARITHMETIC (u, PLUS_EXPR, u, dconst1);
+#else
+	  l--;
+	  if (!no_upper_bound)
+	    u++;
+#endif
+	  /* If X is a NaN, use zero instead and show we have an overflow.
+	     Otherwise, range check.  */
+	  if (REAL_VALUE_ISNAN (x))
+	    overflow = 1, x = dconst0;
+	  else if (! (REAL_VALUES_LESS (l, x)
+		      && !no_upper_bound
+		      && REAL_VALUES_LESS (x, u)))
+	    overflow = 1;
+
+#ifndef REAL_ARITHMETIC
+	  {
+	    HOST_WIDE_INT low, high;
+	    HOST_WIDE_INT half_word
+	      = (HOST_WIDE_INT) 1 << (HOST_BITS_PER_WIDE_INT / 2);
+
+	    if (x < 0)
+	      x = -x;
+
+	    high = (HOST_WIDE_INT) (x / half_word / half_word);
+	    x -= (REAL_VALUE_TYPE) high * half_word * half_word;
+	    if (x >= (REAL_VALUE_TYPE) half_word * half_word / 2)
+	      {
+		low = x - (REAL_VALUE_TYPE) half_word * half_word / 2;
+		low |= (HOST_WIDE_INT) -1 << (HOST_BITS_PER_WIDE_INT - 1);
+	      }
+	    else
+	      low = (HOST_WIDE_INT) x;
+	    if (TREE_REAL_CST (arg1) < 0)
+	      neg_double (low, high, &low, &high);
+	    t = build_int_2 (low, high);
+	  }
+#else
+	  {
+	    HOST_WIDE_INT low, high;
+	    REAL_VALUE_TO_INT (&low, &high, x);
+	    t = build_int_2 (low, high);
+	  }
+#endif
+	  TREE_TYPE (t) = type;
+	  TREE_OVERFLOW (t)
+	    = TREE_OVERFLOW (arg1) | force_fit_type (t, overflow);
+	  TREE_CONSTANT_OVERFLOW (t)
+	    = TREE_OVERFLOW (t) | TREE_CONSTANT_OVERFLOW (arg1);
+	}
+#endif /* not REAL_IS_NOT_DOUBLE, or REAL_ARITHMETIC */
+      TREE_TYPE (t) = type;
+    }
+  else if (TREE_CODE (type) == REAL_TYPE)
+    {
+#if !defined (REAL_IS_NOT_DOUBLE) || defined (REAL_ARITHMETIC)
+      if (TREE_CODE (arg1) == INTEGER_CST)
+	return build_real_from_int_cst (type, arg1);
+#endif /* not REAL_IS_NOT_DOUBLE, or REAL_ARITHMETIC */
+      if (TREE_CODE (arg1) == REAL_CST)
+	{
+	  struct fc_args args;
+
+	  if (REAL_VALUE_ISNAN (TREE_REAL_CST (arg1)))
+	    {
+	      t = arg1;
+	      TREE_TYPE (arg1) = type;
+	      return t;
+	    }
+
+	  /* Setup input for fold_convert_1() */
+	  args.arg1 = arg1;
+	  args.type = type;
+
+	  if (do_float_handler (fold_convert_1, (PTR) &args))
+	    {
+	      /* Receive output from fold_convert_1() */
+	      t = args.t;
+	    }
+	  else
+	    {
+	      /* We got an exception from fold_convert_1() */
+	      overflow = 1;
+	      t = copy_node (arg1);
+	    }
+
+	  TREE_OVERFLOW (t)
+	    = TREE_OVERFLOW (arg1) | force_fit_type (t, overflow);
+	  TREE_CONSTANT_OVERFLOW (t)
+	    = TREE_OVERFLOW (t) | TREE_CONSTANT_OVERFLOW (arg1);
+	  return t;
+	}
+    }
+  TREE_CONSTANT (t) = 1;
+  return t;
+}

@@ -1,0 +1,89 @@
+static void
+put_condition_code (code, mode, reverse, fp, file)
+     enum rtx_code code;
+     enum machine_mode mode;
+     int reverse, fp;
+     FILE *file;
+{
+  const char *suffix;
+
+  if (mode == CCFPmode || mode == CCFPUmode)
+    {
+      enum rtx_code second_code, bypass_code;
+      ix86_fp_comparison_codes (code, &bypass_code, &code, &second_code);
+      if (bypass_code != NIL || second_code != NIL)
+	abort ();
+      code = ix86_fp_compare_code_to_integer (code);
+      mode = CCmode;
+    }
+  if (reverse)
+    code = reverse_condition (code);
+
+  switch (code)
+    {
+    case EQ:
+      suffix = "e";
+      break;
+    case NE:
+      suffix = "ne";
+      break;
+    case GT:
+      if (mode != CCmode && mode != CCNOmode && mode != CCGCmode)
+	abort ();
+      suffix = "g";
+      break;
+    case GTU:
+      /* ??? Use "nbe" instead of "a" for fcmov losage on some assemblers.
+	 Those same assemblers have the same but opposite losage on cmov.  */
+      if (mode != CCmode)
+	abort ();
+      suffix = fp ? "nbe" : "a";
+      break;
+    case LT:
+      if (mode == CCNOmode || mode == CCGOCmode)
+	suffix = "s";
+      else if (mode == CCmode || mode == CCGCmode)
+	suffix = "l";
+      else
+	abort ();
+      break;
+    case LTU:
+      if (mode != CCmode)
+	abort ();
+      suffix = "b";
+      break;
+    case GE:
+      if (mode == CCNOmode || mode == CCGOCmode)
+	suffix = "ns";
+      else if (mode == CCmode || mode == CCGCmode)
+	suffix = "ge";
+      else
+	abort ();
+      break;
+    case GEU:
+      /* ??? As above.  */
+      if (mode != CCmode)
+	abort ();
+      suffix = fp ? "nb" : "ae";
+      break;
+    case LE:
+      if (mode != CCmode && mode != CCGCmode && mode != CCNOmode)
+	abort ();
+      suffix = "le";
+      break;
+    case LEU:
+      if (mode != CCmode)
+	abort ();
+      suffix = "be";
+      break;
+    case UNORDERED:
+      suffix = fp ? "u" : "p";
+      break;
+    case ORDERED:
+      suffix = fp ? "nu" : "np";
+      break;
+    default:
+      abort ();
+    }
+  fputs (suffix, file);
+}

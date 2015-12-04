@@ -1,0 +1,33 @@
+static struct search_path *
+remove_dup_dirs (pfile, head)
+     cpp_reader *pfile;
+     struct search_path *head;
+{
+  struct search_path *prev = NULL, *cur, *other;
+
+  for (cur = head; cur; cur = cur->next)
+    {
+      for (other = head; other != cur; other = other->next)
+        if (INO_T_EQ (cur->ino, other->ino) && cur->dev == other->dev)
+	  {
+	    if (cur->sysp && !other->sysp)
+	      {
+		cpp_warning (pfile,
+			     "changing search order for system directory \"%s\"",
+			     cur->name);
+		if (strcmp (cur->name, other->name))
+		  cpp_warning (pfile, 
+			       "  as it is the same as non-system directory \"%s\"",
+			       other->name);
+		else
+		  cpp_warning (pfile, 
+			       "  as it has already been specified as a non-system directory");
+	      }
+	    cur = remove_dup_dir (pfile, prev);
+	    break;
+	  }
+      prev = cur;
+    }
+
+  return prev;
+}

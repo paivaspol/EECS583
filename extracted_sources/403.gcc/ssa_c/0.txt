@@ -1,0 +1,125 @@
+static void ssa_rename_from_initialize
+  PARAMS ((void));
+static rtx ssa_rename_from_lookup
+  PARAMS ((int reg));
+static unsigned int original_register
+  PARAMS ((unsigned int regno));
+static void ssa_rename_from_insert
+  PARAMS ((unsigned int reg, rtx r));
+static void ssa_rename_from_free
+  PARAMS ((void));
+typedef int (*srf_trav) PARAMS ((int regno, rtx r, sbitmap canonical_elements, partition reg_partition));
+static void ssa_rename_from_traverse
+  PARAMS ((htab_trav callback_function, sbitmap canonical_elements, partition reg_partition));
+/*static Avoid warnign message.  */ void ssa_rename_from_print
+  PARAMS ((void));
+static int ssa_rename_from_print_1
+  PARAMS ((void **slot, void *data));
+static hashval_t ssa_rename_from_hash_function
+  PARAMS ((const void * srfp));
+static int ssa_rename_from_equal
+  PARAMS ((const void *srfp1, const void *srfp2));
+static void ssa_rename_from_delete
+  PARAMS ((void *srfp));
+
+static rtx ssa_rename_to_lookup
+  PARAMS ((rtx reg));
+static void ssa_rename_to_insert
+  PARAMS ((rtx reg, rtx r));
+
+/* The number of registers that were live on entry to the SSA routines.  */
+static unsigned int ssa_max_reg_num;
+
+/* Local function prototypes.  */
+
+struct rename_context;
+
+static inline rtx * phi_alternative
+  PARAMS ((rtx, int));
+static void compute_dominance_frontiers_1
+  PARAMS ((sbitmap *frontiers, int *idom, int bb, sbitmap done));
+static void find_evaluations_1
+  PARAMS ((rtx dest, rtx set, void *data));
+static void find_evaluations
+  PARAMS ((sbitmap *evals, int nregs));
+static void compute_iterated_dominance_frontiers
+  PARAMS ((sbitmap *idfs, sbitmap *frontiers, sbitmap *evals, int nregs));
+static void insert_phi_node
+  PARAMS ((int regno, int b));
+static void insert_phi_nodes
+  PARAMS ((sbitmap *idfs, sbitmap *evals, int nregs));
+static void create_delayed_rename 
+  PARAMS ((struct rename_context *, rtx *));
+static void apply_delayed_renames 
+  PARAMS ((struct rename_context *));
+static int rename_insn_1 
+  PARAMS ((rtx *ptr, void *data));
+static void rename_block 
+  PARAMS ((int b, int *idom));
+static void rename_registers 
+  PARAMS ((int nregs, int *idom));
+
+static inline int ephi_add_node
+  PARAMS ((rtx reg, rtx *nodes, int *n_nodes));
+static int * ephi_forward
+  PARAMS ((int t, sbitmap visited, sbitmap *succ, int *tstack));
+static void ephi_backward
+  PARAMS ((int t, sbitmap visited, sbitmap *pred, rtx *nodes));
+static void ephi_create
+  PARAMS ((int t, sbitmap visited, sbitmap *pred, sbitmap *succ, rtx *nodes));
+static void eliminate_phi
+  PARAMS ((edge e, partition reg_partition));
+static int make_regs_equivalent_over_bad_edges 
+  PARAMS ((int bb, partition reg_partition));
+
+/* These are used only in the conservative register partitioning
+   algorithms.  */
+static int make_equivalent_phi_alternatives_equivalent 
+  PARAMS ((int bb, partition reg_partition));
+static partition compute_conservative_reg_partition 
+  PARAMS ((void));
+static int record_canonical_element_1
+  PARAMS ((void **srfp, void *data));
+static int check_hard_regs_in_partition
+  PARAMS ((partition reg_partition));
+static int rename_equivalent_regs_in_insn 
+  PARAMS ((rtx *ptr, void *data));
+
+/* These are used in the register coalescing algorithm.  */
+static int coalesce_if_unconflicting
+  PARAMS ((partition p, conflict_graph conflicts, int reg1, int reg2));
+static int coalesce_regs_in_copies
+  PARAMS ((basic_block bb, partition p, conflict_graph conflicts));
+static int coalesce_reg_in_phi
+  PARAMS ((rtx, int dest_regno, int src_regno, void *data));
+static int coalesce_regs_in_successor_phi_nodes
+  PARAMS ((basic_block bb, partition p, conflict_graph conflicts));
+static partition compute_coalesced_reg_partition
+  PARAMS ((void));
+static int mark_reg_in_phi 
+  PARAMS ((rtx *ptr, void *data));
+static void mark_phi_and_copy_regs
+  PARAMS ((regset phi_set));
+
+static int rename_equivalent_regs_in_insn 
+  PARAMS ((rtx *ptr, void *data));
+static void rename_equivalent_regs 
+  PARAMS ((partition reg_partition));
+
+/* Deal with hard registers.  */
+static int conflicting_hard_regs_p
+  PARAMS ((int reg1, int reg2));
+
+/* ssa_rename_to maps registers and machine modes to SSA pseudo registers.  */
+
+/* Find the register associated with REG in the indicated mode.  */
+
+static rtx
+ssa_rename_to_lookup (reg)
+     rtx reg;
+{
+  if (!HARD_REGISTER_P (reg))
+    return ssa_rename_to_pseudo[REGNO (reg) - FIRST_PSEUDO_REGISTER];
+  else
+    return ssa_rename_to_hard[REGNO (reg)][GET_MODE (reg)];
+}

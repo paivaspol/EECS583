@@ -1,0 +1,53 @@
+static dw_die_ref
+scope_die_for (t, context_die)
+     tree t;
+     dw_die_ref context_die;
+{
+  dw_die_ref scope_die = NULL;
+  tree containing_scope;
+  int i;
+
+  /* Non-types always go in the current scope.  */
+  if (! TYPE_P (t))
+    abort ();
+
+  containing_scope = TYPE_CONTEXT (t);
+
+  /* Ignore namespaces for the moment.  */
+  if (containing_scope && TREE_CODE (containing_scope) == NAMESPACE_DECL)
+    containing_scope = NULL_TREE;
+
+  /* Ignore function type "scopes" from the C frontend.  They mean that
+     a tagged type is local to a parmlist of a function declarator, but
+     that isn't useful to DWARF.  */
+  if (containing_scope && TREE_CODE (containing_scope) == FUNCTION_TYPE)
+    containing_scope = NULL_TREE;
+
+  if (containing_scope == NULL_TREE)
+    scope_die = comp_unit_die;
+  else if (TYPE_P (containing_scope))
+    {
+      /* For types, we can just look up the appropriate DIE.  But
+	 first we check to see if we're in the middle of emitting it
+	 so we know where the new DIE should go.  */
+      for (i = VARRAY_ACTIVE_SIZE (decl_scope_table) - 1; i >= 0; --i)
+	if (VARRAY_TREE (decl_scope_table, i) == containing_scope)
+	  break;
+
+      if (i < 0)
+	{
+	  if (debug_info_level > DINFO_LEVEL_TERSE
+	      && !TREE_ASM_WRITTEN (containing_scope))
+	    abort ();
+
+	  /* If none of the current dies are suitable, we get file scope.  */
+	  scope_die = comp_unit_die;
+	}
+      else
+	scope_die = lookup_type_die (containing_scope);
+    }
+  else
+    scope_die = context_die;
+
+  return scope_die;
+}

@@ -1,0 +1,71 @@
+static IV
+dynprep(pTHX_ gptr *list1, gptr *list2, size_t nmemb, SVCOMPARE_t cmp)
+{
+    I32 sense;
+    register gptr *b, *p, *q, *t, *p2;
+    register gptr c, *last, *r;
+    gptr *savep;
+    IV runs = 0;
+
+    b = list1;
+    last = PINDEX(b, nmemb);
+    sense = (cmp(aTHX_ *b, *(b+1)) > 0);
+    for (p2 = list2; b < last; ) {
+	/* We just started, or just reversed sense.
+	** Set t at end of pairs with the prevailing sense.
+	*/
+	for (p = b+2, t = p; ++p < last; t = ++p) {
+	    if ((cmp(aTHX_ *t, *p) > 0) != sense) break;
+	}
+	q = b;
+	/* Having laid out the playing field, look for long runs */
+	do {
+	    p = r = b + (2 * PTHRESH);
+	    if (r >= t) p = r = t;	/* too short to care about */
+	    else {
+		while (((cmp(aTHX_ *(p-1), *p) > 0) == sense) &&
+		       ((p -= 2) > q));
+		if (p <= q) {
+		    /* b through r is a (long) run.
+		    ** Extend it as far as possible.
+		    */
+		    p = q = r;
+		    while (((p += 2) < t) &&
+			   ((cmp(aTHX_ *(p-1), *p) > 0) == sense)) q = p;
+		    r = p = q + 2;	/* no simple pairs, no after-run */
+		}
+	    }
+	    if (q > b) {		/* run of greater than 2 at b */
+		savep = p;
+		p = q += 2;
+		/* pick up singleton, if possible */
+		if ((p == t) &&
+		    ((t + 1) == last) &&
+		    ((cmp(aTHX_ *(p-1), *p) > 0) == sense))
+		    savep = r = p = q = last;
+		p2 = NEXT(p2) = p2 + (p - b); ++runs;
+		if (sense) while (b < --p) {
+		    c = *b;
+		    *b++ = *p;
+		    *p = c;
+		}
+		p = savep;
+	    }
+	    while (q < p) {		/* simple pairs */
+		p2 = NEXT(p2) = p2 + 2; ++runs;
+		if (sense) {
+		    c = *q++;
+		    *(q-1) = *q;
+		    *q++ = c;
+		} else q += 2;
+	    }
+	    if (((b = p) == t) && ((t+1) == last)) {
+		NEXT(p2) = p2 + 1; ++runs;
+		b++;
+	    }
+	    q = r;
+	} while (b < t);
+	sense = !sense;
+    }
+    return runs;
+}

@@ -1,0 +1,34 @@
+static tree
+component_ref_for_mem_expr (ref)
+     tree ref;
+{
+  tree inner = TREE_OPERAND (ref, 0);
+
+  if (TREE_CODE (inner) == COMPONENT_REF)
+    inner = component_ref_for_mem_expr (inner);
+  else
+    {
+      tree placeholder_ptr = 0;
+
+      /* Now remove any conversions: they don't change what the underlying
+	 object is.  Likewise for SAVE_EXPR.  Also handle PLACEHOLDER_EXPR.  */
+      while (TREE_CODE (inner) == NOP_EXPR || TREE_CODE (inner) == CONVERT_EXPR
+	     || TREE_CODE (inner) == NON_LVALUE_EXPR
+	     || TREE_CODE (inner) == VIEW_CONVERT_EXPR
+	     || TREE_CODE (inner) == SAVE_EXPR
+	     || TREE_CODE (inner) == PLACEHOLDER_EXPR)
+	  if (TREE_CODE (inner) == PLACEHOLDER_EXPR)
+	    inner = find_placeholder (inner, &placeholder_ptr);
+	  else
+	    inner = TREE_OPERAND (inner, 0);
+
+      if (! DECL_P (inner))
+	inner = NULL_TREE;
+    }
+
+  if (inner == TREE_OPERAND (ref, 0))
+    return ref;
+  else
+    return build (COMPONENT_REF, TREE_TYPE (ref), inner,
+		  TREE_OPERAND (ref, 1));
+}

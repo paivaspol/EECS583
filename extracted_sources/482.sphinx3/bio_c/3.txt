@@ -1,0 +1,15 @@
+int32 bio_writehdr_version (FILE *fp, char *version)
+{
+    uint32 b;
+    
+    fprintf (fp, "s3\n");
+    fprintf (fp, "version %s\n", version);
+    fprintf (fp, "endhdr\n");
+    fflush (fp);
+    
+    b = (uint32) BYTE_ORDER_MAGIC;
+    fwrite (&b, sizeof(uint32), 1, fp);
+    fflush (fp);
+    
+    return 0;
+}

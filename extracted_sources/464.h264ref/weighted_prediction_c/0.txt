@@ -1,0 +1,117 @@
+void estimate_weighting_factor_P_slice(int select_offset)
+{
+  int i, j, n;
+  
+  double dc_org = 0.0;
+  int index;
+  int comp;
+  double dc_ref[MAX_REFERENCE_PICTURES];
+
+  pel_t*  ref_pic;   
+  pel_t*  ref_pic_w;   
+  int default_weight[3];
+
+  int list_offset   = ((img->MbaffFrameFlag)&&(img->mb_data[img->current_mb_nr].mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+  int weight[2][MAX_REFERENCE_PICTURES][3]; 
+  int offset[2][MAX_REFERENCE_PICTURES][3];       
+  int clist;
+  
+  
+  
+  luma_log_weight_denom = 5;
+  chroma_log_weight_denom = 5;
+  wp_luma_round = 1 << (luma_log_weight_denom - 1);
+  wp_chroma_round = 1 << (chroma_log_weight_denom - 1);
+  default_weight[0] = 1<<luma_log_weight_denom;
+  default_weight[1] = default_weight[2] = 1<<chroma_log_weight_denom;
+  
+  /* set all values to defaults */
+  for (i = 0; i < 2 + list_offset; i++)
+  {
+    for (j = 0; j < listXsize[i]; j++)
+    {
+      for (n = 0; n < 3; n++)
+      {
+        weight[i][j][n] = default_weight[n];
+        wp_weight[i][j][n] = default_weight[n];
+        wp_offset[i][j][n] = 0;
+        offset[i][j][n] = 0;
+      }
+    }
+  }
+  
+  for (i = 0; i < img->height; i++)
+  {
+    for (j = 0; j < img->width; j++)
+    {
+      dc_org += (double) imgY_org[i][j];
+    }
+  } 
+    
+  for (clist=0; clist<2 + list_offset; clist++)
+  {
+    for (n = 0; n < listXsize[clist]; n++)
+    {
+      dc_ref[n] = 0.0;
+      
+      ref_pic       = listX[clist][n]->imgY_11;
+      ref_pic_w     = listX[clist][n]->imgY_11_w;
+      
+      // Y
+      for (i = 0; i < img->height * img->width; i++)
+      {
+        dc_ref[n] += (double) ref_pic[i];
+      }
+      
+      if (select_offset==0.0)
+      {
+        if (dc_ref[n] != 0)
+          weight[clist][n][0] = (int) (default_weight[0] * dc_org / dc_ref[n] + 0.5);
+        else
+          weight[clist][n][0] = default_weight[0];  // only used when reference picture is black
+        if (weight[clist][n][0] < -64 || weight[clist][n][0] >127)
+          weight[clist][n][0] = default_weight[0];
+      }
+      else
+      {        
+        offset[clist][n][0] = (int) ((dc_org-dc_ref[n])/(img->height*img->width)+0.5);
+        offset[clist][n][0] = (offset[clist][n][0]<-128) ? -128: (offset[clist][n][0]>127) ? 127:offset[clist][n][0];
+        weight[clist][n][0] = default_weight[0];
+      }
+      
+      
+      /* for now always use default weight for chroma weight */
+      weight[clist][n][1] = default_weight[1];
+      weight[clist][n][2] = default_weight[2];
+      
+      
+      
+      /* store weighted reference pic for motion estimation */
+      for (i = 0; i < img->height * img->width; i++)
+      {          
+        ref_pic_w[i] = Clip3 (0, img->max_imgpel_value , (((int) ref_pic[i] * weight[clist][n][0] + wp_luma_round) >> luma_log_weight_denom) + offset[clist][n][0]);
+      }
+      for (i = 0; i < 4*(img->height + 2*IMG_PAD_SIZE) ; i++)
+      {
+        for (j = 0; j< 4*(img->width + 2*IMG_PAD_SIZE); j++)
+        {
+          listX[LIST_0][n]->imgY_ups_w[i][j] =   Clip3 (0, img->max_imgpel_value, (((int) listX[LIST_0 ][n]->imgY_ups[i][j] * weight[clist][n][0] + wp_luma_round) >> luma_log_weight_denom) + offset[clist][n][0]);
+        }
+      }
+    }
+  }
+  
+  for (clist=0; clist<2 + list_offset; clist++)
+  {
+    for (index = 0; index < listXsize[clist]; index++)
+    {
+      for (comp=0; comp < 3; comp ++)
+      {
+        wp_weight[clist][index][comp] = weight[clist][index][comp];
+        wp_offset[clist][index][comp] = offset[clist][index][comp];
+        // printf("index %d component %d weight %d offset %d\n",index,comp,weight[0][index][comp],offset[0][index][comp]);
+      }
+    }
+  }
+  
+}

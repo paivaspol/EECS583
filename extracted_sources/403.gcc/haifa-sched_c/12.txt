@@ -1,0 +1,29 @@
+void
+rm_line_notes (head, tail)
+     rtx head, tail;
+{
+  rtx next_tail;
+  rtx insn;
+
+  next_tail = NEXT_INSN (tail);
+  for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
+    {
+      rtx prev;
+
+      /* Farm out notes, and maybe save them in NOTE_LIST.
+         This is needed to keep the debugger from
+         getting completely deranged.  */
+      if (GET_CODE (insn) == NOTE)
+	{
+	  prev = insn;
+	  insn = unlink_line_notes (insn, next_tail);
+
+	  if (prev == tail)
+	    abort ();
+	  if (prev == head)
+	    abort ();
+	  if (insn == next_tail)
+	    abort ();
+	}
+    }
+}

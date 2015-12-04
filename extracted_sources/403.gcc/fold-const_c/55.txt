@@ -1,0 +1,16 @@
+static int
+count_cond (expr, lim)
+     tree expr;
+     int lim;
+{
+  int ctrue, cfalse;
+
+  if (TREE_CODE (expr) != COND_EXPR)
+    return 0;
+  else if (lim <= 0)
+    return 0;
+
+  ctrue = count_cond (TREE_OPERAND (expr, 1), lim - 1);
+  cfalse = count_cond (TREE_OPERAND (expr, 2), lim - 1 - ctrue);
+  return MIN (lim, 1 + ctrue + cfalse);
+}

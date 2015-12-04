@@ -1,0 +1,33 @@
+void shift_x(t_graph *g,matrix box,rvec x[],rvec x_s[])
+{
+  ivec *is;
+  int      g0,gn;
+  int      i,j,tx,ty,tz;
+
+  g0=g->start;
+  gn=g->nnodes;
+  is=g->ishift;
+  
+  if(TRICLINIC(box)) {
+     for(i=0,j=g0; (i<gn); i++,j++) { 
+	 tx=is[i][XX];
+	 ty=is[i][YY];
+	 tz=is[i][ZZ];
+	 
+	 x_s[j][XX]=x[j][XX]+tx*box[XX][XX]+ty*box[YY][XX]+tz*box[ZZ][XX];
+	 x_s[j][YY]=x[j][YY]+ty*box[YY][YY]+tz*box[ZZ][YY];
+	 x_s[j][ZZ]=x[j][ZZ]+tz*box[ZZ][ZZ];
+     }
+  } else {
+     for(i=0,j=g0; (i<gn); i++,j++) { 
+	 tx=is[i][XX];
+	 ty=is[i][YY];
+	 tz=is[i][ZZ];
+	 
+	 x_s[j][XX]=x[j][XX]+tx*box[XX][XX];
+	 x_s[j][YY]=x[j][YY]+ty*box[YY][YY];
+	 x_s[j][ZZ]=x[j][ZZ]+tz*box[ZZ][ZZ];
+     }
+  }       
+     
+}

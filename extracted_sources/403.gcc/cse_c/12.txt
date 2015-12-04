@@ -1,0 +1,95 @@
+static int
+mention_regs (x)
+     rtx x;
+{
+  enum rtx_code code;
+  int i, j;
+  const char *fmt;
+  int changed = 0;
+
+  if (x == 0)
+    return 0;
+
+  code = GET_CODE (x);
+  if (code == REG)
+    {
+      unsigned int regno = REGNO (x);
+      unsigned int endregno
+	= regno + (regno >= FIRST_PSEUDO_REGISTER ? 1
+		   : HARD_REGNO_NREGS (regno, GET_MODE (x)));
+      unsigned int i;
+
+      for (i = regno; i < endregno; i++)
+	{
+	  if (REG_IN_TABLE (i) >= 0 && REG_IN_TABLE (i) != REG_TICK (i))
+	    remove_invalid_refs (i);
+
+	  REG_IN_TABLE (i) = REG_TICK (i);
+	}
+
+      return 0;
+    }
+
+  /* If this is a SUBREG, we don't want to discard other SUBREGs of the same
+     pseudo if they don't use overlapping words.  We handle only pseudos
+     here for simplicity.  */
+  if (code == SUBREG && GET_CODE (SUBREG_REG (x)) == REG
+      && REGNO (SUBREG_REG (x)) >= FIRST_PSEUDO_REGISTER)
+    {
+      unsigned int i = REGNO (SUBREG_REG (x));
+
+      if (REG_IN_TABLE (i) >= 0 && REG_IN_TABLE (i) != REG_TICK (i))
+	{
+	  /* If reg_tick has been incremented more than once since
+	     reg_in_table was last set, that means that the entire
+	     register has been set before, so discard anything memorized
+	     for the entire register, including all SUBREG expressions.  */
+	  if (REG_IN_TABLE (i) != REG_TICK (i) - 1)
+	    remove_invalid_refs (i);
+	  else
+	    remove_invalid_subreg_refs (i, SUBREG_BYTE (x), GET_MODE (x));
+	}
+
+      REG_IN_TABLE (i) = REG_TICK (i);
+      return 0;
+    }
+
+  /* If X is a comparison or a COMPARE and either operand is a register
+     that does not have a quantity, give it one.  This is so that a later
+     call to record_jump_equiv won't cause X to be assigned a different
+     hash code and not found in the table after that call.
+
+     It is not necessary to do this here, since rehash_using_reg can
+     fix up the table later, but doing this here eliminates the need to
+     call that expensive function in the most common case where the only
+     use of the register is in the comparison.  */
+
+  if (code == COMPARE || GET_RTX_CLASS (code) == '<')
+    {
+      if (GET_CODE (XEXP (x, 0)) == REG
+	  && ! REGNO_QTY_VALID_P (REGNO (XEXP (x, 0))))
+	if (insert_regs (XEXP (x, 0), NULL, 0))
+	  {
+	    rehash_using_reg (XEXP (x, 0));
+	    changed = 1;
+	  }
+
+      if (GET_CODE (XEXP (x, 1)) == REG
+	  && ! REGNO_QTY_VALID_P (REGNO (XEXP (x, 1))))
+	if (insert_regs (XEXP (x, 1), NULL, 0))
+	  {
+	    rehash_using_reg (XEXP (x, 1));
+	    changed = 1;
+	  }
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    if (fmt[i] == 'e')
+      changed |= mention_regs (XEXP (x, i));
+    else if (fmt[i] == 'E')
+      for (j = 0; j < XVECLEN (x, i); j++)
+	changed |= mention_regs (XVECEXP (x, i, j));
+
+  return changed;
+}

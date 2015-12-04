@@ -1,0 +1,25 @@
+int
+quantum_objcode_write(char *file)
+{
+  FILE *fhd;
+
+  if(!opstatus)
+    {
+      fprintf(stderr, "Object code generation not active! Forgot to call quantum_objcode_start?\n");
+      return 1;
+    }
+
+  if(!file)
+    file = globalfile;
+  
+  fhd = fopen(file, "w");
+
+  if (fhd == 0)
+    return -1;
+
+  fwrite(objcode, position, 1, fhd);
+
+  fclose(fhd);
+
+  return 0;
+}

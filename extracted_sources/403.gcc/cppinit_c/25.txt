@@ -1,0 +1,428 @@
+int
+cpp_handle_option (pfile, argc, argv, ignore)
+     cpp_reader *pfile;
+     int argc;
+     char **argv;
+     int ignore;
+{
+  int i = 0;
+  struct cpp_pending *pend = CPP_OPTION (pfile, pending);
+
+  /* Interpret "-" or a non-option as a file name.  */
+  if (argv[i][0] != '-' || argv[i][1] == '\0')
+    {
+      if (CPP_OPTION (pfile, in_fname) == NULL)
+	CPP_OPTION (pfile, in_fname) = argv[i];
+      else if (CPP_OPTION (pfile, out_fname) == NULL)
+	CPP_OPTION (pfile, out_fname) = argv[i];
+      else
+	cpp_fatal (pfile, "too many filenames. Type %s --help for usage info",
+		   progname);
+    }
+  else
+    {
+      enum opt_code opt_code;
+      int opt_index;
+      const char *arg = 0;
+
+      /* Skip over '-'.  */
+      opt_index = parse_option (&argv[i][1]);
+      if (opt_index < 0)
+	return i;
+
+      opt_code = cl_options[opt_index].opt_code;
+      if (cl_options[opt_index].msg)
+	{
+	  arg = &argv[i][cl_options[opt_index].opt_len + 1];
+
+	  /* Yuk. Special case for -W as it must not swallow
+	     up any following argument.  If this becomes common, add
+	     another field to the cl_options table.  */
+	  if (arg[0] == '\0' && opt_code != OPT_W)
+	    {
+	      arg = argv[++i];
+	      if (!arg)
+		{
+		  cpp_fatal (pfile, cl_options[opt_index].msg, argv[i - 1]);
+		  return argc;
+		}
+	    }
+	}
+
+      switch (opt_code)
+	{
+	case N_OPTS: /* Shut GCC up.  */
+	  break;
+	case OPT_fleading_underscore:
+	  CPP_OPTION (pfile, user_label_prefix) = "_";
+	  break;
+	case OPT_fno_leading_underscore:
+	  CPP_OPTION (pfile, user_label_prefix) = "";
+	  break;
+	case OPT_fno_operator_names:
+	  CPP_OPTION (pfile, operator_names) = 0;
+	  break;
+	case OPT_fpreprocessed:
+	  CPP_OPTION (pfile, preprocessed) = 1;
+	  break;
+	case OPT_fno_preprocessed:
+	  CPP_OPTION (pfile, preprocessed) = 0;
+	  break;
+	case OPT_fshow_column:
+	  CPP_OPTION (pfile, show_column) = 1;
+	  break;
+	case OPT_fno_show_column:
+	  CPP_OPTION (pfile, show_column) = 0;
+	  break;
+	case OPT_fsigned_char:
+	  CPP_OPTION (pfile, signed_char) = 1;
+	  break;
+	case OPT_funsigned_char:
+	  CPP_OPTION (pfile, signed_char) = 0;
+	  break;
+	case OPT_ftabstop:
+	  /* Silently ignore empty string, non-longs and silly values.  */
+	  if (arg[0] != '\0')
+	    {
+	      char *endptr;
+	      long tabstop = strtol (arg, &endptr, 10);
+	      if (*endptr == '\0' && tabstop >= 1 && tabstop <= 100)
+		CPP_OPTION (pfile, tabstop) = tabstop;
+	    }
+	  break;
+	case OPT_w:
+	  CPP_OPTION (pfile, inhibit_warnings) = 1;
+	  break;
+	case OPT_h:
+	case OPT__help:
+	  print_help ();
+	  CPP_OPTION (pfile, help_only) = 1;
+	  break;
+	case OPT_target__help:
+          /* Print if any target specific options. cpplib has none, but
+	     make sure help_only gets set.  */
+	  CPP_OPTION (pfile, help_only) = 1;
+          break;
+
+	  /* --version inhibits compilation, -version doesn't. -v means
+	     verbose and -version.  Historical reasons, don't ask.  */
+	case OPT__version:
+	  CPP_OPTION (pfile, help_only) = 1;
+	  pfile->print_version = 1;
+	  break;
+	case OPT_v:
+	  CPP_OPTION (pfile, verbose) = 1;
+	  pfile->print_version = 1;
+	  break;
+	case OPT_version:
+	  pfile->print_version = 1;
+	  break;
+
+	case OPT_C:
+	  CPP_OPTION (pfile, discard_comments) = 0;
+	  break;
+	case OPT_P:
+	  CPP_OPTION (pfile, no_line_commands) = 1;
+	  break;
+	case OPT_dollar:	/* Don't include $ in identifiers.  */
+	  CPP_OPTION (pfile, dollars_in_ident) = 0;
+	  break;
+	case OPT_H:
+	  CPP_OPTION (pfile, print_include_names) = 1;
+	  break;
+	case OPT_D:
+	  new_pending_directive (pend, arg, cpp_define);
+	  break;
+	case OPT_pedantic_errors:
+	  CPP_OPTION (pfile, pedantic_errors) = 1;
+	  /* fall through */
+	case OPT_pedantic:
+ 	  CPP_OPTION (pfile, pedantic) = 1;
+	  break;
+	case OPT_trigraphs:
+ 	  CPP_OPTION (pfile, trigraphs) = 1;
+	  break;
+	case OPT_plus:
+	  CPP_OPTION (pfile, cplusplus) = 1;
+	  CPP_OPTION (pfile, cplusplus_comments) = 1;
+	  break;
+	case OPT_remap:
+	  CPP_OPTION (pfile, remap) = 1;
+	  break;
+	case OPT_iprefix:
+	  CPP_OPTION (pfile, include_prefix) = arg;
+	  CPP_OPTION (pfile, include_prefix_len) = strlen (arg);
+	  break;
+	case OPT_lang_c:
+	  set_lang (pfile, CLK_GNUC89);
+	  break;
+	case OPT_lang_cplusplus:
+	  set_lang (pfile, CLK_GNUCXX);
+	  break;
+	case OPT_lang_objc:
+	  set_lang (pfile, CLK_OBJC);
+	  break;
+	case OPT_lang_objcplusplus:
+	  set_lang (pfile, CLK_OBJCXX);
+	  break;
+	case OPT_lang_asm:
+	  set_lang (pfile, CLK_ASM);
+	  break;
+	case OPT_std_cplusplus98:
+	  set_lang (pfile, CLK_CXX98);
+	  break;
+	case OPT_std_gnu89:
+	  set_lang (pfile, CLK_GNUC89);
+	  break;
+	case OPT_std_gnu9x:
+	case OPT_std_gnu99:
+	  set_lang (pfile, CLK_GNUC99);
+	  break;
+	case OPT_std_iso9899_199409:
+	  set_lang (pfile, CLK_STDC94);
+	  break;
+	case OPT_std_iso9899_1990:
+	case OPT_std_c89:
+	case OPT_lang_c89:
+	  set_lang (pfile, CLK_STDC89);
+	  break;
+	case OPT_std_iso9899_199x:
+	case OPT_std_iso9899_1999:
+	case OPT_std_c9x:
+	case OPT_std_c99:
+	  set_lang (pfile, CLK_STDC99);
+	  break;
+	case OPT_nostdinc:
+	  /* -nostdinc causes no default include directories.
+	     You must specify all include-file directories with -I.  */
+	  CPP_OPTION (pfile, no_standard_includes) = 1;
+	  break;
+	case OPT_nostdincplusplus:
+	  /* -nostdinc++ causes no default C++-specific include directories.  */
+	  CPP_OPTION (pfile, no_standard_cplusplus_includes) = 1;
+	  break;
+	case OPT_o:
+	  if (CPP_OPTION (pfile, out_fname) == NULL)
+	    CPP_OPTION (pfile, out_fname) = arg;
+	  else
+	    {
+	      cpp_fatal (pfile, "output filename specified twice");
+	      return argc;
+	    }
+	  break;
+	case OPT_d:
+	  /* Args to -d specify what parts of macros to dump.
+	     Silently ignore unrecognised options; they may
+	     be aimed at the compiler proper.  */
+ 	  {
+	    char c;
+
+	    while ((c = *arg++) != '\0')
+ 	      switch (c)
+ 		{
+ 		case 'M':
+		  CPP_OPTION (pfile, dump_macros) = dump_only;
+		  break;
+		case 'N':
+		  CPP_OPTION (pfile, dump_macros) = dump_names;
+		  break;
+		case 'D':
+		  CPP_OPTION (pfile, dump_macros) = dump_definitions;
+		  break;
+		case 'I':
+		  CPP_OPTION (pfile, dump_includes) = 1;
+		  break;
+		}
+	  }
+	  break;
+
+	case OPT_MG:
+	  CPP_OPTION (pfile, print_deps_missing_files) = 1;
+	  break;
+	case OPT_M:
+	  /* When doing dependencies with -M or -MM, suppress normal
+	     preprocessed output, but still do -dM etc. as software
+	     depends on this.  Preprocessed output occurs if -MD, -MMD
+	     or environment var dependency generation is used.  */
+	  CPP_OPTION (pfile, print_deps) = 2;
+	  CPP_OPTION (pfile, no_output) = 1;
+	  break;
+	case OPT_MM:
+	  CPP_OPTION (pfile, print_deps) = 1;
+	  CPP_OPTION (pfile, no_output) = 1;
+	  break;
+	case OPT_MF:
+	  CPP_OPTION (pfile, deps_file) = arg;
+	  break;
+ 	case OPT_MP:
+	  CPP_OPTION (pfile, deps_phony_targets) = 1;
+	  break;
+	case OPT_MQ:
+	case OPT_MT:
+	  /* Add a target.  -MQ quotes for Make.  */
+	  deps_add_target (pfile->deps, arg, opt_code == OPT_MQ);
+	  break;
+
+	case OPT_MD:
+	  CPP_OPTION (pfile, print_deps) = 2;
+	  CPP_OPTION (pfile, deps_file) = arg;
+	  break;
+	case OPT_MMD:
+	  CPP_OPTION (pfile, print_deps) = 1;
+	  CPP_OPTION (pfile, deps_file) = arg;
+	  break;
+
+	case OPT_A:
+	  if (arg[0] == '-')
+	    {
+	      /* -A with an argument beginning with '-' acts as
+		 #unassert on whatever immediately follows the '-'.
+		 If "-" is the whole argument, we eliminate all
+		 predefined macros and assertions, including those
+		 that were specified earlier on the command line.
+		 That way we can get rid of any that were passed
+		 automatically in from GCC.  */
+
+	      if (arg[1] == '\0')
+		{
+		  free_chain (pend->directive_head);
+		  pend->directive_head = NULL;
+		  pend->directive_tail = NULL;
+		}
+	      else
+		new_pending_directive (pend, arg + 1, cpp_unassert);
+	    }
+	  else
+	    new_pending_directive (pend, arg, cpp_assert);
+	  break;
+	case OPT_U:
+	  new_pending_directive (pend, arg, cpp_undef);
+	  break;
+	case OPT_I:           /* Add directory to path for includes.  */
+	  if (!strcmp (arg, "-"))
+ 	    {
+	      /* -I- means:
+		 Use the preceding -I directories for #include "..."
+		 but not #include <...>.
+		 Don't search the directory of the present file
+		 for #include "...".  (Note that -I. -I- is not the same as
+		 the default setup; -I. uses the compiler's working dir.)  */
+	      if (! CPP_OPTION (pfile, ignore_srcdir))
+		{
+		  pend->quote_head = pend->brack_head;
+		  pend->quote_tail = pend->brack_tail;
+		  pend->brack_head = 0;
+		  pend->brack_tail = 0;
+		  CPP_OPTION (pfile, ignore_srcdir) = 1;
+		}
+	      else
+		{
+		  cpp_fatal (pfile, "-I- specified twice");
+		  return argc;
+		}
+ 	    }
+ 	  else
+	    append_include_chain (pfile, xstrdup (arg), BRACKET, 0);
+	  break;
+	case OPT_isystem:
+	  /* Add directory to beginning of system include path, as a system
+	     include directory.  */
+	  append_include_chain (pfile, xstrdup (arg), SYSTEM, 0);
+	  break;
+	case OPT_include:
+	case OPT_imacros:
+	  {
+	    struct pending_option *o = (struct pending_option *)
+	      xmalloc (sizeof (struct pending_option));
+	    o->arg = arg;
+	    o->next = NULL;
+
+	    if (opt_code == OPT_include)
+	      APPEND (pend, include, o);
+	    else
+	      APPEND (pend, imacros, o);
+	  }
+	  break;
+	case OPT_iwithprefix:
+	  /* Add directory to end of path for includes,
+	     with the default prefix at the front of its name.  */
+	  /* fall through */
+	case OPT_iwithprefixbefore:
+	  /* Add directory to main path for includes,
+	     with the default prefix at the front of its name.  */
+	  {
+	    char *fname;
+	    int len;
+
+	    len = strlen (arg);
+
+	    if (CPP_OPTION (pfile, include_prefix) != 0)
+	      {
+		size_t ipl = CPP_OPTION (pfile, include_prefix_len);
+		fname = xmalloc (ipl + len + 1);
+		memcpy (fname, CPP_OPTION (pfile, include_prefix), ipl);
+		memcpy (fname + ipl, arg, len + 1);
+	      }
+	    else if (cpp_GCC_INCLUDE_DIR_len)
+	      {
+		fname = xmalloc (cpp_GCC_INCLUDE_DIR_len + len + 1);
+		memcpy (fname, cpp_GCC_INCLUDE_DIR, cpp_GCC_INCLUDE_DIR_len);
+		memcpy (fname + cpp_GCC_INCLUDE_DIR_len, arg, len + 1);
+	      }
+	    else
+	      fname = xstrdup (arg);
+
+	    append_include_chain (pfile, fname,
+			  opt_code == OPT_iwithprefix ? SYSTEM: BRACKET, 0);
+	  }
+	  break;
+	case OPT_idirafter:
+	  /* Add directory to end of path for includes.  */
+	  append_include_chain (pfile, xstrdup (arg), AFTER, 0);
+	  break;
+	case OPT_W:
+	  /* Silently ignore unrecognised options.  */
+	  if (!strcmp (argv[i], "-Wall"))
+	    {
+	      CPP_OPTION (pfile, warn_trigraphs) = 1;
+	      CPP_OPTION (pfile, warn_comments) = 1;
+	    }
+	  else if (!strcmp (argv[i], "-Wtraditional"))
+	    CPP_OPTION (pfile, warn_traditional) = 1;
+	  else if (!strcmp (argv[i], "-Wtrigraphs"))
+	    CPP_OPTION (pfile, warn_trigraphs) = 1;
+	  else if (!strcmp (argv[i], "-Wcomment"))
+	    CPP_OPTION (pfile, warn_comments) = 1;
+	  else if (!strcmp (argv[i], "-Wcomments"))
+	    CPP_OPTION (pfile, warn_comments) = 1;
+	  else if (!strcmp (argv[i], "-Wundef"))
+	    CPP_OPTION (pfile, warn_undef) = 1;
+	  else if (!strcmp (argv[i], "-Wimport"))
+	    CPP_OPTION (pfile, warn_import) = 1;
+	  else if (!strcmp (argv[i], "-Werror"))
+	    CPP_OPTION (pfile, warnings_are_errors) = 1;
+	  else if (!strcmp (argv[i], "-Wsystem-headers"))
+	    CPP_OPTION (pfile, warn_system_headers) = 1;
+	  else if (!strcmp (argv[i], "-Wno-traditional"))
+	    CPP_OPTION (pfile, warn_traditional) = 0;
+	  else if (!strcmp (argv[i], "-Wno-trigraphs"))
+	    CPP_OPTION (pfile, warn_trigraphs) = 0;
+	  else if (!strcmp (argv[i], "-Wno-comment"))
+	    CPP_OPTION (pfile, warn_comments) = 0;
+	  else if (!strcmp (argv[i], "-Wno-comments"))
+	    CPP_OPTION (pfile, warn_comments) = 0;
+	  else if (!strcmp (argv[i], "-Wno-undef"))
+	    CPP_OPTION (pfile, warn_undef) = 0;
+	  else if (!strcmp (argv[i], "-Wno-import"))
+	    CPP_OPTION (pfile, warn_import) = 0;
+	  else if (!strcmp (argv[i], "-Wno-error"))
+	    CPP_OPTION (pfile, warnings_are_errors) = 0;
+	  else if (!strcmp (argv[i], "-Wno-system-headers"))
+	    CPP_OPTION (pfile, warn_system_headers) = 0;
+	  else if (! ignore)
+	    return i;
+	  break;
+ 	}
+    }
+  return i + 1;
+}

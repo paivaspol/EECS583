@@ -1,0 +1,81 @@
+static void
+store_by_pieces_1 (data, align)
+     struct store_by_pieces *data;
+     unsigned int align;
+{
+  rtx to_addr = XEXP (data->to, 0);
+  unsigned HOST_WIDE_INT max_size = MOVE_MAX_PIECES + 1;
+  enum machine_mode mode = VOIDmode, tmode;
+  enum insn_code icode;
+
+  data->offset = 0;
+  data->to_addr = to_addr;
+  data->autinc_to
+    = (GET_CODE (to_addr) == PRE_INC || GET_CODE (to_addr) == PRE_DEC
+       || GET_CODE (to_addr) == POST_INC || GET_CODE (to_addr) == POST_DEC);
+
+  data->explicit_inc_to = 0;
+  data->reverse
+    = (GET_CODE (to_addr) == PRE_DEC || GET_CODE (to_addr) == POST_DEC);
+  if (data->reverse)
+    data->offset = data->len;
+
+  /* If storing requires more than two move insns,
+     copy addresses to registers (to make displacements shorter)
+     and use post-increment if available.  */
+  if (!data->autinc_to
+      && move_by_pieces_ninsns (data->len, align) > 2)
+    {
+      /* Determine the main mode we'll be using.  */
+      for (tmode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+	   tmode != VOIDmode; tmode = GET_MODE_WIDER_MODE (tmode))
+	if (GET_MODE_SIZE (tmode) < max_size)
+	  mode = tmode;
+
+      if (USE_STORE_PRE_DECREMENT (mode) && data->reverse && ! data->autinc_to)
+	{
+	  data->to_addr = copy_addr_to_reg (plus_constant (to_addr, data->len));
+	  data->autinc_to = 1;
+	  data->explicit_inc_to = -1;
+	}
+
+      if (USE_STORE_POST_INCREMENT (mode) && ! data->reverse
+	  && ! data->autinc_to)
+	{
+	  data->to_addr = copy_addr_to_reg (to_addr);
+	  data->autinc_to = 1;
+	  data->explicit_inc_to = 1;
+	}
+
+      if ( !data->autinc_to && CONSTANT_P (to_addr))
+	data->to_addr = copy_addr_to_reg (to_addr);
+    }
+
+  if (! SLOW_UNALIGNED_ACCESS (word_mode, align)
+      || align > MOVE_MAX * BITS_PER_UNIT || align >= BIGGEST_ALIGNMENT)
+    align = MOVE_MAX * BITS_PER_UNIT;
+
+  /* First store what we can in the largest integer mode, then go to
+     successively smaller modes.  */
+
+  while (max_size > 1)
+    {
+      for (tmode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+	   tmode != VOIDmode; tmode = GET_MODE_WIDER_MODE (tmode))
+	if (GET_MODE_SIZE (tmode) < max_size)
+	  mode = tmode;
+
+      if (mode == VOIDmode)
+	break;
+
+      icode = mov_optab->handlers[(int) mode].insn_code;
+      if (icode != CODE_FOR_nothing && align >= GET_MODE_ALIGNMENT (mode))
+	store_by_pieces_2 (GEN_FCN (icode), mode, data);
+
+      max_size = GET_MODE_SIZE (mode);
+    }
+
+  /* The code above should have handled everything.  */
+  if (data->len != 0)
+    abort ();
+}

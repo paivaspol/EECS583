@@ -1,0 +1,152 @@
+void
+sched_analyze (deps, head, tail)
+     struct deps *deps;
+     rtx head, tail;
+{
+  rtx insn;
+  rtx loop_notes = 0;
+
+  if (current_sched_info->use_cselib)
+    cselib_init ();
+
+  for (insn = head;; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == INSN || GET_CODE (insn) == JUMP_INSN)
+	{
+	  /* Clear out the stale LOG_LINKS from flow.  */
+	  free_INSN_LIST_list (&LOG_LINKS (insn));
+
+	  /* Clear out stale SCHED_GROUP_P.  */
+	  SCHED_GROUP_P (insn) = 0;
+
+	  /* Make each JUMP_INSN a scheduling barrier for memory
+             references.  */
+	  if (GET_CODE (insn) == JUMP_INSN)
+	    {
+	      /* Keep the list a reasonable size.  */
+	      if (deps->pending_flush_length++ > MAX_PENDING_LIST_LENGTH)
+		flush_pending_lists (deps, insn, true, true);
+	      else
+		deps->last_pending_memory_flush
+		  = alloc_INSN_LIST (insn, deps->last_pending_memory_flush);
+	    }
+	  sched_analyze_insn (deps, PATTERN (insn), insn, loop_notes);
+	  loop_notes = 0;
+	}
+      else if (GET_CODE (insn) == CALL_INSN)
+	{
+	  int i;
+
+	  /* Clear out stale SCHED_GROUP_P.  */
+	  SCHED_GROUP_P (insn) = 0;
+
+	  CANT_MOVE (insn) = 1;
+
+	  /* Clear out the stale LOG_LINKS from flow.  */
+	  free_INSN_LIST_list (&LOG_LINKS (insn));
+
+	  if (find_reg_note (insn, REG_SETJMP, NULL))
+	    {
+	      /* This is setjmp.  Assume that all registers, not just
+		 hard registers, may be clobbered by this call.  */
+	      reg_pending_barrier = true;
+	    }
+	  else
+	    {
+	      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+		/* A call may read and modify global register variables.  */
+		if (global_regs[i])
+		  {
+		    SET_REGNO_REG_SET (reg_pending_sets, i);
+		    SET_REGNO_REG_SET (reg_pending_uses, i);
+		  }
+		/* Other call-clobbered hard regs may be clobbered.  */
+		else if (TEST_HARD_REG_BIT (regs_invalidated_by_call, i))
+		  SET_REGNO_REG_SET (reg_pending_clobbers, i);
+		/* We don't know what set of fixed registers might be used
+		   by the function, but it is certain that the stack pointer
+		   is among them, but be conservative.  */
+		else if (fixed_regs[i])
+		  SET_REGNO_REG_SET (reg_pending_uses, i);
+		/* The frame pointer is normally not used by the function
+		   itself, but by the debugger.  */
+		/* ??? MIPS o32 is an exception.  It uses the frame pointer
+		   in the macro expansion of jal but does not represent this
+		   fact in the call_insn rtl.  */
+		else if (i == FRAME_POINTER_REGNUM
+			 || (i == HARD_FRAME_POINTER_REGNUM
+			     && (! reload_completed || frame_pointer_needed)))
+		  SET_REGNO_REG_SET (reg_pending_uses, i);
+	    }
+
+	  /* For each insn which shouldn't cross a call, add a dependence
+	     between that insn and this call insn.  */
+	  add_dependence_list_and_free (insn, &deps->sched_before_next_call,
+					REG_DEP_ANTI);
+
+	  sched_analyze_insn (deps, PATTERN (insn), insn, loop_notes);
+	  loop_notes = 0;
+
+	  /* In the absence of interprocedural alias analysis, we must flush
+	     all pending reads and writes, and start new dependencies starting
+	     from here.  But only flush writes for constant calls (which may
+	     be passed a pointer to something we haven't written yet).  */
+	  flush_pending_lists (deps, insn, true, !CONST_OR_PURE_CALL_P (insn));
+
+	  /* Remember the last function call for limiting lifetimes.  */
+	  free_INSN_LIST_list (&deps->last_function_call);
+	  deps->last_function_call = alloc_INSN_LIST (insn, NULL_RTX);
+
+	  /* Before reload, begin a post-call group, so as to keep the
+	     lifetimes of hard registers correct.  */
+	  if (! reload_completed)
+	    deps->in_post_call_group_p = true;
+	}
+
+      /* See comments on reemit_notes as to why we do this.
+	 ??? Actually, the reemit_notes just say what is done, not why.  */
+
+      else if (GET_CODE (insn) == NOTE
+	       && (NOTE_LINE_NUMBER (insn) == NOTE_INSN_RANGE_BEG
+		   || NOTE_LINE_NUMBER (insn) == NOTE_INSN_RANGE_END))
+	{
+	  loop_notes = alloc_EXPR_LIST (REG_SAVE_NOTE, NOTE_RANGE_INFO (insn),
+					loop_notes);
+	  loop_notes = alloc_EXPR_LIST (REG_SAVE_NOTE,
+					GEN_INT (NOTE_LINE_NUMBER (insn)),
+					loop_notes);
+	}
+      else if (GET_CODE (insn) == NOTE
+	       && (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG
+		   || NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END
+		   || NOTE_LINE_NUMBER (insn) == NOTE_INSN_EH_REGION_BEG
+		   || NOTE_LINE_NUMBER (insn) == NOTE_INSN_EH_REGION_END))
+	{
+	  rtx rtx_region;
+
+	  if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_EH_REGION_BEG
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_EH_REGION_END)
+	    rtx_region = GEN_INT (NOTE_EH_HANDLER (insn));
+	  else
+	    rtx_region = GEN_INT (0);
+
+	  loop_notes = alloc_EXPR_LIST (REG_SAVE_NOTE,
+					rtx_region,
+					loop_notes);
+	  loop_notes = alloc_EXPR_LIST (REG_SAVE_NOTE,
+					GEN_INT (NOTE_LINE_NUMBER (insn)),
+					loop_notes);
+	  CONST_OR_PURE_CALL_P (loop_notes) = CONST_OR_PURE_CALL_P (insn);
+	}
+
+      if (current_sched_info->use_cselib)
+	cselib_process_insn (insn);
+      if (insn == tail)
+	{
+	  if (current_sched_info->use_cselib)
+	    cselib_finish ();
+	  return;
+	}
+    }
+  abort ();
+}

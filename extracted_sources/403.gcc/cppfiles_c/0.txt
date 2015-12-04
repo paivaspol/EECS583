@@ -1,0 +1,42 @@
+static struct file_name_map *read_name_map
+				PARAMS ((cpp_reader *, const char *));
+static char *read_filename_string PARAMS ((int, FILE *));
+static char *remap_filename 	PARAMS ((cpp_reader *, char *,
+					 struct search_path *));
+static struct search_path *search_from PARAMS ((cpp_reader *,
+						enum include_type));
+static struct include_file *
+	find_include_file PARAMS ((cpp_reader *, const cpp_token *,
+				   enum include_type));
+static struct include_file *open_file PARAMS ((cpp_reader *, const char *));
+static int read_include_file	PARAMS ((cpp_reader *, struct include_file *));
+static bool stack_include_file	PARAMS ((cpp_reader *, struct include_file *));
+static void purge_cache 	PARAMS ((struct include_file *));
+static void destroy_node	PARAMS ((splay_tree_value));
+static int report_missing_guard		PARAMS ((splay_tree_node, void *));
+static splay_tree_node find_or_create_entry PARAMS ((cpp_reader *,
+						     const char *));
+static void handle_missing_header PARAMS ((cpp_reader *, const char *, int));
+static int remove_component_p	PARAMS ((const char *));
+
+/* Set up the splay tree we use to store information about all the
+   file names seen in this compilation.  We also have entries for each
+   file we tried to open but failed; this saves system calls since we
+   don't try to open it again in future.
+
+   The key of each node is the file name, after processing by
+   _cpp_simplify_pathname.  The path name may or may not be absolute.
+   The path string has been malloced, as is automatically freed by
+   registering free () as the splay tree key deletion function.
+
+   A node's value is a pointer to a struct include_file, and is never
+   NULL.  */
+void
+_cpp_init_includes (pfile)
+     cpp_reader *pfile;
+{
+  pfile->all_include_files
+    = splay_tree_new ((splay_tree_compare_fn) strcmp,
+		      (splay_tree_delete_key_fn) free,
+		      destroy_node);
+}

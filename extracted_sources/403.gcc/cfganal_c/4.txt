@@ -1,0 +1,43 @@
+void
+find_unreachable_blocks ()
+{
+  edge e;
+  int i, n;
+  basic_block *tos, *worklist;
+
+  n = n_basic_blocks;
+  tos = worklist = (basic_block *) xmalloc (sizeof (basic_block) * n);
+
+  /* Clear all the reachability flags.  */
+
+  for (i = 0; i < n; ++i)
+    BASIC_BLOCK (i)->flags &= ~BB_REACHABLE;
+
+  /* Add our starting points to the worklist.  Almost always there will
+     be only one.  It isn't inconceivable that we might one day directly
+     support Fortran alternate entry points.  */
+
+  for (e = ENTRY_BLOCK_PTR->succ; e; e = e->succ_next)
+    {
+      *tos++ = e->dest;
+
+      /* Mark the block reachable.  */
+      e->dest->flags |= BB_REACHABLE;
+    }
+
+  /* Iterate: find everything reachable from what we've already seen.  */
+
+  while (tos != worklist)
+    {
+      basic_block b = *--tos;
+
+      for (e = b->succ; e; e = e->succ_next)
+	if (!(e->dest->flags & BB_REACHABLE))
+	  {
+	    *tos++ = e->dest;
+	    e->dest->flags |= BB_REACHABLE;
+	  }
+    }
+
+  free (worklist);
+}

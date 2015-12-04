@@ -1,0 +1,29 @@
+void _do_section(int fp,int key,bool bRead,char *src,int line)
+{
+  char buf[STRLEN];
+  bool bDbg;
+
+  if (gmx_fio_getftp(fp) == efTPA) {
+    if (!bRead) {
+      do_string(itemstr[key]);
+      bDbg       = gmx_fio_getdebug(fp);
+      gmx_fio_setdebug(fp,FALSE);
+      do_string(comment_str[key]);
+      gmx_fio_setdebug(fp,bDbg);
+    }
+    else {
+      if (gmx_fio_getdebug(fp))
+	fprintf(stderr,"Looking for section %s (%s, %d)",
+		itemstr[key],src,line);
+      
+      do {
+	do_string(buf);
+      } while ((strcasecmp(buf,itemstr[key]) != 0));
+      
+      if (strcasecmp(buf,itemstr[key]) != 0) 
+	fatal_error(0,"\nCould not find section heading %s",itemstr[key]);
+      else if (gmx_fio_getdebug(fp))
+	fprintf(stderr," and found it\n");
+    }
+  }
+}

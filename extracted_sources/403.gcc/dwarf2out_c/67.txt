@@ -1,0 +1,38 @@
+static int
+AT_string_form (a)
+     dw_attr_ref a;
+{
+  if (a && AT_class (a) == dw_val_class_str)
+    {
+      struct indirect_string_node *node;
+      unsigned int len;
+      extern int const_labelno;
+      char label[32];
+
+      node = a->dw_attr_val.v.val_str;
+      if (node->form)
+	return node->form;
+
+      len = HT_LEN (&node->id) + 1;
+
+      /* If the string is shorter or equal to the size of the reference, it is
+	 always better to put it inline.  */
+      if (len <= DWARF_OFFSET_SIZE || node->refcount == 0)
+	return node->form = DW_FORM_string;
+
+      /* If we cannot expect the linker to merge strings in .debug_str
+	 section, only put it into .debug_str if it is worth even in this
+	 single module.  */
+      if ((DEBUG_STR_SECTION_FLAGS & SECTION_MERGE) == 0
+	  && (len - DWARF_OFFSET_SIZE) * node->refcount <= len)
+	return node->form = DW_FORM_string;
+
+      ASM_GENERATE_INTERNAL_LABEL (label, "LC", const_labelno);
+      ++const_labelno;
+      node->label = xstrdup (label);
+
+      return node->form = DW_FORM_strp;
+    }
+
+  abort ();
+}

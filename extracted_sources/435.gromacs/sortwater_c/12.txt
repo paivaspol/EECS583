@@ -1,0 +1,53 @@
+static void buildbox(int nnode,ivec nbox,matrix box)
+{
+  ivec *BB,bxyz;
+  int  i,j,m,n,n3,ny,*fx,*fy,nbb;
+  
+  n3 = ipow(nnode,3)*6;
+  snew(BB,n3);
+  nbb=0;
+  snew(fx,nnode+1);
+  snew(fy,nnode+1);
+  factorize(nnode,fx);
+  for(i=0; (i<=nnode); i++) {
+    for(m=1; (m<=fx[i]); m++) {
+      bxyz[XX] = ipow(i,m);
+      ny = nnode/bxyz[XX];
+      factorize(ny,fy);
+      for(j=0; (j<=ny); j++) {
+	for(n=1; (n<=fy[j]); n++) {
+	  bxyz[YY] = ipow(j,n);
+	  bxyz[ZZ] = ny/bxyz[YY];
+	  if (bxyz[ZZ] > 0) {
+	    nbb = add_bb(BB,nbb,bxyz);
+	  }
+	}
+      }
+    }
+  }
+  /* Sort boxes and remove doubles */
+  qsort(BB,nbb,sizeof(BB[0]),iv_comp);
+  j = 0;
+  for(i=1; (i<nbb); i++) {
+    if ((BB[i][XX] != BB[j][XX]) || 
+	(BB[i][YY] != BB[j][YY]) || 
+	(BB[i][ZZ] != BB[j][ZZ])) {
+      j++;
+      copy_ivec(BB[i],BB[j]);
+    }
+  }
+  nbb = ++j;
+  /* Sort boxes according to weight */
+  copy_mat(box,BOX);
+  qsort(BB,nbb,sizeof(BB[0]),w_comp);
+  for(i=0; (i<nbb); i++) {
+    fprintf(stderr,"nbox = %2d %2d %2d [ prod %3d ] area = %12.5f (nm^2)\n",
+	    BB[i][XX],BB[i][YY],BB[i][ZZ],
+	    BB[i][XX]*BB[i][YY]*BB[i][ZZ],
+	    box_weight(BB[i],box));
+  }
+  copy_ivec(BB[0],nbox);
+  sfree(BB);
+  sfree(fy);
+  sfree(fx);
+}

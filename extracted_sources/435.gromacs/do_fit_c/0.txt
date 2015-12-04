@@ -1,0 +1,92 @@
+void calc_fit_R(int natoms,real *w_rls,rvec *xp,rvec *x,matrix R)
+{
+  int    c,r,n,j,m,i,irot;
+  static double **omega=NULL,**om=NULL;
+  double d[2*DIM],xnr,xpc;
+  matrix vh,vk,u;
+  real   mn;
+  int    index;
+  real   max_d;
+
+  if (omega == NULL) {
+    snew(omega,2*DIM);
+    snew(om,2*DIM);
+    for(i=0; i<2*DIM; i++) {
+      snew(omega[i],2*DIM);
+      snew(om[i],2*DIM);
+    }
+  }
+
+  for(i=0; i<2*DIM; i++) {
+    d[i]=0;
+    for(j=0; j<2*DIM; j++) {
+      omega[i][j]=0;
+      om[i][j]=0;
+    }
+  }
+  
+  /*calculate the matrix U*/
+  clear_mat(u);
+  for(n=0;(n<natoms);n++)
+    if (fabs(mn = w_rls[n]) > GMX_REAL_MIN)
+      for(c=0; (c<DIM); c++) {
+	xpc=xp[n][c];
+	for(r=0; (r<DIM); r++) {
+	  xnr=x[n][r];
+	  u[c][r]+=mn*xnr*xpc;
+	}
+      }
+  
+  /*construct omega*/
+  /*omega is symmetric -> omega==omega' */
+  for(r=0; r<2*DIM; r++)
+    for(c=0; c<=r; c++)
+      if (r>=DIM && c<DIM) {
+        omega[r][c]=u[r-DIM][c];
+        omega[c][r]=u[r-DIM][c];
+      } else {
+        omega[r][c]=0;
+        omega[c][r]=0;
+      }
+  
+  /*determine h and k*/
+  jacobi(omega,2*DIM,d,om,&irot);
+  /*real   **omega = input matrix a[0..n-1][0..n-1] must be symmetric
+   *int     natoms = number of rows and columns
+   *real      NULL = d[0]..d[n-1] are the eigenvalues of a[][]
+   *real       **v = v[0..n-1][0..n-1] contains the vectors in columns
+   *int      *irot = number of jacobi rotations
+   */
+  
+  if (debug && irot==0) fprintf(debug,"IROT=0\n");
+  
+  index=0; /* For the compiler only */
+
+  /* Copy only the first two eigenvectors */  
+  for(j=0; j<2; j++) {
+    max_d=-1000;
+    for(i=0; i<2*DIM; i++)
+      if (d[i]>max_d) {
+        max_d=d[i];
+        index=i;
+      }
+    d[index]=-10000;
+    for(i=0; i<DIM; i++) {
+      vh[j][i]=M_SQRT2*om[i][index];
+      vk[j][i]=M_SQRT2*om[i+DIM][index];
+    }
+  }
+  /* Calculate the last eigenvector as the outer-product of the first two.
+   * This insures that the conformation is not mirrored and
+   * prevents problems with completely flat reference structures.
+   */  
+  oprod(vh[0],vh[1],vh[2]);
+  oprod(vk[0],vk[1],vk[2]);
+
+  /*determine R*/
+  for(r=0; r<DIM; r++)
+    for(c=0; c<DIM; c++)
+      R[r][c] = vk[0][r]*vh[0][c] +
+	        vk[1][r]*vh[1][c] +
+	        vk[2][r]*vh[2][c];
+}

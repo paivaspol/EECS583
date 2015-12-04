@@ -1,0 +1,34 @@
+void init_single(FILE *log,t_parm *parm,
+                 char *tpxfile,t_topology *top, 
+                 rvec **x,rvec **v,t_mdatoms **mdatoms,
+                 t_nsborder *nsb)
+{
+  int         step,natoms;
+  real        t,lambda;
+  t_tpxheader *tpx;
+
+  snew(tpx,1);
+  
+  read_tpxheader(tpxfile,tpx);
+  snew(*x,tpx->natoms);
+  snew(*v,tpx->natoms);
+  
+  sfree(tpx);
+  
+  read_tpx(tpxfile,&step,&t,&lambda,&parm->ir,
+	   parm->box,&natoms,*x,*v,NULL,top);
+  check_nnodes_top(tpxfile,top,1);
+
+  *mdatoms=atoms2md(log,&top->atoms,parm->ir.opts.nFreeze,
+		    parm->ir.eI==eiBD,parm->ir.delta_t,
+		    parm->ir.bd_fric,parm->ir.opts.tau_t,
+		    parm->ir.efep!=efepNO,FALSE);
+  
+  if(log)
+      pr_inputrec(log,0,"Input Parameters",&parm->ir);
+
+  calc_nsb(log,&(top->blocks[ebCGS]),1,nsb,0);
+
+  if(log)
+      print_nsb(log,"Neighbor Search Blocks",nsb);
+}

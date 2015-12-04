@@ -1,0 +1,42 @@
+void lextree_free (lextree_t *lextree)
+{
+    gnode_t *gn, *gn2;
+    lextree_node_t *ln, *ln2;
+    int32 i, k;
+    
+    if (lextree->n_lc > 0) {
+	for (i = 0; i < lextree->n_lc; i++)
+	    glist_free (lextree->lcroot[i].root);
+	
+	ckd_free (lextree->lcroot);
+    }
+    
+    /* Build reference counts for level-1 nodes (nodes just below root) */
+    for (gn = lextree->root; gn; gn = gnode_next(gn)) {
+	ln = (lextree_node_t *) gnode_ptr (gn);
+	for (gn2 = ln->children; gn2; gn2 = gnode_next(gn2)) {
+	    ln2 = (lextree_node_t *) gnode_ptr (gn2);
+	    if (ln2->composite >= 0) {	/* First visit to this node */
+		ln2->composite = -1;
+		ln2->ssid = 1;		/* Ref count = 1 */
+	    } else
+		ln2->ssid++;		/* Increment ref count */
+	}
+    }
+    
+    /* Free lextree */
+    k = 0;
+    for (gn = lextree->root; gn; gn = gnode_next(gn)) {
+	ln = (lextree_node_t *) gnode_ptr (gn);
+	k += lextree_subtree_free (ln, 0);
+    }
+    glist_free (lextree->root);
+    
+    ckd_free ((void *) lextree->active);
+    ckd_free ((void *) lextree->next_active);
+    
+    if (k != lextree->n_node)
+	E_ERROR("#Nodes allocated(%d) != #nodes freed(%d)\n", lextree->n_node, k);
+    
+    ckd_free (lextree);
+}

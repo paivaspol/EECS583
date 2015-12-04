@@ -1,0 +1,19 @@
+void
+Perl_Slab_Free(pTHX_ void *op)
+{
+    I32 **ptr = (I32 **) op;
+    I32 *slab = ptr[-1];
+    assert( ptr-1 > (I32 **) slab );
+    assert( ptr < ( (I32 **) slab + PERL_SLAB_SIZE) );
+    assert( *slab > 0 );
+    if (--(*slab) == 0) {
+#  ifdef NETWARE
+#    define PerlMemShared PerlMem
+#  endif
+	
+    PerlMemShared_free(slab);
+	if (slab == PL_OpSlab) {
+	    PL_OpSpace = 0;
+	}
+    }
+}

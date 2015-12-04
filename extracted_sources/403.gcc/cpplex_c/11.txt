@@ -1,0 +1,44 @@
+static cpp_hashnode *
+parse_identifier (pfile)
+     cpp_reader *pfile;
+{
+  cpp_hashnode *result;
+  const U_CHAR *cur;
+
+  /* Fast-path loop.  Skim over a normal identifier.
+     N.B. ISIDNUM does not include $.  */
+  cur = pfile->buffer->cur;
+  while (ISIDNUM (*cur))
+    cur++;
+
+  /* Check for slow-path cases.  */
+  if (*cur == '?' || *cur == '\\' || *cur == '$')
+    result = parse_identifier_slow (pfile, cur);
+  else
+    {
+      const U_CHAR *base = pfile->buffer->cur - 1;
+      result = (cpp_hashnode *)
+	ht_lookup (pfile->hash_table, base, cur - base, HT_ALLOC);
+      pfile->buffer->cur = cur;
+    }
+
+  /* Rarely, identifiers require diagnostics when lexed.
+     XXX Has to be forced out of the fast path.  */
+  if (__builtin_expect ((result->flags & NODE_DIAGNOSTIC)
+			&& !pfile->state.skipping, 0))
+    {
+      /* It is allowed to poison the same identifier twice.  */
+      if ((result->flags & NODE_POISONED) && !pfile->state.poisoned_ok)
+	cpp_error (pfile, "attempt to use poisoned \"%s\"",
+		   NODE_NAME (result));
+
+      /* Constraint 6.10.3.5: __VA_ARGS__ should only appear in the
+	 replacement list of a variadic macro.  */
+      if (result == pfile->spec_nodes.n__VA_ARGS__
+	  && !pfile->state.va_args_ok)
+	cpp_pedwarn (pfile,
+	"__VA_ARGS__ can only appear in the expansion of a C99 variadic macro");
+    }
+
+  return result;
+}

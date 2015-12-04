@@ -1,0 +1,18 @@
+void rephase( int flag ){
+register int i,j,k,dir;
+register site *s;
+    /* Check to make sure we are going in expected direction */
+    if( !( (flag==ON && phases_in==OFF) || (flag==OFF && phases_in==ON) ) ){
+        node0_printf("DUMMY: you fouled up the phases\n");
+        terminate(1);
+    }
+    FORALLSITES(i,s){
+	for(dir=XUP;dir<=TUP;dir++){
+	    for(j=0;j<3;j++)for(k=0;k<3;k++){
+		s->link[dir].e[j][k].real *= s->phase[dir];
+		s->link[dir].e[j][k].imag *= s->phase[dir];
+	    }
+	}
+    }
+    phases_in = flag;
+} /* rephase.c */

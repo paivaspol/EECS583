@@ -1,0 +1,58 @@
+static int
+get_last_value_validate (loc, insn, tick, replace)
+     rtx *loc;
+     rtx insn;
+     int tick;
+     int replace;
+{
+  rtx x = *loc;
+  const char *fmt = GET_RTX_FORMAT (GET_CODE (x));
+  int len = GET_RTX_LENGTH (GET_CODE (x));
+  int i;
+
+  if (GET_CODE (x) == REG)
+    {
+      unsigned int regno = REGNO (x);
+      unsigned int endregno
+	= regno + (regno < FIRST_PSEUDO_REGISTER
+		   ? HARD_REGNO_NREGS (regno, GET_MODE (x)) : 1);
+      unsigned int j;
+
+      for (j = regno; j < endregno; j++)
+	if (reg_last_set_invalid[j]
+	    /* If this is a pseudo-register that was only set once and not
+	       live at the beginning of the function, it is always valid.  */
+	    || (! (regno >= FIRST_PSEUDO_REGISTER
+		   && REG_N_SETS (regno) == 1
+		   && (! REGNO_REG_SET_P
+		       (BASIC_BLOCK (0)->global_live_at_start, regno)))
+		&& reg_last_set_label[j] > tick))
+	  {
+	    if (replace)
+	      *loc = gen_rtx_CLOBBER (GET_MODE (x), const0_rtx);
+	    return replace;
+	  }
+
+      return 1;
+    }
+  /* If this is a memory reference, make sure that there were
+     no stores after it that might have clobbered the value.  We don't
+     have alias info, so we assume any store invalidates it.  */
+  else if (GET_CODE (x) == MEM && ! RTX_UNCHANGING_P (x)
+	   && INSN_CUID (insn) <= mem_last_set)
+    {
+      if (replace)
+	*loc = gen_rtx_CLOBBER (GET_MODE (x), const0_rtx);
+      return replace;
+    }
+
+  for (i = 0; i < len; i++)
+    if ((fmt[i] == 'e'
+	 && get_last_value_validate (&XEXP (x, i), insn, tick, replace) == 0)
+	/* Don't bother with these.  They shouldn't occur anyway.  */
+	|| fmt[i] == 'E')
+      return 0;
+
+  /* If we haven't found a reason for it to be invalid, it is valid.  */
+  return 1;
+}

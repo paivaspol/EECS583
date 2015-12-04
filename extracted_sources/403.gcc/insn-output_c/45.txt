@@ -1,0 +1,62 @@
+static const char *
+output_90 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (which_alternative)
+    {
+    case 0:
+      if (REG_P (operands[1])
+          && find_regno_note (insn, REG_DEAD, REGNO (operands[1])))
+        return "fstp\t%y0";
+      else if (STACK_TOP_P (operands[0]))
+        return "fld%z1\t%y1";
+      else
+        return "fst\t%y0";
+
+    case 1:
+      if (find_regno_note (insn, REG_DEAD, REGNO (operands[1])))
+        return "fstp%z0\t%y0";
+      else
+        return "fst%z0\t%y0";
+
+    case 2:
+      switch (standard_80387_constant_p (operands[1]))
+        {
+        case 1:
+	  return "fldz";
+	case 2:
+	  return "fld1";
+	}
+      abort();
+
+    case 3:
+    case 4:
+      return "mov{l}\t{%1, %0|%0, %1}";
+    case 5:
+      if (TARGET_SSE2)
+	return "pxor\t%0, %0";
+      else
+	return "xorps\t%0, %0";
+    case 6:
+      if (TARGET_PARTIAL_REG_DEPENDENCY)
+	return "movaps\t{%1, %0|%0, %1}";
+      else
+	return "movss\t{%1, %0|%0, %1}";
+    case 7:
+    case 8:
+      return "movss\t{%1, %0|%0, %1}";
+
+    case 9:
+    case 10:
+      return "movd\t{%1, %0|%0, %1}";
+
+    case 11:
+      return "movq\t{%1, %0|%0, %1}";
+
+    default:
+      abort();
+    }
+}
+}

@@ -1,0 +1,66 @@
+static int get_nodeid(FILE *log,int left,int right,int *nodeid,int *nnodes)
+     /*
+      * The ring of nodes is only defined by the interconnection
+      * via the supplied communication channels (left and right). Thus
+      * it is not defined what the (hardware) node id's are in the
+      * ring. To be independent of the node id assignment (to allow
+      * node switching without modifying a node id) this routine
+      * determines the node id and the number of nodes. On entry
+      * nodeid needs to be set to an unique value in the system and nnodes
+      * needs to be set to the maximum number of nodes in the system.
+      * The lowest nodeid in the ring will then get the value 0 assigned. The
+      * rest is then assigned by incrementing node id's to the right
+      * until the ring is closed. The function returns 1 in case it succeeded
+      * in determining the values for nodeid and nnodes, else it returns 0. If
+      * the hardware does not implement a ring structure this will hang the
+      * system!
+      */
+{
+  int i,nodeids[MAXNODES],min_index,min_nodeid,send_nodeid,receive_nodeid;
+
+  *nnodes=0;
+  send_nodeid=*nodeid;
+  min_nodeid=send_nodeid;
+  min_index=*nnodes;
+  do {
+#ifdef DEBUGPAR
+    fprintf(log,"Sending: %d\n",send_nodeid);
+#endif
+    gmx_tx(left,&send_nodeid,sizeof(send_nodeid));
+    gmx_rx(right,&receive_nodeid,sizeof(receive_nodeid));
+    gmx_tx_wait(left);
+    gmx_rx_wait(right);
+#ifdef DEBUGPAR
+    fprintf(log,"Received: %d\n",receive_nodeid);
+#endif
+    if (send_nodeid<min_nodeid) {
+      min_nodeid=send_nodeid;
+      min_index=*nnodes;
+    }
+    nodeids[(*nnodes)++]=send_nodeid;
+    send_nodeid=receive_nodeid;
+  } while (receive_nodeid!=*nodeid);
+  
+#ifdef DEBUGPAR  
+  fprintf(log,"min_index=%d\n",min_index);
+  fprintf(log,"nnodes   =%d\n",*nnodes);
+  fprintf(log,"nodeid      =%d\n",*nodeid);
+#endif
+
+  for (i=min_index; (*nodeid)!=nodeids[i%(*nnodes)]; i++)
+    ;
+  (*nodeid)=(i-min_index+(*nnodes))%(*nnodes);
+#ifdef DEBUGPAR
+  fprintf(log,"min_index=%d\n",min_index);
+  fprintf(log,"nnodes   =%d\n",*nnodes);
+  fprintf(log,"nodeid      =%d\n",*nodeid);
+  for (i=0; i<(*nnodes); i++) {
+    fprintf(log,"%d translated %d --> %d",
+	    i,nodeids[i],(i-min_index+(*nnodes))%(*nnodes));
+    if (nodeids[i]==(*nodeid)) 
+      fprintf(log," *");
+    fprintf(log,"\n");
+  }
+#endif
+  return 1;
+}

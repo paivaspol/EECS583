@@ -1,0 +1,27 @@
+static void
+mark_block_nesting (n)
+     struct nesting *n;
+{
+  while (n)
+    {
+      struct label_chain *l;
+
+      ggc_mark_rtx (n->exit_label);
+      ggc_mark_rtx (n->data.block.stack_level);
+      ggc_mark_rtx (n->data.block.first_insn);
+      ggc_mark_tree (n->data.block.cleanups);
+      ggc_mark_tree (n->data.block.outer_cleanups);
+
+      for (l = n->data.block.label_chain; l != NULL; l = l->next) 
+	{
+	  ggc_mark (l);
+	  ggc_mark_tree (l->label);
+	}
+
+      ggc_mark_rtx (n->data.block.last_unconditional_cleanup);
+
+      /* ??? cleanup_ptr never points outside the stack, does it?  */
+
+      n = n->next;
+    }
+}

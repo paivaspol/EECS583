@@ -1,0 +1,173 @@
+void
+df_dump (df, flags, file)
+     struct df *df;
+     int flags;
+     FILE *file;
+{
+  unsigned int i;
+  unsigned int j;
+
+  if (! df || ! file)
+    return;
+
+  fprintf (file, "\nDataflow summary:\n");
+  fprintf (file, "n_regs = %d, n_defs = %d, n_uses = %d, n_bbs = %d\n",
+	   df->n_regs, df->n_defs, df->n_uses, df->n_bbs);
+
+  if (flags & DF_RD)
+    {
+      fprintf (file, "Reaching defs:\n");
+      for (i = 0; i < df->n_bbs; i++)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+
+	  if (! bb_info->rd_in)
+	    continue;
+
+	  fprintf (file, "bb %d in  \t", i);
+	  dump_bitmap (file, bb_info->rd_in);
+	  fprintf (file, "bb %d gen \t", i);
+	  dump_bitmap (file, bb_info->rd_gen);
+	  fprintf (file, "bb %d kill\t", i);
+	  dump_bitmap (file, bb_info->rd_kill);
+	  fprintf (file, "bb %d out \t", i);
+	  dump_bitmap (file, bb_info->rd_out);
+	}
+    }
+
+  if (flags & DF_UD_CHAIN)
+    {
+      fprintf (file, "Use-def chains:\n");
+      for (j = 0; j < df->n_defs; j++)
+	{
+	  if (df->defs[j])
+	    {
+	      fprintf (file, "d%d bb %d luid %d insn %d reg %d ",
+		       j, DF_REF_BBNO (df->defs[j]),
+		       DF_INSN_LUID (df, DF_REF_INSN (df->defs[j])),
+		       DF_REF_INSN_UID (df->defs[j]),
+		       DF_REF_REGNO (df->defs[j]));
+	      if (df->defs[j]->flags & DF_REF_READ_WRITE)
+		fprintf (file, "read/write ");
+	      df_chain_dump (DF_REF_CHAIN (df->defs[j]), file);
+	      fprintf (file, "\n");
+	    }
+	}
+    }
+
+  if (flags & DF_RU)
+    {
+      fprintf (file, "Reaching uses:\n");
+      for (i = 0; i < df->n_bbs; i++)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+
+	  if (! bb_info->ru_in)
+	    continue;
+
+	  fprintf (file, "bb %d in  \t", i);
+	  dump_bitmap (file, bb_info->ru_in);
+	  fprintf (file, "bb %d gen \t", i);
+	  dump_bitmap (file, bb_info->ru_gen);
+	  fprintf (file, "bb %d kill\t", i);
+	  dump_bitmap (file, bb_info->ru_kill);
+	  fprintf (file, "bb %d out \t", i);
+	  dump_bitmap (file, bb_info->ru_out);
+	}
+    }
+
+  if (flags & DF_DU_CHAIN)
+    {
+      fprintf (file, "Def-use chains:\n");
+      for (j = 0; j < df->n_uses; j++)
+	{
+	  if (df->uses[j])
+	    {
+	      fprintf (file, "u%d bb %d luid %d insn %d reg %d ",
+		       j, DF_REF_BBNO (df->uses[j]),
+		       DF_INSN_LUID (df, DF_REF_INSN (df->uses[j])),
+		       DF_REF_INSN_UID (df->uses[j]),
+		       DF_REF_REGNO (df->uses[j]));
+	      if (df->uses[j]->flags & DF_REF_READ_WRITE)
+		fprintf (file, "read/write ");
+	      df_chain_dump (DF_REF_CHAIN (df->uses[j]), file);
+	      fprintf (file, "\n");
+	    }
+	}
+    }
+
+  if (flags & DF_LR)
+    {
+      fprintf (file, "Live regs:\n");
+      for (i = 0; i < df->n_bbs; i++)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+
+	  if (! bb_info->lr_in)
+	    continue;
+
+	  fprintf (file, "bb %d in  \t", i);
+	  dump_bitmap (file, bb_info->lr_in);
+	  fprintf (file, "bb %d use \t", i);
+	  dump_bitmap (file, bb_info->lr_use);
+	  fprintf (file, "bb %d def \t", i);
+	  dump_bitmap (file, bb_info->lr_def);
+	  fprintf (file, "bb %d out \t", i);
+	  dump_bitmap (file, bb_info->lr_out);
+	}
+    }
+
+  if (flags & (DF_REG_INFO | DF_RD_CHAIN | DF_RU_CHAIN))
+    {
+      struct reg_info *reg_info = df->regs;
+
+      fprintf (file, "Register info:\n");
+      for (j = 0; j < df->n_regs; j++)
+	{
+	  if (((flags & DF_REG_INFO)
+	       && (reg_info[j].n_uses || reg_info[j].n_defs))
+	      || ((flags & DF_RD_CHAIN) && reg_info[j].defs)
+	      || ((flags & DF_RU_CHAIN) && reg_info[j].uses))
+	  {
+	    fprintf (file, "reg %d", j);
+	    if ((flags & DF_RD_CHAIN) && (flags & DF_RU_CHAIN))
+	      {
+		basic_block bb = df_regno_bb (df, j);
+
+		if (bb)
+		  fprintf (file, " bb %d", bb->index);
+		else
+		  fprintf (file, " bb ?");
+	      }
+	    if (flags & DF_REG_INFO)
+	      {
+		fprintf (file, " life %d", reg_info[j].lifetime);
+	      }
+
+	    if ((flags & DF_REG_INFO) || (flags & DF_RD_CHAIN))
+	      {
+		fprintf (file, " defs ");
+		if (flags & DF_REG_INFO)
+		  fprintf (file, "%d ", reg_info[j].n_defs);
+		if (flags & DF_RD_CHAIN)
+		  df_chain_dump (reg_info[j].defs, file);
+	      }
+
+	    if ((flags & DF_REG_INFO) || (flags & DF_RU_CHAIN))
+	      {
+		fprintf (file, " uses ");
+		if (flags & DF_REG_INFO)
+		  fprintf (file, "%d ", reg_info[j].n_uses);
+		if (flags & DF_RU_CHAIN)
+		  df_chain_dump (reg_info[j].uses, file);
+	      }
+
+	    fprintf (file, "\n");
+	  }
+	}
+    }
+  fprintf (file, "\n");
+}

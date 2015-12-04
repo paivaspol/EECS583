@@ -1,0 +1,104 @@
+void
+preprocess_constraints ()
+{
+  int i;
+
+  memset (recog_op_alt, 0, sizeof recog_op_alt);
+  for (i = 0; i < recog_data.n_operands; i++)
+    {
+      int j;
+      struct operand_alternative *op_alt;
+      const char *p = recog_data.constraints[i];
+
+      op_alt = recog_op_alt[i];
+
+      for (j = 0; j < recog_data.n_alternatives; j++)
+	{
+	  op_alt[j].class = NO_REGS;
+	  op_alt[j].constraint = p;
+	  op_alt[j].matches = -1;
+	  op_alt[j].matched = -1;
+
+	  if (*p == '\0' || *p == ',')
+	    {
+	      op_alt[j].anything_ok = 1;
+	      continue;
+	    }
+
+	  for (;;)
+	    {
+	      char c = *p++;
+	      if (c == '#')
+		do
+		  c = *p++;
+		while (c != ',' && c != '\0');
+	      if (c == ',' || c == '\0')
+		break;
+
+	      switch (c)
+		{
+		case '=': case '+': case '*': case '%':
+		case 'E': case 'F': case 'G': case 'H':
+		case 's': case 'i': case 'n':
+		case 'I': case 'J': case 'K': case 'L':
+		case 'M': case 'N': case 'O': case 'P':
+		  /* These don't say anything we care about.  */
+		  break;
+
+		case '?':
+		  op_alt[j].reject += 6;
+		  break;
+		case '!':
+		  op_alt[j].reject += 600;
+		  break;
+		case '&':
+		  op_alt[j].earlyclobber = 1;
+		  break;		  
+
+		case '0': case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
+		  {
+		    char *end;
+		    op_alt[j].matches = strtoul (p - 1, &end, 10);
+		    recog_op_alt[op_alt[j].matches][j].matched = i;
+		    p = end;
+		  }
+		  break;
+
+		case 'm':
+		  op_alt[j].memory_ok = 1;
+		  break;
+		case '<':
+		  op_alt[j].decmem_ok = 1;
+		  break;
+		case '>':
+		  op_alt[j].incmem_ok = 1;
+		  break;
+		case 'V':
+		  op_alt[j].nonoffmem_ok = 1;
+		  break;
+		case 'o':
+		  op_alt[j].offmem_ok = 1;
+		  break;
+		case 'X':
+		  op_alt[j].anything_ok = 1;
+		  break;
+
+		case 'p':
+		  op_alt[j].is_address = 1;
+		  op_alt[j].class = reg_class_subunion[(int) op_alt[j].class]
+		    [(int) MODE_BASE_REG_CLASS (VOIDmode)];
+		  break;
+
+		case 'g': case 'r':
+		  op_alt[j].class = reg_class_subunion[(int) op_alt[j].class][(int) GENERAL_REGS];
+		  break;
+
+		default:
+		  op_alt[j].class = reg_class_subunion[(int) op_alt[j].class][(int) REG_CLASS_FROM_LETTER ((unsigned char) c)];
+		  break;
+		}
+	    }
+	}
+    }
+}

@@ -1,0 +1,35 @@
+static void
+add_byte_size_attribute (die, tree_node)
+     dw_die_ref die;
+     tree tree_node;
+{
+  unsigned size;
+
+  switch (TREE_CODE (tree_node))
+    {
+    case ERROR_MARK:
+      size = 0;
+      break;
+    case ENUMERAL_TYPE:
+    case RECORD_TYPE:
+    case UNION_TYPE:
+    case QUAL_UNION_TYPE:
+      size = int_size_in_bytes (tree_node);
+      break;
+    case FIELD_DECL:
+      /* For a data member of a struct or union, the DW_AT_byte_size is
+         generally given as the number of bytes normally allocated for an
+         object of the *declared* type of the member itself.  This is true
+         even for bit-fields.  */
+      size = simple_type_size_in_bits (field_type (tree_node)) / BITS_PER_UNIT;
+      break;
+    default:
+      abort ();
+    }
+
+  /* Note that `size' might be -1 when we get to this point.  If it is, that
+     indicates that the byte size of the entity in question is variable.  We
+     have no good way of expressing this fact in Dwarf at the present time,
+     so just let the -1 pass on through.  */
+  add_AT_unsigned (die, DW_AT_byte_size, size);
+}

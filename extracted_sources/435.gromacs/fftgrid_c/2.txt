@@ -1,0 +1,41 @@
+void gmxfft3D(t_fftgrid *grid,int dir,t_commrec *cr)
+{
+#ifdef WITHOUT_FFTW
+  fatal_error(0,"gmxfft3D called, but GROMACS was compiled without FFTW!\n");
+#else /* have fftw */
+  if (cr && PAR(cr) && grid->localptr) {
+#ifdef USE_MPI
+    if (dir == FFTW_FORWARD)
+      rfftwnd_mpi(grid->plan_mpi_fw,1,grid->localptr,
+		  grid->workspace,FFTW_TRANSPOSED_ORDER);
+    else if (dir == FFTW_BACKWARD)
+      rfftwnd_mpi(grid->plan_mpi_bw,1,grid->localptr,
+		    grid->workspace,FFTW_TRANSPOSED_ORDER);
+    else
+      fatal_error(0,"Invalid direction for FFT: %d",dir);
+#endif
+  }
+  else {
+    t_fft_r *tmp;
+    
+#ifdef FFT_WORKSPACE
+    tmp=grid->workspace;
+#else
+    tmp=NULL;
+#endif
+    if (dir == FFTW_FORWARD)
+	  rfftwnd_one_real_to_complex(grid->plan_fw,grid->ptr,
+				      (fftw_complex *)tmp);
+    else if (dir == FFTW_BACKWARD)
+	  rfftwnd_one_complex_to_real(grid->plan_bw,(fftw_complex *)grid->ptr,
+				      tmp);
+    else
+      fatal_error(0,"Invalid direction for FFT: %d",dir);
+#ifdef FFT_WORKSPACE
+      tmp=grid->ptr;
+      grid->ptr=grid->workspace;
+      grid->workspace=tmp;
+#endif
+  }
+#endif
+}

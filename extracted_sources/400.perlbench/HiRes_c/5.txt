@@ -1,0 +1,37 @@
+static int
+timezone_setup(void) 
+{
+  struct tm *tm_p;
+
+  if (gmtime_emulation_type == 0) {
+    int dstnow;
+    time_t base = 15 * 86400; /* 15jan71; to avoid month/year ends between    */
+                              /* results of calls to gmtime() and localtime() */
+                              /* for same &base */
+
+    gmtime_emulation_type++;
+    if ((tm_p = gmtime(&base)) == NULL) { /* CRTL gmtime() is a fake */
+      char off[LNM$C_NAMLENGTH+1];;
+
+      gmtime_emulation_type++;
+      if (!Perl_vmstrnenv("SYS$TIMEZONE_DIFFERENTIAL",off,0,fildev,0)) {
+        gmtime_emulation_type++;
+        utc_offset_secs = 0;
+        Perl_warn(aTHX_ "no UTC offset information; assuming local time is UTC");
+      }
+      else { utc_offset_secs = atol(off); }
+    }
+    else { /* We've got a working gmtime() */
+      struct tm gmt, local;
+
+      gmt = *tm_p;
+      tm_p = localtime(&base);
+      local = *tm_p;
+      utc_offset_secs  = (local.tm_mday - gmt.tm_mday) * 86400;
+      utc_offset_secs += (local.tm_hour - gmt.tm_hour) * 3600;
+      utc_offset_secs += (local.tm_min  - gmt.tm_min)  * 60;
+      utc_offset_secs += (local.tm_sec  - gmt.tm_sec);
+    }
+  }
+  return 1;
+}

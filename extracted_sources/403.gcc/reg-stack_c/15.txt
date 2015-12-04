@@ -1,0 +1,81 @@
+static void
+emit_swap_insn (insn, regstack, reg)
+     rtx insn;
+     stack regstack;
+     rtx reg;
+{
+  int hard_regno;
+  rtx swap_rtx;
+  int tmp, other_reg;		/* swap regno temps */
+  rtx i1;			/* the stack-reg insn prior to INSN */
+  rtx i1set = NULL_RTX;		/* the SET rtx within I1 */
+
+  hard_regno = get_hard_regnum (regstack, reg);
+
+  if (hard_regno < FIRST_STACK_REG)
+    abort ();
+  if (hard_regno == FIRST_STACK_REG)
+    return;
+
+  other_reg = regstack->top - (hard_regno - FIRST_STACK_REG);
+
+  tmp = regstack->reg[other_reg];
+  regstack->reg[other_reg] = regstack->reg[regstack->top];
+  regstack->reg[regstack->top] = tmp;
+
+  /* Find the previous insn involving stack regs, but don't pass a
+     block boundary.  */
+  i1 = NULL;
+  if (current_block && insn != current_block->head)
+    {
+      rtx tmp = PREV_INSN (insn);
+      rtx limit = PREV_INSN (current_block->head);
+      while (tmp != limit)
+	{
+	  if (GET_CODE (tmp) == CODE_LABEL
+	      || GET_CODE (tmp) == CALL_INSN
+	      || NOTE_INSN_BASIC_BLOCK_P (tmp)
+	      || (GET_CODE (tmp) == INSN
+		  && stack_regs_mentioned (tmp)))
+	    {
+	      i1 = tmp;
+	      break;
+	    }
+	  tmp = PREV_INSN (tmp);
+	}
+    }
+
+  if (i1 != NULL_RTX
+      && (i1set = single_set (i1)) != NULL_RTX)
+    {
+      rtx i1src = *get_true_reg (&SET_SRC (i1set));
+      rtx i1dest = *get_true_reg (&SET_DEST (i1set));
+
+      /* If the previous register stack push was from the reg we are to
+	 swap with, omit the swap.  */
+
+      if (GET_CODE (i1dest) == REG && REGNO (i1dest) == FIRST_STACK_REG
+	  && GET_CODE (i1src) == REG
+	  && REGNO (i1src) == (unsigned) hard_regno - 1
+	  && find_regno_note (i1, REG_DEAD, FIRST_STACK_REG) == NULL_RTX)
+	return;
+
+      /* If the previous insn wrote to the reg we are to swap with,
+	 omit the swap.  */
+
+      if (GET_CODE (i1dest) == REG && REGNO (i1dest) == (unsigned) hard_regno
+	  && GET_CODE (i1src) == REG && REGNO (i1src) == FIRST_STACK_REG
+	  && find_regno_note (i1, REG_DEAD, FIRST_STACK_REG) == NULL_RTX)
+	return;
+    }
+
+  swap_rtx = gen_swapxf (FP_MODE_REG (hard_regno, XFmode),
+			 FP_MODE_REG (FIRST_STACK_REG, XFmode));
+
+  if (i1)
+    emit_insn_after (swap_rtx, i1);
+  else if (current_block)
+    emit_insn_before (swap_rtx, current_block->head);
+  else
+    emit_insn_before (swap_rtx, insn);
+}

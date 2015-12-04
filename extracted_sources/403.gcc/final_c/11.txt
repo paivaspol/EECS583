@@ -1,0 +1,29 @@
+static int
+align_fuzz (start, end, known_align_log, growth)
+     rtx start, end;
+     int known_align_log;
+     unsigned growth;
+{
+  int uid = INSN_UID (start);
+  rtx align_label;
+  int known_align = 1 << known_align_log;
+  int end_shuid = INSN_SHUID (end);
+  int fuzz = 0;
+
+  for (align_label = uid_align[uid]; align_label; align_label = uid_align[uid])
+    {
+      int align_addr, new_align;
+
+      uid = INSN_UID (align_label);
+      align_addr = INSN_ADDRESSES (uid) - insn_lengths[uid];
+      if (uid_shuid[uid] > end_shuid)
+	break;
+      known_align_log = LABEL_TO_ALIGNMENT (align_label);
+      new_align = 1 << known_align_log;
+      if (new_align < known_align)
+	continue;
+      fuzz += (-align_addr ^ growth) & (new_align - known_align);
+      known_align = new_align;
+    }
+  return fuzz;
+}

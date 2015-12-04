@@ -1,0 +1,38 @@
+int
+SSIAddSecondaryKeyToIndex(SSIINDEX *g, char *key, char *pkey)
+{
+  int n;			/* a string length */
+  
+  if (g->nsecondary >= SSI_MAXKEYS) return SSI_ERR_TOOMANY_KEYS;
+
+  /* Before adding the key: check how big our index is.
+   * If it's getting too large, switch to external mode.
+   */
+  if (!g->external && current_index_size(g) >= g->max_ram) 
+    if (activate_external_sort(g) != 0)  return SSI_ERR_NOFILE;
+
+  /* Update maximum secondary key length, if necessary.
+   */
+  n = strlen(key);
+  if ((n+1) > g->slen) g->slen = n+1;
+
+  /* if external mode: write info to disk.
+   */
+  if (g->external) {
+    fprintf(g->stmp, "%s\t%s\n", key, pkey);
+    g->nsecondary++;
+    return 0;
+  }
+
+  /* else, internal mode... store info in memory.
+   */
+  if ((g->skeys[g->nsecondary].key  = sre_strdup(key, n))   == NULL) return SSI_ERR_MALLOC;
+  if ((g->skeys[g->nsecondary].pkey = sre_strdup(pkey, -1)) == NULL) return SSI_ERR_MALLOC;
+  g->nsecondary++;
+
+  if (g->nsecondary % SSI_KEY_BLOCK == 0) {
+    g->skeys = realloc(g->skeys, sizeof(struct ssiskey_s) * (g->nsecondary+SSI_KEY_BLOCK));
+    if (g->skeys == NULL) return SSI_ERR_MALLOC;
+  }
+  return 0;
+}

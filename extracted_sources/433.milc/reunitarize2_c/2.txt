@@ -1,0 +1,95 @@
+int reunit_su3(su3_matrix *c)
+{
+     register double bj0r, bj0i, bj1r, bj1i, bj2r, bj2i;
+     register double c0r, c0i, c1r, c1i, c2r, c2i;
+     register double ar, ai, tr, ti;
+     double deviation;
+     int errors;
+
+     errors = 0;
+     /* first normalize row 0 */
+     ar = (*c).e[0][0].real * (*c).e[0][0].real +    /* sum of squares of row */
+          (*c).e[0][0].imag * (*c).e[0][0].imag +
+          (*c).e[0][1].real * (*c).e[0][1].real +
+          (*c).e[0][1].imag * (*c).e[0][1].imag +
+          (*c).e[0][2].real * (*c).e[0][2].real +
+          (*c).e[0][2].imag * (*c).e[0][2].imag;
+  
+     deviation = fabs(ar - 1.);
+     errors += check_deviation(deviation);
+     
+     ar = 1.0 / sqrt( (double)ar);	       /* used to normalize row */
+     (*c).e[0][0].real *= ar;
+     (*c).e[0][0].imag *= ar;
+     (*c).e[0][1].real *= ar;
+     (*c).e[0][1].imag *= ar;
+     (*c).e[0][2].real *= ar;
+     (*c).e[0][2].imag *= ar;
+
+     /* now make row 1 orthogonal to row 0 */
+     ar = (*c).e[0][0].real * (*c).e[1][0].real +     /* real part of 0 dot 1 */
+          (*c).e[0][0].imag * (*c).e[1][0].imag +
+          (*c).e[0][1].real * (*c).e[1][1].real +
+          (*c).e[0][1].imag * (*c).e[1][1].imag +
+          (*c).e[0][2].real * (*c).e[1][2].real +
+          (*c).e[0][2].imag * (*c).e[1][2].imag;
+     ai = (*c).e[0][0].real * (*c).e[1][0].imag -     /* imag part of 0 dot 1 */
+          (*c).e[0][0].imag * (*c).e[1][0].real +
+          (*c).e[0][1].real * (*c).e[1][1].imag -
+          (*c).e[0][1].imag * (*c).e[1][1].real +
+          (*c).e[0][2].real * (*c).e[1][2].imag -
+          (*c).e[0][2].imag * (*c).e[1][2].real;
+
+     deviation = ar*ar + ai*ai;
+     errors += check_deviation(deviation);
+
+     /* row 1 -= a * row 0 */
+     (*c).e[1][0].real -= ar*(*c).e[0][0].real - ai*(*c).e[0][0].imag;
+     (*c).e[1][0].imag -= ar*(*c).e[0][0].imag + ai*(*c).e[0][0].real;
+     (*c).e[1][1].real -= ar*(*c).e[0][1].real - ai*(*c).e[0][1].imag;
+     (*c).e[1][1].imag -= ar*(*c).e[0][1].imag + ai*(*c).e[0][1].real;
+     (*c).e[1][2].real -= ar*(*c).e[0][2].real - ai*(*c).e[0][2].imag;
+     (*c).e[1][2].imag -= ar*(*c).e[0][2].imag + ai*(*c).e[0][2].real;
+
+     /* now normalize row 1 */
+     ar = (*c).e[1][0].real * (*c).e[1][0].real +    /* sum of squares of row */
+          (*c).e[1][0].imag * (*c).e[1][0].imag +
+          (*c).e[1][1].real * (*c).e[1][1].real +
+          (*c).e[1][1].imag * (*c).e[1][1].imag +
+          (*c).e[1][2].real * (*c).e[1][2].real +
+          (*c).e[1][2].imag * (*c).e[1][2].imag;
+  
+     deviation = fabs(ar - 1.);
+     errors += check_deviation(deviation);
+
+     ar = 1.0 / sqrt( (double)ar);	       /* used to normalize row */
+     (*c).e[1][0].real *= ar;
+     (*c).e[1][0].imag *= ar;
+     (*c).e[1][1].real *= ar;
+     (*c).e[1][1].imag *= ar;
+     (*c).e[1][2].real *= ar;
+     (*c).e[1][2].imag *= ar;
+
+     /* Save for checking */
+     c0r = (*c).e[2][0].real;
+     c0i = (*c).e[2][0].imag;
+     c1r = (*c).e[2][1].real;
+     c1i = (*c).e[2][1].imag;
+     c2r = (*c).e[2][2].real;
+     c2i = (*c).e[2][2].imag;
+
+     fixsu3(c); /* reconstruct row 2 */
+
+     /* Now check deviation */
+     ar = (c0r - (*c).e[2][0].real) * (c0r - (*c).e[2][0].real) +
+          (c0i - (*c).e[2][0].imag) * (c0i - (*c).e[2][0].imag) +
+          (c1r - (*c).e[2][1].real) * (c1r - (*c).e[2][1].real) +
+          (c1i - (*c).e[2][1].imag) * (c1i - (*c).e[2][1].imag) +
+          (c2r - (*c).e[2][2].real) * (c2r - (*c).e[2][2].real) +
+          (c2i - (*c).e[2][2].imag) * (c2i - (*c).e[2][2].imag);
+     deviation = ar;
+     errors += check_deviation(deviation);
+
+     return errors;
+
+} /* reunit_su3 */

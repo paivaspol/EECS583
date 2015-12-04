@@ -1,0 +1,101 @@
+static void
+dbxout_type_methods (type)
+     tree type;
+{
+  /* C++: put out the method names and their parameter lists */
+  tree methods = TYPE_METHODS (type);
+  tree type_encoding;
+  tree fndecl;
+  tree last;
+  char formatted_type_identifier_length[16];
+  int type_identifier_length;
+
+  if (methods == NULL_TREE)
+    return;
+
+  type_encoding = DECL_NAME (TYPE_NAME (type));
+
+#if 0
+  /* C++: Template classes break some assumptions made by this code about
+     the class names, constructor names, and encodings for assembler
+     label names.  For now, disable output of dbx info for them.  */
+  {
+    const char *ptr = IDENTIFIER_POINTER (type_encoding);
+    /* This should use index.  (mrs) */
+    while (*ptr && *ptr != '<') ptr++;
+    if (*ptr != 0)
+      {
+	static int warned;
+	if (!warned)
+	    warned = 1;
+	return;
+      }
+  }
+#endif
+
+  type_identifier_length = IDENTIFIER_LENGTH (type_encoding);
+
+  sprintf (formatted_type_identifier_length, "%d", type_identifier_length);
+
+  if (TREE_CODE (methods) != TREE_VEC)
+    fndecl = methods;
+  else if (TREE_VEC_ELT (methods, 0) != NULL_TREE)
+    fndecl = TREE_VEC_ELT (methods, 0);
+  else
+    fndecl = TREE_VEC_ELT (methods, 1);
+
+  while (fndecl)
+    {
+      int need_prefix = 1;
+
+      /* Group together all the methods for the same operation.
+	 These differ in the types of the arguments.  */
+      for (last = NULL_TREE;
+	   fndecl && (last == NULL_TREE || DECL_NAME (fndecl) == DECL_NAME (last));
+	   fndecl = TREE_CHAIN (fndecl))
+	/* Output the name of the field (after overloading), as
+	   well as the name of the field before overloading, along
+	   with its parameter list */
+	{
+	  /* This is the "mangled" name of the method.
+	     It encodes the argument types.  */
+	  const char *debug_name;
+
+	  /* Skip methods that aren't FUNCTION_DECLs.  (In C++, these
+	     include TEMPLATE_DECLs.)  The debugger doesn't know what
+	     to do with such entities anyhow.  */
+	  if (TREE_CODE (fndecl) != FUNCTION_DECL)
+	    continue;
+
+	  debug_name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (fndecl));
+
+	  CONTIN;
+
+	  last = fndecl;
+
+	  /* Also ignore abstract methods; those are only interesting to
+	     the DWARF backends.  */
+	  if (DECL_IGNORED_P (fndecl) || DECL_ABSTRACT (fndecl))
+	    continue;
+
+	  /* Redundantly output the plain name, since that's what gdb
+	     expects.  */
+	  if (need_prefix)
+	    {
+	      tree name = DECL_NAME (fndecl);
+	      fprintf (asmfile, "%s::", IDENTIFIER_POINTER (name));
+	      CHARS (IDENTIFIER_LENGTH (name) + 2);
+	      need_prefix = 0;
+	    }
+
+	  dbxout_type (TREE_TYPE (fndecl), 0);
+
+	  dbxout_type_method_1 (fndecl, debug_name);
+	}
+      if (!need_prefix)
+	{
+          putc (';', asmfile);
+	  CHARS (1);
+	}
+    }
+}

@@ -1,0 +1,212 @@
+static void
+dwarfout_file_scope_decl (decl, set_finalizing)
+     tree decl;
+     int set_finalizing;
+{
+  if (TREE_CODE (decl) == ERROR_MARK)
+    return;
+
+  /* If this ..._DECL node is marked to be ignored, then ignore it.  */
+
+  if (DECL_IGNORED_P (decl))
+    return;
+
+  switch (TREE_CODE (decl))
+    {
+    case FUNCTION_DECL:
+
+      /* Ignore this FUNCTION_DECL if it refers to a builtin declaration of
+	 a builtin function.  Explicit programmer-supplied declarations of
+	 these same functions should NOT be ignored however.  */
+
+      if (DECL_EXTERNAL (decl) && DECL_FUNCTION_CODE (decl))
+        return;
+
+      /* What we would really like to do here is to filter out all mere
+	 file-scope declarations of file-scope functions which are never
+	 referenced later within this translation unit (and keep all of
+	 ones that *are* referenced later on) but we aren't clairvoyant,
+	 so we have no idea which functions will be referenced in the
+	 future (i.e. later on within the current translation unit).
+	 So here we just ignore all file-scope function declarations
+	 which are not also definitions.  If and when the debugger needs
+	 to know something about these functions, it will have to hunt
+	 around and find the DWARF information associated with the
+	 *definition* of the function.
+
+	 Note that we can't just check `DECL_EXTERNAL' to find out which
+	 FUNCTION_DECL nodes represent definitions and which ones represent
+	 mere declarations.  We have to check `DECL_INITIAL' instead.  That's
+	 because the C front-end supports some weird semantics for "extern
+	 inline" function definitions.  These can get inlined within the
+	 current translation unit (an thus, we need to generate DWARF info
+	 for their abstract instances so that the DWARF info for the
+	 concrete inlined instances can have something to refer to) but
+	 the compiler never generates any out-of-lines instances of such
+	 things (despite the fact that they *are* definitions).  The
+	 important point is that the C front-end marks these "extern inline"
+	 functions as DECL_EXTERNAL, but we need to generate DWARF for them
+	 anyway.
+
+	 Note that the C++ front-end also plays some similar games for inline
+	 function definitions appearing within include files which also
+	 contain `#pragma interface' pragmas.  */
+
+      if (DECL_INITIAL (decl) == NULL_TREE)
+	return;
+
+      if (TREE_PUBLIC (decl)
+	  && ! DECL_EXTERNAL (decl)
+	  && ! DECL_ABSTRACT (decl))
+	{
+	  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+	  /* Output a .debug_pubnames entry for a public function
+	     defined in this compilation unit.  */
+
+	  fputc ('\n', asm_out_file);
+	  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_PUBNAMES_SECTION);
+	  sprintf (label, PUB_DIE_LABEL_FMT, next_pubname_number);
+	  ASM_OUTPUT_DWARF_ADDR (asm_out_file, label);
+	  ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file,
+				   IDENTIFIER_POINTER (DECL_NAME (decl)));
+	  ASM_OUTPUT_POP_SECTION (asm_out_file);
+	}
+
+      break;
+
+    case VAR_DECL:
+
+      /* Ignore this VAR_DECL if it refers to a file-scope extern data
+	 object declaration and if the declaration was never even
+	 referenced from within this entire compilation unit.  We
+	 suppress these DIEs in order to save space in the .debug section
+	 (by eliminating entries which are probably useless).  Note that
+	 we must not suppress block-local extern declarations (whether
+	 used or not) because that would screw-up the debugger's name
+	 lookup mechanism and cause it to miss things which really ought
+	 to be in scope at a given point.  */
+
+      if (DECL_EXTERNAL (decl) && !TREE_USED (decl))
+	return;
+
+      if (TREE_PUBLIC (decl)
+	  && ! DECL_EXTERNAL (decl)
+	  && GET_CODE (DECL_RTL (decl)) == MEM
+	  && ! DECL_ABSTRACT (decl))
+	{
+	  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+	  if (debug_info_level >= DINFO_LEVEL_NORMAL)
+	    {
+	      /* Output a .debug_pubnames entry for a public variable
+	         defined in this compilation unit.  */
+
+	      fputc ('\n', asm_out_file);
+	      ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_PUBNAMES_SECTION);
+	      sprintf (label, PUB_DIE_LABEL_FMT, next_pubname_number);
+	      ASM_OUTPUT_DWARF_ADDR (asm_out_file, label);
+	      ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file,
+				       IDENTIFIER_POINTER (DECL_NAME (decl)));
+	      ASM_OUTPUT_POP_SECTION (asm_out_file);
+	    }
+
+	  if (DECL_INITIAL (decl) == NULL)
+	    {
+	      /* Output a .debug_aranges entry for a public variable
+		 which is tentatively defined in this compilation unit.  */
+
+	      fputc ('\n', asm_out_file);
+	      ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_ARANGES_SECTION);
+	      ASM_OUTPUT_DWARF_ADDR (asm_out_file,
+			      IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl)));
+	      ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 
+			(unsigned) int_size_in_bytes (TREE_TYPE (decl)));
+	      ASM_OUTPUT_POP_SECTION (asm_out_file);
+	    }
+	}
+
+      /* If we are in terse mode, don't generate any DIEs to represent
+	 any variable declarations or definitions.  */
+
+      if (debug_info_level <= DINFO_LEVEL_TERSE)
+        return;
+
+      break;
+
+    case TYPE_DECL:
+      /* Don't bother trying to generate any DIEs to represent any of the
+	 normal built-in types for the language we are compiling, except
+	 in cases where the types in question are *not* DWARF fundamental
+	 types.  We make an exception in the case of non-fundamental types
+	 for the sake of objective C (and perhaps C++) because the GNU
+	 front-ends for these languages may in fact create certain "built-in"
+	 types which are (for example) RECORD_TYPEs.  In such cases, we
+	 really need to output these (non-fundamental) types because other
+	 DIEs may contain references to them.  */
+
+      /* Also ignore language dependent types here, because they are probably
+	 also built-in types.  If we didn't ignore them, then we would get
+	 references to undefined labels because output_type doesn't support
+	 them.   So, for now, we need to ignore them to avoid assembler
+	 errors.  */
+
+      /* ??? This code is different than the equivalent code in dwarf2out.c.
+	 The dwarf2out.c code is probably more correct.  */
+
+      if (DECL_SOURCE_LINE (decl) == 0
+	  && (type_is_fundamental (TREE_TYPE (decl))
+	      || TREE_CODE (TREE_TYPE (decl)) == LANG_TYPE))
+	return;
+
+      /* If we are in terse mode, don't generate any DIEs to represent
+	 any actual typedefs.  Note that even when we are in terse mode,
+	 we must still output DIEs to represent those tagged types which
+	 are used (directly or indirectly) in the specification of either
+	 a return type or a formal parameter type of some function.  */
+
+      if (debug_info_level <= DINFO_LEVEL_TERSE)
+	if (! TYPE_DECL_IS_STUB (decl)
+	    || ! TYPE_USED_FOR_FUNCTION (TREE_TYPE (decl)))
+          return;
+
+      break;
+
+    default:
+      return;
+    }
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SECTION);
+  finalizing = set_finalizing;
+  output_decl (decl, NULL_TREE);
+
+  /* NOTE:  The call above to `output_decl' may have caused one or more
+     file-scope named types (i.e. tagged types) to be placed onto the
+     pending_types_list.  We have to get those types off of that list
+     at some point, and this is the perfect time to do it.  If we didn't
+     take them off now, they might still be on the list when cc1 finally
+     exits.  That might be OK if it weren't for the fact that when we put
+     types onto the pending_types_list, we set the TREE_ASM_WRITTEN flag
+     for these types, and that causes them never to be output unless
+     `output_pending_types_for_scope' takes them off of the list and un-sets
+     their TREE_ASM_WRITTEN flags.  */
+
+  output_pending_types_for_scope (NULL_TREE);
+
+  /* The above call should have totally emptied the pending_types_list
+     if this is not a nested function or class.  If this is a nested type,
+     then the remaining pending_types will be emitted when the containing type
+     is handled.  */
+  
+  if (! DECL_CONTEXT (decl))
+    {
+      if (pending_types != 0)
+	abort ();
+    }
+
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  if (TREE_CODE (decl) == FUNCTION_DECL && DECL_INITIAL (decl) != NULL)
+    current_funcdef_number++;
+}

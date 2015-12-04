@@ -1,0 +1,117 @@
+static int
+fixup_match_2 (insn, dst, src, offset, regmove_dump_file)
+     rtx insn, dst, src, offset;
+     FILE *regmove_dump_file;
+{
+  rtx p, dst_death = 0;
+  int length, num_calls = 0;
+
+  /* If SRC dies in INSN, we'd have to move the death note.  This is
+     considered to be very unlikely, so we just skip the optimization
+     in this case.  */
+  if (find_regno_note (insn, REG_DEAD, REGNO (src)))
+    return 0;
+
+  /* Scan backward to find the first instruction that sets DST.  */
+
+  for (length = 0, p = PREV_INSN (insn); p; p = PREV_INSN (p))
+    {
+      rtx pset;
+
+      /* ??? We can't scan past the end of a basic block without updating
+	 the register lifetime info (REG_DEAD/basic_block_live_at_start).  */
+      if (perhaps_ends_bb_p (p))
+	break;
+      else if (! INSN_P (p))
+        continue;
+
+      if (find_regno_note (p, REG_DEAD, REGNO (dst)))
+	dst_death = p;
+      if (! dst_death)
+	length++;
+
+      pset = single_set (p);
+      if (pset && SET_DEST (pset) == dst
+	  && GET_CODE (SET_SRC (pset)) == PLUS
+	  && XEXP (SET_SRC (pset), 0) == src
+	  && GET_CODE (XEXP (SET_SRC (pset), 1)) == CONST_INT)
+        {
+	  HOST_WIDE_INT newconst
+	    = INTVAL (offset) - INTVAL (XEXP (SET_SRC (pset), 1));
+	  rtx add = gen_add3_insn (dst, dst, GEN_INT (newconst));
+
+	  if (add && validate_change (insn, &PATTERN (insn), add, 0))
+	    {
+	      /* Remove the death note for DST from DST_DEATH.  */
+	      if (dst_death)
+		{
+		  remove_death (REGNO (dst), dst_death);
+		  REG_LIVE_LENGTH (REGNO (dst)) += length;
+		  REG_N_CALLS_CROSSED (REGNO (dst)) += num_calls;
+		}
+
+	      if (regmove_dump_file)
+		fprintf (regmove_dump_file,
+			 "Fixed operand of insn %d.\n",
+			  INSN_UID (insn));
+
+#ifdef AUTO_INC_DEC
+	      for (p = PREV_INSN (insn); p; p = PREV_INSN (p))
+		{
+		  if (GET_CODE (p) == CODE_LABEL
+		      || GET_CODE (p) == JUMP_INSN)
+		    break;
+		  if (! INSN_P (p))
+		    continue;
+		  if (reg_overlap_mentioned_p (dst, PATTERN (p)))
+		    {
+		      if (try_auto_increment (p, insn, 0, dst, newconst, 0))
+			return 1;
+		      break;
+		    }
+		}
+	      for (p = NEXT_INSN (insn); p; p = NEXT_INSN (p))
+		{
+		  if (GET_CODE (p) == CODE_LABEL
+		      || GET_CODE (p) == JUMP_INSN)
+		    break;
+		  if (! INSN_P (p))
+		    continue;
+		  if (reg_overlap_mentioned_p (dst, PATTERN (p)))
+		    {
+		      try_auto_increment (p, insn, 0, dst, newconst, 1);
+		      break;
+		    }
+		}
+#endif
+	      return 1;
+	    }
+        }
+
+      if (reg_set_p (dst, PATTERN (p)))
+        break;
+
+      /* If we have passed a call instruction, and the
+         pseudo-reg SRC is not already live across a call,
+         then don't perform the optimization.  */
+      /* reg_set_p is overly conservative for CALL_INSNS, thinks that all
+	 hard regs are clobbered.  Thus, we only use it for src for
+	 non-call insns.  */
+      if (GET_CODE (p) == CALL_INSN)
+        {
+	  if (! dst_death)
+	    num_calls++;
+
+          if (REG_N_CALLS_CROSSED (REGNO (src)) == 0)
+            break;
+
+	  if (call_used_regs [REGNO (dst)]
+	      || find_reg_fusage (p, CLOBBER, dst))
+	    break;
+        }
+      else if (reg_set_p (src, PATTERN (p)))
+        break;
+    }
+
+  return 0;
+}

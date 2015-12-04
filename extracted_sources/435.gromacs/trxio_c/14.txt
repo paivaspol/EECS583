@@ -1,0 +1,58 @@
+static void choose_ff(FILE *status)
+{
+  int i,m,c;
+
+  printf("\n\n");
+  printf("   Select File Format\n");
+  printf("---------------------------\n");
+  printf("1. XYZ File\n");
+  printf("2. XYZ File with Box\n");
+  printf("3. Gromos-87 Ascii Trajectory\n");
+  printf("4. Gromos-87 Ascii Trajectory with Box\n");
+
+  do {
+    printf("\nChoice: ");
+    fflush(stdout);
+    scanf("%d",&i);
+    i--;
+  } while ((i < 0) || (i >= effNR));
+  printf("\n");
+  
+  eFF = (eFileFormat) i;
+
+  for(m=0; (m<DIM); m++) BOX[m]=0;
+  
+  bReadBox = (eFF == effG87Box) || (eFF == effXYZBox);
+    
+  switch (eFF) {
+  case effXYZ:
+  case effXYZBox:
+    fscanf(status,"%d%lf%lf%lf%lf",&NATOMS,&BOX[XX],&BOX[YY],&BOX[ZZ],&DT);
+    break;
+  case effG87:
+  case effG87Box:
+    printf("GROMOS! OH DEAR...\n\n");
+    printf("Number of atoms ? ");
+    fflush(stdout);
+    scanf("%d",&NATOMS);
+
+    printf("Time between timeframes ? ");
+    fflush(stdout);
+    scanf("%lf",&DT);
+
+    if (eFF == effG87) {
+      printf("Box X Y Z ? ");
+      fflush(stdout);
+      scanf("%lf%lf%lf",&BOX[XX],&BOX[YY],&BOX[ZZ]);
+    }
+    do {
+      c=fgetc(status);
+      printf("%c",c);
+    } while (c != '\n');
+    printf("\n");
+    fflush(stdout);
+    break;
+  default:
+    printf("Hellow World\n");
+  }
+}

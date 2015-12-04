@@ -1,0 +1,50 @@
+void
+try_constants (insn, map)
+     rtx insn;
+     struct inline_remap *map;
+{
+  int i;
+
+  map->num_sets = 0;
+
+  /* First try just updating addresses, then other things.  This is
+     important when we have something like the store of a constant
+     into memory and we can update the memory address but the machine
+     does not support a constant source.  */
+  subst_constants (&PATTERN (insn), insn, map, 1);
+  apply_change_group ();
+  subst_constants (&PATTERN (insn), insn, map, 0);
+  apply_change_group ();
+
+  /* Show we don't know the value of anything stored or clobbered.  */
+  note_stores (PATTERN (insn), mark_stores, NULL);
+  map->last_pc_value = 0;
+#ifdef HAVE_cc0
+  map->last_cc0_value = 0;
+#endif
+
+  /* Set up any constant equivalences made in this insn.  */
+  for (i = 0; i < map->num_sets; i++)
+    {
+      if (GET_CODE (map->equiv_sets[i].dest) == REG)
+	{
+	  int regno = REGNO (map->equiv_sets[i].dest);
+
+	  MAYBE_EXTEND_CONST_EQUIV_VARRAY (map, regno);
+	  if (VARRAY_CONST_EQUIV (map->const_equiv_varray, regno).rtx == 0
+	      /* Following clause is a hack to make case work where GNU C++
+		 reassigns a variable to make cse work right.  */
+	      || ! rtx_equal_p (VARRAY_CONST_EQUIV (map->const_equiv_varray,
+						    regno).rtx,
+				map->equiv_sets[i].equiv))
+	    SET_CONST_EQUIV_DATA (map, map->equiv_sets[i].dest,
+				  map->equiv_sets[i].equiv, map->const_age);
+	}
+      else if (map->equiv_sets[i].dest == pc_rtx)
+	map->last_pc_value = map->equiv_sets[i].equiv;
+#ifdef HAVE_cc0
+      else if (map->equiv_sets[i].dest == cc0_rtx)
+	map->last_cc0_value = map->equiv_sets[i].equiv;
+#endif
+    }
+}

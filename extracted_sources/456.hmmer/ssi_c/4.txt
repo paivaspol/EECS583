@@ -1,0 +1,18 @@
+int
+SSIGetOffsetByNumber(SSIFILE *sfp, int n, int *ret_fh, SSIOFFSET *ret_offset)
+{
+  sqd_uint16 fnum;
+  char      *pkey;
+
+  if (n >= sfp->nprimary) return SSI_ERR_NO_SUCH_KEY;
+  if (indexfile_position(sfp, &(sfp->poffset), sfp->precsize, n) != 0) 
+    return SSI_ERR_SEEK_FAILED;
+
+  if ((pkey = malloc(sizeof(char) * sfp->plen)) == NULL) return SSI_ERR_MALLOC;
+  if (fread(pkey, sizeof(char), sfp->plen, sfp->fp) != sfp->plen) return SSI_ERR_NODATA;
+  if (! read_i16(sfp->fp, &fnum))                      return SSI_ERR_NODATA;
+  if (! read_offset(sfp->fp, sfp->smode, ret_offset))  return SSI_ERR_NODATA;  
+  *ret_fh = fnum;
+  free(pkey);
+  return 0;
+}

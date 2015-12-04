@@ -1,0 +1,150 @@
+static int
+read_asc19hmm(HMMFILE *hmmfp, struct plan7_s **ret_hmm)
+{
+  struct plan7_s *hmm;
+  FILE *fp;
+  char  buffer[512];
+  char *s;
+  int   M;			/* length of model  */
+  int   k;			/* state number  */
+  int   x;			/* symbol number */
+  int   atype;			/* Alphabet type */
+
+  hmm = NULL;
+  fp  = hmmfp->f;
+  if (feof(fp) || fgets(buffer, 512, fp) == NULL) return 0;
+  if (strncmp(buffer, "HMMER v1.9", 10) != 0)             goto FAILURE;
+
+  hmm = AllocPlan7Shell();
+  				/* read M from first line */
+  if ((s = Getword(fp, sqdARG_INT))    == NULL) goto FAILURE;  M = atoi(s);          /* model length */
+  if ((s = Getword(fp, sqdARG_INT))    == NULL) goto FAILURE;                        /* ignore alphabet size */
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;  Plan7SetName(hmm, s); /* name */
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE; /* alphabet type */ 
+  s2upper(s);           
+  if      (strcmp(s, "AMINO") == 0)   atype = hmmAMINO;
+  else if (strcmp(s, "NUCLEIC") == 0) atype = hmmNUCLEIC;
+  else goto FAILURE;
+
+  if (Alphabet_type == hmmNOTSETYET) SetAlphabet(atype);
+  else if (atype != Alphabet_type) 
+    Die("Alphabet mismatch error.\nI thought we were working with %s, but tried to read a %s HMM.\n", AlphabetType2String(Alphabet_type), AlphabetType2String(atype));
+
+				/* read alphabet, make sure it's Plan7-compatible... */
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+  if (strncmp(s, Alphabet, Alphabet_size) != 0) goto FAILURE;
+
+				/* whether we have ref, cs info */
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+  if (strcmp(s, "yes") == 0) hmm->flags |= PLAN7_RF;
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+  if (strcmp(s, "yes") == 0) hmm->flags |= PLAN7_CS;
+
+				/* null model. 1.9 has emissions only. invent transitions. */
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+  if (strcmp(s, "null") != 0) goto FAILURE;
+  for (x = 0; x < Alphabet_size; x++) {
+    if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+    hmm->null[x] = ascii2prob(s, 1.0);
+  }
+  hmm->p1 = (Alphabet_type == hmmAMINO)? 350./351. : 1000./1001.; 
+
+  /* Done with header; check some stuff before proceeding
+   */
+  if (feof(hmmfp->f))                goto FAILURE;
+  if (M < 1)                         goto FAILURE;
+  if (hmm->name == NULL)             goto FAILURE;
+  if (Alphabet_type == hmmNOTSETYET) goto FAILURE;
+
+  /* Allocate the model. Set up the probabilities that Plan9
+   * doesn't set.
+   */
+  AllocPlan7Body(hmm, M);
+  ZeroPlan7(hmm);
+  Plan7LSConfig(hmm);
+
+  /* The zero row has: 4 or 20 unused scores for nonexistent M0 state
+   * then: B->M, tbd1, a B->I that Plan7 doesn't have;
+   *       three unused D-> transitions; then three I0 transitions that Plan7 doesn't have;
+   *       then two unused rf, cs annotations.
+   */
+  if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE; /* position index ignored */
+  for (x = 0; x < Alphabet_size; x++)
+    if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE; /* emissions ignored */
+  if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+  hmm->begin[1] = ascii2prob(s, 1.0);
+  if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+  hmm->tbd1 = ascii2prob(s, 1.0);
+				/* renormalize */
+  hmm->begin[1] = hmm->begin[1] / (hmm->begin[1] + hmm->tbd1);
+  hmm->tbd1     = hmm->tbd1     / (hmm->begin[1] + hmm->tbd1);
+				/* skip rest of line, seven integer fields, two char fields */
+  for (x = 0; x < 7; x++)
+    if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+
+				/* main model: table of emissions, transitions, annotation */
+  for (k = 1; k <= hmm->M; k++)
+    {
+				/* position index ignored */
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+				/* match emissions */
+      for (x = 0; x < Alphabet_size; x++) {
+	if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+	hmm->mat[k][x] = ascii2prob(s, hmm->null[x]);
+      }
+				/* nine transitions; two are ignored */
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TMM] = ascii2prob(s, 1.0);
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TMD] = (k == hmm->M) ? 0.0 : ascii2prob(s, 1.0);
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TMI] = ascii2prob(s, 1.0);
+      
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TDM] = ascii2prob(s, 1.0);
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TDD] = (k == hmm->M) ? 0.0 : ascii2prob(s, 1.0);
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;/* TDI ignored. */
+
+				/* no insert state at k == M, be careful */
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TIM]  = ascii2prob(s, 1.0);
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE; /* TID ignored. */
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+      if (k < hmm->M) hmm->t[k][TII] = ascii2prob(s, 1.0);
+	
+				/* annotations */
+      if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+      if (hmm->flags & PLAN7_RF) hmm->rf[k] = *s;
+      if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+      if (hmm->flags & PLAN7_CS) hmm->cs[k] = *s;
+    }
+				/* table of insert emissions; 
+                                 * Plan7 has no insert state at 0 or M  */
+  for (k = 0; k <= hmm->M; k++)
+    {
+      if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE; /* position index ignored */
+      for (x = 0; x < Alphabet_size; x++) {
+	if ((s = Getword(fp, sqdARG_INT)) == NULL) goto FAILURE;
+	if (k > 0 && k < hmm->M)
+	  hmm->ins[k][x] = ascii2prob(s, hmm->null[x]);
+      }
+    }
+
+  /* Set flags and return
+   */
+  hmm->flags |= PLAN7_HASPROB;	/* probabilities are valid */
+  hmm->flags &= ~PLAN7_HASBITS;	/* scores are not valid    */
+  Plan7Renormalize(hmm);
+  hmm->comlog = Strdup("[converted from an old Plan9 HMM]");
+  Plan7SetCtime(hmm);
+  *ret_hmm = hmm;
+  return 1;
+
+FAILURE:
+  if (hmm  != NULL) FreePlan7(hmm);
+  *ret_hmm = NULL;
+  return 1;
+}

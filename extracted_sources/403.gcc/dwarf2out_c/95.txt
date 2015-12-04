@@ -1,0 +1,26 @@
+static inline void
+free_AT (a)
+     dw_attr_ref a;
+{
+  switch (AT_class (a))
+    {
+    case dw_val_class_str:
+      if (a->dw_attr_val.v.val_str->refcount)
+	a->dw_attr_val.v.val_str->refcount--;
+      break;
+
+    case dw_val_class_lbl_id:
+    case dw_val_class_lbl_offset:
+      free (a->dw_attr_val.v.val_lbl_id);
+      break;
+
+    case dw_val_class_float:
+      free (a->dw_attr_val.v.val_float.array);
+      break;
+
+    default:
+      break;
+    }
+
+  free (a);
+}

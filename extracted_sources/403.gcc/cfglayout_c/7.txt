@@ -1,0 +1,172 @@
+static void
+fixup_reorder_chain ()
+{
+  basic_block bb, last_bb;
+  int index;
+  rtx insn;
+  int old_n_basic_blocks = n_basic_blocks;
+
+  /* First do the bulk reordering -- rechain the blocks without regard to
+     the needed changes to jumps and labels.  */
+
+  for (last_bb = BASIC_BLOCK (0), bb = RBI (last_bb)->next, index = 1;
+       bb != 0;
+       last_bb = bb, bb = RBI (bb)->next, index++)
+    {
+      rtx last_e = RBI (last_bb)->eff_end;
+      rtx curr_h = RBI (bb)->eff_head;
+
+      NEXT_INSN (last_e) = curr_h;
+      PREV_INSN (curr_h) = last_e;
+    }
+
+  if (index != n_basic_blocks)
+    abort ();
+
+  insn = RBI (last_bb)->eff_end;
+  NEXT_INSN (insn) = function_tail_eff_head;
+  if (function_tail_eff_head)
+    PREV_INSN (function_tail_eff_head) = insn;
+
+  while (NEXT_INSN (insn))
+    insn = NEXT_INSN (insn);
+
+  set_last_insn (insn);
+#ifdef ENABLE_CHECKING
+  verify_insn_chain ();
+#endif
+
+  /* Now add jumps and labels as needed to match the blocks new
+     outgoing edges.  */
+
+  for (bb = BASIC_BLOCK (0); bb ; bb = RBI (bb)->next)
+    {
+      edge e_fall, e_taken, e;
+      rtx bb_end_insn;
+      basic_block nb;
+
+      if (bb->succ == NULL)
+	continue;
+
+      /* Find the old fallthru edge, and another non-EH edge for
+	 a taken jump.  */
+      e_taken = e_fall = NULL;
+      for (e = bb->succ; e ; e = e->succ_next)
+	if (e->flags & EDGE_FALLTHRU)
+	  e_fall = e;
+	else if (! (e->flags & EDGE_EH))
+	  e_taken = e;
+
+      bb_end_insn = bb->end;
+      if (GET_CODE (bb_end_insn) == JUMP_INSN)
+	{
+	  if (any_condjump_p (bb_end_insn))
+	    {
+	      /* If the old fallthru is still next, nothing to do.  */
+	      if (RBI (bb)->next == e_fall->dest
+	          || (!RBI (bb)->next
+		      && e_fall->dest == EXIT_BLOCK_PTR))
+		continue;
+
+	      /* There is one special case: if *neither* block is next,
+		 such as happens at the very end of a function, then we'll
+		 need to add a new unconditional jump.  Choose the taken
+		 edge based on known or assumed probability.  */
+	      if (RBI (bb)->next != e_taken->dest)
+		{
+		  rtx note = find_reg_note (bb_end_insn, REG_BR_PROB, 0);
+
+		  if (note
+		      && INTVAL (XEXP (note, 0)) < REG_BR_PROB_BASE / 2
+		      && invert_jump (bb_end_insn,
+				      label_for_bb (e_fall->dest), 0))
+		    {
+		      e_fall->flags &= ~EDGE_FALLTHRU;
+		      e_taken->flags |= EDGE_FALLTHRU;
+		      update_br_prob_note (bb);
+		      e = e_fall, e_fall = e_taken, e_taken = e;
+		    }
+		}
+
+	      /* Otherwise we can try to invert the jump.  This will 
+		 basically never fail, however, keep up the pretense.  */
+	      else if (invert_jump (bb_end_insn,
+				    label_for_bb (e_fall->dest), 0))
+		{
+		  e_fall->flags &= ~EDGE_FALLTHRU;
+		  e_taken->flags |= EDGE_FALLTHRU;
+		  update_br_prob_note (bb);
+		  continue;
+		}
+	    }
+	  else if (returnjump_p (bb_end_insn))
+	    continue;
+	  else
+	    {
+	      /* Otherwise we have some switch or computed jump.  In the
+		 99% case, there should not have been a fallthru edge.  */
+	      if (! e_fall)
+		continue;
+
+#ifdef CASE_DROPS_THROUGH
+	      /* Except for VAX.  Since we didn't have predication for the
+		 tablejump, the fallthru block should not have moved.  */
+	      if (RBI (bb)->next == e_fall->dest)
+		continue;
+	      bb_end_insn = skip_insns_after_block (bb);
+#else
+	      abort ();
+#endif
+	    }
+	}
+      else
+	{
+	  /* No fallthru implies a noreturn function with EH edges, or
+	     something similarly bizarre.  In any case, we don't need to
+	     do anything.  */
+	  if (! e_fall)
+	    continue;
+
+	  /* If the fallthru block is still next, nothing to do.  */
+	  if (RBI (bb)->next == e_fall->dest)
+	    continue;
+
+	  /* A fallthru to exit block.  */
+	  if (!RBI (bb)->next && e_fall->dest == EXIT_BLOCK_PTR)
+	    continue;
+	}
+
+      /* We got here if we need to add a new jump insn.  */
+      nb = force_nonfallthru (e_fall);
+      if (nb)
+	{
+	  alloc_aux_for_block (nb, sizeof (struct reorder_block_def));
+	  RBI (nb)->eff_head = nb->head;
+	  RBI (nb)->eff_end = NEXT_INSN (nb->end);
+	  RBI (nb)->visited = 1;
+	  RBI (nb)->next = RBI (bb)->next;
+	  RBI (bb)->next = nb;
+	  /* Don't process this new block.  */
+	  bb = nb;
+	}
+    }
+
+  /* Put basic_block_info in the new order.  */
+  bb = BASIC_BLOCK (0);
+  index = 0;
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Reordered sequence:\n");
+
+  for (; bb; bb = RBI (bb)->next, index++)
+    {
+      if (rtl_dump_file)
+	fprintf (rtl_dump_file, " %i %sbb %i freq %i\n", index,
+		 bb->index >= old_n_basic_blocks ? "compensation " : "",
+		 bb->index,
+	   	 bb->frequency);
+
+      bb->index = index;
+      BASIC_BLOCK (index) = bb;
+    }
+}

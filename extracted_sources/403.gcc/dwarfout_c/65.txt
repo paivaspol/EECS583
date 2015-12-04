@@ -1,0 +1,23 @@
+static inline void
+abstract_origin_attribute (origin)
+     tree origin;
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_abstract_origin);
+  switch (TREE_CODE_CLASS (TREE_CODE (origin)))
+    {
+    case 'd':
+      sprintf (label, DECL_NAME_FMT, DECL_UID (origin));
+      break;
+
+    case 't':
+      sprintf (label, TYPE_NAME_FMT, TYPE_UID (origin));
+      break;
+
+    default:
+      abort ();		/* Should never happen.  */
+
+    }
+  ASM_OUTPUT_DWARF_REF (asm_out_file, label);
+}

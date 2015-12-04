@@ -1,0 +1,214 @@
+void terminate_macroblock(Boolean *end_of_slice, Boolean *recode_macroblock)
+{
+  int i;
+  Slice *currSlice = img->currentSlice;
+  Macroblock    *currMB    = &img->mb_data[img->current_mb_nr];
+  SyntaxElement *currSE    = &img->MB_SyntaxElements[currMB->currSEnr];
+  int *partMap = assignSE2partition[input->partition_mode];
+  DataPartition *dataPart;
+  Bitstream *currStream;
+  int rlc_bits=0;
+  EncodingEnvironmentPtr eep;
+  int use_bitstream_backing = (input->slice_mode == FIXED_RATE || input->slice_mode == CALLBACK);
+  int new_slice;
+  static int skip = FALSE;
+
+	 
+  // if previous mb in the same slice group has different slice number as the current, it's the
+  // the start of new slice
+  new_slice=0;
+  if ( (img->current_mb_nr==0) || (FmoGetPreviousMBNr(img->current_mb_nr)<0) )
+    new_slice=1;
+  else if( img->mb_data[FmoGetPreviousMBNr(img->current_mb_nr)].slice_nr != img->current_slice_nr )
+    new_slice=1;
+	
+  
+  *recode_macroblock=FALSE;
+
+  switch(input->slice_mode)
+  {
+  case NO_SLICES:
+    currSlice->num_mb++;
+    *recode_macroblock = FALSE;
+    if ((currSlice->num_mb) == img->total_number_mb) // maximum number of MBs reached
+      *end_of_slice = TRUE;
+
+    // if it's end of current slice group, slice ends too
+    *end_of_slice |= (img->current_mb_nr == FmoGetLastCodedMBOfSliceGroup (FmoMB2SliceGroup (img->current_mb_nr)));
+		
+    break;
+  case FIXED_MB:
+    // For slice mode one, check if a new slice boundary follows
+    currSlice->num_mb++;
+    *recode_macroblock = FALSE;
+    //! Check end-of-slice group condition first
+    *end_of_slice = (img->current_mb_nr == FmoGetLastCodedMBOfSliceGroup (FmoMB2SliceGroup (img->current_mb_nr)));
+    //! Now check maximum # of MBs in slice
+    *end_of_slice |= (currSlice->num_mb >= input->slice_argument);
+		
+    break;
+
+    // For slice modes two and three, check if coding of this macroblock
+    // resulted in too many bits for this slice. If so, indicate slice
+    // boundary before this macroblock and code the macroblock again
+  case FIXED_RATE:
+     // in case of skip MBs check if there is a slice boundary
+     // only for UVLC (img->cod_counter is always 0 in case of CABAC)
+     if(img->cod_counter)
+     {
+       // write out the skip MBs to know how many bits we need for the RLC
+       currSE->value1 = img->cod_counter;
+       currSE->value2 = 0;
+       currSE->mapping = ue_linfo;
+       currSE->type = SE_MBTYPE;
+       dataPart = &(currSlice->partArr[partMap[currSE->type]]);
+
+       dataPart->writeSyntaxElement(  currSE, dataPart);
+       rlc_bits=currSE->len;
+
+       currStream = dataPart->bitstream;
+       // save the bitstream as it would be if we write the skip MBs
+       currStream->bits_to_go_skip  = currStream->bits_to_go;
+       currStream->byte_pos_skip    = currStream->byte_pos;
+       currStream->byte_buf_skip    = currStream->byte_buf;
+       // restore the bitstream
+       currStream->bits_to_go = currStream->stored_bits_to_go;
+       currStream->byte_pos = currStream->stored_byte_pos;
+       currStream->byte_buf = currStream->stored_byte_buf;
+       skip = TRUE;
+     }
+     //! Check if the last coded macroblock fits into the size of the slice
+     //! But only if this is not the first macroblock of this slice
+     if (!new_slice)
+     {
+       if(slice_too_big(rlc_bits))
+       {
+         *recode_macroblock = TRUE;
+         *end_of_slice = TRUE;
+       }
+       else if(!img->cod_counter)
+         skip = FALSE;
+     }
+     // maximum number of MBs
+		 
+     // check if current slice group is finished
+     if ((*recode_macroblock == FALSE) && (img->current_mb_nr == FmoGetLastCodedMBOfSliceGroup (FmoMB2SliceGroup (img->current_mb_nr)))) 
+     {
+       *end_of_slice = TRUE;
+       if(!img->cod_counter)
+         skip = FALSE;
+     }
+   
+     //! (first MB OR first MB in a slice) AND bigger that maximum size of slice
+     if (new_slice && slice_too_big(rlc_bits))
+     {
+       *end_of_slice = TRUE;
+       if(!img->cod_counter)
+         skip = FALSE;
+     }
+     if (!*recode_macroblock)
+       currSlice->num_mb++;
+     break;
+
+  case  CALLBACK:
+    if (img->current_mb_nr > 0 && !new_slice)
+    {
+      if (currSlice->slice_too_big(rlc_bits))
+      {
+        *recode_macroblock = TRUE;
+        *end_of_slice = TRUE;
+      }
+    }
+
+    if ( (*recode_macroblock == FALSE) && (img->current_mb_nr == FmoGetLastCodedMBOfSliceGroup (FmoMB2SliceGroup (img->current_mb_nr)))) 
+      *end_of_slice = TRUE;
+    break;
+
+  default:
+    snprintf(errortext, ET_SIZE, "Slice Mode %d not supported", input->slice_mode);
+    error(errortext, 600);
+  }
+
+  if(*recode_macroblock == TRUE)
+  {
+    // Restore everything
+    for (i=0; i<currSlice->max_part_nr; i++)
+    {
+      dataPart = &(currSlice->partArr[i]);
+      currStream = dataPart->bitstream;
+      currStream->bits_to_go = currStream->stored_bits_to_go;
+      currStream->byte_pos  = currStream->stored_byte_pos;
+      currStream->byte_buf  = currStream->stored_byte_buf;
+      if (input->symbol_mode == CABAC)
+      {
+        eep = &(dataPart->ee_cabac);
+        eep->Elow            = eep->ElowS;
+        eep->Erange           = eep->ErangeS;
+        eep->Ebuffer         = eep->EbufferS;
+        eep->Ebits_to_go     = eep->Ebits_to_goS;
+        eep->Ebits_to_follow = eep->Ebits_to_followS;
+        eep->Ecodestrm       = eep->EcodestrmS;
+        eep->Ecodestrm_len   = eep->Ecodestrm_lenS;
+        eep->C               = eep->CS;
+        eep->B               = eep->BS;
+        eep->E               = eep->ES;       
+      }
+    }
+  }
+
+  if(*end_of_slice == TRUE  && skip == TRUE) //! TO 4.11.2001 Skip MBs at the end of this slice
+  { 
+    //! only for Slice Mode 2 or 3
+    // If we still have to write the skip, let's do it!
+    if(img->cod_counter && *recode_macroblock == TRUE) //! MB that did not fit in this slice
+    { 
+      // If recoding is true and we have had skip, 
+      // we have to reduce the counter in case of recoding
+      img->cod_counter--;
+      if(img->cod_counter)
+      {
+        currSE->value1 = img->cod_counter;
+        currSE->value2 = 0;
+        currSE->mapping = ue_linfo;
+        currSE->type = SE_MBTYPE;
+        dataPart = &(currSlice->partArr[partMap[currSE->type]]);
+        dataPart->writeSyntaxElement(  currSE, dataPart);
+        rlc_bits=currSE->len;
+        currMB->bitcounter[BITS_MB_MODE]+=rlc_bits;
+        img->cod_counter = 0;
+      }
+    }
+    else //! MB that did not fit in this slice anymore is not a Skip MB
+    {
+      dataPart = &(currSlice->partArr[partMap[SE_MBTYPE]]);       
+      currStream = dataPart->bitstream;
+        // update the bitstream
+      currStream->bits_to_go = currStream->bits_to_go_skip;
+      currStream->byte_pos  = currStream->byte_pos_skip;
+      currStream->byte_buf  = currStream->byte_buf_skip;
+
+      // update the statistics
+      img->cod_counter = 0;
+      skip = FALSE;
+    }
+  }
+  
+  //! TO 4.11.2001 Skip MBs at the end of this slice for Slice Mode 0 or 1
+  if(*end_of_slice == TRUE && img->cod_counter && !use_bitstream_backing)
+  {
+    currSE->value1 = img->cod_counter;
+    currSE->value2 = 0;
+    currSE->mapping = ue_linfo;
+    currSE->type = SE_MBTYPE;
+    dataPart = &(currSlice->partArr[partMap[currSE->type]]);
+    dataPart->writeSyntaxElement(  currSE, dataPart);
+     currMB->currSEnr ++;
+#if TRACE
+    snprintf(currSE->tracestring, TRACESTRING_SIZE, "Final MB runlength = %3d",img->cod_counter); 
+#endif
+   
+    rlc_bits=currSE->len;
+    currMB->bitcounter[BITS_MB_MODE]+=rlc_bits;
+    img->cod_counter = 0;
+  }
+}

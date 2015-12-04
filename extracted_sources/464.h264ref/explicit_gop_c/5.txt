@@ -1,0 +1,117 @@
+void encode_enhancement_layer()
+{
+    if ((input->successive_Bframe != 0) && (IMG_NUMBER > 0)) // B-frame(s) to encode
+    {
+      img->type = B_SLICE;            // set image type to B-frame
+      
+      if (input->NumFramesInELSubSeq == 0) 
+        img->layer = 0;
+      else 
+        img->layer = 1;
+      
+      if (input->BRefPictures == 0 && input->PyramidCoding==0)
+      {
+        img->frame_num++;                 //increment frame_num once for B-frames
+        img->frame_num %= (1 << (log2_max_frame_num_minus4 + 4));
+      }
+      img->nal_reference_idc = 0;     
+
+      //if (input->PyramidCoding == 3 || input->PyramidCoding == 1)
+      if (input->PyramidCoding)
+      {
+        for(img->b_frame_to_code=1; img->b_frame_to_code<=input->successive_Bframe; img->b_frame_to_code++)
+        {
+          
+          img->nal_reference_idc = 0;     
+
+          img->type = gop_structure[img->b_frame_to_code - 1].slice_type;
+
+          if (gop_structure[img->b_frame_to_code - 1].reference_idc== NALU_PRIORITY_HIGH )            
+          {
+            img->nal_reference_idc = 1;
+            img->frame_num++;                 //increment frame_num for each stored B slice
+            img->frame_num %= (1 << (log2_max_frame_num_minus4 + 4));
+          } 
+
+          img->b_interval =
+            ((double) (input->jumpd + 1) / (input->successive_Bframe + 1.0) );
+
+          if (input->PyramidCoding == 3)
+            img->b_interval = 1.0;
+          
+          if(input->intra_period && input->idr_enable)
+            img->toppoc = 2*(((IMG_NUMBER%input->intra_period)-1)*(input->jumpd+1) + (int)(img->b_interval * (double)(1 + gop_structure[img->b_frame_to_code - 1].display_no)));
+          else
+            img->toppoc = 2*((IMG_NUMBER-1)*(input->jumpd + 1) + (int)(img->b_interval * (double)(1 + gop_structure[img->b_frame_to_code -1].display_no)));
+
+          if (img->b_frame_to_code == 1)
+            img->delta_pic_order_cnt[0] = img->toppoc - 2*(start_tr_in_this_IGOP  + (IMG_NUMBER)*((input->jumpd+1)));
+          else
+            img->delta_pic_order_cnt[0] = img->toppoc - 2*(start_tr_in_this_IGOP  + (IMG_NUMBER-1)*((input->jumpd+1)) + (int) (2.0 *img->b_interval * (double) (1+ gop_structure[img->b_frame_to_code - 2].display_no)));
+
+          if ((input->PicInterlace==FRAME_CODING)&&(input->MbInterlace==FRAME_CODING))
+            img->bottompoc = img->toppoc;     //progressive
+          else 
+            img->bottompoc = img->toppoc+1;
+          
+          img->framepoc = min (img->toppoc, img->bottompoc);
+          
+          img->delta_pic_order_cnt[1]= 0;   // POC200301
+          
+          encode_one_frame();  // encode one B-frame
+          if (input->ReportFrameStats)
+            report_frame_statistic();
+        }
+        img->b_frame_to_code = 0;
+      }
+      else 
+      {      
+        for(img->b_frame_to_code=1; img->b_frame_to_code<=input->successive_Bframe; img->b_frame_to_code++)
+        {
+          
+          img->nal_reference_idc = 0;     
+          if (input->BRefPictures == 1 )
+          {
+            img->nal_reference_idc = 1;
+            img->frame_num++;                 //increment frame_num once for B-frames
+            img->frame_num %= (1 << (log2_max_frame_num_minus4 + 4));
+          }
+
+          img->b_interval =
+            ((double) (input->jumpd + 1) / (input->successive_Bframe + 1.0) );
+
+          if (input->PyramidCoding == 3)
+            img->b_interval = 1.0;
+          
+          if(input->intra_period && input->idr_enable)
+            img->toppoc = 2*(((IMG_NUMBER% input->intra_period)-1)*(input->jumpd+1) + (int) (img->b_interval * (double)img->b_frame_to_code));
+          else
+            img->toppoc = 2*((IMG_NUMBER-1)*(input->jumpd+1) + (int) (img->b_interval * (double)img->b_frame_to_code));
+
+          if ((input->PicInterlace==FRAME_CODING)&&(input->MbInterlace==FRAME_CODING))
+            img->bottompoc = img->toppoc;     //progressive
+          else 
+            img->bottompoc = img->toppoc+1;
+          
+          img->framepoc = min (img->toppoc, img->bottompoc);
+          
+          //the following is sent in the slice header
+          if (!input->BRefPictures)
+          {
+            img->delta_pic_order_cnt[0]= 2*(img->b_frame_to_code-1);
+          }
+          else
+          {
+            img->delta_pic_order_cnt[0]= -2;
+          }
+          
+          img->delta_pic_order_cnt[1]= 0;   // POC200301
+          
+          encode_one_frame();  // encode one B-frame
+          if (input->ReportFrameStats)
+            report_frame_statistic();
+        }
+      }
+    }
+    img->b_frame_to_code = 0;
+}

@@ -1,0 +1,18 @@
+static s3wid_t *dict_comp_head (dict_t *d)
+{
+    int32 w;
+    s3wid_t *comp_head;
+    
+    comp_head = (s3wid_t *) ckd_calloc (d->n_word, sizeof(s3wid_t)); /* freed in dict_free */
+    
+    for (w = 0; w < d->n_word; w++)
+	comp_head[w] = BAD_S3WID;
+    for (w = 0; w < d->n_word; w++) {
+	if (d->word[w].n_comp > 0) {
+	    comp_head[w] = comp_head[d->word[w].comp[0]];
+	    comp_head[d->word[w].comp[0]] = w;
+	}
+    }
+
+    return comp_head;
+}

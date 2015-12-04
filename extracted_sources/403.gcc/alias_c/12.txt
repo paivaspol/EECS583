@@ -1,0 +1,22 @@
+void
+record_base_value (regno, val, invariant)
+     unsigned int regno;
+     rtx val;
+     int invariant;
+{
+  if (regno >= reg_base_value_size)
+    return;
+
+  if (invariant && alias_invariant)
+    alias_invariant[regno] = val;
+
+  if (GET_CODE (val) == REG)
+    {
+      if (REGNO (val) < reg_base_value_size)
+	reg_base_value[regno] = reg_base_value[REGNO (val)];
+
+      return;
+    }
+
+  reg_base_value[regno] = find_base_value (val);
+}

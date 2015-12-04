@@ -1,0 +1,16 @@
+void gmx_txs(int nodeid,void *buf,int bufsize)
+{
+#ifndef USE_MPI
+  MYFATAL("gmx_txs");
+#else
+  int tag;
+
+#ifdef DEBUG
+  fprintf(stderr,"gmx_txs: nodeid=%d, buf=%x, bufsize=%d\n",
+	  nodeid,buf,bufsize);
+#endif
+  tag = 0;
+  if (MPI_Send(buf,bufsize,MPI_BYTE,nodeid,tag,MPI_COMM_WORLD) != 0)
+    fatal_error(0,"MPI_Send Failed !");
+#endif
+}

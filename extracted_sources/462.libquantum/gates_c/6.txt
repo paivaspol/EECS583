@@ -1,0 +1,47 @@
+void
+quantum_swaptheleads(int width, quantum_reg *reg)
+{
+  int i, j;
+  int pat1, pat2;
+  int qec;
+  MAX_UNSIGNED l;
+
+  quantum_qec_get_status(&qec, NULL);
+
+  if(qec)
+    {
+      for(i=0; i<width; i++)
+	{
+	  quantum_cnot(i, width+i, reg);
+	  quantum_cnot(width+i, i, reg);
+	  quantum_cnot(i, width+i, reg);
+	}
+    }
+  else
+    {
+      for(i=0; i<reg->size; i++)
+	{
+
+	  if(quantum_objcode_put(SWAPLEADS, width))
+	    return;
+
+	  /* calculate left bit pattern */
+	  
+	  pat1 = reg->node[i].state % ((MAX_UNSIGNED) 1 << width);
+	  
+	  /*calculate right but pattern */
+	  
+	  pat2 = 0;
+
+	  for(j=0; j<width; j++)
+	    pat2 += reg->node[i].state & ((MAX_UNSIGNED) 1 << (width + j));
+	  
+	  /* construct the new basis state */
+	  
+	  l = reg->node[i].state - (pat1 + pat2);
+	  l += (pat1 << width);
+	  l += (pat2 >> width);
+	  reg->node[i].state = l;
+	}
+    }
+}

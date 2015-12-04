@@ -1,0 +1,24 @@
+void project(rvec *x,t_edpar *edi,char *mode)
+{
+  int i;
+
+  /* subtract average positions */
+  if (strcmp(mode,"x") == 0) {
+    for (i=0;(i<edi->sav.nr);i++) 
+      rvec_dec(x[edi->sav.anrs[i]],edi->sav.x[i]);
+  }
+
+  /* make the projections */
+  do_project(x,&edi->vecs.mon,edi,mode);
+  do_project(x,&edi->vecs.linfix,edi,mode);
+  do_project(x,&edi->vecs.linacc,edi,mode);
+  do_project(x,&edi->vecs.radfix,edi,mode);
+  do_project(x,&edi->vecs.radacc,edi,mode);
+  do_project(x,&edi->vecs.radcon,edi,mode);
+
+  /* add average positions */
+  if (strcmp(mode,"x") == 0) {
+  for (i=0;(i<edi->sav.nr);i++) 
+    rvec_inc(x[edi->sav.anrs[i]],edi->sav.x[i]);
+  }
+}

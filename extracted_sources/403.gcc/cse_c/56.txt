@@ -1,0 +1,27 @@
+static bool
+insn_live_p (insn, counts)
+     rtx insn;
+     int *counts;
+{
+  int i;
+  if (GET_CODE (PATTERN (insn)) == SET)
+    return set_live_p (PATTERN (insn), insn, counts);
+  else if (GET_CODE (PATTERN (insn)) == PARALLEL)
+    {
+      for (i = XVECLEN (PATTERN (insn), 0) - 1; i >= 0; i--)
+	{
+	  rtx elt = XVECEXP (PATTERN (insn), 0, i);
+
+	  if (GET_CODE (elt) == SET)
+	    {
+	      if (set_live_p (elt, insn, counts))
+		return true;
+	    }
+	  else if (GET_CODE (elt) != CLOBBER && GET_CODE (elt) != USE)
+	    return true;
+	}
+      return false;
+    }
+  else
+    return true;
+}

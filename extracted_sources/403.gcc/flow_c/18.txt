@@ -1,0 +1,23 @@
+void
+allocate_reg_life_data ()
+{
+  int i;
+
+  max_regno = max_reg_num ();
+
+  /* Recalculate the register space, in case it has grown.  Old style
+     vector oriented regsets would set regset_{size,bytes} here also.  */
+  allocate_reg_info (max_regno, FALSE, FALSE);
+
+  /* Reset all the data we'll collect in propagate_block and its
+     subroutines.  */
+  for (i = 0; i < max_regno; i++)
+    {
+      REG_N_SETS (i) = 0;
+      REG_N_REFS (i) = 0;
+      REG_N_DEATHS (i) = 0;
+      REG_N_CALLS_CROSSED (i) = 0;
+      REG_LIVE_LENGTH (i) = 0;
+      REG_BASIC_BLOCK (i) = REG_BLOCK_UNKNOWN;
+    }
+}

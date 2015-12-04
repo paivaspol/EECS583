@@ -1,0 +1,20 @@
+static int 
+mems_in_disjoint_alias_sets_p (mem1, mem2)
+     rtx mem1;
+     rtx mem2;
+{
+#ifdef ENABLE_CHECKING	
+/* Perform a basic sanity check.  Namely, that there are no alias sets
+   if we're not using strict aliasing.  This helps to catch bugs
+   whereby someone uses PUT_CODE, but doesn't clear MEM_ALIAS_SET, or
+   where a MEM is allocated in some way other than by the use of
+   gen_rtx_MEM, and the MEM_ALIAS_SET is not cleared.  If we begin to
+   use alias sets to indicate that spilled registers cannot alias each
+   other, we might need to remove this check.  */
+  if (! flag_strict_aliasing
+      && (MEM_ALIAS_SET (mem1) != 0 || MEM_ALIAS_SET (mem2) != 0))
+    abort ();
+#endif
+
+  return ! alias_sets_conflict_p (MEM_ALIAS_SET (mem1), MEM_ALIAS_SET (mem2));
+}

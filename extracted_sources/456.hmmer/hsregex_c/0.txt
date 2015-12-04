@@ -1,0 +1,41 @@
+int
+Strparse(char *rexp, char *s, int ntok)
+{
+  sqd_regexp *pat;
+  int         code;
+  int         len;
+  int         i;
+				/* sanity check */
+  if (ntok >= NSUBEXP )  Die("Strparse(): ntok must be <= %d", NSUBEXP-1); 
+
+  /* Free previous global substring buffers
+   */
+  for (i = 0; i <= ntok; i++)
+    if (sqd_parse[i] != NULL) 
+      { 
+	free(sqd_parse[i]);
+	sqd_parse[i] = NULL;
+      }
+
+  /* Compile and match the pattern, using our modified 
+   * copy of Henry Spencer's regexp library
+   */
+  if ((pat = sqd_regcomp(rexp)) == NULL) 
+    Die("regexp compilation failed.");
+  code = sqd_regexec(pat, s);
+
+  /* Fill the global substring buffers
+   */
+  if (code == 1) 
+    for (i = 0; i <= ntok; i++)
+      if (pat->startp[i] != NULL && pat->endp[i] != NULL)
+	{
+	  len = pat->endp[i] - pat->startp[i];
+	  sqd_parse[i] = (char *) MallocOrDie(sizeof(char) * (len+1));
+	  strncpy(sqd_parse[i], pat->startp[i], len);
+	  sqd_parse[i][len] = '\0';
+	}
+
+  free(pat);
+  return code;
+}

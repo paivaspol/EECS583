@@ -1,0 +1,59 @@
+void
+dw2_asm_output_data_uleb128 VPARAMS ((unsigned HOST_WIDE_INT value,
+				      const char *comment, ...))
+{
+  VA_OPEN (ap, comment);
+  VA_FIXEDARG (ap, unsigned HOST_WIDE_INT, value);
+  VA_FIXEDARG (ap, const char *, comment);
+
+#ifdef HAVE_AS_LEB128
+  fputs ("\t.uleb128 ", asm_out_file);
+  fprintf (asm_out_file, HOST_WIDE_INT_PRINT_HEX, value);
+
+  if (flag_debug_asm && comment)
+    {
+      fprintf (asm_out_file, "\t%s ", ASM_COMMENT_START);
+      vfprintf (asm_out_file, comment, ap);
+    }
+#else
+  {
+    unsigned HOST_WIDE_INT work = value;
+    const char *byte_op = targetm.asm_out.byte_op;
+
+    if (byte_op)
+      fputs (byte_op, asm_out_file);
+    do
+      {
+	int byte = (work & 0x7f);
+	work >>= 7;
+	if (work != 0)
+	  /* More bytes to follow.  */
+	  byte |= 0x80;
+
+	if (byte_op)
+	  {
+	    fprintf (asm_out_file, "0x%x", byte);
+	    if (work != 0)
+	      fputc (',', asm_out_file);
+	  }
+	else
+	  assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+      }
+    while (work != 0);
+
+  if (flag_debug_asm)
+    {
+      fprintf (asm_out_file, "\t%s uleb128 ", ASM_COMMENT_START);
+      fprintf (asm_out_file, HOST_WIDE_INT_PRINT_HEX, value);
+      if (comment)
+	{
+	  fputs ("; ", asm_out_file);
+	  vfprintf (asm_out_file, comment, ap);
+	}
+    }
+  }
+#endif
+  fputc ('\n', asm_out_file);
+
+  VA_CLOSE (ap);
+}

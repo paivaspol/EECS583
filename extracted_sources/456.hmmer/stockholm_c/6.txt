@@ -1,0 +1,25 @@
+static int 
+parse_gc(MSA *msa, char *buf)
+{
+  char *gc;
+  char *featurename;
+  char *text; 
+  char *s;
+  int   len;
+
+  s = buf;
+  if ((gc          = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((featurename = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((text        = sre_strtok(&s, WHITESPACE, &len)) == NULL) return 0;
+  
+  if (strcmp(featurename, "SS_cons") == 0)
+    sre_strcat(&(msa->ss_cons), -1, text, len);
+  else if (strcmp(featurename, "SA_cons") == 0)
+    sre_strcat(&(msa->sa_cons), -1, text, len);
+  else if (strcmp(featurename, "RF") == 0)
+    sre_strcat(&(msa->rf), -1, text, len);
+  else
+    MSAAppendGC(msa, featurename, text);
+
+  return 1;
+}

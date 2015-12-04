@@ -1,0 +1,41 @@
+static void
+todec (x, y)
+     UEMUSHORT *x, *y;
+{
+  UEMUSHORT i;
+  UEMUSHORT *p;
+
+  p = x;
+  *y = 0;
+  if (*p++)
+    *y = 0100000;
+  i = *p++;
+  if (i == 0)
+    {
+      *y++ = 0;
+      *y++ = 0;
+      *y++ = 0;
+      *y++ = 0;
+      return;
+    }
+  if (i > 0377)
+    {
+      *y++ |= 077777;
+      *y++ = 0xffff;
+      *y++ = 0xffff;
+      *y++ = 0xffff;
+#ifdef ERANGE
+      errno = ERANGE;
+#endif
+      return;
+    }
+  i &= 0377;
+  i <<= 7;
+  eshup8 (x);
+  x[M] &= 0177;
+  i |= x[M];
+  *y++ |= i;
+  *y++ = x[M + 1];
+  *y++ = x[M + 2];
+  *y++ = x[M + 3];
+}

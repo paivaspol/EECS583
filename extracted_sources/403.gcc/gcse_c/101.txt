@@ -1,0 +1,144 @@
+static void
+delete_null_pointer_checks_1 (block_reg, nonnull_avin,
+			      nonnull_avout, npi)
+     unsigned int *block_reg;
+     sbitmap *nonnull_avin;
+     sbitmap *nonnull_avout;
+     struct null_pointer_info *npi;
+{
+  int bb;
+  int current_block;
+  sbitmap *nonnull_local = npi->nonnull_local;
+  sbitmap *nonnull_killed = npi->nonnull_killed;
+  
+  /* Compute local properties, nonnull and killed.  A register will have
+     the nonnull property if at the end of the current block its value is
+     known to be nonnull.  The killed property indicates that somewhere in
+     the block any information we had about the register is killed.
+
+     Note that a register can have both properties in a single block.  That
+     indicates that it's killed, then later in the block a new value is
+     computed.  */
+  sbitmap_vector_zero (nonnull_local, n_basic_blocks);
+  sbitmap_vector_zero (nonnull_killed, n_basic_blocks);
+
+  for (current_block = 0; current_block < n_basic_blocks; current_block++)
+    {
+      rtx insn, stop_insn;
+
+      /* Set the current block for invalidate_nonnull_info.  */
+      npi->current_block = current_block;
+
+      /* Scan each insn in the basic block looking for memory references and
+	 register sets.  */
+      stop_insn = NEXT_INSN (BLOCK_END (current_block));
+      for (insn = BLOCK_HEAD (current_block);
+	   insn != stop_insn;
+	   insn = NEXT_INSN (insn))
+	{
+	  rtx set;
+	  rtx reg;
+
+	  /* Ignore anything that is not a normal insn.  */
+	  if (! INSN_P (insn))
+	    continue;
+
+	  /* Basically ignore anything that is not a simple SET.  We do have
+	     to make sure to invalidate nonnull_local and set nonnull_killed
+	     for such insns though.  */
+	  set = single_set (insn);
+	  if (!set)
+	    {
+	      note_stores (PATTERN (insn), invalidate_nonnull_info, npi);
+	      continue;
+	    }
+
+	  /* See if we've got a usable memory load.  We handle it first
+	     in case it uses its address register as a dest (which kills
+	     the nonnull property).  */
+	  if (GET_CODE (SET_SRC (set)) == MEM
+	      && GET_CODE ((reg = XEXP (SET_SRC (set), 0))) == REG
+	      && REGNO (reg) >= npi->min_reg
+	      && REGNO (reg) < npi->max_reg)
+	    SET_BIT (nonnull_local[current_block],
+		     REGNO (reg) - npi->min_reg);
+
+	  /* Now invalidate stuff clobbered by this insn.  */
+	  note_stores (PATTERN (insn), invalidate_nonnull_info, npi);
+
+	  /* And handle stores, we do these last since any sets in INSN can
+	     not kill the nonnull property if it is derived from a MEM
+	     appearing in a SET_DEST.  */
+	  if (GET_CODE (SET_DEST (set)) == MEM
+	      && GET_CODE ((reg = XEXP (SET_DEST (set), 0))) == REG
+	      && REGNO (reg) >= npi->min_reg
+	      && REGNO (reg) < npi->max_reg)
+	    SET_BIT (nonnull_local[current_block],
+		     REGNO (reg) - npi->min_reg);
+	}
+    }
+
+  /* Now compute global properties based on the local properties.   This
+     is a classic global availablity algorithm.  */
+  compute_available (nonnull_local, nonnull_killed,
+		     nonnull_avout, nonnull_avin);
+
+  /* Now look at each bb and see if it ends with a compare of a value
+     against zero.  */
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    {
+      rtx last_insn = BLOCK_END (bb);
+      rtx condition, earliest;
+      int compare_and_branch;
+
+      /* Since MIN_REG is always at least FIRST_PSEUDO_REGISTER, and
+	 since BLOCK_REG[BB] is zero if this block did not end with a
+	 comparison against zero, this condition works.  */
+      if (block_reg[bb] < npi->min_reg
+	  || block_reg[bb] >= npi->max_reg)
+	continue;
+
+      /* LAST_INSN is a conditional jump.  Get its condition.  */
+      condition = get_condition (last_insn, &earliest);
+
+      /* If we can't determine the condition then skip.  */
+      if (! condition)
+	continue;
+
+      /* Is the register known to have a nonzero value?  */
+      if (!TEST_BIT (nonnull_avout[bb], block_reg[bb] - npi->min_reg))
+	continue;
+
+      /* Try to compute whether the compare/branch at the loop end is one or
+	 two instructions.  */
+      if (earliest == last_insn)
+	compare_and_branch = 1;
+      else if (earliest == prev_nonnote_insn (last_insn))
+	compare_and_branch = 2;
+      else
+	continue;
+
+      /* We know the register in this comparison is nonnull at exit from
+	 this block.  We can optimize this comparison.  */
+      if (GET_CODE (condition) == NE)
+	{
+	  rtx new_jump;
+
+	  new_jump = emit_jump_insn_before (gen_jump (JUMP_LABEL (last_insn)),
+					    last_insn);
+	  JUMP_LABEL (new_jump) = JUMP_LABEL (last_insn);
+	  LABEL_NUSES (JUMP_LABEL (new_jump))++;
+	  emit_barrier_after (new_jump);
+	}
+
+      delete_insn (last_insn);
+      if (compare_and_branch == 2)
+        delete_insn (earliest);
+      purge_dead_edges (BASIC_BLOCK (bb));
+
+      /* Don't check this block again.  (Note that BLOCK_END is
+	 invalid here; we deleted the last instruction in the 
+	 block.)  */
+      block_reg[bb] = 0;
+    }
+}

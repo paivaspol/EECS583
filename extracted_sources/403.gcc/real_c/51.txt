@@ -1,0 +1,31 @@
+static void
+eadd (a, b, c)
+     const UEMUSHORT *a, *b;
+     UEMUSHORT *c;
+{
+
+#ifdef NANS
+/* NaN plus anything is a NaN.  */
+  if (eisnan (a))
+    {
+      emov (a, c);
+      return;
+    }
+  if (eisnan (b))
+    {
+      emov (b, c);
+      return;
+    }
+/* Infinity minus infinity is a NaN.
+   Test for adding infinities of opposite signs.  */
+  if (eisinf (a) && eisinf (b)
+      && ((eisneg (a) ^ eisneg (b)) != 0))
+    {
+      mtherr ("esub", INVALID);
+      enan (c, 0);
+      return;
+    }
+#endif
+  subflg = 0;
+  eadd1 (a, b, c);
+}

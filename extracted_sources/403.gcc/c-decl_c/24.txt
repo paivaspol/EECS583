@@ -1,0 +1,42 @@
+static tree
+lookup_tag (code, name, binding_level, thislevel_only)
+     enum tree_code code;
+     struct binding_level *binding_level;
+     tree name;
+     int thislevel_only;
+{
+  struct binding_level *level;
+  int thislevel = 1;
+
+  for (level = binding_level; level; level = level->level_chain)
+    {
+      tree tail;
+      for (tail = level->tags; tail; tail = TREE_CHAIN (tail))
+	{
+	  if (TREE_PURPOSE (tail) == name)
+	    {
+	      if (TREE_CODE (TREE_VALUE (tail)) != code)
+		{
+		  /* Definition isn't the kind we were looking for.  */
+		  pending_invalid_xref = name;
+		  pending_invalid_xref_file = input_filename;
+		  pending_invalid_xref_line = lineno;
+		  /* If in the same binding level as a declaration as a tag
+		     of a different type, this must not be allowed to
+		     shadow that tag, so give the error immediately.
+		     (For example, "struct foo; union foo;" is invalid.)  */
+		  if (thislevel)
+		    pending_xref_error ();
+		}
+	      return TREE_VALUE (tail);
+	    }
+	}
+      if (! level->tag_transparent)
+	{
+	  if (thislevel_only)
+	    return NULL_TREE;
+	  thislevel = 0;
+	}
+    }
+  return NULL_TREE;
+}

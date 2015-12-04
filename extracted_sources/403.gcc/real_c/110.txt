@@ -1,0 +1,38 @@
+static void
+ibmtoe (d, e, mode)
+     const UEMUSHORT *d;
+     UEMUSHORT *e;
+     enum machine_mode mode;
+{
+  UEMUSHORT y[NI];
+  UEMUSHORT r, *p;
+
+  ecleaz (y);			/* start with a zero */
+  p = y;			/* point to our number */
+  r = *d;			/* get IBM exponent word */
+  if (*d & (unsigned int) 0x8000)
+    *p = 0xffff;		/* fill in our sign */
+  ++p;				/* bump pointer to our exponent word */
+  r &= 0x7f00;			/* strip the sign bit */
+  r >>= 6;			/* shift exponent word down 6 bits */
+				/* in fact shift by 8 right and 2 left */
+  r += EXONE - (0x41 << 2);	/* subtract IBM exponent offset */
+  				/* add our e type exponent offset */
+  *p++ = r;			/* to form our exponent */
+
+  *p++ = *d++ & 0xff;		/* now do the high order mantissa */
+				/* strip off the IBM exponent and sign bits */
+  if (mode != SFmode)		/* there are only 2 words in SFmode */
+    {
+      *p++ = *d++;		/* fill in the rest of our mantissa */
+      *p++ = *d++;
+    }
+  *p = *d;
+
+  if (y[M] == 0 && y[M+1] == 0 && y[M+2] == 0 && y[M+3] == 0)
+    y[0] = y[E] = 0;
+  else
+    y[E] -= 5 + enormlz (y);	/* now normalise the mantissa */
+			      /* handle change in RADIX */
+  emovo (y, e);
+}

@@ -1,0 +1,30 @@
+static void
+post_mark_life (regno, mode, life, birth, death)
+     int regno;
+     enum machine_mode mode;
+     int life, birth, death;
+{
+  int j = HARD_REGNO_NREGS (regno, mode);
+#ifdef HARD_REG_SET
+  /* Declare it register if it's a scalar.  */
+  register
+#endif
+    HARD_REG_SET this_reg;
+
+  CLEAR_HARD_REG_SET (this_reg);
+  while (--j >= 0)
+    SET_HARD_REG_BIT (this_reg, regno + j);
+
+  if (life)
+    while (birth < death)
+      {
+	IOR_HARD_REG_SET (regs_live_at[birth], this_reg);
+	birth++;
+      }
+  else
+    while (birth < death)
+      {
+	AND_COMPL_HARD_REG_SET (regs_live_at[birth], this_reg);
+	birth++;
+      }
+}

@@ -1,0 +1,32 @@
+static real calc_dist(FILE *log,rvec x[])
+{
+  static bool bFirst=TRUE;
+  static bool bDist;
+  static int i1,i2;
+  char *buf;
+  rvec   dx;
+  
+  if (bFirst) {
+#ifdef SPEC_CPU
+    buf = NULL;
+#else
+    buf = getenv("DISTGCT");
+#endif
+    if (buf == NULL)
+      bDist = FALSE;
+    else {
+      bDist  = (sscanf(buf,"%d%d",&i1,&i2) == 2);
+      if (bDist)
+	fprintf(log,"GCT: Will couple to distance between %d and %d\n",i1,i2);
+      else
+	fprintf(log,"GCT: Will not couple to distances\n");
+    }
+    bFirst = FALSE;
+  }
+  if (bDist) {
+    rvec_sub(x[i1],x[i2],dx);
+    return norm(dx);
+  }
+  else
+    return 0.0;
+}

@@ -1,0 +1,54 @@
+static void
+finalize ()
+{
+  /* Close the dump files.  */
+  if (flag_gen_aux_info)
+    {
+      fclose (aux_info_file);
+      if (errorcount)
+	unlink (aux_info_file_name);
+    }
+
+  /* Close non-debugging input and output files.  Take special care to note
+     whether fclose returns an error, since the pages might still be on the
+     buffer chain while the file is open.  */
+
+  if (asm_out_file)
+    {
+      if (ferror (asm_out_file) != 0)
+	fatal_io_error ("error writing to %s", asm_file_name);
+      if (fclose (asm_out_file) != 0)
+	fatal_io_error ("error closing %s", asm_file_name);
+    }
+
+  /* Do whatever is necessary to finish printing the graphs.  */
+  if (graph_dump_format != no_graph)
+    {
+      int i;
+
+      for (i = 0; i < (int) DFI_MAX; ++i)
+	if (dump_file[i].initialized && dump_file[i].graph_dump_p)
+	  {
+	    char seq[16];
+	    char *suffix;
+
+	    sprintf (seq, DUMPFILE_FORMAT, i);
+	    suffix = concat (seq, dump_file[i].extension, NULL);
+	    finish_graph_dump_file (dump_base_name, suffix);
+	    free (suffix);
+	  }
+    }
+
+  if (mem_report)
+    {
+      ggc_print_statistics ();
+      stringpool_statistics ();
+      dump_tree_statistics ();
+    }
+
+  /* Free up memory for the benefit of leak detectors.  */
+  free_reg_info ();
+
+  /* Language-specific end of compilation actions.  */
+  (*lang_hooks.finish) ();
+}

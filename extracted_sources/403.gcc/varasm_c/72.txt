@@ -1,0 +1,30 @@
+void
+free_varasm_status (f)
+     struct function *f;
+{
+  struct varasm_status *p;
+  int i;
+
+  p = f->varasm;
+
+  /* Clear out the hash tables.  */
+  for (i = 0; i < MAX_RTX_HASH_TABLE; ++i)
+    {
+      struct constant_descriptor *cd;
+
+      cd = p->x_const_rtx_hash_table[i];
+      while (cd)
+	{
+	  struct constant_descriptor *next = cd->next;
+
+	  free (cd);
+	  cd = next;
+	}
+    }
+
+  free (p->x_const_rtx_hash_table);
+  free (p->x_const_rtx_sym_hash_table);
+  free (p);
+
+  f->varasm = NULL;
+}

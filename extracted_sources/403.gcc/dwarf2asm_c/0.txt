@@ -1,0 +1,18 @@
+void
+dw2_assemble_integer (size, x)
+     int size;
+     rtx x;
+{
+  const char *op = integer_asm_op (size, FALSE);
+
+  if (op)
+    {
+      fputs (op, asm_out_file);
+      if (GET_CODE (x) == CONST_INT)
+	fprintf (asm_out_file, HOST_WIDE_INT_PRINT_HEX, INTVAL (x));
+      else
+	output_addr_const (asm_out_file, x);
+    }
+  else
+    assemble_integer (x, size, BITS_PER_UNIT, 1);
+}

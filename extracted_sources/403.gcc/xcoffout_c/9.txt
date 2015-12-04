@@ -1,0 +1,18 @@
+void
+xcoffout_begin_prologue (line, file)
+     unsigned int line;
+     const char *file ATTRIBUTE_UNUSED;
+{
+  ASM_OUTPUT_LFB (asm_out_file, line);
+  dbxout_parms (DECL_ARGUMENTS (current_function_decl));
+
+  /* Emit the symbols for the outermost BLOCK's variables.  sdbout.c does this
+     in sdbout_begin_block, but there is no guarantee that there will be any
+     inner block 1, so we must do it here.  This gives a result similar to
+     dbxout, so it does make some sense.  */
+  do_block = BLOCK_NUMBER (DECL_INITIAL (current_function_decl));
+  xcoffout_block (DECL_INITIAL (current_function_decl), 0,
+		  DECL_ARGUMENTS (current_function_decl));
+
+  ASM_OUTPUT_SOURCE_LINE (asm_out_file, line);
+}

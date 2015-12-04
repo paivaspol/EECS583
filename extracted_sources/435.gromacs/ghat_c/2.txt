@@ -1,0 +1,57 @@
+void wr_ghat(char *fn,int n1max,int n2max,int n3max,real h1,real h2,real h3,
+	     real ***ghat,int nalias,int porder,int niter,bool bSym,rvec beta,
+	     real r1,real rc,real pval,real zval,real eref,real qopt)
+{
+  FILE *fp;
+  int  N1MAX,N2MAX,N3MAX;
+  bool bNL=FALSE;
+  real rx,ry,rz;
+  int  ii,jj,kk,nn;
+  
+  fp = ffopen(fn,"w");
+  fprintf(fp,"%8d  %8d  %8d  %15.10e  %15.10e %15.10e\n",
+	  n1max,n2max,n3max,h1,h2,h3);
+  fprintf(fp,"%8d  %8d  %8d  %8d  %15.10e  %15.10e  %15.10e\n",
+	  nalias,porder,niter,bSym,beta[XX],beta[YY],beta[ZZ]);
+  fprintf(fp,"%10g  %10g  %10g  %10g  %10g  %10g\n",
+	  rc,r1,pval,zval,eref,qopt);
+  
+  if (bSym) {
+    N1MAX = n1max/2+1;
+    N2MAX = n2max/2+1;
+    N3MAX = n3max/2+1;
+  }
+  else {
+    N1MAX = n1max;
+    N2MAX = n2max;
+    N3MAX = n3max;
+  }
+  for(ii=0; (ii<N1MAX); ii++) {
+    for(jj=0; (jj<N2MAX); jj++) {
+      for(kk=0,nn=1; (kk<N3MAX); kk++,nn++) { 
+	bNL=FALSE;
+	fprintf(fp,"  %12.5e",ghat[ii][jj][kk]);
+	if ((nn % 6) == 0) {
+	  fprintf(fp,"\n");
+	  bNL=TRUE;
+	}
+      }
+      if (!bNL)
+	fprintf(fp,"\n");
+    }
+  }
+  fclose(fp);
+  
+  fp=xvgropen("ghat.xvg","G-Hat","k","gk");
+  for(ii=0; (ii<N1MAX); ii++) {
+    rx=sqr((real)(ii*h1));
+    for(jj=0; (jj<N2MAX); jj++) {
+      ry=rx+sqr((real)(jj*h2));
+      for(kk=0; (kk<N3MAX); kk++) {
+	rz=ry+sqr((real)(kk*h3));
+	fprintf(fp,"%10g  %10g\n",sqrt(rz),ghat[ii][jj][kk]);
+      }
+    }
+  }
+  fclose(fp);
+}

@@ -1,0 +1,15 @@
+void
+ready_add (ready, insn)
+     struct ready_list *ready;
+     rtx insn;
+{
+  if (ready->first == ready->n_ready)
+    {
+      memmove (ready->vec + ready->veclen - ready->n_ready,
+	       ready_lastpos (ready),
+	       ready->n_ready * sizeof (rtx));
+      ready->first = ready->veclen - 1;
+    }
+  ready->vec[ready->first - ready->n_ready] = insn;
+  ready->n_ready++;
+}

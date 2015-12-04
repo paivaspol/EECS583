@@ -1,0 +1,47 @@
+static void
+put_reg_into_stack (function, reg, type, promoted_mode, decl_mode, volatile_p,
+		    original_regno, used_p, ht)
+     struct function *function;
+     rtx reg;
+     tree type;
+     enum machine_mode promoted_mode, decl_mode;
+     int volatile_p;
+     unsigned int original_regno;
+     int used_p;
+     struct hash_table *ht;
+{
+  struct function *func = function ? function : cfun;
+  rtx new = 0;
+  unsigned int regno = original_regno;
+
+  if (regno == 0)
+    regno = REGNO (reg);
+
+  if (regno < func->x_max_parm_reg)
+    new = func->x_parm_reg_stack_loc[regno];
+
+  if (new == 0)
+    new = assign_stack_local_1 (decl_mode, GET_MODE_SIZE (decl_mode), 0, func);
+
+  PUT_CODE (reg, MEM);
+  PUT_MODE (reg, decl_mode);
+  XEXP (reg, 0) = XEXP (new, 0);
+  MEM_ATTRS (reg) = 0;
+  /* `volatil' bit means one thing for MEMs, another entirely for REGs.  */
+  MEM_VOLATILE_P (reg) = volatile_p;
+
+  /* If this is a memory ref that contains aggregate components,
+     mark it as such for cse and loop optimize.  If we are reusing a
+     previously generated stack slot, then we need to copy the bit in
+     case it was set for other reasons.  For instance, it is set for
+     __builtin_va_alist.  */
+  if (type)
+    {
+      MEM_SET_IN_STRUCT_P (reg,
+			   AGGREGATE_TYPE_P (type) || MEM_IN_STRUCT_P (new));
+      set_mem_alias_set (reg, get_alias_set (type));
+    }
+
+  if (used_p)
+    schedule_fixup_var_refs (function, reg, type, promoted_mode, ht);
+}

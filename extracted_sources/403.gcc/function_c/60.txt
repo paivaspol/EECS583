@@ -1,0 +1,50 @@
+static void
+pad_to_arg_alignment (offset_ptr, boundary, alignment_pad)
+     struct args_size *offset_ptr;
+     int boundary;
+     struct args_size *alignment_pad;
+{
+  tree save_var = NULL_TREE;
+  HOST_WIDE_INT save_constant = 0;
+
+  int boundary_in_bytes = boundary / BITS_PER_UNIT;
+
+  if (boundary > PARM_BOUNDARY && boundary > STACK_BOUNDARY)
+    {
+      save_var = offset_ptr->var;
+      save_constant = offset_ptr->constant;
+    }
+
+  alignment_pad->var = NULL_TREE;
+  alignment_pad->constant = 0;
+
+  if (boundary > BITS_PER_UNIT)
+    {
+      if (offset_ptr->var)
+	{
+	  offset_ptr->var =
+#ifdef ARGS_GROW_DOWNWARD
+	    round_down
+#else
+	    round_up
+#endif
+	      (ARGS_SIZE_TREE (*offset_ptr),
+	       boundary / BITS_PER_UNIT);
+	  offset_ptr->constant = 0; /*?*/
+          if (boundary > PARM_BOUNDARY && boundary > STACK_BOUNDARY)
+            alignment_pad->var = size_binop (MINUS_EXPR, offset_ptr->var,
+					     save_var);
+	}
+      else
+	{
+	  offset_ptr->constant =
+#ifdef ARGS_GROW_DOWNWARD
+	    FLOOR_ROUND (offset_ptr->constant, boundary_in_bytes);
+#else
+	    CEIL_ROUND (offset_ptr->constant, boundary_in_bytes);
+#endif
+	    if (boundary > PARM_BOUNDARY && boundary > STACK_BOUNDARY)
+	      alignment_pad->constant = offset_ptr->constant - save_constant;
+	}
+    }
+}

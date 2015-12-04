@@ -1,0 +1,76 @@
+static void analyse_other(eRestp Restp[],t_atoms *atoms,
+			  t_block *gb,char ***gn,bool bASK,bool bVerb)
+{
+  char **restp=NULL;
+  char **attp=NULL;
+  char *rname,*aname;
+  atom_id *other_ndx,*aid,*aaid;
+  int  i,j,k,l,resnr,naid,naaid,natp,nrestp=0;
+  
+  for(i=0; (i<atoms->nres); i++)
+    if (Restp[i] == etOther)
+      break;
+  if (i < atoms->nres) {
+    /* we have others */
+    if (bVerb)
+      printf("Analysing Other...\n");
+    snew(other_ndx,atoms->nr);
+    for(k=0; (k<atoms->nr); k++) {
+      resnr=atoms->atom[k].resnr;
+      rname=*atoms->resname[resnr];
+      if (Restp[resnr] ==  etOther) {
+	for(l=0; (l<nrestp); l++)
+	  if (strcmp(restp[l],rname) == 0)
+	    break;
+	if (l==nrestp) {
+	  srenew(restp,++nrestp);
+	  restp[nrestp-1]=strdup(rname);
+	}
+      }
+    }
+    for(i=0; (i<nrestp); i++) {
+      snew(aid,atoms->nr);
+      naid=0;
+      for(j=0; (j<atoms->nr); j++) {
+	rname=*atoms->resname[atoms->atom[j].resnr];
+	if (strcmp(restp[i],rname) == 0) 
+	  aid[naid++] = j;
+      }
+      add_grp(gb,gn,naid,aid,restp[i]);
+      if (bASK) {
+	printf("split %s into atoms (y/n) ? ",restp[i]);
+	fflush(stdout);
+	if (yn(bASK)) {
+	  natp=0;
+	  for(k=0; (k<naid); k++) {
+	    aname=*atoms->atomname[aid[k]];
+	    for(l=0; (l<natp); l++)
+	      if (strcmp(aname,attp[l]) == 0)
+		break;
+	    if (l == natp) {
+	      srenew(attp,++natp);
+	      attp[natp-1]=aname;
+	    }
+	  }
+	  if (natp > 1) {
+	    for(l=0; (l<natp); l++) {
+	      snew(aaid,naid);
+	      naaid=0;
+	      for(k=0; (k<naid); k++) {
+		aname=*atoms->atomname[aid[k]];
+		if (strcmp(aname,attp[l])==0) 
+		  aaid[naaid++]=aid[k];
+	      }
+	      add_grp(gb,gn,naaid,aaid,attp[l]);
+	      sfree(aaid);
+	    }
+	  }
+	  sfree(attp);
+	  attp=NULL;
+	}
+	sfree(aid);
+      }
+    }
+    sfree(other_ndx);
+  }
+}

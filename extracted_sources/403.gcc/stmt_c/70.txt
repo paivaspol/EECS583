@@ -1,0 +1,93 @@
+int
+expand_decl_cleanup (decl, cleanup)
+     tree decl, cleanup;
+{
+  struct nesting *thisblock;
+
+  /* Error if we are not in any block.  */
+  if (cfun == 0 || block_stack == 0)
+    return 0;
+
+  thisblock = block_stack;
+
+  /* Record the cleanup if there is one.  */
+
+  if (cleanup != 0)
+    {
+      tree t;
+      rtx seq;
+      tree *cleanups = &thisblock->data.block.cleanups;
+      int cond_context = conditional_context ();
+
+      if (cond_context)
+	{
+	  rtx flag = gen_reg_rtx (word_mode);
+	  rtx set_flag_0;
+	  tree cond;
+
+	  start_sequence ();
+	  emit_move_insn (flag, const0_rtx);
+	  set_flag_0 = get_insns ();
+	  end_sequence ();
+
+	  thisblock->data.block.last_unconditional_cleanup
+	    = emit_insns_after (set_flag_0,
+				thisblock->data.block.last_unconditional_cleanup);
+
+	  emit_move_insn (flag, const1_rtx);
+
+	  cond = build_decl (VAR_DECL, NULL_TREE, type_for_mode (word_mode, 1));
+	  SET_DECL_RTL (cond, flag);
+
+	  /* Conditionalize the cleanup.  */
+	  cleanup = build (COND_EXPR, void_type_node,
+			   truthvalue_conversion (cond),
+			   cleanup, integer_zero_node);
+	  cleanup = fold (cleanup);
+
+	  cleanups = thisblock->data.block.cleanup_ptr;
+	}
+
+      cleanup = unsave_expr (cleanup);
+
+      t = *cleanups = tree_cons (decl, cleanup, *cleanups);
+
+      if (! cond_context)
+	/* If this block has a cleanup, it belongs in stack_block_stack.  */
+	stack_block_stack = thisblock;
+
+      if (cond_context)
+	{
+	  start_sequence ();
+	}
+
+      if (! using_eh_for_cleanups_p)
+	TREE_ADDRESSABLE (t) = 1;
+      else
+	expand_eh_region_start ();
+
+      if (cond_context)
+	{
+	  seq = get_insns ();
+	  end_sequence ();
+	  if (seq)
+	    thisblock->data.block.last_unconditional_cleanup
+	      = emit_insns_after (seq,
+				  thisblock->data.block.last_unconditional_cleanup);
+	}
+      else
+	{
+	  thisblock->data.block.last_unconditional_cleanup
+	    = get_last_insn ();
+	  /* When we insert instructions after the last unconditional cleanup,
+	     we don't adjust last_insn.  That means that a later add_insn will
+	     clobber the instructions we've just added.  The easiest way to
+	     fix this is to just insert another instruction here, so that the
+	     instructions inserted after the last unconditional cleanup are
+	     never the last instruction.  */
+	  emit_note (NULL, NOTE_INSN_DELETED);
+	  thisblock->data.block.cleanup_ptr = &thisblock->data.block.cleanups;
+	}
+    }
+  return 1;
+}

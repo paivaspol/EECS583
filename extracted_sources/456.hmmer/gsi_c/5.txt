@@ -1,0 +1,16 @@
+void
+GSIAddKeyToIndex(struct gsiindex_s *g, char *key, int filenum, long offset)
+{
+  if (strlen(key) >= GSI_KEYSIZE) Die("key too long in GSI index");
+  if (filenum > SQD_UINT16_MAX) Die("too many files in GSI index");
+  if (offset  > SQD_UINT32_MAX) Die("offset too big in GSI index");
+  
+  strncpy(g->elems[g->nkeys].key, key, GSI_KEYSIZE-1);
+  g->elems[g->nkeys].key[GSI_KEYSIZE-1] = '\0';
+  g->elems[g->nkeys].filenum = (sqd_uint16) filenum;
+  g->elems[g->nkeys].offset  = (sqd_uint32) offset;
+  g->nkeys++;
+
+  if (g->nkeys % 100 == 0)
+    g->elems = ReallocOrDie(g->elems, sizeof(struct gsikey_s) * (g->nkeys + 100));
+}

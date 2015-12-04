@@ -1,0 +1,48 @@
+static void
+siv_test (icoefficients, ocoefficients, direction, distance, loop_ptr, sub)
+     subscript icoefficients [MAX_SUBSCRIPTS];
+     subscript ocoefficients [MAX_SUBSCRIPTS];
+     enum direction_type direction[MAX_SUBSCRIPTS][MAX_SUBSCRIPTS];
+     int distance[MAX_SUBSCRIPTS][MAX_SUBSCRIPTS];
+     loop *loop_ptr;
+     int sub;
+{
+  int coef_diff;
+  int coef;
+  int gcd;
+
+  if (! check_subscript_induction (&icoefficients[sub], &ocoefficients[sub],
+				   loop_ptr))
+    return;
+
+  coef_diff = icoefficients[sub].offset - ocoefficients[sub].offset;
+  /* strong_siv requires equal coefficients.  weak_crossing_siv requires
+     coefficients to have equal absolute value.  weak_zero_siv uses the
+     nonzero coefficient.  */
+
+  if (ocoefficients[sub].coefficient == INT_MIN)
+    coef = icoefficients[sub].coefficient;
+  else if (icoefficients[sub].coefficient == INT_MIN)
+    coef = ocoefficients[sub].coefficient;
+  else if (ocoefficients[sub].coefficient ==
+	   -1 * icoefficients[sub].coefficient)
+    coef = 2 * abs (ocoefficients[sub].coefficient);
+  else
+    coef = icoefficients[sub].coefficient;
+
+  gcd = -coef_diff / coef;
+  if (gcd * coef != -coef_diff)
+    {
+      direction[loop_ptr->depth][sub] = independent;
+    }
+  else
+    {
+      distance[loop_ptr->depth][sub] = gcd;
+      if (gcd < 0)
+	direction[loop_ptr->depth][sub] = gt;
+      else if (gcd > 0)
+	direction[loop_ptr->depth][sub] = lt;
+      else
+	direction[loop_ptr->depth][sub] = eq;
+    }
+}

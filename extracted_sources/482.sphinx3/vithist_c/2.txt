@@ -1,0 +1,21 @@
+static int32 vh_lmstate_find (vithist_t *vh, vh_lmstate_t *lms)
+{
+    vh_lms2vh_t *lms2vh;
+    s3lmwid_t lwid;
+    gnode_t *gn;
+    
+    lwid = lms->lm3g.lwid[0];
+    if ((lms2vh = vh->lms2vh_root[lwid]) == NULL)
+	return -1;
+
+    assert (lms2vh->state == lwid);
+    
+    lwid = lms->lm3g.lwid[1];
+    for (gn = lms2vh->children; gn; gn = gnode_next(gn)) {
+	lms2vh = (vh_lms2vh_t *) gnode_ptr (gn);
+	if (lms2vh->state == lwid)
+	    return lms2vh->vhid;
+    }
+    
+    return -1;
+}

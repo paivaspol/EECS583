@@ -1,0 +1,52 @@
+static rtx
+noce_emit_cmove (if_info, x, code, cmp_a, cmp_b, vfalse, vtrue)
+     struct noce_if_info *if_info;
+     rtx x, cmp_a, cmp_b, vfalse, vtrue;
+     enum rtx_code code;
+{
+  /* If earliest == jump, try to build the cmove insn directly.
+     This is helpful when combine has created some complex condition
+     (like for alpha's cmovlbs) that we can't hope to regenerate
+     through the normal interface.  */
+
+  if (if_info->cond_earliest == if_info->jump)
+    {
+      rtx tmp;
+
+      tmp = gen_rtx_fmt_ee (code, GET_MODE (if_info->cond), cmp_a, cmp_b);
+      tmp = gen_rtx_IF_THEN_ELSE (GET_MODE (x), tmp, vtrue, vfalse);
+      tmp = gen_rtx_SET (VOIDmode, x, tmp);
+
+      start_sequence ();
+      tmp = emit_insn (tmp);
+
+      if (recog_memoized (tmp) >= 0)
+	{
+	  tmp = get_insns ();
+	  end_sequence ();
+	  emit_insns (tmp);
+
+	  return x;
+	}
+
+      end_sequence ();
+    }
+
+  /* Don't even try if the comparison operands are weird.  */
+  if (! general_operand (cmp_a, GET_MODE (cmp_a))
+      || ! general_operand (cmp_b, GET_MODE (cmp_b)))
+    return NULL_RTX;
+
+#if HAVE_conditional_move
+  return emit_conditional_move (x, code, cmp_a, cmp_b, VOIDmode,
+				vtrue, vfalse, GET_MODE (x),
+			        (code == LTU || code == GEU
+				 || code == LEU || code == GTU));
+#else
+  /* We'll never get here, as noce_process_if_block doesn't call the
+     functions involved.  Ifdef code, however, should be discouraged
+     because it leads to typos in the code not selected.  However, 
+     emit_conditional_move won't exist either.  */
+  return NULL_RTX;
+#endif
+}

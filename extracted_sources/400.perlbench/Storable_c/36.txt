@@ -1,0 +1,111 @@
+static int do_store(
+        pTHX_
+	PerlIO *f,
+	SV *sv,
+	int optype,
+	int network_order,
+	SV **res)
+{
+	dSTCXT;
+	int status;
+
+	ASSERT(!(f == 0 && !(optype & ST_CLONE)) || res,
+		("must supply result SV pointer for real recursion to memory"));
+
+	TRACEME(("do_store (optype=%d, netorder=%d)",
+		optype, network_order));
+
+	optype |= ST_STORE;
+
+	/*
+	 * Workaround for CROAK leak: if they enter with a "dirty" context,
+	 * free up memory for them now.
+	 */
+
+	if (cxt->s_dirty)
+		clean_context(aTHX_ cxt);
+
+	/*
+	 * Now that STORABLE_xxx hooks exist, it is possible that they try to
+	 * re-enter store() via the hooks.  We need to stack contexts.
+	 */
+
+	if (cxt->entry)
+		cxt = allocate_context(aTHX_ cxt);
+
+	cxt->entry++;
+
+	ASSERT(cxt->entry == 1, ("starting new recursion"));
+	ASSERT(!cxt->s_dirty, ("clean context"));
+
+	/*
+	 * Ensure sv is actually a reference. From perl, we called something
+	 * like:
+	 *       pstore(aTHX_ FILE, \@array);
+	 * so we must get the scalar value behing that reference.
+	 */
+
+	if (!SvROK(sv))
+		CROAK(("Not a reference"));
+	sv = SvRV(sv);			/* So follow it to know what to store */
+
+	/* 
+	 * If we're going to store to memory, reset the buffer.
+	 */
+
+	if (!f)
+		MBUF_INIT(0);
+
+	/*
+	 * Prepare context and emit headers.
+	 */
+
+	init_store_context(aTHX_ cxt, f, optype, network_order);
+
+	if (-1 == magic_write(aTHX_ cxt))		/* Emit magic and ILP info */
+		return 0;					/* Error */
+
+	/*
+	 * Recursively store object...
+	 */
+
+	ASSERT(is_storing(), ("within store operation"));
+
+	status = store(aTHX_ cxt, sv);		/* Just do it! */
+
+	/*
+	 * If they asked for a memory store and they provided an SV pointer,
+	 * make an SV string out of the buffer and fill their pointer.
+	 *
+	 * When asking for ST_REAL, it's MANDATORY for the caller to provide
+	 * an SV, since context cleanup might free the buffer if we did recurse.
+	 * (unless caller is dclone(), which is aware of that).
+	 */
+
+	if (!cxt->fio && res)
+		*res = mbuf2sv(aTHX);
+
+	/*
+	 * Final cleanup.
+	 *
+	 * The "root" context is never freed, since it is meant to be always
+	 * handy for the common case where no recursion occurs at all (i.e.
+	 * we enter store() outside of any Storable code and leave it, period).
+	 * We know it's the "root" context because there's nothing stacked
+	 * underneath it.
+	 *
+	 * OPTIMIZATION:
+	 *
+	 * When deep cloning, we don't free the context: doing so would force
+	 * us to copy the data in the memory buffer.  Sicne we know we're
+	 * about to enter do_retrieve...
+	 */
+
+	clean_store_context(aTHX_ cxt);
+	if (cxt->prev && !(cxt->optype & ST_CLONE))
+		free_context(aTHX_ cxt);
+
+	TRACEME(("do_store returns %d", status));
+
+	return status == 0;
+}

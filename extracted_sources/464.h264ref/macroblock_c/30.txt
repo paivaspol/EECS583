@@ -1,0 +1,82 @@
+int writeMotionVector8x8 (int  i0,
+                          int  j0,
+                          int  i1,
+                          int  j1,
+                          int  refframe,
+                          int  list_idx,
+                          int  mv_mode)
+{
+  int            i, j, k, l, m;
+  int            curr_mvd;
+  DataPartition* dataPart;
+
+  int            rate       = 0;
+  int            step_h     = input->part_size[mv_mode][0];
+  int            step_v     = input->part_size[mv_mode][1];
+  Macroblock*    currMB     = &img->mb_data[img->current_mb_nr];
+  SyntaxElement* currSE     = &img->MB_SyntaxElements[currMB->currSEnr];
+  Slice*         currSlice  = img->currentSlice;
+  int*           bitCount   = currMB->bitcounter;
+  const int*     partMap    = assignSE2partition[input->partition_mode];
+  int            refindex   = refframe;
+
+  short******    all_mv     = img->all_mv;
+  short******    pred_mv    = img->pred_mv;
+
+#if BI_PREDICTION
+  if (currMB->bi_pred_me && currMB->b8pdir[0]==2 && mv_mode == 1 && refindex == 0)
+  {
+      all_mv = currMB->bi_pred_me == 1? img->bipred_mv1 : img->bipred_mv2 ;
+  }
+#endif
+
+  for (j=j0; j<j1; j+=step_v)
+  for (i=i0; i<i1; i+=step_h)
+  {
+    for (k=0; k<2; k++) 
+    {
+
+      curr_mvd = all_mv[i][j][list_idx][refindex][mv_mode][k] - pred_mv[i][j][list_idx][refindex][mv_mode][k];
+
+      //--- store (oversampled) mvd ---
+      for (l=0; l < step_v; l++)
+        for (m=0; m < step_h; m++)
+        {
+          currMB->mvd[list_idx][j+l][i+m][k] = curr_mvd;
+        }
+      currSE->value1 = curr_mvd;
+      currSE->value2 = 0;
+      currSE->type   = SE_MVD;
+      if (input->symbol_mode == UVLC)
+      {
+        currSE->mapping = se_linfo;
+      }
+      else
+      {
+        img->subblock_x = i; // position used for context determination
+        img->subblock_y = j; // position used for context determination
+        currSE->value2  = 2*k+list_idx; // identifies the component and the direction; only used for context determination
+        currSE->writing = writeMVD_CABAC;
+      }  
+      dataPart = &(currSlice->partArr[partMap[SE_MVD]]);
+      dataPart->writeSyntaxElement (currSE, dataPart);
+#if TRACE
+        if (!list_idx)
+        {
+          snprintf(currSE->tracestring, TRACESTRING_SIZE, "mvd_l0 (%d) = %3d  (org_mv %3d pred_mv %3d)",k, curr_mvd, all_mv[i][j][list_idx][refindex][mv_mode][k], pred_mv[i][j][list_idx][refindex][mv_mode][k]);
+        }
+        else
+        {
+          snprintf(currSE->tracestring, TRACESTRING_SIZE, "mvd_l1 (%d) = %3d  (org_mv %3d pred_mv %3d)",k, curr_mvd, all_mv[i][j][list_idx][refindex][mv_mode][k], pred_mv[i][j][list_idx][refindex][mv_mode][k]);
+        }
+
+#endif
+      bitCount[BITS_INTER_MB] += currSE->len;
+      rate                    += currSE->len;
+      currSE++;  
+      currMB->currSEnr++;
+    }
+  }
+
+  return rate;
+}

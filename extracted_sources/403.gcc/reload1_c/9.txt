@@ -1,0 +1,23 @@
+static void
+count_pseudo (reg)
+     int reg;
+{
+  int freq = REG_FREQ (reg);
+  int r = reg_renumber[reg];
+  int nregs;
+
+  if (REGNO_REG_SET_P (&pseudos_counted, reg)
+      || REGNO_REG_SET_P (&spilled_pseudos, reg))
+    return;
+
+  SET_REGNO_REG_SET (&pseudos_counted, reg);
+
+  if (r < 0)
+    abort ();
+
+  spill_add_cost[r] += freq;
+
+  nregs = HARD_REGNO_NREGS (r, PSEUDO_REGNO_MODE (reg));
+  while (nregs-- > 0)
+    spill_cost[r + nregs] += freq;
+}

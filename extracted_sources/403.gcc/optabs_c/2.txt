@@ -1,0 +1,129 @@
+static int
+expand_cmplxdiv_straight (real0, real1, imag0, imag1, realr, imagr, submode,
+			  unsignedp, methods, class, binoptab)
+  rtx real0, real1, imag0, imag1, realr, imagr;
+  enum machine_mode submode;
+  int unsignedp;
+  enum optab_methods methods;
+  enum mode_class class;
+  optab binoptab;
+{
+  rtx divisor;
+  rtx real_t, imag_t;
+  rtx temp1, temp2;
+  rtx res;
+  optab this_add_optab = add_optab;
+  optab this_sub_optab = sub_optab;
+  optab this_neg_optab = neg_optab;
+  optab this_mul_optab = smul_optab;
+	      
+  if (binoptab == sdivv_optab)
+    {
+      this_add_optab = addv_optab;
+      this_sub_optab = subv_optab;
+      this_neg_optab = negv_optab;
+      this_mul_optab = smulv_optab;
+    }
+
+  /* Don't fetch these from memory more than once.  */
+  real0 = force_reg (submode, real0);
+  real1 = force_reg (submode, real1);
+
+  if (imag0 != 0)
+    imag0 = force_reg (submode, imag0);
+
+  imag1 = force_reg (submode, imag1);
+
+  /* Divisor: c*c + d*d.  */
+  temp1 = expand_binop (submode, this_mul_optab, real1, real1,
+			NULL_RTX, unsignedp, methods);
+
+  temp2 = expand_binop (submode, this_mul_optab, imag1, imag1,
+			NULL_RTX, unsignedp, methods);
+
+  if (temp1 == 0 || temp2 == 0)
+    return 0;
+
+  divisor = expand_binop (submode, this_add_optab, temp1, temp2,
+			  NULL_RTX, unsignedp, methods);
+  if (divisor == 0)
+    return 0;
+
+  if (imag0 == 0)
+    {
+      /* Mathematically, ((a)(c-id))/divisor.  */
+      /* Computationally, (a+i0) / (c+id) = (ac/(cc+dd)) + i(-ad/(cc+dd)).  */
+
+      /* Calculate the dividend.  */
+      real_t = expand_binop (submode, this_mul_optab, real0, real1,
+			     NULL_RTX, unsignedp, methods);
+		  
+      imag_t = expand_binop (submode, this_mul_optab, real0, imag1,
+			     NULL_RTX, unsignedp, methods);
+
+      if (real_t == 0 || imag_t == 0)
+	return 0;
+
+      imag_t = expand_unop (submode, this_neg_optab, imag_t,
+			    NULL_RTX, unsignedp);
+    }
+  else
+    {
+      /* Mathematically, ((a+ib)(c-id))/divider.  */
+      /* Calculate the dividend.  */
+      temp1 = expand_binop (submode, this_mul_optab, real0, real1,
+			    NULL_RTX, unsignedp, methods);
+
+      temp2 = expand_binop (submode, this_mul_optab, imag0, imag1,
+			    NULL_RTX, unsignedp, methods);
+
+      if (temp1 == 0 || temp2 == 0)
+	return 0;
+
+      real_t = expand_binop (submode, this_add_optab, temp1, temp2,
+			     NULL_RTX, unsignedp, methods);
+		  
+      temp1 = expand_binop (submode, this_mul_optab, imag0, real1,
+			    NULL_RTX, unsignedp, methods);
+
+      temp2 = expand_binop (submode, this_mul_optab, real0, imag1,
+			    NULL_RTX, unsignedp, methods);
+
+      if (temp1 == 0 || temp2 == 0)
+	return 0;
+
+      imag_t = expand_binop (submode, this_sub_optab, temp1, temp2,
+			     NULL_RTX, unsignedp, methods);
+
+      if (real_t == 0 || imag_t == 0)
+	return 0;
+    }
+
+  if (class == MODE_COMPLEX_FLOAT)
+    res = expand_binop (submode, binoptab, real_t, divisor,
+			realr, unsignedp, methods);
+  else
+    res = expand_divmod (0, TRUNC_DIV_EXPR, submode,
+			 real_t, divisor, realr, unsignedp);
+
+  if (res == 0)
+    return 0;
+
+  if (res != realr)
+    emit_move_insn (realr, res);
+
+  if (class == MODE_COMPLEX_FLOAT)
+    res = expand_binop (submode, binoptab, imag_t, divisor,
+			imagr, unsignedp, methods);
+  else
+    res = expand_divmod (0, TRUNC_DIV_EXPR, submode,
+			 imag_t, divisor, imagr, unsignedp);
+
+  if (res == 0)
+    return 0;
+
+  if (res != imagr)
+    emit_move_insn (imagr, res);
+
+  return 1;
+}

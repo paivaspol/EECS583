@@ -1,0 +1,71 @@
+static void
+schedule_ebb (head, tail)
+     rtx head, tail;
+{
+  int n_insns;
+  struct deps tmp_deps;
+
+  if (no_real_insns_p (head, tail))
+    return;
+
+  init_deps_global ();
+
+  /* Compute LOG_LINKS.  */
+  init_deps (&tmp_deps);
+  sched_analyze (&tmp_deps, head, tail);
+  free_deps (&tmp_deps);
+
+  /* Compute INSN_DEPEND.  */
+  compute_forward_dependences (head, tail);
+
+  /* Set priorities.  */
+  n_insns = set_priorities (head, tail);
+
+  current_sched_info->prev_head = PREV_INSN (head);
+  current_sched_info->next_tail = NEXT_INSN (tail);
+
+  if (write_symbols != NO_DEBUG)
+    {
+      save_line_notes (0, head, tail);
+      rm_line_notes (head, tail);
+    }
+
+  /* rm_other_notes only removes notes which are _inside_ the
+     block---that is, it won't remove notes before the first real insn
+     or after the last real insn of the block.  So if the first insn
+     has a REG_SAVE_NOTE which would otherwise be emitted before the
+     insn, it is redundant with the note before the start of the
+     block, and so we have to take it out.  */
+  if (INSN_P (head))
+    {
+      rtx note;
+
+      for (note = REG_NOTES (head); note; note = XEXP (note, 1))
+	if (REG_NOTE_KIND (note) == REG_SAVE_NOTE)
+	  {
+	    remove_note (head, note);
+	    note = XEXP (note, 1);
+	    remove_note (head, note);
+	  }
+    }
+
+  /* Remove remaining note insns from the block, save them in
+     note_list.  These notes are restored at the end of
+     schedule_block ().  */
+  rm_other_notes (head, tail);
+
+  current_sched_info->queue_must_finish_empty = 1;
+
+  schedule_block (-1, n_insns);
+
+  /* Sanity check: verify that all region insns were scheduled.  */
+  if (sched_n_insns != n_insns)
+    abort ();
+  head = current_sched_info->head;
+  tail = current_sched_info->tail;
+
+  if (write_symbols != NO_DEBUG)
+    restore_line_notes (head, tail);
+
+  finish_deps_global ();
+}

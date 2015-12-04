@@ -1,0 +1,57 @@
+static int
+reg_dead_at_p (reg, insn)
+     rtx reg;
+     rtx insn;
+{
+  int block;
+  unsigned int i;
+
+  /* Set variables for reg_dead_at_p_1.  */
+  reg_dead_regno = REGNO (reg);
+  reg_dead_endregno = reg_dead_regno + (reg_dead_regno < FIRST_PSEUDO_REGISTER
+					? HARD_REGNO_NREGS (reg_dead_regno,
+							    GET_MODE (reg))
+					: 1);
+
+  reg_dead_flag = 0;
+
+  /* Check that reg isn't mentioned in NEWPAT_USED_REGS.  */
+  if (reg_dead_regno < FIRST_PSEUDO_REGISTER)
+    {
+      for (i = reg_dead_regno; i < reg_dead_endregno; i++)
+	if (TEST_HARD_REG_BIT (newpat_used_regs, i))
+	  return 0;
+    }
+
+  /* Scan backwards until we find a REG_DEAD note, SET, CLOBBER, label, or
+     beginning of function.  */
+  for (; insn && GET_CODE (insn) != CODE_LABEL && GET_CODE (insn) != BARRIER;
+       insn = prev_nonnote_insn (insn))
+    {
+      note_stores (PATTERN (insn), reg_dead_at_p_1, NULL);
+      if (reg_dead_flag)
+	return reg_dead_flag == 1 ? 1 : 0;
+
+      if (find_regno_note (insn, REG_DEAD, reg_dead_regno))
+	return 1;
+    }
+
+  /* Get the basic block number that we were in.  */
+  if (insn == 0)
+    block = 0;
+  else
+    {
+      for (block = 0; block < n_basic_blocks; block++)
+	if (insn == BLOCK_HEAD (block))
+	  break;
+
+      if (block == n_basic_blocks)
+	return 0;
+    }
+
+  for (i = reg_dead_regno; i < reg_dead_endregno; i++)
+    if (REGNO_REG_SET_P (BASIC_BLOCK (block)->global_live_at_start, i))
+      return 0;
+
+  return 1;
+}

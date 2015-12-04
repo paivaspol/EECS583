@@ -1,0 +1,320 @@
+void Get_Direct_Motion_Vectors ()
+{
+
+  int   block_x, block_y, pic_block_x, pic_block_y, opic_block_x, opic_block_y;
+  short ******all_mvs = img->all_mv;
+  int   mv_scale;
+  byte  **   moving_block;
+  short ****   co_located_mv;
+  short ***    co_located_ref_idx;
+  int64 ***    co_located_ref_id;
+  Macroblock *currMB = &img->mb_data[img->current_mb_nr];
+
+  if ((img->MbaffFrameFlag)&&(currMB->mb_field))
+  {
+    if(img->current_mb_nr%2)
+    {
+      moving_block = Co_located->bottom_moving_block;
+      co_located_mv = Co_located->bottom_mv;
+      co_located_ref_idx = Co_located->bottom_ref_idx;
+      co_located_ref_id = Co_located->bottom_ref_pic_id;
+    }
+    else
+    {
+      moving_block = Co_located->top_moving_block;
+      co_located_mv = Co_located->top_mv;
+      co_located_ref_idx = Co_located->top_ref_idx;
+      co_located_ref_id = Co_located->top_ref_pic_id;
+    }
+  }
+  else
+  {
+    moving_block = Co_located->moving_block;
+    co_located_mv = Co_located->mv;
+    co_located_ref_idx = Co_located->ref_idx;
+    co_located_ref_id = Co_located->ref_pic_id;
+  }
+
+  if (img->direct_spatial_mv_pred_flag)  //spatial direct mode copy from decoder
+  {
+    
+    short fw_rFrameL, fw_rFrameU, fw_rFrameUL, fw_rFrameUR;
+    short bw_rFrameL, bw_rFrameU, bw_rFrameUL, bw_rFrameUR; 
+    short fw_rFrame,bw_rFrame;
+    short pmvfw[2]={0,0},pmvbw[2]={0,0};
+
+    PixelPos mb_left, mb_up, mb_upleft, mb_upright;              
+    
+    getLuma4x4Neighbour(img->current_mb_nr,0,0,-1, 0,&mb_left);
+    getLuma4x4Neighbour(img->current_mb_nr,0,0, 0,-1,&mb_up);
+    getLuma4x4Neighbour(img->current_mb_nr,0,0,16, -1,&mb_upright);
+    getLuma4x4Neighbour(img->current_mb_nr,0,0, -1,-1,&mb_upleft);
+
+    if (!img->MbaffFrameFlag)
+    {
+      fw_rFrameL = mb_left.available ? enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y] : -1;
+      fw_rFrameU = mb_up.available ? enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] : -1;
+      fw_rFrameUL = mb_upleft.available ? enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y] : -1;
+      fw_rFrameUR = mb_upright.available ? enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] : fw_rFrameUL;      
+      
+      bw_rFrameL = mb_left.available ? enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] : -1;
+      bw_rFrameU = mb_up.available ? enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] : -1;
+      bw_rFrameUL = mb_upleft.available ? enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] : -1;
+      bw_rFrameUR = mb_upright.available ? enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] : bw_rFrameUL;      
+    }
+    else
+    {
+      if (currMB->mb_field)
+      {
+        fw_rFrameL = mb_left.available ? 
+          img->mb_data[mb_left.mb_addr].mb_field  || enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y] < 0? 
+          enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y] : 
+          enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y] * 2: -1;
+
+        fw_rFrameU = mb_up.available ? 
+          img->mb_data[mb_up.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] < 0? 
+          enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] : 
+        enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] * 2: -1;
+
+        fw_rFrameUL = mb_upleft.available ? 
+          img->mb_data[mb_upleft.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y] < 0?         
+          enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y] : 
+        enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y] *2: -1;      
+
+        fw_rFrameUR = mb_upright.available ? 
+          img->mb_data[mb_upright.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] < 0?
+          enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] : 
+        enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] * 2: fw_rFrameUL;      
+        
+        bw_rFrameL = mb_left.available ? 
+          img->mb_data[mb_left.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] < 0? 
+          enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] : 
+        enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] * 2: -1;
+
+        bw_rFrameU = mb_up.available ? 
+          img->mb_data[mb_up.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] < 0? 
+          enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] : 
+        enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] * 2: -1;
+
+        bw_rFrameUL = mb_upleft.available ? 
+          img->mb_data[mb_upleft.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] < 0?         
+          enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] : 
+        enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] *2: -1;      
+
+        bw_rFrameUR = mb_upright.available ? 
+          img->mb_data[mb_upright.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] < 0?         
+          enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] : 
+        enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] * 2: bw_rFrameUL;              
+      }
+      else
+      {
+        fw_rFrameL = mb_left.available ? 
+          img->mb_data[mb_left.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y]  < 0 ?
+          enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y] >> 1 : 
+        enc_picture->ref_idx[LIST_0][mb_left.pos_x][mb_left.pos_y]: -1;
+        
+        fw_rFrameU = mb_up.available ? 
+          img->mb_data[mb_up.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] < 0 ?
+          enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] >> 1 :  
+        enc_picture->ref_idx[LIST_0][mb_up.pos_x][mb_up.pos_y] : -1;
+        
+        fw_rFrameUL = mb_upleft.available ? 
+          img->mb_data[mb_upleft.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y] < 0 ?
+          enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y]>> 1 : 
+        enc_picture->ref_idx[LIST_0][mb_upleft.pos_x][mb_upleft.pos_y] : -1;      
+        
+        fw_rFrameUR = mb_upright.available ? 
+          img->mb_data[mb_upright.mb_addr].mb_field || enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] < 0 ? 
+          enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] >> 1 :  
+        enc_picture->ref_idx[LIST_0][mb_upright.pos_x][mb_upright.pos_y] : fw_rFrameUL;      
+        
+        bw_rFrameL = mb_left.available ? 
+          img->mb_data[mb_left.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] < 0 ?
+          enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] >> 1 :  
+        enc_picture->ref_idx[LIST_1][mb_left.pos_x][mb_left.pos_y] : -1;
+        
+        bw_rFrameU = mb_up.available ? 
+          img->mb_data[mb_up.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] < 0 ?
+          enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] >> 1 : 
+        enc_picture->ref_idx[LIST_1][mb_up.pos_x][mb_up.pos_y] : -1;
+        
+        bw_rFrameUL = mb_upleft.available ? 
+          img->mb_data[mb_upleft.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] < 0 ?
+          enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] >> 1 : 
+        enc_picture->ref_idx[LIST_1][mb_upleft.pos_x][mb_upleft.pos_y] : -1;      
+        
+        bw_rFrameUR = mb_upright.available ? 
+          img->mb_data[mb_upright.mb_addr].mb_field || enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] < 0 ?
+          enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] >> 1: 
+        enc_picture->ref_idx[LIST_1][mb_upright.pos_x][mb_upright.pos_y] : bw_rFrameUL;      
+      }
+    }
+    
+    fw_rFrame = (fw_rFrameL >= 0 && fw_rFrameU >= 0) ? min(fw_rFrameL,fw_rFrameU): max(fw_rFrameL,fw_rFrameU);
+    fw_rFrame = (fw_rFrame >= 0 && fw_rFrameUR >= 0) ? min(fw_rFrame,fw_rFrameUR): max(fw_rFrame,fw_rFrameUR);
+    
+    bw_rFrame = (bw_rFrameL >= 0 && bw_rFrameU >= 0) ? min(bw_rFrameL,bw_rFrameU): max(bw_rFrameL,bw_rFrameU);
+    bw_rFrame = (bw_rFrame >= 0 && bw_rFrameUR >= 0) ? min(bw_rFrame,bw_rFrameUR): max(bw_rFrame,bw_rFrameUR);        
+    
+    if (fw_rFrame >=0)
+      SetMotionVectorPredictor (pmvfw, enc_picture->ref_idx, enc_picture->mv, fw_rFrame, LIST_0, 0, 0, 16, 16);
+    
+    if (bw_rFrame >=0)
+      SetMotionVectorPredictor (pmvbw, enc_picture->ref_idx, enc_picture->mv, bw_rFrame, LIST_1, 0, 0, 16, 16);
+
+    for (block_y=0; block_y<4; block_y++)
+    {
+      pic_block_y  = (img->pix_y>>2) + block_y;
+      opic_block_y = (img->opix_y>>2) + block_y;
+      
+      for (block_x=0; block_x<4; block_x++)
+      {
+        pic_block_x  = (img->pix_x>>2) + block_x;
+        opic_block_x = (img->opix_x>>2) + block_x;
+
+        if (fw_rFrame >=0)
+        {
+          if (!fw_rFrame  && !moving_block[opic_block_x][opic_block_y])
+          {
+            all_mvs [block_x][block_y][LIST_0][0][0][0] = 0;
+            all_mvs [block_x][block_y][LIST_0][0][0][1] = 0;            
+            direct_ref_idx[LIST_0][pic_block_x][pic_block_y]=0;       
+          }
+          else
+          {
+            all_mvs [block_x][block_y][LIST_0][fw_rFrame][0][0] = pmvfw[0];
+            all_mvs [block_x][block_y][LIST_0][fw_rFrame][0][1] = pmvfw[1];
+            direct_ref_idx[LIST_0][pic_block_x][pic_block_y]=fw_rFrame;              
+          }
+        }
+        else
+        {
+          all_mvs [block_x][block_y][LIST_0][0][0][0] = 0;
+          all_mvs [block_x][block_y][LIST_0][0][0][1] = 0;
+          direct_ref_idx[LIST_0][pic_block_x][pic_block_y]=-1;          
+        }
+
+        if (bw_rFrame >=0)
+        {
+          if(bw_rFrame==0 && !moving_block[opic_block_x][opic_block_y])
+          {                  
+            all_mvs [block_x][block_y][LIST_1][0][0][0] = 0;
+            all_mvs [block_x][block_y][LIST_1][0][0][1] = 0;
+            direct_ref_idx[LIST_1][pic_block_x][pic_block_y]=bw_rFrame;     
+          }
+          else
+          {
+            all_mvs [block_x][block_y][LIST_1][bw_rFrame][0][0] = pmvbw[0];
+            all_mvs [block_x][block_y][LIST_1][bw_rFrame][0][1] = pmvbw[1];
+            direct_ref_idx[LIST_1][pic_block_x][pic_block_y]=bw_rFrame;
+          }               
+        }
+        else
+        {      
+          direct_ref_idx[LIST_1][pic_block_x][pic_block_y]=-1;
+
+          all_mvs [block_x][block_y][LIST_1][0][0][0] = 0;
+          all_mvs [block_x][block_y][LIST_1][0][0][1] = 0;
+        }
+        
+        if (fw_rFrame < 0 && bw_rFrame < 0)
+        {
+          direct_ref_idx[LIST_0][pic_block_x][pic_block_y] = 
+          direct_ref_idx[LIST_1][pic_block_x][pic_block_y] = 0;
+        }
+
+        if      (direct_ref_idx[LIST_1][pic_block_x][pic_block_y]==-1) direct_pdir[pic_block_x][pic_block_y] = 0;
+        else if (direct_ref_idx[LIST_0][pic_block_x][pic_block_y]==-1) direct_pdir[pic_block_x][pic_block_y] = 1;
+        else                                                           direct_pdir[pic_block_x][pic_block_y] = 2;
+      }
+    }
+  }
+  else
+  {
+    //temporal direct mode copy from decoder
+    for (block_y=0; block_y<4; block_y++)
+    {
+      pic_block_y  = (img->pix_y>>2) + block_y;
+      opic_block_y = (img->opix_y>>2) + block_y;
+      
+      for (block_x=0; block_x<4; block_x++)
+      {
+        int refList; 
+        int ref_idx; 
+
+        int list_offset = ((img->MbaffFrameFlag)&&(currMB->mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+
+        pic_block_x  = (img->pix_x>>2) + block_x;
+        opic_block_x = (img->opix_x>>2) + block_x;
+        
+        refList = (co_located_ref_idx[LIST_0][opic_block_x][opic_block_y]== -1 ? LIST_1 : LIST_0);
+        ref_idx = co_located_ref_idx[refList][opic_block_x][opic_block_y];
+              
+        // next P is intra mode
+        if (ref_idx==-1)
+        {
+          all_mvs [block_x][block_y][LIST_0][0][0][0] = 0;
+          all_mvs [block_x][block_y][LIST_0][0][0][1] = 0;
+          all_mvs [block_x][block_y][LIST_1][0][0][0] = 0;
+          all_mvs [block_x][block_y][LIST_1][0][0][1] = 0;
+          direct_ref_idx[LIST_0][pic_block_x][pic_block_y] = 0;
+          direct_ref_idx[LIST_1][pic_block_x][pic_block_y] = 0;
+          direct_pdir[pic_block_x][pic_block_y] = 2;
+        }
+        // next P is skip or inter mode
+        else 
+        {
+          int mapped_idx=INVALIDINDEX;
+          int iref; 
+
+          {
+            for (iref=0;iref<min(img->num_ref_idx_l0_active,listXsize[LIST_0+list_offset]);iref++)
+            {
+              if (enc_picture->ref_pic_num[LIST_0 +list_offset][iref]==co_located_ref_id[refList ][opic_block_x][opic_block_y])
+              {
+                mapped_idx=iref;
+                break;
+              }
+              else //! invalid index. Default to zero even though this case should not happen
+              {                        
+                mapped_idx=INVALIDINDEX;
+              }
+            }
+          }
+
+          if (mapped_idx !=INVALIDINDEX)
+          {
+            mv_scale = img->mvscale[LIST_0+list_offset][mapped_idx];
+            
+            if (mv_scale==9999)
+            {
+              // forward
+              all_mvs [block_x][block_y][LIST_0][0][0][0] = co_located_mv[refList][opic_block_x][opic_block_y][0];
+              all_mvs [block_x][block_y][LIST_0][0][0][1] = co_located_mv[refList][opic_block_x][opic_block_y][1];
+              // backward
+              all_mvs [block_x][block_y][LIST_1][       0][0][0] = 0;
+              all_mvs [block_x][block_y][LIST_1][       0][0][1] = 0;
+            }else
+            {
+              // forward
+              all_mvs [block_x][block_y][LIST_0][mapped_idx][0][0] = (mv_scale * co_located_mv[refList][opic_block_x][opic_block_y][0] + 128) >> 8;
+              all_mvs [block_x][block_y][LIST_0][mapped_idx][0][1] = (mv_scale * co_located_mv[refList][opic_block_x][opic_block_y][1] + 128) >> 8;
+              // backward
+              all_mvs [block_x][block_y][LIST_1][       0][0][0] = ((mv_scale - 256)* co_located_mv[refList][opic_block_x][opic_block_y][0] + 128) >> 8;
+              all_mvs [block_x][block_y][LIST_1][       0][0][1] = ((mv_scale - 256)* co_located_mv[refList][opic_block_x][opic_block_y][1] + 128) >> 8;
+            }
+            direct_ref_idx[LIST_0][pic_block_x][pic_block_y] = mapped_idx;
+            direct_ref_idx[LIST_1][pic_block_x][pic_block_y] = 0;
+            direct_pdir[pic_block_x][pic_block_y] = 2;
+          }
+          else
+          {
+            direct_ref_idx[LIST_0][pic_block_x][pic_block_y] = -1;
+            direct_ref_idx[LIST_1][pic_block_x][pic_block_y] = -1;
+            direct_pdir[pic_block_x][pic_block_y] = -1;
+          }
+        }
+      }
+    }
+  }
+}

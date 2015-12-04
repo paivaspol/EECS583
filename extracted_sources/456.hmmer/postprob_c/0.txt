@@ -1,0 +1,49 @@
+void
+P7EmitterPosterior(int L,
+		 struct plan7_s *hmm,
+		 struct dpmatrix_s *forward,
+		 struct dpmatrix_s *backward,
+		 struct dpmatrix_s *mx)
+{
+  int i;
+  int k;
+  int sc;
+
+  sc = backward->xmx[0][XMN];
+  
+  for (i = L; i >= 1; i--)
+    {
+      mx->xmx[i][XMC] = forward->xmx[i-1][XMC] + hmm->xsc[XTC][LOOP] + backward->xmx[i][XMC] - sc;
+      
+      mx->xmx[i][XMJ] = forward->xmx[i-1][XMJ] + hmm->xsc[XTJ][LOOP] + backward->xmx[i][XMJ] - sc;
+ 
+      mx->xmx[i][XMN] = forward->xmx[i-1][XMN] + hmm->xsc[XTN][LOOP] + backward->xmx[i][XMN] - sc;
+
+      mx->xmx[i][XMB] = mx->xmx[i][XME] = -INFTY;
+      
+      for (k = 1; k < hmm->M; k++) {
+	mx->mmx[i][k]  = backward->mmx[i][k];
+	mx->mmx[i][k] += ILogsum(ILogsum(forward->mmx[i-1][k-1] + hmm->tsc[TMM][k-1],
+					     forward->imx[i-1][k-1] + hmm->tsc[TIM][k-1]),
+				     ILogsum(forward->xmx[i-1][XMB] + hmm->bsc[k],
+					     forward->dmx[i-1][k-1] + hmm->tsc[TDM][k-1]));
+	mx->mmx[i][k] -= sc;
+	
+	mx->imx[i][k]  = backward->imx[i][k];
+	mx->imx[i][k] += ILogsum(forward->mmx[i-1][k] + hmm->tsc[TMI][k],
+				     forward->imx[i-1][k] + hmm->tsc[TII][k]);
+	mx->imx[i][k] -= sc;
+	
+	mx->dmx[i][k] = -INFTY;
+      }
+      mx->mmx[i][hmm->M]  = backward->mmx[i][hmm->M];
+      mx->mmx[i][hmm->M] += ILogsum(ILogsum(forward->mmx[i-1][hmm->M-1] + hmm->tsc[TMM][hmm->M-1],
+					   forward->imx[i-1][hmm->M-1] + hmm->tsc[TIM][hmm->M-1]),
+				   ILogsum(forward->xmx[i-1][XMB] + hmm->bsc[hmm->M],
+					   forward->dmx[i-1][hmm->M-1] + hmm->tsc[TDM][hmm->M-1]));
+      mx->mmx[i][hmm->M] -= sc;
+
+      mx->imx[i][hmm->M] = mx->dmx[i][hmm->M] = mx->dmx[i][0] = -INFTY;
+      
+    }
+}

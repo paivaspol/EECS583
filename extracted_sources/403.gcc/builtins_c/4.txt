@@ -1,0 +1,25 @@
+static int
+target_char_cast (cst, p)
+     tree cst;
+     char *p;
+{
+  unsigned HOST_WIDE_INT val, hostval;
+
+  if (!host_integerp (cst, 1)
+      || CHAR_TYPE_SIZE > HOST_BITS_PER_WIDE_INT)
+    return 1;
+
+  val = tree_low_cst (cst, 1);
+  if (CHAR_TYPE_SIZE < HOST_BITS_PER_WIDE_INT)
+    val &= (((unsigned HOST_WIDE_INT) 1) << CHAR_TYPE_SIZE) - 1;
+
+  hostval = val;
+  if (HOST_BITS_PER_CHAR < HOST_BITS_PER_WIDE_INT)
+    hostval &= (((unsigned HOST_WIDE_INT) 1) << HOST_BITS_PER_CHAR) - 1;
+
+  if (val != hostval)
+    return 1;
+
+  *p = hostval;
+  return 0;
+}

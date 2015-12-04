@@ -1,0 +1,14 @@
+static I32
+cmpindir_desc(pTHX_ gptr a, gptr b)
+{
+    I32 sense;
+    gptr *ap = (gptr *)a;
+    gptr *bp = (gptr *)b;
+
+    /* Reverse the default */
+    if ((sense = PL_sort_RealCmp(aTHX_ *ap, *bp)))
+	return -sense;
+    /* But don't reverse the stability test.  */
+    return (ap > bp) ? 1 : ((ap < bp) ? -1 : 0);
+
+}

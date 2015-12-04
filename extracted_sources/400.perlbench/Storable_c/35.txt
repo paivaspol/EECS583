@@ -1,0 +1,84 @@
+static int magic_write(pTHX_ stcxt_t *cxt)
+{
+    /*
+     * Starting with 0.6, the "use_network_order" byte flag is also used to
+     * indicate the version number of the binary image, encoded in the upper
+     * bits. The bit 0 is always used to indicate network order.
+     */
+    /*
+     * Starting with 0.7, a full byte is dedicated to the minor version of
+     * the binary format, which is incremented only when new markers are
+     * introduced, for instance, but when backward compatibility is preserved.
+     */
+
+    /* Make these at compile time.  The WRITE() macro is sufficiently complex
+       that it saves about 200 bytes doing it this way and only using it
+       once.  */
+    static const unsigned char network_file_header[] = {
+        MAGICSTR_BYTES,
+        (STORABLE_BIN_MAJOR << 1) | 1,
+        STORABLE_BIN_WRITE_MINOR
+    };
+    static const unsigned char file_header[] = {
+        MAGICSTR_BYTES,
+        (STORABLE_BIN_MAJOR << 1) | 0,
+        STORABLE_BIN_WRITE_MINOR,
+        /* sizeof the array includes the 0 byte at the end:  */
+        (char) sizeof (byteorderstr) - 1,
+        BYTEORDER_BYTES,
+        (unsigned char) sizeof(int),
+	(unsigned char) sizeof(long),
+        (unsigned char) sizeof(char *),
+	(unsigned char) sizeof(NV)
+    };
+#ifdef USE_56_INTERWORK_KLUDGE
+    static const unsigned char file_header_56[] = {
+        MAGICSTR_BYTES,
+        (STORABLE_BIN_MAJOR << 1) | 0,
+        STORABLE_BIN_WRITE_MINOR,
+        /* sizeof the array includes the 0 byte at the end:  */
+        (char) sizeof (byteorderstr_56) - 1,
+        BYTEORDER_BYTES_56,
+        (unsigned char) sizeof(int),
+	(unsigned char) sizeof(long),
+        (unsigned char) sizeof(char *),
+	(unsigned char) sizeof(NV)
+    };
+#endif
+    const unsigned char *header;
+    SSize_t length;
+
+    TRACEME(("magic_write on fd=%d", cxt->fio ? PerlIO_fileno(cxt->fio) : -1));
+
+    if (cxt->netorder) {
+        header = network_file_header;
+        length = sizeof (network_file_header);
+    } else {
+#ifdef USE_56_INTERWORK_KLUDGE
+        if (SvTRUE(get_sv("Storable::interwork_56_64bit", TRUE))) {
+            header = file_header_56;
+            length = sizeof (file_header_56);
+        } else
+#endif
+        {
+            header = file_header;
+            length = sizeof (file_header);
+        }
+    }        
+
+    if (!cxt->fio) {
+        /* sizeof the array includes the 0 byte at the end.  */
+        header += sizeof (magicstr) - 1;
+        length -= sizeof (magicstr) - 1;
+    }        
+
+    WRITE( (unsigned char*) header, length);
+
+    if (!cxt->netorder) {
+	TRACEME(("ok (magic_write byteorder = 0x%lx [%d], I%d L%d P%d D%d)",
+		 (unsigned long) BYTEORDER, (int) sizeof (byteorderstr) - 1,
+		 (int) sizeof(int), (int) sizeof(long),
+		 (int) sizeof(char *), (int) sizeof(NV)));
+    }
+    return 0;
+}

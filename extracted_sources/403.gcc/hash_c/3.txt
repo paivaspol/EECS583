@@ -1,0 +1,14 @@
+void
+hash_traverse (table, func, info)
+     struct hash_table *table;
+     bool (*func) PARAMS ((struct hash_entry *, hash_table_key));
+     PTR info;
+{
+  unsigned int i;
+  struct hash_entry *p;
+
+  for (i = 0; i < table->size; i++)
+    for (p = table->table[i]; p != 0; p = p->next)
+      if (! (*func) (p, info))
+	return;
+}

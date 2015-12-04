@@ -1,0 +1,71 @@
+static void
+expand_goto_internal (body, label, last_insn)
+     tree body;
+     rtx label;
+     rtx last_insn;
+{
+  struct nesting *block;
+  rtx stack_level = 0;
+
+  if (GET_CODE (label) != CODE_LABEL)
+    abort ();
+
+  /* If label has already been defined, we can tell now
+     whether and how we must alter the stack level.  */
+
+  if (PREV_INSN (label) != 0)
+    {
+      /* Find the innermost pending block that contains the label.
+	 (Check containment by comparing insn-uids.)
+	 Then restore the outermost stack level within that block,
+	 and do cleanups of all blocks contained in it.  */
+      for (block = block_stack; block; block = block->next)
+	{
+	  if (INSN_UID (block->data.block.first_insn) < INSN_UID (label))
+	    break;
+	  if (block->data.block.stack_level != 0)
+	    stack_level = block->data.block.stack_level;
+	  /* Execute the cleanups for blocks we are exiting.  */
+	  if (block->data.block.cleanups != 0)
+	    {
+	      expand_cleanups (block->data.block.cleanups, NULL_TREE, 1, 1);
+	      do_pending_stack_adjust ();
+	    }
+	}
+
+      if (stack_level)
+	{
+	  /* Ensure stack adjust isn't done by emit_jump, as this
+	     would clobber the stack pointer.  This one should be
+	     deleted as dead by flow.  */
+	  clear_pending_stack_adjust ();
+	  do_pending_stack_adjust ();
+
+	  /* Don't do this adjust if it's to the end label and this function
+	     is to return with a depressed stack pointer.  */
+	  if (label == return_label
+	      && (((TREE_CODE (TREE_TYPE (current_function_decl))
+		   == FUNCTION_TYPE)
+		   && (TYPE_RETURNS_STACK_DEPRESSED
+		       (TREE_TYPE (current_function_decl))))))
+	    ;
+	  else
+	    emit_stack_restore (SAVE_BLOCK, stack_level, NULL_RTX);
+	}
+
+      if (body != 0 && DECL_TOO_LATE (body))
+	error ("jump to `%s' invalidly jumps into binding contour",
+	       IDENTIFIER_POINTER (DECL_NAME (body)));
+    }
+  /* Label not yet defined: may need to put this goto
+     on the fixup list.  */
+  else if (! expand_fixup (body, label, last_insn))
+    {
+      /* No fixup needed.  Record that the label is the target
+	 of at least one goto that has no fixup.  */
+      if (body != 0)
+	TREE_ADDRESSABLE (body) = 1;
+    }
+
+  emit_jump (label);
+}

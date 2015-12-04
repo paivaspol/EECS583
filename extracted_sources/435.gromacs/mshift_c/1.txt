@@ -1,0 +1,54 @@
+static void mk_igraph(t_graph *g,t_functype ftype[],t_ilist *il,
+		      int natoms,bool bAll)
+{
+  t_iatom *ia,waterh[3],*iap;
+  t_iatom tp;
+  int     i,j,np,nbonded;
+  int     end;
+
+  end=il->nr;
+  ia=il->iatoms;
+
+  i = 0;
+  while (i < end) {
+    tp=ftype[ia[0]];
+    np=interaction_function[tp].nratoms;
+    
+    if ((ia[1] < natoms) && (interaction_function[tp].flags & IF_CONNECT)) {
+      if (ia[np] >= natoms)
+	fatal_error(0,"Molecule in topology has atom numbers below and "
+		    "above natoms (%d).\n"
+		    "You are probably trying to use a trajectory which does "
+		    "not match the first %d atoms of the run input file.\n"
+		    "You can make a matching run input file with tpbconv.",
+		    natoms,natoms);
+      if (tp == F_SETTLE) {
+	/* Bond all the atoms in the settle */
+	nbonded = 3;
+	waterh[0] = ia[1];
+	waterh[1] = ia[1]+1;
+	waterh[2] = ia[1]+2;
+	iap = waterh;
+      } else {
+	if (interaction_function[tp].flags & IF_DUMMY)
+	  /* Bond a dummy only to the first constructing atom */
+	  nbonded = 2;
+	else
+	  nbonded = np;
+	iap = &(ia[1]);
+      }
+      if (bAll)
+	add_gbond(g,iap,nbonded);
+      else {
+	/* Check whether all atoms are bonded now! */
+	for(j=0; j<nbonded; j++)
+	  if (g->nedge[iap[j]-g->start] == 0)
+	    break;
+	if (j < nbonded)
+	  add_gbond(g,iap,nbonded);
+      }
+    }
+    ia+=np+1;
+    i+=np+1;
+  }
+}

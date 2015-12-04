@@ -1,0 +1,18 @@
+static void
+alloc_expr_hash_table (n_insns)
+     unsigned int n_insns;
+{
+  int n;
+
+  expr_hash_table_size = n_insns / 2;
+  /* Make sure the amount is usable.  */
+  if (expr_hash_table_size < 11)
+    expr_hash_table_size = 11;
+
+  /* Attempt to maintain efficient use of hash table.
+     Making it an odd number is simplest for now.
+     ??? Later take some measurements.  */
+  expr_hash_table_size |= 1;
+  n = expr_hash_table_size * sizeof (struct expr *);
+  expr_hash_table = (struct expr **) gmalloc (n);
+}

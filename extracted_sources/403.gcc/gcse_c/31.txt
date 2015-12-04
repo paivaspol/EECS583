@@ -1,0 +1,42 @@
+static void
+dump_hash_table (file, name, table, table_size, total_size)
+     FILE *file;
+     const char *name;
+     struct expr **table;
+     int table_size, total_size;
+{
+  int i;
+  /* Flattened out table, so it's printed in proper order.  */
+  struct expr **flat_table;
+  unsigned int *hash_val;
+  struct expr *expr;
+
+  flat_table 
+    = (struct expr **) xcalloc (total_size, sizeof (struct expr *));
+  hash_val = (unsigned int *) xmalloc (total_size * sizeof (unsigned int));
+
+  for (i = 0; i < table_size; i++)
+    for (expr = table[i]; expr != NULL; expr = expr->next_same_hash)
+      {
+	flat_table[expr->bitmap_index] = expr;
+	hash_val[expr->bitmap_index] = i;
+      }
+
+  fprintf (file, "%s hash table (%d buckets, %d entries)\n",
+	   name, table_size, total_size);
+
+  for (i = 0; i < total_size; i++)
+    if (flat_table[i] != 0)
+      {
+	expr = flat_table[i];
+	fprintf (file, "Index %d (hash value %d)\n  ",
+		 expr->bitmap_index, hash_val[i]);
+	print_rtl (file, expr->expr);
+	fprintf (file, "\n");
+      }
+
+  fprintf (file, "\n");
+
+  free (flat_table);
+  free (hash_val);
+}

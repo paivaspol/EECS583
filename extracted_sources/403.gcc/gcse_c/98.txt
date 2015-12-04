@@ -1,0 +1,33 @@
+static void
+add_label_notes (x, insn)
+     rtx x;
+     rtx insn;
+{
+  enum rtx_code code = GET_CODE (x);
+  int i, j;
+  const char *fmt;
+
+  if (code == LABEL_REF && !LABEL_REF_NONLOCAL_P (x))
+    {
+      /* This code used to ignore labels that referred to dispatch tables to
+	 avoid flow generating (slighly) worse code.
+
+	 We no longer ignore such label references (see LABEL_REF handling in
+	 mark_jump_label for additional information).  */
+
+      REG_NOTES (insn) = gen_rtx_INSN_LIST (REG_LABEL, XEXP (x, 0),
+					    REG_NOTES (insn));
+      if (LABEL_P (XEXP (x, 0)))
+        LABEL_NUSES (XEXP (x, 0))++;
+      return;
+    }
+
+  for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	add_label_notes (XEXP (x, i), insn);
+      else if (fmt[i] == 'E')
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  add_label_notes (XVECEXP (x, i, j), insn);
+    }
+}

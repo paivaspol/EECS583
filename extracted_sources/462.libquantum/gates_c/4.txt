@@ -1,0 +1,23 @@
+void
+quantum_sigma_y(int target, quantum_reg *reg)
+{
+  int i;
+
+  if(quantum_objcode_put(SIGMA_Y, target))
+    return;
+  
+  for(i=0; i<reg->size;i++)
+    {
+      /* Flip the target bit of each basis state and multiply with 
+	 +/- i */
+
+      reg->node[i].state ^= ((MAX_UNSIGNED) 1 << target);
+      
+      if(reg->node[i].state & ((MAX_UNSIGNED) 1 << target))
+	reg->node[i].amplitude *= IMAGINARY;
+      else
+	reg->node[i].amplitude *= -IMAGINARY;
+    }
+
+  quantum_decohere(reg);
+}

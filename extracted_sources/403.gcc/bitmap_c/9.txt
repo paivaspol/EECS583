@@ -1,0 +1,19 @@
+int
+bitmap_bit_p (head, bit)
+     bitmap head;
+     int bit;
+{
+  bitmap_element *ptr;
+  unsigned bit_num;
+  unsigned word_num;
+
+  ptr = bitmap_find_bit (head, bit);
+  if (ptr == 0)
+    return 0;
+
+  bit_num = bit % (unsigned) HOST_BITS_PER_WIDE_INT;
+  word_num
+    = ((bit / (unsigned) HOST_BITS_PER_WIDE_INT) % BITMAP_ELEMENT_WORDS);
+
+  return (ptr->bits[word_num] >> bit_num) & 1;
+}

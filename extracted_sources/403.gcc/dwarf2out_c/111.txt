@@ -1,0 +1,25 @@
+static void
+reverse_die_lists (die)
+     dw_die_ref die;
+{
+  dw_die_ref c, cp, cn;
+  dw_attr_ref a, ap, an;
+
+  for (a = die->die_attr, ap = 0; a; a = an)
+    {
+      an = a->dw_attr_next;
+      a->dw_attr_next = ap;
+      ap = a;
+    }
+
+  die->die_attr = ap;
+
+  for (c = die->die_child, cp = 0; c; c = cn)
+    {
+      cn = c->die_sib;
+      c->die_sib = cp;
+      cp = c;
+    }
+
+  die->die_child = cp;
+}

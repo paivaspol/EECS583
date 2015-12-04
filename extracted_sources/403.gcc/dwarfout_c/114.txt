@@ -1,0 +1,35 @@
+static void
+output_decls_for_scope (stmt, depth)
+     tree stmt;
+     int depth;
+{
+  /* Ignore blocks never really used to make RTL.  */
+
+  if (! stmt || ! TREE_USED (stmt))
+    return;
+
+  /* Output the DIEs to represent all of the data objects, functions,
+     typedefs, and tagged types declared directly within this block
+     but not within any nested sub-blocks.  */
+
+  {
+    tree decl;
+
+    for (decl = BLOCK_VARS (stmt); decl; decl = TREE_CHAIN (decl))
+      output_decl (decl, stmt);
+  }
+
+  output_pending_types_for_scope (stmt);
+
+  /* Output the DIEs to represent all sub-blocks (and the items declared
+     therein) of this block.	 */
+
+  {
+    tree subblocks;
+
+    for (subblocks = BLOCK_SUBBLOCKS (stmt);
+         subblocks;
+         subblocks = BLOCK_CHAIN (subblocks))
+      output_block (subblocks, depth + 1);
+  }
+}

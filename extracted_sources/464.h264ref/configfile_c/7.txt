@@ -1,0 +1,418 @@
+static void PatchInp ()
+{
+  int bitdepth_qp_scale = 6*(input->BitDepthLuma - 8);
+  
+  // These variables are added for FMO
+  FILE * sgfile=NULL;
+  int i;
+  int frame_mb_only;
+  int mb_width, mb_height, mapunit_height;
+
+//  input->BitDepthChroma = input->BitDepthLuma;
+  input->LowPassForIntra8x8 = 1;                    //low pass is always used
+
+  TestEncoderParams(bitdepth_qp_scale);
+
+  if (input->FrameRate == 0.0)
+    input->FrameRate = INIT_FRAME_RATE;
+
+  // Set block sizes
+
+    input->blc_size[0][0]=16;
+    input->blc_size[0][1]=16;
+
+    input->blc_size[1][0]=16;
+    input->blc_size[1][1]=16;
+
+    input->blc_size[2][0]=16;
+    input->blc_size[2][1]= 8;
+
+    input->blc_size[3][0]= 8;
+    input->blc_size[3][1]=16;
+
+    input->blc_size[4][0]= 8;
+    input->blc_size[4][1]= 8;
+
+    input->blc_size[5][0]= 8;
+    input->blc_size[5][1]= 4;
+
+    input->blc_size[6][0]= 4;
+    input->blc_size[6][1]= 8;
+
+    input->blc_size[7][0]= 4;
+    input->blc_size[7][1]= 4;
+
+
+    input->part_size[0][0] = 4;
+    input->part_size[0][1] = 4;
+    input->part_size[1][0] = 4;
+    input->part_size[1][1] = 4;
+    input->part_size[2][0] = 4;
+    input->part_size[2][1] = 2;
+    input->part_size[3][0] = 2;
+    input->part_size[3][1] = 4;
+    input->part_size[4][0] = 2;
+    input->part_size[4][1] = 2;
+    input->part_size[5][0] = 2;
+    input->part_size[5][1] = 1;
+    input->part_size[6][0] = 1;
+    input->part_size[6][1] = 2;
+    input->part_size[7][0] = 1;
+    input->part_size[7][1] = 1;
+
+
+  // set proper log2_max_frame_num_minus4.
+  {
+    int storedBplus1 = (input->BRefPictures ) ? input->successive_Bframe + 1: 1;
+
+//    log2_max_frame_num_minus4 = max( (int)(CeilLog2(input->no_frames * storedBplus1))-4, 0);
+    if (input->Log2MaxFrameNum < 4)
+      log2_max_frame_num_minus4 = max( (int)(CeilLog2(input->no_frames *storedBplus1 ))-4, 0);
+    else 
+      log2_max_frame_num_minus4 = input->Log2MaxFrameNum - 4;
+  
+  }
+
+  log2_max_pic_order_cnt_lsb_minus4 = max( (int)(CeilLog2( 2*input->no_frames * (input->jumpd + 1))) -4, 0);
+
+  // B picture consistency check
+  if(input->successive_Bframe > input->jumpd)
+  {
+    snprintf(errortext, ET_SIZE, "Number of B-frames %d can not exceed the number of frames skipped", input->successive_Bframe);
+    error (errortext, 400);
+  }
+
+  // Direct Mode consistency check
+  if(input->successive_Bframe && input->direct_spatial_mv_pred_flag != DIR_SPATIAL && input->direct_spatial_mv_pred_flag != DIR_TEMPORAL)
+  {
+    snprintf(errortext, ET_SIZE, "Unsupported direct mode=%d, use TEMPORAL=0 or SPATIAL=1", input->direct_spatial_mv_pred_flag);
+    error (errortext, 400);
+  }
+
+  if (input->PicInterlace>0 || input->MbInterlace>0)
+  {
+    if (input->directInferenceFlag==0)
+      printf("\nDirectInferenceFlag set to 1 due to interlace coding.");
+    input->directInferenceFlag=1;
+  }
+
+  if (input->PicInterlace>0)
+  {
+    if (input->IntraBottom!=0 && input->IntraBottom!=1)
+    {
+      snprintf(errortext, ET_SIZE, "Incorrect value %d for IntraBottom. Use 0 (disable) or 1 (enable).", input->IntraBottom);
+      error (errortext, 400);
+    }
+  } 
+  // Cabac/UVLC consistency check
+  if (input->symbol_mode != UVLC && input->symbol_mode != CABAC)
+  {
+    snprintf (errortext, ET_SIZE, "Unsupported symbol mode=%d, use UVLC=0 or CABAC=1",input->symbol_mode);
+    error (errortext, 400);
+  }
+
+  // Open Files
+  if ((p_in=open(input->infile, OPENFLAGS_READ))==-1)
+  {
+    snprintf(errortext, ET_SIZE, "Input file %s does not exist",input->infile);
+    error (errortext, 500);
+  }
+
+  if (strlen (input->ReconFile) > 0 && (p_dec=open(input->ReconFile, OPENFLAGS_WRITE, OPEN_PERMISSIONS))==-1)
+  {
+    snprintf(errortext, ET_SIZE, "Error open file %s", input->ReconFile);
+    error (errortext, 500);
+  }
+
+  if (strlen (input->TraceFile) > 0 && (p_trace=fopen(input->TraceFile,"w"))==NULL)
+  {
+    snprintf(errortext, ET_SIZE, "Error open file %s", input->TraceFile);
+    error (errortext, 500);
+  }
+
+
+  // consistency check size information
+  /*
+  if (input->img_height % 16 != 0 || input->img_width % 16 != 0)
+  {
+    snprintf(errortext, ET_SIZE, "Unsupported image format x=%d,y=%d, must be a multiple of 16",input->img_width,input->img_height);
+    error (errortext, 400);
+  }
+
+  if (input->PicInterlace || input->MbInterlace)
+  {
+    if (input->img_height % 32 != 0 )
+    { 
+      snprintf(errortext, ET_SIZE, "Unsupported image format y=%d, must be a multiple of 32 for adaptive frame/field",input->img_height);
+      error (errortext, 400);
+    }
+  }
+ */
+  if (input->img_width % 16 != 0)
+  {
+    img->auto_crop_right = 16-(input->img_width % 16);
+  }
+  else
+  {
+    img->auto_crop_right=0;
+  }
+  if (input->PicInterlace || input->MbInterlace)
+  {
+    if (input->img_height % 2 != 0)
+    {
+      error ("even number of lines required for interlaced coding", 500);
+    }
+    if (input->img_height % 32 != 0)
+    {
+      img->auto_crop_bottom = 32-(input->img_height % 32);
+    }
+    else
+    {
+      img->auto_crop_bottom=0;
+    }
+  }
+  else
+  {
+    if (input->img_height % 16 != 0)
+    {
+      img->auto_crop_bottom = 16-(input->img_height % 16);
+    }
+    else
+    {
+      img->auto_crop_bottom=0;
+    }
+  }
+  if (img->auto_crop_bottom || img->auto_crop_right)
+  {
+    printf ("Warning: Automatical cropping activated: Coded frame Size: %dx%d\n", input->img_width+img->auto_crop_right, input->img_height+img->auto_crop_bottom);
+  }
+
+  /*
+  // add check for MAXSLICEGROUPIDS
+  if(input->num_slice_groups_minus1>=MAXSLICEGROUPIDS)
+  {
+    snprintf(errortext, ET_SIZE, "num_slice_groups_minus1 exceeds MAXSLICEGROUPIDS");
+    error (errortext, 500);
+  }
+  */
+
+  // Following codes are to read slice group configuration from SliceGroupConfigFileName for slice group type 0,2 or 6
+  if( (input->num_slice_groups_minus1!=0)&&
+    ((input->slice_group_map_type == 0) || (input->slice_group_map_type == 2) || (input->slice_group_map_type == 6)) )
+  { 
+    if (strlen (input->SliceGroupConfigFileName) > 0 && (sgfile=fopen(input->SliceGroupConfigFileName,"r"))==NULL)
+    {
+      snprintf(errortext, ET_SIZE, "Error open file %s", input->SliceGroupConfigFileName);
+      error (errortext, 500);
+    }
+    else
+    {
+      if (input->slice_group_map_type == 0) 
+      {
+        input->run_length_minus1=(int *)malloc(sizeof(int)*(input->num_slice_groups_minus1+1));
+        if (NULL==input->run_length_minus1) 
+          no_mem_exit("PatchInp: input->run_length_minus1");
+        
+        // each line contains one 'run_length_minus1' value
+        for(i=0;i<=input->num_slice_groups_minus1;i++)
+        {
+          fscanf(sgfile,"%d",(input->run_length_minus1+i));
+          fscanf(sgfile,"%*[^\n]");
+          
+        }
+      }
+      else if (input->slice_group_map_type == 2)
+      {
+        input->top_left=(int *)malloc(sizeof(int)*input->num_slice_groups_minus1);
+        input->bottom_right=(int *)malloc(sizeof(int)*input->num_slice_groups_minus1);
+        if (NULL==input->top_left) 
+          no_mem_exit("PatchInp: input->top_left");
+        if (NULL==input->bottom_right) 
+          no_mem_exit("PatchInp: input->bottom_right");
+        
+        // every two lines contain 'top_left' and 'bottom_right' value
+        for(i=0;i<input->num_slice_groups_minus1;i++)
+        {
+          fscanf(sgfile,"%d",(input->top_left+i));
+          fscanf(sgfile,"%*[^\n]");
+          fscanf(sgfile,"%d",(input->bottom_right+i));
+          fscanf(sgfile,"%*[^\n]");
+        }
+        
+      }
+      else if (input->slice_group_map_type == 6)
+      {
+        int tmp;
+
+        frame_mb_only = !(input->PicInterlace || input->MbInterlace);
+        mb_width= (input->img_width+img->auto_crop_right)/16;
+        mb_height= (input->img_height+img->auto_crop_bottom)/16;
+        mapunit_height=mb_height/(2-frame_mb_only);
+        
+        input->slice_group_id=(byte * ) malloc(sizeof(byte)*mapunit_height*mb_width);
+        if (NULL==input->slice_group_id) 
+          no_mem_exit("PatchInp: input->slice_group_id");
+        
+        // each line contains slice_group_id for one Macroblock
+        for (i=0;i<mapunit_height*mb_width;i++)
+        {
+          fscanf(sgfile,"%d", &tmp);
+          input->slice_group_id[i]= (byte) tmp;
+          if ( *(input->slice_group_id+i) > input->num_slice_groups_minus1 )
+          {
+            snprintf(errortext, ET_SIZE, "Error read slice group information from file %s", input->SliceGroupConfigFileName);
+            error (errortext, 500);
+          }
+          fscanf(sgfile,"%*[^\n]");
+        }
+      }
+      fclose(sgfile);
+      
+    }
+  }
+  
+  
+  if (input->PyramidRefReorder && input->PyramidCoding && (input->PicInterlace || input->MbInterlace))
+  {
+    snprintf(errortext, ET_SIZE, "PyramidRefReorder Not supported with Interlace encoding methods\n");
+    error (errortext, 400);
+  }
+
+  if (input->PocMemoryManagement && input->PyramidCoding && (input->PicInterlace || input->MbInterlace))
+  {
+    snprintf(errortext, ET_SIZE, "PocMemoryManagement not supported with Interlace encoding methods\n");
+    error (errortext, 400);
+  }
+
+
+  // frame/field consistency check
+  if (input->PicInterlace != FRAME_CODING && input->PicInterlace != ADAPTIVE_CODING && input->PicInterlace != FIELD_CODING)
+  {
+    snprintf (errortext, ET_SIZE, "Unsupported PicInterlace=%d, use frame based coding=0 or field based coding=1 or adaptive=2",input->PicInterlace);
+    error (errortext, 400);
+  }
+
+  // frame/field consistency check
+  if (input->MbInterlace != FRAME_CODING && input->MbInterlace != ADAPTIVE_CODING && input->MbInterlace != FIELD_CODING)
+  {
+    snprintf (errortext, ET_SIZE, "Unsupported MbInterlace=%d, use frame based coding=0 or field based coding=1 or adaptive=2",input->MbInterlace);
+    error (errortext, 400);
+  }
+   
+ 
+  if ((!input->rdopt)&&(input->MbInterlace))
+  {
+    snprintf(errortext, ET_SIZE, "MB AFF is not compatible with non-rd-optimized coding.");
+    error (errortext, 500);
+  }
+
+  if (input->rdopt>1)
+  {
+    snprintf(errortext, ET_SIZE, "RDOptimization=2 mode has been deactivated do to diverging of real and simulated decoders.");
+    error (errortext, 500);
+  }
+
+  // Tian Dong: May 31, 2002
+  // The number of frames in one sub-seq in enhanced layer should not exceed
+  // the number of reference frame number.
+  if ( input->NumFramesInELSubSeq >= input->num_ref_frames || input->NumFramesInELSubSeq < 0 )
+  {
+    snprintf(errortext, ET_SIZE, "NumFramesInELSubSeq (%d) is out of range [0,%d).", input->NumFramesInELSubSeq, input->num_ref_frames);
+    error (errortext, 500);
+  }
+  // Tian Dong: Enhanced GOP is not supported in bitstream mode. September, 2002
+  if ( input->NumFramesInELSubSeq > 0 && input->of_mode == PAR_OF_ANNEXB )
+  {
+    snprintf(errortext, ET_SIZE, "Enhanced GOP is not supported in bitstream mode and RTP mode yet.");
+    error (errortext, 500);
+  }
+  // Tian Dong (Sept 2002)
+  // The AFF is not compatible with spare picture for the time being.
+  if ((input->PicInterlace || input->MbInterlace) && input->SparePictureOption == TRUE)
+  {
+    snprintf(errortext, ET_SIZE, "AFF is not compatible with spare picture.");
+    error (errortext, 500);
+  }
+
+  // Only the RTP mode is compatible with spare picture for the time being.
+  if (input->of_mode != PAR_OF_RTP && input->SparePictureOption == TRUE)
+  {
+    snprintf(errortext, ET_SIZE, "Only RTP output mode is compatible with spare picture features.");
+    error (errortext, 500);
+  }
+
+  if( (input->WeightedPrediction > 0 || input->WeightedBiprediction > 0) && (input->MbInterlace))
+  {
+    printf("Weighted prediction coding is not supported for MB AFF currently.");
+    error (errortext, 500);
+  }
+  if ( input->NumFramesInELSubSeq > 0 && input->WeightedPrediction > 0)
+  {
+    snprintf(errortext, ET_SIZE, "Enhanced GOP is not supported in weighted prediction coding mode yet.");
+    error (errortext, 500);
+  }
+
+  //! the number of slice groups is forced to be 1 for slice group type 3-5
+  if(input->num_slice_groups_minus1 > 0)
+  {
+    if( (input->slice_group_map_type >= 3) && (input->slice_group_map_type<=5) ) 
+      input->num_slice_groups_minus1 = 1;
+  }
+  
+  // Rate control
+  if(input->RCEnable)
+  {
+    if ( ((input->img_height+img->auto_crop_bottom)*(input->img_width+img->auto_crop_right)/256)%input->basicunit!=0)
+    {
+      snprintf(errortext, ET_SIZE, "Basic unit is not defined correctly.");
+      error (errortext, 500);
+    }
+  }
+
+  if ((input->successive_Bframe)&&(input->BRefPictures)&&(input->idr_enable)&&(input->intra_period)&&(input->pic_order_cnt_type!=0))
+  {
+    error("Stored B pictures combined with IDR pictures only supported in Picture Order Count type 0\n",-1000);
+  }
+  
+  if( !input->direct_spatial_mv_pred_flag && input->num_ref_frames<2 && input->successive_Bframe >0)
+    error("temporal direct needs at least 2 ref frames\n",-1000);
+
+  // frext
+  if(input->AllowTransform8x8 && input->sp_periodicity /*SP-frames*/)
+  {
+    snprintf(errortext, ET_SIZE, "\nThe new 8x8 mode is not implemented for sp-frames.");
+    error (errortext, 500);
+  }
+
+  if(input->AllowTransform8x8 && (input->ProfileIDC<FREXT_HP || input->ProfileIDC>FREXT_Hi444))
+  {
+    snprintf(errortext, ET_SIZE, "\nAllowTransform8x8 may be used only with ProfileIDC %d to %d.", FREXT_HP, FREXT_Hi444);
+    error (errortext, 500);
+  }
+  if(input->ScalingMatrixPresentFlag && (input->ProfileIDC<FREXT_HP || input->ProfileIDC>FREXT_Hi444))
+  {
+    snprintf(errortext, ET_SIZE, "\nScalingMatrixPresentFlag may be used only with ProfileIDC %d to %d.", FREXT_HP, FREXT_Hi444);
+    error (errortext, 500);
+  }
+
+  if(input->yuv_format==YUV422 && input->ProfileIDC < FREXT_Hi422)
+  {
+    snprintf(errortext, ET_SIZE, "\nFRExt Profile(YUV Format) Error!\nYUV422 can be used only with ProfileIDC %d or %d\n",FREXT_Hi422, FREXT_Hi444);
+    error (errortext, 500);
+  }
+  if(input->yuv_format==YUV444 && input->ProfileIDC < FREXT_Hi444)
+  {
+    snprintf(errortext, ET_SIZE, "\nFRExt Profile(YUV Format) Error!\nYUV444 can be used only with ProfileIDC %d.\n",FREXT_Hi444);
+    error (errortext, 500);
+  }
+  
+  // Residue Color Transform
+  if(input->yuv_format!=YUV444 && input->residue_transform_flag)
+  {
+    snprintf(errortext, ET_SIZE, "\nResidue color transform is supported only in YUV444.");
+    error (errortext, 500);
+  }
+
+  ProfileCheck();
+  LevelCheck();
+}

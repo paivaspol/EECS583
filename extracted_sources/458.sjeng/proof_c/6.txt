@@ -1,0 +1,146 @@
+void losers_pn_eval(node_t *this)
+{
+  int num_moves;
+  move_s moves[MOVE_BUFF];
+  int mate;
+  int i;
+  int j, a;
+  int wp = 0, bp = 0;
+
+  this->evaluated = TRUE;
+
+  /*ep_temp = ep_square;*/
+  
+  for (j = 1, a = 1; (a <= piece_count); j++) 
+    {
+      i = pieces[j];
+      
+      if (!i)
+	continue;
+      else
+	a++;
+      
+      switch (board[i])
+	{
+	case wpawn:
+	case wbishop:
+	case wrook:
+	case wqueen:
+	case wknight: wp++; break;
+	case bpawn:
+	case bbishop:
+	case brook:
+	case bqueen:
+	case bknight: bp++; break;
+	}
+  
+      if (wp && bp) break;
+    }
+  
+
+  if (!wp)
+    {
+      /* proven or disproven */
+      if (!root_to_move)
+	{
+	  /* root mover is mated-> disproven */
+	  this->value = TRUE;
+	}
+      else
+	{
+	  this->value = FALSE;
+	};
+      return;
+    }
+  else if (!bp)
+    {
+      if (root_to_move)
+	{
+	  /* root mover is mated-> disproven */
+	  this->value = TRUE;
+	}
+      else
+	{
+	  this->value = FALSE;
+	};
+      return;
+    }
+  
+  if ((white_to_move && is_attacked(wking_loc, WHITE))
+      || (!white_to_move && is_attacked(bking_loc, BLACK)))	
+    {  
+     
+      captures = TRUE;
+
+      num_moves = 0;
+      gen (&moves[0]);
+      num_moves = numb_moves;
+      captures = FALSE;
+
+      mate = TRUE;
+      
+      for (i = 0; i < num_moves; i++) 
+	{
+	  make (&moves[0], i);
+	  
+	  /* check to see if our move is legal: */
+	  if (check_legal (&moves[0], i, TRUE)) 
+	    {
+	      mate = FALSE;
+	      unmake(&moves[0], i);
+	      break;
+	    };
+	  
+	  unmake(&moves[0], i);
+	}
+      
+	if (mate == TRUE)
+	{
+	  /* no legal capture..do non-captures */
+	  captures = FALSE;
+	  num_moves = 0;
+	  gen (&moves[0]);
+	  num_moves = numb_moves;
+	  
+	  for (i = 0; i < num_moves; i++) 
+	    {
+	      make (&moves[0], i);
+	      
+	      /* check to see if our move is legal: */
+	      if (check_legal (&moves[0], i, TRUE)) 
+		{
+		  mate = FALSE;
+		  unmake(&moves[0], i);
+		  break;
+		};
+	      
+	      unmake(&moves[0], i);
+	    }
+	}
+	
+	if (mate == TRUE)
+	  {
+	  /* proven or disproven */
+	    if (ToMove == root_to_move)
+	      {
+		/* root mover is mated-> disproven */
+		this->value = TRUE;
+	      }
+	    else
+	      {
+		this->value = FALSE;
+	      };
+	  }
+	else
+	  {
+	    this->value = UNKNOWN;
+	  };
+    }
+  else
+    {
+      this->value = UNKNOWN;
+    };
+  
+  /* ep_square = ep_temp; */
+  
+}

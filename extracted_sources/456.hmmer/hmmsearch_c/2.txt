@@ -1,0 +1,431 @@
+static struct workpool_s *workpool_start(struct plan7_s *hmm, SQFILE *sqfp, 
+					 int do_xnu, int do_forward, int do_null2, 
+					 struct threshold_s *thresh,
+					 struct tophit_s *ghit, struct tophit_s *dhit, 
+					 struct histogram_s *hist, int num_threads);
+static void  workpool_stop(struct workpool_s *wpool);
+static void  workpool_free(struct workpool_s *wpool);
+static void *worker_thread(void *ptr);
+#endif /* HMMER_THREADS */
+
+
+
+int
+main(int argc, char **argv) 
+{
+  char    *hmmfile;	        /* file to read HMM(s) from                */
+  HMMFILE *hmmfp;               /* opened hmmfile for reading              */
+  char    *seqfile;             /* file to read target sequence(s) from    */ 
+  SQFILE   *sqfp;               /* opened seqfile for reading              */
+  int       format;	        /* format of seqfile                       */
+  int       i; 
+  struct plan7_s  *hmm;         /* HMM to search with                      */ 
+  struct histogram_s *histogram;/* histogram of all scores                 */
+  struct fancyali_s *ali;       /* displayed alignment info                */ 
+  struct tophit_s   *ghit;      /* list of top hits for whole sequences    */
+  struct tophit_s   *dhit;	/* list of top hits for domains            */
+
+  float     sc;	        	/* score of an HMM search                  */
+  double  pvalue;		/* pvalue of an HMM score                  */
+  double  evalue;		/* evalue of an HMM score                  */
+  double  motherp;		/* pvalue of a whole seq HMM score         */
+  float   mothersc;		/* score of a whole seq parent of domain   */
+  int     sqfrom, sqto;		/* coordinates in sequence                 */
+  int     hmmfrom, hmmto;	/* coordinate in HMM                       */
+  char   *name, *desc;          /* hit sequence name and description       */
+  int     sqlen;		/* length of seq that was hit              */
+  int     nseq;			/* number of sequences searched            */
+  int     Z;			/* # of seqs for purposes of E-val calc    */
+  int     domidx;		/* number of this domain                   */
+  int     ndom;			/* total # of domains in this seq          */
+  int     namewidth;		/* max width of sequence name              */
+  int     descwidth;		/* max width of description */
+  int     nreported;		/* # of hits reported in a list            */
+
+  int    Alimit;		/* A parameter limiting output alignments   */
+  struct threshold_s thresh;    /* contains all threshold (cutoff) info     */
+
+  char *optname;                /* name of option found by Getopt()         */
+  char *optarg;                 /* argument found by Getopt()               */
+  int   optind;                 /* index in argv[]                          */
+  int   do_null2;		/* TRUE to adjust scores with null model #2 */
+  int   do_forward;		/* TRUE to use Forward() not Viterbi()      */
+  int   do_xnu;			/* TRUE to filter sequences thru XNU        */
+  int   do_pvm;			/* TRUE to run on Parallel Virtual Machine  */
+  int   be_backwards;		/* TRUE to be backwards-compatible in output*/
+  int   num_threads;		/* number of worker threads                 */
+  int   threads_support;	/* TRUE if threads support compiled in      */
+  int   pvm_support;		/* TRUE if PVM support compiled in          */
+
+#ifdef SPEC_CPU
+  if (argc != 3) {
+    return hmmcalibrate (argc, argv);
+  }
+#endif
+
+  /*********************************************** 
+   * Parse command line
+   ***********************************************/
+  
+  format      = SQFILE_UNKNOWN;	/* default: autodetect seq file format  */
+  do_forward  = FALSE;
+  do_null2    = TRUE;
+  do_xnu      = FALSE;
+  do_pvm      = FALSE;  
+  Z           = 0;
+  be_backwards= FALSE; 
+
+  pvm_support     = FALSE;
+  threads_support = FALSE;
+  num_threads     = 0;
+#ifdef HMMER_THREADS
+  num_threads     = ThreadNumber(); 
+  threads_support = TRUE;
+#endif
+#ifdef HMMER_PVM
+  pvm_support     = TRUE;
+#endif
+
+  Alimit         = INT_MAX;	/* no limit on alignment output       */
+  thresh.globE   = 10.0;	/* use a reasonable Eval threshold;   */
+  thresh.globT   = -FLT_MAX;	/*   but no bit threshold,            */
+  thresh.domT    = -FLT_MAX;	/*   no domain bit threshold,         */
+  thresh.domE    = FLT_MAX;     /*   and no domain Eval threshold.    */
+  thresh.autocut = CUT_NONE;	/*   and no Pfam cutoffs used         */
+  thresh.Z       = 0;           /* Z not preset; use actual # of seqs */
+
+  while (Getopt(argc, argv, OPTIONS, NOPTIONS, usage,
+                &optind, &optname, &optarg))  {
+    if      (strcmp(optname, "-A") == 0)        Alimit         = atoi(optarg); 
+    else if (strcmp(optname, "-E") == 0)        thresh.globE   = atof(optarg);
+    else if (strcmp(optname, "-T") == 0)        thresh.globT   = atof(optarg);
+    else if (strcmp(optname, "-Z") == 0)        thresh.Z       = atoi(optarg);
+    else if (strcmp(optname, "--compat")  == 0) be_backwards   = TRUE;
+    else if (strcmp(optname, "--cpu")     == 0) num_threads    = atoi(optarg);
+    else if (strcmp(optname, "--cut_ga")  == 0) thresh.autocut = CUT_GA;
+    else if (strcmp(optname, "--cut_nc")  == 0) thresh.autocut = CUT_NC;
+    else if (strcmp(optname, "--cut_tc")  == 0) thresh.autocut = CUT_TC;
+    else if (strcmp(optname, "--domE")    == 0) thresh.domE    = atof(optarg);
+    else if (strcmp(optname, "--domT")    == 0) thresh.domT    = atof(optarg);
+    else if (strcmp(optname, "--forward") == 0) do_forward     = TRUE;
+    else if (strcmp(optname, "--null2")   == 0) do_null2       = FALSE;
+    else if (strcmp(optname, "--pvm")     == 0) do_pvm         = TRUE;
+    else if (strcmp(optname, "--xnu")     == 0) do_xnu         = TRUE;
+    else if (strcmp(optname, "--informat") == 0) {
+      format = String2SeqfileFormat(optarg);
+      if (format == SQFILE_UNKNOWN) 
+	Die("unrecognized sequence file format \"%s\"", optarg);
+    }
+    else if (strcmp(optname, "-h") == 0) {
+      HMMERBanner(stdout, banner);
+      puts(usage);
+      puts(experts);
+      exit(0);
+    }
+  }
+  if (argc - optind != 2)
+    Die("Incorrect number of arguments.\n%s\n", usage);
+
+  hmmfile = argv[optind++];
+  seqfile = argv[optind++]; 
+  
+  if (do_pvm && ! pvm_support) 
+    Die("PVM support is not compiled into your HMMER software; --pvm doesn't work.");
+  if (num_threads && ! threads_support)
+    Die("POSIX threads support is not compiled into HMMER; --cpu doesn't have any effect");
+
+  /* Try to work around inability to autodetect from a pipe or .gz:
+   * assume FASTA format
+   */
+  if (format == SQFILE_UNKNOWN &&
+      (Strparse("^.*\\.gz$", seqfile, 0) || strcmp(seqfile, "-") == 0))
+    format = SQFILE_FASTA;
+
+  /*********************************************** 
+   * Open sequence database (might be in BLASTDB or current directory)
+   ***********************************************/
+
+  if ((sqfp = SeqfileOpen(seqfile, format, "BLASTDB")) == NULL)
+    Die("Failed to open sequence database file %s\n%s\n", seqfile, usage);
+
+  /*********************************************** 
+   * Open HMM file (might be in HMMERDB or current directory).
+   * Read a single HMM from it. (Config HMM, if necessary).
+   * Alphabet globals are set by reading the HMM.
+   ***********************************************/
+
+  if ((hmmfp = HMMFileOpen(hmmfile, "HMMERDB")) == NULL)
+    Die("Failed to open HMM file %s\n%s", hmmfile, usage);
+  if (!HMMFileRead(hmmfp, &hmm)) 
+    Die("Failed to read any HMMs from %s\n", hmmfile);
+  if (hmm == NULL) 
+    Die("HMM file %s corrupt or in incorrect format? Parse failed", hmmfile);
+  P7Logoddsify(hmm, !do_forward);
+
+  if (do_xnu && Alphabet_type == hmmNUCLEIC) 
+    Die("The HMM is a DNA model, and you can't use the --xnu filter on DNA data");
+
+  /*****************************************************************
+   * Set up optional Pfam score thresholds. 
+   * Can do this before starting any searches, since we'll only use 1 HMM.
+   *****************************************************************/ 
+
+  if (! SetAutocuts(&thresh, hmm)) 
+    Die("HMM %s did not contain the GA, TC, or NC cutoffs you needed",
+	hmm->name);
+
+  /*********************************************** 
+   * Show the banner
+   ***********************************************/
+
+  HMMERBanner(stdout, banner);
+  printf(   "HMM file:                   %s [%s]\n", hmmfile, hmm->name);
+  printf(   "Sequence database:          %s\n", seqfile); 
+  if (do_pvm)
+    printf( "PVM:                        ACTIVE\n");
+  printf(   "per-sequence score cutoff:  ");
+  if (thresh.globT == -FLT_MAX) printf("[none]\n");
+  else  {
+    printf(">= %.1f", thresh.globT);
+    if      (thresh.autocut == CUT_GA) printf(" [GA1]\n");
+    else if (thresh.autocut == CUT_NC) printf(" [NC1]\n");
+    else if (thresh.autocut == CUT_TC) printf(" [TC1]\n");
+    else                               printf("\n");
+  }
+  printf(   "per-domain score cutoff:    ");
+  if (thresh.domT == -FLT_MAX) printf("[none]\n");
+  else  {
+    printf(">= %.1f", thresh.domT);
+    if      (thresh.autocut == CUT_GA) printf(" [GA2]\n");
+    else if (thresh.autocut == CUT_NC) printf(" [NC2]\n");
+    else if (thresh.autocut == CUT_TC) printf(" [TC2]\n");
+    else                               printf("\n");
+  }
+  printf(   "per-sequence Eval cutoff:   ");
+  if (thresh.globE == FLT_MAX) printf("[none]\n");
+  else                  printf("<= %-10.2g\n", thresh.globE);
+    
+  printf(   "per-domain Eval cutoff:     ");
+  if (thresh.domE == FLT_MAX) printf("[none]\n");
+  else                 printf("<= %10.2g\n", thresh.domE);
+  printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+
+  /*********************************************** 
+   * Search HMM against each sequence
+   ***********************************************/
+
+				/* set up structures for storing output  */
+  histogram = AllocHistogram(-200, 200, 100);  /* keeps full histogram */
+  ghit      = AllocTophits(200);         /* per-seq hits: 200=lumpsize */
+  dhit      = AllocTophits(200);         /* domain hits:  200=lumpsize */
+
+  if (pvm_support && do_pvm)
+    main_loop_pvm(hmm, sqfp, &thresh, do_forward, do_null2, do_xnu, 
+		  histogram, ghit, dhit, &nseq);
+  else if (threads_support && num_threads)
+    main_loop_threaded(hmm, sqfp, &thresh, do_forward, do_null2, do_xnu, num_threads,
+		       histogram, ghit, dhit, &nseq);    
+  else
+    main_loop_serial(hmm, sqfp, &thresh, do_forward, do_null2, do_xnu, 
+		     histogram, ghit, dhit, &nseq);
+
+  /*********************************************** 
+   * Process hit lists, produce text output
+   ***********************************************/
+
+  /* Set the theoretical EVD curve in our histogram using 
+   * calibration in the HMM, if available. 
+   */
+  if (hmm->flags & PLAN7_STATS)
+    ExtremeValueSetHistogram(histogram, hmm->mu, hmm->lambda, 
+			     histogram->lowscore, histogram->highscore, 0);
+  if (!thresh.Z) thresh.Z = nseq;		/* set Z for good now that we're done. */
+
+  /* Format and report our output 
+   */
+  /* 1. Report overall sequence hits (sorted on E-value) */
+  if (be_backwards) 
+    {
+      printf("\nQuery HMM: %s|%s|%s\n", 
+	     hmm->name, 
+	     hmm->flags & PLAN7_ACC  ? hmm->acc  : "",
+	     hmm->flags & PLAN7_DESC ? hmm->desc : "");
+    }
+  else 
+    {
+      printf("\nQuery HMM:   %s\n", hmm->name);
+      printf("Accession:   %s\n", hmm->flags & PLAN7_ACC  ? hmm->acc  : "[none]");
+      printf("Description: %s\n", hmm->flags & PLAN7_DESC ? hmm->desc : "[none]");
+    }
+
+  if (hmm->flags & PLAN7_STATS)
+    printf("  [HMM has been calibrated; E-values are empirical estimates]\n");
+  else
+    printf("  [No calibration for HMM; E-values are upper bounds]\n");
+
+  FullSortTophits(ghit);
+  namewidth = MAX(8, TophitsMaxName(ghit)); /* cannot truncate name. */
+  descwidth = MAX(52-namewidth, 11);/* may truncate desc, but need strlen("Description") */
+
+/* Kaivalya commented following output 6/5/03 */
+#ifndef SPEC_CPU
+/*  ifdef PRODUCT_HMMER */
+  printf("\nScores for complete sequences (score includes all domains):\n");
+  printf("%-*s %-*s %7s %10s %3s\n", namewidth, "Sequence", descwidth, "Description", "Score", "E-value", " N ");
+  printf("%-*s %-*s %7s %10s %3s\n", namewidth, "--------", descwidth, "-----------", "-----", "-------", "---");
+  for (i = 0, nreported = 0; i < ghit->num; i++)
+    {
+      char *safedesc;
+      GetRankedHit(ghit, i, 
+		   &pvalue, &sc, NULL, NULL,
+		   &name, NULL, &desc,
+		   NULL, NULL, NULL,               /* sequence positions */
+		   NULL, NULL, NULL,               /* HMM positions      */
+		   NULL, &ndom,	                   /* domain info        */
+		   NULL);	                   /* alignment info     */
+      evalue = pvalue * (double) thresh.Z;
+
+      /* safedesc is a workaround for an apparent Linux printf()
+       * bug with the *.*s format. dbmalloc crashes with a memchr() ptr out of bounds
+       * flaw if the malloc'ed space for desc is short. The workaround
+       * is to make sure the ptr for *.* has a big malloc space.
+       */
+      if (desc != NULL && strlen(desc) < 80) 
+	{
+	  safedesc = MallocOrDie(sizeof(char) * 80);
+	  strcpy(safedesc, desc);
+	}
+      else safedesc = Strdup(desc);
+
+      if (evalue <= thresh.globE && sc >= thresh.globT) {
+	printf("%-*s %-*.*s %7.1f %10.2g %3d\n", 
+	       namewidth, name, 
+	       descwidth, descwidth, safedesc != NULL ? safedesc : "",
+	       sc, evalue, ndom);
+	nreported++;
+      }
+      free(safedesc);
+    }
+
+  if (nreported == 0) printf("\t[no hits above thresholds]\n");
+#endif
+/* Kaivalya above output removed 6/5/03 */
+
+
+  /* 2. Report domain hits (also sorted on E-value) */
+  FullSortTophits(dhit);
+  namewidth = MAX(8, TophitsMaxName(dhit));
+
+/* Kaivalya commented the following output 6/5/03 */
+
+#ifndef SPEC_CPU
+/* ifdef PRODUCT_HMMER */
+  printf("\nParsed for domains:\n");
+  printf("%-*s %7s %5s %5s    %5s %5s    %7s %8s\n",
+	 namewidth, "Sequence", "Domain ", "seq-f", "seq-t", "hmm-f", "hmm-t", "score", "E-value");
+  printf("%-*s %7s %5s %5s    %5s %5s    %7s %8s\n",
+	 namewidth, "--------", "-------", "-----", "-----", "-----", "-----", "-----", "-------");
+      
+  for (i = 0, nreported = 0; i < dhit->num; i++)
+    {
+      GetRankedHit(dhit, i, 
+		   &pvalue, &sc, &motherp, &mothersc,
+		   &name, NULL, NULL,
+		   &sqfrom, &sqto, &sqlen,            /* seq position info  */
+		   &hmmfrom, &hmmto, NULL,            /* HMM position info  */
+		   &domidx, &ndom,                    /* domain info        */
+		   NULL);	                      /* alignment info     */
+      evalue = pvalue * (double) thresh.Z;
+
+      if (motherp * (double) thresh.Z > thresh.globE || mothersc < thresh.globT) 
+	continue;
+      else if (evalue <= thresh.domE && sc >= thresh.domT) {
+	printf("%-*s %3d/%-3d %5d %5d %c%c %5d %5d %c%c %7.1f %8.2g\n",
+	       namewidth, name, 
+	       domidx, ndom,
+	       sqfrom, sqto, 
+	       sqfrom == 1 ? '[' : '.', sqto == sqlen ? ']' : '.',
+	       hmmfrom, hmmto,
+	       hmmfrom == 1 ? '[':'.', hmmto == hmm->M ? ']' : '.',
+	       sc, evalue);
+	nreported++;
+      }
+    }
+  if (nreported == 0) printf("\t[no hits above thresholds]\n");
+#endif
+/* Kaivalya the above output commented 6/5/03  */
+
+  /* 3. Alignment output, also by domain.
+   *    dhits is already sorted and namewidth is set, from above code.
+   *    Number of displayed alignments is limited by Alimit parameter;
+   *    also by domE (evalue threshold), domT (score theshold).
+   */
+  if (Alimit != 0)
+    {
+      printf("\nAlignments of top-scoring domains:\n");
+      for (i = 0, nreported = 0; i < dhit->num; i++)
+	{
+	  if (nreported == Alimit) break; /* limit to Alimit output alignments */
+	  GetRankedHit(dhit, i, 
+		       &pvalue, &sc, &motherp, &mothersc,
+		       &name, NULL, NULL,
+		       &sqfrom, &sqto, &sqlen,            /* seq position info  */
+		       &hmmfrom, &hmmto, NULL,            /* HMM position info  */
+		       &domidx, &ndom,                    /* domain info        */
+		       &ali);	                      /* alignment info     */
+	  evalue = pvalue * (double) thresh.Z;
+
+	  if (motherp * (double) thresh.Z > thresh.globE || mothersc < thresh.globT) 
+	    continue;
+	  else if (evalue <= thresh.domE && sc >= thresh.domT) 
+	    {
+	      printf("%s: domain %d of %d, from %d to %d: score %.1f, E = %.2g\n", 
+		     name, domidx, ndom, sqfrom, sqto, sc, evalue);
+	      PrintFancyAli(stdout, ali);
+	      nreported++;
+	    }
+	}
+      if (nreported == 0)      printf("\t[no hits above thresholds]\n");
+      if (nreported == Alimit) printf("\t[output cut off at A = %d top alignments]\n", Alimit);
+    }
+
+
+  /* 4. Histogram output */
+
+/*   Kaivalya 060603 */
+/* ifdef PRODUCT_HMMER turn on later */
+#ifndef SPEC_CPU
+  printf("\nHistogram of all scores:\n");
+  PrintASCIIHistogram(stdout, histogram);
+#endif
+/* #endif */
+
+/*   Kaivalya 061103 */
+#ifndef SPEC_CPU
+/* ifdef PRODUCT_HMMER turn on later */
+
+  /* 5. Tophits summaries, while developing...
+   */
+  printf("\nTotal sequences searched: %d\n", nseq);
+  printf("\nWhole sequence top hits:\n");
+  TophitsReport(ghit, thresh.globE, nseq);
+  printf("\nDomain top hits:\n");
+  TophitsReport(dhit, thresh.domE, nseq);
+/*  #endif   Kaivalya turn on later */
+#endif
+
+printf("\nTotal sequences searched: %d\n", nseq); /*Kaivalya 6-11-03 */
+  /*********************************************** 
+   * Clean-up and exit.
+   ***********************************************/
+
+  FreeHistogram(histogram);
+  HMMFileClose(hmmfp);
+  SeqfileClose(sqfp);
+  FreeTophits(ghit);
+  FreeTophits(dhit);
+  FreePlan7(hmm);
+  SqdClean();
+
+  return 0;
+}

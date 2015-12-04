@@ -1,0 +1,19 @@
+static void
+failed_reload (insn, r)
+     rtx insn;
+     int r;
+{
+  if (asm_noperands (PATTERN (insn)) < 0)
+    /* It's the compiler's fault.  */
+    fatal_insn ("could not find a spill register", insn);
+
+  /* It's the user's fault; the operand's mode and constraint
+     don't match.  Disable this reload so we don't crash in final.  */
+  error_for_asm (insn,
+		 "`asm' operand constraint incompatible with operand size");
+  rld[r].in = 0;
+  rld[r].out = 0;
+  rld[r].reg_rtx = 0;
+  rld[r].optional = 1;
+  rld[r].secondary_p = 1;
+}

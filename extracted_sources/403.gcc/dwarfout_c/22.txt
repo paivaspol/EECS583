@@ -1,0 +1,18 @@
+static inline void
+equate_type_number_to_die_number (type)
+     tree type;
+{
+  char type_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char die_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  /* We are generating a DIE to represent the main variant of this type
+     (i.e the type without any const or volatile qualifiers) so in order
+     to get the equate to come out right, we need to get the main variant
+     itself here.  */
+
+  type = type_main_variant (type);
+
+  sprintf (type_label, TYPE_NAME_FMT, TYPE_UID (type));
+  sprintf (die_label, DIE_BEGIN_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DEF (asm_out_file, type_label, die_label);
+}

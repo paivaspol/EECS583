@@ -1,0 +1,151 @@
+static rtx
+find_dummy_reload (real_in, real_out, inloc, outloc,
+		   inmode, outmode, class, for_real, earlyclobber)
+     rtx real_in, real_out;
+     rtx *inloc, *outloc;
+     enum machine_mode inmode, outmode;
+     enum reg_class class;
+     int for_real;
+     int earlyclobber;
+{
+  rtx in = real_in;
+  rtx out = real_out;
+  int in_offset = 0;
+  int out_offset = 0;
+  rtx value = 0;
+
+  /* If operands exceed a word, we can't use either of them
+     unless they have the same size.  */
+  if (GET_MODE_SIZE (outmode) != GET_MODE_SIZE (inmode)
+      && (GET_MODE_SIZE (outmode) > UNITS_PER_WORD
+	  || GET_MODE_SIZE (inmode) > UNITS_PER_WORD))
+    return 0;
+
+  /* Note that {in,out}_offset are needed only when 'in' or 'out'
+     respectively refers to a hard register.  */
+
+  /* Find the inside of any subregs.  */
+  while (GET_CODE (out) == SUBREG)
+    {
+      if (GET_CODE (SUBREG_REG (out)) == REG
+	  && REGNO (SUBREG_REG (out)) < FIRST_PSEUDO_REGISTER)
+	out_offset += subreg_regno_offset (REGNO (SUBREG_REG (out)),
+					   GET_MODE (SUBREG_REG (out)),
+					   SUBREG_BYTE (out),
+					   GET_MODE (out));
+      out = SUBREG_REG (out);
+    }
+  while (GET_CODE (in) == SUBREG)
+    {
+      if (GET_CODE (SUBREG_REG (in)) == REG
+	  && REGNO (SUBREG_REG (in)) < FIRST_PSEUDO_REGISTER)
+	in_offset += subreg_regno_offset (REGNO (SUBREG_REG (in)),
+					  GET_MODE (SUBREG_REG (in)),
+					  SUBREG_BYTE (in),
+					  GET_MODE (in));
+      in = SUBREG_REG (in);
+    }
+
+  /* Narrow down the reg class, the same way push_reload will;
+     otherwise we might find a dummy now, but push_reload won't.  */
+  class = PREFERRED_RELOAD_CLASS (in, class);
+
+  /* See if OUT will do.  */
+  if (GET_CODE (out) == REG
+      && REGNO (out) < FIRST_PSEUDO_REGISTER)
+    {
+      unsigned int regno = REGNO (out) + out_offset;
+      unsigned int nwords = HARD_REGNO_NREGS (regno, outmode);
+      rtx saved_rtx;
+
+      /* When we consider whether the insn uses OUT,
+	 ignore references within IN.  They don't prevent us
+	 from copying IN into OUT, because those refs would
+	 move into the insn that reloads IN.
+
+	 However, we only ignore IN in its role as this reload.
+	 If the insn uses IN elsewhere and it contains OUT,
+	 that counts.  We can't be sure it's the "same" operand
+	 so it might not go through this reload.  */
+      saved_rtx = *inloc;
+      *inloc = const0_rtx;
+
+      if (regno < FIRST_PSEUDO_REGISTER
+	  && HARD_REGNO_MODE_OK (regno, outmode)
+	  && ! refers_to_regno_for_reload_p (regno, regno + nwords,
+					     PATTERN (this_insn), outloc))
+	{
+	  unsigned int i;
+
+	  for (i = 0; i < nwords; i++)
+	    if (! TEST_HARD_REG_BIT (reg_class_contents[(int) class],
+				     regno + i))
+	      break;
+
+	  if (i == nwords)
+	    {
+	      if (GET_CODE (real_out) == REG)
+		value = real_out;
+	      else
+		value = gen_rtx_REG (outmode, regno);
+	    }
+	}
+
+      *inloc = saved_rtx;
+    }
+
+  /* Consider using IN if OUT was not acceptable
+     or if OUT dies in this insn (like the quotient in a divmod insn).
+     We can't use IN unless it is dies in this insn,
+     which means we must know accurately which hard regs are live.
+     Also, the result can't go in IN if IN is used within OUT,
+     or if OUT is an earlyclobber and IN appears elsewhere in the insn.  */
+  if (hard_regs_live_known
+      && GET_CODE (in) == REG
+      && REGNO (in) < FIRST_PSEUDO_REGISTER
+      && (value == 0
+	  || find_reg_note (this_insn, REG_UNUSED, real_out))
+      && find_reg_note (this_insn, REG_DEAD, real_in)
+      && !fixed_regs[REGNO (in)]
+      && HARD_REGNO_MODE_OK (REGNO (in),
+			     /* The only case where out and real_out might
+				have different modes is where real_out
+				is a subreg, and in that case, out
+				has a real mode.  */
+			     (GET_MODE (out) != VOIDmode
+			      ? GET_MODE (out) : outmode)))
+    {
+      unsigned int regno = REGNO (in) + in_offset;
+      unsigned int nwords = HARD_REGNO_NREGS (regno, inmode);
+
+      if (! refers_to_regno_for_reload_p (regno, regno + nwords, out, (rtx*) 0)
+	  && ! hard_reg_set_here_p (regno, regno + nwords,
+				    PATTERN (this_insn))
+	  && (! earlyclobber
+	      || ! refers_to_regno_for_reload_p (regno, regno + nwords,
+						 PATTERN (this_insn), inloc)))
+	{
+	  unsigned int i;
+
+	  for (i = 0; i < nwords; i++)
+	    if (! TEST_HARD_REG_BIT (reg_class_contents[(int) class],
+				     regno + i))
+	      break;
+
+	  if (i == nwords)
+	    {
+	      /* If we were going to use OUT as the reload reg
+		 and changed our mind, it means OUT is a dummy that
+		 dies here.  So don't bother copying value to it.  */
+	      if (for_real >= 0 && value == real_out)
+		rld[for_real].out = 0;
+	      if (GET_CODE (real_in) == REG)
+		value = real_in;
+	      else
+		value = gen_rtx_REG (inmode, regno);
+	    }
+	}
+    }
+
+  return value;
+}

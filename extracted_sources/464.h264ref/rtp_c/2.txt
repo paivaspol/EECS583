@@ -1,0 +1,56 @@
+int WriteRTPNALU (NALU_t *n)
+{
+  RTPpacket_t *p;
+
+  assert (f != NULL);
+  assert (n != NULL);
+  assert (n->len < 65000);
+
+  n->buf[0] =
+    n->forbidden_bit << 7      |
+    n->nal_reference_idc << 5  |
+    n->nal_unit_type;
+
+  // Set RTP structure elements and alloca() memory foor the buffers
+  if ((p = (RTPpacket_t *) malloc (sizeof (RTPpacket_t))) == NULL)
+    no_mem_exit ("RTPWriteNALU-1");
+  if ((p->packet = malloc (MAXRTPPACKETSIZE)) == NULL)
+    no_mem_exit ("RTPWriteNALU-2");
+  if ((p->payload = malloc (MAXRTPPACKETSIZE)) == NULL)
+    no_mem_exit ("RTPWriteNALU-3");
+
+  p->v=2;
+  p->p=0;
+  p->x=0;
+  p->cc=0;
+  p->m=(n->startcodeprefix_len==4)&1;     // a long startcode of Annex B sets marker bit of RTP
+                                          // Not exactly according to the RTP paylaod spec, but
+                                          // good enough for now (hopefully).
+                                          //! For error resilience work, we need the correct
+                                          //! marker bit.  Introduce a nalu->marker and set it in
+                                          //! terminate_slice()?
+  p->pt=H26LPAYLOADTYPE;
+  p->seq=CurrentRTPSequenceNumber++;
+  p->timestamp=CurrentRTPTimestamp;
+  p->ssrc=H26LSSRC;
+  p->paylen = n->len;
+  memcpy (p->payload, n->buf, n->len);
+
+
+
+  // Generate complete RTP packet
+  if (ComposeRTPPacket (p) < 0)
+  {
+    printf ("Cannot compose RTP packet, exit\n");
+    exit (-1);
+  }
+  if (WriteRTPPacket (p, f) < 0)
+  {
+    printf ("Cannot write %d bytes of RTP packet to outfile, exit\n", p->packlen);
+    exit (-1);
+  }
+  free (p->packet);
+  free (p->payload);
+  free (p);
+  return (n->len * 8);
+}

@@ -1,0 +1,27 @@
+void
+clone_body (clone, fn, arg_map)
+     tree clone, fn;
+     void *arg_map;
+{
+  inline_data id;
+
+  /* Clone the body, as if we were making an inline call.  But, remap
+     the parameters in the callee to the parameters of caller.  If
+     there's an in-charge parameter, map it to an appropriate
+     constant.  */
+  memset (&id, 0, sizeof (id));
+  VARRAY_TREE_INIT (id.fns, 2, "fns");
+  VARRAY_PUSH_TREE (id.fns, clone);
+  VARRAY_PUSH_TREE (id.fns, fn);
+  id.decl_map = (splay_tree)arg_map;
+
+  /* Cloning is treated slightly differently from inlining.  Set
+     CLONING_P so that it's clear which operation we're performing.  */
+  id.cloning_p = true;
+
+  /* Actually copy the body.  */
+  TREE_CHAIN (DECL_SAVED_TREE (clone)) = copy_body (&id);
+
+  /* Clean up.  */
+  VARRAY_FREE (id.fns);
+}

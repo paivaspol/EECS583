@@ -1,0 +1,57 @@
+static void
+dump_conflicts (file)
+     FILE *file;
+{
+  int i;
+  int has_preferences;
+  int nregs;
+  nregs = 0;
+  for (i = 0; i < max_allocno; i++)
+    {
+      if (reg_renumber[allocno[allocno_order[i]].reg] >= 0)
+        continue;
+      nregs++;
+    }
+  fprintf (file, ";; %d regs to allocate:", nregs);
+  for (i = 0; i < max_allocno; i++)
+    {
+      int j;
+      if (reg_renumber[allocno[allocno_order[i]].reg] >= 0)
+	continue;
+      fprintf (file, " %d", allocno[allocno_order[i]].reg);
+      for (j = 0; j < max_regno; j++)
+	if (reg_allocno[j] == allocno_order[i]
+	    && j != allocno[allocno_order[i]].reg)
+	  fprintf (file, "+%d", j);
+      if (allocno[allocno_order[i]].size != 1)
+	fprintf (file, " (%d)", allocno[allocno_order[i]].size);
+    }
+  fprintf (file, "\n");
+
+  for (i = 0; i < max_allocno; i++)
+    {
+      int j;
+      fprintf (file, ";; %d conflicts:", allocno[i].reg);
+      for (j = 0; j < max_allocno; j++)
+	if (CONFLICTP (j, i))
+	  fprintf (file, " %d", allocno[j].reg);
+      for (j = 0; j < FIRST_PSEUDO_REGISTER; j++)
+	if (TEST_HARD_REG_BIT (allocno[i].hard_reg_conflicts, j))
+	  fprintf (file, " %d", j);
+      fprintf (file, "\n");
+
+      has_preferences = 0;
+      for (j = 0; j < FIRST_PSEUDO_REGISTER; j++)
+	if (TEST_HARD_REG_BIT (allocno[i].hard_reg_preferences, j))
+	  has_preferences = 1;
+
+      if (! has_preferences)
+	continue;
+      fprintf (file, ";; %d preferences:", allocno[i].reg);
+      for (j = 0; j < FIRST_PSEUDO_REGISTER; j++)
+	if (TEST_HARD_REG_BIT (allocno[i].hard_reg_preferences, j))
+	  fprintf (file, " %d", j);
+      fprintf (file, "\n");
+    }
+  fprintf (file, "\n");
+}

@@ -1,0 +1,20 @@
+static int nFloatSize(t_trnheader *sh)
+{
+  int nflsize=0;
+  
+  if (sh->box_size)
+    nflsize = sh->box_size/(DIM*DIM);
+  else if (sh->x_size)
+    nflsize = sh->x_size/(sh->natoms*DIM);
+  else if (sh->v_size)
+    nflsize = sh->v_size/(sh->natoms*DIM);
+  else if (sh->f_size)
+    nflsize = sh->f_size/(sh->natoms*DIM);
+  else 
+    fatal_error(0,"Can not determine precision of trn file, quit!");
+  
+  if (((nflsize != sizeof(float)) && (nflsize != sizeof(double))))
+    fatal_error(0,"Float size %d. Maybe different CPU?",nflsize);
+      
+  return nflsize;
+}

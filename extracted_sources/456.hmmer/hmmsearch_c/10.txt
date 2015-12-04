@@ -1,0 +1,93 @@
+void *
+worker_thread(void *ptr)
+{
+  struct workpool_s *wpool;     /* our working threads structure   */
+  char  *seq;                   /* target sequence                 */
+  SQINFO sqinfo;		/* information assoc w/ seq        */
+  char  *dsq;                   /* digitized sequence              */
+  struct dpmatrix_s *mx;        /* growable DP matrix              */
+  struct p7trace_s  *tr;        /* traceback from an alignment     */
+  float  sc;			/* score of an alignment           */
+  int    rtn;			/* a return code from pthreads lib */
+  double pvalue;		/* P-value of score                */
+  double evalue;		/* E-value of score                */
+
+  wpool = (struct workpool_s *) ptr;
+
+  /* Init with a small DP matrix; we'll grow in the sequence dimension
+   * overalloc'ing by 25 rows (residues).
+   */
+  mx = CreatePlan7Matrix(1, wpool->hmm->M, 25, 0);
+  for (;;) {
+
+    /* 1. acquire lock on sequence input, and get
+     *    the next seq to work on.
+     */
+				/* acquire a lock */
+    if ((rtn = pthread_mutex_lock(&(wpool->input_lock))) != 0)
+      Die("pthread_mutex_lock failure: %s\n", strerror(rtn));
+    if (! ReadSeq(wpool->sqfp, wpool->sqfp->format, &seq, &sqinfo))
+      {	/* we're done. release lock, exit thread */
+	if ((rtn = pthread_mutex_unlock(&(wpool->input_lock))) != 0)
+	  Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+	FreePlan7Matrix(mx);
+	pthread_exit(NULL);
+      }
+    SQD_DPRINTF1(("a thread is working on %s\n", sqinfo.name));
+    wpool->nseq++;
+				/* release the lock */
+    if ((rtn = pthread_mutex_unlock(&(wpool->input_lock))) != 0)
+      Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+
+    if (sqinfo.len == 0) continue; /* silent skip of len=0 seqs (wormpep!?!) */
+
+    dsq = DigitizeSequence(seq, sqinfo.len);
+    if (wpool->do_xnu) XNU(dsq, sqinfo.len);
+      
+    /* 1. Recover a trace by Viterbi.
+     */
+    if (P7ViterbiSize(sqinfo.len, wpool->hmm->M) <= RAMLIMIT)
+      sc = P7Viterbi(dsq, sqinfo.len, wpool->hmm, mx, &tr);
+    else
+      sc = P7SmallViterbi(dsq, sqinfo.len, wpool->hmm, mx, &tr);
+
+    /* 2. If we're using Forward scores, do another DP
+     *    to get it; else, we already have a Viterbi score
+     *    in sc.
+     */
+    if (wpool->do_forward) {
+      sc  = P7Forward(dsq, sqinfo.len, wpool->hmm, NULL);
+      if (wpool->do_null2) sc -= TraceScoreCorrection(wpool->hmm, tr, dsq);
+    }
+
+    /* 3. Save the output in tophits and histogram structures, after acquiring a lock
+     */
+    if ((rtn = pthread_mutex_lock(&(wpool->output_lock))) != 0)
+      Die("pthread_mutex_lock failure: %s\n", strerror(rtn));
+    SQD_DPRINTF1(("seq %s scores %f\n", sqinfo.name, sc));
+
+    pvalue = PValue(wpool->hmm, sc);
+    evalue = wpool->thresh->Z ? (double) wpool->thresh->Z * pvalue : (double) wpool->nseq * pvalue;
+ 
+    if (sc >= wpool->thresh->globT && evalue <= wpool->thresh->globE) 
+      { 
+	sc = PostprocessSignificantHit(wpool->ghit, wpool->dhit, 
+				       tr, wpool->hmm, dsq, sqinfo.len,
+				       sqinfo.name, 
+				       sqinfo.flags & SQINFO_ACC  ? sqinfo.acc  : NULL, 
+				       sqinfo.flags & SQINFO_DESC ? sqinfo.desc : NULL, 
+				       wpool->do_forward, sc,
+				       wpool->do_null2,
+				       wpool->thresh,
+				       FALSE); /* FALSE-> not hmmpfam mode, hmmsearch mode */
+      }
+    SQD_DPRINTF2(("AddToHistogram: %s\t%f\n", sqinfo.name, sc));
+    AddToHistogram(wpool->hist, sc);
+    if ((rtn = pthread_mutex_unlock(&(wpool->output_lock))) != 0)
+      Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+
+    P7FreeTrace(tr);
+    FreeSequence(seq, &sqinfo);
+    free(dsq);
+  } /* end 'infinite' loop over seqs in this thread */
+}

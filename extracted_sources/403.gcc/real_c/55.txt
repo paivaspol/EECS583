@@ -1,0 +1,108 @@
+static void
+e53toe (pe, y)
+     const UEMUSHORT *pe;
+     UEMUSHORT *y;
+{
+#ifdef DEC
+
+  dectoe (pe, y);
+
+#else
+#ifdef IBM
+
+  ibmtoe (pe, y, DFmode);
+
+#else
+#ifdef C4X
+
+  c4xtoe (pe, y, HFmode);
+
+#else
+  UEMUSHORT r;
+  const UEMUSHORT *e;
+  UEMUSHORT *p;
+  UEMUSHORT yy[NI];
+  int denorm, k;
+
+  e = pe;
+  denorm = 0;			/* flag if denormalized number */
+  ecleaz (yy);
+  if (! REAL_WORDS_BIG_ENDIAN)
+    e += 3;
+  r = *e;
+  yy[0] = 0;
+  if (r & 0x8000)
+    yy[0] = 0xffff;
+  yy[M] = (r & 0x0f) | 0x10;
+  r &= ~0x800f;			/* strip sign and 4 significand bits */
+#ifdef INFINITY
+  if (r == 0x7ff0)
+    {
+#ifdef NANS
+      if (! REAL_WORDS_BIG_ENDIAN)
+	{
+	  if (((pe[3] & 0xf) != 0) || (pe[2] != 0)
+	      || (pe[1] != 0) || (pe[0] != 0))
+	    {
+	      enan (y, yy[0] != 0);
+	      return;
+	    }
+	}
+      else
+	{
+	  if (((pe[0] & 0xf) != 0) || (pe[1] != 0)
+	      || (pe[2] != 0) || (pe[3] != 0))
+	    {
+	      enan (y, yy[0] != 0);
+	      return;
+	    }
+	}
+#endif  /* NANS */
+      eclear (y);
+      einfin (y);
+      if (yy[0])
+	eneg (y);
+      return;
+    }
+#endif  /* INFINITY */
+  r >>= 4;
+  /* If zero exponent, then the significand is denormalized.
+     So take back the understood high significand bit.  */
+
+  if (r == 0)
+    {
+      denorm = 1;
+      yy[M] &= ~0x10;
+    }
+  r += EXONE - 01777;
+  yy[E] = r;
+  p = &yy[M + 1];
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    {
+      *p++ = *(--e);
+      *p++ = *(--e);
+      *p++ = *(--e);
+    }
+  else
+    {
+      ++e;
+      *p++ = *e++;
+      *p++ = *e++;
+      *p++ = *e++;
+    }
+#endif
+  eshift (yy, -5);
+  if (denorm)
+    {
+	/* If zero exponent, then normalize the significand.  */
+      if ((k = enormlz (yy)) > NBITS)
+	ecleazs (yy);
+      else
+	yy[E] -= (UEMUSHORT) (k - 1);
+    }
+  emovo (yy, y);
+#endif /* not C4X */
+#endif /* not IBM */
+#endif /* not DEC */
+}

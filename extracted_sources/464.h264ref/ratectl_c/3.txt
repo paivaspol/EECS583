@@ -1,0 +1,88 @@
+void rc_init_GOP(int np, int nb)
+{
+  Boolean Overum=FALSE;
+  int OverBits;
+  int OverDuantQp;
+  int AllocatedBits;
+  int GOPDquant;
+
+  /* check if the last GOP over uses its budget. If yes, the initial QP of the I frame in 
+     the coming  GOP will be increased.*/
+
+  if(R<0)
+    Overum=TRUE;
+  OverBits=-R;
+
+  /*initialize the lower bound and the upper bound for the target bits of each frame, HRD consideration*/
+  LowerBound=(long)(R+bit_rate/frame_rate);
+  UpperBound1=(long)(R+InitialDelayOffset);
+
+ /*compute the total number of bits for the current GOP*/ 
+  AllocatedBits = (int) floor((1 + np + nb) * bit_rate / frame_rate + 0.5);
+  R +=AllocatedBits;
+  Np  = np;
+  Nb  = nb;
+
+  OverDuantQp=(int)(8*OverBits/AllocatedBits+0.5);
+  GOPOverdue=FALSE;
+  
+  /*field coding*/
+  img->IFLAG=1;
+
+  /*Compute InitialQp for each GOP*/
+  TotalPFrame=np;
+  img->NumberofGOP++;
+  if(img->NumberofGOP==1)
+  {
+    MyInitialQp=input->SeinitialQP;
+    PreviousQp2=MyInitialQp-1; //recent change -0;
+    QPLastGOP=MyInitialQp;
+  
+  }
+  else
+  {
+    /*adaptive field/frame coding*/
+    if((input->PicInterlace==ADAPTIVE_CODING)\
+      ||(input->MbInterlace))
+    {
+      if (img->FieldFrame == 1)
+      {
+        img->TotalQpforPPicture += FrameQPBuffer;
+        QPLastPFrame = FrameQPBuffer;
+      }
+      else
+      {
+        img->TotalQpforPPicture += FieldQPBuffer;
+        QPLastPFrame = FieldQPBuffer;
+      }
+      
+    }
+    /*compute the average QP of P frames in the previous GOP*/
+    PAverageQp=(int)(1.0*img->TotalQpforPPicture/img->NumberofPPicture+0.5);
+
+    GOPDquant=(int)(0.5+1.0*(np+nb+1)/15);
+    if(GOPDquant>2)
+        GOPDquant=2;
+
+    PAverageQp-=GOPDquant;
+
+    if (PAverageQp > (QPLastPFrame - 2))
+      PAverageQp--;
+    PAverageQp = MAX(QPLastGOP-2,  PAverageQp);
+    PAverageQp = MIN(QPLastGOP+2, PAverageQp);
+    PAverageQp = MIN(RC_MAX_QUANT, PAverageQp);
+    PAverageQp = MAX(RC_MIN_QUANT, PAverageQp);
+  
+
+    MyInitialQp=PAverageQp;
+    QPLastGOP = MyInitialQp;
+    Pm_Qp=PAverageQp;
+    PAveFrameQP=PAverageQp;
+    PreviousQp1=PreviousQp2;
+    PreviousQp2=MyInitialQp-1;  
+  }
+
+  img->TotalQpforPPicture=0;
+  img->NumberofPPicture=0;
+  NumberofBFrames=0; 
+}

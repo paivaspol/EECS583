@@ -1,0 +1,26 @@
+void
+std_expand_builtin_va_start (stdarg_p, valist, nextarg)
+     int stdarg_p;
+     tree valist;
+     rtx nextarg;
+{
+  tree t;
+
+  if (! stdarg_p)
+    {
+      /* The dummy named parameter is declared as a 'word' sized
+	 object, but if a 'word' is smaller than an 'int', it would
+	 have been promoted to int when it was added to the arglist.  */
+      int align = PARM_BOUNDARY / BITS_PER_UNIT;
+      int size = MAX (UNITS_PER_WORD,
+		      GET_MODE_SIZE (TYPE_MODE (integer_type_node)));
+      int offset = ((size + align - 1) / align) * align;
+      nextarg = plus_constant (nextarg, -offset);
+    }
+
+  t = build (MODIFY_EXPR, TREE_TYPE (valist), valist,
+	     make_tree (ptr_type_node, nextarg));
+  TREE_SIDE_EFFECTS (t) = 1;
+
+  expand_expr (t, const0_rtx, VOIDmode, EXPAND_NORMAL);
+}

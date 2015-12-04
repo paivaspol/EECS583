@@ -1,0 +1,12 @@
+void bio_verify_chksum (FILE *fp, int32 byteswap, uint32 chksum)
+{
+    uint32 file_chksum;
+    
+    if (fread (&file_chksum, sizeof(uint32), 1, fp) != 1)
+	E_FATAL("fread(chksum) failed\n");
+    if (byteswap)
+	SWAP_INT32(&file_chksum);
+    if (file_chksum != chksum)
+	E_FATAL("Checksum error; file-checksum %08x, computed %08x\n",
+		file_chksum, chksum);
+}

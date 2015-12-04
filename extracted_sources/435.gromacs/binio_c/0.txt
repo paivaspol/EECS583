@@ -1,0 +1,14 @@
+void _blockwrite(FILE *fp,int nelem,int size,void *data,char *what,char *file,
+                 int line)
+{
+  int len;
+  
+#ifdef DEBUG
+  (void) fprintf(stderr,"blockwrite %s (file %s,line %d,size=%d, nelem=%d)\n",
+                 what,file,line,size,nelem);
+  fflush(stderr);
+#endif
+  if ((len=fwrite(data,size,nelem,fp))!=nelem)
+    fatal_error(errno,"writing %s (%dx%d, len=%d, pos=%d) from file %s, "
+                "line %d",what,nelem,size,len,ftell(fp),file,line);
+}

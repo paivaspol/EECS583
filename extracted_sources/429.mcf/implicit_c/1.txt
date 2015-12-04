@@ -1,0 +1,45 @@
+void replace_weaker_arc( network_t *net, arc_t *new, node_t *tail, node_t *head,
+                         cost_t cost, cost_t red_cost )
+#else
+void replace_weaker_arc( net, new, tail, head, cost, red_cost )
+     network *net;
+     arc_t *new;
+     node_t *tail;
+     node_t *head;
+     cost_t cost;
+     cost_t red_cost;
+#endif
+{
+    long pos;
+    long cmp;
+
+    new[0].tail     = tail;
+    new[0].head     = head;
+    new[0].org_cost = cost;
+    new[0].cost     = cost;
+    new[0].flow     = (flow_t)red_cost; 
+                    
+    pos = 1;
+    cmp = (new[1].flow > new[2].flow) ? 2 : 3;
+    while( cmp <= net->max_residual_new_m && red_cost < new[cmp-1].flow )
+    {
+        new[pos-1].tail = new[cmp-1].tail;
+        new[pos-1].head = new[cmp-1].head;
+        new[pos-1].cost = new[cmp-1].cost;
+        new[pos-1].org_cost = new[cmp-1].cost;
+        new[pos-1].flow = new[cmp-1].flow;
+        
+        new[cmp-1].tail = tail;
+        new[cmp-1].head = head;
+        new[cmp-1].cost = cost;
+        new[cmp-1].org_cost = cost;
+        new[cmp-1].flow = (flow_t)red_cost; 
+        pos = cmp;
+        cmp *= 2;
+        if( cmp + 1 <= net->max_residual_new_m )
+            if( new[cmp-1].flow < new[cmp].flow )
+                cmp++;
+    }
+    
+    return;
+}   

@@ -1,0 +1,56 @@
+static rtx
+elim_reg_cond (x, regno)
+     rtx x;
+     unsigned int regno;
+{
+  rtx op0, op1;
+
+  if (GET_RTX_CLASS (GET_CODE (x)) == '<')
+    {
+      if (REGNO (XEXP (x, 0)) == regno)
+	return const0_rtx;
+      return x;
+    }
+
+  switch (GET_CODE (x))
+    {
+    case AND:
+      op0 = elim_reg_cond (XEXP (x, 0), regno);
+      op1 = elim_reg_cond (XEXP (x, 1), regno);
+      if (op0 == const0_rtx || op1 == const0_rtx)
+	return const0_rtx;
+      if (op0 == const1_rtx)
+	return op1;
+      if (op1 == const1_rtx)
+	return op0;
+      if (op0 == XEXP (x, 0) && op1 == XEXP (x, 1))
+	return x;
+      return gen_rtx_AND (0, op0, op1);
+
+    case IOR:
+      op0 = elim_reg_cond (XEXP (x, 0), regno);
+      op1 = elim_reg_cond (XEXP (x, 1), regno);
+      if (op0 == const1_rtx || op1 == const1_rtx)
+	return const1_rtx;
+      if (op0 == const0_rtx)
+	return op1;
+      if (op1 == const0_rtx)
+	return op0;
+      if (op0 == XEXP (x, 0) && op1 == XEXP (x, 1))
+	return x;
+      return gen_rtx_IOR (0, op0, op1);
+
+    case NOT:
+      op0 = elim_reg_cond (XEXP (x, 0), regno);
+      if (op0 == const0_rtx)
+	return const1_rtx;
+      if (op0 == const1_rtx)
+	return const0_rtx;
+      if (op0 != XEXP (x, 0))
+	return not_reg_cond (op0);
+      return x;
+
+    default:
+      abort ();
+    }
+}

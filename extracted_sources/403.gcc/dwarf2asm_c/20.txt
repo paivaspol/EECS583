@@ -1,0 +1,86 @@
+void
+dw2_asm_output_encoded_addr_rtx VPARAMS ((int encoding,
+					  rtx addr,
+					  const char *comment, ...))
+{
+  int size;
+
+  VA_OPEN (ap, comment);
+  VA_FIXEDARG (ap, int, encoding);
+  VA_FIXEDARG (ap, rtx, addr);
+  VA_FIXEDARG (ap, const char *, comment);
+
+  size = size_of_encoded_value (encoding);
+
+  if (encoding == DW_EH_PE_aligned)
+    {
+      assemble_align (POINTER_SIZE);
+      assemble_integer (addr, size, POINTER_SIZE, 1);
+      return;
+    }
+
+  /* NULL is _always_ represented as a plain zero, as is 1 for Ada's
+     "all others".  */
+  if (addr == const0_rtx || addr == const1_rtx)
+    assemble_integer (addr, size, BITS_PER_UNIT, 1);
+  else
+    {
+    restart:
+      /* Allow the target first crack at emitting this.  Some of the
+	 special relocations require special directives instead of 
+	 just ".4byte" or whatever.  */
+#ifdef ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX
+      ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX (asm_out_file, encoding, size,
+					 addr, done);
+#endif
+
+      /* Indirection is used to get dynamic relocations out of a
+	 read-only section.  */
+      if (encoding & DW_EH_PE_indirect)
+	{
+	  /* It is very tempting to use force_const_mem so that we share data
+	     with the normal constant pool.  However, we've already emitted
+	     the constant pool for this function.  Moreover, we'd like to
+	     share these constants across the entire unit of translation,
+	     or better, across the entire application (or DSO).  */
+	  addr = dw2_force_const_mem (addr);
+	  encoding &= ~DW_EH_PE_indirect;
+	  goto restart;
+	}
+
+      switch (encoding & 0xF0)
+	{
+	case DW_EH_PE_absptr:
+	  dw2_assemble_integer (size, addr);
+	  break;
+
+	case DW_EH_PE_pcrel:
+	  if (GET_CODE (addr) != SYMBOL_REF)
+	    abort ();
+#ifdef ASM_OUTPUT_DWARF_PCREL
+	  ASM_OUTPUT_DWARF_PCREL (asm_out_file, size, XSTR (addr, 0));
+#else
+	  dw2_assemble_integer (size, gen_rtx_MINUS (Pmode, addr, pc_rtx));
+#endif
+	  break;
+
+	default:
+	  /* Other encodings should have been handled by 
+	     ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX.  */
+	  abort ();
+	}
+
+#ifdef ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX
+    done:;
+#endif
+    }
+
+  if (flag_debug_asm && comment)
+    {
+      fprintf (asm_out_file, "\t%s ", ASM_COMMENT_START);
+      vfprintf (asm_out_file, comment, ap);
+    }
+  fputc ('\n', asm_out_file);
+
+  VA_CLOSE (ap);
+}

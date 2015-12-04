@@ -1,0 +1,121 @@
+static void
+output_cfi (cfi, fde, for_eh)
+     dw_cfi_ref cfi;
+     dw_fde_ref fde;
+     int for_eh;
+{
+  if (cfi->dw_cfi_opc == DW_CFA_advance_loc)
+    dw2_asm_output_data (1, (cfi->dw_cfi_opc
+			     | (cfi->dw_cfi_oprnd1.dw_cfi_offset & 0x3f)),
+			 "DW_CFA_advance_loc 0x%lx",
+			 cfi->dw_cfi_oprnd1.dw_cfi_offset);
+  else if (cfi->dw_cfi_opc == DW_CFA_offset)
+    {
+      dw2_asm_output_data (1, (cfi->dw_cfi_opc
+			       | (cfi->dw_cfi_oprnd1.dw_cfi_reg_num & 0x3f)),
+			   "DW_CFA_offset, column 0x%lx",
+			   cfi->dw_cfi_oprnd1.dw_cfi_reg_num);
+      dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd2.dw_cfi_offset, NULL);
+    }
+  else if (cfi->dw_cfi_opc == DW_CFA_restore)
+    dw2_asm_output_data (1, (cfi->dw_cfi_opc
+			     | (cfi->dw_cfi_oprnd1.dw_cfi_reg_num & 0x3f)),
+			 "DW_CFA_restore, column 0x%lx",
+			 cfi->dw_cfi_oprnd1.dw_cfi_reg_num);
+  else
+    {
+      dw2_asm_output_data (1, cfi->dw_cfi_opc,
+			   "%s", dwarf_cfi_name (cfi->dw_cfi_opc));
+
+      switch (cfi->dw_cfi_opc)
+	{
+	case DW_CFA_set_loc:
+	  if (for_eh)
+	    dw2_asm_output_encoded_addr_rtx (
+		ASM_PREFERRED_EH_DATA_FORMAT (/*code=*/1, /*global=*/0),
+		gen_rtx_SYMBOL_REF (Pmode, cfi->dw_cfi_oprnd1.dw_cfi_addr),
+		NULL);
+	  else
+	    dw2_asm_output_addr (DWARF2_ADDR_SIZE,
+				 cfi->dw_cfi_oprnd1.dw_cfi_addr, NULL);
+	  break;
+
+	case DW_CFA_advance_loc1:
+	  dw2_asm_output_delta (1, cfi->dw_cfi_oprnd1.dw_cfi_addr,
+				fde->dw_fde_current_label, NULL);
+	  fde->dw_fde_current_label = cfi->dw_cfi_oprnd1.dw_cfi_addr;
+	  break;
+
+	case DW_CFA_advance_loc2:
+	  dw2_asm_output_delta (2, cfi->dw_cfi_oprnd1.dw_cfi_addr,
+				fde->dw_fde_current_label, NULL);
+	  fde->dw_fde_current_label = cfi->dw_cfi_oprnd1.dw_cfi_addr;
+	  break;
+
+	case DW_CFA_advance_loc4:
+	  dw2_asm_output_delta (4, cfi->dw_cfi_oprnd1.dw_cfi_addr,
+				fde->dw_fde_current_label, NULL);
+	  fde->dw_fde_current_label = cfi->dw_cfi_oprnd1.dw_cfi_addr;
+	  break;
+
+	case DW_CFA_MIPS_advance_loc8:
+	  dw2_asm_output_delta (8, cfi->dw_cfi_oprnd1.dw_cfi_addr,
+				fde->dw_fde_current_label, NULL);
+	  fde->dw_fde_current_label = cfi->dw_cfi_oprnd1.dw_cfi_addr;
+	  break;
+
+	case DW_CFA_offset_extended:
+	case DW_CFA_def_cfa:
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd1.dw_cfi_reg_num,
+				       NULL);
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd2.dw_cfi_offset, NULL);
+	  break;
+
+	case DW_CFA_offset_extended_sf:
+	case DW_CFA_def_cfa_sf:
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd1.dw_cfi_reg_num,
+				       NULL);
+	  dw2_asm_output_data_sleb128 (cfi->dw_cfi_oprnd2.dw_cfi_offset, NULL);
+	  break;
+
+	case DW_CFA_restore_extended:
+	case DW_CFA_undefined:
+	case DW_CFA_same_value:
+	case DW_CFA_def_cfa_register:
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd1.dw_cfi_reg_num,
+				       NULL);
+	  break;
+
+	case DW_CFA_register:
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd1.dw_cfi_reg_num,
+				       NULL);
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd2.dw_cfi_reg_num,
+				       NULL);
+	  break;
+
+	case DW_CFA_def_cfa_offset:
+	case DW_CFA_GNU_args_size:
+	  dw2_asm_output_data_uleb128 (cfi->dw_cfi_oprnd1.dw_cfi_offset, NULL);
+	  break;
+
+	case DW_CFA_def_cfa_offset_sf:
+	  dw2_asm_output_data_sleb128 (cfi->dw_cfi_oprnd1.dw_cfi_offset, NULL);
+	  break;
+
+	case DW_CFA_GNU_window_save:
+	  break;
+
+	case DW_CFA_def_cfa_expression:
+	case DW_CFA_expression:
+	  output_cfa_loc (cfi);
+	  break;
+
+	case DW_CFA_GNU_negative_offset_extended:
+	  /* Obsoleted by DW_CFA_offset_extended_sf.  */
+	  abort ();
+
+	default:
+	  break;
+	}
+    }
+}

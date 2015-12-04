@@ -1,0 +1,85 @@
+void
+MSAExpand(MSA *msa)
+{
+  int i,j;
+
+  msa->nseqalloc += msa->nseqlump;
+
+  msa->aseq   = ReallocOrDie(msa->aseq,   sizeof(char *) * msa->nseqalloc);
+  msa->sqname = ReallocOrDie(msa->sqname, sizeof(char *) * msa->nseqalloc);
+  msa->sqlen  = ReallocOrDie(msa->sqlen,  sizeof(char *) * msa->nseqalloc);
+  msa->wgt    = ReallocOrDie(msa->wgt,    sizeof(float)  * msa->nseqalloc);
+
+  if (msa->ss != NULL) {
+    msa->ss    = ReallocOrDie(msa->ss,    sizeof(char *) * msa->nseqalloc);
+    msa->sslen = ReallocOrDie(msa->sslen, sizeof(int)    * msa->nseqalloc);
+  }
+  if (msa->sa != NULL) {
+    msa->sa    = ReallocOrDie(msa->sa,    sizeof(char *) * msa->nseqalloc);
+    msa->salen = ReallocOrDie(msa->salen, sizeof(int)    * msa->nseqalloc);
+  }
+  if (msa->sqacc != NULL)
+    msa->sqacc = ReallocOrDie(msa->sqacc, sizeof(char *) * msa->nseqalloc);
+  if (msa->sqdesc != NULL)
+    msa->sqdesc =ReallocOrDie(msa->sqdesc,sizeof(char *) * msa->nseqalloc);
+
+  for (i = msa->nseqalloc-msa->nseqlump; i < msa->nseqalloc; i++)
+    {
+      msa->sqname[i] = NULL;
+      msa->wgt[i]    = -1.0;
+
+      if (msa->sqacc  != NULL) msa->sqacc[i]  = NULL;
+      if (msa->sqdesc != NULL) msa->sqdesc[i] = NULL;
+
+      if (msa->alen != 0) 
+	msa->aseq[i] = ReallocOrDie(msa->aseq[i], sizeof(char) * (msa->alen+1));
+      else msa->aseq[i] = NULL;
+      msa->sqlen[i] = 0;
+
+      if (msa->ss != NULL) {
+	if (msa->alen != 0) 
+	  msa->ss[i] = ReallocOrDie(msa->ss[i], sizeof(char) * (msa->alen+1));
+	else msa->ss[i] = NULL;
+	msa->sslen[i] = 0;
+      }
+      if (msa->sa != NULL) { 
+	if (msa->alen != 0) 
+	  msa->sa[i] = ReallocOrDie(msa->ss[i], sizeof(char) * (msa->alen+1));
+	else 
+	  msa->sa[i] = NULL;
+	msa->salen[i] = 0;
+      }
+    }
+
+  /* Reallocate and re-init for unparsed #=GS tags, if we have some.
+   * gs is [0..ngs-1][0..nseq-1][], so we're reallocing the middle
+   * set of pointers.
+   */
+  if (msa->gs != NULL)
+    for (i = 0; i < msa->ngs; i++)
+      {
+	if (msa->gs[i] != NULL)
+	  {
+	    msa->gs[i] = ReallocOrDie(msa->gs[i], sizeof(char *) * msa->nseqalloc);
+	    for (j = msa->nseqalloc-msa->nseqlump; j < msa->nseqalloc; j++)
+	      msa->gs[i][j] = NULL;
+	  }
+      }
+
+  /* Reallocate and re-init for unparsed #=GR tags, if we have some.
+   * gr is [0..ngs-1][0..nseq-1][], so we're reallocing the middle
+   * set of pointers.
+   */
+  if (msa->gr != NULL)
+    for (i = 0; i < msa->ngr; i++)
+      {
+	if (msa->gr[i] != NULL)
+	  {
+	    msa->gr[i] = ReallocOrDie(msa->gr[i], sizeof(char *) * msa->nseqalloc);
+	    for (j = msa->nseqalloc-msa->nseqlump; j < msa->nseqalloc; j++)
+	      msa->gr[i][j] = NULL;
+	  }
+      }
+
+  return;
+}

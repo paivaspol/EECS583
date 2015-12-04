@@ -1,0 +1,17 @@
+static int
+ix86_comp_type_attributes (type1, type2)
+     tree type1;
+     tree type2;
+{
+  /* Check for mismatch of non-default calling convention.  */
+  const char *const rtdstr = TARGET_RTD ? "cdecl" : "stdcall";
+
+  if (TREE_CODE (type1) != FUNCTION_TYPE)
+    return 1;
+
+  /* Check for mismatched return types (cdecl vs stdcall).  */
+  if (!lookup_attribute (rtdstr, TYPE_ATTRIBUTES (type1))
+      != !lookup_attribute (rtdstr, TYPE_ATTRIBUTES (type2)))
+    return 0;
+  return 1;
+}

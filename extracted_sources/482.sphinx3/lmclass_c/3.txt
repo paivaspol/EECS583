@@ -1,0 +1,21 @@
+static lmclass_t lmclass_addword (lmclass_t class, lmclass_word_t new)
+{
+    lmclass_word_t w, prev;
+    
+    assert (class != NULL);
+    assert (new != NULL);
+    
+    prev = NULL;
+    for (w = class->wordlist; w && (strcmp (w->word, new->word) != 0); w = w->next)
+	prev = w;
+    if (w)
+	return NULL;
+    
+    if (prev)
+	prev->next = new;
+    else
+	class->wordlist = new;
+    new->next = NULL;
+    
+    return class;
+}

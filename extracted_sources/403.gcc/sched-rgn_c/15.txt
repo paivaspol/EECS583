@@ -1,0 +1,23 @@
+static int
+check_live (insn, src)
+     rtx insn;
+     int src;
+{
+  /* Find the registers set by instruction.  */
+  if (GET_CODE (PATTERN (insn)) == SET
+      || GET_CODE (PATTERN (insn)) == CLOBBER)
+    return check_live_1 (src, PATTERN (insn));
+  else if (GET_CODE (PATTERN (insn)) == PARALLEL)
+    {
+      int j;
+      for (j = XVECLEN (PATTERN (insn), 0) - 1; j >= 0; j--)
+	if ((GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == SET
+	     || GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == CLOBBER)
+	    && !check_live_1 (src, XVECEXP (PATTERN (insn), 0, j)))
+	  return 0;
+
+      return 1;
+    }
+
+  return 1;
+}

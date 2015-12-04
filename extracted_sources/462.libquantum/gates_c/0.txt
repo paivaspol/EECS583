@@ -1,0 +1,25 @@
+void
+quantum_cnot(int control, int target, quantum_reg *reg)
+{
+  int i;
+  int qec;
+
+  quantum_qec_get_status(&qec, NULL);
+
+  if(qec)
+    quantum_cnot_ft(control, target, reg);
+  else
+    {
+      if(quantum_objcode_put(CNOT, control, target))
+	return;
+      
+      for(i=0; i<reg->size; i++)
+	{
+	  /* Flip the target bit of a basis state if the control bit is set */
+      
+	  if((reg->node[i].state & ((MAX_UNSIGNED) 1 << control)))
+	    reg->node[i].state ^= ((MAX_UNSIGNED) 1 << target);
+	}
+      quantum_decohere(reg);
+    }
+}

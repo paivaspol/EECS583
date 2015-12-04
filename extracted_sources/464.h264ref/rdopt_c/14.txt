@@ -1,0 +1,100 @@
+void store_macroblock_parameters (int mode)
+{
+  int  i, j, k, ****i4p, ***i3p;
+  Macroblock *currMB  = &img->mb_data[img->current_mb_nr];
+  int        bframe   = (img->type==B_SLICE);
+
+  //--- store best mode ---
+  best_mode = mode;
+  best_c_imode = currMB->c_ipred_mode;
+  best_i16offset = img->i16offset;
+#if BI_PREDICTION
+  // If condition is not really necessary.
+  if (mode == 1)
+    bi_pred_me=currMB->bi_pred_me;  
+  else
+    bi_pred_me=0;
+#endif
+
+  for (i=0; i<4; i++)
+  {
+    b8mode[i]   = currMB->b8mode[i];
+    b8pdir[i]   = currMB->b8pdir[i];
+  }
+  // Residue Color Transform
+  for (k=0, j=img->block_y; j<img->block_y+4; j++)
+  for (i=img->block_x; i<img->block_x+4; i++, k++)
+  {
+    b4_ipredmode[k] = img->ipredmode[i][j];
+    b4_intra_pred_modes[k] = currMB->intra_pred_modes[k];
+  }
+  for(i = k = 0; i < 4; i++)
+  for(j = 0; j < 4; j++,k++)
+  {
+    b8_ipredmode8x8[i][j] = img->ipredmode8x8[img->block_x+i][img->block_y+j];
+    //only every fourth value relevant
+    b8_intra_pred_modes8x8[k] = currMB->intra_pred_modes8x8[k];
+  }
+
+  //--- reconstructed blocks ----
+  for (j=0; j<16; j++)
+  for (i=0; i<16; i++)
+  {
+    rec_mbY[j][i] = enc_picture->imgY[img->pix_y+j][img->pix_x+i];
+  }
+
+  if (img->yuv_format != YUV400)
+  {
+    for (j=0; j<img->mb_cr_size_y; j++)
+    for (i=0; i<img->mb_cr_size_x; i++)
+    {
+      rec_mbU[j][i] = enc_picture->imgUV[0][img->pix_c_y+j][img->pix_c_x+i];
+      rec_mbV[j][i] = enc_picture->imgUV[1][img->pix_c_y+j][img->pix_c_x+i];
+    }
+  }
+
+
+  //--- store results of decoders ---
+  if (input->rdopt==2 && img->type!=B_SLICE)
+  {
+    for (k=0; k<input->NoOfDecoders; k++)
+    {
+      for (j=img->pix_y; j<img->pix_y+16; j++)
+      for (i=img->pix_x; i<img->pix_x+16; i++)
+      {
+        // Keep the decoded values of each MB for updating the ref frames
+        decs->decY_best[k][j][i] = decs->decY[k][j][i];
+      }
+    }
+  }
+
+  //--- coeff, cbp, kac ---
+  if (mode || bframe)
+  {
+    i4p=cofAC; cofAC=img->cofAC; img->cofAC=i4p;
+    i3p=cofDC; cofDC=img->cofDC; img->cofDC=i3p;
+    cbp     = currMB->cbp;
+    cbp_blk = currMB->cbp_blk;
+  }
+  else
+  {
+    cbp_blk = cbp = 0;
+  }
+
+  //--- store transform size ---
+  luma_transform_size_8x8_flag = currMB->luma_transform_size_8x8_flag;
+//  NoMbPartLessThan8x8Flag  = currMB->NoMbPartLessThan8x8Flag;   //DEL-VG-29072004
+
+
+  for (j=0; j<4; j++)
+  for (i=0; i<4; i++)
+  {
+    frefframe[j][i] = enc_picture->ref_idx[LIST_0][img->block_x+i][img->block_y+j];
+
+    if (bframe)
+    {
+      brefframe[j][i] = enc_picture->ref_idx[LIST_1][img->block_x+i][img->block_y+j];
+    }
+  }
+
+}

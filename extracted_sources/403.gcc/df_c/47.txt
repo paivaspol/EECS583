@@ -1,0 +1,29 @@
+static int
+df_refs_process (df)
+     struct df *df;
+{
+  unsigned int i;
+
+  /* Build new insn-def chains.  */
+  for (i = df->def_id_save; i != df->def_id; i++)
+    {
+      struct ref *def = df->defs[i];
+      unsigned int uid = DF_REF_INSN_UID (def);
+
+      /* Add def to head of def list for INSN.  */
+      df->insns[uid].defs
+	= df_link_create (def, df->insns[uid].defs);
+    }
+
+  /* Build new insn-use chains.  */
+  for (i = df->use_id_save; i != df->use_id; i++)
+    {
+      struct ref *use = df->uses[i];
+      unsigned int uid = DF_REF_INSN_UID (use);
+
+      /* Add use to head of use list for INSN.  */
+      df->insns[uid].uses
+	= df_link_create (use, df->insns[uid].uses);
+    }
+  return 0;
+}

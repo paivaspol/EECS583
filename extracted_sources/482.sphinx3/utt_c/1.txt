@@ -1,0 +1,29 @@
+void matchseg_write (FILE *fp, kb_t *kb, glist_t hyp, char *hdr)
+{
+    gnode_t *gn;
+    hyp_t *h;
+    int32 ascr, lscr;
+    dict_t *dict;
+    
+    ascr = 0;
+    lscr = 0;
+    
+    for (gn = hyp; gn; gn = gnode_next(gn)) {
+	h = (hyp_t *) gnode_ptr (gn);
+	ascr += h->ascr;
+	lscr += h->lscr;
+    }
+    
+    dict = kbcore_dict(kb->kbcore);
+    
+    fprintf (fp, "%s%s S 0 T %d A %d L %d", (hdr ? hdr : ""), kb->uttid,
+	     ascr+lscr, ascr, lscr);
+    
+    for (gn = hyp; gn && (gnode_next(gn)); gn = gnode_next(gn)) {
+	h = (hyp_t *) gnode_ptr (gn);
+	fprintf (fp, " %d %d %d %s", h->sf, h->ascr, h->lscr,
+		 dict_wordstr(dict, h->id));
+    }
+    fprintf (fp, " %d\n", kb->nfr);
+    fflush (fp);
+}

@@ -1,0 +1,22 @@
+static char*
+skip_until_gt(char *beg, char *end)
+{
+    /* tries to emulate quote skipping behaviour observed in MSIE */
+    char *s = beg;
+    char quote = '\0';
+    char prev = ' ';
+    while (s < end) {
+	if (!quote && *s == '>')
+	    return s;
+	if (*s == '"' || *s == '\'') {
+	    if (*s == quote) {
+		quote = '\0';  /* end of quoted string */
+	    }
+	    else if (!quote && (prev == ' ' || prev == '=')) {
+		quote = *s;
+	    }
+	}
+	prev = *s++;
+    }
+    return end;
+}

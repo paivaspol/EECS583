@@ -1,0 +1,112 @@
+static void
+calc_dfs_tree_nonrec (di, bb, reverse)
+     struct dom_info *di;
+     basic_block bb;
+     enum cdi_direction reverse;
+{
+  /* We never call this with bb==EXIT_BLOCK_PTR (ENTRY_BLOCK_PTR if REVERSE).  */
+  /* We call this _only_ if bb is not already visited.  */
+  edge e;
+  TBB child_i, my_i = 0;
+  edge *stack;
+  int sp;
+  /* Start block (ENTRY_BLOCK_PTR for forward problem, EXIT_BLOCK for backward
+     problem).  */
+  basic_block en_block;
+  /* Ending block.  */
+  basic_block ex_block;
+
+  stack = (edge *) xmalloc ((n_basic_blocks + 3) * sizeof (edge));
+  sp = 0;
+
+  /* Initialize our border blocks, and the first edge.  */
+  if (reverse)
+    {
+      e = bb->pred;
+      en_block = EXIT_BLOCK_PTR;
+      ex_block = ENTRY_BLOCK_PTR;
+    }
+  else
+    {
+      e = bb->succ;
+      en_block = ENTRY_BLOCK_PTR;
+      ex_block = EXIT_BLOCK_PTR;
+    }
+
+  /* When the stack is empty we break out of this loop.  */
+  while (1)
+    {
+      basic_block bn;
+
+      /* This loop traverses edges e in depth first manner, and fills the
+         stack.  */
+      while (e)
+	{
+	  edge e_next;
+
+	  /* Deduce from E the current and the next block (BB and BN), and the
+	     next edge.  */
+	  if (reverse)
+	    {
+	      bn = e->src;
+
+	      /* If the next node BN is either already visited or a border
+	         block the current edge is useless, and simply overwritten
+	         with the next edge out of the current node.  */
+	      if (bn == ex_block || di->dfs_order[bn->index])
+		{
+		  e = e->pred_next;
+		  continue;
+		}
+	      bb = e->dest;
+	      e_next = bn->pred;
+	    }
+	  else
+	    {
+	      bn = e->dest;
+	      if (bn == ex_block || di->dfs_order[bn->index])
+		{
+		  e = e->succ_next;
+		  continue;
+		}
+	      bb = e->src;
+	      e_next = bn->succ;
+	    }
+
+	  if (bn == en_block)
+	    abort ();
+
+	  /* Fill the DFS tree info calculatable _before_ recursing.  */
+	  if (bb != en_block)
+	    my_i = di->dfs_order[bb->index];
+	  else
+	    my_i = di->dfs_order[n_basic_blocks];
+	  child_i = di->dfs_order[bn->index] = di->dfsnum++;
+	  di->dfs_to_bb[child_i] = bn;
+	  di->dfs_parent[child_i] = my_i;
+
+	  /* Save the current point in the CFG on the stack, and recurse.  */
+	  stack[sp++] = e;
+	  e = e_next;
+	}
+
+      if (!sp)
+	break;
+      e = stack[--sp];
+
+      /* OK.  The edge-list was exhausted, meaning normally we would
+         end the recursion.  After returning from the recursive call,
+         there were (may be) other statements which were run after a
+         child node was completely considered by DFS.  Here is the
+         point to do it in the non-recursive variant.
+         E.g. The block just completed is in e->dest for forward DFS,
+         the block not yet completed (the parent of the one above)
+         in e->src.  This could be used e.g. for computing the number of
+         descendants or the tree depth.  */
+      if (reverse)
+	e = e->pred_next;
+      else
+	e = e->succ_next;
+    }
+  free (stack);
+}

@@ -1,0 +1,19 @@
+void
+genrtl_while_stmt (t)
+     tree t;
+{
+  tree cond;
+  emit_nop ();
+  emit_line_note (input_filename, lineno);
+  expand_start_loop (1); 
+  genrtl_do_pushlevel ();
+
+  cond = expand_cond (WHILE_COND (t));
+  emit_line_note (input_filename, lineno);
+  expand_exit_loop_top_cond (0, cond);
+  genrtl_do_pushlevel ();
+  
+  expand_stmt (WHILE_BODY (t));
+
+  expand_end_loop ();
+}

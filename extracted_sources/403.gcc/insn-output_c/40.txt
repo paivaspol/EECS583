@@ -1,0 +1,31 @@
+static const char *
+output_84 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_SSE:
+      if (register_operand (operands[0], DImode)
+	  && register_operand (operands[1], DImode))
+	  return "movdqa\t{%1, %0|%0, %1}";
+      /* FALLTHRU */
+    case TYPE_MMX:
+      return "movq\t{%1, %0|%0, %1}";
+    case TYPE_MULTI:
+      return "#";
+    case TYPE_LEA:
+      return "lea{q}\t{%a1, %0|%0, %a1}";
+    default:
+      if (flag_pic && SYMBOLIC_CONST (operands[1]))
+	abort ();
+      if (get_attr_mode (insn) == MODE_SI)
+	return "mov{l}\t{%k1, %k0|%k0, %k1}";
+      else if (which_alternative == 2)
+	return "movabs{q}\t{%1, %0|%0, %1}";
+      else
+	return "mov{q}\t{%1, %0|%0, %1}";
+    }
+}
+}

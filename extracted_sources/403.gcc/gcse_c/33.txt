@@ -1,0 +1,33 @@
+static void 
+canon_list_insert (dest, unused1, v_insn)
+     rtx    dest ATTRIBUTE_UNUSED;
+     rtx    unused1 ATTRIBUTE_UNUSED;
+     void * v_insn;
+{
+  rtx dest_addr, insn;
+  int bb;
+
+  while (GET_CODE (dest) == SUBREG
+      || GET_CODE (dest) == ZERO_EXTRACT
+      || GET_CODE (dest) == SIGN_EXTRACT
+      || GET_CODE (dest) == STRICT_LOW_PART)
+    dest = XEXP (dest, 0);
+
+  /* If DEST is not a MEM, then it will not conflict with a load.  Note
+     that function calls are assumed to clobber memory, but are handled
+     elsewhere.  */
+
+  if (GET_CODE (dest) != MEM)
+    return;
+
+  dest_addr = get_addr (XEXP (dest, 0));
+  dest_addr = canon_rtx (dest_addr);
+  insn = (rtx) v_insn;  
+  bb = BLOCK_NUM (insn);
+
+  canon_modify_mem_list[bb] = 
+    alloc_EXPR_LIST (VOIDmode, dest_addr, canon_modify_mem_list[bb]);
+  canon_modify_mem_list[bb] = 
+    alloc_EXPR_LIST (VOIDmode, dest, canon_modify_mem_list[bb]);
+  bitmap_set_bit (canon_modify_mem_list_set, bb);
+}

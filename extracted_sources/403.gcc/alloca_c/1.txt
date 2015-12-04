@@ -1,0 +1,66 @@
+static long
+i00afunc (long *address)
+{
+  struct stk_stat status;
+  struct stk_trailer *trailer;
+  long *block, size;
+  long result = 0;
+
+  /* We want to iterate through all of the segments.  The first
+     step is to get the stack status structure.  We could do this
+     more quickly and more directly, perhaps, by referencing the
+     $LM00 common block, but I know that this works.  */
+
+  STKSTAT (&status);
+
+  /* Set up the iteration.  */
+
+  trailer = (struct stk_trailer *) (status.current_address
+				    + status.current_size
+				    - 15);
+
+  /* There must be at least one stack segment.  Therefore it is
+     a fatal error if "trailer" is null.  */
+
+  if (trailer == 0)
+    abort ();
+
+  /* Discard segments that do not contain our argument address.  */
+
+  while (trailer != 0)
+    {
+      block = (long *) trailer->this_address;
+      size = trailer->this_size;
+      if (block == 0 || size == 0)
+	abort ();
+      trailer = (struct stk_trailer *) trailer->link;
+      if ((block <= address) && (address < (block + size)))
+	break;
+    }
+
+  /* Set the result to the offset in this segment and add the sizes
+     of all predecessor segments.  */
+
+  result = address - block;
+
+  if (trailer == 0)
+    {
+      return result;
+    }
+
+  do
+    {
+      if (trailer->this_size <= 0)
+	abort ();
+      result += trailer->this_size;
+      trailer = (struct stk_trailer *) trailer->link;
+    }
+  while (trailer != 0);
+
+  /* We are done.  Note that if you present a bogus address (one
+     not in any segment), you will get a different number back, formed
+     from subtracting the address of the first block.  This is probably
+     not what you want.  */
+
+  return (result);
+}

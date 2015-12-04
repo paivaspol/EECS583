@@ -1,0 +1,40 @@
+static int
+skip_whitespace (pfile, c)
+     cpp_reader *pfile;
+     cppchar_t c;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  unsigned int warned = 0;
+
+  do
+    {
+      /* Horizontal space always OK.  */
+      if (c == ' ')
+	;
+      else if (c == '\t')
+	adjust_column (pfile);
+      /* Just \f \v or \0 left.  */
+      else if (c == '\0')
+	{
+	  if (buffer->cur - 1 == buffer->rlimit)
+	    return 0;
+	  if (!warned)
+	    {
+	      cpp_warning (pfile, "null character(s) ignored");
+	      warned = 1;
+	    }
+	}
+      else if (pfile->state.in_directive && CPP_PEDANTIC (pfile))
+	cpp_pedwarn_with_line (pfile, pfile->line,
+			       CPP_BUF_COL (buffer),
+			       "%s in preprocessing directive",
+			       c == '\f' ? "form feed" : "vertical tab");
+
+      c = *buffer->cur++;
+    }
+  /* We only want non-vertical space, i.e. ' ' \t \f \v \0.  */
+  while (is_nvspace (c));
+
+  buffer->cur--;
+  return 1;
+}

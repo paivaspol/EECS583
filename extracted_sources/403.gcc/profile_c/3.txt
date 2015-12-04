@@ -1,0 +1,288 @@
+void
+branch_prob ()
+{
+  int i;
+  int num_edges, ignored_edges;
+  struct edge_list *el;
+
+  /* Start of a function.  */
+  if (flag_test_coverage)
+    output_gcov_string (current_function_name, (long) -2);
+
+  total_num_times_called++;
+
+  flow_call_edges_add (NULL);
+  add_noreturn_fake_exit_edges ();
+
+  /* We can't handle cyclic regions constructed using abnormal edges.
+     To avoid these we replace every source of abnormal edge by a fake
+     edge from entry node and every destination by fake edge to exit.
+     This keeps graph acyclic and our calculation exact for all normal
+     edges except for exit and entrance ones.
+
+     We also add fake exit edges for each call and asm statement in the
+     basic, since it may not return.  */
+
+  for (i = 0; i < n_basic_blocks ; i++)
+    {
+      int need_exit_edge = 0, need_entry_edge = 0;
+      int have_exit_edge = 0, have_entry_edge = 0;
+      basic_block bb = BASIC_BLOCK (i);
+      rtx insn;
+      edge e;
+
+      /* Add fake edges from entry block to the call insns that may return
+	 twice.  The CFG is not quite correct then, as call insn plays more
+	 role of CODE_LABEL, but for our purposes, everything should be OK,
+	 as we never insert code to the beggining of basic block.  */
+      for (insn = bb->head; insn != NEXT_INSN (bb->end);
+	   insn = NEXT_INSN (insn))
+	{
+	  if (GET_CODE (insn) == CALL_INSN
+	      && find_reg_note (insn, REG_SETJMP, NULL))
+	    {
+	      if (GET_CODE (bb->head) == CODE_LABEL
+		  || insn != NEXT_INSN (bb->head))
+		{
+		  e = split_block (bb, PREV_INSN (insn));
+		  make_edge (ENTRY_BLOCK_PTR, e->dest, EDGE_FAKE);
+		  break;
+		}
+	      else
+		{
+		  /* We should not get abort here, as call to setjmp should not
+		     be the very first instruction of function.  */
+		  if (!i)
+		    abort ();
+		  make_edge (ENTRY_BLOCK_PTR, bb, EDGE_FAKE);
+		}
+	    }
+	}
+
+      for (e = bb->succ; e; e = e->succ_next)
+	{
+	  if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
+	       && e->dest != EXIT_BLOCK_PTR)
+	    need_exit_edge = 1;
+	  if (e->dest == EXIT_BLOCK_PTR)
+	    have_exit_edge = 1;
+	}
+      for (e = bb->pred; e; e = e->pred_next)
+	{
+	  if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
+	       && e->src != ENTRY_BLOCK_PTR)
+	    need_entry_edge = 1;
+	  if (e->src == ENTRY_BLOCK_PTR)
+	    have_entry_edge = 1;
+	}
+
+      if (need_exit_edge && !have_exit_edge)
+	{
+	  if (rtl_dump_file)
+	    fprintf (rtl_dump_file, "Adding fake exit edge to bb %i\n",
+		     bb->index);
+          make_edge (bb, EXIT_BLOCK_PTR, EDGE_FAKE);
+	}
+      if (need_entry_edge && !have_entry_edge)
+	{
+	  if (rtl_dump_file)
+	    fprintf (rtl_dump_file, "Adding fake entry edge to bb %i\n",
+		     bb->index);
+          make_edge (ENTRY_BLOCK_PTR, bb, EDGE_FAKE);
+	}
+    }
+
+  el = create_edge_list ();
+  num_edges = NUM_EDGES (el);
+  alloc_aux_for_edges (sizeof (struct edge_info));
+
+  ignored_edges = 0;
+  for (i = 0 ; i < num_edges ; i++)
+    {
+      edge e = INDEX_EDGE (el, i);
+      e->count = 0;
+
+      /* Mark edges we've replaced by fake edges above as ignored.  */
+      if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
+	  && e->src != ENTRY_BLOCK_PTR && e->dest != EXIT_BLOCK_PTR)
+        {
+	  EDGE_INFO (e)->ignore = 1;
+	  ignored_edges++;
+        }
+    }
+
+#ifdef ENABLE_CHECKING
+  verify_flow_info ();
+#endif
+
+  /* Output line number information about each basic block for
+     GCOV utility.  */
+  if (flag_test_coverage)
+    {
+      int i = 0;
+      for (i = 0 ; i < n_basic_blocks; i++)
+        {
+	  basic_block bb = BASIC_BLOCK (i);
+	  rtx insn = bb->head;
+          static int ignore_next_note = 0;
+
+	  /* We are looking for line number notes.  Search backward before
+	     basic block to find correct ones.  */
+	  insn = prev_nonnote_insn (insn);
+	  if (!insn)
+	    insn = get_insns ();
+	  else
+	    insn = NEXT_INSN (insn);
+
+	  /* Output a zero to the .bb file to indicate that a new
+	     block list is starting.  */
+	  __write_long (0, bb_file, 4);
+
+	  while (insn != bb->end)
+	    {
+	      if (GET_CODE (insn) == NOTE)
+		{
+		  /* Must ignore the line number notes that immediately
+		     follow the end of an inline function to avoid counting
+		     it twice.  There is a note before the call, and one
+		     after the call.  */
+		  if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_REPEATED_LINE_NUMBER)
+		    ignore_next_note = 1;
+		  else if (NOTE_LINE_NUMBER (insn) > 0)
+		    {
+		      if (ignore_next_note)
+			ignore_next_note = 0;
+		      else
+			{
+			  /* If this is a new source file, then output the
+			     file's name to the .bb file.  */
+			  if (! last_bb_file_name
+			      || strcmp (NOTE_SOURCE_FILE (insn),
+					 last_bb_file_name))
+			    {
+			      if (last_bb_file_name)
+				free (last_bb_file_name);
+			      last_bb_file_name
+				= xstrdup (NOTE_SOURCE_FILE (insn));
+			      output_gcov_string (NOTE_SOURCE_FILE (insn),
+						  (long)-1);
+			    }
+			  /* Output the line number to the .bb file.  Must be
+			     done after the output_bb_profile_data() call, and
+			     after the file name is written, to ensure that it
+			     is correctly handled by gcov.  */
+			  __write_long (NOTE_LINE_NUMBER (insn), bb_file, 4);
+			}
+		    }
+		}
+	      insn = NEXT_INSN (insn);
+	    }
+        }
+      __write_long (0, bb_file, 4);
+    }
+
+  /* Create spanning tree from basic block graph, mark each edge that is
+     on the spanning tree.  We insert as many abnormal and critical edges
+     as possible to minimize number of edge splits necessary.  */
+
+  find_spanning_tree (el);
+
+  /* Fake edges that are not on the tree will not be instrumented, so
+     mark them ignored.  */
+  for (i = 0; i < num_edges; i++)
+    {
+      edge e = INDEX_EDGE (el, i);
+      struct edge_info *inf = EDGE_INFO (e);
+      if ((e->flags & EDGE_FAKE) && !inf->ignore && !inf->on_tree)
+        {
+          inf->ignore = 1;
+          ignored_edges++;
+        }
+    }
+
+  total_num_blocks += n_basic_blocks + 2;
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "%d basic blocks\n", n_basic_blocks);
+
+  total_num_edges += num_edges;
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "%d edges\n", num_edges);
+
+  total_num_edges_ignored += ignored_edges;
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "%d ignored edges\n", ignored_edges);
+
+  /* Create a .bbg file from which gcov can reconstruct the basic block
+     graph.  First output the number of basic blocks, and then for every
+     edge output the source and target basic block numbers.
+     NOTE: The format of this file must be compatible with gcov.  */
+
+  if (flag_test_coverage)
+    {
+      int flag_bits;
+
+      /* The plus 2 stands for entry and exit block.  */
+      __write_long (n_basic_blocks + 2, bbg_file, 4);
+      __write_long (num_edges - ignored_edges + 1, bbg_file, 4);
+
+      for (i = 0; i < n_basic_blocks + 1; i++)
+	{
+	  basic_block bb = GCOV_INDEX_TO_BB (i);
+	  edge e;
+	  long count = 0;
+
+	  for (e = bb->succ; e; e = e->succ_next)
+	    if (!EDGE_INFO (e)->ignore)
+	      count++;
+	  __write_long (count, bbg_file, 4);
+
+	  for (e = bb->succ; e; e = e->succ_next)
+	    {
+	      struct edge_info *i = EDGE_INFO (e);
+	      if (!i->ignore)
+		{
+		  flag_bits = 0;
+		  if (i->on_tree)
+		    flag_bits |= 0x1;
+		  if (e->flags & EDGE_FAKE)
+		    flag_bits |= 0x2;
+		  if (e->flags & EDGE_FALLTHRU)
+		    flag_bits |= 0x4;
+
+		  __write_long (BB_TO_GCOV_INDEX (e->dest), bbg_file, 4);
+		  __write_long (flag_bits, bbg_file, 4);
+	        }
+	    }
+	}
+      /* Emit fake loopback edge for EXIT block to maintain compatibility with
+         old gcov format.  */
+      __write_long (1, bbg_file, 4);
+      __write_long (0, bbg_file, 4);
+      __write_long (0x1, bbg_file, 4);
+
+      /* Emit a -1 to separate the list of all edges from the list of
+	 loop back edges that follows.  */
+      __write_long (-1, bbg_file, 4);
+    }
+
+  if (flag_branch_probabilities)
+    compute_branch_probabilities ();
+
+  /* For each edge not on the spanning tree, add counting code as rtl.  */
+
+  if (profile_arc_flag)
+    {
+      instrument_edges (el);
+      allocate_reg_info (max_reg_num (), FALSE, FALSE);
+    }
+
+  remove_fake_edges ();
+  /* Re-merge split basic blocks and the mess introduced by
+     insert_insn_on_edge.  */
+  cleanup_cfg (profile_arc_flag ? CLEANUP_EXPENSIVE : 0);
+  if (rtl_dump_file)
+    dump_flow_info (rtl_dump_file);
+
+  free_aux_for_edges ();
+  free_edge_list (el);
+}

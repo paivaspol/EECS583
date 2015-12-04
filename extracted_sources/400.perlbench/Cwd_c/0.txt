@@ -1,0 +1,146 @@
+static
+char *
+bsd_realpath(path, resolved)
+	const char *path;
+	char *resolved;
+{
+#ifdef VMS
+       dTHX;
+       return Perl_rmsexpand(aTHX_ (char*)path, resolved, NULL, 0);
+#else
+	int rootd, serrno;
+	char *p, *q, wbuf[MAXPATHLEN];
+	int symlinks = 0;
+
+	/* Save the starting point. */
+#ifdef HAS_FCHDIR
+	int fd;
+
+	if ((fd = open(".", O_RDONLY)) < 0) {
+		(void)strcpy(resolved, ".");
+		return (NULL);
+	}
+#else
+	char wd[MAXPATHLEN];
+
+	if (getcwd(wd, MAXPATHLEN - 1) == NULL) {
+		(void)strcpy(resolved, ".");
+		return (NULL);
+	}
+#endif
+
+	/*
+	 * Find the dirname and basename from the path to be resolved.
+	 * Change directory to the dirname component.
+	 * lstat the basename part.
+	 *     if it is a symlink, read in the value and loop.
+	 *     if it is a directory, then change to that directory.
+	 * get the current directory name and append the basename.
+	 */
+	(void)strncpy(resolved, path, MAXPATHLEN - 1);
+	resolved[MAXPATHLEN - 1] = '\0';
+loop:
+	q = strrchr(resolved, '/');
+	if (q != NULL) {
+		p = q + 1;
+		if (q == resolved)
+			q = "/";
+		else {
+			do {
+				--q;
+			} while (q > resolved && *q == '/');
+			q[1] = '\0';
+			q = resolved;
+		}
+		if (chdir(q) < 0)
+			goto err1;
+	} else
+		p = resolved;
+
+#if defined(HAS_LSTAT) && defined(HAS_READLINK) && defined(HAS_SYMLINK)
+    {
+	struct stat sb;
+	/* Deal with the last component. */
+	if (lstat(p, &sb) == 0) {
+		if (S_ISLNK(sb.st_mode)) {
+			int n;
+			if (++symlinks > MAXSYMLINKS) {
+				errno = ELOOP;
+				goto err1;
+			}
+			n = readlink(p, resolved, MAXPATHLEN-1);
+			if (n < 0)
+				goto err1;
+			resolved[n] = '\0';
+			goto loop;
+		}
+		if (S_ISDIR(sb.st_mode)) {
+			if (chdir(p) < 0)
+				goto err1;
+			p = "";
+		}
+	}
+    }
+#endif
+
+	/*
+	 * Save the last component name and get the full pathname of
+	 * the current directory.
+	 */
+	(void)strcpy(wbuf, p);
+	if (getcwd(resolved, MAXPATHLEN) == 0)
+		goto err1;
+
+	/*
+	 * Join the two strings together, ensuring that the right thing
+	 * happens if the last component is empty, or the dirname is root.
+	 */
+	if (resolved[0] == '/' && resolved[1] == '\0')
+		rootd = 1;
+	else
+		rootd = 0;
+
+	if (*wbuf) {
+		if (strlen(resolved) + strlen(wbuf) + (1 - rootd) + 1 > MAXPATHLEN) {
+			errno = ENAMETOOLONG;
+			goto err1;
+		}
+		if (rootd == 0)
+			(void)strcat(resolved, "/");
+		(void)strcat(resolved, wbuf);
+	}
+
+	/* Go back to where we came from. */
+#ifdef HAS_FCHDIR
+	if (fchdir(fd) < 0) {
+		serrno = errno;
+		goto err2;
+	}
+#else
+	if (chdir(wd) < 0) {
+		serrno = errno;
+		goto err2;
+	}
+#endif
+
+	/* It's okay if the close fails, what's an fd more or less? */
+#ifdef HAS_FCHDIR
+	(void)close(fd);
+#endif
+	return (resolved);
+
+err1:	serrno = errno;
+#ifdef HAS_FCHDIR
+	(void)fchdir(fd);
+#else
+	(void)chdir(wd);
+#endif
+
+err2:
+#ifdef HAS_FCHDIR
+	(void)close(fd);
+#endif
+	errno = serrno;
+	return (NULL);
+#endif
+}

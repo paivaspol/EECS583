@@ -1,0 +1,23 @@
+void ps_ctext(FILE *ps,real x1,real y1,char *str,int expos)
+{
+  if (expos == eXLeft) {
+    ps_text(ps,x1,y1,str);
+    return;
+  }
+  ps_moveto(ps,x1,y1);
+  fprintf(ps,"(%s) stringwidth\n",str);
+  switch (expos) {
+  case eXLeft:
+    fprintf(ps,"exch 0 exch pop exch\n");
+    break;
+  case eXCenter:
+    fprintf(ps,"exch 2 div neg exch\n");
+    break;
+  case eXRight:
+    fprintf(ps,"exch neg exch\n");
+    break;
+  default:
+    fatal_error(0,"invalid position index (expos=%d)",expos);
+  }
+  fprintf(ps,"rmoveto (%s) show\n",str);
+}

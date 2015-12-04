@@ -1,0 +1,41 @@
+static void
+store_constructor_field (target, bitsize, bitpos, mode, exp, type, cleared,
+			 alias_set)
+     rtx target;
+     unsigned HOST_WIDE_INT bitsize;
+     HOST_WIDE_INT bitpos;
+     enum machine_mode mode;
+     tree exp, type;
+     int cleared;
+     int alias_set;
+{
+  if (TREE_CODE (exp) == CONSTRUCTOR
+      && bitpos % BITS_PER_UNIT == 0
+      /* If we have a non-zero bitpos for a register target, then we just
+	 let store_field do the bitfield handling.  This is unlikely to
+	 generate unnecessary clear instructions anyways.  */
+      && (bitpos == 0 || GET_CODE (target) == MEM))
+    {
+      if (GET_CODE (target) == MEM)
+	target
+	  = adjust_address (target,
+			    GET_MODE (target) == BLKmode
+			    || 0 != (bitpos
+				     % GET_MODE_ALIGNMENT (GET_MODE (target)))
+			    ? BLKmode : VOIDmode, bitpos / BITS_PER_UNIT);
+
+
+      /* Update the alias set, if required.  */
+      if (GET_CODE (target) == MEM && ! MEM_KEEP_ALIAS_SET_P (target)
+	  && MEM_ALIAS_SET (target) != 0)
+	{
+	  target = copy_rtx (target);
+	  set_mem_alias_set (target, alias_set);
+	}
+
+      store_constructor (exp, target, cleared, bitsize / BITS_PER_UNIT);
+    }
+  else
+    store_field (target, bitsize, bitpos, mode, exp, VOIDmode, 0, type,
+		 alias_set);
+}

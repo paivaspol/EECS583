@@ -1,0 +1,95 @@
+static int store_code(pTHX_ stcxt_t *cxt, CV *cv)
+{
+#if PERL_VERSION < 6
+    /*
+	 * retrieve_code does not work with perl 5.005 or less
+	 */
+	return store_other(aTHX_ cxt, (SV*)cv);
+#else
+	dSP;
+	I32 len;
+	int count, reallen;
+	SV *text, *bdeparse;
+
+	TRACEME(("store_code (0x%"UVxf")", PTR2UV(cv)));
+
+	if (
+		cxt->deparse == 0 ||
+		(cxt->deparse < 0 && !(cxt->deparse =
+			SvTRUE(get_sv("Storable::Deparse", TRUE)) ? 1 : 0))
+	) {
+		return store_other(aTHX_ cxt, (SV*)cv);
+	}
+
+	/*
+	 * Require B::Deparse. At least B::Deparse 0.61 is needed for
+	 * blessed code references.
+	 */
+	/* Ownership of both SVs is passed to load_module, which frees them. */
+	load_module(PERL_LOADMOD_NOIMPORT, newSVpvn("B::Deparse",10), newSVnv(0.61));
+
+	ENTER;
+	SAVETMPS;
+
+	/*
+	 * create the B::Deparse object
+	 */
+
+	PUSHMARK(sp);
+	XPUSHs(sv_2mortal(newSVpvn("B::Deparse",10)));
+	PUTBACK;
+	count = call_method("new", G_SCALAR);
+	SPAGAIN;
+	if (count != 1)
+		CROAK(("Unexpected return value from B::Deparse::new\n"));
+	bdeparse = POPs;
+
+	/*
+	 * call the coderef2text method
+	 */
+
+	PUSHMARK(sp);
+	XPUSHs(bdeparse); /* XXX is this already mortal? */
+	XPUSHs(sv_2mortal(newRV_inc((SV*)cv)));
+	PUTBACK;
+	count = call_method("coderef2text", G_SCALAR);
+	SPAGAIN;
+	if (count != 1)
+		CROAK(("Unexpected return value from B::Deparse::coderef2text\n"));
+
+	text = POPs;
+	len = SvLEN(text);
+	reallen = strlen(SvPV_nolen(text));
+
+	/*
+	 * Empty code references or XS functions are deparsed as
+	 * "(prototype) ;" or ";".
+	 */
+
+	if (len == 0 || *(SvPV_nolen(text)+reallen-1) == ';') {
+	    CROAK(("The result of B::Deparse::coderef2text was empty - maybe you're trying to serialize an XS function?\n"));
+	}
+
+	/* 
+	 * Signal code by emitting SX_CODE.
+	 */
+
+	PUTMARK(SX_CODE);
+	cxt->tagnum++;   /* necessary, as SX_CODE is a SEEN() candidate */
+	TRACEME(("size = %d", len));
+	TRACEME(("code = %s", SvPV_nolen(text)));
+
+	/*
+	 * Now store the source code.
+	 */
+
+	STORE_SCALAR(SvPV_nolen(text), len);
+
+	FREETMPS;
+	LEAVE;
+
+	TRACEME(("ok (code)"));
+
+	return 0;
+#endif
+}

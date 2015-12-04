@@ -1,0 +1,32 @@
+static void
+compute_transpout ()
+{
+  int bb;
+  unsigned int i;
+  struct expr *expr;
+
+  sbitmap_vector_ones (transpout, n_basic_blocks);
+
+  for (bb = 0; bb < n_basic_blocks; ++bb)
+    {
+      /* Note that flow inserted a nop a the end of basic blocks that
+	 end in call instructions for reasons other than abnormal
+	 control flow.  */
+      if (GET_CODE (BLOCK_END (bb)) != CALL_INSN)
+	continue;
+
+      for (i = 0; i < expr_hash_table_size; i++)
+	for (expr = expr_hash_table[i]; expr ; expr = expr->next_same_hash)
+	  if (GET_CODE (expr->expr) == MEM)
+	    {
+	      if (GET_CODE (XEXP (expr->expr, 0)) == SYMBOL_REF
+		  && CONSTANT_POOL_ADDRESS_P (XEXP (expr->expr, 0)))
+		continue;
+		
+	      /* ??? Optimally, we would use interprocedural alias
+		 analysis to determine if this mem is actually killed
+		 by this call.  */
+	      RESET_BIT (transpout[bb], expr->bitmap_index);
+	    }
+    }
+}

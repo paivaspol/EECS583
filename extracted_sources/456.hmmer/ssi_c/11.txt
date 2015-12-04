@@ -1,0 +1,26 @@
+int 
+SSIGetFilePosition(FILE *fp, int mode, SSIOFFSET *ret_offset)
+{
+  if (mode == SSI_OFFSET_I32) 
+    {
+      ret_offset->mode    = SSI_OFFSET_I32;
+      ret_offset->off.i32 = ftell(fp);
+      if (ret_offset->off.i32 == -1) return SSI_ERR_TELL_FAILED;
+    }
+  else if (mode != SSI_OFFSET_I64) abort(); /* only happens on a coding error */
+  else {
+    ret_offset->mode    = SSI_OFFSET_I64;
+#ifndef HAS_64BIT_FILE_OFFSETS
+    return SSI_ERR_NO64BIT;
+#elif defined HAVE_FTELLO && SIZEOF_OFF_T == 8
+    if ((ret_offset->off.i64 = ftello(fp)) == -1)   return SSI_ERR_TELL_FAILED;
+#elif defined HAVE_FTELLO64 && SIZEOF_OFF64_T == 8
+    if ((ret_offset->off.i64 = ftello64(fp)) == -1) return SSI_ERR_TELL_FAILED;
+#elif defined HAVE_FTELL64
+    if ((ret_offset->off.i64 = ftell64(fp)) == -1)  return SSI_ERR_TELL_FAILED;
+#elif defined ARITHMETIC_FPOS_T && SIZEOF_FPOS_T == 8
+    if (fgetpos(fp, &(ret_offset->off.i64)) != 0)   return SSI_ERR_TELL_FAILED;
+#endif
+  }
+  return 0;
+}

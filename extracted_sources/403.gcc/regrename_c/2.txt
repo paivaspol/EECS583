@@ -1,0 +1,22 @@
+static void
+clear_dead_regs (pset, kind, notes)
+     HARD_REG_SET *pset;
+     enum machine_mode kind;
+     rtx notes;
+{
+  rtx note;
+  for (note = notes; note; note = XEXP (note, 1))
+    if (REG_NOTE_KIND (note) == kind && REG_P (XEXP (note, 0)))
+      {
+	rtx reg = XEXP (note, 0);
+	unsigned int regno = REGNO (reg);
+	int nregs = HARD_REGNO_NREGS (regno, GET_MODE (reg));
+
+	/* There must not be pseudos at this point.  */
+	if (regno + nregs > FIRST_PSEUDO_REGISTER)
+	  abort ();
+
+	while (nregs-- > 0)
+	  CLEAR_HARD_REG_BIT (*pset, regno + nregs);
+      }
+}

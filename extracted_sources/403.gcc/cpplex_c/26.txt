@@ -1,0 +1,19 @@
+static _cpp_buff *
+new_buff (len)
+     size_t len;
+{
+  _cpp_buff *result;
+  unsigned char *base;
+
+  if (len < MIN_BUFF_SIZE)
+    len = MIN_BUFF_SIZE;
+  len = CPP_ALIGN (len, DEFAULT_ALIGNMENT);
+
+  base = xmalloc (len + sizeof (_cpp_buff));
+  result = (_cpp_buff *) (base + len);
+  result->base = base;
+  result->cur = base;
+  result->limit = base + len;
+  result->next = NULL;
+  return result;
+}

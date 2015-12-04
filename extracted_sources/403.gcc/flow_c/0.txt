@@ -1,0 +1,84 @@
+static int insn_dead_p			PARAMS ((struct propagate_block_info *,
+						 rtx, int, rtx));
+static int libcall_dead_p		PARAMS ((struct propagate_block_info *,
+						 rtx, rtx));
+static void mark_set_regs		PARAMS ((struct propagate_block_info *,
+						 rtx, rtx));
+static void mark_set_1			PARAMS ((struct propagate_block_info *,
+						 enum rtx_code, rtx, rtx,
+						 rtx, int));
+static int find_regno_partial		PARAMS ((rtx *, void *));
+
+#ifdef HAVE_conditional_execution
+static int mark_regno_cond_dead		PARAMS ((struct propagate_block_info *,
+						 int, rtx));
+static void free_reg_cond_life_info	PARAMS ((splay_tree_value));
+static int flush_reg_cond_reg_1		PARAMS ((splay_tree_node, void *));
+static void flush_reg_cond_reg		PARAMS ((struct propagate_block_info *,
+						 int));
+static rtx elim_reg_cond		PARAMS ((rtx, unsigned int));
+static rtx ior_reg_cond			PARAMS ((rtx, rtx, int));
+static rtx not_reg_cond			PARAMS ((rtx));
+static rtx and_reg_cond			PARAMS ((rtx, rtx, int));
+#endif
+#ifdef AUTO_INC_DEC
+static void attempt_auto_inc		PARAMS ((struct propagate_block_info *,
+						 rtx, rtx, rtx, rtx, rtx));
+static void find_auto_inc		PARAMS ((struct propagate_block_info *,
+						 rtx, rtx));
+static int try_pre_increment_1		PARAMS ((struct propagate_block_info *,
+						 rtx));
+static int try_pre_increment		PARAMS ((rtx, rtx, HOST_WIDE_INT));
+#endif
+static void mark_used_reg		PARAMS ((struct propagate_block_info *,
+						 rtx, rtx, rtx));
+static void mark_used_regs		PARAMS ((struct propagate_block_info *,
+						 rtx, rtx, rtx));
+void dump_flow_info			PARAMS ((FILE *));
+void debug_flow_info			PARAMS ((void));
+static void add_to_mem_set_list		PARAMS ((struct propagate_block_info *,
+						 rtx));
+static void invalidate_mems_from_autoinc PARAMS ((struct propagate_block_info *,
+						  rtx));
+static void invalidate_mems_from_set	PARAMS ((struct propagate_block_info *,
+						 rtx));
+static void delete_dead_jumptables	PARAMS ((void));
+static void clear_log_links		PARAMS ((sbitmap));
+
+
+void
+check_function_return_warnings ()
+{
+  if (warn_missing_noreturn
+      && !TREE_THIS_VOLATILE (cfun->decl)
+      && EXIT_BLOCK_PTR->pred == NULL
+      && (lang_missing_noreturn_ok_p
+	  && !lang_missing_noreturn_ok_p (cfun->decl)))
+    warning ("function might be possible candidate for attribute `noreturn'");
+
+  /* If we have a path to EXIT, then we do return.  */
+  if (TREE_THIS_VOLATILE (cfun->decl)
+      && EXIT_BLOCK_PTR->pred != NULL)
+    warning ("`noreturn' function does return");
+
+  /* If the clobber_return_insn appears in some basic block, then we
+     do reach the end without returning a value.  */
+  else if (warn_return_type
+	   && cfun->x_clobber_return_insn != NULL
+	   && EXIT_BLOCK_PTR->pred != NULL)
+    {
+      int max_uid = get_max_uid ();
+
+      /* If clobber_return_insn was excised by jump1, then renumber_insns
+	 can make max_uid smaller than the number still recorded in our rtx.
+	 That's fine, since this is a quick way of verifying that the insn
+	 is no longer in the chain.  */
+      if (INSN_UID (cfun->x_clobber_return_insn) < max_uid)
+	{
+	  /* Recompute insn->block mapping, since the initial mapping is
+	     set before we delete unreachable blocks.  */
+	  if (BLOCK_FOR_INSN (cfun->x_clobber_return_insn) != NULL)
+	    warning ("control reaches end of non-void function");
+	}
+    }
+}

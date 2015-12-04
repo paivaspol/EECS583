@@ -1,0 +1,109 @@
+static int
+nonoverlapping_memrefs_p (x, y)
+     rtx x, y;
+{
+  tree exprx = MEM_EXPR (x), expry = MEM_EXPR (y);
+  rtx rtlx, rtly;
+  rtx basex, basey;
+  rtx moffsetx, moffsety;
+  HOST_WIDE_INT offsetx = 0, offsety = 0, sizex, sizey, tem;
+
+  /* Unless both have exprs, we can't tell anything.  */
+  if (exprx == 0 || expry == 0)
+    return 0;
+
+  /* If both are field references, we may be able to determine something.  */
+  if (TREE_CODE (exprx) == COMPONENT_REF
+      && TREE_CODE (expry) == COMPONENT_REF
+      && nonoverlapping_component_refs_p (exprx, expry))
+    return 1;
+
+  /* If the field reference test failed, look at the DECLs involved.  */
+  moffsetx = MEM_OFFSET (x);
+  if (TREE_CODE (exprx) == COMPONENT_REF)
+    {
+      tree t = decl_for_component_ref (exprx);
+      if (! t)
+	return 0;
+      moffsetx = adjust_offset_for_component_ref (exprx, moffsetx);
+      exprx = t;
+    }
+  moffsety = MEM_OFFSET (y);
+  if (TREE_CODE (expry) == COMPONENT_REF)
+    {
+      tree t = decl_for_component_ref (expry);
+      if (! t)
+	return 0;
+      moffsety = adjust_offset_for_component_ref (expry, moffsety);
+      expry = t;
+    }
+
+  if (! DECL_P (exprx) || ! DECL_P (expry))
+    return 0;
+
+  rtlx = DECL_RTL (exprx);
+  rtly = DECL_RTL (expry);
+
+  /* If either RTL is not a MEM, it must be a REG or CONCAT, meaning they
+     can't overlap unless they are the same because we never reuse that part
+     of the stack frame used for locals for spilled pseudos.  */
+  if ((GET_CODE (rtlx) != MEM || GET_CODE (rtly) != MEM)
+      && ! rtx_equal_p (rtlx, rtly))
+    return 1;
+
+  /* Get the base and offsets of both decls.  If either is a register, we
+     know both are and are the same, so use that as the base.  The only
+     we can avoid overlap is if we can deduce that they are nonoverlapping
+     pieces of that decl, which is very rare.  */
+  basex = GET_CODE (rtlx) == MEM ? XEXP (rtlx, 0) : rtlx;
+  if (GET_CODE (basex) == PLUS && GET_CODE (XEXP (basex, 1)) == CONST_INT)
+    offsetx = INTVAL (XEXP (basex, 1)), basex = XEXP (basex, 0);
+
+  basey = GET_CODE (rtly) == MEM ? XEXP (rtly, 0) : rtly;
+  if (GET_CODE (basey) == PLUS && GET_CODE (XEXP (basey, 1)) == CONST_INT)
+    offsety = INTVAL (XEXP (basey, 1)), basey = XEXP (basey, 0);
+
+  /* If the bases are different, we know they do not overlap if both
+     are constants or if one is a constant and the other a pointer into the 
+     stack frame.  Otherwise a different base means we can't tell if they
+     overlap or not.  */
+  if (! rtx_equal_p (basex, basey))
+      return ((CONSTANT_P (basex) && CONSTANT_P (basey))
+	      || (CONSTANT_P (basex) && REG_P (basey)
+		  && REGNO_PTR_FRAME_P (REGNO (basey)))
+	      || (CONSTANT_P (basey) && REG_P (basex)
+		  && REGNO_PTR_FRAME_P (REGNO (basex))));
+
+  sizex = (GET_CODE (rtlx) != MEM ? (int) GET_MODE_SIZE (GET_MODE (rtlx))
+	   : MEM_SIZE (rtlx) ? INTVAL (MEM_SIZE (rtlx))
+	   : -1);
+  sizey = (GET_CODE (rtly) != MEM ? (int) GET_MODE_SIZE (GET_MODE (rtly))
+	   : MEM_SIZE (rtly) ? INTVAL (MEM_SIZE (rtly)) :
+	   -1);
+
+  /* If we have an offset for either memref, it can update the values computed
+     above.  */
+  if (moffsetx)
+    offsetx += INTVAL (moffsetx), sizex -= INTVAL (moffsetx);
+  if (moffsety)
+    offsety += INTVAL (moffsety), sizey -= INTVAL (moffsety);
+
+  /* If a memref has both a size and an offset, we can use the smaller size.
+     We can't do this if the offset isn't known because we must view this
+     memref as being anywhere inside the DECL's MEM.  */
+  if (MEM_SIZE (x) && moffsetx)
+    sizex = INTVAL (MEM_SIZE (x));
+  if (MEM_SIZE (y) && moffsety)
+    sizey = INTVAL (MEM_SIZE (y));
+
+  /* Put the values of the memref with the lower offset in X's values.  */
+  if (offsetx > offsety)
+    {
+      tem = offsetx, offsetx = offsety, offsety = tem;
+      tem = sizex, sizex = sizey, sizey = tem;
+    }
+
+  /* If we don't know the size of the lower-offset value, we can't tell
+     if they conflict.  Otherwise, we do the test.  */
+  return sizex >= 0 && offsety > offsetx + sizex;
+}

@@ -1,0 +1,65 @@
+void biari_encode_symbol(EncodingEnvironmentPtr eep, signed short symbol, BiContextTypePtr bi_ct )
+{
+  register unsigned int range = Erange;
+  register unsigned int low = Elow;
+  unsigned int rLPS = rLPS_table_64x4[bi_ct->state][(range>>6) & 3];
+
+  extern int cabac_encoding;
+  
+#if TRACE
+//  if (cabac_encoding)
+//    fprintf(p_trace, "%d  0x%04x  %d  %d\n", binCount++, Erange , bi_ct->state, bi_ct->MPS );
+#endif
+  
+  if( cabac_encoding )
+  {
+    bi_ct->count++;
+  }
+
+  /* covers all cases where code does not bother to shift down symbol to be 
+   * either 0 or 1, e.g. in some cases for cbp, mb_Type etc the code symply 
+   * masks off the bit position and passes in the resulting value */
+
+  if (symbol != 0) 
+    symbol = 1;
+  
+  range -= rLPS;
+  if (symbol != bi_ct->MPS) 
+  {
+    low += range;
+    range = rLPS;
+    
+    if (!bi_ct->state)
+      bi_ct->MPS = bi_ct->MPS ^ 1;               // switch LPS if necessary
+    bi_ct->state = AC_next_state_LPS_64[bi_ct->state]; // next state
+  } 
+  else 
+    bi_ct->state = AC_next_state_MPS_64[bi_ct->state]; // next state
+ 
+
+  /* renormalisation */    
+  while (range < QUARTER)
+  {
+    if (low >= HALF)
+    {
+      put_one_bit_plus_outstanding(1);
+      low -= HALF;
+    }
+    else 
+      if (low < QUARTER)
+      {
+        put_one_bit_plus_outstanding(0);
+      }
+      else
+      {
+        Ebits_to_follow++;
+        low -= QUARTER;
+      }
+    low <<= 1;
+    range <<= 1;
+  }
+  Erange = range;
+  Elow = low;
+  eep->C++;
+
+}

@@ -1,0 +1,116 @@
+static struct op
+parse_number (pfile, tok)
+     cpp_reader *pfile;
+     const cpp_token *tok;
+{
+  struct op op;
+  const U_CHAR *start = tok->val.str.text;
+  const U_CHAR *end = start + tok->val.str.len;
+  const U_CHAR *p = start;
+  int c = 0, i, nsuff;
+  unsigned HOST_WIDEST_INT n = 0, nd, MAX_over_base;
+  int base = 10;
+  int overflow = 0;
+  int digit, largest_digit = 0;
+  const struct suffix *sufftab;
+
+  op.unsignedp = 0;
+
+  if (p[0] == '0')
+    {
+      if (end - start >= 3 && (p[1] == 'x' || p[1] == 'X'))
+	{
+	  p += 2;
+	  base = 16;
+	}
+      else
+	{
+	  p += 1;
+	  base = 8;
+	}
+    }
+
+  /* Some buggy compilers (e.g. MPW C) seem to need both casts.  */
+  MAX_over_base = (((unsigned HOST_WIDEST_INT) -1)
+		   / ((unsigned HOST_WIDEST_INT) base));
+
+  for(; p < end; p++)
+    {
+      c = *p;
+
+      if (ISDIGIT (c)
+	  || (base == 16 && ISXDIGIT (c)))
+	digit = hex_value (c);
+      else
+	break;
+
+      if (largest_digit < digit)
+	largest_digit = digit;
+      nd = n * base + digit;
+      overflow |= MAX_over_base < n || nd < n;
+      n = nd;
+    }
+
+  if (p < end)
+    {
+      /* Check for a floating point constant.  Note that float constants
+	 with an exponent or suffix but no decimal point are technically
+	 invalid (C99 6.4.4.2) but accepted elsewhere.  */
+      if ((c == '.' || c == 'F' || c == 'f')
+	  || (base == 10 && (c == 'E' || c == 'e')
+	      && p+1 < end && (p[1] == '+' || p[1] == '-'))
+	  || (base == 16 && (c == 'P' || c == 'p')
+	      && p+1 < end && (p[1] == '+' || p[1] == '-')))
+	SYNTAX_ERROR ("floating point numbers are not valid in #if");
+  
+      /* Determine the suffix. l means long, and u means unsigned.
+	 See the suffix tables, above.  */
+      switch (end - p)
+	{
+	case 1: sufftab = vsuf_1; nsuff = Nsuff(vsuf_1); break;
+	case 2: sufftab = vsuf_2; nsuff = Nsuff(vsuf_2); break;
+	case 3: sufftab = vsuf_3; nsuff = Nsuff(vsuf_3); break;
+	default: goto invalid_suffix;
+	}
+
+      for (i = 0; i < nsuff; i++)
+	if (memcmp (p, sufftab[i].s, end - p) == 0)
+	  break;
+      if (i == nsuff)
+	goto invalid_suffix;
+      op.unsignedp = sufftab[i].u;
+
+      if (CPP_WTRADITIONAL (pfile)
+	  && sufftab[i].u
+	  && ! cpp_sys_macro_p (pfile))
+	cpp_warning (pfile, "traditional C rejects the `U' suffix");
+      if (sufftab[i].l == 2 && CPP_OPTION (pfile, pedantic)
+	  && ! CPP_OPTION (pfile, c99))
+	cpp_pedwarn (pfile, "too many 'l' suffixes in integer constant");
+    }
+  
+  if (base <= largest_digit)
+    cpp_pedwarn (pfile, "integer constant contains digits beyond the radix");
+
+  if (overflow)
+    cpp_pedwarn (pfile, "integer constant out of range");
+
+  /* If too big to be signed, consider it unsigned.  */
+  else if ((HOST_WIDEST_INT) n < 0 && ! op.unsignedp)
+    {
+      if (base == 10)
+	cpp_warning (pfile, "integer constant is so large that it is unsigned");
+      op.unsignedp = 1;
+    }
+
+  op.value = n;
+  op.op = CPP_NUMBER;
+  return op;
+
+ invalid_suffix:
+  cpp_error (pfile, "invalid suffix '%.*s' on integer constant",
+	     (int) (end - p), p);
+ syntax_error:
+  op.op = CPP_ERROR;
+  return op;
+}

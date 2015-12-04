@@ -1,0 +1,17 @@
+int
+df_ref_remove (df, ref)
+     struct df *df;
+     struct ref *ref;
+{
+  if (DF_REF_REG_DEF_P (ref))
+    {
+      df_def_unlink (df, ref);
+      df_ref_unlink (&df->insns[DF_REF_INSN_UID (ref)].defs, ref);
+    }
+  else
+    {
+      df_use_unlink (df, ref);
+      df_ref_unlink (&df->insns[DF_REF_INSN_UID (ref)].uses, ref);
+    }
+  return 1;
+}

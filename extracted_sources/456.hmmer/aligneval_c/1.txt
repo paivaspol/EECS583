@@ -1,0 +1,33 @@
+static int
+make_alilist(char *s1, char *s2, int **ret_s1_list, int *ret_listlen)
+{
+  int *s1_list;
+  int  col;			/* column position in alignment */
+  int  r1, r2;			/* raw symbol index at current col in s1, s2 */
+  
+  /* Malloc for s1_list. It can't be longer than s1 itself; we just malloc
+   * for that (and waste a wee bit of space)
+   */
+  s1_list = (int *) MallocOrDie (sizeof(int) * strlen(s1));
+  r1 = r2 = 0;
+  for (col = 0; s1[col] != '\0'; col++)
+    {
+      /* symbol in s1? Record what it's aligned to, and bump
+       * the r1 counter.
+       */
+      if (! isgap(s1[col]))
+	{
+	  s1_list[r1] = isgap(s2[col]) ? -1 : r2;
+	  r1++;
+	}
+
+      /* symbol in s2? bump the r2 counter
+       */
+      if (! isgap(s2[col]))
+	r2++;
+    }
+
+  *ret_listlen = r1;
+  *ret_s1_list = s1_list;
+  return 1;
+}

@@ -1,0 +1,21 @@
+void dict2pid_comsenscr (dict2pid_t *d2p, int32 *senscr, int32 *comsenscr)
+{
+    int32 i, j;
+    int32 best;
+    s3senid_t *comstate, k;
+    
+    for (i = 0; i < d2p->n_comstate; i++) {
+	comstate = d2p->comstate[i];
+	
+	best = senscr[comstate[0]];
+	for (j = 1;; j++) {
+	    k = comstate[j];
+	    if (NOT_S3SENID(k))
+		break;
+	    if (best < senscr[k])
+		best = senscr[k];
+	}
+	
+	comsenscr[i] = best + d2p->comwt[i];
+    }
+}

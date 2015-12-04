@@ -1,0 +1,38 @@
+static bool
+check_operand_nalternatives (outputs, inputs)
+     tree outputs, inputs;
+{
+  if (outputs || inputs)
+    {
+      tree tmp = TREE_PURPOSE (outputs ? outputs : inputs);
+      int nalternatives
+	= n_occurrences (',', TREE_STRING_POINTER (TREE_VALUE (tmp)));
+      tree next = inputs;
+
+      if (nalternatives + 1 > MAX_RECOG_ALTERNATIVES)
+	{
+	  error ("too many alternatives in `asm'");
+	  return false;
+	}
+
+      tmp = outputs;
+      while (tmp)
+	{
+	  const char *constraint
+	    = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (tmp)));
+
+	  if (n_occurrences (',', constraint) != nalternatives)
+	    {
+	      error ("operand constraints for `asm' differ in number of alternatives");
+	      return false;
+	    }
+
+	  if (TREE_CHAIN (tmp))
+	    tmp = TREE_CHAIN (tmp);
+	  else
+	    tmp = next, next = 0;
+	}
+    }
+
+  return true;
+}

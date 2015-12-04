@@ -1,0 +1,32 @@
+static void
+flow_loop_pre_header_scan (loop)
+     struct loop *loop;
+{
+  int num;
+  basic_block ebb;
+  edge e;
+
+  loop->num_pre_header_edges = 0;
+  if (loop->num_entries != 1)
+    return;
+
+  ebb = loop->entry_edges[0]->src;
+  if (ebb == ENTRY_BLOCK_PTR)
+    return;
+
+  /* Count number of edges along trace from loop header to
+     root of pre-header extended basic block.  Usually this is
+     only one or two edges.  */
+  for (num = 1; ebb->pred->src != ENTRY_BLOCK_PTR && ! ebb->pred->pred_next;
+       num++)
+    ebb = ebb->pred->src;
+
+  loop->pre_header_edges = (edge *) xmalloc (num * sizeof (edge));
+  loop->num_pre_header_edges = num;
+
+  /* Store edges in order that they are followed.  The source of the first edge
+     is the root node of the pre-header extended basic block and the
+     destination of the last last edge is the loop header.  */
+  for (e = loop->entry_edges[0]; num; e = e->src->pred)
+    loop->pre_header_edges[--num] = e;
+}

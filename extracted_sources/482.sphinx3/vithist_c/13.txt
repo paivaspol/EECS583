@@ -1,0 +1,20 @@
+static void vithist_lmstate_subtree_dump (vithist_t *vh, kbcore_t *kbc,
+					  vh_lmstate2vithist_t *lms2vh, int32 level, FILE *fp)
+{
+    gnode_t *gn;
+    vh_lmstate2vithist_t *child;
+    int32 i;
+    lm_t *lm;
+    
+    lm = kbcore_lm (kbc);
+    
+    for (gn = lms2vh->children; gn; gn = gnode_next(gn)) {
+	child = (vh_lmstate2vithist_t *) gnode_ptr (gn);
+	
+	for (i = 0; i < level; i++)
+	    fprintf (fp, "\t");
+	fprintf (fp, "\t%s -> %d\n", lm_wordstr(lm, child->state), child->vhid);
+	
+	vithist_lmstate_subtree_dump (vh, kbc, child, level+1, fp);
+    }
+}

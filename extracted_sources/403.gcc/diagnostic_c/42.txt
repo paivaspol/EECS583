@@ -1,0 +1,23 @@
+int
+count_error (warningp)
+     int warningp;
+{
+  if (warningp && !diagnostic_report_warnings_p ())
+    return 0;
+
+  if (warningp && !warnings_are_errors)
+    warningcount++;
+  else
+    {
+      static int warning_message = 0;
+
+      if (warningp && !warning_message)
+	{
+	  verbatim ("%s: warnings being treated as errors\n", progname);
+	  warning_message = 1;
+	}
+      errorcount++;
+    }
+
+  return 1;
+}

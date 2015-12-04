@@ -1,0 +1,171 @@
+void read_xpm_entry(FILE *in,t_matrix *mm)
+{
+  t_mapping *map;
+  char *line=NULL,*str,buf[256];
+  int i,m,col_len,nch,n_axis_x,n_axis_y,llmax;
+  unsigned int r,g,b;
+  double u;
+  bool bGetOnWithIt;
+  t_xpmelmt c;
+  
+  mm->title[0]=0;
+  mm->legend[0]=0;
+  mm->label_x[0]=0;
+  mm->label_y[0]=0;
+  mm->matrix=NULL;
+  mm->axis_x=NULL;
+  mm->axis_y=NULL;
+  mm->bDiscrete=FALSE;
+
+  llmax = STRLEN;
+
+  while (fgetline(&line,llmax,in) && (strncmp(line,"static",6) != 0)) {
+    parsestring(line,"title",(mm->title));
+    parsestring(line,"legend",(mm->legend));
+    parsestring(line,"x-label",(mm->label_x));
+    parsestring(line,"y-label",(mm->label_y));
+    parsestring(line,"type",buf);
+  }
+  if (buf[0] && (strcasecmp(buf,"Discrete")==0))
+    mm->bDiscrete=TRUE;
+   
+  if (debug)
+    fprintf(debug,"%s %s %s %s\n",
+	    mm->title,mm->legend,mm->label_x,mm->label_y);
+
+  if  (strncmp(line,"static",6) != 0)
+    fatal_error(0,"Invalid XPixMap\n");
+  /* Read sizes */
+  bGetOnWithIt=FALSE;
+  while (!bGetOnWithIt && fgetline(&line,llmax,in)) {
+    while (( line[0] != '\"' ) && ( line[0] != '\0' ))
+      line++;
+
+    if  ( line[0] == '\"' ) {
+      line2string(&line);
+      sscanf(line,"%d %d %d %d",&(mm->nx),&(mm->ny),&(mm->nmap),&nch);
+      if (nch > 2)
+	fatal_error(0,"Sorry can only read xpm's with at most 2 caracters per pixel\n");
+      llmax = max(STRLEN,mm->nx+10);
+      bGetOnWithIt=TRUE;
+    }
+  }
+  if (debug)
+    fprintf(debug,"mm->nx %d mm->ny %d mm->nmap %d nch %d\n",
+	   mm->nx,mm->ny,mm->nmap,nch);
+  
+  /* Read color map */
+  snew(map,mm->nmap);
+  m=0;
+  while ((m < mm->nmap) && fgetline(&line,llmax,in)) {
+    line=strchr(line,'\"');
+    if  (line) {
+      line++;
+      /* Read xpm color map entry */
+      map[m].code.c1 = line[0];
+      if (nch==1)
+	map[m].code.c2 = 0;
+      else
+	map[m].code.c2 = line[1];
+      line += nch;
+      str = strchr(line,'#');
+      if (str) {
+	str++;
+	col_len = 0;
+	while (isxdigit(str[col_len]))
+	  col_len++;
+	if (col_len==6) {
+	  sscanf(line,"%*s #%2x%2x%2x",&r,&g,&b);
+	  map[m].rgb.r=r/255.0;
+	  map[m].rgb.g=g/255.0;
+	  map[m].rgb.b=b/255.0;
+	} else if (col_len==12) {
+	  sscanf(line,"%*s #%4x%4x%4x",&r,&g,&b);
+	  map[m].rgb.r=r/65535.0;
+	  map[m].rgb.g=g/65535.0;
+	  map[m].rgb.b=b/65535.0;
+	} else
+	  fatal_error(0,"Unsupported or invalid colormap in X PixMap\n");
+      } else {
+	str = strchr(line,'c');
+	if (str)
+	  str += 2;
+	else
+	  fatal_error(0,"Unsupported or invalid colormap in X PixMap\n");
+	fprintf(stderr,"Using white for color \"%s",str);
+	map[m].rgb.r = 1;
+	map[m].rgb.g = 1;
+	map[m].rgb.b = 1;
+      }
+      line=strchr(line,'\"');
+      line++;
+      line2string(&line);
+      map[m].desc = strdup(line);
+      m++;
+    }
+  }
+  if  ( m != mm->nmap ) 
+    fatal_error(0,"Number of read colors map entries (%d) does not match the number in the header (%d)",m,mm->nmap);
+  mm->map = map;
+
+  /* Read axes, if there are any */ 
+  n_axis_x=0;
+  n_axis_y=0;
+  bGetOnWithIt=FALSE;
+  do {
+    if (strstr(line,"x-axis")) {
+      line=strstr(line,"x-axis");
+      skipstr(&line);
+      if (mm->axis_x==NULL)
+	snew(mm->axis_x,mm->nx);
+      while (sscanf(line,"%lf",&u)==1) {
+	if (n_axis_x >= mm->nx)
+	  fatal_error(0,"To many x-axis labels in xpm");
+	mm->axis_x[n_axis_x] = u;
+	n_axis_x++;
+	skipstr(&line);
+      }
+    }
+    else if (strstr(line,"y-axis")) {
+      line=strstr(line,"y-axis");
+      skipstr(&line);
+      if (mm->axis_y==NULL)
+	snew(mm->axis_y,mm->ny);
+      while (sscanf(line,"%lf",&u)==1) {
+	if (n_axis_y >= mm->ny)
+	  fatal_error(0,"To many y-axis labels in xpm");
+	mm->axis_y[n_axis_y] = u;
+	n_axis_y++;
+	skipstr(&line);
+      }
+    }
+  } while ((line[0] != '\"') && fgetline(&line,llmax,in));
+
+  /* Read matrix */
+  snew(mm->matrix,mm->nx);
+  for(i=0; i<mm->nx; i++)
+    snew(mm->matrix[i],mm->ny);
+  m=mm->ny-1;
+  do {
+    if(m%(1+mm->ny/100)==0) 
+      fprintf(stderr,"%3d%%\b\b\b\b",(100*(mm->ny-m))/mm->ny);
+    while ((line[0] != '\"') && (line[0] != '\0'))
+      line++;
+    if (line[0] != '\"')
+      fatal_error(0,"Not enough caracters in row %d of the matrix\n",m+1);
+    else {
+      line++;
+      for(i=0; i<mm->nx; i++) {
+	c.c1=line[nch*i];
+	if (nch==1)
+	  c.c2=0;
+	else
+	  c.c2=line[nch*i+1];
+	mm->matrix[i][m]=searchcmap(mm->nmap,mm->map,c);
+	}
+      m--;
+    }
+  } while ((m>=0) && fgetline(&line,llmax,in));
+  if (m>=0)
+    fatal_error(0,"Not enough rows in the matrix\n");
+}

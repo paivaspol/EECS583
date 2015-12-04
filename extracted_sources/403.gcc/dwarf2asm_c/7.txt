@@ -1,0 +1,46 @@
+void
+dw2_asm_output_nstring VPARAMS ((const char *str, size_t orig_len,
+				 const char *comment, ...))
+{
+  size_t i, len;
+
+  VA_OPEN (ap, comment);
+  VA_FIXEDARG (ap, const char *, str);
+  VA_FIXEDARG (ap, size_t, orig_len);
+  VA_FIXEDARG (ap, const char *, comment);
+
+  len = orig_len;
+
+  if (len == (size_t) -1)
+    len = strlen (str);
+
+  if (flag_debug_asm && comment)
+    {
+      fputs ("\t.ascii \"", asm_out_file);
+      for (i = 0; i < len; i++)
+	{
+	  int c = str[i];
+	  if (c == '\"' || c == '\\')
+	    fputc ('\\', asm_out_file);
+	  if (ISPRINT(c))
+	    fputc (c, asm_out_file);
+	  else
+	    fprintf (asm_out_file, "\\%o", c);
+	}
+      fprintf (asm_out_file, "\\0\"\t%s ", ASM_COMMENT_START);
+      vfprintf (asm_out_file, comment, ap);
+      fputc ('\n', asm_out_file);
+    }
+  else
+    {
+      /* If an explicit length was given, we can't assume there
+	 is a null termination in the string buffer.  */
+      if (orig_len == (size_t) -1)
+	len += 1;
+      ASM_OUTPUT_ASCII (asm_out_file, str, len);
+      if (orig_len != (size_t) -1)
+	assemble_integer (const0_rtx, 1, BITS_PER_UNIT, 1);
+    }
+
+  VA_CLOSE (ap);
+}

@@ -1,0 +1,147 @@
+void
+schedule_insns (dump_file)
+     FILE *dump_file;
+{
+  sbitmap large_region_blocks, blocks;
+  int rgn;
+  int any_large_regions;
+
+  /* Taking care of this degenerate case makes the rest of
+     this code simpler.  */
+  if (n_basic_blocks == 0)
+    return;
+
+  scope_to_insns_initialize ();
+
+  nr_inter = 0;
+  nr_spec = 0;
+
+  sched_init (dump_file);
+
+  init_regions ();
+
+  current_sched_info = &region_sched_info;
+  
+  /* Schedule every region in the subroutine.  */
+  for (rgn = 0; rgn < nr_regions; rgn++)
+    schedule_region (rgn);
+
+  /* Update life analysis for the subroutine.  Do single block regions
+     first so that we can verify that live_at_start didn't change.  Then
+     do all other blocks.  */
+  /* ??? There is an outside possibility that update_life_info, or more
+     to the point propagate_block, could get called with non-zero flags
+     more than once for one basic block.  This would be kinda bad if it
+     were to happen, since REG_INFO would be accumulated twice for the
+     block, and we'd have twice the REG_DEAD notes.
+
+     I'm fairly certain that this _shouldn't_ happen, since I don't think
+     that live_at_start should change at region heads.  Not sure what the
+     best way to test for this kind of thing...  */
+
+  allocate_reg_life_data ();
+  compute_bb_for_insn (get_max_uid ());
+
+  any_large_regions = 0;
+  large_region_blocks = sbitmap_alloc (n_basic_blocks);
+  sbitmap_ones (large_region_blocks);
+
+  blocks = sbitmap_alloc (n_basic_blocks);
+  sbitmap_zero (blocks);
+
+  /* Update life information.  For regions consisting of multiple blocks
+     we've possibly done interblock scheduling that affects global liveness.
+     For regions consisting of single blocks we need to do only local
+     liveness.  */
+  for (rgn = 0; rgn < nr_regions; rgn++)
+    if (RGN_NR_BLOCKS (rgn) > 1)
+      any_large_regions = 1;
+    else
+      {
+	SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
+	RESET_BIT (large_region_blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
+      }
+
+  /* Don't update reg info after reload, since that affects
+     regs_ever_live, which should not change after reload.  */
+  update_life_info (blocks, UPDATE_LIFE_LOCAL,
+		    (reload_completed ? PROP_DEATH_NOTES
+		     : PROP_DEATH_NOTES | PROP_REG_INFO));
+  if (any_large_regions)
+    {
+      update_life_info (large_region_blocks, UPDATE_LIFE_GLOBAL,
+			PROP_DEATH_NOTES | PROP_REG_INFO);
+    }
+
+  if (CHECK_DEAD_NOTES)
+    {
+      /* Verify the counts of basic block notes in single the basic block
+         regions.  */
+      for (rgn = 0; rgn < nr_regions; rgn++)
+	if (RGN_NR_BLOCKS (rgn) == 1)
+	  {
+	    sbitmap_zero (blocks);
+	    SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
+
+	    if (deaths_in_region[rgn]
+		!= count_or_remove_death_notes (blocks, 0))
+	      abort ();
+	  }
+      free (deaths_in_region);
+    }
+
+  /* Reposition the prologue and epilogue notes in case we moved the
+     prologue/epilogue insns.  */
+  if (reload_completed)
+    reposition_prologue_and_epilogue_notes (get_insns ());
+
+  /* Delete redundant line notes.  */
+  if (write_symbols != NO_DEBUG)
+    rm_redundant_line_notes ();
+
+  scope_to_insns_finalize ();
+
+  if (sched_verbose)
+    {
+      if (reload_completed == 0 && flag_schedule_interblock)
+	{
+	  fprintf (sched_dump,
+		   "\n;; Procedure interblock/speculative motions == %d/%d \n",
+		   nr_inter, nr_spec);
+	}
+      else
+	{
+	  if (nr_inter > 0)
+	    abort ();
+	}
+      fprintf (sched_dump, "\n\n");
+    }
+
+  /* Clean up.  */
+  free (rgn_table);
+  free (rgn_bb_table);
+  free (block_to_bb);
+  free (containing_rgn);
+
+  sched_finish ();
+
+  if (edge_table)
+    {
+      free (edge_table);
+      edge_table = NULL;
+    }
+
+  if (in_edges)
+    {
+      free (in_edges);
+      in_edges = NULL;
+    }
+  if (out_edges)
+    {
+      free (out_edges);
+      out_edges = NULL;
+    }
+
+  sbitmap_free (blocks);
+  sbitmap_free (large_region_blocks);
+}

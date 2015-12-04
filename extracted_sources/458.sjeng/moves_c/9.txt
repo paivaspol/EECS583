@@ -1,0 +1,52 @@
+void push_pawn (int target, xbool is_ep) {
+
+  /* add pawn moves to the moves array */
+
+  int captured_piece;
+
+  /* check to see if it's an ep move: */
+  if (is_ep) {
+    if (board[gfrom] == wpawn) {
+      add_capture(target, bpawn, 0, TRUE);
+	  return;
+    }
+    else {
+      add_capture(target, wpawn, 0, TRUE);
+      return;
+    }
+  }
+
+  /* record which piece we are taking, so we don't have to compute it over
+     and over again: */
+  captured_piece = board[target];
+  
+  /* look for a white promotion move: */
+  if (board[gfrom] == wpawn && rank(gfrom) == 7) {
+    add_capture(target, captured_piece, wqueen, FALSE);
+    add_capture(target, captured_piece, wrook, FALSE);
+    add_capture(target, captured_piece, wbishop, FALSE);
+    add_capture(target, captured_piece, wknight, FALSE);
+    if (Variant == Suicide)
+      add_capture(target, captured_piece, wking, FALSE);
+    /* we've finished generating all the promotions: */
+    return;
+  }
+
+  /* look for a black promotion move: */
+  else if (board[gfrom] == bpawn && rank(gfrom) == 2) {
+    add_capture(target, captured_piece, bqueen, FALSE);
+    add_capture(target, captured_piece, brook, FALSE);
+    add_capture(target, captured_piece, bbishop, FALSE);
+    add_capture(target, captured_piece, bknight, FALSE);
+    if (Variant == Suicide)
+      add_capture(target, captured_piece, bking, FALSE);
+    /* we've finished generating all the promotions: */
+    return;
+  }
+
+  /* otherwise, we have a normal pawn move: */
+  else {
+    add_capture(target, captured_piece, 0, FALSE);
+    return;
+  }  
+}

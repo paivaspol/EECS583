@@ -1,0 +1,55 @@
+void rc_update_pict_frame(int nbits)
+{
+
+  /* update the complexity weight of I, P, B frame */
+  int Avem_Qc;
+  int X=0;
+    
+  /* frame layer rate control */
+  if(img->BasicUnit==img->Frame_Total_Number_MB)
+    X = (int) floor(nbits*m_Qc+ 0.5);
+  /* basic unit layer rate control */
+  else
+  {
+    if(img->type==P_SLICE)
+    {
+      if(((img->IFLAG==0)&&(img->FieldControl==1))\
+        ||(img->FieldControl==0))
+      {
+        Avem_Qc=TotalFrameQP/TotalNumberofBasicUnit;
+        X=(int)floor(nbits*Avem_Qc+0.5);
+      }
+    }
+    else if(img->type==B_SLICE)
+      X = (int) floor(nbits*m_Qc+ 0.5);
+  }
+
+
+  switch (img->type)
+  {
+  case P_SLICE:
+    /* field coding */
+    if(((img->IFLAG==0)&&(img->FieldControl==1))\
+      ||(img->FieldControl==0))
+    {
+      Xp = X;
+      Np--;
+      Wp=Xp;
+      Pm_Hp=img->NumberofHeaderBits;
+      img->NumberofCodedPFrame++;
+      img->NumberofPPicture++;
+    }
+    else if((img->IFLAG!=0)&&(img->FieldControl==1))
+      img->IFLAG=0;
+    break;
+  case B_SLICE:
+    Xb = X;
+    Nb--;
+    Wb=Xb/THETA; 
+    
+    img->NumberofCodedBFrame++;
+    NumberofBFrames++;
+    
+    break;
+  }
+}

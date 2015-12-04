@@ -1,0 +1,24 @@
+void scalar_mult_latvec(field_offset src,double scalar,
+			field_offset dest,int parity)
+{
+register int i;
+register site *s;
+register su3_vector *spt,*dpt;
+    switch(parity){
+	case EVEN: FOREVENSITES(i,s){
+		spt = (su3_vector *)F_PT(s,src);
+		dpt = (su3_vector *)F_PT(s,dest);
+		scalar_mult_su3_vector( spt , scalar , dpt );
+	    } break;
+	case ODD: FORODDSITES(i,s){
+		spt = (su3_vector *)F_PT(s,src);
+		dpt = (su3_vector *)F_PT(s,dest);
+		scalar_mult_su3_vector( spt , scalar , dpt );
+	    } break;
+	case EVENANDODD: FORALLSITES(i,s){
+		spt = (su3_vector *)F_PT(s,src);
+		dpt = (su3_vector *)F_PT(s,dest);
+		scalar_mult_su3_vector( spt , scalar , dpt );
+	    } break;
+    } 
+}

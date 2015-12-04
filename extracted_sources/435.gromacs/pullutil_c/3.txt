@@ -1,0 +1,19 @@
+static real get_cylinder_distance(rvec x, rvec com, matrix box) {
+  /* Triclinic compatible ??? */
+  real dr, dx, dy, boxx, boxy;
+
+  boxx = box[XX][XX];
+  boxy = box[YY][YY];
+
+  dx = fabs(x[XX] - com[XX]); 
+  while (dx > 0.5*boxx) dx -= boxx;
+
+  dy = fabs(x[YY] - com[YY]);
+  while (dy > 0.5*boxy) dy -= boxy;
+  
+  dr = sqrt(dx*dx+dy*dy);
+#ifdef CYLDEBUG
+  fprintf(stderr,"x:%8.3f%8.3f%8.3f com:%8.3f%8.3f%8.3f dx,dy,dr:%8.3f%8.3f%8.3f\n",x[0],x[1],x[2],com[0],com[1],com[2],dx,dy,dr);
+#endif
+  return dr;
+}

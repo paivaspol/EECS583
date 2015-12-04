@@ -1,0 +1,31 @@
+static tree
+c_make_fname_decl (id, type_dep)
+     tree id;
+     int type_dep;
+{
+  const char *name = fname_as_string (type_dep);
+  tree decl, type, init;
+  size_t length = strlen (name);
+
+  type =  build_array_type
+          (build_qualified_type (char_type_node, TYPE_QUAL_CONST),
+	   build_index_type (size_int (length)));
+
+  decl = build_decl (VAR_DECL, id, type);
+  /* We don't push the decl, so have to set its context here.  */
+  DECL_CONTEXT (decl) = current_function_decl;
+  
+  TREE_STATIC (decl) = 1;
+  TREE_READONLY (decl) = 1;
+  DECL_ARTIFICIAL (decl) = 1;
+  
+  init = build_string (length + 1, name);
+  TREE_TYPE (init) = type;
+  DECL_INITIAL (decl) = init;
+
+  TREE_USED (decl) = 1;
+  
+  finish_decl (decl, init, NULL_TREE);
+
+  return decl;
+}

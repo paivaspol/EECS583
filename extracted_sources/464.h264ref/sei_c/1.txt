@@ -1,0 +1,22 @@
+void CloseSEIMessages()
+{
+  int i;
+  
+  if (input->NumFramesInELSubSeq != 0)
+    CloseSubseqLayerInfo();
+
+  CloseSubseqChar();
+  CloseSparePicture();
+  CloseSceneInformation(); // JVT-D099
+  //Shankar Regunathan Oct 2002
+  ClosePanScanRectInfo();
+  CloseUser_data_unregistered();
+  CloseUser_data_registered_itu_t_t35();
+  CloseRandomAccess();
+
+  for (i=0; i<MAX_LAYER_NUMBER; i++)
+  {
+    if ( sei_message[i].data ) free( sei_message[i].data );
+    sei_message[i].data = NULL;
+  }
+}

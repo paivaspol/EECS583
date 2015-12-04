@@ -1,0 +1,32 @@
+static int receivebits(int buf[], int num_of_bits) {
+
+    int cnt, num; 
+    unsigned int lastbits, lastbyte;
+    unsigned char * cbuf;
+    int mask = (1 << num_of_bits) -1;
+
+    cbuf = ((unsigned char *)buf) + 3 * sizeof(*buf);
+    cnt = buf[0];
+    lastbits = (unsigned int) buf[1];
+    lastbyte = (unsigned int) buf[2];
+    
+    num = 0;
+    while (num_of_bits >= 8) {
+	lastbyte = ( lastbyte << 8 ) | cbuf[cnt++];
+	num |=  (lastbyte >> lastbits) << (num_of_bits - 8);
+	num_of_bits -=8;
+    }
+    if (num_of_bits > 0) {
+	if (lastbits < num_of_bits) {
+	    lastbits += 8;
+	    lastbyte = (lastbyte << 8) | cbuf[cnt++];
+	}
+	lastbits -= num_of_bits;
+	num |= (lastbyte >> lastbits) & ((1 << num_of_bits) -1);
+    }
+    num &= mask;
+    buf[0] = cnt;
+    buf[1] = lastbits;
+    buf[2] = lastbyte;
+    return num; 
+}

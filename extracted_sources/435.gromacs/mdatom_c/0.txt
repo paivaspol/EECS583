@@ -1,0 +1,47 @@
+void md2atoms(t_mdatoms *md,t_atoms *atoms,bool bFree)
+{
+  int i;
+  
+  snew(atoms->atom,md->nr);
+  for(i=0; (i<md->nr); i++) {
+    atoms->atom[i].m                = md->massT[i];
+    atoms->atom[i].q                = md->chargeT[i];
+    atoms->atom[i].resnr            = md->resnr[i];
+    atoms->atom[i].type             = md->typeA[i];
+    atoms->atom[i].ptype            = md->ptype[i];
+    atoms->atom[i].grpnr[egcTC]     = md->cTC[i];
+    atoms->atom[i].grpnr[egcENER]   = md->cENER[i];
+    atoms->atom[i].grpnr[egcACC]    = md->cACC[i];
+    atoms->atom[i].grpnr[egcFREEZE] = md->cFREEZE[i];
+    atoms->atom[i].grpnr[egcVCM]    = md->cVCM[i];
+    atoms->atom[i].grpnr[egcXTC]    = md->cXTC[i];
+    atoms->atom[i].grpnr[egcORFIT]  = md->cORF[i];
+
+    atoms->atom[i].grpnr[egcUser1]  = md->cU1[i];
+    atoms->atom[i].grpnr[egcUser2]  = md->cU2[i];
+
+  }
+  if (bFree) {
+    sfree(md->massA);
+    sfree(md->massB);
+    sfree(md->massT);
+    sfree(md->invmass);
+    sfree(md->chargeA);
+    sfree(md->chargeB);
+    sfree(md->chargeT);
+    sfree(md->resnr);
+    sfree(md->typeA);
+    sfree(md->typeB);
+    sfree(md->ptype);
+    sfree(md->cTC);
+    sfree(md->cENER);
+    sfree(md->cACC);
+    sfree(md->cFREEZE);
+    sfree(md->cVCM);
+    sfree(md->cXTC);
+    sfree(md->cORF);
+    
+    sfree(md->cU1);
+    sfree(md->cU2);
+  }
+}

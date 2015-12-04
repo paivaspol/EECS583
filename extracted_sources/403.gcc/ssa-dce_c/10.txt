@@ -1,0 +1,40 @@
+static int
+find_inherently_necessary (x)
+     rtx x;
+{
+  if (x == NULL_RTX)
+    return 0;
+  else if (inherently_necessary_register (x))
+    return !0;
+  else
+    switch (GET_CODE (x))
+      {  
+      case CALL_INSN:
+      case BARRIER:
+      case PREFETCH:
+	return !0;
+      case CODE_LABEL:
+      case NOTE:
+	return 0;
+      case JUMP_INSN:
+	return JUMP_TABLE_DATA_P (x) || computed_jump_p (x) != 0;
+      case INSN:
+	{
+	  int inherently_necessary_set = 0;
+	  note_stores (PATTERN (x),
+		       note_inherently_necessary_set,
+		       &inherently_necessary_set);
+
+	  /* If we found an inherently necessary set or an asm
+	     instruction, then we consider this insn inherently
+	     necessary.  */
+	  return (inherently_necessary_set
+		  || GET_CODE (PATTERN (x)) == ASM_INPUT
+		  || asm_noperands (PATTERN (x)) >= 0);
+	}
+      default:
+	/* Found an impossible insn type.  */
+	abort ();
+	break;
+      }
+}

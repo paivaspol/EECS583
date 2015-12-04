@@ -1,0 +1,29 @@
+static void
+note_addr_stored (x, y, data)
+     rtx x;
+     rtx y ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  struct loop_info *loop_info = data;
+
+  if (x == 0 || GET_CODE (x) != MEM)
+    return;
+
+  /* Count number of memory writes.
+     This affects heuristics in strength_reduce.  */
+  loop_info->num_mem_sets++;
+
+  /* BLKmode MEM means all memory is clobbered.  */
+  if (GET_MODE (x) == BLKmode)
+    {
+      if (RTX_UNCHANGING_P (x))
+	loop_info->unknown_constant_address_altered = 1;
+      else
+	loop_info->unknown_address_altered = 1;
+
+      return;
+    }
+
+  loop_info->store_mems = gen_rtx_EXPR_LIST (VOIDmode, x,
+					     loop_info->store_mems);
+}

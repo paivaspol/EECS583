@@ -1,0 +1,32 @@
+static SV *pkg_fetchmeth(
+        pTHX_
+	HV *cache,
+	HV *pkg,
+	char *method)
+{
+	GV *gv;
+	SV *sv;
+
+	/*
+	 * The following code is the same as the one performed by UNIVERSAL::can
+	 * in the Perl core.
+	 */
+
+	gv = gv_fetchmethod_autoload(pkg, method, FALSE);
+	if (gv && isGV(gv)) {
+		sv = newRV((SV*) GvCV(gv));
+		TRACEME(("%s->%s: 0x%"UVxf, HvNAME(pkg), method, PTR2UV(sv)));
+	} else {
+		sv = newSVsv(&PL_sv_undef);
+		TRACEME(("%s->%s: not found", HvNAME(pkg), method));
+	}
+
+	/*
+	 * Cache the result, ignoring failure: if we can't store the value,
+	 * it just won't be cached.
+	 */
+
+	(void) hv_store(cache, HvNAME(pkg), strlen(HvNAME(pkg)), sv, 0);
+
+	return SvOK(sv) ? sv : (SV *) 0;
+}

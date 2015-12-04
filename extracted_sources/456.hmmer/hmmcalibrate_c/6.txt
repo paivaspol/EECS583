@@ -1,0 +1,10 @@
+static void
+workpool_stop(struct workpool_s *wpool)
+{
+  int i;
+				/* wait for threads to stop */
+  for (i = 0; i < wpool->num_threads; i++)
+    if (pthread_join(wpool->thread[i],NULL) != 0)
+      Die("pthread_join failed");
+  return;
+}

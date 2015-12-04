@@ -1,0 +1,103 @@
+int main( int argc, char **argv ){
+    int meascount,traj_done;
+    int prompt;
+    int s_iters,avs_iters,avspect_iters,
+        avbcorr_iters;
+    double dtime, dclock();
+
+    initialize_machine(argc,argv);
+    g_sync();
+    /* set up */
+    prompt = setup();
+    /* loop over input sets */
+    while( readin(prompt) == 0){
+
+	/* perform warmup trajectories */
+	dtime = -dclock();
+	for( traj_done=0; traj_done < warms; traj_done++ ){
+            update();
+	}
+	node0_printf("WARMUPS COMPLETED\n"); fflush(stdout);
+
+	/* perform measuring trajectories, reunitarizing and measuring 	*/
+	meascount=0;		/* number of measurements 		*/
+	avspect_iters = avs_iters = avbcorr_iters = 0;
+	for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
+
+	    /* do the trajectories */
+	    s_iters=update();
+
+	    /* measure every "propinterval" trajectories */
+	    if( (traj_done%propinterval)==(propinterval-1) ){
+
+	        /* call gauge_variable fermion_variable measuring routines */
+		/* results are printed in output file */
+	        rephase(OFF);
+		g_measure( );
+		rephase(ON);
+		f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
+#ifdef SPECTRUM 
+                rephase( OFF );
+                gaugefix(TUP,(double)1.8,500,(double)GAUGE_FIX_TOL,
+          	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
+			 0,NULL,NULL,0,NULL,NULL);
+                rephase( ON );
+#ifdef FN
+		valid_fatlinks = valid_longlinks = 0;
+#endif
+		avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx));
+
+		/* Fix TUP Coulomb gauge - gauge links only*/
+		rephase( OFF );
+		gaugefix(TUP,(double)1.8,500,(double)GAUGE_FIX_TOL,
+			 F_OFFSET(tempmat1),F_OFFSET(staple),
+			 0,NULL,NULL,0,NULL,NULL);
+		rephase( ON );
+		valid_fatlinks = valid_longlinks = 0;
+
+		/* Comment these spectrum calls out as you wish */
+		/* There are no side-effects */
+                avspect_iters += nl_spectrum(mass,F_OFFSET(phi),F_OFFSET(xxx),
+					F_OFFSET(tempmat1),F_OFFSET(staple));
+		avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3);
+		avspect_iters += spectrum_multimom(mass,mass,mass/4.,4,5e-3);
+		avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3);
+#ifdef FN
+		if( !valid_fatlinks )load_fatlinks();
+#endif
+		rephase( OFF );
+		hvy_pot( F_OFFSET(link[XUP]) );
+		rephase( ON );
+#endif
+		avs_iters += s_iters;
+	        ++meascount;
+		fflush(stdout);
+	    }
+	}	/* end loop over trajectories */
+
+	node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
+	if(meascount>0)  {
+	    node0_printf("average cg iters for step= %e\n",
+		(double)avs_iters/meascount);
+#ifdef SPECTRUM
+	    node0_printf("average cg iters for spectrum = %e\n",
+		(double)avspect_iters/meascount);
+#endif
+	}
+
+	dtime += dclock();
+	if(this_node==0){
+	  /*CPU2006  printf("Time = %e seconds\n",dtime);*/
+	    printf("total_iters = %d\n",total_iters);
+	}
+	fflush(stdout);
+
+	/* save lattice if requested */
+        if( saveflag != FORGET ){
+          rephase( OFF );
+          save_lattice( saveflag, savefile );
+          rephase( ON );
+        }
+    }
+    return 0;
+}

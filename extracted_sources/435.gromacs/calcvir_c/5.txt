@@ -1,0 +1,29 @@
+void f_calc_vir(FILE *log,int i0,int i1,rvec x[],rvec f[],tensor vir,
+		t_graph *g,matrix box)
+{
+  int start,end;
+  
+  if (g->nnodes > 0) {
+    /* Calculate virial for bonded forces only when they belong to
+     * this node.
+     */
+    start = max(i0,g->start);
+    end   = min(i1,g->end+1);
+#ifdef SAFE
+    lo_fcv2(start,end,x,f,vir,g->ishift,box,TRICLINIC(box));
+#else
+    lo_fcv(start,end,0,x[0],f[0],vir,g->ishift[0],box[0],TRICLINIC(box));
+#endif
+    
+    /* If not all atoms are bonded, calculate their virial contribution 
+     * anyway, without shifting back their coordinates.
+     * Note the nifty pointer arithmetic...
+     */
+    if (start > i0) 
+      calc_vir(log,start-i0,x + i0,f + i0,vir);
+    if (end < i1)
+      calc_vir(log,i1-end,x + end,f + end,vir);
+  }
+  else
+    calc_vir(log,i1-i0,x + i0,f + i0,vir);
+}

@@ -1,0 +1,47 @@
+static void
+output_loc_list (list_head)
+     dw_loc_list_ref list_head;
+{
+  dw_loc_list_ref curr = list_head;
+
+  ASM_OUTPUT_LABEL (asm_out_file, list_head->ll_symbol);
+
+  /* ??? This shouldn't be needed now that we've forced the
+     compilation unit base address to zero when there is code
+     in more than one section.  */
+  if (strcmp (curr->section, ".text") == 0)
+    {
+      /* dw2_asm_output_data will mask off any extra bits in the ~0.  */
+      dw2_asm_output_data (DWARF2_ADDR_SIZE, ~(unsigned HOST_WIDE_INT) 0,
+			   "Location list base address specifier fake entry");
+      dw2_asm_output_offset (DWARF2_ADDR_SIZE, curr->section,
+			     "Location list base address specifier base");
+    }
+
+  for (curr = list_head; curr != NULL; curr=curr->dw_loc_next)
+    {
+      unsigned long size;
+
+      dw2_asm_output_delta (DWARF2_ADDR_SIZE, curr->begin, curr->section,
+			    "Location list begin address (%s)",
+			    list_head->ll_symbol);
+      dw2_asm_output_delta (DWARF2_ADDR_SIZE, curr->end, curr->section,
+			    "Location list end address (%s)",
+			    list_head->ll_symbol);
+      size = size_of_locs (curr->expr);
+      
+      /* Output the block length for this list of location operations.  */
+      if (size > 0xffff)
+	abort ();
+      dw2_asm_output_data (2, size, "%s", "Location expression size");
+
+      output_loc_sequence (curr->expr);
+    }
+
+  dw2_asm_output_data (DWARF_OFFSET_SIZE, 0,
+		       "Location list terminator begin (%s)",
+		       list_head->ll_symbol);
+  dw2_asm_output_data (DWARF_OFFSET_SIZE, 0,
+		       "Location list terminator end (%s)",
+		       list_head->ll_symbol);
+}

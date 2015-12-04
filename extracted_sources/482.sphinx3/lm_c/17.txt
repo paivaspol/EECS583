@@ -1,0 +1,48 @@
+int32 lm_bg_score (lm_t *lm, s3lmwid_t lw1, s3lmwid_t lw2, s3wid_t w2)
+{
+    int32 i, n, score;
+    bg_t *bg=0;
+
+    if ((lm->n_bg == 0) || (NOT_S3LMWID(lw1)))
+	return (lm_ug_score (lm, lw2, w2));
+
+    lm->n_bg_score++;
+
+    if (NOT_S3LMWID(lw2) || (lw2 >= lm->n_ug))
+	E_FATAL("Bad lw2 argument (%d) to lm_bg_score\n", lw2);
+    
+    n = lm->ug[lw1+1].firstbg - lm->ug[lw1].firstbg;
+    
+    if (n > 0) {
+	if (! lm->membg[lw1].bg)
+	    load_bg (lm, lw1);
+	lm->membg[lw1].used = 1;
+	bg = lm->membg[lw1].bg;
+
+	i = find_bg (bg, n, lw2);
+    } else
+	i = -1;
+    
+    if (i >= 0) {
+	score = lm->bgprob[bg[i].probid].l;
+	if(lm->inclass_ugscore){ /*Only add within class prob if class information exists.
+				  Is actually ok to just add the score because if the word
+				  is not within-class. The returning scores will be 0. I just
+				  love to safe-guard it :-). 
+				 */
+	  score += lm->inclass_ugscore[w2];
+	}
+
+	lm->access_type = 2;
+    } else {
+	lm->n_bg_bo++;
+	lm->access_type = 1;
+	score = lm->ug[lw1].bowt.l + lm->ug[lw2].prob.l;
+    }
+
+#if 0
+    printf ("      %5d %5d -> %8d\n", lw1, lw2, score);
+#endif
+
+    return (score);
+}

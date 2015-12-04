@@ -1,0 +1,209 @@
+static int
+combine_regs (usedreg, setreg, may_save_copy, insn_number, insn, already_dead)
+     rtx usedreg, setreg;
+     int may_save_copy;
+     int insn_number;
+     rtx insn;
+     int already_dead;
+{
+  int ureg, sreg;
+  int offset = 0;
+  int usize, ssize;
+  int sqty;
+
+  /* Determine the numbers and sizes of registers being used.  If a subreg
+     is present that does not change the entire register, don't consider
+     this a copy insn.  */
+
+  while (GET_CODE (usedreg) == SUBREG)
+    {
+      rtx subreg = SUBREG_REG (usedreg);
+
+      if (GET_CODE (subreg) == REG)
+	{
+	  if (GET_MODE_SIZE (GET_MODE (subreg)) > UNITS_PER_WORD)
+	    may_save_copy = 0;
+
+	  if (REGNO (subreg) < FIRST_PSEUDO_REGISTER)
+	    offset += subreg_regno_offset (REGNO (subreg),
+					   GET_MODE (subreg),
+					   SUBREG_BYTE (usedreg),
+					   GET_MODE (usedreg));
+	  else
+	    offset += (SUBREG_BYTE (usedreg)
+		      / REGMODE_NATURAL_SIZE (GET_MODE (usedreg)));
+	}
+
+      usedreg = subreg;
+    }
+
+  if (GET_CODE (usedreg) != REG)
+    return 0;
+
+  ureg = REGNO (usedreg);
+  if (ureg < FIRST_PSEUDO_REGISTER)
+    usize = HARD_REGNO_NREGS (ureg, GET_MODE (usedreg));
+  else
+    usize = ((GET_MODE_SIZE (GET_MODE (usedreg))
+	      + (REGMODE_NATURAL_SIZE (GET_MODE (usedreg)) - 1))
+	     / REGMODE_NATURAL_SIZE (GET_MODE (usedreg)));
+
+  while (GET_CODE (setreg) == SUBREG)
+    {
+      rtx subreg = SUBREG_REG (setreg);
+
+      if (GET_CODE (subreg) == REG)
+	{
+	  if (GET_MODE_SIZE (GET_MODE (subreg)) > UNITS_PER_WORD)
+	    may_save_copy = 0;
+
+	  if (REGNO (subreg) < FIRST_PSEUDO_REGISTER)
+	    offset -= subreg_regno_offset (REGNO (subreg),
+					   GET_MODE (subreg),
+					   SUBREG_BYTE (setreg),
+					   GET_MODE (setreg));
+	  else
+	    offset -= (SUBREG_BYTE (setreg)
+		      / REGMODE_NATURAL_SIZE (GET_MODE (setreg)));
+	}
+
+      setreg = subreg;
+    }
+
+  if (GET_CODE (setreg) != REG)
+    return 0;
+
+  sreg = REGNO (setreg);
+  if (sreg < FIRST_PSEUDO_REGISTER)
+    ssize = HARD_REGNO_NREGS (sreg, GET_MODE (setreg));
+  else
+    ssize = ((GET_MODE_SIZE (GET_MODE (setreg))
+	      + (REGMODE_NATURAL_SIZE (GET_MODE (setreg)) - 1))
+	     / REGMODE_NATURAL_SIZE (GET_MODE (setreg)));
+
+  /* If UREG is a pseudo-register that hasn't already been assigned a
+     quantity number, it means that it is not local to this block or dies
+     more than once.  In either event, we can't do anything with it.  */
+  if ((ureg >= FIRST_PSEUDO_REGISTER && reg_qty[ureg] < 0)
+      /* Do not combine registers unless one fits within the other.  */
+      || (offset > 0 && usize + offset > ssize)
+      || (offset < 0 && usize + offset < ssize)
+      /* Do not combine with a smaller already-assigned object
+	 if that smaller object is already combined with something bigger.  */
+      || (ssize > usize && ureg >= FIRST_PSEUDO_REGISTER
+	  && usize < qty[reg_qty[ureg]].size)
+      /* Can't combine if SREG is not a register we can allocate.  */
+      || (sreg >= FIRST_PSEUDO_REGISTER && reg_qty[sreg] == -1)
+      /* Don't combine with a pseudo mentioned in a REG_NO_CONFLICT note.
+	 These have already been taken care of.  This probably wouldn't
+	 combine anyway, but don't take any chances.  */
+      || (ureg >= FIRST_PSEUDO_REGISTER
+	  && find_reg_note (insn, REG_NO_CONFLICT, usedreg))
+      /* Don't tie something to itself.  In most cases it would make no
+	 difference, but it would screw up if the reg being tied to itself
+	 also dies in this insn.  */
+      || ureg == sreg
+      /* Don't try to connect two different hardware registers.  */
+      || (ureg < FIRST_PSEUDO_REGISTER && sreg < FIRST_PSEUDO_REGISTER)
+      /* Don't connect two different machine modes if they have different
+	 implications as to which registers may be used.  */
+      || !MODES_TIEABLE_P (GET_MODE (usedreg), GET_MODE (setreg)))
+    return 0;
+
+  /* Now, if UREG is a hard reg and SREG is a pseudo, record the hard reg in
+     qty_phys_sugg for the pseudo instead of tying them.
+
+     Return "failure" so that the lifespan of UREG is terminated here;
+     that way the two lifespans will be disjoint and nothing will prevent
+     the pseudo reg from being given this hard reg.  */
+
+  if (ureg < FIRST_PSEUDO_REGISTER)
+    {
+      /* Allocate a quantity number so we have a place to put our
+	 suggestions.  */
+      if (reg_qty[sreg] == -2)
+	reg_is_born (setreg, 2 * insn_number);
+
+      if (reg_qty[sreg] >= 0)
+	{
+	  if (may_save_copy
+	      && ! TEST_HARD_REG_BIT (qty_phys_copy_sugg[reg_qty[sreg]], ureg))
+	    {
+	      SET_HARD_REG_BIT (qty_phys_copy_sugg[reg_qty[sreg]], ureg);
+	      qty_phys_num_copy_sugg[reg_qty[sreg]]++;
+	    }
+	  else if (! TEST_HARD_REG_BIT (qty_phys_sugg[reg_qty[sreg]], ureg))
+	    {
+	      SET_HARD_REG_BIT (qty_phys_sugg[reg_qty[sreg]], ureg);
+	      qty_phys_num_sugg[reg_qty[sreg]]++;
+	    }
+	}
+      return 0;
+    }
+
+  /* Similarly for SREG a hard register and UREG a pseudo register.  */
+
+  if (sreg < FIRST_PSEUDO_REGISTER)
+    {
+      if (may_save_copy
+	  && ! TEST_HARD_REG_BIT (qty_phys_copy_sugg[reg_qty[ureg]], sreg))
+	{
+	  SET_HARD_REG_BIT (qty_phys_copy_sugg[reg_qty[ureg]], sreg);
+	  qty_phys_num_copy_sugg[reg_qty[ureg]]++;
+	}
+      else if (! TEST_HARD_REG_BIT (qty_phys_sugg[reg_qty[ureg]], sreg))
+	{
+	  SET_HARD_REG_BIT (qty_phys_sugg[reg_qty[ureg]], sreg);
+	  qty_phys_num_sugg[reg_qty[ureg]]++;
+	}
+      return 0;
+    }
+
+  /* At this point we know that SREG and UREG are both pseudos.
+     Do nothing if SREG already has a quantity or is a register that we
+     don't allocate.  */
+  if (reg_qty[sreg] >= -1
+      /* If we are not going to let any regs live across calls,
+	 don't tie a call-crossing reg to a non-call-crossing reg.  */
+      || (current_function_has_nonlocal_label
+	  && ((REG_N_CALLS_CROSSED (ureg) > 0)
+	      != (REG_N_CALLS_CROSSED (sreg) > 0))))
+    return 0;
+
+  /* We don't already know about SREG, so tie it to UREG
+     if this is the last use of UREG, provided the classes they want
+     are compatible.  */
+
+  if ((already_dead || find_regno_note (insn, REG_DEAD, ureg))
+      && reg_meets_class_p (sreg, qty[reg_qty[ureg]].min_class))
+    {
+      /* Add SREG to UREG's quantity.  */
+      sqty = reg_qty[ureg];
+      reg_qty[sreg] = sqty;
+      reg_offset[sreg] = reg_offset[ureg] + offset;
+      reg_next_in_qty[sreg] = qty[sqty].first_reg;
+      qty[sqty].first_reg = sreg;
+
+      /* If SREG's reg class is smaller, set qty[SQTY].min_class.  */
+      update_qty_class (sqty, sreg);
+
+      /* Update info about quantity SQTY.  */
+      qty[sqty].n_calls_crossed += REG_N_CALLS_CROSSED (sreg);
+      qty[sqty].n_refs += REG_N_REFS (sreg);
+      qty[sqty].freq += REG_FREQ (sreg);
+      if (usize < ssize)
+	{
+	  int i;
+
+	  for (i = qty[sqty].first_reg; i >= 0; i = reg_next_in_qty[i])
+	    reg_offset[i] -= offset;
+
+	  qty[sqty].size = ssize;
+	  qty[sqty].mode = GET_MODE (setreg);
+	}
+    }
+  else
+    return 0;
+
+  return 1;
+}

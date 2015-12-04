@@ -1,0 +1,16 @@
+static void
+cse_check_loop_start (x, set, data)
+     rtx x;
+     rtx set ATTRIBUTE_UNUSED;
+     void *data;
+{
+  rtx *cse_check_loop_start_value = (rtx *) data;
+
+  if (*cse_check_loop_start_value == NULL_RTX
+      || GET_CODE (x) == CC0 || GET_CODE (x) == PC)
+    return;
+
+  if ((GET_CODE (x) == MEM && GET_CODE (*cse_check_loop_start_value) == MEM)
+      || reg_overlap_mentioned_p (x, *cse_check_loop_start_value))
+    *cse_check_loop_start_value = NULL_RTX;
+}

@@ -1,0 +1,201 @@
+static char*
+parse_buf(pTHX_ PSTATE* p_state, char *beg, char *end, U32 utf8, SV* self)
+{
+    char *s = beg;
+    char *t = beg;
+    char *new_pos;
+
+    while (!p_state->eof) {
+	/*
+	 * At the start of this loop we will always be ready for eating text
+	 * or a new tag.  We will never be inside some tag.  The 't' points
+	 * to where we started and the 's' is advanced as we go.
+	 */
+
+	while (p_state->literal_mode) {
+	    char *l = p_state->literal_mode;
+	    bool skip_quoted_end = (strEQ(l, "script") || strEQ(l, "style"));
+	    char inside_quote = 0;
+	    bool escape_next = 0;
+	    char *end_text;
+
+	    while (s < end) {
+		if (*s == '<' && !inside_quote)
+		    break;
+		if (skip_quoted_end) {
+		    if (escape_next) {
+			escape_next = 0;
+		    }
+		    else {
+			if (*s == '\\')
+			    escape_next = 1;
+			else if (inside_quote && *s == inside_quote)
+			    inside_quote = 0;
+			else if (*s == '\r' || *s == '\n')
+			    inside_quote = 0;
+			else if (!inside_quote && (*s == '"' || *s == '\''))
+			    inside_quote = *s;
+		    }
+		}
+		s++;
+	    }
+
+	    if (s == end) {
+		s = t;
+		goto DONE;
+	    }
+
+	    end_text = s;
+	    s++;
+      
+	    /* here we rely on '\0' termination of perl svpv buffers */
+	    if (*s == '/') {
+		s++;
+		while (*l && toLOWER(*s) == *l) {
+		    s++;
+		    l++;
+		}
+
+		if (!*l && (strNE(p_state->literal_mode, "plaintext") || p_state->closing_plaintext)) {
+		    /* matched it all */
+		    token_pos_t end_token;
+		    end_token.beg = end_text + 2;
+		    end_token.end = s;
+
+		    while (isHSPACE(*s))
+			s++;
+		    if (*s == '>') {
+			s++;
+			if (t != end_text)
+			    report_event(p_state, E_TEXT, t, end_text, utf8,
+					 0, 0, self);
+			report_event(p_state, E_END,  end_text, s, utf8,
+				     &end_token, 1, self);
+			p_state->literal_mode = 0;
+			p_state->is_cdata = 0;
+			t = s;
+		    }
+		}
+	    }
+	}
+
+#ifdef MARKED_SECTION
+	while (p_state->ms == MS_CDATA || p_state->ms == MS_RCDATA) {
+	    while (s < end && *s != ']')
+		s++;
+	    if (*s == ']') {
+		char *end_text = s;
+		s++;
+		if (*s == ']') {
+		    s++;
+		    if (*s == '>') {
+			s++;
+			/* marked section end */
+			if (t != end_text)
+			    report_event(p_state, E_TEXT, t, end_text, utf8,
+					 0, 0, self);
+			report_event(p_state, E_NONE, end_text, s, utf8, 0, 0, self);
+			t = s;
+			SvREFCNT_dec(av_pop(p_state->ms_stack));
+			marked_section_update(p_state);
+			continue;
+		    }
+		}
+	    }
+	    if (s == end) {
+		s = t;
+		goto DONE;
+	    }
+	}
+#endif
+
+	/* first we try to match as much text as possible */
+	while (s < end && *s != '<') {
+#ifdef MARKED_SECTION
+	    if (p_state->ms && *s == ']') {
+		char *end_text = s;
+		s++;
+		if (*s == ']') {
+		    s++;
+		    if (*s == '>') {
+			s++;
+			report_event(p_state, E_TEXT, t, end_text, utf8,
+				     0, 0, self);
+			report_event(p_state, E_NONE, end_text, s, utf8,
+				     0, 0, self);
+			t = s;
+			SvREFCNT_dec(av_pop(p_state->ms_stack));
+			marked_section_update(p_state);    
+			continue;
+		    }
+		}
+	    }
+#endif
+	    s++;
+	}
+	if (s != t) {
+	    if (*s == '<') {
+		report_event(p_state, E_TEXT, t, s, utf8, 0, 0, self);
+		t = s;
+	    }
+	    else {
+		s--;
+		if (isHSPACE(*s)) {
+		    /* wait with white space at end */
+		    while (s >= t && isHSPACE(*s))
+			s--;
+		}
+		else {
+		    /* might be a chopped up entities/words */
+		    while (s >= t && !isHSPACE(*s))
+			s--;
+		    while (s >= t && isHSPACE(*s))
+			s--;
+		}
+		s++;
+		if (s != t)
+		    report_event(p_state, E_TEXT, t, s, utf8, 0, 0, self);
+		break;
+	    }
+	}
+
+	if (end - s < 3)
+	    break;
+
+	/* next char is known to be '<' and pointed to by 't' as well as 's' */
+	s++;
+
+#ifdef USE_PFUNC
+	new_pos = parsefunc[(unsigned char)*s](p_state, t, end, utf8, self);
+#else
+	if (isHNAME_FIRST(*s))
+	    new_pos = parse_start(p_state, t, end, utf8, self);
+	else if (*s == '/')
+	    new_pos = parse_end(p_state, t, end, utf8, self);
+	else if (*s == '!')
+	    new_pos = parse_decl(p_state, t, end, utf8, self);
+	else if (*s == '?')
+	    new_pos = parse_process(p_state, t, end, utf8, self);
+	else
+	    new_pos = 0;
+#endif /* USE_PFUNC */
+
+	if (new_pos) {
+	    if (new_pos == t) {
+		/* no progress, need more data to know what it is */
+		s = t;
+		break;
+	    }
+	    t = s = new_pos;
+	}
+
+	/* if we get out here then this was not a conforming tag, so
+	 * treat it is plain text at the top of the loop again (we
+	 * have already skipped past the "<").
+	 */
+    }
+
+DONE:
+    return s;
+
+}

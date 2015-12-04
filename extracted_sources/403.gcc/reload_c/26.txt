@@ -1,0 +1,512 @@
+static int
+find_reloads_address_1 (mode, x, context, loc, opnum, type, ind_levels, insn)
+     enum machine_mode mode;
+     rtx x;
+     int context;
+     rtx *loc;
+     int opnum;
+     enum reload_type type;
+     int ind_levels;
+     rtx insn;
+{
+  RTX_CODE code = GET_CODE (x);
+
+  switch (code)
+    {
+    case PLUS:
+      {
+	rtx orig_op0 = XEXP (x, 0);
+	rtx orig_op1 = XEXP (x, 1);
+	RTX_CODE code0 = GET_CODE (orig_op0);
+	RTX_CODE code1 = GET_CODE (orig_op1);
+	rtx op0 = orig_op0;
+	rtx op1 = orig_op1;
+
+	if (GET_CODE (op0) == SUBREG)
+	  {
+	    op0 = SUBREG_REG (op0);
+	    code0 = GET_CODE (op0);
+	    if (code0 == REG && REGNO (op0) < FIRST_PSEUDO_REGISTER)
+	      op0 = gen_rtx_REG (word_mode,
+				 (REGNO (op0) +
+				  subreg_regno_offset (REGNO (SUBREG_REG (orig_op0)),
+						       GET_MODE (SUBREG_REG (orig_op0)),
+						       SUBREG_BYTE (orig_op0),
+						       GET_MODE (orig_op0))));
+	  }
+
+	if (GET_CODE (op1) == SUBREG)
+	  {
+	    op1 = SUBREG_REG (op1);
+	    code1 = GET_CODE (op1);
+	    if (code1 == REG && REGNO (op1) < FIRST_PSEUDO_REGISTER)
+	      /* ??? Why is this given op1's mode and above for
+		 ??? op0 SUBREGs we use word_mode?  */
+	      op1 = gen_rtx_REG (GET_MODE (op1),
+				 (REGNO (op1) +
+				  subreg_regno_offset (REGNO (SUBREG_REG (orig_op1)),
+						       GET_MODE (SUBREG_REG (orig_op1)),
+						       SUBREG_BYTE (orig_op1),
+						       GET_MODE (orig_op1))));
+	  }
+
+	if (code0 == MULT || code0 == SIGN_EXTEND || code0 == TRUNCATE
+	    || code0 == ZERO_EXTEND || code1 == MEM)
+	  {
+	    find_reloads_address_1 (mode, orig_op0, 1, &XEXP (x, 0), opnum,
+				    type, ind_levels, insn);
+	    find_reloads_address_1 (mode, orig_op1, 0, &XEXP (x, 1), opnum,
+				    type, ind_levels, insn);
+	  }
+
+	else if (code1 == MULT || code1 == SIGN_EXTEND || code1 == TRUNCATE
+		 || code1 == ZERO_EXTEND || code0 == MEM)
+	  {
+	    find_reloads_address_1 (mode, orig_op0, 0, &XEXP (x, 0), opnum,
+				    type, ind_levels, insn);
+	    find_reloads_address_1 (mode, orig_op1, 1, &XEXP (x, 1), opnum,
+				    type, ind_levels, insn);
+	  }
+
+	else if (code0 == CONST_INT || code0 == CONST
+		 || code0 == SYMBOL_REF || code0 == LABEL_REF)
+	  find_reloads_address_1 (mode, orig_op1, 0, &XEXP (x, 1), opnum,
+				  type, ind_levels, insn);
+
+	else if (code1 == CONST_INT || code1 == CONST
+		 || code1 == SYMBOL_REF || code1 == LABEL_REF)
+	  find_reloads_address_1 (mode, orig_op0, 0, &XEXP (x, 0), opnum,
+				  type, ind_levels, insn);
+
+	else if (code0 == REG && code1 == REG)
+	  {
+	    if (REG_OK_FOR_INDEX_P (op0)
+		&& REG_MODE_OK_FOR_BASE_P (op1, mode))
+	      return 0;
+	    else if (REG_OK_FOR_INDEX_P (op1)
+		     && REG_MODE_OK_FOR_BASE_P (op0, mode))
+	      return 0;
+	    else if (REG_MODE_OK_FOR_BASE_P (op1, mode))
+	      find_reloads_address_1 (mode, orig_op0, 1, &XEXP (x, 0), opnum,
+				      type, ind_levels, insn);
+	    else if (REG_MODE_OK_FOR_BASE_P (op0, mode))
+	      find_reloads_address_1 (mode, orig_op1, 1, &XEXP (x, 1), opnum,
+				      type, ind_levels, insn);
+	    else if (REG_OK_FOR_INDEX_P (op1))
+	      find_reloads_address_1 (mode, orig_op0, 0, &XEXP (x, 0), opnum,
+				      type, ind_levels, insn);
+	    else if (REG_OK_FOR_INDEX_P (op0))
+	      find_reloads_address_1 (mode, orig_op1, 0, &XEXP (x, 1), opnum,
+				      type, ind_levels, insn);
+	    else
+	      {
+		find_reloads_address_1 (mode, orig_op0, 1, &XEXP (x, 0), opnum,
+					type, ind_levels, insn);
+		find_reloads_address_1 (mode, orig_op1, 0, &XEXP (x, 1), opnum,
+					type, ind_levels, insn);
+	      }
+	  }
+
+	else if (code0 == REG)
+	  {
+	    find_reloads_address_1 (mode, orig_op0, 1, &XEXP (x, 0), opnum,
+				    type, ind_levels, insn);
+	    find_reloads_address_1 (mode, orig_op1, 0, &XEXP (x, 1), opnum,
+				    type, ind_levels, insn);
+	  }
+
+	else if (code1 == REG)
+	  {
+	    find_reloads_address_1 (mode, orig_op1, 1, &XEXP (x, 1), opnum,
+				    type, ind_levels, insn);
+	    find_reloads_address_1 (mode, orig_op0, 0, &XEXP (x, 0), opnum,
+				    type, ind_levels, insn);
+	  }
+      }
+
+      return 0;
+
+    case POST_MODIFY:
+    case PRE_MODIFY:
+      {
+	rtx op0 = XEXP (x, 0);
+	rtx op1 = XEXP (x, 1);
+
+	if (GET_CODE (op1) != PLUS && GET_CODE (op1) != MINUS)
+	  return 0;
+
+	/* Currently, we only support {PRE,POST}_MODIFY constructs
+	   where a base register is {inc,dec}remented by the contents
+	   of another register or by a constant value.  Thus, these
+	   operands must match.  */
+	if (op0 != XEXP (op1, 0))
+	  abort ();
+
+	/* Require index register (or constant).  Let's just handle the
+	   register case in the meantime... If the target allows
+	   auto-modify by a constant then we could try replacing a pseudo
+	   register with its equivalent constant where applicable.  */
+	if (REG_P (XEXP (op1, 1)))
+	  if (!REGNO_OK_FOR_INDEX_P (REGNO (XEXP (op1, 1))))
+	    find_reloads_address_1 (mode, XEXP (op1, 1), 1, &XEXP (op1, 1),
+				    opnum, type, ind_levels, insn);
+
+	if (REG_P (XEXP (op1, 0)))
+	  {
+	    int regno = REGNO (XEXP (op1, 0));
+	    int reloadnum;
+
+	    /* A register that is incremented cannot be constant!  */
+	    if (regno >= FIRST_PSEUDO_REGISTER
+		&& reg_equiv_constant[regno] != 0)
+	      abort ();
+
+	    /* Handle a register that is equivalent to a memory location
+	       which cannot be addressed directly.  */
+ 	    if (reg_equiv_memory_loc[regno] != 0
+		&& (reg_equiv_address[regno] != 0
+		    || num_not_at_initial_offset))
+	      {
+		rtx tem = make_memloc (XEXP (x, 0), regno);
+
+		if (reg_equiv_address[regno]
+		    || ! rtx_equal_p (tem, reg_equiv_mem[regno]))
+		  {
+		    /* First reload the memory location's address.
+		       We can't use ADDR_TYPE (type) here, because we need to
+		       write back the value after reading it, hence we actually
+		       need two registers.  */
+		    find_reloads_address (GET_MODE (tem), 0, XEXP (tem, 0),
+					  &XEXP (tem, 0), opnum,
+					  RELOAD_OTHER,
+					  ind_levels, insn);
+
+		    /* Then reload the memory location into a base
+		       register.  */
+		    reloadnum = push_reload (tem, tem, &XEXP (x, 0),
+					     &XEXP (op1, 0),
+					     MODE_BASE_REG_CLASS (mode),
+					     GET_MODE (x), GET_MODE (x), 0,
+					     0, opnum, RELOAD_OTHER);
+
+		    update_auto_inc_notes (this_insn, regno, reloadnum);
+		    return 0;
+		  }
+	      }
+
+	    if (reg_renumber[regno] >= 0)
+	      regno = reg_renumber[regno];
+
+	    /* We require a base register here...  */
+	    if (!REGNO_MODE_OK_FOR_BASE_P (regno, GET_MODE (x)))
+	      {
+		reloadnum = push_reload (XEXP (op1, 0), XEXP (x, 0),
+					 &XEXP (op1, 0), &XEXP (x, 0),
+					 MODE_BASE_REG_CLASS (mode),
+					 GET_MODE (x), GET_MODE (x), 0, 0,
+					 opnum, RELOAD_OTHER);
+
+		update_auto_inc_notes (this_insn, regno, reloadnum);
+		return 0;
+	      }
+	  }
+	else
+	  abort ();
+      }
+      return 0;
+
+    case POST_INC:
+    case POST_DEC:
+    case PRE_INC:
+    case PRE_DEC:
+      if (GET_CODE (XEXP (x, 0)) == REG)
+	{
+	  int regno = REGNO (XEXP (x, 0));
+	  int value = 0;
+	  rtx x_orig = x;
+
+	  /* A register that is incremented cannot be constant!  */
+	  if (regno >= FIRST_PSEUDO_REGISTER
+	      && reg_equiv_constant[regno] != 0)
+	    abort ();
+
+	  /* Handle a register that is equivalent to a memory location
+	     which cannot be addressed directly.  */
+	  if (reg_equiv_memory_loc[regno] != 0
+	      && (reg_equiv_address[regno] != 0 || num_not_at_initial_offset))
+	    {
+	      rtx tem = make_memloc (XEXP (x, 0), regno);
+	      if (reg_equiv_address[regno]
+		  || ! rtx_equal_p (tem, reg_equiv_mem[regno]))
+		{
+		  /* First reload the memory location's address.
+		     We can't use ADDR_TYPE (type) here, because we need to
+		     write back the value after reading it, hence we actually
+		     need two registers.  */
+		  find_reloads_address (GET_MODE (tem), &tem, XEXP (tem, 0),
+					&XEXP (tem, 0), opnum, type,
+					ind_levels, insn);
+		  /* Put this inside a new increment-expression.  */
+		  x = gen_rtx_fmt_e (GET_CODE (x), GET_MODE (x), tem);
+		  /* Proceed to reload that, as if it contained a register.  */
+		}
+	    }
+
+	  /* If we have a hard register that is ok as an index,
+	     don't make a reload.  If an autoincrement of a nice register
+	     isn't "valid", it must be that no autoincrement is "valid".
+	     If that is true and something made an autoincrement anyway,
+	     this must be a special context where one is allowed.
+	     (For example, a "push" instruction.)
+	     We can't improve this address, so leave it alone.  */
+
+	  /* Otherwise, reload the autoincrement into a suitable hard reg
+	     and record how much to increment by.  */
+
+	  if (reg_renumber[regno] >= 0)
+	    regno = reg_renumber[regno];
+	  if ((regno >= FIRST_PSEUDO_REGISTER
+	       || !(context ? REGNO_OK_FOR_INDEX_P (regno)
+		    : REGNO_MODE_OK_FOR_BASE_P (regno, mode))))
+	    {
+	      int reloadnum;
+
+	      /* If we can output the register afterwards, do so, this
+		 saves the extra update.
+		 We can do so if we have an INSN - i.e. no JUMP_INSN nor
+		 CALL_INSN - and it does not set CC0.
+		 But don't do this if we cannot directly address the
+		 memory location, since this will make it harder to
+		 reuse address reloads, and increases register pressure.
+		 Also don't do this if we can probably update x directly.  */
+	      rtx equiv = (GET_CODE (XEXP (x, 0)) == MEM
+			   ? XEXP (x, 0)
+			   : reg_equiv_mem[regno]);
+	      int icode = (int) add_optab->handlers[(int) Pmode].insn_code;
+	      if (insn && GET_CODE (insn) == INSN && equiv
+		  && memory_operand (equiv, GET_MODE (equiv))
+#ifdef HAVE_cc0
+		  && ! sets_cc0_p (PATTERN (insn))
+#endif
+		  && ! (icode != CODE_FOR_nothing
+			&& ((*insn_data[icode].operand[0].predicate)
+			    (equiv, Pmode))
+			&& ((*insn_data[icode].operand[1].predicate)
+			    (equiv, Pmode))))
+		{
+		  /* We use the original pseudo for loc, so that
+		     emit_reload_insns() knows which pseudo this
+		     reload refers to and updates the pseudo rtx, not
+		     its equivalent memory location, as well as the
+		     corresponding entry in reg_last_reload_reg.  */
+		  loc = &XEXP (x_orig, 0);
+		  x = XEXP (x, 0);
+		  reloadnum
+		    = push_reload (x, x, loc, loc,
+				   (context ? INDEX_REG_CLASS :
+				    MODE_BASE_REG_CLASS (mode)),
+				   GET_MODE (x), GET_MODE (x), 0, 0,
+				   opnum, RELOAD_OTHER);
+		}
+	      else
+		{
+		  reloadnum
+		    = push_reload (x, NULL_RTX, loc, (rtx*) 0,
+				   (context ? INDEX_REG_CLASS :
+				    MODE_BASE_REG_CLASS (mode)),
+				   GET_MODE (x), GET_MODE (x), 0, 0,
+				   opnum, type);
+		  rld[reloadnum].inc
+		    = find_inc_amount (PATTERN (this_insn), XEXP (x_orig, 0));
+
+		  value = 1;
+		}
+
+	      update_auto_inc_notes (this_insn, REGNO (XEXP (x_orig, 0)),
+				     reloadnum);
+	    }
+	  return value;
+	}
+
+      else if (GET_CODE (XEXP (x, 0)) == MEM)
+	{
+	  /* This is probably the result of a substitution, by eliminate_regs,
+	     of an equivalent address for a pseudo that was not allocated to a
+	     hard register.  Verify that the specified address is valid and
+	     reload it into a register.  */
+	  /* Variable `tem' might or might not be used in FIND_REG_INC_NOTE.  */
+	  rtx tem ATTRIBUTE_UNUSED = XEXP (x, 0);
+	  rtx link;
+	  int reloadnum;
+
+	  /* Since we know we are going to reload this item, don't decrement
+	     for the indirection level.
+
+	     Note that this is actually conservative:  it would be slightly
+	     more efficient to use the value of SPILL_INDIRECT_LEVELS from
+	     reload1.c here.  */
+	  /* We can't use ADDR_TYPE (type) here, because we need to
+	     write back the value after reading it, hence we actually
+	     need two registers.  */
+	  find_reloads_address (GET_MODE (x), &XEXP (x, 0),
+				XEXP (XEXP (x, 0), 0), &XEXP (XEXP (x, 0), 0),
+				opnum, type, ind_levels, insn);
+
+	  reloadnum = push_reload (x, NULL_RTX, loc, (rtx*) 0,
+				   (context ? INDEX_REG_CLASS :
+				    MODE_BASE_REG_CLASS (mode)),
+				   GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+	  rld[reloadnum].inc
+	    = find_inc_amount (PATTERN (this_insn), XEXP (x, 0));
+
+	  link = FIND_REG_INC_NOTE (this_insn, tem);
+	  if (link != 0)
+	    push_replacement (&XEXP (link, 0), reloadnum, VOIDmode);
+
+	  return 1;
+	}
+      return 0;
+
+    case MEM:
+      /* This is probably the result of a substitution, by eliminate_regs, of
+	 an equivalent address for a pseudo that was not allocated to a hard
+	 register.  Verify that the specified address is valid and reload it
+	 into a register.
+
+	 Since we know we are going to reload this item, don't decrement for
+	 the indirection level.
+
+	 Note that this is actually conservative:  it would be slightly more
+	 efficient to use the value of SPILL_INDIRECT_LEVELS from
+	 reload1.c here.  */
+
+      find_reloads_address (GET_MODE (x), loc, XEXP (x, 0), &XEXP (x, 0),
+			    opnum, ADDR_TYPE (type), ind_levels, insn);
+      push_reload (*loc, NULL_RTX, loc, (rtx*) 0,
+		   (context ? INDEX_REG_CLASS : MODE_BASE_REG_CLASS (mode)),
+		   GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+      return 1;
+
+    case REG:
+      {
+	int regno = REGNO (x);
+
+	if (reg_equiv_constant[regno] != 0)
+	  {
+	    find_reloads_address_part (reg_equiv_constant[regno], loc,
+				       (context ? INDEX_REG_CLASS :
+					MODE_BASE_REG_CLASS (mode)),
+				       GET_MODE (x), opnum, type, ind_levels);
+	    return 1;
+	  }
+
+#if 0 /* This might screw code in reload1.c to delete prior output-reload
+	 that feeds this insn.  */
+	if (reg_equiv_mem[regno] != 0)
+	  {
+	    push_reload (reg_equiv_mem[regno], NULL_RTX, loc, (rtx*) 0,
+			 (context ? INDEX_REG_CLASS :
+			  MODE_BASE_REG_CLASS (mode)),
+			 GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+	    return 1;
+	  }
+#endif
+
+	if (reg_equiv_memory_loc[regno]
+	    && (reg_equiv_address[regno] != 0 || num_not_at_initial_offset))
+	  {
+	    rtx tem = make_memloc (x, regno);
+	    if (reg_equiv_address[regno] != 0
+		|| ! rtx_equal_p (tem, reg_equiv_mem[regno]))
+	      {
+		x = tem;
+		find_reloads_address (GET_MODE (x), &x, XEXP (x, 0),
+				      &XEXP (x, 0), opnum, ADDR_TYPE (type),
+				      ind_levels, insn);
+	      }
+	  }
+
+	if (reg_renumber[regno] >= 0)
+	  regno = reg_renumber[regno];
+
+	if ((regno >= FIRST_PSEUDO_REGISTER
+	     || !(context ? REGNO_OK_FOR_INDEX_P (regno)
+		  : REGNO_MODE_OK_FOR_BASE_P (regno, mode))))
+	  {
+	    push_reload (x, NULL_RTX, loc, (rtx*) 0,
+			 (context ? INDEX_REG_CLASS : MODE_BASE_REG_CLASS (mode)),
+			 GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+	    return 1;
+	  }
+
+	/* If a register appearing in an address is the subject of a CLOBBER
+	   in this insn, reload it into some other register to be safe.
+	   The CLOBBER is supposed to make the register unavailable
+	   from before this insn to after it.  */
+	if (regno_clobbered_p (regno, this_insn, GET_MODE (x), 0))
+	  {
+	    push_reload (x, NULL_RTX, loc, (rtx*) 0,
+			 (context ? INDEX_REG_CLASS : MODE_BASE_REG_CLASS (mode)),
+			 GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+	    return 1;
+	  }
+      }
+      return 0;
+
+    case SUBREG:
+      if (GET_CODE (SUBREG_REG (x)) == REG)
+	{
+	  /* If this is a SUBREG of a hard register and the resulting register
+	     is of the wrong class, reload the whole SUBREG.  This avoids
+	     needless copies if SUBREG_REG is multi-word.  */
+	  if (REGNO (SUBREG_REG (x)) < FIRST_PSEUDO_REGISTER)
+	    {
+	      int regno = subreg_regno (x);
+
+	      if (! (context ? REGNO_OK_FOR_INDEX_P (regno)
+		     : REGNO_MODE_OK_FOR_BASE_P (regno, mode)))
+		{
+		  push_reload (x, NULL_RTX, loc, (rtx*) 0,
+			       (context ? INDEX_REG_CLASS :
+				MODE_BASE_REG_CLASS (mode)),
+			       GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+		  return 1;
+		}
+	    }
+	  /* If this is a SUBREG of a pseudo-register, and the pseudo-register
+	     is larger than the class size, then reload the whole SUBREG.  */
+	  else
+	    {
+	      enum reg_class class = (context ? INDEX_REG_CLASS
+				      : MODE_BASE_REG_CLASS (mode));
+	      if (CLASS_MAX_NREGS (class, GET_MODE (SUBREG_REG (x)))
+		  > reg_class_size[class])
+		{
+		  x = find_reloads_subreg_address (x, 0, opnum, type,
+						   ind_levels, insn);
+		  push_reload (x, NULL_RTX, loc, (rtx*) 0, class,
+			       GET_MODE (x), VOIDmode, 0, 0, opnum, type);
+		  return 1;
+		}
+	    }
+	}
+      break;
+
+    default:
+      break;
+    }
+
+  {
+    const char *fmt = GET_RTX_FORMAT (code);
+    int i;
+
+    for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+      {
+	if (fmt[i] == 'e')
+	  find_reloads_address_1 (mode, XEXP (x, i), context, &XEXP (x, i),
+				  opnum, type, ind_levels, insn);
+      }
+  }
+
+  return 0;
+}

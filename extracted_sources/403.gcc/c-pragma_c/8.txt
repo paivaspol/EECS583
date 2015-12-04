@@ -1,0 +1,33 @@
+static void
+handle_pragma_redefine_extname (dummy)
+     cpp_reader *dummy ATTRIBUTE_UNUSED;
+{
+  tree oldname, newname, decl, x;
+  enum cpp_ttype t;
+
+  if (c_lex (&oldname) != CPP_NAME)
+    {
+      warning ("malformed #pragma redefine_extname, ignored");
+      return;
+    }
+  if (c_lex (&newname) != CPP_NAME)
+    {
+      warning ("malformed #pragma redefine_extname, ignored");
+      return;
+    }
+  t = c_lex (&x);
+  if (t != CPP_EOF)
+    warning ("junk at end of #pragma redefine_extname");
+
+  decl = identifier_global_value (oldname);
+  if (decl && TREE_CODE_CLASS (TREE_CODE (decl)) == 'd')
+    {
+      if (DECL_ASSEMBLER_NAME_SET_P (decl)
+	  && DECL_ASSEMBLER_NAME (decl) != newname)
+        warning ("#pragma redefine_extname conflicts with declaration");
+      SET_DECL_ASSEMBLER_NAME (decl, newname);
+    }
+  else
+    pending_redefine_extname
+      = tree_cons (oldname, newname, pending_redefine_extname);
+}

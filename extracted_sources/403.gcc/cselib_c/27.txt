@@ -1,0 +1,19 @@
+void
+cselib_init ()
+{
+  /* These are only created once.  */
+  if (! callmem)
+    {
+      gcc_obstack_init (&cselib_obstack);
+      cselib_startobj = obstack_alloc (&cselib_obstack, 0);
+
+      callmem = gen_rtx_MEM (BLKmode, const0_rtx);
+      ggc_add_rtx_root (&callmem, 1);
+    }
+
+  cselib_nregs = max_reg_num ();
+  VARRAY_ELT_LIST_INIT (reg_values, cselib_nregs, "reg_values");
+  VARRAY_UINT_INIT (used_regs, cselib_nregs, "used_regs");
+  hash_table = htab_create (31, get_value_hash, entry_and_rtx_equal_p, NULL);
+  clear_table (1);
+}

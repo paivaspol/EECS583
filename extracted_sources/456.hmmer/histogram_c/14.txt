@@ -1,0 +1,95 @@
+int
+EVDMaxLikelyFit(float *x, int *c, int n, float *ret_mu, float *ret_lambda)
+{
+  float  lambda, mu;
+  float  fx;			/* f(x)  */
+  float  dfx;			/* f'(x) */
+  double esum;                  /* \sum e^(-lambda xi) */ 
+  double mult;
+  double total;
+  float  tol = 1e-5;
+  int    i;
+
+  /* 1. Find an initial guess at lambda: linear regression here?
+   */
+  lambda = 0.2;
+
+  /* 2. Use Newton/Raphson to solve Lawless 4.1.6 and find ML lambda
+   */
+  for (i = 0; i < 100; i++)
+    {
+      Lawless416(x, c, n, lambda, &fx, &dfx);
+      if (fabs(fx) < tol) break;             /* success */
+      lambda = lambda - fx / dfx;	     /* Newton/Raphson is simple */
+      if (lambda <= 0.) lambda = 0.001;      /* but be a little careful  */
+    }
+
+  /* 2.5: If we did 100 iterations but didn't converge, Newton/Raphson failed.
+   *      Resort to a bisection search. Worse convergence speed
+   *      but guaranteed to converge (unlike Newton/Raphson).
+   *      We assume (!?) that fx is a monotonically decreasing function of x;
+   *      i.e. fx > 0 if we are left of the root, fx < 0 if we
+   *      are right of the root.
+   */ 
+  if (i == 100)
+    {
+      float left, right, mid;
+      SQD_DPRINTF2(("EVDMaxLikelyFit(): Newton/Raphson failed; switchover to bisection"));
+
+				/* First we need to bracket the root */
+      lambda = right = left = 0.2;
+      Lawless416(x, c, n, lambda, &fx, &dfx);
+      if (fx < 0.) 
+	{			/* fix right; search left. */
+	  do {
+	    left -= 0.1;
+	    if (left < 0.) { 
+	      SQD_DPRINTF2(("EVDMaxLikelyFit(): failed to bracket root")); 
+	      return 0; 
+	    }
+	    Lawless416(x, c, n, left, &fx, &dfx);
+	  } while (fx < 0.);
+	}
+      else
+	{			/* fix left; search right. */
+	  do {
+	    right += 0.1;
+	    Lawless416(x, c, n, right, &fx, &dfx);
+	    if (right > 100.) {
+	      SQD_DPRINTF2(("EVDMaxLikelyFit(): failed to bracket root")); 
+	      return 0; 
+	    }
+	  } while (fx > 0.);
+	}
+			/* now we bisection search in left/right interval */
+      for (i = 0; i < 100; i++)
+	{
+	  mid = (left + right) / 2.; 
+	  Lawless416(x, c, n, mid, &fx, &dfx);
+	  if (fabs(fx) < tol) break;             /* success */
+	  if (fx > 0.)	left = mid;
+	  else          right = mid;
+	}
+      if (i == 100) { 
+	SQD_DPRINTF2(("EVDMaxLikelyFit(): even the bisection search failed")); 
+	return 0; 
+      }
+      lambda = mid;
+    }
+
+  /* 3. Substitute into Lawless 4.1.5 to find mu
+   */
+  esum = 0.;
+  total = 0.;
+  for (i = 0; i < n; i++)
+    {
+      mult   = (c == NULL) ? 1. : (double) c[i];
+      esum  += mult * exp(-1 * lambda * x[i]);
+      total += mult;
+    }
+  mu = -1. * log(esum / total) / lambda;
+
+  *ret_lambda = lambda;
+  *ret_mu     = mu;   
+  return 1;
+}

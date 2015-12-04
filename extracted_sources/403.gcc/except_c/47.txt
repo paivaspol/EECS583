@@ -1,0 +1,24 @@
+static int
+add_ttypes_entry (ttypes_hash, type)
+     htab_t ttypes_hash;
+     tree type;
+{
+  struct ttypes_filter **slot, *n;
+
+  slot = (struct ttypes_filter **)
+    htab_find_slot_with_hash (ttypes_hash, type, TYPE_HASH (type), INSERT);
+
+  if ((n = *slot) == NULL)
+    {
+      /* Filter value is a 1 based table index.  */
+
+      n = (struct ttypes_filter *) xmalloc (sizeof (*n));
+      n->t = type;
+      n->filter = VARRAY_ACTIVE_SIZE (cfun->eh->ttype_data) + 1;
+      *slot = n;
+
+      VARRAY_PUSH_TREE (cfun->eh->ttype_data, type);
+    }
+
+  return n->filter;
+}

@@ -1,0 +1,41 @@
+int writeSyntaxElement_Level_VLCN(SyntaxElement *se, int vlc, DataPartition *this_dataPart)
+{
+  int iCodeword;
+  int iLength;
+
+  int level = se->value1;
+
+  int levabs = abs(level);
+  int sign = (level < 0 ? 1 : 0);  
+
+  int shift = vlc-1;
+  int escape = (15<<shift)+1;
+
+  int numPrefix = (levabs-1)>>shift;
+
+  int sufmask = ~((0xffffffff)<<shift);
+  int suffix = (levabs-1)&sufmask;
+
+  if (levabs < escape)
+  {
+    iLength = numPrefix + vlc + 1;
+    iCodeword = (1<<(shift+1))|(suffix<<1)|sign;
+  }
+  else
+  {
+    iLength = 28;
+    iCodeword = (1<<12)|((levabs-escape)<<1)|sign;
+  }
+  se->len = iLength;
+  se->inf = iCodeword;
+
+  symbol2vlc(se);
+
+  writeUVLC2buffer(se, this_dataPart->bitstream);
+#if TRACE
+  if (se->type <= 1)
+    trace2out (se);
+#endif
+
+  return (se->len);
+}

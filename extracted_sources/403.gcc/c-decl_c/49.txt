@@ -1,0 +1,38 @@
+void
+pop_c_function_context (f)
+     struct function *f;
+{
+  struct c_language_function *p
+    = (struct c_language_function *) f->language;
+  tree link;
+
+  /* Bring back all the labels that were shadowed.  */
+  for (link = shadowed_labels; link; link = TREE_CHAIN (link))
+    if (DECL_NAME (TREE_VALUE (link)) != 0)
+      IDENTIFIER_LABEL_VALUE (DECL_NAME (TREE_VALUE (link)))
+	= TREE_VALUE (link);
+
+  if (DECL_SAVED_INSNS (current_function_decl) == 0
+      && DECL_SAVED_TREE (current_function_decl) == NULL_TREE)
+    {
+      /* Stop pointing to the local nodes about to be freed.  */
+      /* But DECL_INITIAL must remain nonzero so we know this
+	 was an actual function definition.  */
+      DECL_INITIAL (current_function_decl) = error_mark_node;
+      DECL_ARGUMENTS (current_function_decl) = 0;
+    }
+
+  c_stmt_tree = p->base.x_stmt_tree;
+  c_scope_stmt_stack = p->base.x_scope_stmt_stack;
+  named_labels = p->named_labels;
+  shadowed_labels = p->shadowed_labels;
+  current_function_returns_value = p->returns_value;
+  current_function_returns_null = p->returns_null;
+  current_function_returns_abnormally = p->returns_abnormally;
+  warn_about_return_type = p->warn_about_return_type;
+  current_extern_inline = p->extern_inline;
+  current_binding_level = p->binding_level;
+
+  free (p);
+  f->language = 0;
+}

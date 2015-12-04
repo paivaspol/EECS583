@@ -1,0 +1,31 @@
+void make_path_table() {
+
+    int i,j;
+#ifdef TADPOLE_IMPROVE
+    int k;
+#endif
+
+    /* table of directions, 1 for each kind of path */
+    /**int path_ind[MAX_BASIC_PATHS][MAX_LENGTH];**/
+    /* table of coefficients in action, for each path */
+
+    node0_printf("%s\n",quark_action_description);
+    num_q_paths = 0;
+    num_basic_paths = 0;
+
+
+    /* add rots. and reflects to table, print out the path coefficients */
+    node0_printf("path coefficients: npath  path_coeff  multiplicity\n");
+    for(j=0;j<quark_action_npaths;j++) {
+	double this_coeff;
+	this_coeff = path_coeff[j];
+#ifdef TADPOLE_IMPROVE
+	for(k=1;k< path_length_in[j];k++)this_coeff /= u0;
+#endif
+	act_path_coeff[j] = this_coeff ;
+	i = add_basic_path( path_ind[j], path_length_in[j],
+	    this_coeff );
+	node0_printf("                    %d      %e     %d\n",
+	    j,this_coeff,i);
+    }
+}

@@ -1,0 +1,24 @@
+static int
+verify_addresses (v, giv_inc, unroll_number)
+     struct induction *v;
+     rtx giv_inc;
+     int unroll_number;
+{
+  int ret = 1;
+  rtx orig_addr = *v->location;
+  rtx last_addr = plus_constant (v->dest_reg,
+				 INTVAL (giv_inc) * (unroll_number - 1));
+
+  /* First check to see if either address would fail.   Handle the fact
+     that we have may have a match_dup.  */
+  if (! validate_replace_rtx (*v->location, v->dest_reg, v->insn)
+      || ! validate_replace_rtx (*v->location, last_addr, v->insn))
+    ret = 0;
+
+  /* Now put things back the way they were before.  This should always
+   succeed.  */
+  if (! validate_replace_rtx (*v->location, orig_addr, v->insn))
+    abort ();
+
+  return ret;
+}

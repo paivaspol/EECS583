@@ -1,0 +1,35 @@
+void
+debug_candidate (i)
+     int i;
+{
+  if (!candidate_table[i].is_valid)
+    return;
+
+  if (candidate_table[i].is_speculative)
+    {
+      int j;
+      fprintf (sched_dump, "src b %d bb %d speculative \n", BB_TO_BLOCK (i), i);
+
+      fprintf (sched_dump, "split path: ");
+      for (j = 0; j < candidate_table[i].split_bbs.nr_members; j++)
+	{
+	  int b = candidate_table[i].split_bbs.first_member[j];
+
+	  fprintf (sched_dump, " %d ", b);
+	}
+      fprintf (sched_dump, "\n");
+
+      fprintf (sched_dump, "update path: ");
+      for (j = 0; j < candidate_table[i].update_bbs.nr_members; j++)
+	{
+	  int b = candidate_table[i].update_bbs.first_member[j];
+
+	  fprintf (sched_dump, " %d ", b);
+	}
+      fprintf (sched_dump, "\n");
+    }
+  else
+    {
+      fprintf (sched_dump, " src %d equivalent\n", BB_TO_BLOCK (i));
+    }
+}

@@ -1,0 +1,209 @@
+static rtx
+cse_basic_block (from, to, next_branch, around_loop)
+     rtx from, to;
+     struct branch_path *next_branch;
+     int around_loop;
+{
+  rtx insn;
+  int to_usage = 0;
+  rtx libcall_insn = NULL_RTX;
+  int num_insns = 0;
+
+  /* This array is undefined before max_reg, so only allocate
+     the space actually needed and adjust the start.  */
+
+  qty_table
+    = (struct qty_table_elem *) xmalloc ((max_qty - max_reg)
+					 * sizeof (struct qty_table_elem));
+  qty_table -= max_reg;
+
+  new_basic_block ();
+
+  /* TO might be a label.  If so, protect it from being deleted.  */
+  if (to != 0 && GET_CODE (to) == CODE_LABEL)
+    ++LABEL_NUSES (to);
+
+  for (insn = from; insn != to; insn = NEXT_INSN (insn))
+    {
+      enum rtx_code code = GET_CODE (insn);
+
+      /* If we have processed 1,000 insns, flush the hash table to
+	 avoid extreme quadratic behavior.  We must not include NOTEs
+	 in the count since there may be more of them when generating
+	 debugging information.  If we clear the table at different
+	 times, code generated with -g -O might be different than code
+	 generated with -O but not -g.
+
+	 ??? This is a real kludge and needs to be done some other way.
+	 Perhaps for 2.9.  */
+      if (code != NOTE && num_insns++ > 1000)
+	{
+	  flush_hash_table ();
+	  num_insns = 0;
+	}
+
+      /* See if this is a branch that is part of the path.  If so, and it is
+	 to be taken, do so.  */
+      if (next_branch->branch == insn)
+	{
+	  enum taken status = next_branch++->status;
+	  if (status != NOT_TAKEN)
+	    {
+	      if (status == TAKEN)
+		record_jump_equiv (insn, 1);
+	      else
+		invalidate_skipped_block (NEXT_INSN (insn));
+
+	      /* Set the last insn as the jump insn; it doesn't affect cc0.
+		 Then follow this branch.  */
+#ifdef HAVE_cc0
+	      prev_insn_cc0 = 0;
+#endif
+	      prev_insn = insn;
+	      insn = JUMP_LABEL (insn);
+	      continue;
+	    }
+	}
+
+      if (GET_MODE (insn) == QImode)
+	PUT_MODE (insn, VOIDmode);
+
+      if (GET_RTX_CLASS (code) == 'i')
+	{
+	  rtx p;
+
+	  /* Process notes first so we have all notes in canonical forms when
+	     looking for duplicate operations.  */
+
+	  if (REG_NOTES (insn))
+	    REG_NOTES (insn) = cse_process_notes (REG_NOTES (insn), NULL_RTX);
+
+	  /* Track when we are inside in LIBCALL block.  Inside such a block,
+	     we do not want to record destinations.  The last insn of a
+	     LIBCALL block is not considered to be part of the block, since
+	     its destination is the result of the block and hence should be
+	     recorded.  */
+
+	  if (REG_NOTES (insn) != 0)
+	    {
+	      if ((p = find_reg_note (insn, REG_LIBCALL, NULL_RTX)))
+		libcall_insn = XEXP (p, 0);
+	      else if (find_reg_note (insn, REG_RETVAL, NULL_RTX))
+		libcall_insn = 0;
+	    }
+
+	  cse_insn (insn, libcall_insn);
+
+	  /* If we haven't already found an insn where we added a LABEL_REF,
+	     check this one.  */
+	  if (GET_CODE (insn) == INSN && ! recorded_label_ref
+	      && for_each_rtx (&PATTERN (insn), check_for_label_ref,
+			       (void *) insn))
+	    recorded_label_ref = 1;
+	}
+
+      /* If INSN is now an unconditional jump, skip to the end of our
+	 basic block by pretending that we just did the last insn in the
+	 basic block.  If we are jumping to the end of our block, show
+	 that we can have one usage of TO.  */
+
+      if (any_uncondjump_p (insn))
+	{
+	  if (to == 0)
+	    {
+	      free (qty_table + max_reg);
+	      return 0;
+	    }
+
+	  if (JUMP_LABEL (insn) == to)
+	    to_usage = 1;
+
+	  /* Maybe TO was deleted because the jump is unconditional.
+	     If so, there is nothing left in this basic block.  */
+	  /* ??? Perhaps it would be smarter to set TO
+	     to whatever follows this insn,
+	     and pretend the basic block had always ended here.  */
+	  if (INSN_DELETED_P (to))
+	    break;
+
+	  insn = PREV_INSN (to);
+	}
+
+      /* See if it is ok to keep on going past the label
+	 which used to end our basic block.  Remember that we incremented
+	 the count of that label, so we decrement it here.  If we made
+	 a jump unconditional, TO_USAGE will be one; in that case, we don't
+	 want to count the use in that jump.  */
+
+      if (to != 0 && NEXT_INSN (insn) == to
+	  && GET_CODE (to) == CODE_LABEL && --LABEL_NUSES (to) == to_usage)
+	{
+	  struct cse_basic_block_data val;
+	  rtx prev;
+
+	  insn = NEXT_INSN (to);
+
+	  /* If TO was the last insn in the function, we are done.  */
+	  if (insn == 0)
+	    {
+	      free (qty_table + max_reg);
+	      return 0;
+	    }
+
+	  /* If TO was preceded by a BARRIER we are done with this block
+	     because it has no continuation.  */
+	  prev = prev_nonnote_insn (to);
+	  if (prev && GET_CODE (prev) == BARRIER)
+	    {
+	      free (qty_table + max_reg);
+	      return insn;
+	    }
+
+	  /* Find the end of the following block.  Note that we won't be
+	     following branches in this case.  */
+	  to_usage = 0;
+	  val.path_size = 0;
+	  cse_end_of_basic_block (insn, &val, 0, 0, 0);
+
+	  /* If the tables we allocated have enough space left
+	     to handle all the SETs in the next basic block,
+	     continue through it.  Otherwise, return,
+	     and that block will be scanned individually.  */
+	  if (val.nsets * 2 + next_qty > max_qty)
+	    break;
+
+	  cse_basic_block_start = val.low_cuid;
+	  cse_basic_block_end = val.high_cuid;
+	  to = val.last;
+
+	  /* Prevent TO from being deleted if it is a label.  */
+	  if (to != 0 && GET_CODE (to) == CODE_LABEL)
+	    ++LABEL_NUSES (to);
+
+	  /* Back up so we process the first insn in the extension.  */
+	  insn = PREV_INSN (insn);
+	}
+    }
+
+  if (next_qty > max_qty)
+    abort ();
+
+  /* If we are running before loop.c, we stopped on a NOTE_INSN_LOOP_END, and
+     the previous insn is the only insn that branches to the head of a loop,
+     we can cse into the loop.  Don't do this if we changed the jump
+     structure of a loop unless we aren't going to be following jumps.  */
+
+  insn = prev_nonnote_insn(to);
+  if ((cse_jumps_altered == 0
+       || (flag_cse_follow_jumps == 0 && flag_cse_skip_blocks == 0))
+      && around_loop && to != 0
+      && GET_CODE (to) == NOTE && NOTE_LINE_NUMBER (to) == NOTE_INSN_LOOP_END
+      && GET_CODE (insn) == JUMP_INSN
+      && JUMP_LABEL (insn) != 0
+      && LABEL_NUSES (JUMP_LABEL (insn)) == 1)
+    cse_around_loop (JUMP_LABEL (insn));
+
+  free (qty_table + max_reg);
+
+  return to ? NEXT_INSN (to) : 0;
+}

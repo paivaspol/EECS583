@@ -1,0 +1,34 @@
+void
+push_parm_decl (parm)
+     tree parm;
+{
+  tree decl;
+  int old_immediate_size_expand = immediate_size_expand;
+  /* Don't try computing parm sizes now -- wait till fn is called.  */
+  immediate_size_expand = 0;
+
+  decl = grokdeclarator (TREE_VALUE (TREE_PURPOSE (parm)),
+			 TREE_PURPOSE (TREE_PURPOSE (parm)), PARM, 0);
+  decl_attributes (&decl, TREE_VALUE (parm), 0);
+
+#if 0
+  if (DECL_NAME (decl))
+    {
+      tree olddecl;
+      olddecl = lookup_name (DECL_NAME (decl));
+      if (pedantic && olddecl != 0 && TREE_CODE (olddecl) == TYPE_DECL)
+	pedwarn_with_decl (decl,
+			   "ISO C forbids parameter `%s' shadowing typedef");
+    }
+#endif
+
+  decl = pushdecl (decl);
+
+  immediate_size_expand = old_immediate_size_expand;
+
+  current_binding_level->parm_order
+    = tree_cons (NULL_TREE, decl, current_binding_level->parm_order);
+
+  /* Add this decl to the current binding level.  */
+  finish_decl (decl, NULL_TREE, NULL_TREE);
+}

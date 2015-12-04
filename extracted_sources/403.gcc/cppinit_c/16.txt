@@ -1,0 +1,17 @@
+static bool
+push_include (pfile, p)
+     cpp_reader *pfile;
+     struct pending_option *p;
+{
+  cpp_token header;
+
+  /* Later: maybe update this to use the #include "" search path
+     if cpp_read_file fails.  */
+  header.type = CPP_STRING;
+  header.val.str.text = (const unsigned char *) p->arg;
+  header.val.str.len = strlen (p->arg);
+  /* Make the command line directive take up a line.  */
+  pfile->line++;
+
+  return _cpp_execute_include (pfile, &header, IT_CMDLINE);
+}

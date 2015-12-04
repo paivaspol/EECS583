@@ -1,0 +1,209 @@
+void
+optimize_sibling_and_tail_recursive_calls ()
+{
+  rtx insn, insns;
+  basic_block alternate_exit = EXIT_BLOCK_PTR;
+  bool no_sibcalls_this_function = false;
+  int successful_sibling_call = 0;
+  int replaced_call_placeholder = 0;
+  edge e;
+
+  insns = get_insns ();
+
+  /* We do not perform these calls when flag_exceptions is true, so this
+     is probably a NOP at the current time.  However, we may want to support
+     sibling and tail recursion optimizations in the future, so let's plan
+     ahead and find all the EH labels.  */
+  find_exception_handler_labels ();
+
+  rebuild_jump_labels (insns);
+  /* We need cfg information to determine which blocks are succeeded
+     only by the epilogue.  */
+  find_basic_blocks (insns, max_reg_num (), 0);
+  cleanup_cfg (CLEANUP_PRE_SIBCALL | CLEANUP_PRE_LOOP);
+
+  /* If there are no basic blocks, then there is nothing to do.  */
+  if (n_basic_blocks == 0)
+    return;
+
+  /* If we are using sjlj exceptions, we may need to add a call to 
+     _Unwind_SjLj_Unregister at exit of the function.  Which means
+     that we cannot do any sibcall transformations.  */
+  if (USING_SJLJ_EXCEPTIONS && current_function_has_exception_handlers ())
+    no_sibcalls_this_function = true;
+
+  return_value_pseudo = NULL_RTX;
+
+  /* Find the exit block.
+
+     It is possible that we have blocks which can reach the exit block
+     directly.  However, most of the time a block will jump (or fall into)
+     N_BASIC_BLOCKS - 1, which in turn falls into the exit block.  */
+  for (e = EXIT_BLOCK_PTR->pred;
+       e && alternate_exit == EXIT_BLOCK_PTR;
+       e = e->pred_next)
+    {
+      rtx insn;
+
+      if (e->dest != EXIT_BLOCK_PTR || e->succ_next != NULL)
+	continue;
+
+      /* Walk forwards through the last normal block and see if it
+	 does nothing except fall into the exit block.  */
+      for (insn = BLOCK_HEAD (n_basic_blocks - 1);
+	   insn;
+	   insn = NEXT_INSN (insn))
+	{
+	  rtx set;
+	  /* This should only happen once, at the start of this block.  */
+	  if (GET_CODE (insn) == CODE_LABEL)
+	    continue;
+
+	  if (GET_CODE (insn) == NOTE)
+	    continue;
+
+	  if (GET_CODE (insn) == INSN
+	      && GET_CODE (PATTERN (insn)) == USE)
+	    continue;
+
+	  /* Exit block also may contain copy from pseudo containing
+	     return value to hard register.  */
+	  if (GET_CODE (insn) == INSN
+	      && (set = single_set (insn))
+	      && SET_DEST (set) == current_function_return_rtx
+	      && REG_P (SET_SRC (set))
+	      && !return_value_pseudo)
+	    {
+	      return_value_pseudo = SET_SRC (set);
+	      continue;
+	    }
+
+	  break;
+	}
+
+      /* If INSN is zero, then the search walked all the way through the
+	 block without hitting anything interesting.  This block is a
+	 valid alternate exit block.  */
+      if (insn == NULL)
+	alternate_exit = e->src;
+      else
+	return_value_pseudo = NULL;
+    }
+
+  /* If the function uses ADDRESSOF, we can't (easily) determine
+     at this point if the value will end up on the stack.  */
+  no_sibcalls_this_function |= sequence_uses_addressof (insns);
+
+  /* Walk the insn chain and find any CALL_PLACEHOLDER insns.  We need to
+     select one of the insn sequences attached to each CALL_PLACEHOLDER.
+
+     The different sequences represent different ways to implement the call,
+     ie, tail recursion, sibling call or normal call.
+
+     Since we do not create nested CALL_PLACEHOLDERs, the scan
+     continues with the insn that was after a replaced CALL_PLACEHOLDER;
+     we don't rescan the replacement insns.  */
+  for (insn = insns; insn; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == CALL_INSN
+	  && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	{
+	  int sibcall = (XEXP (PATTERN (insn), 1) != NULL_RTX);
+	  int tailrecursion = (XEXP (PATTERN (insn), 2) != NULL_RTX);
+	  basic_block call_block = BLOCK_FOR_INSN (insn);
+
+	  /* alloca (until we have stack slot life analysis) inhibits
+	     sibling call optimizations, but not tail recursion.
+	     Similarly if we use varargs or stdarg since they implicitly
+	     may take the address of an argument.  */
+ 	  if (current_function_calls_alloca
+	      || current_function_varargs || current_function_stdarg)
+	    sibcall = 0;
+
+	  /* See if there are any reasons we can't perform either sibling or
+	     tail call optimizations.  We must be careful with stack slots
+	     which are live at potential optimization sites.  */
+	  if (no_sibcalls_this_function
+	      /* ??? Overly conservative.  */
+	      || frame_offset
+	      /* Any function that calls setjmp might have longjmp called from
+		 any called function.  ??? We really should represent this
+		 properly in the CFG so that this needn't be special cased.  */
+	      || current_function_calls_setjmp
+	      /* Can't if more than one successor or single successor is not
+		 exit block.  These two tests prevent tail call optimization
+		 in the presense of active exception handlers.  */
+	      || call_block->succ == NULL
+	      || call_block->succ->succ_next != NULL
+	      || (call_block->succ->dest != EXIT_BLOCK_PTR
+		  && call_block->succ->dest != alternate_exit)
+	      /* If this call doesn't end the block, there are operations at
+		 the end of the block which we must execute after returning.  */
+	      || ! call_ends_block_p (insn, call_block->end))
+	    sibcall = 0, tailrecursion = 0;
+
+	  /* Select a set of insns to implement the call and emit them.
+	     Tail recursion is the most efficient, so select it over
+	     a tail/sibling call.  */
+	  if (sibcall)
+	    successful_sibling_call = 1;
+
+	  replaced_call_placeholder = 1;
+	  replace_call_placeholder (insn, 
+				    tailrecursion != 0 
+				      ? sibcall_use_tail_recursion
+				      : sibcall != 0
+					 ? sibcall_use_sibcall
+					 : sibcall_use_normal);
+	}
+    }
+
+  if (successful_sibling_call)
+    {
+      rtx insn;
+      tree arg;
+
+      /* A sibling call sequence invalidates any REG_EQUIV notes made for
+	 this function's incoming arguments. 
+
+	 At the start of RTL generation we know the only REG_EQUIV notes
+	 in the rtl chain are those for incoming arguments, so we can safely
+	 flush any REG_EQUIV note. 
+
+	 This is (slight) overkill.  We could keep track of the highest
+	 argument we clobber and be more selective in removing notes, but it
+	 does not seem to be worth the effort.  */
+      purge_reg_equiv_notes ();
+
+      /* A sibling call sequence also may invalidate RTX_UNCHANGING_P
+	 flag of some incoming arguments MEM RTLs, because it can write into
+	 those slots.  We clear all those bits now.
+	 
+	 This is (slight) overkill, we could keep track of which arguments
+	 we actually write into.  */
+      for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+	{
+	  if (INSN_P (insn))
+	    purge_mem_unchanging_flag (PATTERN (insn));
+	}
+
+      /* Similarly, invalidate RTX_UNCHANGING_P for any incoming
+	 arguments passed in registers. */
+      for (arg = DECL_ARGUMENTS (current_function_decl); 
+	   arg; 
+	   arg = TREE_CHAIN (arg))
+	{
+	  if (REG_P (DECL_RTL (arg)))
+	    RTX_UNCHANGING_P (DECL_RTL (arg)) = false;
+	}
+    }
+
+  /* There may have been NOTE_INSN_BLOCK_{BEGIN,END} notes in the 
+     CALL_PLACEHOLDER alternatives that we didn't emit.  Rebuild the
+     lexical block tree to correspond to the notes that still exist.  */
+  if (replaced_call_placeholder)
+    reorder_blocks ();
+
+  /* This information will be invalid after inline expansion.  Kill it now.  */
+  free_basic_block_vars (0);
+}

@@ -1,0 +1,42 @@
+int terminate_slice()
+{
+  int bytes_written;
+  Bitstream *currStream;
+  Slice *currSlice = img->currentSlice;
+  EncodingEnvironmentPtr eep;
+  int i;
+  int byte_pos_before_startcode_emu_prevention;
+
+  if (input->symbol_mode == CABAC)
+    write_terminating_bit (1);      // only once, not for all partitions
+  
+  for (i=0; i<currSlice->max_part_nr; i++)
+  {
+    currStream = (currSlice->partArr[i]).bitstream;
+    if (input->symbol_mode == UVLC)
+    {
+      SODBtoRBSP(currStream);
+      byte_pos_before_startcode_emu_prevention = currStream->byte_pos;
+      currStream->byte_pos = RBSPtoEBSP(currStream->streamBuffer, 0 , currStream->byte_pos, 0);
+      *(stats->em_prev_bits) += (currStream->byte_pos - byte_pos_before_startcode_emu_prevention) * 8;
+    }
+    else     // CABAC
+    {
+      eep = &((currSlice->partArr[i]).ee_cabac);
+      // terminate the arithmetic code
+      arienco_done_encoding(eep);
+      currStream->bits_to_go = eep->Ebits_to_go;
+      currStream->byte_buf = 0;
+      bytes_written = currStream->byte_pos;
+      byte_pos_before_startcode_emu_prevention= currStream->byte_pos;
+      currStream->byte_pos = RBSPtoEBSP(currStream->streamBuffer, 0, currStream->byte_pos, eep->E);
+      *(stats->em_prev_bits) += (currStream->byte_pos - byte_pos_before_startcode_emu_prevention) * 8;
+    }           // CABAC
+  }           // partition loop
+  if( input->symbol_mode == CABAC )
+  {
+    store_contexts();
+  }
+
+  return 0;   
+}

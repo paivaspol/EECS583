@@ -1,0 +1,49 @@
+void init_disres(FILE *log,int nfa,t_iatom forceatoms[],t_iparams ip[],
+		 t_inputrec *ir,t_commrec *mcr,t_fcdata *fcd)
+{
+  int          fa;
+  t_disresdata *dd;
+
+  dd = &(fcd->disres);
+
+  dd->dr_weighting = ir->eDisreWeighting;
+  dd->dr_fc        = ir->dr_fc;
+  dd->dr_tau       = ir->dr_tau;
+  if (fabs(dd->dr_tau) < GMX_REAL_MIN) {
+    dd->dr_bMixed = FALSE;
+    dd->ETerm = 0.0;
+  } else {
+    dd->dr_bMixed = ir->bDisreMixed;
+    dd->ETerm = exp(-(ir->delta_t/ir->dr_tau));
+  }
+  dd->ETerm1 = 1.0 - dd->ETerm;
+  dd->exp_min_t_tau = 1.0;
+  
+  dd->nr = 0;
+  for(fa=0; fa<nfa; fa+=3)
+    if (fa==0 || 
+	ip[forceatoms[fa-3]].disres.label != ip[forceatoms[fa]].disres.label)
+      dd->nr++;
+  dd->npr = nfa/(interaction_function[F_DISRES].nratoms+1);
+  snew(dd->rt,dd->npr);
+  snew(dd->rav,dd->npr);
+  /* Allocate Rt_6 and Rav_6 consecutively in memory so they can be
+   * averaged over the processors in one call (in calc_disre_R_6)
+   */
+  snew(dd->Rt_6,2*dd->nr);
+  dd->Rav_6 = &(dd->Rt_6[dd->nr]);
+  if (mcr)
+    snew(dd->Rtl_6,dd->nr);
+  else
+    dd->Rtl_6 = dd->Rt_6;
+  
+  if (dd->npr > 0) {
+      if(log)
+          fprintf(log,"There are %d distance restraints involving %d atom pairs\n",
+                  dd->nr,dd->npr);
+      if (mcr)
+          check_multi_int(log,mcr,fcd->disres.nr,
+                          "the number of distance restraints");
+      please_cite(log,"Torda89a");
+  }
+}

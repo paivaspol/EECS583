@@ -1,0 +1,29 @@
+static int
+entry_and_rtx_equal_p (entry, x_arg)
+     const void *entry, *x_arg;
+{
+  struct elt_loc_list *l;
+  const cselib_val *v = (const cselib_val *) entry;
+  rtx x = (rtx) x_arg;
+  enum machine_mode mode = GET_MODE (x);
+
+  if (GET_CODE (x) == CONST_INT
+      || (mode == VOIDmode && GET_CODE (x) == CONST_DOUBLE))
+    abort ();
+  if (mode != GET_MODE (v->u.val_rtx))
+    return 0;
+
+  /* Unwrap X if necessary.  */
+  if (GET_CODE (x) == CONST
+      && (GET_CODE (XEXP (x, 0)) == CONST_INT
+	  || GET_CODE (XEXP (x, 0)) == CONST_DOUBLE))
+    x = XEXP (x, 0);
+  
+  /* We don't guarantee that distinct rtx's have different hash values,
+     so we need to do a comparison.  */
+  for (l = v->locs; l; l = l->next)
+    if (rtx_equal_for_cselib_p (l->loc, x))
+      return 1;
+
+  return 0;
+}

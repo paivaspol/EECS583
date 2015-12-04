@@ -1,0 +1,41 @@
+void
+TraceSimpleBounds(struct p7trace_s *tr, int *ret_i1, int *ret_i2, 
+		  int *ret_k1,  int *ret_k2)
+{
+  int i1, i2, k1, k2, tpos;
+
+  i1 = k1 = i2 = k2 = -1;
+
+				/* Look forwards to find start of match */
+  for (tpos = 0; tpos < tr->tlen; tpos++)
+    {
+      if (k1 == -1 && (tr->statetype[tpos] == STM || tr->statetype[tpos] == STD))
+	k1 = tr->nodeidx[tpos];
+      if (tr->statetype[tpos] == STM)
+	{
+	  i1 = tr->pos[tpos];
+	  break;
+	}
+    }
+  if (tpos == tr->tlen || i1 == -1 || k1 == -1)
+    Die("sanity check failed: didn't find a match state in trace");
+
+				/* Look backwards to find end of match */
+  for (tpos = tr->tlen-1; tpos >= 0; tpos--)
+    {
+      if (k2 == -1 && (tr->statetype[tpos] == STM || tr->statetype[tpos] == STD))
+	k2 = tr->nodeidx[tpos];
+      if (tr->statetype[tpos] == STM)
+	{
+	  i2 = tr->pos[tpos];
+	  break;
+	}
+    }
+  if (tpos == tr->tlen || i2 == -1 || k2 == -1)
+    Die("sanity check failed: didn't find a match state in trace");
+
+  *ret_k1 = k1;
+  *ret_i1 = i1;
+  *ret_k2 = k2;
+  *ret_i2 = i2;
+}

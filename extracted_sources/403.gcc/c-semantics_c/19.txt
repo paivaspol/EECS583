@@ -1,0 +1,24 @@
+void 
+genrtl_case_label (case_label)
+     tree case_label;
+{
+  tree duplicate;
+  tree cleanup;
+
+  cleanup = last_cleanup_this_contour ();
+  if (cleanup)
+    {
+      static int explained = 0;
+      warning_with_decl (TREE_PURPOSE (cleanup), 
+			 "destructor needed for `%#D'");
+      warning ("where case label appears here");
+      if (!explained)
+	{
+	  warning ("(enclose actions of previous case statements requiring destructors in their own scope.)");
+	  explained = 1;
+	}
+    }
+
+  add_case_node (CASE_LOW (case_label), CASE_HIGH (case_label), 
+		 CASE_LABEL_DECL (case_label), &duplicate);
+}

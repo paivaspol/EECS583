@@ -1,0 +1,36 @@
+void do_radacc(rvec *x,t_edpar *edi)
+{
+  int i,j,k;
+  real *proj,rad=0.0,ratio=0.0;
+
+  if (edi->vecs.radacc.neig == 0) return;
+  snew(proj,edi->vecs.radacc.neig);
+  /* loop over radacc vectors */
+  for (i=0;(i<edi->vecs.radacc.neig);i++) {
+    /* calculate the projections, radius */
+    proj[i]=do_projectx(edi,x,edi->vecs.radacc.vec[i]);
+    /*fprintf(stderr,"Proj[%d]=%f\n",edi->vecs.radacc.ieig[i],proj[i]);*/
+    rad+=pow((proj[i]-edi->vecs.radacc.refproj[i]),2);
+  }
+  rad=sqrt(rad);
+  /*fprintf(stderr,"Radius=%f\n",rad);*/
+
+  /* only correct when radius decreased */
+  if (rad < edi->vecs.radacc.radius) {
+    ratio=edi->vecs.radacc.radius/rad-1.0;
+    rad=edi->vecs.radacc.radius;
+  }
+  else
+    edi->vecs.radacc.radius=rad;
+
+  /* loop over radacc vectors */
+  for (i=0;(i<edi->vecs.radacc.neig);i++) {
+    proj[i]-=edi->vecs.radacc.refproj[i];
+    /* apply the correction */
+    for (j=0;(j<edi->sav.nr);j++) {
+      for (k=0;(k<DIM);k++)
+	x[edi->sav.anrs[j]][k]+=proj[i]*ratio*edi->vecs.radacc.vec[i][j][k];
+    }
+  }  
+  sfree(proj);
+}

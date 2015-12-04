@@ -1,0 +1,100 @@
+static inline int
+_yylex ()
+{
+ get_next:
+  last_token = c_lex (&yylval.ttype);
+  switch (last_token)
+    {
+    case CPP_EQ:					return '=';
+    case CPP_NOT:					return '!';
+    case CPP_GREATER:	yylval.code = GT_EXPR;		return ARITHCOMPARE;
+    case CPP_LESS:	yylval.code = LT_EXPR;		return ARITHCOMPARE;
+    case CPP_PLUS:	yylval.code = PLUS_EXPR;	return '+';
+    case CPP_MINUS:	yylval.code = MINUS_EXPR;	return '-';
+    case CPP_MULT:	yylval.code = MULT_EXPR;	return '*';
+    case CPP_DIV:	yylval.code = TRUNC_DIV_EXPR;	return '/';
+    case CPP_MOD:	yylval.code = TRUNC_MOD_EXPR;	return '%';
+    case CPP_AND:	yylval.code = BIT_AND_EXPR;	return '&';
+    case CPP_OR:	yylval.code = BIT_IOR_EXPR;	return '|';
+    case CPP_XOR:	yylval.code = BIT_XOR_EXPR;	return '^';
+    case CPP_RSHIFT:	yylval.code = RSHIFT_EXPR;	return RSHIFT;
+    case CPP_LSHIFT:	yylval.code = LSHIFT_EXPR;	return LSHIFT;
+
+    case CPP_COMPL:					return '~';
+    case CPP_AND_AND:					return ANDAND;
+    case CPP_OR_OR:					return OROR;
+    case CPP_QUERY:					return '?';
+    case CPP_OPEN_PAREN:				return '(';
+    case CPP_EQ_EQ:	yylval.code = EQ_EXPR;		return EQCOMPARE;
+    case CPP_NOT_EQ:	yylval.code = NE_EXPR;		return EQCOMPARE;
+    case CPP_GREATER_EQ:yylval.code = GE_EXPR;		return ARITHCOMPARE;
+    case CPP_LESS_EQ:	yylval.code = LE_EXPR;		return ARITHCOMPARE;
+
+    case CPP_PLUS_EQ:	yylval.code = PLUS_EXPR;	return ASSIGN;
+    case CPP_MINUS_EQ:	yylval.code = MINUS_EXPR;	return ASSIGN;
+    case CPP_MULT_EQ:	yylval.code = MULT_EXPR;	return ASSIGN;
+    case CPP_DIV_EQ:	yylval.code = TRUNC_DIV_EXPR;	return ASSIGN;
+    case CPP_MOD_EQ:	yylval.code = TRUNC_MOD_EXPR;	return ASSIGN;
+    case CPP_AND_EQ:	yylval.code = BIT_AND_EXPR;	return ASSIGN;
+    case CPP_OR_EQ:	yylval.code = BIT_IOR_EXPR;	return ASSIGN;
+    case CPP_XOR_EQ:	yylval.code = BIT_XOR_EXPR;	return ASSIGN;
+    case CPP_RSHIFT_EQ:	yylval.code = RSHIFT_EXPR;	return ASSIGN;
+    case CPP_LSHIFT_EQ:	yylval.code = LSHIFT_EXPR;	return ASSIGN;
+
+    case CPP_OPEN_SQUARE:				return '[';
+    case CPP_CLOSE_SQUARE:				return ']';
+    case CPP_OPEN_BRACE:				return '{';
+    case CPP_CLOSE_BRACE:				return '}';
+    case CPP_ELLIPSIS:					return ELLIPSIS;
+
+    case CPP_PLUS_PLUS:					return PLUSPLUS;
+    case CPP_MINUS_MINUS:				return MINUSMINUS;
+    case CPP_DEREF:					return POINTSAT;
+    case CPP_DOT:					return '.';
+
+      /* The following tokens may affect the interpretation of any
+	 identifiers following, if doing Objective-C.  */
+    case CPP_COLON:		OBJC_NEED_RAW_IDENTIFIER (0);	return ':';
+    case CPP_COMMA:		OBJC_NEED_RAW_IDENTIFIER (0);	return ',';
+    case CPP_CLOSE_PAREN:	OBJC_NEED_RAW_IDENTIFIER (0);	return ')';
+    case CPP_SEMICOLON:		OBJC_NEED_RAW_IDENTIFIER (0);	return ';';
+
+    case CPP_EOF:
+      return 0;
+
+    case CPP_NAME:
+      return yylexname ();
+
+    case CPP_NUMBER:
+    case CPP_CHAR:
+    case CPP_WCHAR:
+      return CONSTANT;
+
+    case CPP_STRING:
+    case CPP_WSTRING:
+      return STRING;
+      
+      /* This token is Objective-C specific.  It gives the next token
+	 special significance.  */
+    case CPP_ATSIGN:
+
+      /* These tokens are C++ specific (and will not be generated
+         in C mode, but let's be cautious).  */
+    case CPP_SCOPE:
+    case CPP_DEREF_STAR:
+    case CPP_DOT_STAR:
+    case CPP_MIN_EQ:
+    case CPP_MAX_EQ:
+    case CPP_MIN:
+    case CPP_MAX:
+      /* These tokens should not survive translation phase 4.  */
+    case CPP_HASH:
+    case CPP_PASTE:
+      error ("syntax error at '%s' token", NAME(last_token));
+      goto get_next;
+
+    default:
+      abort ();
+    }
+  /* NOTREACHED */
+}

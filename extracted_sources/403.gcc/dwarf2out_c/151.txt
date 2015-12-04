@@ -1,0 +1,52 @@
+static void
+output_ranges ()
+{
+  unsigned i;
+  static const char *const start_fmt = "Offset 0x%x";
+  const char *fmt = start_fmt;
+
+  for (i = 0; i < ranges_table_in_use; i++)
+    {
+      int block_num = ranges_table[i].block_num;
+
+      if (block_num)
+	{
+	  char blabel[MAX_ARTIFICIAL_LABEL_BYTES];
+	  char elabel[MAX_ARTIFICIAL_LABEL_BYTES];
+
+	  ASM_GENERATE_INTERNAL_LABEL (blabel, BLOCK_BEGIN_LABEL, block_num);
+	  ASM_GENERATE_INTERNAL_LABEL (elabel, BLOCK_END_LABEL, block_num);
+
+	  /* If all code is in the text section, then the compilation
+	     unit base address defaults to DW_AT_low_pc, which is the
+	     base of the text section.  */
+	  if (separate_line_info_table_in_use == 0)
+	    {
+	      dw2_asm_output_delta (DWARF2_ADDR_SIZE, blabel,
+				    text_section_label,
+				    fmt, i * 2 * DWARF2_ADDR_SIZE);
+	      dw2_asm_output_delta (DWARF2_ADDR_SIZE, elabel,
+				    text_section_label, NULL);
+	    }
+
+	  /* Otherwise, we add a DW_AT_entry_pc attribute to force the
+	     compilation unit base address to zero, which allows us to
+	     use absolute addresses, and not worry about whether the
+	     target supports cross-section arithmetic.  */
+	  else
+	    {
+	      dw2_asm_output_addr (DWARF2_ADDR_SIZE, blabel,
+				   fmt, i * 2 * DWARF2_ADDR_SIZE);
+	      dw2_asm_output_addr (DWARF2_ADDR_SIZE, elabel, NULL);
+	    }
+
+	  fmt = NULL;
+	}
+      else
+	{
+	  dw2_asm_output_data (DWARF2_ADDR_SIZE, 0, NULL);
+	  dw2_asm_output_data (DWARF2_ADDR_SIZE, 0, NULL);
+	  fmt = start_fmt;
+	}
+    }
+}

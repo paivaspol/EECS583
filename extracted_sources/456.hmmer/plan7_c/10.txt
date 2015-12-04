@@ -1,0 +1,39 @@
+void
+Plan7Renormalize(struct plan7_s *hmm)
+{
+  int   k;			/* counter for model position */
+  int   st;			/* counter for special states */
+  float d;			/* denominator */
+
+				/* match emissions */
+  for (k = 1; k <= hmm->M; k++) 
+    FNorm(hmm->mat[k], Alphabet_size);
+				/* insert emissions */
+  for (k = 1; k < hmm->M; k++)
+    FNorm(hmm->ins[k], Alphabet_size);
+				/* begin transitions */
+  d = FSum(hmm->begin+1, hmm->M) + hmm->tbd1;
+  FScale(hmm->begin+1, hmm->M, 1./d);
+  hmm->tbd1 /= d;
+				/* main model transitions */
+  for (k = 1; k < hmm->M; k++)
+    {
+      d = FSum(hmm->t[k], 3) + hmm->end[k]; 
+      FScale(hmm->t[k], 3, 1./d);
+      hmm->end[k] /= d;
+
+      FNorm(hmm->t[k]+3, 2);	/* insert */
+      FNorm(hmm->t[k]+5, 2);	/* delete */
+    }
+				/* null model emissions */
+  FNorm(hmm->null, Alphabet_size);
+				/* special transitions  */
+  for (st = 0; st < 4; st++)
+    FNorm(hmm->xt[st], 2);
+				/* enforce nonexistent transitions */
+				/* (is this necessary?) */
+  hmm->t[0][TDM] = hmm->t[0][TDD] = 0.0;
+
+  hmm->flags &= ~PLAN7_HASBITS;	/* clear the log-odds ready flag */
+  hmm->flags |= PLAN7_HASPROB;	/* set the probabilities OK flag */
+}

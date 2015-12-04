@@ -1,0 +1,48 @@
+static void
+compute_kill_rd ()
+{
+  int bb, cuid;
+  unsigned int regno;
+  int i;
+
+  /* For each block
+       For each set bit in `gen' of the block (i.e each insn which
+	   generates a definition in the block)
+	 Call the reg set by the insn corresponding to that bit regx
+	 Look at the linked list starting at reg_set_table[regx]
+	 For each setting of regx in the linked list, which is not in
+	     this block
+	   Set the bit in `kill' corresponding to that insn.  */
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    for (cuid = 0; cuid < max_cuid; cuid++)
+      if (TEST_BIT (rd_gen[bb], cuid))
+	{
+	  rtx insn = CUID_INSN (cuid);
+	  rtx pat = PATTERN (insn);
+
+	  if (GET_CODE (insn) == CALL_INSN)
+	    {
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
+		  handle_rd_kill_set (insn, regno, BASIC_BLOCK (bb));
+	    }
+
+	  if (GET_CODE (pat) == PARALLEL)
+	    {
+	      for (i = XVECLEN (pat, 0) - 1; i >= 0; i--)
+		{
+		  enum rtx_code code = GET_CODE (XVECEXP (pat, 0, i));
+
+		  if ((code == SET || code == CLOBBER)
+		      && GET_CODE (XEXP (XVECEXP (pat, 0, i), 0)) == REG)
+		    handle_rd_kill_set (insn,
+					REGNO (XEXP (XVECEXP (pat, 0, i), 0)),
+					BASIC_BLOCK (bb));
+		}
+	    }
+	  else if (GET_CODE (pat) == SET && GET_CODE (SET_DEST (pat)) == REG)
+	    /* Each setting of this register outside of this block
+	       must be marked in the set of kills in this block.  */
+	    handle_rd_kill_set (insn, REGNO (SET_DEST (pat)), BASIC_BLOCK (bb));
+	}
+}

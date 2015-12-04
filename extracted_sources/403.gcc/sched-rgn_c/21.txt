@@ -1,0 +1,65 @@
+static int
+may_trap_exp (x, is_store)
+     rtx x;
+     int is_store;
+{
+  enum rtx_code code;
+
+  if (x == 0)
+    return TRAP_FREE;
+  code = GET_CODE (x);
+  if (is_store)
+    {
+      if (code == MEM && may_trap_p (x))
+	return TRAP_RISKY;
+      else
+	return TRAP_FREE;
+    }
+  if (code == MEM)
+    {
+      /* The insn uses memory:  a volatile load.  */
+      if (MEM_VOLATILE_P (x))
+	return IRISKY;
+      /* An exception-free load.  */
+      if (!may_trap_p (x))
+	return IFREE;
+      /* A load with 1 base register, to be further checked.  */
+      if (CONST_BASED_ADDRESS_P (XEXP (x, 0)))
+	return PFREE_CANDIDATE;
+      /* No info on the load, to be further checked.  */
+      return PRISKY_CANDIDATE;
+    }
+  else
+    {
+      const char *fmt;
+      int i, insn_class = TRAP_FREE;
+
+      /* Neither store nor load, check if it may cause a trap.  */
+      if (may_trap_p (x))
+	return TRAP_RISKY;
+      /* Recursive step: walk the insn...  */
+      fmt = GET_RTX_FORMAT (code);
+      for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+	{
+	  if (fmt[i] == 'e')
+	    {
+	      int tmp_class = may_trap_exp (XEXP (x, i), is_store);
+	      insn_class = WORST_CLASS (insn_class, tmp_class);
+	    }
+	  else if (fmt[i] == 'E')
+	    {
+	      int j;
+	      for (j = 0; j < XVECLEN (x, i); j++)
+		{
+		  int tmp_class = may_trap_exp (XVECEXP (x, i, j), is_store);
+		  insn_class = WORST_CLASS (insn_class, tmp_class);
+		  if (insn_class == TRAP_RISKY || insn_class == IRISKY)
+		    break;
+		}
+	    }
+	  if (insn_class == TRAP_RISKY || insn_class == IRISKY)
+	    break;
+	}
+      return insn_class;
+    }
+}

@@ -1,0 +1,38 @@
+int
+SSIGetOffsetByName(SSIFILE *sfp, char *key, int *ret_fh,
+		   SSIOFFSET *ret_offset)
+{
+  int         status;
+  sqd_uint16  fnum;
+
+  /* Look in the primary keys.
+   */
+  status = binary_search(sfp, key, sfp->plen, &(sfp->poffset), sfp->precsize,
+			 sfp->nprimary);
+  if (status == 0) {		
+    /* We found it as a primary key; get our data & return.
+     */
+    if (! read_i16(sfp->fp, &fnum)) return SSI_ERR_NODATA;
+    *ret_fh = (int) fnum;
+    if (! read_offset(sfp->fp, sfp->smode, ret_offset))  return SSI_ERR_NODATA;
+
+    return 0;	/* success! (we don't need the other key data) */
+  } else if (status == SSI_ERR_NO_SUCH_KEY) {
+    /* Not in the primary keys? OK, try the secondary keys.
+     */
+    if (sfp->nsecondary > 0) {
+      char *pkey;
+      status = binary_search(sfp, key, sfp->slen, &(sfp->soffset), sfp->srecsize,
+			     sfp->nsecondary);
+      if (status != 0) return status;
+      if ((pkey = malloc(sizeof(char) * sfp->plen)) == NULL) return SSI_ERR_MALLOC;
+      if (fread(pkey, sizeof(char), sfp->plen, sfp->fp) != sfp->plen) return SSI_ERR_NODATA;
+
+      status = SSIGetOffsetByName(sfp, pkey, ret_fh, ret_offset);
+      free(pkey);
+    }
+    return status;
+
+  } else return status;		
+  /*NOTREACHED*/
+}

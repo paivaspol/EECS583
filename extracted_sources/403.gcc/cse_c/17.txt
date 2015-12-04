@@ -1,0 +1,30 @@
+static rtx
+lookup_as_function (x, code)
+     rtx x;
+     enum rtx_code code;
+{
+  struct table_elt *p
+    = lookup (x, safe_hash (x, VOIDmode) & HASH_MASK, GET_MODE (x));
+
+  /* If we are looking for a CONST_INT, the mode doesn't really matter, as
+     long as we are narrowing.  So if we looked in vain for a mode narrower
+     than word_mode before, look for word_mode now.  */
+  if (p == 0 && code == CONST_INT
+      && GET_MODE_SIZE (GET_MODE (x)) < GET_MODE_SIZE (word_mode))
+    {
+      x = copy_rtx (x);
+      PUT_MODE (x, word_mode);
+      p = lookup (x, safe_hash (x, VOIDmode) & HASH_MASK, word_mode);
+    }
+
+  if (p == 0)
+    return 0;
+
+  for (p = p->first_same_value; p; p = p->next_same_value)
+    if (GET_CODE (p->exp) == code
+	/* Make sure this is a valid entry in the table.  */
+	&& exp_equiv_p (p->exp, p->exp, 1, 0))
+      return p->exp;
+
+  return 0;
+}

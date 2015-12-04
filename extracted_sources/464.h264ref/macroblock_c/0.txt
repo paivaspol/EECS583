@@ -1,0 +1,47 @@
+void set_MB_parameters (int mb_addr)
+{
+  img->current_mb_nr = mb_addr;
+  
+  get_mb_block_pos(mb_addr, &img->mb_x, &img->mb_y);
+  
+  img->block_x = img->mb_x << 2;
+  img->block_y = img->mb_y << 2;
+
+  img->pix_x   = img->block_x << 2;
+  img->pix_y   = img->block_y << 2;
+
+  img->opix_x   = img->pix_x;
+
+  if (img->MbaffFrameFlag)
+  {
+    if (img->mb_data[mb_addr].mb_field)
+    {
+
+      imgY_org  = (mb_addr % 2) ? imgY_org_bot  : imgY_org_top;
+      imgUV_org = (mb_addr % 2) ? imgUV_org_bot : imgUV_org_top;
+      img->opix_y   = (img->mb_y >> 1 ) << 4;
+    }
+    else
+    {
+      imgY_org  = imgY_org_frm;
+      imgUV_org = imgUV_org_frm;
+      img->opix_y   = img->block_y << 2;
+    }
+  }
+  else
+  {
+    img->opix_y   = img->block_y << 2;
+  }
+
+  if (img->yuv_format != YUV400)
+  {
+    img->pix_c_x = img->pix_x / (16/img->mb_cr_size_x);
+    img->pix_c_y = img->pix_y / (16/img->mb_cr_size_y);
+    
+    img->opix_c_x = img->opix_x / (16/img->mb_cr_size_x);
+    img->opix_c_y = img->opix_y / (16/img->mb_cr_size_y);
+  }
+  
+
+//  printf ("set_MB_parameters: mb %d,  mb_x %d,  mb_y %d\n", mb_addr, img->mb_x, img->mb_y);
+}

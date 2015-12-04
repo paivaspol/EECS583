@@ -1,0 +1,35 @@
+void FinalizeSceneInformation()
+{
+  SyntaxElement sym;
+  Bitstream *dest = seiSceneInformation.data;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  sym.bitpattern = seiSceneInformation.scene_id;
+  sym.len = 8;
+  writeSyntaxElement2Buf_Fixed(&sym, dest);
+
+  sym.value1 = seiSceneInformation.scene_transition_type;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+
+  if(seiSceneInformation.scene_transition_type > 3)
+  {
+    sym.bitpattern = seiSceneInformation.second_scene_id;
+    sym.len = 8;
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+  }
+
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiSceneInformation.payloadSize = dest->byte_pos;
+}

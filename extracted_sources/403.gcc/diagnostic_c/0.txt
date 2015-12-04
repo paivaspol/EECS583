@@ -1,0 +1,74 @@
+static void output_do_verbatim PARAMS ((output_buffer *,
+                                        const char *, va_list *));
+static void output_buffer_to_stream PARAMS ((output_buffer *));
+static void output_format PARAMS ((output_buffer *));
+static void output_indent PARAMS ((output_buffer *));
+
+static char *vbuild_message_string PARAMS ((const char *, va_list))
+     ATTRIBUTE_PRINTF (1, 0);
+static char *build_message_string PARAMS ((const char *, ...))
+     ATTRIBUTE_PRINTF_1;
+static void output_do_printf PARAMS ((output_buffer *, const char *))
+     ATTRIBUTE_PRINTF (2, 0);
+static void format_with_decl PARAMS ((output_buffer *, tree));
+static void diagnostic_for_decl PARAMS ((tree, const char *, va_list *, int));
+static void set_real_maximum_length PARAMS ((output_buffer *));
+
+static void output_unsigned_decimal PARAMS ((output_buffer *, unsigned int));
+static void output_long_decimal PARAMS ((output_buffer *, long int));
+static void output_long_unsigned_decimal PARAMS ((output_buffer *,
+                                                  long unsigned int));
+static void output_octal PARAMS ((output_buffer *, unsigned int));
+static void output_long_octal PARAMS ((output_buffer *, unsigned long int));
+static void output_hexadecimal PARAMS ((output_buffer *, unsigned int));
+static void output_long_hexadecimal PARAMS ((output_buffer *,
+                                             unsigned long int));
+static void output_append_r PARAMS ((output_buffer *, const char *, int));
+static void wrap_text PARAMS ((output_buffer *, const char *, const char *));
+static void maybe_wrap_text PARAMS ((output_buffer *, const char *,
+                                     const char *));
+static void clear_diagnostic_info PARAMS ((output_buffer *));
+
+static void default_diagnostic_starter PARAMS ((output_buffer *,
+                                                diagnostic_context *));
+static void default_diagnostic_finalizer PARAMS ((output_buffer *,
+                                                  diagnostic_context *));
+
+static void error_recursion PARAMS ((void)) ATTRIBUTE_NORETURN;
+
+extern int rtl_dump_and_exit;
+extern int warnings_are_errors;
+
+/* A diagnostic_context surrogate for stderr.  */
+static diagnostic_context global_diagnostic_context;
+diagnostic_context *global_dc = &global_diagnostic_context;
+
+/* This will be removed shortly.  */
+output_buffer *diagnostic_buffer = &global_diagnostic_context.buffer;
+
+/* Function of last error message;
+   more generally, function such that if next error message is in it
+   then we don't have to mention the function name.  */
+static tree last_error_function = NULL;
+
+/* Used to detect when input_file_stack has changed since last described.  */
+static int last_error_tick;
+
+/* Called by report_error_function to print out function name.
+   Default may be overridden by language front-ends.  */
+
+void (*print_error_function) PARAMS ((diagnostic_context *, const char *))
+     = default_print_error_function;
+
+/* Prevent recursion into the error handler.  */
+static int diagnostic_lock;
+
+
+/* Return truthvalue if current input file is different from the most recent
+   file involved in a diagnostic message.  */
+
+int
+error_module_changed ()
+{
+  return last_error_tick != input_file_stack_tick;
+}

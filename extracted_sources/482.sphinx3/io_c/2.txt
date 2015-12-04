@@ -1,0 +1,18 @@
+int32 stat_retry (char *file, struct stat *statbuf)
+{
+    int32 i;
+    
+    for (i = 0; i < STAT_RETRY_COUNT; i++) {
+	if (stat (file, statbuf) == 0)
+	    return 0;
+	
+	if (i == 0) {
+	    E_ERROR_SYSTEM("stat(%s) failed; retrying...\n", file);
+	}
+#if (! SPEC_CPU_WINDOWS)
+	sleep (10);
+#endif
+    }
+    
+    return -1;
+}

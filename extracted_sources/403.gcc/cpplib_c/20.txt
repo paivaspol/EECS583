@@ -1,0 +1,30 @@
+static U_CHAR *
+dequote_string (pfile, str, len)
+     cpp_reader *pfile;
+     const U_CHAR *str;
+     unsigned int len;
+{
+  U_CHAR *result = _cpp_unaligned_alloc (pfile, len + 1);
+  U_CHAR *dst = result;
+  const U_CHAR *limit = str + len;
+  unsigned int c;
+  unsigned HOST_WIDE_INT mask;
+
+  /* We need the mask to match the host's 'unsigned char', not the
+     target's.  */
+  if (CHAR_BIT < HOST_BITS_PER_WIDE_INT)
+    mask = ((unsigned HOST_WIDE_INT) 1 << CHAR_BIT) - 1;
+  else
+    mask = ~(unsigned HOST_WIDE_INT)0;
+  
+  while (str < limit)
+    {
+      c = *str++;
+      if (c != '\\')
+	*dst++ = c;
+      else
+	*dst++ = cpp_parse_escape (pfile, (const U_CHAR **)&str, limit, mask, 0);
+    }
+  *dst++ = '\0';
+  return result;
+}

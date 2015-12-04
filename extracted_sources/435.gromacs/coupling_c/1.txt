@@ -1,0 +1,129 @@
+void parrinellorahman_pcoupl(t_inputrec *ir,int step,tensor pres,
+			    tensor box,tensor boxv,tensor M)
+{
+  /* This doesn't do any coordinate updating. It just
+   * integrates the box vector equations from the calculated
+   * acceleration due to pressure difference. We also compute
+   * the tensor M which is used in update to couple the particle
+   * coordinates to the box vectors.
+   *
+   * In Nose and Klein (Mol.Phys 50 (1983) no 5., p 1055) this is
+   * given as
+   *            -1    .           .     -1
+   * M_nk = (h')   * (h' * h + h' h) * h
+   *
+   * with the dots denoting time derivatives and h is the transformation from
+   * the scaled frame to the real frame, i.e. the TRANSPOSE of the box. 
+   * This also goes for the pressure and M tensors - they are transposed relative
+   * to ours. Our equation thus becomes:
+   *
+   *                  -1       .    .           -1
+   * M_gmx = M_nk' = b  * (b * b' + b * b') * b'
+   * 
+   * where b is the gromacs box matrix.                       
+   * Our box accelerations are given by
+   *   ..                                    ..
+   *   b = vol/W inv(box') * (P-ref_P)     (=h')
+   */
+  
+  int    d,n;
+  static tensor winv;
+  static bool bFirst=TRUE;
+  real   vol=box[XX][XX]*box[YY][YY]*box[ZZ][ZZ];
+  real   fac=vol/PRESFAC;
+  real   atot,arel,change,maxchange,xy_pressure;
+  tensor invbox,pdiff,t1,t2;
+
+  if(bFirst) {
+    real maxl;
+    maxl=max(box[XX][XX],box[YY][YY]);
+    maxl=max(maxl,box[ZZ][ZZ]);
+    for(d=0;d<DIM;d++)
+      for(n=0;n<DIM;n++)
+	winv[d][n]=(4*M_PI*M_PI*ir->compress[d][n])/(3*ir->tau_p*ir->tau_p*maxl);
+    bFirst=FALSE;
+  }
+  
+  m_inv(box,invbox);
+  m_sub(pres,ir->ref_p,pdiff);
+
+  if(ir->epct==epctSURFACETENSION) {
+    /* Unlike Berendsen coupling it might not be trivial to include a z
+     * pressure correction here? On the other hand we don't scale the
+     * box momentarily, but change accelerations, so it might not be crucial.
+     */
+    xy_pressure=0.5*(pres[XX][XX]+pres[YY][YY]);
+    for(d=0;d<ZZ;d++)
+      pdiff[d][d]=(xy_pressure-(pres[ZZ][ZZ]-ir->ref_p[d][d]/box[d][d]));
+  }
+  
+  tmmul(invbox,pdiff,t1);
+
+  switch (ir->epct) {
+  case epctANISOTROPIC:
+    for(d=0;d<DIM;d++) 
+      for(n=0;n<=d;n++)
+	t1[d][n]*=winv[d][n]*fac;
+    break;
+  case epctISOTROPIC:
+    /* calculate total volume acceleration */
+    atot=box[XX][XX]*box[YY][YY]*t1[ZZ][ZZ]+
+      box[XX][XX]*t1[YY][YY]*box[ZZ][ZZ]+
+      t1[XX][XX]*box[YY][YY]*box[ZZ][ZZ];
+    arel=atot/(3*vol);
+    /* set all RELATIVE box accelerations equal, and maintain total V
+     * change speed */
+    for(d=0;d<DIM;d++)
+      for(n=0;n<=d;n++)
+	t1[d][n]=winv[d][n]*fac*arel*box[d][n];    
+    break;
+  case epctSEMIISOTROPIC:
+  case epctSURFACETENSION:
+    /* Note the correction to pdiff above for surftens. coupling  */
+    
+    /* calculate total XY volume acceleration */
+    atot=box[XX][XX]*t1[YY][YY]+t1[XX][XX]*box[YY][YY];
+    arel=atot/(2*box[XX][XX]*box[YY][YY]);
+    /* set RELATIVE XY box accelerations equal, and maintain total V
+     * change speed. Dont change the third box vector accelerations */
+    for(d=0;d<ZZ;d++)
+      for(n=0;n<=d;n++)
+	t1[d][n]=winv[d][n]*fac*arel*box[d][n];
+    for(n=0;n<DIM;n++)
+      t1[ZZ][n]*=winv[d][n]*fac;
+    break;
+  default:
+    fatal_error(0,"Parrinello-Rahman pressure coupling type %s "
+		"not supported yet\n",EPCOUPLTYPETYPE(ir->epct));
+    break;
+  }
+  
+  maxchange=0;
+  for(d=0;d<DIM;d++)
+    for(n=0;n<=d;n++) {
+      boxv[d][n] += ir->delta_t*t1[d][n];
+      /* We do NOT update the box vectors themselves here, since
+       * we need them for shifting later. It is instead done last
+       * in the update() routine.
+       */
+
+      /* Calculate the change relative to diagonal elements -
+       * since it's perfectly ok for the off-diagonal ones to
+       * be zero it doesn't make sense to check the change relative
+       * to its current size.
+       */
+      change=fabs(ir->delta_t*boxv[d][n]/box[d][d]);
+      if(change>maxchange)
+	maxchange=change;
+    }
+  
+  if(maxchange>1.01 && stdlog) 
+    fprintf(stdlog,"\nStep %d  Warning: Pressure scaling more than 1%%.\n",step);
+ 
+  mtmul(boxv,box,t1);       /* t1=boxv * b' */
+  for(d=0;d<DIM;d++)
+    for(n=0;n<DIM;n++)
+      t1[d][n] += t1[n][d]; /* t1=t1+t1' */
+  mmul(invbox,t1,t2);
+  mtmul(t2,invbox,M);
+}

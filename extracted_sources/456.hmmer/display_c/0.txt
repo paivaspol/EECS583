@@ -1,0 +1,42 @@
+void PrintTransition(char src,
+		     int isrc,
+		     int ksrc,
+		     char dest,
+		     int idest,
+		     int kdest,
+		     int sc,
+		     struct p7trace_s **alignment,
+		     int *min,
+		     int *max,
+		     int *on,
+		     int A);
+
+
+/* Function: DisplayPlan7Posteriors()
+ *
+ * Purpose:  Print out posterior transition probabilities
+ *           in modelpost format.
+ *           NB only prints out transitions that touch
+ *           either the Viterbi or the optimal accuracy path.
+ *           
+ * Args:     L        - the length of the sequence
+ *           hmm      - the model
+ *           forward  - forward matrix
+ *           backward - backward matrix
+ *           viterbi  - Viterbi trace
+ *           optacc   - optimal accuracy trace
+ *           
+ * Return:   void
+ *
+ */
+void DisplayPlan7Posteriors(int L, struct plan7_s *hmm,
+			    struct dpmatrix_s *forward,
+			    struct dpmatrix_s *backward,
+			    struct p7trace_s *viterbi,
+			    struct p7trace_s *optacc)
+{
+  struct p7trace_s* alignment[2];
+  alignment[0] = viterbi;
+  alignment[1] = optacc;
+  DisplayPlan7PostAlign (L, hmm, forward, backward, alignment, 2);
+}

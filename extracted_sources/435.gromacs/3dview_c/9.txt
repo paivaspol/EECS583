@@ -1,0 +1,39 @@
+void rotate_3d(t_3dview *view,int axis,bool bPositive)
+{
+  static bool bFirst=TRUE;
+  static mat4 RotP[DIM];
+  static mat4 RotM[DIM];
+  int  i,j;
+  mat4 m4;
+
+  if (bFirst) {
+    real rot=DEG2RAD*15;
+
+    for(i=0; (i<DIM); i++) {
+      rotate(i,        rot ,RotP[i]);
+      rotate(i,(real)(-rot),RotM[i]);
+#ifdef DEBUG
+      print_m4(debug,"RotP",RotP[i]);
+      print_m4(debug,"RotM",RotM[i]);
+#endif
+    }
+  }
+
+  /*
+    if (bPositive)
+    m4_op(RotP[axis],view->eye,v4);
+    else
+    m4_op(RotM[axis],view->eye,v4);
+    for(i=0; (i<DIM); i++)
+    view->eye[i]=v4[i];
+    */
+  if (bPositive)
+    mult_matrix(m4,view->Rot,RotP[axis]);
+  else
+    mult_matrix(m4,view->Rot,RotM[axis]);
+  for(i=0; (i<N); i++)
+    for(j=0; (j<N); j++)
+    view->Rot[i][j]=m4[i][j];
+
+  calculate_view(view);
+}

@@ -1,0 +1,194 @@
+static bool
+copyprop_hardreg_forward_1 (bb, vd)
+     basic_block bb;
+     struct value_data *vd;
+{
+  bool changed = false;
+  rtx insn;
+
+  for (insn = bb->head; ; insn = NEXT_INSN (insn))
+    {
+      int n_ops, i, alt, predicated;
+      bool is_asm;
+      rtx set;
+
+      if (! INSN_P (insn))
+	{
+	  if (insn == bb->end)
+	    break;
+	  else
+	    continue;
+	}
+
+      set = single_set (insn);
+      extract_insn (insn);
+      constrain_operands (1);
+      preprocess_constraints ();
+      alt = which_alternative;
+      n_ops = recog_data.n_operands;
+      is_asm = asm_noperands (PATTERN (insn)) >= 0;
+
+      /* Simplify the code below by rewriting things to reflect
+	 matching constraints.  Also promote OP_OUT to OP_INOUT
+	 in predicated instructions.  */
+
+      predicated = GET_CODE (PATTERN (insn)) == COND_EXEC;
+      for (i = 0; i < n_ops; ++i)
+	{
+	  int matches = recog_op_alt[i][alt].matches;
+	  if (matches >= 0)
+	    recog_op_alt[i][alt].class = recog_op_alt[matches][alt].class;
+	  if (matches >= 0 || recog_op_alt[i][alt].matched >= 0
+	      || (predicated && recog_data.operand_type[i] == OP_OUT))
+	    recog_data.operand_type[i] = OP_INOUT;
+	}
+
+      /* For each earlyclobber operand, zap the value data.  */
+      for (i = 0; i < n_ops; i++)
+	if (recog_op_alt[i][alt].earlyclobber)
+	  kill_value (recog_data.operand[i], vd);
+
+      /* Within asms, a clobber cannot overlap inputs or outputs.
+	 I wouldn't think this were true for regular insns, but
+	 scan_rtx treats them like that...  */
+      note_stores (PATTERN (insn), kill_clobbered_value, vd);
+
+      /* Kill all auto-incremented values.  */
+      /* ??? REG_INC is useless, since stack pushes aren't done that way.  */
+      for_each_rtx (&PATTERN (insn), kill_autoinc_value, vd);
+
+      /* Kill all early-clobbered operands.  */
+      for (i = 0; i < n_ops; i++)
+	if (recog_op_alt[i][alt].earlyclobber)
+	  kill_value (recog_data.operand[i], vd);
+
+      /* Special-case plain move instructions, since we may well
+	 be able to do the move from a different register class.  */
+      if (set && REG_P (SET_SRC (set)))
+	{
+	  rtx src = SET_SRC (set);
+	  unsigned int regno = REGNO (src);
+	  enum machine_mode mode = GET_MODE (src);
+	  unsigned int i;
+	  rtx new;
+
+	  /* If we are accessing SRC in some mode other that what we
+	     set it in, make sure that the replacement is valid.  */
+	  if (mode != vd->e[regno].mode)
+	    {
+	      if (HARD_REGNO_NREGS (regno, mode)
+		  > HARD_REGNO_NREGS (regno, vd->e[regno].mode))
+		goto no_move_special_case;
+	    }
+
+	  /* If the destination is also a register, try to find a source
+	     register in the same class.  */
+	  if (REG_P (SET_DEST (set)))
+	    {
+	      new = find_oldest_value_reg (REGNO_REG_CLASS (regno), src, vd);
+	      if (new && validate_change (insn, &SET_SRC (set), new, 0))
+		{
+		  if (rtl_dump_file)
+		    fprintf (rtl_dump_file,
+			     "insn %u: replaced reg %u with %u\n",
+			     INSN_UID (insn), regno, REGNO (new));
+	          changed = true;
+		  goto did_replacement;
+		}
+	    }
+
+	  /* Otherwise, try all valid registers and see if its valid.  */
+	  for (i = vd->e[regno].oldest_regno; i != regno;
+	       i = vd->e[i].next_regno)
+	    if (vd->e[i].mode == mode
+		|| mode_change_ok (vd->e[i].mode, mode, i))
+	      {
+		new = gen_rtx_raw_REG (mode, i);
+		if (validate_change (insn, &SET_SRC (set), new, 0))
+		  {
+		    ORIGINAL_REGNO (new) = ORIGINAL_REGNO (src);
+		    if (rtl_dump_file)
+		      fprintf (rtl_dump_file,
+			       "insn %u: replaced reg %u with %u\n",
+			       INSN_UID (insn), regno, REGNO (new));
+		    changed = true;
+		    goto did_replacement;
+		  }
+	      }
+	}
+      no_move_special_case:
+
+      /* For each input operand, replace a hard register with the
+	 eldest live copy that's in an appropriate register class.  */
+      for (i = 0; i < n_ops; i++)
+	{
+	  bool replaced = false;
+
+	  /* Don't scan match_operand here, since we've no reg class
+	     information to pass down.  Any operands that we could
+	     substitute in will be represented elsewhere.  */
+	  if (recog_data.constraints[i][0] == '\0')
+	    continue;
+
+	  /* Don't replace in asms intentionally referencing hard regs.  */
+	  if (is_asm && GET_CODE (recog_data.operand[i]) == REG
+	      && (REGNO (recog_data.operand[i])
+		  == ORIGINAL_REGNO (recog_data.operand[i])))
+	    continue;
+
+	  if (recog_data.operand_type[i] == OP_IN)
+	    {
+	      if (recog_op_alt[i][alt].is_address)
+		replaced
+		  = replace_oldest_value_addr (recog_data.operand_loc[i],
+					       recog_op_alt[i][alt].class,
+					       VOIDmode, insn, vd);
+	      else if (REG_P (recog_data.operand[i]))
+		replaced
+		  = replace_oldest_value_reg (recog_data.operand_loc[i],
+					      recog_op_alt[i][alt].class,
+					      insn, vd);
+	      else if (GET_CODE (recog_data.operand[i]) == MEM)
+		replaced = replace_oldest_value_mem (recog_data.operand[i],
+						     insn, vd);
+	    }
+	  else if (GET_CODE (recog_data.operand[i]) == MEM)
+	    replaced = replace_oldest_value_mem (recog_data.operand[i],
+					         insn, vd);
+
+	  /* If we performed any replacement, update match_dups.  */
+	  if (replaced)
+	    {
+	      int j;
+	      rtx new;
+
+	      changed = true;
+
+	      new = *recog_data.operand_loc[i];
+	      recog_data.operand[i] = new;
+	      for (j = 0; j < recog_data.n_dups; j++)
+		if (recog_data.dup_num[j] == i)
+		  *recog_data.dup_loc[j] = new;
+	    }
+	}
+
+    did_replacement:
+      /* Clobber call-clobbered registers.  */
+      if (GET_CODE (insn) == CALL_INSN)
+	for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	  if (TEST_HARD_REG_BIT (regs_invalidated_by_call, i))
+	    kill_value_regno (i, vd);
+
+      /* Notice stores.  */
+      note_stores (PATTERN (insn), kill_set_value, vd);
+
+      /* Notice copies.  */
+      if (set && REG_P (SET_DEST (set)) && REG_P (SET_SRC (set)))
+	copy_value (SET_DEST (set), SET_SRC (set), vd);
+
+      if (insn == bb->end)
+	break;
+    }
+
+  return changed;
+}

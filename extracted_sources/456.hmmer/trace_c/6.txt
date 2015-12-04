@@ -1,0 +1,71 @@
+int
+TransitionScoreLookup(struct plan7_s *hmm, char st1, int k1, 
+		      char st2, int k2)
+{
+  switch (st1) {
+  case STS: return 0;	/* S never pays */
+  case STN:
+    switch (st2) {
+    case STB: return hmm->xsc[XTN][MOVE]; 
+    case STN: return hmm->xsc[XTN][LOOP]; 
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STB:
+    switch (st2) {
+    case STM: return hmm->bsc[k2]; 
+    case STD: return Prob2Score(hmm->tbd1, 1.);
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STM:
+    switch (st2) {
+    case STM: return hmm->tsc[TMM][k1];
+    case STI: return hmm->tsc[TMI][k1];
+    case STD: return hmm->tsc[TMD][k1];
+    case STE: return hmm->esc[k1];
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STI:
+    switch (st2) {
+    case STM: return hmm->tsc[TIM][k1];
+    case STI: return hmm->tsc[TII][k1];
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STD:
+    switch (st2) {
+    case STM: return hmm->tsc[TDM][k1]; 
+    case STD: return hmm->tsc[TDD][k1];
+    case STE: return 0;	/* D_m->E has probability 1.0 by definition in Plan7 */
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STE:
+    switch (st2) {
+    case STC: return hmm->xsc[XTE][MOVE]; 
+    case STJ: return hmm->xsc[XTE][LOOP]; 
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STJ:
+    switch (st2) {
+    case STB: return hmm->xsc[XTJ][MOVE]; 
+    case STJ: return hmm->xsc[XTJ][LOOP]; 
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STC:
+    switch (st2) {
+    case STT: return hmm->xsc[XTC][MOVE]; 
+    case STC: return hmm->xsc[XTC][LOOP]; 
+    default:      Die("illegal %s->%s transition", Statetype(st1), Statetype(st2));
+    }
+    break;
+  case STT:   return 0;	/* T makes no transitions */
+  default:        Die("illegal state %s in traceback", Statetype(st1));
+  }
+  /*NOTREACHED*/
+  return 0;
+}

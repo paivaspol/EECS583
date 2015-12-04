@@ -1,0 +1,27 @@
+static void edr_nms(int fp,int *nre,char ***nms)
+{
+  XDR  *xdr;
+  bool bRead = gmx_fio_getread(fp);
+  int  i;
+  char **NM;
+
+  xdr = gmx_fio_getxdr(fp);
+
+  NM=*nms;
+  
+  if (!xdr_int(xdr,nre)) {
+    *nre=0;
+    return;
+  }
+  if (NM == NULL) {
+    snew(NM,*nre);
+  }
+  for(i=0; i<*nre; i++) {
+    if (bRead && NM[i]) {
+      sfree(NM[i]);
+      NM[i] = NULL;
+    }
+    xdr_string(xdr,&(NM[i]),STRLEN);
+  }
+  *nms=NM;
+}

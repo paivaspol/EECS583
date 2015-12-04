@@ -1,0 +1,18 @@
+void
+quantum_phase_scale(int target, float gamma, quantum_reg *reg)
+{
+  int i;
+  COMPLEX_FLOAT z;
+
+  if(quantum_objcode_put(PHASE_SCALE, target, (double) gamma))
+    return;
+
+  z = quantum_cexp(gamma);
+  
+  for(i=0; i<reg->size; i++)
+    {
+      reg->node[i].amplitude *= z;
+    }
+
+  quantum_decohere(reg);
+}

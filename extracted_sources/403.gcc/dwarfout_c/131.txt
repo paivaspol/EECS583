@@ -1,0 +1,16 @@
+static void
+generate_macinfo_entry (type, offset, string)
+     unsigned int type;
+     rtx offset;
+     const char *string;
+{
+  if (! use_gnu_debug_info_extensions)
+    return;
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_MACINFO_SECTION);
+  assemble_integer (gen_rtx_PLUS (SImode, GEN_INT (type << 24), offset),
+		    4, BITS_PER_UNIT, 1);
+  ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, string);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+}

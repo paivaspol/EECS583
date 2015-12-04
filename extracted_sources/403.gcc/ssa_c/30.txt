@@ -1,0 +1,19 @@
+static void
+ephi_backward (t, visited, pred, nodes)
+     int t;
+     sbitmap visited, *pred;
+     rtx *nodes;
+{
+  int p;
+
+  SET_BIT (visited, t);
+
+  EXECUTE_IF_SET_IN_SBITMAP (pred[t], 0, p,
+    {
+      if (! TEST_BIT (visited, p))
+	{
+	  ephi_backward (p, visited, pred, nodes);
+	  emit_move_insn (nodes[p], nodes[t]);
+	}
+    });
+}

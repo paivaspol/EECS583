@@ -1,0 +1,19 @@
+void do_linfix(rvec *x,t_edpar *edi,int step)
+{
+  int i,j,k;
+  real proj,add;
+
+  /* loop over linfix vectors */
+  for (i=0;(i < edi->vecs.linfix.neig);i++) {
+    /* calculate the projection */
+    proj=do_projectx(edi,x,edi->vecs.linfix.vec[i]);
+    /*fprintf(stderr,"Proj[%d]=%f\n",edi->vecs.linfix.ieig[i],proj);*/
+    /* calculate the correction */
+    add=edi->vecs.linfix.refproj[i]+step*edi->vecs.linfix.stpsz[i]-proj;
+    /* apply the correction */
+    for (j=0;(j<edi->sav.nr);j++) {
+      for (k=0;(k<DIM);k++)
+	x[edi->sav.anrs[j]][k]+=add*edi->vecs.linfix.vec[i][j][k];
+    }
+  }
+}

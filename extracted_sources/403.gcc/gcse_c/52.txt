@@ -1,0 +1,20 @@
+static void
+mark_set (pat, insn)
+     rtx pat, insn;
+{
+  rtx dest = SET_DEST (pat);
+
+  while (GET_CODE (dest) == SUBREG
+	 || GET_CODE (dest) == ZERO_EXTRACT
+	 || GET_CODE (dest) == SIGN_EXTRACT
+	 || GET_CODE (dest) == STRICT_LOW_PART)
+    dest = XEXP (dest, 0);
+
+  if (GET_CODE (dest) == REG)
+    SET_REGNO_REG_SET (reg_set_bitmap, REGNO (dest));
+  else if (GET_CODE (dest) == MEM)
+    record_last_mem_set_info (insn);
+
+  if (GET_CODE (SET_SRC (pat)) == CALL)
+    mark_call (insn);
+}

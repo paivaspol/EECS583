@@ -1,0 +1,33 @@
+static const char *
+gen_formal_list_for_func_def (fndecl, style)
+     tree fndecl;
+     formals_style style;
+{
+  const char *formal_list = "";
+  tree formal_decl;
+
+  formal_decl = DECL_ARGUMENTS (fndecl);
+  while (formal_decl)
+    {
+      const char *this_formal;
+
+      if (*formal_list && ((style == ansi) || (style == k_and_r_names)))
+        formal_list = concat (formal_list, ", ", NULL);
+      this_formal = gen_decl (formal_decl, 0, style);
+      if (style == k_and_r_decls)
+        formal_list = concat (formal_list, this_formal, "; ", NULL);
+      else
+        formal_list = concat (formal_list, this_formal, NULL);
+      formal_decl = TREE_CHAIN (formal_decl);
+    }
+  if (style == ansi)
+    {
+      if (!DECL_ARGUMENTS (fndecl))
+        formal_list = concat (formal_list, "void", NULL);
+      if (deserves_ellipsis (TREE_TYPE (fndecl)))
+        formal_list = concat (formal_list, ", ...", NULL);
+    }
+  if ((style == ansi) || (style == k_and_r_names))
+    formal_list = concat (" (", formal_list, ")", NULL);
+  return formal_list;
+}

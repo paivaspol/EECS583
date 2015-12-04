@@ -1,0 +1,115 @@
+static void
+store_split_bit_field (op0, bitsize, bitpos, value)
+     rtx op0;
+     unsigned HOST_WIDE_INT bitsize, bitpos;
+     rtx value;
+{
+  unsigned int unit;
+  unsigned int bitsdone = 0;
+
+  /* Make sure UNIT isn't larger than BITS_PER_WORD, we can only handle that
+     much at a time.  */
+  if (GET_CODE (op0) == REG || GET_CODE (op0) == SUBREG)
+    unit = BITS_PER_WORD;
+  else
+    unit = MIN (MEM_ALIGN (op0), BITS_PER_WORD);
+
+  /* If VALUE is a constant other than a CONST_INT, get it into a register in
+     WORD_MODE.  If we can do this using gen_lowpart_common, do so.  Note
+     that VALUE might be a floating-point constant.  */
+  if (CONSTANT_P (value) && GET_CODE (value) != CONST_INT)
+    {
+      rtx word = gen_lowpart_common (word_mode, value);
+
+      if (word && (value != word))
+	value = word;
+      else
+	value = gen_lowpart_common (word_mode,
+				    force_reg (GET_MODE (value) != VOIDmode
+					       ? GET_MODE (value)
+					       : word_mode, value));
+    }
+  else if (GET_CODE (value) == ADDRESSOF)
+    value = copy_to_reg (value);
+
+  while (bitsdone < bitsize)
+    {
+      unsigned HOST_WIDE_INT thissize;
+      rtx part, word;
+      unsigned HOST_WIDE_INT thispos;
+      unsigned HOST_WIDE_INT offset;
+
+      offset = (bitpos + bitsdone) / unit;
+      thispos = (bitpos + bitsdone) % unit;
+
+      /* THISSIZE must not overrun a word boundary.  Otherwise,
+	 store_fixed_bit_field will call us again, and we will mutually
+	 recurse forever.  */
+      thissize = MIN (bitsize - bitsdone, BITS_PER_WORD);
+      thissize = MIN (thissize, unit - thispos);
+
+      if (BYTES_BIG_ENDIAN)
+	{
+	  int total_bits;
+
+	  /* We must do an endian conversion exactly the same way as it is
+	     done in extract_bit_field, so that the two calls to
+	     extract_fixed_bit_field will have comparable arguments.  */
+	  if (GET_CODE (value) != MEM || GET_MODE (value) == BLKmode)
+	    total_bits = BITS_PER_WORD;
+	  else
+	    total_bits = GET_MODE_BITSIZE (GET_MODE (value));
+
+	  /* Fetch successively less significant portions.  */
+	  if (GET_CODE (value) == CONST_INT)
+	    part = GEN_INT (((unsigned HOST_WIDE_INT) (INTVAL (value))
+			     >> (bitsize - bitsdone - thissize))
+			    & (((HOST_WIDE_INT) 1 << thissize) - 1));
+	  else
+	    /* The args are chosen so that the last part includes the
+	       lsb.  Give extract_bit_field the value it needs (with
+	       endianness compensation) to fetch the piece we want.  */
+	    part = extract_fixed_bit_field (word_mode, value, 0, thissize,
+					    total_bits - bitsize + bitsdone,
+					    NULL_RTX, 1);
+	}
+      else
+	{
+	  /* Fetch successively more significant portions.  */
+	  if (GET_CODE (value) == CONST_INT)
+	    part = GEN_INT (((unsigned HOST_WIDE_INT) (INTVAL (value))
+			     >> bitsdone)
+			    & (((HOST_WIDE_INT) 1 << thissize) - 1));
+	  else
+	    part = extract_fixed_bit_field (word_mode, value, 0, thissize,
+					    bitsdone, NULL_RTX, 1);
+	}
+
+      /* If OP0 is a register, then handle OFFSET here.
+
+	 When handling multiword bitfields, extract_bit_field may pass
+	 down a word_mode SUBREG of a larger REG for a bitfield that actually
+	 crosses a word boundary.  Thus, for a SUBREG, we must find
+	 the current word starting from the base register.  */
+      if (GET_CODE (op0) == SUBREG)
+	{
+	  int word_offset = (SUBREG_BYTE (op0) / UNITS_PER_WORD) + offset;
+	  word = operand_subword_force (SUBREG_REG (op0), word_offset,
+					GET_MODE (SUBREG_REG (op0)));
+	  offset = 0;
+	}
+      else if (GET_CODE (op0) == REG)
+	{
+	  word = operand_subword_force (op0, offset, GET_MODE (op0));
+	  offset = 0;
+	}
+      else
+	word = op0;
+
+      /* OFFSET is in UNITs, and UNIT is in bits.
+         store_fixed_bit_field wants offset in bytes.  */
+      store_fixed_bit_field (word, offset * unit / BITS_PER_UNIT, thissize,
+			     thispos, part);
+      bitsdone += thissize;
+    }
+}

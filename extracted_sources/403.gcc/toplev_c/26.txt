@@ -1,0 +1,32 @@
+static void
+close_dump_file (index, func, insns)
+     enum dump_file_index index;
+     void (*func) PARAMS ((FILE *, rtx));
+     rtx insns;
+{
+  if (! rtl_dump_file)
+    return;
+
+  timevar_push (TV_DUMP);
+  if (insns
+      && graph_dump_format != no_graph
+      && dump_file[index].graph_dump_p)
+    {
+      char seq[16];
+      char *suffix;
+
+      sprintf (seq, DUMPFILE_FORMAT, index);
+      suffix = concat (seq, dump_file[index].extension, NULL);
+      print_rtl_graph_with_bb (dump_base_name, suffix, insns);
+      free (suffix);
+    }
+
+  if (func && insns)
+    func (rtl_dump_file, insns);
+
+  fflush (rtl_dump_file);
+  fclose (rtl_dump_file);
+
+  rtl_dump_file = NULL;
+  timevar_pop (TV_DUMP);
+}

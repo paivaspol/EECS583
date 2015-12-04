@@ -1,0 +1,35 @@
+void side_link_3f_force(int mu, int nu, double coeff[2], 
+			half_wilson_vector *Path   , 
+			half_wilson_vector *Path_nu, 
+			half_wilson_vector *Path_mu, 
+			half_wilson_vector *Path_numu) {
+  double m_coeff[2] ;
+
+  m_coeff[0] = -coeff[0] ;
+  m_coeff[1] = -coeff[1] ;
+
+  if(GOES_FORWARDS(mu))
+    {
+      /*                    nu           * 
+       * Add the force :  +----+         *
+       *               mu |    |         *
+       *                  x    (x)       *
+       *                  o    o         */
+      if(GOES_FORWARDS(nu))
+	add_3f_force_to_mom(Path_numu, Path, mu, coeff ) ;
+      else
+	add_3f_force_to_mom(Path,Path_numu,OPP_DIR(mu),m_coeff);/* ? extra - */
+    }
+  else /*GOES_BACKWARDS(mu)*/
+    {
+      /* Add the force :  o    o         *
+       *               mu |    |         *
+       *                  x    (x)       *
+       *                  +----+         *
+       *                    nu           */ 
+      if(GOES_FORWARDS(nu))
+	add_3f_force_to_mom(Path_nu, Path_mu, mu, m_coeff) ; /* ? extra - */
+      else
+	add_3f_force_to_mom(Path_mu, Path_nu, OPP_DIR(mu), coeff) ;
+    }
+}

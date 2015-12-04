@@ -1,0 +1,903 @@
+void
+assign_parms (fndecl)
+     tree fndecl;
+{
+  tree parm;
+  rtx entry_parm = 0;
+  rtx stack_parm = 0;
+  CUMULATIVE_ARGS args_so_far;
+  enum machine_mode promoted_mode, passed_mode;
+  enum machine_mode nominal_mode, promoted_nominal_mode;
+  int unsignedp;
+  /* Total space needed so far for args on the stack,
+     given as a constant and a tree-expression.  */
+  struct args_size stack_args_size;
+  tree fntype = TREE_TYPE (fndecl);
+  tree fnargs = DECL_ARGUMENTS (fndecl);
+  /* This is used for the arg pointer when referring to stack args.  */
+  rtx internal_arg_pointer;
+  /* This is a dummy PARM_DECL that we used for the function result if
+     the function returns a structure.  */
+  tree function_result_decl = 0;
+#ifdef SETUP_INCOMING_VARARGS
+  int varargs_setup = 0;
+#endif
+  rtx conversion_insns = 0;
+  struct args_size alignment_pad;
+
+  /* Nonzero if the last arg is named `__builtin_va_alist',
+     which is used on some machines for old-fashioned non-ANSI varargs.h;
+     this should be stuck onto the stack as if it had arrived there.  */
+  int hide_last_arg
+    = (current_function_varargs
+       && fnargs
+       && (parm = tree_last (fnargs)) != 0
+       && DECL_NAME (parm)
+       && (! strcmp (IDENTIFIER_POINTER (DECL_NAME (parm)),
+		     "__builtin_va_alist")));
+
+  /* Nonzero if function takes extra anonymous args.
+     This means the last named arg must be on the stack
+     right before the anonymous ones.  */
+  int stdarg
+    = (TYPE_ARG_TYPES (fntype) != 0
+       && (TREE_VALUE (tree_last (TYPE_ARG_TYPES (fntype)))
+	   != void_type_node));
+
+  current_function_stdarg = stdarg;
+
+  /* If the reg that the virtual arg pointer will be translated into is
+     not a fixed reg or is the stack pointer, make a copy of the virtual
+     arg pointer, and address parms via the copy.  The frame pointer is
+     considered fixed even though it is not marked as such.
+
+     The second time through, simply use ap to avoid generating rtx.  */
+
+  if ((ARG_POINTER_REGNUM == STACK_POINTER_REGNUM
+       || ! (fixed_regs[ARG_POINTER_REGNUM]
+	     || ARG_POINTER_REGNUM == FRAME_POINTER_REGNUM)))
+    internal_arg_pointer = copy_to_reg (virtual_incoming_args_rtx);
+  else
+    internal_arg_pointer = virtual_incoming_args_rtx;
+  current_function_internal_arg_pointer = internal_arg_pointer;
+
+  stack_args_size.constant = 0;
+  stack_args_size.var = 0;
+
+  /* If struct value address is treated as the first argument, make it so.  */
+  if (aggregate_value_p (DECL_RESULT (fndecl))
+      && ! current_function_returns_pcc_struct
+      && struct_value_incoming_rtx == 0)
+    {
+      tree type = build_pointer_type (TREE_TYPE (fntype));
+
+      function_result_decl = build_decl (PARM_DECL, NULL_TREE, type);
+
+      DECL_ARG_TYPE (function_result_decl) = type;
+      TREE_CHAIN (function_result_decl) = fnargs;
+      fnargs = function_result_decl;
+    }
+
+  max_parm_reg = LAST_VIRTUAL_REGISTER + 1;
+  parm_reg_stack_loc = (rtx *) xcalloc (max_parm_reg, sizeof (rtx));
+
+#ifdef INIT_CUMULATIVE_INCOMING_ARGS
+  INIT_CUMULATIVE_INCOMING_ARGS (args_so_far, fntype, NULL_RTX);
+#else
+  INIT_CUMULATIVE_ARGS (args_so_far, fntype, NULL_RTX, 0);
+#endif
+
+  /* We haven't yet found an argument that we must push and pretend the
+     caller did.  */
+  current_function_pretend_args_size = 0;
+
+  for (parm = fnargs; parm; parm = TREE_CHAIN (parm))
+    {
+      struct args_size stack_offset;
+      struct args_size arg_size;
+      int passed_pointer = 0;
+      int did_conversion = 0;
+      tree passed_type = DECL_ARG_TYPE (parm);
+      tree nominal_type = TREE_TYPE (parm);
+      int pretend_named;
+      int last_named = 0, named_arg;
+
+      /* Set LAST_NAMED if this is last named arg before last
+	 anonymous args.  */
+      if (stdarg || current_function_varargs)
+	{
+	  tree tem;
+
+	  for (tem = TREE_CHAIN (parm); tem; tem = TREE_CHAIN (tem))
+	    if (DECL_NAME (tem))
+	      break;
+
+	  if (tem == 0)
+	    last_named = 1;
+	}
+      /* Set NAMED_ARG if this arg should be treated as a named arg.  For
+	 most machines, if this is a varargs/stdarg function, then we treat
+	 the last named arg as if it were anonymous too.  */
+      named_arg = STRICT_ARGUMENT_NAMING ? 1 : ! last_named;
+
+      if (TREE_TYPE (parm) == error_mark_node
+	  /* This can happen after weird syntax errors
+	     or if an enum type is defined among the parms.  */
+	  || TREE_CODE (parm) != PARM_DECL
+	  || passed_type == NULL)
+	{
+	  SET_DECL_RTL (parm, gen_rtx_MEM (BLKmode, const0_rtx));
+	  DECL_INCOMING_RTL (parm) = DECL_RTL (parm);
+	  TREE_USED (parm) = 1;
+	  continue;
+	}
+
+      /* For varargs.h function, save info about regs and stack space
+	 used by the individual args, not including the va_alist arg.  */
+      if (hide_last_arg && last_named)
+	current_function_args_info = args_so_far;
+
+      /* Find mode of arg as it is passed, and mode of arg
+	 as it should be during execution of this function.  */
+      passed_mode = TYPE_MODE (passed_type);
+      nominal_mode = TYPE_MODE (nominal_type);
+
+      /* If the parm's mode is VOID, its value doesn't matter,
+	 and avoid the usual things like emit_move_insn that could crash.  */
+      if (nominal_mode == VOIDmode)
+	{
+	  SET_DECL_RTL (parm, const0_rtx);
+	  DECL_INCOMING_RTL (parm) = DECL_RTL (parm);
+	  continue;
+	}
+
+      /* If the parm is to be passed as a transparent union, use the
+	 type of the first field for the tests below.  We have already
+	 verified that the modes are the same.  */
+      if (DECL_TRANSPARENT_UNION (parm)
+	  || (TREE_CODE (passed_type) == UNION_TYPE
+	      && TYPE_TRANSPARENT_UNION (passed_type)))
+	passed_type = TREE_TYPE (TYPE_FIELDS (passed_type));
+
+      /* See if this arg was passed by invisible reference.  It is if
+	 it is an object whose size depends on the contents of the
+	 object itself or if the machine requires these objects be passed
+	 that way.  */
+
+      if ((TREE_CODE (TYPE_SIZE (passed_type)) != INTEGER_CST
+	   && contains_placeholder_p (TYPE_SIZE (passed_type)))
+	  || TREE_ADDRESSABLE (passed_type)
+#ifdef FUNCTION_ARG_PASS_BY_REFERENCE
+	  || FUNCTION_ARG_PASS_BY_REFERENCE (args_so_far, passed_mode,
+					      passed_type, named_arg)
+#endif
+	  )
+	{
+	  passed_type = nominal_type = build_pointer_type (passed_type);
+	  passed_pointer = 1;
+	  passed_mode = nominal_mode = Pmode;
+	}
+
+      promoted_mode = passed_mode;
+
+#ifdef PROMOTE_FUNCTION_ARGS
+      /* Compute the mode in which the arg is actually extended to.  */
+      unsignedp = TREE_UNSIGNED (passed_type);
+      promoted_mode = promote_mode (passed_type, promoted_mode, &unsignedp, 1);
+#endif
+
+      /* Let machine desc say which reg (if any) the parm arrives in.
+	 0 means it arrives on the stack.  */
+#ifdef FUNCTION_INCOMING_ARG
+      entry_parm = FUNCTION_INCOMING_ARG (args_so_far, promoted_mode,
+					  passed_type, named_arg);
+#else
+      entry_parm = FUNCTION_ARG (args_so_far, promoted_mode,
+				 passed_type, named_arg);
+#endif
+
+      if (entry_parm == 0)
+	promoted_mode = passed_mode;
+
+#ifdef SETUP_INCOMING_VARARGS
+      /* If this is the last named parameter, do any required setup for
+	 varargs or stdargs.  We need to know about the case of this being an
+	 addressable type, in which case we skip the registers it
+	 would have arrived in.
+
+	 For stdargs, LAST_NAMED will be set for two parameters, the one that
+	 is actually the last named, and the dummy parameter.  We only
+	 want to do this action once.
+
+	 Also, indicate when RTL generation is to be suppressed.  */
+      if (last_named && !varargs_setup)
+	{
+	  SETUP_INCOMING_VARARGS (args_so_far, promoted_mode, passed_type,
+				  current_function_pretend_args_size, 0);
+	  varargs_setup = 1;
+	}
+#endif
+
+      /* Determine parm's home in the stack,
+	 in case it arrives in the stack or we should pretend it did.
+
+	 Compute the stack position and rtx where the argument arrives
+	 and its size.
+
+	 There is one complexity here:  If this was a parameter that would
+	 have been passed in registers, but wasn't only because it is
+	 __builtin_va_alist, we want locate_and_pad_parm to treat it as if
+	 it came in a register so that REG_PARM_STACK_SPACE isn't skipped.
+	 In this case, we call FUNCTION_ARG with NAMED set to 1 instead of
+	 0 as it was the previous time.  */
+
+      pretend_named = named_arg || PRETEND_OUTGOING_VARARGS_NAMED;
+      locate_and_pad_parm (promoted_mode, passed_type,
+#ifdef STACK_PARMS_IN_REG_PARM_AREA
+			   1,
+#else
+#ifdef FUNCTION_INCOMING_ARG
+			   FUNCTION_INCOMING_ARG (args_so_far, promoted_mode,
+						  passed_type,
+						  pretend_named) != 0,
+#else
+			   FUNCTION_ARG (args_so_far, promoted_mode,
+					 passed_type,
+					 pretend_named) != 0,
+#endif
+#endif
+			   fndecl, &stack_args_size, &stack_offset, &arg_size,
+			   &alignment_pad);
+
+      {
+	rtx offset_rtx = ARGS_SIZE_RTX (stack_offset);
+
+	if (offset_rtx == const0_rtx)
+	  stack_parm = gen_rtx_MEM (promoted_mode, internal_arg_pointer);
+	else
+	  stack_parm = gen_rtx_MEM (promoted_mode,
+				    gen_rtx_PLUS (Pmode,
+						  internal_arg_pointer,
+						  offset_rtx));
+
+	set_mem_attributes (stack_parm, parm, 1);
+      }
+
+      /* If this parameter was passed both in registers and in the stack,
+	 use the copy on the stack.  */
+      if (MUST_PASS_IN_STACK (promoted_mode, passed_type))
+	entry_parm = 0;
+
+#ifdef FUNCTION_ARG_PARTIAL_NREGS
+      /* If this parm was passed part in regs and part in memory,
+	 pretend it arrived entirely in memory
+	 by pushing the register-part onto the stack.
+
+	 In the special case of a DImode or DFmode that is split,
+	 we could put it together in a pseudoreg directly,
+	 but for now that's not worth bothering with.  */
+
+      if (entry_parm)
+	{
+	  int nregs = FUNCTION_ARG_PARTIAL_NREGS (args_so_far, promoted_mode,
+						  passed_type, named_arg);
+
+	  if (nregs > 0)
+	    {
+	      current_function_pretend_args_size
+		= (((nregs * UNITS_PER_WORD) + (PARM_BOUNDARY / BITS_PER_UNIT) - 1)
+		   / (PARM_BOUNDARY / BITS_PER_UNIT)
+		   * (PARM_BOUNDARY / BITS_PER_UNIT));
+
+	      /* Handle calls that pass values in multiple non-contiguous
+		 locations.  The Irix 6 ABI has examples of this.  */
+	      if (GET_CODE (entry_parm) == PARALLEL)
+		emit_group_store (validize_mem (stack_parm), entry_parm,
+				  int_size_in_bytes (TREE_TYPE (parm)));
+
+	      else
+		move_block_from_reg (REGNO (entry_parm),
+				     validize_mem (stack_parm), nregs,
+				     int_size_in_bytes (TREE_TYPE (parm)));
+
+	      entry_parm = stack_parm;
+	    }
+	}
+#endif
+
+      /* If we didn't decide this parm came in a register,
+	 by default it came on the stack.  */
+      if (entry_parm == 0)
+	entry_parm = stack_parm;
+
+      /* Record permanently how this parm was passed.  */
+      DECL_INCOMING_RTL (parm) = entry_parm;
+
+      /* If there is actually space on the stack for this parm,
+	 count it in stack_args_size; otherwise set stack_parm to 0
+	 to indicate there is no preallocated stack slot for the parm.  */
+
+      if (entry_parm == stack_parm
+          || (GET_CODE (entry_parm) == PARALLEL
+              && XEXP (XVECEXP (entry_parm, 0, 0), 0) == NULL_RTX)
+#if defined (REG_PARM_STACK_SPACE) && ! defined (MAYBE_REG_PARM_STACK_SPACE)
+	  /* On some machines, even if a parm value arrives in a register
+	     there is still an (uninitialized) stack slot allocated for it.
+
+	     ??? When MAYBE_REG_PARM_STACK_SPACE is defined, we can't tell
+	     whether this parameter already has a stack slot allocated,
+	     because an arg block exists only if current_function_args_size
+	     is larger than some threshold, and we haven't calculated that
+	     yet.  So, for now, we just assume that stack slots never exist
+	     in this case.  */
+	  || REG_PARM_STACK_SPACE (fndecl) > 0
+#endif
+	  )
+	{
+	  stack_args_size.constant += arg_size.constant;
+	  if (arg_size.var)
+	    ADD_PARM_SIZE (stack_args_size, arg_size.var);
+	}
+      else
+	/* No stack slot was pushed for this parm.  */
+	stack_parm = 0;
+
+      /* Update info on where next arg arrives in registers.  */
+
+      FUNCTION_ARG_ADVANCE (args_so_far, promoted_mode,
+			    passed_type, named_arg);
+
+      /* If we can't trust the parm stack slot to be aligned enough
+	 for its ultimate type, don't use that slot after entry.
+	 We'll make another stack slot, if we need one.  */
+      {
+	unsigned int thisparm_boundary
+	  = FUNCTION_ARG_BOUNDARY (promoted_mode, passed_type);
+
+	if (GET_MODE_ALIGNMENT (nominal_mode) > thisparm_boundary)
+	  stack_parm = 0;
+      }
+
+      /* If parm was passed in memory, and we need to convert it on entry,
+	 don't store it back in that same slot.  */
+      if (entry_parm != 0
+	  && nominal_mode != BLKmode && nominal_mode != passed_mode)
+	stack_parm = 0;
+
+      /* When an argument is passed in multiple locations, we can't
+	 make use of this information, but we can save some copying if
+	 the whole argument is passed in a single register.  */
+      if (GET_CODE (entry_parm) == PARALLEL
+	  && nominal_mode != BLKmode && passed_mode != BLKmode)
+	{
+	  int i, len = XVECLEN (entry_parm, 0);
+
+	  for (i = 0; i < len; i++)
+	    if (XEXP (XVECEXP (entry_parm, 0, i), 0) != NULL_RTX
+		&& GET_CODE (XEXP (XVECEXP (entry_parm, 0, i), 0)) == REG
+		&& (GET_MODE (XEXP (XVECEXP (entry_parm, 0, i), 0))
+		    == passed_mode)
+		&& INTVAL (XEXP (XVECEXP (entry_parm, 0, i), 1)) == 0)
+	      {
+		entry_parm = XEXP (XVECEXP (entry_parm, 0, i), 0);
+		DECL_INCOMING_RTL (parm) = entry_parm;
+		break;
+	      }
+	}
+
+      /* ENTRY_PARM is an RTX for the parameter as it arrives,
+	 in the mode in which it arrives.
+	 STACK_PARM is an RTX for a stack slot where the parameter can live
+	 during the function (in case we want to put it there).
+	 STACK_PARM is 0 if no stack slot was pushed for it.
+
+	 Now output code if necessary to convert ENTRY_PARM to
+	 the type in which this function declares it,
+	 and store that result in an appropriate place,
+	 which may be a pseudo reg, may be STACK_PARM,
+	 or may be a local stack slot if STACK_PARM is 0.
+
+	 Set DECL_RTL to that place.  */
+
+      if (nominal_mode == BLKmode || GET_CODE (entry_parm) == PARALLEL)
+	{
+	  /* If a BLKmode arrives in registers, copy it to a stack slot.
+	     Handle calls that pass values in multiple non-contiguous
+	     locations.  The Irix 6 ABI has examples of this.  */
+	  if (GET_CODE (entry_parm) == REG
+	      || GET_CODE (entry_parm) == PARALLEL)
+	    {
+	      int size_stored
+		= CEIL_ROUND (int_size_in_bytes (TREE_TYPE (parm)),
+			      UNITS_PER_WORD);
+
+	      /* Note that we will be storing an integral number of words.
+		 So we have to be careful to ensure that we allocate an
+		 integral number of words.  We do this below in the
+		 assign_stack_local if space was not allocated in the argument
+		 list.  If it was, this will not work if PARM_BOUNDARY is not
+		 a multiple of BITS_PER_WORD.  It isn't clear how to fix this
+		 if it becomes a problem.  */
+
+	      if (stack_parm == 0)
+		{
+		  stack_parm
+		    = assign_stack_local (GET_MODE (entry_parm),
+					  size_stored, 0);
+		  set_mem_attributes (stack_parm, parm, 1);
+		}
+
+	      else if (PARM_BOUNDARY % BITS_PER_WORD != 0)
+		abort ();
+
+	      /* Handle calls that pass values in multiple non-contiguous
+		 locations.  The Irix 6 ABI has examples of this.  */
+	      if (GET_CODE (entry_parm) == PARALLEL)
+		emit_group_store (validize_mem (stack_parm), entry_parm,
+				  int_size_in_bytes (TREE_TYPE (parm)));
+	      else
+		move_block_from_reg (REGNO (entry_parm),
+				     validize_mem (stack_parm),
+				     size_stored / UNITS_PER_WORD,
+				     int_size_in_bytes (TREE_TYPE (parm)));
+	    }
+	  SET_DECL_RTL (parm, stack_parm);
+	}
+      else if (! ((! optimize
+		   && ! DECL_REGISTER (parm))
+		  || TREE_SIDE_EFFECTS (parm)
+		  /* If -ffloat-store specified, don't put explicit
+		     float variables into registers.  */
+		  || (flag_float_store
+		      && TREE_CODE (TREE_TYPE (parm)) == REAL_TYPE))
+	       /* Always assign pseudo to structure return or item passed
+		  by invisible reference.  */
+	       || passed_pointer || parm == function_result_decl)
+	{
+	  /* Store the parm in a pseudoregister during the function, but we
+	     may need to do it in a wider mode.  */
+
+	  rtx parmreg;
+	  unsigned int regno, regnoi = 0, regnor = 0;
+
+	  unsignedp = TREE_UNSIGNED (TREE_TYPE (parm));
+
+	  promoted_nominal_mode
+	    = promote_mode (TREE_TYPE (parm), nominal_mode, &unsignedp, 0);
+
+	  parmreg = gen_reg_rtx (promoted_nominal_mode);
+	  mark_user_reg (parmreg);
+
+	  /* If this was an item that we received a pointer to, set DECL_RTL
+	     appropriately.  */
+	  if (passed_pointer)
+	    {
+	      rtx x = gen_rtx_MEM (TYPE_MODE (TREE_TYPE (passed_type)),
+			     	   parmreg);
+	      set_mem_attributes (x, parm, 1);
+	      SET_DECL_RTL (parm, x);
+	    }
+	  else
+	    {
+	      SET_DECL_RTL (parm, parmreg);
+	      maybe_set_unchanging (DECL_RTL (parm), parm);
+	    }
+	      
+	  /* Copy the value into the register.  */
+	  if (nominal_mode != passed_mode
+	      || promoted_nominal_mode != promoted_mode)
+	    {
+	      int save_tree_used;
+	      /* ENTRY_PARM has been converted to PROMOTED_MODE, its
+		 mode, by the caller.  We now have to convert it to
+		 NOMINAL_MODE, if different.  However, PARMREG may be in
+		 a different mode than NOMINAL_MODE if it is being stored
+		 promoted.
+
+		 If ENTRY_PARM is a hard register, it might be in a register
+		 not valid for operating in its mode (e.g., an odd-numbered
+		 register for a DFmode).  In that case, moves are the only
+		 thing valid, so we can't do a convert from there.  This
+		 occurs when the calling sequence allow such misaligned
+		 usages.
+
+		 In addition, the conversion may involve a call, which could
+		 clobber parameters which haven't been copied to pseudo
+		 registers yet.  Therefore, we must first copy the parm to
+		 a pseudo reg here, and save the conversion until after all
+		 parameters have been moved.  */
+
+	      rtx tempreg = gen_reg_rtx (GET_MODE (entry_parm));
+
+	      emit_move_insn (tempreg, validize_mem (entry_parm));
+
+	      push_to_sequence (conversion_insns);
+	      tempreg = convert_to_mode (nominal_mode, tempreg, unsignedp);
+
+	      if (GET_CODE (tempreg) == SUBREG
+		  && GET_MODE (tempreg) == nominal_mode
+		  && GET_CODE (SUBREG_REG (tempreg)) == REG
+		  && nominal_mode == passed_mode
+		  && GET_MODE (SUBREG_REG (tempreg)) == GET_MODE (entry_parm)
+		  && GET_MODE_SIZE (GET_MODE (tempreg))
+		     < GET_MODE_SIZE (GET_MODE (entry_parm)))
+		{
+		  /* The argument is already sign/zero extended, so note it
+		     into the subreg.  */
+		  SUBREG_PROMOTED_VAR_P (tempreg) = 1;
+		  SUBREG_PROMOTED_UNSIGNED_P (tempreg) = unsignedp;
+		}
+
+	      /* TREE_USED gets set erroneously during expand_assignment.  */
+	      save_tree_used = TREE_USED (parm);
+	      expand_assignment (parm,
+				 make_tree (nominal_type, tempreg), 0, 0);
+	      TREE_USED (parm) = save_tree_used;
+	      conversion_insns = get_insns ();
+	      did_conversion = 1;
+	      end_sequence ();
+	    }
+	  else
+	    emit_move_insn (parmreg, validize_mem (entry_parm));
+
+	  /* If we were passed a pointer but the actual value
+	     can safely live in a register, put it in one.  */
+	  if (passed_pointer && TYPE_MODE (TREE_TYPE (parm)) != BLKmode
+	      /* If by-reference argument was promoted, demote it.  */
+	      && (TYPE_MODE (TREE_TYPE (parm)) != GET_MODE (DECL_RTL (parm))
+		  || ! ((! optimize
+			 && ! DECL_REGISTER (parm))
+			|| TREE_SIDE_EFFECTS (parm)
+			/* If -ffloat-store specified, don't put explicit
+			   float variables into registers.  */
+			|| (flag_float_store
+			    && TREE_CODE (TREE_TYPE (parm)) == REAL_TYPE))))
+	    {
+	      /* We can't use nominal_mode, because it will have been set to
+		 Pmode above.  We must use the actual mode of the parm.  */
+	      parmreg = gen_reg_rtx (TYPE_MODE (TREE_TYPE (parm)));
+	      mark_user_reg (parmreg);
+	      if (GET_MODE (parmreg) != GET_MODE (DECL_RTL (parm)))
+		{
+		  rtx tempreg = gen_reg_rtx (GET_MODE (DECL_RTL (parm)));
+		  int unsigned_p = TREE_UNSIGNED (TREE_TYPE (parm));
+		  push_to_sequence (conversion_insns);
+		  emit_move_insn (tempreg, DECL_RTL (parm));
+		  SET_DECL_RTL (parm,
+				convert_to_mode (GET_MODE (parmreg), 
+						 tempreg,
+						 unsigned_p));
+		  emit_move_insn (parmreg, DECL_RTL (parm));
+		  conversion_insns = get_insns();
+		  did_conversion = 1;
+		  end_sequence ();
+		}
+	      else
+		emit_move_insn (parmreg, DECL_RTL (parm));
+	      SET_DECL_RTL (parm, parmreg);
+	      /* STACK_PARM is the pointer, not the parm, and PARMREG is
+		 now the parm.  */
+	      stack_parm = 0;
+	    }
+#ifdef FUNCTION_ARG_CALLEE_COPIES
+	  /* If we are passed an arg by reference and it is our responsibility
+	     to make a copy, do it now.
+	     PASSED_TYPE and PASSED mode now refer to the pointer, not the
+	     original argument, so we must recreate them in the call to
+	     FUNCTION_ARG_CALLEE_COPIES.  */
+	  /* ??? Later add code to handle the case that if the argument isn't
+	     modified, don't do the copy.  */
+
+	  else if (passed_pointer
+		   && FUNCTION_ARG_CALLEE_COPIES (args_so_far,
+						  TYPE_MODE (DECL_ARG_TYPE (parm)),
+						  DECL_ARG_TYPE (parm),
+						  named_arg)
+		   && ! TREE_ADDRESSABLE (DECL_ARG_TYPE (parm)))
+	    {
+	      rtx copy;
+	      tree type = DECL_ARG_TYPE (parm);
+
+	      /* This sequence may involve a library call perhaps clobbering
+		 registers that haven't been copied to pseudos yet.  */
+
+	      push_to_sequence (conversion_insns);
+
+	      if (!COMPLETE_TYPE_P (type)
+		  || TREE_CODE (TYPE_SIZE (type)) != INTEGER_CST)
+		/* This is a variable sized object.  */
+		copy = gen_rtx_MEM (BLKmode,
+				    allocate_dynamic_stack_space
+				    (expr_size (parm), NULL_RTX,
+				     TYPE_ALIGN (type)));
+	      else
+		copy = assign_stack_temp (TYPE_MODE (type),
+					  int_size_in_bytes (type), 1);
+	      set_mem_attributes (copy, parm, 1);
+
+	      store_expr (parm, copy, 0);
+	      emit_move_insn (parmreg, XEXP (copy, 0));
+	      conversion_insns = get_insns ();
+	      did_conversion = 1;
+	      end_sequence ();
+	    }
+#endif /* FUNCTION_ARG_CALLEE_COPIES */
+
+	  /* In any case, record the parm's desired stack location
+	     in case we later discover it must live in the stack.
+
+	     If it is a COMPLEX value, store the stack location for both
+	     halves.  */
+
+	  if (GET_CODE (parmreg) == CONCAT)
+	    regno = MAX (REGNO (XEXP (parmreg, 0)), REGNO (XEXP (parmreg, 1)));
+	  else
+	    regno = REGNO (parmreg);
+
+	  if (regno >= max_parm_reg)
+	    {
+	      rtx *new;
+	      int old_max_parm_reg = max_parm_reg;
+
+	      /* It's slow to expand this one register at a time,
+		 but it's also rare and we need max_parm_reg to be
+		 precisely correct.  */
+	      max_parm_reg = regno + 1;
+	      new = (rtx *) xrealloc (parm_reg_stack_loc,
+				      max_parm_reg * sizeof (rtx));
+	      memset ((char *) (new + old_max_parm_reg), 0,
+		     (max_parm_reg - old_max_parm_reg) * sizeof (rtx));
+	      parm_reg_stack_loc = new;
+	    }
+
+	  if (GET_CODE (parmreg) == CONCAT)
+	    {
+	      enum machine_mode submode = GET_MODE (XEXP (parmreg, 0));
+
+	      regnor = REGNO (gen_realpart (submode, parmreg));
+	      regnoi = REGNO (gen_imagpart (submode, parmreg));
+
+	      if (stack_parm != 0)
+		{
+		  parm_reg_stack_loc[regnor]
+		    = gen_realpart (submode, stack_parm);
+		  parm_reg_stack_loc[regnoi]
+		    = gen_imagpart (submode, stack_parm);
+		}
+	      else
+		{
+		  parm_reg_stack_loc[regnor] = 0;
+		  parm_reg_stack_loc[regnoi] = 0;
+		}
+	    }
+	  else
+	    parm_reg_stack_loc[REGNO (parmreg)] = stack_parm;
+
+	  /* Mark the register as eliminable if we did no conversion
+	     and it was copied from memory at a fixed offset,
+	     and the arg pointer was not copied to a pseudo-reg.
+	     If the arg pointer is a pseudo reg or the offset formed
+	     an invalid address, such memory-equivalences
+	     as we make here would screw up life analysis for it.  */
+	  if (nominal_mode == passed_mode
+	      && ! did_conversion
+	      && stack_parm != 0
+	      && GET_CODE (stack_parm) == MEM
+	      && stack_offset.var == 0
+	      && reg_mentioned_p (virtual_incoming_args_rtx,
+				  XEXP (stack_parm, 0)))
+	    {
+	      rtx linsn = get_last_insn ();
+	      rtx sinsn, set;
+
+	      /* Mark complex types separately.  */
+	      if (GET_CODE (parmreg) == CONCAT)
+		/* Scan backwards for the set of the real and
+		   imaginary parts.  */
+		for (sinsn = linsn; sinsn != 0;
+		     sinsn = prev_nonnote_insn (sinsn))
+		  {
+		    set = single_set (sinsn);
+		    if (set != 0
+			&& SET_DEST (set) == regno_reg_rtx [regnoi])
+		      REG_NOTES (sinsn)
+			= gen_rtx_EXPR_LIST (REG_EQUIV,
+					     parm_reg_stack_loc[regnoi],
+					     REG_NOTES (sinsn));
+		    else if (set != 0
+			     && SET_DEST (set) == regno_reg_rtx [regnor])
+		      REG_NOTES (sinsn)
+			= gen_rtx_EXPR_LIST (REG_EQUIV,
+					     parm_reg_stack_loc[regnor],
+					     REG_NOTES (sinsn));
+		  }
+	      else if ((set = single_set (linsn)) != 0
+		       && SET_DEST (set) == parmreg)
+		REG_NOTES (linsn)
+		  = gen_rtx_EXPR_LIST (REG_EQUIV,
+				       stack_parm, REG_NOTES (linsn));
+	    }
+
+	  /* For pointer data type, suggest pointer register.  */
+	  if (POINTER_TYPE_P (TREE_TYPE (parm)))
+	    mark_reg_pointer (parmreg,
+			      TYPE_ALIGN (TREE_TYPE (TREE_TYPE (parm))));
+
+	  /* If something wants our address, try to use ADDRESSOF.  */
+	  if (TREE_ADDRESSABLE (parm))
+	    {
+	      /* If we end up putting something into the stack,
+		 fixup_var_refs_insns will need to make a pass over
+		 all the instructions.  It looks through the pending
+		 sequences -- but it can't see the ones in the
+		 CONVERSION_INSNS, if they're not on the sequence
+		 stack.  So, we go back to that sequence, just so that
+		 the fixups will happen.  */
+	      push_to_sequence (conversion_insns);
+	      put_var_into_stack (parm);
+	      conversion_insns = get_insns ();
+	      end_sequence ();
+	    }
+	}
+      else
+	{
+	  /* Value must be stored in the stack slot STACK_PARM
+	     during function execution.  */
+
+	  if (promoted_mode != nominal_mode)
+	    {
+	      /* Conversion is required.  */
+	      rtx tempreg = gen_reg_rtx (GET_MODE (entry_parm));
+
+	      emit_move_insn (tempreg, validize_mem (entry_parm));
+
+	      push_to_sequence (conversion_insns);
+	      entry_parm = convert_to_mode (nominal_mode, tempreg,
+					    TREE_UNSIGNED (TREE_TYPE (parm)));
+	      if (stack_parm)
+		/* ??? This may need a big-endian conversion on sparc64.  */
+		stack_parm = adjust_address (stack_parm, nominal_mode, 0);
+
+	      conversion_insns = get_insns ();
+	      did_conversion = 1;
+	      end_sequence ();
+	    }
+
+	  if (entry_parm != stack_parm)
+	    {
+	      if (stack_parm == 0)
+		{
+		  stack_parm
+		    = assign_stack_local (GET_MODE (entry_parm),
+					  GET_MODE_SIZE (GET_MODE (entry_parm)), 0);
+		  set_mem_attributes (stack_parm, parm, 1);
+		}
+
+	      if (promoted_mode != nominal_mode)
+		{
+		  push_to_sequence (conversion_insns);
+		  emit_move_insn (validize_mem (stack_parm),
+				  validize_mem (entry_parm));
+		  conversion_insns = get_insns ();
+		  end_sequence ();
+		}
+	      else
+		emit_move_insn (validize_mem (stack_parm),
+				validize_mem (entry_parm));
+	    }
+
+	  SET_DECL_RTL (parm, stack_parm);
+	}
+
+      /* If this "parameter" was the place where we are receiving the
+	 function's incoming structure pointer, set up the result.  */
+      if (parm == function_result_decl)
+	{
+	  tree result = DECL_RESULT (fndecl);
+	  rtx addr = DECL_RTL (parm);
+	  rtx x;
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+	  if (GET_MODE (addr) != Pmode)
+	    addr = convert_memory_address (Pmode, addr);
+#endif
+
+	  x = gen_rtx_MEM (DECL_MODE (result), addr);
+	  set_mem_attributes (x, result, 1);
+	  SET_DECL_RTL (result, x);
+	}
+
+      if (GET_CODE (DECL_RTL (parm)) == REG)
+	REGNO_DECL (REGNO (DECL_RTL (parm))) = parm;
+      else if (GET_CODE (DECL_RTL (parm)) == CONCAT)
+	{
+	  REGNO_DECL (REGNO (XEXP (DECL_RTL (parm), 0))) = parm;
+	  REGNO_DECL (REGNO (XEXP (DECL_RTL (parm), 1))) = parm;
+	}
+
+    }
+
+  /* Output all parameter conversion instructions (possibly including calls)
+     now that all parameters have been copied out of hard registers.  */
+  emit_insns (conversion_insns);
+
+  last_parm_insn = get_last_insn ();
+
+  current_function_args_size = stack_args_size.constant;
+
+  /* Adjust function incoming argument size for alignment and
+     minimum length.  */
+
+#ifdef REG_PARM_STACK_SPACE
+#ifndef MAYBE_REG_PARM_STACK_SPACE
+  current_function_args_size = MAX (current_function_args_size,
+				    REG_PARM_STACK_SPACE (fndecl));
+#endif
+#endif
+
+#define STACK_BYTES (STACK_BOUNDARY / BITS_PER_UNIT)
+
+  current_function_args_size
+    = ((current_function_args_size + STACK_BYTES - 1)
+       / STACK_BYTES) * STACK_BYTES;
+
+#ifdef ARGS_GROW_DOWNWARD
+  current_function_arg_offset_rtx
+    = (stack_args_size.var == 0 ? GEN_INT (-stack_args_size.constant)
+       : expand_expr (size_diffop (stack_args_size.var,
+				   size_int (-stack_args_size.constant)),
+		      NULL_RTX, VOIDmode, 0));
+#else
+  current_function_arg_offset_rtx = ARGS_SIZE_RTX (stack_args_size);
+#endif
+
+  /* See how many bytes, if any, of its args a function should try to pop
+     on return.  */
+
+  current_function_pops_args = RETURN_POPS_ARGS (fndecl, TREE_TYPE (fndecl),
+						 current_function_args_size);
+
+  /* For stdarg.h function, save info about
+     regs and stack space used by the named args.  */
+
+  if (!hide_last_arg)
+    current_function_args_info = args_so_far;
+
+  /* Set the rtx used for the function return value.  Put this in its
+     own variable so any optimizers that need this information don't have
+     to include tree.h.  Do this here so it gets done when an inlined
+     function gets output.  */
+
+  current_function_return_rtx
+    = (DECL_RTL_SET_P (DECL_RESULT (fndecl))
+       ? DECL_RTL (DECL_RESULT (fndecl)) : NULL_RTX);
+
+  /* If scalar return value was computed in a pseudo-reg, or was a named
+     return value that got dumped to the stack, copy that to the hard
+     return register.  */
+  if (DECL_RTL_SET_P (DECL_RESULT (fndecl)))
+    {
+      tree decl_result = DECL_RESULT (fndecl);
+      rtx decl_rtl = DECL_RTL (decl_result);
+
+      if (REG_P (decl_rtl)
+	  ? REGNO (decl_rtl) >= FIRST_PSEUDO_REGISTER
+	  : DECL_REGISTER (decl_result))
+	{
+	  rtx real_decl_rtl;
+
+#ifdef FUNCTION_OUTGOING_VALUE
+	  real_decl_rtl = FUNCTION_OUTGOING_VALUE (TREE_TYPE (decl_result),
+						   fndecl);
+#else
+	  real_decl_rtl = FUNCTION_VALUE (TREE_TYPE (decl_result),
+					  fndecl);
+#endif
+	  REG_FUNCTION_VALUE_P (real_decl_rtl) = 1;
+	  /* The delay slot scheduler assumes that current_function_return_rtx
+	     holds the hard register containing the return value, not a
+	     temporary pseudo.  */
+	  current_function_return_rtx = real_decl_rtl;
+	}
+    }
+}

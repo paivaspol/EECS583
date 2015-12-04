@@ -1,0 +1,28 @@
+static void frame_mode_buffer (int bit_frame, float snr_frame_y, float snr_frame_u, float snr_frame_v)
+{
+  put_buffer_frame ();
+
+  if ((input->PicInterlace != FRAME_CODING)||(input->MbInterlace != FRAME_CODING))
+  {
+    img->height = img->height / 2;
+    img->height_cr = img->height_cr / 2;
+    img->number *= 2;
+    
+    put_buffer_top ();
+     
+    img->number++;
+    put_buffer_bot ();
+    
+    img->number /= 2;         // reset the img->number to field
+    img->height = (input->img_height+img->auto_crop_bottom);
+    img->height_cr = img->height_cr_frame;
+    img->total_number_mb =
+      (img->width * img->height) / (MB_BLOCK_SIZE * MB_BLOCK_SIZE);
+    
+    snr->snr_y = snr_frame_y;
+    snr->snr_u = snr_frame_u;
+    snr->snr_v = snr_frame_v;
+    put_buffer_frame ();
+    
+  }
+}

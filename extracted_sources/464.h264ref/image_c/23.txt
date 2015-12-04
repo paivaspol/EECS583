@@ -1,0 +1,24 @@
+static void ReportFirstframe(int tmp_time,int me_time)
+{
+  //Rate control
+  int bits;
+  printf ("%04d(IDR)%8d %1d %2d %7.3f %7.3f %7.3f  %7d   %5d     %3s   %3d\n",
+    frame_no, stats->bit_ctr - stats->bit_ctr_n,0,
+    img->qp, snr->snr_y, snr->snr_u, snr->snr_v, tmp_time, me_time,
+    img->fld_flag ? "FLD" : "FRM", intras);
+
+  //Rate control
+  if(input->RCEnable)
+  {
+    if((!input->PicInterlace)&&(!input->MbInterlace))
+        bits = stats->bit_ctr-stats->bit_ctr_n; // used for rate control update 
+    else
+    {
+      bits = stats->bit_ctr - Iprev_bits; // used for rate control update 
+      Iprev_bits = stats->bit_ctr;
+    }
+  }
+
+  stats->bit_ctr_I = stats->bit_ctr;
+  stats->bit_ctr = 0;
+}

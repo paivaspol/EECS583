@@ -1,0 +1,169 @@
+static void
+move_deaths (x, maybe_kill_insn, from_cuid, to_insn, pnotes)
+     rtx x;
+     rtx maybe_kill_insn;
+     int from_cuid;
+     rtx to_insn;
+     rtx *pnotes;
+{
+  const char *fmt;
+  int len, i;
+  enum rtx_code code = GET_CODE (x);
+
+  if (code == REG)
+    {
+      unsigned int regno = REGNO (x);
+      rtx where_dead = reg_last_death[regno];
+      rtx before_dead, after_dead;
+
+      /* Don't move the register if it gets killed in between from and to */
+      if (maybe_kill_insn && reg_set_p (x, maybe_kill_insn)
+	  && ! reg_referenced_p (x, maybe_kill_insn))
+	return;
+
+      /* WHERE_DEAD could be a USE insn made by combine, so first we
+	 make sure that we have insns with valid INSN_CUID values.  */
+      before_dead = where_dead;
+      while (before_dead && INSN_UID (before_dead) > max_uid_cuid)
+	before_dead = PREV_INSN (before_dead);
+
+      after_dead = where_dead;
+      while (after_dead && INSN_UID (after_dead) > max_uid_cuid)
+	after_dead = NEXT_INSN (after_dead);
+
+      if (before_dead && after_dead
+	  && INSN_CUID (before_dead) >= from_cuid
+	  && (INSN_CUID (after_dead) < INSN_CUID (to_insn)
+	      || (where_dead != after_dead
+		  && INSN_CUID (after_dead) == INSN_CUID (to_insn))))
+	{
+	  rtx note = remove_death (regno, where_dead);
+
+	  /* It is possible for the call above to return 0.  This can occur
+	     when reg_last_death points to I2 or I1 that we combined with.
+	     In that case make a new note.
+
+	     We must also check for the case where X is a hard register
+	     and NOTE is a death note for a range of hard registers
+	     including X.  In that case, we must put REG_DEAD notes for
+	     the remaining registers in place of NOTE.  */
+
+	  if (note != 0 && regno < FIRST_PSEUDO_REGISTER
+	      && (GET_MODE_SIZE (GET_MODE (XEXP (note, 0)))
+		  > GET_MODE_SIZE (GET_MODE (x))))
+	    {
+	      unsigned int deadregno = REGNO (XEXP (note, 0));
+	      unsigned int deadend
+		= (deadregno + HARD_REGNO_NREGS (deadregno,
+						 GET_MODE (XEXP (note, 0))));
+	      unsigned int ourend
+		= regno + HARD_REGNO_NREGS (regno, GET_MODE (x));
+	      unsigned int i;
+
+	      for (i = deadregno; i < deadend; i++)
+		if (i < regno || i >= ourend)
+		  REG_NOTES (where_dead)
+		    = gen_rtx_EXPR_LIST (REG_DEAD,
+					 gen_rtx_REG (reg_raw_mode[i], i),
+					 REG_NOTES (where_dead));
+	    }
+
+	  /* If we didn't find any note, or if we found a REG_DEAD note that
+	     covers only part of the given reg, and we have a multi-reg hard
+	     register, then to be safe we must check for REG_DEAD notes
+	     for each register other than the first.  They could have
+	     their own REG_DEAD notes lying around.  */
+	  else if ((note == 0
+		    || (note != 0
+			&& (GET_MODE_SIZE (GET_MODE (XEXP (note, 0)))
+			    < GET_MODE_SIZE (GET_MODE (x)))))
+		   && regno < FIRST_PSEUDO_REGISTER
+		   && HARD_REGNO_NREGS (regno, GET_MODE (x)) > 1)
+	    {
+	      unsigned int ourend
+		= regno + HARD_REGNO_NREGS (regno, GET_MODE (x));
+	      unsigned int i, offset;
+	      rtx oldnotes = 0;
+
+	      if (note)
+		offset = HARD_REGNO_NREGS (regno, GET_MODE (XEXP (note, 0)));
+	      else
+		offset = 1;
+
+	      for (i = regno + offset; i < ourend; i++)
+		move_deaths (gen_rtx_REG (reg_raw_mode[i], i),
+			     maybe_kill_insn, from_cuid, to_insn, &oldnotes);
+	    }
+
+	  if (note != 0 && GET_MODE (XEXP (note, 0)) == GET_MODE (x))
+	    {
+	      XEXP (note, 1) = *pnotes;
+	      *pnotes = note;
+	    }
+	  else
+	    *pnotes = gen_rtx_EXPR_LIST (REG_DEAD, x, *pnotes);
+
+	  REG_N_DEATHS (regno)++;
+	}
+
+      return;
+    }
+
+  else if (GET_CODE (x) == SET)
+    {
+      rtx dest = SET_DEST (x);
+
+      move_deaths (SET_SRC (x), maybe_kill_insn, from_cuid, to_insn, pnotes);
+
+      /* In the case of a ZERO_EXTRACT, a STRICT_LOW_PART, or a SUBREG
+	 that accesses one word of a multi-word item, some
+	 piece of everything register in the expression is used by
+	 this insn, so remove any old death.  */
+      /* ??? So why do we test for equality of the sizes?  */
+
+      if (GET_CODE (dest) == ZERO_EXTRACT
+	  || GET_CODE (dest) == STRICT_LOW_PART
+	  || (GET_CODE (dest) == SUBREG
+	      && (((GET_MODE_SIZE (GET_MODE (dest))
+		    + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
+		  == ((GET_MODE_SIZE (GET_MODE (SUBREG_REG (dest)))
+		       + UNITS_PER_WORD - 1) / UNITS_PER_WORD))))
+	{
+	  move_deaths (dest, maybe_kill_insn, from_cuid, to_insn, pnotes);
+	  return;
+	}
+
+      /* If this is some other SUBREG, we know it replaces the entire
+	 value, so use that as the destination.  */
+      if (GET_CODE (dest) == SUBREG)
+	dest = SUBREG_REG (dest);
+
+      /* If this is a MEM, adjust deaths of anything used in the address.
+	 For a REG (the only other possibility), the entire value is
+	 being replaced so the old value is not used in this insn.  */
+
+      if (GET_CODE (dest) == MEM)
+	move_deaths (XEXP (dest, 0), maybe_kill_insn, from_cuid,
+		     to_insn, pnotes);
+      return;
+    }
+
+  else if (GET_CODE (x) == CLOBBER)
+    return;
+
+  len = GET_RTX_LENGTH (code);
+  fmt = GET_RTX_FORMAT (code);
+
+  for (i = 0; i < len; i++)
+    {
+      if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    move_deaths (XVECEXP (x, i, j), maybe_kill_insn, from_cuid,
+			 to_insn, pnotes);
+	}
+      else if (fmt[i] == 'e')
+	move_deaths (XEXP (x, i), maybe_kill_insn, from_cuid, to_insn, pnotes);
+    }
+}

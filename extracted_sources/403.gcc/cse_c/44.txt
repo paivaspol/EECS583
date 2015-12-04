@@ -1,0 +1,79 @@
+static rtx
+cse_process_notes (x, object)
+     rtx x;
+     rtx object;
+{
+  enum rtx_code code = GET_CODE (x);
+  const char *fmt = GET_RTX_FORMAT (code);
+  int i;
+
+  switch (code)
+    {
+    case CONST_INT:
+    case CONST:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case PC:
+    case CC0:
+    case LO_SUM:
+      return x;
+
+    case MEM:
+      validate_change (x, &XEXP (x, 0),
+		       cse_process_notes (XEXP (x, 0), x), 0);
+      return x;
+
+    case EXPR_LIST:
+    case INSN_LIST:
+      if (REG_NOTE_KIND (x) == REG_EQUAL)
+	XEXP (x, 0) = cse_process_notes (XEXP (x, 0), NULL_RTX);
+      if (XEXP (x, 1))
+	XEXP (x, 1) = cse_process_notes (XEXP (x, 1), NULL_RTX);
+      return x;
+
+    case SIGN_EXTEND:
+    case ZERO_EXTEND:
+    case SUBREG:
+      {
+	rtx new = cse_process_notes (XEXP (x, 0), object);
+	/* We don't substitute VOIDmode constants into these rtx,
+	   since they would impede folding.  */
+	if (GET_MODE (new) != VOIDmode)
+	  validate_change (object, &XEXP (x, 0), new, 0);
+	return x;
+      }
+
+    case REG:
+      i = REG_QTY (REGNO (x));
+
+      /* Return a constant or a constant register.  */
+      if (REGNO_QTY_VALID_P (REGNO (x)))
+	{
+	  struct qty_table_elem *ent = &qty_table[i];
+
+	  if (ent->const_rtx != NULL_RTX
+	      && (CONSTANT_P (ent->const_rtx)
+		  || GET_CODE (ent->const_rtx) == REG))
+	    {
+	      rtx new = gen_lowpart_if_possible (GET_MODE (x), ent->const_rtx);
+	      if (new)
+		return new;
+	    }
+	}
+
+      /* Otherwise, canonicalize this register.  */
+      return canon_reg (x, NULL_RTX);
+
+    default:
+      break;
+    }
+
+  for (i = 0; i < GET_RTX_LENGTH (code); i++)
+    if (fmt[i] == 'e')
+      validate_change (object, &XEXP (x, i),
+		       cse_process_notes (XEXP (x, i), object), 0);
+
+  return x;
+}

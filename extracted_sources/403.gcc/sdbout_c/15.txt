@@ -1,0 +1,121 @@
+static void
+sdbout_parms (parms)
+     tree parms;
+{
+  for (; parms; parms = TREE_CHAIN (parms))
+    if (DECL_NAME (parms))
+      {
+	int current_sym_value = 0;
+	const char *name = IDENTIFIER_POINTER (DECL_NAME (parms));
+
+	if (name == 0 || *name == 0)
+	  name = gen_fake_label ();
+
+	/* Perform any necessary register eliminations on the parameter's rtl,
+	   so that the debugging output will be accurate.  */
+	DECL_INCOMING_RTL (parms)
+	  = eliminate_regs (DECL_INCOMING_RTL (parms), 0, NULL_RTX);
+	SET_DECL_RTL (parms,
+		      eliminate_regs (DECL_RTL (parms), 0, NULL_RTX));
+
+	if (PARM_PASSED_IN_MEMORY (parms))
+	  {
+	    rtx addr = XEXP (DECL_INCOMING_RTL (parms), 0);
+	    tree type;
+
+	    /* ??? Here we assume that the parm address is indexed
+	       off the frame pointer or arg pointer.
+	       If that is not true, we produce meaningless results,
+	       but do not crash.  */
+	    if (GET_CODE (addr) == PLUS
+		&& GET_CODE (XEXP (addr, 1)) == CONST_INT)
+	      current_sym_value = INTVAL (XEXP (addr, 1));
+	    else
+	      current_sym_value = 0;
+
+	    if (GET_CODE (DECL_RTL (parms)) == REG
+		&& REGNO (DECL_RTL (parms)) < FIRST_PSEUDO_REGISTER)
+	      type = DECL_ARG_TYPE (parms);
+	    else
+	      {
+		int original_sym_value = current_sym_value;
+
+		/* This is the case where the parm is passed as an int or
+		   double and it is converted to a char, short or float
+		   and stored back in the parmlist.  In this case, describe
+		   the parm with the variable's declared type, and adjust
+		   the address if the least significant bytes (which we are
+		   using) are not the first ones.  */
+		if (BYTES_BIG_ENDIAN
+		    && TREE_TYPE (parms) != DECL_ARG_TYPE (parms))
+		  current_sym_value +=
+		    (GET_MODE_SIZE (TYPE_MODE (DECL_ARG_TYPE (parms)))
+		     - GET_MODE_SIZE (GET_MODE (DECL_RTL (parms))));
+
+		if (GET_CODE (DECL_RTL (parms)) == MEM
+		    && GET_CODE (XEXP (DECL_RTL (parms), 0)) == PLUS
+		    && (GET_CODE (XEXP (XEXP (DECL_RTL (parms), 0), 1))
+			== CONST_INT)
+		    && (INTVAL (XEXP (XEXP (DECL_RTL (parms), 0), 1))
+			== current_sym_value))
+		  type = TREE_TYPE (parms);
+		else
+		  {
+		    current_sym_value = original_sym_value;
+		    type = DECL_ARG_TYPE (parms);
+		  }
+	      }
+
+	    PUT_SDB_DEF (name);
+	    PUT_SDB_INT_VAL (DEBUGGER_ARG_OFFSET (current_sym_value, addr));
+	    PUT_SDB_SCL (C_ARG);
+	    PUT_SDB_TYPE (plain_type (type));
+	    PUT_SDB_ENDEF;
+	  }
+	else if (GET_CODE (DECL_RTL (parms)) == REG)
+	  {
+	    rtx best_rtl;
+	    /* Parm passed in registers and lives in registers or nowhere.  */
+
+	    /* If parm lives in a register, use that register;
+	       pretend the parm was passed there.  It would be more consistent
+	       to describe the register where the parm was passed,
+	       but in practice that register usually holds something else.  */
+	    if (REGNO (DECL_RTL (parms)) < FIRST_PSEUDO_REGISTER)
+	      best_rtl = DECL_RTL (parms);
+	    /* If the parm lives nowhere,
+	       use the register where it was passed.  */
+	    else
+	      best_rtl = DECL_INCOMING_RTL (parms);
+
+	    PUT_SDB_DEF (name);
+	    PUT_SDB_INT_VAL (DBX_REGISTER_NUMBER (REGNO (best_rtl)));
+	    PUT_SDB_SCL (C_REGPARM);
+	    PUT_SDB_TYPE (plain_type (TREE_TYPE (parms)));
+	    PUT_SDB_ENDEF;
+	  }
+	else if (GET_CODE (DECL_RTL (parms)) == MEM
+		 && XEXP (DECL_RTL (parms), 0) != const0_rtx)
+	  {
+	    /* Parm was passed in registers but lives on the stack.  */
+
+	    /* DECL_RTL looks like (MEM (PLUS (REG...) (CONST_INT...))),
+	       in which case we want the value of that CONST_INT,
+	       or (MEM (REG ...)) or (MEM (MEM ...)),
+	       in which case we use a value of zero.  */
+	    if (GET_CODE (XEXP (DECL_RTL (parms), 0)) == REG
+		|| GET_CODE (XEXP (DECL_RTL (parms), 0)) == MEM)
+	      current_sym_value = 0;
+	    else
+	      current_sym_value = INTVAL (XEXP (XEXP (DECL_RTL (parms), 0), 1));
+
+	    /* Again, this assumes the offset is based on the arg pointer.  */
+	    PUT_SDB_DEF (name);
+	    PUT_SDB_INT_VAL (DEBUGGER_ARG_OFFSET (current_sym_value,
+						  XEXP (DECL_RTL (parms), 0)));
+	    PUT_SDB_SCL (C_ARG);
+	    PUT_SDB_TYPE (plain_type (TREE_TYPE (parms)));
+	    PUT_SDB_ENDEF;
+	  }
+      }
+}

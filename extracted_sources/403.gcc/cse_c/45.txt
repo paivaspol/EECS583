@@ -1,0 +1,68 @@
+static void
+cse_around_loop (loop_start)
+     rtx loop_start;
+{
+  rtx insn;
+  int i;
+  struct table_elt *p;
+
+  /* If the jump at the end of the loop doesn't go to the start, we don't
+     do anything.  */
+  for (insn = PREV_INSN (loop_start);
+       insn && (GET_CODE (insn) == NOTE && NOTE_LINE_NUMBER (insn) >= 0);
+       insn = PREV_INSN (insn))
+    ;
+
+  if (insn == 0
+      || GET_CODE (insn) != NOTE
+      || NOTE_LINE_NUMBER (insn) != NOTE_INSN_LOOP_BEG)
+    return;
+
+  /* If the last insn of the loop (the end test) was an NE comparison,
+     we will interpret it as an EQ comparison, since we fell through
+     the loop.  Any equivalences resulting from that comparison are
+     therefore not valid and must be invalidated.  */
+  if (last_jump_equiv_class)
+    for (p = last_jump_equiv_class->first_same_value; p;
+	 p = p->next_same_value)
+      {
+	if (GET_CODE (p->exp) == MEM || GET_CODE (p->exp) == REG
+	    || (GET_CODE (p->exp) == SUBREG
+		&& GET_CODE (SUBREG_REG (p->exp)) == REG))
+	  invalidate (p->exp, VOIDmode);
+	else if (GET_CODE (p->exp) == STRICT_LOW_PART
+		 || GET_CODE (p->exp) == ZERO_EXTRACT)
+	  invalidate (XEXP (p->exp, 0), GET_MODE (p->exp));
+      }
+
+  /* Process insns starting after LOOP_START until we hit a CALL_INSN or
+     a CODE_LABEL (we could handle a CALL_INSN, but it isn't worth it).
+
+     The only thing we do with SET_DEST is invalidate entries, so we
+     can safely process each SET in order.  It is slightly less efficient
+     to do so, but we only want to handle the most common cases.
+
+     The gen_move_insn call in cse_set_around_loop may create new pseudos.
+     These pseudos won't have valid entries in any of the tables indexed
+     by register number, such as reg_qty.  We avoid out-of-range array
+     accesses by not processing any instructions created after cse started.  */
+
+  for (insn = NEXT_INSN (loop_start);
+       GET_CODE (insn) != CALL_INSN && GET_CODE (insn) != CODE_LABEL
+       && INSN_UID (insn) < max_insn_uid
+       && ! (GET_CODE (insn) == NOTE
+	     && NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END);
+       insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn)
+	  && (GET_CODE (PATTERN (insn)) == SET
+	      || GET_CODE (PATTERN (insn)) == CLOBBER))
+	cse_set_around_loop (PATTERN (insn), insn, loop_start);
+      else if (INSN_P (insn) && GET_CODE (PATTERN (insn)) == PARALLEL)
+	for (i = XVECLEN (PATTERN (insn), 0) - 1; i >= 0; i--)
+	  if (GET_CODE (XVECEXP (PATTERN (insn), 0, i)) == SET
+	      || GET_CODE (XVECEXP (PATTERN (insn), 0, i)) == CLOBBER)
+	    cse_set_around_loop (XVECEXP (PATTERN (insn), 0, i), insn,
+				 loop_start);
+    }
+}

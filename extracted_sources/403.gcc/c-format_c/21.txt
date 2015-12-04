@@ -1,0 +1,21 @@
+static void
+status_warning VPARAMS ((int *status, const char *msgid, ...))
+{
+  diagnostic_context dc;
+
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, int *, status);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  if (status)
+    *status = 1;
+  else
+    {
+      /* This duplicates the warning function behavior.  */
+      set_diagnostic_context
+	(&dc, msgid, &ap, input_filename, lineno, /* warn = */ 1);
+      report_diagnostic (&dc);
+    }
+
+  VA_CLOSE (ap);
+}

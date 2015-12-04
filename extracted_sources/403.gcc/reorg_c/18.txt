@@ -1,0 +1,21 @@
+static int
+check_annul_list_true_false (annul_true_p, delay_list)
+     int annul_true_p;
+     rtx delay_list;
+{
+  rtx temp;
+
+  if (delay_list)
+    {
+      for (temp = delay_list; temp; temp = XEXP (temp, 1))
+	{
+	  rtx trial = XEXP (temp, 0);
+
+	  if ((annul_true_p && INSN_FROM_TARGET_P (trial))
+	      || (!annul_true_p && !INSN_FROM_TARGET_P (trial)))
+	    return 0;
+	}
+    }
+
+  return 1;
+}

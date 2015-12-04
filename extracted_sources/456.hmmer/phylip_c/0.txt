@@ -1,0 +1,23 @@
+int 
+main(int argc, char **argv)
+{
+  MSAFILE *afp;
+  MSA     *msa;
+  char    *file;
+  
+  file = argv[1];
+
+  if ((afp = MSAFileOpen(file, MSAFILE_UNKNOWN, NULL)) == NULL)
+    Die("Couldn't open %s\n", file);
+
+  printf("format %d\n", afp->format);
+
+  while ((msa = ReadPhylip(afp)) != NULL)
+    {
+      WritePhylip(stdout, msa);
+      MSAFree(msa); 
+    }
+  
+  MSAFileClose(afp);
+  exit(0);
+}

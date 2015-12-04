@@ -1,0 +1,57 @@
+void
+Perl_do_dump_pad(pTHX_ I32 level, PerlIO *file, PADLIST *padlist, int full)
+{
+    AV *pad_name;
+    AV *pad;
+    SV **pname;
+    SV **ppad;
+    SV *namesv;
+    I32 ix;
+
+    if (!padlist) {
+	return;
+    }
+    pad_name = (AV*)*av_fetch((AV*)padlist, 0, FALSE);
+    pad = (AV*)*av_fetch((AV*)padlist, 1, FALSE);
+    pname = AvARRAY(pad_name);
+    ppad = AvARRAY(pad);
+    Perl_dump_indent(aTHX_ level, file,
+	    "PADNAME = 0x%"UVxf"(0x%"UVxf") PAD = 0x%"UVxf"(0x%"UVxf")\n",
+	    PTR2UV(pad_name), PTR2UV(pname), PTR2UV(pad), PTR2UV(ppad)
+    );
+
+    for (ix = 1; ix <= AvFILLp(pad_name); ix++) {
+	namesv = pname[ix];
+	if (namesv && namesv == &PL_sv_undef) {
+	    namesv = Nullsv;
+	}
+	if (namesv) {
+	    if (SvFAKE(namesv))
+		Perl_dump_indent(aTHX_ level+1, file,
+		    "%2d. 0x%"UVxf"<%lu> FAKE \"%s\"\n",
+		    (int) ix,
+		    PTR2UV(ppad[ix]),
+		    (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
+		    SvPVX(namesv)
+		);
+	    else
+		Perl_dump_indent(aTHX_ level+1, file,
+		    "%2d. 0x%"UVxf"<%lu> (%lu,%lu) \"%s\"\n",
+		    (int) ix,
+		    PTR2UV(ppad[ix]),
+		    (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
+		    (unsigned long)U_32(SvNVX(namesv)),
+		    (unsigned long)SvIVX(namesv),
+		    SvPVX(namesv)
+		);
+	}
+	else if (full) {
+	    Perl_dump_indent(aTHX_ level+1, file,
+		"%2d. 0x%"UVxf"<%lu>\n",
+		(int) ix,
+		PTR2UV(ppad[ix]),
+		(unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0)
+	    );
+	}
+    }
+}

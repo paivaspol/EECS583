@@ -1,0 +1,19 @@
+static lextree_node_t *lextree_node_alloc (int32 wid, int32 prob,
+					   int32 comp, int32 ssid, int32 n_state, int32 ci)
+{
+    lextree_node_t *ln;
+    
+    ln = (lextree_node_t *) mymalloc (sizeof(lextree_node_t));
+    ln->children = NULL;
+    ln->wid = wid;
+    ln->prob = prob;
+    ln->ssid = ssid;
+    ln->ci = (s3cipid_t) ci;
+    ln->composite = comp;
+    ln->frame = -1;
+    ln->hmm.state = (hmm_state_t *) ckd_calloc (n_state, sizeof(hmm_state_t));
+    
+    hmm_clear (&(ln->hmm), n_state);
+    
+    return ln;
+}

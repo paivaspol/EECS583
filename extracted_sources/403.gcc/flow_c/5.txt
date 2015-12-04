@@ -1,0 +1,136 @@
+void
+update_life_info (blocks, extent, prop_flags)
+     sbitmap blocks;
+     enum update_life_extent extent;
+     int prop_flags;
+{
+  regset tmp;
+  regset_head tmp_head;
+  int i;
+  int stabilized_prop_flags = prop_flags;
+
+  tmp = INITIALIZE_REG_SET (tmp_head);
+
+  timevar_push ((extent == UPDATE_LIFE_LOCAL || blocks)
+		? TV_LIFE_UPDATE : TV_LIFE);
+
+  /* Changes to the CFG are only allowed when
+     doing a global update for the entire CFG.  */
+  if ((prop_flags & PROP_ALLOW_CFG_CHANGES)
+      && (extent == UPDATE_LIFE_LOCAL || blocks))
+    abort ();
+
+  /* Clear log links in case we are asked to (re)compute them.  */
+  if (prop_flags & PROP_LOG_LINKS)
+    clear_log_links (blocks);
+
+  /* For a global update, we go through the relaxation process again.  */
+  if (extent != UPDATE_LIFE_LOCAL)
+    {
+      for ( ; ; )
+	{
+	  int changed = 0;
+
+	  calculate_global_regs_live (blocks, blocks,
+				prop_flags & (PROP_SCAN_DEAD_CODE
+					      | PROP_ALLOW_CFG_CHANGES));
+
+	  if ((prop_flags & (PROP_KILL_DEAD_CODE | PROP_ALLOW_CFG_CHANGES))
+	      != (PROP_KILL_DEAD_CODE | PROP_ALLOW_CFG_CHANGES))
+	    break;
+
+	  /* Removing dead code may allow the CFG to be simplified which
+	     in turn may allow for further dead code detection / removal.  */
+	  for (i = n_basic_blocks - 1; i >= 0; --i)
+	    {
+	      basic_block bb = BASIC_BLOCK (i);
+
+	      COPY_REG_SET (tmp, bb->global_live_at_end);
+	      changed |= propagate_block (bb, tmp, NULL, NULL,
+				prop_flags & (PROP_SCAN_DEAD_CODE
+					      | PROP_KILL_DEAD_CODE));
+	    }
+
+	  /* Don't pass PROP_SCAN_DEAD_CODE or PROP_KILL_DEAD_CODE to
+	     subsequent propagate_block calls, since removing or acting as
+	     removing dead code can affect global register liveness, which
+	     is supposed to be finalized for this call after this loop.  */
+	  stabilized_prop_flags
+	    &= ~(PROP_SCAN_DEAD_CODE | PROP_KILL_DEAD_CODE);
+
+	  if (! changed)
+	    break;
+
+	  /* We repeat regardless of what cleanup_cfg says.  If there were
+	     instructions deleted above, that might have been only a
+	     partial improvement (see MAX_MEM_SET_LIST_LEN usage).
+	     Further improvement may be possible.  */
+	  cleanup_cfg (CLEANUP_EXPENSIVE);
+	}
+
+      /* If asked, remove notes from the blocks we'll update.  */
+      if (extent == UPDATE_LIFE_GLOBAL_RM_NOTES)
+	count_or_remove_death_notes (blocks, 1);
+    }
+
+  if (blocks)
+    {
+      EXECUTE_IF_SET_IN_SBITMAP (blocks, 0, i,
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+
+	  COPY_REG_SET (tmp, bb->global_live_at_end);
+	  propagate_block (bb, tmp, NULL, NULL, stabilized_prop_flags);
+
+	  if (extent == UPDATE_LIFE_LOCAL)
+	    verify_local_live_at_start (tmp, bb);
+	});
+    }
+  else
+    {
+      for (i = n_basic_blocks - 1; i >= 0; --i)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+
+	  COPY_REG_SET (tmp, bb->global_live_at_end);
+
+	  propagate_block (bb, tmp, NULL, NULL, stabilized_prop_flags);
+
+	  if (extent == UPDATE_LIFE_LOCAL)
+	    verify_local_live_at_start (tmp, bb);
+	}
+    }
+
+  FREE_REG_SET (tmp);
+
+  if (prop_flags & PROP_REG_INFO)
+    {
+      /* The only pseudos that are live at the beginning of the function
+	 are those that were not set anywhere in the function.  local-alloc
+	 doesn't know how to handle these correctly, so mark them as not
+	 local to any one basic block.  */
+      EXECUTE_IF_SET_IN_REG_SET (ENTRY_BLOCK_PTR->global_live_at_end,
+				 FIRST_PSEUDO_REGISTER, i,
+				 { REG_BASIC_BLOCK (i) = REG_BLOCK_GLOBAL; });
+
+      /* We have a problem with any pseudoreg that lives across the setjmp.
+	 ANSI says that if a user variable does not change in value between
+	 the setjmp and the longjmp, then the longjmp preserves it.  This
+	 includes longjmp from a place where the pseudo appears dead.
+	 (In principle, the value still exists if it is in scope.)
+	 If the pseudo goes in a hard reg, some other value may occupy
+	 that hard reg where this pseudo is dead, thus clobbering the pseudo.
+	 Conclusion: such a pseudo must not go in a hard reg.  */
+      EXECUTE_IF_SET_IN_REG_SET (regs_live_at_setjmp,
+				 FIRST_PSEUDO_REGISTER, i,
+				 {
+				   if (regno_reg_rtx[i] != 0)
+				     {
+				       REG_LIVE_LENGTH (i) = -1;
+				       REG_BASIC_BLOCK (i) = REG_BLOCK_UNKNOWN;
+				     }
+				 });
+    }
+  timevar_pop ((extent == UPDATE_LIFE_LOCAL || blocks)
+	       ? TV_LIFE_UPDATE : TV_LIFE);
+}

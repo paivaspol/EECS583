@@ -1,0 +1,39 @@
+static void
+MD5Final(U8* digest, MD5_CTX *ctx)
+{
+    STRLEN fill = ctx->bytes_low & 0x3F;
+    STRLEN padlen = (fill < 56 ? 56 : 120) - fill;
+    U32 bits_low, bits_high;
+#ifdef MD5_DEBUG
+    fprintf(stderr,"       Final:  %s\n", ctx_dump(ctx));
+#endif
+    Copy(PADDING, ctx->buffer + fill, padlen, U8);
+    fill += padlen;
+
+    bits_low = ctx->bytes_low << 3;
+    bits_high = (ctx->bytes_high << 3) | (ctx->bytes_low  >> 29);
+#ifdef BYTESWAP
+    *(U32*)(ctx->buffer + fill) = BYTESWAP(bits_low);    fill += 4;
+    *(U32*)(ctx->buffer + fill) = BYTESWAP(bits_high);   fill += 4;
+#else
+    u2s(bits_low,  ctx->buffer + fill);   fill += 4;
+    u2s(bits_high, ctx->buffer + fill);   fill += 4;
+#endif
+
+    MD5Transform(ctx, ctx->buffer, fill >> 6);
+#ifdef MD5_DEBUG
+    fprintf(stderr,"       Result: %s\n", ctx_dump(ctx));
+#endif
+
+#ifdef BYTESWAP
+    *(U32*)digest = BYTESWAP(ctx->A);  digest += 4;
+    *(U32*)digest = BYTESWAP(ctx->B);  digest += 4;
+    *(U32*)digest = BYTESWAP(ctx->C);  digest += 4;
+    *(U32*)digest = BYTESWAP(ctx->D);
+#else
+    u2s(ctx->A, digest);
+    u2s(ctx->B, digest+4);
+    u2s(ctx->C, digest+8);
+    u2s(ctx->D, digest+12);
+#endif
+}

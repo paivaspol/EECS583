@@ -1,0 +1,59 @@
+void open_log(char *lognm,t_commrec *cr)
+{
+  int  len,testlen,pid;
+  char *buf,*host;
+  
+  debug_gmx();
+  
+  /* Communicate the filename for logfile */
+  if (cr->nnodes > 1) {
+    if (MASTER(cr)) {
+      len = strlen(lognm)+1;
+      gmx_txs(cr->right,&len,sizeof(len));
+      gmx_rxs(cr->left,&testlen,sizeof(testlen));
+      
+      debug_gmx();
+      
+      gmx_txs(cr->right,lognm,len);
+      gmx_rxs(cr->left,lognm,len);
+      if (len != testlen)
+	fatal_error(0,"Communication error on NODE 0!");
+      
+    }
+    else {
+      gmx_rxs(cr->left,&len,sizeof(len));
+      debug_gmx();
+      
+      gmx_txs(cr->right,&len,sizeof(len));
+      snew(lognm,len);
+      gmx_rxs(cr->left,lognm,len);
+      gmx_txs(cr->right,lognm,len);
+    }
+  }
+  
+  debug_gmx();
+
+  /* Since log always ends with '.log' let's use this info */
+  buf    = par_fn(lognm,efLOG,cr);
+  stdlog = ffopen(buf,"w");
+  
+  /* Get some machine parameters */
+#ifdef SPEC_CPU
+  host = NULL;
+#else
+  host = getenv("HOST");
+#endif
+#ifndef NO_GETPID
+  pid = getpid();
+#else
+  pid = 0;
+#endif
+  
+  if(stdlog)
+  {
+      fprintf(stdlog,"Log file opened: nodeid %d, nnodes = %d, host = %s, process = %d\n",
+              cr->nodeid,cr->nnodes,host ? host : "unknown",pid);
+      fflush(stdlog);
+  }
+  debug_gmx();
+}

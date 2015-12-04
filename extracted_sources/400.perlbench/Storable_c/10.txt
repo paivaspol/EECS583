@@ -1,0 +1,16 @@
+static stcxt_t *allocate_context(pTHX_ stcxt_t *parent_cxt)
+{
+	stcxt_t *cxt;
+
+	TRACEME(("allocate_context"));
+
+	ASSERT(!parent_cxt->s_dirty, ("parent context clean"));
+
+	NEW_STORABLE_CXT_OBJ(cxt);
+	cxt->prev = parent_cxt->my_sv;
+	SET_STCXT(cxt);
+
+	ASSERT(!cxt->s_dirty, ("clean context"));
+
+	return cxt;
+}

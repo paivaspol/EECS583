@@ -1,0 +1,29 @@
+void refresh_neighbour_lists( network_t *net )
+#else
+void refresh_neighbour_lists( net )
+    network_t *net;
+#endif
+{
+    node_t *node;
+    arc_t *arc;
+    void *stop;
+        
+
+    node = net->nodes;
+    for( stop = (void *)net->stop_nodes; node < (node_t *)stop; node++ )
+    {
+        node->firstin = (arc_t *)NULL;
+        node->firstout = (arc_t *)NULL;
+    }
+    
+    arc = net->arcs;
+    for( stop = (void *)net->stop_arcs; arc < (arc_t *)stop; arc++ )
+    {
+        arc->nextout = arc->tail->firstout;
+        arc->tail->firstout = arc;
+        arc->nextin = arc->head->firstin;
+        arc->head->firstin = arc;
+    }
+    
+    return;
+}

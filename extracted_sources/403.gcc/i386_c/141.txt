@@ -1,0 +1,16 @@
+static void
+ix86_mark_machine_status (p)
+     struct function *p;
+{
+  struct machine_function *machine = p->machine;
+  enum machine_mode mode;
+  int n;
+
+  if (! machine)
+    return;
+
+  for (mode = VOIDmode; (int) mode < (int) MAX_MACHINE_MODE;
+       mode = (enum machine_mode) ((int) mode + 1))
+    for (n = 0; n < MAX_386_STACK_LOCALS; n++)
+      ggc_mark_rtx (machine->stack_locals[(int) mode][n]);
+}

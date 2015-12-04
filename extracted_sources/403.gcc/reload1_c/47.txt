@@ -1,0 +1,46 @@
+static int
+set_reload_reg (i, r)
+     int i, r;
+{
+  int regno;
+  rtx reg = spill_reg_rtx[i];
+
+  if (reg == 0 || GET_MODE (reg) != rld[r].mode)
+    spill_reg_rtx[i] = reg
+      = gen_rtx_REG (rld[r].mode, spill_regs[i]);
+
+  regno = true_regnum (reg);
+
+  /* Detect when the reload reg can't hold the reload mode.
+     This used to be one `if', but Sequent compiler can't handle that.  */
+  if (HARD_REGNO_MODE_OK (regno, rld[r].mode))
+    {
+      enum machine_mode test_mode = VOIDmode;
+      if (rld[r].in)
+	test_mode = GET_MODE (rld[r].in);
+      /* If rld[r].in has VOIDmode, it means we will load it
+	 in whatever mode the reload reg has: to wit, rld[r].mode.
+	 We have already tested that for validity.  */
+      /* Aside from that, we need to test that the expressions
+	 to reload from or into have modes which are valid for this
+	 reload register.  Otherwise the reload insns would be invalid.  */
+      if (! (rld[r].in != 0 && test_mode != VOIDmode
+	     && ! HARD_REGNO_MODE_OK (regno, test_mode)))
+	if (! (rld[r].out != 0
+	       && ! HARD_REGNO_MODE_OK (regno, GET_MODE (rld[r].out))))
+	  {
+	    /* The reg is OK.  */
+	    last_spill_reg = i;
+
+	    /* Mark as in use for this insn the reload regs we use
+	       for this.  */
+	    mark_reload_reg_in_use (spill_regs[i], rld[r].opnum,
+				    rld[r].when_needed, rld[r].mode);
+
+	    rld[r].reg_rtx = reg;
+	    reload_spill_index[r] = spill_regs[i];
+	    return 1;
+	  }
+    }
+  return 0;
+}

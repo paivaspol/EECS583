@@ -1,0 +1,22 @@
+static SV *retrieve_tied_idx(pTHX_ stcxt_t *cxt, char *cname)
+{
+	SV *tv;
+	SV *sv;
+	I32 idx;
+
+	TRACEME(("retrieve_tied_idx (#%d)", cxt->tagnum));
+
+	tv = NEWSV(10002, 0);
+	SEEN(tv, cname, 0);			/* Will return if tv is null */
+	sv = retrieve(aTHX_ cxt, 0);		/* Retrieve <object> */
+	if (!sv)
+		return (SV *) 0;		/* Failed */
+
+	RLEN(idx);					/* Retrieve <idx> */
+
+	sv_upgrade(tv, SVt_PVMG);
+	sv_magic(tv, sv, 'p', Nullch, idx);
+	SvREFCNT_dec(sv);			/* Undo refcnt inc from sv_magic() */
+
+	return tv;
+}

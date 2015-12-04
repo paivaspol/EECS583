@@ -1,0 +1,56 @@
+void
+MSAAddGS(MSA *msa, char *tag, int sqidx, char *value)
+{
+  int tagidx;
+  int i;
+
+  /* Is this an unparsed tag name that we recognize?
+   * If not, handle adding it to index, and reallocating
+   * as needed.
+   */
+  if (msa->gs_tag == NULL)	/* first tag? init w/ malloc  */
+    {
+      msa->gs_idx = GKIInit();
+      tagidx      = GKIStoreKey(msa->gs_idx, tag);
+      SQD_DASSERT1((tagidx == 0));
+      msa->gs_tag = MallocOrDie(sizeof(char *));
+      msa->gs     = MallocOrDie(sizeof(char **));
+      msa->gs[0]  = MallocOrDie(sizeof(char *) * msa->nseqalloc);
+      for (i = 0; i < msa->nseqalloc; i++)
+	msa->gs[0][i] = NULL;
+    }
+  else 
+    {
+				/* new tag? */
+      tagidx  = GKIKeyIndex(msa->gs_idx, tag); 
+      if (tagidx < 0) {		/* it's a new tag name; realloc */
+	tagidx = GKIStoreKey(msa->gs_idx, tag);
+				/* since we alloc in blocks of 1,
+				   we always realloc upon seeing 
+				   a new tag. */
+	SQD_DASSERT1((tagidx == msa->ngs));
+	msa->gs_tag =       ReallocOrDie(msa->gs_tag, (msa->ngs+1) * sizeof(char *));
+	msa->gs     =       ReallocOrDie(msa->gs, (msa->ngs+1) * sizeof(char **));
+	msa->gs[msa->ngs] = MallocOrDie(sizeof(char *) * msa->nseqalloc);
+	for (i = 0; i < msa->nseqalloc; i++) 
+	  msa->gs[msa->ngs][i] = NULL;
+      }
+    }
+
+  if (tagidx == msa->ngs) {
+    msa->gs_tag[tagidx] = sre_strdup(tag, -1);
+    msa->ngs++;
+  }
+  
+  if (msa->gs[tagidx][sqidx] == NULL) /* first annotation of this seq with this tag? */
+    msa->gs[tagidx][sqidx] = sre_strdup(value, -1);
+  else {			
+				/* >1 annotation of this seq with this tag; append */
+    int len;
+    if ((len = sre_strcat(&(msa->gs[tagidx][sqidx]), -1, "\n", 1)) < 0)
+      Die("failed to sre_strcat()");
+    if (sre_strcat(&(msa->gs[tagidx][sqidx]), len, value, -1) < 0)
+      Die("failed to sre_strcat()");
+  }
+  return;
+} 

@@ -1,0 +1,436 @@
+static void
+subst_stack_regs_pat (insn, regstack, pat)
+     rtx insn;
+     stack regstack;
+     rtx pat;
+{
+  rtx *dest, *src;
+
+  switch (GET_CODE (pat))
+    {
+    case USE:
+      /* Deaths in USE insns can happen in non optimizing compilation.
+	 Handle them by popping the dying register.  */
+      src = get_true_reg (&XEXP (pat, 0));
+      if (STACK_REG_P (*src) 
+          && find_regno_note (insn, REG_DEAD, REGNO (*src)))
+        {
+	   emit_pop_insn (insn, regstack, *src, EMIT_AFTER);
+	   return;
+        }
+      /* ??? Uninitialized USE should not happen.  */
+      else if (get_hard_regnum (regstack, *src) == -1)
+	abort ();
+      break;
+
+    case CLOBBER:
+      {
+	rtx note;
+
+	dest = get_true_reg (&XEXP (pat, 0));
+	if (STACK_REG_P (*dest))
+	  {
+	    note = find_reg_note (insn, REG_DEAD, *dest);
+
+	    if (pat != PATTERN (insn))
+	      {
+		/* The fix_truncdi_1 pattern wants to be able to allocate
+		   it's own scratch register.  It does this by clobbering
+		   an fp reg so that it is assured of an empty reg-stack
+		   register.  If the register is live, kill it now. 
+		   Remove the DEAD/UNUSED note so we don't try to kill it
+		   later too.  */
+
+		if (note)
+		  emit_pop_insn (insn, regstack, *dest, EMIT_BEFORE);
+		else
+		  {
+		    note = find_reg_note (insn, REG_UNUSED, *dest);
+		    if (!note)
+		      abort ();
+		  }
+		remove_note (insn, note);
+		replace_reg (dest, LAST_STACK_REG);
+	      }
+	    else
+	      {
+		/* A top-level clobber with no REG_DEAD, and no hard-regnum
+		   indicates an uninitialized value.  Because reload removed
+		   all other clobbers, this must be due to a function 
+		   returning without a value.  Load up a NaN.  */
+
+		if (! note
+		    && get_hard_regnum (regstack, *dest) == -1)
+		  {
+		    pat = gen_rtx_SET (VOIDmode,
+				       FP_MODE_REG (REGNO (*dest), SFmode),
+				       nan);
+		    PATTERN (insn) = pat;
+		    move_for_stack_reg (insn, regstack, pat);
+		  }
+		if (! note && COMPLEX_MODE_P (GET_MODE (*dest))
+		    && get_hard_regnum (regstack, FP_MODE_REG (REGNO (*dest), DFmode)) == -1)
+		  {
+		    pat = gen_rtx_SET (VOIDmode,
+				       FP_MODE_REG (REGNO (*dest) + 1, SFmode),
+				       nan);
+		    PATTERN (insn) = pat;
+		    move_for_stack_reg (insn, regstack, pat);
+		  }
+	      }
+	  }
+	break;
+      }
+
+    case SET:
+      {
+	rtx *src1 = (rtx *) 0, *src2;
+	rtx src1_note, src2_note;
+	rtx pat_src;
+
+	dest = get_true_reg (&SET_DEST (pat));
+	src  = get_true_reg (&SET_SRC (pat));
+	pat_src = SET_SRC (pat);
+
+	/* See if this is a `movM' pattern, and handle elsewhere if so.  */
+	if (STACK_REG_P (*src)
+	    || (STACK_REG_P (*dest)
+		&& (GET_CODE (*src) == REG || GET_CODE (*src) == MEM
+		    || GET_CODE (*src) == CONST_DOUBLE)))
+	  {
+	    move_for_stack_reg (insn, regstack, pat);
+	    break;
+	  }
+
+	switch (GET_CODE (pat_src))
+	  {
+	  case COMPARE:
+	    compare_for_stack_reg (insn, regstack, pat_src);
+	    break;
+
+	  case CALL:
+	    {
+	      int count;
+	      for (count = HARD_REGNO_NREGS (REGNO (*dest), GET_MODE (*dest));
+		   --count >= 0;)
+		{
+		  regstack->reg[++regstack->top] = REGNO (*dest) + count;
+		  SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest) + count);
+		}
+	    }
+	    replace_reg (dest, FIRST_STACK_REG);
+	    break;
+
+	  case REG:
+	    /* This is a `tstM2' case.  */
+	    if (*dest != cc0_rtx)
+	      abort ();
+	    src1 = src;
+
+	    /* Fall through.  */
+
+	  case FLOAT_TRUNCATE:
+	  case SQRT:
+	  case ABS:
+	  case NEG:
+	    /* These insns only operate on the top of the stack. DEST might
+	       be cc0_rtx if we're processing a tstM pattern. Also, it's
+	       possible that the tstM case results in a REG_DEAD note on the
+	       source.  */
+
+	    if (src1 == 0)
+	      src1 = get_true_reg (&XEXP (pat_src, 0));
+
+	    emit_swap_insn (insn, regstack, *src1);
+
+	    src1_note = find_regno_note (insn, REG_DEAD, REGNO (*src1));
+
+	    if (STACK_REG_P (*dest))
+	      replace_reg (dest, FIRST_STACK_REG);
+
+	    if (src1_note)
+	      {
+		replace_reg (&XEXP (src1_note, 0), FIRST_STACK_REG);
+		regstack->top--;
+		CLEAR_HARD_REG_BIT (regstack->reg_set, REGNO (*src1));
+	      }
+
+	    replace_reg (src1, FIRST_STACK_REG);
+	    break;
+
+	  case MINUS:
+	  case DIV:
+	    /* On i386, reversed forms of subM3 and divM3 exist for
+	       MODE_FLOAT, so the same code that works for addM3 and mulM3
+	       can be used.  */
+	  case MULT:
+	  case PLUS:
+	    /* These insns can accept the top of stack as a destination
+	       from a stack reg or mem, or can use the top of stack as a
+	       source and some other stack register (possibly top of stack)
+	       as a destination.  */
+
+	    src1 = get_true_reg (&XEXP (pat_src, 0));
+	    src2 = get_true_reg (&XEXP (pat_src, 1));
+
+	    /* We will fix any death note later.  */
+
+	    if (STACK_REG_P (*src1))
+	      src1_note = find_regno_note (insn, REG_DEAD, REGNO (*src1));
+	    else
+	      src1_note = NULL_RTX;
+	    if (STACK_REG_P (*src2))
+	      src2_note = find_regno_note (insn, REG_DEAD, REGNO (*src2));
+	    else
+	      src2_note = NULL_RTX;
+
+	    /* If either operand is not a stack register, then the dest
+	       must be top of stack.  */
+
+	    if (! STACK_REG_P (*src1) || ! STACK_REG_P (*src2))
+	      emit_swap_insn (insn, regstack, *dest);
+	    else
+	      {
+		/* Both operands are REG.  If neither operand is already
+		   at the top of stack, choose to make the one that is the dest
+		   the new top of stack.  */
+
+		int src1_hard_regnum, src2_hard_regnum;
+
+		src1_hard_regnum = get_hard_regnum (regstack, *src1);
+		src2_hard_regnum = get_hard_regnum (regstack, *src2);
+		if (src1_hard_regnum == -1 || src2_hard_regnum == -1)
+		  abort ();
+
+		if (src1_hard_regnum != FIRST_STACK_REG
+		    && src2_hard_regnum != FIRST_STACK_REG)
+		  emit_swap_insn (insn, regstack, *dest);
+	      }
+
+	    if (STACK_REG_P (*src1))
+	      replace_reg (src1, get_hard_regnum (regstack, *src1));
+	    if (STACK_REG_P (*src2))
+	      replace_reg (src2, get_hard_regnum (regstack, *src2));
+
+	    if (src1_note)
+	      {
+		rtx src1_reg = XEXP (src1_note, 0);
+
+		/* If the register that dies is at the top of stack, then
+		   the destination is somewhere else - merely substitute it.
+		   But if the reg that dies is not at top of stack, then
+		   move the top of stack to the dead reg, as though we had
+		   done the insn and then a store-with-pop.  */
+
+		if (REGNO (src1_reg) == regstack->reg[regstack->top])
+		  {
+		    SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest));
+		    replace_reg (dest, get_hard_regnum (regstack, *dest));
+		  }
+		else
+		  {
+		    int regno = get_hard_regnum (regstack, src1_reg);
+
+		    SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest));
+		    replace_reg (dest, regno);
+
+		    regstack->reg[regstack->top - (regno - FIRST_STACK_REG)]
+		      = regstack->reg[regstack->top];
+		  }
+
+		CLEAR_HARD_REG_BIT (regstack->reg_set,
+				    REGNO (XEXP (src1_note, 0)));
+		replace_reg (&XEXP (src1_note, 0), FIRST_STACK_REG);
+		regstack->top--;
+	      }
+	    else if (src2_note)
+	      {
+		rtx src2_reg = XEXP (src2_note, 0);
+		if (REGNO (src2_reg) == regstack->reg[regstack->top])
+		  {
+		    SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest));
+		    replace_reg (dest, get_hard_regnum (regstack, *dest));
+		  }
+		else
+		  {
+		    int regno = get_hard_regnum (regstack, src2_reg);
+
+		    SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest));
+		    replace_reg (dest, regno);
+
+		    regstack->reg[regstack->top - (regno - FIRST_STACK_REG)]
+		      = regstack->reg[regstack->top];
+		  }
+
+		CLEAR_HARD_REG_BIT (regstack->reg_set,
+				    REGNO (XEXP (src2_note, 0)));
+		replace_reg (&XEXP (src2_note, 0), FIRST_STACK_REG);
+		regstack->top--;
+	      }
+	    else
+	      {
+		SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest));
+		replace_reg (dest, get_hard_regnum (regstack, *dest));
+	      }
+
+	    /* Keep operand 1 maching with destination.  */
+	    if (GET_RTX_CLASS (GET_CODE (pat_src)) == 'c'
+		&& REG_P (*src1) && REG_P (*src2)
+		&& REGNO (*src1) != REGNO (*dest))
+	     {
+		int tmp = REGNO (*src1);
+		replace_reg (src1, REGNO (*src2));
+		replace_reg (src2, tmp);
+	     }
+	    break;
+
+	  case UNSPEC:
+	    switch (XINT (pat_src, 1))
+	      {
+	      case 1: /* sin */
+	      case 2: /* cos */
+		/* These insns only operate on the top of the stack.  */
+
+		src1 = get_true_reg (&XVECEXP (pat_src, 0, 0));
+
+		emit_swap_insn (insn, regstack, *src1);
+
+		src1_note = find_regno_note (insn, REG_DEAD, REGNO (*src1));
+
+		if (STACK_REG_P (*dest))
+		  replace_reg (dest, FIRST_STACK_REG);
+
+		if (src1_note)
+		  {
+		    replace_reg (&XEXP (src1_note, 0), FIRST_STACK_REG);
+		    regstack->top--;
+		    CLEAR_HARD_REG_BIT (regstack->reg_set, REGNO (*src1));
+		  }
+
+		replace_reg (src1, FIRST_STACK_REG);
+		break;
+
+	      case 10:
+		/* (unspec [(unspec [(compare ..)] 9)] 10)
+		   Unspec 9 is fnstsw; unspec 10 is sahf.  The combination
+		   matches the PPRO fcomi instruction.  */
+
+		pat_src = XVECEXP (pat_src, 0, 0);
+		if (GET_CODE (pat_src) != UNSPEC
+		    || XINT (pat_src, 1) != 9)
+		  abort ();
+		/* FALLTHRU */
+
+	      case 9:
+		/* (unspec [(compare ..)] 9) */
+		/* Combined fcomp+fnstsw generated for doing well with
+		   CSE.  When optimizing this would have been broken
+		   up before now.  */
+
+		pat_src = XVECEXP (pat_src, 0, 0);
+		if (GET_CODE (pat_src) != COMPARE)
+		  abort ();
+
+		compare_for_stack_reg (insn, regstack, pat_src);
+		break;
+
+	      default:
+		abort ();
+	      }
+	    break;
+
+	  case IF_THEN_ELSE:
+	    /* This insn requires the top of stack to be the destination.  */
+
+	    src1 = get_true_reg (&XEXP (pat_src, 1));
+	    src2 = get_true_reg (&XEXP (pat_src, 2));
+
+	    src1_note = find_regno_note (insn, REG_DEAD, REGNO (*src1));
+	    src2_note = find_regno_note (insn, REG_DEAD, REGNO (*src2));
+
+	    /* If the comparison operator is an FP comparison operator,
+	       it is handled correctly by compare_for_stack_reg () who
+	       will move the destination to the top of stack. But if the
+	       comparison operator is not an FP comparison operator, we
+	       have to handle it here.  */
+	    if (get_hard_regnum (regstack, *dest) >= FIRST_STACK_REG
+		&& REGNO (*dest) != regstack->reg[regstack->top])
+	      {
+		/* In case one of operands is the top of stack and the operands
+		   dies, it is safe to make it the destination operand by reversing
+		   the direction of cmove and avoid fxch.  */
+		if ((REGNO (*src1) == regstack->reg[regstack->top]
+		     && src1_note)
+		    || (REGNO (*src2) == regstack->reg[regstack->top]
+			&& src2_note))
+		  {
+		    int idx1 = (get_hard_regnum (regstack, *src1)
+				- FIRST_STACK_REG);
+		    int idx2 = (get_hard_regnum (regstack, *src2)
+				- FIRST_STACK_REG);
+
+		    /* Make reg-stack believe that the operands are already
+		       swapped on the stack */
+		    regstack->reg[regstack->top - idx1] = REGNO (*src2);
+		    regstack->reg[regstack->top - idx2] = REGNO (*src1);
+
+		    /* Reverse condition to compensate the operand swap.
+		       i386 do have comparison always reversible.  */
+		    PUT_CODE (XEXP (pat_src, 0),
+			      reversed_comparison_code (XEXP (pat_src, 0), insn));
+		  }
+		else
+	          emit_swap_insn (insn, regstack, *dest);	
+	      }
+
+	    {
+	      rtx src_note [3];
+	      int i;
+
+	      src_note[0] = 0;
+	      src_note[1] = src1_note;
+	      src_note[2] = src2_note;
+
+	      if (STACK_REG_P (*src1))
+		replace_reg (src1, get_hard_regnum (regstack, *src1));
+	      if (STACK_REG_P (*src2))
+		replace_reg (src2, get_hard_regnum (regstack, *src2));
+
+	      for (i = 1; i <= 2; i++)
+		if (src_note [i])
+		  {
+		    int regno = REGNO (XEXP (src_note[i], 0));
+
+		    /* If the register that dies is not at the top of
+		       stack, then move the top of stack to the dead reg */
+		    if (regno != regstack->reg[regstack->top])
+		      {
+			remove_regno_note (insn, REG_DEAD, regno);
+			emit_pop_insn (insn, regstack, XEXP (src_note[i], 0),
+				       EMIT_AFTER);
+		      }
+		    else
+		      /* Top of stack never dies, as it is the
+			 destination.  */
+		      abort ();
+		  }
+	    }
+
+	    /* Make dest the top of stack.  Add dest to regstack if
+	       not present.  */
+	    if (get_hard_regnum (regstack, *dest) < FIRST_STACK_REG)
+	      regstack->reg[++regstack->top] = REGNO (*dest);	
+	    SET_HARD_REG_BIT (regstack->reg_set, REGNO (*dest));
+	    replace_reg (dest, FIRST_STACK_REG);
+	    break;
+
+	  default:
+	    abort ();
+	  }
+	break;
+      }
+
+    default:
+      break;
+    }
+}

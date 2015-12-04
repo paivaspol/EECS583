@@ -1,0 +1,37 @@
+static void
+record_one_conflict (regno)
+     int regno;
+{
+  int j;
+
+  if (regno < FIRST_PSEUDO_REGISTER)
+    /* When a hard register becomes live,
+       record conflicts with live pseudo regs.  */
+    EXECUTE_IF_SET_IN_ALLOCNO_SET (allocnos_live, j,
+      {
+	SET_HARD_REG_BIT (allocno[j].hard_reg_conflicts, regno);
+      });
+  else
+    /* When a pseudo-register becomes live,
+       record conflicts first with hard regs,
+       then with other pseudo regs.  */
+    {
+      int ialloc = reg_allocno[regno];
+      int ialloc_prod = ialloc * allocno_row_words;
+
+      IOR_HARD_REG_SET (allocno[ialloc].hard_reg_conflicts, hard_regs_live);
+      for (j = allocno_row_words - 1; j >= 0; j--)
+	{
+#if 0
+	  int k;
+	  for (k = 0; k < n_no_conflict_pairs; k++)
+	    if (! ((j == no_conflict_pairs[k].allocno1
+		    && ialloc == no_conflict_pairs[k].allocno2)
+		   ||
+		   (j == no_conflict_pairs[k].allocno2
+		    && ialloc == no_conflict_pairs[k].allocno1)))
+#endif /* 0 */
+	      conflicts[ialloc_prod + j] |= allocnos_live[j];
+	}
+    }
+}

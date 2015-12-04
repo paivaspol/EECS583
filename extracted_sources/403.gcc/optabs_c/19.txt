@@ -1,0 +1,18 @@
+static enum insn_code
+can_fix_p (fixmode, fltmode, unsignedp, truncp_ptr)
+     enum machine_mode fltmode, fixmode;
+     int unsignedp;
+     int *truncp_ptr;
+{
+  *truncp_ptr = 0;
+  if (fixtrunctab[(int) fltmode][(int) fixmode][unsignedp != 0]
+      != CODE_FOR_nothing)
+    return fixtrunctab[(int) fltmode][(int) fixmode][unsignedp != 0];
+
+  if (ftrunc_optab->handlers[(int) fltmode].insn_code != CODE_FOR_nothing)
+    {
+      *truncp_ptr = 1;
+      return fixtab[(int) fltmode][(int) fixmode][unsignedp != 0];
+    }
+  return CODE_FOR_nothing;
+}

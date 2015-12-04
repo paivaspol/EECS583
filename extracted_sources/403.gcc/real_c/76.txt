@@ -1,0 +1,89 @@
+static void
+toe24 (x, y)
+     UEMUSHORT *x, *y;
+{
+  UEMUSHORT i;
+  UEMUSHORT *p;
+
+#ifdef NANS
+  if (eiisnan (x))
+    {
+      make_nan (y, eiisneg (x), SFmode);
+      return;
+    }
+#endif
+  p = &x[0];
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    y += 1;
+#endif
+#ifdef DEC
+  y += 1;
+#endif
+  *y = 0;			/* output high order */
+  if (*p++)
+    *y = 0x8000;		/* output sign bit */
+
+  i = *p++;
+/* Handle overflow cases.  */
+  if (i >= 255)
+    {
+#ifdef INFINITY
+      *y |= (UEMUSHORT) 0x7f80;
+#ifdef DEC
+      *(--y) = 0;
+#endif
+#ifdef IEEE
+      if (! REAL_WORDS_BIG_ENDIAN)
+	*(--y) = 0;
+      else
+	{
+	  ++y;
+	  *y = 0;
+	}
+#endif
+#else  /* no INFINITY */
+      *y |= (UEMUSHORT) 0x7f7f;
+#ifdef DEC
+      *(--y) = 0xffff;
+#endif
+#ifdef IEEE
+      if (! REAL_WORDS_BIG_ENDIAN)
+	*(--y) = 0xffff;
+      else
+	{
+	  ++y;
+	  *y = 0xffff;
+	}
+#endif
+#ifdef ERANGE
+      errno = ERANGE;
+#endif
+#endif  /* no INFINITY */
+      return;
+    }
+  if (i == 0)
+    {
+      eshift (x, 7);
+    }
+  else
+    {
+      i <<= 7;
+      eshift (x, 8);
+    }
+  i |= *p++ & (UEMUSHORT) 0x7f;	/* *p = xi[M] */
+  /* High order output already has sign bit set.  */
+  *y |= i;
+#ifdef DEC
+  *(--y) = *p;
+#endif
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    *(--y) = *p;
+  else
+    {
+      ++y;
+      *y = *p;
+    }
+#endif
+}

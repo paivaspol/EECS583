@@ -1,0 +1,242 @@
+void
+P7ViterbiTrace(struct plan7_s *hmm, char *dsq, int N,
+	       struct dpmatrix_s *mx, struct p7trace_s **ret_tr)
+{
+  struct p7trace_s *tr;
+  int curralloc;		/* current allocated length of trace */
+  int tpos;			/* position in trace */
+  int i;			/* position in seq (1..N) */
+  int k;			/* position in model (1..M) */
+  int **xmx, **mmx, **imx, **dmx;
+  int sc;			/* temp var for pre-emission score */
+
+  /* Overallocate for the trace.
+   * S-N-B- ... - E-C-T  : 6 states + N is minimum trace;
+   * add N more as buffer.             
+   */
+  curralloc = N * 2 + 6; 
+  P7AllocTrace(curralloc, &tr);
+
+  xmx = mx->xmx;
+  mmx = mx->mmx;
+  imx = mx->imx;
+  dmx = mx->dmx;
+
+  /* Initialization of trace
+   * We do it back to front; ReverseTrace() is called later.
+   */
+  tr->statetype[0] = STT;
+  tr->nodeidx[0]   = 0;
+  tr->pos[0]       = 0;
+  tr->statetype[1] = STC;
+  tr->nodeidx[1]   = 0;
+  tr->pos[1]       = 0;
+  tpos = 2;
+  i    = N;			/* current i (seq pos) we're trying to assign */
+
+  /* Traceback
+   */
+  while (tr->statetype[tpos-1] != STS) {
+    switch (tr->statetype[tpos-1]) {
+    case STM:			/* M connects from i-1,k-1, or B */
+      sc = mmx[i+1][k+1] - hmm->msc[(int) dsq[i+1]][k+1];
+      if (sc <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      else if (sc == xmx[i][XMB] + hmm->bsc[k+1])
+	{
+				/* Check for wing unfolding */
+	  if (Prob2Score(hmm->begin[k+1], hmm->p1) + 1 * INTSCALE <= hmm->bsc[k+1])
+	    while (k > 0)
+	      {
+		tr->statetype[tpos] = STD;
+		tr->nodeidx[tpos]   = k--;
+		tr->pos[tpos]       = 0;
+		tpos++;
+		if (tpos == curralloc) 
+		  {				/* grow trace if necessary  */
+		    curralloc += N;
+		    P7ReallocTrace(tr, curralloc);
+		  }
+	      }
+
+	  tr->statetype[tpos] = STB;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else if (sc == mmx[i][k] + hmm->tsc[TMM][k])
+	{
+	  tr->statetype[tpos] = STM;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (sc == imx[i][k] + hmm->tsc[TIM][k])
+	{
+	  tr->statetype[tpos] = STI;
+	  tr->nodeidx[tpos]   = k;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (sc == dmx[i][k] + hmm->tsc[TDM][k])
+	{
+	  tr->statetype[tpos] = STD;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = 0;
+	}
+      else
+	Die("traceback failed");
+      break;
+
+    case STD:			/* D connects from M,D */
+      if (dmx[i][k+1] <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      else if (dmx[i][k+1] == mmx[i][k] + hmm->tsc[TMD][k])
+	{
+	  tr->statetype[tpos] = STM;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (dmx[i][k+1] == dmx[i][k] + hmm->tsc[TDD][k]) 
+	{
+	  tr->statetype[tpos] = STD;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = 0;
+	}
+      else Die("traceback failed");
+      break;
+
+    case STI:			/* I connects from M,I */
+      sc = imx[i+1][k] - hmm->isc[(int) dsq[i+1]][k];
+      if (sc <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      else if (sc == mmx[i][k] + hmm->tsc[TMI][k])
+	{
+	  tr->statetype[tpos] = STM;
+	  tr->nodeidx[tpos]   = k--;
+	  tr->pos[tpos]       = i--;
+	}
+      else if (sc == imx[i][k] + hmm->tsc[TII][k])
+	{
+	  tr->statetype[tpos] = STI;
+	  tr->nodeidx[tpos]   = k;
+	  tr->pos[tpos]       = i--;
+	}
+      else Die("traceback failed");
+      break;
+
+    case STN:			/* N connects from S, N */
+      if (i == 0 && xmx[i][XMN] == 0)
+	{
+	  tr->statetype[tpos] = STS;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else if (i > 0 && xmx[i+1][XMN] == xmx[i][XMN] + hmm->xsc[XTN][LOOP])
+	{
+	  tr->statetype[tpos] = STN;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;    /* note convention adherence:  */
+	  tr->pos[tpos-1]     = i--;  /* first N doesn't emit        */
+	}
+      else Die("traceback failed");
+      break;
+
+    case STB:			/* B connects from N, J */
+      if (xmx[i][XMB] <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      else if (xmx[i][XMB] == xmx[i][XMN] + hmm->xsc[XTN][MOVE])
+	{
+	  tr->statetype[tpos] = STN;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+      else if (xmx[i][XMB] == xmx[i][XMJ] + hmm->xsc[XTJ][MOVE])
+	{
+	  tr->statetype[tpos] = STJ;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;
+	}
+
+      else Die("traceback failed");
+      break;
+
+    case STE:			/* E connects from any M state. k set here */
+      if (xmx[i][XME] <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      for (k = hmm->M; k >= 1; k--)
+	if (xmx[i][XME] == mmx[i][k] + hmm->esc[k])
+	  {
+				/* check for wing unfolding */
+	    if (Prob2Score(hmm->end[k], 1.) + 1*INTSCALE <=  hmm->esc[k])
+	      {
+		int dk;		/* need a tmp k while moving thru delete wing */
+		for (dk = hmm->M; dk > k; dk--)
+		  {
+		    tr->statetype[tpos] = STD;
+		    tr->nodeidx[tpos]   = dk;
+		    tr->pos[tpos]       = 0;
+		    tpos++;
+		    if (tpos == curralloc) 
+		      {				/* grow trace if necessary  */
+			curralloc += N;
+			P7ReallocTrace(tr, curralloc);
+		      }
+		  }
+	      }
+
+	    tr->statetype[tpos] = STM;
+	    tr->nodeidx[tpos]   = k--;
+	    tr->pos[tpos]       = i--;
+	    break;
+	  }
+      if (k < 0) Die("traceback failed");
+      break;
+
+    case STC:			/* C comes from C, E */
+      if (xmx[i][XMC] <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      else if (xmx[i][XMC] == xmx[i-1][XMC] + hmm->xsc[XTC][LOOP])
+	{
+	  tr->statetype[tpos] = STC;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;    /* note convention adherence: */
+	  tr->pos[tpos-1]     = i--;  /* first C doesn't emit       */
+	}
+      else if (xmx[i][XMC] == xmx[i][XME] + hmm->xsc[XTE][MOVE])
+	{
+	  tr->statetype[tpos] = STE;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0; /* E is a nonemitter */
+	}
+      
+      else Die("Traceback failed.");
+      break;
+
+    case STJ:			/* J connects from E, J */
+      if (xmx[i][XMJ] <= -INFTY) { P7FreeTrace(tr); *ret_tr = NULL; return; }
+      else if (xmx[i][XMJ] == xmx[i-1][XMJ] + hmm->xsc[XTJ][LOOP])
+	{
+	  tr->statetype[tpos] = STJ;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0;    /* note convention adherence: */
+	  tr->pos[tpos-1]     = i--;  /* first J doesn't emit       */
+	}
+      else if (xmx[i][XMJ] == xmx[i][XME] + hmm->xsc[XTE][LOOP])
+	{
+	  tr->statetype[tpos] = STE;
+	  tr->nodeidx[tpos]   = 0;
+	  tr->pos[tpos]       = 0; /* E is a nonemitter */
+	}
+
+      else Die("Traceback failed.");
+      break;
+
+    default:
+      Die("traceback failed");
+
+    } /* end switch over statetype[tpos-1] */
+    
+    tpos++;
+    if (tpos == curralloc) 
+      {				/* grow trace if necessary  */
+	curralloc += N;
+	P7ReallocTrace(tr, curralloc);
+      }
+
+  } /* end traceback, at S state; tpos == tlen now */
+  tr->tlen = tpos;
+  P7ReverseTrace(tr);
+  *ret_tr = tr;
+}

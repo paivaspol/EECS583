@@ -1,0 +1,105 @@
+static int
+flow_find_cross_jump (mode, bb1, bb2, f1, f2)
+     int mode ATTRIBUTE_UNUSED;
+     basic_block bb1, bb2;
+     rtx *f1, *f2;
+{
+  rtx i1, i2, last1, last2, afterlast1, afterlast2;
+  int ninsns = 0;
+
+  /* Skip simple jumps at the end of the blocks.  Complex jumps still
+     need to be compared for equivalence, which we'll do below.  */
+
+  i1 = bb1->end;
+  last1 = afterlast1 = last2 = afterlast2 = NULL_RTX;
+  if (onlyjump_p (i1)
+      || (returnjump_p (i1) && !side_effects_p (PATTERN (i1))))
+    {
+      last1 = i1;
+      i1 = PREV_INSN (i1);
+    }
+
+  i2 = bb2->end;
+  if (onlyjump_p (i2)
+      || (returnjump_p (i2) && !side_effects_p (PATTERN (i2))))
+    {
+      last2 = i2;
+      /* Count everything except for unconditional jump as insn.  */
+      if (!simplejump_p (i2) && !returnjump_p (i2) && last1)
+	ninsns++;
+      i2 = PREV_INSN (i2);
+    }
+
+  while (true)
+    {
+      /* Ignore notes.  */
+      while (!active_insn_p (i1) && i1 != bb1->head)
+	i1 = PREV_INSN (i1);
+
+      while (!active_insn_p (i2) && i2 != bb2->head)
+	i2 = PREV_INSN (i2);
+
+      if (i1 == bb1->head || i2 == bb2->head)
+	break;
+
+      if (!insns_match_p (mode, i1, i2))
+	break;
+
+      /* Don't begin a cross-jump with a USE or CLOBBER insn.  */
+      if (active_insn_p (i1))
+	{
+	  /* If the merged insns have different REG_EQUAL notes, then
+	     remove them.  */
+	  rtx equiv1 = find_reg_equal_equiv_note (i1);
+	  rtx equiv2 = find_reg_equal_equiv_note (i2);
+
+	  if (equiv1 && !equiv2)
+	    remove_note (i1, equiv1);
+	  else if (!equiv1 && equiv2)
+	    remove_note (i2, equiv2);
+	  else if (equiv1 && equiv2
+		   && !rtx_equal_p (XEXP (equiv1, 0), XEXP (equiv2, 0)))
+	    {
+	      remove_note (i1, equiv1);
+	      remove_note (i2, equiv2);
+	    }
+	     
+	  afterlast1 = last1, afterlast2 = last2;
+	  last1 = i1, last2 = i2;
+          ninsns++;
+	}
+
+      i1 = PREV_INSN (i1);
+      i2 = PREV_INSN (i2);
+    }
+
+#ifdef HAVE_cc0
+  /* Don't allow the insn after a compare to be shared by
+     cross-jumping unless the compare is also shared.  */
+  if (ninsns && reg_mentioned_p (cc0_rtx, last1) && ! sets_cc0_p (last1))
+    last1 = afterlast1, last2 = afterlast2, ninsns--;
+#endif
+
+  /* Include preceding notes and labels in the cross-jump.  One,
+     this may bring us to the head of the blocks as requested above.
+     Two, it keeps line number notes as matched as may be.  */
+  if (ninsns)
+    {
+      while (last1 != bb1->head && !active_insn_p (PREV_INSN (last1)))
+	last1 = PREV_INSN (last1);
+
+      if (last1 != bb1->head && GET_CODE (PREV_INSN (last1)) == CODE_LABEL)
+	last1 = PREV_INSN (last1);
+
+      while (last2 != bb2->head && !active_insn_p (PREV_INSN (last2)))
+	last2 = PREV_INSN (last2);
+
+      if (last2 != bb2->head && GET_CODE (PREV_INSN (last2)) == CODE_LABEL)
+	last2 = PREV_INSN (last2);
+
+      *f1 = last1;
+      *f2 = last2;
+    }
+
+  return ninsns;
+}

@@ -1,0 +1,17 @@
+static void
+record_last_set_info (dest, setter, data)
+     rtx dest, setter ATTRIBUTE_UNUSED;
+     void *data;
+{
+  rtx last_set_insn = (rtx) data;
+
+  if (GET_CODE (dest) == SUBREG)
+    dest = SUBREG_REG (dest);
+
+  if (GET_CODE (dest) == REG)
+    record_last_reg_set_info (last_set_insn, REGNO (dest));
+  else if (GET_CODE (dest) == MEM
+	   /* Ignore pushes, they clobber nothing.  */
+	   && ! push_operand (dest, GET_MODE (dest)))
+    record_last_mem_set_info (last_set_insn);
+}

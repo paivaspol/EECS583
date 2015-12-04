@@ -1,0 +1,153 @@
+static void
+fixup_gotos (thisblock, stack_level, cleanup_list, first_insn, dont_jump_in)
+     struct nesting *thisblock;
+     rtx stack_level;
+     tree cleanup_list;
+     rtx first_insn;
+     int dont_jump_in;
+{
+  struct goto_fixup *f, *prev;
+
+  /* F is the fixup we are considering; PREV is the previous one.  */
+  /* We run this loop in two passes so that cleanups of exited blocks
+     are run first, and blocks that are exited are marked so
+     afterwards.  */
+
+  for (prev = 0, f = goto_fixup_chain; f; prev = f, f = f->next)
+    {
+      /* Test for a fixup that is inactive because it is already handled.  */
+      if (f->before_jump == 0)
+	{
+	  /* Delete inactive fixup from the chain, if that is easy to do.  */
+	  if (prev != 0)
+	    prev->next = f->next;
+	}
+      /* Has this fixup's target label been defined?
+	 If so, we can finalize it.  */
+      else if (PREV_INSN (f->target_rtl) != 0)
+	{
+	  rtx cleanup_insns;
+
+	  /* If this fixup jumped into this contour from before the beginning
+	     of this contour, report an error.   This code used to use
+	     the first non-label insn after f->target_rtl, but that's
+	     wrong since such can be added, by things like put_var_into_stack
+	     and have INSN_UIDs that are out of the range of the block.  */
+	  /* ??? Bug: this does not detect jumping in through intermediate
+	     blocks that have stack levels or cleanups.
+	     It detects only a problem with the innermost block
+	     around the label.  */
+	  if (f->target != 0
+	      && (dont_jump_in || stack_level || cleanup_list)
+	      && INSN_UID (first_insn) < INSN_UID (f->target_rtl)
+	      && INSN_UID (first_insn) > INSN_UID (f->before_jump)
+	      && ! DECL_ERROR_ISSUED (f->target))
+	    {
+	      error_with_decl (f->target,
+			       "label `%s' used before containing binding contour");
+	      /* Prevent multiple errors for one label.  */
+	      DECL_ERROR_ISSUED (f->target) = 1;
+	    }
+
+	  /* We will expand the cleanups into a sequence of their own and
+	     then later on we will attach this new sequence to the insn
+	     stream just ahead of the actual jump insn.  */
+
+	  start_sequence ();
+
+	  /* Temporarily restore the lexical context where we will
+	     logically be inserting the fixup code.  We do this for the
+	     sake of getting the debugging information right.  */
+
+	  pushlevel (0);
+	  set_block (f->context);
+
+	  /* Expand the cleanups for blocks this jump exits.  */
+	  if (f->cleanup_list_list)
+	    {
+	      tree lists;
+	      for (lists = f->cleanup_list_list; lists; lists = TREE_CHAIN (lists))
+		/* Marked elements correspond to blocks that have been closed.
+		   Do their cleanups.  */
+		if (TREE_ADDRESSABLE (lists)
+		    && TREE_VALUE (lists) != 0)
+		  {
+		    expand_cleanups (TREE_VALUE (lists), NULL_TREE, 1, 1);
+		    /* Pop any pushes done in the cleanups,
+		       in case function is about to return.  */
+		    do_pending_stack_adjust ();
+		  }
+	    }
+
+	  /* Restore stack level for the biggest contour that this
+	     jump jumps out of.  */
+	  if (f->stack_level
+	      && ! (f->target_rtl == return_label
+		    && ((TREE_CODE (TREE_TYPE (current_function_decl))
+			 == FUNCTION_TYPE)
+			&& (TYPE_RETURNS_STACK_DEPRESSED
+			    (TREE_TYPE (current_function_decl))))))
+	    emit_stack_restore (SAVE_BLOCK, f->stack_level, f->before_jump);
+
+	  /* Finish up the sequence containing the insns which implement the
+	     necessary cleanups, and then attach that whole sequence to the
+	     insn stream just ahead of the actual jump insn.  Attaching it
+	     at that point insures that any cleanups which are in fact
+	     implicit C++ object destructions (which must be executed upon
+	     leaving the block) appear (to the debugger) to be taking place
+	     in an area of the generated code where the object(s) being
+	     destructed are still "in scope".  */
+
+	  cleanup_insns = get_insns ();
+	  poplevel (1, 0, 0);
+
+	  end_sequence ();
+	  emit_insns_after (cleanup_insns, f->before_jump);
+
+	  f->before_jump = 0;
+	}
+    }
+
+  /* For any still-undefined labels, do the cleanups for this block now.
+     We must do this now since items in the cleanup list may go out
+     of scope when the block ends.  */
+  for (prev = 0, f = goto_fixup_chain; f; prev = f, f = f->next)
+    if (f->before_jump != 0
+	&& PREV_INSN (f->target_rtl) == 0
+	/* Label has still not appeared.  If we are exiting a block with
+	   a stack level to restore, that started before the fixup,
+	   mark this stack level as needing restoration
+	   when the fixup is later finalized.  */
+	&& thisblock != 0
+	/* Note: if THISBLOCK == 0 and we have a label that hasn't appeared, it
+	   means the label is undefined.  That's erroneous, but possible.  */
+	&& (thisblock->data.block.block_start_count
+	    <= f->block_start_count))
+      {
+	tree lists = f->cleanup_list_list;
+	rtx cleanup_insns;
+
+	for (; lists; lists = TREE_CHAIN (lists))
+	  /* If the following elt. corresponds to our containing block
+	     then the elt. must be for this block.  */
+	  if (TREE_CHAIN (lists) == thisblock->data.block.outer_cleanups)
+	    {
+	      start_sequence ();
+	      pushlevel (0);
+	      set_block (f->context);
+	      expand_cleanups (TREE_VALUE (lists), NULL_TREE, 1, 1);
+	      do_pending_stack_adjust ();
+	      cleanup_insns = get_insns ();
+	      poplevel (1, 0, 0);
+	      end_sequence ();
+	      if (cleanup_insns != 0)
+		f->before_jump
+		  = emit_insns_after (cleanup_insns, f->before_jump);
+
+	      f->cleanup_list_list = TREE_CHAIN (lists);
+	    }
+
+	if (stack_level)
+	  f->stack_level = stack_level;
+      }
+}

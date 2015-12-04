@@ -1,0 +1,25 @@
+static const format_flag_spec *
+get_flag_spec (spec, flag, predicates)
+     const format_flag_spec *spec;
+     int flag;
+     const char *predicates;
+{
+  int i;
+  for (i = 0; spec[i].flag_char != 0; i++)
+    {
+      if (spec[i].flag_char != flag)
+	continue;
+      if (predicates != NULL)
+	{
+	  if (spec[i].predicate != 0
+	      && strchr (predicates, spec[i].predicate) != 0)
+	    return &spec[i];
+	}
+      else if (spec[i].predicate == 0)
+	return &spec[i];
+    }
+  if (predicates == NULL)
+    abort ();
+  else
+    return NULL;
+}

@@ -1,0 +1,69 @@
+static void
+prune_preferences ()
+{
+  int i;
+  int num;
+  int *allocno_to_order = (int *) xmalloc (max_allocno * sizeof (int));
+  
+  /* Scan least most important to most important.
+     For each allocno, remove from preferences registers that cannot be used,
+     either because of conflicts or register type.  Then compute all registers
+     preferred by each lower-priority register that conflicts.  */
+
+  for (i = max_allocno - 1; i >= 0; i--)
+    {
+      HARD_REG_SET temp;
+
+      num = allocno_order[i];
+      allocno_to_order[num] = i;
+      COPY_HARD_REG_SET (temp, allocno[num].hard_reg_conflicts);
+
+      if (allocno[num].calls_crossed == 0)
+	IOR_HARD_REG_SET (temp, fixed_reg_set);
+      else
+	IOR_HARD_REG_SET (temp,	call_used_reg_set);
+
+      IOR_COMPL_HARD_REG_SET
+	(temp,
+	 reg_class_contents[(int) reg_preferred_class (allocno[num].reg)]);
+
+      AND_COMPL_HARD_REG_SET (allocno[num].hard_reg_preferences, temp);
+      AND_COMPL_HARD_REG_SET (allocno[num].hard_reg_copy_preferences, temp);
+      AND_COMPL_HARD_REG_SET (allocno[num].hard_reg_full_preferences, temp);
+    }
+
+  for (i = max_allocno - 1; i >= 0; i--)
+    {
+      /* Merge in the preferences of lower-priority registers (they have
+	 already been pruned).  If we also prefer some of those registers,
+	 don't exclude them unless we are of a smaller size (in which case
+	 we want to give the lower-priority allocno the first chance for
+	 these registers).  */
+      HARD_REG_SET temp, temp2;
+      int allocno2;
+
+      num = allocno_order[i];
+
+      CLEAR_HARD_REG_SET (temp);
+      CLEAR_HARD_REG_SET (temp2);
+
+      EXECUTE_IF_SET_IN_ALLOCNO_SET (conflicts + num * allocno_row_words,
+				     allocno2,
+	{
+	  if (allocno_to_order[allocno2] > i)
+	    {
+	      if (allocno[allocno2].size <= allocno[num].size)
+		IOR_HARD_REG_SET (temp,
+				  allocno[allocno2].hard_reg_full_preferences);
+	      else
+		IOR_HARD_REG_SET (temp2,
+				  allocno[allocno2].hard_reg_full_preferences);
+	    }
+	});
+
+      AND_COMPL_HARD_REG_SET (temp, allocno[num].hard_reg_full_preferences);
+      IOR_HARD_REG_SET (temp, temp2);
+      COPY_HARD_REG_SET (allocno[num].regs_someone_prefers, temp);
+    }
+  free (allocno_to_order);
+}

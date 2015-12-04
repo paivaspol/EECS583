@@ -1,0 +1,200 @@
+static void
+global_conflicts ()
+{
+  int b, i;
+  rtx insn;
+  int *block_start_allocnos;
+
+  /* Make a vector that mark_reg_{store,clobber} will store in.  */
+  regs_set = (rtx *) xmalloc (max_parallel * sizeof (rtx) * 2);
+
+  block_start_allocnos = (int *) xmalloc (max_allocno * sizeof (int));
+
+  for (b = 0; b < n_basic_blocks; b++)
+    {
+      memset ((char *) allocnos_live, 0, allocno_row_words * sizeof (INT_TYPE));
+
+      /* Initialize table of registers currently live
+	 to the state at the beginning of this basic block.
+	 This also marks the conflicts among hard registers
+	 and any allocnos that are live.
+
+	 For pseudo-regs, there is only one bit for each one
+	 no matter how many hard regs it occupies.
+	 This is ok; we know the size from PSEUDO_REGNO_SIZE.
+	 For explicit hard regs, we cannot know the size that way
+	 since one hard reg can be used with various sizes.
+	 Therefore, we must require that all the hard regs
+	 implicitly live as part of a multi-word hard reg
+	 are explicitly marked in basic_block_live_at_start.  */
+
+      {
+	regset old = BASIC_BLOCK (b)->global_live_at_start;
+	int ax = 0;
+
+	REG_SET_TO_HARD_REG_SET (hard_regs_live, old);
+	EXECUTE_IF_SET_IN_REG_SET (old, FIRST_PSEUDO_REGISTER, i,
+				   {
+				     int a = reg_allocno[i];
+				     if (a >= 0)
+				       {
+					 SET_ALLOCNO_LIVE (a);
+					 block_start_allocnos[ax++] = a;
+				       }
+				     else if ((a = reg_renumber[i]) >= 0)
+				       mark_reg_live_nc
+					 (a, PSEUDO_REGNO_MODE (i));
+				   });
+
+	/* Record that each allocno now live conflicts with each hard reg
+	   now live.
+
+	   It is not necessary to mark any conflicts between pseudos as
+	   this point, even for pseudos which are live at the start of
+	   the basic block.
+
+	     Given two pseudos X and Y and any point in the CFG P.
+
+	     On any path to point P where X and Y are live one of the
+	     following conditions must be true:
+
+		1. X is live at some instruction on the path that
+		   evaluates Y.
+
+		2. Y is live at some instruction on the path that
+		   evaluates X.
+
+		3. Either X or Y is not evaluted on the path to P
+		   (ie it is used uninitialized) and thus the
+		   conflict can be ignored.
+
+	    In cases #1 and #2 the conflict will be recorded when we
+	    scan the instruction that makes either X or Y become live.  */
+	record_conflicts (block_start_allocnos, ax);
+
+#ifdef STACK_REGS
+	{
+	  /* Pseudos can't go in stack regs at the start of a basic block
+	     that is reached by an abnormal edge.  */
+
+	  edge e;
+	  for (e = BASIC_BLOCK (b)->pred; e ; e = e->pred_next)
+	    if (e->flags & EDGE_ABNORMAL)
+	      break;
+	  if (e != NULL)
+	    for (ax = FIRST_STACK_REG; ax <= LAST_STACK_REG; ax++)
+	      record_one_conflict (ax);
+	}
+#endif
+      }
+
+      insn = BLOCK_HEAD (b);
+
+      /* Scan the code of this basic block, noting which allocnos
+	 and hard regs are born or die.  When one is born,
+	 record a conflict with all others currently live.  */
+
+      while (1)
+	{
+	  RTX_CODE code = GET_CODE (insn);
+	  rtx link;
+
+	  /* Make regs_set an empty set.  */
+
+	  n_regs_set = 0;
+
+	  if (code == INSN || code == CALL_INSN || code == JUMP_INSN)
+	    {
+
+#if 0
+	      int i = 0;
+	      for (link = REG_NOTES (insn);
+		   link && i < NUM_NO_CONFLICT_PAIRS;
+		   link = XEXP (link, 1))
+		if (REG_NOTE_KIND (link) == REG_NO_CONFLICT)
+		  {
+		    no_conflict_pairs[i].allocno1
+		      = reg_allocno[REGNO (SET_DEST (PATTERN (insn)))];
+		    no_conflict_pairs[i].allocno2
+		      = reg_allocno[REGNO (XEXP (link, 0))];
+		    i++;
+		  }
+#endif /* 0 */
+
+	      /* Mark any registers clobbered by INSN as live,
+		 so they conflict with the inputs.  */
+
+	      note_stores (PATTERN (insn), mark_reg_clobber, NULL);
+
+	      /* Mark any registers dead after INSN as dead now.  */
+
+	      for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+		if (REG_NOTE_KIND (link) == REG_DEAD)
+		  mark_reg_death (XEXP (link, 0));
+
+	      /* Mark any registers set in INSN as live,
+		 and mark them as conflicting with all other live regs.
+		 Clobbers are processed again, so they conflict with
+		 the registers that are set.  */
+
+	      note_stores (PATTERN (insn), mark_reg_store, NULL);
+
+#ifdef AUTO_INC_DEC
+	      for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+		if (REG_NOTE_KIND (link) == REG_INC)
+		  mark_reg_store (XEXP (link, 0), NULL_RTX, NULL);
+#endif
+
+	      /* If INSN has multiple outputs, then any reg that dies here
+		 and is used inside of an output
+		 must conflict with the other outputs.
+
+		 It is unsafe to use !single_set here since it will ignore an
+		 unused output.  Just because an output is unused does not mean
+		 the compiler can assume the side effect will not occur.
+		 Consider if REG appears in the address of an output and we
+		 reload the output.  If we allocate REG to the same hard
+		 register as an unused output we could set the hard register
+		 before the output reload insn.  */
+	      if (GET_CODE (PATTERN (insn)) == PARALLEL && multiple_sets (insn))
+		for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+		  if (REG_NOTE_KIND (link) == REG_DEAD)
+		    {
+		      int used_in_output = 0;
+		      int i;
+		      rtx reg = XEXP (link, 0);
+
+		      for (i = XVECLEN (PATTERN (insn), 0) - 1; i >= 0; i--)
+			{
+			  rtx set = XVECEXP (PATTERN (insn), 0, i);
+			  if (GET_CODE (set) == SET
+			      && GET_CODE (SET_DEST (set)) != REG
+			      && !rtx_equal_p (reg, SET_DEST (set))
+			      && reg_overlap_mentioned_p (reg, SET_DEST (set)))
+			    used_in_output = 1;
+			}
+		      if (used_in_output)
+			mark_reg_conflicts (reg);
+		    }
+
+	      /* Mark any registers set in INSN and then never used.  */
+
+	      while (n_regs_set-- > 0)
+		{
+		  rtx note = find_regno_note (insn, REG_UNUSED,
+					      REGNO (regs_set[n_regs_set]));
+		  if (note)
+		    mark_reg_death (XEXP (note, 0));
+		}
+	    }
+
+	  if (insn == BLOCK_END (b))
+	    break;
+	  insn = NEXT_INSN (insn);
+	}
+    }
+
+  /* Clean up.  */
+  free (block_start_allocnos);
+  free (regs_set);
+}

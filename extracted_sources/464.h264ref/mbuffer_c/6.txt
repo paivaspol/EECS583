@@ -1,0 +1,43 @@
+static void unmark_for_reference(FrameStore* fs)
+{
+
+  if (!active_sps->frame_mbs_only_flag)
+  {
+    if (fs->is_used & 1)
+    {
+      fs->top_field->used_for_reference = 0;
+    }
+    if (fs->is_used & 2)
+    {
+      fs->bottom_field->used_for_reference = 0;
+    }
+  }
+
+  if (fs->is_used == 3)
+  {
+    if (!active_sps->frame_mbs_only_flag)
+    {
+      fs->top_field->used_for_reference = 0;
+      fs->bottom_field->used_for_reference = 0;
+    }
+    fs->frame->used_for_reference = 0;
+  }
+
+  fs->is_reference = 0;
+
+  if (fs->frame->imgY_ups_w)
+  {
+    free_mem2Dpel (fs->frame->imgY_ups_w);
+    fs->frame->imgY_ups_w=NULL;
+  }
+  if (fs->frame->imgY_ups)
+  {
+    free_mem2Dpel (fs->frame->imgY_ups);
+    fs->frame->imgY_ups=NULL;
+  }
+  if (fs->frame->imgY_11_w)
+  {
+    free (fs->frame->imgY_11_w);
+    fs->frame->imgY_11_w=NULL;
+  }
+}

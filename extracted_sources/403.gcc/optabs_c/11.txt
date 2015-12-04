@@ -1,0 +1,65 @@
+static void
+emit_cmp_and_jump_insn_1 (x, y, mode, comparison, unsignedp, label)
+     rtx x, y;
+     enum machine_mode mode;
+     enum rtx_code comparison;
+     int unsignedp;
+     rtx label;
+{
+  rtx test = gen_rtx_fmt_ee (comparison, mode, x, y);
+  enum mode_class class = GET_MODE_CLASS (mode);
+  enum machine_mode wider_mode = mode;
+
+  /* Try combined insns first.  */
+  do
+    {
+      enum insn_code icode;
+      PUT_MODE (test, wider_mode);
+
+      if (label)
+	{	  
+	  icode = cbranch_optab->handlers[(int)wider_mode].insn_code;
+	  
+	  if (icode != CODE_FOR_nothing
+	      && (*insn_data[icode].operand[0].predicate) (test, wider_mode))
+	    {
+	      x = prepare_operand (icode, x, 1, mode, wider_mode, unsignedp);
+	      y = prepare_operand (icode, y, 2, mode, wider_mode, unsignedp);
+	      emit_jump_insn (GEN_FCN (icode) (test, x, y, label));
+	      return;
+	    }
+	}
+
+      /* Handle some compares against zero.  */
+      icode = (int) tst_optab->handlers[(int) wider_mode].insn_code;
+      if (y == CONST0_RTX (mode) && icode != CODE_FOR_nothing)
+	{
+	  x = prepare_operand (icode, x, 0, mode, wider_mode, unsignedp);
+	  emit_insn (GEN_FCN (icode) (x));
+	  if (label)
+	    emit_jump_insn ((*bcc_gen_fctn[(int) comparison]) (label));
+	  return;
+	}
+
+      /* Handle compares for which there is a directly suitable insn.  */
+
+      icode = (int) cmp_optab->handlers[(int) wider_mode].insn_code;
+      if (icode != CODE_FOR_nothing)
+	{
+	  x = prepare_operand (icode, x, 0, mode, wider_mode, unsignedp);
+	  y = prepare_operand (icode, y, 1, mode, wider_mode, unsignedp);
+	  emit_insn (GEN_FCN (icode) (x, y));
+	  if (label)
+	    emit_jump_insn ((*bcc_gen_fctn[(int) comparison]) (label));
+	  return;
+	}
+
+      if (class != MODE_INT && class != MODE_FLOAT
+	  && class != MODE_COMPLEX_FLOAT)
+	break;
+
+      wider_mode = GET_MODE_WIDER_MODE (wider_mode);
+    } while (wider_mode != VOIDmode);
+
+  abort ();
+}

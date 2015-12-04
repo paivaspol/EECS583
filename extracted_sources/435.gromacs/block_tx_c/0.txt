@@ -1,0 +1,15 @@
+void _blocktx(int dest,int nelem,int size,void *data)
+{
+  int i;
+  char *buf=data;
+  
+  if ((data==NULL) && (size > 0))
+    fatal_error(0,"TX: Null pointer (size=%d)!\n",size);
+
+  for (i=0; i<nelem; i++) {
+    gmx_txs(dest,&size,sizeof(size));
+    if (size > 0)
+      gmx_txs(dest,buf,size);
+    buf+=size;      
+  }
+}

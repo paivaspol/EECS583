@@ -1,0 +1,25 @@
+int check_buff(FILE *fp,char *title,int data[],int items,int verbose)
+{
+  int i,errs,check,comp;
+
+  errs=0;
+  if (!verbose)
+    for (i=0; i<items; i++) { if (data[i]!=mask(i)) errs++; }
+  else
+    {
+      for (i=0; i<items; i++) 
+        {
+          check=data[i];
+          /* comp=ERR_MASK; */
+          comp=mask(i);
+          if (check!=comp)
+            {
+              if(fp)
+                  fprintf(fp,"error: (%s) data: 0x%.8x, expected: 0x%.8x\n",
+                          title,(unsigned int)check,(unsigned int)comp);
+              errs++; 
+            }
+        }
+    }
+  return errs;
+}

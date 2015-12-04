@@ -1,0 +1,77 @@
+static rtx noce_emit_store_flag		PARAMS ((struct noce_if_info *,
+						 rtx, int, int));
+static int noce_try_store_flag		PARAMS ((struct noce_if_info *));
+static int noce_try_store_flag_inc	PARAMS ((struct noce_if_info *));
+static int noce_try_store_flag_constants PARAMS ((struct noce_if_info *));
+static int noce_try_store_flag_mask	PARAMS ((struct noce_if_info *));
+static rtx noce_emit_cmove		PARAMS ((struct noce_if_info *,
+						 rtx, enum rtx_code, rtx,
+						 rtx, rtx, rtx));
+static int noce_try_cmove		PARAMS ((struct noce_if_info *));
+static int noce_try_cmove_arith		PARAMS ((struct noce_if_info *));
+static rtx noce_get_alt_condition	PARAMS ((struct noce_if_info *,
+						 rtx, rtx *));
+static int noce_try_minmax		PARAMS ((struct noce_if_info *));
+static int noce_try_abs			PARAMS ((struct noce_if_info *));
+
+/* Helper function for noce_try_store_flag*.  */
+
+static rtx
+noce_emit_store_flag (if_info, x, reversep, normalize)
+     struct noce_if_info *if_info;
+     rtx x;
+     int reversep, normalize;
+{
+  rtx cond = if_info->cond;
+  int cond_complex;
+  enum rtx_code code;
+
+  cond_complex = (! general_operand (XEXP (cond, 0), VOIDmode)
+		  || ! general_operand (XEXP (cond, 1), VOIDmode));
+
+  /* If earliest == jump, or when the condition is complex, try to
+     build the store_flag insn directly.  */
+
+  if (cond_complex)
+    cond = XEXP (SET_SRC (pc_set (if_info->jump)), 0);
+
+  if (reversep)
+    code = reversed_comparison_code (cond, if_info->jump);
+  else
+    code = GET_CODE (cond);
+
+  if ((if_info->cond_earliest == if_info->jump || cond_complex)
+      && (normalize == 0 || STORE_FLAG_VALUE == normalize))
+    {
+      rtx tmp;
+
+      tmp = gen_rtx_fmt_ee (code, GET_MODE (x), XEXP (cond, 0),
+			    XEXP (cond, 1));
+      tmp = gen_rtx_SET (VOIDmode, x, tmp);
+
+      start_sequence ();
+      tmp = emit_insn (tmp);
+
+      if (recog_memoized (tmp) >= 0)
+	{
+	  tmp = get_insns ();
+	  end_sequence ();
+	  emit_insns (tmp);
+
+	  if_info->cond_earliest = if_info->jump;
+
+	  return x;
+	}
+
+      end_sequence ();
+    }
+
+  /* Don't even try if the comparison operands are weird.  */
+  if (cond_complex)
+    return NULL_RTX;
+
+  return emit_store_flag (x, code, XEXP (cond, 0),
+			  XEXP (cond, 1), VOIDmode,
+			  (code == LTU || code == LEU
+			   || code == GEU || code == GTU), normalize);
+}

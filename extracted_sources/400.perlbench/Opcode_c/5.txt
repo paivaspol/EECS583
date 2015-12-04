@@ -1,0 +1,34 @@
+static void
+set_opset_bits(pTHX_ char *bitmap, SV *bitspec, int on, char *opname)
+{
+    dMY_CXT;
+
+    if (SvIOK(bitspec)) {
+	int myopcode = SvIV(bitspec);
+	int offset = myopcode >> 3;
+	int bit    = myopcode & 0x07;
+	if (myopcode >= PL_maxo || myopcode < 0)
+	    croak("panic: opcode \"%s\" value %d is invalid", opname, myopcode);
+	if (opcode_debug >= 2)
+	    warn("set_opset_bits bit %2d (off=%d, bit=%d) %s %s\n",
+			myopcode, offset, bit, opname, (on)?"on":"off");
+	if (on)
+	    bitmap[offset] |= 1 << bit;
+	else
+	    bitmap[offset] &= ~(1 << bit);
+    }
+    else if (SvPOK(bitspec) && SvCUR(bitspec) == (STRLEN)opset_len) {
+
+	STRLEN len;
+	char *specbits = SvPV(bitspec, len);
+	if (opcode_debug >= 2)
+	    warn("set_opset_bits opset %s %s\n", opname, (on)?"on":"off");
+	if (on) 
+	    while(len-- > 0) bitmap[len] |=  specbits[len];
+	else
+	    while(len-- > 0) bitmap[len] &= ~specbits[len];
+    }
+    else
+	croak("panic: invalid bitspec for \"%s\" (type %u)",
+		opname, (unsigned)SvTYPE(bitspec));
+}

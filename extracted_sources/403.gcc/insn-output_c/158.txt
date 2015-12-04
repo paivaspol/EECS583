@@ -1,0 +1,43 @@
+static const char *
+output_416 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_ALU:
+      if (operands[2] != const1_rtx)
+	abort ();
+      if (REG_P (operands[1]) && !ANY_QI_REG_P (operands[1]))
+        return "add{l}\t{%k0, %k0|%k0, %k0}";
+      else
+        return "add{b}\t{%0, %0|%0, %0}";
+
+    default:
+      if (REG_P (operands[2]))
+	{
+	  if (get_attr_mode (insn) == MODE_SI)
+	    return "sal{l}\t{%b2, %k0|%k0, %b2}";
+	  else
+	    return "sal{b}\t{%b2, %0|%0, %b2}";
+	}
+      else if (GET_CODE (operands[2]) == CONST_INT
+	       && INTVAL (operands[2]) == 1
+	       && (TARGET_PENTIUM || TARGET_PENTIUMPRO))
+	{
+	  if (get_attr_mode (insn) == MODE_SI)
+	    return "sal{l}\t%0";
+	  else
+	    return "sal{b}\t%0";
+	}
+      else
+	{
+	  if (get_attr_mode (insn) == MODE_SI)
+	    return "sal{l}\t{%2, %k0|%k0, %2}";
+	  else
+	    return "sal{b}\t{%2, %0|%0, %2}";
+	}
+    }
+}
+}

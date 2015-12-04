@@ -1,0 +1,101 @@
+static int
+find_reg (chain, order)
+     struct insn_chain *chain;
+     int order;
+{
+  int rnum = reload_order[order];
+  struct reload *rl = rld + rnum;
+  int best_cost = INT_MAX;
+  int best_reg = -1;
+  unsigned int i, j;
+  int k;
+  HARD_REG_SET not_usable;
+  HARD_REG_SET used_by_other_reload;
+
+  COPY_HARD_REG_SET (not_usable, bad_spill_regs);
+  IOR_HARD_REG_SET (not_usable, bad_spill_regs_global);
+  IOR_COMPL_HARD_REG_SET (not_usable, reg_class_contents[rl->class]);
+
+  CLEAR_HARD_REG_SET (used_by_other_reload);
+  for (k = 0; k < order; k++)
+    {
+      int other = reload_order[k];
+
+      if (rld[other].regno >= 0 && reloads_conflict (other, rnum))
+	for (j = 0; j < rld[other].nregs; j++)
+	  SET_HARD_REG_BIT (used_by_other_reload, rld[other].regno + j);
+    }
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    {
+      unsigned int regno = i;
+
+      if (! TEST_HARD_REG_BIT (not_usable, regno)
+	  && ! TEST_HARD_REG_BIT (used_by_other_reload, regno)
+	  && HARD_REGNO_MODE_OK (regno, rl->mode))
+	{
+	  int this_cost = spill_cost[regno];
+	  int ok = 1;
+	  unsigned int this_nregs = HARD_REGNO_NREGS (regno, rl->mode);
+
+	  for (j = 1; j < this_nregs; j++)
+	    {
+	      this_cost += spill_add_cost[regno + j];
+	      if ((TEST_HARD_REG_BIT (not_usable, regno + j))
+		  || TEST_HARD_REG_BIT (used_by_other_reload, regno + j))
+		ok = 0;
+	    }
+	  if (! ok)
+	    continue;
+	  if (rl->in && GET_CODE (rl->in) == REG && REGNO (rl->in) == regno)
+	    this_cost--;
+	  if (rl->out && GET_CODE (rl->out) == REG && REGNO (rl->out) == regno)
+	    this_cost--;
+	  if (this_cost < best_cost
+	      /* Among registers with equal cost, prefer caller-saved ones, or
+		 use REG_ALLOC_ORDER if it is defined.  */
+	      || (this_cost == best_cost
+#ifdef REG_ALLOC_ORDER
+		  && (inv_reg_alloc_order[regno]
+		      < inv_reg_alloc_order[best_reg])
+#else
+		  && call_used_regs[regno]
+		  && ! call_used_regs[best_reg]
+#endif
+		  ))
+	    {
+	      best_reg = regno;
+	      best_cost = this_cost;
+	    }
+	}
+    }
+  if (best_reg == -1)
+    return 0;
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Using reg %d for reload %d\n", best_reg, rnum);
+
+  rl->nregs = HARD_REGNO_NREGS (best_reg, rl->mode);
+  rl->regno = best_reg;
+
+  EXECUTE_IF_SET_IN_REG_SET
+    (&chain->live_throughout, FIRST_PSEUDO_REGISTER, j,
+     {
+       count_spilled_pseudo (best_reg, rl->nregs, j);
+     });
+
+  EXECUTE_IF_SET_IN_REG_SET
+    (&chain->dead_or_set, FIRST_PSEUDO_REGISTER, j,
+     {
+       count_spilled_pseudo (best_reg, rl->nregs, j);
+     });
+
+  for (i = 0; i < rl->nregs; i++)
+    {
+      if (spill_cost[best_reg + i] != 0
+	  || spill_add_cost[best_reg + i] != 0)
+	abort ();
+      SET_HARD_REG_BIT (used_spill_regs_local, best_reg + i);
+    }
+  return 1;
+}

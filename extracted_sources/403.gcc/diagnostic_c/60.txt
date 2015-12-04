@@ -1,0 +1,15 @@
+void
+warning VPARAMS ((const char *msgid, ...))
+{
+#ifndef SPEC_CPU
+  diagnostic_context dc;
+
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  set_diagnostic_context
+    (&dc, msgid, &ap, input_filename, lineno, /* warn = */ 1);
+  report_diagnostic (&dc);
+  VA_CLOSE (ap);
+#endif
+}

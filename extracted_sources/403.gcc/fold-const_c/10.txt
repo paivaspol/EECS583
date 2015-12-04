@@ -1,0 +1,271 @@
+int
+div_and_round_double (code, uns,
+		      lnum_orig, hnum_orig, lden_orig, hden_orig,
+		      lquo, hquo, lrem, hrem)
+     enum tree_code code;
+     int uns;
+     unsigned HOST_WIDE_INT lnum_orig; /* num == numerator == dividend */
+     HOST_WIDE_INT hnum_orig;
+     unsigned HOST_WIDE_INT lden_orig; /* den == denominator == divisor */
+     HOST_WIDE_INT hden_orig;
+     unsigned HOST_WIDE_INT *lquo, *lrem;
+     HOST_WIDE_INT *hquo, *hrem;
+{
+  int quo_neg = 0;
+  HOST_WIDE_INT num[4 + 1];	/* extra element for scaling.  */
+  HOST_WIDE_INT den[4], quo[4];
+  int i, j;
+  unsigned HOST_WIDE_INT work;
+  unsigned HOST_WIDE_INT carry = 0;
+  unsigned HOST_WIDE_INT lnum = lnum_orig;
+  HOST_WIDE_INT hnum = hnum_orig;
+  unsigned HOST_WIDE_INT lden = lden_orig;
+  HOST_WIDE_INT hden = hden_orig;
+  int overflow = 0;
+
+  if (hden == 0 && lden == 0)
+    overflow = 1, lden = 1;
+
+  /* calculate quotient sign and convert operands to unsigned.  */
+  if (!uns)
+    {
+      if (hnum < 0)
+	{
+	  quo_neg = ~ quo_neg;
+	  /* (minimum integer) / (-1) is the only overflow case.  */
+	  if (neg_double (lnum, hnum, &lnum, &hnum)
+	      && ((HOST_WIDE_INT) lden & hden) == -1)
+	    overflow = 1;
+	}
+      if (hden < 0)
+	{
+	  quo_neg = ~ quo_neg;
+	  neg_double (lden, hden, &lden, &hden);
+	}
+    }
+
+  if (hnum == 0 && hden == 0)
+    {				/* single precision */
+      *hquo = *hrem = 0;
+      /* This unsigned division rounds toward zero.  */
+      *lquo = lnum / lden;
+      goto finish_up;
+    }
+
+  if (hnum == 0)
+    {				/* trivial case: dividend < divisor */
+      /* hden != 0 already checked.  */
+      *hquo = *lquo = 0;
+      *hrem = hnum;
+      *lrem = lnum;
+      goto finish_up;
+    }
+
+  memset ((char *) quo, 0, sizeof quo);
+
+  memset ((char *) num, 0, sizeof num);	/* to zero 9th element */
+  memset ((char *) den, 0, sizeof den);
+
+  encode (num, lnum, hnum);
+  encode (den, lden, hden);
+
+  /* Special code for when the divisor < BASE.  */
+  if (hden == 0 && lden < (unsigned HOST_WIDE_INT) BASE)
+    {
+      /* hnum != 0 already checked.  */
+      for (i = 4 - 1; i >= 0; i--)
+	{
+	  work = num[i] + carry * BASE;
+	  quo[i] = work / lden;
+	  carry = work % lden;
+	}
+    }
+  else
+    {
+      /* Full double precision division,
+	 with thanks to Don Knuth's "Seminumerical Algorithms".  */
+      int num_hi_sig, den_hi_sig;
+      unsigned HOST_WIDE_INT quo_est, scale;
+
+      /* Find the highest non-zero divisor digit.  */
+      for (i = 4 - 1;; i--)
+	if (den[i] != 0)
+	  {
+	    den_hi_sig = i;
+	    break;
+	  }
+
+      /* Insure that the first digit of the divisor is at least BASE/2.
+	 This is required by the quotient digit estimation algorithm.  */
+
+      scale = BASE / (den[den_hi_sig] + 1);
+      if (scale > 1)
+	{		/* scale divisor and dividend */
+	  carry = 0;
+	  for (i = 0; i <= 4 - 1; i++)
+	    {
+	      work = (num[i] * scale) + carry;
+	      num[i] = LOWPART (work);
+	      carry = HIGHPART (work);
+	    }
+
+	  num[4] = carry;
+	  carry = 0;
+	  for (i = 0; i <= 4 - 1; i++)
+	    {
+	      work = (den[i] * scale) + carry;
+	      den[i] = LOWPART (work);
+	      carry = HIGHPART (work);
+	      if (den[i] != 0) den_hi_sig = i;
+	    }
+	}
+
+      num_hi_sig = 4;
+
+      /* Main loop */
+      for (i = num_hi_sig - den_hi_sig - 1; i >= 0; i--)
+	{
+	  /* Guess the next quotient digit, quo_est, by dividing the first
+	     two remaining dividend digits by the high order quotient digit.
+	     quo_est is never low and is at most 2 high.  */
+	  unsigned HOST_WIDE_INT tmp;
+
+	  num_hi_sig = i + den_hi_sig + 1;
+	  work = num[num_hi_sig] * BASE + num[num_hi_sig - 1];
+	  if (num[num_hi_sig] != den[den_hi_sig])
+	    quo_est = work / den[den_hi_sig];
+	  else
+	    quo_est = BASE - 1;
+
+	  /* Refine quo_est so it's usually correct, and at most one high.  */
+	  tmp = work - quo_est * den[den_hi_sig];
+	  if (tmp < BASE
+	      && (den[den_hi_sig - 1] * quo_est
+		  > (tmp * BASE + num[num_hi_sig - 2])))
+	    quo_est--;
+
+	  /* Try QUO_EST as the quotient digit, by multiplying the
+	     divisor by QUO_EST and subtracting from the remaining dividend.
+	     Keep in mind that QUO_EST is the I - 1st digit.  */
+
+	  carry = 0;
+	  for (j = 0; j <= den_hi_sig; j++)
+	    {
+	      work = quo_est * den[j] + carry;
+	      carry = HIGHPART (work);
+	      work = num[i + j] - LOWPART (work);
+	      num[i + j] = LOWPART (work);
+	      carry += HIGHPART (work) != 0;
+	    }
+
+	  /* If quo_est was high by one, then num[i] went negative and
+	     we need to correct things.  */
+	  if (num[num_hi_sig] < carry)
+	    {
+	      quo_est--;
+	      carry = 0;		/* add divisor back in */
+	      for (j = 0; j <= den_hi_sig; j++)
+		{
+		  work = num[i + j] + den[j] + carry;
+		  carry = HIGHPART (work);
+		  num[i + j] = LOWPART (work);
+		}
+
+	      num [num_hi_sig] += carry;
+	    }
+
+	  /* Store the quotient digit.  */
+	  quo[i] = quo_est;
+	}
+    }
+
+  decode (quo, lquo, hquo);
+
+ finish_up:
+  /* if result is negative, make it so.  */
+  if (quo_neg)
+    neg_double (*lquo, *hquo, lquo, hquo);
+
+  /* compute trial remainder:  rem = num - (quo * den)  */
+  mul_double (*lquo, *hquo, lden_orig, hden_orig, lrem, hrem);
+  neg_double (*lrem, *hrem, lrem, hrem);
+  add_double (lnum_orig, hnum_orig, *lrem, *hrem, lrem, hrem);
+
+  switch (code)
+    {
+    case TRUNC_DIV_EXPR:
+    case TRUNC_MOD_EXPR:	/* round toward zero */
+    case EXACT_DIV_EXPR:	/* for this one, it shouldn't matter */
+      return overflow;
+
+    case FLOOR_DIV_EXPR:
+    case FLOOR_MOD_EXPR:	/* round toward negative infinity */
+      if (quo_neg && (*lrem != 0 || *hrem != 0))   /* ratio < 0 && rem != 0 */
+	{
+	  /* quo = quo - 1;  */
+	  add_double (*lquo, *hquo, (HOST_WIDE_INT) -1, (HOST_WIDE_INT)  -1,
+		      lquo, hquo);
+	}
+      else
+	return overflow;
+      break;
+
+    case CEIL_DIV_EXPR:
+    case CEIL_MOD_EXPR:		/* round toward positive infinity */
+      if (!quo_neg && (*lrem != 0 || *hrem != 0))  /* ratio > 0 && rem != 0 */
+	{
+	  add_double (*lquo, *hquo, (HOST_WIDE_INT) 1, (HOST_WIDE_INT) 0,
+		      lquo, hquo);
+	}
+      else
+	return overflow;
+      break;
+
+    case ROUND_DIV_EXPR:
+    case ROUND_MOD_EXPR:	/* round to closest integer */
+      {
+	unsigned HOST_WIDE_INT labs_rem = *lrem;
+	HOST_WIDE_INT habs_rem = *hrem;
+	unsigned HOST_WIDE_INT labs_den = lden, ltwice;
+	HOST_WIDE_INT habs_den = hden, htwice;
+
+	/* Get absolute values */
+	if (*hrem < 0)
+	  neg_double (*lrem, *hrem, &labs_rem, &habs_rem);
+	if (hden < 0)
+	  neg_double (lden, hden, &labs_den, &habs_den);
+
+	/* If (2 * abs (lrem) >= abs (lden)) */
+	mul_double ((HOST_WIDE_INT) 2, (HOST_WIDE_INT) 0,
+		    labs_rem, habs_rem, &ltwice, &htwice);
+
+	if (((unsigned HOST_WIDE_INT) habs_den
+	     < (unsigned HOST_WIDE_INT) htwice)
+	    || (((unsigned HOST_WIDE_INT) habs_den
+		 == (unsigned HOST_WIDE_INT) htwice)
+		&& (labs_den < ltwice)))
+	  {
+	    if (*hquo < 0)
+	      /* quo = quo - 1;  */
+	      add_double (*lquo, *hquo,
+			  (HOST_WIDE_INT) -1, (HOST_WIDE_INT) -1, lquo, hquo);
+	    else
+	      /* quo = quo + 1; */
+	      add_double (*lquo, *hquo, (HOST_WIDE_INT) 1, (HOST_WIDE_INT) 0,
+			  lquo, hquo);
+	  }
+	else
+	  return overflow;
+      }
+      break;
+
+    default:
+      abort ();
+    }
+
+  /* compute true remainder:  rem = num - (quo * den)  */
+  mul_double (*lquo, *hquo, lden_orig, hden_orig, lrem, hrem);
+  neg_double (*lrem, *hrem, lrem, hrem);
+  add_double (lnum_orig, hnum_orig, *lrem, *hrem, lrem, hrem);
+  return overflow;
+}

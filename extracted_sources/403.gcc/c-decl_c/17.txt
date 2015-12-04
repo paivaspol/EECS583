@@ -1,0 +1,34 @@
+void
+pushtag (name, type)
+     tree name, type;
+{
+  struct binding_level *b;
+
+  /* Find the proper binding level for this type tag.  */
+
+  for (b = current_binding_level; b->tag_transparent; b = b->level_chain)
+    continue;
+
+  if (name)
+    {
+      /* Record the identifier as the type's name if it has none.  */
+
+      if (TYPE_NAME (type) == 0)
+	TYPE_NAME (type) = name;
+    }
+
+  b->tags = tree_cons (name, type, b->tags);
+
+  /* Create a fake NULL-named TYPE_DECL node whose TREE_TYPE will be the
+     tagged type we just added to the current binding level.  This fake
+     NULL-named TYPE_DECL node helps dwarfout.c to know when it needs
+     to output a representation of a tagged type, and it also gives
+     us a convenient place to record the "scope start" address for the
+     tagged type.  */
+
+  TYPE_STUB_DECL (type) = pushdecl (build_decl (TYPE_DECL, NULL_TREE, type));
+
+  /* An approximation for now, so we can tell this is a function-scope tag.
+     This will be updated in poplevel.  */
+  TYPE_CONTEXT (type) = DECL_CONTEXT (TYPE_STUB_DECL (type));
+}

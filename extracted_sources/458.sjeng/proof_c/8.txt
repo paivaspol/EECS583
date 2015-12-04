@@ -1,0 +1,180 @@
+void develop_node (node_t * node)
+{
+  int num_moves;
+  move_s moves[MOVE_BUFF];
+  int i, l;
+  node_t *newnode;
+#ifdef PN2
+  node_t **newchildren;
+#endif
+  int leg;
+  int ic;
+
+  /*ept = ep_square; */
+
+#ifdef PN2
+  if (!pn2)
+    pn2_eval(node);
+#endif
+
+  ic = in_check();
+  
+  if (Variant != Losers)
+    {
+      num_moves = 0;
+      gen (&moves[0]);
+      num_moves = numb_moves;
+    }
+  else
+    {
+      captures = TRUE;
+      leg = FALSE;
+      num_moves = 0;
+
+      gen (&moves[0]);
+      num_moves = numb_moves;
+      captures = FALSE;
+
+      for (i = 0; i < num_moves; i++) 
+	{
+	  make (&moves[0], i);
+	  
+	  /* check to see if our move is legal: */
+	  if (check_legal (&moves[0], i, ic)) 
+	    {
+	      leg = TRUE;
+	      unmake(&moves[0], i);
+	      break;
+	    };
+	  
+	  unmake(&moves[0], i);
+	}
+      
+      if (leg == FALSE)
+	{
+	  captures = FALSE;
+	  num_moves = 0;
+	  gen (&moves[0]);
+	  num_moves = numb_moves;
+	}
+    }
+ 
+#ifdef PN2
+  if (pn2)
+#endif
+    node->children = (node_t **) Xmalloc (num_moves * sizeof (node_t **));
+#ifdef PN2
+  else
+    newchildren = (node_t **) malloc (num_moves * sizeof (node_t **));
+#endif
+
+  l = 0;
+
+  for (i = 0; i < num_moves; i++)
+    {
+      hash_history[move_number+ply-1] = hash; 
+      
+      make (&moves[0], i);
+
+      /* check to see if our move is legal: */
+      if (check_legal (&moves[0], i, ic))
+	{
+#ifdef PN2
+	  if (pn2)
+#endif
+	    newnode = (node_t *) Xmalloc (sizeof (node_t));
+#ifdef PN2
+	  else
+	    newnode = (node_t *) malloc (sizeof (node_t));
+#endif
+	  newnode->value = 0;
+#ifdef PN2
+	  if (!pn2)
+	    { 
+	      newnode->proof = node->children[l]->proof;
+	      newnode->disproof = node->children[l]->disproof;
+	    }
+	  else
+	    {
+#endif
+	      newnode->proof = newnode->disproof = 1; 
+#ifdef PN2
+	    };
+#endif
+
+	  newnode->num_children = 0;
+	  newnode->parent = node;
+	  newnode->evaluated = FALSE;
+	  newnode->expanded = FALSE;
+	  newnode->move = moves[i];
+
+#ifdef PN2
+	  if (!pn2)
+	    newchildren[l] = newnode;
+	  else 
+#endif
+	    node->children[l] = newnode;	  	  
+
+	  l++;
+#ifdef PN2
+	  if (pn2 == FALSE)
+	    /*use delayed eval */;
+	  else if (pn2)
+#endif
+	    pn_eval (newnode);
+#ifdef PN2
+	  if (pn2)
+#endif
+	    set_proof_and_disproof_numbers (newnode);
+
+	  unmake (&moves[0], i);	 
+
+	}
+      else
+	unmake (&moves[0], i);
+    };
+
+  node->expanded = TRUE;
+  node->num_children = l;
+
+#ifdef PN2
+  if (!pn2)
+    node->children = newchildren;
+#endif
+  
+  /* account for stalemate ! */
+  if (node->num_children == 0)
+    {
+      node->expanded = FALSE;
+      node->evaluated = TRUE;
+      if (Variant != Suicide && Variant != Losers)
+      {
+      	node->value = STALEMATE;
+      }
+      else
+      {
+	if (ToMove == root_to_move)
+	{
+	  node->value = TRUE;
+	}
+	else
+	{
+	  node->value = FALSE;
+	}
+      };
+      
+    };
+#ifdef PN2
+  if (pn2)
+    nodecount2 += num_moves;
+  else
+#endif
+    nodecount += num_moves;
+
+  frees += num_moves;
+  
+  /*ep_square = ept;*/
+#ifdef PN2
+  if (!pn2) Xfree();
+#endif
+}

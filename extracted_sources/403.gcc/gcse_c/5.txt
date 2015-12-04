@@ -1,0 +1,48 @@
+static void
+alloc_gcse_mem (f)
+     rtx f;
+{
+  int i, n;
+  rtx insn;
+
+  /* Find the largest UID and create a mapping from UIDs to CUIDs.
+     CUIDs are like UIDs except they increase monotonically, have no gaps,
+     and only apply to real insns.  */
+
+  max_uid = get_max_uid ();
+  n = (max_uid + 1) * sizeof (int);
+  uid_cuid = (int *) gmalloc (n);
+  memset ((char *) uid_cuid, 0, n);
+  for (insn = f, i = 0; insn; insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	uid_cuid[INSN_UID (insn)] = i++;
+      else
+	uid_cuid[INSN_UID (insn)] = i;
+    }
+
+  /* Create a table mapping cuids to insns.  */
+
+  max_cuid = i;
+  n = (max_cuid + 1) * sizeof (rtx);
+  cuid_insn = (rtx *) gmalloc (n);
+  memset ((char *) cuid_insn, 0, n);
+  for (insn = f, i = 0; insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn))
+      CUID_INSN (i++) = insn;
+
+  /* Allocate vars to track sets of regs.  */
+  reg_set_bitmap = BITMAP_XMALLOC ();
+
+  /* Allocate vars to track sets of regs, memory per block.  */
+  reg_set_in_block = (sbitmap *) sbitmap_vector_alloc (n_basic_blocks,
+						       max_gcse_regno);
+  /* Allocate array to keep a list of insns which modify memory in each
+     basic block.  */
+  modify_mem_list = (rtx *) gmalloc (n_basic_blocks * sizeof (rtx));
+  canon_modify_mem_list = (rtx *) gmalloc (n_basic_blocks * sizeof (rtx));
+  memset ((char *) modify_mem_list, 0, n_basic_blocks * sizeof (rtx));
+  memset ((char *) canon_modify_mem_list, 0, n_basic_blocks * sizeof (rtx));
+  modify_mem_list_set = BITMAP_XMALLOC ();
+  canon_modify_mem_list_set = BITMAP_XMALLOC ();
+}

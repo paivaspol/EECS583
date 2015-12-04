@@ -1,0 +1,252 @@
+static void synth_mult			PARAMS ((struct algorithm *,
+						 unsigned HOST_WIDE_INT,
+						 int));
+static unsigned HOST_WIDE_INT choose_multiplier PARAMS ((unsigned HOST_WIDE_INT,
+							 int, int,
+							 unsigned HOST_WIDE_INT *,
+							 int *, int *));
+static unsigned HOST_WIDE_INT invert_mod2n	PARAMS ((unsigned HOST_WIDE_INT,
+							 int));
+/* Compute and return the best algorithm for multiplying by T.
+   The algorithm must cost less than cost_limit
+   If retval.cost >= COST_LIMIT, no algorithm was found and all
+   other field of the returned struct are undefined.  */
+
+static void
+synth_mult (alg_out, t, cost_limit)
+     struct algorithm *alg_out;
+     unsigned HOST_WIDE_INT t;
+     int cost_limit;
+{
+  int m;
+  struct algorithm *alg_in, *best_alg;
+  int cost;
+  unsigned HOST_WIDE_INT q;
+
+  /* Indicate that no algorithm is yet found.  If no algorithm
+     is found, this value will be returned and indicate failure.  */
+  alg_out->cost = cost_limit;
+
+  if (cost_limit <= 0)
+    return;
+
+  /* t == 1 can be done in zero cost.  */
+  if (t == 1)
+    {
+      alg_out->ops = 1;
+      alg_out->cost = 0;
+      alg_out->op[0] = alg_m;
+      return;
+    }
+
+  /* t == 0 sometimes has a cost.  If it does and it exceeds our limit,
+     fail now.  */
+  if (t == 0)
+    {
+      if (zero_cost >= cost_limit)
+	return;
+      else
+	{
+	  alg_out->ops = 1;
+	  alg_out->cost = zero_cost;
+	  alg_out->op[0] = alg_zero;
+	  return;
+	}
+    }
+
+  /* We'll be needing a couple extra algorithm structures now.  */
+
+  alg_in = (struct algorithm *)alloca (sizeof (struct algorithm));
+  best_alg = (struct algorithm *)alloca (sizeof (struct algorithm));
+
+  /* If we have a group of zero bits at the low-order part of T, try
+     multiplying by the remaining bits and then doing a shift.  */
+
+  if ((t & 1) == 0)
+    {
+      m = floor_log2 (t & -t);	/* m = number of low zero bits */
+      if (m < BITS_PER_WORD)
+	{
+	  q = t >> m;
+	  cost = shift_cost[m];
+	  synth_mult (alg_in, q, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = m;
+	      best_alg->op[best_alg->ops] = alg_shift;
+	      cost_limit = cost;
+	    }
+	}
+    }
+
+  /* If we have an odd number, add or subtract one.  */
+  if ((t & 1) != 0)
+    {
+      unsigned HOST_WIDE_INT w;
+
+      for (w = 1; (w & t) != 0; w <<= 1)
+	;
+      /* If T was -1, then W will be zero after the loop.  This is another
+	 case where T ends with ...111.  Handling this with (T + 1) and
+	 subtract 1 produces slightly better code and results in algorithm
+	 selection much faster than treating it like the ...0111 case
+	 below.  */
+      if (w == 0
+	  || (w > 2
+	      /* Reject the case where t is 3.
+		 Thus we prefer addition in that case.  */
+	      && t != 3))
+	{
+	  /* T ends with ...111.  Multiply by (T + 1) and subtract 1.  */
+
+	  cost = add_cost;
+	  synth_mult (alg_in, t + 1, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = 0;
+	      best_alg->op[best_alg->ops] = alg_sub_t_m2;
+	      cost_limit = cost;
+	    }
+	}
+      else
+	{
+	  /* T ends with ...01 or ...011.  Multiply by (T - 1) and add 1.  */
+
+	  cost = add_cost;
+	  synth_mult (alg_in, t - 1, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = 0;
+	      best_alg->op[best_alg->ops] = alg_add_t_m2;
+	      cost_limit = cost;
+	    }
+	}
+    }
+
+  /* Look for factors of t of the form
+     t = q(2**m +- 1), 2 <= m <= floor(log2(t - 1)).
+     If we find such a factor, we can multiply by t using an algorithm that
+     multiplies by q, shift the result by m and add/subtract it to itself.
+
+     We search for large factors first and loop down, even if large factors
+     are less probable than small; if we find a large factor we will find a
+     good sequence quickly, and therefore be able to prune (by decreasing
+     COST_LIMIT) the search.  */
+
+  for (m = floor_log2 (t - 1); m >= 2; m--)
+    {
+      unsigned HOST_WIDE_INT d;
+
+      d = ((unsigned HOST_WIDE_INT) 1 << m) + 1;
+      if (t % d == 0 && t > d && m < BITS_PER_WORD)
+	{
+	  cost = MIN (shiftadd_cost[m], add_cost + shift_cost[m]);
+	  synth_mult (alg_in, t / d, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = m;
+	      best_alg->op[best_alg->ops] = alg_add_factor;
+	      cost_limit = cost;
+	    }
+	  /* Other factors will have been taken care of in the recursion.  */
+	  break;
+	}
+
+      d = ((unsigned HOST_WIDE_INT) 1 << m) - 1;
+      if (t % d == 0 && t > d && m < BITS_PER_WORD)
+	{
+	  cost = MIN (shiftsub_cost[m], add_cost + shift_cost[m]);
+	  synth_mult (alg_in, t / d, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = m;
+	      best_alg->op[best_alg->ops] = alg_sub_factor;
+	      cost_limit = cost;
+	    }
+	  break;
+	}
+    }
+
+  /* Try shift-and-add (load effective address) instructions,
+     i.e. do a*3, a*5, a*9.  */
+  if ((t & 1) != 0)
+    {
+      q = t - 1;
+      q = q & -q;
+      m = exact_log2 (q);
+      if (m >= 0 && m < BITS_PER_WORD)
+	{
+	  cost = shiftadd_cost[m];
+	  synth_mult (alg_in, (t - 1) >> m, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = m;
+	      best_alg->op[best_alg->ops] = alg_add_t2_m;
+	      cost_limit = cost;
+	    }
+	}
+
+      q = t + 1;
+      q = q & -q;
+      m = exact_log2 (q);
+      if (m >= 0 && m < BITS_PER_WORD)
+	{
+	  cost = shiftsub_cost[m];
+	  synth_mult (alg_in, (t + 1) >> m, cost_limit - cost);
+
+	  cost += alg_in->cost;
+	  if (cost < cost_limit)
+	    {
+	      struct algorithm *x;
+	      x = alg_in, alg_in = best_alg, best_alg = x;
+	      best_alg->log[best_alg->ops] = m;
+	      best_alg->op[best_alg->ops] = alg_sub_t2_m;
+	      cost_limit = cost;
+	    }
+	}
+    }
+
+  /* If cost_limit has not decreased since we stored it in alg_out->cost,
+     we have not found any algorithm.  */
+  if (cost_limit == alg_out->cost)
+    return;
+
+  /* If we are getting a too long sequence for `struct algorithm'
+     to record, make this search fail.  */
+  if (best_alg->ops == MAX_BITS_PER_WORD)
+    return;
+
+  /* Copy the algorithm from temporary space to the space at alg_out.
+     We avoid using structure assignment because the majority of
+     best_alg is normally undefined, and this is a critical function.  */
+  alg_out->ops = best_alg->ops + 1;
+  alg_out->cost = cost_limit;
+  memcpy (alg_out->op, best_alg->op,
+	  alg_out->ops * sizeof *alg_out->op);
+  memcpy (alg_out->log, best_alg->log,
+	  alg_out->ops * sizeof *alg_out->log);
+}

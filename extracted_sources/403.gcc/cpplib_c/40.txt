@@ -1,0 +1,20 @@
+static void
+destringize_and_run (pfile, in)
+     cpp_reader *pfile;
+     const cpp_string *in;
+{
+  const unsigned char *src, *limit;
+  char *dest, *result;
+
+  dest = result = alloca (in->len + 1);
+  for (src = in->text, limit = src + in->len; src < limit;)
+    {
+      /* We know there is a character following the backslash.  */
+      if (*src == '\\' && (src[1] == '\\' || src[1] == '"'))
+	src++;
+      *dest++ = *src++;
+    }
+  *dest = '\0';
+
+  run_directive (pfile, T_PRAGMA, result, dest - result);
+}

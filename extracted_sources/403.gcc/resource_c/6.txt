@@ -1,0 +1,264 @@
+void
+mark_target_live_regs (insns, target, res)
+     rtx insns;
+     rtx target;
+     struct resources *res;
+{
+  int b = -1;
+  unsigned int i;
+  struct target_info *tinfo = NULL;
+  rtx insn;
+  rtx jump_insn = 0;
+  rtx jump_target;
+  HARD_REG_SET scratch;
+  struct resources set, needed;
+
+  /* Handle end of function.  */
+  if (target == 0)
+    {
+      *res = end_of_function_needs;
+      return;
+    }
+
+  /* We have to assume memory is needed, but the CC isn't.  */
+  res->memory = 1;
+  res->volatil = res->unch_memory = 0;
+  res->cc = 0;
+
+  /* See if we have computed this value already.  */
+  if (target_hash_table != NULL)
+    {
+      for (tinfo = target_hash_table[INSN_UID (target) % TARGET_HASH_PRIME];
+	   tinfo; tinfo = tinfo->next)
+	if (tinfo->uid == INSN_UID (target))
+	  break;
+
+      /* Start by getting the basic block number.  If we have saved
+	 information, we can get it from there unless the insn at the
+	 start of the basic block has been deleted.  */
+      if (tinfo && tinfo->block != -1
+	  && ! INSN_DELETED_P (BLOCK_HEAD (tinfo->block)))
+	b = tinfo->block;
+    }
+
+  if (b == -1)
+    b = find_basic_block (target, MAX_DELAY_SLOT_LIVE_SEARCH);
+
+  if (target_hash_table != NULL)
+    {
+      if (tinfo)
+	{
+	  /* If the information is up-to-date, use it.  Otherwise, we will
+	     update it below.  */
+	  if (b == tinfo->block && b != -1 && tinfo->bb_tick == bb_ticks[b])
+	    {
+	      COPY_HARD_REG_SET (res->regs, tinfo->live_regs);
+	      return;
+	    }
+	}
+      else
+	{
+	  /* Allocate a place to put our results and chain it into the 
+	     hash table.  */
+	  tinfo = (struct target_info *) xmalloc (sizeof (struct target_info));
+	  tinfo->uid = INSN_UID (target);
+	  tinfo->block = b;
+	  tinfo->next
+	    = target_hash_table[INSN_UID (target) % TARGET_HASH_PRIME];
+	  target_hash_table[INSN_UID (target) % TARGET_HASH_PRIME] = tinfo;
+	}
+    }
+
+  CLEAR_HARD_REG_SET (pending_dead_regs);
+
+  /* If we found a basic block, get the live registers from it and update
+     them with anything set or killed between its start and the insn before
+     TARGET.  Otherwise, we must assume everything is live.  */
+  if (b != -1)
+    {
+      regset regs_live = BASIC_BLOCK (b)->global_live_at_start;
+      unsigned int j;
+      unsigned int regno;
+      rtx start_insn, stop_insn;
+
+      /* Compute hard regs live at start of block -- this is the real hard regs
+	 marked live, plus live pseudo regs that have been renumbered to
+	 hard regs.  */
+
+      REG_SET_TO_HARD_REG_SET (current_live_regs, regs_live);
+
+      EXECUTE_IF_SET_IN_REG_SET
+	(regs_live, FIRST_PSEUDO_REGISTER, i,
+	 {
+	   if (reg_renumber[i] >= 0)
+	     {
+	       regno = reg_renumber[i];
+	       for (j = regno;
+		    j < regno + HARD_REGNO_NREGS (regno,
+						  PSEUDO_REGNO_MODE (i));
+		    j++)
+		 SET_HARD_REG_BIT (current_live_regs, j);
+	     }
+	 });
+
+      /* Get starting and ending insn, handling the case where each might
+	 be a SEQUENCE.  */
+      start_insn = (b == 0 ? insns : BLOCK_HEAD (b));
+      stop_insn = target;
+
+      if (GET_CODE (start_insn) == INSN
+	  && GET_CODE (PATTERN (start_insn)) == SEQUENCE)
+	start_insn = XVECEXP (PATTERN (start_insn), 0, 0);
+
+      if (GET_CODE (stop_insn) == INSN
+	  && GET_CODE (PATTERN (stop_insn)) == SEQUENCE)
+	stop_insn = next_insn (PREV_INSN (stop_insn));
+
+      for (insn = start_insn; insn != stop_insn;
+	   insn = next_insn_no_annul (insn))
+	{
+	  rtx link;
+	  rtx real_insn = insn;
+
+	  /* If this insn is from the target of a branch, it isn't going to
+	     be used in the sequel.  If it is used in both cases, this
+	     test will not be true.  */
+	  if (INSN_FROM_TARGET_P (insn))
+	    continue;
+
+	  /* If this insn is a USE made by update_block, we care about the
+	     underlying insn.  */
+	  if (GET_CODE (insn) == INSN && GET_CODE (PATTERN (insn)) == USE
+	      && INSN_P (XEXP (PATTERN (insn), 0)))
+	      real_insn = XEXP (PATTERN (insn), 0);
+
+	  if (GET_CODE (real_insn) == CALL_INSN)
+	    {
+	      /* CALL clobbers all call-used regs that aren't fixed except
+		 sp, ap, and fp.  Do this before setting the result of the
+		 call live.  */
+	      AND_COMPL_HARD_REG_SET (current_live_regs,
+				      regs_invalidated_by_call);
+
+	      /* A CALL_INSN sets any global register live, since it may
+		 have been modified by the call.  */
+	      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+		if (global_regs[i])
+		  SET_HARD_REG_BIT (current_live_regs, i);
+	    }
+
+	  /* Mark anything killed in an insn to be deadened at the next
+	     label.  Ignore USE insns; the only REG_DEAD notes will be for
+	     parameters.  But they might be early.  A CALL_INSN will usually
+	     clobber registers used for parameters.  It isn't worth bothering
+	     with the unlikely case when it won't.  */
+	  if ((GET_CODE (real_insn) == INSN
+	       && GET_CODE (PATTERN (real_insn)) != USE
+	       && GET_CODE (PATTERN (real_insn)) != CLOBBER)
+	      || GET_CODE (real_insn) == JUMP_INSN
+	      || GET_CODE (real_insn) == CALL_INSN)
+	    {
+	      for (link = REG_NOTES (real_insn); link; link = XEXP (link, 1))
+		if (REG_NOTE_KIND (link) == REG_DEAD
+		    && GET_CODE (XEXP (link, 0)) == REG
+		    && REGNO (XEXP (link, 0)) < FIRST_PSEUDO_REGISTER)
+		  {
+		    unsigned int first_regno = REGNO (XEXP (link, 0));
+		    unsigned int last_regno
+		      = (first_regno
+			 + HARD_REGNO_NREGS (first_regno,
+					     GET_MODE (XEXP (link, 0))));
+			 
+		    for (i = first_regno; i < last_regno; i++)
+		      SET_HARD_REG_BIT (pending_dead_regs, i);
+		  }
+
+	      note_stores (PATTERN (real_insn), update_live_status, NULL);
+
+	      /* If any registers were unused after this insn, kill them.
+		 These notes will always be accurate.  */
+	      for (link = REG_NOTES (real_insn); link; link = XEXP (link, 1))
+		if (REG_NOTE_KIND (link) == REG_UNUSED
+		    && GET_CODE (XEXP (link, 0)) == REG
+		    && REGNO (XEXP (link, 0)) < FIRST_PSEUDO_REGISTER)
+		  {
+		    unsigned int first_regno = REGNO (XEXP (link, 0));
+		    unsigned int last_regno
+		      = (first_regno
+			 + HARD_REGNO_NREGS (first_regno,
+					     GET_MODE (XEXP (link, 0))));
+			 
+		    for (i = first_regno; i < last_regno; i++)
+		      CLEAR_HARD_REG_BIT (current_live_regs, i);
+		  }
+	    }
+
+	  else if (GET_CODE (real_insn) == CODE_LABEL)
+	    {
+	      /* A label clobbers the pending dead registers since neither
+		 reload nor jump will propagate a value across a label.  */
+	      AND_COMPL_HARD_REG_SET (current_live_regs, pending_dead_regs);
+	      CLEAR_HARD_REG_SET (pending_dead_regs);
+	    }
+
+	  /* The beginning of the epilogue corresponds to the end of the
+	     RTL chain when there are no epilogue insns.  Certain resources
+	     are implicitly required at that point.  */
+	  else if (GET_CODE (real_insn) == NOTE
+ 		   && NOTE_LINE_NUMBER (real_insn) == NOTE_INSN_EPILOGUE_BEG)
+	    IOR_HARD_REG_SET (current_live_regs, start_of_epilogue_needs.regs);
+	}
+
+      COPY_HARD_REG_SET (res->regs, current_live_regs);
+      if (tinfo != NULL)
+	{
+	  tinfo->block = b;
+	  tinfo->bb_tick = bb_ticks[b];
+	}
+    }
+  else
+    /* We didn't find the start of a basic block.  Assume everything
+       in use.  This should happen only extremely rarely.  */
+    SET_HARD_REG_SET (res->regs);
+
+  CLEAR_RESOURCE (&set);
+  CLEAR_RESOURCE (&needed);
+
+  jump_insn = find_dead_or_set_registers (target, res, &jump_target, 0,
+					  set, needed);
+
+  /* If we hit an unconditional branch, we have another way of finding out
+     what is live: we can see what is live at the branch target and include
+     anything used but not set before the branch.  We add the live
+     resources found using the test below to those found until now.  */
+
+  if (jump_insn)
+    {
+      struct resources new_resources;
+      rtx stop_insn = next_active_insn (jump_insn);
+
+      mark_target_live_regs (insns, next_active_insn (jump_target),
+			     &new_resources);
+      CLEAR_RESOURCE (&set);
+      CLEAR_RESOURCE (&needed);
+
+      /* Include JUMP_INSN in the needed registers.  */
+      for (insn = target; insn != stop_insn; insn = next_active_insn (insn))
+	{
+	  mark_referenced_resources (insn, &needed, 1);
+
+	  COPY_HARD_REG_SET (scratch, needed.regs);
+	  AND_COMPL_HARD_REG_SET (scratch, set.regs);
+	  IOR_HARD_REG_SET (new_resources.regs, scratch);
+
+	  mark_set_resources (insn, &set, 0, MARK_SRC_DEST_CALL);
+	}
+
+      IOR_HARD_REG_SET (res->regs, new_resources.regs);
+    }
+
+  if (tinfo != NULL)
+    {
+      COPY_HARD_REG_SET (tinfo->live_regs, res->regs);
+    }
+}

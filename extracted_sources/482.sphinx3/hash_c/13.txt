@@ -1,0 +1,16 @@
+void hash_free (hash_table_t *h)
+{
+    hash_entry_t *e, *e2;
+    int32 i;
+    
+    /* Free additional entries created for key collision cases */
+    for (i = 0; i < h->size; i++) {
+	for (e = h->table[i].next; e; e = e2) {
+	    e2 = e->next;
+	    ckd_free ((void *) e);
+	}
+    }
+    
+    ckd_free ((void *) h->table);
+    ckd_free ((void *) h);
+}

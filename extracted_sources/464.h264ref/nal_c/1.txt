@@ -1,0 +1,34 @@
+int RBSPtoEBSP(byte *streamBuffer, int begin_bytepos, int end_bytepos, int min_num_bytes)
+{
+  
+  int i, j, count;
+
+  for(i = begin_bytepos; i < end_bytepos; i++)
+    NAL_Payload_buffer[i] = streamBuffer[i];
+
+  count = 0;
+  j = begin_bytepos;
+  for(i = begin_bytepos; i < end_bytepos; i++) 
+  {
+    if(count == ZEROBYTES_SHORTSTARTCODE && !(NAL_Payload_buffer[i] & 0xFC)) 
+    {
+      streamBuffer[j] = 0x03;
+      j++;
+      count = 0;   
+    }
+    streamBuffer[j] = NAL_Payload_buffer[i];
+    if(NAL_Payload_buffer[i] == 0x00)      
+      count++;
+    else 
+      count = 0;
+    j++;
+  }
+  while (j < begin_bytepos+min_num_bytes) {
+    streamBuffer[j] = 0x00; // cabac stuffing word
+    streamBuffer[j+1] = 0x00;
+    streamBuffer[j+2] = 0x03;
+    j += 3;
+    stats->bit_use_stuffingBits[img->type]+=16;
+  }
+  return j;
+}

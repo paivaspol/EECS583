@@ -1,0 +1,46 @@
+static int
+hoist_expr_reaches_here_p (expr_bb, expr_index, bb, visited)
+     basic_block expr_bb;
+     int expr_index;
+     basic_block bb;
+     char *visited;
+{
+  edge pred;
+  int visited_allocated_locally = 0;
+  
+
+  if (visited == NULL)
+    {
+      visited_allocated_locally = 1;
+      visited = xcalloc (n_basic_blocks, 1);
+    }
+
+  for (pred = bb->pred; pred != NULL; pred = pred->pred_next)
+    {
+      basic_block pred_bb = pred->src;
+
+      if (pred->src == ENTRY_BLOCK_PTR)
+	break;
+      else if (visited[pred_bb->index])
+	continue;
+
+      /* Does this predecessor generate this expression?  */
+      else if (TEST_BIT (comp[pred_bb->index], expr_index))
+	break;
+      else if (! TEST_BIT (transp[pred_bb->index], expr_index))
+	break;
+
+      /* Not killed.  */
+      else
+	{
+	  visited[pred_bb->index] = 1;
+	  if (! hoist_expr_reaches_here_p (expr_bb, expr_index,
+					   pred_bb, visited))
+	    break;
+	}
+    }
+  if (visited_allocated_locally) 
+    free (visited);
+
+  return (pred == NULL);
+}

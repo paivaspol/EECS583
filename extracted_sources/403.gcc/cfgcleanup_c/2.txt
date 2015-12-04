@@ -1,0 +1,65 @@
+static bool
+try_simplify_condjump (cbranch_block)
+     basic_block cbranch_block;
+{
+  basic_block jump_block, jump_dest_block, cbranch_dest_block;
+  edge cbranch_jump_edge, cbranch_fallthru_edge;
+  rtx cbranch_insn;
+
+  /* Verify that there are exactly two successors.  */
+  if (!cbranch_block->succ
+      || !cbranch_block->succ->succ_next
+      || cbranch_block->succ->succ_next->succ_next)
+    return false;
+
+  /* Verify that we've got a normal conditional branch at the end
+     of the block.  */
+  cbranch_insn = cbranch_block->end;
+  if (!any_condjump_p (cbranch_insn))
+    return false;
+
+  cbranch_fallthru_edge = FALLTHRU_EDGE (cbranch_block);
+  cbranch_jump_edge = BRANCH_EDGE (cbranch_block);
+
+  /* The next block must not have multiple predecessors, must not
+     be the last block in the function, and must contain just the
+     unconditional jump.  */
+  jump_block = cbranch_fallthru_edge->dest;
+  if (jump_block->pred->pred_next
+      || jump_block->index == n_basic_blocks - 1
+      || !FORWARDER_BLOCK_P (jump_block))
+    return false;
+  jump_dest_block = jump_block->succ->dest;
+
+  /* The conditional branch must target the block after the
+     unconditional branch.  */
+  cbranch_dest_block = cbranch_jump_edge->dest;
+
+  if (!can_fallthru (jump_block, cbranch_dest_block))
+    return false;
+
+  /* Invert the conditional branch.  */
+  if (!invert_jump (cbranch_insn, block_label (jump_dest_block), 0))
+    return false;
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Simplifying condjump %i around jump %i\n",
+	     INSN_UID (cbranch_insn), INSN_UID (jump_block->end));
+
+  /* Success.  Update the CFG to match.  Note that after this point
+     the edge variable names appear backwards; the redirection is done
+     this way to preserve edge profile data.  */
+  cbranch_jump_edge = redirect_edge_succ_nodup (cbranch_jump_edge,
+						cbranch_dest_block);
+  cbranch_fallthru_edge = redirect_edge_succ_nodup (cbranch_fallthru_edge,
+						    jump_dest_block);
+  cbranch_jump_edge->flags |= EDGE_FALLTHRU;
+  cbranch_fallthru_edge->flags &= ~EDGE_FALLTHRU;
+  update_br_prob_note (cbranch_block);
+
+  /* Delete the block with the unconditional jump, and clean up the mess.  */
+  flow_delete_block (jump_block);
+  tidy_fallthru_edge (cbranch_jump_edge, cbranch_block, cbranch_dest_block);
+
+  return true;
+}

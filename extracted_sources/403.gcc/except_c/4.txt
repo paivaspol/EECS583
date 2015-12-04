@@ -1,0 +1,43 @@
+static void
+mark_eh_region (region)
+     struct eh_region *region;
+{
+  if (! region)
+    return;
+
+  switch (region->type)
+    {
+    case ERT_UNKNOWN:
+      /* This can happen if a nested function is inside the body of a region
+	 and we do a GC as part of processing it.  */
+      break;
+    case ERT_CLEANUP:
+      ggc_mark_tree (region->u.cleanup.exp);
+      break;
+    case ERT_TRY:
+      ggc_mark_rtx (region->u.try.continue_label);
+      break;
+    case ERT_CATCH:
+      ggc_mark_tree (region->u.catch.type_list);
+      ggc_mark_tree (region->u.catch.filter_list);
+      break;
+    case ERT_ALLOWED_EXCEPTIONS:
+      ggc_mark_tree (region->u.allowed.type_list);
+      break;
+    case ERT_MUST_NOT_THROW:
+      break;
+    case ERT_THROW:
+      ggc_mark_tree (region->u.throw.type);
+      break;
+    case ERT_FIXUP:
+      ggc_mark_tree (region->u.fixup.cleanup_exp);
+      break;
+    default:
+      abort ();
+    }
+
+  ggc_mark_rtx (region->label);
+  ggc_mark_rtx (region->resume);
+  ggc_mark_rtx (region->landing_pad);
+  ggc_mark_rtx (region->post_landing_pad);
+}

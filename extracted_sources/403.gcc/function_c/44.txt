@@ -1,0 +1,18 @@
+static void
+compute_insns_for_mem (insns, last_insn, ht)
+     rtx insns;
+     rtx last_insn;
+     struct hash_table *ht;
+{
+  rtx insn;
+  struct insns_for_mem_walk_info ifmwi;
+  ifmwi.ht = ht;
+
+  for (ifmwi.pass = 0; ifmwi.pass < 2; ++ifmwi.pass)
+    for (insn = insns; insn != last_insn; insn = NEXT_INSN (insn))
+      if (INSN_P (insn))
+	{
+	  ifmwi.insn = insn;
+	  for_each_rtx (&insn, insns_for_mem_walk, &ifmwi);
+	}
+}

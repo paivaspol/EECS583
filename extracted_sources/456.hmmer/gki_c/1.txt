@@ -1,0 +1,23 @@
+int
+GKIStoreKey(GKI *hash, char *key)
+{
+  int val;
+  struct gki_elem *ptr;
+
+  val = gki_hashvalue(hash, key);
+  
+  ptr = hash->table[val];
+  hash->table[val]      = MallocOrDie(sizeof(struct gki_elem));
+  hash->table[val]->key = MallocOrDie(sizeof(char) * (strlen(key)+1));
+  strcpy(hash->table[val]->key, key);
+
+  hash->table[val]->idx = hash->nkeys;
+  hash->table[val]->nxt = ptr;
+
+  hash->nkeys++;
+				/* time to upsize? */
+  if (hash->nkeys > 3*hash->nhash && hash->primelevel < GKI_NPRIMES-1)
+    gki_upsize(hash);
+
+  return hash->nkeys-1; 
+}

@@ -1,0 +1,22 @@
+void rmfit(int ned,rvec *x,rvec *transvec,matrix rotmat)
+{
+  int i,j,k;
+  matrix r_inv;
+  rvec xdum;
+
+  /* invert the rotation matrix and apply */
+  m_inv(rotmat,r_inv);
+  for(i=0;(i<ned);i++) {
+    for(j=0;(j<3);j++)
+      xdum[j]=x[i][j];
+    for(j=0;(j<3);j++) {
+      x[i][j]=0;
+      for(k=0;(k<3);k++)
+        x[i][j]+=r_inv[k][j]*xdum[k];
+    }
+  }
+ 
+  /* subtract the translation vector */
+  for(i=0;(i<ned);i++)
+    rvec_dec(x[i],transvec[i]);
+}

@@ -1,0 +1,17 @@
+static tree
+decl_class_context (decl)
+     tree decl;
+{
+  tree context = NULL_TREE;
+
+  if (TREE_CODE (decl) != FUNCTION_DECL || ! DECL_VINDEX (decl))
+    context = DECL_CONTEXT (decl);
+  else
+    context = TYPE_MAIN_VARIANT
+      (TREE_TYPE (TREE_VALUE (TYPE_ARG_TYPES (TREE_TYPE (decl)))));
+
+  if (context && !TYPE_P (context))
+    context = NULL_TREE;
+
+  return context;
+}

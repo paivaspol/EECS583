@@ -1,0 +1,109 @@
+static void
+eadd1 (a, b, c)
+     const UEMUSHORT *a, *b;
+     UEMUSHORT *c;
+{
+  UEMUSHORT ai[NI], bi[NI], ci[NI];
+  int i, lost, j, k;
+  EMULONG lt, lta, ltb;
+
+#ifdef INFINITY
+  if (eisinf (a))
+    {
+      emov (a, c);
+      if (subflg)
+	eneg (c);
+      return;
+    }
+  if (eisinf (b))
+    {
+      emov (b, c);
+      return;
+    }
+#endif
+  emovi (a, ai);
+  emovi (b, bi);
+  if (subflg)
+    ai[0] = ~ai[0];
+
+  /* compare exponents */
+  lta = ai[E];
+  ltb = bi[E];
+  lt = lta - ltb;
+  if (lt > 0L)
+    {				/* put the larger number in bi */
+      emovz (bi, ci);
+      emovz (ai, bi);
+      emovz (ci, ai);
+      ltb = bi[E];
+      lt = -lt;
+    }
+  lost = 0;
+  if (lt != 0L)
+    {
+      if (lt < (EMULONG) (-NBITS - 1))
+	goto done;		/* answer same as larger addend */
+      k = (int) lt;
+      lost = eshift (ai, k);	/* shift the smaller number down */
+    }
+  else
+    {
+      /* exponents were the same, so must compare significands */
+      i = ecmpm (ai, bi);
+      if (i == 0)
+	{			/* the numbers are identical in magnitude */
+	  /* if different signs, result is zero */
+	  if (ai[0] != bi[0])
+	    {
+	      eclear (c);
+	      return;
+	    }
+	  /* if same sign, result is double */
+	  /* double denormalized tiny number */
+	  if ((bi[E] == 0) && ((bi[3] & 0x8000) == 0))
+	    {
+	      eshup1 (bi);
+	      goto done;
+	    }
+	  /* add 1 to exponent unless both are zero! */
+	  for (j = 1; j < NI - 1; j++)
+	    {
+	      if (bi[j] != 0)
+		{
+		  ltb += 1;
+		  if (ltb >= 0x7fff)
+		    {
+		      eclear (c);
+		      if (ai[0] != 0)
+			eneg (c);
+		      einfin (c);
+		      return;
+		    }
+		  break;
+		}
+	    }
+	  bi[E] = (UEMUSHORT) ltb;
+	  goto done;
+	}
+      if (i > 0)
+	{			/* put the larger number in bi */
+	  emovz (bi, ci);
+	  emovz (ai, bi);
+	  emovz (ci, ai);
+	}
+    }
+  if (ai[0] == bi[0])
+    {
+      eaddm (ai, bi);
+      subflg = 0;
+    }
+  else
+    {
+      esubm (ai, bi);
+      subflg = 1;
+    }
+  emdnorm (bi, lost, subflg, ltb, 64);
+
+ done:
+  emovo (bi, c);
+}

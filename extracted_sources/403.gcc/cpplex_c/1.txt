@@ -1,0 +1,30 @@
+static cpp_hashnode *parse_identifier_slow PARAMS ((cpp_reader *,
+						    const U_CHAR *));
+static void parse_number PARAMS ((cpp_reader *, cpp_string *, cppchar_t, int));
+static int unescaped_terminator_p PARAMS ((cpp_reader *, const U_CHAR *));
+static void parse_string PARAMS ((cpp_reader *, cpp_token *, cppchar_t));
+static void unterminated PARAMS ((cpp_reader *, int));
+static bool trigraph_p PARAMS ((cpp_reader *));
+static void save_comment PARAMS ((cpp_reader *, cpp_token *, const U_CHAR *));
+static int name_p PARAMS ((cpp_reader *, const cpp_string *));
+static int maybe_read_ucs PARAMS ((cpp_reader *, const unsigned char **,
+				   const unsigned char *, unsigned int *));
+static tokenrun *next_tokenrun PARAMS ((tokenrun *));
+
+static unsigned int hex_digit_value PARAMS ((unsigned int));
+static _cpp_buff *new_buff PARAMS ((size_t));
+
+/* Utility routine:
+
+   Compares, the token TOKEN to the NUL-terminated string STRING.
+   TOKEN must be a CPP_NAME.  Returns 1 for equal, 0 for unequal.  */
+int
+cpp_ideq (token, string)
+     const cpp_token *token;
+     const char *string;
+{
+  if (token->type != CPP_NAME)
+    return 0;
+
+  return !ustrcmp (NODE_NAME (token->val.node), (const U_CHAR *) string);
+}

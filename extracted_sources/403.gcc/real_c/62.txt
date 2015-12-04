@@ -1,0 +1,111 @@
+static void
+toe64 (a, b)
+     UEMUSHORT *a, *b;
+{
+  UEMUSHORT *p, *q;
+  UEMUSHORT i;
+
+#ifdef NANS
+  if (eiisnan (a))
+    {
+      make_nan (b, eiisneg (a), XFmode);
+      return;
+    }
+#endif
+  /* Shift denormal long double Intel format significand down one bit.  */
+  if ((a[E] == 0) && ! REAL_WORDS_BIG_ENDIAN)
+    eshdn1 (a);
+  p = a;
+#ifdef IBM
+  q = b;
+#endif
+#ifdef DEC
+  q = b + 4;
+#endif
+#ifdef IEEE
+  if (REAL_WORDS_BIG_ENDIAN)
+    q = b;
+  else
+    {
+      q = b + 4;			/* point to output exponent */
+      /* Clear the last two bytes of 12-byte Intel format.  q is pointing
+	 into an array of size 6 (e.g. x[NE]), so the last two bytes are
+	 always there, and there are never more bytes, even when we are using
+	 INTEL_EXTENDED_IEEE_FORMAT.  */
+      *(q+1) = 0;
+    }
+#endif
+
+  /* combine sign and exponent */
+  i = *p++;
+#ifdef IBM
+  if (i)
+    *q++ = *p++ | 0x8000;
+  else
+    *q++ = *p++;
+  *q++ = 0;
+#endif
+#ifdef DEC
+  if (i)
+    *q-- = *p++ | 0x8000;
+  else
+    *q-- = *p++;
+#endif
+#ifdef IEEE
+  if (REAL_WORDS_BIG_ENDIAN)
+    {
+#ifdef ARM_EXTENDED_IEEE_FORMAT
+      /* The exponent is in the lowest 15 bits of the first word.  */
+      *q++ = i ? 0x8000 : 0;
+      *q++ = *p++;
+#else
+      if (i)
+	*q++ = *p++ | 0x8000;
+      else
+	*q++ = *p++;
+      *q++ = 0;
+#endif
+    }
+  else
+    {
+      if (i)
+	*q-- = *p++ | 0x8000;
+      else
+	*q-- = *p++;
+    }
+#endif
+  /* skip over guard word */
+  ++p;
+  /* move the significand */
+#ifdef IBM
+  for (i = 0; i < 4; i++)
+    *q++ = *p++;
+#endif
+#ifdef DEC
+  for (i = 0; i < 4; i++)
+    *q-- = *p++;
+#endif
+#ifdef IEEE
+  if (REAL_WORDS_BIG_ENDIAN)
+    {
+      for (i = 0; i < 4; i++)
+	*q++ = *p++;
+    }
+  else
+    {
+#ifdef INFINITY
+      if (eiisinf (a))
+	{
+	  /* Intel long double infinity significand.  */
+	  *q-- = 0x8000;
+	  *q-- = 0;
+	  *q-- = 0;
+	  *q = 0;
+	  return;
+	}
+#endif
+      for (i = 0; i < 4; i++)
+	*q-- = *p++;
+    }
+#endif
+}

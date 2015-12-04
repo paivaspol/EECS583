@@ -1,0 +1,37 @@
+static void
+write_modifier_bytes_1 (type, decl_const, decl_volatile, count)
+     tree type;
+     int decl_const;
+     int decl_volatile;
+     int count;
+{
+  if (TREE_CODE (type) == ERROR_MARK)
+    return;
+
+  /* Give up after searching 1000 levels, in case this is a recursive
+     pointer type.  Such types are possible in Ada, but it is not possible
+     to represent them in DWARF1 debug info.  */
+  if (count > 1000)
+    return;
+
+  if (TYPE_READONLY (type) || decl_const)
+    ASM_OUTPUT_DWARF_TYPE_MODIFIER (asm_out_file, MOD_const);
+  if (TYPE_VOLATILE (type) || decl_volatile)
+    ASM_OUTPUT_DWARF_TYPE_MODIFIER (asm_out_file, MOD_volatile);
+  switch (TREE_CODE (type))
+    {
+      case POINTER_TYPE:
+	ASM_OUTPUT_DWARF_TYPE_MODIFIER (asm_out_file, MOD_pointer_to);
+	write_modifier_bytes_1 (TREE_TYPE (type), 0, 0, count+1);
+	return;
+
+      case REFERENCE_TYPE:
+	ASM_OUTPUT_DWARF_TYPE_MODIFIER (asm_out_file, MOD_reference_to);
+	write_modifier_bytes_1 (TREE_TYPE (type), 0, 0, count+1);
+	return;
+
+      case ERROR_MARK:
+      default:
+	return;
+    }
+}

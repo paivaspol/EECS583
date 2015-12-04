@@ -1,0 +1,133 @@
+static void
+insert_insn_end_bb (expr, bb, pre)
+     struct expr *expr;
+     basic_block bb;
+     int pre;
+{
+  rtx insn = bb->end;
+  rtx new_insn;
+  rtx reg = expr->reaching_reg;
+  int regno = REGNO (reg);
+  rtx pat;
+  int i;
+
+  pat = process_insert_insn (expr);
+
+  /* If the last insn is a jump, insert EXPR in front [taking care to
+     handle cc0, etc. properly].  Similary we need to care trapping
+     instructions in presence of non-call exceptions.  */
+
+  if (GET_CODE (insn) == JUMP_INSN
+      || (GET_CODE (insn) == INSN
+	  && (bb->succ->succ_next || (bb->succ->flags & EDGE_ABNORMAL))))
+    {
+#ifdef HAVE_cc0
+      rtx note;
+#endif
+      /* It should always be the case that we can put these instructions
+	 anywhere in the basic block with performing PRE optimizations.
+	 Check this.  */
+      if (GET_CODE (insn) == INSN && pre
+	  && !TEST_BIT (antloc[bb->index], expr->bitmap_index)
+          && !TEST_BIT (transp[bb->index], expr->bitmap_index))
+	abort ();
+
+      /* If this is a jump table, then we can't insert stuff here.  Since
+	 we know the previous real insn must be the tablejump, we insert
+	 the new instruction just before the tablejump.  */
+      if (GET_CODE (PATTERN (insn)) == ADDR_VEC
+	  || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC)
+	insn = prev_real_insn (insn);
+
+#ifdef HAVE_cc0
+      /* FIXME: 'twould be nice to call prev_cc0_setter here but it aborts
+	 if cc0 isn't set.  */
+      note = find_reg_note (insn, REG_CC_SETTER, NULL_RTX);
+      if (note)
+	insn = XEXP (note, 0);
+      else
+	{
+	  rtx maybe_cc0_setter = prev_nonnote_insn (insn);
+	  if (maybe_cc0_setter
+	      && INSN_P (maybe_cc0_setter)
+	      && sets_cc0_p (PATTERN (maybe_cc0_setter)))
+	    insn = maybe_cc0_setter;
+	}
+#endif
+      /* FIXME: What if something in cc0/jump uses value set in new insn?  */
+      new_insn = emit_insn_before (pat, insn);
+    }
+
+  /* Likewise if the last insn is a call, as will happen in the presence
+     of exception handling.  */
+  else if (GET_CODE (insn) == CALL_INSN
+	   && (bb->succ->succ_next || (bb->succ->flags & EDGE_ABNORMAL)))
+    {
+      /* Keeping in mind SMALL_REGISTER_CLASSES and parameters in registers,
+	 we search backward and place the instructions before the first
+	 parameter is loaded.  Do this for everyone for consistency and a
+	 presumtion that we'll get better code elsewhere as well.  
+
+	 It should always be the case that we can put these instructions
+	 anywhere in the basic block with performing PRE optimizations.
+	 Check this.  */
+
+      if (pre
+	  && !TEST_BIT (antloc[bb->index], expr->bitmap_index)
+          && !TEST_BIT (transp[bb->index], expr->bitmap_index))
+	abort ();
+
+      /* Since different machines initialize their parameter registers
+	 in different orders, assume nothing.  Collect the set of all
+	 parameter registers.  */
+      insn = find_first_parameter_load (insn, bb->head);
+
+      /* If we found all the parameter loads, then we want to insert
+	 before the first parameter load.
+
+	 If we did not find all the parameter loads, then we might have
+	 stopped on the head of the block, which could be a CODE_LABEL.
+	 If we inserted before the CODE_LABEL, then we would be putting
+	 the insn in the wrong basic block.  In that case, put the insn
+	 after the CODE_LABEL.  Also, respect NOTE_INSN_BASIC_BLOCK.  */
+      while (GET_CODE (insn) == CODE_LABEL
+	     || NOTE_INSN_BASIC_BLOCK_P (insn))
+	insn = NEXT_INSN (insn);
+
+      new_insn = emit_insn_before (pat, insn);
+    }
+  else
+    new_insn = emit_insn_after (pat, insn);
+
+  /* Keep block number table up to date.
+     Note, PAT could be a multiple insn sequence, we have to make
+     sure that each insn in the sequence is handled.  */
+  if (GET_CODE (pat) == SEQUENCE)
+    {
+      for (i = 0; i < XVECLEN (pat, 0); i++)
+	{
+	  rtx insn = XVECEXP (pat, 0, i);
+	  if (INSN_P (insn))
+	    add_label_notes (PATTERN (insn), new_insn);
+
+	  note_stores (PATTERN (insn), record_set_info, insn);
+	}
+    }
+  else
+    {
+      add_label_notes (pat, new_insn);
+
+      /* Keep register set table up to date.  */
+      record_one_set (regno, new_insn);
+    }
+
+  gcse_create_count++;
+
+  if (gcse_file)
+    {
+      fprintf (gcse_file, "PRE/HOIST: end of bb %d, insn %d, ",
+	       bb->index, INSN_UID (new_insn));
+      fprintf (gcse_file, "copying expression %d to reg %d\n",
+	       expr->bitmap_index, regno);
+    }
+}

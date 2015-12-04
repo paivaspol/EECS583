@@ -1,0 +1,85 @@
+static void
+toe53 (x, y)
+     UEMUSHORT *x, *y;
+{
+  UEMUSHORT i;
+  UEMUSHORT *p;
+
+#ifdef NANS
+  if (eiisnan (x))
+    {
+      make_nan (y, eiisneg (x), DFmode);
+      return;
+    }
+#endif
+  p = &x[0];
+#ifdef IEEE
+  if (! REAL_WORDS_BIG_ENDIAN)
+    y += 3;
+#endif
+  *y = 0;			/* output high order */
+  if (*p++)
+    *y = 0x8000;		/* output sign bit */
+
+  i = *p++;
+  if (i >= (unsigned int) 2047)
+    {
+      /* Saturate at largest number less than infinity.  */
+#ifdef INFINITY
+      *y |= 0x7ff0;
+      if (! REAL_WORDS_BIG_ENDIAN)
+	{
+	  *(--y) = 0;
+	  *(--y) = 0;
+	  *(--y) = 0;
+	}
+      else
+	{
+	  ++y;
+	  *y++ = 0;
+	  *y++ = 0;
+	  *y++ = 0;
+	}
+#else
+      *y |= (UEMUSHORT) 0x7fef;
+      if (! REAL_WORDS_BIG_ENDIAN)
+	{
+	  *(--y) = 0xffff;
+	  *(--y) = 0xffff;
+	  *(--y) = 0xffff;
+	}
+      else
+	{
+	  ++y;
+	  *y++ = 0xffff;
+	  *y++ = 0xffff;
+	  *y++ = 0xffff;
+	}
+#endif
+      return;
+    }
+  if (i == 0)
+    {
+      eshift (x, 4);
+    }
+  else
+    {
+      i <<= 4;
+      eshift (x, 5);
+    }
+  i |= *p++ & (UEMUSHORT) 0x0f;	/* *p = xi[M] */
+  *y |= (UEMUSHORT) i;	/* high order output already has sign bit set */
+  if (! REAL_WORDS_BIG_ENDIAN)
+    {
+      *(--y) = *p++;
+      *(--y) = *p++;
+      *(--y) = *p;
+    }
+  else
+    {
+      ++y;
+      *y++ = *p++;
+      *y++ = *p++;
+      *y++ = *p++;
+    }
+}

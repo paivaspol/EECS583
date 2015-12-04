@@ -1,0 +1,17 @@
+static void
+add_tlist (to, add, exclude_writer, copy)
+     struct tlist **to;
+     struct tlist *add;
+     tree exclude_writer;
+     int copy;
+{
+  while (add)
+    {
+      struct tlist *next = add->next;
+      if (! copy)
+	add->next = *to;
+      if (! exclude_writer || add->writer != exclude_writer)
+	*to = copy ? new_tlist (*to, add->expr, add->writer) : add;
+      add = next;
+    }
+}

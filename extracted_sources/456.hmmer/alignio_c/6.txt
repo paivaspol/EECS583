@@ -1,0 +1,19 @@
+int
+MakeDealignedString(char *aseq, int alen, char *ss, char **ret_s)
+{
+  char *new; 
+  int   apos, rpos;
+
+  new = (char *) MallocOrDie ((alen+1) * sizeof(char));
+  for (apos = rpos = 0; apos < alen; apos++)
+    if (! isgap(aseq[apos]))
+      {
+	new[rpos] = ss[apos];
+	rpos++;
+      }
+  new[rpos] = '\0';
+  if (alen != strlen(ss))
+    { squid_errno = SQERR_PARAMETER; free(new); return 0; }
+  *ret_s = new;
+  return 1;
+}

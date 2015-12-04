@@ -1,0 +1,28 @@
+static void
+integrate_parm_decls (args, map, arg_vector)
+     tree args;
+     struct inline_remap *map;
+     rtvec arg_vector;
+{
+  tree tail;
+  int i;
+
+  for (tail = args, i = 0; tail; tail = TREE_CHAIN (tail), i++)
+    {
+      tree decl = copy_decl_for_inlining (tail, map->fndecl,
+					  current_function_decl);
+      rtx new_decl_rtl
+	= copy_rtx_and_substitute (RTVEC_ELT (arg_vector, i), map, 1);
+
+      /* We really should be setting DECL_INCOMING_RTL to something reasonable
+	 here, but that's going to require some more work.  */
+      /* DECL_INCOMING_RTL (decl) = ?; */
+      /* Fully instantiate the address with the equivalent form so that the
+	 debugging information contains the actual register, instead of the
+	 virtual register.   Do this by not passing an insn to
+	 subst_constants.  */
+      subst_constants (&new_decl_rtl, NULL_RTX, map, 1);
+      apply_change_group ();
+      SET_DECL_RTL (decl, new_decl_rtl);
+    }
+}

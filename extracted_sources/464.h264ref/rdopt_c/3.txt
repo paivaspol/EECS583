@@ -1,0 +1,126 @@
+int CheckReliabilityOfRef (int block, int list_idx, int ref, int mode)
+{
+  int y,x, block_y, block_x, dy, dx, y_pos, x_pos, yy, xx, pres_x, pres_y;
+  int maxold_x  = img->width-1;
+  int maxold_y  = img->height-1;
+  int ref_frame = ref+1;
+
+  int by0 = (mode>=4?2*(block/2):mode==2?2*block:0);
+  int by1 = by0 + (mode>=4||mode==2?2:4);
+  int bx0 = (mode>=4?2*(block%2):mode==3?2*block:0);
+  int bx1 = bx0 + (mode>=4||mode==3?2:4);
+
+  for (block_y=by0; block_y<by1; block_y++)
+    for (block_x=bx0; block_x<bx1; block_x++)
+    {
+      y_pos  = img->all_mv[block_x][block_y][list_idx][ref][mode][1];
+      y_pos += (img->block_y+block_y) * BLOCK_SIZE * 4;
+      x_pos  = img->all_mv[block_x][block_y][list_idx][ref][mode][0];
+      x_pos += (img->block_x+block_x) * BLOCK_SIZE * 4;
+
+      /* Here we specify which pixels of the reference frame influence
+         the reference values and check their reliability. This is
+         based on the function Get_Reference_Pixel */
+
+      dy = y_pos & 3;
+      dx = x_pos & 3;
+
+      y_pos = (y_pos-dy)/4;
+      x_pos = (x_pos-dx)/4;
+
+      if (dy==0 && dx==0) //full-pel
+      {
+        for (y=0 ; y < BLOCK_SIZE ; y++)
+          for (x=0 ; x < BLOCK_SIZE ; x++)
+            if (pixel_map[max(0,min(maxold_y,y_pos+y))][max(0,min(maxold_x,x_pos+x))] < ref_frame)
+              return 0;
+      }
+      else  /* other positions */
+      {
+        if (dy == 0)
+        {
+          for (y=0 ; y < BLOCK_SIZE ; y++)
+            for (x=0 ; x < BLOCK_SIZE ; x++)
+            {
+              pres_y = max(0,min(maxold_y,y_pos+y));
+              for(xx=-2;xx<4;xx++) {
+                pres_x = max(0,min(maxold_x,x_pos+x+xx));
+                if (pixel_map[pres_y][pres_x] < ref_frame)
+                  return 0;
+              }
+            }
+        }
+
+        else if (dx == 0)
+        {
+          for (y=0 ; y < BLOCK_SIZE ; y++)
+            for (x=0 ; x < BLOCK_SIZE ; x++)
+            {
+              pres_x = max(0,min(maxold_x,x_pos+x));
+              for(yy=-2;yy<4;yy++) {
+                pres_y = max(0,min(maxold_y,y_pos+yy+y));
+                if (pixel_map[pres_y][pres_x] < ref_frame)
+                  return 0;
+              }
+            }
+        }
+        else if (dx == 2)
+        {
+          for (y=0 ; y < BLOCK_SIZE ; y++)
+            for (x=0 ; x < BLOCK_SIZE ; x++)
+            {
+              for(yy=-2;yy<4;yy++) {
+                pres_y = max(0,min(maxold_y,y_pos+yy+y));
+                for(xx=-2;xx<4;xx++) {
+                  pres_x = max(0,min(maxold_x,x_pos+xx+x));
+                  if (pixel_map[pres_y][pres_x] < ref_frame)
+                    return 0;
+                }
+              }
+            }
+        }
+        else if (dy == 2)
+        {
+          for (y=0 ; y < BLOCK_SIZE ; y++)
+            for (x=0 ; x < BLOCK_SIZE ; x++)
+            {
+              for(xx=-2;xx<4;xx++) {
+                pres_x = max(0,min(maxold_x,x_pos+xx+x));
+                for(yy=-2;yy<4;yy++) {
+                  pres_y = max(0,min(maxold_y,y_pos+yy+y));
+                  if (pixel_map[pres_y][pres_x] < ref_frame)
+                    return 0;
+                }
+              }
+            }
+        }
+        else
+        {
+          for (y=0 ; y < BLOCK_SIZE ; y++)
+            for (x=0 ; x < BLOCK_SIZE ; x++)
+            {
+              pres_y = dy == 1 ? y_pos+y : y_pos+y+1;
+              pres_y = max(0,min(maxold_y,pres_y));
+
+              for(xx=-2;xx<4;xx++) {
+                pres_x = max(0,min(maxold_x,x_pos+xx+x));
+                if (pixel_map[pres_y][pres_x] < ref_frame)
+                  return 0;
+              }
+
+              pres_x = dx == 1 ? x_pos+x : x_pos+x+1;
+              pres_x = max(0,min(maxold_x,pres_x));
+
+              for(yy=-2;yy<4;yy++) {
+                pres_y = max(0,min(maxold_y,y_pos+yy+y));
+                if (pixel_map[pres_y][pres_x] < ref_frame)
+                  return 0;
+              }
+            }
+        }
+
+      }
+    }
+
+  return 1;
+}

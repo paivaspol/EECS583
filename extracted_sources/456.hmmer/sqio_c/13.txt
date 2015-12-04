@@ -1,0 +1,25 @@
+static void 
+readLoop(int addfirst, int (*endTest)(char *,int *), struct ReadSeqVars *V)
+{
+  int addend = 0;
+  int done   = 0;
+
+  V->seqlen = 0;
+  V->lastrpl = V->lastbpl = 0;
+  if (addfirst) {
+    if (V->ssimode >= 0) V->d_off = V->ssioffset;
+    addseq(V->buf, V);
+  } else if (V->ssimode >= 0)
+    if (0 != SSIGetFilePosition(V->f, V->ssimode, &(V->d_off)))
+      Die("SSIGetFilePosition() failed");
+
+  do {
+    SeqfileGetLine(V);
+	/* feof() alone is a bug; files not necessarily \n terminated */
+    if (*(V->buf) == '\0' && feof(V->f))
+      done = TRUE;
+    done |= (*endTest)(V->buf, &addend);
+    if (addend || !done)
+      addseq(V->buf, V);
+  } while (!done);
+}

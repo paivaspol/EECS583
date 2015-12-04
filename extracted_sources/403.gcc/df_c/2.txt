@@ -1,0 +1,26 @@
+static void
+df_def_table_realloc (df, size)
+     struct df *df;
+     int size;
+{
+  int i;
+  struct ref *refs;
+
+  /* Make table 25 percent larger by default.  */
+  if (! size)
+    size = df->def_size / 4;
+
+  df->def_size += size;
+  df->defs = xrealloc (df->defs,
+		       df->def_size * sizeof (*df->defs));
+
+  /* Allocate a new block of memory and link into list of blocks
+     that will need to be freed later.  */
+
+  refs = xmalloc (size * sizeof (*refs));
+
+  /* Link all the new refs together, overloading the chain field.  */
+  for (i = 0; i < size - 1; i++)
+      refs[i].chain = (struct df_link *)(refs + i + 1);
+  refs[size - 1].chain = 0;
+}

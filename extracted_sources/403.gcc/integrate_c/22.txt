@@ -1,0 +1,18 @@
+void
+emit_initial_value_sets ()
+{
+  struct initial_value_struct *ivs = cfun->hard_reg_initial_vals;
+  int i;
+  rtx seq;
+
+  if (ivs == 0)
+    return;
+
+  start_sequence ();
+  for (i = 0; i < ivs->num_entries; i++)
+    emit_move_insn (ivs->entries[i].pseudo, ivs->entries[i].hard_reg);
+  seq = get_insns ();
+  end_sequence ();
+
+  emit_insns_after (seq, get_insns ());
+}

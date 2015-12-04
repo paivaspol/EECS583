@@ -1,0 +1,133 @@
+static rtx
+steal_delay_list_from_target (insn, condition, seq, delay_list,
+			      sets, needed, other_needed,
+			      slots_to_fill, pslots_filled, pannul_p,
+			      pnew_thread)
+     rtx insn, condition;
+     rtx seq;
+     rtx delay_list;
+     struct resources *sets, *needed, *other_needed;
+     int slots_to_fill;
+     int *pslots_filled;
+     int *pannul_p;
+     rtx *pnew_thread;
+{
+  rtx temp;
+  int slots_remaining = slots_to_fill - *pslots_filled;
+  int total_slots_filled = *pslots_filled;
+  rtx new_delay_list = 0;
+  int must_annul = *pannul_p;
+  int used_annul = 0;
+  int i;
+  struct resources cc_set;
+
+  /* We can't do anything if there are more delay slots in SEQ than we
+     can handle, or if we don't know that it will be a taken branch.
+     We know that it will be a taken branch if it is either an unconditional
+     branch or a conditional branch with a stricter branch condition.
+
+     Also, exit if the branch has more than one set, since then it is computing
+     other results that can't be ignored, e.g. the HPPA mov&branch instruction.
+     ??? It may be possible to move other sets into INSN in addition to
+     moving the instructions in the delay slots.
+
+     We can not steal the delay list if one of the instructions in the
+     current delay_list modifies the condition codes and the jump in the
+     sequence is a conditional jump. We can not do this because we can
+     not change the direction of the jump because the condition codes
+     will effect the direction of the jump in the sequence.  */
+
+  CLEAR_RESOURCE (&cc_set);
+  for (temp = delay_list; temp; temp = XEXP (temp, 1))
+    {
+      rtx trial = XEXP (temp, 0);
+
+      mark_set_resources (trial, &cc_set, 0, MARK_SRC_DEST_CALL);
+      if (insn_references_resource_p (XVECEXP (seq , 0, 0), &cc_set, 0))
+	return delay_list;
+    }
+
+  if (XVECLEN (seq, 0) - 1 > slots_remaining
+      || ! condition_dominates_p (condition, XVECEXP (seq, 0, 0))
+      || ! single_set (XVECEXP (seq, 0, 0)))
+    return delay_list;
+
+#ifdef MD_CAN_REDIRECT_BRANCH
+  /* On some targets, branches with delay slots can have a limited
+     displacement.  Give the back end a chance to tell us we can't do
+     this.  */
+  if (! MD_CAN_REDIRECT_BRANCH (insn, XVECEXP (seq, 0, 0)))
+    return delay_list;
+#endif
+
+  for (i = 1; i < XVECLEN (seq, 0); i++)
+    {
+      rtx trial = XVECEXP (seq, 0, i);
+      int flags;
+
+      if (insn_references_resource_p (trial, sets, 0)
+	  || insn_sets_resource_p (trial, needed, 0)
+	  || insn_sets_resource_p (trial, sets, 0)
+#ifdef HAVE_cc0
+	  /* If TRIAL sets CC0, we can't copy it, so we can't steal this
+	     delay list.  */
+	  || find_reg_note (trial, REG_CC_USER, NULL_RTX)
+#endif
+	  /* If TRIAL is from the fallthrough code of an annulled branch insn
+	     in SEQ, we cannot use it.  */
+	  || (INSN_ANNULLED_BRANCH_P (XVECEXP (seq, 0, 0))
+	      && ! INSN_FROM_TARGET_P (trial)))
+	return delay_list;
+
+      /* If this insn was already done (usually in a previous delay slot),
+	 pretend we put it in our delay slot.  */
+      if (redundant_insn (trial, insn, new_delay_list))
+	continue;
+
+      /* We will end up re-vectoring this branch, so compute flags
+	 based on jumping to the new label.  */
+      flags = get_jump_flags (insn, JUMP_LABEL (XVECEXP (seq, 0, 0)));
+
+      if (! must_annul
+	  && ((condition == const_true_rtx
+	       || (! insn_sets_resource_p (trial, other_needed, 0)
+		   && ! may_trap_p (PATTERN (trial)))))
+	  ? eligible_for_delay (insn, total_slots_filled, trial, flags)
+	  : (must_annul || (delay_list == NULL && new_delay_list == NULL))
+	     && (must_annul = 1,
+	         check_annul_list_true_false (0, delay_list)
+	         && check_annul_list_true_false (0, new_delay_list)
+	         && eligible_for_annul_false (insn, total_slots_filled,
+					      trial, flags)))
+	{
+	  if (must_annul)
+	    used_annul = 1;
+	  temp = copy_rtx (trial);
+	  INSN_FROM_TARGET_P (temp) = 1;
+	  new_delay_list = add_to_delay_list (temp, new_delay_list);
+	  total_slots_filled++;
+
+	  if (--slots_remaining == 0)
+	    break;
+	}
+      else
+	return delay_list;
+    }
+
+  /* Show the place to which we will be branching.  */
+  *pnew_thread = next_active_insn (JUMP_LABEL (XVECEXP (seq, 0, 0)));
+
+  /* Add any new insns to the delay list and update the count of the
+     number of slots filled.  */
+  *pslots_filled = total_slots_filled;
+  if (used_annul)
+    *pannul_p = 1;
+
+  if (delay_list == 0)
+    return new_delay_list;
+
+  for (temp = new_delay_list; temp; temp = XEXP (temp, 1))
+    delay_list = add_to_delay_list (XEXP (temp, 0), delay_list);
+
+  return delay_list;
+}

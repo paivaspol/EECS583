@@ -1,0 +1,34 @@
+static rtx
+widen_operand (op, mode, oldmode, unsignedp, no_extend)
+     rtx op;
+     enum machine_mode mode, oldmode;
+     int unsignedp;
+     int no_extend;
+{
+  rtx result;
+
+  /* If we don't have to extend and this is a constant, return it.  */
+  if (no_extend && GET_MODE (op) == VOIDmode)
+    return op;
+
+  /* If we must extend do so.  If OP is a SUBREG for a promoted object, also
+     extend since it will be more efficient to do so unless the signedness of
+     a promoted object differs from our extension.  */
+  if (! no_extend
+      || (GET_CODE (op) == SUBREG && SUBREG_PROMOTED_VAR_P (op)
+	  && SUBREG_PROMOTED_UNSIGNED_P (op) == unsignedp))
+    return convert_modes (mode, oldmode, op, unsignedp);
+
+  /* If MODE is no wider than a single word, we return a paradoxical
+     SUBREG.  */
+  if (GET_MODE_SIZE (mode) <= UNITS_PER_WORD)
+    return gen_rtx_SUBREG (mode, force_reg (GET_MODE (op), op), 0);
+
+  /* Otherwise, get an object of MODE, clobber it, and set the low-order
+     part to OP.  */
+
+  result = gen_reg_rtx (mode);
+  emit_insn (gen_rtx_CLOBBER (VOIDmode, result));
+  emit_move_insn (gen_lowpart (GET_MODE (op), result), op);
+  return result;
+}

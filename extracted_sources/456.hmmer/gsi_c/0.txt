@@ -1,0 +1,20 @@
+int
+GSIGetRecord(GSIFILE *gsi, char *f1, sqd_uint16 *f2, sqd_uint32 *f3)
+{
+  if (f1 == NULL) fseek(gsi->gsifp, GSI_KEYSIZE, SEEK_CUR);
+  else if (! fread(f1, GSI_KEYSIZE, 1, gsi->gsifp))
+    { squid_errno = SQERR_NODATA; return 0; }
+
+  if (f2 == NULL) fseek(gsi->gsifp, sizeof(sqd_uint16), SEEK_CUR);
+  else if (! fread(f2, sizeof(sqd_uint16), 1, gsi->gsifp))
+    { squid_errno = SQERR_NODATA; return 0; }
+
+  if (f3 == NULL) fseek(gsi->gsifp, sizeof(sqd_uint32), SEEK_CUR);
+  else if (! fread(f3, sizeof(sqd_uint32), 1, gsi->gsifp))
+    { squid_errno = SQERR_NODATA; return 0; }
+
+  if (f2 != NULL) *f2 = sre_ntoh16(*f2);
+  if (f3 != NULL) *f3 = sre_ntoh32(*f3);
+
+  return 1;
+}

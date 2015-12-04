@@ -1,0 +1,36 @@
+void
+scope_to_insns_finalize ()
+{
+  tree cur_block = DECL_INITIAL (cfun->decl);
+  rtx insn, note;
+
+  /* Tag the blocks with a depth number so that change_scope can find
+     the common parent easily.  */
+  set_block_levels (cur_block, 0);
+
+  for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+    {
+      tree this_block;
+
+      if ((size_t) INSN_UID (insn) >= insn_scopes->num_elements)
+	continue;
+      this_block = VARRAY_TREE (insn_scopes, INSN_UID (insn));
+      if (! this_block)
+	continue;
+
+      if (this_block != cur_block)
+	{
+	  change_scope (insn, cur_block, this_block);
+	  cur_block = this_block;
+	}
+    }
+
+  VARRAY_FREE (insn_scopes);
+
+  /* change_scope emits before the insn, not after.  */
+  note = emit_note (NULL, NOTE_INSN_DELETED);
+  change_scope (note, cur_block, DECL_INITIAL (cfun->decl));
+  delete_insn (note);
+
+  reorder_blocks ();
+}

@@ -1,0 +1,81 @@
+void
+compute_available (avloc, kill, avout, avin)
+     sbitmap *avloc, *kill, *avout, *avin;
+{
+  int bb;
+  edge e;
+  basic_block *worklist, *qin, *qout, *qend;
+  unsigned int qlen;
+
+  /* Allocate a worklist array/queue.  Entries are only added to the
+     list if they were not already on the list.  So the size is
+     bounded by the number of basic blocks.  */
+  qin = qout = worklist
+    = (basic_block *) xmalloc (sizeof (basic_block) * n_basic_blocks);
+
+  /* We want a maximal solution.  */
+  sbitmap_vector_ones (avout, n_basic_blocks);
+
+  /* Put every block on the worklist; this is necessary because of the
+     optimistic initialization of AVOUT above.  */
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    {
+      *qin++ = BASIC_BLOCK (bb);
+      BASIC_BLOCK (bb)->aux = BASIC_BLOCK (bb);
+    }
+
+  qin = worklist;
+  qend = &worklist[n_basic_blocks];
+  qlen = n_basic_blocks;
+
+  /* Mark blocks which are successors of the entry block so that we
+     can easily identify them below.  */
+  for (e = ENTRY_BLOCK_PTR->succ; e; e = e->succ_next)
+    e->dest->aux = ENTRY_BLOCK_PTR;
+
+  /* Iterate until the worklist is empty.  */
+  while (qlen)
+    {
+      /* Take the first entry off the worklist.  */
+      basic_block b = *qout++;
+      bb = b->index;
+      qlen--;
+
+      if (qout >= qend)
+        qout = worklist;
+
+      /* If one of the predecessor blocks is the ENTRY block, then the
+	 intersection of avouts is the null set.  We can identify such blocks
+	 by the special value in the AUX field in the block structure.  */
+      if (b->aux == ENTRY_BLOCK_PTR)
+	/* Do not clear the aux field for blocks which are successors of the
+	   ENTRY block.  That way we never add then to the worklist again.  */
+	sbitmap_zero (avin[bb]);
+      else
+	{
+	  /* Clear the aux field of this block so that it can be added to
+	     the worklist again if necessary.  */
+	  b->aux = NULL;
+	  sbitmap_intersection_of_preds (avin[bb], avout, bb);
+	}
+
+      if (sbitmap_union_of_diff (avout[bb], avloc[bb], avin[bb], kill[bb]))
+	/* If the out state of this block changed, then we need
+	   to add the successors of this block to the worklist
+	   if they are not already on the worklist.  */
+	for (e = b->succ; e; e = e->succ_next)
+	  if (!e->dest->aux && e->dest != EXIT_BLOCK_PTR)
+	    {
+	      *qin++ = e->dest;
+	      e->dest->aux = e;
+	      qlen++;
+
+	      if (qin >= qend)
+	        qin = worklist;
+	    }
+    }
+
+  clear_aux_for_edges ();
+  clear_aux_for_blocks ();
+  free (worklist);
+}

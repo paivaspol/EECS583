@@ -1,0 +1,48 @@
+static rtx
+expand_builtin_frame_address (exp)
+     tree exp;
+{
+  tree fndecl = TREE_OPERAND (TREE_OPERAND (exp, 0), 0);
+  tree arglist = TREE_OPERAND (exp, 1);
+
+  /* The argument must be a nonnegative integer constant.
+     It counts the number of frames to scan up the stack.
+     The value is the return address saved in that frame.  */
+  if (arglist == 0)
+    /* Warning about missing arg was already issued.  */
+    return const0_rtx;
+  else if (! host_integerp (TREE_VALUE (arglist), 1))
+    {
+      if (DECL_FUNCTION_CODE (fndecl) == BUILT_IN_FRAME_ADDRESS)
+	error ("invalid arg to `__builtin_frame_address'");
+      else
+	error ("invalid arg to `__builtin_return_address'");
+      return const0_rtx;
+    }
+  else
+    {
+      rtx tem
+	= expand_builtin_return_addr (DECL_FUNCTION_CODE (fndecl),
+				      tree_low_cst (TREE_VALUE (arglist), 1),
+				      hard_frame_pointer_rtx);
+
+      /* Some ports cannot access arbitrary stack frames.  */
+      if (tem == NULL)
+	{
+	  if (DECL_FUNCTION_CODE (fndecl) == BUILT_IN_FRAME_ADDRESS)
+	    warning ("unsupported arg to `__builtin_frame_address'");
+	  else
+	    warning ("unsupported arg to `__builtin_return_address'");
+	  return const0_rtx;
+	}
+
+      /* For __builtin_frame_address, return what we've got.  */
+      if (DECL_FUNCTION_CODE (fndecl) == BUILT_IN_FRAME_ADDRESS)
+	return tem;
+
+      if (GET_CODE (tem) != REG
+	  && ! CONSTANT_P (tem))
+	tem = copy_to_mode_reg (Pmode, tem);
+      return tem;
+    }
+}

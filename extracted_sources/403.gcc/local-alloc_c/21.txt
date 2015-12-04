@@ -1,0 +1,35 @@
+static void
+reg_is_born (reg, birth)
+     rtx reg;
+     int birth;
+{
+  int regno;
+
+  if (GET_CODE (reg) == SUBREG)
+    {
+      regno = REGNO (SUBREG_REG (reg));
+      if (regno < FIRST_PSEUDO_REGISTER)
+	regno = subreg_hard_regno (reg, 1);
+    }
+  else
+    regno = REGNO (reg);
+
+  if (regno < FIRST_PSEUDO_REGISTER)
+    {
+      mark_life (regno, GET_MODE (reg), 1);
+
+      /* If the register was to have been born earlier that the present
+	 insn, mark it as live where it is actually born.  */
+      if (birth < 2 * this_insn_number)
+	post_mark_life (regno, GET_MODE (reg), 1, birth, 2 * this_insn_number);
+    }
+  else
+    {
+      if (reg_qty[regno] == -2)
+	alloc_qty (regno, GET_MODE (reg), PSEUDO_REGNO_SIZE (regno), birth);
+
+      /* If this register has a quantity number, show that it isn't dead.  */
+      if (reg_qty[regno] >= 0)
+	qty[reg_qty[regno]].death = -1;
+    }
+}

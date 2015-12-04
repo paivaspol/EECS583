@@ -1,0 +1,83 @@
+void updateMADModel ()
+{
+  
+  int n_windowSize;
+  int i;
+  double error[20], std = 0.0, threshold;
+  int m_Nc;
+  
+  if(img->NumberofCodedPFrame>0)
+  {
+    //assert (img->type!=P_SLICE);
+    
+    /*frame layer rate control*/
+    if(img->BasicUnit==img->Frame_Total_Number_MB)
+      m_Nc=img->NumberofCodedPFrame;
+    /*basic unit layer rate control*/
+    else
+      m_Nc=img->NumberofCodedPFrame*TotalNumberofBasicUnit+CodedBasicUnit;
+    
+    for (i = 19; i > 0; i--) 
+    {// update the history
+      PPictureMAD[i] = PPictureMAD[i - 1];
+      PictureMAD[i]=PPictureMAD[i];
+      ReferenceMAD[i]= ReferenceMAD[i-1];
+    }
+    PPictureMAD[0] = CurrentFrameMAD;
+    PictureMAD[0]=PPictureMAD[0];
+    if(img->BasicUnit==img->Frame_Total_Number_MB)
+      ReferenceMAD[0]=PictureMAD[1];
+    else
+    {
+      if(((input->PicInterlace==ADAPTIVE_CODING)||(input->MbInterlace))\
+        &&(img->FieldControl==1))
+        ReferenceMAD[0]=FCBUPFMAD[TotalNumberofBasicUnit-1-NumberofBasicUnit];
+      else
+        ReferenceMAD[0]=BUPFMAD[TotalNumberofBasicUnit-1-NumberofBasicUnit];
+    }
+    MADPictureC1=PMADPictureC1;
+    MADPictureC2=PMADPictureC2;
+    
+    
+    /*compute the size of window*/
+    
+    n_windowSize = (CurrentFrameMAD>PreviousFrameMAD)?(int)(PreviousFrameMAD/CurrentFrameMAD*20)\
+      :(int)(CurrentFrameMAD/PreviousFrameMAD*20);
+    n_windowSize=MIN(n_windowSize,(m_Nc-1));
+    n_windowSize=MAX(n_windowSize, 1);
+    n_windowSize=MIN(n_windowSize,MADm_windowSize+1);
+    n_windowSize=MIN(20,n_windowSize);
+    /*update the previous window size*/
+    MADm_windowSize=n_windowSize;
+    
+    for (i = 0; i < 20; i++) 
+    {
+      PictureRejected[i] = FALSE;
+    }
+    //update the MAD for the previous frame
+    if(img->type==P_SLICE)
+      PreviousFrameMAD=CurrentFrameMAD;
+    
+    // initial MAD model estimator
+    MADModelEstimator (n_windowSize);
+    
+    // remove outlier 
+    
+    for (i = 0; i < (int) n_windowSize; i++) 
+    {
+      error[i] = MADPictureC1*ReferenceMAD[i]+MADPictureC2-PictureMAD[i];
+      std += error[i] * error[i]; 
+    }
+    threshold = (n_windowSize == 2) ? 0 : sqrt (std / n_windowSize);
+    for (i = 0; i < (int) n_windowSize; i++) 
+    {
+      if (fabs(error[i]) > threshold)
+        PictureRejected[i] = TRUE;
+    }
+    // always include the last data point
+    PictureRejected[0] = FALSE;
+    
+    // second MAD model estimator
+    MADModelEstimator (n_windowSize);
+  }
+}

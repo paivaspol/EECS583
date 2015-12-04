@@ -1,0 +1,87 @@
+void
+finish_function (nested, can_defer_p)
+     int nested;
+     int can_defer_p;
+{
+  tree fndecl = current_function_decl;
+
+#if 0
+  /* This caused &foo to be of type ptr-to-const-function which then
+     got a warning when stored in a ptr-to-function variable.  */
+  TREE_READONLY (fndecl) = 1;
+#endif
+
+  poplevel (1, 0, 1);
+  BLOCK_SUPERCONTEXT (DECL_INITIAL (fndecl)) = fndecl;
+
+  /* Must mark the RESULT_DECL as being in this function.  */
+
+  DECL_CONTEXT (DECL_RESULT (fndecl)) = fndecl;
+
+  /* Obey `register' declarations if `setjmp' is called in this fn.  */
+  if (flag_traditional && current_function_calls_setjmp)
+    {
+      setjmp_protect (DECL_INITIAL (fndecl));
+      setjmp_protect_args ();
+    }
+
+  if (MAIN_NAME_P (DECL_NAME (fndecl)) && flag_hosted)
+    {
+      if (TYPE_MAIN_VARIANT (TREE_TYPE (TREE_TYPE (fndecl)))
+	  != integer_type_node)
+	{
+	  /* If warn_main is 1 (-Wmain) or 2 (-Wall), we have already warned.
+	     If warn_main is -1 (-Wno-main) we don't want to be warned.  */
+	  if (! warn_main)
+	    pedwarn_with_decl (fndecl, "return type of `%s' is not `int'");
+	}
+      else
+	{
+#ifdef DEFAULT_MAIN_RETURN
+	  /* Make it so that `main' always returns success by default.  */
+	  DEFAULT_MAIN_RETURN;
+#else
+	  if (flag_isoc99)
+	    c_expand_return (integer_zero_node);
+#endif
+	}
+    }
+  
+  finish_fname_decls ();
+
+  /* Tie off the statement tree for this function.  */
+  finish_stmt_tree (&DECL_SAVED_TREE (fndecl));
+
+  /* Complain if there's just no return statement.  */
+  if (warn_return_type
+      && TREE_CODE (TREE_TYPE (TREE_TYPE (fndecl))) != VOID_TYPE
+      && !current_function_returns_value && !current_function_returns_null
+      /* Don't complain if we abort.  */
+      && !current_function_returns_abnormally
+      /* Don't warn for main().  */
+      && !MAIN_NAME_P (DECL_NAME (fndecl))
+      /* Or if they didn't actually specify a return type.  */
+      && !C_FUNCTION_IMPLICIT_INT (fndecl)
+      /* Normally, with -Wreturn-type, flow will complain.  Unless we're an
+	 inline function, as we might never be compiled separately.  */
+      && DECL_INLINE (fndecl))
+    warning ("no return statement in function returning non-void");
+
+  /* Clear out memory we no longer need.  */
+  free_after_parsing (cfun);
+  /* Since we never call rest_of_compilation, we never clear
+     CFUN.  Do so explicitly.  */
+  free_after_compilation (cfun);
+  cfun = NULL;
+
+  if (! nested)
+    {
+      /* Generate RTL for the body of this function.  */
+      c_expand_body (fndecl, nested, can_defer_p);
+
+      /* Let the error reporting routines know that we're outside a
+	 function.  For a nested function, this value is used in
+	 pop_c_function_context and then reset via pop_function_context.  */
+      current_function_decl = NULL;
+    }
+}

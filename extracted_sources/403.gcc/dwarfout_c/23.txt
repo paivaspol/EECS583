@@ -1,0 +1,21 @@
+static void
+output_reg_number (rtl)
+     rtx rtl;
+{
+  unsigned regno = REGNO (rtl);
+
+  if (regno >= DWARF_FRAME_REGISTERS)
+    {
+      warning_with_decl (dwarf_last_decl, 
+			 "internal regno botch: `%s' has regno = %d\n",
+			 regno);
+      regno = 0;
+    }
+  dw2_assemble_integer (4, GEN_INT (DBX_REGISTER_NUMBER (regno)));
+  if (flag_debug_asm)
+    {
+      fprintf (asm_out_file, "\t%s ", ASM_COMMENT_START);
+      PRINT_REG (rtl, 0, asm_out_file);
+    }
+  fputc ('\n', asm_out_file);
+}

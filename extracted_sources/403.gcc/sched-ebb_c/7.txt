@@ -1,0 +1,14 @@
+static void
+compute_jump_reg_dependencies (insn, set)
+     rtx insn;
+     regset set;
+{
+  basic_block b = BLOCK_FOR_INSN (insn);
+  edge e;
+  for (e = b->succ; e; e = e->succ_next)
+    if ((e->flags & EDGE_FALLTHRU) == 0)
+      {
+	bitmap_operation (set, set, e->dest->global_live_at_start,
+			  BITMAP_IOR);
+      }
+}

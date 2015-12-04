@@ -1,0 +1,27 @@
+static void
+sjlj_build_landing_pads ()
+{
+  struct sjlj_lp_info *lp_info;
+
+  lp_info = (struct sjlj_lp_info *) xcalloc (cfun->eh->last_region_number + 1,
+					     sizeof (struct sjlj_lp_info));
+
+  if (sjlj_find_directly_reachable_regions (lp_info))
+    {
+      rtx dispatch_label = gen_label_rtx ();
+
+      cfun->eh->sjlj_fc
+	= assign_stack_local (TYPE_MODE (sjlj_fc_type_node),
+			      int_size_in_bytes (sjlj_fc_type_node),
+			      TYPE_ALIGN (sjlj_fc_type_node));
+
+      sjlj_assign_call_site_values (dispatch_label, lp_info);
+      sjlj_mark_call_sites (lp_info);
+
+      sjlj_emit_function_enter (dispatch_label);
+      sjlj_emit_dispatch_table (dispatch_label, lp_info);
+      sjlj_emit_function_exit ();
+    }
+
+  free (lp_info);
+}

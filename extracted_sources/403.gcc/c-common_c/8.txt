@@ -1,0 +1,21 @@
+static rtx c_expand_builtin_printf PARAMS ((tree, rtx, enum machine_mode,
+					    enum expand_modifier, int, int));
+static rtx c_expand_builtin_fprintf PARAMS ((tree, rtx, enum machine_mode,
+					     enum expand_modifier, int, int));
+
+/* Print a warning if a constant expression had overflow in folding.
+   Invoke this function on every expression that the language
+   requires to be a constant expression.
+   Note the ANSI C standard says it is erroneous for a
+   constant expression to overflow.  */
+
+void
+constant_expression_warning (value)
+     tree value;
+{
+  if ((TREE_CODE (value) == INTEGER_CST || TREE_CODE (value) == REAL_CST
+       || TREE_CODE (value) == VECTOR_CST
+       || TREE_CODE (value) == COMPLEX_CST)
+      && TREE_CONSTANT_OVERFLOW (value) && pedantic)
+    pedwarn ("overflow in constant expression");
+}

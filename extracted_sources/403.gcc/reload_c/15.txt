@@ -1,0 +1,137 @@
+static struct decomposition
+decompose (x)
+     rtx x;
+{
+  struct decomposition val;
+  int all_const = 0;
+
+  val.reg_flag = 0;
+  val.safe = 0;
+  val.base = 0;
+  val.start = 0;			/* MJP Some SPEC people read */
+  val.end = 0;				/* MJP only warning messages */
+  if (GET_CODE (x) == MEM)
+    {
+      rtx base = NULL_RTX, offset = 0;
+      rtx addr = XEXP (x, 0);
+
+      if (GET_CODE (addr) == PRE_DEC || GET_CODE (addr) == PRE_INC
+	  || GET_CODE (addr) == POST_DEC || GET_CODE (addr) == POST_INC)
+	{
+	  val.base = XEXP (addr, 0);
+	  val.start = -GET_MODE_SIZE (GET_MODE (x));
+	  val.end = GET_MODE_SIZE (GET_MODE (x));
+	  val.safe = REGNO (val.base) == STACK_POINTER_REGNUM;
+	  return val;
+	}
+
+      if (GET_CODE (addr) == PRE_MODIFY || GET_CODE (addr) == POST_MODIFY)
+	{
+	  if (GET_CODE (XEXP (addr, 1)) == PLUS
+	      && XEXP (addr, 0) == XEXP (XEXP (addr, 1), 0)
+	      && CONSTANT_P (XEXP (XEXP (addr, 1), 1)))
+	    {
+	      val.base  = XEXP (addr, 0);
+	      val.start = -INTVAL (XEXP (XEXP (addr, 1), 1));
+	      val.end   = INTVAL (XEXP (XEXP (addr, 1), 1));
+	      val.safe  = REGNO (val.base) == STACK_POINTER_REGNUM;
+	      return val;
+	    }
+	}
+
+      if (GET_CODE (addr) == CONST)
+	{
+	  addr = XEXP (addr, 0);
+	  all_const = 1;
+	}
+      if (GET_CODE (addr) == PLUS)
+	{
+	  if (CONSTANT_P (XEXP (addr, 0)))
+	    {
+	      base = XEXP (addr, 1);
+	      offset = XEXP (addr, 0);
+	    }
+	  else if (CONSTANT_P (XEXP (addr, 1)))
+	    {
+	      base = XEXP (addr, 0);
+	      offset = XEXP (addr, 1);
+	    }
+	}
+
+      if (offset == 0)
+	{
+	  base = addr;
+	  offset = const0_rtx;
+	}
+      if (GET_CODE (offset) == CONST)
+	offset = XEXP (offset, 0);
+      if (GET_CODE (offset) == PLUS)
+	{
+	  if (GET_CODE (XEXP (offset, 0)) == CONST_INT)
+	    {
+	      base = gen_rtx_PLUS (GET_MODE (base), base, XEXP (offset, 1));
+	      offset = XEXP (offset, 0);
+	    }
+	  else if (GET_CODE (XEXP (offset, 1)) == CONST_INT)
+	    {
+	      base = gen_rtx_PLUS (GET_MODE (base), base, XEXP (offset, 0));
+	      offset = XEXP (offset, 1);
+	    }
+	  else
+	    {
+	      base = gen_rtx_PLUS (GET_MODE (base), base, offset);
+	      offset = const0_rtx;
+	    }
+	}
+      else if (GET_CODE (offset) != CONST_INT)
+	{
+	  base = gen_rtx_PLUS (GET_MODE (base), base, offset);
+	  offset = const0_rtx;
+	}
+
+      if (all_const && GET_CODE (base) == PLUS)
+	base = gen_rtx_CONST (GET_MODE (base), base);
+
+      if (GET_CODE (offset) != CONST_INT)
+	abort ();
+
+      val.start = INTVAL (offset);
+      val.end = val.start + GET_MODE_SIZE (GET_MODE (x));
+      val.base = base;
+      return val;
+    }
+  else if (GET_CODE (x) == REG)
+    {
+      val.reg_flag = 1;
+      val.start = true_regnum (x);
+      if (val.start < 0)
+	{
+	  /* A pseudo with no hard reg.  */
+	  val.start = REGNO (x);
+	  val.end = val.start + 1;
+	}
+      else
+	/* A hard reg.  */
+	val.end = val.start + HARD_REGNO_NREGS (val.start, GET_MODE (x));
+    }
+  else if (GET_CODE (x) == SUBREG)
+    {
+      if (GET_CODE (SUBREG_REG (x)) != REG)
+	/* This could be more precise, but it's good enough.  */
+	return decompose (SUBREG_REG (x));
+      val.reg_flag = 1;
+      val.start = true_regnum (x);
+      if (val.start < 0)
+	return decompose (SUBREG_REG (x));
+      else
+	/* A hard reg.  */
+	val.end = val.start + HARD_REGNO_NREGS (val.start, GET_MODE (x));
+    }
+  else if (CONSTANT_P (x)
+	   /* This hasn't been assigned yet, so it can't conflict yet.  */
+	   || GET_CODE (x) == SCRATCH)
+    val.safe = 1;
+  else
+    abort ();
+  return val;
+}

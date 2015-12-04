@@ -1,0 +1,30 @@
+int          
+Linefit(float *x, float *y, int N, float *ret_a, float *ret_b, float *ret_r) 
+{				
+  float xavg, yavg;
+  float sxx, syy, sxy;
+  int   i;
+  
+  /* Calculate averages, xavg and yavg
+   */
+  xavg = yavg = 0.0;
+  for (i = 0; i < N; i++)
+    {
+      xavg += x[i];
+      yavg += y[i];
+    }
+  xavg /= (float) N;
+  yavg /= (float) N;
+
+  sxx = syy = sxy = 0.0;
+  for (i = 0; i < N; i++)
+    {
+      sxx    += (x[i] - xavg) * (x[i] - xavg);
+      syy    += (y[i] - yavg) * (y[i] - xavg);
+      sxy    += (x[i] - xavg) * (y[i] - yavg);
+    }
+  *ret_b = sxy / sxx;
+  *ret_a = yavg - xavg*(*ret_b);
+  *ret_r = sxy / (sqrt(sxx) * sqrt(syy));
+  return 1;
+}

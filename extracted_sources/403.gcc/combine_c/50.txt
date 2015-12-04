@@ -1,0 +1,61 @@
+static rtx
+get_last_value (x)
+     rtx x;
+{
+  unsigned int regno;
+  rtx value;
+
+  /* If this is a non-paradoxical SUBREG, get the value of its operand and
+     then convert it to the desired mode.  If this is a paradoxical SUBREG,
+     we cannot predict what values the "extra" bits might have.  */
+  if (GET_CODE (x) == SUBREG
+      && subreg_lowpart_p (x)
+      && (GET_MODE_SIZE (GET_MODE (x))
+	  <= GET_MODE_SIZE (GET_MODE (SUBREG_REG (x))))
+      && (value = get_last_value (SUBREG_REG (x))) != 0)
+    return gen_lowpart_for_combine (GET_MODE (x), value);
+
+  if (GET_CODE (x) != REG)
+    return 0;
+
+  regno = REGNO (x);
+  value = reg_last_set_value[regno];
+
+  /* If we don't have a value, or if it isn't for this basic block and
+     it's either a hard register, set more than once, or it's a live
+     at the beginning of the function, return 0.
+
+     Because if it's not live at the beginning of the function then the reg
+     is always set before being used (is never used without being set).
+     And, if it's set only once, and it's always set before use, then all
+     uses must have the same last value, even if it's not from this basic
+     block.  */
+
+  if (value == 0
+      || (reg_last_set_label[regno] != label_tick
+	  && (regno < FIRST_PSEUDO_REGISTER
+	      || REG_N_SETS (regno) != 1
+	      || (REGNO_REG_SET_P
+		  (BASIC_BLOCK (0)->global_live_at_start, regno)))))
+    return 0;
+
+  /* If the value was set in a later insn than the ones we are processing,
+     we can't use it even if the register was only set once.  */
+  if (INSN_CUID (reg_last_set[regno]) >= subst_low_cuid)
+    return 0;
+
+  /* If the value has all its registers valid, return it.  */
+  if (get_last_value_validate (&value, reg_last_set[regno],
+			       reg_last_set_label[regno], 0))
+    return value;
+
+  /* Otherwise, make a copy and replace any invalid register with
+     (clobber (const_int 0)).  If that fails for some reason, return 0.  */
+
+  value = copy_rtx (value);
+  if (get_last_value_validate (&value, reg_last_set[regno],
+			       reg_last_set_label[regno], 1))
+    return value;
+
+  return 0;
+}

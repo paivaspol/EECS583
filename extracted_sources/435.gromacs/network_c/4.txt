@@ -1,0 +1,12 @@
+void gmx_rx_wait(int nodeid)
+{
+#ifndef USE_MPI
+  MYFATAL("gmx_rx_wait");
+#else
+  MPI_Status  status;
+  int mpi_result;
+  
+  if ((mpi_result=MPI_Wait(&mpi_req_rx,&status)) != 0)
+    fatal_error(0,"MPI_Wait: result=%d",mpi_result);
+#endif
+}

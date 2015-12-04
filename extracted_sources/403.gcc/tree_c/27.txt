@@ -1,0 +1,76 @@
+int
+unsafe_for_reeval (expr)
+     tree expr;
+{
+  int unsafeness = 0;
+  enum tree_code code;
+  int i, tmp;
+  tree exp;
+  int first_rtl;
+
+  if (expr == NULL_TREE)
+    return 1;
+
+  code = TREE_CODE (expr);
+  first_rtl = first_rtl_op (code);
+
+  switch (code)
+    {
+    case SAVE_EXPR:
+    case RTL_EXPR:
+      return 2;
+
+    case TREE_LIST:
+      for (exp = expr; exp != 0; exp = TREE_CHAIN (exp))
+	{
+	  tmp = unsafe_for_reeval (TREE_VALUE (exp));
+	  unsafeness = MAX (tmp, unsafeness);
+	}
+
+      return unsafeness;
+
+    case CALL_EXPR:
+      tmp = unsafe_for_reeval (TREE_OPERAND (expr, 1));
+      return MAX (tmp, 1);
+
+    case TARGET_EXPR:
+      unsafeness = 1;
+      break;
+
+    default:
+      if (lang_unsafe_for_reeval != 0)
+	{
+	  tmp = (*lang_unsafe_for_reeval) (expr);
+	  if (tmp >= 0)
+	    return tmp;
+	}
+      break;
+    }
+
+  switch (TREE_CODE_CLASS (code))
+    {
+    case 'c':  /* a constant */
+    case 't':  /* a type node */
+    case 'x':  /* something random, like an identifier or an ERROR_MARK.  */
+    case 'd':  /* A decl node */
+    case 'b':  /* A block node */
+      return 0;
+
+    case 'e':  /* an expression */
+    case 'r':  /* a reference */
+    case 's':  /* an expression with side effects */
+    case '<':  /* a comparison expression */
+    case '2':  /* a binary arithmetic expression */
+    case '1':  /* a unary arithmetic expression */
+      for (i = first_rtl - 1; i >= 0; i--)
+	{
+	  tmp = unsafe_for_reeval (TREE_OPERAND (expr, i));
+	  unsafeness = MAX (tmp, unsafeness);
+	}
+
+      return unsafeness;
+
+    default:
+      return 2;
+    }
+}

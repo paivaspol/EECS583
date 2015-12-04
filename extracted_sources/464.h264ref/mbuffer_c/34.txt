@@ -1,0 +1,88 @@
+static void unmark_long_term_field_for_reference_by_frame_idx(PictureStructure structure, int long_term_frame_idx, int mark_current, unsigned curr_frame_num, int curr_pic_num)
+{
+  unsigned i;
+  int MaxFrameNum = 1 << (log2_max_frame_num_minus4 + 4);
+
+  assert(structure!=FRAME);
+  if (curr_pic_num<0)
+    curr_pic_num+=(2*MaxFrameNum);
+
+  for(i=0; i<dpb.ltref_frames_in_buffer; i++)
+  {
+    if (dpb.fs_ltref[i]->long_term_frame_idx == long_term_frame_idx)
+    {
+      if (structure == TOP_FIELD)
+      {
+        if ((dpb.fs_ltref[i]->is_long_term == 3))
+        {
+          unmark_for_long_term_reference(dpb.fs_ltref[i]);
+        }
+        else
+        {
+          if ((dpb.fs_ltref[i]->is_long_term == 1))
+          {
+            unmark_for_long_term_reference(dpb.fs_ltref[i]);
+          }
+          else
+          {
+            if (mark_current)
+            {
+              if (dpb.last_picture)
+              {
+                if ( ( dpb.last_picture != dpb.fs_ltref[i] )|| dpb.last_picture->frame_num != curr_frame_num)
+                  unmark_for_long_term_reference(dpb.fs_ltref[i]);
+              }
+              else
+              {
+              unmark_for_long_term_reference(dpb.fs_ltref[i]);
+          }
+        }
+            else
+            {
+              if ((dpb.fs_ltref[i]->frame_num) != (unsigned)(curr_pic_num/2))
+              {
+                unmark_for_long_term_reference(dpb.fs_ltref[i]);
+              }
+            }
+      }
+        }
+      }
+      if (structure == BOTTOM_FIELD)
+      {
+        if ((dpb.fs_ltref[i]->is_long_term == 3))
+        {
+          unmark_for_long_term_reference(dpb.fs_ltref[i]);
+        }
+        else
+        {
+          if ((dpb.fs_ltref[i]->is_long_term == 2))
+          {
+            unmark_for_long_term_reference(dpb.fs_ltref[i]);
+          }
+          else
+          {
+            if (mark_current)
+            {
+              if (dpb.last_picture)
+            {
+                if ( ( dpb.last_picture != dpb.fs_ltref[i] )|| dpb.last_picture->frame_num != curr_frame_num)
+              unmark_for_long_term_reference(dpb.fs_ltref[i]);
+            }
+              else
+              {
+                unmark_for_long_term_reference(dpb.fs_ltref[i]);
+              }
+            }
+            else
+            {
+              if ((dpb.fs_ltref[i]->frame_num) != (unsigned)(curr_pic_num/2))
+              {
+                unmark_for_long_term_reference(dpb.fs_ltref[i]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

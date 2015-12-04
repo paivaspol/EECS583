@@ -1,0 +1,57 @@
+static struct include_file *
+find_include_file (pfile, header, type)
+     cpp_reader *pfile;
+     const cpp_token *header;
+     enum include_type type;
+{
+  const char *fname = (const char *) header->val.str.text;
+  struct search_path *path;
+  struct include_file *file;
+  char *name, *n;
+
+  if (IS_ABSOLUTE_PATHNAME (fname))
+    return open_file (pfile, fname);
+
+  /* For #include_next, skip in the search path past the dir in which
+     the current file was found, but if it was found via an absolute
+     path use the normal search logic.  */
+  if (type == IT_INCLUDE_NEXT && pfile->buffer->inc->foundhere)
+    path = pfile->buffer->inc->foundhere->next;
+  else if (header->type == CPP_HEADER_NAME)
+    path = CPP_OPTION (pfile, bracket_include);
+  else
+    path = search_from (pfile, type);
+
+  if (path == NULL)
+    {
+      cpp_error (pfile, "no include path in which to find %s", fname);
+      return NO_INCLUDE_PATH;
+    }
+
+  /* Search directory path for the file.  */
+  name = (char *) alloca (strlen (fname) + pfile->max_include_len + 2);
+  for (; path; path = path->next)
+    {
+      int len = path->len;
+      memcpy (name, path->name, len);
+      /* Don't turn / into // or // into ///; // may be a namespace
+	 escape.  */
+      if (name[len-1] == '/')
+	len--;
+      name[len] = '/';
+      strcpy (&name[len + 1], fname);
+      if (CPP_OPTION (pfile, remap))
+	n = remap_filename (pfile, name, path);
+      else
+	n = name;
+
+      file = open_file (pfile, n);
+      if (file)
+	{
+	  file->foundhere = path;
+	  return file;
+	}
+    }
+
+  return 0;
+}

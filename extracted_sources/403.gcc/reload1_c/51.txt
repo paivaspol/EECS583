@@ -1,0 +1,15 @@
+void
+deallocate_reload_reg (r)
+     int r;
+{
+  int regno;
+
+  if (! rld[r].reg_rtx)
+    return;
+  regno = true_regnum (rld[r].reg_rtx);
+  rld[r].reg_rtx = 0;
+  if (spill_reg_order[regno] >= 0)
+    clear_reload_reg_in_use (regno, rld[r].opnum, rld[r].when_needed,
+			     rld[r].mode);
+  reload_spill_index[r] = -1;
+}

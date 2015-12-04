@@ -1,0 +1,29 @@
+static char*
+parse_process(PSTATE* p_state, char *beg, char *end, U32 utf8, SV* self)
+{
+    char *s = beg + 2;  /* skip '<?' */
+    /* processing instruction */
+    token_pos_t token_pos;
+    token_pos.beg = s;
+
+    while (s < end) {
+	if (*s == '>') {
+	    token_pos.end = s;
+	    s++;
+
+	    if (p_state->xml_mode) {
+		/* XML processing instructions are ended by "?>" */
+		if (s - beg < 4 || s[-2] != '?')
+		    continue;
+		token_pos.end = s - 2;
+	    }
+      
+	    /* a complete processing instruction seen */
+	    report_event(p_state, E_PROCESS, beg, s, utf8, 
+			 &token_pos, 1, self);
+	    return s;
+	}
+	s++;
+    }
+    return beg;  /* could not fix end */
+}

@@ -1,0 +1,14 @@
+static void
+do_replace (chain, reg)
+     struct du_chain *chain;
+     int reg;
+{
+  while (chain)
+    {
+      unsigned int regno = ORIGINAL_REGNO (*chain->loc);
+      *chain->loc = gen_raw_REG (GET_MODE (*chain->loc), reg);
+      if (regno >= FIRST_PSEUDO_REGISTER)
+	ORIGINAL_REGNO (*chain->loc) = regno;
+      chain = chain->next_use;
+    }
+}

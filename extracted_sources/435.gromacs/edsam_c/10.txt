@@ -1,0 +1,20 @@
+void put_in_origin(int nr,rvec *x,int nmass,int *masnrs,real *mass,real tmass)
+{
+  int i,j;
+  rvec cm;
+
+  /* calculate CM */
+  for (i=0;(i<DIM);i++) 
+    cm[i]=0.0;	 
+  for (i=0;(i<nmass);i++) {
+    for (j=0;(j<DIM);j++)
+      cm[j]+=x[masnrs[i]][j]*mass[i];
+  }
+
+  for (i=0;(i<DIM);i++) 
+    cm[i]/=tmass;
+
+  /* and subtract it */
+  for (i=0;(i<nr);i++) 
+    rvec_dec(x[i],cm);
+}

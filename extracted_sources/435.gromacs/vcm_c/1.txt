@@ -1,0 +1,45 @@
+void calc_vcm_grp(FILE *fp,int start,int homenr,real mass[],
+		  rvec x[],rvec v[],t_vcm *vcm)
+{
+  int    i,g,m;
+  real   m0,xx,xy,xz,yy,yz,zz;
+  rvec   j0;
+  
+  if (vcm->mode != ecmNO) {
+    for(g=0; (g<vcm->nr); g++) {
+      /* Reset linear momentum */
+      vcm->group_mass[g] = 0;
+      clear_rvec(vcm->group_p[g]);
+      
+      if (vcm->mode == ecmANGULAR) {
+	/* Reset anular momentum */
+	clear_rvec(vcm->group_j[g]);
+	clear_rvec(vcm->group_x[g]);
+	clear_rvec(vcm->group_w[g]);
+	clear_mat(vcm->group_i[g]);
+      }
+    }
+    
+    for(i=start; (i<start+homenr); i++) {
+      m0 = mass[i];
+      g  = vcm->group_id[i];
+      
+      /* Calculate linear momentum */
+      vcm->group_mass[g]  += m0;
+      for(m=0; (m<DIM);m++)
+	vcm->group_p[g][m] += m0*v[i][m];
+
+      if (vcm->mode == ecmANGULAR) {
+	/* Calculate angular momentum */
+	oprod(x[i],v[i],j0);
+	
+	for(m=0; (m<DIM); m++) {
+	  vcm->group_j[g][m] += m0*j0[m];
+	  vcm->group_x[g][m] += m0*x[i][m];
+	}
+	/* Update inertia tensor */
+	update_tensor(x[i],m0,vcm->group_i[g]);
+      }
+    }
+  }
+}

@@ -1,0 +1,398 @@
+static rtx *
+find_split_point (loc, insn)
+     rtx *loc;
+     rtx insn;
+{
+  rtx x = *loc;
+  enum rtx_code code = GET_CODE (x);
+  rtx *split;
+  unsigned HOST_WIDE_INT len = 0;
+  HOST_WIDE_INT pos = 0;
+  int unsignedp = 0;
+  rtx inner = NULL_RTX;
+
+  /* First special-case some codes.  */
+  switch (code)
+    {
+    case SUBREG:
+#ifdef INSN_SCHEDULING
+      /* If we are making a paradoxical SUBREG invalid, it becomes a split
+	 point.  */
+      if (GET_CODE (SUBREG_REG (x)) == MEM)
+	return loc;
+#endif
+      return find_split_point (&SUBREG_REG (x), insn);
+
+    case MEM:
+#ifdef HAVE_lo_sum
+      /* If we have (mem (const ..)) or (mem (symbol_ref ...)), split it
+	 using LO_SUM and HIGH.  */
+      if (GET_CODE (XEXP (x, 0)) == CONST
+	  || GET_CODE (XEXP (x, 0)) == SYMBOL_REF)
+	{
+	  SUBST (XEXP (x, 0),
+		 gen_rtx_LO_SUM (Pmode,
+				 gen_rtx_HIGH (Pmode, XEXP (x, 0)),
+				 XEXP (x, 0)));
+	  return &XEXP (XEXP (x, 0), 0);
+	}
+#endif
+
+      /* If we have a PLUS whose second operand is a constant and the
+	 address is not valid, perhaps will can split it up using
+	 the machine-specific way to split large constants.  We use
+	 the first pseudo-reg (one of the virtual regs) as a placeholder;
+	 it will not remain in the result.  */
+      if (GET_CODE (XEXP (x, 0)) == PLUS
+	  && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT
+	  && ! memory_address_p (GET_MODE (x), XEXP (x, 0)))
+	{
+	  rtx reg = regno_reg_rtx[FIRST_PSEUDO_REGISTER];
+	  rtx seq = split_insns (gen_rtx_SET (VOIDmode, reg, XEXP (x, 0)),
+				 subst_insn);
+
+	  /* This should have produced two insns, each of which sets our
+	     placeholder.  If the source of the second is a valid address,
+	     we can make put both sources together and make a split point
+	     in the middle.  */
+
+	  if (seq && XVECLEN (seq, 0) == 2
+	      && GET_CODE (XVECEXP (seq, 0, 0)) == INSN
+	      && GET_CODE (PATTERN (XVECEXP (seq, 0, 0))) == SET
+	      && SET_DEST (PATTERN (XVECEXP (seq, 0, 0))) == reg
+	      && ! reg_mentioned_p (reg,
+				    SET_SRC (PATTERN (XVECEXP (seq, 0, 0))))
+	      && GET_CODE (XVECEXP (seq, 0, 1)) == INSN
+	      && GET_CODE (PATTERN (XVECEXP (seq, 0, 1))) == SET
+	      && SET_DEST (PATTERN (XVECEXP (seq, 0, 1))) == reg
+	      && memory_address_p (GET_MODE (x),
+				   SET_SRC (PATTERN (XVECEXP (seq, 0, 1)))))
+	    {
+	      rtx src1 = SET_SRC (PATTERN (XVECEXP (seq, 0, 0)));
+	      rtx src2 = SET_SRC (PATTERN (XVECEXP (seq, 0, 1)));
+
+	      /* Replace the placeholder in SRC2 with SRC1.  If we can
+		 find where in SRC2 it was placed, that can become our
+		 split point and we can replace this address with SRC2.
+		 Just try two obvious places.  */
+
+	      src2 = replace_rtx (src2, reg, src1);
+	      split = 0;
+	      if (XEXP (src2, 0) == src1)
+		split = &XEXP (src2, 0);
+	      else if (GET_RTX_FORMAT (GET_CODE (XEXP (src2, 0)))[0] == 'e'
+		       && XEXP (XEXP (src2, 0), 0) == src1)
+		split = &XEXP (XEXP (src2, 0), 0);
+
+	      if (split)
+		{
+		  SUBST (XEXP (x, 0), src2);
+		  return split;
+		}
+	    }
+
+	  /* If that didn't work, perhaps the first operand is complex and
+	     needs to be computed separately, so make a split point there.
+	     This will occur on machines that just support REG + CONST
+	     and have a constant moved through some previous computation.  */
+
+	  else if (GET_RTX_CLASS (GET_CODE (XEXP (XEXP (x, 0), 0))) != 'o'
+		   && ! (GET_CODE (XEXP (XEXP (x, 0), 0)) == SUBREG
+			 && (GET_RTX_CLASS (GET_CODE (SUBREG_REG (XEXP (XEXP (x, 0), 0))))
+			     == 'o')))
+	    return &XEXP (XEXP (x, 0), 0);
+	}
+      break;
+
+    case SET:
+#ifdef HAVE_cc0
+      /* If SET_DEST is CC0 and SET_SRC is not an operand, a COMPARE, or a
+	 ZERO_EXTRACT, the most likely reason why this doesn't match is that
+	 we need to put the operand into a register.  So split at that
+	 point.  */
+
+      if (SET_DEST (x) == cc0_rtx
+	  && GET_CODE (SET_SRC (x)) != COMPARE
+	  && GET_CODE (SET_SRC (x)) != ZERO_EXTRACT
+	  && GET_RTX_CLASS (GET_CODE (SET_SRC (x))) != 'o'
+	  && ! (GET_CODE (SET_SRC (x)) == SUBREG
+		&& GET_RTX_CLASS (GET_CODE (SUBREG_REG (SET_SRC (x)))) == 'o'))
+	return &SET_SRC (x);
+#endif
+
+      /* See if we can split SET_SRC as it stands.  */
+      split = find_split_point (&SET_SRC (x), insn);
+      if (split && split != &SET_SRC (x))
+	return split;
+
+      /* See if we can split SET_DEST as it stands.  */
+      split = find_split_point (&SET_DEST (x), insn);
+      if (split && split != &SET_DEST (x))
+	return split;
+
+      /* See if this is a bitfield assignment with everything constant.  If
+	 so, this is an IOR of an AND, so split it into that.  */
+      if (GET_CODE (SET_DEST (x)) == ZERO_EXTRACT
+	  && (GET_MODE_BITSIZE (GET_MODE (XEXP (SET_DEST (x), 0)))
+	      <= HOST_BITS_PER_WIDE_INT)
+	  && GET_CODE (XEXP (SET_DEST (x), 1)) == CONST_INT
+	  && GET_CODE (XEXP (SET_DEST (x), 2)) == CONST_INT
+	  && GET_CODE (SET_SRC (x)) == CONST_INT
+	  && ((INTVAL (XEXP (SET_DEST (x), 1))
+	       + INTVAL (XEXP (SET_DEST (x), 2)))
+	      <= GET_MODE_BITSIZE (GET_MODE (XEXP (SET_DEST (x), 0))))
+	  && ! side_effects_p (XEXP (SET_DEST (x), 0)))
+	{
+	  HOST_WIDE_INT pos = INTVAL (XEXP (SET_DEST (x), 2));
+	  unsigned HOST_WIDE_INT len = INTVAL (XEXP (SET_DEST (x), 1));
+	  unsigned HOST_WIDE_INT src = INTVAL (SET_SRC (x));
+	  rtx dest = XEXP (SET_DEST (x), 0);
+	  enum machine_mode mode = GET_MODE (dest);
+	  unsigned HOST_WIDE_INT mask = ((HOST_WIDE_INT) 1 << len) - 1;
+
+	  if (BITS_BIG_ENDIAN)
+	    pos = GET_MODE_BITSIZE (mode) - len - pos;
+
+	  if (src == mask)
+	    SUBST (SET_SRC (x),
+		   gen_binary (IOR, mode, dest, GEN_INT (src << pos)));
+	  else
+	    SUBST (SET_SRC (x),
+		   gen_binary (IOR, mode,
+			       gen_binary (AND, mode, dest,
+					   GEN_INT
+					   (
+					    trunc_int_for_mode
+					    (~(mask << pos)
+					     & GET_MODE_MASK (mode), mode))),
+			       GEN_INT (src << pos)));
+
+	  SUBST (SET_DEST (x), dest);
+
+	  split = find_split_point (&SET_SRC (x), insn);
+	  if (split && split != &SET_SRC (x))
+	    return split;
+	}
+
+      /* Otherwise, see if this is an operation that we can split into two.
+	 If so, try to split that.  */
+      code = GET_CODE (SET_SRC (x));
+
+      switch (code)
+	{
+	case AND:
+	  /* If we are AND'ing with a large constant that is only a single
+	     bit and the result is only being used in a context where we
+	     need to know if it is zero or non-zero, replace it with a bit
+	     extraction.  This will avoid the large constant, which might
+	     have taken more than one insn to make.  If the constant were
+	     not a valid argument to the AND but took only one insn to make,
+	     this is no worse, but if it took more than one insn, it will
+	     be better.  */
+
+	  if (GET_CODE (XEXP (SET_SRC (x), 1)) == CONST_INT
+	      && GET_CODE (XEXP (SET_SRC (x), 0)) == REG
+	      && (pos = exact_log2 (INTVAL (XEXP (SET_SRC (x), 1)))) >= 7
+	      && GET_CODE (SET_DEST (x)) == REG
+	      && (split = find_single_use (SET_DEST (x), insn, (rtx*) 0)) != 0
+	      && (GET_CODE (*split) == EQ || GET_CODE (*split) == NE)
+	      && XEXP (*split, 0) == SET_DEST (x)
+	      && XEXP (*split, 1) == const0_rtx)
+	    {
+	      rtx extraction = make_extraction (GET_MODE (SET_DEST (x)),
+						XEXP (SET_SRC (x), 0),
+						pos, NULL_RTX, 1, 1, 0, 0);
+	      if (extraction != 0)
+		{
+		  SUBST (SET_SRC (x), extraction);
+		  return find_split_point (loc, insn);
+		}
+	    }
+	  break;
+
+	case NE:
+	  /* if STORE_FLAG_VALUE is -1, this is (NE X 0) and only one bit of X
+	     is known to be on, this can be converted into a NEG of a shift.  */
+	  if (STORE_FLAG_VALUE == -1 && XEXP (SET_SRC (x), 1) == const0_rtx
+	      && GET_MODE (SET_SRC (x)) == GET_MODE (XEXP (SET_SRC (x), 0))
+	      && 1 <= (pos = exact_log2
+		       (nonzero_bits (XEXP (SET_SRC (x), 0),
+				      GET_MODE (XEXP (SET_SRC (x), 0))))))
+	    {
+	      enum machine_mode mode = GET_MODE (XEXP (SET_SRC (x), 0));
+
+	      SUBST (SET_SRC (x),
+		     gen_rtx_NEG (mode,
+				  gen_rtx_LSHIFTRT (mode,
+						    XEXP (SET_SRC (x), 0),
+						    GEN_INT (pos))));
+
+	      split = find_split_point (&SET_SRC (x), insn);
+	      if (split && split != &SET_SRC (x))
+		return split;
+	    }
+	  break;
+
+	case SIGN_EXTEND:
+	  inner = XEXP (SET_SRC (x), 0);
+
+	  /* We can't optimize if either mode is a partial integer
+	     mode as we don't know how many bits are significant
+	     in those modes.  */
+	  if (GET_MODE_CLASS (GET_MODE (inner)) == MODE_PARTIAL_INT
+	      || GET_MODE_CLASS (GET_MODE (SET_SRC (x))) == MODE_PARTIAL_INT)
+	    break;
+
+	  pos = 0;
+	  len = GET_MODE_BITSIZE (GET_MODE (inner));
+	  unsignedp = 0;
+	  break;
+
+	case SIGN_EXTRACT:
+	case ZERO_EXTRACT:
+	  if (GET_CODE (XEXP (SET_SRC (x), 1)) == CONST_INT
+	      && GET_CODE (XEXP (SET_SRC (x), 2)) == CONST_INT)
+	    {
+	      inner = XEXP (SET_SRC (x), 0);
+	      len = INTVAL (XEXP (SET_SRC (x), 1));
+	      pos = INTVAL (XEXP (SET_SRC (x), 2));
+
+	      if (BITS_BIG_ENDIAN)
+		pos = GET_MODE_BITSIZE (GET_MODE (inner)) - len - pos;
+	      unsignedp = (code == ZERO_EXTRACT);
+	    }
+	  break;
+
+	default:
+	  break;
+	}
+
+      if (len && pos >= 0 && pos + len <= GET_MODE_BITSIZE (GET_MODE (inner)))
+	{
+	  enum machine_mode mode = GET_MODE (SET_SRC (x));
+
+	  /* For unsigned, we have a choice of a shift followed by an
+	     AND or two shifts.  Use two shifts for field sizes where the
+	     constant might be too large.  We assume here that we can
+	     always at least get 8-bit constants in an AND insn, which is
+	     true for every current RISC.  */
+
+	  if (unsignedp && len <= 8)
+	    {
+	      SUBST (SET_SRC (x),
+		     gen_rtx_AND (mode,
+				  gen_rtx_LSHIFTRT
+				  (mode, gen_lowpart_for_combine (mode, inner),
+				   GEN_INT (pos)),
+				  GEN_INT (((HOST_WIDE_INT) 1 << len) - 1)));
+
+	      split = find_split_point (&SET_SRC (x), insn);
+	      if (split && split != &SET_SRC (x))
+		return split;
+	    }
+	  else
+	    {
+	      SUBST (SET_SRC (x),
+		     gen_rtx_fmt_ee
+		     (unsignedp ? LSHIFTRT : ASHIFTRT, mode,
+		      gen_rtx_ASHIFT (mode,
+				      gen_lowpart_for_combine (mode, inner),
+				      GEN_INT (GET_MODE_BITSIZE (mode)
+					       - len - pos)),
+		      GEN_INT (GET_MODE_BITSIZE (mode) - len)));
+
+	      split = find_split_point (&SET_SRC (x), insn);
+	      if (split && split != &SET_SRC (x))
+		return split;
+	    }
+	}
+
+      /* See if this is a simple operation with a constant as the second
+	 operand.  It might be that this constant is out of range and hence
+	 could be used as a split point.  */
+      if ((GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == '2'
+	   || GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == 'c'
+	   || GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == '<')
+	  && CONSTANT_P (XEXP (SET_SRC (x), 1))
+	  && (GET_RTX_CLASS (GET_CODE (XEXP (SET_SRC (x), 0))) == 'o'
+	      || (GET_CODE (XEXP (SET_SRC (x), 0)) == SUBREG
+		  && (GET_RTX_CLASS (GET_CODE (SUBREG_REG (XEXP (SET_SRC (x), 0))))
+		      == 'o'))))
+	return &XEXP (SET_SRC (x), 1);
+
+      /* Finally, see if this is a simple operation with its first operand
+	 not in a register.  The operation might require this operand in a
+	 register, so return it as a split point.  We can always do this
+	 because if the first operand were another operation, we would have
+	 already found it as a split point.  */
+      if ((GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == '2'
+	   || GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == 'c'
+	   || GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == '<'
+	   || GET_RTX_CLASS (GET_CODE (SET_SRC (x))) == '1')
+	  && ! register_operand (XEXP (SET_SRC (x), 0), VOIDmode))
+	return &XEXP (SET_SRC (x), 0);
+
+      return 0;
+
+    case AND:
+    case IOR:
+      /* We write NOR as (and (not A) (not B)), but if we don't have a NOR,
+	 it is better to write this as (not (ior A B)) so we can split it.
+	 Similarly for IOR.  */
+      if (GET_CODE (XEXP (x, 0)) == NOT && GET_CODE (XEXP (x, 1)) == NOT)
+	{
+	  SUBST (*loc,
+		 gen_rtx_NOT (GET_MODE (x),
+			      gen_rtx_fmt_ee (code == IOR ? AND : IOR,
+					      GET_MODE (x),
+					      XEXP (XEXP (x, 0), 0),
+					      XEXP (XEXP (x, 1), 0))));
+	  return find_split_point (loc, insn);
+	}
+
+      /* Many RISC machines have a large set of logical insns.  If the
+	 second operand is a NOT, put it first so we will try to split the
+	 other operand first.  */
+      if (GET_CODE (XEXP (x, 1)) == NOT)
+	{
+	  rtx tem = XEXP (x, 0);
+	  SUBST (XEXP (x, 0), XEXP (x, 1));
+	  SUBST (XEXP (x, 1), tem);
+	}
+      break;
+
+    default:
+      break;
+    }
+
+  /* Otherwise, select our actions depending on our rtx class.  */
+  switch (GET_RTX_CLASS (code))
+    {
+    case 'b':			/* This is ZERO_EXTRACT and SIGN_EXTRACT.  */
+    case '3':
+      split = find_split_point (&XEXP (x, 2), insn);
+      if (split)
+	return split;
+      /* ... fall through ...  */
+    case '2':
+    case 'c':
+    case '<':
+      split = find_split_point (&XEXP (x, 1), insn);
+      if (split)
+	return split;
+      /* ... fall through ...  */
+    case '1':
+      /* Some machines have (and (shift ...) ...) insns.  If X is not
+	 an AND, but XEXP (X, 0) is, use it as our split point.  */
+      if (GET_CODE (x) != AND && GET_CODE (XEXP (x, 0)) == AND)
+	return &XEXP (x, 0);
+
+      split = find_split_point (&XEXP (x, 0), insn);
+      if (split)
+	return split;
+      return loc;
+    }
+
+  /* Otherwise, we don't have a split point.  */
+  return 0;
+}

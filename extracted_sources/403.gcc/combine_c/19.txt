@@ -1,0 +1,298 @@
+static rtx
+simplify_logical (x, last)
+     rtx x;
+     int last;
+{
+  enum machine_mode mode = GET_MODE (x);
+  rtx op0 = XEXP (x, 0);
+  rtx op1 = XEXP (x, 1);
+  rtx reversed;
+
+  switch (GET_CODE (x))
+    {
+    case AND:
+      /* Convert (A ^ B) & A to A & (~B) since the latter is often a single
+	 insn (and may simplify more).  */
+      if (GET_CODE (op0) == XOR
+	  && rtx_equal_p (XEXP (op0, 0), op1)
+	  && ! side_effects_p (op1))
+	x = gen_binary (AND, mode,
+			simplify_gen_unary (NOT, mode, XEXP (op0, 1), mode),
+			op1);
+
+      if (GET_CODE (op0) == XOR
+	  && rtx_equal_p (XEXP (op0, 1), op1)
+	  && ! side_effects_p (op1))
+	x = gen_binary (AND, mode,
+			simplify_gen_unary (NOT, mode, XEXP (op0, 0), mode),
+			op1);
+
+      /* Similarly for (~(A ^ B)) & A.  */
+      if (GET_CODE (op0) == NOT
+	  && GET_CODE (XEXP (op0, 0)) == XOR
+	  && rtx_equal_p (XEXP (XEXP (op0, 0), 0), op1)
+	  && ! side_effects_p (op1))
+	x = gen_binary (AND, mode, XEXP (XEXP (op0, 0), 1), op1);
+
+      if (GET_CODE (op0) == NOT
+	  && GET_CODE (XEXP (op0, 0)) == XOR
+	  && rtx_equal_p (XEXP (XEXP (op0, 0), 1), op1)
+	  && ! side_effects_p (op1))
+	x = gen_binary (AND, mode, XEXP (XEXP (op0, 0), 0), op1);
+
+      /* We can call simplify_and_const_int only if we don't lose
+	 any (sign) bits when converting INTVAL (op1) to
+	 "unsigned HOST_WIDE_INT".  */
+      if (GET_CODE (op1) == CONST_INT
+	  && (GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	      || INTVAL (op1) > 0))
+	{
+	  x = simplify_and_const_int (x, mode, op0, INTVAL (op1));
+
+	  /* If we have (ior (and (X C1) C2)) and the next restart would be
+	     the last, simplify this by making C1 as small as possible
+	     and then exit.  */
+	  if (last
+	      && GET_CODE (x) == IOR && GET_CODE (op0) == AND
+	      && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	      && GET_CODE (op1) == CONST_INT)
+	    return gen_binary (IOR, mode,
+			       gen_binary (AND, mode, XEXP (op0, 0),
+					   GEN_INT (INTVAL (XEXP (op0, 1))
+						    & ~INTVAL (op1))), op1);
+
+	  if (GET_CODE (x) != AND)
+	    return x;
+
+	  if (GET_RTX_CLASS (GET_CODE (x)) == 'c'
+	      || GET_RTX_CLASS (GET_CODE (x)) == '2')
+	    op0 = XEXP (x, 0), op1 = XEXP (x, 1);
+	}
+
+      /* Convert (A | B) & A to A.  */
+      if (GET_CODE (op0) == IOR
+	  && (rtx_equal_p (XEXP (op0, 0), op1)
+	      || rtx_equal_p (XEXP (op0, 1), op1))
+	  && ! side_effects_p (XEXP (op0, 0))
+	  && ! side_effects_p (XEXP (op0, 1)))
+	return op1;
+
+      /* In the following group of tests (and those in case IOR below),
+	 we start with some combination of logical operations and apply
+	 the distributive law followed by the inverse distributive law.
+	 Most of the time, this results in no change.  However, if some of
+	 the operands are the same or inverses of each other, simplifications
+	 will result.
+
+	 For example, (and (ior A B) (not B)) can occur as the result of
+	 expanding a bit field assignment.  When we apply the distributive
+	 law to this, we get (ior (and (A (not B))) (and (B (not B)))),
+	 which then simplifies to (and (A (not B))).
+
+	 If we have (and (ior A B) C), apply the distributive law and then
+	 the inverse distributive law to see if things simplify.  */
+
+      if (GET_CODE (op0) == IOR || GET_CODE (op0) == XOR)
+	{
+	  x = apply_distributive_law
+	    (gen_binary (GET_CODE (op0), mode,
+			 gen_binary (AND, mode, XEXP (op0, 0), op1),
+			 gen_binary (AND, mode, XEXP (op0, 1),
+				     copy_rtx (op1))));
+	  if (GET_CODE (x) != AND)
+	    return x;
+	}
+
+      if (GET_CODE (op1) == IOR || GET_CODE (op1) == XOR)
+	return apply_distributive_law
+	  (gen_binary (GET_CODE (op1), mode,
+		       gen_binary (AND, mode, XEXP (op1, 0), op0),
+		       gen_binary (AND, mode, XEXP (op1, 1),
+				   copy_rtx (op0))));
+
+      /* Similarly, taking advantage of the fact that
+	 (and (not A) (xor B C)) == (xor (ior A B) (ior A C))  */
+
+      if (GET_CODE (op0) == NOT && GET_CODE (op1) == XOR)
+	return apply_distributive_law
+	  (gen_binary (XOR, mode,
+		       gen_binary (IOR, mode, XEXP (op0, 0), XEXP (op1, 0)),
+		       gen_binary (IOR, mode, copy_rtx (XEXP (op0, 0)),
+				   XEXP (op1, 1))));
+
+      else if (GET_CODE (op1) == NOT && GET_CODE (op0) == XOR)
+	return apply_distributive_law
+	  (gen_binary (XOR, mode,
+		       gen_binary (IOR, mode, XEXP (op1, 0), XEXP (op0, 0)),
+		       gen_binary (IOR, mode, copy_rtx (XEXP (op1, 0)), XEXP (op0, 1))));
+      break;
+
+    case IOR:
+      /* (ior A C) is C if all bits of A that might be nonzero are on in C.  */
+      if (GET_CODE (op1) == CONST_INT
+	  && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	  && (nonzero_bits (op0, mode) & ~INTVAL (op1)) == 0)
+	return op1;
+
+      /* Convert (A & B) | A to A.  */
+      if (GET_CODE (op0) == AND
+	  && (rtx_equal_p (XEXP (op0, 0), op1)
+	      || rtx_equal_p (XEXP (op0, 1), op1))
+	  && ! side_effects_p (XEXP (op0, 0))
+	  && ! side_effects_p (XEXP (op0, 1)))
+	return op1;
+
+      /* If we have (ior (and A B) C), apply the distributive law and then
+	 the inverse distributive law to see if things simplify.  */
+
+      if (GET_CODE (op0) == AND)
+	{
+	  x = apply_distributive_law
+	    (gen_binary (AND, mode,
+			 gen_binary (IOR, mode, XEXP (op0, 0), op1),
+			 gen_binary (IOR, mode, XEXP (op0, 1),
+				     copy_rtx (op1))));
+
+	  if (GET_CODE (x) != IOR)
+	    return x;
+	}
+
+      if (GET_CODE (op1) == AND)
+	{
+	  x = apply_distributive_law
+	    (gen_binary (AND, mode,
+			 gen_binary (IOR, mode, XEXP (op1, 0), op0),
+			 gen_binary (IOR, mode, XEXP (op1, 1),
+				     copy_rtx (op0))));
+
+	  if (GET_CODE (x) != IOR)
+	    return x;
+	}
+
+      /* Convert (ior (ashift A CX) (lshiftrt A CY)) where CX+CY equals the
+	 mode size to (rotate A CX).  */
+
+      if (((GET_CODE (op0) == ASHIFT && GET_CODE (op1) == LSHIFTRT)
+	   || (GET_CODE (op1) == ASHIFT && GET_CODE (op0) == LSHIFTRT))
+	  && rtx_equal_p (XEXP (op0, 0), XEXP (op1, 0))
+	  && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	  && GET_CODE (XEXP (op1, 1)) == CONST_INT
+	  && (INTVAL (XEXP (op0, 1)) + INTVAL (XEXP (op1, 1))
+	      == GET_MODE_BITSIZE (mode)))
+	return gen_rtx_ROTATE (mode, XEXP (op0, 0),
+			       (GET_CODE (op0) == ASHIFT
+				? XEXP (op0, 1) : XEXP (op1, 1)));
+
+      /* If OP0 is (ashiftrt (plus ...) C), it might actually be
+	 a (sign_extend (plus ...)).  If so, OP1 is a CONST_INT, and the PLUS
+	 does not affect any of the bits in OP1, it can really be done
+	 as a PLUS and we can associate.  We do this by seeing if OP1
+	 can be safely shifted left C bits.  */
+      if (GET_CODE (op1) == CONST_INT && GET_CODE (op0) == ASHIFTRT
+	  && GET_CODE (XEXP (op0, 0)) == PLUS
+	  && GET_CODE (XEXP (XEXP (op0, 0), 1)) == CONST_INT
+	  && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	  && INTVAL (XEXP (op0, 1)) < HOST_BITS_PER_WIDE_INT)
+	{
+	  int count = INTVAL (XEXP (op0, 1));
+	  HOST_WIDE_INT mask = INTVAL (op1) << count;
+
+	  if (mask >> count == INTVAL (op1)
+	      && (mask & nonzero_bits (XEXP (op0, 0), mode)) == 0)
+	    {
+	      SUBST (XEXP (XEXP (op0, 0), 1),
+		     GEN_INT (INTVAL (XEXP (XEXP (op0, 0), 1)) | mask));
+	      return op0;
+	    }
+	}
+      break;
+
+    case XOR:
+      /* If we are XORing two things that have no bits in common,
+	 convert them into an IOR.  This helps to detect rotation encoded
+	 using those methods and possibly other simplifications.  */
+
+      if (GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	  && (nonzero_bits (op0, mode)
+	      & nonzero_bits (op1, mode)) == 0)
+	return (gen_binary (IOR, mode, op0, op1));
+
+      /* Convert (XOR (NOT x) (NOT y)) to (XOR x y).
+	 Also convert (XOR (NOT x) y) to (NOT (XOR x y)), similarly for
+	 (NOT y).  */
+      {
+	int num_negated = 0;
+
+	if (GET_CODE (op0) == NOT)
+	  num_negated++, op0 = XEXP (op0, 0);
+	if (GET_CODE (op1) == NOT)
+	  num_negated++, op1 = XEXP (op1, 0);
+
+	if (num_negated == 2)
+	  {
+	    SUBST (XEXP (x, 0), op0);
+	    SUBST (XEXP (x, 1), op1);
+	  }
+	else if (num_negated == 1)
+	  return
+	    simplify_gen_unary (NOT, mode, gen_binary (XOR, mode, op0, op1),
+				mode);
+      }
+
+      /* Convert (xor (and A B) B) to (and (not A) B).  The latter may
+	 correspond to a machine insn or result in further simplifications
+	 if B is a constant.  */
+
+      if (GET_CODE (op0) == AND
+	  && rtx_equal_p (XEXP (op0, 1), op1)
+	  && ! side_effects_p (op1))
+	return gen_binary (AND, mode,
+			   simplify_gen_unary (NOT, mode, XEXP (op0, 0), mode),
+			   op1);
+
+      else if (GET_CODE (op0) == AND
+	       && rtx_equal_p (XEXP (op0, 0), op1)
+	       && ! side_effects_p (op1))
+	return gen_binary (AND, mode,
+			   simplify_gen_unary (NOT, mode, XEXP (op0, 1), mode),
+			   op1);
+
+      /* (xor (comparison foo bar) (const_int 1)) can become the reversed
+	 comparison if STORE_FLAG_VALUE is 1.  */
+      if (STORE_FLAG_VALUE == 1
+	  && op1 == const1_rtx
+	  && GET_RTX_CLASS (GET_CODE (op0)) == '<'
+	  && (reversed = reversed_comparison (op0, mode, XEXP (op0, 0),
+					      XEXP (op0, 1))))
+	return reversed;
+
+      /* (lshiftrt foo C) where C is the number of bits in FOO minus 1
+	 is (lt foo (const_int 0)), so we can perform the above
+	 simplification if STORE_FLAG_VALUE is 1.  */
+
+      if (STORE_FLAG_VALUE == 1
+	  && op1 == const1_rtx
+	  && GET_CODE (op0) == LSHIFTRT
+	  && GET_CODE (XEXP (op0, 1)) == CONST_INT
+	  && INTVAL (XEXP (op0, 1)) == GET_MODE_BITSIZE (mode) - 1)
+	return gen_rtx_GE (mode, XEXP (op0, 0), const0_rtx);
+
+      /* (xor (comparison foo bar) (const_int sign-bit))
+	 when STORE_FLAG_VALUE is the sign bit.  */
+      if (GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	  && ((STORE_FLAG_VALUE & GET_MODE_MASK (mode))
+	      == (unsigned HOST_WIDE_INT) 1 << (GET_MODE_BITSIZE (mode) - 1))
+	  && op1 == const_true_rtx
+	  && GET_RTX_CLASS (GET_CODE (op0)) == '<'
+	  && (reversed = reversed_comparison (op0, mode, XEXP (op0, 0),
+					      XEXP (op0, 1))))
+	return reversed;
+
+      break;
+
+    default:
+      abort ();
+    }
+
+  return x;
+}

@@ -1,0 +1,64 @@
+void writeRefFrame_CABAC(SyntaxElement *se, EncodingEnvironmentPtr eep_dp)
+{
+  MotionInfoContexts  *ctx    = img->currentSlice->mot_ctx;
+  Macroblock          *currMB = &img->mb_data[img->current_mb_nr];
+  int                 addctx  = 0;
+
+  int   a, b;
+  int   act_ctx;
+  int   act_sym;
+  short** refframe_array = enc_picture->ref_idx[se->value2];
+
+  int bslice = (img->type==B_SLICE);
+
+  int   b8a, b8b;
+
+  PixelPos block_a, block_b;
+  
+  getLuma4x4Neighbour(img->current_mb_nr, img->subblock_x, img->subblock_y, -1,  0, &block_a);
+  getLuma4x4Neighbour(img->current_mb_nr, img->subblock_x, img->subblock_y,  0, -1, &block_b);
+
+  b8a=((block_a.x/2)%2)+2*((block_a.y/2)%2);
+  b8b=((block_b.x/2)%2)+2*((block_b.y/2)%2);
+
+  
+  if (!block_b.available)
+    b=0;
+  else if (IS_DIRECT(&img->mb_data[block_b.mb_addr]) || (img->mb_data[block_b.mb_addr].b8mode[b8b]==0 && bslice))
+    b=0;
+  else
+  {
+    if (img->MbaffFrameFlag && (currMB->mb_field == 0) && (img->mb_data[block_b.mb_addr].mb_field == 1))
+      b = (refframe_array[block_b.pos_x][block_b.pos_y] > 1 ? 1 : 0);
+    else
+      b = (refframe_array[block_b.pos_x][block_b.pos_y] > 0 ? 1 : 0);
+  }
+
+  if (!block_a.available)
+    a=0;
+  else if (IS_DIRECT(&img->mb_data[block_a.mb_addr]) || (img->mb_data[block_a.mb_addr].b8mode[b8a]==0 && bslice))
+    a=0;
+  else 
+  {
+    if (img->MbaffFrameFlag && (currMB->mb_field == 0) && (img->mb_data[block_a.mb_addr].mb_field == 1))
+      a = (refframe_array[block_a.pos_x][block_a.pos_y] > 1 ? 1 : 0);
+    else
+      a = (refframe_array[block_a.pos_x][block_a.pos_y] > 0 ? 1 : 0);
+  }
+
+  act_ctx     = a + 2*b; 
+  se->context = act_ctx; // store context
+  act_sym     = se->value1;
+
+  if (act_sym==0)
+  {
+    biari_encode_symbol(eep_dp, 0, ctx->ref_no_contexts[addctx] + act_ctx );
+  }
+  else
+  {
+    biari_encode_symbol(eep_dp, 1, ctx->ref_no_contexts[addctx] + act_ctx);
+    act_sym--;
+    act_ctx=4;
+    unary_bin_encode(eep_dp, act_sym,ctx->ref_no_contexts[addctx]+act_ctx,1);
+  }
+}

@@ -1,0 +1,11 @@
+void
+Perl_sv_clean_objs(pTHX)
+{
+    PL_in_clean_objs = TRUE;
+    visit(do_clean_objs, SVf_ROK, SVf_ROK);
+#ifndef DISABLE_DESTRUCTOR_KLUDGE
+    /* some barnacles may yet remain, clinging to typeglobs */
+    visit(do_clean_named_objs, SVt_PVGV, SVTYPEMASK);
+#endif
+    PL_in_clean_objs = FALSE;
+}

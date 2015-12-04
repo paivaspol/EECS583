@@ -1,0 +1,65 @@
+static int
+tail_recursion_args (actuals, formals)
+     tree actuals, formals;
+{
+  tree a = actuals, f = formals;
+  int i;
+  rtx *argvec;
+
+  /* Check that number and types of actuals are compatible
+     with the formals.  This is not always true in valid C code.
+     Also check that no formal needs to be addressable
+     and that all formals are scalars.  */
+
+  /* Also count the args.  */
+
+  for (a = actuals, f = formals, i = 0; a && f; a = TREE_CHAIN (a), f = TREE_CHAIN (f), i++)
+    {
+      if (TYPE_MAIN_VARIANT (TREE_TYPE (TREE_VALUE (a)))
+	  != TYPE_MAIN_VARIANT (TREE_TYPE (f)))
+	return 0;
+      if (GET_CODE (DECL_RTL (f)) != REG || DECL_MODE (f) == BLKmode)
+	return 0;
+    }
+  if (a != 0 || f != 0)
+    return 0;
+
+  /* Compute all the actuals.  */
+
+  argvec = (rtx *) alloca (i * sizeof (rtx));
+
+  for (a = actuals, i = 0; a; a = TREE_CHAIN (a), i++)
+    argvec[i] = expand_expr (TREE_VALUE (a), NULL_RTX, VOIDmode, 0);
+
+  /* Find which actual values refer to current values of previous formals.
+     Copy each of them now, before any formal is changed.  */
+
+  for (a = actuals, i = 0; a; a = TREE_CHAIN (a), i++)
+    {
+      int copy = 0;
+      int j;
+      for (f = formals, j = 0; j < i; f = TREE_CHAIN (f), j++)
+	if (reg_mentioned_p (DECL_RTL (f), argvec[i]))
+	  {
+	    copy = 1;
+	    break;
+	  }
+      if (copy)
+	argvec[i] = copy_to_reg (argvec[i]);
+    }
+
+  /* Store the values of the actuals into the formals.  */
+
+  for (f = formals, a = actuals, i = 0; f;
+       f = TREE_CHAIN (f), a = TREE_CHAIN (a), i++)
+    {
+      if (GET_MODE (DECL_RTL (f)) == GET_MODE (argvec[i]))
+	emit_move_insn (DECL_RTL (f), argvec[i]);
+      else
+	convert_move (DECL_RTL (f), argvec[i],
+		      TREE_UNSIGNED (TREE_TYPE (TREE_VALUE (a))));
+    }
+
+  free_temp_slots ();
+  return 1;
+}

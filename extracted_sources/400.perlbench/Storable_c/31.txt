@@ -1,0 +1,71 @@
+static int store_blessed(
+        pTHX_
+	stcxt_t *cxt,
+	SV *sv,
+	int type,
+	HV *pkg)
+{
+	SV *hook;
+	I32 len;
+	char *class;
+	I32 classnum;
+
+	TRACEME(("store_blessed, type %d, class \"%s\"", type, HvNAME(pkg)));
+
+	/*
+	 * Look for a hook for this blessed SV and redirect to store_hook()
+	 * if needed.
+	 */
+
+	hook = pkg_can(aTHX_ cxt->hook, pkg, "STORABLE_freeze");
+	if (hook)
+		return store_hook(aTHX_ cxt, sv, type, pkg, hook);
+
+	/*
+	 * This is a blessed SV without any serialization hook.
+	 */
+
+	class = HvNAME(pkg);
+	len = strlen(class);
+
+	TRACEME(("blessed 0x%"UVxf" in %s, no hook: tagged #%d",
+		 PTR2UV(sv), class, cxt->tagnum));
+
+	/*
+	 * Determine whether it is the first time we see that class name (in which
+	 * case it will be stored in the SX_BLESS form), or whether we already
+	 * saw that class name before (in which case the SX_IX_BLESS form will be
+	 * used).
+	 */
+
+	if (known_class(aTHX_ cxt, class, len, &classnum)) {
+		TRACEME(("already seen class %s, ID = %d", class, classnum));
+		PUTMARK(SX_IX_BLESS);
+		if (classnum <= LG_BLESS) {
+			unsigned char cnum = (unsigned char) classnum;
+			PUTMARK(cnum);
+		} else {
+			unsigned char flag = (unsigned char) 0x80;
+			PUTMARK(flag);
+			WLEN(classnum);
+		}
+	} else {
+		TRACEME(("first time we see class %s, ID = %d", class, classnum));
+		PUTMARK(SX_BLESS);
+		if (len <= LG_BLESS) {
+			unsigned char clen = (unsigned char) len;
+			PUTMARK(clen);
+		} else {
+			unsigned char flag = (unsigned char) 0x80;
+			PUTMARK(flag);
+			WLEN(len);					/* Don't BER-encode, this should be rare */
+		}
+		WRITE(class, len);				/* Final \0 is omitted */
+	}
+
+	/*
+	 * Now emit the <object> part.
+	 */
+
+	return SV_STORE(type)(aTHX_ cxt, sv);
+}

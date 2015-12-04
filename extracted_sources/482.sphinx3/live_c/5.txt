@@ -1,0 +1,45 @@
+void live_utt_summary(){
+  /*tot: %.2f xCPU, %.2f xClk\n",*/
+
+#ifdef SPEC_CPU
+/* Exclude clock dependent info - SPEC does its own timing
+*
+* INFO: live.c(336): SUMMARY:  328 fr;  2674 sen, 28593 gau/fr, 8.45 xCPU [1.03 xOvrhd];  2873 hmm/fr, 9 wd/fr, 1.12 xCPU;  
+* INFO: live.c(336): SUMMARY:  328 fr;  2674 sen, 28593 gau/fr, 7.99 xCPU [1.01 xOvrhd];  2873 hmm/fr, 9 wd/fr, 1.12 xCPU;  
+#                               1        2          3            4          5              6           7         8
+*
+*/
+  {
+    extern long tot_considered;  
+    extern FILE *confp;
+    extern int confp_open;
+    E_INFO("SUMMARY:  %d fr;  %d sen, %d gau/fr, %.2f xCPU [%.2f xOvrhd];  %d hmm/fr, %d wd/fr, %.2f xCPU;  \n",
+	   kb->tot_fr,
+	   (int32)(kb->tot_sen_eval / kb->tot_fr),
+	   (int32)(kb->tot_gau_eval / kb->tot_fr),
+	   0.0,
+	   0.0,
+	   (int32)(kb->tot_hmm_eval / kb->tot_fr),
+	   (int32)(kb->tot_wd_exit / kb->tot_fr),
+	   0.0);
+    if (confp_open) fclose(confp);
+    if ((confp = fopen ("total_considered.out", "w")) == NULL) {
+       E_FATAL("fopen considered_total.out failed\n");
+       }
+    fprintf (confp, "%22d grand total considered\n", tot_considered);
+  }
+#else
+  E_INFO("SUMMARY:  %d fr;  %d sen, %d gau/fr, %.2f xCPU [%.2f xOvrhd];  %d hmm/fr, %d wd/fr, %.2f xCPU;  \n",
+	   kb->tot_fr,
+	   (int32)(kb->tot_sen_eval / kb->tot_fr),
+	   (int32)(kb->tot_gau_eval / kb->tot_fr),
+	   kb->tm_sen.t_tot_cpu * 100.0 / kb->tot_fr,
+	   kb->tm_ovrhd.t_tot_cpu * 100.0 / kb->tot_fr,
+	   (int32)(kb->tot_hmm_eval / kb->tot_fr),
+	   (int32)(kb->tot_wd_exit / kb->tot_fr),
+	   kb->tm_srch.t_tot_cpu * 100.0 / kb->tot_fr);
+#endif
+
+    /*	   tm.t_tot_cpu * 100.0 / kb->tot_fr,
+	   tm.t_tot_elapsed * 100.0 / kb->tot_fr);*/
+}

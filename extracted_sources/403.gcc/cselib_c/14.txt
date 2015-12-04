@@ -1,0 +1,132 @@
+static unsigned int
+hash_rtx (x, mode, create)
+     rtx x;
+     enum machine_mode mode;
+     int create;
+{
+  cselib_val *e;
+  int i, j;
+  enum rtx_code code;
+  const char *fmt;
+  unsigned int hash = 0;
+
+  code = GET_CODE (x);
+  hash += (unsigned) code + (unsigned) GET_MODE (x);
+
+  switch (code)
+    {
+    case MEM:
+    case REG:
+      e = cselib_lookup (x, GET_MODE (x), create);
+      if (! e)
+	return 0;
+
+      return e->value;
+
+    case CONST_INT:
+      hash += ((unsigned) CONST_INT << 7) + (unsigned) mode + INTVAL (x);
+      return hash ? hash : (unsigned int) CONST_INT;
+
+    case CONST_DOUBLE:
+      /* This is like the general case, except that it only counts
+	 the integers representing the constant.  */
+      hash += (unsigned) code + (unsigned) GET_MODE (x);
+      if (GET_MODE (x) != VOIDmode)
+	for (i = 2; i < GET_RTX_LENGTH (CONST_DOUBLE); i++)
+	  hash += XWINT (x, i);
+      else
+	hash += ((unsigned) CONST_DOUBLE_LOW (x)
+		 + (unsigned) CONST_DOUBLE_HIGH (x));
+      return hash ? hash : (unsigned int) CONST_DOUBLE;
+
+    case CONST_VECTOR:
+      {
+	int units;
+	rtx elt;
+
+	units = CONST_VECTOR_NUNITS (x);
+
+	for (i = 0; i < units; ++i)
+	  {
+	    elt = CONST_VECTOR_ELT (x, i);
+	    hash += hash_rtx (elt, GET_MODE (elt), 0);
+	  }
+
+	return hash;
+      }
+
+      /* Assume there is only one rtx object for any given label.  */
+    case LABEL_REF:
+      hash
+	+= ((unsigned) LABEL_REF << 7) + (unsigned long) XEXP (x, 0);
+      return hash ? hash : (unsigned int) LABEL_REF;
+
+    case SYMBOL_REF:
+      hash
+	+= ((unsigned) SYMBOL_REF << 7) + (unsigned long) XSTR (x, 0);
+      return hash ? hash : (unsigned int) SYMBOL_REF;
+
+    case PRE_DEC:
+    case PRE_INC:
+    case POST_DEC:
+    case POST_INC:
+    case POST_MODIFY:
+    case PRE_MODIFY:
+    case PC:
+    case CC0:
+    case CALL:
+    case UNSPEC_VOLATILE:
+      return 0;
+
+    case ASM_OPERANDS:
+      if (MEM_VOLATILE_P (x))
+	return 0;
+
+      break;
+      
+    default:
+      break;
+    }
+
+  i = GET_RTX_LENGTH (code) - 1;
+  fmt = GET_RTX_FORMAT (code);
+  for (; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  rtx tem = XEXP (x, i);
+	  unsigned int tem_hash = hash_rtx (tem, 0, create);
+
+	  if (tem_hash == 0)
+	    return 0;
+
+	  hash += tem_hash;
+	}
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  {
+	    unsigned int tem_hash = hash_rtx (XVECEXP (x, i, j), 0, create);
+
+	    if (tem_hash == 0)
+	      return 0;
+
+	    hash += tem_hash;
+	  }
+      else if (fmt[i] == 's')
+	{
+	  const unsigned char *p = (const unsigned char *) XSTR (x, i);
+
+	  if (p)
+	    while (*p)
+	      hash += *p++;
+	}
+      else if (fmt[i] == 'i')
+	hash += XINT (x, i);
+      else if (fmt[i] == '0' || fmt[i] == 't')
+	/* unused */;
+      else
+	abort ();
+    }
+
+  return hash ? hash : 1 + (unsigned int) GET_CODE (x);
+}

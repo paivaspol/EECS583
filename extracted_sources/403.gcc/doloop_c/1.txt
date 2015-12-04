@@ -1,0 +1,105 @@
+static unsigned HOST_WIDE_INT
+doloop_iterations_max (loop_info, mode, nonneg)
+     const struct loop_info *loop_info;
+     enum machine_mode mode;
+     int nonneg;
+{
+  unsigned HOST_WIDE_INT n_iterations_max;
+  enum rtx_code code;
+  rtx min_value;
+  rtx max_value;
+  HOST_WIDE_INT abs_inc;
+  int neg_inc;
+
+  neg_inc = 0;
+  abs_inc = INTVAL (loop_info->increment);
+  if (abs_inc < 0)
+    {
+      abs_inc = -abs_inc;
+      neg_inc = 1;
+    }
+
+  if (neg_inc)
+    {
+      code = swap_condition (loop_info->comparison_code);
+      min_value = loop_info->final_equiv_value;
+      max_value = loop_info->initial_equiv_value;
+    }
+  else
+    {
+      code = loop_info->comparison_code;
+      min_value = loop_info->initial_equiv_value;
+      max_value = loop_info->final_equiv_value;
+    }
+
+  /* Since the loop has a VTOP, we know that the initial test will be
+     true and thus the value of max_value should be greater than the
+     value of min_value.  Thus the difference should always be positive
+     and the code must be LT, LE, LTU, LEU, or NE.  Otherwise the loop is
+     not normal, e.g., `for (i = 0; i < 10; i--)'.  */
+  switch (code)
+    {
+    case LTU:
+    case LEU:
+      {
+	unsigned HOST_WIDE_INT umax;
+	unsigned HOST_WIDE_INT umin;
+
+	if (GET_CODE (min_value) == CONST_INT)
+	  umin = INTVAL (min_value);
+	else
+	  umin = 0;
+
+	if (GET_CODE (max_value) == CONST_INT)
+	  umax = INTVAL (max_value);
+	else
+	  umax = ((unsigned) 2 << (GET_MODE_BITSIZE (mode) - 1)) - 1;
+
+	n_iterations_max = umax - umin;
+	break;
+      }
+
+    case LT:
+    case LE:
+      {
+	HOST_WIDE_INT smax;
+	HOST_WIDE_INT smin;
+
+	if (GET_CODE (min_value) == CONST_INT)
+	  smin = INTVAL (min_value);
+	else
+	  smin = -((unsigned) 1 << (GET_MODE_BITSIZE (mode) - 1));
+
+	if (GET_CODE (max_value) == CONST_INT)
+	  smax = INTVAL (max_value);
+	else
+	  smax = ((unsigned) 1 << (GET_MODE_BITSIZE (mode) - 1)) - 1;
+
+	n_iterations_max = smax - smin;
+	break;
+      }
+
+    case NE:
+      if (GET_CODE (min_value) == CONST_INT
+	  && GET_CODE (max_value) == CONST_INT)
+	n_iterations_max = INTVAL (max_value) - INTVAL (min_value);
+      else
+	/* We need to conservatively assume that we might have the maximum
+	   number of iterations without any additional knowledge.  */
+	n_iterations_max = ((unsigned) 2 << (GET_MODE_BITSIZE (mode) - 1)) - 1;
+      break;
+
+    default:
+      return 0;
+    }
+
+  n_iterations_max /= abs_inc;
+
+  /* If we know that the iteration count is non-negative then adjust
+     n_iterations_max if it is so large that it appears negative.  */
+  if (nonneg
+      && n_iterations_max > ((unsigned) 1 << (GET_MODE_BITSIZE (mode) - 1)))
+    n_iterations_max = ((unsigned) 1 << (GET_MODE_BITSIZE (mode) - 1)) - 1;
+
+  return n_iterations_max;
+}

@@ -1,0 +1,56 @@
+void lm_cache_reset (lm_t *lm)
+{
+    int32 i, n_bgfree, n_tgfree;
+    tginfo_t *tginfo, *next_tginfo, *prev_tginfo;
+    
+    n_bgfree = n_tgfree = 0;
+    
+    /* ARCHAN: RAH only short-circult this function only */
+    if (LM_IN_MEMORY)		/* RAH We are going to short circuit this if we are running with the lm in memory */
+    return;
+  
+    if ((lm->n_bg > 0) && (! lm->bg)) {	/* Disk-based; free "stale" bigrams */
+	for (i = 0; i < lm->n_ug; i++) {
+	    if (lm->membg[i].bg && (! lm->membg[i].used)) {
+		lm->n_bg_inmem -= lm->ug[i+1].firstbg - lm->ug[i].firstbg;
+
+		free (lm->membg[i].bg);
+		lm->membg[i].bg = NULL;
+		n_bgfree++;
+	    }
+
+	    lm->membg[i].used = 0;
+	}
+    }
+    
+    if (lm->n_tg > 0) {
+	for (i = 0; i < lm->n_ug; i++) {
+	    prev_tginfo = NULL;
+	    for (tginfo = lm->tginfo[i]; tginfo; tginfo = next_tginfo) {
+		next_tginfo = tginfo->next;
+		
+		if (! tginfo->used) {
+		    if ((! lm->tg) && tginfo->tg) {
+			lm->n_tg_inmem -= tginfo->n_tg;
+			free (tginfo->tg);
+			n_tgfree++;
+		    }
+		    
+		    free (tginfo);
+		    if (prev_tginfo)
+			prev_tginfo->next = next_tginfo;
+		    else
+			lm->tginfo[i] = next_tginfo;
+		} else {
+		    tginfo->used = 0;
+		    prev_tginfo = tginfo;
+		}
+	    }
+	}
+    }
+
+    if ((n_tgfree > 0) || (n_bgfree > 0)) {
+	E_INFO("%d tg frees, %d in mem; %d bg frees, %d in mem\n",
+	       n_tgfree, lm->n_tg_inmem, n_bgfree, lm->n_bg_inmem);
+    }
+}

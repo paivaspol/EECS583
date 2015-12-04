@@ -1,0 +1,60 @@
+static void
+remove_unreachable_regions (insns)
+     rtx insns;
+{
+  int i, *uid_region_num;
+  bool *reachable;
+  struct eh_region *r;
+  rtx insn;
+
+  uid_region_num = xcalloc (get_max_uid (), sizeof(int));
+  reachable = xcalloc (cfun->eh->last_region_number + 1, sizeof(bool));
+
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      r = cfun->eh->region_array[i];
+      if (!r || r->region_number != i)
+	continue;
+
+      if (r->resume)
+        {
+	  if (uid_region_num[INSN_UID (r->resume)])
+	    abort ();
+	  uid_region_num[INSN_UID (r->resume)] = i;
+        }
+      if (r->label)
+        {
+	  if (uid_region_num[INSN_UID (r->label)])
+	    abort ();
+	  uid_region_num[INSN_UID (r->label)] = i;
+        }
+      if (r->type == ERT_TRY && r->u.try.continue_label)
+        {
+	  if (uid_region_num[INSN_UID (r->u.try.continue_label)])
+	    abort ();
+	  uid_region_num[INSN_UID (r->u.try.continue_label)] = i;
+        }
+    }
+
+  for (insn = insns; insn; insn = NEXT_INSN (insn))
+    reachable[uid_region_num[INSN_UID (insn)]] = true;
+
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      r = cfun->eh->region_array[i];
+      if (r && r->region_number == i && !reachable[i])
+	{
+	  /* Don't remove ERT_THROW regions if their outer region
+	     is reachable.  */
+	  if (r->type == ERT_THROW
+	      && r->outer
+	      && reachable[r->outer->region_number])
+	    continue;
+
+	  remove_eh_handler (r);
+	}
+    }
+
+  free (reachable);
+  free (uid_region_num);
+}

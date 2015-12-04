@@ -1,0 +1,270 @@
+static void
+reload_as_needed (live_known)
+     int live_known;
+{
+  struct insn_chain *chain;
+#if defined (AUTO_INC_DEC)
+  int i;
+#endif
+  rtx x;
+
+  memset ((char *) spill_reg_rtx, 0, sizeof spill_reg_rtx);
+  memset ((char *) spill_reg_store, 0, sizeof spill_reg_store);
+  reg_last_reload_reg = (rtx *) xcalloc (max_regno, sizeof (rtx));
+  reg_has_output_reload = (char *) xmalloc (max_regno);
+  CLEAR_HARD_REG_SET (reg_reloaded_valid);
+
+  set_initial_elim_offsets ();
+
+  for (chain = reload_insn_chain; chain; chain = chain->next)
+    {
+      rtx prev;
+      rtx insn = chain->insn;
+      rtx old_next = NEXT_INSN (insn);
+
+      /* If we pass a label, copy the offsets from the label information
+	 into the current offsets of each elimination.  */
+      if (GET_CODE (insn) == CODE_LABEL)
+	set_offsets_for_label (insn);
+
+      else if (INSN_P (insn))
+	{
+	  rtx oldpat = PATTERN (insn);
+
+	  /* If this is a USE and CLOBBER of a MEM, ensure that any
+	     references to eliminable registers have been removed.  */
+
+	  if ((GET_CODE (PATTERN (insn)) == USE
+	       || GET_CODE (PATTERN (insn)) == CLOBBER)
+	      && GET_CODE (XEXP (PATTERN (insn), 0)) == MEM)
+	    XEXP (XEXP (PATTERN (insn), 0), 0)
+	      = eliminate_regs (XEXP (XEXP (PATTERN (insn), 0), 0),
+				GET_MODE (XEXP (PATTERN (insn), 0)),
+				NULL_RTX);
+
+	  /* If we need to do register elimination processing, do so.
+	     This might delete the insn, in which case we are done.  */
+	  if ((num_eliminable || num_eliminable_invariants) && chain->need_elim)
+	    {
+	      eliminate_regs_in_insn (insn, 1);
+	      if (GET_CODE (insn) == NOTE)
+		{
+		  update_eliminable_offsets ();
+		  continue;
+		}
+	    }
+
+	  /* If need_elim is nonzero but need_reload is zero, one might think
+	     that we could simply set n_reloads to 0.  However, find_reloads
+	     could have done some manipulation of the insn (such as swapping
+	     commutative operands), and these manipulations are lost during
+	     the first pass for every insn that needs register elimination.
+	     So the actions of find_reloads must be redone here.  */
+
+	  if (! chain->need_elim && ! chain->need_reload
+	      && ! chain->need_operand_change)
+	    n_reloads = 0;
+	  /* First find the pseudo regs that must be reloaded for this insn.
+	     This info is returned in the tables reload_... (see reload.h).
+	     Also modify the body of INSN by substituting RELOAD
+	     rtx's for those pseudo regs.  */
+	  else
+	    {
+	      memset (reg_has_output_reload, 0, max_regno);
+	      CLEAR_HARD_REG_SET (reg_is_output_reload);
+
+	      find_reloads (insn, 1, spill_indirect_levels, live_known,
+			    spill_reg_order);
+	    }
+
+	  if (n_reloads > 0)
+	    {
+	      rtx next = NEXT_INSN (insn);
+	      rtx p;
+
+	      prev = PREV_INSN (insn);
+
+	      /* Now compute which reload regs to reload them into.  Perhaps
+		 reusing reload regs from previous insns, or else output
+		 load insns to reload them.  Maybe output store insns too.
+		 Record the choices of reload reg in reload_reg_rtx.  */
+	      choose_reload_regs (chain);
+
+	      /* Merge any reloads that we didn't combine for fear of
+		 increasing the number of spill registers needed but now
+		 discover can be safely merged.  */
+	      if (SMALL_REGISTER_CLASSES)
+		merge_assigned_reloads (insn);
+
+	      /* Generate the insns to reload operands into or out of
+		 their reload regs.  */
+	      emit_reload_insns (chain);
+
+	      /* Substitute the chosen reload regs from reload_reg_rtx
+		 into the insn's body (or perhaps into the bodies of other
+		 load and store insn that we just made for reloading
+		 and that we moved the structure into).  */
+	      subst_reloads (insn);
+
+	      /* If this was an ASM, make sure that all the reload insns
+		 we have generated are valid.  If not, give an error
+		 and delete them.  */
+
+	      if (asm_noperands (PATTERN (insn)) >= 0)
+		for (p = NEXT_INSN (prev); p != next; p = NEXT_INSN (p))
+		  if (p != insn && INSN_P (p)
+		      && (recog_memoized (p) < 0
+			  || (extract_insn (p), ! constrain_operands (1))))
+		    {
+		      error_for_asm (insn,
+				     "`asm' operand requires impossible reload");
+		      delete_insn (p);
+		    }
+	    }
+
+	  if (num_eliminable && chain->need_elim)
+	    update_eliminable_offsets ();
+
+	  /* Any previously reloaded spilled pseudo reg, stored in this insn,
+	     is no longer validly lying around to save a future reload.
+	     Note that this does not detect pseudos that were reloaded
+	     for this insn in order to be stored in
+	     (obeying register constraints).  That is correct; such reload
+	     registers ARE still valid.  */
+	  note_stores (oldpat, forget_old_reloads_1, NULL);
+
+	  /* There may have been CLOBBER insns placed after INSN.  So scan
+	     between INSN and NEXT and use them to forget old reloads.  */
+	  for (x = NEXT_INSN (insn); x != old_next; x = NEXT_INSN (x))
+	    if (GET_CODE (x) == INSN && GET_CODE (PATTERN (x)) == CLOBBER)
+	      note_stores (PATTERN (x), forget_old_reloads_1, NULL);
+
+#ifdef AUTO_INC_DEC
+	  /* Likewise for regs altered by auto-increment in this insn.
+	     REG_INC notes have been changed by reloading:
+	     find_reloads_address_1 records substitutions for them,
+	     which have been performed by subst_reloads above.  */
+	  for (i = n_reloads - 1; i >= 0; i--)
+	    {
+	      rtx in_reg = rld[i].in_reg;
+	      if (in_reg)
+		{
+		  enum rtx_code code = GET_CODE (in_reg);
+		  /* PRE_INC / PRE_DEC will have the reload register ending up
+		     with the same value as the stack slot, but that doesn't
+		     hold true for POST_INC / POST_DEC.  Either we have to
+		     convert the memory access to a true POST_INC / POST_DEC,
+		     or we can't use the reload register for inheritance.  */
+		  if ((code == POST_INC || code == POST_DEC)
+		      && TEST_HARD_REG_BIT (reg_reloaded_valid,
+					    REGNO (rld[i].reg_rtx))
+		      /* Make sure it is the inc/dec pseudo, and not
+			 some other (e.g. output operand) pseudo.  */
+		      && (reg_reloaded_contents[REGNO (rld[i].reg_rtx)]
+			  == REGNO (XEXP (in_reg, 0))))
+
+		    {
+		      rtx reload_reg = rld[i].reg_rtx;
+		      enum machine_mode mode = GET_MODE (reload_reg);
+		      int n = 0;
+		      rtx p;
+
+		      for (p = PREV_INSN (old_next); p != prev; p = PREV_INSN (p))
+			{
+			  /* We really want to ignore REG_INC notes here, so
+			     use PATTERN (p) as argument to reg_set_p .  */
+			  if (reg_set_p (reload_reg, PATTERN (p)))
+			    break;
+			  n = count_occurrences (PATTERN (p), reload_reg, 0);
+			  if (! n)
+			    continue;
+			  if (n == 1)
+			    {
+			      n = validate_replace_rtx (reload_reg,
+							gen_rtx (code, mode,
+								 reload_reg),
+							p);
+
+			      /* We must also verify that the constraints
+				 are met after the replacement.  */
+			      extract_insn (p);
+			      if (n)
+				n = constrain_operands (1);
+			      else
+				break;
+
+			      /* If the constraints were not met, then
+				 undo the replacement.  */
+			      if (!n)
+				{
+				  validate_replace_rtx (gen_rtx (code, mode,
+								 reload_reg),
+							reload_reg, p);
+				  break;
+				}
+
+			    }
+			  break;
+			}
+		      if (n == 1)
+			{
+			  REG_NOTES (p)
+			    = gen_rtx_EXPR_LIST (REG_INC, reload_reg,
+						 REG_NOTES (p));
+			  /* Mark this as having an output reload so that the
+			     REG_INC processing code below won't invalidate
+			     the reload for inheritance.  */
+			  SET_HARD_REG_BIT (reg_is_output_reload,
+					    REGNO (reload_reg));
+			  reg_has_output_reload[REGNO (XEXP (in_reg, 0))] = 1;
+			}
+		      else
+			forget_old_reloads_1 (XEXP (in_reg, 0), NULL_RTX,
+					      NULL);
+		    }
+		  else if ((code == PRE_INC || code == PRE_DEC)
+			   && TEST_HARD_REG_BIT (reg_reloaded_valid,
+						 REGNO (rld[i].reg_rtx))
+			   /* Make sure it is the inc/dec pseudo, and not
+			      some other (e.g. output operand) pseudo.  */
+			   && (reg_reloaded_contents[REGNO (rld[i].reg_rtx)]
+			       == REGNO (XEXP (in_reg, 0))))
+		    {
+		      SET_HARD_REG_BIT (reg_is_output_reload,
+					REGNO (rld[i].reg_rtx));
+		      reg_has_output_reload[REGNO (XEXP (in_reg, 0))] = 1;
+		    }
+		}
+	    }
+	  /* If a pseudo that got a hard register is auto-incremented,
+	     we must purge records of copying it into pseudos without
+	     hard registers.  */
+	  for (x = REG_NOTES (insn); x; x = XEXP (x, 1))
+	    if (REG_NOTE_KIND (x) == REG_INC)
+	      {
+		/* See if this pseudo reg was reloaded in this insn.
+		   If so, its last-reload info is still valid
+		   because it is based on this insn's reload.  */
+		for (i = 0; i < n_reloads; i++)
+		  if (rld[i].out == XEXP (x, 0))
+		    break;
+
+		if (i == n_reloads)
+		  forget_old_reloads_1 (XEXP (x, 0), NULL_RTX, NULL);
+	      }
+#endif
+	}
+      /* A reload reg's contents are unknown after a label.  */
+      if (GET_CODE (insn) == CODE_LABEL)
+	CLEAR_HARD_REG_SET (reg_reloaded_valid);
+
+      /* Don't assume a reload reg is still good after a call insn
+	 if it is a call-used reg.  */
+      else if (GET_CODE (insn) == CALL_INSN)
+	AND_COMPL_HARD_REG_SET (reg_reloaded_valid, call_used_reg_set);
+    }
+
+  /* Clean up.  */
+  free (reg_last_reload_reg);
+  free (reg_has_output_reload);
+}

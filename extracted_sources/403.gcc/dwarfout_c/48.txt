@@ -1,0 +1,22 @@
+static inline void
+element_list_attribute (element)
+     tree element;
+{
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_element_list);
+  sprintf (begin_label, EE_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, EE_END_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, end_label, begin_label);
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+
+  /* Here we output a list of value/name pairs for each enumeration constant
+     defined for this enumeration type (as required), but we do it in REVERSE
+     order.  The order is the one required by the draft #5 Dwarf specification
+     published by the UI/PLSIG.  */
+
+  output_enumeral_list (element);   /* Recursively output the whole list.  */
+
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

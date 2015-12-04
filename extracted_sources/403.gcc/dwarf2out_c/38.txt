@@ -1,0 +1,128 @@
+static void
+output_loc_operands (loc)
+     dw_loc_descr_ref loc;
+{
+  dw_val_ref val1 = &loc->dw_loc_oprnd1;
+  dw_val_ref val2 = &loc->dw_loc_oprnd2;
+
+  switch (loc->dw_loc_opc)
+    {
+#ifdef DWARF2_DEBUGGING_INFO
+    case DW_OP_addr:
+      dw2_asm_output_addr_rtx (DWARF2_ADDR_SIZE, val1->v.val_addr, NULL);
+      break;
+    case DW_OP_const2u:
+    case DW_OP_const2s:
+      dw2_asm_output_data (2, val1->v.val_int, NULL);
+      break;
+    case DW_OP_const4u:
+    case DW_OP_const4s:
+      dw2_asm_output_data (4, val1->v.val_int, NULL);
+      break;
+    case DW_OP_const8u:
+    case DW_OP_const8s:
+      if (HOST_BITS_PER_LONG < 64)
+	abort ();
+      dw2_asm_output_data (8, val1->v.val_int, NULL);
+      break;
+    case DW_OP_skip:
+    case DW_OP_bra:
+      {
+	int offset;
+
+	if (val1->val_class == dw_val_class_loc)
+	  offset = val1->v.val_loc->dw_loc_addr - (loc->dw_loc_addr + 3);
+	else
+	  abort ();
+
+	dw2_asm_output_data (2, offset, NULL);
+      }
+      break;
+#else
+    case DW_OP_addr:
+    case DW_OP_const2u:
+    case DW_OP_const2s:
+    case DW_OP_const4u:
+    case DW_OP_const4s:
+    case DW_OP_const8u:
+    case DW_OP_const8s:
+    case DW_OP_skip:
+    case DW_OP_bra:
+      /* We currently don't make any attempt to make sure these are
+         aligned properly like we do for the main unwind info, so
+         don't support emitting things larger than a byte if we're
+         only doing unwinding.  */
+      abort ();
+#endif
+    case DW_OP_const1u:
+    case DW_OP_const1s:
+      dw2_asm_output_data (1, val1->v.val_int, NULL);
+      break;
+    case DW_OP_constu:
+      dw2_asm_output_data_uleb128 (val1->v.val_unsigned, NULL);
+      break;
+    case DW_OP_consts:
+      dw2_asm_output_data_sleb128 (val1->v.val_int, NULL);
+      break;
+    case DW_OP_pick:
+      dw2_asm_output_data (1, val1->v.val_int, NULL);
+      break;
+    case DW_OP_plus_uconst:
+      dw2_asm_output_data_uleb128 (val1->v.val_unsigned, NULL);
+      break;
+    case DW_OP_breg0:
+    case DW_OP_breg1:
+    case DW_OP_breg2:
+    case DW_OP_breg3:
+    case DW_OP_breg4:
+    case DW_OP_breg5:
+    case DW_OP_breg6:
+    case DW_OP_breg7:
+    case DW_OP_breg8:
+    case DW_OP_breg9:
+    case DW_OP_breg10:
+    case DW_OP_breg11:
+    case DW_OP_breg12:
+    case DW_OP_breg13:
+    case DW_OP_breg14:
+    case DW_OP_breg15:
+    case DW_OP_breg16:
+    case DW_OP_breg17:
+    case DW_OP_breg18:
+    case DW_OP_breg19:
+    case DW_OP_breg20:
+    case DW_OP_breg21:
+    case DW_OP_breg22:
+    case DW_OP_breg23:
+    case DW_OP_breg24:
+    case DW_OP_breg25:
+    case DW_OP_breg26:
+    case DW_OP_breg27:
+    case DW_OP_breg28:
+    case DW_OP_breg29:
+    case DW_OP_breg30:
+    case DW_OP_breg31:
+      dw2_asm_output_data_sleb128 (val1->v.val_int, NULL);
+      break;
+    case DW_OP_regx:
+      dw2_asm_output_data_uleb128 (val1->v.val_unsigned, NULL);
+      break;
+    case DW_OP_fbreg:
+      dw2_asm_output_data_sleb128 (val1->v.val_int, NULL);
+      break;
+    case DW_OP_bregx:
+      dw2_asm_output_data_uleb128 (val1->v.val_unsigned, NULL);
+      dw2_asm_output_data_sleb128 (val2->v.val_int, NULL);
+      break;
+    case DW_OP_piece:
+      dw2_asm_output_data_uleb128 (val1->v.val_unsigned, NULL);
+      break;
+    case DW_OP_deref_size:
+    case DW_OP_xderef_size:
+      dw2_asm_output_data (1, val1->v.val_int, NULL);
+      break;
+    default:
+      /* Other codes have no operands.  */
+      break;
+    }
+}

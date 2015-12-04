@@ -1,0 +1,46 @@
+static bool do_binwrite(void *item,int nitem,int eio,
+			char *desc,char *srcfile,int line)
+{
+  size_t size=0,wsize;
+  int    ssize;
+  
+  check_nitem();
+  switch (eio) {
+  case eioREAL:
+    size = sizeof(real);
+    break;
+  case eioINT:
+    size = sizeof(int);
+    break;
+  case eioNUCHAR:
+    size = sizeof(unsigned char);
+    break;
+  case eioUSHORT:
+    size = sizeof(unsigned short);
+    break;
+  case eioRVEC:
+    size = sizeof(rvec);
+    break;
+  case eioNRVEC:
+    size = sizeof(rvec);
+    break;
+  case eioIVEC:
+    size = sizeof(ivec);
+    break;
+  case eioSTRING:
+    size = ssize = strlen((char *)item)+1;
+    do_binwrite(&ssize,1,eioINT,desc,srcfile,line);
+    break;
+  default:
+    FE();
+  }
+  wsize = fwrite(item,size,nitem,curfio->fp);
+  
+  if ((wsize != nitem) && curfio->bDebug) {
+    fprintf(stderr,"Error writing %s %s to file %s (source %s, line %d)\n",
+	    eioNames[eio],desc,curfio->fn,srcfile,line);
+    fprintf(stderr,"written size %u bytes, source size %u bytes\n",
+	    (unsigned int)wsize,(unsigned int)size);
+  }
+  return (wsize == nitem);
+}

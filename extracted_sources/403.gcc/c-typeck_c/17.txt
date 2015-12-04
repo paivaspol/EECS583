@@ -1,0 +1,19 @@
+void
+readonly_warning (arg, msgid)
+     tree arg;
+     const char *msgid;
+{
+  if (TREE_CODE (arg) == COMPONENT_REF)
+    {
+      if (TYPE_READONLY (TREE_TYPE (TREE_OPERAND (arg, 0))))
+	readonly_warning (TREE_OPERAND (arg, 0), msgid);
+      else
+	pedwarn ("%s of read-only member `%s'", _(msgid),
+		 IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (arg, 1))));
+    }
+  else if (TREE_CODE (arg) == VAR_DECL)
+    pedwarn ("%s of read-only variable `%s'", _(msgid),
+	     IDENTIFIER_POINTER (DECL_NAME (arg)));
+  else
+    pedwarn ("%s of read-only location", _(msgid));
+}

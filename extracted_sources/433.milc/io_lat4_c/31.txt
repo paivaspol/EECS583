@@ -1,0 +1,52 @@
+void write_site_list(FILE *fp, gauge_header *gh)
+{
+  off_t offset;
+  int i;
+  int buf_length;
+  register site *s;
+  int32type coords, *cbuf;
+
+  /* All nodes write their site coordinate list in sequential
+     blocks after the header.  The list is in the order of appearance
+     in the lattice array.  Node 0 writes to the first block
+     followed by node 1, etc.  The result is a contiguous table
+     that can be used to remap the data to the corresponding space-time
+     coordinate */
+
+  /* Location of site list for this node */
+  
+  offset = gh->header_bytes + 
+    sizeof(int32type)*sites_on_node*this_node;
+
+  cbuf = (int32type *)calloc(sites_on_node, sizeof(int32type));
+  if(cbuf == NULL)
+    {
+      printf("write_site_list: node %d can't malloc cbuf\n",this_node);
+      fflush(stdout);terminate(1);   
+    }
+
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
+    {
+      printf("write_site_list: node %d g_seek %ld failed errno %d\n",
+	     this_node,(long)offset,errno);
+      fflush(stdout);terminate(1);   
+    }
+  
+  buf_length = 0;
+
+  FORALLSITES(i,s)
+    {
+      /* Encode the space-time coordinate vector as a 32-bit integer */
+      coords = nx*(ny*(nz*s->t + s->z) + s->y) + s->x;
+      cbuf[buf_length] = coords;
+      buf_length++;
+    }
+
+    if( (int)g_write(cbuf,sizeof(int32type),sites_on_node,fp) != sites_on_node)
+      {
+	printf("write_site_list: Node %d coords write error %d\n",
+	       this_node,errno);fflush(stdout);terminate(1);   
+      }
+
+  free(cbuf);
+} /* write_site_list */

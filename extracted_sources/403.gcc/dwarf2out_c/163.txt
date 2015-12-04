@@ -1,0 +1,22 @@
+static dw_loc_descr_ref
+based_loc_descr (reg, offset)
+     unsigned reg;
+     long int offset;
+{
+  dw_loc_descr_ref loc_result;
+  /* For the "frame base", we use the frame pointer or stack pointer
+     registers, since the RTL for local variables is relative to one of
+     them.  */
+  unsigned fp_reg = DBX_REGISTER_NUMBER (frame_pointer_needed
+					 ? HARD_FRAME_POINTER_REGNUM
+					 : STACK_POINTER_REGNUM);
+
+  if (reg == fp_reg)
+    loc_result = new_loc_descr (DW_OP_fbreg, offset, 0);
+  else if (reg <= 31)
+    loc_result = new_loc_descr (DW_OP_breg0 + reg, offset, 0);
+  else
+    loc_result = new_loc_descr (DW_OP_bregx, reg, offset);
+
+  return loc_result;
+}

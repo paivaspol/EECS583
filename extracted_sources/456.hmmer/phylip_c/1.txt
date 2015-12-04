@@ -1,0 +1,32 @@
+void
+WritePhylip(FILE *fp, MSA *msa)
+{
+  int    idx;			/* counter for sequences         */
+  int    cpl = 50;		/* 50 seq char per line          */
+  char   buf[51];		/* buffer for writing seq        */
+  int    pos;
+
+  /* First line has nseq, alen
+   */
+  fprintf(fp, " %d  %d\n", msa->nseq, msa->alen);
+
+  /* Alignment section.
+   * PHYLIP is a multiblock format, blocks (optionally) separated
+   * by blanks; names only attached to first block. Names are
+   * restricted to ten char; we achieve this by simple truncation (!).
+   * (Do we need to convert gap characters from our ./- convention?)
+   */
+  for (pos = 0; pos < msa->alen; pos += cpl)
+    {
+      if (pos > 0) fprintf(fp, "\n");
+
+      for (idx = 0; idx < msa->nseq; idx++)
+	{
+	  strncpy(buf, msa->aseq[idx] + pos, cpl);
+	  buf[cpl] = '\0';	      
+	  if (pos > 0) fprintf(fp, "%s\n", buf);
+	  else         fprintf(fp, "%-10.10s%s\n", msa->sqname[idx], buf);
+	}
+    }
+  return;
+}

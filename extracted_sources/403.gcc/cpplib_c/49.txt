@@ -1,0 +1,25 @@
+static void
+push_conditional (pfile, skip, type, cmacro)
+     cpp_reader *pfile;
+     int skip;
+     int type;
+     const cpp_hashnode *cmacro;
+{
+  struct if_stack *ifs;
+  cpp_buffer *buffer = pfile->buffer;
+
+  ifs = xobnew (&pfile->buffer_ob, struct if_stack);
+  ifs->line = pfile->directive_line;
+  ifs->next = buffer->if_stack;
+  ifs->skip_elses = pfile->state.skipping || !skip;
+  ifs->was_skipping = pfile->state.skipping;
+  ifs->type = type;
+  /* This condition is effectively a test for top-of-file.  */
+  if (pfile->mi_valid && pfile->mi_cmacro == 0)
+    ifs->mi_cmacro = cmacro;
+  else
+    ifs->mi_cmacro = 0;
+
+  pfile->state.skipping = skip;
+  buffer->if_stack = ifs;
+}

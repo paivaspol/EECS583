@@ -1,0 +1,24 @@
+static void vithist_lmstate_reset (vithist_t *vh)
+{
+    gnode_t *lgn, *gn;
+    int32 i;
+    vh_lms2vh_t *lms2vh, *child;
+    
+    for (lgn = vh->lwidlist; lgn; lgn = gnode_next(lgn)) {
+	i = (int32) gnode_int32 (lgn);
+	lms2vh = vh->lms2vh_root[i];
+	
+	for (gn = lms2vh->children; gn; gn = gnode_next(gn)) {
+	    child = (vh_lms2vh_t *) gnode_ptr (gn);
+	    ckd_free ((void *) child);
+	}
+	glist_free (lms2vh->children);
+	
+	ckd_free ((void *) lms2vh);
+	
+	vh->lms2vh_root[i] = NULL;
+    }
+    
+    glist_free (vh->lwidlist);
+    vh->lwidlist = NULL;
+}

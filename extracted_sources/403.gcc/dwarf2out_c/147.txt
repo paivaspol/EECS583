@@ -1,0 +1,30 @@
+static void
+output_pubnames ()
+{
+  unsigned i;
+  unsigned long pubnames_length = size_of_pubnames ();
+
+  dw2_asm_output_data (DWARF_OFFSET_SIZE, pubnames_length,
+		       "Length of Public Names Info");
+  dw2_asm_output_data (2, DWARF_VERSION, "DWARF Version");
+  dw2_asm_output_offset (DWARF_OFFSET_SIZE, debug_info_section_label,
+			 "Offset of Compilation Unit Info");
+  dw2_asm_output_data (DWARF_OFFSET_SIZE, next_die_offset,
+		       "Compilation Unit Length");
+
+  for (i = 0; i < pubname_table_in_use; i++)
+    {
+      pubname_ref pub = &pubname_table[i];
+
+      /* We shouldn't see pubnames for DIEs outside of the main CU.  */
+      if (pub->die->die_mark == 0)
+	abort ();
+
+      dw2_asm_output_data (DWARF_OFFSET_SIZE, pub->die->die_offset,
+			   "DIE offset");
+
+      dw2_asm_output_nstring (pub->name, -1, "external name");
+    }
+
+  dw2_asm_output_data (DWARF_OFFSET_SIZE, 0, NULL);
+}

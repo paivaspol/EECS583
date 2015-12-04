@@ -1,0 +1,35 @@
+static void main_loop_serial(struct plan7_s *hmm, int seed, int nsample,
+			     float lenmean, float lensd, int fixedlen,
+			     struct histogram_s **ret_hist, float *ret_max);
+
+#ifdef HMMER_THREADS
+/* A structure of this type is shared by worker threads in the POSIX
+ * threads parallel version.
+ */
+struct workpool_s {
+  /* Static configuration:
+   */
+  struct plan7_s  *hmm;		/* ptr to single HMM to search with    */
+  int    fixedlen;		/* if >0, fix random seq len to this   */
+  float  lenmean;		/* mean of Gaussian for random seq len */
+  float  lensd;			/* s.d. of Gaussian for random seq len */
+  float *randomseq;             /* 0..Alphabet_size-1 i.i.d. probs     */
+  int    nsample;		/* number of random seqs to do         */
+
+  /* Shared (mutex-protected) input:
+   */
+  int    nseq;			/* current number of seqs searched     */
+
+  /* Shared (mutex-protected) output:
+   */
+  struct histogram_s *hist;     /* histogram          */
+  float          max_score;     /* maximum score seen */
+  Stopwatch_t    watch;		/* Timings accumulated for threads */
+
+  /* Thread pool information:
+   */
+  pthread_t      *thread;       /* our pool of threads */
+  int             num_threads;  /* number of threads   */
+  pthread_mutex_t input_lock;	/* a mutex protecting input fields */
+  pthread_mutex_t output_lock;  /* a mutex protecting output fields */
+};

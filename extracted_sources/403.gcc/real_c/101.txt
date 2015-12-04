@@ -1,0 +1,46 @@
+static void
+efloor (x, y)
+     const UEMUSHORT x[];
+     UEMUSHORT y[];
+{
+  UEMUSHORT *p;
+  int e, expon, i;
+  UEMUSHORT f[NE];
+
+  emov (x, f);			/* leave in external format */
+  expon = (int) f[NE - 1];
+  e = (expon & 0x7fff) - (EXONE - 1);
+  if (e <= 0)
+    {
+      eclear (y);
+      goto isitneg;
+    }
+  /* number of bits to clear out */
+  e = NBITS - e;
+  emov (f, y);
+  if (e <= 0)
+    return;
+
+  p = &y[0];
+  while (e >= 16)
+    {
+      *p++ = 0;
+      e -= 16;
+    }
+  /* clear the remaining bits */
+  *p &= bmask[e];
+  /* truncate negatives toward minus infinity */
+ isitneg:
+
+  if ((UEMUSHORT) expon & (UEMUSHORT) 0x8000)
+    {
+      for (i = 0; i < NE - 1; i++)
+	{
+	  if (f[i] != y[i])
+	    {
+	      esub (eone, y, y);
+	      break;
+	    }
+	}
+    }
+}

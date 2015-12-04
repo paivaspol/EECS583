@@ -1,0 +1,16 @@
+void
+cancel_changes (num)
+     int num;
+{
+  int i;
+
+  /* Back out all the changes.  Do this in the opposite order in which
+     they were made.  */
+  for (i = num_changes - 1; i >= num; i--)
+    {
+      *changes[i].loc = changes[i].old;
+      if (changes[i].object && GET_CODE (changes[i].object) != MEM)
+	INSN_CODE (changes[i].object) = changes[i].old_code;
+    }
+  num_changes = num;
+}

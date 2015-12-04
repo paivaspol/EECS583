@@ -1,0 +1,28 @@
+int
+coded_revcomp(char *comp, char *seq)
+{
+  long  bases;
+  char *bckp, *fwdp;
+  int   idx;
+  long  pos;
+
+  bases = strlen(seq);
+
+  fwdp = comp;
+  bckp = seq + bases -1;
+  for (pos = 0; pos < bases; pos++)
+    {
+      for (idx = 0; *bckp != iupac[idx].code && idx < IUPACSYMNUM; idx++);
+      if (idx > IUPACSYMNUM)
+	{
+	  *fwdp = NTEND;
+	  return 0;
+	}
+      else
+	*fwdp = iupac[idx].comp;
+      fwdp++;
+      bckp--;
+    }
+  *fwdp = NTEND;
+  return(1);
+}

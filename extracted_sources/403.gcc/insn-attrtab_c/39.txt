@@ -1,0 +1,54 @@
+static int
+athlon_muldiv_unit_conflict_cost (executing_insn, candidate_insn)
+     rtx executing_insn;
+     rtx candidate_insn;
+{
+  rtx insn;
+  int casenum;
+
+  insn = executing_insn;
+  switch (recog_memoized (insn))
+    {
+    case 265:
+    case 264:
+    case 263:
+    case 262:
+    case 261:
+    case 260:
+    case 259:
+    case 258:
+    case 257:
+    case 256:
+    case 255:
+    case 254:
+    case 253:
+    case 252:
+    case 251:
+    case 250:
+    case 249:
+      casenum = 0;
+      break;
+
+    case -1:
+      if (GET_CODE (PATTERN (insn)) != ASM_INPUT
+          && asm_noperands (PATTERN (insn)) < 0)
+        fatal_insn_not_found (insn);
+    default:
+      casenum = 1;
+      break;
+
+    }
+
+  insn = candidate_insn;
+  switch (casenum)
+    {
+    case 0:
+      return 1;
+
+    case 1:
+      return 42 /* 0x2a */;
+
+    default:
+      abort ();
+    }
+}

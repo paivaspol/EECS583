@@ -1,0 +1,98 @@
+static void
+subscript_data_attribute (type)
+     tree type;
+{
+  unsigned dimension_number;
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_subscr_data);
+  sprintf (begin_label, SS_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, SS_END_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DWARF_DELTA2 (asm_out_file, end_label, begin_label);
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+
+  /* The GNU compilers represent multidimensional array types as sequences
+     of one dimensional array types whose element types are themselves array
+     types.  Here we squish that down, so that each multidimensional array
+     type gets only one array_type DIE in the Dwarf debugging info.  The
+     draft Dwarf specification say that we are allowed to do this kind
+     of compression in C (because there is no difference between an
+     array or arrays and a multidimensional array in C) but for other
+     source languages (e.g. Ada) we probably shouldn't do this.  */
+
+  for (dimension_number = 0;
+	TREE_CODE (type) == ARRAY_TYPE;
+	type = TREE_TYPE (type), dimension_number++)
+    {
+      tree domain = TYPE_DOMAIN (type);
+
+      /* Arrays come in three flavors.	Unspecified bounds, fixed
+	 bounds, and (in GNU C only) variable bounds.  Handle all
+	 three forms here.  */
+
+      if (domain)
+	{
+	  /* We have an array type with specified bounds.  */
+
+	  tree lower = TYPE_MIN_VALUE (domain);
+	  tree upper = TYPE_MAX_VALUE (domain);
+
+	  /* Handle only fundamental types as index types for now.  */
+	  if (! type_is_fundamental (domain))
+	    abort ();
+
+	  /* Output the representation format byte for this dimension.  */
+	  ASM_OUTPUT_DWARF_FMT_BYTE (asm_out_file,
+		  FMT_CODE (1, TREE_CODE (lower) == INTEGER_CST,
+			    upper && TREE_CODE (upper) == INTEGER_CST));
+
+	  /* Output the index type for this dimension.	*/
+	  ASM_OUTPUT_DWARF_FUND_TYPE (asm_out_file,
+				      fundamental_type_code (domain));
+
+	  /* Output the representation for the lower bound.  */
+	  output_bound_representation (lower, dimension_number, 'l');
+
+	  /* Output the representation for the upper bound.  */
+	  if (upper)
+	    output_bound_representation (upper, dimension_number, 'u');
+	  else
+	    ASM_OUTPUT_DWARF_DATA2 (asm_out_file, 0);
+	}
+      else
+	{
+	  /* We have an array type with an unspecified length.	For C and
+	     C++ we can assume that this really means that (a) the index
+	     type is an integral type, and (b) the lower bound is zero.
+	     Note that Dwarf defines the representation of an unspecified
+	     (upper) bound as being a zero-length location description.	 */
+
+	  /* Output the array-bounds format byte.  */
+
+	  ASM_OUTPUT_DWARF_FMT_BYTE (asm_out_file, FMT_FT_C_X);
+
+	  /* Output the (assumed) index type.  */
+
+	  ASM_OUTPUT_DWARF_FUND_TYPE (asm_out_file, FT_integer);
+
+	  /* Output the (assumed) lower bound (constant) value.	 */
+
+	  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 0);
+
+	  /* Output the (empty) location description for the upper bound.  */
+
+	  ASM_OUTPUT_DWARF_DATA2 (asm_out_file, 0);
+	}
+    }
+
+  /* Output the prefix byte that says that the element type is coming up.  */
+
+  ASM_OUTPUT_DWARF_FMT_BYTE (asm_out_file, FMT_ET);
+
+  /* Output a representation of the type of the elements of this array type.  */
+
+  type_attribute (type, 0, 0);
+
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

@@ -1,0 +1,37 @@
+void write_significance_map (Macroblock* currMB, EncodingEnvironmentPtr eep_dp, int type, int coeff[], int coeff_ctr)
+{
+  short k, sig, last;
+  int   k0      = 0;
+  int   k1      = maxpos[type]-1;
+  
+  int               fld       = ( img->structure!=FRAME || currMB->mb_field );
+  BiContextTypePtr  map_ctx   = ( fld ? img->currentSlice->tex_ctx-> fld_map_contexts[type2ctx_map [type]]
+    : img->currentSlice->tex_ctx->     map_contexts[type2ctx_map [type]] );
+  BiContextTypePtr  last_ctx  = ( fld ? img->currentSlice->tex_ctx->fld_last_contexts[type2ctx_last[type]]
+    : img->currentSlice->tex_ctx->    last_contexts[type2ctx_last[type]] );
+  
+  if (!c1isdc[type])
+  {
+    k0++; k1++; coeff--;
+  }
+
+  for (k=k0; k<k1; k++) // if last coeff is reached, it has to be significant
+  {
+    sig   = (coeff[k]!=0 ? 1 : 0);
+
+    if (img->structure!=FRAME || currMB->mb_field)
+      biari_encode_symbol  (eep_dp, sig,  map_ctx+pos2ctx_map_int [type][k]);
+    else
+       biari_encode_symbol  (eep_dp, sig,  map_ctx+pos2ctx_map     [type][k]);
+    if (sig)
+    {
+      last = (--coeff_ctr==0 ? 1 : 0);
+
+      biari_encode_symbol(eep_dp, last, last_ctx+pos2ctx_last[type][k]);
+      if (last)
+      {
+        return;
+      }
+    }
+  }
+}

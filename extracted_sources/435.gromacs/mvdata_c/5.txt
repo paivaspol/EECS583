@@ -1,0 +1,14 @@
+static void ld_atoms(int src,t_symtab *symtab,t_atoms *atoms)
+{
+  int atomnr;
+
+  blockrx(src,atoms->nr);
+  snew(atoms->atom,atoms->nr);
+  nblockrx(src,atoms->nr,atoms->atom);
+  atomnr=ld_strings(src,symtab,&atoms->atomname);
+  assert(atomnr==atoms->nr);
+  atoms->nres=ld_strings(src,symtab,&atoms->resname);
+  atoms->ngrpname=ld_strings(src,symtab,&atoms->grpname);
+  ld_grps(src,atoms->grps);
+  ld_block(src,&atoms->excl);
+}

@@ -1,0 +1,19 @@
+static void
+update_reg_unused_notes (insn, redundant_insn)
+     rtx insn, redundant_insn;
+{
+  rtx link, next;
+
+  for (link = REG_NOTES (insn); link; link = next)
+    {
+      next = XEXP (link, 1);
+
+      if (REG_NOTE_KIND (link) != REG_UNUSED
+	  || GET_CODE (XEXP (link, 0)) != REG)
+	continue;
+
+      if (! find_regno_note (redundant_insn, REG_UNUSED,
+			     REGNO (XEXP (link, 0))))
+	remove_note (insn, link);
+    }
+}

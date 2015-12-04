@@ -1,0 +1,26 @@
+int
+search_dependence (node)
+     tree node;
+{
+  dependence *dep_ptr;
+  int dep_idx = 0;
+
+
+  if (dep_chain)
+    {
+      if (TREE_CODE (node) == INDIRECT_REF && TREE_OPERAND (node, 1)
+	  && TREE_CODE (TREE_OPERAND (node, 1)) == ARRAY_REF)
+	node = TREE_OPERAND (node, 1);
+
+      for (dep_ptr = VARRAY_GENERIC_PTR (dep_chain, 0);
+	   dep_ptr; dep_ptr = VARRAY_GENERIC_PTR (dep_chain, dep_idx++))
+	{
+	  if ((node == dep_ptr->source
+	       && dest_to_remember == dep_ptr->destination)
+	      || (! dep_ptr->source && node == dep_ptr->destination))
+	    return dep_idx + 1;
+	}
+    }
+  
+  return 0;
+}

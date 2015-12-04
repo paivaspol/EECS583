@@ -1,0 +1,19 @@
+void
+mark_stmt_status (p)
+     struct stmt_status *p;
+{
+  if (p == 0)
+    return;
+
+  mark_block_nesting (p->x_block_stack);
+  mark_cond_nesting (p->x_cond_stack);
+  mark_loop_nesting (p->x_loop_stack);
+  mark_case_nesting (p->x_case_stack);
+
+  ggc_mark_tree (p->x_last_expr_type);
+  /* last_epxr_value is only valid if last_expr_type is nonzero.  */
+  if (p->x_last_expr_type)
+    ggc_mark_rtx (p->x_last_expr_value);
+
+  mark_goto_fixup (p->x_goto_fixup_chain);
+}

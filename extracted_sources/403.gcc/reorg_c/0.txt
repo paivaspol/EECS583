@@ -1,0 +1,84 @@
+static int resource_conflicts_p		PARAMS ((struct resources *,
+					       struct resources *));
+static int insn_references_resource_p	PARAMS ((rtx, struct resources *, int));
+static int insn_sets_resource_p		PARAMS ((rtx, struct resources *, int));
+static rtx find_end_label		PARAMS ((void));
+static rtx emit_delay_sequence		PARAMS ((rtx, rtx, int));
+static rtx add_to_delay_list		PARAMS ((rtx, rtx));
+static rtx delete_from_delay_slot	PARAMS ((rtx));
+static void delete_scheduled_jump	PARAMS ((rtx));
+static void note_delay_statistics	PARAMS ((int, int));
+#if defined(ANNUL_IFFALSE_SLOTS) || defined(ANNUL_IFTRUE_SLOTS)
+static rtx optimize_skip		PARAMS ((rtx));
+#endif
+static int get_jump_flags		PARAMS ((rtx, rtx));
+static int rare_destination		PARAMS ((rtx));
+static int mostly_true_jump		PARAMS ((rtx, rtx));
+static rtx get_branch_condition		PARAMS ((rtx, rtx));
+static int condition_dominates_p	PARAMS ((rtx, rtx));
+static int redirect_with_delay_slots_safe_p PARAMS ((rtx, rtx, rtx));
+static int redirect_with_delay_list_safe_p PARAMS ((rtx, rtx, rtx));
+static int check_annul_list_true_false	PARAMS ((int, rtx));
+static rtx steal_delay_list_from_target PARAMS ((rtx, rtx, rtx, rtx,
+					       struct resources *,
+					       struct resources *,
+					       struct resources *,
+					       int, int *, int *, rtx *));
+static rtx steal_delay_list_from_fallthrough PARAMS ((rtx, rtx, rtx, rtx,
+						    struct resources *,
+						    struct resources *,
+						    struct resources *,
+						    int, int *, int *));
+static void try_merge_delay_insns	PARAMS ((rtx, rtx));
+static rtx redundant_insn		PARAMS ((rtx, rtx, rtx));
+static int own_thread_p			PARAMS ((rtx, rtx, int));
+static void update_block		PARAMS ((rtx, rtx));
+static int reorg_redirect_jump		PARAMS ((rtx, rtx));
+static void update_reg_dead_notes	PARAMS ((rtx, rtx));
+static void fix_reg_dead_note		PARAMS ((rtx, rtx));
+static void update_reg_unused_notes	PARAMS ((rtx, rtx));
+static void fill_simple_delay_slots	PARAMS ((int));
+static rtx fill_slots_from_thread	PARAMS ((rtx, rtx, rtx, rtx, int, int,
+					       int, int, int *, rtx));
+static void fill_eager_delay_slots	PARAMS ((void));
+static void relax_delay_slots		PARAMS ((rtx));
+#ifdef HAVE_return
+static void make_return_insns		PARAMS ((rtx));
+#endif
+
+/* Return TRUE if this insn should stop the search for insn to fill delay
+   slots.  LABELS_P indicates that labels should terminate the search.
+   In all cases, jumps terminate the search.  */
+
+static int
+stop_search_p (insn, labels_p)
+     rtx insn;
+     int labels_p;
+{
+  if (insn == 0)
+    return 1;
+
+  switch (GET_CODE (insn))
+    {
+    case NOTE:
+    case CALL_INSN:
+      return 0;
+
+    case CODE_LABEL:
+      return labels_p;
+
+    case JUMP_INSN:
+    case BARRIER:
+      return 1;
+
+    case INSN:
+      /* OK unless it contains a delay slot or is an `asm' insn of some type.
+	 We don't know anything about these.  */
+      return (GET_CODE (PATTERN (insn)) == SEQUENCE
+	      || GET_CODE (PATTERN (insn)) == ASM_INPUT
+	      || asm_noperands (PATTERN (insn)) >= 0);
+
+    default:
+      abort ();
+    }
+}

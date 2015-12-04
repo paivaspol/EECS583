@@ -1,0 +1,38 @@
+static rtx
+walk_fixup_memory_subreg (x, insn, promoted_mode, uncritical)
+     rtx x;
+     rtx insn;
+     enum machine_mode promoted_mode;
+     int uncritical;
+{
+  enum rtx_code code;
+  const char *fmt;
+  int i;
+
+  if (x == 0)
+    return 0;
+
+  code = GET_CODE (x);
+
+  if (code == SUBREG && GET_CODE (SUBREG_REG (x)) == MEM)
+    return fixup_memory_subreg (x, insn, promoted_mode, uncritical);
+
+  /* Nothing special about this RTX; fix its operands.  */
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	XEXP (x, i) = walk_fixup_memory_subreg (XEXP (x, i), insn, 
+						promoted_mode, uncritical);
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    XVECEXP (x, i, j)
+	      = walk_fixup_memory_subreg (XVECEXP (x, i, j), insn, 
+					  promoted_mode, uncritical);
+	}
+    }
+  return x;
+}

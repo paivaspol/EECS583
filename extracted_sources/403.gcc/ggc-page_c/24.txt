@@ -1,0 +1,41 @@
+void
+ggc_collect ()
+{
+  /* Avoid frequent unnecessary work by skipping collection if the
+     total allocations haven't expanded much since the last
+     collection.  */
+#ifndef GGC_ALWAYS_COLLECT
+  if (G.allocated < GGC_MIN_EXPAND_FOR_GC * G.allocated_last_gc)
+    return;
+#endif
+
+  timevar_push (TV_GC);
+  if (!quiet_flag)
+    fprintf (stderr, " {GC %luk -> ", (unsigned long) G.allocated / 1024);
+
+  /* Zero the total allocated bytes.  This will be recalculated in the
+     sweep phase.  */
+  G.allocated = 0;
+
+  /* Release the pages we freed the last time we collected, but didn't 
+     reuse in the interim.  */
+  release_pages ();
+
+  clear_marks ();
+  ggc_mark_roots ();
+  
+#ifdef GGC_POISON
+  poison_pages ();
+#endif
+
+  sweep_pages ();
+
+  G.allocated_last_gc = G.allocated;
+  if (G.allocated_last_gc < GGC_MIN_LAST_ALLOCATED)
+    G.allocated_last_gc = GGC_MIN_LAST_ALLOCATED;
+
+  timevar_pop (TV_GC);
+
+  if (!quiet_flag)
+    fprintf (stderr, "%luk}", (unsigned long) G.allocated / 1024);
+}

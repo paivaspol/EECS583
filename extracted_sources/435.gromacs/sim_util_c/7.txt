@@ -1,0 +1,38 @@
+void calc_virial(FILE *log,int start,int homenr,rvec x[],rvec f[],
+		 tensor vir_part,tensor pme_vir,
+		 t_graph *graph,matrix box,
+		 t_nrnb *nrnb,t_forcerec *fr,bool bTweak)
+{
+  int i,j;
+  tensor virtest;
+  
+  /* Now it is time for the short range virial. At this timepoint vir_part
+   * already contains the virial from surrounding boxes.
+   * Calculate partial virial, for local atoms only, based on short range. 
+   * Total virial is computed in global_stat, called from do_md 
+   */
+  f_calc_vir(log,start,start+homenr,x,f,vir_part,graph,box);
+  inc_nrnb(nrnb,eNR_VIRIAL,homenr);
+
+  /* Add up the long range forces if necessary */
+  /* if (!bTweak) {
+    sum_lrforces(f,fr,start,homenr);
+    }*/
+  
+  /* Add up virial if necessary */  
+  if (EEL_LR(fr->eeltype) && (fr->eeltype != eelPPPM)) {
+    if (debug && bTweak) {
+      clear_mat(virtest);
+      f_calc_vir(log,start,start+homenr,x,fr->f_pme,virtest,graph,box);
+      pr_rvecs(debug,0,"virtest",virtest,DIM);
+      pr_rvecs(debug,0,"pme_vir",pme_vir,DIM);
+    }    
+    /* PPPM virial sucks */
+    if (!bTweak)
+      for(i=0; (i<DIM); i++) 
+	for(j=0; (j<DIM); j++) 
+	  vir_part[i][j]+=pme_vir[i][j];
+  }
+  if (debug)
+    pr_rvecs(debug,0,"vir_part",vir_part,DIM);
+}

@@ -1,0 +1,20 @@
+static void
+output_member_die (arg)
+     void *arg;
+{
+  tree decl = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_member);
+  sibling_attribute ();
+  name_and_src_coords_attributes (decl);
+  member_attribute (DECL_CONTEXT (decl));
+  type_attribute (member_declared_type (decl),
+		  TREE_READONLY (decl), TREE_THIS_VOLATILE (decl));
+  if (DECL_BIT_FIELD_TYPE (decl))	/* If this is a bit field...  */
+    {
+      byte_size_attribute (decl);
+      bit_size_attribute (decl);
+      bit_offset_attribute (decl);
+    }
+  data_member_location_attribute (decl);
+}

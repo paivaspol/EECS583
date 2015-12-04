@@ -1,0 +1,24 @@
+int
+reg_fits_class_p (operand, class, offset, mode)
+     rtx operand;
+     enum reg_class class;
+     int offset;
+     enum machine_mode mode;
+{
+  int regno = REGNO (operand);
+  if (regno < FIRST_PSEUDO_REGISTER
+      && TEST_HARD_REG_BIT (reg_class_contents[(int) class],
+			    regno + offset))
+    {
+      int sr;
+      regno += offset;
+      for (sr = HARD_REGNO_NREGS (regno, mode) - 1;
+	   sr > 0; sr--)
+	if (! TEST_HARD_REG_BIT (reg_class_contents[(int) class],
+				 regno + sr))
+	  break;
+      return sr == 0;
+    }
+
+  return 0;
+}

@@ -1,0 +1,40 @@
+static int
+emulm (a, b)
+     const UEMUSHORT a[];
+     UEMUSHORT b[];
+{
+  const UEMUSHORT *p;
+  UEMUSHORT *q;
+  UEMUSHORT pprod[NI];
+  UEMUSHORT j;
+  int i;
+
+  equot[0] = b[0];
+  equot[1] = b[1];
+  for (i=M; i<NI; i++)
+    equot[i] = 0;
+
+  j = 0;
+  p = &a[NI-1];
+  q = &equot[NI-1];
+  for (i=M+1; i<NI; i++)
+    {
+      if (*p == 0)
+	{
+	  --p;
+	}
+      else
+	{
+	  m16m ((unsigned int) *p--, b, pprod);
+	  eaddm (pprod, equot);
+	}
+      j |= *q;
+      eshdn6 (equot);
+    }
+
+  for (i=0; i<NI; i++)
+    b[i] = equot[i];
+
+  /* return flag for lost nonzero bits */
+  return ((int) j);
+}

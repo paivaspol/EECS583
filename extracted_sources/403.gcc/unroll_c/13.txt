@@ -1,0 +1,68 @@
+static int
+reg_dead_after_loop (loop, reg)
+     const struct loop *loop;
+     rtx reg;
+{
+  rtx insn, label;
+  enum rtx_code code;
+  int jump_count = 0;
+  int label_count = 0;
+
+  /* In addition to checking all exits of this loop, we must also check
+     all exits of inner nested loops that would exit this loop.  We don't
+     have any way to identify those, so we just give up if there are any
+     such inner loop exits.  */
+
+  for (label = loop->exit_labels; label; label = LABEL_NEXTREF (label))
+    label_count++;
+
+  if (label_count != loop->exit_count)
+    return 0;
+
+  /* HACK: Must also search the loop fall through exit, create a label_ref
+     here which points to the loop->end, and append the loop_number_exit_labels
+     list to it.  */
+  label = gen_rtx_LABEL_REF (VOIDmode, loop->end);
+  LABEL_NEXTREF (label) = loop->exit_labels;
+
+  for (; label; label = LABEL_NEXTREF (label))
+    {
+      /* Succeed if find an insn which sets the biv or if reach end of
+	 function.  Fail if find an insn that uses the biv, or if come to
+	 a conditional jump.  */
+
+      insn = NEXT_INSN (XEXP (label, 0));
+      while (insn)
+	{
+	  code = GET_CODE (insn);
+	  if (GET_RTX_CLASS (code) == 'i')
+	    {
+	      rtx set;
+
+	      if (reg_referenced_p (reg, PATTERN (insn)))
+		return 0;
+
+	      set = single_set (insn);
+	      if (set && rtx_equal_p (SET_DEST (set), reg))
+		break;
+	    }
+
+	  if (code == JUMP_INSN)
+	    {
+	      if (GET_CODE (PATTERN (insn)) == RETURN)
+		break;
+	      else if (!any_uncondjump_p (insn)
+		       /* Prevent infinite loop following infinite loops.  */
+		       || jump_count++ > 20)
+		return 0;
+	      else
+		insn = JUMP_LABEL (insn);
+	    }
+
+	  insn = NEXT_INSN (insn);
+	}
+    }
+
+  /* Success, the register is dead on all loop exits.  */
+  return 1;
+}

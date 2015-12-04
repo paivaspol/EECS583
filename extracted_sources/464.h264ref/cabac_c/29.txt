@@ -1,0 +1,38 @@
+void write_significant_coefficients (Macroblock* currMB, EncodingEnvironmentPtr eep_dp, int type, int coeff[])
+{
+  int   i;
+  int   absLevel;
+  int   ctx;
+  short sign;
+  short greater_one;
+  int   c1 = 1;
+  int   c2 = 0;
+  
+  for (i=maxpos[type]-1; i>=0; i--)
+  {
+    if (coeff[i]!=0)
+    {
+      if (coeff[i]>0) {absLevel =  coeff[i];  sign = 0;}
+      else            {absLevel = -coeff[i];  sign = 1;}
+
+      greater_one = (absLevel>1 ? 1 : 0);
+
+      //--- if coefficient is one ---
+      ctx = min(c1,4);    
+      biari_encode_symbol (eep_dp, greater_one, img->currentSlice->tex_ctx->one_contexts[type2ctx_one[type]] + ctx);
+
+      if (greater_one)
+      {
+        ctx = min(c2, max_c2[type]);
+        unary_exp_golomb_level_encode(eep_dp, absLevel-2, img->currentSlice->tex_ctx->abs_contexts[type2ctx_abs[type]] + ctx);
+        c1 = 0;
+        c2++;
+      }
+      else if (c1)
+      {
+        c1++;
+      }
+      biari_encode_symbol_eq_prob (eep_dp, sign);
+    }
+  }
+}

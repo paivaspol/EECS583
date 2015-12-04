@@ -1,0 +1,40 @@
+static tree convert_for_assignment	PARAMS ((tree, tree, const char *,
+						 tree, tree, int));
+static void warn_for_assignment		PARAMS ((const char *, const char *,
+						 tree, int));
+static tree valid_compound_expr_initializer PARAMS ((tree, tree));
+static void push_string			PARAMS ((const char *));
+static void push_member_name		PARAMS ((tree));
+static void push_array_bounds		PARAMS ((int));
+static int spelling_length		PARAMS ((void));
+static char *print_spelling		PARAMS ((char *));
+static void warning_init		PARAMS ((const char *));
+static tree digest_init			PARAMS ((tree, tree, int, int));
+static void output_init_element		PARAMS ((tree, tree, tree, int));
+static void output_pending_init_elements PARAMS ((int));
+static int set_designator		PARAMS ((int));
+static void push_range_stack		PARAMS ((tree));
+static void add_pending_init		PARAMS ((tree, tree));
+static void set_nonincremental_init	PARAMS ((void));
+static void set_nonincremental_init_from_string	PARAMS ((tree));
+static tree find_init_member		PARAMS ((tree));
+
+/* Do `exp = require_complete_type (exp);' to make sure exp
+   does not have an incomplete type.  (That includes void types.)  */
+
+tree
+require_complete_type (value)
+     tree value;
+{
+  tree type = TREE_TYPE (value);
+
+  if (value == error_mark_node || type == error_mark_node)
+    return error_mark_node;
+
+  /* First, detect a valid value with a complete type.  */
+  if (COMPLETE_TYPE_P (type))
+    return value;
+
+  incomplete_type_error (value, type);
+  return error_mark_node;
+}

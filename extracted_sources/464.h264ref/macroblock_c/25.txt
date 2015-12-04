@@ -1,0 +1,30 @@
+int writeChromaIntraPredMode()
+{
+  Macroblock*     currMB    = &img->mb_data[img->current_mb_nr];
+  SyntaxElement*  currSE    = &img->MB_SyntaxElements[currMB->currSEnr];
+  Slice*          currSlice = img->currentSlice;
+  int*            bitCount  = currMB->bitcounter;
+  const int*      partMap   = assignSE2partition[input->partition_mode];
+  int             rate      = 0;
+  DataPartition*  dataPart;
+
+  //===== BITS FOR CHROMA INTRA PREDICTION MODES
+  if (input->symbol_mode==UVLC)   currSE->mapping = ue_linfo;
+  else                            currSE->writing = writeCIPredMode_CABAC;
+
+  currSE->value1 = currMB->c_ipred_mode;
+  currSE->value2 = 0;
+  currSE->type = SE_INTRAPREDMODE;
+  dataPart = &(currSlice->partArr[partMap[SE_INTRAPREDMODE]]);
+
+  dataPart->writeSyntaxElement (currSE, dataPart);
+  bitCount[BITS_COEFF_UV_MB] += currSE->len;
+  rate                    += currSE->len;
+#if TRACE
+  snprintf(currSE->tracestring, TRACESTRING_SIZE, "Chroma intra pred mode");
+#endif
+  currSE++;
+  currMB->currSEnr++;
+
+  return rate;
+}

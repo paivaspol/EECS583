@@ -1,0 +1,35 @@
+static int
+copy_alignment_line(char *aseq, int apos, int name_rcol, 
+		    char *buffer, int lcol, int rcol, char gapsym)
+{
+  char *s1, *s2;
+  int   i;
+  
+  s1 = aseq + apos;
+  s2 = buffer;			/* be careful that buffer doesn't end before lcol! */
+  for (i = 0; i < lcol; i++)
+    if (*s2) s2++;
+
+  for (i = lcol; i <= rcol; i++)
+    {
+      if (*s2 == '\t') {
+	Warn("TAB characters will corrupt a SELEX alignment! Please remove them first.");
+	return 0;
+      }
+      if (name_rcol >= i)	/* name intrusion special case: pad left w/ gaps */
+	*s1 = gapsym;
+				/* short buffer special case: pad right w/ gaps  */
+      else if (*s2 == '\0' || *s2 == '\n')
+	*s1 = gapsym;
+
+      else if (*s2 == ' ')	/* new: disallow spaces as gap symbols */
+	*s1 = gapsym;
+
+      else			/* normal case: copy buffer into aseq */
+	*s1 = *s2;
+
+      s1++;
+      if (*s2) s2++;
+    }
+  return 1;
+}

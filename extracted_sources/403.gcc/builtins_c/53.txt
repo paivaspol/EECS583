@@ -1,0 +1,75 @@
+static rtx
+expand_builtin_fputs (arglist, ignore, unlocked)
+     tree arglist;
+     int ignore;
+     int unlocked;
+{
+  tree len, fn;
+  tree fn_fputc = unlocked ? built_in_decls[BUILT_IN_FPUTC_UNLOCKED]
+    : built_in_decls[BUILT_IN_FPUTC];
+  tree fn_fwrite = unlocked ? built_in_decls[BUILT_IN_FWRITE_UNLOCKED]
+    : built_in_decls[BUILT_IN_FWRITE];
+
+  /* If the return value is used, or the replacement _DECL isn't
+     initialized, don't do the transformation.  */
+  if (!ignore || !fn_fputc || !fn_fwrite)
+    return 0;
+
+  /* Verify the arguments in the original call.  */
+  if (!validate_arglist (arglist, POINTER_TYPE, POINTER_TYPE, VOID_TYPE))
+    return 0;
+
+  /* Get the length of the string passed to fputs.  If the length
+     can't be determined, punt.  */
+  if (!(len = c_strlen (TREE_VALUE (arglist)))
+      || TREE_CODE (len) != INTEGER_CST)
+    return 0;
+
+  switch (compare_tree_int (len, 1))
+    {
+    case -1: /* length is 0, delete the call entirely .  */
+      {
+	/* Evaluate and ignore the argument in case it has
+           side-effects.  */
+	expand_expr (TREE_VALUE (TREE_CHAIN (arglist)), const0_rtx,
+		     VOIDmode, EXPAND_NORMAL);
+	return const0_rtx;
+      }
+    case 0: /* length is 1, call fputc.  */
+      {
+	const char *p = c_getstr (TREE_VALUE (arglist));
+
+	if (p != NULL)
+	  {
+	    /* New argument list transforming fputs(string, stream) to
+	       fputc(string[0], stream).  */
+	    arglist =
+	      build_tree_list (NULL_TREE, TREE_VALUE (TREE_CHAIN (arglist)));
+	    arglist =
+	      tree_cons (NULL_TREE, build_int_2 (p[0], 0), arglist);
+	    fn = fn_fputc;
+	    break;
+	  }
+      }
+      /* FALLTHROUGH */
+    case 1: /* length is greater than 1, call fwrite.  */
+      {
+	tree string_arg = TREE_VALUE (arglist);
+
+	/* New argument list transforming fputs(string, stream) to
+	   fwrite(string, 1, len, stream).  */
+	arglist = build_tree_list (NULL_TREE, TREE_VALUE (TREE_CHAIN (arglist)));
+	arglist = tree_cons (NULL_TREE, len, arglist);
+	arglist = tree_cons (NULL_TREE, size_one_node, arglist);
+	arglist = tree_cons (NULL_TREE, string_arg, arglist);
+	fn = fn_fwrite;
+	break;
+      }
+    default:
+      abort ();
+    }
+
+  return expand_expr (build_function_call_expr (fn, arglist),
+		      (ignore ? const0_rtx : NULL_RTX),
+		      VOIDmode, EXPAND_NORMAL);
+}

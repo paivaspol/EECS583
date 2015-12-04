@@ -1,0 +1,22 @@
+static int writeout_picture(Picture *pic)
+{
+  Bitstream *currStream;
+  int partition, slice;
+  Slice *currSlice;
+
+  img->currentPicture=pic;
+
+  for (slice=0; slice<pic->no_slices; slice++)
+  {
+    currSlice = pic->slices[slice];
+    for (partition=0; partition<currSlice->max_part_nr; partition++)
+    {
+      currStream = (currSlice->partArr[partition]).bitstream;
+      assert (currStream->bits_to_go == 8);    //! should always be the case, the 
+                                               //! byte alignment is done in terminate_slice
+      writeUnit (currSlice->partArr[partition].bitstream,partition);
+
+    }           // partition loop
+  }           // slice loop
+  return 0;   
+}

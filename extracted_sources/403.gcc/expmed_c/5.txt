@@ -1,0 +1,25 @@
+static rtx
+lshift_value (mode, value, bitpos, bitsize)
+     enum machine_mode mode;
+     rtx value;
+     int bitpos, bitsize;
+{
+  unsigned HOST_WIDE_INT v = INTVAL (value);
+  HOST_WIDE_INT low, high;
+
+  if (bitsize < HOST_BITS_PER_WIDE_INT)
+    v &= ~((HOST_WIDE_INT) -1 << bitsize);
+
+  if (bitpos < HOST_BITS_PER_WIDE_INT)
+    {
+      low = v << bitpos;
+      high = (bitpos > 0 ? (v >> (HOST_BITS_PER_WIDE_INT - bitpos)) : 0);
+    }
+  else
+    {
+      low = 0;
+      high = v << (bitpos - HOST_BITS_PER_WIDE_INT);
+    }
+
+  return immed_double_const (low, high, mode);
+}

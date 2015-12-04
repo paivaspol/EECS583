@@ -1,0 +1,59 @@
+void
+AddToHistogram(struct histogram_s *h, float sc)
+{
+  int score;
+  int moveby;
+  int prevsize;
+  int newsize;
+  int i;
+
+  /* Adding to a histogram conflicts with existing fit:
+   * prohibit this.
+   */
+  if (h->fit_type != HISTFIT_NONE)
+    Die("AddToHistogram(): Can't add to a fitted histogram\n");
+  
+
+  /* histogram bins are defined as:  score >= bin value, < bin+1 
+   * -1.9 -> -2    -0.4 -> -1    1.9 -> 1
+   * -2.1 -> -3     0.4 -> 0     2.1 -> 2
+   */
+  score = (int) floor(sc);
+
+  /* Check to see if we must reallocate the histogram.
+   */
+  if (score < h->min)
+    {
+      prevsize = h->max - h->min + 1;
+      moveby   = (h->min - score) + h->lumpsize;
+      newsize  = prevsize + moveby;
+      h->min  -= moveby;
+
+      h->histogram = (int *) ReallocOrDie(h->histogram, sizeof(int) * newsize);
+      memmove(h->histogram+moveby, h->histogram, sizeof(int) * prevsize);
+      for (i = 0; i < moveby; i++)
+	h->histogram[i] = 0;
+    }
+  else if (score > h->max)
+    {
+      prevsize = h->max - h->min + 1;
+      h->max   = h->lumpsize + score;
+      newsize  = h->max - h->min + 1;
+
+      h->histogram = (int *) ReallocOrDie(h->histogram, sizeof(int) * newsize);
+      for (i = prevsize; i < newsize; i++)
+	h->histogram[i] = 0;
+    }
+
+  /* Bump the correct bin.
+   * The bin number is score - h->min
+   */
+  h->histogram[score - h->min]++;
+  h->total++;
+  if (score < h->lowscore) h->lowscore   = score;
+  if (score > h->highscore) h->highscore = score;
+
+  SQD_DPRINTF3(("AddToHistogram(): added %.1f; rounded to %d; in bin %d (%d-%d)\n",
+	  sc, score, score-h->min, h->min, h->max));
+  return;
+}

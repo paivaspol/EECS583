@@ -1,0 +1,38 @@
+void
+finish_init ()
+{
+  struct initializer_stack *p = initializer_stack;
+
+  /* Output subconstants (string constants, usually)
+     that were referenced within this initializer and saved up.
+     Must do this if and only if we called defer_addressed_constants.  */
+  if (constructor_subconstants_deferred)
+    output_deferred_addressed_constants ();
+
+  /* Free the whole constructor stack of this initializer.  */
+  while (constructor_stack)
+    {
+      struct constructor_stack *q = constructor_stack;
+      constructor_stack = q->next;
+      free (q);
+    }
+
+  if (constructor_range_stack)
+    abort ();
+
+  /* Pop back to the data of the outer initializer (if any).  */
+  constructor_decl = p->decl;
+  constructor_asmspec = p->asmspec;
+  require_constant_value = p->require_constant_value;
+  require_constant_elements = p->require_constant_elements;
+  constructor_stack = p->constructor_stack;
+  constructor_range_stack = p->constructor_range_stack;
+  constructor_elements = p->elements;
+  spelling = p->spelling;
+  spelling_base = p->spelling_base;
+  spelling_size = p->spelling_size;
+  constructor_subconstants_deferred = p->deferred;
+  constructor_top_level = p->top_level;
+  initializer_stack = p->next;
+  free (p);
+}

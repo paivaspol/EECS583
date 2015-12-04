@@ -1,0 +1,39 @@
+static int
+_gettimeofday(pTHX_ struct timeval *tp, void *not_used)
+{
+    dMY_CXT;
+
+    unsigned __int64 ticks;
+    FT_t ft;
+
+    if (MY_CXT.run_count++ == 0 ||
+	MY_CXT.base_systime_as_filetime.ft_i64 > MY_CXT.reset_time) {
+        QueryPerformanceFrequency((LARGE_INTEGER*)&MY_CXT.tick_frequency);
+        QueryPerformanceCounter((LARGE_INTEGER*)&MY_CXT.base_ticks);
+        GetSystemTimeAsFileTime(&MY_CXT.base_systime_as_filetime.ft_val);
+        ft.ft_i64 = MY_CXT.base_systime_as_filetime.ft_i64;
+	MY_CXT.reset_time = ft.ft_i64 + MAX_PERF_COUNTER_TICKS;
+    }
+    else {
+	__int64 diff;
+        QueryPerformanceCounter((LARGE_INTEGER*)&ticks);
+        ticks -= MY_CXT.base_ticks;
+        ft.ft_i64 = MY_CXT.base_systime_as_filetime.ft_i64
+                    + Const64(10000000) * (ticks / MY_CXT.tick_frequency)
+                    +(Const64(10000000) * (ticks % MY_CXT.tick_frequency)) / MY_CXT.tick_frequency;
+	diff = ft.ft_i64 - MY_CXT.base_systime_as_filetime.ft_i64;
+	if (diff < -MAX_PERF_COUNTER_SKEW || diff > MAX_PERF_COUNTER_SKEW) {
+	    MY_CXT.base_ticks += ticks;
+            GetSystemTimeAsFileTime(&MY_CXT.base_systime_as_filetime.ft_val);
+            ft.ft_i64 = MY_CXT.base_systime_as_filetime.ft_i64;
+	}
+    }
+
+    /* seconds since epoch */
+    tp->tv_sec = (long)((ft.ft_i64 - EPOCH_BIAS) / Const64(10000000));
+
+    /* microseconds remaining */
+    tp->tv_usec = (long)((ft.ft_i64 / Const64(10)) % Const64(1000000));
+
+    return 0;
+}

@@ -1,0 +1,152 @@
+void read_pullparams(t_pull *pull, char *infile, char *outfile) 
+{
+  t_inpfile *inp;
+  int ninp,i;
+  char *tmp;           /* for the input parsing macros */
+  char dummy[STRLEN];  /* idem */
+  char grp1buf[STRLEN], grp2buf[STRLEN], grp3buf[STRLEN], grp4buf[STRLEN],
+       grp5buf[STRLEN],
+       bf1[STRLEN], bf2[STRLEN], dir[STRLEN], 
+       refdir1[STRLEN],refdir2[STRLEN];
+
+  int bReverse; int tmpref; int tmprun; 
+
+  enum {erunSTART, erunAFM, erunConstraint, erunUmbrella, erunTest, erunNR};
+  static char *runtypes[erunNR+1] = { 
+    "start", "afm", "constraint", "umbrella", "test", NULL
+  };
+  enum {erefCom, erefComT0, erefDyn, erefDynT0, erefNR};
+  static char *reftypes[erefNR+1] = {
+    "com", "com_t0", "dynamic", "dynamic_t0", NULL
+  };
+  enum {ereverseTO_REF, ereverseFROM_REF, ereverseNR};
+  static char *reversetypes[ereverseNR+1] = {
+    "from_reference", "to_reference", NULL
+  };
+  enum {everboseYES, everboseNO, everboseNR};
+  static char *verbosetypes[erefNR+1] = {
+    "no", "yes", NULL
+  };
+  int nerror = 0;
+
+  /* read input parameter file */
+  fprintf(stderr,"Reading parameter file %s\n",infile);
+  inp=read_inpfile(infile,&ninp);
+
+  /* general options */
+  CTYPE("GENERAL");
+  EETYPE("verbose",         pull->bVerbose, verbosetypes, &nerror, TRUE);
+  CTYPE("Runtype: start, afm, constraint, umbrella, test");
+  EETYPE("runtype",         tmprun, runtypes, &nerror, TRUE);
+  CTYPE("Groups to be pulled");
+  STYPE("group_1",          grp1buf, "");
+  STYPE("group_2",          grp2buf, "");
+  STYPE("group_3",          grp3buf, "");
+  STYPE("group_4",          grp4buf, "");
+  CTYPE("The group for the reaction force.");
+  STYPE("reference_group",  grp5buf, "");
+  CTYPE("Ref. type: com, com_t0, dynamic, dynamic_t0");
+  EETYPE("reftype",         tmpref, reftypes, &nerror, TRUE);
+  CTYPE("Use running average for reflag steps for com calculation");
+  ITYPE("reflag",           pull->reflag, 1);
+  CTYPE("Select components for constraint vector. default: z-only");
+  STYPE("direction",        dir, "0.0 0.0 1.0");
+  CTYPE("Direction for start/afm: to_reference, from_reference");
+  EETYPE("reverse",          pull->bReverse, reversetypes, &nerror, TRUE);
+
+  /* options for dynamic reference groups */
+  CTYPE("DYNAMIC REFERENCE GROUP OPTIONS");
+  CTYPE("Cylinder radius for dynamic reaction force groups (nm)");
+  RTYPE("r",                pull->r, 0.0);
+  CTYPE("Switch from r to rc in case of dynamic reaction force");
+  RTYPE("rc",   pull->rc,   0.0);
+  CTYPE("Update frequency for dynamic reference groups (steps)");
+  ITYPE("update",           pull->update, 1);
+
+  /* constraint run options */
+  CCTYPE("CONSTRAINT RUN OPTIONS");
+  CTYPE("Tolerance of constraints, in nm");
+  RTYPE("constraint_tolerance",            pull->constr_tol, 1E-6);
+
+  /* options for AFM type pulling simulations */
+  CCTYPE("AFM OPTIONS");
+  CTYPE("pull rate in nm/timestep");
+  RTYPE("pullrate",         pull->rate,    0.0);
+  CTYPE("forceconstant in kJ/(mol*nm^2)");
+  RTYPE("forceconstant",    pull->k, 0.0);
+
+  /* umbrella sampling options */
+  CCTYPE("UMBRELLA SAMPLING OPTIONS");
+  CTYPE("Width of umbrella sampling potential in kJ/(mol*nm^2)");
+  RTYPE("width",            pull->um_width, 0.0);
+
+  /* options for making starting structures */
+  CCTYPE("STARTING STRUCTURE OPTIONS");
+  CTYPE("Start coord. for making starting struct, rel. to ref. grp.: x y z");
+  STYPE("r0_group1",        bf1, "");
+  STYPE("r0_group2",        bf2, ""); 
+  /*  CTYPE("Constrain rotations around principle axes? Needs work");
+      ITYPE("rotation_x",       pull->bRot[0], 0);
+      ITYPE("rotation_y",       pull->bRot[1], 0);
+      ITYPE("rotation_z",       pull->bRot[2], 0);
+      CTYPE("Rate of rotation (degrees/step)");
+      RTYPE("rotation_rate",    pull->rot_rate, 0.0);
+  */
+  RTYPE("tolerance",        pull->tolerance, 0.05);
+  CTYPE("Rate of translation in all directions (nm/step)");
+  RTYPE("translation_rate", pull->xlt_rate, 0.0); 
+  CTYPE("Write out structure every ndegr degrees, transstep nm");
+  ITYPE("ndegr",            pull->rot_incr, 0);
+  RTYPE("transstep",        pull->xlt_incr, 0.001);
+
+  write_inpfile(outfile,ninp,inp);
+  for (i=0; (i<ninp); i++) {
+    sfree(inp[i].name);
+    sfree(inp[i].value);
+  }
+  sfree(inp);
+
+  pull->runtype = (t_runtype)tmprun;
+  pull->reftype = (t_reftype)tmpref;
+
+  /* sort out the groups */
+  fprintf(stderr,"Groups: %s %s %s %s %s\n",
+	  grp1buf,grp2buf,grp3buf,grp4buf,grp4buf);
+
+  if (!strcmp(grp1buf,"") || !strcmp(grp5buf,"")) 
+    fatal_error(0,"Need to specify at least group_1 and reference_group");
+  pull->pull.n = 1;
+  if (strcmp(grp2buf,"")) 
+    pull->pull.n += 1;
+  if (strcmp(grp3buf,"")) 
+    pull->pull.n += 1;
+  if (strcmp(grp4buf,""))
+    pull->pull.n += 1;
+     
+  fprintf(stderr,"Using %d pull groups\n",pull->pull.n);
+     
+  /* initialize the names of the groups */
+  snew(pull->pull.grps,pull->pull.n);
+  snew(pull->ref.grps,1);
+  pull->pull.grps[0] = (char *)strdup(grp1buf);
+  pull->pull.grps[1] = (char *)strdup(grp2buf);
+  pull->pull.grps[2] = (char *)strdup(grp3buf);
+  pull->pull.grps[3] = (char *)strdup(grp4buf);
+  pull->ref.grps[0]  = (char *)strdup(grp5buf);
+
+  if (pull->runtype == eStart) {
+    snew(pull->pull.xtarget,pull->pull.n);
+    string2rvec(bf1,pull->pull.xtarget[0]);
+    if (pull->pull.n == 2)
+      string2rvec(bf2,pull->pull.xtarget[1]);
+  }
+
+  string2rvec(dir,pull->dims);
+  fprintf(stderr,"Using distance components %2.1f %2.1f %2.1f\n",
+	  pull->dims[0],pull->dims[1],pull->dims[2]);
+
+  if (pull->r > 0.001) 
+    pull->bCyl = TRUE;
+  else
+    pull->bCyl = FALSE;
+}

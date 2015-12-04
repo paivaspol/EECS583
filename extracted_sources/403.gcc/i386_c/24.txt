@@ -1,0 +1,272 @@
+static int
+classify_argument (mode, type, classes, bit_offset)
+     enum machine_mode mode;
+     tree type;
+     enum x86_64_reg_class classes[MAX_CLASSES];
+     int bit_offset;
+{
+  int bytes =
+    (mode == BLKmode) ? int_size_in_bytes (type) : (int) GET_MODE_SIZE (mode);
+  int words = (bytes + UNITS_PER_WORD - 1) / UNITS_PER_WORD;
+
+  if (type && AGGREGATE_TYPE_P (type))
+    {
+      int i;
+      tree field;
+      enum x86_64_reg_class subclasses[MAX_CLASSES];
+
+      /* On x86-64 we pass structures larger than 16 bytes on the stack.  */
+      if (bytes > 16)
+	return 0;
+
+      for (i = 0; i < words; i++)
+	classes[i] = X86_64_NO_CLASS;
+
+      /* Zero sized arrays or structures are NO_CLASS.  We return 0 to
+	 signalize memory class, so handle it as special case.  */
+      if (!words)
+	{
+	  classes[0] = X86_64_NO_CLASS;
+	  return 1;
+	}
+
+      /* Classify each field of record and merge classes.  */
+      if (TREE_CODE (type) == RECORD_TYPE)
+	{
+	  /* For classes first merge in the field of the subclasses.  */
+	  if (TYPE_BINFO (type) != NULL && TYPE_BINFO_BASETYPES (type) != NULL)
+	    {
+	      tree bases = TYPE_BINFO_BASETYPES (type);
+	      int n_bases = TREE_VEC_LENGTH (bases);
+	      int i;
+
+	      for (i = 0; i < n_bases; ++i)
+		{
+		   tree binfo = TREE_VEC_ELT (bases, i);
+		   int num;
+		   int offset = tree_low_cst (BINFO_OFFSET (binfo), 0) * 8;
+		   tree type = BINFO_TYPE (binfo);
+
+		   num = classify_argument (TYPE_MODE (type),
+					    type, subclasses,
+					    (offset + bit_offset) % 256);
+		   if (!num)
+		     return 0;
+		   for (i = 0; i < num; i++)
+		     {
+		       int pos = (offset + bit_offset) / 8 / 8;
+		       classes[i + pos] =
+			 merge_classes (subclasses[i], classes[i + pos]);
+		     }
+		}
+	    }
+	  /* And now merge the fields of structure.   */
+	  for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
+	    {
+	      if (TREE_CODE (field) == FIELD_DECL)
+		{
+		  int num;
+
+		  /* Bitfields are always classified as integer.  Handle them
+		     early, since later code would consider them to be
+		     misaligned integers.  */
+		  if (DECL_BIT_FIELD (field))
+		    {
+		      for (i = int_bit_position (field) / 8 / 8;
+			   i < (int_bit_position (field)
+			        + tree_low_cst (DECL_SIZE (field), 0)
+			       	+ 63) / 8 / 8; i++)
+			classes[i] =
+			  merge_classes (X86_64_INTEGER_CLASS,
+					 classes[i]);
+		    }
+		  else
+		    {
+		      num = classify_argument (TYPE_MODE (TREE_TYPE (field)),
+					       TREE_TYPE (field), subclasses,
+					       (int_bit_position (field)
+						+ bit_offset) % 256);
+		      if (!num)
+			return 0;
+		      for (i = 0; i < num; i++)
+			{
+			  int pos =
+			    (int_bit_position (field) + bit_offset) / 8 / 8;
+			  classes[i + pos] =
+			    merge_classes (subclasses[i], classes[i + pos]);
+			}
+		    }
+		}
+	    }
+	}
+      /* Arrays are handled as small records.  */
+      else if (TREE_CODE (type) == ARRAY_TYPE)
+	{
+	  int num;
+	  num = classify_argument (TYPE_MODE (TREE_TYPE (type)),
+				   TREE_TYPE (type), subclasses, bit_offset);
+	  if (!num)
+	    return 0;
+
+	  /* The partial classes are now full classes.  */
+	  if (subclasses[0] == X86_64_SSESF_CLASS && bytes != 4)
+	    subclasses[0] = X86_64_SSE_CLASS;
+	  if (subclasses[0] == X86_64_INTEGERSI_CLASS && bytes != 4)
+	    subclasses[0] = X86_64_INTEGER_CLASS;
+
+	  for (i = 0; i < words; i++)
+	    classes[i] = subclasses[i % num];
+	}
+      /* Unions are similar to RECORD_TYPE but offset is always 0.  */
+      else if (TREE_CODE (type) == UNION_TYPE
+	       || TREE_CODE (type) == QUAL_UNION_TYPE)
+	{
+	  /* For classes first merge in the field of the subclasses.  */
+	  if (TYPE_BINFO (type) != NULL && TYPE_BINFO_BASETYPES (type) != NULL)
+	    {
+	      tree bases = TYPE_BINFO_BASETYPES (type);
+	      int n_bases = TREE_VEC_LENGTH (bases);
+	      int i;
+
+	      for (i = 0; i < n_bases; ++i)
+		{
+		   tree binfo = TREE_VEC_ELT (bases, i);
+		   int num;
+		   int offset = tree_low_cst (BINFO_OFFSET (binfo), 0) * 8;
+		   tree type = BINFO_TYPE (binfo);
+
+		   num = classify_argument (TYPE_MODE (type),
+					    type, subclasses,
+					    (offset + bit_offset) % 256);
+		   if (!num)
+		     return 0;
+		   for (i = 0; i < num; i++)
+		     {
+		       int pos = (offset + bit_offset) / 8 / 8;
+		       classes[i + pos] =
+			 merge_classes (subclasses[i], classes[i + pos]);
+		     }
+		}
+	    }
+	  for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
+	    {
+	      if (TREE_CODE (field) == FIELD_DECL)
+		{
+		  int num;
+		  num = classify_argument (TYPE_MODE (TREE_TYPE (field)),
+					   TREE_TYPE (field), subclasses,
+					   bit_offset);
+		  if (!num)
+		    return 0;
+		  for (i = 0; i < num; i++)
+		    classes[i] = merge_classes (subclasses[i], classes[i]);
+		}
+	    }
+	}
+      else
+	abort ();
+
+      /* Final merger cleanup.  */
+      for (i = 0; i < words; i++)
+	{
+	  /* If one class is MEMORY, everything should be passed in
+	     memory.  */
+	  if (classes[i] == X86_64_MEMORY_CLASS)
+	    return 0;
+
+	  /* The X86_64_SSEUP_CLASS should be always preceded by
+	     X86_64_SSE_CLASS.  */
+	  if (classes[i] == X86_64_SSEUP_CLASS
+	      && (i == 0 || classes[i - 1] != X86_64_SSE_CLASS))
+	    classes[i] = X86_64_SSE_CLASS;
+
+	  /*  X86_64_X87UP_CLASS should be preceded by X86_64_X87_CLASS.  */
+	  if (classes[i] == X86_64_X87UP_CLASS
+	      && (i == 0 || classes[i - 1] != X86_64_X87_CLASS))
+	    classes[i] = X86_64_SSE_CLASS;
+	}
+      return words;
+    }
+
+  /* Compute alignment needed.  We align all types to natural boundaries with
+     exception of XFmode that is aligned to 64bits.  */
+  if (mode != VOIDmode && mode != BLKmode)
+    {
+      int mode_alignment = GET_MODE_BITSIZE (mode);
+
+      if (mode == XFmode)
+	mode_alignment = 128;
+      else if (mode == XCmode)
+	mode_alignment = 256;
+      /* Misaligned fields are always returned in memory.  */
+      if (bit_offset % mode_alignment)
+	return 0;
+    }
+
+  /* Classification of atomic types.  */
+  switch (mode)
+    {
+    case DImode:
+    case SImode:
+    case HImode:
+    case QImode:
+    case CSImode:
+    case CHImode:
+    case CQImode:
+      if (bit_offset + GET_MODE_BITSIZE (mode) <= 32)
+	classes[0] = X86_64_INTEGERSI_CLASS;
+      else
+	classes[0] = X86_64_INTEGER_CLASS;
+      return 1;
+    case CDImode:
+    case TImode:
+      classes[0] = classes[1] = X86_64_INTEGER_CLASS;
+      return 2;
+    case CTImode:
+      classes[0] = classes[1] = X86_64_INTEGER_CLASS;
+      classes[2] = classes[3] = X86_64_INTEGER_CLASS;
+      return 4;
+    case SFmode:
+      if (!(bit_offset % 64))
+	classes[0] = X86_64_SSESF_CLASS;
+      else
+	classes[0] = X86_64_SSE_CLASS;
+      return 1;
+    case DFmode:
+      classes[0] = X86_64_SSEDF_CLASS;
+      return 1;
+    case TFmode:
+      classes[0] = X86_64_X87_CLASS;
+      classes[1] = X86_64_X87UP_CLASS;
+      return 2;
+    case TCmode:
+      classes[0] = X86_64_X87_CLASS;
+      classes[1] = X86_64_X87UP_CLASS;
+      classes[2] = X86_64_X87_CLASS;
+      classes[3] = X86_64_X87UP_CLASS;
+      return 4;
+    case DCmode:
+      classes[0] = X86_64_SSEDF_CLASS;
+      classes[1] = X86_64_SSEDF_CLASS;
+      return 2;
+    case SCmode:
+      classes[0] = X86_64_SSE_CLASS;
+      return 1;
+    case V4SFmode:
+    case V4SImode:
+      classes[0] = X86_64_SSE_CLASS;
+      classes[1] = X86_64_SSEUP_CLASS;
+      return 2;
+    case V2SFmode:
+    case V2SImode:
+    case V4HImode:
+    case V8QImode:
+      classes[0] = X86_64_SSE_CLASS;
+      return 1;
+    case BLKmode:
+    case VOIDmode:
+      return 0;
+    default:
+      abort ();
+    }
+}

@@ -1,0 +1,71 @@
+void
+MSAVerifyParse(MSA *msa)
+{
+  int idx;
+
+  if (msa->nseq == 0) Die("Parse error: no sequences were found for alignment %s",
+			  msa->name != NULL ? msa->name : "");
+
+  msa->alen = msa->sqlen[0];
+
+  /* We can rely on msa->sqname[] being valid for any index,
+   * because of the way the line parsers always store any name
+   * they add to the index.
+   */
+  for (idx = 0; idx < msa->nseq; idx++)
+    {
+				/* aseq is required. */
+      if (msa->aseq[idx] == NULL) 
+	Die("Parse error: No sequence for %s in alignment %s", msa->sqname[idx],
+	    msa->name != NULL ? msa->name : "");
+				/* either all weights must be set, or none of them */
+      if ((msa->flags & MSA_SET_WGT) && msa->wgt[idx] == -1.0)
+	Die("Parse error: some weights are set, but %s doesn't have one in alignment %s", 
+	    msa->sqname[idx],
+	    msa->name != NULL ? msa->name : "");
+				/* all aseq must be same length. */
+      if (msa->sqlen[idx] != msa->alen)
+	Die("Parse error: sequence %s: length %d, expected %d in alignment %s",
+	    msa->sqname[idx], msa->sqlen[idx], msa->alen,
+	    msa->name != NULL ? msa->name : "");
+				/* if SS is present, must have length right */
+      if (msa->ss != NULL && msa->ss[idx] != NULL && msa->sslen[idx] != msa->alen) 
+	Die("Parse error: #=GR SS annotation for %s: length %d, expected %d in alignment %s",
+	    msa->sqname[idx], msa->sslen[idx], msa->alen,
+	    msa->name != NULL ? msa->name : "");
+				/* if SA is present, must have length right */
+      if (msa->sa != NULL && msa->sa[idx] != NULL && msa->salen[idx] != msa->alen) 
+	Die("Parse error: #=GR SA annotation for %s: length %d, expected %d in alignment %s",
+	    msa->sqname[idx], msa->salen[idx], msa->alen,
+	    msa->name != NULL ? msa->name : "");
+    }
+
+			/* if cons SS is present, must have length right */
+  if (msa->ss_cons != NULL && strlen(msa->ss_cons) != msa->alen) 
+    Die("Parse error: #=GC SS_cons annotation: length %d, expected %d in alignment %s",
+	strlen(msa->ss_cons), msa->alen,
+	msa->name != NULL ? msa->name : "");
+
+			/* if cons SA is present, must have length right */
+  if (msa->sa_cons != NULL && strlen(msa->sa_cons) != msa->alen) 
+    Die("Parse error: #=GC SA_cons annotation: length %d, expected %d in alignment %s",
+	strlen(msa->sa_cons), msa->alen,
+	msa->name != NULL ? msa->name : "");
+
+				/* if RF is present, must have length right */
+  if (msa->rf != NULL && strlen(msa->rf) != msa->alen) 
+    Die("Parse error: #=GC RF annotation: length %d, expected %d in alignment %s",
+	strlen(msa->rf), msa->alen,
+	msa->name != NULL ? msa->name : "");
+
+				/* Check that all or no weights are set */
+  if (!(msa->flags & MSA_SET_WGT))
+    FSet(msa->wgt, msa->nseq, 1.0); /* default weights */
+
+				/* Clean up a little from the parser */
+  if (msa->sqlen != NULL) { free(msa->sqlen); msa->sqlen = NULL; }
+  if (msa->sslen != NULL) { free(msa->sslen); msa->sslen = NULL; }
+  if (msa->salen != NULL) { free(msa->salen); msa->salen = NULL; }
+
+  return;
+}

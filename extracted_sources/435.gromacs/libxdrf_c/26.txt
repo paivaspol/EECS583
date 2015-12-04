@@ -1,0 +1,28 @@
+static int sizeofints( const int num_of_ints, unsigned int sizes[]) {
+    int i, num;
+    unsigned int num_of_bytes, num_of_bits, bytes[32], bytecnt, tmp;
+    num_of_bytes = 1;
+    bytes[0] = 1;
+    num_of_bits = 0;
+    for (i=0; i < num_of_ints; i++) {	
+	tmp = 0;
+	for (bytecnt = 0; bytecnt < num_of_bytes; bytecnt++) {
+	    tmp = bytes[bytecnt] * sizes[i] + tmp;
+	    bytes[bytecnt] = tmp & 0xff;
+	    tmp >>= 8;
+	}
+	while (tmp != 0) {
+	    bytes[bytecnt++] = tmp & 0xff;
+	    tmp >>= 8;
+	}
+	num_of_bytes = bytecnt;
+    }
+    num = 1;
+    num_of_bytes--;
+    while (bytes[num_of_bytes] >= num) {
+	num_of_bits++;
+	num *= 2;
+    }
+    return num_of_bits + num_of_bytes * 8;
+
+}

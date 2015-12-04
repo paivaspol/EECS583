@@ -1,0 +1,31 @@
+static void load_bg (lm_t *lm, s3lmwid_t lw1)
+{
+    int32 i, n, b;
+    bg_t *bg;
+    
+    b = lm->ug[lw1].firstbg;		/* Absolute first bg index for ug lw1 */
+    n = lm->ug[lw1+1].firstbg - b;	/* Not including guard/sentinel */
+    
+  if (LM_IN_MEMORY)		/* RAH, if LM_IN_MEMORY, then we don't need to go get it. */
+    bg = lm->membg[lw1].bg = &lm->bg[b];
+  else {
+    bg = lm->membg[lw1].bg = (bg_t *) ckd_calloc (n+1, sizeof(bg_t));
+    
+    if (fseek (lm->fp, lm->bgoff + b*sizeof(bg_t), SEEK_SET) < 0)
+	E_FATAL_SYSTEM ("fseek failed\n");
+    
+    /* Need to read n+1 because obtaining tg count for one bg also depends on next bg */
+    if (fread (bg, sizeof(bg_t), n+1, lm->fp) != (size_t)(n+1))
+	E_FATAL("fread failed\n");
+    if (lm->byteswap) {
+	for (i = 0; i <= n; i++) {
+	    SWAP_INT16(&(bg[i].wid));
+	    SWAP_INT16(&(bg[i].probid));
+	    SWAP_INT16(&(bg[i].bowtid));
+	    SWAP_INT16(&(bg[i].firsttg));
+	}
+    }
+  }
+    lm->n_bg_fill++;
+    lm->n_bg_inmem += n;
+}

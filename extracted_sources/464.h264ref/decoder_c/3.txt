@@ -1,0 +1,12 @@
+void UpdateDecoders()
+{
+  int k;
+  for (k=0; k<input->NoOfDecoders; k++)
+  {
+    Build_Status_Map(decs->status_map); // simulates the packet losses
+    Error_Concealment(decs->decY_best[k], decs->status_map, decs->decref[k]); // for the moment error concealment is just a "copy"
+    // Move decoded frames to reference buffers: (at the decoders this is done 
+    // without interpolation (upsampling) - upsampling is done while decoding
+    DecOneForthPix(decs->decY_best[k], decs->decref[k]); 
+  }
+}

@@ -1,0 +1,17 @@
+void arienco_done_encoding(EncodingEnvironmentPtr eep)
+{
+  put_one_bit_plus_outstanding((Elow >> (B_BITS-1)) & 1);
+  put_one_bit((Elow >> (B_BITS-2))&1);
+  put_one_bit(1);
+
+  stats->bit_use_stuffingBits[img->type]+=(8-Ebits_to_go);
+
+  while (Ebits_to_go != 8)
+    put_one_bit(0);
+
+  eep->E= eep->E*8 + eep->C; // no of processed bins
+  eep->B= (*Ecodestrm_len - eep->B); // no of written bytes
+  eep->E -= (img->current_mb_nr-img->currentSlice->start_mb_nr);
+  eep->E = (eep->E + 31)>>5;
+  // eep->E now contains the minimum number of bytes for the NAL unit
+}

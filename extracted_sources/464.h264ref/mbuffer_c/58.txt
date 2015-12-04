@@ -1,0 +1,34 @@
+void fill_frame_num_gap(ImageParameters *img)
+{
+  int CurrFrameNum;
+  int UnusedShortTermFrameNum;
+  StorablePicture *picture = NULL;
+  int nal_ref_idc_bak;
+  int MaxFrameNum = 1 << (log2_max_frame_num_minus4 + 4);
+
+//  printf("A gap in frame number is found, try to fill it.\n");
+
+  nal_ref_idc_bak = img->nal_reference_idc;
+  img->nal_reference_idc = 1;
+
+  UnusedShortTermFrameNum = (img->pre_frame_num + 1) % MaxFrameNum;
+  CurrFrameNum = img->frame_num;
+
+  while (CurrFrameNum != UnusedShortTermFrameNum)
+  {
+    picture = alloc_storable_picture (FRAME, img->width, img->height, img->width_cr, img->height_cr);
+    picture->coded_frame = 1;
+    picture->pic_num = UnusedShortTermFrameNum;
+    picture->non_existing = 1;
+    picture->is_output = 1;
+    
+    img->adaptive_ref_pic_buffering_flag = 0;
+
+    store_picture_in_dpb(picture);
+
+    picture=NULL;
+    UnusedShortTermFrameNum = (UnusedShortTermFrameNum + 1) % MaxFrameNum;
+  }
+
+  img->nal_reference_idc = nal_ref_idc_bak;
+}

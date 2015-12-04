@@ -1,0 +1,25 @@
+void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc)
+{
+
+  char myname[] = "read_checksum";
+  
+  /* Read checksums with byte reversal */
+  
+  if(psread_byteorder(gf->byterevflag,parallel,gf->fp,
+	 &gf->check.sum29,sizeof(gf->check.sum29), myname,"checksum")!=0)
+    terminate(1);
+  if(psread_byteorder(gf->byterevflag,parallel,gf->fp,
+	 &gf->check.sum31,sizeof(gf->check.sum31), myname,"checksum")!=0)
+    terminate(1);
+
+  if(gf->check.sum29 != test_gc->sum29 ||
+     gf->check.sum31 != test_gc->sum31)
+    printf("%s: Checksum violation. Computed %x %x.  Read %x %x.\n",
+	    myname,test_gc->sum29,test_gc->sum31,
+	   gf->check.sum29,gf->check.sum31);
+  else
+    {
+      printf("Checksums %x %x OK\n",gf->check.sum29,gf->check.sum31);
+      fflush(stdout);
+    }
+} /* read_checksum */

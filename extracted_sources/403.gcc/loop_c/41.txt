@@ -1,0 +1,51 @@
+static void
+loop_bivs_init_find (loop)
+     struct loop *loop;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  /* Temporary list pointers for traversing ivs->list.  */
+  struct iv_class *bl;
+  int call_seen;
+  rtx p;
+
+  /* Find initial value for each biv by searching backwards from loop_start,
+     halting at first label.  Also record any test condition.  */
+
+  call_seen = 0;
+  for (p = loop->start; p && GET_CODE (p) != CODE_LABEL; p = PREV_INSN (p))
+    {
+      rtx test;
+
+      note_insn = p;
+
+      if (GET_CODE (p) == CALL_INSN)
+	call_seen = 1;
+
+      if (INSN_P (p))
+	note_stores (PATTERN (p), record_initial, ivs);
+
+      /* Record any test of a biv that branches around the loop if no store
+	 between it and the start of loop.  We only care about tests with
+	 constants and registers and only certain of those.  */
+      if (GET_CODE (p) == JUMP_INSN
+	  && JUMP_LABEL (p) != 0
+	  && next_real_insn (JUMP_LABEL (p)) == next_real_insn (loop->end)
+	  && (test = get_condition_for_loop (loop, p)) != 0
+	  && GET_CODE (XEXP (test, 0)) == REG
+	  && REGNO (XEXP (test, 0)) < max_reg_before_loop
+	  && (bl = REG_IV_CLASS (ivs, REGNO (XEXP (test, 0)))) != 0
+	  && valid_initial_value_p (XEXP (test, 1), p, call_seen, loop->start)
+	  && bl->init_insn == 0)
+	{
+	  /* If an NE test, we have an initial value!  */
+	  if (GET_CODE (test) == NE)
+	    {
+	      bl->init_insn = p;
+	      bl->init_set = gen_rtx_SET (VOIDmode,
+					  XEXP (test, 0), XEXP (test, 1));
+	    }
+	  else
+	    bl->initial_test = test;
+	}
+    }
+}

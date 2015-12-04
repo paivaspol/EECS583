@@ -1,0 +1,14 @@
+static inline rtx *
+phi_alternative (set, c)
+     rtx set;
+     int c;
+{
+  rtvec phi_vec = XVEC (SET_SRC (set), 0);
+  int v;
+
+  for (v = GET_NUM_ELEM (phi_vec) - 2; v >= 0; v -= 2)
+    if (INTVAL (RTVEC_ELT (phi_vec, v + 1)) == c)
+      return &RTVEC_ELT (phi_vec, v);
+
+  return NULL;
+}

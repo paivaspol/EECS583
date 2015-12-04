@@ -1,0 +1,76 @@
+int32 lm_tg_score (lm_t *lm, s3lmwid_t lw1, s3lmwid_t lw2, s3lmwid_t lw3, s3wid_t w3)
+{
+    int32 i, h, n, score;
+    tg_t *tg;
+    tginfo_t *tginfo, *prev_tginfo;
+    
+
+    if ((lm->n_tg == 0) || (NOT_S3LMWID(lw1)))
+	return (lm_bg_score (lm, lw2, lw3, w3));
+
+    lm->n_tg_score++;
+
+    if (NOT_S3LMWID(lw1) || (lw1 >= lm->n_ug))
+	E_FATAL("Bad lw1 argument (%d) to lm_tg_score\n", lw1);
+    if (NOT_S3LMWID(lw2) || (lw2 >= lm->n_ug))
+	E_FATAL("Bad lw2 argument (%d) to lm_tg_score\n", lw2);
+    if (NOT_S3LMWID(lw3) || (lw3 >= lm->n_ug))
+	E_FATAL("Bad lw3 argument (%d) to lm_tg_score\n", lw3);
+
+    /* Lookup tgcache first; compute hash(lw1, lw2, lw3) */
+    h = ((lw1 & 0x000003ff) << 21) + ((lw2 & 0x000003ff) << 11) + (lw3 & 0x000007ff);
+    h %= LM_TGCACHE_SIZE;
+
+    if ((lm->tgcache[h].lwid[0] == lw1) &&
+	(lm->tgcache[h].lwid[1] == lw2) &&
+	(lm->tgcache[h].lwid[2] == lw3)) {
+
+	lm->n_tgcache_hit++;
+	return lm->tgcache[h].lscr;
+    }
+    prev_tginfo = NULL;
+    for (tginfo = lm->tginfo[lw2]; tginfo; tginfo = tginfo->next) {
+	if (tginfo->w1 == lw1)
+	    break;
+	prev_tginfo = tginfo;
+    }
+
+    if (! tginfo) {
+    	load_tg (lm, lw1, lw2);
+	tginfo = lm->tginfo[lw2];
+    } else if (prev_tginfo) {
+	prev_tginfo->next = tginfo->next;
+	tginfo->next = lm->tginfo[lw2];
+	lm->tginfo[lw2] = tginfo;
+    }
+
+    tginfo->used = 1;
+
+    /* Trigrams for w1,w2 now in memory; look for w1,w2,w3 */
+    n = tginfo->n_tg;
+    tg = tginfo->tg;
+
+    if ((i = find_tg (tg, n, lw3)) >= 0) {
+	score = lm->tgprob[tg[i].probid].l ;
+	if(lm->inclass_ugscore){ /*Only add within class prob if class information exists.
+				  Is actually ok to just add the score because if the word
+				  is not within-class. The returning scores will be 0. 
+				 */
+	  score += lm->inclass_ugscore[w3];
+	}
+	lm->access_type = 3;
+    } else {
+	lm->n_tg_bo++;
+	score = tginfo->bowt + lm_bg_score(lm, lw2, lw3, w3);
+    }
+#if 0
+    printf ("%5d %5d %5d -> %8d\n", lw1, lw2, lw3, score);
+#endif
+    
+    lm->tgcache[h].lwid[0] = lw1;
+    lm->tgcache[h].lwid[1] = lw2;
+    lm->tgcache[h].lwid[2] = lw3;
+    lm->tgcache[h].lscr = score;
+    
+    return (score);
+}

@@ -1,0 +1,168 @@
+static void
+combine_stack_adjustments_for_block (bb)
+     basic_block bb;
+{
+  HOST_WIDE_INT last_sp_adjust = 0;
+  rtx last_sp_set = NULL_RTX;
+  struct csa_memlist *memlist = NULL;
+  rtx insn, next, set;
+  struct record_stack_memrefs_data data;
+  bool end_of_block = false;
+
+  for (insn = bb->head; !end_of_block ; insn = next)
+    {
+      end_of_block = insn == bb->end;
+      next = NEXT_INSN (insn);
+
+      if (! INSN_P (insn))
+	continue;
+
+      set = single_set_for_csa (insn);
+      if (set)
+	{
+	  rtx dest = SET_DEST (set);
+	  rtx src = SET_SRC (set);
+
+	  /* Find constant additions to the stack pointer.  */
+	  if (dest == stack_pointer_rtx
+	      && GET_CODE (src) == PLUS
+	      && XEXP (src, 0) == stack_pointer_rtx
+	      && GET_CODE (XEXP (src, 1)) == CONST_INT)
+	    {
+	      HOST_WIDE_INT this_adjust = INTVAL (XEXP (src, 1));
+
+	      /* If we've not seen an adjustment previously, record
+		 it now and continue.  */
+	      if (! last_sp_set)
+		{
+		  last_sp_set = insn;
+		  last_sp_adjust = this_adjust;
+		  continue;
+		}
+
+	      /* If not all recorded memrefs can be adjusted, or the
+		 adjustment is now too large for a constant addition,
+		 we cannot merge the two stack adjustments.
+
+		 Also we need to be carefull to not move stack pointer
+		 such that we create stack accesses outside the allocated
+		 area.  We can combine an allocation into the first insn,
+		 or a deallocation into the second insn.  We can not
+		 combine an allocation followed by a deallocation.
+
+		 The only somewhat frequent occurrence of the later is when
+		 a function allocates a stack frame but does not use it.
+		 For this case, we would need to analyze rtl stream to be
+		 sure that allocated area is really unused.  This means not
+		 only checking the memory references, but also all registers
+		 or global memory references possibly containing a stack
+		 frame address.
+
+		 Perhaps the best way to address this problem is to teach
+		 gcc not to allocate stack for objects never used.  */
+
+	      /* Combine an allocation into the first instruction.  */
+	      if (STACK_GROWS_DOWNWARD ? this_adjust <= 0 : this_adjust >= 0)
+		{
+		  if (try_apply_stack_adjustment (last_sp_set, memlist,
+						  last_sp_adjust + this_adjust,
+						  this_adjust))
+		    {
+		      /* It worked!  */
+		      delete_insn (insn);
+		      last_sp_adjust += this_adjust;
+		      continue;
+		    }
+		}
+
+	      /* Otherwise we have a deallocation.  Do not combine with
+		 a previous allocation.  Combine into the second insn.  */
+	      else if (STACK_GROWS_DOWNWARD
+		       ? last_sp_adjust >= 0 : last_sp_adjust <= 0)
+		{
+		  if (try_apply_stack_adjustment (insn, memlist,
+						  last_sp_adjust + this_adjust,
+						  -last_sp_adjust))
+		    {
+		      /* It worked!  */
+		      delete_insn (last_sp_set);
+		      last_sp_set = insn;
+		      last_sp_adjust += this_adjust;
+		      free_csa_memlist (memlist);
+		      memlist = NULL;
+		      continue;
+		    }
+		}
+
+	      /* Combination failed.  Restart processing from here.  If
+		 deallocation+allocation conspired to cancel, we can
+		 delete the old deallocation insn.  */
+	      if (last_sp_set && last_sp_adjust == 0)
+		delete_insn (insn);
+	      free_csa_memlist (memlist);
+	      memlist = NULL;
+	      last_sp_set = insn;
+	      last_sp_adjust = this_adjust;
+	      continue;
+	    }
+
+	  /* Find a predecrement of exactly the previous adjustment and
+	     turn it into a direct store.  Obviously we can't do this if
+	     there were any intervening uses of the stack pointer.  */
+	  if (memlist == NULL
+	      && GET_CODE (dest) == MEM
+	      && ((GET_CODE (XEXP (dest, 0)) == PRE_DEC
+		   && (last_sp_adjust
+		       == (HOST_WIDE_INT) GET_MODE_SIZE (GET_MODE (dest))))
+		  || (GET_CODE (XEXP (dest, 0)) == PRE_MODIFY
+		      && GET_CODE (XEXP (XEXP (dest, 0), 1)) == PLUS
+		      && XEXP (XEXP (XEXP (dest, 0), 1), 0) == stack_pointer_rtx
+		      && (GET_CODE (XEXP (XEXP (XEXP (dest, 0), 1), 1))
+		          == CONST_INT)
+		      && (INTVAL (XEXP (XEXP (XEXP (dest, 0), 1), 1))
+		          == -last_sp_adjust)))
+	      && XEXP (XEXP (dest, 0), 0) == stack_pointer_rtx
+	      && ! reg_mentioned_p (stack_pointer_rtx, src)
+	      && memory_address_p (GET_MODE (dest), stack_pointer_rtx)
+	      && validate_change (insn, &SET_DEST (set),
+				  replace_equiv_address (dest,
+							 stack_pointer_rtx),
+				  0))
+	    {
+	      delete_insn (last_sp_set);
+	      free_csa_memlist (memlist);
+	      memlist = NULL;
+	      last_sp_set = NULL_RTX;
+	      last_sp_adjust = 0;
+	      continue;
+	    }
+	}
+
+      data.insn = insn;
+      data.memlist = memlist;
+      if (GET_CODE (insn) != CALL_INSN && last_sp_set
+	  && !for_each_rtx (&PATTERN (insn), record_stack_memrefs, &data))
+	{
+	   memlist = data.memlist;
+	   continue;
+	}
+      memlist = data.memlist;
+
+      /* Otherwise, we were not able to process the instruction.
+	 Do not continue collecting data across such a one.  */
+      if (last_sp_set
+	  && (GET_CODE (insn) == CALL_INSN
+	      || reg_mentioned_p (stack_pointer_rtx, PATTERN (insn))))
+	{
+	  if (last_sp_set && last_sp_adjust == 0)
+	    delete_insn (last_sp_set);
+	  free_csa_memlist (memlist);
+	  memlist = NULL;
+	  last_sp_set = NULL_RTX;
+	  last_sp_adjust = 0;
+	}
+    }
+
+  if (last_sp_set && last_sp_adjust == 0)
+    delete_insn (last_sp_set);
+}

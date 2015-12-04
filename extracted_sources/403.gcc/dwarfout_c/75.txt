@@ -1,0 +1,26 @@
+static void
+output_array_type_die (arg)
+     void *arg;
+{
+  tree type = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_array_type);
+  sibling_attribute ();
+  equate_type_number_to_die_number (type);
+  member_attribute (TYPE_CONTEXT (type));
+
+  /* I believe that we can default the array ordering.  SDB will probably
+     do the right things even if AT_ordering is not present.  It's not
+     even an issue until we start to get into multidimensional arrays
+     anyway.  If SDB is ever caught doing the Wrong Thing for multi-
+     dimensional arrays, then we'll have to put the AT_ordering attribute
+     back in.  (But if and when we find out that we need to put these in,
+     we will only do so for multidimensional arrays.  After all, we don't
+     want to waste space in the .debug section now do we?)  */
+
+#ifdef USE_ORDERING_ATTRIBUTE
+  ordering_attribute (ORD_row_major);
+#endif /* defined(USE_ORDERING_ATTRIBUTE) */
+
+  subscript_data_attribute (type);
+}

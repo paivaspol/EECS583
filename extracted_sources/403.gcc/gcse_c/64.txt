@@ -1,0 +1,20 @@
+static void
+compute_ae_kill (ae_gen, ae_kill)
+     sbitmap *ae_gen, *ae_kill;
+{
+  int bb;
+  unsigned int i;
+  struct expr *expr;
+
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    for (i = 0; i < expr_hash_table_size; i++)
+      for (expr = expr_hash_table[i]; expr; expr = expr->next_same_hash)
+	{
+	  /* Skip EXPR if generated in this block.  */
+	  if (TEST_BIT (ae_gen[bb], expr->bitmap_index))
+	    continue;
+
+	  if (expr_killed_p (expr->expr, BASIC_BLOCK (bb)))
+	    SET_BIT (ae_kill[bb], expr->bitmap_index);
+	}
+}

@@ -1,0 +1,88 @@
+int
+_cpp_handle_directive (pfile, indented)
+     cpp_reader *pfile;
+     int indented;
+{
+  const directive *dir = 0;
+  const cpp_token *dname;
+  int skip = 1;
+
+  start_directive (pfile);
+  dname = _cpp_lex_token (pfile);
+
+  if (dname->type == CPP_NAME)
+    {
+      if (dname->val.node->directive_index)
+	dir = &dtable[dname->val.node->directive_index - 1];
+    }
+  /* We do not recognise the # followed by a number extension in
+     assembler code.  */
+  else if (dname->type == CPP_NUMBER && CPP_OPTION (pfile, lang) != CLK_ASM)
+    {
+      dir = &linemarker_dir;
+      if (CPP_PEDANTIC (pfile) && ! CPP_OPTION (pfile, preprocessed)
+	  && ! pfile->state.skipping)
+	cpp_pedwarn (pfile, "style of line directive is a GCC extension");
+    }
+
+  if (dir)
+    {
+      /* If we have a directive that is not an opening conditional,
+	 invalidate any control macro.  */
+      if (! (dir->flags & IF_COND))
+	pfile->mi_valid = false;
+
+      /* Kluge alert.  In order to be sure that code like this
+
+	 #define HASH #
+	 HASH define foo bar
+
+	 does not cause '#define foo bar' to get executed when
+	 compiled with -save-temps, we recognize directives in
+	 -fpreprocessed mode only if the # is in column 1.  cppmacro.c
+	 puts a space in front of any '#' at the start of a macro.  */
+      if (CPP_OPTION (pfile, preprocessed)
+	  && (indented || !(dir->flags & IN_I)))
+	{
+	  skip = 0;
+	  dir = 0;
+	}
+      else
+	{
+	  /* In failed conditional groups, all non-conditional
+	     directives are ignored.  Before doing that, whether
+	     skipping or not, we should lex angle-bracketed headers
+	     correctly, and maybe output some diagnostics.  */
+	  pfile->state.angled_headers = dir->flags & INCL;
+	  if (! CPP_OPTION (pfile, preprocessed))
+	    directive_diagnostics (pfile, dir, indented);
+	  if (pfile->state.skipping && !(dir->flags & COND))
+	    dir = 0;
+	}
+    }
+  else if (dname->type == CPP_EOF)
+    ;	/* CPP_EOF is the "null directive".  */
+  else
+    {
+      /* An unknown directive.  Don't complain about it in assembly
+	 source: we don't know where the comments are, and # may
+	 introduce assembler pseudo-ops.  Don't complain about invalid
+	 directives in skipped conditional groups (6.10 p4).  */
+      if (CPP_OPTION (pfile, lang) == CLK_ASM)
+	skip = 0;
+      else if (!pfile->state.skipping)
+	cpp_error (pfile, "invalid preprocessing directive #%s",
+		   cpp_token_as_text (pfile, dname));
+    }
+
+  if (dir)
+    {
+      pfile->directive = dir;
+      (*pfile->directive->handler) (pfile);
+    }
+  else if (skip == 0)
+    _cpp_backup_tokens (pfile, 1);
+
+  end_directive (pfile, skip);
+  return skip;
+}

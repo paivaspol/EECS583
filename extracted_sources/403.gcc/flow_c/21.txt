@@ -1,0 +1,18 @@
+void
+free_propagate_block_info (pbi)
+     struct propagate_block_info *pbi;
+{
+  free_EXPR_LIST_list (&pbi->mem_set_list);
+
+  BITMAP_XFREE (pbi->new_set);
+
+#ifdef HAVE_conditional_execution
+  splay_tree_delete (pbi->reg_cond_dead);
+  BITMAP_XFREE (pbi->reg_cond_reg);
+#endif
+
+  if (pbi->reg_next_use)
+    free (pbi->reg_next_use);
+
+  free (pbi);
+}

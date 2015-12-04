@@ -1,0 +1,22 @@
+static tree
+convert_sequence (conversions, arg)
+     tree conversions;
+     tree arg;
+{
+  switch (TREE_CODE (conversions))
+    {
+    case NOP_EXPR:
+    case CONVERT_EXPR:
+    case FLOAT_EXPR:
+    case FIX_TRUNC_EXPR:
+    case FIX_FLOOR_EXPR:
+    case FIX_ROUND_EXPR:
+    case FIX_CEIL_EXPR:
+      return convert (TREE_TYPE (conversions),
+		      convert_sequence (TREE_OPERAND (conversions, 0),
+					arg));
+
+    default:
+      return arg;
+    }
+}

@@ -1,0 +1,35 @@
+static void
+hash_scan_insn (insn, set_p, in_libcall_block)
+     rtx insn;
+     int set_p;
+     int in_libcall_block;
+{
+  rtx pat = PATTERN (insn);
+  int i;
+
+  if (in_libcall_block)
+    return;
+
+  /* Pick out the sets of INSN and for other forms of instructions record
+     what's been modified.  */
+
+  if (GET_CODE (pat) == SET)
+    hash_scan_set (pat, insn, set_p);
+  else if (GET_CODE (pat) == PARALLEL)
+    for (i = 0; i < XVECLEN (pat, 0); i++)
+      {
+	rtx x = XVECEXP (pat, 0, i);
+
+	if (GET_CODE (x) == SET)
+	  hash_scan_set (x, insn, set_p);
+	else if (GET_CODE (x) == CLOBBER)
+	  hash_scan_clobber (x, insn);
+	else if (GET_CODE (x) == CALL)
+	  hash_scan_call (x, insn);
+      }
+
+  else if (GET_CODE (pat) == CLOBBER)
+    hash_scan_clobber (pat, insn);
+  else if (GET_CODE (pat) == CALL)
+    hash_scan_call (pat, insn);
+}

@@ -1,0 +1,20 @@
+static void
+make_label_edge (edge_cache, src, label, flags)
+     sbitmap *edge_cache;
+     basic_block src;
+     rtx label;
+     int flags;
+{
+  if (GET_CODE (label) != CODE_LABEL)
+    abort ();
+
+  /* If the label was never emitted, this insn is junk, but avoid a
+     crash trying to refer to BLOCK_FOR_INSN (label).  This can happen
+     as a result of a syntax error and a diagnostic has already been
+     printed.  */
+
+  if (INSN_UID (label) == 0)
+    return;
+
+  cached_make_edge (edge_cache, src, BLOCK_FOR_INSN (label), flags);
+}

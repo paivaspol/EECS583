@@ -1,0 +1,106 @@
+static const unsigned int_reg_class_contents[N_REG_CLASSES][N_REG_INTS] 
+  = REG_CLASS_CONTENTS;
+
+/* For each reg class, number of regs it contains.  */
+
+unsigned int reg_class_size[N_REG_CLASSES];
+
+/* For each reg class, table listing all the containing classes.  */
+
+enum reg_class reg_class_superclasses[N_REG_CLASSES][N_REG_CLASSES];
+
+/* For each reg class, table listing all the classes contained in it.  */
+
+enum reg_class reg_class_subclasses[N_REG_CLASSES][N_REG_CLASSES];
+
+/* For each pair of reg classes,
+   a largest reg class contained in their union.  */
+
+enum reg_class reg_class_subunion[N_REG_CLASSES][N_REG_CLASSES];
+
+/* For each pair of reg classes,
+   the smallest reg class containing their union.  */
+
+enum reg_class reg_class_superunion[N_REG_CLASSES][N_REG_CLASSES];
+
+/* Array containing all of the register names.  Unless
+   DEBUG_REGISTER_NAMES is defined, use the copy in print-rtl.c.  */
+
+#ifdef DEBUG_REGISTER_NAMES
+const char * reg_names[] = REGISTER_NAMES;
+#endif
+
+/* For each hard register, the widest mode object that it can contain.
+   This will be a MODE_INT mode if the register can hold integers.  Otherwise
+   it will be a MODE_FLOAT or a MODE_CC mode, whichever is valid for the
+   register.  */
+
+enum machine_mode reg_raw_mode[FIRST_PSEUDO_REGISTER];
+
+/* 1 if class does contain register of given mode.  */
+
+static char contains_reg_of_mode [N_REG_CLASSES] [MAX_MACHINE_MODE];
+
+/* Maximum cost of moving from a register in one class to a register in
+   another class.  Based on REGISTER_MOVE_COST.  */
+
+static int move_cost[MAX_MACHINE_MODE][N_REG_CLASSES][N_REG_CLASSES];
+
+/* Similar, but here we don't have to move if the first index is a subset
+   of the second so in that case the cost is zero.  */
+
+static int may_move_in_cost[MAX_MACHINE_MODE][N_REG_CLASSES][N_REG_CLASSES];
+
+/* Similar, but here we don't have to move if the first index is a superset
+   of the second so in that case the cost is zero.  */
+
+static int may_move_out_cost[MAX_MACHINE_MODE][N_REG_CLASSES][N_REG_CLASSES];
+
+#ifdef FORBIDDEN_INC_DEC_CLASSES
+
+/* These are the classes that regs which are auto-incremented or decremented
+   cannot be put in.  */
+
+static int forbidden_inc_dec_class[N_REG_CLASSES];
+
+/* Indexed by n, is non-zero if (REG n) is used in an auto-inc or auto-dec
+   context.  */
+
+static char *in_inc_dec;
+
+#endif /* FORBIDDEN_INC_DEC_CLASSES */
+
+#ifdef CLASS_CANNOT_CHANGE_MODE
+
+/* These are the classes containing only registers that can be used in
+   a SUBREG expression that changes the mode of the register in some
+   way that is illegal.  */
+
+static int class_can_change_mode[N_REG_CLASSES];
+
+/* Registers, including pseudos, which change modes in some way that
+   is illegal.  */
+
+static regset reg_changes_mode;
+
+#endif /* CLASS_CANNOT_CHANGE_MODE */
+
+#ifdef HAVE_SECONDARY_RELOADS
+
+/* Sample MEM values for use by memory_move_secondary_cost.  */
+
+static rtx top_of_stack[MAX_MACHINE_MODE];
+
+#endif /* HAVE_SECONDARY_RELOADS */
+
+/* Linked list of reg_info structures allocated for reg_n_info array.
+   Grouping all of the allocated structures together in one lump
+   means only one call to bzero to clear them, rather than n smaller
+   calls.  */
+struct reg_info_data {
+  struct reg_info_data *next;	/* next set of reg_info structures */
+  size_t min_index;		/* minimum index # */
+  size_t max_index;		/* maximum index # */
+  char used_p;			/* non-zero if this has been used previously */
+  reg_info data[1];		/* beginning of the reg_info data */
+};

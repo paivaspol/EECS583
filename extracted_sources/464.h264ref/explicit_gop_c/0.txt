@@ -1,0 +1,113 @@
+void create_pyramid()
+{
+  int i, j;
+  int centerB=input->successive_Bframe/2;
+
+  if (input->PyramidCoding == 1)
+  {
+    for (i=0;i<input->successive_Bframe;i++)
+    {
+      if (i < centerB)
+      {
+        gop_structure[i].slice_type = B_SLICE;
+        gop_structure[i].display_no = i * 2 + 1;
+        gop_structure[i].pyramid_layer = 0;
+        gop_structure[i].reference_idc = NALU_PRIORITY_HIGH;
+      }
+      else
+      {
+        gop_structure[i].slice_type = B_SLICE;
+        gop_structure[i].display_no = (i - centerB) * 2;
+        gop_structure[i].pyramid_layer = 1;
+        gop_structure[i].reference_idc = NALU_PRIORITY_DISPOSABLE;
+
+      }      
+    }
+   
+  }
+  else
+  {    
+    int GOPlevels = 0;
+    int Bframes = input->successive_Bframe;
+    int *curGOPLevelfrm,*curGOPLeveldist ;
+    int curlevel = GOPlevels ;
+    int prvlevelrefs = input->successive_Bframe;
+    int levelrefs = input->successive_Bframe;
+    int i;
+
+    while (Bframes > 2)
+    {
+      Bframes  /= 2;
+      GOPlevels ++;
+    }
+     
+    curlevel = GOPlevels ;
+    if (NULL == (curGOPLevelfrm = (int*)malloc((GOPlevels + 1)*sizeof(int)))) no_mem_exit("create_pyramid:curGOPLevelfrm");
+    if (NULL == (curGOPLeveldist= (int*)malloc((GOPlevels + 1)*sizeof(int)))) no_mem_exit("create_pyramid:curGOPLeveldist");
+    
+    for (i=0; i <input->successive_Bframe; i++)
+    {
+      gop_structure[i].display_no = 0;
+      gop_structure[i].slice_type = B_SLICE;
+    }
+
+    while (levelrefs > 2)
+    {
+      levelrefs /= 2;
+      curGOPLevelfrm[ curlevel ] = prvlevelrefs - levelrefs;
+      curGOPLeveldist[ GOPlevels - curlevel ] = levelrefs+ (levelrefs )% 2;
+    
+      prvlevelrefs =levelrefs ;
+      curlevel --;
+    }
+
+    curGOPLevelfrm[ 0] = levelrefs;
+    curGOPLeveldist[ GOPlevels] = levelrefs + (levelrefs )% 2;
+  
+        
+    for (j=0; j<curGOPLevelfrm[0]; j++)
+    {
+      gop_pyramid(GOPlevels, (j+ 1) * curGOPLeveldist[ 0] - 1, curGOPLeveldist[ 0]-1, gop_structure);
+
+    }
+
+	
+    for (j=input->successive_Bframe; j>0; j--)
+    {
+      for (i=1; i<j; i++)
+      {
+        int tempnum;      
+
+        if (gop_structure[i].pyramid_layer>gop_structure[i-1].pyramid_layer)
+        {
+          tempnum=gop_structure[i -1].display_no;
+          gop_structure[i-1].display_no = gop_structure[i].display_no;
+          gop_structure[i].display_no = tempnum;
+          
+          tempnum=gop_structure[i-1].pyramid_layer;
+          gop_structure[i-1].pyramid_layer = gop_structure[i].pyramid_layer;
+          gop_structure[i].pyramid_layer = tempnum;
+
+          tempnum=gop_structure[i -1].reference_idc;
+          gop_structure[i-1].reference_idc = gop_structure[i].reference_idc;
+          gop_structure[i].reference_idc = tempnum;
+
+          tempnum=gop_structure[i -1].slice_type;
+          gop_structure[i-1].slice_type = gop_structure[i].slice_type;
+          gop_structure[i].slice_type = tempnum;
+
+          tempnum=gop_structure[i -1].slice_qp;
+          gop_structure[i-1].slice_qp = gop_structure[i].slice_qp;
+          gop_structure[i].slice_qp = tempnum;
+ 
+          tempnum=gop_structure[i -1].pyramidPocDelta;
+          gop_structure[i-1].pyramidPocDelta = gop_structure[i].pyramidPocDelta;
+          gop_structure[i].pyramidPocDelta = tempnum;
+
+        }
+
+      }     
+   }
+
+  }
+}

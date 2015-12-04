@@ -1,0 +1,16 @@
+void
+genrtl_compound_stmt (t)
+    tree t;
+{
+#ifdef ENABLE_CHECKING
+  struct nesting *n = current_nesting_level ();
+#endif
+
+  expand_stmt (COMPOUND_BODY (t));
+
+#ifdef ENABLE_CHECKING
+  /* Make sure that we've pushed and popped the same number of levels.  */
+  if (!COMPOUND_STMT_NO_SCOPE (t) && n != current_nesting_level ())
+    abort ();
+#endif
+}

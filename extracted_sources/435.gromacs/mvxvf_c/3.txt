@@ -1,0 +1,26 @@
+void move_cgcm(FILE *log,t_commrec *cr,rvec cg_cm[],int nload[])
+{
+  int i,start,nr;
+  int cur=cr->nodeid;
+#define next ((cur+1) % cr->nnodes)
+  
+  for(i=0; (i<cr->nnodes-1); i++) {
+    start = (cur == 0) ? 0 : nload[cur-1];
+    nr    = nload[cur] - start;
+    gmx_tx(cr->left, cg_cm[start], nr*sizeof(cg_cm[0]));
+#ifdef DEBUG
+    fprintf(log,"move_cgcm: TX start=%d, nr=%d\n",start,nr);
+#endif    
+    start = (next == 0) ? 0 : nload[next-1];
+    nr    = nload[next] - start;
+    gmx_rx(cr->right,cg_cm[start], nr*sizeof(cg_cm[0]));
+#ifdef DEBUG
+    fprintf(log,"move_cgcm: RX start=%d, nr=%d\n",start,nr);
+#endif    
+    gmx_tx_wait(cr->left);
+    gmx_rx_wait(cr->right);
+    
+    cur=next;
+  }
+#undef next
+}

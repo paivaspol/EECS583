@@ -1,0 +1,39 @@
+static int 
+coalesce_if_unconflicting (p, conflicts, reg1, reg2)
+     partition p;
+     conflict_graph conflicts;
+     int reg1;
+     int reg2;
+{
+  int reg;
+
+  /* Work only on SSA registers.  */
+  if (!CONVERT_REGISTER_TO_SSA_P (reg1) || !CONVERT_REGISTER_TO_SSA_P (reg2))
+    return 0;
+
+  /* Find the canonical regs for the classes containing REG1 and
+     REG2.  */
+  reg1 = partition_find (p, reg1);
+  reg2 = partition_find (p, reg2);
+  
+  /* If they're already in the same class, there's nothing to do.  */
+  if (reg1 == reg2)
+    return 0;
+
+  /* If the regs conflict, our hands are tied.  */
+  if (conflicting_hard_regs_p (reg1, reg2) ||
+      conflict_graph_conflict_p (conflicts, reg1, reg2))
+    return 0;
+
+  /* We're good to go.  Put the regs in the same partition.  */
+  partition_union (p, reg1, reg2);
+
+  /* Find the new canonical reg for the merged class.  */
+  reg = partition_find (p, reg1);
+  
+  /* Merge conflicts from the two previous classes.  */
+  conflict_graph_merge_regs (conflicts, reg, reg1);
+  conflict_graph_merge_regs (conflicts, reg, reg2);
+
+  return 1;
+}

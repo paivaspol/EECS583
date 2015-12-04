@@ -1,0 +1,27 @@
+void pr_symtab(FILE *fp,int indent,char *title,t_symtab *symtab)
+{
+  int i,j,nr;
+  t_symbuf *symbuf;
+  
+  if (available(fp,symtab,title))
+    {
+      indent=pr_title_n(fp,indent,title,symtab->nr);
+      i=0;
+      nr=symtab->nr;
+      symbuf=symtab->symbuf;
+      while (symbuf!=NULL)
+        {
+          for (j=0; (j < symbuf->bufsize) && (j < nr); j++)
+            {
+              if(fp)
+              {
+                  pr_indent(fp,indent);
+                  fprintf(fp,"%s[%d]=\"%s\"\n",title,i++,symbuf->buf[j]);
+              }
+            }
+          nr-=j;
+          symbuf=symbuf->next;
+        }
+      assert(nr==0);
+    }
+}

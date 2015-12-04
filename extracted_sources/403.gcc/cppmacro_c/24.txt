@@ -1,0 +1,10 @@
+static cpp_token *
+alloc_expansion_token (pfile, macro)
+     cpp_reader *pfile;
+     cpp_macro *macro;
+{
+  if (BUFF_ROOM (pfile->a_buff) < (macro->count + 1) * sizeof (cpp_token))
+    _cpp_extend_buff (pfile, &pfile->a_buff, sizeof (cpp_token));
+
+  return &((cpp_token *) BUFF_FRONT (pfile->a_buff))[macro->count++];
+}

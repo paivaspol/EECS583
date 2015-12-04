@@ -1,0 +1,65 @@
+static int
+enormlz (x)
+     UEMUSHORT x[];
+{
+  UEMUSHORT *p;
+  int sc;
+
+  sc = 0;
+  p = &x[M];
+  if (*p != 0)
+    goto normdn;
+  ++p;
+  if (*p & 0x8000)
+    return (0);			/* already normalized */
+  while (*p == 0)
+    {
+      eshup6 (x);
+      sc += 16;
+
+      /* With guard word, there are NBITS+16 bits available.
+       Return true if all are zero.  */
+      if (sc > NBITS)
+	return (sc);
+    }
+  /* see if high byte is zero */
+  while ((*p & 0xff00) == 0)
+    {
+      eshup8 (x);
+      sc += 8;
+    }
+  /* now shift 1 bit at a time */
+  while ((*p & 0x8000) == 0)
+    {
+      eshup1 (x);
+      sc += 1;
+      if (sc > NBITS)
+	{
+	  mtherr ("enormlz", UNDERFLOW);
+	  return (sc);
+	}
+    }
+  return (sc);
+
+  /* Normalize by shifting down out of the high guard word
+     of the significand */
+ normdn:
+
+  if (*p & 0xff00)
+    {
+      eshdn8 (x);
+      sc -= 8;
+    }
+  while (*p != 0)
+    {
+      eshdn1 (x);
+      sc -= 1;
+
+      if (sc < -NBITS)
+	{
+	  mtherr ("enormlz", OVERFLOW);
+	  return (sc);
+	}
+    }
+  return (sc);
+}

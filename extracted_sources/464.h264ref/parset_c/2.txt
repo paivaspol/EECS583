@@ -1,0 +1,48 @@
+void GenerateParameterSets ()
+{
+  seq_parameter_set_rbsp_t *sps = NULL; 
+  pic_parameter_set_rbsp_t *pps = NULL;
+
+  sps = AllocSPS();
+  pps = AllocPPS();
+
+  GenerateSequenceParameterSet(sps, 0);
+
+  if (input->GenerateMultiplePPS)
+  {
+    if (sps->profile_idc >= FREXT_HP)
+    {
+      GeneratePictureParameterSet( pps, sps, 0, 0, 0, input->cb_qp_index_offset, input->cr_qp_index_offset);
+      memcpy (&PicParSet[0], pps, sizeof (pic_parameter_set_rbsp_t));
+      GeneratePictureParameterSet( pps, sps, 1, 1, 1, input->cb_qp_index_offset, input->cr_qp_index_offset);
+      memcpy (&PicParSet[1], pps, sizeof (pic_parameter_set_rbsp_t));
+      GeneratePictureParameterSet( pps, sps, 2, 1, 2, input->cb_qp_index_offset, input->cr_qp_index_offset);
+      memcpy (&PicParSet[2], pps, sizeof (pic_parameter_set_rbsp_t));
+
+    }
+    else
+    {
+      GeneratePictureParameterSet( pps, sps, 0, 0, 0, input->chroma_qp_index_offset, 0);
+      memcpy (&PicParSet[0], pps, sizeof (pic_parameter_set_rbsp_t));
+      GeneratePictureParameterSet( pps, sps, 1, 1, 1, input->chroma_qp_index_offset, 0);
+      memcpy (&PicParSet[1], pps, sizeof (pic_parameter_set_rbsp_t));
+      GeneratePictureParameterSet( pps, sps, 2, 1, 2, input->chroma_qp_index_offset, 0);
+      memcpy (&PicParSet[2], pps, sizeof (pic_parameter_set_rbsp_t));
+    }
+  }
+  else
+  {
+    if (sps->profile_idc >= FREXT_HP)
+      GeneratePictureParameterSet( pps, sps, 0, input->WeightedPrediction, input->WeightedBiprediction, 
+                                   input->cb_qp_index_offset, input->cr_qp_index_offset);
+    else
+      GeneratePictureParameterSet( pps, sps, 0, input->WeightedPrediction, input->WeightedBiprediction,
+                                   input->chroma_qp_index_offset, 0);
+    
+    memcpy (&PicParSet[0], pps, sizeof (pic_parameter_set_rbsp_t));
+
+  }
+
+  active_sps = sps;
+  active_pps = &PicParSet[0];
+}

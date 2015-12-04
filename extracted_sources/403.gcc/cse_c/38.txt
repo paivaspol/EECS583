@@ -1,0 +1,47 @@
+static void
+record_jump_equiv (insn, taken)
+     rtx insn;
+     int taken;
+{
+  int cond_known_true;
+  rtx op0, op1;
+  rtx set;
+  enum machine_mode mode, mode0, mode1;
+  int reversed_nonequality = 0;
+  enum rtx_code code;
+
+  /* Ensure this is the right kind of insn.  */
+  if (! any_condjump_p (insn))
+    return;
+  set = pc_set (insn);
+
+  /* See if this jump condition is known true or false.  */
+  if (taken)
+    cond_known_true = (XEXP (SET_SRC (set), 2) == pc_rtx);
+  else
+    cond_known_true = (XEXP (SET_SRC (set), 1) == pc_rtx);
+
+  /* Get the type of comparison being done and the operands being compared.
+     If we had to reverse a non-equality condition, record that fact so we
+     know that it isn't valid for floating-point.  */
+  code = GET_CODE (XEXP (SET_SRC (set), 0));
+  op0 = fold_rtx (XEXP (XEXP (SET_SRC (set), 0), 0), insn);
+  op1 = fold_rtx (XEXP (XEXP (SET_SRC (set), 0), 1), insn);
+
+  code = find_comparison_args (code, &op0, &op1, &mode0, &mode1);
+  if (! cond_known_true)
+    {
+      code = reversed_comparison_code_parts (code, op0, op1, insn);
+
+      /* Don't remember if we can't find the inverse.  */
+      if (code == UNKNOWN)
+	return;
+    }
+
+  /* The mode is the mode of the non-constant.  */
+  mode = mode0;
+  if (mode1 != VOIDmode)
+    mode = mode1;
+
+  record_jump_cond (code, mode, op0, op1, reversed_nonequality);
+}

@@ -1,0 +1,35 @@
+void
+alloc_aux_for_edges (size)
+     int size;
+{
+  static int initialized;
+
+  if (!initialized)
+    {
+      gcc_obstack_init (&edge_aux_obstack);
+      initialized = 1;
+    }
+
+  /* Check whether AUX data are still allocated.  */
+  else if (first_edge_aux_obj)
+    abort ();
+
+  first_edge_aux_obj = (char *) obstack_alloc (&edge_aux_obstack, 0);
+  if (size)
+    {
+      int i;
+      for (i = -1; i < n_basic_blocks; i++)
+	{
+	  basic_block bb;
+	  edge e;
+
+	  if (i >= 0)
+	    bb = BASIC_BLOCK (i);
+	  else
+	    bb = ENTRY_BLOCK_PTR;
+
+	  for (e = bb->succ; e; e = e->succ_next)
+	    alloc_aux_for_edge (e, size);
+	}
+    }
+}

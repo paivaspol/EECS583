@@ -1,0 +1,35 @@
+static const char *
+output_292 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_IMOVX:
+      {
+	enum machine_mode mode;
+
+	if (GET_CODE (operands[2]) != CONST_INT)
+	  abort ();
+        if (INTVAL (operands[2]) == 0xff)
+	  mode = QImode;
+	else if (INTVAL (operands[2]) == 0xffff)
+	  mode = HImode;
+	else
+	  abort ();
+	
+	operands[1] = gen_lowpart (mode, operands[1]);
+	if (mode == QImode)
+	  return "movz{bl|x}\t{%1,%0|%0, %1}";
+	else
+	  return "movz{wl|x}\t{%1,%0|%0, %1}";
+      }
+
+    default:
+      if (! rtx_equal_p (operands[0], operands[1]))
+	abort ();
+      return "and{l}\t{%2, %0|%0, %2}";
+    }
+}
+}

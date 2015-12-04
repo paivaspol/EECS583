@@ -1,0 +1,24 @@
+void
+quantum_sigma_x(int target, quantum_reg *reg)
+{
+  int i;
+  int qec;
+
+  quantum_qec_get_status(&qec, NULL);
+
+  if(qec)
+    quantum_sigma_x_ft(target, reg);
+  else
+    {
+      if(quantum_objcode_put(SIGMA_X, target))
+	return;
+
+      for(i=0; i<reg->size; i++)
+	{
+	  /* Flip the target bit of each basis state */
+
+	  reg->node[i].state ^= ((MAX_UNSIGNED) 1 << target);
+	} 
+      quantum_decohere(reg);
+    }
+}

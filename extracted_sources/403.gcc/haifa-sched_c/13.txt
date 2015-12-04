@@ -1,0 +1,23 @@
+void
+save_line_notes (b, head, tail)
+     int b;
+     rtx head, tail;
+{
+  rtx next_tail;
+
+  /* We must use the true line number for the first insn in the block
+     that was computed and saved at the start of this pass.  We can't
+     use the current line number, because scheduling of the previous
+     block may have changed the current line number.  */
+
+  rtx line = line_note_head[b];
+  rtx insn;
+
+  next_tail = NEXT_INSN (tail);
+
+  for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == NOTE && NOTE_LINE_NUMBER (insn) > 0)
+      line = insn;
+    else
+      LINE_NOTE (insn) = line;
+}

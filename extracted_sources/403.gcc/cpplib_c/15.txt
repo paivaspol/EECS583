@@ -1,0 +1,40 @@
+static void
+do_include_common (pfile, type)
+     cpp_reader *pfile;
+     enum include_type type;
+{
+  const cpp_token *header;
+
+  /* For #include_next, if this is the primary source file, warn and
+     use the normal search logic.  */
+  if (type == IT_INCLUDE_NEXT && ! pfile->buffer->prev)
+    {
+      cpp_warning (pfile, "#include_next in primary source file");
+      type = IT_INCLUDE;
+    }
+  else if (type == IT_IMPORT && CPP_OPTION (pfile, warn_import))
+    {
+      CPP_OPTION (pfile, warn_import) = 0;
+      cpp_warning (pfile,
+	   "#import is obsolete, use an #ifndef wrapper in the header file");
+    }
+
+  header = parse_include (pfile);
+  if (header)
+    {
+      /* Prevent #include recursion.  */
+      if (pfile->line_maps.depth >= CPP_STACK_MAX)
+	cpp_fatal (pfile, "#include nested too deeply");
+      else
+	{
+	  check_eol (pfile);
+	  /* Get out of macro context, if we are.  */
+	  skip_rest_of_line (pfile);
+	  if (pfile->cb.include)
+	    (*pfile->cb.include) (pfile, pfile->directive_line,
+				  pfile->directive->name, header);
+
+	  _cpp_execute_include (pfile, header, type);
+	}
+    }
+}

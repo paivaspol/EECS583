@@ -1,0 +1,106 @@
+void
+merge_blocks_nomove (a, b)
+     basic_block a, b;
+{
+  rtx b_head = b->head, b_end = b->end, a_end = a->end;
+  rtx del_first = NULL_RTX, del_last = NULL_RTX;
+  int b_empty = 0;
+  edge e;
+
+  /* If there was a CODE_LABEL beginning B, delete it.  */
+  if (GET_CODE (b_head) == CODE_LABEL)
+    {
+      /* Detect basic blocks with nothing but a label.  This can happen
+	 in particular at the end of a function.  */
+      if (b_head == b_end)
+	b_empty = 1;
+
+      del_first = del_last = b_head;
+      b_head = NEXT_INSN (b_head);
+    }
+
+  /* Delete the basic block note and handle blocks containing just that
+     note.  */
+  if (NOTE_INSN_BASIC_BLOCK_P (b_head))
+    {
+      if (b_head == b_end)
+	b_empty = 1;
+      if (! del_last)
+	del_first = b_head;
+
+      del_last = b_head;
+      b_head = NEXT_INSN (b_head);
+    }
+
+  /* If there was a jump out of A, delete it.  */
+  if (GET_CODE (a_end) == JUMP_INSN)
+    {
+      rtx prev;
+
+      for (prev = PREV_INSN (a_end); ; prev = PREV_INSN (prev))
+	if (GET_CODE (prev) != NOTE
+	    || NOTE_LINE_NUMBER (prev) == NOTE_INSN_BASIC_BLOCK
+	    || prev == a->head)
+	  break;
+
+      del_first = a_end;
+
+#ifdef HAVE_cc0
+      /* If this was a conditional jump, we need to also delete
+	 the insn that set cc0.  */
+      if (only_sets_cc0_p (prev))
+	{
+	  rtx tmp = prev;
+
+	  prev = prev_nonnote_insn (prev);
+	  if (!prev)
+	    prev = a->head;
+	  del_first = tmp;
+	}
+#endif
+
+      a_end = PREV_INSN (del_first);
+    }
+  else if (GET_CODE (NEXT_INSN (a_end)) == BARRIER)
+    del_first = NEXT_INSN (a_end);
+
+  /* Normally there should only be one successor of A and that is B, but
+     partway though the merge of blocks for conditional_execution we'll
+     be merging a TEST block with THEN and ELSE successors.  Free the
+     whole lot of them and hope the caller knows what they're doing.  */
+  while (a->succ)
+    remove_edge (a->succ);
+
+  /* Adjust the edges out of B for the new owner.  */
+  for (e = b->succ; e; e = e->succ_next)
+    e->src = a;
+  a->succ = b->succ;
+
+  /* B hasn't quite yet ceased to exist.  Attempt to prevent mishap.  */
+  b->pred = b->succ = NULL;
+  a->global_live_at_end = b->global_live_at_end;
+
+  expunge_block (b);
+
+  /* Delete everything marked above as well as crap that might be
+     hanging out between the two blocks.  */
+  delete_insn_chain (del_first, del_last);
+
+  /* Reassociate the insns of B with A.  */
+  if (!b_empty)
+    {
+      if (basic_block_for_insn)
+	{
+	  rtx x;
+
+	  for (x = a_end; x != b_end; x = NEXT_INSN (x))
+	    set_block_for_insn (x, a);
+
+	  set_block_for_insn (b_end, a);
+	}
+
+      a_end = b_end;
+    }
+
+  a->end = a_end;
+}

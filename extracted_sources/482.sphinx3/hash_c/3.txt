@@ -1,0 +1,30 @@
+static uint32 key2hash (hash_table_t *h, const char *key)
+{
+    register const char *cp;
+    register char c;
+    register int32 s;
+    register uint32 hash;
+    
+    hash = 0;
+    s = 0;
+    
+    if (h->nocase) {
+	for (cp = key; *cp; cp++) {
+	    c = *cp;
+	    c = UPPER_CASE(c);
+	    hash += c << s;
+	    s += 5;
+	    if (s >= 25)
+		s -= 24;
+	}
+    } else {
+	for (cp = key; *cp; cp++) {
+	    hash += (*cp) << s;
+	    s += 5;
+	    if (s >= 25)
+		s -= 24;
+	}
+    }
+    
+    return (hash % h->size);
+}

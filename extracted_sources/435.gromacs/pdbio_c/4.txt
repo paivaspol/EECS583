@@ -1,0 +1,101 @@
+void write_pdbfile_indexed(FILE *out,char *title,
+			   t_atoms *atoms,rvec x[],matrix box,char chain,
+			   int model_nr, atom_id nindex, atom_id index[])
+{
+  char resnm[6],nm[6],ch,pdbform[128];
+  atom_id i,ii;
+  int  resnr,type;
+  real occup,bfac;
+  real alpha,beta,gamma;
+  bool bOccup;
+  
+  fprintf(out,"HEADER    %s\n",(title && title[0])?title:bromacs());
+  if (bWideFormat) {
+    fprintf(out,"REMARK    This file does not adhere to the PDB standard\n");
+    fprintf(out,"REMARK    As a result of, some programs may not like it\n");
+  }
+  if (box && ( norm2(box[XX])>GMX_REAL_MIN || 
+	       norm2(box[YY])>GMX_REAL_MIN ||
+	       norm2(box[ZZ])>GMX_REAL_MIN ) ) {
+    if (norm2(box[YY])*norm2(box[ZZ]) > GMX_REAL_MIN)
+      alpha = RAD2DEG*acos(cos_angle_no_table(box[YY],box[ZZ]));
+    else
+      alpha = 90;
+    if (norm2(box[XX])*norm2(box[ZZ]) > GMX_REAL_MIN)
+      beta  = RAD2DEG*acos(cos_angle_no_table(box[XX],box[ZZ]));
+    else
+      beta  = 90;
+    if (norm2(box[XX])*norm2(box[YY]) > GMX_REAL_MIN)
+      gamma = RAD2DEG*acos(cos_angle_no_table(box[XX],box[YY]));
+    else
+      gamma = 90;
+    fprintf(out,"REMARK    THIS IS A SIMULATION BOX\n");
+    fprintf(out,"CRYST1%9.3f%9.3f%9.3f%7.2f%7.2f%7.2f P 1           1\n",
+	    10*norm(box[XX]),10*norm(box[YY]),10*norm(box[ZZ]),
+	    alpha,beta,gamma);
+  }
+  if (atoms->pdbinfo) {
+    /* Check whether any occupancies are set, in that case leave it as is,
+     * otherwise set them all to one
+     */
+    bOccup = TRUE;
+    for (ii=0; (ii<nindex) && bOccup; ii++) {
+      i      = index[ii];
+      bOccup = bOccup && (fabs(atoms->pdbinfo[i].occup) < GMX_REAL_MIN);
+    }
+  } 
+  else
+    bOccup = FALSE;
+
+  if (!bTER) {
+    if (model_nr>0)
+      fprintf(out,"MODEL %8d\n",model_nr);
+    else if (model_nr==0)
+      fprintf(out,"MODEL\n");
+  }
+  for (ii=0; ii<nindex; ii++) {
+    i=index[ii];
+    resnr=atoms->atom[i].resnr;
+    strcpy(resnm,*atoms->resname[resnr]);
+    strcpy(nm,*atoms->atomname[i]);
+    resnr++;
+    if (resnr>=10000)
+      resnr = resnr % 10000;
+    if (chain)
+      ch=chain;
+    else
+      if (atoms->atom[i].chain)
+	ch=atoms->atom[i].chain;
+      else
+	  ch=' ';
+    if (atoms->pdbinfo) {
+      type  = atoms->pdbinfo[i].type;
+      occup = bOccup ? 1.0 : atoms->pdbinfo[i].occup;
+      bfac  = atoms->pdbinfo[i].bfac;
+    }
+    else {
+      type  = 0;
+      occup = 1.0;
+      bfac  = 0.0;
+    }
+    if (strlen(nm)<4)
+      strcpy(pdbform,pdbformat);
+    else {
+      strcpy(pdbform,pdbformat4);
+      if (strlen(nm)>4)
+	fprintf(stderr,"WARNING: Writing out atom name (%s) longer than 4 characters to .pdb file\n",nm);
+    }
+
+    if (bWideFormat)
+      strcat(pdbform,"%8.4f%8.4f\n");
+    else
+      strcat(pdbform,"%6.2f%6.2f\n");
+      
+    fprintf(out,pdbform,pdbtp[type],(i+1)%100000,nm,resnm,ch,resnr,
+	    10*x[i][XX],10*x[i][YY],10*x[i][ZZ],occup,bfac);
+  }
+  
+  fprintf(out,"TER\n");
+  if (model_nr>=0 && !bTER)
+    fprintf(out,"ENDMDL\n");
+}

@@ -1,0 +1,33 @@
+void
+purge_hard_subreg_sets (insn)
+     rtx insn;
+{
+  for (; insn; insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	{
+	  rtx pattern = PATTERN (insn);
+	  switch (GET_CODE (pattern))
+	    {
+	    case SET:
+	      if (GET_CODE (SET_DEST (pattern)) == SUBREG)
+		purge_single_hard_subreg_set (pattern);
+	      break;	      
+	    case PARALLEL:
+	      {
+		int j;
+		for (j = XVECLEN (pattern, 0) - 1; j >= 0; j--)
+		  {
+		    rtx inner_pattern = XVECEXP (pattern, 0, j);
+		    if (GET_CODE (inner_pattern) == SET
+			&& GET_CODE (SET_DEST (inner_pattern)) == SUBREG)
+		      purge_single_hard_subreg_set (inner_pattern);
+		  }
+	      }
+	      break;
+	    default:
+	      break;
+	    }
+	}
+    }
+}

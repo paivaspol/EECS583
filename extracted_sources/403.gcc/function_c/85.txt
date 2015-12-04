@@ -1,0 +1,216 @@
+void
+expand_function_start (subr, parms_have_cleanups)
+     tree subr;
+     int parms_have_cleanups;
+{
+  tree tem;
+  rtx last_ptr = NULL_RTX;
+
+  /* Make sure volatile mem refs aren't considered
+     valid operands of arithmetic insns.  */
+  init_recog_no_volatile ();
+
+  current_function_instrument_entry_exit
+    = (flag_instrument_function_entry_exit
+       && ! DECL_NO_INSTRUMENT_FUNCTION_ENTRY_EXIT (subr));
+
+  current_function_profile
+    = (profile_flag
+       && ! DECL_NO_INSTRUMENT_FUNCTION_ENTRY_EXIT (subr));
+
+  current_function_limit_stack
+    = (stack_limit_rtx != NULL_RTX && ! DECL_NO_LIMIT_STACK (subr));
+
+  /* If function gets a static chain arg, store it in the stack frame.
+     Do this first, so it gets the first stack slot offset.  */
+  if (current_function_needs_context)
+    {
+      last_ptr = assign_stack_local (Pmode, GET_MODE_SIZE (Pmode), 0);
+
+      /* Delay copying static chain if it is not a register to avoid
+	 conflicts with regs used for parameters.  */
+      if (! SMALL_REGISTER_CLASSES
+	  || GET_CODE (static_chain_incoming_rtx) == REG)
+	emit_move_insn (last_ptr, static_chain_incoming_rtx);
+    }
+
+  /* If the parameters of this function need cleaning up, get a label
+     for the beginning of the code which executes those cleanups.  This must
+     be done before doing anything with return_label.  */
+  if (parms_have_cleanups)
+    cleanup_label = gen_label_rtx ();
+  else
+    cleanup_label = 0;
+
+  /* Make the label for return statements to jump to.  Do not special
+     case machines with special return instructions -- they will be
+     handled later during jump, ifcvt, or epilogue creation.  */
+  return_label = gen_label_rtx ();
+
+  /* Initialize rtx used to return the value.  */
+  /* Do this before assign_parms so that we copy the struct value address
+     before any library calls that assign parms might generate.  */
+
+  /* Decide whether to return the value in memory or in a register.  */
+  if (aggregate_value_p (DECL_RESULT (subr)))
+    {
+      /* Returning something that won't go in a register.  */
+      rtx value_address = 0;
+
+#ifdef PCC_STATIC_STRUCT_RETURN
+      if (current_function_returns_pcc_struct)
+	{
+	  int size = int_size_in_bytes (TREE_TYPE (DECL_RESULT (subr)));
+	  value_address = assemble_static_space (size);
+	}
+      else
+#endif
+	{
+	  /* Expect to be passed the address of a place to store the value.
+	     If it is passed as an argument, assign_parms will take care of
+	     it.  */
+	  if (struct_value_incoming_rtx)
+	    {
+	      value_address = gen_reg_rtx (Pmode);
+	      emit_move_insn (value_address, struct_value_incoming_rtx);
+	    }
+	}
+      if (value_address)
+	{
+	  rtx x = gen_rtx_MEM (DECL_MODE (DECL_RESULT (subr)), value_address);
+	  set_mem_attributes (x, DECL_RESULT (subr), 1);
+	  SET_DECL_RTL (DECL_RESULT (subr), x);
+	}
+    }
+  else if (DECL_MODE (DECL_RESULT (subr)) == VOIDmode)
+    /* If return mode is void, this decl rtl should not be used.  */
+    SET_DECL_RTL (DECL_RESULT (subr), NULL_RTX);
+  else
+    {
+      /* Compute the return values into a pseudo reg, which we will copy
+	 into the true return register after the cleanups are done.  */
+
+      /* In order to figure out what mode to use for the pseudo, we
+	 figure out what the mode of the eventual return register will
+	 actually be, and use that.  */
+      rtx hard_reg
+	= hard_function_value (TREE_TYPE (DECL_RESULT (subr)),
+			       subr, 1);
+
+      /* Structures that are returned in registers are not aggregate_value_p,
+	 so we may see a PARALLEL.  Don't play pseudo games with this.  */
+      if (! REG_P (hard_reg))
+	SET_DECL_RTL (DECL_RESULT (subr), hard_reg);
+      else
+	{
+	  /* Create the pseudo.  */
+	  SET_DECL_RTL (DECL_RESULT (subr), gen_reg_rtx (GET_MODE (hard_reg)));
+
+	  /* Needed because we may need to move this to memory
+	     in case it's a named return value whose address is taken.  */
+	  DECL_REGISTER (DECL_RESULT (subr)) = 1;
+	}
+    }
+
+  /* Initialize rtx for parameters and local variables.
+     In some cases this requires emitting insns.  */
+
+  assign_parms (subr);
+
+  /* Copy the static chain now if it wasn't a register.  The delay is to
+     avoid conflicts with the parameter passing registers.  */
+
+  if (SMALL_REGISTER_CLASSES && current_function_needs_context)
+      if (GET_CODE (static_chain_incoming_rtx) != REG)
+        emit_move_insn (last_ptr, static_chain_incoming_rtx);
+
+  /* The following was moved from init_function_start.
+     The move is supposed to make sdb output more accurate.  */
+  /* Indicate the beginning of the function body,
+     as opposed to parm setup.  */
+  emit_note (NULL, NOTE_INSN_FUNCTION_BEG);
+
+  if (GET_CODE (get_last_insn ()) != NOTE)
+    emit_note (NULL, NOTE_INSN_DELETED);
+  parm_birth_insn = get_last_insn ();
+
+  context_display = 0;
+  if (current_function_needs_context)
+    {
+      /* Fetch static chain values for containing functions.  */
+      tem = decl_function_context (current_function_decl);
+      /* Copy the static chain pointer into a pseudo.  If we have
+	 small register classes, copy the value from memory if
+	 static_chain_incoming_rtx is a REG.  */
+      if (tem)
+	{
+	  /* If the static chain originally came in a register, put it back
+	     there, then move it out in the next insn.  The reason for
+	     this peculiar code is to satisfy function integration.  */
+	  if (SMALL_REGISTER_CLASSES
+	      && GET_CODE (static_chain_incoming_rtx) == REG)
+	    emit_move_insn (static_chain_incoming_rtx, last_ptr);
+	  last_ptr = copy_to_reg (static_chain_incoming_rtx);
+	}
+
+      while (tem)
+	{
+	  tree rtlexp = make_node (RTL_EXPR);
+
+	  RTL_EXPR_RTL (rtlexp) = last_ptr;
+	  context_display = tree_cons (tem, rtlexp, context_display);
+	  tem = decl_function_context (tem);
+	  if (tem == 0)
+	    break;
+	  /* Chain thru stack frames, assuming pointer to next lexical frame
+	     is found at the place we always store it.  */
+#ifdef FRAME_GROWS_DOWNWARD
+	  last_ptr = plus_constant (last_ptr,
+				    -(HOST_WIDE_INT) GET_MODE_SIZE (Pmode));
+#endif
+	  last_ptr = gen_rtx_MEM (Pmode, memory_address (Pmode, last_ptr));
+	  set_mem_alias_set (last_ptr, get_frame_alias_set ());
+	  last_ptr = copy_to_reg (last_ptr);
+
+	  /* If we are not optimizing, ensure that we know that this
+	     piece of context is live over the entire function.  */
+	  if (! optimize)
+	    save_expr_regs = gen_rtx_EXPR_LIST (VOIDmode, last_ptr,
+						save_expr_regs);
+	}
+    }
+
+  if (current_function_instrument_entry_exit)
+    {
+      rtx fun = DECL_RTL (current_function_decl);
+      if (GET_CODE (fun) == MEM)
+	fun = XEXP (fun, 0);
+      else
+	abort ();
+      emit_library_call (profile_function_entry_libfunc, LCT_NORMAL, VOIDmode,
+			 2, fun, Pmode,
+			 expand_builtin_return_addr (BUILT_IN_RETURN_ADDRESS,
+						     0,
+						     hard_frame_pointer_rtx),
+			 Pmode);
+    }
+
+  if (current_function_profile)
+    {
+      current_function_profile_label_no = profile_label_no++;
+#ifdef PROFILE_HOOK
+      PROFILE_HOOK (current_function_profile_label_no);
+#endif
+    }
+
+  /* After the display initializations is where the tail-recursion label
+     should go, if we end up needing one.   Ensure we have a NOTE here
+     since some things (like trampolines) get placed before this.  */
+  tail_recursion_reentry = emit_note (NULL, NOTE_INSN_DELETED);
+
+  /* Evaluate now the sizes of any types declared among the arguments.  */
+  expand_pending_sizes (nreverse (get_pending_sizes ()));
+
+  /* Make sure there is a line number after the function entry setup code.  */
+  force_next_line_note ();
+}

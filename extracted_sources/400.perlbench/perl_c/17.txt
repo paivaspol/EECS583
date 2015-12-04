@@ -1,0 +1,18 @@
+void
+Perl_my_exit(pTHX_ U32 status)
+{
+    DEBUG_S(PerlIO_printf(Perl_debug_log, "my_exit: thread %p, status %lu\n",
+			  thr, (unsigned long) status));
+    switch (status) {
+    case 0:
+	STATUS_ALL_SUCCESS;
+	break;
+    case 1:
+	STATUS_ALL_FAILURE;
+	break;
+    default:
+	STATUS_NATIVE_SET(status);
+	break;
+    }
+    my_exit_jump();
+}

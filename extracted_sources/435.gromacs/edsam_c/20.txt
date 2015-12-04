@@ -1,0 +1,28 @@
+void do_radfix(rvec *x,t_edpar *edi,int step)
+{
+  int i,j,k;
+  real *proj,rad=0.0,ratio;
+
+  if (edi->vecs.radfix.neig == 0) return;
+  snew(proj,edi->vecs.radfix.neig);
+  /* loop over radfix vectors */
+  for (i=0;(i<edi->vecs.radfix.neig);i++) {
+    /* calculate the projections, radius */
+    proj[i]=do_projectx(edi,x,edi->vecs.radfix.vec[i]);
+    rad+=pow((proj[i]-edi->vecs.radfix.refproj[i]),2);
+  }
+  rad=sqrt(rad);
+  ratio=(edi->vecs.radfix.stpsz[0]+edi->vecs.radfix.radius)/rad-1.0;
+  edi->vecs.radfix.radius+=edi->vecs.radfix.stpsz[0];
+
+  /* loop over radfix vectors */
+  for (i=0;(i<edi->vecs.radfix.neig);i++) {
+    proj[i]-=edi->vecs.radfix.refproj[i];
+    /* apply the correction */
+    for (j=0;(j<edi->sav.nr);j++) {
+      for (k=0;(k<DIM);k++)
+	x[edi->sav.anrs[j]][k]+=proj[i]*ratio*edi->vecs.radfix.vec[i][j][k];
+    }
+  }  
+  sfree(proj);
+}

@@ -1,0 +1,25 @@
+static void
+output_unspecified_parameters_die (arg)
+     void *arg;
+{
+  tree decl_or_type = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_unspecified_parameters);
+  sibling_attribute ();
+
+  /* This kludge is here only for the sake of being compatible with what
+     the USL CI5 C compiler does.  The specification of Dwarf Version 1
+     doesn't say that TAG_unspecified_parameters DIEs should contain any
+     attributes other than the AT_sibling attribute, but they are certainly
+     allowed to contain additional attributes, and the CI5 compiler
+     generates AT_name, AT_fund_type, and AT_location attributes within
+     TAG_unspecified_parameters DIEs which appear in the child lists for
+     DIEs representing function definitions, so we do likewise here.  */
+
+  if (TREE_CODE (decl_or_type) == FUNCTION_DECL && DECL_INITIAL (decl_or_type))
+    {
+      name_attribute ("...");
+      fund_type_attribute (FT_pointer);
+      /* location_attribute (?); */
+    }
+}

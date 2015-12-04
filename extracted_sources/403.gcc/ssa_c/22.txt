@@ -1,0 +1,19 @@
+static void
+create_delayed_rename (c, reg_loc)
+     struct rename_context *c;
+     rtx *reg_loc;
+{
+  struct rename_set_data *r;
+  r = (struct rename_set_data *) xmalloc (sizeof(*r));
+  
+  if (GET_CODE (*reg_loc) != REG
+      || !CONVERT_REGISTER_TO_SSA_P (REGNO (*reg_loc)))
+    abort ();
+
+  r->reg_loc = reg_loc;
+  r->old_reg = *reg_loc;
+  r->prev_reg = ssa_rename_to_lookup(r->old_reg);
+  r->set_insn = c->current_insn;
+  r->next = c->new_renames;
+  c->new_renames = r;
+}

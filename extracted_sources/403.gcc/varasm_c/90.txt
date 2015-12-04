@@ -1,0 +1,18 @@
+void
+declare_weak (decl)
+     tree decl;
+{
+  if (! TREE_PUBLIC (decl))
+    error_with_decl (decl, "weak declaration of `%s' must be public");
+  else if (TREE_CODE (decl) == FUNCTION_DECL && TREE_ASM_WRITTEN (decl))
+    error_with_decl (decl, "weak declaration of `%s' must precede definition");
+  else if (SUPPORTS_WEAK)
+    {
+      if (! DECL_WEAK (decl))
+	weak_decls = tree_cons (NULL, decl, weak_decls);
+    }
+  else
+    warning_with_decl (decl, "weak declaration of `%s' not supported");
+
+  mark_weak (decl);
+}

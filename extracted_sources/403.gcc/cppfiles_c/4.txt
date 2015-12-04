@@ -1,0 +1,25 @@
+static splay_tree_node
+find_or_create_entry (pfile, fname)
+     cpp_reader *pfile;
+     const char *fname;
+{
+  splay_tree_node node;
+  struct include_file *file;
+  char *name = xstrdup (fname);
+
+  _cpp_simplify_pathname (name);
+  node = splay_tree_lookup (pfile->all_include_files, (splay_tree_key) name);
+  if (node)
+    free (name);
+  else
+    {
+      file = xcnew (struct include_file);
+      file->name = name;
+      file->err_no = errno;
+      node = splay_tree_insert (pfile->all_include_files,
+				(splay_tree_key) file->name,
+				(splay_tree_value) file);
+    }
+
+  return node;
+}

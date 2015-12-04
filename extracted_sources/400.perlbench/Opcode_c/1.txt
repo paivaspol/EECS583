@@ -1,0 +1,15 @@
+static void
+put_op_bitspec(pTHX_ char *optag, STRLEN len, SV *mask)
+{
+    SV **svp;
+    dMY_CXT;
+
+    verify_opset(aTHX_ mask,1);
+    if (!len)
+	len = strlen(optag);
+    svp = hv_fetch(op_named_bits, optag, len, 1);
+    if (SvOK(*svp))
+	croak("Opcode tag \"%s\" already defined", optag);
+    sv_setsv(*svp, mask);
+    SvREADONLY_on(*svp);
+}

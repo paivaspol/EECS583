@@ -1,0 +1,20 @@
+static int *
+ephi_forward (t, visited, succ, tstack)
+     int t;
+     sbitmap visited;
+     sbitmap *succ;
+     int *tstack;
+{
+  int s;
+
+  SET_BIT (visited, t);
+
+  EXECUTE_IF_SET_IN_SBITMAP (succ[t], 0, s,
+    {
+      if (! TEST_BIT (visited, s))
+        tstack = ephi_forward (s, visited, succ, tstack);
+    });
+
+  *tstack++ = t;
+  return tstack;
+}

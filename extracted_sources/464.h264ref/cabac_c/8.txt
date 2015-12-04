@@ -1,0 +1,249 @@
+void writeMB_typeInfo_CABAC(SyntaxElement *se, EncodingEnvironmentPtr eep_dp)
+{
+  int a, b;
+  int act_ctx = 0;
+  int act_sym;
+  int csym;
+  int bframe   = (img->type==B_SLICE);
+  int mode_sym = 0;
+  int mode16x16;
+
+
+  MotionInfoContexts *ctx         = (img->currentSlice)->mot_ctx;
+  Macroblock         *currMB      = &img->mb_data[img->current_mb_nr];
+  int                curr_mb_type = se->value1;
+
+  if(img->type == I_SLICE)  // INTRA-frame
+  {
+    if (currMB->mb_available_up == NULL)
+      b = 0;
+    else 
+      b = ((currMB->mb_available_up->mb_type != I4MB &&  currMB->mb_available_up->mb_type != I8MB) ? 1 : 0 );
+
+    if (currMB->mb_available_left == NULL)
+      a = 0;
+    else 
+      a = ((currMB->mb_available_left->mb_type != I4MB &&  currMB->mb_available_left->mb_type != I8MB) ? 1 : 0 );
+    
+    act_ctx     = a + b;
+    act_sym     = curr_mb_type;
+    se->context = act_ctx; // store context
+
+    if (act_sym==0) // 4x4 Intra
+    {
+      biari_encode_symbol(eep_dp, 0, ctx->mb_type_contexts[0] + act_ctx );
+    }
+    else if( act_sym == 25 ) // PCM-MODE
+    {
+      biari_encode_symbol(eep_dp, 1, ctx->mb_type_contexts[0] + act_ctx );
+
+      biari_encode_symbol_final(eep_dp, 1);
+    }
+    else // 16x16 Intra
+    {
+      biari_encode_symbol(eep_dp, 1, ctx->mb_type_contexts[0] + act_ctx );
+
+      biari_encode_symbol_final(eep_dp, 0);
+
+      mode_sym = act_sym-1; // Values in the range of 0...23
+      act_ctx  = 4;
+      act_sym  = mode_sym/12;
+      biari_encode_symbol(eep_dp, (unsigned char) act_sym, ctx->mb_type_contexts[0] + act_ctx ); // coding of AC/no AC
+      mode_sym = mode_sym % 12;
+      act_sym  = mode_sym / 4; // coding of cbp: 0,1,2
+      act_ctx  = 5;
+      if (act_sym==0)
+      {
+        biari_encode_symbol(eep_dp, 0, ctx->mb_type_contexts[0] + act_ctx );
+      }
+      else
+      {
+        biari_encode_symbol(eep_dp, 1, ctx->mb_type_contexts[0] + act_ctx );
+        act_ctx=6;
+        if (act_sym==1)
+        {
+          biari_encode_symbol(eep_dp, 0, ctx->mb_type_contexts[0] + act_ctx );
+        }
+        else
+        {
+          biari_encode_symbol(eep_dp, 1, ctx->mb_type_contexts[0] + act_ctx );
+        }
+      }
+      mode_sym = mode_sym % 4; // coding of I pred-mode: 0,1,2,3
+      act_sym  = mode_sym/2;
+      act_ctx  = 7;
+      biari_encode_symbol(eep_dp, (unsigned char) act_sym, ctx->mb_type_contexts[0] + act_ctx );
+      act_ctx  = 8;
+      act_sym  = mode_sym%2;
+      biari_encode_symbol(eep_dp, (unsigned char) act_sym, ctx->mb_type_contexts[0] + act_ctx );
+    }
+  }
+  else // INTER
+  {
+    
+    if (bframe)
+    {
+      if (currMB->mb_available_up == NULL)
+        b = 0;
+      else
+        b = (( currMB->mb_available_up->mb_type != 0) ? 1 : 0 );
+      if (currMB->mb_available_left == NULL)
+        a = 0;
+      else
+        a = (( currMB->mb_available_left->mb_type != 0) ? 1 : 0 );
+      act_ctx = a + b;
+      se->context = act_ctx; // store context
+    }
+    act_sym = curr_mb_type;
+
+    if (act_sym>=(mode16x16=(bframe?24:7)))
+    {
+      mode_sym = act_sym-mode16x16;
+      act_sym  = mode16x16; // 16x16 mode info
+    }
+
+
+
+    if (!bframe)
+    {
+      switch (act_sym)
+      {
+      case 0:
+        break;
+      case 1:
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][4]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][5]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][6]);
+        break;
+      case 2:
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][4]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][5]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][7]);
+        break;
+      case 3:
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][4]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][5]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][7]);
+        break;
+      case 4:
+      case 5:
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][4]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][5]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][6]);
+        break;
+      case 6:
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][4]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[1][7]);
+        break;
+      case 7:
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][4]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[1][7]);
+        break;
+      default:
+        printf ("Unsupported MB-MODE in writeMB_typeInfo_CABAC!\n");
+        exit (1);
+      }
+    }
+    else //===== B-FRAMES =====
+    {
+      if (act_sym==0)
+      {
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][act_ctx]);
+      }
+      else if (act_sym<=2)
+      {
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][act_ctx]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][4]);
+        csym=act_sym-1;
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+      }
+      else if (act_sym<=10)
+      {
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][act_ctx]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][4]);
+        biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][5]);
+        csym=(((act_sym-3)>>2)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        csym=(((act_sym-3)>>1)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        csym=((act_sym-3)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+      }
+      else if (act_sym==11 || act_sym==22)
+      {
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][act_ctx]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][4]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][5]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        if (act_sym==11)  biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        else              biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+      }
+      else
+      {
+        if (act_sym > 22) act_sym--;
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][act_ctx]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][4]);
+        biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][5]);
+        csym=(((act_sym-12)>>3)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        csym=(((act_sym-12)>>2)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        csym=(((act_sym-12)>>1)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]);
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        csym=((act_sym-12)&0x01);
+        if (csym) biari_encode_symbol (eep_dp, 1, &ctx->mb_type_contexts[2][6]); 
+        else      biari_encode_symbol (eep_dp, 0, &ctx->mb_type_contexts[2][6]);
+        if (act_sym >=22) act_sym++;
+      }
+    }
+
+    if(act_sym==mode16x16) // additional info for 16x16 Intra-mode
+    {
+      if( mode_sym==25 )
+      {
+        biari_encode_symbol_final(eep_dp, 1 );
+        return;
+      }
+      biari_encode_symbol_final(eep_dp, 0 );
+
+      act_ctx = 8;
+      act_sym = mode_sym/12;
+      biari_encode_symbol(eep_dp, (unsigned char) act_sym, ctx->mb_type_contexts[1] + act_ctx ); // coding of AC/no AC
+      mode_sym = mode_sym % 12;
+
+      act_sym = mode_sym / 4; // coding of cbp: 0,1,2
+      act_ctx = 9;
+      if (act_sym==0)
+      {
+        biari_encode_symbol(eep_dp, 0, ctx->mb_type_contexts[1] + act_ctx );
+      }
+      else
+      {
+        biari_encode_symbol(eep_dp, 1, ctx->mb_type_contexts[1] + act_ctx );
+        if (act_sym==1)
+        {
+          biari_encode_symbol(eep_dp, 0, ctx->mb_type_contexts[1] + act_ctx );
+        }
+        else
+        {
+          biari_encode_symbol(eep_dp, 1, ctx->mb_type_contexts[1] + act_ctx );
+        }
+      }
+
+      mode_sym = mode_sym % 4; // coding of I pred-mode: 0,1,2,3
+      act_ctx  = 10;
+      act_sym  = mode_sym/2;
+      biari_encode_symbol(eep_dp, (unsigned char) act_sym, ctx->mb_type_contexts[1] + act_ctx );
+      act_sym  = mode_sym%2;
+      biari_encode_symbol(eep_dp, (unsigned char) act_sym, ctx->mb_type_contexts[1] + act_ctx );
+    }
+  }
+}

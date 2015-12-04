@@ -1,0 +1,16 @@
+static int xtc_coord(XDR *xd,int *natoms,matrix box,rvec *x,real *prec)
+{
+  int i,j,result;
+  
+  /* box */
+  result=1;
+  for(i=0; ((i<DIM) && result); i++)
+    for(j=0; ((j<DIM) && result); j++)
+      result=XTC_CHECK("box",xdr_real(xd,&(box[i][j])));
+  
+  if (result)
+    /* coordinates     */
+    result=XTC_CHECK("x",xdr3drcoord(xd,x[0],natoms,prec)); 
+  
+  return result;
+}

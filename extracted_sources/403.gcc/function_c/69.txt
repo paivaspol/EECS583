@@ -1,0 +1,60 @@
+static tree *
+identify_blocks_1 (insns, block_vector, end_block_vector, orig_block_stack)
+     rtx insns;
+     tree *block_vector;
+     tree *end_block_vector;
+     tree *orig_block_stack;
+{
+  rtx insn;
+  tree *block_stack = orig_block_stack;
+
+  for (insn = insns; insn; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == NOTE)
+	{
+	  if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_BEG)
+	    {
+	      tree b;
+
+	      /* If there are more block notes than BLOCKs, something
+		 is badly wrong.  */
+	      if (block_vector == end_block_vector)
+		abort ();
+
+	      b = *block_vector++;
+	      NOTE_BLOCK (insn) = b;
+	      *block_stack++ = b;
+	    }
+	  else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_END)
+	    {
+	      /* If there are more NOTE_INSN_BLOCK_ENDs than
+		 NOTE_INSN_BLOCK_BEGs, something is badly wrong.  */
+	      if (block_stack == orig_block_stack)
+		abort ();
+
+	      NOTE_BLOCK (insn) = *--block_stack;
+	    }
+	}
+      else if (GET_CODE (insn) == CALL_INSN
+	       && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	{
+	  rtx cp = PATTERN (insn);
+
+	  block_vector = identify_blocks_1 (XEXP (cp, 0), block_vector,
+					    end_block_vector, block_stack);
+	  if (XEXP (cp, 1))
+	    block_vector = identify_blocks_1 (XEXP (cp, 1), block_vector,
+					      end_block_vector, block_stack);
+	  if (XEXP (cp, 2))
+	    block_vector = identify_blocks_1 (XEXP (cp, 2), block_vector,
+					      end_block_vector, block_stack);
+	}
+    }
+
+  /* If there are more NOTE_INSN_BLOCK_BEGINs than NOTE_INSN_BLOCK_ENDs,
+     something is badly wrong.  */
+  if (block_stack != orig_block_stack)
+    abort ();
+
+  return block_vector;
+}

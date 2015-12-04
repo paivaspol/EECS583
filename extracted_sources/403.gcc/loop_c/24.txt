@@ -1,0 +1,332 @@
+static void
+find_and_verify_loops (f, loops)
+     rtx f;
+     struct loops *loops;
+{
+  rtx insn;
+  rtx label;
+  int num_loops;
+  struct loop *current_loop;
+  struct loop *next_loop;
+  struct loop *loop;
+
+  num_loops = loops->num;
+
+  compute_luids (f, NULL_RTX, 0);
+
+  /* If there are jumps to undefined labels,
+     treat them as jumps out of any/all loops.
+     This also avoids writing past end of tables when there are no loops.  */
+  uid_loop[0] = NULL;
+
+  /* Find boundaries of loops, mark which loops are contained within
+     loops, and invalidate loops that have setjmp.  */
+
+  num_loops = 0;
+  current_loop = NULL;
+  for (insn = f; insn; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == NOTE)
+	switch (NOTE_LINE_NUMBER (insn))
+	  {
+	  case NOTE_INSN_LOOP_BEG:
+	    next_loop = loops->array + num_loops;
+	    next_loop->num = num_loops;
+	    num_loops++;
+	    next_loop->start = insn;
+	    next_loop->outer = current_loop;
+	    current_loop = next_loop;
+	    break;
+
+	  case NOTE_INSN_LOOP_CONT:
+	    current_loop->cont = insn;
+	    break;
+
+	  case NOTE_INSN_LOOP_VTOP:
+	    current_loop->vtop = insn;
+	    break;
+
+	  case NOTE_INSN_LOOP_END:
+	    if (! current_loop)
+	      abort ();
+
+	    current_loop->end = insn;
+	    current_loop = current_loop->outer;
+	    break;
+
+	  default:
+	    break;
+	  }
+
+      if (GET_CODE (insn) == CALL_INSN
+	  && find_reg_note (insn, REG_SETJMP, NULL))
+	{
+	  /* In this case, we must invalidate our current loop and any
+	     enclosing loop.  */
+	  for (loop = current_loop; loop; loop = loop->outer)
+	    {
+	      loop->invalid = 1;
+	      if (loop_dump_stream)
+		fprintf (loop_dump_stream,
+			 "\nLoop at %d ignored due to setjmp.\n",
+			 INSN_UID (loop->start));
+	    }
+	}
+
+      /* Note that this will mark the NOTE_INSN_LOOP_END note as being in the
+	 enclosing loop, but this doesn't matter.  */
+      uid_loop[INSN_UID (insn)] = current_loop;
+    }
+
+  /* Any loop containing a label used in an initializer must be invalidated,
+     because it can be jumped into from anywhere.  */
+  for (label = forced_labels; label; label = XEXP (label, 1))
+    invalidate_loops_containing_label (XEXP (label, 0));
+
+  /* Any loop containing a label used for an exception handler must be
+     invalidated, because it can be jumped into from anywhere.  */
+  for_each_eh_label (invalidate_loops_containing_label);
+
+  /* Now scan all insn's in the function.  If any JUMP_INSN branches into a
+     loop that it is not contained within, that loop is marked invalid.
+     If any INSN or CALL_INSN uses a label's address, then the loop containing
+     that label is marked invalid, because it could be jumped into from
+     anywhere.
+
+     Also look for blocks of code ending in an unconditional branch that
+     exits the loop.  If such a block is surrounded by a conditional
+     branch around the block, move the block elsewhere (see below) and
+     invert the jump to point to the code block.  This may eliminate a
+     label in our loop and will simplify processing by both us and a
+     possible second cse pass.  */
+
+  for (insn = f; insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn))
+      {
+	struct loop *this_loop = uid_loop[INSN_UID (insn)];
+
+	if (GET_CODE (insn) == INSN || GET_CODE (insn) == CALL_INSN)
+	  {
+	    rtx note = find_reg_note (insn, REG_LABEL, NULL_RTX);
+	    if (note)
+	      invalidate_loops_containing_label (XEXP (note, 0));
+	  }
+
+	if (GET_CODE (insn) != JUMP_INSN)
+	  continue;
+
+	mark_loop_jump (PATTERN (insn), this_loop);
+
+	/* See if this is an unconditional branch outside the loop.  */
+	if (this_loop
+	    && (GET_CODE (PATTERN (insn)) == RETURN
+		|| (any_uncondjump_p (insn)
+		    && onlyjump_p (insn)
+		    && (uid_loop[INSN_UID (JUMP_LABEL (insn))]
+			!= this_loop)))
+	    && get_max_uid () < max_uid_for_loop)
+	  {
+	    rtx p;
+	    rtx our_next = next_real_insn (insn);
+	    rtx last_insn_to_move = NEXT_INSN (insn);
+	    struct loop *dest_loop;
+	    struct loop *outer_loop = NULL;
+
+	    /* Go backwards until we reach the start of the loop, a label,
+	       or a JUMP_INSN.  */
+	    for (p = PREV_INSN (insn);
+		 GET_CODE (p) != CODE_LABEL
+		 && ! (GET_CODE (p) == NOTE
+		       && NOTE_LINE_NUMBER (p) == NOTE_INSN_LOOP_BEG)
+		 && GET_CODE (p) != JUMP_INSN;
+		 p = PREV_INSN (p))
+	      ;
+
+	    /* Check for the case where we have a jump to an inner nested
+	       loop, and do not perform the optimization in that case.  */
+
+	    if (JUMP_LABEL (insn))
+	      {
+		dest_loop = uid_loop[INSN_UID (JUMP_LABEL (insn))];
+		if (dest_loop)
+		  {
+		    for (outer_loop = dest_loop; outer_loop;
+			 outer_loop = outer_loop->outer)
+		      if (outer_loop == this_loop)
+			break;
+		  }
+	      }
+
+	    /* Make sure that the target of P is within the current loop.  */
+
+	    if (GET_CODE (p) == JUMP_INSN && JUMP_LABEL (p)
+		&& uid_loop[INSN_UID (JUMP_LABEL (p))] != this_loop)
+	      outer_loop = this_loop;
+
+	    /* If we stopped on a JUMP_INSN to the next insn after INSN,
+	       we have a block of code to try to move.
+
+	       We look backward and then forward from the target of INSN
+	       to find a BARRIER at the same loop depth as the target.
+	       If we find such a BARRIER, we make a new label for the start
+	       of the block, invert the jump in P and point it to that label,
+	       and move the block of code to the spot we found.  */
+
+	    if (! outer_loop
+		&& GET_CODE (p) == JUMP_INSN
+		&& JUMP_LABEL (p) != 0
+		/* Just ignore jumps to labels that were never emitted.
+		   These always indicate compilation errors.  */
+		&& INSN_UID (JUMP_LABEL (p)) != 0
+		&& any_condjump_p (p) && onlyjump_p (p)
+		&& next_real_insn (JUMP_LABEL (p)) == our_next
+		/* If it's not safe to move the sequence, then we
+		   mustn't try.  */
+		&& insns_safe_to_move_p (p, NEXT_INSN (insn),
+					 &last_insn_to_move))
+	      {
+		rtx target
+		  = JUMP_LABEL (insn) ? JUMP_LABEL (insn) : get_last_insn ();
+		struct loop *target_loop = uid_loop[INSN_UID (target)];
+		rtx loc, loc2;
+		rtx tmp;
+
+		/* Search for possible garbage past the conditional jumps
+		   and look for the last barrier.  */
+		for (tmp = last_insn_to_move;
+		     tmp && GET_CODE (tmp) != CODE_LABEL; tmp = NEXT_INSN (tmp))
+		  if (GET_CODE (tmp) == BARRIER)
+		    last_insn_to_move = tmp;
+
+		for (loc = target; loc; loc = PREV_INSN (loc))
+		  if (GET_CODE (loc) == BARRIER
+		      /* Don't move things inside a tablejump.  */
+		      && ((loc2 = next_nonnote_insn (loc)) == 0
+			  || GET_CODE (loc2) != CODE_LABEL
+			  || (loc2 = next_nonnote_insn (loc2)) == 0
+			  || GET_CODE (loc2) != JUMP_INSN
+			  || (GET_CODE (PATTERN (loc2)) != ADDR_VEC
+			      && GET_CODE (PATTERN (loc2)) != ADDR_DIFF_VEC))
+		      && uid_loop[INSN_UID (loc)] == target_loop)
+		    break;
+
+		if (loc == 0)
+		  for (loc = target; loc; loc = NEXT_INSN (loc))
+		    if (GET_CODE (loc) == BARRIER
+			/* Don't move things inside a tablejump.  */
+			&& ((loc2 = next_nonnote_insn (loc)) == 0
+			    || GET_CODE (loc2) != CODE_LABEL
+			    || (loc2 = next_nonnote_insn (loc2)) == 0
+			    || GET_CODE (loc2) != JUMP_INSN
+			    || (GET_CODE (PATTERN (loc2)) != ADDR_VEC
+				&& GET_CODE (PATTERN (loc2)) != ADDR_DIFF_VEC))
+			&& uid_loop[INSN_UID (loc)] == target_loop)
+		      break;
+
+		if (loc)
+		  {
+		    rtx cond_label = JUMP_LABEL (p);
+		    rtx new_label = get_label_after (p);
+
+		    /* Ensure our label doesn't go away.  */
+		    LABEL_NUSES (cond_label)++;
+
+		    /* Verify that uid_loop is large enough and that
+		       we can invert P.  */
+		    if (invert_jump (p, new_label, 1))
+		      {
+			rtx q, r;
+
+			/* If no suitable BARRIER was found, create a suitable
+			   one before TARGET.  Since TARGET is a fall through
+			   path, we'll need to insert an jump around our block
+			   and add a BARRIER before TARGET.
+
+			   This creates an extra unconditional jump outside
+			   the loop.  However, the benefits of removing rarely
+			   executed instructions from inside the loop usually
+			   outweighs the cost of the extra unconditional jump
+			   outside the loop.  */
+			if (loc == 0)
+			  {
+			    rtx temp;
+
+			    temp = gen_jump (JUMP_LABEL (insn));
+			    temp = emit_jump_insn_before (temp, target);
+			    JUMP_LABEL (temp) = JUMP_LABEL (insn);
+			    LABEL_NUSES (JUMP_LABEL (insn))++;
+			    loc = emit_barrier_before (target);
+			  }
+
+			/* Include the BARRIER after INSN and copy the
+			   block after LOC.  */
+			if (squeeze_notes (&new_label, &last_insn_to_move))
+			  abort ();
+			reorder_insns (new_label, last_insn_to_move, loc);
+
+			/* All those insns are now in TARGET_LOOP.  */
+			for (q = new_label;
+			     q != NEXT_INSN (last_insn_to_move);
+			     q = NEXT_INSN (q))
+			  uid_loop[INSN_UID (q)] = target_loop;
+
+			/* The label jumped to by INSN is no longer a loop
+			   exit.  Unless INSN does not have a label (e.g.,
+			   it is a RETURN insn), search loop->exit_labels
+			   to find its label_ref, and remove it.  Also turn
+			   off LABEL_OUTSIDE_LOOP_P bit.  */
+			if (JUMP_LABEL (insn))
+			  {
+			    for (q = 0, r = this_loop->exit_labels;
+				 r;
+				 q = r, r = LABEL_NEXTREF (r))
+			      if (XEXP (r, 0) == JUMP_LABEL (insn))
+				{
+				  LABEL_OUTSIDE_LOOP_P (r) = 0;
+				  if (q)
+				    LABEL_NEXTREF (q) = LABEL_NEXTREF (r);
+				  else
+				    this_loop->exit_labels = LABEL_NEXTREF (r);
+				  break;
+				}
+
+			    for (loop = this_loop; loop && loop != target_loop;
+				 loop = loop->outer)
+			      loop->exit_count--;
+
+			    /* If we didn't find it, then something is
+			       wrong.  */
+			    if (! r)
+			      abort ();
+			  }
+
+			/* P is now a jump outside the loop, so it must be put
+			   in loop->exit_labels, and marked as such.
+			   The easiest way to do this is to just call
+			   mark_loop_jump again for P.  */
+			mark_loop_jump (PATTERN (p), this_loop);
+
+			/* If INSN now jumps to the insn after it,
+			   delete INSN.  */
+			if (JUMP_LABEL (insn) != 0
+			    && (next_real_insn (JUMP_LABEL (insn))
+				== next_real_insn (insn)))
+			  delete_related_insns (insn);
+		      }
+
+		    /* Continue the loop after where the conditional
+		       branch used to jump, since the only branch insn
+		       in the block (if it still remains) is an inter-loop
+		       branch and hence needs no processing.  */
+		    insn = NEXT_INSN (cond_label);
+
+		    if (--LABEL_NUSES (cond_label) == 0)
+		      delete_related_insns (cond_label);
+
+		    /* This loop will be continued with NEXT_INSN (insn).  */
+		    insn = PREV_INSN (insn);
+		  }
+	      }
+	  }
+      }
+}

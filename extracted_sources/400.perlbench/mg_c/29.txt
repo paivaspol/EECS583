@@ -1,0 +1,24 @@
+int
+Perl_magic_nextpack(pTHX_ SV *sv, MAGIC *mg, SV *key)
+{
+    dSP;
+    const char *meth = SvOK(key) ? "NEXTKEY" : "FIRSTKEY";
+
+    ENTER;
+    SAVETMPS;
+    PUSHSTACKi(PERLSI_MAGIC);
+    PUSHMARK(SP);
+    EXTEND(SP, 2);
+    PUSHs(SvTIED_obj(sv, mg));
+    if (SvOK(key))
+	PUSHs(key);
+    PUTBACK;
+
+    if (call_method(meth, G_SCALAR))
+	sv_setsv(key, *PL_stack_sp--);
+
+    POPSTACK;
+    FREETMPS;
+    LEAVE;
+    return 0;
+}

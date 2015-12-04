@@ -1,0 +1,85 @@
+static rtx
+skip_insns_after_block (bb)
+     basic_block bb;
+{
+  rtx insn, last_insn, next_head, prev;
+
+  next_head = NULL_RTX;
+  if (bb->index + 1 != n_basic_blocks)
+    next_head = BASIC_BLOCK (bb->index + 1)->head;
+
+  for (last_insn = insn = bb->end; (insn = NEXT_INSN (insn)) != 0; )
+    {
+      if (insn == next_head)
+	break;
+
+      switch (GET_CODE (insn))
+	{
+	case BARRIER:
+	  last_insn = insn;
+	  continue;
+
+	case NOTE:
+	  switch (NOTE_LINE_NUMBER (insn))
+	    {
+	    case NOTE_INSN_LOOP_END:
+	    case NOTE_INSN_BLOCK_END:
+	      last_insn = insn;
+	      continue;
+	    case NOTE_INSN_DELETED:
+	    case NOTE_INSN_DELETED_LABEL:
+	      continue;
+
+	    default:
+	      continue;
+	      break;
+	    }
+	  break;
+
+	case CODE_LABEL:
+	  if (NEXT_INSN (insn)
+	      && GET_CODE (NEXT_INSN (insn)) == JUMP_INSN
+	      && (GET_CODE (PATTERN (NEXT_INSN (insn))) == ADDR_VEC
+	          || GET_CODE (PATTERN (NEXT_INSN (insn))) == ADDR_DIFF_VEC))
+	    {
+	      insn = NEXT_INSN (insn);
+	      last_insn = insn;
+	      continue;
+	    }
+          break;
+
+	default:
+	  break;
+	}
+
+      break;
+    }
+
+  /* It is possible to hit contradictory sequence.  For instance:
+    
+     jump_insn
+     NOTE_INSN_LOOP_BEG
+     barrier
+
+     Where barrier belongs to jump_insn, but the note does not.  This can be
+     created by removing the basic block originally following
+     NOTE_INSN_LOOP_BEG.  In such case reorder the notes.  */
+
+  for (insn = last_insn; insn != bb->end; insn = prev)
+    {
+      prev = PREV_INSN (insn);
+      if (GET_CODE (insn) == NOTE)
+	switch (NOTE_LINE_NUMBER (insn))
+	  {
+          case NOTE_INSN_LOOP_END:
+          case NOTE_INSN_BLOCK_END:
+          case NOTE_INSN_DELETED:
+          case NOTE_INSN_DELETED_LABEL:
+	    continue;
+          default:
+	    reorder_insns (insn, insn, last_insn);
+        }
+    }
+
+  return last_insn;
+}

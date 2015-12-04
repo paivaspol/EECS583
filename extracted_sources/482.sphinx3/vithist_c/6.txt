@@ -1,0 +1,41 @@
+static void vithist_frame_gc (vithist_t *vh, int32 frm)
+{
+    vithist_entry_t *ve, *tve;
+    int32 se, fe, te, bs, bv;
+    int32 i, j;
+    
+    se = vh->frame_start[frm];
+    fe = vh->n_entry - 1;
+    te = se;
+    
+    bs = MAX_NEG_INT32;
+    bv = -1;
+    for (i = se; i <= fe; i++) {
+	ve = vh->entry[VITHIST_ID2BLK(i)] + VITHIST_ID2BLKOFFSET(i);
+	if (ve->valid) {
+	    if (i != te) {	/* Move i to te */
+		tve = vh->entry[VITHIST_ID2BLK(te)] + VITHIST_ID2BLKOFFSET(te);
+		*tve = *ve;
+	    }
+	    
+	    if (ve->score > bs) {
+		bs = ve->score;
+		bv = te;
+	    }
+	    
+	    te++;
+	}
+    }
+    
+    assert (bs == vh->bestscore[frm]);
+    vh->bestvh[frm] = bv;
+    
+    /* Free up entries [te..n_entry-1] */
+    i = VITHIST_ID2BLK(vh->n_entry - 1);
+    j = VITHIST_ID2BLK(te - 1);
+    for (; i > j; --i) {
+	ckd_free ((void *) vh->entry[i]);
+	vh->entry[i] = NULL;
+    }
+    vh->n_entry = te;
+}

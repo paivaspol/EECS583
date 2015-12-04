@@ -1,0 +1,34 @@
+static int known_class(
+        pTHX_
+	stcxt_t *cxt,
+	char *name,		/* Class name */
+	int len,		/* Name length */
+	I32 *classnum)
+{
+	SV **svh;
+	HV *hclass = cxt->hclass;
+
+	TRACEME(("known_class (%s)", name));
+
+	/*
+	 * Recall that we don't store pointers in this hash table, but tags.
+	 * Therefore, we need LOW_32BITS() to extract the relevant parts.
+	 */
+
+	svh = hv_fetch(hclass, name, len, FALSE);
+	if (svh) {
+		*classnum = LOW_32BITS(*svh);
+		return TRUE;
+	}
+
+	/*
+	 * Unknown classname, we need to record it.
+	 */
+
+	cxt->classnum++;
+	if (!hv_store(hclass, name, len, INT2PTR(SV*, cxt->classnum), 0))
+		CROAK(("Unable to record new classname"));
+
+	*classnum = cxt->classnum;
+	return FALSE;
+}

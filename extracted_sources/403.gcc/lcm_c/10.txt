@@ -1,0 +1,18 @@
+static void
+make_preds_opaque (b, j)
+     basic_block b;
+     int j;
+{
+  edge e;
+
+  for (e = b->pred; e; e = e->pred_next)
+    {
+      basic_block pb = e->src;
+
+      if (e->aux || ! TEST_BIT (transp[pb->index], j))
+	continue;
+
+      RESET_BIT (transp[pb->index], j);
+      make_preds_opaque (pb, j);
+    }
+}

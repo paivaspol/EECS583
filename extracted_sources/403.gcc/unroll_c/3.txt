@@ -1,0 +1,114 @@
+static rtx
+calculate_giv_inc (pattern, src_insn, regno)
+     rtx pattern, src_insn;
+     unsigned int regno;
+{
+  rtx increment;
+  rtx increment_total = 0;
+  int tries = 0;
+
+ retry:
+  /* Verify that we have an increment insn here.  First check for a plus
+     as the set source.  */
+  if (GET_CODE (SET_SRC (pattern)) != PLUS)
+    {
+      /* SR sometimes computes the new giv value in a temp, then copies it
+	 to the new_reg.  */
+      src_insn = PREV_INSN (src_insn);
+      pattern = single_set (src_insn);
+      if (GET_CODE (SET_SRC (pattern)) != PLUS)
+	abort ();
+
+      /* The last insn emitted is not needed, so delete it to avoid confusing
+	 the second cse pass.  This insn sets the giv unnecessarily.  */
+      delete_related_insns (get_last_insn ());
+    }
+
+  /* Verify that we have a constant as the second operand of the plus.  */
+  increment = XEXP (SET_SRC (pattern), 1);
+  if (GET_CODE (increment) != CONST_INT)
+    {
+      /* SR sometimes puts the constant in a register, especially if it is
+	 too big to be an add immed operand.  */
+      increment = find_last_value (increment, &src_insn, NULL_RTX, 0);
+
+      /* SR may have used LO_SUM to compute the constant if it is too large
+	 for a load immed operand.  In this case, the constant is in operand
+	 one of the LO_SUM rtx.  */
+      if (GET_CODE (increment) == LO_SUM)
+	increment = XEXP (increment, 1);
+
+      /* Some ports store large constants in memory and add a REG_EQUAL
+	 note to the store insn.  */
+      else if (GET_CODE (increment) == MEM)
+	{
+	  rtx note = find_reg_note (src_insn, REG_EQUAL, 0);
+	  if (note)
+	    increment = XEXP (note, 0);
+	}
+
+      else if (GET_CODE (increment) == IOR
+	       || GET_CODE (increment) == ASHIFT
+	       || GET_CODE (increment) == PLUS)
+	{
+	  /* The rs6000 port loads some constants with IOR.
+	     The alpha port loads some constants with ASHIFT and PLUS.  */
+	  rtx second_part = XEXP (increment, 1);
+	  enum rtx_code code = GET_CODE (increment);
+
+	  increment = find_last_value (XEXP (increment, 0), 
+				       &src_insn, NULL_RTX, 0);
+	  /* Don't need the last insn anymore.  */
+	  delete_related_insns (get_last_insn ());
+
+	  if (GET_CODE (second_part) != CONST_INT
+	      || GET_CODE (increment) != CONST_INT)
+	    abort ();
+
+	  if (code == IOR)
+	    increment = GEN_INT (INTVAL (increment) | INTVAL (second_part));
+	  else if (code == PLUS)
+	    increment = GEN_INT (INTVAL (increment) + INTVAL (second_part));
+	  else
+	    increment = GEN_INT (INTVAL (increment) << INTVAL (second_part));
+	}
+
+      if (GET_CODE (increment) != CONST_INT)
+	abort ();
+
+      /* The insn loading the constant into a register is no longer needed,
+	 so delete it.  */
+      delete_related_insns (get_last_insn ());
+    }
+
+  if (increment_total)
+    increment_total = GEN_INT (INTVAL (increment_total) + INTVAL (increment));
+  else
+    increment_total = increment;
+
+  /* Check that the source register is the same as the register we expected
+     to see as the source.  If not, something is seriously wrong.  */
+  if (GET_CODE (XEXP (SET_SRC (pattern), 0)) != REG
+      || REGNO (XEXP (SET_SRC (pattern), 0)) != regno)
+    {
+      /* Some machines (e.g. the romp), may emit two add instructions for
+	 certain constants, so lets try looking for another add immediately
+	 before this one if we have only seen one add insn so far.  */
+
+      if (tries == 0)
+	{
+	  tries++;
+
+	  src_insn = PREV_INSN (src_insn);
+	  pattern = single_set (src_insn);
+
+	  delete_related_insns (get_last_insn ());
+
+	  goto retry;
+	}
+
+      abort ();
+    }
+
+  return increment_total;
+}

@@ -1,0 +1,566 @@
+int search (int alpha, int beta, int depth, int is_null) {
+
+  /* search the current node using alpha-beta with negamax search */
+
+  move_s moves[MOVE_BUFF];
+  int num_moves, i, j;
+  int score = -INF, move_ordering[MOVE_BUFF], see_values[MOVE_BUFF];
+  xbool no_moves, legal_move;
+  int bound, threat, donull, best, sbest, best_score, old_ep;
+  xbool incheck, first;
+  int extend, fscore, fmax, selective;
+  move_s kswap;
+  int ksswap;
+  int originalalpha;
+  int afterincheck;
+  int legalmoves;
+  int dropcut;
+  int oldtime;
+  static const int rc_index[14] = {0,1,1,2,2,5,5,3,3,4,4,2,2,0};
+
+  nodes++;
+ 
+  /* before we do anything, see if we're out of time: */
+  if (!(nodes & ((1<<16)-1))) {
+    if (interrupt()) 
+      {
+	time_exit = TRUE;
+	return 0;
+      }
+    else if (((rdifftime (rtime (), start_time) >= time_for_move)) && (i_depth > 1))
+      {
+	if (failed == 1 && !extendedtime 
+	    && !fixed_time
+	    && !go_fast
+	    && Variant != Bughouse
+	    && (time_left > max(time_for_move*4, 1000)))
+	  {
+	    extendedtime = 1;
+	    oldtime = time_for_move;
+	    time_for_move += allocate_time();
+	    printf("Extended from %d to %d, time left %d\n", oldtime,
+		   time_for_move, 
+		   time_left);
+	  }
+	else
+	  {
+	    time_exit = TRUE;
+	    return 0;
+	  }
+      }
+  }
+  
+  originalalpha = alpha;
+  fmax = -INF;
+  
+  threat = 0;
+  extend = 0;
+  
+  pv_length[ply] = ply;
+  
+  if (is_draw ()) 
+    {
+      return 0;
+    }
+  
+  incheck = checks[ply];
+  singular[ply] = 0;
+  recaps[ply] = 0;
+  
+  /* perform check extensions if we haven't gone past maxdepth: */
+  if (ply < PV_BUFF && incheck && ((ply <= i_depth*2) || (depth == 0))) 
+    {
+      depth++;
+      ext_check++;
+      extend++;
+    } 
+  else if ((ply < PV_BUFF) && (ply > 2) && (ply <= (i_depth*2))	   
+           && !recaps[ply-2]
+           && cfg_recap
+	   && (path[ply-1].captured != npiece)
+	   && (rc_index[path[ply-1].captured] == rc_index[path[ply-2].captured]))
+    {
+      depth++;
+      ext_recap++;
+      extend++;
+      recaps[ply] = TRUE;
+    }
+
+  /* try to find a stable position before passing the position to eval (): */
+  if (depth <= 0 || ply >= PV_BUFF)
+    {
+      if (Variant != Suicide && Variant != Losers)
+	{
+	      captures = TRUE;
+	      score = qsearch (alpha, beta, PV_BUFF-ply);   
+	      captures = FALSE;
+	      return score; 
+	}
+      else
+	{
+	  if (Variant == Suicide)
+	    {
+	      return suicide_eval();
+
+	    }
+	  else if (Variant == Losers)
+	    {		 
+	      i = losers_eval();
+	      
+	      if (abs(i) == INF)
+		{
+		  return ((i > 0) ? INF-ply : -INF+ply);
+		}
+	      else
+		{		
+		  return i;		  
+		}
+	    }
+	}
+    }
+  
+  num_moves = 0;
+  no_moves = TRUE;
+ 
+  switch (ProbeTT(&bound, beta, &best, &threat, &donull, depth))
+    {
+    case EXACT:
+      return bound;
+      break;
+    case UPPER:
+      if (bound <= alpha)
+	return bound;
+      break;
+    case LOWER:
+      if (bound >= beta)
+	return bound;
+      break;
+    case DUMMY:
+      break;
+    case HMISS:
+      best = -1;
+      threat = FALSE;
+      break;
+    };
+  
+  if (best == 500) best = -1;
+ 
+  sbest = -1;
+  best_score = -INF;
+
+  old_ep = ep_square;
+  
+  legalmoves = 0;
+  
+  if (Variant == Losers)
+    {
+      i = losers_eval();
+      
+      if (abs(i) == INF)
+      {
+	return (i > 0) ? i-ply : i+ply;
+      }
+      
+      captures = TRUE;
+      gen (&moves[0]);
+      num_moves = numb_moves;
+      captures = FALSE; 
+									               
+      if (num_moves)
+	{
+	  for (i = 0; i < num_moves; i++)
+	    {
+	      make(&moves[0], i);
+	      if (check_legal(&moves[0], i, incheck))
+		{
+		  legalmoves++;
+		}
+	      unmake(&moves[0], i);
+	    }
+	}       
+      if (!legalmoves) 
+	{
+	  captures = FALSE;
+	  gen(&moves[0]);
+	  num_moves = numb_moves;
+	};          
+
+      legalmoves = 0;
+    } 
+
+  if ((is_null == NONE)
+      && ((phase != Endgame) || ((phase == Endgame) && (depth <= 6)))
+      && !incheck && donull && !searching_pv
+      && (threat == FALSE)
+      && (((Variant != Suicide) && (Variant != Losers)) 
+	  || (Variant == Losers && moves[0].captured == npiece)))
+    {
+
+        ep_square = 0;      
+        white_to_move ^= 1;
+        ply++;
+        fifty++;
+        hash ^= 0xDEADBEEF;
+	
+      	/* use R=1 cos R=2 is too dangerous for our ply depths */
+      	if (Variant != Normal && Variant != Losers)
+            score = -search(-beta, -beta+1, ((depth > 3) ? depth-2-1 : depth-1-1), SINGLE);
+     	else
+	    score = -search(-beta, -beta+1, depth-3-1, SINGLE);
+      
+      hash ^= 0xDEADBEEF;
+      fifty--;
+      ply--;
+      white_to_move ^= 1;
+      ep_square = old_ep;
+
+      if (time_exit) return 0;
+
+      NTries++;
+
+      if (score >= beta)
+	{
+	  
+	  NCuts++;
+	  
+          StoreTT(score, alpha, beta, 500, 0, depth);
+	  
+	  return score;
+	}
+      else if (score < -INF+100)
+	{
+	  threat = TRUE;
+	  TExt++;
+	  depth++;
+	  extend++;
+	  ext_onerep++;
+	}
+    }
+  else if (threat == TRUE)
+    {
+      TExt++;
+      depth++;
+      extend++;
+      ext_onerep++;
+    }
+  
+  score = -INF;
+  
+   if (Variant != Losers)
+    {
+      /* generate and order moves: */
+      gen (&moves[0]);
+      num_moves = numb_moves;
+    }
+  
+  /* one reply extension */  
+  if (cfg_onerep && incheck)
+  {
+      if (num_moves)
+      {      	
+	for (i = 0;(i < num_moves) && (legalmoves < 2); i++)
+	  {
+	    make(&moves[0], i);
+	    if (check_legal(&moves[0], i, incheck))
+	      {
+		legalmoves++;
+	      }
+	    unmake(&moves[0], i);
+	  }
+      }
+  }
+    
+  if (ply < PV_BUFF)
+  {
+  	if ((Variant == Suicide) && num_moves == 1) {
+		depth++;
+  		ext_onerep++; 
+		singular[ply] = TRUE;
+        } 
+  	else if (legalmoves == 1 && !singular[ply-2]) {
+		depth++;
+  		ext_onerep++;  	
+		singular[ply] = TRUE;
+	}
+   }
+  
+  first = TRUE;
+  selective = 0;
+
+  if (phase != Endgame && (Variant != Suicide) && cfg_futprune)
+    {
+
+      fscore = (white_to_move ? Material : -Material) + 900;
+    
+      if (!extend && depth == 3 && fscore <= alpha)
+	depth = 2;
+    
+      fscore = (white_to_move ? Material : -Material) + 500;
+    
+      if (!extend && depth == 2 && fscore <= alpha)
+	{
+	  selective = 1;
+	  best_score = fmax = fscore;
+	}
+    
+      fscore = (white_to_move ? Material : -Material) + ((Variant == Normal) ? 150 : 200);
+    
+      if (!extend && depth == 1 && fscore <= alpha)
+	{
+	  selective = 1;
+	  best_score = fmax = fscore;
+	}
+    }   
+  
+  if (num_moves > 0)
+    {
+      order_moves (&moves[0], &move_ordering[0], &see_values[0], num_moves, best);
+      
+      /* loop through the moves at the current node: */
+      while (remove_one (&i, &move_ordering[0], num_moves)) {
+      
+	make (&moves[0], i);
+   
+	legal_move = FALSE;
+      
+	hash_history[move_number+ply-1] = hash;
+	path[ply-1] = moves[i];
+      
+	extend = 0; /* dont extend twice */
+      
+	/* go deeper if it's a legal move: */
+      
+	if (check_legal (&moves[0], i, incheck)) {
+      
+	  afterincheck = f_in_check(&moves[0], i);
+	  checks[ply] = afterincheck;
+	
+	  if (!afterincheck && ((Variant == Normal) 
+		             || (Variant == Suicide) 
+			     || (Variant == Losers)) && (depth < 3) &&
+	      ((((board[moves[i].target] == wpawn) && (rank(moves[i].target) >= 6))
+		|| ((board[moves[i].target] == bpawn) && (rank(moves[i].target) <= 3)))))
+	    {
+	      extend++;
+	    };
+	
+	  dropcut = 0;
+	
+	  /* Razoring of uninteresting drops */
+	  if ((moves[i].from == 0)
+	      && (depth > 1)           /* more than pre-frontier nodes */
+	      && (afterincheck == 0)   /* not a contact checking move */
+	      && (incheck == 0)        /* not a check evasion */
+	      && !searching_pv
+	      && cfg_razordrop
+	      )
+	    { razor_drop++; extend--;}
+	  else
+	    {
+	      if ((moves[i].from == 0) && (depth == 1) && (incheck == 0) && cfg_cutdrop) 
+		{
+		  if (white_to_move)
+		    {
+		      dropcut = (calc_attackers(moves[i].target, 1) 
+				 - calc_attackers(moves[i].target, 0)) > 0;
+		      if (dropcut) drop_cuts++;
+		    }
+		  else
+		    {
+		      dropcut = (calc_attackers(moves[i].target, 0)
+				 - calc_attackers(moves[i].target, 1)) > 0;
+		      if (dropcut) drop_cuts++;
+		    }
+		}
+
+	    }
+	
+	  if (!dropcut && (!selective || (afterincheck != 0) 
+			   || (fmax + ((abs(material[moves[i].captured]) * 
+				 ((Variant == Normal || Variant == Losers)?1:2)
+				 )) > alpha) 
+			   || (moves[i].promoted))) 
+	    {
+	      if (first == TRUE)
+		{ 
+		  score = -search (-beta, -alpha, depth+extend-1, NONE);
+		  FULL++;
+		}
+	      else
+		{
+		  score = -search (-alpha-1, -alpha, depth+extend-1, NONE);
+		  PVS++;
+		    
+		  if (score > best_score && !time_exit && score != -KINGCAP)
+		    {
+		      if ((score > alpha) && (score < beta))
+			{
+			  score = -search(-beta, -alpha, depth+extend-1, NONE);
+			  PVSF++;
+			    
+			  if (score > best_score) best_score = score;
+			}
+		      else	
+			best_score = score;
+		    }
+		}
+
+	      legal_move = TRUE;
+	    
+	    }
+	  else
+	    razor_material++;
+	
+	
+	  legalmoves++;
+	  no_moves = FALSE;
+	}
+
+	if (score > best_score && legal_move)
+	  {
+	    best_score = score;
+	  };
+      
+	unmake (&moves[0], i);
+      
+	/* return if we've run out of time: */
+	if (time_exit) return 0;
+      
+	/* check our current score vs. alpha: */
+	if (score > alpha && legal_move) {
+	
+	  /* try for an early cutoff: */
+	  if (score >= beta) {
+	  
+	    /* update the history heuristic since we have a cutoff: */
+	    history_h[moves[i].from][moves[i].target]++;
+	  
+	    if (moves[i].captured == npiece)
+	      {
+		/* we have a cutoff, so update our killers: */
+		/* first, check whether it matches one of the known killers */
+		if (moves[i].from == killer1[ply].from && moves[i].target ==
+		    killer1[ply].target && moves[i].promoted == killer1[ply].promoted)
+		  {
+		    killer_scores[ply]++;
+		  }
+		else if (moves[i].from == killer2[ply].from && moves[i].target ==
+			 killer2[ply].target && moves[i].promoted == killer2[ply].promoted)
+		  {
+		    killer_scores2[ply]++;
+		    
+		    if (killer_scores2[ply] > killer_scores[ply])
+		      {
+			kswap = killer1[ply];
+			killer1[ply] = killer2[ply];
+			killer2[ply] = kswap;		
+			ksswap = killer_scores[ply];
+			killer_scores[ply] = killer_scores2[ply];
+			killer_scores2[ply] = ksswap;
+		      }
+		  }
+		
+		else if (moves[i].from == killer3[ply].from && moves[i].target ==
+			 killer3[ply].target && moves[i].promoted == killer3[ply].promoted)
+		  {
+		    
+		    killer_scores3[ply]++;
+		    
+		    if (killer_scores3[ply] > killer_scores2[ply])
+		      {
+			kswap = killer2[ply];
+			killer2[ply] = killer3[ply];
+			killer3[ply] = kswap;		
+			ksswap = killer_scores2[ply];
+			killer_scores2[ply] = killer_scores3[ply];
+			killer_scores3[ply] = ksswap;
+		      }
+		  }
+		/* if not, replace killer3 */
+		else
+		  {
+		    killer_scores3[ply] = 1;
+		    killer3[ply] = moves[i];
+		  }
+	      }
+	  
+	    if (first == TRUE) FHF++;
+	  
+	    FH++;
+	  
+	    StoreTT(score, originalalpha, beta, i, threat, depth);
+	  
+	    return score;
+	  }
+	
+	  alpha = score;
+	
+	  sbest = i;
+
+	  /* update the pv: */
+	  pv[ply][ply] = moves[i];
+	  for (j = ply+1; j < pv_length[ply+1]; j++)
+	    pv[ply][j] = pv[ply+1][j];
+	  pv_length[ply] = pv_length[ply+1];
+	}
+      
+	if (legal_move)
+	  first = FALSE;
+      
+      }
+    }
+  else
+    {
+      /* no generated moves..only happens in suicide */
+      StoreTT(INF-ply, originalalpha, beta, 0, threat, depth);
+      return INF-ply;
+    }
+
+  /* check for mate / stalemate: */
+  if (no_moves) 
+    {
+      if (Variant != Losers && Variant != Suicide)
+      {
+      	if (in_check ()) 
+	{
+	  StoreTT(-INF+ply, originalalpha, beta, 0, threat, depth);
+	  return (-INF+ply);
+	}
+      else 
+	{
+	  StoreTT(0, originalalpha, beta, 0, threat, depth);
+	  return 0;
+	}
+      }
+      else
+      {
+	  StoreTT(INF-ply, originalalpha, beta, 0, threat, depth);
+	  return (INF-ply);
+      }
+    }
+  else
+    {
+      if (fifty > 100) 
+	{
+	  return 0;
+	}	
+    };
+  
+  if (sbest == -1) sbest = 500;
+
+  if (best_score <= originalalpha)
+    {
+      if (!selective)
+	StoreTT(best_score, originalalpha, beta, sbest, threat, depth);
+    }
+  else 
+    {
+      if (!selective)
+	StoreTT(best_score, originalalpha, beta, sbest, threat, depth);
+      else
+	StoreTT(best_score, -INF, -INF, sbest, threat, depth);/*store lowbound*/
+    }
+ 
+  return best_score;
+
+}

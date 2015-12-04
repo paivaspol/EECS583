@@ -1,0 +1,32 @@
+static struct dw_loc_descr_struct *
+build_cfa_loc (cfa)
+     dw_cfa_location *cfa;
+{
+  struct dw_loc_descr_struct *head, *tmp;
+
+  if (cfa->indirect == 0)
+    abort ();
+
+  if (cfa->base_offset)
+    {
+      if (cfa->reg <= 31)
+	head = new_loc_descr (DW_OP_breg0 + cfa->reg, cfa->base_offset, 0);
+      else
+	head = new_loc_descr (DW_OP_bregx, cfa->reg, cfa->base_offset);
+    }
+  else if (cfa->reg <= 31)
+    head = new_loc_descr (DW_OP_reg0 + cfa->reg, 0, 0);
+  else
+    head = new_loc_descr (DW_OP_regx, cfa->reg, 0);
+
+  head->dw_loc_oprnd1.val_class = dw_val_class_const;
+  tmp = new_loc_descr (DW_OP_deref, 0, 0);
+  add_loc_descr (&head, tmp);
+  if (cfa->offset != 0)
+    {
+      tmp = new_loc_descr (DW_OP_plus_uconst, cfa->offset, 0);
+      add_loc_descr (&head, tmp);
+    }
+
+  return head;
+}

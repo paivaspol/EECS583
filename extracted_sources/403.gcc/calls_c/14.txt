@@ -1,0 +1,53 @@
+static void
+compute_argument_addresses (args, argblock, num_actuals)
+     struct arg_data *args;
+     rtx argblock;
+     int num_actuals;
+{
+  if (argblock)
+    {
+      rtx arg_reg = argblock;
+      int i, arg_offset = 0;
+
+      if (GET_CODE (argblock) == PLUS)
+	arg_reg = XEXP (argblock, 0), arg_offset = INTVAL (XEXP (argblock, 1));
+
+      for (i = 0; i < num_actuals; i++)
+	{
+	  rtx offset = ARGS_SIZE_RTX (args[i].offset);
+	  rtx slot_offset = ARGS_SIZE_RTX (args[i].slot_offset);
+	  rtx addr;
+
+	  /* Skip this parm if it will not be passed on the stack.  */
+	  if (! args[i].pass_on_stack && args[i].reg != 0)
+	    continue;
+
+	  if (GET_CODE (offset) == CONST_INT)
+	    addr = plus_constant (arg_reg, INTVAL (offset));
+	  else
+	    addr = gen_rtx_PLUS (Pmode, arg_reg, offset);
+
+	  addr = plus_constant (addr, arg_offset);
+	  args[i].stack = gen_rtx_MEM (args[i].mode, addr);
+	  set_mem_attributes (args[i].stack,
+			      TREE_TYPE (args[i].tree_value), 1);
+
+	  if (GET_CODE (slot_offset) == CONST_INT)
+	    addr = plus_constant (arg_reg, INTVAL (slot_offset));
+	  else
+	    addr = gen_rtx_PLUS (Pmode, arg_reg, slot_offset);
+
+	  addr = plus_constant (addr, arg_offset);
+	  args[i].stack_slot = gen_rtx_MEM (args[i].mode, addr);
+	  set_mem_attributes (args[i].stack_slot,
+			      TREE_TYPE (args[i].tree_value), 1);
+
+	  /* Function incoming arguments may overlap with sibling call
+	     outgoing arguments and we cannot allow reordering of reads
+	     from function arguments with stores to outgoing arguments
+	     of sibling calls.  */
+	  set_mem_alias_set (args[i].stack, 0);
+	  set_mem_alias_set (args[i].stack_slot, 0);
+	}
+    }
+}

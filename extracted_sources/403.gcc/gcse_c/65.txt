@@ -1,0 +1,58 @@
+static int
+expr_reaches_here_p_work (occr, expr, bb, check_self_loop, visited)
+     struct occr *occr;
+     struct expr *expr;
+     basic_block bb;
+     int check_self_loop;
+     char *visited;
+{
+  edge pred;
+
+  for (pred = bb->pred; pred != NULL; pred = pred->pred_next)
+    {
+      basic_block pred_bb = pred->src;
+
+      if (visited[pred_bb->index])
+	/* This predecessor has already been visited. Nothing to do.  */
+	  ;
+      else if (pred_bb == bb)
+	{
+	  /* BB loops on itself.  */
+	  if (check_self_loop
+	      && TEST_BIT (ae_gen[pred_bb->index], expr->bitmap_index)
+	      && BLOCK_NUM (occr->insn) == pred_bb->index)
+	    return 1;
+
+	  visited[pred_bb->index] = 1;
+	}
+
+      /* Ignore this predecessor if it kills the expression.  */
+      else if (TEST_BIT (ae_kill[pred_bb->index], expr->bitmap_index))
+	visited[pred_bb->index] = 1;
+
+      /* Does this predecessor generate this expression?  */
+      else if (TEST_BIT (ae_gen[pred_bb->index], expr->bitmap_index))
+	{
+	  /* Is this the occurrence we're looking for?
+	     Note that there's only one generating occurrence per block
+	     so we just need to check the block number.  */
+	  if (BLOCK_NUM (occr->insn) == pred_bb->index)
+	    return 1;
+
+	  visited[pred_bb->index] = 1;
+	}
+
+      /* Neither gen nor kill.  */
+      else
+	{
+	  visited[pred_bb->index] = 1;
+	  if (expr_reaches_here_p_work (occr, expr, pred_bb, check_self_loop, 
+	      visited))
+
+	    return 1;
+	}
+    }
+
+  /* All paths have been checked.  */
+  return 0;
+}

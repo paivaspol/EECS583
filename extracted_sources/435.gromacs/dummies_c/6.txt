@@ -1,0 +1,25 @@
+static void constr_dum3FD(rvec xi,rvec xj,rvec xk,rvec x,real a,real b)
+{
+  rvec xij,xjk,temp;
+  real c;
+  
+  rvec_sub(xj,xi,xij);
+  rvec_sub(xk,xj,xjk);
+  /* 6 flops */
+
+  /* temp goes from i to a point on the line jk */  
+  temp[XX] = xij[XX] + a*xjk[XX];
+  temp[YY] = xij[YY] + a*xjk[YY];
+  temp[ZZ] = xij[ZZ] + a*xjk[ZZ];
+  /* 6 flops */
+  
+  c=b*invsqrt(iprod(temp,temp));
+  /* 6 + 10 flops */
+  
+  x[XX] = xi[XX] + c*temp[XX];
+  x[YY] = xi[YY] + c*temp[YY];
+  x[ZZ] = xi[ZZ] + c*temp[ZZ];
+  /* 6 Flops */
+  
+  /* TOTAL: 34 flops */
+}

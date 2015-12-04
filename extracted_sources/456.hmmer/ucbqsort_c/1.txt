@@ -1,0 +1,98 @@
+static
+void                                       /* added Kaivalya 8/18/03 */
+qst(char *base, char* max)                 /* changed Kaivalya/RRH 8/19/03 */
+{
+	register char c, *i, *j, *jj;
+	register int ii;
+	char *mid, *tmp;
+	int lo, hi;
+
+	/*
+	 * At the top here, lo is the number of characters of elements in the
+	 * current partition.  (Which should be max - base).
+	 * Find the median of the first, last, and middle element and make
+	 * that the middle element.  Set j to largest of first and middle.
+	 * If max is larger than that guy, then it's that guy, else compare
+	 * max with loser of first and take larger.  Things are set up to
+	 * prefer the middle, then the first in case of ties.
+	 */
+	lo = max - base;		/* number of elements as chars */
+	do	{
+		mid = i = base + qsz * ((lo / qsz) >> 1);
+		if (lo >= mthresh) {
+			j = ((*qcmp)((jj = base), i) > 0 ? jj : i);
+			if ((*qcmp)(j, (tmp = max - qsz)) > 0) {
+				/* switch to first loser */
+				j = (j == jj ? i : jj);
+				if ((*qcmp)(j, tmp) < 0)
+					j = tmp;
+			}
+			if (j != i) {
+				ii = qsz;
+				do	{
+					c = *i;
+					*i++ = *j;
+					*j++ = c;
+				} while (--ii);
+			}
+		}
+		/*
+		 * Semi-standard quicksort partitioning/swapping
+		 */
+		for (i = base, j = max - qsz; ; ) {
+			while (i < mid && (*qcmp)(i, mid) <= 0)
+				i += qsz;
+			while (j > mid) {
+				if ((*qcmp)(mid, j) <= 0) {
+					j -= qsz;
+					continue;
+				}
+				tmp = i + qsz;	/* value of i after swap */
+				if (i == mid) {
+					/* j <-> mid, new mid is j */
+					mid = jj = j;
+				} else {
+					/* i <-> j */
+					jj = j;
+					j -= qsz;
+				}
+				goto swap;
+			}
+			if (i == mid) {
+				break;
+			} else {
+				/* i <-> mid, new mid is i */
+				jj = mid;
+				tmp = mid = i;	/* value of i after swap */
+				j -= qsz;
+			}
+		swap:
+			ii = qsz;
+			do	{
+				c = *i;
+				*i++ = *jj;
+				*jj++ = c;
+			} while (--ii);
+			i = tmp;
+		}
+		/*
+		 * Look at sizes of the two partitions, do the smaller
+		 * one first by recursion, then do the larger one by
+		 * making sure lo is its size, base and max are update
+		 * correctly, and branching back.  But only repeat
+		 * (recursively or by branching) if the partition is
+		 * of at least size THRESH.
+		 */
+		i = (j = mid) + qsz;
+		if ((lo = j - base) <= (hi = max - i)) {
+			if (lo >= thresh)
+				qst(base, j);
+			base = i;
+			lo = hi;
+		} else {
+			if (hi >= thresh)
+				qst(i, max);
+			max = j;
+		}
+	} while (lo >= thresh);
+}

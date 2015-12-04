@@ -1,0 +1,30 @@
+static int
+try_apply_stack_adjustment (insn, memlist, new_adjust, delta)
+     rtx insn;
+     struct csa_memlist *memlist;
+     HOST_WIDE_INT new_adjust, delta;
+{
+  struct csa_memlist *ml;
+  rtx set;
+
+  set = single_set_for_csa (insn);
+  validate_change (insn, &XEXP (SET_SRC (set), 1), GEN_INT (new_adjust), 1);
+
+  for (ml = memlist; ml ; ml = ml->next)
+    validate_change
+      (ml->insn, ml->mem,
+       replace_equiv_address_nv (*ml->mem,
+				 plus_constant (stack_pointer_rtx,
+						ml->sp_offset - delta)), 1);
+
+  if (apply_change_group ())
+    {
+      /* Succeeded.  Update our knowledge of the memory references.  */
+      for (ml = memlist; ml ; ml = ml->next)
+	ml->sp_offset -= delta;
+
+      return 1;
+    }
+  else
+    return 0;
+}

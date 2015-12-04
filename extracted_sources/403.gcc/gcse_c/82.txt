@@ -1,0 +1,129 @@
+static int
+cprop_insn (bb, insn, alter_jumps)
+     basic_block bb;
+     rtx insn;
+     int alter_jumps;
+{
+  struct reg_use *reg_used;
+  int changed = 0;
+  rtx note;
+
+  if (!INSN_P (insn))
+    return 0;
+
+  reg_use_count = 0;
+  note_uses (&PATTERN (insn), find_used_regs, NULL);
+  
+  note = find_reg_equal_equiv_note (insn);
+
+  /* We may win even when propagating constants into notes.  */
+  if (note)
+    find_used_regs (&XEXP (note, 0), NULL);
+
+  for (reg_used = &reg_use_table[0]; reg_use_count > 0;
+       reg_used++, reg_use_count--)
+    {
+      unsigned int regno = REGNO (reg_used->reg_rtx);
+      rtx pat, src;
+      struct expr *set;
+
+      /* Ignore registers created by GCSE.
+	 We do this because ...  */
+      if (regno >= max_gcse_regno)
+	continue;
+
+      /* If the register has already been set in this block, there's
+	 nothing we can do.  */
+      if (! oprs_not_set_p (reg_used->reg_rtx, insn))
+	continue;
+
+      /* Find an assignment that sets reg_used and is available
+	 at the start of the block.  */
+      set = find_avail_set (regno, insn);
+      if (! set)
+	continue;
+  
+      pat = set->expr;
+      /* ??? We might be able to handle PARALLELs.  Later.  */
+      if (GET_CODE (pat) != SET)
+	abort ();
+
+      src = SET_SRC (pat);
+
+      /* Constant propagation.  */
+      if (CONSTANT_P (src))
+	{
+	  /* Handle normal insns first.  */
+	  if (GET_CODE (insn) == INSN
+	      && try_replace_reg (reg_used->reg_rtx, src, insn))
+	    {
+	      changed = 1;
+	      const_prop_count++;
+	      if (gcse_file != NULL)
+		{
+		  fprintf (gcse_file, "CONST-PROP: Replacing reg %d in ",
+			   regno);
+		  fprintf (gcse_file, "insn %d with constant ",
+			   INSN_UID (insn));
+		  print_rtl (gcse_file, src);
+		  fprintf (gcse_file, "\n");
+		}
+
+	      /* The original insn setting reg_used may or may not now be
+		 deletable.  We leave the deletion to flow.  */
+	    }
+
+	  /* Try to propagate a CONST_INT into a conditional jump.
+	     We're pretty specific about what we will handle in this
+	     code, we can extend this as necessary over time.
+
+	     Right now the insn in question must look like
+	     (set (pc) (if_then_else ...))  */
+	  else if (alter_jumps
+		   && GET_CODE (insn) == JUMP_INSN
+		   && condjump_p (insn)
+		   && ! simplejump_p (insn))
+	    changed |= cprop_jump (bb, insn, reg_used->reg_rtx, src);
+
+#ifdef HAVE_cc0
+	  /* Similar code for machines that use a pair of CC0 setter and
+	     conditional jump insn.  */
+	  else if (alter_jumps
+		   && GET_CODE (PATTERN (insn)) == SET
+		   && SET_DEST (PATTERN (insn)) == cc0_rtx
+		   && GET_CODE (NEXT_INSN (insn)) == JUMP_INSN
+		   && condjump_p (NEXT_INSN (insn))
+		   && ! simplejump_p (NEXT_INSN (insn))
+		   && cprop_cc0_jump (bb, insn, reg_used, src))
+	    {
+	      changed = 1;
+	      break;
+	    }
+#endif
+	}
+      else if (GET_CODE (src) == REG
+	       && REGNO (src) >= FIRST_PSEUDO_REGISTER
+	       && REGNO (src) != regno)
+	{
+	  if (try_replace_reg (reg_used->reg_rtx, src, insn))
+	    {
+	      changed = 1;
+	      copy_prop_count++;
+	      if (gcse_file != NULL)
+		{
+		  fprintf (gcse_file, "COPY-PROP: Replacing reg %d in insn %d",
+			   regno, INSN_UID (insn));
+		  fprintf (gcse_file, " with reg %d\n", REGNO (src));
+		}
+
+	      /* The original insn setting reg_used may or may not now be
+		 deletable.  We leave the deletion to flow.  */
+	      /* FIXME: If it turns out that the insn isn't deletable,
+		 then we may have unnecessarily extended register lifetimes
+		 and made things worse.  */
+	    }
+	}
+    }
+
+  return changed;
+}

@@ -1,0 +1,73 @@
+static int t2r_eq				PARAMS ((const PTR,
+							 const PTR));
+static hashval_t t2r_hash			PARAMS ((const PTR));
+static int t2r_mark_1				PARAMS ((PTR *, PTR));
+static void t2r_mark				PARAMS ((PTR));
+static void add_type_for_runtime		PARAMS ((tree));
+static tree lookup_type_for_runtime		PARAMS ((tree));
+
+static struct eh_region *expand_eh_region_end	PARAMS ((void));
+
+static rtx get_exception_filter			PARAMS ((struct function *));
+
+static void collect_eh_region_array		PARAMS ((void));
+static void resolve_fixup_regions		PARAMS ((void));
+static void remove_fixup_regions		PARAMS ((void));
+static void remove_unreachable_regions		PARAMS ((rtx));
+static void convert_from_eh_region_ranges_1	PARAMS ((rtx *, int *, int));
+
+static struct eh_region *duplicate_eh_region_1	PARAMS ((struct eh_region *,
+						     struct inline_remap *));
+static void duplicate_eh_region_2		PARAMS ((struct eh_region *,
+							 struct eh_region **));
+static int ttypes_filter_eq			PARAMS ((const PTR,
+							 const PTR));
+static hashval_t ttypes_filter_hash		PARAMS ((const PTR));
+static int ehspec_filter_eq			PARAMS ((const PTR,
+							 const PTR));
+static hashval_t ehspec_filter_hash		PARAMS ((const PTR));
+static int add_ttypes_entry			PARAMS ((htab_t, tree));
+static int add_ehspec_entry			PARAMS ((htab_t, htab_t,
+							 tree));
+static void assign_filter_values		PARAMS ((void));
+static void build_post_landing_pads		PARAMS ((void));
+static void connect_post_landing_pads		PARAMS ((void));
+static void dw2_build_landing_pads		PARAMS ((void));
+
+struct sjlj_lp_info;
+static bool sjlj_find_directly_reachable_regions
+     PARAMS ((struct sjlj_lp_info *));
+static void sjlj_assign_call_site_values
+     PARAMS ((rtx, struct sjlj_lp_info *));
+static void sjlj_mark_call_sites
+     PARAMS ((struct sjlj_lp_info *));
+static void sjlj_emit_function_enter		PARAMS ((rtx));
+static void sjlj_emit_function_exit		PARAMS ((void));
+static void sjlj_emit_dispatch_table
+     PARAMS ((rtx, struct sjlj_lp_info *));
+static void sjlj_build_landing_pads		PARAMS ((void));
+
+static hashval_t ehl_hash			PARAMS ((const PTR));
+static int ehl_eq				PARAMS ((const PTR,
+							 const PTR));
+static void ehl_free				PARAMS ((PTR));
+static void add_ehl_entry			PARAMS ((rtx,
+							 struct eh_region *));
+static void remove_exception_handler_label	PARAMS ((rtx));
+static void remove_eh_handler			PARAMS ((struct eh_region *));
+static int for_each_eh_label_1			PARAMS ((PTR *, PTR));
+
+struct reachable_info;
+
+/* The return value of reachable_next_level.  */
+enum reachable_code
+{
+  /* The given exception is not processed by the given region.  */
+  RNL_NOT_CAUGHT,
+  /* The given exception may need processing by the given region.  */
+  RNL_MAYBE_CAUGHT,
+  /* The given exception is completely processed by the given region.  */
+  RNL_CAUGHT,
+  /* The given exception is completely processed by the runtime.  */
+  RNL_BLOCKED
+};

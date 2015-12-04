@@ -1,0 +1,25 @@
+static int  
+read_bin19hmm(HMMFILE *hmmfp, struct plan7_s **ret_hmm)
+{
+  unsigned int     magic;
+  struct plan7_s  *hmm;     /* plan7 HMM */ 
+  struct plan9_s  *p9hmm;   /* old style 1.x HMM */
+  
+  /* Read the magic number; if we don't see it, then we
+   * must be out of data in the file.
+   */
+  if (feof(hmmfp->f)) return 0;
+  if (! fread((char *) &magic, sizeof(unsigned int), 1, hmmfp->f)) return 0;
+
+  p9hmm = read_plan9_binhmm(hmmfp->f, HMMER1_9B, hmmfp->byteswap);
+  if (p9hmm == NULL) { *ret_hmm = NULL; return 1; }
+
+  Plan9toPlan7(p9hmm, &hmm);
+
+  hmm->comlog = Strdup("[converted from an old Plan9 HMM]");
+  Plan7SetCtime(hmm);
+
+  P9FreeHMM(p9hmm);
+ *ret_hmm = hmm;
+  return 1;
+}

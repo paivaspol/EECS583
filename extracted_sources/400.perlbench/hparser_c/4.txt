@@ -1,0 +1,105 @@
+static char*
+parse_comment(PSTATE* p_state, char *beg, char *end, U32 utf8, SV* self)
+{
+    char *s = beg;
+
+    if (p_state->strict_comment) {
+	dTOKENS(4);
+	char *start_com = s;  /* also used to signal inside/outside */
+
+	while (1) {
+	    /* try to locate "--" */
+	FIND_DASH_DASH:
+	    /* printf("find_dash_dash: [%s]\n", s); */
+	    while (s < end && *s != '-' && *s != '>')
+		s++;
+
+	    if (s == end) {
+		FREE_TOKENS;
+		return beg;
+	    }
+
+	    if (*s == '>') {
+		s++;
+		if (start_com)
+		    goto FIND_DASH_DASH;
+
+		/* we are done recognizing all comments, make callbacks */
+		report_event(p_state, E_COMMENT,
+			     beg - 4, s, utf8,
+			     tokens, num_tokens,
+			     self);
+		FREE_TOKENS;
+
+		return s;
+	    }
+
+	    s++;
+	    if (s == end) {
+		FREE_TOKENS;
+		return beg;
+	    }
+
+	    if (*s == '-') {
+		/* two dashes in a row seen */
+		s++;
+		/* do something */
+		if (start_com) {
+		    PUSH_TOKEN(start_com, s-2);
+		    start_com = 0;
+		}
+		else {
+		    start_com = s;
+		}
+	    }
+	}
+    }
+    else if (p_state->no_dash_dash_comment_end) {
+	token_pos_t token;
+        token.beg = beg;
+        /* a lone '>' signals end-of-comment */
+	while (s < end && *s != '>')
+	    s++;
+	token.end = s;
+	if (s < end) {
+	    s++;
+	    report_event(p_state, E_COMMENT, beg-4, s, utf8, &token, 1, self);
+	    return s;
+	}
+	else {
+	    return beg;
+	}
+    }
+    else { /* non-strict comment */
+	token_pos_t token;
+	token.beg = beg;
+	/* try to locate /--\s*>/ which signals end-of-comment */
+    LOCATE_END:
+	while (s < end && *s != '-')
+	    s++;
+	token.end = s;
+	if (s < end) {
+	    s++;
+	    if (*s == '-') {
+		s++;
+		while (isHSPACE(*s))
+		    s++;
+		if (*s == '>') {
+		    s++;
+		    /* yup */
+		    report_event(p_state, E_COMMENT, beg-4, s, utf8, &token, 1, self);
+		    return s;
+		}
+	    }
+	    if (s < end) {
+		s = token.end + 1;
+		goto LOCATE_END;
+	    }
+	}
+    
+	if (s == end)
+	    return beg;
+    }
+
+    return 0;
+}

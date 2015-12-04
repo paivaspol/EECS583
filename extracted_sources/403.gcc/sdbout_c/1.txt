@@ -1,0 +1,30 @@
+static int
+plain_type (type)
+     tree type;
+{
+  int val = plain_type_1 (type, 0);
+
+  /* If we have already saved up some array dimensions, print them now.  */
+  if (sdb_n_dims > 0)
+    {
+      int i;
+      PUT_SDB_START_DIM;
+      for (i = sdb_n_dims - 1; i > 0; i--)
+	PUT_SDB_NEXT_DIM (sdb_dims[i]);
+      PUT_SDB_LAST_DIM (sdb_dims[0]);
+      sdb_n_dims = 0;
+
+      sdb_type_size = int_size_in_bytes (type);
+      /* Don't kill sdb if type is not laid out or has variable size.  */
+      if (sdb_type_size < 0)
+	sdb_type_size = 0;
+    }
+  /* If we have computed the size of an array containing this type,
+     print it now.  */
+  if (sdb_type_size >= 0)
+    {
+      PUT_SDB_SIZE (sdb_type_size);
+      sdb_type_size = -1;
+    }
+  return val;
+}

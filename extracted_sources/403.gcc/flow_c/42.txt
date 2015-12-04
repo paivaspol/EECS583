@@ -1,0 +1,184 @@
+static void
+mark_used_reg (pbi, reg, cond, insn)
+     struct propagate_block_info *pbi;
+     rtx reg;
+     rtx cond ATTRIBUTE_UNUSED;
+     rtx insn;
+{
+  unsigned int regno_first, regno_last, i;
+  int some_was_live, some_was_dead, some_not_set;
+
+  regno_last = regno_first = REGNO (reg);
+  if (regno_first < FIRST_PSEUDO_REGISTER)
+    regno_last += HARD_REGNO_NREGS (regno_first, GET_MODE (reg)) - 1;
+
+  /* Find out if any of this register is live after this instruction.  */
+  some_was_live = some_was_dead = 0;
+  for (i = regno_first; i <= regno_last; ++i)
+    {
+      int needed_regno = REGNO_REG_SET_P (pbi->reg_live, i);
+      some_was_live |= needed_regno;
+      some_was_dead |= ! needed_regno;
+    }
+
+  /* Find out if any of the register was set this insn.  */
+  some_not_set = 0;
+  for (i = regno_first; i <= regno_last; ++i)
+    some_not_set |= ! REGNO_REG_SET_P (pbi->new_set, i);
+
+  if (pbi->flags & (PROP_LOG_LINKS | PROP_AUTOINC))
+    {
+      /* Record where each reg is used, so when the reg is set we know
+	 the next insn that uses it.  */
+      pbi->reg_next_use[regno_first] = insn;
+    }
+
+  if (pbi->flags & PROP_REG_INFO)
+    {
+      if (regno_first < FIRST_PSEUDO_REGISTER)
+	{
+	  /* If this is a register we are going to try to eliminate,
+	     don't mark it live here.  If we are successful in
+	     eliminating it, it need not be live unless it is used for
+	     pseudos, in which case it will have been set live when it
+	     was allocated to the pseudos.  If the register will not
+	     be eliminated, reload will set it live at that point.
+
+	     Otherwise, record that this function uses this register.  */
+	  /* ??? The PPC backend tries to "eliminate" on the pic
+	     register to itself.  This should be fixed.  In the mean
+	     time, hack around it.  */
+
+	  if (! (TEST_HARD_REG_BIT (elim_reg_set, regno_first)
+	         && (regno_first == FRAME_POINTER_REGNUM
+		     || regno_first == ARG_POINTER_REGNUM)))
+	    for (i = regno_first; i <= regno_last; ++i)
+	      regs_ever_live[i] = 1;
+	}
+      else
+	{
+	  /* Keep track of which basic block each reg appears in.  */
+
+	  int blocknum = pbi->bb->index;
+	  if (REG_BASIC_BLOCK (regno_first) == REG_BLOCK_UNKNOWN)
+	    REG_BASIC_BLOCK (regno_first) = blocknum;
+	  else if (REG_BASIC_BLOCK (regno_first) != blocknum)
+	    REG_BASIC_BLOCK (regno_first) = REG_BLOCK_GLOBAL;
+
+	  /* Count (weighted) number of uses of each reg.  */
+	  REG_FREQ (regno_first) += REG_FREQ_FROM_BB (pbi->bb);
+	  REG_N_REFS (regno_first)++;
+	}
+    }
+
+  /* Record and count the insns in which a reg dies.  If it is used in
+     this insn and was dead below the insn then it dies in this insn.
+     If it was set in this insn, we do not make a REG_DEAD note;
+     likewise if we already made such a note.  */
+  if ((pbi->flags & (PROP_DEATH_NOTES | PROP_REG_INFO))
+      && some_was_dead
+      && some_not_set)
+    {
+      /* Check for the case where the register dying partially
+	 overlaps the register set by this insn.  */
+      if (regno_first != regno_last)
+	for (i = regno_first; i <= regno_last; ++i)
+	  some_was_live |= REGNO_REG_SET_P (pbi->new_set, i);
+
+      /* If none of the words in X is needed, make a REG_DEAD note.
+	 Otherwise, we must make partial REG_DEAD notes.  */
+      if (! some_was_live)
+	{
+	  if ((pbi->flags & PROP_DEATH_NOTES)
+	      && ! find_regno_note (insn, REG_DEAD, regno_first))
+	    REG_NOTES (insn)
+	      = alloc_EXPR_LIST (REG_DEAD, reg, REG_NOTES (insn));
+
+	  if (pbi->flags & PROP_REG_INFO)
+	    REG_N_DEATHS (regno_first)++;
+	}
+      else
+	{
+	  /* Don't make a REG_DEAD note for a part of a register
+	     that is set in the insn.  */
+	  for (i = regno_first; i <= regno_last; ++i)
+	    if (! REGNO_REG_SET_P (pbi->reg_live, i)
+		&& ! dead_or_set_regno_p (insn, i))
+	      REG_NOTES (insn)
+		= alloc_EXPR_LIST (REG_DEAD,
+				   gen_rtx_REG (reg_raw_mode[i], i),
+				   REG_NOTES (insn));
+	}
+    }
+
+  /* Mark the register as being live.  */
+  for (i = regno_first; i <= regno_last; ++i)
+    {
+#ifdef HAVE_conditional_execution
+      int this_was_live = REGNO_REG_SET_P (pbi->reg_live, i);
+#endif
+
+      SET_REGNO_REG_SET (pbi->reg_live, i);
+
+#ifdef HAVE_conditional_execution
+      /* If this is a conditional use, record that fact.  If it is later
+	 conditionally set, we'll know to kill the register.  */
+      if (cond != NULL_RTX)
+	{
+	  splay_tree_node node;
+	  struct reg_cond_life_info *rcli;
+	  rtx ncond;
+
+	  if (this_was_live)
+	    {
+	      node = splay_tree_lookup (pbi->reg_cond_dead, i);
+	      if (node == NULL)
+		{
+		  /* The register was unconditionally live previously.
+		     No need to do anything.  */
+		}
+	      else
+		{
+		  /* The register was conditionally live previously.
+		     Subtract the new life cond from the old death cond.  */
+		  rcli = (struct reg_cond_life_info *) node->value;
+		  ncond = rcli->condition;
+		  ncond = and_reg_cond (ncond, not_reg_cond (cond), 1);
+
+		  /* If the register is now unconditionally live,
+		     remove the entry in the splay_tree.  */
+		  if (ncond == const0_rtx)
+		    splay_tree_remove (pbi->reg_cond_dead, i);
+		  else
+		    {
+		      rcli->condition = ncond;
+		      SET_REGNO_REG_SET (pbi->reg_cond_reg,
+					 REGNO (XEXP (cond, 0)));
+		    }
+		}
+	    }
+	  else
+	    {
+	      /* The register was not previously live at all.  Record
+		 the condition under which it is still dead.  */
+	      rcli = (struct reg_cond_life_info *) xmalloc (sizeof (*rcli));
+	      rcli->condition = not_reg_cond (cond);
+	      rcli->stores = const0_rtx;
+	      rcli->orig_condition = const0_rtx;
+	      splay_tree_insert (pbi->reg_cond_dead, i,
+				 (splay_tree_value) rcli);
+
+	      SET_REGNO_REG_SET (pbi->reg_cond_reg, REGNO (XEXP (cond, 0)));
+	    }
+	}
+      else if (this_was_live)
+	{
+	  /* The register may have been conditionally live previously, but
+	     is now unconditionally live.  Remove it from the conditionally
+	     dead list, so that a conditional set won't cause us to think
+	     it dead.  */
+	  splay_tree_remove (pbi->reg_cond_dead, i);
+	}
+#endif
+    }
+}

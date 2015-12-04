@@ -1,0 +1,27 @@
+void
+c_apply_type_quals_to_decl (type_quals, decl)
+     int type_quals;
+     tree decl;
+{
+  if ((type_quals & TYPE_QUAL_CONST)
+      || (TREE_TYPE (decl) 
+	  && TREE_CODE (TREE_TYPE (decl)) == REFERENCE_TYPE))
+    TREE_READONLY (decl) = 1;
+  if (type_quals & TYPE_QUAL_VOLATILE)
+    {
+      TREE_SIDE_EFFECTS (decl) = 1;
+      TREE_THIS_VOLATILE (decl) = 1;
+    }
+  if (type_quals & TYPE_QUAL_RESTRICT)
+    {
+      if (!TREE_TYPE (decl)
+	  || !POINTER_TYPE_P (TREE_TYPE (decl))
+	  || !C_TYPE_OBJECT_OR_INCOMPLETE_P (TREE_TYPE (TREE_TYPE (decl))))
+	error ("invalid use of `restrict'");
+      else if (flag_strict_aliasing)
+	/* Indicate we need to make a unique alias set for this pointer.
+	   We can't do it here because it might be pointing to an
+	   incomplete type.  */
+	DECL_POINTER_ALIAS_SET (decl) = -2;
+    }
+}

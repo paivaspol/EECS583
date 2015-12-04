@@ -1,0 +1,50 @@
+static void
+add_location_or_const_value_attribute (die, decl)
+     dw_die_ref die;
+     tree decl;
+{
+  rtx rtl;
+
+  if (TREE_CODE (decl) == ERROR_MARK)
+    return;
+  else if (TREE_CODE (decl) != VAR_DECL && TREE_CODE (decl) != PARM_DECL)
+    abort ();
+
+  rtl = rtl_for_decl_location (decl);
+  if (rtl == NULL_RTX)
+    return;
+
+  /* If we don't look past the constant pool, we risk emitting a
+     reference to a constant pool entry that isn't referenced from
+     code, and thus is not emitted.  */
+  rtl = avoid_constant_pool_reference (rtl);
+
+  switch (GET_CODE (rtl))
+    {
+    case ADDRESSOF:
+      /* The address of a variable that was optimized away; don't emit
+	 anything.  */
+      break;
+
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_STRING:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case CONST:
+    case PLUS:
+      /* DECL_RTL could be (plus (reg ...) (const_int ...)) */
+      add_const_value_attribute (die, rtl);
+      break;
+
+    case MEM:
+    case REG:
+    case SUBREG:
+    case CONCAT:
+      add_AT_location_description (die, DW_AT_location, rtl);
+      break;
+
+    default:
+      abort ();
+    }
+}

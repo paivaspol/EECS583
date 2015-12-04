@@ -1,0 +1,17 @@
+static struct elt_loc_list *
+new_elt_loc_list (next, loc)
+     struct elt_loc_list *next;
+     rtx loc;
+{
+  struct elt_loc_list *el = empty_elt_loc_lists;
+
+  if (el)
+    empty_elt_loc_lists = el->next;
+  else
+    el = (struct elt_loc_list *) obstack_alloc (&cselib_obstack,
+						sizeof (struct elt_loc_list));
+  el->next = next;
+  el->loc = loc;
+  el->setting_insn = cselib_current_insn;
+  return el;
+}

@@ -1,0 +1,65 @@
+void
+WriteBinHMM(FILE *fp, struct plan7_s *hmm)
+{
+  int k;
+
+  /* ye olde magic number */
+  fwrite((char *) &(v20magic), sizeof(unsigned int), 1, fp);
+
+  /* header section
+   */
+  fwrite((char *) &(hmm->flags),    sizeof(int),  1,   fp);
+  write_bin_string(fp, hmm->name);
+  if (hmm->flags & PLAN7_ACC)  write_bin_string(fp, hmm->acc);
+  if (hmm->flags & PLAN7_DESC) write_bin_string(fp, hmm->desc);
+  fwrite((char *) &(hmm->M),        sizeof(int),  1,   fp);
+  fwrite((char *) &(Alphabet_type), sizeof(int),  1,   fp);
+  if (hmm->flags & PLAN7_RF)   fwrite((char *) hmm->rf,  sizeof(char), hmm->M+1, fp);
+  if (hmm->flags & PLAN7_CS)   fwrite((char *) hmm->cs,  sizeof(char), hmm->M+1, fp);
+  if (hmm->flags & PLAN7_MAP)  fwrite((char *) hmm->map, sizeof(int), hmm->M+1, fp);
+  write_bin_string(fp, hmm->comlog);
+  fwrite((char *) &(hmm->nseq),     sizeof(int),  1,   fp);
+  write_bin_string(fp, hmm->ctime);
+  fwrite((char *) &(hmm->checksum), sizeof(int),  1,   fp);
+  if (hmm->flags & PLAN7_GA) {
+    fwrite((char *) &(hmm->ga1), sizeof(float), 1, fp);
+    fwrite((char *) &(hmm->ga2), sizeof(float), 1, fp);
+  }
+  if (hmm->flags & PLAN7_TC) {
+    fwrite((char *) &(hmm->tc1), sizeof(float), 1, fp);
+    fwrite((char *) &(hmm->tc2), sizeof(float), 1, fp);
+  }
+  if (hmm->flags & PLAN7_NC) {
+    fwrite((char *) &(hmm->nc1), sizeof(float), 1, fp);
+    fwrite((char *) &(hmm->nc2), sizeof(float), 1, fp);
+  }
+
+  /* Specials */
+  for (k = 0; k < 4; k++)
+    fwrite((char *) hmm->xt[k], sizeof(float), 2, fp);
+
+  /* Null model */
+  fwrite((char *)&(hmm->p1), sizeof(float), 1,             fp);
+  fwrite((char *) hmm->null, sizeof(float), Alphabet_size, fp);
+
+  /* EVD stats */
+  if (hmm->flags & PLAN7_STATS) {
+    fwrite((char *) &(hmm->mu),      sizeof(float),  1,   fp); 
+    fwrite((char *) &(hmm->lambda),  sizeof(float),  1,   fp); 
+  }
+
+  /* entry/exit probabilities
+   */
+  fwrite((char *)&(hmm->tbd1),sizeof(float), 1,        fp);
+  fwrite((char *) hmm->begin, sizeof(float), hmm->M+1, fp);
+  fwrite((char *) hmm->end,   sizeof(float), hmm->M+1, fp);
+
+  /* main model
+   */
+  for (k = 1; k <= hmm->M; k++)
+    fwrite((char *) hmm->mat[k], sizeof(float), Alphabet_size, fp);
+  for (k = 1; k < hmm->M; k++)
+    fwrite((char *) hmm->ins[k], sizeof(float), Alphabet_size, fp);
+  for (k = 1; k < hmm->M; k++)
+    fwrite((char *) hmm->t[k], sizeof(float), 7, fp);
+}

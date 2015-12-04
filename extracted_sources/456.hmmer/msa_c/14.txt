@@ -1,0 +1,17 @@
+void 
+MSAFileWrite(FILE *fp, MSA *msa, int outfmt, int do_oneline)
+{
+  switch (outfmt) {
+  case MSAFILE_A2M:       WriteA2M(fp, msa);     break;
+  case MSAFILE_CLUSTAL:   WriteClustal(fp, msa); break;
+  case MSAFILE_MSF:       WriteMSF(fp, msa);     break;
+  case MSAFILE_PHYLIP:    WritePhylip(fp, msa);  break;
+  case MSAFILE_SELEX:     WriteSELEX(fp, msa);   break;
+  case MSAFILE_STOCKHOLM:
+    if (do_oneline) WriteStockholmOneBlock(fp, msa);
+    else            WriteStockholm(fp, msa);
+    break;
+  default:
+    Die("can't write. no such alignment format %d\n", outfmt);
+  }
+}

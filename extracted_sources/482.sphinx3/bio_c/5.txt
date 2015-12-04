@@ -1,0 +1,30 @@
+static uint32 chksum_accum (void *buf, int32 el_sz, int32 n_el, uint32 sum)
+{
+    int32 i;
+    uint8 *i8;
+    uint16 *i16;
+    uint32 *i32;
+    
+    switch (el_sz) {
+    case 1:
+	i8 = (uint8 *)buf;
+	for (i = 0; i < n_el; i++)
+	    sum = (sum << 5 | sum >> 27) + i8[i];
+	break;
+    case 2:
+	i16 = (uint16 *)buf;
+	for (i = 0; i < n_el; i++)
+	    sum = (sum << 10 | sum >> 22) + i16[i];
+	break;
+    case 4:
+	i32 = (uint32 *)buf;
+	for (i = 0; i < n_el; i++)
+	    sum = (sum << 20 | sum >> 12) + i32[i];
+	break;
+    default:
+	E_FATAL("Unsupported elemsize for checksum: %d\n", el_sz);
+	break;
+    }
+
+    return sum;
+}

@@ -1,0 +1,20 @@
+void
+Clear_Motion_Search_Module ()
+{
+  //--- correct array offset ---
+  mvbits   -= max_mvd;
+  byte_abs -= (img->max_imgpel_value > img->max_imgpel_value_uv) ? (img->max_imgpel_value + 1) : (img->max_imgpel_value_uv + 1);
+
+  //--- delete arrays ---
+  free (spiral_search_x);
+  free (spiral_search_y);
+  free (mvbits);
+  free (refbits);
+  free (byte_abs);
+  free_mem4Dint (motion_cost, 8, 2);
+
+#ifdef _FAST_FULL_ME_
+  if(!input->FMEnable)
+    ClearFastFullIntegerSearch ();
+#endif
+}

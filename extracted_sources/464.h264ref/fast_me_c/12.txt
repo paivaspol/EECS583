@@ -1,0 +1,142 @@
+int                                                   //  ==> minimum motion cost after search
+FastSubPelBlockMotionSearch (pel_t**   orig_pic,      // <--  original pixel values for the AxB block
+                             short     ref,           // <--  reference frame (0... or -1 (backward))
+                             int       list,
+                             int       pic_pix_x,     // <--  absolute x-coordinate of regarded AxB block
+                             int       pic_pix_y,     // <--  absolute y-coordinate of regarded AxB block
+                             int       blocktype,     // <--  block type (1-16x16 ... 7-4x4)
+                             short     pred_mv_x,     // <--  motion vector predictor (x) in sub-pel units
+                             short     pred_mv_y,     // <--  motion vector predictor (y) in sub-pel units
+                             short*    mv_x,          // <--> in: search center (x) / out: motion vector (x) - in pel units
+                             short*    mv_y,          // <--> in: search center (y) / out: motion vector (y) - in pel units
+                             int       search_pos2,   // <--  search positions for    half-pel search  (default: 9)
+                             int       search_pos4,   // <--  search positions for quarter-pel search  (default: 9)
+                             int       min_mcost,     // <--  minimum motion cost (cost for center or huge value)
+                             double    lambda,
+                             int useABT)        // <--  lagrangian parameter for determining motion cost
+{
+  static int Diamond_x[4] = {-1, 0, 1, 0};
+  static int Diamond_y[4] = {0, 1, 0, -1};
+  int   mcost;
+  int   cand_mv_x, cand_mv_y;
+  
+  int   list_offset   = ((img->MbaffFrameFlag)&&(img->mb_data[img->current_mb_nr].mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+  StorablePicture *ref_picture = listX[list+list_offset][ref];
+  
+  int   lambda_factor   = LAMBDA_FACTOR (lambda);
+  int   mv_shift        = 0;
+  int   blocksize_x     = input->blc_size[blocktype][0];
+  int   blocksize_y     = input->blc_size[blocktype][1];
+  int   pic4_pix_x      = (pic_pix_x << 2);
+  int   pic4_pix_y      = (pic_pix_y << 2);
+  int   max_pos_x4      = ((ref_picture->size_x/*img->width*/-blocksize_x+1)<<2);
+  int   max_pos_y4      = ((ref_picture->size_y/*img->height*/-blocksize_y+1)<<2);
+  
+  int   search_range_dynamic,iXMinNow,iYMinNow,i;
+  int   iSADLayer,m,currmv_x = 0,currmv_y = 0,iCurrSearchRange;
+  int   pred_frac_mv_x,pred_frac_mv_y,abort_search;
+  int   mv_cost; 
+  
+  int   pred_frac_up_mv_x, pred_frac_up_mv_y;
+  
+  *mv_x <<= 2;
+  *mv_y <<= 2;
+  if ((pic4_pix_x + *mv_x > 1) && (pic4_pix_x + *mv_x < max_pos_x4 - 2) &&
+    (pic4_pix_y + *mv_y > 1) && (pic4_pix_y + *mv_y < max_pos_y4 - 2)   )
+  {
+    PelY_14 = FastPelY_14;
+  }
+  else
+  {
+    PelY_14 = UMVPelY_14;
+  }
+  
+  search_range_dynamic = 3;
+  pred_frac_mv_x = (pred_mv_x - *mv_x)%4;
+  pred_frac_mv_y = (pred_mv_y - *mv_y)%4; 
+  
+  pred_frac_up_mv_x = (pred_MV_uplayer[0] - *mv_x)%4;
+  pred_frac_up_mv_y = (pred_MV_uplayer[1] - *mv_y)%4;
+  
+  
+  memset(SearchState[0],0,(2*search_range_dynamic+1)*(2*search_range_dynamic+1));
+  
+  if(input->hadamard)
+  {
+    cand_mv_x = *mv_x;    
+    cand_mv_y = *mv_y;    
+    mv_cost = MV_COST (lambda_factor, mv_shift, cand_mv_x, cand_mv_y, pred_mv_x, pred_mv_y);    
+    mcost = AddUpSADQuarter(pic_pix_x,pic_pix_y,blocksize_x,blocksize_y,cand_mv_x,cand_mv_y,ref_picture/*ref_pic*//*Wenfang Fu 2004.3.12*/,orig_pic,mv_cost,min_mcost,useABT);
+    SearchState[search_range_dynamic][search_range_dynamic] = 1;
+    if (mcost < min_mcost)
+    {
+      min_mcost = mcost;
+      currmv_x = cand_mv_x;
+      currmv_y = cand_mv_y; 
+    }
+  }
+  else
+  {
+    SearchState[search_range_dynamic][search_range_dynamic] = 1;
+    currmv_x = *mv_x;
+    currmv_y = *mv_y; 
+  }
+  
+  if(pred_frac_mv_x!=0 || pred_frac_mv_y!=0)
+  {
+    cand_mv_x = *mv_x + pred_frac_mv_x;    
+    cand_mv_y = *mv_y + pred_frac_mv_y;    
+    mv_cost = MV_COST (lambda_factor, mv_shift, cand_mv_x, cand_mv_y, pred_mv_x, pred_mv_y);    
+    mcost = AddUpSADQuarter(pic_pix_x,pic_pix_y,blocksize_x,blocksize_y,cand_mv_x,cand_mv_y,ref_picture/*ref_pic*//*Wenfang Fu 2004.3.12*/,orig_pic,mv_cost,min_mcost,useABT);
+    SearchState[cand_mv_y -*mv_y + search_range_dynamic][cand_mv_x - *mv_x + search_range_dynamic] = 1;
+    if (mcost < min_mcost)
+    {
+      min_mcost = mcost;
+      currmv_x = cand_mv_x;
+      currmv_y = cand_mv_y; 
+    }
+  }
+  
+  
+  iXMinNow = currmv_x;
+  iYMinNow = currmv_y;
+  iCurrSearchRange = 2*search_range_dynamic+1; 
+  for(i=0;i<iCurrSearchRange;i++) 
+  {
+    abort_search=1;
+    iSADLayer = 65536;
+    for (m = 0; m < 4; m++)
+    {
+      cand_mv_x = iXMinNow + Diamond_x[m];    
+      cand_mv_y = iYMinNow + Diamond_y[m]; 
+      
+      if(abs(cand_mv_x - *mv_x) <=search_range_dynamic && abs(cand_mv_y - *mv_y)<= search_range_dynamic)
+      {
+        if(!SearchState[cand_mv_y -*mv_y+ search_range_dynamic][cand_mv_x -*mv_x+ search_range_dynamic])
+        {
+          mv_cost = MV_COST (lambda_factor, mv_shift, cand_mv_x, cand_mv_y, pred_mv_x, pred_mv_y);    
+          mcost = AddUpSADQuarter(pic_pix_x,pic_pix_y,blocksize_x,blocksize_y,cand_mv_x,cand_mv_y,ref_picture/*ref_pic*//*Wenfang Fu 2004.3.12*/,orig_pic,mv_cost,min_mcost,useABT);
+          SearchState[cand_mv_y - *mv_y + search_range_dynamic][cand_mv_x - *mv_x + search_range_dynamic] = 1;
+          if (mcost < min_mcost)
+          {
+            min_mcost = mcost;
+            currmv_x = cand_mv_x;
+            currmv_y = cand_mv_y; 
+            abort_search = 0; 
+            
+          }
+        }
+      }
+    }
+    iXMinNow = currmv_x;
+    iYMinNow = currmv_y;
+    if(abort_search)
+      break;
+  }
+  
+  *mv_x = currmv_x;
+  *mv_y = currmv_y;
+  
+  //===== return minimum motion cost =====
+  return min_mcost;
+}

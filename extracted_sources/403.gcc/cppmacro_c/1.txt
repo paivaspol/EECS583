@@ -1,0 +1,16 @@
+static const cpp_token *
+new_number_token (pfile, number)
+     cpp_reader *pfile;
+     unsigned int number;
+{
+  cpp_token *token = _cpp_temp_token (pfile);
+  /* 21 bytes holds all NUL-terminated unsigned 64-bit numbers.  */
+  unsigned char *buf = _cpp_unaligned_alloc (pfile, 21);
+
+  sprintf ((char *) buf, "%u", number);
+  token->type = CPP_NUMBER;
+  token->val.str.text = buf;
+  token->val.str.len = ustrlen (buf);
+  token->flags = 0;
+  return token;
+}

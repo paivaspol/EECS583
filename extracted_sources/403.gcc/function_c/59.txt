@@ -1,0 +1,111 @@
+void
+locate_and_pad_parm (passed_mode, type, in_regs, fndecl,
+		     initial_offset_ptr, offset_ptr, arg_size_ptr,
+		     alignment_pad)
+     enum machine_mode passed_mode;
+     tree type;
+     int in_regs ATTRIBUTE_UNUSED;
+     tree fndecl ATTRIBUTE_UNUSED;
+     struct args_size *initial_offset_ptr;
+     struct args_size *offset_ptr;
+     struct args_size *arg_size_ptr;
+     struct args_size *alignment_pad;
+
+{
+  tree sizetree
+    = type ? size_in_bytes (type) : size_int (GET_MODE_SIZE (passed_mode));
+  enum direction where_pad = FUNCTION_ARG_PADDING (passed_mode, type);
+  int boundary = FUNCTION_ARG_BOUNDARY (passed_mode, type);
+
+#ifdef REG_PARM_STACK_SPACE
+  /* If we have found a stack parm before we reach the end of the
+     area reserved for registers, skip that area.  */
+  if (! in_regs)
+    {
+      int reg_parm_stack_space = 0;
+
+#ifdef MAYBE_REG_PARM_STACK_SPACE
+      reg_parm_stack_space = MAYBE_REG_PARM_STACK_SPACE;
+#else
+      reg_parm_stack_space = REG_PARM_STACK_SPACE (fndecl);
+#endif
+      if (reg_parm_stack_space > 0)
+	{
+	  if (initial_offset_ptr->var)
+	    {
+	      initial_offset_ptr->var
+		= size_binop (MAX_EXPR, ARGS_SIZE_TREE (*initial_offset_ptr),
+			      ssize_int (reg_parm_stack_space));
+	      initial_offset_ptr->constant = 0;
+	    }
+	  else if (initial_offset_ptr->constant < reg_parm_stack_space)
+	    initial_offset_ptr->constant = reg_parm_stack_space;
+	}
+    }
+#endif /* REG_PARM_STACK_SPACE */
+
+  arg_size_ptr->var = 0;
+  arg_size_ptr->constant = 0;
+  alignment_pad->var = 0;
+  alignment_pad->constant = 0;
+
+#ifdef ARGS_GROW_DOWNWARD
+  if (initial_offset_ptr->var)
+    {
+      offset_ptr->constant = 0;
+      offset_ptr->var = size_binop (MINUS_EXPR, ssize_int (0),
+				    initial_offset_ptr->var);
+    }
+  else
+    {
+      offset_ptr->constant = -initial_offset_ptr->constant;
+      offset_ptr->var = 0;
+    }
+  if (where_pad != none
+      && (!host_integerp (sizetree, 1)
+	  || (tree_low_cst (sizetree, 1) * BITS_PER_UNIT) % PARM_BOUNDARY))
+    sizetree = round_up (sizetree, PARM_BOUNDARY / BITS_PER_UNIT);
+  SUB_PARM_SIZE (*offset_ptr, sizetree);
+  if (where_pad != downward)
+    pad_to_arg_alignment (offset_ptr, boundary, alignment_pad);
+  if (initial_offset_ptr->var)
+    arg_size_ptr->var = size_binop (MINUS_EXPR,
+				    size_binop (MINUS_EXPR,
+						ssize_int (0),
+						initial_offset_ptr->var),
+				    offset_ptr->var);
+
+  else
+    arg_size_ptr->constant = (-initial_offset_ptr->constant
+			      - offset_ptr->constant);
+
+#else /* !ARGS_GROW_DOWNWARD */
+  if (!in_regs
+#ifdef REG_PARM_STACK_SPACE
+      || REG_PARM_STACK_SPACE (fndecl) > 0
+#endif
+      )
+    pad_to_arg_alignment (initial_offset_ptr, boundary, alignment_pad);
+  *offset_ptr = *initial_offset_ptr;
+
+#ifdef PUSH_ROUNDING
+  if (passed_mode != BLKmode)
+    sizetree = size_int (PUSH_ROUNDING (TREE_INT_CST_LOW (sizetree)));
+#endif
+
+  /* Pad_below needs the pre-rounded size to know how much to pad below
+     so this must be done before rounding up.  */
+  if (where_pad == downward
+    /* However, BLKmode args passed in regs have their padding done elsewhere.
+       The stack slot must be able to hold the entire register.  */
+      && !(in_regs && passed_mode == BLKmode))
+    pad_below (offset_ptr, passed_mode, sizetree);
+
+  if (where_pad != none
+      && (!host_integerp (sizetree, 1)
+	  || (tree_low_cst (sizetree, 1) * BITS_PER_UNIT) % PARM_BOUNDARY))
+    sizetree = round_up (sizetree, PARM_BOUNDARY / BITS_PER_UNIT);
+
+  ADD_PARM_SIZE (*arg_size_ptr, sizetree);
+#endif /* ARGS_GROW_DOWNWARD */
+}

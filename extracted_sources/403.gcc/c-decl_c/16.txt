@@ -1,0 +1,53 @@
+void
+pop_label_level ()
+{
+  struct binding_level *level = label_level_chain;
+  tree link, prev;
+
+  /* Clear out the definitions of the declared labels in this level.
+     Leave in the list any ordinary, non-declared labels.  */
+  for (link = named_labels, prev = 0; link;)
+    {
+      if (C_DECLARED_LABEL_FLAG (TREE_VALUE (link)))
+	{
+	  if (DECL_SOURCE_LINE (TREE_VALUE (link)) == 0)
+	    {
+	      error_with_decl (TREE_VALUE (link),
+			       "label `%s' used but not defined");
+	      /* Avoid crashing later.  */
+	      define_label (input_filename, lineno,
+			    DECL_NAME (TREE_VALUE (link)));
+	    }
+	  else if (warn_unused_label && !TREE_USED (TREE_VALUE (link)))
+	    warning_with_decl (TREE_VALUE (link),
+			       "label `%s' defined but not used");
+	  IDENTIFIER_LABEL_VALUE (DECL_NAME (TREE_VALUE (link))) = 0;
+
+	  /* Delete this element from the list.  */
+	  link = TREE_CHAIN (link);
+	  if (prev)
+	    TREE_CHAIN (prev) = link;
+	  else
+	    named_labels = link;
+	}
+      else
+	{
+	  prev = link;
+	  link = TREE_CHAIN (link);
+	}
+    }
+
+  /* Bring back all the labels that were shadowed.  */
+  for (link = shadowed_labels; link; link = TREE_CHAIN (link))
+    if (DECL_NAME (TREE_VALUE (link)) != 0)
+      IDENTIFIER_LABEL_VALUE (DECL_NAME (TREE_VALUE (link)))
+	= TREE_VALUE (link);
+
+  named_labels = chainon (named_labels, level->names);
+  shadowed_labels = level->shadowed;
+
+  /* Pop the current level, and free the structure for reuse.  */
+  label_level_chain = label_level_chain->level_chain;
+  level->level_chain = free_binding_level;
+  free_binding_level = level;
+}

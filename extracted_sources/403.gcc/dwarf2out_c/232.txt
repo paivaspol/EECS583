@@ -1,0 +1,91 @@
+static void
+gen_block_die (stmt, context_die, depth)
+     tree stmt;
+     dw_die_ref context_die;
+     int depth;
+{
+  int must_output_die = 0;
+  tree origin;
+  tree decl;
+  enum tree_code origin_code;
+
+  /* Ignore blocks never really used to make RTL.  */
+  if (stmt == NULL_TREE || !TREE_USED (stmt)
+      || (!TREE_ASM_WRITTEN (stmt) && !BLOCK_ABSTRACT (stmt)))
+    return;
+
+  /* If the block is one fragment of a non-contiguous block, do not
+     process the variables, since they will have been done by the
+     origin block.  Do process subblocks.  */
+  if (BLOCK_FRAGMENT_ORIGIN (stmt))
+    {
+      tree sub;
+
+      for (sub = BLOCK_SUBBLOCKS (stmt); sub; sub = BLOCK_CHAIN (sub))
+	gen_block_die (sub, context_die, depth + 1);
+
+      return;
+    }
+
+  /* Determine the "ultimate origin" of this block.  This block may be an
+     inlined instance of an inlined instance of inline function, so we have
+     to trace all of the way back through the origin chain to find out what
+     sort of node actually served as the original seed for the creation of
+     the current block.  */
+  origin = block_ultimate_origin (stmt);
+  origin_code = (origin != NULL) ? TREE_CODE (origin) : ERROR_MARK;
+
+  /* Determine if we need to output any Dwarf DIEs at all to represent this
+     block.  */
+  if (origin_code == FUNCTION_DECL)
+    /* The outer scopes for inlinings *must* always be represented.  We
+       generate DW_TAG_inlined_subroutine DIEs for them.  (See below.) */
+    must_output_die = 1;
+  else
+    {
+      /* In the case where the current block represents an inlining of the
+         "body block" of an inline function, we must *NOT* output any DIE for
+         this block because we have already output a DIE to represent the whole
+         inlined function scope and the "body block" of any function doesn't
+         really represent a different scope according to ANSI C rules.  So we
+         check here to make sure that this block does not represent a "body
+         block inlining" before trying to set the MUST_OUTPUT_DIE flag.  */
+      if (! is_body_block (origin ? origin : stmt))
+	{
+	  /* Determine if this block directly contains any "significant"
+	     local declarations which we will need to output DIEs for.  */
+	  if (debug_info_level > DINFO_LEVEL_TERSE)
+	    /* We are not in terse mode so *any* local declaration counts
+	       as being a "significant" one.  */
+	    must_output_die = (BLOCK_VARS (stmt) != NULL);
+	  else
+	    /* We are in terse mode, so only local (nested) function
+	       definitions count as "significant" local declarations.  */
+	    for (decl = BLOCK_VARS (stmt);
+		 decl != NULL; decl = TREE_CHAIN (decl))
+	      if (TREE_CODE (decl) == FUNCTION_DECL
+		  && DECL_INITIAL (decl))
+		{
+		  must_output_die = 1;
+		  break;
+		}
+	}
+    }
+
+  /* It would be a waste of space to generate a Dwarf DW_TAG_lexical_block
+     DIE for any block which contains no significant local declarations at
+     all.  Rather, in such cases we just call `decls_for_scope' so that any
+     needed Dwarf info for any sub-blocks will get properly generated. Note
+     that in terse mode, our definition of what constitutes a "significant"
+     local declaration gets restricted to include only inlined function
+     instances and local (nested) function definitions.  */
+  if (must_output_die)
+    {
+      if (origin_code == FUNCTION_DECL)
+	gen_inlined_subroutine_die (stmt, context_die, depth);
+      else
+	gen_lexical_block_die (stmt, context_die, depth);
+    }
+  else
+    decls_for_scope (stmt, context_die, depth);
+}

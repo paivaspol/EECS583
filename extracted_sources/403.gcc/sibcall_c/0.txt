@@ -1,0 +1,78 @@
+static int
+identify_call_return_value (cp, p_hard_return, p_soft_return)
+     rtx cp;
+     rtx *p_hard_return, *p_soft_return;
+{
+  rtx insn, set, hard, soft;
+
+  insn = XEXP (cp, 0);
+  /* Search backward through the "normal" call sequence to the CALL insn.  */
+  while (NEXT_INSN (insn))
+    insn = NEXT_INSN (insn);
+  while (GET_CODE (insn) != CALL_INSN)
+    insn = PREV_INSN (insn);
+
+  /* Assume the pattern is (set (dest) (call ...)), or that the first
+     member of a parallel is.  This is the hard return register used
+     by the function.  */
+  if (GET_CODE (PATTERN (insn)) == SET
+      && GET_CODE (SET_SRC (PATTERN (insn))) == CALL)
+    hard = SET_DEST (PATTERN (insn));
+  else if (GET_CODE (PATTERN (insn)) == PARALLEL
+	   && GET_CODE (XVECEXP (PATTERN (insn), 0, 0)) == SET
+	   && GET_CODE (SET_SRC (XVECEXP (PATTERN (insn), 0, 0))) == CALL)
+    hard = SET_DEST (XVECEXP (PATTERN (insn), 0, 0));
+  else
+    return 0;
+
+  /* If we didn't get a single hard register (e.g. a parallel), give up.  */
+  if (GET_CODE (hard) != REG)
+    return 0;
+    
+  /* Stack adjustment done after call may appear here.  */
+  insn = skip_stack_adjustment (insn);
+  if (! insn)
+    return 0;
+
+  /* Restore of GP register may appear here.  */
+  insn = skip_pic_restore (insn);
+  if (! insn)
+    return 0;
+
+  /* If there's nothing after, there's no soft return value.  */
+  insn = NEXT_INSN (insn);
+  if (! insn)
+    return 0;
+  
+  /* We're looking for a source of the hard return register.  */
+  set = single_set (insn);
+  if (! set || SET_SRC (set) != hard)
+    return 0;
+
+  soft = SET_DEST (set);
+  insn = NEXT_INSN (insn);
+
+  /* Allow this first destination to be copied to a second register,
+     as might happen if the first register wasn't the particular pseudo
+     we'd been expecting.  */
+  if (insn
+      && (set = single_set (insn)) != NULL_RTX
+      && SET_SRC (set) == soft)
+    {
+      soft = SET_DEST (set);
+      insn = NEXT_INSN (insn);
+    }
+
+  /* Don't fool with anything but pseudo registers.  */
+  if (GET_CODE (soft) != REG || REGNO (soft) < FIRST_PSEUDO_REGISTER)
+    return 0;
+
+  /* This value must not be modified before the end of the sequence.  */
+  if (reg_set_between_p (soft, insn, NULL_RTX))
+    return 0;
+
+  *p_hard_return = hard;
+  *p_soft_return = soft;
+
+  return 1;
+}

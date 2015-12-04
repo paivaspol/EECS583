@@ -1,0 +1,24 @@
+static int
+is_comdat_die (c)
+     dw_die_ref c;
+{
+  /* I think we want to leave base types and __vtbl_ptr_type in the main CU, as
+     we do for stabs.  The advantage is a greater likelihood of sharing between
+     objects that don't include headers in the same order (and therefore would
+     put the base types in a different comdat).  jason 8/28/00 */
+
+  if (c->die_tag == DW_TAG_base_type)
+    return 0;
+
+  if (c->die_tag == DW_TAG_pointer_type
+      || c->die_tag == DW_TAG_reference_type
+      || c->die_tag == DW_TAG_const_type
+      || c->die_tag == DW_TAG_volatile_type)
+    {
+      dw_die_ref t = get_AT_ref (c, DW_AT_type);
+
+      return t ? is_comdat_die (t) : 0;
+    }
+
+  return is_type_die (c);
+}

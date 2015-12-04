@@ -1,0 +1,110 @@
+static SV *retrieve_code(pTHX_ stcxt_t *cxt, char *cname)
+{
+#if PERL_VERSION < 6
+    CROAK(("retrieve_code does not work with perl 5.005 or less\n"));
+#else
+	dSP;
+	int type, count, tagnum;
+	SV *cv;
+	SV *sv, *text, *sub;
+
+	TRACEME(("retrieve_code (#%d)", cxt->tagnum));
+
+	/*
+	 *  Insert dummy SV in the aseen array so that we don't screw
+	 *  up the tag numbers.  We would just make the internal
+	 *  scalar an untagged item in the stream, but
+	 *  retrieve_scalar() calls SEEN().  So we just increase the
+	 *  tag number.
+	 */
+	tagnum = cxt->tagnum;
+	sv = newSViv(0);
+	SEEN(sv, cname, 0);
+
+	/*
+	 * Retrieve the source of the code reference
+	 * as a small or large scalar
+	 */
+
+	GETMARK(type);
+	switch (type) {
+	case SX_SCALAR:
+		text = retrieve_scalar(aTHX_ cxt, cname);
+		break;
+	case SX_LSCALAR:
+		text = retrieve_lscalar(aTHX_ cxt, cname);
+		break;
+	default:
+		CROAK(("Unexpected type %d in retrieve_code\n", type));
+	}
+
+	/*
+	 * prepend "sub " to the source
+	 */
+
+	sub = newSVpvn("sub ", 4);
+	sv_catpv(sub, SvPV_nolen(text)); /* XXX no sv_catsv! */
+	SvREFCNT_dec(text);
+
+	/*
+	 * evaluate the source to a code reference and use the CV value
+	 */
+
+	if (cxt->eval == NULL) {
+		cxt->eval = get_sv("Storable::Eval", TRUE);
+		SvREFCNT_inc(cxt->eval);
+	}
+	if (!SvTRUE(cxt->eval)) {
+		if (
+			cxt->forgive_me == 0 ||
+			(cxt->forgive_me < 0 && !(cxt->forgive_me =
+				SvTRUE(get_sv("Storable::forgive_me", TRUE)) ? 1 : 0))
+		) {
+			CROAK(("Can't eval, please set $Storable::Eval to a true value"));
+		} else {
+			sv = newSVsv(sub);
+			/* fix up the dummy entry... */
+			av_store(cxt->aseen, tagnum, SvREFCNT_inc(sv));
+			return sv;
+		}
+	}
+
+	ENTER;
+	SAVETMPS;
+
+	if (SvROK(cxt->eval) && SvTYPE(SvRV(cxt->eval)) == SVt_PVCV) {
+		SV* errsv = get_sv("@", TRUE);
+		sv_setpv(errsv, "");					/* clear $@ */
+		PUSHMARK(sp);
+		XPUSHs(sv_2mortal(newSVsv(sub)));
+		PUTBACK;
+		count = call_sv(cxt->eval, G_SCALAR);
+		SPAGAIN;
+		if (count != 1)
+			CROAK(("Unexpected return value from $Storable::Eval callback\n"));
+		cv = POPs;
+		if (SvTRUE(errsv)) {
+			CROAK(("code %s caused an error: %s",
+				SvPV_nolen(sub), SvPV_nolen(errsv)));
+		}
+		PUTBACK;
+	} else {
+		cv = eval_pv(SvPV_nolen(sub), TRUE);
+	}
+	if (cv && SvROK(cv) && SvTYPE(SvRV(cv)) == SVt_PVCV) {
+	    sv = SvRV(cv);
+	} else {
+	    CROAK(("code %s did not evaluate to a subroutine reference\n", SvPV_nolen(sub)));
+	}
+
+	SvREFCNT_inc(sv); /* XXX seems to be necessary */
+	SvREFCNT_dec(sub);
+
+	FREETMPS;
+	LEAVE;
+	/* fix up the dummy entry... */
+	av_store(cxt->aseen, tagnum, SvREFCNT_inc(sv));
+
+	return sv;
+#endif
+}

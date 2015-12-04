@@ -1,0 +1,77 @@
+void write_out_picture(StorablePicture *p, int p_out)
+{
+  int SubWidthC  [4]= { 1, 2, 2, 1};
+  int SubHeightC [4]= { 1, 2, 1, 1};
+
+  int crop_left, crop_right, crop_top, crop_bottom;
+  int symbol_size_in_bytes = img->pic_unit_size_on_disk/8;
+  Boolean rgb_output = (input->rgb_input_flag && input->yuv_format==3);
+  unsigned char *buf;
+
+  if (p->non_existing)
+    return;
+
+  if (p->frame_cropping_flag)
+  {
+    crop_left   = SubWidthC[p->chroma_format_idc] * p->frame_cropping_rect_left_offset;
+    crop_right  = SubWidthC[p->chroma_format_idc] * p->frame_cropping_rect_right_offset;
+    crop_top    = SubHeightC[p->chroma_format_idc]*( 2 - p->frame_mbs_only_flag ) *  p->frame_cropping_rect_top_offset;
+    crop_bottom = SubHeightC[p->chroma_format_idc]*( 2 - p->frame_mbs_only_flag ) *   p->frame_cropping_rect_bottom_offset;
+  }
+  else
+  {
+    crop_left = crop_right = crop_top = crop_bottom = 0;
+  }
+
+  //printf ("write frame size: %dx%d\n", p->size_x-crop_left-crop_right,p->size_y-crop_top-crop_bottom );
+  
+  // KS: this buffer should actually be allocated only once, but this is still much faster than the previous version
+  if (NULL == (buf = malloc (p->size_x*p->size_y*symbol_size_in_bytes))) no_mem_exit("write_out_picture: buf");
+
+  if(rgb_output)
+  {
+    crop_left   = p->frame_cropping_rect_left_offset;
+    crop_right  = p->frame_cropping_rect_right_offset;
+    crop_top    = ( 2 - p->frame_mbs_only_flag ) *  p->frame_cropping_rect_top_offset;
+    crop_bottom = ( 2 - p->frame_mbs_only_flag ) *   p->frame_cropping_rect_bottom_offset;
+
+    img2buf (p->imgUV[1], buf, p->size_x_cr, p->size_y_cr, symbol_size_in_bytes, crop_left, crop_right, crop_top, crop_bottom);
+    write(p_out, buf, (p->size_y_cr-crop_bottom-crop_top)*(p->size_x_cr-crop_right-crop_left)*symbol_size_in_bytes);
+
+    if (active_sps->frame_cropping_flag)
+    {
+      crop_left   = SubWidthC[p->chroma_format_idc] * p->frame_cropping_rect_left_offset;
+      crop_right  = SubWidthC[p->chroma_format_idc] * p->frame_cropping_rect_right_offset;
+      crop_top    = SubHeightC[p->chroma_format_idc]*( 2 - p->frame_mbs_only_flag ) *  p->frame_cropping_rect_top_offset;
+      crop_bottom = SubHeightC[p->chroma_format_idc]*( 2 - p->frame_mbs_only_flag ) *   p->frame_cropping_rect_bottom_offset;
+    }
+    else
+    {
+      crop_left = crop_right = crop_top = crop_bottom = 0;
+    }
+  }
+  
+  img2buf (p->imgY, buf, p->size_x, p->size_y, symbol_size_in_bytes, crop_left, crop_right, crop_top, crop_bottom);
+  write(p_out, buf, (p->size_y-crop_bottom-crop_top)*(p->size_x-crop_right-crop_left)*symbol_size_in_bytes);
+
+  if (p->chroma_format_idc!=YUV400)
+  {
+    crop_left   = p->frame_cropping_rect_left_offset;
+    crop_right  = p->frame_cropping_rect_right_offset;
+    crop_top    = ( 2 - p->frame_mbs_only_flag ) *  p->frame_cropping_rect_top_offset;
+    crop_bottom = ( 2 - p->frame_mbs_only_flag ) *   p->frame_cropping_rect_bottom_offset;
+    
+    img2buf (p->imgUV[0], buf, p->size_x_cr, p->size_y_cr, symbol_size_in_bytes, crop_left, crop_right, crop_top, crop_bottom);
+    write(p_out, buf, (p->size_y_cr-crop_bottom-crop_top)*(p->size_x_cr-crop_right-crop_left)*symbol_size_in_bytes);
+    
+    if (!rgb_output)
+    {
+      img2buf (p->imgUV[1], buf, p->size_x_cr, p->size_y_cr, symbol_size_in_bytes, crop_left, crop_right, crop_top, crop_bottom);
+      write(p_out, buf, (p->size_y_cr-crop_bottom-crop_top)*(p->size_x_cr-crop_right-crop_left)*symbol_size_in_bytes);
+    }
+  }
+
+  free(buf);
+    
+//  fsync(p_out);
+}

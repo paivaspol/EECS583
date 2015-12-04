@@ -1,0 +1,32 @@
+void
+PositionBasedWeights(char **aseq, int nseq, int alen, float *wgt)
+{
+  int  rescount[26];		/* count of A-Z residues in a column   */
+  int  nres;			/* number of different residues in col */
+  int  idx, pos;                /* indices into aseq                   */
+  int  x;
+  float norm;
+
+  FSet(wgt, nseq, 0.0);
+  for (pos = 0; pos < alen; pos++)
+    {
+      for (x = 0; x < 26; x++) rescount[x] = 0;
+      for (idx = 0; idx < nseq; idx++)
+	if (isalpha((int) aseq[idx][pos]))
+	  rescount[toupper((int) aseq[idx][pos]) - 'A'] ++;
+
+      nres = 0;
+      for (x = 0; x < 26; x++) 
+	if (rescount[x] > 0) nres++;
+
+      for (idx = 0; idx < nseq; idx++)
+	if (isalpha((int) aseq[idx][pos]))
+	  wgt[idx] += 1. / (float) (nres * rescount[toupper((int) aseq[idx][pos]) - 'A']);
+    }
+
+  for (idx = 0; idx < nseq; idx++)
+    wgt[idx] /= (float) DealignedLength(aseq[idx]);
+  norm = (float) nseq / FSum(wgt, nseq);
+  FScale(wgt, nseq, norm);
+  return;
+}

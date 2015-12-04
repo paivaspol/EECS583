@@ -1,0 +1,17 @@
+int
+Perl_sv_isa(pTHX_ SV *sv, const char *name)
+{
+    if (!sv)
+	return 0;
+    if (SvGMAGICAL(sv))
+	mg_get(sv);
+    if (!SvROK(sv))
+	return 0;
+    sv = (SV*)SvRV(sv);
+    if (!SvOBJECT(sv))
+	return 0;
+    if (!HvNAME(SvSTASH(sv)))
+	return 0;
+
+    return strEQ(HvNAME(SvSTASH(sv)), name);
+}

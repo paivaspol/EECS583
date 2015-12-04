@@ -1,0 +1,90 @@
+static void init_store_context(
+        pTHX_
+	stcxt_t *cxt,
+	PerlIO *f,
+	int optype,
+	int network_order)
+{
+	TRACEME(("init_store_context"));
+
+	cxt->netorder = network_order;
+	cxt->forgive_me = -1;			/* Fetched from perl if needed */
+	cxt->deparse = -1;				/* Idem */
+	cxt->eval = NULL;				/* Idem */
+	cxt->canonical = -1;			/* Idem */
+	cxt->tagnum = -1;				/* Reset tag numbers */
+	cxt->classnum = -1;				/* Reset class numbers */
+	cxt->fio = f;					/* Where I/O are performed */
+	cxt->optype = optype;			/* A store, or a deep clone */
+	cxt->entry = 1;					/* No recursion yet */
+
+	/*
+	 * The `hseen' table is used to keep track of each SV stored and their
+	 * associated tag numbers is special. It is "abused" because the
+	 * values stored are not real SV, just integers cast to (SV *),
+	 * which explains the freeing below.
+	 *
+	 * It is also one possible bottlneck to achieve good storing speed,
+	 * so the "shared keys" optimization is turned off (unlikely to be
+	 * of any use here), and the hash table is "pre-extended". Together,
+	 * those optimizations increase the throughput by 12%.
+	 */
+
+	cxt->hseen = newHV();			/* Table where seen objects are stored */
+	HvSHAREKEYS_off(cxt->hseen);
+
+	/*
+	 * The following does not work well with perl5.004_04, and causes
+	 * a core dump later on, in a completely unrelated spot, which
+	 * makes me think there is a memory corruption going on.
+	 *
+	 * Calling hv_ksplit(hseen, HBUCKETS) instead of manually hacking
+	 * it below does not make any difference. It seems to work fine
+	 * with perl5.004_68 but given the probable nature of the bug,
+	 * that does not prove anything.
+	 *
+	 * It's a shame because increasing the amount of buckets raises
+	 * store() throughput by 5%, but until I figure this out, I can't
+	 * allow for this to go into production.
+	 *
+	 * It is reported fixed in 5.005, hence the #if.
+	 */
+#if PERL_VERSION >= 5
+#define HBUCKETS	4096				/* Buckets for %hseen */
+	HvMAX(cxt->hseen) = HBUCKETS - 1;	/* keys %hseen = $HBUCKETS; */
+#endif
+
+	/*
+	 * The `hclass' hash uses the same settings as `hseen' above, but it is
+	 * used to assign sequential tags (numbers) to class names for blessed
+	 * objects.
+	 *
+	 * We turn the shared key optimization on.
+	 */
+
+	cxt->hclass = newHV();			/* Where seen classnames are stored */
+
+#if PERL_VERSION >= 5
+	HvMAX(cxt->hclass) = HBUCKETS - 1;	/* keys %hclass = $HBUCKETS; */
+#endif
+
+	/*
+	 * The `hook' hash table is used to keep track of the references on
+	 * the STORABLE_freeze hook routines, when found in some class name.
+	 *
+	 * It is assumed that the inheritance tree will not be changed during
+	 * storing, and that no new method will be dynamically created by the
+	 * hooks.
+	 */
+
+	cxt->hook = newHV();			/* Table where hooks are cached */
+
+	/*
+	 * The `hook_seen' array keeps track of all the SVs returned by
+	 * STORABLE_freeze hooks for us to serialize, so that they are not
+	 * reclaimed until the end of the serialization process.  Each SV is
+	 * only stored once, the first time it is seen.
+	 */
+
+	cxt->hook_seen = newAV();		/* Lists SVs returned by STORABLE_freeze */
+}

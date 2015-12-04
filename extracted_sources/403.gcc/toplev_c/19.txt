@@ -1,0 +1,14 @@
+static void
+set_float_handler (handler)
+     jmp_buf handler;
+{
+  float_handled = (handler != 0);
+  if (handler)
+    memcpy (float_handler, handler, sizeof (float_handler));
+
+  if (float_handled && ! float_handler_set)
+    {
+      signal (SIGFPE, float_signal);
+      float_handler_set = 1;
+    }
+}

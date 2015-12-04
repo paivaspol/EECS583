@@ -1,0 +1,40 @@
+static void
+record_promoted_value (insn, subreg)
+     rtx insn;
+     rtx subreg;
+{
+  rtx links, set;
+  unsigned int regno = REGNO (SUBREG_REG (subreg));
+  enum machine_mode mode = GET_MODE (subreg);
+
+  if (GET_MODE_BITSIZE (mode) > HOST_BITS_PER_WIDE_INT)
+    return;
+
+  for (links = LOG_LINKS (insn); links;)
+    {
+      insn = XEXP (links, 0);
+      set = single_set (insn);
+
+      if (! set || GET_CODE (SET_DEST (set)) != REG
+	  || REGNO (SET_DEST (set)) != regno
+	  || GET_MODE (SET_DEST (set)) != GET_MODE (SUBREG_REG (subreg)))
+	{
+	  links = XEXP (links, 1);
+	  continue;
+	}
+
+      if (reg_last_set[regno] == insn)
+	{
+	  if (SUBREG_PROMOTED_UNSIGNED_P (subreg))
+	    reg_last_set_nonzero_bits[regno] &= GET_MODE_MASK (mode);
+	}
+
+      if (GET_CODE (SET_SRC (set)) == REG)
+	{
+	  regno = REGNO (SET_SRC (set));
+	  links = LOG_LINKS (insn);
+	}
+      else
+	break;
+    }
+}

@@ -1,0 +1,51 @@
+static void
+fixup_var_refs (var, promoted_mode, unsignedp, may_share, ht)
+     rtx var;
+     enum machine_mode promoted_mode;
+     int unsignedp;
+     struct hash_table *ht;
+     rtx may_share;
+{
+  tree pending;
+  rtx first_insn = get_insns ();
+  struct sequence_stack *stack = seq_stack;
+  tree rtl_exps = rtl_expr_chain;
+
+  /* If there's a hash table, it must record all uses of VAR.  */
+  if (ht)
+    {
+      if (stack != 0)
+	abort ();
+      fixup_var_refs_insns_with_hash (ht, var, promoted_mode, unsignedp,
+				      may_share);
+      return;
+    }
+
+  fixup_var_refs_insns (first_insn, var, promoted_mode, unsignedp,
+			stack == 0, may_share);
+
+  /* Scan all pending sequences too.  */
+  for (; stack; stack = stack->next)
+    {
+      push_to_full_sequence (stack->first, stack->last);
+      fixup_var_refs_insns (stack->first, var, promoted_mode, unsignedp,
+			    stack->next != 0, may_share);
+      /* Update remembered end of sequence
+	 in case we added an insn at the end.  */
+      stack->last = get_last_insn ();
+      end_sequence ();
+    }
+
+  /* Scan all waiting RTL_EXPRs too.  */
+  for (pending = rtl_exps; pending; pending = TREE_CHAIN (pending))
+    {
+      rtx seq = RTL_EXPR_SEQUENCE (TREE_VALUE (pending));
+      if (seq != const0_rtx && seq != 0)
+	{
+	  push_to_sequence (seq);
+	  fixup_var_refs_insns (seq, var, promoted_mode, unsignedp, 0,
+				may_share);
+	  end_sequence ();
+	}
+    }
+}

@@ -1,0 +1,47 @@
+static void
+ssa_ccp_df_delete_unreachable_insns ()
+{
+  int i;
+
+  /* Use the CFG to find all the reachable blocks.  */
+  find_unreachable_blocks ();
+
+  /* Now we know what blocks are not reachable.  Mark all the insns
+     in those blocks as deleted for the DF analyzer.   We'll let the
+     normal flow code actually remove the unreachable blocks.  */
+  for (i = n_basic_blocks - 1; i >= 0; --i)
+    {
+      basic_block b = BASIC_BLOCK (i);
+
+      if (!(b->flags & BB_REACHABLE))
+	{
+	  rtx start = b->head;
+	  rtx end = b->end;
+	  rtx tmp;
+
+	  /* Include any jump table following the basic block.  */
+	  end = b->end;
+	  if (GET_CODE (end) == JUMP_INSN
+	      && (tmp = JUMP_LABEL (end)) != NULL_RTX
+	      && (tmp = NEXT_INSN (tmp)) != NULL_RTX
+	      && GET_CODE (tmp) == JUMP_INSN
+	      && (GET_CODE (PATTERN (tmp)) == ADDR_VEC
+	          || GET_CODE (PATTERN (tmp)) == ADDR_DIFF_VEC))
+	    end = tmp;
+
+	  while (1)
+	    {
+	      rtx next = NEXT_INSN (start);
+
+	      if (GET_CODE (start) == INSN
+		  || GET_CODE (start) == CALL_INSN
+		  || GET_CODE (start) == JUMP_INSN)
+		df_insn_delete (df_analyzer, BLOCK_FOR_INSN (start), start);
+
+	      if (start == end)
+		break;
+	      start = next;
+	    }
+	}
+    }
+}

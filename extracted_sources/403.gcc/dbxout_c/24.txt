@@ -1,0 +1,232 @@
+static int
+dbxout_symbol_location (decl, type, suffix, home)
+     tree decl, type;
+     const char *suffix;
+     rtx home;
+{
+  int letter = 0;
+  int regno = -1;
+
+  /* Don't mention a variable at all
+     if it was completely optimized into nothingness.
+     
+     If the decl was from an inline function, then its rtl
+     is not identically the rtl that was used in this
+     particular compilation.  */
+  if (GET_CODE (home) == SUBREG)
+    {
+      rtx value = home;
+
+      while (GET_CODE (value) == SUBREG)
+	value = SUBREG_REG (value);
+      if (GET_CODE (value) == REG)
+	{
+	  if (REGNO (value) >= FIRST_PSEUDO_REGISTER)
+	    return 0;
+	}
+      home = alter_subreg (&home);
+    }
+  if (GET_CODE (home) == REG)
+    {
+      regno = REGNO (home);
+      if (regno >= FIRST_PSEUDO_REGISTER)
+	return 0;
+    }
+
+  /* The kind-of-variable letter depends on where
+     the variable is and on the scope of its name:
+     G and N_GSYM for static storage and global scope,
+     S for static storage and file scope,
+     V for static storage and local scope,
+     for those two, use N_LCSYM if data is in bss segment,
+     N_STSYM if in data segment, N_FUN otherwise.
+     (We used N_FUN originally, then changed to N_STSYM
+     to please GDB.  However, it seems that confused ld.
+     Now GDB has been fixed to like N_FUN, says Kingdon.)
+     no letter at all, and N_LSYM, for auto variable,
+     r and N_RSYM for register variable.  */
+
+  if (GET_CODE (home) == MEM
+      && GET_CODE (XEXP (home, 0)) == SYMBOL_REF)
+    {
+      if (TREE_PUBLIC (decl))
+	{
+	  letter = 'G';
+	  current_sym_code = N_GSYM;
+	}
+      else
+	{
+	  current_sym_addr = XEXP (home, 0);
+
+	  letter = decl_function_context (decl) ? 'V' : 'S';
+
+	  /* This should be the same condition as in assemble_variable, but
+	     we don't have access to dont_output_data here.  So, instead,
+	     we rely on the fact that error_mark_node initializers always
+	     end up in bss for C++ and never end up in bss for C.  */
+	  if (DECL_INITIAL (decl) == 0
+	      || (!strcmp (lang_hooks.name, "GNU C++")
+		  && DECL_INITIAL (decl) == error_mark_node))
+	    current_sym_code = N_LCSYM;
+	  else if (DECL_IN_TEXT_SECTION (decl))
+	    /* This is not quite right, but it's the closest
+	       of all the codes that Unix defines.  */
+	    current_sym_code = DBX_STATIC_CONST_VAR_CODE;
+	  else
+	    {
+	      /* Some ports can transform a symbol ref into a label ref,
+		 because the symbol ref is too far away and has to be
+		 dumped into a constant pool.  Alternatively, the symbol
+		 in the constant pool might be referenced by a different
+		 symbol.  */
+	      if (GET_CODE (current_sym_addr) == SYMBOL_REF
+		  && CONSTANT_POOL_ADDRESS_P (current_sym_addr))
+		{
+		  rtx tmp = get_pool_constant (current_sym_addr);
+
+		  if (GET_CODE (tmp) == SYMBOL_REF
+		      || GET_CODE (tmp) == LABEL_REF)
+		    current_sym_addr = tmp;
+		}
+  
+	      /* Ultrix `as' seems to need this.  */
+#ifdef DBX_STATIC_STAB_DATA_SECTION
+	      data_section ();
+#endif
+	      current_sym_code = N_STSYM;
+	    }
+	}
+    }
+  else if (regno >= 0)
+    {
+      letter = 'r';
+      current_sym_code = N_RSYM;
+      current_sym_value = DBX_REGISTER_NUMBER (regno);
+    }
+  else if (GET_CODE (home) == MEM
+	   && (GET_CODE (XEXP (home, 0)) == MEM
+	       || (GET_CODE (XEXP (home, 0)) == REG
+		   && REGNO (XEXP (home, 0)) != HARD_FRAME_POINTER_REGNUM
+		   && REGNO (XEXP (home, 0)) != STACK_POINTER_REGNUM
+#if ARG_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+		   && REGNO (XEXP (home, 0)) != ARG_POINTER_REGNUM
+#endif
+		   )))
+    /* If the value is indirect by memory or by a register
+       that isn't the frame pointer
+       then it means the object is variable-sized and address through
+       that register or stack slot.  DBX has no way to represent this
+       so all we can do is output the variable as a pointer.
+       If it's not a parameter, ignore it.
+       (VAR_DECLs like this can be made by integrate.c.)  */
+    {
+      if (GET_CODE (XEXP (home, 0)) == REG)
+	{
+	  letter = 'r';
+	  current_sym_code = N_RSYM;
+	  if (REGNO (XEXP (home, 0)) >= FIRST_PSEUDO_REGISTER)
+	    return 0;
+	  current_sym_value = DBX_REGISTER_NUMBER (REGNO (XEXP (home, 0)));
+	}
+      else
+	{
+	  current_sym_code = N_LSYM;
+	  /* RTL looks like (MEM (MEM (PLUS (REG...) (CONST_INT...)))).
+	     We want the value of that CONST_INT.  */
+	  current_sym_value
+	    = DEBUGGER_AUTO_OFFSET (XEXP (XEXP (home, 0), 0));
+	}
+
+      /* Effectively do build_pointer_type, but don't cache this type,
+	 since it might be temporary whereas the type it points to
+	 might have been saved for inlining.  */
+      /* Don't use REFERENCE_TYPE because dbx can't handle that.  */
+      type = make_node (POINTER_TYPE);
+      TREE_TYPE (type) = TREE_TYPE (decl);
+    }
+  else if (GET_CODE (home) == MEM
+	   && GET_CODE (XEXP (home, 0)) == REG)
+    {
+      current_sym_code = N_LSYM;
+      current_sym_value = DEBUGGER_AUTO_OFFSET (XEXP (home, 0));
+    }
+  else if (GET_CODE (home) == MEM
+	   && GET_CODE (XEXP (home, 0)) == PLUS
+	   && GET_CODE (XEXP (XEXP (home, 0), 1)) == CONST_INT)
+    {
+      current_sym_code = N_LSYM;
+      /* RTL looks like (MEM (PLUS (REG...) (CONST_INT...)))
+	 We want the value of that CONST_INT.  */
+      current_sym_value = DEBUGGER_AUTO_OFFSET (XEXP (home, 0));
+    }
+  else if (GET_CODE (home) == MEM
+	   && GET_CODE (XEXP (home, 0)) == CONST)
+    {
+      /* Handle an obscure case which can arise when optimizing and
+	 when there are few available registers.  (This is *always*
+	 the case for i386/i486 targets).  The RTL looks like
+	 (MEM (CONST ...)) even though this variable is a local `auto'
+	 or a local `register' variable.  In effect, what has happened
+	 is that the reload pass has seen that all assignments and
+	 references for one such a local variable can be replaced by
+	 equivalent assignments and references to some static storage
+	 variable, thereby avoiding the need for a register.  In such
+	 cases we're forced to lie to debuggers and tell them that
+	 this variable was itself `static'.  */
+      current_sym_code = N_LCSYM;
+      letter = 'V';
+      current_sym_addr = XEXP (XEXP (home, 0), 0);
+    }
+  else if (GET_CODE (home) == CONCAT)
+    {
+      tree subtype;
+
+      /* If TYPE is not a COMPLEX_TYPE (it might be a RECORD_TYPE,
+	 for example), then there is no easy way to figure out
+	 what SUBTYPE should be.  So, we give up.  */
+      if (TREE_CODE (type) != COMPLEX_TYPE)
+	return 0;
+
+      subtype = TREE_TYPE (type);
+
+      /* If the variable's storage is in two parts,
+	 output each as a separate stab with a modified name.  */
+      if (WORDS_BIG_ENDIAN)
+	dbxout_symbol_location (decl, subtype, "$imag", XEXP (home, 0));
+      else
+	dbxout_symbol_location (decl, subtype, "$real", XEXP (home, 0));
+
+      /* Cast avoids warning in old compilers.  */
+      current_sym_code = (STAB_CODE_TYPE) 0;
+      current_sym_value = 0;
+      current_sym_addr = 0;
+      dbxout_prepare_symbol (decl);
+
+      if (WORDS_BIG_ENDIAN)
+	dbxout_symbol_location (decl, subtype, "$real", XEXP (home, 1));
+      else
+	dbxout_symbol_location (decl, subtype, "$imag", XEXP (home, 1));
+      return 1;
+    }
+  else
+    /* Address might be a MEM, when DECL is a variable-sized object.
+       Or it might be const0_rtx, meaning previous passes
+       want us to ignore this variable.  */
+    return 0;
+
+  /* Ok, start a symtab entry and output the variable name.  */
+  FORCE_TEXT;
+
+#ifdef DBX_STATIC_BLOCK_START
+  DBX_STATIC_BLOCK_START (asmfile, current_sym_code);
+#endif
+
+  dbxout_symbol_name (decl, suffix, letter);
+  dbxout_type (type, 0);
+  dbxout_finish_symbol (decl);
+
+#ifdef DBX_STATIC_BLOCK_END
+  DBX_STATIC_BLOCK_END (asmfile, current_sym_code);
+#endif
+  return 1;
+}

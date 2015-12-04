@@ -1,0 +1,17 @@
+void
+output_asm_label (x)
+     rtx x;
+{
+  char buf[256];
+
+  if (GET_CODE (x) == LABEL_REF)
+    x = XEXP (x, 0);
+  if (GET_CODE (x) == CODE_LABEL
+      || (GET_CODE (x) == NOTE
+	  && NOTE_LINE_NUMBER (x) == NOTE_INSN_DELETED_LABEL))
+    ASM_GENERATE_INTERNAL_LABEL (buf, "L", CODE_LABEL_NUMBER (x));
+  else
+    output_operand_lossage ("`%%l' operand isn't a label");
+
+  assemble_name (asm_out_file, buf);
+}

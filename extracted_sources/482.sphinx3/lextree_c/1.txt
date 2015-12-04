@@ -1,0 +1,24 @@
+static int32 lextree_subtree_free (lextree_node_t *ln, int32 level)
+{
+    gnode_t *gn;
+    lextree_node_t *ln2;
+    int32 k;
+    
+    k = 0;
+
+    /* Free subtrees below this node */
+    for (gn = ln->children; gn; gn = gnode_next(gn)) {
+	ln2 = (lextree_node_t *) gnode_ptr (gn);
+	k += lextree_subtree_free (ln2, level+1);
+    }
+    glist_free (ln->children);
+    ln->children = NULL;
+    
+    /* Free this node, but for level-1 nodes only if reference count drops to 0 */
+    if ((level != 1) || (--ln->ssid == 0)) {
+	myfree ((void *) ln, sizeof(lextree_node_t));
+	k++;
+    }
+    
+    return k;
+}

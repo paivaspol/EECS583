@@ -1,0 +1,61 @@
+static void
+find_reload_regs (chain)
+     struct insn_chain *chain;
+{
+  int i;
+
+  /* In order to be certain of getting the registers we need,
+     we must sort the reloads into order of increasing register class.
+     Then our grabbing of reload registers will parallel the process
+     that provided the reload registers.  */
+  for (i = 0; i < chain->n_reloads; i++)
+    {
+      /* Show whether this reload already has a hard reg.  */
+      if (chain->rld[i].reg_rtx)
+	{
+	  int regno = REGNO (chain->rld[i].reg_rtx);
+	  chain->rld[i].regno = regno;
+	  chain->rld[i].nregs
+	    = HARD_REGNO_NREGS (regno, GET_MODE (chain->rld[i].reg_rtx));
+	}
+      else
+	chain->rld[i].regno = -1;
+      reload_order[i] = i;
+    }
+
+  n_reloads = chain->n_reloads;
+  memcpy (rld, chain->rld, n_reloads * sizeof (struct reload));
+
+  CLEAR_HARD_REG_SET (used_spill_regs_local);
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file, "Spilling for insn %d.\n", INSN_UID (chain->insn));
+
+  specqsort (reload_order, n_reloads, sizeof (short), reload_reg_class_lower);
+/* MJP Global replacement of qsort with specqsort */
+
+  /* Compute the order of preference for hard registers to spill.  */
+
+  order_regs_for_reload (chain);
+
+  for (i = 0; i < n_reloads; i++)
+    {
+      int r = reload_order[i];
+
+      /* Ignore reloads that got marked inoperative.  */
+      if ((rld[r].out != 0 || rld[r].in != 0 || rld[r].secondary_p)
+	  && ! rld[r].optional
+	  && rld[r].regno == -1)
+	if (! find_reg (chain, i))
+	  {
+	    spill_failure (chain->insn, rld[r].class);
+	    failure = 1;
+	    return;
+	  }
+    }
+
+  COPY_HARD_REG_SET (chain->used_spill_regs, used_spill_regs_local);
+  IOR_HARD_REG_SET (used_spill_regs, used_spill_regs_local);
+
+  memcpy (chain->rld, rld, n_reloads * sizeof (struct reload));
+}

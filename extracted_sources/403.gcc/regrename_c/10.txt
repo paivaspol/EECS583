@@ -1,0 +1,20 @@
+static void
+dump_def_use_chain (chains)
+     struct du_chain *chains;
+{
+  while (chains)
+    {
+      struct du_chain *this = chains;
+      int r = REGNO (*this->loc);
+      int nregs = HARD_REGNO_NREGS (r, GET_MODE (*this->loc));
+      fprintf (rtl_dump_file, "Register %s (%d):", reg_names[r], nregs);
+      while (this)
+	{
+	  fprintf (rtl_dump_file, " %d [%s]", INSN_UID (this->insn),
+		   reg_class_names[this->class]);
+	  this = this->next_use;
+	}
+      fprintf (rtl_dump_file, "\n");
+      chains = chains->next_chain;
+    }
+}

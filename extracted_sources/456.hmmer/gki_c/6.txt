@@ -1,0 +1,42 @@
+static int
+gki_upsize(GKI *old)
+{
+  GKI      *new;
+  int       i;
+  struct gki_elem *optr;
+  struct gki_elem *nptr;
+  int       val;
+
+  if (old->primelevel >= GKI_NPRIMES-1)  return 0;
+  new = gki_alloc(old->primelevel+1);
+
+  /* Read the old, store in the new, while *not changing*
+   * any key indices. Because of the way the lists are
+   * treated as LIFO stacks, all the lists are reversed 
+   * in the new structure.
+   */
+  for (i = 0; i < old->nhash; i++)
+    {
+      optr = old->table[i];
+      while (optr != NULL)
+	{
+	  val = gki_hashvalue(new, optr->key);
+
+	  nptr = new->table[val];
+	  new->table[val]      = optr;
+	  optr                 = optr->nxt;
+	  new->table[val]->nxt = nptr;
+	}
+    }
+  free(old->table);
+
+  /* Now swap within the interior of the structures, so the old
+   * structure is updated to the new structure.
+   * (nkeys is identical, so we don't need to swap that element.)
+   */
+  old->primelevel = new->primelevel;
+  old->nhash      = new->nhash;
+  old->table      = new->table;
+  free(new);
+  return 1;
+}

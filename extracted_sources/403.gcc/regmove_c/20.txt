@@ -1,0 +1,32 @@
+static rtx
+single_set_for_csa (insn)
+     rtx insn;
+{
+  int i;
+  rtx tmp = single_set (insn);
+  if (tmp)
+    return tmp;
+
+  if (GET_CODE (insn) != INSN
+      || GET_CODE (PATTERN (insn)) != PARALLEL)
+    return NULL_RTX;
+
+  tmp = PATTERN (insn);
+  if (GET_CODE (XVECEXP (tmp, 0, 0)) != SET)
+    return NULL_RTX;
+
+  for (i = 1; i < XVECLEN (tmp, 0); ++i)
+    {
+      rtx this = XVECEXP (tmp, 0, i);
+
+      /* The special case is allowing a no-op set.  */
+      if (GET_CODE (this) == SET
+	  && SET_SRC (this) == SET_DEST (this))
+	;
+      else if (GET_CODE (this) != CLOBBER
+	       && GET_CODE (this) != USE)
+	return NULL_RTX;
+    }
+
+  return XVECEXP (tmp, 0, 0);
+}

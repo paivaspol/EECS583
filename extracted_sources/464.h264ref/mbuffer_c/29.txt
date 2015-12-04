@@ -1,0 +1,21 @@
+static void sliding_window_memory_management(StorablePicture* p)
+{
+  unsigned i;
+
+  assert (!img->currentPicture->idr_flag);
+  // if this is a reference pic with sliding sliding window, unmark first ref frame
+  if (dpb.ref_frames_in_buffer==active_sps->num_ref_frames - dpb.ltref_frames_in_buffer)
+  {
+    for (i=0; i<dpb.used_size;i++)
+    {
+      if (dpb.fs[i]->is_reference  && (!(dpb.fs[i]->is_long_term)))
+      {
+        unmark_for_reference(dpb.fs[i]);
+        update_ref_list();
+        break;
+      }
+    }
+  }
+
+  p->is_long_term = 0;
+}

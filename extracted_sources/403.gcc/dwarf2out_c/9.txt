@@ -1,0 +1,24 @@
+static inline void
+lookup_cfa_1 (cfi, loc)
+     dw_cfi_ref cfi;
+     dw_cfa_location *loc;
+{
+  switch (cfi->dw_cfi_opc)
+    {
+    case DW_CFA_def_cfa_offset:
+      loc->offset = cfi->dw_cfi_oprnd1.dw_cfi_offset;
+      break;
+    case DW_CFA_def_cfa_register:
+      loc->reg = cfi->dw_cfi_oprnd1.dw_cfi_reg_num;
+      break;
+    case DW_CFA_def_cfa:
+      loc->reg = cfi->dw_cfi_oprnd1.dw_cfi_reg_num;
+      loc->offset = cfi->dw_cfi_oprnd2.dw_cfi_offset;
+      break;
+    case DW_CFA_def_cfa_expression:
+      get_cfa_from_loc_descr (loc, cfi->dw_cfi_oprnd1.dw_cfi_loc);
+      break;
+    default:
+      break;
+    }
+}

@@ -1,0 +1,14 @@
+static void
+unterminated (pfile, term)
+     cpp_reader *pfile;
+     int term;
+{
+  cpp_error (pfile, "missing terminating %c character", term);
+
+  if (term == '\"' && pfile->mls_line && pfile->mls_line != pfile->line)
+    {
+      cpp_error_with_line (pfile, pfile->mls_line, pfile->mls_col,
+			   "possible start of unterminated string literal");
+      pfile->mls_line = 0;
+    }
+}

@@ -1,0 +1,35 @@
+static int
+replace_loop_mem (mem, data)
+     rtx *mem;
+     void *data;
+{
+  loop_replace_args *args = (loop_replace_args *) data;
+  rtx m = *mem;
+
+  if (m == NULL_RTX)
+    return 0;
+
+  switch (GET_CODE (m))
+    {
+    case MEM:
+      break;
+
+    case CONST_DOUBLE:
+      /* We're not interested in the MEM associated with a
+	 CONST_DOUBLE, so there's no need to traverse into one.  */
+      return -1;
+
+    default:
+      /* This is not a MEM.  */
+      return 0;
+    }
+
+  if (!rtx_equal_p (args->match, m))
+    /* This is not the MEM we are currently replacing.  */
+    return 0;
+
+  /* Actually replace the MEM.  */
+  validate_change (args->insn, mem, args->replacement, 1);
+
+  return 0;
+}

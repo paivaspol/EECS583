@@ -1,0 +1,230 @@
+static void
+check_format_info_recurse (status, res, info, format_tree, params, arg_num)
+     int *status;
+     format_check_results *res;
+     function_format_info *info;
+     tree format_tree;
+     tree params;
+     unsigned HOST_WIDE_INT arg_num;
+{
+  int format_length;
+  HOST_WIDE_INT offset;
+  const char *format_chars;
+  tree array_size = 0;
+  tree array_init;
+
+  if (TREE_CODE (format_tree) == NOP_EXPR)
+    {
+      /* Strip coercion.  */
+      check_format_info_recurse (status, res, info,
+				 TREE_OPERAND (format_tree, 0), params,
+				 arg_num);
+      return;
+    }
+
+  if (TREE_CODE (format_tree) == CALL_EXPR)
+    {
+      tree type = TREE_TYPE (TREE_TYPE (TREE_OPERAND (format_tree, 0)));
+      tree attrs;
+      bool found_format_arg = false;
+
+      /* See if this is a call to a known internationalization function
+	 that modifies the format arg.  Such a function may have multiple
+	 format_arg attributes (for example, ngettext).  */
+
+      for (attrs = TYPE_ATTRIBUTES (type);
+	   attrs;
+	   attrs = TREE_CHAIN (attrs))
+	if (is_attribute_p ("format_arg", TREE_PURPOSE (attrs)))
+	  {
+	    tree inner_args;
+	    tree format_num_expr;
+	    int format_num;
+	    int i;
+
+	    /* Extract the argument number, which was previously checked
+	       to be valid.  */
+	    format_num_expr = TREE_VALUE (TREE_VALUE (attrs));
+	    while (TREE_CODE (format_num_expr) == NOP_EXPR
+		   || TREE_CODE (format_num_expr) == CONVERT_EXPR
+		   || TREE_CODE (format_num_expr) == NON_LVALUE_EXPR)
+	      format_num_expr = TREE_OPERAND (format_num_expr, 0);
+
+	    if (TREE_CODE (format_num_expr) != INTEGER_CST
+		|| TREE_INT_CST_HIGH (format_num_expr) != 0)
+	      abort ();
+
+	    format_num = TREE_INT_CST_LOW (format_num_expr);
+
+	    for (inner_args = TREE_OPERAND (format_tree, 1), i = 1;
+		 inner_args != 0;
+		 inner_args = TREE_CHAIN (inner_args), i++)
+	      if (i == format_num)
+		{
+		  check_format_info_recurse (status, res, info,
+					     TREE_VALUE (inner_args), params,
+					     arg_num);
+		  found_format_arg = true;
+		  break;
+		}
+	  }
+
+      /* If we found a format_arg attribute and did a recursive check,
+	 we are done with checking this format string.  Otherwise, we
+	 continue and this will count as a non-literal format string.  */
+      if (found_format_arg)
+	return;
+    }
+
+  if (TREE_CODE (format_tree) == COND_EXPR)
+    {
+      /* Check both halves of the conditional expression.  */
+      check_format_info_recurse (status, res, info,
+				 TREE_OPERAND (format_tree, 1), params,
+				 arg_num);
+      check_format_info_recurse (status, res, info,
+				 TREE_OPERAND (format_tree, 2), params,
+				 arg_num);
+      return;
+    }
+
+  if (integer_zerop (format_tree))
+    {
+      /* FIXME: this warning should go away once Marc Espie's
+	 __attribute__((nonnull)) patch is in.  Instead, checking for
+	 nonnull attributes should probably change this function to act
+	 specially if info == NULL and add a res->number_null entry for
+	 that case, or maybe add a function pointer to be called at
+	 the end instead of hardcoding check_format_info_main.  */
+      status_warning (status, "null format string");
+
+      /* Skip to first argument to check, so we can see if this format
+	 has any arguments (it shouldn't).  */
+      while (arg_num + 1 < info->first_arg_num)
+	{
+	  if (params == 0)
+	    return;
+	  params = TREE_CHAIN (params);
+	  ++arg_num;
+	}
+
+      if (params == 0)
+	res->number_other++;
+      else
+	res->number_extra_args++;
+
+      return;
+    }
+
+  offset = 0;
+  if (TREE_CODE (format_tree) == PLUS_EXPR)
+    {
+      tree arg0, arg1;
+
+      arg0 = TREE_OPERAND (format_tree, 0);
+      arg1 = TREE_OPERAND (format_tree, 1);
+      STRIP_NOPS (arg0);
+      STRIP_NOPS (arg1);
+      if (TREE_CODE (arg1) == INTEGER_CST)
+	format_tree = arg0;
+      else if (TREE_CODE (arg0) == INTEGER_CST)
+	{
+	  format_tree = arg1;
+	  arg1 = arg0;
+	}
+      else
+	{
+	  res->number_non_literal++;
+	  return;
+	}
+      if (!host_integerp (arg1, 0)
+	  || (offset = tree_low_cst (arg1, 0)) < 0)
+	{
+	  res->number_non_literal++;
+	  return;
+	}
+    }
+  if (TREE_CODE (format_tree) != ADDR_EXPR)
+    {
+      res->number_non_literal++;
+      return;
+    }
+  format_tree = TREE_OPERAND (format_tree, 0);
+  if (TREE_CODE (format_tree) == VAR_DECL
+      && TREE_CODE (TREE_TYPE (format_tree)) == ARRAY_TYPE
+      && (array_init = decl_constant_value (format_tree)) != format_tree
+      && TREE_CODE (array_init) == STRING_CST)
+    {
+      /* Extract the string constant initializer.  Note that this may include
+	 a trailing NUL character that is not in the array (e.g.
+	 const char a[3] = "foo";).  */
+      array_size = DECL_SIZE_UNIT (format_tree);
+      format_tree = array_init;
+    }
+  if (TREE_CODE (format_tree) != STRING_CST)
+    {
+      res->number_non_literal++;
+      return;
+    }
+  if (TYPE_MAIN_VARIANT (TREE_TYPE (TREE_TYPE (format_tree))) != char_type_node)
+    {
+      res->number_wide++;
+      return;
+    }
+  format_chars = TREE_STRING_POINTER (format_tree);
+  format_length = TREE_STRING_LENGTH (format_tree);
+  if (array_size != 0)
+    {
+      /* Variable length arrays can't be initialized.  */
+      if (TREE_CODE (array_size) != INTEGER_CST)
+	abort ();
+      if (host_integerp (array_size, 0))
+	{
+	  HOST_WIDE_INT array_size_value = TREE_INT_CST_LOW (array_size);
+	  if (array_size_value > 0
+	      && array_size_value == (int) array_size_value
+	      && format_length > array_size_value)
+	    format_length = array_size_value;
+	}
+    }
+  if (offset)
+    {
+      if (offset >= format_length)
+	{
+	  res->number_non_literal++;
+	  return;
+	}
+      format_chars += offset;
+      format_length -= offset;
+    }
+  if (format_length < 1)
+    {
+      res->number_unterminated++;
+      return;
+    }
+  if (format_length == 1)
+    {
+      res->number_empty++;
+      return;
+    }
+  if (format_chars[--format_length] != 0)
+    {
+      res->number_unterminated++;
+      return;
+    }
+
+  /* Skip to first argument to check.  */
+  while (arg_num + 1 < info->first_arg_num)
+    {
+      if (params == 0)
+	return;
+      params = TREE_CHAIN (params);
+      ++arg_num;
+    }
+  /* Provisionally increment res->number_other; check_format_info_main
+     will decrement it if it finds there are extra arguments, but this way
+     need not adjust it for every return.  */
+  res->number_other++;
+  check_format_info_main (status, res, info, format_chars, format_length,
+			  params, arg_num);
+}

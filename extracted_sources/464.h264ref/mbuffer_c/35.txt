@@ -1,0 +1,92 @@
+static void mark_pic_long_term(StorablePicture* p, int long_term_frame_idx, int picNumX)
+{
+  unsigned i;
+  int add_top, add_bottom;
+
+  if (p->structure == FRAME)
+  {
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      if (dpb.fs_ref[i]->is_reference == 3)
+      {
+        if ((!dpb.fs_ref[i]->frame->is_long_term)&&(dpb.fs_ref[i]->frame->pic_num == picNumX))
+        {
+          dpb.fs_ref[i]->long_term_frame_idx = dpb.fs_ref[i]->frame->long_term_frame_idx
+                                             = dpb.fs_ref[i]->top_field->long_term_frame_idx
+                                             = dpb.fs_ref[i]->bottom_field->long_term_frame_idx
+                                             = long_term_frame_idx;
+          dpb.fs_ref[i]->frame->long_term_pic_num = dpb.fs_ref[i]->top_field->long_term_pic_num
+                                                  = dpb.fs_ref[i]->bottom_field->long_term_pic_num
+                                                  = long_term_frame_idx;
+          dpb.fs_ref[i]->frame->is_long_term = dpb.fs_ref[i]->top_field->is_long_term
+                                             = dpb.fs_ref[i]->bottom_field->is_long_term
+                                             = 1;
+          dpb.fs_ref[i]->is_long_term = 3;
+          return;
+        }
+      }
+    }
+    printf ("Warning: reference frame for long term marking not found\n");
+  }
+  else
+  {
+    if (p->structure == TOP_FIELD)
+    {
+      add_top    = 1;
+      add_bottom = 0;
+    }
+    else
+    {
+      add_top    = 0;
+      add_bottom = 1;
+    }
+    for (i=0; i<dpb.ref_frames_in_buffer; i++)
+    {
+      if (dpb.fs_ref[i]->is_reference & 1)
+      {
+        if ((!dpb.fs_ref[i]->top_field->is_long_term)&&(dpb.fs_ref[i]->top_field->pic_num == picNumX))
+        {
+          if ((dpb.fs_ref[i]->is_long_term) && (dpb.fs_ref[i]->long_term_frame_idx != long_term_frame_idx))
+          {
+              printf ("Warning: assigning long_term_frame_idx different from other field\n");
+          }
+
+          dpb.fs_ref[i]->long_term_frame_idx = dpb.fs_ref[i]->top_field->long_term_frame_idx 
+                                             = long_term_frame_idx;
+          dpb.fs_ref[i]->top_field->long_term_pic_num = 2 * long_term_frame_idx + add_top;
+          dpb.fs_ref[i]->top_field->is_long_term = 1;
+          dpb.fs_ref[i]->is_long_term |= 1;
+          if (dpb.fs_ref[i]->is_long_term == 3)
+          {
+            dpb.fs_ref[i]->frame->is_long_term = 1;
+            dpb.fs_ref[i]->frame->long_term_frame_idx = dpb.fs_ref[i]->frame->long_term_pic_num = long_term_frame_idx;
+          }
+          return;
+        }
+      }
+      if (dpb.fs_ref[i]->is_reference & 2)
+      {
+        if ((!dpb.fs_ref[i]->bottom_field->is_long_term)&&(dpb.fs_ref[i]->bottom_field->pic_num == picNumX))
+        {
+          if ((dpb.fs_ref[i]->is_long_term) && (dpb.fs_ref[i]->long_term_frame_idx != long_term_frame_idx))
+          {
+              printf ("Warning: assigning long_term_frame_idx different from other field\n");
+          }
+
+          dpb.fs_ref[i]->long_term_frame_idx = dpb.fs_ref[i]->bottom_field->long_term_frame_idx 
+                                             = long_term_frame_idx;
+          dpb.fs_ref[i]->bottom_field->long_term_pic_num = 2 * long_term_frame_idx + add_top;
+          dpb.fs_ref[i]->bottom_field->is_long_term = 1;
+          dpb.fs_ref[i]->is_long_term |= 2;
+          if (dpb.fs_ref[i]->is_long_term == 3)
+          {
+            dpb.fs_ref[i]->frame->is_long_term = 1;
+            dpb.fs_ref[i]->frame->long_term_frame_idx = dpb.fs_ref[i]->frame->long_term_pic_num = long_term_frame_idx;
+          }
+          return;
+        }
+      }
+    }
+    printf ("Warning: reference field for long term marking not found\n");
+  }
+}

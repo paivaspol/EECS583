@@ -1,0 +1,45 @@
+static int
+htab_expand (htab)
+     htab_t htab;
+{
+  PTR *oentries;
+  PTR *olimit;
+  PTR *p;
+
+  oentries = htab->entries;
+  olimit = oentries + htab->size;
+
+  htab->size = higher_prime_number (htab->size * 2);
+
+  if (htab->return_allocation_failure)
+    {
+      PTR *nentries = (PTR *) calloc (htab->size, sizeof (PTR *));
+      if (nentries == NULL)
+	return 0;
+      htab->entries = nentries;
+    }
+  else
+    htab->entries = (PTR *) xcalloc (htab->size, sizeof (PTR *));
+
+  htab->n_elements -= htab->n_deleted;
+  htab->n_deleted = 0;
+
+  p = oentries;
+  do
+    {
+      PTR x = *p;
+
+      if (x != EMPTY_ENTRY && x != DELETED_ENTRY)
+	{
+	  PTR *q = find_empty_slot_for_expand (htab, (*htab->hash_f) (x));
+
+	  *q = x;
+	}
+
+      p++;
+    }
+  while (p < olimit);
+
+  free (oentries);
+  return 1;
+}

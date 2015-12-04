@@ -1,0 +1,21 @@
+void
+reorder_insns_with_line_notes (from, to, after)
+     rtx from, to, after;
+{
+  rtx from_line = find_line_note (from);
+  rtx after_line = find_line_note (after);
+
+  reorder_insns (from, to, after);
+
+  if (from_line == after_line)
+    return;
+
+  if (from_line)
+    emit_line_note_after (NOTE_SOURCE_FILE (from_line),
+			  NOTE_LINE_NUMBER (from_line),
+			  after);
+  if (after_line)
+    emit_line_note_after (NOTE_SOURCE_FILE (after_line),
+			  NOTE_LINE_NUMBER (after_line),
+			  to);
+}

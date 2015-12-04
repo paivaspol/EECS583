@@ -1,0 +1,81 @@
+static SV *old_retrieve_hash(pTHX_ stcxt_t *cxt, char *cname)
+{
+	I32 len;
+	I32 size;
+	I32 i;
+	HV *hv;
+	SV *sv = (SV *) 0;
+	int c;
+	static SV *sv_h_undef = (SV *) 0;		/* hv_store() bug */
+
+	TRACEME(("old_retrieve_hash (#%d)", cxt->tagnum));
+
+	/*
+	 * Read length, allocate table.
+	 */
+
+	RLEN(len);
+	TRACEME(("size = %d", len));
+	hv = newHV();
+	SEEN(hv, 0, 0);			/* Will return if table not allocated properly */
+	if (len == 0)
+		return (SV *) hv;	/* No data follow if table empty */
+	hv_ksplit(hv, len);		/* pre-extend hash to save multiple splits */
+
+	/*
+	 * Now get each key/value pair in turn...
+	 */
+
+	for (i = 0; i < len; i++) {
+		/*
+		 * Get value first.
+		 */
+
+		GETMARK(c);
+		if (c == SX_VL_UNDEF) {
+			TRACEME(("(#%d) undef value", i));
+			/*
+			 * Due to a bug in hv_store(), it's not possible to pass
+			 * &PL_sv_undef to hv_store() as a value, otherwise the
+			 * associated key will not be creatable any more. -- RAM, 14/01/97
+			 */
+			if (!sv_h_undef)
+				sv_h_undef = newSVsv(&PL_sv_undef);
+			sv = SvREFCNT_inc(sv_h_undef);
+		} else if (c == SX_VALUE) {
+			TRACEME(("(#%d) value", i));
+			sv = retrieve(aTHX_ cxt, 0);
+			if (!sv)
+				return (SV *) 0;
+		} else
+			(void) retrieve_other(aTHX_ (stcxt_t *) 0, 0);	/* Will croak out */
+
+		/*
+		 * Get key.
+		 * Since we're reading into kbuf, we must ensure we're not
+		 * recursing between the read and the hv_store() where it's used.
+		 * Hence the key comes after the value.
+		 */
+
+		GETMARK(c);
+		if (c != SX_KEY)
+			(void) retrieve_other(aTHX_ (stcxt_t *) 0, 0);	/* Will croak out */
+		RLEN(size);						/* Get key size */
+		KBUFCHK((STRLEN)size);					/* Grow hash key read pool if needed */
+		if (size)
+			READ(kbuf, size);
+		kbuf[size] = '\0';				/* Mark string end, just in case */
+		TRACEME(("(#%d) key '%s'", i, kbuf));
+
+		/*
+		 * Enter key/value pair into hash table.
+		 */
+
+		if (hv_store(hv, kbuf, (U32) size, sv, 0) == 0)
+			return (SV *) 0;
+	}
+
+	TRACEME(("ok (retrieve_hash at 0x%"UVxf")", PTR2UV(hv)));
+
+	return (SV *) hv;
+}

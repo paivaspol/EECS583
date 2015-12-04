@@ -1,0 +1,73 @@
+static unsigned long
+size_of_die (die)
+     dw_die_ref die;
+{
+  unsigned long size = 0;
+  dw_attr_ref a;
+
+  size += size_of_uleb128 (die->die_abbrev);
+  for (a = die->die_attr; a != NULL; a = a->dw_attr_next)
+    {
+      switch (AT_class (a))
+	{
+	case dw_val_class_addr:
+	  size += DWARF2_ADDR_SIZE;
+	  break;
+	case dw_val_class_offset:
+	  size += DWARF_OFFSET_SIZE;
+	  break;
+	case dw_val_class_loc:
+	  {
+	    unsigned long lsize = size_of_locs (AT_loc (a));
+
+	    /* Block length.  */
+	    size += constant_size (lsize);
+	    size += lsize;
+	  }
+	  break;
+	case dw_val_class_loc_list:
+	  size += DWARF_OFFSET_SIZE;
+	  break;
+	case dw_val_class_range_list:
+	  size += DWARF_OFFSET_SIZE;
+	  break;
+	case dw_val_class_const:
+	  size += size_of_sleb128 (AT_int (a));
+	  break;
+	case dw_val_class_unsigned_const:
+	  size += constant_size (AT_unsigned (a));
+	  break;
+	case dw_val_class_long_long:
+	  size += 1 + 2*HOST_BITS_PER_LONG/HOST_BITS_PER_CHAR; /* block */
+	  break;
+	case dw_val_class_float:
+	  size += 1 + a->dw_attr_val.v.val_float.length * 4; /* block */
+	  break;
+	case dw_val_class_flag:
+	  size += 1;
+	  break;
+	case dw_val_class_die_ref:
+	  size += DWARF_OFFSET_SIZE;
+	  break;
+	case dw_val_class_fde_ref:
+	  size += DWARF_OFFSET_SIZE;
+	  break;
+	case dw_val_class_lbl_id:
+	  size += DWARF2_ADDR_SIZE;
+	  break;
+	case dw_val_class_lbl_offset:
+	  size += DWARF_OFFSET_SIZE;
+	  break;
+	case dw_val_class_str:
+	  if (AT_string_form (a) == DW_FORM_strp)
+	    size += DWARF_OFFSET_SIZE;
+	  else
+	    size += HT_LEN (&a->dw_attr_val.v.val_str->id) + 1;
+	  break;
+	default:
+	  abort ();
+	}
+    }
+
+  return size;
+}

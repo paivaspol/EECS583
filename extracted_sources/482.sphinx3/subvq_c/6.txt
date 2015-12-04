@@ -1,0 +1,49 @@
+int32 subvq_frame_eval (subvq_t *vq, mgau_model_t *g, int32 beam, float32 *feat,
+			int32 *sen_active, int32 *senscr)
+{
+  int32 s;
+  int32 best, ns, ng;
+  
+  best = MAX_NEG_INT32;
+  ns = 0;
+  ng = 0;
+  if (! vq) {
+    /* No subvq model, use the original (SLOW!!) */
+    for (s = 0; s < g->n_mgau; s++) {
+      if ((! sen_active) || sen_active[s]) {
+	senscr[s] = mgau_eval (g, s, NULL, feat);
+	if (best < senscr[s])
+	  best = senscr[s];
+	ns++;
+	ng += mgau_n_comp (g, s);
+      } else
+	senscr[s] = S3_LOGPROB_ZERO;
+    }
+  } else {
+    /* Evaluate subvq model for given feature vector */
+    subvq_gautbl_eval_logs3 (vq, feat);
+    
+    /* Find mixture component shortlists using subvq scores, and evaluate senones */
+    for (s = 0; s < g->n_mgau; s++) {
+      if ((! sen_active) || sen_active[s]) {
+	ng += subvq_mgau_shortlist (vq, s, mgau_n_comp(g,s), beam);
+	
+	senscr[s] = mgau_eval (g, s, vq->mgau_sl, feat);
+	if (best < senscr[s])
+	  best = senscr[s];
+	
+	ns++;
+      } else
+	senscr[s] = S3_LOGPROB_ZERO;
+    }
+  }
+    
+    /* Normalize senone scores */
+    for (s = 0; s < g->n_mgau; s++)
+	senscr[s] -= best;
+    
+    g->frm_sen_eval = ns;
+    g->frm_gau_eval = ng;
+    
+    return best;
+}

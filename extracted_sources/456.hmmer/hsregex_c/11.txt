@@ -1,0 +1,50 @@
+int
+sqd_regexec(prog, str)
+register sqd_regexp *prog;
+const char *str;
+{
+	register char *string = (char *)str;	/* avert const poisoning */
+	register char *s;
+	struct exec ex;
+
+	/* Be paranoid. */
+	if (prog == NULL || string == NULL) {
+		sqd_regerror("NULL argument to sqd_regexec");
+		return(0);
+	}
+
+	/* Check validity of program. */
+	if ((unsigned char)*prog->program != SQD_REGMAGIC) {
+		sqd_regerror("corrupted regexp");
+		return(0);
+	}
+
+	/* If there is a "must appear" string, look for it. */
+	if (prog->regmust != NULL && strstr(string, prog->regmust) == NULL)
+		return(0);
+
+	/* Mark beginning of line for ^ . */
+	ex.regbol = string;
+	ex.regstartp = prog->startp;
+	ex.regendp = prog->endp;
+
+	/* Simplest case:  anchored match need be tried only once. */
+	if (prog->reganch)
+		return(regtry(&ex, prog, string));
+
+	/* Messy cases:  unanchored match. */
+	if (prog->regstart != '\0') {
+		/* We know what char it must start with. */
+		for (s = string; s != NULL; s = strchr(s+1, prog->regstart))
+			if (regtry(&ex, prog, s))
+				return(1);
+		return(0);
+	} else {
+		/* We don't -- general case. */
+		for (s = string; !regtry(&ex, prog, s); s++)
+			if (*s == '\0')
+				return(0);
+		return(1);
+	}
+	/* NOTREACHED */
+}

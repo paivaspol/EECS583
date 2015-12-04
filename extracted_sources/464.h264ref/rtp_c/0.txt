@@ -1,0 +1,35 @@
+int ComposeRTPPacket (RTPpacket_t *p)
+
+{
+  // Consistency checks through assert, only used for debug purposes
+  assert (p->v == 2);
+  assert (p->p == 0);
+  assert (p->x == 0);
+  assert (p->cc == 0);    // mixer designers need to change this one
+  assert (p->m == 0 || p->m == 1);
+  assert (p->pt < 128);
+  assert (p->seq < 65536);
+  assert (p->payload != NULL);
+  assert (p->paylen < 65536 - 40);  // 2**16 -40 for IP/UDP/RTP header
+  assert (p->packet != NULL);
+
+  // Compose RTP header, little endian
+
+  p->packet[0] = (   (p->v)
+                  |  (p->p << 2)
+                  |  (p->x << 3)
+                  |  (p->cc << 4) );
+  p->packet[1] = (   (p->m)
+                  |  (p->pt << 1) );
+  p->packet[2] = p->seq & 0xff;
+  p->packet[3] = (p->seq >> 8) & 0xff;
+
+  memcpy (&p->packet[4], &p->timestamp, 4);  // change to shifts for unified byte sex
+  memcpy (&p->packet[8], &p->ssrc, 4);// change to shifts for unified byte sex
+
+  // Copy payload 
+
+  memcpy (&p->packet[12], p->payload, p->paylen);
+  p->packlen = p->paylen+12;
+  return 0;
+}

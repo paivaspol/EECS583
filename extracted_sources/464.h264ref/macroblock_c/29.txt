@@ -1,0 +1,68 @@
+int writeReferenceFrame (int mode, int i, int j, int fwd_flag, int  ref)
+{
+  Macroblock*     currMB    = &img->mb_data[img->current_mb_nr];
+  SyntaxElement*  currSE    = &img->MB_SyntaxElements[currMB->currSEnr];
+  Slice*          currSlice = img->currentSlice;
+  int*            bitCount  = currMB->bitcounter;
+  const int*      partMap   = assignSE2partition[input->partition_mode];
+  int             rate      = 0;
+  DataPartition*  dataPart;
+  int             list_offset = ((img->MbaffFrameFlag)&&(currMB->mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+  int             num_ref   = ( fwd_flag ? listXsize[LIST_0+list_offset]: listXsize[LIST_1+list_offset]);
+  int             flag_mode = 0;
+
+  if( num_ref == 1 )
+  {
+    return 0;
+  }
+  if ( num_ref == 2 )
+  {
+    flag_mode = 1;
+  }
+
+  currSE->value1 = ref;
+  currSE->value2  = 0;
+  currSE->type   = SE_REFFRAME;
+
+  dataPart = &(currSlice->partArr[partMap[currSE->type]]);
+  if (input->symbol_mode == UVLC)
+  {
+    if( flag_mode )
+    {
+      currSE->bitpattern = 1 - currSE->value1;
+      currSE->len = 1;
+      writeSyntaxElement2Buf_Fixed(currSE, dataPart->bitstream);
+    }
+    else
+    {
+      currSE->mapping = ue_linfo;
+      dataPart->writeSyntaxElement (currSE, dataPart);
+    }
+  }
+  else
+  {
+    currSE->context = BType2CtxRef (mode);
+    img->subblock_x = i; // position used for context determination
+    img->subblock_y = j; // position used for context determination
+    currSE->writing = writeRefFrame_CABAC;
+    currSE->value2 = (fwd_flag)? LIST_0:LIST_1;
+    dataPart->writeSyntaxElement (currSE, dataPart);
+  }
+
+  bitCount[BITS_INTER_MB] += currSE->len;
+  rate                    += currSE->len;
+#if TRACE
+  if (fwd_flag)
+  {
+    snprintf(currSE->tracestring, TRACESTRING_SIZE, "ref_idx_l0 = %d", currSE->value1);
+  }
+  else
+  {
+    snprintf(currSE->tracestring, TRACESTRING_SIZE, "ref_idx_l1 = %d", currSE->value1);
+  }
+#endif
+  currSE++;
+  currMB->currSEnr++;
+
+  return rate;
+}

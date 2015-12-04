@@ -1,0 +1,59 @@
+void
+expand_eh_region_end_cleanup (handler)
+     tree handler;
+{
+  struct eh_region *region;
+  tree protect_cleanup_actions;
+  rtx around_label;
+  rtx data_save[2];
+
+  if (! doing_eh (0))
+    return;
+
+  region = expand_eh_region_end ();
+  region->type = ERT_CLEANUP;
+  region->label = gen_label_rtx ();
+  region->u.cleanup.exp = handler;
+
+  around_label = gen_label_rtx ();
+  emit_jump (around_label);
+
+  emit_label (region->label);
+
+  /* Give the language a chance to specify an action to be taken if an
+     exception is thrown that would propagate out of the HANDLER.  */
+  protect_cleanup_actions
+    = (lang_protect_cleanup_actions
+       ? (*lang_protect_cleanup_actions) ()
+       : NULL_TREE);
+
+  if (protect_cleanup_actions)
+    expand_eh_region_start ();
+
+  /* In case this cleanup involves an inline destructor with a try block in
+     it, we need to save the EH return data registers around it.  */
+  data_save[0] = gen_reg_rtx (Pmode);
+  emit_move_insn (data_save[0], get_exception_pointer (cfun));
+  data_save[1] = gen_reg_rtx (word_mode);
+  emit_move_insn (data_save[1], get_exception_filter (cfun));
+
+  expand_expr (handler, const0_rtx, VOIDmode, 0);
+
+  emit_move_insn (cfun->eh->exc_ptr, data_save[0]);
+  emit_move_insn (cfun->eh->filter, data_save[1]);
+
+  if (protect_cleanup_actions)
+    expand_eh_region_end_must_not_throw (protect_cleanup_actions);
+
+  /* We need any stack adjustment complete before the around_label.  */
+  do_pending_stack_adjust ();
+
+  /* We delay the generation of the _Unwind_Resume until we generate
+     landing pads.  We emit a marker here so as to get good control
+     flow data in the meantime.  */
+  region->resume
+    = emit_jump_insn (gen_rtx_RESX (VOIDmode, region->region_number));
+  emit_barrier ();
+
+  emit_label (around_label);
+}

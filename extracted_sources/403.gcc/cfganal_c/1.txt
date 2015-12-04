@@ -1,0 +1,21 @@
+static bool
+need_fake_edge_p (insn)
+     rtx insn;
+{
+  if (!INSN_P (insn))
+    return false;
+
+  if ((GET_CODE (insn) == CALL_INSN
+       && !SIBLING_CALL_P (insn)
+       && !find_reg_note (insn, REG_NORETURN, NULL)
+       && !find_reg_note (insn, REG_ALWAYS_RETURN, NULL)
+       && !CONST_OR_PURE_CALL_P (insn)))
+    return true;
+
+  return ((GET_CODE (PATTERN (insn)) == ASM_OPERANDS
+	   && MEM_VOLATILE_P (PATTERN (insn)))
+	  || (GET_CODE (PATTERN (insn)) == PARALLEL
+	      && asm_noperands (insn) != -1
+	      && MEM_VOLATILE_P (XVECEXP (PATTERN (insn), 0, 0)))
+	  || GET_CODE (PATTERN (insn)) == ASM_INPUT);
+}

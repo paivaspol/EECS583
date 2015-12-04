@@ -1,0 +1,21 @@
+static void
+remove_regno_note (insn, note, regno)
+     rtx insn;
+     enum reg_note note;
+     unsigned int regno;
+{
+  rtx *note_link, this;
+
+  note_link = &REG_NOTES (insn);
+  for (this = *note_link; this; this = XEXP (this, 1))
+    if (REG_NOTE_KIND (this) == note
+	&& REG_P (XEXP (this, 0)) && REGNO (XEXP (this, 0)) == regno)
+      {
+	*note_link = XEXP (this, 1);
+	return;
+      }
+    else
+      note_link = &XEXP (this, 1);
+
+  abort ();
+}

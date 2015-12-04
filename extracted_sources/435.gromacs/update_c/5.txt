@@ -1,0 +1,53 @@
+static void do_update_bd(int start,int homenr,double dt,
+			 ivec nFreeze[],
+			 real invmass[],unsigned short ptype[],
+			 unsigned short cFREEZE[],unsigned short cTC[],
+			 rvec x[],rvec xprime[],rvec v[],rvec vold[],
+			 rvec f[],real temp,real fr,
+			 int ngtc,real tau_t[],real ref_t[],
+			 int *seed)
+{
+  int    gf,gt;
+  real   vn;
+  static real *rf=NULL;
+  real   rfac=0,invfr=0;
+  int    n,d;
+  unsigned long  jran;
+  bool   fr_is_nonzero;
+
+  fr_is_nonzero = (fabs(fr) > GMX_REAL_MIN);
+
+  if (rf == NULL)
+    snew(rf,ngtc);
+
+  if (fr_is_nonzero) {
+    rfac  = sqrt(2.0*BOLTZ*temp/(fr*dt));
+    invfr = 1.0/fr;
+  } else
+    for(n=0; n<ngtc; n++)
+      rf[n]  = sqrt(2.0*BOLTZ*ref_t[n]);
+  
+  jran = (unsigned long)((real)im*rando(seed));
+
+  for (n=start; (n<start+homenr); n++) {  
+    gf = cFREEZE[n];
+    gt = cTC[n];
+    for (d=0; (d<DIM); d++) {
+      vold[n][d]     = v[n][d];
+      if ((ptype[n]!=eptDummy) && (ptype[n]!=eptShell) && !nFreeze[gf][d]) {
+	if (fr_is_nonzero)
+	  vn         = invfr*f[n][d] + rfac*fgauss(&jran);
+	else
+	  /* NOTE: invmass = 1/(mass*fric_const*dt) */
+	  vn         = invmass[n]*f[n][d]*dt 
+	               + sqrt(invmass[n])*rf[gt]*fgauss(&jran);
+
+	v[n][d]      = vn;
+	xprime[n][d] = x[n][d]+vn*dt;
+      } else {
+	v[n][d]      = 0.0;
+	xprime[n][d] = x[n][d];
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+void Init_QMatrix (void)
+{
+  char *content;
+
+  if(input->ScalingMatrixPresentFlag)
+  {
+    printf ("Parsing QMatrix file %s ", input->QmatrixFile);
+    content = GetConfigFileContent(input->QmatrixFile, 0);
+    if(content!='\0')
+      ParseMatrix(content, strlen (content));
+    else
+      printf("\nError: %s\nProceeding with default values for all matrices.", errortext);
+
+    PatchMatrix();
+    printf("\n");
+
+    memset(UseDefaultScalingMatrix4x4Flag, 0, sizeof(short)*6);
+    UseDefaultScalingMatrix8x8Flag[0]=UseDefaultScalingMatrix8x8Flag[1]=0;
+  
+    free(content);
+  }
+}

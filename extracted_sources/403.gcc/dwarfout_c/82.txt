@@ -1,0 +1,38 @@
+static void
+output_formal_parameter_die (arg)
+     void *arg;
+{
+  tree node = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_formal_parameter);
+  sibling_attribute ();
+
+  switch (TREE_CODE_CLASS (TREE_CODE (node)))
+    {
+    case 'd':	/* We were called with some kind of a ..._DECL node.  */
+      {
+	register tree origin = decl_ultimate_origin (node);
+
+	if (origin != NULL)
+	  abstract_origin_attribute (origin);
+	else
+	  {
+	    name_and_src_coords_attributes (node);
+	    type_attribute (TREE_TYPE (node),
+			    TREE_READONLY (node), TREE_THIS_VOLATILE (node));
+	  }
+	if (DECL_ABSTRACT (node))
+	  equate_decl_number_to_die_number (node);
+	else
+	  location_or_const_value_attribute (node);
+      }
+      break;
+
+    case 't':	/* We were called with some kind of a ..._TYPE node.  */
+      type_attribute (node, 0, 0);
+      break;
+
+    default:
+      abort ();	/* Should never happen.  */
+    }
+}

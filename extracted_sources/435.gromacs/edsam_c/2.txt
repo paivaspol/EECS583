@@ -1,0 +1,86 @@
+void read_edi(t_edsamyn *edyn,t_edpar *edi,int nr_mdatoms)
+{
+  FILE *in;
+  int i,j,idum,magic=666,readmagic;
+  rvec *xdum;
+
+  /* the edi file is not free format, so expect problems if the input is 
+     corrupt :-) */
+  in=ffopen(edyn->edinam,"r");
+
+  /* check the magic number */
+  readmagic=read_edint(in);
+  if (readmagic != magic)
+    fatal_error(0,"Wrong magic number in %s",edyn->edinam);
+  
+  /* check the number of atoms */
+   edi->nini=read_edint(in);
+  if (edi->nini != nr_mdatoms)
+    fatal_error(0,"Nr of atoms in %s (%d) does not match nr of md atoms (%d)",
+		edyn->edinam,edi->nini,nr_mdatoms); 
+
+  /* Done checking. For the rest we blindly trust the input */
+  edi->npro=read_edint(in);
+  idum=read_edint(in);
+  if (idum == 0) edi->selmas=FALSE;
+  else edi->selmas=TRUE;
+  edi->outfrq=read_edint(in);
+  edi->logfrq=read_edint(in);
+  edi->maxedsteps=read_edint(in);
+  edi->slope=read_edreal(in);
+  edi->sref.nr=read_edint(in);
+
+  /* allocate space for reference positions and read them */
+  snew(edi->sref.anrs,edi->sref.nr);
+  snew(edi->sref.x,edi->sref.nr);
+  read_edx(in,edi->sref.nr,edi->sref.anrs,edi->sref.x);
+
+  /* average positions. they define which atoms will be used for ED sampling */
+  edi->sav.nr=read_edint(in);
+  snew(edi->sav.anrs,edi->sav.nr);
+  snew(edi->sav.x,edi->sav.nr);
+  read_edx(in,edi->sav.nr,edi->sav.anrs,edi->sav.x);
+
+  /* Nr of essdyn atoms */
+  edi->ned=read_edint(in);
+
+  /* eigenvectors */
+  read_edvecs(in,edi->sav.nr,&edi->vecs);
+
+  /* target positions */
+  edi->star.nr=read_edint(in);
+  if (edi->star.nr > 0) {
+    snew(edi->star.anrs,edi->star.nr);
+    snew(xdum,edi->star.nr);
+    read_edx(in,edi->star.nr,edi->star.anrs,xdum);
+    snew(edi->star.x,edi->ned);
+    j=0;
+    for(i=0; (i < edi->ned); i++) {
+      if (edi->star.anrs[j] == i) {
+	copy_rvec(xdum[j],edi->star.x[i]);
+	j++;
+      }
+    }
+    sfree(xdum);
+  }
+
+  /* positions defining origin of expansion circle */
+  edi->sori.nr=read_edint(in);
+  if (edi->sori.nr > 0) {
+    snew(edi->sori.anrs,edi->sori.nr);
+    snew(xdum,edi->sori.nr);
+    read_edx(in,edi->sori.nr,edi->sori.anrs,xdum);
+    snew(edi->sori.x,edi->ned);
+    j=0;
+    for(i=0; (i < edi->ned); i++) {
+      if (edi->sori.anrs[j] == i) {
+	copy_rvec(xdum[j],edi->sori.x[i]);
+	j++;
+      }
+    }
+    sfree(xdum);
+  }
+  
+  /* all done */
+  ffclose (in);
+}

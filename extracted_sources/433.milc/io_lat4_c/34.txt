@@ -1,0 +1,21 @@
+void w_parallel_f(gauge_file *gf)
+{
+  /* Close file (if still active) and release header and file structures */
+
+  g_sync();
+  if(gf->fp != NULL)
+    {
+      if(!gf->parallel)
+	printf("w_parallel_f: Attempting parallel close on serial file.\n");
+      
+      g_close(gf->fp);
+      gf->fp = NULL;
+    }
+
+  /* Node 0 writes ascii info file */
+
+  if(this_node == 0)write_gauge_info_file(gf);
+
+  /* Do not free gf and gf->header so calling program can use them */
+
+} /* w_parallel_f */

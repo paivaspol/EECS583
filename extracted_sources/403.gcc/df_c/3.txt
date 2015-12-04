@@ -1,0 +1,65 @@
+static void
+df_bitmaps_alloc (df, flags)
+     struct df *df;
+     int flags;
+{
+  unsigned int i;
+  int dflags = 0;
+
+  /* Free the bitmaps if they need resizing.  */
+  if ((flags & DF_LR) && df->n_regs < (unsigned int)max_reg_num ())
+    dflags |= DF_LR | DF_RU;
+  if ((flags & DF_RU) && df->n_uses < df->use_id)
+    dflags |= DF_RU;
+  if ((flags & DF_RD) && df->n_defs < df->def_id)
+    dflags |= DF_RD;
+
+  if (dflags)
+    df_bitmaps_free (df, dflags);
+
+  df->n_defs = df->def_id;
+  df->n_uses = df->use_id;
+
+  for (i = 0; i < df->n_bbs; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      struct bb_info *bb_info = DF_BB_INFO (df, bb);
+
+      if (flags & DF_RD && ! bb_info->rd_in)
+	{
+	  /* Allocate bitmaps for reaching definitions.  */
+	  bb_info->rd_kill = BITMAP_XMALLOC ();
+	  bitmap_zero (bb_info->rd_kill);
+	  bb_info->rd_gen = BITMAP_XMALLOC ();
+	  bitmap_zero (bb_info->rd_gen);
+	  bb_info->rd_in = BITMAP_XMALLOC ();
+	  bb_info->rd_out = BITMAP_XMALLOC ();
+	  bb_info->rd_valid = 0;
+	}
+
+      if (flags & DF_RU && ! bb_info->ru_in)
+	{
+	  /* Allocate bitmaps for upward exposed uses.  */
+	  bb_info->ru_kill = BITMAP_XMALLOC ();
+	  bitmap_zero (bb_info->ru_kill);
+	  /* Note the lack of symmetry.  */
+	  bb_info->ru_gen = BITMAP_XMALLOC ();
+	  bitmap_zero (bb_info->ru_gen);
+	  bb_info->ru_in = BITMAP_XMALLOC ();
+	  bb_info->ru_out = BITMAP_XMALLOC ();
+	  bb_info->ru_valid = 0;
+	}
+
+      if (flags & DF_LR && ! bb_info->lr_in)
+	{
+	  /* Allocate bitmaps for live variables.  */
+	  bb_info->lr_def = BITMAP_XMALLOC ();
+	  bitmap_zero (bb_info->lr_def);
+	  bb_info->lr_use = BITMAP_XMALLOC ();
+	  bitmap_zero (bb_info->lr_use);
+	  bb_info->lr_in = BITMAP_XMALLOC ();
+	  bb_info->lr_out = BITMAP_XMALLOC ();
+	  bb_info->lr_valid = 0;
+	}
+    }
+}

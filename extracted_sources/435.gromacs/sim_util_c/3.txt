@@ -1,0 +1,20 @@
+static void reset_energies(t_grpopts *opts,t_groups *grp,
+			   t_forcerec *fr,bool bNS,real epot[])
+{
+  int   i,j;
+  
+  /* First reset all energy components but the Long Range, except in
+   * some special cases.
+   */
+  for(i=0; (i<egNR); i++)
+    if (((i != egLR) && (i != egLJLR)) ||
+	(fr->bTwinRange && bNS) || (!fr->bTwinRange))
+      for(j=0; (j<grp->estat.nn); j++)
+	grp->estat.ee[i][j]=0.0;
+  
+  /* Normal potential energy components */
+  for(i=0; (i<=F_EPOT); i++)
+    epot[i] = 0.0;
+  epot[F_DVDL]    = 0.0;
+  epot[F_DVDLKIN] = 0.0;
+}

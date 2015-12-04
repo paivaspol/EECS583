@@ -1,0 +1,23 @@
+void exp_golomb_encode_eq_prob( EncodingEnvironmentPtr eep_dp,
+                                unsigned int symbol,
+                                int k) 
+{
+  while(1)
+  {
+    if (symbol >= (unsigned int)(1<<k))   
+    {
+      biari_encode_symbol_eq_prob(eep_dp, 1);   //first unary part
+      symbol = symbol - (1<<k);
+      k++;
+    }
+    else                  
+    {
+      biari_encode_symbol_eq_prob(eep_dp, 0);   //now terminated zero of unary part
+      while (k--)                               //next binary part
+        biari_encode_symbol_eq_prob(eep_dp, (unsigned char)((symbol>>k)&1)); 
+      break;
+    }
+  }
+
+  return;
+}

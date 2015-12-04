@@ -1,0 +1,26 @@
+void calc_triclinic_images(matrix box,rvec img[])
+{
+  int i;
+
+  /* Calculate 3 adjacent images in the xy-plane */
+  copy_rvec(box[0],img[0]);
+  copy_rvec(box[1],img[1]);
+  if (img[1][XX] < 0)
+    svmul(-1,img[1],img[1]);
+  rvec_sub(img[1],img[0],img[2]);
+
+  /* Get the next 3 in the xy-plane as mirror images */
+  for(i=0; i<3; i++)
+    svmul(-1,img[i],img[3+i]);
+
+  /* Calculate the first 4 out of xy-plane images */
+  copy_rvec(box[2],img[6]);
+  if (img[6][XX] < 0)
+    svmul(-1,img[6],img[6]);
+  for(i=0; i<3; i++)
+    rvec_add(img[6],img[i+1],img[7+i]);
+
+  /* Mirror the last 4 from the previous in opposite rotation */
+  for(i=0; i<4; i++)
+    svmul(-1,img[6 + (2+i) % 4],img[10+i]);
+}

@@ -1,0 +1,42 @@
+static void
+compute_dominance_frontiers_1 (frontiers, idom, bb, done)
+     sbitmap *frontiers;
+     int *idom;
+     int bb;
+     sbitmap done;
+{
+  basic_block b = BASIC_BLOCK (bb);
+  edge e;
+  int c;
+
+  SET_BIT (done, bb);
+  sbitmap_zero (frontiers[bb]);
+
+  /* Do the frontier of the children first.  Not all children in the
+     dominator tree (blocks dominated by this one) are children in the
+     CFG, so check all blocks.  */
+  for (c = 0; c < n_basic_blocks; ++c)
+    if (idom[c] == bb && ! TEST_BIT (done, c))
+      compute_dominance_frontiers_1 (frontiers, idom, c, done);
+
+  /* Find blocks conforming to rule (1) above.  */
+  for (e = b->succ; e; e = e->succ_next)
+    {
+      if (e->dest == EXIT_BLOCK_PTR)
+	continue;
+      if (idom[e->dest->index] != bb)
+	SET_BIT (frontiers[bb], e->dest->index);
+    }
+
+  /* Find blocks conforming to rule (2).  */
+  for (c = 0; c < n_basic_blocks; ++c)
+    if (idom[c] == bb)
+      {
+	int x;
+	EXECUTE_IF_SET_IN_SBITMAP (frontiers[c], 0, x,
+	  {
+	    if (idom[x] != bb)
+	      SET_BIT (frontiers[bb], x);
+	  });
+      }
+}

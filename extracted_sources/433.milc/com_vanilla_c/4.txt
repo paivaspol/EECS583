@@ -1,0 +1,22 @@
+void neighbor_coords_special(
+ int x,int y,int z,int t, /* coordinates of site */
+ int *dirpt,              /* direction (eg XUP) */
+ int fb,                  /* "forwards/backwards"  */
+ int *x2p,int *y2p,int *z2p,int *t2p)
+                          /* pointers to coordinates of neighbor */
+{
+int dir;
+    dir = (fb==FORWARDS) ? *dirpt : OPP_DIR(*dirpt);
+    *x2p = x; *y2p = y; *z2p = z; *t2p = t;
+    switch(dir){
+	case XUP: *x2p = (x+1)%nx; break;
+	case XDOWN: *x2p = (x+nx-1)%nx; break;
+	case YUP: *y2p = (y+1)%ny; break;
+	case YDOWN: *y2p = (y+ny-1)%ny; break;
+	case ZUP: *z2p = (z+1)%nz; break;
+	case ZDOWN: *z2p = (z+nz-1)%nz; break;
+	case TUP: *t2p = (t+1)%nt; break;
+	case TDOWN: *t2p = (t+nt-1)%nt; break;
+	default: printf("BOTCH: bad direction\n"); exit(1);
+    }
+}

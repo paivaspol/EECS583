@@ -1,0 +1,53 @@
+void
+P7PriorifyTransitionVector(float *t, struct p7prior_s *prior, 
+			   float tq[MAXDCHLET])
+{
+  int   ts;
+  int   q;
+  float mix[MAXDCHLET];
+  float totm, totd, toti;       /* total counts in three transition vecs */
+  float xi;                     /* Sjolander's X_i term */
+
+  mix[0] = 1.0;			/* default is simple one component */
+  if ((prior->strategy == PRI_DCHLET || prior->strategy == PRI_PAM) && prior->mnum > 1)
+    {
+      for (q = 0; q < prior->tnum; q++)
+        {
+          mix[q] =  tq[q] > 0.0 ? log(tq[q]) : -999.;
+          mix[q] += Logp_cvec(t,   3, prior->t[q]);   /* 3 match  */
+          mix[q] += Logp_cvec(t+3, 2, prior->t[q]+3); /* 2 insert */
+	  mix[q] += Logp_cvec(t+5, 2, prior->t[q]+5); /* 2 delete */
+        }
+      LogNorm(mix, prior->tnum); /* mix[q] is now P(q | counts) */
+    }
+				/* precalc some denominators */
+  totm = FSum(t,3);		
+  toti = t[TIM] + t[TII];
+  totd = t[TDM] + t[TDD];
+
+  for (ts = 0; ts < 7; ts++)  
+    {
+      xi = 0.0;
+      for (q = 0; q < prior->tnum; q++)
+        {
+	  switch (ts) {
+	  case TMM: case TMI: case TMD: 
+	    xi += mix[q] * (t[ts] + prior->t[q][ts]) / 
+	      (totm + FSum(prior->t[q], 3)); 
+	    break;
+	  case TIM: case TII: 
+	    xi += mix[q] * (t[ts] + prior->t[q][ts]) / 
+	      (toti + prior->t[q][TIM] + prior->t[q][TII]);
+	    break;
+	  case TDM: case TDD: 
+	    xi += mix[q] * (t[ts] + prior->t[q][ts]) / 
+	      (totd + prior->t[q][TDM] + prior->t[q][TDD]);
+	    break;
+	  }
+        }
+      t[ts] = xi;
+    }
+  FNorm(t,   3);		/* match  */
+  FNorm(t+3, 2);		/* insert */
+  FNorm(t+5, 2);		/* delete */
+}

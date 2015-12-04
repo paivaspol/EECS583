@@ -1,0 +1,31 @@
+static void
+compute_code_hoist_vbeinout ()
+{
+  int bb, changed, passes;
+
+  sbitmap_vector_zero (hoist_vbeout, n_basic_blocks);
+  sbitmap_vector_zero (hoist_vbein, n_basic_blocks);
+
+  passes = 0;
+  changed = 1;
+
+  while (changed)
+    {
+      changed = 0;
+
+      /* We scan the blocks in the reverse order to speed up
+	 the convergence.  */
+      for (bb = n_basic_blocks - 1; bb >= 0; bb--)
+	{
+	  changed |= sbitmap_a_or_b_and_c (hoist_vbein[bb], antloc[bb],
+					   hoist_vbeout[bb], transp[bb]);
+	  if (bb != n_basic_blocks - 1)
+	    sbitmap_intersection_of_succs (hoist_vbeout[bb], hoist_vbein, bb);
+	}
+
+      passes++;
+    }
+
+  if (gcse_file)
+    fprintf (gcse_file, "hoisting vbeinout computation: %d passes\n", passes);
+}

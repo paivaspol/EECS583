@@ -1,0 +1,31 @@
+void
+output_emit_prefix (buffer)
+     output_buffer *buffer;
+{
+  if (output_prefix (buffer) != NULL)
+    {
+      switch (diagnostic_prefixing_rule (buffer))
+        {
+        default:
+        case DIAGNOSTICS_SHOW_PREFIX_NEVER:
+          break;
+
+        case DIAGNOSTICS_SHOW_PREFIX_ONCE:
+          if (prefix_was_emitted_for (buffer))
+            {
+              output_indent (buffer);
+              break;
+            }
+          output_indentation (buffer) += 3;          
+          /* Fall through.  */
+
+        case DIAGNOSTICS_SHOW_PREFIX_EVERY_LINE:
+          {
+            int prefix_length = strlen (output_prefix (buffer));
+            output_append_r (buffer, output_prefix (buffer), prefix_length);
+            prefix_was_emitted_for (buffer) = 1;
+          }
+          break;
+        }
+    }
+}

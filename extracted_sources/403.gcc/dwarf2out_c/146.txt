@@ -1,0 +1,23 @@
+static void
+add_pubname (decl, die)
+     tree decl;
+     dw_die_ref die;
+{
+  pubname_ref p;
+
+  if (! TREE_PUBLIC (decl))
+    return;
+
+  if (pubname_table_in_use == pubname_table_allocated)
+    {
+      pubname_table_allocated += PUBNAME_TABLE_INCREMENT;
+      pubname_table
+	= (pubname_ref) xrealloc (pubname_table,
+				  (pubname_table_allocated
+				   * sizeof (pubname_entry)));
+    }
+
+  p = &pubname_table[pubname_table_in_use++];
+  p->die = die;
+  p->name = xstrdup (dwarf2_name (decl, 1));
+}

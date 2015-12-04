@@ -1,0 +1,81 @@
+static void
+subst_stack_regs (insn, regstack)
+     rtx insn;
+     stack regstack;
+{
+  rtx *note_link, note;
+  int i;
+
+  if (GET_CODE (insn) == CALL_INSN)
+    {
+      int top = regstack->top;
+
+      /* If there are any floating point parameters to be passed in
+	 registers for this call, make sure they are in the right
+	 order.  */
+
+      if (top >= 0)
+	{
+	  straighten_stack (PREV_INSN (insn), regstack);
+
+	  /* Now mark the arguments as dead after the call.  */
+
+	  while (regstack->top >= 0)
+	    {
+	      CLEAR_HARD_REG_BIT (regstack->reg_set, FIRST_STACK_REG + regstack->top);
+	      regstack->top--;
+	    }
+	}
+    }
+
+  /* Do the actual substitution if any stack regs are mentioned.
+     Since we only record whether entire insn mentions stack regs, and
+     subst_stack_regs_pat only works for patterns that contain stack regs,
+     we must check each pattern in a parallel here.  A call_value_pop could
+     fail otherwise.  */
+
+  if (stack_regs_mentioned (insn))
+    {
+      int n_operands = asm_noperands (PATTERN (insn));
+      if (n_operands >= 0)
+	{
+	  /* This insn is an `asm' with operands.  Decode the operands,
+	     decide how many are inputs, and do register substitution.
+	     Any REG_UNUSED notes will be handled by subst_asm_stack_regs.  */
+
+	  subst_asm_stack_regs (insn, regstack);
+	  return;
+	}
+
+      if (GET_CODE (PATTERN (insn)) == PARALLEL)
+	for (i = 0; i < XVECLEN (PATTERN (insn), 0); i++)
+	  {
+	    if (stack_regs_mentioned_p (XVECEXP (PATTERN (insn), 0, i)))
+	      subst_stack_regs_pat (insn, regstack,
+				    XVECEXP (PATTERN (insn), 0, i));
+	  }
+      else
+	subst_stack_regs_pat (insn, regstack, PATTERN (insn));
+    }
+
+  /* subst_stack_regs_pat may have deleted a no-op insn.  If so, any
+     REG_UNUSED will already have been dealt with, so just return.  */
+
+  if (GET_CODE (insn) == NOTE || INSN_DELETED_P (insn))
+    return;
+
+  /* If there is a REG_UNUSED note on a stack register on this insn,
+     the indicated reg must be popped.  The REG_UNUSED note is removed,
+     since the form of the newly emitted pop insn references the reg,
+     making it no longer `unset'.  */
+
+  note_link = &REG_NOTES (insn);
+  for (note = *note_link; note; note = XEXP (note, 1))
+    if (REG_NOTE_KIND (note) == REG_UNUSED && STACK_REG_P (XEXP (note, 0)))
+      {
+	*note_link = XEXP (note, 1);
+	insn = emit_pop_insn (insn, regstack, XEXP (note, 0), EMIT_AFTER);
+      }
+    else
+      note_link = &XEXP (note, 1);
+}

@@ -1,0 +1,331 @@
+static int
+store_one_arg (arg, argblock, flags, variable_size, reg_parm_stack_space)
+     struct arg_data *arg;
+     rtx argblock;
+     int flags;
+     int variable_size ATTRIBUTE_UNUSED;
+     int reg_parm_stack_space;
+{
+  tree pval = arg->tree_value;
+  rtx reg = 0;
+  int partial = 0;
+  int used = 0;
+  int i, lower_bound = 0, upper_bound = 0;
+  int sibcall_failure = 0;
+
+  if (TREE_CODE (pval) == ERROR_MARK)
+    return 1;
+
+  /* Push a new temporary level for any temporaries we make for
+     this argument.  */
+  push_temp_slots ();
+
+  if (ACCUMULATE_OUTGOING_ARGS && !(flags & ECF_SIBCALL))
+    {
+      /* If this is being stored into a pre-allocated, fixed-size, stack area,
+	 save any previous data at that location.  */
+      if (argblock && ! variable_size && arg->stack)
+	{
+#ifdef ARGS_GROW_DOWNWARD
+	  /* stack_slot is negative, but we want to index stack_usage_map
+	     with positive values.  */
+	  if (GET_CODE (XEXP (arg->stack_slot, 0)) == PLUS)
+	    upper_bound = -INTVAL (XEXP (XEXP (arg->stack_slot, 0), 1)) + 1;
+	  else
+	    upper_bound = 0;
+
+	  lower_bound = upper_bound - arg->size.constant;
+#else
+	  if (GET_CODE (XEXP (arg->stack_slot, 0)) == PLUS)
+	    lower_bound = INTVAL (XEXP (XEXP (arg->stack_slot, 0), 1));
+	  else
+	    lower_bound = 0;
+
+	  upper_bound = lower_bound + arg->size.constant;
+#endif
+
+	  for (i = lower_bound; i < upper_bound; i++)
+	    if (stack_usage_map[i]
+		/* Don't store things in the fixed argument area at this point;
+		   it has already been saved.  */
+		&& i > reg_parm_stack_space)
+	      break;
+
+	  if (i != upper_bound)
+	    {
+	      /* We need to make a save area.  See what mode we can make it.  */
+	      enum machine_mode save_mode
+		= mode_for_size (arg->size.constant * BITS_PER_UNIT, MODE_INT, 1);
+	      rtx stack_area
+		= gen_rtx_MEM (save_mode,
+			       memory_address (save_mode,
+					       XEXP (arg->stack_slot, 0)));
+
+	      if (save_mode == BLKmode)
+		{
+		  tree ot = TREE_TYPE (arg->tree_value);
+		  tree nt = build_qualified_type (ot, (TYPE_QUALS (ot)
+						       | TYPE_QUAL_CONST));
+
+		  arg->save_area = assign_temp (nt, 0, 1, 1);
+		  preserve_temp_slots (arg->save_area);
+		  emit_block_move (validize_mem (arg->save_area), stack_area,
+				   expr_size (arg->tree_value));
+		}
+	      else
+		{
+		  arg->save_area = gen_reg_rtx (save_mode);
+		  emit_move_insn (arg->save_area, stack_area);
+		}
+	    }
+	}
+      /* Now that we have saved any slots that will be overwritten by this
+	 store, mark all slots this store will use.  We must do this before
+	 we actually expand the argument since the expansion itself may
+	 trigger library calls which might need to use the same stack slot.  */
+      if (argblock && ! variable_size && arg->stack)
+	for (i = lower_bound; i < upper_bound; i++)
+	  stack_usage_map[i] = 1;
+    }
+
+  /* If this isn't going to be placed on both the stack and in registers,
+     set up the register and number of words.  */
+  if (! arg->pass_on_stack)
+    {
+      if (flags & ECF_SIBCALL)
+	reg = arg->tail_call_reg;
+      else
+	reg = arg->reg;
+      partial = arg->partial;
+    }
+
+  if (reg != 0 && partial == 0)
+    /* Being passed entirely in a register.  We shouldn't be called in
+       this case.  */
+    abort ();
+
+  /* If this arg needs special alignment, don't load the registers
+     here.  */
+  if (arg->n_aligned_regs != 0)
+    reg = 0;
+
+  /* If this is being passed partially in a register, we can't evaluate
+     it directly into its stack slot.  Otherwise, we can.  */
+  if (arg->value == 0)
+    {
+      /* stack_arg_under_construction is nonzero if a function argument is
+	 being evaluated directly into the outgoing argument list and
+	 expand_call must take special action to preserve the argument list
+	 if it is called recursively.
+
+	 For scalar function arguments stack_usage_map is sufficient to
+	 determine which stack slots must be saved and restored.  Scalar
+	 arguments in general have pass_on_stack == 0.
+
+	 If this argument is initialized by a function which takes the
+	 address of the argument (a C++ constructor or a C function
+	 returning a BLKmode structure), then stack_usage_map is
+	 insufficient and expand_call must push the stack around the
+	 function call.  Such arguments have pass_on_stack == 1.
+
+	 Note that it is always safe to set stack_arg_under_construction,
+	 but this generates suboptimal code if set when not needed.  */
+
+      if (arg->pass_on_stack)
+	stack_arg_under_construction++;
+
+      arg->value = expand_expr (pval,
+				(partial
+				 || TYPE_MODE (TREE_TYPE (pval)) != arg->mode)
+				? NULL_RTX : arg->stack,
+				VOIDmode, 0);
+
+      /* If we are promoting object (or for any other reason) the mode
+	 doesn't agree, convert the mode.  */
+
+      if (arg->mode != TYPE_MODE (TREE_TYPE (pval)))
+	arg->value = convert_modes (arg->mode, TYPE_MODE (TREE_TYPE (pval)),
+				    arg->value, arg->unsignedp);
+
+      if (arg->pass_on_stack)
+	stack_arg_under_construction--;
+    }
+
+  /* Don't allow anything left on stack from computation
+     of argument to alloca.  */
+  if (flags & ECF_MAY_BE_ALLOCA)
+    do_pending_stack_adjust ();
+
+  if (arg->value == arg->stack)
+    /* If the value is already in the stack slot, we are done.  */
+    ;
+  else if (arg->mode != BLKmode)
+    {
+      int size;
+
+      /* Argument is a scalar, not entirely passed in registers.
+	 (If part is passed in registers, arg->partial says how much
+	 and emit_push_insn will take care of putting it there.)
+
+	 Push it, and if its size is less than the
+	 amount of space allocated to it,
+	 also bump stack pointer by the additional space.
+	 Note that in C the default argument promotions
+	 will prevent such mismatches.  */
+
+      size = GET_MODE_SIZE (arg->mode);
+      /* Compute how much space the push instruction will push.
+	 On many machines, pushing a byte will advance the stack
+	 pointer by a halfword.  */
+#ifdef PUSH_ROUNDING
+      size = PUSH_ROUNDING (size);
+#endif
+      used = size;
+
+      /* Compute how much space the argument should get:
+	 round up to a multiple of the alignment for arguments.  */
+      if (none != FUNCTION_ARG_PADDING (arg->mode, TREE_TYPE (pval)))
+	used = (((size + PARM_BOUNDARY / BITS_PER_UNIT - 1)
+		 / (PARM_BOUNDARY / BITS_PER_UNIT))
+		* (PARM_BOUNDARY / BITS_PER_UNIT));
+
+      /* This isn't already where we want it on the stack, so put it there.
+	 This can either be done with push or copy insns.  */
+      emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval), NULL_RTX, 0,
+		      partial, reg, used - size, argblock,
+		      ARGS_SIZE_RTX (arg->offset), reg_parm_stack_space,
+		      ARGS_SIZE_RTX (arg->alignment_pad));
+
+      /* Unless this is a partially-in-register argument, the argument is now
+	 in the stack.  */
+      if (partial == 0)
+	arg->value = arg->stack;
+    }
+  else
+    {
+      /* BLKmode, at least partly to be pushed.  */
+
+      int excess;
+      rtx size_rtx;
+
+      /* Pushing a nonscalar.
+	 If part is passed in registers, PARTIAL says how much
+	 and emit_push_insn will take care of putting it there.  */
+
+      /* Round its size up to a multiple
+	 of the allocation unit for arguments.  */
+
+      if (arg->size.var != 0)
+	{
+	  excess = 0;
+	  size_rtx = ARGS_SIZE_RTX (arg->size);
+	}
+      else
+	{
+	  /* PUSH_ROUNDING has no effect on us, because
+	     emit_push_insn for BLKmode is careful to avoid it.  */
+	  excess = (arg->size.constant - int_size_in_bytes (TREE_TYPE (pval))
+		    + partial * UNITS_PER_WORD);
+	  size_rtx = expr_size (pval);
+	}
+
+      if ((flags & ECF_SIBCALL) && GET_CODE (arg->value) == MEM)
+	{
+	  /* emit_push_insn might not work properly if arg->value and
+	     argblock + arg->offset areas overlap.  */
+	  rtx x = arg->value;
+	  int i = 0;
+
+	  if (XEXP (x, 0) == current_function_internal_arg_pointer
+	      || (GET_CODE (XEXP (x, 0)) == PLUS
+		  && XEXP (XEXP (x, 0), 0) ==
+		     current_function_internal_arg_pointer
+		  && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT))
+	    {
+	      if (XEXP (x, 0) != current_function_internal_arg_pointer)
+		i = INTVAL (XEXP (XEXP (x, 0), 1));
+
+	      /* expand_call should ensure this */
+	      if (arg->offset.var || GET_CODE (size_rtx) != CONST_INT)
+		abort ();
+
+	      if (arg->offset.constant > i)
+		{
+		  if (arg->offset.constant < i + INTVAL (size_rtx))
+		    sibcall_failure = 1;
+		}
+	      else if (arg->offset.constant < i)
+		{
+		  if (i < arg->offset.constant + INTVAL (size_rtx))
+		    sibcall_failure = 1;
+		}
+	    }
+	}
+
+      /* Special handling is required if part of the parameter lies in the
+	 register parameter area.  The argument may be copied into the stack
+	 slot using memcpy(), but the original contents of the register
+	 parameter area will be restored after the memcpy() call.
+
+	 To ensure that the part that lies in the register parameter area
+	 is copied correctly, we emit a separate push for that part.  This
+	 push should be small enough to avoid a call to memcpy().  */
+#ifndef STACK_PARMS_IN_REG_PARM_AREA
+      if (arg->reg && arg->pass_on_stack)
+#else
+      if (1)
+#endif
+	{
+	  if (arg->offset.constant < reg_parm_stack_space && arg->offset.var)
+	    error ("variable offset is passed partially in stack and in reg");
+	  else if (arg->offset.constant < reg_parm_stack_space && arg->size.var)
+	    error ("variable size is passed partially in stack and in reg");
+	  else if (arg->offset.constant < reg_parm_stack_space 
+	      && ((arg->offset.constant + arg->size.constant) 
+		   > reg_parm_stack_space))
+          {
+	    rtx size_rtx1 = GEN_INT (reg_parm_stack_space - arg->offset.constant);
+	    emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval), size_rtx1,
+		            TYPE_ALIGN (TREE_TYPE (pval)), partial, reg,
+			    excess, argblock, ARGS_SIZE_RTX (arg->offset),
+			    reg_parm_stack_space,
+		            ARGS_SIZE_RTX (arg->alignment_pad));
+	  }
+	}
+	
+
+      emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval), size_rtx,
+		      TYPE_ALIGN (TREE_TYPE (pval)), partial, reg, excess,
+		      argblock, ARGS_SIZE_RTX (arg->offset),
+		      reg_parm_stack_space,
+		      ARGS_SIZE_RTX (arg->alignment_pad));
+
+      /* Unless this is a partially-in-register argument, the argument is now
+	 in the stack.
+
+	 ??? Unlike the case above, in which we want the actual
+	 address of the data, so that we can load it directly into a
+	 register, here we want the address of the stack slot, so that
+	 it's properly aligned for word-by-word copying or something
+	 like that.  It's not clear that this is always correct.  */
+      if (partial == 0)
+	arg->value = arg->stack_slot;
+    }
+
+  /* Once we have pushed something, pops can't safely
+     be deferred during the rest of the arguments.  */
+  NO_DEFER_POP;
+
+  /* ANSI doesn't require a sequence point here,
+     but PCC has one, so this will avoid some problems.  */
+  emit_queue ();
+
+  /* Free any temporary slots made in processing this argument.  Show
+     that we might have taken the address of something and pushed that
+     as an operand.  */
+  preserve_temp_slots (NULL_RTX);
+  free_temp_slots ();
+  pop_temp_slots ();
+
+  return sibcall_failure;
+}

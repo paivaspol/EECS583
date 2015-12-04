@@ -1,0 +1,136 @@
+void EdgeLoop(imgpel** Img, byte Strength[16],ImageParameters *img, int MbQAddr, int AlphaC0Offset, int BetaOffset,
+              int dir, int edge, int width, int yuv, int uv)
+{
+  int      pel, ap = 0, aq = 0, Strng ;
+  int      incP, incQ;
+  int      C0, c0, Delta, dif, AbsDelta ;
+  int      L2 = 0, L1, L0, R0, R1, R2 = 0, RL0, L3, R3 ;
+  int      Alpha = 0, Beta = 0 ;
+  byte*    ClipTab = NULL;   
+  int      small_gap;
+  int      indexA, indexB;
+  int      PelNum;
+  int      StrengthIdx;
+  imgpel   *SrcPtrP, *SrcPtrQ;
+  int      QP;
+  int      xP, xQ, yP, yQ;
+  Macroblock *MbQ, *MbP;
+  PixelPos pixP, pixQ;
+  int      bitdepth_scale;
+  int      pelnum_cr[2][4] =  {{0,8,16,16}, {0,8, 8,16}};  //[dir:0=vert, 1=hor.][yuv_format]
+
+  if (!yuv)
+    bitdepth_scale = 1<<(img->bitdepth_luma - 8);
+  else
+    bitdepth_scale = 1<<(img->bitdepth_chroma - 8);
+  
+  PelNum = yuv ? pelnum_cr[dir][img->yuv_format] : 16 ;
+
+  for( pel=0 ; pel<PelNum ; pel++ )
+  {
+    xQ = dir ? pel : edge << 2;
+    yQ = dir ? (edge < 4 ? edge << 2 : 1) : pel;
+    getNeighbour(MbQAddr, xQ, yQ, 1-yuv, &pixQ);
+    getNeighbour(MbQAddr, xQ - (1 - dir), yQ - dir, 1-yuv, &pixP);
+    xP = pixP.x;
+    yP = pixP.y;
+    MbQ = &(img->mb_data[MbQAddr]);
+    MbP = &(img->mb_data[pixP.mb_addr]);
+    fieldModeFilteringFlag = MbQ->mb_field || MbP->mb_field;
+    StrengthIdx = (yuv&&(PelNum==8)) ? ((MbQ->mb_field && !MbP->mb_field) ? pel<<1 :((pel>>1)<<2)+(pel%2)) : pel;
+
+    if (pixP.available || (MbQ->LFDisableIdc== 0)) {
+      incQ = dir ? ((fieldModeFilteringFlag && !MbQ->mb_field) ? 2 * width : width) : 1;
+      incP = dir ? ((fieldModeFilteringFlag && !MbP->mb_field) ? 2 * width : width) : 1;
+      SrcPtrQ = &(Img[pixQ.pos_y][pixQ.pos_x]);
+      SrcPtrP = &(Img[pixP.pos_y][pixP.pos_x]);
+
+      // Average QP of the two blocks
+      QP  = yuv ? (QP_SCALE_CR[CQPOF(MbP->qp,uv)] + QP_SCALE_CR[CQPOF(MbQ->qp,uv)] + 1) >> 1 : (MbP->qp + MbQ->qp + 1) >> 1;
+
+      indexA = IClip(0, MAX_QP, QP + AlphaC0Offset);
+      indexB = IClip(0, MAX_QP, QP + BetaOffset);
+    
+      Alpha  =ALPHA_TABLE[indexA] * bitdepth_scale;
+      Beta   =BETA_TABLE[indexB]  * bitdepth_scale;
+      ClipTab=CLIP_TAB[indexA]; 
+
+      L0  = SrcPtrP[0] ;
+      R0  = SrcPtrQ[0] ;
+      L1  = SrcPtrP[-incP] ;
+      R1  = SrcPtrQ[ incQ] ;
+      L2  = SrcPtrP[-incP*2] ;
+      R2  = SrcPtrQ[ incQ*2] ;
+      L3  = SrcPtrP[-incP*3] ;
+      R3  = SrcPtrQ[ incQ*3] ;
+
+      if( (Strng = Strength[StrengthIdx]) )
+      {
+        AbsDelta  = abs( Delta = R0 - L0 )  ;
+      
+        if( AbsDelta < Alpha )
+        {
+          C0  = ClipTab[ Strng ] * bitdepth_scale;
+          if( ((abs( R0 - R1) - Beta )  & (abs(L0 - L1) - Beta )) < 0  ) 
+          {
+            if( !yuv)
+            {
+              aq  = (abs( R0 - R2) - Beta ) < 0  ;
+              ap  = (abs( L0 - L2) - Beta ) < 0  ;
+            }
+          
+            RL0             = L0 + R0 ;
+          
+            if(Strng == 4 )    // INTRA strong filtering
+            {
+              if( yuv)  // Chroma
+              {
+                SrcPtrQ[0] = ((R1 << 1) + R0 + L1 + 2) >> 2; 
+                SrcPtrP[0] = ((L1 << 1) + L0 + R1 + 2) >> 2;                                           
+              }
+              else  // Luma
+              {
+                small_gap = (AbsDelta < ((Alpha >> 2) + 2));
+              
+                aq &= small_gap;
+                ap &= small_gap;
+              
+                SrcPtrQ[0]   = aq ? ( L1 + ((R1 + RL0) << 1) +  R2 + 4) >> 3 : ((R1 << 1) + R0 + L1 + 2) >> 2 ;
+                SrcPtrP[0]   = ap ? ( R1 + ((L1 + RL0) << 1) +  L2 + 4) >> 3 : ((L1 << 1) + L0 + R1 + 2) >> 2 ;
+              
+                SrcPtrQ[ incQ] =   aq  ? ( R2 + R0 + R1 + L0 + 2) >> 2 : R1;
+                SrcPtrP[-incP] =   ap  ? ( L2 + L1 + L0 + R0 + 2) >> 2 : L1;
+              
+                SrcPtrQ[ incQ*2] = aq ? (((R3 + R2) <<1) + R2 + R1 + RL0 + 4) >> 3 : R2;
+                SrcPtrP[-incP*2] = ap ? (((L3 + L2) <<1) + L2 + L1 + RL0 + 4) >> 3 : L2;
+              }
+            }
+            else                                                                                   // normal filtering
+            {
+              c0               = yuv? (C0+1):(C0 + ap + aq) ;
+              dif              = IClip( -c0, c0, ( (Delta << 2) + (L1 - R1) + 4) >> 3 ) ;
+              if(!yuv)
+              {
+                SrcPtrP[0]  = IClip(0, img->max_imgpel_value , L0 + dif) ;
+                SrcPtrQ[0]  = IClip(0, img->max_imgpel_value , R0 - dif) ;
+              } 
+              else 
+              {
+                SrcPtrP[0]  = IClip(0, img->max_imgpel_value_uv , L0 + dif) ;
+                SrcPtrQ[0]  = IClip(0, img->max_imgpel_value_uv , R0 - dif) ;
+              }
+            
+              if( !yuv )
+              {
+                if( ap )
+                  SrcPtrP[-incP] += IClip( -C0,  C0, ( L2 + ((RL0 + 1) >> 1) - (L1<<1)) >> 1 ) ;
+                if( aq  )
+                  SrcPtrQ[ incQ] += IClip( -C0,  C0, ( R2 + ((RL0 + 1) >> 1) - (R1<<1)) >> 1 ) ;
+              } ;
+            } ;
+          } ; 
+        } ;
+      } ;
+    } ;
+  }
+}

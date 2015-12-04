@@ -1,0 +1,27 @@
+void
+adjust_stack (adjust)
+     rtx adjust;
+{
+  rtx temp;
+  adjust = protect_from_queue (adjust, 0);
+
+  if (adjust == const0_rtx)
+    return;
+
+  /* We expect all variable sized adjustments to be multiple of
+     PREFERRED_STACK_BOUNDARY.  */
+  if (GET_CODE (adjust) == CONST_INT)
+    stack_pointer_delta -= INTVAL (adjust);
+
+  temp = expand_binop (Pmode,
+#ifdef STACK_GROWS_DOWNWARD
+		       add_optab,
+#else
+		       sub_optab,
+#endif
+		       stack_pointer_rtx, adjust, stack_pointer_rtx, 0,
+		       OPTAB_LIB_WIDEN);
+
+  if (temp != stack_pointer_rtx)
+    emit_move_insn (stack_pointer_rtx, temp);
+}

@@ -1,0 +1,49 @@
+static int
+reg_in_basic_block_p (insn, reg)
+     rtx insn, reg;
+{
+  int regno = REGNO (reg);
+  rtx p;
+
+  if (REGNO_FIRST_UID (regno) != INSN_UID (insn))
+    return 0;
+
+  /* Search this basic block for the already recorded last use of the reg.  */
+  for (p = insn; p; p = NEXT_INSN (p))
+    {
+      switch (GET_CODE (p))
+	{
+	case NOTE:
+	  break;
+
+	case INSN:
+	case CALL_INSN:
+	  /* Ordinary insn: if this is the last use, we win.  */
+	  if (REGNO_LAST_UID (regno) == INSN_UID (p))
+	    return 1;
+	  break;
+
+	case JUMP_INSN:
+	  /* Jump insn: if this is the last use, we win.  */
+	  if (REGNO_LAST_UID (regno) == INSN_UID (p))
+	    return 1;
+	  /* Otherwise, it's the end of the basic block, so we lose.  */
+	  return 0;
+
+	case CODE_LABEL:
+	case BARRIER:
+	  /* It's the end of the basic block, so we lose.  */
+	  return 0;
+
+	default:
+	  break;
+	}
+    }
+
+  /* The "last use" that was recorded can't be found after the first
+     use.  This can happen when the last use was deleted while
+     processing an inner loop, this inner loop was then completely
+     unrolled, and the outer loop is always exited after the inner loop,
+     so that everything after the first use becomes a single basic block.  */
+  return 1;
+}

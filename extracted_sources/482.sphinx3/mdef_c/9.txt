@@ -1,0 +1,37 @@
+static void parse_tmat_senmap (mdef_t *m, char *line, int32 off, s3pid_t p)
+{
+    int32 wlen, n, s;
+    char word[1024], *lp;
+
+    lp = line + off;
+    
+    /* Read transition matrix id */
+    if ((sscanf (lp, "%d%n", &n, &wlen) != 1) || (n < 0))
+        E_FATAL("Missing or bad transition matrix id: %s\n", line);
+    m->phone[p].tmat = n;
+    if (m->n_tmat <= n)
+	E_FATAL("tmat-id(%d) > #tmat in header(%d): %s\n", n, m->n_tmat, line);
+    lp += wlen;
+    
+    /* Read senone mappings for each emitting state */
+    for (n = 0; n < m->n_emit_state; n++) {
+        if ((sscanf (lp, "%d%n", &s, &wlen) != 1) || (s < 0))
+	    E_FATAL("Missing or bad state[%d]->senone mapping: %s\n", n, line);
+	if ((p < m->n_ciphone) && (m->n_ci_sen <= s))
+	    E_FATAL("CI-senone-id(%d) > #CI-senones(%d): %s\n", s, m->n_ci_sen, line);
+	if (m->n_sen <= s)
+	    E_FATAL("Senone-id(%d) > #senones(%d): %s\n", s, m->n_sen, line);
+
+	m->sseq[p][n] = s;
+	lp += wlen;
+    }
+
+    /* Check for the last non-emitting state N */
+    if ((sscanf (lp, "%s%n", word, &wlen) != 1) || (strcmp (word, "N") != 0))
+        E_FATAL("Missing non-emitting state spec: %s\n", line);
+    lp += wlen;
+
+    /* Check for end of line */
+    if (sscanf (lp, "%s%n", word, &wlen) == 1)
+        E_FATAL("Non-empty beyond non-emitting final state: %s\n", line);
+}

@@ -1,0 +1,40 @@
+void
+MSAAppendGC(MSA *msa, char *tag, char *value)
+{
+  int tagidx;
+
+  /* Is this an unparsed tag name that we recognize?
+   * If not, handle adding it to index, and reallocating
+   * as needed.
+   */
+  if (msa->gc_tag == NULL)	/* first tag? init w/ malloc  */
+    {
+      msa->gc_tag = MallocOrDie(sizeof(char *));
+      msa->gc     = MallocOrDie(sizeof(char *));
+      msa->gc_idx = GKIInit();
+      tagidx      = GKIStoreKey(msa->gc_idx, tag);
+      SQD_DASSERT1((tagidx == 0));
+      msa->gc[0]  = NULL;
+    }
+  else
+    {			/* new tag? */
+      tagidx  = GKIKeyIndex(msa->gc_idx, tag); 
+      if (tagidx < 0) {		/* it's a new tag name; realloc */
+	tagidx = GKIStoreKey(msa->gc_idx, tag);
+				/* since we alloc in blocks of 1,
+				   we always realloc upon seeing 
+				   a new tag. */
+	SQD_DASSERT1((tagidx == msa->ngc));
+	msa->gc_tag = ReallocOrDie(msa->gc_tag, (msa->ngc+1) * sizeof(char **));
+	msa->gc     = ReallocOrDie(msa->gc, (msa->ngc+1) * sizeof(char **));
+	msa->gc[tagidx] = NULL;
+      }
+    }
+
+  if (tagidx == msa->ngc) {
+    msa->gc_tag[tagidx] = sre_strdup(tag, -1);
+    msa->ngc++;
+  }
+  sre_strcat(&(msa->gc[tagidx]), -1, value, -1);
+  return;
+}

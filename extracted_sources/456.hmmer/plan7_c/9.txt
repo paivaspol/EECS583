@@ -1,0 +1,127 @@
+void
+P7Logoddsify(struct plan7_s *hmm, int viterbi_mode)
+{
+  int k;			/* counter for model position */
+  int x;			/* counter for symbols        */
+  float accum;
+  float tbm, tme;
+
+  if (hmm->flags & PLAN7_HASBITS) return;
+
+  /* Symbol emission scores
+   */
+  for (k = 1; k <= hmm->M; k++) 
+    {
+				/* match/insert emissions in main model */
+      for (x = 0; x < Alphabet_size; x++) 
+	{
+	  hmm->msc[x][k] = Prob2Score(hmm->mat[k][x], hmm->null[x]);
+	  if (k < hmm->M) 
+	    hmm->isc[x][k] =  Prob2Score(hmm->ins[k][x], hmm->null[x]); 
+	}
+				/* degenerate match/insert emissions */
+      for (x = Alphabet_size; x < Alphabet_iupac; x++) 
+	{
+	  hmm->msc[x][k] = DegenerateSymbolScore(hmm->mat[k], hmm->null, x);
+	  if (k < hmm->M)
+	    hmm->isc[x][k] = DegenerateSymbolScore(hmm->ins[k], hmm->null, x);
+	}
+    }
+
+  /* State transitions.
+   * 
+   * A note on "folding" of D_1 and D_M.
+   * These two delete states are folded out of search form models
+   * in order to prevent null cycles in the dynamic programming
+   * algorithms (see code below). However, we use their log transitions
+   * when we save the model! So the following log transition probs
+   * are used *only* in save files, *never* in search algorithms:
+   *    log (tbd1), D1 -> M2, D1 -> D2
+   *    Mm-1 -> Dm, Dm-1 -> Dm
+   *    
+   * In a search algorithm, these have to be interpreted as -INFTY    
+   * because their contributions are folded into bsc[] and esc[]
+   * entry/exit scores. They can't be set to -INFTY here because
+   * we need them in save files.
+   */
+  for (k = 1; k < hmm->M; k++)
+    {
+      hmm->tsc[TMM][k] = Prob2Score(hmm->t[k][TMM], hmm->p1);
+      hmm->tsc[TMI][k] = Prob2Score(hmm->t[k][TMI], hmm->p1);
+      hmm->tsc[TMD][k] = Prob2Score(hmm->t[k][TMD], 1.0);
+      hmm->tsc[TIM][k] = Prob2Score(hmm->t[k][TIM], hmm->p1);
+      hmm->tsc[TII][k] = Prob2Score(hmm->t[k][TII], hmm->p1);
+      hmm->tsc[TDM][k] = Prob2Score(hmm->t[k][TDM], hmm->p1);
+      hmm->tsc[TDD][k] = Prob2Score(hmm->t[k][TDD], 1.0);
+    }
+
+  /* B->M entry transitions. Note how D_1 is folded out.
+   * M1 is just B->M1
+   * M2 is sum (or max) of B->M2 and B->D1->M2
+   * M_k is sum (or max) of B->M_k and B->D1...D_k-1->M_k
+   * These have to be done in log space, else you'll get
+   * underflow errors; and we also have to watch for log(0).
+   * A little sloppier than it probably has to be; historically,
+   * doing in this in log space was in response to a bug report.
+   */
+  accum = hmm->tbd1 > 0.0 ? log(hmm->tbd1) : -9999.;
+  for (k = 1; k <= hmm->M; k++)
+    {
+      tbm = hmm->begin[k] > 0. ? log(hmm->begin[k]) : -9999.;	/* B->M_k part */
+
+      /* B->D1...D_k-1->M_k part we get from accum*/
+      if (k > 1 && accum > -9999.) 
+	{	
+	  if (hmm->t[k-1][TDM] > 0.0)
+	    {
+	      if (viterbi_mode) tbm =  MAX(tbm, accum + log(hmm->t[k-1][TDM]));
+	      else              tbm =  LogSum(tbm, accum + log(hmm->t[k-1][TDM]));
+	    }
+
+	  accum = (hmm->t[k-1][TDD] > 0.0) ? accum + log(hmm->t[k-1][TDD]) : -9999.;
+	}
+				/* Convert from log_e to scaled integer log_2 odds. */
+      if (tbm > -9999.) 
+	hmm->bsc[k] = (int) floor(0.5 + INTSCALE * 1.44269504 * (tbm - log(hmm->p1)));
+      else
+	hmm->bsc[k] = -INFTY;
+    }
+
+  /* M->E exit transitions. Note how D_M is folded out.
+   * M_M is 1 by definition
+   * M_M-1 is sum of M_M-1->E and M_M-1->D_M->E, where D_M->E is 1 by definition
+   * M_k is sum of M_k->E and M_k->D_k+1...D_M->E
+   * Must be done in log space to avoid underflow errors.
+   * A little sloppier than it probably has to be; historically,
+   * doing in this in log space was in response to a bug report.
+   */
+  hmm->esc[hmm->M] = 0;
+  accum = 0.;
+  for (k = hmm->M-1; k >= 1; k--)
+    {
+      tme = hmm->end[k] > 0. ? log(hmm->end[k]) : -9999.;
+      if (accum > -9999.)
+	{
+	  if (hmm->t[k][TMD] > 0.0)
+	    {	
+	      if (viterbi_mode) tme = MAX(tme, accum + log(hmm->t[k][TMD]));
+	      else              tme = LogSum(tme, accum + log(hmm->t[k][TMD]));
+	    }
+	  accum = (hmm->t[k][TDD] > 0.0) ? accum + log(hmm->t[k][TDD]) : -9999.;
+	}
+				/* convert from log_e to scaled integer log odds. */
+      hmm->esc[k] = (tme > -9999.) ? (int) floor(0.5 + INTSCALE * 1.44269504 * tme) : -INFTY;
+    }
+
+				/* special transitions */
+  hmm->xsc[XTN][LOOP] = Prob2Score(hmm->xt[XTN][LOOP], hmm->p1);
+  hmm->xsc[XTN][MOVE] = Prob2Score(hmm->xt[XTN][MOVE], 1.0);
+  hmm->xsc[XTE][LOOP] = Prob2Score(hmm->xt[XTE][LOOP], 1.0);
+  hmm->xsc[XTE][MOVE] = Prob2Score(hmm->xt[XTE][MOVE], 1.0);
+  hmm->xsc[XTC][LOOP] = Prob2Score(hmm->xt[XTC][LOOP], hmm->p1);
+  hmm->xsc[XTC][MOVE] = Prob2Score(hmm->xt[XTC][MOVE], 1.-hmm->p1);
+  hmm->xsc[XTJ][LOOP] = Prob2Score(hmm->xt[XTJ][LOOP], hmm->p1);
+  hmm->xsc[XTJ][MOVE] = Prob2Score(hmm->xt[XTJ][MOVE], 1.0);
+
+  hmm->flags |= PLAN7_HASBITS;	/* raise the log-odds ready flag */
+}

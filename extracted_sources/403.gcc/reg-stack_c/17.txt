@@ -1,0 +1,31 @@
+static int
+swap_rtx_condition_1 (pat)
+     rtx pat;
+{
+  const char *fmt;
+  int i, r = 0;
+
+  if (GET_RTX_CLASS (GET_CODE (pat)) == '<')
+    {
+      PUT_CODE (pat, swap_condition (GET_CODE (pat)));
+      r = 1;
+    }
+  else
+    {
+      fmt = GET_RTX_FORMAT (GET_CODE (pat));
+      for (i = GET_RTX_LENGTH (GET_CODE (pat)) - 1; i >= 0; i--)
+	{
+	  if (fmt[i] == 'E')
+	    {
+	      int j;
+
+	      for (j = XVECLEN (pat, i) - 1; j >= 0; j--)
+		r |= swap_rtx_condition_1 (XVECEXP (pat, i, j));
+	    }
+	  else if (fmt[i] == 'e')
+	    r |= swap_rtx_condition_1 (XEXP (pat, i));
+	}
+    }
+
+  return r;
+}

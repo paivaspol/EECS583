@@ -1,0 +1,307 @@
+static void
+mark_set_1 (pbi, code, reg, cond, insn, flags)
+     struct propagate_block_info *pbi;
+     enum rtx_code code;
+     rtx reg, cond, insn;
+     int flags;
+{
+  int regno_first = -1, regno_last = -1;
+  unsigned long not_dead = 0;
+  int i;
+
+  /* Modifying just one hardware register of a multi-reg value or just a
+     byte field of a register does not mean the value from before this insn
+     is now dead.  Of course, if it was dead after it's unused now.  */
+
+  switch (GET_CODE (reg))
+    {
+    case PARALLEL:
+      /* Some targets place small structures in registers for return values of
+	 functions.  We have to detect this case specially here to get correct
+	 flow information.  */
+      for (i = XVECLEN (reg, 0) - 1; i >= 0; i--)
+	if (XEXP (XVECEXP (reg, 0, i), 0) != 0)
+	  mark_set_1 (pbi, code, XEXP (XVECEXP (reg, 0, i), 0), cond, insn,
+		      flags);
+      return;
+
+    case ZERO_EXTRACT:
+    case SIGN_EXTRACT:
+    case STRICT_LOW_PART:
+      /* ??? Assumes STRICT_LOW_PART not used on multi-word registers.  */
+      do
+	reg = XEXP (reg, 0);
+      while (GET_CODE (reg) == SUBREG
+	     || GET_CODE (reg) == ZERO_EXTRACT
+	     || GET_CODE (reg) == SIGN_EXTRACT
+	     || GET_CODE (reg) == STRICT_LOW_PART);
+      if (GET_CODE (reg) == MEM)
+	break;
+      not_dead = (unsigned long) REGNO_REG_SET_P (pbi->reg_live, REGNO (reg));
+      /* Fall through.  */
+
+    case REG:
+      regno_last = regno_first = REGNO (reg);
+      if (regno_first < FIRST_PSEUDO_REGISTER)
+	regno_last += HARD_REGNO_NREGS (regno_first, GET_MODE (reg)) - 1;
+      break;
+
+    case SUBREG:
+      if (GET_CODE (SUBREG_REG (reg)) == REG)
+	{
+	  enum machine_mode outer_mode = GET_MODE (reg);
+	  enum machine_mode inner_mode = GET_MODE (SUBREG_REG (reg));
+
+	  /* Identify the range of registers affected.  This is moderately
+	     tricky for hard registers.  See alter_subreg.  */
+
+	  regno_last = regno_first = REGNO (SUBREG_REG (reg));
+	  if (regno_first < FIRST_PSEUDO_REGISTER)
+	    {
+	      regno_first += subreg_regno_offset (regno_first, inner_mode,
+						  SUBREG_BYTE (reg),
+						  outer_mode);
+	      regno_last = (regno_first
+			    + HARD_REGNO_NREGS (regno_first, outer_mode) - 1);
+
+	      /* Since we've just adjusted the register number ranges, make
+		 sure REG matches.  Otherwise some_was_live will be clear
+		 when it shouldn't have been, and we'll create incorrect
+		 REG_UNUSED notes.  */
+	      reg = gen_rtx_REG (outer_mode, regno_first);
+	    }
+	  else
+	    {
+	      /* If the number of words in the subreg is less than the number
+		 of words in the full register, we have a well-defined partial
+		 set.  Otherwise the high bits are undefined.
+
+		 This is only really applicable to pseudos, since we just took
+		 care of multi-word hard registers.  */
+	      if (((GET_MODE_SIZE (outer_mode)
+		    + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
+		  < ((GET_MODE_SIZE (inner_mode)
+		      + UNITS_PER_WORD - 1) / UNITS_PER_WORD))
+		not_dead = (unsigned long) REGNO_REG_SET_P (pbi->reg_live,
+							    regno_first);
+
+	      reg = SUBREG_REG (reg);
+	    }
+	}
+      else
+	reg = SUBREG_REG (reg);
+      break;
+
+    default:
+      break;
+    }
+
+  /* If this set is a MEM, then it kills any aliased writes.
+     If this set is a REG, then it kills any MEMs which use the reg.  */
+  if (optimize && (flags & PROP_SCAN_DEAD_CODE))
+    {
+      if (GET_CODE (reg) == REG)
+	invalidate_mems_from_set (pbi, reg);
+
+      /* If the memory reference had embedded side effects (autoincrement
+	 address modes.  Then we may need to kill some entries on the
+	 memory set list.  */
+      if (insn && GET_CODE (reg) == MEM)
+	invalidate_mems_from_autoinc (pbi, insn);
+
+      if (GET_CODE (reg) == MEM && ! side_effects_p (reg)
+	  /* ??? With more effort we could track conditional memory life.  */
+	  && ! cond
+	  /* There are no REG_INC notes for SP, so we can't assume we'll see
+	     everything that invalidates it.  To be safe, don't eliminate any
+	     stores though SP; none of them should be redundant anyway.  */
+	  && ! reg_mentioned_p (stack_pointer_rtx, reg))
+        add_to_mem_set_list (pbi, canon_rtx (reg));
+    }
+
+  if (GET_CODE (reg) == REG
+      && ! (regno_first == FRAME_POINTER_REGNUM
+	    && (! reload_completed || frame_pointer_needed))
+#if FRAME_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+      && ! (regno_first == HARD_FRAME_POINTER_REGNUM
+	    && (! reload_completed || frame_pointer_needed))
+#endif
+#if FRAME_POINTER_REGNUM != ARG_POINTER_REGNUM
+      && ! (regno_first == ARG_POINTER_REGNUM && fixed_regs[regno_first])
+#endif
+      )
+    {
+      int some_was_live = 0, some_was_dead = 0;
+
+      for (i = regno_first; i <= regno_last; ++i)
+	{
+	  int needed_regno = REGNO_REG_SET_P (pbi->reg_live, i);
+	  if (pbi->local_set)
+	    {
+	      /* Order of the set operation matters here since both
+		 sets may be the same.  */
+	      CLEAR_REGNO_REG_SET (pbi->cond_local_set, i);
+	      if (cond != NULL_RTX
+		  && ! REGNO_REG_SET_P (pbi->local_set, i))
+		SET_REGNO_REG_SET (pbi->cond_local_set, i);
+	      else
+		SET_REGNO_REG_SET (pbi->local_set, i);
+	    }
+	  if (code != CLOBBER)
+	    SET_REGNO_REG_SET (pbi->new_set, i);
+
+	  some_was_live |= needed_regno;
+	  some_was_dead |= ! needed_regno;
+	}
+
+#ifdef HAVE_conditional_execution
+      /* Consider conditional death in deciding that the register needs
+	 a death note.  */
+      if (some_was_live && ! not_dead
+	  /* The stack pointer is never dead.  Well, not strictly true,
+	     but it's very difficult to tell from here.  Hopefully
+	     combine_stack_adjustments will fix up the most egregious
+	     errors.  */
+	  && regno_first != STACK_POINTER_REGNUM)
+	{
+	  for (i = regno_first; i <= regno_last; ++i)
+	    if (! mark_regno_cond_dead (pbi, i, cond))
+	      not_dead |= ((unsigned long) 1) << (i - regno_first);
+	}
+#endif
+
+      /* Additional data to record if this is the final pass.  */
+      if (flags & (PROP_LOG_LINKS | PROP_REG_INFO
+		   | PROP_DEATH_NOTES | PROP_AUTOINC))
+	{
+	  rtx y;
+	  int blocknum = pbi->bb->index;
+
+	  y = NULL_RTX;
+	  if (flags & (PROP_LOG_LINKS | PROP_AUTOINC))
+	    {
+	      y = pbi->reg_next_use[regno_first];
+
+	      /* The next use is no longer next, since a store intervenes.  */
+	      for (i = regno_first; i <= regno_last; ++i)
+		pbi->reg_next_use[i] = 0;
+	    }
+
+	  if (flags & PROP_REG_INFO)
+	    {
+	      for (i = regno_first; i <= regno_last; ++i)
+		{
+		  /* Count (weighted) references, stores, etc.  This counts a
+		     register twice if it is modified, but that is correct.  */
+		  REG_N_SETS (i) += 1;
+		  REG_N_REFS (i) += 1;
+		  REG_FREQ (i) += REG_FREQ_FROM_BB (pbi->bb);
+
+	          /* The insns where a reg is live are normally counted
+		     elsewhere, but we want the count to include the insn
+		     where the reg is set, and the normal counting mechanism
+		     would not count it.  */
+		  REG_LIVE_LENGTH (i) += 1;
+		}
+
+	      /* If this is a hard reg, record this function uses the reg.  */
+	      if (regno_first < FIRST_PSEUDO_REGISTER)
+		{
+		  for (i = regno_first; i <= regno_last; i++)
+		    regs_ever_live[i] = 1;
+		}
+	      else
+		{
+		  /* Keep track of which basic blocks each reg appears in.  */
+		  if (REG_BASIC_BLOCK (regno_first) == REG_BLOCK_UNKNOWN)
+		    REG_BASIC_BLOCK (regno_first) = blocknum;
+		  else if (REG_BASIC_BLOCK (regno_first) != blocknum)
+		    REG_BASIC_BLOCK (regno_first) = REG_BLOCK_GLOBAL;
+		}
+	    }
+
+	  if (! some_was_dead)
+	    {
+	      if (flags & PROP_LOG_LINKS)
+		{
+		  /* Make a logical link from the next following insn
+		     that uses this register, back to this insn.
+		     The following insns have already been processed.
+
+		     We don't build a LOG_LINK for hard registers containing
+		     in ASM_OPERANDs.  If these registers get replaced,
+		     we might wind up changing the semantics of the insn,
+		     even if reload can make what appear to be valid
+		     assignments later.  */
+		  if (y && (BLOCK_NUM (y) == blocknum)
+		      && (regno_first >= FIRST_PSEUDO_REGISTER
+			  || asm_noperands (PATTERN (y)) < 0))
+		    LOG_LINKS (y) = alloc_INSN_LIST (insn, LOG_LINKS (y));
+		}
+	    }
+	  else if (not_dead)
+	    ;
+	  else if (! some_was_live)
+	    {
+	      if (flags & PROP_REG_INFO)
+		REG_N_DEATHS (regno_first) += 1;
+
+	      if (flags & PROP_DEATH_NOTES)
+		{
+		  /* Note that dead stores have already been deleted
+		     when possible.  If we get here, we have found a
+		     dead store that cannot be eliminated (because the
+		     same insn does something useful).  Indicate this
+		     by marking the reg being set as dying here.  */
+		  REG_NOTES (insn)
+		    = alloc_EXPR_LIST (REG_UNUSED, reg, REG_NOTES (insn));
+		}
+	    }
+	  else
+	    {
+	      if (flags & PROP_DEATH_NOTES)
+		{
+		  /* This is a case where we have a multi-word hard register
+		     and some, but not all, of the words of the register are
+		     needed in subsequent insns.  Write REG_UNUSED notes
+		     for those parts that were not needed.  This case should
+		     be rare.  */
+
+		  for (i = regno_first; i <= regno_last; ++i)
+		    if (! REGNO_REG_SET_P (pbi->reg_live, i))
+		      REG_NOTES (insn)
+			= alloc_EXPR_LIST (REG_UNUSED,
+					   gen_rtx_REG (reg_raw_mode[i], i),
+					   REG_NOTES (insn));
+		}
+	    }
+	}
+
+      /* Mark the register as being dead.  */
+      if (some_was_live
+	  /* The stack pointer is never dead.  Well, not strictly true,
+	     but it's very difficult to tell from here.  Hopefully
+	     combine_stack_adjustments will fix up the most egregious
+	     errors.  */
+	  && regno_first != STACK_POINTER_REGNUM)
+	{
+	  for (i = regno_first; i <= regno_last; ++i)
+	    if (!(not_dead & (((unsigned long) 1) << (i - regno_first))))
+	      CLEAR_REGNO_REG_SET (pbi->reg_live, i);
+	}
+    }
+  else if (GET_CODE (reg) == REG)
+    {
+      if (flags & (PROP_LOG_LINKS | PROP_AUTOINC))
+	pbi->reg_next_use[regno_first] = 0;
+    }
+
+  /* If this is the last pass and this is a SCRATCH, show it will be dying
+     here and count it.  */
+  else if (GET_CODE (reg) == SCRATCH)
+    {
+      if (flags & PROP_DEATH_NOTES)
+	REG_NOTES (insn)
+	  = alloc_EXPR_LIST (REG_UNUSED, reg, REG_NOTES (insn));
+    }
+}

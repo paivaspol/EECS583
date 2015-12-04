@@ -1,0 +1,24 @@
+static int
+discard_useless_locs (x, info)
+     void **x;
+     void *info ATTRIBUTE_UNUSED;
+{
+  cselib_val *v = (cselib_val *)*x;
+  struct elt_loc_list **p = &v->locs;
+  int had_locs = v->locs != 0;
+
+  while (*p)
+    {
+      if (references_value_p ((*p)->loc, 1))
+	unchain_one_elt_loc_list (p);
+      else
+	p = &(*p)->next;
+    }
+
+  if (had_locs && v->locs == 0)
+    {
+      n_useless_values++;
+      values_became_useless = 1;
+    }
+  return 1;
+}

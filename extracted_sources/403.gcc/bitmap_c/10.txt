@@ -1,0 +1,49 @@
+int 
+bitmap_first_set_bit (a)
+     bitmap a;
+{
+  bitmap_element *ptr = a->first;
+  unsigned HOST_WIDE_INT word;
+  unsigned word_num, bit_num;
+
+  if (ptr == NULL)
+    return -1;
+
+#if BITMAP_ELEMENT_WORDS == 2
+  word_num = 0, word = ptr->bits[0];
+  if (word == 0)
+    word_num = 1, word = ptr->bits[1];
+#else
+  for (word_num = 0; word_num < BITMAP_ELEMENT_WORDS; ++word_num)
+    if ((word = ptr->bits[word_num]) != 0)
+      break;
+#endif
+
+  /* Binary search for the first set bit.  */
+  /* ??? It'd be nice to know if ffs or ffsl was available.  */
+
+  bit_num = 0;
+  word = word & -word;
+
+#if HOST_BITS_PER_WIDE_INT > 64
+ #error "Fill out the table."
+#endif
+#if HOST_BITS_PER_WIDE_INT > 32
+  if ((word & 0xffffffff) == 0)
+    word >>= 32, bit_num += 32;
+#endif
+  if ((word & 0xffff) == 0)
+    word >>= 16, bit_num += 16;
+  if ((word & 0xff) == 0)
+    word >>= 8, bit_num += 8;
+  if (word & 0xf0)
+    bit_num += 4;
+  if (word & 0xcc)
+    bit_num += 2;
+  if (word & 0xaa)
+    bit_num += 1;
+
+  return (ptr->indx * BITMAP_ELEMENT_ALL_BITS
+	  + word_num * HOST_BITS_PER_WIDE_INT
+	  + bit_num);
+}

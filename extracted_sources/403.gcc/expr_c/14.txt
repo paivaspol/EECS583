@@ -1,0 +1,105 @@
+void
+emit_group_load (dst, orig_src, ssize)
+     rtx dst, orig_src;
+     int ssize;
+{
+  rtx *tmps, src;
+  int start, i;
+
+  if (GET_CODE (dst) != PARALLEL)
+    abort ();
+
+  /* Check for a NULL entry, used to indicate that the parameter goes
+     both on the stack and in registers.  */
+  if (XEXP (XVECEXP (dst, 0, 0), 0))
+    start = 0;
+  else
+    start = 1;
+
+  tmps = (rtx *) alloca (sizeof (rtx) * XVECLEN (dst, 0));
+
+  /* Process the pieces.  */
+  for (i = start; i < XVECLEN (dst, 0); i++)
+    {
+      enum machine_mode mode = GET_MODE (XEXP (XVECEXP (dst, 0, i), 0));
+      HOST_WIDE_INT bytepos = INTVAL (XEXP (XVECEXP (dst, 0, i), 1));
+      unsigned int bytelen = GET_MODE_SIZE (mode);
+      int shift = 0;
+
+      /* Handle trailing fragments that run over the size of the struct.  */
+      if (ssize >= 0 && bytepos + (HOST_WIDE_INT) bytelen > ssize)
+	{
+	  shift = (bytelen - (ssize - bytepos)) * BITS_PER_UNIT;
+	  bytelen = ssize - bytepos;
+	  if (bytelen <= 0)
+	    abort ();
+	}
+
+      /* If we won't be loading directly from memory, protect the real source
+	 from strange tricks we might play; but make sure that the source can
+	 be loaded directly into the destination.  */
+      src = orig_src;
+      if (GET_CODE (orig_src) != MEM
+	  && (!CONSTANT_P (orig_src)
+	      || (GET_MODE (orig_src) != mode
+		  && GET_MODE (orig_src) != VOIDmode)))
+	{
+	  if (GET_MODE (orig_src) == VOIDmode)
+	    src = gen_reg_rtx (mode);
+	  else
+	    src = gen_reg_rtx (GET_MODE (orig_src));
+
+	  emit_move_insn (src, orig_src);
+	}
+
+      /* Optimize the access just a bit.  */
+      if (GET_CODE (src) == MEM
+	  && MEM_ALIGN (src) >= GET_MODE_ALIGNMENT (mode)
+	  && bytepos * BITS_PER_UNIT % GET_MODE_ALIGNMENT (mode) == 0
+	  && bytelen == GET_MODE_SIZE (mode))
+	{
+	  tmps[i] = gen_reg_rtx (mode);
+	  emit_move_insn (tmps[i], adjust_address (src, mode, bytepos));
+	}
+      else if (GET_CODE (src) == CONCAT)
+	{
+	  if ((bytepos == 0
+	       && bytelen == GET_MODE_SIZE (GET_MODE (XEXP (src, 0))))
+	      || (bytepos == (HOST_WIDE_INT) GET_MODE_SIZE (GET_MODE (XEXP (src, 0)))
+		  && bytelen == GET_MODE_SIZE (GET_MODE (XEXP (src, 1)))))
+	    {
+	      tmps[i] = XEXP (src, bytepos != 0);
+	      if (! CONSTANT_P (tmps[i])
+		  && (GET_CODE (tmps[i]) != REG || GET_MODE (tmps[i]) != mode))
+		tmps[i] = extract_bit_field (tmps[i], bytelen * BITS_PER_UNIT,
+					     0, 1, NULL_RTX, mode, mode, ssize);
+	    }
+	  else if (bytepos == 0)
+	    {
+	      rtx mem = assign_stack_temp (GET_MODE (src),
+					   GET_MODE_SIZE (GET_MODE (src)), 0);
+	      emit_move_insn (mem, src);
+	      tmps[i] = adjust_address (mem, mode, 0);
+	    }
+	  else
+	    abort ();
+	}
+      else if (CONSTANT_P (src)
+	       || (GET_CODE (src) == REG && GET_MODE (src) == mode))
+	tmps[i] = src;
+      else
+	tmps[i] = extract_bit_field (src, bytelen * BITS_PER_UNIT,
+				     bytepos * BITS_PER_UNIT, 1, NULL_RTX,
+				     mode, mode, ssize);
+
+      if (BYTES_BIG_ENDIAN && shift)
+	expand_binop (mode, ashl_optab, tmps[i], GEN_INT (shift),
+		      tmps[i], 0, OPTAB_WIDEN);
+    }
+
+  emit_queue ();
+
+  /* Copy the extracted pieces into the proper (probable) hard regs.  */
+  for (i = start; i < XVECLEN (dst, 0); i++)
+    emit_move_insn (XEXP (XVECEXP (dst, 0, i), 0), tmps[i]);
+}

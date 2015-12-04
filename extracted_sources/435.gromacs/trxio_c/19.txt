@@ -1,0 +1,15 @@
+static int pdb_first_x(FILE *status, t_trxframe *fr)
+{
+  INITCOUNT;
+  
+  fprintf(stderr,"Reading frames from pdb file");
+  frewind(status);
+  get_pdb_coordnum(status, &fr->natoms);
+  if (fr->natoms==0)
+    fatal_error(0,"\nNo coordinates in pdb file\n");
+  frewind(status);
+  snew(fr->x,fr->natoms);
+  pdb_next_x(status, fr);
+
+  return fr->natoms;
+}

@@ -1,0 +1,18 @@
+static void
+vmsdbgout_begin_prologue (line, file)
+     unsigned int line;
+     const char *file;
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  if (write_symbols == VMS_AND_DWARF2_DEBUG)
+    (*dwarf2_debug_hooks.begin_prologue) (line, file);
+
+  if (debug_info_level > DINFO_LEVEL_NONE)
+    {
+      current_funcdef_number++;
+      ASM_GENERATE_INTERNAL_LABEL (label, FUNC_BEGIN_LABEL,
+				   current_funcdef_number);
+      ASM_OUTPUT_LABEL (asm_out_file, label);
+    }
+}

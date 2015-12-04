@@ -1,0 +1,88 @@
+static void
+compare_for_stack_reg (insn, regstack, pat_src)
+     rtx insn;
+     stack regstack;
+     rtx pat_src;
+{
+  rtx *src1, *src2;
+  rtx src1_note, src2_note;
+  rtx flags_user;
+
+  src1 = get_true_reg (&XEXP (pat_src, 0));
+  src2 = get_true_reg (&XEXP (pat_src, 1));
+  flags_user = next_flags_user (insn);
+
+  /* ??? If fxch turns out to be cheaper than fstp, give priority to
+     registers that die in this insn - move those to stack top first.  */
+  if ((! STACK_REG_P (*src1)
+       || (STACK_REG_P (*src2)
+	   && get_hard_regnum (regstack, *src2) == FIRST_STACK_REG))
+      && swap_rtx_condition (insn))
+    {
+      rtx temp;
+      temp = XEXP (pat_src, 0);
+      XEXP (pat_src, 0) = XEXP (pat_src, 1);
+      XEXP (pat_src, 1) = temp;
+
+      src1 = get_true_reg (&XEXP (pat_src, 0));
+      src2 = get_true_reg (&XEXP (pat_src, 1));
+
+      INSN_CODE (insn) = -1;
+    }
+
+  /* We will fix any death note later.  */
+
+  src1_note = find_regno_note (insn, REG_DEAD, REGNO (*src1));
+
+  if (STACK_REG_P (*src2))
+    src2_note = find_regno_note (insn, REG_DEAD, REGNO (*src2));
+  else
+    src2_note = NULL_RTX;
+
+  emit_swap_insn (insn, regstack, *src1);
+
+  replace_reg (src1, FIRST_STACK_REG);
+
+  if (STACK_REG_P (*src2))
+    replace_reg (src2, get_hard_regnum (regstack, *src2));
+
+  if (src1_note)
+    {
+      pop_stack (regstack, REGNO (XEXP (src1_note, 0)));
+      replace_reg (&XEXP (src1_note, 0), FIRST_STACK_REG);
+    }
+
+  /* If the second operand dies, handle that.  But if the operands are
+     the same stack register, don't bother, because only one death is
+     needed, and it was just handled.  */
+
+  if (src2_note
+      && ! (STACK_REG_P (*src1) && STACK_REG_P (*src2)
+	    && REGNO (*src1) == REGNO (*src2)))
+    {
+      /* As a special case, two regs may die in this insn if src2 is
+	 next to top of stack and the top of stack also dies.  Since
+	 we have already popped src1, "next to top of stack" is really
+	 at top (FIRST_STACK_REG) now.  */
+
+      if (get_hard_regnum (regstack, XEXP (src2_note, 0)) == FIRST_STACK_REG
+	  && src1_note)
+	{
+	  pop_stack (regstack, REGNO (XEXP (src2_note, 0)));
+	  replace_reg (&XEXP (src2_note, 0), FIRST_STACK_REG + 1);
+	}
+      else
+	{
+	  /* The 386 can only represent death of the first operand in
+	     the case handled above.  In all other cases, emit a separate
+	     pop and remove the death note from here.  */
+
+	  /* link_cc0_insns (insn); */
+
+	  remove_regno_note (insn, REG_DEAD, REGNO (XEXP (src2_note, 0)));
+
+	  emit_pop_insn (insn, regstack, XEXP (src2_note, 0),
+			 EMIT_AFTER);
+	}
+    }
+}

@@ -1,0 +1,46 @@
+int
+rkseq(Hashseq   hashprobe,	/* up to 8 nt packed into the probe */
+      char     *sequence)       /* encoded sequence                 */
+{
+  long     i;
+  long     pos = 0;
+  Hashseq  target = 0;
+  
+				/* initialize the target hashseq */
+  for (i = 0; i < RK_HASHSIZE; i++)
+    {
+      if (*(sequence + i) == NTEND)
+	break;
+      target <<= 4;
+      target |=  (Hashseq) (*(sequence + i));
+    }
+
+  while (*(sequence + pos + RK_HASHSIZE -1) != NTEND)
+    {
+#ifdef DEBUG
+      printf("hashprobe: ");
+      writehash(hashprobe);
+      printf("\ttarget: ");
+      writehash(target);
+      printf("\nhashprobe & target: ");
+      writehash(hashprobe & target);
+      printf("\n");
+#endif
+      if ((hashprobe & target) == target)
+	return ((int) pos);
+      target <<= 4;
+      target |=  (Hashseq) (*(sequence + pos + RK_HASHSIZE));
+      pos++;
+    }
+				/* now we deal with an end effect */
+  for (i = 0; i < RK_HASHSIZE; i++)
+    {
+      target |= (Hashseq) NTN;
+      if ((hashprobe & target) == target)
+	return ((int) pos);
+      target <<=4;
+      pos++;
+    }
+
+  return(-1);
+}

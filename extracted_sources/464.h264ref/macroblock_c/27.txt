@@ -1,0 +1,66 @@
+void write_one_macroblock (int eos_bit)
+{
+  Macroblock* currMB   = &img->mb_data[img->current_mb_nr];
+  int*        bitCount = currMB->bitcounter;
+  int i,j;
+
+  extern int cabac_encoding;
+
+  //===== init and update number of intra macroblocks =====
+  if (img->current_mb_nr==0)
+    intras=0;
+  if (IS_INTRA(currMB))
+    intras++;
+
+  //--- write non-slice termination symbol if the macroblock is not the first one in its slice ---
+  if (input->symbol_mode==CABAC && img->current_mb_nr!=img->currentSlice->start_mb_nr && eos_bit)
+  {
+    write_terminating_bit (0);
+  }
+
+  cabac_encoding = 1;
+
+  //--- write macroblock ---
+  writeMBLayer (0); 
+
+  if (!((currMB->mb_type !=0 ) || ((img->type==B_SLICE) && currMB->cbp != 0) ))
+  { 
+    for (j=0; j < (4 + img->num_blk8x8_uv); j++)
+      for (i=0; i < 4; i++)
+        img->nz_coeff [img->current_mb_nr][i][j]=0;  // CAVLC
+  }
+
+  set_last_dquant();
+
+  //--- constrain intra prediction ---
+  if(input->UseConstrainedIntraPred && (img->type==P_SLICE || img->type==B_SLICE))
+  {
+    if( !IS_INTRA(currMB) )
+    {
+      img->intra_block[img->current_mb_nr] = 0;
+    }
+  }
+
+  //--- set total bit-counter ---
+  bitCount[BITS_TOTAL_MB] = bitCount[BITS_MB_MODE] + bitCount[BITS_COEFF_Y_MB]     + bitCount[BITS_INTER_MB]
+                          + bitCount[BITS_CBP_MB]  + bitCount[BITS_DELTA_QUANT_MB] + bitCount[BITS_COEFF_UV_MB];
+
+  //Rate control
+  img->NumberofMBHeaderBits=bitCount[BITS_MB_MODE]   + bitCount[BITS_INTER_MB]
+    + bitCount[BITS_CBP_MB]  + bitCount[BITS_DELTA_QUANT_MB];
+  img->NumberofMBTextureBits= bitCount[BITS_COEFF_Y_MB]+ bitCount[BITS_COEFF_UV_MB];
+  img->NumberofTextureBits +=img->NumberofMBTextureBits;
+  img->NumberofHeaderBits +=img->NumberofMBHeaderBits;
+  /*basic unit layer rate control*/
+  if(img->BasicUnit<img->Frame_Total_Number_MB)
+  {
+      img->NumberofBasicUnitHeaderBits +=img->NumberofMBHeaderBits;
+      img->NumberofBasicUnitTextureBits +=img->NumberofMBTextureBits;
+  }
+  /*record the total number of MBs*/
+  img->NumberofCodedMacroBlocks++;
+  
+  stats->bit_slice += bitCount[BITS_TOTAL_MB];
+
+  cabac_encoding = 0;
+}

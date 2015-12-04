@@ -1,0 +1,22 @@
+void
+delete_insn_chain (start, finish)
+     rtx start, finish;
+{
+  rtx next;
+
+  /* Unchain the insns one by one.  It would be quicker to delete all of these
+     with a single unchaining, rather than one at a time, but we need to keep
+     the NOTE's.  */
+  while (1)
+    {
+      next = NEXT_INSN (start);
+      if (GET_CODE (start) == NOTE && !can_delete_note_p (start))
+	;
+      else
+	next = delete_insn (start);
+
+      if (start == finish)
+	break;
+      start = next;
+    }
+}

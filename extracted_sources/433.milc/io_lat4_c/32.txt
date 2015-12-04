@@ -1,0 +1,183 @@
+void w_parallel(gauge_file *gf)
+{
+  /* gf  = file descriptor as opened by w_parallel_i */
+
+  FILE *fp;
+  su3_matrix *lbuf;
+  int buf_length,where_in_buf;
+  u_int32type *val;
+  int rank29,rank31;
+  off_t checksum_offset;
+  register int i;
+  int j,k;
+  int x,y,z,t;
+  struct {
+    short x,y,z,t;
+    su3_matrix link[4];
+  } msg;
+  int isite,ksite,site_block;
+  int rcv_coords,rcv_rank;
+  int destnode,sendnode;
+  char myname[] = "w_parallel";
+
+  fp = gf->fp;
+
+  lbuf = w_parallel_setup(gf,&checksum_offset);
+
+  /* Collect buffer from other nodes and write when full */
+
+  /* initialize checksums */
+  gf->check.sum31 = 0;
+  gf->check.sum29 = 0;
+
+  /* Read and deal */
+
+  g_sync();
+  buf_length = 0;
+
+  /* Clear buffer as a precaution.  Easier to tell if we botch the
+     buffer loading. */
+  for(i=0;i<MAX_BUF_LENGTH;i++)
+    for(j=0;j<3;j++)for(k=0;k<3;k++)
+      { lbuf[i].e[j][k].real = lbuf[i].e[j][k].imag = 0.;}
+  
+  /* Cycle through nodes, collecting a buffer full of values from the
+     appropriate node before proceeding to the next node in sequence.
+     We don't know if this pattern is generally optimal.  It is
+     possible that messages arrive at a node in an order different
+     from the order of sending so we include the site coordinates in
+     the message to be sure it goes where it belongs */
+  
+  /* MUST be a factor of MAX_BUF_LENGTH */
+  site_block = MAX_BUF_LENGTH;  
+  if(MAX_BUF_LENGTH % site_block != 0)
+    {printf("%s: site_block incommensurate with buffer size\n",myname);
+     fflush(stdout);terminate(1);}
+
+  for(ksite=0; ksite<sites_on_node; ksite += site_block)
+    {
+      for(destnode=0; destnode<number_of_nodes; destnode++)
+	for(isite=ksite; 
+	    isite<sites_on_node && isite<ksite+site_block; isite++)
+	  {
+	    
+	    /* This is the coordinate natural (typewriter) rank
+	       of the site the destnode needs next */
+	    
+	    rcv_rank = rcv_coords = destnode*sites_on_node + isite;
+	    
+	    /* The coordinate corresponding to this site */
+	    
+	    x = rcv_coords % nx; rcv_coords /= nx;
+	    y = rcv_coords % ny; rcv_coords /= ny;
+	    z = rcv_coords % nz; rcv_coords /= nz;
+	    t = rcv_coords % nt;
+	    
+	    /* The node that has this site */
+	    sendnode=node_number(x,y,z,t);
+	    
+	    /* Node sendnode sends site value to destnode */
+	    if(this_node==sendnode && destnode!=sendnode){
+	      /* Message consists of site coordinates and 4 link matrices */
+	      msg.x = x; msg.y = y; msg.z = z; msg.t = t;
+	      i = node_index(x,y,z,t);
+	      memcpy((void *)msg.link,
+		     (void *)lattice[i].link, 4*sizeof(su3_matrix));
+	      
+	      send_field((char *)&msg,sizeof(msg),destnode);
+	    }
+	    /* Node destnode receives a message */
+	    else if(this_node==destnode){
+	      if(destnode==sendnode){ /* just copy links */
+		i = node_index(x,y,z,t);
+		where_in_buf = buf_length;
+		memcpy((void *)&lbuf[4*where_in_buf],
+		       (void *)lattice[i].link,4*sizeof(su3_matrix));
+		rank29 = rank31 = 
+		  4*sizeof(su3_matrix)/sizeof(int32type)*rcv_rank;
+	      }
+	      else {
+		/* Receive a message */
+		/* Note that messages may arrive in any order
+		   so we use the x,y,z,t coordinate to tell
+		   where it goes in the write buffer */
+		get_field((char *)&msg,sizeof(msg));
+		/* Reconstruct rank from message coordinates */
+		i = msg.x+nx*(msg.y+ny*(msg.z+nz*msg.t));
+		/* The buffer location is then */
+		where_in_buf = (i % sites_on_node) % MAX_BUF_LENGTH;
+
+		/* Move data to buffer */
+		memcpy((void *)&lbuf[4*where_in_buf],
+		       (void *)msg.link,4*sizeof(su3_matrix));
+		rank29 = rank31 = 4*sizeof(su3_matrix)/sizeof(int32type)*i;
+	      }
+
+	      /* Receiving node accumulates checksums as the values
+		 are inserted into its buffer */
+	      rank29 %= 29; rank31 %= 31;
+	      for(k = 0, val = (u_int32type *)&lbuf[4*where_in_buf]; 
+		  k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
+		{
+		  gf->check.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
+		  gf->check.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
+		  rank29++; if(rank29 >= 29)rank29 = 0;
+		  rank31++; if(rank31 >= 31)rank31 = 0;
+		}
+
+	      buf_length++;
+	      if( (buf_length == MAX_BUF_LENGTH) || 
+		 (isite == sites_on_node -1))
+		{
+		  /* write out buffer */
+		  
+		  if( (int)g_write(lbuf,4*sizeof(su3_matrix),buf_length,fp) 
+		     != buf_length)
+		    {
+		      printf("%s: Node %d gauge configuration write error %d file %s\n",
+			     myname,this_node,errno,gf->filename); 
+		      fflush(stdout);
+		      terminate(1);   
+		    }
+		  buf_length = 0;		/* start again after write */
+		  /* Clear buffer as a precaution */
+		  for(i=0;i<MAX_BUF_LENGTH;i++)
+		    for(j=0;j<3;j++)for(k=0;k<3;k++)
+		      { lbuf[i].e[j][k].real = lbuf[i].e[j][k].imag = 0.;}
+		}
+	    } /* else if(this_node==destnode) */
+	    
+	  } /* destnode, isite */
+      g_sync();  /* To assure all write buffers are completed before
+		   starting on the next buffer */
+    } /* ksite */
+  
+  free(lbuf);
+
+  /* Combine checksums */
+
+  g_xor32(&gf->check.sum29);
+  g_xor32(&gf->check.sum31);
+
+  /* Write checksum at end of lattice file */
+
+  /* Position file for writing checksum */
+  /* Only node 0 writes checksum data */
+      
+  if(this_node==0){
+    if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
+      {
+	printf("%s: Node %d g_seek %ld for checksum failed error %d file %s\n",
+	       myname,this_node,(long)checksum_offset,errno,gf->filename);
+	fflush(stdout);terminate(1);   
+      }
+
+    write_checksum(PARALLEL,gf);
+
+    printf("Saved gauge configuration in parallel to binary file %s\n",
+	   gf->filename);
+    printf("Time stamp %s\n",(gf->header)->time_stamp);
+    
+  }
+
+} /* w_parallel */

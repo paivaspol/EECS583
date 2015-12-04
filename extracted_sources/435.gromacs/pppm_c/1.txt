@@ -1,0 +1,68 @@
+void calc_weights(int iatom,int nx,int ny,int nz,
+		  rvec x,rvec box,rvec invh,ivec ixyz,real WXYZ[])
+{
+  const  real half=0.5;
+  tensor wxyz;
+  real   abc,ttt,fact;
+#ifdef DEBUG
+  real   wtot;
+#endif
+  ivec   nxyz;
+  int    it,j,k,m,nm;
+  real   Wx,Wy,Wzx,Wzy,Wzz;
+  
+  fact = 0.125;
+  
+  nxyz[XX] = nx;
+  nxyz[YY] = ny;
+  nxyz[ZZ] = nz;
+  for(m=0; (m<DIM); m++) {
+    /* Put particle in the box... */  
+    ttt = x[m]*invh[m];
+    
+    /* Round to nearest grid point. Do the math in integer! */
+    it  = (ttt+0.5);
+    nm  = nxyz[m];
+    if (it < 0) {
+      ttt+=nm;
+      it +=nm;
+    }
+    else if (it >= nm) {
+      ttt-=nm;
+      it -=nm;
+    }
+    if ((it < 0) || (it >= nxyz[m]))
+      fatal_error(0,"iatom = %d, it = %d, x=%f, ttt=%f",iatom,it,x[m],ttt);
+    ixyz[m]    = it;
+    
+    /* Fraction (offset) from grid point */
+    abc        = ttt - (real)ixyz[m];
+    
+    wxyz[m][0] = sqr((real)(half  - abc));
+    wxyz[m][1] = 1.5 - 2.0*sqr(abc);
+    wxyz[m][2] = sqr((real)(half  + abc));
+  }
+  Wzx=wxyz[ZZ][XX];
+  Wzy=wxyz[ZZ][YY];
+  Wzz=wxyz[ZZ][ZZ];
+  for(j=m=0; (j<DIM); j++) {
+    Wx = wxyz[XX][j]*fact;
+    for(k=0; (k<DIM); k++,m+=3) {
+      Wy        = Wx*wxyz[YY][k];
+      WXYZ[m]   = Wy*Wzx;
+      WXYZ[m+1] = Wy*Wzy;
+      WXYZ[m+2] = Wy*Wzz;
+    }
+  }
+#ifdef DEBUG
+  wtot = 0;
+  for(j=0; (j<27); j++)
+    wtot+=WXYZ[j];
+  fprintf(stderr,"wtot = %g\n",wtot);
+#endif
+#ifdef HACK
+  for(j=0; (j<27); j++)
+    WXYZ[j] = 0;
+  WXYZ[13] = 1.0;
+#endif
+}

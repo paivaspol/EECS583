@@ -1,0 +1,45 @@
+static void
+simplify_unary_real (p)
+     PTR p;
+{
+  REAL_VALUE_TYPE d;
+
+  struct simplify_unary_real_args *args =
+    (struct simplify_unary_real_args *) p;
+
+  REAL_VALUE_FROM_CONST_DOUBLE (d, args->operand);
+
+  if (args->want_integer)
+    {
+      HOST_WIDE_INT i;
+
+      switch (args->code)
+	{
+	case FIX:		i = REAL_VALUE_FIX (d);		  break;
+	case UNSIGNED_FIX:	i = REAL_VALUE_UNSIGNED_FIX (d);  break;
+	default:
+	  abort ();
+	}
+      args->result = GEN_INT (trunc_int_for_mode (i, args->mode));
+    }
+  else
+    {
+      switch (args->code)
+	{
+	case SQRT:
+	  /* We don't attempt to optimize this.  */
+	  args->result = 0;
+	  return;
+
+	case ABS:	      d = REAL_VALUE_ABS (d);			break;
+	case NEG:	      d = REAL_VALUE_NEGATE (d);		break;
+	case FLOAT_TRUNCATE:  d = real_value_truncate (args->mode, d);  break;
+	case FLOAT_EXTEND:    /* All this does is change the mode.  */  break;
+	case FIX:	      d = REAL_VALUE_RNDZINT (d);		break;
+	case UNSIGNED_FIX:    d = REAL_VALUE_UNSIGNED_RNDZINT (d);	break;
+	default:
+	  abort ();
+	}
+      args->result = CONST_DOUBLE_FROM_REAL_VALUE (d, args->mode);
+    }
+}

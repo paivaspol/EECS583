@@ -1,0 +1,15 @@
+static void
+unshare_all_decls (blk)
+     tree blk;
+{
+  tree t;
+
+  /* Copy shared decls.  */
+  for (t = BLOCK_VARS (blk); t; t = TREE_CHAIN (t))
+    if (DECL_RTL_SET_P (t))
+      SET_DECL_RTL (t, copy_rtx_if_shared (DECL_RTL (t)));
+
+  /* Now process sub-blocks.  */
+  for (t = BLOCK_SUBBLOCKS (blk); t; t = TREE_CHAIN (t))
+    unshare_all_decls (t);
+}

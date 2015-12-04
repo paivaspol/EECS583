@@ -1,0 +1,13 @@
+static void
+undo_commit ()
+{
+  struct undo *undo, *next;
+
+  for (undo = undobuf.undos; undo; undo = next)
+    {
+      next = undo->next;
+      undo->next = undobuf.frees;
+      undobuf.frees = undo;
+    }
+  undobuf.undos = 0;
+}

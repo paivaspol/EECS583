@@ -1,0 +1,37 @@
+static void
+dectoe (d, e)
+     const UEMUSHORT *d;
+     UEMUSHORT *e;
+{
+  UEMUSHORT y[NI];
+  UEMUSHORT r, *p;
+
+  ecleaz (y);			/* start with a zero */
+  p = y;			/* point to our number */
+  r = *d;			/* get DEC exponent word */
+  if (*d & (unsigned int) 0x8000)
+    *p = 0xffff;		/* fill in our sign */
+  ++p;				/* bump pointer to our exponent word */
+  r &= 0x7fff;			/* strip the sign bit */
+  if (r == 0)			/* answer = 0 if high order DEC word = 0 */
+    goto done;
+
+
+  r >>= 7;			/* shift exponent word down 7 bits */
+  r += EXONE - 0201;		/* subtract DEC exponent offset */
+  /* add our e type exponent offset */
+  *p++ = r;			/* to form our exponent */
+
+  r = *d++;			/* now do the high order mantissa */
+  r &= 0177;			/* strip off the DEC exponent and sign bits */
+  r |= 0200;			/* the DEC understood high order mantissa bit */
+  *p++ = r;			/* put result in our high guard word */
+
+  *p++ = *d++;			/* fill in the rest of our mantissa */
+  *p++ = *d++;
+  *p = *d;
+
+  eshdn8 (y);			/* shift our mantissa down 8 bits */
+ done:
+  emovo (y, e);
+}

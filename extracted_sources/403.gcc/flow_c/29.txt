@@ -1,0 +1,27 @@
+static void
+invalidate_mems_from_set (pbi, exp)
+     struct propagate_block_info *pbi;
+     rtx exp;
+{
+  rtx temp = pbi->mem_set_list;
+  rtx prev = NULL_RTX;
+  rtx next;
+
+  while (temp)
+    {
+      next = XEXP (temp, 1);
+      if (reg_overlap_mentioned_p (exp, XEXP (temp, 0)))
+	{
+	  /* Splice this entry out of the list.  */
+	  if (prev)
+	    XEXP (prev, 1) = next;
+	  else
+	    pbi->mem_set_list = next;
+	  free_EXPR_LIST_node (temp);
+	  pbi->mem_set_list_len--;
+	}
+      else
+	prev = temp;
+      temp = next;
+    }
+}

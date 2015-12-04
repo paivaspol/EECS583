@@ -1,0 +1,207 @@
+void update_ga(FILE *fpout_ptr,t_range range[],t_genalg *ga)
+{
+  static int  i_init=0;   /* Initialisation related stuff       */
+  int   i, j, L, n;      /* counting variables                 */
+  int   r1,r2,r3,r4,r5;  /* placeholders for random indexes    */
+
+  if (i_init < ga->NP) {
+    /* Copy data for first force evaluation to range array  */
+    copy2range(ga->D,ga->pold[i_init],range);
+    
+    i_init++;
+    return;
+  }
+  else {
+    /* Now starts real genetic stuff, a new trial set is made */
+    if (ga->ipop == ga->NP) {
+      ga->gen++;
+      i=ga->ipop=0;
+    }
+    else 
+      i=ga->ipop;
+
+    do {                        /* Pick a random population member */
+      /* Endless loop for ga->NP < 2 !!!     */
+      r1 = (int)(rando(&ga->seed)*ga->NP);
+    } while(r1==i);            
+      
+    do {                        /* Pick a random population member */
+      /* Endless loop for ga->NP < 3 !!!     */
+      r2 = (int)(rando(&ga->seed)*ga->NP);
+      } while((r2==i) || (r2==r1));
+    
+    do {  
+      /* Pick a random population member */
+      /* Endless loop for ga->NP < 4 !!!     */
+      r3 = (int)(rando(&ga->seed)*ga->NP);
+    } while((r3==i) || (r3==r1) || (r3==r2));
+    
+    do {
+      /* Pick a random population member */
+      /* Endless loop for ga->NP < 5 !!!     */
+      r4 = (int)(rando(&ga->seed)*ga->NP);
+    } while((r4==i) || (r4==r1) || (r4==r2) || (r4==r3));
+    
+    do {
+      /* Pick a random population member */
+      /* Endless loop for ga->NP < 6 !!!     */
+      r5 = (int)(rando(&ga->seed)*ga->NP);
+    } while((r5==i) || (r5==r1) || (r5==r2) || (r5==r3) || (r5==r4));
+    
+    
+    /* Choice of strategy
+     * We have tried to come up with a sensible naming-convention: DE/x/y/z
+     * DE :  stands for Differential Evolution
+     * x  :  a string which denotes the vector to be perturbed
+     * y  :  number of difference vectors taken for perturbation of x
+     * z  :  crossover method (exp = exponential, bin = binomial)
+     *
+     * There are some simple rules which are worth following:
+     * 1)  ga->FF is usually between 0.5 and 1 (in rare cases > 1)
+     * 2)  ga->CR is between 0 and 1 with 0., 0.3, 0.7 and 1. being worth to 
+     *     be tried first
+     * 3)  To start off ga->NP = 10*ga->D is a reasonable choice. Increase ga->NP if 
+     *     misconvergence happens.
+     * 4)  If you increase ga->NP, ga->FF usually has to be decreased
+     * 5)  When the DE/ga->best... schemes fail DE/rand... usually works and 
+     *     vice versa
+     * EXPONENTIAL ga->CROSSOVER
+     *-------DE/ga->best/1/exp-------
+     *-------Our oldest strategy but still not bad. However, we have found several
+     *-------optimization problems where misconvergence occurs.
+     */
+    assignd(ga->D,ga->tmp,ga->pold[i]);
+    n = (int)(rando(&ga->seed)*ga->D);
+    L = 0;
+    
+    switch (ga->strategy) {
+    case 1:
+      /* strategy DE0 (not in our paper) */
+      do {                       
+	ga->tmp[n] = ga->bestit[n] + ga->FF*(ga->pold[r2][n]-ga->pold[r3][n]);
+	n = (n+1)%ga->D;
+	L++;
+      } while((rando(&ga->seed) < ga->CR) && (L < ga->D));
+      break;
+      
+      /* DE/rand/1/exp
+       * This is one of my favourite strategies. It works especially 
+       * well when the ga->bestit[]"-schemes experience misconvergence. 
+       * Try e.g. ga->FF=0.7 and ga->CR=0.5 * as a first guess.
+       */
+    case 2:
+      /* strategy DE1 in the techreport */
+      do {                       
+	ga->tmp[n] = ga->pold[r1][n] + ga->FF*(ga->pold[r2][n]-ga->pold[r3][n]);
+	n = (n+1)%ga->D;
+	L++;
+      } while((rando(&ga->seed) < ga->CR) && (L < ga->D));
+      break;
+      
+      /* DE/rand-to-ga->best/1/exp 
+       * This strategy seems to be one of the ga->best strategies. 
+       * Try ga->FF=0.85 and ga->CR=1.
+       * If you get misconvergence try to increase ga->NP. 
+       * If this doesn't help you should play around with all three 
+       * control variables.
+       */
+    case 3:
+      /* similar to DE2 but generally better */
+      do {                       
+	ga->tmp[n] = ga->tmp[n] + ga->FF*(ga->bestit[n] - ga->tmp[n]) + 
+	  ga->FF*(ga->pold[r1][n]-ga->pold[r2][n]);
+	n = (n+1)%ga->D;
+	L++;
+      } while((rando(&ga->seed) < ga->CR) && (L < ga->D));
+      break;
+      
+      /* DE/ga->best/2/exp is another powerful strategy worth trying */
+    case 4:
+      do {                           
+	ga->tmp[n] = ga->bestit[n] + 
+	  (ga->pold[r1][n]+ga->pold[r2][n]-ga->pold[r3][n]-ga->pold[r4][n])*ga->FF;
+	n = (n+1)%ga->D;
+	L++;
+      } while((rando(&ga->seed) < ga->CR) && (L < ga->D));
+      break;
+      
+      /*----DE/rand/2/exp seems to be a robust optimizer for many functions-----*/
+    case 5:
+      do {                           
+	ga->tmp[n] = ga->pold[r5][n] + 
+	  (ga->pold[r1][n]+ga->pold[r2][n]-ga->pold[r3][n]-ga->pold[r4][n])*ga->FF;
+	n = (n+1)%ga->D;
+	L++;
+      } while((rando(&ga->seed) < ga->CR) && (L < ga->D));
+      break;
+      
+      /*===Essentially same strategies but BINOMIAL ga->CROSSOVER===*/
+      
+      /*-------DE/ga->best/1/bin------*/
+    case 6:
+      for (L=0; L<ga->D; L++) {
+	/* perform D binomial trials */
+	if ((rando(&ga->seed) < ga->CR) || (L == (ga->D-1))) {
+	  /* change at least one parameter */
+	    ga->tmp[n] = ga->bestit[n] + ga->FF*(ga->pold[r2][n]-ga->pold[r3][n]);
+	}
+	n = (n+1)%ga->D;
+      }
+      break;
+      
+      /*-------DE/rand/1/bin------*/
+    case 7:
+      for (L=0; L<ga->D; L++) {
+	/* perform D binomial trials */
+	if ((rando(&ga->seed) < ga->CR) || (L == (ga->D-1))) {
+	  /* change at least one parameter */
+	  ga->tmp[n] = ga->pold[r1][n] + ga->FF*(ga->pold[r2][n]-ga->pold[r3][n]);
+	}
+	n = (n+1)%ga->D;
+      }
+      break;
+      
+      /*-------DE/rand-to-ga->best/1/bin------*/
+    case 8:
+      for (L=0; L<ga->D; L++) {
+	/* perform ga->D binomial trials */
+	if ((rando(&ga->seed) < ga->CR) || (L == (ga->D-1))) {
+	  /* change at least one parameter */
+	  ga->tmp[n] = ga->tmp[n] + ga->FF*(ga->bestit[n] - ga->tmp[n]) + 
+	    ga->FF*(ga->pold[r1][n]-ga->pold[r2][n]);
+	}
+	n = (n+1)%ga->D;
+      }
+      break;
+      
+      /*-------DE/ga->best/2/bin------*/
+    case 9:
+      for (L=0; L<ga->D; L++) {
+	/* perform ga->D binomial trials */
+	if ((rando(&ga->seed) < ga->CR) || (L == (ga->D-1))) {
+	  /* change at least one parameter */
+	  ga->tmp[n] = ga->bestit[n] + 
+	    (ga->pold[r1][n]+ga->pold[r2][n]-ga->pold[r3][n]-ga->pold[r4][n])*ga->FF;
+	}
+	n = (n+1)%ga->D;
+      }
+      break;
+      
+      /*-------DE/rand/2/bin-------*/
+    default:
+      for (L=0; L<ga->D; L++) {
+	/* perform ga->D binomial trials */
+	if ((rando(&ga->seed) < ga->CR) || (L == (ga->D-1))) {
+	  /* change at least one parameter */
+	  ga->tmp[n] = ga->pold[r5][n] + 
+	    (ga->pold[r1][n]+ga->pold[r2][n]-ga->pold[r3][n]-ga->pold[r4][n])*ga->FF;
+	}
+	n = (n+1)%ga->D;
+      }
+      break;
+    }
+    
+    /*===Trial mutation now in ga->tmp[]. Test how good this choice really was.==*/
+    copy2range(ga->D,ga->tmp,range);
+  }     
+}

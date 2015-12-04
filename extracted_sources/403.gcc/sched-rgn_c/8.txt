@@ -1,0 +1,73 @@
+static void
+compute_dom_prob_ps (bb)
+     int bb;
+{
+  int nxt_in_edge, fst_in_edge, pred;
+  int fst_out_edge, nxt_out_edge, nr_out_edges, nr_rgn_out_edges;
+
+  prob[bb] = 0.0;
+  if (IS_RGN_ENTRY (bb))
+    {
+      SET_BIT (dom[bb], 0);
+      prob[bb] = 1.0;
+      return;
+    }
+
+  fst_in_edge = nxt_in_edge = IN_EDGES (BB_TO_BLOCK (bb));
+
+  /* Initialize dom[bb] to '111..1'.  */
+  sbitmap_ones (dom[bb]);
+
+  do
+    {
+      pred = FROM_BLOCK (nxt_in_edge);
+      sbitmap_a_and_b (dom[bb], dom[bb], dom[BLOCK_TO_BB (pred)]);
+      sbitmap_a_or_b (ancestor_edges[bb], ancestor_edges[bb], ancestor_edges[BLOCK_TO_BB (pred)]);
+
+      SET_BIT (ancestor_edges[bb], EDGE_TO_BIT (nxt_in_edge));
+
+      nr_out_edges = 1;
+      nr_rgn_out_edges = 0;
+      fst_out_edge = OUT_EDGES (pred);
+      nxt_out_edge = NEXT_OUT (fst_out_edge);
+
+      sbitmap_a_or_b (pot_split[bb], pot_split[bb], pot_split[BLOCK_TO_BB (pred)]);
+
+      SET_BIT (pot_split[bb], EDGE_TO_BIT (fst_out_edge));
+
+      /* The successor doesn't belong in the region?  */
+      if (CONTAINING_RGN (TO_BLOCK (fst_out_edge)) !=
+	  CONTAINING_RGN (BB_TO_BLOCK (bb)))
+	++nr_rgn_out_edges;
+
+      while (fst_out_edge != nxt_out_edge)
+	{
+	  ++nr_out_edges;
+	  /* The successor doesn't belong in the region?  */
+	  if (CONTAINING_RGN (TO_BLOCK (nxt_out_edge)) !=
+	      CONTAINING_RGN (BB_TO_BLOCK (bb)))
+	    ++nr_rgn_out_edges;
+        SET_BIT (pot_split[bb], EDGE_TO_BIT (nxt_out_edge));
+	  nxt_out_edge = NEXT_OUT (nxt_out_edge);
+
+	}
+
+      /* Now nr_rgn_out_edges is the number of region-exit edges from
+         pred, and nr_out_edges will be the number of pred out edges
+         not leaving the region.  */
+      nr_out_edges -= nr_rgn_out_edges;
+      if (nr_rgn_out_edges > 0)
+	prob[bb] += 0.9 * prob[BLOCK_TO_BB (pred)] / nr_out_edges;
+      else
+	prob[bb] += prob[BLOCK_TO_BB (pred)] / nr_out_edges;
+      nxt_in_edge = NEXT_IN (nxt_in_edge);
+    }
+  while (fst_in_edge != nxt_in_edge);
+
+  SET_BIT (dom[bb], bb);
+  sbitmap_difference (pot_split[bb], pot_split[bb], ancestor_edges[bb]);
+
+  if (sched_verbose >= 2)
+    fprintf (sched_dump, ";;  bb_prob(%d, %d) = %3d\n", bb, BB_TO_BLOCK (bb),
+	     (int) (100.0 * prob[bb]));
+}

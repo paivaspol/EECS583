@@ -1,0 +1,66 @@
+int read_xvg(char *fn,real ***y,int *ny)
+{
+  FILE   *fp;
+  char   *ptr;
+  char   *base=NULL;
+  char   *fmt=NULL;
+  int    k,line=0,nny,nx,maxx,rval;
+  double lf;
+  real   **yy=NULL;
+  
+  *ny  = 0;
+  nny  = 0;
+  nx   = 0;
+  maxx = 0;
+  fp   = ffopen(fn,"r");
+  while ((ptr = fgets3(fp)) != NULL) {
+    line++;
+    trim(ptr);
+    if ((ptr[0] != '@') && (ptr[0] != '#')) {
+      if (nny == 0) {
+	(*ny) = nny = wordcount(ptr);
+	/* fprintf(stderr,"There are %d columns in your file\n",nny);*/
+	if (nny == 0)
+	  return 0;
+	snew(yy,nny);
+	snew(fmt,3*nny+1);
+	snew(base,3*nny+1);
+      }
+      /* Allocate column space */
+      if (nx >= maxx) {
+	maxx+=1024;
+	for(k=0; (k<nny); k++)
+	  srenew(yy[k],maxx);
+      }
+      /* Initiate format string */
+      fmt[0]  = '\0';
+      base[0] = '\0';
+      
+      /* fprintf(stderr,"ptr='%s'\n",ptr);*/
+      for(k=0; (k<nny); k++) {
+	strcpy(fmt,base);
+	strcat(fmt,"%lf");
+	rval = sscanf(ptr,fmt,&lf);
+	/* fprintf(stderr,"rval = %d\n",rval);*/
+	if ((rval == EOF) || (rval == 0))
+	  break;
+	yy[k][nx] = lf;
+	srenew(fmt,3*(nny+1)+1);
+	srenew(base,3*nny+1);
+	strcat(base,"%*s");
+      }
+      if (k != nny) {
+	fprintf(stderr,"Only %d columns on line %d in file %s\n",
+		k,line,fn);
+	for( ; (k<nny); k++)
+	  yy[k][nx] = 0.0;
+      }
+      nx++;
+    }
+  }
+  ffclose(fp);
+  
+  *y = yy;
+  
+  return nx;
+}

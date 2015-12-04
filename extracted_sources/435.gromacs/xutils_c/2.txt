@@ -1,0 +1,32 @@
+static t_range *read_range(char *db,int *nrange)
+{
+  int     nlines,nr,np,i;
+  char    **lines=NULL;
+  t_range *range;
+  int     atype,ptype;
+  double  rmin,rmax;
+  
+  nlines = get_file(db,&lines);
+  snew(range,nlines);
+  
+  nr=0;
+  for(i=0; (i < nlines); i++) {
+    strip_comment(lines[i]);
+    if (sscanf(lines[i],"%d%d%d%lf%lf",&np,&atype,&ptype,&rmin,&rmax) == 5) {
+      if (bLogEps && (ptype == eseEPSILON) && (rmin <= 0))
+	fatal_error(0,"When using logarithmic epsilon increments the minimum"
+		    "value must be > 0");
+      init_range(&range[nr],np,atype,ptype,rmin,rmax);
+      nr++;
+    }
+  }
+  fprintf(stderr,"found %d variables to iterate over\n",nr);
+  
+  *nrange = nr;
+
+  for(nr=0; (nr < nlines); nr++)
+    sfree(lines[nr]);
+  sfree(lines);
+    
+  return range;
+}

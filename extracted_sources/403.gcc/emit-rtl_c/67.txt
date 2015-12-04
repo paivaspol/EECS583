@@ -1,0 +1,24 @@
+static rtx
+gen_const_vector_0 (mode)
+     enum machine_mode mode;
+{
+  rtx tem;
+  rtvec v;
+  int units, i;
+  enum machine_mode inner;
+
+  units = GET_MODE_NUNITS (mode);
+  inner = GET_MODE_INNER (mode);
+
+  v = rtvec_alloc (units);
+
+  /* We need to call this function after we to set CONST0_RTX first.  */
+  if (!CONST0_RTX (inner))
+    abort ();
+
+  for (i = 0; i < units; ++i)
+    RTVEC_ELT (v, i) = CONST0_RTX (inner);
+
+  tem = gen_rtx_CONST_VECTOR (mode, v);
+  return tem;
+}

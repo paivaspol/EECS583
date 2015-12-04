@@ -1,0 +1,20 @@
+static s3cipid_t dict_ciphone_id (dict_t *d, char *str)
+{
+    int32 id;
+    
+    if (d->mdef)
+	return mdef_ciphone_id (d->mdef, str);
+    else {
+	if (hash_lookup (d->pht, str, &id) < 0) {
+	    id = (d->n_ciphone)++;
+	    
+	    if (id >= MAX_S3CIPID)
+		E_FATAL("Too many CIphones in dictionary; increase MAX_S3CIPID\n");
+	    d->ciphone_str[id] = (char *) ckd_salloc(str); /* Freed in dict_free()*/
+	    
+	    if (hash_enter (d->pht, d->ciphone_str[id], id) != id)
+		E_FATAL("hash_enter(local-phonetable, %s) failed\n", str);
+	}
+	return id;
+    }
+}

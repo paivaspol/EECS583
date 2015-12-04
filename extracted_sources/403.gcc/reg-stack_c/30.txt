@@ -1,0 +1,52 @@
+static int
+convert_regs (file)
+     FILE *file;
+{
+  int inserted, i;
+  edge e;
+
+  /* Initialize uninitialized registers on function entry.  */
+  inserted = convert_regs_entry ();
+
+  /* Construct the desired stack for function exit.  */
+  convert_regs_exit ();
+  BLOCK_INFO (EXIT_BLOCK_PTR)->done = 1;
+
+  /* ??? Future: process inner loops first, and give them arbitrary
+     initial stacks which emit_swap_insn can modify.  This ought to
+     prevent double fxch that aften appears at the head of a loop.  */
+
+  /* Process all blocks reachable from all entry points.  */
+  for (e = ENTRY_BLOCK_PTR->succ; e ; e = e->succ_next)
+    inserted |= convert_regs_2 (file, e->dest);
+  
+  /* ??? Process all unreachable blocks.  Though there's no excuse 
+     for keeping these even when not optimizing.  */
+  for (i = 0; i < n_basic_blocks; ++i)
+    {
+      basic_block b = BASIC_BLOCK (i);
+      block_info bi = BLOCK_INFO (b);
+
+      if (! bi->done)
+	{
+	  int reg;
+
+	  /* Create an arbitrary input stack.  */
+	  bi->stack_in.top = -1;
+	  for (reg = LAST_STACK_REG; reg >= FIRST_STACK_REG; --reg)
+	    if (TEST_HARD_REG_BIT (bi->stack_in.reg_set, reg))
+	      bi->stack_in.reg[++bi->stack_in.top] = reg;
+
+	  inserted |= convert_regs_2 (file, b);
+	}
+    }
+
+  fixup_abnormal_edges ();
+  if (inserted)
+    commit_edge_insertions ();
+
+  if (file)
+    fputc ('\n', file);
+
+  return inserted;
+}

@@ -1,0 +1,43 @@
+static int mk_grey(FILE *log,int nnodes,egCol egc[],t_graph *g,int *AtomI,
+		   matrix box,rvec x[],int *nerror)
+{
+  int      m,j,ng,ai,aj,g0;
+  rvec     hbox;
+  bool     bTriclinic;
+  ivec     is_aj;
+  
+  for(m=0; (m<DIM); m++)
+    hbox[m]=box[m][m]*0.5;
+  bTriclinic = TRICLINIC(box);
+  
+  ng=0;
+  ai=*AtomI;
+  
+  g0=g->start;
+  /* Loop over all the bonds */
+  for(j=0; (j<g->nedge[ai]); j++) {
+    aj=g->edge[ai][j]-g0;
+    /* If there is a white one, make it gray and set pbc */
+    if (bTriclinic)
+      mk_1shift_tric(box,hbox,x[g0+ai],x[g0+aj],g->ishift[ai],is_aj);
+    else
+      mk_1shift(hbox,x[g0+ai],x[g0+aj],g->ishift[ai],is_aj);
+    
+    if (egc[aj] == egcolWhite) {
+      if (aj < *AtomI)
+	*AtomI = aj;
+      egc[aj] = egcolGrey;
+      
+      copy_ivec(is_aj,g->ishift[aj]);
+
+      ng++;
+    }
+    else if ((is_aj[XX] != g->ishift[aj][XX]) ||
+	     (is_aj[YY] != g->ishift[aj][YY]) ||
+	     (is_aj[ZZ] != g->ishift[aj][ZZ]))
+	     {
+      (*nerror)++;
+    }
+  }
+  return ng;
+}

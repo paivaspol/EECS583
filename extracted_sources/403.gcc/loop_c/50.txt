@@ -1,0 +1,30 @@
+static void
+loop_ivs_free (loop)
+     struct loop *loop;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct iv_class *iv = ivs->list;
+
+  free (ivs->regs);
+
+  while (iv)
+    {
+      struct iv_class *next = iv->next;
+      struct induction *induction;
+      struct induction *next_induction;
+
+      for (induction = iv->biv; induction; induction = next_induction)
+	{
+	  next_induction = induction->next_iv;
+	  free (induction);
+	}
+      for (induction = iv->giv; induction; induction = next_induction)
+	{
+	  next_induction = induction->next_iv;
+	  free (induction);
+	}
+
+      free (iv);
+      iv = next;
+    }
+}

@@ -1,0 +1,53 @@
+static void
+df_ref_record (df, reg, loc, insn, ref_type, ref_flags)
+     struct df *df;
+     rtx reg;
+     rtx *loc;
+     rtx insn;
+     enum df_ref_type ref_type;
+     enum df_ref_flags ref_flags;
+{
+  unsigned int regno;
+
+  if (GET_CODE (reg) != REG && GET_CODE (reg) != SUBREG)
+    abort ();
+
+  /* For the reg allocator we are interested in some SUBREG rtx's, but not
+     all.  Notably only those representing a word extraction from a multi-word
+     reg.  As written in the docu those should have the form
+     (subreg:SI (reg:M A) N), with size(SImode) > size(Mmode).
+     XXX Is that true?  We could also use the global word_mode variable.  */
+  if (GET_CODE (reg) == SUBREG
+      && (GET_MODE_SIZE (GET_MODE (reg)) < GET_MODE_SIZE (word_mode)
+          || GET_MODE_SIZE (GET_MODE (reg))
+	       >= GET_MODE_SIZE (GET_MODE (SUBREG_REG (reg)))))
+    {
+      loc = &SUBREG_REG (reg);
+      reg = *loc;
+    }
+
+  regno = REGNO (GET_CODE (reg) == SUBREG ? SUBREG_REG (reg) : reg);
+  if (regno < FIRST_PSEUDO_REGISTER)
+    {
+      int i;
+      int endregno;
+
+      if (! (df->flags & DF_HARD_REGS))
+	return;
+
+      /* GET_MODE (reg) is correct here.  We don't want to go into a SUBREG
+         for the mode, because we only want to add references to regs, which
+	 are really referenced.  E.g. a (subreg:SI (reg:DI 0) 0) does _not_
+	 reference the whole reg 0 in DI mode (which would also include
+	 reg 1, at least, if 0 and 1 are SImode registers).  */
+      endregno = regno + HARD_REGNO_NREGS (regno, GET_MODE (reg));
+
+      for (i = regno; i < endregno; i++)
+	df_ref_record_1 (df, gen_rtx_REG (reg_raw_mode[i], i),
+			 loc, insn, ref_type, ref_flags);
+    }
+  else
+    {
+      df_ref_record_1 (df, reg, loc, insn, ref_type, ref_flags);
+    }
+}

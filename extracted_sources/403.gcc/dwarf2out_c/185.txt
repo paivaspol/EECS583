@@ -1,0 +1,47 @@
+static inline void
+add_bit_offset_attribute (die, decl)
+     dw_die_ref die;
+     tree decl;
+{
+  HOST_WIDE_INT object_offset_in_bytes = field_byte_offset (decl);
+  tree type = DECL_BIT_FIELD_TYPE (decl);
+  HOST_WIDE_INT bitpos_int;
+  HOST_WIDE_INT highest_order_object_bit_offset;
+  HOST_WIDE_INT highest_order_field_bit_offset;
+  HOST_WIDE_INT unsigned bit_offset;
+
+  /* Must be a field and a bit field.  */
+  if (!type
+      || TREE_CODE (decl) != FIELD_DECL)
+    abort ();
+
+  /* We can't yet handle bit-fields whose offsets are variable, so if we
+     encounter such things, just return without generating any attribute
+     whatsoever.  Likewise for variable or too large size.  */
+  if (! host_integerp (bit_position (decl), 0)
+      || ! host_integerp (DECL_SIZE (decl), 1))
+    return;
+
+  bitpos_int = int_bit_position (decl);
+
+  /* Note that the bit offset is always the distance (in bits) from the
+     highest-order bit of the "containing object" to the highest-order bit of
+     the bit-field itself.  Since the "high-order end" of any object or field
+     is different on big-endian and little-endian machines, the computation
+     below must take account of these differences.  */
+  highest_order_object_bit_offset = object_offset_in_bytes * BITS_PER_UNIT;
+  highest_order_field_bit_offset = bitpos_int;
+
+  if (! BYTES_BIG_ENDIAN)
+    {
+      highest_order_field_bit_offset += tree_low_cst (DECL_SIZE (decl), 0);
+      highest_order_object_bit_offset += simple_type_size_in_bits (type);
+    }
+
+  bit_offset
+    = (! BYTES_BIG_ENDIAN
+       ? highest_order_object_bit_offset - highest_order_field_bit_offset
+       : highest_order_field_bit_offset - highest_order_object_bit_offset);
+
+  add_AT_unsigned (die, DW_AT_bit_offset, bit_offset);
+}

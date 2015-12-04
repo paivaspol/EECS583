@@ -1,0 +1,96 @@
+static void
+parse_string (pfile, token, terminator)
+     cpp_reader *pfile;
+     cpp_token *token;
+     cppchar_t terminator;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  unsigned char *dest, *limit;
+  cppchar_t c;
+  bool warned_nulls = false, warned_multi = false;
+
+  dest = BUFF_FRONT (pfile->u_buff);
+  limit = BUFF_LIMIT (pfile->u_buff);
+
+  for (;;)
+    {
+      /* We need room for another char, possibly the terminating NUL.  */
+      if ((size_t) (limit - dest) < 1)
+	{
+	  size_t len_so_far = dest - BUFF_FRONT (pfile->u_buff);
+	  _cpp_extend_buff (pfile, &pfile->u_buff, 2);
+	  dest = BUFF_FRONT (pfile->u_buff) + len_so_far;
+	  limit = BUFF_LIMIT (pfile->u_buff);
+	}
+
+      /* Handle trigraphs, escaped newlines etc.  */
+      c = *buffer->cur++;
+      if (c == '?' || c == '\\')
+	c = skip_escaped_newlines (pfile);
+
+      if (c == terminator)
+	{
+	  if (unescaped_terminator_p (pfile, dest))
+	    break;
+	}
+      else if (is_vspace (c))
+	{
+	  /* In assembly language, silently terminate string and
+	     character literals at end of line.  This is a kludge
+	     around not knowing where comments are.  */
+	  if (CPP_OPTION (pfile, lang) == CLK_ASM && terminator != '>')
+	    {
+	      buffer->cur--;
+	      break;
+	    }
+
+	  /* Character constants and header names may not extend over
+	     multiple lines.  In Standard C, neither may strings.
+	     Unfortunately, we accept multiline strings as an
+	     extension, except in #include family directives.  */
+	  if (terminator != '"' || pfile->state.angled_headers)
+	    {
+	      unterminated (pfile, terminator);
+	      buffer->cur--;
+	      break;
+	    }
+
+	  if (!warned_multi)
+	    {
+	      warned_multi = true;
+	      cpp_pedwarn (pfile, "multi-line string literals are deprecated");
+	    }
+
+	  if (pfile->mls_line == 0)
+	    {
+	      pfile->mls_line = token->line;
+	      pfile->mls_col = token->col;
+	    }
+	      
+	  handle_newline (pfile);
+	  c = '\n';
+	}
+      else if (c == '\0')
+	{
+	  if (buffer->cur - 1 == buffer->rlimit)
+	    {
+	      unterminated (pfile, terminator);
+	      buffer->cur--;
+	      break;
+	    }
+	  if (!warned_nulls)
+	    {
+	      warned_nulls = true;
+	      cpp_warning (pfile, "null character(s) preserved in literal");
+	    }
+	}
+
+      *dest++ = c;
+    }
+
+  *dest = '\0';
+
+  token->val.str.text = BUFF_FRONT (pfile->u_buff);
+  token->val.str.len = dest - BUFF_FRONT (pfile->u_buff);
+  BUFF_FRONT (pfile->u_buff) = dest + 1;
+}

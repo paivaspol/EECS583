@@ -1,0 +1,71 @@
+void free_img ()
+{
+  CloseSEIMessages(); // Tian Dong (Sept 2002)
+  free_mem_mv (img->pred_mv);
+  free_mem_mv (img->all_mv);
+
+#if BI_PREDICTION
+  if (input->BiPredMotionEstimation)
+  {
+    free_mem_mv (img->bipred_mv1);
+    free_mem_mv (img->bipred_mv2);
+  }
+#endif
+
+  free_mem_ACcoeff (img->cofAC);
+  free_mem_DCcoeff (img->cofDC);
+
+  if(input->MbInterlace)
+  {
+    free_mem_mv (rddata_top_frame_mb.pred_mv);
+    free_mem_mv (rddata_top_frame_mb.all_mv);
+
+    free_mem_mv (rddata_bot_frame_mb.pred_mv);
+    free_mem_mv (rddata_bot_frame_mb.all_mv);
+
+    free_mem_mv (rddata_top_field_mb.pred_mv);
+    free_mem_mv (rddata_top_field_mb.all_mv);
+
+    free_mem_mv (rddata_bot_field_mb.pred_mv);
+    free_mem_mv (rddata_bot_field_mb.all_mv);
+
+#if BI_PREDICTION
+    if (input->BiPredMotionEstimation)
+    {
+      free_mem_mv (rddata_top_frame_mb.bipred_mv1);
+      free_mem_mv (rddata_top_frame_mb.bipred_mv2);
+      free_mem_mv (rddata_bot_frame_mb.bipred_mv1);
+      free_mem_mv (rddata_bot_frame_mb.bipred_mv2);
+      free_mem_mv (rddata_top_field_mb.bipred_mv1);
+      free_mem_mv (rddata_top_field_mb.bipred_mv2);
+      free_mem_mv (rddata_bot_field_mb.bipred_mv1);
+      free_mem_mv (rddata_bot_field_mb.bipred_mv2);
+    }
+#endif
+
+    free_mem_ACcoeff (rddata_top_frame_mb.cofAC);
+    free_mem_DCcoeff (rddata_top_frame_mb.cofDC);
+
+    free_mem_ACcoeff (rddata_bot_frame_mb.cofAC);
+    free_mem_DCcoeff (rddata_bot_frame_mb.cofDC);
+
+    free_mem_ACcoeff (rddata_top_field_mb.cofAC);
+    free_mem_DCcoeff (rddata_top_field_mb.cofDC);
+
+    free_mem_ACcoeff (rddata_bot_field_mb.cofAC);
+    free_mem_DCcoeff (rddata_bot_field_mb.cofDC);
+  }
+
+  if(img->max_imgpel_value > img->max_imgpel_value_uv)
+    free (img->quad-(img->max_imgpel_value + 1));
+  else
+    free (img->quad-(img->max_imgpel_value_uv + 1));
+
+  if(input->MbInterlace) 
+  {
+    free_mem2Dint(rddata_bot_frame_mb.ipredmode);
+    free_mem2Dint(rddata_top_field_mb.ipredmode);
+    free_mem2Dint(rddata_bot_field_mb.ipredmode);
+  }
+
+}

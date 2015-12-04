@@ -1,0 +1,159 @@
+static void
+check_node_dependence (du)
+     def_use *du;
+{
+  def_use *def_ptr, *use_ptr;
+  dependence *dep_ptr, *dep_list;
+  subscript icoefficients[MAX_SUBSCRIPTS];
+  subscript ocoefficients[MAX_SUBSCRIPTS];
+  loop *loop_ptr, *ck_loop_ptr;
+  unsigned int loop_idx = 0;
+  int distance[MAX_SUBSCRIPTS][MAX_SUBSCRIPTS];
+  int i, j;
+  int subscript_count;
+  int unnormal_loop;
+  enum direction_type direction[MAX_SUBSCRIPTS][MAX_SUBSCRIPTS];
+  enum complexity_type complexity[MAX_SUBSCRIPTS];
+  int separability;
+  int have_dependence;
+
+  for (j = 1 ; j < MAX_SUBSCRIPTS; j++)
+    {
+      direction[j][0] = undef;
+      distance[j][0] = 0;
+    }
+
+  for (def_ptr = du; def_ptr; def_ptr = def_ptr->next)
+    {
+      if (def_ptr->type != def)
+	  continue;
+      subscript_count = get_coefficients (def_ptr, ocoefficients);
+      if (subscript_count < 0)
+	continue;
+
+      loop_idx = 0;
+      for (loop_ptr = VARRAY_GENERIC_PTR (loop_chain, loop_idx);
+	   loop_ptr && loop_idx < VARRAY_SIZE (loop_chain);
+	   loop_ptr = VARRAY_GENERIC_PTR (loop_chain, ++loop_idx))
+	{
+	  if (loop_ptr->outer_loop == def_ptr->outer_loop)
+	    break;
+	}
+
+      unnormal_loop = 0;
+      for (ck_loop_ptr = loop_ptr;
+	   ck_loop_ptr && loop_idx < VARRAY_SIZE (loop_chain);
+	   ck_loop_ptr = VARRAY_GENERIC_PTR (loop_chain, ++loop_idx))
+	{
+	  if (ck_loop_ptr->outer_loop == def_ptr->outer_loop
+	      && ck_loop_ptr->status == unnormal)
+	    unnormal_loop = 1;
+	}
+      if (unnormal_loop)
+	continue;
+
+      normalize_coefficients (ocoefficients, loop_ptr, subscript_count);
+
+      for (use_ptr = du; use_ptr; use_ptr = use_ptr->next)
+	{
+	  if (def_ptr == use_ptr
+	      || def_ptr->outer_loop != use_ptr->outer_loop)
+	    continue;
+	  def_ptr->status = seen;
+	  use_ptr->status = seen;
+	  subscript_count =  get_coefficients (use_ptr, icoefficients);
+	  normalize_coefficients (icoefficients, loop_ptr, subscript_count);
+	  classify_dependence (icoefficients, ocoefficients, complexity,
+			       &separability, subscript_count);
+
+	  for (i = 1, ck_loop_ptr = loop_ptr; ck_loop_ptr; i++)
+	    {
+	      for (j = 1; j <= subscript_count; j++)
+		{
+		  direction[i][j] = star;
+		  distance[i][j] = INT_MAX;
+		  if (separability && complexity[j] == ziv)
+		    ziv_test (icoefficients, ocoefficients, direction, distance,
+			      ck_loop_ptr, j);
+		  else if (separability
+			   && (complexity[j] == strong_siv
+			       || complexity[j] == weak_zero_siv
+			       || complexity[j] == weak_crossing_siv))
+		    siv_test (icoefficients, ocoefficients, direction, distance,
+			      ck_loop_ptr, j);
+		  else
+		    gcd_test (icoefficients, ocoefficients, direction, distance,
+			      ck_loop_ptr, j);
+		  /* ?? Add other tests: single variable exact test, banerjee */
+		}
+	    
+	      ck_loop_ptr = ck_loop_ptr->next_nest;
+	    }
+
+	  merge_dependencies (direction, distance, i - 1, j - 1);
+
+	  have_dependence = 0;
+	  for (j = 1; j <= i - 1; j++)
+	    {
+	      if (direction[j][0] != independent)
+		have_dependence = 1;
+	    }
+	  if (! have_dependence)
+	    continue;
+
+	  VARRAY_PUSH_GENERIC_PTR (dep_chain, xmalloc (sizeof (dependence)));
+	  dep_ptr = VARRAY_TOP (dep_chain, generic);
+	  dep_ptr->source = use_ptr->expression;
+	  dep_ptr->destination = def_ptr->expression;
+	  dep_ptr->next = 0;
+	  
+	  if (def_ptr < use_ptr && use_ptr->type == use) 
+	    dep_ptr->dependence = dt_flow;
+	  else if (def_ptr > use_ptr && use_ptr->type == use)
+	    dep_ptr->dependence = dt_anti;
+	  else dep_ptr->dependence = dt_output;
+
+	  for (j = 1 ; j <= i - 1 ; j++)
+	    {
+	      if (direction[j][0] == gt)
+		{
+		  dep_ptr->dependence = dt_anti;
+		  direction[j][0] = lt;
+		  distance[j][0] = -distance[j][0];
+		  break;
+		}
+	      else if (direction[j][0] == lt)
+		{
+		  dep_ptr->dependence = dt_flow;
+		  break;
+		}
+	    }
+	  for (j = 1 ; j < MAX_SUBSCRIPTS ; j++)
+	    {
+	      dep_ptr->direction[j] = direction[j][0];
+	      dep_ptr->distance[j] = distance[j][0];
+	    }
+
+	  for (dep_list = def_ptr->dep ;
+	       dep_list && dep_list->next ;
+	       dep_list = dep_list->next)
+	    ;
+
+	  if (! dep_list)
+	    {
+	      /* Dummy for rtl interface */
+	      dependence *dep_root_ptr;
+
+	      VARRAY_PUSH_GENERIC_PTR (dep_chain, xmalloc (sizeof (dependence)));
+	      dep_root_ptr = VARRAY_TOP (dep_chain, generic);
+	      dep_root_ptr->source = 0;
+	      dep_root_ptr->destination = def_ptr->expression;
+	      dep_root_ptr->dependence = dt_none;
+	      dep_root_ptr->next = dep_ptr;
+	      def_ptr->dep = dep_ptr;
+	    }
+	  else
+	    dep_list->next = dep_ptr;
+	}
+    }
+}

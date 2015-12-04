@@ -1,0 +1,18 @@
+static void
+remove_useless_values ()
+{
+  /* First pass: eliminate locations that reference the value.  That in
+     turn can make more values useless.  */
+  do
+    {
+      values_became_useless = 0;
+      htab_traverse (hash_table, discard_useless_locs, 0);
+    }
+  while (values_became_useless);
+
+  /* Second pass: actually remove the values.  */
+  htab_traverse (hash_table, discard_useless_values, 0);
+
+  if (n_useless_values != 0)
+    abort ();
+}

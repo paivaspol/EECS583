@@ -1,0 +1,16 @@
+static void
+compute_ae_gen ()
+{
+  unsigned int i;
+  struct expr *expr;
+  struct occr *occr;
+
+  /* For each recorded occurrence of each expression, set ae_gen[bb][expr].
+     This is all we have to do because an expression is not recorded if it
+     is not available, and the only expressions we want to work with are the
+     ones that are recorded.  */
+  for (i = 0; i < expr_hash_table_size; i++)
+    for (expr = expr_hash_table[i]; expr != 0; expr = expr->next_same_hash)
+      for (occr = expr->avail_occr; occr != 0; occr = occr->next)
+	SET_BIT (ae_gen[BLOCK_NUM (occr->insn)], expr->bitmap_index);
+}

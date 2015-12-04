@@ -1,0 +1,15 @@
+static rtx
+builtin_memcpy_read_str (data, offset, mode)
+     PTR data;
+     HOST_WIDE_INT offset;
+     enum machine_mode mode;
+{
+  const char *str = (const char *) data;
+
+  if (offset < 0
+      || ((unsigned HOST_WIDE_INT) offset + GET_MODE_SIZE (mode)
+	  > strlen (str) + 1))
+    abort ();  /* Attempt to read past the end of constant string.  */
+
+  return c_readstr (str + offset, mode);
+}

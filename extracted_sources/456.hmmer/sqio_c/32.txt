@@ -1,0 +1,127 @@
+int
+SeqfileFormat(FILE *fp)
+{
+  char *buf;
+  int   len;
+  int   fmt = SQFILE_UNKNOWN;
+  int   ndataline;
+  char *bufcpy, *s, *s1, *s2;
+  int   has_junk;
+
+  buf       = NULL;
+  len       = 0;
+  ndataline = 0;
+  has_junk  = FALSE;
+  while (sre_fgets(&buf, &len, fp) != NULL)
+    {
+      if (IsBlankline(buf)) continue;
+
+      /* Well-behaved formats identify themselves in first nonblank line.
+       */
+      if (ndataline == 0)
+	{
+	  if (strncmp(buf, ">>>>", 4) == 0 && strstr(buf, "Len: "))
+	    { fmt = SQFILE_GCGDATA; goto DONE; }
+
+	  if (buf[0] == '>')
+	    { fmt = SQFILE_FASTA; goto DONE; }
+
+	  if (strncmp(buf, "!!AA_SEQUENCE", 13) == 0 ||
+	      strncmp(buf, "!!NA_SEQUENCE", 13) == 0)
+	    { fmt = SQFILE_GCG; goto DONE; }
+
+	  if (strncmp(buf, "# STOCKHOLM 1.", 14) == 0)
+	    { fmt = MSAFILE_STOCKHOLM; goto DONE; }
+
+	  if (strncmp(buf, "CLUSTAL", 7) == 0 && 
+	      strstr(buf, "multiple sequence alignment") != NULL)
+	    { fmt = MSAFILE_CLUSTAL; goto DONE; }
+
+	  if (strncmp(buf, "!!AA_MULTIPLE_ALIGNMENT", 23) == 0 ||
+	      strncmp(buf, "!!NA_MULTIPLE_ALIGNMENT", 23) == 0)
+	    { fmt = MSAFILE_MSF; goto DONE; }
+
+	  			/* PHYLIP id: also just a good bet */
+	  bufcpy = sre_strdup(buf, -1);
+	  s = bufcpy;
+	  if ((s1 = sre_strtok(&s, WHITESPACE, NULL)) != NULL &&
+	      (s2 = sre_strtok(&s, WHITESPACE, NULL)) != NULL &&
+	      IsInt(s1) && 
+	      IsInt(s2))
+	    { free(bufcpy); fmt = MSAFILE_PHYLIP; goto DONE; }
+	  free(bufcpy);
+	}
+
+      /* We trust that other formats identify themselves soon.
+       */
+     				/* dead giveaways for extended SELEX */
+      if (strncmp(buf, "#=AU", 4) == 0 ||
+          strncmp(buf, "#=ID", 4) == 0 ||
+	  strncmp(buf, "#=AC", 4) == 0 ||
+	  strncmp(buf, "#=DE", 4) == 0 ||
+	  strncmp(buf, "#=GA", 4) == 0 ||
+	  strncmp(buf, "#=TC", 4) == 0 ||
+	  strncmp(buf, "#=NC", 4) == 0 ||
+	  strncmp(buf, "#=SQ", 4) == 0 ||
+	  strncmp(buf, "#=SS", 4) == 0 ||
+	  strncmp(buf, "#=CS", 4) == 0 ||
+	  strncmp(buf, "#=RF", 4) == 0)
+	{ fmt = MSAFILE_SELEX; goto DONE; }
+	
+      if (strncmp(buf, "///", 3) == 0 || strncmp(buf, "ENTRY ", 6) == 0)
+	{ fmt = SQFILE_PIR; goto DONE; }
+
+				/* a ha, diagnostic of an (old) MSF file */
+      if ((strstr(buf, "..")    != NULL) && 
+	  (strstr(buf, "MSF:")  != NULL) &&
+	  (strstr(buf, "Check:")!= NULL))
+	{ fmt = MSAFILE_MSF; goto DONE; }
+
+				/* unaligned GCG (must follow MSF test!) */
+      if (strstr(buf, " Check: ") != NULL && strstr(buf, "..") != NULL)
+	{ fmt = SQFILE_GCG; goto DONE; }
+
+      if (strncmp(buf,"LOCUS ",6) == 0 || strncmp(buf,"ORIGIN ",6) == 0)
+	{ fmt = SQFILE_GENBANK; goto DONE; }
+
+      if (strncmp(buf,"ID   ",5) == 0 || strncmp(buf,"SQ   ",5) == 0)
+	{ fmt = SQFILE_EMBL; goto DONE; }
+
+      /* But past here, we're being desperate. A simple SELEX file is
+       * very difficult to detect; we can only try to disprove it.
+       */
+      s = buf;
+      if ((s1 = sre_strtok(&s, WHITESPACE, NULL)) == NULL) continue; /* skip blank lines */
+      if (strchr("#%", *s1) != NULL) continue;   /* skip comment lines */
+
+      /* Disproof 1. Noncomment, nonblank lines in a SELEX file
+       * must have at least two space-delimited fields (name/seq)
+       */
+      if ((s2 = sre_strtok(&s, WHITESPACE, NULL)) == NULL) 
+	has_junk = TRUE;
+
+      /* Disproof 2. 
+       * The sequence field should look like a sequence.
+       */
+      if (s2 != NULL && Seqtype(s2) == kOtherSeq) 
+	has_junk = TRUE;
+
+      ndataline++;
+      if (ndataline == 300) break; /* only look at first 300 lines */
+    }
+
+  if (ndataline == 0)
+    Die("Sequence file contains no data");
+
+  /* If we've made it this far, we've run out of data, but there
+   * was at least one line of it; check if we've
+   * disproven SELEX. If not, cross our fingers, pray, and guess SELEX. 
+   */
+  if (has_junk == TRUE) fmt = SQFILE_UNKNOWN;
+  else                  fmt = MSAFILE_SELEX;
+
+ DONE:
+  if (buf != NULL) free(buf);
+  rewind(fp);
+  return fmt;
+}

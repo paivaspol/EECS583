@@ -1,0 +1,66 @@
+void MbAffPostProc()
+{
+  imgpel temp[16][32];
+
+  imgpel ** imgY  = enc_picture->imgY;
+  imgpel ***imgUV = enc_picture->imgUV;
+  int i, x, y, x0, y0, uv;
+
+  if (img->yuv_format != YUV400)
+  {
+    for (i=0; i<(int)img->PicSizeInMbs; i+=2)
+    {
+      if (enc_picture->mb_field[i])
+      {
+        get_mb_pos(i, &x0, &y0);
+        for (y=0; y<(2*MB_BLOCK_SIZE);y++)
+          for (x=0; x<MB_BLOCK_SIZE; x++)
+            temp[x][y] = imgY[y0+y][x0+x];
+
+        for (y=0; y<MB_BLOCK_SIZE;y++)
+          for (x=0; x<MB_BLOCK_SIZE; x++)
+          {
+            imgY[y0+(2*y)][x0+x]   = temp[x][y];
+            imgY[y0+(2*y+1)][x0+x] = temp[x][y+MB_BLOCK_SIZE];
+          }
+
+        x0 = x0 / (16/img->mb_cr_size_x);
+        y0 = y0 / (16/img->mb_cr_size_y);
+
+        for (uv=0; uv<2; uv++)
+        {
+          for (y=0; y<(2*img->mb_cr_size_y);y++)    
+            for (x=0; x<img->mb_cr_size_x; x++)
+              temp[x][y] = imgUV[uv][y0+y][x0+x];
+          
+          for (y=0; y<img->mb_cr_size_y;y++)
+            for (x=0; x<img->mb_cr_size_x; x++)
+            {
+              imgUV[uv][y0+(2*y)][x0+x]   = temp[x][y];
+              imgUV[uv][y0+(2*y+1)][x0+x] = temp[x][y+img->mb_cr_size_y];
+            }
+        }
+      }
+    }
+  }
+  else
+  {
+    for (i=0; i<(int)img->PicSizeInMbs; i+=2)
+    {
+      if (enc_picture->mb_field[i])
+      {
+        get_mb_pos(i, &x0, &y0);
+        for (y=0; y<(2*MB_BLOCK_SIZE);y++)
+          for (x=0; x<MB_BLOCK_SIZE; x++)
+            temp[x][y] = imgY[y0+y][x0+x];
+
+        for (y=0; y<MB_BLOCK_SIZE;y++)
+          for (x=0; x<MB_BLOCK_SIZE; x++)
+          {
+            imgY[y0+(2*y)][x0+x]   = temp[x][y];
+            imgY[y0+(2*y+1)][x0+x] = temp[x][y+MB_BLOCK_SIZE];
+          }
+      }
+    }
+  }
+}

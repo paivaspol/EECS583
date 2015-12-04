@@ -1,0 +1,75 @@
+static void
+hash_scan_set (pat, insn, set_p)
+     rtx pat, insn;
+     int set_p;
+{
+  rtx src = SET_SRC (pat);
+  rtx dest = SET_DEST (pat);
+  rtx note;
+
+  if (GET_CODE (src) == CALL)
+    hash_scan_call (src, insn);
+
+  else if (GET_CODE (dest) == REG)
+    {
+      unsigned int regno = REGNO (dest);
+      rtx tmp;
+
+      /* If this is a single set and we are doing constant propagation,
+	 see if a REG_NOTE shows this equivalent to a constant.  */
+      if (set_p && (note = find_reg_equal_equiv_note (insn)) != 0
+	  && CONSTANT_P (XEXP (note, 0)))
+	src = XEXP (note, 0), pat = gen_rtx_SET (VOIDmode, dest, src);
+
+      /* Only record sets of pseudo-regs in the hash table.  */
+      if (! set_p
+	  && regno >= FIRST_PSEUDO_REGISTER
+	  /* Don't GCSE something if we can't do a reg/reg copy.  */
+	  && can_copy_p [GET_MODE (dest)]
+	  /* GCSE commonly inserts instruction after the insn.  We can't
+	     do that easily for EH_REGION notes so disable GCSE on these
+	     for now.  */
+	  && !can_throw_internal (insn)
+	  /* Is SET_SRC something we want to gcse?  */
+	  && want_to_gcse_p (src)
+	  /* Don't CSE a nop.  */
+	  && ! set_noop_p (pat)
+	  /* Don't GCSE if it has attached REG_EQUIV note.
+	     At this point this only function parameters should have
+	     REG_EQUIV notes and if the argument slot is used somewhere
+	     explicitly, it means address of parameter has been taken,
+	     so we should not extend the lifetime of the pseudo.  */
+	  && ((note = find_reg_note (insn, REG_EQUIV, NULL_RTX)) == 0
+	      || GET_CODE (XEXP (note, 0)) != MEM))
+	{
+	  /* An expression is not anticipatable if its operands are
+	     modified before this insn or if this is not the only SET in
+	     this insn.  */
+	  int antic_p = oprs_anticipatable_p (src, insn) && single_set (insn);
+	  /* An expression is not available if its operands are
+	     subsequently modified, including this insn.  It's also not
+	     available if this is a branch, because we can't insert
+	     a set after the branch.  */
+	  int avail_p = (oprs_available_p (src, insn)
+			 && ! JUMP_P (insn));
+
+	  insert_expr_in_table (src, GET_MODE (dest), insn, antic_p, avail_p);
+	}
+
+      /* Record sets for constant/copy propagation.  */
+      else if (set_p
+	       && regno >= FIRST_PSEUDO_REGISTER
+	       && ((GET_CODE (src) == REG
+		    && REGNO (src) >= FIRST_PSEUDO_REGISTER
+		    && can_copy_p [GET_MODE (dest)]
+		    && REGNO (src) != regno)
+		   || CONSTANT_P (src))
+	       /* A copy is not available if its src or dest is subsequently
+		  modified.  Here we want to search from INSN+1 on, but
+		  oprs_available_p searches from INSN on.  */
+	       && (insn == BLOCK_END (BLOCK_NUM (insn))
+		   || ((tmp = next_nonnote_insn (insn)) != NULL_RTX
+		       && oprs_available_p (pat, tmp))))
+	insert_set_in_table (pat, insn);
+    }
+}

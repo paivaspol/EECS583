@@ -1,0 +1,28 @@
+void
+SSIFreeIndex(SSIINDEX *g) 
+{
+  int i;
+  if (g != NULL) 
+    {
+      if (g->external == FALSE) {
+	for (i = 0; i < g->nprimary;   i++) free(g->pkeys[i].key);
+	for (i = 0; i < g->nsecondary; i++) free(g->skeys[i].key);
+	for (i = 0; i < g->nsecondary; i++) free(g->skeys[i].pkey);
+	if (g->pkeys       != NULL)         free(g->pkeys);       	
+	if (g->skeys       != NULL)         free(g->skeys);       
+      } else {
+	if (g->ptmp        != NULL)         fclose(g->ptmp);
+	if (g->stmp        != NULL)         fclose(g->stmp);       
+#if DEBUGLEVEL == 0
+	remove(g->ptmpfile);
+	remove(g->stmpfile);
+#endif
+      }
+      for (i = 0; i < g->nfiles;     i++) free(g->filenames[i]);
+      if (g->filenames   != NULL)         free(g->filenames);
+      if (g->fileformat  != NULL)         free(g->fileformat);
+      if (g->bpl         != NULL)         free(g->bpl);       
+      if (g->rpl         != NULL)         free(g->rpl);       
+      free(g);
+    }
+}

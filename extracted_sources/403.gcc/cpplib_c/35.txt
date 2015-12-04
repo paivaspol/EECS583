@@ -1,0 +1,30 @@
+static void
+do_pragma_poison (pfile)
+     cpp_reader *pfile;
+{
+  const cpp_token *tok;
+  cpp_hashnode *hp;
+
+  pfile->state.poisoned_ok = 1;
+  for (;;)
+    {
+      tok = _cpp_lex_token (pfile);
+      if (tok->type == CPP_EOF)
+	break;
+      if (tok->type != CPP_NAME)
+	{
+	  cpp_error (pfile, "invalid #pragma GCC poison directive");
+	  break;
+	}
+
+      hp = tok->val.node;
+      if (hp->flags & NODE_POISONED)
+	continue;
+
+      if (hp->type == NT_MACRO)
+	cpp_warning (pfile, "poisoning existing macro \"%s\"", NODE_NAME (hp));
+      _cpp_free_definition (hp);
+      hp->flags |= NODE_POISONED | NODE_DIAGNOSTIC;
+    }
+  pfile->state.poisoned_ok = 0;
+}

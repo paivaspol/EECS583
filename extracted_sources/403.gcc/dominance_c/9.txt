@@ -1,0 +1,40 @@
+static void
+idoms_to_doms (di, dominators)
+     struct dom_info *di;
+     sbitmap *dominators;
+{
+  TBB i, e_index;
+  int bb, bb_idom;
+  sbitmap_vector_zero (dominators, n_basic_blocks);
+  /* We have to be careful, to not include the ENTRY_BLOCK or EXIT_BLOCK
+     in the list of (post)-doms, so remember that in e_index.  */
+  e_index = di->dfs_order[n_basic_blocks];
+
+  for (i = 1; i <= di->nodes; i++)
+    {
+      if (i == e_index)
+	continue;
+      bb = di->dfs_to_bb[i]->index;
+
+      if (di->dom[i] && (di->dom[i] != e_index))
+	{
+	  bb_idom = di->dfs_to_bb[di->dom[i]]->index;
+	  sbitmap_copy (dominators[bb], dominators[bb_idom]);
+	}
+      else
+	{
+	  /* It has no immediate dom or only ENTRY_BLOCK or EXIT_BLOCK.
+	     If it is a child of ENTRY_BLOCK that's OK, and it's only
+	     dominated by itself; if it's _not_ a child of ENTRY_BLOCK, it
+	     means, it is unreachable.  That case has been disallowed in the
+	     building of the DFS tree, so we are save here.  For the reverse
+	     flow graph it means, it has no children, so, to be compatible
+	     with the old code, we set the post_dominators to all one.  */
+	  if (!di->dom[i])
+	    {
+	      sbitmap_ones (dominators[bb]);
+	    }
+	}
+      SET_BIT (dominators[bb], bb);
+    }
+}

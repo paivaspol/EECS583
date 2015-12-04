@@ -1,0 +1,21 @@
+static real rms_force(t_commrec *cr,rvec f[],int ns,t_shell s[],
+		      int ndir,real sf_dir)
+{
+  int  i,shell,ntot;
+  real df2;
+  
+  ntot = ns+ndir;
+
+  if (!ntot)
+    return 0;
+  df2 = sf_dir;
+  for(i=0; i<ns; i++) {
+    shell = s[i].shell;
+    df2  += iprod(f[shell],f[shell]);
+  }
+  if (PAR(cr)) {
+    gmx_sum(1,&df2,cr);
+    gmx_sumi(1,&ntot,cr);
+  }
+  return sqrt(df2/ntot);
+}

@@ -1,0 +1,49 @@
+void replace_top_pic_with_frame(StorablePicture* p)
+{
+  FrameStore* fs = NULL;
+  unsigned i, found;
+
+  assert (p!=NULL);
+  assert (p->structure==FRAME);
+
+  p->used_for_reference = (img->nal_reference_idc != 0);
+  // upsample a reference picture
+  if (p->used_for_reference)
+  {
+    UnifiedOneForthPix(p);
+  }
+
+  found=0;
+
+  for (i=0;i<dpb.used_size;i++)
+  {
+    if((dpb.fs[i]->frame_num == img->frame_num)&&(dpb.fs[i]->is_used==1))
+    {
+      found=1;
+      fs = dpb.fs[i];
+      break;
+    }
+  }
+
+  if (!found)
+  {
+    error("replace_top_pic_with_frame: error storing reference frame (top field not found)",500);
+  }
+
+  free_storable_picture(fs->top_field);
+  fs->top_field=NULL;
+  fs->frame=p;
+  fs->is_used = 3;
+  if (p->used_for_reference)
+  {
+    fs->is_reference = 3;
+    if (p->is_long_term)
+    {
+      fs->is_long_term = 3;
+    }
+  }
+  // generate field views
+  dpb_split_field(fs);
+  update_ref_list();
+  update_ltref_list();
+}

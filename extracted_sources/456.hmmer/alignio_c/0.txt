@@ -1,0 +1,24 @@
+void
+AllocAlignment(int nseq, int alen, char ***ret_aseq, AINFO *ainfo)
+{
+  char **aseq;
+  int idx;
+
+  InitAinfo(ainfo);
+
+  aseq = (char **) MallocOrDie (sizeof(char *) * nseq);
+  for (idx = 0; idx < nseq; idx++)
+    aseq[idx] = (char *) MallocOrDie (sizeof(char) * (alen+1));
+
+  ainfo->alen  = alen;
+  ainfo->nseq  = nseq;
+
+  ainfo->wgt   = (float *) MallocOrDie (sizeof(float) * nseq);
+  FSet(ainfo->wgt, nseq, 1.0);
+
+  ainfo->sqinfo = (SQINFO *) MallocOrDie (sizeof(SQINFO) * nseq);
+  for (idx = 0; idx < nseq; idx++)
+    ainfo->sqinfo[idx].flags = 0;
+
+  *ret_aseq = aseq;
+}

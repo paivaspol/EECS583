@@ -1,0 +1,26 @@
+int
+seqencode(char *codeseq, /* pre-allocated space for answer */
+	  char *str)     /* character string to convert    */
+{
+  char  *ptr;
+  int    idx;
+
+  ptr = codeseq;
+  while (*str != '\0')
+    {
+      if (islower((int) (*str))) *str = (char) toupper((int) (*str));
+      for (idx = 0; *str != iupac[idx].sym && idx <= IUPACSYMNUM; idx++)
+	;
+      if (idx > IUPACSYMNUM)
+	{
+	  *ptr = (char) NTEND;
+	  return 0;
+	}
+      else
+	*ptr = iupac[idx].code;
+      ptr++;
+      str++;
+    }
+  *ptr = NTEND;
+  return 1;
+}

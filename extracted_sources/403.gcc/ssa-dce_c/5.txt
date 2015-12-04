@@ -1,0 +1,26 @@
+static void
+find_control_dependence (el, edge_index, pdom, cdbte)
+   struct edge_list *el;
+   int edge_index;
+   int *pdom;
+   control_dependent_block_to_edge_map cdbte;
+{
+  basic_block current_block;
+  basic_block ending_block;
+
+  if (INDEX_EDGE_PRED_BB (el, edge_index) == EXIT_BLOCK_PTR)
+    abort ();
+  ending_block =
+    (INDEX_EDGE_PRED_BB (el, edge_index) == ENTRY_BLOCK_PTR)
+    ? BASIC_BLOCK (0)
+    : find_pdom (pdom, INDEX_EDGE_PRED_BB (el, edge_index));
+
+  for (current_block = INDEX_EDGE_SUCC_BB (el, edge_index);
+       current_block != ending_block && current_block != EXIT_BLOCK_PTR;
+       current_block = find_pdom (pdom, current_block))
+    {
+      set_control_dependent_block_to_edge_map_bit (cdbte,
+						   current_block,
+						   edge_index);
+    }
+}

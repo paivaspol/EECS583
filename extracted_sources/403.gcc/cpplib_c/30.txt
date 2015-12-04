@@ -1,0 +1,27 @@
+static struct pragma_entry *
+insert_pragma_entry (pfile, chain, pragma, handler)
+     cpp_reader *pfile;
+     struct pragma_entry **chain;
+     const cpp_hashnode *pragma;
+     pragma_cb handler;
+{
+  struct pragma_entry *new;
+
+  new = (struct pragma_entry *)
+    _cpp_aligned_alloc (pfile, sizeof (struct pragma_entry));
+  new->pragma = pragma;
+  if (handler)
+    {
+      new->is_nspace = 0;
+      new->u.handler = handler;
+    }
+  else
+    {
+      new->is_nspace = 1;
+      new->u.space = NULL;
+    }
+
+  new->next = *chain;
+  *chain = new;
+  return new;
+}

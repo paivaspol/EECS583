@@ -1,0 +1,26 @@
+static rtx
+process_insert_insn (expr)
+     struct expr *expr;
+{
+  rtx reg = expr->reaching_reg;
+  rtx exp = copy_rtx (expr->expr);
+  rtx pat;
+
+  start_sequence ();
+
+  /* If the expression is something that's an operand, like a constant,
+     just copy it to a register.  */
+  if (general_operand (exp, GET_MODE (reg)))
+    emit_move_insn (reg, exp);
+
+  /* Otherwise, make a new insn to compute this expression and make sure the
+     insn will be recognized (this also adds any needed CLOBBERs).  Copy the
+     expression to make sure we don't have any sharing issues.  */
+  else if (insn_invalid_p (emit_insn (gen_rtx_SET (VOIDmode, reg, exp))))
+    abort ();
+  
+  pat = gen_sequence ();
+  end_sequence ();
+
+  return pat;
+}

@@ -1,0 +1,14 @@
+void
+disable_builtin_function (name)
+     const char *name;
+{
+  if (strncmp (name, "__builtin_", strlen ("__builtin_")) == 0)
+    error ("cannot disable built-in function `%s'", name);
+  else
+    {
+      disabled_builtin *new = xmalloc (sizeof (disabled_builtin));
+      new->name = name;
+      new->next = disabled_builtins;
+      disabled_builtins = new;
+    }
+}

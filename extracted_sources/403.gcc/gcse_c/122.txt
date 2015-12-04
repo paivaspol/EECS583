@@ -1,0 +1,50 @@
+static void
+update_ld_motion_stores (expr)
+     struct expr * expr;
+{
+  struct ls_expr * mem_ptr;
+
+  if ((mem_ptr = find_rtx_in_ldst (expr->expr)))
+    {
+      /* We can try to find just the REACHED stores, but is shouldn't 
+	 matter to set the reaching reg everywhere...  some might be 
+	 dead and should be eliminated later.  */
+
+      /* We replace  SET mem = expr   with
+	   SET reg = expr
+	   SET mem = reg , where reg is the 
+	   reaching reg used in the load.  */
+      rtx list = mem_ptr->stores;
+      
+      for ( ; list != NULL_RTX; list = XEXP (list, 1))
+	{
+	  rtx insn = XEXP (list, 0);
+	  rtx pat = PATTERN (insn);
+	  rtx src = SET_SRC (pat);
+	  rtx reg = expr->reaching_reg;
+	  rtx copy, new;
+
+	  /* If we've already copied it, continue.  */
+	  if (expr->reaching_reg == src)
+	    continue;
+	  
+	  if (gcse_file)
+	    {
+	      fprintf (gcse_file, "PRE:  store updated with reaching reg ");
+	      print_rtl (gcse_file, expr->reaching_reg);
+	      fprintf (gcse_file, ":\n	");
+	      print_inline_rtx (gcse_file, insn, 8);
+	      fprintf (gcse_file, "\n");
+	    }
+	  
+	  copy = gen_move_insn ( reg, SET_SRC (pat));
+	  new = emit_insn_before (copy, insn);
+	  record_one_set (REGNO (reg), new);
+	  SET_SRC (pat) = reg;
+
+	  /* un-recognize this pattern since it's probably different now.  */
+	  INSN_CODE (insn) = -1;
+	  gcse_create_count++;
+	}
+    }
+}

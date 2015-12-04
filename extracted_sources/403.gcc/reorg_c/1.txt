@@ -1,0 +1,22 @@
+static int
+resource_conflicts_p (res1, res2)
+     struct resources *res1, *res2;
+{
+  if ((res1->cc && res2->cc) || (res1->memory && res2->memory)
+      || (res1->unch_memory && res2->unch_memory)
+      || res1->volatil || res2->volatil)
+    return 1;
+
+#ifdef HARD_REG_SET
+  return (res1->regs & res2->regs) != HARD_CONST (0);
+#else
+  {
+    int i;
+
+    for (i = 0; i < HARD_REG_SET_LONGS; i++)
+      if ((res1->regs[i] & res2->regs[i]) != 0)
+	return 1;
+    return 0;
+  }
+#endif
+}

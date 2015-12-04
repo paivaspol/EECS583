@@ -1,0 +1,48 @@
+static bool
+sjlj_find_directly_reachable_regions (lp_info)
+     struct sjlj_lp_info *lp_info;
+{
+  rtx insn;
+  bool found_one = false;
+
+  for (insn = get_insns (); insn ; insn = NEXT_INSN (insn))
+    {
+      struct eh_region *region;
+      enum reachable_code rc;
+      tree type_thrown;
+      rtx note;
+
+      if (! INSN_P (insn))
+	continue;
+
+      note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+      if (!note || INTVAL (XEXP (note, 0)) <= 0)
+	continue;
+
+      region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+
+      type_thrown = NULL_TREE;
+      if (region->type == ERT_THROW)
+	{
+	  type_thrown = region->u.throw.type;
+	  region = region->outer;
+	}
+
+      /* Find the first containing region that might handle the exception.
+	 That's the landing pad to which we will transfer control.  */
+      rc = RNL_NOT_CAUGHT;
+      for (; region; region = region->outer)
+	{
+	  rc = reachable_next_level (region, type_thrown, 0);
+	  if (rc != RNL_NOT_CAUGHT)
+	    break;
+	}
+      if (rc == RNL_MAYBE_CAUGHT || rc == RNL_CAUGHT)
+	{
+	  lp_info[region->region_number].directly_reachable = 1;
+	  found_one = true;
+	}
+    }
+
+  return found_one;
+}

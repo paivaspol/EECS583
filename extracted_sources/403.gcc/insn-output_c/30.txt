@@ -1,0 +1,20 @@
+static const char *
+output_60 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_IMOVX:
+      if (!ANY_QI_REG_P (operands[1]) && GET_CODE (operands[1]) != MEM)
+	abort ();
+      return "movz{bl|x}\t{%1, %k0|%k0, %1}";
+    default:
+      if (get_attr_mode (insn) == MODE_SI)
+        return "mov{l}\t{%k1, %k0|%k0, %k1}";
+      else
+        return "mov{b}\t{%1, %0|%0, %1}";
+    }
+}
+}

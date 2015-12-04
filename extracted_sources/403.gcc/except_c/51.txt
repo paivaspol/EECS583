@@ -1,0 +1,39 @@
+static void
+connect_post_landing_pads ()
+{
+  int i;
+
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      struct eh_region *region = cfun->eh->region_array[i];
+      struct eh_region *outer;
+      rtx seq;
+
+      /* Mind we don't process a region more than once.  */
+      if (!region || region->region_number != i)
+	continue;
+
+      /* If there is no RESX, or it has been deleted by flow, there's
+	 nothing to fix up.  */
+      if (! region->resume || INSN_DELETED_P (region->resume))
+	continue;
+
+      /* Search for another landing pad in this function.  */
+      for (outer = region->outer; outer ; outer = outer->outer)
+	if (outer->post_landing_pad)
+	  break;
+
+      start_sequence ();
+
+      if (outer)
+	emit_jump (outer->post_landing_pad);
+      else
+	emit_library_call (unwind_resume_libfunc, LCT_THROW,
+			   VOIDmode, 1, cfun->eh->exc_ptr, Pmode);
+
+      seq = get_insns ();
+      end_sequence ();
+      emit_insns_before (seq, region->resume);
+      delete_insn (region->resume);
+    }
+}

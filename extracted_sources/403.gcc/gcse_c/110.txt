@@ -1,0 +1,28 @@
+static struct ls_expr *
+ldst_entry (x)
+     rtx x;
+{
+  struct ls_expr * ptr;
+
+  for (ptr = first_ls_expr(); ptr != NULL; ptr = next_ls_expr (ptr))
+    if (expr_equiv_p (ptr->pattern, x))
+      break;
+
+  if (!ptr)
+    {
+      ptr = (struct ls_expr *) xmalloc (sizeof (struct ls_expr));
+
+      ptr->next         = pre_ldst_mems;
+      ptr->expr         = NULL;
+      ptr->pattern      = x;
+      ptr->loads        = NULL_RTX;
+      ptr->stores       = NULL_RTX;
+      ptr->reaching_reg = NULL_RTX;
+      ptr->invalid      = 0;
+      ptr->index        = 0;
+      ptr->hash_index   = 0;
+      pre_ldst_mems     = ptr;
+    }
+  
+  return ptr;
+}

@@ -1,0 +1,21 @@
+static void
+find_stack_direction ()
+{
+  static char *addr = NULL;	/* Address of first `dummy', once known.  */
+  auto char dummy;		/* To get stack address.  */
+
+  if (addr == NULL)
+    {				/* Initial entry.  */
+      addr = ADDRESS_FUNCTION (dummy);
+
+      find_stack_direction ();	/* Recurse once.  */
+    }
+  else
+    {
+      /* Second entry.  */
+      if (ADDRESS_FUNCTION (dummy) > addr)
+	stack_dir = 1;		/* Stack grew upward.  */
+      else
+	stack_dir = -1;		/* Stack grew downward.  */
+    }
+}

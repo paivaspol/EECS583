@@ -1,0 +1,20 @@
+void InitSubseqInfo(int currLayer)
+{
+  static unsigned short id = 0;
+
+  seiHasSubseqInfo = TRUE;
+  seiSubseqInfo[currLayer].subseq_layer_num = currLayer;
+  seiSubseqInfo[currLayer].subseq_id = id++;
+  seiSubseqInfo[currLayer].last_picture_flag = 0;
+  seiSubseqInfo[currLayer].stored_frame_cnt = -1;
+  seiSubseqInfo[currLayer].payloadSize = 0;
+
+  seiSubseqInfo[currLayer].data = malloc( sizeof(Bitstream) );
+  if ( seiSubseqInfo[currLayer].data == NULL ) no_mem_exit("InitSubseqInfo: seiSubseqInfo[currLayer].data");
+  seiSubseqInfo[currLayer].data->streamBuffer = malloc( MAXRTPPAYLOADLEN );
+  if ( seiSubseqInfo[currLayer].data->streamBuffer == NULL ) no_mem_exit("InitSubseqInfo: seiSubseqInfo[currLayer].data->streamBuffer");
+  seiSubseqInfo[currLayer].data->bits_to_go  = 8;
+  seiSubseqInfo[currLayer].data->byte_pos    = 0;
+  seiSubseqInfo[currLayer].data->byte_buf    = 0;
+  memset( seiSubseqInfo[currLayer].data->streamBuffer, 0, MAXRTPPAYLOADLEN );
+}

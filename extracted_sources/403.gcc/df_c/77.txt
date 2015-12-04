@@ -1,0 +1,22 @@
+static struct ref *
+df_bb_insn_regno_first_def_find (df, bb, insn, regno)
+     struct df * df;
+     basic_block bb ATTRIBUTE_UNUSED;
+     rtx insn;
+     unsigned int regno;
+{
+  unsigned int uid;
+  struct df_link *link;
+
+  uid = INSN_UID (insn);
+
+  for (link = df->insns[uid].defs; link; link = link->next)
+    {
+      struct ref *def = link->ref;
+
+      if (DF_REF_REGNO (def) == regno)
+	return def;
+    }
+
+  return 0;
+}

@@ -1,0 +1,56 @@
+int initial_set(){
+int prompt,status;
+    /* On node zero, read lattice size, seed, nflavors and send to others */
+    if(mynode()==0){
+	/* print banner */
+	printf("SU3 with improved KS action\n");
+	printf("Microcanonical simulation with refreshing\n");
+	printf("MIMD version 6\n");
+	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+#ifdef HMC_ALGORITHM
+	printf("Hybrid Monte Carlo algorithm\n");
+#endif
+#ifdef PHI_ALGORITHM
+	printf("PHI algorithm\n");
+#else
+	printf("R algorithm\n");
+#endif
+#ifdef SPECTRUM
+	printf("With spectrum measurements\n");
+#endif
+	status=get_prompt(&prompt);
+	IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
+#ifdef PHI_ALGORITHM
+	IF_OK if(par_buf.nflavors != 4){
+	    printf("Dummy! Use phi algorithm only for four flavors\n");
+	    status++;
+	}
+#endif
+	IF_OK status += get_i(prompt,"nx", &par_buf.nx );
+	IF_OK status += get_i(prompt,"ny", &par_buf.ny );
+	IF_OK status += get_i(prompt,"nz", &par_buf.nz );
+	IF_OK status += get_i(prompt,"nt", &par_buf.nt );
+	IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+
+	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
+    } /* end if(mynode()==0) */
+
+    /* Node 0 broadcasts parameter buffer to all other nodes */
+    broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+
+    if( par_buf.stopflag != 0 )
+      normal_exit(0);
+
+    nx=par_buf.nx;
+    ny=par_buf.ny;
+    nz=par_buf.nz;
+    nt=par_buf.nt;
+    iseed=par_buf.iseed;
+    nflavors=par_buf.nflavors;
+    
+    this_node = mynode();
+    number_of_nodes = numnodes();
+    volume=nx*ny*nz*nt;
+    total_iters=0;
+    return(prompt);
+}

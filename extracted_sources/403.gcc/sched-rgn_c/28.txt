@@ -1,0 +1,16 @@
+static int
+new_ready (next)
+     rtx next;
+{
+  /* For speculative insns, before inserting to ready/queue,
+     check live, exception-free, and issue-delay.  */
+  if (INSN_BB (next) != target_bb
+      && (!IS_VALID (INSN_BB (next))
+	  || CANT_MOVE (next)
+	  || (IS_SPECULATIVE_INSN (next)
+	      && (insn_issue_delay (next) > 3
+		  || !check_live (next, INSN_BB (next))
+		  || !is_exception_free (next, INSN_BB (next), target_bb)))))
+    return 0;
+  return 1;
+}

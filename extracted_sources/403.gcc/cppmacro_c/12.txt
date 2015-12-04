@@ -1,0 +1,17 @@
+static cpp_context *
+next_context (pfile)
+     cpp_reader *pfile;
+{
+  cpp_context *result = pfile->context->next;
+
+  if (result == 0)
+    {
+      result = xnew (cpp_context);
+      result->prev = pfile->context;
+      result->next = 0;
+      pfile->context->next = result;
+    }
+
+  pfile->context = result;
+  return result;
+}

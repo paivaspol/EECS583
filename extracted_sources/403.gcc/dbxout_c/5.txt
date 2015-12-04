@@ -1,0 +1,30 @@
+static void
+dbxout_source_file (file, filename)
+     FILE *file;
+     const char *filename;
+{
+  if (filename && (lastfile == 0 || strcmp (filename, lastfile)))
+    {
+#ifdef DBX_OUTPUT_SOURCE_FILENAME
+      DBX_OUTPUT_SOURCE_FILENAME (file, filename);
+#else
+      char ltext_label_name[100];
+
+      ASM_GENERATE_INTERNAL_LABEL (ltext_label_name, "Ltext",
+				   source_label_number);
+      fprintf (file, "%s", ASM_STABS_OP);
+      output_quoted_string (file, filename);
+      fprintf (asmfile, ",%d,0,0,", N_SOL);
+      assemble_name (asmfile, ltext_label_name);
+      fputc ('\n', asmfile);
+      if (current_function_decl != NULL_TREE
+	  && DECL_SECTION_NAME (current_function_decl) != NULL_TREE)
+	; /* Don't change section amid function.  */
+      else
+	text_section ();
+      ASM_OUTPUT_INTERNAL_LABEL (file, "Ltext", source_label_number);
+      source_label_number++;
+#endif
+      lastfile = filename;
+    }
+}

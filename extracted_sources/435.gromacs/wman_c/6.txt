@@ -1,0 +1,24 @@
+void print_tty_formatted(FILE *out, int nldesc, char **desc)
+{
+  char *buf,*temp;
+  int i,j;
+
+  /* Just to be sure */
+  j=0;
+  for(i=0; (i<nldesc); i++) 
+    j+=strlen(desc[i])+10;
+  snew(buf,j);
+  for(i=0; (i<nldesc); i++) {
+    if ((strlen(buf)>0) && 
+	(buf[strlen(buf)-1] !=' ') && (buf[strlen(buf)-1] !='\n'))
+      strcat(buf," ");
+    temp=check_tty(desc[i]);
+    strcat(buf,temp);
+    sfree(temp);
+  }
+  /* Make lines of at most 79 characters */
+  temp = wrap_lines(buf,80,0);
+  fprintf(out,"%s\n",temp);
+  sfree(temp);
+  sfree(buf);
+}

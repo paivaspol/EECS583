@@ -1,0 +1,46 @@
+void
+Perl_hv_clear_placeholders(pTHX_ HV *hv)
+{
+    I32 items = (I32)HvPLACEHOLDERS(hv);
+    I32 i = HvMAX(hv);
+
+    if (items == 0)
+	return;
+
+    do {
+	/* Loop down the linked list heads  */
+	int first = 1;
+	HE **oentry = &(HvARRAY(hv))[i];
+	HE *entry = *oentry;
+
+	if (!entry)
+	    continue;
+
+	for (; entry; entry = *oentry) {
+	    if (HeVAL(entry) == &PL_sv_placeholder) {
+		*oentry = HeNEXT(entry);
+		if (first && !*oentry)
+		    HvFILL(hv)--; /* This linked list is now empty.  */
+		if (HvEITER(hv))
+		    HvLAZYDEL_on(hv);
+		else
+		    hv_free_ent(hv, entry);
+
+		if (--items == 0) {
+		    /* Finished.  */
+		    HvTOTALKEYS(hv) -= (IV)HvPLACEHOLDERS(hv);
+		    if (HvKEYS(hv) == 0)
+			HvHASKFLAGS_off(hv);
+		    HvPLACEHOLDERS(hv) = 0;
+		    return;
+		}
+	    } else {
+		oentry = &HeNEXT(entry);
+		first = 0;
+	    }
+	}
+    } while (--i >= 0);
+    /* You can't get here, hence assertion should always fail.  */
+    assert (items == 0);
+    assert (0);
+}

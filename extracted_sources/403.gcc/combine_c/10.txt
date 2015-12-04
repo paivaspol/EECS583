@@ -1,0 +1,38 @@
+static int
+cant_combine_insn_p (insn)
+     rtx insn;
+{
+  rtx set;
+  rtx src, dest;
+
+  /* If this isn't really an insn, we can't do anything.
+     This can occur when flow deletes an insn that it has merged into an
+     auto-increment address.  */
+  if (! INSN_P (insn))
+    return 1;
+
+  /* Never combine loads and stores involving hard regs.  The register
+     allocator can usually handle such reg-reg moves by tying.  If we allow
+     the combiner to make substitutions of hard regs, we risk aborting in
+     reload on machines that have SMALL_REGISTER_CLASSES.
+     As an exception, we allow combinations involving fixed regs; these are
+     not available to the register allocator so there's no risk involved.  */
+
+  set = single_set (insn);
+  if (! set)
+    return 0;
+  src = SET_SRC (set);
+  dest = SET_DEST (set);
+  if (GET_CODE (src) == SUBREG)
+    src = SUBREG_REG (src);
+  if (GET_CODE (dest) == SUBREG)
+    dest = SUBREG_REG (dest);
+  if (REG_P (src) && REG_P (dest)
+      && ((REGNO (src) < FIRST_PSEUDO_REGISTER
+	   && ! fixed_regs[REGNO (src)])
+	  || (REGNO (dest) < FIRST_PSEUDO_REGISTER
+	      && ! fixed_regs[REGNO (dest)])))
+    return 1;
+
+  return 0;
+}

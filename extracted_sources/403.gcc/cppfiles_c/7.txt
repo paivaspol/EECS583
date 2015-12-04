@@ -1,0 +1,59 @@
+static bool
+stack_include_file (pfile, inc)
+     cpp_reader *pfile;
+     struct include_file *inc;
+{
+  cpp_buffer *fp;
+  int sysp;
+  const char *filename;
+
+  if (DO_NOT_REREAD (inc))
+    return false;
+
+  sysp = MAX ((pfile->map ? pfile->map->sysp : 0),
+	      (inc->foundhere ? inc->foundhere->sysp : 0));
+
+  /* For -M, add the file to the dependencies on its first inclusion.  */
+  if (CPP_OPTION (pfile, print_deps) > sysp && !inc->include_count)
+    deps_add_dep (pfile->deps, inc->name);
+
+  /* Not in cache?  */
+  if (! inc->buffer)
+    {
+      if (read_include_file (pfile, inc))
+	{
+	  /* If an error occurs, do not try to read this file again.  */
+	  _cpp_never_reread (inc);
+	  return false;
+	}
+      /* Mark a regular, zero-length file never-reread.  We read it,
+	 NUL-terminate it, and stack it once, so preprocessing a main
+	 file of zero length does not raise an error.  */
+      if (S_ISREG (inc->st.st_mode) && inc->st.st_size == 0)
+	_cpp_never_reread (inc);
+      close (inc->fd);
+      inc->fd = -1;
+    }
+
+  if (pfile->buffer)
+    /* We don't want MI guard advice for the main file.  */
+    inc->include_count++;
+
+  /* Push a buffer.  */
+  fp = cpp_push_buffer (pfile, inc->buffer, inc->st.st_size,
+			/* from_stage3 */ CPP_OPTION (pfile, preprocessed), 0);
+  fp->inc = inc;
+  fp->inc->refcnt++;
+
+  /* Initialise controlling macro state.  */
+  pfile->mi_valid = true;
+  pfile->mi_cmacro = 0;
+
+  /* Generate the call back.  */
+  filename = inc->name;
+  if (*filename == '\0')
+    filename = "<stdin>";
+  _cpp_do_file_change (pfile, LC_ENTER, filename, 1, sysp);
+
+  return true;
+}

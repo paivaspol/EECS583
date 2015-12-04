@@ -1,0 +1,32 @@
+void
+variable_section (decl, reloc)
+     tree decl;
+     int reloc;
+{
+  if (IN_NAMED_SECTION (decl))
+    named_section (decl, NULL, reloc);
+  else
+    {
+      /* C++ can have const variables that get initialized from constructors,
+	 and thus can not be in a readonly section.  We prevent this by
+	 verifying that the initial value is constant for objects put in a
+	 readonly section.
+
+	 error_mark_node is used by the C front end to indicate that the
+	 initializer has not been seen yet.  In this case, we assume that
+	 the initializer must be constant.
+
+	 C++ uses error_mark_node for variables that have complicated
+	 initializers, but these variables go in BSS so we won't be called
+	 for them.  */
+
+#ifdef SELECT_SECTION
+      SELECT_SECTION (decl, reloc, DECL_ALIGN (decl));
+#else
+      if (DECL_READONLY_SECTION (decl, reloc))
+	readonly_data_section ();
+      else
+	data_section ();
+#endif
+    }
+}

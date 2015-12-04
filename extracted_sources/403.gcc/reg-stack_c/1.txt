@@ -1,0 +1,30 @@
+int
+stack_regs_mentioned (insn)
+     rtx insn;
+{
+  unsigned int uid, max;
+  int test;
+
+  if (! INSN_P (insn) || !stack_regs_mentioned_data)
+    return 0;
+
+  uid = INSN_UID (insn);
+  max = VARRAY_SIZE (stack_regs_mentioned_data);
+  if (uid >= max)
+    {
+      /* Allocate some extra size to avoid too many reallocs, but
+	 do not grow too quickly.  */
+      max = uid + uid / 20;
+      VARRAY_GROW (stack_regs_mentioned_data, max);
+    }
+
+  test = VARRAY_CHAR (stack_regs_mentioned_data, uid);
+  if (test == 0)
+    {
+      /* This insn has yet to be examined.  Do so now.  */
+      test = stack_regs_mentioned_p (PATTERN (insn)) ? 1 : 2;
+      VARRAY_CHAR (stack_regs_mentioned_data, uid) = test;
+    }
+
+  return test == 1;
+}

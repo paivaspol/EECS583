@@ -1,0 +1,18 @@
+int
+ix86_constant_alignment (exp, align)
+     tree exp;
+     int align;
+{
+  if (TREE_CODE (exp) == REAL_CST)
+    {
+      if (TYPE_MODE (TREE_TYPE (exp)) == DFmode && align < 64)
+	return 64;
+      else if (ALIGN_MODE_128 (TYPE_MODE (TREE_TYPE (exp))) && align < 128)
+	return 128;
+    }
+  else if (TREE_CODE (exp) == STRING_CST && TREE_STRING_LENGTH (exp) >= 31
+	   && align < 256)
+    return 256;
+
+  return align;
+}

@@ -1,0 +1,99 @@
+static void
+loop_givs_rescan (loop, bl, reg_map)
+     struct loop *loop;
+     struct iv_class *bl;
+     rtx *reg_map;
+{
+  struct induction *v;
+
+  for (v = bl->giv; v; v = v->next_iv)
+    {
+      if (v->same && v->same->ignore)
+	v->ignore = 1;
+
+      if (v->ignore)
+	continue;
+
+      /* Update expression if this was combined, in case other giv was
+	 replaced.  */
+      if (v->same)
+	v->new_reg = replace_rtx (v->new_reg,
+				  v->same->dest_reg, v->same->new_reg);
+
+      /* See if this register is known to be a pointer to something.  If
+	 so, see if we can find the alignment.  First see if there is a
+	 destination register that is a pointer.  If so, this shares the
+	 alignment too.  Next see if we can deduce anything from the
+	 computational information.  If not, and this is a DEST_ADDR
+	 giv, at least we know that it's a pointer, though we don't know
+	 the alignment.  */
+      if (GET_CODE (v->new_reg) == REG
+	  && v->giv_type == DEST_REG
+	  && REG_POINTER (v->dest_reg))
+	mark_reg_pointer (v->new_reg,
+			  REGNO_POINTER_ALIGN (REGNO (v->dest_reg)));
+      else if (GET_CODE (v->new_reg) == REG
+	       && REG_POINTER (v->src_reg))
+	{
+	  unsigned int align = REGNO_POINTER_ALIGN (REGNO (v->src_reg));
+
+	  if (align == 0
+	      || GET_CODE (v->add_val) != CONST_INT
+	      || INTVAL (v->add_val) % (align / BITS_PER_UNIT) != 0)
+	    align = 0;
+
+	  mark_reg_pointer (v->new_reg, align);
+	}
+      else if (GET_CODE (v->new_reg) == REG
+	       && GET_CODE (v->add_val) == REG
+	       && REG_POINTER (v->add_val))
+	{
+	  unsigned int align = REGNO_POINTER_ALIGN (REGNO (v->add_val));
+
+	  if (align == 0 || GET_CODE (v->mult_val) != CONST_INT
+	      || INTVAL (v->mult_val) % (align / BITS_PER_UNIT) != 0)
+	    align = 0;
+
+	  mark_reg_pointer (v->new_reg, align);
+	}
+      else if (GET_CODE (v->new_reg) == REG && v->giv_type == DEST_ADDR)
+	mark_reg_pointer (v->new_reg, 0);
+
+      if (v->giv_type == DEST_ADDR)
+	/* Store reduced reg as the address in the memref where we found
+	   this giv.  */
+	validate_change (v->insn, v->location, v->new_reg, 0);
+      else if (v->replaceable)
+	{
+	  reg_map[REGNO (v->dest_reg)] = v->new_reg;
+	}
+      else
+	{
+	  /* Not replaceable; emit an insn to set the original giv reg from
+	     the reduced giv, same as above.  */
+	  loop_insn_emit_after (loop, 0, v->insn,
+				gen_move_insn (v->dest_reg, v->new_reg));
+	}
+
+      /* When a loop is reversed, givs which depend on the reversed
+	 biv, and which are live outside the loop, must be set to their
+	 correct final value.  This insn is only needed if the giv is
+	 not replaceable.  The correct final value is the same as the
+	 value that the giv starts the reversed loop with.  */
+      if (bl->reversed && ! v->replaceable)
+	loop_iv_add_mult_sink (loop,
+			       extend_value_for_giv (v, bl->initial_value),
+			       v->mult_val, v->add_val, v->dest_reg);
+      else if (v->final_value)
+	loop_insn_sink_or_swim (loop,
+				gen_move_insn (v->dest_reg, v->final_value));
+
+      if (loop_dump_stream)
+	{
+	  fprintf (loop_dump_stream, "giv at %d reduced to ",
+		   INSN_UID (v->insn));
+	  print_simple_rtl (loop_dump_stream, v->new_reg);
+	  fprintf (loop_dump_stream, "\n");
+	}
+    }
+}

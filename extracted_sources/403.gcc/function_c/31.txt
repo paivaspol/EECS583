@@ -1,0 +1,178 @@
+static void
+fixup_var_refs_insn (insn, var, promoted_mode, unsignedp, toplevel, no_share)
+     rtx insn;
+     rtx var;
+     enum machine_mode promoted_mode;
+     int unsignedp;
+     int toplevel;
+     rtx no_share;
+{
+  rtx call_dest = 0;
+  rtx set, prev, prev_set;
+  rtx note;
+
+  /* Remember the notes in case we delete the insn.  */
+  note = REG_NOTES (insn);
+
+  /* If this is a CLOBBER of VAR, delete it.
+
+     If it has a REG_LIBCALL note, delete the REG_LIBCALL
+     and REG_RETVAL notes too.  */
+  if (GET_CODE (PATTERN (insn)) == CLOBBER
+      && (XEXP (PATTERN (insn), 0) == var
+	  || (GET_CODE (XEXP (PATTERN (insn), 0)) == CONCAT
+	      && (XEXP (XEXP (PATTERN (insn), 0), 0) == var
+		  || XEXP (XEXP (PATTERN (insn), 0), 1) == var))))
+    {
+      if ((note = find_reg_note (insn, REG_LIBCALL, NULL_RTX)) != 0)
+	/* The REG_LIBCALL note will go away since we are going to
+	   turn INSN into a NOTE, so just delete the
+	   corresponding REG_RETVAL note.  */
+	remove_note (XEXP (note, 0),
+		     find_reg_note (XEXP (note, 0), REG_RETVAL,
+				    NULL_RTX));
+
+      delete_insn (insn);
+    }
+
+  /* The insn to load VAR from a home in the arglist
+     is now a no-op.  When we see it, just delete it.
+     Similarly if this is storing VAR from a register from which
+     it was loaded in the previous insn.  This will occur
+     when an ADDRESSOF was made for an arglist slot.  */
+  else if (toplevel
+	   && (set = single_set (insn)) != 0
+	   && SET_DEST (set) == var
+	   /* If this represents the result of an insn group,
+	      don't delete the insn.  */
+	   && find_reg_note (insn, REG_RETVAL, NULL_RTX) == 0
+	   && (rtx_equal_p (SET_SRC (set), var)
+	       || (GET_CODE (SET_SRC (set)) == REG
+		   && (prev = prev_nonnote_insn (insn)) != 0
+		   && (prev_set = single_set (prev)) != 0
+		   && SET_DEST (prev_set) == SET_SRC (set)
+		   && rtx_equal_p (SET_SRC (prev_set), var))))
+    {
+      delete_insn (insn);
+    }
+  else
+    {
+      struct fixup_replacement *replacements = 0;
+      rtx next_insn = NEXT_INSN (insn);
+
+      if (SMALL_REGISTER_CLASSES)
+	{
+	  /* If the insn that copies the results of a CALL_INSN
+	     into a pseudo now references VAR, we have to use an
+	     intermediate pseudo since we want the life of the
+	     return value register to be only a single insn.
+
+	     If we don't use an intermediate pseudo, such things as
+	     address computations to make the address of VAR valid
+	     if it is not can be placed between the CALL_INSN and INSN.
+
+	     To make sure this doesn't happen, we record the destination
+	     of the CALL_INSN and see if the next insn uses both that
+	     and VAR.  */
+
+	  if (call_dest != 0 && GET_CODE (insn) == INSN
+	      && reg_mentioned_p (var, PATTERN (insn))
+	      && reg_mentioned_p (call_dest, PATTERN (insn)))
+	    {
+	      rtx temp = gen_reg_rtx (GET_MODE (call_dest));
+
+	      emit_insn_before (gen_move_insn (temp, call_dest), insn);
+
+	      PATTERN (insn) = replace_rtx (PATTERN (insn),
+					    call_dest, temp);
+	    }
+
+	  if (GET_CODE (insn) == CALL_INSN
+	      && GET_CODE (PATTERN (insn)) == SET)
+	    call_dest = SET_DEST (PATTERN (insn));
+	  else if (GET_CODE (insn) == CALL_INSN
+		   && GET_CODE (PATTERN (insn)) == PARALLEL
+		   && GET_CODE (XVECEXP (PATTERN (insn), 0, 0)) == SET)
+	    call_dest = SET_DEST (XVECEXP (PATTERN (insn), 0, 0));
+	  else
+	    call_dest = 0;
+	}
+
+      /* See if we have to do anything to INSN now that VAR is in
+	 memory.  If it needs to be loaded into a pseudo, use a single
+	 pseudo for the entire insn in case there is a MATCH_DUP
+	 between two operands.  We pass a pointer to the head of
+	 a list of struct fixup_replacements.  If fixup_var_refs_1
+	 needs to allocate pseudos or replacement MEMs (for SUBREGs),
+	 it will record them in this list.
+
+	 If it allocated a pseudo for any replacement, we copy into
+	 it here.  */
+
+      fixup_var_refs_1 (var, promoted_mode, &PATTERN (insn), insn,
+			&replacements, no_share);
+
+      /* If this is last_parm_insn, and any instructions were output
+	 after it to fix it up, then we must set last_parm_insn to
+	 the last such instruction emitted.  */
+      if (insn == last_parm_insn)
+	last_parm_insn = PREV_INSN (next_insn);
+
+      while (replacements)
+	{
+	  struct fixup_replacement *next;
+
+	  if (GET_CODE (replacements->new) == REG)
+	    {
+	      rtx insert_before;
+	      rtx seq;
+
+	      /* OLD might be a (subreg (mem)).  */
+	      if (GET_CODE (replacements->old) == SUBREG)
+		replacements->old
+		  = fixup_memory_subreg (replacements->old, insn, 
+					 promoted_mode, 0);
+	      else
+		replacements->old
+		  = fixup_stack_1 (replacements->old, insn);
+
+	      insert_before = insn;
+
+	      /* If we are changing the mode, do a conversion.
+		 This might be wasteful, but combine.c will
+		 eliminate much of the waste.  */
+
+	      if (GET_MODE (replacements->new)
+		  != GET_MODE (replacements->old))
+		{
+		  start_sequence ();
+		  convert_move (replacements->new,
+				replacements->old, unsignedp);
+		  seq = gen_sequence ();
+		  end_sequence ();
+		}
+	      else
+		seq = gen_move_insn (replacements->new,
+				     replacements->old);
+
+	      emit_insn_before (seq, insert_before);
+	    }
+
+	  next = replacements->next;
+	  free (replacements);
+	  replacements = next;
+	}
+    }
+
+  /* Also fix up any invalid exprs in the REG_NOTES of this insn.
+     But don't touch other insns referred to by reg-notes;
+     we will get them elsewhere.  */
+  while (note)
+    {
+      if (GET_CODE (note) != INSN_LIST)
+	XEXP (note, 0)
+	  = walk_fixup_memory_subreg (XEXP (note, 0), insn,
+				      promoted_mode, 1);
+      note = XEXP (note, 1);
+    }
+}

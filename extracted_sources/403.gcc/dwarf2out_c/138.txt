@@ -1,0 +1,17 @@
+static inline void
+output_die_symbol (die)
+     dw_die_ref die;
+{
+  char *sym = die->die_symbol;
+
+  if (sym == 0)
+    return;
+
+  if (strncmp (sym, DIE_LABEL_PREFIX, sizeof (DIE_LABEL_PREFIX) - 1) == 0)
+    /* We make these global, not weak; if the target doesn't support
+       .linkonce, it doesn't support combining the sections, so debugging
+       will break.  */
+    ASM_GLOBALIZE_LABEL (asm_out_file, sym);
+
+  ASM_OUTPUT_LABEL (asm_out_file, sym);
+}

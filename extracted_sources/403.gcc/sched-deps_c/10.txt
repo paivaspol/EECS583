@@ -1,0 +1,23 @@
+static void
+flush_pending_lists (deps, insn, for_read, for_write)
+     struct deps *deps;
+     rtx insn;
+     int for_read, for_write;
+{
+  if (for_write)
+    {
+      add_dependence_list_and_free (insn, &deps->pending_read_insns,
+				    REG_DEP_ANTI);
+      free_EXPR_LIST_list (&deps->pending_read_mems);
+    }
+
+  add_dependence_list_and_free (insn, &deps->pending_write_insns,
+				for_read ? REG_DEP_ANTI : REG_DEP_OUTPUT);
+  free_EXPR_LIST_list (&deps->pending_write_mems);
+  deps->pending_lists_length = 0;
+
+  add_dependence_list_and_free (insn, &deps->last_pending_memory_flush,
+				for_read ? REG_DEP_ANTI : REG_DEP_OUTPUT);
+  deps->last_pending_memory_flush = alloc_INSN_LIST (insn, NULL_RTX);
+  deps->pending_flush_length = 1;
+}

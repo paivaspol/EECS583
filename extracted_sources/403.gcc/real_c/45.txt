@@ -1,0 +1,44 @@
+int
+emulm (a, b)
+     UEMUSHORT a[], b[];
+{
+  UEMUSHORT *p, *q;
+  int i, j, k;
+
+  equot[0] = b[0];
+  equot[1] = b[1];
+  for (i = M; i < NI; i++)
+    equot[i] = 0;
+
+  p = &a[NI - 2];
+  k = NBITS;
+  while (*p == 0)		/* significand is not supposed to be zero */
+    {
+      eshdn6 (a);
+      k -= 16;
+    }
+  if ((*p & 0xff) == 0)
+    {
+      eshdn8 (a);
+      k -= 8;
+    }
+
+  q = &equot[NI - 1];
+  j = 0;
+  for (i = 0; i < k; i++)
+    {
+      if (*p & 1)
+	eaddm (b, equot);
+      /* remember if there were any nonzero bits shifted out */
+      if (*q & 1)
+	j |= 1;
+      eshdn1 (a);
+      eshdn1 (equot);
+    }
+
+  for (i = 0; i < NI; i++)
+    b[i] = equot[i];
+
+  /* return flag for lost nonzero bits */
+  return (j);
+}

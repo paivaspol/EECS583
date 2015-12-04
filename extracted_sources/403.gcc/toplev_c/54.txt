@@ -1,0 +1,23 @@
+int
+toplev_main (argc, argv)
+     int argc;
+     char **argv;
+{
+  hex_init ();
+
+  /* Initialization of GCC's environment, and diagnostics.  */
+  general_init (argv [0]);
+
+  /* Parse the options and do minimal processing; basically just
+     enough to default flags appropriately.  */
+  parse_options_and_default_flags (argc, argv);
+
+  /* Exit early if we can (e.g. -help).  */
+  if (!errorcount && !exit_after_options)
+    do_compile ();
+
+  if (errorcount || sorrycount)
+    return (FATAL_EXIT_CODE);
+
+  return (SUCCESS_EXIT_CODE);
+}

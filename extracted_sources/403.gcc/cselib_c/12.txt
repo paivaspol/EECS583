@@ -1,0 +1,135 @@
+int
+rtx_equal_for_cselib_p (x, y)
+     rtx x, y;
+{
+  enum rtx_code code;
+  const char *fmt;
+  int i;
+  
+  if (GET_CODE (x) == REG || GET_CODE (x) == MEM)
+    {
+      cselib_val *e = cselib_lookup (x, GET_MODE (x), 0);
+
+      if (e)
+	x = e->u.val_rtx;
+    }
+
+  if (GET_CODE (y) == REG || GET_CODE (y) == MEM)
+    {
+      cselib_val *e = cselib_lookup (y, GET_MODE (y), 0);
+
+      if (e)
+	y = e->u.val_rtx;
+    }
+
+  if (x == y)
+    return 1;
+
+  if (GET_CODE (x) == VALUE && GET_CODE (y) == VALUE)
+    return CSELIB_VAL_PTR (x) == CSELIB_VAL_PTR (y);
+
+  if (GET_CODE (x) == VALUE)
+    {
+      cselib_val *e = CSELIB_VAL_PTR (x);
+      struct elt_loc_list *l;
+
+      for (l = e->locs; l; l = l->next)
+	{
+	  rtx t = l->loc;
+
+	  /* Avoid infinite recursion.  */
+	  if (GET_CODE (t) == REG || GET_CODE (t) == MEM)
+	    continue;
+	  else if (rtx_equal_for_cselib_p (t, y))
+	    return 1;
+	}
+      
+      return 0;
+    }
+
+  if (GET_CODE (y) == VALUE)
+    {
+      cselib_val *e = CSELIB_VAL_PTR (y);
+      struct elt_loc_list *l;
+
+      for (l = e->locs; l; l = l->next)
+	{
+	  rtx t = l->loc;
+
+	  if (GET_CODE (t) == REG || GET_CODE (t) == MEM)
+	    continue;
+	  else if (rtx_equal_for_cselib_p (x, t))
+	    return 1;
+	}
+      
+      return 0;
+    }
+
+  if (GET_CODE (x) != GET_CODE (y) || GET_MODE (x) != GET_MODE (y))
+    return 0;
+
+  /* This won't be handled correctly by the code below.  */
+  if (GET_CODE (x) == LABEL_REF)
+    return XEXP (x, 0) == XEXP (y, 0);
+  
+  code = GET_CODE (x);
+  fmt = GET_RTX_FORMAT (code);
+
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      int j;
+
+      switch (fmt[i])
+	{
+	case 'w':
+	  if (XWINT (x, i) != XWINT (y, i))
+	    return 0;
+	  break;
+
+	case 'n':
+	case 'i':
+	  if (XINT (x, i) != XINT (y, i))
+	    return 0;
+	  break;
+
+	case 'V':
+	case 'E':
+	  /* Two vectors must have the same length.  */
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return 0;
+
+	  /* And the corresponding elements must match.  */
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    if (! rtx_equal_for_cselib_p (XVECEXP (x, i, j),
+					  XVECEXP (y, i, j)))
+	      return 0;
+	  break;
+
+	case 'e':
+	  if (! rtx_equal_for_cselib_p (XEXP (x, i), XEXP (y, i)))
+	    return 0;
+	  break;
+
+	case 'S':
+	case 's':
+	  if (strcmp (XSTR (x, i), XSTR (y, i)))
+	    return 0;
+	  break;
+
+	case 'u':
+	  /* These are just backpointers, so they don't matter.  */
+	  break;
+
+	case '0':
+	case 't':
+	  break;
+
+	  /* It is believed that rtx's at this level will never
+	     contain anything but integers and other rtx's,
+	     except for within LABEL_REFs and SYMBOL_REFs.  */
+	default:
+	  abort ();
+	}
+    }
+  return 1;
+}

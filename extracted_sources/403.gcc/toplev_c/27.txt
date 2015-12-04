@@ -1,0 +1,99 @@
+int
+wrapup_global_declarations (vec, len)
+     tree *vec;
+     int len;
+{
+  tree decl;
+  int i;
+  int reconsider;
+  int output_something = 0;
+
+  for (i = 0; i < len; i++)
+    {
+      decl = vec[i];
+
+      /* We're not deferring this any longer.  */
+      DECL_DEFER_OUTPUT (decl) = 0;
+
+      if (TREE_CODE (decl) == VAR_DECL && DECL_SIZE (decl) == 0
+	  && incomplete_decl_finalize_hook != 0)
+	(*incomplete_decl_finalize_hook) (decl);
+    }
+
+  /* Now emit any global variables or functions that we have been
+     putting off.  We need to loop in case one of the things emitted
+     here references another one which comes earlier in the list.  */
+  do
+    {
+      reconsider = 0;
+      for (i = 0; i < len; i++)
+	{
+	  decl = vec[i];
+
+	  if (TREE_ASM_WRITTEN (decl) || DECL_EXTERNAL (decl))
+	    continue;
+
+	  /* Don't write out static consts, unless we still need them.
+
+	     We also keep static consts if not optimizing (for debugging),
+	     unless the user specified -fno-keep-static-consts.
+	     ??? They might be better written into the debug information.
+	     This is possible when using DWARF.
+
+	     A language processor that wants static constants to be always
+	     written out (even if it is not used) is responsible for
+	     calling rest_of_decl_compilation itself.  E.g. the C front-end
+	     calls rest_of_decl_compilation from finish_decl.
+	     One motivation for this is that is conventional in some
+	     environments to write things like:
+	     static const char rcsid[] = "... version string ...";
+	     intending to force the string to be in the executable.
+
+	     A language processor that would prefer to have unneeded
+	     static constants "optimized away" would just defer writing
+	     them out until here.  E.g. C++ does this, because static
+	     constants are often defined in header files.
+
+	     ??? A tempting alternative (for both C and C++) would be
+	     to force a constant to be written if and only if it is
+	     defined in a main file, as opposed to an include file.  */
+
+	  if (TREE_CODE (decl) == VAR_DECL && TREE_STATIC (decl))
+	    {
+	      bool needed = 1;
+
+	      if (TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (decl)))
+		/* needed */;
+	      else if (DECL_COMDAT (decl))
+		needed = 0;
+	      else if (TREE_READONLY (decl) && !TREE_PUBLIC (decl)
+		       && (optimize || !flag_keep_static_consts
+			   || DECL_ARTIFICIAL (decl)))
+		needed = 0;
+
+	      if (needed)
+		{
+		  reconsider = 1;
+		  rest_of_decl_compilation (decl, NULL, 1, 1);
+		}
+	    }
+
+	  if (TREE_CODE (decl) == FUNCTION_DECL
+	      && DECL_INITIAL (decl) != 0
+	      && DECL_SAVED_INSNS (decl) != 0
+	      && (flag_keep_inline_functions
+		  || (TREE_PUBLIC (decl) && !DECL_COMDAT (decl))
+		  || TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (decl))))
+	    {
+	      reconsider = 1;
+	      output_inline_function (decl);
+	    }
+	}
+
+      if (reconsider)
+	output_something = 1;
+    }
+  while (reconsider);
+
+  return output_something;
+}

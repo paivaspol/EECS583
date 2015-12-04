@@ -1,0 +1,50 @@
+static void
+const_binop_1 (data)
+     PTR data;
+{
+  struct cb_args *args = (struct cb_args *) data;
+  REAL_VALUE_TYPE value;
+
+#ifdef REAL_ARITHMETIC
+  REAL_ARITHMETIC (value, args->code, args->d1, args->d2);
+#else
+  switch (args->code)
+    {
+    case PLUS_EXPR:
+      value = args->d1 + args->d2;
+      break;
+
+    case MINUS_EXPR:
+      value = args->d1 - args->d2;
+      break;
+
+    case MULT_EXPR:
+      value = args->d1 * args->d2;
+      break;
+
+    case RDIV_EXPR:
+#ifndef REAL_INFINITY
+      if (args->d2 == 0)
+	abort ();
+#endif
+
+      value = args->d1 / args->d2;
+      break;
+
+    case MIN_EXPR:
+      value = MIN (args->d1, args->d2);
+      break;
+
+    case MAX_EXPR:
+      value = MAX (args->d1, args->d2);
+      break;
+
+    default:
+      abort ();
+    }
+#endif /* no REAL_ARITHMETIC */
+
+  args->t
+    = build_real (args->type,
+		  real_value_truncate (TYPE_MODE (args->type), value));
+}

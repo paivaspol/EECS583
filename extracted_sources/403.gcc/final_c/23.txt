@@ -1,0 +1,26 @@
+static rtx
+walk_alter_subreg (xp)
+     rtx *xp;
+{
+  rtx x = *xp;
+  switch (GET_CODE (x))
+    {
+    case PLUS:
+    case MULT:
+      XEXP (x, 0) = walk_alter_subreg (&XEXP (x, 0));
+      XEXP (x, 1) = walk_alter_subreg (&XEXP (x, 1));
+      break;
+
+    case MEM:
+      XEXP (x, 0) = walk_alter_subreg (&XEXP (x, 0));
+      break;
+
+    case SUBREG:
+      return alter_subreg (xp);
+
+    default:
+      break;
+    }
+
+  return *xp;
+}

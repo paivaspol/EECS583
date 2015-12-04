@@ -1,0 +1,69 @@
+static struct table_elt *lookup	PARAMS ((rtx, unsigned, enum machine_mode)),
+       *lookup_for_remove PARAMS ((rtx, unsigned, enum machine_mode));
+static rtx lookup_as_function	PARAMS ((rtx, enum rtx_code));
+static struct table_elt *insert PARAMS ((rtx, struct table_elt *, unsigned,
+					 enum machine_mode));
+static void merge_equiv_classes PARAMS ((struct table_elt *,
+					 struct table_elt *));
+static void invalidate		PARAMS ((rtx, enum machine_mode));
+static int cse_rtx_varies_p	PARAMS ((rtx, int));
+static void remove_invalid_refs	PARAMS ((unsigned int));
+static void remove_invalid_subreg_refs	PARAMS ((unsigned int, unsigned int,
+						 enum machine_mode));
+static void rehash_using_reg	PARAMS ((rtx));
+static void invalidate_memory	PARAMS ((void));
+static void invalidate_for_call	PARAMS ((void));
+static rtx use_related_value	PARAMS ((rtx, struct table_elt *));
+static unsigned canon_hash	PARAMS ((rtx, enum machine_mode));
+static unsigned canon_hash_string PARAMS ((const char *));
+static unsigned safe_hash	PARAMS ((rtx, enum machine_mode));
+static int exp_equiv_p		PARAMS ((rtx, rtx, int, int));
+static rtx canon_reg		PARAMS ((rtx, rtx));
+static void find_best_addr	PARAMS ((rtx, rtx *, enum machine_mode));
+static enum rtx_code find_comparison_args PARAMS ((enum rtx_code, rtx *, rtx *,
+						   enum machine_mode *,
+						   enum machine_mode *));
+static rtx fold_rtx		PARAMS ((rtx, rtx));
+static rtx equiv_constant	PARAMS ((rtx));
+static void record_jump_equiv	PARAMS ((rtx, int));
+static void record_jump_cond	PARAMS ((enum rtx_code, enum machine_mode,
+					 rtx, rtx, int));
+static void cse_insn		PARAMS ((rtx, rtx));
+static int addr_affects_sp_p	PARAMS ((rtx));
+static void invalidate_from_clobbers PARAMS ((rtx));
+static rtx cse_process_notes	PARAMS ((rtx, rtx));
+static void cse_around_loop	PARAMS ((rtx));
+static void invalidate_skipped_set PARAMS ((rtx, rtx, void *));
+static void invalidate_skipped_block PARAMS ((rtx));
+static void cse_check_loop_start PARAMS ((rtx, rtx, void *));
+static void cse_set_around_loop	PARAMS ((rtx, rtx, rtx));
+static rtx cse_basic_block	PARAMS ((rtx, rtx, struct branch_path *, int));
+static void count_reg_usage	PARAMS ((rtx, int *, rtx, int));
+static int check_for_label_ref	PARAMS ((rtx *, void *));
+extern void dump_class          PARAMS ((struct table_elt*));
+static struct cse_reg_info * get_cse_reg_info PARAMS ((unsigned int));
+static int check_dependence	PARAMS ((rtx *, void *));
+
+static void flush_hash_table	PARAMS ((void));
+static bool insn_live_p		PARAMS ((rtx, int *));
+static bool set_live_p		PARAMS ((rtx, rtx, int *));
+static bool dead_libcall_p	PARAMS ((rtx));
+
+/* Dump the expressions in the equivalence class indicated by CLASSP.
+   This function is used only for debugging.  */
+void
+dump_class (classp)
+     struct table_elt *classp;
+{
+  struct table_elt *elt;
+
+  fprintf (stderr, "Equivalence chain for ");
+  print_rtl (stderr, classp->exp);
+  fprintf (stderr, ": \n");
+
+  for (elt = classp->first_same_value; elt; elt = elt->next_same_value)
+    {
+      print_rtl (stderr, elt->exp);
+      fprintf (stderr, "\n");
+    }
+}

@@ -1,0 +1,14 @@
+int
+SSIOpen(char *filename, SSIFILE **ret_sfp)
+{
+  SSIFILE  *sfp = NULL;
+  int       status;
+  if ((sfp = malloc(sizeof(SSIFILE))) == NULL)   return SSI_ERR_MALLOC;
+  if ((sfp->fp = fopen(filename, "rb")) == NULL) {
+    free(sfp);
+    return SSI_ERR_NOFILE;    
+  }
+  status = load_indexfile(sfp);
+  *ret_sfp = sfp;
+  return status;
+}

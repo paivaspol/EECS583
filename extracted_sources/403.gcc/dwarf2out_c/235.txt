@@ -1,0 +1,145 @@
+static void
+gen_decl_die (decl, context_die)
+     tree decl;
+     dw_die_ref context_die;
+{
+  tree origin;
+
+  if (DECL_P (decl) && DECL_IGNORED_P (decl))
+    return;
+
+  switch (TREE_CODE (decl))
+    {
+    case ERROR_MARK:
+      break;
+
+    case CONST_DECL:
+      /* The individual enumerators of an enum type get output when we output
+         the Dwarf representation of the relevant enum type itself.  */
+      break;
+
+    case FUNCTION_DECL:
+      /* Don't output any DIEs to represent mere function declarations,
+	 unless they are class members or explicit block externs.  */
+      if (DECL_INITIAL (decl) == NULL_TREE && DECL_CONTEXT (decl) == NULL_TREE
+	  && (current_function_decl == NULL_TREE || DECL_ARTIFICIAL (decl)))
+	break;
+
+      /* If we're emitting a clone, emit info for the abstract instance.  */
+      if (DECL_ORIGIN (decl) != decl)
+	dwarf2out_abstract_function (DECL_ABSTRACT_ORIGIN (decl));
+
+      /* If we're emitting an out-of-line copy of an inline function,
+	 emit info for the abstract instance and set up to refer to it.  */
+      else if (DECL_INLINE (decl) && ! DECL_ABSTRACT (decl)
+	       && ! class_scope_p (context_die)
+	       /* dwarf2out_abstract_function won't emit a die if this is just
+		  a declaration.  We must avoid setting DECL_ABSTRACT_ORIGIN in
+		  that case, because that works only if we have a die.  */
+	       && DECL_INITIAL (decl) != NULL_TREE)
+	{
+	  dwarf2out_abstract_function (decl);
+	  set_decl_origin_self (decl);
+	}
+
+      /* Otherwise we're emitting the primary DIE for this decl.  */
+      else if (debug_info_level > DINFO_LEVEL_TERSE)
+	{
+	  /* Before we describe the FUNCTION_DECL itself, make sure that we
+	     have described its return type.  */
+	  gen_type_die (TREE_TYPE (TREE_TYPE (decl)), context_die);
+
+	  /* And its virtual context.  */
+	  if (DECL_VINDEX (decl) != NULL_TREE)
+	    gen_type_die (DECL_CONTEXT (decl), context_die);
+
+	  /* And its containing type.  */
+	  origin = decl_class_context (decl);
+	  if (origin != NULL_TREE)
+	    gen_type_die_for_member (origin, decl, context_die);
+	}
+
+      /* Now output a DIE to represent the function itself.  */
+      gen_subprogram_die (decl, context_die);
+      break;
+
+    case TYPE_DECL:
+      /* If we are in terse mode, don't generate any DIEs to represent any
+         actual typedefs.  */
+      if (debug_info_level <= DINFO_LEVEL_TERSE)
+	break;
+
+      /* In the special case of a TYPE_DECL node representing the declaration
+         of some type tag, if the given TYPE_DECL is marked as having been
+         instantiated from some other (original) TYPE_DECL node (e.g. one which
+         was generated within the original definition of an inline function) we
+         have to generate a special (abbreviated) DW_TAG_structure_type,
+         DW_TAG_union_type, or DW_TAG_enumeration_type DIE here.  */
+      if (TYPE_DECL_IS_STUB (decl) && decl_ultimate_origin (decl) != NULL_TREE)
+	{
+	  gen_tagged_type_instantiation_die (TREE_TYPE (decl), context_die);
+	  break;
+	}
+
+      if (is_redundant_typedef (decl))
+	gen_type_die (TREE_TYPE (decl), context_die);
+      else
+	/* Output a DIE to represent the typedef itself.  */
+	gen_typedef_die (decl, context_die);
+      break;
+
+    case LABEL_DECL:
+      if (debug_info_level >= DINFO_LEVEL_NORMAL)
+	gen_label_die (decl, context_die);
+      break;
+
+    case VAR_DECL:
+      /* If we are in terse mode, don't generate any DIEs to represent any
+         variable declarations or definitions.  */
+      if (debug_info_level <= DINFO_LEVEL_TERSE)
+	break;
+
+      /* Output any DIEs that are needed to specify the type of this data
+         object.  */
+      gen_type_die (TREE_TYPE (decl), context_die);
+
+      /* And its containing type.  */
+      origin = decl_class_context (decl);
+      if (origin != NULL_TREE)
+	gen_type_die_for_member (origin, decl, context_die);
+
+      /* Now output the DIE to represent the data object itself.  This gets
+         complicated because of the possibility that the VAR_DECL really
+         represents an inlined instance of a formal parameter for an inline
+         function.  */
+      origin = decl_ultimate_origin (decl);
+      if (origin != NULL_TREE && TREE_CODE (origin) == PARM_DECL)
+	gen_formal_parameter_die (decl, context_die);
+      else
+	gen_variable_die (decl, context_die);
+      break;
+
+    case FIELD_DECL:
+      /* Ignore the nameless fields that are used to skip bits but handle C++
+	 anonymous unions.  */
+      if (DECL_NAME (decl) != NULL_TREE
+	  || TREE_CODE (TREE_TYPE (decl)) == UNION_TYPE)
+	{
+	  gen_type_die (member_declared_type (decl), context_die);
+	  gen_field_die (decl, context_die);
+	}
+      break;
+
+    case PARM_DECL:
+      gen_type_die (TREE_TYPE (decl), context_die);
+      gen_formal_parameter_die (decl, context_die);
+      break;
+
+    case NAMESPACE_DECL:
+      /* Ignore for now.  */
+      break;
+
+    default:
+      abort ();
+    }
+}

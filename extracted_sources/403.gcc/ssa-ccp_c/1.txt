@@ -1,0 +1,13 @@
+static void
+defs_to_undefined (insn)
+     rtx insn;
+{
+  struct df_link *currdef;
+  for (currdef = DF_INSN_DEFS (df_analyzer, insn); currdef;
+       currdef = currdef->next)
+    {
+      if (values[DF_REF_REGNO (currdef->ref)].lattice_val != UNDEFINED)
+	SET_BIT (ssa_edges, DF_REF_REGNO (currdef->ref));
+      values[DF_REF_REGNO (currdef->ref)].lattice_val = UNDEFINED;
+    }
+}

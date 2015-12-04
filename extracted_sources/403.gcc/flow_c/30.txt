@@ -1,0 +1,66 @@
+static void
+mark_set_regs (pbi, x, insn)
+     struct propagate_block_info *pbi;
+     rtx x, insn;
+{
+  rtx cond = NULL_RTX;
+  rtx link;
+  enum rtx_code code;
+
+  if (insn)
+    for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+      {
+	if (REG_NOTE_KIND (link) == REG_INC)
+	  mark_set_1 (pbi, SET, XEXP (link, 0),
+		      (GET_CODE (x) == COND_EXEC
+		       ? COND_EXEC_TEST (x) : NULL_RTX),
+		      insn, pbi->flags);
+      }
+ retry:
+  switch (code = GET_CODE (x))
+    {
+    case SET:
+    case CLOBBER:
+      mark_set_1 (pbi, code, SET_DEST (x), cond, insn, pbi->flags);
+      return;
+
+    case COND_EXEC:
+      cond = COND_EXEC_TEST (x);
+      x = COND_EXEC_CODE (x);
+      goto retry;
+
+    case PARALLEL:
+      {
+	int i;
+
+	for (i = XVECLEN (x, 0) - 1; i >= 0; i--)
+	  {
+	    rtx sub = XVECEXP (x, 0, i);
+	    switch (code = GET_CODE (sub))
+	      {
+	      case COND_EXEC:
+		if (cond != NULL_RTX)
+		  abort ();
+
+		cond = COND_EXEC_TEST (sub);
+		sub = COND_EXEC_CODE (sub);
+		if (GET_CODE (sub) != SET && GET_CODE (sub) != CLOBBER)
+		  break;
+		/* Fall through.  */
+
+	      case SET:
+	      case CLOBBER:
+		mark_set_1 (pbi, code, SET_DEST (sub), cond, insn, pbi->flags);
+		break;
+
+	      default:
+		break;
+	      }
+	  }
+	break;
+      }
+
+    default:
+      break;
+    }
+}

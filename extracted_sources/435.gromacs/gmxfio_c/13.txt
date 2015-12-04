@@ -1,0 +1,57 @@
+static bool do_binread(void *item,int nitem,int eio,
+		       char *desc,char *srcfile,int line)
+{
+  size_t size=0,rsize;
+  int    ssize;
+  
+  check_nitem();
+  switch (eio) {
+  case eioREAL:
+    if (curfio->bDouble)
+      size = sizeof(double);
+    else
+      size = sizeof(float);
+    break;
+  case eioINT:
+    size = sizeof(int);
+    break;
+  case eioNUCHAR:
+    size = sizeof(unsigned char);
+    break;
+  case eioUSHORT:
+    size = sizeof(unsigned short);
+    break;
+  case eioRVEC:
+  case eioNRVEC:
+    if (curfio->bDouble)
+      size = sizeof(double)*DIM;
+    else
+      size = sizeof(float)*DIM;
+    break;
+  case eioIVEC:
+    size = sizeof(ivec);
+    break;
+  case eioSTRING:
+    do_binread(&ssize,1,eioINT,desc,srcfile,line);
+    size = ssize;
+    break;
+  default:
+    FE();
+  }
+  if (item)
+    rsize = fread(item,size,nitem,curfio->fp);
+  else {
+    /* Skip over it if we have a NULL pointer here */
+#ifdef HAVE_FSEEKO
+    fseeko(curfio->fp,(off_t)(size*nitem),SEEK_CUR);
+#else
+    fseek(curfio->fp,(off_t)(size*nitem),SEEK_CUR);
+#endif    
+    rsize = nitem;
+  }
+  if ((rsize != nitem) && (curfio->bDebug))
+    fprintf(stderr,"Error reading %s %s from file %s (source %s, line %d)\n",
+	    eioNames[eio],desc,curfio->fn,srcfile,line);
+	    
+  return (rsize == nitem);
+}

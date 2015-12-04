@@ -1,0 +1,53 @@
+static void spread_dum4FD(rvec xi,rvec xj,rvec xk,rvec xl,
+			  rvec fi,rvec fj,rvec fk,rvec fl,rvec f,
+			  real a,real b,real c)
+{
+  real fx,fy,fz,d,invl,fproj,a1;
+  rvec xij,xjk,xjl,xix,temp;
+  
+  rvec_sub(xj,xi,xij);
+  rvec_sub(xk,xj,xjk);
+  rvec_sub(xl,xj,xjl);
+  /* 9 flops */
+  
+  /* xix goes from i to point x on the plane jkl */  
+  xix[XX]=xij[XX]+a*xjk[XX]+b*xjl[XX];
+  xix[YY]=xij[YY]+a*xjk[YY]+b*xjl[YY];
+  xix[ZZ]=xij[ZZ]+a*xjk[ZZ]+b*xjl[ZZ];
+  /* 12 flops */
+  
+  invl=invsqrt(iprod(xix,xix));
+  d=c*invl;
+  /* 4 + ?10? flops */
+  
+  fproj=iprod(xix,f)*invl*invl; /* = (xix . f)/(xix . xix) */
+  
+  fx=f[XX];
+  fy=f[YY];
+  fz=f[ZZ];
+  
+  temp[XX]=d*(fx-fproj*xix[XX]);
+  temp[YY]=d*(fy-fproj*xix[YY]);
+  temp[ZZ]=d*(fz-fproj*xix[ZZ]);
+  /* 16 */
+  
+  /* c is already calculated in constr_dum3FD
+     storing c somewhere will save 35 flops!     */
+  
+  a1=1-a-b;
+  fi[XX]+=fx-temp[XX];
+  fi[YY]+=fy-temp[YY];
+  fi[ZZ]+=fz-temp[ZZ];
+  fj[XX]+=a1*temp[XX];
+  fj[YY]+=a1*temp[YY];
+  fj[ZZ]+=a1*temp[ZZ];
+  fk[XX]+= a*temp[XX];
+  fk[YY]+= a*temp[YY];
+  fk[ZZ]+= a*temp[ZZ];
+  fl[XX]+= b*temp[XX];
+  fl[YY]+= b*temp[YY];
+  fl[ZZ]+= b*temp[ZZ];
+  /* 26 Flops */
+  
+  /* TOTAL: 77 flops */
+}

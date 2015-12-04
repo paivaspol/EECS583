@@ -1,0 +1,33 @@
+static void
+normalize_coefficients (coefficients, loop_ptr, count)
+     subscript coefficients [MAX_SUBSCRIPTS];
+     loop *loop_ptr;
+     int count;
+{
+  induction *ind_ptr;
+  loop *ck_loop_ptr;
+  int i;
+
+  for (i = 1; i <= count; i++)
+    {
+      for (ck_loop_ptr = loop_ptr; ck_loop_ptr; 
+	   ck_loop_ptr = ck_loop_ptr->next_nest)
+	for (ind_ptr = ck_loop_ptr->ind; ind_ptr; ind_ptr = ind_ptr->next)
+	  {
+	    if (coefficients[i].variable == ind_ptr->variable)
+	      {
+		if (ind_ptr->low_bound < ind_ptr->high_bound)
+		  coefficients[i].offset += coefficients[i].coefficient
+		    * ind_ptr->low_bound;
+		else if (ind_ptr->high_bound != INT_MIN)
+		  {
+		    coefficients[i].offset = coefficients[i].coefficient
+		      * ind_ptr->high_bound;
+		    coefficients[i].coefficient = coefficients[i].coefficient
+		      * -1;
+		  }
+		break;
+	      }
+	  }
+    }
+}

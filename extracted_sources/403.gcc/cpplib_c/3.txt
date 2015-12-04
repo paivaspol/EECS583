@@ -1,0 +1,13 @@
+static void
+skip_rest_of_line (pfile)
+     cpp_reader *pfile;
+{
+  /* Discard all stacked contexts.  */
+  while (pfile->context != &pfile->base_context)
+    _cpp_pop_context (pfile);
+
+  /* Sweep up all tokens remaining on the line.  */
+  if (! SEEN_EOL ())
+    while (_cpp_lex_token (pfile)->type != CPP_EOF)
+      ;
+}

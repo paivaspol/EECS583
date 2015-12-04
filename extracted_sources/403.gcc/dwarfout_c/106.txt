@@ -1,0 +1,19 @@
+static void
+pend_type (type)
+     tree type;
+{
+  if (pending_types == pending_types_allocated)
+    {
+      pending_types_allocated += PENDING_TYPES_INCREMENT;
+      pending_types_list
+	= (tree *) xrealloc (pending_types_list,
+			     sizeof (tree) * pending_types_allocated);
+    }
+  pending_types_list[pending_types++] = type;
+
+  /* Mark the pending type as having been output already (even though
+     it hasn't been).  This prevents the type from being added to the
+     pending_types_list more than once.  */
+
+  TREE_ASM_WRITTEN (type) = 1;
+}

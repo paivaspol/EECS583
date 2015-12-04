@@ -1,0 +1,42 @@
+void
+pushlevel (tag_transparent)
+     int tag_transparent;
+{
+  struct binding_level *newlevel = NULL_BINDING_LEVEL;
+
+  /* If this is the top level of a function,
+     just make sure that NAMED_LABELS is 0.  */
+
+  if (current_binding_level == global_binding_level)
+    {
+      named_labels = 0;
+    }
+
+  /* Reuse or create a struct for this binding level.  */
+
+  if (free_binding_level)
+    {
+      newlevel = free_binding_level;
+      free_binding_level = free_binding_level->level_chain;
+    }
+  else
+    {
+      newlevel = make_binding_level ();
+    }
+
+  /* Add this level to the front of the chain (stack) of levels that
+     are active.  */
+
+  *newlevel = clear_binding_level;
+  newlevel->tag_transparent
+    = (tag_transparent
+       || (current_binding_level
+	   ? current_binding_level->subblocks_tag_transparent
+	   : 0));
+  newlevel->level_chain = current_binding_level;
+  current_binding_level = newlevel;
+  newlevel->keep = keep_next_level_flag;
+  keep_next_level_flag = 0;
+  newlevel->keep_if_subblocks = keep_next_if_subblocks;
+  keep_next_if_subblocks = 0;
+}

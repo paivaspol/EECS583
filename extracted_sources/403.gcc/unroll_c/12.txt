@@ -1,0 +1,426 @@
+static int
+find_splittable_givs (loop, bl, unroll_type, increment, unroll_number)
+     const struct loop *loop;
+     struct iv_class *bl;
+     enum unroll_types unroll_type;
+     rtx increment;
+     int unroll_number;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct induction *v, *v2;
+  rtx final_value;
+  rtx tem;
+  int result = 0;
+
+  /* Scan the list of givs, and set the same_insn field when there are
+     multiple identical givs in the same insn.  */
+  for (v = bl->giv; v; v = v->next_iv)
+    for (v2 = v->next_iv; v2; v2 = v2->next_iv)
+      if (v->insn == v2->insn && rtx_equal_p (v->new_reg, v2->new_reg)
+	  && ! v2->same_insn)
+	v2->same_insn = v;
+
+  for (v = bl->giv; v; v = v->next_iv)
+    {
+      rtx giv_inc, value;
+
+      /* Only split the giv if it has already been reduced, or if the loop is
+	 being completely unrolled.  */
+      if (unroll_type != UNROLL_COMPLETELY && v->ignore)
+	continue;
+
+      /* The giv can be split if the insn that sets the giv is executed once
+	 and only once on every iteration of the loop.  */
+      /* An address giv can always be split.  v->insn is just a use not a set,
+	 and hence it does not matter whether it is always executed.  All that
+	 matters is that all the biv increments are always executed, and we
+	 won't reach here if they aren't.  */
+      if (v->giv_type != DEST_ADDR
+	  && (! v->always_computable
+	      || back_branch_in_range_p (loop, v->insn)))
+	continue;
+
+      /* The giv increment value must be a constant.  */
+      giv_inc = fold_rtx_mult_add (v->mult_val, increment, const0_rtx,
+				   v->mode);
+      if (! giv_inc || GET_CODE (giv_inc) != CONST_INT)
+	continue;
+
+      /* The loop must be unrolled completely, or else have a known number of
+	 iterations and only one exit, or else the giv must be dead outside
+	 the loop, or else the final value of the giv must be known.
+	 Otherwise, it is not safe to split the giv since it may not have the
+	 proper value on loop exit.  */
+
+      /* The used outside loop test will fail for DEST_ADDR givs.  They are
+	 never used outside the loop anyways, so it is always safe to split a
+	 DEST_ADDR giv.  */
+
+      final_value = 0;
+      if (unroll_type != UNROLL_COMPLETELY
+	  && (loop->exit_count || unroll_type == UNROLL_NAIVE)
+	  && v->giv_type != DEST_ADDR
+	  /* The next part is true if the pseudo is used outside the loop.
+	     We assume that this is true for any pseudo created after loop
+	     starts, because we don't have a reg_n_info entry for them.  */
+	  && (REGNO (v->dest_reg) >= max_reg_before_loop
+	      || (REGNO_FIRST_UID (REGNO (v->dest_reg)) != INSN_UID (v->insn)
+		  /* Check for the case where the pseudo is set by a shift/add
+		     sequence, in which case the first insn setting the pseudo
+		     is the first insn of the shift/add sequence.  */
+		  && (! (tem = find_reg_note (v->insn, REG_RETVAL, NULL_RTX))
+		      || (REGNO_FIRST_UID (REGNO (v->dest_reg))
+			  != INSN_UID (XEXP (tem, 0)))))
+	      /* Line above always fails if INSN was moved by loop opt.  */
+	      || (REGNO_LAST_LUID (REGNO (v->dest_reg))
+		  >= INSN_LUID (loop->end)))
+	  && ! (final_value = v->final_value))
+	continue;
+
+#if 0
+      /* Currently, non-reduced/final-value givs are never split.  */
+      /* Should emit insns after the loop if possible, as the biv final value
+	 code below does.  */
+
+      /* If the final value is non-zero, and the giv has not been reduced,
+	 then must emit an instruction to set the final value.  */
+      if (final_value && !v->new_reg)
+	{
+	  /* Create a new register to hold the value of the giv, and then set
+	     the giv to its final value before the loop start.  The giv is set
+	     to its final value before loop start to ensure that this insn
+	     will always be executed, no matter how we exit.  */
+	  tem = gen_reg_rtx (v->mode);
+	  loop_insn_hoist (loop, gen_move_insn (tem, v->dest_reg));
+	  loop_insn_hoist (loop, gen_move_insn (v->dest_reg, final_value));
+
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "Giv %d mapped to %d for split.\n",
+		     REGNO (v->dest_reg), REGNO (tem));
+
+	  v->src_reg = tem;
+	}
+#endif
+
+      /* This giv is splittable.  If completely unrolling the loop, save the
+	 giv's initial value.  Otherwise, save the constant zero for it.  */
+
+      if (unroll_type == UNROLL_COMPLETELY)
+	{
+	  /* It is not safe to use bl->initial_value here, because it may not
+	     be invariant.  It is safe to use the initial value stored in
+	     the splittable_regs array if it is set.  In rare cases, it won't
+	     be set, so then we do exactly the same thing as
+	     find_splittable_regs does to get a safe value.  */
+	  rtx biv_initial_value;
+
+	  if (splittable_regs[bl->regno])
+	    biv_initial_value = splittable_regs[bl->regno];
+	  else if (GET_CODE (bl->initial_value) != REG
+		   || (REGNO (bl->initial_value) != bl->regno
+		       && REGNO (bl->initial_value) >= FIRST_PSEUDO_REGISTER))
+	    biv_initial_value = bl->initial_value;
+	  else
+	    {
+	      rtx tem = gen_reg_rtx (bl->biv->mode);
+
+	      record_base_value (REGNO (tem), bl->biv->add_val, 0);
+	      loop_insn_hoist (loop, gen_move_insn (tem, bl->biv->src_reg));
+	      biv_initial_value = tem;
+	    }
+	  biv_initial_value = extend_value_for_giv (v, biv_initial_value);
+	  value = fold_rtx_mult_add (v->mult_val, biv_initial_value,
+				     v->add_val, v->mode);
+	}
+      else
+	value = const0_rtx;
+
+      if (v->new_reg)
+	{
+	  /* If a giv was combined with another giv, then we can only split
+	     this giv if the giv it was combined with was reduced.  This
+	     is because the value of v->new_reg is meaningless in this
+	     case.  */
+	  if (v->same && ! v->same->new_reg)
+	    {
+	      if (loop_dump_stream)
+		fprintf (loop_dump_stream,
+			 "giv combined with unreduced giv not split.\n");
+	      continue;
+	    }
+	  /* If the giv is an address destination, it could be something other
+	     than a simple register, these have to be treated differently.  */
+	  else if (v->giv_type == DEST_REG)
+	    {
+	      /* If value is not a constant, register, or register plus
+		 constant, then compute its value into a register before
+		 loop start.  This prevents invalid rtx sharing, and should
+		 generate better code.  We can use bl->initial_value here
+		 instead of splittable_regs[bl->regno] because this code
+		 is going before the loop start.  */
+	      if (unroll_type == UNROLL_COMPLETELY
+		  && GET_CODE (value) != CONST_INT
+		  && GET_CODE (value) != REG
+		  && (GET_CODE (value) != PLUS
+		      || GET_CODE (XEXP (value, 0)) != REG
+		      || GET_CODE (XEXP (value, 1)) != CONST_INT))
+		{
+		  rtx tem = gen_reg_rtx (v->mode);
+		  record_base_value (REGNO (tem), v->add_val, 0);
+		  loop_iv_add_mult_hoist (loop, bl->initial_value, v->mult_val,
+					  v->add_val, tem);
+		  value = tem;
+		}
+
+	      splittable_regs[REGNO (v->new_reg)] = value;
+	    }
+	  else
+	    {
+	      /* Splitting address givs is useful since it will often allow us
+		 to eliminate some increment insns for the base giv as
+		 unnecessary.  */
+
+	      /* If the addr giv is combined with a dest_reg giv, then all
+		 references to that dest reg will be remapped, which is NOT
+		 what we want for split addr regs. We always create a new
+		 register for the split addr giv, just to be safe.  */
+
+	      /* If we have multiple identical address givs within a
+		 single instruction, then use a single pseudo reg for
+		 both.  This is necessary in case one is a match_dup
+		 of the other.  */
+
+	      v->const_adjust = 0;
+
+	      if (v->same_insn)
+		{
+		  v->dest_reg = v->same_insn->dest_reg;
+		  if (loop_dump_stream)
+		    fprintf (loop_dump_stream,
+			     "Sharing address givs in insn %d\n",
+			     INSN_UID (v->insn));
+		}
+	      /* If multiple address GIVs have been combined with the
+		 same dest_reg GIV, do not create a new register for
+		 each.  */
+	      else if (unroll_type != UNROLL_COMPLETELY
+		       && v->giv_type == DEST_ADDR
+		       && v->same && v->same->giv_type == DEST_ADDR
+		       && v->same->unrolled
+		       /* combine_givs_p may return true for some cases
+			  where the add and mult values are not equal.
+			  To share a register here, the values must be
+			  equal.  */
+		       && rtx_equal_p (v->same->mult_val, v->mult_val)
+		       && rtx_equal_p (v->same->add_val, v->add_val)
+		       /* If the memory references have different modes,
+			  then the address may not be valid and we must
+			  not share registers.  */
+		       && verify_addresses (v, giv_inc, unroll_number))
+		{
+		  v->dest_reg = v->same->dest_reg;
+		  v->shared = 1;
+		}
+	      else if (unroll_type != UNROLL_COMPLETELY)
+		{
+		  /* If not completely unrolling the loop, then create a new
+		     register to hold the split value of the DEST_ADDR giv.
+		     Emit insn to initialize its value before loop start.  */
+
+		  rtx tem = gen_reg_rtx (v->mode);
+		  struct induction *same = v->same;
+		  rtx new_reg = v->new_reg;
+		  record_base_value (REGNO (tem), v->add_val, 0);
+
+		  /* If the address giv has a constant in its new_reg value,
+		     then this constant can be pulled out and put in value,
+		     instead of being part of the initialization code.  */
+
+		  if (GET_CODE (new_reg) == PLUS
+		      && GET_CODE (XEXP (new_reg, 1)) == CONST_INT)
+		    {
+		      v->dest_reg
+			= plus_constant (tem, INTVAL (XEXP (new_reg, 1)));
+
+		      /* Only succeed if this will give valid addresses.
+			 Try to validate both the first and the last
+			 address resulting from loop unrolling, if
+			 one fails, then can't do const elim here.  */
+		      if (verify_addresses (v, giv_inc, unroll_number))
+			{
+			  /* Save the negative of the eliminated const, so
+			     that we can calculate the dest_reg's increment
+			     value later.  */
+			  v->const_adjust = -INTVAL (XEXP (new_reg, 1));
+
+			  new_reg = XEXP (new_reg, 0);
+			  if (loop_dump_stream)
+			    fprintf (loop_dump_stream,
+				     "Eliminating constant from giv %d\n",
+				     REGNO (tem));
+			}
+		      else
+			v->dest_reg = tem;
+		    }
+		  else
+		    v->dest_reg = tem;
+
+		  /* If the address hasn't been checked for validity yet, do so
+		     now, and fail completely if either the first or the last
+		     unrolled copy of the address is not a valid address
+		     for the instruction that uses it.  */
+		  if (v->dest_reg == tem
+		      && ! verify_addresses (v, giv_inc, unroll_number))
+		    {
+		      for (v2 = v->next_iv; v2; v2 = v2->next_iv)
+			if (v2->same_insn == v)
+			  v2->same_insn = 0;
+
+		      if (loop_dump_stream)
+			fprintf (loop_dump_stream,
+				 "Invalid address for giv at insn %d\n",
+				 INSN_UID (v->insn));
+		      continue;
+		    }
+
+		  v->new_reg = new_reg;
+		  v->same = same;
+
+		  /* We set this after the address check, to guarantee that
+		     the register will be initialized.  */
+		  v->unrolled = 1;
+
+		  /* To initialize the new register, just move the value of
+		     new_reg into it.  This is not guaranteed to give a valid
+		     instruction on machines with complex addressing modes.
+		     If we can't recognize it, then delete it and emit insns
+		     to calculate the value from scratch.  */
+		  loop_insn_hoist (loop, gen_rtx_SET (VOIDmode, tem,
+						      copy_rtx (v->new_reg)));
+		  if (recog_memoized (PREV_INSN (loop->start)) < 0)
+		    {
+		      rtx sequence, ret;
+
+		      /* We can't use bl->initial_value to compute the initial
+			 value, because the loop may have been preconditioned.
+			 We must calculate it from NEW_REG.  */
+		      delete_related_insns (PREV_INSN (loop->start));
+
+		      start_sequence ();
+		      ret = force_operand (v->new_reg, tem);
+		      if (ret != tem)
+			emit_move_insn (tem, ret);
+		      sequence = gen_sequence ();
+		      end_sequence ();
+		      loop_insn_hoist (loop, sequence);
+
+		      if (loop_dump_stream)
+			fprintf (loop_dump_stream,
+				 "Invalid init insn, rewritten.\n");
+		    }
+		}
+	      else
+		{
+		  v->dest_reg = value;
+
+		  /* Check the resulting address for validity, and fail
+		     if the resulting address would be invalid.  */
+		  if (! verify_addresses (v, giv_inc, unroll_number))
+		    {
+		      for (v2 = v->next_iv; v2; v2 = v2->next_iv)
+			if (v2->same_insn == v)
+			  v2->same_insn = 0;
+
+		      if (loop_dump_stream)
+			fprintf (loop_dump_stream,
+				 "Invalid address for giv at insn %d\n",
+				 INSN_UID (v->insn));
+		      continue;
+		    }
+		}
+
+	      /* Store the value of dest_reg into the insn.  This sharing
+		 will not be a problem as this insn will always be copied
+		 later.  */
+
+	      *v->location = v->dest_reg;
+
+	      /* If this address giv is combined with a dest reg giv, then
+		 save the base giv's induction pointer so that we will be
+		 able to handle this address giv properly.  The base giv
+		 itself does not have to be splittable.  */
+
+	      if (v->same && v->same->giv_type == DEST_REG)
+		addr_combined_regs[REGNO (v->same->new_reg)] = v->same;
+
+	      if (GET_CODE (v->new_reg) == REG)
+		{
+		  /* This giv maybe hasn't been combined with any others.
+		     Make sure that it's giv is marked as splittable here.  */
+
+		  splittable_regs[REGNO (v->new_reg)] = value;
+
+		  /* Make it appear to depend upon itself, so that the
+		     giv will be properly split in the main loop above.  */
+		  if (! v->same)
+		    {
+		      v->same = v;
+		      addr_combined_regs[REGNO (v->new_reg)] = v;
+		    }
+		}
+
+	      if (loop_dump_stream)
+		fprintf (loop_dump_stream, "DEST_ADDR giv being split.\n");
+	    }
+	}
+      else
+	{
+#if 0
+	  /* Currently, unreduced giv's can't be split.  This is not too much
+	     of a problem since unreduced giv's are not live across loop
+	     iterations anyways.  When unrolling a loop completely though,
+	     it makes sense to reduce&split givs when possible, as this will
+	     result in simpler instructions, and will not require that a reg
+	     be live across loop iterations.  */
+
+	  splittable_regs[REGNO (v->dest_reg)] = value;
+	  fprintf (stderr, "Giv %d at insn %d not reduced\n",
+		   REGNO (v->dest_reg), INSN_UID (v->insn));
+#else
+	  continue;
+#endif
+	}
+
+      /* Unreduced givs are only updated once by definition.  Reduced givs
+	 are updated as many times as their biv is.  Mark it so if this is
+	 a splittable register.  Don't need to do anything for address givs
+	 where this may not be a register.  */
+
+      if (GET_CODE (v->new_reg) == REG)
+	{
+	  int count = 1;
+	  if (! v->ignore)
+	    count = REG_IV_CLASS (ivs, REGNO (v->src_reg))->biv_count;
+
+	  splittable_regs_updates[REGNO (v->new_reg)] = count;
+	}
+
+      result++;
+
+      if (loop_dump_stream)
+	{
+	  int regnum;
+
+	  if (GET_CODE (v->dest_reg) == CONST_INT)
+	    regnum = -1;
+	  else if (GET_CODE (v->dest_reg) != REG)
+	    regnum = REGNO (XEXP (v->dest_reg, 0));
+	  else
+	    regnum = REGNO (v->dest_reg);
+	  fprintf (loop_dump_stream, "Giv %d at insn %d safe to split.\n",
+		   regnum, INSN_UID (v->insn));
+	}
+    }
+
+  return result;
+}

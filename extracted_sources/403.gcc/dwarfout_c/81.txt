@@ -1,0 +1,22 @@
+static void
+output_enumeration_type_die (arg)
+     void *arg;
+{
+  tree type = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_enumeration_type);
+  sibling_attribute ();
+  equate_type_number_to_die_number (type);
+  name_attribute (type_tag (type));
+  member_attribute (TYPE_CONTEXT (type));
+
+  /* Handle a GNU C/C++ extension, i.e. incomplete enum types.  If the
+     given enum type is incomplete, do not generate the AT_byte_size
+     attribute or the AT_element_list attribute.  */
+
+  if (COMPLETE_TYPE_P (type))
+    {
+      byte_size_attribute (type);
+      element_list_attribute (TYPE_FIELDS (type));
+    }
+}

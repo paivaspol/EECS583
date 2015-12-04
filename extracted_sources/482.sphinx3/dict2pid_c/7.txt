@@ -1,0 +1,73 @@
+void dict2pid_dump (FILE *fp, dict2pid_t *d2p, mdef_t *mdef, dict_t *dict)
+{
+    int32 w, p, pronlen;
+    int32 i, j, b, l, r;
+    
+    fprintf (fp, "# INTERNAL (wd comssid ssid ssid ... ssid comssid)\n");
+    for (w = 0; w < dict_size(dict); w++) {
+	fprintf (fp, "%30s ", dict_wordstr(dict, w));
+	
+	pronlen = dict_pronlen(dict, w);
+	for (p = 0; p < pronlen; p++)
+	    fprintf (fp, " %5d", d2p->internal[w][p]);
+	fprintf (fp, "\n");
+    }
+    fprintf (fp, "#\n");
+    
+    fprintf (fp, "# LDIPH_LC (b r l ssid)\n");
+    for (b = 0; b < mdef_n_ciphone(mdef); b++) {
+	for (r = 0; r < mdef_n_ciphone(mdef); r++) {
+	    for (l = 0; l < mdef_n_ciphone(mdef); l++) {
+		if (IS_S3SSID(d2p->ldiph_lc[b][r][l]))
+		    fprintf (fp, "%6s %6s %6s %5d\n",
+			     mdef_ciphone_str (mdef, (s3cipid_t)b),
+			     mdef_ciphone_str (mdef, (s3cipid_t)r),
+			     mdef_ciphone_str (mdef, (s3cipid_t)l),
+			     d2p->ldiph_lc[b][r][l]); /* RAH, ldiph_lc is returning an int32, %d expects an int16 */
+	    }
+	}
+    }
+    fprintf (fp, "#\n");
+    
+    fprintf (fp, "# SINGLE_LC (b l comssid)\n");
+    for (b = 0; b < mdef_n_ciphone(mdef); b++) {
+	for (l = 0; l < mdef_n_ciphone(mdef); l++) {
+	    if (IS_S3SSID(d2p->single_lc[b][l]))
+		fprintf (fp, "%6s %6s %5d\n",
+			 mdef_ciphone_str (mdef, (s3cipid_t)b),
+			 mdef_ciphone_str (mdef, (s3cipid_t)l),
+			 d2p->single_lc[b][l]);	/* RAH, single_lc is returning an int32, %d expects an int16 */
+	}
+    }
+    fprintf (fp, "#\n");
+    
+    fprintf (fp, "# SSEQ %d (senid senid ...)\n", mdef->n_sseq);
+    for (i = 0; i < mdef->n_sseq; i++) {
+	fprintf (fp, "%5d ", i);
+	for (j = 0; j < mdef_n_emit_state(mdef); j++)
+	    fprintf (fp, " %5d", mdef->sseq[i][j]);
+	fprintf (fp, "\n");
+    }
+    fprintf (fp, "#\n");
+    
+    fprintf (fp, "# COMSSEQ %d (comstate comstate ...)\n", d2p->n_comsseq);
+    for (i = 0; i < d2p->n_comsseq; i++) {
+	fprintf (fp, "%5d ", i);
+	for (j = 0; j < mdef_n_emit_state(mdef); j++)
+	    fprintf (fp, " %5d", d2p->comsseq[i][j]);
+	fprintf (fp, "\n");
+    }
+    fprintf (fp, "#\n");
+    
+    fprintf (fp, "# COMSTATE %d (senid senid ...)\n", d2p->n_comstate);
+    for (i = 0; i < d2p->n_comstate; i++) {
+	fprintf (fp, "%5d ", i);
+	for (j = 0; IS_S3SENID(d2p->comstate[i][j]); j++)
+	    fprintf (fp, " %5d", d2p->comstate[i][j]);
+	fprintf (fp, "\n");
+    }
+    fprintf (fp, "#\n");
+    fprintf (fp, "# END\n");
+    
+    fflush (fp);
+}

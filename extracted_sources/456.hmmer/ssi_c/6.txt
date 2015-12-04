@@ -1,0 +1,19 @@
+int
+SSISetFilePosition(FILE *fp, SSIOFFSET *offset)
+{
+  if (offset->mode == SSI_OFFSET_I32) {
+    if (fseek(fp, offset->off.i32, SEEK_SET) != 0)       return SSI_ERR_SEEK_FAILED;
+  }
+#ifndef HAS_64BIT_FILE_OFFSETS
+  else return SSI_ERR_NO64BIT;
+#elif defined HAVE_FSEEKO && SIZEOF_OFF_T == 8
+  else if (fseeko(fp, offset->off.i64, SEEK_SET) != 0)   return SSI_ERR_SEEK_FAILED;
+#elif defined HAVE_FSEEKO64 && SIZEOF_OFF64_T == 8
+  else if (fseeko64(fp, offset->off.i64, SEEK_SET) != 0) return SSI_ERR_SEEK_FAILED;
+#elif defined HAVE_FSEEK64
+  else if (fseek64(fp, offset->off.i64, SEEK_SET) != 0)  return SSI_ERR_SEEK_FAILED;
+#elif defined ARITHMETIC_FPOS_T && SIZEOF_FPOS_T == 8
+  else if (fsetpos(fp, &(offset->off.i64)) != 0)         return SSI_ERR_SEEK_FAILED;
+#endif
+  return 0;
+}

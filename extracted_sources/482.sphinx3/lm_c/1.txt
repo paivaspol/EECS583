@@ -1,0 +1,59 @@
+int32 lm_delete (lm_t *lm,lmset_t *lmset)
+{
+#if 0
+    int32 i;
+    tginfo_t *tginfo, *next_tginfo;
+    
+    if (lm->fp)
+	fclose (lm->fp);
+    
+    free (lm->ug);
+
+    if (lm->n_bg > 0) {
+	if (lm->bg)		/* Memory-based; free all bg */
+	    free (lm->bg);
+	else {		/* Disk-based; free in-memory bg */
+	  for (i = 0; i < lm->n_ug; i++)
+		if (lm->membg[i].bg)
+		    free (lm->membg[i].bg);
+	    free (lm->membg);
+	}
+
+	free (lm->bgprob);
+    }
+    
+    if (lm->n_tg > 0) {
+	if (lm->tg)		/* Memory-based; free all tg */
+	    free (lm->tg);
+	for (i = 0; i < lm->n_ug; i++) {	/* Free cached tg access info */
+	    for (tginfo = lm->tginfo[i]; tginfo; tginfo = next_tginfo) {
+		next_tginfo = tginfo->next;
+		if ((! lm->tg) && tginfo->tg)	/* Disk-based; free in-memory tg */
+		    free (tginfo->tg);
+		free (tginfo);
+	    }
+	}
+	free (lm->tginfo);
+
+	free (lm->tgprob);
+	free (lm->tgbowt);
+	free (lm->tg_segbase);
+    }
+    
+    for (i = 0; i < lm->n_ug; i++)
+	free (lm->wordstr[i]);
+    free (lm->wordstr);
+    
+    free (lm);
+    free (lmset[i].name);
+    
+    for (; i < n_lm-1; i++)
+	lmset[i] = lmset[i+1];
+    --n_lm;
+    E_INFO("LM(\"%s\") deleted\n", name);
+#endif    
+    
+    E_INFO("Warning, lm_delete is currently empty, no memory is deleted\n");
+
+    return (0);
+}

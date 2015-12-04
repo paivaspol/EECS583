@@ -1,0 +1,16 @@
+static int
+discard_useless_values (x, info)
+     void **x;
+     void *info ATTRIBUTE_UNUSED;
+{
+  cselib_val *v = (cselib_val *)*x;
+
+  if (v->locs == 0)
+    {
+      htab_clear_slot (hash_table, x);
+      unchain_one_value (v);
+      n_useless_values--;
+    }
+
+  return 1;
+}

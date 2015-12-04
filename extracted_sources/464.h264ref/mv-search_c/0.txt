@@ -1,0 +1,104 @@
+void SetMotionVectorPredictor (short  pmv[2],
+                               short  ***refPic,
+                               short  ****tmp_mv,
+                               short  ref_frame,
+                               int    list,
+                               int    block_x,
+                               int    block_y,
+                               int    blockshape_x,
+                               int    blockshape_y);
+
+#ifdef _FAST_FULL_ME_
+
+/*****
+ *****  static variables for fast integer motion estimation
+ *****
+ */
+static int  **search_setup_done;  //!< flag if all block SAD's have been calculated yet
+static int  **search_center_x;    //!< absolute search center for fast full motion search
+static int  **search_center_y;    //!< absolute search center for fast full motion search
+static int  **pos_00;             //!< position of (0,0) vector
+static int  *****BlockSAD;        //!< SAD for all blocksize, ref. frames and motion vectors
+static int  **max_search_range;
+
+extern ColocatedParams *Co_located;
+
+/*!
+ ***********************************************************************
+ * \brief
+ *    function creating arrays for fast integer motion estimation
+ ***********************************************************************
+ */
+void
+InitializeFastFullIntegerSearch ()
+{
+  int  i, j, k, list;
+  int  search_range = input->search_range;
+  int  max_pos      = (2*search_range+1) * (2*search_range+1);
+
+  if ((BlockSAD = (int*****)malloc (2 * sizeof(int****))) == NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: BlockSAD");
+
+  for (list=0; list<2;list++)
+  {
+    if ((BlockSAD[list] = (int****)malloc ((img->max_num_references+1) * sizeof(int***))) == NULL)
+      no_mem_exit ("InitializeFastFullIntegerSearch: BlockSAD");
+    for (i = 0; i <= img->max_num_references; i++)
+    {
+      if ((BlockSAD[list][i] = (int***)malloc (8 * sizeof(int**))) == NULL)
+        no_mem_exit ("InitializeFastFullIntegerSearch: BlockSAD");
+      for (j = 1; j < 8; j++)
+      {
+        if ((BlockSAD[list][i][j] = (int**)malloc (16 * sizeof(int*))) == NULL)
+          no_mem_exit ("InitializeFastFullIntegerSearch: BlockSAD");
+        for (k = 0; k < 16; k++)
+        {
+          if ((BlockSAD[list][i][j][k] = (int*)malloc (max_pos * sizeof(int))) == NULL)
+            no_mem_exit ("InitializeFastFullIntegerSearch: BlockSAD");
+        }
+      }
+    }
+  }
+
+  if ((search_setup_done = (int**)malloc (2*sizeof(int*)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: search_setup_done");
+  if ((search_center_x = (int**)malloc (2*sizeof(int*)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: search_center_x");
+  if ((search_center_y = (int**)malloc (2*sizeof(int*)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: search_center_y");
+  if ((pos_00 = (int**)malloc (2*sizeof(int*)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: pos_00");
+  if ((max_search_range = (int**)malloc (2*sizeof(int*)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: max_search_range");
+
+  for (list=0; list<2; list++)
+  {
+  if ((search_setup_done[list] = (int*)malloc ((img->max_num_references+1)*sizeof(int)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: search_setup_done");
+  if ((search_center_x[list] = (int*)malloc ((img->max_num_references+1)*sizeof(int)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: search_center_x");
+  if ((search_center_y[list] = (int*)malloc ((img->max_num_references+1)*sizeof(int)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: search_center_y");
+  if ((pos_00[list] = (int*)malloc ((img->max_num_references+1)*sizeof(int)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: pos_00");
+  if ((max_search_range[list] = (int*)malloc ((img->max_num_references+1)*sizeof(int)))==NULL)
+    no_mem_exit ("InitializeFastFullIntegerSearch: max_search_range");
+  }
+
+  // assign max search ranges for reference frames
+  if (input->full_search == 2)
+  {
+    for (list=0;list<2;list++)
+      for (i=0; i<=img->max_num_references; i++)  
+        max_search_range[list][i] = search_range;
+  }
+  else
+  {
+    for (list=0;list<2;list++)
+    {
+      max_search_range[list][0] = max_search_range[list][img->max_num_references] = search_range;
+      for (i=1; i< img->max_num_references; i++)  max_search_range[list][i] = search_range / 2;
+    }
+  }
+
+}

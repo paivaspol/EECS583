@@ -1,0 +1,131 @@
+int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
+{
+  /* Provides compatibility with old-style gauge field configurations */
+
+  /* parallel = 1 (true) if all nodes are accessing the file */
+  /*            0 for access from node 0 only */
+
+  FILE *fp;
+  gauge_header *gh;
+  int32type tmp;
+  int j;
+  int sixtyfourbits;
+  double c1,c2;
+  char myname[] = "read_v3_gauge_hdr";
+
+  fp = gf->fp;
+  gh = gf->header;
+
+  /* Assumes the magic number has already been read */
+
+  /* For cases in which we made a mistake on the T3D and created
+     a header with 64-bit integers */
+
+  if(gh->magic_number == 0)
+    {
+      sixtyfourbits = 1;
+      printf("First 4 bytes were zero. Trying to interpret with 64 bit integer format.\n");
+
+      /* Read next 32 bits (without byte reversal) and hope we find it now */
+      if(psread_data(parallel,fp,&gh->magic_number,sizeof(gh->magic_number),
+	     myname,"magic number")!=0)terminate(1);
+    }
+
+  else sixtyfourbits = 0;
+
+  tmp = gh->magic_number;
+
+  if(gh->magic_number == GAUGE_VERSION_NUMBER_V1) 
+    {
+      printf("Reading as old-style gauge field configuration.\n");
+      *byterevflag=0;
+    }
+  else 
+    {
+      byterevn((int32type *)&gh->magic_number,1);
+      if(gh->magic_number == GAUGE_VERSION_NUMBER_V1) 
+	{
+	  *byterevflag=1;
+	  printf("Reading as old-style gauge field configuration with byte reversal\n");
+	  if( sizeof(double) != sizeof(int32type)) {
+	    printf("read_v3_gauge_hdr: Can't byte reverse\n");
+	    printf("requires size of int32type(%d) = size of double(%d)\n",
+		   (int)sizeof(int32type),(int)sizeof(double));
+	    terminate(1);
+	  }
+	}
+      else 
+	{
+	  /* Not recognized as V3 format */
+	  /* Restore header to entry state */
+	  gh->magic_number = tmp;
+	  return 1;  /* error signal */
+	}
+    }
+
+  /* Read header, do byte reversal, 
+     if necessary, and check consistency */
+  
+  /* Lattice dimensions */
+  
+  for(j=0;j<4;j++)
+    {
+      if(psread_byteorder(*byterevflag,parallel,
+		       fp,&gh->dims[j],sizeof(gh->dims[j]),
+		       myname,"dimensions")!=0)terminate(1);
+      /* If 64 bit integers, then we have to read 4 more bytes get the
+	 correct low-order bits */
+      if(sixtyfourbits)
+	if(psread_byteorder(*byterevflag,parallel,
+			 fp,&gh->dims[j],sizeof(gh->dims[j]),
+			 myname,"dimensions")!=0)terminate(1);
+    }
+
+  if(gh->dims[0] != nx || 
+     gh->dims[1] != ny ||
+     gh->dims[2] != nz ||
+     gh->dims[3] != nt)
+    {
+      /* So we can use this routine to discover the dimensions,
+	 we provide that if nx = ny = nz = nt = -1 initially
+	 we don't die */
+      if(nx != -1 || ny != -1 || nz != -1 || nt != -1)
+	{
+	  printf("read_v3_gauge_hdr: Incorrect lattice dimensions ");
+	  for(j=0;j<4;j++)
+	    printf("%d ",gh->dims[j]); 
+	  printf("\n");fflush(stdout);terminate(1);
+	}
+      else
+	{
+	  nx = gh->dims[0];
+	  ny = gh->dims[1];
+	  nz = gh->dims[2];
+	  nt = gh->dims[3];
+	  volume = nx*ny*nz*nt;
+	}
+    }
+  /* Header byte length for this file */
+  /* This value is used later in g_seek for locating the gauge link
+     matrices */
+
+  if( sixtyfourbits == 0 )
+    gh->header_bytes = 2*4 + 5*4;
+  else
+    gh->header_bytes = 2*4 + 5*8;
+
+  /* Data order - old configuration files have no coordinate list */
+  
+  gh->order = NATURAL_ORDER;
+  
+  /* Gauge field parameters */
+  
+  if(psread_byteorder(*byterevflag,parallel,fp,&c1,sizeof(double),
+		   myname,"c1")!=0)terminate(1);
+  if(psread_byteorder(*byterevflag,parallel,fp,&c2,sizeof(double),
+		   myname,"c2")!=0)terminate(1);
+
+  printf("Old format header parameters are %f %f\n",c1,c2);
+  
+  return 0;
+} /* read_v3_gauge_hdr */

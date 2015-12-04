@@ -1,0 +1,74 @@
+static rtx
+steal_delay_list_from_fallthrough (insn, condition, seq,
+				   delay_list, sets, needed, other_needed,
+				   slots_to_fill, pslots_filled, pannul_p)
+     rtx insn, condition;
+     rtx seq;
+     rtx delay_list;
+     struct resources *sets, *needed, *other_needed;
+     int slots_to_fill;
+     int *pslots_filled;
+     int *pannul_p;
+{
+  int i;
+  int flags;
+  int must_annul = *pannul_p;
+  int used_annul = 0;
+
+  flags = get_jump_flags (insn, JUMP_LABEL (insn));
+
+  /* We can't do anything if SEQ's delay insn isn't an
+     unconditional branch.  */
+
+  if (! simplejump_p (XVECEXP (seq, 0, 0))
+      && GET_CODE (PATTERN (XVECEXP (seq, 0, 0))) != RETURN)
+    return delay_list;
+
+  for (i = 1; i < XVECLEN (seq, 0); i++)
+    {
+      rtx trial = XVECEXP (seq, 0, i);
+
+      /* If TRIAL sets CC0, stealing it will move it too far from the use
+	 of CC0.  */
+      if (insn_references_resource_p (trial, sets, 0)
+	  || insn_sets_resource_p (trial, needed, 0)
+	  || insn_sets_resource_p (trial, sets, 0)
+#ifdef HAVE_cc0
+	  || sets_cc0_p (PATTERN (trial))
+#endif
+	  )
+
+	break;
+
+      /* If this insn was already done, we don't need it.  */
+      if (redundant_insn (trial, insn, delay_list))
+	{
+	  delete_from_delay_slot (trial);
+	  continue;
+	}
+
+      if (! must_annul
+	  && ((condition == const_true_rtx
+	       || (! insn_sets_resource_p (trial, other_needed, 0)
+		   && ! may_trap_p (PATTERN (trial)))))
+	  ? eligible_for_delay (insn, *pslots_filled, trial, flags)
+	  : (must_annul || delay_list == NULL) && (must_annul = 1,
+	     check_annul_list_true_false (1, delay_list)
+	     && eligible_for_annul_true (insn, *pslots_filled, trial, flags)))
+	{
+	  if (must_annul)
+	    used_annul = 1;
+	  delete_from_delay_slot (trial);
+	  delay_list = add_to_delay_list (trial, delay_list);
+
+	  if (++(*pslots_filled) == slots_to_fill)
+	    break;
+	}
+      else
+	break;
+    }
+
+  if (used_annul)
+    *pannul_p = 1;
+  return delay_list;
+}

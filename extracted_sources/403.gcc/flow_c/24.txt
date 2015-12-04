@@ -1,0 +1,51 @@
+static int
+libcall_dead_p (pbi, note, insn)
+     struct propagate_block_info *pbi;
+     rtx note;
+     rtx insn;
+{
+  rtx x = single_set (insn);
+
+  if (x)
+    {
+      rtx r = SET_SRC (x);
+
+      if (GET_CODE (r) == REG)
+	{
+	  rtx call = XEXP (note, 0);
+	  rtx call_pat;
+	  int i;
+
+	  /* Find the call insn.  */
+	  while (call != insn && GET_CODE (call) != CALL_INSN)
+	    call = NEXT_INSN (call);
+
+	  /* If there is none, do nothing special,
+	     since ordinary death handling can understand these insns.  */
+	  if (call == insn)
+	    return 0;
+
+	  /* See if the hard reg holding the value is dead.
+	     If this is a PARALLEL, find the call within it.  */
+	  call_pat = PATTERN (call);
+	  if (GET_CODE (call_pat) == PARALLEL)
+	    {
+	      for (i = XVECLEN (call_pat, 0) - 1; i >= 0; i--)
+		if (GET_CODE (XVECEXP (call_pat, 0, i)) == SET
+		    && GET_CODE (SET_SRC (XVECEXP (call_pat, 0, i))) == CALL)
+		  break;
+
+	      /* This may be a library call that is returning a value
+		 via invisible pointer.  Do nothing special, since
+		 ordinary death handling can understand these insns.  */
+	      if (i < 0)
+		return 0;
+
+	      call_pat = XVECEXP (call_pat, 0, i);
+	    }
+
+	  return insn_dead_p (pbi, call_pat, 1, REG_NOTES (call));
+	}
+    }
+  return 1;
+}

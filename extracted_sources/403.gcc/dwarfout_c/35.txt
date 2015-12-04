@@ -1,0 +1,23 @@
+static void
+data_member_location_attribute (t)
+     tree t;
+{
+  unsigned object_offset_in_bytes;
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  if (TREE_CODE (t) == TREE_VEC)
+    object_offset_in_bytes = tree_low_cst (BINFO_OFFSET (t), 0);
+  else
+    object_offset_in_bytes = field_byte_offset (t);
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_location);
+  sprintf (begin_label, LOC_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, LOC_END_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DWARF_DELTA2 (asm_out_file, end_label, begin_label);
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+  ASM_OUTPUT_DWARF_STACK_OP (asm_out_file, OP_CONST);
+  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, object_offset_in_bytes);
+  ASM_OUTPUT_DWARF_STACK_OP (asm_out_file, OP_ADD);
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

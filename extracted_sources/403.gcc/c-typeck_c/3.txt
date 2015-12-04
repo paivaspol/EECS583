@@ -1,0 +1,118 @@
+int
+comptypes (type1, type2)
+     tree type1, type2;
+{
+  tree t1 = type1;
+  tree t2 = type2;
+  int attrval, val;
+
+  /* Suppress errors caused by previously reported errors.  */
+
+  if (t1 == t2 || !t1 || !t2
+      || TREE_CODE (t1) == ERROR_MARK || TREE_CODE (t2) == ERROR_MARK)
+    return 1;
+
+  /* If either type is the internal version of sizetype, return the
+     language version.  */
+  if (TREE_CODE (t1) == INTEGER_TYPE && TYPE_IS_SIZETYPE (t1)
+      && TYPE_DOMAIN (t1) != 0)
+    t1 = TYPE_DOMAIN (t1);
+
+  if (TREE_CODE (t2) == INTEGER_TYPE && TYPE_IS_SIZETYPE (t2)
+      && TYPE_DOMAIN (t2) != 0)
+    t2 = TYPE_DOMAIN (t2);
+
+  /* Treat an enum type as the integer type of the same width and 
+     signedness.  */
+
+  if (TREE_CODE (t1) == ENUMERAL_TYPE)
+    t1 = type_for_size (TYPE_PRECISION (t1), TREE_UNSIGNED (t1));
+  if (TREE_CODE (t2) == ENUMERAL_TYPE)
+    t2 = type_for_size (TYPE_PRECISION (t2), TREE_UNSIGNED (t2));
+
+  if (t1 == t2)
+    return 1;
+
+  /* Different classes of types can't be compatible.  */
+
+  if (TREE_CODE (t1) != TREE_CODE (t2)) return 0;
+
+  /* Qualifiers must match.  */
+
+  if (TYPE_QUALS (t1) != TYPE_QUALS (t2))
+    return 0;
+
+  /* Allow for two different type nodes which have essentially the same
+     definition.  Note that we already checked for equality of the type
+     qualifiers (just above).  */
+
+  if (TYPE_MAIN_VARIANT (t1) == TYPE_MAIN_VARIANT (t2))
+    return 1;
+
+  /* 1 if no need for warning yet, 2 if warning cause has been seen.  */
+  if (! (attrval = (*targetm.comp_type_attributes) (t1, t2)))
+     return 0;
+
+  /* 1 if no need for warning yet, 2 if warning cause has been seen.  */
+  val = 0;
+
+  switch (TREE_CODE (t1))
+    {
+    case POINTER_TYPE:
+      val = (TREE_TYPE (t1) == TREE_TYPE (t2)
+	      ? 1 : comptypes (TREE_TYPE (t1), TREE_TYPE (t2)));
+      break;
+
+    case FUNCTION_TYPE:
+      val = function_types_compatible_p (t1, t2);
+      break;
+
+    case ARRAY_TYPE:
+      {
+	tree d1 = TYPE_DOMAIN (t1);
+	tree d2 = TYPE_DOMAIN (t2);
+	bool d1_variable, d2_variable;
+	bool d1_zero, d2_zero;
+	val = 1;
+
+	/* Target types must match incl. qualifiers.  */
+	if (TREE_TYPE (t1) != TREE_TYPE (t2)
+	    && 0 == (val = comptypes (TREE_TYPE (t1), TREE_TYPE (t2))))
+	  return 0;
+
+	/* Sizes must match unless one is missing or variable.  */
+	if (d1 == 0 || d2 == 0 || d1 == d2)
+	  break;
+
+	d1_zero = ! TYPE_MAX_VALUE (d1);
+	d2_zero = ! TYPE_MAX_VALUE (d2);
+
+	d1_variable = (! d1_zero
+		       && (TREE_CODE (TYPE_MIN_VALUE (d1)) != INTEGER_CST
+			   || TREE_CODE (TYPE_MAX_VALUE (d1)) != INTEGER_CST));
+	d2_variable = (! d2_zero
+		       && (TREE_CODE (TYPE_MIN_VALUE (d2)) != INTEGER_CST
+			   || TREE_CODE (TYPE_MAX_VALUE (d2)) != INTEGER_CST));
+
+	if (d1_variable || d2_variable)
+	  break;
+	if (d1_zero && d2_zero)
+	  break;
+	if (d1_zero || d2_zero
+	    || ! tree_int_cst_equal (TYPE_MIN_VALUE (d1), TYPE_MIN_VALUE (d2))
+	    || ! tree_int_cst_equal (TYPE_MAX_VALUE (d1), TYPE_MAX_VALUE (d2)))
+	  val = 0;
+
+        break;
+      }
+
+    case RECORD_TYPE:
+      if (maybe_objc_comptypes (t1, t2, 0) == 1)
+	val = 1;
+      break;
+
+    default:
+      break;
+    }
+  return attrval == 2 && val == 1 ? 2 : val;
+}

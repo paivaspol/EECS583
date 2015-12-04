@@ -1,0 +1,41 @@
+static void
+estimate_loops_at_level (first_loop)
+     struct loop *first_loop;
+{
+  struct loop *l, *loop = first_loop;
+
+  for (loop = first_loop; loop; loop = loop->next)
+    {
+      int n;
+      edge e;
+
+      estimate_loops_at_level (loop->inner);
+
+      /* Find current loop back edge and mark it.  */
+      for (e = loop->latch->succ; e->dest != loop->header; e = e->succ_next)
+	;
+
+      EDGE_INFO (e)->back_edge = 1;
+
+      /* In case the loop header is shared, ensure that it is the last
+	 one sharing the same header, so we avoid redundant work.  */
+      if (loop->shared)
+	{
+	  for (l = loop->next; l; l = l->next)
+	    if (l->header == loop->header)
+	      break;
+
+	  if (l)
+	    continue;
+	}
+
+      /* Now merge all nodes of all loops with given header as not visited.  */
+      for (l = loop->shared ? first_loop : loop; l != loop->next; l = l->next)
+	if (loop->header == l->header)
+	  EXECUTE_IF_SET_IN_SBITMAP (l->nodes, 0, n,
+				     BLOCK_INFO (BASIC_BLOCK (n))->tovisit = 1
+				     );
+
+      propagate_freq (loop->header);
+    }
+}

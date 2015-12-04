@@ -1,0 +1,72 @@
+static int
+insert_regs (x, classp, modified)
+     rtx x;
+     struct table_elt *classp;
+     int modified;
+{
+  if (GET_CODE (x) == REG)
+    {
+      unsigned int regno = REGNO (x);
+      int qty_valid;
+
+      /* If REGNO is in the equivalence table already but is of the
+	 wrong mode for that equivalence, don't do anything here.  */
+
+      qty_valid = REGNO_QTY_VALID_P (regno);
+      if (qty_valid)
+	{
+	  struct qty_table_elem *ent = &qty_table[REG_QTY (regno)];
+
+	  if (ent->mode != GET_MODE (x))
+	    return 0;
+	}
+
+      if (modified || ! qty_valid)
+	{
+	  if (classp)
+	    for (classp = classp->first_same_value;
+		 classp != 0;
+		 classp = classp->next_same_value)
+	      if (GET_CODE (classp->exp) == REG
+		  && GET_MODE (classp->exp) == GET_MODE (x))
+		{
+		  make_regs_eqv (regno, REGNO (classp->exp));
+		  return 1;
+		}
+
+	  /* Mention_regs for a SUBREG checks if REG_TICK is exactly one larger
+	     than REG_IN_TABLE to find out if there was only a single preceding
+	     invalidation - for the SUBREG - or another one, which would be
+	     for the full register.  However, if we find here that REG_TICK
+	     indicates that the register is invalid, it means that it has
+	     been invalidated in a separate operation.  The SUBREG might be used
+	     now (then this is a recursive call), or we might use the full REG
+	     now and a SUBREG of it later.  So bump up REG_TICK so that
+	     mention_regs will do the right thing.  */
+	  if (! modified
+	      && REG_IN_TABLE (regno) >= 0
+	      && REG_TICK (regno) == REG_IN_TABLE (regno) + 1)
+	    REG_TICK (regno)++;
+	  make_new_qty (regno, GET_MODE (x));
+	  return 1;
+	}
+
+      return 0;
+    }
+
+  /* If X is a SUBREG, we will likely be inserting the inner register in the
+     table.  If that register doesn't have an assigned quantity number at
+     this point but does later, the insertion that we will be doing now will
+     not be accessible because its hash code will have changed.  So assign
+     a quantity number now.  */
+
+  else if (GET_CODE (x) == SUBREG && GET_CODE (SUBREG_REG (x)) == REG
+	   && ! REGNO_QTY_VALID_P (REGNO (SUBREG_REG (x))))
+    {
+      insert_regs (SUBREG_REG (x), NULL, 0);
+      mention_regs (x);
+      return 1;
+    }
+  else
+    return mention_regs (x);
+}

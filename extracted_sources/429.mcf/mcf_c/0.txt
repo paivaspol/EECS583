@@ -1,0 +1,57 @@
+int main( int argc, char *argv[] )
+#else
+int main( argc, argv )
+    int argc;
+    char *argv[];
+#endif
+{
+    if( argc < 2 )
+        return -1;
+
+
+    printf( "\nMCF SPEC CPU2006 version 1.10\n" );
+    printf( "Copyright (c) 1998-2000 Zuse Institut Berlin (ZIB)\n" );
+    printf( "Copyright (c) 2000-2002 Andreas Loebel & ZIB\n" );
+    printf( "Copyright (c) 2003-2005 Andreas Loebel\n" );
+    printf( "\n" );
+
+
+
+    memset( (void *)(&net), 0, (size_t)sizeof(network_t) );
+    net.bigM = (long)BIGM;
+
+    strcpy( net.inputfile, argv[1] );
+    
+    if( read_min( &net ) )
+    {
+        printf( "read error, exit\n" );
+        getfree( &net );
+        return -1;
+    }
+
+
+#ifdef REPORT
+    printf( "nodes                      : %ld\n", net.n_trips );
+#endif
+
+
+    primal_start_artificial( &net );
+    global_opt( );
+
+
+#ifdef REPORT
+    printf( "done\n" );
+#endif
+
+    
+
+    if( write_circulations( "mcf.out", &net ) )
+    {
+        getfree( &net );
+        return -1;    
+    }
+
+
+    getfree( &net );
+    return 0;
+}

@@ -1,0 +1,202 @@
+static bool
+outgoing_edges_match (mode, bb1, bb2)
+     int mode;
+     basic_block bb1;
+     basic_block bb2;
+{
+  int nehedges1 = 0, nehedges2 = 0;
+  edge fallthru1 = 0, fallthru2 = 0;
+  edge e1, e2;
+
+  /* If BB1 has only one successor, we may be looking at either an
+     unconditional jump, or a fake edge to exit.  */
+  if (bb1->succ && !bb1->succ->succ_next
+      && !(bb1->succ->flags & (EDGE_COMPLEX | EDGE_FAKE)))
+    return (bb2->succ &&  !bb2->succ->succ_next
+	    && (bb2->succ->flags & (EDGE_COMPLEX | EDGE_FAKE)) == 0);
+
+  /* Match conditional jumps - this may get tricky when fallthru and branch
+     edges are crossed.  */
+  if (bb1->succ
+      && bb1->succ->succ_next
+      && !bb1->succ->succ_next->succ_next
+      && any_condjump_p (bb1->end)
+      && onlyjump_p (bb1->end))
+    {
+      edge b1, f1, b2, f2;
+      bool reverse, match;
+      rtx set1, set2, cond1, cond2;
+      enum rtx_code code1, code2;
+
+      if (!bb2->succ
+          || !bb2->succ->succ_next
+	  || bb2->succ->succ_next->succ_next
+	  || !any_condjump_p (bb2->end)
+	  || !onlyjump_p (bb2->end))
+	return false;
+
+      /* Do not crossjump across loop boundaries.  This is a temporary
+	 workaround for the common scenario in which crossjumping results
+	 in killing the duplicated loop condition, making bb-reorder rotate
+	 the loop incorectly, leaving an extra unconditional jump inside
+	 the loop.
+
+	 This check should go away once bb-reorder knows how to duplicate
+	 code in this case or rotate the loops to avoid this scenario.  */
+      if (bb1->loop_depth != bb2->loop_depth)
+	return false;
+
+      b1 = BRANCH_EDGE (bb1);
+      b2 = BRANCH_EDGE (bb2);
+      f1 = FALLTHRU_EDGE (bb1);
+      f2 = FALLTHRU_EDGE (bb2);
+
+      /* Get around possible forwarders on fallthru edges.  Other cases
+         should be optimized out already.  */
+      if (FORWARDER_BLOCK_P (f1->dest))
+	f1 = f1->dest->succ;
+
+      if (FORWARDER_BLOCK_P (f2->dest))
+	f2 = f2->dest->succ;
+
+      /* To simplify use of this function, return false if there are
+	 unneeded forwarder blocks.  These will get eliminated later
+	 during cleanup_cfg.  */
+      if (FORWARDER_BLOCK_P (f1->dest)
+	  || FORWARDER_BLOCK_P (f2->dest)
+	  || FORWARDER_BLOCK_P (b1->dest)
+	  || FORWARDER_BLOCK_P (b2->dest))
+	return false;
+
+      if (f1->dest == f2->dest && b1->dest == b2->dest)
+	reverse = false;
+      else if (f1->dest == b2->dest && b1->dest == f2->dest)
+	reverse = true;
+      else
+	return false;
+
+      set1 = pc_set (bb1->end);
+      set2 = pc_set (bb2->end);
+      if ((XEXP (SET_SRC (set1), 1) == pc_rtx)
+	  != (XEXP (SET_SRC (set2), 1) == pc_rtx))
+	reverse = !reverse;
+
+      cond1 = XEXP (SET_SRC (set1), 0);
+      cond2 = XEXP (SET_SRC (set2), 0);
+      code1 = GET_CODE (cond1);
+      if (reverse)
+	code2 = reversed_comparison_code (cond2, bb2->end);
+      else
+	code2 = GET_CODE (cond2);
+
+      if (code2 == UNKNOWN)
+	return false;
+
+      /* Verify codes and operands match.  */
+      match = ((code1 == code2
+		&& rtx_renumbered_equal_p (XEXP (cond1, 0), XEXP (cond2, 0))
+		&& rtx_renumbered_equal_p (XEXP (cond1, 1), XEXP (cond2, 1)))
+	       || (code1 == swap_condition (code2)
+		   && rtx_renumbered_equal_p (XEXP (cond1, 1),
+					      XEXP (cond2, 0))
+		   && rtx_renumbered_equal_p (XEXP (cond1, 0),
+					      XEXP (cond2, 1))));
+
+      /* If we return true, we will join the blocks.  Which means that
+	 we will only have one branch prediction bit to work with.  Thus
+	 we require the existing branches to have probabilities that are
+	 roughly similar.  */
+      if (match
+	  && !optimize_size
+	  && bb1->frequency > BB_FREQ_MAX / 1000
+	  && bb2->frequency > BB_FREQ_MAX / 1000)
+	{
+	  int prob2;
+
+	  if (b1->dest == b2->dest)
+	    prob2 = b2->probability;
+	  else
+	    /* Do not use f2 probability as f2 may be forwarded.  */
+	    prob2 = REG_BR_PROB_BASE - b2->probability;
+
+	  /* Fail if the difference in probabilities is greater than 50%.
+	     This rules out two well-predicted branches with opposite
+	     outcomes.  */
+	  if (abs (b1->probability - prob2) > REG_BR_PROB_BASE / 2)
+	    {
+	      if (rtl_dump_file)
+		fprintf (rtl_dump_file,
+			 "Outcomes of branch in bb %i and %i differs to much (%i %i)\n",
+			 bb1->index, bb2->index, b1->probability, prob2);
+
+	      return false;
+	    }
+	}
+
+      if (rtl_dump_file && match)
+	fprintf (rtl_dump_file, "Conditionals in bb %i and %i match.\n",
+		 bb1->index, bb2->index);
+
+      return match;
+    }
+
+  /* Generic case - we are seeing an computed jump, table jump or trapping
+     instruction.  */
+
+  /* First ensure that the instructions match.  There may be many outgoing
+     edges so this test is generally cheaper.
+     ??? Currently the tablejumps will never match, as they do have
+     different tables.  */
+  if (!insns_match_p (mode, bb1->end, bb2->end))
+    return false;
+
+  /* Search the outgoing edges, ensure that the counts do match, find possible
+     fallthru and exception handling edges since these needs more
+     validation.  */
+  for (e1 = bb1->succ, e2 = bb2->succ; e1 && e2;
+       e1 = e1->succ_next, e2 = e2->succ_next)
+    {
+      if (e1->flags & EDGE_EH)
+	nehedges1++;
+
+      if (e2->flags & EDGE_EH)
+	nehedges2++;
+
+      if (e1->flags & EDGE_FALLTHRU)
+	fallthru1 = e1;
+      if (e2->flags & EDGE_FALLTHRU)
+	fallthru2 = e2;
+    }
+
+  /* If number of edges of various types does not match, fail.  */
+  if (e1 || e2
+      || nehedges1 != nehedges2
+      || (fallthru1 != 0) != (fallthru2 != 0))
+    return false;
+
+  /* fallthru edges must be forwarded to the same destination.  */
+  if (fallthru1)
+    {
+      basic_block d1 = (forwarder_block_p (fallthru1->dest)
+	                ? fallthru1->dest->succ->dest: fallthru1->dest);
+      basic_block d2 = (forwarder_block_p (fallthru2->dest)
+	                ? fallthru2->dest->succ->dest: fallthru2->dest);
+
+      if (d1 != d2)
+	return false;
+    }
+
+  /* In case we do have EH edges, ensure we are in the same region.  */
+  if (nehedges1)
+    {
+      rtx n1 = find_reg_note (bb1->end, REG_EH_REGION, 0);
+      rtx n2 = find_reg_note (bb2->end, REG_EH_REGION, 0);
+
+      if (XEXP (n1, 0) != XEXP (n2, 0))
+	return false;
+    }
+
+  /* We don't need to match the rest of edges as above checks should be enought
+     to ensure that they are equivalent.  */
+  return true;
+}

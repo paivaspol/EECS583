@@ -1,0 +1,34 @@
+static int32 arg_str2val (argval_t *v, argtype_t t, char *str)
+{
+    if (! str)
+	v->ptr = NULL;
+    else {
+	switch (t) {
+	case ARG_INT32:
+	case REQARG_INT32:
+	    if (sscanf (str, "%d", &(v->val.int32)) != 1)
+		return -1;
+	    v->ptr = (void *) &(v->val.int32);
+	    break;
+	case ARG_FLOAT32:
+	case REQARG_FLOAT32:
+	    if (sscanf (str, "%f", &(v->val.float32)) != 1)
+		return -1;
+	    v->ptr = (void *) &(v->val.float32);
+	    break;
+	case ARG_FLOAT64:
+	case REQARG_FLOAT64:
+	    if (sscanf (str, "%lf", &(v->val.float64)) != 1)
+		return -1;
+	    v->ptr = (void *) &(v->val.float64);
+	    break;
+	case ARG_STRING:
+	case REQARG_STRING:
+	    v->ptr = (void *) str;
+	    break;
+	default: E_FATAL("Unknown argument type: %d\n", t);
+	}
+    }
+    
+    return 0;
+}

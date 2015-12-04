@@ -1,0 +1,342 @@
+static int
+eliminate_regs_in_insn (insn, replace)
+     rtx insn;
+     int replace;
+{
+  int icode = recog_memoized (insn);
+  rtx old_body = PATTERN (insn);
+  int insn_is_asm = asm_noperands (old_body) >= 0;
+  rtx old_set = single_set (insn);
+  rtx new_body;
+  int val = 0;
+  int i, any_changes;
+  rtx substed_operand[MAX_RECOG_OPERANDS];
+  rtx orig_operand[MAX_RECOG_OPERANDS];
+  struct elim_table *ep;
+
+  if (! insn_is_asm && icode < 0)
+    {
+      if (GET_CODE (PATTERN (insn)) == USE
+	  || GET_CODE (PATTERN (insn)) == CLOBBER
+	  || GET_CODE (PATTERN (insn)) == ADDR_VEC
+	  || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC
+	  || GET_CODE (PATTERN (insn)) == ASM_INPUT)
+	return 0;
+      abort ();
+    }
+
+  if (old_set != 0 && GET_CODE (SET_DEST (old_set)) == REG
+      && REGNO (SET_DEST (old_set)) < FIRST_PSEUDO_REGISTER)
+    {
+      /* Check for setting an eliminable register.  */
+      for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS]; ep++)
+	if (ep->from_rtx == SET_DEST (old_set) && ep->can_eliminate)
+	  {
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+	    /* If this is setting the frame pointer register to the
+	       hardware frame pointer register and this is an elimination
+	       that will be done (tested above), this insn is really
+	       adjusting the frame pointer downward to compensate for
+	       the adjustment done before a nonlocal goto.  */
+	    if (ep->from == FRAME_POINTER_REGNUM
+		&& ep->to == HARD_FRAME_POINTER_REGNUM)
+	      {
+		rtx base = SET_SRC (old_set);
+		rtx base_insn = insn;
+		int offset = 0;
+
+		while (base != ep->to_rtx)
+		  {
+		    rtx prev_insn, prev_set;
+
+		    if (GET_CODE (base) == PLUS
+		        && GET_CODE (XEXP (base, 1)) == CONST_INT)
+		      {
+		        offset += INTVAL (XEXP (base, 1));
+		        base = XEXP (base, 0);
+		      }
+		    else if ((prev_insn = prev_nonnote_insn (base_insn)) != 0
+			     && (prev_set = single_set (prev_insn)) != 0
+			     && rtx_equal_p (SET_DEST (prev_set), base))
+		      {
+		        base = SET_SRC (prev_set);
+		        base_insn = prev_insn;
+		      }
+		    else
+		      break;
+		  }
+
+		if (base == ep->to_rtx)
+		  {
+		    rtx src
+		      = plus_constant (ep->to_rtx, offset - ep->offset);
+
+		    new_body = old_body;
+		    if (! replace)
+		      {
+			new_body = copy_insn (old_body);
+			if (REG_NOTES (insn))
+			  REG_NOTES (insn) = copy_insn_1 (REG_NOTES (insn));
+		      }
+		    PATTERN (insn) = new_body;
+		    old_set = single_set (insn);
+
+		    /* First see if this insn remains valid when we
+		       make the change.  If not, keep the INSN_CODE
+		       the same and let reload fit it up.  */
+		    validate_change (insn, &SET_SRC (old_set), src, 1);
+		    validate_change (insn, &SET_DEST (old_set),
+				     ep->to_rtx, 1);
+		    if (! apply_change_group ())
+		      {
+			SET_SRC (old_set) = src;
+			SET_DEST (old_set) = ep->to_rtx;
+		      }
+
+		    val = 1;
+		    goto done;
+		  }
+	      }
+#endif
+
+	    /* In this case this insn isn't serving a useful purpose.  We
+	       will delete it in reload_as_needed once we know that this
+	       elimination is, in fact, being done.
+
+	       If REPLACE isn't set, we can't delete this insn, but needn't
+	       process it since it won't be used unless something changes.  */
+	    if (replace)
+	      {
+		delete_dead_insn (insn);
+		return 1;
+	      }
+	    val = 1;
+	    goto done;
+	  }
+    }
+
+  /* We allow one special case which happens to work on all machines we
+     currently support: a single set with the source being a PLUS of an
+     eliminable register and a constant.  */
+  if (old_set
+      && GET_CODE (SET_DEST (old_set)) == REG
+      && GET_CODE (SET_SRC (old_set)) == PLUS
+      && GET_CODE (XEXP (SET_SRC (old_set), 0)) == REG
+      && GET_CODE (XEXP (SET_SRC (old_set), 1)) == CONST_INT
+      && REGNO (XEXP (SET_SRC (old_set), 0)) < FIRST_PSEUDO_REGISTER)
+    {
+      rtx reg = XEXP (SET_SRC (old_set), 0);
+      int offset = INTVAL (XEXP (SET_SRC (old_set), 1));
+
+      for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS]; ep++)
+	if (ep->from_rtx == reg && ep->can_eliminate)
+	  {
+	    offset += ep->offset;
+
+	    if (offset == 0)
+	      {
+		int num_clobbers;
+		/* We assume here that if we need a PARALLEL with
+		   CLOBBERs for this assignment, we can do with the
+		   MATCH_SCRATCHes that add_clobbers allocates.
+		   There's not much we can do if that doesn't work.  */
+		PATTERN (insn) = gen_rtx_SET (VOIDmode,
+					      SET_DEST (old_set),
+					      ep->to_rtx);
+		num_clobbers = 0;
+		INSN_CODE (insn) = recog (PATTERN (insn), insn, &num_clobbers);
+		if (num_clobbers)
+		  {
+		    rtvec vec = rtvec_alloc (num_clobbers + 1);
+
+		    vec->elem[0] = PATTERN (insn);
+		    PATTERN (insn) = gen_rtx_PARALLEL (VOIDmode, vec);
+		    add_clobbers (PATTERN (insn), INSN_CODE (insn));
+		  }
+		if (INSN_CODE (insn) < 0)
+		  abort ();
+	      }
+	    else
+	      {
+		new_body = old_body;
+		if (! replace)
+		  {
+		    new_body = copy_insn (old_body);
+		    if (REG_NOTES (insn))
+		      REG_NOTES (insn) = copy_insn_1 (REG_NOTES (insn));
+		  }
+		PATTERN (insn) = new_body;
+		old_set = single_set (insn);
+
+		XEXP (SET_SRC (old_set), 0) = ep->to_rtx;
+		XEXP (SET_SRC (old_set), 1) = GEN_INT (offset);
+	      }
+	    val = 1;
+	    /* This can't have an effect on elimination offsets, so skip right
+	       to the end.  */
+	    goto done;
+	  }
+    }
+
+  /* Determine the effects of this insn on elimination offsets.  */
+  elimination_effects (old_body, 0);
+
+  /* Eliminate all eliminable registers occurring in operands that
+     can be handled by reload.  */
+  extract_insn (insn);
+  any_changes = 0;
+  for (i = 0; i < recog_data.n_operands; i++)
+    {
+      orig_operand[i] = recog_data.operand[i];
+      substed_operand[i] = recog_data.operand[i];
+
+      /* For an asm statement, every operand is eliminable.  */
+      if (insn_is_asm || insn_data[icode].operand[i].eliminable)
+	{
+	  /* Check for setting a register that we know about.  */
+	  if (recog_data.operand_type[i] != OP_IN
+	      && GET_CODE (orig_operand[i]) == REG)
+	    {
+	      /* If we are assigning to a register that can be eliminated, it
+		 must be as part of a PARALLEL, since the code above handles
+		 single SETs.  We must indicate that we can no longer
+		 eliminate this reg.  */
+	      for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS];
+		   ep++)
+		if (ep->from_rtx == orig_operand[i] && ep->can_eliminate)
+		  ep->can_eliminate = 0;
+	    }
+
+	  substed_operand[i] = eliminate_regs (recog_data.operand[i], 0,
+					       replace ? insn : NULL_RTX);
+	  if (substed_operand[i] != orig_operand[i])
+	    val = any_changes = 1;
+	  /* Terminate the search in check_eliminable_occurrences at
+	     this point.  */
+	  *recog_data.operand_loc[i] = 0;
+
+	/* If an output operand changed from a REG to a MEM and INSN is an
+	   insn, write a CLOBBER insn.  */
+	  if (recog_data.operand_type[i] != OP_IN
+	      && GET_CODE (orig_operand[i]) == REG
+	      && GET_CODE (substed_operand[i]) == MEM
+	      && replace)
+	    emit_insn_after (gen_rtx_CLOBBER (VOIDmode, orig_operand[i]),
+			     insn);
+	}
+    }
+
+  for (i = 0; i < recog_data.n_dups; i++)
+    *recog_data.dup_loc[i]
+      = *recog_data.operand_loc[(int) recog_data.dup_num[i]];
+
+  /* If any eliminable remain, they aren't eliminable anymore.  */
+  check_eliminable_occurrences (old_body);
+
+  /* Substitute the operands; the new values are in the substed_operand
+     array.  */
+  for (i = 0; i < recog_data.n_operands; i++)
+    *recog_data.operand_loc[i] = substed_operand[i];
+  for (i = 0; i < recog_data.n_dups; i++)
+    *recog_data.dup_loc[i] = substed_operand[(int) recog_data.dup_num[i]];
+
+  /* If we are replacing a body that was a (set X (plus Y Z)), try to
+     re-recognize the insn.  We do this in case we had a simple addition
+     but now can do this as a load-address.  This saves an insn in this
+     common case.
+     If re-recognition fails, the old insn code number will still be used,
+     and some register operands may have changed into PLUS expressions.
+     These will be handled by find_reloads by loading them into a register
+     again.  */
+
+  if (val)
+    {
+      /* If we aren't replacing things permanently and we changed something,
+	 make another copy to ensure that all the RTL is new.  Otherwise
+	 things can go wrong if find_reload swaps commutative operands
+	 and one is inside RTL that has been copied while the other is not.  */
+      new_body = old_body;
+      if (! replace)
+	{
+	  new_body = copy_insn (old_body);
+	  if (REG_NOTES (insn))
+	    REG_NOTES (insn) = copy_insn_1 (REG_NOTES (insn));
+	}
+      PATTERN (insn) = new_body;
+
+      /* If we had a move insn but now we don't, rerecognize it.  This will
+	 cause spurious re-recognition if the old move had a PARALLEL since
+	 the new one still will, but we can't call single_set without
+	 having put NEW_BODY into the insn and the re-recognition won't
+	 hurt in this rare case.  */
+      /* ??? Why this huge if statement - why don't we just rerecognize the
+	 thing always?  */
+      if (! insn_is_asm
+	  && old_set != 0
+	  && ((GET_CODE (SET_SRC (old_set)) == REG
+	       && (GET_CODE (new_body) != SET
+		   || GET_CODE (SET_SRC (new_body)) != REG))
+	      /* If this was a load from or store to memory, compare
+		 the MEM in recog_data.operand to the one in the insn.
+		 If they are not equal, then rerecognize the insn.  */
+	      || (old_set != 0
+		  && ((GET_CODE (SET_SRC (old_set)) == MEM
+		       && SET_SRC (old_set) != recog_data.operand[1])
+		      || (GET_CODE (SET_DEST (old_set)) == MEM
+			  && SET_DEST (old_set) != recog_data.operand[0])))
+	      /* If this was an add insn before, rerecognize.  */
+	      || GET_CODE (SET_SRC (old_set)) == PLUS))
+	{
+	  int new_icode = recog (PATTERN (insn), insn, 0);
+	  if (new_icode < 0)
+	    INSN_CODE (insn) = icode;
+	}
+    }
+
+  /* Restore the old body.  If there were any changes to it, we made a copy
+     of it while the changes were still in place, so we'll correctly return
+     a modified insn below.  */
+  if (! replace)
+    {
+      /* Restore the old body.  */
+      for (i = 0; i < recog_data.n_operands; i++)
+	*recog_data.operand_loc[i] = orig_operand[i];
+      for (i = 0; i < recog_data.n_dups; i++)
+	*recog_data.dup_loc[i] = orig_operand[(int) recog_data.dup_num[i]];
+    }
+
+  /* Update all elimination pairs to reflect the status after the current
+     insn.  The changes we make were determined by the earlier call to
+     elimination_effects.
+
+     We also detect a cases where register elimination cannot be done,
+     namely, if a register would be both changed and referenced outside a MEM
+     in the resulting insn since such an insn is often undefined and, even if
+     not, we cannot know what meaning will be given to it.  Note that it is
+     valid to have a register used in an address in an insn that changes it
+     (presumably with a pre- or post-increment or decrement).
+
+     If anything changes, return nonzero.  */
+
+  for (ep = reg_eliminate; ep < &reg_eliminate[NUM_ELIMINABLE_REGS]; ep++)
+    {
+      if (ep->previous_offset != ep->offset && ep->ref_outside_mem)
+	ep->can_eliminate = 0;
+
+      ep->ref_outside_mem = 0;
+
+      if (ep->previous_offset != ep->offset)
+	val = 1;
+    }
+
+ done:
+  /* If we changed something, perform elimination in REG_NOTES.  This is
+     needed even when REPLACE is zero because a REG_DEAD note might refer
+     to a register that we eliminate and could cause a different number
+     of spill registers to be needed in the final reload pass than in
+     the pre-passes.  */
+  if (val && REG_NOTES (insn) != 0)
+    REG_NOTES (insn) = eliminate_regs (REG_NOTES (insn), 0, REG_NOTES (insn));
+
+  return val;
+}

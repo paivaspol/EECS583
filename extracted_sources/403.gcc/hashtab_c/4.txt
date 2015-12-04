@@ -1,0 +1,14 @@
+void
+htab_empty (htab)
+     htab_t htab;
+{
+  int i;
+
+  if (htab->del_f)
+    for (i = htab->size - 1; i >= 0; i--)
+      if (htab->entries[i] != EMPTY_ENTRY
+	  && htab->entries[i] != DELETED_ENTRY)
+	(*htab->del_f) (htab->entries[i]);
+
+  memset (htab->entries, 0, htab->size * sizeof (PTR));
+}

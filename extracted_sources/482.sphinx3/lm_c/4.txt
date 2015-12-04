@@ -1,0 +1,34 @@
+void lm_set_param (lm_t *lm, float64 lw, float64 wip)
+{
+    int32 i, iwip;
+    float64 f;
+    
+    if (lw <= 0.0)
+	E_FATAL("lw = %e\n", lw);
+    if (wip <= 0.0)
+	E_FATAL("wip = %e\n", wip);
+#if 0 /* No lang weight on wip */
+    iwip = logs3(wip) * lw; 
+#endif
+    iwip = logs3(wip);
+    
+    f = lw / lm->lw;
+    
+    for (i = 0; i < lm->n_ug; i++) {
+	lm->ug[i].prob.l = (int32)((lm->ug[i].prob.l - lm->wip) * f) + iwip;
+	lm->ug[i].bowt.l = (int32)(lm->ug[i].bowt.l * f);
+    }
+
+    for (i = 0; i < lm->n_bgprob; i++)
+	lm->bgprob[i].l = (int32)((lm->bgprob[i].l - lm->wip) * f) + iwip;
+
+    if (lm->n_tg > 0) {
+	for (i = 0; i < lm->n_tgprob; i++)
+	    lm->tgprob[i].l = (int32)((lm->tgprob[i].l - lm->wip) * f) + iwip;
+	for (i = 0; i < lm->n_tgbowt; i++)
+	    lm->tgbowt[i].l = (int32)(lm->tgbowt[i].l * f);
+    }
+
+    lm->lw = (float32) lw;
+    lm->wip = iwip;
+}

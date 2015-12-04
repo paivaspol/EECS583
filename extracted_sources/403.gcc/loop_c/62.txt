@@ -1,0 +1,425 @@
+static rtx
+simplify_giv_expr (loop, x, ext_val, benefit)
+     const struct loop *loop;
+     rtx x;
+     rtx *ext_val;
+     int *benefit;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct loop_regs *regs = LOOP_REGS (loop);
+  enum machine_mode mode = GET_MODE (x);
+  rtx arg0, arg1;
+  rtx tem;
+
+  /* If this is not an integer mode, or if we cannot do arithmetic in this
+     mode, this can't be a giv.  */
+  if (mode != VOIDmode
+      && (GET_MODE_CLASS (mode) != MODE_INT
+	  || GET_MODE_BITSIZE (mode) > HOST_BITS_PER_WIDE_INT))
+    return NULL_RTX;
+
+  switch (GET_CODE (x))
+    {
+    case PLUS:
+      arg0 = simplify_giv_expr (loop, XEXP (x, 0), ext_val, benefit);
+      arg1 = simplify_giv_expr (loop, XEXP (x, 1), ext_val, benefit);
+      if (arg0 == 0 || arg1 == 0)
+	return NULL_RTX;
+
+      /* Put constant last, CONST_INT last if both constant.  */
+      if ((GET_CODE (arg0) == USE
+	   || GET_CODE (arg0) == CONST_INT)
+	  && ! ((GET_CODE (arg0) == USE
+		 && GET_CODE (arg1) == USE)
+		|| GET_CODE (arg1) == CONST_INT))
+	tem = arg0, arg0 = arg1, arg1 = tem;
+
+      /* Handle addition of zero, then addition of an invariant.  */
+      if (arg1 == const0_rtx)
+	return arg0;
+      else if (GET_CODE (arg1) == CONST_INT || GET_CODE (arg1) == USE)
+	switch (GET_CODE (arg0))
+	  {
+	  case CONST_INT:
+	  case USE:
+	    /* Adding two invariants must result in an invariant, so enclose
+	       addition operation inside a USE and return it.  */
+	    if (GET_CODE (arg0) == USE)
+	      arg0 = XEXP (arg0, 0);
+	    if (GET_CODE (arg1) == USE)
+	      arg1 = XEXP (arg1, 0);
+
+	    if (GET_CODE (arg0) == CONST_INT)
+	      tem = arg0, arg0 = arg1, arg1 = tem;
+	    if (GET_CODE (arg1) == CONST_INT)
+	      tem = sge_plus_constant (arg0, arg1);
+	    else
+	      tem = sge_plus (mode, arg0, arg1);
+
+	    if (GET_CODE (tem) != CONST_INT)
+	      tem = gen_rtx_USE (mode, tem);
+	    return tem;
+
+	  case REG:
+	  case MULT:
+	    /* biv + invar or mult + invar.  Return sum.  */
+	    return gen_rtx_PLUS (mode, arg0, arg1);
+
+	  case PLUS:
+	    /* (a + invar_1) + invar_2.  Associate.  */
+	    return
+	      simplify_giv_expr (loop,
+				 gen_rtx_PLUS (mode,
+					       XEXP (arg0, 0),
+					       gen_rtx_PLUS (mode,
+							     XEXP (arg0, 1),
+							     arg1)),
+				 ext_val, benefit);
+
+	  default:
+	    abort ();
+	  }
+
+      /* Each argument must be either REG, PLUS, or MULT.  Convert REG to
+	 MULT to reduce cases.  */
+      if (GET_CODE (arg0) == REG)
+	arg0 = gen_rtx_MULT (mode, arg0, const1_rtx);
+      if (GET_CODE (arg1) == REG)
+	arg1 = gen_rtx_MULT (mode, arg1, const1_rtx);
+
+      /* Now have PLUS + PLUS, PLUS + MULT, MULT + PLUS, or MULT + MULT.
+	 Put a MULT first, leaving PLUS + PLUS, MULT + PLUS, or MULT + MULT.
+	 Recurse to associate the second PLUS.  */
+      if (GET_CODE (arg1) == MULT)
+	tem = arg0, arg0 = arg1, arg1 = tem;
+
+      if (GET_CODE (arg1) == PLUS)
+	return
+	  simplify_giv_expr (loop,
+			     gen_rtx_PLUS (mode,
+					   gen_rtx_PLUS (mode, arg0,
+							 XEXP (arg1, 0)),
+					   XEXP (arg1, 1)),
+			     ext_val, benefit);
+
+      /* Now must have MULT + MULT.  Distribute if same biv, else not giv.  */
+      if (GET_CODE (arg0) != MULT || GET_CODE (arg1) != MULT)
+	return NULL_RTX;
+
+      if (!rtx_equal_p (arg0, arg1))
+	return NULL_RTX;
+
+      return simplify_giv_expr (loop,
+				gen_rtx_MULT (mode,
+					      XEXP (arg0, 0),
+					      gen_rtx_PLUS (mode,
+							    XEXP (arg0, 1),
+							    XEXP (arg1, 1))),
+				ext_val, benefit);
+
+    case MINUS:
+      /* Handle "a - b" as "a + b * (-1)".  */
+      return simplify_giv_expr (loop,
+				gen_rtx_PLUS (mode,
+					      XEXP (x, 0),
+					      gen_rtx_MULT (mode,
+							    XEXP (x, 1),
+							    constm1_rtx)),
+				ext_val, benefit);
+
+    case MULT:
+      arg0 = simplify_giv_expr (loop, XEXP (x, 0), ext_val, benefit);
+      arg1 = simplify_giv_expr (loop, XEXP (x, 1), ext_val, benefit);
+      if (arg0 == 0 || arg1 == 0)
+	return NULL_RTX;
+
+      /* Put constant last, CONST_INT last if both constant.  */
+      if ((GET_CODE (arg0) == USE || GET_CODE (arg0) == CONST_INT)
+	  && GET_CODE (arg1) != CONST_INT)
+	tem = arg0, arg0 = arg1, arg1 = tem;
+
+      /* If second argument is not now constant, not giv.  */
+      if (GET_CODE (arg1) != USE && GET_CODE (arg1) != CONST_INT)
+	return NULL_RTX;
+
+      /* Handle multiply by 0 or 1.  */
+      if (arg1 == const0_rtx)
+	return const0_rtx;
+
+      else if (arg1 == const1_rtx)
+	return arg0;
+
+      switch (GET_CODE (arg0))
+	{
+	case REG:
+	  /* biv * invar.  Done.  */
+	  return gen_rtx_MULT (mode, arg0, arg1);
+
+	case CONST_INT:
+	  /* Product of two constants.  */
+	  return GEN_INT (INTVAL (arg0) * INTVAL (arg1));
+
+	case USE:
+	  /* invar * invar is a giv, but attempt to simplify it somehow.  */
+	  if (GET_CODE (arg1) != CONST_INT)
+	    return NULL_RTX;
+
+	  arg0 = XEXP (arg0, 0);
+	  if (GET_CODE (arg0) == MULT)
+	    {
+	      /* (invar_0 * invar_1) * invar_2.  Associate.  */
+	      return simplify_giv_expr (loop,
+					gen_rtx_MULT (mode,
+						      XEXP (arg0, 0),
+						      gen_rtx_MULT (mode,
+								    XEXP (arg0,
+									  1),
+								    arg1)),
+					ext_val, benefit);
+	    }
+	  /* Porpagate the MULT expressions to the intermost nodes.  */
+	  else if (GET_CODE (arg0) == PLUS)
+	    {
+	      /* (invar_0 + invar_1) * invar_2.  Distribute.  */
+	      return simplify_giv_expr (loop,
+					gen_rtx_PLUS (mode,
+						      gen_rtx_MULT (mode,
+								    XEXP (arg0,
+									  0),
+								    arg1),
+						      gen_rtx_MULT (mode,
+								    XEXP (arg0,
+									  1),
+								    arg1)),
+					ext_val, benefit);
+	    }
+	  return gen_rtx_USE (mode, gen_rtx_MULT (mode, arg0, arg1));
+
+	case MULT:
+	  /* (a * invar_1) * invar_2.  Associate.  */
+	  return simplify_giv_expr (loop,
+				    gen_rtx_MULT (mode,
+						  XEXP (arg0, 0),
+						  gen_rtx_MULT (mode,
+								XEXP (arg0, 1),
+								arg1)),
+				    ext_val, benefit);
+
+	case PLUS:
+	  /* (a + invar_1) * invar_2.  Distribute.  */
+	  return simplify_giv_expr (loop,
+				    gen_rtx_PLUS (mode,
+						  gen_rtx_MULT (mode,
+								XEXP (arg0, 0),
+								arg1),
+						  gen_rtx_MULT (mode,
+								XEXP (arg0, 1),
+								arg1)),
+				    ext_val, benefit);
+
+	default:
+	  abort ();
+	}
+
+    case ASHIFT:
+      /* Shift by constant is multiply by power of two.  */
+      if (GET_CODE (XEXP (x, 1)) != CONST_INT)
+	return 0;
+
+      return
+	simplify_giv_expr (loop,
+			   gen_rtx_MULT (mode,
+					 XEXP (x, 0),
+					 GEN_INT ((HOST_WIDE_INT) 1
+						  << INTVAL (XEXP (x, 1)))),
+			   ext_val, benefit);
+
+    case NEG:
+      /* "-a" is "a * (-1)" */
+      return simplify_giv_expr (loop,
+				gen_rtx_MULT (mode, XEXP (x, 0), constm1_rtx),
+				ext_val, benefit);
+
+    case NOT:
+      /* "~a" is "-a - 1". Silly, but easy.  */
+      return simplify_giv_expr (loop,
+				gen_rtx_MINUS (mode,
+					       gen_rtx_NEG (mode, XEXP (x, 0)),
+					       const1_rtx),
+				ext_val, benefit);
+
+    case USE:
+      /* Already in proper form for invariant.  */
+      return x;
+
+    case SIGN_EXTEND:
+    case ZERO_EXTEND:
+    case TRUNCATE:
+      /* Conditionally recognize extensions of simple IVs.  After we've
+	 computed loop traversal counts and verified the range of the
+	 source IV, we'll reevaluate this as a GIV.  */
+      if (*ext_val == NULL_RTX)
+	{
+	  arg0 = simplify_giv_expr (loop, XEXP (x, 0), ext_val, benefit);
+	  if (arg0 && *ext_val == NULL_RTX && GET_CODE (arg0) == REG)
+	    {
+	      *ext_val = gen_rtx_fmt_e (GET_CODE (x), mode, arg0);
+	      return arg0;
+	    }
+	}
+      goto do_default;
+
+    case REG:
+      /* If this is a new register, we can't deal with it.  */
+      if (REGNO (x) >= max_reg_before_loop)
+	return 0;
+
+      /* Check for biv or giv.  */
+      switch (REG_IV_TYPE (ivs, REGNO (x)))
+	{
+	case BASIC_INDUCT:
+	  return x;
+	case GENERAL_INDUCT:
+	  {
+	    struct induction *v = REG_IV_INFO (ivs, REGNO (x));
+
+	    /* Form expression from giv and add benefit.  Ensure this giv
+	       can derive another and subtract any needed adjustment if so.  */
+
+	    /* Increasing the benefit here is risky.  The only case in which it
+	       is arguably correct is if this is the only use of V.  In other
+	       cases, this will artificially inflate the benefit of the current
+	       giv, and lead to suboptimal code.  Thus, it is disabled, since
+	       potentially not reducing an only marginally beneficial giv is
+	       less harmful than reducing many givs that are not really
+	       beneficial.  */
+	    {
+	      rtx single_use = regs->array[REGNO (x)].single_usage;
+	      if (single_use && single_use != const0_rtx)
+		*benefit += v->benefit;
+	    }
+
+	    if (v->cant_derive)
+	      return 0;
+
+	    tem = gen_rtx_PLUS (mode, gen_rtx_MULT (mode,
+						    v->src_reg, v->mult_val),
+				v->add_val);
+
+	    if (v->derive_adjustment)
+	      tem = gen_rtx_MINUS (mode, tem, v->derive_adjustment);
+	    arg0 = simplify_giv_expr (loop, tem, ext_val, benefit);
+	    if (*ext_val)
+	      {
+		if (!v->ext_dependent)
+		  return arg0;
+	      }
+	    else
+	      {
+		*ext_val = v->ext_dependent;
+		return arg0;
+	      }
+	    return 0;
+	  }
+
+	default:
+	do_default:
+	  /* If it isn't an induction variable, and it is invariant, we
+	     may be able to simplify things further by looking through
+	     the bits we just moved outside the loop.  */
+	  if (loop_invariant_p (loop, x) == 1)
+	    {
+	      struct movable *m;
+	      struct loop_movables *movables = LOOP_MOVABLES (loop);
+
+	      for (m = movables->head; m; m = m->next)
+		if (rtx_equal_p (x, m->set_dest))
+		  {
+		    /* Ok, we found a match.  Substitute and simplify.  */
+
+		    /* If we match another movable, we must use that, as
+		       this one is going away.  */
+		    if (m->match)
+		      return simplify_giv_expr (loop, m->match->set_dest,
+						ext_val, benefit);
+
+		    /* If consec is non-zero, this is a member of a group of
+		       instructions that were moved together.  We handle this
+		       case only to the point of seeking to the last insn and
+		       looking for a REG_EQUAL.  Fail if we don't find one.  */
+		    if (m->consec != 0)
+		      {
+			int i = m->consec;
+			tem = m->insn;
+			do
+			  {
+			    tem = NEXT_INSN (tem);
+			  }
+			while (--i > 0);
+
+			tem = find_reg_note (tem, REG_EQUAL, NULL_RTX);
+			if (tem)
+			  tem = XEXP (tem, 0);
+		      }
+		    else
+		      {
+			tem = single_set (m->insn);
+			if (tem)
+			  tem = SET_SRC (tem);
+		      }
+
+		    if (tem)
+		      {
+			/* What we are most interested in is pointer
+			   arithmetic on invariants -- only take
+			   patterns we may be able to do something with.  */
+			if (GET_CODE (tem) == PLUS
+			    || GET_CODE (tem) == MULT
+			    || GET_CODE (tem) == ASHIFT
+			    || GET_CODE (tem) == CONST_INT
+			    || GET_CODE (tem) == SYMBOL_REF)
+			  {
+			    tem = simplify_giv_expr (loop, tem, ext_val,
+						     benefit);
+			    if (tem)
+			      return tem;
+			  }
+			else if (GET_CODE (tem) == CONST
+				 && GET_CODE (XEXP (tem, 0)) == PLUS
+				 && GET_CODE (XEXP (XEXP (tem, 0), 0)) == SYMBOL_REF
+				 && GET_CODE (XEXP (XEXP (tem, 0), 1)) == CONST_INT)
+			  {
+			    tem = simplify_giv_expr (loop, XEXP (tem, 0),
+						     ext_val, benefit);
+			    if (tem)
+			      return tem;
+			  }
+		      }
+		    break;
+		  }
+	    }
+	  break;
+	}
+
+      /* Fall through to general case.  */
+    default:
+      /* If invariant, return as USE (unless CONST_INT).
+	 Otherwise, not giv.  */
+      if (GET_CODE (x) == USE)
+	x = XEXP (x, 0);
+
+      if (loop_invariant_p (loop, x) == 1)
+	{
+	  if (GET_CODE (x) == CONST_INT)
+	    return x;
+	  if (GET_CODE (x) == CONST
+	      && GET_CODE (XEXP (x, 0)) == PLUS
+	      && GET_CODE (XEXP (XEXP (x, 0), 0)) == SYMBOL_REF
+	      && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT)
+	    x = XEXP (x, 0);
+	  return gen_rtx_USE (mode, x);
+	}
+      else
+	return 0;
+    }
+}

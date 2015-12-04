@@ -1,0 +1,14 @@
+void
+type_hash_add (hashcode, type)
+     unsigned int hashcode;
+     tree type;
+{
+  struct type_hash *h;
+  void **loc;
+
+  h = (struct type_hash *) ggc_alloc (sizeof (struct type_hash));
+  h->hash = hashcode;
+  h->type = type;
+  loc = htab_find_slot_with_hash (type_hash_table, h, hashcode, INSERT);
+  *(struct type_hash **) loc = h;
+}

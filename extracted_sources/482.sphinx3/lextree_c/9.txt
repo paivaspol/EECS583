@@ -1,0 +1,43 @@
+void lextree_enter (lextree_t *lextree, s3cipid_t lc, int32 cf,
+		    int32 inscore, int32 inhist, int32 thresh)
+{
+    glist_t root;
+    gnode_t *gn;
+    lextree_node_t *ln;
+    int32 nf, scr;
+    int32 i, n;
+    hmm_t *hmm;
+    
+    nf = cf+1;
+    
+    /* Locate root nodes list */
+    if (lextree->n_lc == 0) {
+	assert (NOT_S3CIPID(lc));
+	root = lextree->root;
+    } else {
+	for (i = 0; (i < lextree->n_lc) && (lextree->lcroot[i].lc != lc); i++);
+	assert (i < lextree->n_lc);
+	
+	root = lextree->lcroot[i].root;
+    }
+    
+    /* Enter root nodes */
+    n = lextree->n_next_active;
+    for (gn = root; gn; gn = gnode_next(gn)) {
+	ln = (lextree_node_t *) gnode_ptr (gn);
+	
+	hmm = &(ln->hmm);
+	
+	scr = inscore + ln->prob;
+	if ((scr >= thresh) && (hmm->in.score < scr)) {
+	    hmm->in.score = scr;
+	    hmm->in.history = inhist;
+	    
+	    if (ln->frame != nf) {
+		ln->frame = nf;
+		lextree->next_active[n++] = ln;
+	    }
+	} /* else it is activated separately */
+    }
+    lextree->n_next_active = n;
+}

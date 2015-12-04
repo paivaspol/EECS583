@@ -1,0 +1,154 @@
+int
+bitmap_operation (to, from1, from2, operation)
+     bitmap to;
+     bitmap from1;
+     bitmap from2;
+     enum bitmap_bits operation;
+{
+#define HIGHEST_INDEX (unsigned int) ~0
+
+  bitmap_element *from1_ptr = from1->first;
+  bitmap_element *from2_ptr = from2->first;
+  unsigned int indx1 = (from1_ptr) ? from1_ptr->indx : HIGHEST_INDEX;
+  unsigned int indx2 = (from2_ptr) ? from2_ptr->indx : HIGHEST_INDEX;
+  bitmap_element *to_ptr = to->first;
+  bitmap_element *from1_tmp;
+  bitmap_element *from2_tmp;
+  bitmap_element *to_tmp;
+  unsigned int indx;
+  int changed = 0;
+
+#if BITMAP_ELEMENT_WORDS == 2
+#define DOIT(OP)					\
+  do {							\
+    unsigned HOST_WIDE_INT t0, t1, f10, f11, f20, f21;	\
+    f10 = from1_tmp->bits[0];				\
+    f20 = from2_tmp->bits[0];				\
+    t0 = f10 OP f20;					\
+    changed |= (t0 != to_tmp->bits[0]);			\
+    f11 = from1_tmp->bits[1];				\
+    f21 = from2_tmp->bits[1];				\
+    t1 = f11 OP f21;					\
+    changed |= (t1 != to_tmp->bits[1]);			\
+    to_tmp->bits[0] = t0;				\
+    to_tmp->bits[1] = t1;				\
+  } while (0)
+#else
+#define DOIT(OP)					\
+  do {							\
+    unsigned HOST_WIDE_INT t, f1, f2;			\
+    int i;						\
+    for (i = 0; i < BITMAP_ELEMENT_WORDS; ++i)		\
+      {							\
+	f1 = from1_tmp->bits[i];			\
+	f2 = from2_tmp->bits[i];			\
+	t = f1 OP f2;					\
+	changed |= (t != to_tmp->bits[i]);		\
+	to_tmp->bits[i] = t;				\
+      }							\
+  } while (0)
+#endif
+
+  to->first = to->current = 0;
+
+  while (from1_ptr != 0 || from2_ptr != 0)
+    {
+      /* Figure out whether we need to substitute zero elements for
+	 missing links.  */
+      if (indx1 == indx2)
+	{
+	  indx = indx1;
+	  from1_tmp = from1_ptr;
+	  from2_tmp = from2_ptr;
+	  from1_ptr = from1_ptr->next;
+	  indx1 = (from1_ptr) ? from1_ptr->indx : HIGHEST_INDEX;
+	  from2_ptr = from2_ptr->next;
+	  indx2 = (from2_ptr) ? from2_ptr->indx : HIGHEST_INDEX;
+	}
+      else if (indx1 < indx2)
+	{
+	  indx = indx1;
+	  from1_tmp = from1_ptr;
+	  from2_tmp = &bitmap_zero_bits;
+	  from1_ptr = from1_ptr->next;
+	  indx1 = (from1_ptr) ? from1_ptr->indx : HIGHEST_INDEX;
+	}
+      else
+	{
+	  indx = indx2;
+	  from1_tmp = &bitmap_zero_bits;
+	  from2_tmp = from2_ptr;
+	  from2_ptr = from2_ptr->next;
+	  indx2 = (from2_ptr) ? from2_ptr->indx : HIGHEST_INDEX;
+	}
+
+      /* Find the appropriate element from TO.  Begin by discarding
+	 elements that we've skipped.  */
+      while (to_ptr && to_ptr->indx < indx)
+	{
+	  changed = 1;
+	  to_tmp = to_ptr;
+	  to_ptr = to_ptr->next;
+	  to_tmp->next = bitmap_free;
+	  bitmap_free = to_tmp;
+	}
+      if (to_ptr && to_ptr->indx == indx)
+	{
+	  to_tmp = to_ptr;
+	  to_ptr = to_ptr->next;
+	}
+      else
+	to_tmp = bitmap_element_allocate ();
+
+      /* Do the operation, and if any bits are set, link it into the
+	 linked list.  */
+      switch (operation)
+	{
+	default:
+	  abort ();
+
+	case BITMAP_AND:
+	  DOIT (&);
+	  break;
+
+	case BITMAP_AND_COMPL:
+	  DOIT (&~);
+	  break;
+
+	case BITMAP_IOR:
+	  DOIT (|);
+	  break;
+	case BITMAP_IOR_COMPL:
+	  DOIT (|~);
+	  break;
+	case BITMAP_XOR:
+	  DOIT (^);
+	  break;
+	}
+
+      if (! bitmap_element_zerop (to_tmp))
+	{
+	  to_tmp->indx = indx;
+	  bitmap_element_link (to, to_tmp);
+	}
+      else
+	{
+	  to_tmp->next = bitmap_free;
+	  bitmap_free = to_tmp;
+	}
+    }
+
+  /* If we have elements of TO left over, free the lot.  */
+  if (to_ptr)
+    {
+      changed = 1;
+      for (to_tmp = to_ptr; to_tmp->next ; to_tmp = to_tmp->next)
+	continue;
+      to_tmp->next = bitmap_free;
+      bitmap_free = to_ptr;
+    }
+
+#undef DOIT
+
+  return changed;
+}

@@ -1,0 +1,67 @@
+void
+dwarf2out_begin_prologue (line, file)
+     unsigned int line ATTRIBUTE_UNUSED;
+     const char *file ATTRIBUTE_UNUSED;
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+  dw_fde_ref fde;
+
+  current_function_func_begin_label = 0;
+
+#ifdef IA64_UNWIND_INFO
+  /* ??? current_function_func_begin_label is also used by except.c
+     for call-site information.  We must emit this label if it might
+     be used.  */
+  if ((! flag_exceptions || USING_SJLJ_EXCEPTIONS)
+      && ! dwarf2out_do_frame ())
+    return;
+#else
+  if (! dwarf2out_do_frame ())
+    return;
+#endif
+
+  current_funcdef_number++;
+  function_section (current_function_decl);
+  ASM_GENERATE_INTERNAL_LABEL (label, FUNC_BEGIN_LABEL,
+			       current_funcdef_number);
+  ASM_OUTPUT_DEBUG_LABEL (asm_out_file, FUNC_BEGIN_LABEL,
+			  current_funcdef_number);
+  current_function_func_begin_label = get_identifier (label);
+
+#ifdef IA64_UNWIND_INFO
+  /* We can elide the fde allocation if we're not emitting debug info.  */
+  if (! dwarf2out_do_frame ())
+    return;
+#endif
+
+  /* Expand the fde table if necessary.  */
+  if (fde_table_in_use == fde_table_allocated)
+    {
+      fde_table_allocated += FDE_TABLE_INCREMENT;
+      fde_table
+	= (dw_fde_ref) xrealloc (fde_table,
+				 fde_table_allocated * sizeof (dw_fde_node));
+    }
+
+  /* Record the FDE associated with this function.  */
+  current_funcdef_fde = fde_table_in_use;
+
+  /* Add the new FDE at the end of the fde_table.  */
+  fde = &fde_table[fde_table_in_use++];
+  fde->dw_fde_begin = xstrdup (label);
+  fde->dw_fde_current_label = NULL;
+  fde->dw_fde_end = NULL;
+  fde->dw_fde_cfi = NULL;
+  fde->funcdef_number = current_funcdef_number;
+  fde->nothrow = current_function_nothrow;
+  fde->uses_eh_lsda = cfun->uses_eh_lsda;
+
+  args_size = old_args_size = 0;
+
+  /* We only want to output line number information for the genuine dwarf2
+     prologue case, not the eh frame case.  */
+#ifdef DWARF2_DEBUGGING_INFO
+  if (file)
+    dwarf2out_source_line (line, file);
+#endif
+}

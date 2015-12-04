@@ -1,0 +1,24 @@
+void
+maybe_apply_pragma_weak (decl)
+     tree decl;
+{
+  tree *p, t, id;
+
+  /* Copied from the check in set_decl_assembler_name.  */
+  if (TREE_CODE (decl) == FUNCTION_DECL
+      || (TREE_CODE (decl) == VAR_DECL 
+          && (TREE_STATIC (decl) 
+              || DECL_EXTERNAL (decl) 
+              || TREE_PUBLIC (decl))))
+    id = DECL_ASSEMBLER_NAME (decl);
+  else
+    return;
+
+  for (p = &pending_weaks; (t = *p) ; p = &TREE_CHAIN (t))
+    if (id == TREE_PURPOSE (t))
+      {
+	apply_pragma_weak (decl, TREE_VALUE (t));
+	*p = TREE_CHAIN (t);
+	break;
+      }
+}

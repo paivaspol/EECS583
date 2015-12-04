@@ -1,0 +1,35 @@
+int Get_Direct_CostMB (double lambda)
+{
+  int i;
+  int cost = 0;
+  int cost8x8 = 0;
+  
+  for (i=0; i<4; i++)
+  {
+    cost += Get_Direct_Cost8x8 (i, &cost8x8);
+    if ((cost == INT_MAX) || (cost8x8 == INT_MAX)) return cost;
+  }
+
+  // T.Nishi(MEI ACC) 04-28-2004
+  switch(input->AllowTransform8x8)
+  {
+  case 1: // Mixture of 8x8 & 4x4 transform
+          if((cost8x8 < cost)||
+            !(input->InterSearch8x4 &&
+            input->InterSearch4x8 &&
+            input->InterSearch4x4)
+            )
+          {
+            cost = cost8x8; //return 8x8 cost
+          }
+          break;
+  case 2: // 8x8 Transform only
+          cost = cost8x8;
+          break;
+  default: // 4x4 Transform only
+          break;
+  }
+
+  return cost;
+  // T.Nishi(MEI ACC) 04-28-2004 end
+}

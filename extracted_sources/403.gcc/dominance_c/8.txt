@@ -1,0 +1,83 @@
+static void
+calc_idoms (di, reverse)
+     struct dom_info *di;
+     enum cdi_direction reverse;
+{
+  TBB v, w, k, par;
+  basic_block en_block;
+  if (reverse)
+    en_block = EXIT_BLOCK_PTR;
+  else
+    en_block = ENTRY_BLOCK_PTR;
+
+  /* Go backwards in DFS order, to first look at the leafs.  */
+  v = di->nodes;
+  while (v > 1)
+    {
+      basic_block bb = di->dfs_to_bb[v];
+      edge e, e_next;
+
+      par = di->dfs_parent[v];
+      k = v;
+      if (reverse)
+	e = bb->succ;
+      else
+	e = bb->pred;
+
+      /* Search all direct predecessors for the smallest node with a path
+         to them.  That way we have the smallest node with also a path to
+         us only over nodes behind us.  In effect we search for our
+         semidominator.  */
+      for (; e; e = e_next)
+	{
+	  TBB k1;
+	  basic_block b;
+
+	  if (reverse)
+	    {
+	      b = e->dest;
+	      e_next = e->succ_next;
+	    }
+	  else
+	    {
+	      b = e->src;
+	      e_next = e->pred_next;
+	    }
+	  if (b == en_block)
+	    k1 = di->dfs_order[n_basic_blocks];
+	  else
+	    k1 = di->dfs_order[b->index];
+
+	  /* Call eval() only if really needed.  If k1 is above V in DFS tree,
+	     then we know, that eval(k1) == k1 and key[k1] == k1.  */
+	  if (k1 > v)
+	    k1 = di->key[eval (di, k1)];
+	  if (k1 < k)
+	    k = k1;
+	}
+
+      di->key[v] = k;
+      link_roots (di, par, v);
+      di->next_bucket[v] = di->bucket[k];
+      di->bucket[k] = v;
+
+      /* Transform semidominators into dominators.  */
+      for (w = di->bucket[par]; w; w = di->next_bucket[w])
+	{
+	  k = eval (di, w);
+	  if (di->key[k] < di->key[w])
+	    di->dom[w] = k;
+	  else
+	    di->dom[w] = par;
+	}
+      /* We don't need to cleanup next_bucket[].  */
+      di->bucket[par] = 0;
+      v--;
+    }
+
+  /* Explicitly define the dominators.  */
+  di->dom[1] = 0;
+  for (v = 2; v <= di->nodes; v++)
+    if (di->dom[v] != di->key[v])
+      di->dom[v] = di->dom[di->dom[v]];
+}

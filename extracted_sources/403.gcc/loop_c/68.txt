@@ -1,0 +1,159 @@
+static void
+check_ext_dependent_givs (bl, loop_info)
+     struct iv_class *bl;
+     struct loop_info *loop_info;
+{
+  int ze_ok = 0, se_ok = 0, info_ok = 0;
+  enum machine_mode biv_mode = GET_MODE (bl->biv->src_reg);
+  HOST_WIDE_INT start_val;
+  unsigned HOST_WIDE_INT u_end_val = 0;
+  unsigned HOST_WIDE_INT u_start_val = 0;
+  rtx incr = pc_rtx;
+  struct induction *v;
+
+  /* Make sure the iteration data is available.  We must have
+     constants in order to be certain of no overflow.  */
+  /* ??? An unknown iteration count with an increment of +-1
+     combined with friendly exit tests of against an invariant
+     value is also ameanable to optimization.  Not implemented.  */
+  if (loop_info->n_iterations > 0
+      && bl->initial_value
+      && GET_CODE (bl->initial_value) == CONST_INT
+      && (incr = biv_total_increment (bl))
+      && GET_CODE (incr) == CONST_INT
+      /* Make sure the host can represent the arithmetic.  */
+      && HOST_BITS_PER_WIDE_INT >= GET_MODE_BITSIZE (biv_mode))
+    {
+      unsigned HOST_WIDE_INT abs_incr, total_incr;
+      HOST_WIDE_INT s_end_val;
+      int neg_incr;
+
+      info_ok = 1;
+      start_val = INTVAL (bl->initial_value);
+      u_start_val = start_val;
+
+      neg_incr = 0, abs_incr = INTVAL (incr);
+      if (INTVAL (incr) < 0)
+	neg_incr = 1, abs_incr = -abs_incr;
+      total_incr = abs_incr * loop_info->n_iterations;
+
+      /* Check for host arithmatic overflow.  */
+      if (total_incr / loop_info->n_iterations == abs_incr)
+	{
+	  unsigned HOST_WIDE_INT u_max;
+	  HOST_WIDE_INT s_max;
+
+	  u_end_val = start_val + (neg_incr ? -total_incr : total_incr);
+	  s_end_val = u_end_val;
+	  u_max = GET_MODE_MASK (biv_mode);
+	  s_max = u_max >> 1;
+
+	  /* Check zero extension of biv ok.  */
+	  if (start_val >= 0
+	      /* Check for host arithmatic overflow.  */
+	      && (neg_incr
+		  ? u_end_val < u_start_val
+		  : u_end_val > u_start_val)
+	      /* Check for target arithmetic overflow.  */
+	      && (neg_incr
+		  ? 1 /* taken care of with host overflow */
+		  : u_end_val <= u_max))
+	    {
+	      ze_ok = 1;
+	    }
+
+	  /* Check sign extension of biv ok.  */
+	  /* ??? While it is true that overflow with signed and pointer
+	     arithmetic is undefined, I fear too many programmers don't
+	     keep this fact in mind -- myself included on occasion.
+	     So leave alone with the signed overflow optimizations.  */
+	  if (start_val >= -s_max - 1
+	      /* Check for host arithmatic overflow.  */
+	      && (neg_incr
+		  ? s_end_val < start_val
+		  : s_end_val > start_val)
+	      /* Check for target arithmetic overflow.  */
+	      && (neg_incr
+		  ? s_end_val >= -s_max - 1
+		  : s_end_val <= s_max))
+	    {
+	      se_ok = 1;
+	    }
+	}
+    }
+
+  /* Invalidate givs that fail the tests.  */
+  for (v = bl->giv; v; v = v->next_iv)
+    if (v->ext_dependent)
+      {
+	enum rtx_code code = GET_CODE (v->ext_dependent);
+	int ok = 0;
+
+	switch (code)
+	  {
+	  case SIGN_EXTEND:
+	    ok = se_ok;
+	    break;
+	  case ZERO_EXTEND:
+	    ok = ze_ok;
+	    break;
+
+	  case TRUNCATE:
+	    /* We don't know whether this value is being used as either
+	       signed or unsigned, so to safely truncate we must satisfy
+	       both.  The initial check here verifies the BIV itself;
+	       once that is successful we may check its range wrt the
+	       derived GIV.  */
+	    if (se_ok && ze_ok)
+	      {
+		enum machine_mode outer_mode = GET_MODE (v->ext_dependent);
+		unsigned HOST_WIDE_INT max = GET_MODE_MASK (outer_mode) >> 1;
+
+		/* We know from the above that both endpoints are nonnegative,
+		   and that there is no wrapping.  Verify that both endpoints
+		   are within the (signed) range of the outer mode.  */
+		if (u_start_val <= max && u_end_val <= max)
+		  ok = 1;
+	      }
+	    break;
+
+	  default:
+	    abort ();
+	  }
+
+	if (ok)
+	  {
+	    if (loop_dump_stream)
+	      {
+		fprintf (loop_dump_stream,
+			 "Verified ext dependent giv at %d of reg %d\n",
+			 INSN_UID (v->insn), bl->regno);
+	      }
+	  }
+	else
+	  {
+	    if (loop_dump_stream)
+	      {
+		const char *why;
+
+		if (info_ok)
+		  why = "biv iteration values overflowed";
+		else
+		  {
+		    if (incr == pc_rtx)
+		      incr = biv_total_increment (bl);
+		    if (incr == const1_rtx)
+		      why = "biv iteration info incomplete; incr by 1";
+		    else
+		      why = "biv iteration info incomplete";
+		  }
+
+		fprintf (loop_dump_stream,
+			 "Failed ext dependent giv at %d, %s\n",
+			 INSN_UID (v->insn), why);
+	      }
+	    v->ignore = 1;
+	    bl->all_reduced = 0;
+	  }
+      }
+}

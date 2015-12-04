@@ -1,0 +1,25 @@
+static void
+update_reg_dead_notes (insn, delayed_insn)
+     rtx insn, delayed_insn;
+{
+  rtx p, link, next;
+
+  for (p = next_nonnote_insn (insn); p != delayed_insn;
+       p = next_nonnote_insn (p))
+    for (link = REG_NOTES (p); link; link = next)
+      {
+	next = XEXP (link, 1);
+
+	if (REG_NOTE_KIND (link) != REG_DEAD
+	    || GET_CODE (XEXP (link, 0)) != REG)
+	  continue;
+
+	if (reg_referenced_p (XEXP (link, 0), PATTERN (insn)))
+	  {
+	    /* Move the REG_DEAD note from P to INSN.  */
+	    remove_note (p, link);
+	    XEXP (link, 1) = REG_NOTES (insn);
+	    REG_NOTES (insn) = link;
+	  }
+      }
+}

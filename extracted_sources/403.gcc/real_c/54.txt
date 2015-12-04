@@ -1,0 +1,94 @@
+static void
+emul (a, b, c)
+     const UEMUSHORT *a, *b;
+     UEMUSHORT *c;
+{
+  UEMUSHORT ai[NI], bi[NI];
+  int i, j, sign;
+  EMULONG lt, lta, ltb;
+
+/* IEEE says if result is not a NaN, the sign is "-" if and only if
+   operands have opposite signs -- but flush -0 to 0 later if not IEEE.  */
+  sign = eisneg (a) ^ eisneg (b);
+
+#ifdef NANS
+/* NaN times anything is the same NaN.  */
+  if (eisnan (a))
+    {
+    emov (a, c);
+    return;
+    }
+  if (eisnan (b))
+    {
+    emov (b, c);
+    return;
+    }
+/* Zero times infinity is a NaN.  */
+  if ((eisinf (a) && (ecmp (b, ezero) == 0))
+      || (eisinf (b) && (ecmp (a, ezero) == 0)))
+    {
+    mtherr ("emul", INVALID);
+    enan (c, sign);
+    return;
+    }
+#endif
+/* Infinity times anything else is infinity.  */
+#ifdef INFINITY
+  if (eisinf (a) || eisinf (b))
+    {
+      einfin (c);
+      goto mulsign;
+    }
+#endif
+  emovi (a, ai);
+  emovi (b, bi);
+  lta = ai[E];
+  ltb = bi[E];
+  if (ai[E] == 0)
+    {
+      for (i = 1; i < NI - 1; i++)
+	{
+	  if (ai[i] != 0)
+	    {
+	      lta -= enormlz (ai);
+	      goto mnzer1;
+	    }
+	}
+      eclear (c);
+      goto mulsign;
+    }
+ mnzer1:
+
+  if (bi[E] == 0)
+    {
+      for (i = 1; i < NI - 1; i++)
+	{
+	  if (bi[i] != 0)
+	    {
+	      ltb -= enormlz (bi);
+	      goto mnzer2;
+	    }
+	}
+      eclear (c);
+      goto mulsign;
+    }
+ mnzer2:
+
+  /* Multiply significands */
+  j = emulm (ai, bi);
+  /* calculate exponent */
+  lt = lta + ltb - (EXONE - 1);
+  emdnorm (bi, j, 0, lt, 64);
+  emovo (bi, c);
+
+ mulsign:
+
+  if (sign
+#ifndef IEEE
+      && (ecmp (c, ezero) != 0)
+#endif
+      )
+     *(c+(NE-1)) |= 0x8000;
+  else
+     *(c+(NE-1)) &= ~0x8000;
+}

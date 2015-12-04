@@ -1,0 +1,57 @@
+static tree
+handle_mode_attribute (node, name, args, flags, no_add_attrs)
+     tree *node;
+     tree name;
+     tree args;
+     int flags ATTRIBUTE_UNUSED;
+     bool *no_add_attrs;
+{
+  tree type = *node;
+
+  *no_add_attrs = true;
+
+  if (TREE_CODE (TREE_VALUE (args)) != IDENTIFIER_NODE)
+    warning ("`%s' attribute ignored", IDENTIFIER_POINTER (name));
+  else
+    {
+      int j;
+      const char *p = IDENTIFIER_POINTER (TREE_VALUE (args));
+      int len = strlen (p);
+      enum machine_mode mode = VOIDmode;
+      tree typefm;
+
+      if (len > 4 && p[0] == '_' && p[1] == '_'
+	  && p[len - 1] == '_' && p[len - 2] == '_')
+	{
+	  char *newp = (char *) alloca (len - 1);
+
+	  strcpy (newp, &p[2]);
+	  newp[len - 4] = '\0';
+	  p = newp;
+	}
+
+      /* Change this type to have a type with the specified mode.
+	 First check for the special modes.  */
+      if (! strcmp (p, "byte"))
+	mode = byte_mode;
+      else if (!strcmp (p, "word"))
+	mode = word_mode;
+      else if (! strcmp (p, "pointer"))
+	mode = ptr_mode;
+      else
+	for (j = 0; j < NUM_MACHINE_MODES; j++)
+	  if (!strcmp (p, GET_MODE_NAME (j)))
+	    mode = (enum machine_mode) j;
+
+      if (mode == VOIDmode)
+	error ("unknown machine mode `%s'", p);
+      else if (0 == (typefm = type_for_mode (mode,
+					     TREE_UNSIGNED (type))))
+	error ("no data type for mode `%s'", p);
+      else
+	*node = typefm;
+        /* No need to layout the type here.  The caller should do this.  */
+    }
+
+  return NULL_TREE;
+}

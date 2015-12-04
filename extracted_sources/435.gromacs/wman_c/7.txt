@@ -1,0 +1,36 @@
+static void write_ttyman(FILE *out,
+			 char *program,
+			 int nldesc,char **desc,
+			 int nfile,t_filenm *fnm,
+			 int npargs,t_pargs *pa,
+			 int nbug,char **bugs,bool bHeader)
+{
+  int i;
+  char *tmp;
+  
+  if (bHeader) {
+    fprintf(out,"%s\n\n",check_tty(program));
+    fprintf(out,"%s\n%s\n",GromacsVersion(),mydate());
+  }
+  if (nldesc > 0) {
+    fprintf(out,"DESCRIPTION:\n\n");
+    print_tty_formatted(out,nldesc,desc);
+  }
+  if (nbug > 0) {
+    fprintf(out,"\n");
+    for(i=0; i<nbug; i++) {
+      snew(tmp,strlen(bugs[i])+3);
+      strcpy(tmp,"* ");
+      strcpy(tmp+2,bugs[i]);
+      fprintf(out,"%s\n",wrap_lines(tmp,80,2));
+      sfree(tmp);
+    }
+  }
+  if (nfile > 0) {
+    fprintf(out,"\n");
+    pr_fns(out,nfile,fnm);
+  }
+  if (npargs > 0) {
+    print_pargs(out,npargs,pa);
+  }
+}

@@ -1,0 +1,16 @@
+static void
+loop_givs_check (loop)
+     struct loop *loop;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct iv_class *bl;
+
+  for (bl = ivs->list; bl; bl = bl->next)
+    {
+      struct induction *v;
+
+      for (v = bl->giv; v; v = v->next_iv)
+	if (! v->replaceable && ! v->not_replaceable)
+	  check_final_value (loop, v);
+    }
+}

@@ -1,0 +1,54 @@
+static rtx
+remap_split_bivs (loop, x)
+     struct loop *loop;
+     rtx x;
+{
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  enum rtx_code code;
+  int i;
+  const char *fmt;
+
+  if (x == 0)
+    return x;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case SCRATCH:
+    case PC:
+    case CC0:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST:
+    case SYMBOL_REF:
+    case LABEL_REF:
+      return x;
+
+    case REG:
+#if 0
+      /* If non-reduced/final-value givs were split, then this would also
+	 have to remap those givs also.  */
+#endif
+      if (REGNO (x) < ivs->n_regs
+	  && REG_IV_TYPE (ivs, REGNO (x)) == BASIC_INDUCT)
+	return REG_IV_CLASS (ivs, REGNO (x))->biv->src_reg;
+      break;
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	XEXP (x, i) = remap_split_bivs (loop, XEXP (x, i));
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    XVECEXP (x, i, j) = remap_split_bivs (loop, XVECEXP (x, i, j));
+	}
+    }
+  return x;
+}

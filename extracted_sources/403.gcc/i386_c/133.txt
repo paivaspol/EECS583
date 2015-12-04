@@ -1,0 +1,53 @@
+void
+ix86_split_lshrdi (operands, scratch)
+     rtx *operands, scratch;
+{
+  rtx low[2], high[2];
+  int count;
+
+  if (GET_CODE (operands[2]) == CONST_INT)
+    {
+      split_di (operands, 2, low, high);
+      count = INTVAL (operands[2]) & 63;
+
+      if (count >= 32)
+	{
+	  emit_move_insn (low[0], high[1]);
+	  emit_move_insn (high[0], const0_rtx);
+
+	  if (count > 32)
+	    emit_insn (gen_lshrsi3 (low[0], low[0], GEN_INT (count - 32)));
+	}
+      else
+	{
+	  if (!rtx_equal_p (operands[0], operands[1]))
+	    emit_move_insn (operands[0], operands[1]);
+	  emit_insn (gen_x86_shrd_1 (low[0], high[0], GEN_INT (count)));
+	  emit_insn (gen_lshrsi3 (high[0], high[0], GEN_INT (count)));
+	}
+    }
+  else
+    {
+      if (!rtx_equal_p (operands[0], operands[1]))
+	emit_move_insn (operands[0], operands[1]);
+
+      split_di (operands, 1, low, high);
+
+      emit_insn (gen_x86_shrd_1 (low[0], high[0], operands[2]));
+      emit_insn (gen_lshrsi3 (high[0], high[0], operands[2]));
+
+      /* Heh.  By reversing the arguments, we can reuse this pattern.  */
+      if (TARGET_CMOVE && (! no_new_pseudos || scratch))
+	{
+	  if (! no_new_pseudos)
+	    scratch = force_reg (SImode, const0_rtx);
+	  else
+	    emit_move_insn (scratch, const0_rtx);
+
+	  emit_insn (gen_x86_shift_adj_1 (low[0], high[0], operands[2],
+					  scratch));
+	}
+      else
+	emit_insn (gen_x86_shift_adj_2 (low[0], high[0], operands[2]));
+    }
+}

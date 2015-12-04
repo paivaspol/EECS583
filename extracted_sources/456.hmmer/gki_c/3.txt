@@ -1,0 +1,29 @@
+void
+GKIStatus(GKI *hash)
+{
+  struct gki_elem *ptr;
+  int i;
+  int nkeys;
+  int nempty  = 0;
+  int maxkeys = -1;
+  int minkeys = INT_MAX;
+
+  for (i = 0; i < hash->nhash; i++)
+    {
+      nkeys = 0;
+      for (ptr = hash->table[i]; ptr != NULL; ptr = ptr->nxt)
+	nkeys++;
+
+      if (nkeys == 0)      nempty++;
+      if (nkeys > maxkeys) maxkeys = nkeys;
+      if (nkeys < minkeys) minkeys = nkeys;
+    }
+
+  printf("Total keys:        %d\n", hash->nkeys);
+  printf("Hash table size:   %d\n", hash->nhash);
+  printf("Average occupancy: %.1f\n", (float) hash->nkeys / (float) hash->nhash);
+  printf("Unoccupied slots:  %d\n", nempty);
+  printf("Most in one slot:  %d\n", maxkeys);
+  printf("Least in one slot: %d\n", minkeys);
+  
+}

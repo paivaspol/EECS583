@@ -1,0 +1,71 @@
+int
+reloads_conflict (r1, r2)
+     int r1, r2;
+{
+  enum reload_type r1_type = rld[r1].when_needed;
+  enum reload_type r2_type = rld[r2].when_needed;
+  int r1_opnum = rld[r1].opnum;
+  int r2_opnum = rld[r2].opnum;
+
+  /* RELOAD_OTHER conflicts with everything.  */
+  if (r2_type == RELOAD_OTHER)
+    return 1;
+
+  /* Otherwise, check conflicts differently for each type.  */
+
+  switch (r1_type)
+    {
+    case RELOAD_FOR_INPUT:
+      return (r2_type == RELOAD_FOR_INSN
+	      || r2_type == RELOAD_FOR_OPERAND_ADDRESS
+	      || r2_type == RELOAD_FOR_OPADDR_ADDR
+	      || r2_type == RELOAD_FOR_INPUT
+	      || ((r2_type == RELOAD_FOR_INPUT_ADDRESS
+		   || r2_type == RELOAD_FOR_INPADDR_ADDRESS)
+		  && r2_opnum > r1_opnum));
+
+    case RELOAD_FOR_INPUT_ADDRESS:
+      return ((r2_type == RELOAD_FOR_INPUT_ADDRESS && r1_opnum == r2_opnum)
+	      || (r2_type == RELOAD_FOR_INPUT && r2_opnum < r1_opnum));
+
+    case RELOAD_FOR_INPADDR_ADDRESS:
+      return ((r2_type == RELOAD_FOR_INPADDR_ADDRESS && r1_opnum == r2_opnum)
+	      || (r2_type == RELOAD_FOR_INPUT && r2_opnum < r1_opnum));
+
+    case RELOAD_FOR_OUTPUT_ADDRESS:
+      return ((r2_type == RELOAD_FOR_OUTPUT_ADDRESS && r2_opnum == r1_opnum)
+	      || (r2_type == RELOAD_FOR_OUTPUT && r2_opnum <= r1_opnum));
+
+    case RELOAD_FOR_OUTADDR_ADDRESS:
+      return ((r2_type == RELOAD_FOR_OUTADDR_ADDRESS && r2_opnum == r1_opnum)
+	      || (r2_type == RELOAD_FOR_OUTPUT && r2_opnum <= r1_opnum));
+
+    case RELOAD_FOR_OPERAND_ADDRESS:
+      return (r2_type == RELOAD_FOR_INPUT || r2_type == RELOAD_FOR_INSN
+	      || r2_type == RELOAD_FOR_OPERAND_ADDRESS);
+
+    case RELOAD_FOR_OPADDR_ADDR:
+      return (r2_type == RELOAD_FOR_INPUT
+	      || r2_type == RELOAD_FOR_OPADDR_ADDR);
+
+    case RELOAD_FOR_OUTPUT:
+      return (r2_type == RELOAD_FOR_INSN || r2_type == RELOAD_FOR_OUTPUT
+	      || ((r2_type == RELOAD_FOR_OUTPUT_ADDRESS
+		   || r2_type == RELOAD_FOR_OUTADDR_ADDRESS)
+		  && r2_opnum >= r1_opnum));
+
+    case RELOAD_FOR_INSN:
+      return (r2_type == RELOAD_FOR_INPUT || r2_type == RELOAD_FOR_OUTPUT
+	      || r2_type == RELOAD_FOR_INSN
+	      || r2_type == RELOAD_FOR_OPERAND_ADDRESS);
+
+    case RELOAD_FOR_OTHER_ADDRESS:
+      return r2_type == RELOAD_FOR_OTHER_ADDRESS;
+
+    case RELOAD_OTHER:
+      return 1;
+
+    default:
+      abort ();
+    }
+}

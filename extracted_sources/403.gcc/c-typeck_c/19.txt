@@ -1,0 +1,56 @@
+static tree
+internal_build_compound_expr (list, first_p)
+     tree list;
+     int first_p;
+{
+  tree rest;
+
+  if (TREE_CHAIN (list) == 0)
+    {
+      /* Convert arrays and functions to pointers when there
+	 really is a comma operator.  */
+      if (!first_p)
+	TREE_VALUE (list)
+	  = default_function_array_conversion (TREE_VALUE (list));
+
+#if 0 /* If something inside inhibited lvalueness, we should not override.  */
+      /* Consider (x, y+0), which is not an lvalue since y+0 is not.  */
+
+      /* Strip NON_LVALUE_EXPRs since we aren't using as an lvalue.  */
+      if (TREE_CODE (list) == NON_LVALUE_EXPR)
+	list = TREE_OPERAND (list, 0);
+#endif
+
+      /* Don't let (0, 0) be null pointer constant.  */
+      if (!first_p && integer_zerop (TREE_VALUE (list)))
+	return non_lvalue (TREE_VALUE (list));
+      return TREE_VALUE (list);
+    }
+
+  rest = internal_build_compound_expr (TREE_CHAIN (list), FALSE);
+
+  if (! TREE_SIDE_EFFECTS (TREE_VALUE (list)))
+    {
+      /* The left-hand operand of a comma expression is like an expression
+         statement: with -W or -Wunused, we should warn if it doesn't have
+	 any side-effects, unless it was explicitly cast to (void).  */
+      if ((extra_warnings || warn_unused_value)
+           && ! (TREE_CODE (TREE_VALUE (list)) == CONVERT_EXPR
+                && VOID_TYPE_P (TREE_TYPE (TREE_VALUE (list)))))
+        warning ("left-hand operand of comma expression has no effect");
+
+      /* When pedantic, a compound expression can be neither an lvalue
+         nor an integer constant expression.  */
+      if (! pedantic)
+        return rest;
+    }
+
+  /* With -Wunused, we should also warn if the left-hand operand does have
+     side-effects, but computes a value which is not used.  For example, in
+     `foo() + bar(), baz()' the result of the `+' operator is not used,
+     so we should issue a warning.  */
+  else if (warn_unused_value)
+    warn_if_unused_value (TREE_VALUE (list));
+
+  return build (COMPOUND_EXPR, TREE_TYPE (rest), TREE_VALUE (list), rest);
+}

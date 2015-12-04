@@ -1,0 +1,23 @@
+static int
+one_code_hoisting_pass ()
+{
+  int changed = 0;
+
+  alloc_expr_hash_table (max_cuid);
+  compute_expr_hash_table ();
+  if (gcse_file)
+    dump_hash_table (gcse_file, "Code Hosting Expressions", expr_hash_table,
+		     expr_hash_table_size, n_exprs);
+
+  if (n_exprs > 0)
+    {
+      alloc_code_hoist_mem (n_basic_blocks, n_exprs);
+      compute_code_hoist_data ();
+      hoist_code ();
+      free_code_hoist_mem ();
+    }
+
+  free_expr_hash_table ();
+
+  return changed;
+}

@@ -1,0 +1,19 @@
+static void
+mod_fund_type_attribute (type, decl_const, decl_volatile)
+     tree type;
+     int decl_const;
+     int decl_volatile;
+{
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_mod_fund_type);
+  sprintf (begin_label, MT_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, MT_END_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DWARF_DELTA2 (asm_out_file, end_label, begin_label);
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+  write_modifier_bytes (type, decl_const, decl_volatile);
+  ASM_OUTPUT_DWARF_FUND_TYPE (asm_out_file,
+			      fundamental_type_code (root_type (type)));
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

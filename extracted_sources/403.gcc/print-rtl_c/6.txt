@@ -1,0 +1,39 @@
+void
+print_rtl (outf, rtx_first)
+     FILE *outf;
+     rtx rtx_first;
+{
+  rtx tmp_rtx;
+
+  outfile = outf;
+  sawclose = 0;
+
+  if (rtx_first == 0)
+    {
+      fputs (print_rtx_head, outf);
+      fputs ("(nil)\n", outf);
+    }
+  else
+    switch (GET_CODE (rtx_first))
+      {
+      case INSN:
+      case JUMP_INSN:
+      case CALL_INSN:
+      case NOTE:
+      case CODE_LABEL:
+      case BARRIER:
+	for (tmp_rtx = rtx_first; tmp_rtx != 0; tmp_rtx = NEXT_INSN (tmp_rtx))
+	  if (! flag_dump_unnumbered
+	      || GET_CODE (tmp_rtx) != NOTE || NOTE_LINE_NUMBER (tmp_rtx) < 0)
+	    {
+              fputs (print_rtx_head, outfile);
+	      print_rtx (tmp_rtx);
+	      fprintf (outfile, "\n");
+	    }
+	break;
+
+      default:
+        fputs (print_rtx_head, outfile);
+	print_rtx (rtx_first);
+      }
+}

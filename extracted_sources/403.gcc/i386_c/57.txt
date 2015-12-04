@@ -1,0 +1,30 @@
+int
+sse_comparison_operator (op, mode)
+     rtx op;
+     enum machine_mode mode ATTRIBUTE_UNUSED;
+{
+  enum rtx_code code = GET_CODE (op);
+  switch (code)
+    {
+    /* Operations supported directly.  */
+    case EQ:
+    case LT:
+    case LE:
+    case UNORDERED:
+    case NE:
+    case UNGE:
+    case UNGT:
+    case ORDERED:
+      return 1;
+    /* These are equivalent to ones above in non-IEEE comparisons.  */
+    case UNEQ:
+    case UNLT:
+    case UNLE:
+    case LTGT:
+    case GE:
+    case GT:
+      return !TARGET_IEEE_FP;
+    default:
+      return 0;
+    }
+}

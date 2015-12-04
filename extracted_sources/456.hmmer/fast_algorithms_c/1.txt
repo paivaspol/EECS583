@@ -1,0 +1,54 @@
+void
+ResizePlan7Matrix(struct dpmatrix_s *mx, int N, int M, 
+		  int ***xmx, int ***mmx, int ***imx, int ***dmx)
+{
+  int i,n;
+
+  if (N <= mx->maxN && M <= mx->maxM) 
+    {
+      if (xmx != NULL) *xmx = mx->xmx;
+      if (mmx != NULL) *mmx = mx->mmx;
+      if (imx != NULL) *imx = mx->imx;
+      if (dmx != NULL) *dmx = mx->dmx;
+      return; 
+    }
+
+  if (N > mx->maxN) {
+    N          += mx->padN; 
+    mx->maxN    = N; 
+    mx->xmx     = (int **) ReallocOrDie (mx->xmx, sizeof(int *) * (N+1));
+    mx->mmx     = (int **) ReallocOrDie (mx->mmx, sizeof(int *) * (N+1));
+    mx->imx     = (int **) ReallocOrDie (mx->imx, sizeof(int *) * (N+1));
+    mx->dmx     = (int **) ReallocOrDie (mx->dmx, sizeof(int *) * (N+1));
+  }
+
+  if (M > mx->maxM) {
+    M += mx->padM; 
+    mx->maxM = M; 
+  }
+
+  mx->xmx_mem = ReallocOrDie (mx->xmx_mem, sizeof(int) * (N+1)*(5 + 16));
+  mx->mmx_mem = ReallocOrDie (mx->mmx_mem, sizeof(int) * (N+1)*(M+2+16));
+  mx->imx_mem = ReallocOrDie (mx->imx_mem, sizeof(int) * (N+1)*(M+2+16));
+  mx->dmx_mem = ReallocOrDie (mx->dmx_mem, sizeof(int) * (N+1)*(M+2+16));
+  
+  mx->xmx[0] = (int *) (((((unsigned long int) mx->xmx_mem) + 15) & (~0xf)) + 12);
+  mx->mmx[0] = (int *) (((((unsigned long int) mx->mmx_mem) + 15) & (~0xf)) + 12);
+  mx->imx[0] = (int *) (((((unsigned long int) mx->imx_mem) + 15) & (~0xf)) + 12);
+  mx->dmx[0] = (int *) (((((unsigned long int) mx->dmx_mem) + 15) & (~0xf)) + 12);
+  
+  /* And make sure the beginning of each row is aligned the same way */
+  for (i = 1; i <= N; i++)
+    {
+      mx->xmx[i] = mx->xmx[0] + i*(5+11) ; /* add 11 bytes per row, making it divisible by 4 */
+      n = 12 - (M+2)%4;
+      mx->mmx[i] = mx->mmx[0] + i*(M+2+n);
+      mx->imx[i] = mx->imx[0] + i*(M+2+n);
+      mx->dmx[i] = mx->dmx[0] + i*(M+2+n);
+    }
+ 
+  if (xmx != NULL) *xmx = mx->xmx;
+  if (mmx != NULL) *mmx = mx->mmx;
+  if (imx != NULL) *imx = mx->imx;
+  if (dmx != NULL) *dmx = mx->dmx;
+}

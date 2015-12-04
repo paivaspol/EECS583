@@ -1,0 +1,56 @@
+static void
+warn_if_shadowing (x, oldlocal)
+     tree x, oldlocal;
+{
+  tree name;
+
+  if (DECL_EXTERNAL (x))
+    return;
+
+  name = DECL_NAME (x);
+
+  /* Warn if shadowing an argument at the top level of the body.  */
+  if (oldlocal != 0
+      /* This warning doesn't apply to the parms of a nested fcn.  */
+      && ! current_binding_level->parm_flag
+      /* Check that this is one level down from the parms.  */
+      && current_binding_level->level_chain->parm_flag
+      /* Check that the decl being shadowed
+	 comes from the parm level, one level up.  */
+      && chain_member (oldlocal, current_binding_level->level_chain->names))
+    {
+      if (TREE_CODE (oldlocal) == PARM_DECL)
+	pedwarn ("declaration of `%s' shadows a parameter",
+		 IDENTIFIER_POINTER (name));
+      else
+	pedwarn ("declaration of `%s' shadows a symbol from the parameter list",
+		 IDENTIFIER_POINTER (name));
+    }
+  /* Maybe warn if shadowing something else.  */
+  else if (warn_shadow
+	   /* No shadow warnings for internally generated vars.  */
+	   && DECL_SOURCE_LINE (x) != 0
+	   /* No shadow warnings for vars made for inlining.  */
+	   && ! DECL_FROM_INLINE (x))
+    {
+      if (TREE_CODE (x) == PARM_DECL
+	  && current_binding_level->level_chain->parm_flag)
+	/* Don't warn about the parm names in function declarator
+	   within a function declarator.
+	   It would be nice to avoid warning in any function
+	   declarator in a declaration, as opposed to a definition,
+	   but there is no way to tell it's not a definition.  */
+	;
+      else if (oldlocal)
+	{
+	  if (TREE_CODE (oldlocal) == PARM_DECL)
+	    shadow_warning ("a parameter", name, oldlocal);
+	  else
+	    shadow_warning ("a previous local", name, oldlocal);
+	}
+      else if (IDENTIFIER_GLOBAL_VALUE (name) != 0
+	       && IDENTIFIER_GLOBAL_VALUE (name) != error_mark_node)
+	shadow_warning ("a global declaration", name,
+			IDENTIFIER_GLOBAL_VALUE (name));
+    }
+}

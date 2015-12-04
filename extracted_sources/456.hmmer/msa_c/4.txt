@@ -1,0 +1,20 @@
+void
+MSAAddComment(MSA *msa, char *s)
+{
+  /* If this is our first recorded comment, we need to malloc();
+   * and if we've filled available space, we need to realloc().
+   * Note the arbitrary lumpsize of 10 lines per allocation...
+   */
+  if (msa->comment == NULL) {
+    msa->comment        = MallocOrDie (sizeof(char *) * 10);
+    msa->alloc_ncomment = 10;
+  }
+  if (msa->ncomment == msa->alloc_ncomment) {
+    msa->alloc_ncomment += 10;
+    msa->comment = ReallocOrDie(msa->comment, sizeof(char *) * msa->alloc_ncomment);
+  }
+
+  msa->comment[msa->ncomment] = sre_strdup(s, -1);
+  msa->ncomment++;
+  return;
+}

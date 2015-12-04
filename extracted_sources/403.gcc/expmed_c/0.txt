@@ -1,0 +1,166 @@
+static void store_fixed_bit_field	PARAMS ((rtx, unsigned HOST_WIDE_INT,
+						 unsigned HOST_WIDE_INT,
+						 unsigned HOST_WIDE_INT, rtx));
+static void store_split_bit_field	PARAMS ((rtx, unsigned HOST_WIDE_INT,
+						 unsigned HOST_WIDE_INT, rtx));
+static rtx extract_fixed_bit_field	PARAMS ((enum machine_mode, rtx,
+						 unsigned HOST_WIDE_INT,
+						 unsigned HOST_WIDE_INT,
+						 unsigned HOST_WIDE_INT,
+						 rtx, int));
+static rtx mask_rtx			PARAMS ((enum machine_mode, int,
+						 int, int));
+static rtx lshift_value			PARAMS ((enum machine_mode, rtx,
+						 int, int));
+static rtx extract_split_bit_field	PARAMS ((rtx, unsigned HOST_WIDE_INT,
+						 unsigned HOST_WIDE_INT, int));
+static void do_cmp_and_jump		PARAMS ((rtx, rtx, enum rtx_code,
+						 enum machine_mode, rtx));
+
+/* Non-zero means divides or modulus operations are relatively cheap for
+   powers of two, so don't use branches; emit the operation instead.
+   Usually, this will mean that the MD file will emit non-branch
+   sequences.  */
+
+static int sdiv_pow2_cheap, smod_pow2_cheap;
+
+#ifndef SLOW_UNALIGNED_ACCESS
+#define SLOW_UNALIGNED_ACCESS(MODE, ALIGN) STRICT_ALIGNMENT
+#endif
+
+/* For compilers that support multiple targets with different word sizes,
+   MAX_BITS_PER_WORD contains the biggest value of BITS_PER_WORD.  An example
+   is the H8/300(H) compiler.  */
+
+#ifndef MAX_BITS_PER_WORD
+#define MAX_BITS_PER_WORD BITS_PER_WORD
+#endif
+
+/* Reduce conditional compilation elsewhere.  */
+#ifndef HAVE_insv
+#define HAVE_insv	0
+#define CODE_FOR_insv	CODE_FOR_nothing
+#define gen_insv(a,b,c,d) NULL_RTX
+#endif
+#ifndef HAVE_extv
+#define HAVE_extv	0
+#define CODE_FOR_extv	CODE_FOR_nothing
+#define gen_extv(a,b,c,d) NULL_RTX
+#endif
+#ifndef HAVE_extzv
+#define HAVE_extzv	0
+#define CODE_FOR_extzv	CODE_FOR_nothing
+#define gen_extzv(a,b,c,d) NULL_RTX
+#endif
+
+/* Cost of various pieces of RTL.  Note that some of these are indexed by
+   shift count and some by mode.  */
+static int add_cost, negate_cost, zero_cost;
+static int shift_cost[MAX_BITS_PER_WORD];
+static int shiftadd_cost[MAX_BITS_PER_WORD];
+static int shiftsub_cost[MAX_BITS_PER_WORD];
+static int mul_cost[NUM_MACHINE_MODES];
+static int div_cost[NUM_MACHINE_MODES];
+static int mul_widen_cost[NUM_MACHINE_MODES];
+static int mul_highpart_cost[NUM_MACHINE_MODES];
+
+void
+init_expmed ()
+{
+  /* This is "some random pseudo register" for purposes of calling recog
+     to see what insns exist.  */
+  rtx reg = gen_rtx_REG (word_mode, 10000);
+  rtx shift_insn, shiftadd_insn, shiftsub_insn;
+  int dummy;
+  int m;
+  enum machine_mode mode, wider_mode;
+
+  start_sequence ();
+
+  reg = gen_rtx_REG (word_mode, 10000);
+
+  zero_cost = rtx_cost (const0_rtx, 0);
+  add_cost = rtx_cost (gen_rtx_PLUS (word_mode, reg, reg), SET);
+
+  shift_insn = emit_insn (gen_rtx_SET (VOIDmode, reg,
+				       gen_rtx_ASHIFT (word_mode, reg,
+						       const0_rtx)));
+
+  shiftadd_insn
+    = emit_insn (gen_rtx_SET (VOIDmode, reg,
+			      gen_rtx_PLUS (word_mode,
+					    gen_rtx_MULT (word_mode,
+							  reg, const0_rtx),
+					    reg)));
+
+  shiftsub_insn
+    = emit_insn (gen_rtx_SET (VOIDmode, reg,
+			      gen_rtx_MINUS (word_mode,
+					     gen_rtx_MULT (word_mode,
+							   reg, const0_rtx),
+					     reg)));
+
+  init_recog ();
+
+  shift_cost[0] = 0;
+  shiftadd_cost[0] = shiftsub_cost[0] = add_cost;
+
+  for (m = 1; m < MAX_BITS_PER_WORD; m++)
+    {
+      shift_cost[m] = shiftadd_cost[m] = shiftsub_cost[m] = 32000;
+
+      XEXP (SET_SRC (PATTERN (shift_insn)), 1) = GEN_INT (m);
+      if (recog (PATTERN (shift_insn), shift_insn, &dummy) >= 0)
+	shift_cost[m] = rtx_cost (SET_SRC (PATTERN (shift_insn)), SET);
+
+      XEXP (XEXP (SET_SRC (PATTERN (shiftadd_insn)), 0), 1)
+	= GEN_INT ((HOST_WIDE_INT) 1 << m);
+      if (recog (PATTERN (shiftadd_insn), shiftadd_insn, &dummy) >= 0)
+	shiftadd_cost[m] = rtx_cost (SET_SRC (PATTERN (shiftadd_insn)), SET);
+
+      XEXP (XEXP (SET_SRC (PATTERN (shiftsub_insn)), 0), 1)
+	= GEN_INT ((HOST_WIDE_INT) 1 << m);
+      if (recog (PATTERN (shiftsub_insn), shiftsub_insn, &dummy) >= 0)
+	shiftsub_cost[m] = rtx_cost (SET_SRC (PATTERN (shiftsub_insn)), SET);
+    }
+
+  negate_cost = rtx_cost (gen_rtx_NEG (word_mode, reg), SET);
+
+  sdiv_pow2_cheap
+    = (rtx_cost (gen_rtx_DIV (word_mode, reg, GEN_INT (32)), SET)
+       <= 2 * add_cost);
+  smod_pow2_cheap
+    = (rtx_cost (gen_rtx_MOD (word_mode, reg, GEN_INT (32)), SET)
+       <= 2 * add_cost);
+
+  for (mode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+       mode != VOIDmode;
+       mode = GET_MODE_WIDER_MODE (mode))
+    {
+      reg = gen_rtx_REG (mode, 10000);
+      div_cost[(int) mode] = rtx_cost (gen_rtx_UDIV (mode, reg, reg), SET);
+      mul_cost[(int) mode] = rtx_cost (gen_rtx_MULT (mode, reg, reg), SET);
+      wider_mode = GET_MODE_WIDER_MODE (mode);
+      if (wider_mode != VOIDmode)
+	{
+	  mul_widen_cost[(int) wider_mode]
+	    = rtx_cost (gen_rtx_MULT (wider_mode,
+				      gen_rtx_ZERO_EXTEND (wider_mode, reg),
+				      gen_rtx_ZERO_EXTEND (wider_mode, reg)),
+			SET);
+	  mul_highpart_cost[(int) mode]
+	    = rtx_cost (gen_rtx_TRUNCATE
+			(mode,
+			 gen_rtx_LSHIFTRT (wider_mode,
+					   gen_rtx_MULT (wider_mode,
+							 gen_rtx_ZERO_EXTEND
+							 (wider_mode, reg),
+							 gen_rtx_ZERO_EXTEND
+							 (wider_mode, reg)),
+					   GEN_INT (GET_MODE_BITSIZE (mode)))),
+			SET);
+	}
+    }
+
+  end_sequence ();
+}

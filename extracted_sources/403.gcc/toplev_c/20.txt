@@ -1,0 +1,20 @@
+int
+do_float_handler (fn, data)
+     void (*fn) PARAMS ((PTR));
+     PTR data;
+{
+  jmp_buf buf;
+
+  if (setjmp (buf))
+    {
+      /* We got here via longjmp () caused by an exception in function
+         fn ().  */
+      set_float_handler (NULL);
+      return 0;
+    }
+
+  set_float_handler (buf);
+  (*fn)(data);
+  set_float_handler (NULL);
+  return 1;
+}

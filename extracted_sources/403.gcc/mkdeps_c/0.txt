@@ -1,0 +1,59 @@
+static const char *
+munge (filename)
+     const char *filename;
+{
+  int len;
+  const char *p, *q;
+  char *dst, *buffer;
+
+  for (p = filename, len = 0; *p; p++, len++)
+    {
+      switch (*p)
+	{
+	case ' ':
+	case '\t':
+	  /* GNU make uses a weird quoting scheme for white space.
+	     A space or tab preceded by 2N+1 backslashes represents
+	     N backslashes followed by space; a space or tab
+	     preceded by 2N backslashes represents N backslashes at
+	     the end of a file name; and backslashes in other
+	     contexts should not be doubled.  */
+	  for (q = p - 1; filename <= q && *q == '\\';  q--)
+	    len++;
+	  len++;
+	  break;
+
+	case '$':
+	  /* '$' is quoted by doubling it.  */
+	  len++;
+	  break;
+	}
+    }
+
+  /* Now we know how big to make the buffer.  */
+  buffer = xmalloc (len + 1);
+
+  for (p = filename, dst = buffer; *p; p++, dst++)
+    {
+      switch (*p)
+	{
+	case ' ':
+	case '\t':
+	  for (q = p - 1; filename <= q && *q == '\\';  q--)
+	    *dst++ = '\\';
+	  *dst++ = '\\';
+	  break;
+
+	case '$':
+	  *dst++ = '$';
+	  break;
+
+	default:
+	  /* nothing */;
+	}
+      *dst = *p;
+    }
+
+  *dst = '\0';
+  return buffer;
+}

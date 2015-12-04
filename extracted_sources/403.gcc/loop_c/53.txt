@@ -1,0 +1,84 @@
+static rtx
+check_insn_for_givs (loop, p, not_every_iteration, maybe_multiple)
+     struct loop *loop;
+     rtx p;
+     int not_every_iteration;
+     int maybe_multiple;
+{
+  struct loop_regs *regs = LOOP_REGS (loop);
+
+  rtx set;
+  /* Look for a general induction variable in a register.  */
+  if (GET_CODE (p) == INSN
+      && (set = single_set (p))
+      && GET_CODE (SET_DEST (set)) == REG
+      && ! regs->array[REGNO (SET_DEST (set))].may_not_optimize)
+    {
+      rtx src_reg;
+      rtx dest_reg;
+      rtx add_val;
+      rtx mult_val;
+      rtx ext_val;
+      int benefit;
+      rtx regnote = 0;
+      rtx last_consec_insn;
+
+      dest_reg = SET_DEST (set);
+      if (REGNO (dest_reg) < FIRST_PSEUDO_REGISTER)
+	return p;
+
+      if (/* SET_SRC is a giv.  */
+	  (general_induction_var (loop, SET_SRC (set), &src_reg, &add_val,
+				  &mult_val, &ext_val, 0, &benefit, VOIDmode)
+	   /* Equivalent expression is a giv.  */
+	   || ((regnote = find_reg_note (p, REG_EQUAL, NULL_RTX))
+	       && general_induction_var (loop, XEXP (regnote, 0), &src_reg,
+					 &add_val, &mult_val, &ext_val, 0,
+					 &benefit, VOIDmode)))
+	  /* Don't try to handle any regs made by loop optimization.
+	     We have nothing on them in regno_first_uid, etc.  */
+	  && REGNO (dest_reg) < max_reg_before_loop
+	  /* Don't recognize a BASIC_INDUCT_VAR here.  */
+	  && dest_reg != src_reg
+	  /* This must be the only place where the register is set.  */
+	  && (regs->array[REGNO (dest_reg)].n_times_set == 1
+	      /* or all sets must be consecutive and make a giv.  */
+	      || (benefit = consec_sets_giv (loop, benefit, p,
+					     src_reg, dest_reg,
+					     &add_val, &mult_val, &ext_val,
+					     &last_consec_insn))))
+	{
+	  struct induction *v
+	    = (struct induction *) xmalloc (sizeof (struct induction));
+
+	  /* If this is a library call, increase benefit.  */
+	  if (find_reg_note (p, REG_RETVAL, NULL_RTX))
+	    benefit += libcall_benefit (p);
+
+	  /* Skip the consecutive insns, if there are any.  */
+	  if (regs->array[REGNO (dest_reg)].n_times_set != 1)
+	    p = last_consec_insn;
+
+	  record_giv (loop, v, p, src_reg, dest_reg, mult_val, add_val,
+		      ext_val, benefit, DEST_REG, not_every_iteration,
+		      maybe_multiple, (rtx*) 0);
+
+	}
+    }
+
+#ifndef DONT_REDUCE_ADDR
+  /* Look for givs which are memory addresses.  */
+  /* This resulted in worse code on a VAX 8600.  I wonder if it
+     still does.  */
+  if (GET_CODE (p) == INSN)
+    find_mem_givs (loop, PATTERN (p), p, not_every_iteration,
+		   maybe_multiple);
+#endif
+
+  /* Update the status of whether giv can derive other givs.  This can
+     change when we pass a label or an insn that updates a biv.  */
+  if (GET_CODE (p) == INSN || GET_CODE (p) == JUMP_INSN
+      || GET_CODE (p) == CODE_LABEL)
+    update_giv_derive (loop, p);
+  return p;
+}

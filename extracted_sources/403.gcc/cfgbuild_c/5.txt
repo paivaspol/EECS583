@@ -1,0 +1,17 @@
+static void
+make_eh_edge (edge_cache, src, insn)
+     sbitmap *edge_cache;
+     basic_block src;
+     rtx insn;
+{
+  int is_call = GET_CODE (insn) == CALL_INSN ? EDGE_ABNORMAL_CALL : 0;
+  rtx handlers, i;
+
+  handlers = reachable_handlers (insn);
+
+  for (i = handlers; i; i = XEXP (i, 1))
+    make_label_edge (edge_cache, src, XEXP (i, 0),
+		     EDGE_ABNORMAL | EDGE_EH | is_call);
+
+  free_INSN_LIST_list (&handlers);
+}

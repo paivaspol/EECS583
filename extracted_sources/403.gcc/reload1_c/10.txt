@@ -1,0 +1,38 @@
+static void
+order_regs_for_reload (chain)
+     struct insn_chain *chain;
+{
+  int i;
+  HARD_REG_SET used_by_pseudos;
+  HARD_REG_SET used_by_pseudos2;
+
+  COPY_HARD_REG_SET (bad_spill_regs, fixed_reg_set);
+
+  memset (spill_cost, 0, sizeof spill_cost);
+  memset (spill_add_cost, 0, sizeof spill_add_cost);
+
+  /* Count number of uses of each hard reg by pseudo regs allocated to it
+     and then order them by decreasing use.  First exclude hard registers
+     that are live in or across this insn.  */
+
+  REG_SET_TO_HARD_REG_SET (used_by_pseudos, &chain->live_throughout);
+  REG_SET_TO_HARD_REG_SET (used_by_pseudos2, &chain->dead_or_set);
+  IOR_HARD_REG_SET (bad_spill_regs, used_by_pseudos);
+  IOR_HARD_REG_SET (bad_spill_regs, used_by_pseudos2);
+
+  /* Now find out which pseudos are allocated to it, and update
+     hard_reg_n_uses.  */
+  CLEAR_REG_SET (&pseudos_counted);
+
+  EXECUTE_IF_SET_IN_REG_SET
+    (&chain->live_throughout, FIRST_PSEUDO_REGISTER, i,
+     {
+       count_pseudo (i);
+     });
+  EXECUTE_IF_SET_IN_REG_SET
+    (&chain->dead_or_set, FIRST_PSEUDO_REGISTER, i,
+     {
+       count_pseudo (i);
+     });
+  CLEAR_REG_SET (&pseudos_counted);
+}

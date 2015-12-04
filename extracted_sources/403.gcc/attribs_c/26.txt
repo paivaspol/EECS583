@@ -1,0 +1,29 @@
+static tree
+vector_size_helper (type, bottom)
+     tree type, bottom;
+{
+  tree inner, outer;
+
+  if (POINTER_TYPE_P (type))
+    {
+      inner = vector_size_helper (TREE_TYPE (type), bottom);
+      outer = build_pointer_type (inner);
+    }
+  else if (TREE_CODE (type) == ARRAY_TYPE)
+    {
+      inner = vector_size_helper (TREE_TYPE (type), bottom);
+      outer = build_array_type (inner, TYPE_VALUES (type));
+    }
+  else if (TREE_CODE (type) == FUNCTION_TYPE)
+    {
+      inner = vector_size_helper (TREE_TYPE (type), bottom);
+      outer = build_function_type (inner, TYPE_VALUES (type));
+    }
+  else
+    return bottom;
+  
+  TREE_READONLY (outer) = TREE_READONLY (type);
+  TREE_THIS_VOLATILE (outer) = TREE_THIS_VOLATILE (type);
+
+  return outer;
+}

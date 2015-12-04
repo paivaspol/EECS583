@@ -1,0 +1,58 @@
+static int store_tied(pTHX_ stcxt_t *cxt, SV *sv)
+{
+	MAGIC *mg;
+	SV *obj = NULL;
+	int ret = 0;
+	int svt = SvTYPE(sv);
+	char mtype = 'P';
+
+	TRACEME(("store_tied (0x%"UVxf")", PTR2UV(sv)));
+
+	/*
+	 * We have a small run-time penalty here because we chose to factorise
+	 * all tieds objects into the same routine, and not have a store_tied_hash,
+	 * a store_tied_array, etc...
+	 *
+	 * Don't use a switch() statement, as most compilers don't optimize that
+	 * well for 2/3 values. An if() else if() cascade is just fine. We put
+	 * tied hashes first, as they are the most likely beasts.
+	 */
+
+	if (svt == SVt_PVHV) {
+		TRACEME(("tied hash"));
+		PUTMARK(SX_TIED_HASH);			/* Introduces tied hash */
+	} else if (svt == SVt_PVAV) {
+		TRACEME(("tied array"));
+		PUTMARK(SX_TIED_ARRAY);			/* Introduces tied array */
+	} else {
+		TRACEME(("tied scalar"));
+		PUTMARK(SX_TIED_SCALAR);		/* Introduces tied scalar */
+		mtype = 'q';
+	}
+
+	if (!(mg = mg_find(sv, mtype)))
+		CROAK(("No magic '%c' found while storing tied %s", mtype,
+			(svt == SVt_PVHV) ? "hash" :
+				(svt == SVt_PVAV) ? "array" : "scalar"));
+
+	/*
+	 * The mg->mg_obj found by mg_find() above actually points to the
+	 * underlying tied Perl object implementation. For instance, if the
+	 * original SV was that of a tied array, then mg->mg_obj is an AV.
+	 *
+	 * Note that we store the Perl object as-is. We don't call its FETCH
+	 * method along the way. At retrieval time, we won't call its STORE
+	 * method either, but the tieing magic will be re-installed. In itself,
+	 * that ensures that the tieing semantics are preserved since futher
+	 * accesses on the retrieved object will indeed call the magic methods...
+	 */
+
+	/* [#17040] mg_obj is NULL for scalar self-ties. AMS 20030416 */
+	obj = mg->mg_obj ? mg->mg_obj : newSV(0);
+	if ((ret = store(aTHX_ cxt, obj)))
+		return ret;
+
+	TRACEME(("ok (tied)"));
+
+	return 0;
+}

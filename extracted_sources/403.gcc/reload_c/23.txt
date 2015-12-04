@@ -1,0 +1,65 @@
+static rtx
+subst_reg_equivs (ad, insn)
+     rtx ad;
+     rtx insn;
+{
+  RTX_CODE code = GET_CODE (ad);
+  int i;
+  const char *fmt;
+
+  switch (code)
+    {
+    case HIGH:
+    case CONST_INT:
+    case CONST:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case PC:
+    case CC0:
+      return ad;
+
+    case REG:
+      {
+	int regno = REGNO (ad);
+
+	if (reg_equiv_constant[regno] != 0)
+	  {
+	    subst_reg_equivs_changed = 1;
+	    return reg_equiv_constant[regno];
+	  }
+	if (reg_equiv_memory_loc[regno] && num_not_at_initial_offset)
+	  {
+	    rtx mem = make_memloc (ad, regno);
+	    if (! rtx_equal_p (mem, reg_equiv_mem[regno]))
+	      {
+		subst_reg_equivs_changed = 1;
+		/* We mark the USE with QImode so that we recognize it
+		   as one that can be safely deleted at the end of
+		   reload.  */
+		PUT_MODE (emit_insn_before (gen_rtx_USE (VOIDmode, ad), insn),
+			  QImode);
+		return mem;
+	      }
+	  }
+      }
+      return ad;
+
+    case PLUS:
+      /* Quickly dispose of a common case.  */
+      if (XEXP (ad, 0) == frame_pointer_rtx
+	  && GET_CODE (XEXP (ad, 1)) == CONST_INT)
+	return ad;
+      break;
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    if (fmt[i] == 'e')
+      XEXP (ad, i) = subst_reg_equivs (XEXP (ad, i), insn);
+  return ad;
+}

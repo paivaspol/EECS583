@@ -1,0 +1,41 @@
+static void
+decls_for_scope (stmt, context_die, depth)
+     tree stmt;
+     dw_die_ref context_die;
+     int depth;
+{
+  tree decl;
+  tree subblocks;
+
+  /* Ignore blocks never really used to make RTL.  */
+  if (stmt == NULL_TREE || ! TREE_USED (stmt))
+    return;
+
+  /* Output the DIEs to represent all of the data objects and typedefs
+     declared directly within this block but not within any nested
+     sub-blocks.  Also, nested function and tag DIEs have been
+     generated with a parent of NULL; fix that up now.  */
+  for (decl = BLOCK_VARS (stmt); decl != NULL; decl = TREE_CHAIN (decl))
+    {
+      dw_die_ref die;
+
+      if (TREE_CODE (decl) == FUNCTION_DECL)
+	die = lookup_decl_die (decl);
+      else if (TREE_CODE (decl) == TYPE_DECL && TYPE_DECL_IS_STUB (decl))
+	die = lookup_type_die (TREE_TYPE (decl));
+      else
+	die = NULL;
+
+      if (die != NULL && die->die_parent == NULL)
+	add_child_die (context_die, die);
+      else
+	gen_decl_die (decl, context_die);
+    }
+
+  /* Output the DIEs to represent all sub-blocks (and the items declared
+     therein) of this block.  */
+  for (subblocks = BLOCK_SUBBLOCKS (stmt);
+       subblocks != NULL;
+       subblocks = BLOCK_CHAIN (subblocks))
+    gen_block_die (subblocks, context_die, depth + 1);
+}

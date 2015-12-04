@@ -1,0 +1,96 @@
+static void do_update_sd(int start,int homenr,
+			 rvec accel[],ivec nFreeze[],
+			 real invmass[],unsigned short ptype[],
+			 unsigned short cFREEZE[],unsigned short cACC[],
+			 unsigned short cTC[],real SAfactor,
+			 rvec x[],rvec xprime[],rvec v[],rvec vold[],rvec f[],
+			 int ngtc,real tau_t[],real ref_t[],
+			 int *seed, bool bFirstHalf)
+{
+  typedef struct {
+    real V;
+    real X;
+    real Yv;
+    real Yx;
+  } t_sd_sigmas;
+
+  static bool bFirst = TRUE;
+  static t_sd_sigmas *sig=NULL;
+  static rvec *X,*V;
+  real   kT;
+  int    gf,ga,gt;
+  real   vn=0,Vmh,Xmh;
+  real   ism;
+  int    n,d;
+  unsigned long  jran;
+  
+  if (sig == NULL) {
+    snew(sig,ngtc);
+    snew(X,homenr);
+    snew(V,homenr);
+  }
+  
+  if (bFirstHalf) {
+    for(n=0; n<ngtc; n++) {
+      kT = BOLTZ*SAfactor*ref_t[n];
+      /* The mass is encounted for later, since this differs per atom */
+      sig[n].V  = sqrt(kT*(1-sdc[n].em));
+      sig[n].X  = sqrt(kT*sqr(tau_t[n])*sdc[n].c);
+      sig[n].Yv = sqrt(kT*sdc[n].b/sdc[n].c);
+      sig[n].Yx = sqrt(kT*sqr(tau_t[n])*sdc[n].b/(1-sdc[n].em));
+    }
+  }
+
+  jran = (unsigned long)((real)im*rando(seed));
+
+  for (n=start; n<start+homenr; n++) {  
+    ism = sqrt(invmass[n]);
+    gf  = cFREEZE[n];
+    ga  = cACC[n];
+    gt  = cTC[n];
+    
+    for (d=0; d<DIM; d++) {
+      if (bFirstHalf) {
+	vn             = v[n][d];
+	vold[n][d]     = vn;
+      }
+      if ((ptype[n] != eptDummy) && (ptype[n] != eptShell) && !nFreeze[gf][d]) {
+	if (bFirstHalf) {
+
+	  if (bFirst)
+	    X[n-start][d] = ism*sig[gt].X*fgauss(&jran);
+	  
+	  Vmh = X[n-start][d]*sdc[gt].d/(tau_t[gt]*sdc[gt].c) 
+	    + ism*sig[gt].Yv*fgauss(&jran);
+	  V[n-start][d] = ism*sig[gt].V*fgauss(&jran);
+	  
+	  v[n][d] = vn*sdc[gt].em 
+	    + (invmass[n]*f[n][d] + accel[ga][d])*tau_t[gt]*(1 - sdc[gt].em)
+	    + V[n-start][d] - sdc[gt].em*Vmh;
+	    
+	  xprime[n][d] = x[n][d] + v[n][d]*tau_t[gt]*(sdc[gt].eph - sdc[gt].emh); 
+  
+	} else {
+	  
+	  /* Correct the velocties for the constraints */
+	  v[n][d] = 
+	    (xprime[n][d] - x[n][d])/(tau_t[gt]*(sdc[gt].eph - sdc[gt].emh));  
+
+	  Xmh = V[n-start][d]*tau_t[gt]*sdc[gt].d/(sdc[gt].em-1) 
+	    + ism*sig[gt].Yx*fgauss(&jran);
+	  X[n-start][d] = ism*sig[gt].X*fgauss(&jran);
+	  
+	  xprime[n][d] += X[n-start][d] - Xmh;
+	  
+	}
+      } else {
+	if (bFirstHalf) {
+	  v[n][d]        = 0.0;
+	  xprime[n][d]   = x[n][d];
+	}
+      }
+    }
+  }
+  
+  bFirst = FALSE;
+}

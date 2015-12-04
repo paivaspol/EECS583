@@ -1,0 +1,114 @@
+void do_iparams(t_functype ftype,t_iparams *iparams,bool bRead)
+{
+  int i;
+  bool bDum;
+  
+  if (!bRead)
+    set_comment(interaction_function[ftype].name);
+  switch (ftype) {
+  case F_ANGLES:
+  case F_G96ANGLES:
+  case F_BONDS:
+  case F_G96BONDS:
+  case F_HARMONIC:
+  case F_IDIHS:
+  case F_ANGRES:
+  case F_ANGRESZ:
+    do_harm(iparams,bRead);
+    break;
+  case F_BHAM:
+    do_real(iparams->bham.a);
+    do_real(iparams->bham.b);
+    do_real(iparams->bham.c);
+    break;
+  case F_MORSE:
+    do_real(iparams->morse.b0);
+    do_real(iparams->morse.cb);
+    do_real(iparams->morse.beta);
+    break;
+  case F_CUBICBONDS:
+    do_real(iparams->cubic.b0);
+    do_real(iparams->cubic.kb);
+    do_real(iparams->cubic.kcub);
+    break;
+  case F_CONNBONDS:
+    break;
+  case F_WPOL:
+    do_real(iparams->wpol.kx);
+    do_real(iparams->wpol.ky);
+    do_real(iparams->wpol.kz);
+    do_real(iparams->wpol.rOH);
+    do_real(iparams->wpol.rHH);
+    do_real(iparams->wpol.rOD);
+    break;
+  case F_LJ:
+    do_real(iparams->lj.c6);
+    do_real(iparams->lj.c12);
+    break;
+  case F_LJ14:
+    do_real(iparams->lj14.c6A);
+    do_real(iparams->lj14.c12A);
+    do_real(iparams->lj14.c6B);
+    do_real(iparams->lj14.c12B);
+    break;
+  case F_PDIHS:
+    do_real(iparams->pdihs.phiA);
+    do_real(iparams->pdihs.cpA);
+    do_real(iparams->pdihs.phiB);
+    do_real(iparams->pdihs.cpB);
+    do_int (iparams->pdihs.mult);
+    break;
+  case F_DISRES:
+    do_int (iparams->disres.label);
+    do_int (iparams->disres.type);
+    do_real(iparams->disres.low);
+    do_real(iparams->disres.up1);
+    do_real(iparams->disres.up2);
+    do_real(iparams->disres.kfac);
+    break;
+  case F_ORIRES:
+    do_int (iparams->orires.ex);
+    do_int (iparams->orires.label);
+    do_int (iparams->orires.pow);
+    do_real(iparams->orires.c);
+    do_real(iparams->orires.obs);
+    do_real(iparams->orires.kfac);
+    break;
+  case F_POSRES:
+    do_rvec(iparams->posres.pos0);
+    do_rvec(iparams->posres.fc);
+    break;
+  case F_RBDIHS:
+    ndo_real(iparams->rbdihs.rbc,NR_RBDIHS,bDum);
+    break;
+  case F_SHAKE:
+  case F_SHAKENC:
+    do_real(iparams->shake.dA);
+    do_real(iparams->shake.dB);
+    break;
+  case F_SETTLE:
+    do_real(iparams->settle.doh);
+    do_real(iparams->settle.dhh);
+    break;
+  case F_DUMMY2:
+    do_real(iparams->dummy.a);
+    break;
+  case F_DUMMY3:
+  case F_DUMMY3FD:
+  case F_DUMMY3FAD:
+    do_real(iparams->dummy.a);
+    do_real(iparams->dummy.b);
+    break;
+  case F_DUMMY3OUT:
+  case F_DUMMY4FD: 
+    do_real(iparams->dummy.a);
+    do_real(iparams->dummy.b);
+    do_real(iparams->dummy.c);
+    break;
+  default:
+    fatal_error(0,"unknown function type %d (%s) in %s line %d",
+		ftype,interaction_function[ftype].name,__FILE__,__LINE__);
+  }
+  if (!bRead)
+    unset_comment();
+}

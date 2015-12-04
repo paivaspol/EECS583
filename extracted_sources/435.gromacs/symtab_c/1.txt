@@ -1,0 +1,20 @@
+int lookup_symtab(t_symtab *symtab,char **name)
+{
+  int base,index;
+  t_symbuf *symbuf;
+  
+  base=0;
+  index=0;
+  symbuf=symtab->symbuf;
+  while (symbuf!=NULL) {
+    index=name-symbuf->buf;
+    if ( ( index >= 0 ) && ( index < symbuf->bufsize ) )
+      return index+base;
+    else {
+      base+=symbuf->bufsize;
+      symbuf=symbuf->next;
+    }
+  }
+  fatal_error(0,"symtab lookup \"%s\" not found",*name);
+  return -1;
+}

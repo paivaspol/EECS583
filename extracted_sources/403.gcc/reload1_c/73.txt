@@ -1,0 +1,121 @@
+static void
+reload_combine_note_use (xp, insn)
+     rtx *xp, insn;
+{
+  rtx x = *xp;
+  enum rtx_code code = x->code;
+  const char *fmt;
+  int i, j;
+  rtx offset = const0_rtx; /* For the REG case below.  */
+
+  switch (code)
+    {
+    case SET:
+      if (GET_CODE (SET_DEST (x)) == REG)
+	{
+	  reload_combine_note_use (&SET_SRC (x), insn);
+	  return;
+	}
+      break;
+
+    case USE:
+      /* If this is the USE of a return value, we can't change it.  */
+      if (GET_CODE (XEXP (x, 0)) == REG && REG_FUNCTION_VALUE_P (XEXP (x, 0)))
+	{
+	/* Mark the return register as used in an unknown fashion.  */
+	  rtx reg = XEXP (x, 0);
+	  int regno = REGNO (reg);
+	  int nregs = HARD_REGNO_NREGS (regno, GET_MODE (reg));
+
+	  while (--nregs >= 0)
+	    reg_state[regno + nregs].use_index = -1;
+	  return;
+	}
+      break;
+
+    case CLOBBER:
+      if (GET_CODE (SET_DEST (x)) == REG)
+	{
+	  /* No spurious CLOBBERs of pseudo registers may remain.  */
+	  if (REGNO (SET_DEST (x)) >= FIRST_PSEUDO_REGISTER)
+	    abort ();
+	  return;
+	}
+      break;
+
+    case PLUS:
+      /* We are interested in (plus (reg) (const_int)) .  */
+      if (GET_CODE (XEXP (x, 0)) != REG
+	  || GET_CODE (XEXP (x, 1)) != CONST_INT)
+	break;
+      offset = XEXP (x, 1);
+      x = XEXP (x, 0);
+      /* Fall through.  */
+    case REG:
+      {
+	int regno = REGNO (x);
+	int use_index;
+	int nregs;
+
+	/* No spurious USEs of pseudo registers may remain.  */
+	if (regno >= FIRST_PSEUDO_REGISTER)
+	  abort ();
+
+	nregs = HARD_REGNO_NREGS (regno, GET_MODE (x));
+
+	/* We can't substitute into multi-hard-reg uses.  */
+	if (nregs > 1)
+	  {
+	    while (--nregs >= 0)
+	      reg_state[regno + nregs].use_index = -1;
+	    return;
+	  }
+
+	/* If this register is already used in some unknown fashion, we
+	   can't do anything.
+	   If we decrement the index from zero to -1, we can't store more
+	   uses, so this register becomes used in an unknown fashion.  */
+	use_index = --reg_state[regno].use_index;
+	if (use_index < 0)
+	  return;
+
+	if (use_index != RELOAD_COMBINE_MAX_USES - 1)
+	  {
+	    /* We have found another use for a register that is already
+	       used later.  Check if the offsets match; if not, mark the
+	       register as used in an unknown fashion.  */
+	    if (! rtx_equal_p (offset, reg_state[regno].offset))
+	      {
+		reg_state[regno].use_index = -1;
+		return;
+	      }
+	  }
+	else
+	  {
+	    /* This is the first use of this register we have seen since we
+	       marked it as dead.  */
+	    reg_state[regno].offset = offset;
+	    reg_state[regno].use_ruid = reload_combine_ruid;
+	  }
+	reg_state[regno].reg_use[use_index].insn = insn;
+	reg_state[regno].reg_use[use_index].usep = xp;
+	return;
+      }
+
+    default:
+      break;
+    }
+
+  /* Recursively process the components of X.  */
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	reload_combine_note_use (&XEXP (x, i), insn);
+      else if (fmt[i] == 'E')
+	{
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    reload_combine_note_use (&XVECEXP (x, i, j), insn);
+	}
+    }
+}

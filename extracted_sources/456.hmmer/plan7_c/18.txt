@@ -1,0 +1,33 @@
+void
+PrintPlan7Stats(FILE *fp, struct plan7_s *hmm, char **dsq, int nseq,
+		struct p7trace_s **tr)
+{
+  int   idx;			/* counter for sequences                */
+  float score;			/* an individual trace score            */
+  float total, best, worst;	/* for the avg. and range of the scores */
+  float sqsum, stddev;		/* for the std. deviation of the scores */
+
+  P7Logoddsify(hmm, TRUE);	/* make sure model scores are ready */
+
+				/* find individual trace scores */
+  score = P7TraceScore(hmm, dsq[0], tr[0]);
+  total = best = worst = score;
+  sqsum = score * score;
+  for (idx = 1; idx < nseq; idx++) {
+    /* P7PrintTrace(stdout, tr[idx], hmm, dsq[idx]); */
+    score  = P7TraceScore(hmm, dsq[idx], tr[idx]);
+    total += score;
+    sqsum += score * score;
+    if (score > best)  best = score;
+    if (score < worst) worst = score;
+  }
+  if (nseq > 1) {
+    stddev = (sqsum - (total * total / (float) nseq)) / ((float) nseq - 1.);
+    stddev = (stddev > 0) ? sqrt(stddev) : 0.0;
+  } else stddev = 0.0;
+				/* print out stuff. */
+  fprintf(fp, "Average score:  %10.2f bits\n", total / (float) nseq);
+  fprintf(fp, "Minimum score:  %10.2f bits\n", worst);
+  fprintf(fp, "Maximum score:  %10.2f bits\n", best);
+  fprintf(fp, "Std. deviation: %10.2f bits\n", stddev);
+}

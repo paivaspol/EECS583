@@ -1,0 +1,56 @@
+static void
+df_bitmaps_free (df, flags)
+     struct df *df ATTRIBUTE_UNUSED;
+     int flags;
+{
+  unsigned int i;
+
+  for (i = 0; i < df->n_bbs; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      struct bb_info *bb_info = DF_BB_INFO (df, bb);
+
+      if (!bb_info)
+	continue;
+
+      if ((flags & DF_RD) && bb_info->rd_in)
+	{
+	  /* Free bitmaps for reaching definitions.  */
+	  BITMAP_XFREE (bb_info->rd_kill);
+	  bb_info->rd_kill = NULL;
+	  BITMAP_XFREE (bb_info->rd_gen);
+	  bb_info->rd_gen = NULL;
+	  BITMAP_XFREE (bb_info->rd_in);
+	  bb_info->rd_in = NULL;
+	  BITMAP_XFREE (bb_info->rd_out);
+	  bb_info->rd_out = NULL;
+	}
+
+      if ((flags & DF_RU) && bb_info->ru_in)
+	{
+	  /* Free bitmaps for upward exposed uses.  */
+	  BITMAP_XFREE (bb_info->ru_kill);
+	  bb_info->ru_kill = NULL;
+	  BITMAP_XFREE (bb_info->ru_gen);
+	  bb_info->ru_gen = NULL;
+	  BITMAP_XFREE (bb_info->ru_in);
+	  bb_info->ru_in = NULL;
+	  BITMAP_XFREE (bb_info->ru_out);
+	  bb_info->ru_out = NULL;
+	}
+
+      if ((flags & DF_LR) && bb_info->lr_in)
+	{
+	  /* Free bitmaps for live variables.  */
+	  BITMAP_XFREE (bb_info->lr_def);
+	  bb_info->lr_def = NULL;
+	  BITMAP_XFREE (bb_info->lr_use);
+	  bb_info->lr_use = NULL;
+	  BITMAP_XFREE (bb_info->lr_in);
+	  bb_info->lr_in = NULL;
+	  BITMAP_XFREE (bb_info->lr_out);
+	  bb_info->lr_out = NULL;
+	}
+    }
+  df->flags &= ~(flags & (DF_RD | DF_RU | DF_LR));
+}

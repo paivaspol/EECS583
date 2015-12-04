@@ -1,0 +1,17 @@
+static void
+dbxout_start_source_file (line, filename)
+     unsigned int line ATTRIBUTE_UNUSED;
+     const char *filename ATTRIBUTE_UNUSED;
+{
+#ifdef DBX_USE_BINCL
+  struct dbx_file *n = (struct dbx_file *) xmalloc (sizeof *n);
+
+  n->next = current_file;
+  n->file_number = next_file_number++;
+  n->next_type_number = 1;
+  current_file = n;
+  fprintf (asmfile, "%s", ASM_STABS_OP);
+  output_quoted_string (asmfile, filename);
+  fprintf (asmfile, ",%d,0,0,0\n", N_BINCL);
+#endif
+}

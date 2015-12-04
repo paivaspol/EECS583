@@ -1,0 +1,28 @@
+void write_sei_message(int id, byte* payload, int payload_size, int payload_type)
+{
+  int offset, type, size;
+  assert(payload_type > SEI_ZERO && payload_type < SEI_MAX_ELEMENTS);
+
+  type = payload_type;
+  size = payload_size;
+  offset = sei_message[id].payloadSize;
+
+  while ( type > 255 )
+  {
+    sei_message[id].data[offset++] = 0xFF;
+    type = type - 255;
+  }
+  sei_message[id].data[offset++] = type;
+
+  while ( size > 255 )
+  {
+    sei_message[id].data[offset++] = 0xFF;
+    size = size - 255;
+  }
+  sei_message[id].data[offset++] = size;
+
+  memcpy(sei_message[id].data + offset, payload, payload_size);
+  offset += payload_size;
+
+  sei_message[id].payloadSize = offset;
+}

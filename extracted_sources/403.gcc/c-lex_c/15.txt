@@ -1,0 +1,469 @@
+static tree
+lex_number (str, len)
+     const char *str;
+     unsigned int len;
+{
+  int base = 10;
+  int count = 0;
+  int largest_digit = 0;
+  int numdigits = 0;
+  int overflow = 0;
+  int c;
+  tree value;
+  const char *p;
+  enum anon1 { NOT_FLOAT = 0, AFTER_POINT, AFTER_EXPON } floatflag = NOT_FLOAT;
+  
+  /* We actually store only HOST_BITS_PER_CHAR bits in each part.
+     The code below which fills the parts array assumes that a host
+     int is at least twice as wide as a host char, and that 
+     HOST_BITS_PER_WIDE_INT is an even multiple of HOST_BITS_PER_CHAR.
+     Two HOST_WIDE_INTs is the largest int literal we can store.
+     In order to detect overflow below, the number of parts (TOTAL_PARTS)
+     must be exactly the number of parts needed to hold the bits
+     of two HOST_WIDE_INTs.  */
+#define TOTAL_PARTS ((HOST_BITS_PER_WIDE_INT / HOST_BITS_PER_CHAR) * 2)
+  unsigned int parts[TOTAL_PARTS];
+  
+  /* Optimize for most frequent case.  */
+  if (len == 1)
+    {
+      if (*str == '0')
+	return integer_zero_node;
+      else if (*str == '1')
+	return integer_one_node;
+      else
+	return build_int_2 (*str - '0', 0);
+    }
+
+  for (count = 0; count < TOTAL_PARTS; count++)
+    parts[count] = 0;
+
+  /* len is known to be >1 at this point.  */
+  p = str;
+
+  if (len > 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
+    {
+      base = 16;
+      p = str + 2;
+    }
+  /* The ISDIGIT check is so we are not confused by a suffix on 0.  */
+  else if (str[0] == '0' && ISDIGIT (str[1]))
+    {
+      base = 8;
+      p = str + 1;
+    }
+
+  do
+    {
+      c = *p++;
+
+      if (c == '.')
+	{
+	  if (floatflag == AFTER_POINT)
+	    ERROR ("too many decimal points in floating constant");
+	  else if (floatflag == AFTER_EXPON)
+	    ERROR ("decimal point in exponent - impossible!");
+	  else
+	    floatflag = AFTER_POINT;
+
+	  if (base == 8)
+	    base = 10;
+	}
+      else if (c == '_')
+	/* Possible future extension: silently ignore _ in numbers,
+	   permitting cosmetic grouping - e.g. 0x8000_0000 == 0x80000000
+	   but somewhat easier to read.  Ada has this?  */
+	ERROR ("underscore in number");
+      else
+	{
+	  int n;
+	  /* It is not a decimal point.
+	     It should be a digit (perhaps a hex digit).  */
+
+	  if (ISDIGIT (c)
+	      || (base == 16 && ISXDIGIT (c)))
+	    {
+	      n = hex_value (c);
+	    }
+	  else if (base <= 10 && (c == 'e' || c == 'E'))
+	    {
+	      base = 10;
+	      floatflag = AFTER_EXPON;
+	      break;
+	    }
+	  else if (base == 16 && (c == 'p' || c == 'P'))
+	    {
+	      floatflag = AFTER_EXPON;
+	      break;   /* start of exponent */
+	    }
+	  else
+	    {
+	      p--;
+	      break;  /* start of suffix */
+	    }
+
+	  if (n >= largest_digit)
+	    largest_digit = n;
+	  numdigits++;
+
+	  for (count = 0; count < TOTAL_PARTS; count++)
+	    {
+	      parts[count] *= base;
+	      if (count)
+		{
+		  parts[count]
+		    += (parts[count-1] >> HOST_BITS_PER_CHAR);
+		  parts[count-1]
+		    &= (1 << HOST_BITS_PER_CHAR) - 1;
+		}
+	      else
+		parts[0] += n;
+	    }
+
+	  /* If the highest-order part overflows (gets larger than
+	     a host char will hold) then the whole number has 
+	     overflowed.  Record this and truncate the highest-order
+	     part.  */
+	  if (parts[TOTAL_PARTS - 1] >> HOST_BITS_PER_CHAR)
+	    {
+	      overflow = 1;
+	      parts[TOTAL_PARTS - 1] &= (1 << HOST_BITS_PER_CHAR) - 1;
+	    }
+	}
+    }
+  while (p < str + len);
+
+  /* This can happen on input like `int i = 0x;' */
+  if (numdigits == 0)
+    ERROR ("numeric constant with no digits");
+
+  if (largest_digit >= base)
+    ERROR ("numeric constant contains digits beyond the radix");
+
+  if (floatflag != NOT_FLOAT)
+    {
+      tree type;
+      int imag, fflag, lflag, conversion_errno;
+      REAL_VALUE_TYPE real;
+      struct pf_args args;
+      char *copy;
+
+      if (base == 16 && pedantic && !flag_isoc99)
+	pedwarn ("floating constant may not be in radix 16");
+
+      if (base == 16 && floatflag != AFTER_EXPON)
+	ERROR ("hexadecimal floating constant has no exponent");
+
+      /* Read explicit exponent if any, and put it in tokenbuf.  */
+      if ((base == 10 && ((c == 'e') || (c == 'E')))
+	  || (base == 16 && (c == 'p' || c == 'P')))
+	{
+	  if (p < str + len)
+	    c = *p++;
+	  if (p < str + len && (c == '+' || c == '-'))
+	    c = *p++;
+	  /* Exponent is decimal, even if string is a hex float.  */
+	  if (! ISDIGIT (c))
+	    ERROR ("floating constant exponent has no digits");
+	  while (p < str + len && ISDIGIT (c))
+	    c = *p++;
+	  if (! ISDIGIT (c))
+	    p--;
+	}
+
+      /* Copy the float constant now; we don't want any suffixes in the
+	 string passed to parse_float.  */
+      copy = alloca (p - str + 1);
+      memcpy (copy, str, p - str);
+      copy[p - str] = '\0';
+
+      /* Now parse suffixes.  */
+      fflag = lflag = imag = 0;
+      while (p < str + len)
+	switch (*p++)
+	  {
+	  case 'f': case 'F':
+	    if (fflag)
+	      ERROR ("more than one 'f' suffix on floating constant");
+	    else if (warn_traditional && !in_system_header
+		     && ! cpp_sys_macro_p (parse_in))
+	      warning ("traditional C rejects the 'f' suffix");
+
+	    fflag = 1;
+	    break;
+
+	  case 'l': case 'L':
+	    if (lflag)
+	      ERROR ("more than one 'l' suffix on floating constant");
+	    else if (warn_traditional && !in_system_header
+		     && ! cpp_sys_macro_p (parse_in))
+	      warning ("traditional C rejects the 'l' suffix");
+
+	    lflag = 1;
+	    break;
+
+	  case 'i': case 'I':
+	  case 'j': case 'J':
+	    if (imag)
+	      ERROR ("more than one 'i' or 'j' suffix on floating constant");
+	    else if (pedantic)
+	      pedwarn ("ISO C forbids imaginary numeric constants");
+	    imag = 1;
+	    break;
+
+	  default:
+	    ERROR ("invalid suffix on floating constant");
+	  }
+
+      /* Setup input for parse_float() */
+      args.str = copy;
+      args.fflag = fflag;
+      args.lflag = lflag;
+      args.base = base;
+
+      /* Convert string to a double, checking for overflow.  */
+      if (do_float_handler (parse_float, (PTR) &args))
+	{
+	  /* Receive output from parse_float() */
+	  real = args.value;
+	}
+      else
+	  /* We got an exception from parse_float() */
+	  ERROR ("floating constant out of range");
+
+      /* Receive output from parse_float() */
+      conversion_errno = args.conversion_errno;
+      type = args.type;
+	    
+#ifdef ERANGE
+      /* ERANGE is also reported for underflow,
+	 so test the value to distinguish overflow from that.  */
+      if (conversion_errno == ERANGE && !flag_traditional && pedantic
+	  && (REAL_VALUES_LESS (dconst1, real)
+	      || REAL_VALUES_LESS (real, dconstm1)))
+	warning ("floating point number exceeds range of 'double'");
+#endif
+
+      /* Create a node with determined type and value.  */
+      if (imag)
+	value = build_complex (NULL_TREE, convert (type, integer_zero_node),
+			       build_real (type, real));
+      else
+	value = build_real (type, real);
+    }
+  else
+    {
+      tree trad_type, ansi_type, type;
+      HOST_WIDE_INT high, low;
+      int spec_unsigned = 0;
+      int spec_long = 0;
+      int spec_long_long = 0;
+      int spec_imag = 0;
+      int suffix_lu = 0;
+      int warn = 0, i;
+
+      trad_type = ansi_type = type = NULL_TREE;
+      while (p < str + len)
+	{
+	  c = *p++;
+	  switch (c)
+	    {
+	    case 'u': case 'U':
+	      if (spec_unsigned)
+		error ("two 'u' suffixes on integer constant");
+	      else if (warn_traditional && !in_system_header
+		       && ! cpp_sys_macro_p (parse_in))
+		warning ("traditional C rejects the 'u' suffix");
+
+	      spec_unsigned = 1;
+	      if (spec_long)
+		suffix_lu = 1;
+	      break;
+
+	    case 'l': case 'L':
+	      if (spec_long)
+		{
+		  if (spec_long_long)
+		    error ("three 'l' suffixes on integer constant");
+		  else if (suffix_lu)
+		    error ("'lul' is not a valid integer suffix");
+		  else if (c != spec_long)
+		    error ("'Ll' and 'lL' are not valid integer suffixes");
+		  else if (pedantic && ! flag_isoc99
+			   && ! in_system_header && warn_long_long)
+		    pedwarn ("ISO C89 forbids long long integer constants");
+		  spec_long_long = 1;
+		}
+	      spec_long = c;
+	      break;
+
+	    case 'i': case 'I': case 'j': case 'J':
+	      if (spec_imag)
+		error ("more than one 'i' or 'j' suffix on integer constant");
+	      else if (pedantic)
+		pedwarn ("ISO C forbids imaginary numeric constants");
+	      spec_imag = 1;
+	      break;
+
+	    default:
+	      ERROR ("invalid suffix on integer constant");
+	    }
+	}
+
+      /* If the literal overflowed, pedwarn about it now.  */
+      if (overflow)
+	{
+	  warn = 1;
+	  pedwarn ("integer constant is too large for this configuration of the compiler - truncated to %d bits", HOST_BITS_PER_WIDE_INT * 2);
+	}
+
+      /* This is simplified by the fact that our constant
+	 is always positive.  */
+
+      high = low = 0;
+
+      for (i = 0; i < HOST_BITS_PER_WIDE_INT / HOST_BITS_PER_CHAR; i++)
+	{
+	  high |= ((HOST_WIDE_INT) parts[i + (HOST_BITS_PER_WIDE_INT
+					      / HOST_BITS_PER_CHAR)]
+		   << (i * HOST_BITS_PER_CHAR));
+	  low |= (HOST_WIDE_INT) parts[i] << (i * HOST_BITS_PER_CHAR);
+	}
+
+      value = build_int_2 (low, high);
+      TREE_TYPE (value) = long_long_unsigned_type_node;
+
+      /* If warn_traditional, calculate both the ISO type and the
+	 traditional type, then see if they disagree.
+	 Otherwise, calculate only the type for the dialect in use.  */
+      if (warn_traditional || flag_traditional)
+	{
+	  /* Calculate the traditional type.  */
+	  /* Traditionally, any constant is signed; but if unsigned is
+	     specified explicitly, obey that.  Use the smallest size
+	     with the right number of bits, except for one special
+	     case with decimal constants.  */
+	  if (! spec_long && base != 10
+	      && int_fits_type_p (value, unsigned_type_node))
+	    trad_type = spec_unsigned ? unsigned_type_node : integer_type_node;
+	  /* A decimal constant must be long if it does not fit in
+	     type int.  I think this is independent of whether the
+	     constant is signed.  */
+	  else if (! spec_long && base == 10
+		   && int_fits_type_p (value, integer_type_node))
+	    trad_type = spec_unsigned ? unsigned_type_node : integer_type_node;
+	  else if (! spec_long_long)
+	    trad_type = (spec_unsigned
+			 ? long_unsigned_type_node
+			 : long_integer_type_node);
+	  else if (int_fits_type_p (value,
+				    spec_unsigned 
+				    ? long_long_unsigned_type_node
+				    : long_long_integer_type_node)) 
+	    trad_type = (spec_unsigned
+			 ? long_long_unsigned_type_node
+			 : long_long_integer_type_node);
+	  else
+	    trad_type = (spec_unsigned
+			 ? widest_unsigned_literal_type_node
+			 : widest_integer_literal_type_node);
+	}
+      if (warn_traditional || ! flag_traditional)
+	{
+	  /* Calculate the ISO type.  */
+	  if (! spec_long && ! spec_unsigned
+	      && int_fits_type_p (value, integer_type_node))
+	    ansi_type = integer_type_node;
+	  else if (! spec_long && (base != 10 || spec_unsigned)
+		   && int_fits_type_p (value, unsigned_type_node))
+	    ansi_type = unsigned_type_node;
+	  else if (! spec_unsigned && !spec_long_long
+		   && int_fits_type_p (value, long_integer_type_node))
+	    ansi_type = long_integer_type_node;
+	  else if (! spec_long_long
+		   && int_fits_type_p (value, long_unsigned_type_node))
+	    ansi_type = long_unsigned_type_node;
+	  else if (! spec_unsigned
+		   && int_fits_type_p (value, long_long_integer_type_node))
+	    ansi_type = long_long_integer_type_node;
+	  else if (int_fits_type_p (value, long_long_unsigned_type_node))
+	    ansi_type = long_long_unsigned_type_node;
+	  else if (! spec_unsigned
+		   && int_fits_type_p (value, widest_integer_literal_type_node))
+	    ansi_type = widest_integer_literal_type_node;
+	  else
+	    ansi_type = widest_unsigned_literal_type_node;
+	}
+
+      type = flag_traditional ? trad_type : ansi_type;
+
+      /* We assume that constants specified in a non-decimal
+	 base are bit patterns, and that the programmer really
+	 meant what they wrote.  */
+      if (warn_traditional && !in_system_header
+	  && base == 10 && trad_type != ansi_type)
+	{
+	  if (TYPE_PRECISION (trad_type) != TYPE_PRECISION (ansi_type))
+	    warning ("width of integer constant changes with -traditional");
+	  else if (TREE_UNSIGNED (trad_type) != TREE_UNSIGNED (ansi_type))
+	    warning ("integer constant is unsigned in ISO C, signed with -traditional");
+	  else
+	    warning ("width of integer constant may change on other systems with -traditional");
+	}
+
+      if (pedantic && !flag_traditional && (flag_isoc99 || !spec_long_long)
+	  && !warn
+	  && ((flag_isoc99
+	       ? TYPE_PRECISION (long_long_integer_type_node)
+	       : TYPE_PRECISION (long_integer_type_node)) < TYPE_PRECISION (type)))
+	{
+	  warn = 1;
+	  pedwarn ("integer constant larger than the maximum value of %s",
+		   (flag_isoc99
+		    ? (TREE_UNSIGNED (type)
+		       ? _("an unsigned long long int")
+		       : _("a long long int"))
+		    : _("an unsigned long int")));
+	}
+
+      if (base == 10 && ! spec_unsigned && TREE_UNSIGNED (type))
+	warning ("decimal constant is so large that it is unsigned");
+
+      if (spec_imag)
+	{
+	  if (TYPE_PRECISION (type)
+	      <= TYPE_PRECISION (integer_type_node))
+	    value = build_complex (NULL_TREE, integer_zero_node,
+				   convert (integer_type_node, value));
+	  else
+	    ERROR ("complex integer constant is too wide for 'complex int'");
+	}
+      else if (flag_traditional && !int_fits_type_p (value, type))
+	/* The traditional constant 0x80000000 is signed
+	   but doesn't fit in the range of int.
+	   This will change it to -0x80000000, which does fit.  */
+	{
+	  TREE_TYPE (value) = unsigned_type (type);
+	  value = convert (type, value);
+	  TREE_OVERFLOW (value) = TREE_CONSTANT_OVERFLOW (value) = 0;
+	}
+      else
+	TREE_TYPE (value) = type;
+
+      /* If it's still an integer (not a complex), and it doesn't
+	 fit in the type we choose for it, then pedwarn.  */
+
+      if (! warn
+	  && TREE_CODE (TREE_TYPE (value)) == INTEGER_TYPE
+	  && ! int_fits_type_p (value, TREE_TYPE (value)))
+	pedwarn ("integer constant is larger than the maximum value for its type");
+    }
+
+  if (p < str + len)
+    error ("missing white space after number '%.*s'", (int) (p - str), str);
+
+  return value;
+
+ syntax_error:
+  return integer_zero_node;
+}

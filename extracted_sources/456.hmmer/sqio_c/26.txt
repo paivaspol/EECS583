@@ -1,0 +1,15 @@
+static int
+endEMBL(char *s, int *addend)
+{
+  *addend = 0;
+  /* Some people (Berlin 5S rRNA database, f'r instance) use
+   * an extended EMBL format that attaches extra data after
+   * the sequence -- watch out for that. We use the fact that
+   * real EMBL sequence lines begin with five spaces.
+   * 
+   * We can use this as the sole end test because readEMBL() will
+   * advance to the next ID line before starting to read again.
+   */
+  return (strncmp(s,"     ",5) != 0);
+/*  return ((strstr(s,"//") != NULL) || (strstr(s,"ID   ") == s)); */
+}

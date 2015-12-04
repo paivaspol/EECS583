@@ -1,0 +1,26 @@
+void unary_bin_max_encode(EncodingEnvironmentPtr eep_dp,
+                          unsigned int symbol,
+                          BiContextTypePtr ctx,
+                          int ctx_offset,
+                          unsigned int max_symbol)
+{
+  unsigned int l;
+  BiContextTypePtr ictx;
+
+  if (symbol==0)
+  {
+    biari_encode_symbol(eep_dp, 0, ctx );
+    return;
+  }
+  else
+  {
+    biari_encode_symbol(eep_dp, 1, ctx );
+    l=symbol;
+    ictx=ctx+ctx_offset;
+    while ((--l)>0)
+      biari_encode_symbol(eep_dp, 1, ictx);
+    if (symbol<max_symbol)
+        biari_encode_symbol(eep_dp, 0, ictx);
+  }
+  return;
+}

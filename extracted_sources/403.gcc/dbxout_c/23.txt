@@ -1,0 +1,284 @@
+int
+dbxout_symbol (decl, local)
+     tree decl;
+     int local ATTRIBUTE_UNUSED;
+{
+  tree type = TREE_TYPE (decl);
+  tree context = NULL_TREE;
+  int result = 0;
+
+  /* Cast avoids warning in old compilers.  */
+  current_sym_code = (STAB_CODE_TYPE) 0;
+  current_sym_value = 0;
+  current_sym_addr = 0;
+
+  /* Ignore nameless syms, but don't ignore type tags.  */
+
+  if ((DECL_NAME (decl) == 0 && TREE_CODE (decl) != TYPE_DECL)
+      || DECL_IGNORED_P (decl))
+    return 0;
+
+  dbxout_prepare_symbol (decl);
+
+  /* The output will always start with the symbol name,
+     so always count that in the length-output-so-far.  */
+
+  if (DECL_NAME (decl) != 0)
+    current_sym_nchars = 2 + IDENTIFIER_LENGTH (DECL_NAME (decl));
+
+  switch (TREE_CODE (decl))
+    {
+    case CONST_DECL:
+      /* Enum values are defined by defining the enum type.  */
+      break;
+
+    case FUNCTION_DECL:
+      if (DECL_RTL (decl) == 0)
+	return 0;
+      if (DECL_EXTERNAL (decl))
+	break;
+      /* Don't mention a nested function under its parent.  */
+      context = decl_function_context (decl);
+      if (context == current_function_decl)
+	break;
+      if (GET_CODE (DECL_RTL (decl)) != MEM
+	  || GET_CODE (XEXP (DECL_RTL (decl), 0)) != SYMBOL_REF)
+	break;
+      FORCE_TEXT;
+
+      fprintf (asmfile, "%s\"%s:%c", ASM_STABS_OP,
+	       IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl)),
+	       TREE_PUBLIC (decl) ? 'F' : 'f');
+      result = 1;
+
+      current_sym_code = N_FUN;
+      current_sym_addr = XEXP (DECL_RTL (decl), 0);
+
+      if (TREE_TYPE (type))
+	dbxout_type (TREE_TYPE (type), 0);
+      else
+	dbxout_type (void_type_node, 0);
+
+      /* For a nested function, when that function is compiled,
+	 mention the containing function name
+	 as well as (since dbx wants it) our own assembler-name.  */
+      if (context != 0)
+	fprintf (asmfile, ",%s,%s",
+		 IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl)),
+		 IDENTIFIER_POINTER (DECL_NAME (context)));
+
+      dbxout_finish_symbol (decl);
+      break;
+
+    case TYPE_DECL:
+#if 0
+      /* This seems all wrong.  Outputting most kinds of types gives no name
+	 at all.  A true definition gives no name; a cross-ref for a
+	 structure can give the tag name, but not a type name.
+	 It seems that no typedef name is defined by outputting a type.  */
+
+      /* If this typedef name was defined by outputting the type,
+	 don't duplicate it.  */
+      if (typevec[TYPE_SYMTAB_ADDRESS (type)].status == TYPE_DEFINED
+	  && TYPE_NAME (TREE_TYPE (decl)) == decl)
+	return 0;
+#endif
+      /* Don't output the same typedef twice.
+         And don't output what language-specific stuff doesn't want output.  */
+      if (TREE_ASM_WRITTEN (decl) || TYPE_DECL_SUPPRESS_DEBUG (decl))
+	return 0;
+
+      FORCE_TEXT;
+      result = 1;
+      {
+	int tag_needed = 1;
+	int did_output = 0;
+
+	if (DECL_NAME (decl))
+	  {
+	    /* Nonzero means we must output a tag as well as a typedef.  */
+	    tag_needed = 0;
+
+	    /* Handle the case of a C++ structure or union
+	       where the TYPE_NAME is a TYPE_DECL
+	       which gives both a typedef name and a tag.  */
+	    /* dbx requires the tag first and the typedef second.  */
+	    if ((TREE_CODE (type) == RECORD_TYPE
+		 || TREE_CODE (type) == UNION_TYPE
+		 || TREE_CODE (type) == QUAL_UNION_TYPE)
+		&& TYPE_NAME (type) == decl
+		&& !(use_gnu_debug_info_extensions && have_used_extensions)
+		&& !TREE_ASM_WRITTEN (TYPE_NAME (type))
+		/* Distinguish the implicit typedefs of C++
+		   from explicit ones that might be found in C.  */
+                && DECL_ARTIFICIAL (decl)
+		/* Do not generate a tag for records of variable size,
+		   since this type can not be properly described in the
+		   DBX format, and it confuses some tools such as objdump.  */
+		&& host_integerp (TYPE_SIZE (type), 1))
+	      {
+		tree name = TYPE_NAME (type);
+		if (TREE_CODE (name) == TYPE_DECL)
+		  name = DECL_NAME (name);
+
+		current_sym_code = DBX_TYPE_DECL_STABS_CODE;
+		current_sym_value = 0;
+		current_sym_addr = 0;
+		current_sym_nchars = 2 + IDENTIFIER_LENGTH (name);
+
+		fprintf (asmfile, "%s\"%s:T", ASM_STABS_OP,
+			 IDENTIFIER_POINTER (name));
+		dbxout_type (type, 1);
+		dbxout_finish_symbol (NULL_TREE);
+	      }
+
+	    /* Output typedef name.  */
+	    fprintf (asmfile, "%s\"%s:", ASM_STABS_OP,
+		     IDENTIFIER_POINTER (DECL_NAME (decl)));
+
+	    /* Short cut way to output a tag also.  */
+	    if ((TREE_CODE (type) == RECORD_TYPE
+		 || TREE_CODE (type) == UNION_TYPE
+		 || TREE_CODE (type) == QUAL_UNION_TYPE)
+		&& TYPE_NAME (type) == decl
+		/* Distinguish the implicit typedefs of C++
+		   from explicit ones that might be found in C.  */
+                && DECL_ARTIFICIAL (decl))
+	      {
+		if (use_gnu_debug_info_extensions && have_used_extensions)
+		  {
+		    putc ('T', asmfile);
+		    TREE_ASM_WRITTEN (TYPE_NAME (type)) = 1;
+		  }
+#if 0 /* Now we generate the tag for this case up above.  */
+		else
+		  tag_needed = 1;
+#endif
+	      }
+
+	    putc ('t', asmfile);
+	    current_sym_code = DBX_TYPE_DECL_STABS_CODE;
+
+	    dbxout_type (type, 1);
+	    dbxout_finish_symbol (decl);
+	    did_output = 1;
+	  }
+
+	/* Don't output a tag if this is an incomplete type.  This prevents
+	   the sun4 Sun OS 4.x dbx from crashing.  */
+
+	if (tag_needed && TYPE_NAME (type) != 0
+	    && (TREE_CODE (TYPE_NAME (type)) == IDENTIFIER_NODE
+		|| (DECL_NAME (TYPE_NAME (type)) != 0))
+	    && COMPLETE_TYPE_P (type)
+	    && !TREE_ASM_WRITTEN (TYPE_NAME (type)))
+	  {
+	    /* For a TYPE_DECL with no name, but the type has a name,
+	       output a tag.
+	       This is what represents `struct foo' with no typedef.  */
+	    /* In C++, the name of a type is the corresponding typedef.
+	       In C, it is an IDENTIFIER_NODE.  */
+	    tree name = TYPE_NAME (type);
+	    if (TREE_CODE (name) == TYPE_DECL)
+	      name = DECL_NAME (name);
+
+	    current_sym_code = DBX_TYPE_DECL_STABS_CODE;
+	    current_sym_value = 0;
+	    current_sym_addr = 0;
+	    current_sym_nchars = 2 + IDENTIFIER_LENGTH (name);
+
+	    fprintf (asmfile, "%s\"%s:T", ASM_STABS_OP,
+		     IDENTIFIER_POINTER (name));
+	    dbxout_type (type, 1);
+	    dbxout_finish_symbol (NULL_TREE);
+	    did_output = 1;
+	  }
+
+	/* If an enum type has no name, it cannot be referred to,
+	   but we must output it anyway, since the enumeration constants
+	   can be referred to.  */
+	if (!did_output && TREE_CODE (type) == ENUMERAL_TYPE)
+	  {
+	    current_sym_code = DBX_TYPE_DECL_STABS_CODE;
+	    current_sym_value = 0;
+	    current_sym_addr = 0;
+	    current_sym_nchars = 2;
+
+	    /* Some debuggers fail when given NULL names, so give this a
+	       harmless name of ` '.  */
+	    fprintf (asmfile, "%s\" :T", ASM_STABS_OP);
+	    dbxout_type (type, 1);
+	    dbxout_finish_symbol (NULL_TREE);
+	  }
+
+	/* Prevent duplicate output of a typedef.  */
+	TREE_ASM_WRITTEN (decl) = 1;
+	break;
+      }
+
+    case PARM_DECL:
+      /* Parm decls go in their own separate chains
+	 and are output by dbxout_reg_parms and dbxout_parms.  */
+      abort ();
+
+    case RESULT_DECL:
+      /* Named return value, treat like a VAR_DECL.  */
+    case VAR_DECL:
+      if (! DECL_RTL_SET_P (decl))
+	return 0;
+      /* Don't mention a variable that is external.
+	 Let the file that defines it describe it.  */
+      if (DECL_EXTERNAL (decl))
+	break;
+
+      /* If the variable is really a constant
+	 and not written in memory, inform the debugger.  */
+      if (TREE_STATIC (decl) && TREE_READONLY (decl)
+	  && DECL_INITIAL (decl) != 0
+	  && host_integerp (DECL_INITIAL (decl), 0)
+	  && ! TREE_ASM_WRITTEN (decl)
+	  && (DECL_CONTEXT (decl) == NULL_TREE
+	      || TREE_CODE (DECL_CONTEXT (decl)) == BLOCK))
+	{
+	  if (TREE_PUBLIC (decl) == 0)
+	    {
+	      /* The sun4 assembler does not grok this.  */
+	      const char *name = IDENTIFIER_POINTER (DECL_NAME (decl));
+
+	      if (TREE_CODE (TREE_TYPE (decl)) == INTEGER_TYPE
+		  || TREE_CODE (TREE_TYPE (decl)) == ENUMERAL_TYPE)
+		{
+		  HOST_WIDE_INT ival = tree_low_cst (DECL_INITIAL (decl), 0);
+#ifdef DBX_OUTPUT_CONSTANT_SYMBOL
+		  DBX_OUTPUT_CONSTANT_SYMBOL (asmfile, name, ival);
+#else
+		  fprintf (asmfile, "%s\"%s:c=i", ASM_STABS_OP, name);
+
+		  fprintf (asmfile, HOST_WIDE_INT_PRINT_DEC, ival);
+		  fprintf (asmfile, "\",0x%x,0,0,0\n", N_LSYM);
+#endif
+		  return 1;
+		}
+	      else if (TREE_CODE (TREE_TYPE (decl)) == REAL_TYPE)
+		{
+		  /* don't know how to do this yet.  */
+		}
+	      break;
+	    }
+	  /* else it is something we handle like a normal variable.  */
+	}
+
+      SET_DECL_RTL (decl, eliminate_regs (DECL_RTL (decl), 0, NULL_RTX));
+#ifdef LEAF_REG_REMAP
+      if (current_function_uses_only_leaf_regs)
+	leaf_renumber_regs_insn (DECL_RTL (decl));
+#endif
+
+      result = dbxout_symbol_location (decl, type, 0, DECL_RTL (decl));
+      break;
+      
+    default:
+      break;
+    }
+  return result;
+}

@@ -1,0 +1,116 @@
+static int memrefs_conflict_p		PARAMS ((int, rtx, int, rtx,
+						 HOST_WIDE_INT));
+static void record_set			PARAMS ((rtx, rtx, void *));
+static rtx find_base_term		PARAMS ((rtx));
+static int base_alias_check		PARAMS ((rtx, rtx, enum machine_mode,
+						 enum machine_mode));
+static rtx find_base_value		PARAMS ((rtx));
+static int mems_in_disjoint_alias_sets_p PARAMS ((rtx, rtx));
+static int insert_subset_children       PARAMS ((splay_tree_node, void*));
+static tree find_base_decl		PARAMS ((tree));
+static alias_set_entry get_alias_set_entry PARAMS ((HOST_WIDE_INT));
+static rtx fixed_scalar_and_varying_struct_p PARAMS ((rtx, rtx, rtx, rtx,
+						      int (*) (rtx, int)));
+static int aliases_everything_p         PARAMS ((rtx));
+static bool nonoverlapping_component_refs_p PARAMS ((tree, tree));
+static tree decl_for_component_ref	PARAMS ((tree));
+static rtx adjust_offset_for_component_ref PARAMS ((tree, rtx));
+static int nonoverlapping_memrefs_p	PARAMS ((rtx, rtx));
+static int write_dependence_p           PARAMS ((rtx, rtx, int));
+static int nonlocal_mentioned_p         PARAMS ((rtx));
+
+/* Set up all info needed to perform alias analysis on memory references.  */
+
+/* Returns the size in bytes of the mode of X.  */
+#define SIZE_FOR_MODE(X) (GET_MODE_SIZE (GET_MODE (X)))
+
+/* Returns nonzero if MEM1 and MEM2 do not alias because they are in
+   different alias sets.  We ignore alias sets in functions making use
+   of variable arguments because the va_arg macros on some systems are
+   not legal ANSI C.  */
+#define DIFFERENT_ALIAS_SETS_P(MEM1, MEM2)			\
+  mems_in_disjoint_alias_sets_p (MEM1, MEM2)
+
+/* Cap the number of passes we make over the insns propagating alias
+   information through set chains.   10 is a completely arbitrary choice.  */
+#define MAX_ALIAS_LOOP_PASSES 10
+   
+/* reg_base_value[N] gives an address to which register N is related.
+   If all sets after the first add or subtract to the current value
+   or otherwise modify it so it does not point to a different top level
+   object, reg_base_value[N] is equal to the address part of the source
+   of the first set.
+
+   A base address can be an ADDRESS, SYMBOL_REF, or LABEL_REF.  ADDRESS
+   expressions represent certain special values: function arguments and
+   the stack, frame, and argument pointers.  
+
+   The contents of an ADDRESS is not normally used, the mode of the
+   ADDRESS determines whether the ADDRESS is a function argument or some
+   other special value.  Pointer equality, not rtx_equal_p, determines whether
+   two ADDRESS expressions refer to the same base address.
+
+   The only use of the contents of an ADDRESS is for determining if the
+   current function performs nonlocal memory memory references for the
+   purposes of marking the function as a constant function.  */
+
+static rtx *reg_base_value;
+static rtx *new_reg_base_value;
+static unsigned int reg_base_value_size; /* size of reg_base_value array */
+
+#define REG_BASE_VALUE(X) \
+  (REGNO (X) < reg_base_value_size \
+   ? reg_base_value[REGNO (X)] : 0)
+
+/* Vector of known invariant relationships between registers.  Set in
+   loop unrolling.  Indexed by register number, if nonzero the value
+   is an expression describing this register in terms of another.
+
+   The length of this array is REG_BASE_VALUE_SIZE.
+
+   Because this array contains only pseudo registers it has no effect
+   after reload.  */
+static rtx *alias_invariant;
+
+/* Vector indexed by N giving the initial (unchanging) value known for
+   pseudo-register N.  This array is initialized in
+   init_alias_analysis, and does not change until end_alias_analysis
+   is called.  */
+rtx *reg_known_value;
+
+/* Indicates number of valid entries in reg_known_value.  */
+static unsigned int reg_known_value_size;
+
+/* Vector recording for each reg_known_value whether it is due to a
+   REG_EQUIV note.  Future passes (viz., reload) may replace the
+   pseudo with the equivalent expression and so we account for the
+   dependences that would be introduced if that happens.
+
+   The REG_EQUIV notes created in assign_parms may mention the arg
+   pointer, and there are explicit insns in the RTL that modify the
+   arg pointer.  Thus we must ensure that such insns don't get
+   scheduled across each other because that would invalidate the
+   REG_EQUIV notes.  One could argue that the REG_EQUIV notes are
+   wrong, but solving the problem in the scheduler will likely give
+   better code, so we do it here.  */
+char *reg_known_equiv_p;
+
+/* True when scanning insns from the start of the rtl to the
+   NOTE_INSN_FUNCTION_BEG note.  */
+static int copying_arguments;
+
+/* The splay-tree used to store the various alias set entries.  */
+static splay_tree alias_sets;
+
+/* Returns a pointer to the alias set entry for ALIAS_SET, if there is
+   such an entry, or NULL otherwise.  */
+
+static alias_set_entry
+get_alias_set_entry (alias_set)
+     HOST_WIDE_INT alias_set;
+{
+  splay_tree_node sn
+    = splay_tree_lookup (alias_sets, (splay_tree_key) alias_set);
+
+  return sn != 0 ? ((alias_set_entry) sn->value) : 0;
+}

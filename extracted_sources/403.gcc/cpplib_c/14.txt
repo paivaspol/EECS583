@@ -1,0 +1,35 @@
+static const cpp_token *
+parse_include (pfile)
+     cpp_reader *pfile;
+{
+  const unsigned char *dir;
+  const cpp_token *header;
+
+  if (pfile->directive == &dtable[T_PRAGMA])
+    dir = U"pragma dependency";
+  else
+    dir = pfile->directive->name;
+
+  /* Allow macro expansion.  */
+  header = cpp_get_token (pfile);
+  if (header->type != CPP_STRING && header->type != CPP_HEADER_NAME)
+    {
+      if (header->type != CPP_LESS)
+	{
+	  cpp_error (pfile, "#%s expects \"FILENAME\" or <FILENAME>", dir);
+	  return NULL;
+	}
+
+      header = glue_header_name (pfile);
+      if (header == NULL)
+	return header;
+    }
+
+  if (header->val.str.len == 0)
+    {
+      cpp_error (pfile, "empty file name in #%s", dir);
+      return NULL;
+    }
+
+  return header;
+}

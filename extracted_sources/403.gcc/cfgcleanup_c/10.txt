@@ -1,0 +1,100 @@
+static bool
+merge_blocks (e, b, c, mode)
+     edge e;
+     basic_block b, c;
+     int mode;
+{
+  /* If C has a tail recursion label, do not merge.  There is no
+     edge recorded from the call_placeholder back to this label, as
+     that would make optimize_sibling_and_tail_recursive_calls more
+     complex for no gain.  */
+  if ((mode & CLEANUP_PRE_SIBCALL)
+      && GET_CODE (c->head) == CODE_LABEL
+      && tail_recursion_label_p (c->head))
+    return false;
+
+  /* If B has a fallthru edge to C, no need to move anything.  */
+  if (e->flags & EDGE_FALLTHRU)
+    {
+      int b_index = b->index, c_index = c->index;
+      /* We need to update liveness in case C already has broken liveness
+	 or B ends by conditional jump to next instructions that will be
+	 removed.  */
+      if ((BB_FLAGS (c) & BB_UPDATE_LIFE)
+	  || GET_CODE (b->end) == JUMP_INSN)
+	BB_SET_FLAG (b, BB_UPDATE_LIFE);
+      merge_blocks_nomove (b, c);
+      update_forwarder_flag (b);
+
+      if (rtl_dump_file)
+	fprintf (rtl_dump_file, "Merged %d and %d without moving.\n",
+                 b_index, c_index);
+
+      return true;
+    }
+
+  /* Otherwise we will need to move code around.  Do that only if expensive
+     transformations are allowed.  */
+  else if (mode & CLEANUP_EXPENSIVE)
+    {
+      edge tmp_edge, b_fallthru_edge;
+      bool c_has_outgoing_fallthru;
+      bool b_has_incoming_fallthru;
+
+      /* Avoid overactive code motion, as the forwarder blocks should be
+         eliminated by edge redirection instead.  One exception might have
+	 been if B is a forwarder block and C has no fallthru edge, but
+	 that should be cleaned up by bb-reorder instead.  */
+      if (FORWARDER_BLOCK_P (b) || FORWARDER_BLOCK_P (c))
+	return false;
+
+      /* We must make sure to not munge nesting of lexical blocks,
+	 and loop notes.  This is done by squeezing out all the notes
+	 and leaving them there to lie.  Not ideal, but functional.  */
+
+      for (tmp_edge = c->succ; tmp_edge; tmp_edge = tmp_edge->succ_next)
+	if (tmp_edge->flags & EDGE_FALLTHRU)
+	  break;
+
+      c_has_outgoing_fallthru = (tmp_edge != NULL);
+
+      for (tmp_edge = b->pred; tmp_edge; tmp_edge = tmp_edge->pred_next)
+	if (tmp_edge->flags & EDGE_FALLTHRU)
+	  break;
+
+      b_has_incoming_fallthru = (tmp_edge != NULL);
+      b_fallthru_edge = tmp_edge;
+
+      /* Otherwise, we're going to try to move C after B.  If C does
+	 not have an outgoing fallthru, then it can be moved
+	 immediately after B without introducing or modifying jumps.  */
+      if (! c_has_outgoing_fallthru)
+	{
+	  merge_blocks_move_successor_nojumps (b, c);
+	  return true;
+	}
+
+      /* If B does not have an incoming fallthru, then it can be moved
+	 immediately before C without introducing or modifying jumps.
+	 C cannot be the first block, so we do not have to worry about
+	 accessing a non-existent block.  */
+
+      if (b_has_incoming_fallthru)
+	{
+	  basic_block bb;
+
+	  if (b_fallthru_edge->src == ENTRY_BLOCK_PTR)
+	    return false;
+	  bb = force_nonfallthru (b_fallthru_edge);
+	  if (bb)
+	    notice_new_block (bb);
+	  else
+	    BB_SET_FLAG (b_fallthru_edge->src, BB_UPDATE_LIFE);
+	}
+
+      merge_blocks_move_predecessor_nojumps (b, c);
+      return true;
+    }
+
+  return false;
+}

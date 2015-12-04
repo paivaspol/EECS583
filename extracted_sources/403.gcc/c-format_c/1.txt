@@ -1,0 +1,72 @@
+static bool decode_format_attr		PARAMS ((tree,
+						 function_format_info *, int));
+static enum format_type decode_format_type	PARAMS ((const char *));
+
+/* Handle a "format" attribute; arguments as in
+   struct attribute_spec.handler.  */
+tree
+handle_format_attribute (node, name, args, flags, no_add_attrs)
+     tree *node;
+     tree name ATTRIBUTE_UNUSED;
+     tree args;
+     int flags;
+     bool *no_add_attrs;
+{
+  tree type = *node;
+  function_format_info info;
+  tree argument;
+  unsigned HOST_WIDE_INT arg_num;
+
+  if (!decode_format_attr (args, &info, 0))
+    {
+      *no_add_attrs = true;
+      return NULL_TREE;
+    }
+
+  /* If a parameter list is specified, verify that the format_num
+     argument is actually a string, in case the format attribute
+     is in error.  */
+  argument = TYPE_ARG_TYPES (type);
+  if (argument)
+    {
+      for (arg_num = 1; argument != 0 && arg_num != info.format_num;
+	   ++arg_num, argument = TREE_CHAIN (argument))
+	;
+
+      if (! argument
+	  || TREE_CODE (TREE_VALUE (argument)) != POINTER_TYPE
+	  || (TYPE_MAIN_VARIANT (TREE_TYPE (TREE_VALUE (argument)))
+	      != char_type_node))
+	{
+	  if (!(flags & (int) ATTR_FLAG_BUILT_IN))
+	    error ("format string arg not a string type");
+	  *no_add_attrs = true;
+	  return NULL_TREE;
+	}
+
+      else if (info.first_arg_num != 0)
+	{
+	  /* Verify that first_arg_num points to the last arg,
+	     the ...  */
+	  while (argument)
+	    arg_num++, argument = TREE_CHAIN (argument);
+
+	  if (arg_num != info.first_arg_num)
+	    {
+	      if (!(flags & (int) ATTR_FLAG_BUILT_IN))
+		error ("args to be formatted is not '...'");
+	      *no_add_attrs = true;
+	      return NULL_TREE;
+	    }
+	}
+    }
+
+  if (info.format_type == strftime_format_type && info.first_arg_num != 0)
+    {
+      error ("strftime formats cannot format arguments");
+      *no_add_attrs = true;
+      return NULL_TREE;
+    }
+
+  return NULL_TREE;
+}

@@ -1,0 +1,24 @@
+void
+xmalloc_failed (size)
+     size_t size;
+{
+#ifdef HAVE_SBRK
+  extern char **environ;
+  size_t allocated;
+
+  if (first_break != NULL)
+    allocated = (char *) sbrk (0) - first_break;
+  else
+    allocated = (char *) sbrk (0) - (char *) &environ;
+  fprintf (stderr,
+	   "\n%s%sCannot allocate %lu bytes after allocating %lu bytes\n",
+	   name, *name ? ": " : "",
+	   (unsigned long) size, (unsigned long) allocated);
+#else /* HAVE_SBRK */
+  fprintf (stderr,
+	   "\n%s%sCannot allocate %lu bytes\n",
+	   name, *name ? ": " : "",
+	   (unsigned long) size);
+#endif /* HAVE_SBRK */
+  xexit (1);
+}  

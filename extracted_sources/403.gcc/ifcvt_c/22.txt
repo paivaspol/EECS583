@@ -1,0 +1,18 @@
+static int
+process_if_block (test_bb, then_bb, else_bb, join_bb)
+     basic_block test_bb;	/* Basic block test is in */
+     basic_block then_bb;	/* Basic block for THEN block */
+     basic_block else_bb;	/* Basic block for ELSE block */
+     basic_block join_bb;	/* Basic block the join label is in */
+{
+  if (! reload_completed
+      && noce_process_if_block (test_bb, then_bb, else_bb, join_bb))
+    return TRUE;
+
+  if (HAVE_conditional_execution
+      && reload_completed
+      && cond_exec_process_if_block (test_bb, then_bb, else_bb, join_bb))
+    return TRUE;
+
+  return FALSE;
+}

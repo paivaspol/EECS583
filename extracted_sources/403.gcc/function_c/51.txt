@@ -1,0 +1,17 @@
+static void
+instantiate_decls_1 (let, valid_only)
+     tree let;
+     int valid_only;
+{
+  tree t;
+
+  for (t = BLOCK_VARS (let); t; t = TREE_CHAIN (t))
+    if (DECL_RTL_SET_P (t))
+      instantiate_decl (DECL_RTL (t), 
+			int_size_in_bytes (TREE_TYPE (t)),
+			valid_only);
+
+  /* Process all subblocks.  */
+  for (t = BLOCK_SUBBLOCKS (let); t; t = TREE_CHAIN (t))
+    instantiate_decls_1 (t, valid_only);
+}

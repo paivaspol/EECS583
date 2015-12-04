@@ -1,0 +1,65 @@
+void LBM_showGridStatistics( LBM_Grid grid ) {
+	int nObstacleCells = 0,
+	    nAccelCells    = 0,
+	    nFluidCells    = 0;
+	double ux, uy, uz;
+	double minU2  = 1e+30, maxU2  = -1e+30, u2;
+	double minRho = 1e+30, maxRho = -1e+30, rho;
+	double mass = 0;
+
+	SWEEP_VAR
+
+	SWEEP_START( 0, 0, 0, 0, 0, SIZE_Z )
+		rho = + LOCAL( grid, C  ) + LOCAL( grid, N  )
+		      + LOCAL( grid, S  ) + LOCAL( grid, E  )
+		      + LOCAL( grid, W  ) + LOCAL( grid, T  )
+		      + LOCAL( grid, B  ) + LOCAL( grid, NE )
+		      + LOCAL( grid, NW ) + LOCAL( grid, SE )
+		      + LOCAL( grid, SW ) + LOCAL( grid, NT )
+		      + LOCAL( grid, NB ) + LOCAL( grid, ST )
+		      + LOCAL( grid, SB ) + LOCAL( grid, ET )
+		      + LOCAL( grid, EB ) + LOCAL( grid, WT )
+		      + LOCAL( grid, WB );
+		if( rho < minRho ) minRho = rho;
+		if( rho > maxRho ) maxRho = rho;
+		mass += rho;
+
+		if( TEST_FLAG_SWEEP( grid, OBSTACLE )) {
+			nObstacleCells++;
+		}
+		else {
+			if( TEST_FLAG_SWEEP( grid, ACCEL ))
+				nAccelCells++;
+			else
+				nFluidCells++;
+
+			ux = + LOCAL( grid, E  ) - LOCAL( grid, W  )
+			     + LOCAL( grid, NE ) - LOCAL( grid, NW )
+			     + LOCAL( grid, SE ) - LOCAL( grid, SW )
+			     + LOCAL( grid, ET ) + LOCAL( grid, EB )
+			     - LOCAL( grid, WT ) - LOCAL( grid, WB );
+			uy = + LOCAL( grid, N  ) - LOCAL( grid, S  )
+			     + LOCAL( grid, NE ) + LOCAL( grid, NW )
+			     - LOCAL( grid, SE ) - LOCAL( grid, SW )
+			     + LOCAL( grid, NT ) + LOCAL( grid, NB )
+			     - LOCAL( grid, ST ) - LOCAL( grid, SB );
+			uz = + LOCAL( grid, T  ) - LOCAL( grid, B  )
+			     + LOCAL( grid, NT ) - LOCAL( grid, NB )
+			     + LOCAL( grid, ST ) - LOCAL( grid, SB )
+			     + LOCAL( grid, ET ) - LOCAL( grid, EB )
+			     + LOCAL( grid, WT ) - LOCAL( grid, WB );
+			u2 = (ux*ux + uy*uy + uz*uz) / (rho*rho);
+			if( u2 < minU2 ) minU2 = u2;
+			if( u2 > maxU2 ) maxU2 = u2;
+		}
+	SWEEP_END
+
+        printf( "LBM_showGridStatistics:\n"
+        "\tnObstacleCells: %7i nAccelCells: %7i nFluidCells: %7i\n"
+        "\tminRho: %8.4f maxRho: %8.4f mass: %e\n"
+        "\tminU: %e maxU: %e\n\n",
+        nObstacleCells, nAccelCells, nFluidCells,
+        minRho, maxRho, mass,
+        sqrt( minU2 ), sqrt( maxU2 ) );
+
+}

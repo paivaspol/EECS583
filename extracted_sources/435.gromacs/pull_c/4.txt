@@ -1,0 +1,35 @@
+static void do_afm(t_pull *pull,rvec *f,matrix box,t_mdatoms *md)
+{
+  int i,ii,j,m,g;
+  real mi; 
+  rvec cm;     /* center of mass displacement of reference */
+  rvec dr;     /* extension of the springs */
+
+  /* loop over the groups that are being pulled */
+  for (i=0;i<pull->pull.n;i++) {
+    /* compute how far the springs are stretched */
+    for (m=DIM-1; m>=0; m--) {
+      while (dr[m] >  0.5*box[m][m]) rvec_dec(dr,box[m]);
+      while (dr[m] < -0.5*box[m][m]) rvec_inc(dr,box[m]);
+      dr[m]=pull->dims[m]*(pull->pull.spring[i][m]-pull->pull.x_unc[i][m]);
+    }
+
+    /* calculate force from the spring on the pull group: f = - k*dr */
+    for (m=0;m<DIM;m++)
+      pull->pull.f[i][m] = pull->k*dr[m];
+    
+    /* distribute force on com over individual atoms in the group */
+    for (j=0;j<pull->pull.ngx[i];j++) {
+      ii = pull->pull.idx[i][j];
+      for (m=0;m<DIM;m++) {
+	mi = md->massT[ii];
+	f[ii][m] +=  mi*(pull->pull.f[i][m])/(pull->pull.tmass[i]);
+      }
+    }
+    
+    /* move pulling spring along dir, over pull->rate  */
+    for (m=0;m<DIM;m++) 
+      pull->pull.spring[i][m]+=pull->pull.dir[i][m]*pull->rate;
+  }
+  /* done */
+}

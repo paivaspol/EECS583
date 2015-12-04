@@ -1,0 +1,23 @@
+static void
+invalidate_skipped_block (start)
+     rtx start;
+{
+  rtx insn;
+
+  for (insn = start; insn && GET_CODE (insn) != CODE_LABEL;
+       insn = NEXT_INSN (insn))
+    {
+      if (! INSN_P (insn))
+	continue;
+
+      if (GET_CODE (insn) == CALL_INSN)
+	{
+	  if (! CONST_OR_PURE_CALL_P (insn))
+	    invalidate_memory ();
+	  invalidate_for_call ();
+	}
+
+      invalidate_from_clobbers (PATTERN (insn));
+      note_stores (PATTERN (insn), invalidate_skipped_set, NULL);
+    }
+}

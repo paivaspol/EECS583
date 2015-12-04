@@ -1,0 +1,44 @@
+static bool do_trnheader(int fp,bool bRead,t_trnheader *sh, bool *bOK)
+{
+  static int magic=GROMACS_MAGIC;
+  static char *version = "GMX_trn_file";
+  static bool bFirst=TRUE;
+  char buf[256];
+  
+  *bOK=TRUE;
+
+  gmx_fio_select(fp);
+  if (!do_int(magic))
+    return FALSE;
+  
+  if (bRead) {
+    *bOK = *bOK && do_string(buf);
+    if (bFirst) {
+      fprintf(stderr,"trn version: %s\n",buf);
+      bFirst = FALSE;
+    }
+  }
+  else
+    *bOK = *bOK && do_string(version);
+  *bOK = *bOK && do_int(sh->ir_size);
+  *bOK = *bOK && do_int(sh->e_size);
+  *bOK = *bOK && do_int(sh->box_size);
+  *bOK = *bOK && do_int(sh->vir_size);
+  *bOK = *bOK && do_int(sh->pres_size);
+  *bOK = *bOK && do_int(sh->top_size); 
+  *bOK = *bOK && do_int(sh->sym_size); 
+  *bOK = *bOK && do_int(sh->x_size); 
+  *bOK = *bOK && do_int(sh->v_size); 
+  *bOK = *bOK && do_int(sh->f_size); 
+  
+  if (!*bOK) return *bOK; 
+  gmx_fio_setprecision(fp,(nFloatSize(sh) == sizeof(double)));
+  
+  *bOK = *bOK && do_int(sh->natoms); 
+  *bOK = *bOK && do_int(sh->step); 
+  *bOK = *bOK && do_int(sh->nre); 
+  *bOK = *bOK && do_real(sh->t); 
+  *bOK = *bOK && do_real(sh->lambda); 
+  
+  return *bOK;
+}

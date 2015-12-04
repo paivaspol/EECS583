@@ -1,0 +1,46 @@
+static int
+rename_equivalent_regs_in_insn (ptr, data)
+     rtx *ptr;
+     void* data;
+{
+  rtx x = *ptr;
+  partition reg_partition = (partition) data;
+
+  if (x == NULL_RTX)
+    return 0;
+
+  switch (GET_CODE (x))
+    {
+    case REG:
+      if (CONVERT_REGISTER_TO_SSA_P (REGNO (x)))
+	{
+	  unsigned int regno = REGNO (x);
+	  unsigned int new_regno = partition_find (reg_partition, regno);
+	  rtx canonical_element_rtx = ssa_rename_from_lookup (new_regno);
+
+	  if (canonical_element_rtx != NULL_RTX && 
+	      HARD_REGISTER_P (canonical_element_rtx))
+	    {
+	      if (REGNO (canonical_element_rtx) != regno)
+		*ptr = canonical_element_rtx;
+	    }
+	  else if (regno != new_regno)
+	    {
+	      rtx new_reg = regno_reg_rtx[new_regno];
+	      if (GET_MODE (x) != GET_MODE (new_reg))
+		abort ();
+	      *ptr = new_reg;
+	    }
+	}
+      return -1;
+
+    case PHI:
+      /* No need to rename the phi nodes.  We'll check equivalence
+	 when inserting copies.  */
+      return -1;
+
+    default:
+      /* Anything else, continue traversing.  */
+      return 0;
+    }
+}

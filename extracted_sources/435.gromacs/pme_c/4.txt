@@ -1,0 +1,64 @@
+void spread_q_bsplines(t_fftgrid *grid,ivec idx[],real charge[],
+		       splinevec theta,int nr,int order,
+		       int nnx[],int nny[],int nnz[])
+{
+  /* spread charges from home atoms to local grid */
+  t_fft_r *ptr;
+  int      i,j,k,n,*i0,*j0,*k0,*ii0,*jj0,*kk0,ithx,ithy,ithz;
+  int      nx,ny,nz,la2,la12,xidx,yidx,zidx;
+  int      norder,norder1,*idxptr,ind0;
+  real     valx,valxy,qn;
+  real     *thx,*thy,*thz;
+  
+  clear_fftgrid(grid);
+  unpack_fftgrid(grid,&nx,&ny,&nz,&la2,&la12,TRUE,&ptr);
+  ii0   = nnx+nx+1-order;
+  jj0   = nny+ny+1-order;
+  kk0   = nnz+nz+1-order;
+  thx   = theta[XX];
+  thy   = theta[YY];
+  thz   = theta[ZZ];
+  
+  for(n=0; (n<nr); n++) {
+    qn     = charge[n];
+    idxptr = idx[n];
+    
+    if (fabs(qn) > GMX_REAL_MIN) {
+      xidx    = idxptr[XX];
+      yidx    = idxptr[YY];
+      zidx    = idxptr[ZZ];
+#ifdef DEBUG
+      range_check(xidx,nx);
+      range_check(yidx,ny);
+      range_check(zidx,nz);
+#endif
+      i0      = ii0+xidx; /* Pointer arithmetic */
+      norder  = n*order;
+      norder1 = norder+order;
+      
+      for(ithx=norder; (ithx<norder1); ithx++,i0++) {
+	i    = *i0;
+	j0   = jj0+yidx; /* Pointer arithmetic */
+	valx = qn*thx[ithx];
+	
+	for(ithy=norder; (ithy<norder1); ithy++,j0++) {
+	  j     = *j0;
+	  k0    = kk0+zidx; /* Pointer arithmetic */
+	  valxy = valx*thy[ithy];
+	  ind0  = INDEX(i,j,0);
+	  
+	  for(ithz=norder; (ithz<norder1); ithz++,k0++) {
+	    k = *k0;
+#ifdef DEBUG
+	    range_check(i,nx);
+	    range_check(j,ny);
+	    range_check(k,nz);
+	    range_check(ind0+k,grid->nptr);
+#endif
+	    ptr[ind0+k] += valxy*thz[ithz];
+	  }
+	}
+      }
+    }
+  }
+}

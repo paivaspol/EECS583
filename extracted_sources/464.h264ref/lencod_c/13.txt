@@ -1,0 +1,99 @@
+void free_global_buffers()
+{
+  int  i,j;
+
+#ifdef _ADAPT_LAST_GROUP_
+  extern int *last_P_no_frm;
+  extern int *last_P_no_fld;
+  free (last_P_no_frm);
+  free (last_P_no_fld);
+#endif
+
+  free_orig_planes();
+
+  if (input->WeightedPrediction || input->WeightedBiprediction || input->GenerateMultiplePPS)
+  {
+    free_mem3Dint(wp_weight,6);
+    free_mem3Dint(wp_offset,6);
+    free_mem4Dint(wbp_weight,6,MAX_REFERENCE_PICTURES);
+  }
+
+  if(input->successive_Bframe!=0 || input->BRefPictures> 0)
+  {
+    free_mem3Dshort(direct_ref_idx,2);
+    free_mem2Dshort(direct_pdir);
+  } // end if B frame
+
+
+  free_mem2Dint(img4Y_tmp);    // free temp quarter pel frame buffer
+
+  // free mem, allocated in init_img()
+  // free intra pred mode buffer for blocks
+  free_mem2Dint(img->ipredmode);
+  free_mem2Dint(img->ipredmode8x8);
+  free(img->mb_data);
+
+  free_mem2Dint(rddata_top_frame_mb.ipredmode);
+  
+  if(input->UseConstrainedIntraPred)
+  {
+    free (img->intra_block);
+  }
+
+  if (input->rdopt==2)
+  {
+    free(decs->resY[0]);
+    free(decs->resY);
+    free(decs->RefBlock[0]);
+    free(decs->RefBlock);
+    for (j=0; j<input->NoOfDecoders; j++)
+    {
+      free(decs->decY[j][0]);
+      free(decs->decY[j]);
+      free(decs->decY_best[j][0]);
+      free(decs->decY_best[j]);
+      for (i=0; i<img->max_num_references+1; i++)
+      {
+        free(decs->decref[j][i][0]);
+        free(decs->decref[j][i]);
+      }
+      free(decs->decref[j]);
+    }
+    free(decs->decY);
+    free(decs->decY_best);
+    free(decs->decref);
+    free(decs->status_map[0]);
+    free(decs->status_map);
+    free(decs->dec_mb_mode[0]);
+    free(decs->dec_mb_mode);
+  }
+  if (input->RestrictRef)
+  {
+    free(pixel_map[0]);
+    free(pixel_map);
+    free(refresh_map[0]);
+    free(refresh_map);
+  }
+
+  if(!active_sps->frame_mbs_only_flag)
+  {
+    free_mem2Dpel(imgY_com);
+    if (img->yuv_format != YUV400)
+    {
+      free_mem3Dpel(imgUV_com,2);
+    }
+  }
+
+  free_mem3Dint(img->nz_coeff, img->FrameSizeInMbs);
+
+  if(input->FMEnable)
+  {
+    free_mem_FME();
+  }
+
+  if (input->RCEnable)
+  {
+    rc_free();
+  }
+
+}

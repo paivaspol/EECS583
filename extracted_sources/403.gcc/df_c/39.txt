@@ -1,0 +1,37 @@
+static void
+df_bb_lr_local_compute (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+  rtx insn;
+
+  for (insn = bb->end; insn && insn != PREV_INSN (bb->head);
+       insn = PREV_INSN (insn))
+    {
+      unsigned int uid = INSN_UID (insn);
+      struct df_link *link;
+
+      if (! INSN_P (insn))
+	continue;
+
+      for (link = df->insns[uid].defs; link; link = link->next)
+	{
+	  struct ref *def = link->ref;
+	  unsigned int dregno = DF_REF_REGNO (def);
+
+	  /* Add def to set of defs in this BB.  */
+	  bitmap_set_bit (bb_info->lr_def, dregno);
+
+	  bitmap_clear_bit (bb_info->lr_use, dregno);
+	}
+
+      for (link = df->insns[uid].uses; link; link = link->next)
+	{
+	  struct ref *use = link->ref;
+	  /* Add use to set of uses in this BB.  */
+	  bitmap_set_bit (bb_info->lr_use, DF_REF_REGNO (use));
+	}
+    }
+  bb_info->lr_valid = 1;
+}

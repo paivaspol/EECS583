@@ -1,0 +1,37 @@
+int
+ReadMultipleRseqs(char              *seqfile,
+		  int                fformat,
+		  char            ***ret_rseqs,
+		  SQINFO **ret_sqinfo,
+		  int               *ret_num)
+{
+  SQINFO *sqinfo;               /* array of sequence optional info         */
+  SQFILE *dbfp;                 /* open ptr for sequential access of file  */
+  char  **rseqs;                /* sequence array                          */
+  int     numalloced;           /* num of seqs currently alloced for       */
+  int     num;
+
+
+  num        = 0;
+  numalloced = 16;
+  rseqs  = (char **) MallocOrDie (numalloced * sizeof(char *));
+  sqinfo = (SQINFO *) MallocOrDie (numalloced * sizeof(SQINFO));
+  if ((dbfp = SeqfileOpen(seqfile, fformat, NULL)) == NULL) return 0;      
+
+  while (ReadSeq(dbfp, dbfp->format, &rseqs[num], &(sqinfo[num])))
+    {
+      num++;
+      if (num == numalloced) /* more seqs coming, alloc more room */
+	{
+	  numalloced += 16;
+	  rseqs  = (char **) ReallocOrDie (rseqs, numalloced*sizeof(char *));
+	  sqinfo = (SQINFO *) ReallocOrDie (sqinfo, numalloced * sizeof(SQINFO));
+	}
+    }
+  SeqfileClose(dbfp);
+
+  *ret_rseqs  = rseqs;
+  *ret_sqinfo = sqinfo;
+  *ret_num    = num;
+  return 1;
+}

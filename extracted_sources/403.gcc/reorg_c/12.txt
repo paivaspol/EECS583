@@ -1,0 +1,43 @@
+static int
+rare_destination (insn)
+     rtx insn;
+{
+  int jump_count = 0;
+  rtx next;
+
+  for (; insn; insn = next)
+    {
+      if (GET_CODE (insn) == INSN && GET_CODE (PATTERN (insn)) == SEQUENCE)
+	insn = XVECEXP (PATTERN (insn), 0, 0);
+
+      next = NEXT_INSN (insn);
+
+      switch (GET_CODE (insn))
+	{
+	case CODE_LABEL:
+	  return 0;
+	case BARRIER:
+	  /* A BARRIER can either be after a JUMP_INSN or a CALL_INSN.  We
+	     don't scan past JUMP_INSNs, so any barrier we find here must
+	     have been after a CALL_INSN and hence mean the call doesn't
+	     return.  */
+	  return 2;
+	case JUMP_INSN:
+	  if (GET_CODE (PATTERN (insn)) == RETURN)
+	    return 1;
+	  else if (simplejump_p (insn)
+		   && jump_count++ < 10)
+	    next = JUMP_LABEL (insn);
+	  else
+	    return 0;
+
+	default:
+	  break;
+	}
+    }
+
+  /* If we got here it means we hit the end of the function.  So this
+     is an unlikely destination.  */
+
+  return 1;
+}

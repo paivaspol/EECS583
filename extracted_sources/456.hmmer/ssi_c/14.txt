@@ -1,0 +1,62 @@
+int
+SSIAddPrimaryKeyToIndex(SSIINDEX *g, char *key, int fh,
+			SSIOFFSET *r_off, SSIOFFSET *d_off, int L)
+{
+  int n;			/* a string length */
+  
+  if (fh >= SSI_MAXFILES)         return SSI_ERR_TOOMANY_FILES;
+  if (g->nprimary >= SSI_MAXKEYS) return SSI_ERR_TOOMANY_KEYS;
+  if (L > 0 && d_off == NULL) abort(); /* need both. */
+
+  /* Before adding the key: check how big our index is.
+   * If it's getting too large, switch to external mode.
+   */
+  if (!g->external && current_index_size(g) >= g->max_ram) 
+    if (activate_external_sort(g) != 0)  return SSI_ERR_NOFILE;
+
+  /* Update maximum pkey length, if needed.
+   */
+  n = strlen(key);
+  if ((n+1) > g->plen) g->plen = n+1;
+
+  /* External mode? Simply append to disk...
+   */
+  if (g->external) {
+    if (g->smode == SSI_OFFSET_I32) {
+      fprintf(g->ptmp, "%s\t%d\t%lu\t%lu\t%lu\n", 
+	      key, fh, (unsigned long) r_off->off.i32, 
+	      (unsigned long) (d_off == NULL? 0 : d_off->off.i32),
+	      (unsigned long) L);
+    } else {
+      fprintf(g->ptmp, "%s\t%d\t%llu\t%llu\t%lu\n", 
+	      key, fh, (unsigned long long) r_off->off.i64, 
+	      (unsigned long long) (d_off == NULL? 0 : d_off->off.i64), 
+	      (unsigned long) L);
+    }
+    g->nprimary++;
+    return 0;
+  }
+
+  /* Else: internal mode, keep keys in memory...
+   */
+  if ((g->pkeys[g->nprimary].key = sre_strdup(key, n)) == NULL) return SSI_ERR_MALLOC;
+  g->pkeys[g->nprimary].fnum  = (sqd_uint16) fh;
+  g->pkeys[g->nprimary].r_off = *r_off;
+  if (d_off != NULL && L > 0) {
+    g->pkeys[g->nprimary].d_off = *d_off;
+    g->pkeys[g->nprimary].len   = L;
+  } else {
+	/* yeah, this looks stupid, but look: we have to give a valid
+           looking, non-NULL d_off of some sort, or writes will fail. 
+           It's going to be unused anyway. */
+    g->pkeys[g->nprimary].d_off = *r_off;
+    g->pkeys[g->nprimary].len   = 0;
+  }
+  g->nprimary++;
+
+  if (g->nprimary % SSI_KEY_BLOCK == 0) {
+    g->pkeys = realloc(g->pkeys, sizeof(struct ssipkey_s) * (g->nprimary+SSI_KEY_BLOCK));
+    if (g->pkeys == NULL) return SSI_ERR_MALLOC;
+  }
+  return 0;
+}

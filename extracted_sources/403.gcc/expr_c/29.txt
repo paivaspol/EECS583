@@ -1,0 +1,30 @@
+static int
+mostly_zeros_p (exp)
+     tree exp;
+{
+  if (TREE_CODE (exp) == CONSTRUCTOR)
+    {
+      int elts = 0, zeros = 0;
+      tree elt = CONSTRUCTOR_ELTS (exp);
+      if (TREE_TYPE (exp) && TREE_CODE (TREE_TYPE (exp)) == SET_TYPE)
+	{
+	  /* If there are no ranges of true bits, it is all zero.  */
+	  return elt == NULL_TREE;
+	}
+      for (; elt; elt = TREE_CHAIN (elt))
+	{
+	  /* We do not handle the case where the index is a RANGE_EXPR,
+	     so the statistic will be somewhat inaccurate.
+	     We do make a more accurate count in store_constructor itself,
+	     so since this function is only used for nested array elements,
+	     this should be close enough.  */
+	  if (mostly_zeros_p (TREE_VALUE (elt)))
+	    zeros++;
+	  elts++;
+	}
+
+      return 4 * zeros >= 3 * elts;
+    }
+
+  return is_zeros_p (exp);
+}

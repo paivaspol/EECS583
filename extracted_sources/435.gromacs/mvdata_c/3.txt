@@ -1,0 +1,16 @@
+static void ld_symtab(int src,t_symtab *symtab)
+{
+  int i,nr,len;
+  
+  blockrx(src,symtab->nr);
+  nr=symtab->nr;
+  snew(symtab->symbuf,1);
+  symtab->symbuf->bufsize=nr;
+  snew(symtab->symbuf->buf,nr);
+  for (i=0; i<nr; i++)
+    {
+      blockrx(src,len);
+      snew(symtab->symbuf->buf[i],len);
+      nblockrx(src,len,symtab->symbuf->buf[i]);
+    }
+}

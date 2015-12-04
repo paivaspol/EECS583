@@ -1,0 +1,24 @@
+void
+MSAAddGF(MSA *msa, char *tag, char *value)
+{
+  /* If this is our first recorded unparsed #=GF line, we need to malloc();
+   * if we've filled availabl space If we already have a hash index, and the GF 
+   * Note the arbitrary lumpsize of 10 lines per allocation...
+   */
+  if (msa->gf_tag == NULL) {
+    msa->gf_tag    = MallocOrDie (sizeof(char *) * 10);
+    msa->gf        = MallocOrDie (sizeof(char *) * 10);
+    msa->alloc_ngf = 10;
+  }
+  if (msa->ngf == msa->alloc_ngf) {
+    msa->alloc_ngf += 10;
+    msa->gf_tag     = ReallocOrDie(msa->gf_tag, sizeof(char *) * msa->alloc_ngf);
+    msa->gf         = ReallocOrDie(msa->gf, sizeof(char *) * msa->alloc_ngf);
+  }
+
+  msa->gf_tag[msa->ngf] = sre_strdup(tag, -1);
+  msa->gf[msa->ngf]     = sre_strdup(value, -1);
+  msa->ngf++;
+
+  return;
+}

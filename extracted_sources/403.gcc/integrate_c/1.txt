@@ -1,0 +1,47 @@
+static rtvec
+initialize_for_inline (fndecl)
+     tree fndecl;
+{
+  int i;
+  rtvec arg_vector;
+  tree parms;
+
+  /* Clear out PARMDECL_MAP.  It was allocated in the caller's frame.  */
+  memset ((char *) parmdecl_map, 0, max_parm_reg * sizeof (tree));
+  arg_vector = rtvec_alloc (list_length (DECL_ARGUMENTS (fndecl)));
+
+  for (parms = DECL_ARGUMENTS (fndecl), i = 0;
+       parms;
+       parms = TREE_CHAIN (parms), i++)
+    {
+      rtx p = DECL_RTL (parms);
+
+      /* If we have (mem (addressof (mem ...))), use the inner MEM since
+	 otherwise the copy_rtx call below will not unshare the MEM since
+	 it shares ADDRESSOF.  */
+      if (GET_CODE (p) == MEM && GET_CODE (XEXP (p, 0)) == ADDRESSOF
+	  && GET_CODE (XEXP (XEXP (p, 0), 0)) == MEM)
+	p = XEXP (XEXP (p, 0), 0);
+
+      RTVEC_ELT (arg_vector, i) = p;
+
+      if (GET_CODE (p) == REG)
+	parmdecl_map[REGNO (p)] = parms;
+      else if (GET_CODE (p) == CONCAT)
+	{
+	  rtx preal = gen_realpart (GET_MODE (XEXP (p, 0)), p);
+	  rtx pimag = gen_imagpart (GET_MODE (preal), p);
+
+	  if (GET_CODE (preal) == REG)
+	    parmdecl_map[REGNO (preal)] = parms;
+	  if (GET_CODE (pimag) == REG)
+	    parmdecl_map[REGNO (pimag)] = parms;
+	}
+
+      /* This flag is cleared later
+	 if the function ever modifies the value of the parm.  */
+      TREE_READONLY (parms) = 1;
+    }
+
+  return arg_vector;
+}

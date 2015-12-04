@@ -1,0 +1,178 @@
+void
+regrename_optimize ()
+{
+  int tick[FIRST_PSEUDO_REGISTER];
+  int this_tick = 0;
+  int b;
+  char *first_obj;
+
+  memset (tick, 0, sizeof tick);
+
+  gcc_obstack_init (&rename_obstack);
+  first_obj = (char *) obstack_alloc (&rename_obstack, 0);
+
+  for (b = 0; b < n_basic_blocks; b++)
+    {
+      basic_block bb = BASIC_BLOCK (b);
+      struct du_chain *all_chains = 0;
+      HARD_REG_SET unavailable;
+      HARD_REG_SET regs_seen;
+
+      CLEAR_HARD_REG_SET (unavailable);
+
+      if (rtl_dump_file)
+	fprintf (rtl_dump_file, "\nBasic block %d:\n", b);
+
+      all_chains = build_def_use (bb);
+
+      if (rtl_dump_file)
+	dump_def_use_chain (all_chains);
+
+      CLEAR_HARD_REG_SET (unavailable);
+      /* Don't clobber traceback for noreturn functions.  */
+      if (frame_pointer_needed)
+	{
+	  int i;
+	  
+	  for (i = HARD_REGNO_NREGS (FRAME_POINTER_REGNUM, Pmode); i--;)
+	    SET_HARD_REG_BIT (unavailable, FRAME_POINTER_REGNUM + i);
+	  
+#if FRAME_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+	  for (i = HARD_REGNO_NREGS (HARD_FRAME_POINTER_REGNUM, Pmode); i--;)
+	    SET_HARD_REG_BIT (unavailable, HARD_FRAME_POINTER_REGNUM + i);
+#endif
+	}
+
+      CLEAR_HARD_REG_SET (regs_seen);
+      while (all_chains)
+	{
+	  int new_reg, best_new_reg = -1;
+	  int n_uses;
+	  struct du_chain *this = all_chains;
+	  struct du_chain *tmp, *last;
+	  HARD_REG_SET this_unavailable;
+	  int reg = REGNO (*this->loc);
+	  int i;
+
+	  all_chains = this->next_chain;
+	  
+#if 0 /* This just disables optimization opportunities.  */
+	  /* Only rename once we've seen the reg more than once.  */
+	  if (! TEST_HARD_REG_BIT (regs_seen, reg))
+	    {
+	      SET_HARD_REG_BIT (regs_seen, reg);
+	      continue;
+	    }
+#endif
+
+	  if (fixed_regs[reg] || global_regs[reg]
+#if FRAME_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+	      || (frame_pointer_needed && reg == HARD_FRAME_POINTER_REGNUM)
+#else
+	      || (frame_pointer_needed && reg == FRAME_POINTER_REGNUM)
+#endif
+	      )
+	    continue;
+
+	  COPY_HARD_REG_SET (this_unavailable, unavailable);
+
+	  /* Find last entry on chain (which has the need_caller_save bit),
+	     count number of uses, and narrow the set of registers we can
+	     use for renaming.  */
+	  n_uses = 0;
+	  for (last = this; last->next_use; last = last->next_use)
+	    {
+	      n_uses++;
+	      IOR_COMPL_HARD_REG_SET (this_unavailable,
+				      reg_class_contents[last->class]);
+	    }
+	  if (n_uses < 1)
+	    continue;
+
+	  IOR_COMPL_HARD_REG_SET (this_unavailable,
+				  reg_class_contents[last->class]);
+
+	  if (this->need_caller_save_reg)
+	    IOR_HARD_REG_SET (this_unavailable, call_used_reg_set);
+
+	  merge_overlapping_regs (bb, &this_unavailable, this);
+
+	  /* Now potential_regs is a reasonable approximation, let's
+	     have a closer look at each register still in there.  */
+	  for (new_reg = 0; new_reg < FIRST_PSEUDO_REGISTER; new_reg++)
+	    {
+	      int nregs = HARD_REGNO_NREGS (new_reg, GET_MODE (*this->loc));
+
+	      for (i = nregs - 1; i >= 0; --i)
+	        if (TEST_HARD_REG_BIT (this_unavailable, new_reg + i)
+		    || fixed_regs[new_reg + i]
+		    || global_regs[new_reg + i]
+		    /* Can't use regs which aren't saved by the prologue.  */
+		    || (! regs_ever_live[new_reg + i]
+			&& ! call_used_regs[new_reg + i])
+#ifdef LEAF_REGISTERS
+		    /* We can't use a non-leaf register if we're in a 
+		       leaf function.  */
+		    || (current_function_is_leaf 
+			&& !LEAF_REGISTERS[new_reg + i])
+#endif
+#ifdef HARD_REGNO_RENAME_OK
+		    || ! HARD_REGNO_RENAME_OK (reg + i, new_reg + i)
+#endif
+		    )
+		  break;
+	      if (i >= 0)
+		continue;
+
+	      /* See whether it accepts all modes that occur in
+		 definition and uses.  */
+	      for (tmp = this; tmp; tmp = tmp->next_use)
+		if (! HARD_REGNO_MODE_OK (new_reg, GET_MODE (*tmp->loc))
+		    || (tmp->need_caller_save_reg
+			&& ! (HARD_REGNO_CALL_PART_CLOBBERED
+			      (reg, GET_MODE (*tmp->loc)))
+			&& (HARD_REGNO_CALL_PART_CLOBBERED
+			    (new_reg, GET_MODE (*tmp->loc)))))
+		  break;
+	      if (! tmp)
+		{
+		  if (best_new_reg == -1
+		      || tick[best_new_reg] > tick[new_reg])
+		    best_new_reg = new_reg;
+		}
+	    }
+
+	  if (rtl_dump_file)
+	    {
+	      fprintf (rtl_dump_file, "Register %s in insn %d",
+		       reg_names[reg], INSN_UID (last->insn));
+	      if (last->need_caller_save_reg)
+		fprintf (rtl_dump_file, " crosses a call");
+	      }
+
+	  if (best_new_reg == -1)
+	    {
+	      if (rtl_dump_file)
+		fprintf (rtl_dump_file, "; no available registers\n");
+	      continue;
+	    }
+
+	  do_replace (this, best_new_reg);
+	  tick[best_new_reg] = this_tick++;
+
+	  if (rtl_dump_file)
+	    fprintf (rtl_dump_file, ", renamed as %s\n", reg_names[best_new_reg]);
+	}
+
+      obstack_free (&rename_obstack, first_obj);
+    }
+
+  obstack_free (&rename_obstack, NULL);
+
+  if (rtl_dump_file)
+    fputc ('\n', rtl_dump_file);
+
+  count_or_remove_death_notes (NULL, 1);
+  update_life_info (NULL, UPDATE_LIFE_LOCAL,
+		    PROP_REG_INFO | PROP_DEATH_NOTES);
+}

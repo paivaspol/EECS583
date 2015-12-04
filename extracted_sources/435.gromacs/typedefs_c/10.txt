@@ -1,0 +1,18 @@
+void free_t_atoms(t_atoms *atoms)
+{
+  int i;
+
+  for(i=0; i<atoms->nr; i++) {
+    sfree(*atoms->atomname[i]);
+    *atoms->atomname[i]=NULL;
+  }
+  sfree(atoms->atomname);
+  /* Do we need to free atomtype and atomtypeB as well ? */
+  sfree(atoms->resname);
+  sfree(atoms->atom);
+  if (atoms->pdbinfo)
+    sfree(atoms->pdbinfo);
+  atoms->nr=0; 
+  atoms->nres=0;
+  done_block(&atoms->excl);
+}     

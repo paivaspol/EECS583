@@ -1,0 +1,43 @@
+static void
+compute_earliest (edge_list, n_exprs, antin, antout, avout, kill, earliest)
+     struct edge_list *edge_list;
+     int n_exprs;
+     sbitmap *antin, *antout, *avout, *kill, *earliest;
+{
+  sbitmap difference, temp_bitmap;
+  int x, num_edges;
+  basic_block pred, succ;
+
+  num_edges = NUM_EDGES (edge_list);
+
+  difference = sbitmap_alloc (n_exprs);
+  temp_bitmap = sbitmap_alloc (n_exprs);
+
+  for (x = 0; x < num_edges; x++)
+    {
+      pred = INDEX_EDGE_PRED_BB (edge_list, x);
+      succ = INDEX_EDGE_SUCC_BB (edge_list, x);
+      if (pred == ENTRY_BLOCK_PTR)
+	sbitmap_copy (earliest[x], antin[succ->index]);
+      else
+        {
+	  /* We refer to the EXIT_BLOCK index, instead of testing for
+	     EXIT_BLOCK_PTR, so that EXIT_BLOCK_PTR's index can be
+	     changed so as to pretend it's a regular block, so that
+	     its antin can be taken into account.  */
+	  if (succ->index == EXIT_BLOCK)
+	    sbitmap_zero (earliest[x]);
+	  else
+	    {
+	      sbitmap_difference (difference, antin[succ->index],
+				  avout[pred->index]);
+	      sbitmap_not (temp_bitmap, antout[pred->index]);
+	      sbitmap_a_and_b_or_c (earliest[x], difference,
+				    kill[pred->index], temp_bitmap);
+	    }
+	}
+    }
+
+  sbitmap_free (temp_bitmap);
+  sbitmap_free (difference);
+}

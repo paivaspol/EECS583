@@ -1,0 +1,31 @@
+void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
+  su3_vector *tmpvec ; 
+  msg_tag *mtag ;
+  register site *s ;
+  register int i ;
+  
+  if(GOES_FORWARDS(dir)) /* forward shift */
+    {
+      mtag = start_gather_from_temp(src, sizeof(su3_vector), 
+				    dir, EVENANDODD, gen_pt[0]);
+      wait_gather(mtag);
+      FORALLSITES(i,s)
+	mult_su3_mat_vec(&(s->link[dir]),(su3_vector *)(gen_pt[0][i]),
+			 &(dest[i]));
+      cleanup_gather(mtag);
+    }
+  else /* backward shift */
+    {
+      tmpvec = (su3_vector *)calloc(sites_on_node, sizeof(su3_vector));
+      FORALLSITES(i,s)
+	mult_adj_su3_mat_vec(&(s->link[OPP_DIR(dir)]),&(src[i]), &tmpvec[i]);
+      mtag = start_gather_from_temp(tmpvec, sizeof(su3_vector), dir, 
+				    EVENANDODD, gen_pt[0]);
+      wait_gather(mtag);
+      /* copy the gen_pt to the dest */
+      FORALLSITES(i,s)
+	dest[i] = *(su3_vector *)gen_pt[0][i];
+      cleanup_gather(mtag);
+      free(tmpvec) ;
+    }
+}

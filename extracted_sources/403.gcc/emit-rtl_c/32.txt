@@ -1,0 +1,60 @@
+void
+reset_used_flags (x)
+     rtx x;
+{
+  int i, j;
+  enum rtx_code code;
+  const char *format_ptr;
+
+  if (x == 0)
+    return;
+
+  code = GET_CODE (x);
+
+  /* These types may be freely shared so we needn't do any resetting
+     for them.  */
+
+  switch (code)
+    {
+    case REG:
+    case QUEUED:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case CODE_LABEL:
+    case PC:
+    case CC0:
+      return;
+
+    case INSN:
+    case JUMP_INSN:
+    case CALL_INSN:
+    case NOTE:
+    case LABEL_REF:
+    case BARRIER:
+      /* The chain of insns is not being copied.  */
+      return;
+
+    default:
+      break;
+    }
+
+  x->used = 0;
+
+  format_ptr = GET_RTX_FORMAT (code);
+  for (i = 0; i < GET_RTX_LENGTH (code); i++)
+    {
+      switch (*format_ptr++)
+	{
+	case 'e':
+	  reset_used_flags (XEXP (x, i));
+	  break;
+
+	case 'E':
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    reset_used_flags (XVECEXP (x, i, j));
+	  break;
+	}
+    }
+}

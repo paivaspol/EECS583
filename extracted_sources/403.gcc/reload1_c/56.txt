@@ -1,0 +1,69 @@
+static void
+do_output_reload (chain, rl, j)
+     struct insn_chain *chain;
+     struct reload *rl;
+     int j;
+{
+  rtx note, old;
+  rtx insn = chain->insn;
+  /* If this is an output reload that stores something that is
+     not loaded in this same reload, see if we can eliminate a previous
+     store.  */
+  rtx pseudo = rl->out_reg;
+
+  if (pseudo
+      && optimize
+      && GET_CODE (pseudo) == REG
+      && ! rtx_equal_p (rl->in_reg, pseudo)
+      && REGNO (pseudo) >= FIRST_PSEUDO_REGISTER
+      && reg_last_reload_reg[REGNO (pseudo)])
+    {
+      int pseudo_no = REGNO (pseudo);
+      int last_regno = REGNO (reg_last_reload_reg[pseudo_no]);
+
+      /* We don't need to test full validity of last_regno for
+	 inherit here; we only want to know if the store actually
+	 matches the pseudo.  */
+      if (TEST_HARD_REG_BIT (reg_reloaded_valid, last_regno)
+	  && reg_reloaded_contents[last_regno] == pseudo_no
+	  && spill_reg_store[last_regno]
+	  && rtx_equal_p (pseudo, spill_reg_stored_to[last_regno]))
+	delete_output_reload (insn, j, last_regno);
+    }
+
+  old = rl->out_reg;
+  if (old == 0
+      || rl->reg_rtx == old
+      || rl->reg_rtx == 0)
+    return;
+
+  /* An output operand that dies right away does need a reload,
+     but need not be copied from it.  Show the new location in the
+     REG_UNUSED note.  */
+  if ((GET_CODE (old) == REG || GET_CODE (old) == SCRATCH)
+      && (note = find_reg_note (insn, REG_UNUSED, old)) != 0)
+    {
+      XEXP (note, 0) = rl->reg_rtx;
+      return;
+    }
+  /* Likewise for a SUBREG of an operand that dies.  */
+  else if (GET_CODE (old) == SUBREG
+	   && GET_CODE (SUBREG_REG (old)) == REG
+	   && 0 != (note = find_reg_note (insn, REG_UNUSED,
+					  SUBREG_REG (old))))
+    {
+      XEXP (note, 0) = gen_lowpart_common (GET_MODE (old),
+					   rl->reg_rtx);
+      return;
+    }
+  else if (GET_CODE (old) == SCRATCH)
+    /* If we aren't optimizing, there won't be a REG_UNUSED note,
+       but we don't want to make an output reload.  */
+    return;
+
+  /* If is a JUMP_INSN, we can't support output reloads yet.  */
+  if (GET_CODE (insn) == JUMP_INSN)
+    abort ();
+
+  emit_output_reload_insns (chain, rld + j, j);
+}

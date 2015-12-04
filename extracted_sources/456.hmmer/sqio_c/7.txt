@@ -1,0 +1,84 @@
+int
+SetSeqinfoString(SQINFO *sqinfo, char *sptr, int flag)
+{
+  int len;
+  int pos;
+
+				/* silently ignore NULL. */
+  if (sptr == NULL) return 1;
+
+  while (*sptr == ' ') sptr++; /* ignore leading whitespace */
+  for (pos = strlen(sptr)-1; pos >= 0; pos--)
+    if (! isspace((int) sptr[pos])) break;
+  sptr[pos+1] = '\0';	       /* ignore trailing whitespace */
+
+  switch (flag) {
+  case SQINFO_NAME:
+    if (*sptr != '-')
+      { 
+	strncpy(sqinfo->name, sptr, SQINFO_NAMELEN-1);
+	sqinfo->name[SQINFO_NAMELEN-1] = '\0';
+	sqinfo->flags   |= SQINFO_NAME;
+      }
+    break;
+
+  case SQINFO_ID:
+    if (*sptr != '-')
+      { 
+	strncpy(sqinfo->id, sptr, SQINFO_NAMELEN-1);
+	sqinfo->id[SQINFO_NAMELEN-1] = '\0';
+	sqinfo->flags |= SQINFO_ID;
+      }
+    break;
+
+  case SQINFO_ACC:
+    if (*sptr != '-')
+      { 
+	strncpy(sqinfo->acc, sptr, SQINFO_NAMELEN-1);
+	sqinfo->acc[SQINFO_NAMELEN-1] = '\0';
+	sqinfo->flags   |= SQINFO_ACC;
+      }
+    break;
+
+  case SQINFO_DESC:
+    if (*sptr != '-')
+      { 
+	if (sqinfo->flags & SQINFO_DESC) /* append? */
+	  {
+	    len = strlen(sqinfo->desc);
+	    if (len < SQINFO_DESCLEN-2)	/* is there room? */
+	      {
+		strncat(sqinfo->desc, " ", SQINFO_DESCLEN-1-len); len++;
+		strncat(sqinfo->desc, sptr, SQINFO_DESCLEN-1-len);
+	      }
+	  }
+	else			/* else copy */
+	  strncpy(sqinfo->desc, sptr, SQINFO_DESCLEN-1);
+	sqinfo->desc[SQINFO_DESCLEN-1] = '\0';
+	sqinfo->flags   |= SQINFO_DESC;
+      }
+    break;
+
+  case SQINFO_START:
+    if (!IsInt(sptr)) { squid_errno = SQERR_FORMAT; return 0; }
+    sqinfo->start = atoi(sptr);
+    if (sqinfo->start != 0) sqinfo->flags |= SQINFO_START;
+    break;
+
+  case SQINFO_STOP:
+    if (!IsInt(sptr)) { squid_errno = SQERR_FORMAT; return 0; }
+    sqinfo->stop = atoi(sptr);
+    if (sqinfo->stop != 0) sqinfo->flags |= SQINFO_STOP;
+    break;
+
+  case SQINFO_OLEN:
+    if (!IsInt(sptr)) { squid_errno = SQERR_FORMAT; return 0; }
+    sqinfo->olen = atoi(sptr);
+    if (sqinfo->olen != 0) sqinfo->flags |= SQINFO_OLEN;
+    break;
+
+  default:
+    Die("Invalid flag %d to SetSeqinfoString()", flag);
+  }
+  return 1;
+}

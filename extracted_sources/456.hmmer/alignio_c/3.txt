@@ -1,0 +1,27 @@
+void
+SAMizeAlignment(char **aseq, int nseq, int alen)
+{
+  int col;			/* counter for aligned columns */
+  int i;			/* counter for seqs */
+  int sawlower, sawupper, sawgap;
+  char gapchar;
+
+  for (col = 0; col < alen; col++)
+    {
+      sawlower = sawupper = sawgap = 0;
+				/* pass 1: do we see only upper or lower? */
+      for (i = 0; i < nseq; i++)
+	{
+	  if (isgap(aseq[i][col]))         { sawgap   = 1; continue; }
+	  if (isupper((int) aseq[i][col])) { sawupper = 1; continue; }
+	  if (islower((int) aseq[i][col]))   sawlower = 1;
+	}
+				/* select gap character for column */
+      gapchar = '-';		/* default */
+      if (sawlower && ! sawupper) gapchar = '.';
+
+				/* pass 2: set gap char */
+      for (i = 0; i < nseq; i++)
+	if (isgap(aseq[i][col])) aseq[i][col] = gapchar;
+    }
+}

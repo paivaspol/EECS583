@@ -1,0 +1,9 @@
+void
+Perl_sv_untaint(pTHX_ SV *sv)
+{
+    if (SvTYPE(sv) >= SVt_PVMG && SvMAGIC(sv)) {
+	MAGIC *mg = mg_find(sv, PERL_MAGIC_taint);
+	if (mg)
+	    mg->mg_len &= ~1;
+    }
+}

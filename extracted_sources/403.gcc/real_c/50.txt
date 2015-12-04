@@ -1,0 +1,30 @@
+static void
+esub (a, b, c)
+     const UEMUSHORT *a, *b;
+     UEMUSHORT *c;
+{
+
+#ifdef NANS
+  if (eisnan (a))
+    {
+      emov (a, c);
+      return;
+    }
+  if (eisnan (b))
+    {
+      emov (b, c);
+      return;
+    }
+/* Infinity minus infinity is a NaN.
+   Test for subtracting infinities of the same sign.  */
+  if (eisinf (a) && eisinf (b)
+      && ((eisneg (a) ^ eisneg (b)) == 0))
+    {
+      mtherr ("esub", INVALID);
+      enan (c, 0);
+      return;
+    }
+#endif
+  subflg = 1;
+  eadd1 (a, b, c);
+}

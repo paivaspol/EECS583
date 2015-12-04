@@ -1,0 +1,336 @@
+static void main_loop_threaded(struct plan7_s *hmm, int seed, int nsample, 
+			       float lenmean, float lensd, int fixedlen,
+			       int nthreads,
+			       struct histogram_s **ret_hist, float *ret_max,
+			       Stopwatch_t *twatch);
+static struct workpool_s *workpool_start(struct plan7_s *hmm, 
+				 float lenmean, float lensd, int fixedlen,
+				 float *randomseq, int nsample, 
+				 struct histogram_s *hist, 
+				 int num_threads);
+static void  workpool_stop(struct workpool_s *wpool);
+static void  workpool_free(struct workpool_s *wpool);
+static void *worker_thread(void *ptr);
+#endif /* HMMER_THREADS */
+
+#ifdef HMMER_PVM
+static void main_loop_pvm(struct plan7_s *hmm, int seed, int nsample, 
+			  int lumpsize,
+			  float lenmean, float lensd, int fixedlen,
+			  struct histogram_s **ret_hist, float *ret_max, 
+			  Stopwatch_t *extrawatch, int *ret_nslaves);
+#endif /* HMMER_PVM */
+
+
+int
+#ifdef SPEC_CPU
+hmmcalibrate(int argc, char **argv)
+#else
+main(int argc, char **argv)
+#endif
+{
+  char    *hmmfile;             /* HMM file to open                */
+  char    *tmpfile;             /* temporary calibrated HMM file   */
+  HMMFILE *hmmfp;               /* opened hmm file pointer         */
+  FILE    *outfp;               /* for writing HMM(s) into tmpfile */
+  char    *mode;                /* write mode, "w" or "wb"         */
+  struct plan7_s *hmm;          /* the hidden Markov model         */
+  int     idx;			/* counter over sequences          */
+#ifndef SPEC_CPU
+  sigset_t blocksigs;		/* list of signals to protect from */
+#endif
+  int     nhmm;			/* number of HMMs calibrated       */
+
+  struct histogram_s *hist;     /* a resulting histogram           */
+  float   max;			/* maximum score from an HMM       */
+  char   *histfile;             /* histogram save file             */
+  FILE   *hfp;                  /* open file pointer for histfile  */
+
+  Stopwatch_t stopwatch;	/* main stopwatch for process       */
+  Stopwatch_t extrawatch;	/* stopwatch for threads/PVM slaves */
+
+  float  *mu;			/* array of EVD mu's for HMMs      */
+  float  *lambda;		/* array of EVD lambda's for HMMs  */
+  int     mu_lumpsize;		/* allocation lumpsize for mu, lambda */
+
+  int     nsample;		/* number of random seqs to sample */
+  int     seed;			/* random number seed              */
+  int     fixedlen;		/* fixed length, or 0 if unused    */
+  float   lenmean;		/* mean of length distribution     */
+  float   lensd;		/* std dev of length distribution  */
+  int     do_pvm;		/* TRUE to use PVM                 */
+  int     pvm_lumpsize;		/* # of seqs to do per PVM slave exchange */
+  int     pvm_nslaves;		/* number of slaves used in the PVM */
+
+
+  char *optname;		/* name of option found by Getopt() */
+  char *optarg;			/* argument found by Getopt()       */
+  int   optind;		        /* index in argv[]                  */
+
+  int   num_threads;            /* number of worker threads */   
+
+
+  /***********************************************
+   * Parse the command line
+   ***********************************************/
+#ifndef SPEC_CPU
+  StopwatchStart(&stopwatch);
+  StopwatchZero(&extrawatch);
+#endif
+
+  nsample      = 5000;
+  fixedlen     = 0;
+  lenmean      = 325.;
+  lensd        = 200.;
+  seed         = (int) time ((time_t *) NULL);
+  histfile     = NULL;
+  do_pvm       = FALSE;
+  pvm_lumpsize = 20;		/* 20 seqs/PVM exchange: sets granularity */
+  mu_lumpsize  = 100;
+#ifdef HMMER_THREADS
+  num_threads  = ThreadNumber(); /* only matters if we're threaded */
+#else
+  num_threads  = 0;
+#endif
+
+  while (Getopt(argc, argv, OPTIONS, NOPTIONS, usage,
+		&optind, &optname, &optarg))
+    {
+      if      (strcmp(optname, "--cpu")      == 0) num_threads  = atoi(optarg);
+      else if (strcmp(optname, "--fixed")    == 0) fixedlen = atoi(optarg);
+      else if (strcmp(optname, "--histfile") == 0) histfile = optarg;
+      else if (strcmp(optname, "--mean")     == 0) lenmean  = atof(optarg); 
+      else if (strcmp(optname, "--num")      == 0) nsample  = atoi(optarg); 
+      else if (strcmp(optname, "--pvm")      == 0) do_pvm   = TRUE;
+      else if (strcmp(optname, "--sd")       == 0) lensd    = atof(optarg); 
+      else if (strcmp(optname, "--seed")     == 0) seed     = atoi(optarg);
+      else if (strcmp(optname, "-h") == 0)
+	{
+	  HMMERBanner(stdout, banner);
+	  puts(usage);
+	  puts(experts);
+	  exit(0);
+	}
+    }
+
+  if (argc - optind != 1) Die("Incorrect number of arguments.\n%s\n", usage);
+  hmmfile = argv[optind++];
+
+#ifndef HMMER_PVM
+  if (do_pvm) Die("PVM support is not compiled into HMMER; --pvm doesn't work.");
+#endif
+#ifndef HMMER_THREADS
+  if (num_threads) Die("Posix threads support is not compiled into HMMER; --cpu doesn't have any effect");
+#endif
+
+  /***********************************************
+   * Open our i/o file pointers, make sure all is well
+   ***********************************************/
+
+				/* HMM file */
+  if ((hmmfp = HMMFileOpen(hmmfile, NULL)) == NULL)
+    Die("failed to open HMM file %s for reading.", hmmfile);
+
+				/* histogram file */
+  hfp = NULL;
+  if (histfile != NULL) {
+    if ((hfp = fopen(histfile, "w")) == NULL)
+      Die("Failed to open histogram save file %s for writing\n", histfile);
+  }
+
+  /* Generate calibrated HMM(s) in a tmp file in the current
+   * directory. When we're finished, we delete the original
+   * HMM file and rename() this one. That way, the worst
+   * effect of a catastrophic failure should be that we
+   * leave a tmp file lying around, but the original HMM
+   * file remains uncorrupted. tmpnam() doesn't work portably here,
+   * because it'll put the file in /tmp and we won't
+   * necessarily be able to rename() it from there.
+   */
+  tmpfile = MallocOrDie(strlen(hmmfile) + 5);
+  strcpy(tmpfile, hmmfile);
+  strcat(tmpfile, ".new");	/* could be more inventive here... */
+  if (FileExists(tmpfile))
+#ifdef SPEC_CPU
+    if (remove(tmpfile) != 0) PANIC;
+#else
+    Die("temporary file %s already exists; please delete it first", tmpfile);
+#endif
+  if (hmmfp->is_binary) mode = "wb";
+  else                  mode = "w"; 
+
+  /*********************************************** 
+   * Show the banner
+   ***********************************************/
+
+  HMMERBanner(stdout, banner);
+  printf("HMM file:                 %s\n", hmmfile);
+  if (fixedlen) 
+    printf("Length fixed to:          %d\n", fixedlen);
+  else {
+    printf("Length distribution mean: %.0f\n", lenmean);
+    printf("Length distribution s.d.: %.0f\n", lensd);
+  }
+  printf("Number of samples:        %d\n", nsample);
+  printf("random seed:              %d\n", seed);
+  printf("histogram(s) saved to:    %s\n",
+	 histfile != NULL ? histfile : "[not saved]");
+  if (do_pvm)
+    printf("PVM:                      ACTIVE\n");
+  else if (num_threads > 0)
+    printf("POSIX threads:            %d\n", num_threads);
+  printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n");
+
+  /***********************************************
+   * Read the HMMs one at a time, and send them off
+   * in probability form to one of the main loops.
+   * The main loop functions are responsible for 
+   * synthesizing random sequences and returning
+   * a score histogram for each HMM.
+   ***********************************************/
+
+  nhmm = 0;
+  mu     = MallocOrDie(sizeof(float) * mu_lumpsize);
+  lambda = MallocOrDie(sizeof(float) * mu_lumpsize);
+
+  while (HMMFileRead(hmmfp, &hmm))
+    {
+      if (hmm == NULL)
+	Die("HMM file may be corrupt or in incorrect format; parse failed");
+
+      if (! do_pvm && num_threads == 0)
+	main_loop_serial(hmm, seed, nsample, lenmean, lensd, fixedlen, 
+			 &hist, &max);
+#ifdef HMMER_PVM
+      else if (do_pvm) {
+	pvm_nslaves = 0;	/* solely to silence compiler warnings */
+	main_loop_pvm(hmm, seed, nsample, pvm_lumpsize, 
+		      lenmean, lensd, fixedlen, 
+		      &hist, &max, &extrawatch, &pvm_nslaves);
+      }
+#endif 
+#ifdef HMMER_THREADS
+      else if (num_threads > 0)
+	main_loop_threaded(hmm, seed, nsample, lenmean, lensd, fixedlen,
+			   num_threads, &hist, &max, &extrawatch);
+#endif
+      else 
+	Die("wait. that can't happen. I didn't do anything.");
+
+
+      /* Fit an EVD to the observed histogram.
+       * The TRUE left-censors and fits only the right slope of the histogram.
+       * The 9999. is an arbitrary high number that means we won't trim
+       * outliers on the right.
+       */
+      if (! ExtremeValueFitHistogram(hist, TRUE, 9999.))
+	Die("fit failed; --num may be set too small?\n");
+      
+      mu[nhmm]     = hist->param[EVD_MU];
+      lambda[nhmm] = hist->param[EVD_LAMBDA];
+      nhmm++;
+      if (nhmm % 100 == 0) {
+	mu     = ReallocOrDie(mu,     sizeof(float) * (nhmm+mu_lumpsize));
+	lambda = ReallocOrDie(lambda, sizeof(float) * (nhmm+mu_lumpsize));
+      }      
+
+      /* Output
+       */
+      printf("HMM    : %s\n",   hmm->name);
+      printf("mu     : %12f\n", hist->param[EVD_MU]);
+      printf("lambda : %12f\n", hist->param[EVD_LAMBDA]);
+      printf("max    : %12f\n", max);
+      printf("//\n");
+
+      if (hfp != NULL) 
+	{
+	  fprintf(hfp, "HMM: %s\n", hmm->name);
+	  PrintASCIIHistogram(hfp, hist);
+	  fprintf(hfp, "//\n");
+	}
+
+      FreeHistogram(hist);
+      FreePlan7(hmm);
+    }
+  SQD_DPRINTF1(("Main body believes it has calibrations for %d HMMs\n", nhmm));
+
+  /*****************************************************************
+   * Rewind the HMM file for a second pass.
+   * Write a temporary HMM file with new mu, lambda values in it
+   *****************************************************************/
+
+  HMMFileRewind(hmmfp);
+  if (FileExists(tmpfile))
+    Die("Ouch. Temporary file %s appeared during the run.", tmpfile);
+  if ((outfp = fopen(tmpfile, mode)) == NULL)
+    Die("Ouch. Temporary file %s couldn't be opened for writing.", tmpfile); 
+  
+  for (idx = 0; idx < nhmm; idx++)
+    {
+      /* Sanity checks 
+       */
+      if (!HMMFileRead(hmmfp, &hmm))
+	Die("Ran out of HMMs too early in pass 2");
+      if (hmm == NULL) 
+	Die("HMM file %s was corrupted? Parse failed in pass 2", hmmfile);
+
+      /* Put results in HMM
+       */
+      hmm->mu     = mu[idx];
+      hmm->lambda = lambda[idx];
+      hmm->flags |= PLAN7_STATS;
+      Plan7ComlogAppend(hmm, argc, argv);
+
+      /* Save HMM to tmpfile
+       */
+      if (hmmfp->is_binary) WriteBinHMM(outfp, hmm);
+      else                  WriteAscHMM(outfp, hmm); 
+
+      FreePlan7(hmm);
+    }
+  
+  /*****************************************************************
+   * Now, carefully remove original file and replace it
+   * with the tmpfile. Note the protection from signals;
+   * we wouldn't want a user to ctrl-C just as we've deleted
+   * their HMM file but before the new one is moved.
+   *****************************************************************/
+
+  HMMFileClose(hmmfp);
+  if (fclose(outfp)   != 0) PANIC;
+
+#ifndef SPEC_CPU
+  if (sigemptyset(&blocksigs) != 0) PANIC;
+  if (sigaddset(&blocksigs, SIGINT) != 0) PANIC;
+  if (sigprocmask(SIG_BLOCK, &blocksigs, NULL) != 0)   PANIC;
+  if (remove(hmmfile) != 0)                            PANIC;
+  if (rename(tmpfile, hmmfile) != 0)                   PANIC;
+  if (sigprocmask(SIG_UNBLOCK, &blocksigs, NULL) != 0) PANIC;
+#endif
+  free(tmpfile);
+
+  /***********************************************
+   * Exit
+   ***********************************************/
+
+#ifndef SPEC_CPU
+  StopwatchStop(&stopwatch);
+#endif
+#ifdef HMMER_PVM
+  if (do_pvm > 0) {
+    printf("PVM processors used: %d\n", pvm_nslaves);
+    StopwatchInclude(&stopwatch, &extrawatch);
+  }
+#endif
+#ifdef PTHREAD_TIMES_HACK
+  else if (num_threads > 0) StopwatchInclude(&stopwatch, &extrawatch);
+#endif
+
+  /*  StopwatchDisplay(stdout, "CPU Time: ", &stopwatch); */
+
+  free(mu);
+  free(lambda);
+  if (hfp != NULL) fclose(hfp);
+  SqdClean();
+  return 0;
+}

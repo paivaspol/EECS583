@@ -1,0 +1,17 @@
+void
+redirect_edge_succ (e, new_succ)
+     edge e;
+     basic_block new_succ;
+{
+  edge *pe;
+
+  /* Disconnect the edge from the old successor block.  */
+  for (pe = &e->dest->pred; *pe != e; pe = &(*pe)->pred_next)
+    continue;
+  *pe = (*pe)->pred_next;
+
+  /* Reconnect the edge to the new successor block.  */
+  e->pred_next = new_succ->pred;
+  new_succ->pred = e;
+  e->dest = new_succ;
+}

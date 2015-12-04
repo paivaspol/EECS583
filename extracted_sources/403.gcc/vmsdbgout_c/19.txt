@@ -1,0 +1,17 @@
+static void
+vmsdbgout_end_epilogue ()
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  if (write_symbols == VMS_AND_DWARF2_DEBUG)
+    (*dwarf2_debug_hooks.end_epilogue) ();
+
+  if (debug_info_level > DINFO_LEVEL_NONE)
+    {
+      /* Output a label to mark the endpoint of the code generated for this
+         function.  */
+      ASM_GENERATE_INTERNAL_LABEL (label, FUNC_END_LABEL,
+				   current_funcdef_number);
+      ASM_OUTPUT_LABEL (asm_out_file, label);
+    }
+}

@@ -1,0 +1,16 @@
+void
+P9Renormalize(struct plan9_s *hmm)
+{
+  int    k;			/* counter for states                  */
+
+  for (k = 0; k <= hmm->M ; k++)
+    {
+				/* match state transition frequencies */
+      FNorm(hmm->mat[k].t, 3);
+      FNorm(hmm->ins[k].t, 3);
+      if (k > 0) FNorm(hmm->del[k].t, 3);
+
+      if (k > 0) FNorm(hmm->mat[k].p, Alphabet_size);
+      FNorm(hmm->ins[k].p, Alphabet_size);
+    }
+}

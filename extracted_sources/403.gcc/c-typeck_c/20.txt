@@ -1,0 +1,275 @@
+static tree
+convert_for_assignment (type, rhs, errtype, fundecl, funname, parmnum)
+     tree type, rhs;
+     const char *errtype;
+     tree fundecl, funname;
+     int parmnum;
+{
+  enum tree_code codel = TREE_CODE (type);
+  tree rhstype;
+  enum tree_code coder;
+
+  /* Strip NON_LVALUE_EXPRs since we aren't using as an lvalue.  */
+  /* Do not use STRIP_NOPS here.  We do not want an enumerator
+     whose value is 0 to count as a null pointer constant.  */
+  if (TREE_CODE (rhs) == NON_LVALUE_EXPR)
+    rhs = TREE_OPERAND (rhs, 0);
+
+  if (TREE_CODE (TREE_TYPE (rhs)) == ARRAY_TYPE
+      || TREE_CODE (TREE_TYPE (rhs)) == FUNCTION_TYPE)
+    rhs = default_conversion (rhs);
+  else if (optimize && TREE_CODE (rhs) == VAR_DECL)
+    rhs = decl_constant_value_for_broken_optimization (rhs);
+
+  rhstype = TREE_TYPE (rhs);
+  coder = TREE_CODE (rhstype);
+
+  if (coder == ERROR_MARK)
+    return error_mark_node;
+
+  if (TYPE_MAIN_VARIANT (type) == TYPE_MAIN_VARIANT (rhstype))
+    {
+      overflow_warning (rhs);
+      /* Check for Objective-C protocols.  This will issue a warning if
+	 there are protocol violations.  No need to use the return value.  */
+      maybe_objc_comptypes (type, rhstype, 0);
+      return rhs;
+    }
+
+  if (coder == VOID_TYPE)
+    {
+      error ("void value not ignored as it ought to be");
+      return error_mark_node;
+    }
+  /* A type converts to a reference to it.  
+     This code doesn't fully support references, it's just for the
+     special case of va_start and va_copy.  */
+  if (codel == REFERENCE_TYPE
+      && comptypes (TREE_TYPE (type), TREE_TYPE (rhs)) == 1)
+    {
+      if (mark_addressable (rhs) == 0)
+	return error_mark_node;
+      rhs = build1 (ADDR_EXPR, build_pointer_type (TREE_TYPE (rhs)), rhs);
+
+      /* We already know that these two types are compatible, but they
+	 may not be exactly identical.  In fact, `TREE_TYPE (type)' is
+	 likely to be __builtin_va_list and `TREE_TYPE (rhs)' is
+	 likely to be va_list, a typedef to __builtin_va_list, which
+	 is different enough that it will cause problems later.  */
+      if (TREE_TYPE (TREE_TYPE (rhs)) != TREE_TYPE (type))
+	rhs = build1 (NOP_EXPR, build_pointer_type (TREE_TYPE (type)), rhs);
+
+      rhs = build1 (NOP_EXPR, type, rhs);
+      return rhs;
+    }
+  /* Arithmetic types all interconvert, and enum is treated like int.  */
+  else if ((codel == INTEGER_TYPE || codel == REAL_TYPE 
+	    || codel == ENUMERAL_TYPE || codel == COMPLEX_TYPE
+	    || codel == BOOLEAN_TYPE)
+	   && (coder == INTEGER_TYPE || coder == REAL_TYPE 
+	       || coder == ENUMERAL_TYPE || coder == COMPLEX_TYPE
+	       || coder == BOOLEAN_TYPE))
+    return convert_and_check (type, rhs);
+
+  /* Conversion to a transparent union from its member types.
+     This applies only to function arguments.  */
+  else if (codel == UNION_TYPE && TYPE_TRANSPARENT_UNION (type) && ! errtype)
+    {
+      tree memb_types;
+      tree marginal_memb_type = 0;
+
+      for (memb_types = TYPE_FIELDS (type); memb_types;
+	   memb_types = TREE_CHAIN (memb_types))
+	{
+	  tree memb_type = TREE_TYPE (memb_types);
+
+	  if (comptypes (TYPE_MAIN_VARIANT (memb_type),
+			 TYPE_MAIN_VARIANT (rhstype)))
+	    break;
+
+	  if (TREE_CODE (memb_type) != POINTER_TYPE)
+	    continue;
+
+	  if (coder == POINTER_TYPE)
+	    {
+	      tree ttl = TREE_TYPE (memb_type);
+	      tree ttr = TREE_TYPE (rhstype);
+
+	      /* Any non-function converts to a [const][volatile] void *
+		 and vice versa; otherwise, targets must be the same.
+		 Meanwhile, the lhs target must have all the qualifiers of
+		 the rhs.  */
+	      if (VOID_TYPE_P (ttl) || VOID_TYPE_P (ttr)
+		  || comp_target_types (memb_type, rhstype))
+		{
+		  /* If this type won't generate any warnings, use it.  */
+		  if (TYPE_QUALS (ttl) == TYPE_QUALS (ttr)
+		      || ((TREE_CODE (ttr) == FUNCTION_TYPE
+			   && TREE_CODE (ttl) == FUNCTION_TYPE)
+			  ? ((TYPE_QUALS (ttl) | TYPE_QUALS (ttr))
+			     == TYPE_QUALS (ttr))
+			  : ((TYPE_QUALS (ttl) | TYPE_QUALS (ttr))
+			     == TYPE_QUALS (ttl))))
+		    break;
+
+		  /* Keep looking for a better type, but remember this one.  */
+		  if (! marginal_memb_type)
+		    marginal_memb_type = memb_type;
+		}
+	    }
+
+	  /* Can convert integer zero to any pointer type.  */
+	  if (integer_zerop (rhs)
+	      || (TREE_CODE (rhs) == NOP_EXPR
+		  && integer_zerop (TREE_OPERAND (rhs, 0))))
+	    {
+	      rhs = null_pointer_node;
+	      break;
+	    }
+	}
+
+      if (memb_types || marginal_memb_type)
+	{
+	  if (! memb_types)
+	    {
+	      /* We have only a marginally acceptable member type;
+		 it needs a warning.  */
+	      tree ttl = TREE_TYPE (marginal_memb_type);
+	      tree ttr = TREE_TYPE (rhstype);
+
+	      /* Const and volatile mean something different for function
+		 types, so the usual warnings are not appropriate.  */
+	      if (TREE_CODE (ttr) == FUNCTION_TYPE
+		  && TREE_CODE (ttl) == FUNCTION_TYPE)
+		{
+		  /* Because const and volatile on functions are
+		     restrictions that say the function will not do
+		     certain things, it is okay to use a const or volatile
+		     function where an ordinary one is wanted, but not
+		     vice-versa.  */
+		  if (TYPE_QUALS (ttl) & ~TYPE_QUALS (ttr))
+		    warn_for_assignment ("%s makes qualified function pointer from unqualified",
+					 errtype, funname, parmnum);
+		}
+	      else if (TYPE_QUALS (ttr) & ~TYPE_QUALS (ttl))
+		warn_for_assignment ("%s discards qualifiers from pointer target type",
+				     errtype, funname,
+				     parmnum);
+	    }
+	  
+	  if (pedantic && ! DECL_IN_SYSTEM_HEADER (fundecl))
+	    pedwarn ("ISO C prohibits argument conversion to union type");
+
+	  return build1 (NOP_EXPR, type, rhs);
+	}
+    }
+
+  /* Conversions among pointers */
+  else if ((codel == POINTER_TYPE || codel == REFERENCE_TYPE)
+	   && (coder == POINTER_TYPE || coder == REFERENCE_TYPE))
+    {
+      tree ttl = TREE_TYPE (type);
+      tree ttr = TREE_TYPE (rhstype);
+
+      /* Any non-function converts to a [const][volatile] void *
+	 and vice versa; otherwise, targets must be the same.
+	 Meanwhile, the lhs target must have all the qualifiers of the rhs.  */
+      if (VOID_TYPE_P (ttl) || VOID_TYPE_P (ttr)
+	  || comp_target_types (type, rhstype)
+	  || (unsigned_type (TYPE_MAIN_VARIANT (ttl))
+	      == unsigned_type (TYPE_MAIN_VARIANT (ttr))))
+	{
+	  if (pedantic
+	      && ((VOID_TYPE_P (ttl) && TREE_CODE (ttr) == FUNCTION_TYPE)
+		  ||
+		  (VOID_TYPE_P (ttr)
+		   /* Check TREE_CODE to catch cases like (void *) (char *) 0
+		      which are not ANSI null ptr constants.  */
+		   && (!integer_zerop (rhs) || TREE_CODE (rhs) == NOP_EXPR)
+		   && TREE_CODE (ttl) == FUNCTION_TYPE)))
+	    warn_for_assignment ("ISO C forbids %s between function pointer and `void *'",
+				 errtype, funname, parmnum);
+	  /* Const and volatile mean something different for function types,
+	     so the usual warnings are not appropriate.  */
+	  else if (TREE_CODE (ttr) != FUNCTION_TYPE
+		   && TREE_CODE (ttl) != FUNCTION_TYPE)
+	    {
+	      if (TYPE_QUALS (ttr) & ~TYPE_QUALS (ttl))
+		warn_for_assignment ("%s discards qualifiers from pointer target type",
+				     errtype, funname, parmnum);
+	      /* If this is not a case of ignoring a mismatch in signedness,
+		 no warning.  */
+	      else if (VOID_TYPE_P (ttl) || VOID_TYPE_P (ttr)
+		       || comp_target_types (type, rhstype))
+		;
+	      /* If there is a mismatch, do warn.  */
+	      else if (pedantic)
+		warn_for_assignment ("pointer targets in %s differ in signedness",
+				     errtype, funname, parmnum);
+	    }
+	  else if (TREE_CODE (ttl) == FUNCTION_TYPE
+		   && TREE_CODE (ttr) == FUNCTION_TYPE)
+	    {
+	      /* Because const and volatile on functions are restrictions
+		 that say the function will not do certain things,
+		 it is okay to use a const or volatile function
+		 where an ordinary one is wanted, but not vice-versa.  */
+	      if (TYPE_QUALS (ttl) & ~TYPE_QUALS (ttr))
+		warn_for_assignment ("%s makes qualified function pointer from unqualified",
+				     errtype, funname, parmnum);
+	    }
+	}
+      else
+	warn_for_assignment ("%s from incompatible pointer type",
+			     errtype, funname, parmnum);
+      return convert (type, rhs);
+    }
+  else if (codel == POINTER_TYPE && coder == INTEGER_TYPE)
+    {
+      /* An explicit constant 0 can convert to a pointer,
+	 or one that results from arithmetic, even including
+	 a cast to integer type.  */
+      if (! (TREE_CODE (rhs) == INTEGER_CST && integer_zerop (rhs))
+	  &&
+	  ! (TREE_CODE (rhs) == NOP_EXPR
+	     && TREE_CODE (TREE_TYPE (rhs)) == INTEGER_TYPE
+	     && TREE_CODE (TREE_OPERAND (rhs, 0)) == INTEGER_CST
+	     && integer_zerop (TREE_OPERAND (rhs, 0))))
+	{
+	  warn_for_assignment ("%s makes pointer from integer without a cast",
+			       errtype, funname, parmnum);
+	  return convert (type, rhs);
+	}
+      return null_pointer_node;
+    }
+  else if (codel == INTEGER_TYPE && coder == POINTER_TYPE)
+    {
+      warn_for_assignment ("%s makes integer from pointer without a cast",
+			   errtype, funname, parmnum);
+      return convert (type, rhs);
+    }
+  else if (codel == BOOLEAN_TYPE && coder == POINTER_TYPE)
+    return convert (type, rhs);
+
+  if (!errtype)
+    {
+      if (funname)
+ 	{
+ 	  tree selector = maybe_building_objc_message_expr ();
+ 
+ 	  if (selector && parmnum > 2)
+ 	    error ("incompatible type for argument %d of `%s'",
+		   parmnum - 2, IDENTIFIER_POINTER (selector));
+ 	  else
+	    error ("incompatible type for argument %d of `%s'",
+		   parmnum, IDENTIFIER_POINTER (funname));
+	}
+      else
+	error ("incompatible type for argument %d of indirect function call",
+	       parmnum);
+    }
+  else
+    error ("incompatible types in %s", errtype);
+
+  return error_mark_node;
+}

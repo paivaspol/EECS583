@@ -1,0 +1,40 @@
+static int
+noce_try_store_flag (if_info)
+     struct noce_if_info *if_info;
+{
+  int reversep;
+  rtx target, seq;
+
+  if (GET_CODE (if_info->b) == CONST_INT
+      && INTVAL (if_info->b) == STORE_FLAG_VALUE
+      && if_info->a == const0_rtx)
+    reversep = 0;
+  else if (if_info->b == const0_rtx
+	   && GET_CODE (if_info->a) == CONST_INT
+	   && INTVAL (if_info->a) == STORE_FLAG_VALUE
+	   && (reversed_comparison_code (if_info->cond, if_info->jump)
+	       != UNKNOWN))
+    reversep = 1;
+  else
+    return FALSE;
+
+  start_sequence ();
+
+  target = noce_emit_store_flag (if_info, if_info->x, reversep, 0);
+  if (target)
+    {
+      if (target != if_info->x)
+	noce_emit_move_insn (if_info->x, target);
+
+      seq = get_insns ();
+      end_sequence ();
+      emit_insns_before (seq, if_info->jump);
+
+      return TRUE;
+    }
+  else
+    {
+      end_sequence ();
+      return FALSE;
+    }
+}

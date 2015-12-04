@@ -1,0 +1,432 @@
+static unsigned HOST_WIDE_INT
+nonzero_bits (x, mode)
+     rtx x;
+     enum machine_mode mode;
+{
+  unsigned HOST_WIDE_INT nonzero = GET_MODE_MASK (mode);
+  unsigned HOST_WIDE_INT inner_nz;
+  enum rtx_code code;
+  unsigned int mode_width = GET_MODE_BITSIZE (mode);
+  rtx tem;
+
+  /* For floating-point values, assume all bits are needed.  */
+  if (FLOAT_MODE_P (GET_MODE (x)) || FLOAT_MODE_P (mode))
+    return nonzero;
+
+  /* If X is wider than MODE, use its mode instead.  */
+  if (GET_MODE_BITSIZE (GET_MODE (x)) > mode_width)
+    {
+      mode = GET_MODE (x);
+      nonzero = GET_MODE_MASK (mode);
+      mode_width = GET_MODE_BITSIZE (mode);
+    }
+
+  if (mode_width > HOST_BITS_PER_WIDE_INT)
+    /* Our only callers in this case look for single bit values.  So
+       just return the mode mask.  Those tests will then be false.  */
+    return nonzero;
+
+#ifndef WORD_REGISTER_OPERATIONS
+  /* If MODE is wider than X, but both are a single word for both the host
+     and target machines, we can compute this from which bits of the
+     object might be nonzero in its own mode, taking into account the fact
+     that on many CISC machines, accessing an object in a wider mode
+     causes the high-order bits to become undefined.  So they are
+     not known to be zero.  */
+
+  if (GET_MODE (x) != VOIDmode && GET_MODE (x) != mode
+      && GET_MODE_BITSIZE (GET_MODE (x)) <= BITS_PER_WORD
+      && GET_MODE_BITSIZE (GET_MODE (x)) <= HOST_BITS_PER_WIDE_INT
+      && GET_MODE_BITSIZE (mode) > GET_MODE_BITSIZE (GET_MODE (x)))
+    {
+      nonzero &= nonzero_bits (x, GET_MODE (x));
+      nonzero |= GET_MODE_MASK (mode) & ~GET_MODE_MASK (GET_MODE (x));
+      return nonzero;
+    }
+#endif
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case REG:
+#if defined(POINTERS_EXTEND_UNSIGNED) && !defined(HAVE_ptr_extend)
+      /* If pointers extend unsigned and this is a pointer in Pmode, say that
+	 all the bits above ptr_mode are known to be zero.  */
+      if (POINTERS_EXTEND_UNSIGNED && GET_MODE (x) == Pmode
+	  && REG_POINTER (x))
+	nonzero &= GET_MODE_MASK (ptr_mode);
+#endif
+
+      /* Include declared information about alignment of pointers.  */
+      /* ??? We don't properly preserve REG_POINTER changes across
+	 pointer-to-integer casts, so we can't trust it except for
+	 things that we know must be pointers.  See execute/960116-1.c.  */
+      if ((x == stack_pointer_rtx
+	   || x == frame_pointer_rtx
+	   || x == arg_pointer_rtx)
+	  && REGNO_POINTER_ALIGN (REGNO (x)))
+	{
+	  unsigned HOST_WIDE_INT alignment
+	    = REGNO_POINTER_ALIGN (REGNO (x)) / BITS_PER_UNIT;
+
+#ifdef PUSH_ROUNDING
+	  /* If PUSH_ROUNDING is defined, it is possible for the
+	     stack to be momentarily aligned only to that amount,
+	     so we pick the least alignment.  */
+	  if (x == stack_pointer_rtx && PUSH_ARGS)
+	    alignment = MIN (PUSH_ROUNDING (1), alignment);
+#endif
+
+	  nonzero &= ~(alignment - 1);
+	}
+
+      /* If X is a register whose nonzero bits value is current, use it.
+	 Otherwise, if X is a register whose value we can find, use that
+	 value.  Otherwise, use the previously-computed global nonzero bits
+	 for this register.  */
+
+      if (reg_last_set_value[REGNO (x)] != 0
+	  && (reg_last_set_mode[REGNO (x)] == mode
+	      || (GET_MODE_CLASS (reg_last_set_mode[REGNO (x)]) == MODE_INT
+		  && GET_MODE_CLASS (mode) == MODE_INT))
+	  && (reg_last_set_label[REGNO (x)] == label_tick
+	      || (REGNO (x) >= FIRST_PSEUDO_REGISTER
+		  && REG_N_SETS (REGNO (x)) == 1
+		  && ! REGNO_REG_SET_P (BASIC_BLOCK (0)->global_live_at_start,
+					REGNO (x))))
+	  && INSN_CUID (reg_last_set[REGNO (x)]) < subst_low_cuid)
+	return reg_last_set_nonzero_bits[REGNO (x)] & nonzero;
+
+      tem = get_last_value (x);
+
+      if (tem)
+	{
+#ifdef SHORT_IMMEDIATES_SIGN_EXTEND
+	  /* If X is narrower than MODE and TEM is a non-negative
+	     constant that would appear negative in the mode of X,
+	     sign-extend it for use in reg_nonzero_bits because some
+	     machines (maybe most) will actually do the sign-extension
+	     and this is the conservative approach.
+
+	     ??? For 2.5, try to tighten up the MD files in this regard
+	     instead of this kludge.  */
+
+	  if (GET_MODE_BITSIZE (GET_MODE (x)) < mode_width
+	      && GET_CODE (tem) == CONST_INT
+	      && INTVAL (tem) > 0
+	      && 0 != (INTVAL (tem)
+		       & ((HOST_WIDE_INT) 1
+			  << (GET_MODE_BITSIZE (GET_MODE (x)) - 1))))
+	    tem = GEN_INT (INTVAL (tem)
+			   | ((HOST_WIDE_INT) (-1)
+			      << GET_MODE_BITSIZE (GET_MODE (x))));
+#endif
+	  return nonzero_bits (tem, mode) & nonzero;
+	}
+      else if (nonzero_sign_valid && reg_nonzero_bits[REGNO (x)])
+	{
+	  unsigned HOST_WIDE_INT mask = reg_nonzero_bits[REGNO (x)];
+
+	  if (GET_MODE_BITSIZE (GET_MODE (x)) < mode_width)
+	    /* We don't know anything about the upper bits.  */
+	    mask |= GET_MODE_MASK (mode) ^ GET_MODE_MASK (GET_MODE (x));
+	  return nonzero & mask;
+	}
+      else
+	return nonzero;
+
+    case CONST_INT:
+#ifdef SHORT_IMMEDIATES_SIGN_EXTEND
+      /* If X is negative in MODE, sign-extend the value.  */
+      if (INTVAL (x) > 0 && mode_width < BITS_PER_WORD
+	  && 0 != (INTVAL (x) & ((HOST_WIDE_INT) 1 << (mode_width - 1))))
+	return (INTVAL (x) | ((HOST_WIDE_INT) (-1) << mode_width));
+#endif
+
+      return INTVAL (x);
+
+    case MEM:
+#ifdef LOAD_EXTEND_OP
+      /* In many, if not most, RISC machines, reading a byte from memory
+	 zeros the rest of the register.  Noticing that fact saves a lot
+	 of extra zero-extends.  */
+      if (LOAD_EXTEND_OP (GET_MODE (x)) == ZERO_EXTEND)
+	nonzero &= GET_MODE_MASK (GET_MODE (x));
+#endif
+      break;
+
+    case EQ:  case NE:
+    case UNEQ:  case LTGT:
+    case GT:  case GTU:  case UNGT:
+    case LT:  case LTU:  case UNLT:
+    case GE:  case GEU:  case UNGE:
+    case LE:  case LEU:  case UNLE:
+    case UNORDERED: case ORDERED:
+
+      /* If this produces an integer result, we know which bits are set.
+	 Code here used to clear bits outside the mode of X, but that is
+	 now done above.  */
+
+      if (GET_MODE_CLASS (mode) == MODE_INT
+	  && mode_width <= HOST_BITS_PER_WIDE_INT)
+	nonzero = STORE_FLAG_VALUE;
+      break;
+
+    case NEG:
+#if 0
+      /* Disabled to avoid exponential mutual recursion between nonzero_bits
+	 and num_sign_bit_copies.  */
+      if (num_sign_bit_copies (XEXP (x, 0), GET_MODE (x))
+	  == GET_MODE_BITSIZE (GET_MODE (x)))
+	nonzero = 1;
+#endif
+
+      if (GET_MODE_SIZE (GET_MODE (x)) < mode_width)
+	nonzero |= (GET_MODE_MASK (mode) & ~GET_MODE_MASK (GET_MODE (x)));
+      break;
+
+    case ABS:
+#if 0
+      /* Disabled to avoid exponential mutual recursion between nonzero_bits
+	 and num_sign_bit_copies.  */
+      if (num_sign_bit_copies (XEXP (x, 0), GET_MODE (x))
+	  == GET_MODE_BITSIZE (GET_MODE (x)))
+	nonzero = 1;
+#endif
+      break;
+
+    case TRUNCATE:
+      nonzero &= (nonzero_bits (XEXP (x, 0), mode) & GET_MODE_MASK (mode));
+      break;
+
+    case ZERO_EXTEND:
+      nonzero &= nonzero_bits (XEXP (x, 0), mode);
+      if (GET_MODE (XEXP (x, 0)) != VOIDmode)
+	nonzero &= GET_MODE_MASK (GET_MODE (XEXP (x, 0)));
+      break;
+
+    case SIGN_EXTEND:
+      /* If the sign bit is known clear, this is the same as ZERO_EXTEND.
+	 Otherwise, show all the bits in the outer mode but not the inner
+	 may be non-zero.  */
+      inner_nz = nonzero_bits (XEXP (x, 0), mode);
+      if (GET_MODE (XEXP (x, 0)) != VOIDmode)
+	{
+	  inner_nz &= GET_MODE_MASK (GET_MODE (XEXP (x, 0)));
+	  if (inner_nz
+	      & (((HOST_WIDE_INT) 1
+		  << (GET_MODE_BITSIZE (GET_MODE (XEXP (x, 0))) - 1))))
+	    inner_nz |= (GET_MODE_MASK (mode)
+			 & ~GET_MODE_MASK (GET_MODE (XEXP (x, 0))));
+	}
+
+      nonzero &= inner_nz;
+      break;
+
+    case AND:
+      nonzero &= (nonzero_bits (XEXP (x, 0), mode)
+		  & nonzero_bits (XEXP (x, 1), mode));
+      break;
+
+    case XOR:   case IOR:
+    case UMIN:  case UMAX:  case SMIN:  case SMAX:
+      {
+	unsigned HOST_WIDE_INT nonzero0 = nonzero_bits (XEXP (x, 0), mode);
+
+	/* Don't call nonzero_bits for the second time if it cannot change
+	   anything.  */
+	if ((nonzero & nonzero0) != nonzero)
+	  nonzero &= (nonzero0 | nonzero_bits (XEXP (x, 1), mode));
+      }
+      break;
+
+    case PLUS:  case MINUS:
+    case MULT:
+    case DIV:   case UDIV:
+    case MOD:   case UMOD:
+      /* We can apply the rules of arithmetic to compute the number of
+	 high- and low-order zero bits of these operations.  We start by
+	 computing the width (position of the highest-order non-zero bit)
+	 and the number of low-order zero bits for each value.  */
+      {
+	unsigned HOST_WIDE_INT nz0 = nonzero_bits (XEXP (x, 0), mode);
+	unsigned HOST_WIDE_INT nz1 = nonzero_bits (XEXP (x, 1), mode);
+	int width0 = floor_log2 (nz0) + 1;
+	int width1 = floor_log2 (nz1) + 1;
+	int low0 = floor_log2 (nz0 & -nz0);
+	int low1 = floor_log2 (nz1 & -nz1);
+	HOST_WIDE_INT op0_maybe_minusp
+	  = (nz0 & ((HOST_WIDE_INT) 1 << (mode_width - 1)));
+	HOST_WIDE_INT op1_maybe_minusp
+	  = (nz1 & ((HOST_WIDE_INT) 1 << (mode_width - 1)));
+	unsigned int result_width = mode_width;
+	int result_low = 0;
+
+	switch (code)
+	  {
+	  case PLUS:
+	    result_width = MAX (width0, width1) + 1;
+	    result_low = MIN (low0, low1);
+	    break;
+	  case MINUS:
+	    result_low = MIN (low0, low1);
+	    break;
+	  case MULT:
+	    result_width = width0 + width1;
+	    result_low = low0 + low1;
+	    break;
+	  case DIV:
+	    if (width1 == 0)
+	      break;
+	    if (! op0_maybe_minusp && ! op1_maybe_minusp)
+	      result_width = width0;
+	    break;
+	  case UDIV:
+	    if (width1 == 0)
+	      break;
+	    result_width = width0;
+	    break;
+	  case MOD:
+	    if (width1 == 0)
+	      break;
+	    if (! op0_maybe_minusp && ! op1_maybe_minusp)
+	      result_width = MIN (width0, width1);
+	    result_low = MIN (low0, low1);
+	    break;
+	  case UMOD:
+	    if (width1 == 0)
+	      break;
+	    result_width = MIN (width0, width1);
+	    result_low = MIN (low0, low1);
+	    break;
+	  default:
+	    abort ();
+	  }
+
+	if (result_width < mode_width)
+	  nonzero &= ((HOST_WIDE_INT) 1 << result_width) - 1;
+
+	if (result_low > 0)
+	  nonzero &= ~(((HOST_WIDE_INT) 1 << result_low) - 1);
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+	/* If pointers extend unsigned and this is an addition or subtraction
+	   to a pointer in Pmode, all the bits above ptr_mode are known to be
+	   zero.  */
+	if (POINTERS_EXTEND_UNSIGNED > 0 && GET_MODE (x) == Pmode
+	    && (code == PLUS || code == MINUS)
+	    && GET_CODE (XEXP (x, 0)) == REG && REG_POINTER (XEXP (x, 0)))
+	  nonzero &= GET_MODE_MASK (ptr_mode);
+#endif
+      }
+      break;
+
+    case ZERO_EXTRACT:
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) < HOST_BITS_PER_WIDE_INT)
+	nonzero &= ((HOST_WIDE_INT) 1 << INTVAL (XEXP (x, 1))) - 1;
+      break;
+
+    case SUBREG:
+      /* If this is a SUBREG formed for a promoted variable that has
+	 been zero-extended, we know that at least the high-order bits
+	 are zero, though others might be too.  */
+
+      if (SUBREG_PROMOTED_VAR_P (x) && SUBREG_PROMOTED_UNSIGNED_P (x))
+	nonzero = (GET_MODE_MASK (GET_MODE (x))
+		   & nonzero_bits (SUBREG_REG (x), GET_MODE (x)));
+
+      /* If the inner mode is a single word for both the host and target
+	 machines, we can compute this from which bits of the inner
+	 object might be nonzero.  */
+      if (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (x))) <= BITS_PER_WORD
+	  && (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (x)))
+	      <= HOST_BITS_PER_WIDE_INT))
+	{
+	  nonzero &= nonzero_bits (SUBREG_REG (x), mode);
+
+#if defined (WORD_REGISTER_OPERATIONS) && defined (LOAD_EXTEND_OP)
+	  /* If this is a typical RISC machine, we only have to worry
+	     about the way loads are extended.  */
+	  if (LOAD_EXTEND_OP (GET_MODE (SUBREG_REG (x))) == SIGN_EXTEND
+	      ? (((nonzero
+		   & (((unsigned HOST_WIDE_INT) 1
+		       << (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (x))) - 1))))
+		  != 0))
+	      : LOAD_EXTEND_OP (GET_MODE (SUBREG_REG (x))) != ZERO_EXTEND)
+#endif
+	    {
+	      /* On many CISC machines, accessing an object in a wider mode
+		 causes the high-order bits to become undefined.  So they are
+		 not known to be zero.  */
+	      if (GET_MODE_SIZE (GET_MODE (x))
+		  > GET_MODE_SIZE (GET_MODE (SUBREG_REG (x))))
+		nonzero |= (GET_MODE_MASK (GET_MODE (x))
+			    & ~GET_MODE_MASK (GET_MODE (SUBREG_REG (x))));
+	    }
+	}
+      break;
+
+    case ASHIFTRT:
+    case LSHIFTRT:
+    case ASHIFT:
+    case ROTATE:
+      /* The nonzero bits are in two classes: any bits within MODE
+	 that aren't in GET_MODE (x) are always significant.  The rest of the
+	 nonzero bits are those that are significant in the operand of
+	 the shift when shifted the appropriate number of bits.  This
+	 shows that high-order bits are cleared by the right shift and
+	 low-order bits by left shifts.  */
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) >= 0
+	  && INTVAL (XEXP (x, 1)) < HOST_BITS_PER_WIDE_INT)
+	{
+	  enum machine_mode inner_mode = GET_MODE (x);
+	  unsigned int width = GET_MODE_BITSIZE (inner_mode);
+	  int count = INTVAL (XEXP (x, 1));
+	  unsigned HOST_WIDE_INT mode_mask = GET_MODE_MASK (inner_mode);
+	  unsigned HOST_WIDE_INT op_nonzero = nonzero_bits (XEXP (x, 0), mode);
+	  unsigned HOST_WIDE_INT inner = op_nonzero & mode_mask;
+	  unsigned HOST_WIDE_INT outer = 0;
+
+	  if (mode_width > width)
+	    outer = (op_nonzero & nonzero & ~mode_mask);
+
+	  if (code == LSHIFTRT)
+	    inner >>= count;
+	  else if (code == ASHIFTRT)
+	    {
+	      inner >>= count;
+
+	      /* If the sign bit may have been nonzero before the shift, we
+		 need to mark all the places it could have been copied to
+		 by the shift as possibly nonzero.  */
+	      if (inner & ((HOST_WIDE_INT) 1 << (width - 1 - count)))
+		inner |= (((HOST_WIDE_INT) 1 << count) - 1) << (width - count);
+	    }
+	  else if (code == ASHIFT)
+	    inner <<= count;
+	  else
+	    inner = ((inner << (count % width)
+		      | (inner >> (width - (count % width)))) & mode_mask);
+
+	  nonzero &= (outer | inner);
+	}
+      break;
+
+    case FFS:
+      /* This is at most the number of bits in the mode.  */
+      nonzero = ((HOST_WIDE_INT) 1 << (floor_log2 (mode_width) + 1)) - 1;
+      break;
+
+    case IF_THEN_ELSE:
+      nonzero &= (nonzero_bits (XEXP (x, 1), mode)
+		  | nonzero_bits (XEXP (x, 2), mode));
+      break;
+
+    default:
+      break;
+    }
+
+  return nonzero;
+}

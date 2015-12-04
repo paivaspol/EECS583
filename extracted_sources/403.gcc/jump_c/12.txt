@@ -1,0 +1,18 @@
+int
+any_condjump_p (insn)
+     rtx insn;
+{
+  rtx x = pc_set (insn);
+  enum rtx_code a, b;
+
+  if (!x)
+    return 0;
+  if (GET_CODE (SET_SRC (x)) != IF_THEN_ELSE)
+    return 0;
+
+  a = GET_CODE (XEXP (SET_SRC (x), 1));
+  b = GET_CODE (XEXP (SET_SRC (x), 2));
+
+  return ((b == PC && (a == LABEL_REF || a == RETURN))
+	  || (a == PC && (b == LABEL_REF || b == RETURN)));
+}

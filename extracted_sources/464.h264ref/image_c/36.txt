@@ -1,0 +1,61 @@
+static void writeUnit(Bitstream* currStream,int partition)
+{
+  NALU_t *nalu;
+  assert (currStream->bits_to_go == 8);
+  nalu = AllocNALU(img->width*img->height*4);
+  nalu->startcodeprefix_len = 2+(img->current_mb_nr == 0?ZEROBYTES_SHORTSTARTCODE+1:ZEROBYTES_SHORTSTARTCODE);
+//printf ("nalu->startcodeprefix_len %d\n", nalu->startcodeprefix_len);
+  nalu->len = currStream->byte_pos +1;            // add one for the first byte of the NALU
+//printf ("nalu->len %d\n", nalu->len);
+  memcpy (&nalu->buf[1], currStream->streamBuffer, nalu->len-1);
+  if (img->currentPicture->idr_flag)
+  {
+    nalu->nal_unit_type = NALU_TYPE_IDR;
+    nalu->nal_reference_idc = NALU_PRIORITY_HIGHEST;
+  }
+  else if (img->type == B_SLICE)
+  {
+    //different nal header for different partitions
+    if(input->partition_mode == 0)
+    {
+    nalu->nal_unit_type = NALU_TYPE_SLICE;
+    }
+    else
+    {
+      nalu->nal_unit_type = NALU_TYPE_DPA +  partition;
+    }
+    
+    if (img->nal_reference_idc !=0)
+    {
+      nalu->nal_reference_idc = NALU_PRIORITY_HIGH;
+    }
+    else
+    {
+      nalu->nal_reference_idc = NALU_PRIORITY_DISPOSABLE;
+    }
+  }
+  else   // non-b frame, non IDR slice
+  {
+    //different nal header for different partitions
+    if(input->partition_mode == 0)
+    {
+     nalu->nal_unit_type = NALU_TYPE_SLICE;
+    }
+    else
+    {
+     nalu->nal_unit_type = NALU_TYPE_DPA +  partition;
+    }
+    if (img->nal_reference_idc !=0)
+    {
+      nalu->nal_reference_idc = NALU_PRIORITY_HIGH;
+    }
+    else
+    {
+      nalu->nal_reference_idc = NALU_PRIORITY_DISPOSABLE;
+    }
+  }      
+  nalu->forbidden_bit = 0;
+  stats->bit_ctr += WriteNALU (nalu);
+
+  FreeNALU(nalu);
+}

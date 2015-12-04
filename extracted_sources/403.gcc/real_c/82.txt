@@ -1,0 +1,66 @@
+static void
+euifrac (x, i, frac)
+     const UEMUSHORT *x;
+     unsigned HOST_WIDE_INT *i;
+     UEMUSHORT *frac;
+{
+  unsigned HOST_WIDE_INT ll;
+  UEMUSHORT xi[NI];
+  int j, k;
+
+  emovi (x, xi);
+  k = (int) xi[E] - (EXONE - 1);
+  if (k <= 0)
+    {
+      /* if exponent <= 0, integer = 0 and argument is fraction */
+      *i = 0L;
+      emovo (xi, frac);
+      return;
+    }
+  if (k > HOST_BITS_PER_WIDE_INT)
+    {
+      /* Long integer overflow: output large integer
+	 and correct fraction.
+	 Note, the BSD MicroVAX compiler says that ~(0UL)
+	 is a syntax error.  */
+      *i = ~(0L);
+      eshift (xi, k);
+      if (extra_warnings)
+	warning ("overflow on truncation to unsigned integer");
+    }
+  else if (k > 16)
+    {
+      /* Shift more than 16 bits: first shift up k-16 mod 16,
+	 then shift up by 16's.  */
+      j = k - ((k >> 4) << 4);
+      eshift (xi, j);
+      ll = xi[M];
+      k -= j;
+      do
+	{
+	  eshup6 (xi);
+	  ll = (ll << 16) | xi[M];
+	}
+      while ((k -= 16) > 0);
+      *i = ll;
+    }
+  else
+    {
+      /* shift not more than 16 bits */
+      eshift (xi, k);
+      *i = (HOST_WIDE_INT) xi[M] & 0xffff;
+    }
+
+  if (xi[0])  /* A negative value yields unsigned integer 0.  */
+    *i = 0L;
+
+  xi[0] = 0;
+  xi[E] = EXONE - 1;
+  xi[M] = 0;
+  if ((k = enormlz (xi)) > NBITS)
+    ecleaz (xi);
+  else
+    xi[E] -= (UEMUSHORT) k;
+
+  emovo (xi, frac);
+}

@@ -1,0 +1,276 @@
+static void
+mark_used_regs (pbi, x, cond, insn)
+     struct propagate_block_info *pbi;
+     rtx x, cond, insn;
+{
+  RTX_CODE code;
+  int regno;
+  int flags = pbi->flags;
+
+ retry:
+  if (!x)
+    return;
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case LABEL_REF:
+    case SYMBOL_REF:
+    case CONST_INT:
+    case CONST:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case PC:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      return;
+
+#ifdef HAVE_cc0
+    case CC0:
+      pbi->cc0_live = 1;
+      return;
+#endif
+
+    case CLOBBER:
+      /* If we are clobbering a MEM, mark any registers inside the address
+	 as being used.  */
+      if (GET_CODE (XEXP (x, 0)) == MEM)
+	mark_used_regs (pbi, XEXP (XEXP (x, 0), 0), cond, insn);
+      return;
+
+    case MEM:
+      /* Don't bother watching stores to mems if this is not the
+	 final pass.  We'll not be deleting dead stores this round.  */
+      if (optimize && (flags & PROP_SCAN_DEAD_CODE))
+	{
+	  /* Invalidate the data for the last MEM stored, but only if MEM is
+	     something that can be stored into.  */
+	  if (GET_CODE (XEXP (x, 0)) == SYMBOL_REF
+	      && CONSTANT_POOL_ADDRESS_P (XEXP (x, 0)))
+	    /* Needn't clear the memory set list.  */
+	    ;
+	  else
+	    {
+	      rtx temp = pbi->mem_set_list;
+	      rtx prev = NULL_RTX;
+	      rtx next;
+
+	      while (temp)
+		{
+		  next = XEXP (temp, 1);
+		  if (anti_dependence (XEXP (temp, 0), x))
+		    {
+		      /* Splice temp out of the list.  */
+		      if (prev)
+			XEXP (prev, 1) = next;
+		      else
+			pbi->mem_set_list = next;
+		      free_EXPR_LIST_node (temp);
+		      pbi->mem_set_list_len--;
+		    }
+		  else
+		    prev = temp;
+		  temp = next;
+		}
+	    }
+
+	  /* If the memory reference had embedded side effects (autoincrement
+	     address modes.  Then we may need to kill some entries on the
+	     memory set list.  */
+	  if (insn)
+	    invalidate_mems_from_autoinc (pbi, insn);
+	}
+
+#ifdef AUTO_INC_DEC
+      if (flags & PROP_AUTOINC)
+        find_auto_inc (pbi, x, insn);
+#endif
+      break;
+
+    case SUBREG:
+#ifdef CLASS_CANNOT_CHANGE_MODE
+      if (GET_CODE (SUBREG_REG (x)) == REG
+	  && REGNO (SUBREG_REG (x)) >= FIRST_PSEUDO_REGISTER
+	  && CLASS_CANNOT_CHANGE_MODE_P (GET_MODE (x),
+					 GET_MODE (SUBREG_REG (x))))
+	REG_CHANGES_MODE (REGNO (SUBREG_REG (x))) = 1;
+#endif
+
+      /* While we're here, optimize this case.  */
+      x = SUBREG_REG (x);
+      if (GET_CODE (x) != REG)
+	goto retry;
+      /* Fall through.  */
+
+    case REG:
+      /* See a register other than being set => mark it as needed.  */
+      mark_used_reg (pbi, x, cond, insn);
+      return;
+
+    case SET:
+      {
+	rtx testreg = SET_DEST (x);
+	int mark_dest = 0;
+
+	/* If storing into MEM, don't show it as being used.  But do
+	   show the address as being used.  */
+	if (GET_CODE (testreg) == MEM)
+	  {
+#ifdef AUTO_INC_DEC
+	    if (flags & PROP_AUTOINC)
+	      find_auto_inc (pbi, testreg, insn);
+#endif
+	    mark_used_regs (pbi, XEXP (testreg, 0), cond, insn);
+	    mark_used_regs (pbi, SET_SRC (x), cond, insn);
+	    return;
+	  }
+
+	/* Storing in STRICT_LOW_PART is like storing in a reg
+	   in that this SET might be dead, so ignore it in TESTREG.
+	   but in some other ways it is like using the reg.
+
+	   Storing in a SUBREG or a bit field is like storing the entire
+	   register in that if the register's value is not used
+	   then this SET is not needed.  */
+	while (GET_CODE (testreg) == STRICT_LOW_PART
+	       || GET_CODE (testreg) == ZERO_EXTRACT
+	       || GET_CODE (testreg) == SIGN_EXTRACT
+	       || GET_CODE (testreg) == SUBREG)
+	  {
+#ifdef CLASS_CANNOT_CHANGE_MODE
+	    if (GET_CODE (testreg) == SUBREG
+		&& GET_CODE (SUBREG_REG (testreg)) == REG
+		&& REGNO (SUBREG_REG (testreg)) >= FIRST_PSEUDO_REGISTER
+		&& CLASS_CANNOT_CHANGE_MODE_P (GET_MODE (SUBREG_REG (testreg)),
+					       GET_MODE (testreg)))
+	      REG_CHANGES_MODE (REGNO (SUBREG_REG (testreg))) = 1;
+#endif
+
+	    /* Modifying a single register in an alternate mode
+	       does not use any of the old value.  But these other
+	       ways of storing in a register do use the old value.  */
+	    if (GET_CODE (testreg) == SUBREG
+		&& !((REG_BYTES (SUBREG_REG (testreg))
+		      + UNITS_PER_WORD - 1) / UNITS_PER_WORD
+		     > (REG_BYTES (testreg)
+			+ UNITS_PER_WORD - 1) / UNITS_PER_WORD))
+	      ;
+	    else
+	      mark_dest = 1;
+
+	    testreg = XEXP (testreg, 0);
+	  }
+
+	/* If this is a store into a register or group of registers,
+	   recursively scan the value being stored.  */
+
+	if ((GET_CODE (testreg) == PARALLEL
+	     && GET_MODE (testreg) == BLKmode)
+	    || (GET_CODE (testreg) == REG
+		&& (regno = REGNO (testreg),
+		    ! (regno == FRAME_POINTER_REGNUM
+		       && (! reload_completed || frame_pointer_needed)))
+#if FRAME_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+		&& ! (regno == HARD_FRAME_POINTER_REGNUM
+		      && (! reload_completed || frame_pointer_needed))
+#endif
+#if FRAME_POINTER_REGNUM != ARG_POINTER_REGNUM
+		&& ! (regno == ARG_POINTER_REGNUM && fixed_regs[regno])
+#endif
+		))
+	  {
+	    if (mark_dest)
+	      mark_used_regs (pbi, SET_DEST (x), cond, insn);
+	    mark_used_regs (pbi, SET_SRC (x), cond, insn);
+	    return;
+	  }
+      }
+      break;
+
+    case ASM_OPERANDS:
+    case UNSPEC_VOLATILE:
+    case TRAP_IF:
+    case ASM_INPUT:
+      {
+	/* Traditional and volatile asm instructions must be considered to use
+	   and clobber all hard registers, all pseudo-registers and all of
+	   memory.  So must TRAP_IF and UNSPEC_VOLATILE operations.
+
+	   Consider for instance a volatile asm that changes the fpu rounding
+	   mode.  An insn should not be moved across this even if it only uses
+	   pseudo-regs because it might give an incorrectly rounded result.
+
+	   ?!? Unfortunately, marking all hard registers as live causes massive
+	   problems for the register allocator and marking all pseudos as live
+	   creates mountains of uninitialized variable warnings.
+
+	   So for now, just clear the memory set list and mark any regs
+	   we can find in ASM_OPERANDS as used.  */
+	if (code != ASM_OPERANDS || MEM_VOLATILE_P (x))
+	  {
+	    free_EXPR_LIST_list (&pbi->mem_set_list);
+	    pbi->mem_set_list_len = 0;
+	  }
+
+	/* For all ASM_OPERANDS, we must traverse the vector of input operands.
+	   We can not just fall through here since then we would be confused
+	   by the ASM_INPUT rtx inside ASM_OPERANDS, which do not indicate
+	   traditional asms unlike their normal usage.  */
+	if (code == ASM_OPERANDS)
+	  {
+	    int j;
+
+	    for (j = 0; j < ASM_OPERANDS_INPUT_LENGTH (x); j++)
+	      mark_used_regs (pbi, ASM_OPERANDS_INPUT (x, j), cond, insn);
+	  }
+	break;
+      }
+
+    case COND_EXEC:
+      if (cond != NULL_RTX)
+	abort ();
+
+      mark_used_regs (pbi, COND_EXEC_TEST (x), NULL_RTX, insn);
+
+      cond = COND_EXEC_TEST (x);
+      x = COND_EXEC_CODE (x);
+      goto retry;
+
+    case PHI:
+      /* We _do_not_ want to scan operands of phi nodes.  Operands of
+	 a phi function are evaluated only when control reaches this
+	 block along a particular edge.  Therefore, regs that appear
+	 as arguments to phi should not be added to the global live at
+	 start.  */
+      return;
+
+    default:
+      break;
+    }
+
+  /* Recursively scan the operands of this expression.  */
+
+  {
+    const char * const fmt = GET_RTX_FORMAT (code);
+    int i;
+
+    for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+      {
+	if (fmt[i] == 'e')
+	  {
+	    /* Tail recursive case: save a function call level.  */
+	    if (i == 0)
+	      {
+		x = XEXP (x, 0);
+		goto retry;
+	      }
+	    mark_used_regs (pbi, XEXP (x, i), cond, insn);
+	  }
+	else if (fmt[i] == 'E')
+	  {
+	    int j;
+	    for (j = 0; j < XVECLEN (x, i); j++)
+	      mark_used_regs (pbi, XVECEXP (x, i, j), cond, insn);
+	  }
+      }
+  }
+}

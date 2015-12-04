@@ -1,0 +1,37 @@
+void
+cpp_finish_options (pfile)
+     cpp_reader *pfile;
+{
+  /* Mark named operators before handling command line macros.  */
+  if (CPP_OPTION (pfile, cplusplus) && CPP_OPTION (pfile, operator_names))
+    mark_named_operators (pfile);
+
+  /* Install builtins and process command line macros etc. in the order
+     they appeared, but only if not already preprocessed.  */
+  if (! CPP_OPTION (pfile, preprocessed))
+    {
+      struct pending_option *p;
+
+      _cpp_do_file_change (pfile, LC_RENAME, _("<built-in>"), 1, 0);
+      init_builtins (pfile);
+      _cpp_do_file_change (pfile, LC_RENAME, _("<command line>"), 1, 0);
+      for (p = CPP_OPTION (pfile, pending)->directive_head; p; p = p->next)
+	(*p->handler) (pfile, p->arg);
+
+      /* Scan -imacros files after command line defines, but before
+	 files given with -include.  */
+      while ((p = CPP_OPTION (pfile, pending)->imacros_head) != NULL)
+	{
+	  if (push_include (pfile, p))
+	    {
+	      pfile->buffer->return_at_eof = true;
+	      cpp_scan_nooutput (pfile);
+	    }
+	  CPP_OPTION (pfile, pending)->imacros_head = p->next;
+	  free (p);
+	}
+    }
+
+  free_chain (CPP_OPTION (pfile, pending)->directive_head);
+  _cpp_push_next_buffer (pfile);
+}

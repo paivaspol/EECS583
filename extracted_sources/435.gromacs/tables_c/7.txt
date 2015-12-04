@@ -1,0 +1,74 @@
+static void set_table_type(int tabsel[],t_forcerec *fr)
+{
+  /* Set the different table indices.
+   * Coulomb first.
+   */
+  
+  switch (fr->eeltype) {
+  case eelCUT:
+    tabsel[etiCOUL] = etabCOUL;
+    break;
+  case eelPPPM:
+  case eelPOISSON:
+    if ((fr->rcoulomb > fr->rcoulomb_switch) && fr->bcoultab)
+	tabsel[etiCOUL] = etabShift;
+    else
+	tabsel[etiCOUL] = etabCOUL;  /* 1-4 */
+    break;
+  case eelSHIFT:
+    if (fr->rcoulomb > fr->rcoulomb_switch)
+      tabsel[etiCOUL] = etabShift;
+    else
+      tabsel[etiCOUL] = etabCOUL;
+    break;
+  case eelEWALD:
+  case eelPME:
+      if(fr->bcoultab)
+	  tabsel[etiCOUL] = etabEwald;
+      else
+	  tabsel[etiCOUL] = etabCOUL; /* 1-4 */
+      break;
+  case eelRF:
+  case eelGRF:
+    tabsel[etiCOUL] = etabRF;
+    break;
+  case eelSWITCH:
+    tabsel[etiCOUL] = etabCOULSwitch;
+    break;
+  case eelUSER:
+    tabsel[etiCOUL] = etabUSER;
+    break;
+  default:
+    fatal_error(0,"Invalid eeltype %d in %s line %d",fr->eeltype,
+		__FILE__,__LINE__);
+  }
+  
+  /* Van der Waals time */
+  if (fr->bBHAM) {
+    tabsel[etiLJ6]  = etabLJ6;
+    tabsel[etiLJ12] = etabEXPMIN;
+  }
+  else {
+    switch (fr->vdwtype) {
+    case evdwSWITCH:
+      tabsel[etiLJ6]  = etabLJ6Switch;
+      tabsel[etiLJ12] = etabLJ12Switch;
+      break;
+    case evdwSHIFT:
+      tabsel[etiLJ6]  = etabLJ6Shift;
+      tabsel[etiLJ12] = etabLJ12Shift;
+      break;
+    case evdwUSER:
+      tabsel[etiLJ6]  = etabUSER;
+      tabsel[etiLJ12] = etabUSER;
+      break;
+    case evdwCUT:
+      tabsel[etiLJ6]  = etabLJ6;
+      tabsel[etiLJ12] = etabLJ12;
+      break;
+    default:
+      fatal_error(0,"Invalid vdwtype %d in %s line %d",fr->vdwtype,
+		  __FILE__,__LINE__);
+    } 
+  }
+}

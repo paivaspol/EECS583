@@ -1,0 +1,53 @@
+void init_neighbor_list(FILE *log,t_forcerec *fr,int homenr)
+{
+  /* Make maxlr tunable! (does not seem to be a big difference though) 
+   * This parameter determines the number of i particles in a long range 
+   * neighbourlist. Too few means many function calls, too many means
+   * cache trashing.
+   */
+  int maxsr,maxsr_mno,maxsr_wat,maxlr,maxlr_mno,maxlr_wat;
+  
+  maxsr     = homenr-fr->nWatMol*3-(int)(fr->nMNOMol*fr->nMNOav[0]);
+  if (maxsr < 0)
+    fatal_error(0,"%s, %d: Negative number of short range atoms.\n"
+		"Call your Gromacs dealer for assistance.",__FILE__,__LINE__);
+  maxsr_mno = fr->nMNOMol;
+  maxsr_wat = fr->nWatMol; 
+  if (fr->bTwinRange) {
+    maxlr     = 50;
+    maxlr_mno = min(fr->nMNOMol,maxlr);
+    maxlr_wat = min(fr->nWatMol,maxlr);
+  }
+  else {
+    maxlr = maxlr_mno = maxlr_wat = 0;
+  }  
+  init_nblist(&fr->nlist_sr[eNL_VDWQQ],&fr->nlist_lr[eNL_VDWQQ],
+	      maxsr,maxlr,esolNO,nbf_index(fr,TRUE, TRUE, FALSE,esolNO));
+  init_nblist(&fr->nlist_sr[eNL_VDW],&fr->nlist_lr[eNL_VDW],
+	      maxsr,maxlr,esolNO,nbf_index(fr,TRUE, FALSE,FALSE,esolNO));
+  init_nblist(&fr->nlist_sr[eNL_QQ],&fr->nlist_lr[eNL_QQ],
+	      maxsr,maxlr,esolNO,nbf_index(fr,FALSE,TRUE, FALSE,esolNO));
+  init_nblist(&fr->nlist_sr[eNL_VDWQQ_SOLMNO],&fr->nlist_lr[eNL_VDWQQ_SOLMNO],
+	      maxsr_mno,maxlr_mno,esolMNO,nbf_index(fr,TRUE, TRUE, FALSE,esolMNO));
+  init_nblist(&fr->nlist_sr[eNL_VDW_SOLMNO],&fr->nlist_lr[eNL_VDW_SOLMNO],
+	      maxsr_mno,maxlr_mno,esolMNO,nbf_index(fr,TRUE, FALSE, FALSE,esolMNO));
+  init_nblist(&fr->nlist_sr[eNL_QQ_SOLMNO],&fr->nlist_lr[eNL_QQ_SOLMNO],
+	      maxsr_mno,maxlr_mno,esolMNO,nbf_index(fr,FALSE,TRUE, FALSE,esolMNO));
+  init_nblist(&fr->nlist_sr[eNL_VDWQQ_WATER],&fr->nlist_lr[eNL_VDWQQ_WATER],
+	      maxsr_wat,maxlr_wat,esolWATER,nbf_index(fr,TRUE, TRUE, FALSE,esolWATER));
+  init_nblist(&fr->nlist_sr[eNL_QQ_WATER],&fr->nlist_lr[eNL_QQ_WATER],
+	      maxsr_wat,maxlr_wat,esolWATER,nbf_index(fr,FALSE,TRUE, FALSE,esolWATER));
+  init_nblist(&fr->nlist_sr[eNL_VDWQQ_WATERWATER],&fr->nlist_lr[eNL_VDWQQ_WATERWATER],
+	      maxsr_wat,maxlr_wat,esolWATERWATER,nbf_index(fr,TRUE, TRUE, FALSE,esolWATERWATER));
+  init_nblist(&fr->nlist_sr[eNL_QQ_WATERWATER],&fr->nlist_lr[eNL_QQ_WATERWATER],
+	      maxsr_wat,maxlr_wat,esolWATERWATER,nbf_index(fr,FALSE,TRUE, FALSE,esolWATERWATER));
+	  
+  if (fr->efep != efepNO) {
+    init_nblist(&fr->nlist_sr[eNL_VDWQQ_FREE],&fr->nlist_lr[eNL_VDWQQ_FREE],
+		maxsr,maxlr,esolNO,nbf_index(fr,TRUE, TRUE, TRUE,esolNO));
+    init_nblist(&fr->nlist_sr[eNL_VDW_FREE],&fr->nlist_lr[eNL_VDW_FREE],
+		maxsr,maxlr,esolNO,nbf_index(fr,TRUE, FALSE,TRUE,esolNO));
+    init_nblist(&fr->nlist_sr[eNL_QQ_FREE],&fr->nlist_lr[eNL_QQ_FREE],
+		maxsr,maxlr,esolNO,nbf_index(fr,FALSE,TRUE, TRUE,esolNO));
+  }  
+}

@@ -1,0 +1,24 @@
+static int pcomp(const void *p1, const void *p2)
+{
+  int     db;
+  atom_id min1,min2,max1,max2;
+  t_sortblock *a1=(t_sortblock *)p1;
+  t_sortblock *a2=(t_sortblock *)p2;
+
+  pcount++;
+  
+  db=a1->blocknr-a2->blocknr;
+  
+  if (db != 0)
+    return db;
+    
+  min1=min(a1->iatom[1],a1->iatom[2]);
+  max1=max(a1->iatom[1],a1->iatom[2]);
+  min2=min(a2->iatom[1],a2->iatom[2]);
+  max2=max(a2->iatom[1],a2->iatom[2]);
+  
+  if (min1 == min2)
+    return max1-max2;
+  else
+    return min1-min2;
+}

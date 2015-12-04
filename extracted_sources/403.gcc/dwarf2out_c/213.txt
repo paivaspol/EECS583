@@ -1,0 +1,38 @@
+static void
+dwarf2out_abstract_function (decl)
+     tree decl;
+{
+  dw_die_ref old_die;
+  tree save_fn;
+  tree context;
+  int was_abstract = DECL_ABSTRACT (decl);
+
+  /* Make sure we have the actual abstract inline, not a clone.  */
+  decl = DECL_ORIGIN (decl);
+
+  old_die = lookup_decl_die (decl);  
+  if (old_die && get_AT_unsigned (old_die, DW_AT_inline))
+    /* We've already generated the abstract instance.  */
+    return;
+
+  /* Be sure we've emitted the in-class declaration DIE (if any) first, so
+     we don't get confused by DECL_ABSTRACT.  */
+  if (debug_info_level > DINFO_LEVEL_TERSE)
+    {
+      context = decl_class_context (decl);
+      if (context)
+	gen_type_die_for_member
+	  (context, decl, decl_function_context (decl) ? NULL : comp_unit_die);
+    }
+ 
+  /* Pretend we've just finished compiling this function.  */
+  save_fn = current_function_decl;
+  current_function_decl = decl;
+
+  set_decl_abstract_flags (decl, 1);
+  dwarf2out_decl (decl);
+  if (! was_abstract)
+    set_decl_abstract_flags (decl, 0);
+
+  current_function_decl = save_fn;
+}

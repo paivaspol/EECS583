@@ -1,0 +1,14 @@
+static void
+sdbout_end_function (line)
+     unsigned int line;
+{
+#ifdef SDB_ALLOW_FORWARD_REFERENCES
+  sdbout_dequeue_anonymous_types ();
+#endif
+
+  MAKE_LINE_SAFE (line);
+  PUT_SDB_FUNCTION_END (line - sdb_begin_function_line);
+
+  /* Indicate we are between functions, for line-number output.  */
+  sdb_begin_function_line = -1;
+}

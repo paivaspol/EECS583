@@ -1,0 +1,35 @@
+void FinalizeUser_data_unregistered()
+{
+  int i;
+  SyntaxElement sym;
+  Bitstream *dest = seiUser_data_unregistered.data;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+// #define PRINT_USER_DATA_UNREGISTERED_INFO
+  for( i = 0; i < seiUser_data_unregistered.total_byte; i++)
+  {
+    sym.bitpattern = seiUser_data_unregistered.byte[i];
+    sym.len = 8; // b (8)
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+#ifdef PRINT_USER_DATA_UNREGISTERED_INFO
+    printf("Unreg data payload_byte = %d\n", seiUser_data_unregistered.byte[i]);
+#endif
+  }
+#ifdef PRINT_USER_DATA_UNREGISTERED_INFO
+#undef PRINT_USER_DATA_UNREGISTERED_INFO
+#endif
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiUser_data_unregistered.payloadSize = dest->byte_pos;
+}

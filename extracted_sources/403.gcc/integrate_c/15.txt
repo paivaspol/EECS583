@@ -1,0 +1,27 @@
+static void
+set_block_origin_self (stmt)
+     tree stmt;
+{
+  if (BLOCK_ABSTRACT_ORIGIN (stmt) == NULL_TREE)
+    {
+      BLOCK_ABSTRACT_ORIGIN (stmt) = stmt;
+
+      {
+	tree local_decl;
+
+	for (local_decl = BLOCK_VARS (stmt);
+	     local_decl != NULL_TREE;
+	     local_decl = TREE_CHAIN (local_decl))
+	  set_decl_origin_self (local_decl);	/* Potential recursion.  */
+      }
+
+      {
+	tree subblock;
+
+	for (subblock = BLOCK_SUBBLOCKS (stmt);
+	     subblock != NULL_TREE;
+	     subblock = BLOCK_CHAIN (subblock))
+	  set_block_origin_self (subblock);	/* Recurse.  */
+      }
+    }
+}

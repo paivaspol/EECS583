@@ -1,0 +1,14 @@
+static void
+float_signal (signo)
+     /* If this is missing, some compilers complain.  */
+     int signo ATTRIBUTE_UNUSED;
+{
+  if (float_handled == 0)
+    crash_signal (signo);
+  float_handled = 0;
+
+  /* On System-V derived systems, we must reinstall the signal handler.
+     This is harmless on BSD-derived systems.  */
+  signal (SIGFPE, float_signal);
+  longjmp (float_handler, 1);
+}

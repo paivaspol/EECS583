@@ -1,0 +1,1348 @@
+static rtx
+try_combine (i3, i2, i1, new_direct_jump_p)
+     rtx i3, i2, i1;
+     int *new_direct_jump_p;
+{
+  /* New patterns for I3 and I2, respectively.  */
+  rtx newpat, newi2pat = 0;
+  int substed_i2 = 0, substed_i1 = 0;
+  /* Indicates need to preserve SET in I1 or I2 in I3 if it is not dead.  */
+  int added_sets_1, added_sets_2;
+  /* Total number of SETs to put into I3.  */
+  int total_sets;
+  /* Nonzero is I2's body now appears in I3.  */
+  int i2_is_used;
+  /* INSN_CODEs for new I3, new I2, and user of condition code.  */
+  int insn_code_number, i2_code_number = 0, other_code_number = 0;
+  /* Contains I3 if the destination of I3 is used in its source, which means
+     that the old life of I3 is being killed.  If that usage is placed into
+     I2 and not in I3, a REG_DEAD note must be made.  */
+  rtx i3dest_killed = 0;
+  /* SET_DEST and SET_SRC of I2 and I1.  */
+  rtx i2dest, i2src, i1dest = 0, i1src = 0;
+  /* PATTERN (I2), or a copy of it in certain cases.  */
+  rtx i2pat;
+  /* Indicates if I2DEST or I1DEST is in I2SRC or I1_SRC.  */
+  int i2dest_in_i2src = 0, i1dest_in_i1src = 0, i2dest_in_i1src = 0;
+  int i1_feeds_i3 = 0;
+  /* Notes that must be added to REG_NOTES in I3 and I2.  */
+  rtx new_i3_notes, new_i2_notes;
+  /* Notes that we substituted I3 into I2 instead of the normal case.  */
+  int i3_subst_into_i2 = 0;
+  /* Notes that I1, I2 or I3 is a MULT operation.  */
+  int have_mult = 0;
+
+  int maxreg;
+  rtx temp;
+  rtx link;
+  int i;
+
+  /* Exit early if one of the insns involved can't be used for
+     combinations.  */
+  if (cant_combine_insn_p (i3)
+      || cant_combine_insn_p (i2)
+      || (i1 && cant_combine_insn_p (i1))
+      /* We also can't do anything if I3 has a
+	 REG_LIBCALL note since we don't want to disrupt the contiguity of a
+	 libcall.  */
+#if 0
+      /* ??? This gives worse code, and appears to be unnecessary, since no
+	 pass after flow uses REG_LIBCALL/REG_RETVAL notes.  */
+      || find_reg_note (i3, REG_LIBCALL, NULL_RTX)
+#endif
+      )
+    return 0;
+
+  combine_attempts++;
+  undobuf.other_insn = 0;
+
+  /* Reset the hard register usage information.  */
+  CLEAR_HARD_REG_SET (newpat_used_regs);
+
+  /* If I1 and I2 both feed I3, they can be in any order.  To simplify the
+     code below, set I1 to be the earlier of the two insns.  */
+  if (i1 && INSN_CUID (i1) > INSN_CUID (i2))
+    temp = i1, i1 = i2, i2 = temp;
+
+  added_links_insn = 0;
+
+  /* First check for one important special-case that the code below will
+     not handle.  Namely, the case where I1 is zero, I2 is a PARALLEL
+     and I3 is a SET whose SET_SRC is a SET_DEST in I2.  In that case,
+     we may be able to replace that destination with the destination of I3.
+     This occurs in the common code where we compute both a quotient and
+     remainder into a structure, in which case we want to do the computation
+     directly into the structure to avoid register-register copies.
+
+     Note that this case handles both multiple sets in I2 and also
+     cases where I2 has a number of CLOBBER or PARALLELs.
+
+     We make very conservative checks below and only try to handle the
+     most common cases of this.  For example, we only handle the case
+     where I2 and I3 are adjacent to avoid making difficult register
+     usage tests.  */
+
+  if (i1 == 0 && GET_CODE (i3) == INSN && GET_CODE (PATTERN (i3)) == SET
+      && GET_CODE (SET_SRC (PATTERN (i3))) == REG
+      && REGNO (SET_SRC (PATTERN (i3))) >= FIRST_PSEUDO_REGISTER
+      && find_reg_note (i3, REG_DEAD, SET_SRC (PATTERN (i3)))
+      && GET_CODE (PATTERN (i2)) == PARALLEL
+      && ! side_effects_p (SET_DEST (PATTERN (i3)))
+      /* If the dest of I3 is a ZERO_EXTRACT or STRICT_LOW_PART, the code
+	 below would need to check what is inside (and reg_overlap_mentioned_p
+	 doesn't support those codes anyway).  Don't allow those destinations;
+	 the resulting insn isn't likely to be recognized anyway.  */
+      && GET_CODE (SET_DEST (PATTERN (i3))) != ZERO_EXTRACT
+      && GET_CODE (SET_DEST (PATTERN (i3))) != STRICT_LOW_PART
+      && ! reg_overlap_mentioned_p (SET_SRC (PATTERN (i3)),
+				    SET_DEST (PATTERN (i3)))
+      && next_real_insn (i2) == i3)
+    {
+      rtx p2 = PATTERN (i2);
+
+      /* Make sure that the destination of I3,
+	 which we are going to substitute into one output of I2,
+	 is not used within another output of I2.  We must avoid making this:
+	 (parallel [(set (mem (reg 69)) ...)
+		    (set (reg 69) ...)])
+	 which is not well-defined as to order of actions.
+	 (Besides, reload can't handle output reloads for this.)
+
+	 The problem can also happen if the dest of I3 is a memory ref,
+	 if another dest in I2 is an indirect memory ref.  */
+      for (i = 0; i < XVECLEN (p2, 0); i++)
+	if ((GET_CODE (XVECEXP (p2, 0, i)) == SET
+	     || GET_CODE (XVECEXP (p2, 0, i)) == CLOBBER)
+	    && reg_overlap_mentioned_p (SET_DEST (PATTERN (i3)),
+					SET_DEST (XVECEXP (p2, 0, i))))
+	  break;
+
+      if (i == XVECLEN (p2, 0))
+	for (i = 0; i < XVECLEN (p2, 0); i++)
+	  if ((GET_CODE (XVECEXP (p2, 0, i)) == SET
+	       || GET_CODE (XVECEXP (p2, 0, i)) == CLOBBER)
+	      && SET_DEST (XVECEXP (p2, 0, i)) == SET_SRC (PATTERN (i3)))
+	    {
+	      combine_merges++;
+
+	      subst_insn = i3;
+	      subst_low_cuid = INSN_CUID (i2);
+
+	      added_sets_2 = added_sets_1 = 0;
+	      i2dest = SET_SRC (PATTERN (i3));
+
+	      /* Replace the dest in I2 with our dest and make the resulting
+		 insn the new pattern for I3.  Then skip to where we
+		 validate the pattern.  Everything was set up above.  */
+	      SUBST (SET_DEST (XVECEXP (p2, 0, i)),
+		     SET_DEST (PATTERN (i3)));
+
+	      newpat = p2;
+	      i3_subst_into_i2 = 1;
+	      goto validate_replacement;
+	    }
+    }
+
+  /* If I2 is setting a double-word pseudo to a constant and I3 is setting
+     one of those words to another constant, merge them by making a new
+     constant.  */
+  if (i1 == 0
+      && (temp = single_set (i2)) != 0
+      && (GET_CODE (SET_SRC (temp)) == CONST_INT
+	  || GET_CODE (SET_SRC (temp)) == CONST_DOUBLE)
+      && GET_CODE (SET_DEST (temp)) == REG
+      && GET_MODE_CLASS (GET_MODE (SET_DEST (temp))) == MODE_INT
+      && GET_MODE_SIZE (GET_MODE (SET_DEST (temp))) == 2 * UNITS_PER_WORD
+      && GET_CODE (PATTERN (i3)) == SET
+      && GET_CODE (SET_DEST (PATTERN (i3))) == SUBREG
+      && SUBREG_REG (SET_DEST (PATTERN (i3))) == SET_DEST (temp)
+      && GET_MODE_CLASS (GET_MODE (SET_DEST (PATTERN (i3)))) == MODE_INT
+      && GET_MODE_SIZE (GET_MODE (SET_DEST (PATTERN (i3)))) == UNITS_PER_WORD
+      && GET_CODE (SET_SRC (PATTERN (i3))) == CONST_INT)
+    {
+      HOST_WIDE_INT lo, hi;
+
+      if (GET_CODE (SET_SRC (temp)) == CONST_INT)
+	lo = INTVAL (SET_SRC (temp)), hi = lo < 0 ? -1 : 0;
+      else
+	{
+	  lo = CONST_DOUBLE_LOW (SET_SRC (temp));
+	  hi = CONST_DOUBLE_HIGH (SET_SRC (temp));
+	}
+
+      if (subreg_lowpart_p (SET_DEST (PATTERN (i3))))
+	{
+	  /* We don't handle the case of the target word being wider
+	     than a host wide int.  */
+	  if (HOST_BITS_PER_WIDE_INT < BITS_PER_WORD)
+	    abort ();
+
+	  lo &= ~(UWIDE_SHIFT_LEFT_BY_BITS_PER_WORD (1) - 1);
+	  lo |= (INTVAL (SET_SRC (PATTERN (i3))) 
+		 & (UWIDE_SHIFT_LEFT_BY_BITS_PER_WORD (1) - 1));
+	}
+      else if (HOST_BITS_PER_WIDE_INT == BITS_PER_WORD)
+	hi = INTVAL (SET_SRC (PATTERN (i3)));
+      else if (HOST_BITS_PER_WIDE_INT >= 2 * BITS_PER_WORD)
+	{
+	  int sign = -(int) ((unsigned HOST_WIDE_INT) lo
+			     >> (HOST_BITS_PER_WIDE_INT - 1));
+
+	  lo &= ~ (UWIDE_SHIFT_LEFT_BY_BITS_PER_WORD
+		   (UWIDE_SHIFT_LEFT_BY_BITS_PER_WORD (1) - 1));
+	  lo |= (UWIDE_SHIFT_LEFT_BY_BITS_PER_WORD
+		 (INTVAL (SET_SRC (PATTERN (i3)))));
+	  if (hi == sign)
+	    hi = lo < 0 ? -1 : 0;
+	}
+      else
+	/* We don't handle the case of the higher word not fitting
+	   entirely in either hi or lo.  */
+	abort ();
+
+      combine_merges++;
+      subst_insn = i3;
+      subst_low_cuid = INSN_CUID (i2);
+      added_sets_2 = added_sets_1 = 0;
+      i2dest = SET_DEST (temp);
+
+      SUBST (SET_SRC (temp),
+	     immed_double_const (lo, hi, GET_MODE (SET_DEST (temp))));
+
+      newpat = PATTERN (i2);
+      goto validate_replacement;
+    }
+
+#ifndef HAVE_cc0
+  /* If we have no I1 and I2 looks like:
+	(parallel [(set (reg:CC X) (compare:CC OP (const_int 0)))
+		   (set Y OP)])
+     make up a dummy I1 that is
+	(set Y OP)
+     and change I2 to be
+        (set (reg:CC X) (compare:CC Y (const_int 0)))
+
+     (We can ignore any trailing CLOBBERs.)
+
+     This undoes a previous combination and allows us to match a branch-and-
+     decrement insn.  */
+
+  if (i1 == 0 && GET_CODE (PATTERN (i2)) == PARALLEL
+      && XVECLEN (PATTERN (i2), 0) >= 2
+      && GET_CODE (XVECEXP (PATTERN (i2), 0, 0)) == SET
+      && (GET_MODE_CLASS (GET_MODE (SET_DEST (XVECEXP (PATTERN (i2), 0, 0))))
+	  == MODE_CC)
+      && GET_CODE (SET_SRC (XVECEXP (PATTERN (i2), 0, 0))) == COMPARE
+      && XEXP (SET_SRC (XVECEXP (PATTERN (i2), 0, 0)), 1) == const0_rtx
+      && GET_CODE (XVECEXP (PATTERN (i2), 0, 1)) == SET
+      && GET_CODE (SET_DEST (XVECEXP (PATTERN (i2), 0, 1))) == REG
+      && rtx_equal_p (XEXP (SET_SRC (XVECEXP (PATTERN (i2), 0, 0)), 0),
+		      SET_SRC (XVECEXP (PATTERN (i2), 0, 1))))
+    {
+      for (i = XVECLEN (PATTERN (i2), 0) - 1; i >= 2; i--)
+	if (GET_CODE (XVECEXP (PATTERN (i2), 0, i)) != CLOBBER)
+	  break;
+
+      if (i == 1)
+	{
+	  /* We make I1 with the same INSN_UID as I2.  This gives it
+	     the same INSN_CUID for value tracking.  Our fake I1 will
+	     never appear in the insn stream so giving it the same INSN_UID
+	     as I2 will not cause a problem.  */
+
+	  subst_prev_insn = i1
+	    = gen_rtx_INSN (VOIDmode, INSN_UID (i2), NULL_RTX, i2,
+			    XVECEXP (PATTERN (i2), 0, 1), -1, NULL_RTX,
+			    NULL_RTX);
+
+	  SUBST (PATTERN (i2), XVECEXP (PATTERN (i2), 0, 0));
+	  SUBST (XEXP (SET_SRC (PATTERN (i2)), 0),
+		 SET_DEST (PATTERN (i1)));
+	}
+    }
+#endif
+
+  /* Verify that I2 and I1 are valid for combining.  */
+  if (! can_combine_p (i2, i3, i1, NULL_RTX, &i2dest, &i2src)
+      || (i1 && ! can_combine_p (i1, i3, NULL_RTX, i2, &i1dest, &i1src)))
+    {
+      undo_all ();
+      return 0;
+    }
+
+  /* Record whether I2DEST is used in I2SRC and similarly for the other
+     cases.  Knowing this will help in register status updating below.  */
+  i2dest_in_i2src = reg_overlap_mentioned_p (i2dest, i2src);
+  i1dest_in_i1src = i1 && reg_overlap_mentioned_p (i1dest, i1src);
+  i2dest_in_i1src = i1 && reg_overlap_mentioned_p (i2dest, i1src);
+
+  /* See if I1 directly feeds into I3.  It does if I1DEST is not used
+     in I2SRC.  */
+  i1_feeds_i3 = i1 && ! reg_overlap_mentioned_p (i1dest, i2src);
+
+  /* Ensure that I3's pattern can be the destination of combines.  */
+  if (! combinable_i3pat (i3, &PATTERN (i3), i2dest, i1dest,
+			  i1 && i2dest_in_i1src && i1_feeds_i3,
+			  &i3dest_killed))
+    {
+      undo_all ();
+      return 0;
+    }
+
+  /* See if any of the insns is a MULT operation.  Unless one is, we will
+     reject a combination that is, since it must be slower.  Be conservative
+     here.  */
+  if (GET_CODE (i2src) == MULT
+      || (i1 != 0 && GET_CODE (i1src) == MULT)
+      || (GET_CODE (PATTERN (i3)) == SET
+	  && GET_CODE (SET_SRC (PATTERN (i3))) == MULT))
+    have_mult = 1;
+
+  /* If I3 has an inc, then give up if I1 or I2 uses the reg that is inc'd.
+     We used to do this EXCEPT in one case: I3 has a post-inc in an
+     output operand.  However, that exception can give rise to insns like
+	mov r3,(r3)+
+     which is a famous insn on the PDP-11 where the value of r3 used as the
+     source was model-dependent.  Avoid this sort of thing.  */
+
+#if 0
+  if (!(GET_CODE (PATTERN (i3)) == SET
+	&& GET_CODE (SET_SRC (PATTERN (i3))) == REG
+	&& GET_CODE (SET_DEST (PATTERN (i3))) == MEM
+	&& (GET_CODE (XEXP (SET_DEST (PATTERN (i3)), 0)) == POST_INC
+	    || GET_CODE (XEXP (SET_DEST (PATTERN (i3)), 0)) == POST_DEC)))
+    /* It's not the exception.  */
+#endif
+#ifdef AUTO_INC_DEC
+    for (link = REG_NOTES (i3); link; link = XEXP (link, 1))
+      if (REG_NOTE_KIND (link) == REG_INC
+	  && (reg_overlap_mentioned_p (XEXP (link, 0), PATTERN (i2))
+	      || (i1 != 0
+		  && reg_overlap_mentioned_p (XEXP (link, 0), PATTERN (i1)))))
+	{
+	  undo_all ();
+	  return 0;
+	}
+#endif
+
+  /* See if the SETs in I1 or I2 need to be kept around in the merged
+     instruction: whenever the value set there is still needed past I3.
+     For the SETs in I2, this is easy: we see if I2DEST dies or is set in I3.
+
+     For the SET in I1, we have two cases:  If I1 and I2 independently
+     feed into I3, the set in I1 needs to be kept around if I1DEST dies
+     or is set in I3.  Otherwise (if I1 feeds I2 which feeds I3), the set
+     in I1 needs to be kept around unless I1DEST dies or is set in either
+     I2 or I3.  We can distinguish these cases by seeing if I2SRC mentions
+     I1DEST.  If so, we know I1 feeds into I2.  */
+
+  added_sets_2 = ! dead_or_set_p (i3, i2dest);
+
+  added_sets_1
+    = i1 && ! (i1_feeds_i3 ? dead_or_set_p (i3, i1dest)
+	       : (dead_or_set_p (i3, i1dest) || dead_or_set_p (i2, i1dest)));
+
+  /* If the set in I2 needs to be kept around, we must make a copy of
+     PATTERN (I2), so that when we substitute I1SRC for I1DEST in
+     PATTERN (I2), we are only substituting for the original I1DEST, not into
+     an already-substituted copy.  This also prevents making self-referential
+     rtx.  If I2 is a PARALLEL, we just need the piece that assigns I2SRC to
+     I2DEST.  */
+
+  i2pat = (GET_CODE (PATTERN (i2)) == PARALLEL
+	   ? gen_rtx_SET (VOIDmode, i2dest, i2src)
+	   : PATTERN (i2));
+
+  if (added_sets_2)
+    i2pat = copy_rtx (i2pat);
+
+  combine_merges++;
+
+  /* Substitute in the latest insn for the regs set by the earlier ones.  */
+
+  maxreg = max_reg_num ();
+
+  subst_insn = i3;
+
+  /* It is possible that the source of I2 or I1 may be performing an
+     unneeded operation, such as a ZERO_EXTEND of something that is known
+     to have the high part zero.  Handle that case by letting subst look at
+     the innermost one of them.
+
+     Another way to do this would be to have a function that tries to
+     simplify a single insn instead of merging two or more insns.  We don't
+     do this because of the potential of infinite loops and because
+     of the potential extra memory required.  However, doing it the way
+     we are is a bit of a kludge and doesn't catch all cases.
+
+     But only do this if -fexpensive-optimizations since it slows things down
+     and doesn't usually win.  */
+
+  if (flag_expensive_optimizations)
+    {
+      /* Pass pc_rtx so no substitutions are done, just simplifications.
+	 The cases that we are interested in here do not involve the few
+	 cases were is_replaced is checked.  */
+      if (i1)
+	{
+	  subst_low_cuid = INSN_CUID (i1);
+	  i1src = subst (i1src, pc_rtx, pc_rtx, 0, 0);
+	}
+      else
+	{
+	  subst_low_cuid = INSN_CUID (i2);
+	  i2src = subst (i2src, pc_rtx, pc_rtx, 0, 0);
+	}
+    }
+
+#ifndef HAVE_cc0
+  /* Many machines that don't use CC0 have insns that can both perform an
+     arithmetic operation and set the condition code.  These operations will
+     be represented as a PARALLEL with the first element of the vector
+     being a COMPARE of an arithmetic operation with the constant zero.
+     The second element of the vector will set some pseudo to the result
+     of the same arithmetic operation.  If we simplify the COMPARE, we won't
+     match such a pattern and so will generate an extra insn.   Here we test
+     for this case, where both the comparison and the operation result are
+     needed, and make the PARALLEL by just replacing I2DEST in I3SRC with
+     I2SRC.  Later we will make the PARALLEL that contains I2.  */
+
+  if (i1 == 0 && added_sets_2 && GET_CODE (PATTERN (i3)) == SET
+      && GET_CODE (SET_SRC (PATTERN (i3))) == COMPARE
+      && XEXP (SET_SRC (PATTERN (i3)), 1) == const0_rtx
+      && rtx_equal_p (XEXP (SET_SRC (PATTERN (i3)), 0), i2dest))
+    {
+#ifdef EXTRA_CC_MODES
+      rtx *cc_use;
+      enum machine_mode compare_mode;
+#endif
+
+      newpat = PATTERN (i3);
+      SUBST (XEXP (SET_SRC (newpat), 0), i2src);
+
+      i2_is_used = 1;
+
+#ifdef EXTRA_CC_MODES
+      /* See if a COMPARE with the operand we substituted in should be done
+	 with the mode that is currently being used.  If not, do the same
+	 processing we do in `subst' for a SET; namely, if the destination
+	 is used only once, try to replace it with a register of the proper
+	 mode and also replace the COMPARE.  */
+      if (undobuf.other_insn == 0
+	  && (cc_use = find_single_use (SET_DEST (newpat), i3,
+					&undobuf.other_insn))
+	  && ((compare_mode = SELECT_CC_MODE (GET_CODE (*cc_use),
+					      i2src, const0_rtx))
+	      != GET_MODE (SET_DEST (newpat))))
+	{
+	  unsigned int regno = REGNO (SET_DEST (newpat));
+	  rtx new_dest = gen_rtx_REG (compare_mode, regno);
+
+	  if (regno < FIRST_PSEUDO_REGISTER
+	      || (REG_N_SETS (regno) == 1 && ! added_sets_2
+		  && ! REG_USERVAR_P (SET_DEST (newpat))))
+	    {
+	      if (regno >= FIRST_PSEUDO_REGISTER)
+		SUBST (regno_reg_rtx[regno], new_dest);
+
+	      SUBST (SET_DEST (newpat), new_dest);
+	      SUBST (XEXP (*cc_use, 0), new_dest);
+	      SUBST (SET_SRC (newpat),
+		     gen_rtx_COMPARE (compare_mode, i2src, const0_rtx));
+	    }
+	  else
+	    undobuf.other_insn = 0;
+	}
+#endif
+    }
+  else
+#endif
+    {
+      n_occurrences = 0;		/* `subst' counts here */
+
+      /* If I1 feeds into I2 (not into I3) and I1DEST is in I1SRC, we
+	 need to make a unique copy of I2SRC each time we substitute it
+	 to avoid self-referential rtl.  */
+
+      subst_low_cuid = INSN_CUID (i2);
+      newpat = subst (PATTERN (i3), i2dest, i2src, 0,
+		      ! i1_feeds_i3 && i1dest_in_i1src);
+      substed_i2 = 1;
+
+      /* Record whether i2's body now appears within i3's body.  */
+      i2_is_used = n_occurrences;
+    }
+
+  /* If we already got a failure, don't try to do more.  Otherwise,
+     try to substitute in I1 if we have it.  */
+
+  if (i1 && GET_CODE (newpat) != CLOBBER)
+    {
+      /* Before we can do this substitution, we must redo the test done
+	 above (see detailed comments there) that ensures  that I1DEST
+	 isn't mentioned in any SETs in NEWPAT that are field assignments.  */
+
+      if (! combinable_i3pat (NULL_RTX, &newpat, i1dest, NULL_RTX,
+			      0, (rtx*) 0))
+	{
+	  undo_all ();
+	  return 0;
+	}
+
+      n_occurrences = 0;
+      subst_low_cuid = INSN_CUID (i1);
+      newpat = subst (newpat, i1dest, i1src, 0, 0);
+      substed_i1 = 1;
+    }
+
+  /* Fail if an autoincrement side-effect has been duplicated.  Be careful
+     to count all the ways that I2SRC and I1SRC can be used.  */
+  if ((FIND_REG_INC_NOTE (i2, NULL_RTX) != 0
+       && i2_is_used + added_sets_2 > 1)
+      || (i1 != 0 && FIND_REG_INC_NOTE (i1, NULL_RTX) != 0
+	  && (n_occurrences + added_sets_1 + (added_sets_2 && ! i1_feeds_i3)
+	      > 1))
+      /* Fail if we tried to make a new register (we used to abort, but there's
+	 really no reason to).  */
+      || max_reg_num () != maxreg
+      /* Fail if we couldn't do something and have a CLOBBER.  */
+      || GET_CODE (newpat) == CLOBBER
+      /* Fail if this new pattern is a MULT and we didn't have one before
+	 at the outer level.  */
+      || (GET_CODE (newpat) == SET && GET_CODE (SET_SRC (newpat)) == MULT
+	  && ! have_mult))
+    {
+      undo_all ();
+      return 0;
+    }
+
+  /* If the actions of the earlier insns must be kept
+     in addition to substituting them into the latest one,
+     we must make a new PARALLEL for the latest insn
+     to hold additional the SETs.  */
+
+  if (added_sets_1 || added_sets_2)
+    {
+      combine_extras++;
+
+      if (GET_CODE (newpat) == PARALLEL)
+	{
+	  rtvec old = XVEC (newpat, 0);
+	  total_sets = XVECLEN (newpat, 0) + added_sets_1 + added_sets_2;
+	  newpat = gen_rtx_PARALLEL (VOIDmode, rtvec_alloc (total_sets));
+	  memcpy (XVEC (newpat, 0)->elem, &old->elem[0],
+		  sizeof (old->elem[0]) * old->num_elem);
+	}
+      else
+	{
+	  rtx old = newpat;
+	  total_sets = 1 + added_sets_1 + added_sets_2;
+	  newpat = gen_rtx_PARALLEL (VOIDmode, rtvec_alloc (total_sets));
+	  XVECEXP (newpat, 0, 0) = old;
+	}
+
+      if (added_sets_1)
+	XVECEXP (newpat, 0, --total_sets)
+	  = (GET_CODE (PATTERN (i1)) == PARALLEL
+	     ? gen_rtx_SET (VOIDmode, i1dest, i1src) : PATTERN (i1));
+
+      if (added_sets_2)
+	{
+	  /* If there is no I1, use I2's body as is.  We used to also not do
+	     the subst call below if I2 was substituted into I3,
+	     but that could lose a simplification.  */
+	  if (i1 == 0)
+	    XVECEXP (newpat, 0, --total_sets) = i2pat;
+	  else
+	    /* See comment where i2pat is assigned.  */
+	    XVECEXP (newpat, 0, --total_sets)
+	      = subst (i2pat, i1dest, i1src, 0, 0);
+	}
+    }
+
+  /* We come here when we are replacing a destination in I2 with the
+     destination of I3.  */
+ validate_replacement:
+
+  /* Note which hard regs this insn has as inputs.  */
+  mark_used_regs_combine (newpat);
+
+  /* Is the result of combination a valid instruction?  */
+  insn_code_number = recog_for_combine (&newpat, i3, &new_i3_notes);
+
+  /* If the result isn't valid, see if it is a PARALLEL of two SETs where
+     the second SET's destination is a register that is unused.  In that case,
+     we just need the first SET.   This can occur when simplifying a divmod
+     insn.  We *must* test for this case here because the code below that
+     splits two independent SETs doesn't handle this case correctly when it
+     updates the register status.  Also check the case where the first
+     SET's destination is unused.  That would not cause incorrect code, but
+     does cause an unneeded insn to remain.  */
+
+  if (insn_code_number < 0 && GET_CODE (newpat) == PARALLEL
+      && XVECLEN (newpat, 0) == 2
+      && GET_CODE (XVECEXP (newpat, 0, 0)) == SET
+      && GET_CODE (XVECEXP (newpat, 0, 1)) == SET
+      && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) == REG
+      && find_reg_note (i3, REG_UNUSED, SET_DEST (XVECEXP (newpat, 0, 1)))
+      && ! side_effects_p (SET_SRC (XVECEXP (newpat, 0, 1)))
+      && asm_noperands (newpat) < 0)
+    {
+      newpat = XVECEXP (newpat, 0, 0);
+      insn_code_number = recog_for_combine (&newpat, i3, &new_i3_notes);
+    }
+
+  else if (insn_code_number < 0 && GET_CODE (newpat) == PARALLEL
+	   && XVECLEN (newpat, 0) == 2
+	   && GET_CODE (XVECEXP (newpat, 0, 0)) == SET
+	   && GET_CODE (XVECEXP (newpat, 0, 1)) == SET
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 0))) == REG
+	   && find_reg_note (i3, REG_UNUSED, SET_DEST (XVECEXP (newpat, 0, 0)))
+	   && ! side_effects_p (SET_SRC (XVECEXP (newpat, 0, 0)))
+	   && asm_noperands (newpat) < 0)
+    {
+      newpat = XVECEXP (newpat, 0, 1);
+      insn_code_number = recog_for_combine (&newpat, i3, &new_i3_notes);
+    }
+
+  /* If we were combining three insns and the result is a simple SET
+     with no ASM_OPERANDS that wasn't recognized, try to split it into two
+     insns.  There are two ways to do this.  It can be split using a
+     machine-specific method (like when you have an addition of a large
+     constant) or by combine in the function find_split_point.  */
+
+  if (i1 && insn_code_number < 0 && GET_CODE (newpat) == SET
+      && asm_noperands (newpat) < 0)
+    {
+      rtx m_split, *split;
+      rtx ni2dest = i2dest;
+
+      /* See if the MD file can split NEWPAT.  If it can't, see if letting it
+	 use I2DEST as a scratch register will help.  In the latter case,
+	 convert I2DEST to the mode of the source of NEWPAT if we can.  */
+
+      m_split = split_insns (newpat, i3);
+
+      /* We can only use I2DEST as a scratch reg if it doesn't overlap any
+	 inputs of NEWPAT.  */
+
+      /* ??? If I2DEST is not safe, and I1DEST exists, then it would be
+	 possible to try that as a scratch reg.  This would require adding
+	 more code to make it work though.  */
+
+      if (m_split == 0 && ! reg_overlap_mentioned_p (ni2dest, newpat))
+	{
+	  /* If I2DEST is a hard register or the only use of a pseudo,
+	     we can change its mode.  */
+	  if (GET_MODE (SET_DEST (newpat)) != GET_MODE (i2dest)
+	      && GET_MODE (SET_DEST (newpat)) != VOIDmode
+	      && GET_CODE (i2dest) == REG
+	      && (REGNO (i2dest) < FIRST_PSEUDO_REGISTER
+		  || (REG_N_SETS (REGNO (i2dest)) == 1 && ! added_sets_2
+		      && ! REG_USERVAR_P (i2dest))))
+	    ni2dest = gen_rtx_REG (GET_MODE (SET_DEST (newpat)),
+				   REGNO (i2dest));
+
+	  m_split = split_insns (gen_rtx_PARALLEL
+				 (VOIDmode,
+				  gen_rtvec (2, newpat,
+					     gen_rtx_CLOBBER (VOIDmode,
+							      ni2dest))),
+				 i3);
+	  /* If the split with the mode-changed register didn't work, try
+	     the original register.  */
+	  if (! m_split && ni2dest != i2dest)
+	    {
+	      ni2dest = i2dest;
+	      m_split = split_insns (gen_rtx_PARALLEL
+				     (VOIDmode,
+				      gen_rtvec (2, newpat,
+						 gen_rtx_CLOBBER (VOIDmode,
+								  i2dest))),
+				     i3);
+	    }
+	}
+
+      /* If we've split a jump pattern, we'll wind up with a sequence even
+	 with one instruction.  We can handle that below, so extract it.  */
+      if (m_split && GET_CODE (m_split) == SEQUENCE
+	  && XVECLEN (m_split, 0) == 1)
+	m_split = PATTERN (XVECEXP (m_split, 0, 0));
+
+      if (m_split && GET_CODE (m_split) != SEQUENCE)
+	{
+	  insn_code_number = recog_for_combine (&m_split, i3, &new_i3_notes);
+	  if (insn_code_number >= 0)
+	    newpat = m_split;
+	}
+      else if (m_split && GET_CODE (m_split) == SEQUENCE
+	       && XVECLEN (m_split, 0) == 2
+	       && (next_real_insn (i2) == i3
+		   || ! use_crosses_set_p (PATTERN (XVECEXP (m_split, 0, 0)),
+					   INSN_CUID (i2))))
+	{
+	  rtx i2set, i3set;
+	  rtx newi3pat = PATTERN (XVECEXP (m_split, 0, 1));
+	  newi2pat = PATTERN (XVECEXP (m_split, 0, 0));
+
+	  i3set = single_set (XVECEXP (m_split, 0, 1));
+	  i2set = single_set (XVECEXP (m_split, 0, 0));
+
+	  /* In case we changed the mode of I2DEST, replace it in the
+	     pseudo-register table here.  We can't do it above in case this
+	     code doesn't get executed and we do a split the other way.  */
+
+	  if (REGNO (i2dest) >= FIRST_PSEUDO_REGISTER)
+	    SUBST (regno_reg_rtx[REGNO (i2dest)], ni2dest);
+
+	  i2_code_number = recog_for_combine (&newi2pat, i2, &new_i2_notes);
+
+	  /* If I2 or I3 has multiple SETs, we won't know how to track
+	     register status, so don't use these insns.  If I2's destination
+	     is used between I2 and I3, we also can't use these insns.  */
+
+	  if (i2_code_number >= 0 && i2set && i3set
+	      && (next_real_insn (i2) == i3
+		  || ! reg_used_between_p (SET_DEST (i2set), i2, i3)))
+	    insn_code_number = recog_for_combine (&newi3pat, i3,
+						  &new_i3_notes);
+	  if (insn_code_number >= 0)
+	    newpat = newi3pat;
+
+	  /* It is possible that both insns now set the destination of I3.
+	     If so, we must show an extra use of it.  */
+
+	  if (insn_code_number >= 0)
+	    {
+	      rtx new_i3_dest = SET_DEST (i3set);
+	      rtx new_i2_dest = SET_DEST (i2set);
+
+	      while (GET_CODE (new_i3_dest) == ZERO_EXTRACT
+		     || GET_CODE (new_i3_dest) == STRICT_LOW_PART
+		     || GET_CODE (new_i3_dest) == SUBREG)
+		new_i3_dest = XEXP (new_i3_dest, 0);
+
+	      while (GET_CODE (new_i2_dest) == ZERO_EXTRACT
+		     || GET_CODE (new_i2_dest) == STRICT_LOW_PART
+		     || GET_CODE (new_i2_dest) == SUBREG)
+		new_i2_dest = XEXP (new_i2_dest, 0);
+
+	      if (GET_CODE (new_i3_dest) == REG
+		  && GET_CODE (new_i2_dest) == REG
+		  && REGNO (new_i3_dest) == REGNO (new_i2_dest))
+		REG_N_SETS (REGNO (new_i2_dest))++;
+	    }
+	}
+
+      /* If we can split it and use I2DEST, go ahead and see if that
+	 helps things be recognized.  Verify that none of the registers
+	 are set between I2 and I3.  */
+      if (insn_code_number < 0 && (split = find_split_point (&newpat, i3)) != 0
+#ifdef HAVE_cc0
+	  && GET_CODE (i2dest) == REG
+#endif
+	  /* We need I2DEST in the proper mode.  If it is a hard register
+	     or the only use of a pseudo, we can change its mode.  */
+	  && (GET_MODE (*split) == GET_MODE (i2dest)
+	      || GET_MODE (*split) == VOIDmode
+	      || REGNO (i2dest) < FIRST_PSEUDO_REGISTER
+	      || (REG_N_SETS (REGNO (i2dest)) == 1 && ! added_sets_2
+		  && ! REG_USERVAR_P (i2dest)))
+	  && (next_real_insn (i2) == i3
+	      || ! use_crosses_set_p (*split, INSN_CUID (i2)))
+	  /* We can't overwrite I2DEST if its value is still used by
+	     NEWPAT.  */
+	  && ! reg_referenced_p (i2dest, newpat))
+	{
+	  rtx newdest = i2dest;
+	  enum rtx_code split_code = GET_CODE (*split);
+	  enum machine_mode split_mode = GET_MODE (*split);
+
+	  /* Get NEWDEST as a register in the proper mode.  We have already
+	     validated that we can do this.  */
+	  if (GET_MODE (i2dest) != split_mode && split_mode != VOIDmode)
+	    {
+	      newdest = gen_rtx_REG (split_mode, REGNO (i2dest));
+
+	      if (REGNO (i2dest) >= FIRST_PSEUDO_REGISTER)
+		SUBST (regno_reg_rtx[REGNO (i2dest)], newdest);
+	    }
+
+	  /* If *SPLIT is a (mult FOO (const_int pow2)), convert it to
+	     an ASHIFT.  This can occur if it was inside a PLUS and hence
+	     appeared to be a memory address.  This is a kludge.  */
+	  if (split_code == MULT
+	      && GET_CODE (XEXP (*split, 1)) == CONST_INT
+	      && INTVAL (XEXP (*split, 1)) > 0
+	      && (i = exact_log2 (INTVAL (XEXP (*split, 1)))) >= 0)
+	    {
+	      SUBST (*split, gen_rtx_ASHIFT (split_mode,
+					     XEXP (*split, 0), GEN_INT (i)));
+	      /* Update split_code because we may not have a multiply
+		 anymore.  */
+	      split_code = GET_CODE (*split);
+	    }
+
+#ifdef INSN_SCHEDULING
+	  /* If *SPLIT is a paradoxical SUBREG, when we split it, it should
+	     be written as a ZERO_EXTEND.  */
+	  if (split_code == SUBREG && GET_CODE (SUBREG_REG (*split)) == MEM)
+	    SUBST (*split, gen_rtx_ZERO_EXTEND  (split_mode,
+						 SUBREG_REG (*split)));
+#endif
+
+	  newi2pat = gen_rtx_SET (VOIDmode, newdest, *split);
+	  SUBST (*split, newdest);
+	  i2_code_number = recog_for_combine (&newi2pat, i2, &new_i2_notes);
+
+	  /* If the split point was a MULT and we didn't have one before,
+	     don't use one now.  */
+	  if (i2_code_number >= 0 && ! (split_code == MULT && ! have_mult))
+	    insn_code_number = recog_for_combine (&newpat, i3, &new_i3_notes);
+	}
+    }
+
+  /* Check for a case where we loaded from memory in a narrow mode and
+     then sign extended it, but we need both registers.  In that case,
+     we have a PARALLEL with both loads from the same memory location.
+     We can split this into a load from memory followed by a register-register
+     copy.  This saves at least one insn, more if register allocation can
+     eliminate the copy.
+
+     We cannot do this if the destination of the second assignment is
+     a register that we have already assumed is zero-extended.  Similarly
+     for a SUBREG of such a register.  */
+
+  else if (i1 && insn_code_number < 0 && asm_noperands (newpat) < 0
+	   && GET_CODE (newpat) == PARALLEL
+	   && XVECLEN (newpat, 0) == 2
+	   && GET_CODE (XVECEXP (newpat, 0, 0)) == SET
+	   && GET_CODE (SET_SRC (XVECEXP (newpat, 0, 0))) == SIGN_EXTEND
+	   && GET_CODE (XVECEXP (newpat, 0, 1)) == SET
+	   && rtx_equal_p (SET_SRC (XVECEXP (newpat, 0, 1)),
+			   XEXP (SET_SRC (XVECEXP (newpat, 0, 0)), 0))
+	   && ! use_crosses_set_p (SET_SRC (XVECEXP (newpat, 0, 1)),
+				   INSN_CUID (i2))
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) != ZERO_EXTRACT
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) != STRICT_LOW_PART
+	   && ! (temp = SET_DEST (XVECEXP (newpat, 0, 1)),
+		 (GET_CODE (temp) == REG
+		  && reg_nonzero_bits[REGNO (temp)] != 0
+		  && GET_MODE_BITSIZE (GET_MODE (temp)) < BITS_PER_WORD
+		  && GET_MODE_BITSIZE (GET_MODE (temp)) < HOST_BITS_PER_INT
+		  && (reg_nonzero_bits[REGNO (temp)]
+		      != GET_MODE_MASK (word_mode))))
+	   && ! (GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) == SUBREG
+		 && (temp = SUBREG_REG (SET_DEST (XVECEXP (newpat, 0, 1))),
+		     (GET_CODE (temp) == REG
+		      && reg_nonzero_bits[REGNO (temp)] != 0
+		      && GET_MODE_BITSIZE (GET_MODE (temp)) < BITS_PER_WORD
+		      && GET_MODE_BITSIZE (GET_MODE (temp)) < HOST_BITS_PER_INT
+		      && (reg_nonzero_bits[REGNO (temp)]
+			  != GET_MODE_MASK (word_mode)))))
+	   && ! reg_overlap_mentioned_p (SET_DEST (XVECEXP (newpat, 0, 1)),
+					 SET_SRC (XVECEXP (newpat, 0, 1)))
+	   && ! find_reg_note (i3, REG_UNUSED,
+			       SET_DEST (XVECEXP (newpat, 0, 0))))
+    {
+      rtx ni2dest;
+
+      newi2pat = XVECEXP (newpat, 0, 0);
+      ni2dest = SET_DEST (XVECEXP (newpat, 0, 0));
+      newpat = XVECEXP (newpat, 0, 1);
+      SUBST (SET_SRC (newpat),
+	     gen_lowpart_for_combine (GET_MODE (SET_SRC (newpat)), ni2dest));
+      i2_code_number = recog_for_combine (&newi2pat, i2, &new_i2_notes);
+
+      if (i2_code_number >= 0)
+	insn_code_number = recog_for_combine (&newpat, i3, &new_i3_notes);
+
+      if (insn_code_number >= 0)
+	{
+	  rtx insn;
+	  rtx link;
+
+	  /* If we will be able to accept this, we have made a change to the
+	     destination of I3.  This can invalidate a LOG_LINKS pointing
+	     to I3.  No other part of combine.c makes such a transformation.
+
+	     The new I3 will have a destination that was previously the
+	     destination of I1 or I2 and which was used in i2 or I3.  Call
+	     distribute_links to make a LOG_LINK from the next use of
+	     that destination.  */
+
+	  PATTERN (i3) = newpat;
+	  distribute_links (gen_rtx_INSN_LIST (VOIDmode, i3, NULL_RTX));
+
+	  /* I3 now uses what used to be its destination and which is
+	     now I2's destination.  That means we need a LOG_LINK from
+	     I3 to I2.  But we used to have one, so we still will.
+
+	     However, some later insn might be using I2's dest and have
+	     a LOG_LINK pointing at I3.  We must remove this link.
+	     The simplest way to remove the link is to point it at I1,
+	     which we know will be a NOTE.  */
+
+	  for (insn = NEXT_INSN (i3);
+	       insn && (this_basic_block == n_basic_blocks - 1
+			|| insn != BLOCK_HEAD (this_basic_block + 1));
+	       insn = NEXT_INSN (insn))
+	    {
+	      if (INSN_P (insn) && reg_referenced_p (ni2dest, PATTERN (insn)))
+		{
+		  for (link = LOG_LINKS (insn); link;
+		       link = XEXP (link, 1))
+		    if (XEXP (link, 0) == i3)
+		      XEXP (link, 0) = i1;
+
+		  break;
+		}
+	    }
+	}
+    }
+
+  /* Similarly, check for a case where we have a PARALLEL of two independent
+     SETs but we started with three insns.  In this case, we can do the sets
+     as two separate insns.  This case occurs when some SET allows two
+     other insns to combine, but the destination of that SET is still live.  */
+
+  else if (i1 && insn_code_number < 0 && asm_noperands (newpat) < 0
+	   && GET_CODE (newpat) == PARALLEL
+	   && XVECLEN (newpat, 0) == 2
+	   && GET_CODE (XVECEXP (newpat, 0, 0)) == SET
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 0))) != ZERO_EXTRACT
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 0))) != STRICT_LOW_PART
+	   && GET_CODE (XVECEXP (newpat, 0, 1)) == SET
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) != ZERO_EXTRACT
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) != STRICT_LOW_PART
+	   && ! use_crosses_set_p (SET_SRC (XVECEXP (newpat, 0, 1)),
+				   INSN_CUID (i2))
+	   /* Don't pass sets with (USE (MEM ...)) dests to the following.  */
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 1))) != USE
+	   && GET_CODE (SET_DEST (XVECEXP (newpat, 0, 0))) != USE
+	   && ! reg_referenced_p (SET_DEST (XVECEXP (newpat, 0, 1)),
+				  XVECEXP (newpat, 0, 0))
+	   && ! reg_referenced_p (SET_DEST (XVECEXP (newpat, 0, 0)),
+				  XVECEXP (newpat, 0, 1))
+	   && ! (contains_muldiv (SET_SRC (XVECEXP (newpat, 0, 0)))
+		 && contains_muldiv (SET_SRC (XVECEXP (newpat, 0, 1)))))
+    {
+      /* Normally, it doesn't matter which of the two is done first,
+	 but it does if one references cc0.  In that case, it has to
+	 be first.  */
+#ifdef HAVE_cc0
+      if (reg_referenced_p (cc0_rtx, XVECEXP (newpat, 0, 0)))
+	{
+	  newi2pat = XVECEXP (newpat, 0, 0);
+	  newpat = XVECEXP (newpat, 0, 1);
+	}
+      else
+#endif
+	{
+	  newi2pat = XVECEXP (newpat, 0, 1);
+	  newpat = XVECEXP (newpat, 0, 0);
+	}
+
+      i2_code_number = recog_for_combine (&newi2pat, i2, &new_i2_notes);
+
+      if (i2_code_number >= 0)
+	insn_code_number = recog_for_combine (&newpat, i3, &new_i3_notes);
+    }
+
+  /* If it still isn't recognized, fail and change things back the way they
+     were.  */
+  if ((insn_code_number < 0
+       /* Is the result a reasonable ASM_OPERANDS?  */
+       && (! check_asm_operands (newpat) || added_sets_1 || added_sets_2)))
+    {
+      undo_all ();
+      return 0;
+    }
+
+  /* If we had to change another insn, make sure it is valid also.  */
+  if (undobuf.other_insn)
+    {
+      rtx other_pat = PATTERN (undobuf.other_insn);
+      rtx new_other_notes;
+      rtx note, next;
+
+      CLEAR_HARD_REG_SET (newpat_used_regs);
+
+      other_code_number = recog_for_combine (&other_pat, undobuf.other_insn,
+					     &new_other_notes);
+
+      if (other_code_number < 0 && ! check_asm_operands (other_pat))
+	{
+	  undo_all ();
+	  return 0;
+	}
+
+      PATTERN (undobuf.other_insn) = other_pat;
+
+      /* If any of the notes in OTHER_INSN were REG_UNUSED, ensure that they
+	 are still valid.  Then add any non-duplicate notes added by
+	 recog_for_combine.  */
+      for (note = REG_NOTES (undobuf.other_insn); note; note = next)
+	{
+	  next = XEXP (note, 1);
+
+	  if (REG_NOTE_KIND (note) == REG_UNUSED
+	      && ! reg_set_p (XEXP (note, 0), PATTERN (undobuf.other_insn)))
+	    {
+	      if (GET_CODE (XEXP (note, 0)) == REG)
+		REG_N_DEATHS (REGNO (XEXP (note, 0)))--;
+
+	      remove_note (undobuf.other_insn, note);
+	    }
+	}
+
+      for (note = new_other_notes; note; note = XEXP (note, 1))
+	if (GET_CODE (XEXP (note, 0)) == REG)
+	  REG_N_DEATHS (REGNO (XEXP (note, 0)))++;
+
+      distribute_notes (new_other_notes, undobuf.other_insn,
+			undobuf.other_insn, NULL_RTX, NULL_RTX, NULL_RTX);
+    }
+#ifdef HAVE_cc0
+  /* If I2 is the setter CC0 and I3 is the user CC0 then check whether
+     they are adjacent to each other or not.  */
+  {
+    rtx p = prev_nonnote_insn (i3);
+    if (p && p != i2 && GET_CODE (p) == INSN && newi2pat
+	&& sets_cc0_p (newi2pat))
+      {
+	undo_all ();
+	return 0;
+      }
+  }
+#endif
+
+  /* We now know that we can do this combination.  Merge the insns and
+     update the status of registers and LOG_LINKS.  */
+
+  {
+    rtx i3notes, i2notes, i1notes = 0;
+    rtx i3links, i2links, i1links = 0;
+    rtx midnotes = 0;
+    unsigned int regno;
+    /* Compute which registers we expect to eliminate.  newi2pat may be setting
+       either i3dest or i2dest, so we must check it.  Also, i1dest may be the
+       same as i3dest, in which case newi2pat may be setting i1dest.  */
+    rtx elim_i2 = ((newi2pat && reg_set_p (i2dest, newi2pat))
+		   || i2dest_in_i2src || i2dest_in_i1src
+		   ? 0 : i2dest);
+    rtx elim_i1 = (i1 == 0 || i1dest_in_i1src
+		   || (newi2pat && reg_set_p (i1dest, newi2pat))
+		   ? 0 : i1dest);
+
+    /* Get the old REG_NOTES and LOG_LINKS from all our insns and
+       clear them.  */
+    i3notes = REG_NOTES (i3), i3links = LOG_LINKS (i3);
+    i2notes = REG_NOTES (i2), i2links = LOG_LINKS (i2);
+    if (i1)
+      i1notes = REG_NOTES (i1), i1links = LOG_LINKS (i1);
+
+    /* Ensure that we do not have something that should not be shared but
+       occurs multiple times in the new insns.  Check this by first
+       resetting all the `used' flags and then copying anything is shared.  */
+
+    reset_used_flags (i3notes);
+    reset_used_flags (i2notes);
+    reset_used_flags (i1notes);
+    reset_used_flags (newpat);
+    reset_used_flags (newi2pat);
+    if (undobuf.other_insn)
+      reset_used_flags (PATTERN (undobuf.other_insn));
+
+    i3notes = copy_rtx_if_shared (i3notes);
+    i2notes = copy_rtx_if_shared (i2notes);
+    i1notes = copy_rtx_if_shared (i1notes);
+    newpat = copy_rtx_if_shared (newpat);
+    newi2pat = copy_rtx_if_shared (newi2pat);
+    if (undobuf.other_insn)
+      reset_used_flags (PATTERN (undobuf.other_insn));
+
+    INSN_CODE (i3) = insn_code_number;
+    PATTERN (i3) = newpat;
+
+    if (GET_CODE (i3) == CALL_INSN && CALL_INSN_FUNCTION_USAGE (i3))
+      {
+	rtx call_usage = CALL_INSN_FUNCTION_USAGE (i3);
+
+	reset_used_flags (call_usage);
+	call_usage = copy_rtx (call_usage);
+
+	if (substed_i2)
+	  replace_rtx (call_usage, i2dest, i2src);
+
+	if (substed_i1)
+	  replace_rtx (call_usage, i1dest, i1src);
+
+	CALL_INSN_FUNCTION_USAGE (i3) = call_usage;
+      }
+
+    if (undobuf.other_insn)
+      INSN_CODE (undobuf.other_insn) = other_code_number;
+
+    /* We had one special case above where I2 had more than one set and
+       we replaced a destination of one of those sets with the destination
+       of I3.  In that case, we have to update LOG_LINKS of insns later
+       in this basic block.  Note that this (expensive) case is rare.
+
+       Also, in this case, we must pretend that all REG_NOTEs for I2
+       actually came from I3, so that REG_UNUSED notes from I2 will be
+       properly handled.  */
+
+    if (i3_subst_into_i2)
+      {
+	for (i = 0; i < XVECLEN (PATTERN (i2), 0); i++)
+	  if (GET_CODE (XVECEXP (PATTERN (i2), 0, i)) != USE
+	      && GET_CODE (SET_DEST (XVECEXP (PATTERN (i2), 0, i))) == REG
+	      && SET_DEST (XVECEXP (PATTERN (i2), 0, i)) != i2dest
+	      && ! find_reg_note (i2, REG_UNUSED,
+				  SET_DEST (XVECEXP (PATTERN (i2), 0, i))))
+	    for (temp = NEXT_INSN (i2);
+		 temp && (this_basic_block == n_basic_blocks - 1
+			  || BLOCK_HEAD (this_basic_block) != temp);
+		 temp = NEXT_INSN (temp))
+	      if (temp != i3 && INSN_P (temp))
+		for (link = LOG_LINKS (temp); link; link = XEXP (link, 1))
+		  if (XEXP (link, 0) == i2)
+		    XEXP (link, 0) = i3;
+
+	if (i3notes)
+	  {
+	    rtx link = i3notes;
+	    while (XEXP (link, 1))
+	      link = XEXP (link, 1);
+	    XEXP (link, 1) = i2notes;
+	  }
+	else
+	  i3notes = i2notes;
+	i2notes = 0;
+      }
+
+    LOG_LINKS (i3) = 0;
+    REG_NOTES (i3) = 0;
+    LOG_LINKS (i2) = 0;
+    REG_NOTES (i2) = 0;
+
+    if (newi2pat)
+      {
+	INSN_CODE (i2) = i2_code_number;
+	PATTERN (i2) = newi2pat;
+      }
+    else
+      {
+	PUT_CODE (i2, NOTE);
+	NOTE_LINE_NUMBER (i2) = NOTE_INSN_DELETED;
+	NOTE_SOURCE_FILE (i2) = 0;
+      }
+
+    if (i1)
+      {
+	LOG_LINKS (i1) = 0;
+	REG_NOTES (i1) = 0;
+	PUT_CODE (i1, NOTE);
+	NOTE_LINE_NUMBER (i1) = NOTE_INSN_DELETED;
+	NOTE_SOURCE_FILE (i1) = 0;
+      }
+
+    /* Get death notes for everything that is now used in either I3 or
+       I2 and used to die in a previous insn.  If we built two new
+       patterns, move from I1 to I2 then I2 to I3 so that we get the
+       proper movement on registers that I2 modifies.  */
+
+    if (newi2pat)
+      {
+	move_deaths (newi2pat, NULL_RTX, INSN_CUID (i1), i2, &midnotes);
+	move_deaths (newpat, newi2pat, INSN_CUID (i1), i3, &midnotes);
+      }
+    else
+      move_deaths (newpat, NULL_RTX, i1 ? INSN_CUID (i1) : INSN_CUID (i2),
+		   i3, &midnotes);
+
+    /* Distribute all the LOG_LINKS and REG_NOTES from I1, I2, and I3.  */
+    if (i3notes)
+      distribute_notes (i3notes, i3, i3, newi2pat ? i2 : NULL_RTX,
+			elim_i2, elim_i1);
+    if (i2notes)
+      distribute_notes (i2notes, i2, i3, newi2pat ? i2 : NULL_RTX,
+			elim_i2, elim_i1);
+    if (i1notes)
+      distribute_notes (i1notes, i1, i3, newi2pat ? i2 : NULL_RTX,
+			elim_i2, elim_i1);
+    if (midnotes)
+      distribute_notes (midnotes, NULL_RTX, i3, newi2pat ? i2 : NULL_RTX,
+			elim_i2, elim_i1);
+
+    /* Distribute any notes added to I2 or I3 by recog_for_combine.  We
+       know these are REG_UNUSED and want them to go to the desired insn,
+       so we always pass it as i3.  We have not counted the notes in
+       reg_n_deaths yet, so we need to do so now.  */
+
+    if (newi2pat && new_i2_notes)
+      {
+	for (temp = new_i2_notes; temp; temp = XEXP (temp, 1))
+	  if (GET_CODE (XEXP (temp, 0)) == REG)
+	    REG_N_DEATHS (REGNO (XEXP (temp, 0)))++;
+
+	distribute_notes (new_i2_notes, i2, i2, NULL_RTX, NULL_RTX, NULL_RTX);
+      }
+
+    if (new_i3_notes)
+      {
+	for (temp = new_i3_notes; temp; temp = XEXP (temp, 1))
+	  if (GET_CODE (XEXP (temp, 0)) == REG)
+	    REG_N_DEATHS (REGNO (XEXP (temp, 0)))++;
+
+	distribute_notes (new_i3_notes, i3, i3, NULL_RTX, NULL_RTX, NULL_RTX);
+      }
+
+    /* If I3DEST was used in I3SRC, it really died in I3.  We may need to
+       put a REG_DEAD note for it somewhere.  If NEWI2PAT exists and sets
+       I3DEST, the death must be somewhere before I2, not I3.  If we passed I3
+       in that case, it might delete I2.  Similarly for I2 and I1.
+       Show an additional death due to the REG_DEAD note we make here.  If
+       we discard it in distribute_notes, we will decrement it again.  */
+
+    if (i3dest_killed)
+      {
+	if (GET_CODE (i3dest_killed) == REG)
+	  REG_N_DEATHS (REGNO (i3dest_killed))++;
+
+	if (newi2pat && reg_set_p (i3dest_killed, newi2pat))
+	  distribute_notes (gen_rtx_EXPR_LIST (REG_DEAD, i3dest_killed,
+					       NULL_RTX),
+			    NULL_RTX, i2, NULL_RTX, elim_i2, elim_i1);
+	else
+	  distribute_notes (gen_rtx_EXPR_LIST (REG_DEAD, i3dest_killed,
+					       NULL_RTX),
+			    NULL_RTX, i3, newi2pat ? i2 : NULL_RTX,
+			    elim_i2, elim_i1);
+      }
+
+    if (i2dest_in_i2src)
+      {
+	if (GET_CODE (i2dest) == REG)
+	  REG_N_DEATHS (REGNO (i2dest))++;
+
+	if (newi2pat && reg_set_p (i2dest, newi2pat))
+	  distribute_notes (gen_rtx_EXPR_LIST (REG_DEAD, i2dest, NULL_RTX),
+			    NULL_RTX, i2, NULL_RTX, NULL_RTX, NULL_RTX);
+	else
+	  distribute_notes (gen_rtx_EXPR_LIST (REG_DEAD, i2dest, NULL_RTX),
+			    NULL_RTX, i3, newi2pat ? i2 : NULL_RTX,
+			    NULL_RTX, NULL_RTX);
+      }
+
+    if (i1dest_in_i1src)
+      {
+	if (GET_CODE (i1dest) == REG)
+	  REG_N_DEATHS (REGNO (i1dest))++;
+
+	if (newi2pat && reg_set_p (i1dest, newi2pat))
+	  distribute_notes (gen_rtx_EXPR_LIST (REG_DEAD, i1dest, NULL_RTX),
+			    NULL_RTX, i2, NULL_RTX, NULL_RTX, NULL_RTX);
+	else
+	  distribute_notes (gen_rtx_EXPR_LIST (REG_DEAD, i1dest, NULL_RTX),
+			    NULL_RTX, i3, newi2pat ? i2 : NULL_RTX,
+			    NULL_RTX, NULL_RTX);
+      }
+
+    distribute_links (i3links);
+    distribute_links (i2links);
+    distribute_links (i1links);
+
+    if (GET_CODE (i2dest) == REG)
+      {
+	rtx link;
+	rtx i2_insn = 0, i2_val = 0, set;
+
+	/* The insn that used to set this register doesn't exist, and
+	   this life of the register may not exist either.  See if one of
+	   I3's links points to an insn that sets I2DEST.  If it does,
+	   that is now the last known value for I2DEST. If we don't update
+	   this and I2 set the register to a value that depended on its old
+	   contents, we will get confused.  If this insn is used, thing
+	   will be set correctly in combine_instructions.  */
+
+	for (link = LOG_LINKS (i3); link; link = XEXP (link, 1))
+	  if ((set = single_set (XEXP (link, 0))) != 0
+	      && rtx_equal_p (i2dest, SET_DEST (set)))
+	    i2_insn = XEXP (link, 0), i2_val = SET_SRC (set);
+
+	record_value_for_reg (i2dest, i2_insn, i2_val);
+
+	/* If the reg formerly set in I2 died only once and that was in I3,
+	   zero its use count so it won't make `reload' do any work.  */
+	if (! added_sets_2
+	    && (newi2pat == 0 || ! reg_mentioned_p (i2dest, newi2pat))
+	    && ! i2dest_in_i2src)
+	  {
+	    regno = REGNO (i2dest);
+	    REG_N_SETS (regno)--;
+	  }
+      }
+
+    if (i1 && GET_CODE (i1dest) == REG)
+      {
+	rtx link;
+	rtx i1_insn = 0, i1_val = 0, set;
+
+	for (link = LOG_LINKS (i3); link; link = XEXP (link, 1))
+	  if ((set = single_set (XEXP (link, 0))) != 0
+	      && rtx_equal_p (i1dest, SET_DEST (set)))
+	    i1_insn = XEXP (link, 0), i1_val = SET_SRC (set);
+
+	record_value_for_reg (i1dest, i1_insn, i1_val);
+
+	regno = REGNO (i1dest);
+	if (! added_sets_1 && ! i1dest_in_i1src)
+	  REG_N_SETS (regno)--;
+      }
+
+    /* Update reg_nonzero_bits et al for any changes that may have been made
+       to this insn.  The order of set_nonzero_bits_and_sign_copies() is
+       important.  Because newi2pat can affect nonzero_bits of newpat */
+    if (newi2pat)
+      note_stores (newi2pat, set_nonzero_bits_and_sign_copies, NULL);
+    note_stores (newpat, set_nonzero_bits_and_sign_copies, NULL);
+
+    /* Set new_direct_jump_p if a new return or simple jump instruction
+       has been created.
+
+       If I3 is now an unconditional jump, ensure that it has a
+       BARRIER following it since it may have initially been a
+       conditional jump.  It may also be the last nonnote insn.  */
+
+    if (GET_CODE (newpat) == RETURN || any_uncondjump_p (i3))
+      {
+	*new_direct_jump_p = 1;
+
+	if ((temp = next_nonnote_insn (i3)) == NULL_RTX
+	    || GET_CODE (temp) != BARRIER)
+	  emit_barrier_after (i3);
+      }
+    /* An NOOP jump does not need barrier, but it does need cleaning up
+       of CFG.  */
+    if (GET_CODE (newpat) == SET
+	&& SET_SRC (newpat) == pc_rtx
+	&& SET_DEST (newpat) == pc_rtx)
+      *new_direct_jump_p = 1;
+  }
+
+  combine_successes++;
+  undo_commit ();
+
+  /* Clear this here, so that subsequent get_last_value calls are not
+     affected.  */
+  subst_prev_insn = NULL_RTX;
+
+  if (added_links_insn
+      && (newi2pat == 0 || INSN_CUID (added_links_insn) < INSN_CUID (i2))
+      && INSN_CUID (added_links_insn) < INSN_CUID (i3))
+    return added_links_insn;
+  else
+    return newi2pat ? i2 : i3;
+}

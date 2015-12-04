@@ -1,0 +1,138 @@
+int32 approx_cont_mgau_frame_eval (mgau_model_t *g,
+				   gs_t* gs, 
+				   subvq_t *svq,
+				   int32 svq_beam,
+				   float32 *feat,	
+				   int32 *sen_active,  
+				   int32 *senscr,
+				   int32 *cache_ci_senscr,
+				   kb_t *kb,
+				   int32 frame)
+{
+  int32 s;
+  int32 t;
+  int32 best, ns, ng;
+  int32 best_cid;
+  int32 is_skip;
+  int32 is_compute;
+  int32 pbest;
+  int32 is_ciphone;
+  mdef_t* mdef;
+  s3senid_t *cd2cisen;
+
+  best = MAX_NEG_INT32;
+  pbest = MAX_NEG_INT32;
+  ns = 0;
+  ng = 0;
+  best_cid=-1;
+
+  /*if(gs && svq) E_FATAL("Currently, there is no combination scheme of gs and svq\n");*/
+
+  ptmr_start(&(kb->tm_ovrhd));
+  if(gs)  best_cid=gc_compute_closest_cw(gs,feat);
+  if(svq) subvq_gautbl_eval_logs3 (svq, feat);
+  ptmr_stop(&(kb->tm_ovrhd));
+
+  is_skip=approx_isskip(frame,kb->ds_ratio,kb->cond_ds,kb->rec_bstcid==best_cid,&(kb->skip_count));
+  kb->rec_bstcid=best_cid; /*Well, if it is not skip, you need to update, if it is skip, the update will give you the same thing , why bother to check then?*/
+
+  mdef=kb->kbcore->mdef;
+  cd2cisen=mdef_cd2cisen(mdef);
+
+  /*  E_INFO("At frame %d, is_skip? %d best_cid %d skip count %d isSameBestIdx? %d\n",frame,is_skip,best_cid,kb->skip_count,kb->rec_bstcid==best_cid);*/
+
+  /* Use the original */
+  for (s = 0; s < g->n_mgau; s++) {
+    is_compute = !sen_active || sen_active[s];
+    is_ciphone  =  (s==cd2cisen[s]);
+
+#if _DEBUG_GSCORE_
+    E_INFO("Sen active %d, kb->rec_sen_active %d, sen id %d \n",sen_active[s],kb->rec_sen_active[s],s);
+#endif
+
+    if(!is_skip){ /* Loop handling main computation*/
+      /* Compute the score of the CI phone even if it is not active. */
+      if(is_ciphone){
+
+	/*Just copied from the cache, we just do accouting here */
+
+	/*ng+=approx_mgau_eval (gs,svq,g,kb,s,senscr,feat,best_cid,svq_beam);*/
+
+	/*E_INFO("At senone %d, CI phoneme score %d \n",s,cache_ci_senscr[s]);*/
+	senscr[s]=cache_ci_senscr[s];
+	if (pbest < senscr[s]) pbest = senscr[s];
+	if (best < senscr[s]) best = senscr[s];
+	sen_active[s]=1;
+	ng+=mgau_n_comp(g,s); /*Assume all CIs are computed fully*/
+	ns++;
+
+      }else{
+	if(is_compute) {
+	  if((pbest-senscr[cd2cisen[s]]<kb->ci_pbeam)){
+	    ng+=approx_mgau_eval (gs,svq,g,kb,s,senscr,feat,best_cid,svq_beam);
+	    ns++;
+	  }else {
+	    senscr[s]=senscr[cd2cisen[s]]; /* backoff to CI score, not gaussians computed */
+	  }
+	  if (best < senscr[s]) best = senscr[s];
+	}
+      }
+      /*Make a copy to the most recent active list */
+      kb->rec_sen_active[s]=sen_active[s];
+
+    }else{ /* Loop handling no computation*/
+      /* All complexity of the skipping loop will be coded here */
+      if(is_compute){
+	if(kb->rec_sen_active[s])
+	  senscr[s]=senscr[s]; /*Yes. No change to the score */
+	else{
+	  kb->rec_sen_active[s]=1;
+	  ng+=approx_mgau_eval (gs,svq,g,kb,s,senscr,feat,best_cid,svq_beam);
+	  ns++;
+
+	  if(senscr[s]>kb->rec_bst_senscr){ /* Rescore everything if we are better best scores*/
+	    E_INFO("Re-normalizing the previous score\n");
+
+	    /*Every thing except the new score are recomputed*/
+	    for (t = 0; t < g->n_mgau; t++) {
+	      if(kb->rec_sen_active[t]&& t!=s ){
+		senscr[t]-=(senscr[s]-kb->rec_bst_senscr);
+	      }
+	    }
+	    /*Update the best senone score*/
+	    kb->rec_bst_senscr=senscr[s];
+	  }
+	  /*Update the new senone score*/
+	  senscr[s]-=kb->rec_bst_senscr; /*if senscr[s]> kb->rec_bst_senscr, senscr will equals to 0 at this point*/
+	}
+      }
+    }
+  }
+
+  if(!is_skip){
+    for (s = 0; s < g->n_mgau; s++){
+      if(sen_active[s])
+	senscr[s]-=best;
+    }
+  }else{
+   
+#if 0
+    E_INFO("Best score %d\n",kb->rec_bst_senscr);
+    for(s=0 ;s < g-> n_mgau; s++){
+      if(sen_active[s]){
+	  E_INFO("At the end: Senone %d has scores %d\n",s,senscr[s]);
+	if(senscr[s]>0){
+	  E_FATAL("Something wrong, senone score > 0\n",s,senscr[s]);
+	}
+      }
+    }
+#endif
+  }
+
+    
+  g->frm_sen_eval = ns;
+  g->frm_gau_eval = ng;
+    
+  return best;
+
+}

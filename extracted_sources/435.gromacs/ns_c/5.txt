@@ -1,0 +1,43 @@
+static void init_nblist(t_nblist *nl_sr,t_nblist *nl_lr,
+			int maxsr,int maxlr,int solvent,int il_code)
+{
+  t_nblist *nl;
+  int      homenr;
+  int      i;
+  
+  if (debug)
+    fprintf(debug,"Initiating neighbourlist type %d for %s with %d SR, %d LR atoms\n",
+	    il_code,ESOLVTYPE(solvent),maxsr,maxlr);
+  for(i=0; (i<2); i++) {
+    nl     = (i == 0) ? nl_sr : nl_lr;
+    homenr = (i == 0) ? maxsr : maxlr;
+    
+    nl->il_code = il_code;
+    /* maxnri is influenced by the number of shifts (maximum is 8)
+     * and the number of energy groups.
+     * If it is not enough, nl memory will be reallocated during the run.
+     * 4 seems to be a reasonable factor, which only causes reallocation
+     * during runs with tiny and many energygroups.
+     */
+    nl->maxnri  = homenr*4;
+    nl->maxnrj  = 0;
+    nl->maxlen  = 0;
+    nl->nri     = 0;
+    nl->nrj     = 0;
+    nl->iinr    = NULL;
+    nl->gid     = NULL;
+    nl->shift   = NULL;
+    nl->jindex  = NULL;
+    nl->nsatoms = NULL;
+    nl->solvent = solvent;
+    reallocate_nblist(nl);
+    nl->jindex[0] = 0;
+    nl->jindex[1] = 0;
+    nl->gid[0] = -1;
+#ifdef USE_THREADS
+    nl->counter = 0;
+    snew(nl->mtx,1);
+    pthread_mutex_init(nl->mtx,NULL);
+#endif
+  }
+}

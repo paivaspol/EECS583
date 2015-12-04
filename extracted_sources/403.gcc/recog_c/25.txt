@@ -1,0 +1,16 @@
+int
+const_double_operand (op, mode)
+     rtx op;
+     enum machine_mode mode;
+{
+  /* Don't accept CONST_INT or anything similar
+     if the caller wants something floating.  */
+  if (GET_MODE (op) == VOIDmode && mode != VOIDmode
+      && GET_MODE_CLASS (mode) != MODE_INT
+      && GET_MODE_CLASS (mode) != MODE_PARTIAL_INT)
+    return 0;
+
+  return ((GET_CODE (op) == CONST_DOUBLE || GET_CODE (op) == CONST_INT)
+	  && (mode == VOIDmode || GET_MODE (op) == mode
+	      || GET_MODE (op) == VOIDmode));
+}

@@ -1,0 +1,17 @@
+static void
+output_do_verbatim (buffer, msgid, args_ptr)
+     output_buffer *buffer;
+     const char *msgid;
+     va_list *args_ptr;
+{
+  output_state os;
+
+  os = output_buffer_state (buffer);
+  output_prefix (buffer) = NULL;
+  diagnostic_prefixing_rule (buffer) = DIAGNOSTICS_SHOW_PREFIX_NEVER;
+  output_buffer_text_cursor (buffer) = _(msgid);
+  output_buffer_ptr_to_format_args (buffer) = args_ptr;
+  output_set_maximum_length (buffer, 0);
+  output_format (buffer);
+  output_buffer_state (buffer) = os;
+}

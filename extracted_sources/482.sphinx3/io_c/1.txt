@@ -1,0 +1,40 @@
+int32 fread_retry(void *pointer, int32 size, int32 num_items, FILE *stream)
+{
+    char *data;
+    uint32 n_items_read;
+    uint32 n_items_rem;
+    uint32 n_retry_rem;
+    int32 loc;
+
+    n_retry_rem = FREAD_RETRY_COUNT;
+
+    data = pointer;
+    loc = 0;
+    n_items_rem = num_items;
+	
+    do {
+	n_items_read = fread(&data[loc], size, n_items_rem, stream);
+
+	n_items_rem -= n_items_read;
+
+	if (n_items_rem > 0) {
+	    /* an incomplete read occurred */
+
+	    if (n_retry_rem == 0)
+		return -1;
+
+	    if (n_retry_rem == FREAD_RETRY_COUNT) {
+		E_ERROR_SYSTEM("fread() failed; retrying...\n");
+	    }
+
+	    --n_retry_rem;
+	    
+	    loc += n_items_read * size;
+#if (! SPEC_CPU_WINDOWS)
+	    sleep(1);
+#endif
+	}
+    } while (n_items_rem > 0);
+
+    return num_items;
+}

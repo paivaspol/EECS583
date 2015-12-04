@@ -1,0 +1,61 @@
+static rtx
+computing_insn (expr, insn)
+     struct expr *expr;
+     rtx insn;
+{
+  basic_block bb = BLOCK_FOR_INSN (insn);
+
+  if (expr->avail_occr->next == NULL)
+    {    
+      if (BLOCK_FOR_INSN (expr->avail_occr->insn) == bb)
+	/* The available expression is actually itself
+	   (i.e. a loop in the flow graph) so do nothing.  */
+	return NULL;
+
+      /* (FIXME) Case that we found a pattern that was created by
+	 a substitution that took place.  */
+      return expr->avail_occr->insn;
+    }
+  else
+    {
+      /* Pattern is computed more than once.
+	 Search backwards from this insn to see how many of these 
+	 computations actually reach this insn.  */
+      struct occr *occr;
+      rtx insn_computes_expr = NULL;
+      int can_reach = 0;
+
+      for (occr = expr->avail_occr; occr != NULL; occr = occr->next)
+	{
+	  if (BLOCK_FOR_INSN (occr->insn) == bb)
+	    {
+	      /* The expression is generated in this block.
+		 The only time we care about this is when the expression
+		 is generated later in the block [and thus there's a loop].
+		 We let the normal cse pass handle the other cases.  */
+	      if (INSN_CUID (insn) < INSN_CUID (occr->insn)
+		  && expr_reaches_here_p (occr, expr, bb, 1))
+		{
+		  can_reach++;
+		  if (can_reach > 1)
+		    return NULL;
+
+		  insn_computes_expr = occr->insn;
+		}
+	    }
+	  else if (expr_reaches_here_p (occr, expr, bb, 0))
+	    {
+	      can_reach++;
+	      if (can_reach > 1)
+		return NULL;
+
+	      insn_computes_expr = occr->insn;
+	    }
+	}
+
+      if (insn_computes_expr == NULL)
+	abort ();
+
+      return insn_computes_expr;
+    }
+}

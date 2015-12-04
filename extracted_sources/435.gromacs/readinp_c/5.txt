@@ -1,0 +1,35 @@
+int get_eeenum(int *ninp,t_inpfile **inp,char *name,char **defs,
+	       int *nerror,bool bPrintError)
+{
+  int  ii,i,j;
+  
+  ii=get_einp(ninp,inp,name);
+  
+  if (ii == -1) {
+    (*inp)[(*ninp)-1].value=strdup(defs[0]);
+    
+    return 0;
+  }
+  
+  for(i=0; (defs[i] != NULL); i++)
+    if (strcasecmp_min(defs[i],(*inp)[ii].value) == 0)
+      break;
+  
+  if (defs[i] == NULL) {
+    fprintf(stderr,"%snvalid enum '%s' for variable %s, using '%s'\n",
+	    bPrintError ? "ERROR: i" : "I",(*inp)[ii].value,name,defs[0]);
+    fprintf(stderr,"Next time use one of:");
+    (*nerror)++;
+    j=0;
+    while (defs[j]) {
+      fprintf(stderr," '%s'",defs[j]);
+      j++;
+    }
+    fprintf(stderr,"\n");
+    (*inp)[ii].value=strdup(defs[0]);
+    
+    return 0;
+  }
+  
+  return i;
+}

@@ -1,0 +1,16 @@
+static void
+update_qty_class (qtyno, reg)
+     int qtyno;
+     int reg;
+{
+  enum reg_class rclass = reg_preferred_class (reg);
+  if (reg_class_subset_p (rclass, qty[qtyno].min_class))
+    qty[qtyno].min_class = rclass;
+
+  rclass = reg_alternate_class (reg);
+  if (reg_class_subset_p (rclass, qty[qtyno].alternate_class))
+    qty[qtyno].alternate_class = rclass;
+
+  if (REG_CHANGES_MODE (reg))
+    qty[qtyno].changes_mode = 1;
+}

@@ -1,0 +1,28 @@
+void
+Perl_my_unexec(pTHX)
+{
+#if !defined(SPEC_CPU)
+#ifdef UNEXEC
+    SV*    prog;
+    SV*    file;
+    int    status = 1;
+    extern int etext;
+
+    prog = newSVpv(BIN_EXP, 0);
+    sv_catpv(prog, "/perl");
+    file = newSVpv(PL_origfilename, 0);
+    sv_catpv(file, ".perldump");
+
+    unexec(SvPVX(file), SvPVX(prog), &etext, sbrk(0), 0);
+    /* unexec prints msg to stderr in case of failure */
+    PerlProc_exit(status);
+#else
+#  ifdef VMS
+#    include <lib$routines.h>
+     lib$signal(SS$_DEBUG);  /* ssdef.h #included from vmsish.h */
+#  else
+    ABORT();		/* for use with undump */
+#  endif
+#endif
+#endif /* !SPEC_CPU */
+}

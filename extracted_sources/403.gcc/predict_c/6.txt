@@ -1,0 +1,13 @@
+void
+invert_br_probabilities (insn)
+     rtx insn;
+{
+  rtx note;
+
+  for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
+    if (REG_NOTE_KIND (note) == REG_BR_PROB)
+      XEXP (note, 0) = GEN_INT (REG_BR_PROB_BASE - INTVAL (XEXP (note, 0)));
+    else if (REG_NOTE_KIND (note) == REG_BR_PRED)
+      XEXP (XEXP (note, 0), 1)
+	= GEN_INT (REG_BR_PROB_BASE - INTVAL (XEXP (XEXP (note, 0), 1)));
+}

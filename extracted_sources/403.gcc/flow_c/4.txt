@@ -1,0 +1,49 @@
+static void
+verify_local_live_at_start (new_live_at_start, bb)
+     regset new_live_at_start;
+     basic_block bb;
+{
+  if (reload_completed)
+    {
+      /* After reload, there are no pseudos, nor subregs of multi-word
+	 registers.  The regsets should exactly match.  */
+      if (! REG_SET_EQUAL_P (new_live_at_start, bb->global_live_at_start))
+	{
+	  if (rtl_dump_file)
+	    {
+	      fprintf (rtl_dump_file,
+		       "live_at_start mismatch in bb %d, aborting\nNew:\n",
+		       bb->index);
+	      debug_bitmap_file (rtl_dump_file, new_live_at_start);
+	      fputs ("Old:\n", rtl_dump_file);
+	      dump_bb (bb, rtl_dump_file);
+	    }
+	  abort ();
+	}
+    }
+  else
+    {
+      int i;
+
+      /* Find the set of changed registers.  */
+      XOR_REG_SET (new_live_at_start, bb->global_live_at_start);
+
+      EXECUTE_IF_SET_IN_REG_SET (new_live_at_start, 0, i,
+	{
+          /* No registers should die.  */
+	  if (REGNO_REG_SET_P (bb->global_live_at_start, i))
+	    {
+	      if (rtl_dump_file)
+		{
+		  fprintf (rtl_dump_file,
+			   "Register %d died unexpectedly.\n", i);
+		  dump_bb (bb, rtl_dump_file);
+		}
+	      abort ();
+	    }
+
+          /* Verify that the now-live register is wider than word_mode.  */
+	  verify_wide_reg (i, bb);
+	});
+    }
+}

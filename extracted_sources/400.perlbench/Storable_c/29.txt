@@ -1,0 +1,45 @@
+static int store_tied_item(pTHX_ stcxt_t *cxt, SV *sv)
+{
+	MAGIC *mg;
+	int ret;
+
+	TRACEME(("store_tied_item (0x%"UVxf")", PTR2UV(sv)));
+
+	if (!(mg = mg_find(sv, 'p')))
+		CROAK(("No magic 'p' found while storing reference to tied item"));
+
+	/*
+	 * We discriminate between \$h{key} and \$a[idx] via mg_ptr.
+	 */
+
+	if (mg->mg_ptr) {
+		TRACEME(("store_tied_item: storing a ref to a tied hash item"));
+		PUTMARK(SX_TIED_KEY);
+		TRACEME(("store_tied_item: storing OBJ 0x%"UVxf, PTR2UV(mg->mg_obj)));
+
+		if ((ret = store(aTHX_ cxt, mg->mg_obj)))		/* Extra () for -Wall, grr... */
+			return ret;
+
+		TRACEME(("store_tied_item: storing PTR 0x%"UVxf, PTR2UV(mg->mg_ptr)));
+
+		if ((ret = store(aTHX_ cxt, (SV *) mg->mg_ptr)))	/* Idem, for -Wall */
+			return ret;
+	} else {
+		I32 idx = mg->mg_len;
+
+		TRACEME(("store_tied_item: storing a ref to a tied array item "));
+		PUTMARK(SX_TIED_IDX);
+		TRACEME(("store_tied_item: storing OBJ 0x%"UVxf, PTR2UV(mg->mg_obj)));
+
+		if ((ret = store(aTHX_ cxt, mg->mg_obj)))		/* Idem, for -Wall */
+			return ret;
+
+		TRACEME(("store_tied_item: storing IDX %d", idx));
+
+		WLEN(idx);
+	}
+
+	TRACEME(("ok (tied item)"));
+
+	return 0;
+}

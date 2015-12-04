@@ -1,0 +1,28 @@
+void mem_dump(FILE *log,char *title,void *mem,int len)
+{
+  int i,index;
+  char s[LINE_WIDTH+1];
+  byte *p,b;
+  
+  p=mem;
+  index=0;
+  s[0]=NUL;
+  if (len && log) 
+      fprintf(log,"memdump of %s:\n",title);
+  for (i=0; i<len; i++)
+    {
+      b=p[i];
+      if ((index==0)||(index==LINE_WIDTH))
+        {
+          print_chars(log,s,index); 
+          if(log)
+              fprintf(log,"%.8X :",(unsigned int)i);
+          index=0;
+        }
+      if(log)
+          fprintf(log," %.2X",(unsigned int)b);
+      s[index++]=ascii(b);
+    }
+  print_chars(log,s,index);
+  (void) fflush(log);
+}

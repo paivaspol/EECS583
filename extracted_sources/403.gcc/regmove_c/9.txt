@@ -1,0 +1,83 @@
+static void
+optimize_reg_copy_3 (insn, dest, src)
+     rtx insn;
+     rtx dest;
+     rtx src;
+{
+  rtx src_reg = XEXP (src, 0);
+  int src_no = REGNO (src_reg);
+  int dst_no = REGNO (dest);
+  rtx p, set, subreg;
+  enum machine_mode old_mode;
+
+  if (src_no < FIRST_PSEUDO_REGISTER
+      || dst_no < FIRST_PSEUDO_REGISTER
+      || ! find_reg_note (insn, REG_DEAD, src_reg)
+      || REG_N_DEATHS (src_no) != 1
+      || REG_N_SETS (src_no) != 1)
+    return;
+  for (p = PREV_INSN (insn); p && ! reg_set_p (src_reg, p); p = PREV_INSN (p))
+    /* ??? We can't scan past the end of a basic block without updating
+       the register lifetime info (REG_DEAD/basic_block_live_at_start).  */
+    if (perhaps_ends_bb_p (p))
+      break;
+
+  if (! p)
+    return;
+
+  if (! (set = single_set (p))
+      || GET_CODE (SET_SRC (set)) != MEM
+      /* If there's a REG_EQUIV note, this must be an insn that loads an
+	 argument.  Prefer keeping the note over doing this optimization.  */
+      || find_reg_note (p, REG_EQUIV, NULL_RTX)
+      || SET_DEST (set) != src_reg)
+    return;
+
+  /* Be conserative: although this optimization is also valid for
+     volatile memory references, that could cause trouble in later passes.  */
+  if (MEM_VOLATILE_P (SET_SRC (set)))
+    return;
+
+  /* Do not use a SUBREG to truncate from one mode to another if truncation
+     is not a nop.  */
+  if (GET_MODE_BITSIZE (GET_MODE (src_reg)) <= GET_MODE_BITSIZE (GET_MODE (src))
+      && !TRULY_NOOP_TRUNCATION (GET_MODE_BITSIZE (GET_MODE (src)),
+				 GET_MODE_BITSIZE (GET_MODE (src_reg))))
+    return;
+
+  old_mode = GET_MODE (src_reg);
+  PUT_MODE (src_reg, GET_MODE (src));
+  XEXP (src, 0) = SET_SRC (set);
+
+  /* Include this change in the group so that it's easily undone if
+     one of the changes in the group is invalid.  */
+  validate_change (p, &SET_SRC (set), src, 1);
+
+  /* Now walk forward making additional replacements.  We want to be able
+     to undo all the changes if a later substitution fails.  */
+  subreg = gen_lowpart_SUBREG (old_mode, src_reg);
+  while (p = NEXT_INSN (p), p != insn)
+    {
+      if (! INSN_P (p))
+	continue;
+
+      /* Make a tenative change.  */
+      validate_replace_rtx_group (src_reg, subreg, p);
+    }
+
+  validate_replace_rtx_group (src, src_reg, insn);
+
+  /* Now see if all the changes are valid.  */
+  if (! apply_change_group ())
+    {
+      /* One or more changes were no good.  Back out everything.  */
+      PUT_MODE (src_reg, old_mode);
+      XEXP (src, 0) = src_reg;
+    }
+  else
+    {
+      rtx note = find_reg_note (p, REG_EQUAL, NULL_RTX);
+      if (note)
+	remove_note (p, note);
+    }
+}

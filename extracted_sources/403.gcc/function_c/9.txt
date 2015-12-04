@@ -1,0 +1,38 @@
+static struct temp_slot *
+find_temp_slot_from_address (x)
+     rtx x;
+{
+  struct temp_slot *p;
+  rtx next;
+
+  for (p = temp_slots; p; p = p->next)
+    {
+      if (! p->in_use)
+	continue;
+
+      else if (XEXP (p->slot, 0) == x
+	       || p->address == x
+	       || (GET_CODE (x) == PLUS
+		   && XEXP (x, 0) == virtual_stack_vars_rtx
+		   && GET_CODE (XEXP (x, 1)) == CONST_INT
+		   && INTVAL (XEXP (x, 1)) >= p->base_offset
+		   && INTVAL (XEXP (x, 1)) < p->base_offset + p->full_size))
+	return p;
+
+      else if (p->address != 0 && GET_CODE (p->address) == EXPR_LIST)
+	for (next = p->address; next; next = XEXP (next, 1))
+	  if (XEXP (next, 0) == x)
+	    return p;
+    }
+
+  /* If we have a sum involving a register, see if it points to a temp
+     slot.  */
+  if (GET_CODE (x) == PLUS && GET_CODE (XEXP (x, 0)) == REG
+      && (p = find_temp_slot_from_address (XEXP (x, 0))) != 0)
+    return p;
+  else if (GET_CODE (x) == PLUS && GET_CODE (XEXP (x, 1)) == REG
+	   && (p = find_temp_slot_from_address (XEXP (x, 1))) != 0)
+    return p;
+
+  return 0;
+}

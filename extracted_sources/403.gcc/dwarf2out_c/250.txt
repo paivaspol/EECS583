@@ -1,0 +1,91 @@
+static void
+dwarf2out_init (main_input_filename)
+     const char *main_input_filename;
+{
+  init_file_table ();
+
+  /* Remember the name of the primary input file.  */
+  primary_filename = main_input_filename;
+
+  /* Add it to the file table first, under the assumption that we'll
+     be emitting line number data for it first, which avoids having
+     to add an initial DW_LNS_set_file.  */
+  lookup_filename (main_input_filename);
+
+  /* Allocate the initial hunk of the decl_die_table.  */
+  decl_die_table
+    = (dw_die_ref *) xcalloc (DECL_DIE_TABLE_INCREMENT, sizeof (dw_die_ref));
+  decl_die_table_allocated = DECL_DIE_TABLE_INCREMENT;
+  decl_die_table_in_use = 0;
+
+  /* Allocate the initial hunk of the decl_scope_table.  */
+  VARRAY_TREE_INIT (decl_scope_table, 256, "decl_scope_table");
+  ggc_add_tree_varray_root (&decl_scope_table, 1);
+
+  /* Allocate the initial hunk of the abbrev_die_table.  */
+  abbrev_die_table
+    = (dw_die_ref *) xcalloc (ABBREV_DIE_TABLE_INCREMENT,
+			      sizeof (dw_die_ref));
+  abbrev_die_table_allocated = ABBREV_DIE_TABLE_INCREMENT;
+  /* Zero-th entry is allocated, but unused */
+  abbrev_die_table_in_use = 1;
+
+  /* Allocate the initial hunk of the line_info_table.  */
+  line_info_table
+    = (dw_line_info_ref) xcalloc (LINE_INFO_TABLE_INCREMENT,
+				  sizeof (dw_line_info_entry));
+  line_info_table_allocated = LINE_INFO_TABLE_INCREMENT;
+
+  /* Zero-th entry is allocated, but unused */
+  line_info_table_in_use = 1;
+
+  /* Generate the initial DIE for the .debug section.  Note that the (string)
+     value given in the DW_AT_name attribute of the DW_TAG_compile_unit DIE
+     will (typically) be a relative pathname and that this pathname should be
+     taken as being relative to the directory from which the compiler was
+     invoked when the given (base) source file was compiled.  */
+  comp_unit_die = gen_compile_unit_die (main_input_filename);
+
+  VARRAY_TREE_INIT (incomplete_types, 64, "incomplete_types");
+  ggc_add_tree_varray_root (&incomplete_types, 1);
+
+  VARRAY_RTX_INIT (used_rtx_varray, 32, "used_rtx_varray");
+  ggc_add_rtx_varray_root (&used_rtx_varray, 1);
+
+  ggc_add_root (&limbo_die_list, 1, 1, mark_limbo_die_list);
+
+  ASM_GENERATE_INTERNAL_LABEL (text_end_label, TEXT_END_LABEL, 0);
+  ASM_GENERATE_INTERNAL_LABEL (abbrev_section_label,
+			       DEBUG_ABBREV_SECTION_LABEL, 0);
+  if (DWARF2_GENERATE_TEXT_SECTION_LABEL)
+    ASM_GENERATE_INTERNAL_LABEL (text_section_label, TEXT_SECTION_LABEL, 0);
+  else
+    strcpy (text_section_label, stripattributes (TEXT_SECTION_NAME));
+
+  ASM_GENERATE_INTERNAL_LABEL (debug_info_section_label,
+			       DEBUG_INFO_SECTION_LABEL, 0);
+  ASM_GENERATE_INTERNAL_LABEL (debug_line_section_label,
+			       DEBUG_LINE_SECTION_LABEL, 0);
+  ASM_GENERATE_INTERNAL_LABEL (ranges_section_label,
+			       DEBUG_RANGES_SECTION_LABEL, 0);
+  named_section_flags (DEBUG_ABBREV_SECTION, SECTION_DEBUG);
+  ASM_OUTPUT_LABEL (asm_out_file, abbrev_section_label);
+  named_section_flags (DEBUG_INFO_SECTION, SECTION_DEBUG);
+  ASM_OUTPUT_LABEL (asm_out_file, debug_info_section_label);
+  named_section_flags (DEBUG_LINE_SECTION, SECTION_DEBUG);
+  ASM_OUTPUT_LABEL (asm_out_file, debug_line_section_label);
+
+  if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+    {
+      named_section_flags (DEBUG_MACINFO_SECTION, SECTION_DEBUG);
+      ASM_GENERATE_INTERNAL_LABEL (macinfo_section_label,
+				   DEBUG_MACINFO_SECTION_LABEL, 0);
+      ASM_OUTPUT_LABEL (asm_out_file, macinfo_section_label);
+    }
+
+  if (DWARF2_GENERATE_TEXT_SECTION_LABEL)
+    {
+      text_section ();
+      ASM_OUTPUT_LABEL (asm_out_file, text_section_label);
+    }
+}

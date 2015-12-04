@@ -1,0 +1,36 @@
+static void
+find_single_use_in_loop (regs, insn, x)
+     struct loop_regs *regs;
+     rtx insn;
+     rtx x;
+{
+  enum rtx_code code = GET_CODE (x);
+  const char *fmt = GET_RTX_FORMAT (code);
+  int i, j;
+
+  if (code == REG)
+    regs->array[REGNO (x)].single_usage
+      = (regs->array[REGNO (x)].single_usage != 0
+	 && regs->array[REGNO (x)].single_usage != insn)
+	? const0_rtx : insn;
+
+  else if (code == SET)
+    {
+      /* Don't count SET_DEST if it is a REG; otherwise count things
+	 in SET_DEST because if a register is partially modified, it won't
+	 show up as a potential movable so we don't care how USAGE is set
+	 for it.  */
+      if (GET_CODE (SET_DEST (x)) != REG)
+	find_single_use_in_loop (regs, insn, SET_DEST (x));
+      find_single_use_in_loop (regs, insn, SET_SRC (x));
+    }
+  else
+    for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+      {
+	if (fmt[i] == 'e' && XEXP (x, i) != 0)
+	  find_single_use_in_loop (regs, insn, XEXP (x, i));
+	else if (fmt[i] == 'E')
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    find_single_use_in_loop (regs, insn, XVECEXP (x, i, j));
+      }
+}

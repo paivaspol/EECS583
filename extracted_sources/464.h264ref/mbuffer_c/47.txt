@@ -1,0 +1,30 @@
+static int is_long_term_reference(FrameStore* fs)
+{
+
+  if (fs->is_used==3) // frame
+  {
+    if ((fs->frame->used_for_reference)&&(fs->frame->is_long_term))
+    {
+      return 1;
+    }
+  }
+  if (!active_sps->frame_mbs_only_flag)
+  {
+    if (fs->is_used&1) // top field
+    {
+      if ((fs->top_field->used_for_reference)&&(fs->top_field->is_long_term))
+      {
+        return 1;
+      }
+    }
+
+    if (fs->is_used&2) // bottom field
+    {
+        if ((fs->bottom_field->used_for_reference)&&(fs->bottom_field->is_long_term))
+      {
+        return 1;
+      }
+    }
+  }
+  return 0;
+}

@@ -1,0 +1,168 @@
+static void
+hoist_code ()
+{
+  int bb, dominated;
+  unsigned int i;
+  struct expr **index_map;
+  struct expr *expr;
+
+  sbitmap_vector_zero (hoist_exprs, n_basic_blocks);
+
+  /* Compute a mapping from expression number (`bitmap_index') to
+     hash table entry.  */
+
+  index_map = (struct expr **) xcalloc (n_exprs, sizeof (struct expr *));
+  for (i = 0; i < expr_hash_table_size; i++)
+    for (expr = expr_hash_table[i]; expr != NULL; expr = expr->next_same_hash)
+      index_map[expr->bitmap_index] = expr;
+
+  /* Walk over each basic block looking for potentially hoistable
+     expressions, nothing gets hoisted from the entry block.  */
+  for (bb = 0; bb < n_basic_blocks; bb++)
+    {
+      int found = 0;
+      int insn_inserted_p;
+
+      /* Examine each expression that is very busy at the exit of this
+	 block.  These are the potentially hoistable expressions.  */
+      for (i = 0; i < hoist_vbeout[bb]->n_bits; i++)
+	{
+	  int hoistable = 0;
+
+	  if (TEST_BIT (hoist_vbeout[bb], i) && TEST_BIT (transpout[bb], i))
+	    {
+	      /* We've found a potentially hoistable expression, now
+		 we look at every block BB dominates to see if it
+		 computes the expression.  */
+	      for (dominated = 0; dominated < n_basic_blocks; dominated++)
+		{
+		  /* Ignore self dominance.  */
+		  if (bb == dominated
+		      || ! TEST_BIT (dominators[dominated], bb))
+		    continue;
+
+		  /* We've found a dominated block, now see if it computes
+		     the busy expression and whether or not moving that
+		     expression to the "beginning" of that block is safe.  */
+		  if (!TEST_BIT (antloc[dominated], i))
+		    continue;
+
+		  /* Note if the expression would reach the dominated block
+		     unimpared if it was placed at the end of BB. 
+
+		     Keep track of how many times this expression is hoistable
+		     from a dominated block into BB.  */
+		  if (hoist_expr_reaches_here_p (BASIC_BLOCK (bb), i, 
+						 BASIC_BLOCK (dominated), NULL))
+		    hoistable++;
+		}
+
+	      /* If we found more than one hoistable occurrence of this
+		 expression, then note it in the bitmap of expressions to
+		 hoist.  It makes no sense to hoist things which are computed
+		 in only one BB, and doing so tends to pessimize register
+		 allocation.  One could increase this value to try harder
+		 to avoid any possible code expansion due to register
+		 allocation issues; however experiments have shown that
+		 the vast majority of hoistable expressions are only movable
+		 from two successors, so raising this threshhold is likely
+		 to nullify any benefit we get from code hoisting.  */
+	      if (hoistable > 1)
+		{
+		  SET_BIT (hoist_exprs[bb], i);
+		  found = 1;
+		}
+	    }
+	}
+		
+      /* If we found nothing to hoist, then quit now.  */
+      if (! found)
+	continue;
+
+      /* Loop over all the hoistable expressions.  */
+      for (i = 0; i < hoist_exprs[bb]->n_bits; i++)
+	{
+	  /* We want to insert the expression into BB only once, so
+	     note when we've inserted it.  */
+	  insn_inserted_p = 0;
+
+	  /* These tests should be the same as the tests above.  */
+	  if (TEST_BIT (hoist_vbeout[bb], i))
+	    {
+	      /* We've found a potentially hoistable expression, now
+		 we look at every block BB dominates to see if it
+		 computes the expression.  */
+	      for (dominated = 0; dominated < n_basic_blocks; dominated++)
+		{
+		  /* Ignore self dominance.  */
+		  if (bb == dominated
+		      || ! TEST_BIT (dominators[dominated], bb))
+		    continue;
+
+		  /* We've found a dominated block, now see if it computes
+		     the busy expression and whether or not moving that
+		     expression to the "beginning" of that block is safe.  */
+		  if (!TEST_BIT (antloc[dominated], i))
+		    continue;
+
+		  /* The expression is computed in the dominated block and
+		     it would be safe to compute it at the start of the
+		     dominated block.  Now we have to determine if the
+		     expression would reach the dominated block if it was
+		     placed at the end of BB.  */
+		  if (hoist_expr_reaches_here_p (BASIC_BLOCK (bb), i, 
+						 BASIC_BLOCK (dominated), NULL))
+		    {
+		      struct expr *expr = index_map[i];
+		      struct occr *occr = expr->antic_occr;
+		      rtx insn;
+		      rtx set;
+
+		      /* Find the right occurrence of this expression.  */
+		      while (BLOCK_NUM (occr->insn) != dominated && occr)
+			occr = occr->next;
+
+		      /* Should never happen.  */
+		      if (!occr)
+			abort ();
+
+		      insn = occr->insn;
+		 
+		      set = single_set (insn);
+		      if (! set)
+			abort ();
+
+		      /* Create a pseudo-reg to store the result of reaching
+			 expressions into.  Get the mode for the new pseudo
+			 from the mode of the original destination pseudo.  */
+		      if (expr->reaching_reg == NULL)
+			expr->reaching_reg
+			  = gen_reg_rtx (GET_MODE (SET_DEST (set)));
+
+		      /* In theory this should never fail since we're creating
+			 a reg->reg copy.
+
+			 However, on the x86 some of the movXX patterns
+			 actually contain clobbers of scratch regs.  This may
+			 cause the insn created by validate_change to not
+			 match any pattern and thus cause validate_change to
+			 fail.  */
+		      if (validate_change (insn, &SET_SRC (set),
+					   expr->reaching_reg, 0))
+			{
+			  occr->deleted_p = 1;
+			  if (!insn_inserted_p)
+			    {
+			      insert_insn_end_bb (index_map[i], 
+						  BASIC_BLOCK (bb), 0);
+			      insn_inserted_p = 1;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+  free (index_map);
+}

@@ -1,0 +1,19 @@
+static void
+error_recursion ()
+{
+  if (diagnostic_lock < 3)
+    diagnostic_finish ((output_buffer *) global_dc);
+
+  fnotice (stderr,
+	   "Internal compiler error: Error reporting routines re-entered.\n");
+  fnotice (stderr,
+"It is possible that you may be trying to use SPEC's version of gcc \n\
+without first defining the appropriate flags.  Please check the flags \n\
+that are in the config files from recently-published results on your \n\
+platform, and check that you are using an up-to-date compiler.  If\n\
+you still need help, please contact SPEC, reporting your hw/os \n\
+platform, your compiler version, and your compilation flags.\n\
+Contact SPEC at %s\n", GCCBUGURL);
+/* MJP credit to Alexey */
+  exit (FATAL_EXIT_CODE);
+}

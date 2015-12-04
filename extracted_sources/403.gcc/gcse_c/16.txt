@@ -1,0 +1,31 @@
+static void
+mems_conflict_for_gcse_p (dest, setter, data)
+     rtx dest, setter ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  while (GET_CODE (dest) == SUBREG
+	 || GET_CODE (dest) == ZERO_EXTRACT
+	 || GET_CODE (dest) == SIGN_EXTRACT
+	 || GET_CODE (dest) == STRICT_LOW_PART)
+    dest = XEXP (dest, 0);
+
+  /* If DEST is not a MEM, then it will not conflict with the load.  Note
+     that function calls are assumed to clobber memory, but are handled
+     elsewhere.  */
+  if (GET_CODE (dest) != MEM)
+    return;
+
+  /* If we are setting a MEM in our list of specially recognized MEMs,
+     don't mark as killed this time.  */ 
+  
+  if (dest == gcse_mem_operand && pre_ldst_mems != NULL)
+    {
+      if (!find_rtx_in_ldst (dest))
+	gcse_mems_conflict_p = 1;
+      return;
+    }
+
+  if (true_dependence (dest, GET_MODE (dest), gcse_mem_operand,
+		       rtx_addr_varies_p))
+    gcse_mems_conflict_p = 1;
+}

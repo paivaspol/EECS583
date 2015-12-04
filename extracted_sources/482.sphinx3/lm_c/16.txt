@@ -1,0 +1,25 @@
+int32 lm_bg_wordprob (lm_t *lm, s3lmwid_t lwid, int32 th, wordprob_t *wp, int32 *bowt)
+{
+    bg_t *bgptr;
+    int32 i, j, n, ugprob, bgprob;
+    s3wid_t w;
+    
+    n = lm_bglist (lm, lwid, &bgptr, bowt);
+    ugprob = lm_ug_score (lm, lwid);
+    
+    /* Convert bglist to wordprob */
+    for (i = 0, j = 0; i < n; i++, bgptr++) {
+	w = lm->ug[bgptr->wid].dictwid;
+	if (IS_S3WID (w)) {
+	    bgprob = LM_BGPROB(lm, bgptr);
+	    
+	    if (ugprob + bgprob >= th) {	/* ABSOLUTE prob (count) >= min thresh */
+		wp[j].wid = w;
+		wp[j].prob = bgprob;
+		j++;
+	    }
+	}
+    }
+    
+    return j;
+}

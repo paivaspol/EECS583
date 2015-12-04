@@ -1,0 +1,24 @@
+void unary_exp_golomb_level_encode( EncodingEnvironmentPtr eep_dp,
+                                    unsigned int symbol,
+                                    BiContextTypePtr ctx)
+{
+  unsigned int l,k;
+  unsigned int exp_start = 13; // 15-2 : 0,1 level decision always sent
+
+  if (symbol==0)
+  {
+    biari_encode_symbol(eep_dp, 0, ctx );
+    return;
+  }
+  else
+  {
+    biari_encode_symbol(eep_dp, 1, ctx );
+    l=symbol;
+    k=1;
+    while (((--l)>0) && (++k <= exp_start))
+      biari_encode_symbol(eep_dp, 1, ctx);
+    if (symbol < exp_start) biari_encode_symbol(eep_dp, 0, ctx);
+    else exp_golomb_encode_eq_prob(eep_dp,symbol-exp_start,0);
+  }
+  return;
+}

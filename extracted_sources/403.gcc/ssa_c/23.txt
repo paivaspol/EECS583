@@ -1,0 +1,46 @@
+static void
+apply_delayed_renames (c)
+       struct rename_context *c;
+{
+  struct rename_set_data *r;
+  struct rename_set_data *last_r = NULL;
+
+  for (r = c->new_renames; r != NULL; r = r->next)
+    {
+      int new_regno;
+      
+      /* Failure here means that someone has a PARALLEL that sets
+	 a register twice (bad!).  */
+      if (ssa_rename_to_lookup (r->old_reg) != r->prev_reg)
+	abort ();
+      /* Failure here means we have changed REG_LOC before applying
+	 the rename.  */
+      /* For the first set we come across, reuse the original regno.  */
+      if (r->prev_reg == NULL_RTX && !HARD_REGISTER_P (r->old_reg))
+	{
+	  r->new_reg = r->old_reg;
+	  /* We want to restore RENAME_NO_RTX rather than NULL_RTX.  */
+	  r->prev_reg = RENAME_NO_RTX;
+	}
+      else
+	r->new_reg = gen_reg_rtx (GET_MODE (r->old_reg));
+      new_regno = REGNO (r->new_reg);
+      ssa_rename_to_insert (r->old_reg, r->new_reg);
+
+      if (new_regno >= (int) ssa_definition->num_elements)
+	{
+	  int new_limit = new_regno * 5 / 4;
+	  VARRAY_GROW (ssa_definition, new_limit);
+	}
+
+      VARRAY_RTX (ssa_definition, new_regno) = r->set_insn;
+      ssa_rename_from_insert (new_regno, r->old_reg);
+      last_r = r;
+    }
+  if (last_r != NULL)
+    {
+      last_r->next = c->done_renames;
+      c->done_renames = c->new_renames;
+      c->new_renames = NULL;
+    }
+}

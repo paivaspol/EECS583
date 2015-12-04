@@ -1,0 +1,49 @@
+void
+ExtremeValueSetHistogram(struct histogram_s *h, float mu, float lambda, 
+			 float lowbound, float highbound, int ndegrees)
+{
+  int   sc;
+  int   hsize, idx;
+  int   nbins;
+  float delta;
+
+  UnfitHistogram(h);
+  h->fit_type          = HISTFIT_EVD;
+  h->param[EVD_LAMBDA] = lambda;
+  h->param[EVD_MU]     = mu;
+
+  hsize     = h->max - h->min + 1;
+  h->expect = (float *) MallocOrDie(sizeof(float) * hsize);
+  for (idx = 0; idx < hsize; idx++)
+    h->expect[idx] = 0.;
+
+  /* Calculate the expected values for the histogram.
+   */
+  for (sc = h->min; sc <= h->max; sc++)
+    h->expect[sc - h->min] =
+      ExtremeValueE((float)(sc), h->param[EVD_MU], h->param[EVD_LAMBDA], 
+		    h->total) -
+      ExtremeValueE((float)(sc+1), h->param[EVD_MU], h->param[EVD_LAMBDA],
+		    h->total);
+  
+  /* Calculate the goodness-of-fit (within whole region)
+   */
+  h->chisq = 0.;
+  nbins    = 0;
+  for (sc = lowbound; sc <= highbound; sc++)
+    if (h->expect[sc-h->min] >= 5. && h->histogram[sc-h->min] >= 5)
+      {
+	delta = (float) h->histogram[sc-h->min] - h->expect[sc-h->min];
+	h->chisq += delta * delta / h->expect[sc-h->min];
+	nbins++;
+      }
+
+  /* Since we fit the whole histogram, there is at least 
+   * one constraint on chi-square: the normalization to h->total.
+   */
+  if (nbins > 1 + ndegrees)
+    h->chip = (float) IncompleteGamma((double)(nbins-1-ndegrees)/2., 
+				      (double) h->chisq/2.);
+  else
+    h->chip = 0.;		
+}

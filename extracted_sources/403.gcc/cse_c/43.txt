@@ -1,0 +1,36 @@
+static void
+invalidate_from_clobbers (x)
+     rtx x;
+{
+  if (GET_CODE (x) == CLOBBER)
+    {
+      rtx ref = XEXP (x, 0);
+      if (ref)
+	{
+	  if (GET_CODE (ref) == REG || GET_CODE (ref) == SUBREG
+	      || GET_CODE (ref) == MEM)
+	    invalidate (ref, VOIDmode);
+	  else if (GET_CODE (ref) == STRICT_LOW_PART
+		   || GET_CODE (ref) == ZERO_EXTRACT)
+	    invalidate (XEXP (ref, 0), GET_MODE (ref));
+	}
+    }
+  else if (GET_CODE (x) == PARALLEL)
+    {
+      int i;
+      for (i = XVECLEN (x, 0) - 1; i >= 0; i--)
+	{
+	  rtx y = XVECEXP (x, 0, i);
+	  if (GET_CODE (y) == CLOBBER)
+	    {
+	      rtx ref = XEXP (y, 0);
+	      if (GET_CODE (ref) == REG || GET_CODE (ref) == SUBREG
+		  || GET_CODE (ref) == MEM)
+		invalidate (ref, VOIDmode);
+	      else if (GET_CODE (ref) == STRICT_LOW_PART
+		       || GET_CODE (ref) == ZERO_EXTRACT)
+		invalidate (XEXP (ref, 0), GET_MODE (ref));
+	    }
+	}
+    }
+}

@@ -1,0 +1,142 @@
+static void
+move_for_stack_reg (insn, regstack, pat)
+     rtx insn;
+     stack regstack;
+     rtx pat;
+{
+  rtx *psrc =  get_true_reg (&SET_SRC (pat));
+  rtx *pdest = get_true_reg (&SET_DEST (pat));
+  rtx src, dest;
+  rtx note;
+
+  src = *psrc; dest = *pdest;
+
+  if (STACK_REG_P (src) && STACK_REG_P (dest))
+    {
+      /* Write from one stack reg to another.  If SRC dies here, then
+	 just change the register mapping and delete the insn.  */
+
+      note = find_regno_note (insn, REG_DEAD, REGNO (src));
+      if (note)
+	{
+	  int i;
+
+	  /* If this is a no-op move, there must not be a REG_DEAD note.  */
+	  if (REGNO (src) == REGNO (dest))
+	    abort ();
+
+	  for (i = regstack->top; i >= 0; i--)
+	    if (regstack->reg[i] == REGNO (src))
+	      break;
+
+	  /* The source must be live, and the dest must be dead.  */
+	  if (i < 0 || get_hard_regnum (regstack, dest) >= FIRST_STACK_REG)
+	    abort ();
+
+	  /* It is possible that the dest is unused after this insn.
+	     If so, just pop the src.  */
+
+	  if (find_regno_note (insn, REG_UNUSED, REGNO (dest)))
+	    {
+	      emit_pop_insn (insn, regstack, src, EMIT_AFTER);
+
+	      delete_insn (insn);
+	      return;
+	    }
+
+	  regstack->reg[i] = REGNO (dest);
+
+	  SET_HARD_REG_BIT (regstack->reg_set, REGNO (dest));
+	  CLEAR_HARD_REG_BIT (regstack->reg_set, REGNO (src));
+
+	  delete_insn (insn);
+
+	  return;
+	}
+
+      /* The source reg does not die.  */
+
+      /* If this appears to be a no-op move, delete it, or else it
+	 will confuse the machine description output patterns. But if
+	 it is REG_UNUSED, we must pop the reg now, as per-insn processing
+	 for REG_UNUSED will not work for deleted insns.  */
+
+      if (REGNO (src) == REGNO (dest))
+	{
+	  if (find_regno_note (insn, REG_UNUSED, REGNO (dest)))
+	    emit_pop_insn (insn, regstack, dest, EMIT_AFTER);
+
+	  delete_insn (insn);
+	  return;
+	}
+
+      /* The destination ought to be dead */
+      if (get_hard_regnum (regstack, dest) >= FIRST_STACK_REG)
+	abort ();
+
+      replace_reg (psrc, get_hard_regnum (regstack, src));
+
+      regstack->reg[++regstack->top] = REGNO (dest);
+      SET_HARD_REG_BIT (regstack->reg_set, REGNO (dest));
+      replace_reg (pdest, FIRST_STACK_REG);
+    }
+  else if (STACK_REG_P (src))
+    {
+      /* Save from a stack reg to MEM, or possibly integer reg.  Since
+	 only top of stack may be saved, emit an exchange first if
+	 needs be.  */
+
+      emit_swap_insn (insn, regstack, src);
+
+      note = find_regno_note (insn, REG_DEAD, REGNO (src));
+      if (note)
+	{
+	  replace_reg (&XEXP (note, 0), FIRST_STACK_REG);
+	  regstack->top--;
+	  CLEAR_HARD_REG_BIT (regstack->reg_set, REGNO (src));
+	}
+      else if ((GET_MODE (src) == XFmode || GET_MODE (src) == TFmode)
+	       && regstack->top < REG_STACK_SIZE - 1)
+	{
+	  /* A 387 cannot write an XFmode value to a MEM without
+	     clobbering the source reg.  The output code can handle
+	     this by reading back the value from the MEM.
+	     But it is more efficient to use a temp register if one is
+	     available.  Push the source value here if the register
+	     stack is not full, and then write the value to memory via
+	     a pop.  */
+	  rtx push_rtx, push_insn;
+	  rtx top_stack_reg = FP_MODE_REG (FIRST_STACK_REG, GET_MODE (src));
+
+	  if (GET_MODE (src) == TFmode)
+	    push_rtx = gen_movtf (top_stack_reg, top_stack_reg);
+	  else
+	    push_rtx = gen_movxf (top_stack_reg, top_stack_reg);
+	  push_insn = emit_insn_before (push_rtx, insn);
+	  REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_DEAD, top_stack_reg,
+						REG_NOTES (insn));
+	}
+
+      replace_reg (psrc, FIRST_STACK_REG);
+    }
+  else if (STACK_REG_P (dest))
+    {
+      /* Load from MEM, or possibly integer REG or constant, into the
+	 stack regs.  The actual target is always the top of the
+	 stack. The stack mapping is changed to reflect that DEST is
+	 now at top of stack.  */
+
+      /* The destination ought to be dead */
+      if (get_hard_regnum (regstack, dest) >= FIRST_STACK_REG)
+	abort ();
+
+      if (regstack->top >= REG_STACK_SIZE)
+	abort ();
+
+      regstack->reg[++regstack->top] = REGNO (dest);
+      SET_HARD_REG_BIT (regstack->reg_set, REGNO (dest));
+      replace_reg (pdest, FIRST_STACK_REG);
+    }
+  else
+    abort ();
+}

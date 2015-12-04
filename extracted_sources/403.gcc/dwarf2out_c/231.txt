@@ -1,0 +1,40 @@
+static void
+gen_tagged_type_instantiation_die (type, context_die)
+     tree type;
+     dw_die_ref context_die;
+{
+  if (type == NULL_TREE || type == error_mark_node)
+    return;
+
+  /* We are going to output a DIE to represent the unqualified version of
+     this type (i.e. without any const or volatile qualifiers) so make sure
+     that we have the main variant (i.e. the unqualified version) of this
+     type now.  */
+  if (type != type_main_variant (type))
+    abort ();
+
+  /* Do not check TREE_ASM_WRITTEN (type) as it may not be set if this is
+     an instance of an unresolved type.  */
+
+  switch (TREE_CODE (type))
+    {
+    case ERROR_MARK:
+      break;
+
+    case ENUMERAL_TYPE:
+      gen_inlined_enumeration_type_die (type, context_die);
+      break;
+
+    case RECORD_TYPE:
+      gen_inlined_structure_type_die (type, context_die);
+      break;
+
+    case UNION_TYPE:
+    case QUAL_UNION_TYPE:
+      gen_inlined_union_type_die (type, context_die);
+      break;
+
+    default:
+      abort ();
+    }
+}

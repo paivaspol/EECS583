@@ -1,0 +1,13 @@
+void
+save_stack_pointer ()
+{
+  struct nesting *thisblock = block_stack;
+
+  if (thisblock->data.block.stack_level == 0)
+    {
+      emit_stack_save (thisblock->next ? SAVE_BLOCK : SAVE_FUNCTION,
+		       &thisblock->data.block.stack_level,
+		       thisblock->data.block.first_insn);
+      stack_block_stack = thisblock;
+    }
+}

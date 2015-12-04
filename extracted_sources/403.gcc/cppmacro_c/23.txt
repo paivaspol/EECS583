@@ -1,0 +1,69 @@
+static int
+parse_params (pfile, macro)
+     cpp_reader *pfile;
+     cpp_macro *macro;
+{
+  unsigned int prev_ident = 0;
+
+  for (;;)
+    {
+      const cpp_token *token = _cpp_lex_token (pfile);
+
+      switch (token->type)
+	{
+	default:
+	  cpp_error (pfile, "\"%s\" may not appear in macro parameter list",
+		     cpp_token_as_text (pfile, token));
+	  return 0;
+
+	case CPP_NAME:
+	  if (prev_ident)
+	    {
+	      cpp_error (pfile, "macro parameters must be comma-separated");
+	      return 0;
+	    }
+	  prev_ident = 1;
+
+	  if (save_parameter (pfile, macro, token->val.node))
+	    return 0;
+	  continue;
+
+	case CPP_CLOSE_PAREN:
+	  if (prev_ident || macro->paramc == 0)
+	    return 1;
+
+	  /* Fall through to pick up the error.  */
+	case CPP_COMMA:
+	  if (!prev_ident)
+	    {
+	      cpp_error (pfile, "parameter name missing");
+	      return 0;
+	    }
+	  prev_ident = 0;
+	  continue;
+
+	case CPP_ELLIPSIS:
+	  macro->variadic = 1;
+	  if (!prev_ident)
+	    {
+	      save_parameter (pfile, macro, pfile->spec_nodes.n__VA_ARGS__);
+	      pfile->state.va_args_ok = 1;
+	      if (! CPP_OPTION (pfile, c99) && CPP_OPTION (pfile, pedantic))
+		cpp_pedwarn (pfile,
+		     "anonymous variadic macros were introduced in C99");
+	    }
+	  else if (CPP_OPTION (pfile, pedantic))
+	    cpp_pedwarn (pfile, "ISO C does not permit named variadic macros");
+
+	  /* We're at the end, and just expect a closing parenthesis.  */
+	  token = _cpp_lex_token (pfile);
+	  if (token->type == CPP_CLOSE_PAREN)
+	    return 1;
+	  /* Fall through.  */
+
+	case CPP_EOF:
+	  cpp_error (pfile, "missing ')' in macro parameter list");
+	  return 0;
+	}
+    }
+}

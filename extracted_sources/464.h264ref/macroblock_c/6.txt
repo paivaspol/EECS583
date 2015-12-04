@@ -1,0 +1,38 @@
+void
+OneComponentLumaPrediction4x4 (int*   mpred,      //  --> array of prediction values (row by row)
+                               int    pic_pix_x,  // <--  absolute horizontal coordinate of 4x4 block
+                               int    pic_pix_y,  // <--  absolute vertical   coordinate of 4x4 block
+                               short* mv,         // <--  motion vector
+                               short  ref,        // <--  reference frame 
+                               StorablePicture **list)
+{
+  pel_t** ref_pic;
+  int     pix_add = 4;
+  int     j0      = (pic_pix_y << 2) + mv[1], j1=j0+pix_add, j2=j1+pix_add, j3=j2+pix_add;
+  int     i0      = (pic_pix_x << 2) + mv[0], i1=i0+pix_add, i2=i1+pix_add, i3=i2+pix_add;
+  
+  pel_t (*get_pel) (pel_t**, int, int, int, int) = UMVPelY_14;
+
+  int img_width =list[ref]->size_x;
+  int img_height=list[ref]->size_y;
+
+  ref_pic   = list[ref]->imgY_ups;
+  
+  *mpred++ = get_pel (ref_pic, j0, i0, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j0, i1, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j0, i2, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j0, i3, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j1, i0, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j1, i1, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j1, i2, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j1, i3, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j2, i0, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j2, i1, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j2, i2, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j2, i3, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j3, i0, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j3, i1, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j3, i2, img_height, img_width);
+  *mpred++ = get_pel (ref_pic, j3, i3, img_height, img_width);
+
+}

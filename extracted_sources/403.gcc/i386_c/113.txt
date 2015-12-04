@@ -1,0 +1,46 @@
+int
+ix86_match_ccmode (insn, req_mode)
+     rtx insn;
+     enum machine_mode req_mode;
+{
+  rtx set;
+  enum machine_mode set_mode;
+
+  set = PATTERN (insn);
+  if (GET_CODE (set) == PARALLEL)
+    set = XVECEXP (set, 0, 0);
+  if (GET_CODE (set) != SET)
+    abort ();
+  if (GET_CODE (SET_SRC (set)) != COMPARE)
+    abort ();
+
+  set_mode = GET_MODE (SET_DEST (set));
+  switch (set_mode)
+    {
+    case CCNOmode:
+      if (req_mode != CCNOmode
+	  && (req_mode != CCmode
+	      || XEXP (SET_SRC (set), 1) != const0_rtx))
+	return 0;
+      break;
+    case CCmode:
+      if (req_mode == CCGCmode)
+	return 0;
+      /* FALLTHRU */
+    case CCGCmode:
+      if (req_mode == CCGOCmode || req_mode == CCNOmode)
+	return 0;
+      /* FALLTHRU */
+    case CCGOCmode:
+      if (req_mode == CCZmode)
+	return 0;
+      /* FALLTHRU */
+    case CCZmode:
+      break;
+
+    default:
+      abort ();
+    }
+
+  return (GET_MODE (SET_SRC (set)) == set_mode);
+}

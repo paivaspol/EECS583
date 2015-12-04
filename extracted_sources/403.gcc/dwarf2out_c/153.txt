@@ -1,0 +1,202 @@
+static void
+output_file_names ()
+{
+  struct file_info *files;
+  struct dir_info *dirs;
+  int *saved;
+  int *savehere;
+  int *backmap;
+  int ndirs;
+  int idx_offset;
+  int i;
+  int idx;
+
+  /* Allocate the various arrays we need.  */
+  files = (struct file_info *) alloca (file_table.in_use
+				       * sizeof (struct file_info));
+  dirs = (struct dir_info *) alloca (file_table.in_use
+				     * sizeof (struct dir_info));
+
+  /* Sort the file names.  */
+  for (i = 1; i < (int) file_table.in_use; i++)
+    {
+      char *f;
+
+      /* Skip all leading "./".  */
+      f = file_table.table[i];
+      while (f[0] == '.' && f[1] == '/')
+	f += 2;
+
+      /* Create a new array entry.  */
+      files[i].path = f;
+      files[i].length = strlen (f);
+      files[i].file_idx = i;
+
+      /* Search for the file name part.  */
+      f = strrchr (f, '/');
+      files[i].fname = f == NULL ? files[i].path : f + 1;
+    }
+
+  specqsort (files + 1, file_table.in_use - 1, sizeof (files[0]), file_info_cmp);
+/* MJP Global replacement of qsort with specqsort */
+
+  /* Find all the different directories used.  */
+  dirs[0].path = files[1].path;
+  dirs[0].length = files[1].fname - files[1].path;
+  dirs[0].prefix = -1;
+  dirs[0].count = 1;
+  dirs[0].dir_idx = 0;
+  dirs[0].used = 0;
+  files[1].dir_idx = 0;
+  ndirs = 1;
+
+  for (i = 2; i < (int) file_table.in_use; i++)
+    if (files[i].fname - files[i].path == dirs[ndirs - 1].length
+	&& memcmp (dirs[ndirs - 1].path, files[i].path,
+		   dirs[ndirs - 1].length) == 0)
+      {
+	/* Same directory as last entry.  */
+	files[i].dir_idx = ndirs - 1;
+	++dirs[ndirs - 1].count;
+      }
+    else
+      {
+	int j;
+
+	/* This is a new directory.  */
+	dirs[ndirs].path = files[i].path;
+	dirs[ndirs].length = files[i].fname - files[i].path;
+	dirs[ndirs].count = 1;
+	dirs[ndirs].dir_idx = ndirs;
+	dirs[ndirs].used = 0;
+	files[i].dir_idx = ndirs;
+
+	/* Search for a prefix.  */
+	dirs[ndirs].prefix = -1;
+	for (j = 0; j < ndirs; j++)
+	  if (dirs[j].length < dirs[ndirs].length
+	      && dirs[j].length > 1
+	      && (dirs[ndirs].prefix == -1
+		  || dirs[j].length > dirs[dirs[ndirs].prefix].length)
+	      && memcmp (dirs[j].path, dirs[ndirs].path, dirs[j].length) == 0)
+	    dirs[ndirs].prefix = j;
+
+	++ndirs;
+      }
+
+  /* Now to the actual work.  We have to find a subset of the directories which
+     allow expressing the file name using references to the directory table
+     with the least amount of characters.  We do not do an exhaustive search
+     where we would have to check out every combination of every single
+     possible prefix.  Instead we use a heuristic which provides nearly optimal
+     results in most cases and never is much off.  */
+  saved = (int *) alloca (ndirs * sizeof (int));
+  savehere = (int *) alloca (ndirs * sizeof (int));
+
+  memset (saved, '\0', ndirs * sizeof (saved[0]));
+  for (i = 0; i < ndirs; i++)
+    {
+      int j;
+      int total;
+
+      /* We can always save some space for the current directory.  But this
+	 does not mean it will be enough to justify adding the directory.  */
+      savehere[i] = dirs[i].length;
+      total = (savehere[i] - saved[i]) * dirs[i].count;
+
+      for (j = i + 1; j < ndirs; j++)
+	{
+	  savehere[j] = 0;
+	  if (saved[j] < dirs[i].length)
+	    {
+	      /* Determine whether the dirs[i] path is a prefix of the
+		 dirs[j] path.  */
+	      int k;
+
+	      k = dirs[j].prefix;
+	      while (k != -1 && k != i)
+		k = dirs[k].prefix;
+
+	      if (k == i)
+		{
+		  /* Yes it is.  We can possibly safe some memory but
+		     writing the filenames in dirs[j] relative to
+		     dirs[i].  */
+		  savehere[j] = dirs[i].length;
+		  total += (savehere[j] - saved[j]) * dirs[j].count;
+		}
+	    }
+	}
+
+      /* Check whether we can safe enough to justify adding the dirs[i]
+	 directory.  */
+      if (total > dirs[i].length + 1)
+	{
+	  /* It's worthwhile adding.  */
+          for (j = i; j < ndirs; j++)
+	    if (savehere[j] > 0)
+	      {
+		/* Remember how much we saved for this directory so far.  */
+		saved[j] = savehere[j];
+
+		/* Remember the prefix directory.  */
+		dirs[j].dir_idx = i;
+	      }
+	}
+    }
+
+  /* We have to emit them in the order they appear in the file_table array
+     since the index is used in the debug info generation.  To do this
+     efficiently we generate a back-mapping of the indices first.  */
+  backmap = (int *) alloca (file_table.in_use * sizeof (int));
+  for (i = 1; i < (int) file_table.in_use; i++)
+    {
+      backmap[files[i].file_idx] = i;
+
+      /* Mark this directory as used.  */
+      dirs[dirs[files[i].dir_idx].dir_idx].used = 1;
+    }
+
+  /* That was it.  We are ready to emit the information.  First emit the
+     directory name table.  We have to make sure the first actually emitted
+     directory name has index one; zero is reserved for the current working
+     directory.  Make sure we do not confuse these indices with the one for the
+     constructed table (even though most of the time they are identical).  */
+  idx = 1;
+  idx_offset = dirs[0].length > 0 ? 1 : 0;
+  for (i = 1 - idx_offset; i < ndirs; i++)
+    if (dirs[i].used != 0)
+      {
+	dirs[i].used = idx++;
+	dw2_asm_output_nstring (dirs[i].path, dirs[i].length - 1,
+				"Directory Entry: 0x%x", dirs[i].used);
+      }
+
+  dw2_asm_output_data (1, 0, "End directory table");
+
+  /* Correct the index for the current working directory entry if it
+     exists.  */
+  if (idx_offset == 0)
+    dirs[0].used = 0;
+
+  /* Now write all the file names.  */
+  for (i = 1; i < (int) file_table.in_use; i++)
+    {
+      int file_idx = backmap[i];
+      int dir_idx = dirs[files[file_idx].dir_idx].dir_idx;
+
+      dw2_asm_output_nstring (files[file_idx].path + dirs[dir_idx].length, -1,
+			      "File Entry: 0x%x", i);
+
+      /* Include directory index.  */
+      dw2_asm_output_data_uleb128 (dirs[dir_idx].used, NULL);
+
+      /* Modification time.  */
+      dw2_asm_output_data_uleb128 (0, NULL);
+
+      /* File length in bytes.  */
+      dw2_asm_output_data_uleb128 (0, NULL);
+    }
+
+  dw2_asm_output_data (1, 0, "End file name table");
+}

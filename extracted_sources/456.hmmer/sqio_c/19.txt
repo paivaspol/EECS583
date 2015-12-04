@@ -1,0 +1,23 @@
+static void 
+readStrider(struct ReadSeqVars *V)
+{ 
+  char *nm;
+  
+  while ((!feof(V->f)) && (*V->buf == ';')) 
+    {
+      if (strncmp(V->buf,"; DNA sequence", 14) == 0)
+	{
+	  if ((nm = strtok(V->buf+16, ",\n\t ")) != NULL)
+	    SetSeqinfoString(V->sqinfo, nm, SQINFO_NAME);
+	}
+      SeqfileGetLine(V);
+    }
+
+  if (! feof(V->f))
+    readLoop(1, endStrider, V);
+
+  /* load next line
+   */
+  while ((!feof(V->f)) && (*V->buf != ';')) 
+    SeqfileGetLine(V);
+}

@@ -1,0 +1,19 @@
+static void
+insert_phi_nodes (idfs, evals, nregs)
+     sbitmap *idfs;
+     sbitmap *evals ATTRIBUTE_UNUSED;
+     int nregs;
+{
+  int reg;
+
+  for (reg = 0; reg < nregs; ++reg)
+    if (CONVERT_REGISTER_TO_SSA_P (reg))
+    {
+      int b;
+      EXECUTE_IF_SET_IN_SBITMAP (idfs[reg], 0, b,
+	{
+	  if (REGNO_REG_SET_P (BASIC_BLOCK (b)->global_live_at_start, reg))
+	    insert_phi_node (reg, b);
+	});
+    }
+}

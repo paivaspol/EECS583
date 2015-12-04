@@ -1,0 +1,29 @@
+void
+Perl_sv_setiv(pTHX_ register SV *sv, IV i)
+{
+    SV_CHECK_THINKFIRST(sv);
+    switch (SvTYPE(sv)) {
+    case SVt_NULL:
+	sv_upgrade(sv, SVt_IV);
+	break;
+    case SVt_NV:
+	sv_upgrade(sv, SVt_PVNV);
+	break;
+    case SVt_RV:
+    case SVt_PV:
+	sv_upgrade(sv, SVt_PVIV);
+	break;
+
+    case SVt_PVGV:
+    case SVt_PVAV:
+    case SVt_PVHV:
+    case SVt_PVCV:
+    case SVt_PVFM:
+    case SVt_PVIO:
+	Perl_croak(aTHX_ "Can't coerce %s to integer in %s", sv_reftype(sv,0),
+		   OP_DESC(PL_op));
+    }
+    (void)SvIOK_only(sv);			/* validate number */
+    SvIVX(sv) = i;
+    SvTAINT(sv);
+}

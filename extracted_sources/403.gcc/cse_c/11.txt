@@ -1,0 +1,28 @@
+static void
+delete_reg_equiv (reg)
+     unsigned int reg;
+{
+  struct qty_table_elem *ent;
+  int q = REG_QTY (reg);
+  int p, n;
+
+  /* If invalid, do nothing.  */
+  if (q == (int) reg)
+    return;
+
+  ent = &qty_table[q];
+
+  p = reg_eqv_table[reg].prev;
+  n = reg_eqv_table[reg].next;
+
+  if (n != -1)
+    reg_eqv_table[n].prev = p;
+  else
+    ent->last_reg = p;
+  if (p != -1)
+    reg_eqv_table[p].next = n;
+  else
+    ent->first_reg = n;
+
+  REG_QTY (reg) = reg;
+}

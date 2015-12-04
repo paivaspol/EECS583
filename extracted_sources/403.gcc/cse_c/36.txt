@@ -1,0 +1,1029 @@
+static rtx
+fold_rtx (x, insn)
+     rtx x;
+     rtx insn;
+{
+  enum rtx_code code;
+  enum machine_mode mode;
+  const char *fmt;
+  int i;
+  rtx new = 0;
+  int copied = 0;
+  int must_swap = 0;
+
+  /* Folded equivalents of first two operands of X.  */
+  rtx folded_arg0;
+  rtx folded_arg1;
+
+  /* Constant equivalents of first three operands of X;
+     0 when no such equivalent is known.  */
+  rtx const_arg0;
+  rtx const_arg1;
+  rtx const_arg2;
+
+  /* The mode of the first operand of X.  We need this for sign and zero
+     extends.  */
+  enum machine_mode mode_arg0;
+
+  if (x == 0)
+    return x;
+
+  mode = GET_MODE (x);
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case CONST:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case REG:
+      /* No use simplifying an EXPR_LIST
+	 since they are used only for lists of args
+	 in a function call's REG_EQUAL note.  */
+    case EXPR_LIST:
+      /* Changing anything inside an ADDRESSOF is incorrect; we don't
+	 want to (e.g.,) make (addressof (const_int 0)) just because
+	 the location is known to be zero.  */
+    case ADDRESSOF:
+      return x;
+
+#ifdef HAVE_cc0
+    case CC0:
+      return prev_insn_cc0;
+#endif
+
+    case PC:
+      /* If the next insn is a CODE_LABEL followed by a jump table,
+	 PC's value is a LABEL_REF pointing to that label.  That
+	 lets us fold switch statements on the VAX.  */
+      if (insn && GET_CODE (insn) == JUMP_INSN)
+	{
+	  rtx next = next_nonnote_insn (insn);
+
+	  if (next && GET_CODE (next) == CODE_LABEL
+	      && NEXT_INSN (next) != 0
+	      && GET_CODE (NEXT_INSN (next)) == JUMP_INSN
+	      && (GET_CODE (PATTERN (NEXT_INSN (next))) == ADDR_VEC
+		  || GET_CODE (PATTERN (NEXT_INSN (next))) == ADDR_DIFF_VEC))
+	    return gen_rtx_LABEL_REF (Pmode, next);
+	}
+      break;
+
+    case SUBREG:
+      /* See if we previously assigned a constant value to this SUBREG.  */
+      if ((new = lookup_as_function (x, CONST_INT)) != 0
+	  || (new = lookup_as_function (x, CONST_DOUBLE)) != 0)
+	return new;
+
+      /* If this is a paradoxical SUBREG, we have no idea what value the
+	 extra bits would have.  However, if the operand is equivalent
+	 to a SUBREG whose operand is the same as our mode, and all the
+	 modes are within a word, we can just use the inner operand
+	 because these SUBREGs just say how to treat the register.
+
+	 Similarly if we find an integer constant.  */
+
+      if (GET_MODE_SIZE (mode) > GET_MODE_SIZE (GET_MODE (SUBREG_REG (x))))
+	{
+	  enum machine_mode imode = GET_MODE (SUBREG_REG (x));
+	  struct table_elt *elt;
+
+	  if (GET_MODE_SIZE (mode) <= UNITS_PER_WORD
+	      && GET_MODE_SIZE (imode) <= UNITS_PER_WORD
+	      && (elt = lookup (SUBREG_REG (x), HASH (SUBREG_REG (x), imode),
+				imode)) != 0)
+	    for (elt = elt->first_same_value; elt; elt = elt->next_same_value)
+	      {
+		if (CONSTANT_P (elt->exp)
+		    && GET_MODE (elt->exp) == VOIDmode)
+		  return elt->exp;
+
+		if (GET_CODE (elt->exp) == SUBREG
+		    && GET_MODE (SUBREG_REG (elt->exp)) == mode
+		    && exp_equiv_p (elt->exp, elt->exp, 1, 0))
+		  return copy_rtx (SUBREG_REG (elt->exp));
+	      }
+
+	  return x;
+	}
+
+      /* Fold SUBREG_REG.  If it changed, see if we can simplify the SUBREG.
+	 We might be able to if the SUBREG is extracting a single word in an
+	 integral mode or extracting the low part.  */
+
+      folded_arg0 = fold_rtx (SUBREG_REG (x), insn);
+      const_arg0 = equiv_constant (folded_arg0);
+      if (const_arg0)
+	folded_arg0 = const_arg0;
+
+      if (folded_arg0 != SUBREG_REG (x))
+	{
+	  new = simplify_subreg (mode, folded_arg0,
+				 GET_MODE (SUBREG_REG (x)), SUBREG_BYTE (x));
+	  if (new)
+	    return new;
+	}
+
+      /* If this is a narrowing SUBREG and our operand is a REG, see if
+	 we can find an equivalence for REG that is an arithmetic operation
+	 in a wider mode where both operands are paradoxical SUBREGs
+	 from objects of our result mode.  In that case, we couldn't report
+	 an equivalent value for that operation, since we don't know what the
+	 extra bits will be.  But we can find an equivalence for this SUBREG
+	 by folding that operation is the narrow mode.  This allows us to
+	 fold arithmetic in narrow modes when the machine only supports
+	 word-sized arithmetic.
+
+	 Also look for a case where we have a SUBREG whose operand is the
+	 same as our result.  If both modes are smaller than a word, we
+	 are simply interpreting a register in different modes and we
+	 can use the inner value.  */
+
+      if (GET_CODE (folded_arg0) == REG
+	  && GET_MODE_SIZE (mode) < GET_MODE_SIZE (GET_MODE (folded_arg0))
+	  && subreg_lowpart_p (x))
+	{
+	  struct table_elt *elt;
+
+	  /* We can use HASH here since we know that canon_hash won't be
+	     called.  */
+	  elt = lookup (folded_arg0,
+			HASH (folded_arg0, GET_MODE (folded_arg0)),
+			GET_MODE (folded_arg0));
+
+	  if (elt)
+	    elt = elt->first_same_value;
+
+	  for (; elt; elt = elt->next_same_value)
+	    {
+	      enum rtx_code eltcode = GET_CODE (elt->exp);
+
+	      /* Just check for unary and binary operations.  */
+	      if (GET_RTX_CLASS (GET_CODE (elt->exp)) == '1'
+		  && GET_CODE (elt->exp) != SIGN_EXTEND
+		  && GET_CODE (elt->exp) != ZERO_EXTEND
+		  && GET_CODE (XEXP (elt->exp, 0)) == SUBREG
+		  && GET_MODE (SUBREG_REG (XEXP (elt->exp, 0))) == mode
+		  && (GET_MODE_CLASS (mode)
+		      == GET_MODE_CLASS (GET_MODE (XEXP (elt->exp, 0)))))
+		{
+		  rtx op0 = SUBREG_REG (XEXP (elt->exp, 0));
+
+		  if (GET_CODE (op0) != REG && ! CONSTANT_P (op0))
+		    op0 = fold_rtx (op0, NULL_RTX);
+
+		  op0 = equiv_constant (op0);
+		  if (op0)
+		    new = simplify_unary_operation (GET_CODE (elt->exp), mode,
+						    op0, mode);
+		}
+	      else if ((GET_RTX_CLASS (GET_CODE (elt->exp)) == '2'
+			|| GET_RTX_CLASS (GET_CODE (elt->exp)) == 'c')
+		       && eltcode != DIV && eltcode != MOD
+		       && eltcode != UDIV && eltcode != UMOD
+		       && eltcode != ASHIFTRT && eltcode != LSHIFTRT
+		       && eltcode != ROTATE && eltcode != ROTATERT
+		       && ((GET_CODE (XEXP (elt->exp, 0)) == SUBREG
+			    && (GET_MODE (SUBREG_REG (XEXP (elt->exp, 0)))
+				== mode))
+			   || CONSTANT_P (XEXP (elt->exp, 0)))
+		       && ((GET_CODE (XEXP (elt->exp, 1)) == SUBREG
+			    && (GET_MODE (SUBREG_REG (XEXP (elt->exp, 1)))
+				== mode))
+			   || CONSTANT_P (XEXP (elt->exp, 1))))
+		{
+		  rtx op0 = gen_lowpart_common (mode, XEXP (elt->exp, 0));
+		  rtx op1 = gen_lowpart_common (mode, XEXP (elt->exp, 1));
+
+		  if (op0 && GET_CODE (op0) != REG && ! CONSTANT_P (op0))
+		    op0 = fold_rtx (op0, NULL_RTX);
+
+		  if (op0)
+		    op0 = equiv_constant (op0);
+
+		  if (op1 && GET_CODE (op1) != REG && ! CONSTANT_P (op1))
+		    op1 = fold_rtx (op1, NULL_RTX);
+
+		  if (op1)
+		    op1 = equiv_constant (op1);
+
+		  /* If we are looking for the low SImode part of
+		     (ashift:DI c (const_int 32)), it doesn't work
+		     to compute that in SImode, because a 32-bit shift
+		     in SImode is unpredictable.  We know the value is 0.  */
+		  if (op0 && op1
+		      && GET_CODE (elt->exp) == ASHIFT
+		      && GET_CODE (op1) == CONST_INT
+		      && INTVAL (op1) >= GET_MODE_BITSIZE (mode))
+		    {
+		      if (INTVAL (op1) < GET_MODE_BITSIZE (GET_MODE (elt->exp)))
+
+			/* If the count fits in the inner mode's width,
+			   but exceeds the outer mode's width,
+			   the value will get truncated to 0
+			   by the subreg.  */
+			new = const0_rtx;
+		      else
+			/* If the count exceeds even the inner mode's width,
+			   don't fold this expression.  */
+			new = 0;
+		    }
+		  else if (op0 && op1)
+		    new = simplify_binary_operation (GET_CODE (elt->exp), mode,
+						     op0, op1);
+		}
+
+	      else if (GET_CODE (elt->exp) == SUBREG
+		       && GET_MODE (SUBREG_REG (elt->exp)) == mode
+		       && (GET_MODE_SIZE (GET_MODE (folded_arg0))
+			   <= UNITS_PER_WORD)
+		       && exp_equiv_p (elt->exp, elt->exp, 1, 0))
+		new = copy_rtx (SUBREG_REG (elt->exp));
+
+	      if (new)
+		return new;
+	    }
+	}
+
+      return x;
+
+    case NOT:
+    case NEG:
+      /* If we have (NOT Y), see if Y is known to be (NOT Z).
+	 If so, (NOT Y) simplifies to Z.  Similarly for NEG.  */
+      new = lookup_as_function (XEXP (x, 0), code);
+      if (new)
+	return fold_rtx (copy_rtx (XEXP (new, 0)), insn);
+      break;
+
+    case MEM:
+      /* If we are not actually processing an insn, don't try to find the
+	 best address.  Not only don't we care, but we could modify the
+	 MEM in an invalid way since we have no insn to validate against.  */
+      if (insn != 0)
+	find_best_addr (insn, &XEXP (x, 0), GET_MODE (x));
+
+      {
+	/* Even if we don't fold in the insn itself,
+	   we can safely do so here, in hopes of getting a constant.  */
+	rtx addr = fold_rtx (XEXP (x, 0), NULL_RTX);
+	rtx base = 0;
+	HOST_WIDE_INT offset = 0;
+
+	if (GET_CODE (addr) == REG
+	    && REGNO_QTY_VALID_P (REGNO (addr)))
+	  {
+	    int addr_q = REG_QTY (REGNO (addr));
+	    struct qty_table_elem *addr_ent = &qty_table[addr_q];
+
+	    if (GET_MODE (addr) == addr_ent->mode
+		&& addr_ent->const_rtx != NULL_RTX)
+	      addr = addr_ent->const_rtx;
+	  }
+
+	/* If address is constant, split it into a base and integer offset.  */
+	if (GET_CODE (addr) == SYMBOL_REF || GET_CODE (addr) == LABEL_REF)
+	  base = addr;
+	else if (GET_CODE (addr) == CONST && GET_CODE (XEXP (addr, 0)) == PLUS
+		 && GET_CODE (XEXP (XEXP (addr, 0), 1)) == CONST_INT)
+	  {
+	    base = XEXP (XEXP (addr, 0), 0);
+	    offset = INTVAL (XEXP (XEXP (addr, 0), 1));
+	  }
+	else if (GET_CODE (addr) == LO_SUM
+		 && GET_CODE (XEXP (addr, 1)) == SYMBOL_REF)
+	  base = XEXP (addr, 1);
+	else if (GET_CODE (addr) == ADDRESSOF)
+	  return change_address (x, VOIDmode, addr);
+
+	/* If this is a constant pool reference, we can fold it into its
+	   constant to allow better value tracking.  */
+	if (base && GET_CODE (base) == SYMBOL_REF
+	    && CONSTANT_POOL_ADDRESS_P (base))
+	  {
+	    rtx constant = get_pool_constant (base);
+	    enum machine_mode const_mode = get_pool_mode (base);
+	    rtx new;
+
+	    if (CONSTANT_P (constant) && GET_CODE (constant) != CONST_INT)
+	      constant_pool_entries_cost = COST (constant);
+
+	    /* If we are loading the full constant, we have an equivalence.  */
+	    if (offset == 0 && mode == const_mode)
+	      return constant;
+
+	    /* If this actually isn't a constant (weird!), we can't do
+	       anything.  Otherwise, handle the two most common cases:
+	       extracting a word from a multi-word constant, and extracting
+	       the low-order bits.  Other cases don't seem common enough to
+	       worry about.  */
+	    if (! CONSTANT_P (constant))
+	      return x;
+
+	    if (GET_MODE_CLASS (mode) == MODE_INT
+		&& GET_MODE_SIZE (mode) == UNITS_PER_WORD
+		&& offset % UNITS_PER_WORD == 0
+		&& (new = operand_subword (constant,
+					   offset / UNITS_PER_WORD,
+					   0, const_mode)) != 0)
+	      return new;
+
+	    if (((BYTES_BIG_ENDIAN
+		  && offset == GET_MODE_SIZE (GET_MODE (constant)) - 1)
+		 || (! BYTES_BIG_ENDIAN && offset == 0))
+		&& (new = gen_lowpart_if_possible (mode, constant)) != 0)
+	      return new;
+	  }
+
+	/* If this is a reference to a label at a known position in a jump
+	   table, we also know its value.  */
+	if (base && GET_CODE (base) == LABEL_REF)
+	  {
+	    rtx label = XEXP (base, 0);
+	    rtx table_insn = NEXT_INSN (label);
+
+	    if (table_insn && GET_CODE (table_insn) == JUMP_INSN
+		&& GET_CODE (PATTERN (table_insn)) == ADDR_VEC)
+	      {
+		rtx table = PATTERN (table_insn);
+
+		if (offset >= 0
+		    && (offset / GET_MODE_SIZE (GET_MODE (table))
+			< XVECLEN (table, 0)))
+		  return XVECEXP (table, 0,
+				  offset / GET_MODE_SIZE (GET_MODE (table)));
+	      }
+	    if (table_insn && GET_CODE (table_insn) == JUMP_INSN
+		&& GET_CODE (PATTERN (table_insn)) == ADDR_DIFF_VEC)
+	      {
+		rtx table = PATTERN (table_insn);
+
+		if (offset >= 0
+		    && (offset / GET_MODE_SIZE (GET_MODE (table))
+			< XVECLEN (table, 1)))
+		  {
+		    offset /= GET_MODE_SIZE (GET_MODE (table));
+		    new = gen_rtx_MINUS (Pmode, XVECEXP (table, 1, offset),
+					 XEXP (table, 0));
+
+		    if (GET_MODE (table) != Pmode)
+		      new = gen_rtx_TRUNCATE (GET_MODE (table), new);
+
+		    /* Indicate this is a constant.  This isn't a
+		       valid form of CONST, but it will only be used
+		       to fold the next insns and then discarded, so
+		       it should be safe.
+
+		       Note this expression must be explicitly discarded,
+		       by cse_insn, else it may end up in a REG_EQUAL note
+		       and "escape" to cause problems elsewhere.  */
+		    return gen_rtx_CONST (GET_MODE (new), new);
+		  }
+	      }
+	  }
+
+	return x;
+      }
+
+#ifdef NO_FUNCTION_CSE
+    case CALL:
+      if (CONSTANT_P (XEXP (XEXP (x, 0), 0)))
+	return x;
+      break;
+#endif
+
+    case ASM_OPERANDS:
+      for (i = ASM_OPERANDS_INPUT_LENGTH (x) - 1; i >= 0; i--)
+	validate_change (insn, &ASM_OPERANDS_INPUT (x, i),
+			 fold_rtx (ASM_OPERANDS_INPUT (x, i), insn), 0);
+      break;
+
+    default:
+      break;
+    }
+
+  const_arg0 = 0;
+  const_arg1 = 0;
+  const_arg2 = 0;
+  mode_arg0 = VOIDmode;
+
+  /* Try folding our operands.
+     Then see which ones have constant values known.  */
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    if (fmt[i] == 'e')
+      {
+	rtx arg = XEXP (x, i);
+	rtx folded_arg = arg, const_arg = 0;
+	enum machine_mode mode_arg = GET_MODE (arg);
+	rtx cheap_arg, expensive_arg;
+	rtx replacements[2];
+	int j;
+
+	/* Most arguments are cheap, so handle them specially.  */
+	switch (GET_CODE (arg))
+	  {
+	  case REG:
+	    /* This is the same as calling equiv_constant; it is duplicated
+	       here for speed.  */
+	    if (REGNO_QTY_VALID_P (REGNO (arg)))
+	      {
+		int arg_q = REG_QTY (REGNO (arg));
+		struct qty_table_elem *arg_ent = &qty_table[arg_q];
+
+		if (arg_ent->const_rtx != NULL_RTX
+		    && GET_CODE (arg_ent->const_rtx) != REG
+		    && GET_CODE (arg_ent->const_rtx) != PLUS)
+		  const_arg
+		    = gen_lowpart_if_possible (GET_MODE (arg),
+					       arg_ent->const_rtx);
+	      }
+	    break;
+
+	  case CONST:
+	  case CONST_INT:
+	  case SYMBOL_REF:
+	  case LABEL_REF:
+	  case CONST_DOUBLE:
+	  case CONST_VECTOR:
+	    const_arg = arg;
+	    break;
+
+#ifdef HAVE_cc0
+	  case CC0:
+	    folded_arg = prev_insn_cc0;
+	    mode_arg = prev_insn_cc0_mode;
+	    const_arg = equiv_constant (folded_arg);
+	    break;
+#endif
+
+	  default:
+	    folded_arg = fold_rtx (arg, insn);
+	    const_arg = equiv_constant (folded_arg);
+	  }
+
+	/* For the first three operands, see if the operand
+	   is constant or equivalent to a constant.  */
+	switch (i)
+	  {
+	  case 0:
+	    folded_arg0 = folded_arg;
+	    const_arg0 = const_arg;
+	    mode_arg0 = mode_arg;
+	    break;
+	  case 1:
+	    folded_arg1 = folded_arg;
+	    const_arg1 = const_arg;
+	    break;
+	  case 2:
+	    const_arg2 = const_arg;
+	    break;
+	  }
+
+	/* Pick the least expensive of the folded argument and an
+	   equivalent constant argument.  */
+	if (const_arg == 0 || const_arg == folded_arg
+	    || COST_IN (const_arg, code) > COST_IN (folded_arg, code))
+	  cheap_arg = folded_arg, expensive_arg = const_arg;
+	else
+	  cheap_arg = const_arg, expensive_arg = folded_arg;
+
+	/* Try to replace the operand with the cheapest of the two
+	   possibilities.  If it doesn't work and this is either of the first
+	   two operands of a commutative operation, try swapping them.
+	   If THAT fails, try the more expensive, provided it is cheaper
+	   than what is already there.  */
+
+	if (cheap_arg == XEXP (x, i))
+	  continue;
+
+	if (insn == 0 && ! copied)
+	  {
+	    x = copy_rtx (x);
+	    copied = 1;
+	  }
+
+	/* Order the replacements from cheapest to most expensive.  */
+	replacements[0] = cheap_arg;
+	replacements[1] = expensive_arg;
+
+	for (j = 0; j < 2 && replacements[j];  j++)
+	  {
+	    int old_cost = COST_IN (XEXP (x, i), code);
+	    int new_cost = COST_IN (replacements[j], code);
+
+	    /* Stop if what existed before was cheaper.  Prefer constants
+	       in the case of a tie.  */
+	    if (new_cost > old_cost
+		|| (new_cost == old_cost && CONSTANT_P (XEXP (x, i))))
+	      break;
+
+	    if (validate_change (insn, &XEXP (x, i), replacements[j], 0))
+	      break;
+
+	    if (code == NE || code == EQ || GET_RTX_CLASS (code) == 'c'
+		|| code == LTGT || code == UNEQ || code == ORDERED
+		|| code == UNORDERED)
+	      {
+		validate_change (insn, &XEXP (x, i), XEXP (x, 1 - i), 1);
+		validate_change (insn, &XEXP (x, 1 - i), replacements[j], 1);
+
+		if (apply_change_group ())
+		  {
+		    /* Swap them back to be invalid so that this loop can
+		       continue and flag them to be swapped back later.  */
+		    rtx tem;
+
+		    tem = XEXP (x, 0); XEXP (x, 0) = XEXP (x, 1);
+				       XEXP (x, 1) = tem;
+		    must_swap = 1;
+		    break;
+		  }
+	      }
+	  }
+      }
+
+    else
+      {
+	if (fmt[i] == 'E')
+	  /* Don't try to fold inside of a vector of expressions.
+	     Doing nothing is harmless.  */
+	  {;}
+      }
+
+  /* If a commutative operation, place a constant integer as the second
+     operand unless the first operand is also a constant integer.  Otherwise,
+     place any constant second unless the first operand is also a constant.  */
+
+  if (code == EQ || code == NE || GET_RTX_CLASS (code) == 'c'
+      || code == LTGT || code == UNEQ || code == ORDERED
+      || code == UNORDERED)
+    {
+      if (must_swap || (const_arg0
+	  		&& (const_arg1 == 0
+	      		    || (GET_CODE (const_arg0) == CONST_INT
+			        && GET_CODE (const_arg1) != CONST_INT))))
+	{
+	  rtx tem = XEXP (x, 0);
+
+	  if (insn == 0 && ! copied)
+	    {
+	      x = copy_rtx (x);
+	      copied = 1;
+	    }
+
+	  validate_change (insn, &XEXP (x, 0), XEXP (x, 1), 1);
+	  validate_change (insn, &XEXP (x, 1), tem, 1);
+	  if (apply_change_group ())
+	    {
+	      tem = const_arg0, const_arg0 = const_arg1, const_arg1 = tem;
+	      tem = folded_arg0, folded_arg0 = folded_arg1, folded_arg1 = tem;
+	    }
+	}
+    }
+
+  /* If X is an arithmetic operation, see if we can simplify it.  */
+
+  switch (GET_RTX_CLASS (code))
+    {
+    case '1':
+      {
+	int is_const = 0;
+
+	/* We can't simplify extension ops unless we know the
+	   original mode.  */
+	if ((code == ZERO_EXTEND || code == SIGN_EXTEND)
+	    && mode_arg0 == VOIDmode)
+	  break;
+
+	/* If we had a CONST, strip it off and put it back later if we
+	   fold.  */
+	if (const_arg0 != 0 && GET_CODE (const_arg0) == CONST)
+	  is_const = 1, const_arg0 = XEXP (const_arg0, 0);
+
+	new = simplify_unary_operation (code, mode,
+					const_arg0 ? const_arg0 : folded_arg0,
+					mode_arg0);
+	if (new != 0 && is_const)
+	  new = gen_rtx_CONST (mode, new);
+      }
+      break;
+
+    case '<':
+      /* See what items are actually being compared and set FOLDED_ARG[01]
+	 to those values and CODE to the actual comparison code.  If any are
+	 constant, set CONST_ARG0 and CONST_ARG1 appropriately.  We needn't
+	 do anything if both operands are already known to be constant.  */
+
+      if (const_arg0 == 0 || const_arg1 == 0)
+	{
+	  struct table_elt *p0, *p1;
+	  rtx true_rtx = const_true_rtx, false_rtx = const0_rtx;
+	  enum machine_mode mode_arg1;
+
+#ifdef FLOAT_STORE_FLAG_VALUE
+	  if (GET_MODE_CLASS (mode) == MODE_FLOAT)
+	    {
+	      true_rtx = (CONST_DOUBLE_FROM_REAL_VALUE
+		      (FLOAT_STORE_FLAG_VALUE (mode), mode));
+	      false_rtx = CONST0_RTX (mode);
+	    }
+#endif
+
+	  code = find_comparison_args (code, &folded_arg0, &folded_arg1,
+				       &mode_arg0, &mode_arg1);
+	  const_arg0 = equiv_constant (folded_arg0);
+	  const_arg1 = equiv_constant (folded_arg1);
+
+	  /* If the mode is VOIDmode or a MODE_CC mode, we don't know
+	     what kinds of things are being compared, so we can't do
+	     anything with this comparison.  */
+
+	  if (mode_arg0 == VOIDmode || GET_MODE_CLASS (mode_arg0) == MODE_CC)
+	    break;
+
+	  /* If we do not now have two constants being compared, see
+	     if we can nevertheless deduce some things about the
+	     comparison.  */
+	  if (const_arg0 == 0 || const_arg1 == 0)
+	    {
+	      /* Is FOLDED_ARG0 frame-pointer plus a constant?  Or
+		 non-explicit constant?  These aren't zero, but we
+		 don't know their sign.  */
+	      if (const_arg1 == const0_rtx
+		  && (NONZERO_BASE_PLUS_P (folded_arg0)
+#if 0  /* Sad to say, on sysvr4, #pragma weak can make a symbol address
+	  come out as 0.  */
+		      || GET_CODE (folded_arg0) == SYMBOL_REF
+#endif
+		      || GET_CODE (folded_arg0) == LABEL_REF
+		      || GET_CODE (folded_arg0) == CONST))
+		{
+		  if (code == EQ)
+		    return false_rtx;
+		  else if (code == NE)
+		    return true_rtx;
+		}
+
+	      /* See if the two operands are the same.  */
+
+	      if (folded_arg0 == folded_arg1
+		  || (GET_CODE (folded_arg0) == REG
+		      && GET_CODE (folded_arg1) == REG
+		      && (REG_QTY (REGNO (folded_arg0))
+			  == REG_QTY (REGNO (folded_arg1))))
+		  || ((p0 = lookup (folded_arg0,
+				    (safe_hash (folded_arg0, mode_arg0)
+				     & HASH_MASK), mode_arg0))
+		      && (p1 = lookup (folded_arg1,
+				       (safe_hash (folded_arg1, mode_arg0)
+					& HASH_MASK), mode_arg0))
+		      && p0->first_same_value == p1->first_same_value))
+		{
+		   /* Sadly two equal NaNs are not equivalent.  */
+		   if (TARGET_FLOAT_FORMAT != IEEE_FLOAT_FORMAT
+		       || ! FLOAT_MODE_P (mode_arg0) 
+		       || flag_unsafe_math_optimizations)
+		      return ((code == EQ || code == LE || code == GE
+			       || code == LEU || code == GEU || code == UNEQ
+			       || code == UNLE || code == UNGE || code == ORDERED)
+			      ? true_rtx : false_rtx);
+		   /* Take care for the FP compares we can resolve.  */
+		   if (code == UNEQ || code == UNLE || code == UNGE)
+		     return true_rtx;
+		   if (code == LTGT || code == LT || code == GT)
+		     return false_rtx;
+		}
+
+	      /* If FOLDED_ARG0 is a register, see if the comparison we are
+		 doing now is either the same as we did before or the reverse
+		 (we only check the reverse if not floating-point).  */
+	      else if (GET_CODE (folded_arg0) == REG)
+		{
+		  int qty = REG_QTY (REGNO (folded_arg0));
+
+		  if (REGNO_QTY_VALID_P (REGNO (folded_arg0)))
+		    {
+		      struct qty_table_elem *ent = &qty_table[qty];
+
+		      if ((comparison_dominates_p (ent->comparison_code, code)
+			   || (! FLOAT_MODE_P (mode_arg0)
+			       && comparison_dominates_p (ent->comparison_code,
+						          reverse_condition (code))))
+			  && (rtx_equal_p (ent->comparison_const, folded_arg1)
+			      || (const_arg1
+				  && rtx_equal_p (ent->comparison_const,
+						  const_arg1))
+			      || (GET_CODE (folded_arg1) == REG
+				  && (REG_QTY (REGNO (folded_arg1)) == ent->comparison_qty))))
+			return (comparison_dominates_p (ent->comparison_code, code)
+				? true_rtx : false_rtx);
+		    }
+		}
+	    }
+	}
+
+      /* If we are comparing against zero, see if the first operand is
+	 equivalent to an IOR with a constant.  If so, we may be able to
+	 determine the result of this comparison.  */
+
+      if (const_arg1 == const0_rtx)
+	{
+	  rtx y = lookup_as_function (folded_arg0, IOR);
+	  rtx inner_const;
+
+	  if (y != 0
+	      && (inner_const = equiv_constant (XEXP (y, 1))) != 0
+	      && GET_CODE (inner_const) == CONST_INT
+	      && INTVAL (inner_const) != 0)
+	    {
+	      int sign_bitnum = GET_MODE_BITSIZE (mode_arg0) - 1;
+	      int has_sign = (HOST_BITS_PER_WIDE_INT >= sign_bitnum
+			      && (INTVAL (inner_const)
+				  & ((HOST_WIDE_INT) 1 << sign_bitnum)));
+	      rtx true_rtx = const_true_rtx, false_rtx = const0_rtx;
+
+#ifdef FLOAT_STORE_FLAG_VALUE
+	      if (GET_MODE_CLASS (mode) == MODE_FLOAT)
+		{
+		  true_rtx = (CONST_DOUBLE_FROM_REAL_VALUE
+			  (FLOAT_STORE_FLAG_VALUE (mode), mode));
+		  false_rtx = CONST0_RTX (mode);
+		}
+#endif
+
+	      switch (code)
+		{
+		case EQ:
+		  return false_rtx;
+		case NE:
+		  return true_rtx;
+		case LT:  case LE:
+		  if (has_sign)
+		    return true_rtx;
+		  break;
+		case GT:  case GE:
+		  if (has_sign)
+		    return false_rtx;
+		  break;
+		default:
+		  break;
+		}
+	    }
+	}
+
+      new = simplify_relational_operation (code,
+					   (mode_arg0 != VOIDmode
+					    ? mode_arg0
+					    : (GET_MODE (const_arg0
+							 ? const_arg0
+							 : folded_arg0)
+					       != VOIDmode)
+					    ? GET_MODE (const_arg0
+							? const_arg0
+							: folded_arg0)
+					    : GET_MODE (const_arg1
+							? const_arg1
+							: folded_arg1)),
+					   const_arg0 ? const_arg0 : folded_arg0,
+					   const_arg1 ? const_arg1 : folded_arg1);
+#ifdef FLOAT_STORE_FLAG_VALUE
+      if (new != 0 && GET_MODE_CLASS (mode) == MODE_FLOAT)
+	{
+	  if (new == const0_rtx)
+	    new = CONST0_RTX (mode);
+	  else
+	    new = (CONST_DOUBLE_FROM_REAL_VALUE
+		   (FLOAT_STORE_FLAG_VALUE (mode), mode));
+	}
+#endif
+      break;
+
+    case '2':
+    case 'c':
+      switch (code)
+	{
+	case PLUS:
+	  /* If the second operand is a LABEL_REF, see if the first is a MINUS
+	     with that LABEL_REF as its second operand.  If so, the result is
+	     the first operand of that MINUS.  This handles switches with an
+	     ADDR_DIFF_VEC table.  */
+	  if (const_arg1 && GET_CODE (const_arg1) == LABEL_REF)
+	    {
+	      rtx y
+		= GET_CODE (folded_arg0) == MINUS ? folded_arg0
+		: lookup_as_function (folded_arg0, MINUS);
+
+	      if (y != 0 && GET_CODE (XEXP (y, 1)) == LABEL_REF
+		  && XEXP (XEXP (y, 1), 0) == XEXP (const_arg1, 0))
+		return XEXP (y, 0);
+
+	      /* Now try for a CONST of a MINUS like the above.  */
+	      if ((y = (GET_CODE (folded_arg0) == CONST ? folded_arg0
+			: lookup_as_function (folded_arg0, CONST))) != 0
+		  && GET_CODE (XEXP (y, 0)) == MINUS
+		  && GET_CODE (XEXP (XEXP (y, 0), 1)) == LABEL_REF
+		  && XEXP (XEXP (XEXP (y, 0), 1), 0) == XEXP (const_arg1, 0))
+		return XEXP (XEXP (y, 0), 0);
+	    }
+
+	  /* Likewise if the operands are in the other order.  */
+	  if (const_arg0 && GET_CODE (const_arg0) == LABEL_REF)
+	    {
+	      rtx y
+		= GET_CODE (folded_arg1) == MINUS ? folded_arg1
+		: lookup_as_function (folded_arg1, MINUS);
+
+	      if (y != 0 && GET_CODE (XEXP (y, 1)) == LABEL_REF
+		  && XEXP (XEXP (y, 1), 0) == XEXP (const_arg0, 0))
+		return XEXP (y, 0);
+
+	      /* Now try for a CONST of a MINUS like the above.  */
+	      if ((y = (GET_CODE (folded_arg1) == CONST ? folded_arg1
+			: lookup_as_function (folded_arg1, CONST))) != 0
+		  && GET_CODE (XEXP (y, 0)) == MINUS
+		  && GET_CODE (XEXP (XEXP (y, 0), 1)) == LABEL_REF
+		  && XEXP (XEXP (XEXP (y, 0), 1), 0) == XEXP (const_arg0, 0))
+		return XEXP (XEXP (y, 0), 0);
+	    }
+
+	  /* If second operand is a register equivalent to a negative
+	     CONST_INT, see if we can find a register equivalent to the
+	     positive constant.  Make a MINUS if so.  Don't do this for
+	     a non-negative constant since we might then alternate between
+	     choosing positive and negative constants.  Having the positive
+	     constant previously-used is the more common case.  Be sure
+	     the resulting constant is non-negative; if const_arg1 were
+	     the smallest negative number this would overflow: depending
+	     on the mode, this would either just be the same value (and
+	     hence not save anything) or be incorrect.  */
+	  if (const_arg1 != 0 && GET_CODE (const_arg1) == CONST_INT
+	      && INTVAL (const_arg1) < 0
+	      /* This used to test
+
+	         -INTVAL (const_arg1) >= 0
+
+		 But The Sun V5.0 compilers mis-compiled that test.  So
+		 instead we test for the problematic value in a more direct
+		 manner and hope the Sun compilers get it correct.  */
+	      && INTVAL (const_arg1) !=
+	        ((HOST_WIDE_INT) 1 << (HOST_BITS_PER_WIDE_INT - 1))
+	      && GET_CODE (folded_arg1) == REG)
+	    {
+	      rtx new_const = GEN_INT (-INTVAL (const_arg1));
+	      struct table_elt *p
+		= lookup (new_const, safe_hash (new_const, mode) & HASH_MASK,
+			  mode);
+
+	      if (p)
+		for (p = p->first_same_value; p; p = p->next_same_value)
+		  if (GET_CODE (p->exp) == REG)
+		    return simplify_gen_binary (MINUS, mode, folded_arg0,
+						canon_reg (p->exp, NULL_RTX));
+	    }
+	  goto from_plus;
+
+	case MINUS:
+	  /* If we have (MINUS Y C), see if Y is known to be (PLUS Z C2).
+	     If so, produce (PLUS Z C2-C).  */
+	  if (const_arg1 != 0 && GET_CODE (const_arg1) == CONST_INT)
+	    {
+	      rtx y = lookup_as_function (XEXP (x, 0), PLUS);
+	      if (y && GET_CODE (XEXP (y, 1)) == CONST_INT)
+		return fold_rtx (plus_constant (copy_rtx (y),
+						-INTVAL (const_arg1)),
+				 NULL_RTX);
+	    }
+
+	  /* Fall through.  */
+
+	from_plus:
+	case SMIN:    case SMAX:      case UMIN:    case UMAX:
+	case IOR:     case AND:       case XOR:
+	case MULT:    case DIV:       case UDIV:
+	case ASHIFT:  case LSHIFTRT:  case ASHIFTRT:
+	  /* If we have (<op> <reg> <const_int>) for an associative OP and REG
+	     is known to be of similar form, we may be able to replace the
+	     operation with a combined operation.  This may eliminate the
+	     intermediate operation if every use is simplified in this way.
+	     Note that the similar optimization done by combine.c only works
+	     if the intermediate operation's result has only one reference.  */
+
+	  if (GET_CODE (folded_arg0) == REG
+	      && const_arg1 && GET_CODE (const_arg1) == CONST_INT)
+	    {
+	      int is_shift
+		= (code == ASHIFT || code == ASHIFTRT || code == LSHIFTRT);
+	      rtx y = lookup_as_function (folded_arg0, code);
+	      rtx inner_const;
+	      enum rtx_code associate_code;
+	      rtx new_const;
+
+	      if (y == 0
+		  || 0 == (inner_const
+			   = equiv_constant (fold_rtx (XEXP (y, 1), 0)))
+		  || GET_CODE (inner_const) != CONST_INT
+		  /* If we have compiled a statement like
+		     "if (x == (x & mask1))", and now are looking at
+		     "x & mask2", we will have a case where the first operand
+		     of Y is the same as our first operand.  Unless we detect
+		     this case, an infinite loop will result.  */
+		  || XEXP (y, 0) == folded_arg0)
+		break;
+
+	      /* Don't associate these operations if they are a PLUS with the
+		 same constant and it is a power of two.  These might be doable
+		 with a pre- or post-increment.  Similarly for two subtracts of
+		 identical powers of two with post decrement.  */
+
+	      if (code == PLUS && INTVAL (const_arg1) == INTVAL (inner_const)
+		  && ((HAVE_PRE_INCREMENT
+			  && exact_log2 (INTVAL (const_arg1)) >= 0)
+		      || (HAVE_POST_INCREMENT
+			  && exact_log2 (INTVAL (const_arg1)) >= 0)
+		      || (HAVE_PRE_DECREMENT
+			  && exact_log2 (- INTVAL (const_arg1)) >= 0)
+		      || (HAVE_POST_DECREMENT
+			  && exact_log2 (- INTVAL (const_arg1)) >= 0)))
+		break;
+
+	      /* Compute the code used to compose the constants.  For example,
+		 A/C1/C2 is A/(C1 * C2), so if CODE == DIV, we want MULT.  */
+
+	      associate_code
+		= (code == MULT || code == DIV || code == UDIV ? MULT
+		   : is_shift || code == PLUS || code == MINUS ? PLUS : code);
+
+	      new_const = simplify_binary_operation (associate_code, mode,
+						     const_arg1, inner_const);
+
+	      if (new_const == 0)
+		break;
+
+	      /* If we are associating shift operations, don't let this
+		 produce a shift of the size of the object or larger.
+		 This could occur when we follow a sign-extend by a right
+		 shift on a machine that does a sign-extend as a pair
+		 of shifts.  */
+
+	      if (is_shift && GET_CODE (new_const) == CONST_INT
+		  && INTVAL (new_const) >= GET_MODE_BITSIZE (mode))
+		{
+		  /* As an exception, we can turn an ASHIFTRT of this
+		     form into a shift of the number of bits - 1.  */
+		  if (code == ASHIFTRT)
+		    new_const = GEN_INT (GET_MODE_BITSIZE (mode) - 1);
+		  else
+		    break;
+		}
+
+	      y = copy_rtx (XEXP (y, 0));
+
+	      /* If Y contains our first operand (the most common way this
+		 can happen is if Y is a MEM), we would do into an infinite
+		 loop if we tried to fold it.  So don't in that case.  */
+
+	      if (! reg_mentioned_p (folded_arg0, y))
+		y = fold_rtx (y, insn);
+
+	      return simplify_gen_binary (code, mode, y, new_const);
+	    }
+	  break;
+
+	default:
+	  break;
+	}
+
+      new = simplify_binary_operation (code, mode,
+				       const_arg0 ? const_arg0 : folded_arg0,
+				       const_arg1 ? const_arg1 : folded_arg1);
+      break;
+
+    case 'o':
+      /* (lo_sum (high X) X) is simply X.  */
+      if (code == LO_SUM && const_arg0 != 0
+	  && GET_CODE (const_arg0) == HIGH
+	  && rtx_equal_p (XEXP (const_arg0, 0), const_arg1))
+	return const_arg1;
+      break;
+
+    case '3':
+    case 'b':
+      new = simplify_ternary_operation (code, mode, mode_arg0,
+					const_arg0 ? const_arg0 : folded_arg0,
+					const_arg1 ? const_arg1 : folded_arg1,
+					const_arg2 ? const_arg2 : XEXP (x, 2));
+      break;
+
+    case 'x':
+      /* Always eliminate CONSTANT_P_RTX at this stage.  */
+      if (code == CONSTANT_P_RTX)
+	return (const_arg0 ? const1_rtx : const0_rtx);
+      break;
+    }
+
+  return new ? new : x;
+}

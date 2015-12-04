@@ -1,0 +1,28 @@
+static void
+sdbout_finish (main_filename)
+     const char *main_filename ATTRIBUTE_UNUSED;
+{
+  tree decl = getdecls ();
+  unsigned int len = list_length (decl);
+  tree *vec = (tree *) xmalloc (sizeof (tree) * len);
+  unsigned int i;
+
+  /* Process the decls in reverse order--earliest first.  Put them
+     into VEC from back to front, then take out from front.  */
+
+  for (i = 0; i < len; i++, decl = TREE_CHAIN (decl))
+    vec[len - i - 1] = decl;
+
+  for (i = 0; i < len; i++)
+    {
+      decl = vec[i];
+      if (TREE_CODE (decl) == VAR_DECL
+	  && ! DECL_EXTERNAL (decl)
+	  && DECL_INITIAL (decl)
+	  && TREE_PUBLIC (decl)
+	  && DECL_RTL_SET_P (decl))
+	sdbout_symbol (decl, 0);
+    }
+
+  free (vec);
+}

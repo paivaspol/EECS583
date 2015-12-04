@@ -1,0 +1,39 @@
+void MAIN_parseCommandLine( int nArgs, char* arg[], MAIN_Param* param ) {
+	struct stat fileStat;
+	
+	if( nArgs < 5 || nArgs > 6 ) {
+		printf( "syntax: lbm <time steps> <result file> <0: nil, 1: cmp, 2: str> <0: ldc, 1: channel flow> [<obstacle file>]\n" );
+		exit( 1 );
+	}
+
+	param->nTimeSteps     = atoi( arg[1] );
+	param->resultFilename = arg[2];
+	param->action         = (MAIN_Action) atoi( arg[3] );
+	param->simType        = (MAIN_SimType) atoi( arg[4] );
+
+	if( nArgs == 6 ) {
+		param->obstacleFilename = arg[5];
+
+		if( stat( param->obstacleFilename, &fileStat ) != 0 ) {
+			printf( "MAIN_parseCommandLine: cannot stat obstacle file '%s'\n",
+			         param->obstacleFilename );
+			exit( 1 );
+		}
+		if( fileStat.st_size != SIZE_X*SIZE_Y*SIZE_Z+(SIZE_Y+1)*SIZE_Z ) {
+			printf( "MAIN_parseCommandLine:\n"
+			        "\tsize of file '%s' is %i bytes\n"
+					    "\texpected size is %i bytes\n",
+			        param->obstacleFilename, (int) fileStat.st_size,
+			        SIZE_X*SIZE_Y*SIZE_Z+(SIZE_Y+1)*SIZE_Z );
+			exit( 1 );
+		}
+	}
+	else param->obstacleFilename = NULL;
+
+	if( param->action == COMPARE &&
+	    stat( param->resultFilename, &fileStat ) != 0 ) {
+		printf( "MAIN_parseCommandLine: cannot stat result file '%s'\n",
+		         param->resultFilename );
+		exit( 1 );
+	}
+}

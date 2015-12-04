@@ -1,0 +1,118 @@
+void do_hit(int gauge_dir, int parity, int p, int q, double relax_boost,
+	      int nvector, field_offset vector_offset[], int vector_parity[],
+	      int nantiherm, field_offset antiherm_offset[], 
+	      int antiherm_parity[] )
+{
+  /* Do optimum SU(2) gauge hit for p, q subspace */
+
+  double a0,a1,a2,a3,asq,a0sq,x,r,xdr;
+  register int dir,i,j;
+  register site *s;
+  su2_matrix u;
+  su3_matrix htemp;
+
+  /* Accumulate sums for determining optimum gauge hit */
+
+  accum_gauge_hit(gauge_dir,parity);
+
+  FORSOMEPARITY(i,s,parity)
+    {
+      /* The SU(2) hit matrix is represented as a0 + i * Sum j (sigma j * aj)*/
+      /* The locally optimum unnormalized components a0, aj are determined */
+      /* from the current link in direction dir and the link downlink */
+      /* in the same direction on the neighbor in the direction opposite dir */
+      /* The expression is */
+      /* a0 = Sum dir Tr Re 1       * (downlink dir + link dir) */
+      /* aj = Sum dir Tr Im sigma j * (downlink dir - link dir)  j = 1,2, 3 */
+      /*   where 1, sigma j are unit and Pauli matrices on the p,q subspace */
+ /*     
+      a0 =  s->sumvec.c[p].real + s->sumvec.c[q].real;
+      a1 =  s->diffmat.e[q][p].imag + s->diffmat.e[p][q].imag;
+      a2 = -s->diffmat.e[q][p].real + s->diffmat.e[p][q].real;
+      a3 =  s->diffmat.e[p][p].imag - s->diffmat.e[q][q].imag;
+*/  
+      if(sumvec_offset >= 0)
+	a0 =     ((su3_vector *)F_PT(s,sumvec_offset))->c[p].real +
+	  ((su3_vector *)F_PT(s,sumvec_offset))->c[q].real;
+      else
+	a0 =     sumvecp[i].c[p].real +  sumvecp[i].c[q].real;
+	
+      if(diffmat_offset >= 0)
+	{
+	  a1 =     ((su3_matrix *)F_PT(s,diffmat_offset))->e[q][p].imag +
+	    ((su3_matrix *)F_PT(s,diffmat_offset))->e[p][q].imag;
+	  a2 =    -((su3_matrix *)F_PT(s,diffmat_offset))->e[q][p].real +
+	    ((su3_matrix *)F_PT(s,diffmat_offset))->e[p][q].real;
+	  a3 =     ((su3_matrix *)F_PT(s,diffmat_offset))->e[p][p].imag -
+	    ((su3_matrix *)F_PT(s,diffmat_offset))->e[q][q].imag;
+	}
+      else
+	{
+	  a1 =     diffmatp[i].e[q][p].imag + diffmatp[i].e[p][q].imag;
+	  a2 =    -diffmatp[i].e[q][p].real + diffmatp[i].e[p][q].real;
+	  a3 =     diffmatp[i].e[p][p].imag - diffmatp[i].e[q][q].imag;
+	}
+
+      /* Over-relaxation boost */
+
+      /* This algorithm is designed to give little change for large |a| */
+      /* and to scale up the gauge transformation by a factor of relax_boost*/
+      /* for small |a| */
+
+      asq = a1*a1 + a2*a2 + a3*a3;
+      a0sq = a0*a0;
+      x = (relax_boost*a0sq + asq)/(a0sq + asq);
+      r = sqrt((double)(a0sq + x*x*asq));
+      xdr = x/r;
+      /* Normalize and boost */
+      a0 = a0/r; a1 = a1*xdr; a2 = a2*xdr; a3 = a3*xdr;
+
+      /* Elements of SU(2) matrix */
+
+      u.e[0][0] = cmplx( a0, a3);
+      u.e[0][1] = cmplx( a2, a1);
+      u.e[1][0] = cmplx(-a2, a1);
+      u.e[1][1] = cmplx( a0,-a3);
+
+      
+      /* Do SU(2) hit on all upward links */
+
+      FORALLUPDIR(dir)
+	left_su2_hit_n(&u,p,q,&(s->link[dir]));
+      
+      /* Do SU(2) hit on all downward links */
+      
+      FORALLUPDIR(dir)
+	right_su2_hit_a(&u,p,q,(su3_matrix *)gen_pt[dir][i]);
+      
+      /* Transform vectors and gauge momentum if requested */
+
+      for(j = 0; j < nvector; j++)
+	  
+	/* Do SU(2) hit on specified su3 vector for specified parity */
+	  
+	/* vector <- u * vector */
+	if(vector_parity[j] == EVENANDODD || vector_parity[j] == parity)
+	  mult_su2_mat_vec_elem_n(&u, 
+		 &((su3_vector *)F_PT(s,vector_offset[j]))->c[p],
+		 &((su3_vector *)F_PT(s,vector_offset[j]))->c[q]);
+
+      /* Transform antihermitian matrices if requested */
+
+      for(j = 0; j < nantiherm; j++)
+	/* antiherm <- u * antiherm * u^dagger */
+	if(antiherm_parity[j] == EVENANDODD || antiherm_parity[j] == parity)
+	  {
+	    uncompress_anti_hermitian( 
+		     (anti_hermitmat *)F_PT(s,antiherm_offset[j]), &htemp);
+	    /* If the next 2 steps prove too time consuming, */
+	    /* they can be simplified algebraically, and sped up by ~2 */
+	    left_su2_hit_n(&u,p,q,&htemp);
+	    right_su2_hit_a(&u,p,q,&htemp);
+	    make_anti_hermitian( &htemp, 
+		     (anti_hermitmat *)F_PT(s,antiherm_offset[j]));
+	  }
+    }
+  
+  /* Exit with modified downward links left in communications buffer */
+} /* do_hit */

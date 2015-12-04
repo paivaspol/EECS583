@@ -1,0 +1,18 @@
+void
+mark_temp_addr_taken (x)
+     rtx x;
+{
+  struct temp_slot *p;
+
+  if (x == 0)
+    return;
+
+  /* If X is not in memory or is at a constant address, it cannot be in
+     a temporary slot.  */
+  if (GET_CODE (x) != MEM || CONSTANT_P (XEXP (x, 0)))
+    return;
+
+  p = find_temp_slot_from_address (XEXP (x, 0));
+  if (p != 0)
+    p->addr_taken = 1;
+}

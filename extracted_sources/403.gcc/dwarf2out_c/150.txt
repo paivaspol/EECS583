@@ -1,0 +1,19 @@
+static unsigned int
+add_ranges (block)
+     tree block;
+{
+  unsigned int in_use = ranges_table_in_use;
+
+  if (in_use == ranges_table_allocated)
+    {
+      ranges_table_allocated += RANGES_TABLE_INCREMENT;
+      ranges_table = (dw_ranges_ref)
+	xrealloc (ranges_table, (ranges_table_allocated
+				 * sizeof (struct dw_ranges_struct)));
+    }
+
+  ranges_table[in_use].block_num = (block ? BLOCK_NUMBER (block) : 0);
+  ranges_table_in_use = in_use + 1;
+
+  return in_use * 2 * DWARF2_ADDR_SIZE;
+}

@@ -1,0 +1,17 @@
+void subvq_gautbl_eval_logs3 (subvq_t *vq, float32 *feat)
+{
+    int32 s, i;
+    int32 *featdim;
+    
+    for (s = 0; s < vq->n_sv; s++) {
+	/* Extract subvector from feat */
+	featdim = vq->featdim[s];
+	for (i = 0; i < vq->gautbl[s].veclen; i++)
+	    vq->subvec[i] = feat[featdim[i]];
+	
+	/* Evaluate distances between extracted subvector and corresponding codebook */
+    /* RAH, only evaluate the first VQ_EVAL set of features */
+    if (s < VQ_EVAL) 
+	vector_gautbl_eval_logs3(&(vq->gautbl[s]), 0, vq->vqsize, vq->subvec, vq->vqdist[s]);
+    }
+}

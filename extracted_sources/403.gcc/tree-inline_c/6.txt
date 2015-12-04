@@ -1,0 +1,49 @@
+static tree
+declare_return_variable (id, use_stmt)
+     struct inline_data *id;
+     tree *use_stmt;
+{
+  tree fn = VARRAY_TOP_TREE (id->fns);
+  tree result = DECL_RESULT (fn);
+  tree var;
+  int need_return_decl = 1;
+
+  /* We don't need to do anything for functions that don't return
+     anything.  */
+  if (!result || VOID_TYPE_P (TREE_TYPE (result)))
+    {
+      *use_stmt = NULL_TREE;
+      return NULL_TREE;
+    }
+
+  var = ((*lang_hooks.tree_inlining.copy_res_decl_for_inlining)
+	 (result, fn, VARRAY_TREE (id->fns, 0), id->decl_map,
+	  &need_return_decl, &id->target_exprs));
+
+  /* Register the VAR_DECL as the equivalent for the RESULT_DECL; that
+     way, when the RESULT_DECL is encountered, it will be
+     automatically replaced by the VAR_DECL.  */
+  splay_tree_insert (id->decl_map,
+		     (splay_tree_key) result,
+		     (splay_tree_value) var);
+
+  /* Build the USE_STMT.  If the return type of the function was
+     promoted, convert it back to the expected type.  */
+  if (TREE_TYPE (var) == TREE_TYPE (TREE_TYPE (fn)))
+    *use_stmt = build_stmt (EXPR_STMT, var);
+  else
+    *use_stmt = build_stmt (EXPR_STMT,
+			    build1 (NOP_EXPR, TREE_TYPE (TREE_TYPE (fn)),
+				    var));
+
+  TREE_ADDRESSABLE (*use_stmt) = 1;
+
+  /* Build the declaration statement if FN does not return an
+     aggregate.  */
+  if (need_return_decl)
+    return build_stmt (DECL_STMT, var);
+  /* If FN does return an aggregate, there's no need to declare the
+     return variable; we're using a variable in our caller's frame.  */
+  else
+    return NULL_TREE;
+}

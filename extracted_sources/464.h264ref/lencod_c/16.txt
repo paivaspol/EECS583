@@ -1,0 +1,20 @@
+int get_mem_ACcoeff (int***** cofAC)
+{
+  int i, j, k;
+  int num_blk8x8 = 4 + img->num_blk8x8_uv;
+
+  if ((*cofAC = (int****)calloc (num_blk8x8, sizeof(int***))) == NULL)              no_mem_exit ("get_mem_ACcoeff: cofAC");
+  for (k=0; k<num_blk8x8; k++)
+  {
+    if (((*cofAC)[k] = (int***)calloc (4, sizeof(int**))) == NULL)         no_mem_exit ("get_mem_ACcoeff: cofAC");
+    for (j=0; j<4; j++)
+    {
+      if (((*cofAC)[k][j] = (int**)calloc (2, sizeof(int*))) == NULL)      no_mem_exit ("get_mem_ACcoeff: cofAC");
+      for (i=0; i<2; i++)
+      {
+        if (((*cofAC)[k][j][i] = (int*)calloc (65, sizeof(int))) == NULL)  no_mem_exit ("get_mem_ACcoeff: cofAC"); // 18->65 for ABT
+      }
+    }
+  }
+  return num_blk8x8*4*2*65*sizeof(int);// 18->65 for ABT
+}

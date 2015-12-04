@@ -1,0 +1,18 @@
+static rtx
+label_for_bb (bb)
+     basic_block bb;
+{
+  rtx label = bb->head;
+
+  if (GET_CODE (label) != CODE_LABEL)
+    {
+      if (rtl_dump_file)
+	fprintf (rtl_dump_file, "Emitting label for block %d\n", bb->index);
+
+      label = block_label (bb);
+      if (bb->head == PREV_INSN (RBI (bb)->eff_head))
+	RBI (bb)->eff_head = label;
+    }
+
+  return label;
+}

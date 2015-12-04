@@ -1,0 +1,18 @@
+void r_serial_f(gauge_file *gf)
+
+/* Close the file and free associated structures */
+{
+  g_sync();
+  if(this_node==0)
+    {
+      if(gf->parallel)
+	printf("r_serial_f: Attempting serial close on parallel file \n");
+
+      fclose(gf->fp);
+    }
+  
+  if(gf->rank2rcv != NULL)free(gf->rank2rcv);
+  
+  /* Do not free gf and gf->header so calling program can use them */
+
+} /* r_serial_f */

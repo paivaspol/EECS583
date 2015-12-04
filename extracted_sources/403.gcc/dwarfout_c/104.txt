@@ -1,0 +1,20 @@
+static void
+end_sibling_chain ()
+{
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  current_dienum = NEXT_DIE_NUM;
+  NEXT_DIE_NUM = next_unused_dienum;
+
+  sprintf (begin_label, DIE_BEGIN_LABEL_FMT, current_dienum);
+
+  /* Write a label which will act as the name for the start of this DIE.  */
+
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+
+  /* Write the DIE-length word.	 */
+
+  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 4);
+
+  dienum_pop ();
+}

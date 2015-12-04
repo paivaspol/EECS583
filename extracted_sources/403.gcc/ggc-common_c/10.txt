@@ -1,0 +1,33 @@
+void
+ggc_mark_roots ()
+{
+  struct ggc_root *x;
+  struct d_htab_root *y;
+  
+  VARRAY_TREE_INIT (ggc_pending_trees, 4096, "ggc_pending_trees");
+
+  for (x = roots; x != NULL; x = x->next)
+    {
+      char *elt = x->base;
+      int s = x->size, n = x->nelt;
+      void (*cb) PARAMS ((void *)) = x->cb;
+      int i;
+
+      for (i = 0; i < n; ++i, elt += s)
+	(*cb)(elt);
+    }
+
+  /* Mark all the queued up trees, and their children.  */
+  ggc_mark_trees ();
+  VARRAY_FREE (ggc_pending_trees);
+
+  /* Now scan all hash tables that have objects which are to be deleted if
+     they are not already marked.  Since these may mark more trees, we need
+     to reinitialize that varray.  */
+  VARRAY_TREE_INIT (ggc_pending_trees, 1024, "ggc_pending_trees");
+
+  for (y = d_htab_roots; y != NULL; y = y->next)
+    htab_traverse (y->htab, ggc_htab_delete, (PTR) y);
+  ggc_mark_trees ();
+  VARRAY_FREE (ggc_pending_trees);
+}

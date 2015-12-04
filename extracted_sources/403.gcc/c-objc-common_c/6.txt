@@ -1,0 +1,26 @@
+static tree
+start_cdtor (method_type)
+     int method_type;
+{
+  tree fnname = get_file_function_name (method_type);
+  tree void_list_node_1 = build_tree_list (NULL_TREE, void_type_node);
+  tree body;
+
+  start_function (void_list_node_1,
+		  build_nt (CALL_EXPR, fnname,
+			    tree_cons (NULL_TREE, NULL_TREE, void_list_node_1),
+			    NULL_TREE),
+		  NULL_TREE);
+  store_parm_decls ();
+
+  current_function_cannot_inline
+    = "static constructors and destructors cannot be inlined";
+
+  body = c_begin_compound_stmt ();
+
+  pushlevel (0);
+  clear_last_expr ();
+  add_scope_stmt (/*begin_p=*/1, /*partial_p=*/0);
+
+  return body;
+}

@@ -1,0 +1,27 @@
+static void constr_dum4FD(rvec xi,rvec xj,rvec xk,rvec xl,rvec x,
+			  real a,real b,real c)
+{
+  rvec xij,xjk,xjl,temp;
+  real d;
+  
+  rvec_sub(xj,xi,xij);
+  rvec_sub(xk,xj,xjk);
+  rvec_sub(xl,xj,xjl);
+  /* 9 flops */
+
+  /* temp goes from i to a point on the plane jkl */  
+  temp[XX] = xij[XX] + a*xjk[XX] + b*xjl[XX];
+  temp[YY] = xij[YY] + a*xjk[YY] + b*xjl[YY];
+  temp[ZZ] = xij[ZZ] + a*xjk[ZZ] + b*xjl[ZZ];
+  /* 12 flops */
+  
+  d=c*invsqrt(iprod(temp,temp));
+  /* 6 + 10 flops */
+  
+  x[XX] = xi[XX] + d*temp[XX];
+  x[YY] = xi[YY] + d*temp[YY];
+  x[ZZ] = xi[ZZ] + d*temp[ZZ];
+  /* 6 Flops */
+  
+  /* TOTAL: 43 flops */
+}

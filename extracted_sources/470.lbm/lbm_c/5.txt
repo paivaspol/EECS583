@@ -1,0 +1,28 @@
+void LBM_initializeSpecialCellsForLDC( LBM_Grid grid ) {
+	int x,  y,  z;
+
+	/*voption indep*/
+#if !defined(SPEC_CPU)
+#ifdef _OPENMP
+#pragma omp parallel for private( x, y )
+#endif
+#endif
+	for( z = -2; z < SIZE_Z+2; z++ ) {
+		for( y = 0; y < SIZE_Y; y++ ) {
+			for( x = 0; x < SIZE_X; x++ ) {
+				if( x == 0 || x == SIZE_X-1 ||
+				    y == 0 || y == SIZE_Y-1 ||
+				    z == 0 || z == SIZE_Z-1 ) {
+					SET_FLAG( grid, x, y, z, OBSTACLE );
+				}
+				else {
+					if( (z == 1 || z == SIZE_Z-2) &&
+					     x > 1 && x < SIZE_X-2 &&
+					     y > 1 && y < SIZE_Y-2 ) {
+						SET_FLAG( grid, x, y, z, ACCEL );
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,54 @@
+static void
+scan_paradoxical_subregs (x)
+     rtx x;
+{
+  int i;
+  const char *fmt;
+  enum rtx_code code = GET_CODE (x);
+
+  switch (code)
+    {
+    case REG:
+#if 0
+      if (SMALL_REGISTER_CLASSES && REGNO (x) < FIRST_PSEUDO_REGISTER
+	  && REG_USERVAR_P (x))
+	SET_HARD_REG_BIT (bad_spill_regs_global, REGNO (x));
+#endif
+      return;
+
+    case CONST_INT:
+    case CONST:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case CONST_DOUBLE:
+    case CONST_VECTOR: /* shouldn't happen, but just in case.  */
+    case CC0:
+    case PC:
+    case USE:
+    case CLOBBER:
+      return;
+
+    case SUBREG:
+      if (GET_CODE (SUBREG_REG (x)) == REG
+	  && GET_MODE_SIZE (GET_MODE (x)) > GET_MODE_SIZE (GET_MODE (SUBREG_REG (x))))
+	reg_max_ref_width[REGNO (SUBREG_REG (x))]
+	  = GET_MODE_SIZE (GET_MODE (x));
+      return;
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	scan_paradoxical_subregs (XEXP (x, i));
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    scan_paradoxical_subregs (XVECEXP (x, i, j));
+	}
+    }
+}

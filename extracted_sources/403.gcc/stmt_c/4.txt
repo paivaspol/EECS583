@@ -1,0 +1,17 @@
+static void
+mark_case_nesting (n)
+     struct nesting *n;
+{
+  while (n)
+    {
+      ggc_mark_rtx (n->exit_label);
+      ggc_mark_rtx (n->data.case_stmt.start);
+
+      ggc_mark_tree (n->data.case_stmt.default_label);
+      ggc_mark_tree (n->data.case_stmt.index_expr);
+      ggc_mark_tree (n->data.case_stmt.nominal_type);
+
+      mark_case_node (n->data.case_stmt.case_list);
+      n = n->next;
+    }
+}

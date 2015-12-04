@@ -1,0 +1,18 @@
+static void
+readZuker(struct ReadSeqVars *V)
+{
+  char *sptr;
+
+  SeqfileGetLine(V);  /*s == "seqLen seqid string..."*/
+
+  if ((sptr = strtok(V->buf+6, " \t\n")) != NULL)
+    SetSeqinfoString(V->sqinfo, sptr, SQINFO_NAME);
+
+  if ((sptr = strtok(NULL, "\n")) != NULL)
+    SetSeqinfoString(V->sqinfo, sptr, SQINFO_DESC);
+
+  readLoop(0, endZuker, V);
+
+  while (!(feof(V->f) | ((*V->buf != '\0') & (*V->buf == '('))))
+    SeqfileGetLine(V);
+}

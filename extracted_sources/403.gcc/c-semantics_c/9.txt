@@ -1,0 +1,32 @@
+void
+genrtl_decl_stmt (t)
+     tree t;
+{
+  tree decl;
+  emit_line_note (input_filename, lineno);
+  decl = DECL_STMT_DECL (t);
+  /* If this is a declaration for an automatic local
+     variable, initialize it.  Note that we might also see a
+     declaration for a namespace-scope object (declared with
+     `extern').  We don't have to handle the initialization
+     of those objects here; they can only be declarations,
+     rather than definitions.  */
+  if (TREE_CODE (decl) == VAR_DECL 
+      && !TREE_STATIC (decl)
+      && !DECL_EXTERNAL (decl))
+    {
+      /* Let the back-end know about this variable.  */
+      if (!anon_aggr_type_p (TREE_TYPE (decl)))
+	emit_local_var (decl);
+      else
+	expand_anon_union_decl (decl, NULL_TREE, 
+				DECL_ANON_UNION_ELEMS (decl));
+    }
+  else if (TREE_CODE (decl) == VAR_DECL && TREE_STATIC (decl))
+    make_rtl_for_local_static (decl);
+  else if (TREE_CODE (decl) == LABEL_DECL 
+	   && C_DECLARED_LABEL_FLAG (decl))
+    declare_nonlocal_label (decl);
+  else if (lang_expand_decl_stmt)
+    (*lang_expand_decl_stmt) (t);
+}

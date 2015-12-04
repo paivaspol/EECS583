@@ -1,0 +1,73 @@
+int
+try_casesi (index_type, index_expr, minval, range,
+	    table_label, default_label)
+     tree index_type, index_expr, minval, range;
+     rtx table_label ATTRIBUTE_UNUSED;
+     rtx default_label;
+{
+  enum machine_mode index_mode = SImode;
+  int index_bits = GET_MODE_BITSIZE (index_mode);
+  rtx op1, op2, index;
+  enum machine_mode op_mode;
+
+  if (! HAVE_casesi)
+    return 0;
+
+  /* Convert the index to SImode.  */
+  if (GET_MODE_BITSIZE (TYPE_MODE (index_type)) > GET_MODE_BITSIZE (index_mode))
+    {
+      enum machine_mode omode = TYPE_MODE (index_type);
+      rtx rangertx = expand_expr (range, NULL_RTX, VOIDmode, 0);
+
+      /* We must handle the endpoints in the original mode.  */
+      index_expr = build (MINUS_EXPR, index_type,
+			  index_expr, minval);
+      minval = integer_zero_node;
+      index = expand_expr (index_expr, NULL_RTX, VOIDmode, 0);
+      emit_cmp_and_jump_insns (rangertx, index, LTU, NULL_RTX,
+			       omode, 1, default_label);
+      /* Now we can safely truncate.  */
+      index = convert_to_mode (index_mode, index, 0);
+    }
+  else
+    {
+      if (TYPE_MODE (index_type) != index_mode)
+	{
+	  index_expr = convert (type_for_size (index_bits, 0),
+				index_expr);
+	  index_type = TREE_TYPE (index_expr);
+	}
+
+      index = expand_expr (index_expr, NULL_RTX, VOIDmode, 0);
+    }
+  emit_queue ();
+  index = protect_from_queue (index, 0);
+  do_pending_stack_adjust ();
+
+  op_mode = insn_data[(int) CODE_FOR_casesi].operand[0].mode;
+  if (! (*insn_data[(int) CODE_FOR_casesi].operand[0].predicate)
+      (index, op_mode))
+    index = copy_to_mode_reg (op_mode, index);
+
+  op1 = expand_expr (minval, NULL_RTX, VOIDmode, 0);
+
+  op_mode = insn_data[(int) CODE_FOR_casesi].operand[1].mode;
+  op1 = convert_modes (op_mode, TYPE_MODE (TREE_TYPE (minval)),
+		       op1, TREE_UNSIGNED (TREE_TYPE (minval)));
+  if (! (*insn_data[(int) CODE_FOR_casesi].operand[1].predicate)
+      (op1, op_mode))
+    op1 = copy_to_mode_reg (op_mode, op1);
+
+  op2 = expand_expr (range, NULL_RTX, VOIDmode, 0);
+
+  op_mode = insn_data[(int) CODE_FOR_casesi].operand[2].mode;
+  op2 = convert_modes (op_mode, TYPE_MODE (TREE_TYPE (range)),
+		       op2, TREE_UNSIGNED (TREE_TYPE (range)));
+  if (! (*insn_data[(int) CODE_FOR_casesi].operand[2].predicate)
+      (op2, op_mode))
+    op2 = copy_to_mode_reg (op_mode, op2);
+
+  emit_jump_insn (gen_casesi (index, op1, op2,
+			      table_label, default_label));
+  return 1;
+}

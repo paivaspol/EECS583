@@ -1,0 +1,104 @@
+static void
+esqrt (x, y)
+     const UEMUSHORT *x;
+     UEMUSHORT *y;
+{
+  UEMUSHORT temp[NI], num[NI], sq[NI], xx[NI];
+  EMULONG m, exp;
+  int i, j, k, n, nlups;
+
+  if (esqinited == 0)
+    {
+      ecleaz (sqrndbit);
+      sqrndbit[NI - 2] = 1;
+      esqinited = 1;
+    }
+  /* Check for arg <= 0 */
+  i = ecmp (x, ezero);
+  if (i <= 0)
+    {
+      if (i == -1)
+	{
+	  mtherr ("esqrt", DOMAIN);
+	  eclear (y);
+	}
+      else
+	emov (x, y);
+      return;
+    }
+
+#ifdef INFINITY
+  if (eisinf (x))
+    {
+      eclear (y);
+      einfin (y);
+      return;
+    }
+#endif
+  /* Bring in the arg and renormalize if it is denormal.  */
+  emovi (x, xx);
+  m = (EMULONG) xx[1];		/* local long word exponent */
+  if (m == 0)
+    m -= enormlz (xx);
+
+  /* Divide exponent by 2 */
+  m -= 0x3ffe;
+  exp = (unsigned short) ((m / 2) + 0x3ffe);
+
+  /* Adjust if exponent odd */
+  if ((m & 1) != 0)
+    {
+      if (m > 0)
+	exp += 1;
+      eshdn1 (xx);
+    }
+
+  ecleaz (sq);
+  ecleaz (num);
+  n = 8;			/* get 8 bits of result per inner loop */
+  nlups = rndprc;
+  j = 0;
+
+  while (nlups > 0)
+    {
+      /* bring in next word of arg */
+      if (j < NE)
+	num[NI - 1] = xx[j + 3];
+      /* Do additional bit on last outer loop, for roundoff.  */
+      if (nlups <= 8)
+	n = nlups + 1;
+      for (i = 0; i < n; i++)
+	{
+	  /* Next 2 bits of arg */
+	  eshup1 (num);
+	  eshup1 (num);
+	  /* Shift up answer */
+	  eshup1 (sq);
+	  /* Make trial divisor */
+	  for (k = 0; k < NI; k++)
+	    temp[k] = sq[k];
+	  eshup1 (temp);
+	  eaddm (sqrndbit, temp);
+	  /* Subtract and insert answer bit if it goes in */
+	  if (ecmpm (temp, num) <= 0)
+	    {
+	      esubm (temp, num);
+	      sq[NI - 2] |= 1;
+	    }
+	}
+      nlups -= n;
+      j += 1;
+    }
+
+  /* Adjust for extra, roundoff loop done.  */
+  exp += (NBITS - 1) - rndprc;
+
+  /* Sticky bit = 1 if the remainder is nonzero.  */
+  k = 0;
+  for (i = 3; i < NI; i++)
+    k |= (int) num[i];
+
+  /* Renormalize and round off.  */
+  emdnorm (sq, k, 0, exp, 64);
+  emovo (sq, y);
+}

@@ -1,0 +1,29 @@
+void
+SAMizeAlignmentByGapFrac(char **aseq, int nseq, int alen, float maxgap)
+{
+  int apos;			/* counter over columns */
+  int idx;			/* counter over sequences */
+  int ngap;			/* number of gaps seen */
+
+  for (apos = 0; apos < alen; apos++)
+    {
+				/* count gaps */
+      ngap = 0;
+      for (idx = 0; idx < nseq; idx++)
+	if (isgap(aseq[idx][apos])) ngap++;
+      
+				/* convert to SAM conventions */
+      if ((float) ngap / (float) nseq > maxgap)
+	{			/* insert column */
+	  for (idx = 0; idx < nseq; idx++)
+	    if (isgap(aseq[idx][apos])) aseq[idx][apos] = '.';
+	    else aseq[idx][apos] = (char) tolower((int) aseq[idx][apos]);
+	}
+      else			
+	{			/* match column */
+	  for (idx = 0; idx < nseq; idx++)
+	    if (isgap(aseq[idx][apos])) aseq[idx][apos] = '-';
+	    else aseq[idx][apos] = (char) toupper((int) aseq[idx][apos]);
+	}
+    }
+}

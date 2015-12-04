@@ -1,0 +1,106 @@
+static void
+merge_if_block (test_bb, then_bb, else_bb, join_bb)
+     basic_block test_bb;	/* Basic block test is in */
+     basic_block then_bb;	/* Basic block for THEN block */
+     basic_block else_bb;	/* Basic block for ELSE block */
+     basic_block join_bb;	/* Basic block the join label is in */
+{
+  basic_block combo_bb;
+
+  /* All block merging is done into the lower block numbers.  */
+
+  combo_bb = test_bb;
+
+  /* First merge TEST block into THEN block.  This is a no-brainer since
+     the THEN block did not have a code label to begin with.  */
+  if (then_bb)
+    {
+      if (life_data_ok)
+        COPY_REG_SET (combo_bb->global_live_at_end,
+		      then_bb->global_live_at_end);
+      merge_blocks_nomove (combo_bb, then_bb);
+      num_removed_blocks++;
+    }
+
+  /* The ELSE block, if it existed, had a label.  That label count
+     will almost always be zero, but odd things can happen when labels
+     get their addresses taken.  */
+  if (else_bb)
+    {
+      merge_blocks_nomove (combo_bb, else_bb);
+      num_removed_blocks++;
+    }
+
+  /* If there was no join block reported, that means it was not adjacent
+     to the others, and so we cannot merge them.  */
+
+  if (! join_bb)
+    {
+      rtx last = combo_bb->end;
+
+      /* The outgoing edge for the current COMBO block should already
+	 be correct.  Verify this.  */
+      if (combo_bb->succ == NULL_EDGE)
+	{
+	  if (find_reg_note (last, REG_NORETURN, NULL))
+	    ;
+	  else if (GET_CODE (last) == INSN
+		   && GET_CODE (PATTERN (last)) == TRAP_IF
+		   && TRAP_CONDITION (PATTERN (last)) == const_true_rtx)
+	    ;
+	  else
+	    abort ();
+	}
+
+      /* There should still be something at the end of the THEN or ELSE
+         blocks taking us to our final destination.  */
+      else if (GET_CODE (last) == JUMP_INSN)
+	;
+      else if (combo_bb->succ->dest == EXIT_BLOCK_PTR
+	       && GET_CODE (last) == CALL_INSN
+	       && SIBLING_CALL_P (last))
+	;
+      else if ((combo_bb->succ->flags & EDGE_EH)
+	       && can_throw_internal (last))
+	;
+      else
+	abort ();
+    }
+
+  /* The JOIN block may have had quite a number of other predecessors too.
+     Since we've already merged the TEST, THEN and ELSE blocks, we should
+     have only one remaining edge from our if-then-else diamond.  If there
+     is more than one remaining edge, it must come from elsewhere.  There
+     may be zero incoming edges if the THEN block didn't actually join 
+     back up (as with a call to abort).  */
+  else if ((join_bb->pred == NULL
+	    || join_bb->pred->pred_next == NULL)
+	   && join_bb != EXIT_BLOCK_PTR)
+    {
+      /* We can merge the JOIN.  */
+      if (life_data_ok)
+	COPY_REG_SET (combo_bb->global_live_at_end,
+		      join_bb->global_live_at_end);
+      merge_blocks_nomove (combo_bb, join_bb);
+      num_removed_blocks++;
+    }
+  else
+    {
+      /* We cannot merge the JOIN.  */
+
+      /* The outgoing edge for the current COMBO block should already
+	 be correct.  Verify this.  */
+      if (combo_bb->succ->succ_next != NULL_EDGE
+	  || combo_bb->succ->dest != join_bb)
+	abort ();
+
+      /* Remove the jump and cruft from the end of the COMBO block.  */
+      if (join_bb != EXIT_BLOCK_PTR)
+        tidy_fallthru_edge (combo_bb->succ, combo_bb, join_bb);
+    }
+
+  /* Make sure we update life info properly.  */
+  SET_UPDATE_LIFE (combo_bb);
+
+  num_updated_if_blocks++;
+}

@@ -1,0 +1,60 @@
+void
+MSASmallerAlignment(MSA *msa, int *useme, MSA **ret_new)
+{
+  MSA *new;                     /* RETURN: new alignment */
+  int nnew;			/* number of seqs in new msa (e.g. # of TRUEs) */
+  int oidx, nidx;		/* old, new indices */
+  int i;
+
+  nnew = 0;
+  for (oidx = 0; oidx < msa->nseq; oidx++)
+    if (useme[oidx]) nnew++;
+  if (nnew == 0) { *ret_new = NULL; return; }
+  
+  new  = MSAAlloc(nnew, 0);
+  nidx = 0;
+  for (oidx = 0; oidx < msa->nseq; oidx++)
+    if (useme[oidx])
+      {
+	new->aseq[nidx]   = sre_strdup(msa->aseq[oidx],   msa->alen);
+	new->sqname[nidx] = sre_strdup(msa->sqname[oidx], msa->alen);
+	GKIStoreKey(new->index, msa->sqname[oidx]);
+	new->wgt[nidx]    = msa->wgt[oidx];
+	if (msa->sqacc != NULL)
+	  MSASetSeqAccession(new, nidx, msa->sqacc[oidx]);
+	if (msa->sqdesc != NULL)
+	  MSASetSeqDescription(new, nidx, msa->sqdesc[oidx]);
+	if (msa->ss != NULL && msa->ss[oidx] != NULL)
+	  {
+	    if (new->ss == NULL) new->ss = MallocOrDie(sizeof(char *) * new->nseq);
+	    new->ss[nidx] = sre_strdup(msa->ss[oidx], -1);
+	  }
+	if (msa->sa != NULL && msa->sa[oidx] != NULL)
+	  {
+	    if (new->sa == NULL) new->sa = MallocOrDie(sizeof(char *) * new->nseq);
+	    new->sa[nidx] = sre_strdup(msa->sa[oidx], -1);
+	  }
+	nidx++;
+      }
+
+  new->nseq    = nnew;
+  new->alen    = msa->alen; 
+  new->flags   = msa->flags;
+  new->type    = msa->type;
+  new->name    = sre_strdup(msa->name, -1);
+  new->desc    = sre_strdup(msa->desc, -1);
+  new->acc     = sre_strdup(msa->acc, -1);
+  new->au      = sre_strdup(msa->au, -1);
+  new->ss_cons = sre_strdup(msa->ss_cons, -1);
+  new->sa_cons = sre_strdup(msa->sa_cons, -1);
+  new->rf      = sre_strdup(msa->rf, -1);
+  for (i = 0; i < MSA_MAXCUTOFFS; i++) {
+    new->cutoff[i]        = msa->cutoff[i];
+    new->cutoff_is_set[i] = msa->cutoff_is_set[i];
+  }
+  free(new->sqlen);
+
+  MSAMingap(new);
+  *ret_new = new;
+  return;
+}

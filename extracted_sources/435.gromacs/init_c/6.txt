@@ -1,0 +1,23 @@
+void distribute_parts(int left,int right,int nodeid,int nnodes,t_parm *parm,
+		      char *tpxfile,int nstDlb)
+{
+  int         natoms,step;
+  real        t,lambda;
+  t_tpxheader tpx;
+  t_topology  top;
+  t_nsborder  nsb;
+  rvec        *x,*v;
+  
+  read_tpxheader(tpxfile,&tpx);
+  snew(x,tpx.natoms);
+  snew(v,tpx.natoms);
+  read_tpx(tpxfile,&step,&t,&lambda,&parm->ir,parm->box,
+	   &natoms,x,v,NULL,&top);
+  check_nnodes_top(tpxfile,&top,nnodes);
+  
+  calc_nsb(stdlog,&(top.blocks[ebCGS]),nnodes,&nsb,nstDlb);
+  mv_data(left,right,parm,&nsb,&top,x,v);
+  done_top(&top);
+  sfree(x);
+  sfree(v);
+}

@@ -1,0 +1,40 @@
+void
+find_exception_handler_labels ()
+{
+  int i;
+
+  if (exception_handler_label_map)
+    htab_empty (exception_handler_label_map);
+  else
+    {
+      /* ??? The expansion factor here (3/2) must be greater than the htab
+	 occupancy factor (4/3) to avoid unnecessary resizing.  */
+      exception_handler_label_map
+        = htab_create (cfun->eh->last_region_number * 3 / 2,
+		       ehl_hash, ehl_eq, ehl_free);
+    }
+
+  if (cfun->eh->region_tree == NULL)
+    return;
+
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      struct eh_region *region = cfun->eh->region_array[i];
+      rtx lab;
+
+      if (! region || region->region_number != i)
+	continue;
+      if (cfun->eh->built_landing_pads)
+	lab = region->landing_pad;
+      else
+	lab = region->label;
+
+      if (lab)
+	add_ehl_entry (lab, region);
+    }
+
+  /* For sjlj exceptions, need the return label to remain live until
+     after landing pad generation.  */
+  if (USING_SJLJ_EXCEPTIONS && ! cfun->eh->built_landing_pads)
+    add_ehl_entry (return_label, NULL);
+}

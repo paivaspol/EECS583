@@ -1,0 +1,21 @@
+static void
+expand_deferred_fns ()
+{
+  unsigned int i;
+
+  for (i = 0; i < VARRAY_ACTIVE_SIZE (deferred_fns); i++)
+    {
+      tree decl = VARRAY_TREE (deferred_fns, i);
+
+      if (! TREE_ASM_WRITTEN (decl))
+	{
+	  /* For static inline functions, delay the decision whether to
+	     emit them or not until wrapup_global_declarations.  */
+	  if (! TREE_PUBLIC (decl))
+	    DECL_DEFER_OUTPUT (decl) = 1;
+	  c_expand_deferred_function (decl);
+	}
+    }
+
+  VARRAY_FREE (deferred_fns);
+}

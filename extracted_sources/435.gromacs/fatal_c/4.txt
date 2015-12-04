@@ -1,0 +1,23 @@
+static void bputi(char *msg,int *len,int val,int radix,int fld,bool bNeg)
+{
+  int fmax=0;
+  
+  if (bNeg)
+    fmax=1;
+    
+  if (val<radix)
+    {
+      for (fld--; fld>fmax; fld--) 
+	bputc(msg,len,' ');
+      if (bNeg)
+	bputc(msg,len,'-');
+      bputd(msg,len,val);
+    }
+  else
+    {
+      if (bNeg)
+	bputc(msg,len,'-');
+      bputi(msg,len,val/radix,radix,fld-1,FALSE);
+      bputd(msg,len,val%radix);
+    }
+}

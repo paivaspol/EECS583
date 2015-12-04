@@ -1,0 +1,150 @@
+int32 feat_s2mfc2feat (feat_t *fcb, char *file, char *dir, int32 sf, int32 ef, float32 ***feat,
+		       int32 maxfr)
+{
+    char path[16384];
+    int32 win, nfr;
+    int32 i, k;
+    float32 **mfc;
+    /*    int32 l,m;*/
+    
+    if (fcb->cepsize <= 0) {
+	E_ERROR("Bad cepsize: %d\n", fcb->cepsize);
+	return -1;
+    }
+    
+    /* Create mfc filename, combining file, dir and extension (.mfc) if necessary */
+    k = strlen(file);
+    if ((k > 4) && (strcmp (file+k-4, ".mfc") == 0)) {	/* Hack!! Hardwired .mfc extension */
+	if (dir && (file[0] != '/'))
+	    sprintf (path, "%s/%s", dir, file);
+	else
+	    strcpy (path, file);
+    } else {
+	if (dir && (file[0] != '/'))
+	    sprintf (path, "%s/%s.mfc", dir, file);
+	else
+	    sprintf (path, "%s.mfc", file);
+    }
+    
+    win = feat_window_size(fcb);
+    
+    /* Adjust boundaries to include padding for feature computation */
+    if (ef < 0)
+	ef = (int32)0x7fff0000 - win;	/* Hack!! Hardwired constant */
+    sf -= win;
+    ef += win;
+    
+    /* Read mfc file */
+    mfc = (float32 **) ckd_calloc_2d (S3_MAX_FRAMES, fcb->cepsize, sizeof(float32));
+    if (sf < 0)
+	nfr = feat_s2mfc_read (path, 0, ef, mfc-sf, S3_MAX_FRAMES+sf-win);
+    else
+	nfr = feat_s2mfc_read (path, sf, ef, mfc, S3_MAX_FRAMES-win);
+    if (nfr < 0) {
+	ckd_free_2d((void **) mfc);
+	return -1;
+    }
+
+#if 0
+    for(l=0;l<nfr;l++){
+      printf(" %d ",l);
+      for(m=0;m<13;m++){
+	printf("%f ",mfc[l][m]);
+	fflush(stdout);
+      }
+      printf("\n");
+      fflush(stdout);
+    }
+#endif
+
+    
+    if (nfr < 2*win+1) {
+	E_ERROR("%s: MFC file/segment too short to compute features: %d frames\n", file, nfr);
+	ckd_free_2d((void **) mfc);
+	return -1;
+    }
+
+    /* Add padding at the beginning by replicating input data, if necessary */
+    if (sf < 0) {
+	for (i = 0; i < -sf; i++)
+	    memcpy (mfc[i], mfc[i-sf+1], fcb->cepsize * sizeof(float32));
+	nfr -= sf;
+    }
+    
+    /* Add padding at the end by replicating input data, if necessary */
+    k = ef - sf + 1;
+    if (nfr < k) {
+	k -= nfr;	/* Extra frames padding needed at the end */
+	if (k > win)
+	    k = win;	/* Limit feature frames to extent of file, not to unbounded ef */
+	
+	for (i = 0; i < k; i++)
+	    memcpy (mfc[nfr+i], mfc[nfr+i-1-k], fcb->cepsize * sizeof(float32));
+	nfr += k;
+    }
+    /* At this point, nfr includes complete padded cepstrum frames */
+    
+    if (nfr - win*2 > maxfr) {
+	E_ERROR("%s: Feature buffer size(%d frames) < required(%d)\n", maxfr, nfr - win*2);
+	ckd_free_2d((void **) mfc);
+	return -1;
+    }
+    
+    if (fcb->cmn){
+      E_INFO("CMN\n");
+	cmn (mfc, fcb->varnorm, nfr, fcb->cepsize);
+    }
+    if (fcb->agc){
+      E_INFO("AGC\n");
+	agc_max (mfc, nfr);
+    }
+
+
+#if 0
+    for(l=0;l<nfr;l++){
+      printf(" %d ",l);
+      for(m=0;m<13;m++){
+	printf("%f ",mfc[l][m]);
+	fflush(stdout);
+      }
+      printf("\n");
+      fflush(stdout);
+    }
+#endif
+
+    
+    /* Create feature vectors */
+    for (i = win; i < nfr-win; i++)
+	fcb->compute_feat (fcb, mfc+i, feat[i-win]);
+
+#if 0
+    {
+      int32 i, j, k;
+    
+      for (i = 0; i < nfr; i++) {
+	fprintf (stderr, "%8d:", i);
+	
+	for (j = 0; j < feat_n_stream(fcb); j++) {
+	  fprintf (stderr, " %2d:", j);
+	  
+	  for (k = 0; k < 13; k++)
+	    fprintf (stderr, " %f", feat[i][j][k]);
+	  fprintf (stderr, "\n");
+	  for (k = 13; k < 26; k++)
+	    fprintf (stderr, " %f", feat[i][j][k]);
+	  fprintf (stderr, "\n");
+	  for (k = 26; k < 39; k++)
+	    fprintf (stderr, " %f", feat[i][j][k]);
+	  fprintf (stderr, "\n");
+
+	}
+      }
+
+    }
+#endif 
+
+    
+    ckd_free_2d((void **) mfc);
+    
+    return (nfr - win*2);
+}

@@ -1,0 +1,89 @@
+static void ProfileCheck()
+{
+  if((input->ProfileIDC != 66 ) &&
+     (input->ProfileIDC != 77 ) && 
+     (input->ProfileIDC != 88 ) && 
+     (input->ProfileIDC != FREXT_HP    ) && 
+     (input->ProfileIDC != FREXT_Hi10P ) && 
+     (input->ProfileIDC != FREXT_Hi422 ) && 
+     (input->ProfileIDC != FREXT_Hi444 ))
+  {
+    snprintf(errortext, ET_SIZE, "Profile must be baseline(66)/main(77)/extended(88) or FRExt (%d to %d).", FREXT_HP,FREXT_Hi444);
+    error (errortext, 500);
+  }
+  // baseline
+  if (input->ProfileIDC == 66 )
+  {
+    if (input->successive_Bframe)
+    {
+      snprintf(errortext, ET_SIZE, "B pictures are not allowed in baseline.");
+      error (errortext, 500);
+    }
+    if (input->sp_periodicity)
+    {
+      snprintf(errortext, ET_SIZE, "SP pictures are not allowed in baseline.");
+      error (errortext, 500);
+    }
+    if (input->partition_mode)
+    {
+      snprintf(errortext, ET_SIZE, "Data partitioning is not allowed in baseline.");
+      error (errortext, 500);
+    }
+    if (input->WeightedPrediction)
+    {
+      snprintf(errortext, ET_SIZE, "Weighted prediction is not allowed in baseline.");
+      error (errortext, 500);
+    }
+    if (input->WeightedBiprediction)
+    {
+      snprintf(errortext, ET_SIZE, "Weighted prediction is not allowed in baseline.");
+      error (errortext, 500);
+    }
+    if (input->symbol_mode == CABAC)
+    {
+      snprintf(errortext, ET_SIZE, "CABAC is not allowed in baseline.");
+      error (errortext, 500);
+    }
+  }
+
+  // main
+  if (input->ProfileIDC == 77 )
+  {
+    if (input->sp_periodicity)
+    {
+      snprintf(errortext, ET_SIZE, "SP pictures are not allowed in main.");
+      error (errortext, 500);
+    }
+    if (input->partition_mode)
+    {
+      snprintf(errortext, ET_SIZE, "Data partitioning is not allowed in main.");
+      error (errortext, 500);
+    }
+    if (input->num_slice_groups_minus1)
+    {
+      snprintf(errortext, ET_SIZE, "num_slice_groups_minus1>0 (FMO) is not allowed in main.");
+      error (errortext, 500);
+    }
+    if (input->redundant_slice_flag)
+    {
+      snprintf(errortext, ET_SIZE, "Redundant pictures are not allowed in main.");
+      error (errortext, 500);
+    }
+  }
+
+  // extended
+  if (input->ProfileIDC == 88 )
+  {
+    if (!input->directInferenceFlag)
+    {
+      snprintf(errortext, ET_SIZE, "direct_8x8_inference flag must be equal to 1 in extended.");
+      error (errortext, 500);
+    }
+
+    if (input->symbol_mode == CABAC)
+    {
+      snprintf(errortext, ET_SIZE, "CABAC is not allowed in extended.");
+      error (errortext, 500);
+    }
+  }
+}

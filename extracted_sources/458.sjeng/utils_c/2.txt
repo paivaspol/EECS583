@@ -1,0 +1,53 @@
+void comp_to_coord (move_s move, char str[]) {
+
+  /* convert a move_s internal format move to coordinate notation: */
+
+  int prom, from, target, f_rank, t_rank, converter;
+  char f_file, t_file;
+
+  const int type_to_char[] = { 'F', 'P', 'p', 'N', 'n', 'K', 'k', 'R', 'r', 'Q', 'q', 'B', 'b', 'E' };
+
+  prom = move.promoted;
+  from = move.from;
+  target = move.target;
+
+  f_rank = rank (from);
+  t_rank = rank (target);
+  converter = (int) 'a';
+  f_file = file (from)+converter-1;
+  t_file = file (target)+converter-1;
+
+
+  if (from == 0)
+    {
+      sprintf (str, "%c@%c%d", type_to_char[prom], t_file, t_rank);
+    }
+  else
+    {
+      /* "normal" move: */
+      if (!prom) {
+	sprintf (str, "%c%d%c%d", f_file, f_rank, t_file, t_rank);
+      }
+
+      /* promotion move: */
+      else {
+	if (prom == wknight || prom == bknight) {
+	  sprintf (str, "%c%d%c%dn", f_file, f_rank, t_file, t_rank);
+	}
+	else if (prom == wrook || prom == brook) {
+	  sprintf (str, "%c%d%c%dr", f_file, f_rank, t_file, t_rank);
+	}
+	else if (prom == wbishop || prom == bbishop) {
+	  sprintf (str, "%c%d%c%db", f_file, f_rank, t_file, t_rank);
+	}
+	else if (prom == wking || prom == bking)
+	{
+	  sprintf (str, "%c%d%c%dk", f_file, f_rank, t_file, t_rank);
+	}
+	else
+	{
+	  sprintf (str, "%c%d%c%dq", f_file, f_rank, t_file, t_rank);
+	}
+      }
+    }
+}

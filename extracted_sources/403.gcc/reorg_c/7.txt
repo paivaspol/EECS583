@@ -1,0 +1,52 @@
+static rtx
+delete_from_delay_slot (insn)
+     rtx insn;
+{
+  rtx trial, seq_insn, seq, prev;
+  rtx delay_list = 0;
+  int i;
+
+  /* We first must find the insn containing the SEQUENCE with INSN in its
+     delay slot.  Do this by finding an insn, TRIAL, where
+     PREV_INSN (NEXT_INSN (TRIAL)) != TRIAL.  */
+
+  for (trial = insn;
+       PREV_INSN (NEXT_INSN (trial)) == trial;
+       trial = NEXT_INSN (trial))
+    ;
+
+  seq_insn = PREV_INSN (NEXT_INSN (trial));
+  seq = PATTERN (seq_insn);
+
+  /* Create a delay list consisting of all the insns other than the one
+     we are deleting (unless we were the only one).  */
+  if (XVECLEN (seq, 0) > 2)
+    for (i = 1; i < XVECLEN (seq, 0); i++)
+      if (XVECEXP (seq, 0, i) != insn)
+	delay_list = add_to_delay_list (XVECEXP (seq, 0, i), delay_list);
+
+  /* Delete the old SEQUENCE, re-emit the insn that used to have the delay
+     list, and rebuild the delay list if non-empty.  */
+  prev = PREV_INSN (seq_insn);
+  trial = XVECEXP (seq, 0, 0);
+  delete_related_insns (seq_insn);
+  add_insn_after (trial, prev);
+
+  if (GET_CODE (trial) == JUMP_INSN
+      && (simplejump_p (trial) || GET_CODE (PATTERN (trial)) == RETURN))
+    emit_barrier_after (trial);
+
+  /* If there are any delay insns, remit them.  Otherwise clear the
+     annul flag.  */
+  if (delay_list)
+    trial = emit_delay_sequence (trial, delay_list, XVECLEN (seq, 0) - 2);
+  else
+    INSN_ANNULLED_BRANCH_P (trial) = 0;
+
+  INSN_FROM_TARGET_P (insn) = 0;
+
+  /* Show we need to fill this insn again.  */
+  obstack_ptr_grow (&unfilled_slots_obstack, trial);
+
+  return trial;
+}

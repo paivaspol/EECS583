@@ -1,0 +1,183 @@
+void
+push_init_level (implicit)
+     int implicit;
+{
+  struct constructor_stack *p;
+  tree value = NULL_TREE;
+
+  /* If we've exhausted any levels that didn't have braces,
+     pop them now.  */
+  while (constructor_stack->implicit)
+    {
+      if ((TREE_CODE (constructor_type) == RECORD_TYPE
+	   || TREE_CODE (constructor_type) == UNION_TYPE)
+	  && constructor_fields == 0)
+	process_init_element (pop_init_level (1));
+      else if (TREE_CODE (constructor_type) == ARRAY_TYPE
+	       && tree_int_cst_lt (constructor_max_index, constructor_index))
+	process_init_element (pop_init_level (1));
+      else
+	break;
+    }
+
+  /* Unless this is an explicit brace, we need to preserve previous
+     content if any.  */
+  if (implicit)
+    {
+      if ((TREE_CODE (constructor_type) == RECORD_TYPE
+	   || TREE_CODE (constructor_type) == UNION_TYPE)
+	  && constructor_fields)
+	value = find_init_member (constructor_fields);
+      else if (TREE_CODE (constructor_type) == ARRAY_TYPE)
+	value = find_init_member (constructor_index);
+    }
+
+  p = (struct constructor_stack *) xmalloc (sizeof (struct constructor_stack));
+  p->type = constructor_type;
+  p->fields = constructor_fields;
+  p->index = constructor_index;
+  p->max_index = constructor_max_index;
+  p->unfilled_index = constructor_unfilled_index;
+  p->unfilled_fields = constructor_unfilled_fields;
+  p->bit_index = constructor_bit_index;
+  p->elements = constructor_elements;
+  p->constant = constructor_constant;
+  p->simple = constructor_simple;
+  p->erroneous = constructor_erroneous;
+  p->pending_elts = constructor_pending_elts;
+  p->depth = constructor_depth;
+  p->replacement_value = 0;
+  p->implicit = implicit;
+  p->outer = 0;
+  p->incremental = constructor_incremental;
+  p->designated = constructor_designated;
+  p->next = constructor_stack;
+  p->range_stack = 0;
+  constructor_stack = p;
+
+  constructor_constant = 1;
+  constructor_simple = 1;
+  constructor_depth = SPELLING_DEPTH ();
+  constructor_elements = 0;
+  constructor_incremental = 1;
+  constructor_designated = 0;
+  constructor_pending_elts = 0;
+  if (!implicit)
+    {
+      p->range_stack = constructor_range_stack;
+      constructor_range_stack = 0;
+      designator_depth = 0;
+      designator_errorneous = 0;
+    }
+
+  /* Don't die if an entire brace-pair level is superfluous
+     in the containing level.  */
+  if (constructor_type == 0)
+    ;
+  else if (TREE_CODE (constructor_type) == RECORD_TYPE
+	   || TREE_CODE (constructor_type) == UNION_TYPE)
+    {
+      /* Don't die if there are extra init elts at the end.  */
+      if (constructor_fields == 0)
+	constructor_type = 0;
+      else
+	{
+	  constructor_type = TREE_TYPE (constructor_fields);
+	  push_member_name (constructor_fields);
+	  constructor_depth++;
+	}
+    }
+  else if (TREE_CODE (constructor_type) == ARRAY_TYPE)
+    {
+      constructor_type = TREE_TYPE (constructor_type);
+      push_array_bounds (tree_low_cst (constructor_index, 0));
+      constructor_depth++;
+    }
+
+  if (constructor_type == 0)
+    {
+      error_init ("extra brace group at end of initializer");
+      constructor_fields = 0;
+      constructor_unfilled_fields = 0;
+      return;
+    }
+
+  if (value && TREE_CODE (value) == CONSTRUCTOR)
+    {
+      constructor_constant = TREE_CONSTANT (value);
+      constructor_simple = TREE_STATIC (value);
+      constructor_elements = TREE_OPERAND (value, 1);
+      if (constructor_elements
+	  && (TREE_CODE (constructor_type) == RECORD_TYPE
+	      || TREE_CODE (constructor_type) == ARRAY_TYPE))
+	set_nonincremental_init ();
+    }
+
+  if (implicit == 1 && warn_missing_braces && !missing_braces_mentioned)
+    {
+      missing_braces_mentioned = 1;
+      warning_init ("missing braces around initializer");
+    }
+
+  if (TREE_CODE (constructor_type) == RECORD_TYPE
+	   || TREE_CODE (constructor_type) == UNION_TYPE)
+    {
+      constructor_fields = TYPE_FIELDS (constructor_type);
+      /* Skip any nameless bit fields at the beginning.  */
+      while (constructor_fields != 0 && DECL_C_BIT_FIELD (constructor_fields)
+	     && DECL_NAME (constructor_fields) == 0)
+	constructor_fields = TREE_CHAIN (constructor_fields);
+
+      constructor_unfilled_fields = constructor_fields;
+      constructor_bit_index = bitsize_zero_node;
+    }
+  else if (TREE_CODE (constructor_type) == VECTOR_TYPE)
+    {
+      /* Vectors are like simple fixed-size arrays.  */
+      constructor_max_index =
+	build_int_2 (TYPE_VECTOR_SUBPARTS (constructor_type) - 1, 0);
+      constructor_index = convert (bitsizetype, integer_zero_node);
+      constructor_unfilled_index = constructor_index;
+    }
+  else if (TREE_CODE (constructor_type) == ARRAY_TYPE)
+    {
+      if (TYPE_DOMAIN (constructor_type))
+	{
+	  constructor_max_index
+	    = TYPE_MAX_VALUE (TYPE_DOMAIN (constructor_type));
+
+	  /* Detect non-empty initializations of zero-length arrays.  */
+	  if (constructor_max_index == NULL_TREE
+	      && TYPE_SIZE (constructor_type))
+	    constructor_max_index = build_int_2 (-1, -1);
+
+	  /* constructor_max_index needs to be an INTEGER_CST.  Attempts
+	     to initialize VLAs will cause an proper error; avoid tree
+	     checking errors as well by setting a safe value.  */
+	  if (constructor_max_index
+	      && TREE_CODE (constructor_max_index) != INTEGER_CST)
+	    constructor_max_index = build_int_2 (-1, -1);
+
+	  constructor_index
+	    = convert (bitsizetype, 
+		       TYPE_MIN_VALUE (TYPE_DOMAIN (constructor_type)));
+	}
+      else
+	constructor_index = bitsize_zero_node;
+
+      constructor_unfilled_index = constructor_index;
+      if (value && TREE_CODE (value) == STRING_CST)
+	{
+	  /* We need to split the char/wchar array into individual
+	     characters, so that we don't have to special case it
+	     everywhere.  */
+	  set_nonincremental_init_from_string (value);
+	}
+    }
+  else
+    {
+      warning_init ("braces around scalar initializer");
+      constructor_fields = constructor_type;
+      constructor_unfilled_fields = constructor_type;
+    }
+}

@@ -1,0 +1,70 @@
+int writeMotionInfo2NAL ()
+{
+  int k, j0, i0, refframe;
+
+  Macroblock*     currMB    = &img->mb_data[img->current_mb_nr];
+  int             no_bits   = 0;
+  int   bframe          = (img->type==B_SLICE);
+  int   step_h0         = (input->blc_size[IS_P8x8(currMB) ? 4 : currMB->mb_type][0] >> 2);
+  int   step_v0         = (input->blc_size[IS_P8x8(currMB) ? 4 : currMB->mb_type][1] >> 2);
+
+  //=== If multiple ref. frames, write reference frame for the MB ===
+  if (IS_INTERMV (currMB))
+  {
+    // if UVLC is turned on, a 8x8 macroblock with all ref=0 in a P-frame is signalled in macroblock mode
+    if (!IS_P8x8 (currMB) || !ZeroRef (currMB) || input->symbol_mode==CABAC || bframe)
+    {
+      for (j0=0; j0<4; j0+=step_v0)
+      for (i0=0; i0<4; i0+=step_h0)
+      {
+        k=j0+(i0/2);
+
+        if ((currMB->b8pdir[k]==0 || currMB->b8pdir[k]==2) && currMB->b8mode[k]!=0)//has forward vector
+        {
+          no_bits += writeReferenceFrame (currMB->b8mode[k], i0, j0, 1, enc_picture->ref_idx[LIST_0][img->block_x+i0][img->block_y+j0]);
+        }
+      }
+        for (j0=0; j0<4; j0+=step_v0)
+        for (i0=0; i0<4; i0+=step_h0)
+        {
+          k=j0+(i0/2);
+          if ((currMB->b8pdir[k]==1 || currMB->b8pdir[k]==2) && currMB->b8mode[k]!=0)//has backward vector
+          {
+            no_bits += writeReferenceFrame (currMB->b8mode[k], i0, j0, 0, enc_picture->ref_idx[LIST_1][img->block_x+i0][img->block_y+j0]);
+          }
+        }
+    }
+  }
+
+  //===== write forward motion vectors =====
+  if (IS_INTERMV (currMB))
+  {
+    for (j0=0; j0<4; j0+=step_v0)
+    for (i0=0; i0<4; i0+=step_h0)
+    {
+      k=j0+(i0/2);
+      if ((currMB->b8pdir[k]==0 || currMB->b8pdir[k]==2) && currMB->b8mode[k]!=0)//has forward vector
+      {
+        refframe  = enc_picture->ref_idx[LIST_0][img->block_x+i0][img->block_y+j0];
+        no_bits  += writeMotionVector8x8 (i0, j0, i0+step_h0, j0+step_v0, refframe, LIST_0, currMB->b8mode[k]);
+      }
+    }
+  }
+
+
+  //===== write backward motion vectors =====
+  if (IS_INTERMV (currMB) && bframe)
+  {
+    for (j0=0; j0<4; j0+=step_v0)
+    for (i0=0; i0<4; i0+=step_h0)
+    {
+      k=j0+(i0/2);
+      if ((currMB->b8pdir[k]==1 || currMB->b8pdir[k]==2) && currMB->b8mode[k]!=0)//has backward vector
+      {
+        refframe  = enc_picture->ref_idx[LIST_1][img->block_x+i0][img->block_y+j0];
+        no_bits  += writeMotionVector8x8 (i0, j0, i0+step_h0, j0+step_v0, refframe, LIST_1, currMB->b8mode[k]);
+      }
+    }
+  }
+  return no_bits;
+}

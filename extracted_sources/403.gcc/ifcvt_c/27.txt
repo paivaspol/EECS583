@@ -1,0 +1,23 @@
+static rtx
+block_has_only_trap (bb)
+     basic_block bb;
+{
+  rtx trap;
+
+  /* We're not the exit block.  */
+  if (bb == EXIT_BLOCK_PTR)
+    return NULL_RTX;
+
+  /* The block must have no successors.  */
+  if (bb->succ)
+    return NULL_RTX;
+
+  /* The only instruction in the THEN block must be the trap.  */
+  trap = first_active_insn (bb);
+  if (! (trap == bb->end
+	 && GET_CODE (PATTERN (trap)) == TRAP_IF
+         && TRAP_CONDITION (PATTERN (trap)) == const_true_rtx))
+    return NULL_RTX;
+
+  return trap;
+}

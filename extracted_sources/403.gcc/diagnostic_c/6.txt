@@ -1,0 +1,23 @@
+static void
+set_real_maximum_length (buffer)
+     output_buffer *buffer;
+{
+  /* If we're told not to wrap lines then do the obvious thing.  In case
+   we'll emit prefix only once per diagnostic message, it is appropriate
+  not to increase unnecessarily the line-length cut-off.  */
+  if (! output_is_line_wrapping (buffer)
+      || diagnostic_prefixing_rule (buffer) == DIAGNOSTICS_SHOW_PREFIX_ONCE
+      || diagnostic_prefixing_rule (buffer) == DIAGNOSTICS_SHOW_PREFIX_NEVER)
+    line_wrap_cutoff (buffer) = diagnostic_line_cutoff (buffer);
+  else
+    {
+      int prefix_length =
+        output_prefix (buffer) ? strlen (output_prefix (buffer)) : 0;
+      /* If the prefix is ridiculously too long, output at least
+         32 characters.  */
+      if (diagnostic_line_cutoff (buffer) - prefix_length < 32)
+        line_wrap_cutoff (buffer) = diagnostic_line_cutoff (buffer) + 32;
+      else
+        line_wrap_cutoff (buffer) = diagnostic_line_cutoff (buffer);
+    }
+}

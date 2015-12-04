@@ -1,0 +1,45 @@
+int ask_starting_lattice( int prompt, int *flag, char *filename ){
+    char savebuf[256];
+    int status;
+
+    if (prompt!=0) printf(
+        "enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
+    status=scanf("%s",savebuf);
+    if(status !=1) {
+        printf("ask_starting_lattice: ERROR IN INPUT: starting lattice command\n");
+        return(1);
+    }
+
+    printf("%s ",savebuf);
+    if(strcmp("fresh",savebuf) == 0 ){
+       *flag = FRESH;
+    printf("\n");
+    }
+    else if(strcmp("continue",savebuf) == 0 ) {
+        *flag = CONTINUE;
+	printf("\n");
+    }
+    else if(strcmp("reload_ascii",savebuf) == 0 ) {
+       *flag = RELOAD_ASCII;
+    }
+    else if(strcmp("reload_serial",savebuf) == 0 ) {
+       *flag = RELOAD_SERIAL;
+    }
+    else if(strcmp("reload_parallel",savebuf) == 0 ) {
+       *flag = RELOAD_PARALLEL;
+    }
+    else{
+    	printf("ask_starting_lattice: ERROR IN INPUT: lattice_command %s is invalid\n",savebuf); return(1);
+    }
+
+    /*read name of file and load it */
+    if( *flag != FRESH && *flag != CONTINUE ){
+        if(prompt!=0)printf("enter name of file containing lattice\n");
+        status=scanf("%s",filename);
+        if(status !=1) {
+	    printf("ask_starting_lattice: ERROR IN INPUT: file name read\n"); return(1);
+        }
+	printf("%s\n",filename);
+    }
+    return(0);
+}

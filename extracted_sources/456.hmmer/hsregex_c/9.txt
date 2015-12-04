@@ -1,0 +1,21 @@
+static void
+regtail(cp, p, val)
+register struct comp *cp;
+char *p;
+char *val;
+{
+	register char *scan;
+	register char *temp;
+	register int offset;
+
+	if (!EMITTING(cp))
+		return;
+
+	/* Find last node. */
+	for (scan = p; (temp = regnext(scan)) != NULL; scan = temp)
+		continue;
+
+	offset = (OP(scan) == BACK) ? scan - val : val - scan;
+	*(scan+1) = (offset>>8)&0177;
+	*(scan+2) = offset&0377;
+}

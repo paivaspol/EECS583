@@ -1,0 +1,43 @@
+void
+cpp_register_pragma (pfile, space, name, handler)
+     cpp_reader *pfile;
+     const char *space;
+     const char *name;
+     pragma_cb handler;
+{
+  struct pragma_entry **chain = &pfile->pragmas;
+  struct pragma_entry *entry;
+  const cpp_hashnode *node;
+
+  if (!handler)
+    abort ();
+
+  if (space)
+    {
+      node = cpp_lookup (pfile, U space, strlen (space));
+      entry = lookup_pragma_entry (*chain, node);
+      if (!entry)
+	entry = insert_pragma_entry (pfile, chain, node, NULL);
+      else if (!entry->is_nspace)
+	goto clash;
+      chain = &entry->u.space;
+    }
+
+  /* Check for duplicates.  */
+  node = cpp_lookup (pfile, U name, strlen (name));
+  entry = lookup_pragma_entry (*chain, node);
+  if (entry)
+    {
+      if (entry->is_nspace)
+	clash:
+	cpp_ice (pfile,
+		 "registering \"%s\" as both a pragma and a pragma namespace",
+		 NODE_NAME (node));
+      else if (space)
+	cpp_ice (pfile, "#pragma %s %s is already registered", space, name);
+      else
+	cpp_ice (pfile, "#pragma %s is already registered", name);
+    }
+  else
+    insert_pragma_entry (pfile, chain, node, handler);
+}

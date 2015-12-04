@@ -1,0 +1,66 @@
+static int
+make_regs_equivalent_over_bad_edges (bb, reg_partition)
+     int bb;
+     partition reg_partition;
+{
+  int changed = 0;
+  basic_block b = BASIC_BLOCK (bb);
+  rtx phi;
+
+  /* Advance to the first phi node.  */
+  phi = first_insn_after_basic_block_note (b);
+
+  /* Scan all the phi nodes.  */
+  for (; 
+       PHI_NODE_P (phi);
+       phi = next_nonnote_insn (phi))
+    {
+      edge e;
+      int tgt_regno;
+      rtx set = PATTERN (phi);
+      rtx tgt = SET_DEST (set);
+
+      /* The set target is expected to be an SSA register.  */
+      if (GET_CODE (tgt) != REG 
+	  || !CONVERT_REGISTER_TO_SSA_P (REGNO (tgt)))
+	abort ();
+      tgt_regno = REGNO (tgt);
+
+      /* Scan incoming abnormal critical edges.  */
+      for (e = b->pred; e; e = e->pred_next)
+	if ((e->flags & EDGE_ABNORMAL) && EDGE_CRITICAL_P (e))
+	  {
+	    rtx *alt = phi_alternative (set, e->src->index);
+	    int alt_regno;
+
+	    /* If there is no alternative corresponding to this edge,
+	       the value is undefined along the edge, so just go on.  */
+	    if (alt == 0)
+	      continue;
+
+	    /* The phi alternative is expected to be an SSA register.  */
+	    if (GET_CODE (*alt) != REG 
+		|| !CONVERT_REGISTER_TO_SSA_P (REGNO (*alt)))
+	      abort ();
+	    alt_regno = REGNO (*alt);
+
+	    /* If the set destination and the phi alternative aren't
+	       already in the same class...  */
+	    if (partition_find (reg_partition, tgt_regno) 
+		!= partition_find (reg_partition, alt_regno))
+	      {
+		/* ... make them such.  */
+		if (conflicting_hard_regs_p (tgt_regno, alt_regno))
+		  /* It is illegal to unify a hard register with a
+		     different register.  */
+		  abort ();
+		
+		partition_union (reg_partition, 
+				 tgt_regno, alt_regno);
+		++changed;
+	      }
+	  }
+    }
+
+  return changed;
+}

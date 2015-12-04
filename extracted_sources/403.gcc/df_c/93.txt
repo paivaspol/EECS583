@@ -1,0 +1,108 @@
+static void 
+hybrid_search_sbitmap (block, in, out, gen, kill, dir, 
+		       conf_op, transfun, visited, pending,
+		       data)
+     basic_block block;
+     sbitmap *in, *out, *gen, *kill;
+     enum df_flow_dir dir;
+     enum df_confluence_op conf_op;
+     transfer_function_sbitmap transfun;
+     sbitmap visited;
+     sbitmap pending;
+     void *data;
+{
+  int changed;
+  int i = block->index;
+  edge e;
+  basic_block bb= block;
+  SET_BIT (visited, block->index);
+  if (TEST_BIT (pending, block->index))
+    {
+      if (dir == FORWARD)
+	{
+	  /*  Calculate <conf_op> of predecessor_outs */
+	  sbitmap_zero (in[i]);
+	  for (e = bb->pred; e != 0; e = e->pred_next)
+	    {
+	      if (e->src == ENTRY_BLOCK_PTR)
+		continue;
+	      switch (conf_op)
+		{
+		case UNION:
+		  sbitmap_a_or_b (in[i], in[i], out[e->src->index]);
+		  break;
+		case INTERSECTION:
+		  sbitmap_a_and_b (in[i], in[i], out[e->src->index]);
+		  break;
+		}
+	    }
+	}
+      else 
+	{
+	  /* Calculate <conf_op> of successor ins */
+	  sbitmap_zero(out[i]);
+	  for (e = bb->succ; e != 0; e = e->succ_next)
+	    {
+	      if (e->dest == EXIT_BLOCK_PTR)
+		continue;
+	      switch (conf_op)
+		{	
+		case UNION:
+		  sbitmap_a_or_b (out[i], out[i], in[e->dest->index]);
+		  break;
+		case INTERSECTION:
+		  sbitmap_a_and_b (out[i], out[i], in[e->dest->index]);
+		  break;
+		}
+	    }
+	}      
+      /* Common part */
+      (*transfun)(i, &changed, in[i], out[i], gen[i], kill[i], data);
+      RESET_BIT (pending, i);
+      if (changed)
+	{
+	  if (dir == FORWARD)
+	    {
+	      for (e = bb->succ; e != 0; e = e->succ_next)
+		{
+		  if (e->dest == EXIT_BLOCK_PTR || e->dest->index == i)
+		    continue;
+		  SET_BIT (pending, e->dest->index);
+		}
+	    }
+	  else
+	    {
+	      for (e = bb->pred; e != 0; e = e->pred_next)
+		{
+		  if (e->src == ENTRY_BLOCK_PTR || e->dest->index == i)
+		    continue;
+		  SET_BIT (pending, e->src->index);
+		}
+	    }
+	}
+    }
+  if (dir == FORWARD)
+    {
+      for (e = bb->succ; e != 0; e = e->succ_next)
+	{
+	  if (e->dest == EXIT_BLOCK_PTR || e->dest->index == i)
+	    continue;
+	  if (!TEST_BIT (visited, e->dest->index))
+	    hybrid_search_sbitmap (e->dest, in, out, gen, kill, dir, 
+				   conf_op, transfun, visited, pending, 
+				   data);
+	}
+    }
+  else
+    {
+      for (e = bb->pred; e != 0; e = e->pred_next)
+	{
+	  if (e->src == ENTRY_BLOCK_PTR || e->src->index == i)
+	    continue;
+	  if (!TEST_BIT (visited, e->src->index))
+	    hybrid_search_sbitmap (e->src, in, out, gen, kill, dir, 
+				   conf_op, transfun, visited, pending, 
+				   data);
+	}
+    }
+}

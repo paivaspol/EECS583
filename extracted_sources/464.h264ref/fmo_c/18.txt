@@ -1,0 +1,11 @@
+void FmoSetLastMacroblockInSlice ( int mb)
+{
+  // called by terminate_slice(), writes the last processed MB into the
+  // FirstMBInSlice[MAXSLICEGROUPIDS] array.  FmoGetFirstMacroblockInSlice()
+  // uses this info to identify the first uncoded MB in each slice group
+  
+  int currSliceGroup = FmoMB2SliceGroup (mb);
+  assert (mb >= 0);
+  mb = FmoGetNextMBNr (mb);   // The next (still uncoded) MB, or -1 if SG is finished
+  FirstMBInSlice[currSliceGroup] = mb;
+}

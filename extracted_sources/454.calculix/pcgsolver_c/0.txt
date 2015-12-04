@@ -1,0 +1,91 @@
+int cgsolver (double *A, double *x, double *b, int neq, int len, int *ia, 
+	       int *iz,double *eps, int *niter, int precFlg);
+void PCG (double *A, double *x, double *b, int neq, int len, int *ia, 
+	  int *iz,double *eps, int *niter, int precFlg,
+	  double *rho, double *r, double *g, double *C, double *z);
+void CG (double *A, double *x, double *b, int neq, int len, int *ia, 
+	 int *iz,double *eps, int *niter,double *r, double *p, double *z);
+void Scaling (double *A, double *b, int neq, int *ia, int *iz, double *d);
+void MatVecProduct (double *A, double *p, int neq, int *ia, int *iz, 
+		    double *z);
+void PreConditioning (double *A, int neq, int len, int *ia, int *iz, 
+		      double alpha, int precFlg,double *C, int *ier);
+void Mrhor (double *C, int neq, int *ia, int *iz, double *r, double *rho);
+void InnerProduct (double *a, double *b, int n, double *Sum);
+	
+/* **********************************************************************
+
+The (preconditioned) conjugate gradient solver
+
+  parameter:                                                                
+           A       compact row oriented storage of lower left of matrix A  
+           neq     order of A, number of equations                         
+           len     number of non zero entries in Matrix A                  
+           ia      column indices of corresponding elements in Matrix A    
+           iz      row indices (diagonal elements indices)               
+           x       solution vector                                       
+           b       right hand side                                       
+           eps     required accuracy -> residual                         
+           niter   maximum number of iterations -> number of iterations  
+           precFlg preconditioning flag                                  
+
+The compact row oriented storage of sparse quadratic matrices is decsribed in
+H.R. Schwarz: FORTRAN-Programme zur Methode der finiten Elemente, pp.66-67, 
+Teubner, 1981
+ 
+********************************************************************** 
+*/
+
+int cgsolver (double *A, double *x, double *b, int neq, int len, 
+	       int *ia, int *iz, 
+				double *eps, int *niter, int precFlg)
+{
+  int i=0;
+  double *Factor=NULL,*r=NULL,*p=NULL,*z=NULL,*C=NULL,*g=NULL,*rho=NULL;
+
+  /*  reduce row and column indices by 1 (FORTRAN->C)   */
+
+  for (i=0; i<neq; i++)	--iz[i];
+  for (i=0; i<len; i++)	--ia[i];
+
+  /*  Scaling the equation system A x + b = 0  */
+
+  Factor=NNEW(double,neq);
+  Scaling(A,b,neq,ia,iz,Factor);
+
+  /*  SOLVER/PRECONDITIONING TYPE  */
+
+  /*  Conjugate gradient solver without preconditioning  */
+
+  if (!precFlg)
+    {
+      r=NNEW(double,neq);
+      p=NNEW(double,neq);
+      z=NNEW(double,neq);
+      CG(A,x,b,neq,len,ia,iz,eps,niter,r,p,z);
+      free(r);free(p);free(z);
+    }
+  
+  /* Conjugate gradient solver with incomplete Cholesky preconditioning on
+     full matrix */
+  
+  else if (precFlg==3)
+    {
+      rho=NNEW(double,neq);
+      r=NNEW(double,neq);
+      g=NNEW(double,neq);
+      C=NNEW(double,len);
+      z=NNEW(double,neq);
+      PCG(A,x,b,neq,len,ia,iz,eps,niter,precFlg,rho,r,g,C,z);
+      free(rho);free(r);free(g);free(C);free(z);
+    }
+  
+  /*  Backscaling of the solution vector  */
+  
+  for (i=0; i<neq; i++)	x[i] *= Factor[i];
+  
+  /*  That's it  */
+  
+  free(Factor);
+  return GOOD;
+}

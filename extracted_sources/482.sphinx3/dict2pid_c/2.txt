@@ -1,0 +1,22 @@
+static glist_t single_comsseq (mdef_t *mdef, int32 b)
+{
+    int32 l, r, p, ssid;
+    glist_t g;
+    
+    g = NULL;
+    for (l = 0; l < mdef_n_ciphone(mdef); l++) {
+	for (r = 0; r < mdef_n_ciphone(mdef); r++) {
+	    p = mdef_phone_id (mdef, (s3cipid_t)b, (s3cipid_t)l, (s3cipid_t)r, WORD_POSN_SINGLE);
+	    
+	    if (IS_S3PID(p)) {
+		ssid = mdef_pid2ssid(mdef, p);
+		if (! glist_chkdup_int32 (g, ssid))
+		    g = glist_add_int32 (g, ssid);
+	    }
+	}
+    }
+    if (! g)
+	g = glist_add_int32 (g, mdef_pid2ssid(mdef, b));
+    
+    return g;
+}

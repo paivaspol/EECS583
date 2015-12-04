@@ -1,0 +1,48 @@
+static int
+loop_biv_eliminable_p (loop, bl, threshold, insn_count)
+     struct loop *loop;
+     struct iv_class *bl;
+     int threshold;
+     int insn_count;
+{
+  /* For architectures with a decrement_and_branch_until_zero insn,
+     don't do this if we put a REG_NONNEG note on the endtest for this
+     biv.  */
+
+#ifdef HAVE_decrement_and_branch_until_zero
+  if (bl->nonneg)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Cannot eliminate nonneg biv %d.\n", bl->regno);
+      return 0;
+    }
+#endif
+
+  /* Check that biv is used outside loop or if it has a final value.
+     Compare against bl->init_insn rather than loop->start.  We aren't
+     concerned with any uses of the biv between init_insn and
+     loop->start since these won't be affected by the value of the biv
+     elsewhere in the function, so long as init_insn doesn't use the
+     biv itself.  */
+
+  if ((REGNO_LAST_LUID (bl->regno) < INSN_LUID (loop->end)
+       && bl->init_insn
+       && INSN_UID (bl->init_insn) < max_uid_for_loop
+       && REGNO_FIRST_LUID (bl->regno) >= INSN_LUID (bl->init_insn)
+       && ! reg_mentioned_p (bl->biv->dest_reg, SET_SRC (bl->init_set)))
+      || (bl->final_value = final_biv_value (loop, bl)))
+    return maybe_eliminate_biv (loop, bl, 0, threshold,	insn_count);
+
+  if (loop_dump_stream)
+    {
+      fprintf (loop_dump_stream,
+	       "Cannot eliminate biv %d.\n",
+	       bl->regno);
+      fprintf (loop_dump_stream,
+	       "First use: insn %d, last use: insn %d.\n",
+	       REGNO_FIRST_UID (bl->regno),
+	       REGNO_LAST_UID (bl->regno));
+    }
+  return 0;
+}

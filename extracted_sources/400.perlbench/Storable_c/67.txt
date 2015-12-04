@@ -1,0 +1,47 @@
+static SV *old_retrieve_array(pTHX_ stcxt_t *cxt, char *cname)
+{
+	I32 len;
+	I32 i;
+	AV *av;
+	SV *sv;
+	int c;
+
+	TRACEME(("old_retrieve_array (#%d)", cxt->tagnum));
+
+	/*
+	 * Read length, and allocate array, then pre-extend it.
+	 */
+
+	RLEN(len);
+	TRACEME(("size = %d", len));
+	av = newAV();
+	SEEN(av, 0, 0);				/* Will return if array not allocated nicely */
+	if (len)
+		av_extend(av, len);
+	else
+		return (SV *) av;		/* No data follow if array is empty */
+
+	/*
+	 * Now get each item in turn...
+	 */
+
+	for (i = 0; i < len; i++) {
+		GETMARK(c);
+		if (c == SX_IT_UNDEF) {
+			TRACEME(("(#%d) undef item", i));
+			continue;			/* av_extend() already filled us with undef */
+		}
+		if (c != SX_ITEM)
+			(void) retrieve_other(aTHX_ (stcxt_t *) 0, 0);	/* Will croak out */
+		TRACEME(("(#%d) item", i));
+		sv = retrieve(aTHX_ cxt, 0);						/* Retrieve item */
+		if (!sv)
+			return (SV *) 0;
+		if (av_store(av, i, sv) == 0)
+			return (SV *) 0;
+	}
+
+	TRACEME(("ok (old_retrieve_array at 0x%"UVxf")", PTR2UV(av)));
+
+	return (SV *) av;
+}

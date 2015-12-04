@@ -1,0 +1,39 @@
+static void read_tables(FILE *fp,char *fn,t_tabledata td[])
+{
+  char *libfn;
+  real **yy=NULL;
+  int  k,i,nx,nx0,ny,nny;
+  bool bCont;
+  real tabscale;
+
+  nny = 2*etiNR+1;  
+  libfn = low_libfn(fn,TRUE);
+  nx  = read_xvg(libfn,&yy,&ny);
+  if (ny != nny)
+    fatal_error(0,"Trying to read file %s, but nr columns = %d, should be %d",
+		libfn,ny,nny);
+  bCont = TRUE;
+  for(nx0=0; bCont && (nx0 < nx); nx0++)
+    for(k=1; (k<ny); k++)
+      if (fabs(yy[k][nx0]) > GMX_REAL_MIN)
+	bCont = FALSE;
+  if (nx0 == nx)
+    fatal_error(0,"All elements in table %s are zero!\n",libfn);
+    
+  tabscale = (nx-1)/(yy[0][nx-1] - yy[0][0]);
+  for(k=0; (k<etiNR); k++) {
+    init_table(fp,nx,nx0,etabUSER,tabscale,&(td[k]),TRUE);
+    for(i=0; (i<nx); i++) {
+      td[k].x[i]  = yy[0][i];
+      td[k].v[i]  = yy[2*k+1][i];
+      td[k].v2[i] = yy[2*k+2][i];
+    }
+  }
+  for(i=0; (i<ny); i++)
+    sfree(yy[i]);
+  sfree(yy);
+  
+  if (fp) 
+    fprintf(fp,"Read user tables from %s with %d data points.\n"
+	    "Tabscale = %g points/nm\n",libfn,nx,tabscale);
+}

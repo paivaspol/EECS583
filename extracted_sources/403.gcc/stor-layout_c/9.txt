@@ -1,0 +1,21 @@
+void
+normalize_offset (poffset, pbitpos, off_align)
+     tree *poffset, *pbitpos;
+     unsigned int off_align;
+{
+  /* If the bit position is now larger than it should be, adjust it
+     downwards.  */
+  if (compare_tree_int (*pbitpos, off_align) >= 0)
+    {
+      tree extra_aligns = size_binop (FLOOR_DIV_EXPR, *pbitpos,
+				      bitsize_int (off_align));
+
+      *poffset
+	= size_binop (PLUS_EXPR, *poffset,
+		      size_binop (MULT_EXPR, convert (sizetype, extra_aligns),
+				  size_int (off_align / BITS_PER_UNIT)));
+				
+      *pbitpos
+	= size_binop (FLOOR_MOD_EXPR, *pbitpos, bitsize_int (off_align));
+    }
+}

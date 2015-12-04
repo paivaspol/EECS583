@@ -1,0 +1,52 @@
+int ask_ending_lattice( int prompt, int *flag, char *filename ){
+    char savebuf[256];
+    int status;
+
+    if (prompt!=0) printf(
+        "'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_archive', or 'save_parallel_archive'\n");
+    status=scanf("%s",savebuf);
+    if(status !=1) {
+        printf("ask_ending_lattice: ERROR IN INPUT: ending lattice command\n");
+        return(1);
+    }
+    printf("%s ",savebuf);
+    if(strcmp("save_ascii",savebuf) == 0 )  {
+        *flag=SAVE_ASCII;
+    }
+    else if(strcmp("save_serial",savebuf) == 0 ) {
+        *flag=SAVE_SERIAL;
+    }
+    else if(strcmp("save_parallel",savebuf) == 0 ) {
+      *flag=SAVE_PARALLEL;
+    }
+    else if(strcmp("save_checkpoint",savebuf) == 0 ) {
+        *flag=SAVE_CHECKPOINT;
+    }
+    else if(strcmp("save_serial_archive",savebuf) == 0 ) {
+        *flag=SAVE_SERIAL_ARCHIVE;
+    }
+    else if(strcmp("save_parallel_archive",savebuf) == 0 ) {
+        *flag=SAVE_PARALLEL_ARCHIVE;
+    }
+    else if(strcmp("forget",savebuf) == 0 ) {
+        *flag=FORGET;
+	printf("\n");
+    }
+    else {
+      printf("ask_ending_lattice: ERROR IN INPUT: %s is not a save lattice command\n",savebuf);
+      return(1);
+    }
+
+
+
+    if( *flag != FORGET ){
+        if(prompt!=0)printf("enter filename\n");
+        status=scanf("%s",filename);
+        if(status !=1){
+    	    printf("ask_ending_lattice: ERROR IN INPUT: save filename\n"); return(1);
+        }
+	printf("%s\n",filename);
+
+    }
+    return(0);
+}

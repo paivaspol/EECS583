@@ -1,0 +1,20 @@
+int
+GSIWriteFileRecord(FILE *fp, char *fname, int idx, int fmt)
+{
+  sqd_uint16 f1;
+  sqd_uint32 f2;
+
+  if (strlen(fname) >= GSI_KEYSIZE) return 0;
+  if (idx > SQD_UINT16_MAX) Die("GSI: file index out of range");
+  if (fmt > SQD_UINT32_MAX) Die("GSI: format index out of range");
+
+  f1 = (sqd_uint16) idx;
+  f2 = (sqd_uint32) fmt;
+  f1 = sre_hton16(f1);
+  f2 = sre_hton32(f2);
+
+  if (fwrite(fname, 1, GSI_KEYSIZE, fp) < GSI_KEYSIZE) PANIC;
+  if (fwrite(&f1, 2, 1, fp) < 1)    PANIC;
+  if (fwrite(&f2, 4, 1, fp) < 1)    PANIC;
+  return 1;
+}

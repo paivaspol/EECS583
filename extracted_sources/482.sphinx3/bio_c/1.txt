@@ -1,0 +1,24 @@
+static int32 swap_check(FILE *fp)
+{
+    uint32 magic;
+
+    if (fread(&magic, sizeof(uint32), 1, fp) != 1) {
+	E_ERROR ("Cannot read BYTEORDER MAGIC NO.\n");
+	return -1;
+    }
+
+    if (magic != BYTE_ORDER_MAGIC) {
+	/* either need to swap or got bogus magic number */
+	SWAP_INT32(&magic);
+	
+	if (magic == BYTE_ORDER_MAGIC)
+	    return 1;
+
+	SWAP_INT32(&magic);
+	E_ERROR("Bad BYTEORDER MAGIC NO: %08x, expecting %08x\n",
+		magic, BYTE_ORDER_MAGIC);
+	return -1;
+    }
+
+    return 0;
+}

@@ -1,0 +1,73 @@
+static void
+cselib_invalidate_regno (regno, mode)
+     unsigned int regno;
+     enum machine_mode mode;
+{
+  unsigned int endregno;
+  unsigned int i;
+
+  /* If we see pseudos after reload, something is _wrong_.  */
+  if (reload_completed && regno >= FIRST_PSEUDO_REGISTER
+      && reg_renumber[regno] >= 0)
+    abort ();
+
+  /* Determine the range of registers that must be invalidated.  For
+     pseudos, only REGNO is affected.  For hard regs, we must take MODE
+     into account, and we must also invalidate lower register numbers
+     if they contain values that overlap REGNO.  */
+  if (regno < FIRST_PSEUDO_REGISTER && mode != VOIDmode) 
+    {
+      if (regno < max_value_regs)
+	i = 0;
+      else
+	i = regno - max_value_regs;
+
+      endregno = regno + HARD_REGNO_NREGS (regno, mode);
+    }
+  else
+    {
+      i = regno;
+      endregno = regno + 1;
+    }
+
+  for (; i < endregno; i++)
+    {
+      struct elt_list **l = &REG_VALUES (i);
+
+      /* Go through all known values for this reg; if it overlaps the range
+	 we're invalidating, remove the value.  */
+      while (*l)
+	{
+	  cselib_val *v = (*l)->elt;
+	  struct elt_loc_list **p;
+	  unsigned int this_last = i;
+
+	  if (i < FIRST_PSEUDO_REGISTER)
+	    this_last += HARD_REGNO_NREGS (i, GET_MODE (v->u.val_rtx)) - 1;
+
+	  if (this_last < regno)
+	    {
+	      l = &(*l)->next;
+	      continue;
+	    }
+
+	  /* We have an overlap.  */
+	  unchain_one_elt_list (l);
+
+	  /* Now, we clear the mapping from value to reg.  It must exist, so
+	     this code will crash intentionally if it doesn't.  */
+	  for (p = &v->locs; ; p = &(*p)->next)
+	    {
+	      rtx x = (*p)->loc;
+
+	      if (GET_CODE (x) == REG && REGNO (x) == i)
+		{
+		  unchain_one_elt_loc_list (p);
+		  break;
+		}
+	    }
+	  if (v->locs == 0)
+	    n_useless_values++;
+	}
+    }
+}

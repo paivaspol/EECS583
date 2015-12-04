@@ -1,0 +1,59 @@
+int write_trxframe(int fnum,t_trxframe *fr)
+{
+  char title[STRLEN];
+  real prec;
+
+  if (fr->bPrec)
+    prec = fr->prec;
+  else
+    prec = 1000.0;
+
+  switch (gmx_fio_getftp(fnum)) {
+  case efTRJ:
+  case efTRR:
+    break;
+  default:
+    if (!fr->bX)
+      fatal_error(0,"Need coordinates to write a %s trajectory",
+		  ftp2ext(gmx_fio_getftp(fnum)));
+    break;
+  }
+
+  switch (gmx_fio_getftp(fnum)) {
+  case efXTC:
+    write_xtc(fnum,fr->natoms,fr->step,fr->time,fr->box,fr->x,prec);
+    break;
+  case efTRJ:
+  case efTRR:  
+    fwrite_trn(fnum,nframes_read(),fr->time,fr->step,fr->box,fr->natoms,
+	       fr->bX ? fr->x:NULL,fr->bV ? fr->v:NULL ,fr->bF ? fr->f:NULL);
+    break;
+  case efGRO:
+  case efPDB:
+  case efBRK:
+  case efENT:
+    if (!fr->bAtoms)
+      fatal_error(0,"Can not write a %s file without atom names",
+		  ftp2ext(gmx_fio_getftp(fnum)));
+    sprintf(title,"frame t= %.3f",fr->time);
+    if (gmx_fio_getftp(fnum) == efGRO)
+      write_hconf_p(gmx_fio_getfp(fnum),title,fr->atoms,
+		    prec2ndec(prec),fr->x,fr->bV ? fr->v : NULL,fr->box);
+    else
+      write_pdbfile(gmx_fio_getfp(fnum),title,
+		    fr->atoms,fr->x,fr->box,0,fr->step);
+    break;
+  case efG87:
+    write_gms(gmx_fio_getfp(fnum),fr->natoms,fr->x,fr->box);
+    break;
+  case efG96:
+    write_g96_conf(gmx_fio_getfp(fnum),fr,-1,NULL); 
+    break;
+  default:
+    fatal_error(0,"Sorry, write_trxframe can not write %s",
+		ftp2ext(gmx_fio_getftp(fnum)));
+    break;
+  }
+
+  return 0;
+}

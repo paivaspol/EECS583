@@ -1,0 +1,112 @@
+void SetMotionVectorsMB (Macroblock* currMB, int bframe)
+{
+  int i, j, k, l, m, mode8, pdir8, ref, by, bx, bxr;
+  short ******all_mv  = img->all_mv;
+  short ******pred_mv = img->pred_mv;
+  int  bw_ref;
+
+#ifdef PMVFAST  
+  int mvblocktype = input->InterSearch8x8? 4 : 1;
+#endif
+
+  for (j=0; j<4; j++)
+    for (i=0; i<4; i++)
+    {
+      mode8 = currMB->b8mode[k=2*(j/2)+(i/2)];
+      l     = 2*(j%2)+(i%2);
+      by    = img->block_y+j;
+      bxr   = img->block_x+i;
+      bx    = img->block_x+i+4;
+      
+      pdir8 = currMB->b8pdir[k];
+      ref    = enc_picture->ref_idx[LIST_0][bxr][by];
+      bw_ref = enc_picture->ref_idx[LIST_1][bxr][by];
+      
+#if BI_PREDICTION
+      if (currMB->bi_pred_me && (pdir8 == 2) && currMB->mb_type==1)
+      {
+        all_mv  = currMB->bi_pred_me == 1 ? img->bipred_mv1 : img->bipred_mv2;
+        ref = 0;
+        bw_ref = 0;
+      }
+#endif
+      
+      if (!bframe)
+      {
+        if (pdir8>=0) //(mode8!=IBLOCK)&&(mode8!=I16MB))  // && ref != -1)
+        {
+          enc_picture->mv[LIST_0][bxr][by][0] = all_mv [i][j][LIST_0][ ref][mode8][0];
+          enc_picture->mv[LIST_0][bxr][by][1] = all_mv [i][j][LIST_0][ ref][mode8][1];
+        }
+        else
+        {
+          enc_picture->mv[LIST_0][bxr][by][0] = 0;
+          enc_picture->mv[LIST_0][bxr][by][1] = 0;
+        }
+      }
+      else
+      {
+        if (pdir8==-1) // intra
+        {
+          enc_picture->mv[LIST_0][bxr][by][0] = 0;
+          enc_picture->mv[LIST_0][bxr][by][1] = 0;
+          enc_picture->mv[LIST_1][bxr][by][0] = 0;
+          enc_picture->mv[LIST_1][bxr][by][1] = 0;
+        }
+        else if (pdir8==0) // forward
+        {
+          enc_picture->mv[LIST_0][bxr][by][0] = all_mv [i][j][LIST_0][ ref][mode8][0];
+          enc_picture->mv[LIST_0][bxr][by][1] = all_mv [i][j][LIST_0][ ref][mode8][1];
+          enc_picture->mv[LIST_1][bxr][by][0] = 0;
+          enc_picture->mv[LIST_1][bxr][by][1] = 0;
+        }
+        else if (pdir8==1) // backward
+        {
+          enc_picture->mv[LIST_0][bxr][by][0] = 0;
+          enc_picture->mv[LIST_0][bxr][by][1] = 0;
+
+          enc_picture->mv[LIST_1][bxr][by][0] = all_mv[i][j][LIST_1][bw_ref][mode8][0];
+          enc_picture->mv[LIST_1][bxr][by][1] = all_mv[i][j][LIST_1][bw_ref][mode8][1];
+        }
+        else if (pdir8==2) // bidir
+        {
+          enc_picture->mv[LIST_0][bxr][by][0] = all_mv [i][j][LIST_0][ ref][mode8][0];
+          enc_picture->mv[LIST_0][bxr][by][1] = all_mv [i][j][LIST_0][ ref][mode8][1];
+
+
+          enc_picture->mv[LIST_1][bxr][by][0] = all_mv[i][j][LIST_1][bw_ref][mode8][0];
+          enc_picture->mv[LIST_1][bxr][by][1] = all_mv[i][j][LIST_1][bw_ref][mode8][1];
+        }
+        else
+        {
+          error("invalid direction mode", 255);
+        }
+      }
+  }
+
+  // copy all the motion vectors into rdopt structure
+  // Can simplify this by copying the MV's of the best mode (TBD)
+  if(img->MbaffFrameFlag)
+  {
+    for(i=0;i<4;i++)
+    {
+      for(j=0;j<4;j++)
+      {
+        for (k=0;k<2;k++)
+        {
+          for(l=0;l<img->max_num_references;l++)
+          {
+            for(m=0;m<9;m++)
+            {
+              rdopt->all_mv [i][j][k][l][m][0]  = all_mv [i][j][k][l][m][0];
+              rdopt->pred_mv[i][j][k][l][m][0]  = pred_mv[i][j][k][l][m][0];
+
+              rdopt->all_mv [i][j][k][l][m][1]  = all_mv [i][j][k][l][m][1];
+              rdopt->pred_mv[i][j][k][l][m][1]  = pred_mv[i][j][k][l][m][1];
+            }
+          }
+        }
+      }
+    }
+  }
+}

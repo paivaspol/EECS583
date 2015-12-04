@@ -1,0 +1,134 @@
+static void
+invalidate (x, full_mode)
+     rtx x;
+     enum machine_mode full_mode;
+{
+  int i;
+  struct table_elt *p;
+
+  switch (GET_CODE (x))
+    {
+    case REG:
+      {
+	/* If X is a register, dependencies on its contents are recorded
+	   through the qty number mechanism.  Just change the qty number of
+	   the register, mark it as invalid for expressions that refer to it,
+	   and remove it itself.  */
+	unsigned int regno = REGNO (x);
+	unsigned int hash = HASH (x, GET_MODE (x));
+
+	/* Remove REGNO from any quantity list it might be on and indicate
+	   that its value might have changed.  If it is a pseudo, remove its
+	   entry from the hash table.
+
+	   For a hard register, we do the first two actions above for any
+	   additional hard registers corresponding to X.  Then, if any of these
+	   registers are in the table, we must remove any REG entries that
+	   overlap these registers.  */
+
+	delete_reg_equiv (regno);
+	REG_TICK (regno)++;
+
+	if (regno >= FIRST_PSEUDO_REGISTER)
+	  {
+	    /* Because a register can be referenced in more than one mode,
+	       we might have to remove more than one table entry.  */
+	    struct table_elt *elt;
+
+	    while ((elt = lookup_for_remove (x, hash, GET_MODE (x))))
+	      remove_from_table (elt, hash);
+	  }
+	else
+	  {
+	    HOST_WIDE_INT in_table
+	      = TEST_HARD_REG_BIT (hard_regs_in_table, regno);
+	    unsigned int endregno
+	      = regno + HARD_REGNO_NREGS (regno, GET_MODE (x));
+	    unsigned int tregno, tendregno, rn;
+	    struct table_elt *p, *next;
+
+	    CLEAR_HARD_REG_BIT (hard_regs_in_table, regno);
+
+	    for (rn = regno + 1; rn < endregno; rn++)
+	      {
+		in_table |= TEST_HARD_REG_BIT (hard_regs_in_table, rn);
+		CLEAR_HARD_REG_BIT (hard_regs_in_table, rn);
+		delete_reg_equiv (rn);
+		REG_TICK (rn)++;
+	      }
+
+	    if (in_table)
+	      for (hash = 0; hash < HASH_SIZE; hash++)
+		for (p = table[hash]; p; p = next)
+		  {
+		    next = p->next_same_hash;
+
+		    if (GET_CODE (p->exp) != REG
+			|| REGNO (p->exp) >= FIRST_PSEUDO_REGISTER)
+		      continue;
+
+		    tregno = REGNO (p->exp);
+		    tendregno
+		      = tregno + HARD_REGNO_NREGS (tregno, GET_MODE (p->exp));
+		    if (tendregno > regno && tregno < endregno)
+		      remove_from_table (p, hash);
+		  }
+	  }
+      }
+      return;
+
+    case SUBREG:
+      invalidate (SUBREG_REG (x), VOIDmode);
+      return;
+
+    case PARALLEL:
+      for (i = XVECLEN (x, 0) - 1; i >= 0; --i)
+	invalidate (XVECEXP (x, 0, i), VOIDmode);
+      return;
+
+    case EXPR_LIST:
+      /* This is part of a disjoint return value; extract the location in
+	 question ignoring the offset.  */
+      invalidate (XEXP (x, 0), VOIDmode);
+      return;
+
+    case MEM:
+      /* Calculate the canonical version of X here so that
+	 true_dependence doesn't generate new RTL for X on each call.  */
+      x = canon_rtx (x);
+
+      /* Remove all hash table elements that refer to overlapping pieces of
+	 memory.  */
+      if (full_mode == VOIDmode)
+	full_mode = GET_MODE (x);
+
+      for (i = 0; i < HASH_SIZE; i++)
+	{
+	  struct table_elt *next;
+
+	  for (p = table[i]; p; p = next)
+	    {
+	      next = p->next_same_hash;
+	      if (p->in_memory)
+		{
+		  struct check_dependence_data d;
+
+		  /* Just canonicalize the expression once;
+		     otherwise each time we call invalidate
+		     true_dependence will canonicalize the
+		     expression again.  */
+		  if (!p->canon_exp)
+		    p->canon_exp = canon_rtx (p->exp);
+		  d.exp = x;
+		  d.mode = full_mode;
+		  if (for_each_rtx (&p->canon_exp, check_dependence, &d))
+		    remove_from_table (p, i);
+		}
+	    }
+	}
+      return;
+
+    default:
+      abort ();
+    }
+}

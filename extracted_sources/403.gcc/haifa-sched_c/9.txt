@@ -1,0 +1,28 @@
+static rtx
+unlink_line_notes (insn, tail)
+     rtx insn, tail;
+{
+  rtx prev = PREV_INSN (insn);
+
+  while (insn != tail && GET_CODE (insn) == NOTE)
+    {
+      rtx next = NEXT_INSN (insn);
+
+      if (write_symbols != NO_DEBUG && NOTE_LINE_NUMBER (insn) > 0)
+	{
+	  /* Delete the note from its current position.  */
+	  if (prev)
+	    NEXT_INSN (prev) = next;
+	  if (next)
+	    PREV_INSN (next) = prev;
+
+	  /* Record line-number notes so they can be reused.  */
+	  LINE_NOTE (insn) = insn;
+	}
+      else
+	prev = insn;
+
+      insn = next;
+    }
+  return insn;
+}

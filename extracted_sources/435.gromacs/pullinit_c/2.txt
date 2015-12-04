@@ -1,0 +1,26 @@
+static void get_named_indexgroup(FILE *log,atom_id **target,int *isize,
+				 char *name,atom_id **index,int ngx[],
+				 char **grpnames,int ngrps) 
+{
+  int i,j;
+  bool bFound = FALSE;
+  atom_id *tmp = NULL;
+
+  fprintf(log,"Looking for group %s: ",name);
+  for (i=0;i<ngrps;i++) {
+    if (!strcmp(name,grpnames[i])) {
+      /* found the group we're looking for */
+      snew(tmp,ngx[i]);
+      for (j=0;j<ngx[i];j++) 
+	tmp[j]=index[i][j];
+      *isize=ngx[i];
+      bFound = TRUE;
+      fprintf(log,"found group %s: %d elements. First: %d\n",name,ngx[i],
+	      tmp[0]);
+    }
+  }
+  
+  *target=tmp;
+  if (!bFound) 
+    fatal_error(0,"Can't find group %s in the index file",name);
+}

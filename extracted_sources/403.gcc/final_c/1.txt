@@ -1,0 +1,131 @@
+void
+end_final (filename)
+     const char *filename;
+{
+  if (profile_arc_flag)
+    {
+      char name[20];
+      int align = exact_log2 (BIGGEST_ALIGNMENT / BITS_PER_UNIT);
+      int size, rounded;
+      int long_bytes = LONG_TYPE_SIZE / BITS_PER_UNIT;
+      int gcov_type_bytes = GCOV_TYPE_SIZE / BITS_PER_UNIT;
+      int pointer_bytes = POINTER_SIZE / BITS_PER_UNIT;
+      unsigned int align2 = LONG_TYPE_SIZE;
+
+      size = gcov_type_bytes * count_instrumented_edges;
+      rounded = size;
+
+      rounded += (BIGGEST_ALIGNMENT / BITS_PER_UNIT) - 1;
+      rounded = (rounded / (BIGGEST_ALIGNMENT / BITS_PER_UNIT)
+		 * (BIGGEST_ALIGNMENT / BITS_PER_UNIT));
+
+      /* ??? This _really_ ought to be done with a structure layout
+	 and with assemble_constructor.  If long_bytes != pointer_bytes
+	 we'll be emitting unaligned data at some point.  */
+      if (long_bytes != pointer_bytes)
+	abort ();
+
+      data_section ();
+
+      /* Output the main header, of 11 words:
+	 0:  1 if this file is initialized, else 0.
+	 1:  address of file name (LPBX1).
+	 2:  address of table of counts (LPBX2).
+	 3:  number of counts in the table.
+	 4:  always 0, for compatibility with Sun.
+
+         The following are GNU extensions:
+
+	 5:  address of table of start addrs of basic blocks (LPBX3).
+	 6:  Number of bytes in this header.
+	 7:  address of table of function names (LPBX4).
+	 8:  address of table of line numbers (LPBX5) or 0.
+	 9:  address of table of file names (LPBX6) or 0.
+	10:  space reserved for basic block profiling.  */
+
+      ASM_OUTPUT_ALIGN (asm_out_file, align);
+
+      ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "LPBX", 0);
+
+      /* Zero word.  */
+      assemble_integer (const0_rtx, long_bytes, align2, 1);
+
+      /* Address of filename.  */
+      ASM_GENERATE_INTERNAL_LABEL (name, "LPBX", 1);
+      assemble_integer (gen_rtx_SYMBOL_REF (Pmode, name), pointer_bytes,
+			align2, 1);
+
+      /* Address of count table.  */
+      ASM_GENERATE_INTERNAL_LABEL (name, "LPBX", 2);
+      assemble_integer (gen_rtx_SYMBOL_REF (Pmode, name), pointer_bytes,
+			align2, 1);
+
+      /* Count of the # of instrumented arcs.  */
+      assemble_integer (GEN_INT (count_instrumented_edges),
+			long_bytes, align2, 1);
+
+      /* Zero word (link field).  */
+      assemble_integer (const0_rtx, pointer_bytes, align2, 1);
+
+      assemble_integer (const0_rtx, pointer_bytes, align2, 1);
+
+      /* Byte count for extended structure.  */
+      assemble_integer (GEN_INT (11 * UNITS_PER_WORD), long_bytes, align2, 1);
+
+      /* Address of function name table.  */
+      assemble_integer (const0_rtx, pointer_bytes, align2, 1);
+
+      /* Address of line number and filename tables if debugging.  */
+      assemble_integer (const0_rtx, pointer_bytes, align2, 1);
+      assemble_integer (const0_rtx, pointer_bytes, align2, 1);
+
+      /* Space for extension ptr (link field).  */
+      assemble_integer (const0_rtx, UNITS_PER_WORD, align2, 1);
+
+      /* Output the file name changing the suffix to .d for
+	 Sun tcov compatibility.  */
+      ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "LPBX", 1);
+      {
+	char *cwd = getpwd ();
+	int len = strlen (filename) + strlen (cwd) + 1;
+	char *data_file = (char *) alloca (len + 4);
+
+	strcpy (data_file, cwd);
+	strcat (data_file, "/");
+	strcat (data_file, filename);
+	strip_off_ending (data_file, len);
+	strcat (data_file, ".da");
+	assemble_string (data_file, strlen (data_file) + 1);
+      }
+
+      /* Make space for the table of counts.  */
+      if (size == 0)
+	{
+	  /* Realign data section.  */
+	  ASM_OUTPUT_ALIGN (asm_out_file, align);
+	  ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "LPBX", 2);
+	  if (size != 0)
+	    assemble_zeros (size);
+	}
+      else
+	{
+	  ASM_GENERATE_INTERNAL_LABEL (name, "LPBX", 2);
+#ifdef ASM_OUTPUT_SHARED_LOCAL
+	  if (flag_shared_data)
+	    ASM_OUTPUT_SHARED_LOCAL (asm_out_file, name, size, rounded);
+	  else
+#endif
+#ifdef ASM_OUTPUT_ALIGNED_DECL_LOCAL
+	    ASM_OUTPUT_ALIGNED_DECL_LOCAL (asm_out_file, NULL_TREE, name,
+					   size, BIGGEST_ALIGNMENT);
+#else
+#ifdef ASM_OUTPUT_ALIGNED_LOCAL
+	    ASM_OUTPUT_ALIGNED_LOCAL (asm_out_file, name, size,
+				      BIGGEST_ALIGNMENT);
+#else
+	    ASM_OUTPUT_LOCAL (asm_out_file, name, size, rounded);
+#endif
+#endif
+	}
+    }
+}

@@ -1,0 +1,19 @@
+static rtx
+expand_builtin_ffs (arglist, target, subtarget)
+     tree arglist;
+     rtx target, subtarget;
+{
+  rtx op0;
+  if (!validate_arglist (arglist, INTEGER_TYPE, VOID_TYPE))
+    return 0;
+
+  /* Compute the argument.  */
+  op0 = expand_expr (TREE_VALUE (arglist), subtarget, VOIDmode, 0);
+  /* Compute ffs, into TARGET if possible.
+     Set TARGET to wherever the result comes back.  */
+  target = expand_unop (TYPE_MODE (TREE_TYPE (TREE_VALUE (arglist))),
+			ffs_optab, op0, target, 1);
+  if (target == 0)
+    abort ();
+  return target;
+}

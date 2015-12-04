@@ -1,0 +1,19 @@
+int
+P7ViterbiSize(int L, int M)
+{
+  float Mbytes;
+
+  /* We're excessively precise here, but it doesn't cost
+   * us anything to be pedantic. The four terms are:
+   *   1. the matrix structure itself;
+   *   2. the O(NM) main matrix (this dominates!)
+   *   3. ptrs into the rows of the matrix
+   *   4. storage for 5 special states. (xmx)
+   */
+  Mbytes =  (float) sizeof(struct dpmatrix_s); 
+  Mbytes += 3. * (float) (L+1) * (float) (M+2) * (float) sizeof(int); 
+  Mbytes += 4. * (float) (L+1) * (float) sizeof(int *); 
+  Mbytes += 5. * (float) (L+1) * (float) sizeof(int);
+  Mbytes /= 1048576.;
+  return (int) Mbytes;
+}

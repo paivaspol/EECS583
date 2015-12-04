@@ -1,0 +1,27 @@
+integer_asm_op (size, aligned_p)
+     int size;
+     int aligned_p;
+{
+  struct asm_int_op *ops;
+
+  if (aligned_p)
+    ops = &targetm.asm_out.aligned_op;
+  else
+    ops = &targetm.asm_out.unaligned_op;
+
+  switch (size)
+    {
+    case 1:
+      return targetm.asm_out.byte_op;
+    case 2:
+      return ops->hi;
+    case 4:
+      return ops->si;
+    case 8:
+      return ops->di;
+    case 16:
+      return ops->ti;
+    default:
+      return NULL;
+    }
+}

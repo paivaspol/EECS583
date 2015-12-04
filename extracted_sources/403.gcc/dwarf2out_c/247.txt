@@ -1,0 +1,14 @@
+static void
+dwarf2out_end_source_file (lineno)
+     unsigned int lineno ATTRIBUTE_UNUSED;
+{
+  if (flag_eliminate_dwarf2_dups)
+    /* Record the end of the file for break_out_includes.  */
+    new_die (DW_TAG_GNU_EINCL, comp_unit_die, NULL);
+
+  if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+    {
+      named_section_flags (DEBUG_MACINFO_SECTION, SECTION_DEBUG);
+      dw2_asm_output_data (1, DW_MACINFO_end_file, "End file");
+    }
+}

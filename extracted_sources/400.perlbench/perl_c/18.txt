@@ -1,0 +1,28 @@
+void
+Perl_my_failure_exit(pTHX)
+{
+#ifdef VMS
+    if (vaxc$errno & 1) {
+	if (STATUS_NATIVE & 1)		/* fortuitiously includes "-1" */
+	    STATUS_NATIVE_SET(44);
+    }
+    else {
+	if (!vaxc$errno)		/* unlikely */
+	    STATUS_NATIVE_SET(44);
+	else
+	    STATUS_NATIVE_SET(vaxc$errno);
+    }
+#else
+    int exitstatus;
+    if (errno & 255)
+	STATUS_POSIX_SET(errno);
+    else {
+	exitstatus = STATUS_POSIX >> 8;
+	if (exitstatus & 255)
+	    STATUS_POSIX_SET(exitstatus);
+	else
+	    STATUS_POSIX_SET(255);
+    }
+#endif
+    my_exit_jump();
+}

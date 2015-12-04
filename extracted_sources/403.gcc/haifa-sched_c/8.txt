@@ -1,0 +1,34 @@
+static rtx
+unlink_other_notes (insn, tail)
+     rtx insn, tail;
+{
+  rtx prev = PREV_INSN (insn);
+
+  while (insn != tail && GET_CODE (insn) == NOTE)
+    {
+      rtx next = NEXT_INSN (insn);
+      /* Delete the note from its current position.  */
+      if (prev)
+	NEXT_INSN (prev) = next;
+      if (next)
+	PREV_INSN (next) = prev;
+
+      /* See sched_analyze to see how these are handled.  */
+      if (NOTE_LINE_NUMBER (insn) != NOTE_INSN_LOOP_BEG
+	  && NOTE_LINE_NUMBER (insn) != NOTE_INSN_LOOP_END
+	  && NOTE_LINE_NUMBER (insn) != NOTE_INSN_RANGE_BEG
+	  && NOTE_LINE_NUMBER (insn) != NOTE_INSN_RANGE_END
+	  && NOTE_LINE_NUMBER (insn) != NOTE_INSN_EH_REGION_BEG
+	  && NOTE_LINE_NUMBER (insn) != NOTE_INSN_EH_REGION_END)
+	{
+	  /* Insert the note at the end of the notes list.  */
+	  PREV_INSN (insn) = note_list;
+	  if (note_list)
+	    NEXT_INSN (note_list) = insn;
+	  note_list = insn;
+	}
+
+      insn = next;
+    }
+  return insn;
+}

@@ -1,0 +1,92 @@
+void
+output_asm_insn (template, operands)
+     const char *template;
+     rtx *operands;
+{
+  const char *p;
+  int c;
+#ifdef ASSEMBLER_DIALECT
+  int dialect = 0;
+#endif
+  int oporder[MAX_RECOG_OPERANDS];
+  char opoutput[MAX_RECOG_OPERANDS];
+  int ops = 0;
+
+  /* An insn may return a null string template
+     in a case where no assembler code is needed.  */
+  if (*template == 0)
+    return;
+
+  memset (opoutput, 0, sizeof opoutput);
+  p = template;
+  putc ('\t', asm_out_file);
+
+#ifdef ASM_OUTPUT_OPCODE
+  ASM_OUTPUT_OPCODE (asm_out_file, p);
+#endif
+
+  while ((c = *p++))
+    switch (c)
+      {
+      case '\n':
+	if (flag_verbose_asm)
+	  output_asm_operand_names (operands, oporder, ops);
+	if (flag_print_asm_name)
+	  output_asm_name ();
+
+	ops = 0;
+	memset (opoutput, 0, sizeof opoutput);
+
+	putc (c, asm_out_file);
+#ifdef ASM_OUTPUT_OPCODE
+	while ((c = *p) == '\t')
+	  {
+	    putc (c, asm_out_file);
+	    p++;
+	  }
+	ASM_OUTPUT_OPCODE (asm_out_file, p);
+#endif
+	break;
+
+#ifdef ASSEMBLER_DIALECT
+      case '{':
+	{
+	  int i;
+
+	  if (dialect)
+	    output_operand_lossage ("nested assembly dialect alternatives");
+	  else
+	    dialect = 1;
+
+	  /* If we want the first dialect, do nothing.  Otherwise, skip
+	     DIALECT_NUMBER of strings ending with '|'.  */
+	  for (i = 0; i < dialect_number; i++)
+	    {
+	      while (*p && *p != '}' && *p++ != '|')
+		;
+	      if (*p == '}')
+		break;
+	      if (*p == '|')
+		p++;
+	    }
+
+	  if (*p == '\0')
+	    output_operand_lossage ("unterminated assembly dialect alternative");
+	}
+	break;
+
+      case '|':
+	if (dialect)
+	  {
+	    /* Skip to close brace.  */
+	    do
+	      {
+		if (*p == '\0')
+		  {
+		    output_operand_lossage ("unterminated assembly dialect alternative");
+		    break;
+		  }
+	      }
+	    while (*p++ != '}');
+	    dialect = 0;
+	  }

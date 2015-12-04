@@ -1,0 +1,18 @@
+static void
+verify_sequence_points (expr)
+     tree expr;
+{
+  struct tlist *before_sp = 0, *after_sp = 0;
+
+  warned_ids = 0;
+  save_expr_cache = 0;
+  if (tlist_firstobj == 0)
+    {
+      gcc_obstack_init (&tlist_obstack);
+      tlist_firstobj = obstack_alloc (&tlist_obstack, 0);
+    }
+
+  verify_tree (expr, &before_sp, &after_sp, 0);
+  warn_for_collisions (after_sp);
+  obstack_free (&tlist_obstack, tlist_firstobj);
+}

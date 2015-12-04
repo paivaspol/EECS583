@@ -1,0 +1,14 @@
+static cppchar_t
+get_effective_char (pfile)
+     cpp_reader *pfile;
+{
+  cppchar_t next;
+  cpp_buffer *buffer = pfile->buffer;
+
+  buffer->backup_to = buffer->cur;
+  next = *buffer->cur++;
+  if (__builtin_expect (next == '?' || next == '\\', 0))
+    next = skip_escaped_newlines (pfile);
+
+   return next;
+}

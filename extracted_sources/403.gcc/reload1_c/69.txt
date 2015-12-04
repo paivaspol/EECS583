@@ -1,0 +1,230 @@
+static int
+reload_cse_simplify_operands (insn)
+     rtx insn;
+{
+  int i, j;
+
+  /* For each operand, all registers that are equivalent to it.  */
+  HARD_REG_SET equiv_regs[MAX_RECOG_OPERANDS];
+
+  const char *constraints[MAX_RECOG_OPERANDS];
+
+  /* Vector recording how bad an alternative is.  */
+  int *alternative_reject;
+  /* Vector recording how many registers can be introduced by choosing
+     this alternative.  */
+  int *alternative_nregs;
+  /* Array of vectors recording, for each operand and each alternative,
+     which hard register to substitute, or -1 if the operand should be
+     left as it is.  */
+  int *op_alt_regno[MAX_RECOG_OPERANDS];
+  /* Array of alternatives, sorted in order of decreasing desirability.  */
+  int *alternative_order;
+  rtx reg = gen_rtx_REG (VOIDmode, -1);
+
+  extract_insn (insn);
+
+  if (recog_data.n_alternatives == 0 || recog_data.n_operands == 0)
+    return 0;
+
+  /* Figure out which alternative currently matches.  */
+  if (! constrain_operands (1))
+    fatal_insn_not_found (insn);
+
+  alternative_reject = (int *) alloca (recog_data.n_alternatives * sizeof (int));
+  alternative_nregs = (int *) alloca (recog_data.n_alternatives * sizeof (int));
+  alternative_order = (int *) alloca (recog_data.n_alternatives * sizeof (int));
+  memset ((char *) alternative_reject, 0, recog_data.n_alternatives * sizeof (int));
+  memset ((char *) alternative_nregs, 0, recog_data.n_alternatives * sizeof (int));
+
+  /* For each operand, find out which regs are equivalent.  */
+  for (i = 0; i < recog_data.n_operands; i++)
+    {
+      cselib_val *v;
+      struct elt_loc_list *l;
+
+      CLEAR_HARD_REG_SET (equiv_regs[i]);
+
+      /* cselib blows up on CODE_LABELs.  Trying to fix that doesn't seem
+	 right, so avoid the problem here.  Likewise if we have a constant
+         and the insn pattern doesn't tell us the mode we need.  */
+      if (GET_CODE (recog_data.operand[i]) == CODE_LABEL
+	  || (CONSTANT_P (recog_data.operand[i])
+	      && recog_data.operand_mode[i] == VOIDmode))
+	continue;
+
+      v = cselib_lookup (recog_data.operand[i], recog_data.operand_mode[i], 0);
+      if (! v)
+	continue;
+
+      for (l = v->locs; l; l = l->next)
+	if (GET_CODE (l->loc) == REG)
+	  SET_HARD_REG_BIT (equiv_regs[i], REGNO (l->loc));
+    }
+
+  for (i = 0; i < recog_data.n_operands; i++)
+    {
+      enum machine_mode mode;
+      int regno;
+      const char *p;
+
+      op_alt_regno[i] = (int *) alloca (recog_data.n_alternatives * sizeof (int));
+      for (j = 0; j < recog_data.n_alternatives; j++)
+	op_alt_regno[i][j] = -1;
+
+      p = constraints[i] = recog_data.constraints[i];
+      mode = recog_data.operand_mode[i];
+
+      /* Add the reject values for each alternative given by the constraints
+	 for this operand.  */
+      j = 0;
+      while (*p != '\0')
+	{
+	  char c = *p++;
+	  if (c == ',')
+	    j++;
+	  else if (c == '?')
+	    alternative_reject[j] += 3;
+	  else if (c == '!')
+	    alternative_reject[j] += 300;
+	}
+
+      /* We won't change operands which are already registers.  We
+	 also don't want to modify output operands.  */
+      regno = true_regnum (recog_data.operand[i]);
+      if (regno >= 0
+	  || constraints[i][0] == '='
+	  || constraints[i][0] == '+')
+	continue;
+
+      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+	{
+	  int class = (int) NO_REGS;
+
+	  if (! TEST_HARD_REG_BIT (equiv_regs[i], regno))
+	    continue;
+
+	  REGNO (reg) = regno;
+	  PUT_MODE (reg, mode);
+
+	  /* We found a register equal to this operand.  Now look for all
+	     alternatives that can accept this register and have not been
+	     assigned a register they can use yet.  */
+	  j = 0;
+	  p = constraints[i];
+	  for (;;)
+	    {
+	      char c = *p++;
+
+	      switch (c)
+		{
+		case '=':  case '+':  case '?':
+		case '#':  case '&':  case '!':
+		case '*':  case '%':
+		case '0':  case '1':  case '2':  case '3':  case '4':
+		case '5':  case '6':  case '7':  case '8':  case '9':
+		case 'm':  case '<':  case '>':  case 'V':  case 'o':
+		case 'E':  case 'F':  case 'G':  case 'H':
+		case 's':  case 'i':  case 'n':
+		case 'I':  case 'J':  case 'K':  case 'L':
+		case 'M':  case 'N':  case 'O':  case 'P':
+		case 'p': case 'X':
+		  /* These don't say anything we care about.  */
+		  break;
+
+		case 'g': case 'r':
+		  class = reg_class_subunion[(int) class][(int) GENERAL_REGS];
+		  break;
+
+		default:
+		  class
+		    = reg_class_subunion[(int) class][(int) REG_CLASS_FROM_LETTER ((unsigned char) c)];
+		  break;
+
+		case ',': case '\0':
+		  /* See if REGNO fits this alternative, and set it up as the
+		     replacement register if we don't have one for this
+		     alternative yet and the operand being replaced is not
+		     a cheap CONST_INT.  */
+		  if (op_alt_regno[i][j] == -1
+		      && reg_fits_class_p (reg, class, 0, mode)
+		      && (GET_CODE (recog_data.operand[i]) != CONST_INT
+			  || (rtx_cost (recog_data.operand[i], SET)
+			      > rtx_cost (reg, SET))))
+		    {
+		      alternative_nregs[j]++;
+		      op_alt_regno[i][j] = regno;
+		    }
+		  j++;
+		  break;
+		}
+
+	      if (c == '\0')
+		break;
+	    }
+	}
+    }
+
+  /* Record all alternatives which are better or equal to the currently
+     matching one in the alternative_order array.  */
+  for (i = j = 0; i < recog_data.n_alternatives; i++)
+    if (alternative_reject[i] <= alternative_reject[which_alternative])
+      alternative_order[j++] = i;
+  recog_data.n_alternatives = j;
+
+  /* Sort it.  Given a small number of alternatives, a dumb algorithm
+     won't hurt too much.  */
+  for (i = 0; i < recog_data.n_alternatives - 1; i++)
+    {
+      int best = i;
+      int best_reject = alternative_reject[alternative_order[i]];
+      int best_nregs = alternative_nregs[alternative_order[i]];
+      int tmp;
+
+      for (j = i + 1; j < recog_data.n_alternatives; j++)
+	{
+	  int this_reject = alternative_reject[alternative_order[j]];
+	  int this_nregs = alternative_nregs[alternative_order[j]];
+
+	  if (this_reject < best_reject
+	      || (this_reject == best_reject && this_nregs < best_nregs))
+	    {
+	      best = j;
+	      best_reject = this_reject;
+	      best_nregs = this_nregs;
+	    }
+	}
+
+      tmp = alternative_order[best];
+      alternative_order[best] = alternative_order[i];
+      alternative_order[i] = tmp;
+    }
+
+  /* Substitute the operands as determined by op_alt_regno for the best
+     alternative.  */
+  j = alternative_order[0];
+
+  for (i = 0; i < recog_data.n_operands; i++)
+    {
+      enum machine_mode mode = recog_data.operand_mode[i];
+      if (op_alt_regno[i][j] == -1)
+	continue;
+
+      validate_change (insn, recog_data.operand_loc[i],
+		       gen_rtx_REG (mode, op_alt_regno[i][j]), 1);
+    }
+
+  for (i = recog_data.n_dups - 1; i >= 0; i--)
+    {
+      int op = recog_data.dup_num[i];
+      enum machine_mode mode = recog_data.operand_mode[op];
+
+      if (op_alt_regno[op][j] == -1)
+	continue;
+
+      validate_change (insn, recog_data.dup_loc[i],
+		       gen_rtx_REG (mode, op_alt_regno[op][j]), 1);
+    }
+
+  return apply_change_group ();
+}

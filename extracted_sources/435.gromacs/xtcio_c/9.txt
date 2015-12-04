@@ -1,0 +1,22 @@
+int read_first_xtc(int fp,int *natoms,int *step,real *time,
+		   matrix box,rvec **x,real *prec,bool *bOK)
+{
+  int magic;
+  XDR *xd;
+  
+  *bOK=TRUE;
+  xd = gmx_fio_getxdr(fp);
+  
+  /* read header and malloc x */
+  if ( !xtc_header(xd,&magic,natoms,step,time,bOK))
+    return 0;
+    
+  /* Check magic number */
+  check_xtc_magic(magic);
+  
+  snew(*x,*natoms);
+
+  *bOK=xtc_coord(xd,natoms,box,*x,prec);
+  
+  return *bOK;
+}

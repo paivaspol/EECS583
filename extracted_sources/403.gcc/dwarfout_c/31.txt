@@ -1,0 +1,16 @@
+static inline unsigned HOST_WIDE_INT
+simple_type_size_in_bits (type)
+     tree type;
+{
+  tree type_size_tree;
+
+  if (TREE_CODE (type) == ERROR_MARK)
+    return BITS_PER_WORD;
+  type_size_tree = TYPE_SIZE (type);
+
+  if (type_size_tree == NULL_TREE)
+    return 0;
+  if (! host_integerp (type_size_tree, 1))
+    return TYPE_ALIGN (type);
+  return tree_low_cst (type_size_tree, 1);
+}

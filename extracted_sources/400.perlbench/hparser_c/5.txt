@@ -1,0 +1,45 @@
+static void
+marked_section_update(PSTATE* p_state)
+{
+    dTHX;
+    /* we look at p_state->ms_stack to determine p_state->ms */
+    AV* ms_stack = p_state->ms_stack;
+    p_state->ms = MS_NONE;
+
+    if (ms_stack) {
+	int stack_len = av_len(ms_stack);
+	int stack_idx;
+	for (stack_idx = 0; stack_idx <= stack_len; stack_idx++) {
+	    SV** svp = av_fetch(ms_stack, stack_idx, 0);
+	    if (svp) {
+		AV* tokens = (AV*)SvRV(*svp);
+		int tokens_len = av_len(tokens);
+		int i;
+		assert(SvTYPE(tokens) == SVt_PVAV);
+		for (i = 0; i <= tokens_len; i++) {
+		    SV** svp = av_fetch(tokens, i, 0);
+		    if (svp) {
+			STRLEN len;
+			char *token_str = SvPV(*svp, len);
+			enum marked_section_t token;
+			if (strEQ(token_str, "include"))
+			    token = MS_INCLUDE;
+			else if (strEQ(token_str, "rcdata"))
+			    token = MS_RCDATA;
+			else if (strEQ(token_str, "cdata"))
+			    token = MS_CDATA;
+			else if (strEQ(token_str, "ignore"))
+			    token = MS_IGNORE;
+			else
+			    token = MS_NONE;
+			if (p_state->ms < token)
+			    p_state->ms = token;
+		    }
+		}
+	    }
+	}
+    }
+    /* printf("MS %d\n", p_state->ms); */
+    p_state->is_cdata = (p_state->ms == MS_CDATA);
+    return;
+}

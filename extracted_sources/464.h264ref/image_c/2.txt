@@ -1,0 +1,57 @@
+void code_a_picture(Picture *pic)
+{
+  int NumberOfCodedMBs = 0;
+  int SliceGroup = 0;
+  int j;
+
+  img->currentPicture = pic;
+
+  img->currentPicture->idr_flag = ((!IMG_NUMBER) && (!(img->structure==BOTTOM_FIELD))) || (input->idr_enable && (img->type == I_SLICE || img->type==SP_SLICE || img->type==SI_SLICE)&& (!(img->structure==BOTTOM_FIELD)));
+
+  pic->no_slices = 0;
+  pic->distortion_u = pic->distortion_v = pic->distortion_y = 0.0;
+
+  RandomIntraNewPicture ();     //! Allocates forced INTRA MBs (even for fields!)
+
+  // The slice_group_change_cycle can be changed here.
+  // FmoInit() is called before coding each picture, frame or field
+  img->slice_group_change_cycle=1;
+  FmoInit(img, active_pps, active_sps);
+  FmoStartPicture ();           //! picture level initialization of FMO
+
+  CalculateQuantParam();
+  CalculateOffsetParam();
+
+  if(input->AllowTransform8x8)
+  {
+    CalculateQuant8Param();
+    CalculateOffset8Param();
+  }
+
+  while (NumberOfCodedMBs < img->total_number_mb)       // loop over slices
+  {
+    // Encode one SLice Group
+    while (!FmoSliceGroupCompletelyCoded (SliceGroup))
+    {
+      // Encode the current slice
+      NumberOfCodedMBs += encode_one_slice (SliceGroup, pic);
+      FmoSetLastMacroblockInSlice (img->current_mb_nr);
+      // Proceed to next slice
+      img->current_slice_nr++;
+      stats->bit_slice = 0;
+    }
+    // Proceed to next SliceGroup
+    SliceGroup++;
+  }
+  FmoEndPicture ();
+
+  if (input->rdopt == 2 && (img->type != B_SLICE))
+    for (j = 0; j < input->NoOfDecoders; j++)
+      DeblockFrame (img, decs->decY_best[j], NULL);
+
+  DeblockFrame (img, enc_picture->imgY, enc_picture->imgUV); //comment out to disable loop filter
+
+  if (img->MbaffFrameFlag)
+    MbAffPostProc();
+
+}

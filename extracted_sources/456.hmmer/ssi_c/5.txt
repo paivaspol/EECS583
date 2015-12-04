@@ -1,0 +1,63 @@
+int
+SSIGetSubseqOffset(SSIFILE *sfp, char *key, int requested_start,
+		    int *ret_fh, SSIOFFSET *record_offset,
+		    SSIOFFSET *data_offset, int *ret_actual_start)
+{
+  int        status;
+  sqd_uint32 len;
+  int        r, b, i, l;	/* tmp variables for "clarity", to match docs */
+  
+  /* Look up the key. Rely on the fact that SSIGetOffsetByName()
+   * leaves the index file positioned at the rest of the data for this key.
+   */
+  status = SSIGetOffsetByName(sfp, key, ret_fh, record_offset);
+  if (status != 0) return status;
+
+  /* Check that we're allowed to do subseq lookup on that file.
+   */
+  if (! (sfp->fileflags[*ret_fh] & SSI_FAST_SUBSEQ))
+    return SSI_ERR_NO_SUBSEQS;
+
+  /* Read the data we need for subseq lookup
+   */
+  if (! read_offset(sfp->fp, sfp->smode, data_offset)) return SSI_ERR_NODATA;
+  if (! read_i32(sfp->fp, &len))                         return SSI_ERR_NODATA;
+
+  /* Set up tmp variables for clarity of equations below,
+   * and to make them match documentation (ssi-format.tex).
+   */
+  r = sfp->rpl[*ret_fh];    /* residues per line */
+  b = sfp->bpl[*ret_fh];    /* bytes per line    */
+  i = requested_start;	    /* start position 1..L */
+  l = (i-1)/r;		    /* data line # (0..) that the residue is on */
+  if (r == 0 || b == 0) return SSI_ERR_NO_SUBSEQS;
+  if (i < 0 || i > len) return SSI_ERR_RANGE;
+  
+  /* When b = r+1, there's nothing but sequence on each data line (and the \0),
+   * and we can find each residue precisely.
+   */
+  if (b == r+1) {
+    if (sfp->smode == SSI_OFFSET_I32) {
+      data_offset->mode    = SSI_OFFSET_I32;
+      data_offset->off.i32 = data_offset->off.i32 + l*b + (i-1)%r;
+    } else if (sfp->smode == SSI_OFFSET_I64) {
+      data_offset->mode    = SSI_OFFSET_I64;
+      data_offset->off.i64 = data_offset->off.i64 + l*b + (i-1)%r;
+    } 
+    *ret_actual_start = requested_start;
+  } else { 
+    /* else, there's other stuff on seq lines, so the best
+     * we can do easily is to position at start of relevant line.
+     */
+    if (sfp->smode == SSI_OFFSET_I32) {
+      data_offset->mode    = SSI_OFFSET_I32;
+      data_offset->off.i32 = data_offset->off.i32 + l*b;
+    } else if (sfp->smode == SSI_OFFSET_I64) {
+      data_offset->mode    = SSI_OFFSET_I64;
+      data_offset->off.i64 = data_offset->off.i64 + l*b;
+    } 
+    /* yes, the eq below is = 1 + (i-1)/r*r but it's not = i. that's an integer /. */
+    *ret_actual_start = 1 + l*r;
+  }
+  return 0;
+}

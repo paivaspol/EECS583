@@ -1,0 +1,55 @@
+static int
+io_blocking(pTHX_ InputStream f, int block)
+{
+#if defined(HAS_FCNTL)
+    int RETVAL;
+    if(!f) {
+	errno = EBADF;
+	return -1;
+    }
+    RETVAL = fcntl(PerlIO_fileno(f), F_GETFL, 0);
+    if (RETVAL >= 0) {
+	int mode = RETVAL;
+	int newmode = mode;
+#ifdef O_NONBLOCK
+	/* POSIX style */
+
+# ifndef O_NDELAY
+#  define O_NDELAY O_NONBLOCK
+# endif
+	/* Note: UNICOS and UNICOS/mk a F_GETFL returns an O_NDELAY
+	 * after a successful F_SETFL of an O_NONBLOCK. */
+	RETVAL = RETVAL & (O_NONBLOCK | O_NDELAY) ? 0 : 1;
+
+	if (block == 0) {
+	    newmode &= ~O_NDELAY;
+	    newmode |= O_NONBLOCK;
+	} else if (block > 0) {
+	    newmode &= ~(O_NDELAY|O_NONBLOCK);
+	}
+#else
+	/* Not POSIX - better have O_NDELAY or we can't cope.
+	 * for BSD-ish machines this is an acceptable alternative
+	 * for SysV we can't tell "would block" from EOF but that is
+	 * the way SysV is...
+	 */
+	RETVAL = RETVAL & O_NDELAY ? 0 : 1;
+
+	if (block == 0) {
+	    newmode |= O_NDELAY;
+	} else if (block > 0) {
+	    newmode &= ~O_NDELAY;
+	}
+#endif
+	if (newmode != mode) {
+	    int ret;
+	    ret = fcntl(PerlIO_fileno(f),F_SETFL,newmode);
+	    if (ret < 0)
+		RETVAL = ret;
+	}
+    }
+    return RETVAL;
+#else
+    return -1;
+#endif
+}

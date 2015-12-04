@@ -1,0 +1,46 @@
+static Slice *malloc_slice()
+{
+  int i;
+  DataPartition *dataPart;
+  Slice *slice;
+  const int buffer_size = (img->width * img->height * 4); // AH 190202: There can be data expansion with 
+                                                          // low QP values. So, we make sure that buffer 
+                                                          // does not overflow. 4 is probably safe multiplier.
+
+  if ((slice = (Slice *) calloc(1, sizeof(Slice))) == NULL) no_mem_exit ("malloc_slice: slice structure");
+
+  if (input->symbol_mode == CABAC)
+    {
+      // create all context models
+      slice->mot_ctx = create_contexts_MotionInfo();
+      slice->tex_ctx = create_contexts_TextureInfo();
+    }
+
+  slice->max_part_nr = input->partition_mode==0?1:3;
+
+  //for IDR img there should be only one partition
+  if(img->currentPicture->idr_flag)
+    slice->max_part_nr = 1;
+  
+  assignSE2partition[0] = assignSE2partition_NoDP;
+  //ZL 
+  //for IDR img all the syntax element should be mapped to one partition        
+  if(!img->currentPicture->idr_flag&&input->partition_mode==1)
+    assignSE2partition[1] =  assignSE2partition_DP;
+  else
+    assignSE2partition[1] =  assignSE2partition_NoDP;        
+
+
+
+  slice->num_mb = 0;          // no coded MBs so far
+
+  if ((slice->partArr = (DataPartition *) calloc(slice->max_part_nr, sizeof(DataPartition))) == NULL) no_mem_exit ("malloc_slice: partArr");
+  for (i=0; i<slice->max_part_nr; i++) // loop over all data partitions
+  {
+    dataPart = &(slice->partArr[i]);
+    if ((dataPart->bitstream = (Bitstream *) calloc(1, sizeof(Bitstream))) == NULL) no_mem_exit ("malloc_slice: Bitstream");
+    if ((dataPart->bitstream->streamBuffer = (byte *) calloc(buffer_size, sizeof(byte))) == NULL) no_mem_exit ("malloc_slice: StreamBuffer");
+    // Initialize storage of bitstream parameters
+  }
+  return slice;
+}

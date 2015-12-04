@@ -1,0 +1,36 @@
+static void mgau_uninit_compact (mgau_model_t *g)
+{
+    int32 m, c, c2, n, nm;
+    
+    E_INFO("Removing uninitialized Gaussian densities\n");
+    
+    n = 0;
+    nm = 0;
+    for (m = 0; m < mgau_n_mgau(g); m++) {
+	for (c = 0, c2 = 0; c < mgau_n_comp(g,m); c++) {
+	    if (! vector_is_zero (mgau_var(g,m,c), mgau_veclen(g))) {
+		if (c2 != c) {
+		    memcpy (mgau_mean(g,m,c2), mgau_mean(g,m,c),
+			    mgau_veclen(g) * sizeof(float32));
+		    memcpy (mgau_var(g,m,c2), mgau_var(g,m,c),
+			    mgau_veclen(g) * sizeof(float32));
+		    mgau_mixw(g,m,c2) = mgau_mixw(g,m,c);
+		}
+		c2++;
+	    } else {
+		n++;
+	    }
+	}
+	mgau_n_comp(g,m) = c2;
+	if (c2 == 0) {
+	    fprintf (stdout, " %d", m);
+	    //SPEC fflush (stderr);
+	    nm++;
+	}
+    }
+    if (nm > 0)
+	fprintf (stdout, "\n");
+    
+    if ((nm > 0) || (n > 0))
+	E_INFO ("%d densities removed (%d mixtures removed entirely)\n", n, nm);
+}

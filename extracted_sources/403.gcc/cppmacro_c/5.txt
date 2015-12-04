@@ -1,0 +1,41 @@
+static bool
+paste_tokens (pfile, plhs, rhs)
+     cpp_reader *pfile;
+     const cpp_token **plhs, *rhs;
+{
+  unsigned char *buf, *end;
+  const cpp_token *lhs;
+  unsigned int len;
+  bool valid;
+
+  lhs = *plhs;
+  len = cpp_token_len (lhs) + cpp_token_len (rhs) + 1;
+  buf = (unsigned char *) alloca (len);
+  end = cpp_spell_token (pfile, lhs, buf);
+
+  /* Avoid comment headers, since they are still processed in stage 3.
+     It is simpler to insert a space here, rather than modifying the
+     lexer to ignore comments in some circumstances.  Simply returning
+     false doesn't work, since we want to clear the PASTE_LEFT flag.  */
+  if (lhs->type == CPP_DIV
+      && (rhs->type == CPP_MULT || rhs->type == CPP_DIV))
+    *end++ = ' ';
+  end = cpp_spell_token (pfile, rhs, end);
+  *end = '\0';
+
+  cpp_push_buffer (pfile, buf, end - buf, /* from_stage3 */ true, 1);
+
+  /* Tweak the column number the lexer will report.  */
+  pfile->buffer->col_adjust = pfile->cur_token[-1].col - 1;
+
+  /* We don't want a leading # to be interpreted as a directive.  */
+  pfile->buffer->saved_flags = 0;
+
+  /* Set pfile->cur_token as required by _cpp_lex_direct.  */
+  pfile->cur_token = _cpp_temp_token (pfile);
+  *plhs = _cpp_lex_direct (pfile);
+  valid = pfile->buffer->cur == pfile->buffer->rlimit;
+  _cpp_pop_buffer (pfile);
+
+  return valid;
+}

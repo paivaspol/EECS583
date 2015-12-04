@@ -1,0 +1,408 @@
+void make (move_s moves[], int i) {
+
+  /* make a move */
+
+  /* rather than writing out from[i].from, from[i].target, etc. all over
+     the place, just make a copy of them here: */
+  int ep, from, target, captured, promoted, castled, find_slot;
+  ep = moves[i].ep;
+  from = moves[i].from;
+  target = moves[i].target;
+  captured = moves[i].captured;
+  promoted = moves[i].promoted;
+  castled = moves[i].castled;
+
+  /*if ((moves[i].target == 0) || ((moves[i].from != 0) && ((board[moves[i].from] == npiece) || board[moves[i].from] == frame)))
+      DIE;
+  */
+      
+  /* clear the en passant rights: */
+  path_x[ply].epsq = ep_square;
+
+  ep_square = 0;
+
+  /* update the 50 move info: */
+  path_x[ply].fifty = fifty;
+
+  /* ignore piece drops...50move draw wont happen anyway */
+  if (board[from] == wpawn || board[from] == bpawn || board[target] != npiece) 
+  {
+    fifty = 0;
+  }
+  else 
+  {
+    fifty++;
+  }
+  
+  if (from == 0)   
+    { /* drop move */
+      /* Drop moves are handled fully seperate because we exepect to encouter
+	 lots of them and we try to skip as many checks as possible.
+	 Note that the critical path for drop moves is very short.
+	 Also, we have to handle pieces[] and squares[] specially   */
+      
+       /* new piece on board */
+      piece_count++;
+
+      /* find first empty slot in pieces[] */
+      for(find_slot = 1; (pieces[find_slot] != 0); find_slot++)
+	assert(find_slot < 63);
+      
+      /* add to piece array, set piece-square pointer */
+      pieces[find_slot] = target;
+
+      path_x[ply].was_promoted = is_promoted[find_slot];
+      is_promoted[find_slot] = 0;
+      
+      /* set square->piece pointer */
+      squares[target] = find_slot;
+      
+      assert(promoted > frame && promoted < npiece);
+     
+      DropremoveHolding(promoted, ToMove);
+
+      /* piece went off holding but onto board */
+      AddMaterial(promoted);
+
+      /* put our piece on the board */
+      board[target] = promoted;
+      
+      Hash(promoted,target);
+
+      white_to_move ^= 1;
+      ply++;
+      
+      return;
+    }
+  else
+    {
+
+      path_x[ply].was_promoted = is_promoted[squares[target]];
+
+      /* update the "general" pieces[] / squares[] info (special moves need
+	 special handling later): */
+      path_x[ply].cap_num = squares[target];
+      pieces[squares[target]] = 0;
+      pieces[squares[from]] = target;
+      squares[target] = squares[from];
+      squares[from] = 0;
+
+      /* update the piece count & add Holdings */
+      if (!ep)
+      {
+	switch (board[target]) {
+	case (npiece): break;
+	default:
+	  
+	  if (Variant == Bughouse || Variant == Crazyhouse)
+	    {
+	      if (path_x[ply].was_promoted)
+	    	{
+		  addHolding(SwitchPromoted(board[target]), ToMove);
+	    	}
+	      else
+	    	{ 
+		  addHolding(SwitchColor(board[target]), ToMove);
+	    	}
+	    }
+	  
+	  RemoveMaterial(board[target]);
+	  
+	  /* remove captured piece */
+	  Hash(board[target], target);
+	  
+	  piece_count--;
+	  break;
+	}
+      }
+
+      /* white pawn moves: */
+      if (board[from] == wpawn) {
+	/* look for a promotion move: */
+	if (promoted) {
+	  board[target] = promoted;
+	  board[from] = npiece;
+	  moved[target]++;
+	  moved[from]++;
+	  white_to_move ^= 1;
+
+	  is_promoted[squares[target]] = 1;
+
+	  /* remove pawn */
+	  Hash(wpawn, from);
+	  /* add new stuff */
+	  Hash(promoted, target);
+
+	  RemoveMaterial(wpawn);
+	  AddMaterial(promoted);
+
+	  ply++;
+	  
+	  return;
+	}
+
+	/* look for an en passant move: */
+	if (ep) {
+	  
+	  /* remove pawn */
+	  Hash(wpawn, from);
+	  /* remove ep pawn */
+	  Hash(bpawn, target-12);
+	  /* add target pawn */
+	  Hash(wpawn, target);
+
+	  RemoveMaterial(bpawn);
+
+	  board[target] = wpawn;
+	  board[from] = npiece;
+
+	  addHolding(wpawn, WHITE);
+	  piece_count--;
+
+	  board[target-12] = npiece;
+	  moved[target]++;
+	  moved[from]++;
+	  moved[target-12]++;
+	  white_to_move ^= 1;
+	  path_x[ply].cap_num = squares[target-12];
+
+	  pieces[squares[target-12]] = 0;
+	  squares[target-12] = 0;
+
+	  ply++;
+	  
+	  return;
+	}
+	
+	/* otherwise, we have a "regular" pawn move: */
+	/* first check to see if we've moved a pawn up 2 squares: */
+	if (target == from+24)
+	  ep_square = from+12;
+
+	Hash(wpawn, from);
+	Hash(wpawn, target);
+	
+	board[target] = wpawn;
+	board[from] = npiece;
+	moved[target]++;
+	moved[from]++;
+	white_to_move ^= 1;
+	
+	ply++;
+	
+	return;
+	
+      }
+      
+      /* black pawn moves: */
+      if (board[from] == bpawn) {
+	/* look for a promotion move: */
+	if (promoted) {
+	  board[target] = promoted;
+	  board[from] = npiece;
+	  moved[target]++;
+	  moved[from]++;
+	  white_to_move ^= 1;
+
+	  is_promoted[squares[target]] = 1;
+
+	  /* remove pawn */
+	  Hash(bpawn, from);
+	  /* add new stuff */
+	  Hash(promoted, target);
+
+	  RemoveMaterial(bpawn);
+	  AddMaterial(promoted);
+
+	  ply++;
+	  
+	  return;
+	}
+	
+	/* look for an en passant move: */
+	if (ep) {
+
+	  /* remove pawn */
+	  Hash(bpawn, from);
+	  /* remove ep pawn */
+	  Hash(wpawn, target+12);
+	  /* add target pawn */
+	  Hash(bpawn, target);
+
+	  RemoveMaterial(wpawn);
+
+	  board[target] = bpawn;
+	  board[from] = npiece;
+
+	  addHolding(bpawn, BLACK);
+	  piece_count--;
+
+	  board[target+12] = npiece;
+	  moved[target]++;
+	  moved[from]++;
+	  moved[target+12]++;
+	  white_to_move ^= 1;
+	  path_x[ply].cap_num = squares[target+12];
+	  pieces[squares[target+12]] = 0;
+	  squares[target+12] = 0;
+	  
+	  ply++;
+	  
+	  return;
+	}
+	
+	/* otherwise, we have a "regular" pawn move: */
+	/* first check to see if we've moved a pawn down 2 squares: */
+	if (target == from-24)
+	  ep_square = from-12;
+	
+	board[target] = bpawn;
+	board[from] = npiece;
+	moved[target]++;
+	moved[from]++;
+	white_to_move ^= 1;
+
+	Hash(bpawn, from);
+	Hash(bpawn, target);
+
+        ply++;
+	
+	return;
+      }
+      
+      /* piece moves, other than the king: */
+      if (board[from] != wking && board[from] != bking) {
+	
+	Hash(board[from], from);
+	Hash(board[from], target);
+
+	board[target] = board[from];
+	board[from] = npiece;
+	moved[target]++;
+	moved[from]++;
+	white_to_move ^= 1;
+	
+	ply++;
+	
+	return;
+      }
+
+      /* otherwise, we have a king move of some kind: */
+      /* White king moves first: */
+      if (board[from] == wking) {
+	/* record the new white king location: */
+	wking_loc = target;
+	
+	/* perform the white king's move: */
+	board[target] = wking;
+	board[from] = npiece;
+	moved[target]++;
+	moved[from]++;
+	white_to_move ^= 1;
+
+	Hash(wking, from);
+	Hash(wking, target);
+	
+	/* check for castling: */
+	/* check for white kingside castling: */
+	if (castled == wck) {
+	  board[33] = npiece;
+	  board[31] = wrook;
+	  moved[33]++;
+	  moved[31]++;
+	  white_castled = wck;
+	  pieces[squares[33]] = 31;
+	  squares[31] = squares[33];
+	  squares[33] = 0;
+	  
+	  Hash(wrook, 33);
+	  Hash(wrook, 31);
+
+          ply++;
+	  
+	  return;
+	}
+	
+	/* check for white queenside castling: */
+	else if (castled == wcq) {
+	  board[26] = npiece;
+	  board[29] = wrook;
+	  moved[26]++;
+	  moved[29]++;
+	  white_castled = wcq;
+	  pieces[squares[26]] = 29;
+	  squares[29] = squares[26];
+	  squares[26] = 0;
+
+	  Hash(wrook, 26);
+	  Hash(wrook, 29);
+	 
+          ply++;
+	  
+	  return;
+	}
+
+	ply++;
+	
+	return;
+      }
+      
+      /* now we have only black king moves left: */
+      else {
+	/* record the new black king location: */
+	bking_loc = target;
+	
+	/* perform the black king's move: */
+	board[target] = bking;
+	board[from] = npiece;
+	moved[target]++;
+	moved[from]++;
+	white_to_move ^= 1;
+
+	Hash(bking, from);
+	Hash(bking, target);
+	
+	/* check for castling: */
+	/* check for black kingside castling: */
+	if (castled == bck) {
+	  board[117] = npiece;
+	  board[115] = brook;
+	  moved[117]++;
+	  moved[115]++;
+	  black_castled = bck;
+	  pieces[squares[117]] = 115;
+	  squares[115] = squares[117];
+	  squares[117] = 0;
+
+	  Hash(brook, 117);
+	  Hash(brook, 115);
+
+	  ply++;
+	  
+	  return;
+	}
+
+	/* check for black queenside castling: */
+	else if (castled == bcq) {
+	  board[110] = npiece;
+	  board[113] = brook;
+	  moved[110]++;
+	  moved[113]++;
+	  black_castled = bcq;
+	  pieces[squares[110]] = 113;
+	  squares[113] = squares[110];
+	  squares[110] = 0;
+
+	  Hash(brook, 110);
+	  Hash(brook, 113);
+
+          ply++;
+	  
+	  return;
+	}
+      }
+    ply++;
+      
+    return;
+  }
+}

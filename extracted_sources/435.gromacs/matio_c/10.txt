@@ -1,0 +1,23 @@
+int read_xpm_matrix(char *fnm,t_matrix **matrix)
+{
+  FILE *in;
+  char *line;
+  int nmat;
+
+  in=ffopen(fnm,"r");
+  
+  nmat=0;
+  while (fgetline(&line,STRLEN,in)) {
+    if (strstr(line,"/* XPM */")) {
+      srenew(*matrix,nmat+1);
+      read_xpm_entry(in,&(*matrix)[nmat]);
+      nmat++;
+    }
+  }
+  fclose(in);
+
+  if (nmat==0)
+    fatal_error(0,"Invalid XPixMap\n");
+
+  return nmat;
+}

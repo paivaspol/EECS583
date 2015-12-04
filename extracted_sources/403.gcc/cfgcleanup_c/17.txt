@@ -1,0 +1,35 @@
+static bool
+delete_unreachable_blocks ()
+{
+  int i, j;
+  bool changed = false;
+
+  find_unreachable_blocks ();
+
+  /* Delete all unreachable basic blocks.  Do compaction concurrently,
+     as otherwise we can wind up with O(N^2) behaviour here when we 
+     have oodles of dead code.  */
+
+  for (i = j = 0; i < n_basic_blocks; ++i)
+    {
+      basic_block b = BASIC_BLOCK (i);
+
+      if (!(b->flags & BB_REACHABLE))
+	{
+	  flow_delete_block_noexpunge (b);
+	  expunge_block_nocompact (b);
+	  changed = true;
+	}
+      else
+	{
+	  BASIC_BLOCK (j) = b;
+	  b->index = j++;
+	}
+    }
+  n_basic_blocks = j;
+  basic_block_info->num_elements = j;
+
+  if (changed)
+    tidy_fallthru_edges ();
+  return changed;
+}

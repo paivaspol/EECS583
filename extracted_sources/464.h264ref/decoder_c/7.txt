@@ -1,0 +1,36 @@
+void Build_Status_Map(byte **s_map)
+{
+  int i,j,slice=-1,mb=0,jj,ii,packet_lost=0;
+
+  jj = img->height/MB_BLOCK_SIZE;
+  ii = img->width/MB_BLOCK_SIZE;
+  
+  for (j=0 ; j<jj; j++)
+  for (i=0 ; i<ii; i++)
+  {
+    if (!input->slice_mode || img->mb_data[mb].slice_nr != slice) /* new slice */
+    {
+      packet_lost=0;
+      #if defined(SPEC_CPU)
+      if ((spec_rand() * (double) RAND_MAX)/(double)RAND_MAX*100.0 < input->LossRateC)   packet_lost += 3;
+      if ((spec_rand() * (double) RAND_MAX)/(double)RAND_MAX*100.0 < input->LossRateB)   packet_lost += 2;
+      if ((spec_rand() * (double) RAND_MAX)/(double)RAND_MAX*100.0 < input->LossRateA)   packet_lost  = 1;
+      #else
+      if ((double)rand()/(double)RAND_MAX*100 < input->LossRateC)   packet_lost += 3;
+      if ((double)rand()/(double)RAND_MAX*100 < input->LossRateB)   packet_lost += 2;
+      if ((double)rand()/(double)RAND_MAX*100 < input->LossRateA)   packet_lost  = 1;
+      #endif
+      slice++;
+    }
+    if (!packet_lost)
+    {
+      s_map[j][i]=0;  //! Packet OK
+    }
+    else
+    {
+      s_map[j][i]=packet_lost;
+      if(input->partition_mode == 0)  s_map[j][i]=1;
+    }
+    mb++;
+  }
+}

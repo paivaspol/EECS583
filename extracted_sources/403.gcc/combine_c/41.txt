@@ -1,0 +1,18 @@
+static enum rtx_code
+combine_reversed_comparison_code (exp)
+     rtx exp;
+{
+  enum rtx_code code1 = reversed_comparison_code (exp, NULL);
+  rtx x;
+
+  if (code1 != UNKNOWN
+      || GET_MODE_CLASS (GET_MODE (XEXP (exp, 0))) != MODE_CC)
+    return code1;
+  /* Otherwise try and find where the condition codes were last set and
+     use that.  */
+  x = get_last_value (XEXP (exp, 0));
+  if (!x || GET_CODE (x) != COMPARE)
+    return UNKNOWN;
+  return reversed_comparison_code_parts (GET_CODE (exp),
+					 XEXP (x, 0), XEXP (x, 1), NULL);
+}

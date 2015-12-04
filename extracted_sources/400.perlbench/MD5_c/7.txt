@@ -1,0 +1,14 @@
+static MD5_CTX* get_md5_ctx(pTHX_ SV* sv)
+{
+    if (SvROK(sv)) {
+	sv = SvRV(sv);
+	if (SvIOK(sv)) {
+	    MD5_CTX* ctx = INT2PTR(MD5_CTX*, SvIV(sv));
+	    if (ctx && ctx->signature == MD5_CTX_SIGNATURE) {
+		return ctx;
+            }
+        }
+    }
+    croak("Not a reference to a Digest::MD5 object");
+    return (MD5_CTX*)0; /* some compilers insist on a return value */
+}

@@ -1,0 +1,37 @@
+void
+Perl_init_stacks(pTHX)
+{
+    /* start with 128-item stack and 8K cxstack */
+    PL_curstackinfo = new_stackinfo(REASONABLE(128),
+				 REASONABLE(8192/sizeof(PERL_CONTEXT) - 1));
+    PL_curstackinfo->si_type = PERLSI_MAIN;
+    PL_curstack = PL_curstackinfo->si_stack;
+    PL_mainstack = PL_curstack;		/* remember in case we switch stacks */
+
+    PL_stack_base = AvARRAY(PL_curstack);
+    PL_stack_sp = PL_stack_base;
+    PL_stack_max = PL_stack_base + AvMAX(PL_curstack);
+
+    New(50,PL_tmps_stack,REASONABLE(128),SV*);
+    PL_tmps_floor = -1;
+    PL_tmps_ix = -1;
+    PL_tmps_max = REASONABLE(128);
+
+    New(54,PL_markstack,REASONABLE(32),I32);
+    PL_markstack_ptr = PL_markstack;
+    PL_markstack_max = PL_markstack + REASONABLE(32);
+
+    SET_MARK_OFFSET;
+
+    New(54,PL_scopestack,REASONABLE(32),I32);
+    PL_scopestack_ix = 0;
+    PL_scopestack_max = REASONABLE(32);
+
+    New(54,PL_savestack,REASONABLE(128),ANY);
+    PL_savestack_ix = 0;
+    PL_savestack_max = REASONABLE(128);
+
+    New(54,PL_retstack,REASONABLE(16),OP*);
+    PL_retstack_ix = 0;
+    PL_retstack_max = REASONABLE(16);
+}

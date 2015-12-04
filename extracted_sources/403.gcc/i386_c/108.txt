@@ -1,0 +1,31 @@
+void
+ix86_expand_vector_move (mode, operands)
+     enum machine_mode mode;
+     rtx operands[];
+{
+  /* Force constants other than zero into memory.  We do not know how
+     the instructions used to build constants modify the upper 64 bits
+     of the register, once we have that information we may be able
+     to handle some of them more efficiently.  */
+  if ((reload_in_progress | reload_completed) == 0
+      && register_operand (operands[0], mode)
+      && CONSTANT_P (operands[1]))
+    {
+      rtx addr = gen_reg_rtx (Pmode);
+      emit_move_insn (addr, XEXP (force_const_mem (mode, operands[1]), 0));
+      operands[1] = gen_rtx_MEM (mode, addr);
+    }
+
+  /* Make operand1 a register if it isn't already.  */
+  if ((reload_in_progress | reload_completed) == 0
+      && !register_operand (operands[0], mode)
+      && !register_operand (operands[1], mode)
+      && operands[1] != CONST0_RTX (mode))
+    {
+      rtx temp = force_reg (GET_MODE (operands[1]), operands[1]);
+      emit_move_insn (operands[0], temp);
+      return;
+    }
+
+  emit_insn (gen_rtx_SET (VOIDmode, operands[0], operands[1]));
+}  

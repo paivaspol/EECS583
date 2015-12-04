@@ -1,0 +1,18 @@
+void
+cpp_output_line (pfile, fp)
+     cpp_reader *pfile;
+     FILE *fp;
+{
+  const cpp_token *token;
+
+  token = cpp_get_token (pfile);
+  while (token->type != CPP_EOF)
+    {
+      cpp_output_token (token, fp);
+      token = cpp_get_token (pfile);
+      if (token->flags & PREV_WHITE)
+	putc (' ', fp);
+    }
+
+  putc ('\n', fp);
+}

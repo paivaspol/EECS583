@@ -1,0 +1,23 @@
+static inline dw_attr_ref
+get_AT (die, attr_kind)
+     dw_die_ref die;
+     enum dwarf_attribute attr_kind;
+{
+  dw_attr_ref a;
+  dw_die_ref spec = NULL;
+
+  if (die != NULL)
+    {
+      for (a = die->die_attr; a != NULL; a = a->dw_attr_next)
+	if (a->dw_attr == attr_kind)
+	  return a;
+	else if (a->dw_attr == DW_AT_specification
+		 || a->dw_attr == DW_AT_abstract_origin)
+	  spec = AT_ref (a);
+
+      if (spec)
+	return get_AT (spec, attr_kind);
+    }
+
+  return NULL;
+}

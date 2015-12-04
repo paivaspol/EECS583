@@ -1,0 +1,34 @@
+void
+calculate_dominance_info (idom, doms, reverse)
+     int *idom;
+     sbitmap *doms;
+     enum cdi_direction reverse;
+{
+  struct dom_info di;
+
+  if (!doms && !idom)
+    return;
+  init_dom_info (&di);
+  calc_dfs_tree (&di, reverse);
+  calc_idoms (&di, reverse);
+
+  if (idom)
+    {
+      int i;
+      for (i = 0; i < n_basic_blocks; i++)
+	{
+	  basic_block b = BASIC_BLOCK (i);
+	  TBB d = di.dom[di.dfs_order[b->index]];
+
+	  /* The old code didn't modify array elements of nodes having only
+	     itself as dominator (d==0) or only ENTRY_BLOCK (resp. EXIT_BLOCK)
+	     (d==1).  */
+	  if (d > 1)
+	    idom[i] = di.dfs_to_bb[d]->index;
+	}
+    }
+  if (doms)
+    idoms_to_doms (&di, doms);
+
+  free_dom_info (&di);
+}

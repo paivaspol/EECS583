@@ -1,0 +1,74 @@
+static void
+gen_variable_die (decl, context_die)
+     tree decl;
+     dw_die_ref context_die;
+{
+  tree origin = decl_ultimate_origin (decl);
+  dw_die_ref var_die = new_die (DW_TAG_variable, context_die, decl);
+
+  dw_die_ref old_die = lookup_decl_die (decl);
+  int declaration = (DECL_EXTERNAL (decl)
+		     || class_scope_p (context_die));
+
+  if (origin != NULL)
+    add_abstract_origin_attribute (var_die, origin);
+
+  /* Loop unrolling can create multiple blocks that refer to the same
+     static variable, so we must test for the DW_AT_declaration flag.
+
+     ??? Loop unrolling/reorder_blocks should perhaps be rewritten to
+     copy decls and set the DECL_ABSTRACT flag on them instead of
+     sharing them.
+
+     ??? Duplicated blocks have been rewritten to use .debug_ranges.  */
+  else if (old_die && TREE_STATIC (decl)
+ 	   && get_AT_flag (old_die, DW_AT_declaration) == 1)
+    {
+      /* This is a definition of a C++ class level static.  */
+      add_AT_die_ref (var_die, DW_AT_specification, old_die);
+      if (DECL_NAME (decl))
+	{
+	  unsigned file_index = lookup_filename (DECL_SOURCE_FILE (decl));
+
+	  if (get_AT_unsigned (old_die, DW_AT_decl_file) != file_index)
+	    add_AT_unsigned (var_die, DW_AT_decl_file, file_index);
+
+	  if (get_AT_unsigned (old_die, DW_AT_decl_line)
+	      != (unsigned) DECL_SOURCE_LINE (decl))
+
+	    add_AT_unsigned (var_die, DW_AT_decl_line,
+			     DECL_SOURCE_LINE (decl));
+	}
+    }
+  else
+    {
+      add_name_and_src_coords_attributes (var_die, decl);
+      add_type_attribute (var_die, TREE_TYPE (decl), TREE_READONLY (decl),
+			  TREE_THIS_VOLATILE (decl), context_die);
+
+      if (TREE_PUBLIC (decl))
+	add_AT_flag (var_die, DW_AT_external, 1);
+
+      if (DECL_ARTIFICIAL (decl))
+	add_AT_flag (var_die, DW_AT_artificial, 1);
+
+      if (TREE_PROTECTED (decl))
+	add_AT_unsigned (var_die, DW_AT_accessibility, DW_ACCESS_protected);
+      else if (TREE_PRIVATE (decl))
+	add_AT_unsigned (var_die, DW_AT_accessibility, DW_ACCESS_private);
+    }
+
+  if (declaration)
+    add_AT_flag (var_die, DW_AT_declaration, 1);
+
+  if (class_scope_p (context_die) || DECL_ABSTRACT (decl))
+    equate_decl_number_to_die (decl, var_die);
+
+  if (! declaration && ! DECL_ABSTRACT (decl))
+    {
+      add_location_or_const_value_attribute (var_die, decl);
+      add_pubname (decl, var_die);
+    }
+  else
+    tree_add_const_value_attribute (var_die, decl);
+}

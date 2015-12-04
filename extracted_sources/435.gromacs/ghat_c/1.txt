@@ -1,0 +1,41 @@
+void mk_ghat(FILE *fp,int nx,int ny,int nz,real ***ghat,
+	     rvec box,real r1,real rc,bool bSym,bool bOld)
+{
+  int  ix,iy,iz;
+  int  ixmax,iymax,izmax;
+  real k2,ggg;
+  rvec k,lll;
+  
+  calc_lll(box,lll);
+    
+  if (bSym) {
+    ixmax=nx/2+1;
+    iymax=ny/2+1;
+    izmax=nz/2+1;
+  }
+  else {
+    ixmax=nx;
+    iymax=ny;
+    izmax=nz;
+  }
+  /* Loop over lattice vectors in fourier space */    
+  for(ix=0; (ix < ixmax); ix++) {
+    for(iy=0; (iy < iymax); iy++) {
+      for(iz=0; (iz < izmax); iz++) {
+	calc_k(lll,ix,iy,iz,nx,ny,nz,k);
+	k2 = iprod(k,k);
+	if ((ix == 0) && (iy == 0) && (iz == 0))
+	  ggg = 0.0;
+	else {
+	  if (bOld)
+	    ggg = gk(sqrt(k2),rc,r1)/(k2*EPSILON0);
+	  else
+	    ggg = gknew(sqrt(k2),rc,r1)/(k2*EPSILON0);
+	}
+	ghat[ix][iy][iz]=ggg;
+      }
+    }
+  }
+  if (bSym)
+    symmetrize_ghat(nx,ny,nz,ghat);
+}

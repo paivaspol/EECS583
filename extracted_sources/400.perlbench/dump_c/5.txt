@@ -1,0 +1,12 @@
+void
+Perl_dump_form(pTHX_ GV *gv)
+{
+    SV *sv = sv_newmortal();
+
+    gv_fullname3(sv, gv, Nullch);
+    Perl_dump_indent(aTHX_ 0, Perl_debug_log, "\nFORMAT %s = ", SvPVX(sv));
+    if (CvROOT(GvFORM(gv)))
+	op_dump(CvROOT(GvFORM(gv)));
+    else
+	Perl_dump_indent(aTHX_ 0, Perl_debug_log, "<undef>\n");
+}

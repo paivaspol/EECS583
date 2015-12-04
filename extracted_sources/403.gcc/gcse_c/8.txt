@@ -1,0 +1,75 @@
+static void
+compute_local_properties (transp, comp, antloc, setp)
+     sbitmap *transp;
+     sbitmap *comp;
+     sbitmap *antloc;
+     int setp;
+{
+  unsigned int i, hash_table_size;
+  struct expr **hash_table;
+  
+  /* Initialize any bitmaps that were passed in.  */
+  if (transp)
+    {
+      if (setp)
+	sbitmap_vector_zero (transp, n_basic_blocks);
+      else
+	sbitmap_vector_ones (transp, n_basic_blocks);
+    }
+
+  if (comp)
+    sbitmap_vector_zero (comp, n_basic_blocks);
+  if (antloc)
+    sbitmap_vector_zero (antloc, n_basic_blocks);
+
+  /* We use the same code for cprop, pre and hoisting.  For cprop
+     we care about the set hash table, for pre and hoisting we
+     care about the expr hash table.  */
+  hash_table_size = setp ? set_hash_table_size : expr_hash_table_size;
+  hash_table = setp ? set_hash_table : expr_hash_table;
+
+  for (i = 0; i < hash_table_size; i++)
+    {
+      struct expr *expr;
+
+      for (expr = hash_table[i]; expr != NULL; expr = expr->next_same_hash)
+	{
+	  int indx = expr->bitmap_index;
+	  struct occr *occr;
+
+	  /* The expression is transparent in this block if it is not killed.
+	     We start by assuming all are transparent [none are killed], and
+	     then reset the bits for those that are.  */
+	  if (transp)
+	    compute_transp (expr->expr, indx, transp, setp);
+
+	  /* The occurrences recorded in antic_occr are exactly those that
+	     we want to set to non-zero in ANTLOC.  */
+	  if (antloc)
+	    for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+	      {
+		SET_BIT (antloc[BLOCK_NUM (occr->insn)], indx);
+
+		/* While we're scanning the table, this is a good place to
+		   initialize this.  */
+		occr->deleted_p = 0;
+	      }
+
+	  /* The occurrences recorded in avail_occr are exactly those that
+	     we want to set to non-zero in COMP.  */
+	  if (comp)
+	    for (occr = expr->avail_occr; occr != NULL; occr = occr->next)
+	      {
+		SET_BIT (comp[BLOCK_NUM (occr->insn)], indx);
+
+		/* While we're scanning the table, this is a good place to
+		   initialize this.  */
+		occr->copied_p = 0;
+	      }
+
+	  /* While we're scanning the table, this is a good place to
+	     initialize this.  */
+	  expr->reaching_reg = 0;
+	}
+    }
+}

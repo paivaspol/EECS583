@@ -1,0 +1,54 @@
+static int
+simplify_plus_minus_op_data_cmp (p1, p2)
+     const void *p1;
+     const void *p2;
+{
+  const struct simplify_plus_minus_op_data *d1 = p1;
+  const struct simplify_plus_minus_op_data *d2 = p2;
+
+#ifndef SPEC_CPU
+  return (commutative_operand_precedence (d2->op)
+	  - commutative_operand_precedence (d1->op));
+#else
+  int val = (commutative_operand_precedence (d2->op)
+             - commutative_operand_precedence (d1->op));
+  if (val)
+    return val;
+
+  /* if precedence can not be determined, try to sort by RTL,
+     so that the results of qsort leave nothing to chance. Alexey */
+
+  if (GET_CODE (d1->op) == REG && GET_CODE (d2->op) == REG)
+    {
+      val = REGNO (d1->op) - REGNO (d2->op);
+      if (val)
+        return val;
+    }
+  else if (GET_CODE (d1->op) == MEM && GET_CODE (d2->op) == MEM)
+    {
+      rtx op1 = XEXP (d1->op,0);
+      rtx op2 = XEXP (d2->op,0);
+      if (GET_CODE (op1) == SYMBOL_REF && GET_CODE (op2) == SYMBOL_REF)
+        {
+          val = XSTR (op1, 0) - XSTR (op2, 0);
+          if (val)
+            return val;
+        }
+      val = GET_CODE (op1) - GET_CODE (op2);
+      if (val)
+        return val;
+    }
+  else
+    {
+      val = GET_CODE (d1->op) - GET_CODE (d2->op);
+      if (val)
+        return val;
+    }
+  
+  warning ("CPU2006: incomparable RTLs:");
+  debug_rtx (d1->op);
+  debug_rtx (d2->op);
+  
+  return -1;
+#endif
+}

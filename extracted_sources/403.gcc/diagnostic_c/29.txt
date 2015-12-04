@@ -1,0 +1,16 @@
+void
+output_append (buffer, start, end)
+     output_buffer *buffer;
+     const char *start;
+     const char *end;
+{
+  /* Emit prefix and skip whitespace if we're starting a new line.  */
+  if (is_starting_newline (buffer))
+    {
+      output_emit_prefix (buffer);
+      if (output_is_line_wrapping (buffer))
+        while (start != end && *start == ' ')
+          ++start;
+    }
+  output_append_r (buffer, start, end - start);
+}

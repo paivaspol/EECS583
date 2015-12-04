@@ -1,0 +1,20 @@
+static void
+reg_becomes_live (reg, setter, live)
+     rtx reg;
+     rtx setter ATTRIBUTE_UNUSED;
+     void *live;
+{
+  int regno, nregs;
+
+  if (GET_CODE (reg) == SUBREG)
+    reg = SUBREG_REG (reg);
+
+  if (GET_CODE (reg) != REG)
+    return;
+
+  regno = REGNO (reg);
+  if (regno < FIRST_PSEUDO_REGISTER)
+    for (nregs = HARD_REGNO_NREGS (regno, GET_MODE (reg)) - 1; nregs >= 0;
+	 nregs--)
+      SET_HARD_REG_BIT (* (HARD_REG_SET *) live, regno + nregs);
+}

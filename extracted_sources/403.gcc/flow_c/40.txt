@@ -1,0 +1,140 @@
+static void
+attempt_auto_inc (pbi, inc, insn, mem, incr, incr_reg)
+     struct propagate_block_info *pbi;
+     rtx inc, insn, mem, incr, incr_reg;
+{
+  int regno = REGNO (incr_reg);
+  rtx set = single_set (incr);
+  rtx q = SET_DEST (set);
+  rtx y = SET_SRC (set);
+  int opnum = XEXP (y, 0) == incr_reg ? 0 : 1;
+
+  /* Make sure this reg appears only once in this insn.  */
+  if (count_occurrences (PATTERN (insn), incr_reg, 1) != 1)
+    return;
+
+  if (dead_or_set_p (incr, incr_reg)
+      /* Mustn't autoinc an eliminable register.  */
+      && (regno >= FIRST_PSEUDO_REGISTER
+	  || ! TEST_HARD_REG_BIT (elim_reg_set, regno)))
+    {
+      /* This is the simple case.  Try to make the auto-inc.  If
+	 we can't, we are done.  Otherwise, we will do any
+	 needed updates below.  */
+      if (! validate_change (insn, &XEXP (mem, 0), inc, 0))
+	return;
+    }
+  else if (GET_CODE (q) == REG
+	   /* PREV_INSN used here to check the semi-open interval
+	      [insn,incr).  */
+	   && ! reg_used_between_p (q,  PREV_INSN (insn), incr)
+	   /* We must also check for sets of q as q may be
+	      a call clobbered hard register and there may
+	      be a call between PREV_INSN (insn) and incr.  */
+	   && ! reg_set_between_p (q,  PREV_INSN (insn), incr))
+    {
+      /* We have *p followed sometime later by q = p+size.
+	 Both p and q must be live afterward,
+	 and q is not used between INSN and its assignment.
+	 Change it to q = p, ...*q..., q = q+size.
+	 Then fall into the usual case.  */
+      rtx insns, temp;
+
+      start_sequence ();
+      emit_move_insn (q, incr_reg);
+      insns = get_insns ();
+      end_sequence ();
+
+      /* If we can't make the auto-inc, or can't make the
+	 replacement into Y, exit.  There's no point in making
+	 the change below if we can't do the auto-inc and doing
+	 so is not correct in the pre-inc case.  */
+
+      XEXP (inc, 0) = q;
+      validate_change (insn, &XEXP (mem, 0), inc, 1);
+      validate_change (incr, &XEXP (y, opnum), q, 1);
+      if (! apply_change_group ())
+	return;
+
+      /* We now know we'll be doing this change, so emit the
+	 new insn(s) and do the updates.  */
+      emit_insns_before (insns, insn);
+
+      if (pbi->bb->head == insn)
+	pbi->bb->head = insns;
+
+      /* INCR will become a NOTE and INSN won't contain a
+	 use of INCR_REG.  If a use of INCR_REG was just placed in
+	 the insn before INSN, make that the next use.
+	 Otherwise, invalidate it.  */
+      if (GET_CODE (PREV_INSN (insn)) == INSN
+	  && GET_CODE (PATTERN (PREV_INSN (insn))) == SET
+	  && SET_SRC (PATTERN (PREV_INSN (insn))) == incr_reg)
+	pbi->reg_next_use[regno] = PREV_INSN (insn);
+      else
+	pbi->reg_next_use[regno] = 0;
+
+      incr_reg = q;
+      regno = REGNO (q);
+
+      /* REGNO is now used in INCR which is below INSN, but
+	 it previously wasn't live here.  If we don't mark
+	 it as live, we'll put a REG_DEAD note for it
+	 on this insn, which is incorrect.  */
+      SET_REGNO_REG_SET (pbi->reg_live, regno);
+
+      /* If there are any calls between INSN and INCR, show
+	 that REGNO now crosses them.  */
+      for (temp = insn; temp != incr; temp = NEXT_INSN (temp))
+	if (GET_CODE (temp) == CALL_INSN)
+	  REG_N_CALLS_CROSSED (regno)++;
+
+      /* Invalidate alias info for Q since we just changed its value.  */
+      clear_reg_alias_info (q);
+    }
+  else
+    return;
+
+  /* If we haven't returned, it means we were able to make the
+     auto-inc, so update the status.  First, record that this insn
+     has an implicit side effect.  */
+
+  REG_NOTES (insn) = alloc_EXPR_LIST (REG_INC, incr_reg, REG_NOTES (insn));
+
+  /* Modify the old increment-insn to simply copy
+     the already-incremented value of our register.  */
+  if (! validate_change (incr, &SET_SRC (set), incr_reg, 0))
+    abort ();
+
+  /* If that makes it a no-op (copying the register into itself) delete
+     it so it won't appear to be a "use" and a "set" of this
+     register.  */
+  if (REGNO (SET_DEST (set)) == REGNO (incr_reg))
+    {
+      /* If the original source was dead, it's dead now.  */
+      rtx note;
+
+      while ((note = find_reg_note (incr, REG_DEAD, NULL_RTX)) != NULL_RTX)
+	{
+	  remove_note (incr, note);
+	  if (XEXP (note, 0) != incr_reg)
+	    CLEAR_REGNO_REG_SET (pbi->reg_live, REGNO (XEXP (note, 0)));
+	}
+
+      PUT_CODE (incr, NOTE);
+      NOTE_LINE_NUMBER (incr) = NOTE_INSN_DELETED;
+      NOTE_SOURCE_FILE (incr) = 0;
+    }
+
+  if (regno >= FIRST_PSEUDO_REGISTER)
+    {
+      /* Count an extra reference to the reg.  When a reg is
+	 incremented, spilling it is worse, so we want to make
+	 that less likely.  */
+      REG_FREQ (regno) += REG_FREQ_FROM_BB (pbi->bb);
+
+      /* Count the increment as a setting of the register,
+	 even though it isn't a SET in rtl.  */
+      REG_N_SETS (regno)++;
+    }
+}

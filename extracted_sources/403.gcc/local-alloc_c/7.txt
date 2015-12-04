@@ -1,0 +1,67 @@
+static int
+memref_referenced_p (memref, x)
+     rtx x;
+     rtx memref;
+{
+  int i, j;
+  const char *fmt;
+  enum rtx_code code = GET_CODE (x);
+
+  switch (code)
+    {
+    case CONST_INT:
+    case CONST:
+    case LABEL_REF:
+    case SYMBOL_REF:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case PC:
+    case CC0:
+    case HIGH:
+    case LO_SUM:
+      return 0;
+
+    case REG:
+      return (reg_equiv[REGNO (x)].replacement
+	      && memref_referenced_p (memref,
+				      reg_equiv[REGNO (x)].replacement));
+
+    case MEM:
+      if (true_dependence (memref, VOIDmode, x, rtx_varies_p))
+	return 1;
+      break;
+
+    case SET:
+      /* If we are setting a MEM, it doesn't count (its address does), but any
+	 other SET_DEST that has a MEM in it is referencing the MEM.  */
+      if (GET_CODE (SET_DEST (x)) == MEM)
+	{
+	  if (memref_referenced_p (memref, XEXP (SET_DEST (x), 0)))
+	    return 1;
+	}
+      else if (memref_referenced_p (memref, SET_DEST (x)))
+	return 1;
+
+      return memref_referenced_p (memref, SET_SRC (x));
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    switch (fmt[i])
+      {
+      case 'e':
+	if (memref_referenced_p (memref, XEXP (x, i)))
+	  return 1;
+	break;
+      case 'E':
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  if (memref_referenced_p (memref, XVECEXP (x, i, j)))
+	    return 1;
+	break;
+      }
+
+  return 0;
+}

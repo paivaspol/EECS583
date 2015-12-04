@@ -1,0 +1,34 @@
+int
+can_compare_p (code, mode, purpose)
+     enum rtx_code code;
+     enum machine_mode mode;
+     enum can_compare_purpose purpose;
+{
+  do
+    {
+      if (cmp_optab->handlers[(int)mode].insn_code != CODE_FOR_nothing)
+	{
+	  if (purpose == ccp_jump)
+	    return bcc_gen_fctn[(int)code] != NULL;
+	  else if (purpose == ccp_store_flag)
+	    return setcc_gen_code[(int)code] != CODE_FOR_nothing;
+	  else
+	    /* There's only one cmov entry point, and it's allowed to fail.  */
+	    return 1;
+	}
+      if (purpose == ccp_jump
+	  && cbranch_optab->handlers[(int)mode].insn_code != CODE_FOR_nothing)
+	return 1;
+      if (purpose == ccp_cmov
+	  && cmov_optab->handlers[(int)mode].insn_code != CODE_FOR_nothing)
+	return 1;
+      if (purpose == ccp_store_flag
+	  && cstore_optab->handlers[(int)mode].insn_code != CODE_FOR_nothing)
+	return 1;
+
+      mode = GET_MODE_WIDER_MODE (mode);
+    }
+  while (mode != VOIDmode);
+
+  return 0;
+}

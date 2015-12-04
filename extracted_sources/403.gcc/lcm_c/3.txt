@@ -1,0 +1,21 @@
+static void
+compute_insert_delete (edge_list, antloc, later, laterin,
+		       insert, delete)
+     struct edge_list *edge_list;
+     sbitmap *antloc, *later, *laterin, *insert, *delete;
+{
+  int x;
+
+  for (x = 0; x < n_basic_blocks; x++)
+    sbitmap_difference (delete[x], antloc[x], laterin[x]);
+
+  for (x = 0; x < NUM_EDGES (edge_list); x++)
+    {
+      basic_block b = INDEX_EDGE_SUCC_BB (edge_list, x);
+
+      if (b == EXIT_BLOCK_PTR)
+	sbitmap_difference (insert[x], later[x], laterin[n_basic_blocks]);
+      else
+	sbitmap_difference (insert[x], later[x], laterin[b->index]);
+    }
+}

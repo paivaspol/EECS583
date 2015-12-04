@@ -1,0 +1,32 @@
+static basic_block
+flow_loop_pre_header_find (header, dom)
+     basic_block header;
+     const sbitmap *dom;
+{
+  basic_block pre_header;
+  edge e;
+
+  /* If block p is a predecessor of the header and is the only block
+     that the header does not dominate, then it is the pre-header.  */
+  pre_header = NULL;
+  for (e = header->pred; e; e = e->pred_next)
+    {
+      basic_block node = e->src;
+
+      if (node != ENTRY_BLOCK_PTR
+	  && ! TEST_BIT (dom[node->index], header->index))
+	{
+	  if (pre_header == NULL)
+	    pre_header = node;
+	  else
+	    {
+	      /* There are multiple edges into the header from outside
+		 the loop so there is no pre-header block.  */
+	      pre_header = NULL;
+	      break;
+	    }
+	}
+    }
+
+  return pre_header;
+}

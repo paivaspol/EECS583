@@ -1,0 +1,18 @@
+static const char *
+rgn_print_insn (insn, aligned)
+     rtx insn;
+     int aligned;
+{
+  static char tmp[80];
+
+  if (aligned)
+    sprintf (tmp, "b%3d: i%4d", INSN_BB (insn), INSN_UID (insn));
+  else
+    {
+      if (current_nr_blocks > 1 && INSN_BB (insn) != target_bb)
+	sprintf (tmp, "%d/b%d", INSN_UID (insn), INSN_BB (insn));
+      else
+	sprintf (tmp, "%d", INSN_UID (insn));
+    }
+  return tmp;
+}

@@ -1,0 +1,44 @@
+void CopyRight(FILE *out,char *szProgram)
+{
+  /* Dont change szProgram arbitrarily - it must be argv[0], i.e. the 
+   * name of a file. Otherwise, we won't be able to find the library dir.
+   */
+#define NCR (int)asize(CopyrightText)
+#define NGPL (int)asize(GPLText)
+
+  char buf[256];
+  char *ptr;
+  
+  int i;
+
+  set_program_name(szProgram);
+
+  if(out)
+  {
+      ster_print(out,"G  R  O  M  A  C  S");
+      fprintf(out,"\n");
+  
+      ptr=bromacs();
+      sp_print(out,ptr); 
+      fprintf(out,"\n");
+      
+      ster_print(out,GromacsVersion());
+      fprintf(out,"\n");
+      
+      fprintf(out,"\n");
+      
+      for(i=0; (i<NCR); i++) 
+          sp_print(out,CopyrightText[i]);
+      for(i=0; (i<NGPL); i++)
+          sp_print(out,GPLText[i]);
+      
+      fprintf(out,"\n");
+      
+      sprintf(buf,"%s",Program());
+#ifdef DOUBLE
+      strcat(buf," (double precision)");
+#endif
+      ster_print(out,buf);
+      fprintf(out,"\n");
+  }
+}

@@ -1,0 +1,33 @@
+static int
+rtx_equal_for_field_assignment_p (x, y)
+     rtx x;
+     rtx y;
+{
+  if (x == y || rtx_equal_p (x, y))
+    return 1;
+
+  if (x == 0 || y == 0 || GET_MODE (x) != GET_MODE (y))
+    return 0;
+
+  /* Check for a paradoxical SUBREG of a MEM compared with the MEM.
+     Note that all SUBREGs of MEM are paradoxical; otherwise they
+     would have been rewritten.  */
+  if (GET_CODE (x) == MEM && GET_CODE (y) == SUBREG
+      && GET_CODE (SUBREG_REG (y)) == MEM
+      && rtx_equal_p (SUBREG_REG (y),
+		      gen_lowpart_for_combine (GET_MODE (SUBREG_REG (y)), x)))
+    return 1;
+
+  if (GET_CODE (y) == MEM && GET_CODE (x) == SUBREG
+      && GET_CODE (SUBREG_REG (x)) == MEM
+      && rtx_equal_p (SUBREG_REG (x),
+		      gen_lowpart_for_combine (GET_MODE (SUBREG_REG (x)), y)))
+    return 1;
+
+  /* We used to see if get_last_value of X and Y were the same but that's
+     not correct.  In one direction, we'll cause the assignment to have
+     the wrong destination and in the case, we'll import a register into this
+     insn that might have already have been dead.   So fail if none of the
+     above cases are true.  */
+  return 0;
+}

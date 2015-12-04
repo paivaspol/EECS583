@@ -1,0 +1,15 @@
+static rtx
+find_block_label (bb)
+     basic_block bb;
+{
+  rtx insn = bb->head;
+  if (LABEL_P (insn))
+    return insn;
+  else
+    {
+      rtx new_label = emit_label_before (gen_label_rtx (), insn);
+      if (insn == bb->head)
+	bb->head = new_label;
+      return new_label;
+    }
+}

@@ -1,0 +1,16 @@
+static bool grp_cmp(t_block *b, int nra, atom_id a[], int index)
+{
+  int i;
+  
+  if (index < 0)
+    index = b->nr-1+index;
+  if (index >= b->nr)
+    fatal_error(0,"no such index group %d in t_block (nr=%d)",index,b->nr);
+  /* compare sizes */
+  if ( nra != b->index[index+1] - b->index[index] )
+    return FALSE;
+  for(i=0; i<nra; i++)
+    if ( a[i] != b->a[b->index[index]+i] )
+      return FALSE;
+  return TRUE;
+}

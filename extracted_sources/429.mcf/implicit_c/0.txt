@@ -1,0 +1,39 @@
+void insert_new_arc( arc_t *new, long newpos, node_t *tail, node_t *head,
+                     cost_t cost, cost_t red_cost )
+#else
+void insert_new_arc( new, newpos, tail, head, cost, red_cost )
+     arc_t *new;
+     long newpos;
+     node_t *tail;
+     node_t *head;
+     cost_t cost;
+     cost_t red_cost;
+#endif
+{
+    long pos;
+
+    new[newpos].tail      = tail;
+    new[newpos].head      = head;
+    new[newpos].org_cost  = cost;
+    new[newpos].cost      = cost;
+    new[newpos].flow      = (flow_t)red_cost; 
+    
+    pos = newpos+1;
+    while( pos-1 && red_cost > (cost_t)new[pos/2-1].flow )
+    {
+        new[pos-1].tail     = new[pos/2-1].tail;
+        new[pos-1].head     = new[pos/2-1].head;
+        new[pos-1].cost     = new[pos/2-1].cost;
+        new[pos-1].org_cost = new[pos/2-1].cost;
+        new[pos-1].flow     = new[pos/2-1].flow;
+        
+        pos = pos/2;
+        new[pos-1].tail     = tail;
+        new[pos-1].head     = head;
+        new[pos-1].cost     = cost;
+        new[pos-1].org_cost = cost;
+        new[pos-1].flow     = (flow_t)red_cost; 
+    }
+    
+    return;
+}   

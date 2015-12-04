@@ -1,0 +1,32 @@
+static rtx find_block_label
+  PARAMS ((basic_block bb));
+/* Remove INSN, updating its basic block structure.  */
+static void delete_insn_bb
+  PARAMS ((rtx insn));
+
+/* Recording which blocks are control dependent on which edges.  We
+   expect each block to be control dependent on very few edges so we
+   use a bitmap for each block recording its edges.  An array holds
+   the bitmap.  Its position 0 entry holds the bitmap for block
+   INVALID_BLOCK+1 so that all blocks, including the entry and exit
+   blocks can participate in the data structure.  */
+
+/* Create a control_dependent_block_to_edge_map, given the number
+   NUM_BASIC_BLOCKS of non-entry, non-exit basic blocks, e.g.,
+   n_basic_blocks.  This memory must be released using
+   control_dependent_block_to_edge_map_free ().  */
+
+static control_dependent_block_to_edge_map
+control_dependent_block_to_edge_map_create (num_basic_blocks)
+     size_t num_basic_blocks;
+{
+  int i;
+  control_dependent_block_to_edge_map c
+    = xmalloc (sizeof (control_dependent_block_to_edge_map_s));
+  c->length = num_basic_blocks - (INVALID_BLOCK+1);
+  c->data = xmalloc ((size_t) c->length*sizeof (bitmap));
+  for (i = 0; i < c->length; ++i)
+    c->data[i] = BITMAP_XMALLOC ();
+
+  return c;
+}

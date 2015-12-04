@@ -1,0 +1,24 @@
+int
+have_add2_insn (x, y)
+     rtx x, y;
+{
+  int icode;
+
+  if (GET_MODE (x) == VOIDmode)
+    abort ();
+
+  icode = (int) add_optab->handlers[(int) GET_MODE (x)].insn_code; 
+
+  if (icode == CODE_FOR_nothing)
+    return 0;
+
+  if (! ((*insn_data[icode].operand[0].predicate)
+	 (x, insn_data[icode].operand[0].mode))
+      || ! ((*insn_data[icode].operand[1].predicate)
+	    (x, insn_data[icode].operand[1].mode))
+      || ! ((*insn_data[icode].operand[2].predicate)
+	    (y, insn_data[icode].operand[2].mode)))
+    return 0;
+
+  return 1;
+}

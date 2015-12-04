@@ -1,0 +1,223 @@
+static const unsigned char *
+compare_constant_1 (exp, p)
+     tree exp;
+     const unsigned char *p;
+{
+  const unsigned char *strp;
+  int len;
+  enum tree_code code = TREE_CODE (exp);
+
+  if (code != (enum tree_code) *p++)
+    return 0;
+
+  /* Either set STRP, P and LEN to pointers and length to compare and exit the
+     switch, or return the result of the comparison.  */
+
+  switch (code)
+    {
+    case INTEGER_CST:
+      /* Integer constants are the same only if the same width of type.  */
+      if (*p++ != TYPE_PRECISION (TREE_TYPE (exp)))
+	return 0;
+
+      strp = (unsigned char *) &TREE_INT_CST (exp);
+      len = sizeof TREE_INT_CST (exp);
+      break;
+
+    case REAL_CST:
+      /* Real constants are the same only if the same width of type.  */
+      if (*p++ != TYPE_PRECISION (TREE_TYPE (exp)))
+	return 0;
+
+      strp = (unsigned char *) &TREE_REAL_CST (exp);
+      len = sizeof TREE_REAL_CST (exp);
+      break;
+
+    case STRING_CST:
+      if (flag_writable_strings)
+	return 0;
+
+      if ((enum machine_mode) *p++ != TYPE_MODE (TREE_TYPE (exp)))
+	return 0;
+
+      strp = (const unsigned char *) TREE_STRING_POINTER (exp);
+      len = TREE_STRING_LENGTH (exp);
+      if (memcmp ((char *) &TREE_STRING_LENGTH (exp), p,
+		  sizeof TREE_STRING_LENGTH (exp)))
+	return 0;
+
+      p += sizeof TREE_STRING_LENGTH (exp);
+      break;
+
+    case COMPLEX_CST:
+      p = compare_constant_1 (TREE_REALPART (exp), p);
+      if (p == 0)
+	return 0;
+
+      return compare_constant_1 (TREE_IMAGPART (exp), p);
+
+    case CONSTRUCTOR:
+      if (TREE_CODE (TREE_TYPE (exp)) == SET_TYPE)
+	{
+	  int xlen = len = int_size_in_bytes (TREE_TYPE (exp));
+	  unsigned char *tmp = (unsigned char *) alloca (len);
+
+	  get_set_constructor_bytes (exp, tmp, len);
+	  strp = (unsigned char *) tmp;
+	  if (memcmp ((char *) &xlen, p, sizeof xlen))
+	    return 0;
+
+	  p += sizeof xlen;
+	  break;
+	}
+      else
+	{
+	  tree link;
+	  int length = list_length (CONSTRUCTOR_ELTS (exp));
+	  tree type;
+	  enum machine_mode mode = TYPE_MODE (TREE_TYPE (exp));
+	  int have_purpose = 0;
+
+	  for (link = CONSTRUCTOR_ELTS (exp); link; link = TREE_CHAIN (link))
+	    if (TREE_PURPOSE (link))
+	      have_purpose = 1;
+
+	  if (memcmp ((char *) &length, p, sizeof length))
+	    return 0;
+
+	  p += sizeof length;
+
+	  /* For record constructors, insist that the types match.
+	     For arrays, just verify both constructors are for arrays.
+	     Then insist that either both or none have any TREE_PURPOSE
+	     values.  */
+	  if (TREE_CODE (TREE_TYPE (exp)) == RECORD_TYPE)
+	    type = TREE_TYPE (exp);
+	  else
+	    type = 0;
+
+	  if (memcmp ((char *) &type, p, sizeof type))
+	    return 0;
+
+	  if (TREE_CODE (TREE_TYPE (exp)) == ARRAY_TYPE)
+	    {
+	      if (memcmp ((char *) &mode, p, sizeof mode))
+		return 0;
+
+	      p += sizeof mode;
+	    }
+
+	  p += sizeof type;
+
+	  if (memcmp ((char *) &have_purpose, p, sizeof have_purpose))
+	    return 0;
+
+	  p += sizeof have_purpose;
+
+	  /* For arrays, insist that the size in bytes match.  */
+	  if (TREE_CODE (TREE_TYPE (exp)) == ARRAY_TYPE)
+	    {
+	      HOST_WIDE_INT size = int_size_in_bytes (TREE_TYPE (exp));
+
+	      if (memcmp ((char *) &size, p, sizeof size))
+		return 0;
+
+	      p += sizeof size;
+	    }
+
+	  for (link = CONSTRUCTOR_ELTS (exp); link; link = TREE_CHAIN (link))
+	    {
+	      if (TREE_VALUE (link))
+		{
+		  if ((p = compare_constant_1 (TREE_VALUE (link), p)) == 0)
+		    return 0;
+		}
+	      else
+		{
+		  tree zero = 0;
+
+		  if (memcmp ((char *) &zero, p, sizeof zero))
+		    return 0;
+
+		  p += sizeof zero;
+		}
+
+	      if (TREE_PURPOSE (link)
+		  && TREE_CODE (TREE_PURPOSE (link)) == FIELD_DECL)
+		{
+		  if (memcmp ((char *) &TREE_PURPOSE (link), p,
+			    sizeof TREE_PURPOSE (link)))
+		    return 0;
+
+		  p += sizeof TREE_PURPOSE (link);
+		}
+	      else if (TREE_PURPOSE (link))
+		{
+		  if ((p = compare_constant_1 (TREE_PURPOSE (link), p)) == 0)
+		    return 0;
+		}
+	      else if (have_purpose)
+		{
+		  int zero = 0;
+
+		  if (memcmp ((char *) &zero, p, sizeof zero))
+		    return 0;
+
+		  p += sizeof zero;
+		}
+	    }
+
+	  return p;
+	}
+
+    case ADDR_EXPR:
+    case FDESC_EXPR:
+      {
+	struct addr_const value;
+
+	decode_addr_const (exp, &value);
+	strp = (unsigned char *) &value.offset;
+	len = sizeof value.offset;
+	/* Compare the offset.  */
+	while (--len >= 0)
+	  if (*p++ != *strp++)
+	    return 0;
+
+	/* Compare symbol name.  */
+	strp = (const unsigned char *) XSTR (value.base, 0);
+	len = strlen ((const char *) strp) + 1;
+      }
+      break;
+
+    case PLUS_EXPR:
+    case MINUS_EXPR:
+    case RANGE_EXPR:
+      p = compare_constant_1 (TREE_OPERAND (exp, 0), p);
+      if (p == 0)
+	return 0;
+
+      return compare_constant_1 (TREE_OPERAND (exp, 1), p);
+
+    case NOP_EXPR:
+    case CONVERT_EXPR:
+    case NON_LVALUE_EXPR:
+      return compare_constant_1 (TREE_OPERAND (exp, 0), p);
+
+    default:
+      {
+	tree new = (*lang_hooks.expand_constant) (exp);
+
+	if (new != exp)
+          return compare_constant_1 (new, p);
+	else
+	  return 0;
+      }
+    }
+
+  /* Compare constant contents.  */
+  while (--len >= 0)
+    if (*p++ != *strp++)
+      return 0;
+
+  return p;
+}

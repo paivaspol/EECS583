@@ -1,0 +1,45 @@
+static void parse_base_line (mdef_t *m, char *line, s3pid_t p)
+{
+    int32 wlen, n;
+    char word[1024], *lp;
+    s3cipid_t ci;
+
+    lp = line;
+    
+    /* Read base phone name */
+    if (sscanf (lp, "%s%n", word, &wlen) != 1)
+	E_FATAL("Missing base phone name: %s\n", line);
+    lp += wlen;
+    
+    /* Make sure it's not a duplicate */
+    ci = mdef_ciphone_id (m, word);
+    if (IS_S3CIPID(ci))
+        E_FATAL("Duplicate base phone: %s\n", line);
+
+    /* Add ciphone to ciphone table with id p */
+    ciphone_add (m, word, p);
+    ci = (s3cipid_t) p;
+
+    /* Read and skip "-" for lc, rc, wpos */
+    for (n = 0; n < 3; n++) {
+	if ((sscanf (lp, "%s%n", word, &wlen) != 1) || (strcmp (word, "-") != 0))
+	    E_FATAL("Bad context info for base phone: %s\n", line);
+	lp += wlen;
+    }
+    
+    /* Read filler attribute, if present */
+    if (sscanf (lp, "%s%n", word, &wlen) != 1)
+	E_FATAL("Missing filler atribute field: %s\n", line);
+    lp += wlen;
+    if (strcmp (word, "filler") == 0)
+        m->ciphone[(int)ci].filler = 1;
+    else if (strcmp (word, "n/a") == 0)
+        m->ciphone[(int)ci].filler = 0;
+    else
+        E_FATAL("Bad filler attribute field: %s\n", line);
+
+    triphone_add (m, ci, BAD_S3CIPID, BAD_S3CIPID, WORD_POSN_UNDEFINED, p);
+
+    /* Parse remainder of line: transition matrix and state->senone mappings */
+    parse_tmat_senmap (m, line, lp-line, p);
+}

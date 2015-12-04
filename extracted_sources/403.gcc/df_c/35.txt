@@ -1,0 +1,44 @@
+static void
+df_bb_rd_local_compute (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+  rtx insn;
+
+  for (insn = bb->head; insn && insn != NEXT_INSN (bb->end);
+       insn = NEXT_INSN (insn))
+    {
+      unsigned int uid = INSN_UID (insn);
+      struct df_link *def_link;
+
+      if (! INSN_P (insn))
+	continue;
+
+      for (def_link = df->insns[uid].defs; def_link; def_link = def_link->next)
+	{
+	  struct ref *def = def_link->ref;
+	  unsigned int regno = DF_REF_REGNO (def);
+	  struct df_link *def2_link;
+
+	  for (def2_link = df->regs[regno].defs; def2_link;
+	       def2_link = def2_link->next)
+	    {
+	      struct ref *def2 = def2_link->ref;
+
+	      /* Add all defs of this reg to the set of kills.  This
+		 is greedy since many of these defs will not actually
+		 be killed by this BB but it keeps things a lot
+		 simpler.  */
+	      bitmap_set_bit (bb_info->rd_kill, DF_REF_ID (def2));
+
+	      /* Zap from the set of gens for this BB.  */
+	      bitmap_clear_bit (bb_info->rd_gen, DF_REF_ID (def2));
+	    }
+
+	  bitmap_set_bit (bb_info->rd_gen, DF_REF_ID (def));
+	}
+    }
+  
+  bb_info->rd_valid = 1;
+}

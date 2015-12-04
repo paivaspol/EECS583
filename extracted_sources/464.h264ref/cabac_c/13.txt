@@ -1,0 +1,75 @@
+void writeMVD_CABAC(SyntaxElement *se, EncodingEnvironmentPtr eep_dp)
+{
+  int i = img->subblock_x;
+  int j = img->subblock_y;
+  int a, b;
+  int act_ctx;
+  int act_sym;
+  int mv_pred_res;
+  int mv_local_err;
+  int mv_sign;
+  int list_idx = se->value2 & 0x01;
+  int k = (se->value2>>1); // MVD component
+
+  PixelPos block_a, block_b;
+
+  MotionInfoContexts  *ctx    = img->currentSlice->mot_ctx;
+  Macroblock          *currMB = &img->mb_data[img->current_mb_nr];
+
+  getLuma4x4Neighbour(img->current_mb_nr, i, j, -1,  0, &block_a);
+  getLuma4x4Neighbour(img->current_mb_nr, i, j,  0, -1, &block_b);
+
+  if (block_b.available)
+  {
+    b = absm(img->mb_data[block_b.mb_addr].mvd[list_idx][block_b.y][block_b.x][k]);
+    if (img->MbaffFrameFlag && (k==1)) 
+    {
+      if ((currMB->mb_field==0) && (img->mb_data[block_b.mb_addr].mb_field==1))
+        b *= 2;
+      else if ((currMB->mb_field==1) && (img->mb_data[block_b.mb_addr].mb_field==0))
+        b /= 2;
+    }
+  }
+  else
+    b=0;
+          
+  if (block_a.available)
+  {
+    a = absm(img->mb_data[block_a.mb_addr].mvd[list_idx][block_a.y][block_a.x][k]);
+    if (img->MbaffFrameFlag && (k==1)) 
+    {
+      if ((currMB->mb_field==0) && (img->mb_data[block_a.mb_addr].mb_field==1))
+        a *= 2;
+      else if ((currMB->mb_field==1) && (img->mb_data[block_a.mb_addr].mb_field==0))
+        a /= 2;
+    }
+  }
+  else
+    a = 0;
+
+  if ((mv_local_err=a+b)<3)
+    act_ctx = 5*k;
+  else
+  {
+    if (mv_local_err>32)
+      act_ctx=5*k+3;
+    else
+      act_ctx=5*k+2;
+  }
+  mv_pred_res = se->value1;
+  se->context = act_ctx;
+
+  act_sym = absm(mv_pred_res);
+
+  if (act_sym == 0)
+    biari_encode_symbol(eep_dp, 0, &ctx->mv_res_contexts[0][act_ctx] );
+  else
+  {
+    biari_encode_symbol(eep_dp, 1, &ctx->mv_res_contexts[0][act_ctx] );
+    act_sym--;
+    act_ctx=5*k;
+    unary_exp_golomb_mv_encode(eep_dp,act_sym,ctx->mv_res_contexts[1]+act_ctx,3);
+    mv_sign = (mv_pred_res<0) ? 1: 0;
+    biari_encode_symbol_eq_prob(eep_dp, (unsigned char) mv_sign);
+  }
+}

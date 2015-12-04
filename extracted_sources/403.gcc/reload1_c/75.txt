@@ -1,0 +1,158 @@
+static void
+reload_cse_move2add (first)
+     rtx first;
+{
+  int i;
+  rtx insn;
+
+  for (i = FIRST_PSEUDO_REGISTER - 1; i >= 0; i--)
+    reg_set_luid[i] = 0;
+
+  move2add_last_label_luid = 0;
+  move2add_luid = 2;
+  for (insn = first; insn; insn = NEXT_INSN (insn), move2add_luid++)
+    {
+      rtx pat, note;
+
+      if (GET_CODE (insn) == CODE_LABEL)
+	{
+	  move2add_last_label_luid = move2add_luid;
+	  /* We're going to increment move2add_luid twice after a
+	     label, so that we can use move2add_last_label_luid + 1 as
+	     the luid for constants.  */
+	  move2add_luid++;
+	  continue;
+	}
+      if (! INSN_P (insn))
+	continue;
+      pat = PATTERN (insn);
+      /* For simplicity, we only perform this optimization on
+	 straightforward SETs.  */
+      if (GET_CODE (pat) == SET
+	  && GET_CODE (SET_DEST (pat)) == REG)
+	{
+	  rtx reg = SET_DEST (pat);
+	  int regno = REGNO (reg);
+	  rtx src = SET_SRC (pat);
+
+	  /* Check if we have valid information on the contents of this
+	     register in the mode of REG.  */
+	  if (reg_set_luid[regno] > move2add_last_label_luid
+	      && MODES_OK_FOR_MOVE2ADD (GET_MODE (reg), reg_mode[regno]))
+	    {
+	      /* Try to transform (set (REGX) (CONST_INT A))
+				  ...
+				  (set (REGX) (CONST_INT B))
+		 to
+				  (set (REGX) (CONST_INT A))
+				  ...
+				  (set (REGX) (plus (REGX) (CONST_INT B-A)))  */
+
+	      if (GET_CODE (src) == CONST_INT && reg_base_reg[regno] < 0)
+		{
+		  int success = 0;
+		  rtx new_src = GEN_INT (sext_for_mode (GET_MODE (reg),
+							INTVAL (src)
+							- reg_offset[regno]));
+		  /* (set (reg) (plus (reg) (const_int 0))) is not canonical;
+		     use (set (reg) (reg)) instead.
+		     We don't delete this insn, nor do we convert it into a
+		     note, to avoid losing register notes or the return
+		     value flag.  jump2 already knowns how to get rid of
+		     no-op moves.  */
+		  if (new_src == const0_rtx)
+		    success = validate_change (insn, &SET_SRC (pat), reg, 0);
+		  else if (rtx_cost (new_src, PLUS) < rtx_cost (src, SET)
+			   && have_add2_insn (reg, new_src))
+		    success = validate_change (insn, &PATTERN (insn),
+					       gen_add2_insn (reg, new_src), 0);
+		  reg_set_luid[regno] = move2add_luid;
+		  reg_mode[regno] = GET_MODE (reg);
+		  reg_offset[regno] = INTVAL (src);
+		  continue;
+		}
+
+	      /* Try to transform (set (REGX) (REGY))
+				  (set (REGX) (PLUS (REGX) (CONST_INT A)))
+				  ...
+				  (set (REGX) (REGY))
+				  (set (REGX) (PLUS (REGX) (CONST_INT B)))
+		 to
+				  (REGX) (REGY))
+				  (set (REGX) (PLUS (REGX) (CONST_INT A)))
+				  ...
+				  (set (REGX) (plus (REGX) (CONST_INT B-A)))  */
+	      else if (GET_CODE (src) == REG
+		       && reg_set_luid[regno] == reg_set_luid[REGNO (src)]
+		       && reg_base_reg[regno] == reg_base_reg[REGNO (src)]
+		       && MODES_OK_FOR_MOVE2ADD (GET_MODE (reg),
+						 reg_mode[REGNO (src)]))
+		{
+		  rtx next = next_nonnote_insn (insn);
+		  rtx set = NULL_RTX;
+		  if (next)
+		    set = single_set (next);
+		  if (set
+		      && SET_DEST (set) == reg
+		      && GET_CODE (SET_SRC (set)) == PLUS
+		      && XEXP (SET_SRC (set), 0) == reg
+		      && GET_CODE (XEXP (SET_SRC (set), 1)) == CONST_INT)
+		    {
+		      rtx src3 = XEXP (SET_SRC (set), 1);
+		      HOST_WIDE_INT added_offset = INTVAL (src3);
+		      HOST_WIDE_INT base_offset = reg_offset[REGNO (src)];
+		      HOST_WIDE_INT regno_offset = reg_offset[regno];
+		      rtx new_src = GEN_INT (sext_for_mode (GET_MODE (reg),
+							    added_offset
+							    + base_offset
+							    - regno_offset));
+		      int success = 0;
+
+		      if (new_src == const0_rtx)
+			/* See above why we create (set (reg) (reg)) here.  */
+			success
+			  = validate_change (next, &SET_SRC (set), reg, 0);
+		      else if ((rtx_cost (new_src, PLUS)
+				< COSTS_N_INSNS (1) + rtx_cost (src3, SET))
+			       && have_add2_insn (reg, new_src))
+			success
+			  = validate_change (next, &PATTERN (next),
+					     gen_add2_insn (reg, new_src), 0);
+		      if (success)
+			delete_insn (insn);
+		      insn = next;
+		      reg_mode[regno] = GET_MODE (reg);
+		      reg_offset[regno] = sext_for_mode (GET_MODE (reg),
+							 added_offset
+							 + base_offset);
+		      continue;
+		    }
+		}
+	    }
+	}
+
+      for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
+	{
+	  if (REG_NOTE_KIND (note) == REG_INC
+	      && GET_CODE (XEXP (note, 0)) == REG)
+	    {
+	      /* Reset the information about this register.  */
+	      int regno = REGNO (XEXP (note, 0));
+	      if (regno < FIRST_PSEUDO_REGISTER)
+		reg_set_luid[regno] = 0;
+	    }
+	}
+      note_stores (PATTERN (insn), move2add_note_store, NULL);
+      /* If this is a CALL_INSN, all call used registers are stored with
+	 unknown values.  */
+      if (GET_CODE (insn) == CALL_INSN)
+	{
+	  for (i = FIRST_PSEUDO_REGISTER - 1; i >= 0; i--)
+	    {
+	      if (call_used_regs[i])
+		/* Reset the information about this register.  */
+		reg_set_luid[i] = 0;
+	    }
+	}
+    }
+}

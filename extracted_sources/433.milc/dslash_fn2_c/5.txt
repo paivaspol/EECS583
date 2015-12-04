@@ -1,0 +1,139 @@
+void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
+			       int parity, msg_tag **tag, int start ){
+  register int i;
+  register site *s;
+  register int dir,otherparity;
+  register su3_matrix *fat4, *long4;
+  
+  /* allocate temporary work space only if not already allocated */
+  if(temp_not_allocated)
+    {
+      for( dir=XUP; dir<=TUP; dir++ ){
+	temp[dir]  =(su3_vector *)calloc(sites_on_node, sizeof(su3_vector));
+	temp[dir+4]=(su3_vector *)calloc(sites_on_node, sizeof(su3_vector));
+      }
+      temp[8]=(su3_vector *)calloc(sites_on_node, sizeof(su3_vector));
+      temp_not_allocated = 0 ;
+    }
+  
+  /* load fatlinks and longlinks */
+  if(!valid_longlinks) load_longlinks();
+  if(!valid_fatlinks) load_fatlinks();
+
+  switch(parity)
+    {
+    case EVEN:	otherparity=ODD; break;
+    case ODD:	otherparity=EVEN; break;
+    case EVENANDODD:	otherparity=EVENANDODD; break;
+    }
+  
+  /* Start gathers from positive directions */
+  /* And start the 3-step gather too */
+  for( dir=XUP; dir<=TUP; dir++ ){
+    if(start==1)
+      {
+	tag[dir] = start_gather_from_temp( src, sizeof(su3_vector), 
+					   dir, parity,gen_pt[dir] );
+	tag[DIR3(dir)] = start_gather_from_temp(src, sizeof(su3_vector),
+						DIR3(dir),parity, 
+						gen_pt[DIR3(dir)] );
+      }
+    else
+      {
+	restart_gather_from_temp( src, sizeof(su3_vector), 
+				  dir, parity,gen_pt[dir], tag[dir]);
+	restart_gather_from_temp(src, sizeof(su3_vector), DIR3(dir), parity, 
+				 gen_pt[DIR3(dir)], tag[DIR3(dir)]);
+      }
+  }
+  
+  /* Multiply by adjoint matrix at other sites */
+  /* Use fat link for single link transport */
+  FORSOMEPARITY( i, s, otherparity ){
+
+#ifdef DSLASH_TMP_LINKS
+    fat4 = &(t_fatlink[4*i]);
+    long4 = &(t_longlink[4*i]);
+#else
+    fat4 = s->fatlink;
+    long4 = s->longlink;
+#endif
+    mult_adj_su3_mat_4vec( fat4, &(src[i]), &(temp[0][i]),
+			   &(temp[1][i]), &(temp[2][i]), &(temp[3][i]) );
+    /* multiply by 3-link matrices too */
+    mult_adj_su3_mat_4vec( long4, &(src[i]),&(temp[4][i]),
+			   &(temp[5][i]), &(temp[6][i]), &(temp[7][i]) );
+  } END_LOOP
+      
+  /* Start gathers from negative directions */
+  for( dir=XUP; dir <= TUP; dir++){
+      if (start==1) tag[OPP_DIR(dir)] = start_gather_from_temp( temp[dir],
+	   sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
+      else restart_gather_from_temp( temp[dir], sizeof(su3_vector), 
+	   OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)], tag[OPP_DIR(dir)] );
+   }
+
+  /* Start 3-neighbour gathers from negative directions */
+  for( dir=X3UP; dir <= T3UP; dir++){
+      if (start==1) tag[OPP_3_DIR(dir)]=start_gather_from_temp(
+             temp[INDEX_3RD(dir)+4], sizeof(su3_vector), 
+	     OPP_3_DIR( dir), parity, gen_pt[OPP_3_DIR(dir)] );
+      else restart_gather_from_temp(temp[INDEX_3RD(dir)+4], 
+	    sizeof(su3_vector), OPP_3_DIR( dir),parity, 
+	    gen_pt[OPP_3_DIR(dir)], tag[OPP_3_DIR(dir)] );
+    }
+
+    /* Wait gathers from positive directions, multiply by matrix and
+	accumulate */
+    /* wait for the 3-neighbours from positive directions, multiply */
+    for(dir=XUP; dir<=TUP; dir++){
+	wait_gather(tag[dir]);
+	wait_gather(tag[DIR3(dir)]);
+    }
+
+    FORSOMEPARITY(i,s,parity){
+
+#ifdef DSLASH_TMP_LINKS
+      fat4 = &(t_fatlink[4*i]);
+      long4 = &(t_longlink[4*i]);
+#else
+      fat4 = s->fatlink;
+      long4 = s->longlink;
+#endif
+      mult_su3_mat_vec_sum_4dir( fat4,
+	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
+	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
+	    &(dest[i]) );
+
+      mult_su3_mat_vec_sum_4dir( long4,
+	    (su3_vector *)gen_pt[X3UP][i], (su3_vector *)gen_pt[Y3UP][i],
+	    (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
+	    &(temp[8][i]));
+    } END_LOOP
+   
+    /* Wait gathers from negative directions, accumulate (negative) */
+    /* and the same for the negative 3-rd neighbours */
+    for(dir=XUP; dir<=TUP; dir++){
+      wait_gather(tag[OPP_DIR(dir)]);
+    }
+    for(dir=X3UP; dir<=T3UP; dir++){
+      wait_gather(tag[OPP_3_DIR(dir)]);
+    }
+
+    FORSOMEPARITY(i,s,parity){
+
+      sub_four_su3_vecs( &(dest[i]),
+			 (su3_vector *)(gen_pt[XDOWN][i]),
+			 (su3_vector *)(gen_pt[YDOWN][i]),
+			 (su3_vector *)(gen_pt[ZDOWN][i]),
+			 (su3_vector *)(gen_pt[TDOWN][i]) );
+      sub_four_su3_vecs( &(temp[8][i]), 
+			 (su3_vector *)(gen_pt[X3DOWN][i]),
+			 (su3_vector *)(gen_pt[Y3DOWN][i]),
+			 (su3_vector *)(gen_pt[Z3DOWN][i]),
+			 (su3_vector *)(gen_pt[T3DOWN][i]) );
+      /* Now need to add these things together */
+      add_su3_vector(&(dest[i]), &(temp[8][i]),&(dest[i]));
+    } END_LOOP 
+
+}

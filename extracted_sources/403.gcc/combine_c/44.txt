@@ -1,0 +1,105 @@
+static void
+record_value_for_reg (reg, insn, value)
+     rtx reg;
+     rtx insn;
+     rtx value;
+{
+  unsigned int regno = REGNO (reg);
+  unsigned int endregno
+    = regno + (regno < FIRST_PSEUDO_REGISTER
+	       ? HARD_REGNO_NREGS (regno, GET_MODE (reg)) : 1);
+  unsigned int i;
+
+  /* If VALUE contains REG and we have a previous value for REG, substitute
+     the previous value.  */
+  if (value && insn && reg_overlap_mentioned_p (reg, value))
+    {
+      rtx tem;
+
+      /* Set things up so get_last_value is allowed to see anything set up to
+	 our insn.  */
+      subst_low_cuid = INSN_CUID (insn);
+      tem = get_last_value (reg);
+
+      /* If TEM is simply a binary operation with two CLOBBERs as operands,
+	 it isn't going to be useful and will take a lot of time to process,
+	 so just use the CLOBBER.  */
+
+      if (tem)
+	{
+	  if ((GET_RTX_CLASS (GET_CODE (tem)) == '2'
+	       || GET_RTX_CLASS (GET_CODE (tem)) == 'c')
+	      && GET_CODE (XEXP (tem, 0)) == CLOBBER
+	      && GET_CODE (XEXP (tem, 1)) == CLOBBER)
+	    tem = XEXP (tem, 0);
+
+	  value = replace_rtx (copy_rtx (value), reg, tem);
+	}
+    }
+
+  /* For each register modified, show we don't know its value, that
+     we don't know about its bitwise content, that its value has been
+     updated, and that we don't know the location of the death of the
+     register.  */
+  for (i = regno; i < endregno; i++)
+    {
+      if (insn)
+	reg_last_set[i] = insn;
+
+      reg_last_set_value[i] = 0;
+      reg_last_set_mode[i] = 0;
+      reg_last_set_nonzero_bits[i] = 0;
+      reg_last_set_sign_bit_copies[i] = 0;
+      reg_last_death[i] = 0;
+    }
+
+  /* Mark registers that are being referenced in this value.  */
+  if (value)
+    update_table_tick (value);
+
+  /* Now update the status of each register being set.
+     If someone is using this register in this block, set this register
+     to invalid since we will get confused between the two lives in this
+     basic block.  This makes using this register always invalid.  In cse, we
+     scan the table to invalidate all entries using this register, but this
+     is too much work for us.  */
+
+  for (i = regno; i < endregno; i++)
+    {
+      reg_last_set_label[i] = label_tick;
+      if (value && reg_last_set_table_tick[i] == label_tick)
+	reg_last_set_invalid[i] = 1;
+      else
+	reg_last_set_invalid[i] = 0;
+    }
+
+  /* The value being assigned might refer to X (like in "x++;").  In that
+     case, we must replace it with (clobber (const_int 0)) to prevent
+     infinite loops.  */
+  if (value && ! get_last_value_validate (&value, insn,
+					  reg_last_set_label[regno], 0))
+    {
+      value = copy_rtx (value);
+      if (! get_last_value_validate (&value, insn,
+				     reg_last_set_label[regno], 1))
+	value = 0;
+    }
+
+  /* For the main register being modified, update the value, the mode, the
+     nonzero bits, and the number of sign bit copies.  */
+
+  reg_last_set_value[regno] = value;
+
+  if (value)
+    {
+      enum machine_mode mode = GET_MODE (reg);
+      subst_low_cuid = INSN_CUID (insn);
+      reg_last_set_mode[regno] = mode;
+      if (GET_MODE_CLASS (mode) == MODE_INT
+	  && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT)
+	mode = nonzero_bits_mode;
+      reg_last_set_nonzero_bits[regno] = nonzero_bits (value, mode);
+      reg_last_set_sign_bit_copies[regno]
+	= num_sign_bit_copies (value, GET_MODE (reg));
+    }
+}

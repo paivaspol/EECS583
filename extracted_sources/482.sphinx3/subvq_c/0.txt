@@ -1,0 +1,20 @@
+static void subvq_maha_precomp (subvq_t *svq, float64 floor)
+{
+    int32 s;
+    float32 *lrd;
+    vector_gautbl_t *gautbl;
+    
+    E_INFO("Precomputing Mahalanobis distance invariants\n");
+    
+    lrd = (float32 *) ckd_calloc (svq->n_sv * svq->vqsize, sizeof(float32));
+    
+    for (s = 0; s < svq->n_sv; s++) {
+	gautbl = &(svq->gautbl[s]);
+
+	vector_gautbl_var_floor (gautbl, floor);
+	
+	gautbl->lrd = lrd;
+	lrd += svq->vqsize;
+	vector_gautbl_maha_precomp (gautbl);
+    }
+}

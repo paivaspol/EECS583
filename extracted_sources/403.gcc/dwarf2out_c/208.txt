@@ -1,0 +1,58 @@
+static void
+gen_enumeration_type_die (type, context_die)
+     tree type;
+     dw_die_ref context_die;
+{
+  dw_die_ref type_die = lookup_type_die (type);
+
+  if (type_die == NULL)
+    {
+      type_die = new_die (DW_TAG_enumeration_type,
+			  scope_die_for (type, context_die), type);
+      equate_type_number_to_die (type, type_die);
+      add_name_attribute (type_die, type_tag (type));
+    }
+  else if (! TYPE_SIZE (type))
+    return;
+  else
+    remove_AT (type_die, DW_AT_declaration);
+
+  /* Handle a GNU C/C++ extension, i.e. incomplete enum types.  If the
+     given enum type is incomplete, do not generate the DW_AT_byte_size
+     attribute or the DW_AT_element_list attribute.  */
+  if (TYPE_SIZE (type))
+    {
+      tree link;
+
+      TREE_ASM_WRITTEN (type) = 1;
+      add_byte_size_attribute (type_die, type);
+      if (TYPE_STUB_DECL (type) != NULL_TREE)
+	add_src_coords_attributes (type_die, TYPE_STUB_DECL (type));
+
+      /* If the first reference to this type was as the return type of an
+	 inline function, then it may not have a parent.  Fix this now.  */
+      if (type_die->die_parent == NULL)
+	add_child_die (scope_die_for (type, context_die), type_die);
+
+      for (link = TYPE_FIELDS (type);
+	   link != NULL; link = TREE_CHAIN (link))
+	{
+	  dw_die_ref enum_die = new_die (DW_TAG_enumerator, type_die, link);
+
+	  add_name_attribute (enum_die,
+			      IDENTIFIER_POINTER (TREE_PURPOSE (link)));
+
+	  if (host_integerp (TREE_VALUE (link), 0))
+	    {
+	      if (tree_int_cst_sgn (TREE_VALUE (link)) < 0)
+		add_AT_int (enum_die, DW_AT_const_value,
+			    tree_low_cst (TREE_VALUE (link), 0));
+	      else
+		add_AT_unsigned (enum_die, DW_AT_const_value,
+				 tree_low_cst (TREE_VALUE (link), 0));
+	    }
+	}
+    }
+  else
+    add_AT_flag (type_die, DW_AT_declaration, 1);
+}

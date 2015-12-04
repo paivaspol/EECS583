@@ -1,0 +1,151 @@
+static void find_snr ()
+{
+  int i, j;
+  int64 diff_y=0, diff_u=0, diff_v=0;
+  int impix;
+  int impix_cr;
+  unsigned int max_pix_value_sqd = img->max_imgpel_value * img->max_imgpel_value;
+  unsigned int max_pix_value_sqd_uv = img->max_imgpel_value_uv * img->max_imgpel_value_uv;
+
+  //  Calculate  PSNR for Y, U and V.
+  
+  //     Luma.
+  impix = input->img_height * input->img_width;
+  impix_cr = input->img_height_cr * input->img_width_cr;
+
+  if (img->fld_flag != 0)
+  {
+      
+    diff_y = 0;
+    for (i = 0; i < input->img_width; ++i)
+    {
+      for (j = 0; j < input->img_height; ++j)
+      {
+        diff_y += img->quad[imgY_org[j][i] - imgY_com[j][i]];
+      }
+    }
+    
+    if (img->yuv_format != YUV400)
+    {
+      //     Chroma.
+      diff_u = 0;
+      diff_v = 0;
+      
+      for (i = 0; i < input->img_width_cr; i++)
+      {
+        for (j = 0; j < input->img_height_cr; j++)
+        {
+          diff_u += img->quad[imgUV_org[0][j][i] - imgUV_com[0][j][i]];
+          diff_v += img->quad[imgUV_org[1][j][i] - imgUV_com[1][j][i]];
+        }
+      }
+    }
+  }
+  else
+  { 
+    imgY_org  = imgY_org_frm;
+    imgUV_org = imgUV_org_frm;
+
+    if(input->PicInterlace==ADAPTIVE_CODING)
+    {
+      enc_picture = enc_frame_picture;
+    }  
+
+    diff_y = 0;
+    for (i = 0; i < input->img_width; ++i)
+    {
+      for (j = 0; j < input->img_height; ++j)
+      {
+        diff_y += img->quad[imgY_org[j][i] - enc_picture->imgY[j][i]];
+      }
+    }
+    
+    if (img->yuv_format != YUV400)
+    {
+      //     Chroma.
+      diff_u = 0;
+      diff_v = 0;
+      
+      for (i = 0; i < input->img_width_cr; i++)
+      {
+        for (j = 0; j < input->img_height_cr; j++)
+        {
+          diff_u += img->quad[imgUV_org[0][j][i] - enc_picture->imgUV[0][j][i]];
+          diff_v += img->quad[imgUV_org[1][j][i] - enc_picture->imgUV[1][j][i]];
+        }
+      }
+    }
+  }
+
+#if ZEROSNR
+  if (diff_y == 0)
+    diff_y = 1;
+  if (diff_u == 0)
+    diff_u = 1;
+  if (diff_v == 0)
+    diff_v = 1; 
+#endif
+
+  //  Collecting SNR statistics
+  if (diff_y != 0)
+  {
+    snr->snr_y = (float) (10 * log10 (max_pix_value_sqd    * (double)((double) impix    / diff_y)));         // luma snr for current frame
+    if (img->yuv_format != YUV400)
+    {
+      snr->snr_u = (float) (10 * log10 (max_pix_value_sqd_uv * (double)((double) impix_cr / diff_u)));   // u croma snr for current frame, 1/4 of luma samples
+      snr->snr_v = (float) (10 * log10 (max_pix_value_sqd_uv * (double)((double) impix_cr / diff_v)));   // v croma snr for current frame, 1/4 of luma samples
+    }
+    else
+    {
+      snr->snr_u = 0;
+      snr->snr_v = 0;
+    }
+  }
+  
+
+  if (img->number == 0)
+  {
+    snr->snr_y1 = snr->snr_y;  // keep luma snr for first frame
+    snr->snr_u1 = snr->snr_u;  // keep croma u snr for first frame
+    snr->snr_v1 = snr->snr_v;  // keep croma v snr for first frame
+    snr->snr_ya = snr->snr_y1;
+    snr->snr_ua = snr->snr_u1;
+    snr->snr_va = snr->snr_v1;
+    snr->snr_yt[I_SLICE] = 0.0;
+    snr->snr_ut[I_SLICE] = 0.0;
+    snr->snr_vt[I_SLICE] = 0.0;
+    snr->snr_yt[P_SLICE] = 0.0;
+    snr->snr_ut[P_SLICE] = 0.0;
+    snr->snr_vt[P_SLICE] = 0.0;
+    snr->snr_yt[B_SLICE] = 0.0;
+    snr->snr_ut[B_SLICE] = 0.0;
+    snr->snr_vt[B_SLICE] = 0.0;
+  }
+  // B pictures
+  else
+  {
+    snr->snr_ya = (float) (snr->snr_ya * (img->number + Bframe_ctr) + snr->snr_y) / (img->number + Bframe_ctr + 1); // average snr lume for all frames inc. first
+    snr->snr_ua = (float) (snr->snr_ua * (img->number + Bframe_ctr) + snr->snr_u) / (img->number + Bframe_ctr + 1); // average snr u croma for all frames inc. first
+    snr->snr_va = (float) (snr->snr_va * (img->number + Bframe_ctr) + snr->snr_v) / (img->number + Bframe_ctr + 1); // average snr v croma for all frames inc. first
+  }
+
+  if (img->type == I_SLICE )
+  {
+    snr->snr_yt[I_SLICE] = (float) (snr->snr_yt[I_SLICE] * (Iframe_ctr - 1) + snr->snr_y) / ( Iframe_ctr );  // average luma snr for I coded frames
+    snr->snr_ut[I_SLICE] = (float) (snr->snr_ut[I_SLICE] * (Iframe_ctr - 1) + snr->snr_u) / ( Iframe_ctr );  // average chroma u snr for I coded frames
+    snr->snr_vt[I_SLICE] = (float) (snr->snr_vt[I_SLICE] * (Iframe_ctr - 1) + snr->snr_v) / ( Iframe_ctr );  // average chroma v snr for I coded frames
+  }
+  else  if (img->type == B_SLICE )
+  {
+    snr->snr_yt[B_SLICE] = (float) (snr->snr_yt[B_SLICE] * (Bframe_ctr - 1) + snr->snr_y) / ( Bframe_ctr );  // average luma snr for B coded frames
+    snr->snr_ut[B_SLICE] = (float) (snr->snr_ut[B_SLICE] * (Bframe_ctr - 1) + snr->snr_u) / ( Bframe_ctr );  // average chroma u snr for B coded frames
+    snr->snr_vt[B_SLICE] = (float) (snr->snr_vt[B_SLICE] * (Bframe_ctr - 1) + snr->snr_v) / ( Bframe_ctr );  // average chroma v snr for B coded frames
+  }
+  else
+  {
+    snr->snr_yt[P_SLICE] = (float) (snr->snr_yt[P_SLICE] * (Pframe_ctr - 1) + snr->snr_y) / ( Pframe_ctr );  // average luma snr for P coded frames
+    snr->snr_ut[P_SLICE] = (float) (snr->snr_ut[P_SLICE] * (Pframe_ctr - 1) + snr->snr_u) / ( Pframe_ctr );  // average chroma u snr for P coded frames
+    snr->snr_vt[P_SLICE] = (float) (snr->snr_vt[P_SLICE] * (Pframe_ctr - 1) + snr->snr_v) / ( Pframe_ctr );  // average chroma v snr for P coded frames
+  }
+
+}

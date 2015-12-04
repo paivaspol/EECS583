@@ -1,0 +1,39 @@
+int
+Seqtype(char *seq)
+{
+  int  saw;			/* how many non-gap characters I saw */
+  char c;
+  int  po = 0;			/* count of protein-only */
+  int  nt = 0;			/* count of t's */
+  int  nu = 0;			/* count of u's */
+  int  na = 0;			/* count of nucleotides */
+  int  aa = 0;			/* count of amino acids */
+  int  no = 0;			/* count of others */
+  
+  /* Look at the first 300 non-gap characters
+   */
+  for (saw = 0; *seq != '\0' && saw < 300; seq++)
+    {
+      c = sre_toupper((int) *seq);
+      if (! isgap(c)) 
+	{
+	  if (strchr(protonly, c)) po++;
+	  else if (strchr(primenuc,c)) {
+	    na++;
+	    if (c == 'T') nt++;
+	    else if (c == 'U') nu++;
+	  }
+	  else if (strchr(aminos,c)) aa++;
+	  else if (isalpha((int) c)) no++;
+	  saw++;
+	}
+    }
+
+  if (no > 0) return kOtherSeq;
+  else if (po > 0) return kAmino;
+  else if (na > aa) {
+    if (nu > nt) return kRNA;
+    else return kDNA;
+    }
+  else return kAmino;		/* ooooh. risky. */
+}

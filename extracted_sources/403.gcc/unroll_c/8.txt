@@ -1,0 +1,43 @@
+int
+back_branch_in_range_p (loop, insn)
+     const struct loop *loop;
+     rtx insn;
+{
+  rtx p, q, target_insn;
+  rtx loop_start = loop->start;
+  rtx loop_end = loop->end;
+  rtx orig_loop_end = loop->end;
+
+  /* Stop before we get to the backward branch at the end of the loop.  */
+  loop_end = prev_nonnote_insn (loop_end);
+  if (GET_CODE (loop_end) == BARRIER)
+    loop_end = PREV_INSN (loop_end);
+
+  /* Check in case insn has been deleted, search forward for first non
+     deleted insn following it.  */
+  while (INSN_DELETED_P (insn))
+    insn = NEXT_INSN (insn);
+
+  /* Check for the case where insn is the last insn in the loop.  Deal
+     with the case where INSN was a deleted loop test insn, in which case
+     it will now be the NOTE_LOOP_END.  */
+  if (insn == loop_end || insn == orig_loop_end)
+    return 0;
+
+  for (p = NEXT_INSN (insn); p != loop_end; p = NEXT_INSN (p))
+    {
+      if (GET_CODE (p) == JUMP_INSN)
+	{
+	  target_insn = JUMP_LABEL (p);
+
+	  /* Search from loop_start to insn, to see if one of them is
+	     the target_insn.  We can't use INSN_LUID comparisons here,
+	     since insn may not have an LUID entry.  */
+	  for (q = loop_start; q != insn; q = NEXT_INSN (q))
+	    if (q == target_insn)
+	      return 1;
+	}
+    }
+
+  return 0;
+}

@@ -1,0 +1,15 @@
+static void
+generate_srcinfo_entry (line_entry_num, files_entry_num)
+     unsigned line_entry_num;
+     unsigned files_entry_num;
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SRCINFO_SECTION);
+  sprintf (label, LINE_ENTRY_LABEL_FMT, line_entry_num);
+  ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, label, LINE_BEGIN_LABEL);
+  sprintf (label, SFNAMES_ENTRY_LABEL_FMT, files_entry_num);
+  ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, label, SFNAMES_BEGIN_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+}

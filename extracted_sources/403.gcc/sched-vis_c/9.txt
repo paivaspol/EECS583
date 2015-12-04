@@ -1,0 +1,27 @@
+void
+print_block_visualization (s)
+     const char *s;
+{
+  int unit, i;
+
+  /* Print header.  */
+  fprintf (sched_dump, "\n;;   ==================== scheduling visualization %s \n", s);
+
+  /* Print names of units.  */
+  fprintf (sched_dump, ";;   %-8s", "clock");
+  for (unit = 0; unit < FUNCTION_UNITS_SIZE; unit++)
+    if (function_units[unit].bitmask & target_units)
+      for (i = 0; i < function_units[unit].multiplicity; i++)
+	fprintf (sched_dump, "  %-33s", function_units[unit].name);
+  fprintf (sched_dump, "  %-8s\n", "no-unit");
+
+  fprintf (sched_dump, ";;   %-8s", "=====");
+  for (unit = 0; unit < FUNCTION_UNITS_SIZE; unit++)
+    if (function_units[unit].bitmask & target_units)
+      for (i = 0; i < function_units[unit].multiplicity; i++)
+	fprintf (sched_dump, "  %-33s", "==============================");
+  fprintf (sched_dump, "  %-8s\n", "=======");
+
+  /* Print insns in each cycle.  */
+  fprintf (sched_dump, "%s\n", visual_tbl);
+}

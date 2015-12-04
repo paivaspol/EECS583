@@ -1,0 +1,49 @@
+static void
+df_bb_reg_info_compute (df, bb, live)
+     struct df *df;
+     basic_block bb;
+     bitmap live;
+{
+  struct reg_info *reg_info = df->regs;
+  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+  rtx insn;
+
+  bitmap_copy (live, bb_info->lr_out);
+
+  for (insn = bb->end; insn && insn != PREV_INSN (bb->head);
+       insn = PREV_INSN (insn))
+    {
+      unsigned int uid = INSN_UID (insn);
+      unsigned int regno;
+      struct df_link *link;
+
+      if (! INSN_P (insn))
+	continue;
+
+      for (link = df->insns[uid].defs; link; link = link->next)
+	{
+	  struct ref *def = link->ref;
+	  unsigned int dregno = DF_REF_REGNO (def);
+
+	  /* Kill this register.  */
+	  bitmap_clear_bit (live, dregno);
+	  reg_info[dregno].n_defs++;
+	}
+
+      for (link = df->insns[uid].uses; link; link = link->next)
+	{
+	  struct ref *use = link->ref;
+	  unsigned int uregno = DF_REF_REGNO (use);
+
+	  /* This register is now live.  */
+	  bitmap_set_bit (live, uregno);
+	  reg_info[uregno].n_uses++;
+	}
+
+      /* Increment lifetimes of all live registers.  */
+      EXECUTE_IF_SET_IN_BITMAP (live, 0, regno,
+      {
+	reg_info[regno].lifetime++;
+      });
+    }
+}

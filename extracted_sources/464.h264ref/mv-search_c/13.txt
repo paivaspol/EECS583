@@ -1,0 +1,259 @@
+int                                               //  ==> minimum motion cost after search
+SubPelBlockMotionSearch (pel_t**   orig_pic,      // <--  original pixel values for the AxB block
+                         short     ref,           // <--  reference frame (0... or -1 (backward))
+                         int       list,          // <--  reference picture list 
+                         int       pic_pix_x,     // <--  absolute x-coordinate of regarded AxB block
+                         int       pic_pix_y,     // <--  absolute y-coordinate of regarded AxB block
+                         int       blocktype,     // <--  block type (1-16x16 ... 7-4x4)
+                         short     pred_mv_x,     // <--  motion vector predictor (x) in sub-pel units
+                         short     pred_mv_y,     // <--  motion vector predictor (y) in sub-pel units
+                         short*    mv_x,          // <--> in: search center (x) / out: motion vector (x) - in pel units
+                         short*    mv_y,          // <--> in: search center (y) / out: motion vector (y) - in pel units
+                         int       search_pos2,   // <--  search positions for    half-pel search  (default: 9)
+                         int       search_pos4,   // <--  search positions for quarter-pel search  (default: 9)
+                         int       min_mcost,     // <--  minimum motion cost (cost for center or huge value)
+                         double    lambda         // <--  lagrangian parameter for determining motion cost
+                         )
+{
+  int   curr_diff[MB_BLOCK_SIZE][MB_BLOCK_SIZE], i, j, k;
+  int   diff[16], *d;
+  int   pos, best_pos, mcost, abort_search;
+  int   y0, x0, ry0, rx0, ry;
+  int   cand_mv_x, cand_mv_y;
+  int   max_pos_x4, max_pos_y4;
+  pel_t *orig_line;
+  pel_t **ref_pic;      
+  StorablePicture *ref_picture;
+  int   lambda_factor   = LAMBDA_FACTOR (lambda);
+  int   mv_shift        = 0;
+  int   check_position0 = (blocktype==1 && *mv_x==0 && *mv_y==0 && input->hadamard && !input->rdopt && img->type!=B_SLICE && ref==0);
+  int   blocksize_x     = input->blc_size[blocktype][0];
+  int   blocksize_y     = input->blc_size[blocktype][1];
+  int   pic4_pix_x      = (pic_pix_x << 2);
+  int   pic4_pix_y      = (pic_pix_y << 2);
+  int   min_pos2        = (input->hadamard ? (input->hadamardqpel ? 1 : 0) : 1);
+  int   max_pos2        = (input->hadamard ? max(1,search_pos2) : search_pos2);
+  int   list_offset     = ((img->MbaffFrameFlag)&&(img->mb_data[img->current_mb_nr].mb_field))? img->current_mb_nr%2 ? 4 : 2 : 0;
+
+  int  apply_weights = ( (active_pps->weighted_pred_flag && (img->type == P_SLICE || img->type == SP_SLICE)) ||
+                         (active_pps->weighted_bipred_idc && (img->type == B_SLICE)));  
+
+  int   img_width, img_height;
+  
+  int   halfpelhadamard       = input->hadamardqpel ? 0 : input->hadamard;
+  int   qpelstart             = input->hadamardqpel ? 0 : 1;
+
+  ref_picture     = listX[list+list_offset][ref];
+
+  //===== Use weighted Reference for ME ====
+  if (apply_weights && input->UseWeightedReferenceME)
+  {
+    ref_pic = listX[list+list_offset][ref]->imgY_ups_w;
+  }
+  else
+    ref_pic = listX[list+list_offset][ref]->imgY_ups;
+
+  img_width  = ref_picture->size_x;
+  img_height = ref_picture->size_y;
+
+  max_pos_x4      = ((ref_picture->size_x - blocksize_x+1)<<2);
+  max_pos_y4      = ((ref_picture->size_y - blocksize_y+1)<<2);
+  
+  /*********************************
+   *****                       *****
+   *****  HALF-PEL REFINEMENT  *****
+   *****                       *****
+   *********************************/
+  //===== convert search center to quarter-pel units =====
+  *mv_x <<= 2;
+  *mv_y <<= 2;
+  //===== set function for getting pixel values =====
+  if ((pic4_pix_x + *mv_x > 1) && (pic4_pix_x + *mv_x < max_pos_x4 - 2) &&
+      (pic4_pix_y + *mv_y > 1) && (pic4_pix_y + *mv_y < max_pos_y4 - 2)   )
+  {
+    PelY_14 = FastPelY_14;
+  }
+  else
+  {
+    PelY_14 = UMVPelY_14;
+  }
+  //===== loop over search positions =====
+  for (best_pos = 0, pos = min_pos2; pos < max_pos2; pos++)
+  {
+    cand_mv_x = *mv_x + (spiral_search_x[pos] << 1);    // quarter-pel units
+    cand_mv_y = *mv_y + (spiral_search_y[pos] << 1);    // quarter-pel units
+
+    //----- set motion vector cost -----
+    mcost = MV_COST (lambda_factor, mv_shift, cand_mv_x, cand_mv_y, pred_mv_x, pred_mv_y);
+    if (check_position0 && pos==0)
+    {
+      mcost -= WEIGHTED_COST (lambda_factor, 16);
+    }
+
+    if (mcost >= min_mcost) continue;
+
+    //----- add up SATD -----
+    for (y0=0, abort_search=0; y0<blocksize_y && !abort_search; y0+=4)
+    {
+      ry0 = ((pic_pix_y+y0)<<2) + cand_mv_y;
+
+      for (x0=0; x0<blocksize_x; x0+=4)
+      {
+        rx0 = ((pic_pix_x+x0)<<2) + cand_mv_x;
+        d   = diff;
+
+        orig_line = orig_pic [y0  ];    ry=ry0;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        orig_line = orig_pic [y0+1];    ry=ry0+4;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        orig_line = orig_pic [y0+2];    ry=ry0+8;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        orig_line = orig_pic [y0+3];    ry=ry0+12;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d        = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        if (!input->AllowTransform8x8)
+        {
+          if ((mcost += SATD (diff, halfpelhadamard)) > min_mcost)
+          {
+            abort_search = 1;
+            break;
+          }
+        }
+        else
+        {
+          for(j=0, k=0; j<4; j++)
+            for(i=0; i<4; i++, k++)
+              curr_diff[y0+j][x0+i] = diff[k];
+        }
+       }
+    }
+
+    if(input->AllowTransform8x8)
+      mcost += find_SATD (curr_diff, halfpelhadamard, blocktype);
+
+    if (mcost < min_mcost)
+    {
+      min_mcost = mcost;
+      best_pos  = pos;
+    }
+  }
+  if (best_pos)
+  {
+    *mv_x += (spiral_search_x [best_pos] << 1);
+    *mv_y += (spiral_search_y [best_pos] << 1);
+  }
+
+
+  if (input->hadamardqpel)
+    min_mcost = INT_MAX;
+
+  /************************************
+   *****                          *****
+   *****  QUARTER-PEL REFINEMENT  *****
+   *****                          *****
+   ************************************/
+  //===== set function for getting pixel values =====
+  if ((pic4_pix_x + *mv_x > 1) && (pic4_pix_x + *mv_x < max_pos_x4 - 1) &&
+      (pic4_pix_y + *mv_y > 1) && (pic4_pix_y + *mv_y < max_pos_y4 - 1)   )
+  {
+    PelY_14 = FastPelY_14;
+  }
+  else
+  {
+    PelY_14 = UMVPelY_14;
+  }
+  //===== loop over search positions =====
+  for (best_pos = 0, pos = qpelstart; pos < search_pos4; pos++)
+  {
+    cand_mv_x = *mv_x + spiral_search_x[pos];    // quarter-pel units
+    cand_mv_y = *mv_y + spiral_search_y[pos];    // quarter-pel units
+
+    //----- set motion vector cost -----
+    mcost = MV_COST (lambda_factor, mv_shift, cand_mv_x, cand_mv_y, pred_mv_x, pred_mv_y);
+
+    if (mcost >= min_mcost) continue;
+
+    //----- add up SATD -----
+    for (y0=0, abort_search=0; y0<blocksize_y && !abort_search; y0+=4)
+    {
+      ry0 = ((pic_pix_y+y0)<<2) + cand_mv_y;
+
+      for (x0=0; x0<blocksize_x; x0+=4)
+      {
+        rx0 = ((pic_pix_x+x0)<<2) + cand_mv_x;
+        d   = diff;
+
+        orig_line = orig_pic [y0  ];    ry=ry0;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        orig_line = orig_pic [y0+1];    ry=ry0+4;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        orig_line = orig_pic [y0+2];    ry=ry0+8;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        orig_line = orig_pic [y0+3];    ry=ry0+12;
+        *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+        *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+        *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+        *d        = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+12, img_height, img_width);
+
+        if (!input->AllowTransform8x8)
+        {
+          if ((mcost += SATD (diff, input->hadamard)) > min_mcost)
+          {
+            abort_search = 1;
+            break;
+          }
+        }
+        else
+        {
+          for(j=0, k=0; j<4; j++)
+            for(i=0; i<4; i++, k++)
+              curr_diff[y0+j][x0+i] = diff[k];
+        }
+      }
+    }
+
+    if(input->AllowTransform8x8)
+      mcost += find_SATD (curr_diff, input->hadamard, blocktype);
+
+    if (mcost < min_mcost)
+    {
+      min_mcost = mcost;
+      best_pos  = pos;
+    }
+  }
+  if (best_pos)
+  {
+    *mv_x += spiral_search_x [best_pos];
+    *mv_y += spiral_search_y [best_pos];
+  }
+
+  //===== return minimum motion cost =====
+  return min_mcost;
+}

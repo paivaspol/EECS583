@@ -1,0 +1,54 @@
+void
+find_many_sub_basic_blocks (blocks)
+     sbitmap blocks;
+{
+  int i;
+  int min, max;
+
+  for (i = 0; i < n_basic_blocks; i++)
+    SET_STATE (BASIC_BLOCK (i),
+	       TEST_BIT (blocks, i) ? BLOCK_TO_SPLIT : BLOCK_ORIGINAL);
+
+  for (i = 0; i < n_basic_blocks; i++)
+    if (STATE (BASIC_BLOCK (i)) == BLOCK_TO_SPLIT)
+      find_bb_boundaries (BASIC_BLOCK (i));
+
+  for (i = 0; i < n_basic_blocks; i++)
+    if (STATE (BASIC_BLOCK (i)) != BLOCK_ORIGINAL)
+      break;
+
+  min = max = i;
+  for (; i < n_basic_blocks; i++)
+    if (STATE (BASIC_BLOCK (i)) != BLOCK_ORIGINAL)
+      max = i;
+
+  /* Now re-scan and wire in all edges.  This expect simple (conditional)
+     jumps at the end of each new basic blocks.  */
+  make_edges (NULL, min, max, 1);
+
+  /* Update branch probabilities.  Expect only (un)conditional jumps
+     to be created with only the forward edges.  */
+  for (i = min; i <= max; i++)
+    {
+      edge e;
+      basic_block b = BASIC_BLOCK (i);
+
+      if (STATE (b) == BLOCK_ORIGINAL)
+	continue;
+      if (STATE (b) == BLOCK_NEW)
+	{
+	  b->count = 0;
+	  b->frequency = 0;
+	  for (e = b->pred; e; e=e->pred_next)
+	    {
+	      b->count += e->count;
+	      b->frequency += EDGE_FREQUENCY (e);
+	    }
+	}
+
+      compute_outgoing_frequencies (b);
+    }
+
+  for (i = 0; i < n_basic_blocks; i++)
+    SET_STATE (BASIC_BLOCK (i), 0);
+}

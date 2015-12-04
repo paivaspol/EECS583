@@ -1,0 +1,38 @@
+void
+find_sub_basic_blocks (bb)
+    basic_block bb;
+{
+  int i;
+  int min, max;
+  basic_block next = (bb->index == n_basic_blocks - 1
+		      ? NULL : BASIC_BLOCK (bb->index + 1));
+
+  min = bb->index;
+  find_bb_boundaries (bb);
+  max = (next ? next->index : n_basic_blocks) - 1;
+
+  /* Now re-scan and wire in all edges.  This expect simple (conditional)
+     jumps at the end of each new basic blocks.  */
+  make_edges (NULL, min, max, 1);
+
+  /* Update branch probabilities.  Expect only (un)conditional jumps
+     to be created with only the forward edges.  */
+  for (i = min; i <= max; i++)
+    {
+      edge e;
+      basic_block b = BASIC_BLOCK (i);
+
+      if (i != min)
+	{
+	  b->count = 0;
+	  b->frequency = 0;
+	  for (e = b->pred; e; e=e->pred_next)
+	    {
+	      b->count += e->count;
+	      b->frequency += EDGE_FREQUENCY (e);
+	    }
+	}
+
+      compute_outgoing_frequencies (b);
+    }
+}

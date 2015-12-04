@@ -1,0 +1,44 @@
+void
+dwarf2out_frame_debug (insn)
+     rtx insn;
+{
+  const char *label;
+  rtx src;
+
+  if (insn == NULL_RTX)
+    {
+      /* Flush any queued register saves.  */
+      flush_queued_reg_saves ();
+
+      /* Set up state for generating call frame debug info.  */
+      lookup_cfa (&cfa);
+      if (cfa.reg != (unsigned long) DWARF_FRAME_REGNUM (STACK_POINTER_REGNUM))
+	abort ();
+
+      cfa.reg = STACK_POINTER_REGNUM;
+      cfa_store = cfa;
+      cfa_temp.reg = -1;
+      cfa_temp.offset = 0;
+      return;
+    }
+
+  if (GET_CODE (insn) != INSN || clobbers_queued_reg_save (insn))
+    flush_queued_reg_saves ();
+
+  if (! RTX_FRAME_RELATED_P (insn))
+    {
+      if (!ACCUMULATE_OUTGOING_ARGS)
+        dwarf2out_stack_adjust (insn);
+
+      return;
+    }
+
+  label = dwarf2out_cfi_label ();
+  src = find_reg_note (insn, REG_FRAME_RELATED_EXPR, NULL_RTX);
+  if (src)
+    insn = XEXP (src, 0);
+  else
+    insn = PATTERN (insn);
+
+  dwarf2out_frame_debug_expr (insn, label);
+}

@@ -1,0 +1,15 @@
+void free_symtab(t_symtab *symtab)
+{
+  t_symbuf *symbuf,*freeptr;
+  
+  close_symtab(symtab);
+  symbuf=symtab->symbuf;
+  while (symbuf!=NULL) {
+    symtab->nr-=min(symbuf->bufsize,symtab->nr);
+    freeptr=symbuf;
+    symbuf=symbuf->next;
+    sfree(freeptr);
+  }
+  symtab->symbuf=NULL;
+  assert(symtab->nr==0);
+}

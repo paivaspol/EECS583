@@ -1,0 +1,152 @@
+int
+_cpp_create_definition (pfile, node)
+     cpp_reader *pfile;
+     cpp_hashnode *node;
+{
+  cpp_macro *macro;
+  cpp_token *token, *saved_cur_token;
+  const cpp_token *ctoken;
+  unsigned int i, ok = 1;
+
+  macro = (cpp_macro *) _cpp_aligned_alloc (pfile, sizeof (cpp_macro));
+  macro->line = pfile->directive_line;
+  macro->params = 0;
+  macro->paramc = 0;
+  macro->variadic = 0;
+  macro->count = 0;
+  macro->fun_like = 0;
+
+  /* Get the first token of the expansion (or the '(' of a
+     function-like macro).  */
+  ctoken = _cpp_lex_token (pfile);
+
+  if (ctoken->type == CPP_OPEN_PAREN && !(ctoken->flags & PREV_WHITE))
+    {
+      ok = parse_params (pfile, macro);
+      macro->params = (cpp_hashnode **) BUFF_FRONT (pfile->a_buff);
+      if (!ok)
+	goto cleanup2;
+
+      /* Success.  Commit the parameter array.  */
+      BUFF_FRONT (pfile->a_buff) = (U_CHAR *) &macro->params[macro->paramc];
+      macro->fun_like = 1;
+    }
+  else if (ctoken->type != CPP_EOF && !(ctoken->flags & PREV_WHITE))
+    cpp_pedwarn (pfile, "ISO C requires whitespace after the macro name");
+
+  saved_cur_token = pfile->cur_token;
+
+  if (macro->fun_like)
+    token = lex_expansion_token (pfile, macro);
+  else
+    {
+      token = alloc_expansion_token (pfile, macro);
+      *token = *ctoken;
+    }
+
+  for (;;)
+    {
+      /* Check the stringifying # constraint 6.10.3.2.1 of
+	 function-like macros when lexing the subsequent token.  */
+      if (macro->count > 1 && token[-1].type == CPP_HASH && macro->fun_like)
+	{
+	  if (token->type == CPP_MACRO_ARG)
+	    {
+	      token->flags &= ~PREV_WHITE;
+	      token->flags |= STRINGIFY_ARG;
+	      token->flags |= token[-1].flags & PREV_WHITE;
+	      token[-1] = token[0];
+	      macro->count--;
+	    }
+	  /* Let assembler get away with murder.  */
+	  else if (CPP_OPTION (pfile, lang) != CLK_ASM)
+	    {
+	      ok = 0;
+	      cpp_error (pfile, "'#' is not followed by a macro parameter");
+	      goto cleanup1;
+	    }
+	}
+
+      if (token->type == CPP_EOF)
+	break;
+
+      /* Paste operator constraint 6.10.3.3.1.  */
+      if (token->type == CPP_PASTE)
+	{
+	  /* Token-paste ##, can appear in both object-like and
+	     function-like macros, but not at the ends.  */
+	  if (--macro->count > 0)
+	    token = lex_expansion_token (pfile, macro);
+
+	  if (macro->count == 0 || token->type == CPP_EOF)
+	    {
+	      ok = 0;
+	      cpp_error (pfile,
+			 "'##' cannot appear at either end of a macro expansion");
+	      goto cleanup1;
+	    }
+
+	  token[-1].flags |= PASTE_LEFT;
+	}
+
+      token = lex_expansion_token (pfile, macro);
+    }
+
+  macro->expansion = (cpp_token *) BUFF_FRONT (pfile->a_buff);
+
+  /* Don't count the CPP_EOF.  */
+  macro->count--;
+
+  /* Clear whitespace on first token for warn_of_redefinition().  */
+  if (macro->count)
+    macro->expansion[0].flags &= ~PREV_WHITE;
+
+  /* Commit the memory.  */
+  BUFF_FRONT (pfile->a_buff) = (U_CHAR *) &macro->expansion[macro->count];
+
+  /* Implement the macro-defined-to-itself optimisation.  */
+  if (macro->count == 1 && !macro->fun_like
+      && macro->expansion[0].type == CPP_NAME
+      && macro->expansion[0].val.node == node)
+    node->flags |= NODE_DISABLED;
+
+  /* To suppress some diagnostics.  */
+  macro->syshdr = pfile->map->sysp != 0;
+
+  if (node->type != NT_VOID)
+    {
+      if (warn_of_redefinition (node, macro))
+	{
+	  cpp_pedwarn_with_line (pfile, pfile->directive_line, 0,
+				 "\"%s\" redefined", NODE_NAME (node));
+
+	  if (node->type == NT_MACRO && !(node->flags & NODE_BUILTIN))
+	    cpp_pedwarn_with_line (pfile, node->value.macro->line, 0,
+			    "this is the location of the previous definition");
+	}
+      _cpp_free_definition (node);
+    }
+
+  /* Enter definition in hash table.  */
+  node->type = NT_MACRO;
+  node->value.macro = macro;
+  if (! ustrncmp (NODE_NAME (node), DSC ("__STDC_")))
+    node->flags |= NODE_WARN;
+
+ cleanup1:
+
+  /* Set type for SEEN_EOL() in cpplib.c, restore the lexer position.  */
+  saved_cur_token[-1].type = pfile->cur_token[-1].type;
+  pfile->cur_token = saved_cur_token;
+
+ cleanup2:
+
+  /* Stop the lexer accepting __VA_ARGS__.  */
+  pfile->state.va_args_ok = 0;
+
+  /* Clear the fast argument lookup indices.  */
+  for (i = macro->paramc; i-- > 0; )
+    macro->params[i]->arg_index = 0;
+
+  return ok;
+}

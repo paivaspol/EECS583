@@ -1,0 +1,34 @@
+static const char *
+output_215 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_LEA:
+      return "#";
+    case TYPE_INCDEC:
+      if (operands[2] == const1_rtx)
+	return "inc{w}\t%0";
+      else if (operands[2] == constm1_rtx
+	       || (GET_CODE (operands[2]) == CONST_INT
+		   && INTVAL (operands[2]) == 65535))
+	return "dec{w}\t%0";
+      abort();
+
+    default:
+      /* Make things pretty and `subl $4,%eax' rather than `addl $-4, %eax'.
+	 Exceptions: -128 encodes smaller than 128, so swap sign and op.  */
+      if (GET_CODE (operands[2]) == CONST_INT
+          && (INTVAL (operands[2]) == 128
+	      || (INTVAL (operands[2]) < 0
+		  && INTVAL (operands[2]) != -128)))
+	{
+	  operands[2] = GEN_INT (-INTVAL (operands[2]));
+	  return "sub{w}\t{%2, %0|%0, %2}";
+	}
+      return "add{w}\t{%2, %0|%0, %2}";
+    }
+}
+}

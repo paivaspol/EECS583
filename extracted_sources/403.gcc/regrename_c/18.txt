@@ -1,0 +1,56 @@
+static void
+copy_value (dest, src, vd)
+     rtx dest;
+     rtx src;
+     struct value_data *vd;
+{
+  unsigned int dr = REGNO (dest);
+  unsigned int sr = REGNO (src);
+  unsigned int dn, sn;
+  unsigned int i;
+
+  /* ??? At present, it's possible to see noop sets.  It'd be nice if
+     this were cleaned up beforehand...  */
+  if (sr == dr)
+    return;
+
+  /* Do not propagate copies to the stack pointer, as that can leave
+     memory accesses with no scheduling dependancy on the stack update.  */
+  if (dr == STACK_POINTER_REGNUM)
+    return;
+
+  /* Likewise with the frame pointer, if we're using one.  */
+  if (frame_pointer_needed && dr == HARD_FRAME_POINTER_REGNUM)
+    return;
+
+  /* If SRC and DEST overlap, don't record anything.  */
+  dn = HARD_REGNO_NREGS (dr, GET_MODE (dest));
+  sn = HARD_REGNO_NREGS (sr, GET_MODE (dest));
+  if ((dr > sr && dr < sr + sn)
+      || (sr > dr && sr < dr + dn))
+    return;
+
+  /* If SRC had no assigned mode (i.e. we didn't know it was live)
+     assign it now and assume the value came from an input argument
+     or somesuch.  */
+  if (vd->e[sr].mode == VOIDmode)
+    set_value_regno (sr, vd->e[dr].mode, vd);
+
+  /* If SRC had been assigned a mode narrower than the copy, we can't
+     link DEST into the chain, because not all of the pieces of the
+     copy came from oldest_regno.  */
+  else if (sn > (unsigned int) HARD_REGNO_NREGS (sr, vd->e[sr].mode))
+    return;
+
+  /* Link DR at the end of the value chain used by SR.  */
+
+  vd->e[dr].oldest_regno = vd->e[sr].oldest_regno;
+
+  for (i = sr; vd->e[i].next_regno != INVALID_REGNUM; i = vd->e[i].next_regno)
+    continue;
+  vd->e[i].next_regno = dr;
+
+#ifdef ENABLE_CHECKING
+  validate_value_data (vd);
+#endif
+}

@@ -1,0 +1,22 @@
+static int
+splay_tree_foreach_helper (sp, node, fn, data)
+     splay_tree sp;
+     splay_tree_node node;
+     splay_tree_foreach_fn fn;
+     void* data;
+{
+  int val;
+
+  if (!node)
+    return 0;
+
+  val = splay_tree_foreach_helper (sp, node->left, fn, data);
+  if (val)
+    return val;
+
+  val = (*fn)(node, data);
+  if (val)
+    return val;
+
+  return splay_tree_foreach_helper (sp, node->right, fn, data);
+}

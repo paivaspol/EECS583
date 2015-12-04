@@ -1,0 +1,180 @@
+static rtx
+expand_compound_operation (x)
+     rtx x;
+{
+  unsigned HOST_WIDE_INT pos = 0, len;
+  int unsignedp = 0;
+  unsigned int modewidth;
+  rtx tem;
+
+  switch (GET_CODE (x))
+    {
+    case ZERO_EXTEND:
+      unsignedp = 1;
+    case SIGN_EXTEND:
+      /* We can't necessarily use a const_int for a multiword mode;
+	 it depends on implicitly extending the value.
+	 Since we don't know the right way to extend it,
+	 we can't tell whether the implicit way is right.
+
+	 Even for a mode that is no wider than a const_int,
+	 we can't win, because we need to sign extend one of its bits through
+	 the rest of it, and we don't know which bit.  */
+      if (GET_CODE (XEXP (x, 0)) == CONST_INT)
+	return x;
+
+      /* Return if (subreg:MODE FROM 0) is not a safe replacement for
+	 (zero_extend:MODE FROM) or (sign_extend:MODE FROM).  It is for any MEM
+	 because (SUBREG (MEM...)) is guaranteed to cause the MEM to be
+	 reloaded. If not for that, MEM's would very rarely be safe.
+
+	 Reject MODEs bigger than a word, because we might not be able
+	 to reference a two-register group starting with an arbitrary register
+	 (and currently gen_lowpart might crash for a SUBREG).  */
+
+      if (GET_MODE_SIZE (GET_MODE (XEXP (x, 0))) > UNITS_PER_WORD)
+	return x;
+
+      len = GET_MODE_BITSIZE (GET_MODE (XEXP (x, 0)));
+      /* If the inner object has VOIDmode (the only way this can happen
+	 is if it is a ASM_OPERANDS), we can't do anything since we don't
+	 know how much masking to do.  */
+      if (len == 0)
+	return x;
+
+      break;
+
+    case ZERO_EXTRACT:
+      unsignedp = 1;
+    case SIGN_EXTRACT:
+      /* If the operand is a CLOBBER, just return it.  */
+      if (GET_CODE (XEXP (x, 0)) == CLOBBER)
+	return XEXP (x, 0);
+
+      if (GET_CODE (XEXP (x, 1)) != CONST_INT
+	  || GET_CODE (XEXP (x, 2)) != CONST_INT
+	  || GET_MODE (XEXP (x, 0)) == VOIDmode)
+	return x;
+
+      len = INTVAL (XEXP (x, 1));
+      pos = INTVAL (XEXP (x, 2));
+
+      /* If this goes outside the object being extracted, replace the object
+	 with a (use (mem ...)) construct that only combine understands
+	 and is used only for this purpose.  */
+      if (len + pos > GET_MODE_BITSIZE (GET_MODE (XEXP (x, 0))))
+	SUBST (XEXP (x, 0), gen_rtx_USE (GET_MODE (x), XEXP (x, 0)));
+
+      if (BITS_BIG_ENDIAN)
+	pos = GET_MODE_BITSIZE (GET_MODE (XEXP (x, 0))) - len - pos;
+
+      break;
+
+    default:
+      return x;
+    }
+  /* Convert sign extension to zero extension, if we know that the high
+     bit is not set, as this is easier to optimize.  It will be converted
+     back to cheaper alternative in make_extraction.  */
+  if (GET_CODE (x) == SIGN_EXTEND
+      && (GET_MODE_BITSIZE (GET_MODE (x)) <= HOST_BITS_PER_WIDE_INT
+	  && ((nonzero_bits (XEXP (x, 0), GET_MODE (XEXP (x, 0)))
+		& ~(((unsigned HOST_WIDE_INT)
+		      GET_MODE_MASK (GET_MODE (XEXP (x, 0))))
+		     >> 1))
+	       == 0)))
+    {
+      rtx temp = gen_rtx_ZERO_EXTEND (GET_MODE (x), XEXP (x, 0));
+      return expand_compound_operation (temp);
+    }
+
+  /* We can optimize some special cases of ZERO_EXTEND.  */
+  if (GET_CODE (x) == ZERO_EXTEND)
+    {
+      /* (zero_extend:DI (truncate:SI foo:DI)) is just foo:DI if we
+         know that the last value didn't have any inappropriate bits
+         set.  */
+      if (GET_CODE (XEXP (x, 0)) == TRUNCATE
+	  && GET_MODE (XEXP (XEXP (x, 0), 0)) == GET_MODE (x)
+	  && GET_MODE_BITSIZE (GET_MODE (x)) <= HOST_BITS_PER_WIDE_INT
+	  && (nonzero_bits (XEXP (XEXP (x, 0), 0), GET_MODE (x))
+	      & ~GET_MODE_MASK (GET_MODE (XEXP (x, 0)))) == 0)
+	return XEXP (XEXP (x, 0), 0);
+
+      /* Likewise for (zero_extend:DI (subreg:SI foo:DI 0)).  */
+      if (GET_CODE (XEXP (x, 0)) == SUBREG
+	  && GET_MODE (SUBREG_REG (XEXP (x, 0))) == GET_MODE (x)
+	  && subreg_lowpart_p (XEXP (x, 0))
+	  && GET_MODE_BITSIZE (GET_MODE (x)) <= HOST_BITS_PER_WIDE_INT
+	  && (nonzero_bits (SUBREG_REG (XEXP (x, 0)), GET_MODE (x))
+	      & ~GET_MODE_MASK (GET_MODE (XEXP (x, 0)))) == 0)
+	return SUBREG_REG (XEXP (x, 0));
+
+      /* (zero_extend:DI (truncate:SI foo:DI)) is just foo:DI when foo
+         is a comparison and STORE_FLAG_VALUE permits.  This is like
+         the first case, but it works even when GET_MODE (x) is larger
+         than HOST_WIDE_INT.  */
+      if (GET_CODE (XEXP (x, 0)) == TRUNCATE
+	  && GET_MODE (XEXP (XEXP (x, 0), 0)) == GET_MODE (x)
+	  && GET_RTX_CLASS (GET_CODE (XEXP (XEXP (x, 0), 0))) == '<'
+	  && (GET_MODE_BITSIZE (GET_MODE (XEXP (x, 0)))
+	      <= HOST_BITS_PER_WIDE_INT)
+	  && ((HOST_WIDE_INT) STORE_FLAG_VALUE
+	      & ~GET_MODE_MASK (GET_MODE (XEXP (x, 0)))) == 0)
+	return XEXP (XEXP (x, 0), 0);
+
+      /* Likewise for (zero_extend:DI (subreg:SI foo:DI 0)).  */
+      if (GET_CODE (XEXP (x, 0)) == SUBREG
+	  && GET_MODE (SUBREG_REG (XEXP (x, 0))) == GET_MODE (x)
+	  && subreg_lowpart_p (XEXP (x, 0))
+	  && GET_RTX_CLASS (GET_CODE (SUBREG_REG (XEXP (x, 0)))) == '<'
+	  && (GET_MODE_BITSIZE (GET_MODE (XEXP (x, 0)))
+	      <= HOST_BITS_PER_WIDE_INT)
+	  && ((HOST_WIDE_INT) STORE_FLAG_VALUE
+	      & ~GET_MODE_MASK (GET_MODE (XEXP (x, 0)))) == 0)
+	return SUBREG_REG (XEXP (x, 0));
+
+    }
+
+  /* If we reach here, we want to return a pair of shifts.  The inner
+     shift is a left shift of BITSIZE - POS - LEN bits.  The outer
+     shift is a right shift of BITSIZE - LEN bits.  It is arithmetic or
+     logical depending on the value of UNSIGNEDP.
+
+     If this was a ZERO_EXTEND or ZERO_EXTRACT, this pair of shifts will be
+     converted into an AND of a shift.
+
+     We must check for the case where the left shift would have a negative
+     count.  This can happen in a case like (x >> 31) & 255 on machines
+     that can't shift by a constant.  On those machines, we would first
+     combine the shift with the AND to produce a variable-position
+     extraction.  Then the constant of 31 would be substituted in to produce
+     a such a position.  */
+
+  modewidth = GET_MODE_BITSIZE (GET_MODE (x));
+  if (modewidth + len >= pos)
+    tem = simplify_shift_const (NULL_RTX, unsignedp ? LSHIFTRT : ASHIFTRT,
+				GET_MODE (x),
+				simplify_shift_const (NULL_RTX, ASHIFT,
+						      GET_MODE (x),
+						      XEXP (x, 0),
+						      modewidth - pos - len),
+				modewidth - len);
+
+  else if (unsignedp && len < HOST_BITS_PER_WIDE_INT)
+    tem = simplify_and_const_int (NULL_RTX, GET_MODE (x),
+				  simplify_shift_const (NULL_RTX, LSHIFTRT,
+							GET_MODE (x),
+							XEXP (x, 0), pos),
+				  ((HOST_WIDE_INT) 1 << len) - 1);
+  else
+    /* Any other cases we can't handle.  */
+    return x;
+
+  /* If we couldn't do this for some reason, return the original
+     expression.  */
+  if (GET_CODE (tem) == CLOBBER)
+    return x;
+
+  return tem;
+}

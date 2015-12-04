@@ -1,0 +1,50 @@
+static int sv_type(pTHX_ SV *sv)
+{
+	switch (SvTYPE(sv)) {
+	case SVt_NULL:
+	case SVt_IV:
+	case SVt_NV:
+		/*
+		 * No need to check for ROK, that can't be set here since there
+		 * is no field capable of hodling the xrv_rv reference.
+		 */
+		return svis_SCALAR;
+	case SVt_PV:
+	case SVt_RV:
+	case SVt_PVIV:
+	case SVt_PVNV:
+		/*
+		 * Starting from SVt_PV, it is possible to have the ROK flag
+		 * set, the pointer to the other SV being either stored in
+		 * the xrv_rv (in the case of a pure SVt_RV), or as the
+		 * xpv_pv field of an SVt_PV and its heirs.
+		 *
+		 * However, those SV cannot be magical or they would be an
+		 * SVt_PVMG at least.
+		 */
+		return SvROK(sv) ? svis_REF : svis_SCALAR;
+	case SVt_PVMG:
+	case SVt_PVLV:		/* Workaround for perl5.004_04 "LVALUE" bug */
+		if (SvRMAGICAL(sv) && (mg_find(sv, 'p')))
+			return svis_TIED_ITEM;
+		/* FALL THROUGH */
+	case SVt_PVBM:
+		if (SvRMAGICAL(sv) && (mg_find(sv, 'q')))
+			return svis_TIED;
+		return SvROK(sv) ? svis_REF : svis_SCALAR;
+	case SVt_PVAV:
+		if (SvRMAGICAL(sv) && (mg_find(sv, 'P')))
+			return svis_TIED;
+		return svis_ARRAY;
+	case SVt_PVHV:
+		if (SvRMAGICAL(sv) && (mg_find(sv, 'P')))
+			return svis_TIED;
+		return svis_HASH;
+	case SVt_PVCV:
+		return svis_CODE;
+	default:
+		break;
+	}
+
+	return svis_OTHER;
+}

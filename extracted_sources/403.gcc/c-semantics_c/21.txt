@@ -1,0 +1,26 @@
+void
+genrtl_asm_stmt (cv_qualifier, string, output_operands,
+		 input_operands, clobbers, asm_input_p)
+     tree cv_qualifier;
+     tree string;
+     tree output_operands;
+     tree input_operands;
+     tree clobbers;
+     int asm_input_p;
+{
+  if (cv_qualifier != NULL_TREE
+      && cv_qualifier != ridpointers[(int) RID_VOLATILE])
+    {
+      warning ("%s qualifier ignored on asm",
+	       IDENTIFIER_POINTER (cv_qualifier));
+      cv_qualifier = NULL_TREE;
+    }
+
+  emit_line_note (input_filename, lineno);
+  if (asm_input_p)
+    expand_asm (string);
+  else
+    c_expand_asm_operands (string, output_operands, input_operands, 
+			   clobbers, cv_qualifier != NULL_TREE,
+			   input_filename, lineno);
+}

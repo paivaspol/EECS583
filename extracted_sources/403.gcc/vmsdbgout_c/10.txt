@@ -1,0 +1,60 @@
+static int
+write_modbeg (dosizeonly)
+     int dosizeonly;
+{
+  DST_MODULE_BEGIN modbeg;
+  DST_MB_TRLR mb_trlr;
+  int i;
+  char *module_name, *m;
+  int modnamelen;
+  int prodnamelen;
+  int totsize = 0;
+
+  /* Assumes primary filename has Unix syntax file spec.  */
+  module_name = xstrdup (basename ((char *) primary_filename));
+
+  m = strrchr (module_name, '.');
+  if (m)
+    *m = 0;
+
+  modnamelen = strlen (module_name);
+  for (i = 0; i < modnamelen; i++)
+    module_name[i] = TOUPPER (module_name[i]);
+
+  prodnamelen = strlen (module_producer);
+
+  modbeg.dst_a_modbeg_header.dst__header_length.dst_w_length
+    = DST_K_MODBEG_SIZE + modnamelen + DST_K_MB_TRLR_SIZE + prodnamelen - 1;
+  modbeg.dst_a_modbeg_header.dst__header_type.dst_w_type = DST_K_MODBEG;
+  modbeg.dst_b_modbeg_flags.dst_v_modbeg_hide = 0;
+  modbeg.dst_b_modbeg_flags.dst_v_modbeg_version = 1;
+  modbeg.dst_b_modbeg_flags.dst_v_modbeg_unused = 0;
+  modbeg.dst_b_modbeg_unused = 0;
+  modbeg.dst_l_modbeg_language = module_language;
+  modbeg.dst_w_version_major = DST_K_VERSION_MAJOR;
+  modbeg.dst_w_version_minor = DST_K_VERSION_MINOR;
+  modbeg.dst_b_modbeg_name = strlen (module_name);
+
+  mb_trlr.dst_b_compiler = strlen (module_producer);
+
+  totsize += write_debug_header (&modbeg.dst_a_modbeg_header,
+				 "modbeg", dosizeonly);
+  totsize += write_debug_data1 (*((char *) &modbeg.dst_b_modbeg_flags),
+				"flags", dosizeonly);
+  totsize += write_debug_data1 (modbeg.dst_b_modbeg_unused,
+				"unused", dosizeonly);
+  totsize += write_debug_data4 (modbeg.dst_l_modbeg_language,
+				"language", dosizeonly);
+  totsize += write_debug_data2 (modbeg.dst_w_version_major,
+				"DST major version", dosizeonly);
+  totsize += write_debug_data2 (modbeg.dst_w_version_minor,
+				"DST minor version", dosizeonly);
+  totsize += write_debug_data1 (modbeg.dst_b_modbeg_name,
+				"length of module name", dosizeonly);
+  totsize += write_debug_string (module_name, "module name", dosizeonly);
+  totsize += write_debug_data1 (mb_trlr.dst_b_compiler,
+				"length of compiler name", dosizeonly);
+  totsize += write_debug_string (module_producer, "compiler name", dosizeonly);
+
+  return totsize;
+}

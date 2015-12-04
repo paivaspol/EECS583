@@ -1,0 +1,40 @@
+int
+regno_clobbered_p (regno, insn, mode, sets)
+     unsigned int regno;
+     rtx insn;
+     enum machine_mode mode;
+     int sets;
+{
+  unsigned int nregs = HARD_REGNO_NREGS (regno, mode);
+  unsigned int endregno = regno + nregs;
+
+  if ((GET_CODE (PATTERN (insn)) == CLOBBER
+       || (sets && GET_CODE (PATTERN (insn)) == SET))
+      && GET_CODE (XEXP (PATTERN (insn), 0)) == REG)
+    {
+      unsigned int test = REGNO (XEXP (PATTERN (insn), 0));
+
+      return test >= regno && test < endregno;
+    }
+
+  if (GET_CODE (PATTERN (insn)) == PARALLEL)
+    {
+      int i = XVECLEN (PATTERN (insn), 0) - 1;
+
+      for (; i >= 0; i--)
+	{
+	  rtx elt = XVECEXP (PATTERN (insn), 0, i);
+	  if ((GET_CODE (elt) == CLOBBER
+	       || (sets && GET_CODE (PATTERN (insn)) == SET))
+	      && GET_CODE (XEXP (elt, 0)) == REG)
+	    {
+	      unsigned int test = REGNO (XEXP (elt, 0));
+	      
+	      if (test >= regno && test < endregno)
+		return 1;
+	    }
+	}
+    }
+
+  return 0;
+}

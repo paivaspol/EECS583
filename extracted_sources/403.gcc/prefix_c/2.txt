@@ -1,0 +1,47 @@
+static char *
+lookup_key (key)
+     char *key;
+{
+  char *dst;
+  DWORD size;
+  DWORD type;
+  LONG res;
+
+  if (reg_key == (HKEY) INVALID_HANDLE_VALUE)
+    {
+      res = RegOpenKeyExA (HKEY_LOCAL_MACHINE, "SOFTWARE", 0,
+			   KEY_READ, &reg_key);
+
+      if (res == ERROR_SUCCESS)
+	res = RegOpenKeyExA (reg_key, "Free Software Foundation", 0,
+			     KEY_READ, &reg_key);
+
+      if (res == ERROR_SUCCESS)
+	res = RegOpenKeyExA (reg_key, WIN32_REGISTRY_KEY, 0,
+			     KEY_READ, &reg_key);
+
+      if (res != ERROR_SUCCESS)
+        {
+          reg_key = (HKEY) INVALID_HANDLE_VALUE;
+          return 0;
+        }
+    }
+
+  size = 32;
+  dst = (char *) xmalloc (size);
+
+  res = RegQueryValueExA (reg_key, key, 0, &type, dst, &size);
+  if (res == ERROR_MORE_DATA && type == REG_SZ)
+    {
+      dst = (char *) xrealloc (dst, size);
+      res = RegQueryValueExA (reg_key, key, 0, &type, dst, &size);
+    }
+
+  if (type != REG_SZ || res != ERROR_SUCCESS)
+    {
+      free (dst);
+      dst = 0;
+    }
+
+  return dst;
+}

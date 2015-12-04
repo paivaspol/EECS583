@@ -1,0 +1,22 @@
+static void
+cselib_invalidate_rtx (dest, ignore, data)
+     rtx dest;
+     rtx ignore ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  while (GET_CODE (dest) == STRICT_LOW_PART || GET_CODE (dest) == SIGN_EXTRACT
+	 || GET_CODE (dest) == ZERO_EXTRACT || GET_CODE (dest) == SUBREG)
+    dest = XEXP (dest, 0);
+
+  if (GET_CODE (dest) == REG)
+    cselib_invalidate_regno (REGNO (dest), GET_MODE (dest));
+  else if (GET_CODE (dest) == MEM)
+    cselib_invalidate_mem (dest);
+
+  /* Some machines don't define AUTO_INC_DEC, but they still use push
+     instructions.  We need to catch that case here in order to
+     invalidate the stack pointer correctly.  Note that invalidating
+     the stack pointer is different from invalidating DEST.  */
+  if (push_operand (dest, GET_MODE (dest)))
+    cselib_invalidate_rtx (stack_pointer_rtx, NULL_RTX, NULL);
+}

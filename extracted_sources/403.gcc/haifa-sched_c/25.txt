@@ -1,0 +1,114 @@
+void
+sched_init (dump_file)
+     FILE *dump_file;
+{
+  int luid, b;
+  rtx insn;
+
+  /* Disable speculative loads in their presence if cc0 defined.  */
+#ifdef HAVE_cc0
+  flag_schedule_speculative_load = 0;
+#endif
+
+  /* Set dump and sched_verbose for the desired debugging output.  If no
+     dump-file was specified, but -fsched-verbose=N (any N), print to stderr.
+     For -fsched-verbose=N, N>=10, print everything to stderr.  */
+  sched_verbose = sched_verbose_param;
+  if (sched_verbose_param == 0 && dump_file)
+    sched_verbose = 1;
+  sched_dump = ((sched_verbose_param >= 10 || !dump_file)
+		? stderr : dump_file);
+
+  /* Initialize issue_rate.  */
+  if (targetm.sched.issue_rate)
+    issue_rate = (*targetm.sched.issue_rate) ();
+  else
+    issue_rate = 1;
+
+  /* We use LUID 0 for the fake insn (UID 0) which holds dependencies for
+     pseudos which do not cross calls.  */
+  old_max_uid = get_max_uid () + 1;
+
+  h_i_d = (struct haifa_insn_data *) xcalloc (old_max_uid, sizeof (*h_i_d));
+
+  h_i_d[0].luid = 0;
+  luid = 1;
+  for (b = 0; b < n_basic_blocks; b++)
+    for (insn = BLOCK_HEAD (b);; insn = NEXT_INSN (insn))
+      {
+	INSN_LUID (insn) = luid;
+
+	/* Increment the next luid, unless this is a note.  We don't
+	   really need separate IDs for notes and we don't want to
+	   schedule differently depending on whether or not there are
+	   line-number notes, i.e., depending on whether or not we're
+	   generating debugging information.  */
+	if (GET_CODE (insn) != NOTE)
+	  ++luid;
+
+	if (insn == BLOCK_END (b))
+	  break;
+      }
+
+  init_dependency_caches (luid);
+
+  compute_bb_for_insn (old_max_uid);
+
+  init_alias_analysis ();
+
+  if (write_symbols != NO_DEBUG)
+    {
+      rtx line;
+
+      line_note_head = (rtx *) xcalloc (n_basic_blocks, sizeof (rtx));
+
+      /* Save-line-note-head:
+         Determine the line-number at the start of each basic block.
+         This must be computed and saved now, because after a basic block's
+         predecessor has been scheduled, it is impossible to accurately
+         determine the correct line number for the first insn of the block.  */
+
+      for (b = 0; b < n_basic_blocks; b++)
+	{
+	  for (line = BLOCK_HEAD (b); line; line = PREV_INSN (line))
+	    if (GET_CODE (line) == NOTE && NOTE_LINE_NUMBER (line) > 0)
+	      {
+		line_note_head[b] = line;
+		break;
+	      }
+	  /* Do a forward search as well, since we won't get to see the first
+	     notes in a basic block.  */
+	  for (line = BLOCK_HEAD (b); line; line = NEXT_INSN (line))
+	    {
+	      if (INSN_P (line))
+		break;
+	      if (GET_CODE (line) == NOTE && NOTE_LINE_NUMBER (line) > 0)
+		line_note_head[b] = line;
+	    }
+	}
+    }
+
+  /* Find units used in this function, for visualization.  */
+  if (sched_verbose)
+    init_target_units ();
+
+  /* ??? Add a NOTE after the last insn of the last basic block.  It is not
+     known why this is done.  */
+
+  insn = BLOCK_END (n_basic_blocks - 1);
+  if (NEXT_INSN (insn) == 0
+      || (GET_CODE (insn) != NOTE
+	  && GET_CODE (insn) != CODE_LABEL
+	  /* Don't emit a NOTE if it would end up before a BARRIER.  */
+	  && GET_CODE (NEXT_INSN (insn)) != BARRIER))
+    {
+      emit_note_after (NOTE_INSN_DELETED, BLOCK_END (n_basic_blocks - 1));
+      /* Make insn to appear outside BB.  */
+      BLOCK_END (n_basic_blocks - 1) = PREV_INSN (BLOCK_END (n_basic_blocks - 1));
+    }
+
+  /* Compute INSN_REG_WEIGHT for all blocks.  We must do this before
+     removing death notes.  */
+  for (b = n_basic_blocks - 1; b >= 0; b--)
+    find_insn_reg_weight (b);
+}

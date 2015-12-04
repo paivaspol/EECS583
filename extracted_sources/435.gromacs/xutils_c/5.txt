@@ -1,0 +1,56 @@
+void update_forcefield(int nfile,t_filenm fnm[],t_forcerec *fr)
+{
+  static int ntry,ntried;
+  int    i,j;
+  bool   bDone;
+
+  /* First time around we have to read the parameters */  
+  if (nparm == 0) {    
+    range = read_range(ftp2fn(efDAT,nfile,fnm),&nparm);
+    if (nparm == 0) 
+      fatal_error(0,"No correct parameter info in %s",ftp2fn(efDAT,nfile,fnm));
+    snew(param_val,nparm);
+
+    if (opt2bSet("-ga",nfile,fnm)) {
+      /* Genetic algorithm time */
+      ga = init_ga(opt2fn("-ga",nfile,fnm),nparm,range);
+    }
+    else {  
+      /* Determine the grid size */
+      ntry = 1;
+      for(i=0; (i<nparm); i++)
+	ntry *= range[i].np;
+      ntried = 0;
+      
+      if(stdlog)
+          fprintf(stdlog,"Going to try %d different combinations of %d parameters\n",
+                  ntry,nparm);
+    }
+  }
+  else if (ga)
+    update_ga(stdlog,range,ga);
+  else {
+    /* Increment the counter
+     * Non-trivial, since this is nparm nested loops in principle 
+     */
+    for(i=0; (i<nparm); i++) {
+      if (param_val[i] < (range[i].np-1)) {
+	param_val[i]++;
+	for(j=0; (j<i); j++)
+	  param_val[j] = 0;
+	ntried++;
+	break;
+      }
+    }
+    if (i == nparm) {
+        if(stdlog)
+            fprintf(stdlog,"Finished with %d out of %d iterations\n",ntried+1,ntry);
+      if (gmx_parallel)
+	gmx_finalize();
+      exit(0);
+    }
+  }
+
+  /* Now do the real updating */
+  update_ff(fr,nparm,range,param_val);
+}

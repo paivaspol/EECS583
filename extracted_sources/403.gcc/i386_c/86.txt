@@ -1,0 +1,18 @@
+static void
+ix86_emit_save_regs_using_mov (pointer, offset)
+     rtx pointer;
+     HOST_WIDE_INT offset;
+{
+  int regno;
+  rtx insn;
+
+  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+    if (ix86_save_reg (regno, true))
+      {
+	insn = emit_move_insn (adjust_address (gen_rtx_MEM (Pmode, pointer),
+					       Pmode, offset),
+			       gen_rtx_REG (Pmode, regno));
+	RTX_FRAME_RELATED_P (insn) = 1;
+	offset += UNITS_PER_WORD;
+      }
+}

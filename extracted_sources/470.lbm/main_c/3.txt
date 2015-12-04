@@ -1,0 +1,23 @@
+void MAIN_initialize( const MAIN_Param* param ) {
+	LBM_allocateGrid( (double**) &srcGrid );
+	LBM_allocateGrid( (double**) &dstGrid );
+
+	LBM_initializeGrid( *srcGrid );
+	LBM_initializeGrid( *dstGrid );
+
+	if( param->obstacleFilename != NULL ) {
+		LBM_loadObstacleFile( *srcGrid, param->obstacleFilename );
+		LBM_loadObstacleFile( *dstGrid, param->obstacleFilename );
+	}
+
+	if( param->simType == CHANNEL ) {
+		LBM_initializeSpecialCellsForChannel( *srcGrid );
+		LBM_initializeSpecialCellsForChannel( *dstGrid );
+	}
+	else {
+		LBM_initializeSpecialCellsForLDC( *srcGrid );
+		LBM_initializeSpecialCellsForLDC( *dstGrid );
+	}
+
+	LBM_showGridStatistics( *srcGrid );
+}

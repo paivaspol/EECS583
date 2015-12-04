@@ -1,0 +1,43 @@
+void
+quantum_qec_decode(int type, int width, quantum_reg *reg)
+{
+  int i, a, b;
+  int swidth;
+  float lambda;
+
+  lambda = quantum_get_decoherence();
+
+  quantum_set_decoherence(0);
+
+  swidth=reg->width/3;
+
+  quantum_qec_set_status(0, 0);
+
+  for(i=reg->width/3-1;i>=0;i--)
+    {
+      if(i==0)
+	quantum_set_decoherence(lambda);
+
+      if(i<width)
+	{
+	  quantum_cnot(2*swidth+i, i, reg);
+	  quantum_cnot(swidth+i, i, reg);
+	  
+	  quantum_hadamard(2*swidth+i, reg);
+	  quantum_hadamard(swidth+i, reg);
+	}
+      else
+	{
+	  quantum_cnot(i, 2*swidth+i, reg);
+	  quantum_cnot(i, swidth+i, reg);
+	}
+    }
+
+  for(i=1;i<=swidth;i++)
+    {
+      a = quantum_bmeasure(swidth, reg);
+      b = quantum_bmeasure(2*swidth-i, reg);
+      if(a == 1 && b == 1 && i-1 < width)
+	quantum_sigma_z(i-1, reg); /* Z = HXH */
+    }
+}

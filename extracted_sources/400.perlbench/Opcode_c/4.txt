@@ -1,0 +1,14 @@
+static int
+verify_opset(pTHX_ SV *opset, int fatal)
+{
+    char *err = Nullch;
+    dMY_CXT;
+
+    if      (!SvOK(opset))              err = "undefined";
+    else if (!SvPOK(opset))             err = "wrong type";
+    else if (SvCUR(opset) != (STRLEN)opset_len) err = "wrong size";
+    if (err && fatal) {
+	croak("Invalid opset: %s", err);
+    }
+    return !err;
+}

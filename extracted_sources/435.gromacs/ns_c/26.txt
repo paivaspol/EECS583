@@ -1,0 +1,44 @@
+static void ns_inner_rect(rvec x[],int icg,bool *i_eg_excl,
+			  int njcg,atom_id jcg[],
+			  bool bBox,rvec box_size,rvec b_inv,real rcut2,
+			  t_block *cgs,t_ns_buf **ns_buf,unsigned short gid[],
+			  bool bHaveLJ[],int ngid,t_mdatoms *md,
+			  t_excl bexcl[],t_forcerec *fr)
+{
+  int      shift;
+  int      j,nrj,jgid;
+  atom_id  cg_j,*cgindex /* ,*cga */;
+  t_ns_buf *nsbuf;
+
+  cgindex = cgs->index;
+  /* cga     = cgs->a; */
+  if (bBox) {
+    shift = CENTRAL;
+    for(j=0; (j<njcg); j++) {
+      cg_j   = jcg[j];
+      nrj    = cgindex[cg_j+1]-cgindex[cg_j];
+      if (calc_image_rect(x[icg],x[cg_j],box_size,b_inv,&shift) < rcut2) {
+	/* jgid  = gid[cga[cgindex[cg_j]]]; */
+	jgid  = gid[cgindex[cg_j]];
+	if (!i_eg_excl[jgid]) {
+	  add_simple(&ns_buf[jgid][shift],nrj,cg_j,
+		     bHaveLJ,ngid,md,icg,jgid,cgs,bexcl,shift,fr);
+	}
+      }
+    }
+  } 
+  else {
+    for(j=0; (j<njcg); j++) {
+      cg_j   = jcg[j];
+      nrj    = cgindex[cg_j+1]-cgindex[cg_j];
+      if ((rcut2 < GMX_REAL_MIN) || (distance2(x[icg],x[cg_j]) < rcut2)) {
+	/* jgid  = gid[cga[cgindex[cg_j]]]; */
+	jgid  = gid[cgindex[cg_j]];
+	if (!i_eg_excl[jgid]) {
+	  add_simple(&ns_buf[jgid][CENTRAL],nrj,cg_j,
+		     bHaveLJ,ngid,md,icg,jgid,cgs,bexcl,CENTRAL,fr);
+	}
+      }
+    }
+  }
+}

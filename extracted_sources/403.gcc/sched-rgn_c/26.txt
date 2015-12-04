@@ -1,0 +1,96 @@
+static void
+init_ready_list (ready)
+     struct ready_list *ready;
+{
+  rtx prev_head = current_sched_info->prev_head;
+  rtx next_tail = current_sched_info->next_tail;
+  int bb_src;
+  rtx insn;
+
+  target_n_insns = 0;
+  sched_target_n_insns = 0;
+  sched_n_insns = 0;
+  last_was_jump = 0;
+
+  /* Print debugging information.  */
+  if (sched_verbose >= 5)
+    debug_dependencies ();
+
+  /* Prepare current target block info.  */
+  if (current_nr_blocks > 1)
+    {
+      candidate_table = (candidate *) xmalloc (current_nr_blocks
+					       * sizeof (candidate));
+
+      bblst_last = 0;
+      /* bblst_table holds split blocks and update blocks for each block after
+	 the current one in the region.  split blocks and update blocks are
+	 the TO blocks of region edges, so there can be at most rgn_nr_edges
+	 of them.  */
+      bblst_size = (current_nr_blocks - target_bb) * rgn_nr_edges;
+      bblst_table = (int *) xmalloc (bblst_size * sizeof (int));
+
+      bitlst_table_last = 0;
+      bitlst_table_size = rgn_nr_edges;
+      bitlst_table = (int *) xmalloc (rgn_nr_edges * sizeof (int));
+
+      compute_trg_info (target_bb);
+    }
+
+  /* Initialize ready list with all 'ready' insns in target block.
+     Count number of insns in the target block being scheduled.  */
+  for (insn = NEXT_INSN (prev_head); insn != next_tail; insn = NEXT_INSN (insn))
+    {
+      rtx next;
+
+      if (! INSN_P (insn))
+	continue;
+      next = NEXT_INSN (insn);
+
+      if (INSN_DEP_COUNT (insn) == 0
+	  && (SCHED_GROUP_P (next) == 0 || ! INSN_P (next)))
+	ready_add (ready, insn);
+      if (!(SCHED_GROUP_P (insn)))
+	target_n_insns++;
+    }
+
+  /* Add to ready list all 'ready' insns in valid source blocks.
+     For speculative insns, check-live, exception-free, and
+     issue-delay.  */
+  for (bb_src = target_bb + 1; bb_src < current_nr_blocks; bb_src++)
+    if (IS_VALID (bb_src))
+      {
+	rtx src_head;
+	rtx src_next_tail;
+	rtx tail, head;
+
+	get_block_head_tail (BB_TO_BLOCK (bb_src), &head, &tail);
+	src_next_tail = NEXT_INSN (tail);
+	src_head = head;
+
+	for (insn = src_head; insn != src_next_tail; insn = NEXT_INSN (insn))
+	  {
+	    if (! INSN_P (insn))
+	      continue;
+
+	    if (!CANT_MOVE (insn)
+		&& (!IS_SPECULATIVE_INSN (insn)
+		    || (insn_issue_delay (insn) <= 3
+			&& check_live (insn, bb_src)
+			&& is_exception_free (insn, bb_src, target_bb))))
+	      {
+		rtx next;
+
+		/* Note that we haven't squirreled away the notes for
+		   blocks other than the current.  So if this is a
+		   speculative insn, NEXT might otherwise be a note.  */
+		next = next_nonnote_insn (insn);
+		if (INSN_DEP_COUNT (insn) == 0
+		    && (! next
+			|| SCHED_GROUP_P (next) == 0
+			|| ! INSN_P (next)))
+		  ready_add (ready, insn);
+	      }
+	  }
+      }
+}

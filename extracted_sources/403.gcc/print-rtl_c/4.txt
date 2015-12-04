@@ -1,0 +1,23 @@
+void
+debug_rtx_list (x, n)
+     rtx x;
+     int n;
+{
+  int i,count;
+  rtx insn;
+
+  count = n == 0 ? 1 : n < 0 ? -n : n;
+
+  /* If we are printing a window, back up to the start.  */
+
+  if (n < 0)
+    for (i = count / 2; i > 0; i--)
+      {
+	if (PREV_INSN (x) == 0)
+	  break;
+	x = PREV_INSN (x);
+      }
+
+  for (i = count, insn = x; i > 0 && insn != 0; i--, insn = NEXT_INSN (insn))
+    debug_rtx (insn);
+}

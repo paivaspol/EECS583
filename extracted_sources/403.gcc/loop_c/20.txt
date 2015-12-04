@@ -1,0 +1,58 @@
+static void
+replace_call_address (x, reg, addr)
+     rtx x, reg, addr;
+{
+  enum rtx_code code;
+  int i;
+  const char *fmt;
+
+  if (x == 0)
+    return;
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case PC:
+    case CC0:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case REG:
+      return;
+
+    case SET:
+      /* Short cut for very common case.  */
+      replace_call_address (XEXP (x, 1), reg, addr);
+      return;
+
+    case CALL:
+      /* Short cut for very common case.  */
+      replace_call_address (XEXP (x, 0), reg, addr);
+      return;
+
+    case MEM:
+      /* If this MEM uses a reg other than the one we expected,
+	 something is wrong.  */
+      if (XEXP (x, 0) != reg)
+	abort ();
+      XEXP (x, 0) = addr;
+      return;
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	replace_call_address (XEXP (x, i), reg, addr);
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    replace_call_address (XVECEXP (x, i, j), reg, addr);
+	}
+    }
+}

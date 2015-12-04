@@ -1,0 +1,22 @@
+int
+sbitmap_union_of_diff (dst, a, b, c)
+     sbitmap dst, a, b, c;
+{
+  unsigned int i;
+  sbitmap_ptr dstp, ap, bp, cp;
+  int changed = 0;
+
+  for (dstp = dst->elms, ap = a->elms, bp = b->elms, cp = c->elms, i = 0;
+       i < dst->size; i++, dstp++)
+    {
+      SBITMAP_ELT_TYPE tmp = *ap++ | (*bp++ & ~*cp++);
+
+      if (*dstp != tmp)
+	{
+	  changed = 1;
+	  *dstp = tmp;
+	}
+    }
+
+  return changed;
+}

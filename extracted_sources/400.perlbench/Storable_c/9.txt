@@ -1,0 +1,21 @@
+static void clean_context(pTHX_ stcxt_t *cxt)
+{
+	TRACEME(("clean_context"));
+
+	ASSERT(cxt->s_dirty, ("dirty context"));
+
+	if (cxt->membuf_ro)
+		MBUF_RESTORE();
+
+	ASSERT(!cxt->membuf_ro, ("mbase is not read-only"));
+
+	if (cxt->optype & ST_RETRIEVE)
+		clean_retrieve_context(aTHX_ cxt);
+	else if (cxt->optype & ST_STORE)
+		clean_store_context(aTHX_ cxt);
+	else
+		reset_context(cxt);
+
+	ASSERT(!cxt->s_dirty, ("context is clean"));
+	ASSERT(cxt->entry == 0, ("context is reset"));
+}

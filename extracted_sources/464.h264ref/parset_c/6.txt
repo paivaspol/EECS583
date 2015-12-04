@@ -1,0 +1,32 @@
+int Scaling_List(short *scalingListinput, short *scalingList, int sizeOfScalingList, short *UseDefaultScalingMatrix, DataPartition *partition)
+{
+  int j, scanj;
+  int len=0;
+  int delta_scale, lastScale, nextScale;
+
+  lastScale = 8;
+  nextScale = 8;
+
+  for(j=0; j<sizeOfScalingList; j++)
+  {
+    scanj = (sizeOfScalingList==16) ? ZZ_SCAN[j]:ZZ_SCAN8[j];
+
+    if(nextScale!=0)
+    {
+      delta_scale = scalingListinput[scanj]-lastScale; // Calculate delta from the scalingList data from the input file
+      if(delta_scale>127)
+        delta_scale=delta_scale-256;
+      else if(delta_scale<-128)
+        delta_scale=delta_scale+256;
+
+      len+=se_v ("   : delta_sl   ",                      delta_scale,                       partition);
+      nextScale = scalingListinput[scanj];
+      *UseDefaultScalingMatrix|=(scanj==0 && nextScale==0); // Check first matrix value for zero
+    }
+
+    scalingList[scanj] = (nextScale==0) ? lastScale:nextScale; // Update the actual scalingList matrix with the correct values
+    lastScale = scalingList[scanj];
+  }
+
+  return len;
+}

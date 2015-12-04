@@ -1,0 +1,35 @@
+static fibnode_t
+fibheap_extr_min_node (heap)
+     fibheap_t heap;
+{
+  fibnode_t ret = heap->min;
+  fibnode_t x, y, orig;
+
+  /* Attach the child list of the minimum node to the root list of the heap.
+     If there is no child list, we don't do squat.  */
+  for (x = ret->child, orig = NULL; x != orig && x != NULL; x = y)
+    {
+      if (orig == NULL)
+	orig = x;
+      y = x->right;
+      x->parent = NULL;
+      fibheap_ins_root (heap, x);
+    }
+
+  /* Remove the old root.  */
+  fibheap_rem_root (heap, ret);
+  heap->nodes--;
+
+  /* If we are left with no nodes, then the min is NULL.  */
+  if (heap->nodes == 0)
+    heap->min = NULL;
+  else
+    {
+      /* Otherwise, consolidate to find new minimum, as well as do the reorg
+         work that needs to be done.  */
+      heap->min = ret->right;
+      fibheap_consolidate (heap);
+    }
+
+  return ret;
+}

@@ -1,0 +1,20 @@
+static void mk_1shift(rvec hbox,rvec xi,rvec xj,int *mi,int *mj)
+{
+  /* Calculate periodicity for rectangular box... */
+  int  m;
+  rvec dx;
+  
+  rvec_sub(xi,xj,dx);
+
+  for(m=0; (m<DIM); m++) {
+    /* If dx < hbox, then xj will be reduced by box, so that
+     * xi - xj will be bigger
+     */
+    if (dx[m] < -hbox[m])
+      mj[m]=mi[m]-1;
+    else if (dx[m] >= hbox[m])
+      mj[m]=mi[m]+1;
+    else
+      mj[m]=mi[m];
+  }
+}

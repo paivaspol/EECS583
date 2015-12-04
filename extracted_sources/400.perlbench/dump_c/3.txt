@@ -1,0 +1,24 @@
+void
+Perl_dump_packsubs(pTHX_ HV *stash)
+{
+    I32	i;
+    HE	*entry;
+
+    if (!HvARRAY(stash))
+	return;
+    for (i = 0; i <= (I32) HvMAX(stash); i++) {
+	for (entry = HvARRAY(stash)[i]; entry; entry = HeNEXT(entry)) {
+	    GV *gv = (GV*)HeVAL(entry);
+	    HV *hv;
+	    if (SvTYPE(gv) != SVt_PVGV || !GvGP(gv))
+		continue;
+	    if (GvCVu(gv))
+		dump_sub(gv);
+	    if (GvFORM(gv))
+		dump_form(gv);
+	    if (HeKEY(entry)[HeKLEN(entry)-1] == ':'
+		&& (hv = GvHV(gv)) && hv != PL_defstash)
+		dump_packsubs(hv);		/* nested package */
+	}
+    }
+}

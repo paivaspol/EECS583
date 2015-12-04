@@ -1,0 +1,29 @@
+static bool xyz_next_x(FILE *status, real *t, int natoms, rvec x[], matrix box)
+     /* Reads until a new x can be found (return TRUE)
+      * or eof (return FALSE)
+      */
+{
+  extern real tbegin,tend;
+  real pt;
+  
+  pt=*t;
+  while ((tbegin >= 0) && (*t < tbegin)) {
+    if (!do_read_xyz(status,natoms,x,box))
+      return FALSE;
+    printcount(*t);
+    *t+=DT;
+    pt=*t;
+  }
+  if (((tend >= 0) && (*t < tend)) || (tend < 0.0)) {
+    if (!do_read_xyz(status,natoms,x,box)) {
+      printlast(*t);
+      return FALSE;
+    }
+    printcount(*t);
+    pt=*t;
+    *t+=DT;
+    return TRUE;
+  }
+  printlast(pt);
+  return FALSE;
+}

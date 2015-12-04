@@ -1,0 +1,43 @@
+static int
+one_pre_gcse_pass (pass)
+     int pass;
+{
+  int changed = 0;
+
+  gcse_subst_count = 0;
+  gcse_create_count = 0;
+
+  alloc_expr_hash_table (max_cuid);
+  add_noreturn_fake_exit_edges ();
+  if (flag_gcse_lm)
+    compute_ld_motion_mems ();
+
+  compute_expr_hash_table ();
+  trim_ld_motion_mems ();
+  if (gcse_file)
+    dump_hash_table (gcse_file, "Expression", expr_hash_table,
+		     expr_hash_table_size, n_exprs);
+
+  if (n_exprs > 0)
+    {
+      alloc_pre_mem (n_basic_blocks, n_exprs);
+      compute_pre_data ();
+      changed |= pre_gcse ();
+      free_edge_list (edge_list);
+      free_pre_mem ();
+    }
+
+  free_ldst_mems ();
+  remove_fake_edges ();
+  free_expr_hash_table ();
+
+  if (gcse_file)
+    {
+      fprintf (gcse_file, "\nPRE GCSE of %s, pass %d: %d bytes needed, ",
+	       current_function_name, pass, bytes_used);
+      fprintf (gcse_file, "%d substs, %d insns created\n",
+	       gcse_subst_count, gcse_create_count);
+    }
+
+  return changed;
+}

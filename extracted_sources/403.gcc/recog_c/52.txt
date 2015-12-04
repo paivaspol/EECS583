@@ -1,0 +1,24 @@
+int
+peep2_reg_dead_p (ofs, reg)
+     int ofs;
+     rtx reg;
+{
+  int regno, n;
+
+  if (ofs >= MAX_INSNS_PER_PEEP2 + 1)
+    abort ();
+
+  ofs += peep2_current;
+  if (ofs >= MAX_INSNS_PER_PEEP2 + 1)
+    ofs -= MAX_INSNS_PER_PEEP2 + 1;
+
+  if (peep2_insn_data[ofs].insn == NULL_RTX)
+    abort ();
+
+  regno = REGNO (reg);
+  n = HARD_REGNO_NREGS (regno, GET_MODE (reg));
+  while (--n >= 0)
+    if (REGNO_REG_SET_P (peep2_insn_data[ofs].live_before, regno + n))
+      return 0;
+  return 1;
+}

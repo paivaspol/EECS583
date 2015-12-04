@@ -1,0 +1,74 @@
+static void
+schedule_insn (insn, ready, clock)
+     rtx insn;
+     struct ready_list *ready;
+     int clock;
+{
+  rtx link;
+  int unit;
+
+  unit = insn_unit (insn);
+
+  if (sched_verbose >= 2)
+    {
+      fprintf (sched_dump, ";;\t\t--> scheduling insn <<<%d>>> on unit ",
+	       INSN_UID (insn));
+      insn_print_units (insn);
+      fprintf (sched_dump, "\n");
+    }
+
+  if (sched_verbose && unit == -1)
+    visualize_no_unit (insn);
+
+  if (MAX_BLOCKAGE > 1 || issue_rate > 1 || sched_verbose)
+    schedule_unit (unit, insn, clock);
+
+  if (INSN_DEPEND (insn) == 0)
+    return;
+
+  for (link = INSN_DEPEND (insn); link != 0; link = XEXP (link, 1))
+    {
+      rtx next = XEXP (link, 0);
+      int cost = insn_cost (insn, link, next);
+
+      INSN_TICK (next) = MAX (INSN_TICK (next), clock + cost);
+
+      if ((INSN_DEP_COUNT (next) -= 1) == 0)
+	{
+	  int effective_cost = INSN_TICK (next) - clock;
+
+	  if (! (*current_sched_info->new_ready) (next))
+	    continue;
+
+	  if (sched_verbose >= 2)
+	    {
+	      fprintf (sched_dump, ";;\t\tdependences resolved: insn %s ",
+		       (*current_sched_info->print_insn) (next, 0));
+
+	      if (effective_cost < 1)
+		fprintf (sched_dump, "into ready\n");
+	      else
+		fprintf (sched_dump, "into queue with cost=%d\n", effective_cost);
+	    }
+
+	  /* Adjust the priority of NEXT and either put it on the ready
+	     list or queue it.  */
+	  adjust_priority (next);
+	  if (effective_cost < 1)
+	    ready_add (ready, next);
+	  else
+	    queue_insn (next, effective_cost);
+	}
+    }
+
+  /* Annotate the instruction with issue information -- TImode
+     indicates that the instruction is expected not to be able
+     to issue on the same cycle as the previous insn.  A machine
+     may use this information to decide how the instruction should
+     be aligned.  */
+  if (reload_completed && issue_rate > 1)
+    {
+      PUT_MODE (insn, clock > last_clock_var ? TImode : VOIDmode);
+      last_clock_var = clock;
+    }
+}

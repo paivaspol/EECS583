@@ -1,0 +1,14 @@
+static void
+mark_clobber (pat, insn)
+     rtx pat, insn;
+{
+  rtx clob = XEXP (pat, 0);
+
+  while (GET_CODE (clob) == SUBREG || GET_CODE (clob) == STRICT_LOW_PART)
+    clob = XEXP (clob, 0);
+
+  if (GET_CODE (clob) == REG)
+    SET_REGNO_REG_SET (reg_set_bitmap, REGNO (clob));
+  else
+    record_last_mem_set_info (insn);
+}

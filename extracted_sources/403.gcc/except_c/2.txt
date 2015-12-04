@@ -1,0 +1,96 @@
+void
+init_eh ()
+{
+  ggc_add_root (&exception_handler_label_map, 1, 1, mark_ehl_map);
+
+  if (! flag_exceptions)
+    return;
+
+  type_to_runtime_map = htab_create (31, t2r_hash, t2r_eq, NULL);
+  ggc_add_root (&type_to_runtime_map, 1, sizeof (htab_t), t2r_mark);
+
+  /* Create the SjLj_Function_Context structure.  This should match
+     the definition in unwind-sjlj.c.  */
+  if (USING_SJLJ_EXCEPTIONS)
+    {
+      tree f_jbuf, f_per, f_lsda, f_prev, f_cs, f_data, tmp;
+
+      sjlj_fc_type_node = make_lang_type (RECORD_TYPE);
+      ggc_add_tree_root (&sjlj_fc_type_node, 1);
+
+      f_prev = build_decl (FIELD_DECL, get_identifier ("__prev"),
+			   build_pointer_type (sjlj_fc_type_node));
+      DECL_FIELD_CONTEXT (f_prev) = sjlj_fc_type_node;
+
+      f_cs = build_decl (FIELD_DECL, get_identifier ("__call_site"),
+			 integer_type_node);
+      DECL_FIELD_CONTEXT (f_cs) = sjlj_fc_type_node;
+
+      tmp = build_index_type (build_int_2 (4 - 1, 0));
+      tmp = build_array_type (type_for_mode (word_mode, 1), tmp);
+      f_data = build_decl (FIELD_DECL, get_identifier ("__data"), tmp);
+      DECL_FIELD_CONTEXT (f_data) = sjlj_fc_type_node;
+
+      f_per = build_decl (FIELD_DECL, get_identifier ("__personality"),
+			  ptr_type_node);
+      DECL_FIELD_CONTEXT (f_per) = sjlj_fc_type_node;
+
+      f_lsda = build_decl (FIELD_DECL, get_identifier ("__lsda"),
+			   ptr_type_node);
+      DECL_FIELD_CONTEXT (f_lsda) = sjlj_fc_type_node;
+
+#ifdef DONT_USE_BUILTIN_SETJMP
+#ifdef JMP_BUF_SIZE
+      tmp = build_int_2 (JMP_BUF_SIZE - 1, 0);
+#else
+      /* Should be large enough for most systems, if it is not,
+	 JMP_BUF_SIZE should be defined with the proper value.  It will
+	 also tend to be larger than necessary for most systems, a more
+	 optimal port will define JMP_BUF_SIZE.  */
+      tmp = build_int_2 (FIRST_PSEUDO_REGISTER + 2 - 1, 0);
+#endif
+#else
+      /* This is 2 for builtin_setjmp, plus whatever the target requires
+	 via STACK_SAVEAREA_MODE (SAVE_NONLOCAL).  */
+      tmp = build_int_2 ((GET_MODE_SIZE (STACK_SAVEAREA_MODE (SAVE_NONLOCAL))
+			  / GET_MODE_SIZE (Pmode)) + 2 - 1, 0);
+#endif
+      tmp = build_index_type (tmp);
+      tmp = build_array_type (ptr_type_node, tmp);
+      f_jbuf = build_decl (FIELD_DECL, get_identifier ("__jbuf"), tmp);
+#ifdef DONT_USE_BUILTIN_SETJMP
+      /* We don't know what the alignment requirements of the
+	 runtime's jmp_buf has.  Overestimate.  */
+      DECL_ALIGN (f_jbuf) = BIGGEST_ALIGNMENT;
+      DECL_USER_ALIGN (f_jbuf) = 1;
+#endif
+      DECL_FIELD_CONTEXT (f_jbuf) = sjlj_fc_type_node;
+
+      TYPE_FIELDS (sjlj_fc_type_node) = f_prev;
+      TREE_CHAIN (f_prev) = f_cs;
+      TREE_CHAIN (f_cs) = f_data;
+      TREE_CHAIN (f_data) = f_per;
+      TREE_CHAIN (f_per) = f_lsda;
+      TREE_CHAIN (f_lsda) = f_jbuf;
+
+      layout_type (sjlj_fc_type_node);
+
+      /* Cache the interesting field offsets so that we have
+	 easy access from rtl.  */
+      sjlj_fc_call_site_ofs
+	= (tree_low_cst (DECL_FIELD_OFFSET (f_cs), 1)
+	   + tree_low_cst (DECL_FIELD_BIT_OFFSET (f_cs), 1) / BITS_PER_UNIT);
+      sjlj_fc_data_ofs
+	= (tree_low_cst (DECL_FIELD_OFFSET (f_data), 1)
+	   + tree_low_cst (DECL_FIELD_BIT_OFFSET (f_data), 1) / BITS_PER_UNIT);
+      sjlj_fc_personality_ofs
+	= (tree_low_cst (DECL_FIELD_OFFSET (f_per), 1)
+	   + tree_low_cst (DECL_FIELD_BIT_OFFSET (f_per), 1) / BITS_PER_UNIT);
+      sjlj_fc_lsda_ofs
+	= (tree_low_cst (DECL_FIELD_OFFSET (f_lsda), 1)
+	   + tree_low_cst (DECL_FIELD_BIT_OFFSET (f_lsda), 1) / BITS_PER_UNIT);
+      sjlj_fc_jbuf_ofs
+	= (tree_low_cst (DECL_FIELD_OFFSET (f_jbuf), 1)
+	   + tree_low_cst (DECL_FIELD_BIT_OFFSET (f_jbuf), 1) / BITS_PER_UNIT);
+    }
+}

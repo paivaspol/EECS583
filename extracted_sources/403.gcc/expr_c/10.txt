@@ -1,0 +1,36 @@
+static unsigned HOST_WIDE_INT
+move_by_pieces_ninsns (l, align)
+     unsigned HOST_WIDE_INT l;
+     unsigned int align;
+{
+  unsigned HOST_WIDE_INT n_insns = 0;
+  unsigned HOST_WIDE_INT max_size = MOVE_MAX + 1;
+
+  if (! SLOW_UNALIGNED_ACCESS (word_mode, align)
+      || align > MOVE_MAX * BITS_PER_UNIT || align >= BIGGEST_ALIGNMENT)
+    align = MOVE_MAX * BITS_PER_UNIT;
+
+  while (max_size > 1)
+    {
+      enum machine_mode mode = VOIDmode, tmode;
+      enum insn_code icode;
+
+      for (tmode = GET_CLASS_NARROWEST_MODE (MODE_INT);
+	   tmode != VOIDmode; tmode = GET_MODE_WIDER_MODE (tmode))
+	if (GET_MODE_SIZE (tmode) < max_size)
+	  mode = tmode;
+
+      if (mode == VOIDmode)
+	break;
+
+      icode = mov_optab->handlers[(int) mode].insn_code;
+      if (icode != CODE_FOR_nothing && align >= GET_MODE_ALIGNMENT (mode))
+	n_insns += l / GET_MODE_SIZE (mode), l %= GET_MODE_SIZE (mode);
+
+      max_size = GET_MODE_SIZE (mode);
+    }
+
+  if (l)
+    abort ();
+  return n_insns;
+}

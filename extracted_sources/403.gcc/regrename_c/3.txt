@@ -1,0 +1,42 @@
+static void
+merge_overlapping_regs (b, pset, chain)
+     basic_block b;
+     HARD_REG_SET *pset;
+     struct du_chain *chain;
+{
+  struct du_chain *t = chain;
+  rtx insn;
+  HARD_REG_SET live;
+
+  REG_SET_TO_HARD_REG_SET (live, b->global_live_at_start);
+  insn = b->head;
+  while (t)
+    {
+      /* Search forward until the next reference to the register to be
+	 renamed.  */
+      while (insn != t->insn)
+	{
+	  if (INSN_P (insn))
+	    {
+	      clear_dead_regs (&live, REG_DEAD, REG_NOTES (insn));
+	      note_stores (PATTERN (insn), note_sets, (void *) &live);
+	      /* Only record currently live regs if we are inside the
+		 reg's live range.  */
+	      if (t != chain)
+		IOR_HARD_REG_SET (*pset, live);
+	      clear_dead_regs (&live, REG_UNUSED, REG_NOTES (insn));  
+	    }
+	  insn = NEXT_INSN (insn);
+	}
+
+      IOR_HARD_REG_SET (*pset, live);
+
+      /* For the last reference, also merge in all registers set in the
+	 same insn.
+	 @@@ We only have take earlyclobbered sets into account.  */
+      if (! t->next_use)
+	note_stores (PATTERN (insn), note_sets, (void *) pset);
+
+      t = t->next_use;
+    }
+}

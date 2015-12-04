@@ -1,0 +1,47 @@
+void
+df_refs_reg_replace (df, blocks, chain, oldreg, newreg)
+     struct df *df;
+     bitmap blocks;
+     struct df_link *chain;
+     rtx oldreg;
+     rtx newreg;
+{
+  struct df_link *link;
+  replace_args args;
+
+  if (! blocks)
+    blocks = df->all_blocks;
+
+  args.match = oldreg;
+  args.replacement = newreg;
+  args.modified = 0;
+
+  for (link = chain; link; link = link->next)
+    {
+      struct ref *ref = link->ref;
+      rtx insn = DF_REF_INSN (ref);
+
+      if (! INSN_P (insn))
+	continue;
+
+      if (bitmap_bit_p (blocks, DF_REF_BBNO (ref)))
+	{
+	  df_ref_reg_replace (df, ref, oldreg, newreg);
+
+	  /* Replace occurrences of the reg within the REG_NOTES.  */
+	  if ((! link->next || DF_REF_INSN (ref)
+	      != DF_REF_INSN (link->next->ref))
+	      && REG_NOTES (insn))
+	    {
+	      args.insn = insn;
+	      for_each_rtx (&REG_NOTES (insn), df_rtx_reg_replace, &args);
+	    }
+	}
+      else
+	{
+	  /* Temporary check to ensure that we have a grip on which
+	     regs should be replaced.  */
+	  abort ();
+	}
+    }
+}

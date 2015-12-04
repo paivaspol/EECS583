@@ -1,0 +1,54 @@
+int
+_cpp_begin_message (pfile, code, line, column)
+     cpp_reader *pfile;
+     enum error_type code;
+     unsigned int line, column;
+{
+  int is_warning = 0;
+
+  switch (code)
+    {
+    case PEDWARN:
+    case WARNING:
+      if (CPP_IN_SYSTEM_HEADER (pfile)
+	  && ! CPP_OPTION (pfile, warn_system_headers))
+	return 0;
+    case WARNING_SYSHDR:
+      if (CPP_OPTION (pfile, warnings_are_errors)
+	  || (code == PEDWARN && CPP_OPTION (pfile, pedantic_errors)))
+	{
+	  if (CPP_OPTION (pfile, inhibit_errors))
+	    return 0;
+	  if (pfile->errors < CPP_FATAL_LIMIT)
+	    pfile->errors++;
+	}
+      else
+	{
+          if (CPP_OPTION (pfile, inhibit_warnings))
+	    return 0;
+	  is_warning = 1;
+	}
+      break;
+	
+    case ERROR:
+      if (CPP_OPTION (pfile, inhibit_errors))
+	return 0;
+      if (pfile->errors < CPP_FATAL_LIMIT)
+	pfile->errors++;
+      break;
+      /* Fatal errors cannot be inhibited.  */
+    case FATAL:
+      pfile->errors = CPP_FATAL_LIMIT;
+      break;
+    case ICE:
+      fprintf (stderr, _("internal error: "));
+      pfile->errors = CPP_FATAL_LIMIT;
+      break;
+    }
+
+  print_location (pfile, line, column);
+  if (is_warning)
+    fputs (_("warning: "), stderr);
+
+  return 1;
+}

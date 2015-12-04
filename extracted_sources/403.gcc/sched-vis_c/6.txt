@@ -1,0 +1,87 @@
+static void
+print_value (buf, x, verbose)
+     char *buf;
+     rtx x;
+     int verbose;
+{
+  char t[BUF_LEN];
+  char *cur = buf;
+
+  switch (GET_CODE (x))
+    {
+    case CONST_INT:
+      sprintf (t, HOST_WIDE_INT_PRINT_HEX, INTVAL (x));
+      cur = safe_concat (buf, cur, t);
+      break;
+    case CONST_DOUBLE:
+      sprintf (t, "<0x%lx,0x%lx>", (long) XWINT (x, 2), (long) XWINT (x, 3));
+      cur = safe_concat (buf, cur, t);
+      break;
+    case CONST_STRING:
+      cur = safe_concat (buf, cur, "\"");
+      cur = safe_concat (buf, cur, XSTR (x, 0));
+      cur = safe_concat (buf, cur, "\"");
+      break;
+    case SYMBOL_REF:
+      cur = safe_concat (buf, cur, "`");
+      cur = safe_concat (buf, cur, XSTR (x, 0));
+      cur = safe_concat (buf, cur, "'");
+      break;
+    case LABEL_REF:
+      sprintf (t, "L%d", INSN_UID (XEXP (x, 0)));
+      cur = safe_concat (buf, cur, t);
+      break;
+    case CONST:
+      print_value (t, XEXP (x, 0), verbose);
+      cur = safe_concat (buf, cur, "const(");
+      cur = safe_concat (buf, cur, t);
+      cur = safe_concat (buf, cur, ")");
+      break;
+    case HIGH:
+      print_value (t, XEXP (x, 0), verbose);
+      cur = safe_concat (buf, cur, "high(");
+      cur = safe_concat (buf, cur, t);
+      cur = safe_concat (buf, cur, ")");
+      break;
+    case REG:
+      if (REGNO (x) < FIRST_PSEUDO_REGISTER)
+	{
+	  int c = reg_names[REGNO (x)][0];
+	  if (ISDIGIT (c))
+	    cur = safe_concat (buf, cur, "%");
+
+	  cur = safe_concat (buf, cur, reg_names[REGNO (x)]);
+	}
+      else
+	{
+	  sprintf (t, "r%d", REGNO (x));
+	  cur = safe_concat (buf, cur, t);
+	}
+      break;
+    case SUBREG:
+      print_value (t, SUBREG_REG (x), verbose);
+      cur = safe_concat (buf, cur, t);
+      sprintf (t, "#%d", SUBREG_BYTE (x));
+      cur = safe_concat (buf, cur, t);
+      break;
+    case SCRATCH:
+      cur = safe_concat (buf, cur, "scratch");
+      break;
+    case CC0:
+      cur = safe_concat (buf, cur, "cc0");
+      break;
+    case PC:
+      cur = safe_concat (buf, cur, "pc");
+      break;
+    case MEM:
+      print_value (t, XEXP (x, 0), verbose);
+      cur = safe_concat (buf, cur, "[");
+      cur = safe_concat (buf, cur, t);
+      cur = safe_concat (buf, cur, "]");
+      break;
+    default:
+      print_exp (t, x, verbose);
+      cur = safe_concat (buf, cur, t);
+      break;
+    }
+}				/* print_value */

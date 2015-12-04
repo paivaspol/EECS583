@@ -1,0 +1,64 @@
+void
+ix86_expand_move (mode, operands)
+     enum machine_mode mode;
+     rtx operands[];
+{
+  int strict = (reload_in_progress || reload_completed);
+  rtx insn;
+
+  if (flag_pic && mode == Pmode && symbolic_operand (operands[1], Pmode))
+    {
+      /* Emit insns to move operands[1] into operands[0].  */
+
+      if (GET_CODE (operands[0]) == MEM)
+	operands[1] = force_reg (Pmode, operands[1]);
+      else
+	{
+	  rtx temp = operands[0];
+	  if (GET_CODE (temp) != REG)
+	    temp = gen_reg_rtx (Pmode);
+	  temp = legitimize_pic_address (operands[1], temp);
+	  if (temp == operands[0])
+	    return;
+	  operands[1] = temp;
+	}
+    }
+  else
+    {
+      if (GET_CODE (operands[0]) == MEM
+	  && (PUSH_ROUNDING (GET_MODE_SIZE (mode)) != GET_MODE_SIZE (mode)
+	      || !push_operand (operands[0], mode))
+	  && GET_CODE (operands[1]) == MEM)
+	operands[1] = force_reg (mode, operands[1]);
+
+      if (push_operand (operands[0], mode)
+	  && ! general_no_elim_operand (operands[1], mode))
+	operands[1] = copy_to_mode_reg (mode, operands[1]);
+
+      /* Force large constants in 64bit compilation into register
+	 to get them CSEed.  */
+      if (TARGET_64BIT && mode == DImode
+	  && immediate_operand (operands[1], mode)
+	  && !x86_64_zero_extended_value (operands[1])
+	  && !register_operand (operands[0], mode)
+	  && optimize && !reload_completed && !reload_in_progress)
+	operands[1] = copy_to_mode_reg (mode, operands[1]);
+
+      if (FLOAT_MODE_P (mode))
+	{
+	  /* If we are loading a floating point constant to a register,
+	     force the value to memory now, since we'll get better code
+	     out the back end.  */
+
+	  if (strict)
+	    ;
+	  else if (GET_CODE (operands[1]) == CONST_DOUBLE
+		   && register_operand (operands[0], mode))
+	    operands[1] = validize_mem (force_const_mem (mode, operands[1]));
+	}
+    }
+
+  insn = gen_rtx_SET (VOIDmode, operands[0], operands[1]);
+
+  emit_insn (insn);
+}

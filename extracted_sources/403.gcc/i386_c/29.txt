@@ -1,0 +1,22 @@
+int
+ix86_return_in_memory (type)
+     tree type;
+{
+  int needed_intregs, needed_sseregs;
+  if (TARGET_64BIT)
+    {
+      return !examine_argument (TYPE_MODE (type), type, 1,
+				&needed_intregs, &needed_sseregs);
+    }
+  else
+    {
+      if (TYPE_MODE (type) == BLKmode
+	  || (VECTOR_MODE_P (TYPE_MODE (type))
+	      && int_size_in_bytes (type) == 8)
+	  || (int_size_in_bytes (type) > 12 && TYPE_MODE (type) != TImode
+	      && TYPE_MODE (type) != TFmode
+	      && !VECTOR_MODE_P (TYPE_MODE (type))))
+	return 1;
+      return 0;
+    }
+}

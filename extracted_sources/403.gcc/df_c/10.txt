@@ -1,0 +1,41 @@
+static struct df_link *
+df_ref_unlink (phead, ref)
+     struct df_link **phead;
+     struct ref *ref;
+{
+  struct df_link *link = *phead;
+
+  if (link)
+    {
+      if (! link->next)
+	{
+	  /* Only a single ref.  It must be the one we want.
+	     If not, the def-use and use-def chains are likely to
+	     be inconsistent.  */
+	  if (link->ref != ref)
+	    abort ();
+	  /* Now have an empty chain.  */
+	  *phead = NULL;
+	}
+      else
+	{
+	  /* Multiple refs.  One of them must be us.  */
+	  if (link->ref == ref)
+	    *phead = link->next;
+	  else
+	    {
+	      /* Follow chain.  */
+	      for (; link->next; link = link->next)
+		{
+		  if (link->next->ref == ref)
+		    {
+		      /* Unlink from list.  */
+		      link->next = link->next->next;
+		      return link->next;
+		    }
+		}
+	    }
+	}
+    }
+  return link;
+}

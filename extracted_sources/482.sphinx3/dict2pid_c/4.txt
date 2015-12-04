@@ -1,0 +1,65 @@
+static s3ssid_t ssidlist2comsseq (glist_t g, mdef_t *mdef, dict2pid_t *dict2pid,
+				  hash_table_t *hs,	/* For composite states */
+				  hash_table_t *hp)	/* For composite senone seq */
+{
+    int32 i, j, n, s, ssid;
+    s3senid_t **sen;
+    s3senid_t *comsenid;
+    gnode_t *gn;
+    
+    n = glist_count (g);
+    if (n <= 0)
+	E_FATAL("Panic: length(ssidlist)= %d\n", n);
+    
+    /* Space for list of senones for each state, derived from the given glist */
+    sen = (s3senid_t **) ckd_calloc (mdef_n_emit_state (mdef), sizeof(s3senid_t *));
+    for (i = 0; i < mdef_n_emit_state (mdef); i++) {
+	sen[i] = (s3senid_t *) ckd_calloc (n+1, sizeof(s3senid_t));
+	sen[i][0] = BAD_S3SENID;	/* Sentinel */
+    }
+    /* Space for composite senone ID for each state position */
+    comsenid = (s3senid_t *) ckd_calloc (mdef_n_emit_state (mdef), sizeof(s3senid_t));
+    
+    for (gn = g; gn; gn = gnode_next(gn)) {
+	ssid = gnode_int32 (gn);
+	
+	/* Expand ssid into individual states (senones); insert in sen[][] if not present */
+	for (i = 0; i < mdef_n_emit_state (mdef); i++) {
+	    s = mdef->sseq[ssid][i];
+	    
+	    for (j = 0; (IS_S3SENID(sen[i][j])) && (sen[i][j] != s); j++);
+	    if (NOT_S3SENID(sen[i][j])) {
+		sen[i][j] = s;
+		sen[i][j+1] = BAD_S3SENID;
+	    }
+	}
+    }
+    
+    /* Convert senones list for each state position into composite state */
+    for (i = 0; i < mdef_n_emit_state (mdef); i++) {
+	for (j = 0; IS_S3SENID(sen[i][j]); j++);
+	assert (j > 0);
+	
+	j = hash_enter_bkey (hs, (char *)(sen[i]), j*sizeof(s3senid_t), dict2pid->n_comstate);
+	if (j == dict2pid->n_comstate)
+	    dict2pid->n_comstate++;	/* New composite state */
+	else
+	    ckd_free ((void *) sen[i]);
+	
+	comsenid[i] = j;
+    }
+    ckd_free (sen);
+    
+    /* Convert sequence of composite senids to composite sseq ID */
+    j = hash_enter_bkey (hp, (char *)comsenid, mdef->n_emit_state * sizeof(s3senid_t),
+			 dict2pid->n_comsseq);
+    if (j == dict2pid->n_comsseq) {
+	dict2pid->n_comsseq++;
+	if (dict2pid->n_comsseq >= MAX_S3SENID)
+	    E_FATAL("#Composite sseq limit(%d) reached; increase MAX_S3SENID\n",
+		    dict2pid->n_comsseq);
+    } else
+	ckd_free ((void *) comsenid);
+    
+    return ((s3ssid_t)j);
+}

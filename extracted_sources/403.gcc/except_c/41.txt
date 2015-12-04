@@ -1,0 +1,14 @@
+static void
+add_type_for_runtime (type)
+     tree type;
+{
+  tree *slot;
+
+  slot = (tree *) htab_find_slot_with_hash (type_to_runtime_map, type,
+					    TYPE_HASH (type), INSERT);
+  if (*slot == NULL)
+    {
+      tree runtime = (*lang_eh_runtime_type) (type);
+      *slot = tree_cons (type, runtime, NULL_TREE);
+    }
+}

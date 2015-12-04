@@ -1,0 +1,41 @@
+static tree
+negate_expr (t)
+     tree t;
+{
+  tree type;
+  tree tem;
+
+  if (t == 0)
+    return 0;
+
+  type = TREE_TYPE (t);
+  STRIP_SIGN_NOPS (t);
+
+  switch (TREE_CODE (t))
+    {
+    case INTEGER_CST:
+    case REAL_CST:
+      if (! TREE_UNSIGNED (type)
+	  && 0 != (tem = fold (build1 (NEGATE_EXPR, type, t)))
+	  && ! TREE_OVERFLOW (tem))
+	return tem;
+      break;
+
+    case NEGATE_EXPR:
+      return convert (type, TREE_OPERAND (t, 0));
+
+    case MINUS_EXPR:
+      /* - (A - B) -> B - A  */
+      if (! FLOAT_TYPE_P (type) || flag_unsafe_math_optimizations)
+	return convert (type,
+			fold (build (MINUS_EXPR, TREE_TYPE (t),
+				     TREE_OPERAND (t, 1),
+				     TREE_OPERAND (t, 0))));
+      break;
+
+    default:
+      break;
+    }
+
+  return convert (type, fold (build1 (NEGATE_EXPR, TREE_TYPE (t), t)));
+}

@@ -1,0 +1,75 @@
+void write_g96_conf(FILE *out,t_trxframe *fr,
+		    int nindex,atom_id *index)
+{
+  t_atoms *atoms;
+  int nout,i,a;
+  
+  atoms = fr->atoms;
+
+  if (index)
+    nout = nindex;
+  else
+    nout = fr->natoms; 
+
+  if (fr->bTitle)
+    fprintf(out,"TITLE\n%s\nEND\n",fr->title);
+  if (fr->bStep || fr->bTime)
+    /* Officially the time format is %15.9, which is not enough for 10 ns */
+    fprintf(out,"TIMESTEP\n%15d%15.6f\nEND\n",fr->step,fr->time);
+  if (fr->bX) {
+    if (fr->bAtoms) {
+      fprintf(out,"POSITION\n");
+      for(i=0; i<nout; i++) {
+	if (index) a = index[i]; else a = i;
+	fprintf(out,"%5d %-5s %-5s%7d%15.9f%15.9f%15.9f\n",
+		atoms->atom[a].resnr+1,*atoms->resname[atoms->atom[a].resnr],
+		*atoms->atomname[a],i+1,
+		fr->x[a][XX],fr->x[a][YY],fr->x[a][ZZ]);
+      }
+    } else {
+      fprintf(out,"POSITIONRED\n");
+      for(i=0; i<nout; i++) {
+	if (index) a = index[i]; else a = i;
+	fprintf(out,"%15.9f%15.9f%15.9f\n",
+		fr->x[a][XX],fr->x[a][YY],fr->x[a][ZZ]);
+      }
+    }
+    fprintf(out,"END\n");
+  }
+  if (fr->bV) {
+    if (atoms) {
+      fprintf(out,"VELOCITY\n");
+      for(i=0; i<nout; i++) {
+	if (index) a = index[i]; else a = i;
+	fprintf(out,"%5d %-5s %-5s%7d%15.9f%15.9f%15.9f\n",
+		atoms->atom[a].resnr+1,*atoms->resname[atoms->atom[a].resnr],
+		*atoms->atomname[a],i+1,
+		fr->v[a][XX],fr->v[a][YY],fr->v[a][ZZ]);
+      }
+    } else {
+      fprintf(out,"VELOCITYRED\n");
+      for(i=0; i<nout; i++) {
+	if (index) a = index[i]; else a = i;
+	fprintf(out,"%15.9f%15.9f%15.9f\n",
+		fr->v[a][XX],fr->v[a][YY],fr->v[a][ZZ]);
+      }
+    }
+    fprintf(out,"END\n");
+  }
+  if (fr->bBox) {
+    fprintf(out,"BOX\n");
+    fprintf(out,"%15.9f%15.9f%15.9f",
+	    fr->box[XX][XX],fr->box[YY][YY],fr->box[ZZ][ZZ]);
+    if (fabs(fr->box[XX][YY]) > GMX_REAL_MIN || 
+	fabs(fr->box[XX][ZZ]) > GMX_REAL_MIN || 
+	fabs(fr->box[YY][XX]) > GMX_REAL_MIN ||
+	fabs(fr->box[YY][ZZ]) > GMX_REAL_MIN || 
+	fabs(fr->box[ZZ][XX]) > GMX_REAL_MIN ||
+	fabs(fr->box[ZZ][YY]) > GMX_REAL_MIN)
+      fprintf(out,"%15.9f%15.9f%15.9f%15.9f%15.9f%15.9f",
+	      fr->box[XX][YY],fr->box[XX][ZZ],fr->box[YY][XX],
+	      fr->box[YY][ZZ],fr->box[ZZ][XX],fr->box[ZZ][YY]);
+    fprintf(out,"\n");
+    fprintf(out,"END\n");
+  }
+}

@@ -1,0 +1,38 @@
+void pr_difftime(FILE *out,double dt)
+{
+  int    ndays,nhours,nmins,nsecs;
+  bool   bPrint,bPrinted;
+
+  ndays = dt/(24*3600);
+  dt    = dt-24*3600*ndays;
+  nhours= dt/3600;
+  dt    = dt-3600*nhours;
+  nmins = dt/60;
+  dt    = dt-nmins*60;
+  nsecs = dt;
+  bPrint= (ndays > 0);
+  bPrinted=bPrint;
+  if (bPrint) 
+    fprintf(out,"%d",ndays);
+  bPrint=bPrint || (nhours > 0);
+  if (bPrint) {
+    if (bPrinted)
+      pr_two(out,'d',nhours);
+    else 
+      fprintf(out,"%d",nhours);
+  }
+  bPrinted=bPrinted || bPrint;
+  bPrint=bPrint || (nmins > 0);
+  if (bPrint) {
+    if (bPrinted)
+      pr_two(out,'h',nmins);
+    else 
+      fprintf(out,"%d",nmins);
+  }
+  bPrinted=bPrinted || bPrint;
+  if (bPrinted)
+    pr_two(out,':',nsecs);
+  else
+    fprintf(out,"%ds",nsecs);
+  fprintf(out,"\n");
+}

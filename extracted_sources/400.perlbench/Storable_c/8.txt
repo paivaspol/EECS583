@@ -1,0 +1,45 @@
+static void clean_retrieve_context(pTHX_ stcxt_t *cxt)
+{
+	TRACEME(("clean_retrieve_context"));
+
+	ASSERT(cxt->optype & ST_RETRIEVE, ("was performing a retrieve()"));
+
+	if (cxt->aseen) {
+		AV *aseen = cxt->aseen;
+		cxt->aseen = 0;
+		av_undef(aseen);
+		sv_free((SV *) aseen);
+	}
+	cxt->where_is_undef = -1;
+
+	if (cxt->aclass) {
+		AV *aclass = cxt->aclass;
+		cxt->aclass = 0;
+		av_undef(aclass);
+		sv_free((SV *) aclass);
+	}
+
+	if (cxt->hook) {
+		HV *hook = cxt->hook;
+		cxt->hook = 0;
+		hv_undef(hook);
+		sv_free((SV *) hook);
+	}
+
+	if (cxt->hseen) {
+		HV *hseen = cxt->hseen;
+		cxt->hseen = 0;
+		hv_undef(hseen);
+		sv_free((SV *) hseen);		/* optional HV, for backward compat. */
+	}
+
+#ifndef HAS_RESTRICTED_HASHES
+        cxt->derestrict = -1;		/* Fetched from perl if needed */
+#endif
+#ifndef HAS_UTF8_ALL
+        cxt->use_bytes = -1;		/* Fetched from perl if needed */
+#endif
+        cxt->accept_future_minor = -1;	/* Fetched from perl if needed */
+
+	reset_context(cxt);
+}

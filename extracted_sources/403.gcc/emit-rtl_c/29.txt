@@ -1,0 +1,12 @@
+static void
+unshare_all_rtl_1 (insn)
+     rtx insn;
+{
+  for (; insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn))
+      {
+	PATTERN (insn) = copy_rtx_if_shared (PATTERN (insn));
+	REG_NOTES (insn) = copy_rtx_if_shared (REG_NOTES (insn));
+	LOG_LINKS (insn) = copy_rtx_if_shared (LOG_LINKS (insn));
+      }
+}

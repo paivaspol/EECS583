@@ -1,0 +1,87 @@
+static tree
+grokparms (parms_info, funcdef_flag)
+     tree parms_info;
+     int funcdef_flag;
+{
+  tree first_parm = TREE_CHAIN (parms_info);
+
+  last_function_parms = TREE_PURPOSE (parms_info);
+  last_function_parm_tags = TREE_VALUE (parms_info);
+
+  if (warn_strict_prototypes && first_parm == 0 && !funcdef_flag
+      && !in_system_header)
+    warning ("function declaration isn't a prototype");
+
+  if (first_parm != 0
+      && TREE_CODE (TREE_VALUE (first_parm)) == IDENTIFIER_NODE)
+    {
+      if (! funcdef_flag)
+	pedwarn ("parameter names (without types) in function declaration");
+
+      last_function_parms = first_parm;
+      return 0;
+    }
+  else
+    {
+      tree parm;
+      tree typelt;
+      /* We no longer test FUNCDEF_FLAG.
+	 If the arg types are incomplete in a declaration,
+	 they must include undefined tags.
+	 These tags can never be defined in the scope of the declaration,
+	 so the types can never be completed,
+	 and no call can be compiled successfully.  */
+#if 0
+      /* In a fcn definition, arg types must be complete.  */
+      if (funcdef_flag)
+#endif
+	for (parm = last_function_parms, typelt = first_parm;
+	     parm;
+	     parm = TREE_CHAIN (parm))
+	  /* Skip over any enumeration constants declared here.  */
+	  if (TREE_CODE (parm) == PARM_DECL)
+	    {
+	      /* Barf if the parameter itself has an incomplete type.  */
+	      tree type = TREE_VALUE (typelt);
+	      if (type == error_mark_node)
+		continue;
+	      if (!COMPLETE_TYPE_P (type))
+		{
+		  if (funcdef_flag && DECL_NAME (parm) != 0)
+		    error ("parameter `%s' has incomplete type",
+			   IDENTIFIER_POINTER (DECL_NAME (parm)));
+		  else
+		    warning ("parameter has incomplete type");
+		  if (funcdef_flag)
+		    {
+		      TREE_VALUE (typelt) = error_mark_node;
+		      TREE_TYPE (parm) = error_mark_node;
+		    }
+		}
+#if 0
+	      /* This has been replaced by parm_tags_warning, which
+		 uses a more accurate criterion for what to warn
+		 about.  */
+	      else
+		{
+		  /* Now warn if is a pointer to an incomplete type.  */
+		  while (TREE_CODE (type) == POINTER_TYPE
+			 || TREE_CODE (type) == REFERENCE_TYPE)
+		    type = TREE_TYPE (type);
+		  type = TYPE_MAIN_VARIANT (type);
+		  if (!COMPLETE_TYPE_P (type))
+		    {
+		      if (DECL_NAME (parm) != 0)
+			warning ("parameter `%s' points to incomplete type",
+				 IDENTIFIER_POINTER (DECL_NAME (parm)));
+		      else
+			warning ("parameter points to incomplete type");
+		    }
+		}
+#endif
+	      typelt = TREE_CHAIN (typelt);
+	    }
+
+      return first_parm;
+    }
+}

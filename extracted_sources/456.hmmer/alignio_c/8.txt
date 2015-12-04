@@ -1,0 +1,90 @@
+int
+WritePairwiseAlignment(FILE *ofp,
+		       char *aseq1, char *name1, int spos1,
+		       char *aseq2, char *name2, int spos2,
+		       int **pam, int indent)
+{
+  char sname1[11];              /* shortened name               */
+  char sname2[11];             
+  int  still_going;		/* True if writing another block */
+  char buf1[61];		/* buffer for writing seq1; CPL+1*/
+  char bufmid[61];              /* buffer for writing consensus  */
+  char buf2[61];
+  char *s1, *s2;                /* ptrs into each sequence          */
+  int  count1, count2;		/* number of symbols we're writing  */
+  int  rpos1, rpos2;		/* position in raw seqs             */
+  int  rawcount1, rawcount2;	/* number of nongap symbols written */
+  int  apos;
+
+  strncpy(sname1, name1, 10);
+  sname1[10] = '\0';
+  strtok(sname1, WHITESPACE);
+
+  strncpy(sname2, name2, 10);
+  sname2[10] = '\0';
+  strtok(sname2, WHITESPACE);
+
+  s1 = aseq1; 
+  s2 = aseq2;
+  rpos1 = spos1;
+  rpos2 = spos2;
+
+  still_going = TRUE;
+  while (still_going)
+    {
+      still_going = FALSE;
+      
+				/* get next line's worth from both */
+      strncpy(buf1, s1, 60); buf1[60] = '\0';
+      strncpy(buf2, s2, 60); buf2[60] = '\0';
+      count1 = strlen(buf1);
+      count2 = strlen(buf2);
+
+				/* is there still more to go? */
+      if ((count1 == 60 && s1[60] != '\0') ||
+	  (count2 == 60 && s2[60] != '\0'))
+	still_going = TRUE;
+
+				/* shift seq ptrs by a line */
+      s1 += count1;
+      s2 += count2;
+
+				/* assemble the consensus line */
+      for (apos = 0; apos < count1 && apos < count2; apos++)
+	{
+	  if (!isgap(buf1[apos]) && !isgap(buf2[apos]))
+	    {
+	      if (buf1[apos] == buf2[apos])
+		bufmid[apos] = buf1[apos];
+	      else if (pam[buf1[apos] - 'A'][buf2[apos] - 'A'] > 0)
+		bufmid[apos] = '+';
+	      else
+		bufmid[apos] = ' ';
+	    }
+	  else
+	    bufmid[apos] = ' ';
+	}
+      bufmid[apos] = '\0';
+
+      rawcount1 = 0;
+      for (apos = 0; apos < count1; apos++)
+	if (!isgap(buf1[apos])) rawcount1++;
+      
+      rawcount2 = 0;
+      for (apos = 0; apos < count2; apos++)
+	if (!isgap(buf2[apos])) rawcount2++;
+
+      (void) fprintf(ofp, "%*s%-10.10s %5d %s %5d\n", indent, "", 
+		     sname1, rpos1, buf1, rpos1 + rawcount1 -1);
+      (void) fprintf(ofp, "%*s                 %s\n", indent, "",
+		     bufmid);
+      (void) fprintf(ofp, "%*s%-10.10s %5d %s %5d\n", indent, "", 
+		     sname2, rpos2, buf2, rpos2 + rawcount2 -1);
+      (void) fprintf(ofp, "\n");
+
+      rpos1 += rawcount1;
+      rpos2 += rawcount2;
+    }
+
+  return 1;
+}

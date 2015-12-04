@@ -1,0 +1,15 @@
+void init_groups(FILE *log,t_mdatoms *md,t_grpopts *opts,t_groups *grps)
+{
+  int i;
+#ifdef DEBUG
+  fprintf(log,"ngtc: %d, ngacc: %d, ngener: %d\n",opts->ngtc,opts->ngacc,
+	  opts->ngener);
+#endif
+  snew(grps->tcstat,opts->ngtc);
+  init_grptcstat(opts->ngtc,grps->tcstat);
+  
+  snew(grps->grpstat,opts->ngacc);
+  init_grpstat(log,md,opts->ngacc,grps->grpstat);
+  
+  init_grpener(log,opts->ngener,&grps->estat);
+}

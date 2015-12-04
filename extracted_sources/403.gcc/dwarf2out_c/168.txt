@@ -1,0 +1,329 @@
+static dw_loc_descr_ref
+loc_descriptor_from_tree (loc, addressp)
+     tree loc;
+     int addressp;
+{
+  dw_loc_descr_ref ret, ret1;
+  int indirect_p = 0;
+  int unsignedp = TREE_UNSIGNED (TREE_TYPE (loc));
+  enum dwarf_location_atom op;
+
+  /* ??? Most of the time we do not take proper care for sign/zero
+     extending the values properly.  Hopefully this won't be a real
+     problem...  */
+
+  switch (TREE_CODE (loc))
+    {
+    case ERROR_MARK:
+      return 0;
+
+    case WITH_RECORD_EXPR:
+    case PLACEHOLDER_EXPR:
+      /* This case involves extracting fields from an object to determine the
+	 position of other fields.  We don't try to encode this here.  The
+	 only user of this is Ada, which encodes the needed information using
+	 the names of types.  */
+      return 0;
+
+    case CALL_EXPR:
+      return 0;
+
+    case ADDR_EXPR:
+      /* We can support this only if we can look through conversions and
+	 find an INDIRECT_EXPR.  */
+      for (loc = TREE_OPERAND (loc, 0);
+	   TREE_CODE (loc) == CONVERT_EXPR || TREE_CODE (loc) == NOP_EXPR
+	   || TREE_CODE (loc) == NON_LVALUE_EXPR
+	   || TREE_CODE (loc) == VIEW_CONVERT_EXPR
+	   || TREE_CODE (loc) == SAVE_EXPR;
+	   loc = TREE_OPERAND (loc, 0))
+	;
+
+       return (TREE_CODE (loc) == INDIRECT_REF
+	       ? loc_descriptor_from_tree (TREE_OPERAND (loc, 0), addressp)
+	       : 0);
+
+    case VAR_DECL:
+    case PARM_DECL:
+      {
+	rtx rtl = rtl_for_decl_location (loc);
+
+	if (rtl == NULL_RTX)
+	  return 0;
+	else if (CONSTANT_P (rtl))
+	  {
+	    ret = new_loc_descr (DW_OP_addr, 0, 0);
+	    ret->dw_loc_oprnd1.val_class = dw_val_class_addr;
+	    ret->dw_loc_oprnd1.v.val_addr = rtl;
+	    indirect_p = 1;
+	  }
+	else
+	  {
+	    enum machine_mode mode = GET_MODE (rtl);
+
+	    if (GET_CODE (rtl) == MEM)
+	      {
+		indirect_p = 1;
+		rtl = XEXP (rtl, 0);
+	      }
+
+	    ret = mem_loc_descriptor (rtl, mode);
+	  }
+      }
+      break;
+
+    case INDIRECT_REF:
+      ret = loc_descriptor_from_tree (TREE_OPERAND (loc, 0), 0);
+      indirect_p = 1;
+      break;
+
+    case COMPOUND_EXPR:
+      return loc_descriptor_from_tree (TREE_OPERAND (loc, 1), addressp);
+
+    case NOP_EXPR:
+    case CONVERT_EXPR:
+    case NON_LVALUE_EXPR:
+    case VIEW_CONVERT_EXPR:
+    case SAVE_EXPR:
+      return loc_descriptor_from_tree (TREE_OPERAND (loc, 0), addressp);
+
+    case COMPONENT_REF:
+    case BIT_FIELD_REF:
+    case ARRAY_REF:
+    case ARRAY_RANGE_REF:
+      {
+	tree obj, offset;
+	HOST_WIDE_INT bitsize, bitpos, bytepos;
+	enum machine_mode mode;
+	int volatilep;
+
+	obj = get_inner_reference (loc, &bitsize, &bitpos, &offset, &mode,
+				   &unsignedp, &volatilep);
+
+	if (obj == loc)
+	  return 0;
+
+	ret = loc_descriptor_from_tree (obj, 1);
+	if (ret == 0
+	    || bitpos % BITS_PER_UNIT != 0 || bitsize % BITS_PER_UNIT != 0)
+	  return 0;
+
+	if (offset != NULL_TREE)
+	  {
+	    /* Variable offset.  */
+	    add_loc_descr (&ret, loc_descriptor_from_tree (offset, 0));
+	    add_loc_descr (&ret, new_loc_descr (DW_OP_plus, 0, 0));
+	  }
+
+	if (!addressp)
+	  indirect_p = 1;
+
+	bytepos = bitpos / BITS_PER_UNIT;
+	if (bytepos > 0)
+	  add_loc_descr (&ret, new_loc_descr (DW_OP_plus_uconst, bytepos, 0));
+	else if (bytepos < 0)
+	  {
+	    add_loc_descr (&ret, int_loc_descriptor (bytepos));
+	    add_loc_descr (&ret, new_loc_descr (DW_OP_plus, 0, 0));
+	  }
+	break;
+      }
+
+    case INTEGER_CST:
+      if (host_integerp (loc, 0))
+	ret = int_loc_descriptor (tree_low_cst (loc, 0));
+      else
+	return 0;
+      break;
+
+    case TRUTH_AND_EXPR: 
+    case TRUTH_ANDIF_EXPR:
+    case BIT_AND_EXPR:
+      op = DW_OP_and;
+      goto do_binop;
+
+    case TRUTH_XOR_EXPR:
+    case BIT_XOR_EXPR:
+      op = DW_OP_xor;
+      goto do_binop;
+
+    case TRUTH_OR_EXPR:
+    case TRUTH_ORIF_EXPR:
+    case BIT_IOR_EXPR:
+      op = DW_OP_or;
+      goto do_binop;
+
+    case TRUNC_DIV_EXPR:
+      op = DW_OP_div;
+      goto do_binop;
+
+    case MINUS_EXPR:
+      op = DW_OP_minus;
+      goto do_binop;
+
+    case TRUNC_MOD_EXPR:
+      op = DW_OP_mod;
+      goto do_binop;
+
+    case MULT_EXPR:
+      op = DW_OP_mul;
+      goto do_binop;
+
+    case LSHIFT_EXPR:
+      op = DW_OP_shl;
+      goto do_binop;
+
+    case RSHIFT_EXPR:
+      op = (unsignedp ? DW_OP_shr : DW_OP_shra);
+      goto do_binop;
+
+    case PLUS_EXPR:
+      if (TREE_CODE (TREE_OPERAND (loc, 1)) == INTEGER_CST
+	  && host_integerp (TREE_OPERAND (loc, 1), 0))
+	{
+	  ret = loc_descriptor_from_tree (TREE_OPERAND (loc, 0), 0);
+	  if (ret == 0)
+	    return 0;
+
+	  add_loc_descr (&ret,
+			 new_loc_descr (DW_OP_plus_uconst,
+					tree_low_cst (TREE_OPERAND (loc, 1),
+						      0),
+					0));
+	  break;
+	}
+
+      op = DW_OP_plus;
+      goto do_binop;
+
+    case LE_EXPR:
+      if (TREE_UNSIGNED (TREE_TYPE (TREE_OPERAND (loc, 0))))
+	return 0;
+
+      op = DW_OP_le;
+      goto do_binop;
+
+    case GE_EXPR:
+      if (TREE_UNSIGNED (TREE_TYPE (TREE_OPERAND (loc, 0))))
+	return 0;
+
+      op = DW_OP_ge;
+      goto do_binop;
+
+    case LT_EXPR:
+      if (TREE_UNSIGNED (TREE_TYPE (TREE_OPERAND (loc, 0))))
+	return 0;
+
+      op = DW_OP_lt;
+      goto do_binop;
+
+    case GT_EXPR:
+      if (TREE_UNSIGNED (TREE_TYPE (TREE_OPERAND (loc, 0))))
+	return 0;
+
+      op = DW_OP_gt;
+      goto do_binop;
+
+    case EQ_EXPR:
+      op = DW_OP_eq;
+      goto do_binop;
+
+    case NE_EXPR:
+      op = DW_OP_ne;
+      goto do_binop;
+
+    do_binop:
+      ret = loc_descriptor_from_tree (TREE_OPERAND (loc, 0), 0);
+      ret1 = loc_descriptor_from_tree (TREE_OPERAND (loc, 1), 0);
+      if (ret == 0 || ret1 == 0)
+	return 0;
+
+      add_loc_descr (&ret, ret1);
+      add_loc_descr (&ret, new_loc_descr (op, 0, 0));
+      break;
+
+    case TRUTH_NOT_EXPR:
+    case BIT_NOT_EXPR:
+      op = DW_OP_not;
+      goto do_unop;
+
+    case ABS_EXPR:
+      op = DW_OP_abs;
+      goto do_unop;
+
+    case NEGATE_EXPR:
+      op = DW_OP_neg;
+      goto do_unop;
+
+    do_unop:
+      ret = loc_descriptor_from_tree (TREE_OPERAND (loc, 0), 0);
+      if (ret == 0)
+	return 0;
+
+      add_loc_descr (&ret, new_loc_descr (op, 0, 0));
+      break;
+
+    case MAX_EXPR:
+      loc = build (COND_EXPR, TREE_TYPE (loc),
+		   build (LT_EXPR, integer_type_node,
+			  TREE_OPERAND (loc, 0), TREE_OPERAND (loc, 1)),
+		   TREE_OPERAND (loc, 1), TREE_OPERAND (loc, 0));
+
+      /* ... fall through ...  */
+
+    case COND_EXPR:
+      {
+	dw_loc_descr_ref lhs
+	  = loc_descriptor_from_tree (TREE_OPERAND (loc, 1), 0);
+	dw_loc_descr_ref rhs
+	  = loc_descriptor_from_tree (TREE_OPERAND (loc, 2), 0);
+	dw_loc_descr_ref bra_node, jump_node, tmp;
+
+	ret = loc_descriptor_from_tree (TREE_OPERAND (loc, 0), 0);
+	if (ret == 0 || lhs == 0 || rhs == 0)
+	  return 0;
+
+	bra_node = new_loc_descr (DW_OP_bra, 0, 0);
+	add_loc_descr (&ret, bra_node);
+
+	add_loc_descr (&ret, rhs);
+	jump_node = new_loc_descr (DW_OP_skip, 0, 0);
+	add_loc_descr (&ret, jump_node);
+
+	add_loc_descr (&ret, lhs);
+	bra_node->dw_loc_oprnd1.val_class = dw_val_class_loc;
+	bra_node->dw_loc_oprnd1.v.val_loc = lhs;
+
+	/* ??? Need a node to point the skip at.  Use a nop.  */
+	tmp = new_loc_descr (DW_OP_nop, 0, 0);
+	add_loc_descr (&ret, tmp);
+	jump_node->dw_loc_oprnd1.val_class = dw_val_class_loc;
+	jump_node->dw_loc_oprnd1.v.val_loc = tmp;
+      }
+      break;
+
+    default:
+      abort ();
+    }
+
+  /* Show if we can't fill the request for an address.  */
+  if (addressp && indirect_p == 0)
+    return 0;
+
+  /* If we've got an address and don't want one, dereference.  */
+  if (!addressp && indirect_p > 0)
+    {
+      HOST_WIDE_INT size = int_size_in_bytes (TREE_TYPE (loc));
+
+      if (size > DWARF2_ADDR_SIZE || size == -1)
+	return 0;
+      else if (size == DWARF2_ADDR_SIZE)
+	op = DW_OP_deref;
+      else
+	op = DW_OP_deref_size;
+
+      add_loc_descr (&ret, new_loc_descr (op, size, 0));
+    }
+
+  return ret;
+}

@@ -1,0 +1,22 @@
+void
+setjmp_protect_args ()
+{
+  tree decl;
+  for (decl = DECL_ARGUMENTS (current_function_decl);
+       decl; decl = TREE_CHAIN (decl))
+    if ((TREE_CODE (decl) == VAR_DECL
+	 || TREE_CODE (decl) == PARM_DECL)
+	&& DECL_RTL (decl) != 0
+	&& (GET_CODE (DECL_RTL (decl)) == REG
+	    || (GET_CODE (DECL_RTL (decl)) == MEM
+		&& GET_CODE (XEXP (DECL_RTL (decl), 0)) == ADDRESSOF))
+	&& (
+	    /* If longjmp doesn't restore the registers,
+	       don't put anything in them.  */
+#ifdef NON_SAVING_SETJMP
+	    NON_SAVING_SETJMP
+	    ||
+#endif
+	    ! DECL_REGISTER (decl)))
+      put_var_into_stack (decl);
+}

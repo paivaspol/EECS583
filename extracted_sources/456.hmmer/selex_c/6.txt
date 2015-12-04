@@ -1,0 +1,47 @@
+int
+IsSELEXFormat(char *filename)
+{
+  FILE *fp;                     /* ptr to open sequence file */
+  char  buffer[LINEBUFLEN];
+  char *sptr;                   /* ptr to first word          */
+  int   linenum;
+
+
+  if ((fp = fopen(filename, "r")) == NULL)
+    { squid_errno = SQERR_NOFILE; return 0; }
+
+  linenum = 0;
+  while (linenum < 500 && 
+	 fgets(buffer, LINEBUFLEN, fp) != NULL)
+    {
+      linenum++;
+				/* dead giveaways for extended SELEX */
+      if      (strncmp(buffer, "#=AU", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=ID", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=AC", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=DE", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=GA", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=TC", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=NC", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=SQ", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=SS", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=CS", 4) == 0) goto DONE;
+      else if (strncmp(buffer, "#=RF", 4) == 0) goto DONE;
+
+				/* a comment? */
+      if (strchr(commentsyms, *buffer) != NULL) continue;
+
+				/* a blank line? */
+      if ((sptr = strtok(buffer, WHITESPACE)) == NULL) continue;
+
+				/* a one-word line (name only)
+				   is possible, though rare */
+      if ((sptr = strtok(NULL, "\n")) == NULL) continue;
+      
+      if (Seqtype(sptr) == kOtherSeq) {fclose(fp); return 0;}
+    }
+
+ DONE:
+  fclose(fp);
+  return 1;
+}

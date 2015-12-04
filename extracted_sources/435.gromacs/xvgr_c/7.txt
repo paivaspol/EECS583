@@ -1,0 +1,26 @@
+static char *fgets3(FILE *fp)
+{
+  static char *ptr = NULL;
+  static int  len  = STRLEN;
+  char *p;
+  int  slen;
+  
+  if (ptr==NULL)
+    snew(ptr,len);
+
+  if (fgets(ptr,len-1,fp) == NULL)
+    return NULL;
+  p = ptr;
+  while ((strchr(ptr,'\n') == NULL) && (!feof(fp))) {
+    /* This line is longer than len characters, let's increase len! */
+    len += STRLEN;
+    p   += STRLEN;
+    srenew(ptr,len);
+    if (fgets(p-1,STRLEN,fp) == NULL)
+      break;
+  }
+  slen = strlen(ptr);
+  if (ptr[slen-1] == '\n')
+    ptr[slen-1] = '\0';
+  return ptr;
+}

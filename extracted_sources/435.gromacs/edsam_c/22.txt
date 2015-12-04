@@ -1,0 +1,34 @@
+void do_radcon(rvec *x,t_edpar *edi)
+{
+  int i,j,k;
+  real *proj,rad=0.0,ratio=0.0;
+
+  if (edi->vecs.radcon.neig == 0) return;
+  snew(proj,edi->vecs.radcon.neig);
+  /* loop over radcon vectors */
+  for (i=0;(i<edi->vecs.radcon.neig);i++) {
+    /* calculate the projections, radius */
+    proj[i]=do_projectx(edi,x,edi->vecs.radcon.vec[i]);
+    rad+=pow((proj[i]-edi->vecs.radcon.refproj[i]),2);
+  }
+  rad=sqrt(rad);
+
+  /* only correct when radius increased */
+  if (rad > edi->vecs.radcon.radius) {
+    ratio=edi->vecs.radcon.radius/rad-1.0;
+    rad=edi->vecs.radcon.radius;
+  }
+  else
+    edi->vecs.radcon.radius=rad;
+
+  /* loop over radcon vectors */
+  for (i=0;(i<edi->vecs.radcon.neig);i++) {
+    proj[i]-=edi->vecs.radcon.refproj[i];
+    /* apply the correction */
+    for (j=0;(j<edi->sav.nr);j++) {
+      for (k=0;(k<DIM);k++)
+	x[edi->sav.anrs[j]][k]+=proj[i]*ratio*edi->vecs.radcon.vec[i][j][k];
+    }
+  }  
+  sfree(proj);
+}

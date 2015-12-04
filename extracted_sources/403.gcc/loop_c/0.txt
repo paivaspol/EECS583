@@ -1,0 +1,126 @@
+static int consec_sets_invariant_p PARAMS ((const struct loop *,
+					    rtx, int, rtx));
+static int labels_in_range_p PARAMS ((rtx, int));
+static void count_one_set PARAMS ((struct loop_regs *, rtx, rtx, rtx *));
+static void note_addr_stored PARAMS ((rtx, rtx, void *));
+static void note_set_pseudo_multiple_uses PARAMS ((rtx, rtx, void *));
+static int loop_reg_used_before_p PARAMS ((const struct loop *, rtx, rtx));
+static void scan_loop PARAMS ((struct loop*, int));
+#if 0
+static void replace_call_address PARAMS ((rtx, rtx, rtx));
+#endif
+static rtx skip_consec_insns PARAMS ((rtx, int));
+static int libcall_benefit PARAMS ((rtx));
+static void ignore_some_movables PARAMS ((struct loop_movables *));
+static void force_movables PARAMS ((struct loop_movables *));
+static void combine_movables PARAMS ((struct loop_movables *,
+				      struct loop_regs *));
+static int num_unmoved_movables PARAMS ((const struct loop *));
+static int regs_match_p PARAMS ((rtx, rtx, struct loop_movables *));
+static int rtx_equal_for_loop_p PARAMS ((rtx, rtx, struct loop_movables *,
+					 struct loop_regs *));
+static void add_label_notes PARAMS ((rtx, rtx));
+static void move_movables PARAMS ((struct loop *loop, struct loop_movables *,
+				   int, int));
+static void loop_movables_add PARAMS((struct loop_movables *,
+				      struct movable *));
+static void loop_movables_free PARAMS((struct loop_movables *));
+static int count_nonfixed_reads PARAMS ((const struct loop *, rtx));
+static void loop_bivs_find PARAMS((struct loop *));
+static void loop_bivs_init_find PARAMS((struct loop *));
+static void loop_bivs_check PARAMS((struct loop *));
+static void loop_givs_find PARAMS((struct loop *));
+static void loop_givs_check PARAMS((struct loop *));
+static int loop_biv_eliminable_p PARAMS((struct loop *, struct iv_class *,
+					 int, int));
+static int loop_giv_reduce_benefit PARAMS((struct loop *, struct iv_class *,
+					   struct induction *, rtx));
+static void loop_givs_dead_check PARAMS((struct loop *, struct iv_class *));
+static void loop_givs_reduce PARAMS((struct loop *, struct iv_class *));
+static void loop_givs_rescan PARAMS((struct loop *, struct iv_class *,
+				     rtx *));
+static void loop_ivs_free PARAMS((struct loop *));
+static void strength_reduce PARAMS ((struct loop *, int));
+static void find_single_use_in_loop PARAMS ((struct loop_regs *, rtx, rtx));
+static int valid_initial_value_p PARAMS ((rtx, rtx, int, rtx));
+static void find_mem_givs PARAMS ((const struct loop *, rtx, rtx, int, int));
+static void record_biv PARAMS ((struct loop *, struct induction *,
+				rtx, rtx, rtx, rtx, rtx *,
+				int, int));
+static void check_final_value PARAMS ((const struct loop *,
+				       struct induction *));
+static void loop_ivs_dump PARAMS((const struct loop *, FILE *, int));
+static void loop_iv_class_dump PARAMS((const struct iv_class *, FILE *, int));
+static void loop_biv_dump PARAMS((const struct induction *, FILE *, int));
+static void loop_giv_dump PARAMS((const struct induction *, FILE *, int));
+static void record_giv PARAMS ((const struct loop *, struct induction *,
+				rtx, rtx, rtx, rtx, rtx, rtx, int,
+				enum g_types, int, int, rtx *));
+static void update_giv_derive PARAMS ((const struct loop *, rtx));
+static void check_ext_dependent_givs PARAMS ((struct iv_class *,
+					      struct loop_info *));
+static int basic_induction_var PARAMS ((const struct loop *, rtx,
+					enum machine_mode, rtx, rtx,
+					rtx *, rtx *, rtx **));
+static rtx simplify_giv_expr PARAMS ((const struct loop *, rtx, rtx *, int *));
+static int general_induction_var PARAMS ((const struct loop *loop, rtx, rtx *,
+					  rtx *, rtx *, rtx *, int, int *,
+					  enum machine_mode));
+static int consec_sets_giv PARAMS ((const struct loop *, int, rtx,
+				    rtx, rtx, rtx *, rtx *, rtx *, rtx *));
+static int check_dbra_loop PARAMS ((struct loop *, int));
+static rtx express_from_1 PARAMS ((rtx, rtx, rtx));
+static rtx combine_givs_p PARAMS ((struct induction *, struct induction *));
+static int cmp_combine_givs_stats PARAMS ((const PTR, const PTR));
+static void combine_givs PARAMS ((struct loop_regs *, struct iv_class *));
+static int product_cheap_p PARAMS ((rtx, rtx));
+static int maybe_eliminate_biv PARAMS ((const struct loop *, struct iv_class *,
+					int, int, int));
+static int maybe_eliminate_biv_1 PARAMS ((const struct loop *, rtx, rtx,
+					  struct iv_class *, int,
+					  basic_block, rtx));
+static int last_use_this_basic_block PARAMS ((rtx, rtx));
+static void record_initial PARAMS ((rtx, rtx, void *));
+static void update_reg_last_use PARAMS ((rtx, rtx));
+static rtx next_insn_in_loop PARAMS ((const struct loop *, rtx));
+static void loop_regs_scan PARAMS ((const struct loop *, int));
+static int count_insns_in_loop PARAMS ((const struct loop *));
+static void load_mems PARAMS ((const struct loop *));
+static int insert_loop_mem PARAMS ((rtx *, void *));
+static int replace_loop_mem PARAMS ((rtx *, void *));
+static void replace_loop_mems PARAMS ((rtx, rtx, rtx));
+static int replace_loop_reg PARAMS ((rtx *, void *));
+static void replace_loop_regs PARAMS ((rtx insn, rtx, rtx));
+static void note_reg_stored PARAMS ((rtx, rtx, void *));
+static void try_copy_prop PARAMS ((const struct loop *, rtx, unsigned int));
+static void try_swap_copy_prop PARAMS ((const struct loop *, rtx,
+					 unsigned int));
+static int replace_label PARAMS ((rtx *, void *));
+static rtx check_insn_for_givs PARAMS((struct loop *, rtx, int, int));
+static rtx check_insn_for_bivs PARAMS((struct loop *, rtx, int, int));
+static rtx gen_add_mult PARAMS ((rtx, rtx, rtx, rtx));
+static void loop_regs_update PARAMS ((const struct loop *, rtx));
+static int iv_add_mult_cost PARAMS ((rtx, rtx, rtx, rtx));
+
+static rtx loop_insn_emit_after PARAMS((const struct loop *, basic_block,
+					rtx, rtx));
+static rtx loop_call_insn_emit_before PARAMS((const struct loop *,
+					      basic_block, rtx, rtx));
+static rtx loop_call_insn_hoist PARAMS((const struct loop *, rtx));
+static rtx loop_insn_sink_or_swim PARAMS((const struct loop *, rtx));
+
+static void loop_dump_aux PARAMS ((const struct loop *, FILE *, int));
+static void loop_delete_insns PARAMS ((rtx, rtx));
+static HOST_WIDE_INT remove_constant_addition PARAMS ((rtx *));
+void debug_ivs PARAMS ((const struct loop *));
+void debug_iv_class PARAMS ((const struct iv_class *));
+void debug_biv PARAMS ((const struct induction *));
+void debug_giv PARAMS ((const struct induction *));
+void debug_loop PARAMS ((const struct loop *));
+void debug_loops PARAMS ((const struct loops *));
+
+typedef struct rtx_pair
+{
+  rtx r1;
+  rtx r2;
+} rtx_pair;

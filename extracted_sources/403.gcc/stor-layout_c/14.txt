@@ -1,0 +1,101 @@
+static void
+finalize_record_size (rli)
+     record_layout_info rli;
+{
+  tree unpadded_size, unpadded_size_unit;
+
+  /* Now we want just byte and bit offsets, so set the offset alignment
+     to be a byte and then normalize.  */
+  rli->offset_align = BITS_PER_UNIT;
+  normalize_rli (rli);
+
+  /* Determine the desired alignment.  */
+#ifdef ROUND_TYPE_ALIGN
+  TYPE_ALIGN (rli->t) = ROUND_TYPE_ALIGN (rli->t, TYPE_ALIGN (rli->t),
+					  rli->record_align);
+#else
+  TYPE_ALIGN (rli->t) = MAX (TYPE_ALIGN (rli->t), rli->record_align);
+#endif
+
+  /* Compute the size so far.  Be sure to allow for extra bits in the
+     size in bytes.  We have guaranteed above that it will be no more
+     than a single byte.  */
+  unpadded_size = rli_size_so_far (rli);
+  unpadded_size_unit = rli_size_unit_so_far (rli);
+  if (! integer_zerop (rli->bitpos))
+    unpadded_size_unit
+      = size_binop (PLUS_EXPR, unpadded_size_unit, size_one_node);
+
+  /* Record the un-rounded size in the binfo node.  But first we check
+     the size of TYPE_BINFO to make sure that BINFO_SIZE is available.  */
+  if (TYPE_BINFO (rli->t) && TREE_VEC_LENGTH (TYPE_BINFO (rli->t)) > 6)
+    {
+      TYPE_BINFO_SIZE (rli->t) = unpadded_size;
+      TYPE_BINFO_SIZE_UNIT (rli->t) = unpadded_size_unit;
+    }
+
+    /* Round the size up to be a multiple of the required alignment */
+#ifdef ROUND_TYPE_SIZE
+  TYPE_SIZE (rli->t) = ROUND_TYPE_SIZE (rli->t, unpadded_size,
+					TYPE_ALIGN (rli->t));
+  TYPE_SIZE_UNIT (rli->t)
+    = ROUND_TYPE_SIZE_UNIT (rli->t, unpadded_size_unit,
+			    TYPE_ALIGN (rli->t) / BITS_PER_UNIT);
+#else
+  TYPE_SIZE (rli->t) = round_up (unpadded_size, TYPE_ALIGN (rli->t));
+  TYPE_SIZE_UNIT (rli->t) = round_up (unpadded_size_unit,
+				      TYPE_ALIGN (rli->t) / BITS_PER_UNIT);
+#endif
+
+  if (warn_padded && TREE_CONSTANT (unpadded_size)
+      && simple_cst_equal (unpadded_size, TYPE_SIZE (rli->t)) == 0)
+    warning ("padding struct size to alignment boundary");
+  
+  if (warn_packed && TREE_CODE (rli->t) == RECORD_TYPE
+      && TYPE_PACKED (rli->t) && ! rli->packed_maybe_necessary
+      && TREE_CONSTANT (unpadded_size))
+    {
+      tree unpacked_size;
+
+#ifdef ROUND_TYPE_ALIGN
+      rli->unpacked_align
+	= ROUND_TYPE_ALIGN (rli->t, TYPE_ALIGN (rli->t), rli->unpacked_align);
+#else
+      rli->unpacked_align = MAX (TYPE_ALIGN (rli->t), rli->unpacked_align);
+#endif
+
+#ifdef ROUND_TYPE_SIZE
+      unpacked_size = ROUND_TYPE_SIZE (rli->t, TYPE_SIZE (rli->t),
+				       rli->unpacked_align);
+#else
+      unpacked_size = round_up (TYPE_SIZE (rli->t), rli->unpacked_align);
+#endif
+
+      if (simple_cst_equal (unpacked_size, TYPE_SIZE (rli->t)))
+	{
+	  TYPE_PACKED (rli->t) = 0;
+
+	  if (TYPE_NAME (rli->t))
+	    {
+	      const char *name;
+
+	      if (TREE_CODE (TYPE_NAME (rli->t)) == IDENTIFIER_NODE)
+		name = IDENTIFIER_POINTER (TYPE_NAME (rli->t));
+	      else
+		name = IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (rli->t)));
+
+	      if (STRICT_ALIGNMENT)
+		warning ("packed attribute causes inefficient alignment for `%s'", name);
+	      else
+		warning ("packed attribute is unnecessary for `%s'", name);
+	    }
+	  else
+	    {
+	      if (STRICT_ALIGNMENT)
+		warning ("packed attribute causes inefficient alignment");
+	      else
+		warning ("packed attribute is unnecessary");
+	    }
+	}
+    }
+}

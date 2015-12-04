@@ -1,0 +1,34 @@
+static void spread_dum3OUT(rvec xi,rvec xj,rvec xk,
+			   rvec fi,rvec fj,rvec fk,rvec f,real a,real b,real c)
+{
+  rvec xij,xik,ffj,ffk;
+  real cfx,cfy,cfz;
+  int  m;
+  
+  rvec_sub(xj,xi,xij);
+  rvec_sub(xk,xi,xik);
+  /* 6 Flops */
+  
+  cfx=c*f[XX];
+  cfy=c*f[YY];
+  cfz=c*f[ZZ];
+  /* 3 Flops */
+  
+  ffj[XX] =  a*f[XX]     - xik[ZZ]*cfy + xik[YY]*cfz;
+  ffj[YY] =  xik[ZZ]*cfx + a*f[YY]     - xik[XX]*cfz;
+  ffj[ZZ] = -xik[YY]*cfx + xik[XX]*cfy + a*f[ZZ];
+  
+  ffk[XX] =  b*f[XX]     + xij[ZZ]*cfy - xij[YY]*cfz;
+  ffk[YY] = -xij[ZZ]*cfx + b*f[YY]     + xij[XX]*cfz;
+  ffk[ZZ] =  xij[YY]*cfx - xij[XX]*cfy + b*f[ZZ];
+  /* 30 Flops */
+    
+  for(m=0; (m<DIM); m++) {
+    fi[m]+=f[m]-ffj[m]-ffk[m];
+    fj[m]+=ffj[m];
+    fk[m]+=ffk[m];
+  }
+  /* 15 Flops */
+  
+  /* TOTAL: 54 flops */
+}

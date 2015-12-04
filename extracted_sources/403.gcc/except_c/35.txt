@@ -1,0 +1,32 @@
+static void
+duplicate_eh_region_2 (o, n_array)
+     struct eh_region *o;
+     struct eh_region **n_array;
+{
+  struct eh_region *n = n_array[o->region_number];
+
+  switch (n->type)
+    {
+    case ERT_TRY:
+      n->u.try.catch = n_array[o->u.try.catch->region_number];
+      n->u.try.last_catch = n_array[o->u.try.last_catch->region_number];
+      break;
+
+    case ERT_CATCH:
+      if (o->u.catch.next_catch)
+        n->u.catch.next_catch = n_array[o->u.catch.next_catch->region_number];
+      if (o->u.catch.prev_catch)
+        n->u.catch.prev_catch = n_array[o->u.catch.prev_catch->region_number];
+      break;
+
+    default:
+      break;
+    }
+
+  if (o->outer)
+    n->outer = n_array[o->outer->region_number];
+  if (o->inner)
+    n->inner = n_array[o->inner->region_number];
+  if (o->next_peer)
+    n->next_peer = n_array[o->next_peer->region_number];
+}

@@ -1,0 +1,41 @@
+static void
+paste_all_tokens (pfile, lhs)
+     cpp_reader *pfile;
+     const cpp_token *lhs;
+{
+  const cpp_token *rhs;
+  cpp_context *context = pfile->context;
+
+  do
+    {
+      /* Take the token directly from the current context.  We can do
+	 this, because we are in the replacement list of either an
+	 object-like macro, or a function-like macro with arguments
+	 inserted.  In either case, the constraints to #define
+	 guarantee we have at least one more token.  */
+      if (context->direct_p)
+	rhs = context->first.token++;
+      else
+	rhs = *context->first.ptoken++;
+
+      if (rhs->type == CPP_PADDING)
+	abort ();
+
+      if (!paste_tokens (pfile, &lhs, rhs))
+	{
+	  _cpp_backup_tokens (pfile, 1);
+
+	  /* Mandatory warning for all apart from assembler.  */
+	  if (CPP_OPTION (pfile, lang) != CLK_ASM)
+	    cpp_warning (pfile,
+	 "pasting \"%s\" and \"%s\" does not give a valid preprocessing token",
+			 cpp_token_as_text (pfile, lhs),
+			 cpp_token_as_text (pfile, rhs));
+	  break;
+	}
+    }
+  while (rhs->flags & PASTE_LEFT);
+
+  /* Put the resulting token in its own context.  */
+  push_token_context (pfile, NULL, lhs, 1);
+}

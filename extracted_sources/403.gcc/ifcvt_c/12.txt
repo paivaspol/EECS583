@@ -1,0 +1,49 @@
+static int
+noce_try_store_flag_mask (if_info)
+     struct noce_if_info *if_info;
+{
+  rtx target, seq;
+  int reversep;
+
+  reversep = 0;
+  if (! no_new_pseudos
+      && (BRANCH_COST >= 2
+	  || STORE_FLAG_VALUE == -1)
+      && ((if_info->a == const0_rtx
+	   && rtx_equal_p (if_info->b, if_info->x))
+	  || ((reversep = (reversed_comparison_code (if_info->cond,
+						     if_info->jump)
+			   != UNKNOWN))
+	      && if_info->b == const0_rtx
+	      && rtx_equal_p (if_info->a, if_info->x))))
+    {
+      start_sequence ();
+      target = noce_emit_store_flag (if_info,
+				     gen_reg_rtx (GET_MODE (if_info->x)),
+				     reversep, -1);
+      if (target)
+        target = expand_simple_binop (GET_MODE (if_info->x), AND,
+				      if_info->x, target, if_info->x, 0,
+				      OPTAB_WIDEN);
+
+      if (target)
+	{
+	  if (target != if_info->x)
+	    noce_emit_move_insn (if_info->x, target);
+
+	  seq = get_insns ();
+	  end_sequence ();
+
+	  if (seq_contains_jump (seq))
+	    return FALSE;
+
+	  emit_insns_before (seq, if_info->jump);
+
+	  return TRUE;
+	}
+
+      end_sequence ();
+    }
+
+  return FALSE;
+}

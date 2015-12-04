@@ -1,0 +1,195 @@
+void report_frame_statistic()
+{
+  FILE *p_stat_frm = NULL;
+  static int   last_mode_use[NUM_PIC_TYPE][MAXMODE];
+  static int   last_b8_mode_0[NUM_PIC_TYPE][2];
+  static int   last_mode_chroma_use[4];
+  static int   last_bit_ctr_n = 0;
+  int i;
+  char name[20];
+  int bitcounter;
+  
+#ifndef WIN32
+  time_t now;
+  struct tm *l_time;
+  char string[1000];
+#else
+  char timebuf[128];
+#endif
+  
+
+  // write to log file
+  if ((p_stat_frm=fopen("stat_frame.dat","r"))==0)                      // check if file exist
+  {
+    if ((p_stat_frm=fopen("stat_frame.dat","a"))==NULL)            // append new statistic at the end
+    {
+      snprintf(errortext, ET_SIZE, "Error open file %s  \n","stat_frame.dat.dat");
+      error(errortext, 500);
+    }
+    else                                            // Create header for new log file
+    {
+      fprintf(p_stat_frm," --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n");
+      fprintf(p_stat_frm,"|            Encoder statistics. This file is generated during first encoding session, new sessions will be appended                                                                                                                                                                                                                                                                                                                                                              |\n");
+      fprintf(p_stat_frm," --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n");
+    }
+  }
+  else
+  {
+    fclose (p_stat_frm);
+    if ((p_stat_frm=fopen("stat_frame.dat","a"))==NULL)            // File exist,just open for appending
+    {
+      snprintf(errortext, ET_SIZE, "Error open file %s  \n","stat_frame.dat.dat");
+      error(errortext, 500);
+    }
+  }
+  
+  if (frame_statistic_start)
+  {
+    fprintf(p_stat_frm,"|  ver   | Date  | Time  |    Sequence        |Frm | QP |P/MbInt|   Bits   |  SNRY  |  SNRU  |  SNRV  |  I4  |  I8  | I16  | IC0  | IC1  | IC2  | IC3  | PI4  | PI8  | PI16 |  P0  |  P1  |  P2  |  P3  | P1*8*| P1*4*| P2*8*| P2*4*| P3*8*| P3*4*|  P8  | P8:4 | P4*8*| P4*4*| P8:5 | P8:6 | P8:7 | BI4  | BI8  | BI16 |  B0  |  B1  |  B2  |  B3  | B0*8*| B0*4*| B1*8*| B1*4*| B2*8*| B2*4*| B3*8*| B3*4*|  B8  | B8:0 |B80*8*|B80*4*| B8:4 | B4*8*| B4*4*| B8:5 | B8:6 | B8:7 |\n");
+    fprintf(p_stat_frm," --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n");
+  }
+  
+
+  //report
+  fprintf(p_stat_frm,"|%4s/%s", VERSION, EXT_VERSION); 
+  
+#ifdef WIN32
+  _strdate( timebuf );
+  fprintf(p_stat_frm,"| %1.5s |",timebuf );
+  
+  _strtime( timebuf);
+  fprintf(p_stat_frm," % 1.5s |",timebuf);
+#else
+  now = time ((time_t *) NULL); // Get the system time and put it into 'now' as 'calender time'
+  time (&now);
+  l_time = localtime (&now);
+  strftime (string, sizeof string, "%d-%b-%Y", l_time);
+  fprintf(p_stat_frm,"| %1.5s |",string );
+  
+  strftime (string, sizeof string, "%H:%M:%S", l_time);
+  fprintf(p_stat_frm," %1.5s |",string );
+#endif
+  
+  for (i=0;i<20;i++)
+    name[i]=input->infile[i+max(0,(int) (strlen(input->infile)-20))]; // write last part of path, max 20 chars
+  fprintf(p_stat_frm,"%20.20s|",name);
+  
+  fprintf(p_stat_frm,"%3d |",frame_no);
+
+  fprintf(p_stat_frm,"%3d |",img->qp);
+
+  fprintf(p_stat_frm,"  %d/%d  |",input->PicInterlace, input->MbInterlace);
+  
+  
+  if (img->frame_num == 0)
+  {
+    bitcounter = stats->bit_ctr_I;
+  }
+  else
+  {
+    bitcounter = stats->bit_ctr_n - last_bit_ctr_n;
+    last_bit_ctr_n = stats->bit_ctr_n;
+  }
+
+
+  //report bitrate
+  fprintf(p_stat_frm, " %9d|", bitcounter);
+  
+  //report snr's
+  fprintf(p_stat_frm, " %2.4f| %2.4f| %2.4f|", snr->snr_y, snr->snr_u, snr->snr_v);
+  
+  //report modes
+  //I-Modes
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[I_SLICE][I4MB] - last_mode_use[I_SLICE][I4MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[I_SLICE][I8MB] - last_mode_use[I_SLICE][I8MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[I_SLICE][I16MB] - last_mode_use[I_SLICE][I16MB]);
+  
+  //chroma intra mode
+  fprintf(p_stat_frm, " %5d|",stats->intra_chroma_mode[0] - last_mode_chroma_use[0]);
+  fprintf(p_stat_frm, " %5d|",stats->intra_chroma_mode[1] - last_mode_chroma_use[1]);
+  fprintf(p_stat_frm, " %5d|",stats->intra_chroma_mode[2] - last_mode_chroma_use[2]);
+  fprintf(p_stat_frm, " %5d|",stats->intra_chroma_mode[3] - last_mode_chroma_use[3]);
+  
+  //P-Modes
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][I4MB] - last_mode_use[P_SLICE][I4MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][I8MB] - last_mode_use[P_SLICE][I8MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][I16MB] - last_mode_use[P_SLICE][I16MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][0   ] - last_mode_use[P_SLICE][0   ]);
+  
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][1   ] - last_mode_use[P_SLICE][1   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][2   ] - last_mode_use[P_SLICE][2   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][3   ] - last_mode_use[P_SLICE][3   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[0][1]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[0][1]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[0][2]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[0][2]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[0][3]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[0][3]);
+  
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][P8x8] - last_mode_use[P_SLICE][P8x8]);
+//  fprintf(p_stat_frm, " %5d|",stats->b8_mode_0_use[P_SLICE][0]  - last_b8_mode_0[P_SLICE ][0]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][4   ] - last_mode_use[P_SLICE][4   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[0][4]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[0][4]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][5   ] - last_mode_use[P_SLICE][5   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][6   ] - last_mode_use[P_SLICE][6   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[P_SLICE][7   ] - last_mode_use[P_SLICE][7   ]);
+  
+  //B-Modes
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][I4MB] - last_mode_use[B_SLICE][I4MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][I8MB] - last_mode_use[B_SLICE][I8MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][I16MB] - last_mode_use[B_SLICE][I16MB]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][0   ] - last_mode_use[B_SLICE][0   ]);
+  /*
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][1   ] - last_mode_use[B_SLICE][1   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][2   ] - last_mode_use[B_SLICE][2   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][3   ] - last_mode_use[B_SLICE][3   ]);
+  */
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][1   ] - last_mode_use[B_SLICE][1   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][2   ] - last_mode_use[B_SLICE][2   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][3   ] - last_mode_use[B_SLICE][3   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[1][0]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[1][0]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[1][1]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[1][1]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[1][2]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[1][2]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[1][3]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[1][3]);
+  
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][P8x8] - last_mode_use[B_SLICE][P8x8]);
+  fprintf(p_stat_frm, " %5d|",(stats->b8_mode_0_use [B_SLICE][0]+stats->b8_mode_0_use [B_SLICE][1]) - (last_b8_mode_0[B_SLICE][0]+last_b8_mode_0[B_SLICE][1]));
+  fprintf(p_stat_frm, " %5d|",stats->b8_mode_0_use [B_SLICE][1] - last_b8_mode_0[B_SLICE][1]);
+  fprintf(p_stat_frm, " %5d|",stats->b8_mode_0_use [B_SLICE][0] - last_b8_mode_0[B_SLICE][0]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][4   ] - last_mode_use[B_SLICE][4   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_8x8[1][4]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use_transform_4x4[1][4]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][5   ] - last_mode_use[B_SLICE][5   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][6   ] - last_mode_use[B_SLICE][6   ]);
+  fprintf(p_stat_frm, " %5d|",stats->mode_use[B_SLICE][7   ] - last_mode_use[B_SLICE][7   ]);
+
+  fprintf(p_stat_frm, "\n");
+  
+  //save the last results
+  last_mode_use[I_SLICE][I4MB] = stats->mode_use[I_SLICE][I4MB];
+  last_mode_use[I_SLICE][I8MB] = stats->mode_use[I_SLICE][I8MB];
+  last_mode_use[I_SLICE][I16MB] = stats->mode_use[I_SLICE][I16MB];
+  for(i=0; i<MAXMODE; i++)
+  {
+    last_mode_use[P_SLICE][i] = stats->mode_use[P_SLICE][i];
+    last_mode_use[B_SLICE][i] = stats->mode_use[B_SLICE][i];
+    stats->mode_use_transform_8x8[0][i] = 0;
+    stats->mode_use_transform_8x8[1][i] = 0;
+    stats->mode_use_transform_4x4[0][i] = 0;
+    stats->mode_use_transform_4x4[1][i] = 0;
+  }
+//  last_b8_mode_0[P_SLICE][0] = stats->b8_mode_0_use[P_SLICE];
+  last_b8_mode_0[B_SLICE][0] = stats->b8_mode_0_use[B_SLICE][0];
+  last_b8_mode_0[B_SLICE][1] = stats->b8_mode_0_use[B_SLICE][1];
+  
+  for(i=0;i<4;i++)
+    last_mode_chroma_use[i]=stats->intra_chroma_mode[i];
+
+  frame_statistic_start = 0;
+  fclose(p_stat_frm);
+}

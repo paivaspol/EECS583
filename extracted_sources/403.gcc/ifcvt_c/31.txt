@@ -1,0 +1,255 @@
+static int
+dead_or_predicable (test_bb, merge_bb, other_bb, new_dest, reversep)
+     basic_block test_bb, merge_bb, other_bb;
+     basic_block new_dest;
+     int reversep;
+{
+  rtx head, end, jump, earliest, old_dest, new_label = NULL_RTX;
+
+  jump = test_bb->end;
+
+  /* Find the extent of the real code in the merge block.  */
+  head = merge_bb->head;
+  end = merge_bb->end;
+
+  if (GET_CODE (head) == CODE_LABEL)
+    head = NEXT_INSN (head);
+  if (GET_CODE (head) == NOTE)
+    {
+      if (head == end)
+	{
+	  head = end = NULL_RTX;
+	  goto no_body;
+	}
+      head = NEXT_INSN (head);
+    }
+
+  if (GET_CODE (end) == JUMP_INSN)
+    {
+      if (head == end)
+	{
+	  head = end = NULL_RTX;
+	  goto no_body;
+	}
+      end = PREV_INSN (end);
+    }
+
+  /* Disable handling dead code by conditional execution if the machine needs
+     to do anything funny with the tests, etc.  */
+#ifndef IFCVT_MODIFY_TESTS
+  if (HAVE_conditional_execution)
+    {
+      /* In the conditional execution case, we have things easy.  We know
+	 the condition is reversable.  We don't have to check life info,
+	 becase we're going to conditionally execute the code anyway.
+	 All that's left is making sure the insns involved can actually
+	 be predicated.  */
+
+      rtx cond, prob_val;
+
+      cond = cond_exec_get_condition (jump);
+      if (! cond)
+	return FALSE;
+
+      prob_val = find_reg_note (jump, REG_BR_PROB, NULL_RTX);
+      if (prob_val)
+	prob_val = XEXP (prob_val, 0);
+
+      if (reversep)
+	{
+	  enum rtx_code rev = reversed_comparison_code (cond, jump);
+	  if (rev == UNKNOWN)
+	    return FALSE;
+	  cond = gen_rtx_fmt_ee (rev, GET_MODE (cond), XEXP (cond, 0),
+			         XEXP (cond, 1));
+	  if (prob_val)
+	    prob_val = GEN_INT (REG_BR_PROB_BASE - INTVAL (prob_val));
+	}
+
+      if (! cond_exec_process_insns (head, end, cond, prob_val, 0))
+	goto cancel;
+
+      earliest = jump;
+    }
+  else
+#endif
+    {
+      /* In the non-conditional execution case, we have to verify that there
+	 are no trapping operations, no calls, no references to memory, and
+	 that any registers modified are dead at the branch site.  */
+
+      rtx insn, cond, prev;
+      regset_head merge_set_head, tmp_head, test_live_head, test_set_head;
+      regset merge_set, tmp, test_live, test_set;
+      struct propagate_block_info *pbi;
+      int i, fail = 0;
+
+      /* Check for no calls or trapping operations.  */
+      for (insn = head; ; insn = NEXT_INSN (insn))
+	{
+	  if (GET_CODE (insn) == CALL_INSN)
+	    return FALSE;
+	  if (INSN_P (insn))
+	    {
+	      if (may_trap_p (PATTERN (insn)))
+		return FALSE;
+
+	      /* ??? Even non-trapping memories such as stack frame
+		 references must be avoided.  For stores, we collect
+		 no lifetime info; for reads, we'd have to assert
+		 true_dependence false against every store in the
+		 TEST range.  */
+	      if (for_each_rtx (&PATTERN (insn), find_memory, NULL))
+		return FALSE;
+	    }
+	  if (insn == end)
+	    break;
+	}
+
+      if (! any_condjump_p (jump))
+	return FALSE;
+
+      /* Find the extent of the conditional.  */
+      cond = noce_get_condition (jump, &earliest);
+      if (! cond)
+	return FALSE;
+
+      /* Collect:
+	   MERGE_SET = set of registers set in MERGE_BB
+	   TEST_LIVE = set of registers live at EARLIEST
+	   TEST_SET  = set of registers set between EARLIEST and the
+		       end of the block.  */
+
+      tmp = INITIALIZE_REG_SET (tmp_head);
+      merge_set = INITIALIZE_REG_SET (merge_set_head);
+      test_live = INITIALIZE_REG_SET (test_live_head);
+      test_set = INITIALIZE_REG_SET (test_set_head);
+
+      /* ??? bb->local_set is only valid during calculate_global_regs_live,
+	 so we must recompute usage for MERGE_BB.  Not so bad, I suppose, 
+         since we've already asserted that MERGE_BB is small.  */
+      propagate_block (merge_bb, tmp, merge_set, merge_set, 0);
+
+      /* For small register class machines, don't lengthen lifetimes of
+	 hard registers before reload.  */
+      if (SMALL_REGISTER_CLASSES && ! reload_completed)
+	{
+          EXECUTE_IF_SET_IN_BITMAP
+	    (merge_set, 0, i,
+	     {
+	       if (i < FIRST_PSEUDO_REGISTER
+		   && ! fixed_regs[i]
+		   && ! global_regs[i])
+		fail = 1;
+	     });
+	}
+
+      /* For TEST, we're interested in a range of insns, not a whole block.
+	 Moreover, we're interested in the insns live from OTHER_BB.  */
+
+      COPY_REG_SET (test_live, other_bb->global_live_at_start);
+      pbi = init_propagate_block_info (test_bb, test_live, test_set, test_set,
+				       0);
+
+      for (insn = jump; ; insn = prev)
+	{
+	  prev = propagate_one_insn (pbi, insn);
+	  if (insn == earliest)
+	    break;
+	}
+
+      free_propagate_block_info (pbi);
+
+      /* We can perform the transformation if
+	   MERGE_SET & (TEST_SET | TEST_LIVE)
+	 and
+	   TEST_SET & merge_bb->global_live_at_start
+	 are empty.  */
+
+      bitmap_operation (tmp, test_set, test_live, BITMAP_IOR);
+      bitmap_operation (tmp, tmp, merge_set, BITMAP_AND);
+      EXECUTE_IF_SET_IN_BITMAP(tmp, 0, i, fail = 1);
+
+      bitmap_operation (tmp, test_set, merge_bb->global_live_at_start,
+			BITMAP_AND);
+      EXECUTE_IF_SET_IN_BITMAP(tmp, 0, i, fail = 1);
+
+      FREE_REG_SET (tmp);
+      FREE_REG_SET (merge_set);
+      FREE_REG_SET (test_live);
+      FREE_REG_SET (test_set);
+
+      if (fail)
+	return FALSE;
+    }
+
+ no_body:
+  /* We don't want to use normal invert_jump or redirect_jump because
+     we don't want to delete_insn called.  Also, we want to do our own
+     change group management.  */
+
+  old_dest = JUMP_LABEL (jump);
+  if (other_bb != new_dest)
+    {
+      new_label = block_label (new_dest);
+      if (reversep
+	  ? ! invert_jump_1 (jump, new_label)
+	  : ! redirect_jump_1 (jump, new_label))
+	goto cancel;
+    }
+
+  if (! apply_change_group ())
+    return FALSE;
+
+  if (other_bb != new_dest)
+    {
+      if (old_dest)
+	LABEL_NUSES (old_dest) -= 1;
+      if (new_label)
+	LABEL_NUSES (new_label) += 1;
+      JUMP_LABEL (jump) = new_label;
+      if (reversep)
+	invert_br_probabilities (jump);
+
+      redirect_edge_succ (BRANCH_EDGE (test_bb), new_dest);
+      if (reversep)
+	{
+	  gcov_type count, probability;
+	  count = BRANCH_EDGE (test_bb)->count;
+	  BRANCH_EDGE (test_bb)->count = FALLTHRU_EDGE (test_bb)->count;
+	  FALLTHRU_EDGE (test_bb)->count = count;
+	  probability = BRANCH_EDGE (test_bb)->probability;
+	  BRANCH_EDGE (test_bb)->probability
+	    = FALLTHRU_EDGE (test_bb)->probability;
+	  FALLTHRU_EDGE (test_bb)->probability = probability;
+	  update_br_prob_note (test_bb);
+	}
+    }
+
+  /* Move the insns out of MERGE_BB to before the branch.  */
+  if (head != NULL)
+    {
+      if (end == merge_bb->end)
+	merge_bb->end = PREV_INSN (head);
+
+      if (squeeze_notes (&head, &end))
+	return TRUE;
+
+      reorder_insns (head, end, PREV_INSN (earliest));
+    }
+
+  /* Remove the jump and edge if we can.  */
+  if (other_bb == new_dest)
+    {
+      delete_insn (jump);
+      remove_edge (BRANCH_EDGE (test_bb));
+      /* ??? Can't merge blocks here, as then_bb is still in use.
+	 At minimum, the merge will get done just before bb-reorder.  */
+    }
+
+  return TRUE;
+
+ cancel:
+  cancel_changes (0);
+  return FALSE;
+}

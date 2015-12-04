@@ -1,0 +1,31 @@
+int init_orig_buffers()
+{
+  int memory_size = 0;
+  
+  // allocate memory for reference frame buffers: imgY_org_frm, imgUV_org_frm
+  memory_size += get_mem2Dpel(&imgY_org_frm, img->height, img->width);
+
+  if (img->yuv_format != YUV400)
+    memory_size += get_mem3Dpel(&imgUV_org_frm, 2, img->height_cr, img->width_cr);
+
+
+  if(!active_sps->frame_mbs_only_flag)
+  {
+    // allocate memory for reference frame buffers: imgY_org, imgUV_org
+    init_top_bot_planes(imgY_org_frm, img->height, img->width, &imgY_org_top, &imgY_org_bot);
+
+    if (img->yuv_format != YUV400)
+    {
+      if(((imgUV_org_top) = (imgpel***)calloc(2,sizeof(imgpel**))) == NULL)
+        no_mem_exit("init_global_buffers: imgUV_org_top");
+      if(((imgUV_org_bot) = (imgpel***)calloc(2,sizeof(imgpel**))) == NULL)
+        no_mem_exit("init_global_buffers: imgUV_org_bot");
+
+      memory_size += 4*(sizeof(imgpel**));
+
+      memory_size += init_top_bot_planes(imgUV_org_frm[0], img->height_cr, img->width_cr, &(imgUV_org_top[0]), &(imgUV_org_bot[0]));
+      memory_size += init_top_bot_planes(imgUV_org_frm[1], img->height_cr, img->width_cr, &(imgUV_org_top[1]), &(imgUV_org_bot[1]));
+    }
+  }
+  return memory_size;
+}

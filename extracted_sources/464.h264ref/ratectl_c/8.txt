@@ -1,0 +1,610 @@
+int updateQuantizationParameter(int topfield)
+{
+  double dtmp;
+  int m_Bits;
+  int BFrameNumber;
+  int StepSize;
+  int PAverageQP;
+  int SumofBasicUnit;
+  int i;
+  
+  /* frame layer rate control */
+  if(img->BasicUnit==img->Frame_Total_Number_MB)
+  {
+    /* fixed quantization parameter is used to coded I frame, the first P frame and the first B frame
+    the quantization parameter is adjusted according the available channel bandwidth and 
+    the type of vide */  
+    /*top field*/
+    if((topfield)||(img->FieldControl==0))
+    {
+      if(img->type==I_SLICE)
+      {
+        m_Qc=MyInitialQp;
+        return m_Qc;
+      }
+      else if(img->type==B_SLICE)
+      {
+        if(input->successive_Bframe==1)
+        {
+            if((input->PicInterlace==ADAPTIVE_CODING)\
+              ||(input->MbInterlace))
+            {
+              if(img->FieldControl==0)
+              {                   
+                /*previous choice is frame coding*/
+                if(img->FieldFrame==1)
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FrameQPBuffer;
+                }           
+                /*previous choice is field coding*/
+                else
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FieldQPBuffer;
+                }
+              }
+            }
+
+          if(PreviousQp1==PreviousQp2)
+            m_Qc=PreviousQp1+2;
+          else
+            m_Qc=(PreviousQp1+PreviousQp2)/2+1;
+          m_Qc = MIN(m_Qc, RC_MAX_QUANT); // clipping
+          m_Qc = MAX(RC_MIN_QUANT, m_Qc);//clipping
+        }
+        else
+        {
+          BFrameNumber=(NumberofBFrames+1)%input->successive_Bframe;
+          if(BFrameNumber==0)
+            BFrameNumber=input->successive_Bframe;
+          
+          /*adaptive field/frame coding*/
+          if(BFrameNumber==1)
+          {
+            if((input->PicInterlace==ADAPTIVE_CODING)\
+              ||(input->MbInterlace))
+            {
+              if(img->FieldControl==0)
+              {
+                /*previous choice is frame coding*/
+                if(img->FieldFrame==1)
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FrameQPBuffer;
+                }
+                /*previous choice is field coding*/
+                else
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FieldQPBuffer;
+                }
+              }
+            }
+          }
+          
+          if((PreviousQp2-PreviousQp1)<=(-2*input->successive_Bframe-3))
+            StepSize=-3;
+          else  if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe-2))
+            StepSize=-2;
+          else if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe-1))
+            StepSize=-1;
+          else if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe))
+            StepSize=0;
+          else if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe+1))
+            StepSize=1;
+          else
+            StepSize=2;
+          
+          m_Qc=PreviousQp1+StepSize;
+          m_Qc +=MIN(2*(BFrameNumber-1),MAX(-2*(BFrameNumber-1), \
+            (BFrameNumber-1)*(PreviousQp2-PreviousQp1)/(input->successive_Bframe-1)));
+          m_Qc = MIN(m_Qc, RC_MAX_QUANT); // clipping
+          m_Qc = MAX(RC_MIN_QUANT, m_Qc);//clipping
+        }
+        return m_Qc;
+      }
+      else if((img->type==P_SLICE)&&(img->NumberofPPicture==0))
+      {
+        m_Qc=MyInitialQp;
+        
+        if(img->FieldControl==0)
+        {
+          if(active_sps->frame_mbs_only_flag)
+          {
+            img->TotalQpforPPicture +=m_Qc;
+            PreviousQp1=PreviousQp2;
+            PreviousQp2=m_Qc;
+            Pm_Qp=m_Qc;
+          }
+          /*adaptive field/frame coding*/
+          else
+            FrameQPBuffer=m_Qc;
+        }
+        
+        return m_Qc;  
+      }
+      else
+      {
+        /*adaptive field/frame coding*/
+        if(((input->PicInterlace==ADAPTIVE_CODING)\
+          ||(input->MbInterlace))\
+          &&(img->FieldControl==0))
+        {
+          /*previous choice is frame coding*/
+          if(img->FieldFrame==1)
+          {
+            img->TotalQpforPPicture +=FrameQPBuffer;
+            Pm_Qp=FrameQPBuffer;
+          }
+          /*previous choice is field coding*/
+          else
+          {
+            img->TotalQpforPPicture +=FieldQPBuffer;
+            Pm_Qp=FieldQPBuffer;
+          }
+        }
+        
+        m_X1=Pm_X1;
+        m_X2=Pm_X2;
+        m_Hp=PPreHeader;
+        m_Qp=Pm_Qp;
+        DuantQp=PDuantQp;
+        MADPictureC1=PMADPictureC1;
+        MADPictureC2=PMADPictureC2;
+        PreviousPictureMAD=PPictureMAD[0];
+        
+        /* predict the MAD of current picture*/
+        CurrentFrameMAD=MADPictureC1*PreviousPictureMAD+MADPictureC2;
+        
+        /*compute the number of bits for the texture*/      
+        
+        if(T<0)
+        {
+          m_Qc=m_Qp+DuantQp;
+          m_Qc = MIN(m_Qc, RC_MAX_QUANT); // clipping
+        }
+        else
+        {
+          m_Bits =T-m_Hp;
+          m_Bits = MAX(m_Bits, (int)(bit_rate/(MINVALUE*frame_rate)));
+          dtmp = CurrentFrameMAD * m_X1 * CurrentFrameMAD * m_X1 \
+            + 4 * m_X2 * CurrentFrameMAD * m_Bits;
+          if ((m_X2 == 0.0) || (dtmp < 0) || ((sqrt (dtmp) - m_X1 * CurrentFrameMAD) <= 0.0)) // fall back 1st order mode
+            m_Qstep = (float) (m_X1 * CurrentFrameMAD / (double) m_Bits);
+          else // 2nd order mode
+            m_Qstep = (float) ((2 * m_X2 * CurrentFrameMAD) / (sqrt (dtmp) - m_X1 * CurrentFrameMAD));
+          
+          m_Qc=Qstep2QP(m_Qstep);
+          
+          m_Qc = MIN(m_Qp+DuantQp,  m_Qc);  // control variation
+          m_Qc = MIN(m_Qc, RC_MAX_QUANT); // clipping
+          m_Qc = MAX(m_Qp-DuantQp, m_Qc); // control variation
+          m_Qc = MAX(RC_MIN_QUANT, m_Qc);
+        }
+        
+        if(img->FieldControl==0)
+        {
+          /*frame coding*/
+          if(active_sps->frame_mbs_only_flag)
+          {
+            img->TotalQpforPPicture +=m_Qc;
+            PreviousQp1=PreviousQp2;
+            PreviousQp2=m_Qc;
+            Pm_Qp=m_Qc;
+          }
+          /*adaptive field/frame coding*/
+          else
+            FrameQPBuffer=m_Qc;
+        }
+        
+        return m_Qc;
+      }
+   }
+   /*bottom field*/
+   else
+   {
+     if((img->type==P_SLICE)&&(img->IFLAG==0))
+     {
+       /*field coding*/
+       if(input->PicInterlace==FIELD_CODING)
+       {
+         img->TotalQpforPPicture +=m_Qc;
+         PreviousQp1=PreviousQp2+1; 
+         PreviousQp2=m_Qc;//+0 Recent change 13/1/2003
+         Pm_Qp=m_Qc;
+       }
+       /*adaptive field/frame coding*/
+       else
+         FieldQPBuffer=m_Qc;     
+     }
+     return m_Qc;
+   }
+  }
+  /*basic unit layer rate control*/
+  else
+  {
+    /*top filed of I frame*/
+    if(img->type==I_SLICE)
+    {
+      m_Qc=MyInitialQp;
+      return m_Qc;
+    }
+    /*bottom field of I frame*/
+    else if((img->type==P_SLICE)&&(img->IFLAG==1)&&(img->FieldControl==1))
+    {
+      m_Qc=MyInitialQp;
+      return m_Qc;
+    }
+    else if(img->type==B_SLICE)
+    {
+      /*top filed of B frame*/
+      if((topfield)||(img->FieldControl==0))
+      {
+        if(input->successive_Bframe==1)
+        {
+         /*adaptive field/frame coding*/
+          if((input->PicInterlace==ADAPTIVE_CODING)\
+              ||(input->MbInterlace))
+            {
+              if(img->FieldControl==0)
+              {             
+                /*previous choice is frame coding*/
+                if(img->FieldFrame==1)
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FrameQPBuffer;
+                }
+                /*previous choice is field coding*/
+                else
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FieldQPBuffer;
+                }
+              }
+            }
+
+          if(PreviousQp1==PreviousQp2)
+            m_Qc=PreviousQp1+2;
+          else
+            m_Qc=(PreviousQp1+PreviousQp2)/2+1;
+          m_Qc = MIN(m_Qc, RC_MAX_QUANT); // clipping
+          m_Qc = MAX(RC_MIN_QUANT, m_Qc);//clipping
+        }
+        else
+        {
+          BFrameNumber=(NumberofBFrames+1)%input->successive_Bframe;
+          if(BFrameNumber==0)
+            BFrameNumber=input->successive_Bframe;
+          
+          /*adaptive field/frame coding*/
+          if(BFrameNumber==1)
+          {
+            if((input->PicInterlace==ADAPTIVE_CODING)\
+              ||(input->MbInterlace))
+            {
+              if(img->FieldControl==0)
+              {
+                /*previous choice is frame coding*/
+                if(img->FieldFrame==1)
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FrameQPBuffer;
+                }
+                /*previous choice is field coding*/
+                else
+                {
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=FieldQPBuffer;
+                }
+              } 
+            }
+          }
+          
+          if((PreviousQp2-PreviousQp1)<=(-2*input->successive_Bframe-3))
+            StepSize=-3;
+          else  if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe-2))
+            StepSize=-2;
+          else if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe-1))
+            StepSize=-1;
+          else if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe))
+            StepSize=0;//0
+          else if((PreviousQp2-PreviousQp1)==(-2*input->successive_Bframe+1))
+            StepSize=1;//1
+          else
+            StepSize=2;//2
+          m_Qc=PreviousQp1+StepSize;
+          m_Qc +=MIN(2*(BFrameNumber-1),MAX(-2*(BFrameNumber-1), \
+            (BFrameNumber-1)*(PreviousQp2-PreviousQp1)/(input->successive_Bframe-1)));
+          m_Qc = MIN(m_Qc, RC_MAX_QUANT); // clipping
+          m_Qc = MAX(RC_MIN_QUANT, m_Qc);//clipping
+        }
+        return m_Qc;
+      }
+      /*bottom field of B frame*/
+      else
+        return m_Qc;
+    }
+    else if(img->type==P_SLICE)
+    {
+      if((img->NumberofGOP==1)&&(img->NumberofPPicture==0))
+      {
+        if((img->FieldControl==0)||((img->FieldControl==1)\
+          &&(img->IFLAG==0)))
+        {
+          /*top field of the first P frame*/
+          m_Qc=MyInitialQp;
+          img->NumberofBasicUnitHeaderBits=0;
+          img->NumberofBasicUnitTextureBits=0;
+          NumberofBasicUnit--;
+          /*bottom field of the first P frame*/
+          if((!topfield)&&(NumberofBasicUnit==0))
+          {
+            /*frame coding or field coding*/
+            if((active_sps->frame_mbs_only_flag)||(input->PicInterlace==FIELD_CODING))
+            {
+              img->TotalQpforPPicture +=m_Qc;
+              PreviousQp1=PreviousQp2;
+              PreviousQp2=m_Qc;
+              PAveFrameQP=m_Qc;
+              PAveHeaderBits3=PAveHeaderBits2;
+            }
+            /*adaptive frame/field coding*/
+            else if((input->PicInterlace==ADAPTIVE_CODING)\
+              ||(input->MbInterlace))
+            {
+              if(img->FieldControl==0)
+              {
+                FrameQPBuffer=m_Qc;
+                FrameAveHeaderBits=PAveHeaderBits2;
+              }
+              else
+              {
+                FieldQPBuffer=m_Qc;
+                FieldAveHeaderBits=PAveHeaderBits2;
+              }
+            }
+          }
+          Pm_Qp=m_Qc;
+          TotalFrameQP +=m_Qc;
+          return m_Qc;
+        }
+      }
+      else
+      {
+        m_X1=Pm_X1;
+        m_X2=Pm_X2;
+        m_Hp=PPreHeader;
+        m_Qp=Pm_Qp;
+        DuantQp=PDuantQp;
+        MADPictureC1=PMADPictureC1;
+        MADPictureC2=PMADPictureC2;
+
+        if(img->FieldControl==0)
+          SumofBasicUnit=TotalNumberofBasicUnit;
+        else
+          SumofBasicUnit=TotalNumberofBasicUnit/2;
+
+        /*the average QP of the previous frame is used to coded the first basic unit of the current frame or field*/
+        if(NumberofBasicUnit==SumofBasicUnit)
+        {
+
+          /*adaptive field/frame coding*/
+          if(((input->PicInterlace==ADAPTIVE_CODING)\
+            ||(input->MbInterlace))\
+            &&(img->FieldControl==0))
+          {
+            /*previous choice is frame coding*/
+            if(img->FieldFrame==1)
+            {
+              if(img->NumberofPPicture>0)
+                img->TotalQpforPPicture +=FrameQPBuffer;
+              PAveFrameQP=FrameQPBuffer;
+              PAveHeaderBits3=FrameAveHeaderBits;
+            }       
+            /*previous choice is field coding*/
+            else
+            {
+              if(img->NumberofPPicture>0)
+                img->TotalQpforPPicture +=FieldQPBuffer;
+              PAveFrameQP=FieldQPBuffer;
+              PAveHeaderBits3=FieldAveHeaderBits;
+            }
+          }
+
+          if(T<=0)
+          {
+            m_Qc=PAveFrameQP+2;
+            if(m_Qc>RC_MAX_QUANT)
+              m_Qc=RC_MAX_QUANT;
+            if(topfield||(img->FieldControl==0))
+              GOPOverdue=TRUE;
+          }
+          else
+          {
+            m_Qc=PAveFrameQP; 
+          }
+          TotalFrameQP +=m_Qc;
+          NumberofBasicUnit--;
+          Pm_Qp=PAveFrameQP;
+          return m_Qc;
+        }else
+        {
+          /*compute the number of remaining bits*/
+          TotalBasicUnitBits=img->NumberofBasicUnitHeaderBits+img->NumberofBasicUnitTextureBits;
+          T -=TotalBasicUnitBits;
+          img->NumberofBasicUnitHeaderBits=0;
+          img->NumberofBasicUnitTextureBits=0;
+          if(T<0)
+          {
+            if(GOPOverdue==TRUE)
+              m_Qc=m_Qp+2;
+            else 
+              m_Qc=m_Qp+DDquant;//2 
+            m_Qc = MIN(m_Qc, RC_MAX_QUANT);  // clipping
+            if(input->basicunit>=MBPerRow)
+              m_Qc = MIN(m_Qc, PAveFrameQP+6); 
+            else
+              m_Qc = MIN(m_Qc, PAveFrameQP+3);
+            
+            TotalFrameQP +=m_Qc;
+            NumberofBasicUnit--;
+            if(NumberofBasicUnit==0)
+            {
+              if((!topfield)||(img->FieldControl==0))
+              {
+                /*frame coding or field coding*/
+                if((active_sps->frame_mbs_only_flag)||(input->PicInterlace==FIELD_CODING))
+                {
+                  PAverageQP=(int)(1.0*TotalFrameQP/TotalNumberofBasicUnit+0.5);
+                  if (img->NumberofPPicture == (input->intra_period - 2))
+                    QPLastPFrame = PAverageQP;
+                  
+                  img->TotalQpforPPicture +=PAverageQP;
+                  if(GOPOverdue==TRUE)
+                  {
+                    PreviousQp1=PreviousQp2+1;
+                    PreviousQp2=PAverageQP;                   
+                  }
+                  else
+                  {
+                    if((img->NumberofPPicture==0)&&(img->NumberofGOP>1))
+                    {
+                      PreviousQp1=PreviousQp2;
+                      PreviousQp2=PAverageQP;
+                    }
+                    else if(img->NumberofPPicture>0)
+                    {
+                      PreviousQp1=PreviousQp2+1;
+                      PreviousQp2=PAverageQP;
+                    }
+                  }
+                  PAveFrameQP=PAverageQP;
+                  PAveHeaderBits3=PAveHeaderBits2;
+                }
+                /*adaptive field/frame coding*/
+                else if((input->PicInterlace==ADAPTIVE_CODING)\
+                  ||(input->MbInterlace))
+                {
+                  if(img->FieldControl==0)
+                  {
+                    PAverageQP=(int)(1.0*TotalFrameQP/TotalNumberofBasicUnit+0.5);
+                    FrameQPBuffer=PAverageQP;
+                    FrameAveHeaderBits=PAveHeaderBits2;
+                  }
+                  else
+                  {
+                    PAverageQP=(int)(1.0*TotalFrameQP/TotalNumberofBasicUnit+0.5);
+                    FieldQPBuffer=PAverageQP;
+                    FieldAveHeaderBits=PAveHeaderBits2;
+                  }
+                }
+              }
+            }
+            if(GOPOverdue==TRUE)
+              Pm_Qp=PAveFrameQP;
+            else
+              Pm_Qp=m_Qc;
+            return m_Qc;
+          }
+          else
+          {
+            /*predict the MAD of current picture*/
+            if(((input->PicInterlace==ADAPTIVE_CODING)||(input->MbInterlace))\
+              &&(img->FieldControl==1))
+            {
+              CurrentFrameMAD=MADPictureC1*FCBUPFMAD[TotalNumberofBasicUnit-NumberofBasicUnit]+MADPictureC2;
+              TotalBUMAD=0;
+              for(i=TotalNumberofBasicUnit-1; i>=(TotalNumberofBasicUnit-NumberofBasicUnit);i--)
+              {
+                CurrentBUMAD=MADPictureC1*FCBUPFMAD[i]+MADPictureC2;
+                TotalBUMAD +=CurrentBUMAD*CurrentBUMAD;
+              }
+            }
+            else
+            {
+              CurrentFrameMAD=MADPictureC1*BUPFMAD[TotalNumberofBasicUnit-NumberofBasicUnit]+MADPictureC2;
+              TotalBUMAD=0;
+              for(i=TotalNumberofBasicUnit-1; i>=(TotalNumberofBasicUnit-NumberofBasicUnit);i--)
+              {
+                CurrentBUMAD=MADPictureC1*BUPFMAD[i]+MADPictureC2;
+                TotalBUMAD +=CurrentBUMAD*CurrentBUMAD;
+              }
+            }
+            
+            /*compute the total number of bits for the current basic unit*/
+            m_Bits =(int)(T*CurrentFrameMAD*CurrentFrameMAD/TotalBUMAD);
+            /*compute the number of texture bits*/
+            m_Bits -=PAveHeaderBits2;
+            
+            m_Bits=MAX(m_Bits,(int)(bit_rate/(MINVALUE*frame_rate*TotalNumberofBasicUnit)));
+            
+            dtmp = CurrentFrameMAD * m_X1 * CurrentFrameMAD * m_X1 \
+              + 4 * m_X2 * CurrentFrameMAD * m_Bits;
+            if ((m_X2 == 0.0) || (dtmp < 0) || ((sqrt (dtmp) - m_X1 * CurrentFrameMAD) <= 0.0))  // fall back 1st order mode
+              m_Qstep = (float)(m_X1 * CurrentFrameMAD / (double) m_Bits);
+            else // 2nd order mode
+              m_Qstep = (float) ((2 * m_X2 * CurrentFrameMAD) / (sqrt (dtmp) - m_X1 * CurrentFrameMAD));
+            
+            m_Qc=Qstep2QP(m_Qstep);
+            m_Qc = MIN(m_Qp+DDquant,  m_Qc); // control variation
+            
+            if(input->basicunit>=MBPerRow)
+              m_Qc = MIN(PAveFrameQP+6, m_Qc);
+            else
+              m_Qc = MIN(PAveFrameQP+3, m_Qc);
+            
+            m_Qc = MIN(m_Qc, RC_MAX_QUANT);  // clipping
+            m_Qc = MAX(m_Qp-DDquant, m_Qc);  // control variation 
+            if(input->basicunit>=MBPerRow)
+              m_Qc = MAX(PAveFrameQP-6, m_Qc);
+            else
+              m_Qc = MAX(PAveFrameQP-3, m_Qc);
+            
+            m_Qc = MAX(RC_MIN_QUANT, m_Qc);
+            TotalFrameQP +=m_Qc;
+            Pm_Qp=m_Qc;
+            NumberofBasicUnit--;
+            if((NumberofBasicUnit==0)&&(img->type==P_SLICE))
+            {
+              if((!topfield)||(img->FieldControl==0))
+              {
+                /*frame coding or field coding*/
+                if((active_sps->frame_mbs_only_flag)||(input->PicInterlace==FIELD_CODING))
+                {
+                  PAverageQP=(int)(1.0*TotalFrameQP/TotalNumberofBasicUnit+0.5);
+                  if (img->NumberofPPicture == (input->intra_period - 2))
+                    QPLastPFrame = PAverageQP;
+
+                  img->TotalQpforPPicture +=PAverageQP;
+                  PreviousQp1=PreviousQp2;
+                  PreviousQp2=PAverageQP; 
+                  PAveFrameQP=PAverageQP;
+                  PAveHeaderBits3=PAveHeaderBits2;
+                }
+                else if((input->PicInterlace==ADAPTIVE_CODING)\
+                  ||(input->MbInterlace))
+                {
+                  if(img->FieldControl==0)
+                  {
+                    PAverageQP=(int)(1.0*TotalFrameQP/TotalNumberofBasicUnit+0.5);
+                    FrameQPBuffer=PAverageQP;
+                    FrameAveHeaderBits=PAveHeaderBits2;
+                  }
+                  else
+                  {
+                    PAverageQP=(int)(1.0*TotalFrameQP/TotalNumberofBasicUnit+0.5);
+                    FieldQPBuffer=PAverageQP;
+                    FieldAveHeaderBits=PAveHeaderBits2;
+                  }
+                }
+              }
+            }
+            return m_Qc;
+          }
+        }
+      }
+    } 
+  }
+  return m_Qc;
+}

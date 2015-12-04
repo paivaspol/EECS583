@@ -1,0 +1,16 @@
+void
+predict_insn (insn, predictor, probability)
+     rtx insn;
+     int probability;
+     enum br_predictor predictor;
+{
+  if (!any_condjump_p (insn))
+    abort ();
+
+  REG_NOTES (insn)
+    = gen_rtx_EXPR_LIST (REG_BR_PRED,
+			 gen_rtx_CONCAT (VOIDmode,
+					 GEN_INT ((int) predictor),
+					 GEN_INT ((int) probability)),
+			 REG_NOTES (insn));
+}

@@ -1,0 +1,28 @@
+static int32 enter (hash_table_t *h, uint32 hash, const char *key, int32 len, int32 val)
+{
+    int32 old;
+    hash_entry_t *cur, *new;
+    
+    if (lookup (h, hash, key, len, &old) == 0) {
+	/* Key already exists */
+	return old;
+    }
+    
+    cur = &(h->table[hash]);
+    if (cur->key == NULL) {
+	/* Empty slot at hashed location; add this entry */
+	cur->key = key;
+	cur->len = len;
+	cur->val = val;
+    } else {
+	/* Key collision; create new entry and link to hashed location */
+	new = (hash_entry_t *) ckd_calloc (1, sizeof(hash_entry_t));
+	new->key = key;
+	new->len = len;
+	new->val = val;
+	new->next = cur->next;
+	cur->next = new;
+    }
+
+    return val;
+}

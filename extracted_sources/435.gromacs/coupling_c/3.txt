@@ -1,0 +1,22 @@
+void berendsen_tcoupl(t_grpopts *opts,t_groups *grps,
+		      real dt,real SAfactor)
+{
+  int    i;
+  real   T,reft=0,lll; 
+
+  for(i=0; (i<opts->ngtc); i++) {
+    T = grps->tcstat[i].T;
+    
+    if ((opts->tau_t[i] > 0) && (T > 0.0)) {
+      reft = max(0.0,opts->ref_t[i]*SAfactor);
+      lll  = sqrt(1.0 + (dt/opts->tau_t[i])*(reft/T-1.0));
+      grps->tcstat[i].lambda = max(min(lll,1.25),0.8);
+    }
+    else
+      grps->tcstat[i].lambda = 1.0;
+
+    if (debug)
+      fprintf(debug,"TC: group %d: T: %g, Lambda: %g\n",
+	      i,T,grps->tcstat[i].lambda);
+  }
+}

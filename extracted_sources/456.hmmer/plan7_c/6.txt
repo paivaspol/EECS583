@@ -1,0 +1,31 @@
+void
+Plan7ComlogAppend(struct plan7_s *hmm, int argc, char **argv)
+{
+  int len;
+  int i;
+
+  /* figure out length of command line, w/ spaces and \n */
+  len = argc;
+  for (i = 0; i < argc; i++)
+    len += strlen(argv[i]);
+
+  /* allocate */
+  if (hmm->comlog != NULL)
+    {
+      len += strlen(hmm->comlog);
+      hmm->comlog = ReallocOrDie(hmm->comlog, sizeof(char)* (len+1));
+    }
+  else
+    {
+      hmm->comlog = MallocOrDie(sizeof(char)* (len+1));
+      *(hmm->comlog) = '\0'; /* need this to make strcat work */
+    }
+
+  /* append */
+  strcat(hmm->comlog, "\n");
+  for (i = 0; i < argc; i++)
+    {
+      strcat(hmm->comlog, argv[i]);
+      if (i < argc-1) strcat(hmm->comlog, " ");
+    }
+}

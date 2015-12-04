@@ -1,0 +1,19 @@
+void *save_calloc(char *name,char *file,int line,
+                  unsigned nelem,unsigned elsize)
+{
+  void *p;
+  
+  p=NULL;
+  if ((nelem==0)||(elsize==0))
+    p=NULL;
+  else
+    {
+      if ((p=calloc((size_t)nelem,(size_t)elsize))==NULL) 
+        fatal_error(errno,"calloc for %s (nelem=%d, elsize=%d, file %s"
+                    ", line %d)",name,nelem,elsize,file,line);
+    }
+#ifdef DEBUG
+  log_action(1,name,file,line,nelem,elsize,p);
+#endif
+  return p;
+}

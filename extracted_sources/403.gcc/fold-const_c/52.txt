@@ -1,0 +1,275 @@
+static tree
+extract_muldiv (t, c, code, wide_type)
+     tree t;
+     tree c;
+     enum tree_code code;
+     tree wide_type;
+{
+  tree type = TREE_TYPE (t);
+  enum tree_code tcode = TREE_CODE (t);
+  tree ctype = (wide_type != 0 && (GET_MODE_SIZE (TYPE_MODE (wide_type))
+				   > GET_MODE_SIZE (TYPE_MODE (type)))
+		? wide_type : type);
+  tree t1, t2;
+  int same_p = tcode == code;
+  tree op0 = NULL_TREE, op1 = NULL_TREE;
+
+  /* Don't deal with constants of zero here; they confuse the code below.  */
+  if (integer_zerop (c))
+    return NULL_TREE;
+
+  if (TREE_CODE_CLASS (tcode) == '1')
+    op0 = TREE_OPERAND (t, 0);
+
+  if (TREE_CODE_CLASS (tcode) == '2')
+    op0 = TREE_OPERAND (t, 0), op1 = TREE_OPERAND (t, 1);
+
+  /* Note that we need not handle conditional operations here since fold
+     already handles those cases.  So just do arithmetic here.  */
+  switch (tcode)
+    {
+    case INTEGER_CST:
+      /* For a constant, we can always simplify if we are a multiply
+	 or (for divide and modulus) if it is a multiple of our constant.  */
+      if (code == MULT_EXPR
+	  || integer_zerop (const_binop (TRUNC_MOD_EXPR, t, c, 0)))
+	return const_binop (code, convert (ctype, t), convert (ctype, c), 0);
+      break;
+
+    case CONVERT_EXPR:  case NON_LVALUE_EXPR:  case NOP_EXPR:
+      /* If op0 is an expression... */
+      if ((TREE_CODE_CLASS (TREE_CODE (op0)) == '<'
+	   || TREE_CODE_CLASS (TREE_CODE (op0)) == '1'
+	   || TREE_CODE_CLASS (TREE_CODE (op0)) == '2'
+	   || TREE_CODE_CLASS (TREE_CODE (op0)) == 'e')
+	  /* ...and is unsigned, and its type is smaller than ctype,
+	     then we cannot pass through this widening.  */
+	  && ((TREE_UNSIGNED (TREE_TYPE (op0))
+	       && ! (TREE_CODE (TREE_TYPE (op0)) == INTEGER_TYPE
+		     && TYPE_IS_SIZETYPE (TREE_TYPE (op0)))
+	       && (GET_MODE_SIZE (TYPE_MODE (ctype))
+		   > GET_MODE_SIZE (TYPE_MODE (TREE_TYPE (op0)))))
+	      /* ...and its type is larger than ctype,
+		 then we cannot pass through this truncation.  */
+	      || (GET_MODE_SIZE (TYPE_MODE (ctype))
+		  < GET_MODE_SIZE (TYPE_MODE (TREE_TYPE (op0))))))
+	break;
+
+      /* Pass the constant down and see if we can make a simplification.  If
+	 we can, replace this expression with the inner simplification for
+	 possible later conversion to our or some other type.  */
+      if (0 != (t1 = extract_muldiv (op0, convert (TREE_TYPE (op0), c), code,
+				     code == MULT_EXPR ? ctype : NULL_TREE)))
+	return t1;
+      break;
+
+    case NEGATE_EXPR:  case ABS_EXPR:
+      if ((t1 = extract_muldiv (op0, c, code, wide_type)) != 0)
+	return fold (build1 (tcode, ctype, convert (ctype, t1)));
+      break;
+
+    case MIN_EXPR:  case MAX_EXPR:
+      /* If widening the type changes the signedness, then we can't perform
+	 this optimization as that changes the result.  */
+      if (TREE_UNSIGNED (ctype) != TREE_UNSIGNED (type))
+	break;
+
+      /* MIN (a, b) / 5 -> MIN (a / 5, b / 5)  */
+      if ((t1 = extract_muldiv (op0, c, code, wide_type)) != 0
+	  && (t2 = extract_muldiv (op1, c, code, wide_type)) != 0)
+	{
+	  if (tree_int_cst_sgn (c) < 0)
+	    tcode = (tcode == MIN_EXPR ? MAX_EXPR : MIN_EXPR);
+
+	  return fold (build (tcode, ctype, convert (ctype, t1),
+			      convert (ctype, t2)));
+	}
+      break;
+
+    case WITH_RECORD_EXPR:
+      if ((t1 = extract_muldiv (TREE_OPERAND (t, 0), c, code, wide_type)) != 0)
+	return build (WITH_RECORD_EXPR, TREE_TYPE (t1), t1,
+		      TREE_OPERAND (t, 1));
+      break;
+
+    case SAVE_EXPR:
+      /* If this has not been evaluated and the operand has no side effects,
+	 we can see if we can do something inside it and make a new one.
+	 Note that this test is overly conservative since we can do this
+	 if the only reason it had side effects is that it was another
+	 similar SAVE_EXPR, but that isn't worth bothering with.  */
+      if (SAVE_EXPR_RTL (t) == 0 && ! TREE_SIDE_EFFECTS (TREE_OPERAND (t, 0))
+	  && 0 != (t1 = extract_muldiv (TREE_OPERAND (t, 0), c, code,
+					wide_type)))
+	{
+	  t1 = save_expr (t1);
+	  if (SAVE_EXPR_PERSISTENT_P (t) && TREE_CODE (t1) == SAVE_EXPR)
+	    SAVE_EXPR_PERSISTENT_P (t1) = 1;
+	  if (is_pending_size (t))
+	    put_pending_size (t1);
+	  return t1;
+	}
+      break;
+
+    case LSHIFT_EXPR:  case RSHIFT_EXPR:
+      /* If the second operand is constant, this is a multiplication
+	 or floor division, by a power of two, so we can treat it that
+	 way unless the multiplier or divisor overflows.  */
+      if (TREE_CODE (op1) == INTEGER_CST
+	  /* const_binop may not detect overflow correctly,
+	     so check for it explicitly here.  */
+	  && TYPE_PRECISION (TREE_TYPE (size_one_node)) > TREE_INT_CST_LOW (op1)
+	  && TREE_INT_CST_HIGH (op1) == 0
+	  && 0 != (t1 = convert (ctype,
+				 const_binop (LSHIFT_EXPR, size_one_node,
+					      op1, 0)))
+	  && ! TREE_OVERFLOW (t1))
+	return extract_muldiv (build (tcode == LSHIFT_EXPR
+				      ? MULT_EXPR : FLOOR_DIV_EXPR,
+				      ctype, convert (ctype, op0), t1),
+			       c, code, wide_type);
+      break;
+
+    case PLUS_EXPR:  case MINUS_EXPR:
+      /* See if we can eliminate the operation on both sides.  If we can, we
+	 can return a new PLUS or MINUS.  If we can't, the only remaining
+	 cases where we can do anything are if the second operand is a
+	 constant.  */
+      t1 = extract_muldiv (op0, c, code, wide_type);
+      t2 = extract_muldiv (op1, c, code, wide_type);
+      if (t1 != 0 && t2 != 0
+	  && (code == MULT_EXPR
+	      /* If not multiplication, we can only do this if either operand
+		 is divisible by c.  */
+	      || multiple_of_p (ctype, op0, c)
+	      || multiple_of_p (ctype, op1, c)))
+	return fold (build (tcode, ctype, convert (ctype, t1),
+			    convert (ctype, t2)));
+
+      /* If this was a subtraction, negate OP1 and set it to be an addition.
+	 This simplifies the logic below.  */
+      if (tcode == MINUS_EXPR)
+	tcode = PLUS_EXPR, op1 = negate_expr (op1);
+
+      if (TREE_CODE (op1) != INTEGER_CST)
+	break;
+
+      /* If either OP1 or C are negative, this optimization is not safe for
+	 some of the division and remainder types while for others we need
+	 to change the code.  */
+      if (tree_int_cst_sgn (op1) < 0 || tree_int_cst_sgn (c) < 0)
+	{
+	  if (code == CEIL_DIV_EXPR)
+	    code = FLOOR_DIV_EXPR;
+	  else if (code == FLOOR_DIV_EXPR)
+	    code = CEIL_DIV_EXPR;
+	  else if (code != MULT_EXPR
+		   && code != CEIL_MOD_EXPR && code != FLOOR_MOD_EXPR)
+	    break;
+	}
+
+      /* If it's a multiply or a division/modulus operation of a multiple
+         of our constant, do the operation and verify it doesn't overflow.  */
+      if (code == MULT_EXPR
+	  || integer_zerop (const_binop (TRUNC_MOD_EXPR, op1, c, 0)))
+        {
+          op1 = const_binop (code, convert (ctype, op1), convert (ctype, c), 0);
+          if (op1 == 0 || TREE_OVERFLOW (op1))
+            break;
+        }
+      else
+        break;
+
+      /* If we have an unsigned type is not a sizetype, we cannot widen
+	 the operation since it will change the result if the original
+	 computation overflowed.  */
+      if (TREE_UNSIGNED (ctype)
+	  && ! (TREE_CODE (ctype) == INTEGER_TYPE && TYPE_IS_SIZETYPE (ctype))
+	  && ctype != type)
+	break;
+
+      /* If we were able to eliminate our operation from the first side,
+	 apply our operation to the second side and reform the PLUS.  */
+      if (t1 != 0 && (TREE_CODE (t1) != code || code == MULT_EXPR))
+	return fold (build (tcode, ctype, convert (ctype, t1), op1));
+
+      /* The last case is if we are a multiply.  In that case, we can
+	 apply the distributive law to commute the multiply and addition
+	 if the multiplication of the constants doesn't overflow.  */
+      if (code == MULT_EXPR)
+	return fold (build (tcode, ctype, fold (build (code, ctype,
+						       convert (ctype, op0),
+						       convert (ctype, c))),
+			    op1));
+
+      break;
+
+    case MULT_EXPR:
+      /* We have a special case here if we are doing something like
+	 (C * 8) % 4 since we know that's zero.  */
+      if ((code == TRUNC_MOD_EXPR || code == CEIL_MOD_EXPR
+	   || code == FLOOR_MOD_EXPR || code == ROUND_MOD_EXPR)
+	  && TREE_CODE (TREE_OPERAND (t, 1)) == INTEGER_CST
+	  && integer_zerop (const_binop (TRUNC_MOD_EXPR, op1, c, 0)))
+	return omit_one_operand (type, integer_zero_node, op0);
+
+      /* ... fall through ...  */
+
+    case TRUNC_DIV_EXPR:  case CEIL_DIV_EXPR:  case FLOOR_DIV_EXPR:
+    case ROUND_DIV_EXPR:  case EXACT_DIV_EXPR:
+      /* If we can extract our operation from the LHS, do so and return a
+	 new operation.  Likewise for the RHS from a MULT_EXPR.  Otherwise,
+	 do something only if the second operand is a constant.  */
+      if (same_p
+	  && (t1 = extract_muldiv (op0, c, code, wide_type)) != 0)
+	return fold (build (tcode, ctype, convert (ctype, t1),
+			    convert (ctype, op1)));
+      else if (tcode == MULT_EXPR && code == MULT_EXPR
+	       && (t1 = extract_muldiv (op1, c, code, wide_type)) != 0)
+	return fold (build (tcode, ctype, convert (ctype, op0),
+			    convert (ctype, t1)));
+      else if (TREE_CODE (op1) != INTEGER_CST)
+	return 0;
+
+      /* If these are the same operation types, we can associate them
+	 assuming no overflow.  */
+      if (tcode == code
+	  && 0 != (t1 = const_binop (MULT_EXPR, convert (ctype, op1),
+				     convert (ctype, c), 0))
+	  && ! TREE_OVERFLOW (t1))
+	return fold (build (tcode, ctype, convert (ctype, op0), t1));
+
+      /* If these operations "cancel" each other, we have the main
+	 optimizations of this pass, which occur when either constant is a
+	 multiple of the other, in which case we replace this with either an
+	 operation or CODE or TCODE.
+
+	 If we have an unsigned type that is not a sizetype, we cannot do
+	 this since it will change the result if the original computation
+	 overflowed.  */
+      if ((! TREE_UNSIGNED (ctype)
+	   || (TREE_CODE (ctype) == INTEGER_TYPE && TYPE_IS_SIZETYPE (ctype)))
+	  && ((code == MULT_EXPR && tcode == EXACT_DIV_EXPR)
+	      || (tcode == MULT_EXPR
+		  && code != TRUNC_MOD_EXPR && code != CEIL_MOD_EXPR
+		  && code != FLOOR_MOD_EXPR && code != ROUND_MOD_EXPR)))
+	{
+	  if (integer_zerop (const_binop (TRUNC_MOD_EXPR, op1, c, 0)))
+	    return fold (build (tcode, ctype, convert (ctype, op0),
+				convert (ctype,
+					 const_binop (TRUNC_DIV_EXPR,
+						      op1, c, 0))));
+	  else if (integer_zerop (const_binop (TRUNC_MOD_EXPR, c, op1, 0)))
+	    return fold (build (code, ctype, convert (ctype, op0),
+				convert (ctype,
+					 const_binop (TRUNC_DIV_EXPR,
+						      c, op1, 0))));
+	}
+      break;
+
+    default:
+      break;
+    }
+
+  return 0;
+}

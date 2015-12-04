@@ -1,0 +1,211 @@
+void
+cse_end_of_basic_block (insn, data, follow_jumps, after_loop, skip_blocks)
+     rtx insn;
+     struct cse_basic_block_data *data;
+     int follow_jumps;
+     int after_loop;
+     int skip_blocks;
+{
+  rtx p = insn, q;
+  int nsets = 0;
+  int low_cuid = INSN_CUID (insn), high_cuid = INSN_CUID (insn);
+  rtx next = INSN_P (insn) ? insn : next_real_insn (insn);
+  int path_size = data->path_size;
+  int path_entry = 0;
+  int i;
+
+  /* Update the previous branch path, if any.  If the last branch was
+     previously TAKEN, mark it NOT_TAKEN.  If it was previously NOT_TAKEN,
+     shorten the path by one and look at the previous branch.  We know that
+     at least one branch must have been taken if PATH_SIZE is non-zero.  */
+  while (path_size > 0)
+    {
+      if (data->path[path_size - 1].status != NOT_TAKEN)
+	{
+	  data->path[path_size - 1].status = NOT_TAKEN;
+	  break;
+	}
+      else
+	path_size--;
+    }
+
+  /* If the first instruction is marked with QImode, that means we've
+     already processed this block.  Our caller will look at DATA->LAST
+     to figure out where to go next.  We want to return the next block
+     in the instruction stream, not some branched-to block somewhere
+     else.  We accomplish this by pretending our called forbid us to
+     follow jumps, or skip blocks.  */
+  if (GET_MODE (insn) == QImode)
+    follow_jumps = skip_blocks = 0;
+
+  /* Scan to end of this basic block.  */
+  while (p && GET_CODE (p) != CODE_LABEL)
+    {
+      /* Don't cse out the end of a loop.  This makes a difference
+	 only for the unusual loops that always execute at least once;
+	 all other loops have labels there so we will stop in any case.
+	 Cse'ing out the end of the loop is dangerous because it
+	 might cause an invariant expression inside the loop
+	 to be reused after the end of the loop.  This would make it
+	 hard to move the expression out of the loop in loop.c,
+	 especially if it is one of several equivalent expressions
+	 and loop.c would like to eliminate it.
+
+	 If we are running after loop.c has finished, we can ignore
+	 the NOTE_INSN_LOOP_END.  */
+
+      if (! after_loop && GET_CODE (p) == NOTE
+	  && NOTE_LINE_NUMBER (p) == NOTE_INSN_LOOP_END)
+	break;
+
+      /* Don't cse over a call to setjmp; on some machines (eg VAX)
+	 the regs restored by the longjmp come from
+	 a later time than the setjmp.  */
+      if (PREV_INSN (p) && GET_CODE (PREV_INSN (p)) == CALL_INSN
+	  && find_reg_note (PREV_INSN (p), REG_SETJMP, NULL))
+	break;
+
+      /* A PARALLEL can have lots of SETs in it,
+	 especially if it is really an ASM_OPERANDS.  */
+      if (INSN_P (p) && GET_CODE (PATTERN (p)) == PARALLEL)
+	nsets += XVECLEN (PATTERN (p), 0);
+      else if (GET_CODE (p) != NOTE)
+	nsets += 1;
+
+      /* Ignore insns made by CSE; they cannot affect the boundaries of
+	 the basic block.  */
+
+      if (INSN_UID (p) <= max_uid && INSN_CUID (p) > high_cuid)
+	high_cuid = INSN_CUID (p);
+      if (INSN_UID (p) <= max_uid && INSN_CUID (p) < low_cuid)
+	low_cuid = INSN_CUID (p);
+
+      /* See if this insn is in our branch path.  If it is and we are to
+	 take it, do so.  */
+      if (path_entry < path_size && data->path[path_entry].branch == p)
+	{
+	  if (data->path[path_entry].status != NOT_TAKEN)
+	    p = JUMP_LABEL (p);
+
+	  /* Point to next entry in path, if any.  */
+	  path_entry++;
+	}
+
+      /* If this is a conditional jump, we can follow it if -fcse-follow-jumps
+	 was specified, we haven't reached our maximum path length, there are
+	 insns following the target of the jump, this is the only use of the
+	 jump label, and the target label is preceded by a BARRIER.
+
+	 Alternatively, we can follow the jump if it branches around a
+	 block of code and there are no other branches into the block.
+	 In this case invalidate_skipped_block will be called to invalidate any
+	 registers set in the block when following the jump.  */
+
+      else if ((follow_jumps || skip_blocks) && path_size < PATHLENGTH - 1
+	       && GET_CODE (p) == JUMP_INSN
+	       && GET_CODE (PATTERN (p)) == SET
+	       && GET_CODE (SET_SRC (PATTERN (p))) == IF_THEN_ELSE
+	       && JUMP_LABEL (p) != 0
+	       && LABEL_NUSES (JUMP_LABEL (p)) == 1
+	       && NEXT_INSN (JUMP_LABEL (p)) != 0)
+	{
+	  for (q = PREV_INSN (JUMP_LABEL (p)); q; q = PREV_INSN (q))
+	    if ((GET_CODE (q) != NOTE
+		 || NOTE_LINE_NUMBER (q) == NOTE_INSN_LOOP_END
+		 || (PREV_INSN (q) && GET_CODE (PREV_INSN (q)) == CALL_INSN
+		     && find_reg_note (PREV_INSN (q), REG_SETJMP, NULL)))
+		&& (GET_CODE (q) != CODE_LABEL || LABEL_NUSES (q) != 0))
+	      break;
+
+	  /* If we ran into a BARRIER, this code is an extension of the
+	     basic block when the branch is taken.  */
+	  if (follow_jumps && q != 0 && GET_CODE (q) == BARRIER)
+	    {
+	      /* Don't allow ourself to keep walking around an
+		 always-executed loop.  */
+	      if (next_real_insn (q) == next)
+		{
+		  p = NEXT_INSN (p);
+		  continue;
+		}
+
+	      /* Similarly, don't put a branch in our path more than once.  */
+	      for (i = 0; i < path_entry; i++)
+		if (data->path[i].branch == p)
+		  break;
+
+	      if (i != path_entry)
+		break;
+
+	      data->path[path_entry].branch = p;
+	      data->path[path_entry++].status = TAKEN;
+
+	      /* This branch now ends our path.  It was possible that we
+		 didn't see this branch the last time around (when the
+		 insn in front of the target was a JUMP_INSN that was
+		 turned into a no-op).  */
+	      path_size = path_entry;
+
+	      p = JUMP_LABEL (p);
+	      /* Mark block so we won't scan it again later.  */
+	      PUT_MODE (NEXT_INSN (p), QImode);
+	    }
+	  /* Detect a branch around a block of code.  */
+	  else if (skip_blocks && q != 0 && GET_CODE (q) != CODE_LABEL)
+	    {
+	      rtx tmp;
+
+	      if (next_real_insn (q) == next)
+		{
+		  p = NEXT_INSN (p);
+		  continue;
+		}
+
+	      for (i = 0; i < path_entry; i++)
+		if (data->path[i].branch == p)
+		  break;
+
+	      if (i != path_entry)
+		break;
+
+	      /* This is no_labels_between_p (p, q) with an added check for
+		 reaching the end of a function (in case Q precedes P).  */
+	      for (tmp = NEXT_INSN (p); tmp && tmp != q; tmp = NEXT_INSN (tmp))
+		if (GET_CODE (tmp) == CODE_LABEL)
+		  break;
+
+	      if (tmp == q)
+		{
+		  data->path[path_entry].branch = p;
+		  data->path[path_entry++].status = AROUND;
+
+		  path_size = path_entry;
+
+		  p = JUMP_LABEL (p);
+		  /* Mark block so we won't scan it again later.  */
+		  PUT_MODE (NEXT_INSN (p), QImode);
+		}
+	    }
+	}
+      p = NEXT_INSN (p);
+    }
+
+  data->low_cuid = low_cuid;
+  data->high_cuid = high_cuid;
+  data->nsets = nsets;
+  data->last = p;
+
+  /* If all jumps in the path are not taken, set our path length to zero
+     so a rescan won't be done.  */
+  for (i = path_size - 1; i >= 0; i--)
+    if (data->path[i].status != NOT_TAKEN)
+      break;
+
+  if (i == -1)
+    data->path_size = 0;
+  else
+    data->path_size = path_size;
+
+  /* End the current branch path.  */
+  data->path[path_size].branch = 0;
+}

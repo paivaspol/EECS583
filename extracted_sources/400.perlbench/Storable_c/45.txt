@@ -1,0 +1,62 @@
+static SV *retrieve_overloaded(pTHX_ stcxt_t *cxt, char *cname)
+{
+	SV *rv;
+	SV *sv;
+	HV *stash;
+
+	TRACEME(("retrieve_overloaded (#%d)", cxt->tagnum));
+
+	/*
+	 * Same code as retrieve_ref(), duplicated to avoid extra call.
+	 */
+
+	rv = NEWSV(10002, 0);
+	SEEN(rv, cname, 0);		/* Will return if rv is null */
+	sv = retrieve(aTHX_ cxt, 0);	/* Retrieve <object> */
+	if (!sv)
+		return (SV *) 0;	/* Failed */
+
+	/*
+	 * WARNING: breaks RV encapsulation.
+	 */
+
+	sv_upgrade(rv, SVt_RV);
+	SvRV(rv) = sv;				/* $rv = \$sv */
+	SvROK_on(rv);
+
+	/*
+	 * Restore overloading magic.
+	 */
+
+	stash = SvTYPE(sv) ? (HV *) SvSTASH (sv) : 0;
+	if (!stash) {
+		CROAK(("Cannot restore overloading on %s(0x%"UVxf
+		       ") (package <unknown>)",
+		       sv_reftype(sv, FALSE),
+		       PTR2UV(sv)));
+	}
+	if (!Gv_AMG(stash)) {
+		SV *psv = newSVpvn("require ", 8);
+		const char *package = HvNAME(stash);
+		sv_catpv(psv, package);
+
+		TRACEME(("No overloading defined for package %s", package));
+		TRACEME(("Going to require module '%s' with '%s'", package, SvPVX(psv)));
+
+		eval_sv(psv, G_DISCARD);
+		sv_free(psv);
+		if (!Gv_AMG(stash)) {
+			CROAK(("Cannot restore overloading on %s(0x%"UVxf
+			       ") (package %s) (even after a \"require %s;\")",
+			       sv_reftype(sv, FALSE),
+			       PTR2UV(sv),
+			       package, package));
+		}
+	}
+
+	SvAMAGIC_on(rv);
+
+	TRACEME(("ok (retrieve_overloaded at 0x%"UVxf")", PTR2UV(rv)));
+
+	return rv;
+}

@@ -1,0 +1,53 @@
+void FinalizeUser_data_registered_itu_t_t35()
+{
+  int i;
+  SyntaxElement sym;
+  Bitstream *dest = seiUser_data_registered_itu_t_t35.data;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  sym.bitpattern = seiUser_data_registered_itu_t_t35.itu_t_t35_country_code;
+  sym.len = 8;
+  writeSyntaxElement2Buf_Fixed(&sym, dest);
+
+// #define PRINT_USER_DATA_REGISTERED_ITU_T_T35_INFO
+#ifdef PRINT_USER_DATA_REGISTERED_ITU_T_T35_INFO
+  printf(" ITU_T_T35_COUNTRTY_CODE %d \n", seiUser_data_registered_itu_t_t35.itu_t_t35_country_code);
+#endif
+
+  if(seiUser_data_registered_itu_t_t35.itu_t_t35_country_code == 0xFF)
+  {
+    sym.bitpattern = seiUser_data_registered_itu_t_t35.itu_t_t35_country_code_extension_byte;
+    sym.len = 8;
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+#ifdef PRINT_USER_DATA_REGISTERED_ITU_T_T35_INFO
+    printf(" ITU_T_T35_COUNTRTY_CODE_EXTENSION_BYTE %d \n", seiUser_data_registered_itu_t_t35.itu_t_t35_country_code_extension_byte);
+#endif
+  }
+
+  for( i = 0; i < seiUser_data_registered_itu_t_t35.total_byte; i++)
+  {
+    sym.bitpattern = seiUser_data_registered_itu_t_t35.byte[i];
+    sym.len = 8; // b (8)
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+#ifdef PRINT_USER_DATA_REGISTERED_ITU_T_T35_INFO
+    printf("itu_t_t35 payload_byte = %d\n", seiUser_data_registered_itu_t_t35.byte[i]);
+#endif
+  }
+#ifdef PRINT_USER_DATA_REGISTERED_ITU_T_T35_INFO
+#undef PRINT_USER_DATA_REGISTERED_ITU_T_T35_INFO
+#endif
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiUser_data_registered_itu_t_t35.payloadSize = dest->byte_pos;
+}

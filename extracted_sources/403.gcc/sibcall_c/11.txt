@@ -1,0 +1,36 @@
+static void
+purge_mem_unchanging_flag (x)
+     rtx x;
+{
+  RTX_CODE code;
+  int i, j;
+  const char *fmt;
+
+  if (x == NULL_RTX)
+    return;
+
+  code = GET_CODE (x);
+
+  if (code == MEM)
+    {
+      if (RTX_UNCHANGING_P (x)
+	  && (XEXP (x, 0) == current_function_internal_arg_pointer
+	      || (GET_CODE (XEXP (x, 0)) == PLUS
+		  && XEXP (XEXP (x, 0), 0) ==
+		     current_function_internal_arg_pointer
+		  && GET_CODE (XEXP (XEXP (x, 0), 1)) == CONST_INT)))
+	RTX_UNCHANGING_P (x) = 0;
+      return;
+    }
+
+  /* Scan all subexpressions.  */
+  fmt = GET_RTX_FORMAT (code);
+  for (i = 0; i < GET_RTX_LENGTH (code); i++, fmt++)
+    {
+      if (*fmt == 'e')
+	purge_mem_unchanging_flag (XEXP (x, i));
+      else if (*fmt == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  purge_mem_unchanging_flag (XVECEXP (x, i, j));
+    }
+}

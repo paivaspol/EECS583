@@ -1,0 +1,81 @@
+static void do_update_visc(int start,int homenr,double dt,
+			   rvec lamb[],real invmass[],t_grp_tcstat *tcstat,
+			   unsigned short ptype[],unsigned short cTC[],
+			   rvec x[],rvec xprime[],rvec v[],rvec vold[],
+			   rvec f[],matrix M,matrix box,real
+			   cos_accel,real vcos,bool bExtended)
+{
+  double imass,w_dt;
+  int    gt;
+  real   vn,vc;
+  real   lg,xi,vv;
+  real   fac,cosz;
+  rvec   vrel;
+  int    n,d;
+  
+  fac = 2*M_PI/(box[ZZ][ZZ]);
+
+  if(bExtended) {
+    /* Update with coupling to extended ensembles, used for
+     * Nose-Hoover and Parrinello-Rahman coupling
+     */
+    for (n=start; n<start+homenr; n++) {  
+      imass = invmass[n];
+      gt   = cTC[n];
+      cosz = cos(fac*x[n][ZZ]);
+      
+      copy_rvec(v[n],vold[n]);
+      copy_rvec(v[n],vrel);
+      
+      vc            = cosz*vcos;
+      vrel[XX]     -= vc;
+      xi           = tcstat[gt].xi;
+      
+      for (d=0; d<DIM; d++) {
+	vn             = v[n][d];
+	lg             = lamb[gt][d];
+	
+	if ((ptype[n] != eptDummy) && (ptype[n] != eptShell)) {
+	  vn              = lg*(vrel[d] + dt*(imass*f[n][d]-xi*vrel[d]-iprod(M[d],vrel)));
+	  if (d == XX) 
+	    vn           += vc + dt*cosz*cos_accel;
+	  
+	  v[n][d]        = vn;
+	  xprime[n][d]   = x[n][d]+vn*dt;
+	} else
+	  xprime[n][d]   = x[n][d];
+      }
+    }
+    
+  } else {
+    /* Classic version of update, used with berendsen coupling */
+    for (n=start; n<start+homenr; n++) {  
+      w_dt = invmass[n]*dt;
+      gt   = cTC[n];
+      cosz = cos(fac*x[n][ZZ]);
+      
+      for (d=0; d<DIM; d++) {
+	vn             = v[n][d];
+	lg             = lamb[gt][d];
+	vold[n][d]     = vn;
+	
+	if ((ptype[n] != eptDummy) && (ptype[n] != eptShell)) {
+	  if (d == XX) {
+	    vc           = cosz*vcos;
+	    /* Do not scale the cosine velocity profile */
+	    vv           = vc + lg*(vn - vc + f[n][d]*w_dt);
+	    /* Add the cosine accelaration profile */
+	    vv          += dt*cosz*cos_accel;
+	  } else
+	    vv           = lg*(vn + f[n][d]*w_dt);
+	  
+	  v[n][d]        = vv;
+	  xprime[n][d]   = x[n][d]+vv*dt;
+	} else {
+	  v[n][d]        = 0.0;
+	  xprime[n][d]   = x[n][d];
+	}
+      }
+    }
+  }
+}

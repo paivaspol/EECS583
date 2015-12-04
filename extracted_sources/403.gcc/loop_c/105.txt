@@ -1,0 +1,63 @@
+static void
+loop_iv_class_dump (bl, file, verbose)
+     const struct iv_class *bl;
+     FILE *file;
+     int verbose ATTRIBUTE_UNUSED;
+{
+  struct induction *v;
+  rtx incr;
+  int i;
+
+  if (! bl || ! file)
+    return;
+
+  fprintf (file, "IV class for reg %d, benefit %d\n",
+	   bl->regno, bl->total_benefit);
+
+  fprintf (file, " Init insn %d", INSN_UID (bl->init_insn));
+  if (bl->initial_value)
+    {
+      fprintf (file, ", init val: ");
+      print_simple_rtl (file, bl->initial_value);
+    }
+  if (bl->initial_test)
+    {
+      fprintf (file, ", init test: ");
+      print_simple_rtl (file, bl->initial_test);
+    }
+  fputc ('\n', file);
+
+  if (bl->final_value)
+    {
+      fprintf (file, " Final val: ");
+      print_simple_rtl (file, bl->final_value);
+      fputc ('\n', file);
+    }
+
+  if ((incr = biv_total_increment (bl)))
+    {
+      fprintf (file, " Total increment: ");
+      print_simple_rtl (file, incr);
+      fputc ('\n', file);
+    }
+
+  /* List the increments.  */
+  for (i = 0, v = bl->biv; v; v = v->next_iv, i++)
+    {
+      fprintf (file, " Inc%d: insn %d, incr: ", i, INSN_UID (v->insn));
+      print_simple_rtl (file, v->add_val);
+      fputc ('\n', file);
+    }
+
+  /* List the givs.  */
+  for (i = 0, v = bl->giv; v; v = v->next_iv, i++)
+    {
+      fprintf (file, " Giv%d: insn %d, benefit %d, ",
+	       i, INSN_UID (v->insn), v->benefit);
+      if (v->giv_type == DEST_ADDR)
+	  print_simple_rtl (file, v->mem);
+      else
+	  print_simple_rtl (file, single_set (v->insn));
+      fputc ('\n', file);
+    }
+}

@@ -1,0 +1,75 @@
+static void
+add_subscript_info (type_die, type)
+     dw_die_ref type_die;
+     tree type;
+{
+#ifndef MIPS_DEBUGGING_INFO
+  unsigned dimension_number;
+#endif
+  tree lower, upper;
+  dw_die_ref subrange_die;
+
+  /* The GNU compilers represent multidimensional array types as sequences of
+     one dimensional array types whose element types are themselves array
+     types.  Here we squish that down, so that each multidimensional array
+     type gets only one array_type DIE in the Dwarf debugging info. The draft
+     Dwarf specification say that we are allowed to do this kind of
+     compression in C (because there is no difference between an array or
+     arrays and a multidimensional array in C) but for other source languages
+     (e.g. Ada) we probably shouldn't do this.  */
+
+  /* ??? The SGI dwarf reader fails for multidimensional arrays with a
+     const enum type.  E.g. const enum machine_mode insn_operand_mode[2][10].
+     We work around this by disabling this feature.  See also
+     gen_array_type_die.  */
+#ifndef MIPS_DEBUGGING_INFO
+  for (dimension_number = 0;
+       TREE_CODE (type) == ARRAY_TYPE;
+       type = TREE_TYPE (type), dimension_number++)
+#endif
+    {
+      tree domain = TYPE_DOMAIN (type);
+
+      /* Arrays come in three flavors: Unspecified bounds, fixed bounds,
+	 and (in GNU C only) variable bounds.  Handle all three forms
+         here.  */
+      subrange_die = new_die (DW_TAG_subrange_type, type_die, NULL);
+      if (domain)
+	{
+	  /* We have an array type with specified bounds.  */
+	  lower = TYPE_MIN_VALUE (domain);
+	  upper = TYPE_MAX_VALUE (domain);
+
+	  /* define the index type.  */
+	  if (TREE_TYPE (domain))
+	    {
+	      /* ??? This is probably an Ada unnamed subrange type.  Ignore the
+		 TREE_TYPE field.  We can't emit debug info for this
+		 because it is an unnamed integral type.  */
+	      if (TREE_CODE (domain) == INTEGER_TYPE
+		  && TYPE_NAME (domain) == NULL_TREE
+		  && TREE_CODE (TREE_TYPE (domain)) == INTEGER_TYPE
+		  && TYPE_NAME (TREE_TYPE (domain)) == NULL_TREE)
+		;
+	      else
+		add_type_attribute (subrange_die, TREE_TYPE (domain), 0, 0,
+				    type_die);
+	    }
+
+	  /* ??? If upper is NULL, the array has unspecified length,
+	     but it does have a lower bound.  This happens with Fortran
+	       dimension arr(N:*)
+       	     Since the debugger is definitely going to need to know N
+	     to produce useful results, go ahead and output the lower
+	     bound solo, and hope the debugger can cope.  */
+
+	  add_bound_info (subrange_die, DW_AT_lower_bound, lower);
+	  if (upper)
+	    add_bound_info (subrange_die, DW_AT_upper_bound, upper);
+	}
+
+      /* Otherwise we have an array type with an unspecified length.  The
+	 DWARF-2 spec does not say how to handle this; let's just leave out the
+	 bounds.  */
+    }
+}

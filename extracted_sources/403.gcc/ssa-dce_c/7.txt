@@ -1,0 +1,29 @@
+static int
+inherently_necessary_register_1 (current_rtx, data)
+     rtx *current_rtx;
+     void *data ATTRIBUTE_UNUSED;
+{
+  rtx x = *current_rtx;
+
+  if (x == NULL_RTX)
+    return 0;
+  switch (GET_CODE (x))
+    {
+    case CLOBBER:
+      /* Do not traverse the rest of the clobber.  */
+      return -1;
+      break;
+    case PC:
+      return 0;
+      break;
+    case REG:
+      if (CONVERT_REGISTER_TO_SSA_P (REGNO (x)) || x == pc_rtx)
+	return 0;
+      else
+	return !0;
+      break;
+    default:
+      return 0;
+      break;
+    }
+}

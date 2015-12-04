@@ -1,0 +1,161 @@
+int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
+{
+  /* parallel = 1 (true) if all nodes are accessing the file */
+  /*            0 for access from node 0 only */
+
+  FILE *fp;
+  gauge_header *gh;
+  int32type tmp;
+  int j;
+  /* We keep this part of the old gauge header, but
+     we ignore all but the two parameters */
+
+  struct {                      /* Gauge field parameters */
+    int32type n_descript;          /* Number of bytes in character string */
+    char   descript[MAX_GAUGE_FIELD_DESCRIPT];  /* Describes gauge field */
+    int32type n_param;             /* Number of gauge field parameters */
+    double  param[MAX_GAUGE_FIELD_PARAM];        /* GF parameters */
+  } gauge_field;
+  char myname[] = "read_1996_gauge_hdr";
+
+  fp = gf->fp;
+  gh = gf->header;
+  
+  /* Assumes the magic number has already been read */
+  
+  tmp = gh->magic_number;
+  
+  if(gh->magic_number == GAUGE_VERSION_NUMBER_1996) 
+    {
+      printf("Reading as 1996-style gauge field configuration.\n");
+      *byterevflag=0;
+    }
+  else 
+    {
+      byterevn((int32type *)&gh->magic_number,1);
+      if(gh->magic_number == GAUGE_VERSION_NUMBER_1996) 
+	{
+	  *byterevflag=1;
+	  printf("Reading as 1996-style gauge field configuration with byte reversal\n");
+	  if( sizeof(double) != sizeof(int32type)) {
+	    printf("read_1996_gauge_hdr: Can't byte reverse\n");
+	    printf("requires size of int32type(%d) = size of double(%d)\n",
+		   (int)sizeof(int32type),(int)sizeof(double));
+	    terminate(1);
+	  }
+	}
+      /* Not recognized as 1996 format */
+      else
+      {
+	/* Not recognized as 1996 format */
+	/* Restore header to entry state */
+	gh->magic_number = tmp;
+	return 1;  /* error signal */
+      }
+    }
+  
+  /* Read header, do byte reversal, 
+     if necessary, and check consistency */
+  
+  /* Lattice dimensions */
+  
+  if(psread_byteorder(*byterevflag,parallel,fp,gh->dims,sizeof(gh->dims),
+		   myname,"dimensions")!=0)terminate(1);
+
+  if(gh->dims[0] != nx || 
+     gh->dims[1] != ny ||
+     gh->dims[2] != nz ||
+     gh->dims[3] != nt)
+    {
+      /* So we can use this routine to discover the dimensions,
+	 we provide that if nx = ny = nz = nt = -1 initially
+	 we don't die */
+      if(nx != -1 || ny != -1 || nz != -1 || nt != -1)
+	{
+	  printf("read_1996_gauge_hdr: Incorrect lattice dimensions ");
+	  for(j=0;j<4;j++)
+	    printf("%d ",gh->dims[j]); 
+	  printf("\n");fflush(stdout);terminate(1);
+	}
+      else
+	{
+	  nx = gh->dims[0];
+	  ny = gh->dims[1];
+	  nz = gh->dims[2];
+	  nt = gh->dims[3];
+	  volume = nx*ny*nz*nt;
+	}
+    }
+  
+  /* Header byte length */
+  
+  if(psread_byteorder(*byterevflag,parallel,fp,
+		   &gh->header_bytes,sizeof(gh->header_bytes),
+		   myname,"header size")!=0)terminate(1);
+  
+  /* Data order */
+  
+  if(psread_byteorder(*byterevflag,parallel,fp,
+		   &gh->order,sizeof(gh->order),
+		   myname,"order")!=0)terminate(1);
+  
+  /* Length of gauge field descriptor */
+  
+  if(psread_byteorder(*byterevflag,parallel,fp,
+		   &gauge_field.n_descript,sizeof(gauge_field.n_descript),
+		   myname,"n_descript")!=0)terminate(1);
+
+  if(gauge_field.n_descript > MAX_GAUGE_FIELD_DESCRIPT)
+    {
+      printf("read_1996_gauge_hdr: gauge field descriptor length %d\n",
+	     gauge_field.n_descript);
+      printf(" exceeds allocated space %d\n",
+	     MAX_GAUGE_FIELD_DESCRIPT);
+      terminate(1);
+    }
+  
+  /* Gauge field descriptor */
+  
+  /* We read the specified length, rather than the allocated length */
+  /* Read without byte reversal */
+
+  if(psread_data(parallel,fp,gauge_field.descript,sizeof(gauge_field.descript),
+	      myname,"descrip")!=0)terminate(1);
+
+  /* Assures termination of string */
+  gauge_field.descript
+    [gauge_field.n_descript-1] = '\0';
+
+  printf("gauge_field.descript: %s\n", gauge_field.descript);
+
+  /* Number of gauge field parameters */
+  
+  if(psread_byteorder(*byterevflag,parallel,fp,
+		   &gauge_field.n_param,sizeof(gauge_field.n_param),
+		   myname,"n_param")!=0)terminate(1);
+
+  if(gauge_field.n_param > MAX_GAUGE_FIELD_PARAM )
+    {
+      printf("read_1996_gauge_hdr: gauge field parameter vector length %d\n",
+	     gauge_field.n_param);
+      printf(" exceeds allocated space %d\n",
+	     MAX_GAUGE_FIELD_PARAM);
+      terminate(1);
+    }
+  
+  /* Gauge field parameters */
+  
+  for(j=0;j<gauge_field.n_param;j++)
+    {
+      if(psread_byteorder(*byterevflag,parallel,fp,
+		     &gauge_field.param[j],sizeof(gauge_field.param[j]),
+		     myname,"gauge param")!=0)terminate(1);
+      printf("gauge_field.param[%d] = %f\n", j, gauge_field.param[j]);
+    }
+  
+  /* Since there aren't many of these lattices in circulation, 
+     we simply ignore the information in this header */
+  
+  return 0;
+  
+} /* read_1996_gauge_hdr */

@@ -1,0 +1,26 @@
+void
+_cpp_do__Pragma (pfile)
+     cpp_reader *pfile;
+{
+  const cpp_token *string = get__Pragma_string (pfile);
+
+  if (!string)
+    cpp_error (pfile, "_Pragma takes a parenthesized string literal");
+  else
+    {
+      /* Ideally, we'd like
+			token1 _Pragma ("foo") token2
+	 to be output as
+			token1
+			# 7 "file.c"
+			#pragma foo
+			# 7 "file.c"
+					       token2
+	 Getting these correct line markers is a little tricky.  */
+
+      unsigned int orig_line = pfile->line;
+      destringize_and_run (pfile, &string->val.str);
+      pfile->line = orig_line;
+      pfile->buffer->saved_flags = BOL;
+    }
+}

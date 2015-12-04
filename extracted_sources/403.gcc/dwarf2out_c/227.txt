@@ -1,0 +1,78 @@
+static void
+gen_struct_or_union_type_die (type, context_die)
+     tree type;
+     dw_die_ref context_die;
+{
+  dw_die_ref type_die = lookup_type_die (type);
+  dw_die_ref scope_die = 0;
+  int nested = 0;
+  int complete = (TYPE_SIZE (type)
+		  && (! TYPE_STUB_DECL (type)
+		      || ! TYPE_DECL_SUPPRESS_DEBUG (TYPE_STUB_DECL (type))));
+
+  if (type_die && ! complete)
+    return;
+
+  if (TYPE_CONTEXT (type) != NULL_TREE
+      && AGGREGATE_TYPE_P (TYPE_CONTEXT (type)))
+    nested = 1;
+
+  scope_die = scope_die_for (type, context_die);
+
+  if (! type_die || (nested && scope_die == comp_unit_die))
+    /* First occurrence of type or toplevel definition of nested class.  */
+    {
+      dw_die_ref old_die = type_die;
+
+      type_die = new_die (TREE_CODE (type) == RECORD_TYPE
+			  ? DW_TAG_structure_type : DW_TAG_union_type,
+			  scope_die, type);
+      equate_type_number_to_die (type, type_die);
+      if (old_die)
+	add_AT_die_ref (type_die, DW_AT_specification, old_die);
+      else
+	add_name_attribute (type_die, type_tag (type));
+    }
+  else
+    remove_AT (type_die, DW_AT_declaration);
+
+  /* If this type has been completed, then give it a byte_size attribute and
+     then give a list of members.  */
+  if (complete)
+    {
+      /* Prevent infinite recursion in cases where the type of some member of
+         this type is expressed in terms of this type itself.  */
+      TREE_ASM_WRITTEN (type) = 1;
+      add_byte_size_attribute (type_die, type);
+      if (TYPE_STUB_DECL (type) != NULL_TREE)
+	add_src_coords_attributes (type_die, TYPE_STUB_DECL (type));
+
+      /* If the first reference to this type was as the return type of an
+	 inline function, then it may not have a parent.  Fix this now.  */
+      if (type_die->die_parent == NULL)
+	add_child_die (scope_die, type_die);
+
+      push_decl_scope (type);
+      gen_member_die (type, type_die);
+      pop_decl_scope ();
+
+      /* GNU extension: Record what type our vtable lives in.  */
+      if (TYPE_VFIELD (type))
+	{
+	  tree vtype = DECL_FCONTEXT (TYPE_VFIELD (type));
+
+	  gen_type_die (vtype, context_die);
+	  add_AT_die_ref (type_die, DW_AT_containing_type,
+			  lookup_type_die (vtype));
+	}
+    }
+  else
+    {
+      add_AT_flag (type_die, DW_AT_declaration, 1);
+
+      /* We don't need to do this for function-local types.  */
+      if (TYPE_STUB_DECL (type)
+	  && ! decl_function_context (TYPE_STUB_DECL (type)))
+	VARRAY_PUSH_TREE (incomplete_types, type);
+    }
+}

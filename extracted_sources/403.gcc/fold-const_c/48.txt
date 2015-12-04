@@ -1,0 +1,67 @@
+static tree
+fold_range_test (exp)
+     tree exp;
+{
+  int or_op = (TREE_CODE (exp) == TRUTH_ORIF_EXPR
+	       || TREE_CODE (exp) == TRUTH_OR_EXPR);
+  int in0_p, in1_p, in_p;
+  tree low0, low1, low, high0, high1, high;
+  tree lhs = make_range (TREE_OPERAND (exp, 0), &in0_p, &low0, &high0);
+  tree rhs = make_range (TREE_OPERAND (exp, 1), &in1_p, &low1, &high1);
+  tree tem;
+
+  /* If this is an OR operation, invert both sides; we will invert
+     again at the end.  */
+  if (or_op)
+    in0_p = ! in0_p, in1_p = ! in1_p;
+
+  /* If both expressions are the same, if we can merge the ranges, and we
+     can build the range test, return it or it inverted.  If one of the
+     ranges is always true or always false, consider it to be the same
+     expression as the other.  */
+  if ((lhs == 0 || rhs == 0 || operand_equal_p (lhs, rhs, 0))
+      && merge_ranges (&in_p, &low, &high, in0_p, low0, high0,
+		       in1_p, low1, high1)
+      && 0 != (tem = (build_range_check (TREE_TYPE (exp),
+					 lhs != 0 ? lhs
+					 : rhs != 0 ? rhs : integer_zero_node,
+					 in_p, low, high))))
+    return or_op ? invert_truthvalue (tem) : tem;
+
+  /* On machines where the branch cost is expensive, if this is a
+     short-circuited branch and the underlying object on both sides
+     is the same, make a non-short-circuit operation.  */
+  else if (BRANCH_COST >= 2
+	   && lhs != 0 && rhs != 0
+	   && (TREE_CODE (exp) == TRUTH_ANDIF_EXPR
+	       || TREE_CODE (exp) == TRUTH_ORIF_EXPR)
+	   && operand_equal_p (lhs, rhs, 0))
+    {
+      /* If simple enough, just rewrite.  Otherwise, make a SAVE_EXPR
+	 unless we are at top level or LHS contains a PLACEHOLDER_EXPR, in
+	 which cases we can't do this.  */
+      if (simple_operand_p (lhs))
+	return build (TREE_CODE (exp) == TRUTH_ANDIF_EXPR
+		      ? TRUTH_AND_EXPR : TRUTH_OR_EXPR,
+		      TREE_TYPE (exp), TREE_OPERAND (exp, 0),
+		      TREE_OPERAND (exp, 1));
+
+      else if (global_bindings_p () == 0
+	       && ! contains_placeholder_p (lhs))
+	{
+	  tree common = save_expr (lhs);
+
+	  if (0 != (lhs = build_range_check (TREE_TYPE (exp), common,
+					     or_op ? ! in0_p : in0_p,
+					     low0, high0))
+	      && (0 != (rhs = build_range_check (TREE_TYPE (exp), common,
+						 or_op ? ! in1_p : in1_p,
+						 low1, high1))))
+	    return build (TREE_CODE (exp) == TRUTH_ANDIF_EXPR
+			  ? TRUTH_AND_EXPR : TRUTH_OR_EXPR,
+			  TREE_TYPE (exp), lhs, rhs);
+	}
+    }
+
+  return 0;
+}

@@ -1,0 +1,104 @@
+int32 fe_process_utt(fe_t *FE, int16 *spch, int32 nsamps, float32 ***cep_block)	/* RAH, upgraded cep_block to float32 */
+{
+    int32 frame_start, frame_count=0, whichframe=0;
+    int32 i, spbuf_len, offset=0;  
+    double *spbuf, *fr_data, *fr_fea;
+    int16 *tmp_spch = spch;
+    float32 **cep=NULL;
+    
+    /* are there enough samples to make at least 1 frame? */
+    if (nsamps+FE->NUM_OVERFLOW_SAMPS >= FE->FRAME_SIZE){
+      
+      /* if there are previous samples, pre-pend them to input speech samps */
+      if ((FE->NUM_OVERFLOW_SAMPS > 0)) {
+	
+	if ((tmp_spch = (int16 *) malloc (sizeof(int16)*(FE->NUM_OVERFLOW_SAMPS +nsamps)))==NULL){
+	    fprintf(stderr,"memory alloc failed in fe_process_utt()\n...exiting\n");
+	    exit(0);
+	}
+	/* RAH */
+	memcpy (tmp_spch,FE->OVERFLOW_SAMPS,FE->NUM_OVERFLOW_SAMPS*(sizeof(int16))); /* RAH */
+	memcpy(tmp_spch+FE->NUM_OVERFLOW_SAMPS, spch, nsamps*(sizeof(int16))); /* RAH */
+	nsamps += FE->NUM_OVERFLOW_SAMPS;
+	FE->NUM_OVERFLOW_SAMPS = 0; /*reset overflow samps count */
+      }
+      /* compute how many complete frames  can be processed and which samples correspond to those samps */
+      frame_count=0;
+      for (frame_start=0; frame_start+FE->FRAME_SIZE <= nsamps; frame_start += FE->FRAME_SHIFT)
+	frame_count++;
+
+
+      /*      if (cep!=NULL) fe_free_2d((void**)cep); */ /* It should never not be NULL */
+      /* 01.14.01 RAH, added +1 Adding one gives us space to stick the last flushed buffer*/
+      if ((cep = (float32 **)fe_create_2d(frame_count+1,FE->NUM_CEPSTRA,sizeof(float32))) == NULL) {
+	fprintf(stderr,"memory alloc for cep failed in fe_process_utt()\n\tfe_create_2d(%ld,%d,%d)\n...exiting\n",(long int) (frame_count+1),FE->NUM_CEPSTRA,sizeof(float32));  /* typecast to make the compiler happy - EBG */
+	exit(0);
+      }
+
+
+      spbuf_len = (frame_count-1)*FE->FRAME_SHIFT + FE->FRAME_SIZE;    
+      /* assert(spbuf_len <= nsamps);*/
+      if ((spbuf=(double *)calloc(spbuf_len, sizeof(double)))==NULL){
+	  fprintf(stderr,"memory alloc failed in fe_process_utt()\n...exiting\n");
+	  exit(0);
+      }
+      
+      /* pre-emphasis if needed,convert from int16 to double */
+      if (FE->PRE_EMPHASIS_ALPHA != 0.0){
+	fe_pre_emphasis(tmp_spch, spbuf, spbuf_len, FE->PRE_EMPHASIS_ALPHA, FE->PRIOR);
+      } else{
+	fe_short_to_double(tmp_spch, spbuf, spbuf_len);
+      }
+      
+      /* frame based processing - let's make some cepstra... */    
+      fr_data = (double *)calloc(FE->FRAME_SIZE, sizeof(double));
+      fr_fea = (double *)calloc(FE->NUM_CEPSTRA, sizeof(double));
+      
+      if (fr_data==NULL || fr_fea==NULL){
+	  fprintf(stderr,"memory alloc failed in fe_process_utt()\n...exiting\n");
+	  exit(0);
+      }
+
+      for (whichframe=0;whichframe<frame_count;whichframe++){
+	for (i=0;i<FE->FRAME_SIZE;i++)
+	  fr_data[i] = spbuf[whichframe*FE->FRAME_SHIFT + i];
+	
+	fe_hamming_window(fr_data, FE->HAMMING_WINDOW, FE->FRAME_SIZE);
+	
+	fe_frame_to_fea(FE, fr_data, fr_fea);
+	
+	for (i=0;i<FE->NUM_CEPSTRA;i++)
+	  cep[whichframe][i] = (float32)fr_fea[i];
+      }
+      /* done making cepstra */
+      
+      
+      /* assign samples which don't fill an entire frame to FE overflow buffer for use on next pass */
+      if (spbuf_len < nsamps)	{
+	offset = ((frame_count)*FE->FRAME_SHIFT);
+	memcpy(FE->OVERFLOW_SAMPS,tmp_spch+offset,(nsamps-offset)*sizeof(int16));
+	FE->NUM_OVERFLOW_SAMPS = nsamps-offset;
+	FE->PRIOR = tmp_spch[offset-1];
+	assert(FE->NUM_OVERFLOW_SAMPS<FE->FRAME_SIZE);
+      }
+      
+      if (spch != tmp_spch) 
+	free (tmp_spch);
+      
+      free(spbuf);
+      free(fr_data);
+      free(fr_fea);
+    }
+    
+    /* if not enough total samps for a single frame, append new samps to
+       previously stored overlap samples */
+    else { 
+      memcpy(FE->OVERFLOW_SAMPS+FE->NUM_OVERFLOW_SAMPS,tmp_spch, nsamps*(sizeof(int16)));
+      FE->NUM_OVERFLOW_SAMPS += nsamps;
+      assert(FE->NUM_OVERFLOW_SAMPS < FE->FRAME_SIZE);
+      frame_count=0;
+    }
+
+    *cep_block = cep; /* MLS */
+    return frame_count;
+}

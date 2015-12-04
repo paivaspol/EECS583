@@ -1,0 +1,30 @@
+static void
+utf8_extend_token (c)
+     int c;
+{
+  int shift, mask;
+
+  if      (c <= 0x0000007f)
+    {
+      extend_token (c);
+      return;
+    }
+  else if (c <= 0x000007ff)
+    shift = 6, mask = 0xc0;
+  else if (c <= 0x0000ffff)
+    shift = 12, mask = 0xe0;
+  else if (c <= 0x001fffff)
+    shift = 18, mask = 0xf0;
+  else if (c <= 0x03ffffff)
+    shift = 24, mask = 0xf8;
+  else
+    shift = 30, mask = 0xfc;
+
+  extend_token (mask | (c >> shift));
+  do
+    {
+      shift -= 6;
+      extend_token ((unsigned char) (0x80 | (c >> shift)));
+    }
+  while (shift);
+}

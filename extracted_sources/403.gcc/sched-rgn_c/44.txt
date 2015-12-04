@@ -1,0 +1,90 @@
+static void
+init_regions ()
+{
+  sbitmap blocks;
+  int rgn;
+
+  nr_regions = 0;
+  rgn_table = (region *) xmalloc ((n_basic_blocks) * sizeof (region));
+  rgn_bb_table = (int *) xmalloc ((n_basic_blocks) * sizeof (int));
+  block_to_bb = (int *) xmalloc ((n_basic_blocks) * sizeof (int));
+  containing_rgn = (int *) xmalloc ((n_basic_blocks) * sizeof (int));
+
+  /* Compute regions for scheduling.  */
+  if (reload_completed
+      || n_basic_blocks == 1
+      || !flag_schedule_interblock)
+    {
+      find_single_block_region ();
+    }
+  else
+    {
+      /* Verify that a 'good' control flow graph can be built.  */
+      if (is_cfg_nonregular ())
+	{
+	  find_single_block_region ();
+	}
+      else
+	{
+	  sbitmap *dom;
+	  struct edge_list *edge_list;
+
+	  dom = sbitmap_vector_alloc (n_basic_blocks, n_basic_blocks);
+
+	  /* The scheduler runs after flow; therefore, we can't blindly call
+	     back into find_basic_blocks since doing so could invalidate the
+	     info in global_live_at_start.
+
+	     Consider a block consisting entirely of dead stores; after life
+	     analysis it would be a block of NOTE_INSN_DELETED notes.  If
+	     we call find_basic_blocks again, then the block would be removed
+	     entirely and invalidate our the register live information.
+
+	     We could (should?) recompute register live information.  Doing
+	     so may even be beneficial.  */
+	  edge_list = create_edge_list ();
+
+	  /* Compute the dominators and post dominators.  */
+	  calculate_dominance_info (NULL, dom, CDI_DOMINATORS);
+
+	  /* build_control_flow will return nonzero if it detects unreachable
+	     blocks or any other irregularity with the cfg which prevents
+	     cross block scheduling.  */
+	  if (build_control_flow (edge_list) != 0)
+	    find_single_block_region ();
+	  else
+	    find_rgns (edge_list, dom);
+
+	  if (sched_verbose >= 3)
+	    debug_regions ();
+
+	  /* We are done with flow's edge list.  */
+	  free_edge_list (edge_list);
+
+	  /* For now.  This will move as more and more of haifa is converted
+	     to using the cfg code in flow.c.  */
+	  free (dom);
+	}
+    }
+
+
+  if (CHECK_DEAD_NOTES)
+    {
+      blocks = sbitmap_alloc (n_basic_blocks);
+      deaths_in_region = (int *) xmalloc (sizeof (int) * nr_regions);
+      /* Remove all death notes from the subroutine.  */
+      for (rgn = 0; rgn < nr_regions; rgn++)
+	{
+	  int b;
+
+	  sbitmap_zero (blocks);
+	  for (b = RGN_NR_BLOCKS (rgn) - 1; b >= 0; --b)
+	    SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn) + b]);
+
+	  deaths_in_region[rgn] = count_or_remove_death_notes (blocks, 1);
+	}
+      sbitmap_free (blocks);
+    }
+  else
+    count_or_remove_death_notes (NULL, 1);
+}

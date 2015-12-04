@@ -1,0 +1,84 @@
+static int
+store_ops_ok (x, bb)
+     rtx x;
+     basic_block bb;
+{
+  int i;
+  enum rtx_code code;
+  const char * fmt;
+
+  /* Repeat is used to turn tail-recursion into iteration.  */
+ repeat:
+
+  if (x == 0)
+    return 1;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case REG:
+	/* If a reg has changed after us in this
+	   block, the operand has been killed.  */
+	return TEST_BIT (reg_set_in_block[bb->index], REGNO (x));
+
+    case MEM:
+      x = XEXP (x, 0);
+      goto repeat;
+
+    case PRE_DEC:
+    case PRE_INC:
+    case POST_DEC:
+    case POST_INC:
+      return 0;
+
+    case PC:
+    case CC0: /*FIXME*/
+    case CONST:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      return 1;
+
+    default:
+      break;
+    }
+
+  i = GET_RTX_LENGTH (code) - 1;
+  fmt = GET_RTX_FORMAT (code);
+  
+  for (; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  rtx tem = XEXP (x, i);
+
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    {
+	      x = tem;
+	      goto repeat;
+	    }
+	  
+	  if (! store_ops_ok (tem, bb))
+	    return 0;
+	}
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    {
+	      if (! store_ops_ok (XVECEXP (x, i, j), bb))
+		return 0;
+	    }
+	}
+    }
+
+  return 1;
+}

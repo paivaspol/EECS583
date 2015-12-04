@@ -1,0 +1,27 @@
+static int
+check_sibcall_argument_overlap (insn, arg)
+     rtx insn;
+     struct arg_data *arg;
+{
+  int low, high;
+
+  if (insn == NULL_RTX)
+    insn = get_insns ();
+  else
+    insn = NEXT_INSN (insn);
+
+  for (; insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn)
+	&& check_sibcall_argument_overlap_1 (PATTERN (insn)))
+      break;
+
+#ifdef ARGS_GROW_DOWNWARD
+  low = -arg->slot_offset.constant - arg->size.constant;
+#else
+  low = arg->slot_offset.constant;
+#endif
+
+  for (high = low + arg->size.constant; low < high; low++)
+    SET_BIT (stored_args_map, low);
+  return insn != NULL_RTX;
+}

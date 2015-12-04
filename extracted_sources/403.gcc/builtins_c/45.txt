@@ -1,0 +1,45 @@
+static tree
+stabilize_va_list (valist, needs_lvalue)
+     tree valist;
+     int needs_lvalue;
+{
+  if (TREE_CODE (va_list_type_node) == ARRAY_TYPE)
+    {
+      if (TREE_SIDE_EFFECTS (valist))
+	valist = save_expr (valist);
+
+      /* For this case, the backends will be expecting a pointer to
+	 TREE_TYPE (va_list_type_node), but it's possible we've
+	 actually been given an array (an actual va_list_type_node).
+	 So fix it.  */
+      if (TREE_CODE (TREE_TYPE (valist)) == ARRAY_TYPE)
+	{
+	  tree p1 = build_pointer_type (TREE_TYPE (va_list_type_node));
+	  tree p2 = build_pointer_type (va_list_type_node);
+
+	  valist = build1 (ADDR_EXPR, p2, valist);
+	  valist = fold (build1 (NOP_EXPR, p1, valist));
+	}
+    }
+  else
+    {
+      tree pt;
+
+      if (! needs_lvalue)
+	{
+	  if (! TREE_SIDE_EFFECTS (valist))
+	    return valist;
+
+	  pt = build_pointer_type (va_list_type_node);
+	  valist = fold (build1 (ADDR_EXPR, pt, valist));
+	  TREE_SIDE_EFFECTS (valist) = 1;
+	}
+
+      if (TREE_SIDE_EFFECTS (valist))
+	valist = save_expr (valist);
+      valist = fold (build1 (INDIRECT_REF, TREE_TYPE (TREE_TYPE (valist)),
+			     valist));
+    }
+
+  return valist;
+}

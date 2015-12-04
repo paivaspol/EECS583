@@ -1,0 +1,276 @@
+static void
+gen_subprogram_die (decl, context_die)
+     tree decl;
+     dw_die_ref context_die;
+{
+  char label_id[MAX_ARTIFICIAL_LABEL_BYTES];
+  tree origin = decl_ultimate_origin (decl);
+  dw_die_ref subr_die;
+  rtx fp_reg;
+  tree fn_arg_types;
+  tree outer_scope;
+  dw_die_ref old_die = lookup_decl_die (decl);
+  int declaration = (current_function_decl != decl
+		     || class_scope_p (context_die));
+
+  /* It is possible to have both DECL_ABSTRACT and DECLARATION be true if we
+     started to generate the abstract instance of an inline, decided to output
+     its containing class, and proceeded to emit the declaration of the inline
+     from the member list for the class.  If so, DECLARATION takes priority;
+     we'll get back to the abstract instance when done with the class.  */
+
+  /* The class-scope declaration DIE must be the primary DIE.  */
+  if (origin && declaration && class_scope_p (context_die))
+    {
+      origin = NULL;
+      if (old_die)
+	abort ();
+    }
+
+  if (origin != NULL)
+    {
+      if (declaration && ! local_scope_p (context_die))
+	abort ();
+
+      /* Fixup die_parent for the abstract instance of a nested
+	 inline function.  */
+      if (old_die && old_die->die_parent == NULL)
+	add_child_die (context_die, old_die);
+
+      subr_die = new_die (DW_TAG_subprogram, context_die, decl);
+      add_abstract_origin_attribute (subr_die, origin);
+    }
+  else if (old_die)
+    {
+      unsigned file_index = lookup_filename (DECL_SOURCE_FILE (decl));
+
+      if (!get_AT_flag (old_die, DW_AT_declaration)
+	  /* We can have a normal definition following an inline one in the
+	     case of redefinition of GNU C extern inlines.
+	     It seems reasonable to use AT_specification in this case.  */
+	  && !get_AT_unsigned (old_die, DW_AT_inline))
+	{
+	  /* ??? This can happen if there is a bug in the program, for
+	     instance, if it has duplicate function definitions.  Ideally,
+	     we should detect this case and ignore it.  For now, if we have
+	     already reported an error, any error at all, then assume that
+	     we got here because of an input error, not a dwarf2 bug.  */
+	  if (errorcount)
+	    return;
+	  abort ();
+	}
+
+      /* If the definition comes from the same place as the declaration,
+	 maybe use the old DIE.  We always want the DIE for this function
+	 that has the *_pc attributes to be under comp_unit_die so the
+	 debugger can find it.  We also need to do this for abstract
+	 instances of inlines, since the spec requires the out-of-line copy
+	 to have the same parent.  For local class methods, this doesn't
+	 apply; we just use the old DIE.  */
+      if ((old_die->die_parent == comp_unit_die || context_die == NULL)
+	  && (DECL_ARTIFICIAL (decl)
+	      || (get_AT_unsigned (old_die, DW_AT_decl_file) == file_index
+		  && (get_AT_unsigned (old_die, DW_AT_decl_line)
+		      == (unsigned) DECL_SOURCE_LINE (decl)))))
+	{
+	  subr_die = old_die;
+
+	  /* Clear out the declaration attribute and the parm types.  */
+	  remove_AT (subr_die, DW_AT_declaration);
+	  remove_children (subr_die);
+	}
+      else
+	{
+	  subr_die = new_die (DW_TAG_subprogram, context_die, decl);
+	  add_AT_die_ref (subr_die, DW_AT_specification, old_die);
+	  if (get_AT_unsigned (old_die, DW_AT_decl_file) != file_index)
+	    add_AT_unsigned (subr_die, DW_AT_decl_file, file_index);
+	  if (get_AT_unsigned (old_die, DW_AT_decl_line)
+	      != (unsigned) DECL_SOURCE_LINE (decl))
+	    add_AT_unsigned
+	      (subr_die, DW_AT_decl_line, DECL_SOURCE_LINE (decl));
+	}
+    }
+  else
+    {
+      subr_die = new_die (DW_TAG_subprogram, context_die, decl);
+
+      if (TREE_PUBLIC (decl))
+	add_AT_flag (subr_die, DW_AT_external, 1);
+
+      add_name_and_src_coords_attributes (subr_die, decl);
+      if (debug_info_level > DINFO_LEVEL_TERSE)
+	{
+	  add_prototyped_attribute (subr_die, TREE_TYPE (decl));
+	  add_type_attribute (subr_die, TREE_TYPE (TREE_TYPE (decl)),
+			      0, 0, context_die);
+	}
+
+      add_pure_or_virtual_attribute (subr_die, decl);
+      if (DECL_ARTIFICIAL (decl))
+	add_AT_flag (subr_die, DW_AT_artificial, 1);
+
+      if (TREE_PROTECTED (decl))
+	add_AT_unsigned (subr_die, DW_AT_accessibility, DW_ACCESS_protected);
+      else if (TREE_PRIVATE (decl))
+	add_AT_unsigned (subr_die, DW_AT_accessibility, DW_ACCESS_private);
+    }
+
+  if (declaration)
+    {
+      if (!old_die || !get_AT_unsigned (old_die, DW_AT_inline))
+	{
+	  add_AT_flag (subr_die, DW_AT_declaration, 1);
+
+	  /* The first time we see a member function, it is in the context of
+	     the class to which it belongs.  We make sure of this by emitting
+	     the class first.  The next time is the definition, which is
+	     handled above.  The two may come from the same source text.  */
+	  if (DECL_CONTEXT (decl) || DECL_ABSTRACT (decl))
+	    equate_decl_number_to_die (decl, subr_die);
+	}
+    }
+  else if (DECL_ABSTRACT (decl))
+    {
+      if (DECL_INLINE (decl) && !flag_no_inline)
+	{
+	  /* ??? Checking DECL_DEFER_OUTPUT is correct for static
+	     inline functions, but not for extern inline functions.
+	     We can't get this completely correct because information
+	     about whether the function was declared inline is not
+	     saved anywhere.  */
+	  if (DECL_DEFER_OUTPUT (decl))
+	    add_AT_unsigned (subr_die, DW_AT_inline, DW_INL_declared_inlined);
+	  else
+	    add_AT_unsigned (subr_die, DW_AT_inline, DW_INL_inlined);
+	}
+      else
+	add_AT_unsigned (subr_die, DW_AT_inline, DW_INL_declared_not_inlined);
+
+      equate_decl_number_to_die (decl, subr_die);
+    }
+  else if (!DECL_EXTERNAL (decl))
+    {
+      if (!old_die || !get_AT_unsigned (old_die, DW_AT_inline))
+	equate_decl_number_to_die (decl, subr_die);
+
+      ASM_GENERATE_INTERNAL_LABEL (label_id, FUNC_BEGIN_LABEL,
+				   current_funcdef_number);
+      add_AT_lbl_id (subr_die, DW_AT_low_pc, label_id);
+      ASM_GENERATE_INTERNAL_LABEL (label_id, FUNC_END_LABEL,
+				   current_funcdef_number);
+      add_AT_lbl_id (subr_die, DW_AT_high_pc, label_id);
+
+      add_pubname (decl, subr_die);
+      add_arange (decl, subr_die);
+
+#ifdef MIPS_DEBUGGING_INFO
+      /* Add a reference to the FDE for this routine.  */
+      add_AT_fde_ref (subr_die, DW_AT_MIPS_fde, current_funcdef_fde);
+#endif
+
+      /* Define the "frame base" location for this routine.  We use the
+         frame pointer or stack pointer registers, since the RTL for local
+         variables is relative to one of them.  */
+      fp_reg
+	= frame_pointer_needed ? hard_frame_pointer_rtx : stack_pointer_rtx;
+      add_AT_loc (subr_die, DW_AT_frame_base, reg_loc_descriptor (fp_reg));
+
+#if 0
+      /* ??? This fails for nested inline functions, because context_display
+	 is not part of the state saved/restored for inline functions.  */
+      if (current_function_needs_context)
+	add_AT_location_description (subr_die, DW_AT_static_link,
+				     lookup_static_chain (decl));
+#endif
+    }
+
+  /* Now output descriptions of the arguments for this function. This gets
+     (unnecessarily?) complex because of the fact that the DECL_ARGUMENT list
+     for a FUNCTION_DECL doesn't indicate cases where there was a trailing
+     `...' at the end of the formal parameter list.  In order to find out if
+     there was a trailing ellipsis or not, we must instead look at the type
+     associated with the FUNCTION_DECL.  This will be a node of type
+     FUNCTION_TYPE. If the chain of type nodes hanging off of this
+     FUNCTION_TYPE node ends with a void_type_node then there should *not* be
+     an ellipsis at the end.  */
+
+  /* In the case where we are describing a mere function declaration, all we
+     need to do here (and all we *can* do here) is to describe the *types* of
+     its formal parameters.  */
+  if (debug_info_level <= DINFO_LEVEL_TERSE)
+    ;
+  else if (declaration)
+    gen_formal_types_die (decl, subr_die);
+  else
+    {
+      /* Generate DIEs to represent all known formal parameters */
+      tree arg_decls = DECL_ARGUMENTS (decl);
+      tree parm;
+
+      /* When generating DIEs, generate the unspecified_parameters DIE
+         instead if we come across the arg "__builtin_va_alist" */
+      for (parm = arg_decls; parm; parm = TREE_CHAIN (parm))
+	if (TREE_CODE (parm) == PARM_DECL)
+	  {
+	    if (DECL_NAME (parm)
+		&& !strcmp (IDENTIFIER_POINTER (DECL_NAME (parm)),
+			    "__builtin_va_alist"))
+	      gen_unspecified_parameters_die (parm, subr_die);
+	    else
+	      gen_decl_die (parm, subr_die);
+	  }
+
+      /* Decide whether we need an unspecified_parameters DIE at the end.
+         There are 2 more cases to do this for: 1) the ansi ... declaration -
+         this is detectable when the end of the arg list is not a
+         void_type_node 2) an unprototyped function declaration (not a
+         definition).  This just means that we have no info about the
+         parameters at all.  */
+      fn_arg_types = TYPE_ARG_TYPES (TREE_TYPE (decl));
+      if (fn_arg_types != NULL)
+	{
+	  /* this is the prototyped case, check for ...  */
+	  if (TREE_VALUE (tree_last (fn_arg_types)) != void_type_node)
+	    gen_unspecified_parameters_die (decl, subr_die);
+	}
+      else if (DECL_INITIAL (decl) == NULL_TREE)
+	gen_unspecified_parameters_die (decl, subr_die);
+    }
+
+  /* Output Dwarf info for all of the stuff within the body of the function
+     (if it has one - it may be just a declaration).  */
+  outer_scope = DECL_INITIAL (decl);
+
+  /* OUTER_SCOPE is a pointer to the outermost BLOCK node created to represent
+     a function.  This BLOCK actually represents the outermost binding contour
+     for the function, i.e. the contour in which the function's formal
+     parameters and labels get declared. Curiously, it appears that the front
+     end doesn't actually put the PARM_DECL nodes for the current function onto
+     the BLOCK_VARS list for this outer scope, but are strung off of the
+     DECL_ARGUMENTS list for the function instead.
+
+     The BLOCK_VARS list for the `outer_scope' does provide us with a list of
+     the LABEL_DECL nodes for the function however, and we output DWARF info
+     for those in decls_for_scope.  Just within the `outer_scope' there will be
+     a BLOCK node representing the function's outermost pair of curly braces,
+     and any blocks used for the base and member initializers of a C++
+     constructor function.  */
+  if (! declaration && TREE_CODE (outer_scope) != ERROR_MARK)
+    {
+      current_function_has_inlines = 0;
+      decls_for_scope (outer_scope, subr_die, 0);
+
+#if 0 && defined (MIPS_DEBUGGING_INFO)
+      if (current_function_has_inlines)
+	{
+	  add_AT_flag (subr_die, DW_AT_MIPS_has_inlines, 1);
+	  if (! comp_unit_has_inlines)
+	    {
+	      add_AT_flag (comp_unit_die, DW_AT_MIPS_has_inlines, 1);
+	      comp_unit_has_inlines = 1;
+	    }
+	}
+#endif
+    }
+}

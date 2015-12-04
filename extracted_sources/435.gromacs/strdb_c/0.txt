@@ -1,0 +1,30 @@
+int get_strings(char *db,char ***strings)
+{
+  FILE *in;
+  char **ptr;
+  char buf[256];
+  int  i,nstr;
+
+  in=libopen(db);
+  
+  set_warning_line(db,1);
+  if (fscanf(in,"%d",&nstr) != 1) {
+    sprintf(warn_buf,"File %s is empty",db);
+    warning(NULL);
+    fclose(in);
+    return 0;
+  }
+  snew(ptr,nstr);
+  for(i=0; (i<nstr); i++) {
+    fscanf(in,"%s",buf);
+#ifdef DEBUG
+    fprintf(stderr,"Have read: %s\n",buf);
+#endif
+    ptr[i] = strdup(buf);
+  }
+  fclose(in);
+
+  *strings=ptr;
+  
+  return nstr;
+}

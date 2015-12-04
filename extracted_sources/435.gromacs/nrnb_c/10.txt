@@ -1,0 +1,24 @@
+static double pr_av(FILE *log,int nprocs,double fav,double ftot[],char *title)
+{
+  int    i,perc;
+  double dperc,unb;
+  
+  unb=0;
+  if (fav > 0) {
+    fav/=nprocs;
+    fprintf(log,"\n%15s:",title);
+    for(i=0; (i<nprocs); i++) {
+      dperc=(100.0*ftot[i])/fav;
+      unb=max(unb,dperc);
+      perc=dperc;
+      fprintf(log,"%3d ",perc);
+    }
+    if (unb > 0) {
+      perc=10000.0/unb;
+      fprintf(log,"%6d%%\n\n",perc);
+    }
+    else
+      fprintf(log,"\n\n");
+  }
+  return unb;
+}

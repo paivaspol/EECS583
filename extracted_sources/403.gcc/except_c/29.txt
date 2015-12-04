@@ -1,0 +1,83 @@
+static void
+convert_from_eh_region_ranges_1 (pinsns, orig_sp, cur)
+     rtx *pinsns;
+     int *orig_sp;
+     int cur;
+{
+  int *sp = orig_sp;
+  rtx insn, next;
+
+  for (insn = *pinsns; insn ; insn = next)
+    {
+      next = NEXT_INSN (insn);
+      if (GET_CODE (insn) == NOTE)
+	{
+	  int kind = NOTE_LINE_NUMBER (insn);
+	  if (kind == NOTE_INSN_EH_REGION_BEG
+	      || kind == NOTE_INSN_EH_REGION_END)
+	    {
+	      if (kind == NOTE_INSN_EH_REGION_BEG)
+		{
+		  struct eh_region *r;
+
+		  *sp++ = cur;
+		  cur = NOTE_EH_HANDLER (insn);
+
+		  r = cfun->eh->region_array[cur];
+		  if (r->type == ERT_FIXUP)
+		    {
+		      r = r->u.fixup.real_region;
+		      cur = r ? r->region_number : 0;
+		    }
+		  else if (r->type == ERT_CATCH)
+		    {
+		      r = r->outer;
+		      cur = r ? r->region_number : 0;
+		    }
+		}
+	      else
+		cur = *--sp;
+
+	      /* Removing the first insn of a CALL_PLACEHOLDER sequence
+		 requires extra care to adjust sequence start.  */
+	      if (insn == *pinsns)
+		*pinsns = next;
+	      remove_insn (insn);
+	      continue;
+	    }
+	}
+      else if (INSN_P (insn))
+	{
+	  if (cur > 0
+	      && ! find_reg_note (insn, REG_EH_REGION, NULL_RTX)
+	      /* Calls can always potentially throw exceptions, unless
+		 they have a REG_EH_REGION note with a value of 0 or less.
+		 Which should be the only possible kind so far.  */
+	      && (GET_CODE (insn) == CALL_INSN
+		  /* If we wanted exceptions for non-call insns, then
+		     any may_trap_p instruction could throw.  */
+		  || (flag_non_call_exceptions
+		      && GET_CODE (PATTERN (insn)) != CLOBBER
+		      && GET_CODE (PATTERN (insn)) != USE
+		      && may_trap_p (PATTERN (insn)))))
+	    {
+	      REG_NOTES (insn) = alloc_EXPR_LIST (REG_EH_REGION, GEN_INT (cur),
+						  REG_NOTES (insn));
+	    }
+
+	  if (GET_CODE (insn) == CALL_INSN
+	      && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	    {
+	      convert_from_eh_region_ranges_1 (&XEXP (PATTERN (insn), 0),
+					       sp, cur);
+	      convert_from_eh_region_ranges_1 (&XEXP (PATTERN (insn), 1),
+					       sp, cur);
+	      convert_from_eh_region_ranges_1 (&XEXP (PATTERN (insn), 2),
+					       sp, cur);
+	    }
+	}
+    }
+
+  if (sp != orig_sp)
+    abort ();
+}

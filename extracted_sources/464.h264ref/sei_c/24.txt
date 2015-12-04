@@ -1,0 +1,57 @@
+void FinalizeSubseqChar()
+{
+  int i;
+  SyntaxElement sym;
+  Bitstream *dest = seiSubseqChar.data;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  sym.value1 = seiSubseqChar.subseq_layer_num;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.value1 = seiSubseqChar.subseq_id;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.bitpattern = seiSubseqChar.duration_flag;
+  sym.len = 1;
+  writeSyntaxElement2Buf_Fixed(&sym, dest);
+  if ( seiSubseqChar.duration_flag )
+  {
+    sym.bitpattern = seiSubseqChar.subseq_duration;
+    sym.len = 32;
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+  }
+  sym.bitpattern = seiSubseqChar.average_rate_flag;
+  sym.len = 1;
+  writeSyntaxElement2Buf_Fixed(&sym, dest);
+  if ( seiSubseqChar.average_rate_flag )
+  {
+    sym.bitpattern = seiSubseqChar.average_bit_rate;
+    sym.len = 16;
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+    sym.bitpattern = seiSubseqChar.average_frame_rate;
+    sym.len = 16;
+    writeSyntaxElement2Buf_Fixed(&sym, dest);
+  }
+  sym.value1 = seiSubseqChar.num_referenced_subseqs;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  for (i=0; i<seiSubseqChar.num_referenced_subseqs; i++)
+  {
+    sym.value1 = seiSubseqChar.ref_subseq_layer_num[i];
+    writeSyntaxElement2Buf_UVLC(&sym, dest);
+    sym.value1 = seiSubseqChar.ref_subseq_id[i];
+    writeSyntaxElement2Buf_UVLC(&sym, dest);
+  }
+
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiSubseqChar.payloadSize = dest->byte_pos;
+}

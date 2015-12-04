@@ -1,0 +1,82 @@
+void *
+worker_thread(void *ptr)
+{
+  struct plan7_s    *hmm;
+  struct dpmatrix_s *mx;
+  struct workpool_s *wpool;
+  char       *seq;
+  char       *dsq;
+  int         len;
+  float       sc;
+  int         rtn;
+  Stopwatch_t thread_watch;
+
+  StopwatchStart(&thread_watch);
+  wpool = (struct workpool_s *) ptr;
+  hmm   = wpool->hmm;
+  mx    = CreatePlan7Matrix(1, hmm->M, 25, 0);
+  for (;;)
+    {
+      /* 1. Synthesize a random sequence. 
+       *    The input sequence number is a shared resource,
+       *    and sre_random() isn't thread-safe, so protect
+       *    the whole section with mutex.
+       */
+				/* acquire a lock */
+      if ((rtn = pthread_mutex_lock(&(wpool->input_lock))) != 0)
+	Die("pthread_mutex_lock failure: %s\n", strerror(rtn));
+				/* generate a sequence */
+      wpool->nseq++;
+      if (wpool->nseq > wpool->nsample) 
+	{ /* we're done; release input lock, break loop */
+	  if ((rtn = pthread_mutex_unlock(&(wpool->input_lock))) != 0)
+	    Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+	  break;
+	}
+      if (wpool->fixedlen) len = wpool->fixedlen;
+      else do len = (int) Gaussrandom(wpool->lenmean, wpool->lensd); while (len < 1);
+      seq = RandomSequence(Alphabet, wpool->randomseq, Alphabet_size, len);
+
+				/* release the lock */
+      if ((rtn = pthread_mutex_unlock(&(wpool->input_lock))) != 0)
+	Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+
+      /* 2. Score the sequence against the model.
+       */
+      dsq = DigitizeSequence(seq, len);
+      
+      if (P7ViterbiSize(len, hmm->M) <= RAMLIMIT)
+	sc = P7Viterbi(dsq, len, hmm, mx, NULL);
+      else
+	sc = P7SmallViterbi(dsq, len, hmm, mx, NULL);
+      free(dsq); 
+      free(seq);
+      
+      /* 3. Save the output; hist and max_score are shared,
+       *    so protect this section with the output mutex.
+       */
+				/* acquire lock on the output queue */
+      if ((rtn = pthread_mutex_lock(&(wpool->output_lock))) != 0)
+	Die("pthread_mutex_lock failure: %s\n", strerror(rtn));
+				/* save output */
+      AddToHistogram(wpool->hist, sc);
+      if (sc > wpool->max_score) wpool->max_score = sc;
+    				/* release our lock */
+      if ((rtn = pthread_mutex_unlock(&(wpool->output_lock))) != 0)
+	Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+    }
+
+  StopwatchStop(&thread_watch);
+				/* acquire lock on the output queue */
+  if ((rtn = pthread_mutex_lock(&(wpool->output_lock))) != 0)
+    Die("pthread_mutex_lock failure: %s\n", strerror(rtn));
+				/* accumulate cpu time into main stopwatch */
+  StopwatchInclude(&(wpool->watch), &thread_watch);
+    				/* release our lock */
+  if ((rtn = pthread_mutex_unlock(&(wpool->output_lock))) != 0)
+    Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+
+  FreePlan7Matrix(mx);
+  pthread_exit(NULL);
+  return NULL; /* solely to silence compiler warnings */
+}

@@ -1,0 +1,22 @@
+static void
+sdbout_init (input_file_name)
+     const char *input_file_name ATTRIBUTE_UNUSED;
+{
+#ifdef MIPS_DEBUGGING_INFO
+  current_file = (struct sdb_file *) xmalloc (sizeof *current_file);
+  current_file->next = NULL;
+  current_file->name = input_file_name;
+#endif
+
+#ifdef RMS_QUICK_HACK_1
+  tree t;
+  for (t = getdecls (); t; t = TREE_CHAIN (t))
+    if (DECL_NAME (t) && IDENTIFIER_POINTER (DECL_NAME (t)) != 0
+	&& !strcmp (IDENTIFIER_POINTER (DECL_NAME (t)), "__vtbl_ptr_type"))
+      sdbout_symbol (t, 0);
+#endif  
+
+#ifdef SDB_ALLOW_FORWARD_REFERENCES
+  ggc_add_tree_root (&anonymous_types, 1);
+#endif
+}

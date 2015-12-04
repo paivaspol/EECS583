@@ -1,0 +1,60 @@
+static void flow_loops_cfg_dump		PARAMS ((const struct loops *,
+						 FILE *));
+static int flow_loop_nested_p		PARAMS ((struct loop *,
+						 struct loop *));
+static int flow_loop_entry_edges_find	PARAMS ((basic_block, const sbitmap,
+						 edge **));
+static int flow_loop_exit_edges_find	PARAMS ((const sbitmap, edge **));
+static int flow_loop_nodes_find		PARAMS ((basic_block, basic_block,
+						 sbitmap));
+static void flow_loop_pre_header_scan	PARAMS ((struct loop *));
+static basic_block flow_loop_pre_header_find PARAMS ((basic_block,
+						      const sbitmap *));
+static void flow_loop_tree_node_add	PARAMS ((struct loop *,
+						 struct loop *));
+static void flow_loops_tree_build	PARAMS ((struct loops *));
+static int flow_loop_level_compute	PARAMS ((struct loop *, int));
+static int flow_loops_level_compute	PARAMS ((struct loops *));
+
+/* Dump loop related CFG information.  */
+
+static void
+flow_loops_cfg_dump (loops, file)
+     const struct loops *loops;
+     FILE *file;
+{
+  int i;
+
+  if (! loops->num || ! file || ! loops->cfg.dom)
+    return;
+
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      edge succ;
+
+      fprintf (file, ";; %d succs { ", i);
+      for (succ = BASIC_BLOCK (i)->succ; succ; succ = succ->succ_next)
+	fprintf (file, "%d ", succ->dest->index);
+      flow_nodes_print ("} dom", loops->cfg.dom[i], file);
+    }
+
+  /* Dump the DFS node order.  */
+  if (loops->cfg.dfs_order)
+    {
+      fputs (";; DFS order: ", file);
+      for (i = 0; i < n_basic_blocks; i++)
+	fprintf (file, "%d ", loops->cfg.dfs_order[i]);
+
+      fputs ("\n", file);
+    }
+
+  /* Dump the reverse completion node order.  */
+  if (loops->cfg.rc_order)
+    {
+      fputs (";; RC order: ", file);
+      for (i = 0; i < n_basic_blocks; i++)
+	fprintf (file, "%d ", loops->cfg.rc_order[i]);
+
+      fputs ("\n", file);
+    }
+}

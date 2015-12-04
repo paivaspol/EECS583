@@ -1,0 +1,31 @@
+static partition
+compute_conservative_reg_partition ()
+{
+  int bb;
+  int changed = 0;
+
+  /* We don't actually work with hard registers, but it's easier to
+     carry them around anyway rather than constantly doing register
+     number arithmetic.  */
+  partition p = 
+    partition_new (ssa_definition->num_elements);
+
+  /* The first priority is to make sure registers that might have to
+     be copied on abnormal critical edges are placed in the same
+     partition.  This saves us from having to split abnormal critical
+     edges.  */
+  for (bb = n_basic_blocks; --bb >= 0; )
+    changed += make_regs_equivalent_over_bad_edges (bb, p);
+  
+  /* Now we have to insure that corresponding arguments of phi nodes
+     assigning to corresponding regs are equivalent.  Iterate until
+     nothing changes.  */
+  while (changed > 0)
+    {
+      changed = 0;
+      for (bb = n_basic_blocks; --bb >= 0; )
+	changed += make_equivalent_phi_alternatives_equivalent (bb, p);
+    }
+
+  return p;
+}

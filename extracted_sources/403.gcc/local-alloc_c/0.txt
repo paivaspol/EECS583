@@ -1,0 +1,34 @@
+static int find_free_reg	PARAMS ((enum reg_class, enum machine_mode,
+				       int, int, int, int, int));
+static void mark_life		PARAMS ((int, enum machine_mode, int));
+static void post_mark_life	PARAMS ((int, enum machine_mode, int, int, int));
+static int no_conflict_p	PARAMS ((rtx, rtx, rtx));
+static int requires_inout	PARAMS ((const char *));
+
+/* Allocate a new quantity (new within current basic block)
+   for register number REGNO which is born at index BIRTH
+   within the block.  MODE and SIZE are info on reg REGNO.  */
+
+static void
+alloc_qty (regno, mode, size, birth)
+     int regno;
+     enum machine_mode mode;
+     int size, birth;
+{
+  int qtyno = next_qty++;
+
+  reg_qty[regno] = qtyno;
+  reg_offset[regno] = 0;
+  reg_next_in_qty[regno] = -1;
+
+  qty[qtyno].first_reg = regno;
+  qty[qtyno].size = size;
+  qty[qtyno].mode = mode;
+  qty[qtyno].birth = birth;
+  qty[qtyno].n_calls_crossed = REG_N_CALLS_CROSSED (regno);
+  qty[qtyno].min_class = reg_preferred_class (regno);
+  qty[qtyno].alternate_class = reg_alternate_class (regno);
+  qty[qtyno].n_refs = REG_N_REFS (regno);
+  qty[qtyno].freq = REG_FREQ (regno);
+  qty[qtyno].changes_mode = REG_CHANGES_MODE (regno);
+}

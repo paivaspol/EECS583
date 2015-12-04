@@ -1,0 +1,28 @@
+void
+conflict_graph_merge_regs (graph, target, src)
+     conflict_graph graph;
+     int target;
+     int src;
+{
+  conflict_graph_arc arc = graph->neighbor_heads[src];
+
+  if (target == src)
+    return;
+
+  while (arc != NULL)
+    {
+      int other = arc->smaller;
+
+      if (other == src)
+	other = arc->larger;
+
+      conflict_graph_add (graph, target, other);
+
+      /* Which next pointer to follow depends on whether REG is the
+	 smaller or larger reg in this conflict.  */
+      if (src < arc->larger)
+	arc = arc->smaller_next;
+      else
+	arc = arc->larger_next;
+    }
+}

@@ -1,0 +1,171 @@
+static void
+combine_givs (regs, bl)
+     struct loop_regs *regs;
+     struct iv_class *bl;
+{
+  /* Additional benefit to add for being combined multiple times.  */
+  const int extra_benefit = 3;
+
+  struct induction *g1, *g2, **giv_array;
+  int i, j, k, giv_count;
+  struct combine_givs_stats *stats;
+  rtx *can_combine;
+
+  /* Count givs, because bl->giv_count is incorrect here.  */
+  giv_count = 0;
+  for (g1 = bl->giv; g1; g1 = g1->next_iv)
+    if (!g1->ignore)
+      giv_count++;
+
+  giv_array
+    = (struct induction **) alloca (giv_count * sizeof (struct induction *));
+  i = 0;
+  for (g1 = bl->giv; g1; g1 = g1->next_iv)
+    if (!g1->ignore)
+      giv_array[i++] = g1;
+
+  stats = (struct combine_givs_stats *) xcalloc (giv_count, sizeof (*stats));
+  can_combine = (rtx *) xcalloc (giv_count, giv_count * sizeof (rtx));
+
+  for (i = 0; i < giv_count; i++)
+    {
+      int this_benefit;
+      rtx single_use;
+
+      g1 = giv_array[i];
+      stats[i].giv_number = i;
+
+      /* If a DEST_REG GIV is used only once, do not allow it to combine
+	 with anything, for in doing so we will gain nothing that cannot
+	 be had by simply letting the GIV with which we would have combined
+	 to be reduced on its own.  The losage shows up in particular with
+	 DEST_ADDR targets on hosts with reg+reg addressing, though it can
+	 be seen elsewhere as well.  */
+      if (g1->giv_type == DEST_REG
+	  && (single_use = regs->array[REGNO (g1->dest_reg)].single_usage)
+	  && single_use != const0_rtx)
+	continue;
+
+      this_benefit = g1->benefit;
+      /* Add an additional weight for zero addends.  */
+      if (g1->no_const_addval)
+	this_benefit += 1;
+
+      for (j = 0; j < giv_count; j++)
+	{
+	  rtx this_combine;
+
+	  g2 = giv_array[j];
+	  if (g1 != g2
+	      && (this_combine = combine_givs_p (g1, g2)) != NULL_RTX)
+	    {
+	      can_combine[i * giv_count + j] = this_combine;
+	      this_benefit += g2->benefit + extra_benefit;
+	    }
+	}
+      stats[i].total_benefit = this_benefit;
+    }
+
+  /* Iterate, combining until we can't.  */
+restart:
+  specqsort (stats, giv_count, sizeof (*stats), cmp_combine_givs_stats);
+/* MJP Global replacement of qsort with specqsort */
+
+  if (loop_dump_stream)
+    {
+      fprintf (loop_dump_stream, "Sorted combine statistics:\n");
+      for (k = 0; k < giv_count; k++)
+	{
+	  g1 = giv_array[stats[k].giv_number];
+	  if (!g1->combined_with && !g1->same)
+	    fprintf (loop_dump_stream, " {%d, %d}",
+		     INSN_UID (giv_array[stats[k].giv_number]->insn),
+		     stats[k].total_benefit);
+	}
+      putc ('\n', loop_dump_stream);
+    }
+
+  for (k = 0; k < giv_count; k++)
+    {
+      int g1_add_benefit = 0;
+
+      i = stats[k].giv_number;
+      g1 = giv_array[i];
+
+      /* If it has already been combined, skip.  */
+      if (g1->combined_with || g1->same)
+	continue;
+
+      for (j = 0; j < giv_count; j++)
+	{
+	  g2 = giv_array[j];
+	  if (g1 != g2 && can_combine[i * giv_count + j]
+	      /* If it has already been combined, skip.  */
+	      && ! g2->same && ! g2->combined_with)
+	    {
+	      int l;
+
+	      g2->new_reg = can_combine[i * giv_count + j];
+	      g2->same = g1;
+	      /* For destination, we now may replace by mem expression instead
+		 of register.  This changes the costs considerably, so add the
+		 compensation.  */
+	      if (g2->giv_type == DEST_ADDR)
+		g2->benefit = (g2->benefit + reg_address_cost
+			       - address_cost (g2->new_reg,
+			       GET_MODE (g2->mem)));
+	      g1->combined_with++;
+	      g1->lifetime += g2->lifetime;
+
+	      g1_add_benefit += g2->benefit;
+
+	      /* ??? The new final_[bg]iv_value code does a much better job
+		 of finding replaceable giv's, and hence this code may no
+		 longer be necessary.  */
+	      if (! g2->replaceable && REG_USERVAR_P (g2->dest_reg))
+		g1_add_benefit -= copy_cost;
+
+	      /* To help optimize the next set of combinations, remove
+		 this giv from the benefits of other potential mates.  */
+	      for (l = 0; l < giv_count; ++l)
+		{
+		  int m = stats[l].giv_number;
+		  if (can_combine[m * giv_count + j])
+		    stats[l].total_benefit -= g2->benefit + extra_benefit;
+		}
+
+	      if (loop_dump_stream)
+		fprintf (loop_dump_stream,
+			 "giv at %d combined with giv at %d; new benefit %d + %d, lifetime %d\n",
+			 INSN_UID (g2->insn), INSN_UID (g1->insn),
+			 g1->benefit, g1_add_benefit, g1->lifetime);
+	    }
+	}
+
+      /* To help optimize the next set of combinations, remove
+	 this giv from the benefits of other potential mates.  */
+      if (g1->combined_with)
+	{
+	  for (j = 0; j < giv_count; ++j)
+	    {
+	      int m = stats[j].giv_number;
+	      if (can_combine[m * giv_count + i])
+		stats[j].total_benefit -= g1->benefit + extra_benefit;
+	    }
+
+	  g1->benefit += g1_add_benefit;
+
+	  /* We've finished with this giv, and everything it touched.
+	     Restart the combination so that proper weights for the
+	     rest of the givs are properly taken into account.  */
+	  /* ??? Ideally we would compact the arrays at this point, so
+	     as to not cover old ground.  But sanely compacting
+	     can_combine is tricky.  */
+	  goto restart;
+	}
+    }
+
+  /* Clean up.  */
+  free (stats);
+  free (can_combine);
+}

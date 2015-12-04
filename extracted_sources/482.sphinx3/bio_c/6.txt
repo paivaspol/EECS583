@@ -1,0 +1,24 @@
+static void swap_buf (void *buf, int32 el_sz, int32 n_el)
+{
+    int32 i;
+    uint16 *buf16;
+    uint32 *buf32;
+
+    switch (el_sz) {
+    case 1:
+	break;
+    case 2:
+	buf16 = (uint16 *) buf;
+	for (i = 0; i < n_el; i++)
+	    SWAP_INT16(buf16+i);
+	break;
+    case 4:
+	buf32 = (uint32 *) buf;
+	for (i = 0; i < n_el; i++)
+	    SWAP_INT32(buf32+i);
+	break;
+    default:
+	E_FATAL("Unsupported elemsize for byteswapping: %d\n", el_sz);
+	break;
+    }
+}

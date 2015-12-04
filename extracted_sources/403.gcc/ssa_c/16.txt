@@ -1,0 +1,28 @@
+static void
+find_evaluations (evals, nregs)
+     sbitmap *evals;
+     int nregs;
+{
+  int bb;
+
+  sbitmap_vector_zero (evals, nregs);
+  fe_evals = evals;
+
+  for (bb = n_basic_blocks; --bb >= 0; )
+    {
+      rtx p, last;
+
+      fe_current_bb = bb;
+      p = BLOCK_HEAD (bb);
+      last = BLOCK_END (bb);
+      while (1)
+	{
+	  if (INSN_P (p))
+	    note_stores (PATTERN (p), find_evaluations_1, NULL);
+
+	  if (p == last)
+	    break;
+	  p = NEXT_INSN (p);
+	}
+    }
+}

@@ -1,0 +1,53 @@
+static void print_info(FILE *log,t_pull *pull) 
+{
+
+  fprintf(log,"\n**************************************************\n"
+	  "                         PULL INFO                      \n"
+	  "**************************************************\n");
+
+  switch (pull->runtype) {
+  case eStart:
+    fprintf(log,"RUN TYPE: Generating Starting structures\n");
+    break;
+  case eAfm:
+    fprintf(log,"RUN TYPE: Afm\n");
+    break;
+  case eConstraint:
+    fprintf(log,"RUN TYPE: Constraint\n");
+    break;
+  case eUmbrella:
+    fprintf(log,"RUN TYPE: Umbrella sampling\n");
+    break;
+  case eTest:
+    fprintf(log,"RUN TYPE: Test run\n");
+    break;
+  default:
+    fprintf(log,"RUN TYPE: WARNING! pullinit does not know this runtype\n");
+  }
+  
+  if (pull->runtype == eConstraint || pull->runtype == eStart) 
+    switch (pull->reftype) {
+    case eCom: 
+      fprintf(log,"REFERENCE TYPE: center of mass of reference group\n");
+      break;
+    case eComT0:
+      fprintf(log,
+	      "REFERENCE TYPE: center of mass of reference group at t=0\n");
+      break;
+    case eDyn:
+      fprintf(log,
+	      "REFERENCE TYPE: center of mass of dynamically made groups\n");
+      fprintf(log,"Using dynamic reference groups: r=%8.3f, rc=%8.3f\n",
+	      pull->r,pull->rc);
+      break;
+    case eDynT0:
+      fprintf(log,
+	      "REFERENCE TYPE: center of mass of dynamically made groups,\n"
+	      "based on the positions of its atoms at t=0\n");
+      fprintf(log,"Using dynamic reference groups: r=%8.3f, rc=%8.3f\n",
+	      pull->r,pull->rc);
+      break;
+    default:
+      fprintf(log,"REFERENCE TYPE: no clue! What did you do wrong?\n");
+    }
+}

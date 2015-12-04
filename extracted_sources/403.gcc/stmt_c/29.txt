@@ -1,0 +1,58 @@
+static tree
+resolve_operand_names (string, outputs, inputs, pconstraints)
+     tree string;
+     tree outputs, inputs;
+     const char **pconstraints;
+{
+  char *buffer = xstrdup (TREE_STRING_POINTER (string));
+  char *p;
+  tree t;
+
+  /* Assume that we will not need extra space to perform the substitution.
+     This because we get to remove '[' and ']', which means we cannot have
+     a problem until we have more than 999 operands.  */
+
+  p = buffer;
+  while ((p = strchr (p, '%')) != NULL)
+    {
+      if (p[1] == '[')
+	p += 1;
+      else if (ISALPHA (p[1]) && p[2] == '[')
+	p += 2;
+      else
+	{
+	  p += 1;
+	  continue;
+	}
+
+      p = resolve_operand_name_1 (p, outputs, inputs);
+    }
+
+  string = build_string (strlen (buffer), buffer);
+  free (buffer);
+
+  /* Collect output constraints here because it's convenient.
+     There should be no named operands here; this is verified
+     in expand_asm_operand.  */
+  for (t = outputs; t ; t = TREE_CHAIN (t), pconstraints++)
+    *pconstraints = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (t)));
+
+  /* Substitute [<name>] in input constraint strings.  */
+  for (t = inputs; t ; t = TREE_CHAIN (t), pconstraints++)
+    {
+      const char *c = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (t)));
+      if (strchr (c, '[') == NULL)
+	*pconstraints = c;
+      else
+	{
+	  p = buffer = xstrdup (c);
+	  while ((p = strchr (p, '[')) != NULL)
+	    p = resolve_operand_name_1 (p, outputs, inputs);
+
+	  *pconstraints = ggc_alloc_string (buffer, -1);
+	  free (buffer);
+	}
+    }
+
+  return string;
+}

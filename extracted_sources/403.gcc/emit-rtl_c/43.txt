@@ -1,0 +1,58 @@
+void
+add_insn_before (insn, before)
+     rtx insn, before;
+{
+  rtx prev = PREV_INSN (before);
+  basic_block bb;
+
+  if (optimize && INSN_DELETED_P (before))
+    abort ();
+
+  PREV_INSN (insn) = prev;
+  NEXT_INSN (insn) = before;
+
+  if (prev)
+    {
+      NEXT_INSN (prev) = insn;
+      if (GET_CODE (prev) == INSN && GET_CODE (PATTERN (prev)) == SEQUENCE)
+	{
+	  rtx sequence = PATTERN (prev);
+	  NEXT_INSN (XVECEXP (sequence, 0, XVECLEN (sequence, 0) - 1)) = insn;
+	}
+    }
+  else if (first_insn == before)
+    first_insn = insn;
+  else
+    {
+      struct sequence_stack *stack = seq_stack;
+      /* Scan all pending sequences too.  */
+      for (; stack; stack = stack->next)
+	if (before == stack->first)
+	  {
+	    stack->first = insn;
+	    break;
+	  }
+
+      if (stack == 0)
+	abort ();
+    }
+
+  if (basic_block_for_insn
+      && (unsigned int) INSN_UID (before) < basic_block_for_insn->num_elements
+      && (bb = BLOCK_FOR_INSN (before)))
+    {
+      set_block_for_insn (insn, bb);
+      /* Should not happen as first in the BB is always
+	 either NOTE or LABEl.  */
+      if (bb->head == insn
+	  /* Avoid clobbering of structure when creating new BB.  */
+	  && GET_CODE (insn) != BARRIER
+	  && (GET_CODE (insn) != NOTE
+	      || NOTE_LINE_NUMBER (insn) != NOTE_INSN_BASIC_BLOCK))
+	abort ();
+    }
+
+  PREV_INSN (before) = insn;
+  if (GET_CODE (before) == INSN && GET_CODE (PATTERN (before)) == SEQUENCE)
+    PREV_INSN (XVECEXP (PATTERN (before), 0, 0)) = insn;
+}

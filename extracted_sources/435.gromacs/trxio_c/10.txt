@@ -1,0 +1,21 @@
+int write_trx(int fnum,int nind,atom_id *ind,t_atoms *atoms,
+	      int step,real time,matrix box,rvec x[],rvec *v)
+{
+  t_trxframe fr;
+  
+  clear_trxframe(&fr,TRUE);
+  fr.bStep = TRUE;
+  fr.step = step;
+  fr.bTime = TRUE;
+  fr.time = time;
+  fr.bAtoms = atoms!=NULL;
+  fr.atoms = atoms;
+  fr.bX = TRUE;
+  fr.x = x;
+  fr.bV = v!=NULL;
+  fr.v = v;
+  fr.bBox = TRUE;
+  copy_mat(box,fr.box);
+  
+  return write_trxframe_indexed(fnum,&fr,nind,ind);
+}

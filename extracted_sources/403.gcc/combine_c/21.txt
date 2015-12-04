@@ -1,0 +1,123 @@
+static rtx
+expand_field_assignment (x)
+     rtx x;
+{
+  rtx inner;
+  rtx pos;			/* Always counts from low bit.  */
+  int len;
+  rtx mask;
+  enum machine_mode compute_mode;
+
+  /* Loop until we find something we can't simplify.  */
+  while (1)
+    {
+      if (GET_CODE (SET_DEST (x)) == STRICT_LOW_PART
+	  && GET_CODE (XEXP (SET_DEST (x), 0)) == SUBREG)
+	{
+	  inner = SUBREG_REG (XEXP (SET_DEST (x), 0));
+	  len = GET_MODE_BITSIZE (GET_MODE (XEXP (SET_DEST (x), 0)));
+	  pos = GEN_INT (subreg_lsb (XEXP (SET_DEST (x), 0)));
+	}
+      else if (GET_CODE (SET_DEST (x)) == ZERO_EXTRACT
+	       && GET_CODE (XEXP (SET_DEST (x), 1)) == CONST_INT)
+	{
+	  inner = XEXP (SET_DEST (x), 0);
+	  len = INTVAL (XEXP (SET_DEST (x), 1));
+	  pos = XEXP (SET_DEST (x), 2);
+
+	  /* If the position is constant and spans the width of INNER,
+	     surround INNER  with a USE to indicate this.  */
+	  if (GET_CODE (pos) == CONST_INT
+	      && INTVAL (pos) + len > GET_MODE_BITSIZE (GET_MODE (inner)))
+	    inner = gen_rtx_USE (GET_MODE (SET_DEST (x)), inner);
+
+	  if (BITS_BIG_ENDIAN)
+	    {
+	      if (GET_CODE (pos) == CONST_INT)
+		pos = GEN_INT (GET_MODE_BITSIZE (GET_MODE (inner)) - len
+			       - INTVAL (pos));
+	      else if (GET_CODE (pos) == MINUS
+		       && GET_CODE (XEXP (pos, 1)) == CONST_INT
+		       && (INTVAL (XEXP (pos, 1))
+			   == GET_MODE_BITSIZE (GET_MODE (inner)) - len))
+		/* If position is ADJUST - X, new position is X.  */
+		pos = XEXP (pos, 0);
+	      else
+		pos = gen_binary (MINUS, GET_MODE (pos),
+				  GEN_INT (GET_MODE_BITSIZE (GET_MODE (inner))
+					   - len),
+				  pos);
+	    }
+	}
+
+      /* A SUBREG between two modes that occupy the same numbers of words
+	 can be done by moving the SUBREG to the source.  */
+      else if (GET_CODE (SET_DEST (x)) == SUBREG
+	       /* We need SUBREGs to compute nonzero_bits properly.  */
+	       && nonzero_sign_valid
+	       && (((GET_MODE_SIZE (GET_MODE (SET_DEST (x)))
+		     + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD)
+		   == ((GET_MODE_SIZE (GET_MODE (SUBREG_REG (SET_DEST (x))))
+			+ (UNITS_PER_WORD - 1)) / UNITS_PER_WORD)))
+	{
+	  x = gen_rtx_SET (VOIDmode, SUBREG_REG (SET_DEST (x)),
+			   gen_lowpart_for_combine
+			   (GET_MODE (SUBREG_REG (SET_DEST (x))),
+			    SET_SRC (x)));
+	  continue;
+	}
+      else
+	break;
+
+      while (GET_CODE (inner) == SUBREG && subreg_lowpart_p (inner))
+	inner = SUBREG_REG (inner);
+
+      compute_mode = GET_MODE (inner);
+
+      /* Don't attempt bitwise arithmetic on non-integral modes.  */
+      if (! INTEGRAL_MODE_P (compute_mode))
+	{
+	  enum machine_mode imode;
+
+	  /* Something is probably seriously wrong if this matches.  */
+	  if (! FLOAT_MODE_P (compute_mode))
+	    break;
+
+	  /* Try to find an integral mode to pun with.  */
+	  imode = mode_for_size (GET_MODE_BITSIZE (compute_mode), MODE_INT, 0);
+	  if (imode == BLKmode)
+	    break;
+
+	  compute_mode = imode;
+	  inner = gen_lowpart_for_combine (imode, inner);
+	}
+
+      /* Compute a mask of LEN bits, if we can do this on the host machine.  */
+      if (len < HOST_BITS_PER_WIDE_INT)
+	mask = GEN_INT (((HOST_WIDE_INT) 1 << len) - 1);
+      else
+	break;
+
+      /* Now compute the equivalent expression.  Make a copy of INNER
+	 for the SET_DEST in case it is a MEM into which we will substitute;
+	 we don't want shared RTL in that case.  */
+      x = gen_rtx_SET
+	(VOIDmode, copy_rtx (inner),
+	 gen_binary (IOR, compute_mode,
+		     gen_binary (AND, compute_mode,
+				 simplify_gen_unary (NOT, compute_mode,
+						     gen_binary (ASHIFT,
+								 compute_mode,
+								 mask, pos),
+						     compute_mode),
+				 inner),
+		     gen_binary (ASHIFT, compute_mode,
+				 gen_binary (AND, compute_mode,
+					     gen_lowpart_for_combine
+					     (compute_mode, SET_SRC (x)),
+					     mask),
+				 pos)));
+    }
+
+  return x;
+}

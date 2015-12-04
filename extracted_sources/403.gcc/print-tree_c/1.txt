@@ -1,0 +1,95 @@
+void
+print_node_brief (file, prefix, node, indent)
+     FILE *file;
+     const char *prefix;
+     tree node;
+     int indent;
+{
+  char class;
+
+  if (node == 0)
+    return;
+
+  class = TREE_CODE_CLASS (TREE_CODE (node));
+
+  /* Always print the slot this node is in, and its code, address and
+     name if any.  */
+  if (indent > 0)
+    fprintf (file, " ");
+  fprintf (file, "%s <%s ", prefix, tree_code_name[(int) TREE_CODE (node)]);
+  fprintf (file, HOST_PTR_PRINTF, (char *) node);
+
+  if (class == 'd')
+    {
+      if (DECL_NAME (node))
+	fprintf (file, " %s", IDENTIFIER_POINTER (DECL_NAME (node)));
+    }
+  else if (class == 't')
+    {
+      if (TYPE_NAME (node))
+	{
+	  if (TREE_CODE (TYPE_NAME (node)) == IDENTIFIER_NODE)
+	    fprintf (file, " %s", IDENTIFIER_POINTER (TYPE_NAME (node)));
+	  else if (TREE_CODE (TYPE_NAME (node)) == TYPE_DECL
+		   && DECL_NAME (TYPE_NAME (node)))
+	    fprintf (file, " %s",
+		     IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (node))));
+	}
+    }
+  if (TREE_CODE (node) == IDENTIFIER_NODE)
+    fprintf (file, " %s", IDENTIFIER_POINTER (node));
+
+  /* We might as well always print the value of an integer or real.  */
+  if (TREE_CODE (node) == INTEGER_CST)
+    {
+      if (TREE_CONSTANT_OVERFLOW (node))
+	fprintf (file, " overflow");
+
+      fprintf (file, " ");
+      if (TREE_INT_CST_HIGH (node) == 0)
+	fprintf (file, HOST_WIDE_INT_PRINT_UNSIGNED, TREE_INT_CST_LOW (node));
+      else if (TREE_INT_CST_HIGH (node) == -1
+	       && TREE_INT_CST_LOW (node) != 0)
+	{
+	  fprintf (file, "-");
+	  fprintf (file, HOST_WIDE_INT_PRINT_UNSIGNED,
+		   -TREE_INT_CST_LOW (node));
+	}
+      else
+	fprintf (file, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
+		 TREE_INT_CST_HIGH (node), TREE_INT_CST_LOW (node));
+    }
+  if (TREE_CODE (node) == REAL_CST)
+    {
+      REAL_VALUE_TYPE d;
+
+      if (TREE_OVERFLOW (node))
+	fprintf (file, " overflow");
+
+#if !defined(REAL_IS_NOT_DOUBLE) || defined(REAL_ARITHMETIC)
+      d = TREE_REAL_CST (node);
+      if (REAL_VALUE_ISINF (d))
+	fprintf (file, " Inf");
+      else if (REAL_VALUE_ISNAN (d))
+	fprintf (file, " Nan");
+      else
+	{
+	  char string[100];
+
+	  REAL_VALUE_TO_DECIMAL (d, "%e", string);
+	  fprintf (file, " %s", string);
+	}
+#else
+      {
+	int i;
+	unsigned char *p = (unsigned char *) &TREE_REAL_CST (node);
+	fprintf (file, " 0x");
+	for (i = 0; i < sizeof TREE_REAL_CST (node); i++)
+	  fprintf (file, "%02x", *p++);
+	fprintf (file, "");
+      }
+#endif
+    }
+
+  fprintf (file, ">");
+}

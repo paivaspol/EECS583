@@ -1,0 +1,85 @@
+static void
+dbxout_type_fields (type)
+     tree type;
+{
+  tree tem;
+
+  /* Output the name, type, position (in bits), size (in bits) of each
+     field that we can support.  */
+  for (tem = TYPE_FIELDS (type); tem; tem = TREE_CHAIN (tem))
+    {
+      /* Omit here local type decls until we know how to support them.  */
+      if (TREE_CODE (tem) == TYPE_DECL
+	  /* Omit fields whose position or size are variable or too large to
+	     represent.  */
+	  || (TREE_CODE (tem) == FIELD_DECL
+	      && (! host_integerp (bit_position (tem), 0)
+		  || ! DECL_SIZE (tem)
+		  || ! host_integerp (DECL_SIZE (tem), 1)))
+	  /* Omit here the nameless fields that are used to skip bits.  */
+	   || DECL_IGNORED_P (tem))
+	continue;
+
+      else if (TREE_CODE (tem) != CONST_DECL)
+	{
+	  /* Continue the line if necessary,
+	     but not before the first field.  */
+	  if (tem != TYPE_FIELDS (type))
+	    CONTIN;
+
+	  if (DECL_NAME (tem))
+	    {
+	      fprintf (asmfile, "%s:", IDENTIFIER_POINTER (DECL_NAME (tem)));
+	      CHARS (2 + IDENTIFIER_LENGTH (DECL_NAME (tem)));
+	    }
+	  else
+	    {
+	      fprintf (asmfile, ":");
+	      CHARS (1);
+	    }
+
+	  if (use_gnu_debug_info_extensions
+	      && (TREE_PRIVATE (tem) || TREE_PROTECTED (tem)
+		  || TREE_CODE (tem) != FIELD_DECL))
+	    {
+	      have_used_extensions = 1;
+	      putc ('/', asmfile);
+	      putc ((TREE_PRIVATE (tem) ? '0'
+		     : TREE_PROTECTED (tem) ? '1' : '2'),
+		    asmfile);
+	      CHARS (2);
+	    }
+
+	  dbxout_type ((TREE_CODE (tem) == FIELD_DECL
+			&& DECL_BIT_FIELD_TYPE (tem))
+		       ? DECL_BIT_FIELD_TYPE (tem) : TREE_TYPE (tem), 0);
+
+	  if (TREE_CODE (tem) == VAR_DECL)
+	    {
+	      if (TREE_STATIC (tem) && use_gnu_debug_info_extensions)
+		{
+		  tree name = DECL_ASSEMBLER_NAME (tem);
+
+		  have_used_extensions = 1;
+		  fprintf (asmfile, ":%s;", IDENTIFIER_POINTER (name));
+		  CHARS (IDENTIFIER_LENGTH (name) + 2);
+		}
+	      else
+		{
+		  /* If TEM is non-static, GDB won't understand it.  */
+		  fprintf (asmfile, ",0,0;");
+		  CHARS (5);
+		}
+	    }
+	  else
+	    {
+	      putc (',', asmfile);
+	      print_wide_int (int_bit_position (tem));
+	      putc (',', asmfile);
+	      print_wide_int (tree_low_cst (DECL_SIZE (tem), 1));
+	      putc (';', asmfile);
+	      CHARS (3);
+	    }
+	}
+    }
+}

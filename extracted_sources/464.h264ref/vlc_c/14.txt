@@ -1,0 +1,27 @@
+int writeSyntaxElement_Intra4x4PredictionMode(SyntaxElement *se, DataPartition *this_dataPart)
+{
+
+  if (se->value1 == -1)
+  {
+    se->len = 1;
+    se->inf = 1;
+  }
+  else 
+  {
+    se->len = 4;  
+    se->inf = se->value1;
+  }
+
+  se->bitpattern = se->inf;
+  writeUVLC2buffer(se, this_dataPart->bitstream);
+
+  if(se->type != SE_HEADER)
+    this_dataPart->bitstream->write_flag = 1;
+
+#if TRACE
+  if(se->type <= 1)
+    trace2out (se);
+#endif
+
+  return (se->len);
+}

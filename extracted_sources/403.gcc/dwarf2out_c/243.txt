@@ -1,0 +1,45 @@
+static unsigned
+lookup_filename (file_name)
+     const char *file_name;
+{
+  unsigned i;
+
+  /* ??? Why isn't DECL_SOURCE_FILE left null instead.  */
+  if (strcmp (file_name, "<internal>") == 0
+      || strcmp (file_name, "<built-in>") == 0)
+    return 0;
+
+  /* Check to see if the file name that was searched on the previous
+     call matches this file name.  If so, return the index.  */
+  if (file_table.last_lookup_index != 0)
+    if (0 == strcmp (file_name,
+		     file_table.table[file_table.last_lookup_index]))
+      return file_table.last_lookup_index;
+
+  /* Didn't match the previous lookup, search the table */
+  for (i = 1; i < file_table.in_use; i++)
+    if (strcmp (file_name, file_table.table[i]) == 0)
+      {
+	file_table.last_lookup_index = i;
+	return i;
+      }
+
+  /* Prepare to add a new table entry by making sure there is enough space in
+     the table to do so.  If not, expand the current table.  */
+  if (i == file_table.allocated)
+    {
+      file_table.allocated = i + FILE_TABLE_INCREMENT;
+      file_table.table = (char **)
+	xrealloc (file_table.table, file_table.allocated * sizeof (char *));
+    }
+
+  /* Add the new entry to the end of the filename table.  */
+  file_table.table[i] = xstrdup (file_name);
+  file_table.in_use = i + 1;
+  file_table.last_lookup_index = i;
+
+  if (DWARF2_ASM_LINE_DEBUG_INFO)
+    fprintf (asm_out_file, "\t.file %u \"%s\"\n", i, file_name);
+
+  return i;
+}

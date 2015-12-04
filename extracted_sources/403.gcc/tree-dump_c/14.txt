@@ -1,0 +1,37 @@
+void
+dump_node (t, flags, stream)
+     tree t;
+     int flags;
+     FILE *stream;
+{
+  struct dump_info di;
+  dump_queue_p dq;
+  dump_queue_p next_dq;
+
+  /* Initialize the dump-information structure.  */
+  di.stream = stream;
+  di.index = 0;
+  di.column = 0;
+  di.queue = 0;
+  di.queue_end = 0;
+  di.free_list = 0;
+  di.flags = flags;
+  di.node = t;
+  di.nodes = splay_tree_new (splay_tree_compare_pointers, 0, 
+			     (splay_tree_delete_value_fn) &free);
+
+  /* Queue up the first node.  */
+  queue (&di, t, DUMP_NONE);
+
+  /* Until the queue is empty, keep dumping nodes.  */
+  while (di.queue)
+    dequeue_and_dump (&di);
+
+  /* Now, clean up.  */
+  for (dq = di.free_list; dq; dq = next_dq)
+    {
+      next_dq = dq->next;
+      free (dq);
+    }
+  splay_tree_delete (di.nodes);
+}

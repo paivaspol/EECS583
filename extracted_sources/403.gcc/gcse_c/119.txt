@@ -1,0 +1,27 @@
+static void
+invalidate_any_buried_refs (x)
+     rtx x;
+{
+  const char * fmt;
+  int i, j;
+  struct ls_expr * ptr;
+
+  /* Invalidate it in the list.  */
+  if (GET_CODE (x) == MEM && simple_mem (x))
+    {
+      ptr = ldst_entry (x);
+      ptr->invalid = 1;
+    }
+
+  /* Recursively process the insn.  */
+  fmt = GET_RTX_FORMAT (GET_CODE (x));
+  
+  for (i = GET_RTX_LENGTH (GET_CODE (x)) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	invalidate_any_buried_refs (XEXP (x, i));
+      else if (fmt[i] == 'E')
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  invalidate_any_buried_refs (XVECEXP (x, i, j));
+    }
+}

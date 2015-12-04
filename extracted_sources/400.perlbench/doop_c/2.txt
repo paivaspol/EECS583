@@ -1,0 +1,80 @@
+void
+Perl_do_vecset(pTHX_ SV *sv)
+{
+    SV *targ = LvTARG(sv);
+    register I32 offset;
+    register I32 size;
+    register unsigned char *s;
+    register UV lval;
+    I32 mask;
+    STRLEN targlen;
+    STRLEN len;
+
+    if (!targ)
+	return;
+    s = (unsigned char*)SvPV_force(targ, targlen);
+    if (SvUTF8(targ)) {
+	/* This is handled by the SvPOK_only below...
+	if (!Perl_sv_utf8_downgrade(aTHX_ targ, TRUE))
+	    SvUTF8_off(targ);
+	 */
+	(void) Perl_sv_utf8_downgrade(aTHX_ targ, TRUE);
+    }
+
+    (void)SvPOK_only(targ);
+    lval = SvUV(sv);
+    offset = LvTARGOFF(sv);
+    if (offset < 0)
+	Perl_croak(aTHX_ "Negative offset to vec in lvalue context");
+    size = LvTARGLEN(sv);
+    if (size < 1 || (size & (size-1))) /* size < 1 or not a power of two */
+	Perl_croak(aTHX_ "Illegal number of bits in vec");
+
+    offset *= size;			/* turn into bit offset */
+    len = (offset + size + 7) / 8;	/* required number of bytes */
+    if (len > targlen) {
+	s = (unsigned char*)SvGROW(targ, len + 1);
+	(void)memzero((char *)(s + targlen), len - targlen + 1);
+	SvCUR_set(targ, len);
+    }
+
+    if (size < 8) {
+	mask = (1 << size) - 1;
+	size = offset & 7;
+	lval &= mask;
+	offset >>= 3;			/* turn into byte offset */
+	s[offset] &= ~(mask << size);
+	s[offset] |= lval << size;
+    }
+    else {
+	offset >>= 3;			/* turn into byte offset */
+	if (size == 8)
+	    s[offset  ] = (U8)( lval        & 0xff);
+	else if (size == 16) {
+	    s[offset  ] = (U8)((lval >>  8) & 0xff);
+	    s[offset+1] = (U8)( lval        & 0xff);
+	}
+	else if (size == 32) {
+	    s[offset  ] = (U8)((lval >> 24) & 0xff);
+	    s[offset+1] = (U8)((lval >> 16) & 0xff);
+	    s[offset+2] = (U8)((lval >>  8) & 0xff);
+	    s[offset+3] = (U8)( lval        & 0xff);
+	}
+#ifdef UV_IS_QUAD
+	else if (size == 64) {
+	    if (ckWARN(WARN_PORTABLE))
+		Perl_warner(aTHX_ packWARN(WARN_PORTABLE),
+			    "Bit vector size > 32 non-portable");
+	    s[offset  ] = (U8)((lval >> 56) & 0xff);
+	    s[offset+1] = (U8)((lval >> 48) & 0xff);
+	    s[offset+2] = (U8)((lval >> 40) & 0xff);
+	    s[offset+3] = (U8)((lval >> 32) & 0xff);
+	    s[offset+4] = (U8)((lval >> 24) & 0xff);
+	    s[offset+5] = (U8)((lval >> 16) & 0xff);
+	    s[offset+6] = (U8)((lval >>  8) & 0xff);
+	    s[offset+7] = (U8)( lval        & 0xff);
+	}
+#endif
+    }
+    SvSETMAGIC(targ);
+}

@@ -1,0 +1,100 @@
+void
+init_ggc ()
+{
+  unsigned order;
+
+#if defined (SPEC_CPU_WIN32) || defined (SPEC_CPU_WIN64)
+#if 0
+{
+#include <win.h>
+SYSTEMINFO sSysInfo;
+GetSystemInfo(&sSysInfo);
+  G.pagesize = sSysInfo.dwPageSize;
+}
+#else
+  /* MJP */
+  G.pagesize = 4096; /* default page size on IA32 WINDOWS */
+#endif
+#elif SPEC_CPU_RELIANT_MIPS
+  G.pagesize = 4096; /* default page size on Reliant Unix*/
+#else
+  G.pagesize = getpagesize();
+#endif
+  G.lg_pagesize = exact_log2 (G.pagesize);
+
+#ifdef HAVE_MMAP_DEV_ZERO
+  G.dev_zero_fd = open ("/dev/zero", O_RDONLY);
+  if (G.dev_zero_fd == -1)
+    abort ();
+#endif
+
+#if 0
+  G.debug_file = fopen ("ggc-mmap.debug", "w");
+#else
+  G.debug_file = stdout;
+#endif
+
+  G.allocated_last_gc = GGC_MIN_LAST_ALLOCATED;
+
+#ifdef USING_MMAP
+  /* StunOS has an amazing off-by-one error for the first mmap allocation
+     after fiddling with RLIMIT_STACK.  The result, as hard as it is to
+     believe, is an unaligned page allocation, which would cause us to
+     hork badly if we tried to use it.  */
+  {
+    char *p = alloc_anon (NULL, G.pagesize);
+    struct page_entry *e;
+    if ((size_t)p & (G.pagesize - 1))
+      {
+	/* How losing.  Discard this one and try another.  If we still
+	   can't get something useful, give up.  */
+
+	p = alloc_anon (NULL, G.pagesize);
+	if ((size_t)p & (G.pagesize - 1))
+	  abort ();
+      }
+
+    /* We have a good page, might as well hold onto it...  */
+    e = (struct page_entry *) xcalloc (1, sizeof (struct page_entry));
+    e->bytes = G.pagesize;
+    e->page = p;
+    e->next = G.free_pages;
+    G.free_pages = e;
+  }
+#endif
+
+  /* Initialize the object size table.  */
+  for (order = 0; order < HOST_BITS_PER_PTR; ++order)
+    object_size_table[order] = (size_t) 1 << order;
+  for (order = HOST_BITS_PER_PTR; order < NUM_ORDERS; ++order)
+    {
+      size_t s = extra_order_size_table[order - HOST_BITS_PER_PTR];
+
+      /* If S is not a multiple of the MAX_ALIGNMENT, then round it up
+	 so that we're sure of getting aligned memory.  */
+      s = CEIL (s, MAX_ALIGNMENT) * MAX_ALIGNMENT;
+      object_size_table[order] = s;
+    }
+
+  /* Initialize the objects-per-page table.  */
+  for (order = 0; order < NUM_ORDERS; ++order)
+    {
+      objects_per_page_table[order] = G.pagesize / OBJECT_SIZE (order);
+      if (objects_per_page_table[order] == 0)
+	objects_per_page_table[order] = 1;
+    }
+
+  /* Reset the size_lookup array to put appropriately sized objects in
+     the special orders.  All objects bigger than the previous power
+     of two, but no greater than the special size, should go in the
+     new order.  */
+  for (order = HOST_BITS_PER_PTR; order < NUM_ORDERS; ++order)
+    {
+      int o;
+      int i;
+
+      o = size_lookup[OBJECT_SIZE (order)];
+      for (i = OBJECT_SIZE (order); size_lookup [i] == o; --i)
+	size_lookup[i] = order;
+    }
+}

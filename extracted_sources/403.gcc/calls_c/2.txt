@@ -1,0 +1,238 @@
+static void
+emit_call_1 (funexp, fndecl, funtype, stack_size, rounded_stack_size,
+	     struct_value_size, next_arg_reg, valreg, old_inhibit_defer_pop,
+	     call_fusage, ecf_flags, args_so_far)
+     rtx funexp;
+     tree fndecl ATTRIBUTE_UNUSED;
+     tree funtype ATTRIBUTE_UNUSED;
+     HOST_WIDE_INT stack_size ATTRIBUTE_UNUSED;
+     HOST_WIDE_INT rounded_stack_size;
+     HOST_WIDE_INT struct_value_size ATTRIBUTE_UNUSED;
+     rtx next_arg_reg ATTRIBUTE_UNUSED;
+     rtx valreg;
+     int old_inhibit_defer_pop;
+     rtx call_fusage;
+     int ecf_flags;
+     CUMULATIVE_ARGS *args_so_far ATTRIBUTE_UNUSED;
+{
+  rtx rounded_stack_size_rtx = GEN_INT (rounded_stack_size);
+  rtx call_insn;
+  int already_popped = 0;
+  HOST_WIDE_INT n_popped = RETURN_POPS_ARGS (fndecl, funtype, stack_size);
+#if defined (HAVE_call) && defined (HAVE_call_value)
+  rtx struct_value_size_rtx;
+  struct_value_size_rtx = GEN_INT (struct_value_size);
+#endif
+
+#ifdef CALL_POPS_ARGS
+  n_popped += CALL_POPS_ARGS (* args_so_far);
+#endif
+  
+  /* Ensure address is valid.  SYMBOL_REF is already valid, so no need,
+     and we don't want to load it into a register as an optimization,
+     because prepare_call_address already did it if it should be done.  */
+  if (GET_CODE (funexp) != SYMBOL_REF)
+    funexp = memory_address (FUNCTION_MODE, funexp);
+
+#if defined (HAVE_sibcall_pop) && defined (HAVE_sibcall_value_pop)
+  if ((ecf_flags & ECF_SIBCALL)
+      && HAVE_sibcall_pop && HAVE_sibcall_value_pop
+      && (n_popped > 0 || stack_size == 0))
+    {
+      rtx n_pop = GEN_INT (n_popped);
+      rtx pat;
+
+      /* If this subroutine pops its own args, record that in the call insn
+	 if possible, for the sake of frame pointer elimination.  */
+
+      if (valreg)
+	pat = GEN_SIBCALL_VALUE_POP (valreg,
+				     gen_rtx_MEM (FUNCTION_MODE, funexp),
+				     rounded_stack_size_rtx, next_arg_reg,
+				     n_pop);
+      else
+	pat = GEN_SIBCALL_POP (gen_rtx_MEM (FUNCTION_MODE, funexp),
+			       rounded_stack_size_rtx, next_arg_reg, n_pop);
+
+      emit_call_insn (pat);
+      already_popped = 1;
+    }
+  else
+#endif
+
+#if defined (HAVE_call_pop) && defined (HAVE_call_value_pop)
+  /* If the target has "call" or "call_value" insns, then prefer them
+     if no arguments are actually popped.  If the target does not have
+     "call" or "call_value" insns, then we must use the popping versions
+     even if the call has no arguments to pop.  */
+#if defined (HAVE_call) && defined (HAVE_call_value)
+  if (HAVE_call && HAVE_call_value && HAVE_call_pop && HAVE_call_value_pop
+      && n_popped > 0 && ! (ecf_flags & ECF_SP_DEPRESSED))
+#else
+  if (HAVE_call_pop && HAVE_call_value_pop)
+#endif
+    {
+      rtx n_pop = GEN_INT (n_popped);
+      rtx pat;
+
+      /* If this subroutine pops its own args, record that in the call insn
+	 if possible, for the sake of frame pointer elimination.  */
+
+      if (valreg)
+	pat = GEN_CALL_VALUE_POP (valreg,
+				  gen_rtx_MEM (FUNCTION_MODE, funexp),
+				  rounded_stack_size_rtx, next_arg_reg, n_pop);
+      else
+	pat = GEN_CALL_POP (gen_rtx_MEM (FUNCTION_MODE, funexp),
+			    rounded_stack_size_rtx, next_arg_reg, n_pop);
+
+      emit_call_insn (pat);
+      already_popped = 1;
+    }
+  else
+#endif
+
+#if defined (HAVE_sibcall) && defined (HAVE_sibcall_value)
+  if ((ecf_flags & ECF_SIBCALL)
+      && HAVE_sibcall && HAVE_sibcall_value)
+    {
+      if (valreg)
+	emit_call_insn (GEN_SIBCALL_VALUE (valreg,
+					   gen_rtx_MEM (FUNCTION_MODE, funexp),
+					   rounded_stack_size_rtx,
+					   next_arg_reg, NULL_RTX));
+      else
+	emit_call_insn (GEN_SIBCALL (gen_rtx_MEM (FUNCTION_MODE, funexp),
+				     rounded_stack_size_rtx, next_arg_reg,
+				     struct_value_size_rtx));
+    }
+  else
+#endif
+
+#if defined (HAVE_call) && defined (HAVE_call_value)
+  if (HAVE_call && HAVE_call_value)
+    {
+      if (valreg)
+	emit_call_insn (GEN_CALL_VALUE (valreg,
+					gen_rtx_MEM (FUNCTION_MODE, funexp),
+					rounded_stack_size_rtx, next_arg_reg,
+					NULL_RTX));
+      else
+	emit_call_insn (GEN_CALL (gen_rtx_MEM (FUNCTION_MODE, funexp),
+				  rounded_stack_size_rtx, next_arg_reg,
+				  struct_value_size_rtx));
+    }
+  else
+#endif
+    abort ();
+
+  /* Find the CALL insn we just emitted.  */
+  for (call_insn = get_last_insn ();
+       call_insn && GET_CODE (call_insn) != CALL_INSN;
+       call_insn = PREV_INSN (call_insn))
+    ;
+
+  if (! call_insn)
+    abort ();
+
+  /* Mark memory as used for "pure" function call.  */
+  if (ecf_flags & ECF_PURE)
+    call_fusage
+      = gen_rtx_EXPR_LIST
+	(VOIDmode,
+	 gen_rtx_USE (VOIDmode,
+		      gen_rtx_MEM (BLKmode, gen_rtx_SCRATCH (VOIDmode))),
+	 call_fusage);
+
+  /* Put the register usage information on the CALL.  If there is already
+     some usage information, put ours at the end.  */
+  if (CALL_INSN_FUNCTION_USAGE (call_insn))
+    {
+      rtx link;
+
+      for (link = CALL_INSN_FUNCTION_USAGE (call_insn); XEXP (link, 1) != 0;
+	   link = XEXP (link, 1))
+	;
+
+      XEXP (link, 1) = call_fusage;
+    }
+  else
+    CALL_INSN_FUNCTION_USAGE (call_insn) = call_fusage;
+
+  /* If this is a const call, then set the insn's unchanging bit.  */
+  if (ecf_flags & (ECF_CONST | ECF_PURE))
+    CONST_OR_PURE_CALL_P (call_insn) = 1;
+
+  /* If this call can't throw, attach a REG_EH_REGION reg note to that
+     effect.  */
+  if (ecf_flags & ECF_NOTHROW)
+    REG_NOTES (call_insn) = gen_rtx_EXPR_LIST (REG_EH_REGION, const0_rtx,
+					       REG_NOTES (call_insn));
+
+  if (ecf_flags & ECF_NORETURN)
+    REG_NOTES (call_insn) = gen_rtx_EXPR_LIST (REG_NORETURN, const0_rtx,
+					       REG_NOTES (call_insn));
+  if (ecf_flags & ECF_ALWAYS_RETURN)
+    REG_NOTES (call_insn) = gen_rtx_EXPR_LIST (REG_ALWAYS_RETURN, const0_rtx,
+					       REG_NOTES (call_insn));
+
+  if (ecf_flags & ECF_RETURNS_TWICE)
+    {
+      REG_NOTES (call_insn) = gen_rtx_EXPR_LIST (REG_SETJMP, const0_rtx,
+					         REG_NOTES (call_insn));
+      current_function_calls_setjmp = 1;
+    }
+
+  SIBLING_CALL_P (call_insn) = ((ecf_flags & ECF_SIBCALL) != 0);
+
+  /* Restore this now, so that we do defer pops for this call's args
+     if the context of the call as a whole permits.  */
+  inhibit_defer_pop = old_inhibit_defer_pop;
+
+  if (n_popped > 0)
+    {
+      if (!already_popped)
+	CALL_INSN_FUNCTION_USAGE (call_insn)
+	  = gen_rtx_EXPR_LIST (VOIDmode,
+			       gen_rtx_CLOBBER (VOIDmode, stack_pointer_rtx),
+			       CALL_INSN_FUNCTION_USAGE (call_insn));
+      rounded_stack_size -= n_popped;
+      rounded_stack_size_rtx = GEN_INT (rounded_stack_size);
+      stack_pointer_delta -= n_popped;
+    }
+
+  if (!ACCUMULATE_OUTGOING_ARGS)
+    {
+      /* If returning from the subroutine does not automatically pop the args,
+	 we need an instruction to pop them sooner or later.
+	 Perhaps do it now; perhaps just record how much space to pop later.
+
+	 If returning from the subroutine does pop the args, indicate that the
+	 stack pointer will be changed.  */
+
+      if (rounded_stack_size != 0)
+	{
+	  if (ecf_flags & ECF_SP_DEPRESSED)
+	    /* Just pretend we did the pop.  */
+	    stack_pointer_delta -= rounded_stack_size;
+	  else if (flag_defer_pop && inhibit_defer_pop == 0
+	      && ! (ecf_flags & (ECF_CONST | ECF_PURE)))
+	    pending_stack_adjust += rounded_stack_size;
+	  else
+	    adjust_stack (rounded_stack_size_rtx);
+	}
+    }
+  /* When we accumulate outgoing args, we must avoid any stack manipulations.
+     Restore the stack pointer to its original value now.  Usually
+     ACCUMULATE_OUTGOING_ARGS targets don't get here, but there are exceptions.
+     On  i386 ACCUMULATE_OUTGOING_ARGS can be enabled on demand, and
+     popping variants of functions exist as well.
+
+     ??? We may optimize similar to defer_pop above, but it is
+     probably not worthwhile.
+
+     ??? It will be worthwhile to enable combine_stack_adjustments even for
+     such machines.  */
+  else if (n_popped)
+    anti_adjust_stack (GEN_INT (n_popped));
+}

@@ -1,0 +1,20 @@
+static PSTATE*
+get_pstate_hv(pTHX_ SV* sv)                               /* used by XS typemap */
+{
+    HV* hv;
+    SV** svp;
+
+    sv = SvRV(sv);
+    if (!sv || SvTYPE(sv) != SVt_PVHV)
+	croak("Not a reference to a hash");
+    hv = (HV*)sv;
+    svp = hv_fetch(hv, "_hparser_xs_state", 17, 0);
+    if (svp) {
+	if (SvROK(*svp))
+	    return get_pstate_iv(aTHX_ SvRV(*svp));
+	else
+	    croak("_hparser_xs_state element is not a reference");
+    }
+    croak("Can't find '_hparser_xs_state' element in HTML::Parser hash");
+    return 0;
+}

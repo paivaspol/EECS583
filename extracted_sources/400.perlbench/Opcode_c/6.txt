@@ -1,0 +1,27 @@
+static void
+opmask_add(pTHX_ SV *opset)	/* THE ONLY FUNCTION TO EDIT PL_op_mask ITSELF	*/
+{
+    int i,j;
+    char *bitmask;
+    STRLEN len;
+    int myopcode = 0;
+    dMY_CXT;
+
+    verify_opset(aTHX_ opset,1);		/* croaks on bad opset	*/
+
+    if (!PL_op_mask)		/* caller must ensure PL_op_mask exists	*/
+	croak("Can't add to uninitialised PL_op_mask");
+
+    /* OPCODES ALREADY MASKED ARE NEVER UNMASKED. See opmask_addlocal()	*/
+
+    bitmask = SvPV(opset, len);
+    for (i=0; i < opset_len; i++) {
+	U16 bits = bitmask[i];
+	if (!bits) {	/* optimise for sparse masks */
+	    myopcode += 8;
+	    continue;
+	}
+	for (j=0; j < 8 && myopcode < PL_maxo; )
+	    PL_op_mask[myopcode++] |= bits & (1 << j++);
+    }
+}

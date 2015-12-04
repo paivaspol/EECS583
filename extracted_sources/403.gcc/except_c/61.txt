@@ -1,0 +1,43 @@
+void
+finish_eh_generation ()
+{
+  /* Nothing to do if no regions created.  */
+  if (cfun->eh->region_tree == NULL)
+    return;
+
+  /* The object here is to provide find_basic_blocks with detailed
+     information (via reachable_handlers) on how exception control
+     flows within the function.  In this first pass, we can include
+     type information garnered from ERT_THROW and ERT_ALLOWED_EXCEPTIONS
+     regions, and hope that it will be useful in deleting unreachable
+     handlers.  Subsequently, we will generate landing pads which will
+     connect many of the handlers, and then type information will not
+     be effective.  Still, this is a win over previous implementations.  */
+
+  rebuild_jump_labels (get_insns ());
+  find_basic_blocks (get_insns (), max_reg_num (), 0);
+  cleanup_cfg (CLEANUP_PRE_LOOP);
+
+  /* These registers are used by the landing pads.  Make sure they
+     have been generated.  */
+  get_exception_pointer (cfun);
+  get_exception_filter (cfun);
+
+  /* Construct the landing pads.  */
+
+  assign_filter_values ();
+  build_post_landing_pads ();
+  connect_post_landing_pads ();
+  if (USING_SJLJ_EXCEPTIONS)
+    sjlj_build_landing_pads ();
+  else
+    dw2_build_landing_pads ();
+
+  cfun->eh->built_landing_pads = 1;
+
+  /* We've totally changed the CFG.  Start over.  */
+  find_exception_handler_labels ();
+  rebuild_jump_labels (get_insns ());
+  find_basic_blocks (get_insns (), max_reg_num (), 0);
+  cleanup_cfg (CLEANUP_PRE_LOOP);
+}

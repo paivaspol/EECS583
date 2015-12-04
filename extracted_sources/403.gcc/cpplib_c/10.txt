@@ -1,0 +1,42 @@
+static cpp_hashnode *
+lex_macro_node (pfile)
+     cpp_reader *pfile;
+{
+  cpp_hashnode *node;
+  const cpp_token *token = _cpp_lex_token (pfile);
+
+  /* The token immediately after #define must be an identifier.  That
+     identifier may not be "defined", per C99 6.10.8p4.
+     In C++, it may not be any of the "named operators" either,
+     per C++98 [lex.digraph], [lex.key].
+     Finally, the identifier may not have been poisoned.  (In that case
+     the lexer has issued the error message for us.)  */
+
+  if (token->type != CPP_NAME)
+    {
+      if (token->type == CPP_EOF)
+	cpp_error (pfile, "no macro name given in #%s directive",
+		   pfile->directive->name);
+      else if (token->flags & NAMED_OP)
+	cpp_error (pfile,
+	   "\"%s\" cannot be used as a macro name as it is an operator in C++",
+		   NODE_NAME (token->val.node));
+      else
+	cpp_error (pfile, "macro names must be identifiers");
+
+      return 0;
+    }
+
+  node = token->val.node;
+  if (node->flags & NODE_POISONED)
+    return 0;
+
+  if (node == pfile->spec_nodes.n_defined)
+    {
+      cpp_error (pfile, "\"%s\" cannot be used as a macro name",
+		 NODE_NAME (node));
+      return 0;
+    }
+
+  return node;
+}

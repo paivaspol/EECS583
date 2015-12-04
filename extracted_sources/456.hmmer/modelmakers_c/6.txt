@@ -1,0 +1,124 @@
+static void
+fake_tracebacks(char **aseq, int nseq, int alen, int *matassign,
+		struct p7trace_s ***ret_tr)
+{
+  struct p7trace_s **tr;
+  int  idx;                     /* counter over sequences          */
+  int  i;                       /* position in raw sequence (1..L) */
+  int  k;                       /* position in HMM                 */
+  int  apos;                    /* position in alignment columns   */
+  int  tpos;			/* position in traceback           */
+
+  tr = (struct p7trace_s **) MallocOrDie (sizeof(struct p7trace_s *) * nseq);
+  
+  for (idx = 0; idx < nseq; idx++)
+    {
+      P7AllocTrace(alen+6, &tr[idx]); /* allow room for S,N,B,E,C,T */
+      
+				/* all traces start with S state... */
+      tr[idx]->statetype[0] = STS;
+      tr[idx]->nodeidx[0]   = 0;
+      tr[idx]->pos[0]       = 0;
+				/* ...and transit to N state; N-term tail
+				   is emitted on N->N transitions */
+      tr[idx]->statetype[1] = STN;
+      tr[idx]->nodeidx[1]   = 0;
+      tr[idx]->pos[1]       = 0;
+      
+      i = 1;
+      k = 0;
+      tpos = 2;
+      for (apos = 0; apos < alen; apos++)
+        {
+	  tr[idx]->statetype[tpos] = STBOGUS; /* bogus, deliberately, to debug */
+
+	  if (matassign[apos+1] & FIRST_MATCH)
+	    {			/* BEGIN */
+	      tr[idx]->statetype[tpos] = STB;
+	      tr[idx]->nodeidx[tpos]   = 0;
+	      tr[idx]->pos[tpos]       = 0;
+	      tpos++;
+	    }
+
+	  if (matassign[apos+1] & ASSIGN_MATCH && ! isgap(aseq[idx][apos]))
+	    {			/* MATCH */
+	      k++;		/* move to next model pos */
+	      tr[idx]->statetype[tpos] = STM;
+	      tr[idx]->nodeidx[tpos]   = k;
+	      tr[idx]->pos[tpos]       = i;
+	      i++;
+	      tpos++;
+	    }	      
+          else if (matassign[apos+1] & ASSIGN_MATCH)
+            {                   /* DELETE */
+		/* being careful about S/W transitions; no B->D transitions */
+	      k++;		/* *always* move on model when ASSIGN_MATCH */
+	      if (tr[idx]->statetype[tpos-1] != STB)
+		{
+		  tr[idx]->statetype[tpos] = STD;
+		  tr[idx]->nodeidx[tpos]   = k;
+		  tr[idx]->pos[tpos]       = 0;
+		  tpos++;
+		}
+            }
+          else if (matassign[apos+1] & EXTERNAL_INSERT_N &&
+		   ! isgap(aseq[idx][apos]))
+            {                   /* N-TERMINAL TAIL */
+              tr[idx]->statetype[tpos] = STN;
+              tr[idx]->nodeidx[tpos]   = 0;
+              tr[idx]->pos[tpos]       = i;
+	      i++;
+	      tpos++;
+            }
+	  else if (matassign[apos+1] & EXTERNAL_INSERT_C &&
+		   ! isgap(aseq[idx][apos]))
+	    {			/* C-TERMINAL TAIL */
+	      tr[idx]->statetype[tpos] = STC;
+              tr[idx]->nodeidx[tpos]   = 0;
+              tr[idx]->pos[tpos]       = i;
+	      i++;
+	      tpos++;
+	    }
+	  else if (! isgap(aseq[idx][apos]))
+	    {			/* INSERT */
+	      tr[idx]->statetype[tpos] = STI;
+              tr[idx]->nodeidx[tpos]   = k;
+              tr[idx]->pos[tpos]       = i;
+	      i++;
+	      tpos++;
+	    }
+
+	  if (matassign[apos+1] & LAST_MATCH)
+	    {			/* END */
+	      /* be careful about S/W transitions; may need to roll
+	       * back over some D's because there's no D->E transition
+	       */
+	      while (tr[idx]->statetype[tpos-1] == STD) 
+		tpos--;
+	      tr[idx]->statetype[tpos] = STE;
+	      tr[idx]->nodeidx[tpos]   = 0;
+	      tr[idx]->pos[tpos]       = 0;
+	      tpos++;
+				/* and then transit E->C;
+				   alignments that use J are undefined;
+				   C-term tail is emitted on C->C transitions */
+	      tr[idx]->statetype[tpos] = STC;
+	      tr[idx]->nodeidx[tpos]   = 0;
+	      tr[idx]->pos[tpos]       = 0;
+	      tpos++;
+	    }
+        }
+                                /* all traces end with T state */
+      tr[idx]->statetype[tpos] = STT;
+      tr[idx]->nodeidx[tpos]   = 0;
+      tr[idx]->pos[tpos]       = 0;
+      tr[idx]->tlen = ++tpos;
+				/* deal with DI, ID transitions */
+				/* k == M here */
+      trace_doctor(tr[idx], k, NULL, NULL);
+
+    }    /* end for sequence # idx */
+
+  *ret_tr = tr;
+  return;
+}

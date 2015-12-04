@@ -1,0 +1,56 @@
+static bool do_ascwrite(void *item,int nitem,int eio,
+			char *desc,char *srcfile,int line)
+{
+  int  i;
+  int  res=0,*iptr;
+  real *ptr;
+  char strbuf[256];
+  unsigned char *ucptr;
+  
+  check_nitem();
+  switch (eio) {
+  case eioREAL:
+    res = fprintf(curfio->fp,"%18.10e%s\n",*((real *)item),dbgstr(desc));
+    break;
+  case eioINT:
+    res = fprintf(curfio->fp,"%18d%s\n",*((int *)item),dbgstr(desc));
+    break;
+  case eioNUCHAR:
+    ucptr = (unsigned char *)item;
+    for(i=0; (i<nitem); i++)
+      res = fprintf(curfio->fp,"%4d",(int)ucptr[i]);
+    fprintf(curfio->fp,"%s\n",dbgstr(desc));
+    break;
+  case eioUSHORT:
+    res = fprintf(curfio->fp,"%18d%s\n",*((unsigned short *)item),
+		  dbgstr(desc));
+    break;
+  case eioRVEC:
+    ptr = (real *)item;
+    res = fprintf(curfio->fp,"%18.10e%18.10e%18.10e%s\n",
+		  ptr[XX],ptr[YY],ptr[ZZ],dbgstr(desc));
+    break;
+  case eioNRVEC:
+    for(i=0; (i<nitem); i++) {
+      ptr = ((rvec *)item)[i];
+      res = fprintf(curfio->fp,"%18.10e%18.10e%18.10e%s\n",
+		    ptr[XX],ptr[YY],ptr[ZZ],dbgstr(desc));
+    }
+    break;
+  case eioIVEC:
+    iptr= (int *)item;
+    res = fprintf(curfio->fp,"%18d%18d%18d%s\n",
+		  iptr[XX],iptr[YY],iptr[ZZ],dbgstr(desc));
+    break;
+  case eioSTRING:
+    encode_string(256,strbuf,(char *)item);
+    res = fprintf(curfio->fp,"%-18s%s\n",strbuf,dbgstr(desc));
+    break;
+  default:
+    FE();
+  }
+  if ((res <= 0) && curfio->bDebug)
+    fprintf(stderr,"Error writing %s %s to file %s (source %s, line %d)\n",
+	    eioNames[eio],desc,curfio->fn,srcfile,line);
+  return (res > 0);
+}

@@ -1,0 +1,67 @@
+void RCModelEstimator (int n_windowSize)
+{
+  int n_realSize = n_windowSize;
+  int i;
+  double oneSampleQ;
+  double a00 = 0.0, a01 = 0.0, a10 = 0.0, a11 = 0.0, b0 = 0.0, b1 = 0.0;
+  double MatrixValue;
+  Boolean estimateX2 = FALSE;
+
+  for (i = 0; i < n_windowSize; i++) 
+  {// find the number of samples which are not rejected
+    if (m_rgRejected[i])
+      n_realSize--;
+  }
+
+  // default RD model estimation results
+
+  m_X1 = m_X2 = 0.0;
+
+  for (i = 0; i < n_windowSize; i++)  
+  {
+    if (!m_rgRejected[i])
+      oneSampleQ = m_rgQp[i];
+  }
+  for (i = 0; i < n_windowSize; i++)  
+  {// if all non-rejected Q are the same, take 1st order model
+    if ((m_rgQp[i] != oneSampleQ) && !m_rgRejected[i])
+      estimateX2 = TRUE;
+    if (!m_rgRejected[i])
+      m_X1 += (m_rgQp[i] * m_rgRp[i]) / n_realSize;
+  }
+
+  // take 2nd order model to estimate X1 and X2
+  if ((n_realSize >= 1) && estimateX2) 
+  {
+    for (i = 0; i < n_windowSize; i++) 
+    {
+      if (!m_rgRejected[i]) 
+      {
+        a00 = a00 + 1.0;
+        a01 += 1.0 / m_rgQp[i];
+        a10 = a01;
+        a11 += 1.0 / (m_rgQp[i] * m_rgQp[i]);
+        b0 += m_rgQp[i] * m_rgRp[i];
+        b1 += m_rgRp[i];
+      }
+    }
+    // solve the equation of AX = B
+    MatrixValue=a00*a11-a01*a10;
+    if(fabs(MatrixValue)>0.000001)
+    {
+      m_X1=(b0*a11-b1*a01)/MatrixValue;
+      m_X2=(b1*a00-b0*a10)/MatrixValue;
+    }
+    else
+    {
+      m_X1=b0/a00;
+      m_X2=0.0;
+    }
+    
+  }
+  if(img->type==P_SLICE)
+  {
+    Pm_X1=m_X1;
+    Pm_X2=m_X2;
+  }
+}

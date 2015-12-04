@@ -1,0 +1,32 @@
+static int correct_box_elem(tensor box,int v,int d)
+{
+  int shift;
+
+  shift = 0;
+
+  /* correct elem d of vector v with vector d */
+  while (box[v][d] > BOX_MARGIN*box[d][d]) {
+      if(stdlog)
+      {
+          fprintf(stdlog,"Correcting invalid box:\n");
+          pr_rvecs(stdlog,0,"old box",box,DIM);
+      }
+      rvec_dec(box[v],box[d]);
+      shift--;
+      if(stdlog)
+          pr_rvecs(stdlog,0,"new box",box,DIM);
+  } 
+  while (-box[v][d] > BOX_MARGIN*box[d][d]) {
+      if(stdlog)
+      {
+          fprintf(stdlog,"Correcting invalid box:\n");
+          pr_rvecs(stdlog,0,"old box",box,DIM);
+      }
+      rvec_inc(box[v],box[d]);
+      shift++;
+      if(stdlog)
+          pr_rvecs(stdlog,0,"new box",box,DIM);
+  }
+
+  return shift;
+}

@@ -1,0 +1,17 @@
+static void
+alloc_set_hash_table (n_insns)
+     int n_insns;
+{
+  int n;
+
+  set_hash_table_size = n_insns / 4;
+  if (set_hash_table_size < 11)
+    set_hash_table_size = 11;
+
+  /* Attempt to maintain efficient use of hash table.
+     Making it an odd number is simplest for now.
+     ??? Later take some measurements.  */
+  set_hash_table_size |= 1;
+  n = set_hash_table_size * sizeof (struct expr *);
+  set_hash_table = (struct expr **) gmalloc (n);
+}

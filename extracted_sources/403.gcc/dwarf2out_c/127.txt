@@ -1,0 +1,70 @@
+static void
+build_abbrev_table (die)
+     dw_die_ref die;
+{
+  unsigned long abbrev_id;
+  unsigned int n_alloc;
+  dw_die_ref c;
+  dw_attr_ref d_attr, a_attr;
+
+  /* Scan the DIE references, and mark as external any that refer to
+     DIEs from other CUs (i.e. those which are not marked).  */
+  for (d_attr = die->die_attr; d_attr; d_attr = d_attr->dw_attr_next)
+    if (AT_class (d_attr) == dw_val_class_die_ref
+	&& AT_ref (d_attr)->die_mark == 0)
+      {
+	if (AT_ref (d_attr)->die_symbol == 0)
+	  abort ();
+
+	set_AT_ref_external (d_attr, 1);
+      }
+
+  for (abbrev_id = 1; abbrev_id < abbrev_die_table_in_use; ++abbrev_id)
+    {
+      dw_die_ref abbrev = abbrev_die_table[abbrev_id];
+
+      if (abbrev->die_tag == die->die_tag)
+	{
+	  if ((abbrev->die_child != NULL) == (die->die_child != NULL))
+	    {
+	      a_attr = abbrev->die_attr;
+	      d_attr = die->die_attr;
+
+	      while (a_attr != NULL && d_attr != NULL)
+		{
+		  if ((a_attr->dw_attr != d_attr->dw_attr)
+		      || (value_format (a_attr) != value_format (d_attr)))
+		    break;
+
+		  a_attr = a_attr->dw_attr_next;
+		  d_attr = d_attr->dw_attr_next;
+		}
+
+	      if (a_attr == NULL && d_attr == NULL)
+		break;
+	    }
+	}
+    }
+
+  if (abbrev_id >= abbrev_die_table_in_use)
+    {
+      if (abbrev_die_table_in_use >= abbrev_die_table_allocated)
+	{
+	  n_alloc = abbrev_die_table_allocated + ABBREV_DIE_TABLE_INCREMENT;
+	  abbrev_die_table
+	    = (dw_die_ref *) xrealloc (abbrev_die_table,
+				       sizeof (dw_die_ref) * n_alloc);
+
+	  memset ((char *) &abbrev_die_table[abbrev_die_table_allocated], 0,
+		 (n_alloc - abbrev_die_table_allocated) * sizeof (dw_die_ref));
+	  abbrev_die_table_allocated = n_alloc;
+	}
+
+      ++abbrev_die_table_in_use;
+      abbrev_die_table[abbrev_id] = die;
+    }
+
+  die->die_abbrev = abbrev_id;
+  for (c = die->die_child; c != NULL; c = c->die_sib)
+    build_abbrev_table (c);
+}

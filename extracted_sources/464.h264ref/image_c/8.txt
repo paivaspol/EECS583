@@ -1,0 +1,21 @@
+static void distortion_fld (float *dis_fld_y, float *dis_fld_u, float *dis_fld_v)
+{
+
+  img->number /= 2;
+  img->buf_cycle /= 2;
+  img->height = (input->img_height+img->auto_crop_bottom);
+  img->height_cr = img->height_cr_frame;
+  img->total_number_mb =
+    (img->width * img->height) / (MB_BLOCK_SIZE * MB_BLOCK_SIZE);
+
+  combine_field ();
+
+  imgY_org = imgY_org_frm;
+  imgUV_org = imgUV_org_frm;
+
+  find_distortion (snr, img);   // find snr from original frame picture
+
+  *dis_fld_y = snr->snr_y;
+  *dis_fld_u = snr->snr_u;
+  *dis_fld_v = snr->snr_v;
+}

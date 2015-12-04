@@ -1,0 +1,209 @@
+int                                       //  ==> coefficient cost
+LumaResidualCoding8x8 (int   *cbp,         //  --> cbp (updated according to processed 8x8 luminance block)
+                       int64 *cbp_blk,     //  --> block cbp (updated according to processed 8x8 luminance block)
+                       int   block8x8,     // <--  block number of 8x8 block
+                       short p_dir,        // <--  prediction direction
+                       int   fw_mode,      // <--  forward  prediction mode (1-7, 0=DIRECT)
+                       int   bw_mode,      // <--  backward prediction mode (1-7, 0=DIRECT)
+                       short fw_refframe,  // <--  reference frame for forward prediction
+                       short bw_refframe   // <--  reference frame for backward prediction
+                       )
+{
+  int    block_y, block_x, pic_pix_y, pic_pix_x, i, j, nonzero = 0, cbp_blk_mask;
+  int    coeff_cost = 0;
+  int    mb_y       = (block8x8 / 2) << 3;
+  int    mb_x       = (block8x8 % 2) << 3;
+  int    cbp_mask   = 1 << block8x8;
+  int    bxx, byy;                   // indexing curr_blk
+  int    scrFlag = 0;                // 0=noSCR, 1=strongSCR, 2=jmSCR
+  int    skipped    = (fw_mode == 0 && bw_mode == 0 && (img->type != B_SLICE));
+  Macroblock* currMB      = &img->mb_data[img->current_mb_nr];
+  //set transform size
+  int    need_8x8_transform = currMB->luma_transform_size_8x8_flag;
+  // Residue Color Transform
+  int residue_R, residue_G, residue_B, temp;
+
+  if (img->type==B_SLICE)
+    scrFlag = 1;
+
+  //===== loop over 4x4 blocks =====
+  for (byy=0, block_y=mb_y; block_y<mb_y+8; byy+=4, block_y+=4)
+  {
+    pic_pix_y = img->opix_y + block_y;
+
+    for (bxx=0, block_x=mb_x; block_x<mb_x+8; bxx+=4, block_x+=4)
+    {
+      pic_pix_x = img->opix_x + block_x;
+      
+      cbp_blk_mask = (block_x>>2) + block_y;
+
+      // Residue Color Transform
+	  if(img->residue_transform_flag)
+    {
+        ChromaPrediction4x4 (0, block_x, block_y, p_dir, fw_mode, bw_mode, fw_refframe, bw_refframe);
+        for (j=0; j<4; j++)
+        for (i=0; i<4; i++)
+          mprRGB[1][i+block_x][j+block_y] = img->mpr[i+block_x][j+block_y];
+
+        ChromaPrediction4x4 (1, block_x, block_y, p_dir, fw_mode, bw_mode, fw_refframe, bw_refframe);
+        for (j=0; j<4; j++)
+        for (i=0; i<4; i++)
+          mprRGB[2][i+block_x][j+block_y] = img->mpr[i+block_x][j+block_y];
+	  }
+
+      //===== prediction of 4x4 block =====
+      LumaPrediction4x4 (block_x, block_y, p_dir, fw_mode, bw_mode, fw_refframe, bw_refframe);
+
+      // Residue Color Transform
+	  if(img->residue_transform_flag)
+      for (j=0; j<4; j++)
+      for (i=0; i<4; i++)
+        mprRGB[0][i+block_x][j+block_y] = img->mpr[i+block_x][j+block_y];
+
+      //===== get displaced frame difference ======
+      if(!img->residue_transform_flag)
+      {
+        if(!need_8x8_transform)
+        {
+
+        //===== get displaced frame difference ======                
+        for (j=0; j<4; j++)
+          for (i=0; i<4; i++)
+          {
+            img->m7[i][j] = imgY_org[pic_pix_y+j][pic_pix_x+i] - img->mpr[i+block_x][j+block_y];
+          }
+
+          //===== DCT, Quantization, inverse Quantization, IDCT, Reconstruction =====      
+          if (img->NoResidueDirect != 1 && !skipped  )
+          {
+            //===== DCT, Quantization, inverse Quantization, IDCT, Reconstruction =====
+            if (img->type!=SP_SLICE)  nonzero = dct_luma   (block_x, block_y, &coeff_cost, 0);
+            else                      nonzero = dct_luma_sp(block_x, block_y, &coeff_cost);
+            if (nonzero)
+            {
+              (*cbp_blk) |= 1 << cbp_blk_mask;  // one bit for every 4x4 block
+              (*cbp)     |= cbp_mask;           // one bit for the 4x4 blocks of an 8x8 block
+            }
+          }
+        }
+        else
+        {
+          for (j=0; j<4; j++)
+          for (i=0; i<4; i++)
+          {
+            img->m7[i+bxx][j+byy] = imgY_org[pic_pix_y+j][pic_pix_x+i] - img->mpr[i+block_x][j+block_y];
+          }
+        }
+      } 
+      else 
+      {
+	    /* Forward Residue Transform */
+        for (j=0; j<4; j++)
+        for (i=0; i<4; i++)
+        {
+          residue_B = imgUV_org[0][pic_pix_y+j][pic_pix_x+i] - mprRGB[1][i+block_x][j+block_y];
+          residue_G = imgY_org[pic_pix_y+j][pic_pix_x+i] - mprRGB[0][i+block_x][j+block_y];
+          residue_R = imgUV_org[1][pic_pix_y+j][pic_pix_x+i] - mprRGB[2][i+block_x][j+block_y];
+
+          resTrans_R[i+block_x][j+block_y] = residue_R-residue_B;
+          temp = residue_B+(resTrans_R[i+block_x][j+block_y]>>1);
+          resTrans_B[i+block_x][j+block_y] = residue_G-temp;
+          resTrans_G[i+block_x][j+block_y] = temp+(resTrans_B[i+block_x][j+block_y]>>1);
+
+          if(!need_8x8_transform)
+            img->m7[i][j] = resTrans_G[i+block_x][j+block_y];
+          else
+            img->m7[i+bxx][j+byy] = resTrans_G[i+block_x][j+block_y];
+        }
+
+        // Residue Color Transform
+        //===== DCT, Quantization, inverse Quantization, IDCT, Reconstruction =====      
+        if (img->NoResidueDirect != 1 && !skipped && !need_8x8_transform )
+        {
+          //===== DCT, Quantization, inverse Quantization, IDCT, Reconstruction =====
+          if (img->type!=SP_SLICE)  nonzero = dct_luma   (block_x, block_y, &coeff_cost, 0);
+          else                      nonzero = dct_luma_sp(block_x, block_y, &coeff_cost);
+          
+          for (j=0; j<4; j++)
+            for (i=0; i<4; i++)
+              rec_resG[i+block_x][j+block_y] = img->m7[i][j];
+            
+          if (nonzero)
+          {
+            (*cbp_blk) |= 1 << cbp_blk_mask;  // one bit for every 4x4 block
+            (*cbp)     |= cbp_mask;           // one bit for the 4x4 blocks of an 8x8 block
+          }
+        }
+      }
+    }
+  }
+
+  if(need_8x8_transform)
+  {
+    if (img->NoResidueDirect != 1 && !skipped)
+    {
+      if (img->type!=SP_SLICE)
+        nonzero = dct_luma8x8   (block8x8, &coeff_cost, 0);
+
+      // Residue Color Transform
+      if(img->residue_transform_flag)
+      {
+        for (j=0; j<8; j++)
+          for (i=0; i<8; i++)
+            rec_resG[mb_x+i][mb_y+j] = img->m7[i][j];
+      }
+
+      if (nonzero)
+      {
+        (*cbp_blk) |= 51 << (4*block8x8-2*(block8x8%2)); // corresponds to 110011, as if all four 4x4 blocks contain coeff, shifted to block position
+        (*cbp)     |= cbp_mask;           // one bit for the 4x4 blocks of an 8x8 block
+      }
+    }
+  }
+
+  /*
+  The purpose of the action below is to prevent that single or 'expensive' coefficients are coded.
+  With 4x4 transform there is larger chance that a single coefficient in a 8x8 or 16x16 block may be nonzero.
+  A single small (level=1) coefficient in a 8x8 block will cost: 3 or more bits for the coefficient,
+  4 bits for EOBs for the 4x4 blocks,possibly also more bits for CBP.  Hence the total 'cost' of that single
+  coefficient will typically be 10-12 bits which in a RD consideration is too much to justify the distortion improvement.
+  The action below is to watch such 'single' coefficients and set the reconstructed block equal to the prediction according
+  to a given criterium.  The action is taken only for inter luma blocks.
+
+  Notice that this is a pure encoder issue and hence does not have any implication on the standard.
+  coeff_cost is a parameter set in dct_luma() and accumulated for each 8x8 block.  If level=1 for a coefficient,
+  coeff_cost is increased by a number depending on RUN for that coefficient.The numbers are (see also dct_luma()): 3,2,2,1,1,1,0,0,...
+  when RUN equals 0,1,2,3,4,5,6, etc.
+  If level >1 coeff_cost is increased by 9 (or any number above 3). The threshold is set to 3. This means for example:
+  1: If there is one coefficient with (RUN,level)=(0,1) in a 8x8 block this coefficient is discarded.
+  2: If there are two coefficients with (RUN,level)=(1,1) and (4,1) the coefficients are also discarded
+  sum_cnt_nonz is the accumulation of coeff_cost over a whole macro block.  If sum_cnt_nonz is 5 or less for the whole MB,
+  all nonzero coefficients are discarded for the MB and the reconstructed block is set equal to the prediction.
+  */
+
+  if (img->NoResidueDirect != 1 && !skipped && coeff_cost <= _LUMA_COEFF_COST_ &&
+      ((img->qp + img->bitdepth_luma_qp_scale)!=0 || img->lossless_qpprime_flag==0))
+  {
+    coeff_cost  = 0;
+    (*cbp)     &=  (63 - cbp_mask);
+    (*cbp_blk) &= ~(51 << (4*block8x8-2*(block8x8%2)));
+
+    for (i=mb_x; i<mb_x+8; i++)
+    for (j=mb_y; j<mb_y+8; j++)
+    {
+      // Residue Color Transform
+      if(!img->residue_transform_flag)
+        enc_picture->imgY[img->pix_y+j][img->pix_x+i] = img->mpr[i][j];
+      else
+        rec_resG[i][j] = 0;
+    }
+    if (img->type==SP_SLICE)
+    {
+      for (i=mb_x; i < mb_x+BLOCK_SIZE*2; i+=BLOCK_SIZE)
+        for (j=mb_y; j < mb_y+BLOCK_SIZE*2; j+=BLOCK_SIZE)
+          copyblock_sp(i,j);
+    }
+  }
+
+  return coeff_cost;
+}

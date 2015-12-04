@@ -1,0 +1,27 @@
+static void
+do_endif (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  struct if_stack *ifs = buffer->if_stack;
+
+  if (ifs == NULL)
+    cpp_error (pfile, "#endif without #if");
+  else
+    {
+      /* Only check EOL if was not originally skipping.  */
+      if (!ifs->was_skipping)
+	check_eol (pfile);
+
+      /* If potential control macro, we go back outside again.  */
+      if (ifs->next == 0 && ifs->mi_cmacro)
+	{
+	  pfile->mi_valid = true;
+	  pfile->mi_cmacro = ifs->mi_cmacro;
+	}
+
+      buffer->if_stack = ifs->next;
+      pfile->state.skipping = ifs->was_skipping;
+      obstack_free (&pfile->buffer_ob, ifs);
+    }
+}

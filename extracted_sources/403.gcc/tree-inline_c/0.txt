@@ -1,0 +1,68 @@
+static tree
+remap_decl (decl, id)
+     tree decl;
+     inline_data *id;
+{
+  splay_tree_node n;
+  tree fn;
+
+  /* We only remap local variables in the current function.  */
+  fn = VARRAY_TOP_TREE (id->fns);
+  if (! (*lang_hooks.tree_inlining.auto_var_in_fn_p) (decl, fn))
+    return NULL_TREE;
+
+  /* See if we have remapped this declaration.  */
+  n = splay_tree_lookup (id->decl_map, (splay_tree_key) decl);
+  /* If we didn't already have an equivalent for this declaration,
+     create one now.  */
+  if (!n)
+    {
+      tree t;
+
+      /* Make a copy of the variable or label.  */
+      t = copy_decl_for_inlining (decl, fn,
+				  VARRAY_TREE (id->fns, 0));
+
+      /* The decl T could be a dynamic array or other variable size type,
+	 in which case some fields need to be remapped because they may
+	 contain SAVE_EXPRs.  */
+      if (TREE_TYPE (t) && TREE_CODE (TREE_TYPE (t)) == ARRAY_TYPE
+	  && TYPE_DOMAIN (TREE_TYPE (t)))
+	{
+	  TREE_TYPE (t) = copy_node (TREE_TYPE (t));
+	  TYPE_DOMAIN (TREE_TYPE (t))
+	    = copy_node (TYPE_DOMAIN (TREE_TYPE (t)));
+	  walk_tree (&TYPE_MAX_VALUE (TYPE_DOMAIN (TREE_TYPE (t))),
+		     copy_body_r, id, NULL);
+	}
+
+      if (! DECL_NAME (t) && TREE_TYPE (t)
+	  && (*lang_hooks.tree_inlining.anon_aggr_type_p) (TREE_TYPE (t)))
+	{
+	  /* For a VAR_DECL of anonymous type, we must also copy the
+	     member VAR_DECLS here and rechain the
+	     DECL_ANON_UNION_ELEMS.  */
+	  tree members = NULL;
+	  tree src;
+	  
+	  for (src = DECL_ANON_UNION_ELEMS (t); src;
+	       src = TREE_CHAIN (src))
+	    {
+	      tree member = remap_decl (TREE_VALUE (src), id);
+
+	      if (TREE_PURPOSE (src))
+		abort ();
+	      members = tree_cons (NULL, member, members);
+	    }
+	  DECL_ANON_UNION_ELEMS (t) = nreverse (members);
+	}
+      
+      /* Remember it, so that if we encounter this local entity
+	 again we can reuse this copy.  */
+      n = splay_tree_insert (id->decl_map,
+			     (splay_tree_key) decl,
+			     (splay_tree_value) t);
+    }
+
+  return (tree) n->value;
+}

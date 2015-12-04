@@ -1,0 +1,15 @@
+static void
+mark_named_operators (pfile)
+     cpp_reader *pfile;
+{
+  const struct named_op *b;
+
+  for (b = operator_array;
+       b < (operator_array + ARRAY_SIZE (operator_array));
+       b++)
+    {
+      cpp_hashnode *hp = cpp_lookup (pfile, b->name, b->len);
+      hp->flags |= NODE_OPERATOR;
+      hp->value.operator = b->value;
+    }
+}

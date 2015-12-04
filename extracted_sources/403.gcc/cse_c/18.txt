@@ -1,0 +1,180 @@
+static struct table_elt *
+insert (x, classp, hash, mode)
+     rtx x;
+     struct table_elt *classp;
+     unsigned hash;
+     enum machine_mode mode;
+{
+  struct table_elt *elt;
+
+  /* If X is a register and we haven't made a quantity for it,
+     something is wrong.  */
+  if (GET_CODE (x) == REG && ! REGNO_QTY_VALID_P (REGNO (x)))
+    abort ();
+
+  /* If X is a hard register, show it is being put in the table.  */
+  if (GET_CODE (x) == REG && REGNO (x) < FIRST_PSEUDO_REGISTER)
+    {
+      unsigned int regno = REGNO (x);
+      unsigned int endregno = regno + HARD_REGNO_NREGS (regno, GET_MODE (x));
+      unsigned int i;
+
+      for (i = regno; i < endregno; i++)
+	SET_HARD_REG_BIT (hard_regs_in_table, i);
+    }
+
+  /* Put an element for X into the right hash bucket.  */
+
+  elt = free_element_chain;
+  if (elt)
+    free_element_chain = elt->next_same_hash;
+  else
+    {
+      n_elements_made++;
+      elt = (struct table_elt *) xmalloc (sizeof (struct table_elt));
+    }
+
+  elt->exp = x;
+  elt->canon_exp = NULL_RTX;
+  elt->cost = COST (x);
+  elt->regcost = approx_reg_cost (x);
+  elt->next_same_value = 0;
+  elt->prev_same_value = 0;
+  elt->next_same_hash = table[hash];
+  elt->prev_same_hash = 0;
+  elt->related_value = 0;
+  elt->in_memory = 0;
+  elt->mode = mode;
+  elt->is_const = (CONSTANT_P (x)
+		   /* GNU C++ takes advantage of this for `this'
+		      (and other const values).  */
+		   || (RTX_UNCHANGING_P (x)
+		       && GET_CODE (x) == REG
+		       && REGNO (x) >= FIRST_PSEUDO_REGISTER)
+		   || FIXED_BASE_PLUS_P (x));
+
+  if (table[hash])
+    table[hash]->prev_same_hash = elt;
+  table[hash] = elt;
+
+  /* Put it into the proper value-class.  */
+  if (classp)
+    {
+      classp = classp->first_same_value;
+      if (CHEAPER (elt, classp))
+	/* Insert at the head of the class */
+	{
+	  struct table_elt *p;
+	  elt->next_same_value = classp;
+	  classp->prev_same_value = elt;
+	  elt->first_same_value = elt;
+
+	  for (p = classp; p; p = p->next_same_value)
+	    p->first_same_value = elt;
+	}
+      else
+	{
+	  /* Insert not at head of the class.  */
+	  /* Put it after the last element cheaper than X.  */
+	  struct table_elt *p, *next;
+
+	  for (p = classp; (next = p->next_same_value) && CHEAPER (next, elt);
+	       p = next);
+
+	  /* Put it after P and before NEXT.  */
+	  elt->next_same_value = next;
+	  if (next)
+	    next->prev_same_value = elt;
+
+	  elt->prev_same_value = p;
+	  p->next_same_value = elt;
+	  elt->first_same_value = classp;
+	}
+    }
+  else
+    elt->first_same_value = elt;
+
+  /* If this is a constant being set equivalent to a register or a register
+     being set equivalent to a constant, note the constant equivalence.
+
+     If this is a constant, it cannot be equivalent to a different constant,
+     and a constant is the only thing that can be cheaper than a register.  So
+     we know the register is the head of the class (before the constant was
+     inserted).
+
+     If this is a register that is not already known equivalent to a
+     constant, we must check the entire class.
+
+     If this is a register that is already known equivalent to an insn,
+     update the qtys `const_insn' to show that `this_insn' is the latest
+     insn making that quantity equivalent to the constant.  */
+
+  if (elt->is_const && classp && GET_CODE (classp->exp) == REG
+      && GET_CODE (x) != REG)
+    {
+      int exp_q = REG_QTY (REGNO (classp->exp));
+      struct qty_table_elem *exp_ent = &qty_table[exp_q];
+
+      exp_ent->const_rtx = gen_lowpart_if_possible (exp_ent->mode, x);
+      exp_ent->const_insn = this_insn;
+    }
+
+  else if (GET_CODE (x) == REG
+	   && classp
+	   && ! qty_table[REG_QTY (REGNO (x))].const_rtx
+	   && ! elt->is_const)
+    {
+      struct table_elt *p;
+
+      for (p = classp; p != 0; p = p->next_same_value)
+	{
+	  if (p->is_const && GET_CODE (p->exp) != REG)
+	    {
+	      int x_q = REG_QTY (REGNO (x));
+	      struct qty_table_elem *x_ent = &qty_table[x_q];
+
+	      x_ent->const_rtx
+		= gen_lowpart_if_possible (GET_MODE (x), p->exp);
+	      x_ent->const_insn = this_insn;
+	      break;
+	    }
+	}
+    }
+
+  else if (GET_CODE (x) == REG
+	   && qty_table[REG_QTY (REGNO (x))].const_rtx
+	   && GET_MODE (x) == qty_table[REG_QTY (REGNO (x))].mode)
+    qty_table[REG_QTY (REGNO (x))].const_insn = this_insn;
+
+  /* If this is a constant with symbolic value,
+     and it has a term with an explicit integer value,
+     link it up with related expressions.  */
+  if (GET_CODE (x) == CONST)
+    {
+      rtx subexp = get_related_value (x);
+      unsigned subhash;
+      struct table_elt *subelt, *subelt_prev;
+
+      if (subexp != 0)
+	{
+	  /* Get the integer-free subexpression in the hash table.  */
+	  subhash = safe_hash (subexp, mode) & HASH_MASK;
+	  subelt = lookup (subexp, subhash, mode);
+	  if (subelt == 0)
+	    subelt = insert (subexp, NULL, subhash, mode);
+	  /* Initialize SUBELT's circular chain if it has none.  */
+	  if (subelt->related_value == 0)
+	    subelt->related_value = subelt;
+	  /* Find the element in the circular chain that precedes SUBELT.  */
+	  subelt_prev = subelt;
+	  while (subelt_prev->related_value != subelt)
+	    subelt_prev = subelt_prev->related_value;
+	  /* Put new ELT into SUBELT's circular chain just before SUBELT.
+	     This way the element that follows SUBELT is the oldest one.  */
+	  elt->related_value = subelt_prev->related_value;
+	  subelt_prev->related_value = elt;
+	}
+    }
+
+  return elt;
+}

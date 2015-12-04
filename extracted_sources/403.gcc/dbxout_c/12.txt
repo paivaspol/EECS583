@@ -1,0 +1,13 @@
+static void
+dbxout_type_index (type)
+     tree type;
+{
+#ifndef DBX_USE_BINCL
+  fprintf (asmfile, "%d", TYPE_SYMTAB_ADDRESS (type));
+  CHARS (3);
+#else
+  struct typeinfo *t = &typevec[TYPE_SYMTAB_ADDRESS (type)];
+  fprintf (asmfile, "(%d,%d)", t->file_number, t->type_number);
+  CHARS (9);
+#endif
+}

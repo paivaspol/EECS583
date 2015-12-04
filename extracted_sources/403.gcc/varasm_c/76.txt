@@ -1,0 +1,14 @@
+static struct constant_descriptor *
+record_constant_rtx (mode, x)
+     enum machine_mode mode;
+     rtx x;
+{
+  struct constant_descriptor *ptr;
+
+  ptr = ((struct constant_descriptor *)
+	 xcalloc (1, (offsetof (struct constant_descriptor, u)
+		      + sizeof (struct rtx_const))));
+  decode_rtx_const (mode, x, (struct rtx_const *) ptr->u.contents);
+
+  return ptr;
+}

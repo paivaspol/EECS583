@@ -1,0 +1,69 @@
+void vithist_rescore (vithist_t *vh, kbcore_t *kbc,
+		      s3wid_t wid, int32 ef, int32 score, int32 pred, int32 type)
+{
+    vithist_entry_t *pve, tve;
+    s3lmwid_t lwid;
+    int32 se, fe;
+    int32 i;
+    
+    assert (vh->n_frm == ef);
+    if(pred == -1) { 
+      E_FATAL("Hmm->out.history equals to -1 with score %d, some active phone was not computed?\n",score);
+      exit(-1);
+    }
+ 
+    pve = vh->entry[VITHIST_ID2BLK(pred)] + VITHIST_ID2BLKOFFSET(pred);
+    /* Create a temporary entry with all the info currently available */
+    tve.wid = wid;
+    tve.sf = pve->ef + 1;
+    tve.ef = ef;
+    tve.type = type;
+    tve.valid = 1;
+    tve.ascr = score - pve->score;
+
+    if (pred == 0) {	/* Special case for the initial <s> entry */
+	se = 0;
+	fe = 1;
+    } else {
+	se = vh->frame_start[pve->ef];
+	fe = vh->frame_start[pve->ef + 1];
+    }
+    if (dict_filler_word (kbcore_dict(kbc), wid)) {
+	tve.lscr = fillpen (kbcore_fillpen(kbc), wid);
+	tve.score = score + tve.lscr;
+	tve.pred = pred;
+	tve.lmstate.lm3g = pve->lmstate.lm3g;
+	vithist_enter (vh, kbc, &tve);
+    } else {
+
+      if(kbc->lmset)
+	lwid = kbc->lm->dict2lmwid[wid];
+      else 
+	lwid = kbcore_dict2lmwid (kbc, wid);
+
+      /*E_INFO("lwid %d, wid %d wordstr %s\n",lwid, wid, dict_wordstr(kbc->dict,wid));*/
+
+	tve.lmstate.lm3g.lwid[0] = lwid;
+	
+	for (i = se; i < fe; i++) {
+	    pve = vh->entry[VITHIST_ID2BLK(i)] + VITHIST_ID2BLKOFFSET(i);
+	    
+	    if (pve->valid) {
+		tve.lscr = lm_tg_score (kbcore_lm(kbc),
+					pve->lmstate.lm3g.lwid[1],
+					pve->lmstate.lm3g.lwid[0],
+					lwid,
+					wid);
+		
+		tve.score = pve->score + tve.ascr + tve.lscr;
+		
+		if ((tve.score - vh->wbeam) >= vh->bestscore[vh->n_frm]) {
+		    tve.pred = i;
+		    tve.lmstate.lm3g.lwid[1] = pve->lmstate.lm3g.lwid[0];
+		    
+		    vithist_enter (vh, kbc, &tve);
+		}
+	    }
+	}
+    }
+}

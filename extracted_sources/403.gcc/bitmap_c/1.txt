@@ -1,0 +1,49 @@
+static INLINE bitmap_element *
+bitmap_element_allocate ()
+{
+  bitmap_element *element;
+
+  if (bitmap_free != 0)
+    {
+      element = bitmap_free;
+      bitmap_free = element->next;
+    }
+  else
+    {
+      /* We can't use gcc_obstack_init to initialize the obstack since
+	 print-rtl.c now calls bitmap functions, and bitmap is linked
+	 into the gen* functions.  */
+      if (!bitmap_obstack_init)
+	{
+	  bitmap_obstack_init = TRUE;
+
+	  /* Let particular systems override the size of a chunk.  */
+#ifndef OBSTACK_CHUNK_SIZE
+#define OBSTACK_CHUNK_SIZE 0
+#endif
+	  /* Let them override the alloc and free routines too.  */
+#ifndef OBSTACK_CHUNK_ALLOC
+#define OBSTACK_CHUNK_ALLOC xmalloc
+#endif
+#ifndef OBSTACK_CHUNK_FREE
+#define OBSTACK_CHUNK_FREE free
+#endif
+
+#if !defined(__GNUC__) || (__GNUC__ < 2)
+#define __alignof__(type) 0
+#endif
+
+	  obstack_specify_allocation (&bitmap_obstack, OBSTACK_CHUNK_SIZE,
+				      __alignof__ (bitmap_element),
+				      (void *(*) PARAMS ((long))) OBSTACK_CHUNK_ALLOC,
+				      (void (*) PARAMS ((void *))) OBSTACK_CHUNK_FREE);
+	}
+
+      element = (bitmap_element *) obstack_alloc (&bitmap_obstack,
+						  sizeof (bitmap_element));
+    }
+
+  memset (element->bits, 0, sizeof (element->bits));
+
+  return element;
+}

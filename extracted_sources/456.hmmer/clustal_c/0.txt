@@ -1,0 +1,21 @@
+int
+main(int argc, char **argv)
+{
+  MSAFILE *afp;
+  MSA     *msa;
+  char    *file;
+  
+  file = argv[1];
+
+  if ((afp = MSAFileOpen(file, MSAFILE_CLUSTAL, NULL)) == NULL)
+    Die("Couldn't open %s\n", file);
+
+  while ((msa = ReadClustal(afp)) != NULL)
+    {
+      WriteClustal(stdout, msa);
+      MSAFree(msa); 
+    }
+  
+  MSAFileClose(afp);
+  exit(0);
+}

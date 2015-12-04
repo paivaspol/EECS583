@@ -1,0 +1,81 @@
+static int
+make_equivalent_phi_alternatives_equivalent (bb, reg_partition)
+     int bb;
+     partition reg_partition;
+{
+  int changed = 0;
+  basic_block b = BASIC_BLOCK (bb);
+  rtx phi;
+
+  /* Advance to the first phi node.  */
+  phi = first_insn_after_basic_block_note (b);
+
+  /* Scan all the phi nodes.  */
+  for (; 
+       PHI_NODE_P (phi);
+       phi = next_nonnote_insn (phi))
+    {
+      rtx set = PATTERN (phi);
+      /* The regno of the destination of the set.  */
+      int tgt_regno = REGNO (SET_DEST (PATTERN (phi)));
+
+      rtx phi2 = next_nonnote_insn (phi);
+
+      /* Scan all phi nodes following this one.  */
+      for (;
+	   PHI_NODE_P (phi2);
+	   phi2 = next_nonnote_insn (phi2))
+	{
+	  rtx set2 = PATTERN (phi2);
+	  /* The regno of the destination of the set.  */
+	  int tgt2_regno = REGNO (SET_DEST (set2));
+		  
+	  /* Are the set destinations equivalent regs?  */
+	  if (partition_find (reg_partition, tgt_regno) ==
+	      partition_find (reg_partition, tgt2_regno))
+	    {
+	      edge e;
+	      /* Scan over edges.  */
+	      for (e = b->pred; e; e = e->pred_next)
+		{
+		  int pred_block = e->src->index;
+		  /* Identify the phi alternatives from both phi
+		     nodes corresponding to this edge.  */
+		  rtx *alt = phi_alternative (set, pred_block);
+		  rtx *alt2 = phi_alternative (set2, pred_block);
+
+		  /* If one of the phi nodes doesn't have a
+		     corresponding alternative, just skip it.  */
+		  if (alt == 0 || alt2 == 0)
+		    continue;
+
+		  /* Both alternatives should be SSA registers.  */
+		  if (GET_CODE (*alt) != REG
+		      || !CONVERT_REGISTER_TO_SSA_P (REGNO (*alt)))
+		    abort ();
+		  if (GET_CODE (*alt2) != REG
+		      || !CONVERT_REGISTER_TO_SSA_P (REGNO (*alt2)))
+		    abort ();
+
+		  /* If the alternatives aren't already in the same
+		     class ...  */
+		  if (partition_find (reg_partition, REGNO (*alt)) 
+		      != partition_find (reg_partition, REGNO (*alt2)))
+		    {
+		      /* ... make them so.  */
+		      if (conflicting_hard_regs_p (REGNO (*alt), REGNO (*alt2)))
+			/* It is illegal to unify a hard register with
+			   a different register.  */
+			abort ();
+
+		      partition_union (reg_partition, 
+				       REGNO (*alt), REGNO (*alt2));
+		      ++changed;
+		    }
+		}
+	    }
+	}
+    }
+
+  return changed;
+}

@@ -1,0 +1,21 @@
+void
+quantum_r_z(int target, float gamma, quantum_reg *reg)
+{
+  int i;
+  COMPLEX_FLOAT z;
+
+  if(quantum_objcode_put(ROT_Z, target, (double) gamma))
+    return;
+
+  z = quantum_cexp(gamma/2);
+  
+  for(i=0; i<reg->size; i++)
+    {
+      if(reg->node[i].state & ((MAX_UNSIGNED) 1 << target))
+	reg->node[i].amplitude *= z;
+      else
+	reg->node[i].amplitude /= z;
+    }
+
+  quantum_decohere(reg);
+}

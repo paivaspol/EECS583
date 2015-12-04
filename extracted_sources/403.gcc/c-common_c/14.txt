@@ -1,0 +1,33 @@
+static void
+merge_tlist (to, add, copy)
+     struct tlist **to;
+     struct tlist *add;
+     int copy;
+{
+  struct tlist **end = to;
+
+  while (*end)
+    end = &(*end)->next;
+
+  while (add)
+    {
+      int found = 0;
+      struct tlist *tmp2;
+      struct tlist *next = add->next;
+
+      for (tmp2 = *to; tmp2; tmp2 = tmp2->next)
+	if (tmp2->expr == add->expr)
+	  {
+	    found = 1;
+	    if (! tmp2->writer)
+	      tmp2->writer = add->writer;
+	  }
+      if (! found)
+	{
+	  *end = copy ? add : new_tlist (NULL, add->expr, add->writer);
+	  end = &(*end)->next;
+	  *end = 0;
+	}
+      add = next;
+    }
+}

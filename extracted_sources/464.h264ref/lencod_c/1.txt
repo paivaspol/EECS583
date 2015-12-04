@@ -1,0 +1,53 @@
+void report_stats_on_error()
+{
+  input->no_frames=img->number-1;
+  terminate_sequence();
+
+  flush_dpb();
+  
+  close(p_in);
+  if (-1!=p_dec)
+    close(p_dec);
+
+  if (p_trace)
+    fclose(p_trace);
+  
+  Clear_Motion_Search_Module ();
+  
+  RandomIntraUninit();
+  FmoUninit();
+  
+  if (input->PyramidCoding)
+    clear_gop_structure ();
+  
+  // free structure for rd-opt. mode decision
+  clear_rdopt ();
+  
+#ifdef _LEAKYBUCKET_
+  calc_buffer();
+#endif
+
+  if (input->ReportFrameStats)
+    report_frame_statistic();
+  
+  // report everything
+  report();
+  
+  free_picture (frame_pic);
+  if (top_pic)
+    free_picture (top_pic);
+  if (bottom_pic)
+    free_picture (bottom_pic);
+  
+  free_dpb();
+  free_colocated(Co_located);
+  uninit_out_buffer();
+  
+  free_global_buffers();
+  
+  // free image mem
+  free_img ();
+  free_context_memory ();
+  FreeNalPayloadBuffer();
+  FreeParameterSets();
+}

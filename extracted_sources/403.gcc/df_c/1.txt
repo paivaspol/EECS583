@@ -1,0 +1,20 @@
+static void
+df_reg_table_realloc (df, size)
+     struct df *df;
+     int size;
+{
+  /* Make table 25 percent larger by default.  */
+  if (! size)
+    size = df->reg_size / 4;
+
+  size += df->reg_size;
+
+  df->regs = (struct reg_info *)
+    xrealloc (df->regs, size * sizeof (struct reg_info));
+
+  /* Zero the new entries.  */
+  memset (df->regs + df->reg_size, 0,
+	  (size - df->reg_size) * sizeof (struct reg_info));
+
+  df->reg_size = size;
+}

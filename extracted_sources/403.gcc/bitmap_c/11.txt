@@ -1,0 +1,49 @@
+int 
+bitmap_last_set_bit (a)
+     bitmap a;
+{
+  bitmap_element *ptr = a->first;
+  unsigned HOST_WIDE_INT word;
+  unsigned word_num, bit_num;
+
+  if (ptr == NULL)
+    return -1;
+
+  while (ptr->next != NULL)
+    ptr = ptr->next;
+
+#if BITMAP_ELEMENT_WORDS == 2
+  word_num = 1, word = ptr->bits[1];
+  if (word == 0)
+    word_num = 0, word = ptr->bits[0];
+#else
+  for (word_num = BITMAP_ELEMENT_WORDS; word_num-- > 0; )
+    if ((word = ptr->bits[word_num]) != 0)
+      break;
+#endif
+
+  /* Binary search for the last set bit.  */
+
+  bit_num = 0;
+#if HOST_BITS_PER_WIDE_INT > 64
+ #error "Fill out the table."
+#endif
+#if HOST_BITS_PER_WIDE_INT > 32
+  if (word & ~ (unsigned HOST_WIDE_INT) 0xffffffff)
+    word >>= 32, bit_num += 32;
+#endif
+  if (word & 0xffff0000)
+    word >>= 16, bit_num += 16;
+  if (word & 0xff00)
+    word >>= 8, bit_num += 8;
+  if (word & 0xf0)
+    word >>= 4, bit_num += 4;
+  if (word & 0xc)
+    word >>= 2, bit_num += 2;
+  if (word & 0x2)
+    bit_num += 1;
+
+  return (ptr->indx * BITMAP_ELEMENT_ALL_BITS
+	  + word_num * HOST_BITS_PER_WIDE_INT
+	  + bit_num);
+}

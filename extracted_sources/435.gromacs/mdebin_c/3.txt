@@ -1,0 +1,109 @@
+void upd_mdebin(t_mdebin *md,FILE *fp_dgdl,
+		real tmass,int step,real time,
+		real ener[],
+		matrix box,
+		tensor svir,
+		tensor fvir,
+		tensor vir,
+		tensor pres,
+		t_groups *grps,
+		rvec mu_tot, bool bNoseHoover)
+{
+  static real *ttt=NULL;
+  static rvec *uuu=NULL;
+  int    i,j,k,kk,m,n,gid;
+  real   bs[NBOXS];
+  real   tricl_bs[NTRICLBOXS];
+  real   eee[egNR];
+  real   ecopy[F_NRE];
+  real   tmp;
+  
+  copy_energy(ener,ecopy);
+  add_ebin(md->ebin,md->ie,f_nre,ecopy,step);
+  if (bPC || fabs(grps->cosacc.cos_accel)>GMX_REAL_MIN) {
+    if(bTricl) {
+      tricl_bs[0]=box[XX][XX];
+      tricl_bs[1]=box[YY][XX];
+      tricl_bs[2]=box[YY][YY];
+      tricl_bs[3]=box[ZZ][XX];
+      tricl_bs[4]=box[ZZ][YY];
+      tricl_bs[5]=box[ZZ][ZZ];
+      /* This is the volume */
+      tricl_bs[6]=tricl_bs[0]*tricl_bs[2]*tricl_bs[5];
+      /* This is the density */
+      tricl_bs[7] = (tmass*AMU)/(tricl_bs[6]*NANO*NANO*NANO);
+    } else {
+      for(m=0; (m<DIM); m++) 
+	bs[m]=box[m][m];
+      /* This is the volume */
+      bs[3] = bs[XX]*bs[YY]*bs[ZZ];      
+      /* This is the density */
+      bs[4] = (tmass*AMU)/(bs[3]*NANO*NANO*NANO);
+    }
+  }  
+  if (bPC) {
+    /* This is pV (in kJ/mol) */  
+    if(bTricl) {
+      tricl_bs[8] = tricl_bs[6]*ener[F_PRES]/PRESFAC;
+      add_ebin(md->ebin,md->ib,NTRICLBOXS,tricl_bs,step);
+    } else {
+      bs[5] = bs[3]*ener[F_PRES]/PRESFAC;
+      add_ebin(md->ebin,md->ib,NBOXS,bs,step);
+    }
+  }  
+  if (bShake) {
+    add_ebin(md->ebin,md->isvir,9,svir[0],step);
+    add_ebin(md->ebin,md->ifvir,9,fvir[0],step);
+  }
+  add_ebin(md->ebin,md->ivir,9,vir[0],step);
+  add_ebin(md->ebin,md->ipres,9,pres[0],step);
+  tmp = (pres[ZZ][ZZ]-(pres[XX][XX]+pres[YY][YY])*0.5)*box[ZZ][ZZ];
+  add_ebin(md->ebin,md->isurft,1,&tmp,step);
+  add_ebin(md->ebin,md->imu,3,mu_tot,step);
+
+  if (fabs(grps->cosacc.cos_accel)>GMX_REAL_MIN) {
+    add_ebin(md->ebin,md->ivcos,1,&(grps->cosacc.vcos),step);
+    /* 1/viscosity, unit 1/(kg m^-1 s^-1) */
+    if(bTricl) 
+      tmp = 1/(grps->cosacc.cos_accel/(grps->cosacc.vcos*PICO)
+	       *tricl_bs[7]*sqr(box[ZZ][ZZ]*NANO/(2*M_PI)));
+    else 
+      tmp = 1/(grps->cosacc.cos_accel/(grps->cosacc.vcos*PICO)
+	       *bs[4]*sqr(box[ZZ][ZZ]*NANO/(2*M_PI)));
+    add_ebin(md->ebin,md->ivisc,1,&tmp,step);    
+  }
+  if (md->nE > 1) {
+    n=0;
+    for(i=0; (i<md->nEg); i++) {
+      for(j=i; (j<md->nEg); j++) {
+	gid=GID(i,j,md->nEg);
+	for(k=kk=0; (k<egNR); k++) 
+	  if (bEInd[k])
+	    eee[kk++]=grps->estat.ee[k][gid];
+	add_ebin(md->ebin,md->igrp[n],md->nEc,eee,step);
+	n++;
+      }
+    }
+  }
+  
+  if(ttt == NULL) 
+    snew(ttt,2*md->nTC);
+  for(i=0; (i<md->nTC); i++) {
+    ttt[2*i]   = grps->tcstat[i].T;
+    if(bNoseHoover)
+      ttt[2*i+1] = grps->tcstat[i].xi;
+    else
+      ttt[2*i+1] = grps->tcstat[i].lambda;
+  }
+  add_ebin(md->ebin,md->itc,2*md->nTC,ttt,step);  
+  
+  if (md->nU > 1) {
+    if (uuu == NULL)
+      snew(uuu,md->nU);
+    for(i=0; (i<md->nU); i++)
+      copy_rvec(grps->grpstat[i].u,uuu[i]);
+    add_ebin(md->ebin,md->iu,3*md->nU,uuu[0],step);
+  }
+  if (fp_dgdl)
+    fprintf(fp_dgdl,"%g %g\n",time,ener[F_DVDL]+ener[F_DVDLKIN]);
+}

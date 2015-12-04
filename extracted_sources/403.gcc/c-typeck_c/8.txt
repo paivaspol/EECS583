@@ -1,0 +1,97 @@
+static tree
+default_function_array_conversion (exp)
+     tree exp;
+{
+  tree orig_exp;
+  tree type = TREE_TYPE (exp);
+  enum tree_code code = TREE_CODE (type);
+  int not_lvalue = 0;
+
+  /* Strip NON_LVALUE_EXPRs and no-op conversions, since we aren't using as
+     an lvalue. 
+
+     Do not use STRIP_NOPS here!  It will remove conversions from pointer
+     to integer and cause infinite recursion.  */
+  orig_exp = exp;
+  while (TREE_CODE (exp) == NON_LVALUE_EXPR
+	 || (TREE_CODE (exp) == NOP_EXPR
+	     && TREE_TYPE (TREE_OPERAND (exp, 0)) == TREE_TYPE (exp)))
+    {
+      if (TREE_CODE (exp) == NON_LVALUE_EXPR)
+	not_lvalue = 1;
+      exp = TREE_OPERAND (exp, 0);
+    }
+
+  /* Preserve the original expression code.  */
+  if (IS_EXPR_CODE_CLASS (TREE_CODE_CLASS (TREE_CODE (exp))))
+    C_SET_EXP_ORIGINAL_CODE (exp, C_EXP_ORIGINAL_CODE (orig_exp));
+
+  if (code == FUNCTION_TYPE)
+    {
+      return build_unary_op (ADDR_EXPR, exp, 0);
+    }
+  if (code == ARRAY_TYPE)
+    {
+      tree adr;
+      tree restype = TREE_TYPE (type);
+      tree ptrtype;
+      int constp = 0;
+      int volatilep = 0;
+      int lvalue_array_p;
+
+      if (TREE_CODE_CLASS (TREE_CODE (exp)) == 'r' || DECL_P (exp))
+	{
+	  constp = TREE_READONLY (exp);
+	  volatilep = TREE_THIS_VOLATILE (exp);
+	}
+
+      if (TYPE_QUALS (type) || constp || volatilep)
+	restype 
+	  = c_build_qualified_type (restype,
+				    TYPE_QUALS (type) 
+				    | (constp * TYPE_QUAL_CONST)
+				    | (volatilep * TYPE_QUAL_VOLATILE));
+
+      if (TREE_CODE (exp) == INDIRECT_REF)
+	return convert (TYPE_POINTER_TO (restype),
+			TREE_OPERAND (exp, 0));
+
+      if (TREE_CODE (exp) == COMPOUND_EXPR)
+	{
+	  tree op1 = default_conversion (TREE_OPERAND (exp, 1));
+	  return build (COMPOUND_EXPR, TREE_TYPE (op1),
+			TREE_OPERAND (exp, 0), op1);
+	}
+
+      lvalue_array_p = !not_lvalue && lvalue_p (exp);
+      if (!flag_isoc99 && !lvalue_array_p)
+	{
+	  /* Before C99, non-lvalue arrays do not decay to pointers.
+	     Normally, using such an array would be invalid; but it can
+	     be used correctly inside sizeof or as a statement expression.
+	     Thus, do not give an error here; an error will result later.  */
+	  return exp;
+	}
+
+      ptrtype = build_pointer_type (restype);
+
+      if (TREE_CODE (exp) == VAR_DECL)
+	{
+	  /* ??? This is not really quite correct
+	     in that the type of the operand of ADDR_EXPR
+	     is not the target type of the type of the ADDR_EXPR itself.
+	     Question is, can this lossage be avoided?  */
+	  adr = build1 (ADDR_EXPR, ptrtype, exp);
+	  if (mark_addressable (exp) == 0)
+	    return error_mark_node;
+	  TREE_CONSTANT (adr) = staticp (exp);
+	  TREE_SIDE_EFFECTS (adr) = 0;   /* Default would be, same as EXP.  */
+	  return adr;
+	}
+      /* This way is better for a COMPONENT_REF since it can
+	 simplify the offset for a component.  */
+      adr = build_unary_op (ADDR_EXPR, exp, 1);
+      return convert (ptrtype, adr);
+    }
+  return exp;
+}

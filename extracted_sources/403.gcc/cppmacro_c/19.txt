@@ -1,0 +1,30 @@
+void
+_cpp_backup_tokens (pfile, count)
+     cpp_reader *pfile;
+     unsigned int count;
+{
+  if (pfile->context->prev == NULL)
+    {
+      pfile->lookaheads += count;
+      while (count--)
+	{
+	  pfile->cur_token--;
+	  if (pfile->cur_token == pfile->cur_run->base
+	      /* Possible with -fpreprocessed and no leading #line.  */
+	      && pfile->cur_run->prev != NULL)
+	    {
+	      pfile->cur_run = pfile->cur_run->prev;
+	      pfile->cur_token = pfile->cur_run->limit;
+	    }
+	}
+    }
+  else
+    {
+      if (count != 1)
+	abort ();
+      if (pfile->context->direct_p)
+	pfile->context->first.token--;
+      else
+	pfile->context->first.ptoken--;
+    }
+}

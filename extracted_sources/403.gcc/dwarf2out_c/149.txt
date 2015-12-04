@@ -1,0 +1,71 @@
+static void
+output_aranges ()
+{
+  unsigned i;
+  unsigned long aranges_length = size_of_aranges ();
+
+  dw2_asm_output_data (DWARF_OFFSET_SIZE, aranges_length,
+		       "Length of Address Ranges Info");
+  dw2_asm_output_data (2, DWARF_VERSION, "DWARF Version");
+  dw2_asm_output_offset (DWARF_OFFSET_SIZE, debug_info_section_label,
+			 "Offset of Compilation Unit Info");
+  dw2_asm_output_data (1, DWARF2_ADDR_SIZE, "Size of Address");
+  dw2_asm_output_data (1, 0, "Size of Segment Descriptor");
+
+  /* We need to align to twice the pointer size here.  */
+  if (DWARF_ARANGES_PAD_SIZE)
+    {
+      /* Pad using a 2 byte words so that padding is correct for any
+         pointer size.  */
+      dw2_asm_output_data (2, 0, "Pad to %d byte boundary",
+			   2 * DWARF2_ADDR_SIZE);
+      for (i = 2; i < (unsigned) DWARF_ARANGES_PAD_SIZE; i += 2)
+	dw2_asm_output_data (2, 0, NULL);
+    }
+
+  dw2_asm_output_addr (DWARF2_ADDR_SIZE, text_section_label, "Address");
+  dw2_asm_output_delta (DWARF2_ADDR_SIZE, text_end_label,
+			text_section_label, "Length");
+
+  for (i = 0; i < arange_table_in_use; i++)
+    {
+      dw_die_ref die = arange_table[i];
+
+      /* We shouldn't see aranges for DIEs outside of the main CU.  */
+      if (die->die_mark == 0)
+	abort ();
+
+      if (die->die_tag == DW_TAG_subprogram)
+	{
+	  dw2_asm_output_addr (DWARF2_ADDR_SIZE, get_AT_low_pc (die),
+			       "Address");
+	  dw2_asm_output_delta (DWARF2_ADDR_SIZE, get_AT_hi_pc (die),
+				get_AT_low_pc (die), "Length");
+	}
+      else
+	{
+	  /* A static variable; extract the symbol from DW_AT_location.
+	     Note that this code isn't currently hit, as we only emit
+	     aranges for functions (jason 9/23/99).  */
+	  dw_attr_ref a = get_AT (die, DW_AT_location);
+	  dw_loc_descr_ref loc;
+
+	  if (! a || AT_class (a) != dw_val_class_loc)
+	    abort ();
+
+	  loc = AT_loc (a);
+	  if (loc->dw_loc_opc != DW_OP_addr)
+	    abort ();
+
+	  dw2_asm_output_addr_rtx (DWARF2_ADDR_SIZE,
+				   loc->dw_loc_oprnd1.v.val_addr, "Address");
+	  dw2_asm_output_data (DWARF2_ADDR_SIZE,
+			       get_AT_unsigned (die, DW_AT_byte_size),
+			       "Length");
+	}
+    }
+
+  /* Output the terminator words.  */
+  dw2_asm_output_data (DWARF2_ADDR_SIZE, 0, NULL);
+  dw2_asm_output_data (DWARF2_ADDR_SIZE, 0, NULL);
+}

@@ -1,0 +1,51 @@
+void read_site_list(int parallel,gauge_file *gf)
+{
+
+  /* All nodes allocate space for site list table, if file is not in
+     natural order */
+
+  if(gf->header->order != NATURAL_ORDER)
+    {
+      gf->rank2rcv = (int32type *)calloc(volume, sizeof(int32type));
+      if(gf->rank2rcv == NULL)
+	{
+	  printf("read_site_list: Can't malloc rank2rcv table\n");
+	  terminate(1);
+	}
+
+      /* Only node 0 reads the site list */
+      
+      if(this_node==0)
+	{
+	  
+	  /* Reads receiving site coordinate if file is not in natural order */
+	  if(parallel)
+	    {
+	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+		{
+		  printf("read_site_list: Node %d site list read error %d\n",
+			 this_node,errno);
+		  terminate(1);	
+		}
+	    }
+	  else
+	    {
+	      if((int)fread(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+		{
+		  printf("read_site_list: Node %d site list read error %d\n",
+			 this_node,errno);
+		  terminate(1);	
+		}
+	    }
+	  
+	  if(gf->byterevflag==1)byterevn(gf->rank2rcv,volume);
+	}
+
+      /* Broadcast result to all nodes */
+
+      broadcast_bytes((char *)gf->rank2rcv,volume*sizeof(int32type));
+    }
+      
+  else gf->rank2rcv = NULL;  /* If no site list */
+
+} /* read_site_list */

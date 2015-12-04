@@ -1,0 +1,55 @@
+void fill_grid(FILE *log,bool bDD,int cg_index[],
+	       t_grid *grid,matrix box,
+	       int ncg,int cg0,int cg1,rvec cg_cm[])
+{
+  int    *cell_index=grid->cell_index;
+  int    nrx,nry,nrz;
+  real   dx,dy,dz;
+  int  	 i,index,ix,iy,iz;
+  int    ci;
+  
+  /* Initiate cell borders */
+  nrx = grid->nrx;
+  nry = grid->nry;
+  nrz = grid->nrz;
+  dx  = divide(nrx,box[XX][XX]);
+  dy  = divide(nry,box[YY][YY]);
+  dz  = divide(nrz,box[ZZ][ZZ]);
+
+  /* Assign cell indices to charge groups */
+  for (i=0; (i<cg0); i++) {
+    cell_index[i]=NO_CELL;
+  }
+  
+  if (debug)
+    fprintf(debug,"Filling grid from %d to %d (total %d)\n",cg0,cg1,ncg);
+
+  /* We assume here that the charge group center of mass is allways
+   * 0 <= cgcm < box
+   * If not this will generate errors (SEGV). If you suspect this, turn on
+   * DEBUG_PBC
+   */
+  debug_gmx();
+  for (i=cg0; (i<cg1); i++) {
+    index = cg_index[i];
+    ix    = dx*cg_cm[index][XX];
+    iy    = dy*cg_cm[index][YY];
+    iz    = dz*cg_cm[index][ZZ];
+    if (ix >= nrx) ix = nrx-1;
+    if (iy >= nry) iy = nry-1;
+    if (iz >= nrz) iz = nrz-1;
+#ifdef DEBUG_PBC
+#define myrc(ixyz,n) if ((ixyz<0) || (ixyz>=n)) fatal_error(0,"%s=%d(max=%d), index=%d, i=%d, cgcm=(%f,%f,%f)",#ixyz,ixyz,n,index,i,cg_cm[index][XX],cg_cm[index][YY],cg_cm[index][ZZ])
+    myrc(ix,nrx);
+    myrc(iy,nry);
+    myrc(iz,nrz);
+#undef myrc
+#endif
+    ci    = xyz2ci(nry,nrz,ix,iy,iz);
+    cell_index[i] = ci;
+  }
+  debug_gmx();
+  for (; (i<ncg); i++) {
+    cell_index[i]=NO_CELL;
+  }
+}

@@ -1,0 +1,18 @@
+static dw_loc_descr_ref
+reg_loc_descriptor (rtl)
+     rtx rtl;
+{
+  dw_loc_descr_ref loc_result = NULL;
+  unsigned reg;
+
+  if (REGNO (rtl) >= FIRST_PSEUDO_REGISTER)
+    return 0;
+
+  reg = reg_number (rtl);
+  if (reg <= 31)
+    loc_result = new_loc_descr (DW_OP_reg0 + reg, 0, 0);
+  else
+    loc_result = new_loc_descr (DW_OP_regx, reg, 0);
+
+  return loc_result;
+}

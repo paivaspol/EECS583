@@ -1,0 +1,27 @@
+void InitSEIMessages()
+{
+  int i;
+  for (i=0; i<2; i++)
+  {
+    sei_message[i].data = malloc(MAXRTPPAYLOADLEN);
+    if( sei_message[i].data == NULL ) no_mem_exit("InitSEIMessages: sei_message[i].data");
+    sei_message[i].subPacketType = SEI_PACKET_TYPE;
+    clear_sei_message(i);
+  }
+
+  // init sei messages
+  seiSparePicturePayload.data = NULL;
+  InitSparePicture();
+  InitSubseqChar();
+  if (input->NumFramesInELSubSeq != 0)
+    InitSubseqLayerInfo();
+  InitSceneInformation(); // JVT-D099
+  // init panscanrect sei message
+  InitPanScanRectInfo();
+  // init user_data_unregistered
+  InitUser_data_unregistered();
+  // init user_data_unregistered
+  InitUser_data_registered_itu_t_t35();
+  // init user_RandomAccess
+  InitRandomAccess();
+}

@@ -1,0 +1,177 @@
+static int
+insn_dead_p (pbi, x, call_ok, notes)
+     struct propagate_block_info *pbi;
+     rtx x;
+     int call_ok;
+     rtx notes ATTRIBUTE_UNUSED;
+{
+  enum rtx_code code = GET_CODE (x);
+
+#ifdef AUTO_INC_DEC
+  /* As flow is invoked after combine, we must take existing AUTO_INC
+     expressions into account.  */
+  for (; notes; notes = XEXP (notes, 1))
+    {
+      if (REG_NOTE_KIND (notes) == REG_INC)
+	{
+	  int regno = REGNO (XEXP (notes, 0));
+
+	  /* Don't delete insns to set global regs.  */
+	  if ((regno < FIRST_PSEUDO_REGISTER && global_regs[regno])
+	      || REGNO_REG_SET_P (pbi->reg_live, regno))
+	    return 0;
+	}
+    }
+#endif
+
+  /* If setting something that's a reg or part of one,
+     see if that register's altered value will be live.  */
+
+  if (code == SET)
+    {
+      rtx r = SET_DEST (x);
+
+#ifdef HAVE_cc0
+      if (GET_CODE (r) == CC0)
+	return ! pbi->cc0_live;
+#endif
+
+      /* A SET that is a subroutine call cannot be dead.  */
+      if (GET_CODE (SET_SRC (x)) == CALL)
+	{
+	  if (! call_ok)
+	    return 0;
+	}
+
+      /* Don't eliminate loads from volatile memory or volatile asms.  */
+      else if (volatile_refs_p (SET_SRC (x)))
+	return 0;
+
+      if (GET_CODE (r) == MEM)
+	{
+	  rtx temp, canon_r;
+
+	  if (MEM_VOLATILE_P (r) || GET_MODE (r) == BLKmode)
+	    return 0;
+
+	  canon_r = canon_rtx (r);
+
+	  /* Walk the set of memory locations we are currently tracking
+	     and see if one is an identical match to this memory location.
+	     If so, this memory write is dead (remember, we're walking
+	     backwards from the end of the block to the start).  Since
+	     rtx_equal_p does not check the alias set or flags, we also
+	     must have the potential for them to conflict (anti_dependence).  */
+	  for (temp = pbi->mem_set_list; temp != 0; temp = XEXP (temp, 1))
+	    if (anti_dependence (r, XEXP (temp, 0)))
+	      {
+		rtx mem = XEXP (temp, 0);
+
+		if (rtx_equal_p (XEXP (canon_r, 0), XEXP (mem, 0))
+		    && (GET_MODE_SIZE (GET_MODE (canon_r))
+			<= GET_MODE_SIZE (GET_MODE (mem))))
+		  return 1;
+
+#ifdef AUTO_INC_DEC
+		/* Check if memory reference matches an auto increment. Only
+		   post increment/decrement or modify are valid.  */
+		if (GET_MODE (mem) == GET_MODE (r)
+		    && (GET_CODE (XEXP (mem, 0)) == POST_DEC
+			|| GET_CODE (XEXP (mem, 0)) == POST_INC
+			|| GET_CODE (XEXP (mem, 0)) == POST_MODIFY)
+		    && GET_MODE (XEXP (mem, 0)) == GET_MODE (r)
+		    && rtx_equal_p (XEXP (XEXP (mem, 0), 0), XEXP (r, 0)))
+		  return 1;
+#endif
+	      }
+	}
+      else
+	{
+	  while (GET_CODE (r) == SUBREG
+		 || GET_CODE (r) == STRICT_LOW_PART
+		 || GET_CODE (r) == ZERO_EXTRACT)
+	    r = XEXP (r, 0);
+
+	  if (GET_CODE (r) == REG)
+	    {
+	      int regno = REGNO (r);
+
+	      /* Obvious.  */
+	      if (REGNO_REG_SET_P (pbi->reg_live, regno))
+		return 0;
+
+	      /* If this is a hard register, verify that subsequent
+		 words are not needed.  */
+	      if (regno < FIRST_PSEUDO_REGISTER)
+		{
+		  int n = HARD_REGNO_NREGS (regno, GET_MODE (r));
+
+		  while (--n > 0)
+		    if (REGNO_REG_SET_P (pbi->reg_live, regno+n))
+		      return 0;
+		}
+
+	      /* Don't delete insns to set global regs.  */
+	      if (regno < FIRST_PSEUDO_REGISTER && global_regs[regno])
+		return 0;
+
+	      /* Make sure insns to set the stack pointer aren't deleted.  */
+	      if (regno == STACK_POINTER_REGNUM)
+		return 0;
+
+	      /* ??? These bits might be redundant with the force live bits
+		 in calculate_global_regs_live.  We would delete from
+		 sequential sets; whether this actually affects real code
+		 for anything but the stack pointer I don't know.  */
+	      /* Make sure insns to set the frame pointer aren't deleted.  */
+	      if (regno == FRAME_POINTER_REGNUM
+		  && (! reload_completed || frame_pointer_needed))
+		return 0;
+#if FRAME_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+	      if (regno == HARD_FRAME_POINTER_REGNUM
+		  && (! reload_completed || frame_pointer_needed))
+		return 0;
+#endif
+
+#if FRAME_POINTER_REGNUM != ARG_POINTER_REGNUM
+	      /* Make sure insns to set arg pointer are never deleted
+		 (if the arg pointer isn't fixed, there will be a USE
+		 for it, so we can treat it normally).  */
+	      if (regno == ARG_POINTER_REGNUM && fixed_regs[regno])
+		return 0;
+#endif
+
+	      /* Otherwise, the set is dead.  */
+	      return 1;
+	    }
+	}
+    }
+
+  /* If performing several activities, insn is dead if each activity
+     is individually dead.  Also, CLOBBERs and USEs can be ignored; a
+     CLOBBER or USE that's inside a PARALLEL doesn't make the insn
+     worth keeping.  */
+  else if (code == PARALLEL)
+    {
+      int i = XVECLEN (x, 0);
+
+      for (i--; i >= 0; i--)
+	if (GET_CODE (XVECEXP (x, 0, i)) != CLOBBER
+	    && GET_CODE (XVECEXP (x, 0, i)) != USE
+	    && ! insn_dead_p (pbi, XVECEXP (x, 0, i), call_ok, NULL_RTX))
+	  return 0;
+
+      return 1;
+    }
+
+  /* A CLOBBER of a pseudo-register that is dead serves no purpose.  That
+     is not necessarily true for hard registers.  */
+  else if (code == CLOBBER && GET_CODE (XEXP (x, 0)) == REG
+	   && REGNO (XEXP (x, 0)) >= FIRST_PSEUDO_REGISTER
+	   && ! REGNO_REG_SET_P (pbi->reg_live, REGNO (XEXP (x, 0))))
+    return 1;
+
+  /* We do not check other CLOBBER or USE here.  An insn consisting of just
+     a CLOBBER or just a USE should not be deleted.  */
+  return 0;
+}

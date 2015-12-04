@@ -1,0 +1,32 @@
+static void
+flush_pending_text(PSTATE* p_state, SV* self)
+{
+    dTHX;
+    bool   old_unbroken_text = p_state->unbroken_text;
+    SV*    old_pend_text     = p_state->pend_text;
+    bool   old_is_cdata      = p_state->is_cdata;
+    STRLEN old_offset        = p_state->offset;
+    STRLEN old_line          = p_state->line;
+    STRLEN old_column        = p_state->column;
+
+    assert(p_state->pend_text && SvOK(p_state->pend_text));
+
+    p_state->unbroken_text = 0;
+    p_state->pend_text     = 0;
+    p_state->is_cdata      = p_state->pend_text_is_cdata;
+    p_state->offset        = p_state->pend_text_offset;
+    p_state->line          = p_state->pend_text_line;
+    p_state->column        = p_state->pend_text_column;
+
+    report_event(p_state, E_TEXT,
+		 SvPVX(old_pend_text), SvEND(old_pend_text), 
+		 SvUTF8(old_pend_text), 0, 0, self);
+    SvOK_off(old_pend_text);
+
+    p_state->unbroken_text = old_unbroken_text;
+    p_state->pend_text     = old_pend_text;
+    p_state->is_cdata      = old_is_cdata;
+    p_state->offset        = old_offset;
+    p_state->line          = old_line;
+    p_state->column        = old_column;
+}

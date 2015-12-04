@@ -1,0 +1,20 @@
+static int
+parse_sequence(MSA *msa, char *buf)
+{
+  char *s;
+  char *seqname;
+  char *text;
+  int   seqidx;
+  int   len;
+
+  s = buf;
+  if ((seqname     = sre_strtok(&s, WHITESPACE, NULL)) == NULL) return 0;
+  if ((text        = sre_strtok(&s, WHITESPACE, &len)) == NULL) return 0; 
+  
+  /* seq usually follows another seq; guess msa->lastidx +1 */
+  seqidx = MSAGetSeqidx(msa, seqname, msa->lastidx+1);
+  msa->lastidx = seqidx;
+
+  msa->sqlen[seqidx] = sre_strcat(&(msa->aseq[seqidx]), msa->sqlen[seqidx], text, len);
+  return 1;
+}

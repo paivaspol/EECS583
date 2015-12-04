@@ -1,0 +1,79 @@
+static int
+swap_rtx_condition (insn)
+     rtx insn;
+{
+  rtx pat = PATTERN (insn);
+
+  /* We're looking for a single set to cc0 or an HImode temporary.  */
+
+  if (GET_CODE (pat) == SET
+      && GET_CODE (SET_DEST (pat)) == REG
+      && REGNO (SET_DEST (pat)) == FLAGS_REG)
+    {
+      insn = next_flags_user (insn);
+      if (insn == NULL_RTX)
+	return 0;
+      pat = PATTERN (insn);
+    }
+
+  /* See if this is, or ends in, a fnstsw, aka unspec 9.  If so, we're
+     not doing anything with the cc value right now.  We may be able to
+     search for one though.  */
+
+  if (GET_CODE (pat) == SET
+      && GET_CODE (SET_SRC (pat)) == UNSPEC
+      && XINT (SET_SRC (pat), 1) == 9)
+    {
+      rtx dest = SET_DEST (pat);
+
+      /* Search forward looking for the first use of this value. 
+	 Stop at block boundaries.  */
+      while (insn != current_block->end)
+	{
+	  insn = NEXT_INSN (insn);
+	  if (INSN_P (insn) && reg_mentioned_p (dest, insn))
+	    break;
+	  if (GET_CODE (insn) == CALL_INSN)
+	    return 0;
+	}
+
+      /* So we've found the insn using this value.  If it is anything
+	 other than sahf, aka unspec 10, or the value does not die
+	 (meaning we'd have to search further), then we must give up.  */
+      pat = PATTERN (insn);
+      if (GET_CODE (pat) != SET
+	  || GET_CODE (SET_SRC (pat)) != UNSPEC
+	  || XINT (SET_SRC (pat), 1) != 10
+	  || ! dead_or_set_p (insn, dest))
+	return 0;
+
+      /* Now we are prepared to handle this as a normal cc0 setter.  */
+      insn = next_flags_user (insn);
+      if (insn == NULL_RTX)
+	return 0;
+      pat = PATTERN (insn);
+    }
+
+  if (swap_rtx_condition_1 (pat))
+    {
+      int fail = 0;
+      INSN_CODE (insn) = -1;
+      if (recog_memoized (insn) == -1)
+	fail = 1;
+      /* In case the flags don't die here, recurse to try fix
+         following user too.  */
+      else if (! dead_or_set_p (insn, ix86_flags_rtx))
+	{
+	  insn = next_flags_user (insn);
+	  if (!insn || !swap_rtx_condition (insn))
+	    fail = 1;
+	}
+      if (fail)
+	{
+	  swap_rtx_condition_1 (pat);
+	  return 0;
+	}
+      return 1;
+    }
+  return 0;
+}

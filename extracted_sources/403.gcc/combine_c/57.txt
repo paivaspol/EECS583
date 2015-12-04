@@ -1,0 +1,566 @@
+static void
+distribute_notes (notes, from_insn, i3, i2, elim_i2, elim_i1)
+     rtx notes;
+     rtx from_insn;
+     rtx i3, i2;
+     rtx elim_i2, elim_i1;
+{
+  rtx note, next_note;
+  rtx tem;
+
+  for (note = notes; note; note = next_note)
+    {
+      rtx place = 0, place2 = 0;
+
+      /* If this NOTE references a pseudo register, ensure it references
+	 the latest copy of that register.  */
+      if (XEXP (note, 0) && GET_CODE (XEXP (note, 0)) == REG
+	  && REGNO (XEXP (note, 0)) >= FIRST_PSEUDO_REGISTER)
+	XEXP (note, 0) = regno_reg_rtx[REGNO (XEXP (note, 0))];
+
+      next_note = XEXP (note, 1);
+      switch (REG_NOTE_KIND (note))
+	{
+	case REG_BR_PROB:
+	case REG_BR_PRED:
+	case REG_EXEC_COUNT:
+	  /* Doesn't matter much where we put this, as long as it's somewhere.
+	     It is preferable to keep these notes on branches, which is most
+	     likely to be i3.  */
+	  place = i3;
+	  break;
+
+	case REG_VTABLE_REF:
+	  /* ??? Should remain with *a particular* memory load.  Given the
+	     nature of vtable data, the last insn seems relatively safe.  */
+	  place = i3;
+	  break;
+
+	case REG_NON_LOCAL_GOTO:
+	  if (GET_CODE (i3) == JUMP_INSN)
+	    place = i3;
+	  else if (i2 && GET_CODE (i2) == JUMP_INSN)
+	    place = i2;
+	  else
+	    abort ();
+	  break;
+
+	case REG_EH_REGION:
+	  /* These notes must remain with the call or trapping instruction.  */
+	  if (GET_CODE (i3) == CALL_INSN)
+	    place = i3;
+	  else if (i2 && GET_CODE (i2) == CALL_INSN)
+	    place = i2;
+	  else if (flag_non_call_exceptions)
+	    {
+	      if (may_trap_p (i3))
+		place = i3;
+	      else if (i2 && may_trap_p (i2))
+		place = i2;
+	      /* ??? Otherwise assume we've combined things such that we
+		 can now prove that the instructions can't trap.  Drop the
+		 note in this case.  */
+	    }
+	  else
+	    abort ();
+	  break;
+
+	case REG_NORETURN:
+	case REG_SETJMP:
+	  /* These notes must remain with the call.  It should not be
+	     possible for both I2 and I3 to be a call.  */
+	  if (GET_CODE (i3) == CALL_INSN)
+	    place = i3;
+	  else if (i2 && GET_CODE (i2) == CALL_INSN)
+	    place = i2;
+	  else
+	    abort ();
+	  break;
+
+	case REG_UNUSED:
+	  /* Any clobbers for i3 may still exist, and so we must process
+	     REG_UNUSED notes from that insn.
+
+	     Any clobbers from i2 or i1 can only exist if they were added by
+	     recog_for_combine.  In that case, recog_for_combine created the
+	     necessary REG_UNUSED notes.  Trying to keep any original
+	     REG_UNUSED notes from these insns can cause incorrect output
+	     if it is for the same register as the original i3 dest.
+	     In that case, we will notice that the register is set in i3,
+	     and then add a REG_UNUSED note for the destination of i3, which
+	     is wrong.  However, it is possible to have REG_UNUSED notes from
+	     i2 or i1 for register which were both used and clobbered, so
+	     we keep notes from i2 or i1 if they will turn into REG_DEAD
+	     notes.  */
+
+	  /* If this register is set or clobbered in I3, put the note there
+	     unless there is one already.  */
+	  if (reg_set_p (XEXP (note, 0), PATTERN (i3)))
+	    {
+	      if (from_insn != i3)
+		break;
+
+	      if (! (GET_CODE (XEXP (note, 0)) == REG
+		     ? find_regno_note (i3, REG_UNUSED, REGNO (XEXP (note, 0)))
+		     : find_reg_note (i3, REG_UNUSED, XEXP (note, 0))))
+		place = i3;
+	    }
+	  /* Otherwise, if this register is used by I3, then this register
+	     now dies here, so we must put a REG_DEAD note here unless there
+	     is one already.  */
+	  else if (reg_referenced_p (XEXP (note, 0), PATTERN (i3))
+		   && ! (GET_CODE (XEXP (note, 0)) == REG
+			 ? find_regno_note (i3, REG_DEAD,
+					    REGNO (XEXP (note, 0)))
+			 : find_reg_note (i3, REG_DEAD, XEXP (note, 0))))
+	    {
+	      PUT_REG_NOTE_KIND (note, REG_DEAD);
+	      place = i3;
+	    }
+	  break;
+
+	case REG_EQUAL:
+	case REG_EQUIV:
+	case REG_NOALIAS:
+	  /* These notes say something about results of an insn.  We can
+	     only support them if they used to be on I3 in which case they
+	     remain on I3.  Otherwise they are ignored.
+
+	     If the note refers to an expression that is not a constant, we
+	     must also ignore the note since we cannot tell whether the
+	     equivalence is still true.  It might be possible to do
+	     slightly better than this (we only have a problem if I2DEST
+	     or I1DEST is present in the expression), but it doesn't
+	     seem worth the trouble.  */
+
+	  if (from_insn == i3
+	      && (XEXP (note, 0) == 0 || CONSTANT_P (XEXP (note, 0))))
+	    place = i3;
+	  break;
+
+	case REG_INC:
+	case REG_NO_CONFLICT:
+	  /* These notes say something about how a register is used.  They must
+	     be present on any use of the register in I2 or I3.  */
+	  if (reg_mentioned_p (XEXP (note, 0), PATTERN (i3)))
+	    place = i3;
+
+	  if (i2 && reg_mentioned_p (XEXP (note, 0), PATTERN (i2)))
+	    {
+	      if (place)
+		place2 = i2;
+	      else
+		place = i2;
+	    }
+	  break;
+
+	case REG_LABEL:
+	  /* This can show up in several ways -- either directly in the
+	     pattern, or hidden off in the constant pool with (or without?)
+	     a REG_EQUAL note.  */
+	  /* ??? Ignore the without-reg_equal-note problem for now.  */
+	  if (reg_mentioned_p (XEXP (note, 0), PATTERN (i3))
+	      || ((tem = find_reg_note (i3, REG_EQUAL, NULL_RTX))
+		  && GET_CODE (XEXP (tem, 0)) == LABEL_REF
+		  && XEXP (XEXP (tem, 0), 0) == XEXP (note, 0)))
+	    place = i3;
+
+	  if (i2
+	      && (reg_mentioned_p (XEXP (note, 0), PATTERN (i2))
+		  || ((tem = find_reg_note (i2, REG_EQUAL, NULL_RTX))
+		      && GET_CODE (XEXP (tem, 0)) == LABEL_REF
+		      && XEXP (XEXP (tem, 0), 0) == XEXP (note, 0))))
+	    {
+	      if (place)
+		place2 = i2;
+	      else
+		place = i2;
+	    }
+
+	  /* Don't attach REG_LABEL note to a JUMP_INSN which has
+	     JUMP_LABEL already.  Instead, decrement LABEL_NUSES.  */
+	  if (place && GET_CODE (place) == JUMP_INSN && JUMP_LABEL (place))
+	    {
+	      if (JUMP_LABEL (place) != XEXP (note, 0))
+		abort ();
+	      if (GET_CODE (JUMP_LABEL (place)) == CODE_LABEL)
+		LABEL_NUSES (JUMP_LABEL (place))--;
+	      place = 0;
+	    }
+	  if (place2 && GET_CODE (place2) == JUMP_INSN && JUMP_LABEL (place2))
+	    {
+	      if (JUMP_LABEL (place2) != XEXP (note, 0))
+		abort ();
+	      if (GET_CODE (JUMP_LABEL (place2)) == CODE_LABEL)
+		LABEL_NUSES (JUMP_LABEL (place2))--;
+	      place2 = 0;
+	    }
+	  break;
+
+	case REG_NONNEG:
+	case REG_WAS_0:
+	  /* These notes say something about the value of a register prior
+	     to the execution of an insn.  It is too much trouble to see
+	     if the note is still correct in all situations.  It is better
+	     to simply delete it.  */
+	  break;
+
+	case REG_RETVAL:
+	  /* If the insn previously containing this note still exists,
+	     put it back where it was.  Otherwise move it to the previous
+	     insn.  Adjust the corresponding REG_LIBCALL note.  */
+	  if (GET_CODE (from_insn) != NOTE)
+	    place = from_insn;
+	  else
+	    {
+	      tem = find_reg_note (XEXP (note, 0), REG_LIBCALL, NULL_RTX);
+	      place = prev_real_insn (from_insn);
+	      if (tem && place)
+		XEXP (tem, 0) = place;
+	      /* If we're deleting the last remaining instruction of a
+		 libcall sequence, don't add the notes.  */
+	      else if (XEXP (note, 0) == from_insn)
+		tem = place = 0;
+	    }
+	  break;
+
+	case REG_LIBCALL:
+	  /* This is handled similarly to REG_RETVAL.  */
+	  if (GET_CODE (from_insn) != NOTE)
+	    place = from_insn;
+	  else
+	    {
+	      tem = find_reg_note (XEXP (note, 0), REG_RETVAL, NULL_RTX);
+	      place = next_real_insn (from_insn);
+	      if (tem && place)
+		XEXP (tem, 0) = place;
+	      /* If we're deleting the last remaining instruction of a
+		 libcall sequence, don't add the notes.  */
+	      else if (XEXP (note, 0) == from_insn)
+		tem = place = 0;
+	    }
+	  break;
+
+	case REG_DEAD:
+	  /* If the register is used as an input in I3, it dies there.
+	     Similarly for I2, if it is non-zero and adjacent to I3.
+
+	     If the register is not used as an input in either I3 or I2
+	     and it is not one of the registers we were supposed to eliminate,
+	     there are two possibilities.  We might have a non-adjacent I2
+	     or we might have somehow eliminated an additional register
+	     from a computation.  For example, we might have had A & B where
+	     we discover that B will always be zero.  In this case we will
+	     eliminate the reference to A.
+
+	     In both cases, we must search to see if we can find a previous
+	     use of A and put the death note there.  */
+
+	  if (from_insn
+	      && GET_CODE (from_insn) == CALL_INSN
+	      && find_reg_fusage (from_insn, USE, XEXP (note, 0)))
+	    place = from_insn;
+	  else if (reg_referenced_p (XEXP (note, 0), PATTERN (i3)))
+	    place = i3;
+	  else if (i2 != 0 && next_nonnote_insn (i2) == i3
+		   && reg_referenced_p (XEXP (note, 0), PATTERN (i2)))
+	    place = i2;
+
+	  if (rtx_equal_p (XEXP (note, 0), elim_i2)
+	      || rtx_equal_p (XEXP (note, 0), elim_i1))
+	    break;
+
+	  if (place == 0)
+	    {
+	      basic_block bb = BASIC_BLOCK (this_basic_block);
+
+	      for (tem = PREV_INSN (i3); place == 0; tem = PREV_INSN (tem))
+		{
+		  if (! INSN_P (tem))
+		    {
+		      if (tem == bb->head)
+			break;
+		      continue;
+		    }
+
+		  /* If the register is being set at TEM, see if that is all
+		     TEM is doing.  If so, delete TEM.  Otherwise, make this
+		     into a REG_UNUSED note instead.  */
+		  if (reg_set_p (XEXP (note, 0), PATTERN (tem)))
+		    {
+		      rtx set = single_set (tem);
+		      rtx inner_dest = 0;
+#ifdef HAVE_cc0
+		      rtx cc0_setter = NULL_RTX;
+#endif
+
+		      if (set != 0)
+			for (inner_dest = SET_DEST (set);
+			     (GET_CODE (inner_dest) == STRICT_LOW_PART
+			      || GET_CODE (inner_dest) == SUBREG
+			      || GET_CODE (inner_dest) == ZERO_EXTRACT);
+			     inner_dest = XEXP (inner_dest, 0))
+			  ;
+
+		      /* Verify that it was the set, and not a clobber that
+			 modified the register.
+
+			 CC0 targets must be careful to maintain setter/user
+			 pairs.  If we cannot delete the setter due to side
+			 effects, mark the user with an UNUSED note instead
+			 of deleting it.  */
+
+		      if (set != 0 && ! side_effects_p (SET_SRC (set))
+			  && rtx_equal_p (XEXP (note, 0), inner_dest)
+#ifdef HAVE_cc0
+			  && (! reg_mentioned_p (cc0_rtx, SET_SRC (set))
+			      || ((cc0_setter = prev_cc0_setter (tem)) != NULL
+				  && sets_cc0_p (PATTERN (cc0_setter)) > 0))
+#endif
+			  )
+			{
+			  /* Move the notes and links of TEM elsewhere.
+			     This might delete other dead insns recursively.
+			     First set the pattern to something that won't use
+			     any register.  */
+
+			  PATTERN (tem) = pc_rtx;
+
+			  distribute_notes (REG_NOTES (tem), tem, tem,
+					    NULL_RTX, NULL_RTX, NULL_RTX);
+			  distribute_links (LOG_LINKS (tem));
+
+			  PUT_CODE (tem, NOTE);
+			  NOTE_LINE_NUMBER (tem) = NOTE_INSN_DELETED;
+			  NOTE_SOURCE_FILE (tem) = 0;
+
+#ifdef HAVE_cc0
+			  /* Delete the setter too.  */
+			  if (cc0_setter)
+			    {
+			      PATTERN (cc0_setter) = pc_rtx;
+
+			      distribute_notes (REG_NOTES (cc0_setter),
+						cc0_setter, cc0_setter,
+						NULL_RTX, NULL_RTX, NULL_RTX);
+			      distribute_links (LOG_LINKS (cc0_setter));
+
+			      PUT_CODE (cc0_setter, NOTE);
+			      NOTE_LINE_NUMBER (cc0_setter)
+				= NOTE_INSN_DELETED;
+			      NOTE_SOURCE_FILE (cc0_setter) = 0;
+			    }
+#endif
+			}
+		      /* If the register is both set and used here, put the
+			 REG_DEAD note here, but place a REG_UNUSED note
+			 here too unless there already is one.  */
+		      else if (reg_referenced_p (XEXP (note, 0),
+						 PATTERN (tem)))
+			{
+			  place = tem;
+
+			  if (! find_regno_note (tem, REG_UNUSED,
+						 REGNO (XEXP (note, 0))))
+			    REG_NOTES (tem)
+			      = gen_rtx_EXPR_LIST (REG_UNUSED, XEXP (note, 0),
+						   REG_NOTES (tem));
+			}
+		      else
+			{
+			  PUT_REG_NOTE_KIND (note, REG_UNUSED);
+
+			  /*  If there isn't already a REG_UNUSED note, put one
+			      here.  */
+			  if (! find_regno_note (tem, REG_UNUSED,
+						 REGNO (XEXP (note, 0))))
+			    place = tem;
+			  break;
+			}
+		    }
+		  else if (reg_referenced_p (XEXP (note, 0), PATTERN (tem))
+			   || (GET_CODE (tem) == CALL_INSN
+			       && find_reg_fusage (tem, USE, XEXP (note, 0))))
+		    {
+		      place = tem;
+
+		      /* If we are doing a 3->2 combination, and we have a
+			 register which formerly died in i3 and was not used
+			 by i2, which now no longer dies in i3 and is used in
+			 i2 but does not die in i2, and place is between i2
+			 and i3, then we may need to move a link from place to
+			 i2.  */
+		      if (i2 && INSN_UID (place) <= max_uid_cuid
+			  && INSN_CUID (place) > INSN_CUID (i2)
+			  && from_insn
+			  && INSN_CUID (from_insn) > INSN_CUID (i2)
+			  && reg_referenced_p (XEXP (note, 0), PATTERN (i2)))
+			{
+			  rtx links = LOG_LINKS (place);
+			  LOG_LINKS (place) = 0;
+			  distribute_links (links);
+			}
+		      break;
+		    }
+
+		  if (tem == bb->head)
+		    break;
+		}
+
+	      /* We haven't found an insn for the death note and it
+		 is still a REG_DEAD note, but we have hit the beginning
+		 of the block.  If the existing life info says the reg
+		 was dead, there's nothing left to do.  Otherwise, we'll
+		 need to do a global life update after combine.  */
+	      if (REG_NOTE_KIND (note) == REG_DEAD && place == 0
+		  && REGNO_REG_SET_P (bb->global_live_at_start,
+				      REGNO (XEXP (note, 0))))
+		{
+		  SET_BIT (refresh_blocks, this_basic_block);
+		  need_refresh = 1;
+		}
+	    }
+
+	  /* If the register is set or already dead at PLACE, we needn't do
+	     anything with this note if it is still a REG_DEAD note.
+	     We can here if it is set at all, not if is it totally replace,
+	     which is what `dead_or_set_p' checks, so also check for it being
+	     set partially.  */
+
+	  if (place && REG_NOTE_KIND (note) == REG_DEAD)
+	    {
+	      unsigned int regno = REGNO (XEXP (note, 0));
+
+	      /* Similarly, if the instruction on which we want to place
+		 the note is a noop, we'll need do a global live update
+		 after we remove them in delete_noop_moves.  */
+	      if (noop_move_p (place))
+		{
+		  SET_BIT (refresh_blocks, this_basic_block);
+		  need_refresh = 1;
+		}
+
+	      if (dead_or_set_p (place, XEXP (note, 0))
+		  || reg_bitfield_target_p (XEXP (note, 0), PATTERN (place)))
+		{
+		  /* Unless the register previously died in PLACE, clear
+		     reg_last_death.  [I no longer understand why this is
+		     being done.] */
+		  if (reg_last_death[regno] != place)
+		    reg_last_death[regno] = 0;
+		  place = 0;
+		}
+	      else
+		reg_last_death[regno] = place;
+
+	      /* If this is a death note for a hard reg that is occupying
+		 multiple registers, ensure that we are still using all
+		 parts of the object.  If we find a piece of the object
+		 that is unused, we must arrange for an appropriate REG_DEAD
+		 note to be added for it.  However, we can't just emit a USE
+		 and tag the note to it, since the register might actually
+		 be dead; so we recourse, and the recursive call then finds
+		 the previous insn that used this register.  */
+
+	      if (place && regno < FIRST_PSEUDO_REGISTER
+		  && HARD_REGNO_NREGS (regno, GET_MODE (XEXP (note, 0))) > 1)
+		{
+		  unsigned int endregno
+		    = regno + HARD_REGNO_NREGS (regno,
+						GET_MODE (XEXP (note, 0)));
+		  int all_used = 1;
+		  unsigned int i;
+
+		  for (i = regno; i < endregno; i++)
+		    if ((! refers_to_regno_p (i, i + 1, PATTERN (place), 0)
+			 && ! find_regno_fusage (place, USE, i))
+			|| dead_or_set_regno_p (place, i))
+		      all_used = 0;
+
+		  if (! all_used)
+		    {
+		      /* Put only REG_DEAD notes for pieces that are
+			 not already dead or set.  */
+
+		      for (i = regno; i < endregno;
+			   i += HARD_REGNO_NREGS (i, reg_raw_mode[i]))
+			{
+			  rtx piece = gen_rtx_REG (reg_raw_mode[i], i);
+			  basic_block bb = BASIC_BLOCK (this_basic_block);
+
+			  if (! dead_or_set_p (place, piece)
+			      && ! reg_bitfield_target_p (piece,
+							  PATTERN (place)))
+			    {
+			      rtx new_note
+				= gen_rtx_EXPR_LIST (REG_DEAD, piece, NULL_RTX);
+
+			      distribute_notes (new_note, place, place,
+						NULL_RTX, NULL_RTX, NULL_RTX);
+			    }
+			  else if (! refers_to_regno_p (i, i + 1,
+							PATTERN (place), 0)
+				   && ! find_regno_fusage (place, USE, i))
+			    for (tem = PREV_INSN (place); ;
+				 tem = PREV_INSN (tem))
+			      {
+				if (! INSN_P (tem))
+				  {
+				    if (tem == bb->head)
+				      {
+					SET_BIT (refresh_blocks,
+						 this_basic_block);
+					need_refresh = 1;
+					break;
+				      }
+				    continue;
+				  }
+				if (dead_or_set_p (tem, piece)
+				    || reg_bitfield_target_p (piece,
+							      PATTERN (tem)))
+				  {
+				    REG_NOTES (tem)
+				      = gen_rtx_EXPR_LIST (REG_UNUSED, piece,
+							   REG_NOTES (tem));
+				    break;
+				  }
+			      }
+
+			}
+
+		      place = 0;
+		    }
+		}
+	    }
+	  break;
+
+	default:
+	  /* Any other notes should not be present at this point in the
+	     compilation.  */
+	  abort ();
+	}
+
+      if (place)
+	{
+	  XEXP (note, 1) = REG_NOTES (place);
+	  REG_NOTES (place) = note;
+	}
+      else if ((REG_NOTE_KIND (note) == REG_DEAD
+		|| REG_NOTE_KIND (note) == REG_UNUSED)
+	       && GET_CODE (XEXP (note, 0)) == REG)
+	REG_N_DEATHS (REGNO (XEXP (note, 0)))--;
+
+      if (place2)
+	{
+	  if ((REG_NOTE_KIND (note) == REG_DEAD
+	       || REG_NOTE_KIND (note) == REG_UNUSED)
+	      && GET_CODE (XEXP (note, 0)) == REG)
+	    REG_N_DEATHS (REGNO (XEXP (note, 0)))++;
+
+	  REG_NOTES (place2) = gen_rtx_fmt_ee (GET_CODE (note),
+					       REG_NOTE_KIND (note),
+					       XEXP (note, 0),
+					       REG_NOTES (place2));
+	}
+    }
+}

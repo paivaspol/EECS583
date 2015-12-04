@@ -1,0 +1,20 @@
+int
+GSIWriteKeyRecord(FILE *fp, char *key, int fileidx, long offset)
+{
+  sqd_uint16 f1;
+  sqd_uint32 f2;
+
+  if (strlen(key) >= GSI_KEYSIZE) return 0;
+  if (fileidx > SQD_UINT16_MAX) Die("GSI: file index out of range");
+  if (offset  > SQD_UINT32_MAX) Die("GSI: offset out of range");
+
+  f1 = (sqd_uint16) fileidx;
+  f2 = (sqd_uint32) offset;
+  f1 = sre_hton16(f1);
+  f2 = sre_hton32(f2);
+  
+  if (fwrite(key, 1, GSI_KEYSIZE, fp) < GSI_KEYSIZE) PANIC;
+  if (fwrite(&f1, 2,  1, fp) < 1) PANIC;
+  if (fwrite(&f2, 4,  1, fp) < 1) PANIC;
+  return 1;
+}

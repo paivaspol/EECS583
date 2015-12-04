@@ -1,0 +1,35 @@
+static int
+is_conditionally_protected (load_insn, bb_src, bb_trg)
+     rtx load_insn;
+     int bb_src, bb_trg;
+{
+  rtx link;
+
+  for (link = LOG_LINKS (load_insn); link; link = XEXP (link, 1))
+    {
+      rtx insn1 = XEXP (link, 0);
+
+      /* Must be a DEF-USE dependence upon non-branch.  */
+      if (GET_MODE (link) != VOIDmode
+	  || GET_CODE (insn1) == JUMP_INSN)
+	continue;
+
+      /* Must exist a path: region-entry -> ... -> bb_trg -> ... load_insn.  */
+      if (INSN_BB (insn1) == bb_src
+	  || (CONTAINING_RGN (BLOCK_NUM (insn1))
+	      != CONTAINING_RGN (BB_TO_BLOCK (bb_src)))
+	  || (!IS_REACHABLE (bb_trg, INSN_BB (insn1))
+	      && !IS_REACHABLE (INSN_BB (insn1), bb_trg)))
+	continue;
+
+      /* Now search for the conditional-branch.  */
+      if (find_conditional_protection (insn1, bb_src))
+	return 1;
+
+      /* Recursive step: search another insn1, "above" current insn1.  */
+      return is_conditionally_protected (insn1, bb_src, bb_trg);
+    }
+
+  /* The chain does not exist.  */
+  return 0;
+}				/* is_conditionally_protected */

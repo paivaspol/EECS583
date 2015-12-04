@@ -1,0 +1,48 @@
+static void
+find_used_regs (xptr, data)
+     rtx *xptr;
+     void *data ATTRIBUTE_UNUSED;
+{
+  int i, j;
+  enum rtx_code code;
+  const char *fmt;
+  rtx x = *xptr;
+
+  /* repeat is used to turn tail-recursion into iteration since GCC
+     can't do it when there's no return value.  */
+ repeat:
+  if (x == 0)
+    return;
+
+  code = GET_CODE (x);
+  if (REG_P (x))
+    {
+      if (reg_use_count == MAX_USES)
+	return;
+
+      reg_use_table[reg_use_count].reg_rtx = x;
+      reg_use_count++;
+    }
+
+  /* Recursively scan the operands of this expression.  */
+
+  for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    {
+	      x = XEXP (x, 0);
+	      goto repeat;
+	    }
+
+	  find_used_regs (&XEXP (x, i), data);
+	}
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  find_used_regs (&XVECEXP (x, i, j), data);
+    }
+}

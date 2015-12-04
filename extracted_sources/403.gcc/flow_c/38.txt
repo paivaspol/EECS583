@@ -1,0 +1,89 @@
+static rtx
+and_reg_cond (old, x, add)
+     rtx old, x;
+     int add;
+{
+  rtx op0, op1;
+
+  if (GET_RTX_CLASS (GET_CODE (old)) == '<')
+    {
+      if (GET_RTX_CLASS (GET_CODE (x)) == '<'
+	  && GET_CODE (x) == reverse_condition (GET_CODE (old))
+	  && REGNO (XEXP (x, 0)) == REGNO (XEXP (old, 0)))
+	return const0_rtx;
+      if (GET_CODE (x) == GET_CODE (old)
+	  && REGNO (XEXP (x, 0)) == REGNO (XEXP (old, 0)))
+	return old;
+      if (! add)
+	return NULL;
+      return gen_rtx_AND (0, old, x);
+    }
+
+  switch (GET_CODE (old))
+    {
+    case IOR:
+      op0 = and_reg_cond (XEXP (old, 0), x, 0);
+      op1 = and_reg_cond (XEXP (old, 1), x, 0);
+      if (op0 != NULL || op1 != NULL)
+	{
+	  if (op0 == const0_rtx)
+	    return op1 ? op1 : gen_rtx_AND (0, XEXP (old, 1), x);
+	  if (op1 == const0_rtx)
+	    return op0 ? op0 : gen_rtx_AND (0, XEXP (old, 0), x);
+	  if (op0 == const1_rtx || op1 == const1_rtx)
+	    return const1_rtx;
+	  if (op0 == NULL)
+	    op0 = gen_rtx_AND (0, XEXP (old, 0), x);
+	  else if (rtx_equal_p (x, op0))
+	    /* (x | A) & x ~ x.  */
+	    return op0;
+	  if (op1 == NULL)
+	    op1 = gen_rtx_AND (0, XEXP (old, 1), x);
+	  else if (rtx_equal_p (x, op1))
+	    /* (A | x) & x ~ x.  */
+	    return op1;
+	  return gen_rtx_IOR (0, op0, op1);
+	}
+      if (! add)
+	return NULL;
+      return gen_rtx_AND (0, old, x);
+
+    case AND:
+      op0 = and_reg_cond (XEXP (old, 0), x, 0);
+      op1 = and_reg_cond (XEXP (old, 1), x, 0);
+      if (op0 != NULL || op1 != NULL)
+	{
+	  if (op0 == const1_rtx)
+	    return op1 ? op1 : gen_rtx_AND (0, XEXP (old, 1), x);
+	  if (op1 == const1_rtx)
+	    return op0 ? op0 : gen_rtx_AND (0, XEXP (old, 0), x);
+	  if (op0 == const0_rtx || op1 == const0_rtx)
+	    return const0_rtx;
+	  if (op0 == NULL)
+	    op0 = gen_rtx_AND (0, XEXP (old, 0), x);
+	  else if (rtx_equal_p (x, op0))
+	    /* (x & A) & x ~ (x & A).  */
+	    return old;
+	  if (op1 == NULL)
+	    op1 = gen_rtx_AND (0, XEXP (old, 1), x);
+	  else if (rtx_equal_p (x, op1))
+	    /* (A & x) & x ~ (A & x).  */
+	    return old;
+	  return gen_rtx_AND (0, op0, op1);
+	}
+      if (! add)
+	return NULL;
+      return gen_rtx_AND (0, old, x);
+
+    case NOT:
+      op0 = ior_reg_cond (XEXP (old, 0), not_reg_cond (x), 0);
+      if (op0 != NULL)
+	return not_reg_cond (op0);
+      if (! add)
+	return NULL;
+      return gen_rtx_AND (0, old, x);
+
+    default:
+      abort ();
+    }
+}

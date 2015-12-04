@@ -1,0 +1,48 @@
+static void add_reachable_handler
+     PARAMS ((struct reachable_info *, struct eh_region *,
+	      struct eh_region *));
+static enum reachable_code reachable_next_level
+     PARAMS ((struct eh_region *, tree, struct reachable_info *));
+
+static int action_record_eq			PARAMS ((const PTR,
+							 const PTR));
+static hashval_t action_record_hash		PARAMS ((const PTR));
+static int add_action_record			PARAMS ((htab_t, int, int));
+static int collect_one_action_chain		PARAMS ((htab_t,
+							 struct eh_region *));
+static int add_call_site			PARAMS ((rtx, int));
+
+static void push_uleb128			PARAMS ((varray_type *,
+							 unsigned int));
+static void push_sleb128			PARAMS ((varray_type *, int));
+#ifndef HAVE_AS_LEB128
+static int dw2_size_of_call_site_table		PARAMS ((void));
+static int sjlj_size_of_call_site_table		PARAMS ((void));
+#endif
+static void dw2_output_call_site_table		PARAMS ((void));
+static void sjlj_output_call_site_table		PARAMS ((void));
+
+
+/* Routine to see if exception handling is turned on.
+   DO_WARN is non-zero if we want to inform the user that exception
+   handling is turned off.
+
+   This is used to ensure that -fexceptions has been specified if the
+   compiler tries to use any exception-specific functions.  */
+
+int
+doing_eh (do_warn)
+     int do_warn;
+{
+  if (! flag_exceptions)
+    {
+      static int warned = 0;
+      if (! warned && do_warn)
+	{
+	  error ("exception handling disabled, use -fexceptions to enable");
+	  warned = 1;
+	}
+      return 0;
+    }
+  return 1;
+}

@@ -1,0 +1,35 @@
+static rtx
+mask_rtx (mode, bitpos, bitsize, complement)
+     enum machine_mode mode;
+     int bitpos, bitsize, complement;
+{
+  HOST_WIDE_INT masklow, maskhigh;
+
+  if (bitpos < HOST_BITS_PER_WIDE_INT)
+    masklow = (HOST_WIDE_INT) -1 << bitpos;
+  else
+    masklow = 0;
+
+  if (bitpos + bitsize < HOST_BITS_PER_WIDE_INT)
+    masklow &= ((unsigned HOST_WIDE_INT) -1
+		>> (HOST_BITS_PER_WIDE_INT - bitpos - bitsize));
+
+  if (bitpos <= HOST_BITS_PER_WIDE_INT)
+    maskhigh = -1;
+  else
+    maskhigh = (HOST_WIDE_INT) -1 << (bitpos - HOST_BITS_PER_WIDE_INT);
+
+  if (bitpos + bitsize > HOST_BITS_PER_WIDE_INT)
+    maskhigh &= ((unsigned HOST_WIDE_INT) -1
+		 >> (2 * HOST_BITS_PER_WIDE_INT - bitpos - bitsize));
+  else
+    maskhigh = 0;
+
+  if (complement)
+    {
+      maskhigh = ~maskhigh;
+      masklow = ~masklow;
+    }
+
+  return immed_double_const (masklow, maskhigh, mode);
+}

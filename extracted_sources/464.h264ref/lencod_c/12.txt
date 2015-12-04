@@ -1,0 +1,21 @@
+void free_orig_planes()
+{
+  free_mem2Dpel(imgY_org_frm);      // free ref frame buffers
+
+  if (img->yuv_format != YUV400)
+    free_mem3Dpel(imgUV_org_frm, 2);
+
+
+  if(!active_sps->frame_mbs_only_flag)
+  {
+    free_top_bot_planes(imgY_org_top, imgY_org_bot);
+
+    if (img->yuv_format != YUV400)
+    {
+      free_top_bot_planes(imgUV_org_top[0], imgUV_org_bot[0]);
+      free_top_bot_planes(imgUV_org_top[1], imgUV_org_bot[1]);
+      free (imgUV_org_top);
+      free (imgUV_org_bot);
+    }
+  }
+}

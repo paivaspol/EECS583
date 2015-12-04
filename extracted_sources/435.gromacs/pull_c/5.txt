@@ -1,0 +1,149 @@
+void pull(t_pull *pull,rvec *x,rvec *f,matrix box, t_topology *top, 
+	  real dt, int step, int natoms, t_mdatoms *md) 
+{
+  int i,niter;
+  static rvec *x_s = NULL;
+  bool bShakeFirst;
+
+  bShakeFirst = (f == NULL);
+
+  if (!x_s)
+    snew(x_s,md->nr); /* can't rely on natoms */
+
+  /* copy x to temp array x_s. We assume all molecules are whole already */
+  for (i=0;i<md->nr;i++) 
+    copy_rvec(x[i],x_s[i]);  
+  
+  switch (pull->runtype) {
+  case eAfm:
+    if (!bShakeFirst) {
+      /* calculate center of mass of the pull groups */
+      for (i=0;i<pull->pull.n;i++) 
+	(void)calc_com(x_s,pull->pull.ngx[i],pull->pull.idx[i],md,
+		       pull->pull.x_unc[i],box);
+      do_afm(pull,f,box,md);
+      print_afm(pull,step);
+    }
+    break;
+    
+  case eStart:
+    if (!bShakeFirst) {
+      for (i=0;i<pull->pull.n;i++) 
+	(void)calc_com(x_s,pull->pull.ngx[i],pull->pull.idx[i],md,
+		       pull->pull.x_unc[i],box);
+      if (pull->bCyl)
+	make_refgrps(pull,x_s,md);
+      else 
+	(void)calc_com(x_s,pull->ref.ngx[0],pull->ref.idx[0],md,
+		       pull->ref.x_unc[0],box);
+      do_start(pull,x,box,md,dt,step,top);
+      print_start(pull,step);
+    }
+    break; 
+    
+  case eConstraint:
+    /* if necessary, correct for particles jumping across the box 
+       this makes sure pull->ref.x0 has the pbc-corrected coordinates
+       Else just copy the normal coordinates to ref.x0
+     */
+    if (pull->reftype == eComT0 || pull->reftype == eDynT0) {
+      if (pull->bVerbose)
+	fprintf(stderr,"\nCalling correct_t0_pbc\n");
+      correct_t0_pbc(pull,x_s,md,box);
+    } else {
+      for (i=0;i<pull->ref.ngx[0];i++) 
+	copy_rvec(x_s[pull->ref.idx[0][i]],pull->ref.x0[0][i]);
+    }
+
+    /* get centers of mass for the pull groups. Does this work correctly
+       with pbc? */
+    for (i=0;i<pull->pull.n;i++) {
+      (void)calc_com(x_s,pull->pull.ngx[i],pull->pull.idx[i],md,
+		     pull->pull.x_unc[i],box);
+    }
+    
+    /* get new centers of mass for reference groups, from the, possibly 
+       corrected, pull->ref.x0 */
+    /* dynamic case */
+    if (pull->bCyl) {
+      if (step % pull->update == 0)    /* make new ones? */
+	make_refgrps(pull,x_s,md);
+      else {
+	for (i=0;i<pull->pull.n;i++) {
+	  (void)calc_com2(pull->ref.x0[0],pull->dyna.ngx[i],pull->dyna.idx[i],
+			  md,pull->dyna.x_unc[i],box);
+	  if (pull->bVerbose) 
+	    fprintf(stderr,"dynacom: %8.3f%8.3f%8.3f\n",pull->dyna.x_unc[i][0],
+		    pull->dyna.x_unc[i][1],pull->dyna.x_unc[i][2]);
+	}
+      }
+    } 
+
+    /* normal case */
+    if (!pull->bCyl)
+      (void)calc_com2(pull->ref.x0[0],pull->ref.ngx[0],pull->ref.idx[0],
+		      md,pull->ref.x_unc[0],box);
+    
+    /* if necessary, do a running average over the last reflag steps for com */
+    if (pull->reflag > 1) {
+      if (pull->bVerbose) 
+	fprintf(stderr,"Calling calc_running_com\n");
+      calc_running_com(pull);
+    }
+
+    /* print some debug info if necessary */
+    if (pull->bVerbose) {
+      if (pull->bCyl) {
+	for (i=0;i<pull->pull.n;i++) {
+	  fprintf(stderr,"I      :%9.6f %9.6f %9.6f\n",pull->pull.x_unc[i][0],
+		  pull->pull.x_unc[i][1],pull->pull.x_unc[i][2]);
+	  fprintf(stderr,"dyna xref: unconstr. com:%9.6f %9.6f %9.6f\n",
+		  pull->dyna.x_unc[i][0],
+		  pull->dyna.x_unc[i][1],pull->dyna.x_unc[i][2]);
+	}
+      } else {
+	fprintf(stderr,"xref: unconstr. com:%9.6f %9.6f %9.6f\n",
+		pull->ref.x_unc[0][0], pull->ref.x_unc[0][1],
+		pull->ref.x_unc[0][2]);
+      }
+    }
+    
+    /* do the actual constraint calculation */
+    do_constraint(pull,x,box,md,dt,&niter);
+    print_constraint(pull,f,step,box,niter); 
+    break;
+    
+  case eUmbrella:
+    if (!bShakeFirst) {
+      
+      /* get centers of mass for the pull groups, and put them in x_unc. Does 
+	 this work correctly with pbc? */
+      for (i=0;i<pull->pull.n;i++) 
+	(void)calc_com(x_s,pull->pull.ngx[i],pull->pull.idx[i],md,
+		       pull->pull.x_unc[i],box);
+      do_umbrella(pull,x,f,box,md);
+      print_umbrella(pull,step);
+    }
+    break;
+    
+  case eTest:
+    if (!bShakeFirst) {
+      /* code to test reference groups, without actually doing anything 
+	 else 
+	 */
+      (void)calc_com(x,pull->ref.ngx[0],pull->ref.idx[0],
+		     md,pull->ref.x_unc[0],box);
+      fprintf(stderr,"ref: %8.3f %8.3f %8.3f\n",pull->ref.x_unc[0][XX],
+	      pull->ref.x_unc[0][YY],pull->ref.x_unc[0][ZZ]);
+      correct_t0_pbc(pull,x,md,box);
+      (void)calc_com2(pull->ref.x0[0],pull->ref.ngx[0],pull->ref.idx[0],
+		      md,pull->ref.x_unc[0],box);
+      fprintf(stderr,"ref_t0: %8.3f %8.3f %8.3f\n",pull->ref.x_unc[0][XX],
+	      pull->ref.x_unc[0][YY],pull->ref.x_unc[0][ZZ]);
+    }
+    break;
+
+  default:
+    fatal_error(0,"undetermined runtype");
+  }
+}

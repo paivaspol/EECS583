@@ -1,0 +1,52 @@
+static void
+new_edge (source, target)
+     int source, target;
+{
+  int e, next_edge;
+  int curr_edge, fst_edge;
+
+  /* Check for duplicates.  */
+  fst_edge = curr_edge = OUT_EDGES (source);
+  while (curr_edge)
+    {
+      if (FROM_BLOCK (curr_edge) == source
+	  && TO_BLOCK (curr_edge) == target)
+	{
+	  return;
+	}
+
+      curr_edge = NEXT_OUT (curr_edge);
+
+      if (fst_edge == curr_edge)
+	break;
+    }
+
+  e = ++nr_edges;
+
+  FROM_BLOCK (e) = source;
+  TO_BLOCK (e) = target;
+
+  if (OUT_EDGES (source))
+    {
+      next_edge = NEXT_OUT (OUT_EDGES (source));
+      NEXT_OUT (OUT_EDGES (source)) = e;
+      NEXT_OUT (e) = next_edge;
+    }
+  else
+    {
+      OUT_EDGES (source) = e;
+      NEXT_OUT (e) = e;
+    }
+
+  if (IN_EDGES (target))
+    {
+      next_edge = NEXT_IN (IN_EDGES (target));
+      NEXT_IN (IN_EDGES (target)) = e;
+      NEXT_IN (e) = next_edge;
+    }
+  else
+    {
+      IN_EDGES (target) = e;
+      NEXT_IN (e) = e;
+    }
+}

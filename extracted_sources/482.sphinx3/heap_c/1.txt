@@ -1,0 +1,36 @@
+static heapnode_t *subheap_insert (heapnode_t *root, void *data, int32 val)
+{
+    heapnode_t *h;
+    void *tmpdata;
+    int32 tmpval;
+    
+    if (! root) {
+	h = (heapnode_t *) mymalloc (sizeof(heapnode_t));
+	h->data = data;
+	h->val = val;
+	h->l = h->r = NULL;
+	h->nl = h->nr = 0;
+	return h;
+    }
+
+    /* Root already exists; if new value is less, replace root node */
+    if (root->val > val) {
+	tmpdata = root->data;
+	tmpval = root->val;
+	root->data = data;
+	root->val = val;
+	data = tmpdata;
+	val = tmpval;
+    }
+
+    /* Insert new or old (replaced) node in right or left subtree; keep them balanced */
+    if (root->nl > root->nr) {
+	root->r = subheap_insert (root->r, data, val);
+	root->nr++;
+    } else {
+	root->l = subheap_insert (root->l, data, val);
+	root->nl++;
+    }
+
+    return root;
+}

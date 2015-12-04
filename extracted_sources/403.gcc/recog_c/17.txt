@@ -1,0 +1,94 @@
+static rtx *
+find_single_use_1 (dest, loc)
+     rtx dest;
+     rtx *loc;
+{
+  rtx x = *loc;
+  enum rtx_code code = GET_CODE (x);
+  rtx *result = 0;
+  rtx *this_result;
+  int i;
+  const char *fmt;
+
+  switch (code)
+    {
+    case CONST_INT:
+    case CONST:
+    case LABEL_REF:
+    case SYMBOL_REF:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case CLOBBER:
+      return 0;
+
+    case SET:
+      /* If the destination is anything other than CC0, PC, a REG or a SUBREG
+	 of a REG that occupies all of the REG, the insn uses DEST if
+	 it is mentioned in the destination or the source.  Otherwise, we
+	 need just check the source.  */
+      if (GET_CODE (SET_DEST (x)) != CC0
+	  && GET_CODE (SET_DEST (x)) != PC
+	  && GET_CODE (SET_DEST (x)) != REG
+	  && ! (GET_CODE (SET_DEST (x)) == SUBREG
+		&& GET_CODE (SUBREG_REG (SET_DEST (x))) == REG
+		&& (((GET_MODE_SIZE (GET_MODE (SUBREG_REG (SET_DEST (x))))
+		      + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD)
+		    == ((GET_MODE_SIZE (GET_MODE (SET_DEST (x)))
+			 + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD))))
+	break;
+
+      return find_single_use_1 (dest, &SET_SRC (x));
+
+    case MEM:
+    case SUBREG:
+      return find_single_use_1 (dest, &XEXP (x, 0));
+      
+    default:
+      break;
+    }
+
+  /* If it wasn't one of the common cases above, check each expression and
+     vector of this code.  Look for a unique usage of DEST.  */
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  if (dest == XEXP (x, i)
+	      || (GET_CODE (dest) == REG && GET_CODE (XEXP (x, i)) == REG
+		  && REGNO (dest) == REGNO (XEXP (x, i))))
+	    this_result = loc;
+	  else
+	    this_result = find_single_use_1 (dest, &XEXP (x, i));
+
+	  if (result == 0)
+	    result = this_result;
+	  else if (this_result)
+	    /* Duplicate usage.  */
+	    return 0;
+	}
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    {
+	      if (XVECEXP (x, i, j) == dest
+		  || (GET_CODE (dest) == REG
+		      && GET_CODE (XVECEXP (x, i, j)) == REG
+		      && REGNO (XVECEXP (x, i, j)) == REGNO (dest)))
+		this_result = loc;
+	      else
+		this_result = find_single_use_1 (dest, &XVECEXP (x, i, j));
+
+	      if (result == 0)
+		result = this_result;
+	      else if (this_result)
+		return 0;
+	    }
+	}
+    }
+
+  return result;
+}

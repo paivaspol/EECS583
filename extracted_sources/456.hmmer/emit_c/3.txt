@@ -1,0 +1,52 @@
+void
+StateOccupancy(struct plan7_s *hmm, float **ret_mp, float **ret_ip, float **ret_dp)
+{
+  float *fmp, *fip, *fdp;       /* forward probabilities  */
+  int k;			/* counter for nodes      */
+
+  /* Initial allocations
+   */
+  fmp = MallocOrDie (sizeof(float) * (hmm->M+1));
+  fip = MallocOrDie (sizeof(float) * (hmm->M));
+  fdp = MallocOrDie (sizeof(float) * (hmm->M+1));
+  
+  /* Forward pass. 
+   */
+  fdp[1] = hmm->tbd1;
+  fmp[1] = hmm->begin[1];
+  fip[1] = fmp[1] * hmm->t[1][TMI];
+  for (k = 2; k <= hmm->M; k++)
+    {
+			/* M: from M,D,I at k-1, or B; count t_II as 1.0 */
+      fmp[k] = fmp[k-1] * hmm->t[k-1][TMM] +
+	       fip[k-1] +
+               fdp[k-1] * hmm->t[k-1][TDM] +
+	       hmm->begin[k];
+			/* D: from M,D at k-1 */
+      fdp[k] = fmp[k-1] * hmm->t[k-1][TMD] +
+	       fdp[k-1] * hmm->t[k-1][TDD];
+			/* I: from M at k; don't count II */
+      if (k < hmm->M) {
+	fip[k] = fmp[k] * hmm->t[k][TMI];
+      }
+
+      SQD_DASSERT2((fabs(1.0f - fmp[k] - fdp[k]) < 1e-6f));
+      fmp[k] /= fmp[k]+fdp[k];	/* prevent propagating fp errors */
+      fdp[k] /= fmp[k]+fdp[k];
+    }
+  /* We don't need a backward pass; all backwards P's are 1.0
+   * by definition (you can always get out of a state with P=1).
+   * The only situation where this might not be true is for
+   * a TII of 1.0, when TIM = 0 -- but in that case, if there's
+   * a finite chance of getting into that insert state, the model
+   * generates infinitely long sequences, so we can consider this
+   * situation "perverse" and disallow it elsewhere in building
+   * profile HMMs.
+   */
+
+  /* Return.
+   */
+  *ret_mp = fmp;
+  *ret_dp = fdp;
+  *ret_ip = fip;
+}

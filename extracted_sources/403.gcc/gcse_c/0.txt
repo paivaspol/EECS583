@@ -1,0 +1,341 @@
+static void insert_expr_in_table PARAMS ((rtx, enum machine_mode, rtx,
+					  int, int));
+static void insert_set_in_table PARAMS ((rtx, rtx));
+static unsigned int hash_expr	PARAMS ((rtx, enum machine_mode, int *, int));
+static unsigned int hash_expr_1 PARAMS ((rtx, enum machine_mode, int *));
+static unsigned int hash_string_1 PARAMS ((const char *));
+static unsigned int hash_set	PARAMS ((int, int));
+static int expr_equiv_p	        PARAMS ((rtx, rtx));
+static void record_last_reg_set_info PARAMS ((rtx, int));
+static void record_last_mem_set_info PARAMS ((rtx));
+static void record_last_set_info PARAMS ((rtx, rtx, void *));
+static void compute_hash_table	PARAMS ((int));
+static void alloc_set_hash_table PARAMS ((int));
+static void free_set_hash_table PARAMS ((void));
+static void compute_set_hash_table PARAMS ((void));
+static void alloc_expr_hash_table PARAMS ((unsigned int));
+static void free_expr_hash_table PARAMS ((void));
+static void compute_expr_hash_table PARAMS ((void));
+static void dump_hash_table	PARAMS ((FILE *, const char *, struct expr **,
+					 int, int));
+static struct expr *lookup_expr	PARAMS ((rtx));
+static struct expr *lookup_set	PARAMS ((unsigned int, rtx));
+static struct expr *next_set	PARAMS ((unsigned int, struct expr *));
+static void reset_opr_set_tables PARAMS ((void));
+static int oprs_not_set_p	PARAMS ((rtx, rtx));
+static void mark_call		PARAMS ((rtx));
+static void mark_set		PARAMS ((rtx, rtx));
+static void mark_clobber	PARAMS ((rtx, rtx));
+static void mark_oprs_set	PARAMS ((rtx));
+static void alloc_cprop_mem	PARAMS ((int, int));
+static void free_cprop_mem	PARAMS ((void));
+static void compute_transp	PARAMS ((rtx, int, sbitmap *, int));
+static void compute_transpout	PARAMS ((void));
+static void compute_local_properties PARAMS ((sbitmap *, sbitmap *, sbitmap *,
+					      int));
+static void compute_cprop_data	PARAMS ((void));
+static void find_used_regs	PARAMS ((rtx *, void *));
+static int try_replace_reg	PARAMS ((rtx, rtx, rtx));
+static struct expr *find_avail_set PARAMS ((int, rtx));
+static int cprop_jump		PARAMS ((basic_block, rtx, rtx, rtx));
+#ifdef HAVE_cc0
+static int cprop_cc0_jump	PARAMS ((basic_block, rtx, struct reg_use *, rtx));
+#endif
+static void mems_conflict_for_gcse_p PARAMS ((rtx, rtx, void *));
+static int load_killed_in_block_p    PARAMS ((basic_block, int, rtx, int));
+static void canon_list_insert        PARAMS ((rtx, rtx, void *));
+static int cprop_insn		PARAMS ((basic_block, rtx, int));
+static int cprop		PARAMS ((int));
+static int one_cprop_pass	PARAMS ((int, int));
+static void alloc_pre_mem	PARAMS ((int, int));
+static void free_pre_mem	PARAMS ((void));
+static void compute_pre_data	PARAMS ((void));
+static int pre_expr_reaches_here_p PARAMS ((basic_block, struct expr *, 
+					    basic_block));
+static void insert_insn_end_bb	PARAMS ((struct expr *, basic_block, int));
+static void pre_insert_copy_insn PARAMS ((struct expr *, rtx));
+static void pre_insert_copies	PARAMS ((void));
+static int pre_delete		PARAMS ((void));
+static int pre_gcse		PARAMS ((void));
+static int one_pre_gcse_pass	PARAMS ((int));
+static void add_label_notes	PARAMS ((rtx, rtx));
+static void alloc_code_hoist_mem PARAMS ((int, int));
+static void free_code_hoist_mem	PARAMS ((void));
+static void compute_code_hoist_vbeinout	PARAMS ((void));
+static void compute_code_hoist_data PARAMS ((void));
+static int hoist_expr_reaches_here_p PARAMS ((basic_block, int, basic_block, 
+					      char *));
+static void hoist_code		PARAMS ((void));
+static int one_code_hoisting_pass PARAMS ((void));
+static void alloc_rd_mem	PARAMS ((int, int));
+static void free_rd_mem		PARAMS ((void));
+static void handle_rd_kill_set	PARAMS ((rtx, int, basic_block));
+static void compute_kill_rd	PARAMS ((void));
+static void compute_rd		PARAMS ((void));
+static void alloc_avail_expr_mem PARAMS ((int, int));
+static void free_avail_expr_mem PARAMS ((void));
+static void compute_ae_gen	PARAMS ((void));
+static int expr_killed_p	PARAMS ((rtx, basic_block));
+static void compute_ae_kill	PARAMS ((sbitmap *, sbitmap *));
+static int expr_reaches_here_p	PARAMS ((struct occr *, struct expr *,
+					 basic_block, int));
+static rtx computing_insn	PARAMS ((struct expr *, rtx));
+static int def_reaches_here_p	PARAMS ((rtx, rtx));
+static int can_disregard_other_sets PARAMS ((struct reg_set **, rtx, int));
+static int handle_avail_expr	PARAMS ((rtx, struct expr *));
+static int classic_gcse		PARAMS ((void));
+static int one_classic_gcse_pass PARAMS ((int));
+static void invalidate_nonnull_info PARAMS ((rtx, rtx, void *));
+static void delete_null_pointer_checks_1 PARAMS ((unsigned int *,
+						  sbitmap *, sbitmap *,
+						  struct null_pointer_info *));
+static rtx process_insert_insn	PARAMS ((struct expr *));
+static int pre_edge_insert	PARAMS ((struct edge_list *, struct expr **));
+static int expr_reaches_here_p_work PARAMS ((struct occr *, struct expr *,
+					     basic_block, int, char *));
+static int pre_expr_reaches_here_p_work	PARAMS ((basic_block, struct expr *,
+						 basic_block, char *));
+static struct ls_expr * ldst_entry 	PARAMS ((rtx));
+static void free_ldst_entry 		PARAMS ((struct ls_expr *));
+static void free_ldst_mems		PARAMS ((void));
+static void print_ldst_list 		PARAMS ((FILE *));
+static struct ls_expr * find_rtx_in_ldst PARAMS ((rtx));
+static int enumerate_ldsts		PARAMS ((void));
+static inline struct ls_expr * first_ls_expr PARAMS ((void));
+static inline struct ls_expr * next_ls_expr  PARAMS ((struct ls_expr *));
+static int simple_mem			PARAMS ((rtx));
+static void invalidate_any_buried_refs	PARAMS ((rtx));
+static void compute_ld_motion_mems	PARAMS ((void)); 
+static void trim_ld_motion_mems		PARAMS ((void));
+static void update_ld_motion_stores	PARAMS ((struct expr *));
+static void reg_set_info		PARAMS ((rtx, rtx, void *));
+static int store_ops_ok			PARAMS ((rtx, basic_block));
+static void find_moveable_store		PARAMS ((rtx));
+static int compute_store_table		PARAMS ((void));
+static int load_kills_store		PARAMS ((rtx, rtx));
+static int find_loads			PARAMS ((rtx, rtx));
+static int store_killed_in_insn		PARAMS ((rtx, rtx));
+static int store_killed_after		PARAMS ((rtx, rtx, basic_block));
+static int store_killed_before		PARAMS ((rtx, rtx, basic_block));
+static void build_store_vectors		PARAMS ((void));
+static void insert_insn_start_bb	PARAMS ((rtx, basic_block));
+static int insert_store			PARAMS ((struct ls_expr *, edge));
+static void replace_store_insn		PARAMS ((rtx, rtx, basic_block));
+static void delete_store		PARAMS ((struct ls_expr *, 
+						 basic_block));
+static void free_store_memory		PARAMS ((void));
+static void store_motion		PARAMS ((void));
+static void free_insn_expr_list_list	PARAMS ((rtx *));
+static void clear_modify_mem_tables	PARAMS ((void));
+static void free_modify_mem_tables	PARAMS ((void));
+
+/* Entry point for global common subexpression elimination.
+   F is the first instruction in the function.  */
+
+int
+gcse_main (f, file)
+     rtx f;
+     FILE *file;
+{
+  int changed, pass;
+  /* Bytes used at start of pass.  */
+  int initial_bytes_used;
+  /* Maximum number of bytes used by a pass.  */
+  int max_pass_bytes;
+  /* Point to release obstack data from for each pass.  */
+  char *gcse_obstack_bottom;
+
+  /* Insertion of instructions on edges can create new basic blocks; we
+     need the original basic block count so that we can properly deallocate
+     arrays sized on the number of basic blocks originally in the cfg.  */
+  int orig_bb_count;
+  /* We do not construct an accurate cfg in functions which call
+     setjmp, so just punt to be safe.  */
+  if (current_function_calls_setjmp)
+    return 0;
+   
+  /* Assume that we do not need to run jump optimizations after gcse.  */
+  run_jump_opt_after_gcse = 0;
+
+  /* For calling dump_foo fns from gdb.  */
+  debug_stderr = stderr;
+  gcse_file = file;
+
+  /* Identify the basic block information for this function, including
+     successors and predecessors.  */
+  max_gcse_regno = max_reg_num ();
+
+  if (file)
+    dump_flow_info (file);
+
+  orig_bb_count = n_basic_blocks;
+  /* Return if there's nothing to do.  */
+  if (n_basic_blocks <= 1)
+    return 0;
+
+  /* Trying to perform global optimizations on flow graphs which have
+     a high connectivity will take a long time and is unlikely to be
+     particularly useful.
+
+     In normal circumstances a cfg should have about twice as many edges
+     as blocks.  But we do not want to punish small functions which have
+     a couple switch statements.  So we require a relatively large number
+     of basic blocks and the ratio of edges to blocks to be high.  */
+  if (n_basic_blocks > 1000 && n_edges / n_basic_blocks >= 20)
+    {
+      if (warn_disabled_optimization)
+	warning ("GCSE disabled: %d > 1000 basic blocks and %d >= 20 edges/basic block",
+		 n_basic_blocks, n_edges / n_basic_blocks);
+      return 0;
+    }
+
+  /* If allocating memory for the cprop bitmap would take up too much
+     storage it's better just to disable the optimization.  */
+  if ((n_basic_blocks 
+       * SBITMAP_SET_SIZE (max_gcse_regno)
+       * sizeof (SBITMAP_ELT_TYPE)) > MAX_GCSE_MEMORY)
+    {
+      if (warn_disabled_optimization)
+	warning ("GCSE disabled: %d basic blocks and %d registers",
+		 n_basic_blocks, max_gcse_regno);
+
+      return 0;
+    }
+
+  /* See what modes support reg/reg copy operations.  */
+  if (! can_copy_init_p)
+    {
+      compute_can_copy ();
+      can_copy_init_p = 1;
+    }
+
+  gcc_obstack_init (&gcse_obstack);
+  bytes_used = 0;
+
+  /* We need alias.  */
+  init_alias_analysis ();
+  /* Record where pseudo-registers are set.  This data is kept accurate
+     during each pass.  ??? We could also record hard-reg information here
+     [since it's unchanging], however it is currently done during hash table
+     computation.
+
+     It may be tempting to compute MEM set information here too, but MEM sets
+     will be subject to code motion one day and thus we need to compute
+     information about memory sets when we build the hash tables.  */
+
+  alloc_reg_set_mem (max_gcse_regno);
+  compute_sets (f);
+
+  pass = 0;
+  initial_bytes_used = bytes_used;
+  max_pass_bytes = 0;
+  gcse_obstack_bottom = gcse_alloc (1);
+  changed = 1;
+  while (changed && pass < MAX_GCSE_PASSES)
+    {
+      changed = 0;
+      if (file)
+	fprintf (file, "GCSE pass %d\n\n", pass + 1);
+
+      /* Initialize bytes_used to the space for the pred/succ lists,
+	 and the reg_set_table data.  */
+      bytes_used = initial_bytes_used;
+
+      /* Each pass may create new registers, so recalculate each time.  */
+      max_gcse_regno = max_reg_num ();
+
+      alloc_gcse_mem (f);
+
+      /* Don't allow constant propagation to modify jumps
+	 during this pass.  */
+      changed = one_cprop_pass (pass + 1, 0);
+
+      if (optimize_size)
+	changed |= one_classic_gcse_pass (pass + 1);
+      else
+        {
+	  changed |= one_pre_gcse_pass (pass + 1);
+	  /* We may have just created new basic blocks.  Release and
+	     recompute various things which are sized on the number of
+	     basic blocks.  */
+	  if (changed)
+	    {
+	      free_modify_mem_tables ();
+	      modify_mem_list
+		= (rtx *) gmalloc (n_basic_blocks * sizeof (rtx));
+	      canon_modify_mem_list
+		= (rtx *) gmalloc (n_basic_blocks * sizeof (rtx));
+	      memset ((char *) modify_mem_list, 0, n_basic_blocks * sizeof (rtx));
+	      memset ((char *) canon_modify_mem_list, 0, n_basic_blocks * sizeof (rtx));
+	      orig_bb_count = n_basic_blocks;
+	    }
+	  free_reg_set_mem ();
+	  alloc_reg_set_mem (max_reg_num ());
+	  compute_sets (f);
+	  run_jump_opt_after_gcse = 1;
+	}
+
+      if (max_pass_bytes < bytes_used)
+	max_pass_bytes = bytes_used;
+
+      /* Free up memory, then reallocate for code hoisting.  We can
+	 not re-use the existing allocated memory because the tables
+	 will not have info for the insns or registers created by
+	 partial redundancy elimination.  */
+      free_gcse_mem ();
+
+      /* It does not make sense to run code hoisting unless we optimizing
+	 for code size -- it rarely makes programs faster, and can make
+	 them bigger if we did partial redundancy elimination (when optimizing
+	 for space, we use a classic gcse algorithm instead of partial
+	 redundancy algorithms).  */
+      if (optimize_size)
+        {
+	  max_gcse_regno = max_reg_num ();
+	  alloc_gcse_mem (f);
+	  changed |= one_code_hoisting_pass ();
+	  free_gcse_mem ();
+
+	  if (max_pass_bytes < bytes_used)
+	    max_pass_bytes = bytes_used;
+        }
+
+      if (file)
+	{
+	  fprintf (file, "\n");
+	  fflush (file);
+	}
+
+      obstack_free (&gcse_obstack, gcse_obstack_bottom);
+      pass++;
+    }
+
+  /* Do one last pass of copy propagation, including cprop into
+     conditional jumps.  */
+
+  max_gcse_regno = max_reg_num ();
+  alloc_gcse_mem (f);
+  /* This time, go ahead and allow cprop to alter jumps.  */
+  one_cprop_pass (pass + 1, 1);
+  free_gcse_mem ();
+
+  if (file)
+    {
+      fprintf (file, "GCSE of %s: %d basic blocks, ",
+	       current_function_name, n_basic_blocks);
+      fprintf (file, "%d pass%s, %d bytes\n\n",
+	       pass, pass > 1 ? "es" : "", max_pass_bytes);
+    }
+
+  obstack_free (&gcse_obstack, NULL);
+  free_reg_set_mem ();
+  /* We are finished with alias.  */
+  end_alias_analysis ();
+  allocate_reg_info (max_reg_num (), FALSE, FALSE);
+
+  /* Store motion disabled until it is fixed.  */
+  if (0 && !optimize_size && flag_gcse_sm)
+    store_motion ();
+  /* Record where pseudo-registers are set.  */
+  return run_jump_opt_after_gcse;
+}

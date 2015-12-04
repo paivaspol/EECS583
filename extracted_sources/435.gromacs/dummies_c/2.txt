@@ -1,0 +1,35 @@
+static void move_dummy_f(t_comm_dummies *dummycomm, rvec f[], t_commrec *cr)
+{
+  int i;
+
+  /* package dummy particle forces to send left */
+  for(i=0;i<dummycomm->nprevdum;i++)
+    copy_rvec(f[dummycomm->idxprevdum[i]],prevbuf[i]);
+
+  /* off they go! - but only if there is something to send! */
+  if(dummycomm->nprevdum>0)
+    gmx_tx(cr->left,prevbuf,sizeof(rvec)*dummycomm->nprevdum);
+
+  /* Get our share from the right, if there is anything to have */
+  if(dummycomm->nnextdum>0)
+    gmx_rx(cr->right,nextbuf,sizeof(rvec)*dummycomm->nnextdum);
+  
+  if(dummycomm->nprevdum>0)
+    gmx_tx_wait(cr->left);
+  
+  if(dummycomm->nnextdum>0)
+    gmx_rx_wait(cr->right);
+
+  /* Put them where they belong */
+  for(i=0;i<dummycomm->nnextdum;i++)
+    copy_rvec(nextbuf[i],f[dummycomm->idxnextdum[i]]);
+  
+  /* Zero forces on nonlocal constructing atoms.
+   * This is necessary since dummy force spreading is done
+   * after the normal force addition, and we don't want
+   * to include them twice.
+   * (They have already been added on the home node).
+   */
+  for(i=0;i<dummycomm->nnextconstr;i++)
+    clear_rvec(f[dummycomm->idxnextconstr[i]]);
+}

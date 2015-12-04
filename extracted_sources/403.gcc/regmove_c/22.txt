@@ -1,0 +1,20 @@
+static struct csa_memlist *
+record_one_stack_memref (insn, mem, next_memlist)
+     rtx insn, *mem;
+     struct csa_memlist *next_memlist;
+{
+  struct csa_memlist *ml;
+
+  ml = (struct csa_memlist *) xmalloc (sizeof (*ml));
+
+  if (XEXP (*mem, 0) == stack_pointer_rtx)
+    ml->sp_offset = 0;
+  else
+    ml->sp_offset = INTVAL (XEXP (XEXP (*mem, 0), 1));
+
+  ml->insn = insn;
+  ml->mem = mem;
+  ml->next = next_memlist;
+
+  return ml;
+}

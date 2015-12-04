@@ -1,0 +1,144 @@
+Boolean CompressSpareMBMap(unsigned char **map_sp, Bitstream *bitstream)
+{
+  int j, k;
+  int noc, bit0, bit1, bitc;
+  SyntaxElement sym;
+  int x, y, left, right, bottom, top, directx, directy;
+
+  // this is the size of the uncompressed mb map:
+  int size_uncompressed = (img->height/16) * (img->width/16);
+  int size_compressed   = 0;
+  Boolean ret;
+
+  // initialization
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+  noc = 0;
+  bit0 = 0;
+  bit1 = 1;
+  bitc = bit0;
+
+  // compress the map, the result goes to the temporal bitstream buffer
+  x = ( img->width/16 - 1 ) / 2;
+  y = ( img->height/16 - 1 ) / 2;
+  left = right = x;
+  top = bottom = y;
+  directx = 0;
+  directy = 1;
+  for (j=0; j<img->height/16; j++)
+    for (k=0; k<img->width/16; k++)
+    {
+      // check current mb
+      if ( map_sp[y][x] == bitc ) noc++;
+      else
+      {
+        sym.value1 = noc;
+        size_compressed += writeSyntaxElement2Buf_UVLC(&sym, bitstream);    // the return value indicate the num of bits written
+        noc=0;
+      }
+      // go to the next mb:
+      if ( directx == -1 && directy == 0 )
+      {
+        if (x > left) x--;
+        else if (x == 0)
+        {
+          y = bottom + 1;
+          bottom++;
+          directx = 1;
+          directy = 0;
+        }
+        else if (x == left)
+        {
+          x--;
+          left--;
+          directx = 0;
+          directy = 1;
+        }
+      }
+      else if ( directx == 1 && directy == 0 )
+      {
+        if (x < right) x++;
+        else if (x == img->width/16 - 1)
+        {
+          y = top - 1;
+          top--;
+          directx = -1;
+          directy = 0;
+        }
+        else if (x == right)
+        {
+          x++;
+          right++;
+          directx = 0;
+          directy = -1;
+        }
+      }
+      else if ( directx == 0 && directy == -1 )
+      {
+        if ( y > top) y--;
+        else if (y == 0)
+        {
+          x = left - 1;
+          left--;
+          directx = 0;
+          directy = 1;
+        }
+        else if (y == top)
+        {
+          y--;
+          top--;
+          directx = -1;
+          directy = 0;
+        }
+      }
+      else if ( directx == 0 && directy == 1 )
+      {
+        if (y < bottom) y++;
+        else if (y == img->height/16 - 1)
+        {
+          x = right+1;
+          right++;
+          directx = 0;
+          directy = -1;
+        }
+        else if (y == bottom)
+        {
+          y++;
+          bottom++;
+          directx = 1;
+          directy = 0;
+        }
+      }
+    }
+  if (noc!=0)
+  {
+    sym.value1 = noc;
+    size_compressed += writeSyntaxElement2Buf_UVLC(&sym, bitstream);
+  }
+
+  ret = (size_compressed<size_uncompressed? TRUE : FALSE);
+  if ( !ret ) // overwrite the streambuffer with the original mb map
+  {
+    // write the mb map to payload bit by bit
+    bitstream->byte_buf = 0;
+    bitstream->bits_to_go = 8;
+    bitstream->byte_pos = 0;
+    for (j=0; j<img->height/16; j++)
+    {
+      for (k=0; k<img->width/16; k++)
+      {
+        bitstream->byte_buf <<= 1;
+        if (map_sp[j][k]) bitstream->byte_buf |= 1;
+        bitstream->bits_to_go--;
+        if (bitstream->bits_to_go==0)
+        {
+          bitstream->bits_to_go = 8;
+          bitstream->streamBuffer[bitstream->byte_pos++]=bitstream->byte_buf;
+          bitstream->byte_buf = 0;
+        }
+      }
+    }
+  }
+
+  return ret;
+}

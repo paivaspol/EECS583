@@ -1,0 +1,88 @@
+static int
+inlinable_function_p (fn, id)
+     tree fn;
+     inline_data *id;
+{
+  int inlinable;
+
+  /* If we've already decided this function shouldn't be inlined,
+     there's no need to check again.  */
+  if (DECL_UNINLINABLE (fn))
+    return 0;
+
+  /* Assume it is not inlinable.  */
+  inlinable = 0;
+
+  /* If we're not inlining things, then nothing is inlinable.  */
+  if (! flag_inline_trees)
+    ;
+  /* If we're not inlining all functions and the function was not
+     declared `inline', we don't inline it.  Don't think of
+     disregarding DECL_INLINE when flag_inline_trees == 2; it's the
+     front-end that must set DECL_INLINE in this case, because
+     dwarf2out loses if a function is inlined that doesn't have
+     DECL_INLINE set.  */
+  else if (! DECL_INLINE (fn))
+    ;
+  /* We can't inline functions that are too big.  Only allow a single
+     function to eat up half of our budget.  Make special allowance
+     for extern inline functions, though.  */
+  else if (! (*lang_hooks.tree_inlining.disregard_inline_limits) (fn)
+	   && DECL_NUM_STMTS (fn) * INSNS_PER_STMT > MAX_INLINE_INSNS / 2)
+    ;
+  /* All is well.  We can inline this function.  Traditionally, GCC
+     has refused to inline functions using alloca, or functions whose
+     values are returned in a PARALLEL, and a few other such obscure
+     conditions.  We are not equally constrained at the tree level.  */
+  else
+    inlinable = 1;
+
+  /* Squirrel away the result so that we don't have to check again.  */
+  DECL_UNINLINABLE (fn) = ! inlinable;
+
+  /* Even if this function is not itself too big to inline, it might
+     be that we've done so much inlining already that we don't want to
+     risk too much inlining any more and thus halve the acceptable
+     size.  */
+  if (! (*lang_hooks.tree_inlining.disregard_inline_limits) (fn)
+      && ((DECL_NUM_STMTS (fn) + (id ? id->inlined_stmts : 0)) * INSNS_PER_STMT
+	  > MAX_INLINE_INSNS)
+      && DECL_NUM_STMTS (fn) * INSNS_PER_STMT > MAX_INLINE_INSNS / 4)
+    inlinable = 0;
+
+  if (inlinable && (*lang_hooks.tree_inlining.cannot_inline_tree_fn) (&fn))
+    inlinable = 0;
+  
+  /* If we don't have the function body available, we can't inline
+     it.  */
+  if (! DECL_SAVED_TREE (fn))
+    inlinable = 0;
+
+  /* Check again, language hooks may have modified it.  */
+  if (! inlinable || DECL_UNINLINABLE (fn))
+    return 0;
+
+  /* Don't do recursive inlining, either.  We don't record this in
+     DECL_UNINLINABLE; we may be able to inline this function later.  */
+  if (id)
+    {
+      size_t i;
+
+      for (i = 0; i < VARRAY_ACTIVE_SIZE (id->fns); ++i)
+	if (VARRAY_TREE (id->fns, i) == fn)
+	  return 0;
+
+      if (DECL_INLINED_FNS (fn))
+	{
+	  int j;
+	  tree inlined_fns = DECL_INLINED_FNS (fn);
+
+	  for (j = 0; j < TREE_VEC_LENGTH (inlined_fns); ++j)
+	    if (TREE_VEC_ELT (inlined_fns, j) == VARRAY_TREE (id->fns, 0))
+	      return 0;
+	}
+    }
+
+  /* Return the result.  */
+  return inlinable;
+}

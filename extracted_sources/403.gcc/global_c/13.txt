@@ -1,0 +1,31 @@
+static void
+mark_reg_death (reg)
+     rtx reg;
+{
+  int regno = REGNO (reg);
+
+  /* Either this is one of the max_allocno pseudo regs not allocated,
+     or it is a hardware reg.  First handle the pseudo-regs.  */
+  if (regno >= FIRST_PSEUDO_REGISTER)
+    {
+      if (reg_allocno[regno] >= 0)
+	CLEAR_ALLOCNO_LIVE (reg_allocno[regno]);
+    }
+
+  /* For pseudo reg, see if it has been assigned a hardware reg.  */
+  if (reg_renumber[regno] >= 0)
+    regno = reg_renumber[regno];
+
+  /* Handle hardware regs (and pseudos allocated to hard regs).  */
+  if (regno < FIRST_PSEUDO_REGISTER && ! fixed_regs[regno])
+    {
+      /* Pseudo regs already assigned hardware regs are treated
+	 almost the same as explicit hardware regs.  */
+      int last = regno + HARD_REGNO_NREGS (regno, GET_MODE (reg));
+      while (regno < last)
+	{
+	  CLEAR_HARD_REG_BIT (hard_regs_live, regno);
+	  regno++;
+	}
+    }
+}

@@ -1,0 +1,62 @@
+static SV *retrieve_hash(pTHX_ stcxt_t *cxt, char *cname)
+{
+	I32 len;
+	I32 size;
+	I32 i;
+	HV *hv;
+	SV *sv;
+
+	TRACEME(("retrieve_hash (#%d)", cxt->tagnum));
+
+	/*
+	 * Read length, allocate table.
+	 */
+
+	RLEN(len);
+	TRACEME(("size = %d", len));
+	hv = newHV();
+	SEEN(hv, cname, 0);		/* Will return if table not allocated properly */
+	if (len == 0)
+		return (SV *) hv;	/* No data follow if table empty */
+	hv_ksplit(hv, len);		/* pre-extend hash to save multiple splits */
+
+	/*
+	 * Now get each key/value pair in turn...
+	 */
+
+	for (i = 0; i < len; i++) {
+		/*
+		 * Get value first.
+		 */
+
+		TRACEME(("(#%d) value", i));
+		sv = retrieve(aTHX_ cxt, 0);
+		if (!sv)
+			return (SV *) 0;
+
+		/*
+		 * Get key.
+		 * Since we're reading into kbuf, we must ensure we're not
+		 * recursing between the read and the hv_store() where it's used.
+		 * Hence the key comes after the value.
+		 */
+
+		RLEN(size);						/* Get key size */
+		KBUFCHK((STRLEN)size);					/* Grow hash key read pool if needed */
+		if (size)
+			READ(kbuf, size);
+		kbuf[size] = '\0';				/* Mark string end, just in case */
+		TRACEME(("(#%d) key '%s'", i, kbuf));
+
+		/*
+		 * Enter key/value pair into hash table.
+		 */
+
+		if (hv_store(hv, kbuf, (U32) size, sv, 0) == 0)
+			return (SV *) 0;
+	}
+
+	TRACEME(("ok (retrieve_hash at 0x%"UVxf")", PTR2UV(hv)));
+
+	return (SV *) hv;
+}

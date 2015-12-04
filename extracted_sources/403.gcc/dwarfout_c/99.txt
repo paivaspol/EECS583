@@ -1,0 +1,21 @@
+static void
+output_typedef_die (arg)
+     void *arg;
+{
+  tree decl = arg;
+  tree origin = decl_ultimate_origin (decl);
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_typedef);
+  sibling_attribute ();
+  if (origin != NULL)
+    abstract_origin_attribute (origin);
+  else
+    {
+      name_and_src_coords_attributes (decl);
+      member_attribute (DECL_CONTEXT (decl));
+      type_attribute (TREE_TYPE (decl),
+		      TREE_READONLY (decl), TREE_THIS_VOLATILE (decl));
+    }
+  if (DECL_ABSTRACT (decl))
+    equate_decl_number_to_die_number (decl);
+}

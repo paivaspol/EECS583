@@ -1,0 +1,41 @@
+void pbc_dx(const rvec x1, const rvec x2, rvec dx)
+{
+  int i,j;
+  rvec dx_start,try;
+  real d2min,d2try;
+
+  if (!bInit)
+    fatal_error(0,"pbc_dx called before init_pbc");
+  rvec_sub(x1,x2,dx);
+  if (bSupported) {
+    if (bTriclinic) {
+      for(i=DIM-1; i>=0; i--)
+	if (dx[i] > gl_hbox[i])
+	  for (j=i; j>=0; j--)
+	    dx[j] -= gl_box[i][j];
+	else if (dx[i] <= gl_mhbox[i])
+	  for (j=i; j>=0; j--)
+	    dx[j] += gl_box[i][j];
+      /* dx is the distance in a rectangular box */
+      copy_rvec(dx,dx_start);
+      d2min = norm2(dx);
+      /* now try all possible shifts */
+      i=0;
+      while ((d2min > sure_dist2) && (i < ntric_vec)) {
+	rvec_add(dx_start,tric_vec[i],try);
+	d2try = norm2(try);
+	if (d2try < d2min) {
+	  copy_rvec(try,dx);
+	  d2min = d2try;
+	}
+	i++;
+      }
+    } else {
+      for(i=0; i<DIM; i++)
+	if (dx[i] > gl_hbox[i])
+	  dx[i] -= gl_fbox[i];
+	else if (dx[i] <= gl_mhbox[i])
+	  dx[i] += gl_fbox[i];
+    }
+  }
+}

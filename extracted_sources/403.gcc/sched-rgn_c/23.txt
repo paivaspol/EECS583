@@ -1,0 +1,17 @@
+static int
+is_prisky (load_insn, bb_src, bb_trg)
+     rtx load_insn;
+     int bb_src, bb_trg;
+{
+  if (FED_BY_SPEC_LOAD (load_insn))
+    return 1;
+
+  if (LOG_LINKS (load_insn) == NULL)
+    /* Dependence may 'hide' out of the region.  */
+    return 1;
+
+  if (is_conditionally_protected (load_insn, bb_src, bb_trg))
+    return 1;
+
+  return 0;
+}

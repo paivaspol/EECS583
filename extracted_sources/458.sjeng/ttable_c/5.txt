@@ -1,0 +1,81 @@
+void StoreTT(int score, int alpha, int beta, int best, int threat, int depth)
+{
+  unsigned int ttindex;
+  
+  TTStores++;
+
+  ttindex = hash % TTSize;
+
+  /* Prefer storing entries with more information */
+  if ((      ((int)DP_TTable[ttindex].Depth < depth) 
+        ||  (((int)DP_TTable[ttindex].Depth == depth) && 
+	        (    ((DP_TTable[ttindex].Type == UPPER) && (score > alpha))
+		 ||  ((score > alpha) && (score < beta))
+		)
+	    )
+      )
+      && !is_pondering)
+    {
+      if (score <= alpha)  
+      {
+	DP_TTable[ttindex].Type = UPPER;
+	if (score < -INF+500) score = -INF+500;
+      }
+      else if(score >= beta) 
+      {
+	DP_TTable[ttindex].Type = LOWER;
+	if (score > INF-500) score = INF-500;
+      }
+      else                  
+      {
+	DP_TTable[ttindex].Type = EXACT;
+     
+	/* normalize mate scores */
+       if (score > (INF-500))
+	  score += ply;
+        else if (score < (-INF+500))
+	  score -= ply;
+      }
+      
+      DP_TTable[ttindex].HashKey = hash;
+      DP_TTable[ttindex].Hold_hash = hold_hash;
+      DP_TTable[ttindex].Depth = depth;
+      DP_TTable[ttindex].Bestmove = best;
+      DP_TTable[ttindex].Bound = score;
+      DP_TTable[ttindex].OnMove = ToMove;
+      DP_TTable[ttindex].Threat = threat;
+    }
+  else 
+    {
+      if (score <= alpha)  
+      {
+	AS_TTable[ttindex].Type = UPPER;
+	if (score < -INF+500) score = -INF+500;
+      }
+      else if(score >= beta) 
+      {
+	AS_TTable[ttindex].Type = LOWER;
+	if (score > INF-500) score = INF-500;
+      }
+      else                  
+      {
+	AS_TTable[ttindex].Type = EXACT;
+     
+	/* normalize mate scores */
+       if (score > (INF-500))
+	  score += ply;
+        else if (score < (-INF+500))
+	  score -= ply;
+      }
+      
+      AS_TTable[ttindex].HashKey = hash;
+      AS_TTable[ttindex].Hold_hash = hold_hash;
+      AS_TTable[ttindex].Depth = depth;
+      AS_TTable[ttindex].Bestmove = best;
+      AS_TTable[ttindex].Bound = score;
+      AS_TTable[ttindex].OnMove = ToMove;
+      AS_TTable[ttindex].Threat = threat;
+    };
+  
+  return;
+}

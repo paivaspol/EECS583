@@ -1,0 +1,46 @@
+static void
+validate_value_data (vd)
+     struct value_data *vd;
+{
+  HARD_REG_SET set;
+  unsigned int i, j;
+
+  CLEAR_HARD_REG_SET (set);
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; ++i)
+    if (vd->e[i].oldest_regno == i)
+      {
+	if (vd->e[i].mode == VOIDmode)
+	  {
+	    if (vd->e[i].next_regno != INVALID_REGNUM)
+	      internal_error ("validate_value_data: [%u] Bad next_regno for empty chain (%u)",
+			      i, vd->e[i].next_regno);
+	    continue;
+	  }
+
+	SET_HARD_REG_BIT (set, i);
+
+	for (j = vd->e[i].next_regno;
+	     j != INVALID_REGNUM;
+	     j = vd->e[j].next_regno)
+	  {
+	    if (TEST_HARD_REG_BIT (set, j))
+	      internal_error ("validate_value_data: Loop in regno chain (%u)",
+			      j);
+	    if (vd->e[j].oldest_regno != i)
+	      internal_error ("validate_value_data: [%u] Bad oldest_regno (%u)",
+			      j, vd->e[j].oldest_regno);
+
+	    SET_HARD_REG_BIT (set, j);
+	  }
+      }
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; ++i)
+    if (! TEST_HARD_REG_BIT (set, i)
+	&& (vd->e[i].mode != VOIDmode
+	    || vd->e[i].oldest_regno != i
+	    || vd->e[i].next_regno != INVALID_REGNUM))
+      internal_error ("validate_value_data: [%u] Non-empty reg in chain (%s %u %i)",
+		      i, GET_MODE_NAME (vd->e[i].mode), vd->e[i].oldest_regno,
+		      vd->e[i].next_regno);
+}

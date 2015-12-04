@@ -1,0 +1,55 @@
+int
+Perl_mode_from_discipline(pTHX_ SV *discp)
+{
+    int mode = O_BINARY;
+    if (discp) {
+	STRLEN len;
+	char *s = SvPV(discp,len);
+	while (*s) {
+	    if (*s == ':') {
+		switch (s[1]) {
+		case 'r':
+		    if (s[2] == 'a' && s[3] == 'w'
+			&& (!s[4] || s[4] == ':' || isSPACE(s[4])))
+		    {
+			mode = O_BINARY;
+			s += 4;
+			len -= 4;
+			break;
+		    }
+		    /* FALL THROUGH */
+		case 'c':
+		    if (s[2] == 'r' && s[3] == 'l' && s[4] == 'f'
+			&& (!s[5] || s[5] == ':' || isSPACE(s[5])))
+		    {
+			mode = O_TEXT;
+			s += 5;
+			len -= 5;
+			break;
+		    }
+		    /* FALL THROUGH */
+		default:
+		    goto fail_discipline;
+		}
+	    }
+	    else if (isSPACE(*s)) {
+		++s;
+		--len;
+	    }
+	    else {
+		char *end;
+fail_discipline:
+		end = strchr(s+1, ':');
+		if (!end)
+		    end = s+len;
+#ifndef PERLIO_LAYERS
+		Perl_croak(aTHX_ "IO layers (like '%.*s') unavailable", end-s, s);
+#else
+		len -= end-s;
+		s = end;
+#endif
+	    }
+	}
+    }
+    return mode;
+}

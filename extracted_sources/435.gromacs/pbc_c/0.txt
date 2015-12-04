@@ -1,0 +1,52 @@
+void init_pbc(matrix box)
+{
+  static int nalloc=0;
+  int  i,j,k,d;
+  real diagonal2;
+  rvec try;
+  char *ptr;
+
+  ptr = check_box(box);
+  if (ptr) {
+    fprintf(stderr,   "Warning: %s\n",ptr);
+    pr_rvecs(stderr,0,"         Box",box,DIM);
+    fprintf(stderr,   "         Can not fix pbc.\n");
+    bSupported = FALSE;
+  } else {
+    bSupported = TRUE;
+
+    for(i=0; (i<DIM); i++) {
+      gl_fbox[i]  =  box[i][i];
+      gl_hbox[i]  =  gl_fbox[i]*0.5;
+      gl_mhbox[i] = -gl_hbox[i];
+    }
+    bTriclinic = TRICLINIC(box);
+    if (bTriclinic) {
+      copy_mat(box,gl_box);
+      /* When a 'shifted' distance is within this number, it is the shortest
+       * possible distance of all shifts.
+       */
+      sure_dist2 = 0.25*min(sqr(box[XX][XX]),
+			    min(sqr(box[YY][YY]),sqr(box[ZZ][ZZ])));
+      /* Make shift vectors, assuming the box is not very skewed */
+      diagonal2 = norm2(gl_fbox);
+      ntric_vec = 0;
+      for(i=-2; i<=2; i++)
+	for(j=-2; j<=2; j++)
+	  for(k=-2; k<=2; k++)
+	    if ((i!=0) || (j!=0) || (k!=0)) {
+	      for(d=0; d<DIM; d++)
+		try[d] = i*box[XX][d]+j*box[YY][d]+k*box[ZZ][d];
+	      if (norm2(try) < diagonal2) {
+		if (ntric_vec >= nalloc) {
+		  nalloc+=20;
+		  srenew(tric_vec,nalloc);
+		}
+	      copy_rvec(try,tric_vec[ntric_vec]);
+	      ntric_vec++;
+	      }
+	    }
+    }
+  }
+  bInit   = TRUE;
+}

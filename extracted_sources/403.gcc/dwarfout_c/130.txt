@@ -1,0 +1,52 @@
+static void
+dwarfout_source_line (line, filename)
+     unsigned int line;
+     const char *filename;
+{
+  if (debug_info_level >= DINFO_LEVEL_NORMAL
+      /* We can't emit line number info for functions in separate sections,
+	 because the assembler can't subtract labels in different sections.  */
+      && DECL_SECTION_NAME (current_function_decl) == NULL_TREE)
+    {
+      char label[MAX_ARTIFICIAL_LABEL_BYTES];
+      static unsigned last_line_entry_num = 0;
+      static unsigned prev_file_entry_num = (unsigned) -1;
+      unsigned this_file_entry_num;
+
+      function_section (current_function_decl);
+      sprintf (label, LINE_CODE_LABEL_FMT, ++last_line_entry_num);
+      ASM_OUTPUT_LABEL (asm_out_file, label);
+
+      fputc ('\n', asm_out_file);
+
+      if (use_gnu_debug_info_extensions)
+	this_file_entry_num = lookup_filename (filename);
+      else
+	this_file_entry_num = (unsigned) -1;
+
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, LINE_SECTION);
+      if (this_file_entry_num != prev_file_entry_num)
+        {
+          char line_entry_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+          sprintf (line_entry_label, LINE_ENTRY_LABEL_FMT, last_line_entry_num);
+          ASM_OUTPUT_LABEL (asm_out_file, line_entry_label);
+        }
+
+      {
+        const char *tail = strrchr (filename, '/');
+
+        if (tail != NULL)
+          filename = tail;
+      }
+
+      dw2_asm_output_data (4, line, "%s:%u", filename, line);
+      ASM_OUTPUT_DWARF_DATA2 (asm_out_file, 0xffff);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, label, TEXT_BEGIN_LABEL);
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+      if (this_file_entry_num != prev_file_entry_num)
+        generate_srcinfo_entry (last_line_entry_num, this_file_entry_num);
+      prev_file_entry_num = this_file_entry_num;
+    }
+}

@@ -1,0 +1,21 @@
+int
+ix86_frame_pointer_required ()
+{
+  /* If we accessed previous frames, then the generated code expects
+     to be able to access the saved ebp value in our frame.  */
+  if (cfun->machine->accesses_prev_frame)
+    return 1;
+
+  /* Several x86 os'es need a frame pointer for other reasons,
+     usually pertaining to setjmp.  */
+  if (SUBTARGET_FRAME_POINTER_REQUIRED)
+    return 1;
+
+  /* In override_options, TARGET_OMIT_LEAF_FRAME_POINTER turns off
+     the frame pointer by default.  Turn it back on now if we've not
+     got a leaf function.  */
+  if (TARGET_OMIT_LEAF_FRAME_POINTER && ! leaf_function_p ())
+    return 1;
+
+  return 0;
+}

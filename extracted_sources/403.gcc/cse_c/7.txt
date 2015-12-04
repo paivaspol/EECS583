@@ -1,0 +1,44 @@
+static struct cse_reg_info *
+get_cse_reg_info (regno)
+     unsigned int regno;
+{
+  struct cse_reg_info **hash_head = &reg_hash[REGHASH_FN (regno)];
+  struct cse_reg_info *p;
+
+  for (p = *hash_head; p != NULL; p = p->hash_next)
+    if (p->regno == regno)
+      break;
+
+  if (p == NULL)
+    {
+      /* Get a new cse_reg_info structure.  */
+      if (cse_reg_info_free_list)
+	{
+	  p = cse_reg_info_free_list;
+	  cse_reg_info_free_list = p->next;
+	}
+      else
+	p = (struct cse_reg_info *) xmalloc (sizeof (struct cse_reg_info));
+
+      /* Insert into hash table.  */
+      p->hash_next = *hash_head;
+      *hash_head = p;
+
+      /* Initialize it.  */
+      p->reg_tick = 1;
+      p->reg_in_table = -1;
+      p->reg_qty = regno;
+      p->regno = regno;
+      p->next = cse_reg_info_used_list;
+      cse_reg_info_used_list = p;
+      if (!cse_reg_info_used_list_end)
+	cse_reg_info_used_list_end = p;
+    }
+
+  /* Cache this lookup; we tend to be looking up information about the
+     same register several times in a row.  */
+  cached_regno = regno;
+  cached_cse_reg_info = p;
+
+  return p;
+}

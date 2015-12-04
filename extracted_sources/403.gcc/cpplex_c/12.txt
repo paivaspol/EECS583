@@ -1,0 +1,53 @@
+static cpp_hashnode *
+parse_identifier_slow (pfile, cur)
+     cpp_reader *pfile;
+     const U_CHAR *cur;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  const U_CHAR *base = buffer->cur - 1;
+  struct obstack *stack = &pfile->hash_table->stack;
+  unsigned int c, saw_dollar = 0, len;
+
+  /* Copy the part of the token which is known to be okay.  */
+  obstack_grow (stack, base, cur - base);
+
+  /* Now process the part which isn't.  We are looking at one of
+     '$', '\\', or '?' on entry to this loop.  */
+  c = *cur++;
+  buffer->cur = cur;
+  do
+    {
+      while (is_idchar (c))
+        {
+          obstack_1grow (stack, c);
+
+          if (c == '$')
+            saw_dollar++;
+
+          c = *buffer->cur++;
+        }
+
+      /* Potential escaped newline?  */
+      buffer->backup_to = buffer->cur - 1;
+      if (c != '?' && c != '\\')
+        break;
+      c = skip_escaped_newlines (pfile);
+    }
+  while (is_idchar (c));
+
+  /* Step back over the unwanted char.  */
+  BACKUP ();
+
+  /* $ is not an identifier character in the standard, but is commonly
+     accepted as an extension.  Don't warn about it in skipped
+     conditional blocks.  */
+  if (saw_dollar && CPP_PEDANTIC (pfile) && ! pfile->state.skipping)
+    cpp_pedwarn (pfile, "'$' character(s) in identifier");
+
+  /* Identifiers are null-terminated.  */
+  len = obstack_object_size (stack);
+  obstack_1grow (stack, '\0');
+
+  return (cpp_hashnode *)
+    ht_lookup (pfile->hash_table, obstack_finish (stack), len, HT_ALLOCED);
+}

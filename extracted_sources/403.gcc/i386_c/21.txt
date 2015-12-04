@@ -1,0 +1,42 @@
+int
+ix86_return_pops_args (fundecl, funtype, size)
+     tree fundecl;
+     tree funtype;
+     int size;
+{
+  int rtd = TARGET_RTD && (!fundecl || TREE_CODE (fundecl) != IDENTIFIER_NODE);
+
+    /* Cdecl functions override -mrtd, and never pop the stack.  */
+  if (! lookup_attribute ("cdecl", TYPE_ATTRIBUTES (funtype))) {
+
+    /* Stdcall functions will pop the stack if not variable args.  */
+    if (lookup_attribute ("stdcall", TYPE_ATTRIBUTES (funtype)))
+      rtd = 1;
+
+    if (rtd
+        && (TYPE_ARG_TYPES (funtype) == NULL_TREE
+	    || (TREE_VALUE (tree_last (TYPE_ARG_TYPES (funtype)))
+		== void_type_node)))
+      return size;
+  }
+
+  /* Lose any fake structure return argument if it is passed on the stack.  */
+  if (aggregate_value_p (TREE_TYPE (funtype))
+      && !TARGET_64BIT)
+    {
+      int nregs = ix86_regparm;
+
+      if (funtype)
+	{
+	  tree attr = lookup_attribute ("regparm", TYPE_ATTRIBUTES (funtype));
+
+	  if (attr)
+	    nregs = TREE_INT_CST_LOW (TREE_VALUE (TREE_VALUE (attr)));
+	}
+
+      if (!nregs)
+	return GET_MODE_SIZE (Pmode);
+    }
+
+  return 0;
+}

@@ -1,0 +1,73 @@
+static int
+insert_loop_mem (mem, data)
+     rtx *mem;
+     void *data ATTRIBUTE_UNUSED;
+{
+  struct loop_info *loop_info = data;
+  int i;
+  rtx m = *mem;
+
+  if (m == NULL_RTX)
+    return 0;
+
+  switch (GET_CODE (m))
+    {
+    case MEM:
+      break;
+
+    case CLOBBER:
+      /* We're not interested in MEMs that are only clobbered.  */
+      return -1;
+
+    case CONST_DOUBLE:
+      /* We're not interested in the MEM associated with a
+	 CONST_DOUBLE, so there's no need to traverse into this.  */
+      return -1;
+
+    case EXPR_LIST:
+      /* We're not interested in any MEMs that only appear in notes.  */
+      return -1;
+
+    default:
+      /* This is not a MEM.  */
+      return 0;
+    }
+
+  /* See if we've already seen this MEM.  */
+  for (i = 0; i < loop_info->mems_idx; ++i)
+    if (rtx_equal_p (m, loop_info->mems[i].mem))
+      {
+	if (GET_MODE (m) != GET_MODE (loop_info->mems[i].mem))
+	  /* The modes of the two memory accesses are different.  If
+	     this happens, something tricky is going on, and we just
+	     don't optimize accesses to this MEM.  */
+	  loop_info->mems[i].optimize = 0;
+
+	return 0;
+      }
+
+  /* Resize the array, if necessary.  */
+  if (loop_info->mems_idx == loop_info->mems_allocated)
+    {
+      if (loop_info->mems_allocated != 0)
+	loop_info->mems_allocated *= 2;
+      else
+	loop_info->mems_allocated = 32;
+
+      loop_info->mems = (loop_mem_info *)
+	xrealloc (loop_info->mems,
+		  loop_info->mems_allocated * sizeof (loop_mem_info));
+    }
+
+  /* Actually insert the MEM.  */
+  loop_info->mems[loop_info->mems_idx].mem = m;
+  /* We can't hoist this MEM out of the loop if it's a BLKmode MEM
+     because we can't put it in a register.  We still store it in the
+     table, though, so that if we see the same address later, but in a
+     non-BLK mode, we'll not think we can optimize it at that point.  */
+  loop_info->mems[loop_info->mems_idx].optimize = (GET_MODE (m) != BLKmode);
+  loop_info->mems[loop_info->mems_idx].reg = NULL_RTX;
+  ++loop_info->mems_idx;
+
+  return 0;
+}

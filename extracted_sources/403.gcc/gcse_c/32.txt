@@ -1,0 +1,16 @@
+static void
+record_last_reg_set_info (insn, regno)
+     rtx insn;
+     int regno;
+{
+  struct reg_avail_info *info = &reg_avail_info[regno];
+  int cuid = INSN_CUID (insn);
+
+  info->last_set = cuid;
+  if (info->last_bb != current_bb)
+    {
+      info->last_bb = current_bb;
+      info->first_set = cuid;
+      SET_BIT (reg_set_in_block[current_bb], regno);
+    }
+}

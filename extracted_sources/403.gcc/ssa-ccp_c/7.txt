@@ -1,0 +1,74 @@
+static void
+ssa_ccp_substitute_constants ()
+{
+  unsigned int i;
+
+  for (i = FIRST_PSEUDO_REGISTER; i < VARRAY_SIZE (ssa_definition); i++)
+    {
+      if (values[i].lattice_val == CONSTANT)
+	{
+	  rtx def = VARRAY_RTX (ssa_definition, i);
+	  rtx set = single_set (def);
+	  struct df_link *curruse;
+
+	  if (! set)
+	    continue;
+
+	  /* Do not try to simplify PHI nodes down to a constant load.
+	     That will be done later as we translate out of SSA.  Also,
+	     doing that here could violate the rule that all PHI nodes
+	     are consecutive at the start of the basic block.
+
+	     Don't do anything to nodes that were already sets to
+	     constants.	 */
+	  if (! PHI_NODE_P (def)
+	      && ! ((GET_CODE (def) == INSN
+		     && GET_CODE (SET_SRC (set)) == CONST_INT)))
+	    {
+	      if (rtl_dump_file)
+		fprintf (rtl_dump_file,
+			 "Register %d is now set to a constant\n",
+			 SSA_NAME (PATTERN (def)));
+	      SET_SRC (set) = values[i].const_value;
+	      INSN_CODE (def) = -1;
+	      df_insn_modify (df_analyzer, BLOCK_FOR_INSN (def), def);
+	    }
+
+	  /* Iterate through all the uses of this entry and try replacements
+	     there too.  Note it is not particularly profitable to try
+	     and fold/simplify expressions here as most of the common
+	     cases were handled above.  */
+	  for (curruse = df_analyzer->regs[i].uses;
+	       curruse;
+	       curruse = curruse->next)
+	    {
+	      rtx useinsn;
+
+	      useinsn = DF_REF_INSN (curruse->ref);
+
+	      if (!INSN_DELETED_P (useinsn)
+		  && ! (GET_CODE (useinsn) == NOTE
+			&& NOTE_LINE_NUMBER (useinsn) == NOTE_INSN_DELETED)
+		  && (GET_CODE (useinsn) == INSN
+		      || GET_CODE (useinsn) == JUMP_INSN))
+		{
+		  
+		  if (validate_replace_src (regno_reg_rtx [i],
+					values[i].const_value,
+					    useinsn))
+		    {
+		      if (rtl_dump_file)
+			fprintf (rtl_dump_file, 
+				 "Register %d in insn %d replaced with constant\n",
+				 i, INSN_UID (useinsn));
+		      INSN_CODE (useinsn) = -1;
+		      df_insn_modify (df_analyzer,
+				      BLOCK_FOR_INSN (useinsn),
+				      useinsn);
+		    }
+		  
+		}
+	    }
+	}
+    }
+}

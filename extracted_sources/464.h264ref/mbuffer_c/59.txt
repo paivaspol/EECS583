@@ -1,0 +1,51 @@
+void free_colocated(ColocatedParams* p)
+{
+  if (p)
+  {
+    free_mem3Dshort (p->ref_idx, 2);
+    free_mem3Dint64 (p->ref_pic_id, 2);
+    free_mem4Dshort (p->mv, 2, p->size_x / BLOCK_SIZE);
+
+    if (p->moving_block)
+    {
+      free_mem2D (p->moving_block);
+      p->moving_block=NULL;
+    }
+    if (p->field_frame)
+    {
+      free_mem2D (p->field_frame);
+      p->field_frame=NULL;
+    }
+
+    
+    if (p->mb_adaptive_frame_field_flag)
+    {
+      free_mem3Dshort (p->top_ref_idx, 2);
+      free_mem3Dint64 (p->top_ref_pic_id, 2);
+      free_mem4Dshort (p->top_mv, 2, p->size_x / BLOCK_SIZE);
+      
+      
+      if (p->top_moving_block)
+      {
+        free_mem2D (p->top_moving_block);
+        p->top_moving_block=NULL;
+      }
+      
+      free_mem3Dshort (p->bottom_ref_idx, 2);
+      free_mem3Dint64 (p->bottom_ref_pic_id, 2);
+      free_mem4Dshort (p->bottom_mv, 2, p->size_x / BLOCK_SIZE);
+      
+      
+      if (p->bottom_moving_block)
+      {
+        free_mem2D (p->bottom_moving_block);
+        p->bottom_moving_block=NULL;
+      }    
+      
+    }
+
+    free(p);
+
+    p=NULL;
+  }
+}

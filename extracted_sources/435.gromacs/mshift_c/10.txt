@@ -1,0 +1,80 @@
+void mk_mshift(FILE *log,t_graph *g,matrix box,rvec x[])
+{
+  int    ng,nnodes,i;
+  int    nW,nG,nB;		/* Number of Grey, Black, White	*/
+  int    fW,fG;			/* First of each category	*/
+  int    nerror=0;
+  static int   negc=0;
+  static egCol *egc=NULL;	/* The colour of each node	*/
+
+  /* This puts everything in the central box, that is does not move it 
+   * at all. If we return without doing this for a system without bonds
+   * (i.e. only settles) all water molecules are moved to the opposite octant
+   */
+  for(i=0; (i<g->nnodes); i++) {
+      g->ishift[i][XX]=g->ishift[i][YY]=g->ishift[i][ZZ]=0;
+  }
+    
+  if (!g->nbound)
+    return;
+
+  nnodes=g->nnodes;
+  if (nnodes > negc) {
+    negc = nnodes;
+    srenew(egc,negc);
+  }
+  memset(egc,0,(size_t)(nnodes*sizeof(egc[0])));
+
+  nW=g->nbound;
+  nG=0;
+  nB=0;
+
+  fW=0;
+
+  /* We even have a loop invariant:
+   * nW+nG+nB == g->nbound
+   */
+#ifdef DEBUG2
+  fprintf(log,"Starting W loop\n");
+#endif
+  while (nW > 0) {
+    /* Find the first white, this will allways be a larger
+     * number than before, because no nodes are made white
+     * in the loop
+     */
+    if ((fW=first_colour(fW,egcolWhite,g,egc)) == -1) 
+      fatal_error(0,"No WHITE nodes found while nW=%d\n",nW);
+    
+    /* Make the first white node grey */
+    egc[fW]=egcolGrey;
+    nG++;
+    nW--;
+
+    /* Initial value for the first grey */
+    fG=fW;
+#ifdef DEBUG2
+    fprintf(log,"Starting G loop (nW=%d, nG=%d, nB=%d, total %d)\n",
+	    nW,nG,nB,nW+nG+nB);
+#endif
+    while (nG > 0) {
+      if ((fG=first_colour(fG,egcolGrey,g,egc)) == -1)
+	fatal_error(0,"No GREY nodes found while nG=%d\n",nG);
+      
+      /* Make the first grey node black */
+      egc[fG]=egcolBlack;
+      nB++;
+      nG--;
+
+      /* Make all the neighbours of this black node grey
+       * and set their periodicity 
+       */
+      ng=mk_grey(log,nnodes,egc,g,&fG,box,x,&nerror);
+      /* ng is the number of white nodes made grey */
+      nG+=ng;
+      nW-=ng;
+    }
+  }
+  if (nerror > 0 && log)
+    fprintf(log,"There were %d inconsistent shifts. Check your topology\n",
+	    nerror);
+}

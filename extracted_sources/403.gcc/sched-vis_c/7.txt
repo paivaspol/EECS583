@@ -1,0 +1,116 @@
+static void
+print_pattern (buf, x, verbose)
+     char *buf;
+     rtx x;
+     int verbose;
+{
+  char t1[BUF_LEN], t2[BUF_LEN], t3[BUF_LEN];
+
+  switch (GET_CODE (x))
+    {
+    case SET:
+      print_value (t1, SET_DEST (x), verbose);
+      print_value (t2, SET_SRC (x), verbose);
+      sprintf (buf, "%s=%s", t1, t2);
+      break;
+    case RETURN:
+      sprintf (buf, "return");
+      break;
+    case CALL:
+      print_exp (buf, x, verbose);
+      break;
+    case CLOBBER:
+      print_value (t1, XEXP (x, 0), verbose);
+      sprintf (buf, "clobber %s", t1);
+      break;
+    case USE:
+      print_value (t1, XEXP (x, 0), verbose);
+      sprintf (buf, "use %s", t1);
+      break;
+    case COND_EXEC:
+      if (GET_CODE (COND_EXEC_TEST (x)) == NE
+	  && XEXP (COND_EXEC_TEST (x), 1) == const0_rtx)
+	print_value (t1, XEXP (COND_EXEC_TEST (x), 0), verbose);
+      else if (GET_CODE (COND_EXEC_TEST (x)) == EQ
+               && XEXP (COND_EXEC_TEST (x), 1) == const0_rtx)
+        {
+	  t1[0] = '!';
+	  print_value (t1 + 1, XEXP (COND_EXEC_TEST (x), 0), verbose);
+	}
+      else
+        print_value (t1, COND_EXEC_TEST (x), verbose);
+      print_pattern (t2, COND_EXEC_CODE (x), verbose);
+      sprintf (buf, "(%s) %s", t1, t2);
+      break;
+    case PARALLEL:
+      {
+	int i;
+
+	sprintf (t1, "{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s}", t1);
+      }
+      break;
+    case SEQUENCE:
+      {
+	int i;
+
+	sprintf (t1, "%%{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_insn (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s%%}", t1);
+      }
+      break;
+    case ASM_INPUT:
+      sprintf (buf, "asm {%s}", XSTR (x, 0));
+      break;
+    case ADDR_VEC:
+      break;
+    case ADDR_DIFF_VEC:
+      print_value (buf, XEXP (x, 0), verbose);
+      break;
+    case TRAP_IF:
+      print_value (t1, TRAP_CONDITION (x), verbose);
+      sprintf (buf, "trap_if %s", t1);
+      break;
+    case UNSPEC:
+      {
+	int i;
+
+	sprintf (t1, "unspec{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s}", t1);
+      }
+      break;
+    case UNSPEC_VOLATILE:
+      {
+	int i;
+
+	sprintf (t1, "unspec/v{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s}", t1);
+      }
+      break;
+    default:
+      print_value (buf, x, verbose);
+    }
+}				/* print_pattern */

@@ -1,0 +1,45 @@
+static void
+output_global_subroutine_die (arg)
+     void *arg;
+{
+  tree decl = arg;
+  tree origin = decl_ultimate_origin (decl);
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_global_subroutine);
+  sibling_attribute ();
+  dienum_push ();
+  if (origin != NULL)
+    abstract_origin_attribute (origin);
+  else
+    {
+      tree type = TREE_TYPE (decl);
+
+      name_and_src_coords_attributes (decl);
+      inline_attribute (decl);
+      prototyped_attribute (type);
+      member_attribute (DECL_CONTEXT (decl));
+      type_attribute (TREE_TYPE (type), 0, 0);
+      pure_or_virtual_attribute (decl);
+    }
+  if (DECL_ABSTRACT (decl))
+    equate_decl_number_to_die_number (decl);
+  else
+    {
+      if (! DECL_EXTERNAL (decl) && ! in_class
+	  && decl == current_function_decl)
+	{
+	  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+	  low_pc_attribute (function_start_label (decl));
+	  sprintf (label, FUNC_END_LABEL_FMT, current_funcdef_number);
+	  high_pc_attribute (label);
+	  if (use_gnu_debug_info_extensions)
+	    {
+	      sprintf (label, BODY_BEGIN_LABEL_FMT, current_funcdef_number);
+	      body_begin_attribute (label);
+	      sprintf (label, BODY_END_LABEL_FMT, current_funcdef_number);
+	      body_end_attribute (label);
+	    }
+	}
+    }
+}

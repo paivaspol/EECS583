@@ -1,0 +1,13 @@
+void *
+Perl_ptr_table_fetch(pTHX_ PTR_TBL_t *tbl, void *sv)
+{
+    PTR_TBL_ENT_t *tblent;
+    UV hash = PTR_TABLE_HASH(sv);
+    assert(tbl);
+    tblent = tbl->tbl_ary[hash & tbl->tbl_max];
+    for (; tblent; tblent = tblent->next) {
+	if (tblent->oldval == sv)
+	    return tblent->newval;
+    }
+    return (void*)NULL;
+}

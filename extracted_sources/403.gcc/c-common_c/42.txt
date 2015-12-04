@@ -1,0 +1,31 @@
+static int
+is_valid_printf_arglist (arglist)
+     tree arglist;
+{
+  /* Save this value so we can restore it later.  */
+  const int SAVE_pedantic = pedantic;
+  int diagnostic_occurred = 0;
+  tree attrs;
+
+  /* Set this to a known value so the user setting won't affect code
+     generation.  */
+  pedantic = 1;
+  /* Check to make sure there are no format specifier errors.  */
+  attrs = tree_cons (get_identifier ("format"),
+		     tree_cons (NULL_TREE,
+				get_identifier ("printf"),
+				tree_cons (NULL_TREE,
+					   integer_one_node,
+					   tree_cons (NULL_TREE,
+						      build_int_2 (2, 0),
+						      NULL_TREE))),
+		     NULL_TREE);
+  check_function_format (&diagnostic_occurred, attrs, arglist);
+
+  /* Restore the value of `pedantic'.  */
+  pedantic = SAVE_pedantic;
+
+  /* If calling `check_function_format_ptr' produces a warning, we
+     return false, otherwise we return true.  */
+  return ! diagnostic_occurred;
+}

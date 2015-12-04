@@ -1,0 +1,61 @@
+static void
+do_tablejump (index, mode, range, table_label, default_label)
+     rtx index, range, table_label, default_label;
+     enum machine_mode mode;
+{
+  rtx temp, vector;
+
+  /* Do an unsigned comparison (in the proper mode) between the index
+     expression and the value which represents the length of the range.
+     Since we just finished subtracting the lower bound of the range
+     from the index expression, this comparison allows us to simultaneously
+     check that the original index expression value is both greater than
+     or equal to the minimum value of the range and less than or equal to
+     the maximum value of the range.  */
+
+  emit_cmp_and_jump_insns (index, range, GTU, NULL_RTX, mode, 1,
+			   default_label);
+
+  /* If index is in range, it must fit in Pmode.
+     Convert to Pmode so we can index with it.  */
+  if (mode != Pmode)
+    index = convert_to_mode (Pmode, index, 1);
+
+  /* Don't let a MEM slip thru, because then INDEX that comes
+     out of PIC_CASE_VECTOR_ADDRESS won't be a valid address,
+     and break_out_memory_refs will go to work on it and mess it up.  */
+#ifdef PIC_CASE_VECTOR_ADDRESS
+  if (flag_pic && GET_CODE (index) != REG)
+    index = copy_to_mode_reg (Pmode, index);
+#endif
+
+  /* If flag_force_addr were to affect this address
+     it could interfere with the tricky assumptions made
+     about addresses that contain label-refs,
+     which may be valid only very near the tablejump itself.  */
+  /* ??? The only correct use of CASE_VECTOR_MODE is the one inside the
+     GET_MODE_SIZE, because this indicates how large insns are.  The other
+     uses should all be Pmode, because they are addresses.  This code
+     could fail if addresses and insns are not the same size.  */
+  index = gen_rtx_PLUS (Pmode,
+			gen_rtx_MULT (Pmode, index,
+				      GEN_INT (GET_MODE_SIZE (CASE_VECTOR_MODE))),
+			gen_rtx_LABEL_REF (Pmode, table_label));
+#ifdef PIC_CASE_VECTOR_ADDRESS
+  if (flag_pic)
+    index = PIC_CASE_VECTOR_ADDRESS (index);
+  else
+#endif
+    index = memory_address_noforce (CASE_VECTOR_MODE, index);
+  temp = gen_reg_rtx (CASE_VECTOR_MODE);
+  vector = gen_rtx_MEM (CASE_VECTOR_MODE, index);
+  RTX_UNCHANGING_P (vector) = 1;
+  convert_move (temp, vector, 0);
+
+  emit_jump_insn (gen_tablejump (temp, table_label));
+
+  /* If we are generating PIC code or if the table is PC-relative, the
+     table and JUMP_INSN must be adjacent, so don't output a BARRIER.  */
+  if (! CASE_VECTOR_PC_RELATIVE && ! flag_pic)
+    emit_barrier ();
+}

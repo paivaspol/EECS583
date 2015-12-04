@@ -1,0 +1,72 @@
+void kb_setlm(char* lmname,kb_t* kb)
+{
+  lmset_t* lms;
+  kbcore_t* kbc=NULL;
+  int i;
+  int j;
+  int n;
+  /*  s3wid_t dictid;*/
+
+  kbc=kb->kbcore;
+  lms=kbc->lmset;
+
+  E_INFO("Inside kb_setlm\n");
+  kbc->lm=NULL;
+  for(j=0;j<kb->n_lextree;j++){
+    kb->ugtree[j]=NULL;
+  }
+
+  E_INFO("Inside kb_setlm\n");
+  if(lms!=NULL || cmd_ln_str("-lmctlfn")){
+    for(i=0;i<kbc->n_lm;i++){
+      if(!strcmp(lmname,lms[i].name)){
+	/* Point the current lm to a particular lm */
+	kbc->lm=lms[i].lm;
+
+	for(j=0;j<kb->n_lextree;j++){
+	  kb->ugtree[j]=kb->ugtreeMulti[i*kb->n_lextree+j];
+	}
+
+	break;
+      }
+    }
+    if(kbc->lm==NULL){
+      E_ERROR("LM name %s cannot be found! Fall back to use base LM model\n",lmname);
+      kbc->lm=lms[0].lm;
+      for(j=0;j<kb->n_lextree;j++){
+	kb->ugtree[j]=kb->ugtreeMulti[j];
+      }
+    }
+  }
+
+  E_INFO("Current LM name %s.\n",lms[i].name);
+  /*  if((kb->vithist->lms2vh_root=
+     (vh_lms2vh_t**)ckd_realloc(kb->vithist->lms2vh_root,
+				lm_n_ug(kbc->lm)*sizeof(vh_lms2vh_t *)
+				))==NULL) 
+    {
+      E_FATAL("failed to allocate memory for vithist\n");
+      }*/
+
+
+  n = ((kb->ugtree[0]->n_node) + (kb->fillertree[0]->n_node)) * kb->n_lextree;
+  n /= kb->hmm_hist_binsize;
+  kb->hmm_hist_bins = n+1;
+  kb->hmm_hist = (int32 *) ckd_realloc (kb->hmm_hist,(n+1)*sizeof(int32));	/* Really no need for +1 */
+
+  E_INFO("Current LM name %s\n",lms[i].name);
+  E_INFO("LM ug size %d\n",kbc->lm->n_ug);
+  E_INFO("LM bg size %d\n",kbc->lm->n_bg);
+  E_INFO("LM tg size %d\n",kbc->lm->n_tg);
+  E_INFO("HMM history bin size %d\n", n+1);
+
+  for(j=0;j<kb->n_lextree;j++){
+    E_INFO("Lextrees(%d), %d nodes(ug)\n",
+	   kb->n_lextree, lextree_n_node(kb->ugtree[j]));
+  }
+
+  /*  for (n = 0; n < dict_size(kbcore_dict(kbc)); n++){
+    E_INFO("Index %d, map %d word %s\n",n,kbc->lm->dict2lmwid[n],dict_wordstr(kbcore_dict(kbc),n));
+    }*/
+
+}

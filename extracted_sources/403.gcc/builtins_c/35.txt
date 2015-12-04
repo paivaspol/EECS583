@@ -1,0 +1,31 @@
+static rtx
+expand_builtin_bzero (exp)
+     tree exp;
+{
+  tree arglist = TREE_OPERAND (exp, 1);
+  tree dest, size, newarglist;
+  rtx result;
+
+  if (!validate_arglist (arglist, POINTER_TYPE, INTEGER_TYPE, VOID_TYPE))
+    return NULL_RTX;
+
+  dest = TREE_VALUE (arglist);
+  size = TREE_VALUE (TREE_CHAIN (arglist));
+
+  /* New argument list transforming bzero(ptr x, int y) to
+     memset(ptr x, int 0, size_t y).   This is done this way
+     so that if it isn't expanded inline, we fallback to
+     calling bzero instead of memset.  */
+
+  newarglist = build_tree_list (NULL_TREE, convert (sizetype, size));
+  newarglist = tree_cons (NULL_TREE, integer_zero_node, newarglist);
+  newarglist = tree_cons (NULL_TREE, dest, newarglist);
+
+  TREE_OPERAND (exp, 1) = newarglist;
+  result = expand_builtin_memset (exp, const0_rtx, VOIDmode);
+
+  /* Always restore the original arguments.  */
+  TREE_OPERAND (exp, 1) = arglist;
+
+  return result;
+}

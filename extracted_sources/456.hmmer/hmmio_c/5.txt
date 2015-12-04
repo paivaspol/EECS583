@@ -1,0 +1,94 @@
+void
+WriteAscHMM(FILE *fp, struct plan7_s *hmm)
+{
+  int k;                        /* counter for nodes             */
+  int x;                        /* counter for symbols           */
+  int ts;			/* counter for state transitions */
+
+  fprintf(fp, "HMMER2.0  [%s]\n", PACKAGE_VERSION);  /* magic header */
+
+  /* write header information
+   */
+  fprintf(fp, "NAME  %s\n", hmm->name);
+  if (hmm->flags & PLAN7_ACC)
+    fprintf(fp, "ACC   %s\n", hmm->acc);
+  if (hmm->flags & PLAN7_DESC) 
+    fprintf(fp, "DESC  %s\n", hmm->desc);
+  fprintf(fp, "LENG  %d\n", hmm->M);
+  fprintf(fp, "ALPH  %s\n",   
+	  (Alphabet_type == hmmAMINO) ? "Amino":"Nucleic");
+  fprintf(fp, "RF    %s\n", (hmm->flags & PLAN7_RF)  ? "yes" : "no");
+  fprintf(fp, "CS    %s\n", (hmm->flags & PLAN7_CS)  ? "yes" : "no");
+  fprintf(fp, "MAP   %s\n", (hmm->flags & PLAN7_MAP) ? "yes" : "no");
+  multiline(fp, "COM   ", hmm->comlog);
+  fprintf(fp, "NSEQ  %d\n", hmm->nseq);
+  fprintf(fp, "DATE  %s\n", hmm->ctime); 
+  fprintf(fp, "CKSUM %d\n", hmm->checksum);
+  if (hmm->flags & PLAN7_GA)
+    fprintf(fp, "GA    %.1f %.1f\n", hmm->ga1, hmm->ga2);
+  if (hmm->flags & PLAN7_TC)
+    fprintf(fp, "TC    %.1f %.1f\n", hmm->tc1, hmm->tc2);
+  if (hmm->flags & PLAN7_NC)
+    fprintf(fp, "NC    %.1f %.1f\n", hmm->nc1, hmm->nc2);
+
+  /* Specials
+   */
+  fputs("XT     ", fp);
+  for (k = 0; k < 4; k++)
+    for (x = 0; x < 2; x++)
+      fprintf(fp, "%6s ", prob2ascii(hmm->xt[k][x], 1.0));
+  fputs("\n", fp);
+
+  /* Save the null model first, so HMM readers can decode
+   * log odds scores on the fly. Save as log odds probabilities
+   * relative to 1/Alphabet_size (flat distribution)
+   */
+  fprintf(fp, "NULT  ");
+  fprintf(fp, "%6s ", prob2ascii(hmm->p1, 1.0)); /* p1 */
+  fprintf(fp, "%6s\n", prob2ascii(1.0-hmm->p1, 1.0));   /* p2 */
+  fputs("NULE  ", fp);
+  for (x = 0; x < Alphabet_size; x++)
+    fprintf(fp, "%6s ", prob2ascii(hmm->null[x], 1/(float)(Alphabet_size)));
+  fputs("\n", fp);
+
+  /* EVD statistics
+   */
+  if (hmm->flags & PLAN7_STATS) 
+    fprintf(fp, "EVD   %10f %10f\n", hmm->mu, hmm->lambda);
+  
+  /* Print header
+   */
+  fprintf(fp, "HMM      ");
+  for (x = 0; x < Alphabet_size; x++) fprintf(fp, "  %c    ", Alphabet[x]);
+  fprintf(fp, "\n");
+  fprintf(fp, "       %6s %6s %6s %6s %6s %6s %6s %6s %6s\n",
+          "m->m", "m->i", "m->d", "i->m", "i->i", "d->m", "d->d", "b->m", "m->e");
+
+  /* Print HMM parameters (main section of the save file)
+   */
+  fprintf(fp, "       %6s %6s ", prob2ascii(1-hmm->tbd1, 1.0), "*");
+  fprintf(fp, "%6s\n", prob2ascii(hmm->tbd1, 1.0));
+  for (k = 1; k <= hmm->M; k++)
+    {
+				/* Line 1: k, match emissions, map */
+      fprintf(fp, " %5d ", k);
+      for (x = 0; x < Alphabet_size; x++) 
+        fprintf(fp, "%6s ", prob2ascii(hmm->mat[k][x], hmm->null[x]));
+      if (hmm->flags & PLAN7_MAP) fprintf(fp, "%5d", hmm->map[k]);
+      fputs("\n", fp);
+				/* Line 2: RF and insert emissions */
+      fprintf(fp, " %5c ", hmm->flags & PLAN7_RF ? hmm->rf[k] : '-');
+      for (x = 0; x < Alphabet_size; x++) 
+	fprintf(fp, "%6s ", (k < hmm->M) ? prob2ascii(hmm->ins[k][x], hmm->null[x]) : "*");
+      fputs("\n", fp);
+				/* Line 3: CS and transition probs */
+      fprintf(fp, " %5c ", hmm->flags & PLAN7_CS ? hmm->cs[k] : '-');
+      for (ts = 0; ts < 7; ts++)
+	fprintf(fp, "%6s ", (k < hmm->M) ? prob2ascii(hmm->t[k][ts], 1.0) : "*"); 
+      fprintf(fp, "%6s ", prob2ascii(hmm->begin[k], 1.0));
+      fprintf(fp, "%6s ", prob2ascii(hmm->end[k], 1.0));
+      
+      fputs("\n", fp);
+    }
+  fputs("//\n", fp);
+}

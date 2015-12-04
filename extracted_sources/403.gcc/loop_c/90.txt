@@ -1,0 +1,343 @@
+static void
+load_mems (loop)
+     const struct loop *loop;
+{
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  struct loop_regs *regs = LOOP_REGS (loop);
+  int maybe_never = 0;
+  int i;
+  rtx p, prev_ebb_head;
+  rtx label = NULL_RTX;
+  rtx end_label;
+  /* Nonzero if the next instruction may never be executed.  */
+  int next_maybe_never = 0;
+  unsigned int last_max_reg = max_reg_num ();
+
+  if (loop_info->mems_idx == 0)
+    return;
+
+  /* We cannot use next_label here because it skips over normal insns.  */
+  end_label = next_nonnote_insn (loop->end);
+  if (end_label && GET_CODE (end_label) != CODE_LABEL)
+    end_label = NULL_RTX;
+
+  /* Check to see if it's possible that some instructions in the loop are
+     never executed.  Also check if there is a goto out of the loop other
+     than right after the end of the loop.  */
+  for (p = next_insn_in_loop (loop, loop->scan_start);
+       p != NULL_RTX;
+       p = next_insn_in_loop (loop, p))
+    {
+      if (GET_CODE (p) == CODE_LABEL)
+	maybe_never = 1;
+      else if (GET_CODE (p) == JUMP_INSN
+	       /* If we enter the loop in the middle, and scan
+		  around to the beginning, don't set maybe_never
+		  for that.  This must be an unconditional jump,
+		  otherwise the code at the top of the loop might
+		  never be executed.  Unconditional jumps are
+		  followed a by barrier then loop end.  */
+	       && ! (GET_CODE (p) == JUMP_INSN
+		     && JUMP_LABEL (p) == loop->top
+		     && NEXT_INSN (NEXT_INSN (p)) == loop->end
+		     && any_uncondjump_p (p)))
+	{
+	  /* If this is a jump outside of the loop but not right
+	     after the end of the loop, we would have to emit new fixup
+	     sequences for each such label.  */
+	  if (/* If we can't tell where control might go when this
+		 JUMP_INSN is executed, we must be conservative.  */
+	      !JUMP_LABEL (p)
+	      || (JUMP_LABEL (p) != end_label
+		  && (INSN_UID (JUMP_LABEL (p)) >= max_uid_for_loop
+		      || INSN_LUID (JUMP_LABEL (p)) < INSN_LUID (loop->start)
+		      || INSN_LUID (JUMP_LABEL (p)) > INSN_LUID (loop->end))))
+	    return;
+
+	  if (!any_condjump_p (p))
+	    /* Something complicated.  */
+	    maybe_never = 1;
+	  else
+	    /* If there are any more instructions in the loop, they
+	       might not be reached.  */
+	    next_maybe_never = 1;
+	}
+      else if (next_maybe_never)
+	maybe_never = 1;
+    }
+
+  /* Find start of the extended basic block that enters the loop.  */
+  for (p = loop->start;
+       PREV_INSN (p) && GET_CODE (p) != CODE_LABEL;
+       p = PREV_INSN (p))
+    ;
+  prev_ebb_head = p;
+
+  cselib_init ();
+
+  /* Build table of mems that get set to constant values before the
+     loop.  */
+  for (; p != loop->start; p = NEXT_INSN (p))
+    cselib_process_insn (p);
+
+  /* Actually move the MEMs.  */
+  for (i = 0; i < loop_info->mems_idx; ++i)
+    {
+      regset_head load_copies;
+      regset_head store_copies;
+      int written = 0;
+      rtx reg;
+      rtx mem = loop_info->mems[i].mem;
+      rtx mem_list_entry;
+
+      if (MEM_VOLATILE_P (mem)
+	  || loop_invariant_p (loop, XEXP (mem, 0)) != 1)
+	/* There's no telling whether or not MEM is modified.  */
+	loop_info->mems[i].optimize = 0;
+
+      /* Go through the MEMs written to in the loop to see if this
+	 one is aliased by one of them.  */
+      mem_list_entry = loop_info->store_mems;
+      while (mem_list_entry)
+	{
+	  if (rtx_equal_p (mem, XEXP (mem_list_entry, 0)))
+	    written = 1;
+	  else if (true_dependence (XEXP (mem_list_entry, 0), VOIDmode,
+				    mem, rtx_varies_p))
+	    {
+	      /* MEM is indeed aliased by this store.  */
+	      loop_info->mems[i].optimize = 0;
+	      break;
+	    }
+	  mem_list_entry = XEXP (mem_list_entry, 1);
+	}
+
+      if (flag_float_store && written
+	  && GET_MODE_CLASS (GET_MODE (mem)) == MODE_FLOAT)
+	loop_info->mems[i].optimize = 0;
+
+      /* If this MEM is written to, we must be sure that there
+	 are no reads from another MEM that aliases this one.  */
+      if (loop_info->mems[i].optimize && written)
+	{
+	  int j;
+
+	  for (j = 0; j < loop_info->mems_idx; ++j)
+	    {
+	      if (j == i)
+		continue;
+	      else if (true_dependence (mem,
+					VOIDmode,
+					loop_info->mems[j].mem,
+					rtx_varies_p))
+		{
+		  /* It's not safe to hoist loop_info->mems[i] out of
+		     the loop because writes to it might not be
+		     seen by reads from loop_info->mems[j].  */
+		  loop_info->mems[i].optimize = 0;
+		  break;
+		}
+	    }
+	}
+
+      if (maybe_never && may_trap_p (mem))
+	/* We can't access the MEM outside the loop; it might
+	   cause a trap that wouldn't have happened otherwise.  */
+	loop_info->mems[i].optimize = 0;
+
+      if (!loop_info->mems[i].optimize)
+	/* We thought we were going to lift this MEM out of the
+	   loop, but later discovered that we could not.  */
+	continue;
+
+      INIT_REG_SET (&load_copies);
+      INIT_REG_SET (&store_copies);
+
+      /* Allocate a pseudo for this MEM.  We set REG_USERVAR_P in
+	 order to keep scan_loop from moving stores to this MEM
+	 out of the loop just because this REG is neither a
+	 user-variable nor used in the loop test.  */
+      reg = gen_reg_rtx (GET_MODE (mem));
+      REG_USERVAR_P (reg) = 1;
+      loop_info->mems[i].reg = reg;
+
+      /* Now, replace all references to the MEM with the
+	 corresponding pseudos.  */
+      maybe_never = 0;
+      for (p = next_insn_in_loop (loop, loop->scan_start);
+	   p != NULL_RTX;
+	   p = next_insn_in_loop (loop, p))
+	{
+	  if (INSN_P (p))
+	    {
+	      rtx set;
+
+	      set = single_set (p);
+
+	      /* See if this copies the mem into a register that isn't
+		 modified afterwards.  We'll try to do copy propagation
+		 a little further on.  */
+	      if (set
+		  /* @@@ This test is _way_ too conservative.  */
+		  && ! maybe_never
+		  && GET_CODE (SET_DEST (set)) == REG
+		  && REGNO (SET_DEST (set)) >= FIRST_PSEUDO_REGISTER
+		  && REGNO (SET_DEST (set)) < last_max_reg
+		  && regs->array[REGNO (SET_DEST (set))].n_times_set == 1
+		  && rtx_equal_p (SET_SRC (set), mem))
+		SET_REGNO_REG_SET (&load_copies, REGNO (SET_DEST (set)));
+
+	      /* See if this copies the mem from a register that isn't
+		 modified afterwards.  We'll try to remove the
+		 redundant copy later on by doing a little register
+		 renaming and copy propagation.   This will help
+		 to untangle things for the BIV detection code.  */
+	      if (set
+		  && ! maybe_never
+		  && GET_CODE (SET_SRC (set)) == REG
+		  && REGNO (SET_SRC (set)) >= FIRST_PSEUDO_REGISTER
+		  && REGNO (SET_SRC (set)) < last_max_reg
+		  && regs->array[REGNO (SET_SRC (set))].n_times_set == 1
+		  && rtx_equal_p (SET_DEST (set), mem))
+		SET_REGNO_REG_SET (&store_copies, REGNO (SET_SRC (set)));
+
+	      /* Replace the memory reference with the shadow register.  */
+	      replace_loop_mems (p, loop_info->mems[i].mem,
+				 loop_info->mems[i].reg);
+	    }
+
+	  if (GET_CODE (p) == CODE_LABEL
+	      || GET_CODE (p) == JUMP_INSN)
+	    maybe_never = 1;
+	}
+
+      if (! apply_change_group ())
+	/* We couldn't replace all occurrences of the MEM.  */
+	loop_info->mems[i].optimize = 0;
+      else
+	{
+	  /* Load the memory immediately before LOOP->START, which is
+	     the NOTE_LOOP_BEG.  */
+	  cselib_val *e = cselib_lookup (mem, VOIDmode, 0);
+	  rtx set;
+	  rtx best = mem;
+	  int j;
+	  struct elt_loc_list *const_equiv = 0;
+
+	  if (e)
+	    {
+	      struct elt_loc_list *equiv;
+	      struct elt_loc_list *best_equiv = 0;
+	      for (equiv = e->locs; equiv; equiv = equiv->next)
+		{
+		  if (CONSTANT_P (equiv->loc))
+		    const_equiv = equiv;
+		  else if (GET_CODE (equiv->loc) == REG
+			   /* Extending hard register lifetimes causes crash
+			      on SRC targets.  Doing so on non-SRC is
+			      probably also not good idea, since we most
+			      probably have pseudoregister equivalence as
+			      well.  */
+			   && REGNO (equiv->loc) >= FIRST_PSEUDO_REGISTER)
+		    best_equiv = equiv;
+		}
+	      /* Use the constant equivalence if that is cheap enough.  */
+	      if (! best_equiv)
+		best_equiv = const_equiv;
+	      else if (const_equiv
+		       && (rtx_cost (const_equiv->loc, SET)
+			   <= rtx_cost (best_equiv->loc, SET)))
+		{
+		  best_equiv = const_equiv;
+		  const_equiv = 0;
+		}
+
+	      /* If best_equiv is nonzero, we know that MEM is set to a
+		 constant or register before the loop.  We will use this
+		 knowledge to initialize the shadow register with that
+		 constant or reg rather than by loading from MEM.  */
+	      if (best_equiv)
+		best = copy_rtx (best_equiv->loc);
+	    }
+
+	  set = gen_move_insn (reg, best);
+	  set = loop_insn_hoist (loop, set);
+	  if (REG_P (best))
+	    {
+	      for (p = prev_ebb_head; p != loop->start; p = NEXT_INSN (p))
+		if (REGNO_LAST_UID (REGNO (best)) == INSN_UID (p))
+		  {
+		    REGNO_LAST_UID (REGNO (best)) = INSN_UID (set);
+		    break;
+		  }
+	    }
+
+	  if (const_equiv)
+	    set_unique_reg_note (set, REG_EQUAL, copy_rtx (const_equiv->loc));
+
+	  if (written)
+	    {
+	      if (label == NULL_RTX)
+		{
+		  label = gen_label_rtx ();
+		  emit_label_after (label, loop->end);
+		}
+
+	      /* Store the memory immediately after END, which is
+		 the NOTE_LOOP_END.  */
+	      set = gen_move_insn (copy_rtx (mem), reg);
+	      loop_insn_emit_after (loop, 0, label, set);
+	    }
+
+	  if (loop_dump_stream)
+	    {
+	      fprintf (loop_dump_stream, "Hoisted regno %d %s from ",
+		       REGNO (reg), (written ? "r/w" : "r/o"));
+	      print_rtl (loop_dump_stream, mem);
+	      fputc ('\n', loop_dump_stream);
+	    }
+
+	  /* Attempt a bit of copy propagation.  This helps untangle the
+	     data flow, and enables {basic,general}_induction_var to find
+	     more bivs/givs.  */
+	  EXECUTE_IF_SET_IN_REG_SET
+	    (&load_copies, FIRST_PSEUDO_REGISTER, j,
+	     {
+	       try_copy_prop (loop, reg, j);
+	     });
+	  CLEAR_REG_SET (&load_copies);
+
+	  EXECUTE_IF_SET_IN_REG_SET
+	    (&store_copies, FIRST_PSEUDO_REGISTER, j,
+	     {
+	       try_swap_copy_prop (loop, reg, j);
+	     });
+	  CLEAR_REG_SET (&store_copies);
+	}
+    }
+
+  if (label != NULL_RTX && end_label != NULL_RTX)
+    {
+      /* Now, we need to replace all references to the previous exit
+	 label with the new one.  */
+      rtx_pair rr;
+      rr.r1 = end_label;
+      rr.r2 = label;
+
+      for (p = loop->start; p != loop->end; p = NEXT_INSN (p))
+	{
+	  for_each_rtx (&p, replace_label, &rr);
+
+	  /* If this is a JUMP_INSN, then we also need to fix the JUMP_LABEL
+	     field.  This is not handled by for_each_rtx because it doesn't
+	     handle unprinted ('0') fields.  We need to update JUMP_LABEL
+	     because the immediately following unroll pass will use it.
+	     replace_label would not work anyways, because that only handles
+	     LABEL_REFs.  */
+	  if (GET_CODE (p) == JUMP_INSN && JUMP_LABEL (p) == end_label)
+	    JUMP_LABEL (p) = label;
+	}
+    }
+
+  cselib_finish ();
+}

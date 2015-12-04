@@ -1,0 +1,21 @@
+static rtx
+add_to_delay_list (insn, delay_list)
+     rtx insn;
+     rtx delay_list;
+{
+  /* If we have an empty list, just make a new list element.  If
+     INSN has its block number recorded, clear it since we may
+     be moving the insn to a new block.  */
+
+  if (delay_list == 0)
+    {
+      clear_hashed_info_for_insn (insn);
+      return gen_rtx_INSN_LIST (VOIDmode, insn, NULL_RTX);
+    }
+
+  /* Otherwise this must be an INSN_LIST.  Add INSN to the end of the
+     list.  */
+  XEXP (delay_list, 1) = add_to_delay_list (insn, XEXP (delay_list, 1));
+
+  return delay_list;
+}

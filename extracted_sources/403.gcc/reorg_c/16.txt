@@ -1,0 +1,31 @@
+static int
+redirect_with_delay_slots_safe_p (jump, newlabel, seq)
+     rtx jump, newlabel, seq;
+{
+  int flags, i;
+  rtx pat = PATTERN (seq);
+
+  /* Make sure all the delay slots of this jump would still
+     be valid after threading the jump.  If they are still
+     valid, then return non-zero.  */
+
+  flags = get_jump_flags (jump, newlabel);
+  for (i = 1; i < XVECLEN (pat, 0); i++)
+    if (! (
+#ifdef ANNUL_IFFALSE_SLOTS
+	   (INSN_ANNULLED_BRANCH_P (jump)
+	    && INSN_FROM_TARGET_P (XVECEXP (pat, 0, i)))
+	   ? eligible_for_annul_false (jump, i - 1,
+				       XVECEXP (pat, 0, i), flags) :
+#endif
+#ifdef ANNUL_IFTRUE_SLOTS
+	   (INSN_ANNULLED_BRANCH_P (jump)
+	    && ! INSN_FROM_TARGET_P (XVECEXP (pat, 0, i)))
+	   ? eligible_for_annul_true (jump, i - 1,
+				      XVECEXP (pat, 0, i), flags) :
+#endif
+	   eligible_for_delay (jump, i - 1, XVECEXP (pat, 0, i), flags)))
+      break;
+
+  return (i == XVECLEN (pat, 0));
+}

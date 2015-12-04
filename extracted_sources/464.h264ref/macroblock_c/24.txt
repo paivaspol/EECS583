@@ -1,0 +1,17 @@
+void write_terminating_bit (short bit)
+{
+  DataPartition*          dataPart;
+  const int*              partMap   = assignSE2partition[input->partition_mode];
+  EncodingEnvironmentPtr  eep_dp;
+
+  //--- write non-slice termination symbol if the macroblock is not the first one in its slice ---
+  dataPart = &(img->currentSlice->partArr[partMap[SE_MBTYPE]]);
+  dataPart->bitstream->write_flag = 1;
+  eep_dp                          = &(dataPart->ee_cabac);
+  
+  biari_encode_symbol_final(eep_dp, bit); 
+#if TRACE
+  fprintf (p_trace, "      CABAC terminating bit = %d\n",bit);
+#endif
+
+}

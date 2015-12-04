@@ -1,0 +1,82 @@
+void
+expand_builtin_longjmp (buf_addr, value)
+     rtx buf_addr, value;
+{
+  rtx fp, lab, stack, insn;
+  enum machine_mode sa_mode = STACK_SAVEAREA_MODE (SAVE_NONLOCAL);
+
+  if (setjmp_alias_set == -1)
+    setjmp_alias_set = new_alias_set ();
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+  if (GET_MODE (buf_addr) != Pmode)
+    buf_addr = convert_memory_address (Pmode, buf_addr);
+#endif
+
+  buf_addr = force_reg (Pmode, buf_addr);
+
+  /* We used to store value in static_chain_rtx, but that fails if pointers
+     are smaller than integers.  We instead require that the user must pass
+     a second argument of 1, because that is what builtin_setjmp will
+     return.  This also makes EH slightly more efficient, since we are no
+     longer copying around a value that we don't care about.  */
+  if (value != const1_rtx)
+    abort ();
+
+  current_function_calls_longjmp = 1;
+
+#ifdef HAVE_builtin_longjmp
+  if (HAVE_builtin_longjmp)
+    emit_insn (gen_builtin_longjmp (buf_addr));
+  else
+#endif
+    {
+      fp = gen_rtx_MEM (Pmode, buf_addr);
+      lab = gen_rtx_MEM (Pmode, plus_constant (buf_addr,
+					       GET_MODE_SIZE (Pmode)));
+
+      stack = gen_rtx_MEM (sa_mode, plus_constant (buf_addr,
+						   2 * GET_MODE_SIZE (Pmode)));
+      set_mem_alias_set (fp, setjmp_alias_set);
+      set_mem_alias_set (lab, setjmp_alias_set);
+      set_mem_alias_set (stack, setjmp_alias_set);
+
+      /* Pick up FP, label, and SP from the block and jump.  This code is
+	 from expand_goto in stmt.c; see there for detailed comments.  */
+#if HAVE_nonlocal_goto
+      if (HAVE_nonlocal_goto)
+	/* We have to pass a value to the nonlocal_goto pattern that will
+	   get copied into the static_chain pointer, but it does not matter
+	   what that value is, because builtin_setjmp does not use it.  */
+	emit_insn (gen_nonlocal_goto (value, lab, stack, fp));
+      else
+#endif
+	{
+	  lab = copy_to_reg (lab);
+
+	  emit_move_insn (hard_frame_pointer_rtx, fp);
+	  emit_stack_restore (SAVE_NONLOCAL, stack, NULL_RTX);
+
+	  emit_insn (gen_rtx_USE (VOIDmode, hard_frame_pointer_rtx));
+	  emit_insn (gen_rtx_USE (VOIDmode, stack_pointer_rtx));
+	  emit_indirect_jump (lab);
+	}
+    }
+
+  /* Search backwards and mark the jump insn as a non-local goto.
+     Note that this precludes the use of __builtin_longjmp to a
+     __builtin_setjmp target in the same function.  However, we've
+     already cautioned the user that these functions are for
+     internal exception handling use only.  */
+  for (insn = get_last_insn (); insn; insn = PREV_INSN (insn))
+    {
+      if (GET_CODE (insn) == JUMP_INSN)
+	{
+	  REG_NOTES (insn) = alloc_EXPR_LIST (REG_NON_LOCAL_GOTO, const0_rtx,
+					      REG_NOTES (insn));
+	  break;
+	}
+      else if (GET_CODE (insn) == CALL_INSN)
+        break;
+    }
+}

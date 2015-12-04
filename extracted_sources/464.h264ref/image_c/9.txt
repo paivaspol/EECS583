@@ -1,0 +1,17 @@
+static int picture_structure_decision (Picture *frame, Picture *top, Picture *bot)
+{
+  double lambda_picture;
+  int bframe = (img->type == B_SLICE);
+  float snr_frame, snr_field;
+  int bit_frame, bit_field;
+
+  lambda_picture = 0.85 * pow (2, img->bitdepth_lambda_scale + ((img->qp - SHIFT_QP) / 3.0)) * (bframe ? 4 : 1);
+  
+  snr_frame = frame->distortion_y + frame->distortion_u + frame->distortion_v;
+  //! all distrortions of a field picture are accumulated in the top field
+  snr_field = top->distortion_y + top->distortion_u + top->distortion_v;
+  bit_field = top->bits_per_picture + bot->bits_per_picture;
+  bit_frame = frame->bits_per_picture;
+
+  return decide_fld_frame (snr_frame, snr_field, bit_field, bit_frame, lambda_picture);
+}

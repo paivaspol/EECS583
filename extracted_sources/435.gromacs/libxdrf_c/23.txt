@@ -1,0 +1,22 @@
+int xdrclose(XDR *xdrs) {
+    int xdrid;
+    
+    if (xdrs == NULL) {
+	fprintf(stderr, "xdrclose: passed a NULL pointer\n");
+	exit(1);
+    }
+    for (xdrid = 1; xdrid < MAXID; xdrid++) {
+	if (xdridptr[xdrid] == xdrs) {
+	    
+	    xdr_destroy(xdrs);
+	    fclose(xdrfiles[xdrid]);
+	    xdridptr[xdrid] = NULL;
+	    return 1;
+	}
+    } 
+    fprintf(stderr, "xdrclose: no such open xdr file\n");
+    exit(1);
+    
+    /* to make some compilers happy: */
+    return 0;    
+}

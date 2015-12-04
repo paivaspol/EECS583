@@ -1,0 +1,119 @@
+static int
+allocate_reload_reg (chain, r, last_reload)
+     struct insn_chain *chain ATTRIBUTE_UNUSED;
+     int r;
+     int last_reload;
+{
+  int i, pass, count;
+
+  /* If we put this reload ahead, thinking it is a group,
+     then insist on finding a group.  Otherwise we can grab a
+     reg that some other reload needs.
+     (That can happen when we have a 68000 DATA_OR_FP_REG
+     which is a group of data regs or one fp reg.)
+     We need not be so restrictive if there are no more reloads
+     for this insn.
+
+     ??? Really it would be nicer to have smarter handling
+     for that kind of reg class, where a problem like this is normal.
+     Perhaps those classes should be avoided for reloading
+     by use of more alternatives.  */
+
+  int force_group = rld[r].nregs > 1 && ! last_reload;
+
+  /* If we want a single register and haven't yet found one,
+     take any reg in the right class and not in use.
+     If we want a consecutive group, here is where we look for it.
+
+     We use two passes so we can first look for reload regs to
+     reuse, which are already in use for other reloads in this insn,
+     and only then use additional registers.
+     I think that maximizing reuse is needed to make sure we don't
+     run out of reload regs.  Suppose we have three reloads, and
+     reloads A and B can share regs.  These need two regs.
+     Suppose A and B are given different regs.
+     That leaves none for C.  */
+  for (pass = 0; pass < 2; pass++)
+    {
+      /* I is the index in spill_regs.
+	 We advance it round-robin between insns to use all spill regs
+	 equally, so that inherited reloads have a chance
+	 of leapfrogging each other.  */
+
+      i = last_spill_reg;
+
+      for (count = 0; count < n_spills; count++)
+	{
+	  int class = (int) rld[r].class;
+	  int regnum;
+
+	  i++;
+	  if (i >= n_spills)
+	    i -= n_spills;
+	  regnum = spill_regs[i];
+
+	  if ((reload_reg_free_p (regnum, rld[r].opnum,
+				  rld[r].when_needed)
+	       || (rld[r].in
+		   /* We check reload_reg_used to make sure we
+		      don't clobber the return register.  */
+		   && ! TEST_HARD_REG_BIT (reload_reg_used, regnum)
+		   && free_for_value_p (regnum, rld[r].mode, rld[r].opnum,
+					rld[r].when_needed, rld[r].in,
+					rld[r].out, r, 1)))
+	      && TEST_HARD_REG_BIT (reg_class_contents[class], regnum)
+	      && HARD_REGNO_MODE_OK (regnum, rld[r].mode)
+	      /* Look first for regs to share, then for unshared.  But
+		 don't share regs used for inherited reloads; they are
+		 the ones we want to preserve.  */
+	      && (pass
+		  || (TEST_HARD_REG_BIT (reload_reg_used_at_all,
+					 regnum)
+		      && ! TEST_HARD_REG_BIT (reload_reg_used_for_inherit,
+					      regnum))))
+	    {
+	      int nr = HARD_REGNO_NREGS (regnum, rld[r].mode);
+	      /* Avoid the problem where spilling a GENERAL_OR_FP_REG
+		 (on 68000) got us two FP regs.  If NR is 1,
+		 we would reject both of them.  */
+	      if (force_group)
+		nr = rld[r].nregs;
+	      /* If we need only one reg, we have already won.  */
+	      if (nr == 1)
+		{
+		  /* But reject a single reg if we demand a group.  */
+		  if (force_group)
+		    continue;
+		  break;
+		}
+	      /* Otherwise check that as many consecutive regs as we need
+		 are available here.  */
+	      while (nr > 1)
+		{
+		  int regno = regnum + nr - 1;
+		  if (!(TEST_HARD_REG_BIT (reg_class_contents[class], regno)
+			&& spill_reg_order[regno] >= 0
+			&& reload_reg_free_p (regno, rld[r].opnum,
+					      rld[r].when_needed)))
+		    break;
+		  nr--;
+		}
+	      if (nr == 1)
+		break;
+	    }
+	}
+
+      /* If we found something on pass 1, omit pass 2.  */
+      if (count < n_spills)
+	break;
+    }
+
+  /* We should have found a spill register by now.  */
+  if (count >= n_spills)
+    return 0;
+
+  /* I is the index in SPILL_REG_RTX of the reload register we are to
+     allocate.  Get an rtx for it and find its register number.  */
+
+  return set_reload_reg (i, r);
+}

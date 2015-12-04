@@ -1,0 +1,22 @@
+static void
+end_directive (pfile, skip_line)
+     cpp_reader *pfile;
+     int skip_line;
+{
+  /* We don't skip for an assembler #.  */
+  if (skip_line)
+    {
+      skip_rest_of_line (pfile);
+      if (!pfile->keep_tokens)
+	{
+	  pfile->cur_run = &pfile->base_run;
+	  pfile->cur_token = pfile->base_run.base;
+	}
+    }
+
+  /* Restore state.  */
+  pfile->state.save_comments = ! CPP_OPTION (pfile, discard_comments);
+  pfile->state.in_directive = 0;
+  pfile->state.angled_headers = 0;
+  pfile->directive = 0;
+}

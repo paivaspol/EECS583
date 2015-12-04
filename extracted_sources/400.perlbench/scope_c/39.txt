@@ -1,0 +1,18 @@
+void
+Perl_save_helem(pTHX_ HV *hv, SV *key, SV **sptr)
+{
+    SV *sv;
+    SSCHECK(4);
+    SSPUSHPTR(SvREFCNT_inc(hv));
+    SSPUSHPTR(SvREFCNT_inc(key));
+    SSPUSHPTR(SvREFCNT_inc(*sptr));
+    SSPUSHINT(SAVEt_HELEM);
+    save_scalar_at(sptr);
+    sv = *sptr;
+    /* If we're localizing a tied hash element, this new sv
+     * won't actually be stored in the hash - so it won't get
+     * reaped when the localize ends. Ensure it gets reaped by
+     * mortifying it instead. DAPM */
+    if (SvTIED_mg(sv, PERL_MAGIC_tiedelem))
+	sv_2mortal(sv);
+}

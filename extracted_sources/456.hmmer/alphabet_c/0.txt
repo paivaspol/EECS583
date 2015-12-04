@@ -1,0 +1,37 @@
+void
+DetermineAlphabet(char **rseqs, int  nseq)
+{
+  int idx;
+  int other, nucleic, amino;
+  int type;
+  
+  /* Autodetection of alphabet type.
+   */
+  type = hmmNOTSETYET;
+  other = nucleic = amino = 0;
+  for (idx = 0; idx < nseq; idx++) {
+    switch (Seqtype(rseqs[idx])) {
+    case kRNA:      nucleic++;   break;
+    case kDNA:      nucleic++;   break;
+    case kAmino:    amino++;     break;
+    case kOtherSeq: other++;     break;
+    default: Die("No such alphabet type");
+    }
+  }
+
+  if      (nucleic == nseq) type = hmmNUCLEIC;
+  else if (amino   == nseq) type = hmmAMINO;
+  else if (nucleic > amino && nucleic > other) {
+    Warn("Looks like nucleic acid sequence, hope that's right");
+    type = hmmNUCLEIC;
+  }
+  else if (amino > nucleic && amino > other) {
+    Warn("Looks like amino acid sequence, hope that's right");
+    type = hmmAMINO;
+  }
+  else Die("Sorry, I can't tell if that's protein or DNA"); 
+
+  /* Now set up the alphabet.
+   */
+  SetAlphabet(type);
+}

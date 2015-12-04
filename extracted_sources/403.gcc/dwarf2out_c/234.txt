@@ -1,0 +1,17 @@
+static inline int
+is_redundant_typedef (decl)
+     tree decl;
+{
+  if (TYPE_DECL_IS_STUB (decl))
+    return 1;
+
+  if (DECL_ARTIFICIAL (decl)
+      && DECL_CONTEXT (decl)
+      && is_tagged_type (DECL_CONTEXT (decl))
+      && TREE_CODE (TYPE_NAME (DECL_CONTEXT (decl))) == TYPE_DECL
+      && DECL_NAME (decl) == DECL_NAME (TYPE_NAME (DECL_CONTEXT (decl))))
+    /* Also ignore the artificial member typedef for the class name.  */
+    return 1;
+
+  return 0;
+}

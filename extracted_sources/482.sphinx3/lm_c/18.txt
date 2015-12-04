@@ -1,0 +1,80 @@
+static void load_tg (lm_t *lm, s3lmwid_t lw1, s3lmwid_t lw2)
+{
+    int32 i, n, b;
+    int32 t = -1; /* Let's make sure that if t isn't initialized after the
+					    * "if" statement below, it makes things go bad */
+    bg_t *bg;
+    tg_t *tg;
+    tginfo_t *tginfo;
+    
+    /* First allocate space for tg information for bg lw1,lw2 */
+    tginfo = (tginfo_t *) ckd_malloc (sizeof(tginfo_t));
+    tginfo->w1 = lw1;
+    tginfo->tg = NULL;
+    tginfo->next = lm->tginfo[lw2];
+    lm->tginfo[lw2] = tginfo;
+    
+    /* Locate bigram lw1,lw2 */
+
+    b = lm->ug[lw1].firstbg;
+    n = lm->ug[lw1+1].firstbg - b;
+    
+    /* Make sure bigrams for lw1, if any, loaded into memory */
+    if (n > 0) {
+	if (! lm->membg[lw1].bg)
+	    load_bg (lm, lw1);
+	lm->membg[lw1].used = 1;
+	bg = lm->membg[lw1].bg;
+    }
+
+    /* At this point, n = #bigrams for lw1 */
+    if ((n > 0) && ((i = find_bg (bg, n, lw2)) >= 0)) {
+	tginfo->bowt = lm->tgbowt[bg[i].bowtid].l;
+	
+	/* Find t = Absolute first trigram index for bigram lw1,lw2 */
+	b += i;			/* b = Absolute index of bigram lw1,lw2 on disk */
+	t = lm->tg_segbase[b >> lm->log_bg_seg_sz];
+	t += bg[i].firsttg;
+	
+	/* Find #tg for bigram w1,w2 */
+	n = lm->tg_segbase[(b+1) >> lm->log_bg_seg_sz];
+	n += bg[i+1].firsttg;
+	n -= t;
+	tginfo->n_tg = n;
+    } else {			/* No bigram w1,w2 */
+	tginfo->bowt = 0;
+	n = tginfo->n_tg = 0;
+    }
+
+    /* "t" has not been assigned any meanigful value, so if you use it
+     * beyond this point, make sure it's been properly assigned.
+     */   
+//	assert (t != -1);
+
+    /* At this point, n = #trigrams for lw1,lw2.  Read them in */
+
+    if (LM_IN_MEMORY) {
+		/* RAH, already have this in memory */
+      if (n > 0){
+	assert(t != -1);
+	tg = tginfo->tg = &lm->tg[t];
+      }
+    } else {
+    if (n > 0) {
+	tg = tginfo->tg = (tg_t *) ckd_calloc (n, sizeof(tg_t));
+	if (fseek (lm->fp, lm->tgoff + t*sizeof(tg_t), SEEK_SET) < 0)
+	    E_FATAL_SYSTEM("fseek failed\n");
+
+	if (fread (tg, sizeof(tg_t), n, lm->fp) != (size_t)n)
+	    E_FATAL("fread(tg, %d at %d) failed\n", n, lm->tgoff);
+	if (lm->byteswap) {
+	    for (i = 0; i < n; i++) {
+		SWAP_INT16(&(tg[i].wid));
+		SWAP_INT16(&(tg[i].probid));
+	    }
+	}
+    }
+    }
+    lm->n_tg_fill++;
+    lm->n_tg_inmem += n;
+}

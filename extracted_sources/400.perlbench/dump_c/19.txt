@@ -1,0 +1,35 @@
+int
+Perl_runops_debug(pTHX)
+{
+    if (!PL_op) {
+	if (ckWARN_d(WARN_DEBUGGING))
+	    Perl_warner(aTHX_ packWARN(WARN_DEBUGGING), "NULL OP IN RUN");
+	return 0;
+    }
+
+    do {
+	PERL_ASYNC_CHECK();
+	if (PL_debug) {
+	    if (PL_watchaddr != 0 && *PL_watchaddr != PL_watchok)
+		PerlIO_printf(Perl_debug_log,
+			      "WARNING: %"UVxf" changed from %"UVxf" to %"UVxf"\n",
+			      PTR2UV(PL_watchaddr), PTR2UV(PL_watchok),
+			      PTR2UV(*PL_watchaddr));
+	    if (DEBUG_s_TEST_) {
+		if (DEBUG_v_TEST_) {
+		    PerlIO_printf(Perl_debug_log, "\n");
+		    deb_stack_all();
+		}
+		else
+		    debstack();
+	    }
+
+
+	    if (DEBUG_t_TEST_) debop(PL_op);
+	    if (DEBUG_P_TEST_) debprof(PL_op);
+	}
+    } while ((PL_op = CALL_FPTR(PL_op->op_ppaddr)(aTHX)));
+
+    TAINT_NOT;
+    return 0;
+}

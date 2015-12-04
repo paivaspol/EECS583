@@ -1,0 +1,142 @@
+static void
+mark_loop_jump (x, loop)
+     rtx x;
+     struct loop *loop;
+{
+  struct loop *dest_loop;
+  struct loop *outer_loop;
+  int i;
+
+  switch (GET_CODE (x))
+    {
+    case PC:
+    case USE:
+    case CLOBBER:
+    case REG:
+    case MEM:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case RETURN:
+      return;
+
+    case CONST:
+      /* There could be a label reference in here.  */
+      mark_loop_jump (XEXP (x, 0), loop);
+      return;
+
+    case PLUS:
+    case MINUS:
+    case MULT:
+      mark_loop_jump (XEXP (x, 0), loop);
+      mark_loop_jump (XEXP (x, 1), loop);
+      return;
+
+    case LO_SUM:
+      /* This may refer to a LABEL_REF or SYMBOL_REF.  */
+      mark_loop_jump (XEXP (x, 1), loop);
+      return;
+
+    case SIGN_EXTEND:
+    case ZERO_EXTEND:
+      mark_loop_jump (XEXP (x, 0), loop);
+      return;
+
+    case LABEL_REF:
+      dest_loop = uid_loop[INSN_UID (XEXP (x, 0))];
+
+      /* Link together all labels that branch outside the loop.  This
+	 is used by final_[bg]iv_value and the loop unrolling code.  Also
+	 mark this LABEL_REF so we know that this branch should predict
+	 false.  */
+
+      /* A check to make sure the label is not in an inner nested loop,
+	 since this does not count as a loop exit.  */
+      if (dest_loop)
+	{
+	  for (outer_loop = dest_loop; outer_loop;
+	       outer_loop = outer_loop->outer)
+	    if (outer_loop == loop)
+	      break;
+	}
+      else
+	outer_loop = NULL;
+
+      if (loop && ! outer_loop)
+	{
+	  LABEL_OUTSIDE_LOOP_P (x) = 1;
+	  LABEL_NEXTREF (x) = loop->exit_labels;
+	  loop->exit_labels = x;
+
+	  for (outer_loop = loop;
+	       outer_loop && outer_loop != dest_loop;
+	       outer_loop = outer_loop->outer)
+	    outer_loop->exit_count++;
+	}
+
+      /* If this is inside a loop, but not in the current loop or one enclosed
+	 by it, it invalidates at least one loop.  */
+
+      if (! dest_loop)
+	return;
+
+      /* We must invalidate every nested loop containing the target of this
+	 label, except those that also contain the jump insn.  */
+
+      for (; dest_loop; dest_loop = dest_loop->outer)
+	{
+	  /* Stop when we reach a loop that also contains the jump insn.  */
+	  for (outer_loop = loop; outer_loop; outer_loop = outer_loop->outer)
+	    if (dest_loop == outer_loop)
+	      return;
+
+	  /* If we get here, we know we need to invalidate a loop.  */
+	  if (loop_dump_stream && ! dest_loop->invalid)
+	    fprintf (loop_dump_stream,
+		     "\nLoop at %d ignored due to multiple entry points.\n",
+		     INSN_UID (dest_loop->start));
+
+	  dest_loop->invalid = 1;
+	}
+      return;
+
+    case SET:
+      /* If this is not setting pc, ignore.  */
+      if (SET_DEST (x) == pc_rtx)
+	mark_loop_jump (SET_SRC (x), loop);
+      return;
+
+    case IF_THEN_ELSE:
+      mark_loop_jump (XEXP (x, 1), loop);
+      mark_loop_jump (XEXP (x, 2), loop);
+      return;
+
+    case PARALLEL:
+    case ADDR_VEC:
+      for (i = 0; i < XVECLEN (x, 0); i++)
+	mark_loop_jump (XVECEXP (x, 0, i), loop);
+      return;
+
+    case ADDR_DIFF_VEC:
+      for (i = 0; i < XVECLEN (x, 1); i++)
+	mark_loop_jump (XVECEXP (x, 1, i), loop);
+      return;
+
+    default:
+      /* Strictly speaking this is not a jump into the loop, only a possible
+	 jump out of the loop.  However, we have no way to link the destination
+	 of this jump onto the list of exit labels.  To be safe we mark this
+	 loop and any containing loops as invalid.  */
+      if (loop)
+	{
+	  for (outer_loop = loop; outer_loop; outer_loop = outer_loop->outer)
+	    {
+	      if (loop_dump_stream && ! outer_loop->invalid)
+		fprintf (loop_dump_stream,
+			 "\nLoop at %d ignored due to unknown exit jump.\n",
+			 INSN_UID (outer_loop->start));
+	      outer_loop->invalid = 1;
+	    }
+	}
+      return;
+    }
+}

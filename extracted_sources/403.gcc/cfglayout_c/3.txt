@@ -1,0 +1,34 @@
+void
+scope_to_insns_initialize ()
+{
+  tree block = NULL;
+  rtx insn, next;
+
+  VARRAY_TREE_INIT (insn_scopes, get_max_uid (), "insn scopes");
+
+  for (insn = get_insns (); insn; insn = next)
+    {
+      next = NEXT_INSN (insn);
+
+      if (active_insn_p (insn)
+	  && GET_CODE (PATTERN (insn)) != ADDR_VEC
+	  && GET_CODE (PATTERN (insn)) != ADDR_DIFF_VEC)
+	VARRAY_TREE (insn_scopes, INSN_UID (insn)) = block;
+      else if (GET_CODE (insn) == NOTE)
+	{
+	  switch (NOTE_LINE_NUMBER (insn))
+	    {
+	    case NOTE_INSN_BLOCK_BEG:
+	      block = NOTE_BLOCK (insn);
+	      delete_insn (insn);
+	      break;
+	    case NOTE_INSN_BLOCK_END:
+	      block = BLOCK_SUPERCONTEXT (block);
+	      delete_insn (insn);
+	      break;
+	    default:
+	      break;
+	    }
+	}
+    }
+}

@@ -1,0 +1,48 @@
+static void
+delete_handlers ()
+{
+  rtx insn;
+  for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+    {
+      /* Delete the handler by turning off the flag that would
+	 prevent jump_optimize from deleting it.
+	 Also permit deletion of the nonlocal labels themselves
+	 if nothing local refers to them.  */
+      if (GET_CODE (insn) == CODE_LABEL)
+	{
+	  tree t, last_t;
+
+	  LABEL_PRESERVE_P (insn) = 0;
+
+	  /* Remove it from the nonlocal_label list, to avoid confusing
+	     flow.  */
+	  for (t = nonlocal_labels, last_t = 0; t;
+	       last_t = t, t = TREE_CHAIN (t))
+	    if (DECL_RTL (TREE_VALUE (t)) == insn)
+	      break;
+	  if (t)
+	    {
+	      if (! last_t)
+		nonlocal_labels = TREE_CHAIN (nonlocal_labels);
+	      else
+		TREE_CHAIN (last_t) = TREE_CHAIN (t);
+	    }
+	}
+      if (GET_CODE (insn) == INSN)
+	{
+	  int can_delete = 0;
+	  rtx t;
+	  for (t = nonlocal_goto_handler_slots; t != 0; t = XEXP (t, 1))
+	    if (reg_mentioned_p (t, PATTERN (insn)))
+	      {
+		can_delete = 1;
+		break;
+	      }
+	  if (can_delete
+	      || (nonlocal_goto_stack_level != 0
+		  && reg_mentioned_p (nonlocal_goto_stack_level,
+				      PATTERN (insn))))
+	    delete_related_insns (insn);
+	}
+    }
+}

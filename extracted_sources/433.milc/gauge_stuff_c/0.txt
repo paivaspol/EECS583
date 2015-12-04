@@ -1,0 +1,68 @@
+void make_loop_table() {
+
+    int perm[8],pp[8],ir[4];
+    int length,iloop,i,j,chr;
+    int vec[MAX_LENGTH];
+    int count,flag;
+    void char_num( int *dig, int *chr, int length);
+
+#define GAUGE_ACTION_PART2
+/* defines all loops and their coefficients */
+#include <gauge_action.h>
+#undef GAUGE_ACTION_PART2
+
+    for(iloop=0;iloop<NLOOP;iloop++){
+	length=loop_length[iloop];
+	count=0;
+	/* permutations */
+	for(perm[0]=0;perm[0]<4;perm[0]++)
+	for(perm[1]=0;perm[1]<4;perm[1]++)
+	for(perm[2]=0;perm[2]<4;perm[2]++)
+	for(perm[3]=0;perm[3]<4;perm[3]++){
+	    if(perm[0] != perm[1] && perm[0] != perm[2] 
+		&& perm[0] != perm[3] && perm[1] != perm[2]
+	    	&& perm[1] != perm[3] && perm[2] != perm[3] ) {
+	        /* reflections*/
+	 	for(ir[0]=0;ir[0]<2;ir[0]++)
+		for(ir[1]=0;ir[1]<2;ir[1]++)
+		for(ir[2]=0;ir[2]<2;ir[2]++)
+		for(ir[3]=0;ir[3]<2;ir[3]++){
+		    for(j=0;j<4;j++){
+			pp[j]=perm[j];
+
+			if(ir[j] == 1) pp[j]=7-pp[j];
+			pp[7-j]=7-pp[j];
+		    }
+		    /* create new vector*/
+		    for(j=0;j<length;j++) vec[j]=pp[loop_ind[iloop][j]];
+
+         	    char_num(vec,&chr,length);
+         	    flag=0;
+		    /* check if it's a new set: */
+		    for(j=0;j<count;j++) if(chr == loop_char[j])flag=1;
+		    if(flag == 0 ){
+			loop_char[count]=chr;
+			for(j=0;j<length;j++)
+			    loop_table[iloop][count][j]=vec[j];
+			count++;
+/**node0_printf("ADD LOOP: "); printpath( vec, length );**/
+		    }
+		    if(count>MAX_NUM){
+			node0_printf("OOPS: MAX_NUM too small\n");
+			exit(0);
+		    }
+		    loop_num[iloop]=count;
+
+		} /* end reflection*/
+	    } /* end permutation if block */
+	} /* end permutation */
+    } /* end iloop */
+
+    /* print out the loop coefficients */
+    node0_printf("loop coefficients: nloop rep loop_coeff  multiplicity\n");
+    for(i=0;i<NREPS;i++) for(j=0;j<NLOOP;j++) {
+	node0_printf("                    %d %d      %e     %d\n",
+	    j,i,loop_coeff[j][i],loop_num[j]);
+    }
+
+} /* make_loop_table */

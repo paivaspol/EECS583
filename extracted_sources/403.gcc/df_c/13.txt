@@ -1,0 +1,23 @@
+static void
+df_use_unlink (df, use)
+     struct df *df ATTRIBUTE_UNUSED;
+     struct ref *use;
+{
+  struct df_link *ud_link;
+  unsigned int uregno = DF_REF_REGNO (use);
+
+  /* Follow use-def chain to find all the defs of this use.  */
+  for (ud_link = DF_REF_CHAIN (use); ud_link; ud_link = ud_link->next)
+    {
+      struct ref *def = ud_link->ref;
+
+      /* Unlink this use from the def-use chain.  */
+      df_ref_unlink (&DF_REF_CHAIN (def), use);
+    }
+  DF_REF_CHAIN (use) = 0;
+
+  /* Unlink use from reg-use chain.  */
+  df_ref_unlink (&df->regs[uregno].uses, use);
+
+  df->uses[DF_REF_ID (use)] = 0;
+}

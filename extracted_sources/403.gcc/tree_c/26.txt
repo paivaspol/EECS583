@@ -1,0 +1,47 @@
+static void
+unsave_expr_now_r (expr)
+     tree expr;
+{
+  enum tree_code code;
+
+  /* There's nothing to do for NULL_TREE.  */
+  if (expr == 0)
+    return;
+
+  unsave_expr_1 (expr);
+
+  code = TREE_CODE (expr);
+  switch (TREE_CODE_CLASS (code))
+    {
+    case 'c':  /* a constant */
+    case 't':  /* a type node */
+    case 'd':  /* A decl node */
+    case 'b':  /* A block node */
+      break;
+
+    case 'x':  /* miscellaneous: e.g., identifier, TREE_LIST or ERROR_MARK.  */
+      if (code == TREE_LIST)
+	{
+	  unsave_expr_now_r (TREE_VALUE (expr));
+	  unsave_expr_now_r (TREE_CHAIN (expr));
+	}
+      break;
+
+    case 'e':  /* an expression */
+    case 'r':  /* a reference */
+    case 's':  /* an expression with side effects */
+    case '<':  /* a comparison expression */
+    case '2':  /* a binary arithmetic expression */
+    case '1':  /* a unary arithmetic expression */
+      {
+	int i;
+
+	for (i = first_rtl_op (code) - 1; i >= 0; i--)
+	  unsave_expr_now_r (TREE_OPERAND (expr, i));
+      }
+      break;
+
+    default:
+      abort ();
+    }
+}

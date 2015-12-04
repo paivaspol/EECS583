@@ -1,0 +1,18 @@
+int 
+ILogsum(int p1, int p2)
+{
+  int    diff;
+#ifdef HMMER_THREADS
+  static pthread_once_t firsttime = PTHREAD_ONCE_INIT;
+  pthread_once(&firsttime, init_ilogsum);
+#else
+  static int firsttime = 1;
+  if (firsttime) { init_ilogsum(); firsttime = 0; }
+#endif
+
+  diff = p1-p2;
+  if      (diff >=  LOGSUM_TBL) return p1;
+  else if (diff <= -LOGSUM_TBL) return p2;
+  else if (diff > 0)            return p1 + ilogsum_lookup[diff];
+  else                          return p2 + ilogsum_lookup[-diff];
+} 

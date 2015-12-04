@@ -1,0 +1,180 @@
+void
+P7Maxmodelmaker(MSA *msa, char **dsq, float maxgap,
+		struct p7prior_s *prior, 
+		float *null, float null_p1, float mpri, 
+		struct plan7_s **ret_hmm, struct p7trace_s  ***ret_tr)
+{
+  int     idx;			/* counter for seqs                */
+  int     i, j;			/* positions in alignment          */
+  int     x;			/* counter for syms or transitions */
+  float **matc;                 /* count vectors: [1..alen][0..19] */ 
+  float   cij[8], tij[8];	/* count and score transit vectors */
+  float   matp[MAXABET];        /* match emission vector           */
+  float   insp[MAXABET];	/* insert score vector             */
+  float   insc[MAXABET];	/* insert count vector             */
+  float  *sc;                   /* DP scores [0,1..alen,alen+1]    */
+  int    *tbck;                 /* traceback ptrs for sc           */
+  int    *matassign;            /* match assignments [1..alen]     */ 
+  int    *insopt;		/* number of inserted chars [0..nseq-1] */
+  int     first, last;		/* positions of first and last cols [1..alen] */
+  float   bm1, bm2;		/* estimates for start,internal b->m t's  */
+  int     est_M;		/* estimate for the size of the model */
+  float   t_me;			/* estimate for an internal M->E transition */
+  float   new, bestsc;		/* new score, best score so far     */
+  int     code;			/* optimization: return code from build_cij() */
+  int     ngap;			/* gap count in a column                      */
+  float   wgtsum;		/* sum of weights; do not assume it is nseq */
+
+  /* Allocations
+   */
+  matc      = (float **) MallocOrDie (sizeof(float *) * (msa->alen+1));
+  sc        = (float *)  MallocOrDie (sizeof(float)   * (msa->alen+2));
+  tbck      = (int *)    MallocOrDie (sizeof(int)     * (msa->alen+2));
+  matassign = (int *)    MallocOrDie (sizeof(int)     * (msa->alen+1));
+  insopt    = (int *)    MallocOrDie (sizeof(int)     * msa->nseq);    
+  for (i = 0; i < msa->alen; i++) {
+    matc[i+1] = (float *) MallocOrDie (Alphabet_size * sizeof(float));
+    FSet(matc[i+1], Alphabet_size, 0.);
+  }
+
+  /* Precalculations
+   */
+  for (i = 0; i < msa->alen; i++) 
+    for (idx = 0; idx < msa->nseq; idx++) 
+      if (!isgap(msa->aseq[idx][i])) 
+	P7CountSymbol(matc[i+1], SymbolIndex(msa->aseq[idx][i]), msa->wgt[idx]);
+  mpri = sreLOG2(mpri);
+  
+  FCopy(insp, prior->i[0], Alphabet_size);
+  FNorm(insp, Alphabet_size);
+  wgtsum = FSum(msa->wgt, msa->nseq);
+  for (x = 0; x < Alphabet_size; x++)
+    insp[x] = sreLOG2(insp[x] / null[x]);
+  
+  /* Estimate the relevant special transitions.
+   */
+  est_M = estimate_model_length(msa);
+  t_me  = 0.5 / (float) (est_M-1);
+  bm1   = 0.5;
+  bm2   = 0.5 / (float) (est_M-1);
+  bm1   = sreLOG2(bm1 / null_p1);
+  bm2   = sreLOG2(bm2 / null_p1);
+
+  /* Estimate the position of the last match-assigned column
+   * by counting gap frequencies.
+   */ 
+  maxgap = 0.5;
+  for (last = msa->alen; last >= 1; last--) {
+    ngap = 0;
+    for (idx = 0; idx < msa->nseq; idx++)
+      if (isgap(msa->aseq[idx][last-1])) ngap++;
+    if ((float) ngap / (float) msa->nseq <= maxgap)
+      break;
+  }
+
+  /* Initialization
+   */
+  sc[last]   = 0.;
+  tbck[last] = 0;
+
+  /* Set ME gaps to '_'
+   */
+  for (idx = 0; idx < msa->nseq; idx++) 
+    for (i = last; i > 0 && isgap(msa->aseq[idx][i-1]); i--)
+      msa->aseq[idx][i-1] = '_';
+
+  /* Main recursion moves from right to left.
+   */
+  for (i = last-1; i > 0; i--) {
+				/* Calculate match emission scores for i  */
+    FCopy(matp, matc[i], Alphabet_size);
+    P7PriorifyEmissionVector(matp, prior, prior->mnum, prior->mq, prior->m, NULL); 
+    for (x = 0; x < Alphabet_size; x++)
+      matp[x] = sreLOG2(matp[x] / null[x]);
+
+				/* Initialize insert counters to zero */
+    FSet(insc, Alphabet_size, 0.);
+    for (idx = 0; idx < msa->nseq; idx++) insopt[idx] = 0;
+
+    sc[i] = -FLT_MAX; 
+    for (j = i+1; j <= last; j++) {
+			/* build transition matrix for column pair i,j */
+      code = build_cij(msa->aseq, msa->nseq, insopt, i, j, msa->wgt, cij);
+      if (code == -1) break;	/* no j to our right can work for us */
+      if (code == 1) {
+	FCopy(tij, cij, 7);
+	P7PriorifyTransitionVector(tij, prior, prior->tq); 
+	FNorm(tij, 3);
+	tij[TMM] = sreLOG2(tij[TMM] / null_p1); 
+	tij[TMI] = sreLOG2(tij[TMI] / null_p1); 
+	tij[TMD] = sreLOG2(tij[TMD]); 
+	tij[TIM] = sreLOG2(tij[TIM] / null_p1); 
+	tij[TII] = sreLOG2(tij[TII] / null_p1); 
+	tij[TDM] = sreLOG2(tij[TDM] / null_p1); 
+	tij[TDD] = sreLOG2(tij[TDD]); 
+  				/* calculate the score of using this j. */
+	new = sc[j] +  FDot(tij, cij, 7) + FDot(insp, insc, Alphabet_size);
+
+	SQD_DPRINTF2(("%3d %3d new=%6.2f scj=%6.2f m=%6.2f i=%6.2f t=%6.2f\n",
+	       i, j, new, sc[j], FDot(matp, matc[i], Alphabet_size), 
+	       FDot(insp, insc, Alphabet_size), FDot(tij, cij, 7)));
+
+				/* keep it if it's better */
+	if (new > sc[i]) {
+	  sc[i]   = new;
+	  tbck[i] = j;
+	} 
+      }
+				/* bump insc, insopt insert symbol counters */
+      FAdd(insc, matc[j], Alphabet_size);
+      for (idx = 0; idx < msa->nseq; idx++)
+	if (!isgap(msa->aseq[idx][j-1])) insopt[idx]++;
+    }
+				/* add in constant contributions for col i */
+				/* note ad hoc scaling of mpri by wgtsum (us. nseq)*/
+    sc[i] += FDot(matp, matc[i], Alphabet_size) + mpri * wgtsum;
+  } /* end loop over start positions i */
+
+  /* Termination: place the begin state.
+   * log odds score for S->N->B is all zero except for NB transition, which
+   * is a constant. So we only have to evaluate BM transitions.
+   */
+  bestsc = -FLT_MAX;
+  first  = 0;
+  for (i = 1; i <= last; i++) {
+    new = sc[i]; 
+    for (idx = 0; idx < msa->nseq; idx++) {
+      if (isgap(msa->aseq[idx][i-1])) 
+	new += bm2;		/* internal B->M transition */
+      else
+	new += bm1;		/* B->M1 transition         */
+    }
+    if (new > bestsc) {
+      bestsc = new;
+      first  = i;
+    }
+  }
+
+  /* Traceback
+   */
+  matassign[0] = 0;
+  for (i = 1; i <= msa->alen; i++) matassign[i] = ASSIGN_INSERT; 
+  for (i = first; i != 0; i = tbck[i]) {
+    matassign[i] &= ~ASSIGN_INSERT;
+    matassign[i] |= ASSIGN_MATCH;
+  }
+
+  /* Hand matassign off for remainder of model construction
+   */
+  /*  print_matassign(matassign, ainfo->alen); */
+  matassign2hmm(msa, dsq, matassign, ret_hmm, ret_tr);
+
+  /* Clean up.
+   */
+  for (i = 1; i <= msa->alen; i++) free(matc[i]);
+  free(matc);
+  free(sc);
+  free(tbck);
+  free(matassign);
+  free(insopt);
+}

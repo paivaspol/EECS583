@@ -1,0 +1,33 @@
+void
+purge_line_number_notes (f)
+     rtx f;
+{
+  rtx last_note = 0;
+  rtx insn;
+  /* Delete extraneous line number notes.
+     Note that two consecutive notes for different lines are not really
+     extraneous.  There should be some indication where that line belonged,
+     even if it became empty.  */
+
+  for (insn = f; insn; insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == NOTE)
+      {
+	if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_FUNCTION_BEG)
+	  /* Any previous line note was for the prologue; gdb wants a new
+	     note after the prologue even if it is for the same line.  */
+	  last_note = NULL_RTX;
+	else if (NOTE_LINE_NUMBER (insn) >= 0)
+	  {
+	    /* Delete this note if it is identical to previous note.  */
+	    if (last_note
+		&& NOTE_SOURCE_FILE (insn) == NOTE_SOURCE_FILE (last_note)
+		&& NOTE_LINE_NUMBER (insn) == NOTE_LINE_NUMBER (last_note))
+	      {
+		delete_related_insns (insn);
+		continue;
+	      }
+
+	    last_note = insn;
+	  }
+      }
+}

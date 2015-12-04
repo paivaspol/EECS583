@@ -1,0 +1,57 @@
+static void do_tpxheader(int fp,bool bRead,t_tpxheader *tpx)
+{
+  char  buf[STRLEN];
+  bool  bDouble;
+  int   precision;
+ 
+  gmx_fio_select(fp);
+  gmx_fio_setdebug(fp,bDebugMode());
+  
+  /* NEW! XDR tpb file */
+  precision = sizeof(real);
+  if (bRead) {
+    do_string(buf);
+    if (strncmp(buf,"VERSION",7))
+      fatal_error(0,"Can not read file %s,\n"
+		  "             this file is from a Gromacs version which is older than 2.0\n"
+		  "             Make a new one with grompp or use a gro or pdb file, if possible",
+		  gmx_fio_getname(fp));
+    do_int(precision);
+    bDouble = (precision == sizeof(double));
+    if ((precision != sizeof(float)) && !bDouble)
+      fatal_error(0,"Unknown precision in file %s: real is %d bytes "
+		  "instead of %d or %d",
+		  gmx_fio_getname(fp),precision,sizeof(float),sizeof(double));
+    gmx_fio_setprecision(fp,bDouble);
+#ifndef SPEC_CPU    
+    fprintf(stderr,"Reading file %s, %s (%s precision)\n",
+	    gmx_fio_getname(fp),buf,bDouble ? "double" : "single");
+#endif    
+  }
+  else {
+    do_string(GromacsVersion());
+    bDouble = (precision == sizeof(double));
+    gmx_fio_setprecision(fp,bDouble);
+    do_int(precision);
+    file_version = tpx_version;
+  }
+  
+  /* Check versions! */
+  do_int(file_version);
+  if ((file_version <= tpx_incompatible_version) ||
+      (file_version > tpx_version))
+    fatal_error(0,"reading tpx file (%s) version %d with version %d program",
+		gmx_fio_getname(fp),file_version,tpx_version);
+    
+  do_section(eitemHEADER,bRead);
+  do_int (tpx->natoms);
+  do_int (tpx->step);
+  do_real(tpx->t);
+  do_real(tpx->lambda);
+  do_int (tpx->bIr);
+  do_int (tpx->bTop);
+  do_int (tpx->bX);
+  do_int (tpx->bV);
+  do_int (tpx->bF);
+  do_int (tpx->bBox);
+}

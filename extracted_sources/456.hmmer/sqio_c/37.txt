@@ -1,0 +1,32 @@
+int
+GuessAlignmentSeqtype(char **aseq, int nseq)
+{
+  int idx;
+  int nrna   = 0;
+  int ndna   = 0;
+  int namino = 0;
+  int nother = 0;
+
+  for (idx = 0; idx < nseq; idx++)
+    switch (Seqtype(aseq[idx])) {
+    case kRNA:   nrna++;   break;
+    case kDNA:   ndna++;   break;
+    case kAmino: namino++; break;
+    default:     nother++;
+    }
+
+  /* Unambiguous decisions:
+   */
+  if (nother)         return kOtherSeq;
+  if (namino == nseq) return kAmino;
+  if (ndna   == nseq) return kDNA;
+  if (nrna   == nseq) return kRNA;
+
+  /* Ambiguous decisions:
+   */
+  if (namino == 0)    return kRNA; /* it's nucleic acid, but seems mixed RNA/DNA */
+  return kAmino;		   /* some amino acid seen; others probably short seqs, some 
+				      of which may be entirely ACGT (ala,cys,gly,thr). We 
+				      could be a little more sophisticated: U would be a giveaway
+				      that we're not in protein seqs */
+}

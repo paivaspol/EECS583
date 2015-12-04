@@ -1,0 +1,52 @@
+static tree
+find_init_member (field)
+     tree field;
+{
+  struct init_node *p;
+
+  if (TREE_CODE (constructor_type) == ARRAY_TYPE)
+    {
+      if (constructor_incremental
+	  && tree_int_cst_lt (field, constructor_unfilled_index))
+	set_nonincremental_init ();
+
+      p = constructor_pending_elts;
+      while (p)
+	{
+	  if (tree_int_cst_lt (field, p->purpose))
+	    p = p->left;
+	  else if (tree_int_cst_lt (p->purpose, field))
+	    p = p->right;
+	  else
+	    return p->value;
+	}
+    }
+  else if (TREE_CODE (constructor_type) == RECORD_TYPE)
+    {
+      tree bitpos = bit_position (field);
+
+      if (constructor_incremental
+	  && (!constructor_unfilled_fields
+	      || tree_int_cst_lt (bitpos,
+				  bit_position (constructor_unfilled_fields))))
+	set_nonincremental_init ();
+
+      p = constructor_pending_elts;
+      while (p)
+	{
+	  if (field == p->purpose)
+	    return p->value;
+	  else if (tree_int_cst_lt (bitpos, bit_position (p->purpose)))
+	    p = p->left;
+	  else
+	    p = p->right;
+	}
+    }
+  else if (TREE_CODE (constructor_type) == UNION_TYPE)
+    {
+      if (constructor_elements
+	  && TREE_PURPOSE (constructor_elements) == field)
+	return TREE_VALUE (constructor_elements);
+    }
+  return 0;
+}

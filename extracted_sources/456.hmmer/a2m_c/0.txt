@@ -1,0 +1,21 @@
+void
+WriteA2M(FILE *fp, MSA *msa)
+{
+  int  idx;			/* sequence index */
+  int  pos;			/* position in sequence */
+  char buf[64];			/* buffer for individual lines */
+  int  cpl = 60;		/* char per line; must be < 64 unless buf is bigger */
+
+  buf[cpl] = '\0';
+  for (idx = 0; idx < msa->nseq; idx++)
+    {
+      fprintf(fp, ">%s %s\n", 
+	      msa->sqname[idx],
+	      (msa->sqdesc != NULL && msa->sqdesc[idx] != NULL) ? msa->sqdesc[idx] : "");
+      for (pos = 0; pos < msa->alen; pos+=cpl)
+	{
+	  strncpy(buf, &(msa->aseq[idx][pos]), cpl);
+	  fprintf(fp, "%s\n", buf);
+	}
+    }
+}

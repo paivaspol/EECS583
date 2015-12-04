@@ -1,0 +1,22 @@
+void
+set_param_value (name, value)
+     const char *name;
+     int value;
+{
+  size_t i;
+
+  /* Make sure nobody tries to set a parameter to an invalid value.  */
+  if (value == INVALID_PARAM_VAL)
+    abort ();
+
+  /* Scan the parameter table to find a matching entry.  */
+  for (i = 0; i < num_compiler_params; ++i)
+    if (strcmp (compiler_params[i].option, name) == 0)
+      {
+	compiler_params[i].value = value;
+	return;
+      }
+
+  /* If we didn't find this parameter, issue an error message.  */
+  error ("invalid parameter `%s'", name);
+}

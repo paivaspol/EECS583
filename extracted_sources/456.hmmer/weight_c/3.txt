@@ -1,0 +1,154 @@
+void
+VoronoiWeights(char **aseq, int nseq, int alen, float *wgt)
+{
+  float **dmx;                 /* distance (difference) matrix    */
+  float  *halfmin;             /* 1/2 minimum distance to other seqs */
+  char   **psym;                /* symbols seen in each column     */
+  int     *nsym;                /* # syms seen in each column      */
+  int      symseen[27];         /* flags for observed syms         */
+  char    *randseq;             /* randomly generated sequence     */
+  int      acol;		/* pos in aligned columns          */
+  int      idx;                 /* index in sequences              */
+  int      symidx;              /* 0..25 index for symbol          */
+  int      i;			/* generic counter                 */
+  float   min;			/* minimum distance                */
+  float   dist;		/* distance between random and real */
+  float   challenge, champion; /* for resolving ties              */
+  int     itscale;		/* how many iterations per seq     */
+  int     iteration;           
+  int     best;			/* index of nearest real sequence  */
+
+  /* Sanity check first
+   */
+  if (nseq == 1) { wgt[0] = 1.0; return; }
+
+  itscale = 50;
+
+  /* Precalculate 1/2 minimum distance to other
+   * sequences for each sequence
+   */
+  if (! simple_diffmx(aseq, nseq, &dmx)) 
+    Die("simple_diffmx() failed");
+  halfmin = MallocOrDie (sizeof(float) * nseq);
+  for (idx = 0; idx < nseq; idx++)
+    {
+      for (min = 1.0, i = 0; i < nseq; i++)
+	{
+	  if (i == idx) continue;
+	  if (dmx[idx][i] < min) min = dmx[idx][i];
+	}
+      halfmin[idx] = min / 2.0;
+    }
+  Free2DArray((void **) dmx, nseq);
+
+  /* Set up the random sequence generating model.
+   */
+  psym = MallocOrDie (alen * sizeof(char *));
+  nsym = MallocOrDie (alen * sizeof(int));
+  for (acol = 0; acol < alen; acol++)
+    psym[acol] = MallocOrDie (27 * sizeof(char));
+
+/* ifdef ORIGINAL_SIBBALD_ALGORITHM_IS_BROKEN */
+  for (acol = 0; acol < alen; acol++)
+    {
+      memset(symseen, 0, sizeof(int) * 27);
+      for (idx = 0; idx < nseq; idx++)
+	if (! isgap(aseq[idx][acol]))
+	  {
+	    if (isupper((int) aseq[idx][acol])) 
+	      symidx = aseq[idx][acol] - 'A';
+	    else
+	      symidx = aseq[idx][acol] - 'a';
+	    if (symidx >= 0 && symidx < 26)
+	      symseen[symidx] = 1;
+	  }
+	else
+	  symseen[26] = 1;	/* a gap */
+
+      for (nsym[acol] = 0, i = 0; i < 26; i++)
+	if (symseen[i]) 
+	  {
+	    psym[acol][nsym[acol]] = 'A'+i;
+	    nsym[acol]++;
+	  }
+      if (symseen[26]) { psym[acol][nsym[acol]] = ' '; nsym[acol]++; }
+    }
+/* #endif ORIGINAL_SIBBALD_ALGORITHM_IS_BROKEN */
+
+  /* Note: the original Sibbald&Argos algorithm calls for
+   * bounding the sampled space using a template-like random
+   * sequence generator. However, this leads to one minor
+   * and one major problem. The minor problem is that
+   * exceptional amino acids in a column can have a
+   * significant effect by altering the amount of sampled
+   * sequence space; the larger the data set, the worse
+   * this problem becomes. The major problem is that 
+   * there is no reasonable way to deal with gaps.
+   * Gapped sequences simply inhabit a different dimensionality
+   * and it's pretty painful to imagine calculating Voronoi
+   * volumes when the N in your N-space is varying.
+   * Note that all the examples shown by Sibbald and Argos
+   * are *ungapped* examples.
+   * 
+   * The best way I've found to circumvent this problem is
+   * just not to bound the sampled space; count gaps as
+   * symbols and generate completely random sequences.
+   */
+#ifdef ALL_SEQUENCE_SPACE
+  for (acol = 0; acol < alen; acol++)
+    {
+      strcpy(psym[acol], "ACDEFGHIKLMNPQRSTVWY ");
+      nsym[acol] = 21;
+    }
+#endif
+  
+  /* Sibbald and Argos algorithm:
+   *   1) assign all seqs weight 0.
+   *   2) generate a "random" sequence
+   *   3) calculate distance to every other sequence
+   *      (if we get a distance < 1/2 minimum distance
+   *       to other real seqs, we can stop)
+   *   4) if unique closest sequence, increment its weight 1.
+   *      if multiple closest seq, choose one randomly    
+   *   5) repeat 2-4 for lots of iterations
+   *   6) normalize all weights to sum to nseq.
+   */
+  randseq = MallocOrDie ((alen+1) * sizeof(char));
+
+  best = 42.;			/* solely to silence GCC uninit warnings. */
+  FSet(wgt, nseq, 0.0);
+  for (iteration = 0; iteration < itscale * nseq; iteration++)
+    {
+      for (acol = 0; acol < alen; acol++)
+	randseq[acol] = (nsym[acol] == 0) ? ' ' : psym[acol][CHOOSE(nsym[acol])];
+      randseq[acol] = '\0';
+
+      champion = sre_random();
+      for (min = 1.0, idx = 0; idx < nseq; idx++)
+	{
+	  dist = simple_distance(aseq[idx], randseq);
+	  if (dist < halfmin[idx]) 
+	    { 
+	      best = idx; 
+	      break;      
+	    } 
+	  if (dist < min)          
+	    { champion = sre_random(); best = idx; min = dist; } 
+	  else if (dist == min)    
+	    { 
+	      challenge = sre_random(); 
+	      if (challenge > champion)
+		{ champion = challenge; best = idx; min = dist; }
+	    }
+	}
+      wgt[best] += 1.0;
+    }
+
+  for (idx = 0; idx < nseq; idx++)
+    wgt[idx] = wgt[idx] / (float) itscale;
+
+  free(randseq);
+  free(nsym);
+  free(halfmin);
+  Free2DArray((void **) psym, alen);
+}

@@ -1,0 +1,189 @@
+int read_gauge_hdr(gauge_file *gf, int parallel)
+{
+  /* parallel = 1 (TRUE) if all nodes are accessing the file */
+  /*            0        for access from node 0 only */
+
+  FILE *fp;
+  gauge_header *gh;
+  int32type tmp, btmp;
+  int j;
+  int byterevflag;
+  char myname[] = "read_gauge_hdr";
+  int i;
+  QCDheader *hdr;
+  int dims[4];
+  int ARCHYES=0;
+  u_int32type chksum;
+
+  fp = gf->fp;
+  gh = gf->header;
+
+  /* Read header, do byte reversal, 
+     if necessary, and check consistency */
+  
+  /* Read and verify magic number */
+
+  if(psread_data(parallel, fp,&gh->magic_number,sizeof(gh->magic_number),
+			 myname,"magic number")!=0)terminate(1);
+
+  tmp = gh->magic_number;
+  btmp = gh->magic_number;
+  byterevn((int32type *)&btmp,1);
+
+  /** See if header chunk is BEGI = 1111836489 for big endian
+      or the byte reverse 1229407554 for little endian **/
+
+  if(tmp == GAUGE_VERSION_NUMBER_ARCHIVE) 
+    {
+      printf("reading as archive format\n"); 
+      ARCHYES=1;
+      byterevflag=0;
+    }
+  else if(btmp == GAUGE_VERSION_NUMBER_ARCHIVE) 
+	{
+	  printf("reading as archive format with byte reversal\n"); 
+	  ARCHYES=1;
+	  byterevflag=1;	/* not really needed */
+	  gh->magic_number = btmp;
+	  if( sizeof(double) != sizeof(int32type)) {
+	    printf("%s: Can't byte reverse\n",myname);
+	    printf("requires size of int32type(%d) = size of double(%d)\n",
+		   (int)sizeof(int32type),(int)sizeof(double));
+	    terminate(1);
+	  }
+	}
+  else if(tmp == GAUGE_VERSION_NUMBER) 
+    {
+      byterevflag=0;
+    }
+  else 
+    {
+      if(btmp == GAUGE_VERSION_NUMBER) 
+	{
+	  byterevflag=1;
+	  gh->magic_number = btmp;
+	  printf("Reading with byte reversal\n");
+	  if( sizeof(double) != sizeof(int32type)) {
+	    printf("%s: Can't byte reverse\n",myname);
+	    printf("requires size of int32type(%d) = size of double(%d)\n",
+		   (int)sizeof(int32type),(int)sizeof(double));
+	    terminate(1);
+	  }
+	}
+      else
+	{
+	  /* Try old-style configurations */
+	  if((read_v3_gauge_hdr(gf,parallel,&byterevflag) != 0) &&
+	     (read_1996_gauge_hdr(gf,parallel,&byterevflag) != 0))
+	    {
+	      /* End of the road. */
+	      printf("%s: Unrecognized magic number in gauge configuration file header.\n",myname);
+	      printf("Expected %x but read %x\n",
+		     GAUGE_VERSION_NUMBER,tmp);
+	      printf("Expected %s but read %s\n",
+		     (char *)GAUGE_VERSION_NUMBER,(char *)tmp);
+	      terminate(1);
+	    }
+	  return byterevflag;
+	}
+    }
+  
+  /* Read and process header information */
+  /* Get lattice dimensions */
+  
+  /* Special processing for NERSC archive format files */
+  if(ARCHYES == 1) 
+    {
+      gf->header->order = NATURAL_ORDER;
+      
+      if(parallel) {
+	fprintf(stderr,
+		"%s: Must use reload_serial with archive files for now.\n",
+		myname);
+	terminate(1);
+      }
+
+      /* Reads the entire header of the archive file */
+      hdr = qcdhdr_get_hdr(fp);
+
+      /* Get dimensions */
+      if (qcdhdr_get_int("DIMENSION_1",hdr,dims+0)==FAILURE)
+	error_exit("DIMENSION_1 not present");
+      if (qcdhdr_get_int("DIMENSION_2",hdr,dims+1)==FAILURE)
+	error_exit("DIMENSION_2 not present");
+      if (qcdhdr_get_int("DIMENSION_3",hdr,dims+2)==FAILURE)
+	error_exit("DIMENSION_3 not present");
+      if (qcdhdr_get_int("DIMENSION_4",hdr,dims+3)==FAILURE)
+	error_exit("DIMENSION_4 not present");
+
+      for(i=0; i<4; i++) gh->dims[i] = dims[i];
+
+      /* Get archive checksum */
+      if (qcdhdr_get_int32x("CHECKSUM",hdr,&chksum)==FAILURE)
+	error_exit("CHECKSUM not present");
+      gf->check.sum31 = chksum;
+    }
+
+  /* not a archive lattice - read lattice dimensions */
+  else
+    {
+      if(psread_byteorder(byterevflag,parallel,fp,gh->dims,sizeof(gh->dims),
+			  myname,"dimensions")!=0)terminate(1);
+    }
+
+  /* Check lattice dimensions for consistency */
+
+  if(gh->dims[0] != nx || 
+     gh->dims[1] != ny ||
+     gh->dims[2] != nz ||
+     gh->dims[3] != nt)
+    {
+      /* So we can use this routine to discover the dimensions,
+	 we provide that if nx = ny = nz = nt = -1 initially
+	 we don't die */
+      if(nx != -1 || ny != -1 || nz != -1 || nt != -1)
+	{
+	  printf("%s: Incorrect lattice dimensions ",myname);
+	  for(j=0;j<4;j++)
+	    printf("%d ",gh->dims[j]); 
+	  printf("\n");fflush(stdout);terminate(1);
+	}
+      else
+	{
+	  nx = gh->dims[0];
+	  ny = gh->dims[1];
+	  nz = gh->dims[2];
+	  nt = gh->dims[3];
+	  volume = nx*ny*nz*nt;
+	}
+    }
+
+  if(ARCHYES) {
+
+  /* After we are done processing the archive header information, we
+     discard it */
+
+    qcdhdr_destroy_hdr(hdr);
+  }
+
+  else {
+    
+    /* Read date and time stamp */
+    
+    if(psread_data(parallel,fp,gh->time_stamp,sizeof(gh->time_stamp),
+		   myname,"time stamp")!=0)terminate(1);
+    
+    /* Read header byte length */
+    
+    gh->header_bytes = sizeof(gh->magic_number) + sizeof(gh->dims) + 
+      sizeof(gh->time_stamp) + sizeof(gh->order);
+    
+    /* Read data order */
+    
+    if(psread_byteorder(byterevflag,parallel,fp,&gh->order,sizeof(gh->order),
+			myname,"order parameter")!=0)terminate(1);
+  }  
+
+  return byterevflag;
+  
+} /* read_gauge_hdr */

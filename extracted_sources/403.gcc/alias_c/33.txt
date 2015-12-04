@@ -1,0 +1,18 @@
+void
+init_alias_once ()
+{
+  int i;
+
+#ifndef OUTGOING_REGNO
+#define OUTGOING_REGNO(N) N
+#endif
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    /* Check whether this register can hold an incoming pointer
+       argument.  FUNCTION_ARG_REGNO_P tests outgoing register
+       numbers, so translate if necessary due to register windows.  */
+    if (FUNCTION_ARG_REGNO_P (OUTGOING_REGNO (i))
+	&& HARD_REGNO_MODE_OK (i, Pmode))
+      SET_HARD_REG_BIT (argument_registers, i);
+
+  alias_sets = splay_tree_new (splay_tree_compare_ints, 0, 0);
+}

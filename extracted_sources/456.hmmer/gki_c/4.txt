@@ -1,0 +1,18 @@
+static GKI *
+gki_alloc(int primelevel)
+{
+  GKI *hash;
+  int  i;
+
+  if (primelevel < 0 || primelevel >= GKI_NPRIMES) 
+    Die("bad primelevel in gki_alloc()");
+  hash = MallocOrDie(sizeof(GKI));
+
+  hash->primelevel = primelevel;
+  hash->nhash      = gki_primes[hash->primelevel];
+  hash->table      = MallocOrDie(sizeof(struct gki_elem) * hash->nhash);
+  for (i = 0; i < hash->nhash; i++)
+    hash->table[i] = NULL;
+  hash->nkeys = 0;
+  return hash;
+}  

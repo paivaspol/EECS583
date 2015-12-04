@@ -1,0 +1,173 @@
+static void
+output_die (die)
+     dw_die_ref die;
+{
+  dw_attr_ref a;
+  dw_die_ref c;
+  unsigned long size;
+
+  /* If someone in another CU might refer to us, set up a symbol for
+     them to point to.  */
+  if (die->die_symbol)
+    output_die_symbol (die);
+
+  dw2_asm_output_data_uleb128 (die->die_abbrev, "(DIE (0x%lx) %s)",
+			       die->die_offset, dwarf_tag_name (die->die_tag));
+
+  for (a = die->die_attr; a != NULL; a = a->dw_attr_next)
+    {
+      const char *name = dwarf_attr_name (a->dw_attr);
+
+      switch (AT_class (a))
+	{
+	case dw_val_class_addr:
+	  dw2_asm_output_addr_rtx (DWARF2_ADDR_SIZE, AT_addr (a), "%s", name);
+	  break;
+
+	case dw_val_class_offset:
+	  dw2_asm_output_data (DWARF_OFFSET_SIZE, a->dw_attr_val.v.val_offset,
+			       "%s", name);
+	  break;
+
+	case dw_val_class_range_list:
+	  {
+	    char *p = strchr (ranges_section_label, '\0');
+
+	    sprintf (p, "+0x%lx", a->dw_attr_val.v.val_offset);
+	    dw2_asm_output_offset (DWARF_OFFSET_SIZE, ranges_section_label,
+				   "%s", name);
+	    *p = '\0';
+	  }
+	  break;
+
+	case dw_val_class_loc:
+	  size = size_of_locs (AT_loc (a));
+
+	  /* Output the block length for this list of location operations.  */
+	  dw2_asm_output_data (constant_size (size), size, "%s", name);
+
+	  output_loc_sequence (AT_loc (a));
+	  break;
+
+	case dw_val_class_const:
+	  /* ??? It would be slightly more efficient to use a scheme like is
+	     used for unsigned constants below, but gdb 4.x does not sign
+	     extend.  Gdb 5.x does sign extend.  */
+	  dw2_asm_output_data_sleb128 (AT_int (a), "%s", name);
+	  break;
+
+	case dw_val_class_unsigned_const:
+	  dw2_asm_output_data (constant_size (AT_unsigned (a)),
+			       AT_unsigned (a), "%s", name);
+	  break;
+
+	case dw_val_class_long_long:
+	  {
+	    unsigned HOST_WIDE_INT first, second;
+
+	    dw2_asm_output_data (1,
+				 2 * HOST_BITS_PER_LONG / HOST_BITS_PER_CHAR,
+			         "%s", name);
+
+	    if (WORDS_BIG_ENDIAN)
+	      {
+		first = a->dw_attr_val.v.val_long_long.hi;
+		second = a->dw_attr_val.v.val_long_long.low;
+	      }
+	    else
+	      {
+		first = a->dw_attr_val.v.val_long_long.low;
+		second = a->dw_attr_val.v.val_long_long.hi;
+	      }
+
+	    dw2_asm_output_data (HOST_BITS_PER_LONG / HOST_BITS_PER_CHAR,
+				 first, "long long constant");
+	    dw2_asm_output_data (HOST_BITS_PER_LONG / HOST_BITS_PER_CHAR,
+				 second, NULL);
+	  }
+	  break;
+
+	case dw_val_class_float:
+	  {
+	    unsigned int i;
+
+	    dw2_asm_output_data (1, a->dw_attr_val.v.val_float.length * 4,
+			         "%s", name);
+
+	    for (i = 0; i < a->dw_attr_val.v.val_float.length; i++)
+	      dw2_asm_output_data (4, a->dw_attr_val.v.val_float.array[i],
+				   "fp constant word %u", i);
+	    break;
+	  }
+
+	case dw_val_class_flag:
+	  dw2_asm_output_data (1, AT_flag (a), "%s", name);
+	  break;
+
+        case dw_val_class_loc_list:
+	  {
+	    char *sym = AT_loc_list (a)->ll_symbol;
+
+	    if (sym == 0)
+	      abort ();
+	    dw2_asm_output_delta (DWARF_OFFSET_SIZE, sym,
+				  loc_section_label, "%s", name);
+	  }
+	  break;
+
+	case dw_val_class_die_ref:
+	  if (AT_ref_external (a))
+	    {
+	      char *sym = AT_ref (a)->die_symbol;
+
+	      if (sym == 0)
+		abort ();
+	      dw2_asm_output_offset (DWARF2_ADDR_SIZE, sym, "%s", name);
+	    }
+	  else if (AT_ref (a)->die_offset == 0)
+	    abort ();
+	  else
+	    dw2_asm_output_data (DWARF_OFFSET_SIZE, AT_ref (a)->die_offset,
+				 "%s", name);
+	  break;
+
+	case dw_val_class_fde_ref:
+	  {
+	    char l1[20];
+
+	    ASM_GENERATE_INTERNAL_LABEL (l1, FDE_LABEL,
+					 a->dw_attr_val.v.val_fde_index * 2);
+	    dw2_asm_output_offset (DWARF_OFFSET_SIZE, l1, "%s", name);
+	  }
+	  break;
+
+	case dw_val_class_lbl_id:
+	  dw2_asm_output_addr (DWARF2_ADDR_SIZE, AT_lbl (a), "%s", name);
+	  break;
+
+	case dw_val_class_lbl_offset:
+	  dw2_asm_output_offset (DWARF_OFFSET_SIZE, AT_lbl (a), "%s", name);
+	  break;
+
+	case dw_val_class_str:
+	  if (AT_string_form (a) == DW_FORM_strp)
+	    dw2_asm_output_offset (DWARF_OFFSET_SIZE,
+				   a->dw_attr_val.v.val_str->label,
+				   "%s: \"%s\"", name, AT_string (a));
+	  else
+	    dw2_asm_output_nstring (AT_string (a), -1, "%s", name);
+	  break;
+
+	default:
+	  abort ();
+	}
+    }
+
+  for (c = die->die_child; c != NULL; c = c->die_sib)
+    output_die (c);
+
+  /* Add null byte to terminate sibling list.  */
+  if (die->die_child != NULL)
+    dw2_asm_output_data (1, 0, "end of children of DIE 0x%lx",
+			 die->die_offset);
+}

@@ -1,0 +1,21 @@
+static inline void
+add_pure_or_virtual_attribute (die, func_decl)
+     dw_die_ref die;
+     tree func_decl;
+{
+  if (DECL_VINDEX (func_decl))
+    {
+      add_AT_unsigned (die, DW_AT_virtuality, DW_VIRTUALITY_virtual);
+
+      if (host_integerp (DECL_VINDEX (func_decl), 0))
+	add_AT_loc (die, DW_AT_vtable_elem_location,
+		    new_loc_descr (DW_OP_constu,
+				   tree_low_cst (DECL_VINDEX (func_decl), 0),
+				   0));
+
+      /* GNU extension: Record what type this method came from originally.  */
+      if (debug_info_level > DINFO_LEVEL_TERSE)
+	add_AT_die_ref (die, DW_AT_containing_type,
+			lookup_type_die (DECL_CONTEXT (func_decl)));
+    }
+}

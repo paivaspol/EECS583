@@ -1,0 +1,63 @@
+void
+free_eh_status (f)
+     struct function *f;
+{
+  struct eh_status *eh = f->eh;
+
+  if (eh->region_array)
+    {
+      int i;
+      for (i = eh->last_region_number; i > 0; --i)
+	{
+	  struct eh_region *r = eh->region_array[i];
+	  /* Mind we don't free a region struct more than once.  */
+	  if (r && r->region_number == i)
+	    free_region (r);
+	}
+      free (eh->region_array);
+    }
+  else if (eh->region_tree)
+    {
+      struct eh_region *next, *r = eh->region_tree;
+      while (1)
+	{
+	  if (r->inner)
+	    r = r->inner;
+	  else if (r->next_peer)
+	    {
+	      next = r->next_peer;
+	      free_region (r);
+	      r = next;
+	    }
+	  else
+	    {
+	      do {
+	        next = r->outer;
+	        free_region (r);
+	        r = next;
+		if (r == NULL)
+		  goto tree_done;
+	      } while (r->next_peer == NULL);
+	      next = r->next_peer;
+	      free_region (r);
+	      r = next;
+	    }
+	}
+    tree_done:;
+    }
+
+  VARRAY_FREE (eh->ttype_data);
+  VARRAY_FREE (eh->ehspec_data);
+  VARRAY_FREE (eh->action_record_data);
+  if (eh->call_site_data)
+    free (eh->call_site_data);
+
+  free (eh);
+  f->eh = NULL;
+
+  if (exception_handler_label_map)
+    {
+      htab_delete (exception_handler_label_map);
+      exception_handler_label_map = NULL;
+    }
+}

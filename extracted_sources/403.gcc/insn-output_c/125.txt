@@ -1,0 +1,29 @@
+static const char *
+output_224 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+{
+  switch (get_attr_type (insn))
+    {
+    case TYPE_INCDEC:
+      if (operands[2] == const1_rtx)
+	return "inc{b}\t%0";
+      else if (operands[2] == constm1_rtx
+	       || (GET_CODE (operands[2]) == CONST_INT
+		   && INTVAL (operands[2]) == 255))
+	return "dec{b}\t%0";
+      abort();
+
+    default:
+      /* Make things pretty and `subb $4,%al' rather than `addb $-4, %al'.  */
+      if (GET_CODE (operands[2]) == CONST_INT
+          && INTVAL (operands[2]) < 0)
+	{
+	  operands[2] = GEN_INT (-INTVAL (operands[2]));
+	  return "sub{b}\t{%2, %0|%0, %2}";
+	}
+      return "add{b}\t{%2, %0|%0, %2}";
+    }
+}
+}

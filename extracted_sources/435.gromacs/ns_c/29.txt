@@ -1,0 +1,29 @@
+static void do_longrange(FILE *log,t_commrec *cr,t_topology *top,t_forcerec *fr,
+			 int ngid,t_mdatoms *md,int icg,
+			 int jgid,int nlr,
+			 atom_id lr[],t_excl bexcl[],int shift,
+			 rvec x[],rvec box_size,t_nrnb *nrnb,
+			 real lambda,real *dvdlambda,
+			 t_groups *grps,bool bVDWOnly,bool bCoulOnly,
+			 bool bDoForces,bool bHaveLJ[])
+{
+  int i;
+  for(i=0; (i<eNL_NR); i++) {
+    if ((fr->nlist_lr[i].nri > fr->nlist_lr[i].maxnri-32) || bDoForces) {
+      close_neighbor_list(fr,TRUE,i);
+      /* Evaluate the forces */
+      do_fnbf(log,cr,fr,x,fr->f_twin,md,
+	      grps->estat.ee[egLJLR],grps->estat.ee[egLR],box_size,
+	      nrnb,lambda,dvdlambda,TRUE,i);
+      
+      reset_neighbor_list(fr,TRUE,i);
+    }
+  }
+
+  if (!bDoForces) {  
+    /* Put the long range particles in a list */
+    put_in_list(bHaveLJ,ngid,md,icg,jgid,nlr,lr,top->blocks[ebCGS].index,
+		/* top->blocks[ebCGS].a, */ bexcl,shift,fr,
+		TRUE,bVDWOnly,bCoulOnly);
+  }
+}

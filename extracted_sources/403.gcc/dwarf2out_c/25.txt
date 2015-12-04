@@ -1,0 +1,325 @@
+static void
+dwarf2out_frame_debug_expr (expr, label)
+     rtx expr;
+     const char *label;
+{
+  rtx src, dest;
+  HOST_WIDE_INT offset;
+
+  /* If RTX_FRAME_RELATED_P is set on a PARALLEL, process each member of
+     the PARALLEL independently. The first element is always processed if
+     it is a SET. This is for backward compatibility.   Other elements
+     are processed only if they are SETs and the RTX_FRAME_RELATED_P
+     flag is set in them.  */
+  if (GET_CODE (expr) == PARALLEL || GET_CODE (expr) == SEQUENCE)
+    {
+      int par_index;
+      int limit = XVECLEN (expr, 0);
+
+      for (par_index = 0; par_index < limit; par_index++)
+	if (GET_CODE (XVECEXP (expr, 0, par_index)) == SET
+	    && (RTX_FRAME_RELATED_P (XVECEXP (expr, 0, par_index))
+		|| par_index == 0))
+	  dwarf2out_frame_debug_expr (XVECEXP (expr, 0, par_index), label);
+
+      return;
+    }
+
+  if (GET_CODE (expr) != SET)
+    abort ();
+
+  src = SET_SRC (expr);
+  dest = SET_DEST (expr);
+
+  switch (GET_CODE (dest))
+    {
+    case REG:
+      /* Rule 1 */
+      /* Update the CFA rule wrt SP or FP.  Make sure src is
+         relative to the current CFA register.  */
+      switch (GET_CODE (src))
+	{
+	  /* Setting FP from SP.  */
+	case REG:
+	  if (cfa.reg == (unsigned) REGNO (src))
+	    /* OK.  */
+	    ;
+	  else
+	    abort ();
+
+	  /* We used to require that dest be either SP or FP, but the
+	     ARM copies SP to a temporary register, and from there to
+	     FP.  So we just rely on the backends to only set
+	     RTX_FRAME_RELATED_P on appropriate insns.  */
+	  cfa.reg = REGNO (dest);
+	  cfa_temp.reg = cfa.reg;
+	  cfa_temp.offset = cfa.offset;
+	  break;
+
+	case PLUS:
+	case MINUS:
+	case LO_SUM:
+	  if (dest == stack_pointer_rtx)
+	    {
+	      /* Rule 2 */
+	      /* Adjusting SP.  */
+	      switch (GET_CODE (XEXP (src, 1)))
+		{
+		case CONST_INT:
+		  offset = INTVAL (XEXP (src, 1));
+		  break;
+		case REG:
+		  if ((unsigned) REGNO (XEXP (src, 1)) != cfa_temp.reg)
+		    abort ();
+		  offset = cfa_temp.offset;
+		  break;
+		default:
+		  abort ();
+		}
+
+	      if (XEXP (src, 0) == hard_frame_pointer_rtx)
+		{
+		  /* Restoring SP from FP in the epilogue.  */
+		  if (cfa.reg != (unsigned) HARD_FRAME_POINTER_REGNUM)
+		    abort ();
+		  cfa.reg = STACK_POINTER_REGNUM;
+		}
+	      else if (GET_CODE (src) == LO_SUM)
+		/* Assume we've set the source reg of the LO_SUM from sp.  */
+		;
+	      else if (XEXP (src, 0) != stack_pointer_rtx)
+		abort ();
+
+	      if (GET_CODE (src) != MINUS)
+		offset = -offset;
+	      if (cfa.reg == STACK_POINTER_REGNUM)
+		cfa.offset += offset;
+	      if (cfa_store.reg == STACK_POINTER_REGNUM)
+		cfa_store.offset += offset;
+	    }
+	  else if (dest == hard_frame_pointer_rtx)
+	    {
+	      /* Rule 3 */
+	      /* Either setting the FP from an offset of the SP,
+		 or adjusting the FP */
+	      if (! frame_pointer_needed)
+		abort ();
+
+	      if (GET_CODE (XEXP (src, 0)) == REG
+		  && (unsigned) REGNO (XEXP (src, 0)) == cfa.reg
+		  && GET_CODE (XEXP (src, 1)) == CONST_INT)
+		{
+		  offset = INTVAL (XEXP (src, 1));
+		  if (GET_CODE (src) != MINUS)
+		    offset = -offset;
+		  cfa.offset += offset;
+		  cfa.reg = HARD_FRAME_POINTER_REGNUM;
+		}
+	      else
+		abort ();
+	    }
+	  else
+	    {
+	      if (GET_CODE (src) == MINUS)
+		abort ();
+
+	      /* Rule 4 */
+	      if (GET_CODE (XEXP (src, 0)) == REG
+		  && REGNO (XEXP (src, 0)) == cfa.reg
+		  && GET_CODE (XEXP (src, 1)) == CONST_INT)
+		{
+		  /* Setting a temporary CFA register that will be copied
+		     into the FP later on.  */
+		  offset = - INTVAL (XEXP (src, 1));
+		  cfa.offset += offset;
+		  cfa.reg = REGNO (dest);
+		  /* Or used to save regs to the stack.  */
+		  cfa_temp.reg = cfa.reg;
+		  cfa_temp.offset = cfa.offset;
+		}
+
+	      /* Rule 5 */
+	      else if (GET_CODE (XEXP (src, 0)) == REG
+		       && REGNO (XEXP (src, 0)) == cfa_temp.reg
+		       && XEXP (src, 1) == stack_pointer_rtx)
+		{
+		  /* Setting a scratch register that we will use instead
+		     of SP for saving registers to the stack.  */
+		  if (cfa.reg != STACK_POINTER_REGNUM)
+		    abort ();
+		  cfa_store.reg = REGNO (dest);
+		  cfa_store.offset = cfa.offset - cfa_temp.offset;
+		}
+
+	      /* Rule 9 */
+	      else if (GET_CODE (src) == LO_SUM
+		       && GET_CODE (XEXP (src, 1)) == CONST_INT)
+		{
+		  cfa_temp.reg = REGNO (dest);
+		  cfa_temp.offset = INTVAL (XEXP (src, 1));
+		}
+	      else
+		abort ();
+	    }
+	  break;
+
+	  /* Rule 6 */
+	case CONST_INT:
+	  cfa_temp.reg = REGNO (dest);
+	  cfa_temp.offset = INTVAL (src);
+	  break;
+
+	  /* Rule 7 */
+	case IOR:
+	  if (GET_CODE (XEXP (src, 0)) != REG
+	      || (unsigned) REGNO (XEXP (src, 0)) != cfa_temp.reg
+	      || GET_CODE (XEXP (src, 1)) != CONST_INT)
+	    abort ();
+
+	  if ((unsigned) REGNO (dest) != cfa_temp.reg)
+	    cfa_temp.reg = REGNO (dest);
+	  cfa_temp.offset |= INTVAL (XEXP (src, 1));
+	  break;
+
+	  /* Skip over HIGH, assuming it will be followed by a LO_SUM,
+	     which will fill in all of the bits.  */
+	  /* Rule 8 */
+	case HIGH:
+	  break;
+
+	default:
+	  abort ();
+	}
+
+      def_cfa_1 (label, &cfa);
+      break;
+
+    case MEM:
+      if (GET_CODE (src) != REG)
+	abort ();
+
+      /* Saving a register to the stack.  Make sure dest is relative to the
+	 CFA register.  */
+      switch (GET_CODE (XEXP (dest, 0)))
+	{
+	  /* Rule 10 */
+	  /* With a push.  */
+	case PRE_MODIFY:
+	  /* We can't handle variable size modifications.  */
+	  if (GET_CODE (XEXP (XEXP (XEXP (dest, 0), 1), 1)) != CONST_INT)
+	    abort ();
+	  offset = -INTVAL (XEXP (XEXP (XEXP (dest, 0), 1), 1));
+
+	  if (REGNO (XEXP (XEXP (dest, 0), 0)) != STACK_POINTER_REGNUM
+	      || cfa_store.reg != STACK_POINTER_REGNUM)
+	    abort ();
+
+	  cfa_store.offset += offset;
+	  if (cfa.reg == STACK_POINTER_REGNUM)
+	    cfa.offset = cfa_store.offset;
+
+	  offset = -cfa_store.offset;
+	  break;
+
+	  /* Rule 11 */
+	case PRE_INC:
+	case PRE_DEC:
+	  offset = GET_MODE_SIZE (GET_MODE (dest));
+	  if (GET_CODE (XEXP (dest, 0)) == PRE_INC)
+	    offset = -offset;
+
+	  if (REGNO (XEXP (XEXP (dest, 0), 0)) != STACK_POINTER_REGNUM
+	      || cfa_store.reg != STACK_POINTER_REGNUM)
+	    abort ();
+
+	  cfa_store.offset += offset;
+	  if (cfa.reg == STACK_POINTER_REGNUM)
+	    cfa.offset = cfa_store.offset;
+
+	  offset = -cfa_store.offset;
+	  break;
+
+	  /* Rule 12 */
+	  /* With an offset.  */
+	case PLUS:
+	case MINUS:
+	case LO_SUM:
+	  if (GET_CODE (XEXP (XEXP (dest, 0), 1)) != CONST_INT)
+	    abort ();
+	  offset = INTVAL (XEXP (XEXP (dest, 0), 1));
+	  if (GET_CODE (XEXP (dest, 0)) == MINUS)
+	    offset = -offset;
+
+	  if (cfa_store.reg == (unsigned) REGNO (XEXP (XEXP (dest, 0), 0)))
+	    offset -= cfa_store.offset;
+	  else if (cfa_temp.reg == (unsigned) REGNO (XEXP (XEXP (dest, 0), 0)))
+	    offset -= cfa_temp.offset;
+	  else
+	    abort ();
+	  break;
+
+	  /* Rule 13 */
+	  /* Without an offset.  */
+	case REG:
+	  if (cfa_store.reg == (unsigned) REGNO (XEXP (dest, 0)))
+	    offset = -cfa_store.offset;
+	  else if (cfa_temp.reg == (unsigned) REGNO (XEXP (dest, 0)))
+	    offset = -cfa_temp.offset;
+	  else
+	    abort ();
+	  break;
+
+	  /* Rule 14 */
+	case POST_INC:
+	  if (cfa_temp.reg != (unsigned) REGNO (XEXP (XEXP (dest, 0), 0)))
+	    abort ();
+	  offset = -cfa_temp.offset;
+	  cfa_temp.offset -= GET_MODE_SIZE (GET_MODE (dest));
+	  break;
+
+	default:
+	  abort ();
+	}
+
+      if (REGNO (src) != STACK_POINTER_REGNUM
+	  && REGNO (src) != HARD_FRAME_POINTER_REGNUM
+	  && (unsigned) REGNO (src) == cfa.reg)
+	{
+	  /* We're storing the current CFA reg into the stack.  */
+
+	  if (cfa.offset == 0)
+	    {
+	      /* If the source register is exactly the CFA, assume
+		 we're saving SP like any other register; this happens
+		 on the ARM.  */
+	      def_cfa_1 (label, &cfa);
+	      queue_reg_save (label, stack_pointer_rtx, offset);
+	      break;
+	    }
+	  else
+	    {
+	      /* Otherwise, we'll need to look in the stack to
+                 calculate the CFA.  */
+	      rtx x = XEXP (dest, 0);
+
+	      if (GET_CODE (x) != REG)
+		x = XEXP (x, 0);
+	      if (GET_CODE (x) != REG)
+		abort ();
+
+	      cfa.reg = REGNO (x);
+	      cfa.base_offset = offset;
+	      cfa.indirect = 1;
+	      def_cfa_1 (label, &cfa);
+	      break;
+	    }
+	}
+
+      def_cfa_1 (label, &cfa);
+      queue_reg_save (label, src, offset);
+      break;
+
+    default:
+      abort ();
+    }
+}

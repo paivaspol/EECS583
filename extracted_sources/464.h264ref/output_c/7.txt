@@ -1,0 +1,28 @@
+void write_unpaired_field(FrameStore* fs, int p_out)
+{
+  StorablePicture *p;
+  assert (fs->is_used<3);
+  if(fs->is_used &1)
+  {
+    // we have a top field
+    // construct an empty bottom field
+    p = fs->top_field;
+    fs->bottom_field = alloc_storable_picture(BOTTOM_FIELD, p->size_x, p->size_y, p->size_x_cr, p->size_y_cr);
+    clear_picture(fs->bottom_field);
+    dpb_combine_field(fs);
+    write_picture (fs->frame, p_out, TOP_FIELD);
+  }
+
+  if(fs->is_used &2)
+  {
+    // we have a bottom field
+    // construct an empty top field
+    p = fs->bottom_field;
+    fs->top_field = alloc_storable_picture(TOP_FIELD, p->size_x, p->size_y, p->size_x_cr, p->size_y_cr);
+    clear_picture(fs->top_field);
+    dpb_combine_field(fs);
+    write_picture (fs->frame, p_out, BOTTOM_FIELD);
+  }
+
+  fs->is_used=3;
+}

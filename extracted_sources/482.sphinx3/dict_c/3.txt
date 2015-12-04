@@ -1,0 +1,54 @@
+static int32 dict_build_comp (dict_t *d,
+			      char sep)		/* Separator character */
+{
+    char wd[4096];
+    int32 w, cwid;
+    dictword_t *wordp;
+    int32 nc;		/* # compound words in dictionary */
+    int32 i, j, l, n;
+    
+    nc = 0;
+    for (w = 0; w < d->n_word; w++) {
+	wordp = d->word + dict_basewid(d, w);
+	strcpy (wd, wordp->word);
+	l = strlen(wd);
+	if ((wd[0] == sep) || (wd[l-1] == sep))
+	    E_FATAL("Bad compound word %s: leading or trailing separator\n", wordp->word);
+	
+	/* Count no. of components in this word */
+	n = 1;
+	for (i = 1; i < l-1; i++)	/* 0 and l-1 already checked above */
+	    if (wd[i] == sep)
+		n++;
+	if (n == 1)
+	    continue;		/* Not a compound word */
+	nc++;
+	
+	if ((w == d->startwid) || (w == d->finishwid) || dict_filler_word (d, w))
+	    E_FATAL("Compound special/filler word (%s) not allowed\n", wordp->word);
+	
+	/* Allocate and fill in component word info */
+	wordp->n_comp = n;
+	wordp->comp = (s3wid_t *) ckd_calloc (n, sizeof(s3wid_t)); /* freed in dict_free */
+	
+	/* Parse word string into components */
+	n = 0;
+	for (i = 0; i < l; i++) {
+	    for (j = i; (i < l) && (wd[i] != sep); i++);
+	    if (j == i)
+		E_FATAL("Bad compound word %s: successive separators\n", wordp->word);
+	    
+	    wd[i] = '\0';
+	    cwid = dict_wordid (d, wd+j);
+	    if (NOT_S3WID(cwid))
+		E_FATAL("Component word %s of %s not in dictionary\n", wd+j, wordp->word);
+	    wordp->comp[n] = cwid;
+	    n++;
+	}
+    }
+    
+    if (nc > 0)
+	d->comp_head = dict_comp_head (d);
+    
+    return nc;
+}

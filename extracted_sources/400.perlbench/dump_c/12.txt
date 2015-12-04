@@ -1,0 +1,117 @@
+void
+Perl_do_magic_dump(pTHX_ I32 level, PerlIO *file, MAGIC *mg, I32 nest, I32 maxnest, bool dumpops, STRLEN pvlim)
+{
+    for (; mg; mg = mg->mg_moremagic) {
+ 	Perl_dump_indent(aTHX_ level, file,
+			 "  MAGIC = 0x%"UVxf"\n", PTR2UV(mg));
+ 	if (mg->mg_virtual) {
+            MGVTBL *v = mg->mg_virtual;
+ 	    char *s = 0;
+ 	    if      (v == &PL_vtbl_sv)         s = "sv";
+            else if (v == &PL_vtbl_env)        s = "env";
+            else if (v == &PL_vtbl_envelem)    s = "envelem";
+            else if (v == &PL_vtbl_sig)        s = "sig";
+            else if (v == &PL_vtbl_sigelem)    s = "sigelem";
+            else if (v == &PL_vtbl_pack)       s = "pack";
+            else if (v == &PL_vtbl_packelem)   s = "packelem";
+            else if (v == &PL_vtbl_dbline)     s = "dbline";
+            else if (v == &PL_vtbl_isa)        s = "isa";
+            else if (v == &PL_vtbl_arylen)     s = "arylen";
+            else if (v == &PL_vtbl_glob)       s = "glob";
+            else if (v == &PL_vtbl_mglob)      s = "mglob";
+            else if (v == &PL_vtbl_nkeys)      s = "nkeys";
+            else if (v == &PL_vtbl_taint)      s = "taint";
+            else if (v == &PL_vtbl_substr)     s = "substr";
+            else if (v == &PL_vtbl_vec)        s = "vec";
+            else if (v == &PL_vtbl_pos)        s = "pos";
+            else if (v == &PL_vtbl_bm)         s = "bm";
+            else if (v == &PL_vtbl_fm)         s = "fm";
+            else if (v == &PL_vtbl_uvar)       s = "uvar";
+            else if (v == &PL_vtbl_defelem)    s = "defelem";
+#ifdef USE_LOCALE_COLLATE
+	    else if (v == &PL_vtbl_collxfrm)   s = "collxfrm";
+#endif
+	    else if (v == &PL_vtbl_amagic)     s = "amagic";
+	    else if (v == &PL_vtbl_amagicelem) s = "amagicelem";
+	    else if (v == &PL_vtbl_backref)    s = "backref";
+	    else if (v == &PL_vtbl_utf8)       s = "utf8";
+	    if (s)
+	        Perl_dump_indent(aTHX_ level, file, "    MG_VIRTUAL = &PL_vtbl_%s\n", s);
+	    else
+	        Perl_dump_indent(aTHX_ level, file, "    MG_VIRTUAL = 0x%"UVxf"\n", PTR2UV(v));
+        }
+	else
+	    Perl_dump_indent(aTHX_ level, file, "    MG_VIRTUAL = 0\n");
+
+	if (mg->mg_private)
+	    Perl_dump_indent(aTHX_ level, file, "    MG_PRIVATE = %d\n", mg->mg_private);
+
+	{
+	    int n;
+	    char *name = 0;
+	    for (n=0; magic_names[n].name; n++) {
+		if (mg->mg_type == magic_names[n].type) {
+		    name = magic_names[n].name;
+		    break;
+		}
+	    }
+	    if (name)
+		Perl_dump_indent(aTHX_ level, file,
+				"    MG_TYPE = PERL_MAGIC_%s\n", name);
+	    else
+		Perl_dump_indent(aTHX_ level, file,
+				"    MG_TYPE = UNKNOWN(\\%o)\n", mg->mg_type);
+	}
+
+        if (mg->mg_flags) {
+            Perl_dump_indent(aTHX_ level, file, "    MG_FLAGS = 0x%02X\n", mg->mg_flags);
+	    if (mg->mg_type == PERL_MAGIC_envelem &&
+		mg->mg_flags & MGf_TAINTEDDIR)
+	        Perl_dump_indent(aTHX_ level, file, "      TAINTEDDIR\n");
+	    if (mg->mg_flags & MGf_REFCOUNTED)
+	        Perl_dump_indent(aTHX_ level, file, "      REFCOUNTED\n");
+            if (mg->mg_flags & MGf_GSKIP)
+	        Perl_dump_indent(aTHX_ level, file, "      GSKIP\n");
+	    if (mg->mg_type == PERL_MAGIC_regex_global &&
+		mg->mg_flags & MGf_MINMATCH)
+	        Perl_dump_indent(aTHX_ level, file, "      MINMATCH\n");
+        }
+	if (mg->mg_obj) {
+	    Perl_dump_indent(aTHX_ level, file, "    MG_OBJ = 0x%"UVxf"\n", PTR2UV(mg->mg_obj));
+	    if (mg->mg_flags & MGf_REFCOUNTED)
+		do_sv_dump(level+2, file, mg->mg_obj, nest+1, maxnest, dumpops, pvlim); /* MG is already +1 */
+	}
+        if (mg->mg_len)
+	    Perl_dump_indent(aTHX_ level, file, "    MG_LEN = %ld\n", (long)mg->mg_len);
+        if (mg->mg_ptr) {
+	    Perl_dump_indent(aTHX_ level, file, "    MG_PTR = 0x%"UVxf, PTR2UV(mg->mg_ptr));
+	    if (mg->mg_len >= 0) {
+		 if (mg->mg_type != PERL_MAGIC_utf8) {
+		      SV *sv = newSVpvn("", 0);
+		      PerlIO_printf(file, " %s", pv_display(sv, mg->mg_ptr, mg->mg_len, 0, pvlim));
+		      SvREFCNT_dec(sv);
+		 }
+            }
+	    else if (mg->mg_len == HEf_SVKEY) {
+		PerlIO_puts(file, " => HEf_SVKEY\n");
+		do_sv_dump(level+2, file, (SV*)((mg)->mg_ptr), nest+1, maxnest, dumpops, pvlim); /* MG is already +1 */
+		continue;
+	    }
+	    else
+		PerlIO_puts(file, " ???? - please notify IZ");
+            PerlIO_putc(file, '\n');
+        }
+	if (mg->mg_type == PERL_MAGIC_utf8) {
+	     STRLEN *cache = (STRLEN *) mg->mg_ptr;
+	     if (cache) {
+		  IV i;
+		  for (i = 0; i < PERL_MAGIC_UTF8_CACHESIZE; i++)
+		       Perl_dump_indent(aTHX_ level, file,
+					"      %2"IVdf": %"UVuf" -> %"UVuf"\n",
+					i,
+					(UV)cache[i * 2],
+					(UV)cache[i * 2 + 1]);
+	     }
+	}
+    }
+}

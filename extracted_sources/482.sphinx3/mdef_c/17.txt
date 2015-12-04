@@ -1,0 +1,46 @@
+void mdef_free (mdef_t *m)
+{
+  int i,j;
+
+  if (m) { 
+    if (m->ciphone2n_cd_sen)
+      ckd_free    ((void *)m->ciphone2n_cd_sen);
+    if (m->sen2cimap)
+      ckd_free    ((void *)m->sen2cimap);
+    if (m->cd2cisen)
+      ckd_free    ((void *)m->cd2cisen);
+
+    /* RAH, go down the ->next list and delete all the pieces */
+    for (i=0;i<N_WORD_POSN;i++)
+      for (j=0;j<m->n_ciphone;j++) 
+	if (m->wpos_ci_lclist[i][j]) {
+	  mdef_free_recursive_lc (m->wpos_ci_lclist[i][j]->next);
+	  mdef_free_recursive_rc (m->wpos_ci_lclist[i][j]->rclist);
+	}
+    
+    for (i=0;i<N_WORD_POSN;i++)
+      for (j=0;j<m->n_ciphone;j++) 
+	if (m->wpos_ci_lclist[i][j])  
+	  ckd_free ((void *) m->wpos_ci_lclist[i][j]);
+
+    
+    if (m->wpos_ci_lclist)
+      ckd_free_2d ((void *)m->wpos_ci_lclist);
+    if (m->sseq) 
+      ckd_free_2d ((void *)m->sseq);
+    /* Free phone context */
+    if (m->phone) 
+      ckd_free    ((void *)m->phone);    
+    if (m->ciphone_ht)
+      hash_free (m->ciphone_ht);
+
+    for (i=0;i<m->n_ciphone;i++) {
+      if (m->ciphone[i].name) 
+	ckd_free    ((void *)m->ciphone[i].name);
+    }
+    if (m->ciphone) 
+      ckd_free    ((void *)m->ciphone);
+    
+    ckd_free    ((void *)m);
+  }
+}

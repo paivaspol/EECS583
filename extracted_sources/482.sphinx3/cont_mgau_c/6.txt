@@ -1,0 +1,34 @@
+int32 mgau_comp_eval (mgau_model_t *g, int32 s, float32 *x, int32 *score)
+{
+    mgau_t *mgau;
+    int32 veclen;
+    float32 *m, *v;
+    float64 dval, diff, f;
+    int32 bs;
+    int32 i, c;
+    
+    veclen = mgau_veclen(g);
+    mgau = &(g->mgau[s]);
+    f = log_to_logs3_factor();
+
+    bs = MAX_NEG_INT32;
+    for (c = 0; c < mgau->n_comp; c++) {
+	m = mgau->mean[c];
+	v = mgau->var[c];
+	dval = mgau->lrd[c];
+	
+	for (i = 0; i < veclen; i++) {
+	    diff = x[i] - m[i];
+	    dval -= diff * diff * v[i];
+	}
+	
+	if (dval < g->distfloor)
+	    dval = g->distfloor;
+	
+	score[c] = (int32) (f * dval);
+	if (score[c] > bs)
+	    bs = score[c];
+    }
+    
+    return bs;
+}

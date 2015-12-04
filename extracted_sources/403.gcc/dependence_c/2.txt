@@ -1,0 +1,149 @@
+static void
+build_def_use (exp, du_type)
+     tree exp;
+     enum def_use_type du_type;
+{
+  static tree outer_loop;
+  static int nloop;
+  static tree current_loop;
+  static int du_idx;
+  static loop *loop_def;
+  tree node = exp;
+  tree array_ref;
+  def_use *du_ptr;
+
+  if (du_type == init_def_use)
+    {
+      outer_loop = 0;
+      nloop = 0;
+      du_idx = 0;
+    }
+  
+  while (node)
+    switch (TREE_CODE (node))
+      {
+      case COMPOUND_STMT:
+	node = TREE_OPERAND (node, 0);
+	break;
+      case TREE_LIST:
+	build_def_use (TREE_VALUE (node), 0);
+	node = TREE_CHAIN (node);
+	break;
+      case CALL_EXPR:
+	node = TREE_CHAIN (node);
+	break;
+      case FOR_STMT:
+	if (! nloop) outer_loop = node;
+	nloop++;
+	current_loop = node;
+	loop_def = add_loop (node, outer_loop, nloop);
+	if (find_induction_variable (TREE_OPERAND (node, 0),
+				     TREE_OPERAND (node, 1),
+				     TREE_OPERAND (node, 2), loop_def)
+	    == 0)
+	  loop_def->status = unnormal;
+	  
+	build_def_use (TREE_OPERAND (node, 3), 0);
+	nloop--;
+	current_loop = 0;
+	node = TREE_CHAIN (node);
+	break;
+      case MODIFY_EXPR:
+	/* Is an induction variable modified? */
+	if (loop_def 
+	    && TREE_CODE (TREE_OPERAND (node, 0)) == VAR_DECL
+	    && have_induction_variable
+	       (loop_def->outer_loop,
+		IDENTIFIER_POINTER (DECL_NAME (TREE_OPERAND (node, 0)))) >= 0)
+	  loop_def->status = unnormal;
+
+	if (TREE_CODE (TREE_OPERAND (node, 0)) == ARRAY_REF
+	    || TREE_CODE (TREE_OPERAND (node, 0)) == INDIRECT_REF)
+	  build_def_use (TREE_OPERAND (node, 0), def);
+
+	build_def_use (TREE_OPERAND (node, 1), use);
+	node = TREE_CHAIN (node);
+	break;
+      case INDIRECT_REF:
+	if (! TREE_OPERAND (node, 1)
+	    || TREE_CODE (TREE_OPERAND (node, 1)) != ARRAY_REF)
+	  {
+	    node = 0;
+	    break;
+	  }
+	node = TREE_OPERAND (node, 1);
+      case ARRAY_REF:
+	if (nloop)
+	  {
+	    int i;
+	    char null_string = '\0';
+
+	    VARRAY_PUSH_GENERIC_PTR (def_use_chain, xmalloc (sizeof (def_use)));
+	    du_ptr = VARRAY_GENERIC_PTR (def_use_chain, du_idx++);
+	    du_ptr->type = du_type;
+	    du_ptr->status = unseen;
+	    du_ptr->outer_loop = outer_loop;
+	    du_ptr->containing_loop = current_loop;
+	    du_ptr->expression = node;
+	    du_ptr->variable = &null_string;
+	    du_ptr->next = 0;
+	    du_ptr->dep = 0;
+	    for (array_ref = node;
+		 TREE_CODE (array_ref) == ARRAY_REF;
+		 array_ref = TREE_OPERAND (array_ref, 0))
+	      ;
+
+	    if (TREE_CODE (array_ref) == COMPONENT_REF)
+	      {
+		array_ref = TREE_OPERAND (array_ref, 1);
+		if (! (TREE_CODE (array_ref) == FIELD_DECL
+		       && TREE_CODE (TREE_TYPE (array_ref)) == ARRAY_TYPE))
+		  {
+		    node = 0;
+		    break;
+		  }
+	      }
+	    
+	    for (i = 0;
+		 i < du_idx
+		   && strcmp (IDENTIFIER_POINTER (DECL_NAME (array_ref)),
+			      ((def_use*) (VARRAY_GENERIC_PTR
+					   (def_use_chain, i)))->variable);
+		 i++)
+	      ;
+	    if (i != du_idx)
+	      {
+		def_use *tmp_duc;
+		for (tmp_duc = ((def_use*) (VARRAY_GENERIC_PTR (def_use_chain, i)));
+		     tmp_duc->next;
+		     tmp_duc = ((def_use*)tmp_duc->next));
+		tmp_duc->next = du_ptr;
+	      }
+	    else du_ptr->next = 0;
+	    du_ptr->variable = IDENTIFIER_POINTER (DECL_NAME (array_ref));
+	  }
+	node = 0;
+	break;
+
+      case SCOPE_STMT:
+      case DECL_STMT:
+	node = TREE_CHAIN (node);
+	break;
+	
+      case EXPR_STMT:
+	if (TREE_CODE (TREE_OPERAND (node, 0)) == MODIFY_EXPR)
+	  build_def_use (TREE_OPERAND (node, 0), def);
+	node = TREE_CHAIN (node);
+	break;
+
+      default:
+	if (TREE_CODE_CLASS (TREE_CODE (node)) == '2')
+	  {
+	    build_def_use (TREE_OPERAND (node, 0), use);
+	    build_def_use (TREE_OPERAND (node, 1), use);
+	    node = TREE_CHAIN (node);
+	  }
+	else
+	  node = 0;
+      }
+}

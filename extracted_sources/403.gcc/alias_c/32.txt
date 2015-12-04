@@ -1,0 +1,37 @@
+void
+mark_constant_function ()
+{
+  rtx insn;
+  int nonlocal_mentioned;
+
+  if (TREE_PUBLIC (current_function_decl)
+      || TREE_READONLY (current_function_decl)
+      || DECL_IS_PURE (current_function_decl)
+      || TREE_THIS_VOLATILE (current_function_decl)
+      || TYPE_MODE (TREE_TYPE (current_function_decl)) == VOIDmode)
+    return;
+
+  /* A loop might not return which counts as a side effect.  */
+  if (mark_dfs_back_edges ())
+    return;
+
+  nonlocal_mentioned = 0;
+
+  init_alias_analysis ();
+
+  /* Determine if this is a constant function.  */
+
+  for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn) && nonlocal_mentioned_p (insn))
+      {
+	nonlocal_mentioned = 1;
+	break;
+      }
+
+  end_alias_analysis ();
+
+  /* Mark the function.  */
+
+  if (! nonlocal_mentioned)
+    TREE_READONLY (current_function_decl) = 1;
+}

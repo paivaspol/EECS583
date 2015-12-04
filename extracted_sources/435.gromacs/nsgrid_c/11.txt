@@ -1,0 +1,22 @@
+void check_grid(FILE *log,t_grid *grid)
+{
+  int ix,iy,iz,ci,cci,nra;
+
+  ci=0;
+  cci=0;
+  for(ix=0; (ix<grid->nrx); ix++)
+    for(iy=0; (iy<grid->nry); iy++)
+      for(iz=0; (iz<grid->nrz); iz++,ci++) {
+	if (ci > 0) {
+	  nra=grid->index[ci]-grid->index[cci];
+	  if (nra != grid->nra[cci]) 
+	    fatal_error(0,"nra=%d, grid->nra=%d, cci=%d",
+			nra,grid->nra[cci],cci);
+	}
+	cci=xyz2ci(grid->nry,grid->nrz,ix,iy,iz);
+	range_check(cci,grid->ncells);
+	
+	if (cci != ci) 
+	  fatal_error(0,"ci = %d, cci = %d",ci,cci);
+      }
+}

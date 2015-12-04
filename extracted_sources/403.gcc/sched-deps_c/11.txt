@@ -1,0 +1,151 @@
+static void
+sched_analyze_1 (deps, x, insn)
+     struct deps *deps;
+     rtx x;
+     rtx insn;
+{
+  int regno;
+  rtx dest = XEXP (x, 0);
+  enum rtx_code code = GET_CODE (x);
+
+  if (dest == 0)
+    return;
+
+  if (GET_CODE (dest) == PARALLEL)
+    {
+      int i;
+
+      for (i = XVECLEN (dest, 0) - 1; i >= 0; i--)
+	if (XEXP (XVECEXP (dest, 0, i), 0) != 0)
+	  sched_analyze_1 (deps,
+			   gen_rtx_CLOBBER (VOIDmode,
+					    XEXP (XVECEXP (dest, 0, i), 0)),
+			   insn);
+
+      if (GET_CODE (x) == SET)
+	sched_analyze_2 (deps, SET_SRC (x), insn);
+      return;
+    }
+
+  while (GET_CODE (dest) == STRICT_LOW_PART || GET_CODE (dest) == SUBREG
+	 || GET_CODE (dest) == ZERO_EXTRACT || GET_CODE (dest) == SIGN_EXTRACT)
+    {
+      if (GET_CODE (dest) == ZERO_EXTRACT || GET_CODE (dest) == SIGN_EXTRACT)
+	{
+	  /* The second and third arguments are values read by this insn.  */
+	  sched_analyze_2 (deps, XEXP (dest, 1), insn);
+	  sched_analyze_2 (deps, XEXP (dest, 2), insn);
+	}
+      dest = XEXP (dest, 0);
+    }
+
+  if (GET_CODE (dest) == REG)
+    {
+      regno = REGNO (dest);
+
+      /* A hard reg in a wide mode may really be multiple registers.
+         If so, mark all of them just like the first.  */
+      if (regno < FIRST_PSEUDO_REGISTER)
+	{
+	  int i = HARD_REGNO_NREGS (regno, GET_MODE (dest));
+	  if (code == SET)
+	    {
+	      while (--i >= 0)
+		SET_REGNO_REG_SET (reg_pending_sets, regno + i);
+	    }
+	  else
+	    {
+	      while (--i >= 0)
+		SET_REGNO_REG_SET (reg_pending_clobbers, regno + i);
+	    }
+	}
+      /* ??? Reload sometimes emits USEs and CLOBBERs of pseudos that
+	 it does not reload.  Ignore these as they have served their
+	 purpose already.  */
+      else if (regno >= deps->max_reg)
+	{
+	  if (GET_CODE (PATTERN (insn)) != USE
+	      && GET_CODE (PATTERN (insn)) != CLOBBER)
+	    abort ();
+	}
+      else
+	{
+	  if (code == SET)
+	    SET_REGNO_REG_SET (reg_pending_sets, regno);
+	  else
+	    SET_REGNO_REG_SET (reg_pending_clobbers, regno);
+
+	  /* Pseudos that are REG_EQUIV to something may be replaced
+	     by that during reloading.  We need only add dependencies for
+	     the address in the REG_EQUIV note.  */
+	  if (!reload_completed
+	      && reg_known_equiv_p[regno]
+	      && GET_CODE (reg_known_value[regno]) == MEM)
+	    sched_analyze_2 (deps, XEXP (reg_known_value[regno], 0), insn);
+
+	  /* Don't let it cross a call after scheduling if it doesn't
+	     already cross one.  */
+	  if (REG_N_CALLS_CROSSED (regno) == 0)
+	    add_dependence_list (insn, deps->last_function_call, REG_DEP_ANTI);
+	}
+    }
+  else if (GET_CODE (dest) == MEM)
+    {
+      /* Writing memory.  */
+      rtx t = dest;
+
+      if (current_sched_info->use_cselib)
+	{
+	  t = shallow_copy_rtx (dest);
+	  cselib_lookup (XEXP (t, 0), Pmode, 1);
+	  XEXP (t, 0) = cselib_subst_to_values (XEXP (t, 0));
+	}
+
+      if (deps->pending_lists_length > MAX_PENDING_LIST_LENGTH)
+	{
+	  /* Flush all pending reads and writes to prevent the pending lists
+	     from getting any larger.  Insn scheduling runs too slowly when
+	     these lists get long.  When compiling GCC with itself,
+	     this flush occurs 8 times for sparc, and 10 times for m88k using
+	     the default value of 32.  */
+	  flush_pending_lists (deps, insn, false, true);
+	}
+      else
+	{
+	  rtx pending, pending_mem;
+
+	  pending = deps->pending_read_insns;
+	  pending_mem = deps->pending_read_mems;
+	  while (pending)
+	    {
+	      if (anti_dependence (XEXP (pending_mem, 0), t))
+		add_dependence (insn, XEXP (pending, 0), REG_DEP_ANTI);
+
+	      pending = XEXP (pending, 1);
+	      pending_mem = XEXP (pending_mem, 1);
+	    }
+
+	  pending = deps->pending_write_insns;
+	  pending_mem = deps->pending_write_mems;
+	  while (pending)
+	    {
+	      if (output_dependence (XEXP (pending_mem, 0), t))
+		add_dependence (insn, XEXP (pending, 0), REG_DEP_OUTPUT);
+
+	      pending = XEXP (pending, 1);
+	      pending_mem = XEXP (pending_mem, 1);
+	    }
+
+	  add_dependence_list (insn, deps->last_pending_memory_flush,
+			       REG_DEP_ANTI);
+
+	  add_insn_mem_dependence (deps, &deps->pending_write_insns,
+				   &deps->pending_write_mems, insn, dest);
+	}
+      sched_analyze_2 (deps, XEXP (dest, 0), insn);
+    }
+
+  /* Analyze reads.  */
+  if (GET_CODE (x) == SET)
+    sched_analyze_2 (deps, SET_SRC (x), insn);
+}

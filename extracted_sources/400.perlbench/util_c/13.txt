@@ -1,0 +1,15 @@
+void
+Perl_my_setenv(pTHX_ char *nam,char *val)
+{
+    register char *envstr;
+    int nlen = strlen(nam), vlen;
+
+    if (!val) {
+	val = "";
+    }
+    vlen = strlen(val);
+    New(904, envstr, nlen+vlen+2, char);
+    my_setenv_format(envstr, nam, nlen, val, vlen);
+    (void)PerlEnv_putenv(envstr);
+    Safefree(envstr);
+}

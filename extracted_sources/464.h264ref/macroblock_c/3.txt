@@ -1,0 +1,81 @@
+void proceed2nextMacroblock()
+{
+#if TRACE
+  int use_bitstream_backing = (input->slice_mode == FIXED_RATE || input->slice_mode == CALLBACK);
+#endif
+  Macroblock *currMB = &img->mb_data[img->current_mb_nr];
+  int*        bitCount = currMB->bitcounter;
+  int i;
+  
+#if TRACE
+
+  if (p_trace)
+  {
+    fprintf(p_trace, "\n*********** Pic: %i (I/P) MB: %i Slice: %i **********\n\n", frame_no, img->current_mb_nr, img->current_slice_nr);
+    if(use_bitstream_backing)
+      fprintf(p_trace, "\n*********** Pic: %i (I/P) MB: %i Slice: %i **********\n\n", frame_no, img->current_mb_nr, img->current_slice_nr);
+   // Write out the tracestring for each symbol
+    for (i=0; i<currMB->currSEnr; i++)
+      trace2out(&(img->MB_SyntaxElements[i]));
+  }
+#endif
+
+  // Update the statistics
+  stats->bit_use_mb_type[img->type]      += bitCount[BITS_MB_MODE];
+  stats->bit_use_coeffY[img->type]       += bitCount[BITS_COEFF_Y_MB] ;
+  stats->tmp_bit_use_cbp[img->type]      += bitCount[BITS_CBP_MB];
+  stats->bit_use_coeffC[img->type]       += bitCount[BITS_COEFF_UV_MB];
+  stats->bit_use_delta_quant[img->type]  += bitCount[BITS_DELTA_QUANT_MB];
+
+  if (IS_INTRA(currMB))
+  {
+    ++stats->intra_chroma_mode[currMB->c_ipred_mode];
+
+    if ((currMB->cbp&15) != 0)
+    {
+      if (currMB->luma_transform_size_8x8_flag)
+        ++stats->mode_use_transform_8x8[img->type][currMB->mb_type];
+      else
+        ++stats->mode_use_transform_4x4[img->type][currMB->mb_type];
+    }
+  }
+
+   ++stats->mode_use[img->type][currMB->mb_type];
+   stats->bit_use_mode[img->type][currMB->mb_type]+= bitCount[BITS_INTER_MB];
+ 
+   if (img->type != I_SLICE)
+   {
+     if (currMB->mb_type == P8x8)
+     {
+       for(i=0;i<4;i++)
+       {
+         if (currMB->b8mode[i] > 0)
+           ++stats->mode_use[img->type][currMB->b8mode[i]];
+         else
+           ++stats->b8_mode_0_use[img->type][currMB->luma_transform_size_8x8_flag];
+         
+         if (currMB->b8mode[i]==4)
+         {
+           if ((currMB->luma_transform_size_8x8_flag && (currMB->cbp&15) != 0) || input->AllowTransform8x8 == 2)
+             ++stats->mode_use_transform_8x8[img->type][4];
+           else
+             ++stats->mode_use_transform_4x4[img->type][4];
+         }
+       }
+     }
+     else if (currMB->mb_type >= 0 && currMB->mb_type <=3 && ((currMB->cbp&15) != 0))
+     {
+       if (currMB->luma_transform_size_8x8_flag)
+         ++stats->mode_use_transform_8x8[img->type][currMB->mb_type];
+       else
+         ++stats->mode_use_transform_4x4[img->type][currMB->mb_type];
+     }
+   }
+  
+  // Statistics
+  if ((img->type == P_SLICE)||(img->type==SP_SLICE) )
+  {
+    ++stats->quant0;
+    stats->quant1 += currMB->qp;      // to find average quant for inter frames
+  }
+}

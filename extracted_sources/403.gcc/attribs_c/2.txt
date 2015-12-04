@@ -1,0 +1,81 @@
+static void
+init_attributes ()
+{
+#ifdef ENABLE_CHECKING
+  int i;
+#endif
+
+  attribute_tables[0]
+    = lang_attribute_common ? c_common_attribute_table : empty_attribute_table;
+  attribute_tables[1] = lang_attribute_table;
+  attribute_tables[2] = format_attribute_table;
+  attribute_tables[3] = targetm.attribute_table;
+
+#ifdef ENABLE_CHECKING
+  /* Make some sanity checks on the attribute tables.  */
+  for (i = 0;
+       i < (int) (sizeof (attribute_tables) / sizeof (attribute_tables[0]));
+       i++)
+    {
+      int j;
+
+      for (j = 0; attribute_tables[i][j].name != NULL; j++)
+	{
+	  /* The name must not begin and end with __.  */
+	  const char *name = attribute_tables[i][j].name;
+	  int len = strlen (name);
+	  if (name[0] == '_' && name[1] == '_'
+	      && name[len - 1] == '_' && name[len - 2] == '_')
+	    abort ();
+	  /* The minimum and maximum lengths must be consistent.  */
+	  if (attribute_tables[i][j].min_length < 0)
+	    abort ();
+	  if (attribute_tables[i][j].max_length != -1
+	      && (attribute_tables[i][j].max_length
+		  < attribute_tables[i][j].min_length))
+	    abort ();
+	  /* An attribute cannot require both a DECL and a TYPE.  */
+	  if (attribute_tables[i][j].decl_required
+	      && attribute_tables[i][j].type_required)
+	    abort ();
+	  /* If an attribute requires a function type, in particular
+	     it requires a type.  */
+	  if (attribute_tables[i][j].function_type_required
+	      && !attribute_tables[i][j].type_required)
+	    abort ();
+	}
+    }
+
+  /* Check that each name occurs just once in each table.  */
+  for (i = 0;
+       i < (int) (sizeof (attribute_tables) / sizeof (attribute_tables[0]));
+       i++)
+    {
+      int j, k;
+      for (j = 0; attribute_tables[i][j].name != NULL; j++)
+	for (k = j + 1; attribute_tables[i][k].name != NULL; k++)
+	  if (!strcmp (attribute_tables[i][j].name,
+		       attribute_tables[i][k].name))
+	    abort ();
+    }
+  /* Check that no name occurs in more than one table.  */
+  for (i = 0;
+       i < (int) (sizeof (attribute_tables) / sizeof (attribute_tables[0]));
+       i++)
+    {
+      int j, k, l;
+
+      for (j = i + 1;
+	   j < ((int) (sizeof (attribute_tables)
+		       / sizeof (attribute_tables[0])));
+	   j++)
+	for (k = 0; attribute_tables[i][k].name != NULL; k++)
+	  for (l = 0; attribute_tables[j][l].name != NULL; l++)
+	    if (!strcmp (attribute_tables[i][k].name,
+			 attribute_tables[j][l].name))
+	      abort ();
+    }
+#endif
+
+  attributes_initialized = true;
+}

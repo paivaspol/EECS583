@@ -1,0 +1,21 @@
+static void
+eshdn1 (x)
+     UEMUSHORT *x;
+{
+  UEMUSHORT bits;
+  int i;
+
+  x += M;			/* point to significand area */
+
+  bits = 0;
+  for (i = M; i < NI; i++)
+    {
+      if (*x & 1)
+	bits |= 1;
+      *x >>= 1;
+      if (bits & 2)
+	*x |= 0x8000;
+      bits <<= 1;
+      ++x;
+    }
+}

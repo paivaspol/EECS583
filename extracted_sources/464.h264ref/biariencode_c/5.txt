@@ -1,0 +1,35 @@
+void biari_encode_symbol_eq_prob(EncodingEnvironmentPtr eep, signed short symbol)
+{
+  register unsigned int low = (Elow<<1);
+
+  
+#if TRACE
+//  extern int cabac_encoding;
+//  if (cabac_encoding)
+//    fprintf(p_trace, "%d  0x%04x\n", binCount++, Erange );
+#endif
+  
+  if (symbol != 0)
+    low += Erange;
+
+  /* renormalisation as for biari_encode_symbol; 
+     note that low has already been doubled */ 
+  if (low >= ONE)
+  {
+    put_one_bit_plus_outstanding(1);
+    low -= ONE;
+  }
+  else 
+    if (low < HALF)
+    {
+      put_one_bit_plus_outstanding(0);
+    }
+    else
+    {
+      Ebits_to_follow++;
+      low -= HALF;
+    }
+    Elow = low;
+    eep->C++;
+    
+}

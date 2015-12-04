@@ -1,0 +1,125 @@
+void force(FILE       *fp,     int        step,
+	   t_forcerec *fr,      t_inputrec *ir,
+	   t_idef     *idef,    t_nsborder *nsb,
+	   t_commrec  *cr,      t_commrec *mcr,
+	   t_nrnb     *nrnb,
+	   t_groups   *grps,    t_mdatoms  *md,
+	   int        ngener,   t_grpopts  *opts,
+	   rvec       x[],      rvec       f[],
+	   real       epot[],   t_fcdata   *fcd,
+	   bool       bVerbose, matrix     box,
+	   real       lambda,   t_graph    *graph,
+	   t_block    *excl,    bool       bNBFonly,
+	   matrix lr_vir,       rvec       mu_tot,
+	   real       qsum,     bool       bGatherOnly)
+{
+  int     i,nit;
+  bool    bDoEpot;
+  rvec    box_size;
+  real    Vlr,Vcorr=0;
+  
+  /* Reset box */
+  for(i=0; (i<DIM); i++)
+    box_size[i]=box[i][i];
+    
+  bDoEpot=((fr->nmol > 0) && (fr->nstcalc > 0) && (mod(step,fr->nstcalc)==0));
+  /* Reset epot... */
+  if (bDoEpot) 
+    for(i=0; (i<fr->nmol); i++)
+      fr->mol_epot[i]=0.0;
+  debug_gmx();
+  
+  /* Call the short range functions all in one go. */
+  do_fnbf(fp,cr,fr,x,f,md,
+	  fr->bBHAM ? grps->estat.ee[egBHAM] : grps->estat.ee[egLJ],
+	  grps->estat.ee[egCOUL],box_size,nrnb,
+	  lambda,&epot[F_DVDL],FALSE,-1);
+  debug_gmx();
+
+  if (debug) 
+    pr_rvecs(debug,0,"fshift after SR",fr->fshift,SHIFTS);
+  
+  /* Shift the coordinates. Must be done before bonded forces and PPPM, 
+   * but is also necessary for SHAKE and update, therefore it can NOT 
+   * go when no bonded forces have to be evaluated.
+   */
+  if (debug && 0)
+    p_graph(debug,"DeBUGGGG",graph);
+  
+  /* Check whether we need to do bondeds */
+  if (!bNBFonly) {
+    shift_self(graph,box,x);
+    if (debug && 0) {
+      fprintf(debug,"BBBBBBBBBBBBBBBB\n");
+      fprintf(debug,"%5d\n",graph->nnodes);
+      for(i=graph->start; (i<=graph->end); i++)
+	fprintf(debug,"%5d%5s%5s%5d%8.3f%8.3f%8.3f\n",
+		i,"A","B",i,x[i][XX],x[i][YY],x[i][ZZ]);
+      fprintf(debug,"%10.5f%10.5f%10.5f\n",
+	      box[XX][XX],box[YY][YY],box[ZZ][ZZ]);
+    }
+    if (TRICLINIC(box))
+	inc_nrnb(nrnb,eNR_SHIFTX,2*graph->nnodes);
+    else
+	inc_nrnb(nrnb,eNR_SHIFTX,graph->nnodes);
+    debug_gmx();
+  }
+  
+  if (EEL_LR(fr->eeltype)) {
+    switch (fr->eeltype) {
+    case eelPPPM:
+      Vlr = do_pppm(fp,FALSE,x,fr->f_pme,md->chargeT,
+		    box_size,fr->phi,cr,nsb,nrnb);
+      break;
+    case eelPOISSON:
+      Vlr = do_poisson(fp,FALSE,ir,md->nr,x,fr->f_pme,md->chargeT,
+		       box_size,fr->phi,cr,nrnb,&nit,TRUE);
+      break;
+    case eelPME:
+      Vlr = do_pme(fp,FALSE,ir,x,fr->f_pme,md->chargeT,
+		   box,cr,nsb,nrnb,lr_vir,fr->ewaldcoeff,bGatherOnly);
+      break;
+    case eelEWALD:
+      Vlr = do_ewald(fp,FALSE,ir,x,fr->f_pme,md->chargeT,
+		     box_size,cr,nsb,lr_vir,fr->ewaldcoeff);
+      break;
+    default:
+      Vlr = 0;
+      fatal_error(0,"No such electrostatics method implemented %s",
+		  eel_names[fr->eeltype]);
+    }
+    if(fr->bEwald)
+      Vcorr =
+	ewald_LRcorrection(fp,nsb,cr,fr,md->chargeT,excl,x,box,mu_tot,qsum,
+			   ir->ewald_geometry,ir->epsilon_surface,lr_vir);
+    else
+      Vcorr = shift_LRcorrection(fp,nsb,cr,fr,md->chargeT,excl,x,TRUE,box,lr_vir);
+    epot[F_LR] = Vlr + Vcorr;
+    if (debug)
+      fprintf(debug,"Vlr = %g, Vcorr = %g, Vlr_corr = %g\n",
+	      Vlr,Vcorr,epot[F_LR]);
+    if (debug) {
+      pr_rvecs(debug,0,"lr_vir after corr",lr_vir,DIM);
+      pr_rvecs(debug,0,"fshift after LR Corrections",fr->fshift,SHIFTS);
+    }
+  }
+  debug_gmx();
+  
+  if (debug)    
+    print_nrnb(debug,nrnb); 
+  debug_gmx();
+  
+  if (!bNBFonly) {
+    calc_bonds(fp,cr,mcr,
+	       idef,x,f,fr,graph,epot,nrnb,box,lambda,md,
+	       opts->ngener,grps->estat.ee[egLJ14],grps->estat.ee[egCOUL14],
+	       fcd,step,fr->bSepDVDL && do_per_step(step,ir->nstlog));    
+    debug_gmx();
+  }
+  if (debug) 
+    pr_rvecs(debug,0,"fshift after bondeds",fr->fshift,SHIFTS);
+  
+  for(i=0; (i<F_EPOT); i++)
+    if (i != F_DISRES)
+      epot[F_EPOT]+=epot[i];
+}

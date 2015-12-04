@@ -1,0 +1,53 @@
+void  parse_args_file(char *live_args)
+{
+  /*    static char **liveargs; */	/* RAH, 4.17.01 */
+    static int32 nliveargs;
+    int32 nargs, maxarglen;
+    char  *argline, *targ; 
+    FILE *fp;
+
+    if (live_args == NULL) {
+      cmd_ln_print_help(stderr, arg);
+      return;
+    }
+    if ((fp = fopen(live_args,"r")) == NULL)
+	E_FATAL("Unable to open arguments file %s for reading\n",live_args);
+
+    argline = (char*) ckd_calloc(10000,sizeof(char)); /* Longest line allowed */
+    nargs = 1;
+    maxarglen = 0;
+    while (fgets(argline,10000,fp) != NULL){
+        if ((targ = strtok(argline," \t\n")) == NULL)
+            continue; /* Empty line in argfile */
+      if ((int32) strlen(targ) > maxarglen) maxarglen = strlen(targ);
+	nargs++; 
+
+        while ((targ = strtok(NULL," \t\n")) != NULL){
+	if ((int32) strlen(targ) > maxarglen) maxarglen = strlen(targ);
+	    nargs++; 
+	}
+    }
+    rewind(fp);
+
+    nliveargs = nargs;
+    liveargs = (char**) ckd_calloc_2d(nargs,maxarglen+1,sizeof(char));
+
+    nargs = 1;
+    while (fgets(argline,10000,fp) != NULL){
+        if ((targ = strtok(argline," \t\n")) == NULL)
+            continue; /* Empty line in argfile */
+
+        strcpy(liveargs[nargs++],targ);
+        while ((targ = strtok(NULL," \t\n")) != NULL){
+            strcpy(liveargs[nargs++],targ);
+	}
+    }
+    fclose(fp);
+
+    assert(nargs == nliveargs);
+    free(argline);
+
+    cmd_ln_parse(arg, nliveargs, liveargs);
+
+    return;
+}

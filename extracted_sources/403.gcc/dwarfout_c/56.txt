@@ -1,0 +1,15 @@
+static inline void
+string_length_attribute (upper_bound)
+     tree upper_bound;
+{
+  char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+  char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  ASM_OUTPUT_DWARF_ATTRIBUTE (asm_out_file, AT_string_length);
+  sprintf (begin_label, SL_BEGIN_LABEL_FMT, current_dienum);
+  sprintf (end_label, SL_END_LABEL_FMT, current_dienum);
+  ASM_OUTPUT_DWARF_DELTA2 (asm_out_file, end_label, begin_label);
+  ASM_OUTPUT_LABEL (asm_out_file, begin_label);
+  output_bound_representation (upper_bound, 0, 'u');
+  ASM_OUTPUT_LABEL (asm_out_file, end_label);
+}

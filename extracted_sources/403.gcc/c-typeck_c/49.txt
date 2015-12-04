@@ -1,0 +1,12 @@
+void
+c_finish_case ()
+{
+  struct c_switch *cs = switch_stack;
+
+  RECHAIN_STMTS (cs->switch_stmt, SWITCH_BODY (cs->switch_stmt)); 
+
+  /* Pop the stack.  */
+  switch_stack = switch_stack->next;
+  splay_tree_delete (cs->cases);
+  free (cs);
+}

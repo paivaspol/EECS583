@@ -1,0 +1,78 @@
+void frame_picture (Picture *frame, int rd_pass)
+{
+
+  img->structure = FRAME;
+  img->PicSizeInMbs = img->FrameSizeInMbs;
+
+  if (rd_pass == 2)
+  {
+    enc_frame_picture3  = alloc_storable_picture (img->structure, img->width, img->height, img->width_cr, img->height_cr);
+    img->ThisPOC=enc_frame_picture3->poc=img->framepoc;
+    enc_frame_picture3->top_poc    = img->toppoc;
+    enc_frame_picture3->bottom_poc = img->bottompoc;
+    
+    enc_frame_picture3->frame_poc = img->framepoc;
+    
+    enc_frame_picture3->pic_num = img->frame_num;
+    enc_frame_picture3->frame_num = img->frame_num;
+    enc_frame_picture3->coded_frame = 1;
+    
+    enc_frame_picture3->MbaffFrameFlag = img->MbaffFrameFlag = (input->MbInterlace != FRAME_CODING);
+    
+    enc_picture=enc_frame_picture3;
+    copy_params();
+  }
+  else if (rd_pass == 1)
+  {
+    enc_frame_picture2  = alloc_storable_picture (img->structure, img->width, img->height, img->width_cr, img->height_cr);
+    img->ThisPOC=enc_frame_picture2->poc=img->framepoc;
+    enc_frame_picture2->top_poc    = img->toppoc;
+    enc_frame_picture2->bottom_poc = img->bottompoc;
+    
+    enc_frame_picture2->frame_poc = img->framepoc;
+    
+    enc_frame_picture2->pic_num = img->frame_num;
+    enc_frame_picture2->frame_num = img->frame_num;
+    enc_frame_picture2->coded_frame = 1;
+    
+    enc_frame_picture2->MbaffFrameFlag = img->MbaffFrameFlag = (input->MbInterlace != FRAME_CODING);
+    
+    enc_picture=enc_frame_picture2;
+    copy_params();
+  }
+  else
+  {
+    enc_frame_picture  = alloc_storable_picture (img->structure, img->width, img->height, img->width_cr, img->height_cr);
+    img->ThisPOC=enc_frame_picture->poc=img->framepoc;
+    enc_frame_picture->top_poc    = img->toppoc;
+    enc_frame_picture->bottom_poc = img->bottompoc;
+    
+    enc_frame_picture->frame_poc = img->framepoc;
+    
+    enc_frame_picture->pic_num = img->frame_num;
+    enc_frame_picture->frame_num = img->frame_num;
+    enc_frame_picture->coded_frame = 1;
+    
+    enc_frame_picture->MbaffFrameFlag = img->MbaffFrameFlag = (input->MbInterlace != FRAME_CODING);
+    
+    enc_picture=enc_frame_picture;
+    copy_params();
+  }
+
+
+  stats->em_prev_bits_frm = 0;
+  stats->em_prev_bits = &stats->em_prev_bits_frm;
+
+  img->fld_flag = 0;
+  code_a_picture(frame);
+
+  frame->bits_per_picture = 8 * ((((img->currentSlice)->partArr[0]).bitstream)->byte_pos);
+  
+  if (img->structure==FRAME)
+  {
+    find_distortion (snr, img);      
+    frame->distortion_y = snr->snr_y;
+    frame->distortion_u = snr->snr_u;
+    frame->distortion_v = snr->snr_v;
+  }
+}

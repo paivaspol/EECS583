@@ -1,0 +1,21 @@
+void lextree_dump (lextree_t *lextree, dict_t *dict, FILE *fp)
+{
+    gnode_t *gn;
+    lextree_node_t *ln;
+    int32 i;
+    
+    for (gn = lextree->root; gn; gn = gnode_next(gn)) {
+	ln = (lextree_node_t *) gnode_ptr (gn);
+    	lextree_subtree_print (ln, 0, dict, fp);
+    }
+    
+    if (lextree->n_lc > 0) {
+	for (i = 0; i < lextree->n_lc; i++) {
+	    fprintf (fp, "lcroot %d\n", lextree->lcroot[i].lc);
+	    for (gn = lextree->lcroot[i].root; gn; gn = gnode_next(gn)) {
+		ln = (lextree_node_t *) gnode_ptr(gn);
+		lextree_node_print (ln, dict, fp);
+	    }
+	}
+    }
+}

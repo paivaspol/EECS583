@@ -1,0 +1,139 @@
+int
+doloop_optimize (loop)
+     const struct loop *loop;
+{
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  rtx initial_value;
+  rtx final_value;
+  rtx increment;
+  rtx jump_insn;
+  enum machine_mode mode;
+  unsigned HOST_WIDE_INT n_iterations;
+  unsigned HOST_WIDE_INT n_iterations_max;
+  rtx doloop_seq, doloop_pat, doloop_reg;
+  rtx iterations;
+  rtx iterations_max;
+  rtx start_label;
+  rtx condition;
+
+  if (loop_dump_stream)
+    fprintf (loop_dump_stream,
+	     "Doloop: Processing loop %d, enclosed levels %d.\n",
+	     loop->num, loop->level);
+
+  jump_insn = prev_nonnote_insn (loop->end);
+
+  /* Check that loop is a candidate for a low-overhead looping insn.  */
+  if (! doloop_valid_p (loop, jump_insn))
+    return 0;
+
+  /* Determine if the loop can be safely, and profitably,
+     preconditioned.  While we don't precondition the loop in a loop
+     unrolling sense, this test ensures that the loop is well behaved
+     and that the increment is a constant integer.  */
+  if (! precondition_loop_p (loop, &initial_value, &final_value,
+			     &increment, &mode))
+    {
+      if (loop_dump_stream)
+      	fprintf (loop_dump_stream,
+		 "Doloop: Cannot precondition loop.\n");
+      return 0;
+    }
+
+  /* Determine or estimate the maximum number of loop iterations.  */
+  n_iterations = loop_info->n_iterations;
+  if (n_iterations)
+    {
+      /* This is the simple case where the initial and final loop
+	 values are constants.  */
+      n_iterations_max = n_iterations;
+    }
+  else
+    {
+      int nonneg = find_reg_note (jump_insn, REG_NONNEG, 0) != 0;
+
+      /* This is the harder case where the initial and final loop
+	 values may not be constants.  */
+      n_iterations_max = doloop_iterations_max (loop_info, mode, nonneg);
+
+      if (! n_iterations_max)
+	{
+	  /* We have something like `for (i = 0; i < 10; i--)'.  */
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream,
+		     "Doloop: Not normal loop.\n");
+	  return 0;
+	}
+    }
+
+  /* Account for loop unrolling in the iteration count.  This will
+     have no effect if loop_iterations could not determine the number
+     of iterations.  */
+  n_iterations /= loop_info->unroll_number;
+  n_iterations_max /= loop_info->unroll_number;
+
+  if (n_iterations && n_iterations < 3)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Doloop: Too few iterations (%ld) to be profitable.\n",
+		 (long int) n_iterations);
+      return 0;
+    }
+
+  iterations = GEN_INT (n_iterations);
+  iterations_max = GEN_INT (n_iterations_max);
+
+  /* Generate looping insn.  If the pattern FAILs then give up trying
+     to modify the loop since there is some aspect the back-end does
+     not like.  */
+  start_label = gen_label_rtx ();
+  doloop_reg = gen_reg_rtx (mode);
+  doloop_seq = gen_doloop_end (doloop_reg, iterations, iterations_max,
+			       GEN_INT (loop->level), start_label);
+  if (! doloop_seq && mode != word_mode)
+    {
+      PUT_MODE (doloop_reg, word_mode);
+      doloop_seq = gen_doloop_end (doloop_reg, iterations, iterations_max,
+				   GEN_INT (loop->level), start_label);
+    }
+  if (! doloop_seq)
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Doloop: Target unwilling to use doloop pattern!\n");
+      return 0;
+    }
+
+  /* A raw define_insn may yield a plain pattern.  If a sequence
+     was involved, the last must be the jump instruction.  */
+  if (GET_CODE (doloop_seq) == SEQUENCE)
+    {
+      doloop_pat = XVECEXP (doloop_seq, 0, XVECLEN (doloop_seq, 0) - 1);
+      if (GET_CODE (doloop_pat) == JUMP_INSN)
+	doloop_pat = PATTERN (doloop_pat);
+      else
+	doloop_pat = NULL_RTX;
+    }
+  else
+    doloop_pat = doloop_seq;
+
+  if (! doloop_pat
+      || ! (condition = doloop_condition_get (doloop_pat)))
+    {
+      if (loop_dump_stream)
+	fprintf (loop_dump_stream,
+		 "Doloop: Unrecognizable doloop pattern!\n");
+      return 0;
+    }
+
+  if (n_iterations != 0)
+    /* Handle the simpler case, where we know the iteration count at
+       compile time.  */
+    return doloop_modify (loop, iterations, iterations_max, doloop_seq,
+			  start_label, condition);
+  else
+    /* Handle the harder case, where we must add additional runtime tests.  */
+    return doloop_modify_runtime (loop, iterations_max, doloop_seq,
+				  start_label, mode, condition);
+}

@@ -1,0 +1,22 @@
+static int32 lookup (hash_table_t *h, uint32 hash, const char *key, int32 len, int32 *val)
+{
+    hash_entry_t *entry;
+    
+    entry = &(h->table[hash]);
+    if (entry->key == NULL)
+	return -1;
+    
+    if (h->nocase) {
+	while (entry && ((entry->len != len) || (keycmp_nocase (entry, key) != 0)))
+	    entry = entry->next;
+    } else {
+	while (entry && ((entry->len != len) || (keycmp_case (entry, key) != 0)))
+	    entry = entry->next;
+    }
+    
+    if (entry) {
+	*val = entry->val;
+	return 0;
+    } else
+	return -1;
+}

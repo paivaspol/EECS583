@@ -1,0 +1,78 @@
+static const cpp_token *
+stringify_arg (pfile, arg)
+     cpp_reader *pfile;
+     macro_arg *arg;
+{
+  unsigned char *dest = BUFF_FRONT (pfile->u_buff);
+  unsigned int i, escape_it, backslash_count = 0;
+  const cpp_token *source = NULL;
+  size_t len;
+
+  /* Loop, reading in the argument's tokens.  */
+  for (i = 0; i < arg->count; i++)
+    {
+      const cpp_token *token = arg->first[i];
+
+      if (token->type == CPP_PADDING)
+	{
+	  if (source == NULL)
+	    source = token->val.source;
+	  continue;
+	}
+
+      escape_it = (token->type == CPP_STRING || token->type == CPP_WSTRING
+		   || token->type == CPP_CHAR || token->type == CPP_WCHAR);
+
+      /* Room for each char being written in octal, initial space and
+	 final NUL.  */
+      len = cpp_token_len (token);
+      if (escape_it)
+	len *= 4;
+      len += 2;
+
+      if ((size_t) (BUFF_LIMIT (pfile->u_buff) - dest) < len)
+	{
+	  size_t len_so_far = dest - BUFF_FRONT (pfile->u_buff);
+	  _cpp_extend_buff (pfile, &pfile->u_buff, len);
+	  dest = BUFF_FRONT (pfile->u_buff) + len_so_far;
+	}
+
+      /* Leading white space?  */
+      if (dest != BUFF_FRONT (pfile->u_buff))
+	{
+	  if (source == NULL)
+	    source = token;
+	  if (source->flags & PREV_WHITE)
+	    *dest++ = ' ';
+	}
+      source = NULL;
+
+      if (escape_it)
+	{
+	  _cpp_buff *buff = _cpp_get_buff (pfile, len);
+	  unsigned char *buf = BUFF_FRONT (buff);
+	  len = cpp_spell_token (pfile, token, buf) - buf;
+	  dest = cpp_quote_string (dest, buf, len);
+	  _cpp_release_buff (pfile, buff);
+	}
+      else
+	dest = cpp_spell_token (pfile, token, dest);
+
+      if (token->type == CPP_OTHER && token->val.c == '\\')
+	backslash_count++;
+      else
+	backslash_count = 0;
+    }
+
+  /* Ignore the final \ of invalid string literals.  */
+  if (backslash_count & 1)
+    {
+      cpp_warning (pfile, "invalid string literal, ignoring final '\\'");
+      dest--;
+    }
+
+  /* Commit the memory, including NUL, and return the token.  */
+  len = dest - BUFF_FRONT (pfile->u_buff);
+  BUFF_FRONT (pfile->u_buff) = dest + 1;
+  return new_string_token (pfile, dest - len, len);
+}

@@ -1,0 +1,23 @@
+int32 lm_bglist (lm_t *lm, s3lmwid_t w1, bg_t **bgptr, int32 *bowt)
+{
+    int32 n;
+
+    if (NOT_S3LMWID(w1) || (w1 >= lm->n_ug))
+	E_FATAL("Bad w1 argument (%d) to lm_bglist\n", w1);
+
+    n = (lm->n_bg > 0) ? lm->ug[w1+1].firstbg - lm->ug[w1].firstbg : 0;
+    
+    if (n > 0) {
+	if (! lm->membg[w1].bg)
+	    load_bg (lm, w1);
+	lm->membg[w1].used = 1;
+
+	*bgptr = lm->membg[w1].bg;
+	*bowt = lm->ug[w1].bowt.l;
+    } else {
+	*bgptr = NULL;
+	*bowt = 0;
+    }
+    
+    return (n);
+}

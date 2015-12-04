@@ -1,0 +1,27 @@
+static void
+sdbout_toplevel_data (decl)
+     tree decl;
+{
+  tree type = TREE_TYPE (decl);
+
+  if (DECL_IGNORED_P (decl))
+    return;
+
+  if (! (TREE_CODE (decl) == VAR_DECL
+	 && GET_CODE (DECL_RTL (decl)) == MEM
+	 && DECL_INITIAL (decl)))
+    abort ();
+
+  PUT_SDB_DEF (IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl)));
+  PUT_SDB_VAL (XEXP (DECL_RTL (decl), 0));
+  if (TREE_PUBLIC (decl))
+    {
+      PUT_SDB_SCL (C_EXT);
+    }
+  else
+    {
+      PUT_SDB_SCL (C_STAT);
+    }
+  PUT_SDB_TYPE (plain_type (type));
+  PUT_SDB_ENDEF;
+}

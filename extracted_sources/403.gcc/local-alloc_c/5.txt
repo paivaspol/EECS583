@@ -1,0 +1,61 @@
+static int
+equiv_init_movable_p (x, regno)
+     rtx x;
+     int regno;
+{
+  int i, j;
+  const char *fmt;
+  enum rtx_code code = GET_CODE (x);
+
+  switch (code)
+    {
+    case SET:
+      return equiv_init_movable_p (SET_SRC (x), regno);
+
+    case CC0:
+    case CLOBBER:
+      return 0;
+
+    case PRE_INC:
+    case PRE_DEC:
+    case POST_INC:
+    case POST_DEC:
+    case PRE_MODIFY:
+    case POST_MODIFY:
+      return 0;
+
+    case REG:
+      return (reg_equiv[REGNO (x)].loop_depth >= reg_equiv[regno].loop_depth
+	      && reg_equiv[REGNO (x)].replace)
+	     || (REG_BASIC_BLOCK (REGNO (x)) < 0 && ! rtx_varies_p (x, 0));
+
+    case UNSPEC_VOLATILE:
+      return 0;
+
+    case ASM_OPERANDS:
+      if (MEM_VOLATILE_P (x))
+	return 0;
+
+      /* FALLTHROUGH */
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    switch (fmt[i])
+      {
+      case 'e':
+	if (! equiv_init_movable_p (XEXP (x, i), regno))
+	  return 0;
+	break;
+      case 'E':
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  if (! equiv_init_movable_p (XVECEXP (x, i, j), regno))
+	    return 0;
+	break;
+      }
+
+  return 1;
+}

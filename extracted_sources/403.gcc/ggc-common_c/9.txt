@@ -1,0 +1,14 @@
+static int
+ggc_htab_delete (slot, info)
+     void **slot;
+     void *info;
+{
+  struct d_htab_root *r = (struct d_htab_root *) info;
+
+  if (! (*r->marked_p) (*slot))
+    htab_clear_slot (r->htab, slot);
+  else if (r->mark)
+    (*r->mark) (*slot);
+
+  return 1;
+}

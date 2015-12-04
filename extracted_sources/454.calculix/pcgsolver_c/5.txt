@@ -1,0 +1,25 @@
+void Mrhor (double *C, int neq, int *ia, int *iz, double *r, double *rho)
+{
+	int				i=0, j=0, jlo=0, jup=0;
+	double			s=0.0;
+/*..solve equation sytem by forward/backward substitution..........................	*/
+	rho[0] = r[0];
+	for (i=1; i<neq; i++)
+	{
+		s = 0.0;
+		jlo = iz[i-1]+1;			/*..first non-zero element in current row......	*/
+		jup = iz[i];				/*..diagonal element in current row............	*/
+		for (j=jlo; j<jup; j++)		/*..all non-zero off-diagonal element..........	*/
+			s += C[j]*rho[ia[j]];
+		rho[i] = (r[i]-s)/C[jup];
+	}
+	for (i=neq-1; i>0; i--)
+	{
+		rho[i] /= C[iz[i]];
+		jlo = iz[i-1]+1;			/*..first non-zero element in current row......	*/
+		jup = iz[i]-1;				/*..diagonal element in current row............	*/
+		for (j=jlo; j<=jup; j++)	/*..all non-zero off-diagonal element..........	*/
+			rho[ia[j]] -= C[j]*rho[i];
+	}
+	return;
+}

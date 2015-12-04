@@ -1,0 +1,80 @@
+static rtx
+c_expand_builtin_fprintf (arglist, target, tmode, modifier, ignore, unlocked)
+     tree arglist;
+     rtx target;
+     enum machine_mode tmode;
+     enum expand_modifier modifier;
+     int ignore;
+     int unlocked;
+{
+  tree fn_fputc = unlocked ?
+    built_in_decls[BUILT_IN_FPUTC_UNLOCKED] : built_in_decls[BUILT_IN_FPUTC];
+  tree fn_fputs = unlocked ?
+    built_in_decls[BUILT_IN_FPUTS_UNLOCKED] : built_in_decls[BUILT_IN_FPUTS];
+  tree fn, format_arg, stripped_string;
+
+  /* If the return value is used, or the replacement _DECL isn't
+     initialized, don't do the transformation.  */
+  if (!ignore || !fn_fputc || !fn_fputs)
+    return 0;
+
+  /* Verify the required arguments in the original call.  */
+  if (arglist == 0
+      || (TREE_CODE (TREE_TYPE (TREE_VALUE (arglist))) != POINTER_TYPE)
+      || (TREE_CHAIN (arglist) == 0)
+      || (TREE_CODE (TREE_TYPE (TREE_VALUE (TREE_CHAIN (arglist)))) !=
+	  POINTER_TYPE))
+    return 0;
+  
+  /* Check the specifier vs. the parameters.  */
+  if (!is_valid_printf_arglist (TREE_CHAIN (arglist)))
+    return 0;
+  
+  format_arg = TREE_VALUE (TREE_CHAIN (arglist));
+  stripped_string = format_arg;
+  STRIP_NOPS (stripped_string);
+  if (stripped_string && TREE_CODE (stripped_string) == ADDR_EXPR)
+    stripped_string = TREE_OPERAND (stripped_string, 0);
+
+  /* If the format specifier isn't a STRING_CST, punt.  */
+  if (TREE_CODE (stripped_string) != STRING_CST)
+    return 0;
+  
+  /* OK!  We can attempt optimization.  */
+
+  /* If the format specifier was "%s", call __builtin_fputs(arg3, arg1).  */
+  if (strcmp (TREE_STRING_POINTER (stripped_string), "%s") == 0)
+    {
+      tree newarglist = build_tree_list (NULL_TREE, TREE_VALUE (arglist));
+      arglist = tree_cons (NULL_TREE,
+			   TREE_VALUE (TREE_CHAIN (TREE_CHAIN (arglist))),
+			   newarglist);
+      fn = fn_fputs;
+    }
+  /* If the format specifier was "%c", call __builtin_fputc (arg3, arg1).  */
+  else if (strcmp (TREE_STRING_POINTER (stripped_string), "%c") == 0)
+    {
+      tree newarglist = build_tree_list (NULL_TREE, TREE_VALUE (arglist));
+      arglist = tree_cons (NULL_TREE,
+			   TREE_VALUE (TREE_CHAIN (TREE_CHAIN (arglist))),
+			   newarglist);
+      fn = fn_fputc;
+    }
+  else
+    {
+      /* We can't handle anything else with % args or %% ... yet.  */
+      if (strchr (TREE_STRING_POINTER (stripped_string), '%'))
+	return 0;
+      
+      /* When "string" doesn't contain %, replace all cases of
+         fprintf(stream,string) with fputs(string,stream).  The fputs
+         builtin will take take of special cases like length==1.  */
+      arglist = tree_cons (NULL_TREE, TREE_VALUE (TREE_CHAIN (arglist)),
+			   build_tree_list (NULL_TREE, TREE_VALUE (arglist)));
+      fn = fn_fputs;
+    }
+  
+  return expand_expr (build_function_call (fn, arglist),
+		      (ignore ? const0_rtx : target),
+		      tmode, modifier);
+}

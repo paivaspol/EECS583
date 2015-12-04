@@ -1,0 +1,379 @@
+static void
+asctoeg (ss, y, oprec)
+     const char *ss;
+     UEMUSHORT *y;
+     int oprec;
+{
+  UEMUSHORT yy[NI], xt[NI], tt[NI];
+  int esign, decflg, sgnflg, nexp, exp, prec, lost;
+  int i, k, trail, c, rndsav;
+  EMULONG lexp;
+  UEMUSHORT nsign;
+  char *sp, *s, *lstr;
+  int base = 10;
+
+  /* Copy the input string.  */
+  lstr = (char *) alloca (strlen (ss) + 1);
+
+  while (*ss == ' ')		/* skip leading spaces */
+    ++ss;
+
+  sp = lstr;
+  while ((*sp++ = *ss++) != '\0')
+    ;
+  s = lstr;
+
+  if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+    {
+      base = 16;
+      s += 2;
+    }
+
+  rndsav = rndprc;
+  rndprc = NBITS;		/* Set to full precision */
+  lost = 0;
+  nsign = 0;
+  decflg = 0;
+  sgnflg = 0;
+  nexp = 0;
+  exp = 0;
+  prec = 0;
+  ecleaz (yy);
+  trail = 0;
+
+ nxtcom:
+  k = hex_value (*s);
+  if ((k >= 0) && (k < base))
+    {
+      /* Ignore leading zeros */
+      if ((prec == 0) && (decflg == 0) && (k == 0))
+	goto donchr;
+      /* Identify and strip trailing zeros after the decimal point.  */
+      if ((trail == 0) && (decflg != 0))
+	{
+	  sp = s;
+	  while (ISDIGIT (*sp) || (base == 16 && ISXDIGIT (*sp)))
+	    ++sp;
+	  /* Check for syntax error */
+	  c = *sp & CHARMASK;
+	  if ((base != 10 || ((c != 'e') && (c != 'E')))
+	      && (base != 16 || ((c != 'p') && (c != 'P')))
+	      && (c != '\0')
+	      && (c != '\n') && (c != '\r') && (c != ' ')
+	      && (c != ','))
+	    goto unexpected_char_error;
+	  --sp;
+	  while (*sp == '0')
+	    *sp-- = 'z';
+	  trail = 1;
+	  if (*s == 'z')
+	    goto donchr;
+	}
+
+      /* If enough digits were given to more than fill up the yy register,
+	 continuing until overflow into the high guard word yy[2]
+	 guarantees that there will be a roundoff bit at the top
+	 of the low guard word after normalization.  */
+
+      if (yy[2] == 0)
+	{
+	  if (base == 16)
+	    {
+	      if (decflg)
+		nexp += 4;	/* count digits after decimal point */
+
+	      eshup1 (yy);	/* multiply current number by 16 */
+	      eshup1 (yy);
+	      eshup1 (yy);
+	      eshup1 (yy);
+	    }
+	  else
+	    {
+	      if (decflg)
+		nexp += 1;		/* count digits after decimal point */
+
+	      eshup1 (yy);		/* multiply current number by 10 */
+	      emovz (yy, xt);
+	      eshup1 (xt);
+	      eshup1 (xt);
+	      eaddm (xt, yy);
+	    }
+	  /* Insert the current digit.  */
+	  ecleaz (xt);
+	  xt[NI - 2] = (UEMUSHORT) k;
+	  eaddm (xt, yy);
+	}
+      else
+	{
+	  /* Mark any lost non-zero digit.  */
+	  lost |= k;
+	  /* Count lost digits before the decimal point.  */
+	  if (decflg == 0)
+	    {
+	      if (base == 10)
+		nexp -= 1;
+	      else
+		nexp -= 4;
+	    }
+	}
+      prec += 1;
+      goto donchr;
+    }
+
+  switch (*s)
+    {
+    case 'z':
+      break;
+    case 'E':
+    case 'e':
+    case 'P':
+    case 'p':
+      goto expnt;
+    case '.':			/* decimal point */
+      if (decflg)
+	goto unexpected_char_error;
+      ++decflg;
+      break;
+    case '-':
+      nsign = 0xffff;
+      if (sgnflg)
+	goto unexpected_char_error;
+      ++sgnflg;
+      break;
+    case '+':
+      if (sgnflg)
+	goto unexpected_char_error;
+      ++sgnflg;
+      break;
+    case ',':
+    case ' ':
+    case '\0':
+    case '\n':
+    case '\r':
+      goto daldone;
+    case 'i':
+    case 'I':
+      goto infinite;
+    default:
+    unexpected_char_error:
+#ifdef NANS
+      einan (yy);
+#else
+      mtherr ("asctoe", DOMAIN);
+      eclear (yy);
+#endif
+      goto aexit;
+    }
+ donchr:
+  ++s;
+  goto nxtcom;
+
+  /* Exponent interpretation */
+ expnt:
+  /* 0.0eXXX is zero, regardless of XXX.  Check for the 0.0.  */
+  for (k = 0; k < NI; k++)
+    {
+      if (yy[k] != 0)
+	goto read_expnt;
+    }
+  goto aexit;
+
+read_expnt:
+  esign = 1;
+  exp = 0;
+  ++s;
+  /* check for + or - */
+  if (*s == '-')
+    {
+      esign = -1;
+      ++s;
+    }
+  if (*s == '+')
+    ++s;
+  while (ISDIGIT (*s))
+    {
+      exp *= 10;
+      exp += *s++ - '0';
+      if (exp > 999999)
+	break;
+    }
+  if (esign < 0)
+    exp = -exp;
+  if ((exp > MAXDECEXP) && (base == 10))
+    {
+ infinite:
+      ecleaz (yy);
+      yy[E] = 0x7fff;		/* infinity */
+      goto aexit;
+    }
+  if ((exp < MINDECEXP) && (base == 10))
+    {
+ zero:
+      ecleaz (yy);
+      goto aexit;
+    }
+
+ daldone:
+  if (base == 16)
+    {
+      /* Base 16 hexadecimal floating constant.  */
+      if ((k = enormlz (yy)) > NBITS)
+	{
+	  ecleaz (yy);
+	  goto aexit;
+	}
+      /* Adjust the exponent.  NEXP is the number of hex digits,
+         EXP is a power of 2.  */
+      lexp = (EXONE - 1 + NBITS) - k + yy[E] + exp - nexp;
+      if (lexp > 0x7fff)
+	goto infinite;
+      if (lexp < 0)
+	goto zero;
+      yy[E] = lexp;
+      goto expdon;
+    }
+
+  nexp = exp - nexp;
+  /* Pad trailing zeros to minimize power of 10, per IEEE spec.  */
+  while ((nexp > 0) && (yy[2] == 0))
+    {
+      emovz (yy, xt);
+      eshup1 (xt);
+      eshup1 (xt);
+      eaddm (yy, xt);
+      eshup1 (xt);
+      if (xt[2] != 0)
+	break;
+      nexp -= 1;
+      emovz (xt, yy);
+    }
+  if ((k = enormlz (yy)) > NBITS)
+    {
+      ecleaz (yy);
+      goto aexit;
+    }
+  lexp = (EXONE - 1 + NBITS) - k;
+  emdnorm (yy, lost, 0, lexp, 64);
+  lost = 0;
+
+  /* Convert to external format:
+
+     Multiply by 10**nexp.  If precision is 64 bits,
+     the maximum relative error incurred in forming 10**n
+     for 0 <= n <= 324 is 8.2e-20, at 10**180.
+     For 0 <= n <= 999, the peak relative error is 1.4e-19 at 10**947.
+     For 0 >= n >= -999, it is -1.55e-19 at 10**-435.  */
+
+  lexp = yy[E];
+  if (nexp == 0)
+    {
+      k = 0;
+      goto expdon;
+    }
+  esign = 1;
+  if (nexp < 0)
+    {
+      nexp = -nexp;
+      esign = -1;
+      if (nexp > 4096)
+	{
+	  /* Punt.  Can't handle this without 2 divides.  */
+	  emovi (etens[0], tt);
+	  lexp -= tt[E];
+	  k = edivm (tt, yy);
+	  lexp += EXONE;
+	  nexp -= 4096;
+	}
+    }
+  emov (eone, xt);
+  exp = 1;
+  i = NTEN;
+  do
+    {
+      if (exp & nexp)
+	emul (etens[i], xt, xt);
+      i--;
+      exp = exp + exp;
+    }
+  while (exp <= MAXP);
+
+  emovi (xt, tt);
+  if (esign < 0)
+    {
+      lexp -= tt[E];
+      k = edivm (tt, yy);
+      lexp += EXONE;
+    }
+  else
+    {
+      lexp += tt[E];
+      k = emulm (tt, yy);
+      lexp -= EXONE - 1;
+    }
+  lost = k;
+
+ expdon:
+
+  /* Round and convert directly to the destination type */
+  if (oprec == 53)
+    lexp -= EXONE - 0x3ff;
+#ifdef C4X
+  else if (oprec == 24 || oprec == 32)
+    lexp -= (EXONE - 0x7f);
+#else
+#ifdef IBM
+  else if (oprec == 24 || oprec == 56)
+    lexp -= EXONE - (0x41 << 2);
+#else
+  else if (oprec == 24)
+    lexp -= EXONE - 0177;
+#endif /* IBM */
+#endif /* C4X */
+#ifdef DEC
+  else if (oprec == 56)
+    lexp -= EXONE - 0201;
+#endif
+  rndprc = oprec;
+  emdnorm (yy, lost, 0, lexp, 64);
+
+ aexit:
+
+  rndprc = rndsav;
+  yy[0] = nsign;
+  switch (oprec)
+    {
+#ifdef DEC
+    case 56:
+      todec (yy, y);		/* see etodec.c */
+      break;
+#endif
+#ifdef IBM
+    case 56:
+      toibm (yy, y, DFmode);
+      break;
+#endif
+#ifdef C4X
+    case 32:
+      toc4x (yy, y, HFmode);
+      break;
+#endif
+
+    case 53:
+      toe53 (yy, y);
+      break;
+    case 24:
+      toe24 (yy, y);
+      break;
+    case 64:
+      toe64 (yy, y);
+      break;
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+    case 113:
+      toe113 (yy, y);
+      break;
+#endif
+    case NBITS:
+      emovo (yy, y);
+      break;
+    }
+}

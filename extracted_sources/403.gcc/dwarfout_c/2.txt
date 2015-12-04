@@ -1,0 +1,19 @@
+static inline tree
+type_main_variant (type)
+     tree type;
+{
+  type = TYPE_MAIN_VARIANT (type);
+
+  /* There really should be only one main variant among any group of variants
+     of a given type (and all of the MAIN_VARIANT values for all members of
+     the group should point to that one type) but sometimes the C front-end
+     messes this up for array types, so we work around that bug here.  */
+
+  if (TREE_CODE (type) == ARRAY_TYPE)
+    {
+      while (type != TYPE_MAIN_VARIANT (type))
+        type = TYPE_MAIN_VARIANT (type);
+    }
+
+  return type;
+}

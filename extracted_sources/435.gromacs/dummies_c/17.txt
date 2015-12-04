@@ -1,0 +1,107 @@
+void spread_dummy_f(FILE *log,rvec x[],rvec f[],t_nrnb *nrnb,t_idef *idef,
+		    t_comm_dummies *dummycomm,t_commrec *cr)
+{
+  real      a1,b1,c1;
+  int       i,m,nra,nrd,tp,ftype;
+  int       nd2,nd3,nd3FD,nd3FAD,nd3OUT,nd4FD;
+  t_iatom   adum,ai,aj,ak,al;
+  t_iatom   *ia;
+  t_iparams *ip;
+  
+  /* We only move forces here, and they are independent of shifts */
+  if (dummycomm)
+    move_dummy_f(dummycomm,f,cr);
+
+  ip     = idef->iparams;
+
+  nd2    = 0;
+  nd3    = 0;
+  nd3FD  = 0;
+  nd3FAD = 0;
+  nd3OUT = 0;
+  nd4FD  = 0;
+   
+  /* this loop goes backwards to be able to build *
+   * higher type dummies from lower types         */
+  for(ftype=F_NRE-1; (ftype>=0); ftype--) {
+    if (interaction_function[ftype].flags & IF_DUMMY) {
+      nra    = interaction_function[ftype].nratoms;
+      nrd    = idef->il[ftype].nr;
+      ia     = idef->il[ftype].iatoms;
+      
+      for(i=0; (i<nrd); ) {
+	tp   = ia[0];
+	assert(ftype == idef->functype[tp]);
+	
+	/* The dummy and constructing atoms */
+	adum = ia[1];
+	ai   = ia[2];
+	aj   = ia[3];
+		
+	/* Constants for constructing */
+	a1   = ip[tp].dummy.a; 
+      
+	/* Construct the dummy depending on type */
+	switch (ftype) {
+	case F_DUMMY2:
+	  spread_dum2(f[ai],f[aj],f[adum],a1);
+	  nd2++;
+	  break;
+	case F_DUMMY3:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  spread_dum3(f[ai],f[aj],f[ak],f[adum],a1,b1);
+	  nd3++;
+	  break;
+	case F_DUMMY3FD:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  spread_dum3FD(x[ai],x[aj],x[ak],f[ai],f[aj],f[ak],f[adum],a1,b1);
+	  nd3FD++;
+	  break;
+	case F_DUMMY3FAD:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  spread_dum3FAD(x[ai],x[aj],x[ak],f[ai],f[aj],f[ak],f[adum],a1,b1);
+	  nd3FAD++;
+	  break;
+	case F_DUMMY3OUT:
+	  ak = ia[4];
+	  b1 = ip[tp].dummy.b;
+	  c1 = ip[tp].dummy.c;
+	  spread_dum3OUT(x[ai],x[aj],x[ak],f[ai],f[aj],f[ak],f[adum],a1,b1,c1);
+	  nd3OUT++;
+	  break;
+	case F_DUMMY4FD:
+	  ak = ia[4];
+	  al = ia[5];
+	  b1 = ip[tp].dummy.b;
+	  c1 = ip[tp].dummy.c;
+	  spread_dum4FD(x[ai],x[aj],x[ak],x[al],
+			f[ai],f[aj],f[ak],f[al],f[adum],a1,b1,c1);
+	  nd4FD++;
+	  break;
+	default:
+	  fatal_error(0,"No such dummy type %d in %s, line %d",
+		      ftype,__FILE__,__LINE__);
+	}
+	clear_rvec(f[adum]);
+	
+	/* Increment loop variables */
+	i  += nra+1;
+	ia += nra+1;
+      }
+    }
+  }
+  
+  inc_nrnb(nrnb,eNR_DUM2,   nd2   );
+  inc_nrnb(nrnb,eNR_DUM3,   nd3   );
+  inc_nrnb(nrnb,eNR_DUM3FD, nd3FD );
+  inc_nrnb(nrnb,eNR_DUM3FAD,nd3FAD);
+  inc_nrnb(nrnb,eNR_DUM3OUT,nd3OUT);
+  inc_nrnb(nrnb,eNR_DUM4FD, nd4FD );
+
+  /* We only move forces here, and they are independent of shifts */
+  if(dummycomm)
+    move_construct_f(dummycomm,f,cr);
+}

@@ -1,0 +1,69 @@
+static void
+def_cfa_1 (label, loc_p)
+     const char *label;
+     dw_cfa_location *loc_p;
+{
+  dw_cfi_ref cfi;
+  dw_cfa_location old_cfa, loc;
+
+  cfa = *loc_p;
+  loc = *loc_p;
+
+  if (cfa_store.reg == loc.reg && loc.indirect == 0)
+    cfa_store.offset = loc.offset;
+
+  loc.reg = DWARF_FRAME_REGNUM (loc.reg);
+  lookup_cfa (&old_cfa);
+
+  /* If nothing changed, no need to issue any call frame instructions.  */
+  if (loc.reg == old_cfa.reg && loc.offset == old_cfa.offset
+      && loc.indirect == old_cfa.indirect
+      && (loc.indirect == 0 || loc.base_offset == old_cfa.base_offset))
+    return;
+
+  cfi = new_cfi ();
+
+  if (loc.reg == old_cfa.reg && !loc.indirect)
+    {
+      /* Construct a "DW_CFA_def_cfa_offset <offset>" instruction,
+	 indicating the CFA register did not change but the offset
+	 did.  */
+      cfi->dw_cfi_opc = DW_CFA_def_cfa_offset;
+      cfi->dw_cfi_oprnd1.dw_cfi_offset = loc.offset;
+    }
+
+#ifndef MIPS_DEBUGGING_INFO  /* SGI dbx thinks this means no offset.  */
+  else if (loc.offset == old_cfa.offset && old_cfa.reg != (unsigned long) -1
+	   && !loc.indirect)
+    {
+      /* Construct a "DW_CFA_def_cfa_register <register>" instruction,
+	 indicating the CFA register has changed to <register> but the
+	 offset has not changed.  */
+      cfi->dw_cfi_opc = DW_CFA_def_cfa_register;
+      cfi->dw_cfi_oprnd1.dw_cfi_reg_num = loc.reg;
+    }
+#endif
+
+  else if (loc.indirect == 0)
+    {
+      /* Construct a "DW_CFA_def_cfa <register> <offset>" instruction,
+	 indicating the CFA register has changed to <register> with
+	 the specified offset.  */
+      cfi->dw_cfi_opc = DW_CFA_def_cfa;
+      cfi->dw_cfi_oprnd1.dw_cfi_reg_num = loc.reg;
+      cfi->dw_cfi_oprnd2.dw_cfi_offset = loc.offset;
+    }
+  else
+    {
+      /* Construct a DW_CFA_def_cfa_expression instruction to
+	 calculate the CFA using a full location expression since no
+	 register-offset pair is available.  */
+      struct dw_loc_descr_struct *loc_list;
+
+      cfi->dw_cfi_opc = DW_CFA_def_cfa_expression;
+      loc_list = build_cfa_loc (&loc);
+      cfi->dw_cfi_oprnd1.dw_cfi_loc = loc_list;
+    }
+
+  add_fde_cfi (label, cfi);
+}

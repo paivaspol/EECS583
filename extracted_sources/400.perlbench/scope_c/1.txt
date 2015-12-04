@@ -1,0 +1,16 @@
+void *
+Perl_vdefault_protect(pTHX_ volatile JMPENV *pcur_env, int *excpt,
+		      protect_body_t body, va_list *args)
+{
+    int ex;
+    void *ret;
+
+    JMPENV_PUSH(ex);
+    if (ex)
+	ret = NULL;
+    else
+	ret = CALL_FPTR(body)(aTHX_ *args);
+    *excpt = ex;
+    JMPENV_POP;
+    return ret;
+}

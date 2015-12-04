@@ -1,0 +1,35 @@
+static void
+cselib_record_set (dest, src_elt, dest_addr_elt)
+     rtx dest;
+     cselib_val *src_elt, *dest_addr_elt;
+{
+  int dreg = GET_CODE (dest) == REG ? (int) REGNO (dest) : -1;
+
+  if (src_elt == 0 || side_effects_p (dest))
+    return;
+
+  if (dreg >= 0)
+    {
+      if (REG_VALUES (dreg) == 0)
+        VARRAY_PUSH_UINT (used_regs, dreg);
+
+      if (dreg < FIRST_PSEUDO_REGISTER)
+	{
+	  unsigned int n = HARD_REGNO_NREGS (dreg, GET_MODE (dest));
+
+	  if (n > max_value_regs)
+	    max_value_regs = n;
+	}
+
+      REG_VALUES (dreg) = new_elt_list (REG_VALUES (dreg), src_elt);
+      if (src_elt->locs == 0)
+	n_useless_values--;
+      src_elt->locs = new_elt_loc_list (src_elt->locs, dest);
+    }
+  else if (GET_CODE (dest) == MEM && dest_addr_elt != 0)
+    {
+      if (src_elt->locs == 0)
+	n_useless_values--;
+      add_mem_for_addr (dest_addr_elt, src_elt, dest);
+    }
+}

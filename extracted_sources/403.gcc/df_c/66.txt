@@ -1,0 +1,21 @@
+int
+df_insn_dominates_all_uses_p (df, bb, insn)
+     struct df *df;
+     basic_block bb ATTRIBUTE_UNUSED;
+     rtx insn;
+{
+  unsigned int uid;
+  struct df_link *link;
+
+  uid = INSN_UID (insn);
+
+  for (link = df->insns[uid].defs; link; link = link->next)
+    {
+      struct ref *def = link->ref;
+
+      if (! df_def_dominates_all_uses_p (df, def))
+	return 0;
+    }
+
+  return 1;
+}

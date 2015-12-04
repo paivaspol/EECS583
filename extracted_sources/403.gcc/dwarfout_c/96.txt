@@ -1,0 +1,24 @@
+static void
+output_structure_type_die (arg)
+     void *arg;
+{
+  tree type = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_structure_type);
+  sibling_attribute ();
+  equate_type_number_to_die_number (type);
+  name_attribute (type_tag (type));
+  member_attribute (TYPE_CONTEXT (type));
+
+  /* If this type has been completed, then give it a byte_size attribute
+     and prepare to give a list of members.  Otherwise, don't do either of
+     these things.  In the latter case, we will not be generating a list
+     of members (since we don't have any idea what they might be for an
+     incomplete type).	*/
+
+  if (COMPLETE_TYPE_P (type))
+    {
+      dienum_push ();
+      byte_size_attribute (type);
+    }
+}

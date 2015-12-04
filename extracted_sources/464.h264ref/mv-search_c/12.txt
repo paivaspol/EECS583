@@ -1,0 +1,55 @@
+int
+find_SATD (int curr_diff[MB_BLOCK_SIZE][MB_BLOCK_SIZE], int use_hadamard, int blocktype)
+{
+  int i, j, k, x, y, sad=0;
+  int block_size_x = input->blc_size[blocktype][0];
+  int block_size_y = input->blc_size[blocktype][1];
+  int block_size = (blocktype>4) ? 4:8;
+  int diff[MB_BLOCK_SIZE*MB_BLOCK_SIZE];
+
+  k=0;
+  for(y=0; y<block_size_y; y+=block_size)
+    for(x=0; x<block_size_x; x+=block_size)
+      for(j=y; j<y+block_size; j++)
+        for(i=x; i<x+block_size; i++, k++)
+          diff[k]=curr_diff[j][i];
+
+  if(use_hadamard)
+  {
+    switch(blocktype)
+    {
+    //16x16
+    case 1: 
+            sad  = SATD8X8 (diff, input->hadamard);
+            sad += SATD8X8 (&diff[64], input->hadamard);
+            sad += SATD8X8 (&diff[128], input->hadamard);
+            sad += SATD8X8 (&diff[192], input->hadamard);
+            break;
+    //16x8 8x16
+    case 2:
+    case 3: sad  = SATD8X8 (diff, input->hadamard);
+            sad += SATD8X8 (&diff[64], input->hadamard);
+            break;
+    //8x8
+    case 4: sad  = SATD8X8 (diff, input->hadamard);
+            break;
+    //8x4 4x8
+    case 5:
+    case 6: sad  = SATD (diff, input->hadamard);
+            sad += SATD (&diff[16], input->hadamard);
+            break;
+    //4x4
+    case 7: sad  = SATD (diff, input->hadamard);
+            break;
+    default:sad=-1;
+            break;
+    }
+  }
+  else
+  {
+    for(i=0; i<(block_size_y*block_size_x); i++)
+      sad += byte_abs[diff[i]];
+  }
+
+  return sad;
+}

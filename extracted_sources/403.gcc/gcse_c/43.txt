@@ -1,0 +1,19 @@
+static struct expr *
+lookup_expr (pat)
+     rtx pat;
+{
+  int do_not_record_p;
+  unsigned int hash = hash_expr (pat, GET_MODE (pat), &do_not_record_p,
+				 expr_hash_table_size);
+  struct expr *expr;
+
+  if (do_not_record_p)
+    return NULL;
+
+  expr = expr_hash_table[hash];
+
+  while (expr && ! expr_equiv_p (expr->expr, pat))
+    expr = expr->next_same_hash;
+
+  return expr;
+}

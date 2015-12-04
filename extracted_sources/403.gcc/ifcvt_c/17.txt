@@ -1,0 +1,98 @@
+static int
+noce_try_minmax (if_info)
+     struct noce_if_info *if_info;
+{ 
+  rtx cond, earliest, target, seq;
+  enum rtx_code code, op;
+  int unsignedp;
+
+  /* ??? Can't guarantee that expand_binop won't create pseudos.  */
+  if (no_new_pseudos)
+    return FALSE;
+
+  /* ??? Reject FP modes since we don't know how 0 vs -0 or NaNs
+     will be resolved with an SMIN/SMAX.  It wouldn't be too hard
+     to get the target to tell us...  */
+  if (FLOAT_MODE_P (GET_MODE (if_info->x))
+      && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT
+      && ! flag_unsafe_math_optimizations)
+    return FALSE;
+
+  cond = noce_get_alt_condition (if_info, if_info->a, &earliest);
+  if (!cond)
+    return FALSE;
+
+  /* Verify the condition is of the form we expect, and canonicalize
+     the comparison code.  */
+  code = GET_CODE (cond);
+  if (rtx_equal_p (XEXP (cond, 0), if_info->a))
+    {
+      if (! rtx_equal_p (XEXP (cond, 1), if_info->b))
+	return FALSE;
+    }
+  else if (rtx_equal_p (XEXP (cond, 1), if_info->a))
+    {
+      if (! rtx_equal_p (XEXP (cond, 0), if_info->b))
+	return FALSE;
+      code = swap_condition (code);
+    }
+  else
+    return FALSE;
+
+  /* Determine what sort of operation this is.  Note that the code is for
+     a taken branch, so the code->operation mapping appears backwards.  */
+  switch (code)
+    {
+    case LT:
+    case LE:
+    case UNLT:
+    case UNLE:
+      op = SMAX;
+      unsignedp = 0;
+      break;
+    case GT:
+    case GE:
+    case UNGT:
+    case UNGE:
+      op = SMIN;
+      unsignedp = 0;
+      break;
+    case LTU:
+    case LEU:
+      op = UMAX;
+      unsignedp = 1;
+      break;
+    case GTU:
+    case GEU:
+      op = UMIN;
+      unsignedp = 1;
+      break;
+    default:
+      return FALSE;
+    }
+
+  start_sequence ();
+
+  target = expand_simple_binop (GET_MODE (if_info->x), op,
+				if_info->a, if_info->b,
+				if_info->x, unsignedp, OPTAB_WIDEN);
+  if (! target)
+    {
+      end_sequence ();
+      return FALSE;
+    }
+  if (target != if_info->x)
+    noce_emit_move_insn (if_info->x, target);
+
+  seq = get_insns ();
+  end_sequence ();  
+
+  if (seq_contains_jump (seq))
+    return FALSE;
+
+  emit_insns_before (seq, if_info->jump);
+  if_info->cond = cond;
+  if_info->cond_earliest = earliest;
+
+  return TRUE;
+}

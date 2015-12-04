@@ -1,0 +1,31 @@
+void
+init_reg_sets ()
+{
+  int i, j;
+
+  /* First copy the register information from the initial int form into
+     the regsets.  */
+
+  for (i = 0; i < N_REG_CLASSES; i++)
+    {
+      CLEAR_HARD_REG_SET (reg_class_contents[i]);
+
+      /* Note that we hard-code 32 here, not HOST_BITS_PER_INT.  */
+      for (j = 0; j < FIRST_PSEUDO_REGISTER; j++)
+	if (int_reg_class_contents[i][j / 32]
+	    & ((unsigned) 1 << (j % 32)))
+	  SET_HARD_REG_BIT (reg_class_contents[i], j);
+    }
+
+  memcpy (fixed_regs, initial_fixed_regs, sizeof fixed_regs);
+  memcpy (call_used_regs, initial_call_used_regs, sizeof call_used_regs);
+  memset (global_regs, 0, sizeof global_regs);
+
+  /* Do any additional initialization regsets may need */
+  INIT_ONCE_REG_SET ();
+
+#ifdef REG_ALLOC_ORDER
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    inv_reg_alloc_order[reg_alloc_order[i]] = i;
+#endif
+}

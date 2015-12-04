@@ -1,0 +1,43 @@
+void levrun_linfo_c2x2(int level,int run,int *len,int *info)
+{
+  const int NTAB[2][2]=
+  {
+    {1,5},
+    {3,0}
+  };
+  const int LEVRUN[4]=
+  {
+    2,1,0,0
+  };
+
+  int levabs,i,n,sign,nn;
+
+  if (level == 0) //  check if the coefficient sign EOB (level=0)
+  {
+    *len=1;
+    return;
+  }
+  sign=0;
+  if (level <= 0)
+  {
+    sign=1;
+  }
+  levabs=abs(level);
+  if (levabs <= LEVRUN[run])
+  {
+    n=NTAB[levabs-1][run]+1;
+  }
+  else
+  {
+    n=(levabs-LEVRUN[run])*8 + run*2;
+  }
+
+  nn=n/2;
+
+  for (i=0; i < 16 && nn != 0; i++)
+  {
+    nn /= 2;
+  }
+  *len= 2*i + 1;
+  *info=n-(int)pow(2,i)+sign;
+}

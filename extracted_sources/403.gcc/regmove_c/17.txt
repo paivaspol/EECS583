@@ -1,0 +1,30 @@
+static int
+stable_and_no_regs_but_for_p (x, src, dst)
+     rtx x, src, dst;
+{
+  RTX_CODE code = GET_CODE (x);
+  switch (GET_RTX_CLASS (code))
+    {
+    case '<': case '1': case 'c': case '2': case 'b': case '3':
+      {
+	int i;
+	const char *fmt = GET_RTX_FORMAT (code);
+	for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+	  if (fmt[i] == 'e'
+	      && ! stable_and_no_regs_but_for_p (XEXP (x, i), src, dst))
+	      return 0;
+	return 1;
+      }
+    case 'o':
+      if (code == REG)
+	return x == src || x == dst;
+      /* If this is a MEM, look inside - there might be a register hidden in
+	 the address of an unchanging MEM.  */
+      if (code == MEM
+	  && ! stable_and_no_regs_but_for_p (XEXP (x, 0), src, dst))
+	return 0;
+      /* fall through */
+    default:
+      return ! rtx_unstable_p (x);
+    }
+}

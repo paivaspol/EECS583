@@ -1,0 +1,51 @@
+static rtx
+emit_pop_insn (insn, regstack, reg, where)
+     rtx insn;
+     stack regstack;
+     rtx reg;
+     enum emit_where where;
+{
+  rtx pop_insn, pop_rtx;
+  int hard_regno;
+
+  /* For complex types take care to pop both halves.  These may survive in
+     CLOBBER and USE expressions.  */
+  if (COMPLEX_MODE_P (GET_MODE (reg)))
+    {
+      rtx reg1 = FP_MODE_REG (REGNO (reg), DFmode);
+      rtx reg2 = FP_MODE_REG (REGNO (reg) + 1, DFmode);
+
+      pop_insn = NULL_RTX;
+      if (get_hard_regnum (regstack, reg1) >= 0)
+         pop_insn = emit_pop_insn (insn, regstack, reg1, where);
+      if (get_hard_regnum (regstack, reg2) >= 0)
+         pop_insn = emit_pop_insn (insn, regstack, reg2, where);
+      if (!pop_insn)
+	abort ();
+      return pop_insn;
+    }
+
+  hard_regno = get_hard_regnum (regstack, reg);
+
+  if (hard_regno < FIRST_STACK_REG)
+    abort ();
+
+  pop_rtx = gen_rtx_SET (VOIDmode, FP_MODE_REG (hard_regno, DFmode),
+			 FP_MODE_REG (FIRST_STACK_REG, DFmode));
+
+  if (where == EMIT_AFTER)
+    pop_insn = emit_insn_after (pop_rtx, insn);
+  else
+    pop_insn = emit_insn_before (pop_rtx, insn);
+
+  REG_NOTES (pop_insn)
+    = gen_rtx_EXPR_LIST (REG_DEAD, FP_MODE_REG (FIRST_STACK_REG, DFmode),
+			 REG_NOTES (pop_insn));
+
+  regstack->reg[regstack->top - (hard_regno - FIRST_STACK_REG)]
+    = regstack->reg[regstack->top];
+  regstack->top -= 1;
+  CLEAR_HARD_REG_BIT (regstack->reg_set, REGNO (reg));
+
+  return pop_insn;
+}

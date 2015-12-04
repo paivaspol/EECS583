@@ -1,0 +1,26 @@
+static inline void
+add_AT_string (die, attr_kind, str)
+     dw_die_ref die;
+     enum dwarf_attribute attr_kind;
+     const char *str;
+{
+  dw_attr_ref attr = (dw_attr_ref) xmalloc (sizeof (dw_attr_node));
+  struct indirect_string_node *node;
+  
+  if (! debug_str_hash)
+    {
+      debug_str_hash = ht_create (10);
+      debug_str_hash->alloc_node = indirect_string_alloc;
+    }
+
+  node = (struct indirect_string_node *)
+	 ht_lookup (debug_str_hash, (const unsigned char *) str,
+		    strlen (str), HT_ALLOC);
+  node->refcount++;
+
+  attr->dw_attr_next = NULL;
+  attr->dw_attr = attr_kind;
+  attr->dw_attr_val.val_class = dw_val_class_str;
+  attr->dw_attr_val.v.val_str = node;
+  add_dwarf_attr (die, attr);
+}

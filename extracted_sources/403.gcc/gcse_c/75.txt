@@ -1,0 +1,130 @@
+static void
+compute_transp (x, indx, bmap, set_p)
+     rtx x;
+     int indx;
+     sbitmap *bmap;
+     int set_p;
+{
+  int bb, i, j;
+  enum rtx_code code;
+  reg_set *r;
+  const char *fmt;
+
+  /* repeat is used to turn tail-recursion into iteration since GCC
+     can't do it when there's no return value.  */
+ repeat:
+
+  if (x == 0)
+    return;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case REG:
+      if (set_p)
+	{
+	  if (REGNO (x) < FIRST_PSEUDO_REGISTER)
+	    {
+	      for (bb = 0; bb < n_basic_blocks; bb++)
+		if (TEST_BIT (reg_set_in_block[bb], REGNO (x)))
+		  SET_BIT (bmap[bb], indx);
+	    }
+	  else
+	    {
+	      for (r = reg_set_table[REGNO (x)]; r != NULL; r = r->next)
+		SET_BIT (bmap[BLOCK_NUM (r->insn)], indx);
+	    }
+	}
+      else
+	{
+	  if (REGNO (x) < FIRST_PSEUDO_REGISTER)
+	    {
+	      for (bb = 0; bb < n_basic_blocks; bb++)
+		if (TEST_BIT (reg_set_in_block[bb], REGNO (x)))
+		  RESET_BIT (bmap[bb], indx);
+	    }
+	  else
+	    {
+	      for (r = reg_set_table[REGNO (x)]; r != NULL; r = r->next)
+		RESET_BIT (bmap[BLOCK_NUM (r->insn)], indx);
+	    }
+	}
+
+      return;
+
+    case MEM:
+      for (bb = 0; bb < n_basic_blocks; bb++)
+	{
+	  rtx list_entry = canon_modify_mem_list[bb];
+
+	  while (list_entry)
+	    {
+	      rtx dest, dest_addr;
+
+	      if (GET_CODE (XEXP (list_entry, 0)) == CALL_INSN)
+		{
+		  if (set_p)
+		    SET_BIT (bmap[bb], indx);
+		  else
+		    RESET_BIT (bmap[bb], indx);
+		  break;
+		}
+	      /* LIST_ENTRY must be an INSN of some kind that sets memory.
+		 Examine each hunk of memory that is modified.  */
+
+	      dest = XEXP (list_entry, 0);
+	      list_entry = XEXP (list_entry, 1);
+	      dest_addr = XEXP (list_entry, 0);
+	      
+	      if (canon_true_dependence (dest, GET_MODE (dest), dest_addr,
+					 x, rtx_addr_varies_p))
+		{
+		  if (set_p)
+		    SET_BIT (bmap[bb], indx);
+		  else
+		    RESET_BIT (bmap[bb], indx);
+		  break;
+		}
+	      list_entry = XEXP (list_entry, 1);
+	    }
+	}
+
+      x = XEXP (x, 0);
+      goto repeat;
+
+    case PC:
+    case CC0: /*FIXME*/
+    case CONST:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+      return;
+
+    default:
+      break;
+    }
+
+  for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    {
+	      x = XEXP (x, i);
+	      goto repeat;
+	    }
+
+	  compute_transp (XEXP (x, i), indx, bmap, set_p);
+	}
+      else if (fmt[i] == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  compute_transp (XVECEXP (x, i, j), indx, bmap, set_p);
+    }
+}

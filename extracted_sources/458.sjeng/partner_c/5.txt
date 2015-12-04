@@ -1,0 +1,310 @@
+void CheckBadFlow(xbool reset)
+{
+  move_s hismoves[MOVE_BUFF];
+  move_s ourmoves[MOVE_BUFF];
+  int his_num_moves, our_num_moves, j, i, ic, icc;
+
+  xbool othermove = FALSE;
+
+  int 
+    pawnmates = FALSE, 
+    knightmates = FALSE, 
+    bishopmates = FALSE, 
+    rookmates = FALSE, 
+    queenmates = FALSE;
+  
+  static int 
+    pawnmated = FALSE, 
+    knightmated = FALSE, 
+    bishopmated = FALSE, 
+    rookmated = FALSE, 
+    queenmated = FALSE;
+
+  xbool
+    pawnwarn = FALSE,
+    knightwarn = FALSE,
+    bishopwarn = FALSE,
+    rookwarn = FALSE,
+    queenwarn = FALSE;
+
+  if (reset)
+    {
+      pawnmated = FALSE; 
+      knightmated = FALSE; 
+      bishopmated = FALSE; 
+      rookmated = FALSE; 
+      queenmated = FALSE;
+      return;
+    }
+
+  ic = in_check();
+
+  if (!holding[!white_to_move][(white_to_move ? wpawn : bpawn)])
+    {
+  
+      DropaddHolding((white_to_move ? wpawn : bpawn) , !white_to_move);
+      
+      gen(&hismoves[0]);
+      his_num_moves = numb_moves;
+      
+      for(i = 0; (i < his_num_moves) && (pawnmates == FALSE); i++)
+	{
+	  make(&hismoves[0], i);
+	  
+	  if (check_legal(&hismoves[0], i, ic))
+	    {
+	      pawnmates = CANCEL_THRESH;
+
+	      icc = in_check();
+	      
+	      gen(&ourmoves[0]); 
+	      our_num_moves = numb_moves;
+	      
+	      for (j = 0; (j < our_num_moves) && (pawnmates != FALSE); j++)
+		{
+		  
+		  make(&ourmoves[0], j);
+		  
+		  if (check_legal(&ourmoves[0], j, icc))
+		    pawnmates = FALSE;
+		  
+		  unmake(&ourmoves[0], j);
+		  
+		}
+	    }
+	  unmake(&hismoves[0], i);	  
+	}
+      DropremoveHolding((white_to_move ? wpawn : bpawn), !white_to_move);
+    }
+  
+  if (!holding[!white_to_move][(white_to_move ? wknight : bknight)])
+    {
+      
+      DropaddHolding((white_to_move ? wknight : bknight) , !white_to_move);
+      
+      gen(&hismoves[0]); 
+      his_num_moves = numb_moves;
+      
+      for(i = 0; (i < his_num_moves) && (knightmates == FALSE); i++)
+	{
+	  
+	  make(&hismoves[0], i);
+	  
+	  if (check_legal(&hismoves[0], i, ic))
+	    {
+	      knightmates = CANCEL_THRESH;
+
+	      icc = in_check();
+	      
+	      gen(&ourmoves[0]); 
+	      our_num_moves = numb_moves;
+	      
+	      for (j = 0; (j < our_num_moves) && (knightmates != FALSE); j++)
+		{
+		  make(&ourmoves[0], j);
+		  
+		  if (check_legal(&ourmoves[0], j, icc))
+		    knightmates = FALSE;
+		  
+		  unmake(&ourmoves[0], j);
+		}
+	    }
+	  unmake(&hismoves[0], i);
+	}
+      DropremoveHolding((white_to_move ? wknight : bknight), !white_to_move);
+    }
+  
+  if (!holding[!white_to_move][(white_to_move ? wbishop : bbishop)])
+    {      
+      
+      DropaddHolding((white_to_move ? wbishop : bbishop) , !white_to_move);
+      
+      gen(&hismoves[0]); 
+      his_num_moves = numb_moves;
+      
+      for(i = 0; (i < his_num_moves) && (bishopmates == FALSE); i++)
+	{
+	  make(&hismoves[0], i);
+	  
+	  if (check_legal(&hismoves[0], i, ic))
+	    {
+	      bishopmates = CANCEL_THRESH;
+	      
+	      icc = in_check();
+
+	      gen(&ourmoves[0]);
+	      our_num_moves = numb_moves;
+	      
+	      for (j = 0; (j < our_num_moves) && (bishopmates != FALSE); j++)
+		{
+		  make(&ourmoves[0], j);
+		  
+		  if (check_legal(&ourmoves[0], j, icc))
+		    bishopmates = FALSE;
+		  
+		  unmake(&ourmoves[0], j);
+		}
+	    }
+	  unmake(&hismoves[0], i);
+	}
+      DropremoveHolding((white_to_move ? wbishop : bbishop), !white_to_move);  
+    }
+  
+  if (!holding[!white_to_move][(white_to_move ? wrook : brook)])
+    {
+      
+      DropaddHolding((white_to_move ? wrook : brook) , !white_to_move);
+      
+      gen(&hismoves[0]);
+      his_num_moves= numb_moves;
+      
+      for(i = 0; (i < his_num_moves) && (rookmates == FALSE); i++)
+	{
+	  make(&hismoves[0], i);
+	  
+	  if (check_legal(&hismoves[0], i, ic))
+	    {
+	      rookmates = CANCEL_THRESH;
+
+	      icc = in_check();
+	      
+	      gen(&ourmoves[0]);
+	      our_num_moves = numb_moves;
+	      
+	      for (j = 0; (j < our_num_moves) && (rookmates != FALSE); j++)
+		{
+		  make(&ourmoves[0], j);
+		  
+		  if (check_legal(&ourmoves[0], j, icc))
+		    rookmates = FALSE;
+		  
+		  unmake(&ourmoves[0], j); 
+		}
+	    }
+	  unmake(&hismoves[0], i);
+	}
+      DropremoveHolding((white_to_move ? wrook : brook), !white_to_move); 
+    }
+  
+  if (!holding[!white_to_move][(white_to_move ? wqueen : bqueen)])
+    {
+      
+      DropaddHolding((white_to_move ? wqueen : bqueen) , !white_to_move);
+
+      gen(&hismoves[0]);
+      his_num_moves= numb_moves;
+      
+      for(i = 0; (i < his_num_moves) && (queenmates == FALSE); i++)
+	{
+	  make(&hismoves[0], i);
+	  
+	  if (check_legal(&hismoves[0], i, ic))
+	    {
+	      queenmates = CANCEL_THRESH;
+
+	      icc = in_check();
+	      
+	      gen(&ourmoves[0]);
+	      our_num_moves = numb_moves;
+	      
+	      for (j = 0; (j < our_num_moves) && (queenmates != FALSE); j++)
+		{
+		  make(&ourmoves[0], j);
+		  
+		  if (check_legal(&ourmoves[0], j, icc))
+		    queenmates = FALSE;
+		  
+		  unmake(&ourmoves[0], j); 
+		}
+	    }
+	  unmake(&hismoves[0], i);
+	}
+      DropremoveHolding((white_to_move ? wqueen : bqueen), !white_to_move);
+    }
+
+  /* order in which we tell things is important if we partner ourselves */
+  
+  /* only update if changed */
+  if (pawnmates != pawnmated)
+    {
+      if (pawnmates == CANCEL_THRESH)
+	  pawnwarn = TRUE;
+      else if (pawnmates == 0 && pawnmated == 0)
+	{
+	  printf("tellics ptell p doesn't mate me anymore\n");
+	  othermove = TRUE;
+	}
+    }
+  
+  if (knightmates != knightmated)
+    {
+      if (knightmates == CANCEL_THRESH)
+	  knightwarn = TRUE;
+      else if (knightmates == 0 && knightmated == 0)
+	{
+	  printf("tellics ptell n doesn't mate me anymore\n");
+	  othermove = TRUE;
+	}
+    }  
+
+  if (bishopmates != bishopmated)
+    {
+      if (bishopmates == CANCEL_THRESH)
+	  bishopwarn = TRUE;
+      else if (bishopmates == 0 && bishopmated == 0)
+	{
+	  printf("tellics ptell b doesn't mate me anymore\n");
+	  othermove = TRUE;
+	}
+    }  
+  if (rookmates != rookmated)
+    {
+      if (rookmates == CANCEL_THRESH)
+	  rookwarn = TRUE;
+      else if (rookmates == 0 && rookmated == 0)
+	{
+	  printf("tellics ptell r doesn't mate me anymore\n");
+	  othermove = TRUE;
+	}
+    }
+  if (queenmates != queenmated)
+    {
+      if (queenmates == CANCEL_THRESH)
+	  queenwarn = TRUE;
+      else if (queenmates == 0 && queenmated == 0)
+	{
+	  printf("tellics ptell q doesn't mate me anymore\n");
+	  othermove = TRUE;
+	} 
+    }
+
+  if (pawnwarn)
+	printf("tellics ptell ---p\n");
+  if (knightwarn)
+	printf("tellics ptell ---n\n");
+  if (bishopwarn)
+	printf("tellics ptell ---b\n");
+  if (rookwarn)
+	printf("tellics ptell ---r\n");
+  if (queenwarn)
+	printf("tellics ptell ---q\n");
+
+  /* if other sjeng had to sit because of piece-loss, he
+     may be able to go now */
+  
+  if (piecedead && othermove)
+    {
+      piecedead = FALSE;
+      printf("tellics ptell x\n");
+      printf("tellics ptell go\n");
+      go_fast = FALSE;
+    }
+
+  (pawnmates) ? (pawnmated = pawnmates) : (pawnmated--);
+  (bishopmates) ? (bishopmated = bishopmates) : (bishopmated--);
+  (rookmates) ? (rookmated = rookmates) : (rookmated--);
+  (queenmates) ? (queenmated = queenmates) : (queenmated--);
+  (knightmates) ? (knightmated = knightmates) : (knightmated--);
+
+  return;
+}

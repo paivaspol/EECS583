@@ -1,0 +1,56 @@
+int32 bio_readhdr (FILE *fp, char ***argname, char ***argval, int32 *swap)
+{
+    char line[16384], word[4096];
+    int32 i, l;
+    int32 lineno;
+    
+    *argname = (char **) ckd_calloc (BIO_HDRARG_MAX+1, sizeof(char *));
+    *argval = (char **) ckd_calloc (BIO_HDRARG_MAX, sizeof(char *));
+
+    lineno = 0;
+    if (fgets (line, sizeof(line), fp) == NULL)
+	E_FATAL("Premature EOF, line %d\n", lineno);
+    lineno++;
+    
+    if ((line[0] == 's') && (line[1] == '3') && (line[2] == '\n')) {
+	/* New format (post Dec-1996, including checksums); read argument-value pairs */
+	for (i = 0;;) {
+	    if (fgets (line, sizeof(line), fp) == NULL)
+		E_FATAL("Premature EOF, line %d\n", lineno);
+	    lineno++;
+	    
+	    if (sscanf (line, "%s%n", word, &l) != 1)
+		E_FATAL("Header format error, line %d\n", lineno);
+	    if (strcmp (word, "endhdr") == 0)
+		break;
+	    if (word[0] == '#')		/* Skip comments */
+		continue;
+
+	    if (i >= BIO_HDRARG_MAX)
+		E_FATAL("Max arg-value limit(%d) exceeded; increase BIO_HDRARG_MAX\n",
+			BIO_HDRARG_MAX);
+	    
+	    (*argname)[i] = ckd_salloc (word);
+	    if (sscanf (line+l, "%s", word) != 1)	/* Multi-word values not allowed */
+		E_FATAL("Header format error, line %d\n", lineno);
+	    (*argval)[i] = ckd_salloc (word);
+	    i++;
+	}
+    } else {
+	/* Old format (without checksums); the first entry must be the version# */
+	if (sscanf(line, "%s", word) != 1)
+	    E_FATAL("Header format error, line %d\n", lineno);
+
+	(*argname)[0] = ckd_salloc ("version");
+	(*argval)[0] = ckd_salloc (word);
+	i = 1;
+	
+	bcomment_read(fp);
+    }
+    (*argname)[i] = NULL;
+    
+    if ((*swap = swap_check(fp)) < 0)
+	E_FATAL("swap_check failed\n");
+
+    return 0;
+}

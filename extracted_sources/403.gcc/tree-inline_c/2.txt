@@ -1,0 +1,21 @@
+static void
+copy_scope_stmt (tp, walk_subtrees, id)
+     tree *tp;
+     int *walk_subtrees;
+     inline_data *id;
+{
+  tree block;
+
+  /* Remember whether or not this statement was nullified.  When
+     making a copy, copy_tree_r always sets SCOPE_NULLIFIED_P (and
+     doesn't copy the SCOPE_STMT_BLOCK) to free callers from having to
+     deal with copying BLOCKs if they do not wish to do so.  */
+  block = SCOPE_STMT_BLOCK (*tp);
+  /* Copy (and replace) the statement.  */
+  copy_tree_r (tp, walk_subtrees, NULL);
+  /* Restore the SCOPE_STMT_BLOCK.  */
+  SCOPE_STMT_BLOCK (*tp) = block;
+
+  /* Remap the associated block.  */
+  remap_block (*tp, NULL_TREE, id);
+}

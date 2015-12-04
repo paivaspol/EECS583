@@ -1,0 +1,29 @@
+int32 mgau_var_nzvec_floor (mgau_model_t *g, float64 floor)
+{
+  int32 m, c, i, n, l;
+  float32 *var;
+  
+  E_INFO("Applying variance floor to non-zero variance vectors\n");
+  
+  l = mgau_veclen(g);
+  
+  n = 0;
+  for (m = 0; m < mgau_n_mgau(g); m++) {
+    for (c = 0; c < mgau_n_comp(g,m); c++) {
+      var = g->mgau[m].var[c];
+      
+      if (! vector_is_zero (var, l)) {
+	for (i = 0; i < l; i++) {
+	  if (var[i] < floor) {
+	    var[i] = (float32) floor;
+	    n++;
+	  }
+	}
+      }
+    }
+  }
+  
+  E_INFO("%d variance values floored\n", n);
+  
+  return n;
+}

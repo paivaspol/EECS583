@@ -1,0 +1,84 @@
+void
+PartitionMotionSearch (int    blocktype,
+                       int    block8x8,
+                       double lambda)
+{
+  static int  bx0[5][4] = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,2,0,0}, {0,2,0,2}};
+  static int  by0[5][4] = {{0,0,0,0}, {0,0,0,0}, {0,2,0,0}, {0,0,0,0}, {0,0,2,2}};
+
+  short **ref_array, ***mv_array;
+  short ref;
+  int   v, h, mcost, search_range, i, j;
+  int   pic_block_x, pic_block_y;
+  int   bslice    = (img->type==B_SLICE);
+  int   parttype  = (blocktype<4?blocktype:4);
+  int   step_h0   = (input->part_size[ parttype][0]);
+  int   step_v0   = (input->part_size[ parttype][1]);
+  int   step_h    = (input->part_size[blocktype][0]);
+  int   step_v    = (input->part_size[blocktype][1]);
+  int   list;
+  int   numlists;
+  int   list_offset;
+
+  if (img->mb_data[img->current_mb_nr].mb_field)
+  {
+    if(img->current_mb_nr%2)
+      list_offset = 4; // bottom field mb
+    else
+      list_offset = 2; // top field mb
+  }
+  else
+  {
+    list_offset = 0;  // no mb aff or frame mb
+  }
+
+  numlists=bslice?2:1;
+
+  //===== LOOP OVER REFERENCE FRAMES =====
+  for (list=0; list<numlists;list++)
+  {
+    for (ref=0; ref < listXsize[list+list_offset]; ref++)
+    {
+        //----- set search range ---
+#ifdef _FULL_SEARCH_RANGE_
+        if      (input->full_search == 2) search_range = input->search_range;
+        else if (input->full_search == 1) search_range = input->search_range /  (min(ref,1)+1);
+        else                              search_range = input->search_range / ((min(ref,1)+1) * min(2,blocktype));
+#else
+        search_range = input->search_range / ((min(ref,1)+1) * min(2,blocktype));
+#endif
+        
+        //----- set arrays -----
+        ref_array = enc_picture->ref_idx[list];
+        mv_array  = enc_picture->mv[list];
+        
+        //----- init motion cost -----
+        motion_cost[blocktype][list][ref][block8x8] = 0;
+        
+        //===== LOOP OVER SUB MACRO BLOCK partitions
+        for (v=by0[parttype][block8x8]; v<by0[parttype][block8x8]+step_v0; v+=step_v)
+        {
+          pic_block_y = img->block_y + v;
+          
+          for (h=bx0[parttype][block8x8]; h<bx0[parttype][block8x8]+step_h0; h+=step_h)
+          {
+            pic_block_x = img->block_x + h;
+            
+            //--- motion search for block ---
+
+            mcost = BlockMotionSearch     (ref, list, h<<2, v<<2, blocktype, search_range, lambda);
+            motion_cost[blocktype][list][ref][block8x8] += mcost;
+            
+            //--- set motion vectors and reference frame (for motion vector prediction) ---
+            for (j=0; j<step_v; j++)
+              for (i=0; i<step_h; i++)
+              {
+                mv_array  [pic_block_x+i][pic_block_y+j][0] = img->all_mv[h][v][list][ref][blocktype][0];
+                mv_array  [pic_block_x+i][pic_block_y+j][1] = img->all_mv[h][v][list][ref][blocktype][1];
+                ref_array [pic_block_x+i][pic_block_y+j]    = ref;
+              }
+          }
+        }
+    }
+  }
+}

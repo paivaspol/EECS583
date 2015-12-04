@@ -1,0 +1,213 @@
+void rc_init_pict(int fieldpic,int topfield,int targetcomputation)
+{
+  int i;
+
+  /* compute the total number of basic units in a frame */
+  if(input->MbInterlace)
+    TotalNumberofBasicUnit=img->Frame_Total_Number_MB/img->BasicUnit;
+  img->NumberofCodedMacroBlocks=0;
+
+  /* Normally, the bandwidth for the VBR case is estimated by 
+     a congestion control algorithm. A bandwidth curve can be predefined if we only want to 
+     test the proposed algorithm */
+  if(input->channel_type==1)
+  {
+    if(img->NumberofCodedPFrame==58)
+      bit_rate *=1.5;
+    else if(img->NumberofCodedPFrame==59)
+      PreviousBit_Rate=bit_rate;
+  }
+
+  /* predefine a target buffer level for each frame */
+  if((fieldpic||topfield)&&targetcomputation)
+  {
+    switch (img->type)
+    {
+      case P_SLICE:
+      /* Since the available bandwidth may vary at any time, the total number of 
+         bits is updated picture by picture*/
+        if(PreviousBit_Rate!=bit_rate)
+          R +=(int) floor((bit_rate-PreviousBit_Rate)*(Np+Nb)/frame_rate+0.5);
+              
+        /* predefine the  target buffer level for each picture.
+           frame layer rate control */
+        if(img->BasicUnit==img->Frame_Total_Number_MB)
+        {
+          if(img->NumberofPPicture==1)
+          {
+            TargetBufferLevel=CurrentBufferFullness;
+            DeltaP=(CurrentBufferFullness-GOPTargetBufferLevel)/(TotalPFrame-1);
+            TargetBufferLevel -=DeltaP;
+          }
+          else if(img->NumberofPPicture>1)
+            TargetBufferLevel -=DeltaP;
+        }
+        /* basic unit layer rate control */
+        else
+        {
+          if(img->NumberofCodedPFrame>0)
+          {
+            /* adaptive frame/filed coding */
+            if(((input->PicInterlace==ADAPTIVE_CODING)||(input->MbInterlace))\
+              &&(img->FieldControl==1))
+            {
+              for(i=0;i<TotalNumberofBasicUnit;i++)
+                FCBUPFMAD[i]=FCBUCFMAD[i];
+            }
+            else
+            {
+              for(i=0;i<TotalNumberofBasicUnit;i++)
+                BUPFMAD[i]=BUCFMAD[i];
+            }     
+          }
+
+          if(img->NumberofGOP==1)
+          {
+            if(img->NumberofPPicture==1)
+            {
+              TargetBufferLevel=CurrentBufferFullness;
+              DeltaP=(CurrentBufferFullness-GOPTargetBufferLevel)/(TotalPFrame-1);
+              TargetBufferLevel -=DeltaP;
+            }
+            else if(img->NumberofPPicture>1)
+              TargetBufferLevel -=DeltaP;
+          }
+          else if(img->NumberofGOP>1)
+          {
+            if(img->NumberofPPicture==0)
+            {
+              TargetBufferLevel=CurrentBufferFullness;
+              DeltaP=(CurrentBufferFullness-GOPTargetBufferLevel)/TotalPFrame;
+              TargetBufferLevel -=DeltaP;
+            }
+            else if(img->NumberofPPicture>0)
+              TargetBufferLevel -=DeltaP;
+          }
+        }
+
+        if(img->NumberofCodedPFrame==1)
+          AWp=Wp;
+        if((img->NumberofCodedPFrame<8)&&(img->NumberofCodedPFrame>1))
+            AWp=Wp*(img->NumberofCodedPFrame-1)/img->NumberofCodedPFrame+\
+              AWp/img->NumberofCodedPFrame;
+          else if(img->NumberofCodedPFrame>1)
+            AWp=Wp/8+7*AWp/8;
+          
+        // compute the average complexity of B frames
+        if(input->successive_Bframe>0)
+        {
+          // compute the target buffer level
+          TargetBufferLevel +=(AWp*(input->successive_Bframe+1)*bit_rate\
+            /(frame_rate*(AWp+AWb*input->successive_Bframe))-bit_rate/frame_rate);
+        }
+        
+        break;
+
+         case B_SLICE:
+         /* update the total number of bits if the bandwidth is changed*/
+           if(PreviousBit_Rate!=bit_rate)
+             R +=(int) floor((bit_rate-PreviousBit_Rate)*(Np+Nb)/frame_rate+0.5);
+            if((img->NumberofCodedPFrame==1)&&(img->NumberofCodedBFrame==1))
+          {
+            AWp=Wp;
+            AWb=Wb;
+          }
+          else if(img->NumberofCodedBFrame>1)
+          {
+            //compute the average weight
+            if(img->NumberofCodedBFrame<8)
+              AWb=Wb*(img->NumberofCodedBFrame-1)/img->NumberofCodedBFrame+\
+                AWb/img->NumberofCodedBFrame;
+            else
+              AWb=Wb/8+7*AWb/8;
+          }
+
+            break;
+    }
+     /* Compute the target bit for each frame */
+    if(img->type==P_SLICE)
+    {
+      /* frame layer rate control */
+      if(img->BasicUnit==img->Frame_Total_Number_MB)
+      {
+        if(img->NumberofCodedPFrame>0)
+        {
+          T = (long) floor(Wp*R/(Np*Wp+Nb*Wb) + 0.5);
+                
+          T1 = (long) floor(bit_rate/frame_rate-GAMMAP*(CurrentBufferFullness-TargetBufferLevel)+0.5);
+          T1=MAX(0,T1);
+          T = (long)(floor(BETAP*T+(1.0-BETAP)*T1+0.5));
+        }
+       }
+      /* basic unit layer rate control */
+      else
+      {
+        if((img->NumberofGOP==1)&&(img->NumberofCodedPFrame>0))
+        {
+          T = (int) floor(Wp*R/(Np*Wp+Nb*Wb) + 0.5);
+          T1 = (int) floor(bit_rate/frame_rate-GAMMAP*(CurrentBufferFullness-TargetBufferLevel)+0.5);
+          T1=MAX(0,T1);
+          T = (int)(floor(BETAP*T+(1.0-BETAP)*T1+0.5));
+        }
+        else if(img->NumberofGOP>1)
+        {
+          T = (long) floor(Wp*R/(Np*Wp+Nb*Wb) + 0.5);
+          T1 = (long) floor(bit_rate/frame_rate-GAMMAP*(CurrentBufferFullness-TargetBufferLevel)+0.5);
+          T1 = MAX(0,T1);
+          T = (long)(floor(BETAP*T+(1.0-BETAP)*T1+0.5));
+        }
+      }
+
+      /* reserve some bits for smoothing */
+
+      T=(long)((1.0-0.0*input->successive_Bframe)*T);
+      /* HRD consideration */
+      T = MAX(T, (long) LowerBound);
+        T = MIN(T, (long) UpperBound2);
+
+      if((topfield)||(fieldpic&&((input->PicInterlace==ADAPTIVE_CODING)\
+        ||(input->MbInterlace))))
+        T_field=T;
+    }
+  }
+
+  if(fieldpic||topfield)
+  {
+    /* frame layer rate control */
+    img->NumberofHeaderBits=0;
+    img->NumberofTextureBits=0;
+
+    /* basic unit layer rate control */
+    if(img->BasicUnit<img->Frame_Total_Number_MB)
+    {
+      TotalFrameQP=0;
+      img->NumberofBasicUnitHeaderBits=0;
+      img->NumberofBasicUnitTextureBits=0;
+      img->TotalMADBasicUnit=0;
+      if(img->FieldControl==0)
+        NumberofBasicUnit=TotalNumberofBasicUnit;
+      else
+        NumberofBasicUnit=TotalNumberofBasicUnit/2;
+    }
+  }
+    
+  if((img->type==P_SLICE)&&(img->BasicUnit<img->Frame_Total_Number_MB)\
+    &&(img->FieldControl==1))
+  {
+  /* top filed at basic unit layer rate control */
+    if(topfield)
+    {
+      bits_topfield=0;
+      T=(long)(T_field*0.6);
+    }
+  /* bottom filed at basic unit layer rate control */
+    else
+    {
+      T=T_field-bits_topfield;
+      img->NumberofBasicUnitHeaderBits=0;
+      img->NumberofBasicUnitTextureBits=0;
+      img->TotalMADBasicUnit=0;
+      NumberofBasicUnit=TotalNumberofBasicUnit/2;
+    }
+  }
+}

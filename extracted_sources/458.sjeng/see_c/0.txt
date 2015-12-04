@@ -1,0 +1,138 @@
+void setup_attackers (int square) {
+
+  /* this function calculates attack information for a square */
+
+  static const int rook_o[4] = {12, -12, 1, -1};
+  static const int bishop_o[4] = {11, -11, 13, -13};
+  static const int knight_o[8] = {10, -10, 14, -14, 23, -23, 25, -25};
+  register int a_sq, b_sq, i;
+  int numw = see_num_attackers[WHITE], numb = see_num_attackers[BLACK];
+  
+  /* rook-style moves: */
+  for (i = 0; i < 4; i++) 
+    {
+      a_sq = square + rook_o[i];
+      b_sq = board[a_sq];
+      
+      /* the king can attack from one square away: */
+      if (b_sq == wking) 
+	{
+	  see_attackers[WHITE][numw].piece = b_sq;
+	  see_attackers[WHITE][numw].square = a_sq;
+	  numw++;
+	  break;
+	}
+      else if (b_sq == bking)
+	{
+	  see_attackers[BLACK][numb].piece = b_sq;
+	  see_attackers[BLACK][numb].square = a_sq;
+	  numb++;
+	  break;
+	}
+      else
+	{
+	  /* otherwise, check for sliding pieces: */
+	  while (b_sq != frame) 
+	    {
+	      if (b_sq == wrook || b_sq == wqueen) 
+		{
+		  see_attackers[WHITE][numw].piece = b_sq;
+		  see_attackers[WHITE][numw].square = a_sq;
+		  numw++;
+		  break;
+		}
+	      else if (b_sq == brook || b_sq == bqueen)
+		{
+		  see_attackers[BLACK][numb].piece = b_sq;
+		  see_attackers[BLACK][numb].square = a_sq;
+		  numb++;
+		  break;
+		}
+	      else if (b_sq != npiece) break;
+	      a_sq += rook_o [i];
+	      b_sq = board[a_sq];
+	    }
+	}
+    }
+  
+  /* bishop-style moves: */
+  for (i = 0; i < 4; i++) 
+    {
+      a_sq = square + bishop_o[i];
+      b_sq = board[a_sq];
+      /* check for pawn attacks: */
+      if (b_sq == wpawn && i%2)
+	{
+	  see_attackers[WHITE][numw].piece = b_sq;
+	  see_attackers[WHITE][numw].square = a_sq;
+	  numw++;
+	  break;
+	}
+      else if (b_sq == bpawn && !(i%2))
+	{
+	  see_attackers[BLACK][numb].piece = b_sq;
+	  see_attackers[BLACK][numb].square = a_sq;
+	  numb++;
+	  break;
+	}
+      /* the king can attack from one square away: */
+      else if (b_sq == wking)
+	{
+	  see_attackers[WHITE][numw].piece = b_sq;
+	  see_attackers[WHITE][numw].square = a_sq;
+	  numw++;
+	  break;
+	}
+      else if (b_sq == bking)
+	{
+	  see_attackers[BLACK][numb].piece = b_sq;
+	  see_attackers[BLACK][numb].square = a_sq;
+	  numb++;
+	  break;
+	}
+      else
+	{
+	  while (b_sq != frame) {
+	    if (b_sq == wbishop || b_sq == wqueen) 
+	      {
+	        see_attackers[WHITE][numw].piece = b_sq;
+	        see_attackers[WHITE][numw].square = a_sq;
+		numw++;
+		break;
+	      }
+	    else if (b_sq == bbishop || b_sq == bqueen)
+	      {
+	        see_attackers[BLACK][numb].piece = b_sq;
+		see_attackers[BLACK][numb].square = a_sq;
+		numb++;
+		break;
+	      }
+	    else if (b_sq != npiece) break;
+	    a_sq += bishop_o [i];
+	    b_sq = board[a_sq];
+	  }
+	}
+    }
+  
+  /* knight-style moves: */
+  for (i = 0; i < 8; i++) 
+    {
+      a_sq = square + knight_o[i];
+      b_sq = board[a_sq];
+      if (b_sq == wknight)
+	{
+	  see_attackers[WHITE][numw].piece = b_sq;
+	  see_attackers[WHITE][numw].square = a_sq;
+	  numw++;
+	}
+      else if (b_sq == bknight)
+	{
+	  see_attackers[BLACK][numb].piece = b_sq;
+	  see_attackers[BLACK][numb].square = a_sq;
+	  numb++;
+	}
+    }
+
+  see_num_attackers[WHITE] = numw;
+  see_num_attackers[BLACK] = numb;
+}

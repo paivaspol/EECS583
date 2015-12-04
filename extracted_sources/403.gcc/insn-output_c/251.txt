@@ -1,0 +1,26 @@
+static const char *
+output_805 (operands, insn)
+     rtx *operands ATTRIBUTE_UNUSED;
+     rtx insn ATTRIBUTE_UNUSED;
+{
+
+{
+  int i;
+  operands[0] = gen_rtx_MEM (Pmode,
+			     gen_rtx_PLUS (Pmode, operands[0], operands[4]));
+  output_asm_insn ("jmp\t%A1", operands);
+  for (i = SSE_REGPARM_MAX - 1; i >= INTVAL (operands[2]); i--)
+    {
+      operands[4] = adjust_address (operands[0], DImode, i*16);
+      operands[5] = gen_rtx_REG (TImode, SSE_REGNO (i));
+      PUT_MODE (operands[4], TImode);
+      if (GET_CODE (XEXP (operands[0], 0)) != PLUS)
+        output_asm_insn ("rex", operands);
+      output_asm_insn ("movaps\t{%5, %4|%4, %5}", operands);
+    }
+  ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "L",
+			     CODE_LABEL_NUMBER (operands[3]));
+  RET;
+}
+  
+}

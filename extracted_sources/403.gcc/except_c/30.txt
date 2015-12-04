@@ -1,0 +1,17 @@
+void
+convert_from_eh_region_ranges ()
+{
+  int *stack;
+  rtx insns;
+
+  collect_eh_region_array ();
+  resolve_fixup_regions ();
+
+  stack = xmalloc (sizeof (int) * (cfun->eh->last_region_number + 1));
+  insns = get_insns ();
+  convert_from_eh_region_ranges_1 (&insns, stack, 0);
+  free (stack);
+
+  remove_fixup_regions ();
+  remove_unreachable_regions (insns);
+}

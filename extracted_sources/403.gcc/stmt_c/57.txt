@@ -1,0 +1,65 @@
+void
+expand_start_bindings_and_block (flags, block)
+     int flags;
+     tree block;
+{
+  struct nesting *thisblock = ALLOC_NESTING ();
+  rtx note;
+  int exit_flag = ((flags & 1) != 0);
+  int block_flag = ((flags & 2) == 0);
+
+  /* If a BLOCK is supplied, then the caller should be requesting a
+     NOTE_INSN_BLOCK_BEG note.  */
+  if (!block_flag && block)
+    abort ();
+
+  /* Create a note to mark the beginning of the block.  */
+  if (block_flag)
+    {
+      note = emit_note (NULL, NOTE_INSN_BLOCK_BEG);
+      NOTE_BLOCK (note) = block;
+    }
+  else
+    note = emit_note (NULL, NOTE_INSN_DELETED);
+
+  /* Make an entry on block_stack for the block we are entering.  */
+
+  thisblock->next = block_stack;
+  thisblock->all = nesting_stack;
+  thisblock->depth = ++nesting_depth;
+  thisblock->data.block.stack_level = 0;
+  thisblock->data.block.cleanups = 0;
+  thisblock->data.block.n_function_calls = 0;
+  thisblock->data.block.exception_region = 0;
+  thisblock->data.block.block_target_temp_slot_level = target_temp_slot_level;
+
+  thisblock->data.block.conditional_code = 0;
+  thisblock->data.block.last_unconditional_cleanup = note;
+  /* When we insert instructions after the last unconditional cleanup,
+     we don't adjust last_insn.  That means that a later add_insn will
+     clobber the instructions we've just added.  The easiest way to
+     fix this is to just insert another instruction here, so that the
+     instructions inserted after the last unconditional cleanup are
+     never the last instruction.  */
+  emit_note (NULL, NOTE_INSN_DELETED);
+  thisblock->data.block.cleanup_ptr = &thisblock->data.block.cleanups;
+
+  if (block_stack
+      && !(block_stack->data.block.cleanups == NULL_TREE
+	   && block_stack->data.block.outer_cleanups == NULL_TREE))
+    thisblock->data.block.outer_cleanups
+      = tree_cons (NULL_TREE, block_stack->data.block.cleanups,
+		   block_stack->data.block.outer_cleanups);
+  else
+    thisblock->data.block.outer_cleanups = 0;
+  thisblock->data.block.label_chain = 0;
+  thisblock->data.block.innermost_stack_block = stack_block_stack;
+  thisblock->data.block.first_insn = note;
+  thisblock->data.block.block_start_count = ++current_block_start_count;
+  thisblock->exit_label = exit_flag ? gen_label_rtx () : 0;
+  block_stack = thisblock;
+  nesting_stack = thisblock;
+
+  /* Make a new level for allocating stack slots.  */
+  push_temp_slots ();
+}

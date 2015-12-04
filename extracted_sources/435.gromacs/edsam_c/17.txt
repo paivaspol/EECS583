@@ -1,0 +1,19 @@
+void ed_cons(rvec *x,t_edpar *edi,int step)
+{
+  int i;
+  
+  /* subtract the average positions */
+  for (i=0;(i<edi->sav.nr);i++) 
+      rvec_dec(x[edi->sav.anrs[i]],edi->sav.x[i]);
+  
+  /* apply the constraints */
+  if (step >= 0) do_linfix(x,edi,step);
+  do_linacc(x,edi);
+  if (step >= 0) do_radfix(x,edi,step);
+  do_radacc(x,edi);
+  do_radcon(x,edi);
+  
+  /* add average positions */
+  for (i=0;(i<edi->sav.nr);i++) 
+    rvec_inc(x[edi->sav.anrs[i]],edi->sav.x[i]);
+}

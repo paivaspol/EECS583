@@ -1,0 +1,24 @@
+int
+index_type_equal (itype1, itype2)
+     tree itype1, itype2;
+{
+  if (TREE_CODE (itype1) != TREE_CODE (itype2))
+    return 0;
+
+  if (TREE_CODE (itype1) == INTEGER_TYPE)
+    {
+      if (TYPE_PRECISION (itype1) != TYPE_PRECISION (itype2)
+	  || TYPE_MODE (itype1) != TYPE_MODE (itype2)
+	  || simple_cst_equal (TYPE_SIZE (itype1), TYPE_SIZE (itype2)) != 1
+	  || TYPE_ALIGN (itype1) != TYPE_ALIGN (itype2))
+	return 0;
+
+      if (1 == simple_cst_equal (TYPE_MIN_VALUE (itype1),
+				 TYPE_MIN_VALUE (itype2))
+	  && 1 == simple_cst_equal (TYPE_MAX_VALUE (itype1),
+				    TYPE_MAX_VALUE (itype2)))
+	return 1;
+    }
+
+  return 0;
+}

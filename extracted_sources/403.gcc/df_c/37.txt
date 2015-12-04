@@ -1,0 +1,53 @@
+static void
+df_bb_ru_local_compute (df, bb)
+     struct df *df;
+     basic_block bb;
+{
+  /* This is much more tricky than computing reaching defs.  With
+     reaching defs, defs get killed by other defs.  With upwards
+     exposed uses, these get killed by defs with the same regno.  */
+  
+  struct bb_info *bb_info = DF_BB_INFO (df, bb);
+  rtx insn;
+
+
+  for (insn = bb->end; insn && insn != PREV_INSN (bb->head);
+       insn = PREV_INSN (insn))
+    {
+      unsigned int uid = INSN_UID (insn);
+      struct df_link *def_link;
+      struct df_link *use_link;
+
+      if (! INSN_P (insn))
+	continue;
+
+      for (def_link = df->insns[uid].defs; def_link; def_link = def_link->next)
+	{
+	  struct ref *def = def_link->ref;
+	  unsigned int dregno = DF_REF_REGNO (def);
+
+	  for (use_link = df->regs[dregno].uses; use_link;
+	       use_link = use_link->next)
+	    {
+	      struct ref *use = use_link->ref;
+
+	      /* Add all uses of this reg to the set of kills.  This
+		 is greedy since many of these uses will not actually
+		 be killed by this BB but it keeps things a lot
+		 simpler.  */
+	      bitmap_set_bit (bb_info->ru_kill, DF_REF_ID (use));
+
+	      /* Zap from the set of gens for this BB.  */
+	      bitmap_clear_bit (bb_info->ru_gen, DF_REF_ID (use));
+	    }
+	}
+
+      for (use_link = df->insns[uid].uses; use_link; use_link = use_link->next)
+	{
+	  struct ref *use = use_link->ref;
+	  /* Add use to set of gens in this BB.  */
+	  bitmap_set_bit (bb_info->ru_gen, DF_REF_ID (use));
+	}
+    }
+  bb_info->ru_valid = 1;
+}

@@ -1,0 +1,35 @@
+void gen_waterhydrogen(rvec xa[], rvec xh[])
+{
+#define AA 0.081649
+#define BB 0.0
+#define CC 0.0577350
+  const  rvec   matrix1[6] = {
+    { AA,     BB,     CC },
+    { AA,     BB,     CC },
+    { AA,     BB,     CC },
+    { -AA,    BB,     CC },
+    { -AA,    BB,     CC },
+    { BB,     AA,    -CC }
+  };
+  const  rvec   matrix2[6] = {
+    { -AA,   BB,   CC },
+    { BB,    AA,  -CC },
+    { BB,   -AA,  -CC },
+    { BB,    AA,  -CC },
+    { BB,   -AA,  -CC },
+    { BB,   -AA,  -CC }
+  };
+#undef AA
+#undef BB
+#undef CC
+  static int l=0;
+  int        m;
+  
+  /* This was copied from Gromos */
+  for(m=0; (m<DIM); m++) {
+    xH1[m]=xAI[m]+matrix1[l][m];
+    xH2[m]=xAI[m]+matrix2[l][m];
+  }
+      
+  l=(l+1) % 6;
+}

@@ -1,0 +1,72 @@
+void StoreMVBlock8x8(int dir, int block8x8, int mode, int ref, int bw_ref, int pdir8, int bframe)
+{
+  int i, j, i0, j0, ii, jj;
+  short ******all_mv  = img->all_mv;
+  short ******pred_mv = img->pred_mv;
+
+
+  i0 = (block8x8%2)<<1;
+  j0 = (block8x8/2)<<1;
+  ii = i0+2;
+  jj = j0+2;
+
+  if (!bframe)
+  {
+    if (pdir8>=0) //(mode8!=IBLOCK)&&(mode8!=I16MB))  // && ref != -1)
+    {
+      for (j=j0; j<jj; j++)
+        for (i=i0; i<ii; i++)
+        {
+          all_mv8x8[dir][LIST_0][i][j][0] = all_mv[i][j][LIST_0][ref][4][0];
+          all_mv8x8[dir][LIST_0][i][j][1] = all_mv[i][j][LIST_0][ref][4][1];
+          pred_mv8x8[dir][LIST_0][i][j][0] = pred_mv[i][j][LIST_0][ref][4][0];
+          pred_mv8x8[dir][LIST_0][i][j][1] = pred_mv[i][j][LIST_0][ref][4][1];
+        }
+    }
+  }
+  else
+  {
+    if (pdir8==0) // forward
+    {
+      for (j=j0; j<jj; j++)
+        for (i=i0; i<ii; i++)
+        {
+          all_mv8x8[dir][LIST_0][i][j][0] = all_mv[i][j][LIST_0][ref][mode][0];
+          all_mv8x8[dir][LIST_0][i][j][1] = all_mv[i][j][LIST_0][ref][mode][1];
+          pred_mv8x8[dir][LIST_0][i][j][0] = pred_mv[i][j][LIST_0][ref][mode][0];
+          pred_mv8x8[dir][LIST_0][i][j][1] = pred_mv[i][j][LIST_0][ref][mode][1];
+        }
+    }
+    else if (pdir8==1) // backward
+    {
+      for (j=j0; j<jj; j++)
+        for (i=i0; i<ii; i++)
+        {
+          all_mv8x8[dir][LIST_1][i][j][0] = all_mv[i][j][LIST_1][bw_ref][mode][0];
+          all_mv8x8[dir][LIST_1][i][j][1] = all_mv[i][j][LIST_1][bw_ref][mode][1];
+          pred_mv8x8[dir][LIST_1][i][j][0] = pred_mv[i][j][LIST_1][bw_ref][mode][0];
+          pred_mv8x8[dir][LIST_1][i][j][1] = pred_mv[i][j][LIST_1][bw_ref][mode][1];
+        }
+    }
+    else if (pdir8==2) // bidir
+    {
+      for (j=j0; j<jj; j++)
+        for (i=i0; i<ii; i++)
+        {
+          all_mv8x8[dir][LIST_0][i][j][0] = all_mv[i][j][LIST_0][ref][mode][0];
+          all_mv8x8[dir][LIST_0][i][j][1] = all_mv[i][j][LIST_0][ref][mode][1];
+          pred_mv8x8[dir][LIST_0][i][j][0] = pred_mv[i][j][LIST_0][ref][mode][0];
+          pred_mv8x8[dir][LIST_0][i][j][1] = pred_mv[i][j][LIST_0][ref][mode][1];
+
+          all_mv8x8[dir][LIST_1][i][j][0] = all_mv[i][j][LIST_1][bw_ref][mode][0];
+          all_mv8x8[dir][LIST_1][i][j][1] = all_mv[i][j][LIST_1][bw_ref][mode][1];
+          pred_mv8x8[dir][LIST_1][i][j][0] = pred_mv[i][j][LIST_1][bw_ref][mode][0];
+          pred_mv8x8[dir][LIST_1][i][j][1] = pred_mv[i][j][LIST_1][bw_ref][mode][1];
+        }
+    }
+    else
+    {
+      error("invalid direction mode", 255);
+    }
+  }
+}

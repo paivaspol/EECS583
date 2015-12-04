@@ -1,0 +1,19 @@
+void
+MSAMingap(MSA *msa)
+{
+  int *useme;			/* array of TRUE/FALSE flags for which columns to keep */
+  int apos;			/* position in original alignment */
+  int idx;			/* sequence index */
+
+  useme = MallocOrDie(sizeof(int) * msa->alen);
+  for (apos = 0; apos < msa->alen; apos++)
+    {
+      for (idx = 0; idx < msa->nseq; idx++)
+	if (! isgap(msa->aseq[idx][apos]))
+	  break;
+      if (idx == msa->nseq) useme[apos] = FALSE; else useme[apos] = TRUE;
+    }
+  MSAShorterAlignment(msa, useme);
+  free(useme);
+  return;
+}

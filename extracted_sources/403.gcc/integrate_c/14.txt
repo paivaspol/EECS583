@@ -1,0 +1,41 @@
+static void
+mark_stores (dest, x, data)
+     rtx dest;
+     rtx x ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  int regno = -1;
+  enum machine_mode mode = VOIDmode;
+
+  /* DEST is always the innermost thing set, except in the case of
+     SUBREGs of hard registers.  */
+
+  if (GET_CODE (dest) == REG)
+    regno = REGNO (dest), mode = GET_MODE (dest);
+  else if (GET_CODE (dest) == SUBREG && GET_CODE (SUBREG_REG (dest)) == REG)
+    {
+      regno = REGNO (SUBREG_REG (dest));
+      if (regno < FIRST_PSEUDO_REGISTER)
+	regno += subreg_regno_offset (REGNO (SUBREG_REG (dest)),
+				      GET_MODE (SUBREG_REG (dest)),
+				      SUBREG_BYTE (dest),
+				      GET_MODE (dest));
+      mode = GET_MODE (SUBREG_REG (dest));
+    }
+
+  if (regno >= 0)
+    {
+      unsigned int uregno = regno;
+      unsigned int last_reg = (uregno >= FIRST_PSEUDO_REGISTER ? uregno
+			       : uregno + HARD_REGNO_NREGS (uregno, mode) - 1);
+      unsigned int i;
+
+      /* Ignore virtual stack var or virtual arg register since those
+	 are handled separately.  */
+      if (uregno != VIRTUAL_INCOMING_ARGS_REGNUM
+	  && uregno != VIRTUAL_STACK_VARS_REGNUM)
+	for (i = uregno; i <= last_reg; i++)
+	  if ((size_t) i < VARRAY_SIZE (global_const_equiv_varray))
+	    VARRAY_CONST_EQUIV (global_const_equiv_varray, i).rtx = 0;
+    }
+}

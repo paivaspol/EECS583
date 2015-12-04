@@ -1,0 +1,31 @@
+static int
+flush_reg_cond_reg_1 (node, data)
+     splay_tree_node node;
+     void *data;
+{
+  struct reg_cond_life_info *rcli;
+  int *xdata = (int *) data;
+  unsigned int regno = xdata[0];
+
+  /* Don't need to search if last flushed value was farther on in
+     the in-order traversal.  */
+  if (xdata[1] >= (int) node->key)
+    return 0;
+
+  /* Splice out portions of the expression that refer to regno.  */
+  rcli = (struct reg_cond_life_info *) node->value;
+  rcli->condition = elim_reg_cond (rcli->condition, regno);
+  if (rcli->stores != const0_rtx && rcli->stores != const1_rtx)
+    rcli->stores = elim_reg_cond (rcli->stores, regno);
+
+  /* If the entire condition is now false, signal the node to be removed.  */
+  if (rcli->condition == const0_rtx)
+    {
+      xdata[1] = node->key;
+      return -1;
+    }
+  else if (rcli->condition == const1_rtx)
+    abort ();
+
+  return 0;
+}

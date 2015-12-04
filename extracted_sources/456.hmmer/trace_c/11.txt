@@ -1,0 +1,69 @@
+void
+ImposeMasterTrace(char **aseq, int nseq, struct p7trace_s *mtr, struct p7trace_s ***ret_tr)
+{
+  struct p7trace_s **tr;
+  int  idx;			/* counter over sequences */
+  int  i;                       /* position in raw sequence (1..L) */
+  int  tpos;			/* position in traceback           */
+  int  mpos;			/* position in master trace        */
+
+  tr = (struct p7trace_s **) MallocOrDie (sizeof(struct p7trace_s *) * nseq);
+  
+  for (idx = 0; idx < nseq; idx++)
+    {
+      P7AllocTrace(mtr->tlen, &tr[idx]); /* we're guaranteed that individuals len < master len */
+      
+      tpos = 0;
+      i    = 1;
+      for (mpos = 0; mpos < mtr->tlen; mpos++)
+	{
+	  switch (mtr->statetype[mpos]) 
+	    {
+	    case STS:		/* straight copies w/ no emission: S, B, D, E, T*/
+	    case STB:
+	    case STD:
+	    case STE:
+	    case STT:
+	      TraceSet(tr[idx], tpos, mtr->statetype[mpos], mtr->nodeidx[mpos], 0);
+	      tpos++;
+	      break;
+
+	    case STM:		/* M* implies M or D */
+	      if (isgap(aseq[idx][mtr->pos[mpos]-1])) 
+		TraceSet(tr[idx], tpos, STD, mtr->nodeidx[mpos], 0);
+	      else {
+		TraceSet(tr[idx], tpos, STM, mtr->nodeidx[mpos], i);
+		i++;
+	      }
+	      tpos++;
+	      break;
+
+	    case STI:		/* I* implies I or nothing */
+	      if (!isgap(aseq[idx][mtr->pos[mpos]-1])) {
+		TraceSet(tr[idx], tpos, STI, mtr->nodeidx[mpos], i);
+		i++;
+		tpos++;
+	      }
+	      break;
+
+	    case STJ:		/* N,J,C: first N* -> N. After that, N* -> N or nothing. */
+	    case STN:
+	    case STC:
+	      if (mtr->pos[mpos] == 0) { 
+		TraceSet(tr[idx], tpos, mtr->statetype[mpos], 0, 0);
+		tpos++;
+	      } else if (!isgap(aseq[idx][mtr->pos[mpos]-1])) {
+		TraceSet(tr[idx], tpos, mtr->statetype[mpos], 0, i);
+		i++;
+		tpos++; 
+	      }
+	      break;
+
+	    case STBOGUS:
+	      Die("never happens. Trust me.");
+	    }
+	}
+      tr[idx]->tlen = tpos;
+    }	  
+  *ret_tr = tr;
+}

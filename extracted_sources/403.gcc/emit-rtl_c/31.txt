@@ -1,0 +1,15 @@
+static void
+reset_used_decls (blk)
+     tree blk;
+{
+  tree t;
+
+  /* Mark decls.  */
+  for (t = BLOCK_VARS (blk); t; t = TREE_CHAIN (t))
+    if (DECL_RTL_SET_P (t))
+      reset_used_flags (DECL_RTL (t));
+
+  /* Now process sub-blocks.  */
+  for (t = BLOCK_SUBBLOCKS (blk); t; t = TREE_CHAIN (t))
+    reset_used_decls (t);
+}

@@ -1,0 +1,80 @@
+static void insert_picture_in_dpb(FrameStore* fs, StorablePicture* p)
+{
+//  printf ("insert (%s) pic with frame_num #%d, poc %d\n", (p->structure == FRAME)?"FRAME":(p->structure == TOP_FIELD)?"TOP_FIELD":"BOTTOM_FIELD", p->pic_num, p->poc);
+  assert (p!=NULL);
+  assert (fs!=NULL);
+
+  // upsample a reference picture
+  if (p->used_for_reference)
+  {
+    UnifiedOneForthPix(p);
+  }
+
+  switch (p->structure)
+  {
+  case FRAME: 
+    fs->frame = p;
+    fs->is_used = 3;
+    if (p->used_for_reference)
+    {
+      fs->is_reference = 3;
+      fs->is_orig_reference = 3;
+      if (p->is_long_term)
+      {
+        fs->is_long_term = 3;
+      }
+    }
+   // generate field views
+      dpb_split_field(fs); 
+    break;
+  case TOP_FIELD:
+    fs->top_field = p;
+    fs->is_used |= 1;
+    if (p->used_for_reference)
+    {
+      fs->is_reference |= 1;
+      fs->is_orig_reference |= 1;
+      if (p->is_long_term)
+      {
+        fs->is_long_term |= 1;
+        fs->long_term_frame_idx = p->long_term_frame_idx;
+      }
+    }
+    if (fs->is_used == 3)
+    {
+      // generate frame view
+      dpb_combine_field(fs);
+    } else
+    {
+      fs->poc = p->poc;
+      gen_field_ref_ids(p);
+    }
+    break;
+  case BOTTOM_FIELD:
+    fs->bottom_field = p;
+    fs->is_used |= 2;
+    if (p->used_for_reference)
+    {
+      fs->is_reference |= 2;
+      fs->is_orig_reference |= 2;
+      if (p->is_long_term)
+      {
+        fs->is_long_term |= 2;
+        fs->long_term_frame_idx = p->long_term_frame_idx;
+      }
+    }
+    if (fs->is_used == 3)
+    {
+      // generate frame view
+      dpb_combine_field(fs);
+    } else
+    {
+      fs->poc = p->poc;
+      gen_field_ref_ids(p);
+    }
+    break;
+  }
+  fs->frame_num = p->pic_num;
+  fs->is_output = p->is_output;
+
+}

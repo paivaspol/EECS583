@@ -1,0 +1,34 @@
+static void
+invalidate_skipped_set (dest, set, data)
+     rtx set;
+     rtx dest;
+     void *data ATTRIBUTE_UNUSED;
+{
+  enum rtx_code code = GET_CODE (dest);
+
+  if (code == MEM
+      && ! addr_affects_sp_p (dest)	/* If this is not a stack push ...  */
+      /* There are times when an address can appear varying and be a PLUS
+	 during this scan when it would be a fixed address were we to know
+	 the proper equivalences.  So invalidate all memory if there is
+	 a BLKmode or nonscalar memory reference or a reference to a
+	 variable address.  */
+      && (MEM_IN_STRUCT_P (dest) || GET_MODE (dest) == BLKmode
+	  || cse_rtx_varies_p (XEXP (dest, 0), 0)))
+    {
+      invalidate_memory ();
+      return;
+    }
+
+  if (GET_CODE (set) == CLOBBER
+#ifdef HAVE_cc0
+      || dest == cc0_rtx
+#endif
+      || dest == pc_rtx)
+    return;
+
+  if (code == STRICT_LOW_PART || code == ZERO_EXTRACT)
+    invalidate (XEXP (dest, 0), GET_MODE (dest));
+  else if (code == REG || code == SUBREG || code == MEM)
+    invalidate (dest, VOIDmode);
+}

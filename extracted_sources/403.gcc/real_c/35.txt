@@ -1,0 +1,21 @@
+static int
+ecmpm (a, b)
+     const UEMUSHORT *a, *b;
+{
+  int i;
+
+  a += M;			/* skip up to significand area */
+  b += M;
+  for (i = M; i < NI; i++)
+    {
+      if (*a++ != *b++)
+	goto difrnt;
+    }
+  return (0);
+
+ difrnt:
+  if (*(--a) > *(--b))
+    return (1);
+  else
+    return (-1);
+}

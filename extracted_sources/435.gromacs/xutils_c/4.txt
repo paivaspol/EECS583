@@ -1,0 +1,92 @@
+static void update_ff(t_forcerec *fr,int nparm,t_range range[],int param_val[])
+{
+  static double *sigma=NULL,*eps=NULL,*c6=NULL,*cn=NULL,*bhama=NULL,*bhamb=NULL,*bhamc=NULL;
+  real   val,*nbfp;
+  int    i,j,atnr;
+  
+  atnr = fr->ntype;
+  nbfp = fr->nbfp;
+  
+  if (fr->bBHAM) {
+    if (bhama == NULL) {
+      snew(bhama,atnr);
+      snew(bhamb,atnr);
+      snew(bhamc,atnr);
+    }
+  }
+  else {
+    if (sigma == NULL) {
+      snew(sigma,atnr);
+      snew(eps,atnr);
+      snew(c6,atnr);
+      snew(cn,atnr);
+    }
+  }
+  /* Get current values for everything */
+  for(i=0; (i<nparm); i++) {
+    if (ga)
+      val = range[i].rval;
+    else
+      val = value_range(&range[i],param_val[i]);
+    switch (range[i].ptype) {
+    case eseSIGMA:
+      sigma[range[i].atype] = val;
+      break;
+    case eseEPSILON:
+      eps[range[i].atype] = val;
+      break;
+    case eseBHAMA:
+      bhama[range[i].atype] = val;
+      break;
+    case eseBHAMB:
+      bhamb[range[i].atype] = val;
+      break;
+    case eseBHAMC:
+      bhamc[range[i].atype] = val;
+      break;
+    default:
+      fatal_error(0,"Unknown ptype");
+    }
+  }
+  if (fr->bBHAM) {
+    for(i=0; (i<atnr); i++) {
+      for(j=0; (j<=i); j++) {
+	BHAMA(nbfp,atnr,i,j) = BHAMA(nbfp,atnr,j,i) = sqrt(bhama[i]*bhama[j]);
+	BHAMB(nbfp,atnr,i,j) = BHAMB(nbfp,atnr,j,i) = sqrt(bhamb[i]*bhamb[j]);
+	BHAMC(nbfp,atnr,i,j) = BHAMC(nbfp,atnr,j,i) = sqrt(bhamc[i]*bhamc[j]);
+      }
+    }
+  }
+  else {  
+    /* Now build a new matrix */
+    for(i=0; (i<atnr); i++) {
+      c6[i] = 4*eps[i]*pow(sigma[i],6.0);
+      cn[i] = 4*eps[i]*pow(sigma[i],npow);
+      if (debug)
+	fprintf(debug,"c6[%d] = %12.5e  c12[%d] = %12.5e\n",i,c6[i],i,cn[i]);
+    }
+    for(i=0; (i<atnr); i++) {
+      for(j=0; (j<=i); j++) {
+	C6(nbfp,atnr,i,j)  = C6(nbfp,atnr,j,i)  = sqrt(c6[i]*c6[j]);
+	C12(nbfp,atnr,i,j) = C12(nbfp,atnr,j,i) = sqrt(cn[i]*cn[j]);
+      }
+    }
+  }
+  
+  if (debug) {
+    if (!fr->bBHAM) 
+      for(i=0; (i<atnr); i++)
+	fprintf(debug,"atnr = %2d  sigma = %8.4f  eps = %8.4f\n",i,sigma[i],eps[i]);
+    for(i=0; (i<atnr); i++) {
+      for(j=0; (j<atnr); j++) {
+	if (fr->bBHAM)
+	  fprintf(debug,"i: %2d  j: %2d  A:  %10.5e  B:  %10.5e  C:  %10.5e\n",i,j,
+		  BHAMA(nbfp,atnr,i,j),BHAMB(nbfp,atnr,i,j),BHAMC(nbfp,atnr,i,j));
+	else
+	  fprintf(debug,"i: %2d  j: %2d  c6:  %10.5e  cn:  %10.5e\n",i,j,
+		  C6(nbfp,atnr,i,j),C12(nbfp,atnr,i,j));
+	
+      }
+    }
+  }
+}

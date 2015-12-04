@@ -1,0 +1,41 @@
+static int
+constraint_accepts_reg_p (string, reg)
+     const char *string;
+     rtx reg;
+{
+  int value = 0;
+  int regno = true_regnum (reg);
+  int c;
+
+  /* Initialize for first alternative.  */
+  value = 0;
+  /* Check that each alternative contains `g' or `r'.  */
+  while (1)
+    switch (c = *string++)
+      {
+      case 0:
+	/* If an alternative lacks `g' or `r', we lose.  */
+	return value;
+      case ',':
+	/* If an alternative lacks `g' or `r', we lose.  */
+	if (value == 0)
+	  return 0;
+	/* Initialize for next alternative.  */
+	value = 0;
+	break;
+      case 'g':
+      case 'r':
+	/* Any general reg wins for this alternative.  */
+	if (TEST_HARD_REG_BIT (reg_class_contents[(int) GENERAL_REGS], regno))
+	  value = 1;
+	break;
+      default:
+	/* Any reg in specified class wins for this alternative.  */
+	{
+	  enum reg_class class = REG_CLASS_FROM_LETTER (c);
+
+	  if (TEST_HARD_REG_BIT (reg_class_contents[(int) class], regno))
+	    value = 1;
+	}
+      }
+}

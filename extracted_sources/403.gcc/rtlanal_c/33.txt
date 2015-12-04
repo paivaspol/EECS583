@@ -1,0 +1,25 @@
+void
+remove_node_from_expr_list (node, listp)
+     rtx node;
+     rtx *listp;
+{
+  rtx temp = *listp;
+  rtx prev = NULL_RTX;
+
+  while (temp)
+    {
+      if (node == XEXP (temp, 0))
+	{
+	  /* Splice the node out of the list.  */
+	  if (prev)
+	    XEXP (prev, 1) = XEXP (temp, 1);
+	  else
+	    *listp = XEXP (temp, 1);
+
+	  return;
+	}
+
+      prev = temp;
+      temp = XEXP (temp, 1);
+    }
+}

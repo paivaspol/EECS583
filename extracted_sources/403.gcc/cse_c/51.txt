@@ -1,0 +1,137 @@
+int
+cse_main (f, nregs, after_loop, file)
+     rtx f;
+     int nregs;
+     int after_loop;
+     FILE *file;
+{
+  struct cse_basic_block_data val;
+  rtx insn = f;
+  int i;
+
+  cse_jumps_altered = 0;
+  recorded_label_ref = 0;
+  constant_pool_entries_cost = 0;
+  val.path_size = 0;
+
+  init_recog ();
+  init_alias_analysis ();
+
+  max_reg = nregs;
+
+  max_insn_uid = get_max_uid ();
+
+  reg_eqv_table = (struct reg_eqv_elem *)
+    xmalloc (nregs * sizeof (struct reg_eqv_elem));
+
+#ifdef LOAD_EXTEND_OP
+
+  /* Allocate scratch rtl here.  cse_insn will fill in the memory reference
+     and change the code and mode as appropriate.  */
+  memory_extend_rtx = gen_rtx_ZERO_EXTEND (VOIDmode, NULL_RTX);
+#endif
+
+  /* Reset the counter indicating how many elements have been made
+     thus far.  */
+  n_elements_made = 0;
+
+  /* Find the largest uid.  */
+
+  max_uid = get_max_uid ();
+  uid_cuid = (int *) xcalloc (max_uid + 1, sizeof (int));
+
+  /* Compute the mapping from uids to cuids.
+     CUIDs are numbers assigned to insns, like uids,
+     except that cuids increase monotonically through the code.
+     Don't assign cuids to line-number NOTEs, so that the distance in cuids
+     between two insns is not affected by -g.  */
+
+  for (insn = f, i = 0; insn; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) != NOTE
+	  || NOTE_LINE_NUMBER (insn) < 0)
+	INSN_CUID (insn) = ++i;
+      else
+	/* Give a line number note the same cuid as preceding insn.  */
+	INSN_CUID (insn) = i;
+    }
+
+  ggc_push_context ();
+
+  /* Loop over basic blocks.
+     Compute the maximum number of qty's needed for each basic block
+     (which is 2 for each SET).  */
+  insn = f;
+  while (insn)
+    {
+      cse_altered = 0;
+      cse_end_of_basic_block (insn, &val, flag_cse_follow_jumps, after_loop,
+			      flag_cse_skip_blocks);
+
+      /* If this basic block was already processed or has no sets, skip it.  */
+      if (val.nsets == 0 || GET_MODE (insn) == QImode)
+	{
+	  PUT_MODE (insn, VOIDmode);
+	  insn = (val.last ? NEXT_INSN (val.last) : 0);
+	  val.path_size = 0;
+	  continue;
+	}
+
+      cse_basic_block_start = val.low_cuid;
+      cse_basic_block_end = val.high_cuid;
+      max_qty = val.nsets * 2;
+
+      if (file)
+	fnotice (file, ";; Processing block from %d to %d, %d sets.\n",
+		 INSN_UID (insn), val.last ? INSN_UID (val.last) : 0,
+		 val.nsets);
+
+      /* Make MAX_QTY bigger to give us room to optimize
+	 past the end of this basic block, if that should prove useful.  */
+      if (max_qty < 500)
+	max_qty = 500;
+
+      max_qty += max_reg;
+
+      /* If this basic block is being extended by following certain jumps,
+         (see `cse_end_of_basic_block'), we reprocess the code from the start.
+         Otherwise, we start after this basic block.  */
+      if (val.path_size > 0)
+	cse_basic_block (insn, val.last, val.path, 0);
+      else
+	{
+	  int old_cse_jumps_altered = cse_jumps_altered;
+	  rtx temp;
+
+	  /* When cse changes a conditional jump to an unconditional
+	     jump, we want to reprocess the block, since it will give
+	     us a new branch path to investigate.  */
+	  cse_jumps_altered = 0;
+	  temp = cse_basic_block (insn, val.last, val.path, ! after_loop);
+	  if (cse_jumps_altered == 0
+	      || (flag_cse_follow_jumps == 0 && flag_cse_skip_blocks == 0))
+	    insn = temp;
+
+	  cse_jumps_altered |= old_cse_jumps_altered;
+	}
+
+      if (cse_altered)
+	ggc_collect ();
+
+#ifdef USE_C_ALLOCA
+      alloca (0);
+#endif
+    }
+
+  ggc_pop_context ();
+
+  if (max_elements_made < n_elements_made)
+    max_elements_made = n_elements_made;
+
+  /* Clean up.  */
+  end_alias_analysis ();
+  free (uid_cuid);
+  free (reg_eqv_table);
+
+  return cse_jumps_altered || recorded_label_ref;
+}

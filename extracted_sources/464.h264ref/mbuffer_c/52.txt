@@ -1,0 +1,23 @@
+void flush_dpb()
+{
+  unsigned i;
+
+  //diagnostics
+//  printf("Flush remaining frames from dpb. dpb.size=%d, dpb.used_size=%d\n",dpb.size,dpb.used_size);
+
+  // mark all frames unused
+  for (i=0; i<dpb.used_size; i++)
+  {
+    unmark_for_reference (dpb.fs[i]);
+  }
+
+  while (remove_unused_frame_from_dpb()) ;
+  
+  // output frames in POC order
+  while (dpb.used_size)
+  {
+    output_one_frame_from_dpb();
+  }
+
+  dpb.last_output_poc = INT_MIN;
+}

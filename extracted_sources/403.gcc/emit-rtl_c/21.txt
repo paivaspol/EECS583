@@ -1,0 +1,34 @@
+static rtx
+change_address_1 (memref, mode, addr, validate)
+     rtx memref;
+     enum machine_mode mode;
+     rtx addr;
+     int validate;
+{
+  rtx new;
+
+  if (GET_CODE (memref) != MEM)
+    abort ();
+  if (mode == VOIDmode)
+    mode = GET_MODE (memref);
+  if (addr == 0)
+    addr = XEXP (memref, 0);
+
+  if (validate)
+    {
+      if (reload_in_progress || reload_completed)
+	{
+	  if (! memory_address_p (mode, addr))
+	    abort ();
+	}
+      else
+	addr = memory_address (mode, addr);
+    }
+
+  if (rtx_equal_p (addr, XEXP (memref, 0)) && mode == GET_MODE (memref))
+    return memref;
+
+  new = gen_rtx_MEM (mode, addr);
+  MEM_COPY_ATTRIBUTES (new, memref);
+  return new;
+}

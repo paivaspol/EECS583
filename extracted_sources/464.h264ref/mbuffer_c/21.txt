@@ -1,0 +1,24 @@
+static StorablePicture*  get_short_term_pic(int picNum)
+{
+  unsigned i;
+
+  for (i=0; i<dpb.ref_frames_in_buffer; i++)
+  {
+    if (img->structure==FRAME)
+    {
+      if (dpb.fs_ref[i]->is_reference == 3)
+        if ((!dpb.fs_ref[i]->frame->is_long_term)&&(dpb.fs_ref[i]->frame->pic_num == picNum))
+          return dpb.fs_ref[i]->frame;
+    }
+    else
+    {
+      if (dpb.fs_ref[i]->is_reference & 1)
+        if ((!dpb.fs_ref[i]->top_field->is_long_term)&&(dpb.fs_ref[i]->top_field->pic_num == picNum))
+          return dpb.fs_ref[i]->top_field;
+      if (dpb.fs_ref[i]->is_reference & 2)
+        if ((!dpb.fs_ref[i]->bottom_field->is_long_term)&&(dpb.fs_ref[i]->bottom_field->pic_num == picNum))
+          return dpb.fs_ref[i]->bottom_field;
+    }
+  }
+  return NULL;
+}

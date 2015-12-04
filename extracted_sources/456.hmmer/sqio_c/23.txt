@@ -1,0 +1,41 @@
+static void
+readGCGdata(struct ReadSeqVars *V)
+{
+  int   binary = FALSE;		/* whether data are binary or not */
+  int   blen = 0;		/* length of binary sequence */
+  
+				/* first line contains ">>>>" followed by name */
+  if (Strparse(">>>>([^ ]+) .+2BIT +Len: ([0-9]+)", V->buf, 2))
+    {
+      binary = TRUE;
+      SetSeqinfoString(V->sqinfo, sqd_parse[1], SQINFO_NAME);
+      blen = atoi(sqd_parse[2]);
+    } 
+  else if (Strparse(">>>>([^ ]+) .+ASCII +Len: [0-9]+", V->buf, 1))
+    SetSeqinfoString(V->sqinfo, sqd_parse[1], SQINFO_NAME);
+  else 
+    Die("bogus GCGdata format? %s", V->buf);
+
+				/* second line contains free text description */
+  SeqfileGetLine(V);
+  SetSeqinfoString(V->sqinfo, V->buf, SQINFO_DESC);
+
+  if (binary) {
+    /* allocate for blen characters +3... (allow for 3 bytes of slop) */
+    if (blen >= V->maxseq) {
+      V->maxseq = blen;
+      if ((V->seq = (char *) realloc (V->seq, sizeof(char)*(V->maxseq+4)))==NULL)
+	Die("malloc failed");
+    }
+				/* read (blen+3)/4 bytes from file */
+    if (fread(V->seq, sizeof(char), (blen+3)/4, V->f) < (size_t) ((blen+3)/4))
+      Die("fread failed");
+    V->seqlen = blen;
+				/* convert binary code to seq */
+    GCGBinaryToSequence(V->seq, blen);
+  }
+  else readLoop(0, endGCGdata, V);
+  
+  while (!(feof(V->f) || ((*V->buf != 0) && (*V->buf == '>'))))
+    SeqfileGetLine(V);
+}

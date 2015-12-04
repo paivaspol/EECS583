@@ -1,0 +1,88 @@
+void
+reg_to_stack (first, file)
+     rtx first;
+     FILE *file;
+{
+  int i;
+  int max_uid;
+
+  /* Clean up previous run.  */
+  if (stack_regs_mentioned_data)
+    {
+      VARRAY_FREE (stack_regs_mentioned_data);
+      stack_regs_mentioned_data = 0;
+    }
+
+  if (!optimize)
+    split_all_insns (0);
+
+  /* See if there is something to do.  Flow analysis is quite
+     expensive so we might save some compilation time.  */
+  for (i = FIRST_STACK_REG; i <= LAST_STACK_REG; i++)
+    if (regs_ever_live[i])
+      break;
+  if (i > LAST_STACK_REG)
+    return;
+
+  /* Ok, floating point instructions exist.  If not optimizing, 
+     build the CFG and run life analysis.  */
+  if (!optimize)
+    {
+      find_basic_blocks (first, max_reg_num (), file);
+      count_or_remove_death_notes (NULL, 1);
+      life_analysis (first, file, PROP_DEATH_NOTES);
+    }
+  mark_dfs_back_edges ();
+
+  /* Set up block info for each basic block.  */
+  alloc_aux_for_blocks (sizeof (struct block_info_def));
+  for (i = n_basic_blocks - 1; i >= 0; --i)
+    {
+      edge e;
+      basic_block bb = BASIC_BLOCK (i);
+      for (e = bb->pred; e; e=e->pred_next)
+	if (!(e->flags & EDGE_DFS_BACK)
+	    && e->src != ENTRY_BLOCK_PTR)
+	  BLOCK_INFO (bb)->predecessors++;
+    }
+
+  /* Create the replacement registers up front.  */
+  for (i = FIRST_STACK_REG; i <= LAST_STACK_REG; i++)
+    {
+      enum machine_mode mode;
+      for (mode = GET_CLASS_NARROWEST_MODE (MODE_FLOAT);
+	   mode != VOIDmode;
+	   mode = GET_MODE_WIDER_MODE (mode))
+	FP_MODE_REG (i, mode) = gen_rtx_REG (mode, i);
+      for (mode = GET_CLASS_NARROWEST_MODE (MODE_COMPLEX_FLOAT);
+	   mode != VOIDmode;
+	   mode = GET_MODE_WIDER_MODE (mode))
+	FP_MODE_REG (i, mode) = gen_rtx_REG (mode, i);
+    }
+
+  ix86_flags_rtx = gen_rtx_REG (CCmode, FLAGS_REG);
+
+  /* A QNaN for initializing uninitialized variables.  
+
+     ??? We can't load from constant memory in PIC mode, because
+     we're insertting these instructions before the prologue and
+     the PIC register hasn't been set up.  In that case, fall back
+     on zero, which we can get from `ldz'.  */
+
+  if (flag_pic)
+    nan = CONST0_RTX (SFmode);
+  else
+    {
+      nan = gen_lowpart (SFmode, GEN_INT (0x7fc00000));
+      nan = force_const_mem (SFmode, nan);
+    }
+
+  /* Allocate a cache for stack_regs_mentioned.  */
+  max_uid = get_max_uid ();
+  VARRAY_CHAR_INIT (stack_regs_mentioned_data, max_uid + 1,
+		    "stack_regs_mentioned cache");
+
+  convert_regs (file);
+
+  free_aux_for_blocks ();
+}

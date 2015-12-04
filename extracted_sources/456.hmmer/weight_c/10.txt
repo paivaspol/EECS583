@@ -1,0 +1,49 @@
+void
+SingleLinkCluster(char **aseq, int nseq, int alen, float maxid, 
+		  int **ret_c, int *ret_nc)
+{
+  int *a, na;                   /* stack of available vertices */
+  int *b, nb;                   /* stack of working vertices   */
+  int *c;                       /* array of results            */
+  int  nc;			/* total number of components  */
+  int  v,w;			/* index of a working vertices */
+  int  i;			/* loop counter */
+
+  /* allocations and initializations
+   */
+  a = MallocOrDie (sizeof(int) * nseq);
+  b = MallocOrDie (sizeof(int) * nseq);
+  c = MallocOrDie (sizeof(int) * nseq);
+  for (i = 0; i < nseq; i++) a[i] = i;
+  na = nseq;
+  nb = 0;
+  nc = 0;
+
+  /* Main algorithm
+   */
+  while (na > 0)
+    {
+      v = a[na-1]; na--;	/* pop a vertex off a, */
+      b[nb] = v;   nb++;	/* and push onto b     */
+      while (nb > 0)
+	{
+	  v    = b[nb-1]; nb--;	/* pop vertex off b          */
+	  c[v] = nc;		/* assign it to component nc */
+	  for (i = na-1; i >= 0; i--)/* backwards, becase of deletion/swapping we do*/
+	    if (simple_distance(aseq[v], aseq[a[i]]) <= 1. - maxid) /* linked? */
+	      {			
+		w = a[i]; a[i] = a[na-1]; na--;	/* delete w from a (note swap) */
+		b[nb] = w; nb++;                /* push w onto b */
+	      }
+	}
+      nc++;
+    }
+
+  /* Cleanup and return
+   */
+  free(a);
+  free(b);
+  *ret_c  = c;
+  *ret_nc = nc;
+  return;
+}

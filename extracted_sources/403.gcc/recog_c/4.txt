@@ -1,0 +1,54 @@
+int
+validate_change (object, loc, new, in_group)
+    rtx object;
+    rtx *loc;
+    rtx new;
+    int in_group;
+{
+  rtx old = *loc;
+
+  if (old == new || rtx_equal_p (old, new))
+    return 1;
+
+  if (in_group == 0 && num_changes != 0)
+    abort ();
+
+  *loc = new;
+
+  /* Save the information describing this change.  */
+  if (num_changes >= changes_allocated)
+    {
+      if (changes_allocated == 0)
+	/* This value allows for repeated substitutions inside complex
+	   indexed addresses, or changes in up to 5 insns.  */
+	changes_allocated = MAX_RECOG_OPERANDS * 5;
+      else
+	changes_allocated *= 2;
+
+      changes = 
+	(change_t*) xrealloc (changes, 
+			      sizeof (change_t) * changes_allocated); 
+    }
+  
+  changes[num_changes].object = object;
+  changes[num_changes].loc = loc;
+  changes[num_changes].old = old;
+
+  if (object && GET_CODE (object) != MEM)
+    {
+      /* Set INSN_CODE to force rerecognition of insn.  Save old code in
+	 case invalid.  */
+      changes[num_changes].old_code = INSN_CODE (object);
+      INSN_CODE (object) = -1;
+    }
+
+  num_changes++;
+
+  /* If we are making a group of changes, return 1.  Otherwise, validate the
+     change group we made.  */
+
+  if (in_group)
+    return 1;
+  else
+    return apply_change_group ();
+}

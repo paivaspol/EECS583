@@ -1,0 +1,124 @@
+void
+save_call_clobbered_regs ()
+{
+  struct insn_chain *chain, *next;
+  enum machine_mode save_mode [FIRST_PSEUDO_REGISTER];
+
+  CLEAR_HARD_REG_SET (hard_regs_saved);
+  n_regs_saved = 0;
+
+  for (chain = reload_insn_chain; chain != 0; chain = next)
+    {
+      rtx insn = chain->insn;
+      enum rtx_code code = GET_CODE (insn);
+
+      next = chain->next;
+
+      if (chain->is_caller_save_insn)
+	abort ();
+
+      if (GET_RTX_CLASS (code) == 'i')
+	{
+	  /* If some registers have been saved, see if INSN references
+	     any of them.  We must restore them before the insn if so.  */
+
+	  if (n_regs_saved)
+	    {
+	      int regno;
+
+	      if (code == JUMP_INSN)
+		/* Restore all registers if this is a JUMP_INSN.  */
+		COPY_HARD_REG_SET (referenced_regs, hard_regs_saved);
+	      else
+		{
+		  CLEAR_HARD_REG_SET (referenced_regs);
+		  mark_referenced_regs (PATTERN (insn));
+		  AND_HARD_REG_SET (referenced_regs, hard_regs_saved);
+		}
+
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (referenced_regs, regno))
+		  regno += insert_restore (chain, 1, regno, MOVE_MAX_WORDS, save_mode);
+	    }
+
+	  if (code == CALL_INSN)
+	    {
+	      int regno;
+	      HARD_REG_SET hard_regs_to_save;
+
+	      /* Use the register life information in CHAIN to compute which
+		 regs are live during the call.  */
+	      REG_SET_TO_HARD_REG_SET (hard_regs_to_save,
+				       &chain->live_throughout);
+	      /* Save hard registers always in the widest mode available.  */
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (hard_regs_to_save, regno))
+		  save_mode [regno] = regno_save_mode [regno][1];
+		else
+		  save_mode [regno] = VOIDmode;
+
+	      /* Look through all live pseudos, mark their hard registers
+		 and choose proper mode for saving.  */
+	      EXECUTE_IF_SET_IN_REG_SET
+		(&chain->live_throughout, FIRST_PSEUDO_REGISTER, regno,
+		 {
+		   int r = reg_renumber[regno];
+		   int nregs;
+
+		   if (r >= 0)
+		     {
+		       enum machine_mode mode;
+
+		       nregs = HARD_REGNO_NREGS (r, PSEUDO_REGNO_MODE (regno));
+		       mode = HARD_REGNO_CALLER_SAVE_MODE
+			        (r, nregs, PSEUDO_REGNO_MODE (regno));
+		       if (GET_MODE_BITSIZE (mode)
+			   > GET_MODE_BITSIZE (save_mode[r]))
+			 save_mode[r] = mode;
+		       while (nregs-- > 0)
+			 SET_HARD_REG_BIT (hard_regs_to_save, r + nregs);
+		     }
+		   else
+		     abort ();
+		 });
+
+	      /* Record all registers set in this call insn.  These don't need
+		 to be saved.  N.B. the call insn might set a subreg of a
+		 multi-hard-reg pseudo; then the pseudo is considered live
+		 during the call, but the subreg that is set isn't.  */
+	      CLEAR_HARD_REG_SET (this_insn_sets);
+	      note_stores (PATTERN (insn), mark_set_regs, NULL);
+
+	      /* Compute which hard regs must be saved before this call.  */
+	      AND_COMPL_HARD_REG_SET (hard_regs_to_save, call_fixed_reg_set);
+	      AND_COMPL_HARD_REG_SET (hard_regs_to_save, this_insn_sets);
+	      AND_COMPL_HARD_REG_SET (hard_regs_to_save, hard_regs_saved);
+	      AND_HARD_REG_SET (hard_regs_to_save, call_used_reg_set);
+
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (hard_regs_to_save, regno))
+		  regno += insert_save (chain, 1, regno, &hard_regs_to_save, save_mode);
+
+	      /* Must recompute n_regs_saved.  */
+	      n_regs_saved = 0;
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (hard_regs_saved, regno))
+		  n_regs_saved++;
+	    }
+	}
+
+      if (chain->next == 0 || chain->next->block > chain->block)
+	{
+	  int regno;
+	  /* At the end of the basic block, we must restore any registers that
+	     remain saved.  If the last insn in the block is a JUMP_INSN, put
+	     the restore before the insn, otherwise, put it after the insn.  */
+
+	  if (n_regs_saved)
+	    for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+	      if (TEST_HARD_REG_BIT (hard_regs_saved, regno))
+		regno += insert_restore (chain, GET_CODE (insn) == JUMP_INSN,
+					 regno, MOVE_MAX_WORDS, save_mode);
+	}
+    }  
+}

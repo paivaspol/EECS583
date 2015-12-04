@@ -1,0 +1,285 @@
+int
+combine_instructions (f, nregs)
+     rtx f;
+     unsigned int nregs;
+{
+  rtx insn, next;
+#ifdef HAVE_cc0
+  rtx prev;
+#endif
+  int i;
+  rtx links, nextlinks;
+
+  int new_direct_jump_p = 0;
+
+  combine_attempts = 0;
+  combine_merges = 0;
+  combine_extras = 0;
+  combine_successes = 0;
+
+  combine_max_regno = nregs;
+
+  reg_nonzero_bits = ((unsigned HOST_WIDE_INT *)
+		      xcalloc (nregs, sizeof (unsigned HOST_WIDE_INT)));
+  reg_sign_bit_copies
+    = (unsigned char *) xcalloc (nregs, sizeof (unsigned char));
+
+  reg_last_death = (rtx *) xmalloc (nregs * sizeof (rtx));
+  reg_last_set = (rtx *) xmalloc (nregs * sizeof (rtx));
+  reg_last_set_value = (rtx *) xmalloc (nregs * sizeof (rtx));
+  reg_last_set_table_tick = (int *) xmalloc (nregs * sizeof (int));
+  reg_last_set_label = (int *) xmalloc (nregs * sizeof (int));
+  reg_last_set_invalid = (char *) xmalloc (nregs * sizeof (char));
+  reg_last_set_mode
+    = (enum machine_mode *) xmalloc (nregs * sizeof (enum machine_mode));
+  reg_last_set_nonzero_bits
+    = (unsigned HOST_WIDE_INT *) xmalloc (nregs * sizeof (HOST_WIDE_INT));
+  reg_last_set_sign_bit_copies
+    = (char *) xmalloc (nregs * sizeof (char));
+
+  init_reg_last_arrays ();
+
+  init_recog_no_volatile ();
+
+  /* Compute maximum uid value so uid_cuid can be allocated.  */
+
+  for (insn = f, i = 0; insn; insn = NEXT_INSN (insn))
+    if (INSN_UID (insn) > i)
+      i = INSN_UID (insn);
+
+  uid_cuid = (int *) xmalloc ((i + 1) * sizeof (int));
+  max_uid_cuid = i;
+
+  nonzero_bits_mode = mode_for_size (HOST_BITS_PER_WIDE_INT, MODE_INT, 0);
+
+  /* Don't use reg_nonzero_bits when computing it.  This can cause problems
+     when, for example, we have j <<= 1 in a loop.  */
+
+  nonzero_sign_valid = 0;
+
+  /* Compute the mapping from uids to cuids.
+     Cuids are numbers assigned to insns, like uids,
+     except that cuids increase monotonically through the code.
+
+     Scan all SETs and see if we can deduce anything about what
+     bits are known to be zero for some registers and how many copies
+     of the sign bit are known to exist for those registers.
+
+     Also set any known values so that we can use it while searching
+     for what bits are known to be set.  */
+
+  label_tick = 1;
+
+  /* We need to initialize it here, because record_dead_and_set_regs may call
+     get_last_value.  */
+  subst_prev_insn = NULL_RTX;
+
+  setup_incoming_promotions ();
+
+  refresh_blocks = sbitmap_alloc (n_basic_blocks);
+  sbitmap_zero (refresh_blocks);
+  need_refresh = 0;
+
+  for (insn = f, i = 0; insn; insn = NEXT_INSN (insn))
+    {
+      uid_cuid[INSN_UID (insn)] = ++i;
+      subst_low_cuid = i;
+      subst_insn = insn;
+
+      if (INSN_P (insn))
+	{
+	  note_stores (PATTERN (insn), set_nonzero_bits_and_sign_copies,
+		       NULL);
+	  record_dead_and_set_regs (insn);
+
+#ifdef AUTO_INC_DEC
+	  for (links = REG_NOTES (insn); links; links = XEXP (links, 1))
+	    if (REG_NOTE_KIND (links) == REG_INC)
+	      set_nonzero_bits_and_sign_copies (XEXP (links, 0), NULL_RTX,
+						NULL);
+#endif
+	}
+
+      if (GET_CODE (insn) == CODE_LABEL)
+	label_tick++;
+    }
+
+  nonzero_sign_valid = 1;
+
+  /* Now scan all the insns in forward order.  */
+
+  this_basic_block = -1;
+  label_tick = 1;
+  last_call_cuid = 0;
+  mem_last_set = 0;
+  init_reg_last_arrays ();
+  setup_incoming_promotions ();
+
+  for (insn = f; insn; insn = next ? next : NEXT_INSN (insn))
+    {
+      next = 0;
+
+      /* If INSN starts a new basic block, update our basic block number.  */
+      if (this_basic_block + 1 < n_basic_blocks
+	  && BLOCK_HEAD (this_basic_block + 1) == insn)
+	this_basic_block++;
+
+      if (GET_CODE (insn) == CODE_LABEL)
+	label_tick++;
+
+      else if (INSN_P (insn))
+	{
+	  /* See if we know about function return values before this
+	     insn based upon SUBREG flags.  */
+	  check_promoted_subreg (insn, PATTERN (insn));
+
+	  /* Try this insn with each insn it links back to.  */
+
+	  for (links = LOG_LINKS (insn); links; links = XEXP (links, 1))
+	    if ((next = try_combine (insn, XEXP (links, 0),
+				     NULL_RTX, &new_direct_jump_p)) != 0)
+	      goto retry;
+
+	  /* Try each sequence of three linked insns ending with this one.  */
+
+	  for (links = LOG_LINKS (insn); links; links = XEXP (links, 1))
+	    {
+	      rtx link = XEXP (links, 0);
+
+	      /* If the linked insn has been replaced by a note, then there
+		 is no point in pursuing this chain any further.  */
+	      if (GET_CODE (link) == NOTE)
+		continue;
+
+	      for (nextlinks = LOG_LINKS (link);
+		   nextlinks;
+		   nextlinks = XEXP (nextlinks, 1))
+		if ((next = try_combine (insn, link,
+					 XEXP (nextlinks, 0),
+					 &new_direct_jump_p)) != 0)
+		  goto retry;
+	    }
+
+#ifdef HAVE_cc0
+	  /* Try to combine a jump insn that uses CC0
+	     with a preceding insn that sets CC0, and maybe with its
+	     logical predecessor as well.
+	     This is how we make decrement-and-branch insns.
+	     We need this special code because data flow connections
+	     via CC0 do not get entered in LOG_LINKS.  */
+
+	  if (GET_CODE (insn) == JUMP_INSN
+	      && (prev = prev_nonnote_insn (insn)) != 0
+	      && GET_CODE (prev) == INSN
+	      && sets_cc0_p (PATTERN (prev)))
+	    {
+	      if ((next = try_combine (insn, prev,
+				       NULL_RTX, &new_direct_jump_p)) != 0)
+		goto retry;
+
+	      for (nextlinks = LOG_LINKS (prev); nextlinks;
+		   nextlinks = XEXP (nextlinks, 1))
+		if ((next = try_combine (insn, prev,
+					 XEXP (nextlinks, 0),
+					 &new_direct_jump_p)) != 0)
+		  goto retry;
+	    }
+
+	  /* Do the same for an insn that explicitly references CC0.  */
+	  if (GET_CODE (insn) == INSN
+	      && (prev = prev_nonnote_insn (insn)) != 0
+	      && GET_CODE (prev) == INSN
+	      && sets_cc0_p (PATTERN (prev))
+	      && GET_CODE (PATTERN (insn)) == SET
+	      && reg_mentioned_p (cc0_rtx, SET_SRC (PATTERN (insn))))
+	    {
+	      if ((next = try_combine (insn, prev,
+				       NULL_RTX, &new_direct_jump_p)) != 0)
+		goto retry;
+
+	      for (nextlinks = LOG_LINKS (prev); nextlinks;
+		   nextlinks = XEXP (nextlinks, 1))
+		if ((next = try_combine (insn, prev,
+					 XEXP (nextlinks, 0),
+					 &new_direct_jump_p)) != 0)
+		  goto retry;
+	    }
+
+	  /* Finally, see if any of the insns that this insn links to
+	     explicitly references CC0.  If so, try this insn, that insn,
+	     and its predecessor if it sets CC0.  */
+	  for (links = LOG_LINKS (insn); links; links = XEXP (links, 1))
+	    if (GET_CODE (XEXP (links, 0)) == INSN
+		&& GET_CODE (PATTERN (XEXP (links, 0))) == SET
+		&& reg_mentioned_p (cc0_rtx, SET_SRC (PATTERN (XEXP (links, 0))))
+		&& (prev = prev_nonnote_insn (XEXP (links, 0))) != 0
+		&& GET_CODE (prev) == INSN
+		&& sets_cc0_p (PATTERN (prev))
+		&& (next = try_combine (insn, XEXP (links, 0),
+					prev, &new_direct_jump_p)) != 0)
+	      goto retry;
+#endif
+
+	  /* Try combining an insn with two different insns whose results it
+	     uses.  */
+	  for (links = LOG_LINKS (insn); links; links = XEXP (links, 1))
+	    for (nextlinks = XEXP (links, 1); nextlinks;
+		 nextlinks = XEXP (nextlinks, 1))
+	      if ((next = try_combine (insn, XEXP (links, 0),
+				       XEXP (nextlinks, 0),
+				       &new_direct_jump_p)) != 0)
+		goto retry;
+
+	  if (GET_CODE (insn) != NOTE)
+	    record_dead_and_set_regs (insn);
+
+	retry:
+	  ;
+	}
+    }
+
+  delete_noop_moves (f);
+
+  if (need_refresh)
+    {
+      update_life_info (refresh_blocks, UPDATE_LIFE_GLOBAL_RM_NOTES,
+			PROP_DEATH_NOTES);
+    }
+
+  /* Clean up.  */
+  sbitmap_free (refresh_blocks);
+  free (reg_nonzero_bits);
+  free (reg_sign_bit_copies);
+  free (reg_last_death);
+  free (reg_last_set);
+  free (reg_last_set_value);
+  free (reg_last_set_table_tick);
+  free (reg_last_set_label);
+  free (reg_last_set_invalid);
+  free (reg_last_set_mode);
+  free (reg_last_set_nonzero_bits);
+  free (reg_last_set_sign_bit_copies);
+  free (uid_cuid);
+
+  {
+    struct undo *undo, *next;
+    for (undo = undobuf.frees; undo; undo = next)
+      {
+	next = undo->next;
+	free (undo);
+      }
+    undobuf.frees = 0;
+  }
+
+  total_attempts += combine_attempts;
+  total_merges += combine_merges;
+  total_extras += combine_extras;
+  total_successes += combine_successes;
+
+  nonzero_sign_valid = 0;
+
+  /* Make recognizer allow volatile MEMs again.  */
+  init_recog ();
+
+  return new_direct_jump_p;
+}

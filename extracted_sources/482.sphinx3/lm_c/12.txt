@@ -1,0 +1,41 @@
+int32 lm_ug_wordprob (lm_t *lm, dict_t *dict,int32 th, wordprob_t *wp)
+{
+    int32 i, j, n, p;
+    s3wid_t w,dictid;
+    lmclass_t lmclass;
+    lmclass_word_t lm_cw;
+    n = lm->n_ug;
+    
+    for (i = 0, j = 0; i < n; i++) {
+	w = lm->ug[i].dictwid;
+	if (IS_S3WID(w)) { /*Is w>0? Then it can be either wid or class id*/
+	  if (w <  LM_CLASSID_BASE){ /*It is just a word*/
+	    if ((p = lm->ug[i].prob.l) >= th) {
+		wp[j].wid = w;
+		wp[j].prob = p;
+		j++;
+	    }
+	  }else{ /* It is a class */
+	    lmclass=LM_CLASSID_TO_CLASS(lm,w); /* Get the class*/
+	    lm_cw=lmclass_firstword(lmclass);
+	    while(lmclass_isword(lm_cw)){
+	      dictid =lmclass_getwid(lm_cw); 
+
+	      if(dictid !=dict_basewid(dict,dictid)){
+		dictid=dict_basewid(dict,dictid);
+	      }
+	      if((p=lm->ug[i].prob.l+lm->inclass_ugscore[dictid])>=th){
+		wp[j].wid=dictid;
+		wp[j].prob=lm->ug[i].prob.l;
+		j++;
+	      }
+
+	      lm_cw= lmclass_nextword (lmclass,lm_cw);
+	      
+	    }
+	  }
+	}
+    }
+    
+    return j;
+}

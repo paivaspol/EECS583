@@ -1,0 +1,68 @@
+static void 
+readGenBank(struct ReadSeqVars *V)
+{
+  char *sptr;
+  int   in_definition;
+
+  /* We'll map three genbank identifiers onto names:
+   *     LOCUS     -> sqinfo.name
+   *     ACCESSION -> sqinfo.acc   [primary accession only]
+   *     VERSION   -> sqinfo.id
+   * We don't currently store the GI number, or secondary accessions.    
+   */
+  while (strncmp(V->buf, "LOCUS", 5) != 0) {
+    SeqfileGetLine(V);
+  }
+  if (V->ssimode >= 0) V->r_off = V->ssioffset;
+
+  if ((sptr = strtok(V->buf+12, "\n\t ")) != NULL)
+    SetSeqinfoString(V->sqinfo, sptr, SQINFO_NAME);
+
+  in_definition = FALSE;
+  while (! feof(V->f))
+    {
+      SeqfileGetLine(V);
+      if (! feof(V->f) && strstr(V->buf, "DEFINITION") == V->buf)
+	{
+	  if ((sptr = strtok(V->buf+12, "\n")) != NULL)
+	    SetSeqinfoString(V->sqinfo, sptr, SQINFO_DESC);
+	  in_definition = TRUE;
+	}
+      else if (! feof(V->f) && strstr(V->buf, "ACCESSION") == V->buf)
+	{
+	  if ((sptr = strtok(V->buf+12, "\n\t ")) != NULL)
+	    SetSeqinfoString(V->sqinfo, sptr, SQINFO_ACC);
+	  in_definition = FALSE;
+	}
+      else if (! feof(V->f) && strstr(V->buf, "VERSION") == V->buf)
+	{
+	  if ((sptr = strtok(V->buf+12, "\n\t ")) != NULL)
+	    SetSeqinfoString(V->sqinfo, sptr, SQINFO_ID);
+	  in_definition = FALSE;
+	}
+      else if (strncmp(V->buf,"ORIGIN", 6) != 0)
+	{
+	  if (in_definition)
+	    SetSeqinfoString(V->sqinfo, V->buf, SQINFO_DESC);
+	}
+      else
+	break;
+    }
+
+  readLoop(0, endGB, V);
+
+  /* reading a real GenBank database file, we keep the source coords
+   */
+  V->sqinfo->start = 1;
+  V->sqinfo->stop  = V->seqlen;
+  V->sqinfo->olen  = V->seqlen;
+  V->sqinfo->flags |= SQINFO_START | SQINFO_STOP | SQINFO_OLEN;
+
+
+  while (!(feof(V->f) || ((*V->buf!=0) && (strstr(V->buf,"LOCUS") == V->buf))))
+    SeqfileGetLine(V);
+				/* SRE: V->s now holds "//", so sequential
+				   reads are wedged: fixed Tue Jul 13 1993 */
+  while (!feof(V->f) && strstr(V->buf, "LOCUS  ") != V->buf)
+    SeqfileGetLine(V);
+}

@@ -1,0 +1,108 @@
+static int
+find_if_block (test_bb, then_edge, else_edge)
+      basic_block test_bb;
+      edge then_edge, else_edge;
+{
+  basic_block then_bb = then_edge->dest;
+  basic_block else_bb = else_edge->dest;
+  basic_block join_bb = NULL_BLOCK;
+  edge then_succ = then_bb->succ;
+  edge else_succ = else_bb->succ;
+  int next_index;
+
+  /* The THEN block of an IF-THEN combo must have exactly one predecessor.  */
+  if (then_bb->pred->pred_next != NULL_EDGE)
+    return FALSE;
+
+  /* The THEN block of an IF-THEN combo must have zero or one successors.  */
+  if (then_succ != NULL_EDGE
+      && (then_succ->succ_next != NULL_EDGE
+          || (then_succ->flags & EDGE_COMPLEX)))
+    return FALSE;
+
+  /* If the THEN block has no successors, conditional execution can still
+     make a conditional call.  Don't do this unless the ELSE block has
+     only one incoming edge -- the CFG manipulation is too ugly otherwise.
+     Check for the last insn of the THEN block being an indirect jump, which
+     is listed as not having any successors, but confuses the rest of the CE
+     code processing.  XXX we should fix this in the future.  */
+  if (then_succ == NULL)
+    {
+      if (else_bb->pred->pred_next == NULL_EDGE)
+	{
+	  rtx last_insn = then_bb->end;
+
+	  while (last_insn
+		 && GET_CODE (last_insn) == NOTE
+		 && last_insn != then_bb->head)
+	    last_insn = PREV_INSN (last_insn);
+
+	  if (last_insn
+	      && GET_CODE (last_insn) == JUMP_INSN
+	      && ! simplejump_p (last_insn))
+	    return FALSE;
+
+	  join_bb = else_bb;
+	  else_bb = NULL_BLOCK;
+	}
+      else
+	return FALSE;
+    }
+
+  /* If the THEN block's successor is the other edge out of the TEST block,
+     then we have an IF-THEN combo without an ELSE.  */
+  else if (then_succ->dest == else_bb)
+    {
+      join_bb = else_bb;
+      else_bb = NULL_BLOCK;
+    }
+
+  /* If the THEN and ELSE block meet in a subsequent block, and the ELSE
+     has exactly one predecessor and one successor, and the outgoing edge
+     is not complex, then we have an IF-THEN-ELSE combo.  */
+  else if (else_succ != NULL_EDGE
+	   && then_succ->dest == else_succ->dest
+	   && else_bb->pred->pred_next == NULL_EDGE
+	   && else_succ->succ_next == NULL_EDGE
+	   && ! (else_succ->flags & EDGE_COMPLEX))
+    join_bb = else_succ->dest;
+
+  /* Otherwise it is not an IF-THEN or IF-THEN-ELSE combination.  */
+  else
+    return FALSE;	   
+
+  num_possible_if_blocks++;
+
+  if (rtl_dump_file)
+    {
+      if (else_bb)
+	fprintf (rtl_dump_file,
+		 "\nIF-THEN-ELSE block found, start %d, then %d, else %d, join %d\n",
+		 test_bb->index, then_bb->index, else_bb->index,
+		 join_bb->index);
+      else
+	fprintf (rtl_dump_file,
+		 "\nIF-THEN block found, start %d, then %d, join %d\n",
+		 test_bb->index, then_bb->index, join_bb->index);
+    }
+
+  /* Make sure IF, THEN, and ELSE, blocks are adjacent.  Actually, we
+     get the first condition for free, since we've already asserted that
+     there's a fallthru edge from IF to THEN.  */
+  /* ??? As an enhancement, move the ELSE block.  Have to deal with
+     BLOCK notes, if by no other means than aborting the merge if they
+     exist.  Sticky enough I don't want to think about it now.  */
+  next_index = then_bb->index;
+  if (else_bb && ++next_index != else_bb->index)
+    return FALSE;
+  if (++next_index != join_bb->index && join_bb->index != EXIT_BLOCK)
+    {
+      if (else_bb)
+	join_bb = NULL;
+      else
+	return FALSE;
+    }
+
+  /* Do the real work.  */
+  return process_if_block (test_bb, then_bb, else_bb, join_bb);
+}

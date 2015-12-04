@@ -1,0 +1,35 @@
+static void
+MD5Update(MD5_CTX* ctx, const U8* buf, STRLEN len)
+{
+    STRLEN blocks;
+    STRLEN fill = ctx->bytes_low & 0x3F;
+
+#ifdef MD5_DEBUG  
+    static int ucount = 0;
+    fprintf(stderr,"%5i: Update(%s, %p, %d)\n", ++ucount, ctx_dump(ctx),
+	                                        buf, len);
+#endif
+
+    ctx->bytes_low += len;
+    if (ctx->bytes_low < len) /* wrap around */
+	ctx->bytes_high++;
+
+    if (fill) {
+	STRLEN missing = 64 - fill;
+	if (len < missing) {
+	    Copy(buf, ctx->buffer + fill, len, U8);
+	    return;
+	}
+	Copy(buf, ctx->buffer + fill, missing, U8);
+	MD5Transform(ctx, ctx->buffer, 1);
+	buf += missing;
+	len -= missing;
+    }
+
+    blocks = len >> 6;
+    if (blocks)
+	MD5Transform(ctx, buf, blocks);
+    if ( (len &= 0x3F)) {
+	Copy(buf + (blocks << 6), ctx->buffer, len, U8);
+    }
+}

@@ -1,0 +1,22 @@
+void
+genrtl_goto_stmt (destination)
+     tree destination;
+{
+  if (TREE_CODE (destination) == IDENTIFIER_NODE)
+    abort ();
+  
+  /* We warn about unused labels with -Wunused.  That means we have to
+     mark the used labels as used.  */
+  if (TREE_CODE (destination) == LABEL_DECL)
+    TREE_USED (destination) = 1;
+  
+  emit_line_note (input_filename, lineno);
+  
+  if (TREE_CODE (destination) == LABEL_DECL)
+    {
+      label_rtx (destination);
+      expand_goto (destination); 
+    }
+  else
+    expand_computed_goto (destination);
+}

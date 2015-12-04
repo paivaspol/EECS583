@@ -1,0 +1,47 @@
+static void subvq_map_compact (subvq_t *vq, mgau_model_t *g)
+{
+    int32 r, c, c2, s;
+    
+    if (g) {
+	if ((g->n_mgau != vq->origsize.r) || (g->max_comp != vq->origsize.c))
+	    E_FATAL("Model size conflict: %d x %d (SubVQ) vs %d x %d (Original)\n",
+		    vq->origsize.r, vq->origsize.c, g->n_mgau, g->max_comp);
+    }
+    
+    /*
+     * Compress map entries by removing invalid ones.  NOTE: There's not much of a consistency
+     * check to ensure that the entries remaining do map correctly on to the valid entries in
+     * the original (parent) mixture Gaussian model g.  The only check we have is to verify
+     * the NUMBER of valid entries (components) in each mixture.
+     */
+    for (r = 0; r < vq->origsize.r; r++) {
+	for (c = 0, c2 = 0; c < vq->origsize.c; c++) {
+	    if (vq->map[r][c][0] < 0) {
+		/* All ought to be < 0 */
+		for (s = 1; s < vq->n_sv; s++) {
+		    if (vq->map[r][c][s] >= 0)
+			E_FATAL("Partially undefined map[%d][%d]\n", r, c);
+		}
+	    } else {
+		if (c2 != c) {
+		    for (s = 0; s < vq->n_sv; s++) {
+			if (vq->map[r][c][s] < 0)
+			    E_FATAL("Partially undefined map[%d][%d]\n", r, c);
+			vq->map[r][c2][s] = vq->map[r][c][s];
+		    }
+		}
+		c2++;
+	    }
+	}
+	
+	if (g && (c2 != mgau_n_comp (g, r)))
+	    E_FATAL("Mixture %d: #Valid components conflict: %d (SubVQ) vs %d (Original)\n",
+		    r, c2, mgau_n_comp(g,r));
+	
+	/* Invalidate the remaining map entries, for good measure */
+	for (; c2 < vq->origsize.c; c2++) {
+	    for (s = 0; s < vq->n_sv; s++)
+		vq->map[r][c2][s] = -1;
+	}
+    }
+}

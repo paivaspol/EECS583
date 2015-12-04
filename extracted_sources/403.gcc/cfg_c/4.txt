@@ -1,0 +1,18 @@
+void
+expunge_block (b)
+     basic_block b;
+{
+  int i, n = n_basic_blocks;
+
+  for (i = b->index; i + 1 < n; ++i)
+    {
+      basic_block x = BASIC_BLOCK (i + 1);
+      BASIC_BLOCK (i) = x;
+      x->index = i;
+    }
+
+  n_basic_blocks--;
+  basic_block_info->num_elements--;
+
+  expunge_block_nocompact (b);
+}

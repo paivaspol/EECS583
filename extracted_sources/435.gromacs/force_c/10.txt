@@ -1,0 +1,64 @@
+void ns(FILE *fp,
+	t_forcerec *fr,
+	rvec       x[],
+	rvec       f[],
+	matrix     box,
+	t_groups   *grps,
+	t_grpopts  *opts,
+	t_topology *top,
+	t_mdatoms  *md,
+	t_commrec  *cr,
+	t_nrnb     *nrnb,
+	t_nsborder *nsb,
+	int        step,
+	real       lambda,
+	real       *dvdlambda)
+{
+  static bool bFirst=TRUE;
+  static int  nDNL;
+  char   *ptr;
+  int    nsearch;
+  
+  if (bFirst) {
+#ifdef SPEC_CPU
+    ptr = NULL;
+#else
+    ptr=getenv("DUMPNL");
+#endif
+    if (ptr) {
+      nDNL=atoi(ptr);
+      fprintf(fp,"nDNL = %d\n",nDNL);  
+    } else
+      nDNL=0;
+    /* Allocate memory for the neighbor lists */
+    init_neighbor_list(fp,fr,HOMENR(nsb));
+      
+    bFirst=FALSE;
+  }
+    
+  if (fr->bTwinRange) 
+    fr->nlr=0;
+
+  /* Whether or not we do dynamic load balancing,
+   * workload contains the proper numbers of charge groups
+   * to be searched.
+   */
+  if (cr->nodeid == 0)
+    fr->cg0=0;
+  else
+    fr->cg0=nsb->workload[cr->nodeid-1];
+  fr->hcg=nsb->workload[cr->nodeid];
+
+  nsearch = search_neighbours(fp,fr,x,box,top,grps,cr,nsb,nrnb,md,
+			      lambda,dvdlambda);
+  if (debug)
+    fprintf(debug,"nsearch = %d\n",nsearch);
+    
+  /* Check whether we have to do dynamic load balancing */
+  /*if ((nsb->nstDlb > 0) && (mod(step,nsb->nstDlb) == 0))
+    count_nb(cr,nsb,&(top->blocks[ebCGS]),nns,fr->nlr,
+    &(top->idef),opts->ngener);
+  */
+  if (nDNL > 0)
+    dump_nblist(fp,fr,nDNL);
+}

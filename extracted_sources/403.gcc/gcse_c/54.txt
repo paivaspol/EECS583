@@ -1,0 +1,27 @@
+static void
+mark_oprs_set (insn)
+     rtx insn;
+{
+  rtx pat = PATTERN (insn);
+  int i;
+
+  if (GET_CODE (pat) == SET)
+    mark_set (pat, insn);
+  else if (GET_CODE (pat) == PARALLEL)
+    for (i = 0; i < XVECLEN (pat, 0); i++)
+      {
+	rtx x = XVECEXP (pat, 0, i);
+
+	if (GET_CODE (x) == SET)
+	  mark_set (x, insn);
+	else if (GET_CODE (x) == CLOBBER)
+	  mark_clobber (x, insn);
+	else if (GET_CODE (x) == CALL)
+	  mark_call (insn);
+      }
+
+  else if (GET_CODE (pat) == CLOBBER)
+    mark_clobber (pat, insn);
+  else if (GET_CODE (pat) == CALL)
+    mark_call (insn);
+}

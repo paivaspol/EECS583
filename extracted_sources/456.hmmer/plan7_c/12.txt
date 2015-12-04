@@ -1,0 +1,18 @@
+void
+Plan7NakedConfig(struct plan7_s *hmm)                           
+{
+  hmm->xt[XTN][MOVE] = 1.;	      /* disallow N-terminal tail */
+  hmm->xt[XTN][LOOP] = 0.;
+  hmm->xt[XTE][MOVE] = 1.;	      /* only 1 domain/sequence ("global" alignment) */
+  hmm->xt[XTE][LOOP] = 0.;
+  hmm->xt[XTC][MOVE] = 1.;	      /* disallow C-terminal tail */
+  hmm->xt[XTC][LOOP] = 0.;
+  hmm->xt[XTJ][MOVE] = 0.;	      /* J state unused */
+  hmm->xt[XTJ][LOOP] = 1.;
+  FSet(hmm->begin+2, hmm->M-1, 0.);   /* disallow internal entries. */
+  hmm->begin[1]    = 1. - hmm->tbd1;
+  FSet(hmm->end+1,   hmm->M-1, 0.);   /* disallow internal exits. */
+  hmm->end[hmm->M] = 1.;
+  Plan7RenormalizeExits(hmm);
+  hmm->flags       &= ~PLAN7_HASBITS; /* reconfig invalidates log-odds scores */
+}

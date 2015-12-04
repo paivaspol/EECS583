@@ -1,0 +1,58 @@
+static void
+move_by_pieces_1 (genfun, mode, data)
+     rtx (*genfun) PARAMS ((rtx, ...));
+     enum machine_mode mode;
+     struct move_by_pieces *data;
+{
+  unsigned int size = GET_MODE_SIZE (mode);
+  rtx to1 = NULL_RTX, from1;
+
+  while (data->len >= size)
+    {
+      if (data->reverse)
+	data->offset -= size;
+
+      if (data->to)
+	{
+	  if (data->autinc_to)
+	    to1 = adjust_automodify_address (data->to, mode, data->to_addr,
+					     data->offset);
+	  else
+	    to1 = adjust_address (data->to, mode, data->offset);
+	}
+
+      if (data->autinc_from)
+	from1 = adjust_automodify_address (data->from, mode, data->from_addr,
+					   data->offset);
+      else
+	from1 = adjust_address (data->from, mode, data->offset);
+
+      if (HAVE_PRE_DECREMENT && data->explicit_inc_to < 0)
+	emit_insn (gen_add2_insn (data->to_addr,
+				  GEN_INT (-(HOST_WIDE_INT)size)));
+      if (HAVE_PRE_DECREMENT && data->explicit_inc_from < 0)
+	emit_insn (gen_add2_insn (data->from_addr,
+				  GEN_INT (-(HOST_WIDE_INT)size)));
+
+      if (data->to)
+	emit_insn ((*genfun) (to1, from1));
+      else
+	{
+#ifdef PUSH_ROUNDING
+	  emit_single_push_insn (mode, from1, NULL);
+#else
+	  abort ();
+#endif
+	}
+
+      if (HAVE_POST_INCREMENT && data->explicit_inc_to > 0)
+	emit_insn (gen_add2_insn (data->to_addr, GEN_INT (size)));
+      if (HAVE_POST_INCREMENT && data->explicit_inc_from > 0)
+	emit_insn (gen_add2_insn (data->from_addr, GEN_INT (size)));
+
+      if (! data->reverse)
+	data->offset += size;
+
+      data->len -= size;
+    }
+}

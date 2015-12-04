@@ -1,0 +1,209 @@
+void
+finish_decl (decl, init, asmspec_tree)
+     tree decl, init;
+     tree asmspec_tree;
+{
+  tree type = TREE_TYPE (decl);
+  int was_incomplete = (DECL_SIZE (decl) == 0);
+  const char *asmspec = 0;
+
+  /* If a name was specified, get the string.  */
+  if (current_binding_level == global_binding_level)
+    asmspec_tree = maybe_apply_renaming_pragma (decl, asmspec_tree);
+  if (asmspec_tree)
+    asmspec = TREE_STRING_POINTER (asmspec_tree);
+
+  /* If `start_decl' didn't like having an initialization, ignore it now.  */
+  if (init != 0 && DECL_INITIAL (decl) == 0)
+    init = 0;
+  
+  /* Don't crash if parm is initialized.  */
+  if (TREE_CODE (decl) == PARM_DECL)
+    init = 0;
+
+  if (init)
+    {
+      if (TREE_CODE (decl) != TYPE_DECL)
+	store_init_value (decl, init);
+      else
+	{
+	  /* typedef foo = bar; store the type of bar as the type of foo.  */
+	  TREE_TYPE (decl) = TREE_TYPE (init);
+	  DECL_INITIAL (decl) = init = 0;
+	}
+    }
+
+  /* Deduce size of array from initialization, if not already known */
+  if (TREE_CODE (type) == ARRAY_TYPE
+      && TYPE_DOMAIN (type) == 0
+      && TREE_CODE (decl) != TYPE_DECL)
+    {
+      int do_default
+	= (TREE_STATIC (decl)
+	   /* Even if pedantic, an external linkage array
+	      may have incomplete type at first.  */
+	   ? pedantic && !TREE_PUBLIC (decl)
+	   : !DECL_EXTERNAL (decl));
+      int failure
+	= complete_array_type (type, DECL_INITIAL (decl), do_default);
+
+      /* Get the completed type made by complete_array_type.  */
+      type = TREE_TYPE (decl);
+
+      if (failure == 1)
+	error_with_decl (decl, "initializer fails to determine size of `%s'");
+
+      else if (failure == 2)
+	{
+	  if (do_default)
+	    error_with_decl (decl, "array size missing in `%s'");
+	  /* If a `static' var's size isn't known,
+	     make it extern as well as static, so it does not get
+	     allocated.
+	     If it is not `static', then do not mark extern;
+	     finish_incomplete_decl will give it a default size
+	     and it will get allocated.  */
+	  else if (!pedantic && TREE_STATIC (decl) && ! TREE_PUBLIC (decl))
+	    DECL_EXTERNAL (decl) = 1;
+	}
+
+      /* TYPE_MAX_VALUE is always one less than the number of elements
+	 in the array, because we start counting at zero.  Therefore,
+	 warn only if the value is less than zero.  */
+      else if (pedantic && TYPE_DOMAIN (type) != 0
+	      && tree_int_cst_sgn (TYPE_MAX_VALUE (TYPE_DOMAIN (type))) < 0)
+	error_with_decl (decl, "zero or negative size array `%s'");
+
+      layout_decl (decl, 0);
+    }
+
+  if (TREE_CODE (decl) == VAR_DECL)
+    {
+      if (DECL_SIZE (decl) == 0 && TREE_TYPE (decl) != error_mark_node
+	  && COMPLETE_TYPE_P (TREE_TYPE (decl)))
+	layout_decl (decl, 0);
+
+      if (DECL_SIZE (decl) == 0
+	  /* Don't give an error if we already gave one earlier.  */
+	  && TREE_TYPE (decl) != error_mark_node
+	  && (TREE_STATIC (decl)
+	      ?
+		/* A static variable with an incomplete type
+		   is an error if it is initialized.
+		   Also if it is not file scope.
+		   Otherwise, let it through, but if it is not `extern'
+		   then it may cause an error message later.  */
+		(DECL_INITIAL (decl) != 0
+		 || DECL_CONTEXT (decl) != 0)
+	      :
+		/* An automatic variable with an incomplete type
+		   is an error.  */
+		!DECL_EXTERNAL (decl)))
+	{
+	  error_with_decl (decl, "storage size of `%s' isn't known");
+	  TREE_TYPE (decl) = error_mark_node;
+	}
+
+      if ((DECL_EXTERNAL (decl) || TREE_STATIC (decl))
+	  && DECL_SIZE (decl) != 0)
+	{
+	  if (TREE_CODE (DECL_SIZE (decl)) == INTEGER_CST)
+	    constant_expression_warning (DECL_SIZE (decl));
+	  else
+	    error_with_decl (decl, "storage size of `%s' isn't constant");
+	}
+
+      if (TREE_USED (type))
+	TREE_USED (decl) = 1;
+    }
+
+  /* If this is a function and an assembler name is specified, it isn't
+     builtin any more.  Also reset DECL_RTL so we can give it its new
+     name.  */
+  if (TREE_CODE (decl) == FUNCTION_DECL && asmspec)
+    {
+      DECL_BUILT_IN_CLASS (decl) = NOT_BUILT_IN;
+      SET_DECL_RTL (decl, NULL_RTX);
+      SET_DECL_ASSEMBLER_NAME (decl, get_identifier (asmspec));
+    }
+
+  /* Output the assembler code and/or RTL code for variables and functions,
+     unless the type is an undefined structure or union.
+     If not, it will get done when the type is completed.  */
+
+  if (TREE_CODE (decl) == VAR_DECL || TREE_CODE (decl) == FUNCTION_DECL)
+    {
+      /* This is a no-op in c-lang.c or something real in objc-actions.c.  */
+      maybe_objc_check_decl (decl);
+
+      if (!DECL_CONTEXT (decl))
+	{
+	  if (DECL_INITIAL (decl) == NULL_TREE
+	      || DECL_INITIAL (decl) == error_mark_node)
+	    /* Don't output anything
+	       when a tentative file-scope definition is seen.
+	       But at end of compilation, do output code for them.  */
+	    DECL_DEFER_OUTPUT (decl) = 1;
+	  rest_of_decl_compilation (decl, asmspec,
+				    (DECL_CONTEXT (decl) == 0
+				     || TREE_ASM_WRITTEN (decl)), 0);
+	}
+      else
+	{
+	  /* This is a local variable.  If there is an ASMSPEC, the
+	     user has requested that we handle it specially.  */
+	  if (asmspec)
+	    {
+	      /* In conjunction with an ASMSPEC, the `register'
+		 keyword indicates that we should place the variable
+		 in a particular register.  */
+	      if (DECL_REGISTER (decl))
+		DECL_C_HARD_REGISTER (decl) = 1;
+
+	      /* If this is not a static variable, issue a warning.
+		 It doesn't make any sense to give an ASMSPEC for an
+		 ordinary, non-register local variable.  Historically,
+		 GCC has accepted -- but ignored -- the ASMSPEC in
+		 this case.  */
+	      if (TREE_CODE (decl) == VAR_DECL 
+		  && !DECL_REGISTER (decl)
+		  && !TREE_STATIC (decl))
+		warning_with_decl (decl,
+				   "ignoring asm-specifier for non-static local variable `%s'");
+	      else
+		SET_DECL_ASSEMBLER_NAME (decl, get_identifier (asmspec));
+	    }
+
+	  if (TREE_CODE (decl) != FUNCTION_DECL)
+	    add_decl_stmt (decl);
+	}
+
+      if (DECL_CONTEXT (decl) != 0)
+	{
+	  /* Recompute the RTL of a local array now
+	     if it used to be an incomplete type.  */
+	  if (was_incomplete
+	      && ! TREE_STATIC (decl) && ! DECL_EXTERNAL (decl))
+	    {
+	      /* If we used it already as memory, it must stay in memory.  */
+	      TREE_ADDRESSABLE (decl) = TREE_USED (decl);
+	      /* If it's still incomplete now, no init will save it.  */
+	      if (DECL_SIZE (decl) == 0)
+		DECL_INITIAL (decl) = 0;
+	    }
+	}
+    }
+
+  if (TREE_CODE (decl) == TYPE_DECL)
+    {
+      /* This is a no-op in c-lang.c or something real in objc-actions.c.  */
+      maybe_objc_check_decl (decl);
+      rest_of_decl_compilation (decl, NULL, DECL_CONTEXT (decl) == 0, 0);
+    }
+
+  /* At the end of a declaration, throw away any variable type sizes
+     of types defined inside that declaration.  There is no use
+     computing them in the following function definition.  */
+  if (current_binding_level == global_binding_level)
+    get_pending_sizes ();
+}

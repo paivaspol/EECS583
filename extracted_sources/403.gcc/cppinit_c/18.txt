@@ -1,0 +1,25 @@
+static void
+read_original_filename (pfile)
+     cpp_reader *pfile;
+{
+  const cpp_token *token, *token1;
+
+  /* Lex ahead; if the first tokens are of the form # NUM, then
+     process the directive, otherwise back up.  */
+  token = _cpp_lex_direct (pfile);
+  if (token->type == CPP_HASH)
+    {
+      token1 = _cpp_lex_direct (pfile);
+      _cpp_backup_tokens (pfile, 1);
+
+      /* If it's a #line directive, handle it.  */
+      if (token1->type == CPP_NUMBER)
+	{
+	  _cpp_handle_directive (pfile, token->flags & PREV_WHITE);
+	  return;
+	}
+    }
+
+  /* Backup as if nothing happened.  */
+  _cpp_backup_tokens (pfile, 1);
+}

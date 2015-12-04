@@ -1,0 +1,53 @@
+static int write_debug_data8	PARAMS ((unsigned long long, const char *,
+					 int));
+static int write_debug_delta4	PARAMS ((char *, char *, const char *, int));
+static int write_debug_string	PARAMS ((char *, const char *, int));
+static int write_modbeg		PARAMS ((int));
+static int write_modend		PARAMS ((int));
+static int write_rtnbeg		PARAMS ((int, int));
+static int write_rtnend		PARAMS ((int, int));
+static int write_pclines	PARAMS ((int));
+static int write_srccorr	PARAMS ((int, dst_file_info_entry, int));
+static int write_srccorrs	PARAMS ((int));
+
+static void vmsdbgout_init		PARAMS ((const char *));
+static void vmsdbgout_finish		PARAMS ((const char *));
+static void vmsdbgout_define		PARAMS ((unsigned int, const char *));
+static void vmsdbgout_undef		PARAMS ((unsigned int, const char *));
+static void vmsdbgout_start_source_file PARAMS ((unsigned int, const char *));
+static void vmsdbgout_end_source_file	PARAMS ((unsigned int));
+static void vmsdbgout_begin_block	PARAMS ((unsigned int, unsigned int));
+static void vmsdbgout_end_block		PARAMS ((unsigned int, unsigned int));
+static bool vmsdbgout_ignore_block	PARAMS ((tree));
+static void vmsdbgout_source_line	PARAMS ((unsigned int, const char *));
+static void vmsdbgout_begin_prologue	PARAMS ((unsigned int, const char *));
+static void vmsdbgout_end_epilogue	PARAMS ((void));
+static void vmsdbgout_begin_function	PARAMS ((tree));
+static void vmsdbgout_decl		PARAMS ((tree));
+static void vmsdbgout_global_decl	PARAMS ((tree));
+static void vmsdbgout_abstract_function PARAMS ((tree));
+
+/* The debug hooks structure.  */
+
+struct gcc_debug_hooks vmsdbg_debug_hooks
+= {vmsdbgout_init,
+   vmsdbgout_finish,
+   vmsdbgout_define,
+   vmsdbgout_undef,
+   vmsdbgout_start_source_file,
+   vmsdbgout_end_source_file,
+   vmsdbgout_begin_block,
+   vmsdbgout_end_block,
+   vmsdbgout_ignore_block,
+   vmsdbgout_source_line,
+   vmsdbgout_begin_prologue,
+   debug_nothing_int,		/* end_prologue */
+   vmsdbgout_end_epilogue,	/* end_epilogue */
+   vmsdbgout_begin_function,	/* begin_function */
+   debug_nothing_int,		/* end_function */
+   vmsdbgout_decl,
+   vmsdbgout_global_decl,
+   debug_nothing_tree,		/* deferred_inline_function */
+   vmsdbgout_abstract_function,
+   debug_nothing_rtx		/* label */
+};

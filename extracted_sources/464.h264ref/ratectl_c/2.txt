@@ -1,0 +1,120 @@
+void rc_init_seq()
+{
+  double L1,L2,L3,bpp;
+  int qp;
+  int i;
+  
+  Xp=0;
+  Xb=0;
+   
+  bit_rate=input->bit_rate;
+  frame_rate = (img->framerate *(float)(input->successive_Bframe + 1)) / (float) (input->jumpd + 1);
+  PreviousBit_Rate=bit_rate;
+   
+  /*compute the total number of MBs in a frame*/
+  
+  img->Frame_Total_Number_MB=img->height*img->width/256;
+  if(input->basicunit>img->Frame_Total_Number_MB)
+    input->basicunit=img->Frame_Total_Number_MB;
+  if(input->basicunit<img->Frame_Total_Number_MB)
+    TotalNumberofBasicUnit=img->Frame_Total_Number_MB/input->basicunit;
+  
+  MINVALUE=4.0;
+  /*initialize the parameters of fluid flow traffic model*/
+  
+  BufferSize=bit_rate*2.56;
+  CurrentBufferFullness=0;
+  GOPTargetBufferLevel=CurrentBufferFullness;
+  /*HRD consideration*/
+  InitialDelayOffset=BufferSize*0.8;
+  
+  /*initialize the previous window size*/
+  m_windowSize=0;
+  MADm_windowSize=0;
+  img->NumberofCodedBFrame=0;
+  img->NumberofCodedPFrame=0;
+  img->NumberofGOP=0;
+  /*remaining # of bits in GOP */
+  R = 0;
+  /*control parameter */
+  if(input->successive_Bframe>0)
+  {
+    GAMMAP=0.25;
+    BETAP=0.9;
+  }
+  else
+  {
+    GAMMAP=0.5;
+    BETAP=0.5;
+  }
+  
+  /*quadratic rate-distortion model*/
+  PPreHeader=0;
+  
+  Pm_X1=bit_rate*1.0;
+  Pm_X2=0.0;
+  /* linear prediction model for P picture*/
+  PMADPictureC1=1.0;
+  PMADPictureC2=0.0;
+  
+  for(i=0;i<20;i++)
+  {
+    Pm_rgQp[i]=0;
+    Pm_rgRp[i]=0.0;
+    PPictureMAD[i]=0.0;
+  }
+  PPictureMAD[20]=0.0;
+   
+  //Define the largest variation of quantization parameters
+  PDuantQp=2;
+  
+  /*basic unit layer rate control*/
+  PAveHeaderBits1=0;
+  PAveHeaderBits3=0;  
+  if(TotalNumberofBasicUnit>=9)
+    DDquant=1;
+  else
+    DDquant=2;
+  
+  MBPerRow=img->width/16;
+  
+  /*adaptive field/frame coding*/
+  img->FieldControl=0;
+  
+  RC_MAX_QUANT = 51;  // clipping
+  RC_MIN_QUANT = 0;//clipping
+  
+  /*compute the initial QP*/
+  bpp = 1.0*bit_rate /(frame_rate*img->width*img->height);
+  if (img->width == 176) 
+  {
+    L1 = 0.1;
+    L2 = 0.3;
+    L3 = 0.6;
+  }else if (img->width == 352)
+  {
+    L1 = 0.2;
+    L2 = 0.6;
+    L3 = 1.2;
+  }else 
+  {
+    L1 = 0.6;
+    L2 = 1.4;
+    L3 = 2.4;
+  }
+  
+  if (input->SeinitialQP==0)
+  {
+    if(bpp<= L1)
+      qp = 35;
+    else
+      if(bpp<=L2)
+        qp = 25;
+      else
+        if(bpp<=L3)
+          qp  = 20;
+        else
+          qp =10;
+    input->SeinitialQP = qp;
+  }
+}

@@ -1,0 +1,21 @@
+static SV *retrieve_lutf8str(pTHX_ stcxt_t *cxt, char *cname)
+{
+    SV *sv;
+
+    TRACEME(("retrieve_lutf8str"));
+
+    sv = retrieve_lscalar(aTHX_ cxt, cname);
+    if (sv) {
+#ifdef HAS_UTF8_SCALARS
+        SvUTF8_on(sv);
+#else
+        if (cxt->use_bytes < 0)
+            cxt->use_bytes
+                = (SvTRUE(get_sv("Storable::drop_utf8", TRUE))
+                   ? 1 : 0);
+        if (cxt->use_bytes == 0)
+            UTF8_CROAK();
+#endif
+    }
+    return sv;
+}

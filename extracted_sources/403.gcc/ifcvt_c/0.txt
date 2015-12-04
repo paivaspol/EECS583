@@ -1,0 +1,55 @@
+static int cond_exec_process_if_block	PARAMS ((basic_block, basic_block,
+						 basic_block, basic_block));
+
+static rtx noce_get_condition		PARAMS ((rtx, rtx *));
+static int noce_operand_ok		PARAMS ((rtx));
+static int noce_process_if_block	PARAMS ((basic_block, basic_block,
+						 basic_block, basic_block));
+
+static int process_if_block		PARAMS ((basic_block, basic_block,
+						 basic_block, basic_block));
+static void merge_if_block		PARAMS ((basic_block, basic_block,
+						 basic_block, basic_block));
+
+static int find_if_header		PARAMS ((basic_block));
+static int find_if_block		PARAMS ((basic_block, edge, edge));
+static int find_if_case_1		PARAMS ((basic_block, edge, edge));
+static int find_if_case_2		PARAMS ((basic_block, edge, edge));
+static int find_cond_trap		PARAMS ((basic_block, edge, edge));
+static rtx block_has_only_trap		PARAMS ((basic_block));
+static int find_memory			PARAMS ((rtx *, void *));
+static int dead_or_predicable		PARAMS ((basic_block, basic_block,
+						 basic_block, basic_block, int));
+static void noce_emit_move_insn		PARAMS ((rtx, rtx));
+
+/* Abuse the basic_block AUX field to store the original block index,
+   as well as a flag indicating that the block should be rescaned for
+   life analysis.  */
+
+#define SET_ORIG_INDEX(BB,I)	((BB)->aux = (void *)((size_t)(I) << 1))
+#define ORIG_INDEX(BB)		((size_t)(BB)->aux >> 1)
+#define SET_UPDATE_LIFE(BB)	((BB)->aux = (void *)((size_t)(BB)->aux | 1))
+#define UPDATE_LIFE(BB)		((size_t)(BB)->aux & 1)
+
+
+/* Count the number of non-jump active insns in BB.  */
+
+static int
+count_bb_insns (bb)
+     basic_block bb;
+{
+  int count = 0;
+  rtx insn = bb->head;
+
+  while (1)
+    {
+      if (GET_CODE (insn) == CALL_INSN || GET_CODE (insn) == INSN)
+	count++;
+
+      if (insn == bb->end)
+	break;
+      insn = NEXT_INSN (insn);
+    }
+
+  return count;
+}

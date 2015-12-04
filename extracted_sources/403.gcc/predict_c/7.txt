@@ -1,0 +1,30 @@
+static void
+dump_prediction (predictor, probability, bb, used)
+     enum br_predictor predictor;
+     int probability;
+     basic_block bb;
+     int used;
+{
+  edge e = bb->succ;
+
+  if (!rtl_dump_file)
+    return;
+
+  while (e->flags & EDGE_FALLTHRU)
+    e = e->succ_next;
+
+  fprintf (rtl_dump_file, "  %s heuristics%s: %.1f%%",
+	   predictor_info[predictor].name,
+	   used ? "" : " (ignored)", probability * 100.0 / REG_BR_PROB_BASE);
+
+  if (bb->count)
+    {
+      fprintf (rtl_dump_file, "  exec ");
+      fprintf (rtl_dump_file, HOST_WIDEST_INT_PRINT_DEC, bb->count);
+      fprintf (rtl_dump_file, " hit ");
+      fprintf (rtl_dump_file, HOST_WIDEST_INT_PRINT_DEC, e->count);
+      fprintf (rtl_dump_file, " (%.1f%%)", e->count * 100.0 / bb->count);
+    }
+
+  fprintf (rtl_dump_file, "\n");
+}

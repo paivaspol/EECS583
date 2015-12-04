@@ -1,0 +1,14 @@
+void **__ckd_calloc_2d__ (int32 d1, int32 d2, int32 elemsize,
+			  const char *caller_file, int32 caller_line)
+{
+    char **ref, *mem;
+    int32 i, offset;
+
+    mem = (char *) __ckd_calloc__(d1*d2, elemsize, caller_file, caller_line);
+    ref = (char **) __ckd_malloc__(d1 * sizeof(void *), caller_file, caller_line);
+
+    for (i = 0, offset = 0; i < d1; i++, offset += d2*elemsize)
+	ref[i] = mem + offset;
+
+    return ((void **) ref);
+}

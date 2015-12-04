@@ -1,0 +1,28 @@
+static const char *
+type_tag (type)
+     tree type;
+{
+  const char *name = 0;
+
+  if (TYPE_NAME (type) != 0)
+    {
+      tree t = 0;
+
+      /* Find the IDENTIFIER_NODE for the type name.  */
+      if (TREE_CODE (TYPE_NAME (type)) == IDENTIFIER_NODE)
+	t = TYPE_NAME (type);
+
+      /* The g++ front end makes the TYPE_NAME of *each* tagged type point to
+         a TYPE_DECL node, regardless of whether or not a `typedef' was
+         involved.  */
+      else if (TREE_CODE (TYPE_NAME (type)) == TYPE_DECL
+	       && ! DECL_IGNORED_P (TYPE_NAME (type)))
+	t = DECL_NAME (TYPE_NAME (type));
+
+      /* Now get the name as a string, or invent one.  */
+      if (t != 0)
+	name = IDENTIFIER_POINTER (t);
+    }
+
+  return (name == 0 || *name == '\0') ? 0 : name;
+}

@@ -1,0 +1,22 @@
+void
+GSIWriteHeader(FILE *fp, int nfiles, long nkeys)
+{
+  char       key[GSI_KEYSIZE];
+  sqd_uint16 f1;
+  sqd_uint32 f2;
+
+  /* beware potential range errors!
+   */
+  if (nfiles > SQD_UINT16_MAX) Die("GSI: nfiles out of range");
+  if (nkeys > SQD_UINT32_MAX)  Die("GSI: nkeys out of range");
+
+  f1 = (sqd_uint16) nfiles;
+  f2 = (sqd_uint32) nkeys;
+  f1 = sre_hton16(f1);
+  f2 = sre_hton32(f2);
+  strcpy(key, "GSI");
+
+  if (fwrite(key,   1, GSI_KEYSIZE, fp) < GSI_KEYSIZE) PANIC;
+  if (fwrite(&f1,   2,  1, fp) < 1)  PANIC;
+  if (fwrite(&f2,   4,  1, fp) < 1)  PANIC;
+}

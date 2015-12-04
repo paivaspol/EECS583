@@ -1,0 +1,23 @@
+void make_nn_gathers(){
+
+int i;
+void neighbor_coords_special(
+ int x,int y,int z,int t, /* coordinates of site */
+ int *dirpt,              /* direction (eg XUP) */
+ int fb,                  /* "forwards/backwards"  */
+ int *x2p,int *y2p,int *z2p,int *t2p);
+                          /* pointers to coordinates of neighbor */
+
+    /* Allocate space for lists of pointers to neighbor sites.
+       (NULL if neighbor not on this node) */
+    neighbor = (int **)calloc(NDIRS, sizeof(int *));
+    n_gathers=0;
+
+    for(i=XUP;i<=TUP;i++)
+	make_gather(neighbor_coords_special,&i,WANT_INVERSE,
+	    ALLOW_EVEN_ODD,SWITCH_PARITY);
+
+    /* Sort into the order we want for nearest neighbor gathers,
+	so you can use XUP, XDOWN, etc. as argument in calling them. */
+    sort_eight_special((void **) neighbor );
+}

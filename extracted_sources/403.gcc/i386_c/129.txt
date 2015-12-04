@@ -1,0 +1,129 @@
+static int
+ix86_split_to_parts (operand, parts, mode)
+     rtx operand;
+     rtx *parts;
+     enum machine_mode mode;
+{
+  int size;
+
+  if (!TARGET_64BIT)
+    size = mode == TFmode ? 3 : (GET_MODE_SIZE (mode) / 4);
+  else
+    size = (GET_MODE_SIZE (mode) + 4) / 8;
+
+  if (GET_CODE (operand) == REG && MMX_REGNO_P (REGNO (operand)))
+    abort ();
+  if (size < 2 || size > 3)
+    abort ();
+
+  /* Optimize constant pool reference to immediates.  This is used by fp moves,
+     that force all constants to memory to allow combining.  */
+
+  if (GET_CODE (operand) == MEM
+      && GET_CODE (XEXP (operand, 0)) == SYMBOL_REF
+      && CONSTANT_POOL_ADDRESS_P (XEXP (operand, 0)))
+    operand = get_pool_constant (XEXP (operand, 0));
+
+  if (GET_CODE (operand) == MEM && !offsettable_memref_p (operand))
+    {
+      /* The only non-offsetable memories we handle are pushes.  */
+      if (! push_operand (operand, VOIDmode))
+	abort ();
+
+      operand = copy_rtx (operand);
+      PUT_MODE (operand, Pmode);
+      parts[0] = parts[1] = parts[2] = operand;
+    }
+  else if (!TARGET_64BIT)
+    {
+      if (mode == DImode)
+	split_di (&operand, 1, &parts[0], &parts[1]);
+      else
+	{
+	  if (REG_P (operand))
+	    {
+	      if (!reload_completed)
+		abort ();
+	      parts[0] = gen_rtx_REG (SImode, REGNO (operand) + 0);
+	      parts[1] = gen_rtx_REG (SImode, REGNO (operand) + 1);
+	      if (size == 3)
+		parts[2] = gen_rtx_REG (SImode, REGNO (operand) + 2);
+	    }
+	  else if (offsettable_memref_p (operand))
+	    {
+	      operand = adjust_address (operand, SImode, 0);
+	      parts[0] = operand;
+	      parts[1] = adjust_address (operand, SImode, 4);
+	      if (size == 3)
+		parts[2] = adjust_address (operand, SImode, 8);
+	    }
+	  else if (GET_CODE (operand) == CONST_DOUBLE)
+	    {
+	      REAL_VALUE_TYPE r;
+	      long l[4];
+
+	      REAL_VALUE_FROM_CONST_DOUBLE (r, operand);
+	      switch (mode)
+		{
+		case XFmode:
+		case TFmode:
+		  REAL_VALUE_TO_TARGET_LONG_DOUBLE (r, l);
+		  parts[2] = GEN_INT (trunc_int_for_mode (l[2], SImode));
+		  break;
+		case DFmode:
+		  REAL_VALUE_TO_TARGET_DOUBLE (r, l);
+		  break;
+		default:
+		  abort ();
+		}
+	      parts[1] = GEN_INT (trunc_int_for_mode (l[1], SImode));
+	      parts[0] = GEN_INT (trunc_int_for_mode (l[0], SImode));
+	    }
+	  else
+	    abort ();
+	}
+    }
+  else
+    {
+      if (mode == TImode)
+	split_ti (&operand, 1, &parts[0], &parts[1]);
+      if (mode == XFmode || mode == TFmode)
+	{
+	  if (REG_P (operand))
+	    {
+	      if (!reload_completed)
+		abort ();
+	      parts[0] = gen_rtx_REG (DImode, REGNO (operand) + 0);
+	      parts[1] = gen_rtx_REG (SImode, REGNO (operand) + 1);
+	    }
+	  else if (offsettable_memref_p (operand))
+	    {
+	      operand = adjust_address (operand, DImode, 0);
+	      parts[0] = operand;
+	      parts[1] = adjust_address (operand, SImode, 8);
+	    }
+	  else if (GET_CODE (operand) == CONST_DOUBLE)
+	    {
+	      REAL_VALUE_TYPE r;
+	      long l[3];
+
+	      REAL_VALUE_FROM_CONST_DOUBLE (r, operand);
+	      REAL_VALUE_TO_TARGET_LONG_DOUBLE (r, l);
+	      /* Do not use shift by 32 to avoid warning on 32bit systems.  */
+	      if (HOST_BITS_PER_WIDE_INT >= 64)
+	        parts[0]
+		  = GEN_INT (trunc_int_for_mode
+		      ((l[0] & (((HOST_WIDE_INT) 2 << 31) - 1))
+		       + ((((HOST_WIDE_INT) l[1]) << 31) << 1),
+		       DImode));
+	      else
+	        parts[0] = immed_double_const (l[0], l[1], DImode);
+	      parts[1] = GEN_INT (trunc_int_for_mode (l[2], SImode));
+	    }
+	  else
+	    abort ();
+	}
+    }
+
+  return size;
+}

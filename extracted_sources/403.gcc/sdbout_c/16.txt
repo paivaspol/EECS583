@@ -1,0 +1,55 @@
+static void
+sdbout_reg_parms (parms)
+     tree parms;
+{
+  for (; parms; parms = TREE_CHAIN (parms))
+    if (DECL_NAME (parms))
+      {
+	const char *name = IDENTIFIER_POINTER (DECL_NAME (parms));
+
+	/* Report parms that live in registers during the function
+	   but were passed in memory.  */
+	if (GET_CODE (DECL_RTL (parms)) == REG
+	    && REGNO (DECL_RTL (parms)) < FIRST_PSEUDO_REGISTER
+	    && PARM_PASSED_IN_MEMORY (parms))
+	  {
+	    if (name == 0 || *name == 0)
+	      name = gen_fake_label ();
+	    PUT_SDB_DEF (name);
+	    PUT_SDB_INT_VAL (DBX_REGISTER_NUMBER (REGNO (DECL_RTL (parms))));
+	    PUT_SDB_SCL (C_REG);
+	    PUT_SDB_TYPE (plain_type (TREE_TYPE (parms)));
+	    PUT_SDB_ENDEF;
+	  }
+	/* Report parms that live in memory but not where they were passed.  */
+	else if (GET_CODE (DECL_RTL (parms)) == MEM
+		 && GET_CODE (XEXP (DECL_RTL (parms), 0)) == PLUS
+		 && GET_CODE (XEXP (XEXP (DECL_RTL (parms), 0), 1)) == CONST_INT
+		 && PARM_PASSED_IN_MEMORY (parms)
+		 && ! rtx_equal_p (DECL_RTL (parms), DECL_INCOMING_RTL (parms)))
+	  {
+#if 0 /* ??? It is not clear yet what should replace this.  */
+	    int offset = DECL_OFFSET (parms) / BITS_PER_UNIT;
+	    /* A parm declared char is really passed as an int,
+	       so it occupies the least significant bytes.
+	       On a big-endian machine those are not the low-numbered ones.  */
+	    if (BYTES_BIG_ENDIAN
+		&& offset != -1
+		&& TREE_TYPE (parms) != DECL_ARG_TYPE (parms))
+	      offset += (GET_MODE_SIZE (TYPE_MODE (DECL_ARG_TYPE (parms)))
+			 - GET_MODE_SIZE (GET_MODE (DECL_RTL (parms))));
+	    if (INTVAL (XEXP (XEXP (DECL_RTL (parms), 0), 1)) != offset) {...}
+#endif
+	      {
+		if (name == 0 || *name == 0)
+		  name = gen_fake_label ();
+		PUT_SDB_DEF (name);
+		PUT_SDB_INT_VAL (DEBUGGER_AUTO_OFFSET
+				 (XEXP (DECL_RTL (parms), 0)));
+		PUT_SDB_SCL (C_AUTO);
+		PUT_SDB_TYPE (plain_type (TREE_TYPE (parms)));
+		PUT_SDB_ENDEF;
+	      }
+	  }
+      }
+}

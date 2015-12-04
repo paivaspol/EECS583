@@ -1,0 +1,313 @@
+static void
+strength_reduce (loop, flags)
+     struct loop *loop;
+     int flags;
+{
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  struct loop_regs *regs = LOOP_REGS (loop);
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  rtx p;
+  /* Temporary list pointer for traversing ivs->list.  */
+  struct iv_class *bl;
+  /* Ratio of extra register life span we can justify
+     for saving an instruction.  More if loop doesn't call subroutines
+     since in that case saving an insn makes more difference
+     and more registers are available.  */
+  /* ??? could set this to last value of threshold in move_movables */
+  int threshold = (loop_info->has_call ? 1 : 2) * (3 + n_non_fixed_regs);
+  /* Map of pseudo-register replacements.  */
+  rtx *reg_map = NULL;
+  int reg_map_size;
+  int unrolled_insn_copies = 0;
+  rtx test_reg = gen_rtx_REG (word_mode, LAST_VIRTUAL_REGISTER + 1);
+  int insn_count = count_insns_in_loop (loop);
+
+  addr_placeholder = gen_reg_rtx (Pmode);
+
+  ivs->n_regs = max_reg_before_loop;
+  ivs->regs = (struct iv *) xcalloc (ivs->n_regs, sizeof (struct iv));
+
+  /* Find all BIVs in loop.  */
+  loop_bivs_find (loop);
+
+  /* Exit if there are no bivs.  */
+  if (! ivs->list)
+    {
+      /* Can still unroll the loop anyways, but indicate that there is no
+	 strength reduction info available.  */
+      if (flags & LOOP_UNROLL)
+	unroll_loop (loop, insn_count, 0);
+
+      loop_ivs_free (loop);
+      return;
+    }
+
+  /* Determine how BIVS are initialised by looking through pre-header
+     extended basic block.  */
+  loop_bivs_init_find (loop);
+
+  /* Look at the each biv and see if we can say anything better about its
+     initial value from any initializing insns set up above.  */
+  loop_bivs_check (loop);
+
+  /* Search the loop for general induction variables.  */
+  loop_givs_find (loop);
+
+  /* Try to calculate and save the number of loop iterations.  This is
+     set to zero if the actual number can not be calculated.  This must
+     be called after all giv's have been identified, since otherwise it may
+     fail if the iteration variable is a giv.  */
+  loop_iterations (loop);
+
+#ifdef HAVE_prefetch
+  if (flags & LOOP_PREFETCH)
+    emit_prefetch_instructions (loop);
+#endif
+
+  /* Now for each giv for which we still don't know whether or not it is
+     replaceable, check to see if it is replaceable because its final value
+     can be calculated.  This must be done after loop_iterations is called,
+     so that final_giv_value will work correctly.  */
+  loop_givs_check (loop);
+
+  /* Try to prove that the loop counter variable (if any) is always
+     nonnegative; if so, record that fact with a REG_NONNEG note
+     so that "decrement and branch until zero" insn can be used.  */
+  check_dbra_loop (loop, insn_count);
+
+  /* Create reg_map to hold substitutions for replaceable giv regs.
+     Some givs might have been made from biv increments, so look at
+     ivs->reg_iv_type for a suitable size.  */
+  reg_map_size = ivs->n_regs;
+  reg_map = (rtx *) xcalloc (reg_map_size, sizeof (rtx));
+
+  /* Examine each iv class for feasibility of strength reduction/induction
+     variable elimination.  */
+
+  for (bl = ivs->list; bl; bl = bl->next)
+    {
+      struct induction *v;
+      int benefit;
+
+      /* Test whether it will be possible to eliminate this biv
+	 provided all givs are reduced.  */
+      bl->eliminable = loop_biv_eliminable_p (loop, bl, threshold, insn_count);
+
+      /* This will be true at the end, if all givs which depend on this
+	 biv have been strength reduced.
+	 We can't (currently) eliminate the biv unless this is so.  */
+      bl->all_reduced = 1;
+
+      /* Check each extension dependent giv in this class to see if its
+	 root biv is safe from wrapping in the interior mode.  */
+      check_ext_dependent_givs (bl, loop_info);
+
+      /* Combine all giv's for this iv_class.  */
+      combine_givs (regs, bl);
+
+      for (v = bl->giv; v; v = v->next_iv)
+	{
+	  struct induction *tv;
+
+	  if (v->ignore || v->same)
+	    continue;
+
+	  benefit = loop_giv_reduce_benefit (loop, bl, v, test_reg);
+
+	  /* If an insn is not to be strength reduced, then set its ignore
+	     flag, and clear bl->all_reduced.  */
+
+	  /* A giv that depends on a reversed biv must be reduced if it is
+	     used after the loop exit, otherwise, it would have the wrong
+	     value after the loop exit.  To make it simple, just reduce all
+	     of such giv's whether or not we know they are used after the loop
+	     exit.  */
+
+	  if (! flag_reduce_all_givs
+	      && v->lifetime * threshold * benefit < insn_count
+	      && ! bl->reversed)
+	    {
+	      if (loop_dump_stream)
+		fprintf (loop_dump_stream,
+			 "giv of insn %d not worth while, %d vs %d.\n",
+			 INSN_UID (v->insn),
+			 v->lifetime * threshold * benefit, insn_count);
+	      v->ignore = 1;
+	      bl->all_reduced = 0;
+	    }
+	  else
+	    {
+	      /* Check that we can increment the reduced giv without a
+		 multiply insn.  If not, reject it.  */
+
+	      for (tv = bl->biv; tv; tv = tv->next_iv)
+		if (tv->mult_val == const1_rtx
+		    && ! product_cheap_p (tv->add_val, v->mult_val))
+		  {
+		    if (loop_dump_stream)
+		      fprintf (loop_dump_stream,
+			       "giv of insn %d: would need a multiply.\n",
+			       INSN_UID (v->insn));
+		    v->ignore = 1;
+		    bl->all_reduced = 0;
+		    break;
+		  }
+	    }
+	}
+
+      /* Check for givs whose first use is their definition and whose
+	 last use is the definition of another giv.  If so, it is likely
+	 dead and should not be used to derive another giv nor to
+	 eliminate a biv.  */
+      loop_givs_dead_check (loop, bl);
+
+      /* Reduce each giv that we decided to reduce.  */
+      loop_givs_reduce (loop, bl);
+
+      /* Rescan all givs.  If a giv is the same as a giv not reduced, mark it
+	 as not reduced.
+
+	 For each giv register that can be reduced now: if replaceable,
+	 substitute reduced reg wherever the old giv occurs;
+	 else add new move insn "giv_reg = reduced_reg".  */
+      loop_givs_rescan (loop, bl, reg_map);
+
+      /* All the givs based on the biv bl have been reduced if they
+	 merit it.  */
+
+      /* For each giv not marked as maybe dead that has been combined with a
+	 second giv, clear any "maybe dead" mark on that second giv.
+	 v->new_reg will either be or refer to the register of the giv it
+	 combined with.
+
+	 Doing this clearing avoids problems in biv elimination where
+	 a giv's new_reg is a complex value that can't be put in the
+	 insn but the giv combined with (with a reg as new_reg) is
+	 marked maybe_dead.  Since the register will be used in either
+	 case, we'd prefer it be used from the simpler giv.  */
+
+      for (v = bl->giv; v; v = v->next_iv)
+	if (! v->maybe_dead && v->same)
+	  v->same->maybe_dead = 0;
+
+      /* Try to eliminate the biv, if it is a candidate.
+	 This won't work if ! bl->all_reduced,
+	 since the givs we planned to use might not have been reduced.
+
+	 We have to be careful that we didn't initially think we could
+	 eliminate this biv because of a giv that we now think may be
+	 dead and shouldn't be used as a biv replacement.
+
+	 Also, there is the possibility that we may have a giv that looks
+	 like it can be used to eliminate a biv, but the resulting insn
+	 isn't valid.  This can happen, for example, on the 88k, where a
+	 JUMP_INSN can compare a register only with zero.  Attempts to
+	 replace it with a compare with a constant will fail.
+
+	 Note that in cases where this call fails, we may have replaced some
+	 of the occurrences of the biv with a giv, but no harm was done in
+	 doing so in the rare cases where it can occur.  */
+
+      if (bl->all_reduced == 1 && bl->eliminable
+	  && maybe_eliminate_biv (loop, bl, 1, threshold, insn_count))
+	{
+	  /* ?? If we created a new test to bypass the loop entirely,
+	     or otherwise drop straight in, based on this test, then
+	     we might want to rewrite it also.  This way some later
+	     pass has more hope of removing the initialization of this
+	     biv entirely.  */
+
+	  /* If final_value != 0, then the biv may be used after loop end
+	     and we must emit an insn to set it just in case.
+
+	     Reversed bivs already have an insn after the loop setting their
+	     value, so we don't need another one.  We can't calculate the
+	     proper final value for such a biv here anyways.  */
+	  if (bl->final_value && ! bl->reversed)
+	      loop_insn_sink_or_swim (loop, gen_move_insn
+				      (bl->biv->dest_reg, bl->final_value));
+
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "Reg %d: biv eliminated\n",
+		     bl->regno);
+	}
+      /* See above note wrt final_value.  But since we couldn't eliminate
+	 the biv, we must set the value after the loop instead of before.  */
+      else if (bl->final_value && ! bl->reversed)
+	loop_insn_sink (loop, gen_move_insn (bl->biv->dest_reg,
+					     bl->final_value));
+    }
+
+  /* Go through all the instructions in the loop, making all the
+     register substitutions scheduled in REG_MAP.  */
+
+  for (p = loop->start; p != loop->end; p = NEXT_INSN (p))
+    if (GET_CODE (p) == INSN || GET_CODE (p) == JUMP_INSN
+	|| GET_CODE (p) == CALL_INSN)
+      {
+	replace_regs (PATTERN (p), reg_map, reg_map_size, 0);
+	replace_regs (REG_NOTES (p), reg_map, reg_map_size, 0);
+	INSN_CODE (p) = -1;
+      }
+
+  if (loop_info->n_iterations > 0)
+    {
+      /* When we completely unroll a loop we will likely not need the increment
+	 of the loop BIV and we will not need the conditional branch at the
+	 end of the loop.  */
+      unrolled_insn_copies = insn_count - 2;
+
+#ifdef HAVE_cc0
+      /* When we completely unroll a loop on a HAVE_cc0 machine we will not
+	 need the comparison before the conditional branch at the end of the
+	 loop.  */
+      unrolled_insn_copies -= 1;
+#endif
+
+      /* We'll need one copy for each loop iteration.  */
+      unrolled_insn_copies *= loop_info->n_iterations;
+
+      /* A little slop to account for the ability to remove initialization
+	 code, better CSE, and other secondary benefits of completely
+	 unrolling some loops.  */
+      unrolled_insn_copies -= 1;
+
+      /* Clamp the value.  */
+      if (unrolled_insn_copies < 0)
+	unrolled_insn_copies = 0;
+    }
+
+  /* Unroll loops from within strength reduction so that we can use the
+     induction variable information that strength_reduce has already
+     collected.  Always unroll loops that would be as small or smaller
+     unrolled than when rolled.  */
+  if ((flags & LOOP_UNROLL)
+      || (!(flags & LOOP_FIRST_PASS)
+	  && loop_info->n_iterations > 0
+	  && unrolled_insn_copies <= insn_count))
+    unroll_loop (loop, insn_count, 1);
+
+#ifdef HAVE_doloop_end
+  if (HAVE_doloop_end && (flags & LOOP_BCT) && flag_branch_on_count_reg)
+    doloop_optimize (loop);
+#endif  /* HAVE_doloop_end  */
+
+  /* In case number of iterations is known, drop branch prediction note
+     in the branch.  Do that only in second loop pass, as loop unrolling
+     may change the number of iterations performed.  */
+  if ((flags & LOOP_BCT)
+      && loop_info->n_iterations / loop_info->unroll_number > 1)
+    {
+      int n = loop_info->n_iterations / loop_info->unroll_number;
+      predict_insn (PREV_INSN (loop->end),
+		    PRED_LOOP_ITERATIONS,
+		    REG_BR_PROB_BASE - REG_BR_PROB_BASE / n);
+    }
+
+  if (loop_dump_stream)
+    fprintf (loop_dump_stream, "\n");
+
+  loop_ivs_free (loop);
+  if (reg_map)
+    free (reg_map);
+}

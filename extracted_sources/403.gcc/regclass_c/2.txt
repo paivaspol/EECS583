@@ -1,0 +1,262 @@
+static void
+init_reg_sets_1 ()
+{
+  unsigned int i, j;
+  unsigned int /* enum machine_mode */ m;
+  char allocatable_regs_of_mode [MAX_MACHINE_MODE];
+
+  /* This macro allows the fixed or call-used registers
+     and the register classes to depend on target flags.  */
+
+#ifdef CONDITIONAL_REGISTER_USAGE
+  CONDITIONAL_REGISTER_USAGE;
+#endif
+
+  /* Compute number of hard regs in each class.  */
+
+  memset ((char *) reg_class_size, 0, sizeof reg_class_size);
+  for (i = 0; i < N_REG_CLASSES; i++)
+    for (j = 0; j < FIRST_PSEUDO_REGISTER; j++)
+      if (TEST_HARD_REG_BIT (reg_class_contents[i], j))
+	reg_class_size[i]++;
+
+  /* Initialize the table of subunions.
+     reg_class_subunion[I][J] gets the largest-numbered reg-class
+     that is contained in the union of classes I and J.  */
+
+  for (i = 0; i < N_REG_CLASSES; i++)
+    {
+      for (j = 0; j < N_REG_CLASSES; j++)
+	{
+#ifdef HARD_REG_SET
+	  register		/* Declare it register if it's a scalar.  */
+#endif
+	    HARD_REG_SET c;
+	  int k;
+
+	  COPY_HARD_REG_SET (c, reg_class_contents[i]);
+	  IOR_HARD_REG_SET (c, reg_class_contents[j]);
+	  for (k = 0; k < N_REG_CLASSES; k++)
+	    {
+	      GO_IF_HARD_REG_SUBSET (reg_class_contents[k], c,
+				     subclass1);
+	      continue;
+
+	    subclass1:
+	      /* keep the largest subclass */		/* SPEE 900308 */
+	      GO_IF_HARD_REG_SUBSET (reg_class_contents[k],
+				     reg_class_contents[(int) reg_class_subunion[i][j]],
+				     subclass2);
+	      reg_class_subunion[i][j] = (enum reg_class) k;
+	    subclass2:
+	      ;
+	    }
+	}
+    }
+
+  /* Initialize the table of superunions.
+     reg_class_superunion[I][J] gets the smallest-numbered reg-class
+     containing the union of classes I and J.  */
+
+  for (i = 0; i < N_REG_CLASSES; i++)
+    {
+      for (j = 0; j < N_REG_CLASSES; j++)
+	{
+#ifdef HARD_REG_SET
+	  register		/* Declare it register if it's a scalar.  */
+#endif
+	    HARD_REG_SET c;
+	  int k;
+
+	  COPY_HARD_REG_SET (c, reg_class_contents[i]);
+	  IOR_HARD_REG_SET (c, reg_class_contents[j]);
+	  for (k = 0; k < N_REG_CLASSES; k++)
+	    GO_IF_HARD_REG_SUBSET (c, reg_class_contents[k], superclass);
+
+	superclass:
+	  reg_class_superunion[i][j] = (enum reg_class) k;
+	}
+    }
+
+  /* Initialize the tables of subclasses and superclasses of each reg class.
+     First clear the whole table, then add the elements as they are found.  */
+
+  for (i = 0; i < N_REG_CLASSES; i++)
+    {
+      for (j = 0; j < N_REG_CLASSES; j++)
+	{
+	  reg_class_superclasses[i][j] = LIM_REG_CLASSES;
+	  reg_class_subclasses[i][j] = LIM_REG_CLASSES;
+	}
+    }
+
+  for (i = 0; i < N_REG_CLASSES; i++)
+    {
+      if (i == (int) NO_REGS)
+	continue;
+
+      for (j = i + 1; j < N_REG_CLASSES; j++)
+	{
+	  enum reg_class *p;
+
+	  GO_IF_HARD_REG_SUBSET (reg_class_contents[i], reg_class_contents[j],
+				 subclass);
+	  continue;
+	subclass:
+	  /* Reg class I is a subclass of J.
+	     Add J to the table of superclasses of I.  */
+	  p = &reg_class_superclasses[i][0];
+	  while (*p != LIM_REG_CLASSES) p++;
+	  *p = (enum reg_class) j;
+	  /* Add I to the table of superclasses of J.  */
+	  p = &reg_class_subclasses[j][0];
+	  while (*p != LIM_REG_CLASSES) p++;
+	  *p = (enum reg_class) i;
+	}
+    }
+
+  /* Initialize "constant" tables.  */
+
+  CLEAR_HARD_REG_SET (fixed_reg_set);
+  CLEAR_HARD_REG_SET (call_used_reg_set);
+  CLEAR_HARD_REG_SET (call_fixed_reg_set);
+  CLEAR_HARD_REG_SET (regs_invalidated_by_call);
+
+  memcpy (call_fixed_regs, fixed_regs, sizeof call_fixed_regs);
+
+  n_non_fixed_regs = 0;
+
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+    {
+      if (fixed_regs[i])
+	SET_HARD_REG_BIT (fixed_reg_set, i);
+      else
+	n_non_fixed_regs++;
+
+      if (call_used_regs[i])
+	SET_HARD_REG_BIT (call_used_reg_set, i);
+      if (call_fixed_regs[i])
+	SET_HARD_REG_BIT (call_fixed_reg_set, i);
+      if (CLASS_LIKELY_SPILLED_P (REGNO_REG_CLASS (i)))
+	SET_HARD_REG_BIT (losing_caller_save_reg_set, i);
+
+      /* There are a couple of fixed registers that we know are safe to
+	 exclude from being clobbered by calls:
+
+	 The frame pointer is always preserved across calls.  The arg pointer
+	 is if it is fixed.  The stack pointer usually is, unless
+	 RETURN_POPS_ARGS, in which case an explicit CLOBBER will be present.
+	 If we are generating PIC code, the PIC offset table register is
+	 preserved across calls, though the target can override that.  */
+	 
+      if (i == STACK_POINTER_REGNUM || i == FRAME_POINTER_REGNUM)
+	;
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+      else if (i == HARD_FRAME_POINTER_REGNUM)
+	;
+#endif
+#if ARG_POINTER_REGNUM != FRAME_POINTER_REGNUM
+      else if (i == ARG_POINTER_REGNUM && fixed_regs[i])
+	;
+#endif
+#ifndef PIC_OFFSET_TABLE_REG_CALL_CLOBBERED
+      else if (i == PIC_OFFSET_TABLE_REGNUM && fixed_regs[i])
+	;
+#endif
+      else if (0
+#ifdef CALL_REALLY_USED_REGISTERS
+	       || call_really_used_regs[i]
+#else
+	       || call_used_regs[i]
+#endif
+	       || global_regs[i])
+	SET_HARD_REG_BIT (regs_invalidated_by_call, i);
+    }
+
+  memset (contains_reg_of_mode, 0, sizeof (contains_reg_of_mode));
+  memset (allocatable_regs_of_mode, 0, sizeof (allocatable_regs_of_mode));
+  for (m = 0; m < (unsigned int) MAX_MACHINE_MODE; m++)
+    for (i = 0; i < N_REG_CLASSES; i++)
+      if (CLASS_MAX_NREGS (i, m) <= reg_class_size[i])
+	for (j = 0; j < FIRST_PSEUDO_REGISTER; j++)
+	  if (!fixed_regs [j] && TEST_HARD_REG_BIT (reg_class_contents[i], j)
+	      && HARD_REGNO_MODE_OK (j, m))
+	     {
+	       contains_reg_of_mode [i][m] = 1;
+	       allocatable_regs_of_mode [m] = 1;
+	       break;
+	     }
+
+  /* Initialize the move cost table.  Find every subset of each class
+     and take the maximum cost of moving any subset to any other.  */
+
+  for (m = 0; m < (unsigned int) MAX_MACHINE_MODE; m++)
+    if (allocatable_regs_of_mode [m])
+      {
+	for (i = 0; i < N_REG_CLASSES; i++)
+	  if (contains_reg_of_mode [i][m])
+	    for (j = 0; j < N_REG_CLASSES; j++)
+	      {
+		int cost;
+		enum reg_class *p1, *p2;
+
+		if (!contains_reg_of_mode [j][m])
+		  {
+		    move_cost[m][i][j] = 65536;
+		    may_move_in_cost[m][i][j] = 65536;
+		    may_move_out_cost[m][i][j] = 65536;
+		  }
+		else
+		  {
+		    cost = REGISTER_MOVE_COST (m, i, j);
+
+		    for (p2 = &reg_class_subclasses[j][0];
+			 *p2 != LIM_REG_CLASSES;
+			 p2++)
+		      if (*p2 != i && contains_reg_of_mode [*p2][m])
+			cost = MAX (cost, move_cost [m][i][*p2]);
+
+		    for (p1 = &reg_class_subclasses[i][0];
+			 *p1 != LIM_REG_CLASSES;
+			 p1++)
+		      if (*p1 != j && contains_reg_of_mode [*p1][m])
+			cost = MAX (cost, move_cost [m][*p1][j]);
+
+		    move_cost[m][i][j] = cost;
+
+		    if (reg_class_subset_p (i, j))
+		      may_move_in_cost[m][i][j] = 0;
+		    else
+		      may_move_in_cost[m][i][j] = cost;
+
+		    if (reg_class_subset_p (j, i))
+		      may_move_out_cost[m][i][j] = 0;
+		    else
+		      may_move_out_cost[m][i][j] = cost;
+		  }
+	      }
+	  else
+	    for (j = 0; j < N_REG_CLASSES; j++)
+	      {
+		move_cost[m][i][j] = 65536;
+		may_move_in_cost[m][i][j] = 65536;
+		may_move_out_cost[m][i][j] = 65536;
+	      }
+      }
+
+#ifdef CLASS_CANNOT_CHANGE_MODE
+  {
+    HARD_REG_SET c;
+    COMPL_HARD_REG_SET (c, reg_class_contents[CLASS_CANNOT_CHANGE_MODE]);
+      
+    for (i = 0; i < N_REG_CLASSES; i++)
+      {
+	GO_IF_HARD_REG_SUBSET (reg_class_contents[i], c, ok_class);
+	class_can_change_mode [i] = 0;
+	continue;
+      ok_class:
+	class_can_change_mode [i] = 1;
+      }
+    }
+#endif /* CLASS_CANNOT_CHANGE_MODE */
+}

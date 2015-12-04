@@ -1,0 +1,24 @@
+static void
+record_insns (insns, vecp)
+     rtx insns;
+     varray_type *vecp;
+{
+  if (GET_CODE (insns) == SEQUENCE)
+    {
+      int len = XVECLEN (insns, 0);
+      int i = VARRAY_SIZE (*vecp);
+
+      VARRAY_GROW (*vecp, i + len);
+      while (--len >= 0)
+	{
+	  VARRAY_INT (*vecp, i) = INSN_UID (XVECEXP (insns, 0, len));
+	  ++i;
+	}
+    }
+  else
+    {
+      int i = VARRAY_SIZE (*vecp);
+      VARRAY_GROW (*vecp, i + 1);
+      VARRAY_INT (*vecp, i) = INSN_UID (insns);
+    }
+}

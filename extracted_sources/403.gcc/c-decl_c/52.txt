@@ -1,0 +1,23 @@
+void
+lang_mark_tree (t)
+     tree t;
+{
+  if (TREE_CODE (t) == IDENTIFIER_NODE)
+    {
+      struct lang_identifier *i = (struct lang_identifier *) t;
+      ggc_mark_tree (i->global_value);
+      ggc_mark_tree (i->local_value);
+      ggc_mark_tree (i->label_value);
+      ggc_mark_tree (i->implicit_decl);
+      ggc_mark_tree (i->error_locus);
+      ggc_mark_tree (i->limbo_value);
+    }
+  else if (TYPE_P (t) && TYPE_LANG_SPECIFIC (t))
+    ggc_mark (TYPE_LANG_SPECIFIC (t));
+  else if (DECL_P (t) && DECL_LANG_SPECIFIC (t))
+    {
+      ggc_mark (DECL_LANG_SPECIFIC (t));
+      c_mark_lang_decl (&DECL_LANG_SPECIFIC (t)->base);
+      ggc_mark_tree (DECL_LANG_SPECIFIC (t)->pending_sizes);
+    }
+}

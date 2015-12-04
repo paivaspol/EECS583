@@ -1,0 +1,41 @@
+void
+assemble_alias (decl, target)
+     tree decl, target ATTRIBUTE_UNUSED;
+{
+  const char *name;
+
+  /* We must force creation of DECL_RTL for debug info generation, even though
+     we don't use it here.  */
+  make_decl_rtl (decl, NULL);
+
+  name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl));
+
+#ifdef ASM_OUTPUT_DEF
+  /* Make name accessible from other files, if appropriate.  */
+  if (TREE_PUBLIC (decl))
+    globalize_decl (decl);
+
+#ifdef ASM_OUTPUT_DEF_FROM_DECLS
+  ASM_OUTPUT_DEF_FROM_DECLS (asm_out_file, decl, target);
+#else
+  ASM_OUTPUT_DEF (asm_out_file, name, IDENTIFIER_POINTER (target));
+#endif
+#else /* !ASM_OUTPUT_DEF */
+#if defined (ASM_OUTPUT_WEAK_ALIAS) || defined (ASM_WEAKEN_DECL)
+  if (! DECL_WEAK (decl))
+    warning ("only weak aliases are supported in this configuration");
+
+#ifdef ASM_WEAKEN_DECL
+  ASM_WEAKEN_DECL (asm_out_file, decl, name, IDENTIFIER_POINTER (target));
+#else
+  ASM_OUTPUT_WEAK_ALIAS (asm_out_file, name, IDENTIFIER_POINTER (target));
+#endif
+#else
+  warning ("alias definitions not supported in this configuration; ignored");
+#endif
+#endif
+
+  TREE_USED (decl) = 1;
+  TREE_ASM_WRITTEN (decl) = 1;
+  TREE_ASM_WRITTEN (DECL_ASSEMBLER_NAME (decl)) = 1;
+}

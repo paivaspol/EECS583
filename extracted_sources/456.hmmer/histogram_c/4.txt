@@ -1,0 +1,28 @@
+void
+PrintXMGRHistogram(FILE *fp, struct histogram_s *h)
+{
+  int sc;			/* integer score in histogram structure */
+  double val;
+
+  /* First data set is the observed histogram
+   */
+  for (sc = h->lowscore; sc <= h->highscore; sc++)
+    if (h->histogram[sc - h->min] > 0)
+      fprintf(fp, "%-6d %f\n", sc, 
+	      (float) h->histogram[sc - h->min]/ (float) h->total);
+  fprintf(fp, "&\n");
+
+  /* Second data set is the theoretical histogram
+   */
+  if (h->fit_type != HISTFIT_NONE)
+    {
+        for (sc = h->lowscore; sc <= h->highscore; sc++)
+	  {
+	    val = 
+	      (1. - ExtremeValueP((float)sc+1, h->param[EVD_MU], h->param[EVD_LAMBDA]))-
+	      (1. - ExtremeValueP((float)sc, h->param[EVD_MU], h->param[EVD_LAMBDA]));
+	    fprintf(fp, "%-6d %f\n", sc, val);
+	  }
+	fprintf(fp, "&\n");
+    }
+}

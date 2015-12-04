@@ -1,0 +1,23 @@
+static void 
+readUWGCG(struct ReadSeqVars *V)
+{
+  char  *si;
+  char  *sptr;
+  int    done;
+
+  V->seqlen = 0;
+
+  /*writeseq: "    %s  Length: %d  (today)  Check: %d  ..\n" */
+  /*drop above or ".." from id*/
+  if ((si = strstr(V->buf,"  Length: ")) != NULL) *si = 0;
+  else if ((si = strstr(V->buf,"..")) != NULL)    *si = 0;
+
+  if ((sptr = strtok(V->buf, "\n\t ")) != NULL)
+    SetSeqinfoString(V->sqinfo, sptr, SQINFO_NAME);
+
+  do {
+    done = feof(V->f);
+    SeqfileGetLine(V);
+    if (! done) addseq(V->buf, V);
+  } while (!done);
+}

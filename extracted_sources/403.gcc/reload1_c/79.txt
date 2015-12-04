@@ -1,0 +1,65 @@
+void
+fixup_abnormal_edges ()
+{
+  int i;
+  bool inserted = false;
+
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      edge e;
+
+      /* Look for cases we are interested in - an calls or instructions causing
+         exceptions.  */
+      for (e = bb->succ; e; e = e->succ_next)
+	{
+	  if (e->flags & EDGE_ABNORMAL_CALL)
+	    break;
+	  if ((e->flags & (EDGE_ABNORMAL | EDGE_EH))
+	      == (EDGE_ABNORMAL | EDGE_EH))
+	    break;
+	}
+      if (e && GET_CODE (bb->end) != CALL_INSN && !can_throw_internal (bb->end))
+	{
+	  rtx insn = bb->end, stop = NEXT_INSN (bb->end);
+	  rtx next;
+	  for (e = bb->succ; e; e = e->succ_next)
+	    if (e->flags & EDGE_FALLTHRU)
+	      break;
+	  /* Get past the new insns generated. Allow notes, as the insns may
+	     be already deleted.  */
+	  while ((GET_CODE (insn) == INSN || GET_CODE (insn) == NOTE)
+		 && !can_throw_internal (insn)
+		 && insn != bb->head)
+	    insn = PREV_INSN (insn);
+	  if (GET_CODE (insn) != CALL_INSN && !can_throw_internal (insn))
+	    abort ();
+	  bb->end = insn;
+	  inserted = true;
+	  insn = NEXT_INSN (insn);
+	  while (insn && insn != stop)
+	    {
+	      next = NEXT_INSN (insn);
+	      if (INSN_P (insn))
+		{
+		  rtx seq;
+
+	          delete_insn (insn);
+
+		  /* We're not deleting it, we're moving it.  */
+		  INSN_DELETED_P (insn) = 0;
+
+		  /* Emit a sequence, rather than scarfing the pattern, so
+		     that we don't lose REG_NOTES etc.  */
+		  /* ??? Could copy the test from gen_sequence, but don't
+		     think it's worth the bother.  */
+		  seq = gen_rtx_SEQUENCE (VOIDmode, gen_rtvec (1, insn));
+	          insert_insn_on_edge (seq, e);
+		}
+	      insn = next;
+	    }
+	}
+    }
+  if (inserted)
+    commit_edge_insertions ();
+}

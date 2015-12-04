@@ -1,0 +1,17 @@
+void
+set_decl_abstract_flags (decl, setting)
+     tree decl;
+     int setting;
+{
+  DECL_ABSTRACT (decl) = setting;
+  if (TREE_CODE (decl) == FUNCTION_DECL)
+    {
+      tree arg;
+
+      for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
+	DECL_ABSTRACT (arg) = setting;
+      if (DECL_INITIAL (decl) != NULL_TREE
+	  && DECL_INITIAL (decl) != error_mark_node)
+	set_block_abstract_flags (DECL_INITIAL (decl), setting);
+    }
+}

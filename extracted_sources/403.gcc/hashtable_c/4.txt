@@ -1,0 +1,18 @@
+void
+ht_forall (table, cb, v)
+     hash_table *table;
+     ht_cb cb;
+     const PTR v;
+{
+  hashnode *p, *limit;
+
+  p = table->entries;
+  limit = p + table->nslots;
+  do
+    if (*p)
+      {
+	if ((*cb) (table->pfile, *p, v) == 0)
+	  break;
+      }
+  while (++p < limit);
+}

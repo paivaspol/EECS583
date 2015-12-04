@@ -1,0 +1,13 @@
+int ue_v (char *tracestring, int value, DataPartition *part)
+{
+  SyntaxElement symbol, *sym=&symbol;
+  sym->type = SE_HEADER;
+  sym->mapping = ue_linfo;               // Mapping rule: unsigned integer
+  sym->value1 = value;
+  sym->value2 = 0;
+#if TRACE
+  strncpy(sym->tracestring,tracestring,TRACESTRING_SIZE);
+#endif
+  assert (part->bitstream->streamBuffer != NULL);
+  return writeSyntaxElement_UVLC (sym, part);
+}

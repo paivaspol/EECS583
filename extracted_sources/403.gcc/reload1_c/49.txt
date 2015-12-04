@@ -1,0 +1,53 @@
+static void
+choose_reload_regs_init (chain, save_reload_reg_rtx)
+     struct insn_chain *chain;
+     rtx *save_reload_reg_rtx;
+{
+  int i;
+
+  for (i = 0; i < n_reloads; i++)
+    rld[i].reg_rtx = save_reload_reg_rtx[i];
+
+  memset (reload_inherited, 0, MAX_RELOADS);
+  memset ((char *) reload_inheritance_insn, 0, MAX_RELOADS * sizeof (rtx));
+  memset ((char *) reload_override_in, 0, MAX_RELOADS * sizeof (rtx));
+
+  CLEAR_HARD_REG_SET (reload_reg_used);
+  CLEAR_HARD_REG_SET (reload_reg_used_at_all);
+  CLEAR_HARD_REG_SET (reload_reg_used_in_op_addr);
+  CLEAR_HARD_REG_SET (reload_reg_used_in_op_addr_reload);
+  CLEAR_HARD_REG_SET (reload_reg_used_in_insn);
+  CLEAR_HARD_REG_SET (reload_reg_used_in_other_addr);
+
+  CLEAR_HARD_REG_SET (reg_used_in_insn);
+  {
+    HARD_REG_SET tmp;
+    REG_SET_TO_HARD_REG_SET (tmp, &chain->live_throughout);
+    IOR_HARD_REG_SET (reg_used_in_insn, tmp);
+    REG_SET_TO_HARD_REG_SET (tmp, &chain->dead_or_set);
+    IOR_HARD_REG_SET (reg_used_in_insn, tmp);
+    compute_use_by_pseudos (&reg_used_in_insn, &chain->live_throughout);
+    compute_use_by_pseudos (&reg_used_in_insn, &chain->dead_or_set);
+  }
+
+  for (i = 0; i < reload_n_operands; i++)
+    {
+      CLEAR_HARD_REG_SET (reload_reg_used_in_output[i]);
+      CLEAR_HARD_REG_SET (reload_reg_used_in_input[i]);
+      CLEAR_HARD_REG_SET (reload_reg_used_in_input_addr[i]);
+      CLEAR_HARD_REG_SET (reload_reg_used_in_inpaddr_addr[i]);
+      CLEAR_HARD_REG_SET (reload_reg_used_in_output_addr[i]);
+      CLEAR_HARD_REG_SET (reload_reg_used_in_outaddr_addr[i]);
+    }
+
+  COMPL_HARD_REG_SET (reload_reg_unavailable, chain->used_spill_regs);
+
+  CLEAR_HARD_REG_SET (reload_reg_used_for_inherit);
+
+  for (i = 0; i < n_reloads; i++)
+    /* If we have already decided to use a certain register,
+       don't use it in another way.  */
+    if (rld[i].reg_rtx)
+      mark_reload_reg_in_use (REGNO (rld[i].reg_rtx), rld[i].opnum,
+			      rld[i].when_needed, rld[i].mode);
+}

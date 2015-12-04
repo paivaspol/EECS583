@@ -1,0 +1,16 @@
+static rtx
+skip_pic_restore (orig_insn)
+     rtx orig_insn;
+{
+  rtx insn, set = NULL_RTX;
+
+  insn = next_nonnote_insn (orig_insn);
+
+  if (insn)
+    set = single_set (insn);
+
+  if (insn && set && SET_DEST (set) == pic_offset_table_rtx)
+    return insn;
+
+  return orig_insn;
+}

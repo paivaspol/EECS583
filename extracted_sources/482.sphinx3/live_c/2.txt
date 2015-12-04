@@ -1,0 +1,49 @@
+int32 live_get_partialhyp(int32 endutt)
+{
+    int32 id, nwds;
+    glist_t   hyp;
+    gnode_t   *gn;
+    hyp_t     *h;
+    dict_t    *dict;
+
+    dict = kbcore_dict (kb->kbcore);
+    if (endutt)
+        id = vithist_utt_end(kb->vithist, kb->kbcore);
+    else
+        id = vithist_partialutt_end(kb->vithist, kb->kbcore);
+
+    if (id > 0) {
+        hyp = vithist_backtrace(kb->vithist,id);
+
+        for (gn = hyp,nwds=0; gn; gn = gnode_next(gn),nwds++) {
+            h = (hyp_t *) gnode_ptr (gn);
+            if (parthyp[nwds].word != NULL) {
+                ckd_free(parthyp[nwds].word);
+                parthyp[nwds].word = NULL;
+            }
+            parthyp[nwds].word = strdup(dict_wordstr(dict, h->id));
+            parthyp[nwds].sf = h->sf;
+            parthyp[nwds].ef = h->ef;
+	    parthyp[nwds].ascr = h->ascr;
+	    parthyp[nwds].lscr = h->lscr;
+        }
+        if (parthyp[nwds].word != NULL){
+            ckd_free(parthyp[nwds].word);
+            parthyp[nwds].word = NULL;
+        }
+        /* Free hyplist */
+        for (gn = hyp; gn && (gnode_next(gn)); gn = gnode_next(gn)) {
+            h = (hyp_t *) gnode_ptr (gn);
+            ckd_free ((void *) h);
+        }
+        glist_free (hyp);
+    } else {
+        nwds = 0;
+        if (parthyp[nwds].word != NULL) {
+            ckd_free(parthyp[nwds].word);
+            parthyp[nwds].word = NULL;
+        }
+    }
+
+    return(nwds);
+}

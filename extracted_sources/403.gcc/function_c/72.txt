@@ -1,0 +1,64 @@
+static void
+reorder_blocks_1 (insns, current_block, p_block_stack)
+     rtx insns;
+     tree current_block;
+     varray_type *p_block_stack;
+{
+  rtx insn;
+
+  for (insn = insns; insn; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == NOTE)
+	{
+	  if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_BEG)
+	    {
+	      tree block = NOTE_BLOCK (insn);
+
+	      /* If we have seen this block before, that means it now
+		 spans multiple address regions.  Create a new fragment.  */
+	      if (TREE_ASM_WRITTEN (block))
+		{
+		  tree new_block = copy_node (block);
+		  tree origin;
+
+		  origin = (BLOCK_FRAGMENT_ORIGIN (block)
+			    ? BLOCK_FRAGMENT_ORIGIN (block)
+			    : block);
+		  BLOCK_FRAGMENT_ORIGIN (new_block) = origin;
+		  BLOCK_FRAGMENT_CHAIN (new_block)
+		    = BLOCK_FRAGMENT_CHAIN (origin);
+		  BLOCK_FRAGMENT_CHAIN (origin) = new_block;
+
+		  NOTE_BLOCK (insn) = new_block;
+		  block = new_block;
+		}
+
+	      BLOCK_SUBBLOCKS (block) = 0;
+	      TREE_ASM_WRITTEN (block) = 1;
+	      BLOCK_SUPERCONTEXT (block) = current_block;
+	      BLOCK_CHAIN (block) = BLOCK_SUBBLOCKS (current_block);
+	      BLOCK_SUBBLOCKS (current_block) = block;
+	      current_block = block;
+	      VARRAY_PUSH_TREE (*p_block_stack, block);
+	    }
+	  else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_END)
+	    {
+	      NOTE_BLOCK (insn) = VARRAY_TOP_TREE (*p_block_stack);
+	      VARRAY_POP (*p_block_stack);
+	      BLOCK_SUBBLOCKS (current_block)
+		= blocks_nreverse (BLOCK_SUBBLOCKS (current_block));
+	      current_block = BLOCK_SUPERCONTEXT (current_block);
+	    }
+	}
+      else if (GET_CODE (insn) == CALL_INSN
+	       && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
+	{
+	  rtx cp = PATTERN (insn);
+	  reorder_blocks_1 (XEXP (cp, 0), current_block, p_block_stack);
+	  if (XEXP (cp, 1))
+	    reorder_blocks_1 (XEXP (cp, 1), current_block, p_block_stack);
+	  if (XEXP (cp, 2))
+	    reorder_blocks_1 (XEXP (cp, 2), current_block, p_block_stack);
+	}
+    }
+}

@@ -1,0 +1,40 @@
+static void comm_args(t_commrec *cr,int *argc,char ***argv)
+{
+  int i,len;
+  char **argv_tmp=NULL,*buf;
+  
+  if (!MASTER(cr))
+    *argc=0;
+
+  if((cr) && PAR(cr))
+    gmx_sumi(1,argc,cr);
+  
+  if (!MASTER(cr))
+    snew(argv_tmp,*argc+1);
+  fprintf(stderr,"NODEID=%d argc=%d\n",cr->nodeid,*argc);
+  for(i=0; (i<*argc); i++) {
+    if (MASTER(cr)) {
+      len = strlen((*argv)[i])+1;
+      gmx_txs(cr->right,&len,sizeof(len));
+      gmx_rxs(cr->left,&len,sizeof(len));
+      gmx_txs(cr->right,(*argv)[i],len);
+      snew(buf,len);
+      gmx_rxs(cr->left,buf,len);
+      if (strcmp(buf,(*argv)[i]) != 0)
+	fatal_error(0,"Communicating argv[%d]=%s\n",i,(*argv)[i]);
+      sfree(buf);
+    }
+    else {
+      gmx_rxs(cr->left,&len,sizeof(len));
+      gmx_txs(cr->right,&len,sizeof(len));
+      snew(argv_tmp[i],len);
+      gmx_rxs(cr->left,argv_tmp[i],len);
+      gmx_txs(cr->right,argv_tmp[i],len);
+    }
+  }
+  if (!MASTER(cr)) {
+    argv_tmp[*argc] = NULL;
+    *argv = argv_tmp;
+  }
+  debug_gmx();
+}

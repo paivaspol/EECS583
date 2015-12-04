@@ -1,0 +1,49 @@
+int GetBestTransformP8x8()
+{
+  int    block_y, block_x, pic_pix_y, pic_pix_x, i, j, k;
+  int    mb_y, mb_x, block8x8;
+  int    cost8x8=0, cost4x4=0;
+  int    diff4x4[64], *diff_ptr;
+  int    diff8x8[64];
+
+  if(input->AllowTransform8x8==2) //always allow 8x8 transform
+    return 1;
+  
+  for (block8x8=0; block8x8<4; block8x8++)
+  {
+    mb_y = (block8x8 / 2) << 3;
+    mb_x = (block8x8 % 2) << 3;
+    //===== loop over 4x4 blocks =====
+    k=0;
+    for (block_y=mb_y; block_y<mb_y+8; block_y+=4)
+    {
+      pic_pix_y = img->opix_y + block_y;
+      
+      //get cost for transform size 4x4
+      for (block_x=mb_x; block_x<mb_x+8; block_x+=4)
+      {
+        pic_pix_x = img->opix_x + block_x;
+
+        //===== get displaced frame difference ======
+        diff_ptr=&diff4x4[k];
+        for (j=0; j<4; j++)
+        for (i=0; i<4; i++, k++)
+        {
+          //4x4 transform size
+          diff4x4[k] = imgY_org[pic_pix_y+j][pic_pix_x+i] - mpr8x8[j+block_y][i+block_x];
+          //8x8 transform size
+          diff8x8[k] = imgY_org[pic_pix_y+j][pic_pix_x+i] - mpr_8x8ts[j+block_y][i+block_x];
+        }
+
+        cost4x4 += SATD (diff_ptr, input->hadamard);
+      }
+    }
+
+    cost8x8 += SATD8X8 (diff8x8, input->hadamard);
+  }
+
+  if(cost8x8<cost4x4)
+    return 1;
+  else
+    return 0;
+}

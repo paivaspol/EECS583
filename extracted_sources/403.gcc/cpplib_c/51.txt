@@ -1,0 +1,32 @@
+static cpp_hashnode *
+parse_assertion (pfile, answerp, type)
+     cpp_reader *pfile;
+     struct answer **answerp;
+     int type;
+{
+  cpp_hashnode *result = 0;
+  const cpp_token *predicate;
+
+  /* We don't expand predicates or answers.  */
+  pfile->state.prevent_expansion++;
+
+  *answerp = 0;
+  predicate = cpp_get_token (pfile);
+  if (predicate->type == CPP_EOF)
+    cpp_error (pfile, "assertion without predicate");
+  else if (predicate->type != CPP_NAME)
+    cpp_error (pfile, "predicate must be an identifier");
+  else if (parse_answer (pfile, answerp, type) == 0)
+    {
+      unsigned int len = NODE_LEN (predicate->val.node);
+      unsigned char *sym = alloca (len + 1);
+
+      /* Prefix '#' to get it out of macro namespace.  */
+      sym[0] = '#';
+      memcpy (sym + 1, NODE_NAME (predicate->val.node), len);
+      result = cpp_lookup (pfile, sym, len + 1);
+    }
+
+  pfile->state.prevent_expansion--;
+  return result;
+}

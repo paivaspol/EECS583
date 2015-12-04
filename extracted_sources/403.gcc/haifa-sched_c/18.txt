@@ -1,0 +1,62 @@
+static void
+queue_to_ready (ready)
+     struct ready_list *ready;
+{
+  rtx insn;
+  rtx link;
+
+  q_ptr = NEXT_Q (q_ptr);
+
+  /* Add all pending insns that can be scheduled without stalls to the
+     ready list.  */
+  for (link = insn_queue[q_ptr]; link; link = XEXP (link, 1))
+    {
+      insn = XEXP (link, 0);
+      q_size -= 1;
+
+      if (sched_verbose >= 2)
+	fprintf (sched_dump, ";;\t\tQ-->Ready: insn %s: ",
+		 (*current_sched_info->print_insn) (insn, 0));
+
+      ready_add (ready, insn);
+      if (sched_verbose >= 2)
+	fprintf (sched_dump, "moving to ready without stalls\n");
+    }
+  insn_queue[q_ptr] = 0;
+
+  /* If there are no ready insns, stall until one is ready and add all
+     of the pending insns at that point to the ready list.  */
+  if (ready->n_ready == 0)
+    {
+      int stalls;
+
+      for (stalls = 1; stalls < INSN_QUEUE_SIZE; stalls++)
+	{
+	  if ((link = insn_queue[NEXT_Q_AFTER (q_ptr, stalls)]))
+	    {
+	      for (; link; link = XEXP (link, 1))
+		{
+		  insn = XEXP (link, 0);
+		  q_size -= 1;
+
+		  if (sched_verbose >= 2)
+		    fprintf (sched_dump, ";;\t\tQ-->Ready: insn %s: ",
+			     (*current_sched_info->print_insn) (insn, 0));
+
+		  ready_add (ready, insn);
+		  if (sched_verbose >= 2)
+		    fprintf (sched_dump, "moving to ready with %d stalls\n", stalls);
+		}
+	      insn_queue[NEXT_Q_AFTER (q_ptr, stalls)] = 0;
+
+	      if (ready->n_ready)
+		break;
+	    }
+	}
+
+      if (sched_verbose && stalls)
+	visualize_stall_cycles (stalls);
+      q_ptr = NEXT_Q_AFTER (q_ptr, stalls);
+      clock_var += stalls;
+    }
+}

@@ -1,0 +1,17 @@
+void
+pedwarn_with_decl VPARAMS ((tree decl, const char *msgid, ...))
+{
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, tree, decl);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  /* We don't want -pedantic-errors to cause the compilation to fail from
+     "errors" in system header files.  Sometimes fixincludes can't fix what's
+     broken (eg: unsigned char bitfields - fixing it may change the alignment
+     which will cause programs to mysteriously fail because the C library
+     or kernel uses the original layout).  There's no point in issuing a
+     warning either, it's just unnecessary noise.  */
+  if (!DECL_IN_SYSTEM_HEADER (decl))
+    diagnostic_for_decl (decl, msgid, &ap, !flag_pedantic_errors);
+  VA_CLOSE (ap);
+}

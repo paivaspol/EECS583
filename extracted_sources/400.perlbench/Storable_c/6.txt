@@ -1,0 +1,72 @@
+static void clean_store_context(pTHX_ stcxt_t *cxt)
+{
+	HE *he;
+
+	TRACEME(("clean_store_context"));
+
+	ASSERT(cxt->optype & ST_STORE, ("was performing a store()"));
+
+	/*
+	 * Insert real values into hashes where we stored faked pointers.
+	 */
+
+	if (cxt->hseen) {
+		hv_iterinit(cxt->hseen);
+		while ((he = hv_iternext(cxt->hseen)))	/* Extra () for -Wall, grr.. */
+			HeVAL(he) = &PL_sv_undef;
+	}
+
+	if (cxt->hclass) {
+		hv_iterinit(cxt->hclass);
+		while ((he = hv_iternext(cxt->hclass)))	/* Extra () for -Wall, grr.. */
+			HeVAL(he) = &PL_sv_undef;
+	}
+
+	/*
+	 * And now dispose of them...
+	 *
+	 * The surrounding if() protection has been added because there might be
+	 * some cases where this routine is called more than once, during
+	 * exceptionnal events.  This was reported by Marc Lehmann when Storable
+	 * is executed from mod_perl, and the fix was suggested by him.
+	 * 		-- RAM, 20/12/2000
+	 */
+
+	if (cxt->hseen) {
+		HV *hseen = cxt->hseen;
+		cxt->hseen = 0;
+		hv_undef(hseen);
+		sv_free((SV *) hseen);
+	}
+
+	if (cxt->hclass) {
+		HV *hclass = cxt->hclass;
+		cxt->hclass = 0;
+		hv_undef(hclass);
+		sv_free((SV *) hclass);
+	}
+
+	if (cxt->hook) {
+		HV *hook = cxt->hook;
+		cxt->hook = 0;
+		hv_undef(hook);
+		sv_free((SV *) hook);
+	}
+
+	if (cxt->hook_seen) {
+		AV *hook_seen = cxt->hook_seen;
+		cxt->hook_seen = 0;
+		av_undef(hook_seen);
+		sv_free((SV *) hook_seen);
+	}
+
+	cxt->forgive_me = -1;			/* Fetched from perl if needed */
+	cxt->deparse = -1;				/* Idem */
+	if (cxt->eval) {
+	    SvREFCNT_dec(cxt->eval);
+	}
+	cxt->eval = NULL;				/* Idem */
+	cxt->canonical = -1;			/* Idem */
+
+	reset_context(cxt);
+}

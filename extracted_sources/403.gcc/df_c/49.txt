@@ -1,0 +1,20 @@
+static int
+df_refs_update (df)
+     struct df *df;
+{
+  basic_block bb;
+  int count = 0;
+
+  if ((unsigned int)max_reg_num () >= df->reg_size)
+    df_reg_table_realloc (df, 0);
+
+  df_refs_queue (df);
+
+  FOR_EACH_BB_IN_BITMAP (df->bbs_modified, 0, bb,
+    {
+      count += df_bb_refs_update (df, bb);
+    });
+
+  df_refs_process (df);
+  return count;
+}

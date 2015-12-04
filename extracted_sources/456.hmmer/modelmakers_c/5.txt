@@ -1,0 +1,64 @@
+static void
+matassign2hmm(MSA *msa, char **dsq, int *matassign, 
+	      struct plan7_s **ret_hmm, struct p7trace_s ***ret_tr)
+{
+  struct plan7_s    *hmm;       /* RETURN: new hmm                     */
+  struct p7trace_s **tr;        /* fake tracebacks for each seq        */
+  int      M;                   /* length of new model in match states */
+  int      idx;                 /* counter over sequences              */
+  int      apos;                /* counter for aligned columns         */
+
+				/* how many match states in the HMM? */
+  M = 0;
+  for (apos = 1; apos <= msa->alen; apos++) {
+    if (matassign[apos] & ASSIGN_MATCH) 
+      M++;
+  }
+
+  if (M == 0) 
+    Die("No conserved consensus columns found; aborting construction!\n\
+This is an unusual situation. Reexamine your sequence alignment. It is\n\
+probably unusually full of gaps, or lots of sequence fragments. You may be\n\
+able to force HMMER to model it; see the --fast (and --gapmax), or --hand\n\
+options to hmmbuild.");
+
+				/* delimit N-terminal tail */
+  for (apos=1; matassign[apos] & ASSIGN_INSERT && apos <= msa->alen; apos++)
+    matassign[apos] |= EXTERNAL_INSERT_N;
+  if (apos <= msa->alen) matassign[apos] |= FIRST_MATCH;
+
+				/* delimit C-terminal tail */
+  for (apos=msa->alen; matassign[apos] & ASSIGN_INSERT && apos > 0; apos--)
+    matassign[apos] |= EXTERNAL_INSERT_C;
+  if (apos > 0) matassign[apos] |= LAST_MATCH;
+
+  /* print_matassign(matassign, msa->alen);  */
+
+				/* make fake tracebacks for each seq */
+  fake_tracebacks(msa->aseq, msa->nseq, msa->alen, matassign, &tr);
+				/* build model from tracebacks */
+  hmm = AllocPlan7(M);
+  ZeroPlan7(hmm);
+  for (idx = 0; idx < msa->nseq; idx++) {
+    /* P7PrintTrace(stdout, tr[idx], NULL, NULL);   */
+    P7TraceCount(hmm, dsq[idx], msa->wgt[idx], tr[idx]);
+  }
+				/* annotate new model */
+  annotate_model(hmm, matassign, msa);
+
+  /* Set #=RF line of alignment to reflect our assignment
+   * of match, delete. matassign is valid from 1..alen and is off
+   * by one from msa->rf.
+   */
+  if (msa->rf != NULL) free(msa->rf);
+  msa->rf = (char *) MallocOrDie (sizeof(char) * (msa->alen + 1));
+  for (apos = 0; apos < msa->alen; apos++)
+    msa->rf[apos] = matassign[apos+1] & ASSIGN_MATCH ? 'x' : '.';
+  msa->rf[msa->alen] = '\0';
+
+				/* Cleanup and return. */
+  if (ret_tr != NULL) *ret_tr = tr;
+  else   { for (idx = 0; idx < msa->nseq; idx++) P7FreeTrace(tr[idx]); free(tr); }
+  if (ret_hmm != NULL) *ret_hmm = hmm; else FreePlan7(hmm);
+  return;
+}

@@ -1,0 +1,13 @@
+static void
+parms_set (x, pat, data)
+	rtx x, pat ATTRIBUTE_UNUSED;
+	void *data;
+{
+  struct parms_set_data *d = data;
+  if (REG_P (x) && REGNO (x) < FIRST_PSEUDO_REGISTER
+      && TEST_HARD_REG_BIT (d->regs, REGNO (x)))
+    {
+      CLEAR_HARD_REG_BIT (d->regs, REGNO (x));
+      d->nregs--;
+    }
+}

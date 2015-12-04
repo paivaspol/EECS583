@@ -1,0 +1,29 @@
+static void free_slice(Slice *slice)
+{
+  int i;
+  DataPartition *dataPart;
+
+  if (slice != NULL)
+  {
+    for (i=0; i<slice->max_part_nr; i++) // loop over all data partitions
+    {
+      dataPart = &(slice->partArr[i]);
+      if (dataPart != NULL)
+      {
+        if (dataPart->bitstream->streamBuffer != NULL)
+          free(dataPart->bitstream->streamBuffer);
+        if (dataPart->bitstream != NULL)
+          free(dataPart->bitstream);
+      }
+    }
+    if (slice->partArr != NULL)
+      free(slice->partArr);
+    if (input->symbol_mode == CABAC)
+    {
+      delete_contexts_MotionInfo(slice->mot_ctx);
+      delete_contexts_TextureInfo(slice->tex_ctx);
+    }
+    //free(img->currentSlice);
+    free(slice);
+  }
+}

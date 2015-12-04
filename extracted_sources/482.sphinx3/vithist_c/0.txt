@@ -1,0 +1,23 @@
+static vithist_entry_t *vithist_entry_alloc (vithist_t *vh)
+{
+    int32 b, l;
+    vithist_entry_t *ve;
+    
+    b = VITHIST_ID2BLK(vh->n_entry);
+    l = VITHIST_ID2BLKOFFSET (vh->n_entry);
+    
+    if (l == 0) {	/* Crossed block boundary; allocate a new block of vithist space */
+	if (b >= VITHIST_MAXBLKS)
+	    E_FATAL("Viterbi history array exhausted; increase VITHIST_MAXBLKS\n");
+	
+	assert (vh->entry[b] == NULL);
+	
+	ve = (vithist_entry_t *) ckd_calloc (VITHIST_BLKSIZE, sizeof(vithist_entry_t));
+	vh->entry[b] = ve;
+    } else
+	ve = vh->entry[b] + l;
+    
+    vh->n_entry++;
+    
+    return ve;
+}

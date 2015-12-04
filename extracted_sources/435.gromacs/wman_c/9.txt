@@ -1,0 +1,42 @@
+static void pr_opts(FILE *fp, 
+		    int nfile,  t_filenm *fnm, 
+		    int npargs, t_pargs pa[], int shell)
+{
+  int i;
+  
+  switch (shell) {
+  case eshellCSH:
+    fprintf(fp," \"c/-/(");
+    for (i=0; i<nfile; i++)
+      fprintf(fp," %s",fnm[i].opt+1);
+    for (i=0; i<npargs; i++)
+      if ( (pa[i].type==etBOOL) && *(pa[i].u.b) )
+	fprintf(fp," no%s",pa[i].option+1);
+      else
+	fprintf(fp," %s",pa[i].option+1);
+    fprintf(fp,")/\"");
+    break;
+  case eshellBASH:
+    fprintf(fp,"if (( $COMP_CWORD <= 1 )) || [[ $c == -* ]]; then COMPREPLY=( $(compgen  -W '");
+    for (i=0; i<nfile; i++)
+      fprintf(fp," -%s",fnm[i].opt+1);
+    for (i=0; i<npargs; i++)
+      if ( (pa[i].type==etBOOL) && *(pa[i].u.b) )
+	fprintf(fp," -no%s",pa[i].option+1);
+      else
+	fprintf(fp," -%s",pa[i].option+1);
+    fprintf(fp,"' -- $c)); return 0; fi\n");
+    break;
+  case eshellZSH:
+    fprintf(fp," -x 's[-]' -s \"");
+    for (i=0; i<nfile; i++)
+      fprintf(fp," %s",fnm[i].opt+1);
+    for (i=0; i<npargs; i++)
+      if ( (pa[i].type==etBOOL) && *(pa[i].u.b) )
+	fprintf(fp," no%s",pa[i].option+1);
+      else
+	fprintf(fp," %s",pa[i].option+1);
+    fprintf(fp,"\" ");
+    break;
+  }
+}

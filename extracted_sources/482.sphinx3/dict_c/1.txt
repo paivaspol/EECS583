@@ -1,0 +1,50 @@
+static int32 dict_read (FILE *fp, dict_t *d)
+{
+    char line[16384], **wptr;
+    s3cipid_t p[4096];
+    int32 lineno, nwd;
+    s3wid_t w;
+    int32 i, maxwd;
+    
+    maxwd = 4092;
+    wptr = (char **) ckd_calloc (maxwd, sizeof(char *)); /* Freed below */
+    
+    lineno = 0;
+    while (fgets (line, sizeof(line), fp) != NULL) {
+        lineno++;
+	if (line[0] == '#')	/* Comment line */
+	    continue;
+	
+	if ((nwd = str2words (line, wptr, maxwd)) < 0)
+	    E_FATAL("str2words(%s) failed; Increase maxwd from %d\n", line, maxwd);
+
+	if (nwd == 0)	    /* Empty line */
+	    continue;
+	/* wptr[0] is the word-string and wptr[1..nwd-1] the pronunciation sequence */
+	if (nwd == 1) {
+	    E_ERROR("Line %d: No pronunciation for word %s; ignored\n", lineno, wptr[0]);
+	    continue;
+	}
+	
+	/* Convert pronunciation string to CI-phone-ids */
+	for (i = 1; i < nwd; i++) {
+	    p[i-1] = dict_ciphone_id (d, wptr[i]);
+	    if (NOT_S3CIPID(p[i-1])) {
+		E_ERROR("Line %d: Bad ciphone: %s; word %s ignored\n",
+			lineno, wptr[i], wptr[0]);
+		break;
+	    }
+	}
+	
+	if (i == nwd) {	/* All CI-phones successfully converted to IDs */
+	    w = dict_add_word (d, wptr[0], p, nwd-1);
+	    if (NOT_S3WID(w))
+		E_ERROR("Line %d: dict_add_word (%s) failed (duplicate?); ignored\n",
+			lineno, wptr[0]);
+	}
+    }
+
+    ckd_free (wptr);
+    
+    return 0;
+}

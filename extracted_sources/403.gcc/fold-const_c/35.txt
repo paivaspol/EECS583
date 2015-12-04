@@ -1,0 +1,78 @@
+static tree
+eval_subst (arg, old0, new0, old1, new1)
+     tree arg;
+     tree old0, new0, old1, new1;
+{
+  tree type = TREE_TYPE (arg);
+  enum tree_code code = TREE_CODE (arg);
+  char class = TREE_CODE_CLASS (code);
+
+  /* We can handle some of the 'e' cases here.  */
+  if (class == 'e' && code == TRUTH_NOT_EXPR)
+    class = '1';
+  else if (class == 'e'
+	   && (code == TRUTH_ANDIF_EXPR || code == TRUTH_ORIF_EXPR))
+    class = '2';
+
+  switch (class)
+    {
+    case '1':
+      return fold (build1 (code, type,
+			   eval_subst (TREE_OPERAND (arg, 0),
+				       old0, new0, old1, new1)));
+
+    case '2':
+      return fold (build (code, type,
+			  eval_subst (TREE_OPERAND (arg, 0),
+				      old0, new0, old1, new1),
+			  eval_subst (TREE_OPERAND (arg, 1),
+				      old0, new0, old1, new1)));
+
+    case 'e':
+      switch (code)
+	{
+	case SAVE_EXPR:
+	  return eval_subst (TREE_OPERAND (arg, 0), old0, new0, old1, new1);
+
+	case COMPOUND_EXPR:
+	  return eval_subst (TREE_OPERAND (arg, 1), old0, new0, old1, new1);
+
+	case COND_EXPR:
+	  return fold (build (code, type,
+			      eval_subst (TREE_OPERAND (arg, 0),
+					  old0, new0, old1, new1),
+			      eval_subst (TREE_OPERAND (arg, 1),
+					  old0, new0, old1, new1),
+			      eval_subst (TREE_OPERAND (arg, 2),
+					  old0, new0, old1, new1)));
+	default:
+	  break;
+	}
+      /* fall through - ??? */
+
+    case '<':
+      {
+	tree arg0 = TREE_OPERAND (arg, 0);
+	tree arg1 = TREE_OPERAND (arg, 1);
+
+	/* We need to check both for exact equality and tree equality.  The
+	   former will be true if the operand has a side-effect.  In that
+	   case, we know the operand occurred exactly once.  */
+
+	if (arg0 == old0 || operand_equal_p (arg0, old0, 0))
+	  arg0 = new0;
+	else if (arg0 == old1 || operand_equal_p (arg0, old1, 0))
+	  arg0 = new1;
+
+	if (arg1 == old0 || operand_equal_p (arg1, old0, 0))
+	  arg1 = new0;
+	else if (arg1 == old1 || operand_equal_p (arg1, old1, 0))
+	  arg1 = new1;
+
+	return fold (build (code, type, arg0, arg1));
+      }
+
+    default:
+      return arg;
+    }
+}

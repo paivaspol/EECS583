@@ -1,0 +1,122 @@
+int
+loop_invariant_p (loop, x)
+     const struct loop *loop;
+     rtx x;
+{
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  struct loop_regs *regs = LOOP_REGS (loop);
+  int i;
+  enum rtx_code code;
+  const char *fmt;
+  int conditional = 0;
+  rtx mem_list_entry;
+
+  if (x == 0)
+    return 1;
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case SYMBOL_REF:
+    case CONST:
+      return 1;
+
+    case LABEL_REF:
+      /* A LABEL_REF is normally invariant, however, if we are unrolling
+	 loops, and this label is inside the loop, then it isn't invariant.
+	 This is because each unrolled copy of the loop body will have
+	 a copy of this label.  If this was invariant, then an insn loading
+	 the address of this label into a register might get moved outside
+	 the loop, and then each loop body would end up using the same label.
+
+	 We don't know the loop bounds here though, so just fail for all
+	 labels.  */
+      if (flag_unroll_loops)
+	return 0;
+      else
+	return 1;
+
+    case PC:
+    case CC0:
+    case UNSPEC_VOLATILE:
+      return 0;
+
+    case REG:
+      /* We used to check RTX_UNCHANGING_P (x) here, but that is invalid
+	 since the reg might be set by initialization within the loop.  */
+
+      if ((x == frame_pointer_rtx || x == hard_frame_pointer_rtx
+	   || x == arg_pointer_rtx || x == pic_offset_table_rtx)
+	  && ! current_function_has_nonlocal_goto)
+	return 1;
+
+      if (LOOP_INFO (loop)->has_call
+	  && REGNO (x) < FIRST_PSEUDO_REGISTER && call_used_regs[REGNO (x)])
+	return 0;
+
+      if (regs->array[REGNO (x)].set_in_loop < 0)
+	return 2;
+
+      return regs->array[REGNO (x)].set_in_loop == 0;
+
+    case MEM:
+      /* Volatile memory references must be rejected.  Do this before
+	 checking for read-only items, so that volatile read-only items
+	 will be rejected also.  */
+      if (MEM_VOLATILE_P (x))
+	return 0;
+
+      /* See if there is any dependence between a store and this load.  */
+      mem_list_entry = loop_info->store_mems;
+      while (mem_list_entry)
+	{
+	  if (true_dependence (XEXP (mem_list_entry, 0), VOIDmode,
+			       x, rtx_varies_p))
+	    return 0;
+
+	  mem_list_entry = XEXP (mem_list_entry, 1);
+	}
+
+      /* It's not invalidated by a store in memory
+	 but we must still verify the address is invariant.  */
+      break;
+
+    case ASM_OPERANDS:
+      /* Don't mess with insns declared volatile.  */
+      if (MEM_VOLATILE_P (x))
+	return 0;
+      break;
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	{
+	  int tem = loop_invariant_p (loop, XEXP (x, i));
+	  if (tem == 0)
+	    return 0;
+	  if (tem == 2)
+	    conditional = 1;
+	}
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    {
+	      int tem = loop_invariant_p (loop, XVECEXP (x, i, j));
+	      if (tem == 0)
+		return 0;
+	      if (tem == 2)
+		conditional = 1;
+	    }
+
+	}
+    }
+
+  return 1 + conditional;
+}

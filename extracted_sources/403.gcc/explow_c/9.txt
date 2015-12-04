@@ -1,0 +1,124 @@
+void
+probe_stack_range (first, size)
+     HOST_WIDE_INT first;
+     rtx size;
+{
+  /* First ensure SIZE is Pmode.  */
+  if (GET_MODE (size) != VOIDmode && GET_MODE (size) != Pmode)
+    size = convert_to_mode (Pmode, size, 1);
+
+  /* Next see if the front end has set up a function for us to call to
+     check the stack.  */
+  if (stack_check_libfunc != 0)
+    {
+      rtx addr = memory_address (QImode,
+				 gen_rtx (STACK_GROW_OP, Pmode,
+					  stack_pointer_rtx,
+					  plus_constant (size, first)));
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+      if (GET_MODE (addr) != ptr_mode)
+	addr = convert_memory_address (ptr_mode, addr);
+#endif
+
+      emit_library_call (stack_check_libfunc, LCT_NORMAL, VOIDmode, 1, addr,
+			 ptr_mode);
+    }
+
+  /* Next see if we have an insn to check the stack.  Use it if so.  */
+#ifdef HAVE_check_stack
+  else if (HAVE_check_stack)
+    {
+      insn_operand_predicate_fn pred;
+      rtx last_addr
+	= force_operand (gen_rtx_STACK_GROW_OP (Pmode,
+						stack_pointer_rtx,
+						plus_constant (size, first)),
+			 NULL_RTX);
+
+      pred = insn_data[(int) CODE_FOR_check_stack].operand[0].predicate;
+      if (pred && ! ((*pred) (last_addr, Pmode)))
+	last_addr = copy_to_mode_reg (Pmode, last_addr);
+
+      emit_insn (gen_check_stack (last_addr));
+    }
+#endif
+
+  /* If we have to generate explicit probes, see if we have a constant
+     small number of them to generate.  If so, that's the easy case.  */
+  else if (GET_CODE (size) == CONST_INT
+	   && INTVAL (size) < 10 * STACK_CHECK_PROBE_INTERVAL)
+    {
+      HOST_WIDE_INT offset;
+
+      /* Start probing at FIRST + N * STACK_CHECK_PROBE_INTERVAL
+	 for values of N from 1 until it exceeds LAST.  If only one
+	 probe is needed, this will not generate any code.  Then probe
+	 at LAST.  */
+      for (offset = first + STACK_CHECK_PROBE_INTERVAL;
+	   offset < INTVAL (size);
+	   offset = offset + STACK_CHECK_PROBE_INTERVAL)
+	emit_stack_probe (gen_rtx_fmt_ee (STACK_GROW_OP, Pmode,
+					  stack_pointer_rtx,
+					  GEN_INT (offset)));
+
+      emit_stack_probe (gen_rtx_fmt_ee (STACK_GROW_OP, Pmode,
+					stack_pointer_rtx,
+					plus_constant (size, first)));
+    }
+
+  /* In the variable case, do the same as above, but in a loop.  We emit loop
+     notes so that loop optimization can be done.  */
+  else
+    {
+      rtx test_addr
+	= force_operand (gen_rtx_fmt_ee (STACK_GROW_OP, Pmode,
+					 stack_pointer_rtx,
+					 GEN_INT (first + STACK_CHECK_PROBE_INTERVAL)),
+			 NULL_RTX);
+      rtx last_addr
+	= force_operand (gen_rtx_fmt_ee (STACK_GROW_OP, Pmode,
+					 stack_pointer_rtx,
+					 plus_constant (size, first)),
+			 NULL_RTX);
+      rtx incr = GEN_INT (STACK_CHECK_PROBE_INTERVAL);
+      rtx loop_lab = gen_label_rtx ();
+      rtx test_lab = gen_label_rtx ();
+      rtx end_lab = gen_label_rtx ();
+      rtx temp;
+
+      if (GET_CODE (test_addr) != REG
+	  || REGNO (test_addr) < FIRST_PSEUDO_REGISTER)
+	test_addr = force_reg (Pmode, test_addr);
+
+      emit_note (NULL, NOTE_INSN_LOOP_BEG);
+      emit_jump (test_lab);
+
+      emit_label (loop_lab);
+      emit_stack_probe (test_addr);
+
+      emit_note (NULL, NOTE_INSN_LOOP_CONT);
+
+#ifdef STACK_GROWS_DOWNWARD
+#define CMP_OPCODE GTU
+      temp = expand_binop (Pmode, sub_optab, test_addr, incr, test_addr,
+			   1, OPTAB_WIDEN);
+#else
+#define CMP_OPCODE LTU
+      temp = expand_binop (Pmode, add_optab, test_addr, incr, test_addr,
+			   1, OPTAB_WIDEN);
+#endif
+
+      if (temp != test_addr)
+	abort ();
+
+      emit_label (test_lab);
+      emit_cmp_and_jump_insns (test_addr, last_addr, CMP_OPCODE,
+			       NULL_RTX, Pmode, 1, loop_lab);
+      emit_jump (end_lab);
+      emit_note (NULL, NOTE_INSN_LOOP_END);
+      emit_label (end_lab);
+
+      emit_stack_probe (last_addr);
+    }
+}

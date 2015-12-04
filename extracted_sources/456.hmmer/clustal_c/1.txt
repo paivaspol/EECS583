@@ -1,0 +1,35 @@
+void
+WriteClustal(FILE *fp, MSA *msa)
+{
+  int    idx;			/* counter for sequences         */
+  int    len;			/* tmp variable for name lengths */
+  int    namelen;		/* maximum name length used      */
+  int    pos;			/* position counter              */
+  char   buf[64];	        /* buffer for writing seq        */
+  int    cpl = 50;		/* char per line (< 64)          */
+
+				/* calculate max namelen used */
+  namelen = 0;
+  for (idx = 0; idx < msa->nseq; idx++)
+    if ((len = strlen(msa->sqname[idx])) > namelen) 
+      namelen = len;
+
+  fprintf(fp, "CLUSTAL W(1.5) multiple sequence alignment\n"); 
+
+  /*****************************************************
+   * Write the sequences
+   *****************************************************/
+
+  for (pos = 0; pos < msa->alen; pos += cpl)
+    {
+      fprintf(fp, "\n");	/* Blank line between sequence blocks */
+      for (idx = 0; idx < msa->nseq; idx++)
+	{
+	  strncpy(buf, msa->aseq[idx] + pos, cpl);
+	  buf[cpl] = '\0';
+	  fprintf(fp, "%*s %s\n", namelen, msa->sqname[idx], buf);
+	}
+    }
+
+  return;
+}

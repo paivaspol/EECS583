@@ -1,0 +1,43 @@
+static void
+readPIR(struct ReadSeqVars *V)
+{
+  char *sptr;
+				/* load first line of entry  */
+  while (!feof(V->f) && strncmp(V->buf, "ENTRY", 5) != 0) {
+    SeqfileGetLine(V);
+  }
+  if (feof(V->f)) return;
+  if (V->ssimode >= 0) V->r_off = V->ssioffset;
+
+  if ((sptr = strtok(V->buf + 15, "\n\t ")) != NULL)
+    {
+      SetSeqinfoString(V->sqinfo, sptr, SQINFO_NAME);
+      SetSeqinfoString(V->sqinfo, sptr, SQINFO_ID);
+    }
+  do {
+    SeqfileGetLine(V);
+    if (!feof(V->f) && strncmp(V->buf, "TITLE", 5) == 0)
+      SetSeqinfoString(V->sqinfo, V->buf+15, SQINFO_DESC);
+    else if (!feof(V->f) && strncmp(V->buf, "ACCESSION", 9) == 0)
+      {
+	if ((sptr = strtok(V->buf+15, " \t\n")) != NULL)
+	  SetSeqinfoString(V->sqinfo, sptr, SQINFO_ACC);
+      }
+  } while (! feof(V->f) && (strncmp(V->buf,"SEQUENCE", 8) != 0));
+  SeqfileGetLine(V);			/* skip next line, coords */
+
+  readLoop(0, endPIR, V);
+
+  /* reading a real PIR-CODATA database file, we keep the source coords
+   */
+  V->sqinfo->start = 1;
+  V->sqinfo->stop  = V->seqlen;
+  V->sqinfo->olen  = V->seqlen;
+  V->sqinfo->flags |= SQINFO_START | SQINFO_STOP | SQINFO_OLEN;
+
+  /* get next line
+   */
+  while (!feof(V->f) && strncmp(V->buf, "ENTRY", 5) != 0) {
+    SeqfileGetLine(V);
+  }
+}

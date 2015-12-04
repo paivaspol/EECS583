@@ -1,0 +1,36 @@
+void
+sbitmap_union_of_succs (dst, src, bb)
+     sbitmap dst;
+     sbitmap *src;
+     int bb;
+{
+  basic_block b = BASIC_BLOCK (bb);
+  unsigned int set_size = dst->size;
+  edge e;
+
+  for (e = b->succ; e != 0; e = e->succ_next)
+    {
+      if (e->dest == EXIT_BLOCK_PTR)
+        continue;
+
+      sbitmap_copy (dst, src[e->dest->index]);
+      break;
+    }
+
+  if (e == 0)
+    sbitmap_zero (dst);
+  else
+    for (e = e->succ_next; e != 0; e = e->succ_next)
+      {
+	unsigned int i;
+	sbitmap_ptr p, r;
+
+	if (e->dest == EXIT_BLOCK_PTR)
+	  continue;
+
+	p = src[e->dest->index]->elms;
+	r = dst->elms;
+	for (i = 0; i < set_size; i++)
+	  *r++ |= *p++;
+      }
+}

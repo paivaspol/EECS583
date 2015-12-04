@@ -1,0 +1,68 @@
+int AddUpSADQuarter(int pic_pix_x,int pic_pix_y,int blocksize_x,int blocksize_y,
+                    int cand_mv_x,int cand_mv_y, StorablePicture *ref_picture, pel_t**   orig_pic, 
+                    int Mvmcost, int min_mcost,int useABT)
+{
+  int abort_search, y0, x0, rx0, ry0, ry; 
+  pel_t *orig_line;
+  int   diff[16], *d; 
+  int  mcost = Mvmcost;
+  int yy,kk,xx;
+  int   curr_diff[MB_BLOCK_SIZE][MB_BLOCK_SIZE]; // for ABT SATD calculation
+//2004.3.3
+  pel_t **ref_pic = ref_picture->imgY_ups;
+  int img_width  = ref_picture->size_x;
+  int img_height = ref_picture->size_y;
+
+  
+  for (y0=0, abort_search=0; y0<blocksize_y && !abort_search; y0+=4)
+  {
+    ry0 = ((pic_pix_y+y0)<<2) + cand_mv_y;
+    
+    for (x0=0; x0<blocksize_x; x0+=4)
+    {
+      rx0 = ((pic_pix_x+x0)<<2) + cand_mv_x;
+      d   = diff;
+      
+      orig_line = orig_pic [y0  ];    ry=ry0;
+      *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+      *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+      *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+      *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+ 12, img_height, img_width);
+      
+      orig_line = orig_pic [y0+1];    ry=ry0+4;
+      *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+      *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+      *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+      *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+ 12, img_height, img_width);
+      
+      orig_line = orig_pic [y0+2];    ry=ry0+8;
+      *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+      *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+      *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+      *d++      = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+ 12, img_height, img_width);
+      
+      orig_line = orig_pic [y0+3];    ry=ry0+12;
+      *d++      = orig_line[x0  ]  -  PelY_14 (ref_pic, ry, rx0   , img_height, img_width);
+      *d++      = orig_line[x0+1]  -  PelY_14 (ref_pic, ry, rx0+ 4, img_height, img_width);
+      *d++      = orig_line[x0+2]  -  PelY_14 (ref_pic, ry, rx0+ 8, img_height, img_width);
+      *d        = orig_line[x0+3]  -  PelY_14 (ref_pic, ry, rx0+ 12, img_height, img_width);
+      
+      if (!useABT)
+      {
+        if ((mcost += SATD (diff, input->hadamard)) > min_mcost)
+        {
+          abort_search = 1;
+          break;
+        }
+      }
+      else  // copy diff to curr_diff for ABT SATD calculation
+      {
+        for (yy=y0,kk=0; yy<y0+4; yy++)
+          for (xx=x0; xx<x0+4; xx++, kk++)
+            curr_diff[yy][xx] = diff[kk];
+      }
+    }
+  }
+  
+  return mcost;
+}

@@ -1,0 +1,119 @@
+static edge
+thread_jump (mode, e, b)
+     int mode;
+     edge e;
+     basic_block b;
+{
+  rtx set1, set2, cond1, cond2, insn;
+  enum rtx_code code1, code2, reversed_code2;
+  bool reverse1 = false;
+  int i;
+  regset nonequal;
+  bool failed = false;
+
+  /* At the moment, we do handle only conditional jumps, but later we may
+     want to extend this code to tablejumps and others.  */
+  if (!e->src->succ->succ_next || e->src->succ->succ_next->succ_next)
+    return NULL;
+  if (!b->succ || !b->succ->succ_next || b->succ->succ_next->succ_next)
+    return NULL;
+
+  /* Second branch must end with onlyjump, as we will eliminate the jump.  */
+  if (!any_condjump_p (e->src->end) || !any_condjump_p (b->end)
+      || !onlyjump_p (b->end))
+    return NULL;
+
+  set1 = pc_set (e->src->end);
+  set2 = pc_set (b->end);
+  if (((e->flags & EDGE_FALLTHRU) != 0)
+      != (XEXP (SET_SRC (set1), 1) == pc_rtx))
+    reverse1 = true;
+
+  cond1 = XEXP (SET_SRC (set1), 0);
+  cond2 = XEXP (SET_SRC (set2), 0);
+  if (reverse1)
+    code1 = reversed_comparison_code (cond1, e->src->end);
+  else
+    code1 = GET_CODE (cond1);
+
+  code2 = GET_CODE (cond2);
+  reversed_code2 = reversed_comparison_code (cond2, b->end);
+
+  if (!comparison_dominates_p (code1, code2)
+      && !comparison_dominates_p (code1, reversed_code2))
+    return NULL;
+
+  /* Ensure that the comparison operators are equivalent.
+     ??? This is far too pesimistic.  We should allow swapped operands,
+     different CCmodes, or for example comparisons for interval, that
+     dominate even when operands are not equivalent.  */
+  if (!rtx_equal_p (XEXP (cond1, 0), XEXP (cond2, 0))
+      || !rtx_equal_p (XEXP (cond1, 1), XEXP (cond2, 1)))
+    return NULL;
+
+  /* Short circuit cases where block B contains some side effects, as we can't
+     safely bypass it.  */
+  for (insn = NEXT_INSN (b->head); insn != NEXT_INSN (b->end);
+       insn = NEXT_INSN (insn))
+    if (INSN_P (insn) && side_effects_p (PATTERN (insn)))
+      return NULL;
+
+  cselib_init ();
+
+  /* First process all values computed in the source basic block.  */
+  for (insn = NEXT_INSN (e->src->head); insn != NEXT_INSN (e->src->end);
+       insn = NEXT_INSN (insn))
+    if (INSN_P (insn))
+      cselib_process_insn (insn);
+
+  nonequal = BITMAP_XMALLOC();
+  CLEAR_REG_SET (nonequal);
+
+  /* Now assume that we've continued by the edge E to B and continue
+     processing as if it were same basic block.
+     Our goal is to prove that whole block is an NOOP.  */
+
+  for (insn = NEXT_INSN (b->head); insn != NEXT_INSN (b->end) && !failed;
+       insn = NEXT_INSN (insn))
+  {
+    if (INSN_P (insn))
+      {
+        rtx pat = PATTERN (insn);
+
+        if (GET_CODE (pat) == PARALLEL)
+	  {
+	    for (i = 0; i < XVECLEN (pat, 0); i++)
+	      failed |= mark_effect (XVECEXP (pat, 0, i), nonequal);
+	  }
+	else
+	  failed |= mark_effect (pat, nonequal);
+      }
+
+    cselib_process_insn (insn);
+  }
+
+  /* Later we should clear nonequal of dead registers.  So far we don't
+     have life information in cfg_cleanup.  */
+  if (failed)
+    goto failed_exit;
+
+  /* In case liveness information is available, we need to prove equivalence
+     only of the live values.  */
+  if (mode & CLEANUP_UPDATE_LIFE)
+    AND_REG_SET (nonequal, b->global_live_at_end);
+
+  EXECUTE_IF_SET_IN_REG_SET (nonequal, 0, i, goto failed_exit;);
+
+  BITMAP_XFREE (nonequal);
+  cselib_finish ();
+  if ((comparison_dominates_p (code1, code2) != 0)
+      != (XEXP (SET_SRC (set2), 1) == pc_rtx))
+    return BRANCH_EDGE (b);
+  else
+    return FALLTHRU_EDGE (b);
+
+failed_exit:
+  BITMAP_XFREE (nonequal);
+  cselib_finish ();
+  return NULL;
+}

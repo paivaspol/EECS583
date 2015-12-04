@@ -1,0 +1,26 @@
+void
+_cpp_pop_buffer (pfile)
+     cpp_reader *pfile;
+{
+  cpp_buffer *buffer = pfile->buffer;
+  struct if_stack *ifs;
+  bool pushed = false;
+
+  /* Walk back up the conditional stack till we reach its level at
+     entry to this file, issuing error messages.  */
+  for (ifs = buffer->if_stack; ifs; ifs = ifs->next)
+    cpp_error_with_line (pfile, ifs->line, 0,
+			 "unterminated #%s", dtable[ifs->type].name);
+
+  /* In case of a missing #endif.  */
+  pfile->state.skipping = 0;
+
+  /* Update the reader's buffer before _cpp_do_file_change.  */
+  pfile->buffer = buffer->prev;
+
+  if (buffer->inc)
+    pushed = _cpp_pop_file_buffer (pfile, buffer->inc);
+
+  if (!pushed)
+    obstack_free (&pfile->buffer_ob, buffer);
+}

@@ -1,0 +1,16 @@
+static struct search_path *
+remove_dup_dir (pfile, prev)
+     cpp_reader *pfile;
+     struct search_path *prev;
+{
+  struct search_path *cur = prev->next;
+
+  if (CPP_OPTION (pfile, verbose))
+    fprintf (stderr, _("ignoring duplicate directory \"%s\"\n"), cur->name);
+
+  prev->next = cur->next;
+  free ((PTR) cur->name);
+  free (cur);
+
+  return prev;
+}

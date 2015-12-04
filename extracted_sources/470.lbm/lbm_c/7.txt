@@ -1,0 +1,96 @@
+void LBM_performStreamCollide( LBM_Grid srcGrid, LBM_Grid dstGrid ) {
+	SWEEP_VAR
+
+	double ux, uy, uz, u2, rho;
+
+	/*voption indep*/
+#if !defined(SPEC_CPU)
+#ifdef _OPENMP
+#pragma omp parallel for private( ux, uy, uz, u2, rho )
+#endif
+#endif
+	SWEEP_START( 0, 0, 0, 0, 0, SIZE_Z )
+		if( TEST_FLAG_SWEEP( srcGrid, OBSTACLE )) {
+			DST_C ( dstGrid ) = SRC_C ( srcGrid );
+			DST_S ( dstGrid ) = SRC_N ( srcGrid );
+			DST_N ( dstGrid ) = SRC_S ( srcGrid );
+			DST_W ( dstGrid ) = SRC_E ( srcGrid );
+			DST_E ( dstGrid ) = SRC_W ( srcGrid );
+			DST_B ( dstGrid ) = SRC_T ( srcGrid );
+			DST_T ( dstGrid ) = SRC_B ( srcGrid );
+			DST_SW( dstGrid ) = SRC_NE( srcGrid );
+			DST_SE( dstGrid ) = SRC_NW( srcGrid );
+			DST_NW( dstGrid ) = SRC_SE( srcGrid );
+			DST_NE( dstGrid ) = SRC_SW( srcGrid );
+			DST_SB( dstGrid ) = SRC_NT( srcGrid );
+			DST_ST( dstGrid ) = SRC_NB( srcGrid );
+			DST_NB( dstGrid ) = SRC_ST( srcGrid );
+			DST_NT( dstGrid ) = SRC_SB( srcGrid );
+			DST_WB( dstGrid ) = SRC_ET( srcGrid );
+			DST_WT( dstGrid ) = SRC_EB( srcGrid );
+			DST_EB( dstGrid ) = SRC_WT( srcGrid );
+			DST_ET( dstGrid ) = SRC_WB( srcGrid );
+			continue;
+		}
+
+		rho = + SRC_C ( srcGrid ) + SRC_N ( srcGrid )
+		      + SRC_S ( srcGrid ) + SRC_E ( srcGrid )
+		      + SRC_W ( srcGrid ) + SRC_T ( srcGrid )
+		      + SRC_B ( srcGrid ) + SRC_NE( srcGrid )
+		      + SRC_NW( srcGrid ) + SRC_SE( srcGrid )
+		      + SRC_SW( srcGrid ) + SRC_NT( srcGrid )
+		      + SRC_NB( srcGrid ) + SRC_ST( srcGrid )
+		      + SRC_SB( srcGrid ) + SRC_ET( srcGrid )
+		      + SRC_EB( srcGrid ) + SRC_WT( srcGrid )
+		      + SRC_WB( srcGrid );
+
+		ux = + SRC_E ( srcGrid ) - SRC_W ( srcGrid )
+		     + SRC_NE( srcGrid ) - SRC_NW( srcGrid )
+		     + SRC_SE( srcGrid ) - SRC_SW( srcGrid )
+		     + SRC_ET( srcGrid ) + SRC_EB( srcGrid )
+		     - SRC_WT( srcGrid ) - SRC_WB( srcGrid );
+		uy = + SRC_N ( srcGrid ) - SRC_S ( srcGrid )
+		     + SRC_NE( srcGrid ) + SRC_NW( srcGrid )
+		     - SRC_SE( srcGrid ) - SRC_SW( srcGrid )
+		     + SRC_NT( srcGrid ) + SRC_NB( srcGrid )
+		     - SRC_ST( srcGrid ) - SRC_SB( srcGrid );
+		uz = + SRC_T ( srcGrid ) - SRC_B ( srcGrid )
+		     + SRC_NT( srcGrid ) - SRC_NB( srcGrid )
+		     + SRC_ST( srcGrid ) - SRC_SB( srcGrid )
+		     + SRC_ET( srcGrid ) - SRC_EB( srcGrid )
+		     + SRC_WT( srcGrid ) - SRC_WB( srcGrid );
+
+		ux /= rho;
+		uy /= rho;
+		uz /= rho;
+
+		if( TEST_FLAG_SWEEP( srcGrid, ACCEL )) {
+			ux = 0.005;
+			uy = 0.002;
+			uz = 0.000;
+		}
+
+		u2 = 1.5 * (ux*ux + uy*uy + uz*uz);
+		DST_C ( dstGrid ) = (1.0-OMEGA)*SRC_C ( srcGrid ) + DFL1*OMEGA*rho*(1.0                                 - u2);
+
+		DST_N ( dstGrid ) = (1.0-OMEGA)*SRC_N ( srcGrid ) + DFL2*OMEGA*rho*(1.0 +       uy*(4.5*uy       + 3.0) - u2);
+		DST_S ( dstGrid ) = (1.0-OMEGA)*SRC_S ( srcGrid ) + DFL2*OMEGA*rho*(1.0 +       uy*(4.5*uy       - 3.0) - u2);
+		DST_E ( dstGrid ) = (1.0-OMEGA)*SRC_E ( srcGrid ) + DFL2*OMEGA*rho*(1.0 +       ux*(4.5*ux       + 3.0) - u2);
+		DST_W ( dstGrid ) = (1.0-OMEGA)*SRC_W ( srcGrid ) + DFL2*OMEGA*rho*(1.0 +       ux*(4.5*ux       - 3.0) - u2);
+		DST_T ( dstGrid ) = (1.0-OMEGA)*SRC_T ( srcGrid ) + DFL2*OMEGA*rho*(1.0 +       uz*(4.5*uz       + 3.0) - u2);
+		DST_B ( dstGrid ) = (1.0-OMEGA)*SRC_B ( srcGrid ) + DFL2*OMEGA*rho*(1.0 +       uz*(4.5*uz       - 3.0) - u2);
+
+		DST_NE( dstGrid ) = (1.0-OMEGA)*SRC_NE( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (+ux+uy)*(4.5*(+ux+uy) + 3.0) - u2);
+		DST_NW( dstGrid ) = (1.0-OMEGA)*SRC_NW( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (-ux+uy)*(4.5*(-ux+uy) + 3.0) - u2);
+		DST_SE( dstGrid ) = (1.0-OMEGA)*SRC_SE( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (+ux-uy)*(4.5*(+ux-uy) + 3.0) - u2);
+		DST_SW( dstGrid ) = (1.0-OMEGA)*SRC_SW( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (-ux-uy)*(4.5*(-ux-uy) + 3.0) - u2);
+		DST_NT( dstGrid ) = (1.0-OMEGA)*SRC_NT( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (+uy+uz)*(4.5*(+uy+uz) + 3.0) - u2);
+		DST_NB( dstGrid ) = (1.0-OMEGA)*SRC_NB( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (+uy-uz)*(4.5*(+uy-uz) + 3.0) - u2);
+		DST_ST( dstGrid ) = (1.0-OMEGA)*SRC_ST( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (-uy+uz)*(4.5*(-uy+uz) + 3.0) - u2);
+		DST_SB( dstGrid ) = (1.0-OMEGA)*SRC_SB( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (-uy-uz)*(4.5*(-uy-uz) + 3.0) - u2);
+		DST_ET( dstGrid ) = (1.0-OMEGA)*SRC_ET( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (+ux+uz)*(4.5*(+ux+uz) + 3.0) - u2);
+		DST_EB( dstGrid ) = (1.0-OMEGA)*SRC_EB( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (+ux-uz)*(4.5*(+ux-uz) + 3.0) - u2);
+		DST_WT( dstGrid ) = (1.0-OMEGA)*SRC_WT( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (-ux+uz)*(4.5*(-ux+uz) + 3.0) - u2);
+		DST_WB( dstGrid ) = (1.0-OMEGA)*SRC_WB( srcGrid ) + DFL3*OMEGA*rho*(1.0 + (-ux-uz)*(4.5*(-ux-uz) + 3.0) - u2);
+	SWEEP_END
+}

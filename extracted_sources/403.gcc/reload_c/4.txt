@@ -1,0 +1,35 @@
+static int
+reload_inner_reg_of_subreg (x, mode)
+     rtx x;
+     enum machine_mode mode;
+{
+  rtx inner;
+
+  /* Only SUBREGs are problematical.  */
+  if (GET_CODE (x) != SUBREG)
+    return 0;
+
+  inner = SUBREG_REG (x);
+
+  /* If INNER is a constant or PLUS, then INNER must be reloaded.  */
+  if (CONSTANT_P (inner) || GET_CODE (inner) == PLUS)
+    return 1;
+
+  /* If INNER is not a hard register, then INNER will not need to
+     be reloaded.  */
+  if (GET_CODE (inner) != REG
+      || REGNO (inner) >= FIRST_PSEUDO_REGISTER)
+    return 0;
+
+  /* If INNER is not ok for MODE, then INNER will need reloading.  */
+  if (! HARD_REGNO_MODE_OK (subreg_regno (x), mode))
+    return 1;
+
+  /* If the outer part is a word or smaller, INNER larger than a
+     word and the number of regs for INNER is not the same as the
+     number of words in INNER, then INNER will need reloading.  */
+  return (GET_MODE_SIZE (mode) <= UNITS_PER_WORD
+	  && GET_MODE_SIZE (GET_MODE (inner)) > UNITS_PER_WORD
+	  && ((GET_MODE_SIZE (GET_MODE (inner)) / UNITS_PER_WORD)
+	      != HARD_REGNO_NREGS (REGNO (inner), GET_MODE (inner))));
+}

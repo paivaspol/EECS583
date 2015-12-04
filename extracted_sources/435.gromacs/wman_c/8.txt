@@ -1,0 +1,95 @@
+static void write_htmlman(FILE *out,
+			  char *program,
+			  int nldesc,char **desc,
+			  int nfile,t_filenm *fnm,
+			  int npargs,t_pargs *pa,
+			  int nbug,char **bugs)
+{
+  int i;
+  char link[10];
+  
+#define NSR(s) check_html(s,program)
+  
+  fprintf(out,"<HTML>\n<HEAD>\n<TITLE>%s</TITLE>\n",program);
+  fprintf(out,"<LINK rel=stylesheet href=\"style.css\" type=\"text/css\">\n");
+  fprintf(out,"<BODY text=\"#000000\" bgcolor=\"#FFFFFF\" link=\"#0000FF\" vlink=\"#990000\" alink=\"#FF0000\">\n");
+  fprintf(out,"<TABLE WIDTH=\"98%%\" NOBORDER >\n<TR><TD WIDTH=400>\n");
+  fprintf(out,"<TABLE WIDTH=400 NOBORDER>\n<TD WIDTH=116>\n");
+  fprintf(out,"<a href=\"http://www.gromacs.org/\">"
+	  "<img SRC=\"../images/gmxlogo_small.jpg\""
+	  "BORDER=0 height=133 width=116></a></td>\n");
+  fprintf(out,"<td ALIGN=LEFT VALIGN=TOP WIDTH=280>"
+	  "<br><h2>%s</h2>",program);
+  fprintf(out,"<font size=-1><A HREF=\"../online.html\">Main Table of Contents</A></font><br>");
+  fprintf(out,"<br></td>\n</TABLE></TD><TD WIDTH=\"*\" ALIGN=RIGHT VALIGN=BOTTOM><p><B>%s<br>\n",GromacsVersion());
+  fprintf(out,"%s</B></td></tr></TABLE>\n<HR>\n",mydate());
+  
+  if (nldesc > 0) {
+    fprintf(out,"<H3>Description</H3>\n<p>\n");
+    for(i=0; (i<nldesc); i++) 
+      fprintf(out,"%s\n",NSR(desc[i]));
+  }
+  if (nfile > 0) {
+    fprintf(out,"<P>\n");
+    fprintf(out,"<H3>Files</H3>\n");
+    fprintf(out,
+	    "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2>\n"
+	    "<TR>"
+	    "<TH>option</TH>"
+	    "<TH>filename</TH>"
+	    "<TH>type</TH>"
+	    "<TH>description</TH>"
+	    "</TR>\n");
+    for(i=0; (i<nfile); i++) {
+      strcpy(link,ftp2ext(fnm[i].ftp));
+      if (strcmp(link,"???")==0)
+	strcpy(link,"files");
+      fprintf(out,
+	      "<TR>"
+	      "<TD ALIGN=RIGHT> <b><tt>%s</tt></b> </TD>"
+	      "<TD ALIGN=RIGHT> <tt><a href=\"%s.html\">%12s</a></tt> </TD>"
+	      "<TD> %s </TD>"
+	      "<TD> %s </TD>"
+	      "</TR>\n",
+	      fnm[i].opt,link,fnm[i].fn,fileopt(fnm[i].flag),
+	      NSR(ftp2desc(fnm[i].ftp)));
+    }
+    fprintf(out,"</TABLE>\n");
+  }
+  if (npargs > 0) {
+    fprintf(out,"<P>\n");
+    fprintf(out,"<H3>Other options</H3>\n");
+    fprintf(out,
+	    "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2>\n"
+	    "<TR>"
+	    "<TH>option</TH>"
+	    "<TH>type</TH>"
+	    "<TH>default</TH>"
+	    "<TH>description</TH>"
+	    "</TR>\n");
+    for(i=0; (i<npargs); i++)
+      fprintf(out,
+	      "<TR>"
+	      "<TD ALIGN=RIGHT> <b><tt>%s%s</tt></b> </TD>"
+	      "<TD ALIGN=RIGHT> %s </TD>"
+	      "<TD ALIGN=RIGHT> <tt>%s</tt> </TD>"
+	      "<TD> %s </TD>"
+	      "</TD>\n",
+	      (pa[i].type == etBOOL)?"-[no]":"-",pa[i].option+1,
+	      argtp[pa[i].type],pa_val(&(pa[i])),NSR(pa[i].desc));
+    fprintf(out,"</TABLE>\n");
+  }
+  if (nbug > 0) {
+    fprintf(out,"<P>\n");
+    fprintf(out,"<UL>\n");
+    for(i=0; (i<nbug); i++)
+      fprintf(out,"<LI>%s\n",NSR(bugs[i]));
+    fprintf(out,"</UL>\n");
+  }
+  fprintf(out,"<P>\n");
+  fprintf(out,"<hr>\n<div ALIGN=RIGHT>\n");
+  fprintf(out,"<font size=\"-1\"><a href=\"http://www.gromacs.org\">"
+	  "http://www.gromacs.org</a></font><br>\n");
+  fprintf(out,"</div>\n");
+  fprintf(out,"</BODY>\n");
+}

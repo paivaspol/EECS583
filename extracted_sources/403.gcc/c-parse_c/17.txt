@@ -1,0 +1,29 @@
+static void
+init_reswords ()
+{
+  unsigned int i;
+  tree id;
+  int mask = (flag_isoc99 ? 0 : D_C89)
+	      | (flag_traditional ? D_TRAD : 0)
+	      | (flag_no_asm ? (flag_isoc99 ? D_EXT : D_EXT|D_EXT89) : 0);
+
+  if (c_language != clk_objective_c)
+     mask |= D_OBJC;
+
+  /* It is not necessary to register ridpointers as a GC root, because
+     all the trees it points to are permanently interned in the
+     get_identifier hash anyway.  */
+  ridpointers = (tree *) xcalloc ((int) RID_MAX, sizeof (tree));
+  for (i = 0; i < N_reswords; i++)
+    {
+      /* If a keyword is disabled, do not enter it into the table
+	 and so create a canonical spelling that isn't a keyword.  */
+      if (reswords[i].disable & mask)
+	continue;
+
+      id = get_identifier (reswords[i].word);
+      C_RID_CODE (id) = reswords[i].rid;
+      C_IS_RESERVED_WORD (id) = 1;
+      ridpointers [(int) reswords[i].rid] = id;
+    }
+}

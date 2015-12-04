@@ -1,0 +1,83 @@
+int32 vithist_utt_end (vithist_t *vh, kbcore_t *kbc)
+{
+    int32 f, i, b, l;
+    int32 sv, nsv, scr, bestscore, bestvh, vhid;
+    vithist_entry_t *ve, *bestve=0;
+    s3lmwid_t endwid;
+    lm_t *lm;
+    dict_t *dict;
+
+    /* Find last frame with entries in vithist table */
+    for (f = vh->n_frm-1; f >= 0; --f) {
+	sv = vh->frame_start[f];	/* First vithist entry in frame f */
+	nsv = vh->frame_start[f+1];	/* First vithist entry in next frame (f+1) */
+	
+	if (sv < nsv)
+	    break;
+    }
+    if (f < 0)
+	return -1;
+    
+    #ifndef SPEC_CPU
+    if (f != vh->n_frm-1)
+	E_ERROR("No word exit in frame %d, using exits from frame %d\n", vh->n_frm-1, f);
+    #endif
+    
+    /* Terminate in a final </s> node (make this optional?) */
+    lm = kbcore_lm (kbc);
+    endwid = lm_finishwid (lm);
+    dict = kbcore_dict (kbc);
+    
+    bestscore = MAX_NEG_INT32;
+    bestvh = -1;
+    
+    for (i = sv; i < nsv; i++) {
+	b = VITHIST_ID2BLK (i);
+	l = VITHIST_ID2BLKOFFSET (i);
+	ve = vh->entry[b] + l;
+	
+	scr = ve->score;
+	scr += lm_tg_score (lm, ve->lmstate.lm3g.lwid[1], ve->lmstate.lm3g.lwid[0], endwid,dict_finishwid(dict));
+	
+	if (bestscore < scr) {
+	    bestscore = scr;
+	    bestvh = i;
+	    bestve = ve;
+	}
+    }
+    assert (bestvh >= 0);
+
+    
+    if (f != vh->n_frm-1) {
+	#ifndef SPEC_CPU
+	E_ERROR("No word exit in frame %d, using exits from frame %d\n", vh->n_frm-1, f);
+	#endif
+	
+	/* Add a dummy silwid covering the remainder of the utterance */
+	assert (vh->frame_start[vh->n_frm-1] == vh->frame_start[vh->n_frm]);
+	vh->n_frm -= 1;
+	vithist_rescore (vh, kbc, dict_silwid (dict), vh->n_frm, bestve->score, bestvh, -1);
+	vh->n_frm += 1;
+	vh->frame_start[vh->n_frm] = vh->n_entry;
+	
+	return vithist_utt_end (vh, kbc);
+    }
+    
+    /* Create an </s> entry */
+    vhid = vh->n_entry;
+    ve = vithist_entry_alloc (vh);
+    
+    ve->wid = dict_finishwid (dict);
+    ve->sf = (bestve->ef == BAD_S3FRMID) ? 0 : bestve->ef + 1;
+    ve->ef = vh->n_frm;
+    ve->ascr = 0;
+    ve->lscr = bestscore - bestve->score;
+    ve->score = bestscore;
+    ve->pred = bestvh;
+    ve->type = 0;
+    ve->valid = 1;
+    ve->lmstate.lm3g.lwid[0] = endwid;
+    ve->lmstate.lm3g.lwid[1] = ve->lmstate.lm3g.lwid[0];
+    
+    return vhid;
+}

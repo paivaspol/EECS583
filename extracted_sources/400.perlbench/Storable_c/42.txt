@@ -1,0 +1,45 @@
+static SV *retrieve_blessed(pTHX_ stcxt_t *cxt, char *cname)
+{
+	I32 len;
+	SV *sv;
+	char buf[LG_BLESS + 1];		/* Avoid malloc() if possible */
+	char *class = buf;
+
+	TRACEME(("retrieve_blessed (#%d)", cxt->tagnum));
+	ASSERT(!cname, ("no bless-into class given here, got %s", cname));
+
+	/*
+	 * Decode class name length and read that name.
+	 *
+	 * Short classnames have two advantages: their length is stored on one
+	 * single byte, and the string can be read on the stack.
+	 */
+
+	GETMARK(len);			/* Length coded on a single char? */
+	if (len & 0x80) {
+		RLEN(len);
+		TRACEME(("** allocating %d bytes for class name", len+1));
+		New(10003, class, len+1, char);
+	}
+	READ(class, len);
+	class[len] = '\0';		/* Mark string end */
+
+	/*
+	 * It's a new classname, otherwise it would have been an SX_IX_BLESS.
+	 */
+
+	TRACEME(("new class name \"%s\" will bear ID = %d", class, cxt->classnum));
+
+	if (!av_store(cxt->aclass, cxt->classnum++, newSVpvn(class, len)))
+		return (SV *) 0;
+
+	/*
+	 * Retrieve object and bless it.
+	 */
+
+	sv = retrieve(aTHX_ cxt, class);	/* First SV which is SEEN will be blessed */
+	if (class != buf)
+		Safefree(class);
+
+	return sv;
+}

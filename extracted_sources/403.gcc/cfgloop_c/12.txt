@@ -1,0 +1,27 @@
+static int
+flow_loop_level_compute (loop, depth)
+     struct loop *loop;
+     int depth;
+{
+  struct loop *inner;
+  int level = 1;
+
+  if (! loop)
+    return 0;
+
+  /* Traverse loop tree assigning depth and computing level as the
+     maximum level of all the inner loops of this loop.  The loop
+     level is equivalent to the height of the loop in the loop tree
+     and corresponds to the number of enclosed loop levels (including
+     itself).  */
+  for (inner = loop->inner; inner; inner = inner->next)
+    {
+      int ilevel = flow_loop_level_compute (inner, depth + 1) + 1;
+
+      level = MAX (ilevel, level);
+    }
+
+  loop->level = level;
+  loop->depth = depth;
+  return level;
+}

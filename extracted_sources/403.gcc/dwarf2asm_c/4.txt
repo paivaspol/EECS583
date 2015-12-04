@@ -1,0 +1,28 @@
+void
+dw2_asm_output_pcrel VPARAMS ((int size ATTRIBUTE_UNUSED,
+			       const char *label ATTRIBUTE_UNUSED,
+			       const char *comment, ...))
+{
+  VA_OPEN (ap, comment);
+  VA_FIXEDARG (ap, int, size);
+  VA_FIXEDARG (ap, const char *, label);
+  VA_FIXEDARG (ap, const char *, comment);
+
+#ifdef ASM_OUTPUT_DWARF_PCREL
+  ASM_OUTPUT_DWARF_PCREL (asm_out_file, size, label);
+#else
+  dw2_assemble_integer (size,
+			gen_rtx_MINUS (Pmode,
+				       gen_rtx_SYMBOL_REF (Pmode, label),
+				       pc_rtx));
+#endif
+
+  if (flag_debug_asm && comment)
+    {
+      fprintf (asm_out_file, "\t%s ", ASM_COMMENT_START);
+      vfprintf (asm_out_file, comment, ap);
+    }
+  fputc ('\n', asm_out_file);
+
+  VA_CLOSE (ap);
+}

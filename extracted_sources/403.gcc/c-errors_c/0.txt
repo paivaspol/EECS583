@@ -1,0 +1,13 @@
+void
+pedwarn_c99 VPARAMS ((const char *msgid, ...))
+{
+  diagnostic_context dc;
+
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  set_diagnostic_context (&dc, msgid, &ap, input_filename, lineno,
+                          !flag_isoc99 || !flag_pedantic_errors);
+  report_diagnostic (&dc);
+  VA_CLOSE (ap);
+}

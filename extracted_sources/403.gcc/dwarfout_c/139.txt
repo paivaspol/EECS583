@@ -1,0 +1,192 @@
+static void
+dwarfout_finish (main_input_filename)
+     const char *main_input_filename ATTRIBUTE_UNUSED;
+{
+  char label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SECTION);
+  retry_incomplete_types ();
+  fputc ('\n', asm_out_file);
+
+  /* Mark the end of the chain of siblings which represent all file-scope
+     declarations in this compilation unit.  */
+
+  /* The (null) DIE which represents the terminator for the (sibling linked)
+     list of file-scope items is *special*.  Normally, we would just call
+     end_sibling_chain at this point in order to output a word with the
+     value `4' and that word would act as the terminator for the list of
+     DIEs describing file-scope items.  Unfortunately, if we were to simply
+     do that, the label that would follow this DIE in the .debug section
+     (i.e. `..D2') would *not* be properly aligned (as it must be on some
+     machines) to a 4 byte boundary.
+
+     In order to force the label `..D2' to get aligned to a 4 byte boundary,
+     the trick used is to insert extra (otherwise useless) padding bytes
+     into the (null) DIE that we know must precede the ..D2 label in the
+     .debug section.  The amount of padding required can be anywhere between
+     0 and 3 bytes.  The length word at the start of this DIE (i.e. the one
+     with the padding) would normally contain the value 4, but now it will
+     also have to include the padding bytes, so it will instead have some
+     value in the range 4..7.
+
+     Fortunately, the rules of Dwarf say that any DIE whose length word
+     contains *any* value less than 8 should be treated as a null DIE, so
+     this trick works out nicely.  Clever, eh?  Don't give me any credit
+     (or blame).  I didn't think of this scheme.  I just conformed to it.
+  */
+
+  output_die (output_padded_null_die, (void *) 0);
+  dienum_pop ();
+
+  sprintf (label, DIE_BEGIN_LABEL_FMT, NEXT_DIE_NUM);
+  ASM_OUTPUT_LABEL (asm_out_file, label);	/* should be ..D2 */
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  /* Output a terminator label for the .text section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, TEXT_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, TEXT_END_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  /* Output a terminator label for the .data section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DATA_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, DATA_END_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+#if 0 /* GNU C doesn't currently use .data1.  */
+  /* Output a terminator label for the .data1 section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DATA1_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, DATA1_END_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+#endif
+
+  /* Output a terminator label for the .rodata section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, RODATA_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, RODATA_END_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+#if 0 /* GNU C doesn't currently use .rodata1.  */
+  /* Output a terminator label for the .rodata1 section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, RODATA1_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, RODATA1_END_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+#endif
+
+  /* Output a terminator label for the .bss section.  */
+
+  fputc ('\n', asm_out_file);
+  ASM_OUTPUT_PUSH_SECTION (asm_out_file, BSS_SECTION_NAME);
+  ASM_OUTPUT_LABEL (asm_out_file, BSS_END_LABEL);
+  ASM_OUTPUT_POP_SECTION (asm_out_file);
+
+  if (debug_info_level >= DINFO_LEVEL_NORMAL)
+    {
+      /* Output a terminating entry for the .line section.  */
+    
+      fputc ('\n', asm_out_file);
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, LINE_SECTION);
+      ASM_OUTPUT_LABEL (asm_out_file, LINE_LAST_ENTRY_LABEL);
+      ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 0);
+      ASM_OUTPUT_DWARF_DATA2 (asm_out_file, 0xffff);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, TEXT_END_LABEL, TEXT_BEGIN_LABEL);
+      ASM_OUTPUT_LABEL (asm_out_file, LINE_END_LABEL);
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+    
+      if (use_gnu_debug_info_extensions)
+	{
+	  /* Output a terminating entry for the .debug_srcinfo section.  */
+
+	  fputc ('\n', asm_out_file);
+	  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_SRCINFO_SECTION);
+	  ASM_OUTPUT_DWARF_DELTA4 (asm_out_file,
+				   LINE_LAST_ENTRY_LABEL, LINE_BEGIN_LABEL);
+	  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, -1);
+	  ASM_OUTPUT_POP_SECTION (asm_out_file);
+	}
+
+      if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+	{
+	  /* Output terminating entries for the .debug_macinfo section.  */
+	
+	  dwarfout_end_source_file (0);
+
+	  fputc ('\n', asm_out_file);
+	  ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_MACINFO_SECTION);
+	  ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 0);
+	  ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, "");
+	  ASM_OUTPUT_POP_SECTION (asm_out_file);
+	}
+    
+      /* Generate the terminating entry for the .debug_pubnames section.  */
+    
+      fputc ('\n', asm_out_file);
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_PUBNAMES_SECTION);
+      ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 0);
+      ASM_OUTPUT_DWARF_STRING_NEWLINE (asm_out_file, "");
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+    
+      /* Generate the terminating entries for the .debug_aranges section.
+
+	 Note that we want to do this only *after* we have output the end
+	 labels (for the various program sections) which we are going to
+	 refer to here.  This allows us to work around a bug in the m68k
+	 svr4 assembler.  That assembler gives bogus assembly-time errors
+	 if (within any given section) you try to take the difference of
+	 two relocatable symbols, both of which are located within some
+	 other section, and if one (or both?) of the symbols involved is
+	 being forward-referenced.  By generating the .debug_aranges
+	 entries at this late point in the assembly output, we skirt the
+	 issue simply by avoiding forward-references.
+      */
+    
+      fputc ('\n', asm_out_file);
+      ASM_OUTPUT_PUSH_SECTION (asm_out_file, DEBUG_ARANGES_SECTION);
+
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, TEXT_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, TEXT_END_LABEL, TEXT_BEGIN_LABEL);
+
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, DATA_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, DATA_END_LABEL, DATA_BEGIN_LABEL);
+
+#if 0 /* GNU C doesn't currently use .data1.  */
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, DATA1_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, DATA1_END_LABEL,
+					     DATA1_BEGIN_LABEL);
+#endif
+
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, RODATA_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, RODATA_END_LABEL,
+					     RODATA_BEGIN_LABEL);
+
+#if 0 /* GNU C doesn't currently use .rodata1.  */
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, RODATA1_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, RODATA1_END_LABEL,
+					     RODATA1_BEGIN_LABEL);
+#endif
+
+      ASM_OUTPUT_DWARF_ADDR (asm_out_file, BSS_BEGIN_LABEL);
+      ASM_OUTPUT_DWARF_DELTA4 (asm_out_file, BSS_END_LABEL, BSS_BEGIN_LABEL);
+
+      ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 0);
+      ASM_OUTPUT_DWARF_DATA4 (asm_out_file, 0);
+
+      ASM_OUTPUT_LABEL (asm_out_file, DEBUG_ARANGES_END_LABEL);
+      ASM_OUTPUT_POP_SECTION (asm_out_file);
+    }
+
+  /* There should not be any pending types left at the end.  We need
+     this now because it may not have been checked on the last call to
+     dwarfout_file_scope_decl.  */
+  if (pending_types != 0)
+    abort ();
+}

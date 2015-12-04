@@ -1,0 +1,55 @@
+void
+ereal_from_uint (d, i, j, mode)
+     REAL_VALUE_TYPE *d;
+     unsigned HOST_WIDE_INT i, j;
+     enum machine_mode mode;
+{
+  UEMUSHORT df[NE], dg[NE];
+  unsigned HOST_WIDE_INT low, high;
+
+  if (GET_MODE_CLASS (mode) != MODE_FLOAT)
+    abort ();
+  low = i;
+  high = j;
+  eldexp (eone, HOST_BITS_PER_WIDE_INT, df);
+  ultoe (&high, dg);
+  emul (dg, df, dg);
+  ultoe (&low, df);
+  eadd (df, dg, dg);
+
+  /* A REAL_VALUE_TYPE may not be wide enough to hold the two HOST_WIDE_INTS.
+     Avoid double-rounding errors later by rounding off now from the
+     extra-wide internal format to the requested precision.  */
+  switch (GET_MODE_BITSIZE (mode))
+    {
+    case 32:
+      etoe24 (dg, df);
+      e24toe (df, dg);
+      break;
+
+    case 64:
+      etoe53 (dg, df);
+      e53toe (df, dg);
+      break;
+
+    case 96:
+      etoe64 (dg, df);
+      e64toe (df, dg);
+      break;
+
+    case 128:
+#if (INTEL_EXTENDED_IEEE_FORMAT == 0)
+      etoe113 (dg, df);
+      e113toe (df, dg);
+#else
+      etoe64 (dg, df);
+      e64toe (df, dg);
+#endif
+      break;
+
+    default:
+      abort ();
+  }
+
+  PUT_REAL (dg, d);
+}

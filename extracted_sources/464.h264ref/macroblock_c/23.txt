@@ -1,0 +1,366 @@
+int writeMBLayer (int rdopt)  // GB CHROMA !!!!!!!!
+{
+  int             i,j;
+  int             mb_nr     = img->current_mb_nr;
+  Macroblock*     currMB    = &img->mb_data[mb_nr];
+  Macroblock*     prevMB    = mb_nr ? (&img->mb_data[mb_nr-1]) : NULL;
+  SyntaxElement  *currSE    = &img->MB_SyntaxElements[currMB->currSEnr];
+  int*            bitCount  = currMB->bitcounter;
+  Slice*          currSlice = img->currentSlice;
+  DataPartition*  dataPart;
+  const int*      partMap   = assignSE2partition[input->partition_mode];
+  int             no_bits   = 0;
+  int             skip      = currMB->mb_type ? 0:((img->type == B_SLICE) ? !currMB->cbp:1);
+  int             mb_type;
+  int             prevMbSkipped = 0;
+  int             mb_field_tmp;
+  Macroblock      *topMB = NULL;
+  
+  int             WriteFrameFieldMBInHeader = 0;
+
+  if (img->MbaffFrameFlag)
+  {
+    if (0==(mb_nr%2))
+    {
+      WriteFrameFieldMBInHeader = 1; // top field
+
+      prevMbSkipped = 0;
+    }
+    else
+    {
+      if (prevMB->mb_type ? 0:((img->type == B_SLICE) ? !prevMB->cbp:1))
+      {
+        WriteFrameFieldMBInHeader = 1; // bottom, if top was skipped
+      }
+
+      topMB= &img->mb_data[img->current_mb_nr-1];
+      if(!(img->type == B_SLICE))
+        prevMbSkipped = (topMB->mb_type == 0);
+      else 
+        prevMbSkipped = (topMB->mb_type == 0 && topMB->cbp == 0);
+    }
+  }
+  currMB->IntraChromaPredModeFlag = IS_INTRA(currMB);
+
+  // choose the appropriate data partition
+  dataPart = &(currSlice->partArr[partMap[SE_MBTYPE]]);
+  
+  if(img->type == I_SLICE)//GB
+  {
+    //========= write mb_aff (I_SLICE) =========
+    if(img->MbaffFrameFlag && !skip) // check for copy mode, Krit
+    {
+      if(WriteFrameFieldMBInHeader)
+      {
+        currSE->value1 =  currMB->mb_field;
+        currSE->value2 = 0;
+        currSE->type   =  SE_MBTYPE;
+        
+        if (input->symbol_mode==UVLC)   currSE->mapping = ue_linfo;
+        else                            currSE->writing = writeFieldModeInfo_CABAC;
+        
+#if TRACE
+        snprintf(currSE->tracestring, TRACESTRING_SIZE, "Field mode = %3d",currMB->mb_field);
+#endif
+        if( input->symbol_mode==UVLC)
+        {
+          currSE->bitpattern = (currMB->mb_field ? 1 : 0);
+          currSE->len = 1;
+          writeSyntaxElement2Buf_Fixed(currSE, dataPart->bitstream);
+        }
+        else
+        {
+          dataPart->writeSyntaxElement(currSE, dataPart);
+        }
+
+        bitCount[BITS_MB_MODE] += currSE->len;
+        no_bits                += currSE->len;
+        currSE++;
+        currMB->currSEnr++;
+      }
+    }
+    
+    //========= write mb_type (I_SLICE) =========
+    currSE->value1  = MBType2Value (currMB);
+    currSE->value2  = 0;
+    currSE->type    = SE_MBTYPE;
+
+    if (input->symbol_mode == UVLC)  currSE->mapping = ue_linfo;
+    else                             currSE->writing = writeMB_typeInfo_CABAC;
+
+    dataPart->writeSyntaxElement( currSE, dataPart);
+#if TRACE
+    snprintf(currSE->tracestring, TRACESTRING_SIZE,   "MB mode(%2d,%2d) = %3d",img->mb_x, img->mb_y, currMB->mb_type);
+#endif
+    bitCount[BITS_MB_MODE] += currSE->len;
+    no_bits                += currSE->len;
+    currSE++;
+    currMB->currSEnr++;
+  }
+  else if (input->symbol_mode == CABAC)//GB
+  {
+    if (img->MbaffFrameFlag && (img->current_mb_nr%2 == 0||prevMbSkipped))
+    {
+      mb_field_tmp = currMB->mb_field;
+      currMB->mb_field = field_flag_inference();
+      CheckAvailabilityOfNeighborsCABAC();
+      currMB->mb_field = mb_field_tmp;
+    }
+    
+    //========= write mb_skip_flag (CABAC) =========
+    mb_type         = MBType2Value (currMB);
+    currSE->value1  = mb_type;
+    currSE->value2  = currMB->cbp;
+    currSE->type    = SE_MBTYPE;
+    currSE->writing = writeMB_skip_flagInfo_CABAC;
+    dataPart->writeSyntaxElement( currSE, dataPart);
+#if TRACE
+    if (img->type == B_SLICE)  snprintf(currSE->tracestring, TRACESTRING_SIZE, "B_MB skipflag(%2d,%2d) = %3d",img->mb_x, img->mb_y, (mb_type!=0 ||currMB->cbp!=0));
+    else                     snprintf(currSE->tracestring, TRACESTRING_SIZE,   "MB skipflag(%2d,%2d,%d) = %3d",img->mb_x, img->mb_y, currSE->context,(mb_type!=0));
+#endif
+    bitCount[BITS_MB_MODE] += currSE->len;
+    no_bits                += currSE->len;
+    currSE++;
+    currMB->currSEnr++;
+
+    CheckAvailabilityOfNeighborsCABAC();
+    
+    //========= write mb_aff (CABAC) =========
+    if(img->MbaffFrameFlag && !skip) // check for copy mode, Krit
+    {
+      if(WriteFrameFieldMBInHeader)
+      {
+        currSE->value1 = currMB->mb_field;
+        currSE->value2 = 0;
+        currSE->type   =  SE_MBTYPE;
+
+        if (input->symbol_mode==UVLC)   currSE->mapping = ue_linfo;
+        else                            currSE->writing = writeFieldModeInfo_CABAC;
+
+        if( input->symbol_mode==UVLC)
+        {
+          currSE->bitpattern = (currMB->mb_field ? 1 : 0);
+          currSE->len = 1;
+          writeSyntaxElement2Buf_Fixed(currSE, dataPart->bitstream);
+        }
+        else
+        {
+          dataPart->writeSyntaxElement(currSE, dataPart);
+        }
+#if TRACE
+        snprintf(currSE->tracestring, TRACESTRING_SIZE, "Field mode = %3d",currMB->mb_field);
+#endif
+        bitCount[BITS_MB_MODE] += currSE->len;
+        no_bits                += currSE->len;
+        currSE++;
+        currMB->currSEnr++;
+      }
+    }
+    
+    //========= write mb_type (CABAC) =========
+    if (currMB->mb_type != 0 || ((img->type == B_SLICE) && currMB->cbp != 0))
+    {
+      currSE->value1  = mb_type;
+      currSE->value2  = 0;
+      currSE->type    = SE_MBTYPE;
+      currSE->writing = writeMB_typeInfo_CABAC;
+      dataPart->writeSyntaxElement( currSE, dataPart);
+#if TRACE
+      if (img->type == B_SLICE)  snprintf(currSE->tracestring, TRACESTRING_SIZE, "B_MB mode(%2d,%2d) = %3d",img->mb_x, img->mb_y, currMB->mb_type);
+      else                     snprintf(currSE->tracestring, TRACESTRING_SIZE,   "MB mode(%2d,%2d) = %3d",img->mb_x, img->mb_y,currMB->mb_type);
+#endif
+      bitCount[BITS_MB_MODE] += currSE->len;
+      no_bits                += currSE->len;
+      currSE++;
+      currMB->currSEnr++;
+    }
+  }
+
+  else if (currMB->mb_type != 0 || ((img->type == B_SLICE) && currMB->cbp != 0))
+  {
+    //===== Run Length Coding: Non-Skipped macorblock =====
+    currSE->value1  = img->cod_counter;
+    currSE->value2  = 0;
+    currSE->mapping = ue_linfo;
+    currSE->type    = SE_MBTYPE;
+    dataPart->writeSyntaxElement( currSE, dataPart);
+#if TRACE
+    snprintf(currSE->tracestring, TRACESTRING_SIZE, "MB runlength = %3d",img->cod_counter);
+#endif
+    bitCount[BITS_MB_MODE] += currSE->len;
+    no_bits                += currSE->len;
+    currSE++;
+    currMB->currSEnr++;
+    
+    // Reset cod counter
+    img->cod_counter = 0;
+    
+    // write mb_aff
+    if(img->MbaffFrameFlag && !skip) // check for copy mode, Krit
+    {
+      if(WriteFrameFieldMBInHeader)
+      {
+        currSE->value1 = currMB->mb_field;
+        currSE->type   =  SE_MBTYPE;
+        currSE->mapping = ue_linfo;
+        
+        //dataPart->writeSyntaxElement(currSE, dataPart);
+        currSE->bitpattern = (currMB->mb_field ? 1 : 0);
+        currSE->len = 1;
+        writeSyntaxElement2Buf_Fixed(currSE, dataPart->bitstream);
+
+#if TRACE
+        snprintf(currSE->tracestring, TRACESTRING_SIZE, "Field mode = %3d",currMB->mb_field);
+#endif
+        bitCount[BITS_MB_MODE] += currSE->len;
+        no_bits                += currSE->len;
+        currSE++;
+        currMB->currSEnr++;
+      }
+    }
+    // Put out mb mode
+    currSE->value1  = MBType2Value (currMB);
+
+    if (img->type != B_SLICE)
+    {
+      currSE->value1--;
+    }
+    currSE->mapping = ue_linfo;
+    currSE->type    = SE_MBTYPE;
+    currSE->value2  = 0;
+
+    dataPart->writeSyntaxElement( currSE, dataPart);
+#if TRACE
+    if (img->type == B_SLICE)   snprintf(currSE->tracestring, TRACESTRING_SIZE, "B_MB mode(%2d,%2d) = %3d",img->mb_x, img->mb_y, currMB->mb_type);
+    else                      snprintf(currSE->tracestring, TRACESTRING_SIZE,   "MB mode(%2d,%2d) = %3d",img->mb_x, img->mb_y,currMB->mb_type);
+#endif
+    bitCount[BITS_MB_MODE] += currSE->len;
+    no_bits                += currSE->len;
+    currSE++;
+    currMB->currSEnr++;
+  }
+  else
+  {
+    //Run Length Coding: Skipped macroblock
+    img->cod_counter++;
+
+    // CAVLC
+    for (j=0; j < (4 + img->num_blk8x8_uv); j++)
+      for (i=0; i < 4; i++)
+        img->nz_coeff [img->current_mb_nr][i][j]=0;
+
+
+    if(img->current_mb_nr == img->total_number_mb)
+    {
+      // Put out run
+      currSE->value1  = img->cod_counter;
+      currSE->value2  = 0;
+      currSE->mapping = ue_linfo;
+      currSE->type    = SE_MBTYPE;
+
+      dataPart->writeSyntaxElement( currSE, dataPart);
+#if TRACE
+      snprintf(currSE->tracestring, TRACESTRING_SIZE, "MB runlength = %3d",img->cod_counter);
+#endif
+      bitCount[BITS_MB_MODE] += currSE->len;
+      no_bits                += currSE->len;
+      currSE++;
+      currMB->currSEnr++;
+
+      // Reset cod counter
+      img->cod_counter = 0;
+    }
+  }
+
+  //init NoMbPartLessThan8x8Flag
+  currMB->NoMbPartLessThan8x8Flag = (IS_DIRECT(currMB) && !(active_sps->direct_8x8_inference_flag))? 0: 1;
+  
+  //===== BITS FOR 8x8 SUB-PARTITION MODES =====
+  if (IS_P8x8 (currMB))
+  {
+    dataPart = &(currSlice->partArr[partMap[SE_MBTYPE]]);
+    
+    for (i=0; i<4; i++)
+    {
+      if (input->symbol_mode==UVLC)   currSE->mapping = ue_linfo;
+      else                            currSE->writing = writeB8_typeInfo_CABAC;
+
+      currSE->value1  = B8Mode2Value (currMB->b8mode[i], currMB->b8pdir[i]);
+      currSE->value2  = 0;
+      currSE->type    = SE_MBTYPE;
+      dataPart->writeSyntaxElement (currSE, dataPart);
+#if TRACE
+      snprintf(currSE->tracestring, TRACESTRING_SIZE, "8x8 mode/pdir(%2d) = %3d/%d",
+        i,currMB->b8mode[i],currMB->b8pdir[i]);
+#endif
+      bitCount[BITS_MB_MODE]+= currSE->len;
+      no_bits               += currSE->len;
+      currSE++;
+      currMB->currSEnr++;
+
+      //set NoMbPartLessThan8x8Flag for P8x8 mode
+      currMB->NoMbPartLessThan8x8Flag &= (currMB->b8mode[i]==0 && active_sps->direct_8x8_inference_flag) || 
+                                         (currMB->b8mode[i]==4);
+    }
+    no_bits += writeMotionInfo2NAL  ();
+    currSE   = &img->MB_SyntaxElements[currMB->currSEnr];
+  }
+
+  //============= Transform size flag for INTRA MBs =============
+  //-------------------------------------------------------------
+  //transform size flag for INTRA_4x4 and INTRA_8x8 modes
+  if ((currMB->mb_type == I8MB || currMB->mb_type == I4MB) && input->AllowTransform8x8)
+  {
+    currSE->value1 = currMB->luma_transform_size_8x8_flag;
+    currSE->type   = SE_TRANSFORM_SIZE_FLAG;
+    
+    if (input->symbol_mode==UVLC)   currSE->mapping = ue_linfo;
+    else                            currSE->writing = writeMB_transform_size_CABAC;
+    
+    if( input->symbol_mode==UVLC)
+    {
+      currSE->bitpattern = currMB->luma_transform_size_8x8_flag;
+      currSE->len = 1;
+      writeSyntaxElement2Buf_Fixed(currSE, dataPart->bitstream);
+    }
+    else
+    {
+      dataPart->writeSyntaxElement(currSE, dataPart);
+    }
+#if TRACE
+    snprintf(currSE->tracestring, TRACESTRING_SIZE, "transform size 8x8 flag = %3d", currMB->luma_transform_size_8x8_flag);
+#endif
+    
+    bitCount[BITS_MB_MODE] += currSE->len;
+    no_bits                += currSE->len;
+    currSE++;
+    currMB->currSEnr++;
+  }
+  
+    
+ //===== BITS FOR INTRA PREDICTION MODES ====
+  no_bits += writeIntra4x4Modes(-1);
+  //===== BITS FOR CHROMA INTRA PREDICTION MODE ====
+  if (currMB->IntraChromaPredModeFlag && img->yuv_format != YUV400)
+    no_bits += writeChromaIntraPredMode();
+  else if(!rdopt) //GB CHROMA !!!!!
+    currMB->c_ipred_mode = DC_PRED_8; //setting c_ipred_mode to default is not the right place here
+                                      //resetting in rdopt.c (but where ??)
+                                      //with cabac and bframes maybe it could crash without this default
+                                      //since cabac needs the right neighborhood for the later MBs
+
+  if (currMB->mb_type !=0 && currMB->mb_type !=P8x8)
+  {
+    //----- motion information -----
+    no_bits  += writeMotionInfo2NAL  ();
+  }
+  
+  if ((currMB->mb_type!=0) || (img->type==B_SLICE && (currMB->cbp!=0)))
+  {
+    no_bits  += writeCBPandLumaCoeff ();
+    if (img->yuv_format != YUV400)
+      no_bits  += writeChromaCoeff     ();
+  }
+  
+  return no_bits;
+}

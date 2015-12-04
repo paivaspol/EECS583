@@ -1,0 +1,51 @@
+static void
+expand_builtin_return (result)
+     rtx result;
+{
+  int size, align, regno;
+  enum machine_mode mode;
+  rtx reg;
+  rtx call_fusage = 0;
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+  if (GET_MODE (result) != Pmode)
+    result = convert_memory_address (Pmode, result);
+#endif
+
+  apply_result_size ();
+  result = gen_rtx_MEM (BLKmode, result);
+
+#ifdef HAVE_untyped_return
+  if (HAVE_untyped_return)
+    {
+      emit_jump_insn (gen_untyped_return (result, result_vector (0, result)));
+      emit_barrier ();
+      return;
+    }
+#endif
+
+  /* Restore the return value and note that each value is used.  */
+  size = 0;
+  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+    if ((mode = apply_result_mode[regno]) != VOIDmode)
+      {
+	align = GET_MODE_ALIGNMENT (mode) / BITS_PER_UNIT;
+	if (size % align != 0)
+	  size = CEIL (size, align) * align;
+	reg = gen_rtx_REG (mode, INCOMING_REGNO (regno));
+	emit_move_insn (reg, adjust_address (result, mode, size));
+
+	push_to_sequence (call_fusage);
+	emit_insn (gen_rtx_USE (VOIDmode, reg));
+	call_fusage = get_insns ();
+	end_sequence ();
+	size += GET_MODE_SIZE (mode);
+      }
+
+  /* Put the USE insns before the return.  */
+  emit_insns (call_fusage);
+
+  /* Return whatever values was restored by jumping directly to the end
+     of the function.  */
+  expand_null_return ();
+}

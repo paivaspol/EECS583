@@ -1,0 +1,168 @@
+int
+Cluster(float **dmx, int N, enum clust_strategy mode, struct phylo_s **ret_tree)
+{
+  struct phylo_s *tree;         /* (0..N-2) phylogenetic tree          */
+  float    **mx;                /* copy of difference matrix           */
+  int       *coord;             /* (0..N-1), indices for matrix coords */
+  int        i, j;		/* coords of minimum difference        */
+  int        idx;		/* counter over seqs                   */
+  int        Np;                /* N', a working copy of N             */
+  int        row, col;          /* loop variables                      */
+  float      min;		/* best minimum score found            */
+  float     *trow;              /* tmp pointer for swapping rows       */
+  float      tcol;              /* tmp storage for swapping cols       */
+  float     *diff;		/* (0..N-2) difference scores at nodes */
+  int        swapfoo;		/* for SWAP() macro                    */
+
+  /**************************
+   * Initializations.
+   **************************/
+  /* We destroy the matrix we work on, so make a copy of dmx.
+   */
+  mx = MallocOrDie (sizeof(float *) * N);
+  for (i = 0; i < N; i++)
+    {
+      mx[i] = MallocOrDie (sizeof(float) * N);
+      for (j = 0; j < N; j++)
+	mx[i][j] = dmx[i][j];
+    }
+				/* coord array alloc, (0..N-1) */
+  coord = MallocOrDie (N     * sizeof(int));
+  diff  = MallocOrDie ((N-1) * sizeof(float));
+				/* init the coord array to 0..N-1 */
+  for (col = 0; col < N; col++)  coord[col] = col;
+  for (i = 0; i < N-1; i++)      diff[i] = 0.0;
+
+				/* tree array alloc, (0..N-2) */
+  if ((tree = AllocPhylo(N)) == NULL)  Die("AllocPhylo() failed");
+
+  /*********************************
+   * Process the difference matrix
+   *********************************/
+  
+				/* N-prime, for an NxN down to a 2x2 diffmx */
+  j= 0;				/* just to silence gcc uninit warnings */
+  for (Np = N; Np >= 2; Np--)
+    {
+				/* find a minimum on the N'xN' matrix*/
+      min = 999999.;
+      for (row = 0; row < Np; row++)
+	for (col = row+1; col < Np; col++)
+	  if (mx[row][col] < min)
+	    {
+	      min = mx[row][col];
+	      i   = row;
+	      j   = col;
+	    }
+
+      /* We're clustering row i with col j. write necessary
+       * data into a node on the tree
+       */
+				/* topology info */
+      tree[Np-2].left  = coord[i];
+      tree[Np-2].right = coord[j];
+      if (coord[i] >= N) tree[coord[i]-N].parent = N + Np - 2;
+      if (coord[j] >= N) tree[coord[j]-N].parent = N + Np - 2;
+
+				/* keep score info */
+      diff[Np-2] = tree[Np-2].diff = min;
+
+				/* way-simple branch length estimation */
+      tree[Np-2].lblen = tree[Np-2].rblen = min;
+      if (coord[i] >= N) tree[Np-2].lblen -= diff[coord[i]-N];
+      if (coord[j] >= N) tree[Np-2].rblen -= diff[coord[j]-N];
+
+				/* number seqs included at node */
+      if (coord[i] < N) 
+	{
+	  tree[Np-2].incnum ++;
+	  tree[Np-2].is_in[coord[i]] = 1;
+	}
+      else 
+	{
+	  tree[Np-2].incnum += tree[coord[i]-N].incnum;
+	  for (idx = 0; idx < N; idx++)
+	    tree[Np-2].is_in[idx] |= tree[coord[i]-N].is_in[idx];
+	}
+      
+      if (coord[j] < N) 
+	{
+	  tree[Np-2].incnum ++;
+	  tree[Np-2].is_in[coord[j]] = 1;
+	}
+      else 
+	{
+	  tree[Np-2].incnum += tree[coord[j]-N].incnum;
+	  for (idx = 0; idx < N; idx++)
+	    tree[Np-2].is_in[idx] |= tree[coord[j]-N].is_in[idx];
+	}
+
+
+      /* Now build a new matrix, by merging row i with row j and
+       * column i with column j; see Fitch and Margoliash
+       */
+				/* Row and column swapping. */
+				/* watch out for swapping i, j away: */
+      if (i == Np-1 || j == Np-2)
+	SWAP(i,j);
+
+      if (i != Np-2)
+	{
+				/* swap row i, row N'-2 */
+	  trow = mx[Np-2]; mx[Np-2] = mx[i]; mx[i] = trow;
+				/* swap col i, col N'-2 */
+	  for (row = 0; row < Np; row++) 
+	    {
+	      tcol = mx[row][Np-2];
+	      mx[row][Np-2] = mx[row][i];
+	      mx[row][i] = tcol;
+	    }
+				/* swap coord i, coord N'-2 */
+	  SWAP(coord[i], coord[Np-2]);
+	}
+
+      if (j != Np-1)
+	{
+				/* swap row j, row N'-1 */
+	  trow = mx[Np-1]; mx[Np-1] = mx[j]; mx[j] = trow;
+				/* swap col j, col N'-1 */
+	  for (row = 0; row < Np; row++) 
+	    {
+	      tcol = mx[row][Np-1];
+	      mx[row][Np-1] = mx[row][j];
+	      mx[row][j] = tcol;
+	    }
+				/* swap coord j, coord N'-1 */
+	  SWAP(coord[j], coord[Np-1]);
+	}
+
+				/* average i and j together; they're now
+				   at Np-2 and Np-1 though */
+      i = Np-2;
+      j = Np-1;
+				/* merge by saving avg of cols of row i and row j */
+      for (col = 0; col < Np; col++)
+	{
+	  switch (mode) {
+	  case CLUSTER_MEAN:  mx[i][col] =(mx[i][col]+ mx[j][col]) / 2.0; break;
+	  case CLUSTER_MIN:   mx[i][col] = MIN(mx[i][col], mx[j][col]);   break;
+	  case CLUSTER_MAX:   mx[i][col] = MAX(mx[i][col], mx[j][col]);   break;
+	  default:            mx[i][col] =(mx[i][col]+ mx[j][col]) / 2.0; break; 
+	  }
+	}
+				/* copy those rows to columns */
+      for (col = 0; col < Np; col++)
+	mx[col][i] = mx[i][col];
+				/* store the node index in coords */
+      coord[Np-2] = Np+N-2;
+    }
+
+  /**************************
+   * Garbage collection and return
+   **************************/
+  Free2DArray((void **) mx, N);
+  free(coord);
+  free(diff);
+  *ret_tree = tree;
+  return 1;
+}

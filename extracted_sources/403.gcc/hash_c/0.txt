@@ -1,0 +1,22 @@
+void
+hash_table_init_n (table, newfunc, hash, comp, size)
+     struct hash_table *table;
+     struct hash_entry *(*newfunc) PARAMS ((struct hash_entry *,
+					    struct hash_table *,
+					    hash_table_key));
+     unsigned long (*hash) PARAMS ((hash_table_key));
+     bool (*comp) PARAMS ((hash_table_key, hash_table_key));
+     unsigned int size;
+{
+  unsigned int alloc;
+
+  alloc = size * sizeof (struct hash_entry *);
+  obstack_begin (&table->memory, alloc);
+  table->table = ((struct hash_entry **)
+		  obstack_alloc (&table->memory, alloc));
+  memset ((PTR) table->table, 0, alloc);
+  table->size = size;
+  table->newfunc = newfunc;
+  table->hash = hash;
+  table->comp = comp;
+}

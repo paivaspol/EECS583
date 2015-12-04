@@ -1,0 +1,69 @@
+static void
+display_target_options ()
+{
+  int undoc, i;
+  static bool displayed = false;
+
+  /* Avoid double printing for --help --target-help.  */
+  if (displayed)
+    return;
+  displayed = true;
+
+  if (ARRAY_SIZE (target_switches) > 1
+#ifdef TARGET_OPTIONS
+      || ARRAY_SIZE (target_options) > 1
+#endif
+      )
+    {
+      int doc = 0;
+
+      undoc = 0;
+
+      printf (_("\nTarget specific options:\n"));
+
+      for (i = ARRAY_SIZE (target_switches); i--;)
+	{
+	  const char *option      = target_switches[i].name;
+	  const char *description = target_switches[i].description;
+
+	  if (option == NULL || *option == 0)
+	    continue;
+	  else if (description == NULL)
+	    {
+	      undoc = 1;
+
+	      if (extra_warnings)
+		printf (_("  -m%-23.23s [undocumented]\n"), option);
+	    }
+	  else if (* description != 0)
+	    doc += printf ("  -m%-23.23s %s\n", option, _(description));
+	}
+
+#ifdef TARGET_OPTIONS
+      for (i = ARRAY_SIZE (target_options); i--;)
+	{
+	  const char *option      = target_options[i].prefix;
+	  const char *description = target_options[i].description;
+
+	  if (option == NULL || *option == 0)
+	    continue;
+	  else if (description == NULL)
+	    {
+	      undoc = 1;
+
+	      if (extra_warnings)
+		printf (_("  -m%-23.23s [undocumented]\n"), option);
+	    }
+	  else if (* description != 0)
+	    doc += printf ("  -m%-23.23s %s\n", option, _(description));
+	}
+#endif
+      if (undoc)
+	{
+	  if (doc)
+	    printf (_("\nThere are undocumented target specific options as well.\n"));
+	  else
+	    printf (_("  They exist, but they are not documented.\n"));
+	}
+    }
+}

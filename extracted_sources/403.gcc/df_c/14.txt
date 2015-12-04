@@ -1,0 +1,48 @@
+static struct ref *
+df_ref_create (df, reg, loc, insn, ref_type, ref_flags)
+     struct df *df;
+     rtx reg;
+     rtx *loc;
+     rtx insn;
+     enum df_ref_type ref_type;
+     enum df_ref_flags ref_flags;
+{
+  struct ref *this_ref;
+  unsigned int uid;
+
+  this_ref = (struct ref *) obstack_alloc (&df_ref_obstack,
+					   sizeof (*this_ref));
+  DF_REF_REG (this_ref) = reg;
+  DF_REF_LOC (this_ref) = loc;
+  DF_REF_INSN (this_ref) = insn;
+  DF_REF_CHAIN (this_ref) = 0;
+  DF_REF_TYPE (this_ref) = ref_type;
+  DF_REF_FLAGS (this_ref) = ref_flags;
+  uid = INSN_UID (insn);
+
+  if (ref_type == DF_REF_REG_DEF)
+    {
+      if (df->def_id >= df->def_size)
+	{
+	  /* Make table 25 percent larger.  */
+	  df->def_size += (df->def_size / 4);
+	  df->defs = xrealloc (df->defs,
+			       df->def_size * sizeof (*df->defs));
+	}
+      DF_REF_ID (this_ref) = df->def_id;
+      df->defs[df->def_id++] = this_ref;
+    }
+  else
+    {
+      if (df->use_id >= df->use_size)
+	{
+	  /* Make table 25 percent larger.  */
+	  df->use_size += (df->use_size / 4);
+	  df->uses = xrealloc (df->uses,
+			       df->use_size * sizeof (*df->uses));
+	}
+      DF_REF_ID (this_ref) = df->use_id;
+      df->uses[df->use_id++] = this_ref;
+    }
+  return this_ref;
+}

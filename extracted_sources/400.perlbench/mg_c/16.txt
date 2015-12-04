@@ -1,0 +1,67 @@
+int
+Perl_magic_clearsig(pTHX_ SV *sv, MAGIC *mg)
+{
+    /* XXX Some of this code was copied from Perl_magic_setsig. A little
+     * refactoring might be in order.
+     */
+    register char *s;
+    STRLEN n_a;
+    SV* to_dec;
+    s = MgPV(mg,n_a);
+    if (*s == '_') {
+	SV** svp;
+	if (strEQ(s,"__DIE__"))
+	    svp = &PL_diehook;
+	else if (strEQ(s,"__WARN__"))
+	    svp = &PL_warnhook;
+	else
+	    Perl_croak(aTHX_ "No such hook: %s", s);
+	if (*svp) {
+	    to_dec = *svp;
+	    *svp = 0;
+    	    SvREFCNT_dec(to_dec);
+	}
+    }
+    else {
+	I32 i;
+	/* Are we clearing a signal entry? */
+	i = whichsig(s);
+	if (i > 0) {
+#ifdef HAS_SIGPROCMASK
+	    sigset_t set, save;
+	    SV* save_sv;
+	    /* Avoid having the signal arrive at a bad time, if possible. */
+	    sigemptyset(&set);
+	    sigaddset(&set,i);
+	    sigprocmask(SIG_BLOCK, &set, &save);
+	    ENTER;
+	    save_sv = newSVpv((char *)(&save), sizeof(sigset_t));
+	    SAVEFREESV(save_sv);
+	    SAVEDESTRUCTOR_X(restore_sigmask, save_sv);
+#endif
+	    PERL_ASYNC_CHECK();
+#if defined(FAKE_PERSISTENT_SIGNAL_HANDLERS) || defined(FAKE_DEFAULT_SIGNAL_HANDLERS)
+	    if (!sig_handlers_initted) Perl_csighandler_init();
+#endif
+#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+	    sig_defaulting[i] = 1;
+	    (void)rsignal(i, PL_csighandlerp);
+#else
+	    (void)rsignal(i, SIG_DFL);
+#endif
+    	    if(PL_psig_name[i]) {
+    		SvREFCNT_dec(PL_psig_name[i]);
+    		PL_psig_name[i]=0;
+    	    }
+    	    if(PL_psig_ptr[i]) {
+		to_dec=PL_psig_ptr[i];
+    		PL_psig_ptr[i]=0;
+		LEAVE;
+    		SvREFCNT_dec(to_dec);
+    	    }
+	    else
+		LEAVE;
+	}
+    }
+    return 0;
+}

@@ -1,0 +1,31 @@
+static int
+ix86_sched_reorder (dump, sched_verbose, ready, n_readyp, clock_var)
+     FILE *dump ATTRIBUTE_UNUSED;
+     int sched_verbose ATTRIBUTE_UNUSED;
+     rtx *ready;
+     int *n_readyp;
+     int clock_var ATTRIBUTE_UNUSED;
+{
+  int n_ready = *n_readyp;
+  rtx *e_ready = ready + n_ready - 1;
+
+  if (n_ready < 2)
+    goto out;
+
+  switch (ix86_cpu)
+    {
+    default:
+      break;
+
+    case PROCESSOR_PENTIUM:
+      ix86_sched_reorder_pentium (ready, e_ready);
+      break;
+
+    case PROCESSOR_PENTIUMPRO:
+      ix86_sched_reorder_ppro (ready, e_ready);
+      break;
+    }
+
+out:
+  return ix86_issue_rate ();
+}

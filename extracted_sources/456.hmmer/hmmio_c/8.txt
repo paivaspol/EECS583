@@ -1,0 +1,172 @@
+static int
+read_bin20hmm(HMMFILE *hmmfp, struct plan7_s **ret_hmm)
+{
+   struct plan7_s *hmm;
+   int    k,x;
+   int    type;
+   unsigned int magic;
+
+   hmm = NULL;
+
+   /* Header section
+    */
+   if (feof(hmmfp->f))                                      return 0;
+   if (! fread((char *) &magic, sizeof(unsigned int), 1, hmmfp->f)) return 0;
+
+   if (hmmfp->byteswap) byteswap((char *)&magic, sizeof(unsigned int));
+   if (magic != v20magic) goto FAILURE;
+				/* allocate HMM shell for header info */
+   hmm = AllocPlan7Shell();
+				/* flags */
+   if (! fread((char *) &(hmm->flags), sizeof(int), 1, hmmfp->f)) goto FAILURE;
+   if (hmmfp->byteswap) byteswap((char *)&(hmm->flags), sizeof(int)); 
+				/* name */
+   if (! read_bin_string(hmmfp->f, hmmfp->byteswap, &(hmm->name))) goto FAILURE;
+
+				/* optional accession */
+   if ((hmm->flags & PLAN7_ACC) &&
+       ! read_bin_string(hmmfp->f, hmmfp->byteswap, &(hmm->acc))) goto FAILURE;
+				/* optional description */
+   if ((hmm->flags & PLAN7_DESC) &&
+       ! read_bin_string(hmmfp->f, hmmfp->byteswap, &(hmm->desc))) goto FAILURE;
+				/* length of model */
+   if (! fread((char *) &hmm->M,  sizeof(int), 1, hmmfp->f)) goto FAILURE;
+   if (hmmfp->byteswap) byteswap((char *)&(hmm->M), sizeof(int)); 
+				/* alphabet type */
+   if (! fread((char *) &type, sizeof(int), 1, hmmfp->f)) goto FAILURE;
+   if (hmmfp->byteswap) byteswap((char *)&type, sizeof(int)); 
+   if (Alphabet_type == hmmNOTSETYET) SetAlphabet(type);
+   else if (type != Alphabet_type) 
+     Die("Alphabet mismatch error.\nI thought we were working with %s, but tried to read a %s HMM.\n", AlphabetType2String(Alphabet_type), AlphabetType2String(type));
+
+				/* now allocate for rest of model */
+   AllocPlan7Body(hmm, hmm->M);
+
+				/* optional #=RF alignment annotation */
+   if ((hmm->flags & PLAN7_RF) &&
+       !fread((char *) hmm->rf, sizeof(char), hmm->M+1, hmmfp->f)) goto FAILURE;
+   hmm->rf[hmm->M+1] = '\0';
+				/* optional #=CS alignment annotation */
+   if ((hmm->flags & PLAN7_CS) &&
+       !fread((char *) hmm->cs, sizeof(char), hmm->M+1, hmmfp->f)) goto FAILURE;
+   hmm->cs[hmm->M+1]  = '\0';
+				/* optional alignment map annotation */
+   if ((hmm->flags & PLAN7_MAP) &&
+       !fread((char *) hmm->map, sizeof(int), hmm->M+1, hmmfp->f)) goto FAILURE;
+   if (hmmfp->byteswap)
+     for (k = 1; k <= hmm->M; k++)
+       byteswap((char*)&(hmm->map[k]), sizeof(int));
+				/* command line log */
+   if (!read_bin_string(hmmfp->f, hmmfp->byteswap, &(hmm->comlog)))  goto FAILURE;
+				/* nseq */
+   if (!fread((char *) &(hmm->nseq),sizeof(int), 1, hmmfp->f))       goto FAILURE;
+   if (hmmfp->byteswap) byteswap((char *)&(hmm->nseq), sizeof(int)); 
+				/* creation time */
+   if (!read_bin_string(hmmfp->f, hmmfp->byteswap, &(hmm->ctime)))   goto FAILURE;
+				/* checksum */
+   if (!fread((char *) &(hmm->checksum),sizeof(int), 1, hmmfp->f))       goto FAILURE;
+   if (hmmfp->byteswap) byteswap((char *)&(hmm->checksum), sizeof(int)); 
+     
+				/* Pfam gathering thresholds */
+   if (hmm->flags & PLAN7_GA) {
+     if (! fread((char *) &(hmm->ga1), sizeof(float), 1, hmmfp->f)) goto FAILURE;
+     if (! fread((char *) &(hmm->ga2), sizeof(float), 1, hmmfp->f)) goto FAILURE;
+     if (hmmfp->byteswap) {
+       byteswap((char *) &(hmm->ga1), sizeof(float));
+       byteswap((char *) &(hmm->ga2), sizeof(float));
+     }
+   }
+				/* Pfam trusted cutoffs */
+   if (hmm->flags & PLAN7_TC) {
+     if (! fread((char *) &(hmm->tc1), sizeof(float), 1, hmmfp->f)) goto FAILURE;
+     if (! fread((char *) &(hmm->tc2), sizeof(float), 1, hmmfp->f)) goto FAILURE;
+     if (hmmfp->byteswap) {
+       byteswap((char *) &(hmm->tc1), sizeof(float));
+       byteswap((char *) &(hmm->tc2), sizeof(float));
+     }
+   }
+				/* Pfam noise cutoffs */
+   if (hmm->flags & PLAN7_NC) {
+     if (! fread((char *) &(hmm->nc1), sizeof(float), 1, hmmfp->f)) goto FAILURE;
+     if (! fread((char *) &(hmm->nc2), sizeof(float), 1, hmmfp->f)) goto FAILURE;
+     if (hmmfp->byteswap) {
+       byteswap((char *) &(hmm->nc1), sizeof(float));
+       byteswap((char *) &(hmm->nc2), sizeof(float));
+     }
+   }
+
+   /* specials */
+   for (k = 0; k < 4; k++)
+     {
+       if (! fread((char *) hmm->xt[k], sizeof(float), 2, hmmfp->f))    goto FAILURE;
+       if (hmmfp->byteswap) {
+	 for (x = 0; x < 2; x++)
+	   byteswap((char *)&(hmm->xt[k][x]), sizeof(float));
+       }
+     }
+   
+   /* null model */
+   if (!fread((char *) &(hmm->p1),sizeof(float), 1, hmmfp->f))        goto FAILURE;
+   if (!fread((char *)hmm->null,sizeof(float),Alphabet_size,hmmfp->f))goto FAILURE;
+
+  /* EVD stats */
+  if (hmm->flags & PLAN7_STATS) {
+    if (! fread((char *) &(hmm->mu),     sizeof(float), 1, hmmfp->f))goto FAILURE;
+    if (! fread((char *) &(hmm->lambda), sizeof(float), 1, hmmfp->f))goto FAILURE;
+
+    if (hmmfp->byteswap) {
+      byteswap((char *)&(hmm->mu),     sizeof(float));
+      byteswap((char *)&(hmm->lambda), sizeof(float));
+    }
+  }
+
+   /* entry/exit probabilities
+    */
+   if (! fread((char *)&(hmm->tbd1), sizeof(float), 1, hmmfp->f))       goto FAILURE;
+   if (! fread((char *) hmm->begin, sizeof(float), hmm->M+1, hmmfp->f)) goto FAILURE;
+   if (! fread((char *) hmm->end,   sizeof(float), hmm->M+1, hmmfp->f)) goto FAILURE;
+
+				/* main model */
+   for (k = 1; k <= hmm->M; k++)
+     if (! fread((char *) hmm->mat[k], sizeof(float), Alphabet_size, hmmfp->f)) goto FAILURE;
+   for (k = 1; k < hmm->M; k++)
+     if (! fread((char *) hmm->ins[k], sizeof(float), Alphabet_size, hmmfp->f)) goto FAILURE;
+   for (k = 1; k < hmm->M; k++)
+     if (! fread((char *) hmm->t[k], sizeof(float), 7, hmmfp->f)) goto FAILURE;
+
+  /* byteswapping
+   */
+  if (hmmfp->byteswap) {
+    for (x = 0; x < Alphabet_size; x++) 
+      byteswap((char *) &(hmm->null[x]), sizeof(float));
+    byteswap((char *)&(hmm->p1),   sizeof(float));
+    byteswap((char *)&(hmm->tbd1), sizeof(float));
+
+    for (k = 1; k <= hmm->M; k++) 
+      { 
+	for (x = 0; x < Alphabet_size; x++) 
+	  byteswap((char *)&(hmm->mat[k][x]), sizeof(float));
+	if (k < hmm->M) 
+	  for (x = 0; x < Alphabet_size; x++) 
+	    byteswap((char *)&(hmm->ins[k][x]), sizeof(float));
+	byteswap((char *)&(hmm->begin[k]),  sizeof(float));
+	byteswap((char *)&(hmm->end[k]),    sizeof(float));
+	if (k < hmm->M)
+	  for (x = 0; x < 7; x++) 
+	    byteswap((char *)&(hmm->t[k][x]), sizeof(float));
+      }
+  }
+
+    
+  /* set flags and return
+   */
+  hmm->flags |= PLAN7_HASPROB;	/* probabilities are valid  */
+  hmm->flags &= ~PLAN7_HASBITS;	/* scores are not yet valid */
+  *ret_hmm = hmm;
+  return 1;
+
+FAILURE:
+  if (hmm != NULL) FreePlan7(hmm);
+  *ret_hmm = NULL;
+  return 1;
+}

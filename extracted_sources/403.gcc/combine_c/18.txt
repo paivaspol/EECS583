@@ -1,0 +1,283 @@
+static rtx
+simplify_set (x)
+     rtx x;
+{
+  rtx src = SET_SRC (x);
+  rtx dest = SET_DEST (x);
+  enum machine_mode mode
+    = GET_MODE (src) != VOIDmode ? GET_MODE (src) : GET_MODE (dest);
+  rtx other_insn;
+  rtx *cc_use;
+
+  /* (set (pc) (return)) gets written as (return).  */
+  if (GET_CODE (dest) == PC && GET_CODE (src) == RETURN)
+    return src;
+
+  /* Now that we know for sure which bits of SRC we are using, see if we can
+     simplify the expression for the object knowing that we only need the
+     low-order bits.  */
+
+  if (GET_MODE_CLASS (mode) == MODE_INT)
+    {
+      src = force_to_mode (src, mode, ~(HOST_WIDE_INT) 0, NULL_RTX, 0);
+      SUBST (SET_SRC (x), src);
+    }
+
+  /* If we are setting CC0 or if the source is a COMPARE, look for the use of
+     the comparison result and try to simplify it unless we already have used
+     undobuf.other_insn.  */
+  if ((GET_CODE (src) == COMPARE
+#ifdef HAVE_cc0
+       || dest == cc0_rtx
+#endif
+       )
+      && (cc_use = find_single_use (dest, subst_insn, &other_insn)) != 0
+      && (undobuf.other_insn == 0 || other_insn == undobuf.other_insn)
+      && GET_RTX_CLASS (GET_CODE (*cc_use)) == '<'
+      && rtx_equal_p (XEXP (*cc_use, 0), dest))
+    {
+      enum rtx_code old_code = GET_CODE (*cc_use);
+      enum rtx_code new_code;
+      rtx op0, op1;
+      int other_changed = 0;
+      enum machine_mode compare_mode = GET_MODE (dest);
+
+      if (GET_CODE (src) == COMPARE)
+	op0 = XEXP (src, 0), op1 = XEXP (src, 1);
+      else
+	op0 = src, op1 = const0_rtx;
+
+      /* Simplify our comparison, if possible.  */
+      new_code = simplify_comparison (old_code, &op0, &op1);
+
+#ifdef EXTRA_CC_MODES
+      /* If this machine has CC modes other than CCmode, check to see if we
+	 need to use a different CC mode here.  */
+      compare_mode = SELECT_CC_MODE (new_code, op0, op1);
+#endif /* EXTRA_CC_MODES */
+
+#if !defined (HAVE_cc0) && defined (EXTRA_CC_MODES)
+      /* If the mode changed, we have to change SET_DEST, the mode in the
+	 compare, and the mode in the place SET_DEST is used.  If SET_DEST is
+	 a hard register, just build new versions with the proper mode.  If it
+	 is a pseudo, we lose unless it is only time we set the pseudo, in
+	 which case we can safely change its mode.  */
+      if (compare_mode != GET_MODE (dest))
+	{
+	  unsigned int regno = REGNO (dest);
+	  rtx new_dest = gen_rtx_REG (compare_mode, regno);
+
+	  if (regno < FIRST_PSEUDO_REGISTER
+	      || (REG_N_SETS (regno) == 1 && ! REG_USERVAR_P (dest)))
+	    {
+	      if (regno >= FIRST_PSEUDO_REGISTER)
+		SUBST (regno_reg_rtx[regno], new_dest);
+
+	      SUBST (SET_DEST (x), new_dest);
+	      SUBST (XEXP (*cc_use, 0), new_dest);
+	      other_changed = 1;
+
+	      dest = new_dest;
+	    }
+	}
+#endif
+
+      /* If the code changed, we have to build a new comparison in
+	 undobuf.other_insn.  */
+      if (new_code != old_code)
+	{
+	  unsigned HOST_WIDE_INT mask;
+
+	  SUBST (*cc_use, gen_rtx_fmt_ee (new_code, GET_MODE (*cc_use),
+					  dest, const0_rtx));
+
+	  /* If the only change we made was to change an EQ into an NE or
+	     vice versa, OP0 has only one bit that might be nonzero, and OP1
+	     is zero, check if changing the user of the condition code will
+	     produce a valid insn.  If it won't, we can keep the original code
+	     in that insn by surrounding our operation with an XOR.  */
+
+	  if (((old_code == NE && new_code == EQ)
+	       || (old_code == EQ && new_code == NE))
+	      && ! other_changed && op1 == const0_rtx
+	      && GET_MODE_BITSIZE (GET_MODE (op0)) <= HOST_BITS_PER_WIDE_INT
+	      && exact_log2 (mask = nonzero_bits (op0, GET_MODE (op0))) >= 0)
+	    {
+	      rtx pat = PATTERN (other_insn), note = 0;
+
+	      if ((recog_for_combine (&pat, other_insn, &note) < 0
+		   && ! check_asm_operands (pat)))
+		{
+		  PUT_CODE (*cc_use, old_code);
+		  other_insn = 0;
+
+		  op0 = gen_binary (XOR, GET_MODE (op0), op0, GEN_INT (mask));
+		}
+	    }
+
+	  other_changed = 1;
+	}
+
+      if (other_changed)
+	undobuf.other_insn = other_insn;
+
+#ifdef HAVE_cc0
+      /* If we are now comparing against zero, change our source if
+	 needed.  If we do not use cc0, we always have a COMPARE.  */
+      if (op1 == const0_rtx && dest == cc0_rtx)
+	{
+	  SUBST (SET_SRC (x), op0);
+	  src = op0;
+	}
+      else
+#endif
+
+      /* Otherwise, if we didn't previously have a COMPARE in the
+	 correct mode, we need one.  */
+      if (GET_CODE (src) != COMPARE || GET_MODE (src) != compare_mode)
+	{
+	  SUBST (SET_SRC (x), gen_rtx_COMPARE (compare_mode, op0, op1));
+	  src = SET_SRC (x);
+	}
+      else
+	{
+	  /* Otherwise, update the COMPARE if needed.  */
+	  SUBST (XEXP (src, 0), op0);
+	  SUBST (XEXP (src, 1), op1);
+	}
+    }
+  else
+    {
+      /* Get SET_SRC in a form where we have placed back any
+	 compound expressions.  Then do the checks below.  */
+      src = make_compound_operation (src, SET);
+      SUBST (SET_SRC (x), src);
+    }
+
+  /* If we have (set x (subreg:m1 (op:m2 ...) 0)) with OP being some operation,
+     and X being a REG or (subreg (reg)), we may be able to convert this to
+     (set (subreg:m2 x) (op)).
+
+     We can always do this if M1 is narrower than M2 because that means that
+     we only care about the low bits of the result.
+
+     However, on machines without WORD_REGISTER_OPERATIONS defined, we cannot
+     perform a narrower operation than requested since the high-order bits will
+     be undefined.  On machine where it is defined, this transformation is safe
+     as long as M1 and M2 have the same number of words.  */
+
+  if (GET_CODE (src) == SUBREG && subreg_lowpart_p (src)
+      && GET_RTX_CLASS (GET_CODE (SUBREG_REG (src))) != 'o'
+      && (((GET_MODE_SIZE (GET_MODE (src)) + (UNITS_PER_WORD - 1))
+	   / UNITS_PER_WORD)
+	  == ((GET_MODE_SIZE (GET_MODE (SUBREG_REG (src)))
+	       + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD))
+#ifndef WORD_REGISTER_OPERATIONS
+      && (GET_MODE_SIZE (GET_MODE (src))
+	  < GET_MODE_SIZE (GET_MODE (SUBREG_REG (src))))
+#endif
+#ifdef CLASS_CANNOT_CHANGE_MODE
+      && ! (GET_CODE (dest) == REG && REGNO (dest) < FIRST_PSEUDO_REGISTER
+	    && (TEST_HARD_REG_BIT
+		(reg_class_contents[(int) CLASS_CANNOT_CHANGE_MODE],
+		 REGNO (dest)))
+	    && CLASS_CANNOT_CHANGE_MODE_P (GET_MODE (src),
+					   GET_MODE (SUBREG_REG (src))))
+#endif
+      && (GET_CODE (dest) == REG
+	  || (GET_CODE (dest) == SUBREG
+	      && GET_CODE (SUBREG_REG (dest)) == REG)))
+    {
+      SUBST (SET_DEST (x),
+	     gen_lowpart_for_combine (GET_MODE (SUBREG_REG (src)),
+				      dest));
+      SUBST (SET_SRC (x), SUBREG_REG (src));
+
+      src = SET_SRC (x), dest = SET_DEST (x);
+    }
+
+#ifdef LOAD_EXTEND_OP
+  /* If we have (set FOO (subreg:M (mem:N BAR) 0)) with M wider than N, this
+     would require a paradoxical subreg.  Replace the subreg with a
+     zero_extend to avoid the reload that would otherwise be required.  */
+
+  if (GET_CODE (src) == SUBREG && subreg_lowpart_p (src)
+      && LOAD_EXTEND_OP (GET_MODE (SUBREG_REG (src))) != NIL
+      && SUBREG_BYTE (src) == 0
+      && (GET_MODE_SIZE (GET_MODE (src))
+	  > GET_MODE_SIZE (GET_MODE (SUBREG_REG (src))))
+      && GET_CODE (SUBREG_REG (src)) == MEM)
+    {
+      SUBST (SET_SRC (x),
+	     gen_rtx (LOAD_EXTEND_OP (GET_MODE (SUBREG_REG (src))),
+		      GET_MODE (src), SUBREG_REG (src)));
+
+      src = SET_SRC (x);
+    }
+#endif
+
+  /* If we don't have a conditional move, SET_SRC is an IF_THEN_ELSE, and we
+     are comparing an item known to be 0 or -1 against 0, use a logical
+     operation instead. Check for one of the arms being an IOR of the other
+     arm with some value.  We compute three terms to be IOR'ed together.  In
+     practice, at most two will be nonzero.  Then we do the IOR's.  */
+
+  if (GET_CODE (dest) != PC
+      && GET_CODE (src) == IF_THEN_ELSE
+      && GET_MODE_CLASS (GET_MODE (src)) == MODE_INT
+      && (GET_CODE (XEXP (src, 0)) == EQ || GET_CODE (XEXP (src, 0)) == NE)
+      && XEXP (XEXP (src, 0), 1) == const0_rtx
+      && GET_MODE (src) == GET_MODE (XEXP (XEXP (src, 0), 0))
+#ifdef HAVE_conditional_move
+      && ! can_conditionally_move_p (GET_MODE (src))
+#endif
+      && (num_sign_bit_copies (XEXP (XEXP (src, 0), 0),
+			       GET_MODE (XEXP (XEXP (src, 0), 0)))
+	  == GET_MODE_BITSIZE (GET_MODE (XEXP (XEXP (src, 0), 0))))
+      && ! side_effects_p (src))
+    {
+      rtx true_rtx = (GET_CODE (XEXP (src, 0)) == NE
+		      ? XEXP (src, 1) : XEXP (src, 2));
+      rtx false_rtx = (GET_CODE (XEXP (src, 0)) == NE
+		   ? XEXP (src, 2) : XEXP (src, 1));
+      rtx term1 = const0_rtx, term2, term3;
+
+      if (GET_CODE (true_rtx) == IOR
+	  && rtx_equal_p (XEXP (true_rtx, 0), false_rtx))
+	term1 = false_rtx, true_rtx = XEXP(true_rtx, 1), false_rtx = const0_rtx;
+      else if (GET_CODE (true_rtx) == IOR
+	       && rtx_equal_p (XEXP (true_rtx, 1), false_rtx))
+	term1 = false_rtx, true_rtx = XEXP(true_rtx, 0), false_rtx = const0_rtx;
+      else if (GET_CODE (false_rtx) == IOR
+	       && rtx_equal_p (XEXP (false_rtx, 0), true_rtx))
+	term1 = true_rtx, false_rtx = XEXP(false_rtx, 1), true_rtx = const0_rtx;
+      else if (GET_CODE (false_rtx) == IOR
+	       && rtx_equal_p (XEXP (false_rtx, 1), true_rtx))
+	term1 = true_rtx, false_rtx = XEXP(false_rtx, 0), true_rtx = const0_rtx;
+
+      term2 = gen_binary (AND, GET_MODE (src),
+			  XEXP (XEXP (src, 0), 0), true_rtx);
+      term3 = gen_binary (AND, GET_MODE (src),
+			  simplify_gen_unary (NOT, GET_MODE (src),
+					      XEXP (XEXP (src, 0), 0),
+					      GET_MODE (src)),
+			  false_rtx);
+
+      SUBST (SET_SRC (x),
+	     gen_binary (IOR, GET_MODE (src),
+			 gen_binary (IOR, GET_MODE (src), term1, term2),
+			 term3));
+
+      src = SET_SRC (x);
+    }
+
+  /* If either SRC or DEST is a CLOBBER of (const_int 0), make this
+     whole thing fail.  */
+  if (GET_CODE (src) == CLOBBER && XEXP (src, 0) == const0_rtx)
+    return src;
+  else if (GET_CODE (dest) == CLOBBER && XEXP (dest, 0) == const0_rtx)
+    return dest;
+  else
+    /* Convert this into a field assignment operation, if possible.  */
+    return make_field_assignment (x);
+}

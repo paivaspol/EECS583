@@ -1,0 +1,17 @@
+static rtx
+safe_vector_operand (x, mode)
+     rtx x;
+     enum machine_mode mode;
+{
+  if (x != const0_rtx)
+    return x;
+  x = gen_reg_rtx (mode);
+
+  if (VALID_MMX_REG_MODE (mode) || VALID_MMX_REG_MODE_3DNOW (mode))
+    emit_insn (gen_mmx_clrdi (mode == DImode ? x
+			      : gen_rtx_SUBREG (DImode, x, 0)));
+  else
+    emit_insn (gen_sse_clrv4sf (mode == V4SFmode ? x
+				: gen_rtx_SUBREG (V4SFmode, x, 0)));
+  return x;
+}

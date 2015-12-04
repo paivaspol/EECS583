@@ -1,0 +1,92 @@
+static rtx
+inc_for_reload (reloadreg, in, value, inc_amount)
+     rtx reloadreg;
+     rtx in, value;
+     int inc_amount;
+{
+  /* REG or MEM to be copied and incremented.  */
+  rtx incloc = XEXP (value, 0);
+  /* Nonzero if increment after copying.  */
+  int post = (GET_CODE (value) == POST_DEC || GET_CODE (value) == POST_INC);
+  rtx last;
+  rtx inc;
+  rtx add_insn;
+  int code;
+  rtx store;
+  rtx real_in = in == value ? XEXP (in, 0) : in;
+
+  /* No hard register is equivalent to this register after
+     inc/dec operation.  If REG_LAST_RELOAD_REG were non-zero,
+     we could inc/dec that register as well (maybe even using it for
+     the source), but I'm not sure it's worth worrying about.  */
+  if (GET_CODE (incloc) == REG)
+    reg_last_reload_reg[REGNO (incloc)] = 0;
+
+  if (GET_CODE (value) == PRE_DEC || GET_CODE (value) == POST_DEC)
+    inc_amount = -inc_amount;
+
+  inc = GEN_INT (inc_amount);
+
+  /* If this is post-increment, first copy the location to the reload reg.  */
+  if (post && real_in != reloadreg)
+    emit_insn (gen_move_insn (reloadreg, real_in));
+
+  if (in == value)
+    {
+      /* See if we can directly increment INCLOC.  Use a method similar to
+	 that in gen_reload.  */
+
+      last = get_last_insn ();
+      add_insn = emit_insn (gen_rtx_SET (VOIDmode, incloc,
+					 gen_rtx_PLUS (GET_MODE (incloc),
+						       incloc, inc)));
+
+      code = recog_memoized (add_insn);
+      if (code >= 0)
+	{
+	  extract_insn (add_insn);
+	  if (constrain_operands (1))
+	    {
+	      /* If this is a pre-increment and we have incremented the value
+		 where it lives, copy the incremented value to RELOADREG to
+		 be used as an address.  */
+
+	      if (! post)
+		emit_insn (gen_move_insn (reloadreg, incloc));
+
+	      return add_insn;
+	    }
+	}
+      delete_insns_since (last);
+    }
+
+  /* If couldn't do the increment directly, must increment in RELOADREG.
+     The way we do this depends on whether this is pre- or post-increment.
+     For pre-increment, copy INCLOC to the reload register, increment it
+     there, then save back.  */
+
+  if (! post)
+    {
+      if (in != reloadreg)
+	emit_insn (gen_move_insn (reloadreg, real_in));
+      emit_insn (gen_add2_insn (reloadreg, inc));
+      store = emit_insn (gen_move_insn (incloc, reloadreg));
+    }
+  else
+    {
+      /* Postincrement.
+	 Because this might be a jump insn or a compare, and because RELOADREG
+	 may not be available after the insn in an input reload, we must do
+	 the incrementation before the insn being reloaded for.
+
+	 We have already copied IN to RELOADREG.  Increment the copy in
+	 RELOADREG, save that back, then decrement RELOADREG so it has
+	 the original value.  */
+
+      emit_insn (gen_add2_insn (reloadreg, inc));
+      store = emit_insn (gen_move_insn (incloc, reloadreg));
+      emit_insn (gen_add2_insn (reloadreg, GEN_INT (-inc_amount)));
+    }
+
+  return store;
+}

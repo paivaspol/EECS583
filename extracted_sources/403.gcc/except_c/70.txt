@@ -1,0 +1,17 @@
+static void
+add_reachable_handler (info, lp_region, region)
+     struct reachable_info *info;
+     struct eh_region *lp_region;
+     struct eh_region *region;
+{
+  if (! info)
+    return;
+
+  if (cfun->eh->built_landing_pads)
+    {
+      if (! info->handlers)
+	info->handlers = alloc_INSN_LIST (lp_region->landing_pad, NULL_RTX);
+    }
+  else
+    info->handlers = alloc_INSN_LIST (region->label, info->handlers);
+}

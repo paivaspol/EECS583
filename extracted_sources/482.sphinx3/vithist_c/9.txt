@@ -1,0 +1,15 @@
+void vithist_frame_windup (vithist_t *vh, int32 frm, FILE *fp, kbcore_t *kbc)
+{
+    assert (vh->n_frm == frm);
+    
+    vh->n_frm++;
+    vh->frame_start[vh->n_frm] = vh->n_entry;
+    
+    if (fp)
+	vithist_dump (vh, frm, kbc, fp);
+    
+    vithist_lmstate_reset (vh);
+    
+    vh->bestscore[vh->n_frm] = MAX_NEG_INT32;
+    vh->bestvh[vh->n_frm] = -1;
+}

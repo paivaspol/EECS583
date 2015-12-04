@@ -1,0 +1,26 @@
+static void
+do_pragma_dependency (pfile)
+     cpp_reader *pfile;
+{
+  const cpp_token *header;
+  int ordering;
+ 
+  header = parse_include (pfile);
+  if (!header)
+    return;
+
+  ordering = _cpp_compare_file_date (pfile, header);
+  if (ordering < 0)
+    cpp_warning (pfile, "cannot find source %s",
+		 cpp_token_as_text (pfile, header));
+  else if (ordering > 0)
+    {
+      cpp_warning (pfile, "current file is older than %s",
+		   cpp_token_as_text (pfile, header));
+      if (cpp_get_token (pfile)->type != CPP_EOF)
+	{
+	  _cpp_backup_tokens (pfile, 1);
+	  do_diagnostic (pfile, WARNING, 0);
+	}
+    }
+}

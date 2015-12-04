@@ -1,0 +1,13 @@
+void
+cpp_make_system_header (pfile, syshdr, externc)
+     cpp_reader *pfile;
+     int syshdr, externc;
+{
+  int flags = 0;
+
+  /* 1 = system header, 2 = system header to be treated as C.  */
+  if (syshdr)
+    flags = 1 + (externc != 0);
+  _cpp_do_file_change (pfile, LC_RENAME, pfile->map->to_file,
+		       SOURCE_LINE (pfile->map, pfile->line), flags);
+}

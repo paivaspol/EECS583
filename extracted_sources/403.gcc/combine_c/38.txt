@@ -1,0 +1,100 @@
+static rtx
+gen_lowpart_for_combine (mode, x)
+     enum machine_mode mode;
+     rtx x;
+{
+  rtx result;
+
+  if (GET_MODE (x) == mode)
+    return x;
+
+  /* We can only support MODE being wider than a word if X is a
+     constant integer or has a mode the same size.  */
+
+  if (GET_MODE_SIZE (mode) > UNITS_PER_WORD
+      && ! ((GET_MODE (x) == VOIDmode
+	     && (GET_CODE (x) == CONST_INT
+		 || GET_CODE (x) == CONST_DOUBLE))
+	    || GET_MODE_SIZE (GET_MODE (x)) == GET_MODE_SIZE (mode)))
+    return gen_rtx_CLOBBER (GET_MODE (x), const0_rtx);
+
+  /* X might be a paradoxical (subreg (mem)).  In that case, gen_lowpart
+     won't know what to do.  So we will strip off the SUBREG here and
+     process normally.  */
+  if (GET_CODE (x) == SUBREG && GET_CODE (SUBREG_REG (x)) == MEM)
+    {
+      x = SUBREG_REG (x);
+      if (GET_MODE (x) == mode)
+	return x;
+    }
+
+  result = gen_lowpart_common (mode, x);
+#ifdef CLASS_CANNOT_CHANGE_MODE
+  if (result != 0
+      && GET_CODE (result) == SUBREG
+      && GET_CODE (SUBREG_REG (result)) == REG
+      && REGNO (SUBREG_REG (result)) >= FIRST_PSEUDO_REGISTER
+      && CLASS_CANNOT_CHANGE_MODE_P (GET_MODE (result),
+				     GET_MODE (SUBREG_REG (result))))
+    REG_CHANGES_MODE (REGNO (SUBREG_REG (result))) = 1;
+#endif
+
+  if (result)
+    return result;
+
+  if (GET_CODE (x) == MEM)
+    {
+      int offset = 0;
+
+      /* Refuse to work on a volatile memory ref or one with a mode-dependent
+	 address.  */
+      if (MEM_VOLATILE_P (x) || mode_dependent_address_p (XEXP (x, 0)))
+	return gen_rtx_CLOBBER (GET_MODE (x), const0_rtx);
+
+      /* If we want to refer to something bigger than the original memref,
+	 generate a perverse subreg instead.  That will force a reload
+	 of the original memref X.  */
+      if (GET_MODE_SIZE (GET_MODE (x)) < GET_MODE_SIZE (mode))
+	return gen_rtx_SUBREG (mode, x, 0);
+
+      if (WORDS_BIG_ENDIAN)
+	offset = (MAX (GET_MODE_SIZE (GET_MODE (x)), UNITS_PER_WORD)
+		  - MAX (GET_MODE_SIZE (mode), UNITS_PER_WORD));
+
+      if (BYTES_BIG_ENDIAN)
+	{
+	  /* Adjust the address so that the address-after-the-data is
+	     unchanged.  */
+	  offset -= (MIN (UNITS_PER_WORD, GET_MODE_SIZE (mode))
+		     - MIN (UNITS_PER_WORD, GET_MODE_SIZE (GET_MODE (x))));
+	}
+
+      return adjust_address_nv (x, mode, offset);
+    }
+
+  /* If X is a comparison operator, rewrite it in a new mode.  This
+     probably won't match, but may allow further simplifications.  */
+  else if (GET_RTX_CLASS (GET_CODE (x)) == '<')
+    return gen_rtx_fmt_ee (GET_CODE (x), mode, XEXP (x, 0), XEXP (x, 1));
+
+  /* If we couldn't simplify X any other way, just enclose it in a
+     SUBREG.  Normally, this SUBREG won't match, but some patterns may
+     include an explicit SUBREG or we may simplify it further in combine.  */
+  else
+    {
+      int offset = 0;
+      rtx res;
+
+      /* We can't handle VOIDmodes.  We can get here when generating vector
+	 modes since these, unlike integral and floating point modes are not
+	 handled earlier.  */
+      if (GET_MODE (x) == VOIDmode)
+	return gen_rtx_CLOBBER (GET_MODE (x), const0_rtx);
+
+      offset = subreg_lowpart_offset (mode, GET_MODE (x));
+      res = simplify_gen_subreg (mode, x, GET_MODE (x), offset);
+      if (res)
+	return res;
+      return gen_rtx_CLOBBER (GET_MODE (x), const0_rtx);
+    }
+}

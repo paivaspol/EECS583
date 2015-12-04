@@ -1,0 +1,51 @@
+static void
+reorder_fix_fragments (block)
+    tree block;
+{
+  while (block)
+    {
+      tree dup_origin = BLOCK_FRAGMENT_ORIGIN (block);
+      tree new_origin = NULL_TREE;
+
+      if (dup_origin)
+	{
+	  if (! TREE_ASM_WRITTEN (dup_origin))
+	    {
+	      new_origin = BLOCK_FRAGMENT_CHAIN (dup_origin);
+	      
+	      /* Find the first of the remaining fragments.  There must
+		 be at least one -- the current block.  */
+	      while (! TREE_ASM_WRITTEN (new_origin))
+		new_origin = BLOCK_FRAGMENT_CHAIN (new_origin);
+	      BLOCK_FRAGMENT_ORIGIN (new_origin) = NULL_TREE;
+	    }
+	}
+      else if (! dup_origin)
+	new_origin = block;
+
+      /* Re-root the rest of the fragments to the new origin.  In the
+	 case that DUP_ORIGIN was null, that means BLOCK was the origin
+	 of a chain of fragments and we want to remove those fragments
+	 that didn't make it to the output.  */
+      if (new_origin)
+	{
+	  tree *pp = &BLOCK_FRAGMENT_CHAIN (new_origin);
+	  tree chain = *pp;
+
+	  while (chain)
+	    {
+	      if (TREE_ASM_WRITTEN (chain))
+		{
+		  BLOCK_FRAGMENT_ORIGIN (chain) = new_origin;
+		  *pp = chain;
+		  pp = &BLOCK_FRAGMENT_CHAIN (chain);
+		}
+	      chain = BLOCK_FRAGMENT_CHAIN (chain);
+	    }
+	  *pp = NULL_TREE;
+	}
+
+      reorder_fix_fragments (BLOCK_SUBBLOCKS (block));
+      block = BLOCK_CHAIN (block);
+    }
+}

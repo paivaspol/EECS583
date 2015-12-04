@@ -1,0 +1,22 @@
+static void
+df_insn_refs_unlink (df, bb, insn)
+     struct df *df;
+     basic_block bb ATTRIBUTE_UNUSED;
+     rtx insn;
+{
+  struct df_link *link;
+  unsigned int uid;
+
+  uid = INSN_UID (insn);
+
+  /* Unlink all refs defined by this insn.  */
+  for (link = df->insns[uid].defs; link; link = link->next)
+    df_def_unlink (df, link->ref);
+
+  /* Unlink all refs used by this insn.  */
+  for (link = df->insns[uid].uses; link; link = link->next)
+    df_use_unlink (df, link->ref);
+
+  df->insns[uid].defs = 0;
+  df->insns[uid].uses = 0;
+}

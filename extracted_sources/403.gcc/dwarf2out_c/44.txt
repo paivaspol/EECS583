@@ -1,0 +1,349 @@
+static void add_AT_flag			PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned));
+static inline unsigned AT_flag		PARAMS ((dw_attr_ref));
+static void add_AT_int			PARAMS ((dw_die_ref,
+						 enum dwarf_attribute, long));
+static inline long int AT_int		PARAMS ((dw_attr_ref));
+static void add_AT_unsigned		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned long));
+static inline unsigned long 		AT_unsigned PARAMS ((dw_attr_ref));
+static void add_AT_long_long		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned long,
+						 unsigned long));
+static void add_AT_float		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned, long *));
+static void add_AT_string		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 const char *));
+static inline const char *AT_string	PARAMS ((dw_attr_ref));
+static int AT_string_form		PARAMS ((dw_attr_ref));
+static void add_AT_die_ref		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 dw_die_ref));
+static inline dw_die_ref AT_ref		PARAMS ((dw_attr_ref));
+static inline int AT_ref_external	PARAMS ((dw_attr_ref));
+static inline void set_AT_ref_external	PARAMS ((dw_attr_ref, int));
+static void add_AT_fde_ref		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned));
+static void add_AT_loc			PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 dw_loc_descr_ref));
+static inline dw_loc_descr_ref AT_loc	PARAMS ((dw_attr_ref));
+static void add_AT_loc_list		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 dw_loc_list_ref));
+static inline dw_loc_list_ref AT_loc_list PARAMS ((dw_attr_ref));
+static void add_AT_addr			PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 rtx));
+static inline rtx AT_addr		PARAMS ((dw_attr_ref));
+static void add_AT_lbl_id		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 const char *));
+static void add_AT_lbl_offset		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 const char *));
+static void add_AT_offset		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned long));
+static void add_AT_range_list		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute,
+						 unsigned long));
+static inline const char *AT_lbl	PARAMS ((dw_attr_ref));
+static dw_attr_ref get_AT		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute));
+static const char *get_AT_low_pc	PARAMS ((dw_die_ref));
+static const char *get_AT_hi_pc		PARAMS ((dw_die_ref));
+static const char *get_AT_string	PARAMS ((dw_die_ref,
+						 enum dwarf_attribute));
+static int get_AT_flag			PARAMS ((dw_die_ref,
+						 enum dwarf_attribute));
+static unsigned get_AT_unsigned		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute));
+static inline dw_die_ref get_AT_ref 	PARAMS ((dw_die_ref,
+						 enum dwarf_attribute));
+static int is_c_family			PARAMS ((void));
+static int is_cxx			PARAMS ((void));
+static int is_java			PARAMS ((void));
+static int is_fortran			PARAMS ((void));
+static void remove_AT			PARAMS ((dw_die_ref,
+						 enum dwarf_attribute));
+static inline void free_die		PARAMS ((dw_die_ref));
+static void remove_children		PARAMS ((dw_die_ref));
+static void add_child_die		PARAMS ((dw_die_ref, dw_die_ref));
+static dw_die_ref new_die		PARAMS ((enum dwarf_tag, dw_die_ref,
+						 tree));
+static dw_die_ref lookup_type_die	PARAMS ((tree));
+static void equate_type_number_to_die	PARAMS ((tree, dw_die_ref));
+static dw_die_ref lookup_decl_die	PARAMS ((tree));
+static void equate_decl_number_to_die	PARAMS ((tree, dw_die_ref));
+static void print_spaces		PARAMS ((FILE *));
+static void print_die			PARAMS ((dw_die_ref, FILE *));
+static void print_dwarf_line_table	PARAMS ((FILE *));
+static void reverse_die_lists		PARAMS ((dw_die_ref));
+static void reverse_all_dies		PARAMS ((dw_die_ref));
+static dw_die_ref push_new_compile_unit PARAMS ((dw_die_ref, dw_die_ref));
+static dw_die_ref pop_compile_unit	PARAMS ((dw_die_ref));
+static void loc_checksum	 	PARAMS ((dw_loc_descr_ref,
+						 struct md5_ctx *));
+static void attr_checksum		PARAMS ((dw_attr_ref,
+						 struct md5_ctx *));
+static void die_checksum		PARAMS ((dw_die_ref,
+						 struct md5_ctx *));
+static void compute_section_prefix	PARAMS ((dw_die_ref));
+static int is_type_die			PARAMS ((dw_die_ref));
+static int is_comdat_die 		PARAMS ((dw_die_ref));
+static int is_symbol_die 		PARAMS ((dw_die_ref));
+static void assign_symbol_names		PARAMS ((dw_die_ref));
+static void break_out_includes		PARAMS ((dw_die_ref));
+static void add_sibling_attributes	PARAMS ((dw_die_ref));
+static void build_abbrev_table		PARAMS ((dw_die_ref));
+static void output_location_lists   	PARAMS ((dw_die_ref));
+static int constant_size		PARAMS ((long unsigned));
+static unsigned long size_of_die	PARAMS ((dw_die_ref));
+static void calc_die_sizes		PARAMS ((dw_die_ref));
+static void mark_dies			PARAMS ((dw_die_ref));
+static void unmark_dies			PARAMS ((dw_die_ref));
+static unsigned long size_of_pubnames	PARAMS ((void));
+static unsigned long size_of_aranges	PARAMS ((void));
+static enum dwarf_form value_format	PARAMS ((dw_attr_ref));
+static void output_value_format		PARAMS ((dw_attr_ref));
+static void output_abbrev_section	PARAMS ((void));
+static void output_die_symbol		PARAMS ((dw_die_ref));
+static void output_die			PARAMS ((dw_die_ref));
+static void output_compilation_unit_header PARAMS ((void));
+static void output_comp_unit		PARAMS ((dw_die_ref));
+static const char *dwarf2_name		PARAMS ((tree, int));
+static void add_pubname			PARAMS ((tree, dw_die_ref));
+static void output_pubnames		PARAMS ((void));
+static void add_arange			PARAMS ((tree, dw_die_ref));
+static void output_aranges		PARAMS ((void));
+static unsigned int add_ranges		PARAMS ((tree));
+static void output_ranges		PARAMS ((void));
+static void output_line_info		PARAMS ((void));
+static void output_file_names           PARAMS ((void));
+static dw_die_ref base_type_die		PARAMS ((tree));
+static tree root_type			PARAMS ((tree));
+static int is_base_type			PARAMS ((tree));
+static dw_die_ref modified_type_die	PARAMS ((tree, int, int, dw_die_ref));
+static int type_is_enum			PARAMS ((tree));
+static unsigned int reg_number		PARAMS ((rtx));
+static dw_loc_descr_ref reg_loc_descriptor PARAMS ((rtx));
+static dw_loc_descr_ref int_loc_descriptor PARAMS ((HOST_WIDE_INT));
+static dw_loc_descr_ref based_loc_descr	PARAMS ((unsigned, long));
+static int is_based_loc			PARAMS ((rtx));
+static dw_loc_descr_ref mem_loc_descriptor PARAMS ((rtx, enum machine_mode mode));
+static dw_loc_descr_ref concat_loc_descriptor PARAMS ((rtx, rtx));
+static dw_loc_descr_ref loc_descriptor	PARAMS ((rtx));
+static dw_loc_descr_ref loc_descriptor_from_tree PARAMS ((tree, int));
+static HOST_WIDE_INT ceiling		PARAMS ((HOST_WIDE_INT, unsigned int));
+static tree field_type			PARAMS ((tree));
+static unsigned int simple_type_align_in_bits PARAMS ((tree));
+static unsigned int simple_field_decl_align_in_bits PARAMS ((tree));
+static unsigned HOST_WIDE_INT simple_type_size_in_bits PARAMS ((tree));
+static HOST_WIDE_INT field_byte_offset	PARAMS ((tree));
+static void add_AT_location_description	PARAMS ((dw_die_ref,
+						 enum dwarf_attribute, rtx));
+static void add_data_member_location_attribute PARAMS ((dw_die_ref, tree));
+static void add_const_value_attribute	PARAMS ((dw_die_ref, rtx));
+static rtx rtl_for_decl_location	PARAMS ((tree));
+static void add_location_or_const_value_attribute PARAMS ((dw_die_ref, tree));
+static void tree_add_const_value_attribute PARAMS ((dw_die_ref, tree));
+static void add_name_attribute		PARAMS ((dw_die_ref, const char *));
+static void add_bound_info		PARAMS ((dw_die_ref,
+						 enum dwarf_attribute, tree));
+static void add_subscript_info		PARAMS ((dw_die_ref, tree));
+static void add_byte_size_attribute	PARAMS ((dw_die_ref, tree));
+static void add_bit_offset_attribute	PARAMS ((dw_die_ref, tree));
+static void add_bit_size_attribute	PARAMS ((dw_die_ref, tree));
+static void add_prototyped_attribute	PARAMS ((dw_die_ref, tree));
+static void add_abstract_origin_attribute PARAMS ((dw_die_ref, tree));
+static void add_pure_or_virtual_attribute PARAMS ((dw_die_ref, tree));
+static void add_src_coords_attributes	PARAMS ((dw_die_ref, tree));
+static void add_name_and_src_coords_attributes PARAMS ((dw_die_ref, tree));
+static void push_decl_scope		PARAMS ((tree));
+static void pop_decl_scope		PARAMS ((void));
+static dw_die_ref scope_die_for		PARAMS ((tree, dw_die_ref));
+static inline int local_scope_p		PARAMS ((dw_die_ref));
+static inline int class_scope_p		PARAMS ((dw_die_ref));
+static void add_type_attribute		PARAMS ((dw_die_ref, tree, int, int,
+						 dw_die_ref));
+static const char *type_tag	        PARAMS ((tree));
+static tree member_declared_type	PARAMS ((tree));
+#if 0
+static const char *decl_start_label	PARAMS ((tree));
+#endif
+static void gen_array_type_die		PARAMS ((tree, dw_die_ref));
+static void gen_set_type_die		PARAMS ((tree, dw_die_ref));
+#if 0
+static void gen_entry_point_die		PARAMS ((tree, dw_die_ref));
+#endif
+static void gen_inlined_enumeration_type_die PARAMS ((tree, dw_die_ref));
+static void gen_inlined_structure_type_die PARAMS ((tree, dw_die_ref));
+static void gen_inlined_union_type_die	PARAMS ((tree, dw_die_ref));
+static void gen_enumeration_type_die	PARAMS ((tree, dw_die_ref));
+static dw_die_ref gen_formal_parameter_die PARAMS ((tree, dw_die_ref));
+static void gen_unspecified_parameters_die PARAMS ((tree, dw_die_ref));
+static void gen_formal_types_die	PARAMS ((tree, dw_die_ref));
+static void gen_subprogram_die		PARAMS ((tree, dw_die_ref));
+static void gen_variable_die		PARAMS ((tree, dw_die_ref));
+static void gen_label_die		PARAMS ((tree, dw_die_ref));
+static void gen_lexical_block_die	PARAMS ((tree, dw_die_ref, int));
+static void gen_inlined_subroutine_die	PARAMS ((tree, dw_die_ref, int));
+static void gen_field_die		PARAMS ((tree, dw_die_ref));
+static void gen_ptr_to_mbr_type_die	PARAMS ((tree, dw_die_ref));
+static dw_die_ref gen_compile_unit_die	PARAMS ((const char *));
+static void gen_string_type_die		PARAMS ((tree, dw_die_ref));
+static void gen_inheritance_die		PARAMS ((tree, dw_die_ref));
+static void gen_member_die		PARAMS ((tree, dw_die_ref));
+static void gen_struct_or_union_type_die PARAMS ((tree, dw_die_ref));
+static void gen_subroutine_type_die	PARAMS ((tree, dw_die_ref));
+static void gen_typedef_die		PARAMS ((tree, dw_die_ref));
+static void gen_type_die		PARAMS ((tree, dw_die_ref));
+static void gen_tagged_type_instantiation_die PARAMS ((tree, dw_die_ref));
+static void gen_block_die		PARAMS ((tree, dw_die_ref, int));
+static void decls_for_scope		PARAMS ((tree, dw_die_ref, int));
+static int is_redundant_typedef		PARAMS ((tree));
+static void gen_decl_die		PARAMS ((tree, dw_die_ref));
+static unsigned lookup_filename		PARAMS ((const char *));
+static void init_file_table		PARAMS ((void));
+static void retry_incomplete_types	PARAMS ((void));
+static void gen_type_die_for_member	PARAMS ((tree, tree, dw_die_ref));
+static void splice_child_die		PARAMS ((dw_die_ref, dw_die_ref));
+static int file_info_cmp		PARAMS ((const void *, const void *));
+static dw_loc_list_ref new_loc_list     PARAMS ((dw_loc_descr_ref, 
+						 const char *, const char *,
+						 const char *, unsigned));
+static void add_loc_descr_to_loc_list   PARAMS ((dw_loc_list_ref *,
+						 dw_loc_descr_ref,
+						 const char *, const char *, const char *));
+static void output_loc_list		PARAMS ((dw_loc_list_ref));
+static char *gen_internal_sym 		PARAMS ((const char *));
+static void mark_limbo_die_list		PARAMS ((void *));
+
+/* Section names used to hold DWARF debugging information.  */
+#ifndef DEBUG_INFO_SECTION
+#define DEBUG_INFO_SECTION	".debug_info"
+#endif
+#ifndef DEBUG_ABBREV_SECTION
+#define DEBUG_ABBREV_SECTION	".debug_abbrev"
+#endif
+#ifndef DEBUG_ARANGES_SECTION
+#define DEBUG_ARANGES_SECTION	".debug_aranges"
+#endif
+#ifndef DEBUG_MACINFO_SECTION
+#define DEBUG_MACINFO_SECTION	".debug_macinfo"
+#endif
+#ifndef DEBUG_LINE_SECTION
+#define DEBUG_LINE_SECTION	".debug_line"
+#endif
+#ifndef DEBUG_LOC_SECTION
+#define DEBUG_LOC_SECTION	".debug_loc"
+#endif
+#ifndef DEBUG_PUBNAMES_SECTION
+#define DEBUG_PUBNAMES_SECTION	".debug_pubnames"
+#endif
+#ifndef DEBUG_STR_SECTION
+#define DEBUG_STR_SECTION	".debug_str"
+#endif
+#ifndef DEBUG_RANGES_SECTION
+#define DEBUG_RANGES_SECTION	".debug_ranges"
+#endif
+
+/* Standard ELF section names for compiled code and data.  */
+#ifndef TEXT_SECTION_NAME
+#define TEXT_SECTION_NAME	".text"
+#endif
+
+/* Section flags for .debug_str section.  */
+#ifdef HAVE_GAS_SHF_MERGE
+#define DEBUG_STR_SECTION_FLAGS \
+  (SECTION_DEBUG | SECTION_MERGE | SECTION_STRINGS | 1)
+#else
+#define DEBUG_STR_SECTION_FLAGS	SECTION_DEBUG
+#endif
+
+/* Labels we insert at beginning sections we can reference instead of
+   the section names themselves.  */
+
+#ifndef TEXT_SECTION_LABEL
+#define TEXT_SECTION_LABEL		"Ltext"
+#endif
+#ifndef DEBUG_LINE_SECTION_LABEL
+#define DEBUG_LINE_SECTION_LABEL	"Ldebug_line"
+#endif
+#ifndef DEBUG_INFO_SECTION_LABEL
+#define DEBUG_INFO_SECTION_LABEL	"Ldebug_info"
+#endif
+#ifndef DEBUG_ABBREV_SECTION_LABEL
+#define DEBUG_ABBREV_SECTION_LABEL	"Ldebug_abbrev"
+#endif
+#ifndef DEBUG_LOC_SECTION_LABEL
+#define DEBUG_LOC_SECTION_LABEL		"Ldebug_loc"
+#endif
+#ifndef DEBUG_RANGES_SECTION_LABEL
+#define DEBUG_RANGES_SECTION_LABEL	"Ldebug_ranges"
+#endif
+#ifndef DEBUG_MACINFO_SECTION_LABEL
+#define DEBUG_MACINFO_SECTION_LABEL     "Ldebug_macinfo"
+#endif
+
+/* Definitions of defaults for formats and names of various special
+   (artificial) labels which may be generated within this file (when the -g
+   options is used and DWARF_DEBUGGING_INFO is in effect.
+   If necessary, these may be overridden from within the tm.h file, but
+   typically, overriding these defaults is unnecessary.  */
+
+static char text_end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char text_section_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char abbrev_section_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char debug_info_section_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char debug_line_section_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char macinfo_section_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char loc_section_label[MAX_ARTIFICIAL_LABEL_BYTES];
+static char ranges_section_label[2 * MAX_ARTIFICIAL_LABEL_BYTES];
+
+#ifndef TEXT_END_LABEL
+#define TEXT_END_LABEL		"Letext"
+#endif
+#ifndef DATA_END_LABEL
+#define DATA_END_LABEL		"Ledata"
+#endif
+#ifndef BSS_END_LABEL
+#define BSS_END_LABEL           "Lebss"
+#endif
+#ifndef BLOCK_BEGIN_LABEL
+#define BLOCK_BEGIN_LABEL	"LBB"
+#endif
+#ifndef BLOCK_END_LABEL
+#define BLOCK_END_LABEL		"LBE"
+#endif
+#ifndef BODY_BEGIN_LABEL
+#define BODY_BEGIN_LABEL	"Lbb"
+#endif
+#ifndef BODY_END_LABEL
+#define BODY_END_LABEL		"Lbe"
+#endif
+#ifndef LINE_CODE_LABEL
+#define LINE_CODE_LABEL		"LM"
+#endif
+#ifndef SEPARATE_LINE_CODE_LABEL
+#define SEPARATE_LINE_CODE_LABEL	"LSM"
+#endif
+
+/* We allow a language front-end to designate a function that is to be
+   called to "demangle" any name before it it put into a DIE.  */
+
+static const char *(*demangle_name_func) PARAMS ((const char *));
+
+void
+dwarf2out_set_demangle_name_func (func)
+     const char *(*func) PARAMS ((const char *));
+{
+  demangle_name_func = func;
+}

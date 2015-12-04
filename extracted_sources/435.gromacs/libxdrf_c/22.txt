@@ -1,0 +1,49 @@
+int xdropen(XDR *xdrs, const char *filename, const char *type) {
+    static int init_done = 0;
+    enum xdr_op lmode;
+    int xdrid;
+    char newtype[5];
+
+    if (init_done == 0) {
+	for (xdrid = 1; xdrid < MAXID; xdrid++) {
+	    xdridptr[xdrid] = NULL;
+	}
+	init_done = 1;
+    }
+    xdrid = 1;
+    while (xdrid < MAXID && xdridptr[xdrid] != NULL) {
+	xdrid++;
+    }
+    if (xdrid == MAXID) {
+	return 0;
+    }
+    if (*type == 'w' || *type == 'W') {
+            strcpy(newtype,"wb+");
+	    lmode = XDR_ENCODE;
+    } else if (*type == 'a' || *type == 'A') {
+            strcpy(newtype,"ab+");
+            lmode = XDR_ENCODE;
+    } else {
+            strcpy(newtype,"rb+");
+	    lmode = XDR_DECODE;
+    }
+    xdrfiles[xdrid] = fopen(filename, newtype);
+    if (xdrfiles[xdrid] == NULL) {
+	xdrs = NULL;
+	return 0;
+    }
+    xdrmodes[xdrid] = *type;
+    /* next test isn't usefull in the case of C language
+     * but is used for the Fortran interface
+     * (C users are expected to pass the address of an already allocated
+     * XDR staructure)
+     */
+    if (xdrs == NULL) {
+	xdridptr[xdrid] = (XDR *) malloc((size_t)sizeof(XDR));
+	xdrstdio_create(xdridptr[xdrid], xdrfiles[xdrid], lmode);
+    } else {
+	xdridptr[xdrid] = xdrs;
+	xdrstdio_create(xdrs, xdrfiles[xdrid], lmode);
+    }
+    return xdrid;
+}

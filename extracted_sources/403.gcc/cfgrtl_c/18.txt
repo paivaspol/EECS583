@@ -1,0 +1,28 @@
+void
+commit_edge_insertions ()
+{
+  int i;
+  basic_block bb;
+
+#ifdef ENABLE_CHECKING
+  verify_flow_info ();
+#endif
+
+  i = -1;
+  bb = ENTRY_BLOCK_PTR;
+  while (1)
+    {
+      edge e, next;
+
+      for (e = bb->succ; e; e = next)
+	{
+	  next = e->succ_next;
+	  if (e->insns)
+	    commit_one_edge_insertion (e);
+	}
+
+      if (++i >= n_basic_blocks)
+	break;
+      bb = BASIC_BLOCK (i);
+    }
+}

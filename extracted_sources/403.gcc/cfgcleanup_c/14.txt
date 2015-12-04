@@ -1,0 +1,161 @@
+static bool
+try_crossjump_to_edge (mode, e1, e2)
+     int mode;
+     edge e1, e2;
+{
+  int nmatch;
+  basic_block src1 = e1->src, src2 = e2->src;
+  basic_block redirect_to;
+  rtx newpos1, newpos2;
+  edge s;
+  rtx last;
+  rtx label;
+
+  /* Search backward through forwarder blocks.  We don't need to worry
+     about multiple entry or chained forwarders, as they will be optimized
+     away.  We do this to look past the unconditional jump following a
+     conditional jump that is required due to the current CFG shape.  */
+  if (src1->pred
+      && FORWARDER_BLOCK_P (src1))
+    e1 = src1->pred, src1 = e1->src;
+
+  if (src2->pred
+      && FORWARDER_BLOCK_P (src2))
+    e2 = src2->pred, src2 = e2->src;
+
+  /* Nothing to do if we reach ENTRY, or a common source block.  */
+  if (src1 == ENTRY_BLOCK_PTR || src2 == ENTRY_BLOCK_PTR)
+    return false;
+  if (src1 == src2)
+    return false;
+
+  /* Seeing more than 1 forwarder blocks would confuse us later...  */
+  if (FORWARDER_BLOCK_P (e1->dest)
+      && FORWARDER_BLOCK_P (e1->dest->succ->dest))
+    return false;
+
+  if (FORWARDER_BLOCK_P (e2->dest)
+      && FORWARDER_BLOCK_P (e2->dest->succ->dest))
+    return false;
+
+  /* Likewise with dead code (possibly newly created by the other optimizations
+     of cfg_cleanup).  */
+  if (!src1->pred || !src2->pred)
+    return false;
+
+  /* Look for the common insn sequence, part the first ...  */
+  if (!outgoing_edges_match (mode, src1, src2))
+    return false;
+
+  /* ... and part the second.  */
+  nmatch = flow_find_cross_jump (mode, src1, src2, &newpos1, &newpos2);
+  if (!nmatch)
+    return false;
+
+  /* Avoid splitting if possible.  */
+  if (newpos2 == src2->head)
+    redirect_to = src2;
+  else
+    {
+      if (rtl_dump_file)
+	fprintf (rtl_dump_file, "Splitting bb %i before %i insns\n",
+		 src2->index, nmatch);
+      redirect_to = split_block (src2, PREV_INSN (newpos2))->dest;
+    }
+
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file,
+	     "Cross jumping from bb %i to bb %i; %i common insns\n",
+	     src1->index, src2->index, nmatch);
+
+  redirect_to->count += src1->count;
+  redirect_to->frequency += src1->frequency;
+
+  /* Recompute the frequencies and counts of outgoing edges.  */
+  for (s = redirect_to->succ; s; s = s->succ_next)
+    {
+      edge s2;
+      basic_block d = s->dest;
+
+      if (FORWARDER_BLOCK_P (d))
+	d = d->succ->dest;
+
+      for (s2 = src1->succ; ; s2 = s2->succ_next)
+	{
+	  basic_block d2 = s2->dest;
+	  if (FORWARDER_BLOCK_P (d2))
+	    d2 = d2->succ->dest;
+	  if (d == d2)
+	    break;
+	}
+
+      s->count += s2->count;
+
+      /* Take care to update possible forwarder blocks.  We verified
+         that there is no more than one in the chain, so we can't run
+         into infinite loop.  */
+      if (FORWARDER_BLOCK_P (s->dest))
+	{
+	  s->dest->succ->count += s2->count;
+	  s->dest->count += s2->count;
+	  s->dest->frequency += EDGE_FREQUENCY (s);
+	}
+
+      if (FORWARDER_BLOCK_P (s2->dest))
+	{
+	  s2->dest->succ->count -= s2->count;
+	  if (s2->dest->succ->count < 0)
+	    s2->dest->succ->count = 0;
+	  s2->dest->count -= s2->count;
+	  s2->dest->frequency -= EDGE_FREQUENCY (s);
+	  if (s2->dest->frequency < 0)
+	    s2->dest->frequency = 0;
+	  if (s2->dest->count < 0)
+	    s2->dest->count = 0;
+	}
+
+      if (!redirect_to->frequency && !src1->frequency)
+	s->probability = (s->probability + s2->probability) / 2;
+      else
+	s->probability
+	  = ((s->probability * redirect_to->frequency +
+	      s2->probability * src1->frequency)
+	     / (redirect_to->frequency + src1->frequency));
+    }
+
+  update_br_prob_note (redirect_to);
+
+  /* Edit SRC1 to go to REDIRECT_TO at NEWPOS1.  */
+
+  /* Skip possible basic block header.  */
+  if (GET_CODE (newpos1) == CODE_LABEL)
+    newpos1 = NEXT_INSN (newpos1);
+
+  if (GET_CODE (newpos1) == NOTE)
+    newpos1 = NEXT_INSN (newpos1);
+  last = src1->end;
+
+  /* Emit the jump insn.  */
+  label = block_label (redirect_to);
+  emit_jump_insn_after (gen_jump (label), src1->end);
+  JUMP_LABEL (src1->end) = label;
+  LABEL_NUSES (label)++;
+
+  /* Delete the now unreachable instructions.  */
+  delete_insn_chain (newpos1, last);
+
+  /* Make sure there is a barrier after the new jump.  */
+  last = next_nonnote_insn (src1->end);
+  if (!last || GET_CODE (last) != BARRIER)
+    emit_barrier_after (src1->end);
+
+  /* Update CFG.  */
+  while (src1->succ)
+    remove_edge (src1->succ);
+  make_single_succ_edge (src1, redirect_to, 0);
+
+  BB_SET_FLAG (src1, BB_UPDATE_LIFE);
+  update_forwarder_flag (src1);
+
+  return true;
+}

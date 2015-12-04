@@ -1,0 +1,52 @@
+static void
+new_basic_block ()
+{
+  int i;
+
+  next_qty = max_reg;
+
+  /* Clear out hash table state for this pass.  */
+
+  memset ((char *) reg_hash, 0, sizeof reg_hash);
+
+  if (cse_reg_info_used_list)
+    {
+      cse_reg_info_used_list_end->next = cse_reg_info_free_list;
+      cse_reg_info_free_list = cse_reg_info_used_list;
+      cse_reg_info_used_list = cse_reg_info_used_list_end = 0;
+    }
+  cached_cse_reg_info = 0;
+
+  CLEAR_HARD_REG_SET (hard_regs_in_table);
+
+  /* The per-quantity values used to be initialized here, but it is
+     much faster to initialize each as it is made in `make_new_qty'.  */
+
+  for (i = 0; i < HASH_SIZE; i++)
+    {
+      struct table_elt *first;
+
+      first = table[i];
+      if (first != NULL)
+	{
+	  struct table_elt *last = first;
+
+	  table[i] = NULL;
+
+	  while (last->next_same_hash != NULL)
+	    last = last->next_same_hash;
+
+	  /* Now relink this hash entire chain into
+	     the free element list.  */
+
+	  last->next_same_hash = free_element_chain;
+	  free_element_chain = first;
+	}
+    }
+
+  prev_insn = 0;
+
+#ifdef HAVE_cc0
+  prev_insn_cc0 = 0;
+#endif
+}

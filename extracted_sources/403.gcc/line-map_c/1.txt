@@ -1,0 +1,18 @@
+void
+free_line_maps (set)
+     struct line_maps *set;
+{
+  if (set->maps)
+    {
+      struct line_map *map;
+
+      /* Depending upon whether we are handling preprocessed input or
+	 not, this can be a user error or an ICE.  */
+      for (map = CURRENT_LINE_MAP (set); ! MAIN_FILE_P (map);
+	   map = INCLUDED_FROM (set, map))
+	fprintf (stderr, "line-map.c: file \"%s\" entered but not left\n",
+		 map->to_file);
+
+      free (set->maps);
+    }
+}

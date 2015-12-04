@@ -1,0 +1,56 @@
+int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
+		       char *keyword,   /* keyword */
+		       char *fmt,       /* output format -
+					      must use s, d, e, f, or g */
+		       char *src,       /* address of starting data
+					   doubleing point data must be
+					   of type (double) */
+		       int count,       /* number of data items if > 1 */
+		       int stride)      /* byte stride of data if
+                                           count > 1 */
+{
+
+  int i,k,n;
+  char *data;
+
+  /* Check for valid keyword */
+
+  for(i=0;strlen(gauge_info_keyword[i])>0 &&
+      strcmp(gauge_info_keyword[i],keyword) != 0; i++);
+  if(strlen(gauge_info_keyword[i])==0)
+    printf("write_gauge_info_item: WARNING: keyword %s not in table\n",
+	    keyword);
+
+  /* Write keyword */
+
+  fprintf(fpout,"%s =",keyword);
+
+  /* Write count if more than one item */
+  if(count > 1)
+    fprintf(fpout,"[%d]",count);
+
+  n = count; if(n==0)n = 1;
+  
+  /* Write data */
+  for(k = 0, data = (char *)src; k < n; k++, data += stride)
+    {
+      fprintf(fpout," ");
+      if(strstr(fmt,"s") != NULL)
+	fprintf(fpout,fmt,data);
+      else if(strstr(fmt,"d") != NULL)
+	fprintf(fpout,fmt,*(int *)data);
+      else if(strstr(fmt,"e") != NULL)
+	fprintf(fpout,fmt,(double)(*(double *)data));
+      else if(strstr(fmt,"f") != NULL)
+	fprintf(fpout,fmt,(double)(*(double *)data));
+      else if(strstr(fmt,"g") != NULL)
+	fprintf(fpout,fmt,(double)(*(double *)data));
+      else
+	{
+	  printf("write_gauge_info_item: Unrecognized data type %s\n",fmt);
+	  return 1;
+	}
+    }
+  fprintf(fpout,"\n");
+  return 0;
+}

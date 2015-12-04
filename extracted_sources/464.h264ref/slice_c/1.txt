@@ -1,0 +1,48 @@
+int start_slice()
+{
+  EncodingEnvironmentPtr eep;
+  Slice *currSlice = img->currentSlice;
+  Bitstream *currStream;
+  int header_len = 0;
+  int i;
+  int NumberOfPartitions = (input->partition_mode == PAR_DP_1?1:3);
+
+  //one  partition for IDR img
+  if(img->currentPicture->idr_flag)
+  {
+     NumberOfPartitions = 1;
+  }
+
+  RTPUpdateTimestamp (img->tr);   // this has no side effects, just leave it for all NALs
+
+  for (i=0; i<NumberOfPartitions; i++)
+  {
+    currStream = (currSlice->partArr[i]).bitstream;
+
+    currStream->write_flag = 0;
+    if (i==0)     // First partition
+      header_len += SliceHeader (0);
+    else          // Second/Third partition
+      header_len += Partition_BC_Header(i);
+     
+    //! Initialize CABAC
+    if (input->symbol_mode == CABAC)
+    {
+      eep = &((currSlice->partArr[i]).ee_cabac);
+      if (currStream->bits_to_go != 8)
+        header_len+=currStream->bits_to_go;
+      writeVlcByteAlign(currStream);
+      arienco_start_encoding(eep, currStream->streamBuffer, &(currStream->byte_pos)/*, &(currStream->last_startcode)*/,img->type);
+      cabac_new_slice();
+    } else 
+    {
+      // Initialize CA-VLC
+      CAVLC_init();
+    }
+  }
+  if(input->symbol_mode == CABAC)
+  {
+    init_contexts();
+  }
+  return header_len;
+}

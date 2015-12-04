@@ -1,0 +1,31 @@
+static char *
+regbranch(cp, flagp)
+register struct comp *cp;
+int *flagp;
+{
+	register char *ret;
+	register char *chain;
+	register char *latest;
+	int flags;
+	register int c;
+
+	*flagp = WORST;				/* Tentatively. */
+
+	ret = regnode(cp, BRANCH);
+	chain = NULL;
+	while ((c = *cp->regparse) != '\0' && c != '|' && c != ')') {
+		latest = regpiece(cp, &flags);
+		if (latest == NULL)
+			return(NULL);
+		*flagp |= flags&HASWIDTH;
+		if (chain == NULL)		/* First piece. */
+			*flagp |= flags&SPSTART;
+		else
+			regtail(cp, chain, latest);
+		chain = latest;
+	}
+	if (chain == NULL)			/* Loop ran zero times. */
+		(void) regnode(cp, NOTHING);
+
+	return(ret);
+}

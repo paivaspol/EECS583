@@ -1,0 +1,23 @@
+static rtx
+next_insn_in_loop (loop, insn)
+     const struct loop *loop;
+     rtx insn;
+{
+  insn = NEXT_INSN (insn);
+
+  if (insn == loop->end)
+    {
+      if (loop->top)
+	/* Go to the top of the loop, and continue there.  */
+	insn = loop->top;
+      else
+	/* We're done.  */
+	insn = NULL_RTX;
+    }
+
+  if (insn == loop->scan_start)
+    /* We're done.  */
+    insn = NULL_RTX;
+
+  return insn;
+}

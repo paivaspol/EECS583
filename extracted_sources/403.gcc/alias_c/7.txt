@@ -1,0 +1,29 @@
+int
+can_address_p (t)
+     tree t;
+{
+  /* If we're at the end, it is vacuously addressable.  */
+  if (! handled_component_p (t))
+    return 1;
+
+  /* Bitfields are never addressable.  */
+  else if (TREE_CODE (t) == BIT_FIELD_REF)
+    return 0;
+
+  /* Fields are addressable unless they are marked as nonaddressable or
+     the containing type has alias set 0.  */
+  else if (TREE_CODE (t) == COMPONENT_REF
+	   && ! DECL_NONADDRESSABLE_P (TREE_OPERAND (t, 1))
+	   && get_alias_set (TREE_TYPE (TREE_OPERAND (t, 0))) != 0
+	   && can_address_p (TREE_OPERAND (t, 0)))
+    return 1;
+
+  /* Likewise for arrays.  */
+  else if ((TREE_CODE (t) == ARRAY_REF || TREE_CODE (t) == ARRAY_RANGE_REF)
+	   && ! TYPE_NONALIASED_COMPONENT (TREE_TYPE (TREE_OPERAND (t, 0)))
+	   && get_alias_set (TREE_TYPE (TREE_OPERAND (t, 0))) != 0
+	   && can_address_p (TREE_OPERAND (t, 0)))
+    return 1;
+
+  return 0;
+}

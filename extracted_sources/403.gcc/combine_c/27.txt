@@ -1,0 +1,191 @@
+static rtx
+if_then_else_cond (x, ptrue, pfalse)
+     rtx x;
+     rtx *ptrue, *pfalse;
+{
+  enum machine_mode mode = GET_MODE (x);
+  enum rtx_code code = GET_CODE (x);
+  rtx cond0, cond1, true0, true1, false0, false1;
+  unsigned HOST_WIDE_INT nz;
+
+  /* If we are comparing a value against zero, we are done.  */
+  if ((code == NE || code == EQ)
+      && GET_CODE (XEXP (x, 1)) == CONST_INT && INTVAL (XEXP (x, 1)) == 0)
+    {
+      *ptrue = (code == NE) ? const_true_rtx : const0_rtx;
+      *pfalse = (code == NE) ? const0_rtx : const_true_rtx;
+      return XEXP (x, 0);
+    }
+
+  /* If this is a unary operation whose operand has one of two values, apply
+     our opcode to compute those values.  */
+  else if (GET_RTX_CLASS (code) == '1'
+	   && (cond0 = if_then_else_cond (XEXP (x, 0), &true0, &false0)) != 0)
+    {
+      *ptrue = simplify_gen_unary (code, mode, true0, GET_MODE (XEXP (x, 0)));
+      *pfalse = simplify_gen_unary (code, mode, false0,
+				    GET_MODE (XEXP (x, 0)));
+      return cond0;
+    }
+
+  /* If this is a COMPARE, do nothing, since the IF_THEN_ELSE we would
+     make can't possibly match and would suppress other optimizations.  */
+  else if (code == COMPARE)
+    ;
+
+  /* If this is a binary operation, see if either side has only one of two
+     values.  If either one does or if both do and they are conditional on
+     the same value, compute the new true and false values.  */
+  else if (GET_RTX_CLASS (code) == 'c' || GET_RTX_CLASS (code) == '2'
+	   || GET_RTX_CLASS (code) == '<')
+    {
+      cond0 = if_then_else_cond (XEXP (x, 0), &true0, &false0);
+      cond1 = if_then_else_cond (XEXP (x, 1), &true1, &false1);
+
+      if ((cond0 != 0 || cond1 != 0)
+	  && ! (cond0 != 0 && cond1 != 0 && ! rtx_equal_p (cond0, cond1)))
+	{
+	  /* If if_then_else_cond returned zero, then true/false are the
+	     same rtl.  We must copy one of them to prevent invalid rtl
+	     sharing.  */
+	  if (cond0 == 0)
+	    true0 = copy_rtx (true0);
+	  else if (cond1 == 0)
+	    true1 = copy_rtx (true1);
+
+	  *ptrue = gen_binary (code, mode, true0, true1);
+	  *pfalse = gen_binary (code, mode, false0, false1);
+	  return cond0 ? cond0 : cond1;
+	}
+
+      /* See if we have PLUS, IOR, XOR, MINUS or UMAX, where one of the
+	 operands is zero when the other is non-zero, and vice-versa,
+	 and STORE_FLAG_VALUE is 1 or -1.  */
+
+      if ((STORE_FLAG_VALUE == 1 || STORE_FLAG_VALUE == -1)
+	  && (code == PLUS || code == IOR || code == XOR || code == MINUS
+	      || code == UMAX)
+	  && GET_CODE (XEXP (x, 0)) == MULT && GET_CODE (XEXP (x, 1)) == MULT)
+	{
+	  rtx op0 = XEXP (XEXP (x, 0), 1);
+	  rtx op1 = XEXP (XEXP (x, 1), 1);
+
+	  cond0 = XEXP (XEXP (x, 0), 0);
+	  cond1 = XEXP (XEXP (x, 1), 0);
+
+	  if (GET_RTX_CLASS (GET_CODE (cond0)) == '<'
+	      && GET_RTX_CLASS (GET_CODE (cond1)) == '<'
+	      && ((GET_CODE (cond0) == combine_reversed_comparison_code (cond1)
+		   && rtx_equal_p (XEXP (cond0, 0), XEXP (cond1, 0))
+		   && rtx_equal_p (XEXP (cond0, 1), XEXP (cond1, 1)))
+		  || ((swap_condition (GET_CODE (cond0))
+		       == combine_reversed_comparison_code (cond1))
+		      && rtx_equal_p (XEXP (cond0, 0), XEXP (cond1, 1))
+		      && rtx_equal_p (XEXP (cond0, 1), XEXP (cond1, 0))))
+	      && ! side_effects_p (x))
+	    {
+	      *ptrue = gen_binary (MULT, mode, op0, const_true_rtx);
+	      *pfalse = gen_binary (MULT, mode,
+				    (code == MINUS
+				     ? simplify_gen_unary (NEG, mode, op1,
+							   mode)
+				     : op1),
+				    const_true_rtx);
+	      return cond0;
+	    }
+	}
+
+      /* Similarly for MULT, AND and UMIN, except that for these the result
+	 is always zero.  */
+      if ((STORE_FLAG_VALUE == 1 || STORE_FLAG_VALUE == -1)
+	  && (code == MULT || code == AND || code == UMIN)
+	  && GET_CODE (XEXP (x, 0)) == MULT && GET_CODE (XEXP (x, 1)) == MULT)
+	{
+	  cond0 = XEXP (XEXP (x, 0), 0);
+	  cond1 = XEXP (XEXP (x, 1), 0);
+
+	  if (GET_RTX_CLASS (GET_CODE (cond0)) == '<'
+	      && GET_RTX_CLASS (GET_CODE (cond1)) == '<'
+	      && ((GET_CODE (cond0) == combine_reversed_comparison_code (cond1)
+		   && rtx_equal_p (XEXP (cond0, 0), XEXP (cond1, 0))
+		   && rtx_equal_p (XEXP (cond0, 1), XEXP (cond1, 1)))
+		  || ((swap_condition (GET_CODE (cond0))
+		       == combine_reversed_comparison_code (cond1))
+		      && rtx_equal_p (XEXP (cond0, 0), XEXP (cond1, 1))
+		      && rtx_equal_p (XEXP (cond0, 1), XEXP (cond1, 0))))
+	      && ! side_effects_p (x))
+	    {
+	      *ptrue = *pfalse = const0_rtx;
+	      return cond0;
+	    }
+	}
+    }
+
+  else if (code == IF_THEN_ELSE)
+    {
+      /* If we have IF_THEN_ELSE already, extract the condition and
+	 canonicalize it if it is NE or EQ.  */
+      cond0 = XEXP (x, 0);
+      *ptrue = XEXP (x, 1), *pfalse = XEXP (x, 2);
+      if (GET_CODE (cond0) == NE && XEXP (cond0, 1) == const0_rtx)
+	return XEXP (cond0, 0);
+      else if (GET_CODE (cond0) == EQ && XEXP (cond0, 1) == const0_rtx)
+	{
+	  *ptrue = XEXP (x, 2), *pfalse = XEXP (x, 1);
+	  return XEXP (cond0, 0);
+	}
+      else
+	return cond0;
+    }
+
+  /* If X is a SUBREG, we can narrow both the true and false values
+     if the inner expression, if there is a condition.  */
+  else if (code == SUBREG
+	   && 0 != (cond0 = if_then_else_cond (SUBREG_REG (x),
+					       &true0, &false0)))
+    {
+      *ptrue = simplify_gen_subreg (mode, true0,
+				    GET_MODE (SUBREG_REG (x)), SUBREG_BYTE (x));
+      *pfalse = simplify_gen_subreg (mode, false0,
+				     GET_MODE (SUBREG_REG (x)), SUBREG_BYTE (x));
+
+      return cond0;
+    }
+
+  /* If X is a constant, this isn't special and will cause confusions
+     if we treat it as such.  Likewise if it is equivalent to a constant.  */
+  else if (CONSTANT_P (x)
+	   || ((cond0 = get_last_value (x)) != 0 && CONSTANT_P (cond0)))
+    ;
+
+  /* If we're in BImode, canonicalize on 0 and STORE_FLAG_VALUE, as that
+     will be least confusing to the rest of the compiler.  */
+  else if (mode == BImode)
+    {
+      *ptrue = GEN_INT (STORE_FLAG_VALUE), *pfalse = const0_rtx;
+      return x;
+    }
+
+  /* If X is known to be either 0 or -1, those are the true and
+     false values when testing X.  */
+  else if (x == constm1_rtx || x == const0_rtx
+	   || (mode != VOIDmode
+	       && num_sign_bit_copies (x, mode) == GET_MODE_BITSIZE (mode)))
+    {
+      *ptrue = constm1_rtx, *pfalse = const0_rtx;
+      return x;
+    }
+
+  /* Likewise for 0 or a single bit.  */
+  else if (mode != VOIDmode
+	   && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	   && exact_log2 (nz = nonzero_bits (x, mode)) >= 0)
+    {
+      *ptrue = GEN_INT (trunc_int_for_mode (nz, mode)), *pfalse = const0_rtx;
+      return x;
+    }
+
+  /* Otherwise fail; show no condition with true and false values the same.  */
+  *ptrue = *pfalse = x;
+  return 0;
+}

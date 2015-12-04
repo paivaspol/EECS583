@@ -1,0 +1,16 @@
+static int
+coalesce_reg_in_phi (insn, dest_regno, src_regno, data)
+     rtx insn ATTRIBUTE_UNUSED;
+     int dest_regno;
+     int src_regno;
+     void *data;
+{
+  struct phi_coalesce_context *context = 
+    (struct phi_coalesce_context *) data;
+  
+  /* Attempt to use the same reg, if they don't conflict.  */
+  context->changed 
+    += coalesce_if_unconflicting (context->p, context->conflicts, 
+				  dest_regno, src_regno);
+  return 0;
+}

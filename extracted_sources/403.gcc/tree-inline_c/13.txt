@@ -1,0 +1,39 @@
+void
+remap_save_expr (tp, st_, fn, walk_subtrees)
+     tree *tp;
+     void *st_;
+     tree fn;
+     int *walk_subtrees;
+{
+  splay_tree st = (splay_tree) st_;
+  splay_tree_node n;
+
+  /* See if we already encountered this SAVE_EXPR.  */
+  n = splay_tree_lookup (st, (splay_tree_key) *tp);
+      
+  /* If we didn't already remap this SAVE_EXPR, do so now.  */
+  if (!n)
+    {
+      tree t = copy_node (*tp);
+
+      /* The SAVE_EXPR is now part of the function into which we
+	 are inlining this body.  */
+      SAVE_EXPR_CONTEXT (t) = fn;
+      /* And we haven't evaluated it yet.  */
+      SAVE_EXPR_RTL (t) = NULL_RTX;
+      /* Remember this SAVE_EXPR.  */
+      n = splay_tree_insert (st,
+			     (splay_tree_key) *tp,
+			     (splay_tree_value) t);
+      /* Make sure we don't remap an already-remapped SAVE_EXPR.  */
+      splay_tree_insert (st, (splay_tree_key) t,
+			 (splay_tree_value) error_mark_node);
+    }
+  else
+    /* We've already walked into this SAVE_EXPR, so we needn't do it
+       again.  */
+    *walk_subtrees = 0;
+
+  /* Replace this SAVE_EXPR with the copy.  */
+  *tp = (tree) n->value;
+}

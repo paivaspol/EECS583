@@ -1,0 +1,28 @@
+int32 logs3_add (int32 logp, int32 logq)
+{
+    int32 d, r;
+    
+    assert(add_tbl != NULL);	/* Use assert to allow use of NDEBUG for efficiency */
+
+    if (logp > logq) {
+	d = logp - logq;
+	r = logp;
+    } else {
+	d = logq - logp;
+	r = logq;
+    }
+    /* RAH 5.9.01 If we allow the computation of values of d beyond
+       the add_tbl_size, speed degrades quickly, for that reason,
+       limit the calculations to the same range as the table. This
+       seems wrong. Must think more about it */
+    if (d < add_tbl_size)
+      {
+      if (USE_LOG3_ADD_TABLE) 
+	r += add_tbl[d];
+      else
+	/* Do we need to be checking to see if the value is too large? small? */
+	r += 0.5 + (float64) (log(1.0 + pow(F,d)) * invlogB); /* RAH, 5.9.01 - compute instead of looking it up */
+      }
+
+    return r;
+}

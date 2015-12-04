@@ -1,0 +1,17 @@
+int
+reg_referenced_between_p (reg, from_insn, to_insn)
+     rtx reg, from_insn, to_insn;
+{
+  rtx insn;
+
+  if (from_insn == to_insn)
+    return 0;
+
+  for (insn = NEXT_INSN (from_insn); insn != to_insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn)
+	&& (reg_referenced_p (reg, PATTERN (insn))
+	   || (GET_CODE (insn) == CALL_INSN
+	      && find_reg_fusage (insn, USE, reg))))
+      return 1;
+  return 0;
+}

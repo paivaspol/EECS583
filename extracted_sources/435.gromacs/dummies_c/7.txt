@@ -1,0 +1,25 @@
+static void constr_dum3FAD(rvec xi,rvec xj,rvec xk,rvec x,real a,real b)
+{
+  rvec xij,xjk,xp;
+  real a1,b1,c1,invdij;
+  
+  rvec_sub(xj,xi,xij);
+  rvec_sub(xk,xj,xjk);
+  /* 6 flops */
+
+  invdij = invsqrt(iprod(xij,xij));
+  c1 = invdij * invdij * iprod(xij,xjk);
+  xp[XX] = xjk[XX] - c1*xij[XX];
+  xp[YY] = xjk[YY] - c1*xij[YY];
+  xp[ZZ] = xjk[ZZ] - c1*xij[ZZ];
+  a1 = a*invdij;
+  b1 = b*invsqrt(iprod(xp,xp));
+  /* 45 */
+  
+  x[XX] = xi[XX] + a1*xij[XX] + b1*xp[XX];
+  x[YY] = xi[YY] + a1*xij[YY] + b1*xp[YY];
+  x[ZZ] = xi[ZZ] + a1*xij[ZZ] + b1*xp[ZZ];
+  /* 12 Flops */
+  
+  /* TOTAL: 63 flops */
+}

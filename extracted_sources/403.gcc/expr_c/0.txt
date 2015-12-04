@@ -1,0 +1,147 @@
+static unsigned HOST_WIDE_INT move_by_pieces_ninsns
+				PARAMS ((unsigned HOST_WIDE_INT,
+					 unsigned int));
+static void move_by_pieces_1	PARAMS ((rtx (*) (rtx, ...), enum machine_mode,
+					 struct move_by_pieces *));
+static rtx clear_by_pieces_1	PARAMS ((PTR, HOST_WIDE_INT,
+					 enum machine_mode));
+static void clear_by_pieces	PARAMS ((rtx, unsigned HOST_WIDE_INT,
+					 unsigned int));
+static void store_by_pieces_1	PARAMS ((struct store_by_pieces *,
+					 unsigned int));
+static void store_by_pieces_2	PARAMS ((rtx (*) (rtx, ...),
+					 enum machine_mode,
+					 struct store_by_pieces *));
+static rtx get_subtarget	PARAMS ((rtx));
+static int is_zeros_p		PARAMS ((tree));
+static int mostly_zeros_p	PARAMS ((tree));
+static void store_constructor_field PARAMS ((rtx, unsigned HOST_WIDE_INT,
+					     HOST_WIDE_INT, enum machine_mode,
+					     tree, tree, int, int));
+static void store_constructor	PARAMS ((tree, rtx, int, HOST_WIDE_INT));
+static rtx store_field		PARAMS ((rtx, HOST_WIDE_INT,
+					 HOST_WIDE_INT, enum machine_mode,
+					 tree, enum machine_mode, int, tree,
+					 int));
+static rtx var_rtx		PARAMS ((tree));
+static HOST_WIDE_INT highest_pow2_factor PARAMS ((tree));
+static HOST_WIDE_INT highest_pow2_factor_for_type PARAMS ((tree, tree));
+static int is_aligning_offset	PARAMS ((tree, tree));
+static rtx expand_increment	PARAMS ((tree, int, int));
+static void do_jump_by_parts_greater PARAMS ((tree, int, rtx, rtx));
+static void do_jump_by_parts_equality PARAMS ((tree, rtx, rtx));
+static void do_compare_and_jump	PARAMS ((tree, enum rtx_code, enum rtx_code,
+					 rtx, rtx));
+static rtx do_store_flag	PARAMS ((tree, rtx, enum machine_mode, int));
+#ifdef PUSH_ROUNDING
+static void emit_single_push_insn PARAMS ((enum machine_mode, rtx, tree));
+#endif
+static void do_tablejump PARAMS ((rtx, enum machine_mode, rtx, rtx, rtx));
+
+/* Record for each mode whether we can move a register directly to or
+   from an object of that mode in memory.  If we can't, we won't try
+   to use that mode directly when accessing a field of that mode.  */
+
+static char direct_load[NUM_MACHINE_MODES];
+static char direct_store[NUM_MACHINE_MODES];
+
+/* If a memory-to-memory move would take MOVE_RATIO or more simple
+   move-instruction sequences, we will do a movstr or libcall instead.  */
+
+#ifndef MOVE_RATIO
+#if defined (HAVE_movstrqi) || defined (HAVE_movstrhi) || defined (HAVE_movstrsi) || defined (HAVE_movstrdi) || defined (HAVE_movstrti)
+#define MOVE_RATIO 2
+#else
+/* If we are optimizing for space (-Os), cut down the default move ratio.  */
+#define MOVE_RATIO (optimize_size ? 3 : 15)
+#endif
+#endif
+
+/* This macro is used to determine whether move_by_pieces should be called
+   to perform a structure copy.  */
+#ifndef MOVE_BY_PIECES_P
+#define MOVE_BY_PIECES_P(SIZE, ALIGN) \
+  (move_by_pieces_ninsns (SIZE, ALIGN) < (unsigned int) MOVE_RATIO)
+#endif
+
+/* This array records the insn_code of insns to perform block moves.  */
+enum insn_code movstr_optab[NUM_MACHINE_MODES];
+
+/* This array records the insn_code of insns to perform block clears.  */
+enum insn_code clrstr_optab[NUM_MACHINE_MODES];
+
+/* SLOW_UNALIGNED_ACCESS is non-zero if unaligned accesses are very slow.  */
+
+#ifndef SLOW_UNALIGNED_ACCESS
+#define SLOW_UNALIGNED_ACCESS(MODE, ALIGN) STRICT_ALIGNMENT
+#endif
+
+/* This is run once per compilation to set up which modes can be used
+   directly in memory and to initialize the block move optab.  */
+
+void
+init_expr_once ()
+{
+  rtx insn, pat;
+  enum machine_mode mode;
+  int num_clobbers;
+  rtx mem, mem1;
+
+  start_sequence ();
+
+  /* Try indexing by frame ptr and try by stack ptr.
+     It is known that on the Convex the stack ptr isn't a valid index.
+     With luck, one or the other is valid on any machine.  */
+  mem = gen_rtx_MEM (VOIDmode, stack_pointer_rtx);
+  mem1 = gen_rtx_MEM (VOIDmode, frame_pointer_rtx);
+
+  insn = emit_insn (gen_rtx_SET (0, NULL_RTX, NULL_RTX));
+  pat = PATTERN (insn);
+
+  for (mode = VOIDmode; (int) mode < NUM_MACHINE_MODES;
+       mode = (enum machine_mode) ((int) mode + 1))
+    {
+      int regno;
+      rtx reg;
+
+      direct_load[(int) mode] = direct_store[(int) mode] = 0;
+      PUT_MODE (mem, mode);
+      PUT_MODE (mem1, mode);
+
+      /* See if there is some register that can be used in this mode and
+	 directly loaded or stored from memory.  */
+
+      if (mode != VOIDmode && mode != BLKmode)
+	for (regno = 0; regno < FIRST_PSEUDO_REGISTER
+	     && (direct_load[(int) mode] == 0 || direct_store[(int) mode] == 0);
+	     regno++)
+	  {
+	    if (! HARD_REGNO_MODE_OK (regno, mode))
+	      continue;
+
+	    reg = gen_rtx_REG (mode, regno);
+
+	    SET_SRC (pat) = mem;
+	    SET_DEST (pat) = reg;
+	    if (recog (pat, insn, &num_clobbers) >= 0)
+	      direct_load[(int) mode] = 1;
+
+	    SET_SRC (pat) = mem1;
+	    SET_DEST (pat) = reg;
+	    if (recog (pat, insn, &num_clobbers) >= 0)
+	      direct_load[(int) mode] = 1;
+
+	    SET_SRC (pat) = reg;
+	    SET_DEST (pat) = mem;
+	    if (recog (pat, insn, &num_clobbers) >= 0)
+	      direct_store[(int) mode] = 1;
+
+	    SET_SRC (pat) = reg;
+	    SET_DEST (pat) = mem1;
+	    if (recog (pat, insn, &num_clobbers) >= 0)
+	      direct_store[(int) mode] = 1;
+	  }
+    }
+
+  end_sequence ();
+}

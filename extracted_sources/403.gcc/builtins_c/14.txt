@@ -1,0 +1,26 @@
+static rtx
+result_vector (savep, result)
+     int savep;
+     rtx result;
+{
+  int regno, size, align, nelts;
+  enum machine_mode mode;
+  rtx reg, mem;
+  rtx *savevec = (rtx *) alloca (FIRST_PSEUDO_REGISTER * sizeof (rtx));
+
+  size = nelts = 0;
+  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+    if ((mode = apply_result_mode[regno]) != VOIDmode)
+      {
+	align = GET_MODE_ALIGNMENT (mode) / BITS_PER_UNIT;
+	if (size % align != 0)
+	  size = CEIL (size, align) * align;
+	reg = gen_rtx_REG (mode, savep ? regno : INCOMING_REGNO (regno));
+	mem = adjust_address (result, mode, size);
+	savevec[nelts++] = (savep
+			    ? gen_rtx_SET (VOIDmode, mem, reg)
+			    : gen_rtx_SET (VOIDmode, reg, mem));
+	size += GET_MODE_SIZE (mode);
+      }
+  return gen_rtx_PARALLEL (VOIDmode, gen_rtvec_v (nelts, savevec));
+}

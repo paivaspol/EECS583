@@ -1,0 +1,72 @@
+static rtx
+save_fixed_argument_area (reg_parm_stack_space, argblock,
+			  low_to_save, high_to_save)
+     int reg_parm_stack_space;
+     rtx argblock;
+     int *low_to_save;
+     int *high_to_save;
+{
+  int i;
+  rtx save_area = NULL_RTX;
+
+  /* Compute the boundary of the that needs to be saved, if any.  */
+#ifdef ARGS_GROW_DOWNWARD
+  for (i = 0; i < reg_parm_stack_space + 1; i++)
+#else
+  for (i = 0; i < reg_parm_stack_space; i++)
+#endif
+    {
+      if (i >= highest_outgoing_arg_in_use
+	  || stack_usage_map[i] == 0)
+	continue;
+
+      if (*low_to_save == -1)
+	*low_to_save = i;
+
+      *high_to_save = i;
+    }
+
+  if (*low_to_save >= 0)
+    {
+      int num_to_save = *high_to_save - *low_to_save + 1;
+      enum machine_mode save_mode
+	= mode_for_size (num_to_save * BITS_PER_UNIT, MODE_INT, 1);
+      rtx stack_area;
+
+      /* If we don't have the required alignment, must do this in BLKmode.  */
+      if ((*low_to_save & (MIN (GET_MODE_SIZE (save_mode),
+				BIGGEST_ALIGNMENT / UNITS_PER_WORD) - 1)))
+	save_mode = BLKmode;
+
+#ifdef ARGS_GROW_DOWNWARD
+      stack_area
+	= gen_rtx_MEM (save_mode,
+		       memory_address (save_mode,
+				       plus_constant (argblock,
+						      - *high_to_save)));
+#else
+      stack_area = gen_rtx_MEM (save_mode,
+				memory_address (save_mode,
+						plus_constant (argblock,
+							       *low_to_save)));
+#endif
+
+      set_mem_align (stack_area, PARM_BOUNDARY);
+      if (save_mode == BLKmode)
+	{
+	  save_area = assign_stack_temp (BLKmode, num_to_save, 0);
+	  /* Cannot use emit_block_move here because it can be done by a
+	     library call which in turn gets into this place again and deadly
+	     infinite recursion happens.  */
+	  move_by_pieces (validize_mem (save_area), stack_area, num_to_save,
+			  PARM_BOUNDARY);
+	}
+      else
+	{
+	  save_area = gen_reg_rtx (save_mode);
+	  emit_move_insn (save_area, stack_area);
+	}
+    }
+
+  return save_area;
+}

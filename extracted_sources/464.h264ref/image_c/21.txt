@@ -1,0 +1,45 @@
+static void copy_motion_vectors_MB ()
+{
+  int i,j,k,l;
+
+  for (i = 0; i < 4; i++)
+  {
+    for (j = 0; j < 4; j++)
+    {
+      for (k = 0; k < img->max_num_references; k++)
+      {
+        for (l = 0; l < 9; l++)
+        {
+          img->all_mv[i][j][LIST_0][k][l][0] = rdopt->all_mv[i][j][LIST_0][k][l][0];
+          img->all_mv[i][j][LIST_0][k][l][1] = rdopt->all_mv[i][j][LIST_0][k][l][1];
+
+          img->all_mv[i][j][LIST_1][k][l][0] = rdopt->all_mv[i][j][LIST_1][k][l][0];
+          img->all_mv[i][j][LIST_1][k][l][1] = rdopt->all_mv[i][j][LIST_1][k][l][1];
+
+#if BI_PREDICTION         
+          if (input->BiPredMotionEstimation && k==1 && img->type==B_SLICE)
+          {
+            img->bipred_mv1[i][j][LIST_0][k][l][0] = rdopt->bipred_mv1[i][j][LIST_0][k][l][0];
+            img->bipred_mv1[i][j][LIST_0][k][l][1] = rdopt->bipred_mv1[i][j][LIST_0][k][l][1];
+            
+            img->bipred_mv1[i][j][LIST_1][k][l][0] = rdopt->bipred_mv1[i][j][LIST_1][k][l][0];
+            img->bipred_mv1[i][j][LIST_1][k][l][1] = rdopt->bipred_mv1[i][j][LIST_1][k][l][1];            
+
+            img->bipred_mv2[i][j][LIST_0][k][l][0] = rdopt->bipred_mv2[i][j][LIST_0][k][l][0];
+            img->bipred_mv2[i][j][LIST_0][k][l][1] = rdopt->bipred_mv2[i][j][LIST_0][k][l][1];            
+            img->bipred_mv2[i][j][LIST_1][k][l][0] = rdopt->bipred_mv2[i][j][LIST_1][k][l][0];
+            img->bipred_mv2[i][j][LIST_1][k][l][1] = rdopt->bipred_mv2[i][j][LIST_1][k][l][1];            
+          }
+#endif
+
+          img->pred_mv[i][j][LIST_0][k][l][0] = rdopt->pred_mv[i][j][LIST_0][k][l][0];
+          img->pred_mv[i][j][LIST_0][k][l][1] = rdopt->pred_mv[i][j][LIST_0][k][l][1];
+          
+          img->pred_mv[i][j][LIST_1][k][l][0] = rdopt->pred_mv[i][j][LIST_1][k][l][0];
+          img->pred_mv[i][j][LIST_1][k][l][1] = rdopt->pred_mv[i][j][LIST_1][k][l][1];
+          
+        }
+      }
+    }
+  }
+}

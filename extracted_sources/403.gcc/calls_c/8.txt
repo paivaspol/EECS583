@@ -1,0 +1,31 @@
+static void
+restore_fixed_argument_area (save_area, argblock, high_to_save, low_to_save)
+     rtx save_area;
+     rtx argblock;
+     int high_to_save;
+     int low_to_save;
+{
+  enum machine_mode save_mode = GET_MODE (save_area);
+#ifdef ARGS_GROW_DOWNWARD
+  rtx stack_area
+    = gen_rtx_MEM (save_mode,
+		   memory_address (save_mode,
+				   plus_constant (argblock,
+						  - high_to_save)));
+#else
+  rtx stack_area
+    = gen_rtx_MEM (save_mode,
+		   memory_address (save_mode,
+				   plus_constant (argblock,
+						  low_to_save)));
+#endif
+
+  if (save_mode != BLKmode)
+    emit_move_insn (stack_area, save_area);
+  else
+    /* Cannot use emit_block_move here because it can be done by a library
+       call which in turn gets into this place again and deadly infinite
+       recursion happens.  */
+    move_by_pieces (stack_area, validize_mem (save_area),
+		    high_to_save - low_to_save + 1, PARM_BOUNDARY);
+}

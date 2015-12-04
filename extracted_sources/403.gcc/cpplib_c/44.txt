@@ -1,0 +1,19 @@
+static void
+do_ifndef (pfile)
+     cpp_reader *pfile;
+{
+  int skip = 1;
+  const cpp_hashnode *node = 0;
+
+  if (! pfile->state.skipping)
+    {
+      node = lex_macro_node (pfile);
+      if (node)
+	skip = node->type == NT_MACRO;
+
+      if (node)
+	check_eol (pfile);
+    }
+
+  push_conditional (pfile, skip, T_IFNDEF, node);
+}

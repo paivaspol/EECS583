@@ -1,0 +1,40 @@
+void sort_basket( long min, long max )
+#else
+void sort_basket( min, max )
+    long min, max;
+#endif
+{
+    long l, r;
+    cost_t cut;
+    BASKET *xchange;
+
+    l = min; r = max;
+
+    cut = perm[ (long)( (l+r) / 2 ) ]->abs_cost;
+
+    do
+    {
+        while( perm[l]->abs_cost > cut )
+            l++;
+        while( cut > perm[r]->abs_cost )
+            r--;
+            
+        if( l < r )
+        {
+            xchange = perm[l];
+            perm[l] = perm[r];
+            perm[r] = xchange;
+        }
+        if( l <= r )
+        {
+            l++; r--;
+        }
+
+    }
+    while( l <= r );
+
+    if( min < r )
+        sort_basket( min, r );
+    if( l < max && l <= B )
+        sort_basket( l, max ); 
+}

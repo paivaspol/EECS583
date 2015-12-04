@@ -1,0 +1,96 @@
+static void
+remap_block (scope_stmt, decls, id)
+     tree scope_stmt;
+     tree decls;
+     inline_data *id;
+{
+  /* We cannot do this in the cleanup for a TARGET_EXPR since we do
+     not know whether or not expand_expr will actually write out the
+     code we put there.  If it does not, then we'll have more BLOCKs
+     than block-notes, and things will go awry.  At some point, we
+     should make the back-end handle BLOCK notes in a tidier way,
+     without requiring a strict correspondence to the block-tree; then
+     this check can go.  */
+  if (id->in_target_cleanup_p)
+    {
+      SCOPE_STMT_BLOCK (scope_stmt) = NULL_TREE;
+      return;
+    }
+
+  /* If this is the beginning of a scope, remap the associated BLOCK.  */
+  if (SCOPE_BEGIN_P (scope_stmt) && SCOPE_STMT_BLOCK (scope_stmt))
+    {
+      tree old_block;
+      tree new_block;
+      tree old_var;
+      tree fn;
+
+      /* Make the new block.  */
+      old_block = SCOPE_STMT_BLOCK (scope_stmt);
+      new_block = make_node (BLOCK);
+      TREE_USED (new_block) = TREE_USED (old_block);
+      BLOCK_ABSTRACT_ORIGIN (new_block) = old_block;
+      SCOPE_STMT_BLOCK (scope_stmt) = new_block;
+
+      /* Remap its variables.  */
+      for (old_var = decls ? decls : BLOCK_VARS (old_block);
+	   old_var;
+	   old_var = TREE_CHAIN (old_var))
+	{
+	  tree new_var;
+
+	  /* Remap the variable.  */
+	  new_var = remap_decl (old_var, id);
+	  /* If we didn't remap this variable, so we can't mess with
+	     its TREE_CHAIN.  If we remapped this variable to
+	     something other than a declaration (say, if we mapped it
+	     to a constant), then we must similarly omit any mention
+	     of it here.  */
+	  if (!new_var || !DECL_P (new_var))
+	    ;
+	  else
+	    {
+	      TREE_CHAIN (new_var) = BLOCK_VARS (new_block);
+	      BLOCK_VARS (new_block) = new_var;
+	    }
+	}
+      /* We put the BLOCK_VARS in reverse order; fix that now.  */
+      BLOCK_VARS (new_block) = nreverse (BLOCK_VARS (new_block));
+      fn = VARRAY_TREE (id->fns, 0);
+      if (id->cloning_p)
+	/* We're building a clone; DECL_INITIAL is still
+	   error_mark_node, and current_binding_level is the parm
+	   binding level.  */
+	insert_block (new_block);
+      else
+	{
+	  /* Attach this new block after the DECL_INITIAL block for the
+	     function into which this block is being inlined.  In
+	     rest_of_compilation we will straighten out the BLOCK tree.  */
+	  tree *first_block;
+	  if (DECL_INITIAL (fn))
+	    first_block = &BLOCK_CHAIN (DECL_INITIAL (fn));
+	  else
+	    first_block = &DECL_INITIAL (fn);
+	  BLOCK_CHAIN (new_block) = *first_block;
+	  *first_block = new_block;
+	}
+      /* Remember the remapped block.  */
+      splay_tree_insert (id->decl_map,
+			 (splay_tree_key) old_block,
+			 (splay_tree_value) new_block);
+    }
+  /* If this is the end of a scope, set the SCOPE_STMT_BLOCK to be the
+     remapped block.  */
+  else if (SCOPE_END_P (scope_stmt) && SCOPE_STMT_BLOCK (scope_stmt))
+    {
+      splay_tree_node n;
+
+      /* Find this block in the table of remapped things.  */
+      n = splay_tree_lookup (id->decl_map,
+			     (splay_tree_key) SCOPE_STMT_BLOCK (scope_stmt));
+      if (! n)
+	abort ();
+      SCOPE_STMT_BLOCK (scope_stmt) = (tree) n->value;
+    }
+}

@@ -1,0 +1,203 @@
+static void
+df_analyse_1 (df, blocks, flags, update)
+     struct df *df;
+     bitmap blocks;
+     int flags;
+     int update;
+{
+  int aflags;
+  int dflags;
+  int i;
+  dflags = 0;
+  aflags = flags;
+  if (flags & DF_UD_CHAIN)
+    aflags |= DF_RD | DF_RD_CHAIN;
+
+  if (flags & DF_DU_CHAIN)
+    aflags |= DF_RU;
+
+  if (flags & DF_RU)
+    aflags |= DF_RU_CHAIN;
+
+  if (flags & DF_REG_INFO)
+    aflags |= DF_LR;
+
+  if (! blocks)
+      blocks = df->all_blocks;
+
+  df->flags = flags;
+  if (update)
+    {
+      df_refs_update (df);
+      /* More fine grained incremental dataflow analysis would be
+	 nice.  For now recompute the whole shebang for the
+	 modified blocks.  */
+#if 0
+      df_refs_unlink (df, blocks);
+#endif
+      /* All the def-use, use-def chains can be potentially
+	 modified by changes in one block.  The size of the
+	 bitmaps can also change.  */
+    }
+  else
+    {
+      /* Scan the function for all register defs and uses.  */
+      df_refs_queue (df);
+      df_refs_record (df, blocks);
+
+      /* Link all the new defs and uses to the insns.  */
+      df_refs_process (df);
+    }
+
+  /* Allocate the bitmaps now the total number of defs and uses are
+     known.  If the number of defs or uses have changed, then
+     these bitmaps need to be reallocated.  */
+  df_bitmaps_alloc (df, aflags);
+
+  /* Set the LUIDs for each specified basic block.  */
+  df_luids_set (df, blocks);
+
+  /* Recreate reg-def and reg-use chains from scratch so that first
+     def is at the head of the reg-def chain and the last use is at
+     the head of the reg-use chain.  This is only important for
+     regs local to a basic block as it speeds up searching.  */
+  if (aflags & DF_RD_CHAIN)
+    {
+      df_reg_def_chain_create (df, blocks);
+    }
+
+  if (aflags & DF_RU_CHAIN)
+    {
+      df_reg_use_chain_create (df, blocks);
+    }
+
+  df->dfs_order = xmalloc (sizeof(int) * n_basic_blocks);
+  df->rc_order = xmalloc (sizeof(int) * n_basic_blocks);
+  df->rts_order = xmalloc (sizeof(int) * n_basic_blocks);
+  df->inverse_dfs_map = xmalloc (sizeof(int) * n_basic_blocks);
+  df->inverse_rc_map = xmalloc (sizeof(int) * n_basic_blocks);
+  df->inverse_rts_map = xmalloc (sizeof(int) * n_basic_blocks);
+  
+  flow_depth_first_order_compute (df->dfs_order, df->rc_order);
+  flow_reverse_top_sort_order_compute (df->rts_order);
+  for (i = 0; i < n_basic_blocks; i ++)
+   {
+     df->inverse_dfs_map[df->dfs_order[i]] = i;
+     df->inverse_rc_map[df->rc_order[i]] = i;
+     df->inverse_rts_map[df->rts_order[i]] = i;
+   }
+  if (aflags & DF_RD)
+    {
+      /* Compute the sets of gens and kills for the defs of each bb.  */
+      df_rd_local_compute (df, df->flags & DF_RD ? blocks : df->all_blocks);
+      {
+	int i;
+	bitmap *in = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *out = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *gen = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *kill = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	for (i = 0; i < n_basic_blocks; i ++)
+	  {
+	    in[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->rd_in;
+	    out[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->rd_out;
+	    gen[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->rd_gen;
+	    kill[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->rd_kill;
+	  }
+	iterative_dataflow_bitmap (in, out, gen, kill, df->all_blocks, 
+				   FORWARD, UNION, df_rd_transfer_function,
+				   df->inverse_rc_map, NULL);
+	free (in);
+	free (out);
+	free (gen);
+	free (kill);
+      }
+    }
+
+  if (aflags & DF_UD_CHAIN)
+    {
+      /* Create use-def chains.  */
+      df_ud_chain_create (df, df->all_blocks);
+
+      if (! (flags & DF_RD))
+	dflags |= DF_RD;
+    }
+
+  if (aflags & DF_RU)
+    {
+      /* Compute the sets of gens and kills for the upwards exposed
+	 uses in each bb.  */
+      df_ru_local_compute (df, df->flags & DF_RU ? blocks : df->all_blocks);
+      {
+	int i;
+	bitmap *in = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *out = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *gen = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *kill = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	for (i = 0; i < n_basic_blocks; i ++)
+	  {
+	    in[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->ru_in;
+	    out[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->ru_out;
+	    gen[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->ru_gen;
+	    kill[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->ru_kill;
+	  }
+	iterative_dataflow_bitmap (in, out, gen, kill, df->all_blocks, 
+				   BACKWARD, UNION, df_ru_transfer_function,
+				   df->inverse_rts_map, NULL);
+	free (in);
+	free (out);
+	free (gen);
+	free (kill);
+      }
+    }
+
+  if (aflags & DF_DU_CHAIN)
+    {
+      /* Create def-use chains.  */
+      df_du_chain_create (df, df->all_blocks);
+
+      if (! (flags & DF_RU))
+	dflags |= DF_RU;
+    }
+
+  /* Free up bitmaps that are no longer required.  */
+  if (dflags)
+     df_bitmaps_free (df, dflags);
+
+  if (aflags & DF_LR)
+    {
+      /* Compute the sets of defs and uses of live variables.  */
+      df_lr_local_compute (df, df->flags & DF_LR ? blocks : df->all_blocks);      
+      {
+	int i;
+	bitmap *in = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *out = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *use = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	bitmap *def = xmalloc (sizeof (bitmap) * n_basic_blocks);
+	for (i = 0; i < n_basic_blocks; i ++)
+	  {
+	    in[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->lr_in;
+	    out[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->lr_out;
+	    use[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->lr_use;
+	    def[i] = DF_BB_INFO (df, BASIC_BLOCK (i))->lr_def;
+	  }
+	iterative_dataflow_bitmap (in, out, use, def, df->all_blocks, 
+				   BACKWARD, UNION, df_lr_transfer_function,
+				   df->inverse_rts_map, NULL);
+	free (in);
+	free (out);
+	free (use);
+	free (def);
+      }
+    }
+
+  if (aflags & DF_REG_INFO)
+    {
+      df_reg_info_compute (df, df->all_blocks);
+    }
+  free (df->dfs_order);
+  free (df->rc_order);
+  free (df->rts_order);
+  free (df->inverse_rc_map);
+  free (df->inverse_dfs_map);
+  free (df->inverse_rts_map);
+}

@@ -1,0 +1,16 @@
+static bool do_htrn(int fp,bool bRead,t_trnheader *sh,
+		    rvec *box,rvec *x,rvec *v,rvec *f)
+{
+  matrix pv;
+  bool bOK;
+
+  bOK = TRUE;
+  if (sh->box_size != 0) bOK = bOK && ndo_rvec(box,DIM);
+  if (sh->vir_size != 0) bOK = bOK && ndo_rvec(pv,DIM);
+  if (sh->pres_size!= 0) bOK = bOK && ndo_rvec(pv,DIM);
+  if (sh->x_size   != 0) bOK = bOK && ndo_rvec(x,sh->natoms);
+  if (sh->v_size   != 0) bOK = bOK && ndo_rvec(v,sh->natoms);
+  if (sh->f_size   != 0) bOK = bOK && ndo_rvec(f,sh->natoms);
+
+  return bOK;
+}

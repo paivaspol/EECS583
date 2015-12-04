@@ -1,0 +1,54 @@
+static int
+enter_macro_context (pfile, node)
+     cpp_reader *pfile;
+     cpp_hashnode *node;
+{
+  /* The presence of a macro invalidates a file's controlling macro.  */
+  pfile->mi_valid = false;
+
+  pfile->state.angled_headers = false;
+
+  /* Handle standard macros.  */
+  if (! (node->flags & NODE_BUILTIN))
+    {
+      cpp_macro *macro = node->value.macro;
+
+      if (macro->fun_like)
+	{
+	  _cpp_buff *buff;
+
+	  pfile->state.prevent_expansion++;
+	  pfile->keep_tokens++;
+	  pfile->state.parsing_args = 1;
+	  buff = funlike_invocation_p (pfile, node);
+	  pfile->state.parsing_args = 0;
+	  pfile->keep_tokens--;
+	  pfile->state.prevent_expansion--;
+
+	  if (buff == NULL)
+	    {
+	      if (CPP_WTRADITIONAL (pfile) && ! node->value.macro->syshdr)
+		cpp_warning (pfile,
+ "function-like macro \"%s\" must be used with arguments in traditional C",
+			     NODE_NAME (node));
+
+	      return 0;
+	    }
+
+	  if (node->value.macro->paramc > 0)
+	    replace_args (pfile, node, (macro_arg *) buff->base);
+	  _cpp_release_buff (pfile, buff);
+	}
+
+      /* Disable the macro within its expansion.  */
+      node->flags |= NODE_DISABLED;
+
+      if (macro->paramc == 0)
+	push_token_context (pfile, node, macro->expansion, macro->count);
+
+      return 1;
+    }
+
+  /* Handle built-in macros and the _Pragma operator.  */
+  return builtin_macro (pfile, node);
+}

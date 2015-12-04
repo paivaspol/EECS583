@@ -1,0 +1,23 @@
+int32 vector_vqlabel (float32 *vec, float32 **mean, int32 rows, int32 cols, float64 *sqerr)
+{
+    int32 i, besti;
+    float64 d, bestd;
+    
+    assert ((rows > 0) && (cols > 0));
+    
+    bestd = vector_dist_eucl (mean[0], vec, cols);
+    besti = 0;
+    
+    for (i = 1; i < rows; i++) {
+	d = vector_dist_eucl (mean[i], vec, cols);
+	if (bestd > d) {
+	    bestd = d;
+	    besti = i;
+	}
+    }
+    
+    if (sqerr)
+	*sqerr = bestd;
+    
+    return besti;
+}

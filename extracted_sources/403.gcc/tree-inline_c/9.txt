@@ -1,0 +1,234 @@
+static tree
+expand_call_inline (tp, walk_subtrees, data)
+     tree *tp;
+     int *walk_subtrees;
+     void *data;
+{
+  inline_data *id;
+  tree t;
+  tree expr;
+  tree chain;
+  tree fn;
+  tree scope_stmt;
+  tree use_stmt;
+  tree arg_inits;
+  tree *inlined_body;
+  splay_tree st;
+
+  /* See what we've got.  */
+  id = (inline_data *) data;
+  t = *tp;
+
+  /* Recurse, but letting recursive invocations know that we are
+     inside the body of a TARGET_EXPR.  */
+  if (TREE_CODE (*tp) == TARGET_EXPR)
+    {
+      int i, len = first_rtl_op (TARGET_EXPR);
+
+      /* We're walking our own subtrees.  */
+      *walk_subtrees = 0;
+
+      /* Push *TP on the stack of pending TARGET_EXPRs.  */
+      VARRAY_PUSH_TREE (id->target_exprs, *tp);
+
+      /* Actually walk over them.  This loop is the body of
+	 walk_trees, omitting the case where the TARGET_EXPR
+	 itself is handled.  */
+      for (i = 0; i < len; ++i)
+	{
+	  if (i == 2)
+	    ++id->in_target_cleanup_p;
+	  walk_tree (&TREE_OPERAND (*tp, i), expand_call_inline, data,
+		     id->tree_pruner);
+	  if (i == 2)
+	    --id->in_target_cleanup_p;
+	}
+
+      /* We're done with this TARGET_EXPR now.  */
+      VARRAY_POP (id->target_exprs);
+
+      return NULL_TREE;
+    }
+
+  if (TYPE_P (t))
+    /* Because types were not copied in copy_body, CALL_EXPRs beneath
+       them should not be expanded.  This can happen if the type is a
+       dynamic array type, for example.  */
+    *walk_subtrees = 0;
+
+  /* From here on, we're only interested in CALL_EXPRs.  */
+  if (TREE_CODE (t) != CALL_EXPR)
+    return NULL_TREE;
+
+  /* First, see if we can figure out what function is being called.
+     If we cannot, then there is no hope of inlining the function.  */
+  fn = get_callee_fndecl (t);
+  if (!fn)
+    return NULL_TREE;
+
+  /* If fn is a declaration of a function in a nested scope that was
+     globally declared inline, we don't set its DECL_INITIAL.
+     However, we can't blindly follow DECL_ABSTRACT_ORIGIN because the
+     C++ front-end uses it for cdtors to refer to their internal
+     declarations, that are not real functions.  Fortunately those
+     don't have trees to be saved, so we can tell by checking their
+     DECL_SAVED_TREE.  */
+  if (! DECL_INITIAL (fn)
+      && DECL_ABSTRACT_ORIGIN (fn)
+      && DECL_SAVED_TREE (DECL_ABSTRACT_ORIGIN (fn)))
+    fn = DECL_ABSTRACT_ORIGIN (fn);
+
+  /* Don't try to inline functions that are not well-suited to
+     inlining.  */
+  if (!inlinable_function_p (fn, id))
+    return NULL_TREE;
+
+  if (! (*lang_hooks.tree_inlining.start_inlining) (fn))
+    return NULL_TREE;
+
+  /* Set the current filename and line number to the function we are
+     inlining so that when we create new _STMT nodes here they get
+     line numbers corresponding to the function we are calling.  We
+     wrap the whole inlined body in an EXPR_WITH_FILE_AND_LINE as well
+     because individual statements don't record the filename.  */
+  push_srcloc (fn->decl.filename, fn->decl.linenum);
+
+  /* Build a statement-expression containing code to initialize the
+     arguments, the actual inline expansion of the body, and a label
+     for the return statements within the function to jump to.  The
+     type of the statement expression is the return type of the
+     function call.  */
+  expr = build1 (STMT_EXPR, TREE_TYPE (TREE_TYPE (fn)), NULL_TREE);
+  /* There is no scope associated with the statement-expression.  */
+  STMT_EXPR_NO_SCOPE (expr) = 1;
+
+  /* Local declarations will be replaced by their equivalents in this
+     map.  */
+  st = id->decl_map;
+  id->decl_map = splay_tree_new (splay_tree_compare_pointers,
+				 NULL, NULL);
+
+  /* Initialize the parameters.  */
+  arg_inits = initialize_inlined_parameters (id, TREE_OPERAND (t, 1), fn);
+  /* Expand any inlined calls in the initializers.  Do this before we
+     push FN on the stack of functions we are inlining; we want to
+     inline calls to FN that appear in the initializers for the
+     parameters.  */
+  expand_calls_inline (&arg_inits, id);
+  /* And add them to the tree.  */
+  STMT_EXPR_STMT (expr) = chainon (STMT_EXPR_STMT (expr), arg_inits);
+
+  /* Record the function we are about to inline so that we can avoid
+     recursing into it.  */
+  VARRAY_PUSH_TREE (id->fns, fn);
+
+  /* Record the function we are about to inline if optimize_function
+     has not been called on it yet and we don't have it in the list.  */
+  if (! DECL_INLINED_FNS (fn))
+    {
+      int i;
+
+      for (i = VARRAY_ACTIVE_SIZE (id->inlined_fns) - 1; i >= 0; i--)
+	if (VARRAY_TREE (id->inlined_fns, i) == fn)
+	  break;
+      if (i < 0)
+	VARRAY_PUSH_TREE (id->inlined_fns, fn);
+    }
+
+  /* Return statements in the function body will be replaced by jumps
+     to the RET_LABEL.  */
+  id->ret_label = build_decl (LABEL_DECL, NULL_TREE, NULL_TREE);
+  DECL_CONTEXT (id->ret_label) = VARRAY_TREE (id->fns, 0);
+
+  if (! DECL_INITIAL (fn)
+      || TREE_CODE (DECL_INITIAL (fn)) != BLOCK)
+    abort ();
+
+  /* Create a block to put the parameters in.  We have to do this
+     after the parameters have been remapped because remapping
+     parameters is different from remapping ordinary variables.  */
+  scope_stmt = build_stmt (SCOPE_STMT, DECL_INITIAL (fn));
+  SCOPE_BEGIN_P (scope_stmt) = 1;
+  SCOPE_NO_CLEANUPS_P (scope_stmt) = 1;
+  remap_block (scope_stmt, DECL_ARGUMENTS (fn), id);
+  TREE_CHAIN (scope_stmt) = STMT_EXPR_STMT (expr);
+  STMT_EXPR_STMT (expr) = scope_stmt;
+
+  /* Tell the debugging backends that this block represents the
+     outermost scope of the inlined function.  */
+  if (SCOPE_STMT_BLOCK (scope_stmt))
+    BLOCK_ABSTRACT_ORIGIN (SCOPE_STMT_BLOCK (scope_stmt)) = DECL_ORIGIN (fn);
+
+  /* Declare the return variable for the function.  */
+  STMT_EXPR_STMT (expr)
+    = chainon (STMT_EXPR_STMT (expr),
+	       declare_return_variable (id, &use_stmt));
+
+  /* After we've initialized the parameters, we insert the body of the
+     function itself.  */
+  inlined_body = &STMT_EXPR_STMT (expr);
+  while (*inlined_body)
+    inlined_body = &TREE_CHAIN (*inlined_body);
+  *inlined_body = copy_body (id);
+
+  /* Close the block for the parameters.  */
+  scope_stmt = build_stmt (SCOPE_STMT, DECL_INITIAL (fn));
+  SCOPE_NO_CLEANUPS_P (scope_stmt) = 1;
+  remap_block (scope_stmt, NULL_TREE, id);
+  STMT_EXPR_STMT (expr)
+    = chainon (STMT_EXPR_STMT (expr), scope_stmt);
+
+  /* After the body of the function comes the RET_LABEL.  This must come
+     before we evaluate the returned value below, because that evalulation
+     may cause RTL to be generated.  */
+  STMT_EXPR_STMT (expr)
+    = chainon (STMT_EXPR_STMT (expr),
+	       build_stmt (LABEL_STMT, id->ret_label));
+
+  /* Finally, mention the returned value so that the value of the
+     statement-expression is the returned value of the function.  */
+  STMT_EXPR_STMT (expr) = chainon (STMT_EXPR_STMT (expr), use_stmt);
+
+  /* Clean up.  */
+  splay_tree_delete (id->decl_map);
+  id->decl_map = st;
+
+  /* The new expression has side-effects if the old one did.  */
+  TREE_SIDE_EFFECTS (expr) = TREE_SIDE_EFFECTS (t);
+
+  /* Replace the call by the inlined body.  Wrap it in an
+     EXPR_WITH_FILE_LOCATION so that we'll get debugging line notes
+     pointing to the right place.  */
+  chain = TREE_CHAIN (*tp);
+  *tp = build_expr_wfl (expr, DECL_SOURCE_FILE (fn), DECL_SOURCE_LINE (fn),
+			/*col=*/0);
+  EXPR_WFL_EMIT_LINE_NOTE (*tp) = 1;
+  TREE_CHAIN (*tp) = chain;
+  pop_srcloc ();
+
+  /* If the value of the new expression is ignored, that's OK.  We
+     don't warn about this for CALL_EXPRs, so we shouldn't warn about
+     the equivalent inlined version either.  */
+  TREE_USED (*tp) = 1;
+
+  /* Our function now has more statements than it did before.  */
+  DECL_NUM_STMTS (VARRAY_TREE (id->fns, 0)) += DECL_NUM_STMTS (fn);
+  id->inlined_stmts += DECL_NUM_STMTS (fn);
+
+  /* Recurse into the body of the just inlined function.  */
+  expand_calls_inline (inlined_body, id);
+  VARRAY_POP (id->fns);
+
+  /* If we've returned to the top level, clear out the record of how
+     much inlining has been done.  */
+  if (VARRAY_ACTIVE_SIZE (id->fns) == id->first_inlined_fn)
+    id->inlined_stmts = 0;
+
+  /* Don't walk into subtrees.  We've already handled them above.  */
+  *walk_subtrees = 0;
+
+  (*lang_hooks.tree_inlining.end_inlining) (fn);
+
+  /* Keep iterating.  */
+  return NULL_TREE;
+}

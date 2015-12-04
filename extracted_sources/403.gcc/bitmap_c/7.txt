@@ -1,0 +1,19 @@
+void
+bitmap_clear_bit (head, bit)
+     bitmap head;
+     int bit;
+{
+  bitmap_element *ptr = bitmap_find_bit (head, bit);
+
+  if (ptr != 0)
+    {
+      unsigned bit_num  = bit % (unsigned) HOST_BITS_PER_WIDE_INT;
+      unsigned word_num = ((bit / (unsigned) HOST_BITS_PER_WIDE_INT)
+			   % BITMAP_ELEMENT_WORDS);
+      ptr->bits[word_num] &= ~ (((unsigned HOST_WIDE_INT) 1) << bit_num);
+
+      /* If we cleared the entire word, free up the element */
+      if (bitmap_element_zerop (ptr))
+	bitmap_element_free (head, ptr);
+    }
+}

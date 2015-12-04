@@ -1,0 +1,19 @@
+void
+htab_traverse (htab, callback, info)
+     htab_t htab;
+     htab_trav callback;
+     PTR info;
+{
+  PTR *slot = htab->entries;
+  PTR *limit = slot + htab->size;
+
+  do
+    {
+      PTR x = *slot;
+
+      if (x != EMPTY_ENTRY && x != DELETED_ENTRY)
+	if (!(*callback) (slot, info))
+	  break;
+    }
+  while (++slot < limit);
+}

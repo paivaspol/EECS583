@@ -1,0 +1,95 @@
+int32 lextree_hmm_eval (lextree_t *lextree, kbcore_t *kbc, ascr_t *ascr, int32 frm, FILE *fp)
+{
+    int32 best, wbest, n_st;
+    int32 i, k;
+    lextree_node_t **list, *ln;
+    mdef_t *mdef;
+    dict2pid_t *d2p;
+    
+    mdef = kbc->mdef;
+    d2p = kbc->dict2pid;
+    n_st = mdef_n_emit_state (mdef);
+    
+    list = lextree->active;
+    best = MAX_NEG_INT32;
+    wbest = MAX_NEG_INT32;
+    
+    if (fp) {
+	for (i = 0; i < lextree->n_active; i++) {
+	    ln = list[i];
+	    assert (ln->frame == frm);
+	    
+	    lextree_node_print (ln, kbc->dict, fp);
+	    
+	    if (! ln->composite)
+		k = hmm_dump_vit_eval (&(ln->hmm), n_st,
+				       mdef->sseq[ln->ssid], ascr->sen, fp);
+	    else
+		k = hmm_dump_vit_eval (&(ln->hmm), n_st,
+				       d2p->comsseq[ln->ssid], ascr->comsen, fp);
+	    
+	    if (best < k)
+		best = k;
+	    
+	    if (IS_S3WID(ln->wid)) {
+		if (wbest < k)
+		    wbest = k;
+	    }
+	}
+    } else {
+	if (n_st == 3) {
+	    for (i = 0; i < lextree->n_active; i++) {
+		ln = list[i];
+		assert (ln->frame == frm);
+		
+		if (! ln->composite)
+		  {
+
+		    k = hmm_vit_eval_3st (&(ln->hmm), mdef->sseq[ln->ssid], ascr->sen);
+		  }
+		else
+		  {
+		    k = hmm_vit_eval_3st (&(ln->hmm), d2p->comsseq[ln->ssid], ascr->comsen);
+
+		  }
+		if (best < k)
+		    best = k;
+		
+		if (IS_S3WID(ln->wid)) {
+		    if (wbest < k)
+			wbest = k;
+		}
+	    }
+	} else if (n_st == 5) {
+	    for (i = 0; i < lextree->n_active; i++) {
+		ln = list[i];
+		assert (ln->frame == frm);
+		
+		if (! ln->composite)
+		    k = hmm_vit_eval_5st (&(ln->hmm), mdef->sseq[ln->ssid], ascr->sen);
+		else
+		    k = hmm_vit_eval_5st (&(ln->hmm), d2p->comsseq[ln->ssid], ascr->comsen);
+		
+		if (best < k)
+		    best = k;
+		
+		if (IS_S3WID(ln->wid)) {
+		    if (wbest < k)
+			wbest = k;
+		}
+	    }
+	} else
+	    E_FATAL("#State= %d unsupported\n", n_st);
+    }
+    
+    lextree->best = best;
+    lextree->wbest = wbest;
+    
+    if (fp) {
+	fprintf (fp, "Fr %d  #active %d  best %d  wbest %d\n",
+		 frm, lextree->n_active, best, wbest);
+	fflush (fp);
+    }
+    
+    return best;
+}

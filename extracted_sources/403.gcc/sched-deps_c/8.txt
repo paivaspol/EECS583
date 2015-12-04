@@ -1,0 +1,24 @@
+static void
+set_sched_group_p (insn)
+     rtx insn;
+{
+  rtx link, prev;
+
+  SCHED_GROUP_P (insn) = 1;
+
+  /* There may be a note before this insn now, but all notes will
+     be removed before we actually try to schedule the insns, so
+     it won't cause a problem later.  We must avoid it here though.  */
+  prev = prev_nonnote_insn (insn);
+
+  /* Make a copy of all dependencies on the immediately previous insn,
+     and add to this insn.  This is so that all the dependencies will
+     apply to the group.  Remove an explicit dependence on this insn
+     as SCHED_GROUP_P now represents it.  */
+
+  if (find_insn_list (prev, LOG_LINKS (insn)))
+    remove_dependence (insn, prev);
+
+  for (link = LOG_LINKS (prev); link; link = XEXP (link, 1))
+    add_dependence (insn, XEXP (link, 0), REG_NOTE_KIND (link));
+}

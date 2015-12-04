@@ -1,0 +1,158 @@
+static bool get_w_conf(FILE *in, char *infile, char *title,
+		       t_atoms *atoms, int *ndec, rvec x[],rvec *v, matrix box)
+{
+  static t_symtab *symtab=NULL;
+  char   name[6];
+  char   line[STRLEN+1];
+  char   buf[256];
+  char   format[30];
+  double x1,y1,z1,x2,y2,z2;
+  rvec   xmin,xmax;
+  int    natoms,i,m,resnr,newres,oldres,ddist;
+  bool   bFirst,bVel;
+  char   *p1,*p2;
+  
+  newres  = 0;
+  oldres  = NOTSET; /* Unlikely number for the first residue! */
+  ddist   = 0;
+  
+  if (!symtab) {
+    snew(symtab,1);
+    open_symtab(symtab);
+  }
+  fgets2(title,STRLEN,in);
+
+  /* read the number of atoms */
+  fgets2(line,STRLEN,in);
+  sscanf(line,"%d",&natoms);
+  if (natoms > atoms->nr)
+    fatal_error(0,"gro file contains more atoms (%d) than expected (%d)",
+		natoms,atoms->nr);
+  else if (natoms <  atoms->nr)
+    fprintf(stderr,"Warning: gro file contains less atoms (%d) than expected"
+	    " (%d)\n",natoms,atoms->nr);
+  
+  bFirst=TRUE;
+  
+  bVel = FALSE;
+
+  /* just pray the arrays are big enough */
+  for (i=0; (i < natoms) ; i++) {
+    if ((fgets2 (line,STRLEN,in)) == NULL) {
+      unexpected_eof(infile,i+2);
+    }
+    if (strlen(line) < 39)
+      fatal_error(0,"Invalid line in %s for atom %d:\n%s",infile,i+1,line);
+
+    /* determine read precision from distance between periods 
+       (decimal points) */
+    if (bFirst) {
+      bFirst=FALSE;
+      p1=strchr(line,'.');
+      if (p1 == NULL)
+	fatal_error(0,"A coordinate in file %s does not contain a '.'",infile);
+      p2=strchr(&p1[1],'.');
+      if (p1 || p2)
+	ddist=p2-p1;
+      else
+	ddist=8;
+      if (ddist<0)
+	ddist=8;
+      if (ddist>30)
+	ddist=30;
+      sprintf(format,"%%%dlf%%%dlf%%%dlf",ddist,ddist,ddist);
+      /* this will be something like "%8lf%8lf%8lf" */
+      *ndec = ddist-5;
+    }
+    
+    /* residue number*/
+    memcpy(name,line,5);
+    name[5]='\0';
+    sscanf(name,"%d",&resnr);
+    memcpy(name,line+5,5);
+    name[5]='\0';
+    if (resnr != oldres) {
+      oldres = resnr;
+      if (newres >= natoms)
+	fatal_error(0,"More residues than atoms in %s (natoms = %d)",
+		    infile,natoms);
+      atoms->resname[newres] = put_symtab(symtab,name);
+      newres++;
+    }
+    resnr = newres;
+    atoms->atom[i].resnr = resnr-1;
+
+    /* atomname */
+    memcpy(name,line+10,5);
+    atoms->atomname[i]=put_symtab(symtab,name);
+   
+    /* eventueel controle atomnumber met i+1 */
+
+    /* coordinates (start after residue shit) */
+    /* 'format' was built previously */
+    if (sscanf (line+20,format,&x1,&y1,&z1) != 3) {
+      too_few();
+    }
+    else {
+      x[i][XX]=x1;
+      x[i][YY]=y1;
+      x[i][ZZ]=z1;
+    }
+
+    /* velocities (start after residues and coordinates) */
+    /* 'format' was built previously */
+    if (v) {
+      if (sscanf (line+20+(3*ddist),format,&x1,&y1,&z1) != 3) {
+	v[i][XX] = 0.0;
+	v[i][YY] = 0.0;
+	v[i][ZZ] = 0.0;
+      }
+      else {
+	v[i][XX]=x1;
+	v[i][YY]=y1;
+	v[i][ZZ]=z1;
+	bVel = TRUE;
+      }
+    }
+  }
+  atoms->nres=newres;
+
+  /* box */
+  fgets2 (line,STRLEN,in);
+  if (sscanf (line,"%lf%lf%lf",&x1,&y1,&z1) != 3) {
+    sprintf(buf,"Bad box in file %s",infile);
+    warning(buf);
+    
+    /* Generate a cubic box */
+    for(m=0; (m<DIM); m++)
+      xmin[m]=xmax[m]=x[0][m];
+    for(i=1; (i<atoms->nr); i++)
+      for(m=0; (m<DIM); m++) {
+	xmin[m]=min(xmin[m],x[i][m]);
+	xmax[m]=max(xmax[m],x[i][m]);
+      }
+    for (i=0; i<DIM; i++) for (m=0; m<DIM; m++) box[i][m]=0.0;
+    for(m=0; (m<DIM); m++)
+      box[m][m]=(xmax[m]-xmin[m]);
+    fprintf(stderr,"Generated a cubic box %8.3f x %8.3f x %8.3f\n",
+	    box[XX][XX],box[YY][YY],box[ZZ][ZZ]);
+  }
+  else {
+    /* We found the first three values, the diagonal elements */
+    box[XX][XX]=x1;
+    box[YY][YY]=y1;
+    box[ZZ][ZZ]=z1;
+    if (sscanf (line,"%*f%*f%*f%lf%lf%lf%lf%lf%lf",
+		&x1,&y1,&z1,&x2,&y2,&z2) != 6) 
+      x1=y1=z1=x2=y2=z2=0.0;
+    box[XX][YY] = x1;
+    box[XX][ZZ] = y1;
+    box[YY][XX] = z1;
+    box[YY][ZZ] = x2;
+    box[ZZ][XX] = y2;
+    box[ZZ][YY] = z2;
+  }
+  close_symtab(symtab);
+
+  return bVel;
+}

@@ -1,0 +1,12 @@
+static void
+validate_equiv_mem_from_store (dest, set, data)
+     rtx dest;
+     rtx set ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  if ((GET_CODE (dest) == REG
+       && reg_overlap_mentioned_p (dest, equiv_mem))
+      || (GET_CODE (dest) == MEM
+	  && true_dependence (dest, VOIDmode, equiv_mem, rtx_varies_p)))
+    equiv_mem_modified = 1;
+}

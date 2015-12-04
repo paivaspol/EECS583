@@ -1,0 +1,307 @@
+static void
+etoasc (x, string, ndigs)
+     const UEMUSHORT x[];
+     char *string;
+     int ndigs;
+{
+  EMUSHORT digit;
+  UEMUSHORT y[NI], t[NI], u[NI], w[NI];
+  const UEMUSHORT *p, *r, *ten;
+  UEMUSHORT sign;
+  int i, j, k, expon, rndsav;
+  char *s, *ss;
+  UEMUSHORT m;
+
+
+  rndsav = rndprc;
+  ss = string;
+  s = wstring;
+  *ss = '\0';
+  *s = '\0';
+#ifdef NANS
+  if (eisnan (x))
+    {
+      sprintf (wstring, " NaN ");
+      goto bxit;
+    }
+#endif
+  rndprc = NBITS;		/* set to full precision */
+  emov (x, y);			/* retain external format */
+  if (y[NE - 1] & 0x8000)
+    {
+      sign = 0xffff;
+      y[NE - 1] &= 0x7fff;
+    }
+  else
+    {
+      sign = 0;
+    }
+  expon = 0;
+  ten = &etens[NTEN][0];
+  emov (eone, t);
+  /* Test for zero exponent */
+  if (y[NE - 1] == 0)
+    {
+      for (k = 0; k < NE - 1; k++)
+	{
+	  if (y[k] != 0)
+	    goto tnzro;		/* denormalized number */
+	}
+      goto isone;		/* valid all zeros */
+    }
+ tnzro:
+
+  /* Test for infinity.  */
+  if (y[NE - 1] == 0x7fff)
+    {
+      if (sign)
+	sprintf (wstring, " -Infinity ");
+      else
+	sprintf (wstring, " Infinity ");
+      goto bxit;
+    }
+
+  /* Test for exponent nonzero but significand denormalized.
+   * This is an error condition.
+   */
+  if ((y[NE - 1] != 0) && ((y[NE - 2] & 0x8000) == 0))
+    {
+      mtherr ("etoasc", DOMAIN);
+      sprintf (wstring, "NaN");
+      goto bxit;
+    }
+
+  /* Compare to 1.0 */
+  i = ecmp (eone, y);
+  if (i == 0)
+    goto isone;
+
+  if (i == -2)
+    abort ();
+
+  if (i < 0)
+    {				/* Number is greater than 1 */
+      /* Convert significand to an integer and strip trailing decimal zeros.  */
+      emov (y, u);
+      u[NE - 1] = EXONE + NBITS - 1;
+
+      p = &etens[NTEN - 4][0];
+      m = 16;
+      do
+	{
+	  ediv (p, u, t);
+	  efloor (t, w);
+	  for (j = 0; j < NE - 1; j++)
+	    {
+	      if (t[j] != w[j])
+		goto noint;
+	    }
+	  emov (t, u);
+	  expon += (int) m;
+	noint:
+	  p += NE;
+	  m >>= 1;
+	}
+      while (m != 0);
+
+      /* Rescale from integer significand */
+      u[NE - 1] += y[NE - 1] - (unsigned int) (EXONE + NBITS - 1);
+      emov (u, y);
+      /* Find power of 10 */
+      emov (eone, t);
+      m = MAXP;
+      p = &etens[0][0];
+      /* An unordered compare result shouldn't happen here.  */
+      while (ecmp (ten, u) <= 0)
+	{
+	  if (ecmp (p, u) <= 0)
+	    {
+	      ediv (p, u, u);
+	      emul (p, t, t);
+	      expon += (int) m;
+	    }
+	  m >>= 1;
+	  if (m == 0)
+	    break;
+	  p += NE;
+	}
+    }
+  else
+    {				/* Number is less than 1.0 */
+      /* Pad significand with trailing decimal zeros.  */
+      if (y[NE - 1] == 0)
+	{
+	  while ((y[NE - 2] & 0x8000) == 0)
+	    {
+	      emul (ten, y, y);
+	      expon -= 1;
+	    }
+	}
+      else
+	{
+	  emovi (y, w);
+	  for (i = 0; i < NDEC + 1; i++)
+	    {
+	      if ((w[NI - 1] & 0x7) != 0)
+		break;
+	      /* multiply by 10 */
+	      emovz (w, u);
+	      eshdn1 (u);
+	      eshdn1 (u);
+	      eaddm (w, u);
+	      u[1] += 3;
+	      while (u[2] != 0)
+		{
+		  eshdn1 (u);
+		  u[1] += 1;
+		}
+	      if (u[NI - 1] != 0)
+		break;
+	      if (eone[NE - 1] <= u[1])
+		break;
+	      emovz (u, w);
+	      expon -= 1;
+	    }
+	  emovo (w, y);
+	}
+      k = -MAXP;
+      p = &emtens[0][0];
+      r = &etens[0][0];
+      emov (y, w);
+      emov (eone, t);
+      while (ecmp (eone, w) > 0)
+	{
+	  if (ecmp (p, w) >= 0)
+	    {
+	      emul (r, w, w);
+	      emul (r, t, t);
+	      expon += k;
+	    }
+	  k /= 2;
+	  if (k == 0)
+	    break;
+	  p += NE;
+	  r += NE;
+	}
+      ediv (t, eone, t);
+    }
+ isone:
+  /* Find the first (leading) digit.  */
+  emovi (t, w);
+  emovz (w, t);
+  emovi (y, w);
+  emovz (w, y);
+  eiremain (t, y);
+  digit = equot[NI - 1];
+  while ((digit == 0) && (ecmp (y, ezero) != 0))
+    {
+      eshup1 (y);
+      emovz (y, u);
+      eshup1 (u);
+      eshup1 (u);
+      eaddm (u, y);
+      eiremain (t, y);
+      digit = equot[NI - 1];
+      expon -= 1;
+    }
+  s = wstring;
+  if (sign)
+    *s++ = '-';
+  else
+    *s++ = ' ';
+  /* Examine number of digits requested by caller.  */
+  if (ndigs < 0)
+    ndigs = 0;
+  if (ndigs > NDEC)
+    ndigs = NDEC;
+  if (digit == 10)
+    {
+      *s++ = '1';
+      *s++ = '.';
+      if (ndigs > 0)
+	{
+	  *s++ = '0';
+	  ndigs -= 1;
+	}
+      expon += 1;
+    }
+  else
+    {
+      *s++ = (char) digit + '0';
+      *s++ = '.';
+    }
+  /* Generate digits after the decimal point.  */
+  for (k = 0; k <= ndigs; k++)
+    {
+      /* multiply current number by 10, without normalizing */
+      eshup1 (y);
+      emovz (y, u);
+      eshup1 (u);
+      eshup1 (u);
+      eaddm (u, y);
+      eiremain (t, y);
+      *s++ = (char) equot[NI - 1] + '0';
+    }
+  digit = equot[NI - 1];
+  --s;
+  ss = s;
+  /* round off the ASCII string */
+  if (digit > 4)
+    {
+      /* Test for critical rounding case in ASCII output.  */
+      if (digit == 5)
+	{
+	  emovo (y, t);
+	  if (ecmp (t, ezero) != 0)
+	    goto roun;		/* round to nearest */
+#ifndef C4X
+	  if ((*(s - 1) & 1) == 0)
+	    goto doexp;		/* round to even */
+#endif
+	}
+      /* Round up and propagate carry-outs */
+    roun:
+      --s;
+      k = *s & CHARMASK;
+      /* Carry out to most significant digit? */
+      if (k == '.')
+	{
+	  --s;
+	  k = *s;
+	  k += 1;
+	  *s = (char) k;
+	  /* Most significant digit carries to 10? */
+	  if (k > '9')
+	    {
+	      expon += 1;
+	      *s = '1';
+	    }
+	  goto doexp;
+	}
+      /* Round up and carry out from less significant digits */
+      k += 1;
+      *s = (char) k;
+      if (k > '9')
+	{
+	  *s = '0';
+	  goto roun;
+	}
+    }
+ doexp:
+  /*
+     if (expon >= 0)
+     sprintf (ss, "e+%d", expon);
+     else
+     sprintf (ss, "e%d", expon);
+     */
+  sprintf (ss, "e%d", expon);
+ bxit:
+  rndprc = rndsav;
+  /* copy out the working string */
+  s = string;
+  ss = wstring;
+  while (*ss == ' ')		/* strip possible leading space */
+    ++ss;
+  while ((*s++ = *ss++) != '\0')
+    ;
+}

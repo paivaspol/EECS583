@@ -1,0 +1,55 @@
+static rtx
+fixup_stack_1 (x, insn)
+     rtx x;
+     rtx insn;
+{
+  int i;
+  RTX_CODE code = GET_CODE (x);
+  const char *fmt;
+
+  if (code == MEM)
+    {
+      rtx ad = XEXP (x, 0);
+      /* If we have address of a stack slot but it's not valid
+	 (displacement is too large), compute the sum in a register.  */
+      if (GET_CODE (ad) == PLUS
+	  && GET_CODE (XEXP (ad, 0)) == REG
+	  && ((REGNO (XEXP (ad, 0)) >= FIRST_VIRTUAL_REGISTER
+	       && REGNO (XEXP (ad, 0)) <= LAST_VIRTUAL_REGISTER)
+	      || REGNO (XEXP (ad, 0)) == FRAME_POINTER_REGNUM
+#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+	      || REGNO (XEXP (ad, 0)) == HARD_FRAME_POINTER_REGNUM
+#endif
+	      || REGNO (XEXP (ad, 0)) == STACK_POINTER_REGNUM
+	      || REGNO (XEXP (ad, 0)) == ARG_POINTER_REGNUM
+	      || XEXP (ad, 0) == current_function_internal_arg_pointer)
+	  && GET_CODE (XEXP (ad, 1)) == CONST_INT)
+	{
+	  rtx temp, seq;
+	  if (memory_address_p (GET_MODE (x), ad))
+	    return x;
+
+	  start_sequence ();
+	  temp = copy_to_reg (ad);
+	  seq = gen_sequence ();
+	  end_sequence ();
+	  emit_insn_before (seq, insn);
+	  return replace_equiv_address (x, temp);
+	}
+      return x;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+	XEXP (x, i) = fixup_stack_1 (XEXP (x, i), insn);
+      else if (fmt[i] == 'E')
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    XVECEXP (x, i, j) = fixup_stack_1 (XVECEXP (x, i, j), insn);
+	}
+    }
+  return x;
+}

@@ -1,0 +1,211 @@
+static void
+emdnorm (s, lost, subflg, exp, rcntrl)
+     UEMUSHORT s[];
+     int lost;
+     int subflg;
+     EMULONG exp;
+     int rcntrl;
+{
+  int i, j;
+  UEMUSHORT r;
+
+  /* Normalize */
+  j = enormlz (s);
+
+  /* a blank significand could mean either zero or infinity.  */
+#ifndef INFINITY
+  if (j > NBITS)
+    {
+      ecleazs (s);
+      return;
+    }
+#endif
+  exp -= j;
+#ifndef INFINITY
+  if (exp >= 32767L)
+    goto overf;
+#else
+  if ((j > NBITS) && (exp < 32767))
+    {
+      ecleazs (s);
+      return;
+    }
+#endif
+  if (exp < 0L)
+    {
+      if (exp > (EMULONG) (-NBITS - 1))
+	{
+	  j = (int) exp;
+	  i = eshift (s, j);
+	  if (i)
+	    lost = 1;
+	}
+      else
+	{
+	  ecleazs (s);
+	  return;
+	}
+    }
+  /* Round off, unless told not to by rcntrl.  */
+  if (rcntrl == 0)
+    goto mdfin;
+  /* Set up rounding parameters if the control register changed.  */
+  if (rndprc != rlast)
+    {
+      ecleaz (rbit);
+      switch (rndprc)
+	{
+	default:
+	case NBITS:
+	  rw = NI - 1;		/* low guard word */
+	  rmsk = 0xffff;
+	  rmbit = 0x8000;
+	  re = rw - 1;
+	  rebit = 1;
+	  break;
+
+	case 113:
+	  rw = 10;
+	  rmsk = 0x7fff;
+	  rmbit = 0x4000;
+	  rebit = 0x8000;
+	  re = rw;
+	  break;
+
+	case 64:
+	  rw = 7;
+	  rmsk = 0xffff;
+	  rmbit = 0x8000;
+	  re = rw - 1;
+	  rebit = 1;
+	  break;
+
+	  /* For DEC or IBM arithmetic */
+	case 56:
+	  rw = 6;
+	  rmsk = 0xff;
+	  rmbit = 0x80;
+	  rebit = 0x100;
+	  re = rw;
+	  break;
+
+	case 53:
+	  rw = 6;
+	  rmsk = 0x7ff;
+	  rmbit = 0x0400;
+	  rebit = 0x800;
+	  re = rw;
+	  break;
+
+	  /* For C4x arithmetic */
+	case 32:
+	  rw = 5;
+	  rmsk = 0xffff;
+	  rmbit = 0x8000;
+	  rebit = 1;
+	  re = rw - 1;
+	  break;
+
+	case 24:
+	  rw = 4;
+	  rmsk = 0xff;
+	  rmbit = 0x80;
+	  rebit = 0x100;
+	  re = rw;
+	  break;
+	}
+      rbit[re] = rebit;
+      rlast = rndprc;
+    }
+
+  /* Shift down 1 temporarily if the data structure has an implied
+     most significant bit and the number is denormal.
+     Intel long double denormals also lose one bit of precision.  */
+  if ((exp <= 0) && (rndprc != NBITS)
+      && ((rndprc != 64) || ((rndprc == 64) && ! REAL_WORDS_BIG_ENDIAN)))
+    {
+      lost |= s[NI - 1] & 1;
+      eshdn1 (s);
+    }
+  /* Clear out all bits below the rounding bit,
+     remembering in r if any were nonzero.  */
+  r = s[rw] & rmsk;
+  if (rndprc < NBITS)
+    {
+      i = rw + 1;
+      while (i < NI)
+	{
+	  if (s[i])
+	    r |= 1;
+	  s[i] = 0;
+	  ++i;
+	}
+    }
+  s[rw] &= ~rmsk;
+  if ((r & rmbit) != 0)
+    {
+#ifndef C4X
+      if (r == rmbit)
+	{
+	  if (lost == 0)
+	    {			/* round to even */
+	      if ((s[re] & rebit) == 0)
+		goto mddone;
+	    }
+	  else
+	    {
+	      if (subflg != 0)
+		goto mddone;
+	    }
+	}
+#endif
+      eaddm (rbit, s);
+    }
+ mddone:
+/* Undo the temporary shift for denormal values.  */
+  if ((exp <= 0) && (rndprc != NBITS)
+      && ((rndprc != 64) || ((rndprc == 64) && ! REAL_WORDS_BIG_ENDIAN)))
+    {
+      eshup1 (s);
+    }
+  if (s[2] != 0)
+    {				/* overflow on roundoff */
+      eshdn1 (s);
+      exp += 1;
+    }
+ mdfin:
+  s[NI - 1] = 0;
+  if (exp >= 32767L)
+    {
+#ifndef INFINITY
+    overf:
+#endif
+#ifdef INFINITY
+      s[1] = 32767;
+      for (i = 2; i < NI - 1; i++)
+	s[i] = 0;
+      if (extra_warnings)
+	warning ("floating point overflow");
+#else
+      s[1] = 32766;
+      s[2] = 0;
+      for (i = M + 1; i < NI - 1; i++)
+	s[i] = 0xffff;
+      s[NI - 1] = 0;
+      if ((rndprc < 64) || (rndprc == 113))
+	{
+	  s[rw] &= ~rmsk;
+	  if (rndprc == 24)
+	    {
+	      s[5] = 0;
+	      s[6] = 0;
+	    }
+	}
+#endif
+      return;
+    }
+  if (exp < 0)
+    s[1] = 0;
+  else
+    s[1] = (UEMUSHORT) exp;
+}

@@ -1,0 +1,26 @@
+static void
+uditoe (di, e)
+     const UEMUSHORT *di;  /* Address of the 64-bit int.  */
+     UEMUSHORT *e;
+{
+  UEMUSHORT yi[NI];
+  int k;
+
+  ecleaz (yi);
+  if (WORDS_BIG_ENDIAN)
+    {
+      for (k = M; k < M + 4; k++)
+	yi[k] = *di++;
+    }
+  else
+    {
+      for (k = M + 3; k >= M; k--)
+	yi[k] = *di++;
+    }
+  yi[E] = EXONE + 47;	/* exponent if normalize shift count were 0 */
+  if ((k = enormlz (yi)) > NBITS)/* normalize the significand */
+    ecleaz (yi);		/* it was zero */
+  else
+    yi[E] -= (UEMUSHORT) k;/* subtract shift count from exponent */
+  emovo (yi, e);
+}

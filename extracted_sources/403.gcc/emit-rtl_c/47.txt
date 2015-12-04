@@ -1,0 +1,31 @@
+void
+reorder_insns (from, to, after)
+     rtx from, to, after;
+{
+  rtx prev = PREV_INSN (from);
+  basic_block bb, bb2;
+
+  reorder_insns_nobb (from, to, after);
+
+  if (basic_block_for_insn
+      && (unsigned int) INSN_UID (after) < basic_block_for_insn->num_elements
+      && (bb = BLOCK_FOR_INSN (after)))
+    {
+      rtx x;
+ 
+      if (basic_block_for_insn
+	  && ((unsigned int) INSN_UID (from)
+	      < basic_block_for_insn->num_elements)
+	  && (bb2 = BLOCK_FOR_INSN (from)))
+	{
+	  if (bb2->end == to)
+	    bb2->end = prev;
+	}
+
+      if (bb->end == after)
+	bb->end = to;
+
+      for (x = from; x != NEXT_INSN (to); x = NEXT_INSN (x))
+	set_block_for_insn (x, bb);
+    }
+}

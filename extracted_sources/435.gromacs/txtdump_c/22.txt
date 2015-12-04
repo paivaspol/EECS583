@@ -1,0 +1,24 @@
+void pr_idef(FILE *fp,int indent,char *title,t_idef *idef)
+{
+  int i,j;
+  
+  if (available(fp,idef,title)) {  
+    indent=pr_title(fp,indent,title);
+    (void) pr_indent(fp,indent);
+    (void) fprintf(fp,"atnr=%d\n",idef->atnr);
+    (void) pr_indent(fp,indent);
+    (void) fprintf(fp,"nodeid=%d\n",idef->nodeid);
+    (void) pr_indent(fp,indent);
+    (void) fprintf(fp,"ntypes=%d\n",idef->ntypes);
+    for (i=0; i<idef->ntypes; i++) {
+      (void) pr_indent(fp,indent+INDENT);
+      (void) fprintf(fp,"functype[%d]=%s, ",
+		     bShowNumbers?i:-1,
+		     interaction_function[idef->functype[i]].name);
+      pr_iparams(fp,idef->functype[i],&idef->iparams[i]);
+    }
+    for(j=0; (j<F_NRE); j++)
+      pr_ilist(fp,indent,interaction_function[j].longname,
+	       idef,&idef->il[j]);
+  }
+}

@@ -1,0 +1,36 @@
+static bool outgoing_edges_match	PARAMS ((int,
+						 basic_block, basic_block));
+static int flow_find_cross_jump		PARAMS ((int, basic_block, basic_block,
+						 rtx *, rtx *));
+static bool insns_match_p		PARAMS ((int, rtx, rtx));
+
+static bool delete_unreachable_blocks	PARAMS ((void));
+static bool label_is_jump_target_p	PARAMS ((rtx, rtx));
+static bool tail_recursion_label_p	PARAMS ((rtx));
+static void merge_blocks_move_predecessor_nojumps PARAMS ((basic_block,
+							  basic_block));
+static void merge_blocks_move_successor_nojumps PARAMS ((basic_block,
+							basic_block));
+static bool merge_blocks		PARAMS ((edge,basic_block,basic_block,
+						 int));
+static bool try_optimize_cfg		PARAMS ((int));
+static bool try_simplify_condjump	PARAMS ((basic_block));
+static bool try_forward_edges		PARAMS ((int, basic_block));
+static edge thread_jump			PARAMS ((int, edge, basic_block));
+static bool mark_effect			PARAMS ((rtx, bitmap));
+static void notice_new_block		PARAMS ((basic_block));
+static void update_forwarder_flag	PARAMS ((basic_block));
+
+/* Set flags for newly created block.  */
+
+static void
+notice_new_block (bb)
+     basic_block bb;
+{
+  if (!bb)
+    return;
+
+  BB_SET_FLAG (bb, BB_UPDATE_LIFE);
+  if (forwarder_block_p (bb))
+    BB_SET_FLAG (bb, BB_FORWARDER_BLOCK);
+}

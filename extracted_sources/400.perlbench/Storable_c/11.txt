@@ -1,0 +1,14 @@
+static void free_context(pTHX_ stcxt_t *cxt)
+{
+	stcxt_t *prev = (stcxt_t *)(cxt->prev ? SvPVX(SvRV(cxt->prev)) : 0);
+
+	TRACEME(("free_context"));
+
+	ASSERT(!cxt->s_dirty, ("clean context"));
+	ASSERT(prev, ("not freeing root context"));
+
+	SvREFCNT_dec(cxt->my_sv);
+	SET_STCXT(prev);
+
+	ASSERT(cxt, ("context not void"));
+}

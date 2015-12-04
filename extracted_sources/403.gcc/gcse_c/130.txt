@@ -1,0 +1,24 @@
+static int 
+store_killed_after (x, insn, bb)
+     rtx x, insn;
+     basic_block bb;
+{
+  rtx last = bb->end;
+   
+  if (insn == last)
+    return 0;
+
+  /* Check if the register operands of the store are OK in this block.
+     Note that if registers are changed ANYWHERE in the block, we'll 
+     decide we can't move it, regardless of whether it changed above 
+     or below the store. This could be improved by checking the register
+     operands while lookinng for aliasing in each insn.  */
+  if (!store_ops_ok (XEXP (x, 0), bb))
+    return 1;
+
+  for ( ; insn && insn != NEXT_INSN (last); insn = NEXT_INSN (insn))
+    if (store_killed_in_insn (x, insn))
+      return 1;
+   
+  return 0;
+}

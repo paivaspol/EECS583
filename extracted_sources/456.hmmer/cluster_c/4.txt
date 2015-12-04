@@ -1,0 +1,57 @@
+void
+PrintNewHampshireTree(FILE *fp, AINFO *ainfo, struct phylo_s *tree, int N)
+{                 
+  struct intstack_s *stack;
+  int    code;
+  float *blen;
+  int    docomma; 
+
+  blen  = (float *) MallocOrDie (sizeof(float) * (2*N-1));
+  stack = InitIntStack();
+  PushIntStack(stack, N);	/* push root on stack */
+  docomma = FALSE;
+  
+  /* node index code:
+   *     0..N-1   = leaves; indexes of sequences.
+   *     N..2N-2  = interior nodes; node-N = index of node in tree structure.
+   *                code N is the root. 
+   *     2N..3N-2 = special flags for closing interior nodes; node-2N = index in tree
+   */
+  while (PopIntStack(stack, &code))
+    {
+      if (code < N)		/* we're a leaf. */
+	{
+				/* 1) print name:branchlength */
+	  if (docomma) fputs(",", fp);
+	  fprintf(fp, "%s:%.5f", ainfo->sqinfo[code].name, blen[code]);
+	  docomma = TRUE;
+	}
+
+      else if (code < 2*N)      /* we're an interior node */
+	{
+				/* 1) print a '(' */
+	  if (docomma) fputs(",\n", fp);
+	  fputs("(", fp);
+				/* 2) push on stack: ), rchild, lchild */
+	  PushIntStack(stack, code+N);
+	  PushIntStack(stack, tree[code-N].right);
+	  PushIntStack(stack, tree[code-N].left);
+				/* 3) record branch lengths */
+	  blen[tree[code-N].right] = tree[code-N].rblen;
+	  blen[tree[code-N].left]  = tree[code-N].lblen;
+	  docomma = FALSE;
+	}
+
+      else			/* we're closing an interior node */
+	{
+				/* print a ):branchlength */
+	  if (code == 2*N) fprintf(fp, ");\n");
+	  else             fprintf(fp, "):%.5f", blen[code-N]);
+	  docomma = TRUE;
+	}
+    }
+
+  FreeIntStack(stack);
+  free(blen);
+  return;
+}

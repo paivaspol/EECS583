@@ -1,0 +1,43 @@
+static void
+expand_preferences ()
+{
+  rtx insn;
+  rtx link;
+  rtx set;
+
+  /* We only try to handle the most common cases here.  Most of the cases
+     where this wins are reg-reg copies.  */
+
+  for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
+    if (INSN_P (insn)
+	&& (set = single_set (insn)) != 0
+	&& GET_CODE (SET_DEST (set)) == REG
+	&& reg_allocno[REGNO (SET_DEST (set))] >= 0)
+      for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
+	if (REG_NOTE_KIND (link) == REG_DEAD
+	    && GET_CODE (XEXP (link, 0)) == REG
+	    && reg_allocno[REGNO (XEXP (link, 0))] >= 0
+	    && ! CONFLICTP (reg_allocno[REGNO (SET_DEST (set))],
+			    reg_allocno[REGNO (XEXP (link, 0))]))
+	  {
+	    int a1 = reg_allocno[REGNO (SET_DEST (set))];
+	    int a2 = reg_allocno[REGNO (XEXP (link, 0))];
+
+	    if (XEXP (link, 0) == SET_SRC (set))
+	      {
+		IOR_HARD_REG_SET (allocno[a1].hard_reg_copy_preferences,
+				  allocno[a2].hard_reg_copy_preferences);
+		IOR_HARD_REG_SET (allocno[a2].hard_reg_copy_preferences,
+				  allocno[a1].hard_reg_copy_preferences);
+	      }
+
+	    IOR_HARD_REG_SET (allocno[a1].hard_reg_preferences,
+			      allocno[a2].hard_reg_preferences);
+	    IOR_HARD_REG_SET (allocno[a2].hard_reg_preferences,
+			      allocno[a1].hard_reg_preferences);
+	    IOR_HARD_REG_SET (allocno[a1].hard_reg_full_preferences,
+			      allocno[a2].hard_reg_full_preferences);
+	    IOR_HARD_REG_SET (allocno[a2].hard_reg_full_preferences,
+			      allocno[a1].hard_reg_full_preferences);
+	  }
+}

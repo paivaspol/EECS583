@@ -1,0 +1,51 @@
+static int make_ref_alilist(int *refcoords, char *k1, char *k2, char *s1, char *s2, 
+			    int **ret_s1_list, int *ret_listlen);
+static int compare_lists(int *k1, int *k2, int *t1, int *t2, int len1, int len2, float *ret_sc);
+
+
+/* Function: ComparePairAlignments
+ * 
+ * Purpose:  Calculate and return a number representing how well two different alignments
+ *           of a pair of sequences compare. The number is, roughly speaking,
+ *           the fraction of columns which are identically aligned.
+ * 
+ *           For all columns c in which either known1[c] or known2[c] 
+ *           is a non-gap, count an identity if those same symbols are
+ *           aligned somewhere in calc1/calc2. The score is identities/total
+ *           columns examined. (i.e. fully gapped columns don't count)
+ * 
+ *           more explicitly, identities come from:
+ *             both known and test aligned pairs have the same symbol in the first sequence aligned to
+ *               a gap in the second sequence;
+ *             both known and test aligned pairs have the same symbol in the second sequence
+ *               aligned to a gap in the first sequence;
+ *             the known alignment has symbols aligned at this column, and the test
+ *               alignment aligns the same two symbols.
+ * 
+ * Args:     known1, known2: trusted alignment of two sequences
+ *           calc1, calc2:   test alignment of two sequences
+ *  
+ * Return:   Returns -1.0 on internal failure.
+ */
+float
+ComparePairAlignments(char *known1, char *known2, char *calc1, char *calc2)
+{
+  int *klist1;
+  int *klist2;
+  int *tlist1;
+  int *tlist2;
+  int len1, len2;
+  float score;
+
+  if (! make_alilist(calc1,  calc2,  &tlist1, &len1)) return -1.0;
+  if (! make_alilist(calc2,  calc1,  &tlist2, &len2)) return -1.0;
+  if (! make_alilist(known1, known2, &klist1, &len1)) return -1.0;
+  if (! make_alilist(known2, known1, &klist2, &len2)) return -1.0;
+  if (! compare_lists(klist1, klist2, tlist1, tlist2, len1, len2, &score)) return -1.0;
+  
+  free(klist1);
+  free(klist2);
+  free(tlist1);
+  free(tlist2);
+  return score;
+}

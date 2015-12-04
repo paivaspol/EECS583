@@ -1,0 +1,59 @@
+static void
+trim_ld_motion_mems ()
+{
+  struct ls_expr * last = NULL;
+  struct ls_expr * ptr = first_ls_expr ();
+
+  while (ptr != NULL)
+    {
+      int del = ptr->invalid;
+      struct expr * expr = NULL;
+      
+      /* Delete if entry has been made invalid.  */
+      if (!del) 
+	{
+	  unsigned int i;
+	  
+	  del = 1;
+	  /* Delete if we cannot find this mem in the expression list.  */
+	  for (i = 0; i < expr_hash_table_size && del; i++)
+	    {
+	      for (expr = expr_hash_table[i]; 
+		   expr != NULL; 
+		   expr = expr->next_same_hash)
+		if (expr_equiv_p (expr->expr, ptr->pattern))
+		  {
+		    del = 0;
+		    break;
+		  }
+	    }
+	}
+      
+      if (del)
+	{
+	  if (last != NULL)
+	    {
+	      last->next = ptr->next;
+	      free_ldst_entry (ptr);
+	      ptr = last->next;
+	    }
+	  else
+	    {
+	      pre_ldst_mems = pre_ldst_mems->next;
+	      free_ldst_entry (ptr);
+	      ptr = pre_ldst_mems;
+	    }
+	}
+      else
+	{
+	  /* Set the expression field if we are keeping it.  */
+	  last = ptr;
+	  ptr->expr = expr;
+	  ptr = ptr->next;
+	}
+    }
+
+  /* Show the world what we've found.  */
+  if (gcse_file && pre_ldst_mems != NULL)
+    print_ldst_list (gcse_file);
+}

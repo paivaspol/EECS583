@@ -1,0 +1,40 @@
+static void
+general_init (argv0)
+     char *argv0;
+{
+  char *p;
+
+  p = argv0 + strlen (argv0);
+  while (p != argv0 && !IS_DIR_SEPARATOR (p[-1]))
+    --p;
+  progname = p;
+
+  xmalloc_set_program_name (progname);
+
+  gcc_init_libintl ();
+
+  /* Install handler for SIGFPE, which may be received while we do
+     compile-time floating point arithmetic.  */
+  signal (SIGFPE, float_signal);
+
+  /* Trap fatal signals, e.g. SIGSEGV, and convert them to ICE messages.  */
+#ifdef SIGSEGV
+  signal (SIGSEGV, crash_signal);
+#endif
+#ifdef SIGILL
+  signal (SIGILL, crash_signal);
+#endif
+#ifdef SIGBUS
+  signal (SIGBUS, crash_signal);
+#endif
+#ifdef SIGABRT
+  signal (SIGABRT, crash_signal);
+#endif
+#if defined SIGIOT && (!defined SIGABRT || SIGABRT != SIGIOT)
+  signal (SIGIOT, crash_signal);
+#endif
+
+  /* Initialize the diagnostics reporting machinery, so option parsing
+     can give warnings and errors.  */
+  diagnostic_initialize (global_dc);
+}

@@ -1,0 +1,33 @@
+static void
+set_target_switch (name)
+     const char *name;
+{
+  size_t j;
+  int valid_target_option = 0;
+
+  for (j = 0; j < ARRAY_SIZE (target_switches); j++)
+    if (!strcmp (target_switches[j].name, name))
+      {
+	if (target_switches[j].value < 0)
+	  target_flags &= ~-target_switches[j].value;
+	else
+	  target_flags |= target_switches[j].value;
+	valid_target_option = 1;
+      }
+
+#ifdef TARGET_OPTIONS
+  if (!valid_target_option)
+    for (j = 0; j < ARRAY_SIZE (target_options); j++)
+      {
+	int len = strlen (target_options[j].prefix);
+	if (!strncmp (target_options[j].prefix, name, len))
+	  {
+	    *target_options[j].variable = name + len;
+	    valid_target_option = 1;
+	  }
+      }
+#endif
+
+  if (!valid_target_option)
+    error ("invalid option `%s'", name);
+}

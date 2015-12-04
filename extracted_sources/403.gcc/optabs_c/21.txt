@@ -1,0 +1,259 @@
+void
+expand_float (to, from, unsignedp)
+     rtx to, from;
+     int unsignedp;
+{
+  enum insn_code icode;
+  rtx target = to;
+  enum machine_mode fmode, imode;
+
+  /* Crash now, because we won't be able to decide which mode to use.  */
+  if (GET_MODE (from) == VOIDmode)
+    abort ();
+
+  /* Look for an insn to do the conversion.  Do it in the specified
+     modes if possible; otherwise convert either input, output or both to
+     wider mode.  If the integer mode is wider than the mode of FROM,
+     we can do the conversion signed even if the input is unsigned.  */
+
+  for (imode = GET_MODE (from); imode != VOIDmode;
+       imode = GET_MODE_WIDER_MODE (imode))
+    for (fmode = GET_MODE (to); fmode != VOIDmode;
+	 fmode = GET_MODE_WIDER_MODE (fmode))
+      {
+	int doing_unsigned = unsignedp;
+
+	if (fmode != GET_MODE (to)
+	    && significand_size (fmode) < GET_MODE_BITSIZE (GET_MODE (from)))
+	  continue;
+
+	icode = can_float_p (fmode, imode, unsignedp);
+	if (icode == CODE_FOR_nothing && imode != GET_MODE (from) && unsignedp)
+	  icode = can_float_p (fmode, imode, 0), doing_unsigned = 0;
+
+	if (icode != CODE_FOR_nothing)
+	  {
+	    to = protect_from_queue (to, 1);
+	    from = protect_from_queue (from, 0);
+
+	    if (imode != GET_MODE (from))
+	      from = convert_to_mode (imode, from, unsignedp);
+
+	    if (fmode != GET_MODE (to))
+	      target = gen_reg_rtx (fmode);
+
+	    emit_unop_insn (icode, target, from,
+			    doing_unsigned ? UNSIGNED_FLOAT : FLOAT);
+
+	    if (target != to)
+	      convert_move (to, target, 0);
+	    return;
+	  }
+    }
+
+#if !defined (REAL_IS_NOT_DOUBLE) || defined (REAL_ARITHMETIC)
+
+  /* Unsigned integer, and no way to convert directly.
+     Convert as signed, then conditionally adjust the result.  */
+  if (unsignedp)
+    {
+      rtx label = gen_label_rtx ();
+      rtx temp;
+      REAL_VALUE_TYPE offset;
+
+      emit_queue ();
+
+      to = protect_from_queue (to, 1);
+      from = protect_from_queue (from, 0);
+
+      if (flag_force_mem)
+	from = force_not_mem (from);
+
+      /* Look for a usable floating mode FMODE wider than the source and at
+	 least as wide as the target.  Using FMODE will avoid rounding woes
+	 with unsigned values greater than the signed maximum value.  */
+
+      for (fmode = GET_MODE (to);  fmode != VOIDmode;
+	   fmode = GET_MODE_WIDER_MODE (fmode))
+	if (GET_MODE_BITSIZE (GET_MODE (from)) < GET_MODE_BITSIZE (fmode)
+	    && can_float_p (fmode, GET_MODE (from), 0) != CODE_FOR_nothing)
+	  break;
+
+      if (fmode == VOIDmode)
+	{
+	  /* There is no such mode.  Pretend the target is wide enough.  */
+	  fmode = GET_MODE (to);
+
+	  /* Avoid double-rounding when TO is narrower than FROM.  */
+	  if ((significand_size (fmode) + 1)
+	      < GET_MODE_BITSIZE (GET_MODE (from)))
+	    {
+	      rtx temp1;
+	      rtx neglabel = gen_label_rtx ();
+
+	      /* Don't use TARGET if it isn't a register, is a hard register, 
+		 or is the wrong mode.  */
+	      if (GET_CODE (target) != REG
+		  || REGNO (target) < FIRST_PSEUDO_REGISTER
+		  || GET_MODE (target) != fmode)
+		target = gen_reg_rtx (fmode);
+
+	      imode = GET_MODE (from);
+	      do_pending_stack_adjust ();
+
+	      /* Test whether the sign bit is set.  */
+	      emit_cmp_and_jump_insns (from, const0_rtx, LT, NULL_RTX, imode,
+				       0, neglabel);
+
+	      /* The sign bit is not set.  Convert as signed.  */
+	      expand_float (target, from, 0);
+	      emit_jump_insn (gen_jump (label));
+	      emit_barrier ();
+
+	      /* The sign bit is set.
+		 Convert to a usable (positive signed) value by shifting right
+		 one bit, while remembering if a nonzero bit was shifted
+		 out; i.e., compute  (from & 1) | (from >> 1).  */
+
+	      emit_label (neglabel);
+	      temp = expand_binop (imode, and_optab, from, const1_rtx,
+				   NULL_RTX, 1, OPTAB_LIB_WIDEN);
+	      temp1 = expand_shift (RSHIFT_EXPR, imode, from, integer_one_node,
+				    NULL_RTX, 1);
+	      temp = expand_binop (imode, ior_optab, temp, temp1, temp, 1, 
+				   OPTAB_LIB_WIDEN);
+	      expand_float (target, temp, 0);
+
+	      /* Multiply by 2 to undo the shift above.  */
+	      temp = expand_binop (fmode, add_optab, target, target,
+				     target, 0, OPTAB_LIB_WIDEN);
+	      if (temp != target)
+		emit_move_insn (target, temp);
+
+	      do_pending_stack_adjust ();
+	      emit_label (label);
+	      goto done;
+	    }
+	}
+
+      /* If we are about to do some arithmetic to correct for an
+	 unsigned operand, do it in a pseudo-register.  */
+
+      if (GET_MODE (to) != fmode
+	  || GET_CODE (to) != REG || REGNO (to) < FIRST_PSEUDO_REGISTER)
+	target = gen_reg_rtx (fmode);
+
+      /* Convert as signed integer to floating.  */
+      expand_float (target, from, 0);
+
+      /* If FROM is negative (and therefore TO is negative),
+	 correct its value by 2**bitwidth.  */
+
+      do_pending_stack_adjust ();
+      emit_cmp_and_jump_insns (from, const0_rtx, GE, NULL_RTX, GET_MODE (from),
+			       0, label);
+
+      /* On SCO 3.2.1, ldexp rejects values outside [0.5, 1).
+	 Rather than setting up a dconst_dot_5, let's hope SCO
+	 fixes the bug.  */
+      offset = REAL_VALUE_LDEXP (dconst1, GET_MODE_BITSIZE (GET_MODE (from)));
+      temp = expand_binop (fmode, add_optab, target,
+			   CONST_DOUBLE_FROM_REAL_VALUE (offset, fmode),
+			   target, 0, OPTAB_LIB_WIDEN);
+      if (temp != target)
+	emit_move_insn (target, temp);
+
+      do_pending_stack_adjust ();
+      emit_label (label);
+      goto done;
+    }
+#endif
+
+  /* No hardware instruction available; call a library routine to convert from
+     SImode, DImode, or TImode into SFmode, DFmode, XFmode, or TFmode.  */
+    {
+      rtx libfcn;
+      rtx insns;
+      rtx value;
+
+      to = protect_from_queue (to, 1);
+      from = protect_from_queue (from, 0);
+
+      if (GET_MODE_SIZE (GET_MODE (from)) < GET_MODE_SIZE (SImode))
+	from = convert_to_mode (SImode, from, unsignedp);
+
+      if (flag_force_mem)
+	from = force_not_mem (from);
+
+      if (GET_MODE (to) == SFmode)
+	{
+	  if (GET_MODE (from) == SImode)
+	    libfcn = floatsisf_libfunc;
+	  else if (GET_MODE (from) == DImode)
+	    libfcn = floatdisf_libfunc;
+	  else if (GET_MODE (from) == TImode)
+	    libfcn = floattisf_libfunc;
+	  else
+	    abort ();
+	}
+      else if (GET_MODE (to) == DFmode)
+	{
+	  if (GET_MODE (from) == SImode)
+	    libfcn = floatsidf_libfunc;
+	  else if (GET_MODE (from) == DImode)
+	    libfcn = floatdidf_libfunc;
+	  else if (GET_MODE (from) == TImode)
+	    libfcn = floattidf_libfunc;
+	  else
+	    abort ();
+	}
+      else if (GET_MODE (to) == XFmode)
+	{
+	  if (GET_MODE (from) == SImode)
+	    libfcn = floatsixf_libfunc;
+	  else if (GET_MODE (from) == DImode)
+	    libfcn = floatdixf_libfunc;
+	  else if (GET_MODE (from) == TImode)
+	    libfcn = floattixf_libfunc;
+	  else
+	    abort ();
+	}
+      else if (GET_MODE (to) == TFmode)
+	{
+	  if (GET_MODE (from) == SImode)
+	    libfcn = floatsitf_libfunc;
+	  else if (GET_MODE (from) == DImode)
+	    libfcn = floatditf_libfunc;
+	  else if (GET_MODE (from) == TImode)
+	    libfcn = floattitf_libfunc;
+	  else
+	    abort ();
+	}
+      else
+	abort ();
+
+      start_sequence ();
+
+      value = emit_library_call_value (libfcn, NULL_RTX, LCT_CONST,
+				       GET_MODE (to), 1, from,
+				       GET_MODE (from));
+      insns = get_insns ();
+      end_sequence ();
+
+      emit_libcall_block (insns, target, value,
+			  gen_rtx_FLOAT (GET_MODE (to), from));
+    }
+
+ done:
+
+  /* Copy result to requested destination
+     if we have been computing in a temp location.  */
+
+  if (target != to)
+    {
+      if (GET_MODE (target) == GET_MODE (to))
+	emit_move_insn (to, target);
+      else
+	convert_move (to, target, 0);
+    }
+}

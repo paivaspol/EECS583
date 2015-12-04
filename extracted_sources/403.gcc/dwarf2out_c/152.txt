@@ -1,0 +1,36 @@
+static int
+file_info_cmp (p1, p2)
+     const void *p1;
+     const void *p2;
+{
+  const struct file_info *s1 = p1;
+  const struct file_info *s2 = p2;
+  unsigned char *cp1;
+  unsigned char *cp2;
+
+  /* Take care of file names without directories.  We need to make sure that
+     we return consistent values to qsort since some will get confused if
+     we return the same value when identical operands are passed in opposite
+     orders.  So if neither has a directory, return 0 and otherwise return
+     1 or -1 depending on which one has the directory.  */
+  if ((s1->path == s1->fname || s2->path == s2->fname))
+    return (s2->path == s2->fname) - (s1->path == s1->fname);
+
+  cp1 = (unsigned char *) s1->path;
+  cp2 = (unsigned char *) s2->path;
+
+  while (1)
+    {
+      ++cp1;
+      ++cp2;
+      /* Reached the end of the first path?  If so, handle like above.  */
+      if ((cp1 == (unsigned char *) s1->fname)
+	  || (cp2 == (unsigned char *) s2->fname))
+	return ((cp2 == (unsigned char *) s2->fname)
+		- (cp1 == (unsigned char *) s1->fname));
+
+      /* Character of current path component the same?  */
+      else if (*cp1 != *cp2)
+	return *cp1 - *cp2;
+    }
+}

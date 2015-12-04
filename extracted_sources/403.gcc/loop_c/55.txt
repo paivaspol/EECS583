@@ -1,0 +1,77 @@
+static void
+find_mem_givs (loop, x, insn, not_every_iteration, maybe_multiple)
+     const struct loop *loop;
+     rtx x;
+     rtx insn;
+     int not_every_iteration, maybe_multiple;
+{
+  int i, j;
+  enum rtx_code code;
+  const char *fmt;
+
+  if (x == 0)
+    return;
+
+  code = GET_CODE (x);
+  switch (code)
+    {
+    case REG:
+    case CONST_INT:
+    case CONST:
+    case CONST_DOUBLE:
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case PC:
+    case CC0:
+    case ADDR_VEC:
+    case ADDR_DIFF_VEC:
+    case USE:
+    case CLOBBER:
+      return;
+
+    case MEM:
+      {
+	rtx src_reg;
+	rtx add_val;
+	rtx mult_val;
+	rtx ext_val;
+	int benefit;
+
+	/* This code used to disable creating GIVs with mult_val == 1 and
+	   add_val == 0.  However, this leads to lost optimizations when
+	   it comes time to combine a set of related DEST_ADDR GIVs, since
+	   this one would not be seen.  */
+
+	if (general_induction_var (loop, XEXP (x, 0), &src_reg, &add_val,
+				   &mult_val, &ext_val, 1, &benefit,
+				   GET_MODE (x)))
+	  {
+	    /* Found one; record it.  */
+	    struct induction *v
+	      = (struct induction *) xmalloc (sizeof (struct induction));
+
+	    record_giv (loop, v, insn, src_reg, addr_placeholder, mult_val,
+			add_val, ext_val, benefit, DEST_ADDR,
+			not_every_iteration, maybe_multiple, &XEXP (x, 0));
+
+	    v->mem = x;
+	  }
+      }
+      return;
+
+    default:
+      break;
+    }
+
+  /* Recursively scan the subexpressions for other mem refs.  */
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    if (fmt[i] == 'e')
+      find_mem_givs (loop, XEXP (x, i), insn, not_every_iteration,
+		     maybe_multiple);
+    else if (fmt[i] == 'E')
+      for (j = 0; j < XVECLEN (x, i); j++)
+	find_mem_givs (loop, XVECEXP (x, i, j), insn, not_every_iteration,
+		       maybe_multiple);
+}

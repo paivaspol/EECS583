@@ -1,0 +1,16 @@
+void
+GSIWriteIndex(FILE *fp, struct gsiindex_s *g)
+{
+  sqd_uint32 i;
+
+  /* Range checking.
+   */
+  if (g->nfiles > SQD_UINT16_MAX) Die("Too many files in GSI index.");
+  if (g->nkeys  > SQD_UINT32_MAX) Die("Too many keys in GSI index.");
+
+  GSIWriteHeader(fp, g->nfiles, g->nkeys);
+  for (i = 0; i < g->nfiles; i++)
+    GSIWriteFileRecord(fp, g->filenames[i], i+1, g->fmt[i]);
+  for (i = 0; i < g->nkeys; i++)
+    GSIWriteKeyRecord(fp, g->elems[i].key, g->elems[i].filenum, g->elems[i].offset);
+}

@@ -1,0 +1,19 @@
+void
+store_by_pieces (to, len, constfun, constfundata, align)
+     rtx to;
+     unsigned HOST_WIDE_INT len;
+     rtx (*constfun) PARAMS ((PTR, HOST_WIDE_INT, enum machine_mode));
+     PTR constfundata;
+     unsigned int align;
+{
+  struct store_by_pieces data;
+
+  if (! MOVE_BY_PIECES_P (len, align))
+    abort ();
+  to = protect_from_queue (to, 1);
+  data.constfun = constfun;
+  data.constfundata = constfundata;
+  data.len = len;
+  data.to = to;
+  store_by_pieces_1 (&data, align);
+}

@@ -1,0 +1,62 @@
+static void
+sjlj_mark_call_sites (lp_info)
+     struct sjlj_lp_info *lp_info;
+{
+  int last_call_site = -2;
+  rtx insn, mem;
+
+  for (insn = get_insns (); insn ; insn = NEXT_INSN (insn))
+    {
+      struct eh_region *region;
+      int this_call_site;
+      rtx note, before, p;
+
+      /* Reset value tracking at extended basic block boundaries.  */
+      if (GET_CODE (insn) == CODE_LABEL)
+	last_call_site = -2;
+
+      if (! INSN_P (insn))
+	continue;
+
+      note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+      if (!note)
+	{
+	  /* Calls (and trapping insns) without notes are outside any
+	     exception handling region in this function.  Mark them as
+	     no action.  */
+	  if (GET_CODE (insn) == CALL_INSN
+	      || (flag_non_call_exceptions
+		  && may_trap_p (PATTERN (insn))))
+	    this_call_site = -1;
+	  else
+	    continue;
+	}
+      else
+	{
+	  /* Calls that are known to not throw need not be marked.  */
+	  if (INTVAL (XEXP (note, 0)) <= 0)
+	    continue;
+
+	  region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+	  this_call_site = lp_info[region->region_number].call_site_index;
+	}
+
+      if (this_call_site == last_call_site)
+	continue;
+
+      /* Don't separate a call from it's argument loads.  */
+      before = insn;
+      if (GET_CODE (insn) == CALL_INSN)
+         before = find_first_parameter_load (insn, NULL_RTX);
+
+      start_sequence ();
+      mem = adjust_address (cfun->eh->sjlj_fc, TYPE_MODE (integer_type_node),
+			    sjlj_fc_call_site_ofs);
+      emit_move_insn (mem, GEN_INT (this_call_site));
+      p = get_insns ();
+      end_sequence ();
+
+      emit_insns_before (p, before);
+      last_call_site = this_call_site;
+    }
+}

@@ -1,0 +1,69 @@
+static void
+visit_phi_node (phi_node, block)
+     rtx phi_node;
+     basic_block block;
+{
+  unsigned int i;
+  rtx phi_node_expr = NULL;
+  unsigned int phi_node_name = SSA_NAME (PATTERN (phi_node));
+  latticevalue phi_node_lattice_val = UNDEFINED;
+  rtx pat = PATTERN (phi_node);
+  rtvec phi_vec = XVEC (SET_SRC (pat), 0);
+  unsigned int num_elem = GET_NUM_ELEM (phi_vec);
+
+  for (i = 0; i < num_elem; i += 2)
+    {
+      if (TEST_BIT (executable_edges,
+		    EIE (BASIC_BLOCK (INTVAL (RTVEC_ELT (phi_vec, i + 1))),
+			 block)))
+	{
+	  unsigned int current_parm
+	    = REGNO (RTVEC_ELT (phi_vec, i));
+
+	  latticevalue current_parm_lattice_val
+	    = values[current_parm].lattice_val;
+
+	  /* If any node is VARYING, then new value of PHI_NODE
+	     is VARYING.  */
+	  if (current_parm_lattice_val == VARYING)
+	    {
+	      phi_node_lattice_val = VARYING;
+	      phi_node_expr = NULL;
+	      break;
+	    }
+
+	  /* If we have more than one distinct constant, then the new
+	     value of PHI_NODE is VARYING.  */
+	  if (current_parm_lattice_val == CONSTANT
+	      && phi_node_lattice_val == CONSTANT
+	      && values[current_parm].const_value != phi_node_expr)
+	    {
+	      phi_node_lattice_val = VARYING;
+	      phi_node_expr = NULL;
+	      break;
+	    }
+
+	  /* If the current value of PHI_NODE is UNDEFINED and one
+	     node in PHI_NODE is CONSTANT, then the new value of the
+	     PHI is that CONSTANT.  Note this can turn into VARYING
+	     if we find another distinct constant later.  */ 
+	  if (phi_node_lattice_val == UNDEFINED
+	      && phi_node_expr == NULL
+	      && current_parm_lattice_val == CONSTANT)
+	    {
+	      phi_node_expr = values[current_parm].const_value;
+	      phi_node_lattice_val = CONSTANT;
+	      continue;
+	    }
+	}
+    }
+
+  /* If the value of PHI_NODE changed, then we will need to
+     re-execute uses of the output of PHI_NODE.  */
+  if (phi_node_lattice_val != values[phi_node_name].lattice_val)
+    {
+      values[phi_node_name].lattice_val = phi_node_lattice_val;
+      values[phi_node_name].const_value = phi_node_expr;
+      SET_BIT (ssa_edges, phi_node_name);
+    }
+}

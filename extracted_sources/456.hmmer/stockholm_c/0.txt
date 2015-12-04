@@ -1,0 +1,21 @@
+int
+main(int argc, char **argv)
+{
+  MSAFILE *afp;
+  MSA     *msa;
+  char    *file;
+  
+  file = argv[1];
+
+  if ((afp = MSAFileOpen(file, MSAFILE_STOCKHOLM, NULL)) == NULL)
+    Die("Couldn't open %s\n", file);
+
+  while ((msa = ReadStockholm(afp)) != NULL)
+    {
+      WriteStockholm(stdout, msa);
+      MSAFree(msa); 
+    }
+  
+  MSAFileClose(afp);
+  exit(0);
+}

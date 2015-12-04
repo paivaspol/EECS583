@@ -1,0 +1,22 @@
+static unsigned int
+read_flag (pfile, last)
+     cpp_reader *pfile;
+     unsigned int last;
+{
+  const cpp_token *token = _cpp_lex_token (pfile);
+
+  if (token->type == CPP_NUMBER && token->val.str.len == 1)
+    {
+      unsigned int flag = token->val.str.text[0] - '0';
+
+      if (flag > last && flag <= 4
+	  && (flag != 4 || last == 3)
+	  && (flag != 2 || last == 0))
+	return flag;
+    }
+
+  if (token->type != CPP_EOF)
+    cpp_error (pfile, "invalid flag \"%s\" in line directive",
+	       cpp_token_as_text (pfile, token));
+  return 0;
+}

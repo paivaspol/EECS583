@@ -1,0 +1,53 @@
+static void
+store_motion ()
+{
+  int x;
+  struct ls_expr * ptr;
+  int update_flow = 0;
+
+  if (gcse_file)
+    {
+      fprintf (gcse_file, "before store motion\n");
+      print_rtl (gcse_file, get_insns ());
+    }
+
+
+  init_alias_analysis ();
+
+  /* Find all the stores that are live to the end of their block.  */
+  num_stores = compute_store_table ();
+  if (num_stores == 0)
+    {
+      sbitmap_vector_free (reg_set_in_block);
+      end_alias_analysis ();
+      return;
+    }
+
+  /* Now compute whats actually available to move.  */
+  add_noreturn_fake_exit_edges ();
+  build_store_vectors ();
+
+  edge_list = pre_edge_rev_lcm (gcse_file, num_stores, transp, ae_gen, 
+				st_antloc, ae_kill, &pre_insert_map, 
+				&pre_delete_map);
+
+  /* Now we want to insert the new stores which are going to be needed.  */
+  for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
+    {
+      for (x = 0; x < n_basic_blocks; x++)
+	if (TEST_BIT (pre_delete_map[x], ptr->index))
+	  delete_store (ptr, BASIC_BLOCK (x));
+
+      for (x = 0; x < NUM_EDGES (edge_list); x++)
+	if (TEST_BIT (pre_insert_map[x], ptr->index))
+	  update_flow |= insert_store (ptr, INDEX_EDGE (edge_list, x));
+    }
+
+  if (update_flow)
+    commit_edge_insertions ();
+
+  free_store_memory ();
+  free_edge_list (edge_list);
+  remove_fake_edges ();
+  end_alias_analysis ();
+}

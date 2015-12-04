@@ -1,0 +1,90 @@
+int
+apply_change_group ()
+{
+  int i;
+  rtx last_validated = NULL_RTX;
+
+  /* The changes have been applied and all INSN_CODEs have been reset to force
+     rerecognition.
+
+     The changes are valid if we aren't given an object, or if we are
+     given a MEM and it still is a valid address, or if this is in insn
+     and it is recognized.  In the latter case, if reload has completed,
+     we also require that the operands meet the constraints for
+     the insn.  */
+
+  for (i = 0; i < num_changes; i++)
+    {
+      rtx object = changes[i].object;
+
+      /* if there is no object to test or if it is the same as the one we
+         already tested, ignore it.  */
+      if (object == 0 || object == last_validated)
+	continue;
+
+      if (GET_CODE (object) == MEM)
+	{
+	  if (! memory_address_p (GET_MODE (object), XEXP (object, 0)))
+	    break;
+	}
+      else if (insn_invalid_p (object))
+	{
+	  rtx pat = PATTERN (object);
+
+	  /* Perhaps we couldn't recognize the insn because there were
+	     extra CLOBBERs at the end.  If so, try to re-recognize
+	     without the last CLOBBER (later iterations will cause each of
+	     them to be eliminated, in turn).  But don't do this if we
+	     have an ASM_OPERAND.  */
+	  if (GET_CODE (pat) == PARALLEL
+	      && GET_CODE (XVECEXP (pat, 0, XVECLEN (pat, 0) - 1)) == CLOBBER
+	      && asm_noperands (PATTERN (object)) < 0)
+	    {
+	      rtx newpat;
+
+	      if (XVECLEN (pat, 0) == 2)
+		newpat = XVECEXP (pat, 0, 0);
+	      else
+		{
+		  int j;
+
+		  newpat
+		    = gen_rtx_PARALLEL (VOIDmode, 
+					rtvec_alloc (XVECLEN (pat, 0) - 1));
+		  for (j = 0; j < XVECLEN (newpat, 0); j++)
+		    XVECEXP (newpat, 0, j) = XVECEXP (pat, 0, j);
+		}
+
+	      /* Add a new change to this group to replace the pattern
+		 with this new pattern.  Then consider this change
+		 as having succeeded.  The change we added will
+		 cause the entire call to fail if things remain invalid.
+
+		 Note that this can lose if a later change than the one
+		 we are processing specified &XVECEXP (PATTERN (object), 0, X)
+		 but this shouldn't occur.  */
+
+	      validate_change (object, &PATTERN (object), newpat, 1);
+	      continue;
+	    }
+	  else if (GET_CODE (pat) == USE || GET_CODE (pat) == CLOBBER)
+	    /* If this insn is a CLOBBER or USE, it is always valid, but is
+	       never recognized.  */
+	    continue;
+	  else
+	    break;
+	}
+      last_validated = object;
+    }
+
+  if (i == num_changes)
+    {
+      num_changes = 0;
+      return 1;
+    }
+  else
+    {
+      cancel_changes (0);
+      return 0;
+    }
+}

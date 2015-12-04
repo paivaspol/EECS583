@@ -1,0 +1,15 @@
+int
+nonmemory_no_elim_operand (op, mode)
+     register rtx op;
+     enum machine_mode mode;
+{
+  rtx t = op;
+  if (GET_CODE (t) == SUBREG)
+    t = SUBREG_REG (t);
+  if (t == arg_pointer_rtx || t == frame_pointer_rtx
+      || t == virtual_incoming_args_rtx || t == virtual_stack_vars_rtx
+      || t == virtual_stack_dynamic_rtx)
+    return 0;
+
+  return GET_CODE (op) == CONST_INT || register_operand (op, mode);
+}

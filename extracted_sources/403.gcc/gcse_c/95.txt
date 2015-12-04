@@ -1,0 +1,66 @@
+static int
+pre_delete ()
+{
+  unsigned int i;
+  int changed;
+  struct expr *expr;
+  struct occr *occr;
+
+  changed = 0;
+  for (i = 0; i < expr_hash_table_size; i++)
+    for (expr = expr_hash_table[i]; expr != NULL; expr = expr->next_same_hash)
+      {
+	int indx = expr->bitmap_index;
+
+	/* We only need to search antic_occr since we require
+	   ANTLOC != 0.  */
+
+	for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+	  {
+	    rtx insn = occr->insn;
+	    rtx set;
+	    basic_block bb = BLOCK_FOR_INSN (insn);
+
+	    if (TEST_BIT (pre_delete_map[bb->index], indx))
+	      {
+		set = single_set (insn);
+		if (! set)
+		  abort ();
+
+		/* Create a pseudo-reg to store the result of reaching
+		   expressions into.  Get the mode for the new pseudo from
+		   the mode of the original destination pseudo.  */
+		if (expr->reaching_reg == NULL)
+		  expr->reaching_reg
+		    = gen_reg_rtx (GET_MODE (SET_DEST (set)));
+
+		/* In theory this should never fail since we're creating
+		   a reg->reg copy.
+
+		   However, on the x86 some of the movXX patterns actually
+		   contain clobbers of scratch regs.  This may cause the
+		   insn created by validate_change to not match any pattern
+		   and thus cause validate_change to fail.  */
+		if (validate_change (insn, &SET_SRC (set),
+				     expr->reaching_reg, 0))
+		  {
+		    occr->deleted_p = 1;
+		    SET_BIT (pre_redundant_insns, INSN_CUID (insn));
+		    changed = 1;
+		    gcse_subst_count++;
+		  }
+
+		if (gcse_file)
+		  {
+		    fprintf (gcse_file,
+			     "PRE: redundant insn %d (expression %d) in ",
+			       INSN_UID (insn), indx);
+		    fprintf (gcse_file, "bb %d, reaching reg is %d\n",
+			     bb->index, REGNO (expr->reaching_reg));
+		  }
+	      }
+	  }
+      }
+
+  return changed;
+}

@@ -1,0 +1,32 @@
+void
+P7ReverseTrace(struct p7trace_s *tr)
+{
+  char  *statetype;
+  int   *nodeidx;
+  int   *pos;
+  int    opos, npos;
+
+  /* Allocate
+   */
+  statetype = MallocOrDie (sizeof(char)* tr->tlen);
+  nodeidx   = MallocOrDie (sizeof(int) * tr->tlen);
+  pos       = MallocOrDie (sizeof(int) * tr->tlen);
+  
+  /* Reverse the trace.
+   */
+  for (opos = tr->tlen-1, npos = 0; npos < tr->tlen; npos++, opos--)
+    {
+      statetype[npos] = tr->statetype[opos];
+      nodeidx[npos]   = tr->nodeidx[opos];
+      pos[npos]       = tr->pos[opos];
+    }
+
+  /* Swap old, new arrays.
+   */
+  free(tr->statetype);
+  free(tr->nodeidx);
+  free(tr->pos);
+  tr->statetype = statetype;
+  tr->nodeidx   = nodeidx;
+  tr->pos       = pos;
+}

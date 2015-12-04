@@ -1,0 +1,62 @@
+void std_pn_eval (node_t * this)
+{
+  int num_moves;
+  move_s moves[MOVE_BUFF];
+  int mate;
+  int i;
+
+  this->evaluated = TRUE;
+
+  /*ep_temp = ep_square;*/
+
+  if ((white_to_move && is_attacked (wking_loc, WHITE))
+      || (!white_to_move && is_attacked (bking_loc, BLACK)))
+    {
+
+      num_moves = 0;
+      gen (&moves[0]);
+      num_moves = numb_moves;
+
+      mate = TRUE;
+
+      for (i = 0; i < num_moves; i++)
+	{
+	  make (&moves[0], i);
+
+	  /* check to see if our move is legal: */
+	  if (check_legal (&moves[0], i, TRUE))
+	    {
+	      mate = FALSE;
+	      unmake (&moves[0], i);
+	      break;
+	    };
+
+	  unmake (&moves[0], i);
+	}
+
+      if (mate == TRUE)
+	{
+	  /* proven or disproven */
+	  if (ToMove == root_to_move)
+	    {
+	      /* root mover is mated-> disproven */
+	      this->value = FALSE;
+	    }
+	  else
+	    {
+	      this->value = TRUE;
+	    };
+	}
+      else
+	{
+	  this->value = UNKNOWN;
+	};
+    }
+  else
+    {
+      this->value = UNKNOWN;
+    };
+
+  /*ep_square = ep_temp;*/
+
+}

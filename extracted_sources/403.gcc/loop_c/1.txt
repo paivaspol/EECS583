@@ -1,0 +1,20 @@
+static int biv_elimination_giv_has_0_offset PARAMS ((struct induction *,
+						     struct induction *,
+						     rtx));
+
+/* Benefit penalty, if a giv is not replaceable, i.e. must emit an insn to
+   copy the value of the strength reduced giv to its original register.  */
+static int copy_cost;
+
+/* Cost of using a register, to normalize the benefits of a giv.  */
+static int reg_address_cost;
+
+void
+init_loop ()
+{
+  rtx reg = gen_rtx_REG (word_mode, LAST_VIRTUAL_REGISTER + 1);
+
+  reg_address_cost = address_cost (reg, SImode);
+
+  copy_cost = COSTS_N_INSNS (1);
+}

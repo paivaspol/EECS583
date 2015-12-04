@@ -1,0 +1,23 @@
+static void
+loop_ivs_dump (loop, file, verbose)
+     const struct loop *loop;
+     FILE *file;
+     int verbose;
+{
+  struct iv_class *bl;
+  int iv_num = 0;
+
+  if (! loop || ! file)
+    return;
+
+  for (bl = LOOP_IVS (loop)->list; bl; bl = bl->next)
+    iv_num++;
+
+  fprintf (file, "Loop %d: %d IV classes\n", loop->num, iv_num);
+
+  for (bl = LOOP_IVS (loop)->list; bl; bl = bl->next)
+    {
+      loop_iv_class_dump (bl, file, verbose);
+      fputc ('\n', file);
+    }
+}

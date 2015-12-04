@@ -1,0 +1,64 @@
+static struct op
+parse_defined (pfile)
+     cpp_reader *pfile;
+{
+  int paren = 0;
+  cpp_hashnode *node = 0;
+  const cpp_token *token;
+  struct op op;
+  cpp_context *initial_context = pfile->context;
+
+  /* Don't expand macros.  */
+  pfile->state.prevent_expansion++;
+
+  token = cpp_get_token (pfile);
+  if (token->type == CPP_OPEN_PAREN)
+    {
+      paren = 1;
+      token = cpp_get_token (pfile);
+    }
+
+  if (token->type == CPP_NAME)
+    {
+      node = token->val.node;
+      if (paren && cpp_get_token (pfile)->type != CPP_CLOSE_PAREN)
+	{
+	  cpp_error (pfile, "missing ')' after \"defined\"");
+	  node = 0;
+	}
+    }
+  else
+    {
+      cpp_error (pfile, "operator \"defined\" requires an identifier");
+      if (token->flags & NAMED_OP)
+	{
+	  cpp_token op;
+
+	  op.flags = 0;
+	  op.type = token->type;
+	  cpp_error (pfile,
+		     "(\"%s\" is an alternative token for \"%s\" in C++)",
+		     cpp_token_as_text (pfile, token),
+		     cpp_token_as_text (pfile, &op));
+	}
+    }
+
+  if (!node)
+    op.op = CPP_ERROR;
+  else
+    {
+      if (pfile->context != initial_context)
+	cpp_warning (pfile, "this use of \"defined\" may not be portable");
+
+      op.value = node->type == NT_MACRO;
+      op.unsignedp = 0;
+      op.op = CPP_NUMBER;
+
+      /* A possible controlling macro of the form #if !defined ().
+	 _cpp_parse_expr checks there was no other junk on the line.  */
+      pfile->mi_ind_cmacro = node;
+    }
+
+  pfile->state.prevent_expansion--;
+  return op;
+}

@@ -1,0 +1,15 @@
+static void
+purge_cache (inc)
+     struct include_file *inc;
+{
+  if (inc->buffer)
+    {
+#if MMAP_THRESHOLD
+      if (inc->mapped)
+	munmap ((PTR) inc->buffer, inc->st.st_size);
+      else
+#endif
+	free ((PTR) inc->buffer);
+      inc->buffer = NULL;
+    }
+}

@@ -1,0 +1,39 @@
+int32 gs_mgau_shortlist(gs_t *gs, int m, int n,float32 *feat,int bst_codeid)
+{
+  uint32 map;
+  int32 bit_id;
+  int32 nc;
+  nc=0;
+
+  map=0;
+  map=gs->codemap[m][0][bst_codeid];
+
+#if 0
+  E_INFO("The map is %u, the length of gaussian %d\n",map,n);
+#endif
+
+  for(bit_id=0;bit_id<n;bit_id++)
+    {
+      if(map & (1 << bit_id))
+	gs->mgau_sl[nc++]=bit_id;
+    }
+  gs->mgau_sl[nc]=-1;
+
+  if(nc==0){
+    /* 20040222 ARCHAN : added to safe guard Gaussian Selection anomality */
+    /* Special case when the number of components is smaller than the max. */
+    /* This happens when zero vectors were removed from the codebook. */
+
+    for(bit_id=0;bit_id<n;bit_id++)
+      {
+	gs->mgau_sl[nc++]=bit_id;
+      }
+    gs->mgau_sl[nc]=-1;
+  }
+
+  if(nc==0){
+    E_INFO("No active gaussian found in senone %d, with num. component = %d\n",m,n);
+  }
+  return nc;
+
+}

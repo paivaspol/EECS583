@@ -1,0 +1,27 @@
+static int
+get_visual_tbl_length ()
+{
+  int unit, i;
+  int n, n1;
+  char *s;
+
+  /* Compute length of one field in line.  */
+  s = (char *) alloca (INSN_LEN + 6);
+  sprintf (s, "  %33s", "uname");
+  n1 = strlen (s);
+
+  /* Compute length of one line.  */
+  n = strlen (";; ");
+  n += n1;
+  for (unit = 0; unit < FUNCTION_UNITS_SIZE; unit++)
+    if (function_units[unit].bitmask & target_units)
+      for (i = 0; i < function_units[unit].multiplicity; i++)
+	n += n1;
+  n += n1;
+  n += strlen ("\n") + 2;
+
+  visual_tbl_line_length = n;
+
+  /* Compute length of visualization string.  */
+  return (MAX_VISUAL_LINES * n);
+}

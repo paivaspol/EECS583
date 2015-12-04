@@ -1,0 +1,60 @@
+static void
+gen_member_die (type, context_die)
+     tree type;
+     dw_die_ref context_die;
+{
+  tree member;
+  dw_die_ref child;
+
+  /* If this is not an incomplete type, output descriptions of each of its
+     members. Note that as we output the DIEs necessary to represent the
+     members of this record or union type, we will also be trying to output
+     DIEs to represent the *types* of those members. However the `type'
+     function (above) will specifically avoid generating type DIEs for member
+     types *within* the list of member DIEs for this (containing) type except
+     for those types (of members) which are explicitly marked as also being
+     members of this (containing) type themselves.  The g++ front- end can
+     force any given type to be treated as a member of some other (containing)
+     type by setting the TYPE_CONTEXT of the given (member) type to point to
+     the TREE node representing the appropriate (containing) type.  */
+
+  /* First output info about the base classes.  */
+  if (TYPE_BINFO (type) && TYPE_BINFO_BASETYPES (type))
+    {
+      tree bases = TYPE_BINFO_BASETYPES (type);
+      int n_bases = TREE_VEC_LENGTH (bases);
+      int i;
+
+      for (i = 0; i < n_bases; i++)
+	gen_inheritance_die (TREE_VEC_ELT (bases, i), context_die);
+    }
+
+  /* Now output info about the data members and type members.  */
+  for (member = TYPE_FIELDS (type); member; member = TREE_CHAIN (member))
+    {
+      /* If we thought we were generating minimal debug info for TYPE
+	 and then changed our minds, some of the member declarations
+	 may have already been defined.  Don't define them again, but
+	 do put them in the right order.  */
+
+      child = lookup_decl_die (member);
+      if (child)
+	splice_child_die (context_die, child);
+      else
+	gen_decl_die (member, context_die);
+    }
+
+  /* Now output info about the function members (if any).  */
+  for (member = TYPE_METHODS (type); member; member = TREE_CHAIN (member))
+    {
+      /* Don't include clones in the member list.  */
+      if (DECL_ABSTRACT_ORIGIN (member))
+	continue;
+
+      child = lookup_decl_die (member);
+      if (child)
+	splice_child_die (context_die, child);
+      else
+	gen_decl_die (member, context_die);
+    }
+}

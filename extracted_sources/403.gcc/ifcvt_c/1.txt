@@ -1,0 +1,25 @@
+static rtx
+first_active_insn (bb)
+     basic_block bb;
+{
+  rtx insn = bb->head;
+
+  if (GET_CODE (insn) == CODE_LABEL)
+    {
+      if (insn == bb->end)
+	return NULL_RTX;
+      insn = NEXT_INSN (insn);
+    }
+
+  while (GET_CODE (insn) == NOTE)
+    {
+      if (insn == bb->end)
+	return NULL_RTX;
+      insn = NEXT_INSN (insn);
+    }
+
+  if (GET_CODE (insn) == JUMP_INSN)
+    return NULL_RTX;
+
+  return insn;
+}

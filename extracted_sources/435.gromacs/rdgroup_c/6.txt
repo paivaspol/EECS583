@@ -1,0 +1,19 @@
+void get_index(t_atoms *atoms, char *fnm, int ngrps,
+	       int isize[], atom_id *index[],char *grpnames[])
+{
+  char    ***gnames;
+  t_block *grps;
+  int     *grpnr;
+  
+  snew(grpnr,ngrps);
+  snew(gnames,1);
+  if (fnm != NULL) {
+    grps=init_index(fnm,gnames);
+  }
+  else {
+    snew(grps,1);
+    snew(grps->index,1);
+    analyse(atoms,grps,gnames,FALSE,FALSE);
+  } 
+  rd_groups(grps,*gnames,grpnames,ngrps,isize,index,grpnr);
+}

@@ -1,0 +1,69 @@
+static rtx
+expand_builtin_memset (exp, target, mode)
+     tree exp;
+     rtx target;
+     enum machine_mode mode;
+{
+  tree arglist = TREE_OPERAND (exp, 1);
+
+  if (!validate_arglist (arglist,
+			 POINTER_TYPE, INTEGER_TYPE, INTEGER_TYPE, VOID_TYPE))
+    return 0;
+  else
+    {
+      tree dest = TREE_VALUE (arglist);
+      tree val = TREE_VALUE (TREE_CHAIN (arglist));
+      tree len = TREE_VALUE (TREE_CHAIN (TREE_CHAIN (arglist)));
+      char c;
+
+      unsigned int dest_align
+	= get_pointer_alignment (dest, BIGGEST_ALIGNMENT);
+      rtx dest_mem, dest_addr, len_rtx;
+
+      /* If DEST is not a pointer type, don't do this
+	 operation in-line.  */
+      if (dest_align == 0)
+	return 0;
+
+      /* If the LEN parameter is zero, return DEST.  */
+      if (host_integerp (len, 1) && tree_low_cst (len, 1) == 0)
+        {
+          /* Evaluate and ignore VAL in case it has side-effects.  */
+          expand_expr (val, const0_rtx, VOIDmode, EXPAND_NORMAL);
+          return expand_expr (dest, target, mode, EXPAND_NORMAL);
+        }
+
+      if (TREE_CODE (val) != INTEGER_CST)
+	return 0;
+
+      if (target_char_cast (val, &c))
+	return 0;
+
+      if (c)
+	{
+	  if (!host_integerp (len, 1))
+	    return 0;
+	  if (!can_store_by_pieces (tree_low_cst (len, 1),
+				    builtin_memset_read_str, (PTR) &c,
+				    dest_align))
+	    return 0;
+
+	  dest_mem = get_memory_rtx (dest);
+	  store_by_pieces (dest_mem, tree_low_cst (len, 1),
+			   builtin_memset_read_str,
+			   (PTR) &c, dest_align);
+	  return force_operand (XEXP (dest_mem, 0), NULL_RTX);
+	}
+
+      len_rtx = expand_expr (len, NULL_RTX, VOIDmode, 0);
+
+      dest_mem = get_memory_rtx (dest);
+      set_mem_align (dest_mem, dest_align);
+      dest_addr = clear_storage (dest_mem, len_rtx);
+
+      if (dest_addr == 0)
+	dest_addr = force_operand (XEXP (dest_mem, 0), NULL_RTX);
+
+      return dest_addr;
+    }
+}

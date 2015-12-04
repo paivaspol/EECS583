@@ -1,0 +1,20 @@
+static int
+df_def_dominates_all_uses_p (df, def)
+     struct df *df ATTRIBUTE_UNUSED;
+     struct ref *def;
+{
+  struct df_link *du_link;
+
+  /* Follow def-use chain to find all the uses of this def.  */
+  for (du_link = DF_REF_CHAIN (def); du_link; du_link = du_link->next)
+    {
+      struct ref *use = du_link->ref;
+      struct df_link *ud_link;
+
+      /* Follow use-def chain to check all the defs for this use.  */
+      for (ud_link = DF_REF_CHAIN (use); ud_link; ud_link = ud_link->next)
+	if (ud_link->ref != def)
+	  return 0;
+    }
+  return 1;
+}

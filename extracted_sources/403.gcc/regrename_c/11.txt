@@ -1,0 +1,56 @@
+static void set_value_regno PARAMS ((unsigned, enum machine_mode,
+				     struct value_data *));
+static void init_value_data PARAMS ((struct value_data *));
+static void kill_clobbered_value PARAMS ((rtx, rtx, void *));
+static void kill_set_value PARAMS ((rtx, rtx, void *));
+static int kill_autoinc_value PARAMS ((rtx *, void *));
+static void copy_value PARAMS ((rtx, rtx, struct value_data *));
+static bool mode_change_ok PARAMS ((enum machine_mode, enum machine_mode,
+				    unsigned int));
+static rtx find_oldest_value_reg PARAMS ((enum reg_class, rtx,
+					  struct value_data *));
+static bool replace_oldest_value_reg PARAMS ((rtx *, enum reg_class, rtx,
+					      struct value_data *));
+static bool replace_oldest_value_addr PARAMS ((rtx *, enum reg_class,
+					       enum machine_mode, rtx,
+					       struct value_data *));
+static bool replace_oldest_value_mem PARAMS ((rtx, rtx, struct value_data *));
+static bool copyprop_hardreg_forward_1 PARAMS ((basic_block,
+						 struct value_data *));
+extern void debug_value_data PARAMS ((struct value_data *));
+#ifdef ENABLE_CHECKING
+static void validate_value_data PARAMS ((struct value_data *));
+#endif
+
+/* Kill register REGNO.  This involves removing it from any value lists,
+   and resetting the value mode to VOIDmode.  */
+
+static void
+kill_value_regno (regno, vd)
+     unsigned int regno;
+     struct value_data *vd;
+{
+  unsigned int i, next;
+
+  if (vd->e[regno].oldest_regno != regno)
+    {
+      for (i = vd->e[regno].oldest_regno;
+	   vd->e[i].next_regno != regno;
+	   i = vd->e[i].next_regno)
+	continue;
+      vd->e[i].next_regno = vd->e[regno].next_regno;
+    }
+  else if ((next = vd->e[regno].next_regno) != INVALID_REGNUM)
+    {
+      for (i = next; i != INVALID_REGNUM; i = vd->e[i].next_regno)
+        vd->e[i].oldest_regno = next;
+    }
+
+  vd->e[regno].mode = VOIDmode;
+  vd->e[regno].oldest_regno = regno;
+  vd->e[regno].next_regno = INVALID_REGNUM;
+
+#ifdef ENABLE_CHECKING
+  validate_value_data (vd);
+#endif
+}

@@ -1,0 +1,24 @@
+void
+split_ti (operands, num, lo_half, hi_half)
+     rtx operands[];
+     int num;
+     rtx lo_half[], hi_half[];
+{
+  while (num--)
+    {
+      rtx op = operands[num];
+
+      /* simplify_subreg refuse to split volatile memory addresses, but we
+         still have to handle it.  */
+      if (GET_CODE (op) == MEM)
+	{
+	  lo_half[num] = adjust_address (op, DImode, 0);
+	  hi_half[num] = adjust_address (op, DImode, 8);
+	}
+      else
+	{
+	  lo_half[num] = simplify_gen_subreg (DImode, op, TImode, 0);
+	  hi_half[num] = simplify_gen_subreg (DImode, op, TImode, 8);
+	}
+    }
+}

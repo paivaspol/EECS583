@@ -1,0 +1,25 @@
+static int			/* 0 failure, 1 success */
+regtry(ep, prog, string)
+register struct exec *ep;
+sqd_regexp *prog;
+char *string;
+{
+	register int i;
+	register char **stp;
+	register char **enp;
+
+	ep->reginput = string;
+
+	stp = prog->startp;
+	enp = prog->endp;
+	for (i = NSUBEXP; i > 0; i--) {
+		*stp++ = NULL;
+		*enp++ = NULL;
+	}
+	if (regmatch(ep, prog->program + 1)) {
+		prog->startp[0] = string;
+		prog->endp[0] = ep->reginput;
+		return(1);
+	} else
+		return(0);
+}

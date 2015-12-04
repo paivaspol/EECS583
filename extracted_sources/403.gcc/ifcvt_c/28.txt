@@ -1,0 +1,65 @@
+static int
+find_if_case_1 (test_bb, then_edge, else_edge)
+      basic_block test_bb;
+      edge then_edge, else_edge;
+{
+  basic_block then_bb = then_edge->dest;
+  basic_block else_bb = else_edge->dest, new_bb;
+  edge then_succ = then_bb->succ;
+
+  /* THEN has one successor.  */
+  if (!then_succ || then_succ->succ_next != NULL)
+    return FALSE;
+
+  /* THEN does not fall through, but is not strange either.  */
+  if (then_succ->flags & (EDGE_COMPLEX | EDGE_FALLTHRU))
+    return FALSE;
+
+  /* THEN has one predecessor.  */
+  if (then_bb->pred->pred_next != NULL)
+    return FALSE;
+
+  /* THEN must do something.  */
+  if (forwarder_block_p (then_bb))
+    return FALSE;
+
+  num_possible_if_blocks++;
+  if (rtl_dump_file)
+    fprintf (rtl_dump_file,
+	     "\nIF-CASE-1 found, start %d, then %d\n",
+	     test_bb->index, then_bb->index);
+
+  /* THEN is small.  */
+  if (count_bb_insns (then_bb) > BRANCH_COST)
+    return FALSE;
+
+  /* Registers set are dead, or are predicable.  */
+  if (! dead_or_predicable (test_bb, then_bb, else_bb, 
+			    then_bb->succ->dest, 1))
+    return FALSE;
+
+  /* Conversion went ok, including moving the insns and fixing up the
+     jump.  Adjust the CFG to match.  */
+
+  SET_UPDATE_LIFE (test_bb);
+  bitmap_operation (test_bb->global_live_at_end,
+		    else_bb->global_live_at_start,
+		    then_bb->global_live_at_end, BITMAP_IOR);
+  
+  new_bb = redirect_edge_and_branch_force (FALLTHRU_EDGE (test_bb), else_bb);
+  /* Make rest of code believe that the newly created block is the THEN_BB
+     block we are going to remove.  */
+  if (new_bb)
+    {
+      new_bb->aux = then_bb->aux;
+      SET_UPDATE_LIFE (then_bb);
+    }
+  flow_delete_block (then_bb);
+  /* We've possibly created jump to next insn, cleanup_cfg will solve that
+     later.  */
+
+  num_removed_blocks++;
+  num_updated_if_blocks++;
+
+  return TRUE;
+}

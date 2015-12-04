@@ -1,0 +1,18 @@
+int
+MSAGetSeqidx(MSA *msa, char *name, int guess)
+{
+  int seqidx;
+				/* can we guess? */
+  if (guess >= 0 && guess < msa->nseq && strcmp(name, msa->sqname[guess]) == 0) 
+    return guess;
+				/* else, a lookup in the index */
+  if ((seqidx = GKIKeyIndex(msa->index, name)) >= 0)
+    return seqidx;
+				/* else, it's a new name */
+  seqidx = GKIStoreKey(msa->index, name);
+  if (seqidx >= msa->nseqalloc)  MSAExpand(msa);
+
+  msa->sqname[seqidx] = sre_strdup(name, -1);
+  msa->nseq++;
+  return seqidx;
+}

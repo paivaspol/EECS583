@@ -1,0 +1,19 @@
+static void
+reg_is_set (reg, setter, data)
+     rtx reg;
+     rtx setter;
+     void *data ATTRIBUTE_UNUSED;
+{
+  /* Note that note_stores will only pass us a SUBREG if it is a SUBREG of
+     a hard register.  These may actually not exist any more.  */
+
+  if (GET_CODE (reg) != SUBREG
+      && GET_CODE (reg) != REG)
+    return;
+
+  /* Mark this register as being born.  If it is used in a CLOBBER, mark
+     it as being born halfway between the previous insn and this insn so that
+     it conflicts with our inputs but not the outputs of the previous insn.  */
+
+  reg_is_born (reg, 2 * this_insn_number - (GET_CODE (setter) == CLOBBER));
+}

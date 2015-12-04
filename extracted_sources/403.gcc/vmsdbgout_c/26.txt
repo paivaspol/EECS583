@@ -1,0 +1,33 @@
+static void
+vmsdbgout_source_line (line, filename)
+     register unsigned line;
+     register const char *filename;
+{
+  if (write_symbols == VMS_AND_DWARF2_DEBUG)
+    (*dwarf2_debug_hooks.source_line) (line, filename);
+
+  if (debug_info_level >= DINFO_LEVEL_TERSE)
+    {
+      dst_line_info_ref line_info;
+
+      ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, LINE_CODE_LABEL,
+				 line_info_table_in_use);
+
+      /* Expand the line info table if necessary.  */
+      if (line_info_table_in_use == line_info_table_allocated)
+	{
+	  line_info_table_allocated += LINE_INFO_TABLE_INCREMENT;
+	  line_info_table
+	    = (dst_line_info_ref) xrealloc (line_info_table,
+					    (line_info_table_allocated
+					     * sizeof (dst_line_info_entry)));
+	  }
+
+      /* Add the new entry at the end of the line_info_table.  */
+      line_info = &line_info_table[line_info_table_in_use++];
+      line_info->dst_file_num = lookup_filename (filename);
+      line_info->dst_line_num = line;
+      if (line > file_info_table[line_info->dst_file_num].max_line)
+	file_info_table[line_info->dst_file_num].max_line = line;
+    }
+}

@@ -1,0 +1,173 @@
+static void
+schedule_region (rgn)
+     int rgn;
+{
+  int bb;
+  int rgn_n_insns = 0;
+  int sched_rgn_n_insns = 0;
+
+  /* Set variables for the current region.  */
+  current_nr_blocks = RGN_NR_BLOCKS (rgn);
+  current_blocks = RGN_BLOCKS (rgn);
+
+  init_deps_global ();
+
+  /* Initializations for region data dependence analyisis.  */
+  bb_deps = (struct deps *) xmalloc (sizeof (struct deps) * current_nr_blocks);
+  for (bb = 0; bb < current_nr_blocks; bb++)
+    init_deps (bb_deps + bb);
+
+  /* Compute LOG_LINKS.  */
+  for (bb = 0; bb < current_nr_blocks; bb++)
+    compute_block_backward_dependences (bb);
+
+  /* Compute INSN_DEPEND.  */
+  for (bb = current_nr_blocks - 1; bb >= 0; bb--)
+    {
+      rtx head, tail;
+      get_block_head_tail (BB_TO_BLOCK (bb), &head, &tail);
+
+      compute_forward_dependences (head, tail);
+    }
+
+  /* Set priorities.  */
+  for (bb = 0; bb < current_nr_blocks; bb++)
+    {
+      rtx head, tail;
+      get_block_head_tail (BB_TO_BLOCK (bb), &head, &tail);
+
+      rgn_n_insns += set_priorities (head, tail);
+    }
+
+  /* Compute interblock info: probabilities, split-edges, dominators, etc.  */
+  if (current_nr_blocks > 1)
+    {
+      int i;
+
+      prob = (float *) xmalloc ((current_nr_blocks) * sizeof (float));
+
+      dom = sbitmap_vector_alloc (current_nr_blocks, current_nr_blocks);
+      sbitmap_vector_zero (dom, current_nr_blocks);
+      /* Edge to bit.  */
+      rgn_nr_edges = 0;
+      edge_to_bit = (int *) xmalloc (nr_edges * sizeof (int));
+      for (i = 1; i < nr_edges; i++)
+	if (CONTAINING_RGN (FROM_BLOCK (i)) == rgn)
+	  EDGE_TO_BIT (i) = rgn_nr_edges++;
+      rgn_edges = (int *) xmalloc (rgn_nr_edges * sizeof (int));
+
+      rgn_nr_edges = 0;
+      for (i = 1; i < nr_edges; i++)
+	if (CONTAINING_RGN (FROM_BLOCK (i)) == (rgn))
+	  rgn_edges[rgn_nr_edges++] = i;
+
+      /* Split edges.  */
+      pot_split = sbitmap_vector_alloc (current_nr_blocks, rgn_nr_edges);
+      sbitmap_vector_zero (pot_split, current_nr_blocks);
+      ancestor_edges = sbitmap_vector_alloc (current_nr_blocks, rgn_nr_edges);
+      sbitmap_vector_zero (ancestor_edges, current_nr_blocks);
+
+      /* Compute probabilities, dominators, split_edges.  */
+      for (bb = 0; bb < current_nr_blocks; bb++)
+	compute_dom_prob_ps (bb);
+    }
+
+  /* Now we can schedule all blocks.  */
+  for (bb = 0; bb < current_nr_blocks; bb++)
+    {
+      rtx head, tail;
+      int b = BB_TO_BLOCK (bb);
+
+      get_block_head_tail (b, &head, &tail);
+
+      if (no_real_insns_p (head, tail))
+	continue;
+
+      current_sched_info->prev_head = PREV_INSN (head);
+      current_sched_info->next_tail = NEXT_INSN (tail);
+
+      if (write_symbols != NO_DEBUG)
+	{
+	  save_line_notes (b, head, tail);
+	  rm_line_notes (head, tail);
+	}
+
+      /* rm_other_notes only removes notes which are _inside_ the
+	 block---that is, it won't remove notes before the first real insn
+ 	 or after the last real insn of the block.  So if the first insn
+	 has a REG_SAVE_NOTE which would otherwise be emitted before the
+	 insn, it is redundant with the note before the start of the
+	 block, and so we have to take it out.  */
+      if (INSN_P (head))
+	{
+	  rtx note;
+
+	  for (note = REG_NOTES (head); note; note = XEXP (note, 1))
+	    if (REG_NOTE_KIND (note) == REG_SAVE_NOTE)
+	      {
+		remove_note (head, note);
+		note = XEXP (note, 1);
+		remove_note (head, note);
+	      }
+	}
+
+      /* Remove remaining note insns from the block, save them in
+	 note_list.  These notes are restored at the end of
+	 schedule_block ().  */
+      rm_other_notes (head, tail);
+
+      target_bb = bb;
+
+      current_sched_info->queue_must_finish_empty
+	= current_nr_blocks > 1 && !flag_schedule_interblock;
+
+      schedule_block (b, rgn_n_insns);
+      sched_rgn_n_insns += sched_n_insns;
+
+      /* Update target block boundaries.  */
+      if (head == BLOCK_HEAD (b))
+	BLOCK_HEAD (b) = current_sched_info->head;
+      if (tail == BLOCK_END (b))
+	BLOCK_END (b) = current_sched_info->tail;
+
+      /* Clean up.  */
+      if (current_nr_blocks > 1)
+	{
+	  free (candidate_table);
+	  free (bblst_table);
+	  free (bitlst_table);
+	}
+    }
+
+  /* Sanity check: verify that all region insns were scheduled.  */
+  if (sched_rgn_n_insns != rgn_n_insns)
+    abort ();
+
+  /* Restore line notes.  */
+  if (write_symbols != NO_DEBUG)
+    {
+      for (bb = 0; bb < current_nr_blocks; bb++)
+	{
+	  rtx head, tail;
+	  get_block_head_tail (BB_TO_BLOCK (bb), &head, &tail);
+	  restore_line_notes (head, tail);
+	}
+    }
+
+  /* Done with this region.  */
+  free_pending_lists ();
+
+  finish_deps_global ();
+
+  free (bb_deps);
+
+  if (current_nr_blocks > 1)
+    {
+      free (prob);
+      sbitmap_vector_free (dom);
+      sbitmap_vector_free (pot_split);
+      sbitmap_vector_free (ancestor_edges);
+      free (edge_to_bit);
+      free (rgn_edges);
+    }
+}

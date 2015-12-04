@@ -1,0 +1,28 @@
+void symmetrize_ghat(int nx,int ny,int nz,real ***ghat)
+{
+  int  i,j,k;
+  int  iip,jjp,kkp;
+  real ggg;
+
+  /* fprintf(stderr,"Symmetrizing Ghat function\n");   */
+  /* Only the lower octant of the rectangle has been saved,
+   * so we must construct the other 7 octants by symmetry operations.
+   */
+  for(i=0; (i<=nx/2); i++) {
+    iip = (nx-i) % nx;
+    for(j=0; (j<=ny/2); j++) {
+      jjp = (ny-j) % ny;
+      for(k=0; (k<=nz/2); k++) {
+	kkp = (nz-k) % nz;
+	ggg                 = ghat[i][j][k];
+	ghat[i]  [jjp][k]   = ggg;
+	ghat[i]  [j]  [kkp] = ggg;
+	ghat[i]  [jjp][kkp] = ggg;
+	ghat[iip][j]  [k]   = ggg;
+	ghat[iip][jjp][k]   = ggg;
+	ghat[iip][j]  [kkp] = ggg;
+	ghat[iip][jjp][kkp] = ggg;
+      }
+    }
+  }
+}

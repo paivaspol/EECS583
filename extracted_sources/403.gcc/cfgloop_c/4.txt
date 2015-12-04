@@ -1,0 +1,41 @@
+void
+flow_loops_free (loops)
+     struct loops *loops;
+{
+  if (loops->array)
+    {
+      int i;
+
+      if (! loops->num)
+	abort ();
+
+      /* Free the loop descriptors.  */
+      for (i = 0; i < loops->num; i++)
+	{
+	  struct loop *loop = &loops->array[i];
+
+	  if (loop->pre_header_edges)
+	    free (loop->pre_header_edges);
+	  if (loop->nodes)
+	    sbitmap_free (loop->nodes);
+	  if (loop->entry_edges)
+	    free (loop->entry_edges);
+	  if (loop->exit_edges)
+	    free (loop->exit_edges);
+	  if (loop->exits_doms)
+	    sbitmap_free (loop->exits_doms);
+	}
+
+      free (loops->array);
+      loops->array = NULL;
+
+      if (loops->cfg.dom)
+	sbitmap_vector_free (loops->cfg.dom);
+
+      if (loops->cfg.dfs_order)
+	free (loops->cfg.dfs_order);
+
+      if (loops->shared_headers)
+	sbitmap_free (loops->shared_headers);
+    }
+}

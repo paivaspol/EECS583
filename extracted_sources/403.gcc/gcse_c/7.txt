@@ -1,0 +1,25 @@
+static int
+get_bitmap_width (n, x, y)
+     int n;
+     int x;
+     int y;
+{
+  /* It's not really worth figuring out *exactly* how much memory will
+     be used by a particular choice.  The important thing is to get
+     something approximately right.  */
+  size_t max_bitmap_memory = 10 * 1024 * 1024;
+
+  /* The number of bytes we'd use for a single column of minimum
+     width.  */
+  size_t column_size = n * x * sizeof (SBITMAP_ELT_TYPE);
+
+  /* Often, it's reasonable just to solve all the equations in
+     parallel.  */
+  if (column_size * SBITMAP_SET_SIZE (y) <= max_bitmap_memory)
+    return y;
+
+  /* Otherwise, pick the largest width we can, without going over the
+     limit.  */
+  return SBITMAP_ELT_BITS * ((max_bitmap_memory + column_size - 1)
+			     / column_size);
+}

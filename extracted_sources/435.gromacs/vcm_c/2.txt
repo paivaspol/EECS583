@@ -1,0 +1,25 @@
+void do_stopcm_grp(FILE *fp,int start,int homenr,rvec x[],rvec v[],
+		   t_vcm *vcm)
+{
+  int  i,g,m;
+  real tm,tm_1;
+  rvec dv,dx;
+  
+  if (vcm->mode != ecmNO) {
+    /* Subtract linear momentum */
+    for(i=start; (i<start+homenr); i++) {
+      g = vcm->group_id[i];
+      rvec_dec(v[i],vcm->group_v[g]);
+    }
+    if (vcm->mode == ecmANGULAR) {
+      /* Subtract angular momentum */
+      for(i=start; (i<start+homenr); i++) {
+	g = vcm->group_id[i];
+	/* Compute the correction to the velocity for each atom */
+	rvec_sub(x[i],vcm->group_x[g],dx);
+	oprod(vcm->group_w[g],dx,dv);
+	rvec_dec(v[i],dv);
+      }
+    }
+  }
+}

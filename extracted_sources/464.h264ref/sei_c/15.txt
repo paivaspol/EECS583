@@ -1,0 +1,33 @@
+void FinalizeSubseqInfo(int currLayer)
+{
+  SyntaxElement sym;
+  Bitstream *dest = seiSubseqInfo[currLayer].data;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  sym.value1 = seiSubseqInfo[currLayer].subseq_layer_num;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.value1 = seiSubseqInfo[currLayer].subseq_id;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+  sym.bitpattern = seiSubseqInfo[currLayer].last_picture_flag;
+  sym.len = 1;
+  writeSyntaxElement2Buf_Fixed(&sym, dest);
+  sym.value1 = seiSubseqInfo[currLayer].stored_frame_cnt;
+  writeSyntaxElement2Buf_UVLC(&sym, dest);
+
+  // make sure the payload is byte aligned, stuff bits are 10..0
+  if ( dest->bits_to_go != 8 )
+  {
+    (dest->byte_buf) <<= 1;
+    dest->byte_buf |= 1;
+    dest->bits_to_go--;
+    if ( dest->bits_to_go != 0 ) (dest->byte_buf) <<= (dest->bits_to_go);
+    dest->bits_to_go = 8;
+    dest->streamBuffer[dest->byte_pos++]=dest->byte_buf;
+    dest->byte_buf = 0;
+  }
+  seiSubseqInfo[currLayer].payloadSize = dest->byte_pos;
+
+//  printf("layer %d, last picture %d, stored_cnt %d\n", currLayer, seiSubseqInfo[currLayer].last_picture_flag, seiSubseqInfo[currLayer].stored_frame_cnt );
+}

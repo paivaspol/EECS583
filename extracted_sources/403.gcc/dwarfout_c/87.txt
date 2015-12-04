@@ -1,0 +1,21 @@
+static void
+output_inlined_subroutine_die (arg)
+     void *arg;
+{
+  tree stmt = arg;
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_inlined_subroutine);
+  sibling_attribute ();
+  dienum_push ();
+  abstract_origin_attribute (block_ultimate_origin (stmt));
+  if (! BLOCK_ABSTRACT (stmt))
+    {
+      char begin_label[MAX_ARTIFICIAL_LABEL_BYTES];
+      char end_label[MAX_ARTIFICIAL_LABEL_BYTES];
+
+      sprintf (begin_label, BLOCK_BEGIN_LABEL_FMT, BLOCK_NUMBER (stmt));
+      low_pc_attribute (begin_label);
+      sprintf (end_label, BLOCK_END_LABEL_FMT, BLOCK_NUMBER (stmt));
+      high_pc_attribute (end_label);
+    }
+}

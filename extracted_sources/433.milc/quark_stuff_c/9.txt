@@ -1,0 +1,120 @@
+void eo_fermion_force( double eps, int nflavors, field_offset x_off ){
+  /* note CG_solution and Dslash * solution are combined in "x_off" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need x_off transported from both ends of path. */
+  register int i,dir,lastdir,ipath,ilink;
+  register site *s;
+  int length;
+  su3_matrix tmat,tmat2;
+  double ferm_epsilon, coeff;
+#ifdef FFTIME
+  double dtime;
+#endif
+  msg_tag *mtag0;
+  half_wilson_vector *hw_tmp0,*hw_tmp1,*tmp_pt;
+
+#ifdef FFTIME
+dtime=-dclock();
+#endif
+  ferm_epsilon = 2.0*(nflavors/4.0)*eps;
+  hw_tmp0 = (half_wilson_vector *)
+    calloc(sites_on_node, sizeof(half_wilson_vector));
+  hw_tmp1 = (half_wilson_vector *)
+    calloc(sites_on_node, sizeof(half_wilson_vector));
+  /* Use half_wilson_vectors to store x_off transported from ends of
+     path.  0 component from forward end, 1 component from back end */
+
+  /* loop over paths, and loop over links in path */
+  for( ipath=0; ipath<num_q_paths; ipath++ ){
+    if(q_paths[ipath].forwback== -1)continue;	/* skip backwards dslash */
+    length = q_paths[ipath].length;
+
+    /* path transport x_off and Dslash*x_off from far end.  Sometimes
+	we need them at the start point of the path, and sometimes
+	one link into the path - an optimization for later */
+    path_transport( x_off, F_OFFSET(tempvec[0]),
+      EVENANDODD, q_paths[ipath].dir, length );
+    /* use tempvec[1] for transport from starting end */
+    FORALLSITES(i,s){
+      hw_tmp0[i].h[0]=s->tempvec[0];
+      hw_tmp0[i].h[1]=*(su3_vector *)F_PT(s,x_off);
+    }
+
+    /* A path has (length+1) points, counting the ends.  At first
+	 point, no "down" direction links have their momenta "at this
+	 point". At last, no "up" ... */
+    for( ilink=0; ilink<=length; ilink++ ){
+      if(ilink<length)dir = q_paths[ipath].dir[ilink];
+      else dir=NODIR;
+      coeff = ferm_epsilon*q_paths[ipath].coeff;
+      if( (ilink%2)==1 )coeff = -coeff;
+
+      /* path transport x_off and Dslash*x_off from previous point */
+      /* Use "half_wilson_vector" to handle pair of vectors -
+	0 component is x_off from forward end, 1 component from back end */
+      /* sometimes we don't need them */
+      if( (ilink>0&&ilink<length) || 
+	(ilink==length && GOES_BACKWARDS(lastdir)) ){
+
+	if( GOES_FORWARDS(lastdir) ){
+	  FORALLSITES(i,s){
+            mult_adj_su3_mat_hwvec( &(s->link[lastdir]),
+	      &(hw_tmp0[i]), &(hw_tmp1[i]) );
+	  }
+	  mtag0 = start_gather_from_temp( hw_tmp1, 2*sizeof(su3_vector),
+             OPP_DIR(lastdir), EVENANDODD, gen_pt[0] );
+          wait_gather(mtag0);
+          FORALLSITES(i,s){
+	     hw_tmp0[i] = *(half_wilson_vector *)gen_pt[0][i];
+	  }
+          cleanup_gather(mtag0);
+	}
+	else{   /* GOES_BACKWARDS(lastdir) */
+          mtag0 = start_gather_from_temp( hw_tmp0, 2*sizeof(su3_vector),
+               OPP_DIR(lastdir), EVENANDODD, gen_pt[0] );
+          wait_gather(mtag0);
+          FORALLSITES(i,s){
+            mult_su3_mat_hwvec( &(s->link[OPP_DIR(lastdir)]),
+                (half_wilson_vector *)(gen_pt[0][i]),
+		&(hw_tmp1[i]) );
+          }
+	  tmp_pt = hw_tmp0; hw_tmp0 = hw_tmp1; hw_tmp1 = tmp_pt;
+          cleanup_gather(mtag0);
+	}
+      }
+
+      /* add in contribution to the force */
+      /* Put antihermitian traceless part into momentum */
+      FORALLSITES(i,s){
+        if( ilink<length && GOES_FORWARDS(dir) ){
+          uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
+	  su3_projector( &(hw_tmp0[i].h[0]), &(hw_tmp0[i].h[1]), &tmat );
+	  if( s->parity==EVEN )scalar_mult_add_su3_matrix(
+	    &tmat2, &tmat,  coeff, &tmat2 );
+	  else		 scalar_mult_add_su3_matrix(
+	    &tmat2, &tmat, -coeff, &tmat2 );
+          make_anti_hermitian( &tmat2, &(s->mom[dir]) );
+        }
+	if( ilink>0 && GOES_BACKWARDS(lastdir) ){
+          uncompress_anti_hermitian( &(s->mom[OPP_DIR(lastdir)]), &tmat2 );
+	  su3_projector( &(hw_tmp0[i].h[0]), &(hw_tmp0[i].h[1]), &tmat );
+	  if( s->parity==EVEN )scalar_mult_add_su3_matrix(
+	    &tmat2, &tmat, -coeff, &tmat2 );
+	  else		 scalar_mult_add_su3_matrix(
+	    &tmat2, &tmat,  coeff, &tmat2 );
+          make_anti_hermitian( &tmat2, &(s->mom[OPP_DIR(lastdir)]) );
+        }
+      }
+      lastdir = dir;
+    } /* end loop over links in path */
+  } /* end loop over paths */
+
+  free( hw_tmp0 ); free( hw_tmp1 );
+
+#ifdef FFTIME
+dtime += dclock();
+node0_printf("FFTIME:  %e\n",dtime);
+/**printf("TLENGTH: %d\n",tlength);**/
+#endif
+} /* eo_fermion_force(version 6) */

@@ -1,0 +1,79 @@
+int init_global_buffers()
+{
+  int j,memory_size=0;
+#ifdef _ADAPT_LAST_GROUP_
+  extern int *last_P_no_frm;
+  extern int *last_P_no_fld;
+
+  if ((last_P_no_frm = (int*)malloc(2*img->max_num_references*sizeof(int))) == NULL)
+    no_mem_exit("init_global_buffers: last_P_no");
+  if(!active_sps->frame_mbs_only_flag)
+    if ((last_P_no_fld = (int*)malloc(4*img->max_num_references*sizeof(int))) == NULL)
+      no_mem_exit("init_global_buffers: last_P_no");
+#endif
+
+  memory_size += init_orig_buffers(); 
+    
+
+  if (input->WeightedPrediction || input->WeightedBiprediction || input->GenerateMultiplePPS)
+  {
+    // Currently only use up to 20 references. Need to use different indicator such as maximum num of references in list
+    memory_size += get_mem3Dint(&wp_weight,6,MAX_REFERENCE_PICTURES,3);
+    memory_size += get_mem3Dint(&wp_offset,6,MAX_REFERENCE_PICTURES,3);
+    
+    memory_size += get_mem4Dint(&wbp_weight, 6, MAX_REFERENCE_PICTURES, MAX_REFERENCE_PICTURES, 3);
+  }
+
+  // allocate memory for reference frames of each block: refFrArr
+
+  if(input->successive_Bframe!=0 || input->BRefPictures> 0)
+  {    
+    memory_size += get_mem3Dshort(&direct_ref_idx, 2, img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);
+    memory_size += get_mem2Dshort(&direct_pdir, img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);
+  }
+
+  // allocate memory for temp quarter pel luma frame buffer: img4Y_tmp
+  // int img4Y_tmp[576][704];  (previously int imgY_tmp in global.h)
+  memory_size += get_mem2Dint(&img4Y_tmp, img->height+2*IMG_PAD_SIZE, (img->width+2*IMG_PAD_SIZE)*4);
+
+  if (input->rdopt==2)
+  {
+    memory_size += get_mem2Dint(&decs->resY, MB_BLOCK_SIZE, MB_BLOCK_SIZE);
+    if ((decs->decref = (imgpel****) calloc(input->NoOfDecoders,sizeof(imgpel***))) == NULL) 
+      no_mem_exit("init_global_buffers: decref");
+    for (j=0 ; j<input->NoOfDecoders; j++)
+    {
+      memory_size += get_mem3Dpel(&decs->decref[j], img->max_num_references+1, img->height, img->width);
+    }
+    memory_size += get_mem2Dpel(&decs->RefBlock, BLOCK_SIZE,BLOCK_SIZE);
+    memory_size += get_mem3Dpel(&decs->decY, input->NoOfDecoders, img->height, img->width);
+    memory_size += get_mem3Dpel(&decs->decY_best, input->NoOfDecoders, img->height, img->width);
+    memory_size += get_mem2D(&decs->status_map, img->height/MB_BLOCK_SIZE,img->width/MB_BLOCK_SIZE);
+    memory_size += get_mem2D(&decs->dec_mb_mode, img->width/MB_BLOCK_SIZE,img->height/MB_BLOCK_SIZE);
+  }
+  if (input->RestrictRef)
+  {
+    memory_size += get_mem2D(&pixel_map, img->height,img->width);
+    memory_size += get_mem2D(&refresh_map, img->height/8,img->width/8);
+  }
+
+  if(!active_sps->frame_mbs_only_flag)
+  {
+    memory_size += get_mem2Dpel(&imgY_com, img->height, img->width);
+
+    if (img->yuv_format != YUV400)
+    {
+      memory_size += get_mem3Dpel(&imgUV_com, 2, img->height_cr, img->width_cr);
+    }
+  }
+
+  if(input->FMEnable)
+    memory_size += get_mem_FME();
+
+  if (input->RCEnable)
+  {
+    rc_alloc();
+  }
+
+  return (memory_size);
+}

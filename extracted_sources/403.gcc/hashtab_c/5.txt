@@ -1,0 +1,29 @@
+static PTR *
+find_empty_slot_for_expand (htab, hash)
+     htab_t htab;
+     hashval_t hash;
+{
+  size_t size = htab->size;
+  unsigned int index = hash % size;
+  PTR *slot = htab->entries + index;
+  hashval_t hash2;
+
+  if (*slot == EMPTY_ENTRY)
+    return slot;
+  else if (*slot == DELETED_ENTRY)
+    abort ();
+
+  hash2 = 1 + hash % (size - 2);
+  for (;;)
+    {
+      index += hash2;
+      if (index >= size)
+	index -= size;
+
+      slot = htab->entries + index;
+      if (*slot == EMPTY_ENTRY)
+	return slot;
+      else if (*slot == DELETED_ENTRY)
+	abort ();
+    }
+}

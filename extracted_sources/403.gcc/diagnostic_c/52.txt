@@ -1,0 +1,15 @@
+void
+error_with_file_and_line VPARAMS ((const char *file, int line,
+				   const char *msgid, ...))
+{
+  diagnostic_context dc;
+
+  VA_OPEN (ap, msgid);
+  VA_FIXEDARG (ap, const char *, file);
+  VA_FIXEDARG (ap, int, line);
+  VA_FIXEDARG (ap, const char *, msgid);
+
+  set_diagnostic_context (&dc, msgid, &ap, file, line, /* warn = */ 0);
+  report_diagnostic (&dc);
+  VA_CLOSE (ap);
+}

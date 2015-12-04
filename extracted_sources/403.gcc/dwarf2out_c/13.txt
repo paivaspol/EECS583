@@ -1,0 +1,51 @@
+static void
+reg_save (label, reg, sreg, offset)
+     const char *label;
+     unsigned reg;
+     unsigned sreg;
+     long offset;
+{
+  dw_cfi_ref cfi = new_cfi ();
+
+  cfi->dw_cfi_oprnd1.dw_cfi_reg_num = reg;
+
+  /* The following comparison is correct. -1 is used to indicate that
+     the value isn't a register number.  */
+  if (sreg == (unsigned int) -1)
+    {
+      if (reg & ~0x3f)
+	/* The register number won't fit in 6 bits, so we have to use
+	   the long form.  */
+	cfi->dw_cfi_opc = DW_CFA_offset_extended;
+      else
+	cfi->dw_cfi_opc = DW_CFA_offset;
+
+#ifdef ENABLE_CHECKING
+      {
+	/* If we get an offset that is not a multiple of
+	   DWARF_CIE_DATA_ALIGNMENT, there is either a bug in the
+	   definition of DWARF_CIE_DATA_ALIGNMENT, or a bug in the machine
+	   description.  */
+	long check_offset = offset / DWARF_CIE_DATA_ALIGNMENT;
+
+	if (check_offset * DWARF_CIE_DATA_ALIGNMENT != offset)
+	  abort ();
+      }
+#endif
+      offset /= DWARF_CIE_DATA_ALIGNMENT;
+      if (offset < 0)
+	cfi->dw_cfi_opc = DW_CFA_offset_extended_sf;
+
+      cfi->dw_cfi_oprnd2.dw_cfi_offset = offset;
+    }
+  else if (sreg == reg)
+    /* We could emit a DW_CFA_same_value in this case, but don't bother.  */
+    return;
+  else
+    {
+      cfi->dw_cfi_opc = DW_CFA_register;
+      cfi->dw_cfi_oprnd2.dw_cfi_reg_num = sreg;
+    }
+
+  add_fde_cfi (label, cfi);
+}

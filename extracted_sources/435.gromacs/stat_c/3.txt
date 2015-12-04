@@ -1,0 +1,26 @@
+int write_traj(FILE *log,t_commrec *cr,
+	       char *traj,t_nsborder *nsb,
+	       int step,real t,real lambda,t_nrnb nrnb[],
+	       int natoms,rvec *xx,rvec *vv,rvec *ff,matrix box)
+{
+  static int fp=-1;
+  
+  if ((fp == -1) && MASTER(cr)) {
+#ifdef DEBUG
+    fprintf(log,"Going to open trajectory file: %s\n",traj);
+#endif
+    fp = open_trn(traj,"w");
+  }
+  
+#define MX(xvf) moveit(log,cr->left,cr->right,#xvf,xvf,nsb)
+  if (cr->nnodes > 1) {
+    MX(xx);
+    MX(vv);
+    MX(ff);
+  }
+  if ((xx || vv || ff) && MASTER(cr)) {
+    fwrite_trn(fp,step,t,lambda,box,natoms,xx,vv,ff);
+    gmx_fio_flush(fp);
+  }
+  return fp;
+}

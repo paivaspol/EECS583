@@ -1,0 +1,22 @@
+static void
+mark_label_nuses(x)
+    rtx x;
+{
+  enum rtx_code code;
+  int i, j;
+  const char *fmt;
+
+  code = GET_CODE (x);
+  if (code == LABEL_REF)
+    LABEL_NUSES (XEXP (x, 0))++;
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    {
+      if (fmt[i] == 'e')
+        mark_label_nuses (XEXP (x, i));
+      else if (fmt[i] == 'E')
+        for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  mark_label_nuses (XVECEXP (x, i, j));
+    }
+}

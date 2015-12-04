@@ -1,0 +1,18 @@
+void
+genrtl_if_stmt (t)
+     tree t;
+{
+  tree cond;
+  genrtl_do_pushlevel ();
+  cond = expand_cond (IF_COND (t));
+  emit_line_note (input_filename, lineno);
+  expand_start_cond (cond, 0);
+  if (THEN_CLAUSE (t))
+    expand_stmt (THEN_CLAUSE (t));
+  if (ELSE_CLAUSE (t))
+    {
+      expand_start_else ();
+      expand_stmt (ELSE_CLAUSE (t));
+    }
+  expand_end_cond ();
+}

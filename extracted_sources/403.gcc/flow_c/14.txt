@@ -1,0 +1,296 @@
+static void
+calculate_global_regs_live (blocks_in, blocks_out, flags)
+     sbitmap blocks_in, blocks_out;
+     int flags;
+{
+  basic_block *queue, *qhead, *qtail, *qend;
+  regset tmp, new_live_at_end, call_used;
+  regset_head tmp_head, call_used_head;
+  regset_head new_live_at_end_head;
+  int i;
+
+  tmp = INITIALIZE_REG_SET (tmp_head);
+  new_live_at_end = INITIALIZE_REG_SET (new_live_at_end_head);
+  call_used = INITIALIZE_REG_SET (call_used_head);
+
+  /* Inconveniently, this is only readily available in hard reg set form.  */
+  for (i = 0; i < FIRST_PSEUDO_REGISTER; ++i)
+    if (call_used_regs[i])
+      SET_REGNO_REG_SET (call_used, i);
+
+  /* Create a worklist.  Allocate an extra slot for ENTRY_BLOCK, and one
+     because the `head == tail' style test for an empty queue doesn't
+     work with a full queue.  */
+  queue = (basic_block *) xmalloc ((n_basic_blocks + 2) * sizeof (*queue));
+  qtail = queue;
+  qhead = qend = queue + n_basic_blocks + 2;
+
+  /* Queue the blocks set in the initial mask.  Do this in reverse block
+     number order so that we are more likely for the first round to do
+     useful work.  We use AUX non-null to flag that the block is queued.  */
+  if (blocks_in)
+    {
+      /* Clear out the garbage that might be hanging out in bb->aux.  */
+      for (i = n_basic_blocks - 1; i >= 0; --i)
+	BASIC_BLOCK (i)->aux = NULL;
+
+      EXECUTE_IF_SET_IN_SBITMAP (blocks_in, 0, i,
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  *--qhead = bb;
+	  bb->aux = bb;
+	});
+    }
+  else
+    {
+      for (i = 0; i < n_basic_blocks; ++i)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  *--qhead = bb;
+	  bb->aux = bb;
+	}
+    }
+
+  /* We clean aux when we remove the initially-enqueued bbs, but we
+     don't enqueue ENTRY and EXIT initially, so clean them upfront and
+     unconditionally.  */
+  ENTRY_BLOCK_PTR->aux = EXIT_BLOCK_PTR->aux = NULL;
+
+  if (blocks_out)
+    sbitmap_zero (blocks_out);
+
+  /* We work through the queue until there are no more blocks.  What
+     is live at the end of this block is precisely the union of what
+     is live at the beginning of all its successors.  So, we set its
+     GLOBAL_LIVE_AT_END field based on the GLOBAL_LIVE_AT_START field
+     for its successors.  Then, we compute GLOBAL_LIVE_AT_START for
+     this block by walking through the instructions in this block in
+     reverse order and updating as we go.  If that changed
+     GLOBAL_LIVE_AT_START, we add the predecessors of the block to the
+     queue; they will now need to recalculate GLOBAL_LIVE_AT_END.
+
+     We are guaranteed to terminate, because GLOBAL_LIVE_AT_START
+     never shrinks.  If a register appears in GLOBAL_LIVE_AT_START, it
+     must either be live at the end of the block, or used within the
+     block.  In the latter case, it will certainly never disappear
+     from GLOBAL_LIVE_AT_START.  In the former case, the register
+     could go away only if it disappeared from GLOBAL_LIVE_AT_START
+     for one of the successor blocks.  By induction, that cannot
+     occur.  */
+  while (qhead != qtail)
+    {
+      int rescan, changed;
+      basic_block bb;
+      edge e;
+
+      bb = *qhead++;
+      if (qhead == qend)
+	qhead = queue;
+      bb->aux = NULL;
+
+      /* Begin by propagating live_at_start from the successor blocks.  */
+      CLEAR_REG_SET (new_live_at_end);
+
+      if (bb->succ)
+	for (e = bb->succ; e; e = e->succ_next)
+	  {
+	    basic_block sb = e->dest;
+
+	    /* Call-clobbered registers die across exception and
+	       call edges.  */
+	    /* ??? Abnormal call edges ignored for the moment, as this gets
+	       confused by sibling call edges, which crashes reg-stack.  */
+	    if (e->flags & EDGE_EH)
+	      {
+		bitmap_operation (tmp, sb->global_live_at_start,
+				  call_used, BITMAP_AND_COMPL);
+		IOR_REG_SET (new_live_at_end, tmp);
+	      }
+	    else
+	      IOR_REG_SET (new_live_at_end, sb->global_live_at_start);
+
+	    /* If a target saves one register in another (instead of on
+	       the stack) the save register will need to be live for EH.  */
+	    if (e->flags & EDGE_EH)
+	      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+		if (EH_USES (i))
+		  SET_REGNO_REG_SET (new_live_at_end, i);
+	  }
+      else
+	{
+	  /* This might be a noreturn function that throws.  And
+	     even if it isn't, getting the unwind info right helps
+	     debugging.  */
+	  for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+	    if (EH_USES (i))
+	      SET_REGNO_REG_SET (new_live_at_end, i);
+	}
+
+      /* The all-important stack pointer must always be live.  */
+      SET_REGNO_REG_SET (new_live_at_end, STACK_POINTER_REGNUM);
+
+      /* Before reload, there are a few registers that must be forced
+	 live everywhere -- which might not already be the case for
+	 blocks within infinite loops.  */
+      if (! reload_completed)
+	{
+	  /* Any reference to any pseudo before reload is a potential
+	     reference of the frame pointer.  */
+	  SET_REGNO_REG_SET (new_live_at_end, FRAME_POINTER_REGNUM);
+
+#if FRAME_POINTER_REGNUM != ARG_POINTER_REGNUM
+	  /* Pseudos with argument area equivalences may require
+	     reloading via the argument pointer.  */
+	  if (fixed_regs[ARG_POINTER_REGNUM])
+	    SET_REGNO_REG_SET (new_live_at_end, ARG_POINTER_REGNUM);
+#endif
+
+	  /* Any constant, or pseudo with constant equivalences, may
+	     require reloading from memory using the pic register.  */
+	  if (PIC_OFFSET_TABLE_REGNUM != INVALID_REGNUM
+	      && fixed_regs[PIC_OFFSET_TABLE_REGNUM])
+	    SET_REGNO_REG_SET (new_live_at_end, PIC_OFFSET_TABLE_REGNUM);
+	}
+
+      /* Regs used in phi nodes are not included in
+	 global_live_at_start, since they are live only along a
+	 particular edge.  Set those regs that are live because of a
+	 phi node alternative corresponding to this particular block.  */
+      if (in_ssa_form)
+	for_each_successor_phi (bb, &set_phi_alternative_reg,
+				new_live_at_end);
+
+      if (bb == ENTRY_BLOCK_PTR)
+	{
+	  COPY_REG_SET (bb->global_live_at_end, new_live_at_end);
+	  continue;
+	}
+
+      /* On our first pass through this block, we'll go ahead and continue.
+	 Recognize first pass by local_set NULL.  On subsequent passes, we
+	 get to skip out early if live_at_end wouldn't have changed.  */
+
+      if (bb->local_set == NULL)
+	{
+	  bb->local_set = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+	  bb->cond_local_set = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+	  rescan = 1;
+	}
+      else
+	{
+	  /* If any bits were removed from live_at_end, we'll have to
+	     rescan the block.  This wouldn't be necessary if we had
+	     precalculated local_live, however with PROP_SCAN_DEAD_CODE
+	     local_live is really dependent on live_at_end.  */
+	  CLEAR_REG_SET (tmp);
+	  rescan = bitmap_operation (tmp, bb->global_live_at_end,
+				     new_live_at_end, BITMAP_AND_COMPL);
+
+	  if (! rescan)
+	    {
+	      /* If any of the registers in the new live_at_end set are
+		 conditionally set in this basic block, we must rescan.
+	         This is because conditional lifetimes at the end of the
+		 block do not just take the live_at_end set into account,
+		 but also the liveness at the start of each successor
+		 block.  We can miss changes in those sets if we only
+		 compare the new live_at_end against the previous one.  */
+	      CLEAR_REG_SET (tmp);
+	      rescan = bitmap_operation (tmp, new_live_at_end,
+					 bb->cond_local_set, BITMAP_AND);
+	    }
+
+	  if (! rescan)
+	    {
+	      /* Find the set of changed bits.  Take this opportunity
+		 to notice that this set is empty and early out.  */
+	      CLEAR_REG_SET (tmp);
+	      changed = bitmap_operation (tmp, bb->global_live_at_end,
+					  new_live_at_end, BITMAP_XOR);
+	      if (! changed)
+		continue;
+
+	      /* If any of the changed bits overlap with local_set,
+		 we'll have to rescan the block.  Detect overlap by
+		 the AND with ~local_set turning off bits.  */
+	      rescan = bitmap_operation (tmp, tmp, bb->local_set,
+					 BITMAP_AND_COMPL);
+	    }
+	}
+
+      /* Let our caller know that BB changed enough to require its
+	 death notes updated.  */
+      if (blocks_out)
+	SET_BIT (blocks_out, bb->index);
+
+      if (! rescan)
+	{
+	  /* Add to live_at_start the set of all registers in
+	     new_live_at_end that aren't in the old live_at_end.  */
+
+	  bitmap_operation (tmp, new_live_at_end, bb->global_live_at_end,
+			    BITMAP_AND_COMPL);
+	  COPY_REG_SET (bb->global_live_at_end, new_live_at_end);
+
+	  changed = bitmap_operation (bb->global_live_at_start,
+				      bb->global_live_at_start,
+				      tmp, BITMAP_IOR);
+	  if (! changed)
+	    continue;
+	}
+      else
+	{
+	  COPY_REG_SET (bb->global_live_at_end, new_live_at_end);
+
+	  /* Rescan the block insn by insn to turn (a copy of) live_at_end
+	     into live_at_start.  */
+	  propagate_block (bb, new_live_at_end, bb->local_set,
+			   bb->cond_local_set, flags);
+
+	  /* If live_at start didn't change, no need to go farther.  */
+	  if (REG_SET_EQUAL_P (bb->global_live_at_start, new_live_at_end))
+	    continue;
+
+	  COPY_REG_SET (bb->global_live_at_start, new_live_at_end);
+	}
+
+      /* Queue all predecessors of BB so that we may re-examine
+	 their live_at_end.  */
+      for (e = bb->pred; e; e = e->pred_next)
+	{
+	  basic_block pb = e->src;
+	  if (pb->aux == NULL)
+	    {
+	      *qtail++ = pb;
+	      if (qtail == qend)
+		qtail = queue;
+	      pb->aux = pb;
+	    }
+	}
+    }
+
+  FREE_REG_SET (tmp);
+  FREE_REG_SET (new_live_at_end);
+  FREE_REG_SET (call_used);
+
+  if (blocks_out)
+    {
+      EXECUTE_IF_SET_IN_SBITMAP (blocks_out, 0, i,
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  FREE_REG_SET (bb->local_set);
+	  FREE_REG_SET (bb->cond_local_set);
+	});
+    }
+  else
+    {
+      for (i = n_basic_blocks - 1; i >= 0; --i)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  FREE_REG_SET (bb->local_set);
+	  FREE_REG_SET (bb->cond_local_set);
+	}
+    }
+
+  free (queue);
+}

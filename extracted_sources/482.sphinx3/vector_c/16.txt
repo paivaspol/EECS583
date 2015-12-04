@@ -1,0 +1,58 @@
+void vector_gautbl_eval_logs3 (vector_gautbl_t *gautbl,
+			       int32 offset,
+			       int32 count,
+			       float32 *x,
+			       int32 *score)
+{
+    int32 i, r;
+    float64 f;
+    int32 end, veclen;
+    float32 *m1, *m2, *v1, *v2;
+    float64 dval1, dval2, diff1, diff2;
+    
+    f = log_to_logs3_factor();
+    
+    /* Interleave evaluation of two vectors at a time for speed on pipelined machines */
+    end = offset + count;
+    veclen = gautbl->veclen;
+    
+    for (r = offset; r < end-1; r += 2) {
+	m1 = gautbl->mean[r];
+	m2 = gautbl->mean[r+1];
+	v1 = gautbl->var[r];
+	v2 = gautbl->var[r+1];
+	dval1 = gautbl->lrd[r];
+	dval2 = gautbl->lrd[r+1];
+
+	for (i = 0; i < veclen; i++) {
+	    diff1 = x[i] - m1[i];
+	    dval1 -= diff1 * diff1 * v1[i];
+	    diff2 = x[i] - m2[i];
+	    dval2 -= diff2 * diff2 * v2[i];
+	}
+	
+	if (dval1 < gautbl->distfloor)
+	    dval1 = gautbl->distfloor;
+	if (dval2 < gautbl->distfloor)
+	    dval2 = gautbl->distfloor;
+
+	score[r] = (int32)(f * dval1);
+	score[r+1] = (int32)(f * dval2);
+    }
+    
+    if (r < end) {
+	m1 = gautbl->mean[r];
+	v1 = gautbl->var[r];
+	dval1 = gautbl->lrd[r];
+	
+	for (i = 0; i < veclen; i++) {
+	    diff1 = x[i] - m1[i];
+	    dval1 -= diff1 * diff1 * v1[i];
+	}
+	
+	if (dval1 < gautbl->distfloor)
+	    dval1 = gautbl->distfloor;
+
+	score[r] = (int32)(f * dval1);
+    }
+}

@@ -1,0 +1,90 @@
+void do_edfit(int natoms,rvec *xp,rvec *x,matrix R)
+{
+  /* this is a copy of do_fit with some modifications */
+  int    c,r,n,j,i,irot;
+  double **omega=NULL,**om=NULL,d[6],xnr,xpc;
+  matrix vh,vk,u;
+  /*
+  matrix vh_d,vk_d;
+  */
+  int    index;
+  real   max_d;
+
+  if (omega == NULL) {
+    snew(omega,2*DIM);
+    snew(om,2*DIM);
+    for(i=0; i<2*DIM; i++) {
+      snew(omega[i],2*DIM);
+      snew(om[i],2*DIM);
+    }
+  }
+
+  for(i=0;(i<6);i++) {
+    d[i]=0;
+    for(j=0;(j<6);j++) {
+      omega[i][j]=0;
+      om[i][j]=0;
+    }
+  }
+
+  /*calculate the matrix U*/
+  clear_mat(u);
+  for(n=0;(n<natoms);n++) {
+    for(c=0; (c<DIM); c++) {
+      xpc=xp[n][c];
+      for(r=0; (r<DIM); r++) {
+	xnr=x[n][r];
+	u[c][r]+=xnr*xpc;
+      }
+    }
+  }
+  
+  /*construct omega*/
+  /*omega is symmetric -> omega==omega' */
+  for(r=0;(r<6);r++)
+    for(c=0;(c<=r);c++)
+      if ((r>=3) && (c<3)) {
+        omega[r][c]=u[r-3][c];
+        omega[c][r]=u[r-3][c];
+      }
+      else {
+        omega[r][c]=0;
+        omega[c][r]=0;
+      }
+
+  /*determine h and k*/
+  jacobi(omega,6,d,om,&irot);
+
+  if (irot==0) {
+    fprintf(stderr,"IROT=0\n");
+  }
+
+  index=0; /* For the compiler only */
+
+  for(j=0;(j<3);j++) {
+    max_d=-1000;
+    for(i=0;(i<6);i++)
+      if (d[i]>max_d) {
+        max_d=d[i];
+        index=i;
+      }
+    d[index]=-10000;
+    for(i=0;(i<3);i++) {
+      vh[j][i]=M_SQRT2*om[i][index];
+      vk[j][i]=M_SQRT2*om[i+DIM][index];
+    }
+  }
+
+  /*determine R*/
+  for(c=0;(c<3);c++)
+    for(r=0;(r<3);r++)
+      R[c][r]=vk[0][r]*vh[0][c]+
+              vk[1][r]*vh[1][c]+
+              vk[2][r]*vh[2][c];
+  if (det(R) < 0)
+    for(c=0;(c<3);c++)
+      for(r=0;(r<3);r++)
+	R[c][r]=vk[0][r]*vh[0][c]+
+	        vk[1][r]*vh[1][c]-
+	        vk[2][r]*vh[2][c];
+}

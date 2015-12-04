@@ -1,0 +1,105 @@
+static char *
+regatom(cp, flagp)
+register struct comp *cp;
+int *flagp;
+{
+	register char *ret;
+	int flags;
+
+	*flagp = WORST;		/* Tentatively. */
+
+	switch (*cp->regparse++) {
+	case '^':
+		ret = regnode(cp, BOL);
+		break;
+	case '$':
+		ret = regnode(cp, EOL);
+		break;
+	case '.':
+		ret = regnode(cp, ANY);
+		*flagp |= HASWIDTH|SIMPLE;
+		break;
+	case '[': {
+		register int range;
+		register int rangeend;
+		register int c;
+
+		if (*cp->regparse == '^') {	/* Complement of range. */
+			ret = regnode(cp, ANYBUT);
+			cp->regparse++;
+		} else
+			ret = regnode(cp, ANYOF);
+		if ((c = *cp->regparse) == ']' || c == '-') {
+			regc(cp, c);
+			cp->regparse++;
+		}
+		while ((c = *cp->regparse++) != '\0' && c != ']') {
+			if (c != '-')
+				regc(cp, c);
+			else if ((c = *cp->regparse) == ']' || c == '\0')
+				regc(cp, '-');
+			else {
+				range = (unsigned char)*(cp->regparse-2);
+				rangeend = (unsigned char)c;
+				if (range > rangeend)
+					FAIL("invalid [] range");
+				for (range++; range <= rangeend; range++)
+					regc(cp, range);
+				cp->regparse++;
+			}
+		}
+		regc(cp, '\0');
+		if (c != ']')
+			FAIL("unmatched []");
+		*flagp |= HASWIDTH|SIMPLE;
+		break;
+		}
+	case '(':
+		ret = reg(cp, 1, &flags);
+		if (ret == NULL)
+			return(NULL);
+		*flagp |= flags&(HASWIDTH|SPSTART);
+		break;
+	case '\0':
+	case '|':
+	case ')':
+		/* supposed to be caught earlier */
+		FAIL("internal error: \\0|) unexpected");
+		break;
+	case '?':
+	case '+':
+	case '*':
+		FAIL("?+* follows nothing");
+		break;
+	case '\\':
+		if (*cp->regparse == '\0')
+			FAIL("trailing \\");
+		ret = regnode(cp, EXACTLY);
+		regc(cp, *cp->regparse++);
+		regc(cp, '\0');
+		*flagp |= HASWIDTH|SIMPLE;
+		break;
+	default: {
+		register size_t len;
+		register char ender;
+
+		cp->regparse--;
+		len = strcspn(cp->regparse, META);
+		if (len == 0)
+			FAIL("internal error: strcspn 0");
+		ender = *(cp->regparse+len);
+		if (len > 1 && ISREPN(ender))
+			len--;		/* Back off clear of ?+* operand. */
+		*flagp |= HASWIDTH;
+		if (len == 1)
+			*flagp |= SIMPLE;
+		ret = regnode(cp, EXACTLY);
+		for (; len > 0; len--)
+			regc(cp, *cp->regparse++);
+		regc(cp, '\0');
+		break;
+		}
+	}
+
+	return(ret);
+}

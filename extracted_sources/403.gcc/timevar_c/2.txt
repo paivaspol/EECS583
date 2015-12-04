@@ -1,0 +1,22 @@
+void
+init_timevar ()
+{
+  if (!TIMEVAR_ENABLE)
+    return;
+
+  /* Zero all elapsed times.  */
+  memset ((void *) timevars, 0, sizeof (timevars));
+
+  /* Initialize the names of timing variables.  */
+#define DEFTIMEVAR(identifier__, name__) \
+  timevars[identifier__].name = name__;
+#include "timevar.def"
+#undef DEFTIMEVAR
+
+#ifdef USE_TIMES
+  ticks_to_msec = TICKS_TO_MSEC;
+#endif
+#ifdef USE_CLOCK
+  clocks_to_msec = CLOCKS_TO_MSEC;
+#endif
+}

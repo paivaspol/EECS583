@@ -1,0 +1,100 @@
+int read_g96_conf(FILE *fp,char *infile,t_trxframe *fr)
+{
+  static t_symtab *symtab=NULL;
+  static char line[STRLEN+1]; /* VERY DIRTY, you can not read two       *
+		               * Gromos96 trajectories at the same time */  
+  bool   bAtStart,bTime,bAtoms,bPos,bVel,bBox,bEnd,bFinished;
+  int    natoms,nbp;
+  double db1,db2,db3,db4,db5,db6,db7,db8,db9;
+
+  bAtStart = (ftell(fp) == 0);
+
+  clear_trxframe(fr,FALSE);
+  
+  if (!symtab) {
+    snew(symtab,1);
+    open_symtab(symtab);
+  }
+  
+  natoms=0;
+
+  if (bAtStart) {
+    while ( !fr->bTitle && fgets2(line,STRLEN,fp))
+      fr->bTitle = (strcmp(line,"TITLE") == 0);
+    if (fr->title)
+      fgets2(fr->title,STRLEN,fp);
+    bEnd = FALSE;
+    while (!bEnd && fgets2(line,STRLEN,fp))
+      bEnd = (strcmp(line,"END") == 0);
+    fgets2(line,STRLEN,fp);
+  }
+  
+  /* Do not get a line if we are not at the start of the file, *
+   * because without a parameter file we don't know what is in *
+   * the trajectory and we have already read the line in the   *
+   * previous call (VERY DIRTY).                               */
+  bFinished = FALSE;
+  do {
+    bTime  = (strcmp(line,"TIMESTEP") == 0);
+    bAtoms = (strcmp(line,"POSITION") == 0);
+    bPos   = (bAtoms || (strcmp(line,"POSITIONRED") == 0));
+    bVel   = (strncmp(line,"VELOCITY",8) == 0);
+    bBox   = (strcmp(line,"BOX") == 0);
+    if (bTime) {
+      if (!fr->bTime && !fr->bX) {
+	fr->bStep = bTime;
+	fr->bTime = bTime;
+	do 
+	  bFinished = (fgets2(line,STRLEN,fp) == NULL);
+	while (!bFinished && (line[0] == '#'));
+	sscanf(line,"%15d%15lf",&(fr->step),&db1);
+	fr->time = db1;
+      } else
+	bFinished = TRUE;
+    }
+    if (bPos) {
+      if (!fr->bX) {
+	fr->bAtoms = bAtoms;
+	fr->bX     = bPos;
+	natoms = read_g96_pos(line,symtab,fp,infile,fr);
+      } else
+	bFinished = TRUE;
+    }
+    if (fr->v && bVel) {
+      fr->bV = bVel;
+      natoms = read_g96_vel(line,fp,infile,fr);
+    }
+    if (bBox) {
+      fr->bBox = bBox;
+      clear_mat(fr->box);
+      bEnd = FALSE;
+      while (!bEnd && fgets2(line,STRLEN,fp)) {
+	bEnd = (strncmp(line,"END",3) == 0);
+	if (!bEnd && (line[0] != '#')) {
+	  nbp = sscanf(line,"%15lf%15lf%15lf%15lf%15lf%15lf%15lf%15lf%15lf",
+		       &db1,&db2,&db3,&db4,&db5,&db6,&db7,&db8,&db9);
+	  if (nbp < 3)
+	    fatal_error(0,"Found a BOX line, but no box in %s",infile);
+	  fr->box[XX][XX] = db1;
+	  fr->box[YY][YY] = db2;
+	  fr->box[ZZ][ZZ] = db3;
+	  if (nbp == 9) {
+	    fr->box[XX][YY] = db4;
+	    fr->box[XX][ZZ] = db5;
+	    fr->box[YY][XX] = db6;
+	    fr->box[YY][ZZ] = db7;
+	    fr->box[ZZ][XX] = db8;
+	    fr->box[ZZ][YY] = db9; 
+	  }
+	}
+      }
+      bFinished = TRUE;
+    }
+  } while (!bFinished && fgets2(line,STRLEN,fp));
+  
+  close_symtab(symtab);
+
+  fr->natoms = natoms;
+  
+  return natoms;
+}

@@ -1,0 +1,53 @@
+static void
+main_loop_serial(struct plan7_s *hmm, int seed, int nsample, 
+		 float lenmean, float lensd, int fixedlen,
+		 struct histogram_s **ret_hist, float *ret_max)
+{
+  struct histogram_s *hist;
+  struct dpmatrix_s  *mx;
+  float  randomseq[MAXABET];
+  float  p1;
+  float  max;
+  char  *seq;
+  char  *dsq;
+  float  score;
+  int    sqlen;
+  int    idx;
+  
+  /* Initialize.
+   * We assume we've already set the alphabet (safe, because
+   * HMM input sets the alphabet).
+   */
+  sre_srandom(seed);
+  P7Logoddsify(hmm, TRUE);
+  P7DefaultNullModel(randomseq, &p1);
+  hist = AllocHistogram(-200, 200, 100);
+  mx = CreatePlan7Matrix(1, hmm->M, 25, 0);
+  max = -FLT_MAX;
+
+  for (idx = 0; idx < nsample; idx++)
+    {
+				/* choose length of random sequence */
+      if (fixedlen) sqlen = fixedlen;
+      else do sqlen = (int) Gaussrandom(lenmean, lensd); while (sqlen < 1);
+				/* generate it */
+      seq = RandomSequence(Alphabet, randomseq, Alphabet_size, sqlen);
+      dsq = DigitizeSequence(seq, sqlen);
+
+      if (P7ViterbiSize(sqlen, hmm->M) <= RAMLIMIT)
+	score = P7Viterbi(dsq, sqlen, hmm, mx, NULL);
+      else
+	score = P7SmallViterbi(dsq, sqlen, hmm, mx, NULL);
+
+      AddToHistogram(hist, score);
+      if (score > max) max = score;
+
+      free(dsq); 
+      free(seq);
+    }
+
+  FreePlan7Matrix(mx);
+  *ret_hist   = hist;
+  *ret_max    = max;
+  return;
+}

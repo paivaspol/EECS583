@@ -1,0 +1,29 @@
+static void
+do_compile ()
+{
+  /* The bulk of command line switch processing.  */
+  process_options ();
+
+#ifndef SPEC_CPU
+  /* We cannot start timing until after options are processed since that
+     says if we run timers or not.  */
+  init_timevar ();
+  timevar_start (TV_TOTAL);
+#endif
+
+  /* Language-independent initialization.  Also sets up GC, identifier
+     hashes etc.  */
+  lang_independent_init ();
+
+  /* Language-dependent initialization.  Returns true on success.  */
+  if (lang_dependent_init (filename))
+    compile_file ();
+
+  finalize ();
+
+#ifndef SPEC_CPU
+  /* Stop timing and print the times.  */
+  timevar_stop (TV_TOTAL);
+  timevar_print (stderr);
+#endif
+}

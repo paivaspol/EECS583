@@ -1,0 +1,25 @@
+static int  
+read_asc17hmm(HMMFILE *hmmfp, struct plan7_s **ret_hmm)
+{
+  struct plan7_s  *hmm;     /* plan7 HMM */ 
+  struct plan9_s  *p9hmm;   /* old style 1.x HMM */
+  char   buffer[512];
+
+  /* Read the magic header; if we don't see it, then
+   * we must be out of data in the file.
+   */
+  if (feof(hmmfp->f) || fgets(buffer, 512, hmmfp->f) == NULL) return 0;
+
+  p9hmm = read_plan9_aschmm(hmmfp->f, HMMER1_7F);
+  if (p9hmm == NULL) { *ret_hmm = NULL; return 1; }
+
+  Plan9toPlan7(p9hmm, &hmm);
+
+  hmm->comlog = Strdup("[converted from an old Plan9 HMM]");
+  Plan7SetCtime(hmm);
+
+  P9FreeHMM(p9hmm);
+  Plan7Renormalize(hmm);
+ *ret_hmm = hmm;
+  return 1;
+}

@@ -1,0 +1,25 @@
+int
+_cpp_equiv_tokens (a, b)
+     const cpp_token *a, *b;
+{
+  if (a->type == b->type && a->flags == b->flags)
+    switch (TOKEN_SPELL (a))
+      {
+      default:			/* Keep compiler happy.  */
+      case SPELL_OPERATOR:
+	return 1;
+      case SPELL_CHAR:
+	return a->val.c == b->val.c; /* Character.  */
+      case SPELL_NONE:
+	return (a->type != CPP_MACRO_ARG || a->val.arg_no == b->val.arg_no);
+      case SPELL_IDENT:
+	return a->val.node == b->val.node;
+      case SPELL_NUMBER:
+      case SPELL_STRING:
+	return (a->val.str.len == b->val.str.len
+		&& !memcmp (a->val.str.text, b->val.str.text,
+			    a->val.str.len));
+      }
+
+  return 0;
+}

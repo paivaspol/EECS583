@@ -1,0 +1,186 @@
+int
+WriteSeq(FILE *outf, int outform, char *seq, SQINFO *sqinfo)
+{
+  int   numline = 0;
+  int   lines = 0, spacer = 0, width  = 50, tab = 0;
+  int   i, j, l, l1, ibase;
+  char  endstr[10];
+  char  s[100];			/* buffer for sequence  */
+  char  ss[100];		/* buffer for structure */
+  int   checksum = 0;
+  int   seqlen;   
+  int   which_case;    /* 0 = do nothing. 1 = upper case. 2 = lower case */
+  int   dostruc;		/* TRUE to print structure lines*/
+
+  which_case = 0;
+  dostruc    = FALSE;		
+  seqlen     = (sqinfo->flags & SQINFO_LEN) ? sqinfo->len : strlen(seq);
+
+  if (IsAlignmentFormat(outform)) 
+    Die("Tried to write an aligned format with WriteSeq() -- bad, bad.");
+
+
+  strcpy( endstr,"");
+  l1 = 0;
+  checksum = GCGchecksum(seq, seqlen);
+
+  switch (outform) {
+  case SQFILE_UNKNOWN:    /* no header, just sequence */
+    strcpy(endstr,"\n"); /* end w/ extra blank line */
+    break;
+
+  case SQFILE_GENBANK:
+    fprintf(outf,"LOCUS       %s       %d bp\n", 
+	    sqinfo->name, seqlen);
+    fprintf(outf,"ACCESSION   %s\n", 
+	    (sqinfo->flags & SQINFO_ACC) ? sqinfo->acc : ".");
+    fprintf(outf,"DEFINITION  %s\n", 
+	    (sqinfo->flags & SQINFO_DESC) ? sqinfo->desc : ".");
+    fprintf(outf,"VERSION     %s\n", 
+	    (sqinfo->flags & SQINFO_ID) ? sqinfo->id : ".");
+    fprintf(outf,"ORIGIN      \n");
+    spacer = 11;
+    numline = 1;
+    strcpy(endstr, "\n//");
+    break;
+
+  case SQFILE_GCGDATA:
+    fprintf(outf, ">>>>%s  9/95  ASCII  Len: %d\n", sqinfo->name, seqlen);
+    fprintf(outf, "%s\n", (sqinfo->flags & SQINFO_DESC) ? sqinfo->desc : "-");
+    break;
+
+  case SQFILE_PIR:
+    fprintf(outf, "ENTRY          %s\n", 
+	    (sqinfo->flags & SQINFO_ID) ? sqinfo->id : sqinfo->name);
+    fprintf(outf, "TITLE          %s\n", 
+	    (sqinfo->flags & SQINFO_DESC) ? sqinfo->desc : "-");
+    fprintf(outf, "ACCESSION      %s\n",
+	    (sqinfo->flags & SQINFO_ACC) ? sqinfo->acc : "-");
+    fprintf(outf, "SUMMARY                                #Length %d  #Checksum  %d\n",
+	    sqinfo->len, checksum);
+    fprintf(outf, "SEQUENCE\n");
+    fprintf(outf, "                  5        10        15        20        25        30\n");
+    spacer  = 2;		/* spaces after every residue */
+    numline = 1;              /* number lines w/ coords     */
+    width   = 30;             /* 30 aa per line             */
+    strcpy(endstr, "\n///");
+    break;
+
+  case SQFILE_SQUID:
+    fprintf(outf, "NAM  %s\n", sqinfo->name);
+    if (sqinfo->flags & (SQINFO_ID | SQINFO_ACC | SQINFO_START | SQINFO_STOP | SQINFO_OLEN))
+      fprintf(outf, "SRC  %s %s %d..%d::%d\n",
+	      (sqinfo->flags & SQINFO_ID)    ? sqinfo->id     : "-",
+	      (sqinfo->flags & SQINFO_ACC)   ? sqinfo->acc    : "-",
+	      (sqinfo->flags & SQINFO_START) ? sqinfo->start  : 0,
+	      (sqinfo->flags & SQINFO_STOP)  ? sqinfo->stop   : 0,
+	      (sqinfo->flags & SQINFO_OLEN)  ? sqinfo->olen   : 0);
+    if (sqinfo->flags & SQINFO_DESC)
+      fprintf(outf, "DES  %s\n", sqinfo->desc);
+    if (sqinfo->flags & SQINFO_SS)
+      {
+	fprintf(outf, "SEQ  +SS\n");
+	dostruc = TRUE;	/* print structure lines too */
+      }
+    else
+      fprintf(outf, "SEQ\n");
+    numline = 1;                /* number seq lines w/ coords  */
+    strcpy(endstr, "\n++");
+    break;
+
+  case SQFILE_EMBL:
+    fprintf(outf,"ID   %s\n",
+	    (sqinfo->flags & SQINFO_ID) ? sqinfo->id : sqinfo->name);
+    fprintf(outf,"AC   %s\n",
+	    (sqinfo->flags & SQINFO_ACC) ? sqinfo->acc : "-");
+    fprintf(outf,"DE   %s\n", 
+	    (sqinfo->flags & SQINFO_DESC) ? sqinfo->desc : "-");
+    fprintf(outf,"SQ             %d BP\n", seqlen);
+    strcpy(endstr, "\n//"); /* 11Oct90: bug fix*/
+    tab = 5;     /** added 31jan91 */
+    spacer = 11; /** added 31jan91 */
+    break;
+
+  case SQFILE_GCG:
+    fprintf(outf,"%s\n", sqinfo->name);
+    if (sqinfo->flags & SQINFO_ACC)
+      fprintf(outf,"ACCESSION   %s\n", sqinfo->acc); 
+    if (sqinfo->flags & SQINFO_DESC)
+      fprintf(outf,"DEFINITION  %s\n", sqinfo->desc);
+    fprintf(outf,"    %s  Length: %d  (today)  Check: %d  ..\n", 
+	    sqinfo->name, seqlen, checksum);
+    spacer = 11;
+    numline = 1;
+    strcpy(endstr, "\n");  /* this is insurance to help prevent misreads at eof */
+    break;
+
+  case SQFILE_STRIDER: /* ?? map ?*/
+    fprintf(outf,"; ### from DNA Strider ;-)\n");
+    fprintf(outf,"; DNA sequence  %s, %d bases, %d checksum.\n;\n", 
+	    sqinfo->name, seqlen, checksum);
+    strcpy(endstr, "\n//");
+    break;
+
+    /* SRE: Don had Zuker default to Pearson, which is not
+			   intuitive or helpful, since Zuker's MFOLD can't read
+			   Pearson format. More useful to use kIG */
+  case SQFILE_ZUKER:
+    which_case = 1;			/* MFOLD requires upper case. */
+    /*FALLTHRU*/
+  case SQFILE_IG:
+    fprintf(outf,";%s %s\n", 
+	    sqinfo->name,
+	    (sqinfo->flags & SQINFO_DESC) ? sqinfo->desc : "");
+    fprintf(outf,"%s\n", sqinfo->name);
+    strcpy(endstr,"1"); /* == linear dna */
+    break;
+
+  case SQFILE_RAW:			/* Raw: no header at all. */
+    break;
+
+  default :
+  case SQFILE_FASTA:
+    fprintf(outf,">%s %s\n", sqinfo->name,
+	    (sqinfo->flags & SQINFO_DESC)  ? sqinfo->desc   : "");
+    break;
+  }
+
+  if (which_case == 1) s2upper(seq);
+  if (which_case == 2) s2lower(seq);
+
+
+  width = MIN(width,100);
+  for (i=0, l=0, ibase = 1, lines = 0; i < seqlen; ) {
+    if (l1 < 0) l1 = 0;
+    else if (l1 == 0) {
+      if (numline) fprintf(outf,"%8d ",ibase);
+      for (j=0; j<tab; j++) fputc(' ',outf);
+    }
+    if ((spacer != 0) && ((l+1) % spacer == 1)) 
+      { s[l] = ' '; ss[l] = ' '; l++; }
+    s[l]  = seq[i];
+    ss[l] = (sqinfo->flags & SQINFO_SS) ? sqinfo->ss[i] : '.';
+    l++; i++;
+    l1++;                 /* don't count spaces for width*/
+    if (l1 == width || i == seqlen) {
+      s[l] = ss[l] = '\0';
+      l = 0; l1 = 0;
+      if (dostruc)
+	{
+	  fprintf(outf, "%s\n", s);
+	  if (numline) fprintf(outf,"         ");
+	  for (j=0; j<tab; j++) fputc(' ',outf);
+	  if (i == seqlen) fprintf(outf,"%s%s\n",ss,endstr);
+	  else fprintf(outf,"%s\n",ss);
+	}
+      else
+	{
+	  if (i == seqlen) fprintf(outf,"%s%s\n",s,endstr);
+	  else fprintf(outf,"%s\n",s);
+	}
+      lines++;
+      ibase = i+1;
+    }
+  }
+  return lines;
+} 

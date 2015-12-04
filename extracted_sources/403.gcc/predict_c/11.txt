@@ -1,0 +1,89 @@
+static void
+propagate_freq (head)
+     basic_block head;
+{
+  basic_block bb = head;
+  basic_block last = bb;
+  edge e;
+  basic_block nextbb;
+  int n;
+
+  /* For each basic block we need to visit count number of his predecessors
+     we need to visit first.  */
+  for (n = 0; n < n_basic_blocks; n++)
+    {
+      basic_block bb = BASIC_BLOCK (n);
+      if (BLOCK_INFO (bb)->tovisit)
+	{
+	  int count = 0;
+
+	  for (e = bb->pred; e; e = e->pred_next)
+	    if (BLOCK_INFO (e->src)->tovisit && !(e->flags & EDGE_DFS_BACK))
+	      count++;
+	    else if (BLOCK_INFO (e->src)->tovisit
+		     && rtl_dump_file && !EDGE_INFO (e)->back_edge)
+	      fprintf (rtl_dump_file,
+		       "Irreducible region hit, ignoring edge to %i->%i\n",
+		       e->src->index, bb->index);
+	  BLOCK_INFO (bb)->npredecessors = count;
+	}
+    }
+
+  BLOCK_INFO (head)->frequency = 1;
+  for (; bb; bb = nextbb)
+    {
+      double cyclic_probability = 0, frequency = 0;
+
+      nextbb = BLOCK_INFO (bb)->next;
+      BLOCK_INFO (bb)->next = NULL;
+
+      /* Compute frequency of basic block.  */
+      if (bb != head)
+	{
+#ifdef ENABLE_CHECKING
+	  for (e = bb->pred; e; e = e->pred_next)
+	    if (BLOCK_INFO (e->src)->tovisit && !(e->flags & EDGE_DFS_BACK))
+	      abort ();
+#endif
+
+	  for (e = bb->pred; e; e = e->pred_next)
+	    if (EDGE_INFO (e)->back_edge)
+	      cyclic_probability += EDGE_INFO (e)->back_edge_prob;
+	    else if (!(e->flags & EDGE_DFS_BACK))
+	      frequency += (e->probability
+			    * BLOCK_INFO (e->src)->frequency /
+			    REG_BR_PROB_BASE);
+
+	  if (cyclic_probability > 1.0 - 1.0 / REG_BR_PROB_BASE)
+	    cyclic_probability = 1.0 - 1.0 / REG_BR_PROB_BASE;
+
+	  BLOCK_INFO (bb)->frequency = frequency / (1 - cyclic_probability);
+	}
+
+      BLOCK_INFO (bb)->tovisit = 0;
+
+      /* Compute back edge frequencies.  */
+      for (e = bb->succ; e; e = e->succ_next)
+	if (e->dest == head)
+	  EDGE_INFO (e)->back_edge_prob
+	    = ((e->probability * BLOCK_INFO (bb)->frequency)
+	       / REG_BR_PROB_BASE);
+
+      /* Propagate to successor blocks.  */
+      for (e = bb->succ; e; e = e->succ_next)
+	if (!(e->flags & EDGE_DFS_BACK)
+	    && BLOCK_INFO (e->dest)->npredecessors)
+	  {
+	    BLOCK_INFO (e->dest)->npredecessors--;
+	    if (!BLOCK_INFO (e->dest)->npredecessors)
+	      {
+		if (!nextbb)
+		  nextbb = e->dest;
+		else
+		  BLOCK_INFO (last)->next = e->dest;
+
+		last = e->dest;
+	      }
+	   }
+    }
+}

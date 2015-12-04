@@ -1,0 +1,18 @@
+static int
+read_bin_string(FILE *fp, int doswap, char **ret_s)
+{
+  char *s;
+  int   len;
+
+  if (! fread((char *) &len, sizeof(int), 1, fp))  return 0;
+  if (doswap) byteswap((char *)&len, sizeof(int)); 
+  s = MallocOrDie (sizeof(char) * (len));
+  if (! fread((char *) s, sizeof(char), len, fp)) 
+    {
+      free(s);
+      return 0;
+    }
+
+  *ret_s = s;
+  return 1;
+}

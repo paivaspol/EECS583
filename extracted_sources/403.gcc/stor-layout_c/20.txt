@@ -1,0 +1,77 @@
+void
+set_sizetype (type)
+     tree type;
+{
+  int oprecision = TYPE_PRECISION (type);
+  /* The *bitsizetype types use a precision that avoids overflows when
+     calculating signed sizes / offsets in bits.  However, when
+     cross-compiling from a 32 bit to a 64 bit host, we are limited to 64 bit
+     precision.  */
+  int precision = MIN (oprecision + BITS_PER_UNIT_LOG + 1,
+		       2 * HOST_BITS_PER_WIDE_INT);
+  unsigned int i;
+  tree t;
+
+  if (sizetype_set)
+    abort ();
+
+  /* Make copies of nodes since we'll be setting TYPE_IS_SIZETYPE.  */
+  sizetype = copy_node (type);
+  TYPE_DOMAIN (sizetype) = type;
+  TYPE_IS_SIZETYPE (sizetype) = 1;
+  bitsizetype = make_node (INTEGER_TYPE);
+  TYPE_NAME (bitsizetype) = TYPE_NAME (type);
+  TYPE_PRECISION (bitsizetype) = precision;
+  TYPE_IS_SIZETYPE (bitsizetype) = 1;
+
+  if (TREE_UNSIGNED (type))
+    fixup_unsigned_type (bitsizetype);
+  else
+    fixup_signed_type (bitsizetype);
+
+  layout_type (bitsizetype);
+
+  if (TREE_UNSIGNED (type))
+    {
+      usizetype = sizetype;
+      ubitsizetype = bitsizetype;
+      ssizetype = copy_node (make_signed_type (oprecision));
+      sbitsizetype = copy_node (make_signed_type (precision));
+    }
+  else
+    {
+      ssizetype = sizetype;
+      sbitsizetype = bitsizetype;
+      usizetype = copy_node (make_unsigned_type (oprecision));
+      ubitsizetype = copy_node (make_unsigned_type (precision));
+    }
+
+  TYPE_NAME (bitsizetype) = get_identifier ("bit_size_type");
+
+  /* Show is a sizetype, is a main type, and has no pointers to it.  */
+  for (i = 0; i < ARRAY_SIZE (sizetype_tab); i++)
+    {
+      TYPE_IS_SIZETYPE (sizetype_tab[i]) = 1;
+      TYPE_MAIN_VARIANT (sizetype_tab[i]) = sizetype_tab[i];
+      TYPE_NEXT_VARIANT (sizetype_tab[i]) = 0;
+      TYPE_POINTER_TO (sizetype_tab[i]) = 0;
+      TYPE_REFERENCE_TO (sizetype_tab[i]) = 0;
+    }
+
+  ggc_add_tree_root ((tree *) &sizetype_tab,
+		     sizeof sizetype_tab / sizeof (tree));
+
+  /* Go down each of the types we already made and set the proper type
+     for the sizes in them.  */
+  for (t = early_type_list; t != 0; t = TREE_CHAIN (t))
+    {
+      if (TREE_CODE (TREE_VALUE (t)) != INTEGER_TYPE)
+	abort ();
+
+      TREE_TYPE (TYPE_SIZE (TREE_VALUE (t))) = bitsizetype;
+      TREE_TYPE (TYPE_SIZE_UNIT (TREE_VALUE (t))) = sizetype;
+    }
+
+  early_type_list = 0;
+  sizetype_set = 1;
+}

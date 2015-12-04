@@ -1,0 +1,37 @@
+void print_grid(FILE *log,t_grid *grid,bool bDD,int cg_index[])
+{
+  int i,nra,index;
+  int ix,iy,iz,ci;
+
+  if(log)
+  {
+      fprintf(log,"nr:    %d\n",grid->nr);
+      fprintf(log,"nrx:   %d\n",grid->nrx);
+      fprintf(log,"nry:   %d\n",grid->nry);
+      fprintf(log,"nrz:   %d\n",grid->nrz);
+      fprintf(log,"delta: %d\n",grid->delta);
+      fprintf(log,"gmax:  %d\n",grid->gmax);
+      fprintf(log,"    i  cell_index\n");
+      for(i=0; (i<grid->nr); i++)
+          fprintf(log,"%5d  %5d\n",i,grid->cell_index[i]);
+      fprintf(log,"cells\n");
+      fprintf(log," ix iy iz   nr  index  cgs...\n");
+      ci=0;
+      for(ix=0; (ix<grid->nrx); ix++)
+      {
+          for(iy=0; (iy<grid->nry); iy++)
+          {
+              for(iz=0; (iz<grid->nrz); iz++,ci++) 
+              {
+                  index=grid->index[ci];
+                  nra=grid->nra[ci];
+                  fprintf(log,"%3d%3d%3d%5d%5d",ix,iy,iz,nra,index);
+                  for(i=0; (i<nra); i++)
+                      fprintf(log,"%5d",grid->a[index+i]);
+                  fprintf(log,"\n");
+              }
+          }
+      }
+      fflush(log);
+  }
+}

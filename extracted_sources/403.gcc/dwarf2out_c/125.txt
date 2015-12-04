@@ -1,0 +1,14 @@
+static void
+add_sibling_attributes (die)
+     dw_die_ref die;
+{
+  dw_die_ref c;
+
+  if (die->die_tag != DW_TAG_compile_unit
+      && die->die_sib && die->die_child != NULL)
+    /* Add the sibling link to the front of the attribute list.  */
+    add_AT_die_ref (die, DW_AT_sibling, die->die_sib);
+
+  for (c = die->die_child; c != NULL; c = c->die_sib)
+    add_sibling_attributes (c);
+}

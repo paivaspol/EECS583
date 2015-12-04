@@ -1,0 +1,13 @@
+static SV*
+check_handler(pTHX_ SV* h)
+{
+    if (SvROK(h)) {
+	SV* myref = SvRV(h);
+	if (SvTYPE(myref) == SVt_PVCV)
+	    return newSVsv(h);
+	if (SvTYPE(myref) == SVt_PVAV)
+	    return SvREFCNT_inc(myref);
+	croak("Only code or array references allowed as handler");
+    }
+    return SvOK(h) ? newSVsv(h) : 0;
+}

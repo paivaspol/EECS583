@@ -1,0 +1,19 @@
+static void
+mark_reg (reg, xset)
+     rtx reg;
+     void *xset;
+{
+  regset set = (regset) xset;
+  int regno = REGNO (reg);
+
+  if (GET_MODE (reg) == BLKmode)
+    abort ();
+
+  SET_REGNO_REG_SET (set, regno);
+  if (regno < FIRST_PSEUDO_REGISTER)
+    {
+      int n = HARD_REGNO_NREGS (regno, GET_MODE (reg));
+      while (--n > 0)
+	SET_REGNO_REG_SET (set, regno + n);
+    }
+}

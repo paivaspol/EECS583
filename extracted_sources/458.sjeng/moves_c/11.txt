@@ -1,0 +1,37 @@
+void push_slidE (int target) {
+
+  /* add moves for sliding pieces to the moves array */
+
+  int offset;
+  int mycolor;
+  
+  /* check to see if we have gone off the board first: */
+  /* init variables: */
+  offset = target - gfrom;
+  mycolor = board[gfrom]&1;
+  
+  /* loop until we hit the edge of the board, or another piece: */
+  do {
+    /* case when the target is an empty square: */
+    if (board[target] == npiece) {
+      if (!captures) {
+      add_move(target, 0);
+      }
+      target += offset;
+    }
+
+    /* case when an enemy piece is hit: */
+    else if ((board[target]&1) != mycolor) {
+      add_capture(target, board[target], 0, FALSE);
+      break;
+    }
+
+    /* otherwise, we have hit a friendly piece (or edge of board): */
+    else
+      break;
+  } while (board[target] != frame);
+
+  /* we have finished generating all of the sliding moves, so return: */
+  return;
+
+}

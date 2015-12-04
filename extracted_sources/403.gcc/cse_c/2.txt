@@ -1,0 +1,27 @@
+static int
+approx_reg_cost (x)
+     rtx x;
+{
+  regset_head set;
+  int i;
+  int cost = 0;
+  int hardregs = 0;
+
+  INIT_REG_SET (&set);
+  for_each_rtx (&x, approx_reg_cost_1, (void *)&set);
+
+  EXECUTE_IF_SET_IN_REG_SET
+    (&set, 0, i,
+     {
+       if (! CHEAP_REGNO (i))
+	 {
+	   if (i < FIRST_PSEUDO_REGISTER)
+	     hardregs++;
+
+	   cost += i < FIRST_PSEUDO_REGISTER ? 2 : 1;
+	 }
+     });
+
+  CLEAR_REG_SET (&set);
+  return hardregs && SMALL_REGISTER_CLASSES ? MAX_COST : cost;
+}

@@ -1,0 +1,25 @@
+static int
+iv_add_mult_cost (b, m, a, reg)
+     rtx b;          /* initial value of basic induction variable */
+     rtx m;          /* multiplicative constant */
+     rtx a;          /* additive constant */
+     rtx reg;        /* destination register */
+{
+  int cost = 0;
+  rtx last, result;
+
+  start_sequence ();
+  result = expand_mult_add (b, reg, m, a, GET_MODE (reg), 1);
+  if (reg != result)
+    emit_move_insn (reg, result);
+  last = get_last_insn ();
+  while (last)
+    {
+      rtx t = single_set (last);
+      if (t)
+	cost += rtx_cost (SET_SRC (t), SET);
+      last = PREV_INSN (last);
+    }
+  end_sequence ();
+  return cost;
+}

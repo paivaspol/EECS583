@@ -1,0 +1,22 @@
+static void
+init_library ()
+{
+  static int initialized = 0;
+
+  if (! initialized)
+    {
+      initialized = 1;
+
+#ifdef HOST_EBCDIC
+      /* For non-ASCII hosts, the cl_options array needs to be sorted at
+	 runtime.  */
+      specqsort (cl_options, N_OPTS, sizeof (struct cl_option), opt_comp);
+/* MJP Global replacement of qsort with specqsort */
+#endif
+
+      /* Set up the trigraph map.  This doesn't need to do anything if
+	 we were compiled with a compiler that supports C99 designated
+	 initializers.  */
+      init_trigraph_map ();
+    }
+}

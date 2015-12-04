@@ -1,0 +1,25 @@
+void copy_latvec(field_offset src,field_offset dest,int parity){
+register int i;
+register site *s;
+register su3_vector *spt,*dpt;
+    switch(parity){
+	case EVEN: FOREVENSITES(i,s){
+		s = &(lattice[i]);
+		spt = (su3_vector *)F_PT(s,src);
+		dpt = (su3_vector *)F_PT(s,dest);
+		*dpt = *spt;
+	    } break;
+	case ODD: FORODDSITES(i,s){
+		s = &(lattice[i]);
+		spt = (su3_vector *)F_PT(s,src);
+		dpt = (su3_vector *)F_PT(s,dest);
+		*dpt = *spt;
+	    } break;
+	case EVENANDODD: FORALLSITES(i,s){
+		s = &(lattice[i]);
+		spt = (su3_vector *)F_PT(s,src);
+		dpt = (su3_vector *)F_PT(s,dest);
+		*dpt = *spt;
+	    } break;
+    } 
+}

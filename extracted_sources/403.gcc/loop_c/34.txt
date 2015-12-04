@@ -1,0 +1,21 @@
+static int
+loop_reg_used_before_p (loop, set, insn)
+     const struct loop *loop;
+     rtx set, insn;
+{
+  rtx reg = SET_DEST (set);
+  rtx p;
+
+  /* Scan forward checking for register usage.  If we hit INSN, we
+     are done.  Otherwise, if we hit LOOP->END, wrap around to LOOP->START.  */
+  for (p = loop->scan_start; p != insn; p = NEXT_INSN (p))
+    {
+      if (INSN_P (p) && reg_overlap_mentioned_p (reg, PATTERN (p)))
+	return 1;
+
+      if (p == loop->end)
+	p = loop->start;
+    }
+
+  return 0;
+}

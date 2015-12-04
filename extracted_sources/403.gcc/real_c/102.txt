@@ -1,0 +1,21 @@
+static void
+efrexp (x, exp, s)
+     const UEMUSHORT x[];
+     int *exp;
+     UEMUSHORT s[];
+{
+  UEMUSHORT xi[NI];
+  EMULONG li;
+
+  emovi (x, xi);
+  /*  Handle denormalized numbers properly using long integer exponent.  */
+  li = (EMULONG) ((EMUSHORT) xi[1]);
+
+  if (li == 0)
+    {
+      li -= enormlz (xi);
+    }
+  xi[1] = 0x3ffe;
+  emovo (xi, s);
+  *exp = (int) (li - 0x3ffe);
+}

@@ -1,0 +1,84 @@
+static dw_die_ref
+base_type_die (type)
+     tree type;
+{
+  dw_die_ref base_type_result;
+  const char *type_name;
+  enum dwarf_type encoding;
+  tree name = TYPE_NAME (type);
+
+  if (TREE_CODE (type) == ERROR_MARK || TREE_CODE (type) == VOID_TYPE)
+    return 0;
+
+  if (name)
+    {
+      if (TREE_CODE (name) == TYPE_DECL)
+	name = DECL_NAME (name);
+
+      type_name = IDENTIFIER_POINTER (name);
+    }
+  else
+    type_name = "__unknown__";
+
+  switch (TREE_CODE (type))
+    {
+    case INTEGER_TYPE:
+      /* Carefully distinguish the C character types, without messing
+         up if the language is not C. Note that we check only for the names
+         that contain spaces; other names might occur by coincidence in other
+         languages.  */
+      if (! (TYPE_PRECISION (type) == CHAR_TYPE_SIZE
+	     && (type == char_type_node
+		 || ! strcmp (type_name, "signed char")
+		 || ! strcmp (type_name, "unsigned char"))))
+	{
+	  if (TREE_UNSIGNED (type))
+	    encoding = DW_ATE_unsigned;
+	  else
+	    encoding = DW_ATE_signed;
+	  break;
+	}
+      /* else fall through.  */
+
+    case CHAR_TYPE:
+      /* GNU Pascal/Ada CHAR type.  Not used in C.  */
+      if (TREE_UNSIGNED (type))
+	encoding = DW_ATE_unsigned_char;
+      else
+	encoding = DW_ATE_signed_char;
+      break;
+
+    case REAL_TYPE:
+      encoding = DW_ATE_float;
+      break;
+
+      /* Dwarf2 doesn't know anything about complex ints, so use
+	 a user defined type for it.  */
+    case COMPLEX_TYPE:
+      if (TREE_CODE (TREE_TYPE (type)) == REAL_TYPE)
+	encoding = DW_ATE_complex_float;
+      else
+	encoding = DW_ATE_lo_user;
+      break;
+
+    case BOOLEAN_TYPE:
+      /* GNU FORTRAN/Ada/C++ BOOLEAN type.  */
+      encoding = DW_ATE_boolean;
+      break;
+
+    default:
+      /* No other TREE_CODEs are Dwarf fundamental types.  */
+      abort ();
+    }
+
+  base_type_result = new_die (DW_TAG_base_type, comp_unit_die, type);
+  if (demangle_name_func)
+    type_name = (*demangle_name_func) (type_name);
+
+  add_AT_string (base_type_result, DW_AT_name, type_name);
+  add_AT_unsigned (base_type_result, DW_AT_byte_size,
+		   int_size_in_bytes (type));
+  add_AT_unsigned (base_type_result, DW_AT_encoding, encoding);
+
+  return base_type_result;
+}

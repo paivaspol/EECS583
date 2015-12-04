@@ -1,0 +1,62 @@
+static void
+store_unaligned_arguments_into_pseudos (args, num_actuals)
+     struct arg_data *args;
+     int num_actuals;
+{
+  int i, j;
+
+  for (i = 0; i < num_actuals; i++)
+    if (args[i].reg != 0 && ! args[i].pass_on_stack
+	&& args[i].mode == BLKmode
+	&& (TYPE_ALIGN (TREE_TYPE (args[i].tree_value))
+	    < (unsigned int) MIN (BIGGEST_ALIGNMENT, BITS_PER_WORD)))
+      {
+	int bytes = int_size_in_bytes (TREE_TYPE (args[i].tree_value));
+	int big_endian_correction = 0;
+
+	args[i].n_aligned_regs
+	  = args[i].partial ? args[i].partial
+	    : (bytes + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD;
+
+	args[i].aligned_regs = (rtx *) xmalloc (sizeof (rtx)
+						* args[i].n_aligned_regs);
+
+	/* Structures smaller than a word are aligned to the least
+	   significant byte (to the right).  On a BYTES_BIG_ENDIAN machine,
+	   this means we must skip the empty high order bytes when
+	   calculating the bit offset.  */
+	if (BYTES_BIG_ENDIAN
+	    && !FUNCTION_ARG_REG_LITTLE_ENDIAN
+	    && bytes < UNITS_PER_WORD)
+	  big_endian_correction = (BITS_PER_WORD  - (bytes * BITS_PER_UNIT));
+
+	for (j = 0; j < args[i].n_aligned_regs; j++)
+	  {
+	    rtx reg = gen_reg_rtx (word_mode);
+	    rtx word = operand_subword_force (args[i].value, j, BLKmode);
+	    int bitsize = MIN (bytes * BITS_PER_UNIT, BITS_PER_WORD);
+
+	    args[i].aligned_regs[j] = reg;
+
+	    /* There is no need to restrict this code to loading items
+	       in TYPE_ALIGN sized hunks.  The bitfield instructions can
+	       load up entire word sized registers efficiently.
+
+	       ??? This may not be needed anymore.
+	       We use to emit a clobber here but that doesn't let later
+	       passes optimize the instructions we emit.  By storing 0 into
+	       the register later passes know the first AND to zero out the
+	       bitfield being set in the register is unnecessary.  The store
+	       of 0 will be deleted as will at least the first AND.  */
+
+	    emit_move_insn (reg, const0_rtx);
+
+	    bytes -= bitsize / BITS_PER_UNIT;
+	    store_bit_field (reg, bitsize, big_endian_correction, word_mode,
+			     extract_bit_field (word, bitsize, 0, 1, NULL_RTX,
+						word_mode, word_mode,
+						BITS_PER_WORD),
+			     BITS_PER_WORD);
+	  }
+      }
+}

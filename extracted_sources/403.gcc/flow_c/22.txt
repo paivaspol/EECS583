@@ -1,0 +1,47 @@
+int
+propagate_block (bb, live, local_set, cond_local_set, flags)
+     basic_block bb;
+     regset live;
+     regset local_set;
+     regset cond_local_set;
+     int flags;
+{
+  struct propagate_block_info *pbi;
+  rtx insn, prev;
+  int changed;
+
+  pbi = init_propagate_block_info (bb, live, local_set, cond_local_set, flags);
+
+  if (flags & PROP_REG_INFO)
+    {
+      int i;
+
+      /* Process the regs live at the end of the block.
+	 Mark them as not local to any one basic block.  */
+      EXECUTE_IF_SET_IN_REG_SET (live, 0, i,
+				 { REG_BASIC_BLOCK (i) = REG_BLOCK_GLOBAL; });
+    }
+
+  /* Scan the block an insn at a time from end to beginning.  */
+
+  changed = 0;
+  for (insn = bb->end;; insn = prev)
+    {
+      /* If this is a call to `setjmp' et al, warn if any
+	 non-volatile datum is live.  */
+      if ((flags & PROP_REG_INFO)
+	  && GET_CODE (insn) == CALL_INSN
+	  && find_reg_note (insn, REG_SETJMP, NULL))
+	IOR_REG_SET (regs_live_at_setjmp, pbi->reg_live);
+
+      prev = propagate_one_insn (pbi, insn);
+      changed |= NEXT_INSN (prev) != insn;
+
+      if (insn == bb->head)
+	break;
+    }
+
+  free_propagate_block_info (pbi);
+
+  return changed;
+}

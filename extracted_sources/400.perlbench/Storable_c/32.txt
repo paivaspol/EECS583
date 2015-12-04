@@ -1,0 +1,34 @@
+static int store_other(pTHX_ stcxt_t *cxt, SV *sv)
+{
+	I32 len;
+	static char buf[80];
+
+	TRACEME(("store_other"));
+
+	/*
+	 * Fetch the value from perl only once per store() operation.
+	 */
+
+	if (
+		cxt->forgive_me == 0 ||
+		(cxt->forgive_me < 0 && !(cxt->forgive_me =
+			SvTRUE(get_sv("Storable::forgive_me", TRUE)) ? 1 : 0))
+	)
+		CROAK(("Can't store %s items", sv_reftype(sv, FALSE)));
+
+	warn("Can't store item %s(0x%"UVxf")",
+		sv_reftype(sv, FALSE), PTR2UV(sv));
+
+	/*
+	 * Store placeholder string as a scalar instead...
+	 */
+
+	(void) sprintf(buf, "You lost %s(0x%"UVxf")%c", sv_reftype(sv, FALSE),
+		       PTR2UV(sv), (char) 0);
+
+	len = strlen(buf);
+	STORE_SCALAR(buf, len);
+	TRACEME(("ok (dummy \"%s\", length = %"IVdf")", buf, (IV) len));
+
+	return 0;
+}

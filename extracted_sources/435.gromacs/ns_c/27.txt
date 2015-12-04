@@ -1,0 +1,75 @@
+static int ns_simple_core(t_forcerec *fr,
+			  t_topology *top,
+			  t_mdatoms *md,
+			  matrix box,rvec box_size,
+			  t_excl bexcl[],
+			  int ngid,t_ns_buf **ns_buf,
+			  bool bHaveLJ[])
+{
+  static   atom_id  *aaj=NULL;
+  int      naaj,k;
+  real     rlist2;
+  int      nsearch,icg,jcg,i0,nri,nn;
+  t_ns_buf *nsbuf;
+  /* atom_id  *i_atoms; */
+  t_block  *cgs=&(top->blocks[ebCGS]);
+  t_block  *excl=&(top->atoms.excl);
+  rvec     b_inv;
+  int      m;
+  bool     bBox,bTriclinic,*i_eg_excl;
+  
+  if (aaj==NULL) {
+    snew(aaj,2*cgs->nr);
+    for(jcg=0; (jcg<cgs->nr); jcg++) {
+      aaj[jcg]=jcg;
+      aaj[jcg+cgs->nr]=jcg;
+    }
+  }
+  rlist2 = sqr(fr->rlist);
+
+  bBox = (fr->ePBC != epbcNONE);
+  if (bBox)
+    for(m=0; (m<DIM); m++)
+      b_inv[m]=divide(1.0,box_size[m]);
+  bTriclinic = TRICLINIC(box);
+
+  nsearch=0;
+  for (icg=fr->cg0; (icg<fr->hcg); icg++) {
+    /*
+    i0        = cgs->index[icg];
+    nri       = cgs->index[icg+1]-i0;
+    i_atoms   = &(cgs->a[i0]);
+    i_eg_excl = fr->eg_excl + ngid*md->cENER[*i_atoms];
+    setexcl(nri,i_atoms,excl,TRUE,bexcl);
+    */
+    i_eg_excl = fr->eg_excl + ngid*md->cENER[cgs->index[icg]];
+    setexcl(cgs->index[icg],cgs->index[icg+1],excl,TRUE,bexcl);
+    
+    naaj=calc_naaj(icg,cgs->nr);
+    if (bTriclinic)
+      ns_inner_tric(fr->cg_cm,icg,i_eg_excl,naaj,&(aaj[icg]),
+		    box,b_inv,rlist2,cgs,ns_buf,md->cENER,
+		    bHaveLJ,ngid,md,bexcl,fr);
+    else
+      ns_inner_rect(fr->cg_cm,icg,i_eg_excl,naaj,&(aaj[icg]),
+		    bBox,box_size,b_inv,rlist2,cgs,ns_buf,md->cENER,
+		    bHaveLJ,ngid,md,bexcl,fr);
+    nsearch += naaj;
+    
+    for(nn=0; (nn<ngid); nn++) {
+      for(k=0; (k<SHIFTS); k++) {
+	nsbuf = &(ns_buf[nn][k]);
+	if (nsbuf->ncg > 0) {
+	  put_in_list(bHaveLJ,ngid,md,icg,nn,nsbuf->ncg,nsbuf->jcg,
+		      cgs->index,/* cgs->a, */ bexcl,k,fr,FALSE,FALSE,FALSE);
+	  nsbuf->ncg=nsbuf->nj=0;
+	}
+      }
+    }
+    /* setexcl(nri,i_atoms,excl,FALSE,bexcl); */
+    setexcl(cgs->index[icg],cgs->index[icg+1],excl,FALSE,bexcl);
+  }
+  close_neighbor_list(fr,FALSE,-1);
+  
+  return nsearch;
+}

@@ -1,0 +1,61 @@
+static void feat_s2_4x_cep2feat (feat_t *fcb, float32 **mfc, float32 **feat)
+{
+    float32 *f;
+    float32 *w, *_w;
+    float32 *w1, *w_1, *_w1, *_w_1;
+    float32 d1, d2;
+    int32 i, j;
+    
+    assert (fcb);
+    assert (feat_cepsize (fcb) == 13);
+    assert (feat_cepsize_used (fcb) == 13);
+    assert (feat_n_stream (fcb) == 4);
+    assert (feat_stream_len (fcb, 0) == 12);
+    assert (feat_stream_len (fcb, 1) == 24);
+    assert (feat_stream_len (fcb, 2) == 3);
+    assert (feat_stream_len (fcb, 3) == 12);
+    assert (feat_window_size (fcb) == 4);
+    
+    /* CEP; skip C0 */
+    memcpy (feat[0], mfc[0]+1, (feat_cepsize(fcb)-1) * sizeof(float32));
+    
+    /*
+     * DCEP(SHORT): mfc[2] - mfc[-2]
+     * DCEP(LONG):  mfc[4] - mfc[-4]
+     */
+    w  = mfc[2] + 1;	/* +1 to skip C0 */
+    _w = mfc[-2] + 1;
+
+    f = feat[1];
+    for (i = 0; i < feat_cepsize(fcb)-1; i++)	/* Short-term */
+	f[i] = w[i] - _w[i];
+
+    w  = mfc[4] + 1;	/* +1 to skip C0 */
+    _w = mfc[-4] + 1;
+
+    for (j = 0; j < feat_cepsize(fcb)-1; i++, j++)	/* Long-term */
+	f[i] = w[j] - _w[j];
+
+    /* D2CEP: (mfc[3] - mfc[-1]) - (mfc[1] - mfc[-3]) */
+    w1   = mfc[3] + 1;	/* Final +1 to skip C0 */
+    _w1  = mfc[-1] + 1;
+    w_1  = mfc[1] + 1;
+    _w_1 = mfc[-3] + 1;
+
+    f = feat[3];
+    for (i = 0; i < feat_cepsize(fcb)-1; i++) {
+	d1 =  w1[i] -  _w1[i];
+	d2 = w_1[i] - _w_1[i];
+
+	f[i] = d1 - d2;
+    }
+    
+    /* POW: C0, DC0, D2C0; differences computed as above for rest of cep */
+    f = feat[2];
+    f[0] = mfc[0][0];
+    f[1] = mfc[2][0] - mfc[-2][0];
+
+    d1 = mfc[3][0] - mfc[-1][0];
+    d2 = mfc[1][0] - mfc[-3][0];
+    f[2] = d1 - d2;
+}

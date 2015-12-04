@@ -1,0 +1,21 @@
+static void
+dump_node_dependence (void)
+{
+  varray_type seen;
+  unsigned int du_idx, seen_idx, i;
+  def_use *du_ptr;
+
+  VARRAY_GENERIC_PTR_INIT (seen, 20, "seen");
+  du_idx = 0;
+  seen_idx = 0;
+  for (du_ptr = VARRAY_GENERIC_PTR (def_use_chain, du_idx);
+       du_idx < VARRAY_SIZE (def_use_chain);
+       du_ptr = VARRAY_GENERIC_PTR (def_use_chain, du_idx++))
+    {
+      for (i = 0; i < VARRAY_SIZE (seen) && VARRAY_GENERIC_PTR (seen, i)
+	     != du_ptr ; i++);
+      if (i >= VARRAY_SIZE (seen))
+	dump_one_node (du_ptr, &seen);
+    }
+  VARRAY_FREE (seen);
+}

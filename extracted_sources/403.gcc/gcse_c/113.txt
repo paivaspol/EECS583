@@ -1,0 +1,33 @@
+static void
+print_ldst_list (file)
+     FILE * file;
+{
+  struct ls_expr * ptr;
+
+  fprintf (file, "LDST list: \n");
+
+  for (ptr = first_ls_expr(); ptr != NULL; ptr = next_ls_expr (ptr))
+    {
+      fprintf (file, "  Pattern (%3d): ", ptr->index);
+
+      print_rtl (file, ptr->pattern);
+
+      fprintf (file, "\n	 Loads : ");
+
+      if (ptr->loads)
+	print_rtl (file, ptr->loads);
+      else
+	fprintf (file, "(nil)");
+
+      fprintf (file, "\n	Stores : ");
+
+      if (ptr->stores)
+	print_rtl (file, ptr->stores);
+      else
+	fprintf (file, "(nil)");
+
+      fprintf (file, "\n\n");
+    }
+
+  fprintf (file, "\n");
+}

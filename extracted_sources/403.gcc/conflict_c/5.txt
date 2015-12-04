@@ -1,0 +1,23 @@
+void
+conflict_graph_enum (graph, reg, enum_fn, extra)
+     conflict_graph graph;
+     int reg;
+     conflict_graph_enum_fn enum_fn;
+     void *extra;
+{
+  conflict_graph_arc arc = graph->neighbor_heads[reg];
+  while (arc != NULL)
+    {
+      /* Invoke the callback.  */
+      if ((*enum_fn) (arc->smaller, arc->larger, extra))
+	/* Stop if requested.  */
+	break;
+      
+      /* Which next pointer to follow depends on whether REG is the
+	 smaller or larger reg in this conflict.  */
+      if (reg < arc->larger)
+	arc = arc->smaller_next;
+      else
+	arc = arc->larger_next;
+    }
+}

@@ -1,0 +1,37 @@
+void
+default_print_error_function (context, file)
+     diagnostic_context *context;
+     const char *file;
+{
+#ifdef SPEC_CPU
+  return;
+#endif
+  if (error_function_changed ())
+    {
+      char *prefix = file ? build_message_string ("%s: ", file) : NULL;
+      output_state os;
+
+      os = output_buffer_state (context);
+      output_set_prefix ((output_buffer *) context, prefix);
+      
+      if (current_function_decl == NULL)
+          output_add_string ((output_buffer *) context, _("At top level:"));
+      else
+	{
+	  if (TREE_CODE (TREE_TYPE (current_function_decl)) == METHOD_TYPE)
+            output_printf
+              ((output_buffer *) context, "In member function `%s':",
+               (*decl_printable_name) (current_function_decl, 2));
+	  else
+            output_printf
+              ((output_buffer *) context, "In function `%s':",
+               (*decl_printable_name) (current_function_decl, 2));
+	}
+      output_add_newline ((output_buffer *) context);
+
+      record_last_error_function ();
+      output_buffer_to_stream ((output_buffer *) context);
+      output_buffer_state (context) = os;
+      free ((char*) prefix);
+    }
+}

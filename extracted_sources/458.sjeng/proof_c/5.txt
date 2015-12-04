@@ -1,0 +1,67 @@
+void suicide_pn_eval(node_t *this)
+{
+  int j, a, i;
+  int wp = 0, bp = 0;
+  
+  this->evaluated = TRUE;
+
+  for (j = 1, a = 1; (a <= piece_count); j++) 
+    {
+      i = pieces[j];
+      
+      if (!i)
+	continue;
+      else
+	a++;
+      
+      switch (board[i])
+	{
+	case wpawn:
+	case wbishop:
+	case wrook:
+	case wking:
+	case wqueen:
+	case wknight: wp++; break;
+	case bpawn:
+	case bbishop:
+	case brook:
+	case bking:
+	case bqueen:
+	case bknight: bp++; break;
+	}
+
+      if (wp && bp) break;
+    }
+  
+  if (!wp)
+    {
+      /* white has no pieces */
+      /* proven or disproven */
+      if (!root_to_move)
+	{
+	  /* root mover is mated-> proven */
+	  this->value = TRUE;
+	}
+      else
+	{
+	  this->value = FALSE;
+	};
+    }
+  else if (!bp)
+    {
+      /* black has no pieces */
+      if (!root_to_move)
+	{
+	  /* root mover is mated-> disproven */
+	  this->value = FALSE;
+	}
+      else
+	{
+	  this->value = TRUE;
+	};
+    }
+  else
+    {
+      this->value = UNKNOWN;
+    };  
+}

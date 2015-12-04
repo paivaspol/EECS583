@@ -1,0 +1,61 @@
+static void
+make_regs_eqv (new, old)
+     unsigned int new, old;
+{
+  unsigned int lastr, firstr;
+  int q = REG_QTY (old);
+  struct qty_table_elem *ent;
+
+  ent = &qty_table[q];
+
+  /* Nothing should become eqv until it has a "non-invalid" qty number.  */
+  if (! REGNO_QTY_VALID_P (old))
+    abort ();
+
+  REG_QTY (new) = q;
+  firstr = ent->first_reg;
+  lastr = ent->last_reg;
+
+  /* Prefer fixed hard registers to anything.  Prefer pseudo regs to other
+     hard regs.  Among pseudos, if NEW will live longer than any other reg
+     of the same qty, and that is beyond the current basic block,
+     make it the new canonical replacement for this qty.  */
+  if (! (firstr < FIRST_PSEUDO_REGISTER && FIXED_REGNO_P (firstr))
+      /* Certain fixed registers might be of the class NO_REGS.  This means
+	 that not only can they not be allocated by the compiler, but
+	 they cannot be used in substitutions or canonicalizations
+	 either.  */
+      && (new >= FIRST_PSEUDO_REGISTER || REGNO_REG_CLASS (new) != NO_REGS)
+      && ((new < FIRST_PSEUDO_REGISTER && FIXED_REGNO_P (new))
+	  || (new >= FIRST_PSEUDO_REGISTER
+	      && (firstr < FIRST_PSEUDO_REGISTER
+		  || ((uid_cuid[REGNO_LAST_UID (new)] > cse_basic_block_end
+		       || (uid_cuid[REGNO_FIRST_UID (new)]
+			   < cse_basic_block_start))
+		      && (uid_cuid[REGNO_LAST_UID (new)]
+			  > uid_cuid[REGNO_LAST_UID (firstr)]))))))
+    {
+      reg_eqv_table[firstr].prev = new;
+      reg_eqv_table[new].next = firstr;
+      reg_eqv_table[new].prev = -1;
+      ent->first_reg = new;
+    }
+  else
+    {
+      /* If NEW is a hard reg (known to be non-fixed), insert at end.
+	 Otherwise, insert before any non-fixed hard regs that are at the
+	 end.  Registers of class NO_REGS cannot be used as an
+	 equivalent for anything.  */
+      while (lastr < FIRST_PSEUDO_REGISTER && reg_eqv_table[lastr].prev >= 0
+	     && (REGNO_REG_CLASS (lastr) == NO_REGS || ! FIXED_REGNO_P (lastr))
+	     && new >= FIRST_PSEUDO_REGISTER)
+	lastr = reg_eqv_table[lastr].prev;
+      reg_eqv_table[new].next = reg_eqv_table[lastr].next;
+      if (reg_eqv_table[lastr].next >= 0)
+	reg_eqv_table[reg_eqv_table[lastr].next].prev = new;
+      else
+	qty_table[q].last_reg = new;
+      reg_eqv_table[lastr].next = new;
+      reg_eqv_table[new].prev = lastr;
+    }
+}

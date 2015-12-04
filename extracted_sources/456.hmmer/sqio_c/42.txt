@@ -1,0 +1,42 @@
+int
+main(int argc, char **argv)
+{
+  FILE *fp;
+  char *filename;
+  char *buf;
+  int   len;
+  int   mode = 3;
+  SSIOFFSET off;
+
+  filename = argv[1];
+
+  if (mode == 1) {
+    buf = malloc(sizeof(char) * 256);
+    if ((fp = fopen(filename, "r")) == NULL)
+      Die("open of %s failed", filename); 
+    while (fgets(buf, 255, fp) != NULL)
+      ;
+    fclose(fp);
+    free(buf);
+  } else if (mode == 2) {
+    if ((fp = fopen(filename, "r")) == NULL)
+      Die("open of %s failed", filename); 
+    buf = NULL; len = 0;
+    while (sre_fgets(&buf, &len, fp) != NULL)
+      SSIGetFilePosition(fp, SSI_OFFSET_I32, &off); 
+    fclose(fp);
+    free(buf);
+  } else if (mode == 3) {
+    SQFILE *dbfp;
+    SQINFO  info;
+
+    if ((dbfp = SeqfileOpen(filename, SQFILE_FASTA, NULL)) == NULL)
+      Die("open of %s failed", filename); 
+    while (ReadSeq(dbfp, dbfp->format, &buf, &info)) { 
+      SSIGetFilePosition(dbfp->f, SSI_OFFSET_I32, &off); 
+      FreeSequence(buf, &info);
+    }
+    SeqfileClose(dbfp);
+  }
+      
+}

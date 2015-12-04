@@ -1,0 +1,247 @@
+void 
+proofnumbersearch (void)
+{
+  node_t *root;
+  node_t *mostproving;
+  node_t *currentnode;
+  rtime_t xstart_time;
+  char output[8192];
+  char PV[8192];
+  int i;
+  float bdp;
+  int oldply;
+  
+  nodecount = 1;
+  iters = 0;
+  frees = 0;
+  ply = 1;
+  maxply = 0;
+  forwards = 0;
+  hash_history[move_number+ply-1] = hash; 
+  root_to_move = ToMove;
+  
+  /*eps = ep_square;*/
+
+  xstart_time = rtime ();
+
+  root = (node_t *) calloc (1, sizeof (node_t));
+
+  membuff = (unsigned char *) calloc(PBSize, sizeof(node_t));
+
+  pn_eval (root);
+  
+  if (root->value == FALSE)
+  {
+    pn_move = dummy;
+    Xfree();
+    free(root);
+    free(membuff);
+    return;
+  }
+
+  set_proof_and_disproof_numbers (root);
+
+  currentnode = root;
+
+  while (root->proof != 0 && root->disproof != 0 
+      && ((unsigned)bufftop < ((PBSize-SAFETY) * sizeof(node_t))))
+    {
+      mostproving = select_most_proving (currentnode);
+      develop_node (mostproving);
+      update_ancestors (mostproving);
+
+      iters++;
+
+#ifdef PN2
+      if (iters)
+#else
+      if ((iters % 32) == 0)
+#endif
+      {
+#ifdef PN2
+	  printf("P: %d D: %d N: %d S: %d Mem: %2.2fM Iters: %d ", root->proof, root->disproof, nodecount, frees, (((nodecount) * sizeof(node_t) / (float)(1024*1024))), iters);
+	  
+	  printf ("PV: ");
+	  
+	  memset (output, 0, sizeof (output));
+	  memset (PV, 0, sizeof (PV));
+	  /*currentnode = root;*/
+	  ply = 1;
+	  
+	  while (currentnode->expanded)
+	    {
+	      if (ToMove == root_to_move)
+		{
+		  i = 0;
+		  while (currentnode->children[i]->proof != currentnode->proof)
+		    {
+		      i++;
+		    };
+		}
+	      else
+		{
+		  i = 0;
+		  while (currentnode->children[i]->disproof != currentnode->disproof)
+		    {
+		      i++;
+		    }
+		};
+	      
+	      currentnode = currentnode->children[i];
+	      
+	      comp_to_coord (currentnode->move, output);
+	      printf ("%s ", output);
+	      strcat (PV, output);
+	      strcat (PV, " ");
+	      
+	      make (&currentnode->move, 0);
+	    };
+	  
+	  while (currentnode != root)
+	    {
+	      unmake (&currentnode->move, 0);
+	      currentnode = currentnode->parent;
+	    };
+
+	  printf("\n");
+#endif
+      	  if ((rdifftime (rtime (), xstart_time) > pn_time) && !interrupt())
+       	    break;
+	}
+    };
+  
+  printf ("P: %d D: %d N: %d S: %d Mem: %2.2fM Iters: %d MaxDepth: %d\n", root->proof, root->disproof, nodecount, frees, (((nodecount) * sizeof (node_t) / (float) (1024 * 1024))), iters,maxply);
+
+  if (xb_mode && post)
+    printf ("tellics whisper proof %d, disproof %d, %d nodes, %d forwards, %d iters, highest depth %d\n", root->proof, root->disproof, nodecount, forwards, iters, maxply);
+  
+  if (!xb_mode)
+    printf("Time : %f\n", (float)rdifftime(rtime(), xstart_time)/100.);
+  
+  while (currentnode != root)
+    {
+      unmake (&currentnode->move, 0);
+      currentnode = currentnode->parent;
+    };
+
+  if (root->proof == 0)
+    {
+      root->value = TRUE;
+
+      printf ("This position is WON.\n");
+      printf ("PV: ");
+
+      memset (output, 0, sizeof (output));
+      memset (PV, 0, sizeof (PV));
+      /*currentnode = root;*/
+      ply = 1;
+      
+      while (currentnode->expanded)
+	{
+	  if (ToMove == root_to_move)
+	    {
+	      i = 0;
+	      while (currentnode->children[i]->proof != currentnode->proof)
+		{
+		  i++;
+		};
+	    }
+	  else
+	    {
+	      i = 0;
+	      while (currentnode->children[i]->disproof != currentnode->disproof)
+		{
+		  i++;
+		}
+	    };
+
+	  currentnode = currentnode->children[i];
+
+	  comp_to_coord (currentnode->move, output);
+	  printf ("%s ", output);
+	  strcat (PV, output);
+	  strcat (PV, " ");
+
+	  make (&currentnode->move, 0);
+
+	  if (ply == 1)
+	    pn_move = currentnode->move;
+
+	  forcedwin = TRUE;
+	};
+
+      oldply = ply;
+
+      while (currentnode != root)
+	{
+	  unmake (&currentnode->move, 0);
+	  currentnode = currentnode->parent;
+	};
+
+      if (!kibitzed && xb_mode && post)
+	{
+	  kibitzed = TRUE;
+	  printf ("\ntellics kibitz Forced win in %d moves.\n", oldply/2);
+	}
+
+      if (oldply == 1 && (root->proof == 0 || root->disproof == 0)) 
+      {
+	if (root_to_move == WHITE)
+	{
+	  printf("\n1-0 {White mates}\n");
+	  result = black_is_mated;
+	}
+	else
+	{
+	  printf("\n0-1 {Black mates}\n");
+	  result = white_is_mated;
+	}
+      }
+
+      printf ("\n");
+    }
+  else if (root->disproof == 0)
+    {
+      root->value = FALSE;
+      printf ("This position is LOST.\n");
+
+      pn_move = dummy;
+    }
+  else
+    {
+      root->value = UNKNOWN;
+      printf ("This position is UNKNOWN.\n");
+
+      pn_move = dummy;
+    };
+
+  /* find the move which is least likely to lose */
+  bdp = -1;
+  
+  for (i = 0; i < root->num_children; i++)
+    {
+      if (root->children[i]->proof != 0)
+      {
+      	if (((float)(root->children[i]->disproof) / (float)(root->children[i]->proof)) > bdp)
+	{
+	  bdp = (float)root->children[i]->disproof / (float)(root->children[i]->proof);
+	  pn_move = root->children[i]->move;
+	}
+      }
+      else
+      {
+	pn_move = root->children[i]->move;
+	break;
+      }
+    };
+
+  pn_saver = pn_move;
+
+  free(root);
+  Xfree();
+  free(membuff);
+  
+  /*ep_square = eps;*/
+
+  return;
+}

@@ -1,0 +1,86 @@
+static void
+distribute_links (links)
+     rtx links;
+{
+  rtx link, next_link;
+
+  for (link = links; link; link = next_link)
+    {
+      rtx place = 0;
+      rtx insn;
+      rtx set, reg;
+
+      next_link = XEXP (link, 1);
+
+      /* If the insn that this link points to is a NOTE or isn't a single
+	 set, ignore it.  In the latter case, it isn't clear what we
+	 can do other than ignore the link, since we can't tell which
+	 register it was for.  Such links wouldn't be used by combine
+	 anyway.
+
+	 It is not possible for the destination of the target of the link to
+	 have been changed by combine.  The only potential of this is if we
+	 replace I3, I2, and I1 by I3 and I2.  But in that case the
+	 destination of I2 also remains unchanged.  */
+
+      if (GET_CODE (XEXP (link, 0)) == NOTE
+	  || (set = single_set (XEXP (link, 0))) == 0)
+	continue;
+
+      reg = SET_DEST (set);
+      while (GET_CODE (reg) == SUBREG || GET_CODE (reg) == ZERO_EXTRACT
+	     || GET_CODE (reg) == SIGN_EXTRACT
+	     || GET_CODE (reg) == STRICT_LOW_PART)
+	reg = XEXP (reg, 0);
+
+      /* A LOG_LINK is defined as being placed on the first insn that uses
+	 a register and points to the insn that sets the register.  Start
+	 searching at the next insn after the target of the link and stop
+	 when we reach a set of the register or the end of the basic block.
+
+	 Note that this correctly handles the link that used to point from
+	 I3 to I2.  Also note that not much searching is typically done here
+	 since most links don't point very far away.  */
+
+      for (insn = NEXT_INSN (XEXP (link, 0));
+	   (insn && (this_basic_block == n_basic_blocks - 1
+		     || BLOCK_HEAD (this_basic_block + 1) != insn));
+	   insn = NEXT_INSN (insn))
+	if (INSN_P (insn) && reg_overlap_mentioned_p (reg, PATTERN (insn)))
+	  {
+	    if (reg_referenced_p (reg, PATTERN (insn)))
+	      place = insn;
+	    break;
+	  }
+	else if (GET_CODE (insn) == CALL_INSN
+		 && find_reg_fusage (insn, USE, reg))
+	  {
+	    place = insn;
+	    break;
+	  }
+
+      /* If we found a place to put the link, place it there unless there
+	 is already a link to the same insn as LINK at that point.  */
+
+      if (place)
+	{
+	  rtx link2;
+
+	  for (link2 = LOG_LINKS (place); link2; link2 = XEXP (link2, 1))
+	    if (XEXP (link2, 0) == XEXP (link, 0))
+	      break;
+
+	  if (link2 == 0)
+	    {
+	      XEXP (link, 1) = LOG_LINKS (place);
+	      LOG_LINKS (place) = link;
+
+	      /* Set added_links_insn to the earliest insn we added a
+		 link to.  */
+	      if (added_links_insn == 0
+		  || INSN_CUID (added_links_insn) > INSN_CUID (place))
+		added_links_insn = place;
+	    }
+	}
+    }
+}

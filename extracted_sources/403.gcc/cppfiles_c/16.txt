@@ -1,0 +1,18 @@
+int
+_cpp_compare_file_date (pfile, header)
+     cpp_reader *pfile;
+     const cpp_token *header;
+{
+  struct include_file *inc = find_include_file (pfile, header, 0);
+  
+  if (inc == NULL || inc == NO_INCLUDE_PATH)
+    return -1;
+
+  if (inc->fd > 0)
+    {
+      close (inc->fd);
+      inc->fd = -1;
+    }
+    
+  return inc->st.st_mtime > pfile->buffer->inc->st.st_mtime;
+}

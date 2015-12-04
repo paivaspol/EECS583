@@ -1,0 +1,25 @@
+void write_buffer(unsigned long NumberLeakyBuckets, unsigned long Rmin[], unsigned long Bmin[], unsigned long Fmin[])
+{
+  FILE *outf;
+  unsigned long iBucket;
+        
+  if ((outf=fopen(input->LeakyBucketParamFile,"wb"))==NULL)
+  {
+    snprintf(errortext, ET_SIZE, "Error open file %s  \n",input->LeakyBucketParamFile);
+    error(errortext,1);
+  }
+
+  PutBigDoubleWord(NumberLeakyBuckets, outf);
+  printf(" Number Leaky Buckets: %ld \n     Rmin     Bmin     Fmin \n", NumberLeakyBuckets);
+  for(iBucket =0; iBucket < NumberLeakyBuckets; iBucket++) 
+  {
+    //assert(Rmin[iBucket]<4294967296); //Overflow should be corrected already.
+    //assert(Bmin[iBucket]<4294967296);
+    //assert(Fmin[iBucket]<4294967296);
+    PutBigDoubleWord(Rmin[iBucket], outf);
+    PutBigDoubleWord(Bmin[iBucket], outf);
+    PutBigDoubleWord(Fmin[iBucket], outf);
+    printf(" %8ld %8ld %8ld \n", Rmin[iBucket], Bmin[iBucket], Fmin[iBucket]);
+  }
+  fclose(outf);
+}

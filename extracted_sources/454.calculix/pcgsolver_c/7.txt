@@ -1,0 +1,71 @@
+void CG (double *A, double *x, double *b, int neq, int len, int *ia, int *iz,
+		double *eps, int *niter, double *r, double *p, double *z)
+{
+	int			i=0, k=0, ncg=0,iam;
+	double		ekm1=0.0,c1=0.005,qam,ram=0.,err;
+	double		rr=0.0, pz=0.0, qk=0.0, rro=0.0;
+
+
+  /* solving the system of equations using the iterative solver */
+
+  printf("Solving the system of equations using the iterative solver\n\n");
+
+/*..initialize result, search and residual vectors.................................	*/
+	qam=0.;iam=0;
+	for (i=0; i<neq; i++)
+	{
+		x[i] =  0.0;					/*..start vector x0 = 0....................	*/
+		r[i] =  b[i];					/*..residual vector r0 = Ax+b = b..........	*/
+		p[i] = -r[i];					/*..initial search vector..................	*/
+		err=fabs(r[i]);
+		if(err>1.e-20){qam+=err;iam++;}
+	}
+	if(iam>0) qam=qam/neq;
+	else {*niter=0;return;}
+	/*else qam=0.01;*/
+/*..main iteration loop............................................................	*/
+	for (k=1; k<=(*niter); k++, ncg++)
+	{
+/*......inner product rT r......................................................... */
+		InnerProduct(r,r,neq,&rr);
+		printf("iteration= %d, error= %e, limit=%e\n",ncg,ram,c1*qam);
+/*......If working with Penalty-terms for boundary conditions you can get nume-....	*/
+/*......rical troubles because RR becomes a very large value. With at least two....	*/
+/*......iterations the result may be better !!!....................................	*/
+/*......convergency check..........................................................	*/
+		if (k!=1 && (ram<=c1*qam)) break;
+/*		if (k==6500) break; */
+/*......new search vector..........................................................	*/
+		if (k!=1)
+		{
+			ekm1 = rr/rro;
+			for (i=0; i<neq; i++)	p[i] = ekm1*p[i]-r[i];
+		}
+/*......matrix vector product A p = z..............................................	*/
+		MatVecProduct(A,p,neq,ia,iz,z);
+/*......inner product pT z.........................................................	*/
+		InnerProduct(p,z,neq,&pz);
+/*......step size..................................................................	*/
+		qk = rr/pz;
+/*......approximated solution vector, residual vector..............................	*/
+		ram=0.;
+		for (i=0; i<neq; i++)
+		{
+			x[i] = x[i] + qk*p[i];
+			r[i] = r[i] + qk*z[i];
+			err=fabs(r[i]);
+			if(err>ram) ram=err;
+		}
+/*......store previous residual....................................................	*/
+		rro = rr;
+
+	}
+	if(k==*niter){
+	  printf("*ERROR in PCG: no convergence;");
+	  FORTRAN(stop,());
+	} 
+	*eps = rr;						/*..return residual............................	*/
+	*niter = ncg;					/*..return number of iterations................	*/
+/*..That's it......................................................................	*/
+	return;
+}

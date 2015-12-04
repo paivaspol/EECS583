@@ -1,0 +1,15 @@
+void ComposeSparePictureMessage(int delta_spare_frame_num, int ref_area_indicator, Bitstream *tmpBitstream)
+{
+  Bitstream *bitstream = seiSparePicturePayload.data;
+  SyntaxElement sym;
+
+  sym.type = SE_HEADER;
+  sym.mapping = ue_linfo;
+
+  sym.value1 = delta_spare_frame_num;
+  writeSyntaxElement2Buf_UVLC(&sym, bitstream);
+  sym.value1 = ref_area_indicator;
+  writeSyntaxElement2Buf_UVLC(&sym, bitstream);
+
+  AppendTmpbits2Buf( bitstream, tmpBitstream );
+}

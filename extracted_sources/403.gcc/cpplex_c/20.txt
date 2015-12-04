@@ -1,0 +1,66 @@
+void
+cpp_output_token (token, fp)
+     const cpp_token *token;
+     FILE *fp;
+{
+  switch (TOKEN_SPELL (token))
+    {
+    case SPELL_OPERATOR:
+      {
+	const unsigned char *spelling;
+	int c;
+
+	if (token->flags & DIGRAPH)
+	  spelling
+	    = digraph_spellings[(int) token->type - (int) CPP_FIRST_DIGRAPH];
+	else if (token->flags & NAMED_OP)
+	  goto spell_ident;
+	else
+	  spelling = TOKEN_NAME (token);
+
+	c = *spelling;
+	do
+	  putc (c, fp);
+	while ((c = *++spelling) != '\0');
+      }
+      break;
+
+    case SPELL_CHAR:
+      putc (token->val.c, fp);
+      break;
+
+    spell_ident:
+    case SPELL_IDENT:
+      fwrite (NODE_NAME (token->val.node), 1, NODE_LEN (token->val.node), fp);
+    break;
+
+    case SPELL_NUMBER:
+      fwrite (token->val.str.text, 1, token->val.str.len, fp);
+      break;
+
+    case SPELL_STRING:
+      {
+	int left, right, tag;
+	switch (token->type)
+	  {
+	  case CPP_STRING:	left = '"';  right = '"';  tag = '\0'; break;
+	  case CPP_WSTRING:	left = '"';  right = '"';  tag = 'L';  break;
+	  case CPP_CHAR:	left = '\''; right = '\''; tag = '\0'; break;
+    	  case CPP_WCHAR:	left = '\''; right = '\''; tag = 'L';  break;
+	  case CPP_HEADER_NAME:	left = '<';  right = '>';  tag = '\0'; break;
+	  default:
+	    fprintf (stderr, "impossible STRING token %s\n", TOKEN_NAME (token));
+	    return;
+	  }
+	if (tag) putc (tag, fp);
+	putc (left, fp);
+	fwrite (token->val.str.text, 1, token->val.str.len, fp);
+	putc (right, fp);
+      }
+      break;
+
+    case SPELL_NONE:
+      /* An error, most probably.  */
+      break;
+    }
+}

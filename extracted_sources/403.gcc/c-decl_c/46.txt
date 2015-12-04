@@ -1,0 +1,181 @@
+static void
+c_expand_body (fndecl, nested_p, can_defer_p)
+     tree fndecl;
+     int nested_p, can_defer_p;
+{
+  int uninlinable = 1;
+
+  /* There's no reason to do any of the work here if we're only doing
+     semantic analysis; this code just generates RTL.  */
+  if (flag_syntax_only)
+    return;
+
+  if (flag_inline_trees)
+    {
+      /* First, cache whether the current function is inlinable.  Some
+         predicates depend on cfun and current_function_decl to
+         function completely.  */
+      timevar_push (TV_INTEGRATION);
+      uninlinable = ! tree_inlinable_function_p (fndecl);
+      
+      if (! uninlinable && can_defer_p
+	  /* Save function tree for inlining.  Should return 0 if the
+             language does not support function deferring or the
+             function could not be deferred.  */
+	  && defer_fn (fndecl))
+	{
+	  /* Let the back-end know that this function exists.  */
+	  (*debug_hooks->deferred_inline_function) (fndecl);
+          timevar_pop (TV_INTEGRATION);
+	  return;
+	}
+      
+      /* Then, inline any functions called in it.  */
+      optimize_inline_calls (fndecl);
+      timevar_pop (TV_INTEGRATION);
+    }
+
+  timevar_push (TV_EXPAND);
+
+  if (nested_p)
+    {
+      /* Make sure that we will evaluate variable-sized types involved
+	 in our function's type.  */
+      expand_pending_sizes (DECL_LANG_SPECIFIC (fndecl)->pending_sizes);
+      /* Squirrel away our current state.  */
+      push_function_context ();
+    }
+
+  /* Initialize the RTL code for the function.  */
+  current_function_decl = fndecl;
+  input_filename = DECL_SOURCE_FILE (fndecl);
+  init_function_start (fndecl, input_filename, DECL_SOURCE_LINE (fndecl));
+
+  /* This function is being processed in whole-function mode.  */
+  cfun->x_whole_function_mode_p = 1;
+
+  /* Even though we're inside a function body, we still don't want to
+     call expand_expr to calculate the size of a variable-sized array.
+     We haven't necessarily assigned RTL to all variables yet, so it's
+     not safe to try to expand expressions involving them.  */
+  immediate_size_expand = 0;
+  cfun->x_dont_save_pending_sizes_p = 1;
+
+  /* If this is a varargs function, inform function.c.  */
+  if (c_function_varargs)
+    mark_varargs ();
+
+  /* Set up parameters and prepare for return, for the function.  */
+  expand_function_start (fndecl, 0);
+
+  /* If this function is `main', emit a call to `__main'
+     to run global initializers, etc.  */
+  if (DECL_NAME (fndecl)
+      && MAIN_NAME_P (DECL_NAME (fndecl))
+      && DECL_CONTEXT (fndecl) == NULL_TREE)
+    expand_main_function ();
+
+  /* Generate the RTL for this function.  */
+  expand_stmt (DECL_SAVED_TREE (fndecl));
+  if (uninlinable)
+    {
+      /* Allow the body of the function to be garbage collected.  */
+      DECL_SAVED_TREE (fndecl) = NULL_TREE;
+    }
+
+  /* We hard-wired immediate_size_expand to zero above.
+     expand_function_end will decrement this variable.  So, we set the
+     variable to one here, so that after the decrement it will remain
+     zero.  */
+  immediate_size_expand = 1;
+
+  /* Allow language dialects to perform special processing.  */
+  if (lang_expand_function_end)
+    (*lang_expand_function_end) ();
+
+  /* Generate rtl for function exit.  */
+  expand_function_end (input_filename, lineno, 0);
+
+  /* If this is a nested function, protect the local variables in the stack
+     above us from being collected while we're compiling this function.  */
+  if (nested_p)
+    ggc_push_context ();
+
+  /* Run the optimizers and output the assembler code for this function.  */
+  rest_of_compilation (fndecl);
+
+  /* Undo the GC context switch.  */
+  if (nested_p)
+    ggc_pop_context ();
+
+  /* With just -W, complain only if function returns both with
+     and without a value.  */
+  if (extra_warnings
+      && current_function_returns_value
+      && current_function_returns_null)
+    warning ("this function may return with or without a value");
+
+  /* If requested, warn about function definitions where the function will
+     return a value (usually of some struct or union type) which itself will
+     take up a lot of stack space.  */
+
+  if (warn_larger_than && !DECL_EXTERNAL (fndecl) && TREE_TYPE (fndecl))
+    {
+      tree ret_type = TREE_TYPE (TREE_TYPE (fndecl));
+
+      if (ret_type && TYPE_SIZE_UNIT (ret_type)
+	  && TREE_CODE (TYPE_SIZE_UNIT (ret_type)) == INTEGER_CST
+	  && 0 < compare_tree_int (TYPE_SIZE_UNIT (ret_type),
+				   larger_than_size))
+	{
+	  unsigned int size_as_int
+	    = TREE_INT_CST_LOW (TYPE_SIZE_UNIT (ret_type));
+
+	  if (compare_tree_int (TYPE_SIZE_UNIT (ret_type), size_as_int) == 0)
+	    warning_with_decl (fndecl,
+			       "size of return value of `%s' is %u bytes",
+			       size_as_int);
+	  else
+	    warning_with_decl (fndecl,
+			       "size of return value of `%s' is larger than %d bytes",
+			       larger_than_size);
+	}
+    }
+
+  if (DECL_SAVED_INSNS (fndecl) == 0 && ! nested_p
+      && ! flag_inline_trees)
+    {
+      /* Stop pointing to the local nodes about to be freed.
+	 But DECL_INITIAL must remain nonzero so we know this
+	 was an actual function definition.
+	 For a nested function, this is done in pop_c_function_context.
+	 If rest_of_compilation set this to 0, leave it 0.  */
+      if (DECL_INITIAL (fndecl) != 0)
+	DECL_INITIAL (fndecl) = error_mark_node;
+
+      DECL_ARGUMENTS (fndecl) = 0;
+    }
+
+  if (DECL_STATIC_CONSTRUCTOR (fndecl))
+    {
+      if (targetm.have_ctors_dtors)
+	(* targetm.asm_out.constructor) (XEXP (DECL_RTL (fndecl), 0),
+				         DEFAULT_INIT_PRIORITY);
+      else
+	static_ctors = tree_cons (NULL_TREE, fndecl, static_ctors);
+    }
+
+  if (DECL_STATIC_DESTRUCTOR (fndecl))
+    {
+      if (targetm.have_ctors_dtors)
+	(* targetm.asm_out.destructor) (XEXP (DECL_RTL (fndecl), 0),
+				        DEFAULT_INIT_PRIORITY);
+      else
+	static_dtors = tree_cons (NULL_TREE, fndecl, static_dtors);
+    }
+
+  if (nested_p)
+    /* Return to the enclosing function.  */
+    pop_function_context ();
+  timevar_pop (TV_EXPAND);
+}

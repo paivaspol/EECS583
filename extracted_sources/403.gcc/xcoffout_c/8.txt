@@ -1,0 +1,34 @@
+void
+xcoffout_declare_function (file, decl, name)
+     FILE *file;
+     tree decl;
+     const char *name;
+{
+  int i;
+
+  if (*name == '*')
+    name++;
+  else
+    for (i = 0; name[i]; ++i)
+      {
+	if (name[i] == '[')
+	  {
+	    char *n = (char *) alloca (i + 1);
+	    strncpy (n, name, i);
+	    n[i] = '\0';
+	    name = n;
+	    break;
+	  }
+      }
+
+  /* Any pending .bi or .ei must occur before the .function pseudo op.
+     Otherwise debuggers will think that the function is in the previous
+     file and/or at the wrong line number.  */
+  xcoffout_source_file (file, DECL_SOURCE_FILE (decl), 0);
+  dbxout_symbol (decl, 0);
+
+  /* .function NAME, TOP, MAPPING, TYPE, SIZE
+     16 and 044 are placeholders for backwards compatibility */
+  fprintf (file, "\t.function .%s,.%s,16,044,FE..%s-.%s\n",
+	   name, name, name, name);
+}

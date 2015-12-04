@@ -1,0 +1,24 @@
+void ChromaResidualCoding (int* cr_cbp)
+{
+  int   uv, block8, block_y, block_x, j, i;
+  int   fw_mode, bw_mode;
+  short p_dir, refframe, bw_ref;
+  int   skipped = (img->mb_data[img->current_mb_nr].mb_type == 0 && (img->type == P_SLICE || img->type == SP_SLICE));
+  int   yuv = img->yuv_format - 1; //ADD-VG-15052004
+
+  int   block8x8_idx[3][4][4] =     //ADD-VG-15052004
+  { { {0, 1, 0, 0}, 
+      {2, 3, 0, 0},
+      {0, 0, 0, 0},
+      {0, 0, 0, 0}, },
+
+    { {0, 1, 0, 0}, 
+      {0, 1, 0, 0}, 
+      {2, 3, 0, 0},
+      {2, 3, 0, 0}  },
+
+    { {0, 0, 1, 1},
+      {0, 0, 1, 1},
+      {2, 2, 3, 3},
+      {2, 2, 3, 3}  }
+  };

@@ -1,0 +1,105 @@
+static int
+builtin_macro (pfile, node)
+     cpp_reader *pfile;
+     cpp_hashnode *node;
+{
+  const cpp_token *result;
+
+  switch (node->value.builtin)
+    {
+    default:
+      cpp_ice (pfile, "invalid built-in macro \"%s\"", NODE_NAME (node));
+      return 0;
+
+    case BT_FILE:
+    case BT_BASE_FILE:
+      {
+	unsigned int len;
+	const char *name;
+	U_CHAR *buf;
+	const struct line_map *map = pfile->map;
+
+	if (node->value.builtin == BT_BASE_FILE)
+	  while (! MAIN_FILE_P (map))
+	    map = INCLUDED_FROM (&pfile->line_maps, map);
+
+	name = map->to_file;
+	len = strlen (name);
+	buf = _cpp_unaligned_alloc (pfile, len * 4 + 1);
+	len = cpp_quote_string (buf, (const unsigned char *) name, len) - buf;
+
+	result = new_string_token (pfile, buf, len);
+      }
+      break;
+
+    case BT_INCLUDE_LEVEL:
+      /* The line map depth counts the primary source as level 1, but
+	 historically __INCLUDE_DEPTH__ has called the primary source
+	 level 0.  */
+      result = new_number_token (pfile, pfile->line_maps.depth - 1);
+      break;
+
+    case BT_SPECLINE:
+      /* If __LINE__ is embedded in a macro, it must expand to the
+	 line of the macro's invocation, not its definition.
+	 Otherwise things like assert() will not work properly.  */
+      result = new_number_token (pfile,
+				 SOURCE_LINE (pfile->map,
+					      pfile->cur_token[-1].line));
+      break;
+
+    case BT_STDC:
+      {
+	int stdc = (!CPP_IN_SYSTEM_HEADER (pfile)
+		    || pfile->spec_nodes.n__STRICT_ANSI__->type != NT_VOID);
+	result = new_number_token (pfile, stdc);
+      }
+      break;
+
+    case BT_DATE:
+    case BT_TIME:
+      if (pfile->date.type == CPP_EOF)
+	{
+	  /* Allocate __DATE__ and __TIME__ strings from permanent
+	     storage.  We only do this once, and don't generate them
+	     at init time, because time() and localtime() are very
+	     slow on some systems.  */
+	  time_t tt = time (NULL);
+	  struct tm *tb = localtime (&tt);
+
+	  pfile->date.val.str.text =
+	    _cpp_unaligned_alloc (pfile, sizeof ("Oct 11 1347"));
+	  pfile->date.val.str.len = sizeof ("Oct 11 1347") - 1;
+	  pfile->date.type = CPP_STRING;
+	  pfile->date.flags = 0;
+	  sprintf ((char *) pfile->date.val.str.text, "%s %2d %4d",
+		   monthnames[tb->tm_mon], tb->tm_mday, tb->tm_year + 1900);
+
+	  pfile->time.val.str.text =
+	    _cpp_unaligned_alloc (pfile, sizeof ("12:34:56"));
+	  pfile->time.val.str.len = sizeof ("12:34:56") - 1;
+	  pfile->time.type = CPP_STRING;
+	  pfile->time.flags = 0;
+	  sprintf ((char *) pfile->time.val.str.text, "%02d:%02d:%02d",
+		   tb->tm_hour, tb->tm_min, tb->tm_sec);
+	}
+
+      if (node->value.builtin == BT_DATE)
+	result = &pfile->date;
+      else
+	result = &pfile->time;
+      break;
+
+    case BT_PRAGMA:
+      /* Don't interpret _Pragma within directives.  The standard is
+         not clear on this, but to me this makes most sense.  */
+      if (pfile->state.in_directive)
+	return 0;
+
+      _cpp_do__Pragma (pfile);
+      return 1;
+    }
+
+  push_token_context (pfile, NULL, result, 1);
+  return 1;
+}

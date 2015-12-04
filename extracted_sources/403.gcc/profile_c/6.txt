@@ -1,0 +1,59 @@
+static void
+find_spanning_tree (el)
+     struct edge_list *el;
+{
+  int i;
+  int num_edges = NUM_EDGES (el);
+
+  /* We use aux field for standard union-find algorithm.  */
+  EXIT_BLOCK_PTR->aux = EXIT_BLOCK_PTR;
+  ENTRY_BLOCK_PTR->aux = ENTRY_BLOCK_PTR;
+  for (i = 0; i < n_basic_blocks; i++)
+    BASIC_BLOCK (i)->aux = BASIC_BLOCK (i);
+
+  /* Add fake edge exit to entry we can't instrument.  */
+  union_groups (EXIT_BLOCK_PTR, ENTRY_BLOCK_PTR);
+
+  /* First add all abnormal edges to the tree unless they form an cycle.  */
+  for (i = 0; i < num_edges; i++)
+    {
+      edge e = INDEX_EDGE (el, i);
+      if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL | EDGE_FAKE))
+	  && !EDGE_INFO (e)->ignore
+	  && (find_group (e->src) != find_group (e->dest)))
+	{
+	  EDGE_INFO (e)->on_tree = 1;
+	  union_groups (e->src, e->dest);
+	}
+    }
+
+  /* Now insert all critical edges to the tree unless they form an cycle.  */
+  for (i = 0; i < num_edges; i++)
+    {
+      edge e = INDEX_EDGE (el, i);
+      if ((EDGE_CRITICAL_P (e))
+	  && !EDGE_INFO (e)->ignore
+	  && (find_group (e->src) != find_group (e->dest)))
+	{
+	  EDGE_INFO (e)->on_tree = 1;
+	  union_groups (e->src, e->dest);
+	}
+    }
+
+  /* And now the rest.  */
+  for (i = 0; i < num_edges; i++)
+    {
+      edge e = INDEX_EDGE (el, i);
+      if (find_group (e->src) != find_group (e->dest)
+	  && !EDGE_INFO (e)->ignore)
+	{
+	  EDGE_INFO (e)->on_tree = 1;
+	  union_groups (e->src, e->dest);
+	}
+    }
+
+  EXIT_BLOCK_PTR->aux = NULL;
+  ENTRY_BLOCK_PTR->aux = NULL;
+  for (i = 0; i < n_basic_blocks; i++)
+    BASIC_BLOCK (i)->aux = NULL;
+}

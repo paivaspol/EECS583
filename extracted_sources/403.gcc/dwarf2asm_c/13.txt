@@ -1,0 +1,28 @@
+void
+dw2_asm_output_delta_uleb128 VPARAMS ((const char *lab1 ATTRIBUTE_UNUSED,
+				       const char *lab2 ATTRIBUTE_UNUSED,
+				       const char *comment, ...))
+{
+  VA_OPEN (ap, comment);
+  VA_FIXEDARG (ap, const char *, lab1);
+  VA_FIXEDARG (ap, const char *, lab2);
+  VA_FIXEDARG (ap, const char *, comment);
+
+#ifdef HAVE_AS_LEB128
+  fputs ("\t.uleb128 ", asm_out_file);
+  assemble_name (asm_out_file, lab1);
+  fputc ('-', asm_out_file);
+  assemble_name (asm_out_file, lab2);
+#else
+  abort ();
+#endif
+
+  if (flag_debug_asm && comment)
+    {
+      fprintf (asm_out_file, "\t%s ", ASM_COMMENT_START);
+      vfprintf (asm_out_file, comment, ap);
+    }
+  fputc ('\n', asm_out_file);
+
+  VA_CLOSE (ap);
+}

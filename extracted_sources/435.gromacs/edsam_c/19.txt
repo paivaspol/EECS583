@@ -1,0 +1,28 @@
+void do_linacc(rvec *x,t_edpar *edi)
+{
+  int i,j,k;
+  real proj,add;
+
+  /* loop over linacc vectors */
+  for (i=0;(i<edi->vecs.linacc.neig);i++) {
+    /* calculate the projection */
+    proj=do_projectx(edi,x,edi->vecs.linacc.vec[i]);
+    /* calculate the correction */
+    add=0.0;
+    if (edi->vecs.linacc.stpsz[i] > 0.0) {
+      if ((proj-edi->vecs.linacc.refproj[i]) < 0.0)
+	add=edi->vecs.linacc.refproj[i]-proj;
+    }
+    if (edi->vecs.linacc.stpsz[i] < 0.0) {
+      if ((proj-edi->vecs.linacc.refproj[i]) > 0.0)
+	add=edi->vecs.linacc.refproj[i]-proj;
+    }
+    /* apply the correction */
+    for (j=0;(j<edi->sav.nr);j++) {
+      for (k=0;(k<DIM);k++)
+	x[edi->sav.anrs[j]][k]+=add*edi->vecs.linacc.vec[i][j][k];
+    }
+    /* new positions will act as reference */
+    edi->vecs.linacc.refproj[i]=proj+add;
+  }
+}

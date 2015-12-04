@@ -1,0 +1,88 @@
+void
+SetAlphabet(int type)
+{
+  int x;
+#ifdef HMMER_THREADS
+  pthread_mutex_t  alphabet_lock; /* alphabet is global; must protect to be threadsafe */
+  int              rtn;		  /* return code from pthreads */
+
+  if ((rtn = pthread_mutex_init(&alphabet_lock, NULL)) != 0)
+    Die("pthread_mutex_init FAILED; %s\n", strerror(rtn));
+  if ((rtn = pthread_mutex_lock(&alphabet_lock)) != 0)
+    Die("pthread_mutex_lock FAILED: %s\n", strerror(rtn));
+#endif
+
+ /* Because the alphabet information is global, we must
+  * be careful to make this a thread-safe function. The mutex
+  * (above) takes care of that. But, indeed, it's also
+  * just good sense (and more efficient) to simply never
+  * allow resetting the alphabet. If type is Alphabet_type,
+  * silently return; else die with an alphabet mismatch
+  * warning.
+  */
+  if (Alphabet_type != hmmNOTSETYET) 
+    {
+      if (type != Alphabet_type) 
+	Die("An alphabet type conflict occurred.\nYou probably mixed a DNA seq file with a protein model, or vice versa.");
+      
+#ifdef HMMER_THREADS
+      if ((rtn = pthread_mutex_unlock(&alphabet_lock)) != 0)
+	Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+#endif
+      return;
+    }
+
+  switch(type) { /* Alphabet is not a string - careful! */
+  case hmmAMINO: 
+    Alphabet_type     = type;
+/*  strncpy(Alphabet, "ACDEFGHIKLMNPQRSTVWYUBZX", 24); 10/10 kmd  */
+    strcpy(Alphabet, "ACDEFGHIKLMNPQRSTVWYUBZX");
+    Alphabet_size     = 20; 
+    Alphabet_iupac    = 24;
+    for (x = 0; x < Alphabet_iupac; x++) {
+      memset(Degenerate[x], 0, Alphabet_size);
+    }
+    for (x = 0; x < Alphabet_size; x++) {
+      Degenerate[x][x] = 1;
+      DegenCount[x] = 1;
+    }
+    set_degenerate('U', "S");	/* selenocysteine is treated as serine */
+    set_degenerate('B', "ND");
+    set_degenerate('Z', "QE");
+    set_degenerate('X', "ACDEFGHIKLMNPQRSTVWY");
+    break;
+  case hmmNUCLEIC:
+    Alphabet_type     = type;
+/*  strncpy(Alphabet, "ACGTUNRYMKSWHBVDX", 17); 10/1003 kmd */
+    strcpy(Alphabet, "ACGTUNRYMKSWHBVDX"); 
+    Alphabet_size     = 4; 
+    Alphabet_iupac    = 17;
+    for (x = 0; x < Alphabet_iupac; x++) {
+      memset(Degenerate[x], 0, Alphabet_size);
+    }
+    for (x = 0; x < Alphabet_size; x++) {
+      Degenerate[x][x] = 1;
+      DegenCount[x] = 1;
+    }
+    set_degenerate('U', "T");
+    set_degenerate('N', "ACGT");
+    set_degenerate('X', "ACGT");
+    set_degenerate('R', "AG");
+    set_degenerate('Y', "CT");
+    set_degenerate('M', "AC");
+    set_degenerate('K', "GT");
+    set_degenerate('S', "CG");
+    set_degenerate('W', "AT");
+    set_degenerate('H', "ACT");
+    set_degenerate('B', "CGT");
+    set_degenerate('V', "ACG");
+    set_degenerate('D', "AGT");
+    break;
+  default: Die("No support for non-nucleic or protein alphabets");  
+  }
+
+#ifdef HMMER_THREADS
+  if ((rtn = pthread_mutex_unlock(&alphabet_lock)) != 0)
+    Die("pthread_mutex_unlock failure: %s\n", strerror(rtn));
+#endif
+}

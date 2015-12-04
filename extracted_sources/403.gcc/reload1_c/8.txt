@@ -1,0 +1,33 @@
+static int
+reload_reg_class_lower (r1p, r2p)
+     const PTR r1p;
+     const PTR r2p;
+{
+  int r1 = *(const short *) r1p, r2 = *(const short *) r2p;
+  int t;
+
+  /* Consider required reloads before optional ones.  */
+  t = rld[r1].optional - rld[r2].optional;
+  if (t != 0)
+    return t;
+
+  /* Count all solitary classes before non-solitary ones.  */
+  t = ((reg_class_size[(int) rld[r2].class] == 1)
+       - (reg_class_size[(int) rld[r1].class] == 1));
+  if (t != 0)
+    return t;
+
+  /* Aside from solitaires, consider all multi-reg groups first.  */
+  t = rld[r2].nregs - rld[r1].nregs;
+  if (t != 0)
+    return t;
+
+  /* Consider reloads in order of increasing reg-class number.  */
+  t = (int) rld[r1].class - (int) rld[r2].class;
+  if (t != 0)
+    return t;
+
+  /* If reloads are equally urgent, sort by reload number,
+     so that the results of qsort leave nothing to chance.  */
+  return r1 - r2;
+}

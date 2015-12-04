@@ -1,0 +1,182 @@
+static int
+check_asm_stack_operands (insn)
+     rtx insn;
+{
+  int i;
+  int n_clobbers;
+  int malformed_asm = 0;
+  rtx body = PATTERN (insn);
+
+  char reg_used_as_output[FIRST_PSEUDO_REGISTER];
+  char implicitly_dies[FIRST_PSEUDO_REGISTER];
+  int alt;
+
+  rtx *clobber_reg = 0;
+  int n_inputs, n_outputs;
+
+  /* Find out what the constraints require.  If no constraint
+     alternative matches, this asm is malformed.  */
+  extract_insn (insn);
+  constrain_operands (1);
+  alt = which_alternative;
+
+  preprocess_constraints ();
+
+  n_inputs = get_asm_operand_n_inputs (body);
+  n_outputs = recog_data.n_operands - n_inputs;
+
+  if (alt < 0)
+    {
+      malformed_asm = 1;
+      /* Avoid further trouble with this insn.  */
+      PATTERN (insn) = gen_rtx_USE (VOIDmode, const0_rtx);
+      return 0;
+    }
+
+  /* Strip SUBREGs here to make the following code simpler.  */
+  for (i = 0; i < recog_data.n_operands; i++)
+    if (GET_CODE (recog_data.operand[i]) == SUBREG
+	&& GET_CODE (SUBREG_REG (recog_data.operand[i])) == REG)
+      recog_data.operand[i] = SUBREG_REG (recog_data.operand[i]);
+
+  /* Set up CLOBBER_REG.  */
+
+  n_clobbers = 0;
+
+  if (GET_CODE (body) == PARALLEL)
+    {
+      clobber_reg = (rtx *) alloca (XVECLEN (body, 0) * sizeof (rtx));
+
+      for (i = 0; i < XVECLEN (body, 0); i++)
+	if (GET_CODE (XVECEXP (body, 0, i)) == CLOBBER)
+	  {
+	    rtx clobber = XVECEXP (body, 0, i);
+	    rtx reg = XEXP (clobber, 0);
+
+	    if (GET_CODE (reg) == SUBREG && GET_CODE (SUBREG_REG (reg)) == REG)
+	      reg = SUBREG_REG (reg);
+
+	    if (STACK_REG_P (reg))
+	      {
+		clobber_reg[n_clobbers] = reg;
+		n_clobbers++;
+	      }
+	  }
+    }
+
+  /* Enforce rule #4: Output operands must specifically indicate which
+     reg an output appears in after an asm.  "=f" is not allowed: the
+     operand constraints must select a class with a single reg.
+
+     Also enforce rule #5: Output operands must start at the top of
+     the reg-stack: output operands may not "skip" a reg.  */
+
+  memset (reg_used_as_output, 0, sizeof (reg_used_as_output));
+  for (i = 0; i < n_outputs; i++)
+    if (STACK_REG_P (recog_data.operand[i]))
+      {
+	if (reg_class_size[(int) recog_op_alt[i][alt].class] != 1)
+	  {
+	    error_for_asm (insn, "output constraint %d must specify a single register", i);
+	    malformed_asm = 1;
+	  }
+        else
+	  {
+	    int j;
+
+	    for (j = 0; j < n_clobbers; j++)
+	      if (REGNO (recog_data.operand[i]) == REGNO (clobber_reg[j]))
+		{
+		  error_for_asm (insn, "output constraint %d cannot be specified together with \"%s\" clobber",
+				 i, reg_names [REGNO (clobber_reg[j])]);
+		  malformed_asm = 1;
+		  break;
+		}
+	    if (j == n_clobbers)
+	      reg_used_as_output[REGNO (recog_data.operand[i])] = 1;
+	  }
+      }
+
+
+  /* Search for first non-popped reg.  */
+  for (i = FIRST_STACK_REG; i < LAST_STACK_REG + 1; i++)
+    if (! reg_used_as_output[i])
+      break;
+
+  /* If there are any other popped regs, that's an error.  */
+  for (; i < LAST_STACK_REG + 1; i++)
+    if (reg_used_as_output[i])
+      break;
+
+  if (i != LAST_STACK_REG + 1)
+    {
+      error_for_asm (insn, "output regs must be grouped at top of stack");
+      malformed_asm = 1;
+    }
+
+  /* Enforce rule #2: All implicitly popped input regs must be closer
+     to the top of the reg-stack than any input that is not implicitly
+     popped.  */
+
+  memset (implicitly_dies, 0, sizeof (implicitly_dies));
+  for (i = n_outputs; i < n_outputs + n_inputs; i++)
+    if (STACK_REG_P (recog_data.operand[i]))
+      {
+	/* An input reg is implicitly popped if it is tied to an
+	   output, or if there is a CLOBBER for it.  */
+	int j;
+
+	for (j = 0; j < n_clobbers; j++)
+	  if (operands_match_p (clobber_reg[j], recog_data.operand[i]))
+	    break;
+
+	if (j < n_clobbers || recog_op_alt[i][alt].matches >= 0)
+	  implicitly_dies[REGNO (recog_data.operand[i])] = 1;
+      }
+
+  /* Search for first non-popped reg.  */
+  for (i = FIRST_STACK_REG; i < LAST_STACK_REG + 1; i++)
+    if (! implicitly_dies[i])
+      break;
+
+  /* If there are any other popped regs, that's an error.  */
+  for (; i < LAST_STACK_REG + 1; i++)
+    if (implicitly_dies[i])
+      break;
+
+  if (i != LAST_STACK_REG + 1)
+    {
+      error_for_asm (insn,
+		     "implicitly popped regs must be grouped at top of stack");
+      malformed_asm = 1;
+    }
+
+  /* Enfore rule #3: If any input operand uses the "f" constraint, all
+     output constraints must use the "&" earlyclobber.
+
+     ??? Detect this more deterministically by having constrain_asm_operands
+     record any earlyclobber.  */
+
+  for (i = n_outputs; i < n_outputs + n_inputs; i++)
+    if (recog_op_alt[i][alt].matches == -1)
+      {
+	int j;
+
+	for (j = 0; j < n_outputs; j++)
+	  if (operands_match_p (recog_data.operand[j], recog_data.operand[i]))
+	    {
+	      error_for_asm (insn,
+			     "output operand %d must use `&' constraint", j);
+	      malformed_asm = 1;
+	    }
+      }
+
+  if (malformed_asm)
+    {
+      /* Avoid further trouble with this insn.  */
+      PATTERN (insn) = gen_rtx_USE (VOIDmode, const0_rtx);
+      return 0;
+    }
+
+  return 1;
+}

@@ -1,0 +1,47 @@
+static control_dependent_block_to_edge_map control_dependent_block_to_edge_map_create
+  PARAMS((size_t num_basic_blocks));
+static void set_control_dependent_block_to_edge_map_bit
+  PARAMS ((control_dependent_block_to_edge_map c, basic_block bb,
+	   int edge_index));
+static void control_dependent_block_to_edge_map_free
+  PARAMS ((control_dependent_block_to_edge_map c));
+static void find_all_control_dependences
+  PARAMS ((struct edge_list *el, int *pdom,
+	   control_dependent_block_to_edge_map cdbte));
+static void find_control_dependence
+  PARAMS ((struct edge_list *el, int edge_index, int *pdom,
+	   control_dependent_block_to_edge_map cdbte));
+static basic_block find_pdom
+  PARAMS ((int *pdom, basic_block block));
+static int inherently_necessary_register_1
+  PARAMS ((rtx *current_rtx, void *data));
+static int inherently_necessary_register
+  PARAMS ((rtx current_rtx));
+static int find_inherently_necessary
+  PARAMS ((rtx current_rtx));
+static int propagate_necessity_through_operand
+  PARAMS ((rtx *current_rtx, void *data));
+static void note_inherently_necessary_set
+  PARAMS ((rtx, rtx, void *));
+
+/* Unnecessary insns are indicated using insns' in_struct bit.  */
+
+/* Indicate INSN is dead-code; returns nothing.  */
+#define KILL_INSN(INSN)		INSN_DEAD_CODE_P(INSN) = 1
+/* Indicate INSN is necessary, i.e., not dead-code; returns nothing.  */
+#define RESURRECT_INSN(INSN)	INSN_DEAD_CODE_P(INSN) = 0
+/* Return nonzero if INSN is unnecessary.  */
+#define UNNECESSARY_P(INSN)	INSN_DEAD_CODE_P(INSN)
+static void mark_all_insn_unnecessary
+  PARAMS ((void));
+/* Execute CODE with free variable INSN for all unnecessary insns in
+   an unspecified order, producing no output.  */
+#define EXECUTE_IF_UNNECESSARY(INSN, CODE)	\
+{								\
+  rtx INSN;							\
+								\
+  for (INSN = get_insns (); INSN != NULL_RTX; INSN = NEXT_INSN (INSN))	\
+    if (INSN_DEAD_CODE_P (INSN)) {				\
+      CODE;							\
+    }								\
+}

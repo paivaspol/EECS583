@@ -1,0 +1,21 @@
+static struct ref *
+df_bb_regno_last_use_find (df, bb, regno)
+     struct df * df;
+     basic_block bb ATTRIBUTE_UNUSED;
+     unsigned int regno;
+{
+  struct df_link *link;
+
+  /* This assumes that the reg-use list is ordered such that for any
+     BB, the last use is found first.  However, since the BBs are not
+     ordered, the first use in the chain is not necessarily the last
+     use in the function.  */
+  for (link = df->regs[regno].uses; link; link = link->next)
+    {
+      struct ref *use = link->ref;
+
+      if (DF_REF_BB (use) == bb)
+	return use;
+    }
+  return 0;
+}

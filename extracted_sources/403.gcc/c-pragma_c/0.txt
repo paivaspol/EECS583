@@ -1,0 +1,31 @@
+static void
+push_alignment (alignment, id)
+     int alignment;
+     tree id;
+{
+  if (alignment_stack == NULL
+      || alignment_stack->alignment != alignment
+      || id != NULL_TREE)
+    {
+      align_stack * entry;
+
+      entry = (align_stack *) xmalloc (sizeof (* entry));
+
+      entry->alignment  = alignment;
+      entry->num_pushes = 1;
+      entry->id         = id;
+      entry->prev       = alignment_stack;
+      
+      /* The current value of maximum_field_alignment is not necessarily 
+	 0 since there may be a #pragma pack(<n>) in effect; remember it 
+	 so that we can restore it after the final #pragma pop().  */
+      if (alignment_stack == NULL)
+	default_alignment = maximum_field_alignment;
+      
+      alignment_stack = entry;
+
+      maximum_field_alignment = alignment;
+    }
+  else
+    alignment_stack->num_pushes ++;
+}

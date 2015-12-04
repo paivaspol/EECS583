@@ -1,0 +1,17 @@
+static void
+flush_hash_table ()
+{
+  int i;
+  struct table_elt *p;
+
+  for (i = 0; i < HASH_SIZE; i++)
+    for (p = table[i]; p; p = table[i])
+      {
+	/* Note that invalidate can remove elements
+	   after P in the current hash chain.  */
+	if (GET_CODE (p->exp) == REG)
+	  invalidate (p->exp, p->mode);
+	else
+	  remove_from_table (p, i);
+      }
+}

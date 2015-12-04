@@ -1,0 +1,23 @@
+static void
+output_entry_point_die (arg)
+     void *arg;
+{
+  tree decl = arg;
+  tree origin = decl_ultimate_origin (decl);
+
+  ASM_OUTPUT_DWARF_TAG (asm_out_file, TAG_entry_point);
+  sibling_attribute ();
+  dienum_push ();
+  if (origin != NULL)
+    abstract_origin_attribute (origin);
+  else
+    {
+      name_and_src_coords_attributes (decl);
+      member_attribute (DECL_CONTEXT (decl));
+      type_attribute (TREE_TYPE (TREE_TYPE (decl)), 0, 0);
+    }
+  if (DECL_ABSTRACT (decl))
+    equate_decl_number_to_die_number (decl);
+  else
+    low_pc_attribute (function_start_label (decl));
+}

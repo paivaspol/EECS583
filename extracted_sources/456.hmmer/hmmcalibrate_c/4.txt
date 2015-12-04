@@ -1,0 +1,32 @@
+static void
+main_loop_threaded(struct plan7_s *hmm, int seed, int nsample, 
+		   float lenmean, float lensd, int fixedlen,
+		   int nthreads,
+		   struct histogram_s **ret_hist, float *ret_max,
+		   Stopwatch_t *twatch)
+{
+  struct histogram_s *hist;
+  float  randomseq[MAXABET];
+  float  p1;
+  struct workpool_s *wpool;     /* pool of worker threads  */
+  
+  /* Initialize.
+   * We assume we've already set the alphabet (safe, because
+   * HMM input sets the alphabet).
+   */
+  sre_srandom(seed);
+  P7Logoddsify(hmm, TRUE);
+  P7DefaultNullModel(randomseq, &p1);
+  hist = AllocHistogram(-200, 200, 100);
+
+  wpool = workpool_start(hmm, lenmean, lensd, fixedlen, randomseq, nsample,
+			 hist, nthreads);
+  workpool_stop(wpool);
+
+  *ret_hist = hist;
+  *ret_max  = wpool->max_score;
+  StopwatchInclude(twatch, &(wpool->watch));
+
+  workpool_free(wpool);
+  return;
+}

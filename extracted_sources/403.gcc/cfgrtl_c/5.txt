@@ -1,0 +1,27 @@
+void
+compute_bb_for_insn (max)
+     int max;
+{
+  int i;
+
+  if (basic_block_for_insn)
+    VARRAY_FREE (basic_block_for_insn);
+
+  VARRAY_BB_INIT (basic_block_for_insn, max, "basic_block_for_insn");
+
+  for (i = 0; i < n_basic_blocks; ++i)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      rtx end = bb->end;
+      rtx insn;
+
+      for (insn = bb->head; ; insn = NEXT_INSN (insn))
+	{
+	  if (INSN_UID (insn) < max)
+	    VARRAY_BB (basic_block_for_insn, INSN_UID (insn)) = bb;
+
+	  if (insn == end)
+	    break;
+	}
+    }
+}

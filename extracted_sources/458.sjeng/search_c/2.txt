@@ -1,0 +1,170 @@
+int qsearch (int alpha, int beta, int depth) {
+
+  /* perform a quiscense search on the current node using alpha-beta with
+     negamax search */
+
+  move_s moves[MOVE_BUFF];
+  int num_moves, i, j;
+  int score = -INF, standpat, 
+    move_ordering[MOVE_BUFF],
+    see_values[MOVE_BUFF];
+  xbool legal_move, no_moves = TRUE;
+  int sbest, best_score, best, delta, bound;
+  int originalalpha;
+  int oldtime;
+  int seev;
+  
+  pv_length[ply] = ply;
+   
+  /* before we do anything, see if we're out of time: */
+  if (!(nodes & ((1<<16)-1))) 
+    {
+      if (interrupt()) 
+	{
+	  time_exit = TRUE;
+	  return 0;
+	}
+      else if (((rdifftime (rtime (), start_time) >= time_for_move)) && (i_depth > 1))
+	{
+	  if (failed == 1 && !extendedtime 
+	      && !fixed_time
+	      && !go_fast
+	      && Variant != Bughouse
+	      && (time_left > max(time_for_move*4, 1000)))
+	    {
+	      extendedtime = 1;
+	      oldtime = time_for_move;
+	      time_for_move += allocate_time();
+	      printf("Extended from %d to %d, time left %d\n", oldtime,
+		     time_for_move, 
+		     time_left);
+	    }
+	  else
+	    {
+	      time_exit = TRUE;
+	      return 0;
+	    }
+	}
+    }
+  
+  /* return our score if we're at a leaf node: */
+  if (depth <= 0 || ply >= PV_BUFF) 
+  {
+    score = eval (alpha, beta);
+    return score;
+  }
+
+  qnodes++;
+  nodes++;
+
+  originalalpha = alpha;
+ 
+  switch (QProbeTT(&bound, &best))
+    {
+    case EXACT:
+      return bound;
+      break;
+    case UPPER:
+      if (bound <= alpha)
+	return bound;
+      break;
+    case LOWER:
+      if (bound >= beta)
+	return bound;
+      break;
+    case DUMMY:
+      break;
+    case HMISS:
+      best = -1;;
+      break;
+    };
+  
+  standpat = eval (alpha, beta);
+  
+  if (standpat >= beta) {
+    /* rem check this */
+    QStoreTT(standpat, originalalpha, beta, 500);
+    return standpat;
+  }
+  else if (standpat > alpha) {
+    alpha = standpat;
+  }
+  
+  sbest = -1;
+  best_score = -INF;
+  num_moves = 0;
+  
+  /* generate and order moves: */
+  gen (&moves[0]);
+  num_moves = numb_moves;
+
+  if (kingcap) return KINGCAP;
+        
+  delta = alpha-150-standpat;
+  
+  order_moves (&moves[0], &move_ordering[0], &see_values[0], num_moves, best);
+
+  /* loop through the moves at the current node: */
+  while (remove_one (&i, &move_ordering[0], num_moves)) {
+
+    legal_move = FALSE;
+  
+    if (!moves[i].promoted)
+    {
+    	seev = see_values[i];
+ 
+    	if (seev < delta || seev < 0)
+	  continue;  
+    }
+
+    make (&moves[0], i);
+ 
+    score = -qsearch (-beta, -alpha, depth-1);
+	
+    if (score != -KINGCAP) 
+      {
+	legal_move = TRUE;
+	no_moves = FALSE;
+      };
+
+    unmake (&moves[0], i);
+
+    if(score > best_score && legal_move)
+      {
+	best_score = score;
+      };
+
+    /* check our current score vs. alpha: */
+    if (score > alpha && legal_move) 
+      {
+
+	/* don't update the history heuristic scores here, since depth is messed
+	   up when qsearch is called */
+	best = i;
+	
+	/* try for an early cutoff: */
+	if (score >= beta) 
+	  {
+	    QStoreTT(score, originalalpha, beta, i);
+	    return score;
+	  }
+	
+	alpha = score;
+	
+	/* update the pv: */
+	pv[ply][ply] = moves[i];;
+	for (j = ply+1; j < pv_length[ply+1]; j++)
+	  pv[ply][j] = pv[ply+1][j];
+	pv_length[ply] = pv_length[ply+1];
+      }
+    
+  }
+
+  /* we don't check for mate / stalemate here, because without generating all
+     of the moves leading up to it, we don't know if the position could have
+     been avoided by one side or not */
+
+  QStoreTT(alpha, originalalpha, beta, best);
+  return alpha;
+  
+}

@@ -1,0 +1,46 @@
+static rtx
+expand_builtin_strcspn (arglist, target, mode)
+     tree arglist;
+     rtx target;
+     enum machine_mode mode;
+{
+  if (!validate_arglist (arglist, POINTER_TYPE, POINTER_TYPE, VOID_TYPE))
+    return 0;
+  else
+    {
+      tree s1 = TREE_VALUE (arglist), s2 = TREE_VALUE (TREE_CHAIN (arglist));
+      const char *p1 = c_getstr (s1), *p2 = c_getstr (s2);
+
+      /* If both arguments are constants, evaluate at compile-time.  */
+      if (p1 && p2)
+        {
+	  const size_t r = strcspn (p1, p2);
+	  return expand_expr (size_int (r), target, mode, EXPAND_NORMAL);
+	}
+
+      /* If the first argument is "", return 0.  */
+      if (p1 && *p1 == '\0')
+        {
+	  /* Evaluate and ignore argument s2 in case it has
+	     side-effects.  */
+	  expand_expr (s2, const0_rtx, VOIDmode, EXPAND_NORMAL);
+	  return const0_rtx;
+	}
+
+      /* If the second argument is "", return __builtin_strlen(s1).  */
+      if (p2 && *p2 == '\0')
+        {
+	  tree newarglist = build_tree_list (NULL_TREE, s1),
+	    fn = built_in_decls[BUILT_IN_STRLEN];
+
+	  /* If the replacement _DECL isn't initialized, don't do the
+	     transformation.  */
+	  if (!fn)
+	    return 0;
+
+	  return expand_expr (build_function_call_expr (fn, newarglist),
+			      target, mode, EXPAND_NORMAL);
+	}
+      return 0;
+    }
+}

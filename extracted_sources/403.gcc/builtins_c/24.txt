@@ -1,0 +1,51 @@
+static rtx
+expand_builtin_strstr (arglist, target, mode)
+     tree arglist;
+     rtx target;
+     enum machine_mode mode;
+{
+  if (!validate_arglist (arglist, POINTER_TYPE, POINTER_TYPE, VOID_TYPE))
+    return 0;
+  else
+    {
+      tree s1 = TREE_VALUE (arglist), s2 = TREE_VALUE (TREE_CHAIN (arglist));
+      tree fn;
+      const char *p1, *p2;
+
+      p2 = c_getstr (s2);
+      if (p2 == NULL)
+	return 0;
+
+      p1 = c_getstr (s1);
+      if (p1 != NULL)
+	{
+	  const char *r = strstr (p1, p2);
+
+	  if (r == NULL)
+	    return const0_rtx;
+
+	  /* Return an offset into the constant string argument.  */
+	  return expand_expr (fold (build (PLUS_EXPR, TREE_TYPE (s1),
+					   s1, ssize_int (r - p1))),
+			      target, mode, EXPAND_NORMAL);
+	}
+
+      if (p2[0] == '\0')
+	return expand_expr (s1, target, mode, EXPAND_NORMAL);
+
+      if (p2[1] != '\0')
+	return 0;
+
+      fn = built_in_decls[BUILT_IN_STRCHR];
+      if (!fn)
+	return 0;
+
+      /* New argument list transforming strstr(s1, s2) to
+	 strchr(s1, s2[0]).  */
+      arglist =
+	build_tree_list (NULL_TREE, build_int_2 (p2[0], 0));
+      arglist = tree_cons (NULL_TREE, s1, arglist);
+      return expand_expr (build_function_call_expr (fn, arglist),
+			  target, mode, EXPAND_NORMAL);
+    }
+}

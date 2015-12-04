@@ -1,0 +1,18 @@
+static int
+redirect_exp (olabel, nlabel, insn)
+     rtx olabel, nlabel;
+     rtx insn;
+{
+  rtx *loc;
+
+  if (GET_CODE (PATTERN (insn)) == PARALLEL)
+    loc = &XVECEXP (PATTERN (insn), 0, 0);
+  else
+    loc = &PATTERN (insn);
+
+  redirect_exp_1 (loc, olabel, nlabel, insn);
+  if (num_validated_changes () == 0)
+    return 0;
+
+  return apply_change_group ();
+}

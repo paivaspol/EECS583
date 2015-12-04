@@ -1,0 +1,100 @@
+static void
+optimize_unexecutable_edges (edges, executable_edges)
+     struct edge_list *edges;
+     sbitmap executable_edges;
+{
+  int i;
+
+  for (i = 0; i < NUM_EDGES (edges); i++)
+    {
+      if (!TEST_BIT (executable_edges, i))
+	{
+	  edge edge = INDEX_EDGE (edges, i);
+
+	  if (edge->flags & EDGE_ABNORMAL)
+	    continue;
+
+	  /* We found an edge that is not executable.  First simplify
+	     the PHI nodes in the target block.  */
+	  if (edge->dest != EXIT_BLOCK_PTR)
+	    {
+	      rtx insn = first_insn_after_basic_block_note (edge->dest);
+
+	      while (PHI_NODE_P (insn))
+		{
+		  remove_phi_alternative (PATTERN (insn), edge->src);
+		  if (rtl_dump_file)
+		    fprintf (rtl_dump_file,
+			     "Removing alternative for bb %d of phi %d\n", 
+			     edge->src->index, SSA_NAME (PATTERN (insn)));
+		  insn = NEXT_INSN (insn);
+		}
+	    }
+	  if (rtl_dump_file)
+	    fprintf (rtl_dump_file,
+		     "Removing unexecutable edge from %d to %d\n",
+		     edge->src->index, edge->dest->index);
+	  /* Since the edge was not executable, remove it from the CFG.  */
+	  remove_edge (edge);
+	}
+    }
+
+  /* We have removed all the unexecutable edges from the CFG.  Fix up
+     the conditional jumps at the end of any affected block.
+
+     We have three cases to deal with:
+
+       a. Both outgoing edges are not executable.  This happens if the
+	  source block is not reachable.  We will deal with this by
+	  deleting all the insns in the block later.
+
+       b. The fall-thru edge is not executable.  In this case we
+	  change the conditional jump into an unconditional jump and
+	  add a BARRIER after the unconditional jump.  Note that since
+	  we are working on generic RTL we can change the jump in-place
+	  instead of dealing with the headache of reemitting the jump.
+
+       c. The branch taken edge is not executable.  In this case
+	  we turn the jump into (set (pc) (pc)) which is a nop-jump
+          and we will remove the unrecognizable insn later.
+
+     In cases B & C we are removing uses of registers, so make sure
+     to note those changes for the DF analyzer.  */
+
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      basic_block bb = BASIC_BLOCK (i);
+      rtx insn = bb->end;
+      edge edge = bb->succ;
+
+      /* If we have no predecessors, then this block is unreachable and
+	 will be cleaned up when we remove unreachable blocks.  */
+      if (bb->pred == NULL || GET_CODE (insn) != JUMP_INSN)
+	continue;
+
+      /* If this block ends in a conditional jump, but only has one
+	 successor, then the jump needs adjustment.  */
+      if (condjump_p (insn) && ! simplejump_p (insn)
+	  && bb->succ && bb->succ->succ_next == NULL)
+	{
+	  /* If the fallthru edge is the executable edge, then turn
+	     this jump into a nop jump, otherwise make it an unconditinoal
+	     jump to its target.  */
+	  if (edge->flags & EDGE_FALLTHRU)
+	    {
+	      PUT_CODE (insn, NOTE);
+	      NOTE_LINE_NUMBER (insn) = NOTE_INSN_DELETED;
+	    }
+	  else
+	    {
+	      SET_SRC (PATTERN (insn)) = gen_rtx_LABEL_REF (Pmode,
+							    JUMP_LABEL (insn));
+	      emit_barrier_after (insn);
+	      INSN_CODE (insn) = -1;
+	    }
+
+	  /* Inform the DF analyzer that this insn changed.  */
+	  df_insn_modify (df_analyzer, BLOCK_FOR_INSN (insn), insn);
+	}
+    }
+}

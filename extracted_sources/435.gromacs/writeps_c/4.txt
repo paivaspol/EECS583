@@ -1,0 +1,25 @@
+static int search_col(FILE *ps,real r,real g,real b)
+{
+  int  i;
+  
+  for(i=0; (i<nrgb); i++)
+    if ( (fabs(rgb[i].r-r) < GMX_REAL_EPS) &&
+	 (fabs(rgb[i].g-g) < GMX_REAL_EPS) &&
+	 (fabs(rgb[i].b-b) < GMX_REAL_EPS))
+      return i;
+  
+  if (nrgb >= maxrgb) 
+    {
+      maxrgb+=100;
+      srenew(rgb,maxrgb);
+    }
+  
+  ps_defcolor(ps,r,g,b,i2a(nrgb));
+  fprintf(ps,"/B%d {%s b} bind def\n",nrgb,i2a(nrgb));
+  rgb[i].r=r;
+  rgb[i].g=g;
+  rgb[i].b=b;
+  nrgb++;
+  
+  return nrgb-1;
+}

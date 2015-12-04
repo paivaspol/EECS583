@@ -1,0 +1,108 @@
+static splay_tree_node
+splay_tree_splay_helper (sp, key, node, parent, grandparent)
+     splay_tree sp;
+     splay_tree_key key;
+     splay_tree_node *node;
+     splay_tree_node *parent;
+     splay_tree_node *grandparent;
+{
+  splay_tree_node *next;
+  splay_tree_node n;
+  int comparison;
+  
+  n = *node;
+
+  if (!n)
+    return *parent;
+
+  comparison = (*sp->comp) (key, n->key);
+
+  if (comparison == 0)
+    /* We've found the target.  */
+    next = 0;
+  else if (comparison < 0)
+    /* The target is to the left.  */
+    next = &n->left;
+  else 
+    /* The target is to the right.  */
+    next = &n->right;
+
+  if (next)
+    {
+      /* Continue down the tree.  */
+      n = splay_tree_splay_helper (sp, key, next, node, parent);
+
+      /* The recursive call will change the place to which NODE
+	 points.  */
+      if (*node != n)
+	return n;
+    }
+
+  if (!parent)
+    /* NODE is the root.  We are done.  */
+    return n;
+
+  /* First, handle the case where there is no grandparent (i.e.,
+     *PARENT is the root of the tree.)  */
+  if (!grandparent) 
+    {
+      if (n == (*parent)->left)
+	{
+	  *node = n->right;
+	  n->right = *parent;
+	}
+      else
+	{
+	  *node = n->left;
+	  n->left = *parent;
+	}
+      *parent = n;
+      return n;
+    }
+
+  /* Next handle the cases where both N and *PARENT are left children,
+     or where both are right children.  */
+  if (n == (*parent)->left && *parent == (*grandparent)->left)
+    {
+      splay_tree_node p = *parent;
+
+      (*grandparent)->left = p->right;
+      p->right = *grandparent;
+      p->left = n->right;
+      n->right = p;
+      *grandparent = n;
+      return n; 
+    }
+  else if  (n == (*parent)->right && *parent == (*grandparent)->right)
+    {
+      splay_tree_node p = *parent;
+
+      (*grandparent)->right = p->left;
+      p->left = *grandparent;
+      p->right = n->left;
+      n->left = p;
+      *grandparent = n;
+      return n;
+    }
+
+  /* Finally, deal with the case where N is a left child, but *PARENT
+     is a right child, or vice versa.  */
+  if (n == (*parent)->left) 
+    {
+      (*parent)->left = n->right;
+      n->right = *parent;
+      (*grandparent)->right = n->left;
+      n->left = *grandparent;
+      *grandparent = n;
+      return n;
+    } 
+  else
+    {
+      (*parent)->right = n->left;
+      n->left = *parent;
+      (*grandparent)->left = n->right;
+      n->right = *grandparent;
+      *grandparent = n;
+      return n;
+    }
+}

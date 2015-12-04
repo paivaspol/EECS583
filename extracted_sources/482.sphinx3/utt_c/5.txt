@@ -1,0 +1,80 @@
+void utt_word_trans (kb_t *kb, int32 cf)
+{
+  int32 k, th;
+  vithist_t *vh;
+  vithist_entry_t *ve;
+  int32 vhid, le, n_ci, score;
+  int32 maxpscore;
+  static int32 *bs = NULL, *bv = NULL, epl;
+  s3wid_t wid;
+  int32 p;
+  dict_t *dict;
+  mdef_t *mdef;
+  maxpscore=MAX_NEG_INT32;
+
+  
+  vh = kb->vithist;
+  th = kb->bestscore + kb->beam->hmm;	/* Pruning threshold */
+  
+  if (vh->bestvh[cf] < 0)
+    return;
+  
+  dict = kbcore_dict(kb->kbcore);
+  mdef = kbcore_mdef(kb->kbcore);
+  n_ci = mdef_n_ciphone(mdef);
+  
+  /* Initialize best exit for each distinct word-final CIphone to NONE */
+  if (! bs) {
+    bs = (int32 *) ckd_calloc (n_ci, sizeof(int32));
+    bv = (int32 *) ckd_calloc (n_ci, sizeof(int32));
+    epl = cmd_ln_int32 ("-epl");
+  }
+  for (p = 0; p < n_ci; p++) {
+    bs[p] = MAX_NEG_INT32;
+    bv[p] = -1;
+  }
+  
+  /* Find best word exit in this frame for each distinct word-final CI phone */
+  vhid = vithist_first_entry (vh, cf);
+  le = vithist_n_entry (vh) - 1;
+  for (; vhid <= le; vhid++) {
+    ve = vithist_id2entry (vh, vhid);
+    if (! vithist_entry_valid(ve))
+      continue;
+    
+    wid = vithist_entry_wid (ve);
+    p = dict_last_phone (dict, wid);
+    if (mdef_is_fillerphone(mdef, p))
+      p = mdef_silphone(mdef);
+    
+    score = vithist_entry_score (ve);
+    if (score > bs[p]) {
+      bs[p] = score;
+      bv[p] = vhid;
+      if (maxpscore < score)
+	{
+	  maxpscore=score;
+	  /*	E_INFO("maxscore = %d\n", maxpscore); */
+	}
+    }
+  }
+  
+  /* Find lextree instance to be entered */
+  k = kb->n_lextrans++;
+  k = (k % (kb->n_lextree * epl)) / epl;
+  
+  /* Transition to unigram lextrees */
+  for (p = 0; p < n_ci; p++) {
+    if (bv[p] >= 0)
+      if (kb->wend_beam==0 || bs[p]>-kb->wend_beam + maxpscore)
+	{
+	  /* RAH, typecast p to (s3cipid_t) to make compiler happy */
+	  lextree_enter (kb->ugtree[k], (s3cipid_t) p, cf, bs[p], bv[p], th); 
+	}
+
+  }
+  
+  /* Transition to filler lextrees */
+  lextree_enter (kb->fillertree[k], BAD_S3CIPID, cf, vh->bestscore[cf],
+		 vh->bestvh[cf], th);
+}

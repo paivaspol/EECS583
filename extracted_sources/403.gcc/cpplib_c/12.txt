@@ -1,0 +1,20 @@
+static void
+do_undef (pfile)
+     cpp_reader *pfile;
+{
+  cpp_hashnode *node = lex_macro_node (pfile);  
+
+  /* 6.10.3.5 paragraph 2: [#undef] is ignored if the specified identifier
+     is not currently defined as a macro name.  */
+  if (node && node->type == NT_MACRO)
+    {
+      if (pfile->cb.undef)
+	(*pfile->cb.undef) (pfile, pfile->directive_line, node);
+
+      if (node->flags & NODE_WARN)
+	cpp_warning (pfile, "undefining \"%s\"", NODE_NAME (node));
+
+      _cpp_free_definition (node);
+    }
+  check_eol (pfile);
+}

@@ -1,0 +1,31 @@
+void
+expand_eh_region_start ()
+{
+  struct eh_region *new_region;
+  struct eh_region *cur_region;
+  rtx note;
+
+  if (! doing_eh (0))
+    return;
+
+  /* Insert a new blank region as a leaf in the tree.  */
+  new_region = (struct eh_region *) xcalloc (1, sizeof (*new_region));
+  cur_region = cfun->eh->cur_region;
+  new_region->outer = cur_region;
+  if (cur_region)
+    {
+      new_region->next_peer = cur_region->inner;
+      cur_region->inner = new_region;
+    }
+  else
+    {
+      new_region->next_peer = cfun->eh->region_tree;
+      cfun->eh->region_tree = new_region;
+    }
+  cfun->eh->cur_region = new_region;
+
+  /* Create a note marking the start of this region.  */
+  new_region->region_number = ++cfun->eh->last_region_number;
+  note = emit_note (NULL, NOTE_INSN_EH_REGION_BEG);
+  NOTE_EH_HANDLER (note) = new_region->region_number;
+}

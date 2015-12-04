@@ -1,0 +1,215 @@
+void init_img()
+{
+  int i,j;
+  int byte_abs_range;
+
+  static int mb_width_cr[4] = {0,8, 8,16};
+  static int mb_height_cr[4]= {0,8,16,16};
+
+  img->yuv_format = input->yuv_format;
+
+  //pel bitdepth init
+  img->bitdepth_luma   = input->BitDepthLuma;
+  
+  if((img->bitdepth_luma > img->bitdepth_chroma) || img->yuv_format == YUV400)
+    img->pic_unit_size_on_disk = (img->bitdepth_luma > 8)? 16:8;
+  else
+    img->pic_unit_size_on_disk = (img->bitdepth_chroma > 8)? 16:8;
+
+  img->bitdepth_luma_qp_scale   = 6*(img->bitdepth_luma   - 8);
+  img->bitdepth_lambda_scale    = 2*(img->bitdepth_luma   - 8);
+
+  img->dc_pred_value = 1<<(img->bitdepth_luma - 1);
+  img->max_imgpel_value = (1<<img->bitdepth_luma) - 1;
+
+  if (img->yuv_format != YUV400)  
+  {
+    img->bitdepth_chroma     = input->BitDepthChroma;
+    img->max_imgpel_value_uv = (1<<img->bitdepth_chroma) - 1;
+    img->num_blk8x8_uv       = (1<<img->yuv_format)&(~(0x1));
+    img->num_cdc_coeff       = img->num_blk8x8_uv<<1;
+    img->mb_cr_size_x        = (img->yuv_format==YUV420 || img->yuv_format==YUV422)? 8:16;
+    img->mb_cr_size_y        = (img->yuv_format==YUV444 || img->yuv_format==YUV422)? 16:8;
+
+    img->bitdepth_chroma_qp_scale = 6*(img->bitdepth_chroma - 8);
+    if(img->residue_transform_flag)
+      img->bitdepth_chroma_qp_scale += 6;
+
+    img->chroma_qp_offset[0] = active_pps->cb_qp_index_offset;
+    img->chroma_qp_offset[1] = active_pps->cr_qp_index_offset;
+  }
+  else
+  {
+    img->bitdepth_chroma     = 0;
+    img->max_imgpel_value_uv = 0;
+    img->num_blk8x8_uv       = 0;
+    img->num_cdc_coeff       = 0;
+    img->mb_cr_size_x        = 0;
+    img->mb_cr_size_y        = 0;
+    
+    img->bitdepth_chroma_qp_scale = 0;
+    img->bitdepth_chroma_qp_scale = 0;
+    
+    img->chroma_qp_offset[0] = 0;
+    img->chroma_qp_offset[1] = 0;
+  }
+
+  img->num_ref_frames = active_sps->num_ref_frames;
+  img->max_num_references   = active_sps->frame_mbs_only_flag ? active_sps->num_ref_frames : 2 * active_sps->num_ref_frames;
+
+
+  img->buf_cycle = input->num_ref_frames;
+
+  img->DeblockCall = 0;
+
+//  img->framerate=INIT_FRAME_RATE;   // The basic frame rate (of the original sequence)
+  img->framerate=(float) input->FrameRate;   // The basic frame rate (of the original sequence)
+
+
+  get_mem_mv (&(img->pred_mv));
+  get_mem_mv (&(img->all_mv));
+
+#if BI_PREDICTION
+  if (input->BiPredMotionEstimation)
+  {
+    get_mem_mv (&(img->bipred_mv1));
+    get_mem_mv (&(img->bipred_mv2));
+  }
+#endif
+
+  get_mem_ACcoeff (&(img->cofAC));
+  get_mem_DCcoeff (&(img->cofDC));
+
+  
+  if(input->MbInterlace)
+  {
+    get_mem_mv (&(rddata_top_frame_mb.pred_mv));
+    get_mem_mv (&(rddata_top_frame_mb.all_mv));
+
+    get_mem_mv (&(rddata_bot_frame_mb.pred_mv));
+    get_mem_mv (&(rddata_bot_frame_mb.all_mv));
+
+    get_mem_mv (&(rddata_top_field_mb.pred_mv));
+    get_mem_mv (&(rddata_top_field_mb.all_mv));
+
+    get_mem_mv (&(rddata_bot_field_mb.pred_mv));
+    get_mem_mv (&(rddata_bot_field_mb.all_mv));
+#if BI_PREDICTION
+    if (input->BiPredMotionEstimation)
+    {
+      get_mem_mv (&(rddata_top_frame_mb.bipred_mv1));
+      get_mem_mv (&(rddata_top_frame_mb.bipred_mv2));
+      get_mem_mv (&(rddata_bot_frame_mb.bipred_mv1));
+      get_mem_mv (&(rddata_bot_frame_mb.bipred_mv2));
+      get_mem_mv (&(rddata_top_field_mb.bipred_mv1));
+      get_mem_mv (&(rddata_top_field_mb.bipred_mv2));
+      get_mem_mv (&(rddata_bot_field_mb.bipred_mv1));
+      get_mem_mv (&(rddata_bot_field_mb.bipred_mv2));
+    }
+#endif
+
+    get_mem_ACcoeff (&(rddata_top_frame_mb.cofAC));
+    get_mem_DCcoeff (&(rddata_top_frame_mb.cofDC));
+
+    get_mem_ACcoeff (&(rddata_bot_frame_mb.cofAC));
+    get_mem_DCcoeff (&(rddata_bot_frame_mb.cofDC));
+
+    get_mem_ACcoeff (&(rddata_top_field_mb.cofAC));
+    get_mem_DCcoeff (&(rddata_top_field_mb.cofDC));
+
+    get_mem_ACcoeff (&(rddata_bot_field_mb.cofAC));
+    get_mem_DCcoeff (&(rddata_bot_field_mb.cofDC));
+  }
+
+  if(img->max_imgpel_value > img->max_imgpel_value_uv)
+    byte_abs_range = (img->max_imgpel_value + 1) * 2;
+  else
+    byte_abs_range = (img->max_imgpel_value_uv + 1) * 2;
+
+  if ((img->quad = (int*)calloc (byte_abs_range, sizeof(int))) == NULL)
+    no_mem_exit ("init_img: img->quad");
+  img->quad+=byte_abs_range/2;
+  for (i=0; i < byte_abs_range/2; ++i)
+  {
+    img->quad[i]=img->quad[-i]=i*i;
+  }
+
+  img->width    = (input->img_width+img->auto_crop_right);
+  img->height   = (input->img_height+img->auto_crop_bottom);
+  if (img->yuv_format != YUV400)
+  {
+    img->width_cr = img->width/(16/mb_width_cr[img->yuv_format]);
+    img->height_cr= img->height/(16/mb_height_cr[img->yuv_format]);
+
+    input->img_width_cr  = input->img_width/(16/mb_width_cr[img->yuv_format]);
+    input->img_height_cr = input->img_height/(16/mb_height_cr[img->yuv_format]);
+  }
+  else
+  {
+    img->width_cr = 0;
+    img->height_cr= 0;
+
+    input->img_width_cr  = 0;
+    input->img_height_cr = 0;
+  }
+  img->height_cr_frame = img->height_cr;
+  
+  img->PicWidthInMbs    = (input->img_width+img->auto_crop_right)/MB_BLOCK_SIZE;
+  img->FrameHeightInMbs = (input->img_height+img->auto_crop_bottom)/MB_BLOCK_SIZE;
+  img->FrameSizeInMbs   = img->PicWidthInMbs * img->FrameHeightInMbs;
+
+  img->PicHeightInMapUnits = ( active_sps->frame_mbs_only_flag ? img->FrameHeightInMbs : img->FrameHeightInMbs/2 );
+
+  if(((img->mb_data) = (Macroblock *) calloc(img->FrameSizeInMbs,sizeof(Macroblock))) == NULL)
+    no_mem_exit("init_img: img->mb_data");
+
+  if(input->UseConstrainedIntraPred)
+  {
+    if(((img->intra_block) = (int*)calloc(img->FrameSizeInMbs,sizeof(int))) == NULL)
+      no_mem_exit("init_img: img->intra_block");
+  }
+
+  get_mem2Dint(&(img->ipredmode), img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);        //need two extra rows at right and bottom
+  get_mem2Dint(&(img->ipredmode8x8), img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);     // help storage for ipredmode 8x8, inserted by YV
+ 
+  get_mem2Dint(&(rddata_top_frame_mb.ipredmode), img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);
+  
+  if(input->MbInterlace) 
+  {
+    get_mem2Dint(&(rddata_bot_frame_mb.ipredmode), img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);
+    get_mem2Dint(&(rddata_top_field_mb.ipredmode), img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);
+    get_mem2Dint(&(rddata_bot_field_mb.ipredmode), img->width/BLOCK_SIZE, img->height/BLOCK_SIZE);
+  }
+  // CAVLC mem
+  get_mem3Dint(&(img->nz_coeff), img->FrameSizeInMbs, 4, 4+img->num_blk8x8_uv);
+
+  CAVLC_init();
+
+  for (i=0; i < img->width/BLOCK_SIZE; i++)
+    for (j=0; j < img->height/BLOCK_SIZE; j++)
+    {
+      img->ipredmode[i][j]=-1;
+      img->ipredmode8x8[i][j]=-1;
+    }
+
+  img->mb_y_upd=0;
+
+  RandomIntraInit (img->width/16, img->height/16, input->RandomIntraMBRefresh);
+
+  InitSEIMessages();  // Tian Dong (Sept 2002)
+
+  // Initialize filtering parameters. If sending parameters, the offsets are 
+  // multiplied by 2 since inputs are taken in "div 2" format.
+  // If not sending parameters, all fields are cleared 
+  if (input->LFSendParameters)
+  {
+    input->LFAlphaC0Offset <<= 1;
+    input->LFBetaOffset <<= 1;
+  }
+  else
+  {
+    input->LFDisableIdc = 0;
+    input->LFAlphaC0Offset = 0;
+    input->LFBetaOffset = 0;
+  }
+}

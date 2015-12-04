@@ -1,0 +1,22 @@
+int
+next_insns_test_no_inequality (insn)
+     rtx insn;
+{
+  rtx next = NEXT_INSN (insn);
+
+  for (; next != 0; next = NEXT_INSN (next))
+    {
+      if (GET_CODE (next) == CODE_LABEL
+	  || GET_CODE (next) == BARRIER)
+	return 1;
+      if (GET_CODE (next) == NOTE)
+	continue;
+      if (inequality_comparisons_p (PATTERN (next)))
+	return 0;
+      if (sets_cc0_p (PATTERN (next)) == 1)
+	return 1;
+      if (! reg_mentioned_p (cc0_rtx, PATTERN (next)))
+	return 1;
+    }
+  return 1;
+}

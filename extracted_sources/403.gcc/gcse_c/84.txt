@@ -1,0 +1,35 @@
+static int
+one_cprop_pass (pass, alter_jumps)
+     int pass;
+     int alter_jumps;
+{
+  int changed = 0;
+
+  const_prop_count = 0;
+  copy_prop_count = 0;
+
+  alloc_set_hash_table (max_cuid);
+  compute_set_hash_table ();
+  if (gcse_file)
+    dump_hash_table (gcse_file, "SET", set_hash_table, set_hash_table_size,
+		     n_sets);
+  if (n_sets > 0)
+    {
+      alloc_cprop_mem (n_basic_blocks, n_sets);
+      compute_cprop_data ();
+      changed = cprop (alter_jumps);
+      free_cprop_mem ();
+    }
+
+  free_set_hash_table ();
+
+  if (gcse_file)
+    {
+      fprintf (gcse_file, "CPROP of %s, pass %d: %d bytes needed, ",
+	       current_function_name, pass, bytes_used);
+      fprintf (gcse_file, "%d const props, %d copy props\n\n",
+	       const_prop_count, copy_prop_count);
+    }
+
+  return changed;
+}

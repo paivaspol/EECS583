@@ -1,0 +1,114 @@
+void
+P7TraceCount(struct plan7_s *hmm, char *dsq, float wt, struct p7trace_s *tr)
+{
+  int tpos;                     /* position in tr */
+  int i;			/* symbol position in seq */
+  
+  for (tpos = 0; tpos < tr->tlen; tpos++)
+    {
+      i = tr->pos[tpos];
+
+      /* Emission counts. 
+       * Don't bother counting null states N,J,C.
+       */
+      if (tr->statetype[tpos] == STM) 
+	P7CountSymbol(hmm->mat[tr->nodeidx[tpos]], dsq[i], wt);
+      else if (tr->statetype[tpos] == STI) 
+	P7CountSymbol(hmm->ins[tr->nodeidx[tpos]], dsq[i], wt);
+
+      /* State transition counts
+       */
+      switch (tr->statetype[tpos]) {
+      case STS:
+	break;			/* don't bother; P=1 */
+      case STN:
+	switch (tr->statetype[tpos+1]) {
+	case STB: hmm->xt[XTN][MOVE] += wt; break;
+	case STN: hmm->xt[XTN][LOOP] += wt; break;
+	default:
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+      case STB:
+	switch (tr->statetype[tpos+1]) {
+	case STM: hmm->begin[tr->nodeidx[tpos+1]] += wt; break;
+	case STD: hmm->tbd1 += wt;                       break;
+	default:      
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+      case STM:
+	switch (tr->statetype[tpos+1]) {
+	case STM: hmm->t[tr->nodeidx[tpos]][TMM] += wt; break;
+	case STI: hmm->t[tr->nodeidx[tpos]][TMI] += wt; break;
+	case STD: hmm->t[tr->nodeidx[tpos]][TMD] += wt; break;
+	case STE: hmm->end[tr->nodeidx[tpos]]    += wt; break;
+	default:    
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+      case STI:
+	switch (tr->statetype[tpos+1]) {
+	case STM: hmm->t[tr->nodeidx[tpos]][TIM] += wt; break;
+	case STI: hmm->t[tr->nodeidx[tpos]][TII] += wt; break;
+	default:    
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+      case STD:
+	switch (tr->statetype[tpos+1]) {
+	case STM: hmm->t[tr->nodeidx[tpos]][TDM] += wt; break;
+	case STD: hmm->t[tr->nodeidx[tpos]][TDD] += wt; break;
+	case STE: /* ignore; p(D->E) = 1.0 */           break;
+	default: 
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+      case STE:
+	switch (tr->statetype[tpos+1]) {
+	case STC: hmm->xt[XTE][MOVE] += wt; break;
+	case STJ: hmm->xt[XTE][LOOP] += wt; break;
+	default:     
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+     case STJ:
+	switch (tr->statetype[tpos+1]) {
+	case STB: hmm->xt[XTJ][MOVE] += wt; break;
+	case STJ: hmm->xt[XTJ][LOOP] += wt; break;
+	default:     
+	  Die("illegal state transition %s->%s in traceback", 
+	      Statetype(tr->statetype[tpos]),
+	      Statetype(tr->statetype[tpos+1]));
+	}
+	break;
+      case STC:
+	switch (tr->statetype[tpos+1]) {
+	case STT: hmm->xt[XTC][MOVE] += wt; break;
+	case STC: hmm->xt[XTC][LOOP] += wt; break;
+	default:     
+	 Die("illegal state transition %s->%s in traceback", 
+	     Statetype(tr->statetype[tpos]),
+	     Statetype(tr->statetype[tpos+1])); 
+	}
+	break;
+      case STT:
+	break;			/* T is the last. It makes no transitions. */
+      default:
+	Die("illegal state %s in traceback", 
+	    Statetype(tr->statetype[tpos]));
+      }
+    }
+}

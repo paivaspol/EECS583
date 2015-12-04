@@ -1,0 +1,21 @@
+void pr_scalar_gk(char *fn,int nx,int ny,int nz,rvec box,real ***ghat)
+{
+  FILE *fp;
+  int  ii,jj,kk;
+  real k1;
+  rvec k,lll;
+  
+  calc_lll(box,lll);
+  
+  fp=xvgropen(fn,"G-Hat","k","gk");
+  for(ii=0; (ii<nx); ii++) {
+    for(jj=0; (jj<ny); jj++) {
+      for(kk=0; (kk<nz); kk++) {
+	calc_k(lll,ii,jj,kk,nx,ny,nz,k);
+	k1 = norm(k);
+	fprintf(fp,"%10g  %10g\n",k1,ghat[ii][jj][kk]);
+      }
+    }
+  }
+  fclose(fp);
+}

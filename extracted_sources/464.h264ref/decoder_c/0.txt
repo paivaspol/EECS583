@@ -1,0 +1,101 @@
+void decode_one_b8block (int decoder, int mbmode, int b8block, int b8mode, int b8ref)
+{
+  int i,j,block_y,block_x,bx,by;
+  int ref_inx = (IMG_NUMBER-1)%img->num_ref_frames;
+
+  int mv[2][BLOCK_MULTIPLE][BLOCK_MULTIPLE];
+  int resY_tmp[MB_BLOCK_SIZE][MB_BLOCK_SIZE];
+
+  int i0 = (b8block%2)<<3,   i1 = i0+8,   bx0 = i0>>2,   bx1 = bx0+2;
+  int j0 = (b8block/2)<<3,   j1 = j0+8,   by0 = j0>>2,   by1 = by0+2;
+
+  if (img->type==I_SLICE)
+  {
+    for(i=i0;i<i1;i++)
+    for(j=j0;j<j1;j++)
+    {
+      decs->decY[decoder][img->pix_y+j][img->pix_x+i]=enc_picture->imgY[img->pix_y+j][img->pix_x+i];
+    }
+  }
+  else
+  {
+    if (mbmode==0 && (img->type==P_SLICE || (img->type==B_SLICE && img->nal_reference_idc>0)))
+    {
+      for(i=i0;i<i1;i++)
+      for(j=j0;j<j1;j++)
+      {
+        resY_tmp[j][i]=0;
+      }
+      for (by=by0; by<by1; by++)
+      for (bx=bx0; bx<bx1; bx++)
+      {
+        mv[0][by][bx] = mv[1][by][bx] = 0;
+      }
+    }
+    else
+    {
+      if (b8mode>=1 && b8mode<=7)
+      {
+        for (by=by0; by<by1; by++)
+        for (bx=bx0; bx<bx1; bx++)
+        {
+          mv[0][by][bx] = img->all_mv[bx][by][LIST_0][b8ref][b8mode][0];
+          mv[1][by][bx] = img->all_mv[bx][by][LIST_0][b8ref][b8mode][1];
+        }
+      }
+      else
+      {
+        for (by=by0; by<by1; by++)
+        for (bx=bx0; bx<bx1; bx++)
+        {
+          mv[0][by][bx] = mv[1][by][bx] = 0;
+        }
+      }
+          
+      for(i=i0;i<i1;i++)
+      for(j=j0;j<j1;j++)
+      {
+        resY_tmp[j][i]=decs->resY[j][i];
+      }
+    }
+
+    // Decode Luminance
+    if ((b8mode>=1 && b8mode<=7) || (mbmode==0 && (img->type==P_SLICE || (img->type==B_SLICE && img->nal_reference_idc>0))))
+    {
+      for (by=by0; by<by1; by++)
+      for (bx=bx0; bx<bx1; bx++)
+      {
+        block_x = img->block_x+bx;
+        block_y = img->block_y+by;
+        if (img->type == B_SLICE && enc_picture != enc_frame_picture)
+          ref_inx = (IMG_NUMBER-b8ref-2)%img->num_ref_frames;
+
+        Get_Reference_Block (decs->decref[decoder][ref_inx],
+                             block_y, block_x,
+                             mv[0][by][bx],
+                             mv[1][by][bx],
+                             decs->RefBlock);
+        for (j=0; j<4; j++)
+        for (i=0; i<4; i++)
+        {
+          /*
+          if (decs->RefBlock[j][i] != UMVPelY_14 (mref[ref_inx],
+                                                  (block_y*4+j)*4+mv[1][by][bx],
+                                                  (block_x*4+i)*4+mv[0][by][bx]))
+          ref_inx = (img->number-ref-1)%img->num_ref_frames;
+          */
+          decs->decY[decoder][block_y*4+j][block_x*4+i] = resY_tmp[by*4+j][bx*4+i] + decs->RefBlock[j][i];
+        }
+      }
+    }
+    else 
+    {
+      // Intra Refresh - Assume no spatial prediction
+      for(i=i0;i<i1;i++)
+      for(j=j0;j<j1;j++)
+      {
+        decs->decY[decoder][img->pix_y+j][img->pix_x+i] = enc_picture->imgY[img->pix_y+j][img->pix_x+i];
+      }
+    }
+  }
+}

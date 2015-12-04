@@ -1,0 +1,94 @@
+int
+edivm (den, num)
+     UEMUSHORT den[], num[];
+{
+  int i;
+  UEMUSHORT *p, *q;
+  UEMUSHORT j;
+
+  p = &equot[0];
+  *p++ = num[0];
+  *p++ = num[1];
+
+  for (i = M; i < NI; i++)
+    {
+      *p++ = 0;
+    }
+
+  /* Use faster compare and subtraction if denominator has only 15 bits of
+     significance.  */
+
+  p = &den[M + 2];
+  if (*p++ == 0)
+    {
+      for (i = M + 3; i < NI; i++)
+	{
+	  if (*p++ != 0)
+	    goto fulldiv;
+	}
+      if ((den[M + 1] & 1) != 0)
+	goto fulldiv;
+      eshdn1 (num);
+      eshdn1 (den);
+
+      p = &den[M + 1];
+      q = &num[M + 1];
+
+      for (i = 0; i < NBITS + 2; i++)
+	{
+	  if (*p <= *q)
+	    {
+	      *q -= *p;
+	      j = 1;
+	    }
+	  else
+	    {
+	      j = 0;
+	    }
+	  eshup1 (equot);
+	  equot[NI - 2] |= j;
+	  eshup1 (num);
+	}
+      goto divdon;
+    }
+
+  /* The number of quotient bits to calculate is NBITS + 1 scaling guard
+     bit + 1 roundoff bit.  */
+
+ fulldiv:
+
+  p = &equot[NI - 2];
+  for (i = 0; i < NBITS + 2; i++)
+    {
+      if (ecmpm (den, num) <= 0)
+	{
+	  esubm (den, num);
+	  j = 1;		/* quotient bit = 1 */
+	}
+      else
+	j = 0;
+      eshup1 (equot);
+      *p |= j;
+      eshup1 (num);
+    }
+
+ divdon:
+
+  eshdn1 (equot);
+  eshdn1 (equot);
+
+  /* test for nonzero remainder after roundoff bit */
+  p = &num[M];
+  j = 0;
+  for (i = M; i < NI; i++)
+    {
+      j |= *p++;
+    }
+  if (j)
+    j = 1;
+
+
+  for (i = 0; i < NI; i++)
+    num[i] = equot[i];
+  return ((int) j);
+}

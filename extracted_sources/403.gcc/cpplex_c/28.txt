@@ -1,0 +1,14 @@
+void
+_cpp_extend_buff (pfile, pbuff, min_extra)
+     cpp_reader *pfile;
+     _cpp_buff **pbuff;
+     size_t min_extra;
+{
+  _cpp_buff *new_buff, *old_buff = *pbuff;
+  size_t size = EXTENDED_BUFF_SIZE (old_buff, min_extra);
+
+  new_buff = _cpp_get_buff (pfile, size);
+  memcpy (new_buff->base, old_buff->cur, BUFF_ROOM (old_buff));
+  new_buff->next = old_buff;
+  *pbuff = new_buff;
+}

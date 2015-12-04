@@ -1,0 +1,36 @@
+int
+df_bb_regs_lives_compare (df, bb, reg1, reg2)
+     struct df *df;
+     basic_block bb;
+     rtx reg1;
+     rtx reg2;
+{
+  unsigned int regno1 = REGNO (reg1);
+  unsigned int regno2 = REGNO (reg2);
+  struct ref *def1;
+  struct ref *use1;
+  struct ref *def2;
+  struct ref *use2;
+
+
+  /* The regs must be local to BB.  */
+  if (df_regno_bb (df, regno1) != bb
+      || df_regno_bb (df, regno2) != bb)
+    abort ();
+
+  def2 = df_bb_regno_first_def_find (df, bb, regno2);
+  use1 = df_bb_regno_last_use_find (df, bb, regno1);
+
+  if (DF_INSN_LUID (df, DF_REF_INSN (def2))
+      > DF_INSN_LUID (df, DF_REF_INSN (use1)))
+    return -1;
+
+  def1 = df_bb_regno_first_def_find (df, bb, regno1);
+  use2 = df_bb_regno_last_use_find (df, bb, regno2);
+
+  if (DF_INSN_LUID (df, DF_REF_INSN (def1))
+      > DF_INSN_LUID (df, DF_REF_INSN (use2)))
+    return 1;
+
+  return 0;
+}

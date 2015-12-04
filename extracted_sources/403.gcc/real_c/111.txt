@@ -1,0 +1,19 @@
+static void
+etoibm (x, d, mode)
+     const UEMUSHORT *x;
+     UEMUSHORT *d;
+     enum machine_mode mode;
+{
+  UEMUSHORT xi[NI];
+  EMULONG exp;
+  int rndsav;
+
+  emovi (x, xi);
+  exp = (EMULONG) xi[E] - (EXONE - (0x41 << 2));	/* adjust exponent for offsets */
+							/* round off to nearest or even */
+  rndsav = rndprc;
+  rndprc = 56;
+  emdnorm (xi, 0, 0, exp, 64);
+  rndprc = rndsav;
+  toibm (xi, d, mode);
+}

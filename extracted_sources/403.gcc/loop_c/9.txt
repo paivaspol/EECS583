@@ -1,0 +1,23 @@
+static rtx
+skip_consec_insns (insn, count)
+     rtx insn;
+     int count;
+{
+  for (; count > 0; count--)
+    {
+      rtx temp;
+
+      /* If first insn of libcall sequence, skip to end.  */
+      /* Do this at start of loop, since INSN is guaranteed to
+	 be an insn here.  */
+      if (GET_CODE (insn) != NOTE
+	  && (temp = find_reg_note (insn, REG_LIBCALL, NULL_RTX)))
+	insn = XEXP (temp, 0);
+
+      do
+	insn = NEXT_INSN (insn);
+      while (GET_CODE (insn) == NOTE);
+    }
+
+  return insn;
+}

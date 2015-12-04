@@ -1,0 +1,48 @@
+static int
+want_to_gcse_p (x)
+     rtx x;
+{
+  static rtx test_insn = 0;
+  int num_clobbers = 0;
+  int icode;
+
+  switch (GET_CODE (x))
+    {
+    case REG:
+    case SUBREG:
+    case CONST_INT:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case CALL:
+      return 0;
+
+    default:
+      break;
+    }
+
+  /* If this is a valid operand, we are OK.  If it's VOIDmode, we aren't.  */
+  if (general_operand (x, GET_MODE (x)))
+    return 1;
+  else if (GET_MODE (x) == VOIDmode)
+    return 0;
+
+  /* Otherwise, check if we can make a valid insn from it.  First initialize
+     our test insn if we haven't already.  */
+  if (test_insn == 0)
+    {
+      test_insn
+	= make_insn_raw (gen_rtx_SET (VOIDmode,
+				      gen_rtx_REG (word_mode,
+						   FIRST_PSEUDO_REGISTER * 2),
+				      const0_rtx));
+      NEXT_INSN (test_insn) = PREV_INSN (test_insn) = 0;
+      ggc_add_rtx_root (&test_insn, 1);
+    }
+
+  /* Now make an insn like the one we would make when GCSE'ing and see if
+     valid.  */
+  PUT_MODE (SET_DEST (PATTERN (test_insn)), GET_MODE (x));
+  SET_SRC (PATTERN (test_insn)) = x;
+  return ((icode = recog (PATTERN (test_insn), test_insn, &num_clobbers)) >= 0
+	  && (num_clobbers == 0 || ! added_clobbers_hard_reg_p (icode)));
+}

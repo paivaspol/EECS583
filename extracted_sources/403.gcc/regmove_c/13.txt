@@ -1,0 +1,471 @@
+void
+regmove_optimize (f, nregs, regmove_dump_file)
+     rtx f;
+     int nregs;
+     FILE *regmove_dump_file;
+{
+  int old_max_uid = get_max_uid ();
+  rtx insn;
+  struct match match;
+  int pass;
+  int i;
+  rtx copy_src, copy_dst;
+
+  /* ??? Hack.  Regmove doesn't examine the CFG, and gets mightily
+     confused by non-call exceptions ending blocks.  */
+  if (flag_non_call_exceptions)
+    return;
+
+  /* Find out where a potential flags register is live, and so that we
+     can supress some optimizations in those zones.  */
+  mark_flags_life_zones (discover_flags_reg ());
+
+  regno_src_regno = (int *) xmalloc (sizeof *regno_src_regno * nregs);
+  for (i = nregs; --i >= 0; ) regno_src_regno[i] = -1;
+
+  regmove_bb_head = (int *) xmalloc (sizeof (int) * (old_max_uid + 1));
+  for (i = old_max_uid; i >= 0; i--) regmove_bb_head[i] = -1;
+  for (i = 0; i < n_basic_blocks; i++)
+    regmove_bb_head[INSN_UID (BLOCK_HEAD (i))] = i;
+
+  /* A forward/backward pass.  Replace output operands with input operands.  */
+
+  for (pass = 0; pass <= 2; pass++)
+    {
+      if (! flag_regmove && pass >= flag_expensive_optimizations)
+	goto done;
+
+      if (regmove_dump_file)
+	fprintf (regmove_dump_file, "Starting %s pass...\n",
+		 pass ? "backward" : "forward");
+
+      for (insn = pass ? get_last_insn () : f; insn;
+	   insn = pass ? PREV_INSN (insn) : NEXT_INSN (insn))
+	{
+	  rtx set;
+	  int op_no, match_no;
+
+	  set = single_set (insn);
+	  if (! set)
+	    continue;
+
+	  if (flag_expensive_optimizations && ! pass
+	      && (GET_CODE (SET_SRC (set)) == SIGN_EXTEND
+		  || GET_CODE (SET_SRC (set)) == ZERO_EXTEND)
+	      && GET_CODE (XEXP (SET_SRC (set), 0)) == REG
+	      && GET_CODE (SET_DEST (set)) == REG)
+	    optimize_reg_copy_3 (insn, SET_DEST (set), SET_SRC (set));
+
+	  if (flag_expensive_optimizations && ! pass
+	      && GET_CODE (SET_SRC (set)) == REG
+	      && GET_CODE (SET_DEST (set)) == REG)
+	    {
+	      /* If this is a register-register copy where SRC is not dead,
+		 see if we can optimize it.  If this optimization succeeds,
+		 it will become a copy where SRC is dead.  */
+	      if ((find_reg_note (insn, REG_DEAD, SET_SRC (set))
+		   || optimize_reg_copy_1 (insn, SET_DEST (set), SET_SRC (set)))
+		  && REGNO (SET_DEST (set)) >= FIRST_PSEUDO_REGISTER)
+		{
+		  /* Similarly for a pseudo-pseudo copy when SRC is dead.  */
+		  if (REGNO (SET_SRC (set)) >= FIRST_PSEUDO_REGISTER)
+		    optimize_reg_copy_2 (insn, SET_DEST (set), SET_SRC (set));
+		  if (regno_src_regno[REGNO (SET_DEST (set))] < 0
+		      && SET_SRC (set) != SET_DEST (set))
+		    {
+		      int srcregno = REGNO (SET_SRC (set));
+		      if (regno_src_regno[srcregno] >= 0)
+			srcregno = regno_src_regno[srcregno];
+		      regno_src_regno[REGNO (SET_DEST (set))] = srcregno;
+		    }
+		}
+	    }
+          if (! flag_regmove)
+            continue;
+
+	  if (! find_matches (insn, &match))
+	    continue;
+
+	  /* Now scan through the operands looking for a source operand
+	     which is supposed to match the destination operand.
+	     Then scan forward for an instruction which uses the dest
+	     operand.
+	     If it dies there, then replace the dest in both operands with
+	     the source operand.  */
+
+	  for (op_no = 0; op_no < recog_data.n_operands; op_no++)
+	    {
+	      rtx src, dst, src_subreg;
+	      enum reg_class src_class, dst_class;
+
+	      match_no = match.with[op_no];
+
+	      /* Nothing to do if the two operands aren't supposed to match.  */
+	      if (match_no < 0)
+		continue;
+
+	      src = recog_data.operand[op_no];
+	      dst = recog_data.operand[match_no];
+
+	      if (GET_CODE (src) != REG)
+		continue;
+
+	      src_subreg = src;
+	      if (GET_CODE (dst) == SUBREG
+		  && GET_MODE_SIZE (GET_MODE (dst))
+		     >= GET_MODE_SIZE (GET_MODE (SUBREG_REG (dst))))
+		{
+		  src_subreg
+		    = gen_rtx_SUBREG (GET_MODE (SUBREG_REG (dst)),
+				      src, SUBREG_BYTE (dst));
+		  dst = SUBREG_REG (dst);
+		}
+	      if (GET_CODE (dst) != REG
+		  || REGNO (dst) < FIRST_PSEUDO_REGISTER)
+		continue;
+
+	      if (REGNO (src) < FIRST_PSEUDO_REGISTER)
+		{
+		  if (match.commutative[op_no] < op_no)
+		    regno_src_regno[REGNO (dst)] = REGNO (src);
+		  continue;
+		}
+
+	      if (REG_LIVE_LENGTH (REGNO (src)) < 0)
+		continue;
+
+	      /* op_no/src must be a read-only operand, and
+		 match_operand/dst must be a write-only operand.  */
+	      if (match.use[op_no] != READ
+		  || match.use[match_no] != WRITE)
+		continue;
+
+	      if (match.early_clobber[match_no]
+		  && count_occurrences (PATTERN (insn), src, 0) > 1)
+		continue;
+
+	      /* Make sure match_operand is the destination.  */
+	      if (recog_data.operand[match_no] != SET_DEST (set))
+		continue;
+
+	      /* If the operands already match, then there is nothing to do.  */
+	      if (operands_match_p (src, dst))
+		continue;
+
+	      /* But in the commutative case, we might find a better match.  */
+	      if (match.commutative[op_no] >= 0)
+		{
+		  rtx comm = recog_data.operand[match.commutative[op_no]];
+		  if (operands_match_p (comm, dst)
+		      && (replacement_quality (comm)
+			  >= replacement_quality (src)))
+		    continue;
+		}
+
+	      src_class = reg_preferred_class (REGNO (src));
+	      dst_class = reg_preferred_class (REGNO (dst));
+	      if (! regclass_compatible_p (src_class, dst_class))
+		continue;
+
+	      if (GET_MODE (src) != GET_MODE (dst))
+		continue;
+
+	      if (fixup_match_1 (insn, set, src, src_subreg, dst, pass,
+				 op_no, match_no,
+				 regmove_dump_file))
+		break;
+	    }
+	}
+    }
+
+  /* A backward pass.  Replace input operands with output operands.  */
+
+  if (regmove_dump_file)
+    fprintf (regmove_dump_file, "Starting backward pass...\n");
+
+  for (insn = get_last_insn (); insn; insn = PREV_INSN (insn))
+    {
+      if (INSN_P (insn))
+	{
+	  int op_no, match_no;
+	  int success = 0;
+
+	  if (! find_matches (insn, &match))
+	    continue;
+
+	  /* Now scan through the operands looking for a destination operand
+	     which is supposed to match a source operand.
+	     Then scan backward for an instruction which sets the source
+	     operand.  If safe, then replace the source operand with the
+	     dest operand in both instructions.  */
+
+	  copy_src = NULL_RTX;
+	  copy_dst = NULL_RTX;
+	  for (op_no = 0; op_no < recog_data.n_operands; op_no++)
+	    {
+	      rtx set, p, src, dst;
+	      rtx src_note, dst_note;
+	      int num_calls = 0;
+	      enum reg_class src_class, dst_class;
+	      int length;
+
+	      match_no = match.with[op_no];
+
+	      /* Nothing to do if the two operands aren't supposed to match.  */
+	      if (match_no < 0)
+		continue;
+
+	      dst = recog_data.operand[match_no];
+	      src = recog_data.operand[op_no];
+
+	      if (GET_CODE (src) != REG)
+		continue;
+
+	      if (GET_CODE (dst) != REG
+		  || REGNO (dst) < FIRST_PSEUDO_REGISTER
+		  || REG_LIVE_LENGTH (REGNO (dst)) < 0
+		  || RTX_UNCHANGING_P (dst))
+		continue;
+
+	      /* If the operands already match, then there is nothing to do.  */
+	      if (operands_match_p (src, dst))
+		continue;
+
+	      if (match.commutative[op_no] >= 0)
+		{
+		  rtx comm = recog_data.operand[match.commutative[op_no]];
+		  if (operands_match_p (comm, dst))
+		    continue;
+		}
+
+	      set = single_set (insn);
+	      if (! set)
+		continue;
+
+	      /* Note that single_set ignores parts of a parallel set for
+		 which one of the destinations is REG_UNUSED.  We can't
+		 handle that here, since we can wind up rewriting things
+		 such that a single register is set twice within a single
+		 parallel.  */
+	      if (reg_set_p (src, insn))
+		continue;
+
+	      /* match_no/dst must be a write-only operand, and
+		 operand_operand/src must be a read-only operand.  */
+	      if (match.use[op_no] != READ
+		  || match.use[match_no] != WRITE)
+		continue;
+
+	      if (match.early_clobber[match_no]
+		  && count_occurrences (PATTERN (insn), src, 0) > 1)
+		continue;
+
+	      /* Make sure match_no is the destination.  */
+	      if (recog_data.operand[match_no] != SET_DEST (set))
+		continue;
+
+	      if (REGNO (src) < FIRST_PSEUDO_REGISTER)
+		{
+		  if (GET_CODE (SET_SRC (set)) == PLUS
+		      && GET_CODE (XEXP (SET_SRC (set), 1)) == CONST_INT
+		      && XEXP (SET_SRC (set), 0) == src
+		      && fixup_match_2 (insn, dst, src,
+					XEXP (SET_SRC (set), 1),
+					regmove_dump_file))
+		    break;
+		  continue;
+		}
+	      src_class = reg_preferred_class (REGNO (src));
+	      dst_class = reg_preferred_class (REGNO (dst));
+
+	      if (! (src_note = find_reg_note (insn, REG_DEAD, src)))
+		{
+		  /* We used to force the copy here like in other cases, but
+		     it produces worse code, as it eliminates no copy
+		     instructions and the copy emitted will be produced by
+		     reload anyway.  On patterns with multiple alternatives,
+		     there may be better sollution availble.
+
+		     In particular this change produced slower code for numeric
+		     i387 programs.  */
+
+		  continue;
+		}
+
+	      if (! regclass_compatible_p (src_class, dst_class))
+		{
+		  if (!copy_src)
+		    {
+		      copy_src = src;
+		      copy_dst = dst;
+		    }
+		  continue;
+		}
+
+	      /* Can not modify an earlier insn to set dst if this insn
+		 uses an old value in the source.  */
+	      if (reg_overlap_mentioned_p (dst, SET_SRC (set)))
+		{
+		  if (!copy_src)
+		    {
+		      copy_src = src;
+		      copy_dst = dst;
+		    }
+		  continue;
+		}
+
+	      /* If src is set once in a different basic block,
+		 and is set equal to a constant, then do not use
+		 it for this optimization, as this would make it
+		 no longer equivalent to a constant.  */
+
+              if (reg_is_remote_constant_p (src, insn, f))
+		{
+		  if (!copy_src)
+		    {
+		      copy_src = src;
+		      copy_dst = dst;
+		    }
+		  continue;
+		}
+
+
+	      if (regmove_dump_file)
+		fprintf (regmove_dump_file,
+			 "Could fix operand %d of insn %d matching operand %d.\n",
+			 op_no, INSN_UID (insn), match_no);
+
+	      /* Scan backward to find the first instruction that uses
+		 the input operand.  If the operand is set here, then
+		 replace it in both instructions with match_no.  */
+
+	      for (length = 0, p = PREV_INSN (insn); p; p = PREV_INSN (p))
+		{
+		  rtx pset;
+
+		  /* ??? We can't scan past the end of a basic block without
+		     updating the register lifetime info
+		     (REG_DEAD/basic_block_live_at_start).  */
+		  if (perhaps_ends_bb_p (p))
+		    break;
+		  else if (! INSN_P (p))
+		    continue;
+
+		  length++;
+
+		  /* ??? See if all of SRC is set in P.  This test is much
+		     more conservative than it needs to be.  */
+		  pset = single_set (p);
+		  if (pset && SET_DEST (pset) == src)
+		    {
+		      /* We use validate_replace_rtx, in case there
+			 are multiple identical source operands.  All of
+			 them have to be changed at the same time.  */
+		      if (validate_replace_rtx (src, dst, insn))
+			{
+			  if (validate_change (p, &SET_DEST (pset),
+					       dst, 0))
+			    success = 1;
+			  else
+			    {
+			      /* Change all source operands back.
+				 This modifies the dst as a side-effect.  */
+			      validate_replace_rtx (dst, src, insn);
+			      /* Now make sure the dst is right.  */
+			      validate_change (insn,
+					       recog_data.operand_loc[match_no],
+					       dst, 0);
+			    }
+			}
+		      break;
+		    }
+
+		  if (reg_overlap_mentioned_p (src, PATTERN (p))
+		      || reg_overlap_mentioned_p (dst, PATTERN (p)))
+		    break;
+
+		  /* If we have passed a call instruction, and the
+		     pseudo-reg DST is not already live across a call,
+		     then don't perform the optimization.  */
+		  if (GET_CODE (p) == CALL_INSN)
+		    {
+		      num_calls++;
+
+		      if (REG_N_CALLS_CROSSED (REGNO (dst)) == 0)
+			break;
+		    }
+		}
+
+	      if (success)
+		{
+		  int dstno, srcno;
+
+		  /* Remove the death note for SRC from INSN.  */
+		  remove_note (insn, src_note);
+		  /* Move the death note for SRC to P if it is used
+		     there.  */
+		  if (reg_overlap_mentioned_p (src, PATTERN (p)))
+		    {
+		      XEXP (src_note, 1) = REG_NOTES (p);
+		      REG_NOTES (p) = src_note;
+		    }
+		  /* If there is a REG_DEAD note for DST on P, then remove
+		     it, because DST is now set there.  */
+		  if ((dst_note = find_reg_note (p, REG_DEAD, dst)))
+		    remove_note (p, dst_note);
+
+		  dstno = REGNO (dst);
+		  srcno = REGNO (src);
+
+		  REG_N_SETS (dstno)++;
+		  REG_N_SETS (srcno)--;
+
+		  REG_N_CALLS_CROSSED (dstno) += num_calls;
+		  REG_N_CALLS_CROSSED (srcno) -= num_calls;
+
+		  REG_LIVE_LENGTH (dstno) += length;
+		  if (REG_LIVE_LENGTH (srcno) >= 0)
+		    {
+		      REG_LIVE_LENGTH (srcno) -= length;
+		      /* REG_LIVE_LENGTH is only an approximation after
+			 combine if sched is not run, so make sure that we
+			 still have a reasonable value.  */
+		      if (REG_LIVE_LENGTH (srcno) < 2)
+			REG_LIVE_LENGTH (srcno) = 2;
+		    }
+
+		  if (regmove_dump_file)
+		    fprintf (regmove_dump_file,
+			     "Fixed operand %d of insn %d matching operand %d.\n",
+			     op_no, INSN_UID (insn), match_no);
+
+		  break;
+		}
+	    }
+
+	  /* If we weren't able to replace any of the alternatives, try an
+	     alternative appoach of copying the source to the destination.  */
+	  if (!success && copy_src != NULL_RTX)
+	    copy_src_to_dest (insn, copy_src, copy_dst, old_max_uid);
+
+	}
+    }
+
+  /* In fixup_match_1, some insns may have been inserted after basic block
+     ends.  Fix that here.  */
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      rtx end = BLOCK_END (i);
+      rtx new = end;
+      rtx next = NEXT_INSN (new);
+      while (next != 0 && INSN_UID (next) >= old_max_uid
+	     && (i == n_basic_blocks - 1 || BLOCK_HEAD (i + 1) != next))
+	new = next, next = NEXT_INSN (new);
+      BLOCK_END (i) = new;
+    }
+
+ done:
+  /* Clean up.  */
+  free (regno_src_regno);
+  free (regmove_bb_head);
+}

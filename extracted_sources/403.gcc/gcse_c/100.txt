@@ -1,0 +1,23 @@
+static void
+invalidate_nonnull_info (x, setter, data)
+     rtx x;
+     rtx setter ATTRIBUTE_UNUSED;
+     void *data;
+{
+  unsigned int regno;
+  struct null_pointer_info *npi = (struct null_pointer_info *) data;
+
+  while (GET_CODE (x) == SUBREG)
+    x = SUBREG_REG (x);
+
+  /* Ignore anything that is not a register or is a hard register.  */
+  if (GET_CODE (x) != REG
+      || REGNO (x) < npi->min_reg
+      || REGNO (x) >= npi->max_reg)
+    return;
+
+  regno = REGNO (x) - npi->min_reg;
+
+  RESET_BIT (npi->nonnull_local[npi->current_block], regno);
+  SET_BIT (npi->nonnull_killed[npi->current_block], regno);
+}

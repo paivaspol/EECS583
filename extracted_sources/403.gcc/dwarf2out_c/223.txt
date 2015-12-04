@@ -1,0 +1,49 @@
+static dw_die_ref
+gen_compile_unit_die (filename)
+     const char *filename;
+{
+  dw_die_ref die;
+  char producer[250];
+  const char *wd = getpwd ();
+  const char *language_string = lang_hooks.name;
+  int language;
+
+  die = new_die (DW_TAG_compile_unit, NULL, NULL);
+  add_name_attribute (die, filename);
+
+  if (wd != NULL && filename[0] != DIR_SEPARATOR)
+    add_AT_string (die, DW_AT_comp_dir, wd);
+
+  sprintf (producer, "%s %s", language_string, version_string);
+
+#ifdef MIPS_DEBUGGING_INFO
+  /* The MIPS/SGI compilers place the 'cc' command line options in the producer
+     string.  The SGI debugger looks for -g, -g1, -g2, or -g3; if they do
+     not appear in the producer string, the debugger reaches the conclusion
+     that the object file is stripped and has no debugging information.
+     To get the MIPS/SGI debugger to believe that there is debugging
+     information in the object file, we add a -g to the producer string.  */
+  if (debug_info_level > DINFO_LEVEL_TERSE)
+    strcat (producer, " -g");
+#endif
+
+  add_AT_string (die, DW_AT_producer, producer);
+
+  if (strcmp (language_string, "GNU C++") == 0)
+    language = DW_LANG_C_plus_plus;
+  else if (strcmp (language_string, "GNU Ada") == 0)
+    language = DW_LANG_Ada83;
+  else if (strcmp (language_string, "GNU F77") == 0)
+    language = DW_LANG_Fortran77;
+  else if (strcmp (language_string, "GNU Pascal") == 0)
+    language = DW_LANG_Pascal83;
+  else if (strcmp (language_string, "GNU Java") == 0)
+    language = DW_LANG_Java;
+  else if (flag_traditional)
+    language = DW_LANG_C;
+  else
+    language = DW_LANG_C89;
+
+  add_AT_unsigned (die, DW_AT_language, language);
+  return die;
+}

@@ -1,0 +1,20 @@
+void
+deps_add_target (d, t, quote)
+     struct deps *d;
+     const char *t;
+     int quote;
+{
+  if (d->ntargets == d->targets_size)
+    {
+      d->targets_size = d->targets_size * 2 + 4;
+      d->targetv = (const char **) xrealloc (d->targetv,
+			     d->targets_size * sizeof (const char *));
+    }
+
+  if (quote)
+    t = munge (t);  /* Also makes permanent copy.  */
+  else
+    t = xstrdup (t);
+
+  d->targetv[d->ntargets++] = t;
+}

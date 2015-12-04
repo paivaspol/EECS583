@@ -1,0 +1,264 @@
+static bool
+purge_addressof_1 (loc, insn, force, store, ht)
+     rtx *loc;
+     rtx insn;
+     int force, store;
+     struct hash_table *ht;
+{
+  rtx x;
+  RTX_CODE code;
+  int i, j;
+  const char *fmt;
+  bool result = true;
+
+  /* Re-start here to avoid recursion in common cases.  */
+ restart:
+
+  x = *loc;
+  if (x == 0)
+    return true;
+
+  code = GET_CODE (x);
+
+  /* If we don't return in any of the cases below, we will recurse inside
+     the RTX, which will normally result in any ADDRESSOF being forced into
+     memory.  */
+  if (code == SET)
+    {
+      result = purge_addressof_1 (&SET_DEST (x), insn, force, 1, ht);
+      result &= purge_addressof_1 (&SET_SRC (x), insn, force, 0, ht);
+      return result;
+    }
+  else if (code == ADDRESSOF)
+    {
+      rtx sub, insns;
+
+      if (GET_CODE (XEXP (x, 0)) != MEM)
+	{
+	  put_addressof_into_stack (x, ht);
+	  return true;
+	}
+	  
+      /* We must create a copy of the rtx because it was created by
+	 overwriting a REG rtx which is always shared.  */
+      sub = copy_rtx (XEXP (XEXP (x, 0), 0));
+      if (validate_change (insn, loc, sub, 0)
+	  || validate_replace_rtx (x, sub, insn))
+	return true;
+
+      start_sequence ();
+      sub = force_operand (sub, NULL_RTX);
+      if (! validate_change (insn, loc, sub, 0)
+	  && ! validate_replace_rtx (x, sub, insn))
+	abort ();
+
+      insns = gen_sequence ();
+      end_sequence ();
+      emit_insn_before (insns, insn);
+      return true;
+    }
+
+  else if (code == MEM && GET_CODE (XEXP (x, 0)) == ADDRESSOF && ! force)
+    {
+      rtx sub = XEXP (XEXP (x, 0), 0);
+
+      if (GET_CODE (sub) == MEM)
+	sub = adjust_address_nv (sub, GET_MODE (x), 0);
+      else if (GET_CODE (sub) == REG
+	       && (MEM_VOLATILE_P (x) || GET_MODE (x) == BLKmode))
+	;
+      else if (GET_CODE (sub) == REG && GET_MODE (x) != GET_MODE (sub))
+	{
+	  int size_x, size_sub;
+
+	  if (!insn)
+	    {
+	      /* When processing REG_NOTES look at the list of
+		 replacements done on the insn to find the register that X
+		 was replaced by.  */
+	      rtx tem;
+
+	      for (tem = purge_bitfield_addressof_replacements;
+		   tem != NULL_RTX;
+		   tem = XEXP (XEXP (tem, 1), 1))
+		if (rtx_equal_p (x, XEXP (tem, 0)))
+		  {
+		    *loc = XEXP (XEXP (tem, 1), 0);
+		    return true;
+		  }
+
+	      /* See comment for purge_addressof_replacements.  */
+	      for (tem = purge_addressof_replacements;
+		   tem != NULL_RTX;
+		   tem = XEXP (XEXP (tem, 1), 1))
+		if (rtx_equal_p (XEXP (x, 0), XEXP (tem, 0)))
+		  {
+		    rtx z = XEXP (XEXP (tem, 1), 0);
+
+		    if (GET_MODE (x) == GET_MODE (z)
+			|| (GET_CODE (XEXP (XEXP (tem, 1), 0)) != REG
+			    && GET_CODE (XEXP (XEXP (tem, 1), 0)) != SUBREG))
+		      abort ();
+
+		    /* It can happen that the note may speak of things
+		       in a wider (or just different) mode than the
+		       code did.  This is especially true of
+		       REG_RETVAL.  */
+
+		    if (GET_CODE (z) == SUBREG && SUBREG_BYTE (z) == 0)
+		      z = SUBREG_REG (z);
+
+		    if (GET_MODE_SIZE (GET_MODE (x)) > UNITS_PER_WORD
+			&& (GET_MODE_SIZE (GET_MODE (x))
+			    > GET_MODE_SIZE (GET_MODE (z))))
+		      {
+			/* This can occur as a result in invalid
+			   pointer casts, e.g. float f; ...
+			   *(long long int *)&f.
+			   ??? We could emit a warning here, but
+			   without a line number that wouldn't be
+			   very helpful.  */
+			z = gen_rtx_SUBREG (GET_MODE (x), z, 0);
+		      }
+		    else
+		      z = gen_lowpart (GET_MODE (x), z);
+
+		    *loc = z;
+		    return true;
+		  }
+
+	      /* Sometimes we may not be able to find the replacement.  For
+		 example when the original insn was a MEM in a wider mode,
+		 and the note is part of a sign extension of a narrowed
+		 version of that MEM.  Gcc testcase compile/990829-1.c can
+		 generate an example of this situation.  Rather than complain
+		 we return false, which will prompt our caller to remove the
+		 offending note.  */
+	      return false;
+	    }
+
+	  size_x = GET_MODE_BITSIZE (GET_MODE (x));
+	  size_sub = GET_MODE_BITSIZE (GET_MODE (sub));
+
+	  /* Don't even consider working with paradoxical subregs,
+	     or the moral equivalent seen here.  */
+	  if (size_x <= size_sub
+	      && int_mode_for_mode (GET_MODE (sub)) != BLKmode)
+	    {
+	      /* Do a bitfield insertion to mirror what would happen
+		 in memory.  */
+
+	      rtx val, seq;
+
+	      if (store)
+		{
+		  rtx p = PREV_INSN (insn);
+
+		  start_sequence ();
+		  val = gen_reg_rtx (GET_MODE (x));
+		  if (! validate_change (insn, loc, val, 0))
+		    {
+		      /* Discard the current sequence and put the
+			 ADDRESSOF on stack.  */
+		      end_sequence ();
+		      goto give_up;
+		    }
+		  seq = gen_sequence ();
+		  end_sequence ();
+		  emit_insn_before (seq, insn);
+		  compute_insns_for_mem (p ? NEXT_INSN (p) : get_insns (),
+					 insn, ht);
+
+		  start_sequence ();
+		  store_bit_field (sub, size_x, 0, GET_MODE (x),
+				   val, GET_MODE_SIZE (GET_MODE (sub)));
+
+		  /* Make sure to unshare any shared rtl that store_bit_field
+		     might have created.  */
+		  unshare_all_rtl_again (get_insns ());
+
+		  seq = gen_sequence ();
+		  end_sequence ();
+		  p = emit_insn_after (seq, insn);
+		  if (NEXT_INSN (insn))
+		    compute_insns_for_mem (NEXT_INSN (insn),
+					   p ? NEXT_INSN (p) : NULL_RTX,
+					   ht);
+		}
+	      else
+		{
+		  rtx p = PREV_INSN (insn);
+
+		  start_sequence ();
+		  val = extract_bit_field (sub, size_x, 0, 1, NULL_RTX,
+					   GET_MODE (x), GET_MODE (x),
+					   GET_MODE_SIZE (GET_MODE (sub)));
+
+		  if (! validate_change (insn, loc, val, 0))
+		    {
+		      /* Discard the current sequence and put the
+			 ADDRESSOF on stack.  */
+		      end_sequence ();
+		      goto give_up;
+		    }
+
+		  seq = gen_sequence ();
+		  end_sequence ();
+		  emit_insn_before (seq, insn);
+		  compute_insns_for_mem (p ? NEXT_INSN (p) : get_insns (),
+					 insn, ht);
+		}
+
+	      /* Remember the replacement so that the same one can be done
+		 on the REG_NOTES.  */
+	      purge_bitfield_addressof_replacements
+		= gen_rtx_EXPR_LIST (VOIDmode, x,
+				     gen_rtx_EXPR_LIST
+				     (VOIDmode, val,
+				      purge_bitfield_addressof_replacements));
+
+	      /* We replaced with a reg -- all done.  */
+	      return true;
+	    }
+	}
+
+      else if (validate_change (insn, loc, sub, 0))
+	{
+	  /* Remember the replacement so that the same one can be done
+	     on the REG_NOTES.  */
+	  if (GET_CODE (sub) == REG || GET_CODE (sub) == SUBREG)
+	    {
+	      rtx tem;
+
+	      for (tem = purge_addressof_replacements;
+		   tem != NULL_RTX;
+		   tem = XEXP (XEXP (tem, 1), 1))
+		if (rtx_equal_p (XEXP (x, 0), XEXP (tem, 0)))
+		  {
+		    XEXP (XEXP (tem, 1), 0) = sub;
+		    return true;
+		  }
+	      purge_addressof_replacements
+		= gen_rtx (EXPR_LIST, VOIDmode, XEXP (x, 0),
+			   gen_rtx_EXPR_LIST (VOIDmode, sub,
+					      purge_addressof_replacements));
+	      return true;
+	    }
+	  goto restart;
+	}
+    }
+
+ give_up:
+  /* Scan all subexpressions.  */
+  fmt = GET_RTX_FORMAT (code);
+  for (i = 0; i < GET_RTX_LENGTH (code); i++, fmt++)
+    {
+      if (*fmt == 'e')
+	result &= purge_addressof_1 (&XEXP (x, i), insn, force, 0, ht);
+      else if (*fmt == 'E')
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  result &= purge_addressof_1 (&XVECEXP (x, i, j), insn, force, 0, ht);
+    }
+
+  return result;
+}

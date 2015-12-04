@@ -1,0 +1,30 @@
+void SetCtxModelNumber ()
+{
+  int frame_field = img->field_picture;
+  int img_type    = img->type;
+  int ctx_number  = img->currentSlice->start_mb_nr / num_mb_per_slice;
+
+  if(img->type==I_SLICE)
+  {
+    img->model_number=DEFAULT_CTX_MODEL;
+    return;
+  }
+  if(input->context_init_method==FIXED)
+  {
+    img->model_number=input->model_number;
+    return;
+  }
+
+  if (initialized [frame_field][img_type][ctx_number])
+  {
+    img->model_number = model_number[frame_field][img_type][ctx_number];
+  }
+  else if (ctx_number && initialized[frame_field][img_type][ctx_number-1])
+  {
+    img->model_number = model_number[frame_field][img_type][ctx_number-1];
+  }
+  else
+  {
+    img->model_number = DEFAULT_CTX_MODEL;
+  }
+}

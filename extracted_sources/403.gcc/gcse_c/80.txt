@@ -1,0 +1,45 @@
+static int
+cprop_jump (bb, insn, from, src)
+     rtx insn;
+     rtx from;
+     rtx src;
+     basic_block bb;
+{
+  rtx set = PATTERN (insn);
+  rtx new = simplify_replace_rtx (SET_SRC (set), from, src);
+
+  /* If no simplification can be made, then try the next
+     register.  */
+  if (rtx_equal_p (new, SET_SRC (set)))
+    return 0;
+ 
+  /* If this is now a no-op delete it, otherwise this must be a valid insn.  */
+  if (new == pc_rtx)
+    delete_insn (insn);
+  else
+    {
+      if (! validate_change (insn, &SET_SRC (set), new, 0))
+	return 0;
+
+      /* If this has turned into an unconditional jump,
+	 then put a barrier after it so that the unreachable
+	 code will be deleted.  */
+      if (GET_CODE (SET_SRC (set)) == LABEL_REF)
+	emit_barrier_after (insn);
+     }
+
+  run_jump_opt_after_gcse = 1;
+
+  const_prop_count++;
+  if (gcse_file != NULL)
+    {
+      fprintf (gcse_file,
+	       "CONST-PROP: Replacing reg %d in insn %d with constant ",
+	       REGNO (from), INSN_UID (insn));
+      print_rtl (gcse_file, src);
+      fprintf (gcse_file, "\n");
+    }
+  purge_dead_edges (bb);
+
+  return 1;
+}

@@ -1,0 +1,43 @@
+void
+expand_eh_return ()
+{
+  rtx sa, ra, around_label;
+
+  if (! cfun->eh->ehr_label)
+    return;
+
+  sa = EH_RETURN_STACKADJ_RTX;
+  if (! sa)
+    {
+      error ("__builtin_eh_return not supported on this target");
+      return;
+    }
+
+  current_function_calls_eh_return = 1;
+
+  around_label = gen_label_rtx ();
+  emit_move_insn (sa, const0_rtx);
+  emit_jump (around_label);
+
+  emit_label (cfun->eh->ehr_label);
+  clobber_return_register ();
+
+#ifdef HAVE_eh_return
+  if (HAVE_eh_return)
+    emit_insn (gen_eh_return (cfun->eh->ehr_stackadj, cfun->eh->ehr_handler));
+  else
+#endif
+    {
+      ra = EH_RETURN_HANDLER_RTX;
+      if (! ra)
+	{
+	  error ("__builtin_eh_return not supported on this target");
+	  ra = gen_reg_rtx (Pmode);
+	}
+
+      emit_move_insn (sa, cfun->eh->ehr_stackadj);
+      emit_move_insn (ra, cfun->eh->ehr_handler);
+    }
+
+  emit_label (around_label);
+}

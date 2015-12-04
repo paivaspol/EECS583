@@ -1,0 +1,127 @@
+void
+loop_optimize (f, dumpfile, flags)
+     /* f is the first instruction of a chain of insns for one function */
+     rtx f;
+     FILE *dumpfile;
+     int flags;
+{
+  rtx insn;
+  int i;
+  struct loops loops_data;
+  struct loops *loops = &loops_data;
+  struct loop_info *loops_info;
+
+  loop_dump_stream = dumpfile;
+
+  init_recog_no_volatile ();
+
+  max_reg_before_loop = max_reg_num ();
+  loop_max_reg = max_reg_before_loop;
+
+  regs_may_share = 0;
+
+  /* Count the number of loops.  */
+
+  max_loop_num = 0;
+  for (insn = f; insn; insn = NEXT_INSN (insn))
+    {
+      if (GET_CODE (insn) == NOTE
+	  && NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG)
+	max_loop_num++;
+    }
+
+  /* Don't waste time if no loops.  */
+  if (max_loop_num == 0)
+    return;
+
+  loops->num = max_loop_num;
+
+  /* Get size to use for tables indexed by uids.
+     Leave some space for labels allocated by find_and_verify_loops.  */
+  max_uid_for_loop = get_max_uid () + 1 + max_loop_num * 32;
+
+  uid_luid = (int *) xcalloc (max_uid_for_loop, sizeof (int));
+  uid_loop = (struct loop **) xcalloc (max_uid_for_loop,
+				       sizeof (struct loop *));
+
+  /* Allocate storage for array of loops.  */
+  loops->array = (struct loop *)
+    xcalloc (loops->num, sizeof (struct loop));
+
+  /* Find and process each loop.
+     First, find them, and record them in order of their beginnings.  */
+  find_and_verify_loops (f, loops);
+
+  /* Allocate and initialize auxiliary loop information.  */
+  loops_info = xcalloc (loops->num, sizeof (struct loop_info));
+  for (i = 0; i < loops->num; i++)
+    loops->array[i].aux = loops_info + i;
+
+  /* Now find all register lifetimes.  This must be done after
+     find_and_verify_loops, because it might reorder the insns in the
+     function.  */
+  reg_scan (f, max_reg_before_loop, 1);
+
+  /* This must occur after reg_scan so that registers created by gcse
+     will have entries in the register tables.
+
+     We could have added a call to reg_scan after gcse_main in toplev.c,
+     but moving this call to init_alias_analysis is more efficient.  */
+  init_alias_analysis ();
+
+  /* See if we went too far.  Note that get_max_uid already returns
+     one more that the maximum uid of all insn.  */
+  if (get_max_uid () > max_uid_for_loop)
+    abort ();
+  /* Now reset it to the actual size we need.  See above.  */
+  max_uid_for_loop = get_max_uid ();
+
+  /* find_and_verify_loops has already called compute_luids, but it
+     might have rearranged code afterwards, so we need to recompute
+     the luids now.  */
+  max_luid = compute_luids (f, NULL_RTX, 0);
+
+  /* Don't leave gaps in uid_luid for insns that have been
+     deleted.  It is possible that the first or last insn
+     using some register has been deleted by cross-jumping.
+     Make sure that uid_luid for that former insn's uid
+     points to the general area where that insn used to be.  */
+  for (i = 0; i < max_uid_for_loop; i++)
+    {
+      uid_luid[0] = uid_luid[i];
+      if (uid_luid[0] != 0)
+	break;
+    }
+  for (i = 0; i < max_uid_for_loop; i++)
+    if (uid_luid[i] == 0)
+      uid_luid[i] = uid_luid[i - 1];
+
+  /* Determine if the function has indirect jump.  On some systems
+     this prevents low overhead loop instructions from being used.  */
+  indirect_jump_in_function = indirect_jump_in_function_p (f);
+
+  /* Now scan the loops, last ones first, since this means inner ones are done
+     before outer ones.  */
+  for (i = max_loop_num - 1; i >= 0; i--)
+    {
+      struct loop *loop = &loops->array[i];
+
+      if (! loop->invalid && loop->end)
+	scan_loop (loop, flags);
+    }
+
+  /* If there were lexical blocks inside the loop, they have been
+     replicated.  We will now have more than one NOTE_INSN_BLOCK_BEG
+     and NOTE_INSN_BLOCK_END for each such block.  We must duplicate
+     the BLOCKs as well.  */
+  if (write_symbols != NO_DEBUG)
+    reorder_blocks ();
+
+  end_alias_analysis ();
+
+  /* Clean up.  */
+  free (uid_luid);
+  free (uid_loop);
+  free (loops_info);
+  free (loops->array);
+}

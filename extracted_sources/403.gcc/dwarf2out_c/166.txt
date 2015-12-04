@@ -1,0 +1,23 @@
+static dw_loc_descr_ref
+concat_loc_descriptor (x0, x1)
+     rtx x0, x1;
+{
+  dw_loc_descr_ref cc_loc_result = NULL;
+  dw_loc_descr_ref x0_ref = loc_descriptor (x0);
+  dw_loc_descr_ref x1_ref = loc_descriptor (x1);
+
+  if (x0_ref == 0 || x1_ref == 0)
+    return 0;
+
+  cc_loc_result = x0_ref;
+  add_loc_descr (&cc_loc_result,
+		 new_loc_descr (DW_OP_piece,
+				GET_MODE_SIZE (GET_MODE (x0)), 0));
+
+  add_loc_descr (&cc_loc_result, x1_ref);
+  add_loc_descr (&cc_loc_result,
+		 new_loc_descr (DW_OP_piece,
+				GET_MODE_SIZE (GET_MODE (x1)), 0));
+
+  return cc_loc_result;
+}

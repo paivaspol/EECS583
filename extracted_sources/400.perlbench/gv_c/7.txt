@@ -1,0 +1,50 @@
+void
+Perl_gv_check(pTHX_ HV *stash)
+{
+    register HE *entry;
+    register I32 i;
+    register GV *gv;
+    HV *hv;
+
+    if (!HvARRAY(stash))
+	return;
+    for (i = 0; i <= (I32) HvMAX(stash); i++) {
+	for (entry = HvARRAY(stash)[i]; entry; entry = HeNEXT(entry)) {
+	    if (HeKEY(entry)[HeKLEN(entry)-1] == ':' &&
+		(gv = (GV*)HeVAL(entry)) && isGV(gv) && (hv = GvHV(gv)))
+	    {
+		if (hv != PL_defstash && hv != stash)
+		     gv_check(hv);              /* nested package */
+	    }
+	    else if (isALPHA(*HeKEY(entry))) {
+		char *file;
+		gv = (GV*)HeVAL(entry);
+		if (SvTYPE(gv) != SVt_PVGV || GvMULTI(gv))
+		    continue;
+		file = GvFILE(gv);
+		/* performance hack: if filename is absolute and it's a standard
+		 * module, don't bother warning */
+		if (file
+		    && PERL_FILE_IS_ABSOLUTE(file)
+#ifdef MACOS_TRADITIONAL
+		    && (instr(file, ":lib:")
+#else
+		    && (instr(file, "/lib/")
+#endif
+		    || instr(file, ".pm")))
+		{
+		    continue;
+		}
+		CopLINE_set(PL_curcop, GvLINE(gv));
+#ifdef USE_ITHREADS
+		CopFILE(PL_curcop) = file;	/* set for warning */
+#else
+		CopFILEGV(PL_curcop) = gv_fetchfile(file);
+#endif
+		Perl_warner(aTHX_ packWARN(WARN_ONCE),
+			"Name \"%s::%s\" used only once: possible typo",
+			HvNAME(stash), GvNAME(gv));
+	    }
+	}
+    }
+}

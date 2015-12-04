@@ -1,0 +1,25 @@
+static rtx
+expand_builtin_strcpy (exp, target, mode)
+     tree exp;
+     rtx target;
+     enum machine_mode mode;
+{
+  tree arglist = TREE_OPERAND (exp, 1);
+  tree fn, len;
+
+  if (!validate_arglist (arglist, POINTER_TYPE, POINTER_TYPE, VOID_TYPE))
+    return 0;
+
+  fn = built_in_decls[BUILT_IN_MEMCPY];
+  if (!fn)
+    return 0;
+
+  len = c_strlen (TREE_VALUE (TREE_CHAIN (arglist)));
+  if (len == 0)
+    return 0;
+
+  len = size_binop (PLUS_EXPR, len, ssize_int (1));
+  chainon (arglist, build_tree_list (NULL_TREE, len));
+  return expand_expr (build_function_call_expr (fn, arglist),
+                      target, mode, EXPAND_NORMAL);
+}

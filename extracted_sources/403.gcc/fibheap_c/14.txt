@@ -1,0 +1,46 @@
+static void
+fibheap_consolidate (heap)
+     fibheap_t heap;
+{
+  fibnode_t a[1 + 8 * sizeof (long)];
+  fibnode_t w;
+  fibnode_t y;
+  fibnode_t x;
+  int i;
+  int d;
+  int D;
+
+  D = 1 + 8 * sizeof (long);
+
+  memset (a, 0, sizeof (fibnode_t) * D);
+
+  while ((w = heap->root) != NULL)
+    {
+      x = w;
+      fibheap_rem_root (heap, w);
+      d = x->degree;
+      while (a[d] != NULL)
+	{
+	  y = a[d];
+	  if (fibheap_compare (heap, x, y) > 0)
+	    {
+	      fibnode_t temp;
+	      temp = x;
+	      x = y;
+	      y = temp;
+	    }
+	  fibheap_link (heap, y, x);
+	  a[d] = NULL;
+	  d++;
+	}
+      a[d] = x;
+    }
+  heap->min = NULL;
+  for (i = 0; i < D; i++)
+    if (a[i] != NULL)
+      {
+	fibheap_ins_root (heap, a[i]);
+	if (heap->min == NULL || fibheap_compare (heap, a[i], heap->min) < 0)
+	  heap->min = a[i];
+      }
+}

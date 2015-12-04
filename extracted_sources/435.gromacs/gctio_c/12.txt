@@ -1,0 +1,31 @@
+static bool add_q(int *nQ,t_coupl_Q **tcQ,char *s,bool bObsUsed[])
+{
+  int       j,ati,eo;
+  char      buf[256];
+  double    xiQ;
+  
+  if (sscanf(s,"%s%d%lf",buf,&ati,&xiQ) != 3) 
+    return TRUE;
+  
+  for(j=0; (j<*nQ); j++) {
+    if ((*tcQ)[j].at_i == ati)
+      break;
+  }
+  if (j == *nQ) {
+    ++(*nQ);
+    srenew((*tcQ),*nQ);
+  }
+  else
+    fprintf(stderr,"\n*** WARNING: overwriting entry for Q coupling '%s'\n",s);
+  
+  clear_q(&((*tcQ)[j]));
+  eo = (*tcQ)[j].eObs = Name2eo(buf);
+  if ((*tcQ)[j].eObs == -1) {
+    fatal_error(0,"Invalid observable for Q coupling: %s",buf);
+  }
+  (*tcQ)[j].at_i   = ati;
+  (*tcQ)[j].xi_Q  = xiQ;
+  bObsUsed[eo] = TRUE;
+  
+  return FALSE;
+}

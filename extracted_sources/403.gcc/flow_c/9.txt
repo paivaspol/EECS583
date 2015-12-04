@@ -1,0 +1,15 @@
+static void
+notice_stack_pointer_modification_1 (x, pat, data)
+     rtx x;
+     rtx pat ATTRIBUTE_UNUSED;
+     void *data ATTRIBUTE_UNUSED;
+{
+  if (x == stack_pointer_rtx
+      /* The stack pointer is only modified indirectly as the result
+	 of a push until later in flow.  See the comments in rtl.texi
+	 regarding Embedded Side-Effects on Addresses.  */
+      || (GET_CODE (x) == MEM
+	  && GET_RTX_CLASS (GET_CODE (XEXP (x, 0))) == 'a'
+	  && XEXP (XEXP (x, 0), 0) == stack_pointer_rtx))
+    current_function_sp_is_unchanging = 0;
+}

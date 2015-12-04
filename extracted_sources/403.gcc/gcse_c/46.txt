@@ -1,0 +1,17 @@
+static void
+free_insn_expr_list_list (listp)
+     rtx *listp;
+{
+  rtx list, next;
+
+  for (list = *listp; list ; list = next)
+    {
+      next = XEXP (list, 1);
+      if (GET_CODE (list) == EXPR_LIST)
+	free_EXPR_LIST_node (list);
+      else
+	free_INSN_LIST_node (list);
+    }
+
+  *listp = NULL;
+}

@@ -1,0 +1,39 @@
+static void
+path_include (pfile, list, path)
+     cpp_reader *pfile;
+     char *list;
+     int path;
+{
+  char *p, *q, *name;
+
+  p = list;
+
+  do
+    {
+      /* Find the end of this name.  */
+      q = p;
+      while (*q != 0 && *q != PATH_SEPARATOR) q++;
+      if (q == p)
+	{
+	  /* An empty name in the path stands for the current directory.  */
+	  name = (char *) xmalloc (2);
+	  name[0] = '.';
+	  name[1] = 0;
+	}
+      else
+	{
+	  /* Otherwise use the directory that is named.  */
+	  name = (char *) xmalloc (q - p + 1);
+	  memcpy (name, p, q - p);
+	  name[q - p] = 0;
+	}
+
+      append_include_chain (pfile, name, path, 0);
+
+      /* Advance past this name.  */
+      if (*q == 0)
+	break;
+      p = q + 1;
+    }
+  while (1);
+}

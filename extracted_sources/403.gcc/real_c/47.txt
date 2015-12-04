@@ -1,0 +1,63 @@
+static int
+edivm (den, num)
+     const UEMUSHORT den[];
+     UEMUSHORT num[];
+{
+  int i;
+  UEMUSHORT *p;
+  unsigned EMULONG tnum;
+  UEMUSHORT j, tdenm, tquot;
+  UEMUSHORT tprod[NI+1];
+
+  p = &equot[0];
+  *p++ = num[0];
+  *p++ = num[1];
+
+  for (i=M; i<NI; i++)
+    {
+      *p++ = 0;
+    }
+  eshdn1 (num);
+  tdenm = den[M+1];
+  for (i=M; i<NI; i++)
+    {
+      /* Find trial quotient digit (the radix is 65536).  */
+      tnum = (((unsigned EMULONG) num[M]) << 16) + num[M+1];
+
+      /* Do not execute the divide instruction if it will overflow.  */
+      if ((tdenm * (unsigned long) 0xffff) < tnum)
+	tquot = 0xffff;
+      else
+	tquot = tnum / tdenm;
+      /* Multiply denominator by trial quotient digit.  */
+      m16m ((unsigned int) tquot, den, tprod);
+      /* The quotient digit may have been overestimated.  */
+      if (ecmpm (tprod, num) > 0)
+	{
+	  tquot -= 1;
+	  esubm (den, tprod);
+	  if (ecmpm (tprod, num) > 0)
+	    {
+	      tquot -= 1;
+	      esubm (den, tprod);
+	    }
+	}
+      esubm (tprod, num);
+      equot[i] = tquot;
+      eshup6 (num);
+    }
+  /* test for nonzero remainder after roundoff bit */
+  p = &num[M];
+  j = 0;
+  for (i=M; i<NI; i++)
+    {
+      j |= *p++;
+    }
+  if (j)
+    j = 1;
+
+  for (i=0; i<NI; i++)
+    num[i] = equot[i];
+
+  return ((int) j);
+}

@@ -1,0 +1,24 @@
+int
+ix86_secondary_memory_needed (class1, class2, mode, strict)
+     enum reg_class class1, class2;
+     enum machine_mode mode;
+     int strict;
+{
+  if (MAYBE_FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class1)
+      || MAYBE_FLOAT_CLASS_P (class2) != FLOAT_CLASS_P (class2)
+      || MAYBE_SSE_CLASS_P (class1) != SSE_CLASS_P (class1)
+      || MAYBE_SSE_CLASS_P (class2) != SSE_CLASS_P (class2)
+      || MAYBE_MMX_CLASS_P (class1) != MMX_CLASS_P (class1)
+      || MAYBE_MMX_CLASS_P (class2) != MMX_CLASS_P (class2))
+    {
+      if (strict)
+	abort ();
+      else
+	return 1;
+    }
+  return (FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class2)
+	  || (SSE_CLASS_P (class1) != SSE_CLASS_P (class2)
+	      && (mode) != SImode)
+	  || (MMX_CLASS_P (class1) != MMX_CLASS_P (class2)
+	      && (mode) != SImode));
+}

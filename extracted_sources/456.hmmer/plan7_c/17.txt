@@ -1,0 +1,42 @@
+void
+Plan7ESTConfig(struct plan7_s *hmm, int *aacode, float **estmodel, 
+	       float dna2, float dna4)
+{
+  int k;
+  int x;
+  float p;
+/* fixed kaivalya  8/1/8/03 UNFINISHED!!! */
+/*   float *tripnull;	*/
+  float *tripnull = NULL;	/* Kaivalya 8/25/03 * UNFINISHED!!! */
+
+				/* configure specials */
+  hmm->xt[XTN][MOVE] = 1./351.;
+  hmm->xt[XTN][LOOP] = 350./351.;
+  hmm->xt[XTE][MOVE] = 1.;
+  hmm->xt[XTE][LOOP] = 0.;
+  hmm->xt[XTC][MOVE] = 1./351.;
+  hmm->xt[XTC][LOOP] = 350./351.;
+  hmm->xt[XTJ][MOVE] = 1.;
+  hmm->xt[XTJ][LOOP] = 0.;
+				/* configure entry/exit */
+  hmm->begin[1] = 0.5;
+  FSet(hmm->begin+2, hmm->M-1, 0.5 / ((float)hmm->M - 1.));
+  hmm->end[hmm->M] = 1.;
+  FSet(hmm->end, hmm->M-1, 0.5 / ((float)hmm->M - 1.));
+
+				/* configure dna triplet/frameshift emissions */
+  for (k = 1; k <= hmm->M; k++)
+    {
+				/* translate aa to triplet probabilities */
+      for (x = 0; x < 64; x++) {
+	p =  hmm->mat[k][aacode[x]] * estmodel[aacode[x]][x] * (1.-dna2-dna4);
+	hmm->dnam[x][k] = Prob2Score(p, tripnull[x]);
+
+	p = hmm->ins[k][aacode[x]] * estmodel[aacode[x]][x] * (1.-dna2-dna4);
+	hmm->dnai[x][k] = Prob2Score(p, tripnull[x]);
+      }
+      hmm->dnam[64][k] = 0;	/* ambiguous codons score 0 (danger?) */
+      hmm->dna2 = Prob2Score(dna2, 1.);
+      hmm->dna4 = Prob2Score(dna4, 1.);
+    }
+}

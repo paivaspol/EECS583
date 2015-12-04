@@ -1,0 +1,190 @@
+int
+perl_parse(pTHXx_ XSINIT_t xsinit, int argc, char **argv, char **env)
+{
+    I32 oldscope;
+    int ret;
+    dJMPENV;
+#ifdef USE_5005THREADS
+    dTHX;
+#endif
+
+#ifdef SETUID_SCRIPTS_ARE_SECURE_NOW
+#ifdef IAMSUID
+#undef IAMSUID
+    Perl_croak(aTHX_ "suidperl is no longer needed since the kernel can now execute\n\
+setuid perl scripts securely.\n");
+#endif /* IAMSUID */
+#endif
+
+#if defined(USE_HASH_SEED) || defined(USE_HASH_SEED_EXPLICIT)
+    /* [perl #22371] Algorimic Complexity Attack on Perl 5.6.1, 5.8.0
+     * This MUST be done before any hash stores or fetches take place.
+     * If you set PL_rehash_seed (and assumedly also PL_rehash_seed_set)
+     * yourself, it is your responsibility to provide a good random seed!
+     * You can also define PERL_HASH_SEED in compile time, see hv.h. */
+    if (!PL_rehash_seed_set)
+	 PL_rehash_seed = get_hash_seed();
+    {
+#if !defined(SPEC_CPU)
+	 char *s = PerlEnv_getenv("PERL_HASH_SEED_DEBUG");
+
+	 if (s) {
+	      int i = atoi(s);
+
+	      if (i == 1)
+		   PerlIO_printf(Perl_debug_log, "HASH_SEED = %"UVuf"\n",
+				 PL_rehash_seed);
+	 }
+#endif /* !SPEC_CPU */
+    }
+#endif /* #if defined(USE_HASH_SEED) || defined(USE_HASH_SEED_EXPLICIT) */
+
+    PL_origargc = argc;
+    PL_origargv = argv;
+
+    {
+	/* Set PL_origalen be the sum of the contiguous argv[]
+	 * elements plus the size of the env in case that it is
+	 * contiguous with the argv[].  This is used in mg.c:Perl_magic_set()
+	 * as the maximum modifiable length of $0.  In the worst case
+	 * the area we are able to modify is limited to the size of
+	 * the original argv[0].  (See below for 'contiguous', though.)
+	 * --jhi */
+	 char *s = NULL;
+	 int i;
+	 UV mask =
+	   ~(UV)(PTRSIZE == 4 ? 3 : PTRSIZE == 8 ? 7 : PTRSIZE == 16 ? 15 : 0);
+         /* Do the mask check only if the args seem like aligned. */
+	 UV aligned =
+	   (mask < ~(UV)0) && ((PTR2UV(argv[0]) & mask) == PTR2UV(argv[0]));
+
+	 /* See if all the arguments are contiguous in memory.  Note
+	  * that 'contiguous' is a loose term because some platforms
+	  * align the argv[] and the envp[].  If the arguments look
+	  * like non-aligned, assume that they are 'strictly' or
+	  * 'traditionally' contiguous.  If the arguments look like
+	  * aligned, we just check that they are within aligned
+	  * PTRSIZE bytes.  As long as no system has something bizarre
+	  * like the argv[] interleaved with some other data, we are
+	  * fine.  (Did I just evoke Murphy's Law?)  --jhi */
+	 if (PL_origargv && PL_origargc >= 1 && (s = PL_origargv[0])) {
+	      while (*s) s++;
+	      for (i = 1; i < PL_origargc; i++) {
+		   if ((PL_origargv[i] == s + 1
+#ifdef OS2
+			|| PL_origargv[i] == s + 2
+#endif 
+			    )
+		       ||
+		       (aligned &&
+			(PL_origargv[i] >  s &&
+			 PL_origargv[i] <=
+			 INT2PTR(char *, PTR2UV(s + PTRSIZE) & mask)))
+			)
+		   {
+			s = PL_origargv[i];
+			while (*s) s++;
+		   }
+		   else
+			break;
+	      }
+	 }
+	 /* Can we grab env area too to be used as the area for $0? */
+	 if (PL_origenviron) {
+	      if ((PL_origenviron[0] == s + 1
+#ifdef OS2
+		   || (PL_origenviron[0] == s + 9 && (s += 8))
+#endif 
+		  )
+		  ||
+		  (aligned &&
+		   (PL_origenviron[0] >  s &&
+		    PL_origenviron[0] <=
+		    INT2PTR(char *, PTR2UV(s + PTRSIZE) & mask)))
+		 )
+	      {
+#ifndef OS2
+		   s = PL_origenviron[0];
+		   while (*s) s++;
+#endif
+		   my_setenv("NoNe  SuCh", Nullch);
+		   /* Force copy of environment. */
+		   for (i = 1; PL_origenviron[i]; i++) {
+			if (PL_origenviron[i] == s + 1
+			    ||
+			    (aligned &&
+			     (PL_origenviron[i] >  s &&
+			      PL_origenviron[i] <=
+			      INT2PTR(char *, PTR2UV(s + PTRSIZE) & mask)))
+			   )
+			{
+			     s = PL_origenviron[i];
+			     while (*s) s++;
+			}
+			else
+			     break;
+		   }
+	      }
+	 }
+	 PL_origalen = s - PL_origargv[0];
+    }
+
+    if (PL_do_undump) {
+
+	/* Come here if running an undumped a.out. */
+
+	PL_origfilename = savepv(argv[0]);
+	PL_do_undump = FALSE;
+	cxstack_ix = -1;		/* start label stack again */
+	init_ids();
+	init_postdump_symbols(argc,argv,env);
+	return 0;
+    }
+
+    if (PL_main_root) {
+	op_free(PL_main_root);
+	PL_main_root = Nullop;
+    }
+    PL_main_start = Nullop;
+    SvREFCNT_dec(PL_main_cv);
+    PL_main_cv = Nullcv;
+
+    time(&PL_basetime);
+    oldscope = PL_scopestack_ix;
+    PL_dowarn = G_WARN_OFF;
+
+#ifdef PERL_FLEXIBLE_EXCEPTIONS
+    CALLPROTECT(aTHX_ pcur_env, &ret, MEMBER_TO_FPTR(S_vparse_body), env, xsinit);
+#else
+    JMPENV_PUSH(ret);
+#endif
+    switch (ret) {
+    case 0:
+#ifndef PERL_FLEXIBLE_EXCEPTIONS
+	parse_body(env,xsinit);
+#endif
+	if (PL_checkav)
+	    call_list(oldscope, PL_checkav);
+	ret = 0;
+	break;
+    case 1:
+	STATUS_ALL_FAILURE;
+	/* FALL THROUGH */
+    case 2:
+	/* my_exit() was called */
+	while (PL_scopestack_ix > oldscope)
+	    LEAVE;
+	FREETMPS;
+	PL_curstash = PL_defstash;
+	if (PL_checkav)
+	    call_list(oldscope, PL_checkav);
+	ret = STATUS_NATIVE_EXPORT;
+	break;
+    case 3:
+	PerlIO_printf(Perl_error_log, "panic: top_env\n");
+	ret = 1;
+	break;
+    }
+    JMPENV_POP;
+    return ret;
+}

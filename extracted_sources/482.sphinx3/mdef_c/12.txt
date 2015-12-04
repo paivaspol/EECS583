@@ -1,0 +1,44 @@
+static void sseq_compress (mdef_t *m)
+{
+    hash_table_t *h;
+    s3senid_t **sseq;
+    int32 n_sseq;
+    int32 p, j, k;
+    glist_t g;
+    gnode_t *gn;
+    hash_entry_t *he;
+    
+    k = m->n_emit_state * sizeof(s3senid_t);
+    
+    h = hash_new (m->n_phone, HASH_CASE_YES);
+    n_sseq = 0;
+    
+    /* Identify unique senone-sequence IDs.  BUG: tmat-id not being considered!! */
+    for (p = 0; p < m->n_phone; p++) {
+	/* Add senone sequence to hash table */
+	if ((j = hash_enter_bkey (h, (char *)(m->sseq[p]), k, n_sseq)) == n_sseq)
+	    n_sseq++;
+	
+	m->phone[p].ssid = j;
+    }
+    
+    /* Generate compacted sseq table */
+    sseq = (s3senid_t **) ckd_calloc_2d (n_sseq, m->n_emit_state, sizeof(s3senid_t));/* freed in mdef_free() */
+    
+    g = hash_tolist (h, &j);
+    assert (j == n_sseq);
+    
+    for (gn = g; gn; gn = gnode_next(gn)) {
+	he = (hash_entry_t *) gnode_ptr (gn);
+	j = hash_entry_val(he);
+	memcpy (sseq[j], hash_entry_key(he), k);
+    }
+    glist_free (g);
+    
+    /* Free the old, temporary senone sequence table, replace with compacted one */
+    ckd_free_2d ((void **) m->sseq);
+    m->sseq = sseq;
+    m->n_sseq = n_sseq;
+    
+    hash_free (h);
+}

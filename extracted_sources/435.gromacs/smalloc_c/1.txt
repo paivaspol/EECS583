@@ -1,0 +1,19 @@
+void *save_malloc(char *name,char *file,int line,int size)
+{
+  void *p;
+  
+  p=NULL;
+  if (size==0)
+    p=NULL;
+  else
+    {
+      if ((p=malloc(size))==NULL) 
+        fatal_error(errno,"malloc for %s (%d bytes, file %s, line %d)",
+                    name,size,file,line);
+      (void) memset(p,0,size);
+    }
+#ifdef DEBUG
+  log_action(1,name,file,line,1,size,p);
+#endif
+  return p;
+}

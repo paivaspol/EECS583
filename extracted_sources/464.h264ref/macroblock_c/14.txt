@@ -1,0 +1,71 @@
+void
+OneComponentChromaPrediction4x4 (int*        mpred,      //!< array to store prediction values
+                                 int         block_c_x,  //!< horizontal pixel coordinate of 4x4 block
+                                 int         block_c_y,  //!< vertical   pixel coordinate of 4x4 block
+                                 short****** mv,         //!< motion vector array
+                                 int         list_idx,   //!< reference picture list
+                                 short       ref,        //!< reference index
+                                 int         blocktype,  //!< block type
+                                 int         uv)         //!< chroma component
+{
+  int     i, j, ii, jj, ii0, jj0, ii1, jj1, if0, if1, jf0, jf1;
+  short*  mvb;
+  pel_t** refimage;
+  int     f1_x = 64/img->mb_cr_size_x;
+  int     f2_x=f1_x-1;
+
+  int     f1_y = 64/img->mb_cr_size_y;
+  int     f2_y=f1_y-1;
+
+  int     f3=f1_x*f1_y, f4=f3>>1;
+
+  int     list_offset;
+  int     max_y_cr;
+
+  StorablePicture **list;
+
+  int curr_mb_field = ((img->MbaffFrameFlag)&&(img->mb_data[img->current_mb_nr].mb_field));
+  // find out the correct list offsets
+  if (curr_mb_field)
+  {
+    if(img->current_mb_nr%2)
+      list_offset = 4; // top field mb
+    else
+      list_offset = 2; // bottom field mb
+    max_y_cr = img->height_cr/2-1;
+  }
+  else
+  {
+    list_offset = 0;  // no mb aff or frame mb
+    max_y_cr = img->height_cr-1;
+  }
+
+
+  list      = listX[list_idx + list_offset];
+
+  refimage  = list[ref]->imgUV[uv];
+
+  for (j=0; j<4; j++)
+    for (i=0; i<4; i++)
+    {
+      mvb  = mv [(i+block_c_x)/(img->mb_cr_size_x/4)][(j+block_c_y)/(img->mb_cr_size_y/4)][list_idx][ref][blocktype];
+
+      ii   = (i+block_c_x+img->opix_c_x)*f1_x + mvb[0];
+      jj   = (j+block_c_y+img->opix_c_y)*f1_y + mvb[1];
+
+      jj  += list[ref]->chroma_vector_adjustment;
+
+      ii0  = max (0, min (img->width_cr -1, ii/f1_x));
+      jj0  = max (0, min (max_y_cr,         jj/f1_y));
+      ii1  = max (0, min (img->width_cr -1, (ii+f2_x)/f1_x));
+      jj1  = max (0, min (max_y_cr,         (jj+f2_y)/f1_y));
+
+      if1  = (ii&f2_x);  if0 = f1_x-if1;
+      jf1  = (jj&f2_y);  jf0 = f1_y-jf1;
+      
+      *mpred++ = (if0 * jf0 * refimage[jj0][ii0] +
+                  if1 * jf0 * refimage[jj0][ii1] +
+                  if0 * jf1 * refimage[jj1][ii0] +
+                  if1 * jf1 * refimage[jj1][ii1] + f4) / f3;
+    }
+}

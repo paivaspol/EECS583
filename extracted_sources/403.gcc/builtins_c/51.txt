@@ -1,0 +1,24 @@
+static rtx
+expand_builtin_alloca (arglist, target)
+     tree arglist;
+     rtx target;
+{
+  rtx op0;
+  rtx result;
+
+  if (!validate_arglist (arglist, INTEGER_TYPE, VOID_TYPE))
+    return 0;
+
+  /* Compute the argument.  */
+  op0 = expand_expr (TREE_VALUE (arglist), NULL_RTX, VOIDmode, 0);
+
+  /* Allocate the desired space.  */
+  result = allocate_dynamic_stack_space (op0, target, BITS_PER_UNIT);
+
+#ifdef POINTERS_EXTEND_UNSIGNED
+  if (GET_MODE (result) != ptr_mode)
+    result = convert_memory_address (ptr_mode, result);
+#endif
+
+  return result;
+}

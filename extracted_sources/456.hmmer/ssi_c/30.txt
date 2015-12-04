@@ -1,0 +1,33 @@
+static int
+binary_search(SSIFILE *sfp, char *key, int klen, SSIOFFSET *base, 
+	      sqd_uint32 recsize, sqd_uint32 maxidx)
+{
+  char        *name;
+  sqd_uint32   left, right, mid;
+  int          cmp;
+  int          status;
+  
+  if (maxidx == 0) return SSI_ERR_NO_SUCH_KEY; /* special case: empty index */
+  if ((name = malloc (sizeof(char)*klen)) == NULL) return SSI_ERR_MALLOC;
+  left  = 0;
+  right = maxidx-1;
+  while (1) {			/* A binary search: */
+    mid   = (left+right) / 2;	/* careful here. only works because
+				   we limit unsigned vars to signed ranges. */
+    if ((status = indexfile_position(sfp, base, recsize, mid)) != 0)
+      { free(name); return status; }
+    if (fread(name, sizeof(char), klen, sfp->fp) != klen) 
+      { free(name); return SSI_ERR_NODATA; }
+    cmp = strcmp(name, key);
+    if      (cmp == 0) break;	          /* found it!              */
+    else if (left >= right)	          /* oops, missed it; fail  */
+      { free(name); return SSI_ERR_NO_SUCH_KEY; }
+    else if (cmp < 0)       left  = mid+1; /* it's right of mid     */
+    else if (cmp > 0) {
+      if (mid == 0) { free(name); return SSI_ERR_NO_SUCH_KEY; } /* special case, beware */
+      else right = mid-1;                  /* it's left of mid      */
+    }
+  }
+  free(name);
+  return 0;			/* and sfp->fp is positioned... */
+}

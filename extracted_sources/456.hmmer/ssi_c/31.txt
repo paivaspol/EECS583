@@ -1,0 +1,16 @@
+static int
+indexfile_position(SSIFILE *sfp, SSIOFFSET *base, sqd_uint32 len, sqd_uint32 n)
+{
+  SSIOFFSET pos;
+  int       status;
+
+  if (base->mode == SSI_OFFSET_I32) {
+    pos.mode    = SSI_OFFSET_I32;
+    pos.off.i32 = base->off.i32 + n*len;
+  } else if (base->mode == SSI_OFFSET_I64) {
+    pos.mode    = SSI_OFFSET_I64;
+    pos.off.i64 = base->off.i64 + n*len;
+  } else return 0;
+  if ((status = SSISetFilePosition(sfp->fp, &pos)) != 0) return status;
+  return 0;
+}

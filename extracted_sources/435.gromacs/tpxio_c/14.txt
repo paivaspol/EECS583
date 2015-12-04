@@ -1,0 +1,15 @@
+static void do_top(t_topology *top,bool bRead)
+{
+  int  i;
+  
+  do_symtab(&(top->symtab),bRead);
+  do_symstr(&(top->name),bRead,&(top->symtab));
+  do_atoms (&(top->atoms),bRead,&(top->symtab));
+  do_idef  (&(top->idef),bRead);
+  for(i=0; (i<ebNR); i++)
+    do_block(&(top->blocks[i]),bRead);
+  if (bRead) {
+    close_symtab(&(top->symtab));
+    make_chain_identifiers(&(top->atoms),&(top->blocks[ebMOLS]));
+  }
+}

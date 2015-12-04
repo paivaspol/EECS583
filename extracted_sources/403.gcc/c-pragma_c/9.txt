@@ -1,0 +1,19 @@
+static void
+handle_pragma_extern_prefix (dummy)
+     cpp_reader *dummy ATTRIBUTE_UNUSED;
+{
+  tree prefix, x;
+  enum cpp_ttype t;
+
+  if (c_lex (&prefix) != CPP_STRING)
+    {
+      warning ("malformed #pragma extern_prefix, ignored");
+      return;
+    }
+  t = c_lex (&x);
+  if (t != CPP_EOF)
+    warning ("junk at end of #pragma extern_prefix");
+
+  /* Note that the length includes the null terminator.  */
+  pragma_extern_prefix = (TREE_STRING_LENGTH (prefix) > 1 ? prefix : NULL);
+}

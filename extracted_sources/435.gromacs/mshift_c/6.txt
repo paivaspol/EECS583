@@ -1,0 +1,24 @@
+static void mk_1shift_tric(matrix box,rvec hbox,rvec xi,rvec xj,int *mi,int *mj)
+{
+  /* Calculate periodicity for triclinic box... */
+  int  m,d;
+  rvec dx;
+  
+  rvec_sub(xi,xj,dx);
+
+  for(m=DIM-1; (m>=0); m--) {
+    /* If dx < hbox, then xj will be reduced by box, so that
+     * xi - xj will be bigger
+     */
+    if (dx[m] < -hbox[m]) {
+      mj[m]=mi[m]-1;
+      for(d=m-1; d>=0; d--)
+	dx[d]+=box[m][d];
+    } else if (dx[m] >= hbox[m]) {
+      mj[m]=mi[m]+1;
+      for(d=m-1; d>=0; d--)
+	dx[d]-=box[m][d];
+    } else
+      mj[m]=mi[m];
+  }
+}

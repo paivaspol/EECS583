@@ -1,0 +1,23 @@
+int32 approx_isskip(int32 frame,int32 ds_ratio,int32 cond_ds,int32 isSameBestIdx,int32 *skip_count)
+{
+  /*Consider cond_ds first if specified*/
+  if(cond_ds>0) {
+      if(isSameBestIdx){
+	if(*skip_count<ds_ratio-1){
+	  *skip_count++;
+	  return 1;
+	}else{
+	  *skip_count=0;
+	  return 0;
+	}
+      }
+      else
+	return 0;
+    }
+
+  /*Consider the effect of ds_ratio*/
+  if(frame%ds_ratio==0)
+    return 0;
+  else
+    return 1;
+}

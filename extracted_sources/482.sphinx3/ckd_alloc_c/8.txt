@@ -1,0 +1,32 @@
+void __myfree__ (char *elem, int32 elemsize, char *caller_file, int32 caller_line)
+{
+#if (! __PURIFY__)
+    char **cpp;
+    mylist_t *prev, *list;
+    
+    /* Find list for elemsize */
+    prev = NULL;
+    for (list = head; list && (list->elemsize != elemsize); list = list->next)
+	prev = list;
+
+    if (! list) {
+	E_FATAL("Unknown list item size: %d; called from %s(%d)\n",
+		elemsize, caller_file, caller_line);
+    } else if (prev) {
+	/* List found; move entry to head of list */
+	prev->next = list->next;
+	list->next = head;
+	head = list;
+    }
+
+    /*
+     * Insert freed item at head of list.
+     * NOTE: skipping check for size being multiple of (void *).
+     */
+    cpp = (char **) elem;
+    *cpp = (char *) list->freelist;
+    list->freelist = cpp;
+#else
+    free (elem);
+#endif
+}

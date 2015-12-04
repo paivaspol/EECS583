@@ -1,0 +1,210 @@
+void
+schedule_block (b, rgn_n_insns)
+     int b;
+     int rgn_n_insns;
+{
+  struct ready_list ready;
+  int can_issue_more;
+
+  /* Head/tail info for this block.  */
+  rtx prev_head = current_sched_info->prev_head;
+  rtx next_tail = current_sched_info->next_tail;
+  rtx head = NEXT_INSN (prev_head);
+  rtx tail = PREV_INSN (next_tail);
+
+  /* We used to have code to avoid getting parameters moved from hard
+     argument registers into pseudos.
+
+     However, it was removed when it proved to be of marginal benefit
+     and caused problems because schedule_block and compute_forward_dependences
+     had different notions of what the "head" insn was.  */
+
+  if (head == tail && (! INSN_P (head)))
+    abort ();
+
+  /* Debug info.  */
+  if (sched_verbose)
+    {
+      fprintf (sched_dump, ";;   ======================================================\n");
+      fprintf (sched_dump,
+	       ";;   -- basic block %d from %d to %d -- %s reload\n",
+	       b, INSN_UID (head), INSN_UID (tail),
+	       (reload_completed ? "after" : "before"));
+      fprintf (sched_dump, ";;   ======================================================\n");
+      fprintf (sched_dump, "\n");
+
+      visualize_alloc ();
+      init_block_visualization ();
+    }
+
+  clear_units ();
+
+  /* Allocate the ready list.  */
+  ready.veclen = rgn_n_insns + 1 + issue_rate;
+  ready.first = ready.veclen - 1;
+  ready.vec = (rtx *) xmalloc (ready.veclen * sizeof (rtx));
+  ready.n_ready = 0;
+
+  (*current_sched_info->init_ready_list) (&ready);
+
+  if (targetm.sched.md_init)
+    (*targetm.sched.md_init) (sched_dump, sched_verbose, ready.veclen);
+
+  /* We start inserting insns after PREV_HEAD.  */
+  last_scheduled_insn = prev_head;
+
+  /* Initialize INSN_QUEUE.  Q_SIZE is the total number of insns in the
+     queue.  */
+  q_ptr = 0;
+  q_size = 0;
+  last_clock_var = 0;
+  memset ((char *) insn_queue, 0, sizeof (insn_queue));
+
+  /* Start just before the beginning of time.  */
+  clock_var = -1;
+
+  /* Loop until all the insns in BB are scheduled.  */
+  while ((*current_sched_info->schedule_more_p) ())
+    {
+      clock_var++;
+
+      /* Add to the ready list all pending insns that can be issued now.
+         If there are no ready insns, increment clock until one
+         is ready and add all pending insns at that point to the ready
+         list.  */
+      queue_to_ready (&ready);
+
+      if (ready.n_ready == 0)
+	abort ();
+
+      if (sched_verbose >= 2)
+	{
+	  fprintf (sched_dump, ";;\t\tReady list after queue_to_ready:  ");
+	  debug_ready_list (&ready);
+	}
+
+      /* Sort the ready list based on priority.  */
+      ready_sort (&ready);
+
+      /* Allow the target to reorder the list, typically for
+	 better instruction bundling.  */
+      if (targetm.sched.reorder)
+	can_issue_more =
+	  (*targetm.sched.reorder) (sched_dump, sched_verbose,
+				    ready_lastpos (&ready),
+				    &ready.n_ready, clock_var);
+      else
+	can_issue_more = issue_rate;
+
+      if (sched_verbose && targetm.sched.cycle_display)
+	last_scheduled_insn
+	  = (*targetm.sched.cycle_display) (clock_var, last_scheduled_insn);
+
+      if (sched_verbose)
+	{
+	  fprintf (sched_dump, "\n;;\tReady list (t =%3d):  ", clock_var);
+	  debug_ready_list (&ready);
+	}
+
+      /* Issue insns from ready list.  */
+      while (ready.n_ready != 0
+	     && can_issue_more
+	     && (*current_sched_info->schedule_more_p) ())
+	{
+	  /* Select and remove the insn from the ready list.  */
+	  rtx insn = ready_remove_first (&ready);
+	  int cost = actual_hazard (insn_unit (insn), insn, clock_var, 0);
+
+	  if (cost >= 1)
+	    {
+	      queue_insn (insn, cost);
+	      continue;
+	    }
+
+	  if (! (*current_sched_info->can_schedule_ready_p) (insn))
+	    goto next;
+
+	  last_scheduled_insn = move_insn (insn, last_scheduled_insn);
+
+	  if (targetm.sched.variable_issue)
+	    can_issue_more =
+	      (*targetm.sched.variable_issue) (sched_dump, sched_verbose,
+					       insn, can_issue_more);
+	  else
+	    can_issue_more--;
+
+	  schedule_insn (insn, &ready, clock_var);
+
+	next:
+	  if (targetm.sched.reorder2)
+	    {
+	      /* Sort the ready list based on priority.  */
+	      if (ready.n_ready > 0)
+		ready_sort (&ready);
+	      can_issue_more =
+		(*targetm.sched.reorder2) (sched_dump,sched_verbose,
+					   ready.n_ready
+					   ? ready_lastpos (&ready) : NULL,
+					   &ready.n_ready, clock_var);
+	    }
+	}
+
+      /* Debug info.  */
+      if (sched_verbose)
+	visualize_scheduled_insns (clock_var);
+    }
+
+  if (targetm.sched.md_finish)
+    (*targetm.sched.md_finish) (sched_dump, sched_verbose);
+
+  /* Debug info.  */
+  if (sched_verbose)
+    {
+      fprintf (sched_dump, ";;\tReady list (final):  ");
+      debug_ready_list (&ready);
+      print_block_visualization ("");
+    }
+
+  /* Sanity check -- queue must be empty now.  Meaningless if region has
+     multiple bbs.  */
+  if (current_sched_info->queue_must_finish_empty && q_size != 0)
+      abort ();
+
+  /* Update head/tail boundaries.  */
+  head = NEXT_INSN (prev_head);
+  tail = last_scheduled_insn;
+
+  /* Restore-other-notes: NOTE_LIST is the end of a chain of notes
+     previously found among the insns.  Insert them at the beginning
+     of the insns.  */
+  if (note_list != 0)
+    {
+      rtx note_head = note_list;
+
+      while (PREV_INSN (note_head))
+	{
+	  note_head = PREV_INSN (note_head);
+	}
+
+      PREV_INSN (note_head) = PREV_INSN (head);
+      NEXT_INSN (PREV_INSN (head)) = note_head;
+      PREV_INSN (head) = note_list;
+      NEXT_INSN (note_list) = head;
+      head = note_head;
+    }
+
+  /* Debugging.  */
+  if (sched_verbose)
+    {
+      fprintf (sched_dump, ";;   total time = %d\n;;   new head = %d\n",
+	       clock_var, INSN_UID (head));
+      fprintf (sched_dump, ";;   new tail = %d\n\n",
+	       INSN_UID (tail));
+      visualize_free ();
+    }
+
+  current_sched_info->head = head;
+  current_sched_info->tail = tail;
+
+  free (ready.vec);
+}

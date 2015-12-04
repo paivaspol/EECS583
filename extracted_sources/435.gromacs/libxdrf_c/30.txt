@@ -1,0 +1,445 @@
+int xdr3dfcoord(XDR *xdrs, float *fp, int *size, float *precision) {
+    
+
+    static int *ip = NULL;
+    static int oldsize;
+    static int *buf;
+
+    int minint[3], maxint[3], mindiff, *lip, diff;
+    int lint1, lint2, lint3, oldlint1, oldlint2, oldlint3, smallidx;
+    int minidx, maxidx;
+    unsigned sizeint[3], sizesmall[3], bitsizeint[3], size3, *luip;
+    int flag, k;
+    int smallnum, smaller, larger, i, is_small, is_smaller, run, prevrun;
+    float *lfp, lf;
+    int tmp, *thiscoord,  prevcoord[3];
+    unsigned int tmpcoord[30];
+
+    int bufsize, xdrid, lsize;
+    unsigned int bitsize;
+    float inv_precision;
+    int errval = 1;
+
+    /* find out if xdrs is opened for reading or for writing */
+    xdrid = 0;
+    while (xdridptr[xdrid] != xdrs) {
+	xdrid++;
+	if (xdrid >= MAXID) {
+	    fprintf(stderr, "xdr error. no open xdr stream\n");
+	    exit (1);
+	}
+    }
+    if ((xdrmodes[xdrid] == 'w') || (xdrmodes[xdrid] == 'a')) {
+
+	/* xdrs is open for writing */
+
+	if (xdr_int(xdrs, size) == 0)
+	    return 0;
+	size3 = *size * 3;
+	/* when the number of coordinates is small, don't try to compress; just
+	 * write them as floats using xdr_vector
+	 */
+	if (*size <= 9 ) {
+            return (xdr_vector(xdrs, (char *) fp, (unsigned int)size3, 
+                    (unsigned int)sizeof(*fp), (xdrproc_t)xdr_float));
+	}
+	
+	xdr_float(xdrs, precision);
+	if (ip == NULL) {
+	    ip = (int *)malloc((size_t)(size3 * sizeof(*ip)));
+	    if (ip == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    bufsize = size3 * 1.2;
+	    buf = (int *)malloc((size_t)(bufsize * sizeof(*buf)));
+	    if (buf == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    oldsize = *size;
+	} else if (*size > oldsize) {
+	    ip = (int *)realloc(ip, (size_t)(size3 * sizeof(*ip)));
+	    if (ip == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    bufsize = size3 * 1.2;
+	    buf = (int *)realloc(buf, (size_t)(bufsize * sizeof(*buf)));
+	    if (buf == NULL) {
+		fprintf(stderr,"realloc failed\n");
+		exit(1);
+	    }
+	    oldsize = *size;
+	}
+	/* buf[0-2] are special and do not contain actual data */
+	buf[0] = buf[1] = buf[2] = 0;
+	minint[0] = minint[1] = minint[2] = INT_MAX;
+	maxint[0] = maxint[1] = maxint[2] = INT_MIN;
+	prevrun = -1;
+	lfp = fp;
+	lip = ip;
+	mindiff = INT_MAX;
+	oldlint1 = oldlint2 = oldlint3 = 0;
+	while(lfp < fp + size3 ) {
+	    /* find nearest integer */
+	    if (*lfp >= 0.0)
+		lf = *lfp * *precision + 0.5;
+	    else
+		lf = *lfp * *precision - 0.5;
+	    if (fabs(lf) > MAXABS) {
+		/* scaling would cause overflow */
+		errval = 0;
+	    }
+	    lint1 = lf;
+	    if (lint1 < minint[0]) minint[0] = lint1;
+	    if (lint1 > maxint[0]) maxint[0] = lint1;
+	    *lip++ = lint1;
+	    lfp++;
+	    if (*lfp >= 0.0)
+		lf = *lfp * *precision + 0.5;
+	    else
+		lf = *lfp * *precision - 0.5;
+	    if (fabs(lf) > MAXABS) {
+		/* scaling would cause overflow */
+		errval = 0;
+	    }
+	    lint2 = lf;
+	    if (lint2 < minint[1]) minint[1] = lint2;
+	    if (lint2 > maxint[1]) maxint[1] = lint2;
+	    *lip++ = lint2;
+	    lfp++;
+	    if (*lfp >= 0.0)
+		lf = *lfp * *precision + 0.5;
+	    else
+		lf = *lfp * *precision - 0.5;
+	    if (fabs(lf) > MAXABS) {
+		/* scaling would cause overflow */
+		errval = 0;
+	    }
+	    lint3 = lf;
+	    if (lint3 < minint[2]) minint[2] = lint3;
+	    if (lint3 > maxint[2]) maxint[2] = lint3;
+	    *lip++ = lint3;
+	    lfp++;
+	    diff = abs(oldlint1-lint1)+abs(oldlint2-lint2)+abs(oldlint3-lint3);
+	    if (diff < mindiff && lfp > fp + 3)
+		mindiff = diff;
+	    oldlint1 = lint1;
+	    oldlint2 = lint2;
+	    oldlint3 = lint3;
+	}
+	xdr_int(xdrs, &(minint[0]));
+	xdr_int(xdrs, &(minint[1]));
+	xdr_int(xdrs, &(minint[2]));
+	
+	xdr_int(xdrs, &(maxint[0]));
+	xdr_int(xdrs, &(maxint[1]));
+	xdr_int(xdrs, &(maxint[2]));
+	
+	if ((float)maxint[0] - (float)minint[0] >= MAXABS ||
+		(float)maxint[1] - (float)minint[1] >= MAXABS ||
+		(float)maxint[2] - (float)minint[2] >= MAXABS) {
+	    /* turning value in unsigned by subtracting minint
+	     * would cause overflow
+	     */
+	    errval = 0;
+	}
+	sizeint[0] = maxint[0] - minint[0]+1;
+	sizeint[1] = maxint[1] - minint[1]+1;
+	sizeint[2] = maxint[2] - minint[2]+1;
+	
+	/* check if one of the sizes is to big to be multiplied */
+	if ((sizeint[0] | sizeint[1] | sizeint[2] ) > 0xffffff) {
+	    bitsizeint[0] = sizeofint(sizeint[0]);
+	    bitsizeint[1] = sizeofint(sizeint[1]);
+	    bitsizeint[2] = sizeofint(sizeint[2]);
+	    bitsize = 0; /* flag the use of large sizes */
+	} else {
+	    bitsize = sizeofints(3, sizeint);
+	}
+	lip = ip;
+	luip = (unsigned int *) ip;
+	smallidx = FIRSTIDX;
+	while (smallidx < LASTIDX && magicints[smallidx] < mindiff) {
+	    smallidx++;
+	}
+	xdr_int(xdrs, &smallidx);
+	maxidx = MIN(LASTIDX, smallidx + 8) ;
+	minidx = maxidx - 8; /* often this equal smallidx */
+	smaller = magicints[MAX(FIRSTIDX, smallidx-1)] / 2;
+	smallnum = magicints[smallidx] / 2;
+	sizesmall[0] = sizesmall[1] = sizesmall[2] = magicints[smallidx];
+	larger = magicints[maxidx] / 2;
+	i = 0;
+	while (i < *size) {
+	    is_small = 0;
+	    thiscoord = (int *)(luip) + i * 3;
+	    if (smallidx < maxidx && i >= 1 &&
+		    abs(thiscoord[0] - prevcoord[0]) < larger &&
+		    abs(thiscoord[1] - prevcoord[1]) < larger &&
+		    abs(thiscoord[2] - prevcoord[2]) < larger) {
+		is_smaller = 1;
+	    } else if (smallidx > minidx) {
+		is_smaller = -1;
+	    } else {
+		is_smaller = 0;
+	    }
+	    if (i + 1 < *size) {
+		if (abs(thiscoord[0] - thiscoord[3]) < smallnum &&
+			abs(thiscoord[1] - thiscoord[4]) < smallnum &&
+			abs(thiscoord[2] - thiscoord[5]) < smallnum) {
+		    /* interchange first with second atom for better
+		     * compression of water molecules
+		     */
+		    tmp = thiscoord[0]; thiscoord[0] = thiscoord[3];
+			thiscoord[3] = tmp;
+		    tmp = thiscoord[1]; thiscoord[1] = thiscoord[4];
+			thiscoord[4] = tmp;
+		    tmp = thiscoord[2]; thiscoord[2] = thiscoord[5];
+			thiscoord[5] = tmp;
+		    is_small = 1;
+		}
+    
+	    }
+	    tmpcoord[0] = thiscoord[0] - minint[0];
+	    tmpcoord[1] = thiscoord[1] - minint[1];
+	    tmpcoord[2] = thiscoord[2] - minint[2];
+	    if (bitsize == 0) {
+		sendbits(buf, bitsizeint[0], tmpcoord[0]);
+		sendbits(buf, bitsizeint[1], tmpcoord[1]);
+		sendbits(buf, bitsizeint[2], tmpcoord[2]);
+	    } else {
+		sendints(buf, 3, bitsize, sizeint, tmpcoord);
+	    }
+	    prevcoord[0] = thiscoord[0];
+	    prevcoord[1] = thiscoord[1];
+	    prevcoord[2] = thiscoord[2];
+	    thiscoord = thiscoord + 3;
+	    i++;
+	    
+	    run = 0;
+	    if (is_small == 0 && is_smaller == -1)
+		is_smaller = 0;
+	    while (is_small && run < 8*3) {
+		if (is_smaller == -1 && (
+			SQR(thiscoord[0] - prevcoord[0]) +
+			SQR(thiscoord[1] - prevcoord[1]) +
+			SQR(thiscoord[2] - prevcoord[2]) >= smaller * smaller)) {
+		    is_smaller = 0;
+		}
+
+		tmpcoord[run++] = thiscoord[0] - prevcoord[0] + smallnum;
+		tmpcoord[run++] = thiscoord[1] - prevcoord[1] + smallnum;
+		tmpcoord[run++] = thiscoord[2] - prevcoord[2] + smallnum;
+		
+		prevcoord[0] = thiscoord[0];
+		prevcoord[1] = thiscoord[1];
+		prevcoord[2] = thiscoord[2];
+
+		i++;
+		thiscoord = thiscoord + 3;
+		is_small = 0;
+		if (i < *size &&
+			abs(thiscoord[0] - prevcoord[0]) < smallnum &&
+			abs(thiscoord[1] - prevcoord[1]) < smallnum &&
+			abs(thiscoord[2] - prevcoord[2]) < smallnum) {
+		    is_small = 1;
+		}
+	    }
+	    if (run != prevrun || is_smaller != 0) {
+		prevrun = run;
+		sendbits(buf, 1, 1); /* flag the change in run-length */
+		sendbits(buf, 5, run+is_smaller+1);
+	    } else {
+		sendbits(buf, 1, 0); /* flag the fact that runlength did not change */
+	    }
+	    for (k=0; k < run; k+=3) {
+		sendints(buf, 3, smallidx, sizesmall, &tmpcoord[k]);	
+	    }
+	    if (is_smaller != 0) {
+		smallidx += is_smaller;
+		if (is_smaller < 0) {
+		    smallnum = smaller;
+		    smaller = magicints[smallidx-1] / 2;
+		} else {
+		    smaller = smallnum;
+		    smallnum = magicints[smallidx] / 2;
+		}
+		sizesmall[0] = sizesmall[1] = sizesmall[2] = magicints[smallidx];
+	    }
+	}
+	if (buf[1] != 0) buf[0]++;
+	xdr_int(xdrs, &(buf[0])); /* buf[0] holds the length in bytes */
+        return errval * (xdr_opaque(xdrs, (char *)&(buf[3]), (unsigned int)buf[0]));
+    } else {
+	
+	/* xdrs is open for reading */
+	
+	if (xdr_int(xdrs, &lsize) == 0) 
+	    return 0;
+	if (*size != 0 && lsize != *size) {
+	    fprintf(stderr, "wrong number of coordinates in xdr3dfcoord; "
+		    "%d arg vs %d in file", *size, lsize);
+	}
+	*size = lsize;
+	size3 = *size * 3;
+	if (*size <= 9) {
+            return (xdr_vector(xdrs, (char *) fp, (unsigned int)size3, 
+                    (unsigned int)sizeof(*fp), (xdrproc_t)xdr_float));
+	}
+	xdr_float(xdrs, precision);
+	if (ip == NULL) {
+	    ip = (int *)malloc((size_t)(size3 * sizeof(*ip)));
+	    if (ip == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    bufsize = size3 * 1.2;
+	    buf = (int *)malloc((size_t)(bufsize * sizeof(*buf)));
+	    if (buf == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    oldsize = *size;
+	} else if (*size > oldsize) {
+	    ip = (int *)realloc(ip, (size_t)(size3 * sizeof(*ip)));
+	    if (ip == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    bufsize = size3 * 1.2;
+	    buf = (int *)realloc(buf, (size_t)(bufsize * sizeof(*buf)));
+	    if (buf == NULL) {
+		fprintf(stderr,"malloc failed\n");
+		exit(1);
+	    }
+	    oldsize = *size;
+	}
+	buf[0] = buf[1] = buf[2] = 0;
+	
+	xdr_int(xdrs, &(minint[0]));
+	xdr_int(xdrs, &(minint[1]));
+	xdr_int(xdrs, &(minint[2]));
+
+	xdr_int(xdrs, &(maxint[0]));
+	xdr_int(xdrs, &(maxint[1]));
+	xdr_int(xdrs, &(maxint[2]));
+		
+	sizeint[0] = maxint[0] - minint[0]+1;
+	sizeint[1] = maxint[1] - minint[1]+1;
+	sizeint[2] = maxint[2] - minint[2]+1;
+	
+	/* check if one of the sizes is to big to be multiplied */
+	if ((sizeint[0] | sizeint[1] | sizeint[2] ) > 0xffffff) {
+	    bitsizeint[0] = sizeofint(sizeint[0]);
+	    bitsizeint[1] = sizeofint(sizeint[1]);
+	    bitsizeint[2] = sizeofint(sizeint[2]);
+	    bitsize = 0; /* flag the use of large sizes */
+	} else {
+	    bitsize = sizeofints(3, sizeint);
+	}
+	
+	if (xdr_int(xdrs, &smallidx) == 0)	
+	    return 0;
+	maxidx = MIN(LASTIDX, smallidx + 8) ;
+	minidx = maxidx - 8; /* often this equal smallidx */
+	smaller = magicints[MAX(FIRSTIDX, smallidx-1)] / 2;
+	smallnum = magicints[smallidx] / 2;
+	sizesmall[0] = sizesmall[1] = sizesmall[2] = magicints[smallidx] ;
+	larger = magicints[maxidx];
+
+    	/* buf[0] holds the length in bytes */
+
+	if (xdr_int(xdrs, &(buf[0])) == 0)
+	    return 0;
+        if (xdr_opaque(xdrs, (char *)&(buf[3]), (unsigned int)buf[0]) == 0)
+	    return 0;
+	buf[0] = buf[1] = buf[2] = 0;
+	
+	lfp = fp;
+	inv_precision = 1.0 / * precision;
+	run = 0;
+	i = 0;
+	lip = ip;
+	while ( i < lsize ) {
+	    thiscoord = (int *)(lip) + i * 3;
+
+	    if (bitsize == 0) {
+		thiscoord[0] = receivebits(buf, bitsizeint[0]);
+		thiscoord[1] = receivebits(buf, bitsizeint[1]);
+		thiscoord[2] = receivebits(buf, bitsizeint[2]);
+	    } else {
+		receiveints(buf, 3, bitsize, sizeint, thiscoord);
+	    }
+	    
+	    i++;
+	    thiscoord[0] += minint[0];
+	    thiscoord[1] += minint[1];
+	    thiscoord[2] += minint[2];
+	    
+	    prevcoord[0] = thiscoord[0];
+	    prevcoord[1] = thiscoord[1];
+	    prevcoord[2] = thiscoord[2];
+	    
+	   
+	    flag = receivebits(buf, 1);
+	    is_smaller = 0;
+	    if (flag == 1) {
+		run = receivebits(buf, 5);
+		is_smaller = run % 3;
+		run -= is_smaller;
+		is_smaller--;
+	    }
+	    if (run > 0) {
+		thiscoord += 3;
+		for (k = 0; k < run; k+=3) {
+		    receiveints(buf, 3, smallidx, sizesmall, thiscoord);
+		    i++;
+		    thiscoord[0] += prevcoord[0] - smallnum;
+		    thiscoord[1] += prevcoord[1] - smallnum;
+		    thiscoord[2] += prevcoord[2] - smallnum;
+		    if (k == 0) {
+			/* interchange first with second atom for better
+			 * compression of water molecules
+			 */
+			tmp = thiscoord[0]; thiscoord[0] = prevcoord[0];
+				prevcoord[0] = tmp;
+			tmp = thiscoord[1]; thiscoord[1] = prevcoord[1];
+				prevcoord[1] = tmp;
+			tmp = thiscoord[2]; thiscoord[2] = prevcoord[2];
+				prevcoord[2] = tmp;
+			*lfp++ = prevcoord[0] * inv_precision;
+			*lfp++ = prevcoord[1] * inv_precision;
+			*lfp++ = prevcoord[2] * inv_precision;
+		    } else {
+			prevcoord[0] = thiscoord[0];
+			prevcoord[1] = thiscoord[1];
+			prevcoord[2] = thiscoord[2];
+		    }
+		    *lfp++ = thiscoord[0] * inv_precision;
+		    *lfp++ = thiscoord[1] * inv_precision;
+		    *lfp++ = thiscoord[2] * inv_precision;
+		}
+	    } else {
+		*lfp++ = thiscoord[0] * inv_precision;
+		*lfp++ = thiscoord[1] * inv_precision;
+		*lfp++ = thiscoord[2] * inv_precision;		
+	    }
+	    smallidx += is_smaller;
+	    if (is_smaller < 0) {
+		smallnum = smaller;
+		if (smallidx > FIRSTIDX) {
+		    smaller = magicints[smallidx - 1] /2;
+		} else {
+		    smaller = 0;
+		}
+	    } else if (is_smaller > 0) {
+		smaller = smallnum;
+		smallnum = magicints[smallidx] / 2;
+	    }
+	    sizesmall[0] = sizesmall[1] = sizesmall[2] = magicints[smallidx] ;
+	}
+    }
+    return 1;
+}

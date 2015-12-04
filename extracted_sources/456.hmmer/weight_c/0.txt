@@ -1,0 +1,68 @@
+static void downweight(struct phylo_s *tree, int nseq, float *lwt, float *rwt, 
+		       float *fwt, int node);
+static float simple_distance(char *s1, char *s2);
+static int    simple_diffmx(char **aseqs,int num, float ***ret_dmx);
+
+/* Function: GSCWeights()
+ * 
+ * Purpose:  Use Erik's tree-based algorithm to set weights for
+ *           sequences in an alignment. upweight() and downweight()
+ *           are derived from Graeme Mitchison's code.
+ *           
+ * Args:     aseq        - array of (0..nseq-1) aligned sequences
+ *           nseq        - number of seqs in alignment  
+ *           alen        - length of alignment
+ *           wgt         - allocated [0..nseq-1] array of weights to be returned
+ *           
+ * Return:   (void)
+ *           wgt is filled in.
+ */
+void
+GSCWeights(char **aseq, int nseq, int alen, float *wgt)
+{
+  float **dmx;                 /* distance (difference) matrix */
+  struct phylo_s *tree;
+  float  *lwt, *rwt;           /* weight on left, right of this tree node */
+  float  *fwt;                 /* final weight assigned to this node */
+  int      i;
+  
+  /* Sanity check first
+   */
+  if (nseq == 1) { wgt[0] = 1.0; return; }
+
+  /* I use a simple fractional difference matrix derived by
+   * pairwise identity. Perhaps I should include a Poisson
+   * distance correction.
+   */
+  MakeDiffMx(aseq, nseq, &dmx);
+  if (! Cluster(dmx, nseq, CLUSTER_MIN, &tree))  Die("Cluster() failed");
+  
+  /* Allocations
+   */
+  lwt = MallocOrDie (sizeof(float) * (2 * nseq - 1));
+  rwt = MallocOrDie (sizeof(float) * (2 * nseq - 1));
+  fwt = MallocOrDie (sizeof(float) * (2 * nseq - 1));
+  
+  /* lwt and rwt are the total branch weight to the left and
+   * right of a node or sequence. They are 0..2N-2.  0..N-1 are 
+   * the sequences; these have weight 0. N..2N-2 are the actual
+   * tree nodes.
+   */
+  for (i = 0; i < nseq; i++)
+    lwt[i] = rwt[i] = 0.0;
+				/* recursively calculate rwt, lwt, starting
+				   at node nseq (the root) */
+  upweight(tree, nseq, lwt, rwt, nseq);
+
+				/* recursively distribute weight across the
+				   tree */
+  fwt[nseq] = nseq;
+  downweight(tree, nseq, lwt, rwt, fwt, nseq);
+				/* collect the weights */
+  for (i = 0; i < nseq; i++)
+    wgt[i]  = fwt[i];
+
+  FMX2Free(dmx);
+  FreePhylo(tree, nseq);
+  free(lwt); free(rwt); free(fwt);
+}

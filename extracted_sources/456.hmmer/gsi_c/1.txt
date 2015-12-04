@@ -1,0 +1,38 @@
+int
+GSIGetOffset(GSIFILE *gsi, char *key, char *ret_seqfile, 
+	     int *ret_format, long *ret_offset)
+{
+  sqd_uint32  left, right, mid;
+  int         cmp;
+  char        name[GSI_KEYSIZE + 1];
+  sqd_uint32  offset;
+  sqd_uint16  filenum;
+  sqd_uint32  fmt;
+
+  name[GSI_KEYSIZE] = '\0';
+
+  left  = gsi->nfiles + 1;
+  right = gsi->nfiles + gsi->recnum;
+  mid   = (left + right) / 2;
+  fseek(gsi->gsifp, mid * GSI_RECSIZE, SEEK_SET);
+
+  while (GSIGetRecord(gsi, name, &filenum, &offset))
+    {
+      cmp = strcmp(name, key);
+      if      (cmp == 0)      break;	       /* found it!              */
+      else if (left >= right) return 0;        /* oops, missed it; fail. */
+      else if (cmp < 0)       left = mid + 1;  /* it's right of mid      */
+      else if (cmp > 0)	      right = mid - 1; /* it's left of mid       */ 
+      mid = (left + right) / 2;
+      fseek(gsi->gsifp, mid * GSI_RECSIZE, SEEK_SET);
+    }
+
+  /* Using file number, look up the sequence file and format.
+   */
+  fseek(gsi->gsifp, filenum * GSI_RECSIZE, SEEK_SET);
+  GSIGetRecord(gsi, ret_seqfile, NULL, &fmt);
+  *ret_format =  (int) fmt;
+  *ret_offset = (long) offset;
+  
+  return 1;
+}

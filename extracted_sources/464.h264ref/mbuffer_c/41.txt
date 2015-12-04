@@ -1,0 +1,78 @@
+static void adaptive_memory_management(StorablePicture* p)
+{
+  DecRefPicMarking_t *tmp_drpm;
+
+  img->last_has_mmco_5 = 0;
+
+  assert (!img->currentPicture->idr_flag);
+  assert (img->adaptive_ref_pic_buffering_flag);
+
+  while (img->dec_ref_pic_marking_buffer)
+  {
+    tmp_drpm = img->dec_ref_pic_marking_buffer;
+    switch (tmp_drpm->memory_management_control_operation)
+    {
+      case 0:
+        if (tmp_drpm->Next != NULL)
+        {
+          error ("memory_management_control_operation = 0 not last operation in buffer", 500);
+        }
+        break;
+      case 1:
+        mm_unmark_short_term_for_reference(p, tmp_drpm->difference_of_pic_nums_minus1);
+        update_ref_list();
+        break;
+      case 2:
+        mm_unmark_long_term_for_reference(p, tmp_drpm->long_term_pic_num);
+        update_ltref_list();
+        break;
+      case 3:
+        mm_assign_long_term_frame_idx(p, tmp_drpm->difference_of_pic_nums_minus1, tmp_drpm->long_term_frame_idx);
+        update_ref_list();
+        update_ltref_list();
+        break;
+      case 4:
+        mm_update_max_long_term_frame_idx (tmp_drpm->max_long_term_frame_idx_plus1);
+        update_ltref_list();
+        break;
+      case 5:
+        mm_unmark_all_short_term_for_reference();
+        mm_unmark_all_long_term_for_reference();
+       img->last_has_mmco_5 = 1;
+        break;
+      case 6:
+        mm_mark_current_picture_long_term(p, tmp_drpm->long_term_frame_idx);
+        break;
+      default:
+        error ("invalid memory_management_control_operation in buffer", 500);
+    }
+    img->dec_ref_pic_marking_buffer = tmp_drpm->Next;
+    free (tmp_drpm);
+  }
+  if ( img->last_has_mmco_5 )
+  {
+    p->pic_num = p->frame_num = 0;
+    p->poc = 0;
+    img->ThisPOC=0;
+    
+    switch (p->structure)
+    {
+    case TOP_FIELD:
+      {
+        img->toppoc=0;
+        break;
+      }
+    case BOTTOM_FIELD:
+      {
+        img->bottompoc=0;
+        break;
+      }
+    case FRAME:
+      {
+        img->framepoc=0;
+        break;
+      }
+    }
+    flush_dpb();
+  }
+}

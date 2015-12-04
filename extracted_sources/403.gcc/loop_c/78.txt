@@ -1,0 +1,584 @@
+static int
+check_dbra_loop (loop, insn_count)
+     struct loop *loop;
+     int insn_count;
+{
+  struct loop_info *loop_info = LOOP_INFO (loop);
+  struct loop_regs *regs = LOOP_REGS (loop);
+  struct loop_ivs *ivs = LOOP_IVS (loop);
+  struct iv_class *bl;
+  rtx reg;
+  rtx jump_label;
+  rtx final_value;
+  rtx start_value;
+  rtx new_add_val;
+  rtx comparison;
+  rtx before_comparison;
+  rtx p;
+  rtx jump;
+  rtx first_compare;
+  int compare_and_branch;
+  rtx loop_start = loop->start;
+  rtx loop_end = loop->end;
+
+  /* If last insn is a conditional branch, and the insn before tests a
+     register value, try to optimize it.  Otherwise, we can't do anything.  */
+
+  jump = PREV_INSN (loop_end);
+  comparison = get_condition_for_loop (loop, jump);
+  if (comparison == 0)
+    return 0;
+  if (!onlyjump_p (jump))
+    return 0;
+
+  /* Try to compute whether the compare/branch at the loop end is one or
+     two instructions.  */
+  get_condition (jump, &first_compare);
+  if (first_compare == jump)
+    compare_and_branch = 1;
+  else if (first_compare == prev_nonnote_insn (jump))
+    compare_and_branch = 2;
+  else
+    return 0;
+
+  {
+    /* If more than one condition is present to control the loop, then
+       do not proceed, as this function does not know how to rewrite
+       loop tests with more than one condition.
+
+       Look backwards from the first insn in the last comparison
+       sequence and see if we've got another comparison sequence.  */
+
+    rtx jump1;
+    if ((jump1 = prev_nonnote_insn (first_compare)) != loop->cont)
+      if (GET_CODE (jump1) == JUMP_INSN)
+	return 0;
+  }
+
+  /* Check all of the bivs to see if the compare uses one of them.
+     Skip biv's set more than once because we can't guarantee that
+     it will be zero on the last iteration.  Also skip if the biv is
+     used between its update and the test insn.  */
+
+  for (bl = ivs->list; bl; bl = bl->next)
+    {
+      if (bl->biv_count == 1
+	  && ! bl->biv->maybe_multiple
+	  && bl->biv->dest_reg == XEXP (comparison, 0)
+	  && ! reg_used_between_p (regno_reg_rtx[bl->regno], bl->biv->insn,
+				   first_compare))
+	break;
+    }
+
+  if (! bl)
+    return 0;
+
+  /* Look for the case where the basic induction variable is always
+     nonnegative, and equals zero on the last iteration.
+     In this case, add a reg_note REG_NONNEG, which allows the
+     m68k DBRA instruction to be used.  */
+
+  if (((GET_CODE (comparison) == GT
+	&& GET_CODE (XEXP (comparison, 1)) == CONST_INT
+	&& INTVAL (XEXP (comparison, 1)) == -1)
+       || (GET_CODE (comparison) == NE && XEXP (comparison, 1) == const0_rtx))
+      && GET_CODE (bl->biv->add_val) == CONST_INT
+      && INTVAL (bl->biv->add_val) < 0)
+    {
+      /* Initial value must be greater than 0,
+	 init_val % -dec_value == 0 to ensure that it equals zero on
+	 the last iteration */
+
+      if (GET_CODE (bl->initial_value) == CONST_INT
+	  && INTVAL (bl->initial_value) > 0
+	  && (INTVAL (bl->initial_value)
+	      % (-INTVAL (bl->biv->add_val))) == 0)
+	{
+	  /* register always nonnegative, add REG_NOTE to branch */
+	  if (! find_reg_note (jump, REG_NONNEG, NULL_RTX))
+	    REG_NOTES (jump)
+	      = gen_rtx_EXPR_LIST (REG_NONNEG, bl->biv->dest_reg,
+				   REG_NOTES (jump));
+	  bl->nonneg = 1;
+
+	  return 1;
+	}
+
+      /* If the decrement is 1 and the value was tested as >= 0 before
+	 the loop, then we can safely optimize.  */
+      for (p = loop_start; p; p = PREV_INSN (p))
+	{
+	  if (GET_CODE (p) == CODE_LABEL)
+	    break;
+	  if (GET_CODE (p) != JUMP_INSN)
+	    continue;
+
+	  before_comparison = get_condition_for_loop (loop, p);
+	  if (before_comparison
+	      && XEXP (before_comparison, 0) == bl->biv->dest_reg
+	      && GET_CODE (before_comparison) == LT
+	      && XEXP (before_comparison, 1) == const0_rtx
+	      && ! reg_set_between_p (bl->biv->dest_reg, p, loop_start)
+	      && INTVAL (bl->biv->add_val) == -1)
+	    {
+	      if (! find_reg_note (jump, REG_NONNEG, NULL_RTX))
+		REG_NOTES (jump)
+		  = gen_rtx_EXPR_LIST (REG_NONNEG, bl->biv->dest_reg,
+				       REG_NOTES (jump));
+	      bl->nonneg = 1;
+
+	      return 1;
+	    }
+	}
+    }
+  else if (GET_CODE (bl->biv->add_val) == CONST_INT
+	   && INTVAL (bl->biv->add_val) > 0)
+    {
+      /* Try to change inc to dec, so can apply above optimization.  */
+      /* Can do this if:
+	 all registers modified are induction variables or invariant,
+	 all memory references have non-overlapping addresses
+	 (obviously true if only one write)
+	 allow 2 insns for the compare/jump at the end of the loop.  */
+      /* Also, we must avoid any instructions which use both the reversed
+	 biv and another biv.  Such instructions will fail if the loop is
+	 reversed.  We meet this condition by requiring that either
+	 no_use_except_counting is true, or else that there is only
+	 one biv.  */
+      int num_nonfixed_reads = 0;
+      /* 1 if the iteration var is used only to count iterations.  */
+      int no_use_except_counting = 0;
+      /* 1 if the loop has no memory store, or it has a single memory store
+	 which is reversible.  */
+      int reversible_mem_store = 1;
+
+      if (bl->giv_count == 0
+	  && !loop->exit_count
+	  && !loop_info->has_multiple_exit_targets)
+	{
+	  rtx bivreg = regno_reg_rtx[bl->regno];
+	  struct iv_class *blt;
+
+	  /* If there are no givs for this biv, and the only exit is the
+	     fall through at the end of the loop, then
+	     see if perhaps there are no uses except to count.  */
+	  no_use_except_counting = 1;
+	  for (p = loop_start; p != loop_end; p = NEXT_INSN (p))
+	    if (INSN_P (p))
+	      {
+		rtx set = single_set (p);
+
+		if (set && GET_CODE (SET_DEST (set)) == REG
+		    && REGNO (SET_DEST (set)) == bl->regno)
+		  /* An insn that sets the biv is okay.  */
+		  ;
+		else if ((p == prev_nonnote_insn (prev_nonnote_insn (loop_end))
+			  || p == prev_nonnote_insn (loop_end))
+			 && reg_mentioned_p (bivreg, PATTERN (p)))
+		  {
+		    /* If either of these insns uses the biv and sets a pseudo
+		       that has more than one usage, then the biv has uses
+		       other than counting since it's used to derive a value
+		       that is used more than one time.  */
+		    note_stores (PATTERN (p), note_set_pseudo_multiple_uses,
+				 regs);
+		    if (regs->multiple_uses)
+		      {
+			no_use_except_counting = 0;
+			break;
+		      }
+		  }
+		else if (reg_mentioned_p (bivreg, PATTERN (p)))
+		  {
+		    no_use_except_counting = 0;
+		    break;
+		  }
+	      }
+
+	  /* A biv has uses besides counting if it is used to set
+	     another biv.  */
+	  for (blt = ivs->list; blt; blt = blt->next)
+	    if (blt->init_set
+		&& reg_mentioned_p (bivreg, SET_SRC (blt->init_set)))
+	      {
+		no_use_except_counting = 0;
+		break;
+	      }
+	}
+
+      if (no_use_except_counting)
+	/* No need to worry about MEMs.  */
+	;
+      else if (loop_info->num_mem_sets <= 1)
+	{
+	  for (p = loop_start; p != loop_end; p = NEXT_INSN (p))
+	    if (INSN_P (p))
+	      num_nonfixed_reads += count_nonfixed_reads (loop, PATTERN (p));
+
+	  /* If the loop has a single store, and the destination address is
+	     invariant, then we can't reverse the loop, because this address
+	     might then have the wrong value at loop exit.
+	     This would work if the source was invariant also, however, in that
+	     case, the insn should have been moved out of the loop.  */
+
+	  if (loop_info->num_mem_sets == 1)
+	    {
+	      struct induction *v;
+
+	      /* If we could prove that each of the memory locations
+		 written to was different, then we could reverse the
+		 store -- but we don't presently have any way of
+		 knowing that.  */
+	      reversible_mem_store = 0;
+
+	      /* If the store depends on a register that is set after the
+		 store, it depends on the initial value, and is thus not
+		 reversible.  */
+	      for (v = bl->giv; reversible_mem_store && v; v = v->next_iv)
+		{
+		  if (v->giv_type == DEST_REG
+		      && reg_mentioned_p (v->dest_reg,
+					  PATTERN (loop_info->first_loop_store_insn))
+		      && loop_insn_first_p (loop_info->first_loop_store_insn,
+					    v->insn))
+		    reversible_mem_store = 0;
+		}
+	    }
+	}
+      else
+	return 0;
+
+      /* This code only acts for innermost loops.  Also it simplifies
+	 the memory address check by only reversing loops with
+	 zero or one memory access.
+	 Two memory accesses could involve parts of the same array,
+	 and that can't be reversed.
+	 If the biv is used only for counting, than we don't need to worry
+	 about all these things.  */
+
+      if ((num_nonfixed_reads <= 1
+	   && ! loop_info->has_nonconst_call
+	   && ! loop_info->has_volatile
+	   && reversible_mem_store
+	   && (bl->giv_count + bl->biv_count + loop_info->num_mem_sets
+	       + num_unmoved_movables (loop) + compare_and_branch == insn_count)
+	   && (bl == ivs->list && bl->next == 0))
+	  || no_use_except_counting)
+	{
+	  rtx tem;
+
+	  /* Loop can be reversed.  */
+	  if (loop_dump_stream)
+	    fprintf (loop_dump_stream, "Can reverse loop\n");
+
+	  /* Now check other conditions:
+
+	     The increment must be a constant, as must the initial value,
+	     and the comparison code must be LT.
+
+	     This test can probably be improved since +/- 1 in the constant
+	     can be obtained by changing LT to LE and vice versa; this is
+	     confusing.  */
+
+	  if (comparison
+	      /* for constants, LE gets turned into LT */
+	      && (GET_CODE (comparison) == LT
+		  || (GET_CODE (comparison) == LE
+		      && no_use_except_counting)))
+	    {
+	      HOST_WIDE_INT add_val, add_adjust, comparison_val = 0;
+	      rtx initial_value, comparison_value;
+	      int nonneg = 0;
+	      enum rtx_code cmp_code;
+	      int comparison_const_width;
+	      unsigned HOST_WIDE_INT comparison_sign_mask;
+
+	      add_val = INTVAL (bl->biv->add_val);
+	      comparison_value = XEXP (comparison, 1);
+	      if (GET_MODE (comparison_value) == VOIDmode)
+		comparison_const_width
+		  = GET_MODE_BITSIZE (GET_MODE (XEXP (comparison, 0)));
+	      else
+		comparison_const_width
+		  = GET_MODE_BITSIZE (GET_MODE (comparison_value));
+	      if (comparison_const_width > HOST_BITS_PER_WIDE_INT)
+		comparison_const_width = HOST_BITS_PER_WIDE_INT;
+	      comparison_sign_mask
+		= (unsigned HOST_WIDE_INT) 1 << (comparison_const_width - 1);
+
+	      /* If the comparison value is not a loop invariant, then we
+		 can not reverse this loop.
+
+		 ??? If the insns which initialize the comparison value as
+		 a whole compute an invariant result, then we could move
+		 them out of the loop and proceed with loop reversal.  */
+	      if (! loop_invariant_p (loop, comparison_value))
+		return 0;
+
+	      if (GET_CODE (comparison_value) == CONST_INT)
+		comparison_val = INTVAL (comparison_value);
+	      initial_value = bl->initial_value;
+
+	      /* Normalize the initial value if it is an integer and
+		 has no other use except as a counter.  This will allow
+		 a few more loops to be reversed.  */
+	      if (no_use_except_counting
+		  && GET_CODE (comparison_value) == CONST_INT
+		  && GET_CODE (initial_value) == CONST_INT)
+		{
+		  comparison_val = comparison_val - INTVAL (bl->initial_value);
+		  /* The code below requires comparison_val to be a multiple
+		     of add_val in order to do the loop reversal, so
+		     round up comparison_val to a multiple of add_val.
+		     Since comparison_value is constant, we know that the
+		     current comparison code is LT.  */
+		  comparison_val = comparison_val + add_val - 1;
+		  comparison_val
+		    -= (unsigned HOST_WIDE_INT) comparison_val % add_val;
+		  /* We postpone overflow checks for COMPARISON_VAL here;
+		     even if there is an overflow, we might still be able to
+		     reverse the loop, if converting the loop exit test to
+		     NE is possible.  */
+		  initial_value = const0_rtx;
+		}
+
+	      /* First check if we can do a vanilla loop reversal.  */
+	      if (initial_value == const0_rtx
+		  /* If we have a decrement_and_branch_on_count,
+		     prefer the NE test, since this will allow that
+		     instruction to be generated.  Note that we must
+		     use a vanilla loop reversal if the biv is used to
+		     calculate a giv or has a non-counting use.  */
+#if ! defined (HAVE_decrement_and_branch_until_zero) \
+&& defined (HAVE_decrement_and_branch_on_count)
+		  && (! (add_val == 1 && loop->vtop
+		         && (bl->biv_count == 0
+			     || no_use_except_counting)))
+#endif
+		  && GET_CODE (comparison_value) == CONST_INT
+		     /* Now do postponed overflow checks on COMPARISON_VAL.  */
+		  && ! (((comparison_val - add_val) ^ INTVAL (comparison_value))
+			& comparison_sign_mask))
+		{
+		  /* Register will always be nonnegative, with value
+		     0 on last iteration */
+		  add_adjust = add_val;
+		  nonneg = 1;
+		  cmp_code = GE;
+		}
+	      else if (add_val == 1 && loop->vtop
+		       && (bl->biv_count == 0
+			   || no_use_except_counting))
+		{
+		  add_adjust = 0;
+		  cmp_code = NE;
+		}
+	      else
+		return 0;
+
+	      if (GET_CODE (comparison) == LE)
+		add_adjust -= add_val;
+
+	      /* If the initial value is not zero, or if the comparison
+		 value is not an exact multiple of the increment, then we
+		 can not reverse this loop.  */
+	      if (initial_value == const0_rtx
+		  && GET_CODE (comparison_value) == CONST_INT)
+		{
+		  if (((unsigned HOST_WIDE_INT) comparison_val % add_val) != 0)
+		    return 0;
+		}
+	      else
+		{
+		  if (! no_use_except_counting || add_val != 1)
+		    return 0;
+		}
+
+	      final_value = comparison_value;
+
+	      /* Reset these in case we normalized the initial value
+		 and comparison value above.  */
+	      if (GET_CODE (comparison_value) == CONST_INT
+		  && GET_CODE (initial_value) == CONST_INT)
+		{
+		  comparison_value = GEN_INT (comparison_val);
+		  final_value
+		    = GEN_INT (comparison_val + INTVAL (bl->initial_value));
+		}
+	      bl->initial_value = initial_value;
+
+	      /* Save some info needed to produce the new insns.  */
+	      reg = bl->biv->dest_reg;
+	      jump_label = condjump_label (PREV_INSN (loop_end));
+	      new_add_val = GEN_INT (-INTVAL (bl->biv->add_val));
+
+	      /* Set start_value; if this is not a CONST_INT, we need
+		 to generate a SUB.
+		 Initialize biv to start_value before loop start.
+		 The old initializing insn will be deleted as a
+		 dead store by flow.c.  */
+	      if (initial_value == const0_rtx
+		  && GET_CODE (comparison_value) == CONST_INT)
+		{
+		  start_value = GEN_INT (comparison_val - add_adjust);
+		  loop_insn_hoist (loop, gen_move_insn (reg, start_value));
+		}
+	      else if (GET_CODE (initial_value) == CONST_INT)
+		{
+		  enum machine_mode mode = GET_MODE (reg);
+		  rtx offset = GEN_INT (-INTVAL (initial_value) - add_adjust);
+		  rtx add_insn = gen_add3_insn (reg, comparison_value, offset);
+
+		  if (add_insn == 0)
+		    return 0;
+
+		  start_value
+		    = gen_rtx_PLUS (mode, comparison_value, offset);
+		  loop_insn_hoist (loop, add_insn);
+		  if (GET_CODE (comparison) == LE)
+		    final_value = gen_rtx_PLUS (mode, comparison_value,
+						GEN_INT (add_val));
+		}
+	      else if (! add_adjust)
+		{
+		  enum machine_mode mode = GET_MODE (reg);
+		  rtx sub_insn = gen_sub3_insn (reg, comparison_value,
+						initial_value);
+
+		  if (sub_insn == 0)
+		    return 0;
+		  start_value
+		    = gen_rtx_MINUS (mode, comparison_value, initial_value);
+		  loop_insn_hoist (loop, sub_insn);
+		}
+	      else
+		/* We could handle the other cases too, but it'll be
+		   better to have a testcase first.  */
+		return 0;
+
+	      /* We may not have a single insn which can increment a reg, so
+		 create a sequence to hold all the insns from expand_inc.  */
+	      start_sequence ();
+	      expand_inc (reg, new_add_val);
+	      tem = gen_sequence ();
+	      end_sequence ();
+
+	      p = loop_insn_emit_before (loop, 0, bl->biv->insn, tem);
+	      delete_insn (bl->biv->insn);
+
+	      /* Update biv info to reflect its new status.  */
+	      bl->biv->insn = p;
+	      bl->initial_value = start_value;
+	      bl->biv->add_val = new_add_val;
+
+	      /* Update loop info.  */
+	      loop_info->initial_value = reg;
+	      loop_info->initial_equiv_value = reg;
+	      loop_info->final_value = const0_rtx;
+	      loop_info->final_equiv_value = const0_rtx;
+	      loop_info->comparison_value = const0_rtx;
+	      loop_info->comparison_code = cmp_code;
+	      loop_info->increment = new_add_val;
+
+	      /* Inc LABEL_NUSES so that delete_insn will
+		 not delete the label.  */
+	      LABEL_NUSES (XEXP (jump_label, 0))++;
+
+	      /* Emit an insn after the end of the loop to set the biv's
+		 proper exit value if it is used anywhere outside the loop.  */
+	      if ((REGNO_LAST_UID (bl->regno) != INSN_UID (first_compare))
+		  || ! bl->init_insn
+		  || REGNO_FIRST_UID (bl->regno) != INSN_UID (bl->init_insn))
+		loop_insn_sink (loop, gen_move_insn (reg, final_value));
+
+	      /* Delete compare/branch at end of loop.  */
+	      delete_related_insns (PREV_INSN (loop_end));
+	      if (compare_and_branch == 2)
+		delete_related_insns (first_compare);
+
+	      /* Add new compare/branch insn at end of loop.  */
+	      start_sequence ();
+	      emit_cmp_and_jump_insns (reg, const0_rtx, cmp_code, NULL_RTX,
+				       GET_MODE (reg), 0,
+				       XEXP (jump_label, 0));
+	      tem = gen_sequence ();
+	      end_sequence ();
+	      emit_jump_insn_before (tem, loop_end);
+
+	      for (tem = PREV_INSN (loop_end);
+		   tem && GET_CODE (tem) != JUMP_INSN;
+		   tem = PREV_INSN (tem))
+		;
+
+	      if (tem)
+		JUMP_LABEL (tem) = XEXP (jump_label, 0);
+
+	      if (nonneg)
+		{
+		  if (tem)
+		    {
+		      /* Increment of LABEL_NUSES done above.  */
+		      /* Register is now always nonnegative,
+			 so add REG_NONNEG note to the branch.  */
+		      REG_NOTES (tem) = gen_rtx_EXPR_LIST (REG_NONNEG, reg,
+							   REG_NOTES (tem));
+		    }
+		  bl->nonneg = 1;
+		}
+
+	      /* No insn may reference both the reversed and another biv or it
+		 will fail (see comment near the top of the loop reversal
+		 code).
+		 Earlier on, we have verified that the biv has no use except
+		 counting, or it is the only biv in this function.
+		 However, the code that computes no_use_except_counting does
+		 not verify reg notes.  It's possible to have an insn that
+		 references another biv, and has a REG_EQUAL note with an
+		 expression based on the reversed biv.  To avoid this case,
+		 remove all REG_EQUAL notes based on the reversed biv
+		 here.  */
+	      for (p = loop_start; p != loop_end; p = NEXT_INSN (p))
+		if (INSN_P (p))
+		  {
+		    rtx *pnote;
+		    rtx set = single_set (p);
+		    /* If this is a set of a GIV based on the reversed biv, any
+		       REG_EQUAL notes should still be correct.  */
+		    if (! set
+			|| GET_CODE (SET_DEST (set)) != REG
+			|| (size_t) REGNO (SET_DEST (set)) >= ivs->n_regs
+			|| REG_IV_TYPE (ivs, REGNO (SET_DEST (set))) != GENERAL_INDUCT
+			|| REG_IV_INFO (ivs, REGNO (SET_DEST (set)))->src_reg != bl->biv->src_reg)
+		      for (pnote = &REG_NOTES (p); *pnote;)
+			{
+			  if (REG_NOTE_KIND (*pnote) == REG_EQUAL
+			      && reg_mentioned_p (regno_reg_rtx[bl->regno],
+						  XEXP (*pnote, 0)))
+			    *pnote = XEXP (*pnote, 1);
+			  else
+			    pnote = &XEXP (*pnote, 1);
+			}
+		  }
+
+	      /* Mark that this biv has been reversed.  Each giv which depends
+		 on this biv, and which is also live past the end of the loop
+		 will have to be fixed up.  */
+
+	      bl->reversed = 1;
+
+	      if (loop_dump_stream)
+		{
+		  fprintf (loop_dump_stream, "Reversed loop");
+		  if (bl->nonneg)
+		    fprintf (loop_dump_stream, " and added reg_nonneg\n");
+		  else
+		    fprintf (loop_dump_stream, "\n");
+		}
+
+	      return 1;
+	    }
+	}
+    }
+
+  return 0;
+}

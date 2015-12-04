@@ -1,0 +1,24 @@
+static void
+notice_stack_pointer_modification (f)
+     rtx f;
+{
+  rtx insn;
+
+  /* Assume that the stack pointer is unchanging if alloca hasn't
+     been used.  */
+  current_function_sp_is_unchanging = !current_function_calls_alloca;
+  if (! current_function_sp_is_unchanging)
+    return;
+
+  for (insn = f; insn; insn = NEXT_INSN (insn))
+    {
+      if (INSN_P (insn))
+	{
+	  /* Check if insn modifies the stack pointer.  */
+	  note_stores (PATTERN (insn), notice_stack_pointer_modification_1,
+		       NULL);
+	  if (! current_function_sp_is_unchanging)
+	    return;
+	}
+    }
+}

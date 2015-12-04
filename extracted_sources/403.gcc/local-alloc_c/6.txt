@@ -1,0 +1,45 @@
+static int
+contains_replace_regs (x)
+     rtx x;
+{
+  int i, j;
+  const char *fmt;
+  enum rtx_code code = GET_CODE (x);
+
+  switch (code)
+    {
+    case CONST_INT:
+    case CONST:
+    case LABEL_REF:
+    case SYMBOL_REF:
+    case CONST_DOUBLE:
+    case CONST_VECTOR:
+    case PC:
+    case CC0:
+    case HIGH:
+      return 0;
+
+    case REG:
+      return reg_equiv[REGNO (x)].replace;
+
+    default:
+      break;
+    }
+
+  fmt = GET_RTX_FORMAT (code);
+  for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
+    switch (fmt[i])
+      {
+      case 'e':
+	if (contains_replace_regs (XEXP (x, i)))
+	  return 1;
+	break;
+      case 'E':
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  if (contains_replace_regs (XVECEXP (x, i, j)))
+	    return 1;
+	break;
+      }
+
+  return 0;
+}

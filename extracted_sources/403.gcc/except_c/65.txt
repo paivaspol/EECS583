@@ -1,0 +1,87 @@
+static void
+remove_eh_handler (region)
+     struct eh_region *region;
+{
+  struct eh_region **pp, **pp_start, *p, *outer, *inner;
+  rtx lab;
+
+  /* For the benefit of efficiently handling REG_EH_REGION notes,
+     replace this region in the region array with its containing
+     region.  Note that previous region deletions may result in
+     multiple copies of this region in the array, so we have a
+     list of alternate numbers by which we are known.  */
+
+  outer = region->outer;
+  cfun->eh->region_array[region->region_number] = outer;
+  if (region->aka)
+    {
+      int i;
+      EXECUTE_IF_SET_IN_BITMAP (region->aka, 0, i,
+	{ cfun->eh->region_array[i] = outer; });
+    }
+
+  if (outer)
+    {
+      if (!outer->aka)
+        outer->aka = BITMAP_XMALLOC ();
+      if (region->aka)
+	bitmap_a_or_b (outer->aka, outer->aka, region->aka);
+      bitmap_set_bit (outer->aka, region->region_number);
+    }
+
+  if (cfun->eh->built_landing_pads)
+    lab = region->landing_pad;
+  else
+    lab = region->label;
+  if (lab)
+    remove_exception_handler_label (lab);
+
+  if (outer)
+    pp_start = &outer->inner;
+  else
+    pp_start = &cfun->eh->region_tree;
+  for (pp = pp_start, p = *pp; p != region; pp = &p->next_peer, p = *pp)
+    continue;
+  *pp = region->next_peer;
+
+  inner = region->inner;
+  if (inner)
+    {
+      for (p = inner; p->next_peer ; p = p->next_peer)
+	p->outer = outer;
+      p->outer = outer;
+
+      p->next_peer = *pp_start;
+      *pp_start = inner;
+    }
+
+  if (region->type == ERT_CATCH)
+    {
+      struct eh_region *try, *next, *prev;
+
+      for (try = region->next_peer;
+	   try->type == ERT_CATCH;
+	   try = try->next_peer)
+	continue;
+      if (try->type != ERT_TRY)
+	abort ();
+
+      next = region->u.catch.next_catch;
+      prev = region->u.catch.prev_catch;
+
+      if (next)
+	next->u.catch.prev_catch = prev;
+      else
+	try->u.try.last_catch = prev;
+      if (prev)
+	prev->u.catch.next_catch = next;
+      else
+	{
+	  try->u.try.catch = next;
+	  if (! next)
+	    remove_eh_handler (try);
+	}
+    }
+
+  free_region (region);
+}

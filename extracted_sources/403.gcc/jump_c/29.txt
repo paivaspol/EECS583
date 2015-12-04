@@ -1,0 +1,43 @@
+static void
+invert_exp_1 (insn)
+     rtx insn;
+{
+  RTX_CODE code;
+  rtx x = pc_set (insn);
+
+  if (!x)
+    abort ();
+  x = SET_SRC (x);
+
+  code = GET_CODE (x);
+
+  if (code == IF_THEN_ELSE)
+    {
+      rtx comp = XEXP (x, 0);
+      rtx tem;
+      enum rtx_code reversed_code;
+
+      /* We can do this in two ways:  The preferable way, which can only
+	 be done if this is not an integer comparison, is to reverse
+	 the comparison code.  Otherwise, swap the THEN-part and ELSE-part
+	 of the IF_THEN_ELSE.  If we can't do either, fail.  */
+
+      reversed_code = reversed_comparison_code (comp, insn);
+
+      if (reversed_code != UNKNOWN)
+	{
+	  validate_change (insn, &XEXP (x, 0),
+			   gen_rtx_fmt_ee (reversed_code,
+					   GET_MODE (comp), XEXP (comp, 0),
+					   XEXP (comp, 1)),
+			   1);
+	  return;
+	}
+
+      tem = XEXP (x, 1);
+      validate_change (insn, &XEXP (x, 1), XEXP (x, 2), 1);
+      validate_change (insn, &XEXP (x, 2), tem, 1);
+    }
+  else
+    abort ();
+}

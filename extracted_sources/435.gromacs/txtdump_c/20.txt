@@ -1,0 +1,101 @@
+void pr_iparams(FILE *fp,t_functype ftype,t_iparams *iparams)
+{
+  int i;
+  
+  switch (ftype) {
+  case F_ANGLES:
+  case F_G96ANGLES:
+    pr_harm(fp,iparams,"th","ct");
+    break;
+  case F_BHAM:
+    fprintf(fp,"a=%15.8e, b=%15.8e, c=%15.8e\n",
+	    iparams->bham.a,iparams->bham.b,iparams->bham.c);
+    break;
+  case F_BONDS:
+  case F_G96BONDS:
+  case F_HARMONIC:
+    pr_harm(fp,iparams,"b0","cb");
+    break;
+  case F_IDIHS:
+    pr_harm(fp,iparams,"xi","cx");
+    break;
+  case F_MORSE:
+    fprintf(fp,"b0=%15.8e, cb=%15.8e, beta=%15.8e\n",
+	    iparams->morse.b0,iparams->morse.cb,iparams->morse.beta);
+    break;
+  case F_CUBICBONDS:
+    fprintf(fp,"b0=%15.8e, kb=%15.8e, kcub=%15.8e\n",
+	    iparams->cubic.b0,iparams->cubic.kb,iparams->cubic.kcub);
+    break;
+  case F_CONNBONDS:
+    fprintf(fp,"\n");
+    break;
+  case F_WPOL:
+    fprintf(fp,"kx=%15.8e, ky=%15.8e, kz=%15.8e, rOH=%9.6f, rHH=%9.6f, rOD=%9.6f\n",
+	    iparams->wpol.kx,iparams->wpol.ky,iparams->wpol.kz,
+	    iparams->wpol.rOH,iparams->wpol.rHH,iparams->wpol.rOD);
+    break;
+  case F_LJ:
+    fprintf(fp,"c6=%15.8e, c12=%15.8e\n",iparams->lj.c6,iparams->lj.c12);
+    break;
+  case F_LJ14:
+    fprintf(fp,"c6A=%15.8e, c12A=%15.8e, c6B=%15.8e, c12B=%15.8e\n",
+	    iparams->lj14.c6A,iparams->lj14.c12A,
+	    iparams->lj14.c6B,iparams->lj14.c12B);
+    break;
+  case F_PDIHS:
+  case F_ANGRES:
+  case F_ANGRESZ:
+    fprintf(fp,"phiA=%15.8e, cpA=%15.8e, phiB=%15.8e, cpB=%15.8e, mult=%d\n",
+	    iparams->pdihs.phiA,iparams->pdihs.cpA,
+	    iparams->pdihs.phiB,iparams->pdihs.cpB,
+	    iparams->pdihs.mult);
+    break;
+  case F_DISRES:
+    fprintf(fp,"label=%4d, type=%1d, low=%15.8e, up1=%15.8e, up2=%15.8e, fac=%15.8e)\n",
+	    iparams->disres.label,iparams->disres.type,
+	    iparams->disres.low,iparams->disres.up1,
+	    iparams->disres.up2,iparams->disres.kfac);
+    break;
+  case F_ORIRES:
+    fprintf(fp,"ex=%4d, label=%d, pow=%4d, c=%15.8e, obs=%15.8e, kfac=%15.8e)\n",
+	    iparams->orires.ex,iparams->orires.label,iparams->orires.pow,
+	    iparams->orires.c,iparams->orires.obs,iparams->orires.kfac);
+    break;
+  case F_POSRES:
+    fprintf(fp,"pos0=(%15.8e,%15.8e,%15.8e), fc=(%15.8e,%15.8e,%15.8e)\n",
+	    iparams->posres.pos0[XX],iparams->posres.pos0[YY],
+	    iparams->posres.pos0[ZZ],iparams->posres.fc[XX],
+	    iparams->posres.fc[YY],iparams->posres.fc[ZZ]);
+    break;
+  case F_RBDIHS:
+    for (i=0; i<NR_RBDIHS; i++)
+      fprintf(fp,"%srbc[%d]=%15.8e",i==0?"":", ",i,iparams->rbdihs.rbc[i]);
+    fprintf(fp,"\n");
+    break;
+  case F_SHAKE:
+  case F_SHAKENC:
+    fprintf(fp,"dA=%15.8e, dB=%15.8e\n",iparams->shake.dA,iparams->shake.dB);
+    break;
+  case F_SETTLE:
+    fprintf(fp,"doh=%15.8e, dhh=%15.8e\n",iparams->settle.doh,
+	    iparams->settle.dhh);
+    break;
+  case F_DUMMY2:
+    fprintf(fp,"a=%15.8e\n",iparams->dummy.a);
+    break;
+  case F_DUMMY3:
+  case F_DUMMY3FD:
+  case F_DUMMY3FAD:
+    fprintf(fp,"a=%15.8e, b=%15.8e\n",iparams->dummy.a,iparams->dummy.b);
+    break;
+  case F_DUMMY3OUT:
+  case F_DUMMY4FD:
+    fprintf(fp,"a=%15.8e, b=%15.8e, c=%15.8e\n",
+	    iparams->dummy.a,iparams->dummy.b,iparams->dummy.c);
+    break;
+  default:
+    fatal_error(0,"unknown function type %d (%s) in %s line %d",
+		ftype,interaction_function[ftype].name,__FILE__,__LINE__);
+  }
+}

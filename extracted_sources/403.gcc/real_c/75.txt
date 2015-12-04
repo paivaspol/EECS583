@@ -1,0 +1,33 @@
+static void
+etoe24 (x, e)
+     const UEMUSHORT *x;
+     UEMUSHORT *e;
+{
+  EMULONG exp;
+  UEMUSHORT xi[NI];
+  int rndsav;
+
+#ifdef NANS
+  if (eisnan (x))
+    {
+      make_nan (e, eisneg (x), SFmode);
+      return;
+    }
+#endif
+  emovi (x, xi);
+  /* adjust exponent for offsets */
+  exp = (EMULONG) xi[E] - (EXONE - 0177);
+#ifdef INFINITY
+  if (eisinf (x))
+    goto nonorm;
+#endif
+  /* round off to nearest or even */
+  rndsav = rndprc;
+  rndprc = 24;
+  emdnorm (xi, 0, 0, exp, 64);
+  rndprc = rndsav;
+#ifdef INFINITY
+ nonorm:
+#endif
+  toe24 (xi, e);
+}

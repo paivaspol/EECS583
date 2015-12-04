@@ -1,0 +1,172 @@
+void
+perl_construct(pTHXx)
+{
+#ifdef USE_5005THREADS
+#ifndef FAKE_THREADS
+    struct perl_thread *thr = NULL;
+#endif /* FAKE_THREADS */
+#endif /* USE_5005THREADS */
+
+#ifdef MULTIPLICITY
+    init_interp();
+    PL_perl_destruct_level = 1;
+#else
+   if (PL_perl_destruct_level > 0)
+       init_interp();
+#endif
+   /* Init the real globals (and main thread)? */
+    if (!PL_linestr) {
+#ifdef USE_5005THREADS
+	MUTEX_INIT(&PL_sv_mutex);
+	/*
+	 * Safe to use basic SV functions from now on (though
+	 * not things like mortals or tainting yet).
+	 */
+	MUTEX_INIT(&PL_eval_mutex);
+	COND_INIT(&PL_eval_cond);
+	MUTEX_INIT(&PL_threads_mutex);
+	COND_INIT(&PL_nthreads_cond);
+#  ifdef EMULATE_ATOMIC_REFCOUNTS
+	MUTEX_INIT(&PL_svref_mutex);
+#  endif /* EMULATE_ATOMIC_REFCOUNTS */
+	
+	MUTEX_INIT(&PL_cred_mutex);
+	MUTEX_INIT(&PL_sv_lock_mutex);
+	MUTEX_INIT(&PL_fdpid_mutex);
+
+	thr = init_main_thread();
+#endif /* USE_5005THREADS */
+
+#ifdef PERL_FLEXIBLE_EXCEPTIONS
+	PL_protect = MEMBER_TO_FPTR(Perl_default_protect); /* for exceptions */
+#endif
+
+	PL_curcop = &PL_compiling;	/* needed by ckWARN, right away */
+
+	PL_linestr = NEWSV(65,79);
+	sv_upgrade(PL_linestr,SVt_PVIV);
+
+	if (!SvREADONLY(&PL_sv_undef)) {
+	    /* set read-only and try to insure than we wont see REFCNT==0
+	       very often */
+
+	    SvREADONLY_on(&PL_sv_undef);
+	    SvREFCNT(&PL_sv_undef) = (~(U32)0)/2;
+
+	    sv_setpv(&PL_sv_no,PL_No);
+	    /* value lookup in void context - happens to have the side effect
+	       of caching the numeric forms.  */
+	    SvIV(&PL_sv_no);
+	    SvNV(&PL_sv_no);
+	    SvREADONLY_on(&PL_sv_no);
+	    SvREFCNT(&PL_sv_no) = (~(U32)0)/2;
+
+	    sv_setpv(&PL_sv_yes,PL_Yes);
+	    SvIV(&PL_sv_yes);
+	    SvNV(&PL_sv_yes);
+	    SvREADONLY_on(&PL_sv_yes);
+	    SvREFCNT(&PL_sv_yes) = (~(U32)0)/2;
+
+	    SvREADONLY_on(&PL_sv_placeholder);
+	    SvREFCNT(&PL_sv_placeholder) = (~(U32)0)/2;
+	}
+
+	PL_sighandlerp = Perl_sighandler;
+	PL_pidstatus = newHV();
+    }
+
+    PL_rs = newSVpvn("\n", 1);
+
+    init_stacks();
+
+    init_ids();
+    PL_lex_state = LEX_NOTPARSING;
+
+    JMPENV_BOOTSTRAP;
+    STATUS_ALL_SUCCESS;
+
+    init_i18nl10n(1);
+    SET_NUMERIC_STANDARD();
+
+    {
+	U8 *s;
+	PL_patchlevel = NEWSV(0,4);
+	(void)SvUPGRADE(PL_patchlevel, SVt_PVNV);
+	if (PERL_REVISION > 127 || PERL_VERSION > 127 || PERL_SUBVERSION > 127)
+	    SvGROW(PL_patchlevel, UTF8_MAXLEN*3+1);
+	s = (U8*)SvPVX(PL_patchlevel);
+	/* Build version strings using "native" characters */
+	s = uvchr_to_utf8(s, (UV)PERL_REVISION);
+	s = uvchr_to_utf8(s, (UV)PERL_VERSION);
+	s = uvchr_to_utf8(s, (UV)PERL_SUBVERSION);
+	*s = '\0';
+	SvCUR_set(PL_patchlevel, s - (U8*)SvPVX(PL_patchlevel));
+	SvPOK_on(PL_patchlevel);
+	SvNVX(PL_patchlevel) = (NV)PERL_REVISION +
+			      ((NV)PERL_VERSION / (NV)1000) +
+			      ((NV)PERL_SUBVERSION / (NV)1000000);
+	SvNOK_on(PL_patchlevel);	/* dual valued */
+	SvUTF8_on(PL_patchlevel);
+	SvREADONLY_on(PL_patchlevel);
+    }
+
+#if defined(LOCAL_PATCH_COUNT)
+    PL_localpatches = local_patches;	/* For possible -v */
+#endif
+
+#ifdef HAVE_INTERP_INTERN
+    sys_intern_init();
+#endif
+
+    PerlIO_init(aTHX);			/* Hook to IO system */
+
+    PL_fdpid = newAV();			/* for remembering popen pids by fd */
+    PL_modglobal = newHV();		/* pointers to per-interpreter module globals */
+    PL_errors = newSVpvn("",0);
+    sv_setpvn(PERL_DEBUG_PAD(0), "", 0);	/* For regex debugging. */
+    sv_setpvn(PERL_DEBUG_PAD(1), "", 0);	/* ext/re needs these */
+    sv_setpvn(PERL_DEBUG_PAD(2), "", 0);	/* even without DEBUGGING. */
+#ifdef USE_ITHREADS
+    PL_regex_padav = newAV();
+    av_push(PL_regex_padav,(SV*)newAV());    /* First entry is an array of empty elements */
+    PL_regex_pad = AvARRAY(PL_regex_padav);
+#endif
+#ifdef USE_REENTRANT_API
+    Perl_reentrant_init(aTHX);
+#endif
+
+    /* Note that strtab is a rather special HV.  Assumptions are made
+       about not iterating on it, and not adding tie magic to it.
+       It is properly deallocated in perl_destruct() */
+    PL_strtab = newHV();
+
+#ifdef USE_5005THREADS
+    MUTEX_INIT(&PL_strtab_mutex);
+#endif
+    HvSHAREKEYS_off(PL_strtab);			/* mandatory */
+    hv_ksplit(PL_strtab, 512);
+
+#if defined(__DYNAMIC__) && (defined(NeXT) || defined(__NeXT__))
+    _dyld_lookup_and_bind
+	("__environ", (unsigned long *) &environ_pointer, NULL);
+#endif /* environ */
+
+#ifndef PERL_MICRO
+#   ifdef  USE_ENVIRON_ARRAY
+    PL_origenviron = environ;
+#   endif
+#endif
+
+    /* Use sysconf(_SC_CLK_TCK) if available, if not
+     * available or if the sysconf() fails, use the HZ.
+     * BeOS has those, but returns the wrong value. */
+#if defined(HAS_SYSCONF) && defined(_SC_CLK_TCK) && !defined(__BEOS__)
+    PL_clocktick = sysconf(_SC_CLK_TCK);
+    if (PL_clocktick <= 0)
+#endif
+	 PL_clocktick = HZ;
+
+    PL_stashcache = newHV();
+
+    ENTER;
+}

@@ -1,0 +1,20 @@
+static void
+push_sleb128 (data_area, value)
+     varray_type *data_area;
+     int value;
+{
+  unsigned char byte;
+  int more;
+
+  do
+    {
+      byte = value & 0x7f;
+      value >>= 7;
+      more = ! ((value == 0 && (byte & 0x40) == 0)
+		|| (value == -1 && (byte & 0x40) != 0));
+      if (more)
+	byte |= 0x80;
+      VARRAY_PUSH_UCHAR (*data_area, byte);
+    }
+  while (more);
+}

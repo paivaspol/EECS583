@@ -1,0 +1,41 @@
+static int
+get_coefficients (du, coefficients)
+     def_use *du;
+     subscript coefficients [MAX_SUBSCRIPTS];
+{
+  int idx = 0;
+  int array_count;
+  int i;
+  tree array_ref;
+
+  array_count = 0;
+  for (array_ref = du->expression;
+       TREE_CODE (array_ref) == ARRAY_REF;
+       array_ref = TREE_OPERAND (array_ref, 0))
+    array_count += 1;
+
+  idx = array_count;
+
+  for (i = 0; i < MAX_SUBSCRIPTS; i++)
+    {
+      coefficients[i].position = 0;
+      coefficients[i].coefficient = INT_MIN;
+      coefficients[i].offset = INT_MIN;
+      coefficients[i].variable = 0;
+      coefficients[i].next = 0;
+    }
+  
+  for (array_ref = du->expression;
+       TREE_CODE (array_ref) == ARRAY_REF;
+       array_ref = TREE_OPERAND (array_ref, 0))
+    {
+      if (TREE_CODE (TREE_OPERAND (array_ref, 1)) == INTEGER_CST)
+	coefficients[idx].offset = TREE_INT_CST_LOW (TREE_OPERAND (array_ref, 1));
+      else
+	if (get_one_coefficient (TREE_OPERAND (array_ref, 1),
+				 &coefficients[idx], du, 0) < 0)
+	  return -1;
+      idx = idx - 1;
+    }
+  return array_count;
+}

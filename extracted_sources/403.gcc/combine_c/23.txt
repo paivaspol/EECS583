@@ -1,0 +1,44 @@
+static rtx
+extract_left_shift (x, count)
+     rtx x;
+     int count;
+{
+  enum rtx_code code = GET_CODE (x);
+  enum machine_mode mode = GET_MODE (x);
+  rtx tem;
+
+  switch (code)
+    {
+    case ASHIFT:
+      /* This is the shift itself.  If it is wide enough, we will return
+	 either the value being shifted if the shift count is equal to
+	 COUNT or a shift for the difference.  */
+      if (GET_CODE (XEXP (x, 1)) == CONST_INT
+	  && INTVAL (XEXP (x, 1)) >= count)
+	return simplify_shift_const (NULL_RTX, ASHIFT, mode, XEXP (x, 0),
+				     INTVAL (XEXP (x, 1)) - count);
+      break;
+
+    case NEG:  case NOT:
+      if ((tem = extract_left_shift (XEXP (x, 0), count)) != 0)
+	return simplify_gen_unary (code, mode, tem, mode);
+
+      break;
+
+    case PLUS:  case IOR:  case XOR:  case AND:
+      /* If we can safely shift this constant and we find the inner shift,
+	 make a new operation.  */
+      if (GET_CODE (XEXP (x,1)) == CONST_INT
+	  && (INTVAL (XEXP (x, 1)) & ((((HOST_WIDE_INT) 1 << count)) - 1)) == 0
+	  && (tem = extract_left_shift (XEXP (x, 0), count)) != 0)
+	return gen_binary (code, mode, tem,
+			   GEN_INT (INTVAL (XEXP (x, 1)) >> count));
+
+      break;
+
+    default:
+      break;
+    }
+
+  return 0;
+}

@@ -1,0 +1,24 @@
+static void
+esubm (x, y)
+     const UEMUSHORT *x;
+     UEMUSHORT *y;
+{
+  unsigned EMULONG a;
+  int i;
+  unsigned int carry;
+
+  x += NI - 1;
+  y += NI - 1;
+  carry = 0;
+  for (i = M; i < NI; i++)
+    {
+      a = (unsigned EMULONG) (*y) - (unsigned EMULONG) (*x) - carry;
+      if (a & 0x10000)
+	carry = 1;
+      else
+	carry = 0;
+      *y = (UEMUSHORT) a;
+      --x;
+      --y;
+    }
+}

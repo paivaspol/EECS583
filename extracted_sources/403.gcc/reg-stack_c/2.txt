@@ -1,0 +1,19 @@
+static rtx
+next_flags_user (insn)
+     rtx insn;
+{
+  /* Search forward looking for the first use of this value. 
+     Stop at block boundaries.  */
+
+  while (insn != current_block->end)
+    {
+      insn = NEXT_INSN (insn);
+
+      if (INSN_P (insn) && reg_mentioned_p (ix86_flags_rtx, PATTERN (insn)))
+        return insn;
+
+      if (GET_CODE (insn) == CALL_INSN)
+	return NULL_RTX;
+    }
+  return NULL_RTX;
+}

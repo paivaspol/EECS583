@@ -1,0 +1,98 @@
+int32 feat_s2mfc_read (char *file, int32 sf, int32 ef, float32 **mfc, int32 maxfr)
+{
+    FILE *fp;
+    int32 n_float32;
+    struct stat statbuf;
+    int32 i, n, byterev, cepsize;
+    
+    if (ef < 0)
+	ef = (int32)0x7fff0000;		/* Hack!! hardwired constant */
+    
+    E_INFO("Reading mfc file: '%s'[%d..%d]\n", file, sf, ef);
+    if (ef <= sf) {
+	E_ERROR("%s: End frame (%d) <= Start frame (%d)\n", file, ef, sf);
+	return -1;
+    }
+    
+    cepsize = 13;	/* Hack!! hardwired constant */
+    
+    /* Find filesize; HACK!! To get around intermittent NFS failures, use stat_retry */
+    if ((stat_retry (file, &statbuf) < 0) || ((fp = fopen(file, "rb")) == NULL)) {
+	E_ERROR("stat_retry/fopen(%s) failed\n", file);
+	return -1;
+    }
+    
+    /* Read #floats in header */
+    if (fread_retry (&n_float32, sizeof(int32), 1, fp) != 1) {
+	E_ERROR("%s: fread(#floats) failed\n", file);
+	fclose (fp);
+	return -1;
+    }
+    
+    /* Check if n_float32 matches file size */
+    byterev = FALSE;
+    if ((int32) (n_float32*sizeof(float32) + 4) !=  (int32) statbuf.st_size) { /* RAH, typecast both sides to remove compile warning */
+	n = n_float32;
+	SWAP_INT32(&n);
+
+	if ((int32) (n*sizeof(float32) + 4) != (int32) (statbuf.st_size)) { /* RAH, typecast both sides to remove compile warning */
+	    E_ERROR("%s: Header size field: %d(%08x); filesize: %d(%08x)\n",
+		    file, n_float32, n_float32, statbuf.st_size, statbuf.st_size);
+	    fclose (fp);
+	    return -1;
+	}
+	
+	n_float32 = n;
+	byterev = TRUE;
+    }
+    if (n_float32 <= 0) {
+	E_ERROR("%s: Header size field (#floats) = %d\n", file, n_float32);
+	fclose (fp);
+	return -1;
+    }
+    
+    /* Convert n to #frames of input */
+    n = n_float32/cepsize;
+    if (n * cepsize != n_float32) {
+	E_ERROR("Header size field: %d; not multiple of %d\n", n_float32, cepsize);
+	fclose (fp);
+	return -1;
+    }
+
+    /* Check sf/ef specified */
+    if (sf > 0) {
+	if (sf >= n) {
+	    E_ERROR("%s: Start frame (%d) beyond file size (%d)\n", file, sf, n);
+	    fclose (fp);
+	    return -1;
+	}
+	n -= sf;
+    }
+
+    /* Limit n if indicated by [sf..ef] */
+    if ((ef-sf+1) < n)
+	n = (ef-sf+1);
+    if (n > maxfr) {
+	E_ERROR("%s: MFC buffer size(%d frames) < actual #frames(%d)\n", file, maxfr, n);
+	fclose (fp);
+	return -1;
+    }
+    
+    /* Position at desired start frame and read MFC data */
+    if (sf > 0)
+	fseek (fp, sf * cepsize * sizeof(float32), SEEK_CUR);
+    n_float32 = n * cepsize;
+    if (fread_retry (mfc[0], sizeof(float32), n_float32, fp) != n_float32) {
+	E_ERROR("%s: fread(%dx%d) (MFC data) failed\n", file, n, cepsize);
+	fclose (fp);
+	return -1;
+    }
+    if (byterev) {
+	for (i = 0; i < n_float32; i++)
+	    SWAP_FLOAT32(&(mfc[0][i]));
+    }
+
+    fclose (fp);
+    
+    return n;
+}

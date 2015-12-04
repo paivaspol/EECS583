@@ -1,0 +1,35 @@
+void
+P7ReadNullModel(char *rndfile, float *null, float *ret_p1)
+{
+  FILE *fp;
+  char *s;
+  int   x;
+  int   type = 0; 
+
+  if ((fp = fopen(rndfile, "r")) == NULL)
+    Die("Failed to open null model file %s\n", rndfile);
+  if ((s = Getword(fp, sqdARG_STRING)) == NULL) goto FAILURE;
+  s2upper(s);
+  if      (strcmp(s, "NUCLEIC") == 0) type = hmmNUCLEIC;
+  else if (strcmp(s, "AMINO")   == 0) type = hmmAMINO;
+  else    goto FAILURE;
+				/* check/set alphabet type */
+  if (Alphabet_type == 0) 
+    SetAlphabet(type);
+  else if (Alphabet_type != type)
+    Die("Alphabet type conflict; null model in %s is inappropriate\n", rndfile);
+				/* parse the file */
+  for (x = 0; x < Alphabet_size; x++) {
+    if ((s = Getword(fp, sqdARG_FLOAT)) == NULL) goto FAILURE;
+    null[x] = atof(s);
+  }
+  if ((s = Getword(fp, sqdARG_FLOAT)) == NULL) goto FAILURE;
+  *ret_p1 = atof(s);
+
+  fclose(fp);
+  return;
+
+FAILURE:
+  fclose(fp);
+  Die("%s is not in HMMER null model file format", rndfile);
+}

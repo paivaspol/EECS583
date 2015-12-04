@@ -1,0 +1,50 @@
+static rtx
+gen_binary (code, mode, op0, op1)
+     enum rtx_code code;
+     enum machine_mode mode;
+     rtx op0, op1;
+{
+  rtx result;
+  rtx tem;
+
+  if (GET_RTX_CLASS (code) == 'c'
+      && swap_commutative_operands_p (op0, op1))
+    tem = op0, op0 = op1, op1 = tem;
+
+  if (GET_RTX_CLASS (code) == '<')
+    {
+      enum machine_mode op_mode = GET_MODE (op0);
+
+      /* Strip the COMPARE from (REL_OP (compare X Y) 0) to get
+	 just (REL_OP X Y).  */
+      if (GET_CODE (op0) == COMPARE && op1 == const0_rtx)
+	{
+	  op1 = XEXP (op0, 1);
+	  op0 = XEXP (op0, 0);
+	  op_mode = GET_MODE (op0);
+	}
+
+      if (op_mode == VOIDmode)
+	op_mode = GET_MODE (op1);
+      result = simplify_relational_operation (code, op_mode, op0, op1);
+    }
+  else
+    result = simplify_binary_operation (code, mode, op0, op1);
+
+  if (result)
+    return result;
+
+  /* Put complex operands first and constants second.  */
+  if (GET_RTX_CLASS (code) == 'c'
+      && swap_commutative_operands_p (op0, op1))
+    return gen_rtx_fmt_ee (code, mode, op1, op0);
+
+  /* If we are turning off bits already known off in OP0, we need not do
+     an AND.  */
+  else if (code == AND && GET_CODE (op1) == CONST_INT
+	   && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT
+	   && (nonzero_bits (op0, mode) & ~INTVAL (op1)) == 0)
+    return op0;
+
+  return gen_rtx_fmt_ee (code, mode, op0, op1);
+}

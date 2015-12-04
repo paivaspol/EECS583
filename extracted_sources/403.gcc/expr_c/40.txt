@@ -1,0 +1,200 @@
+static rtx
+expand_increment (exp, post, ignore)
+     tree exp;
+     int post, ignore;
+{
+  rtx op0, op1;
+  rtx temp, value;
+  tree incremented = TREE_OPERAND (exp, 0);
+  optab this_optab = add_optab;
+  int icode;
+  enum machine_mode mode = TYPE_MODE (TREE_TYPE (exp));
+  int op0_is_copy = 0;
+  int single_insn = 0;
+  /* 1 means we can't store into OP0 directly,
+     because it is a subreg narrower than a word,
+     and we don't dare clobber the rest of the word.  */
+  int bad_subreg = 0;
+
+  /* Stabilize any component ref that might need to be
+     evaluated more than once below.  */
+  if (!post
+      || TREE_CODE (incremented) == BIT_FIELD_REF
+      || (TREE_CODE (incremented) == COMPONENT_REF
+	  && (TREE_CODE (TREE_OPERAND (incremented, 0)) != INDIRECT_REF
+	      || DECL_BIT_FIELD (TREE_OPERAND (incremented, 1)))))
+    incremented = stabilize_reference (incremented);
+  /* Nested *INCREMENT_EXPRs can happen in C++.  We must force innermost
+     ones into save exprs so that they don't accidentally get evaluated
+     more than once by the code below.  */
+  if (TREE_CODE (incremented) == PREINCREMENT_EXPR
+      || TREE_CODE (incremented) == PREDECREMENT_EXPR)
+    incremented = save_expr (incremented);
+
+  /* Compute the operands as RTX.
+     Note whether OP0 is the actual lvalue or a copy of it:
+     I believe it is a copy iff it is a register or subreg
+     and insns were generated in computing it.  */
+
+  temp = get_last_insn ();
+  op0 = expand_expr (incremented, NULL_RTX, VOIDmode, 0);
+
+  /* If OP0 is a SUBREG made for a promoted variable, we cannot increment
+     in place but instead must do sign- or zero-extension during assignment,
+     so we copy it into a new register and let the code below use it as
+     a copy.
+
+     Note that we can safely modify this SUBREG since it is know not to be
+     shared (it was made by the expand_expr call above).  */
+
+  if (GET_CODE (op0) == SUBREG && SUBREG_PROMOTED_VAR_P (op0))
+    {
+      if (post)
+	SUBREG_REG (op0) = copy_to_reg (SUBREG_REG (op0));
+      else
+	bad_subreg = 1;
+    }
+  else if (GET_CODE (op0) == SUBREG
+	   && GET_MODE_BITSIZE (GET_MODE (op0)) < BITS_PER_WORD)
+    {
+      /* We cannot increment this SUBREG in place.  If we are
+	 post-incrementing, get a copy of the old value.  Otherwise,
+	 just mark that we cannot increment in place.  */
+      if (post)
+	op0 = copy_to_reg (op0);
+      else
+	bad_subreg = 1;
+    }
+
+  op0_is_copy = ((GET_CODE (op0) == SUBREG || GET_CODE (op0) == REG)
+		 && temp != get_last_insn ());
+  op1 = expand_expr (TREE_OPERAND (exp, 1), NULL_RTX, VOIDmode, 0);
+
+  /* Decide whether incrementing or decrementing.  */
+  if (TREE_CODE (exp) == POSTDECREMENT_EXPR
+      || TREE_CODE (exp) == PREDECREMENT_EXPR)
+    this_optab = sub_optab;
+
+  /* Convert decrement by a constant into a negative increment.  */
+  if (this_optab == sub_optab
+      && GET_CODE (op1) == CONST_INT)
+    {
+      op1 = GEN_INT (-INTVAL (op1));
+      this_optab = add_optab;
+    }
+
+  if (TYPE_TRAP_SIGNED (TREE_TYPE (exp)))
+    this_optab = this_optab == add_optab ? addv_optab : subv_optab;
+
+  /* For a preincrement, see if we can do this with a single instruction.  */
+  if (!post)
+    {
+      icode = (int) this_optab->handlers[(int) mode].insn_code;
+      if (icode != (int) CODE_FOR_nothing
+	  /* Make sure that OP0 is valid for operands 0 and 1
+	     of the insn we want to queue.  */
+	  && (*insn_data[icode].operand[0].predicate) (op0, mode)
+	  && (*insn_data[icode].operand[1].predicate) (op0, mode)
+	  && (*insn_data[icode].operand[2].predicate) (op1, mode))
+	single_insn = 1;
+    }
+
+  /* If OP0 is not the actual lvalue, but rather a copy in a register,
+     then we cannot just increment OP0.  We must therefore contrive to
+     increment the original value.  Then, for postincrement, we can return
+     OP0 since it is a copy of the old value.  For preincrement, expand here
+     unless we can do it with a single insn.
+
+     Likewise if storing directly into OP0 would clobber high bits
+     we need to preserve (bad_subreg).  */
+  if (op0_is_copy || (!post && !single_insn) || bad_subreg)
+    {
+      /* This is the easiest way to increment the value wherever it is.
+	 Problems with multiple evaluation of INCREMENTED are prevented
+	 because either (1) it is a component_ref or preincrement,
+	 in which case it was stabilized above, or (2) it is an array_ref
+	 with constant index in an array in a register, which is
+	 safe to reevaluate.  */
+      tree newexp = build (((TREE_CODE (exp) == POSTDECREMENT_EXPR
+			     || TREE_CODE (exp) == PREDECREMENT_EXPR)
+			    ? MINUS_EXPR : PLUS_EXPR),
+			   TREE_TYPE (exp),
+			   incremented,
+			   TREE_OPERAND (exp, 1));
+
+      while (TREE_CODE (incremented) == NOP_EXPR
+	     || TREE_CODE (incremented) == CONVERT_EXPR)
+	{
+	  newexp = convert (TREE_TYPE (incremented), newexp);
+	  incremented = TREE_OPERAND (incremented, 0);
+	}
+
+      temp = expand_assignment (incremented, newexp, ! post && ! ignore , 0);
+      return post ? op0 : temp;
+    }
+
+  if (post)
+    {
+      /* We have a true reference to the value in OP0.
+	 If there is an insn to add or subtract in this mode, queue it.
+	 Queueing the increment insn avoids the register shuffling
+	 that often results if we must increment now and first save
+	 the old value for subsequent use.  */
+
+#if 0  /* Turned off to avoid making extra insn for indexed memref.  */
+      op0 = stabilize (op0);
+#endif
+
+      icode = (int) this_optab->handlers[(int) mode].insn_code;
+      if (icode != (int) CODE_FOR_nothing
+	  /* Make sure that OP0 is valid for operands 0 and 1
+	     of the insn we want to queue.  */
+	  && (*insn_data[icode].operand[0].predicate) (op0, mode)
+	  && (*insn_data[icode].operand[1].predicate) (op0, mode))
+	{
+	  if (! (*insn_data[icode].operand[2].predicate) (op1, mode))
+	    op1 = force_reg (mode, op1);
+
+	  return enqueue_insn (op0, GEN_FCN (icode) (op0, op0, op1));
+	}
+      if (icode != (int) CODE_FOR_nothing && GET_CODE (op0) == MEM)
+	{
+	  rtx addr = (general_operand (XEXP (op0, 0), mode)
+		      ? force_reg (Pmode, XEXP (op0, 0))
+		      : copy_to_reg (XEXP (op0, 0)));
+	  rtx temp, result;
+
+	  op0 = replace_equiv_address (op0, addr);
+	  temp = force_reg (GET_MODE (op0), op0);
+	  if (! (*insn_data[icode].operand[2].predicate) (op1, mode))
+	    op1 = force_reg (mode, op1);
+
+	  /* The increment queue is LIFO, thus we have to `queue'
+	     the instructions in reverse order.  */
+	  enqueue_insn (op0, gen_move_insn (op0, temp));
+	  result = enqueue_insn (temp, GEN_FCN (icode) (temp, temp, op1));
+	  return result;
+	}
+    }
+
+  /* Preincrement, or we can't increment with one simple insn.  */
+  if (post)
+    /* Save a copy of the value before inc or dec, to return it later.  */
+    temp = value = copy_to_reg (op0);
+  else
+    /* Arrange to return the incremented value.  */
+    /* Copy the rtx because expand_binop will protect from the queue,
+       and the results of that would be invalid for us to return
+       if our caller does emit_queue before using our result.  */
+    temp = copy_rtx (value = op0);
+
+  /* Increment however we can.  */
+  op1 = expand_binop (mode, this_optab, value, op1, op0,
+		      TREE_UNSIGNED (TREE_TYPE (exp)), OPTAB_LIB_WIDEN);
+
+  /* Make sure the value is stored into OP0.  */
+  if (op1 != op0)
+    emit_move_insn (op0, op1);
+
+  return temp;
+}

@@ -1,0 +1,24 @@
+static void tabulate_eir(int natom,rvec x[],int kmax,cvec **eir,rvec lll)
+{
+  int  i,j,m;
+  
+  if (kmax < 1) {
+      printf("Go away! kmax = %d\n",kmax);
+      exit(1);
+  }
+  
+  for(i=0; (i<natom); i++) {
+    for(m=0; (m<3); m++) {
+      eir[0][i][m].re = 1;
+      eir[0][i][m].im = 0;
+    }
+    
+    for(m=0; (m<3); m++) {
+      eir[1][i][m].re = cos(x[i][m]*lll[m]);
+      eir[1][i][m].im = sin(x[i][m]*lll[m]); 
+    }
+    for(j=2; (j<kmax); j++) 
+      for(m=0; (m<3); m++)
+	eir[j][i][m] = cmul(eir[j-1][i][m],eir[1][i][m]);
+  }
+}

@@ -1,0 +1,61 @@
+static int compare_constant		PARAMS ((tree,
+					       struct constant_descriptor *));
+static const unsigned char *compare_constant_1  PARAMS ((tree, const unsigned char *));
+static struct constant_descriptor *record_constant PARAMS ((tree));
+static void record_constant_1		PARAMS ((tree));
+static tree copy_constant		PARAMS ((tree));
+static void output_constant_def_contents  PARAMS ((tree, int, int));
+static void decode_rtx_const		PARAMS ((enum machine_mode, rtx,
+					       struct rtx_const *));
+static int const_hash_rtx		PARAMS ((enum machine_mode, rtx));
+static int compare_constant_rtx		PARAMS ((enum machine_mode, rtx,
+					       struct constant_descriptor *));
+static struct constant_descriptor *record_constant_rtx PARAMS ((enum machine_mode,
+							      rtx));
+static struct pool_constant *find_pool_constant PARAMS ((struct function *, rtx));
+static void mark_constant_pool		PARAMS ((void));
+static void mark_constants		PARAMS ((rtx));
+static int mark_constant		PARAMS ((rtx *current_rtx, void *data));
+static int output_addressed_constants	PARAMS ((tree));
+static void output_after_function_constants PARAMS ((void));
+static unsigned HOST_WIDE_INT array_size_for_constructor PARAMS ((tree));
+static unsigned min_align		PARAMS ((unsigned, unsigned));
+static void output_constructor		PARAMS ((tree, HOST_WIDE_INT,
+						 unsigned int));
+static void globalize_decl		PARAMS ((tree));
+static int in_named_entry_eq		PARAMS ((const PTR, const PTR));
+static hashval_t in_named_entry_hash	PARAMS ((const PTR));
+#ifdef ASM_OUTPUT_BSS
+static void asm_output_bss		PARAMS ((FILE *, tree, const char *, int, int));
+#endif
+#ifdef BSS_SECTION_ASM_OP
+#ifdef ASM_OUTPUT_ALIGNED_BSS
+static void asm_output_aligned_bss	PARAMS ((FILE *, tree, const char *,
+						 int, int));
+#endif
+#endif /* BSS_SECTION_ASM_OP */
+static void mark_pool_constant          PARAMS ((struct pool_constant *));
+static void mark_const_hash_entry	PARAMS ((void *));
+static int mark_const_str_htab_1	PARAMS ((void **, void *));
+static void mark_const_str_htab		PARAMS ((void *));
+static hashval_t const_str_htab_hash	PARAMS ((const void *x));
+static int const_str_htab_eq		PARAMS ((const void *x, const void *y));
+static void const_str_htab_del		PARAMS ((void *));
+static void asm_emit_uninitialised	PARAMS ((tree, const char*, int, int));
+static void resolve_unique_section	PARAMS ((tree, int, int));
+static void mark_weak                   PARAMS ((tree));
+
+static enum in_section { no_section, in_text, in_data, in_named
+#ifdef BSS_SECTION_ASM_OP
+  , in_bss
+#endif
+#ifdef CTORS_SECTION_ASM_OP
+  , in_ctors
+#endif
+#ifdef DTORS_SECTION_ASM_OP
+  , in_dtors
+#endif
+#ifdef EXTRA_SECTIONS
+  , EXTRA_SECTIONS
+#endif
+} in_section = no_section;

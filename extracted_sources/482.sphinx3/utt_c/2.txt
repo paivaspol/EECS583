@@ -1,0 +1,19 @@
+void match_write (FILE *fp, kb_t *kb, glist_t hyp, char *hdr)
+{
+    gnode_t *gn;
+    hyp_t *h;
+    dict_t *dict;
+    int counter=0;
+
+    dict = kbcore_dict(kb->kbcore);
+
+    for (gn = hyp; gn && (gnode_next(gn)); gn = gnode_next(gn)) {
+      h = (hyp_t *) gnode_ptr (gn);
+      if((!dict_filler_word(dict,h->id)) && (h->id!=dict_finishwid(dict)))
+	fprintf(fp,"%s ",dict_wordstr(dict, dict_basewid(dict,h->id)));
+      counter++;
+    }
+    if(counter==0) fprintf(fp," ");
+    fprintf (fp, "(%s)\n", kb->uttid);
+    fflush (fp);
+}

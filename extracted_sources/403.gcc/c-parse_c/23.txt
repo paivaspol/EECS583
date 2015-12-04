@@ -1,0 +1,47 @@
+static void
+yyprint (file, yychar, yyl)
+     FILE *file;
+     int yychar;
+     YYSTYPE yyl;
+{
+  tree t = yyl.ttype;
+
+  fprintf (file, " [%s]", NAME(last_token));
+  
+  switch (yychar)
+    {
+    case IDENTIFIER:
+    case TYPENAME:
+    case OBJECTNAME:
+    case TYPESPEC:
+    case TYPE_QUAL:
+    case SCSPEC:
+      if (IDENTIFIER_POINTER (t))
+	fprintf (file, " `%s'", IDENTIFIER_POINTER (t));
+      break;
+
+    case CONSTANT:
+      fprintf (file, " %s", GET_MODE_NAME (TYPE_MODE (TREE_TYPE (t))));
+      if (TREE_CODE (t) == INTEGER_CST)
+	fprintf (file,
+#if HOST_BITS_PER_WIDE_INT == 64
+#if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_INT
+		 " 0x%x%016x",
+#else
+#if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_LONG
+		 " 0x%lx%016lx",
+#else
+		 " 0x%llx%016llx",
+#endif
+#endif
+#else
+#if HOST_BITS_PER_WIDE_INT != HOST_BITS_PER_INT
+		 " 0x%lx%08lx",
+#else
+		 " 0x%x%08x",
+#endif
+#endif
+		 TREE_INT_CST_HIGH (t), TREE_INT_CST_LOW (t));
+      break;
+    }
+}

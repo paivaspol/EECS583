@@ -1,0 +1,19 @@
+static bool
+replace_oldest_value_reg (loc, class, insn, vd)
+     rtx *loc;
+     enum reg_class class;
+     rtx insn;
+     struct value_data *vd;
+{
+  rtx new = find_oldest_value_reg (class, *loc, vd);
+  if (new)
+    {
+      if (rtl_dump_file)
+	fprintf (rtl_dump_file, "insn %u: replaced reg %u with %u\n",
+		 INSN_UID (insn), REGNO (*loc), REGNO (new));
+
+      *loc = new;
+      return true;
+    }
+  return false;
+}

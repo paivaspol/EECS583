@@ -1,0 +1,74 @@
+static void find_distortion ()
+{
+  int i, j;
+  int64 diff_y, diff_u, diff_v;
+  int impix;
+  
+  //  Calculate  PSNR for Y, U and V.
+  
+  //     Luma.
+  impix = input->img_height * input->img_width;
+  
+  if (img->structure!=FRAME)
+  {
+
+    diff_y = 0;
+    for (i = 0; i < input->img_width; ++i)
+    {
+      for (j = 0; j < input->img_height; ++j)
+      {
+        diff_y += img->quad[abs (imgY_org[j][i] - imgY_com[j][i])];
+      }
+    }
+  
+    diff_u = 0;
+    diff_v = 0;
+    
+    if (img->yuv_format != YUV400)
+    {
+      //     Chroma.
+      for (i = 0; i < input->img_width_cr; i++)
+      {
+        for (j = 0; j < input->img_height_cr; j++)
+        {
+          diff_u += img->quad[abs (imgUV_org[0][j][i] - imgUV_com[0][j][i])];
+          diff_v += img->quad[abs (imgUV_org[1][j][i] - imgUV_com[1][j][i])];
+        }
+      }
+    }
+  }
+  else
+  {
+      imgY_org   = imgY_org_frm;
+      imgUV_org = imgUV_org_frm;
+
+      diff_y = 0;
+      for (i = 0; i < input->img_width; ++i)
+      {
+        for (j = 0; j < input->img_height; ++j)
+        {
+          diff_y += img->quad[abs (imgY_org[j][i] - enc_picture->imgY[j][i])];
+        }
+      }
+      
+      diff_u = 0;
+      diff_v = 0;
+
+      if (img->yuv_format != YUV400)
+      {
+        //     Chroma.
+        for (i = 0; i < input->img_width_cr; i++)
+        {
+          for (j = 0; j < input->img_height_cr; j++)
+          {
+            diff_u += img->quad[abs (imgUV_org[0][j][i] - enc_picture->imgUV[0][j][i])];
+            diff_v += img->quad[abs (imgUV_org[1][j][i] - enc_picture->imgUV[1][j][i])];
+          }
+        }
+      }
+  }
+  // Calculate real PSNR at find_snr_avg()
+  snr->snr_y = (float) diff_y;
+  snr->snr_u = (float) diff_u;
+  snr->snr_v = (float) diff_v;
+}

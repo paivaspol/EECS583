@@ -1,0 +1,306 @@
+void
+expand_end_case_type (orig_index, orig_type)
+     tree orig_index, orig_type;
+{
+  tree minval = NULL_TREE, maxval = NULL_TREE, range = NULL_TREE;
+  rtx default_label = 0;
+  struct case_node *n;
+  unsigned int count;
+  rtx index;
+  rtx table_label;
+  int ncases;
+  rtx *labelvec;
+  int i;
+  rtx before_case, end;
+  struct nesting *thiscase = case_stack;
+  tree index_expr, index_type;
+  int unsignedp;
+
+  /* Don't crash due to previous errors.  */
+  if (thiscase == NULL)
+    return;
+
+  table_label = gen_label_rtx ();
+  index_expr = thiscase->data.case_stmt.index_expr;
+  index_type = TREE_TYPE (index_expr);
+  unsignedp = TREE_UNSIGNED (index_type);
+  if (orig_type == NULL)
+    orig_type = TREE_TYPE (orig_index);
+
+  do_pending_stack_adjust ();
+
+  /* This might get an spurious warning in the presence of a syntax error;
+     it could be fixed by moving the call to check_seenlabel after the
+     check for error_mark_node, and copying the code of check_seenlabel that
+     deals with case_stack->data.case_stmt.line_number_status /
+     restore_line_number_status in front of the call to end_cleanup_deferral;
+     However, this might miss some useful warnings in the presence of
+     non-syntax errors.  */
+  check_seenlabel ();
+
+  /* An ERROR_MARK occurs for various reasons including invalid data type.  */
+  if (index_type != error_mark_node)
+    {
+      /* If switch expression was an enumerated type, check that all
+	 enumeration literals are covered by the cases.
+	 No sense trying this if there's a default case, however.  */
+
+      if (!thiscase->data.case_stmt.default_label
+	  && TREE_CODE (orig_type) == ENUMERAL_TYPE
+	  && TREE_CODE (index_expr) != INTEGER_CST)
+	check_for_full_enumeration_handling (orig_type);
+
+      /* If we don't have a default-label, create one here,
+	 after the body of the switch.  */
+      if (thiscase->data.case_stmt.default_label == 0)
+	{
+	  thiscase->data.case_stmt.default_label
+	    = build_decl (LABEL_DECL, NULL_TREE, NULL_TREE);
+	  expand_label (thiscase->data.case_stmt.default_label);
+	}
+      default_label = label_rtx (thiscase->data.case_stmt.default_label);
+
+      before_case = get_last_insn ();
+
+      if (thiscase->data.case_stmt.case_list
+	  && thiscase->data.case_stmt.case_list->left)
+	thiscase->data.case_stmt.case_list
+	  = case_tree2list (thiscase->data.case_stmt.case_list, 0);
+
+      /* Simplify the case-list before we count it.  */
+      group_case_nodes (thiscase->data.case_stmt.case_list);
+
+      /* Get upper and lower bounds of case values.
+	 Also convert all the case values to the index expr's data type.  */
+
+      count = 0;
+      for (n = thiscase->data.case_stmt.case_list; n; n = n->right)
+	{
+	  /* Check low and high label values are integers.  */
+	  if (TREE_CODE (n->low) != INTEGER_CST)
+	    abort ();
+	  if (TREE_CODE (n->high) != INTEGER_CST)
+	    abort ();
+
+	  n->low = convert (index_type, n->low);
+	  n->high = convert (index_type, n->high);
+
+	  /* Count the elements and track the largest and smallest
+	     of them (treating them as signed even if they are not).  */
+	  if (count++ == 0)
+	    {
+	      minval = n->low;
+	      maxval = n->high;
+	    }
+	  else
+	    {
+	      if (INT_CST_LT (n->low, minval))
+		minval = n->low;
+	      if (INT_CST_LT (maxval, n->high))
+		maxval = n->high;
+	    }
+	  /* A range counts double, since it requires two compares.  */
+	  if (! tree_int_cst_equal (n->low, n->high))
+	    count++;
+	}
+
+      /* Compute span of values.  */
+      if (count != 0)
+	range = fold (build (MINUS_EXPR, index_type, maxval, minval));
+
+      end_cleanup_deferral ();
+
+      if (count == 0)
+	{
+	  expand_expr (index_expr, const0_rtx, VOIDmode, 0);
+	  emit_queue ();
+	  emit_jump (default_label);
+	}
+
+      /* If range of values is much bigger than number of values,
+	 make a sequence of conditional branches instead of a dispatch.
+	 If the switch-index is a constant, do it this way
+	 because we can optimize it.  */
+
+      else if (count < case_values_threshold ()
+	       || compare_tree_int (range, 10 * count) > 0
+	       /* RANGE may be signed, and really large ranges will show up
+		  as negative numbers.  */
+	       || compare_tree_int (range, 0) < 0
+#ifndef ASM_OUTPUT_ADDR_DIFF_ELT
+	       || flag_pic
+#endif
+	       || TREE_CODE (index_expr) == INTEGER_CST
+	       || (TREE_CODE (index_expr) == COMPOUND_EXPR
+		   && TREE_CODE (TREE_OPERAND (index_expr, 1)) == INTEGER_CST))
+	{
+	  index = expand_expr (index_expr, NULL_RTX, VOIDmode, 0);
+
+	  /* If the index is a short or char that we do not have
+	     an insn to handle comparisons directly, convert it to
+	     a full integer now, rather than letting each comparison
+	     generate the conversion.  */
+
+	  if (GET_MODE_CLASS (GET_MODE (index)) == MODE_INT
+	      && ! have_insn_for (COMPARE, GET_MODE (index)))
+	    {
+	      enum machine_mode wider_mode;
+	      for (wider_mode = GET_MODE (index); wider_mode != VOIDmode;
+		   wider_mode = GET_MODE_WIDER_MODE (wider_mode))
+		if (have_insn_for (COMPARE, wider_mode))
+		  {
+		    index = convert_to_mode (wider_mode, index, unsignedp);
+		    break;
+		  }
+	    }
+
+	  emit_queue ();
+	  do_pending_stack_adjust ();
+
+	  index = protect_from_queue (index, 0);
+	  if (GET_CODE (index) == MEM)
+	    index = copy_to_reg (index);
+	  if (GET_CODE (index) == CONST_INT
+	      || TREE_CODE (index_expr) == INTEGER_CST)
+	    {
+	      /* Make a tree node with the proper constant value
+		 if we don't already have one.  */
+	      if (TREE_CODE (index_expr) != INTEGER_CST)
+		{
+		  index_expr
+		    = build_int_2 (INTVAL (index),
+				   unsignedp || INTVAL (index) >= 0 ? 0 : -1);
+		  index_expr = convert (index_type, index_expr);
+		}
+
+	      /* For constant index expressions we need only
+		 issue an unconditional branch to the appropriate
+		 target code.  The job of removing any unreachable
+		 code is left to the optimisation phase if the
+		 "-O" option is specified.  */
+	      for (n = thiscase->data.case_stmt.case_list; n; n = n->right)
+		if (! tree_int_cst_lt (index_expr, n->low)
+		    && ! tree_int_cst_lt (n->high, index_expr))
+		  break;
+
+	      if (n)
+		emit_jump (label_rtx (n->code_label));
+	      else
+		emit_jump (default_label);
+	    }
+	  else
+	    {
+	      /* If the index expression is not constant we generate
+		 a binary decision tree to select the appropriate
+		 target code.  This is done as follows:
+
+		 The list of cases is rearranged into a binary tree,
+		 nearly optimal assuming equal probability for each case.
+
+		 The tree is transformed into RTL, eliminating
+		 redundant test conditions at the same time.
+
+		 If program flow could reach the end of the
+		 decision tree an unconditional jump to the
+		 default code is emitted.  */
+
+	      use_cost_table
+		= (TREE_CODE (orig_type) != ENUMERAL_TYPE
+		   && estimate_case_costs (thiscase->data.case_stmt.case_list));
+	      balance_case_nodes (&thiscase->data.case_stmt.case_list, NULL);
+	      emit_case_nodes (index, thiscase->data.case_stmt.case_list,
+			       default_label, index_type);
+	      emit_jump_if_reachable (default_label);
+	    }
+	}
+      else
+	{
+	  if (! try_casesi (index_type, index_expr, minval, range,
+			    table_label, default_label))
+	    {
+	      index_type = thiscase->data.case_stmt.nominal_type;
+
+              /* Index jumptables from zero for suitable values of
+                 minval to avoid a subtraction.  */
+              if (! optimize_size
+                  && compare_tree_int (minval, 0) > 0
+                  && compare_tree_int (minval, 3) < 0)
+                {
+                  minval = integer_zero_node;
+                  range = maxval;
+                }
+
+	      if (! try_tablejump (index_type, index_expr, minval, range,
+				   table_label, default_label))
+		abort ();
+	    }
+	  
+	  /* Get table of labels to jump to, in order of case index.  */
+
+	  ncases = tree_low_cst (range, 0) + 1;
+	  labelvec = (rtx *) alloca (ncases * sizeof (rtx));
+	  memset ((char *) labelvec, 0, ncases * sizeof (rtx));
+
+	  for (n = thiscase->data.case_stmt.case_list; n; n = n->right)
+	    {
+	      /* Compute the low and high bounds relative to the minimum
+		 value since that should fit in a HOST_WIDE_INT while the
+		 actual values may not.  */
+	      HOST_WIDE_INT i_low
+		= tree_low_cst (fold (build (MINUS_EXPR, index_type, 
+                                             n->low, minval)), 1);
+	      HOST_WIDE_INT i_high
+		= tree_low_cst (fold (build (MINUS_EXPR, index_type, 
+                                             n->high, minval)), 1);
+	      HOST_WIDE_INT i;
+
+	      for (i = i_low; i <= i_high; i ++)
+		labelvec[i]
+		  = gen_rtx_LABEL_REF (Pmode, label_rtx (n->code_label));
+	    }
+
+	  /* Fill in the gaps with the default.  */
+	  for (i = 0; i < ncases; i++)
+	    if (labelvec[i] == 0)
+	      labelvec[i] = gen_rtx_LABEL_REF (Pmode, default_label);
+
+	  /* Output the table */
+	  emit_label (table_label);
+
+	  if (CASE_VECTOR_PC_RELATIVE || flag_pic)
+	    emit_jump_insn (gen_rtx_ADDR_DIFF_VEC (CASE_VECTOR_MODE,
+						   gen_rtx_LABEL_REF (Pmode, table_label),
+						   gen_rtvec_v (ncases, labelvec),
+						   const0_rtx, const0_rtx));
+	  else
+	    emit_jump_insn (gen_rtx_ADDR_VEC (CASE_VECTOR_MODE,
+					      gen_rtvec_v (ncases, labelvec)));
+
+	  /* If the case insn drops through the table,
+	     after the table we must jump to the default-label.
+	     Otherwise record no drop-through after the table.  */
+#ifdef CASE_DROPS_THROUGH
+	  emit_jump (default_label);
+#else
+	  emit_barrier ();
+#endif
+	}
+
+      before_case = NEXT_INSN (before_case);
+      end = get_last_insn ();
+      if (squeeze_notes (&before_case, &end))
+	abort ();
+      reorder_insns (before_case, end,
+		     thiscase->data.case_stmt.start);
+    }
+  else
+    end_cleanup_deferral ();
+
+  if (thiscase->exit_label)
+    emit_label (thiscase->exit_label);
+
+  free_case_nodes (case_stack->data.case_stmt.case_list);
+  POPSTACK (case_stack);
+
+  free_temp_slots ();
+}

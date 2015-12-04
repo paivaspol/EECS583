@@ -1,0 +1,27 @@
+static int
+df_def_dominates_uses_p (df, def, blocks)
+     struct df *df ATTRIBUTE_UNUSED;
+     struct ref *def;
+     bitmap blocks;
+{
+  struct df_link *du_link;
+
+  /* Follow def-use chain to find all the uses of this def.  */
+  for (du_link = DF_REF_CHAIN (def); du_link; du_link = du_link->next)
+    {
+      struct ref *use = du_link->ref;
+      struct df_link *ud_link;
+
+      /* Only worry about the uses within BLOCKS.  For example,
+      consider a register defined within a loop that is live at the
+      loop exits.  */
+      if (bitmap_bit_p (blocks, DF_REF_BBNO (use)))
+	{
+	  /* Follow use-def chain to check all the defs for this use.  */
+	  for (ud_link = DF_REF_CHAIN (use); ud_link; ud_link = ud_link->next)
+	    if (ud_link->ref != def)
+	      return 0;
+	}
+    }
+  return 1;
+}

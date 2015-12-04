@@ -1,0 +1,381 @@
+void start_macroblock(int mb_addr, int mb_field)
+{
+  int i,j,k,l;
+  int use_bitstream_backing = (input->slice_mode == FIXED_RATE || input->slice_mode == CALLBACK);
+  Macroblock *currMB = &img->mb_data[mb_addr];
+  Slice *curr_slice = img->currentSlice;
+  DataPartition *dataPart;
+  Bitstream *currStream;
+  EncodingEnvironmentPtr eep;
+  int max_qp_delta = 25 + img->bitdepth_luma_qp_scale/2;
+  int min_qp_delta = (26 + img->bitdepth_luma_qp_scale/2);
+  
+  currMB->mb_field = mb_field;
+  
+  enc_picture->mb_field[mb_addr] = mb_field;
+
+  set_MB_parameters (mb_addr);
+
+  if(use_bitstream_backing)
+  {
+    // Keep the current state of the bitstreams
+    if(!img->cod_counter)
+      for (i=0; i<curr_slice->max_part_nr; i++)
+      {
+        dataPart = &(curr_slice->partArr[i]);
+        currStream = dataPart->bitstream;
+        currStream->stored_bits_to_go   = currStream->bits_to_go;
+        currStream->stored_byte_pos   = currStream->byte_pos;
+        currStream->stored_byte_buf   = currStream->byte_buf;
+
+        if (input->symbol_mode ==CABAC)
+        {
+          eep = &(dataPart->ee_cabac);
+          eep->ElowS            = eep->Elow;
+          eep->ErangeS           = eep->Erange;
+          eep->EbufferS         = eep->Ebuffer;
+          eep->Ebits_to_goS     = eep->Ebits_to_go;
+          eep->Ebits_to_followS = eep->Ebits_to_follow;
+          eep->EcodestrmS       = eep->Ecodestrm;
+          eep->Ecodestrm_lenS   = eep->Ecodestrm_len;
+          eep->CS               = eep->C;
+          eep->BS               = eep->B;
+          eep->ES               = eep->E;
+        }
+      }
+  }
+
+  // Save the slice number of this macroblock. When the macroblock below
+  // is coded it will use this to decide if prediction for above is possible
+  currMB->slice_nr = img->current_slice_nr;
+
+  // Initialize delta qp change from last macroblock. Feature may be used for future rate control
+  // Rate control
+  currMB->qpsp       = img->qpsp;
+  if(input->RCEnable)
+  {
+    int prev_mb = FmoGetPreviousMBNr(img->current_mb_nr);
+    if (prev_mb>-1)
+    {
+      currMB->prev_qp = img->mb_data[prev_mb].qp;
+      currMB->prev_delta_qp = img->mb_data[prev_mb].delta_qp;
+    }
+    else
+    {
+      currMB->prev_qp = curr_slice->qp;
+      currMB->prev_delta_qp = 0;
+    }
+    /*frame layer rate control*/
+    if(input->basicunit==img->Frame_Total_Number_MB)
+    {
+      currMB->delta_qp = 0;
+      currMB->qp       = img->qp;
+    }
+/*basic unit layer rate control*/
+    else
+    {
+/*each I or B frame has only one QP*/
+     if((img->type==I_SLICE)||(img->type==B_SLICE))
+     {
+       currMB->delta_qp = 0;
+       currMB->qp       = img->qp;
+     }
+     else if(img->type==P_SLICE)
+     {
+
+       if (!img->write_macroblock) //write macroblock
+       {
+         if (!currMB->mb_field)  //frame macroblock
+         {
+           if (img->current_mb_nr == 0) //first macroblock
+           {
+// Initialize delta qp change from last macroblock. Feature may be used for future rate control
+             currMB->delta_qp = 0;
+             currMB->qp       = img->qp;
+             DELTA_QP = DELTA_QP2 = currMB->delta_qp;
+             QP = QP2 = currMB->qp;
+           }
+           else
+           {
+             if (!((input->MbInterlace) && img->bot_MB)) //top macroblock
+             {
+               if (img->mb_data[img->current_mb_nr-1].prev_cbp == 1)
+               {
+                 currMB->delta_qp = 0;
+                 currMB->qp       = img->qp;
+               }
+               else
+               {
+                 currMB->qp = img->mb_data[img->current_mb_nr-1].prev_qp;
+                 currMB->delta_qp = currMB->qp - img->mb_data[img->current_mb_nr-1].qp;
+                 img->qp = currMB->qp;
+               }
+               DELTA_QP = DELTA_QP2 = currMB->delta_qp;
+               QP = QP2 = currMB->qp;
+             }
+             else //bottom macroblock
+             {
+// Initialize delta qp change from last macroblock. Feature may be used for future rate control
+               currMB->delta_qp = 0;
+               currMB->qp       = img->qp;       // needed in loop filter (even if constant QP is used)
+             }
+           }
+         }
+         else  //field macroblock
+         {
+           if (!img->bot_MB) //top macroblock 
+           {
+             currMB->delta_qp = DELTA_QP2;
+             currMB->qp   = img->qp    = QP2;
+           }
+           else//bottom macroblock
+           {
+             currMB->qp = img->qp;
+             currMB->delta_qp = 0;
+           }
+           
+         }
+         
+       }
+       else 
+       {
+         if (!img->bot_MB) //write top macroblock
+         {
+           if (img->write_macroblock_frame)
+           {
+             currMB->delta_qp = DELTA_QP;
+             img->qp = currMB->qp = QP;
+           }
+           else
+           {
+             currMB->delta_qp = DELTA_QP2;
+             img->qp = currMB->qp = QP2;
+           }
+         }
+         else //write bottom macroblock
+         {
+           currMB->delta_qp = 0;
+           currMB->qp = img->qp;
+         }
+       }
+
+       /*compute the quantization parameter for each basic unit of P frame*/
+
+       if(!((input->MbInterlace)&&img->bot_MB))
+       {
+         if(!currMB->mb_field)
+         {
+           
+           if((img->NumberofCodedMacroBlocks>0)\
+             &&(img->NumberofCodedMacroBlocks%img->BasicUnit==0))
+           {
+             
+             /*frame coding*/
+             if(active_sps->frame_mbs_only_flag)
+             {
+               updateRCModel();
+               img->BasicUnitQP=updateQuantizationParameter(img->TopFieldFlag);
+             }
+             /*adaptive field/frame coding*/
+             else if((input->PicInterlace==ADAPTIVE_CODING)&&(!input->MbInterlace)&&(img->IFLAG==0))
+             {
+               updateRCModel();
+               img->BasicUnitQP=updateQuantizationParameter(img->TopFieldFlag);
+             }
+             /*field coding*/
+             else if((input->PicInterlace==FIELD_CODING)&&(!input->MbInterlace)&&(img->IFLAG==0))
+             {
+               updateRCModel();
+               img->BasicUnitQP=updateQuantizationParameter(img->TopFieldFlag);
+             }
+             /*mb adaptive f/f coding, field coding*/
+             else if((input->MbInterlace)&&(img->IFLAG==0)&&(img->FieldControl==1))
+             {
+               updateRCModel();
+               img->BasicUnitQP=updateQuantizationParameter(img->TopFieldFlag);
+             }
+             /*mb adaptive f/f coding, frame coding*/
+             else if((input->MbInterlace)&&(img->IFLAG==0)&&(img->FieldControl==0))
+             {
+               updateRCModel();
+               img->BasicUnitQP=updateQuantizationParameter(img->TopFieldFlag);
+             } 
+             
+             
+           }
+           
+           
+           if(img->current_mb_nr==0)
+             img->BasicUnitQP=img->qp;
+
+           currMB->predict_qp=img->BasicUnitQP;
+           
+           if(currMB->predict_qp>currMB->qp + max_qp_delta)
+             currMB->predict_qp=currMB->qp + max_qp_delta;
+           else if(currMB->predict_qp<currMB->qp - min_qp_delta)
+             currMB->predict_qp=currMB->qp - min_qp_delta; 
+           
+//           currMB->prev_qp = currMB->predict_qp;
+           
+           dq = currMB->delta_qp + currMB->predict_qp-currMB->qp;
+           if(dq < -min_qp_delta) 
+           {
+             dq = -min_qp_delta;
+             predict_error = dq-currMB->delta_qp;
+             img->qp = img->qp+predict_error;
+             currMB->delta_qp = -min_qp_delta;
+           }
+           else if(dq > max_qp_delta)
+           {
+             dq = max_qp_delta;
+             predict_error = dq - currMB->delta_qp;
+             img->qp = img->qp + predict_error;
+             currMB->delta_qp = max_qp_delta;
+           }
+           else
+           {
+             currMB->delta_qp = dq;
+             predict_error=currMB->predict_qp-currMB->qp;
+             img->qp = currMB->predict_qp;
+           }
+           currMB->qp =  img->qp;
+           if (input->MbInterlace)
+           {
+             DELTA_QP = DELTA_QP2 = currMB->delta_qp;
+             QP = QP2     = currMB->qp;
+             DELTA_QP2 = currMB->delta_qp;
+           }
+           currMB->predict_error=predict_error;
+         }
+         else
+           predict_error=currMB->predict_error;
+       }
+       else
+         currMB->prev_qp=img->qp;
+       }
+    }   
+  }
+  else
+  {
+    Slice* currSlice = img->currentSlice;
+  	
+    int prev_mb = FmoGetPreviousMBNr(img->current_mb_nr);
+    if (prev_mb>-1)
+    {
+      currMB->prev_qp = img->mb_data[prev_mb].qp;
+      currMB->prev_delta_qp = img->mb_data[prev_mb].delta_qp;
+    }
+    else
+    {
+      currMB->prev_qp = currSlice->qp;
+      currMB->prev_delta_qp = 0;
+    }
+
+    currMB->qp       = currSlice->qp ;
+  
+    currMB->delta_qp = currMB->qp - currMB->prev_qp;
+    DELTA_QP = DELTA_QP2 = currMB->delta_qp;
+    QP = QP2 = currMB->qp;
+    
+  }
+  // Initialize counter for MB symbols
+  currMB->currSEnr=0;
+
+  // loop filter parameter
+  if (active_pps->deblocking_filter_control_present_flag)
+  {
+    currMB->LFDisableIdc    = img->LFDisableIdc;
+    currMB->LFAlphaC0Offset = img->LFAlphaC0Offset;
+    currMB->LFBetaOffset    = img->LFBetaOffset;
+  }
+  else
+  {
+    currMB->LFDisableIdc    = 0;
+    currMB->LFAlphaC0Offset = 0;
+    currMB->LFBetaOffset    = 0;
+  }
+
+  // If MB is next to a slice boundary, mark neighboring blocks unavailable for prediction
+  CheckAvailabilityOfNeighbors();
+
+  if (input->symbol_mode == CABAC)
+    CheckAvailabilityOfNeighborsCABAC();
+  
+  // Reset vectors before doing motion search in motion_search().
+
+  for (l=0; l<2; l++)
+  {
+    for (j=0; j < BLOCK_MULTIPLE; j++)
+      for (i=0; i < BLOCK_MULTIPLE; i++)
+        for (k=0; k < 2; k++)
+          enc_picture->mv[l][img->block_x+i][img->block_y+j][k]=0;
+  }
+
+  //initialize reference index 
+  for (j=0; j < BLOCK_MULTIPLE; j++)
+  {
+    for (i=0; i < BLOCK_MULTIPLE; i++)
+      for (l=0; l<2; l++)
+      {
+        enc_picture->ref_idx[l][img->block_x+i][img->block_y + j] =-1;
+        enc_picture->ref_pic_id[l][img->block_x+i][img->block_y+j] = -1;
+      }
+    }
+  
+  // Reset syntax element entries in MB struct
+  currMB->mb_type   = 0;
+  currMB->cbp_blk   = 0;
+  currMB->cbp       = 0;
+
+  for (l=0; l < 2; l++)
+    for (j=0; j < BLOCK_MULTIPLE; j++)
+      for (i=0; i < BLOCK_MULTIPLE; i++)
+        for (k=0; k < 2; k++)
+          currMB->mvd[l][j][i][k] = 0;
+ 
+  currMB->cbp_bits   = 0;
+  currMB->c_ipred_mode = DC_PRED_8; //GB
+
+  for (i=0; i < (BLOCK_MULTIPLE*BLOCK_MULTIPLE); i++)
+    currMB->intra_pred_modes[i] = DC_PRED;
+
+  for (i=0; i < 16; i++)
+    currMB->intra_pred_modes8x8[i] = DC_PRED;
+  
+  //initialize the whole MB as INTRA coded
+  //Blocks ar set to notINTRA in write_one_macroblock
+  if (input->UseConstrainedIntraPred)
+  {
+    img->intra_block[img->current_mb_nr] = 1;
+  }
+
+  // store filtering parameters for this MB; For now, we are using the
+  // same offset throughout the sequence
+  currMB->lf_disable = img->LFDisableIdc;
+  currMB->lf_alpha_c0_offset = img->LFAlphaC0Offset;
+  currMB->lf_beta_offset = img->LFBetaOffset;
+
+
+  // Initialize bitcounters for this macroblock
+  if(img->current_mb_nr == 0) // No slice header to account for
+  {
+    currMB->bitcounter[BITS_HEADER] = 0;
+  }
+  else if (currMB->slice_nr == img->mb_data[img->current_mb_nr-1].slice_nr) // current MB belongs to the
+  // same slice as the last MB
+  {
+    currMB->bitcounter[BITS_HEADER] = 0;
+  }
+
+  currMB->bitcounter[BITS_MB_MODE] = 0;
+  currMB->bitcounter[BITS_COEFF_Y_MB] = 0;
+  currMB->bitcounter[BITS_INTER_MB] = 0;
+  currMB->bitcounter[BITS_CBP_MB] = 0;
+  currMB->bitcounter[BITS_DELTA_QUANT_MB] = 0;
+  currMB->bitcounter[BITS_COEFF_UV_MB] = 0;
+
+#ifdef _FAST_FULL_ME_
+  if(!input->FMEnable)
+    ResetFastFullIntegerSearch ();
+#endif
+}

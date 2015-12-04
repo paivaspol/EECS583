@@ -1,0 +1,24 @@
+static void
+flow_loop_tree_node_add (prevloop, loop)
+     struct loop *prevloop;
+     struct loop *loop;
+{
+
+  if (flow_loop_nested_p (prevloop, loop))
+    {
+      prevloop->inner = loop;
+      loop->outer = prevloop;
+      return;
+    }
+
+  for (; prevloop->outer; prevloop = prevloop->outer)
+    if (flow_loop_nested_p (prevloop->outer, loop))
+      {
+	prevloop->next = loop;
+	loop->outer = prevloop->outer;
+	return;
+      }
+
+  prevloop->next = loop;
+  loop->outer = NULL;
+}

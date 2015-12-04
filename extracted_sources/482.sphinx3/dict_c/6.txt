@@ -1,0 +1,34 @@
+void dict_free (dict_t *d)
+{
+  int i;
+  dictword_t *word;
+
+  if (d) { /* Clean up the dictionary stuff*/
+    /* First Step, free all memory allocated for each word */
+    for (i=0;i<d->n_word;i++) {
+      word = (dictword_t *) &(d->word[i]);
+      if (word->word) 
+	ckd_free ((void *)word->word);
+      if (word->ciphone) 
+      ckd_free ((void *)word->ciphone);
+      if (word->comp) 
+	ckd_free ((void *)word->comp);
+    }
+    
+    if (d->word) 
+      ckd_free ((void *)d->word);
+    for (i=0;i<d->n_ciphone;i++) {
+      if (d->ciphone_str[i]) 
+	ckd_free ((void *)d->ciphone_str[i]);
+    }
+    if (d->comp_head) 
+      ckd_free ((void *)d->comp_head);
+    if (d->ciphone_str)
+      ckd_free ((void *)d->ciphone_str);
+    if (d->pht)
+      hash_free (d->pht);
+    if (d->ht)
+      hash_free (d->ht);
+    ckd_free ((void *)d);
+  }
+}

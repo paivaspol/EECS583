@@ -1,0 +1,22 @@
+static int store_ref(pTHX_ stcxt_t *cxt, SV *sv)
+{
+	TRACEME(("store_ref (0x%"UVxf")", PTR2UV(sv)));
+
+	/*
+	 * Follow reference, and check if target is overloaded.
+	 */
+
+	sv = SvRV(sv);
+
+	if (SvOBJECT(sv)) {
+		HV *stash = (HV *) SvSTASH(sv);
+		if (stash && Gv_AMG(stash)) {
+			TRACEME(("ref (0x%"UVxf") is overloaded", PTR2UV(sv)));
+			PUTMARK(SX_OVERLOAD);
+		} else
+			PUTMARK(SX_REF);
+	} else
+		PUTMARK(SX_REF);
+
+	return store(aTHX_ cxt, sv);
+}

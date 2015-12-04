@@ -1,0 +1,21 @@
+static int CalculateFrameNumber()
+{
+  if (img->b_frame_to_code)
+  {
+
+    if (input->PyramidCoding)
+      frame_no = start_tr_in_this_IGOP + (IMG_NUMBER - 1) * (input->jumpd + 1) + (int) (img->b_interval * (double) (1 + gop_structure[img->b_frame_to_code - 1].display_no));
+    else      
+    frame_no = start_tr_in_this_IGOP + (IMG_NUMBER - 1) * (input->jumpd + 1) + (int) (img->b_interval * (double) img->b_frame_to_code);
+  }
+  else
+    {
+      frame_no = start_tr_in_this_IGOP + IMG_NUMBER * (input->jumpd + 1);
+#ifdef _ADAPT_LAST_GROUP_
+      if (input->last_frame && img->number + 1 == input->no_frames)
+        frame_no = input->last_frame;
+#endif
+    }
+
+  return frame_no;
+}

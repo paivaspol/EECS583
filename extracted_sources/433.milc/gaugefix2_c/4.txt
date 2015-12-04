@@ -1,0 +1,57 @@
+void gaugefix(int gauge_dir,double relax_boost,int max_gauge_iter,
+	      double gauge_fix_tol, field_offset diffmat, field_offset sumvec,
+	      int nvector, field_offset vector_offset[], int vector_parity[],
+	      int nantiherm, field_offset antiherm_offset[], 
+	      int antiherm_parity[] )
+{
+  int gauge_iter;
+  double current_av, old_av, del_av;
+
+  /* We require at least 8 gen_pt values for gauge fixing */
+  if(N_POINTERS < 8)
+    {
+      printf("gaugefix: N_POINTERS must be at least %d.  Fix the code.\n",
+	     N_POINTERS);
+      fflush(stdout); terminate(1);
+    }
+    
+
+  /* Set up work space */
+  gaugefixscratch(diffmat,sumvec);
+
+  /* Do at most max_gauge_iter iterations, but stop after the second step if */
+  /* the change in the avg gauge fixing action is smaller than gauge_fix_tol */
+
+  for (gauge_iter=0; gauge_iter < max_gauge_iter; gauge_iter++)
+    {
+      gaugefixstep(gauge_dir,&current_av,relax_boost,
+		   nvector, vector_offset, vector_parity,
+		   nantiherm, antiherm_offset, antiherm_parity);
+
+      if(gauge_iter != 0)
+	{
+	  del_av = current_av - old_av;
+	  if (fabs(del_av) < gauge_fix_tol) break;
+	}
+      old_av = current_av;
+
+      /* Reunitarize when iteration count is a multiple of REUNIT_INTERVAL */
+      if((gauge_iter % REUNIT_INTERVAL) == (REUNIT_INTERVAL - 1))
+	{
+/**	  node0_printf("step %d av gf action %.8e, delta %.3e\n",
+		       gauge_iter,current_av,del_av); **/
+	  reunitarize();
+	}
+    }
+  /* Reunitarize at the end, unless we just did it in the loop */
+  if((gauge_iter % REUNIT_INTERVAL) != 0)
+    reunitarize();
+
+  /* Free workspace */
+  if(diffmat_offset < 0)free(diffmatp);
+  if(sumvec_offset < 0)free(sumvecp);
+  
+  if(this_node==0)
+    printf("GFIX: Ended at step %d. Av gf action %.8e, delta %.3e\n",
+	   gauge_iter,(double)current_av,(double)del_av);
+}

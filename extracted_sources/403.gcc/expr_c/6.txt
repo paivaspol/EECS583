@@ -1,0 +1,20 @@
+int
+queued_subexp_p (x)
+     rtx x;
+{
+  enum rtx_code code = GET_CODE (x);
+  switch (code)
+    {
+    case QUEUED:
+      return 1;
+    case MEM:
+      return queued_subexp_p (XEXP (x, 0));
+    case MULT:
+    case PLUS:
+    case MINUS:
+      return (queued_subexp_p (XEXP (x, 0))
+	      || queued_subexp_p (XEXP (x, 1)));
+    default:
+      return 0;
+    }
+}

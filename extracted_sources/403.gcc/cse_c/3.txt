@@ -1,0 +1,31 @@
+static int
+preferrable (cost_a, regcost_a, cost_b, regcost_b)
+     int cost_a, regcost_a, cost_b, regcost_b;
+{
+  /* First, get rid of a cases involving expressions that are entirely
+     unwanted.  */
+  if (cost_a != cost_b)
+    {
+      if (cost_a == MAX_COST)
+	return 1;
+      if (cost_b == MAX_COST)
+	return -1;
+    }
+
+  /* Avoid extending lifetimes of hardregs.  */
+  if (regcost_a != regcost_b)
+    {
+      if (regcost_a == MAX_COST)
+	return 1;
+      if (regcost_b == MAX_COST)
+	return -1;
+    }
+
+  /* Normal operation costs take precedence.  */
+  if (cost_a != cost_b)
+    return cost_a - cost_b;
+  /* Only if these are identical consider effects on register pressure.  */
+  if (regcost_a != regcost_b)
+    return regcost_a - regcost_b;
+  return 0;
+}
