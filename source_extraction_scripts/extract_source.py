@@ -54,14 +54,15 @@ def parse_file(input_filename):
     return result
 
 def is_start_function(line):
-    retval = (line.startswith('static') or line.startswith('Int32') or line.startswith('void') or line.startswith('IntNative')) and ';' not in line
+    retval = (line.startswith('static') or line.startswith('Int32') or line.startswith('void') or line.startswith('IntNative') or \
+            line.startswith('Bool') or line.startswith('int')) and ';' not in line
     return retval
 
 def check_defined(line):
     return line.startswith('#if defined(SPEC_CPU)')
 
-def output_to_file(input_filename, functions):
-    output_dir = input_filename[find_last_path_delim(input_filename) + 1:].replace('.', '_')
+def output_to_file(input_filename, functions, output_dir):
+    output_dir = os.path.join(output_dir, input_filename[find_last_path_delim(input_filename) + 1:].replace('.', '_'))
     print 'output dir: ' +  output_dir
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -80,6 +81,7 @@ def find_last_path_delim(path):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('input_filename')
+    parser.add_argument('--output-dir')
     args = parser.parse_args()
     functions = parse_file(args.input_filename)
-    output_to_file(args.input_filename, functions)
+    output_to_file(args.input_filename, functions, args.output_dir)
