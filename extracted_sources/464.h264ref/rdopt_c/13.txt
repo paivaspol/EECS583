@@ -1,1 +1,216 @@
+int RDCost_for_macroblocks (double   lambda,       // <-- lagrange multiplier
+                            int      mode,         // <-- modus (0-COPY/DIRECT, 1-16x16, 2-16x8, 3-8x16, 4-8x8(+), 5-Intra4x4, 6-Intra16x16)
+                            double*  min_rdcost,   // <-> minimum rate-distortion cost
+                            int i16mode )
+{
+  int         i, j, k; //, k, ****ip4;
+  int         rate=0;
+  int64       distortion=0;
+  double      rdcost;
+  Macroblock  *currMB   = &img->mb_data[img->current_mb_nr];
+  Macroblock  *prevMB   = img->current_mb_nr ? &img->mb_data[img->current_mb_nr-1] : NULL;
+  int         bframe    = (img->type==B_SLICE);
+  int         tmp_cc;
+  int         use_of_cc =  (img->type!=I_SLICE &&  input->symbol_mode!=CABAC);
+  int         cc_rate, dummy;
+  int         cr_cbp=0, uv;
+
+  //=====
+  //=====  SET REFERENCE FRAMES AND BLOCK MODES
+  //=====
+  SetModesAndRefframeForBlocks (mode);
+
+  //=====
+  //=====  GET COEFFICIENTS, RECONSTRUCTIONS, CBP
+  //=====
+  if (bframe && mode==0)
+  {
+    int block_x=img->pix_x>>2;
+    int block_y=img->pix_y>>2;
+    for (i=0;i<4;i++)
+      for (j=0;j<4;j++)
+        if (direct_pdir[block_x+i][block_y+j]<0)
+          return 0;
+  }
+
+  if (mode<P8x8)
+  {
+    LumaResidualCoding ();
+    if(mode==0 && currMB->cbp==0 && currMB->luma_transform_size_8x8_flag==1) //for B_skip, luma_transform_size_8x8_flag=0 only
+      return 0;
+  }
+  else if (mode==P8x8)
+  {
+    SetCoeffAndReconstruction8x8 (currMB);
+  }
+  else if (mode==I4MB)
+  {
+    currMB->cbp = Mode_Decision_for_Intra4x4Macroblock (lambda, &dummy);
+
+    // Residue Color Transform
+    if(img->residue_transform_flag)
+    {
+      for(i=0; i<2; i++)
+      for(j=0; j<4; j++)
+      for(k=0; k<4; k++)
+        if(cbp_chroma_block[i][j][k])
+          cr_cbp = 2;
+
+      for(uv=0; uv<2; uv++)
+        cr_cbp = dct_chroma_DC(uv, cr_cbp);
+
+      currMB->cbp += (cr_cbp<<4);
+    }
+  }
+  else if (mode==I16MB)
+  {
+    Intra16x16_Mode_Decision  (currMB, &i16mode);
+  }
+  else if(mode==I8MB){
+    currMB->cbp = Mode_Decision_for_new_Intra8x8Macroblock(lambda, &dummy);
+
+    // Residue Color Transform
+    if(img->residue_transform_flag)
+    {
+      for(i=0; i<2; i++)
+      for(j=0; j<4; j++)
+      for(k=0; k<4; k++)
+        if(cbp_chroma_block[i][j][k])
+          cr_cbp = 2;
+
+      for(uv=0; uv<2; uv++)
+        cr_cbp = dct_chroma_DC(uv, cr_cbp);
+
+      currMB->cbp += (cr_cbp<<4);
+    }
+  }
+
+  if (input->rdopt==2 && img->type!=B_SLICE)
+  {
+    // We need the reconstructed prediction residue for the simulated decoders.
+    compute_residue_mb (mode==I16MB?i16mode:-1);
+  }
+
+  //Rate control
+  if (mode == I16MB)
+  {
+    for(i=0; i<16; i++)
+    for(j=0; j<16; j++)
+      pred[j][i] = img->mprr_2[i16mode][j][i];
+  }else
+  {
+    for(i=0; i<16; i++)
+    for(j=0; j<16; j++)
+      pred[j][i] = img->mpr[i][j];
+  }
+
+  img->i16offset = 0;
+  dummy = 0;
+  if ((!(img->residue_transform_flag && (mode==I4MB || mode==I16MB || mode==I8MB))) && img->yuv_format!=YUV400)
+    ChromaResidualCoding (&dummy);
+  if (mode==I16MB)     img->i16offset = I16Offset  (currMB->cbp, i16mode);
+
+  //=====
+  //=====   GET DISTORTION
+  //=====
+  // LUMA
+  if (input->rdopt==2 && img->type!=B_SLICE)
+  {
+    for (k=0; k<input->NoOfDecoders ;k++)
+    {
+      decode_one_mb (k, currMB);
+      for (j=0; j<MB_BLOCK_SIZE; j++)
+      for (i=img->opix_x; i<img->opix_x+MB_BLOCK_SIZE; i++)
+      {
+        distortion += img->quad [imgY_org[img->opix_y+j][i] - decs->decY[k][img->opix_y+j][i]];
+      }
+    }
+    distortion /= input->NoOfDecoders;
+  }
+  else
+  {
+    for (j=0; j<16; j++)
+    for (i=img->opix_x; i<img->opix_x+16; i++)
+    {
+      distortion += img->quad [imgY_org[j+img->opix_y][i] - enc_picture->imgY[img->pix_y+j][i]];
+    }
+  }
+
+  if (img->yuv_format != YUV400)
+  {
+    // CHROMA
+    for (j=0; j<img->mb_cr_size_y; j++)
+    for (i=img->opix_c_x; i<img->opix_c_x+img->mb_cr_size_x; i++)
+    {
+      distortion += img->quad [imgUV_org[0][j+img->opix_c_y][i] - enc_picture->imgUV[0][img->pix_c_y+j][i]];
+      distortion += img->quad [imgUV_org[1][j+img->opix_c_y][i] - enc_picture->imgUV[1][img->pix_c_y+j][i]];
+    }
+  }
+
+
+  //=====   S T O R E   C O D I N G   S T A T E   =====
+  //---------------------------------------------------
+  store_coding_state (cs_cm);
+
+  //=====
+  //=====   GET RATE
+  //=====
+  //----- macroblock header -----
+  if (use_of_cc)
+  {
+    if (currMB->mb_type!=0 || (bframe && currMB->cbp!=0))
+    {
+      // cod counter and macroblock mode are written ==> do not consider code counter
+      tmp_cc = img->cod_counter;
+      rate   = writeMBLayer (1);
+      ue_linfo (tmp_cc, dummy, &cc_rate, &dummy);
+      rate  -= cc_rate;
+      img->cod_counter = tmp_cc;
+    }
+    else
+    {
+      // cod counter is just increased  ==> get additional rate
+      ue_linfo (img->cod_counter+1, dummy, &rate,    &dummy);
+      ue_linfo (img->cod_counter,   dummy, &cc_rate, &dummy);
+      rate -= cc_rate;
+    }
+  }
+  else
+  {
+    rate = writeMBLayer (1);
+  }
+
+  //=====   R E S T O R E   C O D I N G   S T A T E   =====
+  //-------------------------------------------------------
+  reset_coding_state (cs_cm);
+
+  rdcost = (double)distortion + lambda * max(0.5,(double)rate);
+
 #if defined(SPEC_CPU)
+   if (((rdcost - *min_rdcost) >= -1e-12) ||
+#else
+  if (rdcost >= *min_rdcost ||
+#endif
+      ((img->qp + img->bitdepth_luma_qp_scale)==0 && img->lossless_qpprime_flag==1 && distortion!=0))
+  {
+    return 0;
+  }
+
+
+  if ((img->MbaffFrameFlag) && (mode ? 0: ((img->type == B_SLICE) ? !currMB->cbp:1)))  // AFF and current is skip
+  {
+    if (img->current_mb_nr%2) //bottom
+    {
+      if (prevMB->mb_type ? 0:((img->type == B_SLICE) ? !prevMB->cbp:1)) //top is skip
+      {
+        if (!(field_flag_inference() == currMB->mb_field)) //skip only allowed when correct inference
+          return 0;
+      }
+    }
+  }
+
+  //=====   U P D A T E   M I N I M U M   C O S T   =====
+  //-----------------------------------------------------
+  *min_rdcost = rdcost;
+  return 1;
+}
