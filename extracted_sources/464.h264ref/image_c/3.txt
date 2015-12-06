@@ -1,1 +1,402 @@
+int encode_one_frame ()
+{
+  static int prev_frame_no = 0; // POC200301
+  static int consecutive_non_reference_pictures = 0; // POC200301
+  int        FrameNumberInFile;
+
+#ifdef _LEAKYBUCKET_
+  extern long Bit_Buffer[10000];
+  extern unsigned long total_frame_buffer;
+#endif
+
+  time_t ltime1;
+  time_t ltime2;
+
+#ifdef WIN32
+  struct _timeb tstruct1;
+  struct _timeb tstruct2;
+#else
+  struct timeb tstruct1;
+  struct timeb tstruct2;
+#endif
+
+  int tmp_time;
+  int bits_frm = 0, bits_fld = 0;
+  float dis_frm = 0, dis_frm_y = 0, dis_frm_u = 0, dis_frm_v = 0;
+  float dis_fld = 0, dis_fld_y = 0, dis_fld_u = 0, dis_fld_v = 0;
+
+  //Rate control
+  int pic_type, bits = 0; 
+
+  me_time=0;
+  img->rd_pass = 0;
+  enc_frame_picture  = NULL;
+  enc_frame_picture2 = NULL;
+  enc_frame_picture3 = NULL;
+
 #if defined(SPEC_CPU)
+  tstruct1.time = 0;
+  tstruct1.millitm = 0;
+  tstruct1.timezone = 0;                 
+  tstruct1.dstflag = 0;
+  ltime1 = 0;
+#else 
+#ifdef WIN32
+  _ftime (&tstruct1);           // start time ms
+#else
+  ftime (&tstruct1);
+#endif
+  time (&ltime1);               // start time s
+#endif /* !SPEC_CPU */
+
+  //Rate control 
+  img->write_macroblock = 0;
+/*
+  //Shankar Regunathan (Oct 2002)
+  //Prepare Panscanrect SEI payload
+  UpdatePanScanRectInfo ();
+  //Prepare Arbitrarydata SEI Payload
+  UpdateUser_data_unregistered ();
+  //Prepare Registered data SEI Payload
+  UpdateUser_data_registered_itu_t_t35 ();
+  //Prepare RandomAccess SEI Payload
+  UpdateRandomAccess ();
+*/
+
+  if (input->ResendPPS && img->number !=0)
+  {
+    stats->bit_ctr_parametersets_n=write_PPS(0, 0);
+    //stats->bit_slice += stats->bit_ctr_parametersets_n;
+    stats->bit_ctr_parametersets += stats->bit_ctr_parametersets_n;
+  }
+
+  put_buffer_frame ();      // sets the pointers to the frame structures 
+                            // (and not to one of the field structures)
+  init_frame ();
+  FrameNumberInFile = CalculateFrameNumber();
+
+  ReadOneFrame (FrameNumberInFile, input->infile_header,
+                input->img_width, input->img_height, input->img_width_cr, input->img_height_cr);
+
+  PaddAutoCropBorders (input->img_width, input->img_height, img->width, img->height,
+                       input->img_width_cr, input->img_height_cr, img->width_cr, img->height_cr);
+
+  // set parameters for direct mode and deblocking filter
+  img->direct_spatial_mv_pred_flag     = input->direct_spatial_mv_pred_flag;
+  img->LFDisableIdc    = input->LFDisableIdc;
+  img->LFAlphaC0Offset = input->LFAlphaC0Offset;
+  img->LFBetaOffset    = input->LFBetaOffset;
+
+  // Following code should consider optimal coding mode. Currently also does not support
+  // multiple slices per frame.
+  if (img->type == B_SLICE)
+    Bframe_ctr++;         // Bframe_ctr only used for statistics, should go to stats->
+  else if (img->type == I_SLICE)
+    Iframe_ctr++;         // Iframe_ctr only used for statistics, should go to stats->
+  else
+    Pframe_ctr++;         // Pframe_ctr only used for statistics, should go to stats->
+
+  if (input->PicInterlace == FIELD_CODING)
+  {
+    //Rate control
+    img->FieldControl=1;
+
+    img->field_picture = 1;  // we encode fields
+    field_picture (top_pic, bottom_pic);
+    img->fld_flag = 1;
+  }
+  else
+  {
+    //Rate control
+    img->FieldControl=0;
+
+    // For frame coding, turn MB level field/frame coding flag on
+    if (input->MbInterlace)
+      mb_adaptive = 1;
+
+    img->field_picture = 0; // we encode a frame
+
+    //Rate control
+    if(input->RCEnable)
+    { 
+    /*update the number of MBs in the basic unit for MB adaptive 
+      f/f coding*/
+      if((input->MbInterlace)&&(input->basicunit<img->Frame_Total_Number_MB)\
+        &&(img->type==P_SLICE)&&(img->IFLAG==0))
+        img->BasicUnit=input->basicunit*2;
+      else
+        img->BasicUnit=input->basicunit;
+      
+      rc_init_pict(1,0,1); 
+      img->qp  = updateQuantizationParameter(0); 
+      
+      
+      pic_type = img->type;
+      QP =0;
+    }
+
+    if( active_sps->frame_mbs_only_flag)
+      img->TopFieldFlag=0;
+
+    if (input->GenerateMultiplePPS)
+      active_pps = &PicParSet[0];
+
+    frame_picture (frame_pic, 0);
+   
+    if ((input->RDPictureIntra || img->type!=I_SLICE) && input->RDPictureDecision)
+    {
+      rdPictureCoding();
+    }         
+    
+    // For field coding, turn MB level field/frame coding flag off
+    if (input->MbInterlace)
+      mb_adaptive = 0;
+    
+    if (input->PicInterlace == ADAPTIVE_CODING)
+    {
+      //Rate control
+      img->FieldControl=1;
+      img->write_macroblock = 0;
+      img->bot_MB = 0;
+
+      img->field_picture = 1;  // we encode fields
+      field_picture (top_pic, bottom_pic);
+      
+      //! Note: the distortion for a field coded picture is stored in the top field
+      //! the distortion values in the bottom field are dummies
+      dis_fld = top_pic->distortion_y + top_pic->distortion_u + top_pic->distortion_v;
+      dis_frm = frame_pic->distortion_y + frame_pic->distortion_u + frame_pic->distortion_v;
+      
+      img->fld_flag = picture_structure_decision (frame_pic, top_pic, bottom_pic);
+      update_field_frame_contexts (img->fld_flag);
+
+      //Rate control
+      if(img->fld_flag==0)
+        img->FieldFrame=1;
+      /*the current choice is field coding*/
+      else
+        img->FieldFrame=0;
+    }
+    else
+   
+      img->fld_flag = 0;
+  }
+
+  if (img->fld_flag)
+    stats->bit_ctr_emulationprevention += stats->em_prev_bits_fld;
+  else
+    stats->bit_ctr_emulationprevention += stats->em_prev_bits_frm;
+
+  if (img->type != B_SLICE)
+  {
+    img->pstruct_next_P = img->fld_flag;
+  }
+
+  // Here, img->structure may be either FRAME or BOTTOM FIELD depending on whether AFF coding is used
+  // The picture structure decision changes really only the fld_flag
+
+  if (img->fld_flag)            // field mode (use field when fld_flag=1 only)
+  {
+    field_mode_buffer (bits_fld, dis_fld_y, dis_fld_u, dis_fld_v);
+    writeout_picture (top_pic);
+    writeout_picture (bottom_pic);
+  }
+  else                          //frame mode
+  {
+    frame_mode_buffer (bits_frm, dis_frm_y, dis_frm_u, dis_frm_v);
+    
+    if (input->RDPictureDecision && img->rd_pass == 2)
+      writeout_picture (frame_pic3);
+    else if (input->RDPictureDecision && img->rd_pass == 1)
+      writeout_picture (frame_pic2);
+    else
+      writeout_picture (frame_pic);
+  }
+
+  if (frame_pic3)
+    free_slice_list(frame_pic3);  
+  if (frame_pic2)
+    free_slice_list(frame_pic2);  
+  if (frame_pic)
+    free_slice_list(frame_pic);
+  if (top_pic)
+    free_slice_list(top_pic);
+  if (bottom_pic)
+    free_slice_list(bottom_pic);
+
+  /*
+  // Tian Dong (Sept 2002)
+  // in frame mode, the newly reconstructed frame has been inserted to the mem buffer
+  // and it is time to prepare the spare picture SEI payload.
+  if (input->InterlaceCodingOption == FRAME_CODING
+      && input->SparePictureOption && img->type != B_SLICE)
+    CalculateSparePicture ();
+*/
+
+  //Rate control
+  if(input->RCEnable)
+  {
+    bits = stats->bit_ctr-stats->bit_ctr_n;
+    rc_update_pict_frame(bits);
+  }
+
+/*
+    
+  if (input->InterlaceCodingOption == FRAME_CODING)
+  {
+    if (input->rdopt == 2 && img->type != B_SLICE)
+      UpdateDecoders ();      // simulate packet losses and move decoded image to reference buffers
+    
+    if (input->RestrictRef)
+      UpdatePixelMap ();
+  }
+*/
+
+  find_snr ();
+
+#if defined(SPEC_CPU)
+  ltime2 = 0;
+  tstruct2.time = 0;
+  tstruct2.millitm = 0;
+  tstruct2.timezone = 0;
+  tstruct2.dstflag = 0;
+#else
+  time (&ltime2);               // end time sec
+#ifdef WIN32
+  _ftime (&tstruct2);           // end time ms
+#else
+  ftime (&tstruct2);            // end time ms
+#endif
+#endif /* !SPEC_CPU */
+
+  tmp_time = (ltime2 * 1000 + tstruct2.millitm) - (ltime1 * 1000 + tstruct1.millitm);
+  tot_time = tot_time + tmp_time;
+
+  if (input->PicInterlace == ADAPTIVE_CODING)
+  {
+    if (img->fld_flag)
+    {
+      // store bottom field
+      store_picture_in_dpb(enc_bottom_picture);
+      free_storable_picture(enc_frame_picture);
+    }
+    else
+    {
+      // replace top with frame
+      replace_top_pic_with_frame(enc_frame_picture);
+      free_storable_picture(enc_bottom_picture);
+    }
+  }
+  else
+  {
+    if (img->fld_flag)
+    {
+      store_picture_in_dpb(enc_bottom_picture);
+    }
+    else
+    {
+      if (img->rd_pass==2)
+      {
+        store_picture_in_dpb(enc_frame_picture3);
+        free_storable_picture(enc_frame_picture);
+        free_storable_picture(enc_frame_picture2);
+      }
+      else if (img->rd_pass==1)
+      {
+        store_picture_in_dpb(enc_frame_picture2);
+        free_storable_picture(enc_frame_picture);
+        free_storable_picture(enc_frame_picture3);
+      }
+      else
+      {
+        store_picture_in_dpb(enc_frame_picture);
+        free_storable_picture(enc_frame_picture2);
+        free_storable_picture(enc_frame_picture3);
+      }
+    }
+  }
+
+
+#ifdef _LEAKYBUCKET_
+  // Store bits used for this frame and increment counter of no. of coded frames
+  Bit_Buffer[total_frame_buffer] = stats->bit_ctr - stats->bit_ctr_n;
+  total_frame_buffer++;
+#endif
+
+  // POC200301: Verify that POC coding type 2 is not used if more than one consecutive 
+  // non-reference frame is requested or if decoding order is different from output order
+  if (img->pic_order_cnt_type == 2)
+  {
+    if (!img->nal_reference_idc) consecutive_non_reference_pictures++;
+    else consecutive_non_reference_pictures = 0;
+
+    if (frame_no < prev_frame_no || consecutive_non_reference_pictures>1)
+      error("POC type 2 cannot be applied for the coding pattern where the encoding /decoding order of pictures are different from the output order.\n", -1);
+    prev_frame_no = frame_no;
+  }
+
+  if (stats->bit_ctr_parametersets_n!=0)
+    ReportNALNonVLCBits(tmp_time, me_time);
+
+  if (IMG_NUMBER == 0)
+    ReportFirstframe(tmp_time,me_time);
+    //ReportFirstframe(tmp_time);
+  else
+  {
+    //Rate control
+    if(input->RCEnable)
+    {
+      if((!input->PicInterlace)&&(!input->MbInterlace))
+        bits=stats->bit_ctr-stats->bit_ctr_n;
+      else
+      {
+        bits = stats->bit_ctr -Pprev_bits; // used for rate control update */
+        Pprev_bits = stats->bit_ctr;
+      }
+    }
+
+    switch (img->type)
+    {
+    case I_SLICE:
+      stats->bit_ctr_I += stats->bit_ctr - stats->bit_ctr_n;
+      ReportIntra(tmp_time,me_time);
+      break;
+    case SP_SLICE:
+      stats->bit_ctr_P += stats->bit_ctr - stats->bit_ctr_n;
+      ReportSP(tmp_time,me_time);
+      break;
+    case B_SLICE:
+      stats->bit_ctr_B += stats->bit_ctr - stats->bit_ctr_n;
+      if (img->nal_reference_idc>0)
+        ReportRB(tmp_time,me_time);
+      else
+        ReportB(tmp_time,me_time);
+
+      break;
+    default:      // P
+      stats->bit_ctr_P += stats->bit_ctr - stats->bit_ctr_n;
+      ReportP(tmp_time,me_time);
+    }
+  }
+
+  stats->bit_ctr_n = stats->bit_ctr;
+
+  //Rate control
+  if(input->RCEnable) 
+  {
+    rc_update_pict(bits);
+      /*update the parameters of quadratic R-D model*/
+    if((img->type==P_SLICE)&&(active_sps->frame_mbs_only_flag))
+      updateRCModel();
+    else if((img->type==P_SLICE)&&(!active_sps->frame_mbs_only_flag)\
+      &&(img->IFLAG==0))
+      updateRCModel();
+  }
+
+  stats->bit_ctr_parametersets_n=0;
+
+  if (IMG_NUMBER == 0)
+    return 0;
+  else
+    return 1;
+}

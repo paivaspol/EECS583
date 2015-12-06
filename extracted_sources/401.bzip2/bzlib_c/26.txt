@@ -1,18 +1,15 @@
-void BZ_API(BZ2_bzReadGetUnused) 
-                     ( int*    bzerror, 
-                       BZFILE* b, 
-                       void**  unused, 
-                       int*    nUnused )
+void BZ_API(BZ2_bzReadClose) ( int *bzerror, BZFILE *b )
 {
    bzFile* bzf = (bzFile*)b;
-   if (bzf == NULL)
-      { BZ_SETERR(BZ_PARAM_ERROR); return; };
-   if (bzf->lastErr != BZ_STREAM_END)
-      { BZ_SETERR(BZ_SEQUENCE_ERROR); return; };
-   if (unused == NULL || nUnused == NULL)
-      { BZ_SETERR(BZ_PARAM_ERROR); return; };
 
    BZ_SETERR(BZ_OK);
-   *nUnused = bzf->strm.avail_in;
-   *unused = bzf->strm.next_in;
+   if (bzf == NULL)
+      { BZ_SETERR(BZ_OK); return; };
+
+   if (bzf->writing)
+      { BZ_SETERR(BZ_SEQUENCE_ERROR); return; };
+
+   if (bzf->initialisedOk)
+      (void)BZ2_bzDecompressEnd ( &(bzf->strm) );
+   free ( bzf );
 }

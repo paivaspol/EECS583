@@ -16,7 +16,7 @@ def parse_file(input_filename):
         for raw_line in input_file:
             line = raw_line
             # print line
-            if check_defined(line) or (is_start_function(line) and not in_a_function):
+            if (check_defined(line) and not in_a_function) or (is_start_function(line) and not in_a_function):
                 # Detect if it is the start of a function.
                 if check_defined(line):
                     last_line_was_defined = True
@@ -29,6 +29,8 @@ def parse_file(input_filename):
                 found_first_curly_brace = False
                 curly_brace_stack = []
                 function_str = ''
+            elif last_line_was_defined and in_a_function:
+                last_line_was_defined = False
 
             if in_a_function:
                 if '{' in line:
@@ -55,7 +57,7 @@ def parse_file(input_filename):
 
 def is_start_function(line):
     retval = (line.startswith('static') or line.startswith('Int32') or line.startswith('void') or line.startswith('IntNative') or \
-            line.startswith('Bool') or line.startswith('int')) and ';' not in line
+            line.startswith('Bool') or line.startswith('int') or line.startswith('BZFILE*')) and ';' not in line
     return retval
 
 def check_defined(line):
@@ -81,7 +83,7 @@ def find_last_path_delim(path):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('input_filename')
-    parser.add_argument('--output-dir')
+    parser.add_argument('--output-dir', default='.')
     args = parser.parse_args()
     functions = parse_file(args.input_filename)
     output_to_file(args.input_filename, functions, args.output_dir)

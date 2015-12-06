@@ -1,1 +1,37 @@
+static void output_one_frame_from_dpb()
+{
+  int poc, pos;
+  //diagnostics
+  if (dpb.used_size<1)
+  {
+    error("Cannot output frame, DPB empty.",150);
+  }
+
+  // find smallest POC
+  get_smallest_poc(&poc, &pos);
+
+  if(pos==-1)
+  {
+    error("no frames for output available", 150);
+  }
+
+  // call the output function
+//  printf ("output frame with frame_num #%d, poc %d (dpb. dpb.size=%d, dpb.used_size=%d)\n", dpb.fs[pos]->frame_num, dpb.fs[pos]->frame->poc, dpb.size, dpb.used_size);
+
 #if defined(SPEC_CPU)
+  if (p_dec != -1) write_stored_frame(dpb.fs[pos], p_dec);
+#else
+  write_stored_frame(dpb.fs[pos], p_dec);
+#endif
+
+  if (dpb.last_output_poc >= poc)
+  {
+    error ("output POC must be in ascending order", 150);
+  } 
+  dpb.last_output_poc = poc;
+  // free frame store and move empty store to end of buffer
+  if (!is_used_for_reference(dpb.fs[pos]))
+  {
+    remove_frame_from_dpb(pos);
+  }
+}
