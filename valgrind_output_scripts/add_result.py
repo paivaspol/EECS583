@@ -35,19 +35,24 @@ def parse_file(input_filename, out_filename, sources_path):
                             lines = next_file.read()
                             lines_words = lines.split()
                             endpoint = len(lines_words)
-                            if endpoint > 4:
-                                endpoint = 4
+                            if endpoint > 5:
+                                endpoint = 5
                         
                                 for i in range(endpoint):
                                     if lines_words[i].find("(") > 0:
                                         for word in split_macros(lines_words[i]):
                                             if word == words[1]:
+                                                if found:
+                                                    print "I already found this!",word
                                                 found = True                                
                                                 out_file.write(this_path + f +": " + str(get_bucket(float(words[2]))) + "\n")                                
                 
                                     else:
                                         word = lines_words[i]
                                         if word == words[1]:
+                                            if found:
+                                                print "I already found this!",word
+
                                             found = True                                
                                             out_file.write(this_path + f +": " + str(get_bucket(float(words[2]))) + "\n")
         
