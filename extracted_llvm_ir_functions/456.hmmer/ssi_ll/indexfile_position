@@ -1,0 +1,31 @@
+define internal fastcc i32 @indexfile_position(%struct.ssifile_s* nocapture %sfp, %struct.ssioffset_s* nocapture %base, i32 %len, i32 %n) #0 {
+entry:
+  %mode = getelementptr inbounds %struct.ssioffset_s* %base, i64 0, i32 0
+  %0 = load i8* %mode, align 1, !tbaa !1
+  switch i8 %0, label %return [
+    i8 0, label %if.then.i
+    i8 1, label %SSISetFilePosition.exit
+  ]
+
+if.then.i:                                        ; preds = %entry
+  %off = getelementptr inbounds %struct.ssioffset_s* %base, i64 0, i32 1
+  %i32 = bitcast %union.anon* %off to i32*
+  %1 = load i32* %i32, align 4, !tbaa !4
+  %mul = mul i32 %n, %len
+  %add = add i32 %1, %mul
+  %fp30 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
+  %2 = load %struct._IO_FILE** %fp30, align 8, !tbaa !0
+  %conv2.i = zext i32 %add to i64
+  %call.i = tail call i32 @fseek(%struct._IO_FILE* %2, i64 %conv2.i, i32 0) #8
+  %cmp3.i = icmp eq i32 %call.i, 0
+  %..i = select i1 %cmp3.i, i32 0, i32 8
+  br label %SSISetFilePosition.exit
+
+SSISetFilePosition.exit:                          ; preds = %entry, %if.then.i
+  %retval.0.i = phi i32 [ %..i, %if.then.i ], [ 7, %entry ]
+  br label %return
+
+return:                                           ; preds = %SSISetFilePosition.exit, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %retval.0.i, %SSISetFilePosition.exit ]
+  ret i32 %retval.0
+}

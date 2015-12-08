@@ -1,0 +1,12 @@
+define %struct.op* @Perl_pp_srefgen() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv** %0, align 8, !tbaa !0
+  %call = tail call fastcc %struct.sv* @S_refto(%struct.sv* %1) #8
+  store %struct.sv* %call, %struct.sv** %0, align 8, !tbaa !0
+  store %struct.sv** %0, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %2 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %2, i64 0, i32 0
+  %3 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %3
+}

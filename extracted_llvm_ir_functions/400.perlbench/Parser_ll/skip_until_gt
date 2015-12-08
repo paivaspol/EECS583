@@ -1,0 +1,48 @@
+define internal fastcc i8* @skip_until_gt(i8* %beg, i8* %end) #4 {
+entry:
+  %cmp39 = icmp ult i8* %beg, %end
+  br i1 %cmp39, label %while.body, label %return
+
+while.body:                                       ; preds = %entry, %if.end27
+  %prev.043 = phi i32 [ %phitmp, %if.end27 ], [ 32, %entry ]
+  %quote.042 = phi i8 [ %quote.1, %if.end27 ], [ 0, %entry ]
+  %s.040 = phi i8* [ %incdec.ptr, %if.end27 ], [ %beg, %entry ]
+  %tobool = icmp ne i8 %quote.042, 0
+  %.pr = load i8* %s.040, align 1, !tbaa !1
+  %tobool.not = xor i1 %tobool, true
+  %cmp1 = icmp eq i8 %.pr, 62
+  %or.cond = and i1 %cmp1, %tobool.not
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %while.body
+  switch i8 %.pr, label %if.end27 [
+    i8 34, label %if.then9
+    i8 39, label %if.then9
+  ]
+
+if.then9:                                         ; preds = %if.end, %if.end
+  %cmp12 = icmp eq i8 %.pr, %quote.042
+  %brmerge = or i1 %cmp12, %tobool
+  %.mux = select i1 %cmp12, i8 0, i8 %quote.042
+  br i1 %brmerge, label %if.end27, label %land.lhs.true16
+
+land.lhs.true16:                                  ; preds = %if.then9
+  switch i32 %prev.043, label %if.end27 [
+    i32 32, label %if.then24
+    i32 61, label %if.then24
+  ]
+
+if.then24:                                        ; preds = %land.lhs.true16, %land.lhs.true16
+  br label %if.end27
+
+if.end27:                                         ; preds = %land.lhs.true16, %if.then9, %if.end, %if.then24
+  %quote.1 = phi i8 [ %.pr, %if.then24 ], [ %quote.042, %if.end ], [ %.mux, %if.then9 ], [ 0, %land.lhs.true16 ]
+  %incdec.ptr = getelementptr inbounds i8* %s.040, i64 1
+  %phitmp = sext i8 %.pr to i32
+  %cmp = icmp ult i8* %incdec.ptr, %end
+  br i1 %cmp, label %while.body, label %return
+
+return:                                           ; preds = %if.end27, %while.body, %entry
+  %retval.0 = phi i8* [ %end, %entry ], [ %s.040, %while.body ], [ %end, %if.end27 ]
+  ret i8* %retval.0
+}

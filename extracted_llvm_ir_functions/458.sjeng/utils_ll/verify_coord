@@ -1,0 +1,93 @@
+define i32 @verify_coord(i8* nocapture %input, %struct.move_s* nocapture %move) #0 {
+entry:
+  %moves = alloca [512 x %struct.move_s], align 16
+  %comp_move = alloca [6 x i8], align 1
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #1
+  %1 = load i32* @Variant, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 4
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  store i32 1, i32* @captures, align 4, !tbaa !1
+  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
+  call void @gen(%struct.move_s* %arrayidx) #12
+  %2 = load i32* @numb_moves, align 4, !tbaa !0
+  store i32 0, i32* @captures, align 4, !tbaa !1
+  %cmp151 = icmp sgt i32 %2, 0
+  br i1 %cmp151, label %for.body, label %if.then8.critedge
+
+for.cond:                                         ; preds = %for.body
+  %cmp1 = icmp slt i32 %inc, %2
+  br i1 %cmp1, label %for.body, label %if.then8.critedge
+
+for.body:                                         ; preds = %if.then, %for.cond
+  %i.052 = phi i32 [ %inc, %for.cond ], [ 0, %if.then ]
+  call void @make(%struct.move_s* %arrayidx, i32 %i.052) #12
+  %call = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.052, i32 1) #12
+  %tobool = icmp eq i32 %call, 0
+  call void @unmake(%struct.move_s* %arrayidx, i32 %i.052) #12
+  %inc = add nsw i32 %i.052, 1
+  br i1 %tobool, label %for.cond, label %if.end12
+
+if.then8.critedge:                                ; preds = %for.cond, %if.then
+  store i32 0, i32* @captures, align 4, !tbaa !1
+  call void @gen(%struct.move_s* %arrayidx) #12
+  %3 = load i32* @numb_moves, align 4, !tbaa !0
+  br label %if.end12
+
+if.else:                                          ; preds = %entry
+  %arrayidx11 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
+  call void @gen(%struct.move_s* %arrayidx11) #12
+  %4 = load i32* @numb_moves, align 4, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %for.body, %if.then8.critedge, %if.else
+  %num_moves.0 = phi i32 [ %3, %if.then8.critedge ], [ %4, %if.else ], [ %2, %for.body ]
+  %cmp1447 = icmp sgt i32 %num_moves.0, 0
+  br i1 %cmp1447, label %for.body15.lr.ph, label %for.end33
+
+for.body15.lr.ph:                                 ; preds = %if.end12
+  %arraydecay = getelementptr inbounds [6 x i8]* %comp_move, i64 0, i64 0
+  %arrayidx21 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
+  %5 = bitcast %struct.move_s* %move to i8*
+  br label %for.body15
+
+for.body15:                                       ; preds = %for.inc31, %for.body15.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body15.lr.ph ], [ %indvars.iv.next, %for.inc31 ]
+  %legal.050 = phi i32 [ 0, %for.body15.lr.ph ], [ %legal.2, %for.inc31 ]
+  %arrayidx16 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 %indvars.iv
+  call void @comp_to_coord(%struct.move_s* byval align 8 %arrayidx16, i8* %arraydecay) #13
+  %call18 = call i32 @strcmp(i8* %input, i8* %arraydecay) #15
+  %tobool19 = icmp eq i32 %call18, 0
+  br i1 %tobool19, label %if.then20, label %for.inc31
+
+if.then20:                                        ; preds = %for.body15
+  %6 = trunc i64 %indvars.iv to i32
+  call void @make(%struct.move_s* %arrayidx21, i32 %6) #12
+  %call23 = call i32 @check_legal(%struct.move_s* %arrayidx21, i32 %6, i32 1) #12
+  %tobool24 = icmp eq i32 %call23, 0
+  br i1 %tobool24, label %if.end28, label %if.then25
+
+if.then25:                                        ; preds = %if.then20
+  %7 = bitcast %struct.move_s* %arrayidx16 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %7, i64 24, i32 4, i1 false), !tbaa.struct !5
+  br label %if.end28
+
+if.end28:                                         ; preds = %if.then20, %if.then25
+  %legal.1 = phi i32 [ 1, %if.then25 ], [ %legal.050, %if.then20 ]
+  call void @unmake(%struct.move_s* %arrayidx21, i32 %6) #12
+  br label %for.inc31
+
+for.inc31:                                        ; preds = %for.body15, %if.end28
+  %legal.2 = phi i32 [ %legal.050, %for.body15 ], [ %legal.1, %if.end28 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %num_moves.0
+  br i1 %exitcond, label %for.end33, label %for.body15
+
+for.end33:                                        ; preds = %for.inc31, %if.end12
+  %legal.0.lcssa = phi i32 [ 0, %if.end12 ], [ %legal.2, %for.inc31 ]
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #1
+  ret i32 %legal.0.lcssa
+}

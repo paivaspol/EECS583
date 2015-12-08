@@ -1,0 +1,88 @@
+define internal i32 @sortcv(%struct.sv* %a, %struct.sv* %b) #0 {
+entry:
+  %0 = load i32* @PL_savestack_ix, align 4, !tbaa !3
+  %1 = load i32* @PL_scopestack_ix, align 4, !tbaa !3
+  %2 = load %struct.gv** @PL_firstgv, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.gv* %2, i64 0, i32 0
+  %3 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %3, i64 0, i32 7
+  %4 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_sv = getelementptr inbounds %struct.gp* %4, i64 0, i32 0
+  store %struct.sv* %a, %struct.sv** %gp_sv, align 8, !tbaa !0
+  %5 = load %struct.gv** @PL_secondgv, align 8, !tbaa !0
+  %sv_any1 = getelementptr inbounds %struct.gv* %5, i64 0, i32 0
+  %6 = load %struct.xpvgv** %sv_any1, align 8, !tbaa !0
+  %xgv_gp2 = getelementptr inbounds %struct.xpvgv* %6, i64 0, i32 7
+  %7 = load %struct.gp** %xgv_gp2, align 8, !tbaa !0
+  %gp_sv3 = getelementptr inbounds %struct.gp* %7, i64 0, i32 0
+  store %struct.sv* %b, %struct.sv** %gp_sv3, align 8, !tbaa !0
+  %8 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  store %struct.sv** %8, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %9 = load %struct.op** @PL_sortcop, align 8, !tbaa !0
+  store %struct.op* %9, %struct.op** @PL_op, align 8, !tbaa !0
+  %10 = load i32 ()** @PL_runops, align 8, !tbaa !0
+  %call = tail call i32 %10() #4
+  %11 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %12 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds %struct.sv** %12, i64 1
+  %cmp = icmp eq %struct.sv** %11, %add.ptr
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([43 x i8]* @.str7, i64 0, i64 0)) #4
+  %.pre = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %13 = phi %struct.sv** [ %11, %entry ], [ %.pre, %if.then ]
+  %14 = load %struct.sv** %13, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %14, i64 0, i32 2
+  %15 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %15, 50331648
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.then4, label %if.end5
+
+if.then4:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([46 x i8]* @.str8, i64 0, i64 0)) #4
+  %.pre14 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %.pre15 = load %struct.sv** %.pre14, align 8, !tbaa !0
+  %sv_flags6.phi.trans.insert = getelementptr inbounds %struct.sv* %.pre15, i64 0, i32 2
+  %.pre16 = load i32* %sv_flags6.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then4
+  %16 = phi i32 [ %15, %if.end ], [ %.pre16, %if.then4 ]
+  %17 = phi %struct.sv* [ %14, %if.end ], [ %.pre15, %if.then4 ]
+  %and7 = and i32 %16, 65536
+  %tobool8 = icmp eq i32 %and7, 0
+  br i1 %tobool8, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end5
+  %sv_any9 = getelementptr inbounds %struct.sv* %17, i64 0, i32 0
+  %18 = load i8** %sv_any9, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %18, i64 24
+  %19 = bitcast i8* %xiv_iv to i64*
+  %20 = load i64* %19, align 8, !tbaa !4
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end5
+  %call10 = tail call i64 @Perl_sv_2iv(%struct.sv* %17) #4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %20, %cond.true ], [ %call10, %cond.false ]
+  %conv = trunc i64 %cond to i32
+  %21 = load i32* @PL_scopestack_ix, align 4, !tbaa !3
+  %cmp1113 = icmp sgt i32 %21, %1
+  br i1 %cmp1113, label %while.body, label %while.end
+
+while.body:                                       ; preds = %cond.end, %while.body
+  tail call void @Perl_pop_scope() #4
+  %22 = load i32* @PL_scopestack_ix, align 4, !tbaa !3
+  %cmp11 = icmp sgt i32 %22, %1
+  br i1 %cmp11, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %cond.end
+  tail call void @Perl_leave_scope(i32 %0) #4
+  ret i32 %conv
+}

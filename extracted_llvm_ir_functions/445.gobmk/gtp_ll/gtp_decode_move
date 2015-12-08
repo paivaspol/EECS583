@@ -1,0 +1,63 @@
+define i32 @gtp_decode_move(i8* nocapture %s, i32* nocapture %color, i32* %i, i32* %j) #0 {
+entry:
+  %n2 = alloca i32, align 4
+  %buf = alloca [6 x i8], align 1
+  %call = call i32 @gtp_decode_color(i8* %s, i32* %color) #6
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %idx.ext = sext i32 %call to i64
+  %add.ptr = getelementptr inbounds i8* %s, i64 %idx.ext
+  %call1 = call i32 @gtp_decode_coord(i8* %add.ptr, i32* %i, i32* %j) #6
+  store i32 %call1, i32* %n2, align 4, !tbaa !2
+  %cmp2 = icmp eq i32 %call1, 0
+  br i1 %cmp2, label %if.then3, label %if.end25
+
+if.then3:                                         ; preds = %if.end
+  %arraydecay = getelementptr inbounds [6 x i8]* %buf, i64 0, i64 0
+  %call6 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %add.ptr, i8* getelementptr inbounds ([6 x i8]* @.str19, i64 0, i64 0), i8* %arraydecay, i32* %n2) #4
+  %cmp7 = icmp eq i32 %call6, 1
+  br i1 %cmp7, label %for.cond.preheader, label %return
+
+for.cond.preheader:                               ; preds = %if.then3
+  %call1136 = call i64 @strlen(i8* %arraydecay) #5
+  %conv37 = trunc i64 %call1136 to i32
+  %cmp1238 = icmp sgt i32 %conv37, 0
+  br i1 %cmp1238, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds [6 x i8]* %buf, i64 0, i64 %indvars.iv
+  %0 = load i8* %arrayidx, align 1, !tbaa !0
+  %conv14 = sext i8 %0 to i32
+  %call15 = call i32 @tolower(i32 %conv14) #4
+  %conv16 = trunc i32 %call15 to i8
+  store i8 %conv16, i8* %arrayidx, align 1, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %call11 = call i64 @strlen(i8* %arraydecay) #5
+  %conv = trunc i64 %call11 to i32
+  %1 = trunc i64 %indvars.iv.next to i32
+  %cmp12 = icmp slt i32 %1, %conv
+  br i1 %cmp12, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %call20 = call i32 @strcmp(i8* %arraydecay, i8* getelementptr inbounds ([5 x i8]* @.str20, i64 0, i64 0)) #5
+  %cmp21 = icmp eq i32 %call20, 0
+  br i1 %cmp21, label %if.end24, label %return
+
+if.end24:                                         ; preds = %for.end
+  store i32 -1, i32* %i, align 4, !tbaa !2
+  store i32 -1, i32* %j, align 4, !tbaa !2
+  %.pre = load i32* %n2, align 4, !tbaa !2
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.end24, %if.end
+  %2 = phi i32 [ %.pre, %if.end24 ], [ %call1, %if.end ]
+  %add = add nsw i32 %2, %call
+  br label %return
+
+return:                                           ; preds = %for.end, %if.then3, %entry, %if.end25
+  %retval.0 = phi i32 [ %add, %if.end25 ], [ 0, %entry ], [ 0, %if.then3 ], [ 0, %for.end ]
+  ret i32 %retval.0
+}

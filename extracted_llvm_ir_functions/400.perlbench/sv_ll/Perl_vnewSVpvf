@@ -1,0 +1,33 @@
+define %struct.sv* @Perl_vnewSVpvf(i8* %pat, [1 x %struct.__va_list_tag]* %args) #0 {
+entry:
+  %0 = load %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %0, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %0, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %2 = bitcast i8* %1 to %struct.sv*
+  store %struct.sv* %2, %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %3 = load i32* @PL_sv_count, align 4, !tbaa !3
+  %inc = add nsw i32 %3, 1
+  store i32 %inc, i32* @PL_sv_count, align 4, !tbaa !3
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call = tail call fastcc %struct.sv* @S_more_sv() #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %sv.0 = phi %struct.sv* [ %0, %if.then ], [ %call, %if.else ]
+  %sv_any1 = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 0
+  store i8* null, i8** %sv_any1, align 8, !tbaa !0
+  %sv_refcnt = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 1
+  store i32 1, i32* %sv_refcnt, align 4, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 2
+  store i32 0, i32* %sv_flags, align 4, !tbaa !3
+  %call2 = tail call i64 @strlen(i8* %pat) #8
+  tail call void @Perl_sv_setpvn(%struct.sv* %sv.0, i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i64 0) #8
+  tail call void @Perl_sv_vcatpvfn(%struct.sv* %sv.0, i8* %pat, i64 %call2, [1 x %struct.__va_list_tag]* %args, %struct.sv** null, i32 0, i8* undef) #8
+  ret %struct.sv* %sv.0
+}

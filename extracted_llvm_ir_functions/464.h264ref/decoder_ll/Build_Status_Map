@@ -1,0 +1,140 @@
+define void @Build_Status_Map(i8** nocapture %s_map) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %height = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15
+  %1 = load i32* %height, align 4, !tbaa !3
+  %div = sdiv i32 %1, 16
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13
+  %2 = load i32* %width, align 4, !tbaa !3
+  %div1 = sdiv i32 %2, 16
+  %cmp78 = icmp sgt i32 %1, 15
+  br i1 %cmp78, label %for.cond2.preheader.lr.ph, label %for.end55
+
+for.cond2.preheader.lr.ph:                        ; preds = %entry
+  %cmp371 = icmp sgt i32 %2, 15
+  %3 = icmp sgt i32 %div1, 1
+  %smax = select i1 %3, i32 %div1, i32 1
+  br label %for.cond2.preheader
+
+for.cond2.preheader:                              ; preds = %for.cond2.preheader.lr.ph, %for.inc53
+  %indvars.iv85 = phi i64 [ 0, %for.cond2.preheader.lr.ph ], [ %indvars.iv.next86, %for.inc53 ]
+  %packet_lost.082 = phi i32 [ 0, %for.cond2.preheader.lr.ph ], [ %packet_lost.1.lcssa, %for.inc53 ]
+  %mb.080 = phi i32 [ 0, %for.cond2.preheader.lr.ph ], [ %mb.1.lcssa, %for.inc53 ]
+  %slice.079 = phi i32 [ -1, %for.cond2.preheader.lr.ph ], [ %slice.1.lcssa, %for.inc53 ]
+  br i1 %cmp371, label %for.body4.lr.ph, label %for.inc53
+
+for.body4.lr.ph:                                  ; preds = %for.cond2.preheader
+  %arrayidx35 = getelementptr inbounds i8** %s_map, i64 %indvars.iv85
+  %4 = sext i32 %mb.080 to i64
+  br label %for.body4
+
+for.body4:                                        ; preds = %if.end50.for.body4_crit_edge, %for.body4.lr.ph
+  %indvars.iv83 = phi i64 [ %4, %for.body4.lr.ph ], [ %indvars.iv.next84, %if.end50.for.body4_crit_edge ]
+  %indvars.iv = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next, %if.end50.for.body4_crit_edge ]
+  %packet_lost.175 = phi i32 [ %packet_lost.082, %for.body4.lr.ph ], [ %packet_lost.5, %if.end50.for.body4_crit_edge ]
+  %slice.172 = phi i32 [ %slice.079, %for.body4.lr.ph ], [ %slice.2, %if.end50.for.body4_crit_edge ]
+  %5 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %slice_mode = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 22
+  %6 = load i32* %slice_mode, align 4, !tbaa !3
+  %tobool = icmp eq i32 %6, 0
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.body4
+  %7 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 51
+  %8 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %slice_nr = getelementptr inbounds %struct.macroblock* %8, i64 %indvars.iv83, i32 1
+  %9 = load i32* %slice_nr, align 4, !tbaa !3
+  %cmp5 = icmp eq i32 %9, %slice.172
+  br i1 %cmp5, label %if.end30, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %for.body4
+  %call = tail call double @spec_rand() #6
+  %mul = fmul double %call, 0x41DFFFFFFFC00000
+  %div6 = fdiv double %mul, 0x41DFFFFFFFC00000
+  %mul7 = fmul double %div6, 1.000000e+02
+  %10 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %LossRateC = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 96
+  %11 = load i32* %LossRateC, align 4, !tbaa !3
+  %conv = sitofp i32 %11 to double
+  %cmp8 = fcmp olt double %mul7, %conv
+  %packet_lost.2 = select i1 %cmp8, i32 3, i32 0
+  %call11 = tail call double @spec_rand() #6
+  %mul12 = fmul double %call11, 0x41DFFFFFFFC00000
+  %div13 = fdiv double %mul12, 0x41DFFFFFFFC00000
+  %mul14 = fmul double %div13, 1.000000e+02
+  %12 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %LossRateB = getelementptr inbounds %struct.InputParameters* %12, i64 0, i32 95
+  %13 = load i32* %LossRateB, align 4, !tbaa !3
+  %conv15 = sitofp i32 %13 to double
+  %cmp16 = fcmp olt double %mul14, %conv15
+  %add19 = add nsw i32 %packet_lost.2, 2
+  %packet_lost.3 = select i1 %cmp16, i32 %add19, i32 %packet_lost.2
+  %call21 = tail call double @spec_rand() #6
+  %mul22 = fmul double %call21, 0x41DFFFFFFFC00000
+  %div23 = fdiv double %mul22, 0x41DFFFFFFFC00000
+  %mul24 = fmul double %div23, 1.000000e+02
+  %14 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %LossRateA = getelementptr inbounds %struct.InputParameters* %14, i64 0, i32 94
+  %15 = load i32* %LossRateA, align 4, !tbaa !3
+  %conv25 = sitofp i32 %15 to double
+  %cmp26 = fcmp olt double %mul24, %conv25
+  %packet_lost.4 = select i1 %cmp26, i32 1, i32 %packet_lost.3
+  %inc = add nsw i32 %slice.172, 1
+  br label %if.end30
+
+if.end30:                                         ; preds = %lor.lhs.false, %if.then
+  %slice.2 = phi i32 [ %inc, %if.then ], [ %slice.172, %lor.lhs.false ]
+  %packet_lost.5 = phi i32 [ %packet_lost.4, %if.then ], [ %packet_lost.175, %lor.lhs.false ]
+  %tobool31 = icmp eq i32 %packet_lost.5, 0
+  br i1 %tobool31, label %if.then32, label %if.else
+
+if.then32:                                        ; preds = %if.end30
+  %16 = load i8** %arrayidx35, align 8, !tbaa !0
+  %arrayidx36 = getelementptr inbounds i8* %16, i64 %indvars.iv
+  store i8 0, i8* %arrayidx36, align 1, !tbaa !1
+  br label %if.end50
+
+if.else:                                          ; preds = %if.end30
+  %conv37 = trunc i32 %packet_lost.5 to i8
+  %17 = load i8** %arrayidx35, align 8, !tbaa !0
+  %arrayidx41 = getelementptr inbounds i8* %17, i64 %indvars.iv
+  store i8 %conv37, i8* %arrayidx41, align 1, !tbaa !1
+  %18 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode = getelementptr inbounds %struct.InputParameters* %18, i64 0, i32 61
+  %19 = load i32* %partition_mode, align 4, !tbaa !3
+  %cmp42 = icmp eq i32 %19, 0
+  br i1 %cmp42, label %if.then44, label %if.end50
+
+if.then44:                                        ; preds = %if.else
+  %20 = load i8** %arrayidx35, align 8, !tbaa !0
+  %arrayidx48 = getelementptr inbounds i8* %20, i64 %indvars.iv
+  store i8 1, i8* %arrayidx48, align 1, !tbaa !1
+  br label %if.end50
+
+if.end50:                                         ; preds = %if.else, %if.then44, %if.then32
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp3 = icmp slt i32 %21, %div1
+  br i1 %cmp3, label %if.end50.for.body4_crit_edge, label %for.cond2.for.inc53_crit_edge
+
+if.end50.for.body4_crit_edge:                     ; preds = %if.end50
+  %indvars.iv.next84 = add i64 %indvars.iv83, 1
+  br label %for.body4
+
+for.cond2.for.inc53_crit_edge:                    ; preds = %if.end50
+  %22 = add i32 %smax, %mb.080
+  br label %for.inc53
+
+for.inc53:                                        ; preds = %for.cond2.for.inc53_crit_edge, %for.cond2.preheader
+  %packet_lost.1.lcssa = phi i32 [ %packet_lost.5, %for.cond2.for.inc53_crit_edge ], [ %packet_lost.082, %for.cond2.preheader ]
+  %mb.1.lcssa = phi i32 [ %22, %for.cond2.for.inc53_crit_edge ], [ %mb.080, %for.cond2.preheader ]
+  %slice.1.lcssa = phi i32 [ %slice.2, %for.cond2.for.inc53_crit_edge ], [ %slice.079, %for.cond2.preheader ]
+  %indvars.iv.next86 = add i64 %indvars.iv85, 1
+  %23 = trunc i64 %indvars.iv.next86 to i32
+  %cmp = icmp slt i32 %23, %div
+  br i1 %cmp, label %for.cond2.preheader, label %for.end55
+
+for.end55:                                        ; preds = %for.inc53, %entry
+  ret void
+}

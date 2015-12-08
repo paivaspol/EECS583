@@ -1,0 +1,79 @@
+define i64 @PerlIOStdio_pushed(%struct._PerlIO** %f, i8* %mode, %struct.sv* nocapture %arg, %struct._PerlIO_funcs* %tab) #1 {
+entry:
+  %tmode = alloca [8 x i8], align 1
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.end20, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.end20, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %next = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 0
+  %1 = load %struct._PerlIO** %next, align 8, !tbaa !3
+  %tobool6 = icmp eq %struct._PerlIO* %1, null
+  br i1 %tobool6, label %if.end20, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true2
+  %tab7 = getelementptr inbounds %struct._PerlIO* %1, i64 0, i32 1
+  %2 = load %struct._PerlIO_funcs** %tab7, align 8, !tbaa !3
+  %cmp = icmp eq %struct._PerlIO_funcs* %2, %tab
+  br i1 %cmp, label %if.then8, label %if.else
+
+if.then8:                                         ; preds = %if.then
+  call void @PerlIO_pop(%struct._PerlIO** %f) #10
+  br label %return
+
+if.else:                                          ; preds = %if.then
+  %call = call i32 @Perl_PerlIO_fileno(%struct._PerlIO** %next) #10
+  %cmp9 = icmp sgt i32 %call, -1
+  br i1 %cmp9, label %land.lhs.true10, label %return
+
+land.lhs.true10:                                  ; preds = %if.else
+  %arraydecay = getelementptr inbounds [8 x i8]* %tmode, i64 0, i64 0
+  %tobool.i = icmp eq i8* %mode, null
+  br i1 %tobool.i, label %PerlIOStdio_mode.exit, label %while.cond.preheader.i
+
+while.cond.preheader.i:                           ; preds = %land.lhs.true10
+  %3 = load i8* %mode, align 1, !tbaa !1
+  %tobool17.i = icmp eq i8 %3, 0
+  br i1 %tobool17.i, label %PerlIOStdio_mode.exit, label %while.body.i
+
+while.body.i:                                     ; preds = %while.cond.preheader.i, %while.body.i
+  %4 = phi i8 [ %5, %while.body.i ], [ %3, %while.cond.preheader.i ]
+  %mode.addr.09.i = phi i8* [ %incdec.ptr.i, %while.body.i ], [ %mode, %while.cond.preheader.i ]
+  %tmode.addr.08.i = phi i8* [ %incdec.ptr2.i, %while.body.i ], [ %arraydecay, %while.cond.preheader.i ]
+  %incdec.ptr.i = getelementptr inbounds i8* %mode.addr.09.i, i64 1
+  %incdec.ptr2.i = getelementptr inbounds i8* %tmode.addr.08.i, i64 1
+  store i8 %4, i8* %tmode.addr.08.i, align 1, !tbaa !1
+  %5 = load i8* %incdec.ptr.i, align 1, !tbaa !1
+  %tobool1.i = icmp eq i8 %5, 0
+  br i1 %tobool1.i, label %PerlIOStdio_mode.exit, label %while.body.i
+
+PerlIOStdio_mode.exit:                            ; preds = %while.body.i, %land.lhs.true10, %while.cond.preheader.i
+  %tmode.addr.1.i = phi i8* [ %arraydecay, %land.lhs.true10 ], [ %arraydecay, %while.cond.preheader.i ], [ %incdec.ptr2.i, %while.body.i ]
+  store i8 0, i8* %tmode.addr.1.i, align 1, !tbaa !1
+  %call12 = call %struct._IO_FILE* @fdopen(i32 %call, i8* %arraydecay) #9
+  %tobool13 = icmp eq %struct._IO_FILE* %call12, null
+  br i1 %tobool13, label %return, label %if.then14
+
+if.then14:                                        ; preds = %PerlIOStdio_mode.exit
+  %6 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %7 = getelementptr inbounds %struct._PerlIO* %6, i64 1, i32 0
+  %call12.c = bitcast %struct._IO_FILE* %call12 to %struct._PerlIO*
+  store %struct._PerlIO* %call12.c, %struct._PerlIO** %7, align 8, !tbaa !3
+  %8 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %next16 = getelementptr inbounds %struct._PerlIO* %8, i64 0, i32 0
+  %call17 = call i32 @Perl_PerlIO_flush(%struct._PerlIO** %next16) #10
+  br label %if.end20
+
+if.end20:                                         ; preds = %land.lhs.true2, %land.lhs.true, %entry, %if.then14
+  %mode.addr.0 = phi i8* [ %arraydecay, %if.then14 ], [ %mode, %land.lhs.true2 ], [ %mode, %land.lhs.true ], [ %mode, %entry ]
+  %call21 = call i64 @PerlIOBase_pushed(%struct._PerlIO** %f, i8* %mode.addr.0, %struct.sv* undef, %struct._PerlIO_funcs* %tab) #10
+  br label %return
+
+return:                                           ; preds = %if.else, %PerlIOStdio_mode.exit, %if.end20, %if.then8
+  %retval.0 = phi i64 [ 0, %if.then8 ], [ %call21, %if.end20 ], [ -1, %PerlIOStdio_mode.exit ], [ -1, %if.else ]
+  ret i64 %retval.0
+}

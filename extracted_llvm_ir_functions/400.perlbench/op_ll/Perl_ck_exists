@@ -1,0 +1,92 @@
+define %struct.op* @Perl_ck_exists(%struct.op* %o) #0 {
+entry:
+  %call = tail call %struct.op* @Perl_ck_fun(%struct.op* %o) #8
+  %op_flags = getelementptr inbounds %struct.op* %call, i64 0, i32 6
+  %0 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %0, 4
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %if.end51, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %struct.op* %call, i64 1, i32 0
+  %2 = load %struct.op** %1, align 8, !tbaa !3
+  %op_type = getelementptr inbounds %struct.op* %2, i64 0, i32 4
+  %3 = load i16* %op_type, align 2, !tbaa !4
+  switch i16 %3, label %if.then35 [
+    i16 166, label %if.then3
+    i16 127, label %if.then25
+    i16 135, label %if.end50
+  ]
+
+if.then3:                                         ; preds = %if.then
+  %op_type4 = getelementptr inbounds %struct.op* %call, i64 0, i32 4
+  %4 = load i16* %op_type4, align 2, !tbaa !4
+  %conv5 = zext i16 %4 to i32
+  %call6 = tail call %struct.op* @Perl_ref(%struct.op* %2, i32 %conv5) #8
+  %5 = load i16* %op_type, align 2, !tbaa !4
+  %cmp9 = icmp eq i16 %5, 17
+  %6 = load i32* @PL_error_count, align 4, !tbaa !0
+  %tobool11 = icmp ne i32 %6, 0
+  %or.cond = or i1 %cmp9, %tobool11
+  br i1 %or.cond, label %if.end, label %if.then12
+
+if.then12:                                        ; preds = %if.then3
+  %7 = load i16* %op_type4, align 2, !tbaa !4
+  %cmp15 = icmp eq i16 %7, 351
+  br i1 %cmp15, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then12
+  %call17 = tail call i8* @Perl_custom_op_desc(%struct.op* %call) #8
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then12
+  %idxprom = zext i16 %7 to i64
+  %arrayidx = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %8 = load i8** %arrayidx, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %call17, %cond.true ], [ %8, %cond.false ]
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([37 x i8]* @.str89, i64 0, i64 0), i8* %cond) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.then3, %cond.end
+  %op_private = getelementptr inbounds %struct.op* %call, i64 0, i32 7
+  %9 = load i8* %op_private, align 1, !tbaa !1
+  %or = or i8 %9, 64
+  store i8 %or, i8* %op_private, align 1, !tbaa !1
+  br label %if.end50
+
+if.then25:                                        ; preds = %if.then
+  %or28 = or i8 %0, -128
+  store i8 %or28, i8* %op_flags, align 1, !tbaa !1
+  br label %if.end50
+
+if.then35:                                        ; preds = %if.then
+  %op_type36 = getelementptr inbounds %struct.op* %call, i64 0, i32 4
+  %10 = load i16* %op_type36, align 2, !tbaa !4
+  %cmp38 = icmp eq i16 %10, 351
+  br i1 %cmp38, label %cond.true40, label %cond.false42
+
+cond.true40:                                      ; preds = %if.then35
+  %call41 = tail call i8* @Perl_custom_op_desc(%struct.op* %call) #8
+  br label %cond.end46
+
+cond.false42:                                     ; preds = %if.then35
+  %idxprom44 = zext i16 %10 to i64
+  %arrayidx45 = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom44
+  %11 = load i8** %arrayidx45, align 8, !tbaa !3
+  br label %cond.end46
+
+cond.end46:                                       ; preds = %cond.false42, %cond.true40
+  %cond47 = phi i8* [ %call41, %cond.true40 ], [ %11, %cond.false42 ]
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([43 x i8]* @.str90, i64 0, i64 0), i8* %cond47) #7
+  br label %if.end50
+
+if.end50:                                         ; preds = %if.then, %if.then25, %cond.end46, %if.end
+  tail call void @Perl_op_null(%struct.op* %2) #8
+  br label %if.end51
+
+if.end51:                                         ; preds = %entry, %if.end50
+  ret %struct.op* %call
+}

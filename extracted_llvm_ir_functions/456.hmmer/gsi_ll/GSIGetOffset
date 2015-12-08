@@ -1,0 +1,75 @@
+define i32 @GSIGetOffset(%struct.gsi_s* nocapture %gsi, i8* nocapture %key, i8* %ret_seqfile, i32* nocapture %ret_format, i64* nocapture %ret_offset) #0 {
+entry:
+  %name = alloca [33 x i8], align 16
+  %offset = alloca i32, align 4
+  %filenum = alloca i16, align 2
+  %fmt = alloca i32, align 4
+  %0 = getelementptr inbounds [33 x i8]* %name, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 33, i8* %0) #4
+  %arrayidx = getelementptr inbounds [33 x i8]* %name, i64 0, i64 32
+  store i8 0, i8* %arrayidx, align 16, !tbaa !1
+  %nfiles = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 1
+  %1 = load i16* %nfiles, align 2, !tbaa !4
+  %conv = zext i16 %1 to i32
+  %add = add nsw i32 %conv, 1
+  %recnum = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 2
+  %2 = load i32* %recnum, align 4, !tbaa !3
+  %add3 = add i32 %conv, %2
+  %add4 = add i32 %add, %add3
+  %div = lshr i32 %add4, 1
+  %gsifp = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 0
+  %3 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
+  %mul = mul i32 %div, 38
+  %conv5 = zext i32 %mul to i64
+  %call = call i32 @fseek(%struct._IO_FILE* %3, i64 %conv5, i32 0) #6
+  %call656 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %0, i16* %filenum, i32* %offset) #8
+  %tobool57 = icmp eq i32 %call656, 0
+  br i1 %tobool57, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %if.else14
+  %mid.060 = phi i32 [ %div27, %if.else14 ], [ %div, %entry ]
+  %right.059 = phi i32 [ %right.1, %if.else14 ], [ %add3, %entry ]
+  %left.058 = phi i32 [ %left.1, %if.else14 ], [ %add, %entry ]
+  %call8 = call i32 @strcmp(i8* %0, i8* %key) #7
+  %cmp9 = icmp eq i32 %call8, 0
+  br i1 %cmp9, label %while.end, label %if.else
+
+if.else:                                          ; preds = %while.body
+  %cmp11 = icmp ult i32 %left.058, %right.059
+  br i1 %cmp11, label %if.else14, label %cleanup
+
+if.else14:                                        ; preds = %if.else
+  %cmp15 = icmp slt i32 %call8, 0
+  %add18 = add i32 %mid.060, 1
+  %sub = add i32 %mid.060, -1
+  %left.1 = select i1 %cmp15, i32 %add18, i32 %left.058
+  %right.1 = select i1 %cmp15, i32 %right.059, i32 %sub
+  %add26 = add i32 %left.1, %right.1
+  %div27 = lshr i32 %add26, 1
+  %4 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
+  %mul29 = mul i32 %div27, 38
+  %conv30 = zext i32 %mul29 to i64
+  %call31 = call i32 @fseek(%struct._IO_FILE* %4, i64 %conv30, i32 0) #6
+  %call6 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %0, i16* %filenum, i32* %offset) #8
+  %tobool = icmp eq i32 %call6, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.else14, %while.body, %entry
+  %5 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
+  %6 = load i16* %filenum, align 2, !tbaa !4
+  %conv33 = zext i16 %6 to i64
+  %mul34 = mul i64 %conv33, 38
+  %call36 = call i32 @fseek(%struct._IO_FILE* %5, i64 %mul34, i32 0) #6
+  %call37 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %ret_seqfile, i16* null, i32* %fmt) #8
+  %7 = load i32* %fmt, align 4, !tbaa !3
+  store i32 %7, i32* %ret_format, align 4, !tbaa !3
+  %8 = load i32* %offset, align 4, !tbaa !3
+  %conv38 = zext i32 %8 to i64
+  store i64 %conv38, i64* %ret_offset, align 8, !tbaa !5
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.else, %while.end
+  %retval.0 = phi i32 [ 1, %while.end ], [ 0, %if.else ]
+  call void @llvm.lifetime.end(i64 33, i8* %0) #4
+  ret i32 %retval.0
+}

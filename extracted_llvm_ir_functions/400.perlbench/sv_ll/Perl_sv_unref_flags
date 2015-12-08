@@ -1,0 +1,47 @@
+define void @Perl_sv_unref_flags(%struct.sv* %sv, i32 %flags) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %0 to %struct.sv**
+  %1 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, -2146959360
+  %cmp = icmp eq i32 %and, -2146959360
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @S_sv_del_backref(%struct.sv* %sv) #7
+  %3 = load i32* %sv_flags, align 4, !tbaa !3
+  %and2 = and i32 %3, 2146959359
+  store i32 %and2, i32* %sv_flags, align 4, !tbaa !3
+  %4 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv4 = bitcast i8* %4 to %struct.sv**
+  store %struct.sv* null, %struct.sv** %xrv_rv4, align 8, !tbaa !0
+  br label %if.end12
+
+if.end:                                           ; preds = %entry
+  store %struct.sv* null, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %and8 = and i32 %2, -268959745
+  store i32 %and8, i32* %sv_flags, align 4, !tbaa !3
+  %sv_refcnt = getelementptr inbounds %struct.sv* %1, i64 0, i32 1
+  %5 = load i32* %sv_refcnt, align 4, !tbaa !3
+  %cmp9 = icmp eq i32 %5, 1
+  br i1 %cmp9, label %lor.lhs.false, label %if.then11
+
+lor.lhs.false:                                    ; preds = %if.end
+  %and10 = and i32 %flags, 1
+  %tobool = icmp eq i32 %and10, 0
+  br i1 %tobool, label %if.else, label %if.then11
+
+if.then11:                                        ; preds = %lor.lhs.false, %if.end
+  tail call void @Perl_sv_free(%struct.sv* %1) #7
+  br label %if.end12
+
+if.else:                                          ; preds = %lor.lhs.false
+  %call = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %1) #7
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then, %if.else, %if.then11
+  ret void
+}

@@ -1,0 +1,76 @@
+define i32 @Perl_intro_my() #0 {
+entry:
+  %0 = load i32* @PL_min_intro_pending, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @PL_cop_seqmax, align 4, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %2 = load %struct.av** @PL_comppad_name, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.av* %2, i64 0, i32 0
+  %3 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_array = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 0
+  %4 = load i8** %xav_array, align 8, !tbaa !3
+  %5 = bitcast i8* %4 to %struct.sv**
+  %6 = load i32* @PL_max_intro_pending, align 4, !tbaa !0
+  %cmp20 = icmp sgt i32 %0, %6
+  %.pre = load i32* @PL_cop_seqmax, align 4, !tbaa !0
+  br i1 %cmp20, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %conv = uitofp i32 %.pre to double
+  %7 = sext i32 %0 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ %7, %for.body.lr.ph ]
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %indvars.iv
+  %8 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.sv* %8, null
+  %cmp2 = icmp eq %struct.sv* %8, @PL_sv_undef
+  %or.cond = or i1 %tobool1, %cmp2
+  br i1 %or.cond, label %for.inc, label %land.lhs.true3
+
+land.lhs.true3:                                   ; preds = %for.body
+  %sv_flags = getelementptr inbounds %struct.sv* %8, i64 0, i32 2
+  %9 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %9, 1048576
+  %tobool4 = icmp eq i32 %and, 0
+  br i1 %tobool4, label %land.lhs.true5, label %for.inc
+
+land.lhs.true5:                                   ; preds = %land.lhs.true3
+  %sv_any6 = getelementptr inbounds %struct.sv* %8, i64 0, i32 0
+  %10 = load i8** %sv_any6, align 8, !tbaa !3
+  %xiv_iv = getelementptr inbounds i8* %10, i64 24
+  %11 = bitcast i8* %xiv_iv to i64*
+  %12 = load i64* %11, align 8, !tbaa !4
+  %tobool7 = icmp eq i64 %12, 0
+  br i1 %tobool7, label %if.then8, label %for.inc
+
+if.then8:                                         ; preds = %land.lhs.true5
+  store i64 999999999, i64* %11, align 8, !tbaa !4
+  %xnv_nv = getelementptr inbounds i8* %10, i64 32
+  %13 = bitcast i8* %xnv_nv to double*
+  store double %conv, double* %13, align 8, !tbaa !6
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true5, %land.lhs.true3, %for.body, %if.then8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %14 = trunc i64 %indvars.iv to i32
+  %cmp = icmp slt i32 %14, %6
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end, %for.inc
+  store i32 0, i32* @PL_min_intro_pending, align 4, !tbaa !0
+  store i32 %6, i32* @PL_comppad_name_fill, align 4, !tbaa !0
+  %inc13 = add i32 %.pre, 1
+  store i32 %inc13, i32* @PL_cop_seqmax, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %for.end, %if.then
+  %retval.0 = phi i32 [ %.pre, %for.end ], [ %1, %if.then ]
+  ret i32 %retval.0
+}

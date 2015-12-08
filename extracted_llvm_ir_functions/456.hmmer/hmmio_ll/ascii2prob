@@ -1,0 +1,15 @@
+define internal fastcc float @ascii2prob(i8* nocapture %s, float %null) #0 {
+entry:
+  %0 = load i8* %s, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 42
+  br i1 %cmp, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i32 @atoi(i8* %s) #7
+  %call2 = tail call float @Score2Prob(i32 %call, float %null) #6
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi float [ %call2, %cond.false ], [ 0.000000e+00, %entry ]
+  ret float %cond
+}

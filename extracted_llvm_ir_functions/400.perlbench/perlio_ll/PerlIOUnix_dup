@@ -1,0 +1,42 @@
+define %struct._PerlIO** @PerlIOUnix_dup(%struct._PerlIO** %f, %struct._PerlIO** %o, %struct.clone_params* %param, i32 %flags) #1 {
+entry:
+  %0 = load %struct._PerlIO** %o, align 8, !tbaa !3
+  %1 = bitcast %struct._PerlIO* %0 to %struct.PerlIOUnix*
+  %fd1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %2 = bitcast %struct._PerlIO* %fd1 to i32*
+  %3 = load i32* %2, align 4, !tbaa !0
+  %and = and i32 %flags, 2
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @dup(i32 %3) #9
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %fd.0 = phi i32 [ %call, %if.then ], [ %3, %entry ]
+  %4 = icmp ult i32 %fd.0, 2048
+  br i1 %4, label %if.then3, label %return
+
+if.then3:                                         ; preds = %if.end
+  %call4 = tail call %struct._PerlIO** @PerlIOBase_dup(%struct._PerlIO** %f, %struct._PerlIO** %o, %struct.clone_params* %param, i32 %flags) #10
+  %tobool5 = icmp eq %struct._PerlIO** %call4, null
+  br i1 %tobool5, label %return, label %if.then6
+
+if.then6:                                         ; preds = %if.then3
+  %oflags = getelementptr inbounds %struct.PerlIOUnix* %1, i64 0, i32 2
+  %5 = load i32* %oflags, align 4, !tbaa !0
+  %6 = load %struct._PerlIO** %call4, align 8, !tbaa !3
+  %7 = bitcast %struct._PerlIO* %6 to %struct.PerlIOUnix*
+  %fd1.i = getelementptr inbounds %struct._PerlIO* %6, i64 1
+  %8 = bitcast %struct._PerlIO* %fd1.i to i32*
+  store i32 %fd.0, i32* %8, align 4, !tbaa !0
+  %oflags.i = getelementptr inbounds %struct.PerlIOUnix* %7, i64 0, i32 2
+  store i32 %5, i32* %oflags.i, align 4, !tbaa !0
+  tail call void @PerlIOUnix_refcnt_inc(i32 %fd.0) #9
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then3, %if.then6
+  %retval.0 = phi %struct._PerlIO** [ %call4, %if.then6 ], [ null, %if.then3 ], [ null, %if.end ]
+  ret %struct._PerlIO** %retval.0
+}

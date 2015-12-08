@@ -1,0 +1,115 @@
+define void @initialize_eval() #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc23, %entry
+  %indvars.iv326 = phi i64 [ 0, %entry ], [ %indvars.iv.next327, %for.inc23 ]
+  %0 = trunc i64 %indvars.iv326 to i32
+  %and = and i32 %0, 7
+  %shr = ashr i32 %0, 3
+  %arrayidx10 = getelementptr inbounds [64 x i32]* @upscale, i64 0, i64 %indvars.iv326
+  %1 = load i32* %arrayidx10, align 4, !tbaa !0
+  %idxprom11 = sext i32 %1 to i64
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv322 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next323, %for.body3 ]
+  %2 = trunc i64 %indvars.iv322 to i32
+  %and4 = and i32 %2, 7
+  %sub = sub nsw i32 %and, %and4
+  %ispos310 = icmp sgt i32 %sub, -1
+  %neg311 = sub i32 0, %sub
+  %3 = select i1 %ispos310, i32 %sub, i32 %neg311
+  %shr5 = ashr i32 %2, 3
+  %sub6 = sub nsw i32 %shr, %shr5
+  %ispos312 = icmp sgt i32 %sub6, -1
+  %neg313 = sub i32 0, %sub6
+  %4 = select i1 %ispos312, i32 %sub6, i32 %neg313
+  %add = add nsw i32 %3, %4
+  %arrayidx = getelementptr inbounds [64 x i32]* @upscale, i64 0, i64 %indvars.iv322
+  %5 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom8 = sext i32 %5 to i64
+  %arrayidx13 = getelementptr inbounds [144 x [144 x i32]]* @rookdistance, i64 0, i64 %idxprom11, i64 %idxprom8
+  store i32 %add, i32* %arrayidx13, align 4, !tbaa !0
+  %cmp14 = icmp sgt i32 %3, %4
+  %cond = select i1 %cmp14, i32 %3, i32 %4
+  %arrayidx22 = getelementptr inbounds [144 x [144 x i32]]* @distance, i64 0, i64 %idxprom11, i64 %idxprom8
+  store i32 %cond, i32* %arrayidx22, align 4, !tbaa !0
+  %indvars.iv.next323 = add i64 %indvars.iv322, 1
+  %lftr.wideiv324 = trunc i64 %indvars.iv.next323 to i32
+  %exitcond325 = icmp eq i32 %lftr.wideiv324, 64
+  br i1 %exitcond325, label %for.inc23, label %for.body3
+
+for.inc23:                                        ; preds = %for.body3
+  %indvars.iv.next327 = add i64 %indvars.iv326, 1
+  %lftr.wideiv328 = trunc i64 %indvars.iv.next327 to i32
+  %exitcond329 = icmp eq i32 %lftr.wideiv328, 64
+  br i1 %exitcond329, label %for.cond29.preheader, label %for.cond1.preheader
+
+for.cond29.preheader:                             ; preds = %for.inc23, %for.inc218
+  %indvars.iv318 = phi i64 [ %indvars.iv.next319, %for.inc218 ], [ 0, %for.inc23 ]
+  %arrayidx33 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %indvars.iv318
+  %6 = load i32* %arrayidx33, align 4, !tbaa !0
+  %arrayidx39 = getelementptr inbounds [144 x i32]* @Xfile, i64 0, i64 %indvars.iv318
+  %7 = load i32* %arrayidx39, align 4, !tbaa !0
+  br label %for.body31
+
+for.body31:                                       ; preds = %for.body31, %for.cond29.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond29.preheader ], [ %indvars.iv.next, %for.body31 ]
+  %arrayidx35 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %indvars.iv
+  %8 = load i32* %arrayidx35, align 4, !tbaa !0
+  %sub36 = sub nsw i32 %6, %8
+  %ispos = icmp sgt i32 %sub36, -1
+  %neg = sub i32 0, %sub36
+  %9 = select i1 %ispos, i32 %sub36, i32 %neg
+  %arrayidx41 = getelementptr inbounds [144 x i32]* @Xfile, i64 0, i64 %indvars.iv
+  %10 = load i32* %arrayidx41, align 4, !tbaa !0
+  %sub42 = sub nsw i32 %7, %10
+  %ispos282 = icmp sgt i32 %sub42, -1
+  %neg283 = sub i32 0, %sub42
+  %11 = select i1 %ispos282, i32 %sub42, i32 %neg283
+  %cmp44 = icmp sgt i32 %9, %11
+  %sub36.sub42 = select i1 %cmp44, i32 %sub36, i32 %sub42
+  %ispos284 = icmp sgt i32 %sub36.sub42, -1
+  %neg285 = sub i32 0, %sub36.sub42
+  %12 = select i1 %ispos284, i32 %sub36.sub42, i32 %neg285
+  %idxprom61 = sext i32 %12 to i64
+  %arrayidx62 = getelementptr inbounds [9 x i32]* @pre_p_tropism, i64 0, i64 %idxprom61
+  %13 = load i32* %arrayidx62, align 4, !tbaa !0
+  %conv = trunc i32 %13 to i8
+  %arrayidx66 = getelementptr inbounds [144 x [144 x i8]]* @p_tropism, i64 0, i64 %indvars.iv318, i64 %indvars.iv
+  store i8 %conv, i8* %arrayidx66, align 1, !tbaa !1
+  %arrayidx98 = getelementptr inbounds [9 x i32]* @pre_b_tropism, i64 0, i64 %idxprom61
+  %14 = load i32* %arrayidx98, align 4, !tbaa !0
+  %conv99 = trunc i32 %14 to i8
+  %arrayidx103 = getelementptr inbounds [144 x [144 x i8]]* @b_tropism, i64 0, i64 %indvars.iv318, i64 %indvars.iv
+  store i8 %conv99, i8* %arrayidx103, align 1, !tbaa !1
+  %arrayidx135 = getelementptr inbounds [9 x i32]* @pre_n_tropism, i64 0, i64 %idxprom61
+  %15 = load i32* %arrayidx135, align 4, !tbaa !0
+  %conv136 = trunc i32 %15 to i8
+  %arrayidx140 = getelementptr inbounds [144 x [144 x i8]]* @n_tropism, i64 0, i64 %indvars.iv318, i64 %indvars.iv
+  store i8 %conv136, i8* %arrayidx140, align 1, !tbaa !1
+  %arrayidx172 = getelementptr inbounds [9 x i32]* @pre_r_tropism, i64 0, i64 %idxprom61
+  %16 = load i32* %arrayidx172, align 4, !tbaa !0
+  %conv173 = trunc i32 %16 to i8
+  %arrayidx177 = getelementptr inbounds [144 x [144 x i8]]* @r_tropism, i64 0, i64 %indvars.iv318, i64 %indvars.iv
+  store i8 %conv173, i8* %arrayidx177, align 1, !tbaa !1
+  %arrayidx209 = getelementptr inbounds [9 x i32]* @pre_q_tropism, i64 0, i64 %idxprom61
+  %17 = load i32* %arrayidx209, align 4, !tbaa !0
+  %conv210 = trunc i32 %17 to i8
+  %arrayidx214 = getelementptr inbounds [144 x [144 x i8]]* @q_tropism, i64 0, i64 %indvars.iv318, i64 %indvars.iv
+  store i8 %conv210, i8* %arrayidx214, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 144
+  br i1 %exitcond, label %for.inc218, label %for.body31
+
+for.inc218:                                       ; preds = %for.body31
+  %indvars.iv.next319 = add i64 %indvars.iv318, 1
+  %lftr.wideiv320 = trunc i64 %indvars.iv.next319 to i32
+  %exitcond321 = icmp eq i32 %lftr.wideiv320, 144
+  br i1 %exitcond321, label %for.end220, label %for.cond29.preheader
+
+for.end220:                                       ; preds = %for.inc218
+  ret void
+}

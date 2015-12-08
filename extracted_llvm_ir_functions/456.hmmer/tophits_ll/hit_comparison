@@ -1,0 +1,22 @@
+define i32 @hit_comparison(i8* nocapture %vh1, i8* nocapture %vh2) #3 {
+entry:
+  %0 = bitcast i8* %vh1 to %struct.hit_s**
+  %1 = load %struct.hit_s** %0, align 8, !tbaa !0
+  %2 = bitcast i8* %vh2 to %struct.hit_s**
+  %3 = load %struct.hit_s** %2, align 8, !tbaa !0
+  %sortkey = getelementptr inbounds %struct.hit_s* %1, i64 0, i32 0
+  %4 = load double* %sortkey, align 8, !tbaa !4
+  %sortkey1 = getelementptr inbounds %struct.hit_s* %3, i64 0, i32 0
+  %5 = load double* %sortkey1, align 8, !tbaa !4
+  %cmp = fcmp olt double %4, %5
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp4 = fcmp ogt double %4, %5
+  %. = sext i1 %cmp4 to i32
+  br label %return
+
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0
+}

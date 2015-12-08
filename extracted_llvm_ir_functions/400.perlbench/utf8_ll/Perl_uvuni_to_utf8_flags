@@ -1,0 +1,369 @@
+define i8* @Perl_uvuni_to_utf8_flags(i8* %d, i64 %uv, i64 %flags) #0 {
+entry:
+  %0 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings = getelementptr inbounds %struct.cop* %0, i64 0, i32 14
+  %1 = load %struct.sv** %cop_warnings, align 8, !tbaa !0
+  %cmp = icmp eq %struct.sv* %1, null
+  br i1 %cmp, label %lor.lhs.false7, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings1 = getelementptr inbounds %struct.cop* %2, i64 0, i32 14
+  %3 = load %struct.sv** %cop_warnings1, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.sv* %3, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp2, label %lor.lhs.false7, label %land.lhs.true3
+
+land.lhs.true3:                                   ; preds = %land.lhs.true
+  %4 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings4 = getelementptr inbounds %struct.cop* %4, i64 0, i32 14
+  %5 = load %struct.sv** %cop_warnings4, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.sv* %5, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp5, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true3
+  %6 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings6 = getelementptr inbounds %struct.cop* %6, i64 0, i32 14
+  %7 = load %struct.sv** %cop_warnings6, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.sv* %7, i64 0, i32 0
+  %8 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8* %9, i64 11
+  %10 = load i8* %arrayidx, align 1, !tbaa !1
+  %and = and i8 %10, 1
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %lor.lhs.false7, label %if.then
+
+lor.lhs.false7:                                   ; preds = %lor.lhs.false, %land.lhs.true, %entry
+  %11 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings8 = getelementptr inbounds %struct.cop* %11, i64 0, i32 14
+  %12 = load %struct.sv** %cop_warnings8, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct.sv* %12, null
+  br i1 %cmp9, label %land.lhs.true11, label %if.end47
+
+land.lhs.true11:                                  ; preds = %lor.lhs.false7
+  %13 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and13 = and i8 %13, 1
+  %tobool14 = icmp eq i8 %and13, 0
+  br i1 %tobool14, label %if.end47, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %land.lhs.true11, %land.lhs.true3
+  %uv.off = add i64 %uv, -55296
+  %14 = icmp ult i64 %uv.off, 2048
+  br i1 %14, label %land.lhs.true20, label %if.else
+
+land.lhs.true20:                                  ; preds = %if.then
+  %and21 = and i64 %flags, 1
+  %tobool22 = icmp eq i64 %and21, 0
+  br i1 %tobool22, label %if.then23, label %if.else
+
+if.then23:                                        ; preds = %land.lhs.true20
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 44, i8* getelementptr inbounds ([25 x i8]* @.str, i64 0, i64 0), i64 %uv) #5
+  br label %if.end47
+
+if.else:                                          ; preds = %land.lhs.true20, %if.then
+  %uv.off348 = add i64 %uv, -64976
+  %15 = icmp ult i64 %uv.off348, 32
+  br i1 %15, label %land.lhs.true29, label %lor.lhs.false32
+
+land.lhs.true29:                                  ; preds = %if.else
+  %and30 = and i64 %flags, 2
+  %tobool31 = icmp eq i64 %and30, 0
+  br i1 %tobool31, label %land.lhs.true39, label %lor.lhs.false32
+
+lor.lhs.false32:                                  ; preds = %land.lhs.true29, %if.else
+  %and33 = and i64 %uv, 65534
+  %cmp34 = icmp eq i64 %and33, 65534
+  br i1 %cmp34, label %land.lhs.true36, label %if.end47
+
+land.lhs.true36:                                  ; preds = %lor.lhs.false32
+  %and37 = and i64 %flags, 4
+  %tobool38 = icmp eq i64 %and37, 0
+  br i1 %tobool38, label %land.lhs.true39, label %if.end47
+
+land.lhs.true39:                                  ; preds = %land.lhs.true29, %land.lhs.true36
+  %cmp40 = icmp ult i64 %uv, 1114112
+  br i1 %cmp40, label %if.then45, label %lor.lhs.false42
+
+lor.lhs.false42:                                  ; preds = %land.lhs.true39
+  %and43 = and i64 %flags, 8
+  %tobool44 = icmp eq i64 %and43, 0
+  br i1 %tobool44, label %if.then45, label %if.end47
+
+if.then45:                                        ; preds = %lor.lhs.false42, %land.lhs.true39
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 44, i8* getelementptr inbounds ([37 x i8]* @.str1, i64 0, i64 0), i64 %uv) #5
+  br label %if.end47
+
+if.end47:                                         ; preds = %lor.lhs.false42, %land.lhs.true36, %land.lhs.true11, %if.then23, %if.then45, %lor.lhs.false32, %lor.lhs.false7
+  %cmp48 = icmp ult i64 %uv, 128
+  br i1 %cmp48, label %if.then50, label %if.end52
+
+if.then50:                                        ; preds = %if.end47
+  %conv51 = trunc i64 %uv to i8
+  %incdec.ptr = getelementptr inbounds i8* %d, i64 1
+  store i8 %conv51, i8* %d, align 1, !tbaa !1
+  br label %return
+
+if.end52:                                         ; preds = %if.end47
+  %cmp53 = icmp ult i64 %uv, 2048
+  br i1 %cmp53, label %if.then55, label %if.end62
+
+if.then55:                                        ; preds = %if.end52
+  %shr = lshr i64 %uv, 6
+  %or = or i64 %shr, 192
+  %conv56 = trunc i64 %or to i8
+  %incdec.ptr57 = getelementptr inbounds i8* %d, i64 1
+  store i8 %conv56, i8* %d, align 1, !tbaa !1
+  %and58 = and i64 %uv, 63
+  %or59 = or i64 %and58, 128
+  %conv60 = trunc i64 %or59 to i8
+  %incdec.ptr61 = getelementptr inbounds i8* %d, i64 2
+  store i8 %conv60, i8* %incdec.ptr57, align 1, !tbaa !1
+  br label %return
+
+if.end62:                                         ; preds = %if.end52
+  %cmp63 = icmp ult i64 %uv, 65536
+  br i1 %cmp63, label %if.then65, label %if.end79
+
+if.then65:                                        ; preds = %if.end62
+  %shr66 = lshr i64 %uv, 12
+  %or67 = or i64 %shr66, 224
+  %conv68 = trunc i64 %or67 to i8
+  %incdec.ptr69 = getelementptr inbounds i8* %d, i64 1
+  store i8 %conv68, i8* %d, align 1, !tbaa !1
+  %shr70 = lshr i64 %uv, 6
+  %and71 = and i64 %shr70, 63
+  %or72 = or i64 %and71, 128
+  %conv73 = trunc i64 %or72 to i8
+  %incdec.ptr74 = getelementptr inbounds i8* %d, i64 2
+  store i8 %conv73, i8* %incdec.ptr69, align 1, !tbaa !1
+  %and75 = and i64 %uv, 63
+  %or76 = or i64 %and75, 128
+  %conv77 = trunc i64 %or76 to i8
+  %incdec.ptr78 = getelementptr inbounds i8* %d, i64 3
+  store i8 %conv77, i8* %incdec.ptr74, align 1, !tbaa !1
+  br label %return
+
+if.end79:                                         ; preds = %if.end62
+  %cmp80 = icmp ult i64 %uv, 2097152
+  br i1 %cmp80, label %if.then82, label %if.end101
+
+if.then82:                                        ; preds = %if.end79
+  %shr83 = lshr i64 %uv, 18
+  %or84 = or i64 %shr83, 240
+  %conv85 = trunc i64 %or84 to i8
+  %incdec.ptr86 = getelementptr inbounds i8* %d, i64 1
+  store i8 %conv85, i8* %d, align 1, !tbaa !1
+  %shr87 = lshr i64 %uv, 12
+  %and88 = and i64 %shr87, 63
+  %or89 = or i64 %and88, 128
+  %conv90 = trunc i64 %or89 to i8
+  %incdec.ptr91 = getelementptr inbounds i8* %d, i64 2
+  store i8 %conv90, i8* %incdec.ptr86, align 1, !tbaa !1
+  %shr92 = lshr i64 %uv, 6
+  %and93 = and i64 %shr92, 63
+  %or94 = or i64 %and93, 128
+  %conv95 = trunc i64 %or94 to i8
+  %incdec.ptr96 = getelementptr inbounds i8* %d, i64 3
+  store i8 %conv95, i8* %incdec.ptr91, align 1, !tbaa !1
+  %and97 = and i64 %uv, 63
+  %or98 = or i64 %and97, 128
+  %conv99 = trunc i64 %or98 to i8
+  %incdec.ptr100 = getelementptr inbounds i8* %d, i64 4
+  store i8 %conv99, i8* %incdec.ptr96, align 1, !tbaa !1
+  br label %return
+
+if.end101:                                        ; preds = %if.end79
+  %cmp102 = icmp ult i64 %uv, 67108864
+  br i1 %cmp102, label %if.then104, label %if.end128
+
+if.then104:                                       ; preds = %if.end101
+  %shr105 = lshr i64 %uv, 24
+  %or106 = or i64 %shr105, 248
+  %conv107 = trunc i64 %or106 to i8
+  %incdec.ptr108 = getelementptr inbounds i8* %d, i64 1
+  store i8 %conv107, i8* %d, align 1, !tbaa !1
+  %shr109 = lshr i64 %uv, 18
+  %and110 = and i64 %shr109, 63
+  %or111 = or i64 %and110, 128
+  %conv112 = trunc i64 %or111 to i8
+  %incdec.ptr113 = getelementptr inbounds i8* %d, i64 2
+  store i8 %conv112, i8* %incdec.ptr108, align 1, !tbaa !1
+  %shr114 = lshr i64 %uv, 12
+  %and115 = and i64 %shr114, 63
+  %or116 = or i64 %and115, 128
+  %conv117 = trunc i64 %or116 to i8
+  %incdec.ptr118 = getelementptr inbounds i8* %d, i64 3
+  store i8 %conv117, i8* %incdec.ptr113, align 1, !tbaa !1
+  %shr119 = lshr i64 %uv, 6
+  %and120 = and i64 %shr119, 63
+  %or121 = or i64 %and120, 128
+  %conv122 = trunc i64 %or121 to i8
+  %incdec.ptr123 = getelementptr inbounds i8* %d, i64 4
+  store i8 %conv122, i8* %incdec.ptr118, align 1, !tbaa !1
+  %and124 = and i64 %uv, 63
+  %or125 = or i64 %and124, 128
+  %conv126 = trunc i64 %or125 to i8
+  %incdec.ptr127 = getelementptr inbounds i8* %d, i64 5
+  store i8 %conv126, i8* %incdec.ptr123, align 1, !tbaa !1
+  br label %return
+
+if.end128:                                        ; preds = %if.end101
+  %cmp129 = icmp ult i64 %uv, 2147483648
+  br i1 %cmp129, label %if.then131, label %if.end160
+
+if.then131:                                       ; preds = %if.end128
+  %shr132 = lshr i64 %uv, 30
+  %or133 = or i64 %shr132, 252
+  %conv134 = trunc i64 %or133 to i8
+  %incdec.ptr135 = getelementptr inbounds i8* %d, i64 1
+  store i8 %conv134, i8* %d, align 1, !tbaa !1
+  %shr136 = lshr i64 %uv, 24
+  %and137 = and i64 %shr136, 63
+  %or138 = or i64 %and137, 128
+  %conv139 = trunc i64 %or138 to i8
+  %incdec.ptr140 = getelementptr inbounds i8* %d, i64 2
+  store i8 %conv139, i8* %incdec.ptr135, align 1, !tbaa !1
+  %shr141 = lshr i64 %uv, 18
+  %and142 = and i64 %shr141, 63
+  %or143 = or i64 %and142, 128
+  %conv144 = trunc i64 %or143 to i8
+  %incdec.ptr145 = getelementptr inbounds i8* %d, i64 3
+  store i8 %conv144, i8* %incdec.ptr140, align 1, !tbaa !1
+  %shr146 = lshr i64 %uv, 12
+  %and147 = and i64 %shr146, 63
+  %or148 = or i64 %and147, 128
+  %conv149 = trunc i64 %or148 to i8
+  %incdec.ptr150 = getelementptr inbounds i8* %d, i64 4
+  store i8 %conv149, i8* %incdec.ptr145, align 1, !tbaa !1
+  %shr151 = lshr i64 %uv, 6
+  %and152 = and i64 %shr151, 63
+  %or153 = or i64 %and152, 128
+  %conv154 = trunc i64 %or153 to i8
+  %incdec.ptr155 = getelementptr inbounds i8* %d, i64 5
+  store i8 %conv154, i8* %incdec.ptr150, align 1, !tbaa !1
+  %and156 = and i64 %uv, 63
+  %or157 = or i64 %and156, 128
+  %conv158 = trunc i64 %or157 to i8
+  %incdec.ptr159 = getelementptr inbounds i8* %d, i64 6
+  store i8 %conv158, i8* %incdec.ptr155, align 1, !tbaa !1
+  br label %return
+
+if.end160:                                        ; preds = %if.end128
+  %cmp161 = icmp ult i64 %uv, 68719476736
+  %incdec.ptr164 = getelementptr inbounds i8* %d, i64 1
+  br i1 %cmp161, label %if.then163, label %if.end194
+
+if.then163:                                       ; preds = %if.end160
+  store i8 -2, i8* %d, align 1, !tbaa !1
+  %shr165 = lshr i64 %uv, 30
+  %and166 = and i64 %shr165, 63
+  %or167 = or i64 %and166, 128
+  %conv168 = trunc i64 %or167 to i8
+  %incdec.ptr169 = getelementptr inbounds i8* %d, i64 2
+  store i8 %conv168, i8* %incdec.ptr164, align 1, !tbaa !1
+  %shr170 = lshr i64 %uv, 24
+  %and171 = and i64 %shr170, 63
+  %or172 = or i64 %and171, 128
+  %conv173 = trunc i64 %or172 to i8
+  %incdec.ptr174 = getelementptr inbounds i8* %d, i64 3
+  store i8 %conv173, i8* %incdec.ptr169, align 1, !tbaa !1
+  %shr175 = lshr i64 %uv, 18
+  %and176 = and i64 %shr175, 63
+  %or177 = or i64 %and176, 128
+  %conv178 = trunc i64 %or177 to i8
+  %incdec.ptr179 = getelementptr inbounds i8* %d, i64 4
+  store i8 %conv178, i8* %incdec.ptr174, align 1, !tbaa !1
+  %shr180 = lshr i64 %uv, 12
+  %and181 = and i64 %shr180, 63
+  %or182 = or i64 %and181, 128
+  %conv183 = trunc i64 %or182 to i8
+  %incdec.ptr184 = getelementptr inbounds i8* %d, i64 5
+  store i8 %conv183, i8* %incdec.ptr179, align 1, !tbaa !1
+  %shr185 = lshr i64 %uv, 6
+  %and186 = and i64 %shr185, 63
+  %or187 = or i64 %and186, 128
+  %conv188 = trunc i64 %or187 to i8
+  %incdec.ptr189 = getelementptr inbounds i8* %d, i64 6
+  store i8 %conv188, i8* %incdec.ptr184, align 1, !tbaa !1
+  %and190 = and i64 %uv, 63
+  %or191 = or i64 %and190, 128
+  %conv192 = trunc i64 %or191 to i8
+  %incdec.ptr193 = getelementptr inbounds i8* %d, i64 7
+  store i8 %conv192, i8* %incdec.ptr189, align 1, !tbaa !1
+  br label %return
+
+if.end194:                                        ; preds = %if.end160
+  store i8 -1, i8* %d, align 1, !tbaa !1
+  %incdec.ptr196 = getelementptr inbounds i8* %d, i64 2
+  store i8 -128, i8* %incdec.ptr164, align 1, !tbaa !1
+  %shr197 = lshr i64 %uv, 60
+  %or199 = or i64 %shr197, 128
+  %conv200 = trunc i64 %or199 to i8
+  %incdec.ptr201 = getelementptr inbounds i8* %d, i64 3
+  store i8 %conv200, i8* %incdec.ptr196, align 1, !tbaa !1
+  %shr202 = lshr i64 %uv, 54
+  %and203 = and i64 %shr202, 63
+  %or204 = or i64 %and203, 128
+  %conv205 = trunc i64 %or204 to i8
+  %incdec.ptr206 = getelementptr inbounds i8* %d, i64 4
+  store i8 %conv205, i8* %incdec.ptr201, align 1, !tbaa !1
+  %shr207 = lshr i64 %uv, 48
+  %and208 = and i64 %shr207, 63
+  %or209 = or i64 %and208, 128
+  %conv210 = trunc i64 %or209 to i8
+  %incdec.ptr211 = getelementptr inbounds i8* %d, i64 5
+  store i8 %conv210, i8* %incdec.ptr206, align 1, !tbaa !1
+  %shr212 = lshr i64 %uv, 42
+  %and213 = and i64 %shr212, 63
+  %or214 = or i64 %and213, 128
+  %conv215 = trunc i64 %or214 to i8
+  %incdec.ptr216 = getelementptr inbounds i8* %d, i64 6
+  store i8 %conv215, i8* %incdec.ptr211, align 1, !tbaa !1
+  %shr217 = lshr i64 %uv, 36
+  %and218 = and i64 %shr217, 63
+  %or219 = or i64 %and218, 128
+  %conv220 = trunc i64 %or219 to i8
+  %incdec.ptr221 = getelementptr inbounds i8* %d, i64 7
+  store i8 %conv220, i8* %incdec.ptr216, align 1, !tbaa !1
+  %shr222 = lshr i64 %uv, 30
+  %and223 = and i64 %shr222, 63
+  %or224 = or i64 %and223, 128
+  %conv225 = trunc i64 %or224 to i8
+  %incdec.ptr226 = getelementptr inbounds i8* %d, i64 8
+  store i8 %conv225, i8* %incdec.ptr221, align 1, !tbaa !1
+  %shr227 = lshr i64 %uv, 24
+  %and228 = and i64 %shr227, 63
+  %or229 = or i64 %and228, 128
+  %conv230 = trunc i64 %or229 to i8
+  %incdec.ptr231 = getelementptr inbounds i8* %d, i64 9
+  store i8 %conv230, i8* %incdec.ptr226, align 1, !tbaa !1
+  %shr232 = lshr i64 %uv, 18
+  %and233 = and i64 %shr232, 63
+  %or234 = or i64 %and233, 128
+  %conv235 = trunc i64 %or234 to i8
+  %incdec.ptr236 = getelementptr inbounds i8* %d, i64 10
+  store i8 %conv235, i8* %incdec.ptr231, align 1, !tbaa !1
+  %shr237 = lshr i64 %uv, 12
+  %and238 = and i64 %shr237, 63
+  %or239 = or i64 %and238, 128
+  %conv240 = trunc i64 %or239 to i8
+  %incdec.ptr241 = getelementptr inbounds i8* %d, i64 11
+  store i8 %conv240, i8* %incdec.ptr236, align 1, !tbaa !1
+  %shr242 = lshr i64 %uv, 6
+  %and243 = and i64 %shr242, 63
+  %or244 = or i64 %and243, 128
+  %conv245 = trunc i64 %or244 to i8
+  %incdec.ptr246 = getelementptr inbounds i8* %d, i64 12
+  store i8 %conv245, i8* %incdec.ptr241, align 1, !tbaa !1
+  %and247 = and i64 %uv, 63
+  %or248 = or i64 %and247, 128
+  %conv249 = trunc i64 %or248 to i8
+  %incdec.ptr250 = getelementptr inbounds i8* %d, i64 13
+  store i8 %conv249, i8* %incdec.ptr246, align 1, !tbaa !1
+  br label %return
+
+return:                                           ; preds = %if.end194, %if.then163, %if.then131, %if.then104, %if.then82, %if.then65, %if.then55, %if.then50
+  %retval.0 = phi i8* [ %incdec.ptr, %if.then50 ], [ %incdec.ptr61, %if.then55 ], [ %incdec.ptr78, %if.then65 ], [ %incdec.ptr100, %if.then82 ], [ %incdec.ptr127, %if.then104 ], [ %incdec.ptr159, %if.then131 ], [ %incdec.ptr193, %if.then163 ], [ %incdec.ptr250, %if.end194 ]
+  ret i8* %retval.0
+}

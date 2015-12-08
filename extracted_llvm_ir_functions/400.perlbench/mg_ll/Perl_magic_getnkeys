@@ -1,0 +1,71 @@
+define i32 @Perl_magic_getnkeys(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xlv_targ = getelementptr inbounds i8* %0, i64 72
+  %1 = bitcast i8* %xlv_targ to %struct.sv**
+  %2 = load %struct.sv** %1, align 8, !tbaa !0
+  %3 = bitcast %struct.sv* %2 to %struct.hv*
+  %tobool = icmp eq %struct.sv* %2, null
+  br i1 %tobool, label %if.end10, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_hv_iterinit(%struct.hv* %3) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %4 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %4, 32768
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.then.if.then4_crit_edge, label %if.end.i
+
+if.then.if.then4_crit_edge:                       ; preds = %if.then
+  %sv_any5.phi.trans.insert = bitcast %struct.sv* %2 to %struct.xpvhv**
+  %.pre = load %struct.xpvhv** %sv_any5.phi.trans.insert, align 8, !tbaa !0
+  br label %if.then4
+
+if.end.i:                                         ; preds = %if.then
+  %sv_any.i = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %5 = load i8** %sv_any.i, align 8, !tbaa !0
+  %xmg_magic.i = getelementptr inbounds i8* %5, i64 40
+  %6 = bitcast i8* %xmg_magic.i to %struct.magic**
+  %mg.08.i = load %struct.magic** %6, align 8
+  %tobool19.i = icmp eq %struct.magic* %mg.08.i, null
+  %7 = bitcast i8* %5 to %struct.xpvhv*
+  br i1 %tobool19.i, label %if.then4, label %for.body.i
+
+for.cond.i:                                       ; preds = %for.body.i
+  %mg_moremagic.i = getelementptr inbounds %struct.magic* %mg.010.i, i64 0, i32 0
+  %mg.0.i = load %struct.magic** %mg_moremagic.i, align 8
+  %tobool1.i = icmp eq %struct.magic* %mg.0.i, null
+  br i1 %tobool1.i, label %if.then4, label %for.body.i
+
+for.body.i:                                       ; preds = %if.end.i, %for.cond.i
+  %mg.010.i = phi %struct.magic* [ %mg.0.i, %for.cond.i ], [ %mg.08.i, %if.end.i ]
+  %mg_type.i = getelementptr inbounds %struct.magic* %mg.010.i, i64 0, i32 3
+  %8 = load i8* %mg_type.i, align 1, !tbaa !1
+  %cmp.i = icmp eq i8 %8, 80
+  br i1 %cmp.i, label %while.cond, label %for.cond.i
+
+if.then4:                                         ; preds = %for.cond.i, %if.then.if.then4_crit_edge, %if.end.i
+  %9 = phi %struct.xpvhv* [ %.pre, %if.then.if.then4_crit_edge ], [ %7, %if.end.i ], [ %7, %for.cond.i ]
+  %xhv_keys = getelementptr inbounds %struct.xpvhv* %9, i64 0, i32 3
+  %10 = load i64* %xhv_keys, align 8, !tbaa !4
+  %xnv_nv = getelementptr inbounds %struct.xpvhv* %9, i64 0, i32 4
+  %11 = load double* %xnv_nv, align 8, !tbaa !5
+  %conv = fptosi double %11 to i64
+  %sub = sub nsw i64 %10, %conv
+  %conv7 = trunc i64 %sub to i32
+  br label %if.end10
+
+while.cond:                                       ; preds = %for.body.i, %while.cond
+  %i.0 = phi i32 [ %inc, %while.cond ], [ 0, %for.body.i ]
+  %call8 = tail call %struct.he* @Perl_hv_iternext(%struct.hv* %3) #7
+  %tobool9 = icmp eq %struct.he* %call8, null
+  %inc = add nsw i32 %i.0, 1
+  br i1 %tobool9, label %if.end10, label %while.cond
+
+if.end10:                                         ; preds = %while.cond, %entry, %if.then4
+  %i.1 = phi i32 [ %conv7, %if.then4 ], [ 0, %entry ], [ %i.0, %while.cond ]
+  %conv11 = sext i32 %i.1 to i64
+  tail call void @Perl_sv_setiv(%struct.sv* %sv, i64 %conv11) #7
+  ret i32 0
+}

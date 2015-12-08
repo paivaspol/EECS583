@@ -1,0 +1,16 @@
+define i32 @IVL_incr(%struct._IVL* %ivl) #0 {
+entry:
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([42 x i8]* @.str4, i64 0, i64 0), %struct._IVL* null) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %incr = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 6
+  %1 = load i32* %incr, align 4, !tbaa !3
+  ret i32 %1
+}

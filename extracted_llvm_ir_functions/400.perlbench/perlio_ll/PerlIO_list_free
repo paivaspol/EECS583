@@ -1,0 +1,61 @@
+define void @PerlIO_list_free(%struct.PerlIO_list_s* %Perl_list) #1 {
+entry:
+  %tobool = icmp eq %struct.PerlIO_list_s* %Perl_list, null
+  br i1 %tobool, label %if.end14, label %if.then
+
+if.then:                                          ; preds = %entry
+  %refcnt = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 0
+  %0 = load i64* %refcnt, align 8, !tbaa !4
+  %dec = add nsw i64 %0, -1
+  store i64 %dec, i64* %refcnt, align 8, !tbaa !4
+  %cmp = icmp eq i64 %dec, 0
+  br i1 %cmp, label %if.then1, label %if.end14
+
+if.then1:                                         ; preds = %if.then
+  %array = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 3
+  %1 = load %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  %tobool2 = icmp eq %struct.PerlIO_pair_t* %1, null
+  br i1 %tobool2, label %if.end12, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then1
+  %cur = getelementptr inbounds %struct.PerlIO_list_s* %Perl_list, i64 0, i32 1
+  %2 = load i64* %cur, align 8, !tbaa !4
+  %cmp425 = icmp sgt i64 %2, 0
+  br i1 %cmp425, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %3 = phi i64 [ %7, %for.inc ], [ %2, %for.cond.preheader ]
+  %4 = phi %struct.PerlIO_pair_t* [ %6, %for.inc ], [ %1, %for.cond.preheader ]
+  %i.026 = phi i64 [ %inc, %for.inc ], [ 0, %for.cond.preheader ]
+  %arg = getelementptr inbounds %struct.PerlIO_pair_t* %4, i64 %i.026, i32 1
+  %5 = load %struct.sv** %arg, align 8, !tbaa !3
+  %tobool6 = icmp eq %struct.sv* %5, null
+  br i1 %tobool6, label %for.inc, label %if.then7
+
+if.then7:                                         ; preds = %for.body
+  tail call void @Perl_sv_free(%struct.sv* %5) #9
+  %.pre = load i64* %cur, align 8, !tbaa !4
+  %.pre28 = load %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then7
+  %6 = phi %struct.PerlIO_pair_t* [ %4, %for.body ], [ %.pre28, %if.then7 ]
+  %7 = phi i64 [ %3, %for.body ], [ %.pre, %if.then7 ]
+  %inc = add nsw i64 %i.026, 1
+  %cmp4 = icmp slt i64 %inc, %7
+  br i1 %cmp4, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %.lcssa = phi %struct.PerlIO_pair_t* [ %1, %for.cond.preheader ], [ %6, %for.inc ]
+  %8 = bitcast %struct.PerlIO_pair_t* %.lcssa to i8*
+  tail call void @Perl_safesysfree(i8* %8) #9
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then1, %for.end
+  %9 = bitcast %struct.PerlIO_list_s* %Perl_list to i8*
+  tail call void @Perl_safesysfree(i8* %9) #9
+  br label %if.end14
+
+if.end14:                                         ; preds = %entry, %if.then, %if.end12
+  ret void
+}

@@ -1,0 +1,39 @@
+define i32 @DV_writeStats(%struct._DV* %dv, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._DV* %dv, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str26, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp) #5
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([31 x i8]* @.str27, i64 0, i64 0)) #5
+  %cmp3 = icmp slt i32 %call2, 0
+  br i1 %cmp3, label %IO_error, label %if.end5
+
+if.end5:                                          ; preds = %if.end
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
+  %1 = load i32* %size, align 4, !tbaa !3
+  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1
+  %2 = load i32* %maxsize, align 4, !tbaa !3
+  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2
+  %3 = load i32* %owned, align 4, !tbaa !3
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([37 x i8]* @.str28, i64 0, i64 0), i32 %1, i32 %2, i32 %3) #5
+  %cmp7 = icmp slt i32 %call6, 0
+  br i1 %cmp7, label %IO_error, label %return
+
+IO_error:                                         ; preds = %if.end5, %if.end
+  %rc.0 = phi i32 [ %call2, %if.end ], [ %call6, %if.end5 ]
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([69 x i8]* @.str29, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp, i32 %rc.0) #5
+  br label %return
+
+return:                                           ; preds = %if.end5, %IO_error
+  %retval.0 = phi i32 [ 0, %IO_error ], [ 1, %if.end5 ]
+  ret i32 %retval.0
+}

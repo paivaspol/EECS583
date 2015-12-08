@@ -1,0 +1,62 @@
+define %struct.sv* @Perl_filter_add(i32 (i32, %struct.sv*, i32)* %funcp, %struct.sv* %datasv) #0 {
+entry:
+  %tobool = icmp eq i32 (i32, %struct.sv*, i32)* %funcp, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load %struct.av** @PL_rsfp_filters, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.av* %0, null
+  br i1 %tobool1, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  %call = tail call %struct.av* @Perl_newAV() #6
+  store %struct.av* %call, %struct.av** @PL_rsfp_filters, align 8, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then2
+  %tobool4 = icmp eq %struct.sv* %datasv, null
+  br i1 %tobool4, label %if.then5, label %if.end7
+
+if.then5:                                         ; preds = %if.end3
+  %call6 = tail call %struct.sv* @Perl_newSV(i64 0) #6
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end3, %if.then5
+  %datasv.addr.0 = phi %struct.sv* [ %datasv, %if.end3 ], [ %call6, %if.then5 ]
+  %sv_flags = getelementptr inbounds %struct.sv* %datasv.addr.0, i64 0, i32 2
+  %1 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %1, 255
+  %cmp = icmp ugt i32 %and, 14
+  br i1 %cmp, label %if.end12, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end7
+  %call8 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %datasv.addr.0, i32 15) #6
+  %tobool9 = icmp eq i8 %call8, 0
+  br i1 %tobool9, label %if.then10, label %if.end12
+
+if.then10:                                        ; preds = %lor.lhs.false
+  %call11 = tail call %struct.op* (i8*, ...)* @Perl_die(i8* getelementptr inbounds ([42 x i8]* @.str2, i64 0, i64 0)) #6
+  br label %if.end12
+
+if.end12:                                         ; preds = %lor.lhs.false, %if.then10, %if.end7
+  %2 = bitcast i32 (i32, %struct.sv*, i32)* %funcp to i8*
+  %sv_any = getelementptr inbounds %struct.sv* %datasv.addr.0, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xio_dirpu = getelementptr inbounds i8* %3, i64 72
+  %xiou_any = bitcast i8* %xio_dirpu to i8**
+  store i8* %2, i8** %xiou_any, align 8, !tbaa !0
+  %4 = load i8** %sv_any, align 8, !tbaa !0
+  %5 = getelementptr inbounds i8* %4, i64 163
+  %6 = load i8* %5, align 1, !tbaa !1
+  %or = or i8 %6, 64
+  store i8 %or, i8* %5, align 1, !tbaa !1
+  %7 = load %struct.av** @PL_rsfp_filters, align 8, !tbaa !0
+  tail call void @Perl_av_unshift(%struct.av* %7, i32 1) #6
+  %8 = load %struct.av** @PL_rsfp_filters, align 8, !tbaa !0
+  %call16 = tail call %struct.sv** @Perl_av_store(%struct.av* %8, i32 0, %struct.sv* %datasv.addr.0) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.end12
+  %retval.0 = phi %struct.sv* [ %datasv.addr.0, %if.end12 ], [ null, %entry ]
+  ret %struct.sv* %retval.0
+}

@@ -1,0 +1,27 @@
+define i32 @Mode_Decision_for_8x8IntraBlocks(i32 %b8, double %lambda, i32* nocapture %cost) #0 {
+entry:
+  %cost4x4 = alloca i32, align 4
+  %mul = fmul double %lambda, 6.000000e+00
+  %add = fadd double %mul, 4.999000e-01
+  %call = call double @floor(double %add) #9
+  %conv = fptosi double %call to i32
+  store i32 %conv, i32* %cost, align 4, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %b4.09 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
+  %nonzero.08 = phi i32 [ 0, %entry ], [ %nonzero.0., %for.body ]
+  %call2 = call i32 @Mode_Decision_for_4x4IntraBlocks(i32 %b8, i32 %b4.09, double %lambda, i32* %cost4x4) #10
+  %tobool = icmp eq i32 %call2, 0
+  %nonzero.0. = select i1 %tobool, i32 %nonzero.08, i32 1
+  %0 = load i32* %cost4x4, align 4, !tbaa !3
+  %1 = load i32* %cost, align 4, !tbaa !3
+  %add3 = add nsw i32 %1, %0
+  store i32 %add3, i32* %cost, align 4, !tbaa !3
+  %inc = add nsw i32 %b4.09, 1
+  %exitcond = icmp eq i32 %inc, 4
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret i32 %nonzero.0.
+}

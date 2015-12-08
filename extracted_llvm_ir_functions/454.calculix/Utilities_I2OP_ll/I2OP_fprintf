@@ -1,0 +1,35 @@
+define void @I2OP_fprintf(%struct._IO_FILE* %fp, %struct._I2OP* %elem) #0 {
+entry:
+  %cmp = icmp eq %struct._IO_FILE* %fp, null
+  %cmp1 = icmp eq %struct._I2OP* %elem, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end6, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %i.018 = phi i32 [ %inc, %if.end ], [ 0, %entry ]
+  %elem.addr.017 = phi %struct._I2OP* [ %4, %if.end ], [ %elem, %entry ]
+  %rem15 = and i32 %i.018, 3
+  %cmp3 = icmp eq i32 %rem15, 0
+  br i1 %cmp3, label %if.then4, label %if.end
+
+if.then4:                                         ; preds = %while.body
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
+  br label %if.end
+
+if.end:                                           ; preds = %if.then4, %while.body
+  %value0 = getelementptr inbounds %struct._I2OP* %elem.addr.017, i64 0, i32 0
+  %1 = load i32* %value0, align 4, !tbaa !3
+  %value1 = getelementptr inbounds %struct._I2OP* %elem.addr.017, i64 0, i32 1
+  %2 = load i32* %value1, align 4, !tbaa !3
+  %value2 = getelementptr inbounds %struct._I2OP* %elem.addr.017, i64 0, i32 2
+  %3 = load i8** %value2, align 8, !tbaa !0
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i32 %1, i32 %2, i8* %3) #4
+  %next = getelementptr inbounds %struct._I2OP* %elem.addr.017, i64 0, i32 3
+  %4 = load %struct._I2OP** %next, align 8, !tbaa !0
+  %inc = add nsw i32 %i.018, 1
+  %cmp2 = icmp eq %struct._I2OP* %4, null
+  br i1 %cmp2, label %if.end6, label %while.body
+
+if.end6:                                          ; preds = %if.end, %entry
+  ret void
+}

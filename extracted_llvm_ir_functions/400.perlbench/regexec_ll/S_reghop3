@@ -1,0 +1,70 @@
+define internal fastcc i8* @S_reghop3(i8* %s, i32 %off, i8* %lim) #1 {
+entry:
+  %cmp = icmp sgt i32 %off, -1
+  br i1 %cmp, label %while.cond.preheader, label %while.cond2.outer
+
+while.cond.preheader:                             ; preds = %entry
+  %tobool46 = icmp ne i32 %off, 0
+  %cmp147 = icmp ult i8* %s, %lim
+  %or.cond48 = and i1 %tobool46, %cmp147
+  br i1 %or.cond48, label %while.body, label %if.end29
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %s.addr.050 = phi i8* [ %add.ptr, %while.body ], [ %s, %while.cond.preheader ]
+  %off.addr.049 = phi i32 [ %dec, %while.body ], [ %off, %while.cond.preheader ]
+  %dec = add nsw i32 %off.addr.049, -1
+  %0 = load i8* %s.addr.050, align 1, !tbaa !1
+  %idxprom = zext i8 %0 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %idx.ext = zext i8 %1 to i64
+  %add.ptr = getelementptr inbounds i8* %s.addr.050, i64 %idx.ext
+  %tobool = icmp ne i32 %dec, 0
+  %cmp1 = icmp ult i8* %add.ptr, %lim
+  %or.cond = and i1 %tobool, %cmp1
+  br i1 %or.cond, label %while.body, label %if.end29
+
+while.cond2.outer:                                ; preds = %if.then7, %while.cond11, %land.rhs14, %entry
+  %off.addr.1.ph = phi i32 [ %off, %entry ], [ %inc, %land.rhs14 ], [ %inc, %while.cond11 ], [ %inc, %if.then7 ]
+  %s.addr.1.ph = phi i8* [ %s, %entry ], [ %s.addr.252, %land.rhs14 ], [ %incdec.ptr25, %while.cond11 ], [ %incdec.ptr, %if.then7 ]
+  %cmp5 = icmp ugt i8* %s.addr.1.ph, %lim
+  br label %while.cond2
+
+while.cond2:                                      ; preds = %while.cond2.outer, %while.body4
+  %off.addr.1 = phi i32 [ %inc, %while.body4 ], [ %off.addr.1.ph, %while.cond2.outer ]
+  %inc = add nsw i32 %off.addr.1, 1
+  %tobool3 = icmp eq i32 %off.addr.1, 0
+  br i1 %tobool3, label %if.end29, label %while.body4
+
+while.body4:                                      ; preds = %while.cond2
+  br i1 %cmp5, label %if.then7, label %while.cond2
+
+if.then7:                                         ; preds = %while.body4
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.1.ph, i64 -1
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool9 = icmp slt i8 %2, 0
+  %cmp1251 = icmp ugt i8* %incdec.ptr, %lim
+  %or.cond59 = and i1 %tobool9, %cmp1251
+  br i1 %or.cond59, label %land.rhs14, label %while.cond2.outer
+
+while.cond11:                                     ; preds = %land.rhs14
+  %cmp12 = icmp ugt i8* %incdec.ptr25, %lim
+  br i1 %cmp12, label %while.cond11.land.rhs14_crit_edge, label %while.cond2.outer
+
+while.cond11.land.rhs14_crit_edge:                ; preds = %while.cond11
+  %.pre = load i8* %incdec.ptr25, align 1, !tbaa !1
+  br label %land.rhs14
+
+land.rhs14:                                       ; preds = %if.then7, %while.cond11.land.rhs14_crit_edge
+  %3 = phi i8 [ %.pre, %while.cond11.land.rhs14_crit_edge ], [ %2, %if.then7 ]
+  %s.addr.252 = phi i8* [ %incdec.ptr25, %while.cond11.land.rhs14_crit_edge ], [ %incdec.ptr, %if.then7 ]
+  %cmp16 = icmp slt i8 %3, 0
+  %cmp20 = icmp ult i8 %3, -64
+  %or.cond45 = and i1 %cmp16, %cmp20
+  %incdec.ptr25 = getelementptr inbounds i8* %s.addr.252, i64 -1
+  br i1 %or.cond45, label %while.cond11, label %while.cond2.outer
+
+if.end29:                                         ; preds = %while.cond2, %while.cond.preheader, %while.body
+  %s.addr.3 = phi i8* [ %s, %while.cond.preheader ], [ %add.ptr, %while.body ], [ %s.addr.1.ph, %while.cond2 ]
+  ret i8* %s.addr.3
+}

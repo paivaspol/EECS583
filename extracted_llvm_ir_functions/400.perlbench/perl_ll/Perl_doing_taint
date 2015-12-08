@@ -1,0 +1,41 @@
+define signext i8 @Perl_doing_taint(i32 %argc, i8** nocapture %argv, i8** nocapture %envp) #0 {
+entry:
+  %call = tail call i32 @getuid() #7
+  %call1 = tail call i32 @geteuid() #7
+  %call2 = tail call i32 @getgid() #7
+  %call3 = tail call i32 @getegid() #7
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %cmp = icmp eq i32 %call1, %call
+  %cmp4 = icmp eq i32 %call3, %call2
+  %or.cond = and i1 %cmp, %cmp4
+  br i1 %or.cond, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  %cmp5 = icmp sgt i32 %argc, 1
+  br i1 %cmp5, label %land.lhs.true6, label %if.end23
+
+land.lhs.true6:                                   ; preds = %if.end
+  %arrayidx = getelementptr inbounds i8** %argv, i64 1
+  %0 = load i8** %arrayidx, align 8, !tbaa !0
+  %1 = load i8* %0, align 1, !tbaa !1
+  %cmp8 = icmp eq i8 %1, 45
+  br i1 %cmp8, label %land.lhs.true10, label %if.end23
+
+land.lhs.true10:                                  ; preds = %land.lhs.true6
+  %arrayidx12 = getelementptr inbounds i8* %0, i64 1
+  %2 = load i8* %arrayidx12, align 1, !tbaa !1
+  switch i8 %2, label %if.end23 [
+    i8 116, label %return
+    i8 84, label %return
+  ]
+
+if.end23:                                         ; preds = %land.lhs.true10, %land.lhs.true6, %if.end
+  br label %return
+
+return:                                           ; preds = %land.lhs.true10, %land.lhs.true10, %land.lhs.true, %if.end23
+  %retval.0 = phi i8 [ 0, %if.end23 ], [ 1, %land.lhs.true ], [ 1, %land.lhs.true10 ], [ 1, %land.lhs.true10 ]
+  ret i8 %retval.0
+}

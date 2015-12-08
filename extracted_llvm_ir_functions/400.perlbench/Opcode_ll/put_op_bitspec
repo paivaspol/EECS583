@@ -1,0 +1,37 @@
+define internal fastcc void @put_op_bitspec(i8* %optag, i64 %len, %struct.sv* %mask) #0 {
+entry:
+  %call = tail call fastcc i32 @verify_opset(%struct.sv* %mask, i32 1) #5
+  %tobool = icmp eq i64 %len, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i64 @strlen(i8* %optag) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %len.addr.0 = phi i64 [ %len, %entry ], [ %call1, %if.then ]
+  %0 = load %struct.hv** @my_cxt.0, align 8, !tbaa !0
+  %conv = trunc i64 %len.addr.0 to i32
+  %call2 = tail call %struct.sv** @Perl_hv_fetch(%struct.hv* %0, i8* %optag, i32 %conv, i32 1) #4
+  %1 = load %struct.sv** %call2, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 118423552
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.end5, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([32 x i8]* @.str51, i64 0, i64 0), i8* %optag) #4
+  %.pre = load %struct.sv** %call2, align 8, !tbaa !0
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then4
+  %3 = phi %struct.sv* [ %1, %if.end ], [ %.pre, %if.then4 ]
+  tail call void @Perl_sv_setsv_flags(%struct.sv* %3, %struct.sv* %mask, i32 2) #4
+  %4 = load %struct.sv** %call2, align 8, !tbaa !0
+  %sv_flags6 = getelementptr inbounds %struct.sv* %4, i64 0, i32 2
+  %5 = load i32* %sv_flags6, align 4, !tbaa !3
+  %or = or i32 %5, 8388608
+  store i32 %or, i32* %sv_flags6, align 4, !tbaa !3
+  ret void
+}

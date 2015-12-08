@@ -1,0 +1,64 @@
+define internal fastcc void @IIheap_siftUp(%struct._IIheap* %heap, i32 %loc) #0 {
+entry:
+  %cmp = icmp eq %struct._IIheap* %heap, null
+  %cmp1 = icmp slt i32 %loc, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %size = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 0
+  %0 = load i32* %size, align 4, !tbaa !3
+  %cmp3 = icmp sgt i32 %0, %loc
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([78 x i8]* @.str17, i64 0, i64 0), %struct._IIheap* %heap, i32 %loc, i32 %loc) #6
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %heapLoc4 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 2
+  %2 = load i32** %heapLoc4, align 8, !tbaa !0
+  %keys5 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 3
+  %3 = load i32** %keys5, align 8, !tbaa !0
+  %values6 = getelementptr inbounds %struct._IIheap* %heap, i64 0, i32 4
+  %4 = load i32** %values6, align 8, !tbaa !0
+  %cmp773 = icmp eq i32 %loc, 0
+  br i1 %cmp773, label %while.end, label %while.body
+
+while.body:                                       ; preds = %if.end, %if.then11
+  %loc.addr.074 = phi i32 [ %div, %if.then11 ], [ %loc, %if.end ]
+  %sub = add nsw i32 %loc.addr.074, -1
+  %div = sdiv i32 %sub, 2
+  %idxprom = sext i32 %div to i64
+  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom
+  %5 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom8 = sext i32 %loc.addr.074 to i64
+  %arrayidx9 = getelementptr inbounds i32* %4, i64 %idxprom8
+  %6 = load i32* %arrayidx9, align 4, !tbaa !3
+  %cmp10 = icmp slt i32 %5, %6
+  br i1 %cmp10, label %while.end, label %if.then11
+
+if.then11:                                        ; preds = %while.body
+  store i32 %6, i32* %arrayidx, align 4, !tbaa !3
+  store i32 %5, i32* %arrayidx9, align 4, !tbaa !3
+  %arrayidx21 = getelementptr inbounds i32* %3, i64 %idxprom
+  %7 = load i32* %arrayidx21, align 4, !tbaa !3
+  %arrayidx23 = getelementptr inbounds i32* %3, i64 %idxprom8
+  %8 = load i32* %arrayidx23, align 4, !tbaa !3
+  store i32 %8, i32* %arrayidx21, align 4, !tbaa !3
+  store i32 %7, i32* %arrayidx23, align 4, !tbaa !3
+  %idxprom30 = sext i32 %7 to i64
+  %arrayidx31 = getelementptr inbounds i32* %2, i64 %idxprom30
+  store i32 %loc.addr.074, i32* %arrayidx31, align 4, !tbaa !3
+  %9 = load i32* %arrayidx21, align 4, !tbaa !3
+  %idxprom34 = sext i32 %9 to i64
+  %arrayidx35 = getelementptr inbounds i32* %2, i64 %idxprom34
+  store i32 %div, i32* %arrayidx35, align 4, !tbaa !3
+  %10 = icmp ult i32 %loc.addr.074, 3
+  br i1 %10, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.then11, %while.body, %if.end
+  ret void
+}

@@ -1,0 +1,20 @@
+define i8* @Strdup(i8* %s) #0 {
+entry:
+  %cmp = icmp eq i8* %s, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i64 @strlen(i8* %s) #7
+  %add = add i64 %call, 1
+  %call1 = tail call noalias i8* @malloc(i64 %add) #8
+  %cmp2 = icmp eq i8* %call1, null
+  br i1 %cmp2, label %return, label %if.end4
+
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call i8* @strcpy(i8* %call1, i8* %s) #8
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %if.end4
+  %retval.0 = phi i8* [ %call1, %if.end4 ], [ null, %entry ], [ null, %if.end ]
+  ret i8* %retval.0
+}

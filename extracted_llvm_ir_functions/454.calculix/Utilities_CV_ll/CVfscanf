@@ -1,0 +1,36 @@
+define i32 @CVfscanf(%struct._IO_FILE* %fp, i32 %size, i8* %y) #0 {
+entry:
+  %cmp = icmp ne %struct._IO_FILE* %fp, null
+  %cmp1 = icmp sgt i32 %size, 0
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end9
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp eq i8* %y, null
+  br i1 %cmp2, label %if.then3, label %for.body
+
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str10, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, i8* null) #6
+  tail call void @exit(i32 0) #7
+  unreachable
+
+for.cond:                                         ; preds = %for.body
+  %1 = trunc i64 %indvars.iv.next to i32
+  %cmp4 = icmp slt i32 %1, %size
+  br i1 %cmp4, label %for.body, label %if.end9
+
+for.body:                                         ; preds = %if.then, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %if.then ]
+  %i.020 = phi i32 [ %inc, %for.cond ], [ 0, %if.then ]
+  %add.ptr = getelementptr inbounds i8* %y, i64 %indvars.iv
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %add.ptr) #6
+  %cmp6 = icmp eq i32 %call5, 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.020, 1
+  br i1 %cmp6, label %for.cond, label %if.end9
+
+if.end9:                                          ; preds = %for.body, %for.cond, %entry
+  %i.1 = phi i32 [ 0, %entry ], [ %i.020, %for.body ], [ %inc, %for.cond ]
+  ret i32 %i.1
+}

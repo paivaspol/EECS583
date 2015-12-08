@@ -1,0 +1,177 @@
+define internal fastcc void @S_cl_or(%struct.RExC_state_t* nocapture %pRExC_state, %struct.regnode_charclass_class* nocapture %cl, %struct.regnode_charclass_class* nocapture %or_with) #0 {
+entry:
+  %flags = getelementptr inbounds %struct.regnode_charclass_class* %or_with, i64 0, i32 0
+  %0 = load i8* %flags, align 1, !tbaa !1
+  %conv = zext i8 %0 to i32
+  %and = and i32 %conv, 4
+  %tobool = icmp eq i32 %and, 0
+  %flags4 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 0
+  %1 = load i8* %flags4, align 1, !tbaa !1
+  %conv5 = zext i8 %1 to i32
+  %2 = xor i8 %1, %0
+  %3 = and i8 %2, 1
+  %cmp = icmp eq i8 %3, 0
+  br i1 %tobool, label %if.else26, label %if.then
+
+if.then:                                          ; preds = %entry
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %if.then
+  %and10 = and i32 %conv, 2
+  %tobool11 = icmp eq i32 %and10, 0
+  br i1 %tobool11, label %land.lhs.true12, label %if.else
+
+land.lhs.true12:                                  ; preds = %land.lhs.true
+  %and15 = and i32 %conv5, 2
+  %tobool16 = icmp eq i32 %and15, 0
+  br i1 %tobool16, label %for.body, label %if.else
+
+for.body:                                         ; preds = %land.lhs.true12, %for.body
+  %indvars.iv193 = phi i64 [ %indvars.iv.next194, %for.body ], [ 0, %land.lhs.true12 ]
+  %arrayidx = getelementptr inbounds %struct.regnode_charclass_class* %or_with, i64 0, i32 4, i64 %indvars.iv193
+  %4 = load i8* %arrayidx, align 1, !tbaa !1
+  %neg = xor i8 %4, -1
+  %arrayidx23 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 4, i64 %indvars.iv193
+  %5 = load i8* %arrayidx23, align 1, !tbaa !1
+  %or = or i8 %5, %neg
+  store i8 %or, i8* %arrayidx23, align 1, !tbaa !1
+  %indvars.iv.next194 = add i64 %indvars.iv193, 1
+  %lftr.wideiv195 = trunc i64 %indvars.iv.next194 to i32
+  %exitcond196 = icmp eq i32 %lftr.wideiv195, 32
+  br i1 %exitcond196, label %if.end91, label %for.body
+
+if.else:                                          ; preds = %land.lhs.true12, %land.lhs.true, %if.then
+  %arraydecay.i = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 5, i64 0
+  %6 = bitcast i8* %arraydecay.i to i32*
+  store i32 0, i32* %6, align 1
+  %7 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 4, i64 0
+  tail call void @llvm.memset.p0i8.i64(i8* %7, i8 -1, i64 32, i32 4, i1 false) #3
+  store i8 80, i8* %flags4, align 1, !tbaa !1
+  %flags1.i = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 0
+  %8 = load i32* %flags1.i, align 4, !tbaa !3
+  %and.i = and i32 %8, 2048
+  %cmp.i = icmp eq i32 %and.i, 0
+  %..i = select i1 %cmp.i, i8 80, i8 81
+  store i8 %..i, i8* %flags4, align 1, !tbaa !1
+  br label %if.end91
+
+if.else26:                                        ; preds = %entry
+  br i1 %cmp, label %land.lhs.true35, label %if.else89
+
+land.lhs.true35:                                  ; preds = %if.else26
+  %and38 = and i32 %conv, 2
+  %tobool39 = icmp eq i32 %and38, 0
+  br i1 %tobool39, label %for.body49, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true35
+  %and42 = and i32 %conv5, 2
+  %tobool43 = icmp eq i32 %and42, 0
+  br i1 %tobool43, label %if.else89, label %for.body49
+
+for.body49:                                       ; preds = %land.lhs.true35, %lor.lhs.false, %for.body49
+  %indvars.iv189 = phi i64 [ %indvars.iv.next190, %for.body49 ], [ 0, %lor.lhs.false ], [ 0, %land.lhs.true35 ]
+  %arrayidx52 = getelementptr inbounds %struct.regnode_charclass_class* %or_with, i64 0, i32 4, i64 %indvars.iv189
+  %9 = load i8* %arrayidx52, align 1, !tbaa !1
+  %arrayidx56 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 4, i64 %indvars.iv189
+  %10 = load i8* %arrayidx56, align 1, !tbaa !1
+  %or58177 = or i8 %10, %9
+  store i8 %or58177, i8* %arrayidx56, align 1, !tbaa !1
+  %indvars.iv.next190 = add i64 %indvars.iv189, 1
+  %lftr.wideiv191 = trunc i64 %indvars.iv.next190 to i32
+  %exitcond192 = icmp eq i32 %lftr.wideiv191, 32
+  br i1 %exitcond192, label %for.end62, label %for.body49
+
+for.end62:                                        ; preds = %for.body49
+  %11 = load i8* %flags, align 1, !tbaa !1
+  %and65 = and i8 %11, 8
+  %tobool66 = icmp eq i8 %and65, 0
+  br i1 %tobool66, label %if.end91, label %for.body71
+
+for.body71:                                       ; preds = %for.end62, %for.body71
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body71 ], [ 0, %for.end62 ]
+  %arrayidx73 = getelementptr inbounds %struct.regnode_charclass_class* %or_with, i64 0, i32 5, i64 %indvars.iv
+  %12 = load i8* %arrayidx73, align 1, !tbaa !1
+  %arrayidx77 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 5, i64 %indvars.iv
+  %13 = load i8* %arrayidx77, align 1, !tbaa !1
+  %or79176 = or i8 %13, %12
+  store i8 %or79176, i8* %arrayidx77, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end83, label %for.body71
+
+for.end83:                                        ; preds = %for.body71
+  %14 = load i8* %flags4, align 1, !tbaa !1
+  %or86 = or i8 %14, 8
+  store i8 %or86, i8* %flags4, align 1, !tbaa !1
+  br label %if.end91
+
+if.else89:                                        ; preds = %lor.lhs.false, %if.else26
+  %arraydecay.i180 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 5, i64 0
+  %15 = bitcast i8* %arraydecay.i180 to i32*
+  store i32 0, i32* %15, align 1
+  %16 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 4, i64 0
+  tail call void @llvm.memset.p0i8.i64(i8* %16, i8 -1, i64 32, i32 4, i1 false) #3
+  store i8 80, i8* %flags4, align 1, !tbaa !1
+  %flags1.i182 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 0
+  %17 = load i32* %flags1.i182, align 4, !tbaa !3
+  %and.i183 = and i32 %17, 2048
+  %cmp.i184 = icmp eq i32 %and.i183, 0
+  %..i185 = select i1 %cmp.i184, i8 80, i8 81
+  store i8 %..i185, i8* %flags4, align 1, !tbaa !1
+  br label %if.end91
+
+if.end91:                                         ; preds = %for.body, %for.end62, %if.else89, %for.end83, %if.else
+  %18 = load i8* %flags, align 1, !tbaa !1
+  %and94 = and i8 %18, 16
+  %tobool95 = icmp eq i8 %and94, 0
+  %.pre = load i8* %flags4, align 1, !tbaa !1
+  br i1 %tobool95, label %if.end101, label %if.then96
+
+if.then96:                                        ; preds = %if.end91
+  %or99 = or i8 %.pre, 16
+  store i8 %or99, i8* %flags4, align 1, !tbaa !1
+  br label %if.end101
+
+if.end101:                                        ; preds = %if.end91, %if.then96
+  %19 = phi i8 [ %or99, %if.then96 ], [ %.pre, %if.end91 ]
+  %and104 = and i8 %19, 32
+  %tobool105 = icmp eq i8 %and104, 0
+  br i1 %tobool105, label %if.end124, label %land.lhs.true106
+
+land.lhs.true106:                                 ; preds = %if.end101
+  %20 = load i8* %flags, align 1, !tbaa !1
+  %and109 = and i8 %20, 32
+  %tobool110 = icmp eq i8 %and109, 0
+  br i1 %tobool110, label %if.end124, label %land.lhs.true111
+
+land.lhs.true111:                                 ; preds = %land.lhs.true106
+  %21 = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 3
+  %22 = load i32* %21, align 4, !tbaa !3
+  %23 = getelementptr inbounds %struct.regnode_charclass_class* %or_with, i64 0, i32 3
+  %24 = load i32* %23, align 4, !tbaa !3
+  %cmp113 = icmp eq i32 %22, %24
+  br i1 %cmp113, label %if.end124, label %if.then115
+
+if.then115:                                       ; preds = %land.lhs.true111
+  %or118 = and i8 %19, -97
+  %and122 = or i8 %or118, 64
+  store i8 %and122, i8* %flags4, align 1, !tbaa !1
+  br label %if.end124
+
+if.end124:                                        ; preds = %if.end101, %land.lhs.true111, %land.lhs.true106, %if.then115
+  %25 = phi i8 [ %19, %land.lhs.true111 ], [ %19, %land.lhs.true106 ], [ %and122, %if.then115 ], [ %19, %if.end101 ]
+  %26 = load i8* %flags, align 1, !tbaa !1
+  %and127 = and i8 %26, 64
+  %tobool128 = icmp eq i8 %and127, 0
+  br i1 %tobool128, label %if.end138, label %if.then129
+
+if.then129:                                       ; preds = %if.end124
+  %or132 = and i8 %25, -97
+  %and136 = or i8 %or132, 64
+  store i8 %and136, i8* %flags4, align 1, !tbaa !1
+  br label %if.end138
+
+if.end138:                                        ; preds = %if.end124, %if.then129
+  ret void
+}

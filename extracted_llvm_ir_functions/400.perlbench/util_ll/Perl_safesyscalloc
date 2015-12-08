@@ -1,0 +1,64 @@
+define noalias i8* @Perl_safesyscalloc(i64 %count, i64 %size) #0 {
+entry:
+  %mul = mul i64 %size, %count
+  %tobool = icmp ne i64 %mul, 0
+  %cond = select i1 %tobool, i64 %mul, i64 1
+  %call = tail call i8* @malloc(i64 %cond) #8
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %mul, i32 1, i1 false)
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %0 = load i8* @PL_nomemok, align 1, !tbaa !0
+  %tobool1 = icmp eq i8 %0, 0
+  br i1 %tobool1, label %if.else3, label %return
+
+if.else3:                                         ; preds = %if.else
+  %1 = load %struct.gv** @PL_stderrgv, align 8, !tbaa !2
+  %tobool4 = icmp eq %struct.gv* %1, null
+  br i1 %tobool4, label %cond.false20, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else3
+  %sv_flags = getelementptr inbounds %struct.gv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 255
+  %cmp5 = icmp eq i32 %and, 13
+  br i1 %cmp5, label %land.lhs.true6, label %cond.false20
+
+land.lhs.true6:                                   ; preds = %land.lhs.true
+  %sv_any = getelementptr inbounds %struct.gv* %1, i64 0, i32 0
+  %3 = load %struct.xpvgv** %sv_any, align 8, !tbaa !2
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %3, i64 0, i32 7
+  %4 = load %struct.gp** %xgv_gp, align 8, !tbaa !2
+  %gp_io = getelementptr inbounds %struct.gp* %4, i64 0, i32 2
+  %5 = load %struct.io** %gp_io, align 8, !tbaa !2
+  %tobool7 = icmp eq %struct.io* %5, null
+  br i1 %tobool7, label %cond.false20, label %land.lhs.true8
+
+land.lhs.true8:                                   ; preds = %land.lhs.true6
+  %sv_any12 = getelementptr inbounds %struct.io* %5, i64 0, i32 0
+  %6 = load %struct.xpvio** %sv_any12, align 8, !tbaa !2
+  %xio_ofp = getelementptr inbounds %struct.xpvio* %6, i64 0, i32 8
+  %7 = load %struct._PerlIO*** %xio_ofp, align 8, !tbaa !2
+  %tobool13 = icmp eq %struct._PerlIO** %7, null
+  br i1 %tobool13, label %cond.false20, label %cond.end22
+
+cond.false20:                                     ; preds = %land.lhs.true8, %land.lhs.true6, %if.else3, %land.lhs.true
+  %call21 = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #8
+  br label %cond.end22
+
+cond.end22:                                       ; preds = %land.lhs.true8, %cond.false20
+  %cond23 = phi %struct._PerlIO** [ %call21, %cond.false20 ], [ %7, %land.lhs.true8 ]
+  %call24 = tail call i32 @Perl_PerlIO_fileno(%struct._PerlIO** %cond23) #8
+  %call25 = tail call i64 @strlen(i8* getelementptr inbounds ([0 x i8]* @PL_no_mem, i64 0, i64 0)) #8
+  %call26 = tail call i64 @write(i32 %call24, i8* getelementptr inbounds ([0 x i8]* @PL_no_mem, i64 0, i64 0), i64 %call25) #8
+  tail call void @Perl_my_exit(i32 1) #8
+  br label %return
+
+return:                                           ; preds = %if.else, %cond.end22, %if.then
+  %retval.0 = phi i8* [ %call, %if.then ], [ null, %cond.end22 ], [ null, %if.else ]
+  ret i8* %retval.0
+}

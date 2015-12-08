@@ -1,0 +1,348 @@
+define i8* @Perl_my_atof2(i8* %orig, double* nocapture %value) #1 {
+entry:
+  %result = alloca [3 x double], align 16
+  %accumulator = alloca [2 x i64], align 16
+  %exp_acc = alloca i64, align 8
+  %tmpcast = bitcast i64* %exp_acc to [2 x i32]*
+  %0 = bitcast [3 x double]* %result to i8*
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 24, i32 16, i1 false)
+  %1 = bitcast [2 x i64]* %accumulator to i8*
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 16, i1 false)
+  %call = call i64 @strlen(i8* %orig) #5
+  %add.ptr.sum = add i64 %call, -1
+  %add.ptr1 = getelementptr inbounds i8* %orig, i64 %add.ptr.sum
+  store i64 -1, i64* %exp_acc, align 8
+  %2 = load i8* %orig, align 1, !tbaa !1
+  %switch.tableidx299 = add i8 %2, -9
+  %3 = icmp ult i8 %switch.tableidx299, 24
+  br i1 %3, label %lor.end, label %while.end
+
+while.cond:                                       ; preds = %lor.end
+  %4 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %switch.tableidx = add i8 %4, -9
+  %5 = icmp ult i8 %switch.tableidx, 24
+  br i1 %5, label %lor.end, label %while.end
+
+lor.end:                                          ; preds = %entry, %while.cond
+  %6 = phi i8 [ %4, %while.cond ], [ %2, %entry ]
+  %switch.tableidx301 = phi i8 [ %switch.tableidx, %while.cond ], [ %switch.tableidx299, %entry ]
+  %incdec.ptr.i274300 = phi i8* [ %incdec.ptr, %while.cond ], [ %orig, %entry ]
+  %switch.cast = zext i8 %switch.tableidx301 to i24
+  %switch.downshift = lshr i24 -8388581, %switch.cast
+  %7 = and i24 %switch.downshift, 1
+  %switch.masked = icmp eq i24 %7, 0
+  %incdec.ptr = getelementptr inbounds i8* %incdec.ptr.i274300, i64 1
+  br i1 %switch.masked, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %while.cond, %lor.end, %entry
+  %8 = phi i8 [ %2, %entry ], [ %6, %lor.end ], [ %4, %while.cond ]
+  %incdec.ptr.i274.lcssa = phi i8* [ %orig, %entry ], [ %incdec.ptr.i274300, %lor.end ], [ %incdec.ptr, %while.cond ]
+  %conv17 = sext i8 %8 to i32
+  switch i32 %conv17, label %while.body21.preheader [
+    i32 45, label %sw.bb
+    i32 43, label %sw.bb18
+  ]
+
+sw.bb:                                            ; preds = %while.end
+  br label %sw.bb18
+
+sw.bb18:                                          ; preds = %while.end, %sw.bb
+  %negative.0 = phi i8 [ 0, %while.end ], [ 1, %sw.bb ]
+  %incdec.ptr19 = getelementptr inbounds i8* %incdec.ptr.i274.lcssa, i64 1
+  br label %while.body21.preheader
+
+while.body21.preheader:                           ; preds = %sw.bb18, %while.end
+  %incdec.ptr.i272.ph = phi i8* [ %incdec.ptr.i274.lcssa, %while.end ], [ %incdec.ptr19, %sw.bb18 ]
+  %negative.1.ph = phi i8 [ 0, %while.end ], [ %negative.0, %sw.bb18 ]
+  br label %while.body21.outer.outer
+
+while.body21.outer.outer:                         ; preds = %if.end56, %while.body71, %while.body21.preheader
+  %incdec.ptr.i272.ph292.ph = phi i8* [ %incdec.ptr.i272.ph, %while.body21.preheader ], [ %incdec.ptr28, %if.end56 ], [ %incdec.ptr72, %while.body71 ]
+  %seen_digit.0.ph.ph = phi i8 [ 0, %while.body21.preheader ], [ 1, %if.end56 ], [ 1, %while.body71 ]
+  %exp_adjust.sroa.1.0.ph.ph = phi i32 [ 0, %while.body21.preheader ], [ %exp_adjust.sroa.1.2.ph, %if.end56 ], [ %exp_adjust.sroa.1.2.ph, %while.body71 ]
+  %exp_adjust.sroa.0.0.ph.ph = phi i32 [ 0, %while.body21.preheader ], [ %exp_adjust.sroa.0.1.ph, %if.end56 ], [ %exp_adjust.sroa.0.1.inc76, %while.body71 ]
+  %seen_dp.0.ph.ph = phi i32 [ 0, %while.body21.preheader ], [ %seen_dp.0, %if.end56 ], [ %seen_dp.0, %while.body71 ]
+  %digit.0.ph.ph = phi i32 [ 0, %while.body21.preheader ], [ %sub, %if.end56 ], [ %sub, %while.body71 ]
+  %sig_digits.0.ph.ph = phi i32 [ 0, %while.body21.preheader ], [ %inc37, %if.end56 ], [ %inc37, %while.body71 ]
+  br label %while.body21.outer.outer303
+
+while.body21.outer.outer303:                      ; preds = %while.body21.outer.outer, %if.end99
+  %incdec.ptr.i272.ph292.ph304 = phi i8* [ %incdec.ptr28, %if.end99 ], [ %incdec.ptr.i272.ph292.ph, %while.body21.outer.outer ]
+  %seen_digit.0.ph.ph305 = phi i8 [ 1, %if.end99 ], [ %seen_digit.0.ph.ph, %while.body21.outer.outer ]
+  %exp_adjust.sroa.1.0.ph.ph306 = phi i32 [ %inc.exp_adjust.sroa.1.0, %if.end99 ], [ %exp_adjust.sroa.1.0.ph.ph, %while.body21.outer.outer ]
+  %seen_dp.0.ph.ph307 = phi i32 [ %seen_dp.0, %if.end99 ], [ %seen_dp.0.ph.ph, %while.body21.outer.outer ]
+  %digit.0.ph.ph308 = phi i32 [ %sub, %if.end99 ], [ %digit.0.ph.ph, %while.body21.outer.outer ]
+  %sig_digits.0.ph.ph309 = phi i32 [ %inc37, %if.end99 ], [ %sig_digits.0.ph.ph, %while.body21.outer.outer ]
+  %cmp117 = icmp sgt i32 %sig_digits.0.ph.ph309, 17
+  br label %while.body21.outer
+
+while.body21.outer:                               ; preds = %while.body21.outer.outer303, %if.then
+  %incdec.ptr.i272.ph292 = phi i8* [ %incdec.ptr28, %if.then ], [ %incdec.ptr.i272.ph292.ph304, %while.body21.outer.outer303 ]
+  %seen_digit.0.ph = phi i8 [ 1, %if.then ], [ %seen_digit.0.ph.ph305, %while.body21.outer.outer303 ]
+  %exp_adjust.sroa.1.0.ph = phi i32 [ %inc.exp_adjust.sroa.1.0, %if.then ], [ %exp_adjust.sroa.1.0.ph.ph306, %while.body21.outer.outer303 ]
+  %seen_dp.0.ph = phi i32 [ %seen_dp.0, %if.then ], [ %seen_dp.0.ph.ph307, %while.body21.outer.outer303 ]
+  %digit.0.ph = phi i32 [ %sub, %if.then ], [ %digit.0.ph.ph308, %while.body21.outer.outer303 ]
+  br label %while.body21
+
+while.body21:                                     ; preds = %if.then116, %while.body21.outer
+  %incdec.ptr.i272 = phi i8* [ %incdec.ptr.i272.ph292, %while.body21.outer ], [ %incdec.ptr.i, %if.then116 ]
+  %seen_dp.0 = phi i32 [ %seen_dp.0.ph, %while.body21.outer ], [ 1, %if.then116 ]
+  %9 = load i8* %incdec.ptr.i272, align 1, !tbaa !1
+  %.off = add i8 %9, -48
+  %10 = icmp ult i8 %.off, 10
+  br i1 %10, label %if.then, label %if.else110
+
+if.then:                                          ; preds = %while.body21
+  %incdec.ptr28 = getelementptr inbounds i8* %incdec.ptr.i272, i64 1
+  %conv29 = sext i8 %9 to i32
+  %sub = add nsw i32 %conv29, -48
+  %inc.exp_adjust.sroa.1.0 = add nsw i32 %seen_dp.0, %exp_adjust.sroa.1.0.ph
+  %11 = or i32 %sub, %sig_digits.0.ph.ph309
+  %12 = icmp eq i32 %11, 0
+  br i1 %12, label %while.body21.outer, label %if.end36
+
+if.end36:                                         ; preds = %if.then
+  %tobool = icmp eq i32 %seen_dp.0, 0
+  %inc37 = add nsw i32 %sig_digits.0.ph.ph309, 1
+  %cmp38 = icmp sgt i32 %sig_digits.0.ph.ph309, 16
+  br i1 %cmp38, label %if.then40, label %if.else79
+
+if.then40:                                        ; preds = %if.end36
+  %cmp41 = icmp sgt i32 %sub, 5
+  br i1 %cmp41, label %if.then43, label %if.else
+
+if.then43:                                        ; preds = %if.then40
+  %idxprom254 = zext i32 %seen_dp.0 to i64
+  %arrayidx44 = getelementptr inbounds [2 x i64]* %accumulator, i64 0, i64 %idxprom254
+  %13 = load i64* %arrayidx44, align 8, !tbaa !0
+  %inc45 = add i64 %13, 1
+  store i64 %inc45, i64* %arrayidx44, align 8, !tbaa !0
+  br label %if.end56
+
+if.else:                                          ; preds = %if.then40
+  %cmp46 = icmp eq i32 %sub, 5
+  br i1 %cmp46, label %if.then48, label %if.end56
+
+if.then48:                                        ; preds = %if.else
+  %rem252 = and i32 %digit.0.ph, 1
+  %tobool49 = icmp eq i32 %rem252, 0
+  br i1 %tobool49, label %if.end56, label %if.then50
+
+if.then50:                                        ; preds = %if.then48
+  %idxprom51253 = zext i32 %seen_dp.0 to i64
+  %arrayidx52 = getelementptr inbounds [2 x i64]* %accumulator, i64 0, i64 %idxprom51253
+  %14 = load i64* %arrayidx52, align 8, !tbaa !0
+  %inc53 = add i64 %14, 1
+  store i64 %inc53, i64* %arrayidx52, align 8, !tbaa !0
+  br label %if.end56
+
+if.end56:                                         ; preds = %if.then48, %if.else, %if.then50, %if.then43
+  %not.tobool = xor i1 %tobool, true
+  %dec = sext i1 %not.tobool to i32
+  %exp_adjust.sroa.1.2.ph = add nsw i32 %inc.exp_adjust.sroa.1.0, %dec
+  %inc62 = zext i1 %tobool to i32
+  %exp_adjust.sroa.0.1.ph = add nsw i32 %exp_adjust.sroa.0.0.ph.ph, %inc62
+  %15 = load i8* %incdec.ptr28, align 1, !tbaa !1
+  %.off281286 = add i8 %15, -48
+  %16 = icmp ult i8 %.off281286, 10
+  br i1 %16, label %while.body71.lr.ph, label %while.body21.outer.outer
+
+while.body71.lr.ph:                               ; preds = %if.end56
+  %inc76 = xor i32 %seen_dp.0, 1
+  br label %while.body71
+
+while.body71:                                     ; preds = %while.body71.lr.ph, %while.body71
+  %exp_adjust.sroa.0.1288 = phi i32 [ %exp_adjust.sroa.0.1.ph, %while.body71.lr.ph ], [ %exp_adjust.sroa.0.1.inc76, %while.body71 ]
+  %incdec.ptr.i273287 = phi i8* [ %incdec.ptr28, %while.body71.lr.ph ], [ %incdec.ptr72, %while.body71 ]
+  %incdec.ptr72 = getelementptr inbounds i8* %incdec.ptr.i273287, i64 1
+  %exp_adjust.sroa.0.1.inc76 = add nsw i32 %exp_adjust.sroa.0.1288, %inc76
+  %17 = load i8* %incdec.ptr72, align 1, !tbaa !1
+  %.off281 = add i8 %17, -48
+  %18 = icmp ult i8 %.off281, 10
+  br i1 %18, label %while.body71, label %while.body21.outer.outer
+
+if.else79:                                        ; preds = %if.end36
+  %idxprom80251 = zext i32 %seen_dp.0 to i64
+  %arrayidx81 = getelementptr inbounds [2 x i64]* %accumulator, i64 0, i64 %idxprom80251
+  %19 = load i64* %arrayidx81, align 8, !tbaa !0
+  %cmp82 = icmp ugt i64 %19, 1844674407370955160
+  br i1 %cmp82, label %if.then84, label %if.else79.if.end99_crit_edge
+
+if.else79.if.end99_crit_edge:                     ; preds = %if.else79
+  %arrayidx107.phi.trans.insert = getelementptr inbounds [2 x i32]* %tmpcast, i64 0, i64 %idxprom80251
+  %.pre338 = load i32* %arrayidx107.phi.trans.insert, align 4, !tbaa !3
+  %phitmp = mul i64 %19, 10
+  %phitmp339 = add i32 %.pre338, 1
+  br label %if.end99
+
+if.then84:                                        ; preds = %if.else79
+  %arrayidx86 = getelementptr inbounds [3 x double]* %result, i64 0, i64 %idxprom80251
+  %20 = load double* %arrayidx86, align 8, !tbaa !5
+  %arrayidx88 = getelementptr inbounds [2 x i32]* %tmpcast, i64 0, i64 %idxprom80251
+  %21 = load i32* %arrayidx88, align 4, !tbaa !3
+  %call89 = call fastcc double @S_mulexp10(double %20, i32 %21) #6
+  %conv92 = uitofp i64 %19 to double
+  %add = fadd double %conv92, %call89
+  store double %add, double* %arrayidx86, align 8, !tbaa !5
+  store i64 0, i64* %arrayidx81, align 8, !tbaa !0
+  store i32 0, i32* %arrayidx88, align 4, !tbaa !3
+  br label %if.end99
+
+if.end99:                                         ; preds = %if.else79.if.end99_crit_edge, %if.then84
+  %22 = phi i32 [ 1, %if.then84 ], [ %phitmp339, %if.else79.if.end99_crit_edge ]
+  %23 = phi i64 [ 0, %if.then84 ], [ %phitmp, %if.else79.if.end99_crit_edge ]
+  %conv102 = sext i32 %sub to i64
+  %add103 = add i64 %23, %conv102
+  store i64 %add103, i64* %arrayidx81, align 8, !tbaa !0
+  %arrayidx107 = getelementptr inbounds [2 x i32]* %tmpcast, i64 0, i64 %idxprom80251
+  store i32 %22, i32* %arrayidx107, align 4, !tbaa !3
+  br label %while.body21.outer.outer303
+
+if.else110:                                       ; preds = %while.body21
+  %tobool111 = icmp eq i32 %seen_dp.0, 0
+  br i1 %tobool111, label %land.lhs.true112, label %while.end137
+
+land.lhs.true112:                                 ; preds = %if.else110
+  %cmp.i = icmp ult i8* %incdec.ptr.i272, %add.ptr1
+  %cmp1.i = icmp eq i8 %9, 46
+  %or.cond = and i1 %cmp.i, %cmp1.i
+  br i1 %or.cond, label %if.then116, label %while.end137
+
+if.then116:                                       ; preds = %land.lhs.true112
+  %incdec.ptr.i = getelementptr inbounds i8* %incdec.ptr.i272, i64 1
+  br i1 %cmp117, label %while.cond121, label %while.body21
+
+while.cond121:                                    ; preds = %if.then116, %while.cond121
+  %.pn = phi i8* [ %storemerge, %while.cond121 ], [ %incdec.ptr.i, %if.then116 ]
+  %storemerge = getelementptr inbounds i8* %.pn, i64 1
+  %24 = load i8* %storemerge, align 1, !tbaa !1
+  %.off280 = add i8 %24, -48
+  %25 = icmp ult i8 %.off280, 10
+  br i1 %25, label %while.cond121, label %while.end137
+
+while.end137:                                     ; preds = %land.lhs.true112, %if.else110, %while.cond121
+  %incdec.ptr.i277 = phi i8* [ %storemerge, %while.cond121 ], [ %incdec.ptr.i272, %if.else110 ], [ %incdec.ptr.i272, %land.lhs.true112 ]
+  %seen_dp.1 = phi i32 [ 1, %while.cond121 ], [ %seen_dp.0, %if.else110 ], [ 0, %land.lhs.true112 ]
+  %arrayidx138 = getelementptr inbounds [3 x double]* %result, i64 0, i64 0
+  %26 = load double* %arrayidx138, align 16, !tbaa !5
+  %27 = load i64* %exp_acc, align 8
+  %28 = trunc i64 %27 to i32
+  %call140 = call fastcc double @S_mulexp10(double %26, i32 %28) #6
+  %arrayidx141 = getelementptr inbounds [2 x i64]* %accumulator, i64 0, i64 0
+  %29 = load i64* %arrayidx141, align 16, !tbaa !0
+  %conv142 = uitofp i64 %29 to double
+  %add143 = fadd double %call140, %conv142
+  store double %add143, double* %arrayidx138, align 16, !tbaa !5
+  %tobool145 = icmp ne i32 %seen_dp.1, 0
+  br i1 %tobool145, label %if.then146, label %if.end154
+
+if.then146:                                       ; preds = %while.end137
+  %30 = lshr i64 %27, 32
+  %31 = trunc i64 %30 to i32
+  %arrayidx147 = getelementptr inbounds [3 x double]* %result, i64 0, i64 1
+  %32 = load double* %arrayidx147, align 8, !tbaa !5
+  %call149 = call fastcc double @S_mulexp10(double %32, i32 %31) #6
+  %arrayidx150 = getelementptr inbounds [2 x i64]* %accumulator, i64 0, i64 1
+  %33 = load i64* %arrayidx150, align 8, !tbaa !0
+  %conv151 = uitofp i64 %33 to double
+  %add152 = fadd double %call149, %conv151
+  store double %add152, double* %arrayidx147, align 8, !tbaa !5
+  br label %if.end154
+
+if.end154:                                        ; preds = %if.then146, %while.end137
+  %tobool156 = icmp eq i8 %seen_digit.0.ph, 0
+  br i1 %tobool156, label %if.end192, label %land.lhs.true157
+
+land.lhs.true157:                                 ; preds = %if.end154
+  %34 = load i8* %incdec.ptr.i277, align 1, !tbaa !1
+  switch i8 %34, label %if.end192 [
+    i8 101, label %if.then165
+    i8 69, label %if.then165
+  ]
+
+if.then165:                                       ; preds = %land.lhs.true157, %land.lhs.true157
+  %incdec.ptr166 = getelementptr inbounds i8* %incdec.ptr.i277, i64 1
+  %35 = load i8* %incdec.ptr166, align 1, !tbaa !1
+  %conv167 = sext i8 %35 to i32
+  switch i32 %conv167, label %while.cond172.preheader [
+    i32 45, label %sw.bb168
+    i32 43, label %sw.bb169
+  ]
+
+sw.bb168:                                         ; preds = %if.then165
+  br label %sw.bb169
+
+sw.bb169:                                         ; preds = %if.then165, %sw.bb168
+  %expnegative.0 = phi i8 [ 0, %if.then165 ], [ 1, %sw.bb168 ]
+  %incdec.ptr170 = getelementptr inbounds i8* %incdec.ptr.i277, i64 2
+  %.pre = load i8* %incdec.ptr170, align 1, !tbaa !1
+  br label %while.cond172.preheader
+
+while.cond172.preheader:                          ; preds = %sw.bb169, %if.then165
+  %36 = phi i8 [ %35, %if.then165 ], [ %.pre, %sw.bb169 ]
+  %incdec.ptr.i276.ph = phi i8* [ %incdec.ptr166, %if.then165 ], [ %incdec.ptr170, %sw.bb169 ]
+  %expnegative.1.ph = phi i8 [ 0, %if.then165 ], [ %expnegative.0, %sw.bb169 ]
+  %.off279282 = add i8 %36, -48
+  %37 = icmp ult i8 %.off279282, 10
+  br i1 %37, label %while.body181, label %while.end187
+
+while.body181:                                    ; preds = %while.cond172.preheader, %while.body181
+  %38 = phi i8 [ %39, %while.body181 ], [ %36, %while.cond172.preheader ]
+  %exponent.0284 = phi i32 [ %add186, %while.body181 ], [ 0, %while.cond172.preheader ]
+  %incdec.ptr.i276283 = phi i8* [ %incdec.ptr183, %while.body181 ], [ %incdec.ptr.i276.ph, %while.cond172.preheader ]
+  %mul182 = mul nsw i32 %exponent.0284, 10
+  %incdec.ptr183 = getelementptr inbounds i8* %incdec.ptr.i276283, i64 1
+  %conv184 = sext i8 %38 to i32
+  %sub185 = add i32 %mul182, -48
+  %add186 = add i32 %sub185, %conv184
+  %39 = load i8* %incdec.ptr183, align 1, !tbaa !1
+  %.off279 = add i8 %39, -48
+  %40 = icmp ult i8 %.off279, 10
+  br i1 %40, label %while.body181, label %while.end187
+
+while.end187:                                     ; preds = %while.body181, %while.cond172.preheader
+  %exponent.0.lcssa = phi i32 [ 0, %while.cond172.preheader ], [ %add186, %while.body181 ]
+  %incdec.ptr.i276.lcssa = phi i8* [ %incdec.ptr.i276.ph, %while.cond172.preheader ], [ %incdec.ptr183, %while.body181 ]
+  %tobool188 = icmp eq i8 %expnegative.1.ph, 0
+  %sub190 = sub nsw i32 0, %exponent.0.lcssa
+  %exponent.0.sub190 = select i1 %tobool188, i32 %exponent.0.lcssa, i32 %sub190
+  br label %if.end192
+
+if.end192:                                        ; preds = %while.end187, %land.lhs.true157, %if.end154
+  %incdec.ptr.i275 = phi i8* [ %incdec.ptr.i277, %if.end154 ], [ %incdec.ptr.i277, %land.lhs.true157 ], [ %incdec.ptr.i276.lcssa, %while.end187 ]
+  %exponent.1 = phi i32 [ 0, %if.end154 ], [ 0, %land.lhs.true157 ], [ %exponent.0.sub190, %while.end187 ]
+  %add197 = add nsw i32 %exponent.1, %exp_adjust.sroa.0.0.ph.ph
+  %call198 = call fastcc double @S_mulexp10(double %add143, i32 %add197) #6
+  br i1 %tobool145, label %if.then194, label %if.else205
+
+if.then194:                                       ; preds = %if.end192
+  %arrayidx199 = getelementptr inbounds [3 x double]* %result, i64 0, i64 1
+  %41 = load double* %arrayidx199, align 8, !tbaa !5
+  %sub201 = sub nsw i32 %exponent.1, %exp_adjust.sroa.1.0.ph
+  %call202 = call fastcc double @S_mulexp10(double %41, i32 %sub201) #6
+  %add203 = fadd double %call198, %call202
+  %arrayidx204 = getelementptr inbounds [3 x double]* %result, i64 0, i64 2
+  store double %add203, double* %arrayidx204, align 16, !tbaa !5
+  br label %if.end211
+
+if.else205:                                       ; preds = %if.end192
+  %arrayidx210 = getelementptr inbounds [3 x double]* %result, i64 0, i64 2
+  store double %call198, double* %arrayidx210, align 16, !tbaa !5
+  br label %if.end211
+
+if.end211:                                        ; preds = %if.else205, %if.then194
+  %42 = phi double [ %call198, %if.else205 ], [ %add203, %if.then194 ]
+  %tobool212 = icmp eq i8 %negative.1.ph, 0
+  br i1 %tobool212, label %if.end217, label %if.then213
+
+if.then213:                                       ; preds = %if.end211
+  %arrayidx214 = getelementptr inbounds [3 x double]* %result, i64 0, i64 2
+  %sub215 = fsub double -0.000000e+00, %42
+  store double %sub215, double* %arrayidx214, align 16, !tbaa !5
+  br label %if.end217
+
+if.end217:                                        ; preds = %if.end211, %if.then213
+  %43 = phi double [ %sub215, %if.then213 ], [ %42, %if.end211 ]
+  store double %43, double* %value, align 8, !tbaa !5
+  ret i8* %incdec.ptr.i275
+}

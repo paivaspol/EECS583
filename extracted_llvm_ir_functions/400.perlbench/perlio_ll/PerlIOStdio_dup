@@ -1,0 +1,48 @@
+define %struct._PerlIO** @PerlIOStdio_dup(%struct._PerlIO** %f, %struct._PerlIO** %o, %struct.clone_params* %param, i32 %flags) #1 {
+entry:
+  %mode = alloca [8 x i8], align 1
+  %call = call %struct._PerlIO** @PerlIOBase_dup(%struct._PerlIO** %f, %struct._PerlIO** %o, %struct.clone_params* %param, i32 %flags) #10
+  %tobool = icmp eq %struct._PerlIO** %call, null
+  br i1 %tobool, label %if.end16, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._PerlIO** %o, align 8, !tbaa !3
+  %stdio1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio1 to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %call2 = call i32 @fileno(%struct._IO_FILE* %2) #9
+  %and = and i32 %flags, 2
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.end10, label %if.then4
+
+if.then4:                                         ; preds = %if.then
+  %call5 = call i32 @fileno(%struct._IO_FILE* %2) #9
+  %call6 = call i32 @dup(i32 %call5) #9
+  %cmp = icmp sgt i32 %call6, -1
+  br i1 %cmp, label %if.then7, label %if.end10
+
+if.then7:                                         ; preds = %if.then4
+  %arraydecay = getelementptr inbounds [8 x i8]* %mode, i64 0, i64 0
+  %call8 = call i8* @PerlIO_modestr(%struct._PerlIO** %o, i8* %arraydecay) #10
+  %call9 = call %struct._IO_FILE* @fdopen(i32 %call6, i8* %call8) #9
+  br label %set_this
+
+if.end10:                                         ; preds = %if.then, %if.then4
+  %arraydecay11 = getelementptr inbounds [8 x i8]* %mode, i64 0, i64 0
+  %call12 = call i8* @PerlIO_modestr(%struct._PerlIO** %o, i8* %arraydecay11) #10
+  %call13 = call %struct._IO_FILE* @fdopen(i32 %call2, i8* %call12) #9
+  br label %set_this
+
+set_this:                                         ; preds = %if.end10, %if.then7
+  %stdio.0 = phi %struct._IO_FILE* [ %call9, %if.then7 ], [ %call13, %if.end10 ]
+  %3 = load %struct._PerlIO** %call, align 8, !tbaa !3
+  %4 = getelementptr inbounds %struct._PerlIO* %3, i64 1, i32 0
+  %stdio.0.c = bitcast %struct._IO_FILE* %stdio.0 to %struct._PerlIO*
+  store %struct._PerlIO* %stdio.0.c, %struct._PerlIO** %4, align 8, !tbaa !3
+  %call15 = call i32 @fileno(%struct._IO_FILE* %stdio.0) #9
+  call void @PerlIOUnix_refcnt_inc(i32 %call15) #10
+  br label %if.end16
+
+if.end16:                                         ; preds = %entry, %set_this
+  ret %struct._PerlIO** %call
+}

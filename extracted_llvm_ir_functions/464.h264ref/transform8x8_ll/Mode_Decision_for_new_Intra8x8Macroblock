@@ -1,0 +1,35 @@
+define i32 @Mode_Decision_for_new_Intra8x8Macroblock(double %lambda, i32* nocapture %min_cost) #0 {
+entry:
+  %cost8x8 = alloca i32, align 4
+  %mul = fmul double %lambda, 6.000000e+00
+  %add = fadd double %mul, 4.999000e-01
+  %call = call double @floor(double %add) #4
+  %conv = fptosi double %call to i32
+  store i32 %conv, i32* %min_cost, align 4, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %if.end, %entry
+  %b8.011 = phi i32 [ 0, %entry ], [ %inc, %if.end ]
+  %cbp.010 = phi i32 [ 0, %entry ], [ %cbp.1, %if.end ]
+  %call2 = call i32 @Mode_Decision_for_new_8x8IntraBlocks(i32 %b8.011, double %lambda, i32* %cost8x8) #5
+  %tobool = icmp eq i32 %call2, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %shl = shl i32 1, %b8.011
+  %or = or i32 %shl, %cbp.010
+  br label %if.end
+
+if.end:                                           ; preds = %for.body, %if.then
+  %cbp.1 = phi i32 [ %or, %if.then ], [ %cbp.010, %for.body ]
+  %0 = load i32* %cost8x8, align 4, !tbaa !0
+  %1 = load i32* %min_cost, align 4, !tbaa !0
+  %add3 = add nsw i32 %1, %0
+  store i32 %add3, i32* %min_cost, align 4, !tbaa !0
+  %inc = add nsw i32 %b8.011, 1
+  %exitcond = icmp eq i32 %inc, 4
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end
+  ret i32 %cbp.1
+}

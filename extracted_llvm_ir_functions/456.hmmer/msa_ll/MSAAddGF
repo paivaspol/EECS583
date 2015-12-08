@@ -1,0 +1,75 @@
+define void @MSAAddGF(%struct.msa_struct* nocapture %msa, i8* %tag, i8* %value) #0 {
+entry:
+  %gf_tag = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 23
+  %0 = load i8*** %gf_tag, align 8, !tbaa !0
+  %cmp = icmp eq i8** %0, null
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %alloc_ngf3.phi.trans.insert = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 26
+  %.pre = load i32* %alloc_ngf3.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 395, i64 80) #6
+  %1 = bitcast i8* %call to i8**
+  store i8** %1, i8*** %gf_tag, align 8, !tbaa !0
+  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 396, i64 80) #6
+  %2 = bitcast i8* %call2 to i8**
+  %gf = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 24
+  store i8** %2, i8*** %gf, align 8, !tbaa !0
+  %alloc_ngf = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 26
+  store i32 10, i32* %alloc_ngf, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %3 = phi i32 [ %.pre, %entry.if.end_crit_edge ], [ 10, %if.then ]
+  %ngf = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 25
+  %4 = load i32* %ngf, align 4, !tbaa !3
+  %alloc_ngf3 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 26
+  %cmp4 = icmp eq i32 %4, %3
+  br i1 %cmp4, label %if.then5, label %if.end.if.end17_crit_edge
+
+if.end.if.end17_crit_edge:                        ; preds = %if.end
+  %gf24.pre = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 24
+  br label %if.end17
+
+if.then5:                                         ; preds = %if.end
+  %add = add nsw i32 %3, 10
+  store i32 %add, i32* %alloc_ngf3, align 4, !tbaa !3
+  %5 = load i8*** %gf_tag, align 8, !tbaa !0
+  %6 = bitcast i8** %5 to i8*
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call9 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 401, i8* %6, i64 %mul) #6
+  %7 = bitcast i8* %call9 to i8**
+  store i8** %7, i8*** %gf_tag, align 8, !tbaa !0
+  %gf11 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 24
+  %8 = load i8*** %gf11, align 8, !tbaa !0
+  %9 = bitcast i8** %8 to i8*
+  %10 = load i32* %alloc_ngf3, align 4, !tbaa !3
+  %conv13 = sext i32 %10 to i64
+  %mul14 = shl nsw i64 %conv13, 3
+  %call15 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 402, i8* %9, i64 %mul14) #6
+  %11 = bitcast i8* %call15 to i8**
+  store i8** %11, i8*** %gf11, align 8, !tbaa !0
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end.if.end17_crit_edge, %if.then5
+  %gf24.pre-phi = phi i8*** [ %gf24.pre, %if.end.if.end17_crit_edge ], [ %gf11, %if.then5 ]
+  %call18 = tail call i8* @sre_strdup(i8* %tag, i32 -1) #6
+  %12 = load i32* %ngf, align 4, !tbaa !3
+  %idxprom = sext i32 %12 to i64
+  %13 = load i8*** %gf_tag, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %13, i64 %idxprom
+  store i8* %call18, i8** %arrayidx, align 8, !tbaa !0
+  %call21 = tail call i8* @sre_strdup(i8* %value, i32 -1) #6
+  %14 = load i32* %ngf, align 4, !tbaa !3
+  %idxprom23 = sext i32 %14 to i64
+  %15 = load i8*** %gf24.pre-phi, align 8, !tbaa !0
+  %arrayidx25 = getelementptr inbounds i8** %15, i64 %idxprom23
+  store i8* %call21, i8** %arrayidx25, align 8, !tbaa !0
+  %inc = add nsw i32 %14, 1
+  store i32 %inc, i32* %ngf, align 4, !tbaa !3
+  ret void
+}

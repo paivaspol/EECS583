@@ -1,0 +1,39 @@
+define internal fastcc void @prepareToAddNewEntries(%struct._InpMtx* %inpmtx, i32 %nnewent) #0 {
+entry:
+  %nent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4
+  %0 = load i32* %nent, align 4, !tbaa !3
+  %add = add nsw i32 %0, %nnewent
+  %maxnent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3
+  %1 = load i32* %maxnent, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %add, %1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @InpMtx_sortAndCompress(%struct._InpMtx* %inpmtx) #4
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1
+  store i32 2, i32* %storageMode, align 4, !tbaa !3
+  %.pre = load i32* %nent, align 4, !tbaa !3
+  %.pre31 = load i32* %maxnent, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre31, %if.then ], [ %1, %entry ]
+  %3 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %add2 = add nsw i32 %3, %nnewent
+  %cmp4 = icmp sgt i32 %add2, %2
+  br i1 %cmp4, label %if.then5, label %if.end16
+
+if.then5:                                         ; preds = %if.end
+  %conv = sitofp i32 %2 to double
+  %resizeMultiple = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5
+  %4 = load double* %resizeMultiple, align 8, !tbaa !4
+  %mul = fmul double %conv, %4
+  %conv7 = fptosi double %mul to i32
+  %cmp10 = icmp slt i32 %conv7, %add2
+  %add2.conv7 = select i1 %cmp10, i32 %add2, i32 %conv7
+  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %add2.conv7) #4
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.then5, %if.end
+  ret void
+}

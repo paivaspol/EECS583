@@ -1,0 +1,27 @@
+define internal fastcc void @free_context(%struct.stcxt* nocapture %cxt) #1 {
+entry:
+  %prev1 = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 27
+  %0 = load %struct.sv** %prev1, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %0, null
+  br i1 %tobool, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %0, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %1 to %struct.sv**
+  %2 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_any3 = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %3 = load i8** %sv_any3, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %3 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  %phitmp = bitcast i8* %4 to %struct.stcxt*
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi %struct.stcxt* [ %phitmp, %cond.true ], [ null, %entry ]
+  %my_sv = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 28
+  %5 = load %struct.sv** %my_sv, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %5) #7
+  store %struct.stcxt* %cond, %struct.stcxt** @Context_ptr, align 8, !tbaa !0
+  ret void
+}

@@ -1,0 +1,40 @@
+define i32 @main(i32 %argc, i8** %argv, i8** nocapture %env) #0 {
+entry:
+  store i32 0, i32* @PL_use_safe_putenv, align 4, !tbaa !0
+  %0 = load i8* @PL_do_undump, align 1, !tbaa !1
+  %tobool = icmp eq i8 %0, 0
+  br i1 %tobool, label %if.then, label %if.end3
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.interpreter* @perl_alloc() #4
+  %tobool1 = icmp eq %struct.interpreter* %call, null
+  br i1 %tobool1, label %if.then2, label %if.end
+
+if.then2:                                         ; preds = %if.then
+  tail call void @exit(i32 1) #5
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  tail call void @perl_construct(%struct.interpreter* %call) #4
+  store i32 0, i32* @PL_perl_destruct_level, align 4, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %entry, %if.end
+  %call15 = phi %struct.interpreter* [ null, %entry ], [ %call, %if.end ]
+  %1 = load i8* @PL_exit_flags, align 1, !tbaa !1
+  %or = or i8 %1, 2
+  store i8 %or, i8* @PL_exit_flags, align 1, !tbaa !1
+  %call5 = tail call i32 @perl_parse(%struct.interpreter* %call15, void ()* @xs_init, i32 %argc, i8** %argv, i8** null) #4
+  %tobool6 = icmp eq i32 %call5, 0
+  br i1 %tobool6, label %if.then7, label %if.end9
+
+if.then7:                                         ; preds = %if.end3
+  %call8 = tail call i32 @perl_run(%struct.interpreter* %call15) #4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end3, %if.then7
+  %call10 = tail call i32 @perl_destruct(%struct.interpreter* %call15) #4
+  tail call void @perl_free(%struct.interpreter* %call15) #4
+  tail call void @exit(i32 %call10) #5
+  unreachable
+}

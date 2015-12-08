@@ -1,0 +1,15 @@
+define i32 @quantum_inverse_mod(i32 %n, i32 %c) #0 {
+entry:
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond, %entry
+  %i.0 = phi i32 [ 1, %entry ], [ %inc, %for.cond ]
+  %mul = mul nsw i32 %i.0, %c
+  %rem = srem i32 %mul, %n
+  %cmp = icmp eq i32 %rem, 1
+  %inc = add nsw i32 %i.0, 1
+  br i1 %cmp, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  ret i32 %i.0
+}

@@ -1,0 +1,62 @@
+define void @hash_extract_pv(i32 %level, i8* %str) #0 {
+entry:
+  %xdummy = alloca i32, align 4
+  %bm = alloca i32, align 4
+  %moves = alloca [512 x %struct.move_s], align 16
+  %output = alloca [256 x i8], align 16
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #1
+  %1 = getelementptr inbounds [256 x i8]* %output, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %1) #1
+  %dec = add nsw i32 %level, -1
+  %tobool = icmp eq i32 %dec, 0
+  br i1 %tobool, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = call i32 @ProbeTT(i32* %xdummy, i32 0, i32* %bm, i32* %xdummy, i32* %xdummy, i32 0) #12
+  %cmp = icmp eq i32 %call, 4
+  br i1 %cmp, label %cleanup, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
+  call void @gen(%struct.move_s* %arrayidx) #12
+  %2 = load i32* %bm, align 4, !tbaa !0
+  %cmp2 = icmp sgt i32 %2, -1
+  %3 = load i32* @numb_moves, align 4, !tbaa !0
+  %cmp3 = icmp slt i32 %2, %3
+  %or.cond = and i1 %cmp2, %cmp3
+  br i1 %or.cond, label %if.then4, label %cleanup
+
+if.then4:                                         ; preds = %if.then1
+  %idxprom = sext i32 %2 to i64
+  %arrayidx5 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 %idxprom
+  call void @comp_to_san(%struct.move_s* byval align 8 %arrayidx5, i8* %1) #13
+  %4 = load i32* %bm, align 4, !tbaa !0
+  call void @make(%struct.move_s* %arrayidx, i32 %4) #12
+  %5 = load i32* %bm, align 4, !tbaa !0
+  %call8 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %5, i32 1) #12
+  %tobool9 = icmp eq i32 %call8, 0
+  br i1 %tobool9, label %if.end15, label %if.then10
+
+if.then10:                                        ; preds = %if.then4
+  %strlen = call i64 @strlen(i8* %str)
+  %endptr = getelementptr i8* %str, i64 %strlen
+  %6 = bitcast i8* %endptr to i16*
+  store i16 60, i16* %6, align 1
+  %call13 = call i8* @strcat(i8* %str, i8* %1) #12
+  %strlen25 = call i64 @strlen(i8* %str)
+  %endptr26 = getelementptr i8* %str, i64 %strlen25
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %endptr26, i8* getelementptr inbounds ([3 x i8]* @.str48, i64 0, i64 0), i64 3, i32 1, i1 false)
+  call void @hash_extract_pv(i32 %dec, i8* %str) #13
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then4, %if.then10
+  %7 = load i32* %bm, align 4, !tbaa !0
+  call void @unmake(%struct.move_s* %arrayidx, i32 %7) #12
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end15, %if.then1, %if.end, %entry
+  call void @llvm.lifetime.end(i64 256, i8* %1) #1
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #1
+  ret void
+}

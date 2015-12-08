@@ -1,0 +1,62 @@
+define i32 @seqndecode(i8* nocapture %str, i8* nocapture %codeseq, i32 %n) #1 {
+entry:
+  %cmp29 = icmp sgt i32 %n, 0
+  br i1 %cmp29, label %for.cond.preheader, label %while.end
+
+for.cond.preheader:                               ; preds = %entry, %if.else
+  %indvars.iv34 = phi i64 [ %indvars.iv.next35, %if.else ], [ 0, %entry ]
+  %dec32.in = phi i32 [ %dec32, %if.else ], [ %n, %entry ]
+  %pos.031 = phi i32 [ %inc14, %if.else ], [ 0, %entry ]
+  %codeseq.addr.030 = phi i8* [ %incdec.ptr, %if.else ], [ %codeseq, %entry ]
+  %0 = load i8* %codeseq.addr.030, align 1, !tbaa !0
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond, %for.cond.preheader
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %idx.0 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
+  %code = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2
+  %1 = load i8* %code, align 1, !tbaa !0
+  %cmp2 = icmp ne i8 %0, %1
+  %2 = trunc i64 %indvars.iv to i32
+  %cmp4 = icmp slt i32 %2, 17
+  %or.cond = and i1 %cmp2, %cmp4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %idx.0, 1
+  br i1 %or.cond, label %for.cond, label %for.end
+
+for.end:                                          ; preds = %for.cond
+  %dec32 = add nsw i32 %dec32.in, -1
+  %cmp6 = icmp sgt i32 %idx.0, 17
+  br i1 %cmp6, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.end
+  %idxprom8 = sext i32 %pos.031 to i64
+  %arrayidx9 = getelementptr inbounds i8* %str, i64 %idxprom8
+  store i8 88, i8* %arrayidx9, align 1, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %for.end
+  %sym = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 0
+  %3 = load i8* %sym, align 1, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i8* %str, i64 %indvars.iv34
+  store i8 %3, i8* %arrayidx13, align 1, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i8* %codeseq.addr.030, i64 1
+  %indvars.iv.next35 = add i64 %indvars.iv34, 1
+  %inc14 = add nsw i32 %pos.031, 1
+  %cmp = icmp sgt i32 %dec32, 0
+  br i1 %cmp, label %for.cond.preheader, label %while.cond.while.end_crit_edge
+
+while.cond.while.end_crit_edge:                   ; preds = %if.else
+  %phitmp = sext i32 %inc14 to i64
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
+  %pos.0.lcssa = phi i64 [ %phitmp, %while.cond.while.end_crit_edge ], [ 0, %entry ]
+  %arrayidx16 = getelementptr inbounds i8* %str, i64 %pos.0.lcssa
+  store i8 0, i8* %arrayidx16, align 1, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %while.end, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 1, %while.end ]
+  ret i32 %retval.0
+}

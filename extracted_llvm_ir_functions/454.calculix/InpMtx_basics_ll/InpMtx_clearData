@@ -1,0 +1,27 @@
+define void @InpMtx_clearData(%struct._InpMtx* %inpmtx) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str3, i64 0, i64 0), %struct._InpMtx* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6
+  tail call void @IV_clearData(%struct._IV* %ivec1IV) #4
+  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7
+  tail call void @IV_clearData(%struct._IV* %ivec2IV) #4
+  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
+  tail call void @DV_clearData(%struct._DV* %dvecDV) #4
+  %vecidsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 11
+  tail call void @IV_clearData(%struct._IV* %vecidsIV) #4
+  %sizesIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 12
+  tail call void @IV_clearData(%struct._IV* %sizesIV) #4
+  %offsetsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 13
+  tail call void @IV_clearData(%struct._IV* %offsetsIV) #4
+  tail call void @InpMtx_setDefaultFields(%struct._InpMtx* %inpmtx) #6
+  ret void
+}

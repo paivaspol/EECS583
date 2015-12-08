@@ -1,0 +1,81 @@
+define %struct.sv* @Perl_hv_iterkeysv(%struct.he* nocapture %entry1) #0 {
+entry:
+  %utf8_len = alloca i64, align 8
+  %hent_hek = getelementptr inbounds %struct.he* %entry1, i64 0, i32 1
+  %0 = load %struct.hek** %hent_hek, align 8, !tbaa !0
+  %hek_len = getelementptr inbounds %struct.hek* %0, i64 0, i32 1
+  %1 = load i32* %hek_len, align 4, !tbaa !4
+  %cmp = icmp eq i32 %1, -2
+  %arraydecay52 = getelementptr inbounds %struct.hek* %0, i64 0, i32 2, i64 0
+  br i1 %cmp, label %if.end49, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idx.ext = sext i32 %1 to i64
+  %add.ptr.sum = add i64 %idx.ext, 1
+  %add.ptr4 = getelementptr inbounds %struct.hek* %0, i64 0, i32 2, i64 %add.ptr.sum
+  %2 = load i8* %add.ptr4, align 1, !tbaa !1
+  %conv = zext i8 %2 to i32
+  %and = and i32 %conv, 2
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else, label %if.then5
+
+if.then5:                                         ; preds = %if.then
+  store i64 %idx.ext, i64* %utf8_len, align 8, !tbaa !3
+  %call = call i8* @Perl_bytes_to_utf8(i8* %arraydecay52, i64* %utf8_len) #4
+  %3 = load i64* %utf8_len, align 8, !tbaa !3
+  %call10 = call %struct.sv* @Perl_newSVpvn(i8* %call, i64 %3) #4
+  %sv_flags = getelementptr inbounds %struct.sv* %call10, i64 0, i32 2
+  %4 = load i32* %sv_flags, align 4, !tbaa !4
+  %or = or i32 %4, 536870912
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !4
+  call void @Perl_safesysfree(i8* %call) #4
+  br label %if.end47
+
+if.else:                                          ; preds = %if.then
+  %and11 = and i32 %conv, 4
+  %tobool12 = icmp eq i32 %and11, 0
+  br i1 %tobool12, label %if.else31, label %if.then13
+
+if.then13:                                        ; preds = %if.else
+  %call18 = call %struct.sv* @Perl_newSVpvn(i8* %arraydecay52, i64 %idx.ext) #4
+  %5 = load i32* %hek_len, align 4, !tbaa !4
+  %idx.ext22 = sext i32 %5 to i64
+  %add.ptr23.sum = add i64 %idx.ext22, 1
+  %add.ptr24 = getelementptr inbounds %struct.hek* %0, i64 0, i32 2, i64 %add.ptr23.sum
+  %6 = load i8* %add.ptr24, align 1, !tbaa !1
+  %and26 = and i8 %6, 1
+  %tobool27 = icmp eq i8 %and26, 0
+  br i1 %tobool27, label %if.end47, label %if.then28
+
+if.then28:                                        ; preds = %if.then13
+  %sv_flags29 = getelementptr inbounds %struct.sv* %call18, i64 0, i32 2
+  %7 = load i32* %sv_flags29, align 4, !tbaa !4
+  %or30 = or i32 %7, 536870912
+  store i32 %or30, i32* %sv_flags29, align 4, !tbaa !4
+  br label %if.end47
+
+if.else31:                                        ; preds = %if.else
+  %and41 = and i32 %conv, 1
+  %tobool42 = icmp ne i32 %and41, 0
+  %sub = sub nsw i32 0, %1
+  %cond = select i1 %tobool42, i32 %sub, i32 %1
+  %hek_hash = getelementptr inbounds %struct.hek* %0, i64 0, i32 0
+  %8 = load i32* %hek_hash, align 4, !tbaa !4
+  %call45 = call %struct.sv* @Perl_newSVpvn_share(i8* %arraydecay52, i32 %cond, i32 %8) #4
+  br label %if.end47
+
+if.end47:                                         ; preds = %if.then13, %if.else31, %if.then28, %if.then5
+  %sv.0 = phi %struct.sv* [ %call10, %if.then5 ], [ %call18, %if.then28 ], [ %call18, %if.then13 ], [ %call45, %if.else31 ]
+  %call48 = call %struct.sv* @Perl_sv_2mortal(%struct.sv* %sv.0) #4
+  br label %return
+
+if.end49:                                         ; preds = %entry
+  %9 = bitcast i8* %arraydecay52 to %struct.sv**
+  %10 = load %struct.sv** %9, align 8, !tbaa !0
+  %call53 = call %struct.sv* @Perl_sv_mortalcopy(%struct.sv* %10) #4
+  br label %return
+
+return:                                           ; preds = %if.end49, %if.end47
+  %retval.0 = phi %struct.sv* [ %call48, %if.end47 ], [ %call53, %if.end49 ]
+  ret %struct.sv* %retval.0
+}

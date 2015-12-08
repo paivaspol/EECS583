@@ -1,0 +1,78 @@
+define i32 @is_move(i8* nocapture %str) #4 {
+entry:
+  %0 = load i8* %str, align 1, !tbaa !1
+  %idxprom = sext i8 %0 to i64
+  %call = tail call i16** @__ctype_b_loc() #14
+  %1 = load i16** %call, align 8, !tbaa !3
+  %arrayidx1 = getelementptr inbounds i16* %1, i64 %idxprom
+  %2 = load i16* %arrayidx1, align 2, !tbaa !4
+  %and = and i16 %2, 1024
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %if.else60, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx3 = getelementptr inbounds i8* %str, i64 1
+  %3 = load i8* %arrayidx3, align 1, !tbaa !1
+  %idxprom5 = sext i8 %3 to i64
+  %arrayidx7 = getelementptr inbounds i16* %1, i64 %idxprom5
+  %4 = load i16* %arrayidx7, align 2, !tbaa !4
+  %and9 = and i16 %4, 2048
+  %tobool10 = icmp eq i16 %and9, 0
+  br i1 %tobool10, label %land.lhs.true37, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %land.lhs.true
+  %arrayidx12 = getelementptr inbounds i8* %str, i64 2
+  %5 = load i8* %arrayidx12, align 1, !tbaa !1
+  %idxprom14 = sext i8 %5 to i64
+  %arrayidx16 = getelementptr inbounds i16* %1, i64 %idxprom14
+  %6 = load i16* %arrayidx16, align 2, !tbaa !4
+  %and18 = and i16 %6, 1024
+  %tobool19 = icmp eq i16 %and18, 0
+  br i1 %tobool19, label %if.else, label %land.lhs.true20
+
+land.lhs.true20:                                  ; preds = %land.lhs.true11
+  %arrayidx21 = getelementptr inbounds i8* %str, i64 3
+  %7 = load i8* %arrayidx21, align 1, !tbaa !1
+  %idxprom23 = sext i8 %7 to i64
+  %arrayidx25 = getelementptr inbounds i16* %1, i64 %idxprom23
+  %8 = load i16* %arrayidx25, align 2, !tbaa !4
+  %and27 = and i16 %8, 2048
+  %tobool28 = icmp eq i16 %and27, 0
+  br i1 %tobool28, label %if.else, label %return
+
+if.else:                                          ; preds = %land.lhs.true20, %land.lhs.true11
+  br i1 %tobool, label %if.else60, label %land.lhs.true37
+
+land.lhs.true37:                                  ; preds = %land.lhs.true, %if.else
+  %arrayidx38 = getelementptr inbounds i8* %str, i64 1
+  %9 = load i8* %arrayidx38, align 1, !tbaa !1
+  %cmp = icmp eq i8 %9, 64
+  br i1 %cmp, label %land.lhs.true41, label %if.else60
+
+land.lhs.true41:                                  ; preds = %land.lhs.true37
+  %arrayidx42 = getelementptr inbounds i8* %str, i64 2
+  %10 = load i8* %arrayidx42, align 1, !tbaa !1
+  %idxprom44 = sext i8 %10 to i64
+  %arrayidx46 = getelementptr inbounds i16* %1, i64 %idxprom44
+  %11 = load i16* %arrayidx46, align 2, !tbaa !4
+  %and48 = and i16 %11, 1024
+  %tobool49 = icmp eq i16 %and48, 0
+  br i1 %tobool49, label %if.else60, label %land.lhs.true50
+
+land.lhs.true50:                                  ; preds = %land.lhs.true41
+  %arrayidx51 = getelementptr inbounds i8* %str, i64 3
+  %12 = load i8* %arrayidx51, align 1, !tbaa !1
+  %idxprom53 = sext i8 %12 to i64
+  %arrayidx55 = getelementptr inbounds i16* %1, i64 %idxprom53
+  %13 = load i16* %arrayidx55, align 2, !tbaa !4
+  %and57 = and i16 %13, 2048
+  %tobool58 = icmp eq i16 %and57, 0
+  br i1 %tobool58, label %if.else60, label %return
+
+if.else60:                                        ; preds = %entry, %land.lhs.true50, %land.lhs.true41, %if.else, %land.lhs.true37
+  br label %return
+
+return:                                           ; preds = %land.lhs.true50, %land.lhs.true20, %if.else60
+  %retval.0 = phi i32 [ 0, %if.else60 ], [ 1, %land.lhs.true20 ], [ 1, %land.lhs.true50 ]
+  ret i32 %retval.0
+}

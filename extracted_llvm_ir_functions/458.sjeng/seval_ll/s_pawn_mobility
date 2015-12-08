@@ -1,0 +1,26 @@
+define internal fastcc i32 @s_pawn_mobility(i32 %square) #3 {
+entry:
+  %idxprom = sext i32 %square to i64
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, 1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %add = add nsw i32 %square, 12
+  %idxprom1 = sext i32 %add to i64
+  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1
+  %1 = load i32* %arrayidx2, align 4, !tbaa !0
+  %cmp3 = icmp eq i32 %1, 13
+  %. = select i1 %cmp3, i32 8, i32 0
+  ret i32 %.
+
+if.else:                                          ; preds = %entry
+  %sub = add nsw i32 %square, -12
+  %idxprom5 = sext i32 %sub to i64
+  %arrayidx6 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom5
+  %2 = load i32* %arrayidx6, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %2, 13
+  %.15 = select i1 %cmp7, i32 8, i32 0
+  ret i32 %.15
+}

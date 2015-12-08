@@ -1,0 +1,39 @@
+define { i64, { float, float }* } @quantum_new_matrix(i32 %cols, i32 %rows) #0 {
+entry:
+  %mul = mul nsw i32 %rows, %cols
+  %conv = sext i32 %mul to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #4
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([35 x i8]* @.str, i64 0, i64 0), i32 %rows, i32 %cols) #4
+  tail call void @exit(i32 1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %0 = bitcast i8* %call to { float, float }*
+  %conv5 = sext i32 %cols to i64
+  %mul6 = shl nsw i64 %conv5, 3
+  %conv7 = sext i32 %rows to i64
+  %mul8 = mul i64 %mul6, %conv7
+  %1 = load i64* @quantum_memman.mem, align 8, !tbaa !0
+  %add.i = add nsw i64 %1, %mul8
+  store i64 %add.i, i64* @quantum_memman.mem, align 8, !tbaa !0
+  %2 = load i64* @quantum_memman.max, align 8, !tbaa !0
+  %cmp.i = icmp sgt i64 %add.i, %2
+  br i1 %cmp.i, label %if.then.i, label %quantum_memman.exit
+
+if.then.i:                                        ; preds = %if.end
+  store i64 %add.i, i64* @quantum_memman.max, align 8, !tbaa !0
+  br label %quantum_memman.exit
+
+quantum_memman.exit:                              ; preds = %if.end, %if.then.i
+  %retval.sroa.0.0.insert.ext = zext i32 %rows to i64
+  %retval.sroa.0.4.insert.ext = zext i32 %cols to i64
+  %retval.sroa.0.4.insert.shift = shl nuw i64 %retval.sroa.0.4.insert.ext, 32
+  %retval.sroa.0.4.insert.insert = or i64 %retval.sroa.0.0.insert.ext, %retval.sroa.0.4.insert.shift
+  %.fca.0.insert = insertvalue { i64, { float, float }* } undef, i64 %retval.sroa.0.4.insert.insert, 0
+  %.fca.1.insert = insertvalue { i64, { float, float }* } %.fca.0.insert, { float, float }* %0, 1
+  ret { i64, { float, float }* } %.fca.1.insert
+}

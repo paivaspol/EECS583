@@ -1,0 +1,155 @@
+define %struct.PerlIO_list_s* @PerlIO_resolve_layers(i8* %layers, i8* nocapture %mode, i32 %narg, %struct.sv** nocapture %args) #1 {
+entry:
+  %call = tail call %struct.PerlIO_list_s* @PerlIO_default_layers() #10
+  %0 = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  %tobool = icmp eq %struct._PerlIO** %0, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @PerlIO_stdstreams() #10
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %tobool1 = icmp eq i32 %narg, 0
+  br i1 %tobool1, label %if.end13, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %1 = load %struct.sv** %args, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %2, 524288
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.end13, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then2
+  %call4 = tail call i32 @Perl_sv_isobject(%struct.sv* %1) #9
+  %tobool5 = icmp eq i32 %call4, 0
+  br i1 %tobool5, label %if.then6, label %if.end13
+
+if.then6:                                         ; preds = %land.lhs.true
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !3
+  %xrv_rv = bitcast i8* %3 to %struct.sv**
+  %4 = load %struct.sv** %xrv_rv, align 8, !tbaa !3
+  %sv_flags.i = getelementptr inbounds %struct.sv* %4, i64 0, i32 2
+  %5 = load i32* %sv_flags.i, align 4, !tbaa !0
+  %and.i = and i32 %5, 255
+  %cmp.i = icmp ult i32 %and.i, 10
+  br i1 %cmp.i, label %if.then.i, label %if.end.i
+
+if.then.i:                                        ; preds = %if.then6
+  %call.i = tail call %struct._PerlIO_funcs* @PerlIO_find_layer(i8* getelementptr inbounds ([7 x i8]* @.str49, i64 0, i64 0), i64 6, i32 1) #9
+  br label %PerlIO_layer_from_ref.exit
+
+if.end.i:                                         ; preds = %if.then6
+  switch i32 %and.i, label %if.end13 [
+    i32 10, label %sw.bb.i
+    i32 11, label %sw.bb4.i
+    i32 12, label %sw.bb6.i
+    i32 13, label %sw.bb8.i
+  ]
+
+sw.bb.i:                                          ; preds = %if.end.i
+  %call3.i = tail call %struct._PerlIO_funcs* @PerlIO_find_layer(i8* getelementptr inbounds ([6 x i8]* @.str50, i64 0, i64 0), i64 5, i32 0) #9
+  br label %PerlIO_layer_from_ref.exit
+
+sw.bb4.i:                                         ; preds = %if.end.i
+  %call5.i = tail call %struct._PerlIO_funcs* @PerlIO_find_layer(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i64 4, i32 0) #9
+  br label %PerlIO_layer_from_ref.exit
+
+sw.bb6.i:                                         ; preds = %if.end.i
+  %call7.i = tail call %struct._PerlIO_funcs* @PerlIO_find_layer(i8* getelementptr inbounds ([5 x i8]* @.str52, i64 0, i64 0), i64 4, i32 0) #9
+  br label %PerlIO_layer_from_ref.exit
+
+sw.bb8.i:                                         ; preds = %if.end.i
+  %call9.i = tail call %struct._PerlIO_funcs* @PerlIO_find_layer(i8* getelementptr inbounds ([5 x i8]* @.str53, i64 0, i64 0), i64 4, i32 0) #9
+  br label %PerlIO_layer_from_ref.exit
+
+PerlIO_layer_from_ref.exit:                       ; preds = %if.then.i, %sw.bb.i, %sw.bb4.i, %sw.bb6.i, %sw.bb8.i
+  %retval.0.i = phi %struct._PerlIO_funcs* [ %call.i, %if.then.i ], [ %call9.i, %sw.bb8.i ], [ %call7.i, %sw.bb6.i ], [ %call5.i, %sw.bb4.i ], [ %call3.i, %sw.bb.i ]
+  %tobool8 = icmp eq %struct._PerlIO_funcs* %retval.0.i, null
+  br i1 %tobool8, label %if.end13, label %if.then9
+
+if.then9:                                         ; preds = %PerlIO_layer_from_ref.exit
+  %call.i59 = tail call i8* @Perl_safesysmalloc(i64 32) #9
+  %6 = bitcast i8* %call.i59 to %struct.PerlIO_list_s*
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i59, i8 0, i64 32, i32 1, i1 false) #2
+  %refcnt.i = bitcast i8* %call.i59 to i64*
+  store i64 1, i64* %refcnt.i, align 8, !tbaa !4
+  tail call void @PerlIO_list_push(%struct.PerlIO_list_s* %6, %struct._PerlIO_funcs* %retval.0.i, %struct.sv* @PL_sv_undef) #10
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end.i, %PerlIO_layer_from_ref.exit, %land.lhs.true, %if.then2, %if.end, %if.then9
+  %def.0 = phi %struct.PerlIO_list_s* [ %call, %land.lhs.true ], [ %6, %if.then9 ], [ %call, %PerlIO_layer_from_ref.exit ], [ %call, %if.then2 ], [ %call, %if.end ], [ %call, %if.end.i ]
+  %incdef.0 = phi i32 [ 1, %land.lhs.true ], [ 0, %if.then9 ], [ 1, %PerlIO_layer_from_ref.exit ], [ 1, %if.then2 ], [ 1, %if.end ], [ 1, %if.end.i ]
+  %tobool14 = icmp eq i8* %layers, null
+  br i1 %tobool14, label %if.end17, label %land.lhs.true19
+
+if.end17:                                         ; preds = %if.end13
+  %call16 = tail call fastcc i8* @PerlIO_context_layers(i8* %mode) #10
+  %tobool18 = icmp eq i8* %call16, null
+  br i1 %tobool18, label %if.else36, label %land.lhs.true19
+
+land.lhs.true19:                                  ; preds = %if.end13, %if.end17
+  %layers.addr.064 = phi i8* [ %call16, %if.end17 ], [ %layers, %if.end13 ]
+  %7 = load i8* %layers.addr.064, align 1, !tbaa !1
+  %tobool20 = icmp eq i8 %7, 0
+  br i1 %tobool20, label %if.else36, label %if.then21
+
+if.then21:                                        ; preds = %land.lhs.true19
+  %tobool22 = icmp eq i32 %incdef.0, 0
+  br i1 %tobool22, label %if.end30, label %if.then23
+
+if.then23:                                        ; preds = %if.then21
+  %cur = getelementptr inbounds %struct.PerlIO_list_s* %def.0, i64 0, i32 1
+  %call.i60 = tail call i8* @Perl_safesysmalloc(i64 32) #9
+  %8 = bitcast i8* %call.i60 to %struct.PerlIO_list_s*
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i60, i8 0, i64 32, i32 1, i1 false) #2
+  %refcnt.i61 = bitcast i8* %call.i60 to i64*
+  store i64 1, i64* %refcnt.i61, align 8, !tbaa !4
+  %9 = load i64* %cur, align 8, !tbaa !4
+  %cmp65 = icmp sgt i64 %9, 0
+  br i1 %cmp65, label %for.body.lr.ph, label %if.end30
+
+for.body.lr.ph:                                   ; preds = %if.then23
+  %array = getelementptr inbounds %struct.PerlIO_list_s* %def.0, i64 0, i32 3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.066 = phi i64 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %10 = load %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  %funcs = getelementptr inbounds %struct.PerlIO_pair_t* %10, i64 %i.066, i32 0
+  %11 = load %struct._PerlIO_funcs** %funcs, align 8, !tbaa !3
+  %arg29 = getelementptr inbounds %struct.PerlIO_pair_t* %10, i64 %i.066, i32 1
+  %12 = load %struct.sv** %arg29, align 8, !tbaa !3
+  tail call void @PerlIO_list_push(%struct.PerlIO_list_s* %8, %struct._PerlIO_funcs* %11, %struct.sv* %12) #10
+  %inc = add nsw i64 %i.066, 1
+  %13 = load i64* %cur, align 8, !tbaa !4
+  %cmp = icmp slt i64 %inc, %13
+  br i1 %cmp, label %for.body, label %if.end30
+
+if.end30:                                         ; preds = %if.then23, %for.body, %if.then21
+  %av.0 = phi %struct.PerlIO_list_s* [ %def.0, %if.then21 ], [ %8, %for.body ], [ %8, %if.then23 ]
+  %call31 = tail call i32 @PerlIO_parse_layers(%struct.PerlIO_list_s* %av.0, i8* %layers.addr.064) #10
+  %cmp32 = icmp eq i32 %call31, 0
+  br i1 %cmp32, label %return, label %if.else35
+
+if.else35:                                        ; preds = %if.end30
+  tail call void @PerlIO_list_free(%struct.PerlIO_list_s* %av.0) #10
+  br label %return
+
+if.else36:                                        ; preds = %land.lhs.true19, %if.end17
+  %tobool37 = icmp eq i32 %incdef.0, 0
+  br i1 %tobool37, label %return, label %if.then38
+
+if.then38:                                        ; preds = %if.else36
+  %refcnt = getelementptr inbounds %struct.PerlIO_list_s* %def.0, i64 0, i32 0
+  %14 = load i64* %refcnt, align 8, !tbaa !4
+  %inc39 = add nsw i64 %14, 1
+  store i64 %inc39, i64* %refcnt, align 8, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.then38, %if.else36, %if.end30, %if.else35
+  %retval.0 = phi %struct.PerlIO_list_s* [ null, %if.else35 ], [ %av.0, %if.end30 ], [ %def.0, %if.else36 ], [ %def.0, %if.then38 ]
+  ret %struct.PerlIO_list_s* %retval.0
+}

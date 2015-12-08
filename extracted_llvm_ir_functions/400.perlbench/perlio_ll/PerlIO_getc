@@ -1,0 +1,17 @@
+define i32 @PerlIO_getc(%struct._PerlIO** %f) #1 {
+entry:
+  %buf = alloca [1 x i8], align 1
+  %arraydecay = getelementptr inbounds [1 x i8]* %buf, i64 0, i64 0
+  %call = call i64 @Perl_PerlIO_read(%struct._PerlIO** %f, i8* %arraydecay, i64 1) #10
+  %cmp = icmp eq i64 %call, 1
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %0 = load i8* %arraydecay, align 1, !tbaa !1
+  %conv = zext i8 %0 to i32
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %conv, %if.then ], [ -1, %entry ]
+  ret i32 %retval.0
+}

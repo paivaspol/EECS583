@@ -1,0 +1,29 @@
+define i32 @Ideq_tail(%struct._Ideq* %deq) #0 {
+entry:
+  %cmp = icmp eq %struct._Ideq* %deq, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._Ideq* null) #3
+  tail call void @exit(i32 -1) #4
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %tail = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 2
+  %1 = load i32* %tail, align 4, !tbaa !3
+  %cmp1 = icmp eq i32 %1, -1
+  br i1 %cmp1, label %if.end4, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %idxprom = sext i32 %1 to i64
+  %vec = getelementptr inbounds %struct._Ideq* %deq, i64 0, i32 3, i32 3
+  %2 = load i32** %vec, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.else
+  %val.0 = phi i32 [ %3, %if.else ], [ -1, %if.end ]
+  ret i32 %val.0
+}

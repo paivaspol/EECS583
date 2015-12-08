@@ -1,0 +1,26 @@
+define i32 @Perl_magic_getglob(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 1048576
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %and2 = and i32 %0, -1048577
+  store i32 %and2, i32* %sv_flags, align 4, !tbaa !3
+  %1 = bitcast %struct.sv* %sv to %struct.gv*
+  tail call void @Perl_gv_efullname4(%struct.sv* %sv, %struct.gv* %1, i8* getelementptr inbounds ([2 x i8]* @.str32, i64 0, i64 0), i8 signext 1) #7
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %2, 1048576
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %3 = bitcast %struct.sv* %sv to %struct.gv*
+  tail call void @Perl_gv_efullname4(%struct.sv* %sv, %struct.gv* %3, i8* getelementptr inbounds ([2 x i8]* @.str32, i64 0, i64 0), i8 signext 1) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret i32 0
+}

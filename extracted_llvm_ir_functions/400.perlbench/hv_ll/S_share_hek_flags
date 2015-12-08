@@ -1,0 +1,116 @@
+define internal fastcc %struct.hek* @S_share_hek_flags(i8* %str, i32 %len, i32 %hash, i32 %flags) #0 {
+entry:
+  %and = and i32 %flags, 255
+  %0 = load %struct.hv** @PL_strtab, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.hv* %0, i64 0, i32 0
+  %1 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %xhv_max = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 2
+  %2 = load i64* %xhv_max, align 8, !tbaa !3
+  %conv = trunc i64 %2 to i32
+  %and2 = and i32 %conv, %hash
+  %idxprom = zext i32 %and2 to i64
+  %xhv_array = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 0
+  %3 = load i8** %xhv_array, align 8, !tbaa !0
+  %4 = bitcast i8* %3 to %struct.he**
+  %arrayidx = getelementptr inbounds %struct.he** %4, i64 %idxprom
+  %entry1.083 = load %struct.he** %arrayidx, align 8
+  %tobool84 = icmp eq %struct.he* %entry1.083, null
+  br i1 %tobool84, label %if.then31.critedge, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %5 = trunc i32 %flags to i8
+  %conv15 = sext i32 %len to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %entry1.085 = phi %struct.he* [ %entry1.083, %for.body.lr.ph ], [ %entry1.0, %for.inc ]
+  %hent_hek = getelementptr inbounds %struct.he* %entry1.085, i64 0, i32 1
+  %6 = load %struct.hek** %hent_hek, align 8, !tbaa !0
+  %hek_hash = getelementptr inbounds %struct.hek* %6, i64 0, i32 0
+  %7 = load i32* %hek_hash, align 4, !tbaa !4
+  %cmp = icmp eq i32 %7, %hash
+  br i1 %cmp, label %if.end, label %for.inc
+
+if.end:                                           ; preds = %for.body
+  %hek_len = getelementptr inbounds %struct.hek* %6, i64 0, i32 1
+  %8 = load i32* %hek_len, align 4, !tbaa !4
+  %cmp5 = icmp eq i32 %8, %len
+  br i1 %cmp5, label %if.end8, label %for.inc
+
+if.end8:                                          ; preds = %if.end
+  %arraydecay = getelementptr inbounds %struct.hek* %6, i64 0, i32 2, i64 0
+  %cmp10 = icmp eq i8* %arraydecay, %str
+  br i1 %cmp10, label %if.end18, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end8
+  %call = tail call i32 @memcmp(i8* %arraydecay, i8* %str, i64 %conv15) #4
+  %tobool16 = icmp eq i32 %call, 0
+  br i1 %tobool16, label %if.end18, label %for.inc
+
+if.end18:                                         ; preds = %land.lhs.true, %if.end8
+  %add.ptr.sum = add i64 %conv15, 1
+  %add.ptr24 = getelementptr inbounds %struct.hek* %6, i64 0, i32 2, i64 %add.ptr.sum
+  %9 = load i8* %add.ptr24, align 1, !tbaa !1
+  %cmp26 = icmp eq i8 %9, %5
+  br i1 %cmp26, label %if.end46, label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %if.end18, %if.end, %for.body
+  %hent_next = getelementptr inbounds %struct.he* %entry1.085, i64 0, i32 0
+  %entry1.0 = load %struct.he** %hent_next, align 8
+  %tobool = icmp eq %struct.he* %entry1.0, null
+  br i1 %tobool, label %if.then31.critedge, label %for.body
+
+if.then31.critedge:                               ; preds = %for.inc, %entry
+  %i.0.lcssa = phi i1 [ false, %entry ], [ true, %for.inc ]
+  %call32 = tail call fastcc %struct.he* @S_new_he() #5
+  %call33 = tail call fastcc %struct.hek* @S_save_hek_flags(i8* %str, i32 %len, i32 %hash, i32 %and) #5
+  %hent_hek34 = getelementptr inbounds %struct.he* %call32, i64 0, i32 1
+  store %struct.hek* %call33, %struct.hek** %hent_hek34, align 8, !tbaa !0
+  %hent_val = getelementptr inbounds %struct.he* %call32, i64 0, i32 2
+  store %struct.sv* null, %struct.sv** %hent_val, align 8, !tbaa !0
+  %10 = load %struct.he** %arrayidx, align 8, !tbaa !0
+  %hent_next35 = getelementptr inbounds %struct.he* %call32, i64 0, i32 0
+  store %struct.he* %10, %struct.he** %hent_next35, align 8, !tbaa !0
+  store %struct.he* %call32, %struct.he** %arrayidx, align 8, !tbaa !0
+  %xhv_keys = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 3
+  %11 = load i64* %xhv_keys, align 8, !tbaa !3
+  %inc = add nsw i64 %11, 1
+  store i64 %inc, i64* %xhv_keys, align 8, !tbaa !3
+  br i1 %i.0.lcssa, label %if.else, label %if.then37
+
+if.then37:                                        ; preds = %if.then31.critedge
+  %xhv_fill = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 1
+  %12 = load i64* %xhv_fill, align 8, !tbaa !3
+  %inc38 = add i64 %12, 1
+  store i64 %inc38, i64* %xhv_fill, align 8, !tbaa !3
+  br label %if.end46
+
+if.else:                                          ; preds = %if.then31.critedge
+  %13 = load i64* %xhv_max, align 8, !tbaa !3
+  %cmp41 = icmp slt i64 %11, %13
+  br i1 %cmp41, label %if.end46, label %if.then43
+
+if.then43:                                        ; preds = %if.else
+  %14 = load %struct.hv** @PL_strtab, align 8, !tbaa !0
+  tail call fastcc void @S_hsplit(%struct.hv* %14) #5
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.end18, %if.else, %if.then37, %if.then43
+  %entry1.1 = phi %struct.he* [ %call32, %if.then37 ], [ %call32, %if.then43 ], [ %call32, %if.else ], [ %entry1.085, %if.end18 ]
+  %hent_val47 = getelementptr inbounds %struct.he* %entry1.1, i64 0, i32 2
+  %15 = load %struct.sv** %hent_val47, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds %struct.sv* %15, i64 1
+  store %struct.sv* %incdec.ptr, %struct.sv** %hent_val47, align 8, !tbaa !0
+  %and48 = and i32 %flags, 256
+  %tobool49 = icmp eq i32 %and48, 0
+  br i1 %tobool49, label %if.end51, label %if.then50
+
+if.then50:                                        ; preds = %if.end46
+  tail call void @Perl_safesysfree(i8* %str) #4
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.end46, %if.then50
+  %hent_hek52 = getelementptr inbounds %struct.he* %entry1.1, i64 0, i32 1
+  %16 = load %struct.hek** %hent_hek52, align 8, !tbaa !0
+  ret %struct.hek* %16
+}

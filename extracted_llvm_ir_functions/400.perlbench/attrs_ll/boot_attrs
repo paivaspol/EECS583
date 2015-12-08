@@ -1,0 +1,31 @@
+define void @boot_attrs(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %0, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %1 = load i32* %0, align 4, !tbaa !3
+  %idx.ext22 = zext i32 %1 to i64
+  %add.ptr.idx = shl nuw i64 %idx.ext22, 32
+  %call = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([16 x i8]* @.str9, i64 0, i64 0), void (%struct.cv*)* @XS_attrs_import, i8* getelementptr inbounds ([55 x i8]* @.str8, i64 0, i64 0)) #3
+  %sv_any = getelementptr inbounds %struct.cv* %call, i64 0, i32 0
+  %2 = load %struct.xpvcv** %sv_any, align 8, !tbaa !0
+  %xcv_xsubany = getelementptr inbounds %struct.xpvcv* %2, i64 0, i32 11
+  %any_i32 = bitcast %union.any* %xcv_xsubany to i32*
+  store i32 1, i32* %any_i32, align 4, !tbaa !3
+  %call7 = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0), void (%struct.cv*)* @XS_attrs_import, i8* getelementptr inbounds ([55 x i8]* @.str8, i64 0, i64 0)) #3
+  %sv_any8 = getelementptr inbounds %struct.cv* %call7, i64 0, i32 0
+  %3 = load %struct.xpvcv** %sv_any8, align 8, !tbaa !0
+  %xcv_xsubany9 = getelementptr inbounds %struct.xpvcv* %3, i64 0, i32 11
+  %any_i3210 = bitcast %union.any* %xcv_xsubany9 to i32*
+  store i32 0, i32* %any_i3210, align 4, !tbaa !3
+  %call11 = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([11 x i8]* @.str11, i64 0, i64 0), void (%struct.cv*)* @XS_attrs_get, i8* getelementptr inbounds ([55 x i8]* @.str8, i64 0, i64 0)) #3
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %4 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %4, i64 %idxprom
+  store %struct.sv* @PL_sv_yes, %struct.sv** %arrayidx, align 8, !tbaa !0
+  %5 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr14 = getelementptr inbounds %struct.sv** %5, i64 %idxprom
+  store %struct.sv** %add.ptr14, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

@@ -1,0 +1,40 @@
+define internal fastcc float @eval(float %alpha, float %wS, float %wB, float %wW) #4 {
+entry:
+  %cmp = fcmp oeq float %wB, 0.000000e+00
+  %cmp1 = fcmp oeq float %wW, 0.000000e+00
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %add = fadd float %wS, %wB
+  %add2 = fadd float %add, %wW
+  %mul = fmul float %add2, %add2
+  br label %if.end20
+
+if.else:                                          ; preds = %entry
+  %cmp5 = fcmp ult float %wB, %wW
+  %conv = fpext float %wS to double
+  br i1 %cmp5, label %if.else12, label %if.then6
+
+if.then6:                                         ; preds = %if.else
+  %mul7 = fmul float %alpha, %wB
+  %div = fdiv float %mul7, %wW
+  %conv8 = fpext float %div to double
+  %add9 = fadd double %conv8, 1.000000e+00
+  %mul10 = fmul double %conv, %add9
+  %conv11 = fptrunc double %mul10 to float
+  br label %if.end20
+
+if.else12:                                        ; preds = %if.else
+  %mul14 = fmul float %alpha, %wW
+  %div15 = fdiv float %mul14, %wB
+  %conv16 = fpext float %div15 to double
+  %add17 = fadd double %conv16, 1.000000e+00
+  %mul18 = fmul double %conv, %add17
+  %conv19 = fptrunc double %mul18 to float
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.then6, %if.else12, %if.then
+  %cost.0 = phi float [ %mul, %if.then ], [ %conv11, %if.then6 ], [ %conv19, %if.else12 ]
+  ret float %cost.0
+}

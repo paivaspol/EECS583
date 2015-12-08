@@ -1,0 +1,17 @@
+define void @Chv_clearData(%struct._Chv* %chv) #0 {
+entry:
+  %cmp = icmp eq %struct._Chv* %chv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), %struct._Chv* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %wrkDV = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 9
+  tail call void @DV_clearData(%struct._DV* %wrkDV) #5
+  tail call void @Chv_setDefaultFields(%struct._Chv* %chv) #7
+  ret void
+}

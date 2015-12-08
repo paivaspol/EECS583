@@ -1,0 +1,18 @@
+define internal fastcc i32 @read_i16(%struct._IO_FILE* nocapture %fp, i16* nocapture %ret_result) #0 {
+entry:
+  %result = alloca i16, align 2
+  %0 = bitcast i16* %result to i8*
+  %call = call i64 @fread(i8* %0, i64 2, i64 1, %struct._IO_FILE* %fp) #8
+  %cmp = icmp eq i64 %call, 1
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %1 = load i16* %result, align 2, !tbaa !3
+  %call1 = call zeroext i16 @sre_ntoh16(i16 zeroext %1) #8
+  store i16 %call1, i16* %ret_result, align 2, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,167 @@
+define i8* @Perl_utf16_to_utf8(i8* %p, i8* %d, i32 %bytelen, i32* nocapture %newlen) #0 {
+entry:
+  %cmp = icmp eq i32 %bytelen, 1
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load i8* %p, align 1, !tbaa !1
+  %cmp1 = icmp eq i8 %0, 0
+  br i1 %cmp1, label %if.then, label %if.then4
+
+if.then:                                          ; preds = %land.lhs.true
+  store i8 0, i8* %d, align 1, !tbaa !1
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %and = and i32 %bytelen, 1
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end.if.end6_crit_edge, label %if.then4
+
+if.end.if.end6_crit_edge:                         ; preds = %if.end
+  %idx.ext.pre = sext i32 %bytelen to i64
+  br label %if.end6
+
+if.then4:                                         ; preds = %land.lhs.true, %if.end
+  %conv5 = sext i32 %bytelen to i64
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([38 x i8]* @.str17, i64 0, i64 0), i64 %conv5) #5
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end.if.end6_crit_edge, %if.then4
+  %idx.ext.pre-phi = phi i64 [ %idx.ext.pre, %if.end.if.end6_crit_edge ], [ %conv5, %if.then4 ]
+  %add.ptr = getelementptr inbounds i8* %p, i64 %idx.ext.pre-phi
+  %cmp7135 = icmp sgt i32 %bytelen, 0
+  br i1 %cmp7135, label %while.body, label %while.end
+
+while.body:                                       ; preds = %if.end6, %while.cond.backedge
+  %p.addr.0137 = phi i8* [ %p.addr.0.be, %while.cond.backedge ], [ %p, %if.end6 ]
+  %d.addr.0136 = phi i8* [ %d.addr.0.be, %while.cond.backedge ], [ %d, %if.end6 ]
+  %1 = load i8* %p.addr.0137, align 1, !tbaa !1
+  %conv10 = zext i8 %1 to i64
+  %shl = shl nuw nsw i64 %conv10, 8
+  %arrayidx11 = getelementptr inbounds i8* %p.addr.0137, i64 1
+  %2 = load i8* %arrayidx11, align 1, !tbaa !1
+  %conv12 = zext i8 %2 to i64
+  %add = or i64 %shl, %conv12
+  %add.ptr14 = getelementptr inbounds i8* %p.addr.0137, i64 2
+  %cmp15 = icmp ult i64 %add, 128
+  br i1 %cmp15, label %if.then17, label %if.end19
+
+if.then17:                                        ; preds = %while.body
+  %incdec.ptr = getelementptr inbounds i8* %d.addr.0136, i64 1
+  store i8 %2, i8* %d.addr.0136, align 1, !tbaa !1
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then17, %if.then22, %if.then57, %if.else
+  %d.addr.0.be = phi i8* [ %incdec.ptr, %if.then17 ], [ %incdec.ptr28, %if.then22 ], [ %incdec.ptr70, %if.then57 ], [ %incdec.ptr88, %if.else ]
+  %p.addr.0.be = phi i8* [ %add.ptr14, %if.then17 ], [ %add.ptr14, %if.then22 ], [ %p.addr.1, %if.then57 ], [ %p.addr.1, %if.else ]
+  %cmp7 = icmp ult i8* %p.addr.0.be, %add.ptr
+  br i1 %cmp7, label %while.body, label %while.end
+
+if.end19:                                         ; preds = %while.body
+  %cmp20 = icmp ult i64 %add, 2048
+  br i1 %cmp20, label %if.then22, label %if.end29
+
+if.then22:                                        ; preds = %if.end19
+  %shr = lshr i64 %add, 6
+  %or = or i64 %shr, 192
+  %conv23 = trunc i64 %or to i8
+  %incdec.ptr24 = getelementptr inbounds i8* %d.addr.0136, i64 1
+  store i8 %conv23, i8* %d.addr.0136, align 1, !tbaa !1
+  %and25 = and i8 %2, 63
+  %or26 = or i8 %and25, -128
+  %incdec.ptr28 = getelementptr inbounds i8* %d.addr.0136, i64 2
+  store i8 %or26, i8* %incdec.ptr24, align 1, !tbaa !1
+  br label %while.cond.backedge
+
+if.end29:                                         ; preds = %if.end19
+  %add.off = add i64 %add, -55296
+  %3 = icmp ult i64 %add.off, 1023
+  br i1 %3, label %if.then35, label %if.end54
+
+if.then35:                                        ; preds = %if.end29
+  %4 = load i8* %add.ptr14, align 1, !tbaa !1
+  %conv37 = zext i8 %4 to i64
+  %shl38 = shl nuw nsw i64 %conv37, 8
+  %arrayidx39 = getelementptr inbounds i8* %p.addr.0137, i64 3
+  %5 = load i8* %arrayidx39, align 1, !tbaa !1
+  %conv40 = zext i8 %5 to i64
+  %add41 = or i64 %shl38, %conv40
+  %add.ptr43 = getelementptr inbounds i8* %p.addr.0137, i64 4
+  %add41.off = add i64 %add41, -56320
+  %6 = icmp ugt i64 %add41.off, 1022
+  br i1 %6, label %if.then48, label %if.end49
+
+if.then48:                                        ; preds = %if.then35
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([27 x i8]* @.str18, i64 0, i64 0)) #5
+  br label %if.end49
+
+if.end49:                                         ; preds = %if.then35, %if.then48
+  %sub = shl nuw nsw i64 %add, 10
+  %sub51 = add i64 %sub, -56613888
+  %add53 = add i64 %sub51, %add41
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.end49, %if.end29
+  %p.addr.1 = phi i8* [ %add.ptr43, %if.end49 ], [ %add.ptr14, %if.end29 ]
+  %uv.0 = phi i64 [ %add53, %if.end49 ], [ %add, %if.end29 ]
+  %cmp55 = icmp ult i64 %uv.0, 65536
+  br i1 %cmp55, label %if.then57, label %if.else
+
+if.then57:                                        ; preds = %if.end54
+  %shr58 = lshr i64 %uv.0, 12
+  %or59 = or i64 %shr58, 224
+  %conv60 = trunc i64 %or59 to i8
+  %incdec.ptr61 = getelementptr inbounds i8* %d.addr.0136, i64 1
+  store i8 %conv60, i8* %d.addr.0136, align 1, !tbaa !1
+  %shr62 = lshr i64 %uv.0, 6
+  %and63 = and i64 %shr62, 63
+  %or64 = or i64 %and63, 128
+  %conv65 = trunc i64 %or64 to i8
+  %incdec.ptr66 = getelementptr inbounds i8* %d.addr.0136, i64 2
+  store i8 %conv65, i8* %incdec.ptr61, align 1, !tbaa !1
+  %and67 = and i64 %uv.0, 63
+  %or68 = or i64 %and67, 128
+  %conv69 = trunc i64 %or68 to i8
+  %incdec.ptr70 = getelementptr inbounds i8* %d.addr.0136, i64 3
+  store i8 %conv69, i8* %incdec.ptr66, align 1, !tbaa !1
+  br label %while.cond.backedge
+
+if.else:                                          ; preds = %if.end54
+  %shr71 = lshr i64 %uv.0, 18
+  %or72 = or i64 %shr71, 240
+  %conv73 = trunc i64 %or72 to i8
+  %incdec.ptr74 = getelementptr inbounds i8* %d.addr.0136, i64 1
+  store i8 %conv73, i8* %d.addr.0136, align 1, !tbaa !1
+  %shr75 = lshr i64 %uv.0, 12
+  %and76 = and i64 %shr75, 63
+  %or77 = or i64 %and76, 128
+  %conv78 = trunc i64 %or77 to i8
+  %incdec.ptr79 = getelementptr inbounds i8* %d.addr.0136, i64 2
+  store i8 %conv78, i8* %incdec.ptr74, align 1, !tbaa !1
+  %shr80 = lshr i64 %uv.0, 6
+  %and81 = and i64 %shr80, 63
+  %or82 = or i64 %and81, 128
+  %conv83 = trunc i64 %or82 to i8
+  %incdec.ptr84 = getelementptr inbounds i8* %d.addr.0136, i64 3
+  store i8 %conv83, i8* %incdec.ptr79, align 1, !tbaa !1
+  %and85 = and i64 %uv.0, 63
+  %or86 = or i64 %and85, 128
+  %conv87 = trunc i64 %or86 to i8
+  %incdec.ptr88 = getelementptr inbounds i8* %d.addr.0136, i64 4
+  store i8 %conv87, i8* %incdec.ptr84, align 1, !tbaa !1
+  br label %while.cond.backedge
+
+while.end:                                        ; preds = %while.cond.backedge, %if.end6
+  %d.addr.0.lcssa = phi i8* [ %d, %if.end6 ], [ %d.addr.0.be, %while.cond.backedge ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %d.addr.0.lcssa to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %d to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv89 = trunc i64 %sub.ptr.sub to i32
+  br label %return
+
+return:                                           ; preds = %while.end, %if.then
+  %storemerge = phi i32 [ %conv89, %while.end ], [ 1, %if.then ]
+  %retval.0 = phi i8* [ %d.addr.0.lcssa, %while.end ], [ %d, %if.then ]
+  store i32 %storemerge, i32* %newlen, align 4, !tbaa !5
+  ret i8* %retval.0
+}

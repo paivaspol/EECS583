@@ -1,0 +1,50 @@
+define void @P7CountSymbol(float* nocapture %counters, i8 signext %symidx, float %wt) #0 {
+entry:
+  %conv = sext i8 %symidx to i32
+  %0 = load i32* @Alphabet_size, align 4, !tbaa !3
+  %cmp = icmp slt i32 %conv, %0
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp327 = icmp sgt i32 %0, 0
+  br i1 %cmp327, label %for.body.lr.ph, label %if.end18
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %idxprom7 = sext i8 %symidx to i64
+  %arrayidx13 = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %idxprom7
+  br label %for.body
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i8 %symidx to i64
+  %arrayidx = getelementptr inbounds float* %counters, i64 %idxprom
+  %1 = load float* %arrayidx, align 4, !tbaa !4
+  %add = fadd float %1, %wt
+  store float %add, float* %arrayidx, align 4, !tbaa !4
+  br label %if.end18
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx9 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %idxprom7, i64 %indvars.iv
+  %2 = load i8* %arrayidx9, align 1, !tbaa !1
+  %tobool = icmp eq i8 %2, 0
+  br i1 %tobool, label %for.inc, label %if.then10
+
+if.then10:                                        ; preds = %for.body
+  %3 = load i32* %arrayidx13, align 4, !tbaa !3
+  %conv14 = sitofp i32 %3 to float
+  %div = fdiv float %wt, %conv14
+  %arrayidx16 = getelementptr inbounds float* %counters, i64 %indvars.iv
+  %4 = load float* %arrayidx16, align 4, !tbaa !4
+  %add17 = fadd float %div, %4
+  store float %add17, float* %arrayidx16, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then10
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp3 = icmp slt i32 %5, %0
+  br i1 %cmp3, label %for.body, label %if.end18
+
+if.end18:                                         ; preds = %for.cond.preheader, %for.inc, %if.then
+  ret void
+}

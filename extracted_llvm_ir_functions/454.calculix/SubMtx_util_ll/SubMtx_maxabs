@@ -1,0 +1,128 @@
+define double @SubMtx_maxabs(%struct._SubMtx* %mtx) #0 {
+entry:
+  %entries = alloca double*, align 8
+  %loc = alloca i32, align 4
+  %nent = alloca i32, align 4
+  %inc1 = alloca i32, align 4
+  %inc2 = alloca i32, align 4
+  %ncol = alloca i32, align 4
+  %nrow = alloca i32, align 4
+  %ncol9 = alloca i32, align 4
+  %indices = alloca i32*, align 8
+  %sizes = alloca i32*, align 8
+  %nrow11 = alloca i32, align 4
+  %indices12 = alloca i32*, align 8
+  %sizes13 = alloca i32*, align 8
+  %colids = alloca i32*, align 8
+  %rowids = alloca i32*, align 8
+  %ncol16 = alloca i32, align 4
+  %firstlocs = alloca i32*, align 8
+  %sizes17 = alloca i32*, align 8
+  %nrow19 = alloca i32, align 4
+  %firstlocs20 = alloca i32*, align 8
+  %sizes21 = alloca i32*, align 8
+  %nrow24 = alloca i32, align 4
+  %pivotsizes = alloca i32*, align 8
+  %nrow26 = alloca i32, align 4
+  %pivotsizes27 = alloca i32*, align 8
+  %cmp = icmp eq %struct._SubMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str8, i64 0, i64 0), %struct._SubMtx* null) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %1, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end7, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([90 x i8]* @.str9, i64 0, i64 0), %struct._SubMtx* %mtx, i32 %1) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end7:                                          ; preds = %if.end
+  %mode = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 1
+  %3 = load i32* %mode, align 4, !tbaa !3
+  switch i32 %3, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 3, label %sw.bb8
+    i32 2, label %sw.bb10
+    i32 4, label %sw.bb14
+    i32 6, label %sw.bb15
+    i32 5, label %sw.bb18
+    i32 7, label %sw.bb22
+    i32 8, label %sw.bb23
+    i32 9, label %sw.bb25
+  ]
+
+sw.bb:                                            ; preds = %if.end7, %if.end7
+  call void @SubMtx_denseInfo(%struct._SubMtx* %mtx, i32* %nrow, i32* %ncol, i32* %inc1, i32* %inc2, double** %entries) #4
+  %4 = load i32* %nrow, align 4, !tbaa !3
+  %5 = load i32* %ncol, align 4, !tbaa !3
+  %mul = mul nsw i32 %5, %4
+  store i32 %mul, i32* %nent, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.bb8:                                           ; preds = %if.end7
+  call void @SubMtx_sparseColumnsInfo(%struct._SubMtx* %mtx, i32* %ncol9, i32* %nent, i32** %sizes, i32** %indices, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb10:                                          ; preds = %if.end7
+  call void @SubMtx_sparseRowsInfo(%struct._SubMtx* %mtx, i32* %nrow11, i32* %nent, i32** %sizes13, i32** %indices12, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb14:                                          ; preds = %if.end7
+  call void @SubMtx_sparseTriplesInfo(%struct._SubMtx* %mtx, i32* %nent, i32** %rowids, i32** %colids, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb15:                                          ; preds = %if.end7
+  call void @SubMtx_denseSubcolumnsInfo(%struct._SubMtx* %mtx, i32* %ncol16, i32* %nent, i32** %firstlocs, i32** %sizes17, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb18:                                          ; preds = %if.end7
+  call void @SubMtx_denseSubrowsInfo(%struct._SubMtx* %mtx, i32* %nrow19, i32* %nent, i32** %firstlocs20, i32** %sizes21, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb22:                                          ; preds = %if.end7
+  call void @SubMtx_diagonalInfo(%struct._SubMtx* %mtx, i32* %nent, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb23:                                          ; preds = %if.end7
+  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow24, i32* %nent, i32** %pivotsizes, double** %entries) #4
+  br label %sw.epilog
+
+sw.bb25:                                          ; preds = %if.end7
+  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow26, i32* %nent, i32** %pivotsizes27, double** %entries) #4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.end7, %sw.bb25, %sw.bb23, %sw.bb22, %sw.bb18, %sw.bb15, %sw.bb14, %sw.bb10, %sw.bb8, %sw.bb
+  %6 = load i32* %type, align 4, !tbaa !3
+  switch i32 %6, label %if.end37 [
+    i32 1, label %if.then30
+    i32 2, label %if.then34
+  ]
+
+if.then30:                                        ; preds = %sw.epilog
+  %7 = load i32* %nent, align 4, !tbaa !3
+  %8 = load double** %entries, align 8, !tbaa !0
+  %call31 = call double @DVmaxabs(i32 %7, double* %8, i32* %loc) #4
+  br label %if.end37
+
+if.then34:                                        ; preds = %sw.epilog
+  %9 = load i32* %nent, align 4, !tbaa !3
+  %10 = load double** %entries, align 8, !tbaa !0
+  %call35 = call double @ZVmaxabs(i32 %9, double* %10) #4
+  br label %if.end37
+
+if.end37:                                         ; preds = %sw.epilog, %if.then34, %if.then30
+  %maxabs.0 = phi double [ %call31, %if.then30 ], [ %call35, %if.then34 ], [ undef, %sw.epilog ]
+  ret double %maxabs.0
+}

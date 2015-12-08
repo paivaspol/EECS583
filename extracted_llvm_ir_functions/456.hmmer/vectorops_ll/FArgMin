@@ -1,0 +1,25 @@
+define i32 @FArgMin(float* nocapture %vec, i32 %n) #1 {
+entry:
+  %cmp9 = icmp sgt i32 %n, 1
+  br i1 %cmp9, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
+  %best.011 = phi i32 [ %best.1, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !3
+  %idxprom1 = sext i32 %best.011 to i64
+  %arrayidx2 = getelementptr inbounds float* %vec, i64 %idxprom1
+  %1 = load float* %arrayidx2, align 4, !tbaa !3
+  %cmp3 = fcmp olt float %0, %1
+  %2 = trunc i64 %indvars.iv to i32
+  %best.1 = select i1 %cmp3, i32 %2, i32 %best.011
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %best.0.lcssa = phi i32 [ 0, %entry ], [ %best.1, %for.body ]
+  ret i32 %best.0.lcssa
+}

@@ -1,0 +1,69 @@
+define internal fastcc void @MD5Update(%struct.MD5_CTX* nocapture %ctx, i8* nocapture %buf, i64 %len) #0 {
+entry:
+  %bytes_low = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 5
+  %0 = load i32* %bytes_low, align 4, !tbaa !3
+  %and = and i32 %0, 63
+  %conv = zext i32 %and to i64
+  %conv2 = zext i32 %0 to i64
+  %add = add i64 %conv2, %len
+  %conv3 = trunc i64 %add to i32
+  store i32 %conv3, i32* %bytes_low, align 4, !tbaa !3
+  %conv5 = and i64 %add, 4294967295
+  %cmp = icmp ult i64 %conv5, %len
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %bytes_high = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 6
+  %1 = load i32* %bytes_high, align 4, !tbaa !3
+  %inc = add i32 %1, 1
+  store i32 %inc, i32* %bytes_high, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end20, label %if.then7
+
+if.then7:                                         ; preds = %if.end
+  %sub = sub i64 64, %conv
+  %cmp8 = icmp ugt i64 %sub, %len
+  %add.ptr = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %conv
+  br i1 %cmp8, label %if.then10, label %if.end11
+
+if.then10:                                        ; preds = %if.then7
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %buf, i64 %len, i32 1, i1 false)
+  br label %if.end31
+
+if.end11:                                         ; preds = %if.then7
+  %arraydecay = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 0
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %buf, i64 %sub, i32 1, i1 false)
+  tail call fastcc void @MD5Transform(%struct.MD5_CTX* %ctx, i8* %arraydecay, i64 1) #5
+  %add.ptr18 = getelementptr inbounds i8* %buf, i64 %sub
+  %sub19 = sub i64 %len, %sub
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.end, %if.end11
+  %len.addr.0 = phi i64 [ %sub19, %if.end11 ], [ %len, %if.end ]
+  %buf.addr.0 = phi i8* [ %add.ptr18, %if.end11 ], [ %buf, %if.end ]
+  %shr = lshr i64 %len.addr.0, 6
+  %tobool21 = icmp eq i64 %shr, 0
+  br i1 %tobool21, label %if.end23, label %if.then22
+
+if.then22:                                        ; preds = %if.end20
+  tail call fastcc void @MD5Transform(%struct.MD5_CTX* %ctx, i8* %buf.addr.0, i64 %shr) #5
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.end20, %if.then22
+  %and24 = and i64 %len.addr.0, 63
+  %tobool25 = icmp eq i64 %and24, 0
+  br i1 %tobool25, label %if.end31, label %if.then26
+
+if.then26:                                        ; preds = %if.end23
+  %arraydecay28 = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 0
+  %shl = shl nuw i64 %shr, 6
+  %add.ptr29 = getelementptr inbounds i8* %buf.addr.0, i64 %shl
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arraydecay28, i8* %add.ptr29, i64 %and24, i32 1, i1 false)
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.end23, %if.then10, %if.then26
+  ret void
+}

@@ -1,0 +1,43 @@
+define %struct.av* @Perl_get_av(i8* %name, i32 %create) #0 {
+entry:
+  %call = tail call %struct.gv* @Perl_gv_fetchpv(i8* %name, i32 %create, i32 10) #7
+  %tobool = icmp eq i32 %create, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.gv* %call, i64 0, i32 0
+  %0 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %0, i64 0, i32 7
+  %1 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_av = getelementptr inbounds %struct.gp* %1, i64 0, i32 4
+  %2 = load %struct.av** %gp_av, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.av* %2, null
+  br i1 %tobool1, label %cond.false, label %return
+
+cond.false:                                       ; preds = %if.then
+  %call5 = tail call %struct.gv* @Perl_gv_AVadd(%struct.gv* %call) #7
+  %sv_any6 = getelementptr inbounds %struct.gv* %call5, i64 0, i32 0
+  %3 = load %struct.xpvgv** %sv_any6, align 8, !tbaa !0
+  %xgv_gp7 = getelementptr inbounds %struct.xpvgv* %3, i64 0, i32 7
+  %4 = load %struct.gp** %xgv_gp7, align 8, !tbaa !0
+  %gp_av8 = getelementptr inbounds %struct.gp* %4, i64 0, i32 4
+  %5 = load %struct.av** %gp_av8, align 8, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %tobool9 = icmp eq %struct.gv* %call, null
+  br i1 %tobool9, label %return, label %if.then10
+
+if.then10:                                        ; preds = %if.end
+  %sv_any11 = getelementptr inbounds %struct.gv* %call, i64 0, i32 0
+  %6 = load %struct.xpvgv** %sv_any11, align 8, !tbaa !0
+  %xgv_gp12 = getelementptr inbounds %struct.xpvgv* %6, i64 0, i32 7
+  %7 = load %struct.gp** %xgv_gp12, align 8, !tbaa !0
+  %gp_av13 = getelementptr inbounds %struct.gp* %7, i64 0, i32 4
+  %8 = load %struct.av** %gp_av13, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %cond.false, %if.then, %if.then10
+  %retval.0 = phi %struct.av* [ %8, %if.then10 ], [ %5, %cond.false ], [ %2, %if.then ], [ null, %if.end ]
+  ret %struct.av* %retval.0
+}

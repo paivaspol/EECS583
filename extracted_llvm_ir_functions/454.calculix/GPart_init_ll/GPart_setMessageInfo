@@ -1,0 +1,31 @@
+define void @GPart_setMessageInfo(%struct._GPart* %gpart, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %cmp = icmp eq %struct._GPart* %gpart, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str1, i64 0, i64 0), %struct._GPart* null, i32 %msglvl, %struct._IO_FILE* %msgFile) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %msglvl1 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 11
+  store i32 %msglvl, i32* %msglvl1, align 4, !tbaa !0
+  %cmp2 = icmp eq %struct._IO_FILE* %msgFile, null
+  br i1 %cmp2, label %if.else, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %msgFile4 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12
+  store %struct._IO_FILE* %msgFile, %struct._IO_FILE** %msgFile4, align 8, !tbaa !3
+  br label %if.end6
+
+if.else:                                          ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %msgFile5 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12
+  store %struct._IO_FILE* %1, %struct._IO_FILE** %msgFile5, align 8, !tbaa !3
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.else, %if.then3
+  ret void
+}

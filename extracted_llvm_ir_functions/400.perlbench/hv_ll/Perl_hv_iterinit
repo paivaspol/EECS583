@@ -1,0 +1,39 @@
+define i32 @Perl_hv_iterinit(%struct.hv* %hv) #0 {
+entry:
+  %tobool = icmp eq %struct.hv* %hv, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([9 x i8]* @.str2, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %sv_any = getelementptr inbounds %struct.hv* %hv, i64 0, i32 0
+  %0 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %xhv_eiter = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 8
+  %1 = load %struct.he** %xhv_eiter, align 8, !tbaa !0
+  %tobool2 = icmp eq %struct.he* %1, null
+  br i1 %tobool2, label %if.end7, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %sv_flags = getelementptr inbounds %struct.hv* %hv, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %2, 1073741824
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.end7, label %if.then4
+
+if.then4:                                         ; preds = %land.lhs.true
+  %and6 = and i32 %2, -1073741825
+  store i32 %and6, i32* %sv_flags, align 4, !tbaa !4
+  tail call void @Perl_hv_free_ent(%struct.hv* %hv, %struct.he* %1) #5
+  br label %if.end7
+
+if.end7:                                          ; preds = %land.lhs.true, %if.end, %if.then4
+  %xhv_riter = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 7
+  store i32 -1, i32* %xhv_riter, align 4, !tbaa !4
+  store %struct.he* null, %struct.he** %xhv_eiter, align 8, !tbaa !0
+  %xhv_keys = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 3
+  %3 = load i64* %xhv_keys, align 8, !tbaa !3
+  %conv = trunc i64 %3 to i32
+  ret i32 %conv
+}

@@ -1,0 +1,23 @@
+define void @BKL_setDefaultFields(%struct._BKL* %bkl) #0 {
+entry:
+  %cmp = icmp eq %struct._BKL* %bkl, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._BKL* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %colors = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10
+  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13
+  store float 0.000000e+00, float* %alpha, align 4, !tbaa !3
+  %regwghts = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12
+  store i32* null, i32** %regwghts, align 8, !tbaa !0
+  %1 = bitcast %struct._BKL* %bkl to i8*
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 44, i32 8, i1 false)
+  %2 = bitcast i32** %colors to i8*
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 20, i32 8, i1 false)
+  ret void
+}

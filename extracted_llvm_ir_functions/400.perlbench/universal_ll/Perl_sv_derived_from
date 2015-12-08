@@ -1,0 +1,73 @@
+define signext i8 @Perl_sv_derived_from(%struct.sv* %sv, i8* %name) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %0, 8192
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_mg_get(%struct.sv* %sv) #4
+  %.pre = load i32* %sv_flags, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = phi i32 [ %0, %entry ], [ %.pre, %if.then ]
+  %and2 = and i32 %1, 524288
+  %tobool3 = icmp eq i32 %and2, 0
+  br i1 %tobool3, label %if.end13.thread, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %2 = load i8** %sv_any, align 8, !tbaa !3
+  %xrv_rv = bitcast i8* %2 to %struct.sv**
+  %3 = load %struct.sv** %xrv_rv, align 8, !tbaa !3
+  %call5 = tail call i8* @Perl_sv_reftype(%struct.sv* %3, i32 0) #4
+  %sv_flags6 = getelementptr inbounds %struct.sv* %3, i64 0, i32 2
+  %4 = load i32* %sv_flags6, align 4, !tbaa !0
+  %and7 = and i32 %4, 4096
+  %tobool8 = icmp eq i32 %and7, 0
+  br i1 %tobool8, label %if.end13, label %if.then9
+
+if.then9:                                         ; preds = %if.then4
+  %sv_any10 = getelementptr inbounds %struct.sv* %3, i64 0, i32 0
+  %5 = load i8** %sv_any10, align 8, !tbaa !3
+  %xmg_stash = getelementptr inbounds i8* %5, i64 48
+  %6 = bitcast i8* %xmg_stash to %struct.hv**
+  %7 = load %struct.hv** %6, align 8, !tbaa !3
+  br label %if.end13
+
+if.end13.thread:                                  ; preds = %if.end
+  %call12 = tail call %struct.hv* @Perl_gv_stashsv(%struct.sv* %sv, i32 0) #4
+  %call1434 = tail call %struct.hv* @Perl_gv_stashpv(i8* %name, i32 0) #4
+  br label %lor.rhs
+
+if.end13:                                         ; preds = %if.then4, %if.then9
+  %stash.0 = phi %struct.hv* [ %7, %if.then9 ], [ null, %if.then4 ]
+  %call14 = tail call %struct.hv* @Perl_gv_stashpv(i8* %name, i32 0) #4
+  %tobool15 = icmp eq i8* %call5, null
+  br i1 %tobool15, label %lor.rhs, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end13
+  %call16 = tail call i32 @strcmp(i8* %call5, i8* %name) #4
+  %tobool17 = icmp eq i32 %call16, 0
+  br i1 %tobool17, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %if.end13.thread, %land.lhs.true, %if.end13
+  %call1437 = phi %struct.hv* [ %call1434, %if.end13.thread ], [ %call14, %land.lhs.true ], [ %call14, %if.end13 ]
+  %stash.036 = phi %struct.hv* [ %call12, %if.end13.thread ], [ %stash.0, %land.lhs.true ], [ %stash.0, %if.end13 ]
+  %tobool18 = icmp eq %struct.hv* %stash.036, null
+  br i1 %tobool18, label %lor.end, label %land.rhs
+
+land.rhs:                                         ; preds = %lor.rhs
+  %call19 = tail call i64 @strlen(i8* %name) #4
+  %conv = trunc i64 %call19 to i32
+  %call20 = tail call fastcc %struct.sv* @S_isa_lookup(%struct.hv* %stash.036, i8* %name, %struct.hv* %call1437, i32 %conv, i32 0) #5
+  %cmp = icmp eq %struct.sv* %call20, @PL_sv_yes
+  br label %lor.end
+
+lor.end:                                          ; preds = %land.lhs.true, %lor.rhs, %land.rhs
+  %8 = phi i1 [ true, %land.lhs.true ], [ false, %lor.rhs ], [ %cmp, %land.rhs ]
+  %conv22 = zext i1 %8 to i8
+  ret i8 %conv22
+}

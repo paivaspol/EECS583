@@ -1,0 +1,30 @@
+define void @DenseMtx_setDefaultFields(%struct._DenseMtx* %mtx) #0 {
+entry:
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str2, i64 0, i64 0), %struct._DenseMtx* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  store i32 1, i32* %type, align 4, !tbaa !3
+  %rowid = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 1
+  store i32 -1, i32* %rowid, align 4, !tbaa !3
+  %colid = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 2
+  store i32 -1, i32* %colid, align 4, !tbaa !3
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %rowind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7
+  %wrkDV = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10
+  %1 = bitcast i32* %nrow to i8*
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 4, i1 false)
+  %2 = bitcast i32** %rowind to i8*
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 24, i32 8, i1 false)
+  tail call void @DV_setDefaultFields(%struct._DV* %wrkDV) #5
+  %next = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 11
+  store %struct._DenseMtx* null, %struct._DenseMtx** %next, align 8, !tbaa !0
+  ret void
+}

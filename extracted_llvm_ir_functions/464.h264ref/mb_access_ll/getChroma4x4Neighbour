@@ -1,0 +1,34 @@
+define void @getChroma4x4Neighbour(i32 %curr_mb_nr, i32 %block_x, i32 %block_y, i32 %rel_x, i32 %rel_y, %struct.pix_pos* nocapture %pix) #1 {
+entry:
+  %mul = shl i32 %block_x, 2
+  %add = add nsw i32 %mul, %rel_x
+  %mul1 = shl i32 %block_y, 2
+  %add2 = add nsw i32 %mul1, %rel_y
+  tail call void @getNeighbour(i32 %curr_mb_nr, i32 %add, i32 %add2, i32 0, %struct.pix_pos* %pix) #4
+  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  %0 = load i32* %available, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %x3 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
+  %1 = load i32* %x3, align 4, !tbaa !3
+  %div = sdiv i32 %1, 4
+  store i32 %div, i32* %x3, align 4, !tbaa !3
+  %y4 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
+  %2 = load i32* %y4, align 4, !tbaa !3
+  %div5 = sdiv i32 %2, 4
+  store i32 %div5, i32* %y4, align 4, !tbaa !3
+  %pos_x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 4
+  %3 = load i32* %pos_x, align 4, !tbaa !3
+  %div6 = sdiv i32 %3, 4
+  store i32 %div6, i32* %pos_x, align 4, !tbaa !3
+  %pos_y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 5
+  %4 = load i32* %pos_y, align 4, !tbaa !3
+  %div7 = sdiv i32 %4, 4
+  store i32 %div7, i32* %pos_y, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

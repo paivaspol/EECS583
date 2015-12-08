@@ -1,0 +1,138 @@
+define void @Perl_do_dump_pad(i32 %level, %struct._PerlIO** %file, %struct.av* %padlist, i32 %full) #0 {
+entry:
+  %tobool = icmp eq %struct.av* %padlist, null
+  br i1 %tobool, label %for.end, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call %struct.sv** @Perl_av_fetch(%struct.av* %padlist, i32 0, i32 0) #3
+  %0 = load %struct.sv** %call, align 8, !tbaa !3
+  %call1 = tail call %struct.sv** @Perl_av_fetch(%struct.av* %padlist, i32 1, i32 0) #3
+  %1 = load %struct.sv** %call1, align 8, !tbaa !3
+  %sv_any = bitcast %struct.sv* %0 to %struct.xpvav**
+  %2 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_array = getelementptr inbounds %struct.xpvav* %2, i64 0, i32 0
+  %3 = load i8** %xav_array, align 8, !tbaa !3
+  %4 = bitcast i8* %3 to %struct.sv**
+  %sv_any2 = bitcast %struct.sv* %1 to %struct.xpvav**
+  %5 = load %struct.xpvav** %sv_any2, align 8, !tbaa !3
+  %xav_array3 = getelementptr inbounds %struct.xpvav* %5, i64 0, i32 0
+  %6 = load i8** %xav_array3, align 8, !tbaa !3
+  %7 = bitcast i8* %6 to %struct.sv**
+  %8 = ptrtoint %struct.sv* %0 to i64
+  %9 = ptrtoint i8* %3 to i64
+  %10 = ptrtoint %struct.sv* %1 to i64
+  %11 = ptrtoint i8* %6 to i64
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %level, %struct._PerlIO** %file, i8* getelementptr inbounds ([43 x i8]* @.str15, i64 0, i64 0), i64 %8, i64 %9, i64 %10, i64 %11) #3
+  %12 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_fill101 = getelementptr inbounds %struct.xpvav* %12, i64 0, i32 1
+  %13 = load i64* %xav_fill101, align 8, !tbaa !4
+  %cmp102 = icmp slt i64 %13, 1
+  br i1 %cmp102, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %tobool46 = icmp eq i32 %full, 0
+  %add48 = add nsw i32 %level, 1
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.sv** %4, i64 %indvars.iv
+  %14 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %tobool6 = icmp ne %struct.sv* %14, null
+  %cmp7 = icmp eq %struct.sv* %14, @PL_sv_undef
+  %or.cond = and i1 %tobool6, %cmp7
+  %. = select i1 %or.cond, %struct.sv* null, %struct.sv* %14
+  %tobool11 = icmp eq %struct.sv* %., null
+  br i1 %tobool11, label %if.else45, label %if.then12
+
+if.then12:                                        ; preds = %for.body
+  %sv_flags = getelementptr inbounds %struct.sv* %., i64 0, i32 2
+  %15 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %15, 1048576
+  %tobool13 = icmp eq i32 %and, 0
+  %arrayidx16 = getelementptr inbounds %struct.sv** %7, i64 %indvars.iv
+  %16 = load %struct.sv** %arrayidx16, align 8, !tbaa !3
+  %17 = ptrtoint %struct.sv* %16 to i64
+  %tobool19 = icmp ne %struct.sv* %16, null
+  br i1 %tobool13, label %if.else, label %if.then14
+
+if.then14:                                        ; preds = %if.then12
+  br i1 %tobool19, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %if.then14
+  %sv_refcnt = getelementptr inbounds %struct.sv* %16, i64 0, i32 1
+  %18 = load i32* %sv_refcnt, align 4, !tbaa !0
+  %phitmp100 = zext i32 %18 to i64
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then14, %cond.true
+  %cond = phi i64 [ %phitmp100, %cond.true ], [ 0, %if.then14 ]
+  %sv_any23 = getelementptr inbounds %struct.sv* %., i64 0, i32 0
+  %19 = load i8** %sv_any23, align 8, !tbaa !3
+  %xpv_pv = bitcast i8* %19 to i8**
+  %20 = load i8** %xpv_pv, align 8, !tbaa !3
+  %21 = trunc i64 %indvars.iv to i32
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %add48, %struct._PerlIO** %file, i8* getelementptr inbounds ([27 x i8]* @.str16, i64 0, i64 0), i32 %21, i64 %17, i64 %cond, i8* %20) #3
+  br label %for.inc
+
+if.else:                                          ; preds = %if.then12
+  br i1 %tobool19, label %cond.true30, label %cond.end35
+
+cond.true30:                                      ; preds = %if.else
+  %sv_refcnt33 = getelementptr inbounds %struct.sv* %16, i64 0, i32 1
+  %22 = load i32* %sv_refcnt33, align 4, !tbaa !0
+  %phitmp99 = zext i32 %22 to i64
+  br label %cond.end35
+
+cond.end35:                                       ; preds = %if.else, %cond.true30
+  %cond36 = phi i64 [ %phitmp99, %cond.true30 ], [ 0, %if.else ]
+  %sv_any38 = getelementptr inbounds %struct.sv* %., i64 0, i32 0
+  %23 = load i8** %sv_any38, align 8, !tbaa !3
+  %xnv_nv = getelementptr inbounds i8* %23, i64 32
+  %24 = bitcast i8* %xnv_nv to double*
+  %25 = load double* %24, align 8, !tbaa !6
+  %call39 = tail call i32 @Perl_cast_ulong(double %25) #3
+  %conv40 = zext i32 %call39 to i64
+  %26 = load i8** %sv_any38, align 8, !tbaa !3
+  %xiv_iv = getelementptr inbounds i8* %26, i64 24
+  %27 = bitcast i8* %xiv_iv to i64*
+  %28 = load i64* %27, align 8, !tbaa !4
+  %xpv_pv43 = bitcast i8* %26 to i8**
+  %29 = load i8** %xpv_pv43, align 8, !tbaa !3
+  %30 = trunc i64 %indvars.iv to i32
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %add48, %struct._PerlIO** %file, i8* getelementptr inbounds ([32 x i8]* @.str17, i64 0, i64 0), i32 %30, i64 %17, i64 %cond36, i64 %conv40, i64 %28, i8* %29) #3
+  br label %for.inc
+
+if.else45:                                        ; preds = %for.body
+  br i1 %tobool46, label %for.inc, label %if.then47
+
+if.then47:                                        ; preds = %if.else45
+  %arrayidx50 = getelementptr inbounds %struct.sv** %7, i64 %indvars.iv
+  %31 = load %struct.sv** %arrayidx50, align 8, !tbaa !3
+  %32 = ptrtoint %struct.sv* %31 to i64
+  %tobool53 = icmp eq %struct.sv* %31, null
+  br i1 %tobool53, label %cond.end59, label %cond.true54
+
+cond.true54:                                      ; preds = %if.then47
+  %sv_refcnt57 = getelementptr inbounds %struct.sv* %31, i64 0, i32 1
+  %33 = load i32* %sv_refcnt57, align 4, !tbaa !0
+  %phitmp = zext i32 %33 to i64
+  br label %cond.end59
+
+cond.end59:                                       ; preds = %if.then47, %cond.true54
+  %cond60 = phi i64 [ %phitmp, %cond.true54 ], [ 0, %if.then47 ]
+  %34 = trunc i64 %indvars.iv to i32
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %add48, %struct._PerlIO** %file, i8* getelementptr inbounds ([17 x i8]* @.str18, i64 0, i64 0), i32 %34, i64 %32, i64 %cond60) #3
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.else45, %cond.end35, %cond.end, %cond.end59
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %35 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_fill = getelementptr inbounds %struct.xpvav* %35, i64 0, i32 1
+  %36 = load i64* %xav_fill, align 8, !tbaa !4
+  %cmp = icmp sgt i64 %indvars.iv.next, %36
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end, %for.inc, %entry
+  ret void
+}

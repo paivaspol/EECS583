@@ -1,0 +1,42 @@
+define %struct.op* @Perl_pp_chmod() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !4
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %4 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_targ = getelementptr inbounds %struct.op* %4, i64 0, i32 3
+  %5 = load i64* %op_targ, align 8, !tbaa !3
+  %6 = load %struct.sv*** @PL_curpad, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %6, i64 %5
+  %7 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %op_type = getelementptr inbounds %struct.op* %4, i64 0, i32 4
+  %8 = load i16* %op_type, align 2, !tbaa !5
+  %conv = zext i16 %8 to i32
+  %call = tail call i32 @Perl_apply(i32 %conv, %struct.sv** %add.ptr, %struct.sv** %0) #6
+  %conv1 = sext i32 %call to i64
+  tail call void @Perl_sv_setiv(%struct.sv* %7, i64 %conv1) #6
+  %sv_flags = getelementptr inbounds %struct.sv* %7, i64 0, i32 2
+  %9 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %9, 16384
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @Perl_mg_set(%struct.sv* %7) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %add.ptr.sum = add i64 %idx.ext, 1
+  %incdec.ptr3 = getelementptr inbounds %struct.sv** %1, i64 %add.ptr.sum
+  store %struct.sv* %7, %struct.sv** %incdec.ptr3, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr3, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %10 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %10, i64 0, i32 0
+  %11 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %11
+}

@@ -1,0 +1,24 @@
+define i64 @htovl(i64 %n) #7 {
+entry:
+  %u = alloca %union.anon.5, align 8
+  %c = bitcast %union.anon.5* %u to [8 x i8]*
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv8 = phi i64 [ 0, %entry ], [ %indvars.iv.next9, %for.body ]
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %shr = ashr i64 %n, %indvars.iv
+  %conv2 = trunc i64 %shr to i8
+  %arrayidx = getelementptr inbounds [8 x i8]* %c, i64 0, i64 %indvars.iv8
+  store i8 %conv2, i8* %arrayidx, align 1, !tbaa !0
+  %indvars.iv.next9 = add i64 %indvars.iv8, 1
+  %indvars.iv.next = add i64 %indvars.iv, 8
+  %lftr.wideiv = trunc i64 %indvars.iv.next9 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 8
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %value = getelementptr inbounds %union.anon.5* %u, i64 0, i32 0
+  %0 = load i64* %value, align 8, !tbaa !4
+  ret i64 %0
+}

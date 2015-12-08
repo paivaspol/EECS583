@@ -1,0 +1,46 @@
+define internal i32 @read_bin10hmm(%struct.hmmfile_s* nocapture %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
+entry:
+  %magic = alloca i32, align 4
+  %hmm = alloca %struct.plan7_s*, align 8
+  %f = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0
+  %0 = load %struct._IO_FILE** %f, align 8, !tbaa !3
+  %call = call i32 @feof(%struct._IO_FILE* %0) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %1 = bitcast i32* %magic to i8*
+  %2 = load %struct._IO_FILE** %f, align 8, !tbaa !3
+  %call2 = call i64 @fread(i8* %1, i64 4, i64 1, %struct._IO_FILE* %2) #6
+  %tobool3 = icmp eq i64 %call2, 0
+  br i1 %tobool3, label %return, label %if.end5
+
+if.end5:                                          ; preds = %if.end
+  %3 = load %struct._IO_FILE** %f, align 8, !tbaa !3
+  %byteswap = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 4
+  %4 = load i32* %byteswap, align 4, !tbaa !0
+  %call7 = call fastcc %struct.plan9_s* @read_plan9_binhmm(%struct._IO_FILE* %3, i32 1, i32 %4) #8
+  %cmp = icmp eq %struct.plan9_s* %call7, null
+  br i1 %cmp, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.end5
+  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !tbaa !3
+  br label %return
+
+if.end9:                                          ; preds = %if.end5
+  call void @Plan9toPlan7(%struct.plan9_s* %call7, %struct.plan7_s** %hmm) #6
+  %call10 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str59, i64 0, i64 0)) #6
+  %5 = load %struct.plan7_s** %hmm, align 8, !tbaa !3
+  %comlog = getelementptr inbounds %struct.plan7_s* %5, i64 0, i32 6
+  store i8* %call10, i8** %comlog, align 8, !tbaa !3
+  %6 = load %struct.plan7_s** %hmm, align 8, !tbaa !3
+  call void @Plan7SetCtime(%struct.plan7_s* %6) #6
+  %call11 = call i32 @P9FreeHMM(%struct.plan9_s* %call7) #6
+  %7 = load %struct.plan7_s** %hmm, align 8, !tbaa !3
+  store %struct.plan7_s* %7, %struct.plan7_s** %ret_hmm, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %if.end9, %if.then8
+  %retval.0 = phi i32 [ 1, %if.then8 ], [ 1, %if.end9 ], [ 0, %entry ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

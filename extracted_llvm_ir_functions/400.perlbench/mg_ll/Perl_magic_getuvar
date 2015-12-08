@@ -1,0 +1,23 @@
+define i32 @Perl_magic_getuvar(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %mg_ptr = getelementptr inbounds %struct.magic* %mg, i64 0, i32 6
+  %0 = load i8** %mg_ptr, align 8, !tbaa !0
+  %tobool = icmp eq i8* %0, null
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %uf_val = bitcast i8* %0 to i32 (i64, %struct.sv*)**
+  %1 = load i32 (i64, %struct.sv*)** %uf_val, align 8, !tbaa !0
+  %tobool1 = icmp eq i32 (i64, %struct.sv*)* %1, null
+  br i1 %tobool1, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %uf_index = getelementptr inbounds i8* %0, i64 16
+  %2 = bitcast i8* %uf_index to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  %call = tail call i32 %1(i64 %3, %struct.sv* %sv) #7
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  ret i32 0
+}

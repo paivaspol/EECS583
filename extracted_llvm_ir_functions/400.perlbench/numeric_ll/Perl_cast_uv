@@ -1,0 +1,30 @@
+define i64 @Perl_cast_uv(double %f) #0 {
+entry:
+  %cmp = fcmp olt double %f, 0.000000e+00
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %cmp1 = fcmp olt double %f, 0xC3E0000000000000
+  br i1 %cmp1, label %return, label %cond.false
+
+cond.false:                                       ; preds = %if.then
+  %conv = fptosi double %f to i64
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp2 = fcmp olt double %f, 0x43F0000000000000
+  br i1 %cmp2, label %if.then4, label %if.end6
+
+if.then4:                                         ; preds = %if.end
+  %conv5 = fptoui double %f to i64
+  br label %return
+
+if.end6:                                          ; preds = %if.end
+  %cmp7 = fcmp ogt double %f, 0.000000e+00
+  %cond9 = sext i1 %cmp7 to i64
+  br label %return
+
+return:                                           ; preds = %cond.false, %if.then, %if.end6, %if.then4
+  %retval.0 = phi i64 [ %conv5, %if.then4 ], [ %cond9, %if.end6 ], [ %conv, %cond.false ], [ -9223372036854775808, %if.then ]
+  ret i64 %retval.0
+}

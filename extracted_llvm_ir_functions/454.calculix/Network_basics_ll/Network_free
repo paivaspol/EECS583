@@ -1,0 +1,17 @@
+define void @Network_free(%struct._Network* %network) #0 {
+entry:
+  %cmp = icmp eq %struct._Network* %network, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str4, i64 0, i64 0), %struct._Network* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  tail call void @Network_clearData(%struct._Network* %network) #6
+  %1 = bitcast %struct._Network* %network to i8*
+  tail call void @free(i8* %1) #4
+  ret void
+}

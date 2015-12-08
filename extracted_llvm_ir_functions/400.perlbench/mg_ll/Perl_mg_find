@@ -1,0 +1,32 @@
+define %struct.magic* @Perl_mg_find(%struct.sv* %sv, i32 %type) #2 {
+entry:
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %0, i64 40
+  %1 = bitcast i8* %xmg_magic to %struct.magic**
+  %mg.08 = load %struct.magic** %1, align 8
+  %tobool19 = icmp eq %struct.magic* %mg.08, null
+  br i1 %tobool19, label %return, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %mg_moremagic = getelementptr inbounds %struct.magic* %mg.010, i64 0, i32 0
+  %mg.0 = load %struct.magic** %mg_moremagic, align 8
+  %tobool1 = icmp eq %struct.magic* %mg.0, null
+  br i1 %tobool1, label %return, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.cond
+  %mg.010 = phi %struct.magic* [ %mg.0, %for.cond ], [ %mg.08, %if.end ]
+  %mg_type = getelementptr inbounds %struct.magic* %mg.010, i64 0, i32 3
+  %2 = load i8* %mg_type, align 1, !tbaa !1
+  %conv = sext i8 %2 to i32
+  %cmp = icmp eq i32 %conv, %type
+  br i1 %cmp, label %return, label %for.cond
+
+return:                                           ; preds = %if.end, %for.body, %for.cond, %entry
+  %retval.0 = phi %struct.magic* [ null, %entry ], [ null, %if.end ], [ %mg.010, %for.body ], [ null, %for.cond ]
+  ret %struct.magic* %retval.0
+}

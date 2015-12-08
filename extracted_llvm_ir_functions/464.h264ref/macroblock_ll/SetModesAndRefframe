@@ -1,0 +1,151 @@
+define void @SetModesAndRefframe(i32 %b8, i16* nocapture %p_dir, i32* nocapture %fw_mode, i32* nocapture %bw_mode, i16* nocapture %fw_ref, i16* nocapture %bw_ref) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
+  %idxprom = sext i32 %1 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %div = sdiv i32 %b8, 2
+  %mul = shl nsw i32 %div, 1
+  %rem = srem i32 %b8, 2
+  %mul1 = shl nsw i32 %rem, 1
+  store i16 -1, i16* %bw_ref, align 2, !tbaa !4
+  store i16 -1, i16* %fw_ref, align 2, !tbaa !4
+  store i32 -1, i32* %bw_mode, align 4, !tbaa !3
+  store i32 -1, i32* %fw_mode, align 4, !tbaa !3
+  %idxprom2 = sext i32 %b8 to i64
+  %arrayidx3 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 15, i64 %idxprom2
+  %3 = load i32* %arrayidx3, align 4, !tbaa !3
+  %conv = trunc i32 %3 to i16
+  store i16 %conv, i16* %p_dir, align 2, !tbaa !4
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %4 = load i32* %type, align 4, !tbaa !3
+  %cmp = icmp eq i32 %4, 1
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %block_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 32
+  %5 = load i32* %block_y, align 4, !tbaa !3
+  %add = add nsw i32 %5, %mul
+  %idxprom5 = sext i32 %add to i64
+  %block_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 31
+  %6 = load i32* %block_x, align 4, !tbaa !3
+  %add6 = add nsw i32 %6, %mul1
+  %idxprom7 = sext i32 %add6 to i64
+  %7 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
+  %ref_idx = getelementptr inbounds %struct.storable_picture* %7, i64 0, i32 32
+  %8 = load i16**** %ref_idx, align 8, !tbaa !0
+  %9 = load i16*** %8, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i16** %9, i64 %idxprom7
+  %10 = load i16** %arrayidx9, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds i16* %10, i64 %idxprom5
+  %11 = load i16* %arrayidx10, align 2, !tbaa !4
+  store i16 %11, i16* %fw_ref, align 2, !tbaa !4
+  store i16 0, i16* %bw_ref, align 2, !tbaa !4
+  %arrayidx12 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 14, i64 %idxprom2
+  %12 = load i32* %arrayidx12, align 4, !tbaa !3
+  store i32 %12, i32* %fw_mode, align 4, !tbaa !3
+  store i32 0, i32* %bw_mode, align 4, !tbaa !3
+  br label %if.end88
+
+if.else:                                          ; preds = %entry
+  switch i32 %3, label %if.else59 [
+    i32 -1, label %if.then18
+    i32 0, label %if.then25
+    i32 1, label %if.then45
+  ]
+
+if.then18:                                        ; preds = %if.else
+  store i16 -1, i16* %fw_ref, align 2, !tbaa !4
+  store i16 -1, i16* %bw_ref, align 2, !tbaa !4
+  store i32 0, i32* %fw_mode, align 4, !tbaa !3
+  store i32 0, i32* %bw_mode, align 4, !tbaa !3
+  br label %if.end88
+
+if.then25:                                        ; preds = %if.else
+  %block_y26 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 32
+  %13 = load i32* %block_y26, align 4, !tbaa !3
+  %add27 = add nsw i32 %13, %mul
+  %idxprom28 = sext i32 %add27 to i64
+  %block_x29 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 31
+  %14 = load i32* %block_x29, align 4, !tbaa !3
+  %add30 = add nsw i32 %14, %mul1
+  %idxprom31 = sext i32 %add30 to i64
+  %15 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
+  %ref_idx32 = getelementptr inbounds %struct.storable_picture* %15, i64 0, i32 32
+  %16 = load i16**** %ref_idx32, align 8, !tbaa !0
+  %17 = load i16*** %16, align 8, !tbaa !0
+  %arrayidx34 = getelementptr inbounds i16** %17, i64 %idxprom31
+  %18 = load i16** %arrayidx34, align 8, !tbaa !0
+  %arrayidx35 = getelementptr inbounds i16* %18, i64 %idxprom28
+  %19 = load i16* %arrayidx35, align 2, !tbaa !4
+  store i16 %19, i16* %fw_ref, align 2, !tbaa !4
+  store i16 0, i16* %bw_ref, align 2, !tbaa !4
+  %arrayidx38 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 14, i64 %idxprom2
+  %20 = load i32* %arrayidx38, align 4, !tbaa !3
+  store i32 %20, i32* %fw_mode, align 4, !tbaa !3
+  store i32 0, i32* %bw_mode, align 4, !tbaa !3
+  br label %if.end88
+
+if.then45:                                        ; preds = %if.else
+  store i16 0, i16* %fw_ref, align 2, !tbaa !4
+  %block_y46 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 32
+  %21 = load i32* %block_y46, align 4, !tbaa !3
+  %add47 = add nsw i32 %21, %mul
+  %idxprom48 = sext i32 %add47 to i64
+  %block_x49 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 31
+  %22 = load i32* %block_x49, align 4, !tbaa !3
+  %add50 = add nsw i32 %22, %mul1
+  %idxprom51 = sext i32 %add50 to i64
+  %23 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
+  %ref_idx52 = getelementptr inbounds %struct.storable_picture* %23, i64 0, i32 32
+  %24 = load i16**** %ref_idx52, align 8, !tbaa !0
+  %arrayidx53 = getelementptr inbounds i16*** %24, i64 1
+  %25 = load i16*** %arrayidx53, align 8, !tbaa !0
+  %arrayidx54 = getelementptr inbounds i16** %25, i64 %idxprom51
+  %26 = load i16** %arrayidx54, align 8, !tbaa !0
+  %arrayidx55 = getelementptr inbounds i16* %26, i64 %idxprom48
+  %27 = load i16* %arrayidx55, align 2, !tbaa !4
+  store i16 %27, i16* %bw_ref, align 2, !tbaa !4
+  store i32 0, i32* %fw_mode, align 4, !tbaa !3
+  %arrayidx58 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 14, i64 %idxprom2
+  %28 = load i32* %arrayidx58, align 4, !tbaa !3
+  store i32 %28, i32* %bw_mode, align 4, !tbaa !3
+  br label %if.end88
+
+if.else59:                                        ; preds = %if.else
+  %block_y60 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 32
+  %29 = load i32* %block_y60, align 4, !tbaa !3
+  %add61 = add nsw i32 %29, %mul
+  %idxprom62 = sext i32 %add61 to i64
+  %block_x63 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 31
+  %30 = load i32* %block_x63, align 4, !tbaa !3
+  %add64 = add nsw i32 %30, %mul1
+  %idxprom65 = sext i32 %add64 to i64
+  %31 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
+  %ref_idx66 = getelementptr inbounds %struct.storable_picture* %31, i64 0, i32 32
+  %32 = load i16**** %ref_idx66, align 8, !tbaa !0
+  %33 = load i16*** %32, align 8, !tbaa !0
+  %arrayidx68 = getelementptr inbounds i16** %33, i64 %idxprom65
+  %34 = load i16** %arrayidx68, align 8, !tbaa !0
+  %arrayidx69 = getelementptr inbounds i16* %34, i64 %idxprom62
+  %35 = load i16* %arrayidx69, align 2, !tbaa !4
+  store i16 %35, i16* %fw_ref, align 2, !tbaa !4
+  %arrayidx77 = getelementptr inbounds i16*** %32, i64 1
+  %36 = load i16*** %arrayidx77, align 8, !tbaa !0
+  %arrayidx78 = getelementptr inbounds i16** %36, i64 %idxprom65
+  %37 = load i16** %arrayidx78, align 8, !tbaa !0
+  %arrayidx79 = getelementptr inbounds i16* %37, i64 %idxprom62
+  %38 = load i16* %arrayidx79, align 2, !tbaa !4
+  store i16 %38, i16* %bw_ref, align 2, !tbaa !4
+  %arrayidx82 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 14, i64 %idxprom2
+  %39 = load i32* %arrayidx82, align 4, !tbaa !3
+  store i32 %39, i32* %fw_mode, align 4, !tbaa !3
+  %40 = load i32* %arrayidx82, align 4, !tbaa !3
+  store i32 %40, i32* %bw_mode, align 4, !tbaa !3
+  br label %if.end88
+
+if.end88:                                         ; preds = %if.then18, %if.then45, %if.else59, %if.then25, %if.then
+  ret void
+}

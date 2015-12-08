@@ -1,0 +1,45 @@
+define void @DenseMtx_zero(%struct._DenseMtx* %mtx) #0 {
+entry:
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #6
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  switch i32 %1, label %if.end12 [
+    i32 1, label %if.then2
+    i32 2, label %if.then5
+  ]
+
+if.then2:                                         ; preds = %if.end
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %2 = load i32* %nrow, align 4, !tbaa !3
+  %ncol = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %3 = load i32* %ncol, align 4, !tbaa !3
+  %mul = mul nsw i32 %3, %2
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %4 = load double** %entries, align 8, !tbaa !0
+  tail call void @DVzero(i32 %mul, double* %4) #6
+  br label %if.end12
+
+if.then5:                                         ; preds = %if.end
+  %nrow6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %5 = load i32* %nrow6, align 4, !tbaa !3
+  %mul7 = shl i32 %5, 1
+  %ncol8 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %6 = load i32* %ncol8, align 4, !tbaa !3
+  %mul9 = mul nsw i32 %mul7, %6
+  %entries10 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %7 = load double** %entries10, align 8, !tbaa !0
+  tail call void @DVzero(i32 %mul9, double* %7) #6
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %if.then5, %if.then2
+  ret void
+}

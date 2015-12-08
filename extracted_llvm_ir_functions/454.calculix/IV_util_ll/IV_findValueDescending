@@ -1,0 +1,64 @@
+define i32 @IV_findValueDescending(%struct._IV* %iv, i32 %value) #0 {
+entry:
+  %cmp = icmp eq %struct._IV* %iv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([59 x i8]* @.str22, i64 0, i64 0), %struct._IV* null, i32 %value) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
+  %1 = load i32* %size, align 4, !tbaa !3
+  %cmp1 = icmp slt i32 %1, 1
+  br i1 %cmp1, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %vec2 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
+  %2 = load i32** %vec2, align 8, !tbaa !0
+  %cmp3 = icmp eq i32* %2, null
+  br i1 %cmp3, label %return, label %if.end5
+
+if.end5:                                          ; preds = %lor.lhs.false
+  %sub = add nsw i32 %1, -1
+  %3 = load i32* %2, align 4, !tbaa !3
+  %cmp6 = icmp eq i32 %3, %value
+  br i1 %cmp6, label %return, label %if.else
+
+if.else:                                          ; preds = %if.end5
+  %idxprom8 = sext i32 %sub to i64
+  %arrayidx9 = getelementptr inbounds i32* %2, i64 %idxprom8
+  %4 = load i32* %arrayidx9, align 4, !tbaa !3
+  %cmp10 = icmp eq i32 %4, %value
+  br i1 %cmp10, label %return, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.else
+  %sub1347 = add nsw i32 %1, -2
+  %cmp1448 = icmp sgt i32 %sub1347, 0
+  br i1 %cmp1448, label %while.body, label %return
+
+while.body:                                       ; preds = %while.cond.preheader, %if.else19
+  %right.050 = phi i32 [ %right.0.div, %if.else19 ], [ %sub, %while.cond.preheader ]
+  %left.049 = phi i32 [ %div.left.0, %if.else19 ], [ 0, %while.cond.preheader ]
+  %add = add nsw i32 %right.050, %left.049
+  %div = sdiv i32 %add, 2
+  %idxprom15 = sext i32 %div to i64
+  %arrayidx16 = getelementptr inbounds i32* %2, i64 %idxprom15
+  %5 = load i32* %arrayidx16, align 4, !tbaa !3
+  %cmp17 = icmp eq i32 %5, %value
+  br i1 %cmp17, label %return, label %if.else19
+
+if.else19:                                        ; preds = %while.body
+  %cmp22 = icmp sgt i32 %5, %value
+  %div.left.0 = select i1 %cmp22, i32 %div, i32 %left.049
+  %right.0.div = select i1 %cmp22, i32 %right.050, i32 %div
+  %sub13 = add nsw i32 %right.0.div, -1
+  %cmp14 = icmp slt i32 %div.left.0, %sub13
+  br i1 %cmp14, label %while.body, label %return
+
+return:                                           ; preds = %while.cond.preheader, %while.body, %if.else19, %if.else, %if.end5, %if.end, %lor.lhs.false
+  %retval.0 = phi i32 [ -1, %lor.lhs.false ], [ -1, %if.end ], [ 0, %if.end5 ], [ %sub, %if.else ], [ -1, %while.cond.preheader ], [ %div, %while.body ], [ -1, %if.else19 ]
+  ret i32 %retval.0
+}

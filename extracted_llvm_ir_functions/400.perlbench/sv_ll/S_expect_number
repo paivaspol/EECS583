@@ -1,0 +1,31 @@
+define internal fastcc i32 @S_expect_number(i8** nocapture %pattern) #0 {
+entry:
+  %0 = load i8** %pattern, align 8, !tbaa !0
+  %1 = load i8* %0, align 1, !tbaa !1
+  %conv = sext i8 %1 to i32
+  %conv.off = add i32 %conv, -49
+  %switch = icmp ult i32 %conv.off, 9
+  %.off11 = add i8 %1, -48
+  %2 = icmp ult i8 %.off11, 10
+  %or.cond = and i1 %switch, %2
+  br i1 %or.cond, label %while.body, label %sw.epilog
+
+while.body:                                       ; preds = %entry, %while.body
+  %3 = phi i8* [ %incdec.ptr, %while.body ], [ %0, %entry ]
+  %var.012 = phi i32 [ %add, %while.body ], [ 0, %entry ]
+  %mul = mul nsw i32 %var.012, 10
+  %incdec.ptr = getelementptr inbounds i8* %3, i64 1
+  store i8* %incdec.ptr, i8** %pattern, align 8, !tbaa !0
+  %4 = load i8* %3, align 1, !tbaa !1
+  %conv6 = sext i8 %4 to i32
+  %sub = add i32 %mul, -48
+  %add = add i32 %sub, %conv6
+  %5 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %.off = add i8 %5, -48
+  %6 = icmp ult i8 %.off, 10
+  br i1 %6, label %while.body, label %sw.epilog
+
+sw.epilog:                                        ; preds = %while.body, %entry
+  %var.1 = phi i32 [ 0, %entry ], [ %add, %while.body ]
+  ret i32 %var.1
+}

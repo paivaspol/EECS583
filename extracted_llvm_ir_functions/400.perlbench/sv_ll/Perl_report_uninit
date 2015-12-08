@@ -1,0 +1,34 @@
+define void @Perl_report_uninit() #0 {
+entry:
+  %0 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %tobool = icmp eq %struct.op* %0, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %op_type = getelementptr inbounds %struct.op* %0, i64 0, i32 4
+  %1 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %1, 351
+  br i1 %cmp, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %if.then
+  %call = tail call i8* @Perl_custom_op_desc(%struct.op* %0) #8
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %idxprom = zext i16 %1 to i64
+  %arrayidx = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %2 = load i8** %arrayidx, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %call, %cond.true ], [ %2, %cond.false ]
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 41, i8* getelementptr inbounds ([0 x i8]* @PL_warn_uninit, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0), i8* %cond) #8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 41, i8* getelementptr inbounds ([0 x i8]* @PL_warn_uninit, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)) #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %cond.end
+  ret void
+}

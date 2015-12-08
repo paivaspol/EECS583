@@ -1,0 +1,21 @@
+define void @FreeHistogram(%struct.histogram_s* nocapture %h) #0 {
+entry:
+  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %0 = load i32** %histogram, align 8, !tbaa !3
+  %1 = bitcast i32* %0 to i8*
+  tail call void @free(i8* %1) #4
+  %expect = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7
+  %2 = load float** %expect, align 8, !tbaa !3
+  %cmp = icmp eq float* %2, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast float* %2 to i8*
+  tail call void @free(i8* %3) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %4 = bitcast %struct.histogram_s* %h to i8*
+  tail call void @free(i8* %4) #4
+  ret void
+}

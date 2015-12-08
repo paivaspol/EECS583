@@ -1,0 +1,127 @@
+define i32 @Zrecip2(double %areal, double %aimag, double %breal, double %bimag, double %creal, double %cimag, double %dreal, double %dimag, double* %pereal, double* %peimag, double* %pfreal, double* %pfimag, double* %pgreal, double* %pgimag, double* %phreal, double* %phimag) #0 {
+entry:
+  %yreal = alloca double, align 8
+  %yimag = alloca double, align 8
+  %mul = fmul double %areal, %dreal
+  %mul1 = fmul double %aimag, %dimag
+  %sub = fsub double %mul, %mul1
+  %mul2 = fmul double %breal, %creal
+  %sub3 = fsub double %sub, %mul2
+  %mul4 = fmul double %bimag, %cimag
+  %add = fadd double %mul4, %sub3
+  %mul5 = fmul double %areal, %dimag
+  %mul6 = fmul double %aimag, %dreal
+  %add7 = fadd double %mul6, %mul5
+  %mul8 = fmul double %breal, %cimag
+  %sub9 = fsub double %add7, %mul8
+  %mul10 = fmul double %bimag, %creal
+  %sub11 = fsub double %sub9, %mul10
+  %call = call i32 @Zrecip(double %add, double %sub11, double* %yreal, double* %yimag) #6
+  %cmp = icmp eq double* %pereal, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load double* %yreal, align 8, !tbaa !0
+  %mul12 = fmul double %0, %dreal
+  %1 = load double* %yimag, align 8, !tbaa !0
+  %mul13 = fmul double %1, %dimag
+  %sub14 = fsub double %mul12, %mul13
+  store double %sub14, double* %pereal, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %cmp15 = icmp eq double* %peimag, null
+  br i1 %cmp15, label %if.end20, label %if.then16
+
+if.then16:                                        ; preds = %if.end
+  %2 = load double* %yimag, align 8, !tbaa !0
+  %mul17 = fmul double %2, %dreal
+  %3 = load double* %yreal, align 8, !tbaa !0
+  %mul18 = fmul double %3, %dimag
+  %add19 = fadd double %mul17, %mul18
+  store double %add19, double* %peimag, align 8, !tbaa !0
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.end, %if.then16
+  %cmp21 = icmp eq double* %pfreal, null
+  br i1 %cmp21, label %if.end27, label %if.then22
+
+if.then22:                                        ; preds = %if.end20
+  %4 = load double* %yreal, align 8, !tbaa !0
+  %5 = fmul double %4, %breal
+  %6 = load double* %yimag, align 8, !tbaa !0
+  %mul25 = fmul double %6, %bimag
+  %add26 = fsub double %mul25, %5
+  store double %add26, double* %pfreal, align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end20, %if.then22
+  %cmp28 = icmp eq double* %pfimag, null
+  br i1 %cmp28, label %if.end34, label %if.then29
+
+if.then29:                                        ; preds = %if.end27
+  %7 = load double* %yimag, align 8, !tbaa !0
+  %8 = fmul double %7, %breal
+  %mul31 = fsub double -0.000000e+00, %8
+  %9 = load double* %yreal, align 8, !tbaa !0
+  %mul32 = fmul double %9, %bimag
+  %sub33 = fsub double %mul31, %mul32
+  store double %sub33, double* %pfimag, align 8, !tbaa !0
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.end27, %if.then29
+  %cmp35 = icmp eq double* %pgreal, null
+  br i1 %cmp35, label %if.end41, label %if.then36
+
+if.then36:                                        ; preds = %if.end34
+  %10 = load double* %yreal, align 8, !tbaa !0
+  %11 = fmul double %10, %creal
+  %12 = load double* %yimag, align 8, !tbaa !0
+  %mul39 = fmul double %12, %cimag
+  %add40 = fsub double %mul39, %11
+  store double %add40, double* %pgreal, align 8, !tbaa !0
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.end34, %if.then36
+  %cmp42 = icmp eq double* %pgimag, null
+  br i1 %cmp42, label %if.end48, label %if.then43
+
+if.then43:                                        ; preds = %if.end41
+  %13 = load double* %yimag, align 8, !tbaa !0
+  %14 = fmul double %13, %creal
+  %mul45 = fsub double -0.000000e+00, %14
+  %15 = load double* %yreal, align 8, !tbaa !0
+  %mul46 = fmul double %15, %cimag
+  %sub47 = fsub double %mul45, %mul46
+  store double %sub47, double* %pgimag, align 8, !tbaa !0
+  br label %if.end48
+
+if.end48:                                         ; preds = %if.end41, %if.then43
+  %cmp49 = icmp eq double* %phreal, null
+  br i1 %cmp49, label %if.end54, label %if.then50
+
+if.then50:                                        ; preds = %if.end48
+  %16 = load double* %yreal, align 8, !tbaa !0
+  %mul51 = fmul double %16, %areal
+  %17 = load double* %yimag, align 8, !tbaa !0
+  %mul52 = fmul double %17, %aimag
+  %sub53 = fsub double %mul51, %mul52
+  store double %sub53, double* %phreal, align 8, !tbaa !0
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.end48, %if.then50
+  %cmp55 = icmp eq double* %phimag, null
+  br i1 %cmp55, label %if.end60, label %if.then56
+
+if.then56:                                        ; preds = %if.end54
+  %18 = load double* %yimag, align 8, !tbaa !0
+  %mul57 = fmul double %18, %areal
+  %19 = load double* %yreal, align 8, !tbaa !0
+  %mul58 = fmul double %19, %aimag
+  %add59 = fadd double %mul57, %mul58
+  store double %add59, double* %phimag, align 8, !tbaa !0
+  br label %if.end60
+
+if.end60:                                         ; preds = %if.end54, %if.then56
+  ret i32 1
+}

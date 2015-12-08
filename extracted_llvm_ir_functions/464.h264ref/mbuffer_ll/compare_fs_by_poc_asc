@@ -1,0 +1,22 @@
+define internal i32 @compare_fs_by_poc_asc(i8* nocapture %arg1, i8* nocapture %arg2) #4 {
+entry:
+  %0 = bitcast i8* %arg1 to %struct.frame_store**
+  %1 = load %struct.frame_store** %0, align 8, !tbaa !0
+  %poc = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 9
+  %2 = load i32* %poc, align 4, !tbaa !3
+  %3 = bitcast i8* %arg2 to %struct.frame_store**
+  %4 = load %struct.frame_store** %3, align 8, !tbaa !0
+  %poc1 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 9
+  %5 = load i32* %poc1, align 4, !tbaa !3
+  %cmp = icmp slt i32 %2, %5
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp sgt i32 %2, %5
+  %. = zext i1 %cmp4 to i32
+  br label %return
+
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.end ]
+  ret i32 %retval.0
+}

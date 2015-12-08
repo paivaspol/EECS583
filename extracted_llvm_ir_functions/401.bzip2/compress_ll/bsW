@@ -1,0 +1,53 @@
+define internal fastcc void @bsW(%struct.EState* nocapture %s, i32 %n, i32 %v) #0 {
+entry:
+  %bsLive = getelementptr inbounds %struct.EState* %s, i64 0, i32 25
+  %0 = load i32* %bsLive, align 4, !tbaa !0
+  %cmp20 = icmp sgt i32 %0, 7
+  %bsBuff = getelementptr inbounds %struct.EState* %s, i64 0, i32 24
+  br i1 %cmp20, label %while.body.lr.ph, label %entry.while.end_crit_edge
+
+entry.while.end_crit_edge:                        ; preds = %entry
+  %.pre23 = load i32* %bsBuff, align 4, !tbaa !0
+  br label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %numZ = getelementptr inbounds %struct.EState* %s, i64 0, i32 19
+  %zbits = getelementptr inbounds %struct.EState* %s, i64 0, i32 11
+  %.pre = load i32* %bsBuff, align 4, !tbaa !0
+  %.pre22 = load i32* %numZ, align 4, !tbaa !0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %1 = phi i32 [ %.pre22, %while.body.lr.ph ], [ %inc, %while.body ]
+  %2 = phi i32 [ %.pre, %while.body.lr.ph ], [ %shl, %while.body ]
+  %shr = lshr i32 %2, 24
+  %conv = trunc i32 %shr to i8
+  %idxprom = sext i32 %1 to i64
+  %3 = load i8** %zbits, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i8* %3, i64 %idxprom
+  store i8 %conv, i8* %arrayidx, align 1, !tbaa !1
+  %4 = load i32* %numZ, align 4, !tbaa !0
+  %inc = add nsw i32 %4, 1
+  store i32 %inc, i32* %numZ, align 4, !tbaa !0
+  %5 = load i32* %bsBuff, align 4, !tbaa !0
+  %shl = shl i32 %5, 8
+  store i32 %shl, i32* %bsBuff, align 4, !tbaa !0
+  %6 = load i32* %bsLive, align 4, !tbaa !0
+  %sub = add nsw i32 %6, -8
+  store i32 %sub, i32* %bsLive, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %sub, 7
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %entry.while.end_crit_edge
+  %7 = phi i32 [ %.pre23, %entry.while.end_crit_edge ], [ %shl, %while.body ]
+  %8 = phi i32 [ %0, %entry.while.end_crit_edge ], [ %sub, %while.body ]
+  %sub5 = sub i32 32, %n
+  %sub6 = sub i32 %sub5, %8
+  %shl7 = shl i32 %v, %sub6
+  %bsBuff8 = getelementptr inbounds %struct.EState* %s, i64 0, i32 24
+  %or = or i32 %7, %shl7
+  store i32 %or, i32* %bsBuff8, align 4, !tbaa !0
+  %add = add nsw i32 %8, %n
+  store i32 %add, i32* %bsLive, align 4, !tbaa !0
+  ret void
+}

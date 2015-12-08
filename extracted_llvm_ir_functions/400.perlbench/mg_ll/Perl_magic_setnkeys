@@ -1,0 +1,36 @@
+define i32 @Perl_magic_setnkeys(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xlv_targ = getelementptr inbounds i8* %0, i64 72
+  %1 = bitcast i8* %xlv_targ to %struct.sv**
+  %2 = load %struct.sv** %1, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %2, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast %struct.sv* %2 to %struct.hv*
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %4 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %4, 65536
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %xiv_iv = getelementptr inbounds i8* %0, i64 24
+  %5 = bitcast i8* %xiv_iv to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %call = tail call i64 @Perl_sv_2iv(%struct.sv* %sv) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %6, %cond.true ], [ %call, %cond.false ]
+  tail call void @Perl_hv_ksplit(%struct.hv* %3, i64 %cond) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %cond.end
+  ret i32 0
+}

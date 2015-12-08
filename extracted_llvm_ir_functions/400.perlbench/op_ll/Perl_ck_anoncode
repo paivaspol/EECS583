@@ -1,0 +1,14 @@
+define %struct.op* @Perl_ck_anoncode(%struct.op* %o) #0 {
+entry:
+  %op_sv = getelementptr inbounds %struct.op* %o, i64 1
+  %0 = bitcast %struct.op* %op_sv to %struct.sv**
+  %1 = load %struct.sv** %0, align 8, !tbaa !3
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %2 = load i16* %op_type, align 2, !tbaa !4
+  %call = tail call i64 @Perl_pad_add_anon(%struct.sv* %1, i16 zeroext %2) #7
+  %3 = getelementptr inbounds %struct.op* %o, i64 0, i32 3
+  store i64 %call, i64* %3, align 8, !tbaa !5
+  %4 = getelementptr inbounds %struct.op* %op_sv, i64 0, i32 0
+  store %struct.op* null, %struct.op** %4, align 8, !tbaa !3
+  ret %struct.op* %o
+}

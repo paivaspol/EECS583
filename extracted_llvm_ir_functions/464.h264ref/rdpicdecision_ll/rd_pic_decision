@@ -1,0 +1,21 @@
+define i32 @rd_pic_decision(double %snrY_version1, double %snrY_version2, i32 %bits_version1, i32 %bits_version2, double %lambda_picture) #0 {
+entry:
+  %conv = sitofp i32 %bits_version1 to double
+  %mul = fmul double %conv, %lambda_picture
+  %add = fadd double %mul, %snrY_version1
+  %conv1 = sitofp i32 %bits_version2 to double
+  %mul2 = fmul double %conv1, %lambda_picture
+  %add3 = fadd double %mul2, %snrY_version2
+  %cmp = fcmp ogt double %add3, %add
+  br i1 %cmp, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %cmp5 = fcmp une double %add3, %add
+  %cmp7 = fcmp ult double %snrY_version2, %snrY_version1
+  %or.cond = or i1 %cmp5, %cmp7
+  %. = zext i1 %or.cond to i32
+  ret i32 %.
+
+return:                                           ; preds = %entry
+  ret i32 0
+}

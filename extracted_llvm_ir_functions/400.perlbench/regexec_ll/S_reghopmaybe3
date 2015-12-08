@@ -1,0 +1,83 @@
+define internal fastcc i8* @S_reghopmaybe3(i8* %s, i32 %off, i8* %lim) #1 {
+entry:
+  %cmp = icmp sgt i32 %off, -1
+  br i1 %cmp, label %while.cond.preheader, label %while.cond5.preheader
+
+while.cond5.preheader:                            ; preds = %entry
+  %cmp869 = icmp ugt i8* %s, %lim
+  br i1 %cmp869, label %if.then10, label %return
+
+while.cond.preheader:                             ; preds = %entry
+  %tobool58 = icmp ne i32 %off, 0
+  %cmp159 = icmp ult i8* %s, %lim
+  %or.cond60 = and i1 %tobool58, %cmp159
+  br i1 %or.cond60, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %off.addr.062 = phi i32 [ %dec, %while.body ], [ %off, %while.cond.preheader ]
+  %s.addr.061 = phi i8* [ %add.ptr, %while.body ], [ %s, %while.cond.preheader ]
+  %dec = add nsw i32 %off.addr.062, -1
+  %0 = load i8* %s.addr.061, align 1, !tbaa !1
+  %idxprom = zext i8 %0 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %idx.ext = zext i8 %1 to i64
+  %add.ptr = getelementptr inbounds i8* %s.addr.061, i64 %idx.ext
+  %tobool = icmp ne i32 %dec, 0
+  %cmp1 = icmp ult i8* %add.ptr, %lim
+  %or.cond = and i1 %tobool, %cmp1
+  br i1 %or.cond, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %off.addr.0.lcssa = phi i32 [ %off, %while.cond.preheader ], [ %dec, %while.body ]
+  %s.addr.0.lcssa = phi i8* [ %s, %while.cond.preheader ], [ %add.ptr, %while.body ]
+  %cmp2 = icmp sgt i32 %off.addr.0.lcssa, 0
+  br i1 %cmp2, label %return, label %if.end38
+
+if.then10:                                        ; preds = %while.cond5.preheader, %while.cond5.backedge
+  %inc72.in = phi i32 [ %inc72, %while.cond5.backedge ], [ %off, %while.cond5.preheader ]
+  %s.addr.171 = phi i8* [ %s.addr.1.be, %while.cond5.backedge ], [ %s, %while.cond5.preheader ]
+  %inc72 = add nsw i32 %inc72.in, 1
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.171, i64 -1
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool12 = icmp slt i8 %2, 0
+  %cmp1564 = icmp ugt i8* %incdec.ptr, %lim
+  %or.cond78 = and i1 %tobool12, %cmp1564
+  br i1 %or.cond78, label %land.rhs17, label %while.cond5.backedge
+
+while.cond5.backedge:                             ; preds = %land.rhs17, %while.cond14, %if.then10
+  %s.addr.1.be = phi i8* [ %incdec.ptr, %if.then10 ], [ %s.addr.265, %land.rhs17 ], [ %incdec.ptr28, %while.cond14 ]
+  %tobool6 = icmp ne i32 %inc72, 0
+  %cmp8 = icmp ugt i8* %s.addr.1.be, %lim
+  %or.cond56 = and i1 %tobool6, %cmp8
+  br i1 %or.cond56, label %if.then10, label %while.end33
+
+while.cond14:                                     ; preds = %land.rhs17
+  %cmp15 = icmp ugt i8* %incdec.ptr28, %lim
+  br i1 %cmp15, label %while.cond14.land.rhs17_crit_edge, label %while.cond5.backedge
+
+while.cond14.land.rhs17_crit_edge:                ; preds = %while.cond14
+  %.pre = load i8* %incdec.ptr28, align 1, !tbaa !1
+  br label %land.rhs17
+
+land.rhs17:                                       ; preds = %if.then10, %while.cond14.land.rhs17_crit_edge
+  %3 = phi i8 [ %.pre, %while.cond14.land.rhs17_crit_edge ], [ %2, %if.then10 ]
+  %s.addr.265 = phi i8* [ %incdec.ptr28, %while.cond14.land.rhs17_crit_edge ], [ %incdec.ptr, %if.then10 ]
+  %cmp19 = icmp slt i8 %3, 0
+  %cmp23 = icmp ult i8 %3, -64
+  %or.cond57 = and i1 %cmp19, %cmp23
+  %incdec.ptr28 = getelementptr inbounds i8* %s.addr.265, i64 -1
+  br i1 %or.cond57, label %while.cond14, label %while.cond5.backedge
+
+while.end33:                                      ; preds = %while.cond5.backedge
+  %cmp34 = icmp slt i32 %inc72, 0
+  br i1 %cmp34, label %return, label %if.end38
+
+if.end38:                                         ; preds = %while.end33, %while.end
+  %s.addr.3 = phi i8* [ %s.addr.0.lcssa, %while.end ], [ %s.addr.1.be, %while.end33 ]
+  br label %return
+
+return:                                           ; preds = %while.cond5.preheader, %while.end33, %while.end, %if.end38
+  %retval.0 = phi i8* [ %s.addr.3, %if.end38 ], [ null, %while.end ], [ null, %while.end33 ], [ null, %while.cond5.preheader ]
+  ret i8* %retval.0
+}

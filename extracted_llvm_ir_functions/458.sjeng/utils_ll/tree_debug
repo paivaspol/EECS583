@@ -1,0 +1,45 @@
+define void @tree_debug() #0 {
+entry:
+  %input = alloca [256 x i8], align 16
+  %0 = getelementptr inbounds [256 x i8]* %input, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #1
+  call void @init_game() #13
+  %puts = call i32 @puts(i8* getelementptr inbounds ([33 x i8]* @str82, i64 0, i64 0))
+  %1 = load %struct._IO_FILE** @stdin, align 8, !tbaa !3
+  call void @rinput(i8* %0, i32 256, %struct._IO_FILE* %1) #13
+  %call2 = call i32 @atoi(i8* %0) #15
+  %puts22 = call i32 @puts(i8* getelementptr inbounds ([36 x i8]* @str83, i64 0, i64 0))
+  %2 = load %struct._IO_FILE** @stdin, align 8, !tbaa !3
+  call void @rinput(i8* %0, i32 256, %struct._IO_FILE* %2) #13
+  %3 = load i8* %0, align 16, !tbaa !1
+  %cmp = icmp eq i8 %3, 121
+  br i1 %cmp, label %if.then, label %if.end18
+
+if.then:                                          ; preds = %entry
+  %puts23 = call i32 @puts(i8* getelementptr inbounds ([55 x i8]* @str84, i64 0, i64 0))
+  %4 = load %struct._IO_FILE** @stdin, align 8, !tbaa !3
+  call void @rinput(i8* %0, i32 256, %struct._IO_FILE* %4) #13
+  %call9 = call %struct._IO_FILE* @fopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str70, i64 0, i64 0)) #12
+  %cmp10 = icmp eq %struct._IO_FILE* %call9, null
+  br i1 %cmp10, label %if.then12, label %if.end
+
+if.then12:                                        ; preds = %if.then
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call14 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([23 x i8]* @.str71, i64 0, i64 0), i8* %0) #12
+  br label %if.end
+
+if.end:                                           ; preds = %if.then12, %if.then
+  %puts24 = call i32 @puts(i8* getelementptr inbounds ([39 x i8]* @str85, i64 0, i64 0))
+  %6 = load %struct._IO_FILE** @stdin, align 8, !tbaa !3
+  call void @rinput(i8* %0, i32 256, %struct._IO_FILE* %6) #13
+  call void @tree(i32 %call2, i32 0, %struct._IO_FILE* %call9, i8* %0) #12
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end, %entry
+  store i32 0, i32* @raw_nodes, align 4, !tbaa !0
+  call void @perft(i32 %call2) #12
+  %7 = load i32* @raw_nodes, align 4, !tbaa !0
+  %call19 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([37 x i8]* @.str73, i64 0, i64 0), i8* getelementptr inbounds ([50 x i8]* @divider, i64 0, i64 0), i32 %call2, i32 %7, i8* getelementptr inbounds ([50 x i8]* @divider, i64 0, i64 0)) #12
+  call void @llvm.lifetime.end(i64 256, i8* %0) #1
+  ret void
+}

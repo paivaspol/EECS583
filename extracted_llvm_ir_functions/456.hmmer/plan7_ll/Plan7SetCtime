@@ -1,0 +1,21 @@
+define void @Plan7SetCtime(%struct.plan7_s* nocapture %hmm) #0 {
+entry:
+  %date = alloca i64, align 8
+  %call = call i64 @time(i64* null) #7
+  store i64 %call, i64* %date, align 8, !tbaa !5
+  %ctime = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 8
+  %0 = load i8** %ctime, align 8, !tbaa !4
+  %cmp = icmp eq i8* %0, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void @free(i8* %0) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call2 = call i8* @ctime(i64* %date) #7
+  %call3 = call i8* @Strdup(i8* %call2) #7
+  store i8* %call3, i8** %ctime, align 8, !tbaa !4
+  call void @StringChop(i8* %call3) #7
+  ret void
+}

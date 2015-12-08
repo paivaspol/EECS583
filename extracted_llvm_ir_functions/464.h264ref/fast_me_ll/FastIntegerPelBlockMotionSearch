@@ -1,0 +1,1712 @@
+define i32 @FastIntegerPelBlockMotionSearch(i16** nocapture %orig_pic, i16 signext %ref, i32 %list, i32 %pic_pix_x, i32 %pic_pix_y, i32 %blocktype, i16 signext %pred_mv_x, i16 signext %pred_mv_y, i16* nocapture %mv_x, i16* nocapture %mv_y, i32 %search_range, i32 %min_mcost, double %lambda) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 90
+  %1 = load i32* %MbaffFrameFlag, align 4, !tbaa !4
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %cond.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %2 = load i32* %current_mb_nr, align 4, !tbaa !4
+  %idxprom = sext i32 %2 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %3 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  %mb_field = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22
+  %4 = load i32* %mb_field, align 4, !tbaa !4
+  %tobool1 = icmp eq i32 %4, 0
+  br i1 %tobool1, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %land.lhs.true
+  %rem2330 = shl i32 %2, 1
+  %5 = and i32 %rem2330, 2
+  %6 = add i32 %5, 2
+  br label %cond.end
+
+cond.end:                                         ; preds = %land.lhs.true, %entry, %cond.true
+  %cond4 = phi i32 [ %6, %cond.true ], [ 0, %land.lhs.true ], [ 0, %entry ]
+  %idxprom5 = sext i16 %ref to i64
+  %add = add nsw i32 %cond4, %list
+  %idxprom6 = sext i32 %add to i64
+  %arrayidx7 = getelementptr inbounds [6 x %struct.storable_picture**]* @listX, i64 0, i64 %idxprom6
+  %7 = load %struct.storable_picture*** %arrayidx7, align 8, !tbaa !3
+  %arrayidx8 = getelementptr inbounds %struct.storable_picture** %7, i64 %idxprom5
+  %8 = load %struct.storable_picture** %arrayidx8, align 8, !tbaa !3
+  %imgY_11 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 26
+  %9 = load i16** %imgY_11, align 8, !tbaa !3
+  %mul = fmul double %lambda, 6.553600e+04
+  %add9 = fadd double %mul, 5.000000e-01
+  %conv = fptosi double %add9 to i32
+  %idxprom10 = sext i32 %blocktype to i64
+  %10 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %arrayidx12 = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 20, i64 %idxprom10, i64 1
+  %11 = load i32* %arrayidx12, align 4, !tbaa !4
+  %arrayidx16 = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 20, i64 %idxprom10, i64 0
+  %12 = load i32* %arrayidx16, align 4, !tbaa !4
+  %shr = ashr i32 %12, 2
+  %shl = shl i32 %pic_pix_x, 2
+  %conv17 = sext i16 %pred_mv_x to i32
+  %add18 = add nsw i32 %conv17, %shl
+  %shl19 = shl i32 %pic_pix_y, 2
+  %conv20 = sext i16 %pred_mv_y to i32
+  %add21 = add nsw i32 %conv20, %shl19
+  %13 = load i16* %mv_x, align 2, !tbaa !5
+  %conv22 = sext i16 %13 to i32
+  %add23 = add nsw i32 %conv22, %pic_pix_x
+  %14 = load i16* %mv_y, align 2, !tbaa !5
+  %conv24 = sext i16 %14 to i32
+  %add25 = add nsw i32 %conv24, %pic_pix_y
+  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 34
+  %15 = load i32* %successive_Bframe, align 4, !tbaa !4
+  br i1 %tobool, label %cond.false37, label %land.lhs.true28
+
+land.lhs.true28:                                  ; preds = %cond.end
+  %current_mb_nr29 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %16 = load i32* %current_mb_nr29, align 4, !tbaa !4
+  %idxprom30 = sext i32 %16 to i64
+  %mb_data31 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %17 = load %struct.macroblock** %mb_data31, align 8, !tbaa !3
+  %mb_field33 = getelementptr inbounds %struct.macroblock* %17, i64 %idxprom30, i32 22
+  %18 = load i32* %mb_field33, align 4, !tbaa !4
+  %tobool34 = icmp eq i32 %18, 0
+  br i1 %tobool34, label %cond.false37, label %cond.true35
+
+cond.true35:                                      ; preds = %land.lhs.true28
+  %height36 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15
+  %19 = load i32* %height36, align 4, !tbaa !4
+  %div = sdiv i32 %19, 2
+  br label %cond.end39
+
+cond.false37:                                     ; preds = %land.lhs.true28, %cond.end
+  %height38 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15
+  %20 = load i32* %height38, align 4, !tbaa !4
+  br label %cond.end39
+
+cond.end39:                                       ; preds = %cond.false37, %cond.true35
+  %cond40 = phi i32 [ %div, %cond.true35 ], [ %20, %cond.false37 ]
+  %cmp = icmp sgt i32 %add23, %search_range
+  br i1 %cmp, label %land.lhs.true42, label %if.else
+
+land.lhs.true42:                                  ; preds = %cond.end39
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13
+  %21 = load i32* %width, align 4, !tbaa !4
+  %sub = xor i32 %search_range, -1
+  %sub43 = sub i32 %sub, %12
+  %sub44 = add i32 %sub43, %21
+  %cmp45 = icmp slt i32 %add23, %sub44
+  %cmp48 = icmp sgt i32 %add25, %search_range
+  %or.cond = and i1 %cmp45, %cmp48
+  br i1 %or.cond, label %land.lhs.true50, label %if.else
+
+land.lhs.true50:                                  ; preds = %land.lhs.true42
+  %sub52 = sub i32 %sub, %11
+  %sub53 = add i32 %sub52, %cond40
+  %cmp54 = icmp slt i32 %add25, %sub53
+  br i1 %cmp54, label %if.end, label %if.else
+
+if.else:                                          ; preds = %land.lhs.true50, %land.lhs.true42, %cond.end39
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true50, %if.else
+  %get_ref_line.0 = phi i16* (i32, i16*, i32, i32, i32, i32)* [ @UMVLineX, %if.else ], [ @FastLineX, %land.lhs.true50 ]
+  %22 = load i32*** @McostState, align 8, !tbaa !3
+  %23 = load i32** %22, align 8, !tbaa !3
+  %24 = bitcast i32* %23 to i8*
+  %mul57 = shl nsw i32 %search_range, 1
+  %add582269 = or i32 %mul57, 1
+  %mul61 = shl i32 %add582269, 2
+  %mul62 = mul i32 %mul61, %add582269
+  %conv63 = sext i32 %mul62 to i64
+  tail call void @llvm.memset.p0i8.i64(i8* %24, i8 0, i64 %conv63, i32 4, i1 false)
+  %conv64 = sext i16 %ref to i32
+  %cmp65 = icmp sgt i16 %ref, 0
+  br i1 %cmp65, label %if.then67, label %if.else89
+
+if.then67:                                        ; preds = %if.end
+  %25 = load i32* @pred_SAD_ref, align 4, !tbaa !4
+  %cmp68 = icmp eq i32 %25, 0
+  br i1 %cmp68, label %if.end137, label %if.then70
+
+if.then70:                                        ; preds = %if.then67
+  %arrayidx72 = getelementptr inbounds [8 x float]* @Bsize, i64 0, i64 %idxprom10
+  %26 = load float* %arrayidx72, align 4, !tbaa !0
+  %mul73 = mul nsw i32 %25, %25
+  %conv74 = sitofp i32 %mul73 to float
+  %div75 = fdiv float %26, %conv74
+  %arrayidx77 = getelementptr inbounds [8 x float]* @AlphaSec, i64 0, i64 %idxprom10
+  %27 = load float* %arrayidx77, align 4, !tbaa !0
+  %sub78 = fsub float %div75, %27
+  %arrayidx85 = getelementptr inbounds [8 x float]* @AlphaThird, i64 0, i64 %idxprom10
+  %28 = load float* %arrayidx85, align 4, !tbaa !0
+  %sub86 = fsub float %div75, %28
+  br label %if.end137
+
+if.else89:                                        ; preds = %if.end
+  %cmp90 = icmp eq i32 %blocktype, 1
+  br i1 %cmp90, label %if.then92, label %if.else114
+
+if.then92:                                        ; preds = %if.else89
+  %29 = load i32* @pred_SAD_space, align 4, !tbaa !4
+  %cmp93 = icmp eq i32 %29, 0
+  br i1 %cmp93, label %if.end137, label %if.then95
+
+if.then95:                                        ; preds = %if.then92
+  %arrayidx97 = getelementptr inbounds [8 x float]* @Bsize, i64 0, i64 %idxprom10
+  %30 = load float* %arrayidx97, align 4, !tbaa !0
+  %mul98 = mul nsw i32 %29, %29
+  %conv99 = sitofp i32 %mul98 to float
+  %div100 = fdiv float %30, %conv99
+  %arrayidx102 = getelementptr inbounds [8 x float]* @AlphaSec, i64 0, i64 %idxprom10
+  %31 = load float* %arrayidx102, align 4, !tbaa !0
+  %sub103 = fsub float %div100, %31
+  %arrayidx110 = getelementptr inbounds [8 x float]* @AlphaThird, i64 0, i64 %idxprom10
+  %32 = load float* %arrayidx110, align 4, !tbaa !0
+  %sub111 = fsub float %div100, %32
+  br label %if.end137
+
+if.else114:                                       ; preds = %if.else89
+  %33 = load i32* @pred_SAD_uplayer, align 4, !tbaa !4
+  %cmp115 = icmp eq i32 %33, 0
+  br i1 %cmp115, label %if.end137, label %if.then117
+
+if.then117:                                       ; preds = %if.else114
+  %arrayidx119 = getelementptr inbounds [8 x float]* @Bsize, i64 0, i64 %idxprom10
+  %34 = load float* %arrayidx119, align 4, !tbaa !0
+  %mul120 = mul nsw i32 %33, %33
+  %conv121 = sitofp i32 %mul120 to float
+  %div122 = fdiv float %34, %conv121
+  %arrayidx124 = getelementptr inbounds [8 x float]* @AlphaSec, i64 0, i64 %idxprom10
+  %35 = load float* %arrayidx124, align 4, !tbaa !0
+  %sub125 = fsub float %div122, %35
+  %arrayidx132 = getelementptr inbounds [8 x float]* @AlphaThird, i64 0, i64 %idxprom10
+  %36 = load float* %arrayidx132, align 4, !tbaa !0
+  %sub133 = fsub float %div122, %36
+  br label %if.end137
+
+if.end137:                                        ; preds = %if.else114, %if.then92, %if.then67, %if.then95, %if.then117, %if.then70
+  %betaSec.0 = phi float [ %sub78, %if.then70 ], [ %sub103, %if.then95 ], [ %sub125, %if.then117 ], [ 0.000000e+00, %if.then67 ], [ 0.000000e+00, %if.then92 ], [ 0.000000e+00, %if.else114 ]
+  %betaThird.0 = phi float [ %sub86, %if.then70 ], [ %sub111, %if.then95 ], [ %sub133, %if.then117 ], [ 0.000000e+00, %if.then67 ], [ 0.000000e+00, %if.then92 ], [ 0.000000e+00, %if.else114 ]
+  %shl138 = shl i32 %add23, 2
+  %sub139 = sub nsw i32 %shl138, %add18
+  %idxprom140 = sext i32 %sub139 to i64
+  %37 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx141 = getelementptr inbounds i32* %37, i64 %idxprom140
+  %38 = load i32* %arrayidx141, align 4, !tbaa !4
+  %shl142 = shl i32 %add25, 2
+  %sub143 = sub nsw i32 %shl142, %add21
+  %idxprom144 = sext i32 %sub143 to i64
+  %arrayidx145 = getelementptr inbounds i32* %37, i64 %idxprom144
+  %39 = load i32* %arrayidx145, align 4, !tbaa !4
+  %add146 = add nsw i32 %39, %38
+  %mul147 = mul nsw i32 %add146, %conv
+  %shr148 = ashr i32 %mul147, 16
+  %call = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr148, i32 %min_mcost, i32 %add23, i32 %add25) #4
+  %idxprom149 = sext i32 %search_range to i64
+  %40 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx151 = getelementptr inbounds i32** %40, i64 %idxprom149
+  %41 = load i32** %arrayidx151, align 8, !tbaa !3
+  %arrayidx152 = getelementptr inbounds i32* %41, i64 %idxprom149
+  store i32 %call, i32* %arrayidx152, align 4, !tbaa !4
+  %cmp153 = icmp slt i32 %call, %min_mcost
+  %add23. = select i1 %cmp153, i32 %add23, i32 0
+  %add25. = select i1 %cmp153, i32 %add25, i32 0
+  %call.min_mcost = select i1 %cmp153, i32 %call, i32 %min_mcost
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %if.end137
+  %42 = phi i32** [ %40, %if.end137 ], [ %54, %for.inc ]
+  %indvars.iv2461 = phi i64 [ 0, %if.end137 ], [ %indvars.iv.next2462, %for.inc ]
+  %min_mcost.addr.12424 = phi i32 [ %call.min_mcost, %if.end137 ], [ %min_mcost.addr.2, %for.inc ]
+  %best_y.12422 = phi i32 [ %add25., %if.end137 ], [ %best_y.2, %for.inc ]
+  %best_x.12421 = phi i32 [ %add23., %if.end137 ], [ %best_x.2, %for.inc ]
+  %arrayidx160 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_x, i64 0, i64 %indvars.iv2461
+  %43 = load i32* %arrayidx160, align 4, !tbaa !4
+  %add161 = add nsw i32 %43, %add23.
+  %arrayidx163 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_y, i64 0, i64 %indvars.iv2461
+  %44 = load i32* %arrayidx163, align 4, !tbaa !4
+  %add164 = add nsw i32 %44, %add25.
+  %sub165 = sub nsw i32 %add161, %add23
+  %ispos2326 = icmp sgt i32 %sub165, -1
+  %neg2327 = sub i32 0, %sub165
+  %45 = select i1 %ispos2326, i32 %sub165, i32 %neg2327
+  %cmp167 = icmp sgt i32 %45, %search_range
+  br i1 %cmp167, label %for.inc, label %land.lhs.true169
+
+land.lhs.true169:                                 ; preds = %for.body
+  %sub170 = sub nsw i32 %add164, %add25
+  %ispos2328 = icmp sgt i32 %sub170, -1
+  %neg2329 = sub i32 0, %sub170
+  %46 = select i1 %ispos2328, i32 %sub170, i32 %neg2329
+  %cmp172 = icmp sgt i32 %46, %search_range
+  br i1 %cmp172, label %for.inc, label %if.then174
+
+if.then174:                                       ; preds = %land.lhs.true169
+  %add176 = add nsw i32 %sub165, %search_range
+  %idxprom177 = sext i32 %add176 to i64
+  %add179 = add nsw i32 %sub170, %search_range
+  %idxprom180 = sext i32 %add179 to i64
+  %arrayidx181 = getelementptr inbounds i32** %42, i64 %idxprom180
+  %47 = load i32** %arrayidx181, align 8, !tbaa !3
+  %arrayidx182 = getelementptr inbounds i32* %47, i64 %idxprom177
+  %48 = load i32* %arrayidx182, align 4, !tbaa !4
+  %tobool183 = icmp eq i32 %48, 0
+  br i1 %tobool183, label %if.then184, label %for.inc
+
+if.then184:                                       ; preds = %if.then174
+  %shl185 = shl i32 %add161, 2
+  %sub186 = sub nsw i32 %shl185, %add18
+  %idxprom187 = sext i32 %sub186 to i64
+  %49 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx188 = getelementptr inbounds i32* %49, i64 %idxprom187
+  %50 = load i32* %arrayidx188, align 4, !tbaa !4
+  %shl189 = shl i32 %add164, 2
+  %sub190 = sub nsw i32 %shl189, %add21
+  %idxprom191 = sext i32 %sub190 to i64
+  %arrayidx192 = getelementptr inbounds i32* %49, i64 %idxprom191
+  %51 = load i32* %arrayidx192, align 4, !tbaa !4
+  %add193 = add nsw i32 %51, %50
+  %mul194 = mul nsw i32 %add193, %conv
+  %shr195 = ashr i32 %mul194, 16
+  %call196 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr195, i32 %min_mcost.addr.12424, i32 %add161, i32 %add164) #4
+  %52 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx203 = getelementptr inbounds i32** %52, i64 %idxprom180
+  %53 = load i32** %arrayidx203, align 8, !tbaa !3
+  %arrayidx204 = getelementptr inbounds i32* %53, i64 %idxprom177
+  store i32 %call196, i32* %arrayidx204, align 4, !tbaa !4
+  %cmp205 = icmp slt i32 %call196, %min_mcost.addr.12424
+  %add161.best_x.1 = select i1 %cmp205, i32 %add161, i32 %best_x.12421
+  %add164.best_y.1 = select i1 %cmp205, i32 %add164, i32 %best_y.12422
+  %call196.min_mcost.addr.1 = select i1 %cmp205, i32 %call196, i32 %min_mcost.addr.12424
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then184, %if.then174, %land.lhs.true169, %for.body
+  %54 = phi i32** [ %42, %if.then174 ], [ %42, %land.lhs.true169 ], [ %42, %for.body ], [ %52, %if.then184 ]
+  %best_x.2 = phi i32 [ %best_x.12421, %if.then174 ], [ %best_x.12421, %land.lhs.true169 ], [ %best_x.12421, %for.body ], [ %add161.best_x.1, %if.then184 ]
+  %best_y.2 = phi i32 [ %best_y.12422, %if.then174 ], [ %best_y.12422, %land.lhs.true169 ], [ %best_y.12422, %for.body ], [ %add164.best_y.1, %if.then184 ]
+  %min_mcost.addr.2 = phi i32 [ %min_mcost.addr.12424, %if.then174 ], [ %min_mcost.addr.12424, %land.lhs.true169 ], [ %min_mcost.addr.12424, %for.body ], [ %call196.min_mcost.addr.1, %if.then184 ]
+  %indvars.iv.next2462 = add i64 %indvars.iv2461, 1
+  %lftr.wideiv2463 = trunc i64 %indvars.iv.next2462 to i32
+  %exitcond2464 = icmp eq i32 %lftr.wideiv2463, 4
+  br i1 %exitcond2464, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %55 = or i16 %14, %13
+  %56 = icmp eq i16 %55, 0
+  br i1 %56, label %if.end321, label %if.then215
+
+if.then215:                                       ; preds = %for.end
+  %sub216 = sub i32 0, %conv22
+  %ispos2318 = icmp sgt i32 %sub216, -1
+  %57 = select i1 %ispos2318, i32 %sub216, i32 %conv22
+  %cmp218 = icmp sgt i32 %57, %search_range
+  br i1 %cmp218, label %if.end261, label %land.lhs.true220
+
+land.lhs.true220:                                 ; preds = %if.then215
+  %sub221 = sub i32 0, %conv24
+  %ispos2324 = icmp sgt i32 %sub221, -1
+  %58 = select i1 %ispos2324, i32 %sub221, i32 %conv24
+  %cmp223 = icmp sgt i32 %58, %search_range
+  br i1 %cmp223, label %if.end261, label %if.then225
+
+if.then225:                                       ; preds = %land.lhs.true220
+  %add227 = sub i32 %search_range, %conv22
+  %idxprom228 = sext i32 %add227 to i64
+  %add230 = sub i32 %search_range, %conv24
+  %idxprom231 = sext i32 %add230 to i64
+  %arrayidx232 = getelementptr inbounds i32** %54, i64 %idxprom231
+  %59 = load i32** %arrayidx232, align 8, !tbaa !3
+  %arrayidx233 = getelementptr inbounds i32* %59, i64 %idxprom228
+  %60 = load i32* %arrayidx233, align 4, !tbaa !4
+  %tobool234 = icmp eq i32 %60, 0
+  br i1 %tobool234, label %if.then235, label %if.end261
+
+if.then235:                                       ; preds = %if.then225
+  %sub237 = sub i32 0, %conv17
+  %idxprom238 = sext i32 %sub237 to i64
+  %61 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx239 = getelementptr inbounds i32* %61, i64 %idxprom238
+  %62 = load i32* %arrayidx239, align 4, !tbaa !4
+  %sub241 = sub i32 0, %conv20
+  %idxprom242 = sext i32 %sub241 to i64
+  %arrayidx243 = getelementptr inbounds i32* %61, i64 %idxprom242
+  %63 = load i32* %arrayidx243, align 4, !tbaa !4
+  %add244 = add nsw i32 %63, %62
+  %mul245 = mul nsw i32 %add244, %conv
+  %shr246 = ashr i32 %mul245, 16
+  %call247 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr246, i32 %min_mcost.addr.2, i32 %pic_pix_x, i32 %pic_pix_y) #4
+  %64 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx254 = getelementptr inbounds i32** %64, i64 %idxprom231
+  %65 = load i32** %arrayidx254, align 8, !tbaa !3
+  %arrayidx255 = getelementptr inbounds i32* %65, i64 %idxprom228
+  store i32 %call247, i32* %arrayidx255, align 4, !tbaa !4
+  %cmp256 = icmp slt i32 %call247, %min_mcost.addr.2
+  %pic_pix_x.best_x.1 = select i1 %cmp256, i32 %pic_pix_x, i32 %best_x.2
+  %pic_pix_y.best_y.1 = select i1 %cmp256, i32 %pic_pix_y, i32 %best_y.2
+  %call247.min_mcost.addr.1 = select i1 %cmp256, i32 %call247, i32 %min_mcost.addr.2
+  br label %if.end261
+
+if.end261:                                        ; preds = %if.then235, %if.then225, %land.lhs.true220, %if.then215
+  %66 = phi i32** [ %54, %if.then225 ], [ %54, %land.lhs.true220 ], [ %54, %if.then215 ], [ %64, %if.then235 ]
+  %best_x.3 = phi i32 [ %best_x.2, %if.then225 ], [ %best_x.2, %land.lhs.true220 ], [ %best_x.2, %if.then215 ], [ %pic_pix_x.best_x.1, %if.then235 ]
+  %best_y.3 = phi i32 [ %best_y.2, %if.then225 ], [ %best_y.2, %land.lhs.true220 ], [ %best_y.2, %if.then215 ], [ %pic_pix_y.best_y.1, %if.then235 ]
+  %min_mcost.addr.3 = phi i32 [ %min_mcost.addr.2, %if.then225 ], [ %min_mcost.addr.2, %land.lhs.true220 ], [ %min_mcost.addr.2, %if.then215 ], [ %call247.min_mcost.addr.1, %if.then235 ]
+  br label %for.body265
+
+for.body265:                                      ; preds = %for.inc318, %if.end261
+  %67 = phi i32** [ %66, %if.end261 ], [ %79, %for.inc318 ]
+  %indvars.iv2457 = phi i64 [ 0, %if.end261 ], [ %indvars.iv.next2458, %for.inc318 ]
+  %min_mcost.addr.42420 = phi i32 [ %min_mcost.addr.3, %if.end261 ], [ %min_mcost.addr.5, %for.inc318 ]
+  %best_y.42418 = phi i32 [ %best_y.3, %if.end261 ], [ %best_y.5, %for.inc318 ]
+  %best_x.42417 = phi i32 [ %best_x.3, %if.end261 ], [ %best_x.5, %for.inc318 ]
+  %arrayidx267 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_x, i64 0, i64 %indvars.iv2457
+  %68 = load i32* %arrayidx267, align 4, !tbaa !4
+  %add268 = add nsw i32 %68, %best_x.3
+  %arrayidx270 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_y, i64 0, i64 %indvars.iv2457
+  %69 = load i32* %arrayidx270, align 4, !tbaa !4
+  %add271 = add nsw i32 %69, %best_y.3
+  %sub272 = sub nsw i32 %add268, %add23
+  %ispos2320 = icmp sgt i32 %sub272, -1
+  %neg2321 = sub i32 0, %sub272
+  %70 = select i1 %ispos2320, i32 %sub272, i32 %neg2321
+  %cmp274 = icmp sgt i32 %70, %search_range
+  br i1 %cmp274, label %for.inc318, label %land.lhs.true276
+
+land.lhs.true276:                                 ; preds = %for.body265
+  %sub277 = sub nsw i32 %add271, %add25
+  %ispos2322 = icmp sgt i32 %sub277, -1
+  %neg2323 = sub i32 0, %sub277
+  %71 = select i1 %ispos2322, i32 %sub277, i32 %neg2323
+  %cmp279 = icmp sgt i32 %71, %search_range
+  br i1 %cmp279, label %for.inc318, label %if.then281
+
+if.then281:                                       ; preds = %land.lhs.true276
+  %add283 = add nsw i32 %sub272, %search_range
+  %idxprom284 = sext i32 %add283 to i64
+  %add286 = add nsw i32 %sub277, %search_range
+  %idxprom287 = sext i32 %add286 to i64
+  %arrayidx288 = getelementptr inbounds i32** %67, i64 %idxprom287
+  %72 = load i32** %arrayidx288, align 8, !tbaa !3
+  %arrayidx289 = getelementptr inbounds i32* %72, i64 %idxprom284
+  %73 = load i32* %arrayidx289, align 4, !tbaa !4
+  %tobool290 = icmp eq i32 %73, 0
+  br i1 %tobool290, label %if.then291, label %for.inc318
+
+if.then291:                                       ; preds = %if.then281
+  %shl292 = shl i32 %add268, 2
+  %sub293 = sub nsw i32 %shl292, %add18
+  %idxprom294 = sext i32 %sub293 to i64
+  %74 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx295 = getelementptr inbounds i32* %74, i64 %idxprom294
+  %75 = load i32* %arrayidx295, align 4, !tbaa !4
+  %shl296 = shl i32 %add271, 2
+  %sub297 = sub nsw i32 %shl296, %add21
+  %idxprom298 = sext i32 %sub297 to i64
+  %arrayidx299 = getelementptr inbounds i32* %74, i64 %idxprom298
+  %76 = load i32* %arrayidx299, align 4, !tbaa !4
+  %add300 = add nsw i32 %76, %75
+  %mul301 = mul nsw i32 %add300, %conv
+  %shr302 = ashr i32 %mul301, 16
+  %call303 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr302, i32 %min_mcost.addr.42420, i32 %add268, i32 %add271) #4
+  %77 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx310 = getelementptr inbounds i32** %77, i64 %idxprom287
+  %78 = load i32** %arrayidx310, align 8, !tbaa !3
+  %arrayidx311 = getelementptr inbounds i32* %78, i64 %idxprom284
+  store i32 %call303, i32* %arrayidx311, align 4, !tbaa !4
+  %cmp312 = icmp slt i32 %call303, %min_mcost.addr.42420
+  %add268.best_x.4 = select i1 %cmp312, i32 %add268, i32 %best_x.42417
+  %add271.best_y.4 = select i1 %cmp312, i32 %add271, i32 %best_y.42418
+  %call303.min_mcost.addr.4 = select i1 %cmp312, i32 %call303, i32 %min_mcost.addr.42420
+  br label %for.inc318
+
+for.inc318:                                       ; preds = %if.then291, %if.then281, %land.lhs.true276, %for.body265
+  %79 = phi i32** [ %67, %if.then281 ], [ %67, %land.lhs.true276 ], [ %67, %for.body265 ], [ %77, %if.then291 ]
+  %best_x.5 = phi i32 [ %best_x.42417, %if.then281 ], [ %best_x.42417, %land.lhs.true276 ], [ %best_x.42417, %for.body265 ], [ %add268.best_x.4, %if.then291 ]
+  %best_y.5 = phi i32 [ %best_y.42418, %if.then281 ], [ %best_y.42418, %land.lhs.true276 ], [ %best_y.42418, %for.body265 ], [ %add271.best_y.4, %if.then291 ]
+  %min_mcost.addr.5 = phi i32 [ %min_mcost.addr.42420, %if.then281 ], [ %min_mcost.addr.42420, %land.lhs.true276 ], [ %min_mcost.addr.42420, %for.body265 ], [ %call303.min_mcost.addr.4, %if.then291 ]
+  %indvars.iv.next2458 = add i64 %indvars.iv2457, 1
+  %lftr.wideiv2459 = trunc i64 %indvars.iv.next2458 to i32
+  %exitcond2460 = icmp eq i32 %lftr.wideiv2459, 4
+  br i1 %exitcond2460, label %if.end321, label %for.body265
+
+if.end321:                                        ; preds = %for.inc318, %for.end
+  %80 = phi i32** [ %54, %for.end ], [ %79, %for.inc318 ]
+  %best_x.6 = phi i32 [ %best_x.2, %for.end ], [ %best_x.5, %for.inc318 ]
+  %best_y.6 = phi i32 [ %best_y.2, %for.end ], [ %best_y.5, %for.inc318 ]
+  %min_mcost.addr.6 = phi i32 [ %min_mcost.addr.2, %for.end ], [ %min_mcost.addr.5, %for.inc318 ]
+  %cmp322 = icmp sgt i32 %blocktype, 1
+  br i1 %cmp322, label %if.then324, label %if.end392
+
+if.then324:                                       ; preds = %if.end321
+  %81 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_uplayer, i64 0, i64 0), align 4, !tbaa !4
+  %div325 = sdiv i32 %81, 4
+  %add326 = add nsw i32 %div325, %pic_pix_x
+  %82 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_uplayer, i64 0, i64 1), align 4, !tbaa !4
+  %div327 = sdiv i32 %82, 4
+  %add328 = add nsw i32 %div327, %pic_pix_y
+  %sub329 = sub nsw i32 %add326, %add23
+  %ispos2314 = icmp sgt i32 %sub329, -1
+  %neg2315 = sub i32 0, %sub329
+  %83 = select i1 %ispos2314, i32 %sub329, i32 %neg2315
+  %cmp331 = icmp sgt i32 %83, %search_range
+  br i1 %cmp331, label %if.end374, label %land.lhs.true333
+
+land.lhs.true333:                                 ; preds = %if.then324
+  %sub334 = sub nsw i32 %add328, %add25
+  %ispos2316 = icmp sgt i32 %sub334, -1
+  %neg2317 = sub i32 0, %sub334
+  %84 = select i1 %ispos2316, i32 %sub334, i32 %neg2317
+  %cmp336 = icmp sgt i32 %84, %search_range
+  br i1 %cmp336, label %if.end374, label %if.then338
+
+if.then338:                                       ; preds = %land.lhs.true333
+  %add340 = add nsw i32 %sub329, %search_range
+  %idxprom341 = sext i32 %add340 to i64
+  %add343 = add nsw i32 %sub334, %search_range
+  %idxprom344 = sext i32 %add343 to i64
+  %arrayidx345 = getelementptr inbounds i32** %80, i64 %idxprom344
+  %85 = load i32** %arrayidx345, align 8, !tbaa !3
+  %arrayidx346 = getelementptr inbounds i32* %85, i64 %idxprom341
+  %86 = load i32* %arrayidx346, align 4, !tbaa !4
+  %tobool347 = icmp eq i32 %86, 0
+  br i1 %tobool347, label %if.then348, label %if.end374
+
+if.then348:                                       ; preds = %if.then338
+  %shl349 = shl i32 %add326, 2
+  %sub350 = sub nsw i32 %shl349, %add18
+  %idxprom351 = sext i32 %sub350 to i64
+  %87 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx352 = getelementptr inbounds i32* %87, i64 %idxprom351
+  %88 = load i32* %arrayidx352, align 4, !tbaa !4
+  %shl353 = shl i32 %add328, 2
+  %sub354 = sub nsw i32 %shl353, %add21
+  %idxprom355 = sext i32 %sub354 to i64
+  %arrayidx356 = getelementptr inbounds i32* %87, i64 %idxprom355
+  %89 = load i32* %arrayidx356, align 4, !tbaa !4
+  %add357 = add nsw i32 %89, %88
+  %mul358 = mul nsw i32 %add357, %conv
+  %shr359 = ashr i32 %mul358, 16
+  %call360 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr359, i32 %min_mcost.addr.6, i32 %add326, i32 %add328) #4
+  %90 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx367 = getelementptr inbounds i32** %90, i64 %idxprom344
+  %91 = load i32** %arrayidx367, align 8, !tbaa !3
+  %arrayidx368 = getelementptr inbounds i32* %91, i64 %idxprom341
+  store i32 %call360, i32* %arrayidx368, align 4, !tbaa !4
+  %cmp369 = icmp slt i32 %call360, %min_mcost.addr.6
+  %add326.best_x.6 = select i1 %cmp369, i32 %add326, i32 %best_x.6
+  %add328.best_y.6 = select i1 %cmp369, i32 %add328, i32 %best_y.6
+  %call360.min_mcost.addr.6 = select i1 %cmp369, i32 %call360, i32 %min_mcost.addr.6
+  br label %if.end374
+
+if.end374:                                        ; preds = %if.then348, %if.then338, %land.lhs.true333, %if.then324
+  %92 = phi i32** [ %80, %if.then338 ], [ %80, %land.lhs.true333 ], [ %80, %if.then324 ], [ %90, %if.then348 ]
+  %best_x.7 = phi i32 [ %best_x.6, %if.then338 ], [ %best_x.6, %land.lhs.true333 ], [ %best_x.6, %if.then324 ], [ %add326.best_x.6, %if.then348 ]
+  %best_y.7 = phi i32 [ %best_y.6, %if.then338 ], [ %best_y.6, %land.lhs.true333 ], [ %best_y.6, %if.then324 ], [ %add328.best_y.6, %if.then348 ]
+  %min_mcost.addr.7 = phi i32 [ %min_mcost.addr.6, %if.then338 ], [ %min_mcost.addr.6, %land.lhs.true333 ], [ %min_mcost.addr.6, %if.then324 ], [ %call360.min_mcost.addr.6, %if.then348 ]
+  %93 = load i32* @pred_SAD_uplayer, align 4, !tbaa !4
+  %sub375 = sub nsw i32 %min_mcost.addr.7, %93
+  %conv376 = sitofp i32 %sub375 to float
+  %conv377 = sitofp i32 %93 to float
+  %mul378 = fmul float %betaThird.0, %conv377
+  %cmp379 = fcmp olt float %conv376, %mul378
+  br i1 %cmp379, label %for.cond1325.preheader, label %if.else382
+
+for.cond1325.preheader:                           ; preds = %if.else1232, %if.then1214, %if.then1193, %for.end1318, %if.else1102, %if.then1084, %if.then1063, %if.else981, %if.then963, %if.then942, %if.else707, %if.then689, %if.then668, %if.end374
+  %94 = phi i32** [ %92, %if.end374 ], [ %153, %if.then668 ], [ %153, %if.then689 ], [ %153, %if.else707 ], [ %199, %if.then942 ], [ %199, %if.then963 ], [ %199, %if.else981 ], [ %217, %if.then1063 ], [ %217, %if.then1084 ], [ %217, %if.else1102 ], [ %251, %for.end1318 ], [ %234, %if.then1193 ], [ %234, %if.then1214 ], [ %234, %if.else1232 ]
+  %best_x.29.ph = phi i32 [ %best_x.7, %if.end374 ], [ %best_x.12, %if.then668 ], [ %best_x.12, %if.then689 ], [ %best_x.12, %if.else707 ], [ %best_x.16.lcssa, %if.then942 ], [ %best_x.16.lcssa, %if.then963 ], [ %best_x.16.lcssa, %if.else981 ], [ %best_x.20, %if.then1063 ], [ %best_x.20, %if.then1084 ], [ %best_x.20, %if.else1102 ], [ %best_x.27, %for.end1318 ], [ %best_x.23, %if.then1193 ], [ %best_x.23, %if.then1214 ], [ %best_x.23, %if.else1232 ]
+  %best_y.29.ph = phi i32 [ %best_y.7, %if.end374 ], [ %best_y.12, %if.then668 ], [ %best_y.12, %if.then689 ], [ %best_y.12, %if.else707 ], [ %best_y.16.lcssa, %if.then942 ], [ %best_y.16.lcssa, %if.then963 ], [ %best_y.16.lcssa, %if.else981 ], [ %best_y.20, %if.then1063 ], [ %best_y.20, %if.then1084 ], [ %best_y.20, %if.else1102 ], [ %best_y.27, %for.end1318 ], [ %best_y.23, %if.then1193 ], [ %best_y.23, %if.then1214 ], [ %best_y.23, %if.else1232 ]
+  %min_mcost.addr.29.ph = phi i32 [ %min_mcost.addr.7, %if.end374 ], [ %min_mcost.addr.12, %if.then668 ], [ %min_mcost.addr.12, %if.then689 ], [ %min_mcost.addr.12, %if.else707 ], [ %min_mcost.addr.16.lcssa, %if.then942 ], [ %min_mcost.addr.16.lcssa, %if.then963 ], [ %min_mcost.addr.16.lcssa, %if.else981 ], [ %min_mcost.addr.20, %if.then1063 ], [ %min_mcost.addr.20, %if.then1084 ], [ %min_mcost.addr.20, %if.else1102 ], [ %min_mcost.addr.27, %for.end1318 ], [ %min_mcost.addr.23, %if.then1193 ], [ %min_mcost.addr.23, %if.then1214 ], [ %min_mcost.addr.23, %if.else1232 ]
+  %cmp13262357 = icmp sgt i32 %search_range, 0
+  br i1 %cmp13262357, label %for.cond1329.preheader, label %for.end1393
+
+if.else382:                                       ; preds = %if.end374
+  %mul386 = fmul float %betaSec.0, %conv377
+  %cmp387 = fcmp olt float %conv376, %mul386
+  br i1 %cmp387, label %for.cond1256.preheader, label %if.end392
+
+for.cond1256.preheader:                           ; preds = %for.cond1122.preheader, %if.else1240, %if.else1222, %if.else1201, %for.inc1253, %if.else1110, %if.else1092, %if.else1071, %if.else989, %if.else971, %if.else950, %if.else715, %if.else697, %if.else676, %if.else382
+  %95 = phi i32** [ %92, %if.else382 ], [ %153, %if.else676 ], [ %153, %if.else697 ], [ %153, %if.else715 ], [ %199, %if.else950 ], [ %199, %if.else971 ], [ %199, %if.else989 ], [ %217, %if.else1071 ], [ %217, %if.else1092 ], [ %217, %if.else1110 ], [ %217, %for.cond1122.preheader ], [ %234, %if.else1240 ], [ %234, %if.else1222 ], [ %234, %if.else1201 ], [ %234, %for.inc1253 ]
+  %best_x.25.ph = phi i32 [ %best_x.7, %if.else382 ], [ %best_x.12, %if.else676 ], [ %best_x.12, %if.else697 ], [ %best_x.12, %if.else715 ], [ %best_x.16.lcssa, %if.else950 ], [ %best_x.16.lcssa, %if.else971 ], [ %best_x.16.lcssa, %if.else989 ], [ %best_x.20, %if.else1071 ], [ %best_x.20, %if.else1092 ], [ %best_x.20, %if.else1110 ], [ %best_x.20, %for.cond1122.preheader ], [ %best_x.23, %if.else1240 ], [ %best_x.23, %if.else1222 ], [ %best_x.23, %if.else1201 ], [ %best_x.23, %for.inc1253 ]
+  %best_y.25.ph = phi i32 [ %best_y.7, %if.else382 ], [ %best_y.12, %if.else676 ], [ %best_y.12, %if.else697 ], [ %best_y.12, %if.else715 ], [ %best_y.16.lcssa, %if.else950 ], [ %best_y.16.lcssa, %if.else971 ], [ %best_y.16.lcssa, %if.else989 ], [ %best_y.20, %if.else1071 ], [ %best_y.20, %if.else1092 ], [ %best_y.20, %if.else1110 ], [ %best_y.20, %for.cond1122.preheader ], [ %best_y.23, %if.else1240 ], [ %best_y.23, %if.else1222 ], [ %best_y.23, %if.else1201 ], [ %best_y.23, %for.inc1253 ]
+  %min_mcost.addr.25.ph = phi i32 [ %min_mcost.addr.7, %if.else382 ], [ %min_mcost.addr.12, %if.else676 ], [ %min_mcost.addr.12, %if.else697 ], [ %min_mcost.addr.12, %if.else715 ], [ %min_mcost.addr.16.lcssa, %if.else950 ], [ %min_mcost.addr.16.lcssa, %if.else971 ], [ %min_mcost.addr.16.lcssa, %if.else989 ], [ %min_mcost.addr.20, %if.else1071 ], [ %min_mcost.addr.20, %if.else1092 ], [ %min_mcost.addr.20, %if.else1110 ], [ %min_mcost.addr.20, %for.cond1122.preheader ], [ %min_mcost.addr.23, %if.else1240 ], [ %min_mcost.addr.23, %if.else1222 ], [ %min_mcost.addr.23, %if.else1201 ], [ %min_mcost.addr.23, %for.inc1253 ]
+  %cmp12572369 = icmp sgt i32 %search_range, 0
+  br i1 %cmp12572369, label %for.cond1260.preheader, label %for.end1393
+
+if.end392:                                        ; preds = %if.else382, %if.end321
+  %96 = phi i32** [ %92, %if.else382 ], [ %80, %if.end321 ]
+  %best_x.8 = phi i32 [ %best_x.7, %if.else382 ], [ %best_x.6, %if.end321 ]
+  %best_y.8 = phi i32 [ %best_y.7, %if.else382 ], [ %best_y.6, %if.end321 ]
+  %min_mcost.addr.8 = phi i32 [ %min_mcost.addr.7, %if.else382 ], [ %min_mcost.addr.6, %if.end321 ]
+  %97 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %number = getelementptr inbounds %struct.ImageParameters* %97, i64 0, i32 0
+  %98 = load i32* %number, align 4, !tbaa !4
+  %add394 = add nsw i32 %conv64, 1
+  %cmp395 = icmp sle i32 %98, %add394
+  %cmp399 = icmp eq i16 %ref, -1
+  %or.cond2332 = or i1 %cmp395, %cmp399
+  br i1 %or.cond2332, label %lor.lhs.false401, label %if.then408
+
+lor.lhs.false401:                                 ; preds = %if.end392
+  %cmp402 = icmp eq i32 %list, 1
+  br i1 %cmp402, label %land.lhs.true404, label %if.end459
+
+land.lhs.true404:                                 ; preds = %lor.lhs.false401
+  %99 = load i32* @Bframe_ctr, align 4, !tbaa !4
+  %rem405 = srem i32 %99, %15
+  %cmp406 = icmp sgt i32 %rem405, 1
+  br i1 %cmp406, label %if.then408, label %if.end459
+
+if.then408:                                       ; preds = %if.end392, %land.lhs.true404
+  %100 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_time, i64 0, i64 0), align 4, !tbaa !4
+  %div409 = sdiv i32 %100, 4
+  %add410 = add nsw i32 %div409, %pic_pix_x
+  %101 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_time, i64 0, i64 1), align 4, !tbaa !4
+  %div411 = sdiv i32 %101, 4
+  %add412 = add nsw i32 %div411, %pic_pix_y
+  %sub413 = sub nsw i32 %add410, %add23
+  %ispos2310 = icmp sgt i32 %sub413, -1
+  %neg2311 = sub i32 0, %sub413
+  %102 = select i1 %ispos2310, i32 %sub413, i32 %neg2311
+  %cmp415 = icmp sgt i32 %102, %search_range
+  br i1 %cmp415, label %if.end459, label %land.lhs.true417
+
+land.lhs.true417:                                 ; preds = %if.then408
+  %sub418 = sub nsw i32 %add412, %add25
+  %ispos2312 = icmp sgt i32 %sub418, -1
+  %neg2313 = sub i32 0, %sub418
+  %103 = select i1 %ispos2312, i32 %sub418, i32 %neg2313
+  %cmp420 = icmp sgt i32 %103, %search_range
+  br i1 %cmp420, label %if.end459, label %if.then422
+
+if.then422:                                       ; preds = %land.lhs.true417
+  %add424 = add nsw i32 %sub413, %search_range
+  %idxprom425 = sext i32 %add424 to i64
+  %add427 = add nsw i32 %sub418, %search_range
+  %idxprom428 = sext i32 %add427 to i64
+  %arrayidx429 = getelementptr inbounds i32** %96, i64 %idxprom428
+  %104 = load i32** %arrayidx429, align 8, !tbaa !3
+  %arrayidx430 = getelementptr inbounds i32* %104, i64 %idxprom425
+  %105 = load i32* %arrayidx430, align 4, !tbaa !4
+  %tobool431 = icmp eq i32 %105, 0
+  br i1 %tobool431, label %if.then432, label %if.end459
+
+if.then432:                                       ; preds = %if.then422
+  %shl433 = shl i32 %add410, 2
+  %sub434 = sub nsw i32 %shl433, %add18
+  %idxprom435 = sext i32 %sub434 to i64
+  %106 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx436 = getelementptr inbounds i32* %106, i64 %idxprom435
+  %107 = load i32* %arrayidx436, align 4, !tbaa !4
+  %shl437 = shl i32 %add412, 2
+  %sub438 = sub nsw i32 %shl437, %add21
+  %idxprom439 = sext i32 %sub438 to i64
+  %arrayidx440 = getelementptr inbounds i32* %106, i64 %idxprom439
+  %108 = load i32* %arrayidx440, align 4, !tbaa !4
+  %add441 = add nsw i32 %108, %107
+  %mul442 = mul nsw i32 %add441, %conv
+  %shr443 = ashr i32 %mul442, 16
+  %call444 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr443, i32 %min_mcost.addr.8, i32 %add410, i32 %add412) #4
+  %109 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx451 = getelementptr inbounds i32** %109, i64 %idxprom428
+  %110 = load i32** %arrayidx451, align 8, !tbaa !3
+  %arrayidx452 = getelementptr inbounds i32* %110, i64 %idxprom425
+  store i32 %call444, i32* %arrayidx452, align 4, !tbaa !4
+  %cmp453 = icmp slt i32 %call444, %min_mcost.addr.8
+  %add410.best_x.8 = select i1 %cmp453, i32 %add410, i32 %best_x.8
+  %add412.best_y.8 = select i1 %cmp453, i32 %add412, i32 %best_y.8
+  %call444.min_mcost.addr.8 = select i1 %cmp453, i32 %call444, i32 %min_mcost.addr.8
+  br label %if.end459
+
+if.end459:                                        ; preds = %if.then432, %if.then422, %land.lhs.true417, %if.then408, %land.lhs.true404, %lor.lhs.false401
+  %111 = phi i32** [ %96, %if.then422 ], [ %96, %land.lhs.true417 ], [ %96, %if.then408 ], [ %96, %land.lhs.true404 ], [ %96, %lor.lhs.false401 ], [ %109, %if.then432 ]
+  %best_x.9 = phi i32 [ %best_x.8, %if.then422 ], [ %best_x.8, %land.lhs.true417 ], [ %best_x.8, %if.then408 ], [ %best_x.8, %land.lhs.true404 ], [ %best_x.8, %lor.lhs.false401 ], [ %add410.best_x.8, %if.then432 ]
+  %best_y.9 = phi i32 [ %best_y.8, %if.then422 ], [ %best_y.8, %land.lhs.true417 ], [ %best_y.8, %if.then408 ], [ %best_y.8, %land.lhs.true404 ], [ %best_y.8, %lor.lhs.false401 ], [ %add412.best_y.8, %if.then432 ]
+  %min_mcost.addr.9 = phi i32 [ %min_mcost.addr.8, %if.then422 ], [ %min_mcost.addr.8, %land.lhs.true417 ], [ %min_mcost.addr.8, %if.then408 ], [ %min_mcost.addr.8, %land.lhs.true404 ], [ %min_mcost.addr.8, %lor.lhs.false401 ], [ %call444.min_mcost.addr.8, %if.then432 ]
+  %112 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %112, i64 0, i32 91
+  %113 = load i32* %PicInterlace, align 4, !tbaa !4
+  %cmp460 = icmp eq i32 %113, 1
+  %cmp463.not = icmp ne i32 %list, 0
+  %cmp65.not = xor i1 %cmp65, true
+  %brmerge = or i1 %cmp463.not, %cmp65.not
+  br i1 %cmp460, label %if.then462, label %if.else535
+
+if.then462:                                       ; preds = %if.end459
+  br i1 %brmerge, label %lor.lhs.false469, label %if.then483
+
+lor.lhs.false469:                                 ; preds = %if.then462
+  %114 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %114, i64 0, i32 6
+  %115 = load i32* %type, align 4, !tbaa !4
+  %cmp470.not = icmp ne i32 %115, 1
+  %brmerge2334 = or i1 %cmp470.not, %cmp463.not
+  br i1 %brmerge2334, label %if.end605, label %land.lhs.true475
+
+land.lhs.true475:                                 ; preds = %lor.lhs.false469
+  switch i16 %ref, label %if.end605 [
+    i16 0, label %if.then483
+    i16 2, label %if.then483
+  ]
+
+if.then483:                                       ; preds = %land.lhs.true475, %land.lhs.true475, %if.then462
+  %116 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_ref, i64 0, i64 0), align 4, !tbaa !4
+  %div484 = sdiv i32 %116, 4
+  %add485 = add nsw i32 %div484, %pic_pix_x
+  %117 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_ref, i64 0, i64 1), align 4, !tbaa !4
+  %div486 = sdiv i32 %117, 4
+  %add487 = add nsw i32 %div486, %pic_pix_y
+  %sub488 = sub nsw i32 %add485, %add23
+  %ispos2306 = icmp sgt i32 %sub488, -1
+  %neg2307 = sub i32 0, %sub488
+  %118 = select i1 %ispos2306, i32 %sub488, i32 %neg2307
+  %cmp490 = icmp sgt i32 %118, %search_range
+  br i1 %cmp490, label %if.end605, label %land.lhs.true492
+
+land.lhs.true492:                                 ; preds = %if.then483
+  %sub493 = sub nsw i32 %add487, %add25
+  %ispos2308 = icmp sgt i32 %sub493, -1
+  %neg2309 = sub i32 0, %sub493
+  %119 = select i1 %ispos2308, i32 %sub493, i32 %neg2309
+  %cmp495 = icmp sgt i32 %119, %search_range
+  br i1 %cmp495, label %if.end605, label %if.then497
+
+if.then497:                                       ; preds = %land.lhs.true492
+  %add499 = add nsw i32 %sub488, %search_range
+  %idxprom500 = sext i32 %add499 to i64
+  %add502 = add nsw i32 %sub493, %search_range
+  %idxprom503 = sext i32 %add502 to i64
+  %arrayidx504 = getelementptr inbounds i32** %111, i64 %idxprom503
+  %120 = load i32** %arrayidx504, align 8, !tbaa !3
+  %arrayidx505 = getelementptr inbounds i32* %120, i64 %idxprom500
+  %121 = load i32* %arrayidx505, align 4, !tbaa !4
+  %tobool506 = icmp eq i32 %121, 0
+  br i1 %tobool506, label %if.then507, label %if.end605
+
+if.then507:                                       ; preds = %if.then497
+  %shl508 = shl i32 %add485, 2
+  %sub509 = sub nsw i32 %shl508, %add18
+  %idxprom510 = sext i32 %sub509 to i64
+  %122 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx511 = getelementptr inbounds i32* %122, i64 %idxprom510
+  %123 = load i32* %arrayidx511, align 4, !tbaa !4
+  %shl512 = shl i32 %add487, 2
+  %sub513 = sub nsw i32 %shl512, %add21
+  %idxprom514 = sext i32 %sub513 to i64
+  %arrayidx515 = getelementptr inbounds i32* %122, i64 %idxprom514
+  %124 = load i32* %arrayidx515, align 4, !tbaa !4
+  %add516 = add nsw i32 %124, %123
+  %mul517 = mul nsw i32 %add516, %conv
+  %shr518 = ashr i32 %mul517, 16
+  %call519 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr518, i32 %min_mcost.addr.9, i32 %add485, i32 %add487) #4
+  %125 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx526 = getelementptr inbounds i32** %125, i64 %idxprom503
+  %126 = load i32** %arrayidx526, align 8, !tbaa !3
+  %arrayidx527 = getelementptr inbounds i32* %126, i64 %idxprom500
+  store i32 %call519, i32* %arrayidx527, align 4, !tbaa !4
+  %cmp528 = icmp slt i32 %call519, %min_mcost.addr.9
+  %add485.best_x.9 = select i1 %cmp528, i32 %add485, i32 %best_x.9
+  %add487.best_y.9 = select i1 %cmp528, i32 %add487, i32 %best_y.9
+  %call519.min_mcost.addr.9 = select i1 %cmp528, i32 %call519, i32 %min_mcost.addr.9
+  br label %if.end605
+
+if.else535:                                       ; preds = %if.end459
+  br i1 %brmerge, label %lor.lhs.false542, label %if.then553
+
+lor.lhs.false542:                                 ; preds = %if.else535
+  %127 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %type543 = getelementptr inbounds %struct.ImageParameters* %127, i64 0, i32 6
+  %128 = load i32* %type543, align 4, !tbaa !4
+  %cmp544.not = icmp ne i32 %128, 1
+  %brmerge2339 = or i1 %cmp544.not, %cmp463.not
+  %brmerge2339.not = xor i1 %brmerge2339, true
+  %cmp551 = icmp eq i16 %ref, 0
+  %or.cond2340 = and i1 %cmp551, %brmerge2339.not
+  br i1 %or.cond2340, label %if.then553, label %if.end605
+
+if.then553:                                       ; preds = %lor.lhs.false542, %if.else535
+  %129 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_ref, i64 0, i64 0), align 4, !tbaa !4
+  %div554 = sdiv i32 %129, 4
+  %add555 = add nsw i32 %div554, %pic_pix_x
+  %130 = load i32* getelementptr inbounds ([2 x i32]* @pred_MV_ref, i64 0, i64 1), align 4, !tbaa !4
+  %div556 = sdiv i32 %130, 4
+  %add557 = add nsw i32 %div556, %pic_pix_y
+  %sub558 = sub nsw i32 %add555, %add23
+  %ispos2302 = icmp sgt i32 %sub558, -1
+  %neg2303 = sub i32 0, %sub558
+  %131 = select i1 %ispos2302, i32 %sub558, i32 %neg2303
+  %cmp560 = icmp sgt i32 %131, %search_range
+  br i1 %cmp560, label %if.end605, label %land.lhs.true562
+
+land.lhs.true562:                                 ; preds = %if.then553
+  %sub563 = sub nsw i32 %add557, %add25
+  %ispos2304 = icmp sgt i32 %sub563, -1
+  %neg2305 = sub i32 0, %sub563
+  %132 = select i1 %ispos2304, i32 %sub563, i32 %neg2305
+  %cmp565 = icmp sgt i32 %132, %search_range
+  br i1 %cmp565, label %if.end605, label %if.then567
+
+if.then567:                                       ; preds = %land.lhs.true562
+  %add569 = add nsw i32 %sub558, %search_range
+  %idxprom570 = sext i32 %add569 to i64
+  %add572 = add nsw i32 %sub563, %search_range
+  %idxprom573 = sext i32 %add572 to i64
+  %arrayidx574 = getelementptr inbounds i32** %111, i64 %idxprom573
+  %133 = load i32** %arrayidx574, align 8, !tbaa !3
+  %arrayidx575 = getelementptr inbounds i32* %133, i64 %idxprom570
+  %134 = load i32* %arrayidx575, align 4, !tbaa !4
+  %tobool576 = icmp eq i32 %134, 0
+  br i1 %tobool576, label %if.then577, label %if.end605
+
+if.then577:                                       ; preds = %if.then567
+  %shl578 = shl i32 %add555, 2
+  %sub579 = sub nsw i32 %shl578, %add18
+  %idxprom580 = sext i32 %sub579 to i64
+  %135 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx581 = getelementptr inbounds i32* %135, i64 %idxprom580
+  %136 = load i32* %arrayidx581, align 4, !tbaa !4
+  %shl582 = shl i32 %add557, 2
+  %sub583 = sub nsw i32 %shl582, %add21
+  %idxprom584 = sext i32 %sub583 to i64
+  %arrayidx585 = getelementptr inbounds i32* %135, i64 %idxprom584
+  %137 = load i32* %arrayidx585, align 4, !tbaa !4
+  %add586 = add nsw i32 %137, %136
+  %mul587 = mul nsw i32 %add586, %conv
+  %shr588 = ashr i32 %mul587, 16
+  %call589 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr588, i32 %min_mcost.addr.9, i32 %add555, i32 %add557) #4
+  %138 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx596 = getelementptr inbounds i32** %138, i64 %idxprom573
+  %139 = load i32** %arrayidx596, align 8, !tbaa !3
+  %arrayidx597 = getelementptr inbounds i32* %139, i64 %idxprom570
+  store i32 %call589, i32* %arrayidx597, align 4, !tbaa !4
+  %cmp598 = icmp slt i32 %call589, %min_mcost.addr.9
+  %add555.best_x.9 = select i1 %cmp598, i32 %add555, i32 %best_x.9
+  %add557.best_y.9 = select i1 %cmp598, i32 %add557, i32 %best_y.9
+  %call589.min_mcost.addr.9 = select i1 %cmp598, i32 %call589, i32 %min_mcost.addr.9
+  br label %if.end605
+
+if.end605:                                        ; preds = %if.then577, %if.then507, %lor.lhs.false542, %land.lhs.true475, %lor.lhs.false469, %if.then497, %land.lhs.true492, %if.then483, %if.then567, %land.lhs.true562, %if.then553
+  %140 = phi i32** [ %111, %if.then497 ], [ %111, %land.lhs.true492 ], [ %111, %if.then483 ], [ %111, %lor.lhs.false469 ], [ %111, %if.then567 ], [ %111, %land.lhs.true562 ], [ %111, %if.then553 ], [ %111, %lor.lhs.false542 ], [ %111, %land.lhs.true475 ], [ %125, %if.then507 ], [ %138, %if.then577 ]
+  %best_x.10 = phi i32 [ %best_x.9, %if.then497 ], [ %best_x.9, %land.lhs.true492 ], [ %best_x.9, %if.then483 ], [ %best_x.9, %lor.lhs.false469 ], [ %best_x.9, %if.then567 ], [ %best_x.9, %land.lhs.true562 ], [ %best_x.9, %if.then553 ], [ %best_x.9, %lor.lhs.false542 ], [ %best_x.9, %land.lhs.true475 ], [ %add485.best_x.9, %if.then507 ], [ %add555.best_x.9, %if.then577 ]
+  %best_y.10 = phi i32 [ %best_y.9, %if.then497 ], [ %best_y.9, %land.lhs.true492 ], [ %best_y.9, %if.then483 ], [ %best_y.9, %lor.lhs.false469 ], [ %best_y.9, %if.then567 ], [ %best_y.9, %land.lhs.true562 ], [ %best_y.9, %if.then553 ], [ %best_y.9, %lor.lhs.false542 ], [ %best_y.9, %land.lhs.true475 ], [ %add487.best_y.9, %if.then507 ], [ %add557.best_y.9, %if.then577 ]
+  %min_mcost.addr.10 = phi i32 [ %min_mcost.addr.9, %if.then497 ], [ %min_mcost.addr.9, %land.lhs.true492 ], [ %min_mcost.addr.9, %if.then483 ], [ %min_mcost.addr.9, %lor.lhs.false469 ], [ %min_mcost.addr.9, %if.then567 ], [ %min_mcost.addr.9, %land.lhs.true562 ], [ %min_mcost.addr.9, %if.then553 ], [ %min_mcost.addr.9, %lor.lhs.false542 ], [ %min_mcost.addr.9, %land.lhs.true475 ], [ %call519.min_mcost.addr.9, %if.then507 ], [ %call589.min_mcost.addr.9, %if.then577 ]
+  br label %for.body609
+
+for.body609:                                      ; preds = %for.inc662, %if.end605
+  %141 = phi i32** [ %140, %if.end605 ], [ %153, %for.inc662 ]
+  %indvars.iv2453 = phi i64 [ 0, %if.end605 ], [ %indvars.iv.next2454, %for.inc662 ]
+  %min_mcost.addr.112416 = phi i32 [ %min_mcost.addr.10, %if.end605 ], [ %min_mcost.addr.12, %for.inc662 ]
+  %best_y.112414 = phi i32 [ %best_y.10, %if.end605 ], [ %best_y.12, %for.inc662 ]
+  %best_x.112413 = phi i32 [ %best_x.10, %if.end605 ], [ %best_x.12, %for.inc662 ]
+  %arrayidx611 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_x, i64 0, i64 %indvars.iv2453
+  %142 = load i32* %arrayidx611, align 4, !tbaa !4
+  %add612 = add nsw i32 %142, %best_x.10
+  %arrayidx614 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_y, i64 0, i64 %indvars.iv2453
+  %143 = load i32* %arrayidx614, align 4, !tbaa !4
+  %add615 = add nsw i32 %143, %best_y.10
+  %sub616 = sub nsw i32 %add612, %add23
+  %ispos2298 = icmp sgt i32 %sub616, -1
+  %neg2299 = sub i32 0, %sub616
+  %144 = select i1 %ispos2298, i32 %sub616, i32 %neg2299
+  %cmp618 = icmp sgt i32 %144, %search_range
+  br i1 %cmp618, label %for.inc662, label %land.lhs.true620
+
+land.lhs.true620:                                 ; preds = %for.body609
+  %sub621 = sub nsw i32 %add615, %add25
+  %ispos2300 = icmp sgt i32 %sub621, -1
+  %neg2301 = sub i32 0, %sub621
+  %145 = select i1 %ispos2300, i32 %sub621, i32 %neg2301
+  %cmp623 = icmp sgt i32 %145, %search_range
+  br i1 %cmp623, label %for.inc662, label %if.then625
+
+if.then625:                                       ; preds = %land.lhs.true620
+  %add627 = add nsw i32 %sub616, %search_range
+  %idxprom628 = sext i32 %add627 to i64
+  %add630 = add nsw i32 %sub621, %search_range
+  %idxprom631 = sext i32 %add630 to i64
+  %arrayidx632 = getelementptr inbounds i32** %141, i64 %idxprom631
+  %146 = load i32** %arrayidx632, align 8, !tbaa !3
+  %arrayidx633 = getelementptr inbounds i32* %146, i64 %idxprom628
+  %147 = load i32* %arrayidx633, align 4, !tbaa !4
+  %tobool634 = icmp eq i32 %147, 0
+  br i1 %tobool634, label %if.then635, label %for.inc662
+
+if.then635:                                       ; preds = %if.then625
+  %shl636 = shl i32 %add612, 2
+  %sub637 = sub nsw i32 %shl636, %add18
+  %idxprom638 = sext i32 %sub637 to i64
+  %148 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx639 = getelementptr inbounds i32* %148, i64 %idxprom638
+  %149 = load i32* %arrayidx639, align 4, !tbaa !4
+  %shl640 = shl i32 %add615, 2
+  %sub641 = sub nsw i32 %shl640, %add21
+  %idxprom642 = sext i32 %sub641 to i64
+  %arrayidx643 = getelementptr inbounds i32* %148, i64 %idxprom642
+  %150 = load i32* %arrayidx643, align 4, !tbaa !4
+  %add644 = add nsw i32 %150, %149
+  %mul645 = mul nsw i32 %add644, %conv
+  %shr646 = ashr i32 %mul645, 16
+  %call647 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr646, i32 %min_mcost.addr.112416, i32 %add612, i32 %add615) #4
+  %151 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx654 = getelementptr inbounds i32** %151, i64 %idxprom631
+  %152 = load i32** %arrayidx654, align 8, !tbaa !3
+  %arrayidx655 = getelementptr inbounds i32* %152, i64 %idxprom628
+  store i32 %call647, i32* %arrayidx655, align 4, !tbaa !4
+  %cmp656 = icmp slt i32 %call647, %min_mcost.addr.112416
+  %add612.best_x.11 = select i1 %cmp656, i32 %add612, i32 %best_x.112413
+  %add615.best_y.11 = select i1 %cmp656, i32 %add615, i32 %best_y.112414
+  %call647.min_mcost.addr.11 = select i1 %cmp656, i32 %call647, i32 %min_mcost.addr.112416
+  br label %for.inc662
+
+for.inc662:                                       ; preds = %if.then635, %if.then625, %land.lhs.true620, %for.body609
+  %153 = phi i32** [ %141, %if.then625 ], [ %141, %land.lhs.true620 ], [ %141, %for.body609 ], [ %151, %if.then635 ]
+  %best_x.12 = phi i32 [ %best_x.112413, %if.then625 ], [ %best_x.112413, %land.lhs.true620 ], [ %best_x.112413, %for.body609 ], [ %add612.best_x.11, %if.then635 ]
+  %best_y.12 = phi i32 [ %best_y.112414, %if.then625 ], [ %best_y.112414, %land.lhs.true620 ], [ %best_y.112414, %for.body609 ], [ %add615.best_y.11, %if.then635 ]
+  %min_mcost.addr.12 = phi i32 [ %min_mcost.addr.112416, %if.then625 ], [ %min_mcost.addr.112416, %land.lhs.true620 ], [ %min_mcost.addr.112416, %for.body609 ], [ %call647.min_mcost.addr.11, %if.then635 ]
+  %indvars.iv.next2454 = add i64 %indvars.iv2453, 1
+  %lftr.wideiv2455 = trunc i64 %indvars.iv.next2454 to i32
+  %exitcond2456 = icmp eq i32 %lftr.wideiv2455, 4
+  br i1 %exitcond2456, label %for.end664, label %for.body609
+
+for.end664:                                       ; preds = %for.inc662
+  br i1 %cmp65, label %if.then668, label %if.else686
+
+if.then668:                                       ; preds = %for.end664
+  %154 = load i32* @pred_SAD_ref, align 4, !tbaa !4
+  %sub669 = sub nsw i32 %min_mcost.addr.12, %154
+  %conv670 = sitofp i32 %sub669 to float
+  %conv671 = sitofp i32 %154 to float
+  %mul672 = fmul float %betaThird.0, %conv671
+  %cmp673 = fcmp olt float %conv670, %mul672
+  br i1 %cmp673, label %for.cond1325.preheader, label %if.else676
+
+if.else676:                                       ; preds = %if.then668
+  %mul680 = fmul float %betaSec.0, %conv671
+  %cmp681 = fcmp olt float %conv670, %mul680
+  %cmp727.old.old = icmp sgt i32 %blocktype, 6
+  %or.cond2343 = or i1 %cmp681, %cmp727.old.old
+  br i1 %or.cond2343, label %for.cond1256.preheader, label %for.cond731.preheader
+
+if.else686:                                       ; preds = %for.end664
+  br i1 %cmp322, label %if.then689, label %if.else707
+
+if.then689:                                       ; preds = %if.else686
+  %155 = load i32* @pred_SAD_uplayer, align 4, !tbaa !4
+  %sub690 = sub nsw i32 %min_mcost.addr.12, %155
+  %conv691 = sitofp i32 %sub690 to float
+  %conv692 = sitofp i32 %155 to float
+  %mul693 = fmul float %betaThird.0, %conv692
+  %cmp694 = fcmp olt float %conv691, %mul693
+  br i1 %cmp694, label %for.cond1325.preheader, label %if.else697
+
+if.else697:                                       ; preds = %if.then689
+  %mul701 = fmul float %betaSec.0, %conv692
+  %cmp702 = fcmp olt float %conv691, %mul701
+  %cmp727 = icmp sgt i32 %blocktype, 6
+  %or.cond2341 = or i1 %cmp702, %cmp727
+  br i1 %or.cond2341, label %for.cond1256.preheader, label %for.cond731.preheader
+
+if.else707:                                       ; preds = %if.else686
+  %156 = load i32* @pred_SAD_space, align 4, !tbaa !4
+  %sub708 = sub nsw i32 %min_mcost.addr.12, %156
+  %conv709 = sitofp i32 %sub708 to float
+  %conv710 = sitofp i32 %156 to float
+  %mul711 = fmul float %betaThird.0, %conv710
+  %cmp712 = fcmp olt float %conv709, %mul711
+  br i1 %cmp712, label %for.cond1325.preheader, label %if.else715
+
+if.else715:                                       ; preds = %if.else707
+  %mul719 = fmul float %betaSec.0, %conv710
+  %cmp720 = fcmp olt float %conv709, %mul719
+  br i1 %cmp720, label %for.cond1256.preheader, label %for.cond731.preheader
+
+for.cond731.preheader:                            ; preds = %if.else676, %if.else715, %if.else697
+  %div732 = sdiv i32 %search_range, 2
+  %cmp7332404 = icmp slt i32 %search_range, 2
+  br i1 %cmp7332404, label %for.cond835.preheader.thread, label %for.body735.lr.ph
+
+for.cond835.preheader.thread:                     ; preds = %for.cond731.preheader
+  %div8362466 = sdiv i32 %search_range, 4
+  br label %for.end938
+
+for.body735.lr.ph:                                ; preds = %for.cond731.preheader
+  %sub791 = sub nsw i32 %best_y.12, %add25
+  %ispos2294 = icmp sgt i32 %sub791, -1
+  %neg2295 = sub i32 0, %sub791
+  %157 = select i1 %ispos2294, i32 %sub791, i32 %neg2295
+  %cmp793 = icmp sgt i32 %157, %search_range
+  %add800 = add nsw i32 %sub791, %search_range
+  %idxprom801 = sext i32 %add800 to i64
+  %shl810 = shl i32 %best_y.12, 2
+  %sub811 = sub nsw i32 %shl810, %add21
+  %idxprom812 = sext i32 %sub811 to i64
+  br label %for.body735
+
+for.cond835.preheader:                            ; preds = %for.inc832
+  %div836 = sdiv i32 %search_range, 4
+  %cmp8372395 = icmp slt i32 %search_range, 4
+  br i1 %cmp8372395, label %for.end938, label %for.body839.lr.ph
+
+for.body839.lr.ph:                                ; preds = %for.cond835.preheader
+  %sub843 = sub nsw i32 %best_x.12, %add23
+  %ispos2284 = icmp sgt i32 %sub843, -1
+  %neg2285 = sub i32 0, %sub843
+  %158 = select i1 %ispos2284, i32 %sub843, i32 %neg2285
+  %cmp845 = icmp sgt i32 %158, %search_range
+  %add901 = add nsw i32 %sub843, %search_range
+  %idxprom902 = sext i32 %add901 to i64
+  %shl910 = shl i32 %best_x.12, 2
+  %sub911 = sub nsw i32 %shl910, %add18
+  %idxprom912 = sext i32 %sub911 to i64
+  br label %for.body839
+
+for.body735:                                      ; preds = %for.inc832, %for.body735.lr.ph
+  %159 = phi i32** [ %178, %for.inc832 ], [ %153, %for.body735.lr.ph ]
+  %indvars.iv2451 = phi i64 [ %indvars.iv.next2452, %for.inc832 ], [ 1, %for.body735.lr.ph ]
+  %min_mcost.addr.132408 = phi i32 [ %min_mcost.addr.15, %for.inc832 ], [ %min_mcost.addr.12, %for.body735.lr.ph ]
+  %best_y.132406 = phi i32 [ %best_y.15, %for.inc832 ], [ %best_y.12, %for.body735.lr.ph ]
+  %best_x.132405 = phi i32 [ %best_x.15, %for.inc832 ], [ %best_x.12, %for.body735.lr.ph ]
+  %160 = trunc i64 %indvars.iv2451 to i32
+  %mul736 = shl nsw i32 %160, 1
+  %sub737 = add nsw i32 %mul736, -1
+  %add738 = add nsw i32 %sub737, %best_x.12
+  %sub739 = sub nsw i32 %add738, %add23
+  %ispos2290 = icmp sgt i32 %sub739, -1
+  %neg2291 = sub i32 0, %sub739
+  %161 = select i1 %ispos2290, i32 %sub739, i32 %neg2291
+  %cmp741 = icmp sgt i32 %161, %search_range
+  br i1 %cmp741, label %if.end784, label %land.lhs.true743
+
+land.lhs.true743:                                 ; preds = %for.body735
+  br i1 %cmp793, label %if.end784, label %if.then748
+
+if.then748:                                       ; preds = %land.lhs.true743
+  %add750 = add nsw i32 %sub739, %search_range
+  %idxprom751 = sext i32 %add750 to i64
+  %arrayidx755 = getelementptr inbounds i32** %159, i64 %idxprom801
+  %162 = load i32** %arrayidx755, align 8, !tbaa !3
+  %arrayidx756 = getelementptr inbounds i32* %162, i64 %idxprom751
+  %163 = load i32* %arrayidx756, align 4, !tbaa !4
+  %tobool757 = icmp eq i32 %163, 0
+  br i1 %tobool757, label %if.then758, label %if.end784
+
+if.then758:                                       ; preds = %if.then748
+  %shl759 = shl i32 %add738, 2
+  %sub760 = sub nsw i32 %shl759, %add18
+  %idxprom761 = sext i32 %sub760 to i64
+  %164 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx762 = getelementptr inbounds i32* %164, i64 %idxprom761
+  %165 = load i32* %arrayidx762, align 4, !tbaa !4
+  %arrayidx766 = getelementptr inbounds i32* %164, i64 %idxprom812
+  %166 = load i32* %arrayidx766, align 4, !tbaa !4
+  %add767 = add nsw i32 %166, %165
+  %mul768 = mul nsw i32 %add767, %conv
+  %shr769 = ashr i32 %mul768, 16
+  %call770 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr769, i32 %min_mcost.addr.132408, i32 %add738, i32 %best_y.12) #4
+  %167 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx777 = getelementptr inbounds i32** %167, i64 %idxprom801
+  %168 = load i32** %arrayidx777, align 8, !tbaa !3
+  %arrayidx778 = getelementptr inbounds i32* %168, i64 %idxprom751
+  store i32 %call770, i32* %arrayidx778, align 4, !tbaa !4
+  %cmp779 = icmp slt i32 %call770, %min_mcost.addr.132408
+  %add738.best_x.13 = select i1 %cmp779, i32 %add738, i32 %best_x.132405
+  %best_y.11.best_y.13 = select i1 %cmp779, i32 %best_y.12, i32 %best_y.132406
+  %call770.min_mcost.addr.13 = select i1 %cmp779, i32 %call770, i32 %min_mcost.addr.132408
+  br label %if.end784
+
+if.end784:                                        ; preds = %if.then758, %if.then748, %land.lhs.true743, %for.body735
+  %169 = phi i32** [ %159, %if.then748 ], [ %159, %land.lhs.true743 ], [ %159, %for.body735 ], [ %167, %if.then758 ]
+  %best_x.14 = phi i32 [ %best_x.132405, %if.then748 ], [ %best_x.132405, %land.lhs.true743 ], [ %best_x.132405, %for.body735 ], [ %add738.best_x.13, %if.then758 ]
+  %best_y.14 = phi i32 [ %best_y.132406, %if.then748 ], [ %best_y.132406, %land.lhs.true743 ], [ %best_y.132406, %for.body735 ], [ %best_y.11.best_y.13, %if.then758 ]
+  %min_mcost.addr.14 = phi i32 [ %min_mcost.addr.132408, %if.then748 ], [ %min_mcost.addr.132408, %land.lhs.true743 ], [ %min_mcost.addr.132408, %for.body735 ], [ %call770.min_mcost.addr.13, %if.then758 ]
+  %sub785 = sub nsw i32 %best_x.12, %sub737
+  %sub786 = sub nsw i32 %sub785, %add23
+  %ispos2292 = icmp sgt i32 %sub786, -1
+  %neg2293 = sub i32 0, %sub786
+  %170 = select i1 %ispos2292, i32 %sub786, i32 %neg2293
+  %cmp788 = icmp sgt i32 %170, %search_range
+  br i1 %cmp788, label %for.inc832, label %land.lhs.true790
+
+land.lhs.true790:                                 ; preds = %if.end784
+  br i1 %cmp793, label %for.inc832, label %if.then795
+
+if.then795:                                       ; preds = %land.lhs.true790
+  %add797 = add nsw i32 %sub786, %search_range
+  %idxprom798 = sext i32 %add797 to i64
+  %arrayidx802 = getelementptr inbounds i32** %169, i64 %idxprom801
+  %171 = load i32** %arrayidx802, align 8, !tbaa !3
+  %arrayidx803 = getelementptr inbounds i32* %171, i64 %idxprom798
+  %172 = load i32* %arrayidx803, align 4, !tbaa !4
+  %tobool804 = icmp eq i32 %172, 0
+  br i1 %tobool804, label %if.then805, label %for.inc832
+
+if.then805:                                       ; preds = %if.then795
+  %shl806 = shl i32 %sub785, 2
+  %sub807 = sub nsw i32 %shl806, %add18
+  %idxprom808 = sext i32 %sub807 to i64
+  %173 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx809 = getelementptr inbounds i32* %173, i64 %idxprom808
+  %174 = load i32* %arrayidx809, align 4, !tbaa !4
+  %arrayidx813 = getelementptr inbounds i32* %173, i64 %idxprom812
+  %175 = load i32* %arrayidx813, align 4, !tbaa !4
+  %add814 = add nsw i32 %175, %174
+  %mul815 = mul nsw i32 %add814, %conv
+  %shr816 = ashr i32 %mul815, 16
+  %call817 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr816, i32 %min_mcost.addr.14, i32 %sub785, i32 %best_y.12) #4
+  %176 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx824 = getelementptr inbounds i32** %176, i64 %idxprom801
+  %177 = load i32** %arrayidx824, align 8, !tbaa !3
+  %arrayidx825 = getelementptr inbounds i32* %177, i64 %idxprom798
+  store i32 %call817, i32* %arrayidx825, align 4, !tbaa !4
+  %cmp826 = icmp slt i32 %call817, %min_mcost.addr.14
+  %sub785.best_x.14 = select i1 %cmp826, i32 %sub785, i32 %best_x.14
+  %best_y.11.best_y.14 = select i1 %cmp826, i32 %best_y.12, i32 %best_y.14
+  %call817.min_mcost.addr.14 = select i1 %cmp826, i32 %call817, i32 %min_mcost.addr.14
+  br label %for.inc832
+
+for.inc832:                                       ; preds = %if.then805, %if.then795, %land.lhs.true790, %if.end784
+  %178 = phi i32** [ %169, %if.then795 ], [ %169, %land.lhs.true790 ], [ %169, %if.end784 ], [ %176, %if.then805 ]
+  %best_x.15 = phi i32 [ %best_x.14, %if.then795 ], [ %best_x.14, %land.lhs.true790 ], [ %best_x.14, %if.end784 ], [ %sub785.best_x.14, %if.then805 ]
+  %best_y.15 = phi i32 [ %best_y.14, %if.then795 ], [ %best_y.14, %land.lhs.true790 ], [ %best_y.14, %if.end784 ], [ %best_y.11.best_y.14, %if.then805 ]
+  %min_mcost.addr.15 = phi i32 [ %min_mcost.addr.14, %if.then795 ], [ %min_mcost.addr.14, %land.lhs.true790 ], [ %min_mcost.addr.14, %if.end784 ], [ %call817.min_mcost.addr.14, %if.then805 ]
+  %indvars.iv.next2452 = add i64 %indvars.iv2451, 1
+  %cmp733 = icmp slt i32 %160, %div732
+  br i1 %cmp733, label %for.body735, label %for.cond835.preheader
+
+for.body839:                                      ; preds = %for.inc936, %for.body839.lr.ph
+  %179 = phi i32** [ %198, %for.inc936 ], [ %178, %for.body839.lr.ph ]
+  %indvars.iv2449 = phi i64 [ %indvars.iv.next2450, %for.inc936 ], [ 1, %for.body839.lr.ph ]
+  %min_mcost.addr.162399 = phi i32 [ %min_mcost.addr.18, %for.inc936 ], [ %min_mcost.addr.15, %for.body839.lr.ph ]
+  %best_y.162397 = phi i32 [ %best_y.18, %for.inc936 ], [ %best_y.15, %for.body839.lr.ph ]
+  %best_x.162396 = phi i32 [ %best_x.18, %for.inc936 ], [ %best_x.15, %for.body839.lr.ph ]
+  %180 = trunc i64 %indvars.iv2449 to i32
+  %mul840 = shl nsw i32 %180, 1
+  %sub841 = add nsw i32 %mul840, -1
+  %add842 = add nsw i32 %sub841, %best_y.12
+  br i1 %cmp845, label %for.inc936, label %land.lhs.true847
+
+land.lhs.true847:                                 ; preds = %for.body839
+  %sub848 = sub nsw i32 %add842, %add25
+  %ispos2288 = icmp sgt i32 %sub848, -1
+  %neg2289 = sub i32 0, %sub848
+  %181 = select i1 %ispos2288, i32 %sub848, i32 %neg2289
+  %cmp850 = icmp sgt i32 %181, %search_range
+  br i1 %cmp850, label %land.lhs.true894, label %if.then852
+
+if.then852:                                       ; preds = %land.lhs.true847
+  %add857 = add nsw i32 %sub848, %search_range
+  %idxprom858 = sext i32 %add857 to i64
+  %arrayidx859 = getelementptr inbounds i32** %179, i64 %idxprom858
+  %182 = load i32** %arrayidx859, align 8, !tbaa !3
+  %arrayidx860 = getelementptr inbounds i32* %182, i64 %idxprom902
+  %183 = load i32* %arrayidx860, align 4, !tbaa !4
+  %tobool861 = icmp eq i32 %183, 0
+  br i1 %tobool861, label %if.then862, label %land.lhs.true894
+
+if.then862:                                       ; preds = %if.then852
+  %184 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx866 = getelementptr inbounds i32* %184, i64 %idxprom912
+  %185 = load i32* %arrayidx866, align 4, !tbaa !4
+  %shl867 = shl i32 %add842, 2
+  %sub868 = sub nsw i32 %shl867, %add21
+  %idxprom869 = sext i32 %sub868 to i64
+  %arrayidx870 = getelementptr inbounds i32* %184, i64 %idxprom869
+  %186 = load i32* %arrayidx870, align 4, !tbaa !4
+  %add871 = add nsw i32 %186, %185
+  %mul872 = mul nsw i32 %add871, %conv
+  %shr873 = ashr i32 %mul872, 16
+  %call874 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr873, i32 %min_mcost.addr.162399, i32 %best_x.12, i32 %add842) #4
+  %187 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx881 = getelementptr inbounds i32** %187, i64 %idxprom858
+  %188 = load i32** %arrayidx881, align 8, !tbaa !3
+  %arrayidx882 = getelementptr inbounds i32* %188, i64 %idxprom902
+  store i32 %call874, i32* %arrayidx882, align 4, !tbaa !4
+  %cmp883 = icmp slt i32 %call874, %min_mcost.addr.162399
+  %best_x.11.best_x.16 = select i1 %cmp883, i32 %best_x.12, i32 %best_x.162396
+  %add842.best_y.16 = select i1 %cmp883, i32 %add842, i32 %best_y.162397
+  %call874.min_mcost.addr.16 = select i1 %cmp883, i32 %call874, i32 %min_mcost.addr.162399
+  br label %land.lhs.true894
+
+land.lhs.true894:                                 ; preds = %if.then852, %if.then862, %land.lhs.true847
+  %189 = phi i32** [ %179, %land.lhs.true847 ], [ %179, %if.then852 ], [ %187, %if.then862 ]
+  %min_mcost.addr.172347 = phi i32 [ %min_mcost.addr.162399, %land.lhs.true847 ], [ %min_mcost.addr.162399, %if.then852 ], [ %call874.min_mcost.addr.16, %if.then862 ]
+  %best_y.172346 = phi i32 [ %best_y.162397, %land.lhs.true847 ], [ %best_y.162397, %if.then852 ], [ %add842.best_y.16, %if.then862 ]
+  %best_x.172345 = phi i32 [ %best_x.162396, %land.lhs.true847 ], [ %best_x.162396, %if.then852 ], [ %best_x.11.best_x.16, %if.then862 ]
+  %sub8892348 = sub nsw i32 %best_y.12, %sub841
+  %sub895 = sub nsw i32 %sub8892348, %add25
+  %ispos2286 = icmp sgt i32 %sub895, -1
+  %neg2287 = sub i32 0, %sub895
+  %190 = select i1 %ispos2286, i32 %sub895, i32 %neg2287
+  %cmp897 = icmp sgt i32 %190, %search_range
+  br i1 %cmp897, label %for.inc936, label %if.then899
+
+if.then899:                                       ; preds = %land.lhs.true894
+  %add904 = add nsw i32 %sub895, %search_range
+  %idxprom905 = sext i32 %add904 to i64
+  %arrayidx906 = getelementptr inbounds i32** %189, i64 %idxprom905
+  %191 = load i32** %arrayidx906, align 8, !tbaa !3
+  %arrayidx907 = getelementptr inbounds i32* %191, i64 %idxprom902
+  %192 = load i32* %arrayidx907, align 4, !tbaa !4
+  %tobool908 = icmp eq i32 %192, 0
+  br i1 %tobool908, label %if.then909, label %for.inc936
+
+if.then909:                                       ; preds = %if.then899
+  %193 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx913 = getelementptr inbounds i32* %193, i64 %idxprom912
+  %194 = load i32* %arrayidx913, align 4, !tbaa !4
+  %shl914 = shl i32 %sub8892348, 2
+  %sub915 = sub nsw i32 %shl914, %add21
+  %idxprom916 = sext i32 %sub915 to i64
+  %arrayidx917 = getelementptr inbounds i32* %193, i64 %idxprom916
+  %195 = load i32* %arrayidx917, align 4, !tbaa !4
+  %add918 = add nsw i32 %195, %194
+  %mul919 = mul nsw i32 %add918, %conv
+  %shr920 = ashr i32 %mul919, 16
+  %call921 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr920, i32 %min_mcost.addr.172347, i32 %best_x.12, i32 %sub8892348) #4
+  %196 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx928 = getelementptr inbounds i32** %196, i64 %idxprom905
+  %197 = load i32** %arrayidx928, align 8, !tbaa !3
+  %arrayidx929 = getelementptr inbounds i32* %197, i64 %idxprom902
+  store i32 %call921, i32* %arrayidx929, align 4, !tbaa !4
+  %cmp930 = icmp slt i32 %call921, %min_mcost.addr.172347
+  %best_x.11.best_x.17 = select i1 %cmp930, i32 %best_x.12, i32 %best_x.172345
+  %sub889.best_y.17 = select i1 %cmp930, i32 %sub8892348, i32 %best_y.172346
+  %call921.min_mcost.addr.17 = select i1 %cmp930, i32 %call921, i32 %min_mcost.addr.172347
+  br label %for.inc936
+
+for.inc936:                                       ; preds = %for.body839, %if.then909, %if.then899, %land.lhs.true894
+  %198 = phi i32** [ %189, %if.then899 ], [ %189, %land.lhs.true894 ], [ %196, %if.then909 ], [ %179, %for.body839 ]
+  %best_x.18 = phi i32 [ %best_x.172345, %if.then899 ], [ %best_x.172345, %land.lhs.true894 ], [ %best_x.11.best_x.17, %if.then909 ], [ %best_x.162396, %for.body839 ]
+  %best_y.18 = phi i32 [ %best_y.172346, %if.then899 ], [ %best_y.172346, %land.lhs.true894 ], [ %sub889.best_y.17, %if.then909 ], [ %best_y.162397, %for.body839 ]
+  %min_mcost.addr.18 = phi i32 [ %min_mcost.addr.172347, %if.then899 ], [ %min_mcost.addr.172347, %land.lhs.true894 ], [ %call921.min_mcost.addr.17, %if.then909 ], [ %min_mcost.addr.162399, %for.body839 ]
+  %indvars.iv.next2450 = add i64 %indvars.iv2449, 1
+  %cmp837 = icmp slt i32 %180, %div836
+  br i1 %cmp837, label %for.body839, label %for.end938
+
+for.end938:                                       ; preds = %for.inc936, %for.cond835.preheader.thread, %for.cond835.preheader
+  %cmp83723952469 = phi i1 [ true, %for.cond835.preheader ], [ true, %for.cond835.preheader.thread ], [ %cmp8372395, %for.inc936 ]
+  %div8362468 = phi i32 [ %div836, %for.cond835.preheader ], [ %div8362466, %for.cond835.preheader.thread ], [ %div836, %for.inc936 ]
+  %199 = phi i32** [ %178, %for.cond835.preheader ], [ %153, %for.cond835.preheader.thread ], [ %198, %for.inc936 ]
+  %min_mcost.addr.16.lcssa = phi i32 [ %min_mcost.addr.15, %for.cond835.preheader ], [ %min_mcost.addr.12, %for.cond835.preheader.thread ], [ %min_mcost.addr.18, %for.inc936 ]
+  %best_y.16.lcssa = phi i32 [ %best_y.15, %for.cond835.preheader ], [ %best_y.12, %for.cond835.preheader.thread ], [ %best_y.18, %for.inc936 ]
+  %best_x.16.lcssa = phi i32 [ %best_x.15, %for.cond835.preheader ], [ %best_x.12, %for.cond835.preheader.thread ], [ %best_x.18, %for.inc936 ]
+  br i1 %cmp65, label %if.then942, label %if.else960
+
+if.then942:                                       ; preds = %for.end938
+  %200 = load i32* @pred_SAD_ref, align 4, !tbaa !4
+  %sub943 = sub nsw i32 %min_mcost.addr.16.lcssa, %200
+  %conv944 = sitofp i32 %sub943 to float
+  %conv945 = sitofp i32 %200 to float
+  %mul946 = fmul float %betaThird.0, %conv945
+  %cmp947 = fcmp olt float %conv944, %mul946
+  br i1 %cmp947, label %for.cond1325.preheader, label %if.else950
+
+if.else950:                                       ; preds = %if.then942
+  %mul954 = fmul float %betaSec.0, %conv945
+  %cmp955 = fcmp olt float %conv944, %mul954
+  br i1 %cmp955, label %for.cond1256.preheader, label %for.body1004
+
+if.else960:                                       ; preds = %for.end938
+  br i1 %cmp322, label %if.then963, label %if.else981
+
+if.then963:                                       ; preds = %if.else960
+  %201 = load i32* @pred_SAD_uplayer, align 4, !tbaa !4
+  %sub964 = sub nsw i32 %min_mcost.addr.16.lcssa, %201
+  %conv965 = sitofp i32 %sub964 to float
+  %conv966 = sitofp i32 %201 to float
+  %mul967 = fmul float %betaThird.0, %conv966
+  %cmp968 = fcmp olt float %conv965, %mul967
+  br i1 %cmp968, label %for.cond1325.preheader, label %if.else971
+
+if.else971:                                       ; preds = %if.then963
+  %mul975 = fmul float %betaSec.0, %conv966
+  %cmp976 = fcmp olt float %conv965, %mul975
+  br i1 %cmp976, label %for.cond1256.preheader, label %for.body1004
+
+if.else981:                                       ; preds = %if.else960
+  %202 = load i32* @pred_SAD_space, align 4, !tbaa !4
+  %sub982 = sub nsw i32 %min_mcost.addr.16.lcssa, %202
+  %conv983 = sitofp i32 %sub982 to float
+  %conv984 = sitofp i32 %202 to float
+  %mul985 = fmul float %betaThird.0, %conv984
+  %cmp986 = fcmp olt float %conv983, %mul985
+  br i1 %cmp986, label %for.cond1325.preheader, label %if.else989
+
+if.else989:                                       ; preds = %if.else981
+  %mul993 = fmul float %betaSec.0, %conv984
+  %cmp994 = fcmp olt float %conv983, %mul993
+  br i1 %cmp994, label %for.cond1256.preheader, label %for.body1004
+
+for.body1004:                                     ; preds = %for.inc1057, %if.else950, %if.else989, %if.else971
+  %203 = phi i32** [ %199, %if.else971 ], [ %199, %if.else989 ], [ %199, %if.else950 ], [ %217, %for.inc1057 ]
+  %indvars.iv2445 = phi i64 [ 1, %if.else971 ], [ 1, %if.else989 ], [ 1, %if.else950 ], [ %indvars.iv.next2446, %for.inc1057 ]
+  %min_mcost.addr.192394 = phi i32 [ %min_mcost.addr.16.lcssa, %if.else971 ], [ %min_mcost.addr.16.lcssa, %if.else989 ], [ %min_mcost.addr.16.lcssa, %if.else950 ], [ %min_mcost.addr.20, %for.inc1057 ]
+  %best_y.192392 = phi i32 [ %best_y.16.lcssa, %if.else971 ], [ %best_y.16.lcssa, %if.else989 ], [ %best_y.16.lcssa, %if.else950 ], [ %best_y.20, %for.inc1057 ]
+  %best_x.192391 = phi i32 [ %best_x.16.lcssa, %if.else971 ], [ %best_x.16.lcssa, %if.else989 ], [ %best_x.16.lcssa, %if.else950 ], [ %best_x.20, %for.inc1057 ]
+  %204 = load i32** @spiral_search_x, align 8, !tbaa !3
+  %arrayidx1006 = getelementptr inbounds i32* %204, i64 %indvars.iv2445
+  %205 = load i32* %arrayidx1006, align 4, !tbaa !4
+  %add1007 = add nsw i32 %205, %best_x.16.lcssa
+  %206 = load i32** @spiral_search_y, align 8, !tbaa !3
+  %arrayidx1009 = getelementptr inbounds i32* %206, i64 %indvars.iv2445
+  %207 = load i32* %arrayidx1009, align 4, !tbaa !4
+  %add1010 = add nsw i32 %207, %best_y.16.lcssa
+  %sub1011 = sub nsw i32 %add1007, %add23
+  %ispos2280 = icmp sgt i32 %sub1011, -1
+  %neg2281 = sub i32 0, %sub1011
+  %208 = select i1 %ispos2280, i32 %sub1011, i32 %neg2281
+  %cmp1013 = icmp sgt i32 %208, %search_range
+  br i1 %cmp1013, label %for.inc1057, label %land.lhs.true1015
+
+land.lhs.true1015:                                ; preds = %for.body1004
+  %sub1016 = sub nsw i32 %add1010, %add25
+  %ispos2282 = icmp sgt i32 %sub1016, -1
+  %neg2283 = sub i32 0, %sub1016
+  %209 = select i1 %ispos2282, i32 %sub1016, i32 %neg2283
+  %cmp1018 = icmp sgt i32 %209, %search_range
+  br i1 %cmp1018, label %for.inc1057, label %if.then1020
+
+if.then1020:                                      ; preds = %land.lhs.true1015
+  %add1022 = add nsw i32 %sub1011, %search_range
+  %idxprom1023 = sext i32 %add1022 to i64
+  %add1025 = add nsw i32 %sub1016, %search_range
+  %idxprom1026 = sext i32 %add1025 to i64
+  %arrayidx1027 = getelementptr inbounds i32** %203, i64 %idxprom1026
+  %210 = load i32** %arrayidx1027, align 8, !tbaa !3
+  %arrayidx1028 = getelementptr inbounds i32* %210, i64 %idxprom1023
+  %211 = load i32* %arrayidx1028, align 4, !tbaa !4
+  %tobool1029 = icmp eq i32 %211, 0
+  br i1 %tobool1029, label %if.then1030, label %for.inc1057
+
+if.then1030:                                      ; preds = %if.then1020
+  %shl1031 = shl i32 %add1007, 2
+  %sub1032 = sub nsw i32 %shl1031, %add18
+  %idxprom1033 = sext i32 %sub1032 to i64
+  %212 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx1034 = getelementptr inbounds i32* %212, i64 %idxprom1033
+  %213 = load i32* %arrayidx1034, align 4, !tbaa !4
+  %shl1035 = shl i32 %add1010, 2
+  %sub1036 = sub nsw i32 %shl1035, %add21
+  %idxprom1037 = sext i32 %sub1036 to i64
+  %arrayidx1038 = getelementptr inbounds i32* %212, i64 %idxprom1037
+  %214 = load i32* %arrayidx1038, align 4, !tbaa !4
+  %add1039 = add nsw i32 %214, %213
+  %mul1040 = mul nsw i32 %add1039, %conv
+  %shr1041 = ashr i32 %mul1040, 16
+  %call1042 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr1041, i32 %min_mcost.addr.192394, i32 %add1007, i32 %add1010) #4
+  %215 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx1049 = getelementptr inbounds i32** %215, i64 %idxprom1026
+  %216 = load i32** %arrayidx1049, align 8, !tbaa !3
+  %arrayidx1050 = getelementptr inbounds i32* %216, i64 %idxprom1023
+  store i32 %call1042, i32* %arrayidx1050, align 4, !tbaa !4
+  %cmp1051 = icmp slt i32 %call1042, %min_mcost.addr.192394
+  %add1007.best_x.19 = select i1 %cmp1051, i32 %add1007, i32 %best_x.192391
+  %add1010.best_y.19 = select i1 %cmp1051, i32 %add1010, i32 %best_y.192392
+  %call1042.min_mcost.addr.19 = select i1 %cmp1051, i32 %call1042, i32 %min_mcost.addr.192394
+  br label %for.inc1057
+
+for.inc1057:                                      ; preds = %if.then1030, %if.then1020, %land.lhs.true1015, %for.body1004
+  %217 = phi i32** [ %203, %if.then1020 ], [ %203, %land.lhs.true1015 ], [ %203, %for.body1004 ], [ %215, %if.then1030 ]
+  %best_x.20 = phi i32 [ %best_x.192391, %if.then1020 ], [ %best_x.192391, %land.lhs.true1015 ], [ %best_x.192391, %for.body1004 ], [ %add1007.best_x.19, %if.then1030 ]
+  %best_y.20 = phi i32 [ %best_y.192392, %if.then1020 ], [ %best_y.192392, %land.lhs.true1015 ], [ %best_y.192392, %for.body1004 ], [ %add1010.best_y.19, %if.then1030 ]
+  %min_mcost.addr.20 = phi i32 [ %min_mcost.addr.192394, %if.then1020 ], [ %min_mcost.addr.192394, %land.lhs.true1015 ], [ %min_mcost.addr.192394, %for.body1004 ], [ %call1042.min_mcost.addr.19, %if.then1030 ]
+  %indvars.iv.next2446 = add i64 %indvars.iv2445, 1
+  %lftr.wideiv2447 = trunc i64 %indvars.iv.next2446 to i32
+  %exitcond2448 = icmp eq i32 %lftr.wideiv2447, 25
+  br i1 %exitcond2448, label %for.end1059, label %for.body1004
+
+for.end1059:                                      ; preds = %for.inc1057
+  br i1 %cmp65, label %if.then1063, label %if.else1081
+
+if.then1063:                                      ; preds = %for.end1059
+  %218 = load i32* @pred_SAD_ref, align 4, !tbaa !4
+  %sub1064 = sub nsw i32 %min_mcost.addr.20, %218
+  %conv1065 = sitofp i32 %sub1064 to float
+  %conv1066 = sitofp i32 %218 to float
+  %mul1067 = fmul float %betaThird.0, %conv1066
+  %cmp1068 = fcmp olt float %conv1065, %mul1067
+  br i1 %cmp1068, label %for.cond1325.preheader, label %if.else1071
+
+if.else1071:                                      ; preds = %if.then1063
+  %mul1075 = fmul float %betaSec.0, %conv1066
+  %cmp1076 = fcmp olt float %conv1065, %mul1075
+  br i1 %cmp1076, label %for.cond1256.preheader, label %for.cond1122.preheader
+
+if.else1081:                                      ; preds = %for.end1059
+  br i1 %cmp322, label %if.then1084, label %if.else1102
+
+if.then1084:                                      ; preds = %if.else1081
+  %219 = load i32* @pred_SAD_uplayer, align 4, !tbaa !4
+  %sub1085 = sub nsw i32 %min_mcost.addr.20, %219
+  %conv1086 = sitofp i32 %sub1085 to float
+  %conv1087 = sitofp i32 %219 to float
+  %mul1088 = fmul float %betaThird.0, %conv1087
+  %cmp1089 = fcmp olt float %conv1086, %mul1088
+  br i1 %cmp1089, label %for.cond1325.preheader, label %if.else1092
+
+if.else1092:                                      ; preds = %if.then1084
+  %mul1096 = fmul float %betaSec.0, %conv1087
+  %cmp1097 = fcmp olt float %conv1086, %mul1096
+  br i1 %cmp1097, label %for.cond1256.preheader, label %for.cond1122.preheader
+
+if.else1102:                                      ; preds = %if.else1081
+  %220 = load i32* @pred_SAD_space, align 4, !tbaa !4
+  %sub1103 = sub nsw i32 %min_mcost.addr.20, %220
+  %conv1104 = sitofp i32 %sub1103 to float
+  %conv1105 = sitofp i32 %220 to float
+  %mul1106 = fmul float %betaThird.0, %conv1105
+  %cmp1107 = fcmp olt float %conv1104, %mul1106
+  br i1 %cmp1107, label %for.cond1325.preheader, label %if.else1110
+
+if.else1110:                                      ; preds = %if.else1102
+  %mul1114 = fmul float %betaSec.0, %conv1105
+  %cmp1115 = fcmp olt float %conv1104, %mul1114
+  br i1 %cmp1115, label %for.cond1256.preheader, label %for.cond1122.preheader
+
+for.cond1122.preheader:                           ; preds = %if.else1092, %if.else1110, %if.else1071
+  br i1 %cmp83723952469, label %for.cond1256.preheader, label %for.cond1127.preheader
+
+for.cond1127.preheader:                           ; preds = %for.cond1122.preheader, %for.inc1253
+  %221 = phi i32** [ %234, %for.inc1253 ], [ %217, %for.cond1122.preheader ]
+  %min_mcost.addr.212387 = phi i32 [ %min_mcost.addr.23, %for.inc1253 ], [ %min_mcost.addr.20, %for.cond1122.preheader ]
+  %i.22386 = phi i32 [ %inc1254, %for.inc1253 ], [ 1, %for.cond1122.preheader ]
+  %best_y.212385 = phi i32 [ %best_y.23, %for.inc1253 ], [ %best_y.20, %for.cond1122.preheader ]
+  %best_x.212384 = phi i32 [ %best_x.23, %for.inc1253 ], [ %best_x.20, %for.cond1122.preheader ]
+  br label %for.body1130
+
+for.body1130:                                     ; preds = %for.inc1185, %for.cond1127.preheader
+  %222 = phi i32** [ %221, %for.cond1127.preheader ], [ %234, %for.inc1185 ]
+  %indvars.iv2435 = phi i64 [ 0, %for.cond1127.preheader ], [ %indvars.iv.next2436, %for.inc1185 ]
+  %min_mcost.addr.222381 = phi i32 [ %min_mcost.addr.212387, %for.cond1127.preheader ], [ %min_mcost.addr.23, %for.inc1185 ]
+  %iAbort.02380 = phi i32 [ 0, %for.cond1127.preheader ], [ %iAbort.1, %for.inc1185 ]
+  %best_y.222378 = phi i32 [ %best_y.212385, %for.cond1127.preheader ], [ %best_y.23, %for.inc1185 ]
+  %best_x.222377 = phi i32 [ %best_x.212384, %for.cond1127.preheader ], [ %best_x.23, %for.inc1185 ]
+  %arrayidx1132 = getelementptr inbounds [16 x i32]* @FastIntegerPelBlockMotionSearch.Big_Hexagon_x, i64 0, i64 %indvars.iv2435
+  %223 = load i32* %arrayidx1132, align 4, !tbaa !4
+  %mul1133 = mul nsw i32 %223, %i.22386
+  %add1134 = add nsw i32 %mul1133, %best_x.16.lcssa
+  %arrayidx1136 = getelementptr inbounds [16 x i32]* @FastIntegerPelBlockMotionSearch.Big_Hexagon_y, i64 0, i64 %indvars.iv2435
+  %224 = load i32* %arrayidx1136, align 4, !tbaa !4
+  %mul1137 = mul nsw i32 %224, %i.22386
+  %add1138 = add nsw i32 %mul1137, %best_y.16.lcssa
+  %sub1139 = sub nsw i32 %add1134, %add23
+  %ispos2276 = icmp sgt i32 %sub1139, -1
+  %neg2277 = sub i32 0, %sub1139
+  %225 = select i1 %ispos2276, i32 %sub1139, i32 %neg2277
+  %cmp1141 = icmp sgt i32 %225, %search_range
+  br i1 %cmp1141, label %for.inc1185, label %land.lhs.true1143
+
+land.lhs.true1143:                                ; preds = %for.body1130
+  %sub1144 = sub nsw i32 %add1138, %add25
+  %ispos2278 = icmp sgt i32 %sub1144, -1
+  %neg2279 = sub i32 0, %sub1144
+  %226 = select i1 %ispos2278, i32 %sub1144, i32 %neg2279
+  %cmp1146 = icmp sgt i32 %226, %search_range
+  br i1 %cmp1146, label %for.inc1185, label %if.then1148
+
+if.then1148:                                      ; preds = %land.lhs.true1143
+  %add1150 = add nsw i32 %sub1139, %search_range
+  %idxprom1151 = sext i32 %add1150 to i64
+  %add1153 = add nsw i32 %sub1144, %search_range
+  %idxprom1154 = sext i32 %add1153 to i64
+  %arrayidx1155 = getelementptr inbounds i32** %222, i64 %idxprom1154
+  %227 = load i32** %arrayidx1155, align 8, !tbaa !3
+  %arrayidx1156 = getelementptr inbounds i32* %227, i64 %idxprom1151
+  %228 = load i32* %arrayidx1156, align 4, !tbaa !4
+  %tobool1157 = icmp eq i32 %228, 0
+  br i1 %tobool1157, label %if.then1158, label %for.inc1185
+
+if.then1158:                                      ; preds = %if.then1148
+  %shl1159 = shl i32 %add1134, 2
+  %sub1160 = sub nsw i32 %shl1159, %add18
+  %idxprom1161 = sext i32 %sub1160 to i64
+  %229 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx1162 = getelementptr inbounds i32* %229, i64 %idxprom1161
+  %230 = load i32* %arrayidx1162, align 4, !tbaa !4
+  %shl1163 = shl i32 %add1138, 2
+  %sub1164 = sub nsw i32 %shl1163, %add21
+  %idxprom1165 = sext i32 %sub1164 to i64
+  %arrayidx1166 = getelementptr inbounds i32* %229, i64 %idxprom1165
+  %231 = load i32* %arrayidx1166, align 4, !tbaa !4
+  %add1167 = add nsw i32 %231, %230
+  %mul1168 = mul nsw i32 %add1167, %conv
+  %shr1169 = ashr i32 %mul1168, 16
+  %call1170 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr1169, i32 %min_mcost.addr.222381, i32 %add1134, i32 %add1138) #4
+  %232 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx1177 = getelementptr inbounds i32** %232, i64 %idxprom1154
+  %233 = load i32** %arrayidx1177, align 8, !tbaa !3
+  %arrayidx1178 = getelementptr inbounds i32* %233, i64 %idxprom1151
+  store i32 %call1170, i32* %arrayidx1178, align 4, !tbaa !4
+  %cmp1179 = icmp slt i32 %call1170, %min_mcost.addr.222381
+  %add1134.best_x.22 = select i1 %cmp1179, i32 %add1134, i32 %best_x.222377
+  %add1138.best_y.22 = select i1 %cmp1179, i32 %add1138, i32 %best_y.222378
+  %.iAbort.0 = select i1 %cmp1179, i32 1, i32 %iAbort.02380
+  %call1170.min_mcost.addr.22 = select i1 %cmp1179, i32 %call1170, i32 %min_mcost.addr.222381
+  br label %for.inc1185
+
+for.inc1185:                                      ; preds = %if.then1158, %if.then1148, %land.lhs.true1143, %for.body1130
+  %234 = phi i32** [ %222, %if.then1148 ], [ %222, %land.lhs.true1143 ], [ %222, %for.body1130 ], [ %232, %if.then1158 ]
+  %best_x.23 = phi i32 [ %best_x.222377, %if.then1148 ], [ %best_x.222377, %land.lhs.true1143 ], [ %best_x.222377, %for.body1130 ], [ %add1134.best_x.22, %if.then1158 ]
+  %best_y.23 = phi i32 [ %best_y.222378, %if.then1148 ], [ %best_y.222378, %land.lhs.true1143 ], [ %best_y.222378, %for.body1130 ], [ %add1138.best_y.22, %if.then1158 ]
+  %iAbort.1 = phi i32 [ %iAbort.02380, %if.then1148 ], [ %iAbort.02380, %land.lhs.true1143 ], [ %iAbort.02380, %for.body1130 ], [ %.iAbort.0, %if.then1158 ]
+  %min_mcost.addr.23 = phi i32 [ %min_mcost.addr.222381, %if.then1148 ], [ %min_mcost.addr.222381, %land.lhs.true1143 ], [ %min_mcost.addr.222381, %for.body1130 ], [ %call1170.min_mcost.addr.22, %if.then1158 ]
+  %indvars.iv.next2436 = add i64 %indvars.iv2435, 1
+  %lftr.wideiv2437 = trunc i64 %indvars.iv.next2436 to i32
+  %exitcond2438 = icmp eq i32 %lftr.wideiv2437, 16
+  br i1 %exitcond2438, label %for.end1187, label %for.body1130
+
+for.end1187:                                      ; preds = %for.inc1185
+  %tobool1188 = icmp eq i32 %iAbort.1, 0
+  br i1 %tobool1188, label %for.inc1253, label %if.then1189
+
+if.then1189:                                      ; preds = %for.end1187
+  br i1 %cmp65, label %if.then1193, label %if.else1211
+
+if.then1193:                                      ; preds = %if.then1189
+  %235 = load i32* @pred_SAD_ref, align 4, !tbaa !4
+  %sub1194 = sub nsw i32 %min_mcost.addr.23, %235
+  %conv1195 = sitofp i32 %sub1194 to float
+  %conv1196 = sitofp i32 %235 to float
+  %mul1197 = fmul float %betaThird.0, %conv1196
+  %cmp1198 = fcmp olt float %conv1195, %mul1197
+  br i1 %cmp1198, label %for.cond1325.preheader, label %if.else1201
+
+if.else1201:                                      ; preds = %if.then1193
+  %mul1205 = fmul float %betaSec.0, %conv1196
+  %cmp1206 = fcmp olt float %conv1195, %mul1205
+  br i1 %cmp1206, label %for.cond1256.preheader, label %for.inc1253
+
+if.else1211:                                      ; preds = %if.then1189
+  br i1 %cmp322, label %if.then1214, label %if.else1232
+
+if.then1214:                                      ; preds = %if.else1211
+  %236 = load i32* @pred_SAD_uplayer, align 4, !tbaa !4
+  %sub1215 = sub nsw i32 %min_mcost.addr.23, %236
+  %conv1216 = sitofp i32 %sub1215 to float
+  %conv1217 = sitofp i32 %236 to float
+  %mul1218 = fmul float %betaThird.0, %conv1217
+  %cmp1219 = fcmp olt float %conv1216, %mul1218
+  br i1 %cmp1219, label %for.cond1325.preheader, label %if.else1222
+
+if.else1222:                                      ; preds = %if.then1214
+  %mul1226 = fmul float %betaSec.0, %conv1217
+  %cmp1227 = fcmp olt float %conv1216, %mul1226
+  br i1 %cmp1227, label %for.cond1256.preheader, label %for.inc1253
+
+if.else1232:                                      ; preds = %if.else1211
+  %237 = load i32* @pred_SAD_space, align 4, !tbaa !4
+  %sub1233 = sub nsw i32 %min_mcost.addr.23, %237
+  %conv1234 = sitofp i32 %sub1233 to float
+  %conv1235 = sitofp i32 %237 to float
+  %mul1236 = fmul float %betaThird.0, %conv1235
+  %cmp1237 = fcmp olt float %conv1234, %mul1236
+  br i1 %cmp1237, label %for.cond1325.preheader, label %if.else1240
+
+if.else1240:                                      ; preds = %if.else1232
+  %mul1244 = fmul float %betaSec.0, %conv1235
+  %cmp1245 = fcmp olt float %conv1234, %mul1244
+  br i1 %cmp1245, label %for.cond1256.preheader, label %for.inc1253
+
+for.inc1253:                                      ; preds = %for.end1187, %if.else1222, %if.else1240, %if.else1201
+  %inc1254 = add nsw i32 %i.22386, 1
+  %cmp1124 = icmp slt i32 %i.22386, %div8362468
+  br i1 %cmp1124, label %for.cond1127.preheader, label %for.cond1256.preheader
+
+for.cond1260.preheader:                           ; preds = %for.end1318, %for.cond1256.preheader
+  %238 = phi i32** [ %95, %for.cond1256.preheader ], [ %251, %for.end1318 ]
+  %min_mcost.addr.252373 = phi i32 [ %min_mcost.addr.25.ph, %for.cond1256.preheader ], [ %min_mcost.addr.27, %for.end1318 ]
+  %i.32372 = phi i32 [ 0, %for.cond1256.preheader ], [ %inc1323, %for.end1318 ]
+  %best_y.252371 = phi i32 [ %best_y.25.ph, %for.cond1256.preheader ], [ %best_y.27, %for.end1318 ]
+  %best_x.252370 = phi i32 [ %best_x.25.ph, %for.cond1256.preheader ], [ %best_x.27, %for.end1318 ]
+  br label %for.body1263
+
+for.body1263:                                     ; preds = %for.inc1316, %for.cond1260.preheader
+  %239 = phi i32** [ %238, %for.cond1260.preheader ], [ %251, %for.inc1316 ]
+  %indvars.iv2428 = phi i64 [ 0, %for.cond1260.preheader ], [ %indvars.iv.next2429, %for.inc1316 ]
+  %min_mcost.addr.262368 = phi i32 [ %min_mcost.addr.252373, %for.cond1260.preheader ], [ %min_mcost.addr.27, %for.inc1316 ]
+  %iAbort.22367 = phi i32 [ 1, %for.cond1260.preheader ], [ %iAbort.3, %for.inc1316 ]
+  %best_y.262365 = phi i32 [ %best_y.252371, %for.cond1260.preheader ], [ %best_y.27, %for.inc1316 ]
+  %best_x.262364 = phi i32 [ %best_x.252370, %for.cond1260.preheader ], [ %best_x.27, %for.inc1316 ]
+  %arrayidx1265 = getelementptr inbounds [6 x i32]* @FastIntegerPelBlockMotionSearch.Hexagon_x, i64 0, i64 %indvars.iv2428
+  %240 = load i32* %arrayidx1265, align 4, !tbaa !4
+  %add1266 = add nsw i32 %240, %best_x.252370
+  %arrayidx1268 = getelementptr inbounds [6 x i32]* @FastIntegerPelBlockMotionSearch.Hexagon_y, i64 0, i64 %indvars.iv2428
+  %241 = load i32* %arrayidx1268, align 4, !tbaa !4
+  %add1269 = add nsw i32 %241, %best_y.252371
+  %sub1270 = sub nsw i32 %add1266, %add23
+  %ispos2272 = icmp sgt i32 %sub1270, -1
+  %neg2273 = sub i32 0, %sub1270
+  %242 = select i1 %ispos2272, i32 %sub1270, i32 %neg2273
+  %cmp1272 = icmp sgt i32 %242, %search_range
+  br i1 %cmp1272, label %for.inc1316, label %land.lhs.true1274
+
+land.lhs.true1274:                                ; preds = %for.body1263
+  %sub1275 = sub nsw i32 %add1269, %add25
+  %ispos2274 = icmp sgt i32 %sub1275, -1
+  %neg2275 = sub i32 0, %sub1275
+  %243 = select i1 %ispos2274, i32 %sub1275, i32 %neg2275
+  %cmp1277 = icmp sgt i32 %243, %search_range
+  br i1 %cmp1277, label %for.inc1316, label %if.then1279
+
+if.then1279:                                      ; preds = %land.lhs.true1274
+  %add1281 = add nsw i32 %sub1270, %search_range
+  %idxprom1282 = sext i32 %add1281 to i64
+  %add1284 = add nsw i32 %sub1275, %search_range
+  %idxprom1285 = sext i32 %add1284 to i64
+  %arrayidx1286 = getelementptr inbounds i32** %239, i64 %idxprom1285
+  %244 = load i32** %arrayidx1286, align 8, !tbaa !3
+  %arrayidx1287 = getelementptr inbounds i32* %244, i64 %idxprom1282
+  %245 = load i32* %arrayidx1287, align 4, !tbaa !4
+  %tobool1288 = icmp eq i32 %245, 0
+  br i1 %tobool1288, label %if.then1289, label %for.inc1316
+
+if.then1289:                                      ; preds = %if.then1279
+  %shl1290 = shl i32 %add1266, 2
+  %sub1291 = sub nsw i32 %shl1290, %add18
+  %idxprom1292 = sext i32 %sub1291 to i64
+  %246 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx1293 = getelementptr inbounds i32* %246, i64 %idxprom1292
+  %247 = load i32* %arrayidx1293, align 4, !tbaa !4
+  %shl1294 = shl i32 %add1269, 2
+  %sub1295 = sub nsw i32 %shl1294, %add21
+  %idxprom1296 = sext i32 %sub1295 to i64
+  %arrayidx1297 = getelementptr inbounds i32* %246, i64 %idxprom1296
+  %248 = load i32* %arrayidx1297, align 4, !tbaa !4
+  %add1298 = add nsw i32 %248, %247
+  %mul1299 = mul nsw i32 %add1298, %conv
+  %shr1300 = ashr i32 %mul1299, 16
+  %call1301 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr1300, i32 %min_mcost.addr.262368, i32 %add1266, i32 %add1269) #4
+  %249 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx1308 = getelementptr inbounds i32** %249, i64 %idxprom1285
+  %250 = load i32** %arrayidx1308, align 8, !tbaa !3
+  %arrayidx1309 = getelementptr inbounds i32* %250, i64 %idxprom1282
+  store i32 %call1301, i32* %arrayidx1309, align 4, !tbaa !4
+  %cmp1310 = icmp slt i32 %call1301, %min_mcost.addr.262368
+  %add1266.best_x.26 = select i1 %cmp1310, i32 %add1266, i32 %best_x.262364
+  %add1269.best_y.26 = select i1 %cmp1310, i32 %add1269, i32 %best_y.262365
+  %.iAbort.2 = select i1 %cmp1310, i32 0, i32 %iAbort.22367
+  %call1301.min_mcost.addr.26 = select i1 %cmp1310, i32 %call1301, i32 %min_mcost.addr.262368
+  br label %for.inc1316
+
+for.inc1316:                                      ; preds = %if.then1289, %if.then1279, %land.lhs.true1274, %for.body1263
+  %251 = phi i32** [ %239, %if.then1279 ], [ %239, %land.lhs.true1274 ], [ %239, %for.body1263 ], [ %249, %if.then1289 ]
+  %best_x.27 = phi i32 [ %best_x.262364, %if.then1279 ], [ %best_x.262364, %land.lhs.true1274 ], [ %best_x.262364, %for.body1263 ], [ %add1266.best_x.26, %if.then1289 ]
+  %best_y.27 = phi i32 [ %best_y.262365, %if.then1279 ], [ %best_y.262365, %land.lhs.true1274 ], [ %best_y.262365, %for.body1263 ], [ %add1269.best_y.26, %if.then1289 ]
+  %iAbort.3 = phi i32 [ %iAbort.22367, %if.then1279 ], [ %iAbort.22367, %land.lhs.true1274 ], [ %iAbort.22367, %for.body1263 ], [ %.iAbort.2, %if.then1289 ]
+  %min_mcost.addr.27 = phi i32 [ %min_mcost.addr.262368, %if.then1279 ], [ %min_mcost.addr.262368, %land.lhs.true1274 ], [ %min_mcost.addr.262368, %for.body1263 ], [ %call1301.min_mcost.addr.26, %if.then1289 ]
+  %indvars.iv.next2429 = add i64 %indvars.iv2428, 1
+  %lftr.wideiv2430 = trunc i64 %indvars.iv.next2429 to i32
+  %exitcond2431 = icmp eq i32 %lftr.wideiv2430, 6
+  br i1 %exitcond2431, label %for.end1318, label %for.body1263
+
+for.end1318:                                      ; preds = %for.inc1316
+  %tobool1319 = icmp eq i32 %iAbort.3, 0
+  %inc1323 = add nsw i32 %i.32372, 1
+  %cmp1257 = icmp slt i32 %inc1323, %search_range
+  %or.cond2470 = and i1 %tobool1319, %cmp1257
+  br i1 %or.cond2470, label %for.cond1260.preheader, label %for.cond1325.preheader
+
+for.cond1329.preheader:                           ; preds = %for.end1387, %for.cond1325.preheader
+  %252 = phi i32** [ %94, %for.cond1325.preheader ], [ %265, %for.end1387 ]
+  %min_mcost.addr.292361 = phi i32 [ %min_mcost.addr.29.ph, %for.cond1325.preheader ], [ %min_mcost.addr.31, %for.end1387 ]
+  %i.42360 = phi i32 [ 0, %for.cond1325.preheader ], [ %inc1392, %for.end1387 ]
+  %best_y.292359 = phi i32 [ %best_y.29.ph, %for.cond1325.preheader ], [ %best_y.31, %for.end1387 ]
+  %best_x.292358 = phi i32 [ %best_x.29.ph, %for.cond1325.preheader ], [ %best_x.31, %for.end1387 ]
+  br label %for.body1332
+
+for.body1332:                                     ; preds = %for.inc1385, %for.cond1329.preheader
+  %253 = phi i32** [ %252, %for.cond1329.preheader ], [ %265, %for.inc1385 ]
+  %indvars.iv = phi i64 [ 0, %for.cond1329.preheader ], [ %indvars.iv.next, %for.inc1385 ]
+  %min_mcost.addr.302356 = phi i32 [ %min_mcost.addr.292361, %for.cond1329.preheader ], [ %min_mcost.addr.31, %for.inc1385 ]
+  %iAbort.42355 = phi i32 [ 1, %for.cond1329.preheader ], [ %iAbort.5, %for.inc1385 ]
+  %best_y.302353 = phi i32 [ %best_y.292359, %for.cond1329.preheader ], [ %best_y.31, %for.inc1385 ]
+  %best_x.302352 = phi i32 [ %best_x.292358, %for.cond1329.preheader ], [ %best_x.31, %for.inc1385 ]
+  %arrayidx1334 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_x, i64 0, i64 %indvars.iv
+  %254 = load i32* %arrayidx1334, align 4, !tbaa !4
+  %add1335 = add nsw i32 %254, %best_x.292358
+  %arrayidx1337 = getelementptr inbounds [4 x i32]* @FastSubPelBlockMotionSearch.Diamond_y, i64 0, i64 %indvars.iv
+  %255 = load i32* %arrayidx1337, align 4, !tbaa !4
+  %add1338 = add nsw i32 %255, %best_y.292359
+  %sub1339 = sub nsw i32 %add1335, %add23
+  %ispos = icmp sgt i32 %sub1339, -1
+  %neg = sub i32 0, %sub1339
+  %256 = select i1 %ispos, i32 %sub1339, i32 %neg
+  %cmp1341 = icmp sgt i32 %256, %search_range
+  br i1 %cmp1341, label %for.inc1385, label %land.lhs.true1343
+
+land.lhs.true1343:                                ; preds = %for.body1332
+  %sub1344 = sub nsw i32 %add1338, %add25
+  %ispos2270 = icmp sgt i32 %sub1344, -1
+  %neg2271 = sub i32 0, %sub1344
+  %257 = select i1 %ispos2270, i32 %sub1344, i32 %neg2271
+  %cmp1346 = icmp sgt i32 %257, %search_range
+  br i1 %cmp1346, label %for.inc1385, label %if.then1348
+
+if.then1348:                                      ; preds = %land.lhs.true1343
+  %add1350 = add nsw i32 %sub1339, %search_range
+  %idxprom1351 = sext i32 %add1350 to i64
+  %add1353 = add nsw i32 %sub1344, %search_range
+  %idxprom1354 = sext i32 %add1353 to i64
+  %arrayidx1355 = getelementptr inbounds i32** %253, i64 %idxprom1354
+  %258 = load i32** %arrayidx1355, align 8, !tbaa !3
+  %arrayidx1356 = getelementptr inbounds i32* %258, i64 %idxprom1351
+  %259 = load i32* %arrayidx1356, align 4, !tbaa !4
+  %tobool1357 = icmp eq i32 %259, 0
+  br i1 %tobool1357, label %if.then1358, label %for.inc1385
+
+if.then1358:                                      ; preds = %if.then1348
+  %shl1359 = shl i32 %add1335, 2
+  %sub1360 = sub nsw i32 %shl1359, %add18
+  %idxprom1361 = sext i32 %sub1360 to i64
+  %260 = load i32** @mvbits, align 8, !tbaa !3
+  %arrayidx1362 = getelementptr inbounds i32* %260, i64 %idxprom1361
+  %261 = load i32* %arrayidx1362, align 4, !tbaa !4
+  %shl1363 = shl i32 %add1338, 2
+  %sub1364 = sub nsw i32 %shl1363, %add21
+  %idxprom1365 = sext i32 %sub1364 to i64
+  %arrayidx1366 = getelementptr inbounds i32* %260, i64 %idxprom1365
+  %262 = load i32* %arrayidx1366, align 4, !tbaa !4
+  %add1367 = add nsw i32 %262, %261
+  %mul1368 = mul nsw i32 %add1367, %conv
+  %shr1369 = ashr i32 %mul1368, 16
+  %call1370 = tail call i32 @PartCalMad(i16* %9, i16** %orig_pic, i16* (i32, i16*, i32, i32, i32, i32)* %get_ref_line.0, i32 %11, i32 %12, i32 %shr, i32 %shr1369, i32 %min_mcost.addr.302356, i32 %add1335, i32 %add1338) #4
+  %263 = load i32*** @McostState, align 8, !tbaa !3
+  %arrayidx1377 = getelementptr inbounds i32** %263, i64 %idxprom1354
+  %264 = load i32** %arrayidx1377, align 8, !tbaa !3
+  %arrayidx1378 = getelementptr inbounds i32* %264, i64 %idxprom1351
+  store i32 %call1370, i32* %arrayidx1378, align 4, !tbaa !4
+  %cmp1379 = icmp slt i32 %call1370, %min_mcost.addr.302356
+  %add1335.best_x.30 = select i1 %cmp1379, i32 %add1335, i32 %best_x.302352
+  %add1338.best_y.30 = select i1 %cmp1379, i32 %add1338, i32 %best_y.302353
+  %.iAbort.4 = select i1 %cmp1379, i32 0, i32 %iAbort.42355
+  %call1370.min_mcost.addr.30 = select i1 %cmp1379, i32 %call1370, i32 %min_mcost.addr.302356
+  br label %for.inc1385
+
+for.inc1385:                                      ; preds = %if.then1358, %if.then1348, %land.lhs.true1343, %for.body1332
+  %265 = phi i32** [ %253, %if.then1348 ], [ %253, %land.lhs.true1343 ], [ %253, %for.body1332 ], [ %263, %if.then1358 ]
+  %best_x.31 = phi i32 [ %best_x.302352, %if.then1348 ], [ %best_x.302352, %land.lhs.true1343 ], [ %best_x.302352, %for.body1332 ], [ %add1335.best_x.30, %if.then1358 ]
+  %best_y.31 = phi i32 [ %best_y.302353, %if.then1348 ], [ %best_y.302353, %land.lhs.true1343 ], [ %best_y.302353, %for.body1332 ], [ %add1338.best_y.30, %if.then1358 ]
+  %iAbort.5 = phi i32 [ %iAbort.42355, %if.then1348 ], [ %iAbort.42355, %land.lhs.true1343 ], [ %iAbort.42355, %for.body1332 ], [ %.iAbort.4, %if.then1358 ]
+  %min_mcost.addr.31 = phi i32 [ %min_mcost.addr.302356, %if.then1348 ], [ %min_mcost.addr.302356, %land.lhs.true1343 ], [ %min_mcost.addr.302356, %for.body1332 ], [ %call1370.min_mcost.addr.30, %if.then1358 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end1387, label %for.body1332
+
+for.end1387:                                      ; preds = %for.inc1385
+  %tobool1388 = icmp eq i32 %iAbort.5, 0
+  %inc1392 = add nsw i32 %i.42360, 1
+  %cmp1326 = icmp slt i32 %inc1392, %search_range
+  %or.cond2471 = and i1 %tobool1388, %cmp1326
+  br i1 %or.cond2471, label %for.cond1329.preheader, label %for.end1393
+
+for.end1393:                                      ; preds = %for.end1387, %for.cond1256.preheader, %for.cond1325.preheader
+  %best_x.32 = phi i32 [ %best_x.29.ph, %for.cond1325.preheader ], [ %best_x.25.ph, %for.cond1256.preheader ], [ %best_x.31, %for.end1387 ]
+  %best_y.32 = phi i32 [ %best_y.29.ph, %for.cond1325.preheader ], [ %best_y.25.ph, %for.cond1256.preheader ], [ %best_y.31, %for.end1387 ]
+  %min_mcost.addr.32 = phi i32 [ %min_mcost.addr.29.ph, %for.cond1325.preheader ], [ %min_mcost.addr.25.ph, %for.cond1256.preheader ], [ %min_mcost.addr.31, %for.end1387 ]
+  %sub1394 = sub nsw i32 %best_x.32, %pic_pix_x
+  %conv1395 = trunc i32 %sub1394 to i16
+  store i16 %conv1395, i16* %mv_x, align 2, !tbaa !5
+  %sub1396 = sub nsw i32 %best_y.32, %pic_pix_y
+  %conv1397 = trunc i32 %sub1396 to i16
+  store i16 %conv1397, i16* %mv_y, align 2, !tbaa !5
+  ret i32 %min_mcost.addr.32
+}

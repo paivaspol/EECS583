@@ -1,0 +1,95 @@
+define %struct._IV* @FrontMtx_ownedColumnsIV(%struct._FrontMtx* %frontmtx, i32 %myid, %struct._IV* %ownersIV, i32 %msglvl, %struct._IO_FILE* nocapture %msgFile) #0 {
+entry:
+  %ncolJ = alloca i32, align 4
+  %colindJ = alloca i32*, align 8
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), %struct._FrontMtx* null, i32 %myid, %struct._IV* %ownersIV) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nfront1 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
+  %1 = load i32* %nfront1, align 4, !tbaa !0
+  %neqns2 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 1
+  %2 = load i32* %neqns2, align 4, !tbaa !0
+  %call3 = call %struct._IV* @IV_new() #5
+  %cmp4 = icmp eq %struct._IV* %ownersIV, null
+  br i1 %cmp4, label %if.then5, label %if.else
+
+if.then5:                                         ; preds = %if.end
+  call void @IV_init(%struct._IV* %call3, i32 %2, i32* null) #5
+  call void @IV_ramp(%struct._IV* %call3, i32 0, i32 1) #5
+  br label %if.end32
+
+if.else:                                          ; preds = %if.end
+  %call6 = call i32* @IV_entries(%struct._IV* %ownersIV) #5
+  %cmp766 = icmp sgt i32 %1, 0
+  br i1 %cmp766, label %for.body, label %if.end32
+
+for.body:                                         ; preds = %if.else, %for.inc
+  %indvars.iv69 = phi i64 [ %indvars.iv.next70, %for.inc ], [ 0, %if.else ]
+  %nowned.067 = phi i32 [ %nowned.1, %for.inc ], [ 0, %if.else ]
+  %arrayidx = getelementptr inbounds i32* %call6, i64 %indvars.iv69
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp8 = icmp eq i32 %3, %myid
+  br i1 %cmp8, label %if.then9, label %for.inc
+
+if.then9:                                         ; preds = %for.body
+  %4 = trunc i64 %indvars.iv69 to i32
+  %call10 = call i32 @FrontMtx_frontSize(%struct._FrontMtx* %frontmtx, i32 %4) #5
+  %add = add nsw i32 %call10, %nowned.067
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then9
+  %nowned.1 = phi i32 [ %add, %if.then9 ], [ %nowned.067, %for.body ]
+  %indvars.iv.next70 = add i64 %indvars.iv69, 1
+  %lftr.wideiv71 = trunc i64 %indvars.iv.next70 to i32
+  %exitcond72 = icmp eq i32 %lftr.wideiv71, %1
+  br i1 %exitcond72, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %cmp12 = icmp sgt i32 %nowned.1, 0
+  br i1 %cmp12, label %if.then13, label %if.end32
+
+if.then13:                                        ; preds = %for.end
+  call void @IV_init(%struct._IV* %call3, i32 %nowned.1, i32* null) #5
+  %call14 = call i32* @IV_entries(%struct._IV* %call3) #5
+  br i1 %cmp766, label %for.body17, label %if.end32
+
+for.body17:                                       ; preds = %if.then13, %for.inc28
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc28 ], [ 0, %if.then13 ]
+  %offset.064 = phi i32 [ %offset.1, %for.inc28 ], [ 0, %if.then13 ]
+  %arrayidx19 = getelementptr inbounds i32* %call6, i64 %indvars.iv
+  %5 = load i32* %arrayidx19, align 4, !tbaa !0
+  %cmp20 = icmp eq i32 %5, %myid
+  br i1 %cmp20, label %if.then21, label %for.inc28
+
+if.then21:                                        ; preds = %for.body17
+  %6 = trunc i64 %indvars.iv to i32
+  %call22 = call i32 @FrontMtx_frontSize(%struct._FrontMtx* %frontmtx, i32 %6) #5
+  %cmp23 = icmp sgt i32 %call22, 0
+  br i1 %cmp23, label %if.then24, label %for.inc28
+
+if.then24:                                        ; preds = %if.then21
+  call void @FrontMtx_columnIndices(%struct._FrontMtx* %frontmtx, i32 %6, i32* %ncolJ, i32** %colindJ) #5
+  %idx.ext = sext i32 %offset.064 to i64
+  %add.ptr = getelementptr inbounds i32* %call14, i64 %idx.ext
+  %7 = load i32** %colindJ, align 8, !tbaa !3
+  call void @IVcopy(i32 %call22, i32* %add.ptr, i32* %7) #5
+  %add25 = add nsw i32 %call22, %offset.064
+  br label %for.inc28
+
+for.inc28:                                        ; preds = %for.body17, %if.then24, %if.then21
+  %offset.1 = phi i32 [ %add25, %if.then24 ], [ %offset.064, %if.then21 ], [ %offset.064, %for.body17 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %1
+  br i1 %exitcond, label %if.end32, label %for.body17
+
+if.end32:                                         ; preds = %if.else, %if.then13, %for.inc28, %for.end, %if.then5
+  ret %struct._IV* %call3
+}

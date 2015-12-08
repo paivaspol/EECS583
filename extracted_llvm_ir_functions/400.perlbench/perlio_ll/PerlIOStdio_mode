@@ -1,0 +1,26 @@
+define i8* @PerlIOStdio_mode(i8* %mode, i8* %tmode) #1 {
+entry:
+  %tobool = icmp eq i8* %mode, null
+  br i1 %tobool, label %if.end, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %0 = load i8* %mode, align 1, !tbaa !1
+  %tobool17 = icmp eq i8 %0, 0
+  br i1 %tobool17, label %if.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %1 = phi i8 [ %2, %while.body ], [ %0, %while.cond.preheader ]
+  %mode.addr.09 = phi i8* [ %incdec.ptr, %while.body ], [ %mode, %while.cond.preheader ]
+  %tmode.addr.08 = phi i8* [ %incdec.ptr2, %while.body ], [ %tmode, %while.cond.preheader ]
+  %incdec.ptr = getelementptr inbounds i8* %mode.addr.09, i64 1
+  %incdec.ptr2 = getelementptr inbounds i8* %tmode.addr.08, i64 1
+  store i8 %1, i8* %tmode.addr.08, align 1, !tbaa !1
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %tobool1 = icmp eq i8 %2, 0
+  br i1 %tobool1, label %if.end, label %while.body
+
+if.end:                                           ; preds = %while.cond.preheader, %while.body, %entry
+  %tmode.addr.1 = phi i8* [ %tmode, %entry ], [ %tmode, %while.cond.preheader ], [ %incdec.ptr2, %while.body ]
+  store i8 0, i8* %tmode.addr.1, align 1, !tbaa !1
+  ret i8* %tmode
+}

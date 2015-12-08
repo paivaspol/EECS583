@@ -1,0 +1,95 @@
+define void @RegisterHit(%struct.tophit_s* nocapture %h, double %key, double %pvalue, float %score, double %motherp, float %mothersc, i8* %name, i8* %acc, i8* %desc, i32 %sqfrom, i32 %sqto, i32 %sqlen, i32 %hmmfrom, i32 %hmmto, i32 %hmmlen, i32 %domidx, i32 %ndom, %struct.fancyali_s* %ali) #0 {
+entry:
+  %num = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 3
+  %0 = load i32* %num, align 4, !tbaa !3
+  %alloc = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 2
+  %1 = load i32* %alloc, align 4, !tbaa !3
+  %cmp = icmp eq i32 %0, %1
+  %unsrt.i = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %2 = load %struct.hit_s** %unsrt.i, align 8, !tbaa !0
+  %3 = bitcast %struct.hit_s* %2 to i8*
+  %lump.i = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 4
+  %4 = load i32* %lump.i, align 4, !tbaa !3
+  %add.i = add nsw i32 %4, %0
+  %conv.i = sext i32 %add.i to i64
+  %mul.i = mul i64 %conv.i, 104
+  %call.i = tail call i8* @sre_realloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 93, i8* %3, i64 %mul.i) #6
+  %5 = bitcast i8* %call.i to %struct.hit_s*
+  store %struct.hit_s* %5, %struct.hit_s** %unsrt.i, align 8, !tbaa !0
+  %6 = load i32* %lump.i, align 4, !tbaa !3
+  %7 = load i32* %alloc, align 4, !tbaa !3
+  %add4.i = add nsw i32 %7, %6
+  store i32 %add4.i, i32* %alloc, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call i8* @Strdup(i8* %name) #6
+  %8 = load i32* %num, align 4, !tbaa !3
+  %idxprom = sext i32 %8 to i64
+  %9 = load %struct.hit_s** %unsrt.i, align 8, !tbaa !0
+  %name2 = getelementptr inbounds %struct.hit_s* %9, i64 %idxprom, i32 5
+  store i8* %call, i8** %name2, align 8, !tbaa !0
+  %call3 = tail call i8* @Strdup(i8* %acc) #6
+  %10 = load i32* %num, align 4, !tbaa !3
+  %idxprom5 = sext i32 %10 to i64
+  %11 = load %struct.hit_s** %unsrt.i, align 8, !tbaa !0
+  %acc8 = getelementptr inbounds %struct.hit_s* %11, i64 %idxprom5, i32 6
+  store i8* %call3, i8** %acc8, align 8, !tbaa !0
+  %call9 = tail call i8* @Strdup(i8* %desc) #6
+  %12 = load i32* %num, align 4, !tbaa !3
+  %idxprom11 = sext i32 %12 to i64
+  %13 = load %struct.hit_s** %unsrt.i, align 8, !tbaa !0
+  %desc14 = getelementptr inbounds %struct.hit_s* %13, i64 %idxprom11, i32 7
+  store i8* %call9, i8** %desc14, align 8, !tbaa !0
+  %14 = load %struct.hit_s** %unsrt.i, align 8, !tbaa !0
+  %sortkey = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom11, i32 0
+  store double %key, double* %sortkey, align 8, !tbaa !4
+  %pvalue23 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom11, i32 2
+  store double %pvalue, double* %pvalue23, align 8, !tbaa !4
+  %score28 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom11, i32 1
+  store float %score, float* %score28, align 4, !tbaa !5
+  %motherp33 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom11, i32 4
+  store double %motherp, double* %motherp33, align 8, !tbaa !4
+  %mothersc38 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom11, i32 3
+  store float %mothersc, float* %mothersc38, align 4, !tbaa !5
+  %sqfrom43 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom11, i32 8
+  store i32 %sqfrom, i32* %sqfrom43, align 4, !tbaa !3
+  %15 = load i32* %num, align 4, !tbaa !3
+  %idxprom45 = sext i32 %15 to i64
+  %sqto48 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom45, i32 9
+  store i32 %sqto, i32* %sqto48, align 4, !tbaa !3
+  %16 = load i32* %num, align 4, !tbaa !3
+  %idxprom50 = sext i32 %16 to i64
+  %sqlen53 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom50, i32 10
+  store i32 %sqlen, i32* %sqlen53, align 4, !tbaa !3
+  %17 = load i32* %num, align 4, !tbaa !3
+  %idxprom55 = sext i32 %17 to i64
+  %hmmfrom58 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom55, i32 11
+  store i32 %hmmfrom, i32* %hmmfrom58, align 4, !tbaa !3
+  %18 = load i32* %num, align 4, !tbaa !3
+  %idxprom60 = sext i32 %18 to i64
+  %hmmto63 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom60, i32 12
+  store i32 %hmmto, i32* %hmmto63, align 4, !tbaa !3
+  %19 = load i32* %num, align 4, !tbaa !3
+  %idxprom65 = sext i32 %19 to i64
+  %hmmlen68 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom65, i32 13
+  store i32 %hmmlen, i32* %hmmlen68, align 4, !tbaa !3
+  %20 = load i32* %num, align 4, !tbaa !3
+  %idxprom70 = sext i32 %20 to i64
+  %domidx73 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom70, i32 14
+  store i32 %domidx, i32* %domidx73, align 4, !tbaa !3
+  %21 = load i32* %num, align 4, !tbaa !3
+  %idxprom75 = sext i32 %21 to i64
+  %ndom78 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom75, i32 15
+  store i32 %ndom, i32* %ndom78, align 4, !tbaa !3
+  %22 = load i32* %num, align 4, !tbaa !3
+  %idxprom80 = sext i32 %22 to i64
+  %ali83 = getelementptr inbounds %struct.hit_s* %14, i64 %idxprom80, i32 16
+  store %struct.fancyali_s* %ali, %struct.fancyali_s** %ali83, align 8, !tbaa !0
+  %inc = add nsw i32 %22, 1
+  store i32 %inc, i32* %num, align 4, !tbaa !3
+  ret void
+}

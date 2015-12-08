@@ -1,0 +1,48 @@
+define %struct._PerlIO** @PerlIO_allocate() #1 {
+entry:
+  %0 = load %struct._PerlIO*** @PL_perlio, align 8, !tbaa !3
+  %tobool16 = icmp eq %struct._PerlIO** %0, null
+  br i1 %tobool16, label %while.end, label %while.body
+
+while.cond.loopexit:                              ; preds = %for.cond
+  %1 = load %struct._PerlIO** %3, align 8
+  %2 = getelementptr inbounds %struct._PerlIO* %1, i64 0, i32 0
+  %tobool = icmp eq %struct._PerlIO* %1, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.cond.loopexit
+  %3 = phi %struct._PerlIO** [ %2, %while.cond.loopexit ], [ %0, %entry ]
+  %4 = bitcast %struct._PerlIO** %3 to %struct._PerlIO***
+  br label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp slt i32 %inc, 64
+  br i1 %cmp, label %for.body, label %while.cond.loopexit
+
+for.body:                                         ; preds = %while.body, %for.cond
+  %i.014 = phi i32 [ 1, %while.body ], [ %inc, %for.cond ]
+  %f.013 = phi %struct._PerlIO** [ %3, %while.body ], [ %incdec.ptr, %for.cond ]
+  %incdec.ptr = getelementptr inbounds %struct._PerlIO** %f.013, i64 1
+  %5 = load %struct._PerlIO** %incdec.ptr, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %5, null
+  %inc = add nsw i32 %i.014, 1
+  br i1 %tobool1, label %return, label %for.cond
+
+while.end:                                        ; preds = %while.cond.loopexit, %entry
+  %last.0.lcssa = phi %struct._PerlIO*** [ @PL_perlio, %entry ], [ %4, %while.cond.loopexit ]
+  %call = tail call i8* @Perl_safesysmalloc(i64 512) #9
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 512, i32 1, i1 false)
+  %tobool2 = icmp eq i8* %call, null
+  br i1 %tobool2, label %return, label %if.end4
+
+if.end4:                                          ; preds = %while.end
+  %6 = bitcast i8* %call to %struct._PerlIO**
+  store %struct._PerlIO** %6, %struct._PerlIO*** %last.0.lcssa, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i8* %call, i64 8
+  %7 = bitcast i8* %add.ptr to %struct._PerlIO**
+  br label %return
+
+return:                                           ; preds = %for.body, %while.end, %if.end4
+  %retval.0 = phi %struct._PerlIO** [ %7, %if.end4 ], [ null, %while.end ], [ %incdec.ptr, %for.body ]
+  ret %struct._PerlIO** %retval.0
+}

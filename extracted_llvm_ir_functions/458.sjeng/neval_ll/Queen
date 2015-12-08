@@ -1,0 +1,43 @@
+define i32 @Queen(i32 %sq, i32 %c) #1 {
+entry:
+  %xor = xor i32 %c, 1
+  %idxprom = sext i32 %xor to i64
+  %arrayidx = getelementptr inbounds [2 x i32]* @king_locs, i64 0, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom1 = sext i32 %0 to i64
+  %idxprom2 = sext i32 %sq to i64
+  %arrayidx4 = getelementptr inbounds [144 x [144 x i32]]* @distance, i64 0, i64 %idxprom2, i64 %idxprom1
+  %1 = load i32* %arrayidx4, align 4, !tbaa !0
+  %idxprom5 = sext i32 %1 to i64
+  %arrayidx6 = getelementptr inbounds [8 x i32]* @std_q_tropism, i64 0, i64 %idxprom5
+  %2 = load i32* %arrayidx6, align 4, !tbaa !0
+  %add7 = add nsw i32 %2, 900
+  %call = tail call fastcc i32 @rook_mobility(i32 %sq) #5
+  %shl = shl i32 %call, 1
+  %call8 = tail call fastcc i32 @bishop_mobility(i32 %sq) #5
+  %shl9 = shl i32 %call8, 1
+  %add10 = add nsw i32 %shl9, %shl
+  %cmp = icmp slt i32 %add10, 5
+  br i1 %cmp, label %if.then, label %if.end19
+
+if.then:                                          ; preds = %entry
+  switch i32 %add10, label %if.else16 [
+    i32 0, label %if.end19
+    i32 2, label %if.then14
+  ]
+
+if.then14:                                        ; preds = %if.then
+  br label %if.end19
+
+if.else16:                                        ; preds = %if.then
+  %sub17 = add nsw i32 %add10, -5
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then, %if.else16, %if.then14, %entry
+  %mob.0 = phi i32 [ -8, %if.then14 ], [ %sub17, %if.else16 ], [ %add10, %entry ], [ -15, %if.then ]
+  %add20 = add nsw i32 %add7, %mob.0
+  %cmp21 = icmp eq i32 %c, 1
+  %sub23 = sub nsw i32 0, %add20
+  %sub23.add20 = select i1 %cmp21, i32 %sub23, i32 %add20
+  ret i32 %sub23.add20
+}

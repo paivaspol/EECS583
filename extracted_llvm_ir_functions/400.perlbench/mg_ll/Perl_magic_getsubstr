@@ -1,0 +1,101 @@
+define i32 @Perl_magic_getsubstr(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %len = alloca i64, align 8
+  %offs = alloca i32, align 4
+  %rem = alloca i32, align 4
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xlv_targ = getelementptr inbounds i8* %0, i64 72
+  %1 = bitcast i8* %xlv_targ to %struct.sv**
+  %2 = load %struct.sv** %1, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %3, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any1 = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %4 = load i8** %sv_any1, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %4, i64 8
+  %5 = bitcast i8* %xpv_cur to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  store i64 %6, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %4 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %2, i64* %len, i32 2) #7
+  %.pre = load i8** %sv_any, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %8 = phi i8* [ %0, %cond.true ], [ %.pre, %cond.false ]
+  %cond = phi i8* [ %7, %cond.true ], [ %call, %cond.false ]
+  %xlv_targoff = getelementptr inbounds i8* %8, i64 56
+  %9 = bitcast i8* %xlv_targoff to i64*
+  %10 = load i64* %9, align 8, !tbaa !4
+  %conv = trunc i64 %10 to i32
+  store i32 %conv, i32* %offs, align 4, !tbaa !3
+  %xlv_targlen = getelementptr inbounds i8* %8, i64 64
+  %11 = bitcast i8* %xlv_targlen to i64*
+  %12 = load i64* %11, align 8, !tbaa !4
+  %conv5 = trunc i64 %12 to i32
+  store i32 %conv5, i32* %rem, align 4, !tbaa !3
+  %13 = load i32* %sv_flags, align 4, !tbaa !3
+  %and7 = and i32 %13, 536870912
+  %tobool = icmp eq i32 %and7, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  call void @Perl_sv_pos_u2b(%struct.sv* %2, i32* %offs, i32* %rem) #7
+  %.pre38 = load i32* %offs, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %cond.end, %if.then
+  %14 = phi i32 [ %.pre38, %if.then ], [ %conv, %cond.end ]
+  %15 = load i64* %len, align 8, !tbaa !4
+  %conv8 = trunc i64 %15 to i32
+  %cmp9 = icmp sgt i32 %14, %conv8
+  br i1 %cmp9, label %if.then11, label %if.end13
+
+if.then11:                                        ; preds = %if.end
+  store i32 %conv8, i32* %offs, align 4, !tbaa !3
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end, %if.then11
+  %16 = phi i32 [ %conv8, %if.then11 ], [ %14, %if.end ]
+  %17 = load i32* %rem, align 4, !tbaa !3
+  %add = add nsw i32 %16, %17
+  %cmp15 = icmp sgt i32 %add, %conv8
+  br i1 %cmp15, label %if.then17, label %if.end20
+
+if.then17:                                        ; preds = %if.end13
+  %conv1837 = zext i32 %16 to i64
+  %sub = sub i64 %15, %conv1837
+  %conv19 = trunc i64 %sub to i32
+  store i32 %conv19, i32* %rem, align 4, !tbaa !3
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.then17, %if.end13
+  %18 = phi i32 [ %conv19, %if.then17 ], [ %17, %if.end13 ]
+  %idx.ext = sext i32 %16 to i64
+  %add.ptr = getelementptr inbounds i8* %cond, i64 %idx.ext
+  %conv21 = sext i32 %18 to i64
+  call void @Perl_sv_setpvn(%struct.sv* %sv, i8* %add.ptr, i64 %conv21) #7
+  %19 = load i32* %sv_flags, align 4, !tbaa !3
+  %and23 = and i32 %19, 536870912
+  %tobool24 = icmp eq i32 %and23, 0
+  br i1 %tobool24, label %if.end27, label %if.then25
+
+if.then25:                                        ; preds = %if.end20
+  %sv_flags26 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %20 = load i32* %sv_flags26, align 4, !tbaa !3
+  %or = or i32 %20, 536870912
+  store i32 %or, i32* %sv_flags26, align 4, !tbaa !3
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end20, %if.then25
+  ret i32 0
+}

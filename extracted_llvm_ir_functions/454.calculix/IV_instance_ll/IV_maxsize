@@ -1,0 +1,16 @@
+define i32 @IV_maxsize(%struct._IV* %iv) #0 {
+entry:
+  %cmp = icmp eq %struct._IV* %iv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str2, i64 0, i64 0), %struct._IV* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %maxsize = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1
+  %1 = load i32* %maxsize, align 4, !tbaa !3
+  ret i32 %1
+}

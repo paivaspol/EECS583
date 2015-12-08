@@ -1,0 +1,81 @@
+define double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %0 = load i32* %nfront, align 4, !tbaa !3
+  %notlhs = icmp sgt i32 %0, 0
+  %notrhs = icmp sgt i32 %J, -1
+  %or.cond.not = and i1 %notrhs, %notlhs
+  %cmp6 = icmp sgt i32 %0, %J
+  %or.cond62 = and i1 %or.cond.not, %cmp6
+  br i1 %or.cond62, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call7 = tail call i32 @ETree_frontSize(%struct._ETree* %etree, i32 %J) #4
+  %conv = sitofp i32 %call7 to double
+  %call8 = tail call i32 @ETree_frontBoundarySize(%struct._ETree* %etree, i32 %J) #4
+  %conv9 = sitofp i32 %call8 to double
+  switch i32 %symflag, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb16
+  ]
+
+sw.bb:                                            ; preds = %if.end, %if.end
+  %add = fadd double %conv, 1.000000e+00
+  %mul = fmul double %conv, %add
+  %mul10 = fmul double %conv, 2.000000e+00
+  %add11 = fadd double %mul10, 1.000000e+00
+  %mul12 = fmul double %mul, %add11
+  %div = fdiv double %mul12, 6.000000e+00
+  %mul13 = fmul double %conv, %conv9
+  %mul14 = fmul double %conv, %mul13
+  %add15 = fadd double %mul14, %div
+  br label %sw.epilog
+
+sw.bb16:                                          ; preds = %if.end
+  %mul17 = fmul double %conv, 2.000000e+00
+  %mul18 = fmul double %conv, %mul17
+  %add19 = fadd double %mul18, 1.000000e+00
+  %mul20 = fmul double %conv, %add19
+  %div21 = fdiv double %mul20, 3.000000e+00
+  %mul22 = fmul double %conv9, 2.000000e+00
+  %mul23 = fmul double %conv, %mul22
+  %mul24 = fmul double %conv, %mul23
+  %add25 = fadd double %mul24, %div21
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([70 x i8]* @.str7, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #4
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %sw.default, %sw.bb16, %sw.bb
+  %ops.0 = phi double [ undef, %sw.default ], [ %add25, %sw.bb16 ], [ %add15, %sw.bb ]
+  switch i32 %type, label %sw.default29 [
+    i32 1, label %sw.epilog31
+    i32 2, label %sw.bb27
+  ]
+
+sw.bb27:                                          ; preds = %sw.epilog
+  %mul28 = fmul double %ops.0, 4.000000e+00
+  br label %sw.epilog31
+
+sw.default29:                                     ; preds = %sw.epilog
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #4
+  br label %sw.epilog31
+
+sw.epilog31:                                      ; preds = %sw.default29, %sw.bb27, %sw.epilog
+  %ops.1 = phi double [ %ops.0, %sw.default29 ], [ %mul28, %sw.bb27 ], [ %ops.0, %sw.epilog ]
+  ret double %ops.1
+}

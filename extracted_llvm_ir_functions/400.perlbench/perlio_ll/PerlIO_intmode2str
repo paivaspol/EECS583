@@ -1,0 +1,68 @@
+define i32 @PerlIO_intmode2str(i32 %rawmode, i8* nocapture %mode, i32* %writing) #1 {
+entry:
+  %and = and i32 %rawmode, 3
+  switch i32 %and, label %sw.default [
+    i32 0, label %sw.epilog
+    i32 1, label %sw.bb1
+  ]
+
+sw.bb1:                                           ; preds = %entry
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %entry
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %entry, %sw.default, %sw.bb1
+  %ptype.0 = phi i32 [ 43, %sw.default ], [ 62, %sw.bb1 ], [ 60, %entry ]
+  %tobool = icmp eq i32* %writing, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %sw.epilog
+  %cmp = icmp ne i32 %and, 0
+  %conv = zext i1 %cmp to i32
+  store i32 %conv, i32* %writing, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %sw.epilog, %if.then
+  %cmp3 = icmp eq i32 %and, 0
+  br i1 %cmp3, label %if.then5, label %if.else
+
+if.then5:                                         ; preds = %if.end
+  store i8 114, i8* %mode, align 1, !tbaa !1
+  br label %if.end42
+
+if.else:                                          ; preds = %if.end
+  %and6 = and i32 %rawmode, 1024
+  %tobool7 = icmp eq i32 %and6, 0
+  br i1 %tobool7, label %if.else19, label %if.then8
+
+if.then8:                                         ; preds = %if.else
+  store i8 97, i8* %mode, align 1, !tbaa !1
+  %cmp12 = icmp eq i32 %and, 1
+  br i1 %cmp12, label %if.end42, label %if.then14
+
+if.then14:                                        ; preds = %if.then8
+  %arrayidx17 = getelementptr inbounds i8* %mode, i64 1
+  store i8 43, i8* %arrayidx17, align 1, !tbaa !1
+  br label %if.end42
+
+if.else19:                                        ; preds = %if.else
+  %cmp20 = icmp eq i32 %and, 1
+  br i1 %cmp20, label %if.then22, label %if.else26
+
+if.then22:                                        ; preds = %if.else19
+  store i8 119, i8* %mode, align 1, !tbaa !1
+  br label %if.end42
+
+if.else26:                                        ; preds = %if.else19
+  store i8 114, i8* %mode, align 1, !tbaa !1
+  %arrayidx32 = getelementptr inbounds i8* %mode, i64 1
+  store i8 43, i8* %arrayidx32, align 1, !tbaa !1
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.then5, %if.then22, %if.else26, %if.then14, %if.then8
+  %ix.0 = phi i64 [ 1, %if.then5 ], [ 2, %if.then14 ], [ 1, %if.then8 ], [ 1, %if.then22 ], [ 2, %if.else26 ]
+  %arrayidx44 = getelementptr inbounds i8* %mode, i64 %ix.0
+  store i8 0, i8* %arrayidx44, align 1, !tbaa !1
+  ret i32 %ptype.0
+}

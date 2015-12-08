@@ -1,0 +1,101 @@
+define i32 @init_orig_buffers() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %height = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15
+  %1 = load i32* %height, align 4, !tbaa !0
+  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13
+  %2 = load i32* %width, align 4, !tbaa !0
+  %call = tail call i32 @get_mem2Dpel(i16*** @imgY_org_frm, i32 %1, i32 %2) #6
+  %3 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 159
+  %4 = load i32* %yuv_format, align 4, !tbaa !0
+  %cmp = icmp eq i32 %4, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %height_cr = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 16
+  %5 = load i32* %height_cr, align 4, !tbaa !0
+  %width_cr = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 14
+  %6 = load i32* %width_cr, align 4, !tbaa !0
+  %call1 = tail call i32 @get_mem3Dpel(i16**** @imgUV_org_frm, i32 2, i32 %5, i32 %6) #6
+  %add2 = add nsw i32 %call1, %call
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %memory_size.0 = phi i32 [ %add2, %if.then ], [ %call, %entry ]
+  %7 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !3
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %7, i64 0, i32 25
+  %8 = load i32* %frame_mbs_only_flag, align 4, !tbaa !1
+  %tobool = icmp eq i32 %8, 0
+  br i1 %tobool, label %if.then3, label %if.end34
+
+if.then3:                                         ; preds = %if.end
+  %9 = load i16*** @imgY_org_frm, align 8, !tbaa !3
+  %10 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %height4 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 15
+  %11 = load i32* %height4, align 4, !tbaa !0
+  %width5 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 13
+  %12 = load i32* %width5, align 4, !tbaa !0
+  %call6 = tail call i32 @init_top_bot_planes(i16** %9, i32 %11, i32 %12, i16*** @imgY_org_top, i16*** @imgY_org_bot) #6
+  %13 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %yuv_format7 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 159
+  %14 = load i32* %yuv_format7, align 4, !tbaa !0
+  %cmp8 = icmp eq i32 %14, 0
+  br i1 %cmp8, label %if.end34, label %if.then9
+
+if.then9:                                         ; preds = %if.then3
+  %call10 = tail call noalias i8* @calloc(i64 2, i64 8) #6
+  %15 = bitcast i8* %call10 to i16***
+  store i16*** %15, i16**** @imgUV_org_top, align 8, !tbaa !3
+  %cmp11 = icmp eq i8* %call10, null
+  br i1 %cmp11, label %if.then12, label %if.end13
+
+if.then12:                                        ; preds = %if.then9
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([35 x i8]* @.str87, i64 0, i64 0)) #6
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.then12, %if.then9
+  %call14 = tail call noalias i8* @calloc(i64 2, i64 8) #6
+  %16 = bitcast i8* %call14 to i16***
+  store i16*** %16, i16**** @imgUV_org_bot, align 8, !tbaa !3
+  %cmp15 = icmp eq i8* %call14, null
+  br i1 %cmp15, label %if.then16, label %if.end17
+
+if.then16:                                        ; preds = %if.end13
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([35 x i8]* @.str88, i64 0, i64 0)) #6
+  %.pre = load i16**** @imgUV_org_bot, align 8, !tbaa !3
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end13, %if.then16
+  %17 = phi i16*** [ %.pre, %if.then16 ], [ %16, %if.end13 ]
+  %add18 = add i32 %memory_size.0, 32
+  %18 = load i16**** @imgUV_org_frm, align 8, !tbaa !3
+  %19 = load i16*** %18, align 8, !tbaa !3
+  %20 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %height_cr20 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 16
+  %21 = load i32* %height_cr20, align 4, !tbaa !0
+  %width_cr21 = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 14
+  %22 = load i32* %width_cr21, align 4, !tbaa !0
+  %23 = load i16**** @imgUV_org_top, align 8, !tbaa !3
+  %call24 = tail call i32 @init_top_bot_planes(i16** %19, i32 %21, i32 %22, i16*** %23, i16*** %17) #6
+  %add25 = add nsw i32 %add18, %call24
+  %24 = load i16**** @imgUV_org_frm, align 8, !tbaa !3
+  %arrayidx26 = getelementptr inbounds i16*** %24, i64 1
+  %25 = load i16*** %arrayidx26, align 8, !tbaa !3
+  %26 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %height_cr27 = getelementptr inbounds %struct.ImageParameters* %26, i64 0, i32 16
+  %27 = load i32* %height_cr27, align 4, !tbaa !0
+  %width_cr28 = getelementptr inbounds %struct.ImageParameters* %26, i64 0, i32 14
+  %28 = load i32* %width_cr28, align 4, !tbaa !0
+  %29 = load i16**** @imgUV_org_top, align 8, !tbaa !3
+  %arrayidx29 = getelementptr inbounds i16*** %29, i64 1
+  %30 = load i16**** @imgUV_org_bot, align 8, !tbaa !3
+  %arrayidx30 = getelementptr inbounds i16*** %30, i64 1
+  %call31 = tail call i32 @init_top_bot_planes(i16** %25, i32 %27, i32 %28, i16*** %arrayidx29, i16*** %arrayidx30) #6
+  %add32 = add nsw i32 %add25, %call31
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.then3, %if.end, %if.end17
+  %memory_size.1 = phi i32 [ %memory_size.0, %if.end ], [ %add32, %if.end17 ], [ %memory_size.0, %if.then3 ]
+  ret i32 %memory_size.1
+}

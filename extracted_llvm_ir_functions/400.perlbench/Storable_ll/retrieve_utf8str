@@ -1,0 +1,16 @@
+define internal %struct.sv* @retrieve_utf8str(%struct.stcxt* nocapture %cxt, i8* %cname) #1 {
+entry:
+  %call = tail call %struct.sv* @retrieve_scalar(%struct.stcxt* %cxt, i8* %cname) #6
+  %tobool = icmp eq %struct.sv* %call, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %0, 536870912
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.sv* %call
+}

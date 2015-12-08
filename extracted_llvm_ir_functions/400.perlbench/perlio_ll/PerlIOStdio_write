@@ -1,0 +1,41 @@
+define i64 @PerlIOStdio_write(%struct._PerlIO** nocapture %f, i8* nocapture %vbuf, i64 %count) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %stdio7 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio7 to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %call8 = tail call i64 @fwrite(i8* %vbuf, i64 1, i64 %count, %struct._IO_FILE* %2) #9
+  %cmp9 = icmp sgt i64 %call8, -1
+  br i1 %cmp9, label %for.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry, %if.end4
+  %call10 = phi i64 [ %call, %if.end4 ], [ %call8, %entry ]
+  %call1 = tail call i32* @__errno_location() #9
+  %3 = load i32* %call1, align 4, !tbaa !0
+  %cmp2 = icmp eq i32 %3, 4
+  br i1 %cmp2, label %if.end, label %for.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %4 = load i32* @PL_sig_pending, align 4, !tbaa !0
+  %tobool = icmp eq i32 %4, 0
+  br i1 %tobool, label %if.end4, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  tail call void @Perl_despatch_signals() #9
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then3
+  %call5 = tail call i32* @__errno_location() #9
+  store i32 0, i32* %call5, align 4, !tbaa !0
+  %5 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %stdio = getelementptr inbounds %struct._PerlIO* %5, i64 1
+  %6 = bitcast %struct._PerlIO* %stdio to %struct._IO_FILE**
+  %7 = load %struct._IO_FILE** %6, align 8, !tbaa !3
+  %call = tail call i64 @fwrite(i8* %vbuf, i64 1, i64 %count, %struct._IO_FILE* %7) #9
+  %cmp = icmp sgt i64 %call, -1
+  br i1 %cmp, label %for.end, label %lor.lhs.false
+
+for.end:                                          ; preds = %if.end4, %lor.lhs.false, %entry
+  %call.lcssa = phi i64 [ %call8, %entry ], [ %call10, %lor.lhs.false ], [ %call, %if.end4 ]
+  ret i64 %call.lcssa
+}

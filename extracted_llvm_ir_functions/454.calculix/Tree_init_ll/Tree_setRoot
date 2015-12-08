@@ -1,0 +1,50 @@
+define void @Tree_setRoot(%struct._Tree* %tree) #0 {
+entry:
+  %cmp = icmp eq %struct._Tree* %tree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n1 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
+  %0 = load i32* %n1, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %0, 1
+  br i1 %cmp2, label %if.then, label %for.body.lr.ph
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([46 x i8]* @.str4, i64 0, i64 0), %struct._Tree* %tree) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+for.body.lr.ph:                                   ; preds = %lor.lhs.false
+  %par4 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2
+  %2 = load i32** %par4, align 8, !tbaa !0
+  %sib5 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
+  %3 = load i32** %sib5, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %root.026 = phi i32 [ -1, %for.body.lr.ph ], [ %root.1, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv
+  %4 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp7 = icmp eq i32 %4, -1
+  br i1 %cmp7, label %if.then8, label %for.inc
+
+if.then8:                                         ; preds = %for.body
+  %arrayidx10 = getelementptr inbounds i32* %3, i64 %indvars.iv
+  store i32 %root.026, i32* %arrayidx10, align 4, !tbaa !3
+  %5 = trunc i64 %indvars.iv to i32
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then8
+  %root.1 = phi i32 [ %5, %if.then8 ], [ %root.026, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %root12 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 1
+  store i32 %root.1, i32* %root12, align 4, !tbaa !3
+  ret void
+}

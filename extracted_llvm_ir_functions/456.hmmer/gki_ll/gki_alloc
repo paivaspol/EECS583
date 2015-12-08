@@ -1,0 +1,51 @@
+define internal fastcc %struct.GKI* @gki_alloc(i32 %primelevel) #0 {
+entry:
+  %0 = icmp ugt i32 %primelevel, 3
+  br i1 %0, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0)) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 294, i64 24) #6
+  %1 = bitcast i8* %call to %struct.GKI*
+  %primelevel2 = getelementptr inbounds i8* %call, i64 8
+  %2 = bitcast i8* %primelevel2 to i32*
+  store i32 %primelevel, i32* %2, align 4, !tbaa !0
+  %idxprom = sext i32 %primelevel to i64
+  %arrayidx = getelementptr inbounds [4 x i32]* @gki_primes, i64 0, i64 %idxprom
+  %3 = load i32* %arrayidx, align 4, !tbaa !0
+  %nhash = getelementptr inbounds i8* %call, i64 12
+  %4 = bitcast i8* %nhash to i32*
+  store i32 %3, i32* %4, align 4, !tbaa !0
+  %conv = sext i32 %3 to i64
+  %mul = mul i64 %conv, 24
+  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 298, i64 %mul) #6
+  %5 = bitcast i8* %call5 to %struct.gki_elem**
+  %table = bitcast i8* %call to %struct.gki_elem***
+  store %struct.gki_elem** %5, %struct.gki_elem*** %table, align 8, !tbaa !3
+  %6 = load i32* %4, align 4, !tbaa !0
+  %cmp724 = icmp sgt i32 %6, 0
+  br i1 %cmp724, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.body.for.body_crit_edge
+  %7 = phi %struct.gki_elem** [ %.pre, %for.body.for.body_crit_edge ], [ %5, %if.end ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %if.end ]
+  %arrayidx11 = getelementptr inbounds %struct.gki_elem** %7, i64 %indvars.iv
+  store %struct.gki_elem* null, %struct.gki_elem** %arrayidx11, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp7 = icmp slt i32 %8, %6
+  br i1 %cmp7, label %for.body.for.body_crit_edge, label %for.end
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load %struct.gki_elem*** %table, align 8, !tbaa !3
+  br label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  %nkeys = getelementptr inbounds i8* %call, i64 16
+  %9 = bitcast i8* %nkeys to i32*
+  store i32 0, i32* %9, align 4, !tbaa !0
+  ret %struct.GKI* %1
+}

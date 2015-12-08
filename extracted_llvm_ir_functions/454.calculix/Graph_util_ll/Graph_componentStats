@@ -1,0 +1,87 @@
+define void @Graph_componentStats(%struct._Graph* %g, i32* %map, i32* %counts, i32* %weights) #0 {
+entry:
+  %v = alloca i32, align 4
+  %cmp = icmp eq %struct._Graph* %g, null
+  %cmp1 = icmp eq i32* %map, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i32* %counts, null
+  %or.cond50 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq i32* %weights, null
+  %or.cond51 = or i1 %or.cond50, %cmp5
+  br i1 %or.cond51, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([63 x i8]* @.str8, i64 0, i64 0), %struct._Graph* %g, i32* %map, i32* %counts, i32* %weights) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nvtx6 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
+  %1 = load i32* %nvtx6, align 4, !tbaa !0
+  %call7 = call i32 @IVmax(i32 %1, i32* %map, i32* %v) #4
+  %add = add nsw i32 %call7, 1
+  %vwghts8 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 7
+  %2 = load i32** %vwghts8, align 8, !tbaa !3
+  %cmp9 = icmp eq i32* %2, null
+  store i32 0, i32* %v, align 4, !tbaa !0
+  %cmp2152 = icmp sgt i32 %1, 0
+  br i1 %cmp9, label %for.cond20.preheader, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end
+  br i1 %cmp2152, label %for.body, label %if.end31
+
+for.cond20.preheader:                             ; preds = %if.end
+  br i1 %cmp2152, label %for.body22.lr.ph, label %for.end30
+
+for.body22.lr.ph:                                 ; preds = %for.cond20.preheader
+  %3 = icmp sgt i32 %1, 1
+  br label %for.body22
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %4 = phi i32 [ %inc19, %for.body ], [ 0, %for.cond.preheader ]
+  %idxprom = sext i32 %4 to i64
+  %arrayidx = getelementptr inbounds i32* %map, i64 %idxprom
+  %5 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom12 = sext i32 %5 to i64
+  %arrayidx13 = getelementptr inbounds i32* %counts, i64 %idxprom12
+  %6 = load i32* %arrayidx13, align 4, !tbaa !0
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* %arrayidx13, align 4, !tbaa !0
+  %arrayidx15 = getelementptr inbounds i32* %2, i64 %idxprom
+  %7 = load i32* %arrayidx15, align 4, !tbaa !0
+  %arrayidx17 = getelementptr inbounds i32* %weights, i64 %idxprom12
+  %8 = load i32* %arrayidx17, align 4, !tbaa !0
+  %add18 = add nsw i32 %8, %7
+  store i32 %add18, i32* %arrayidx17, align 4, !tbaa !0
+  %inc19 = add nsw i32 %4, 1
+  store i32 %inc19, i32* %v, align 4, !tbaa !0
+  %cmp11 = icmp slt i32 %inc19, %1
+  br i1 %cmp11, label %for.body, label %if.end31
+
+for.body22:                                       ; preds = %for.body22.lr.ph, %for.body22
+  %inc2953 = phi i32 [ 0, %for.body22.lr.ph ], [ %inc29, %for.body22 ]
+  %idxprom23 = sext i32 %inc2953 to i64
+  %arrayidx24 = getelementptr inbounds i32* %map, i64 %idxprom23
+  %9 = load i32* %arrayidx24, align 4, !tbaa !0
+  %idxprom25 = sext i32 %9 to i64
+  %arrayidx26 = getelementptr inbounds i32* %counts, i64 %idxprom25
+  %10 = load i32* %arrayidx26, align 4, !tbaa !0
+  %inc27 = add nsw i32 %10, 1
+  store i32 %inc27, i32* %arrayidx26, align 4, !tbaa !0
+  %inc29 = add nsw i32 %inc2953, 1
+  %cmp21 = icmp slt i32 %inc29, %1
+  br i1 %cmp21, label %for.body22, label %for.cond20.for.end30_crit_edge
+
+for.cond20.for.end30_crit_edge:                   ; preds = %for.body22
+  %smax = select i1 %3, i32 %1, i32 1
+  store i32 %smax, i32* %v, align 4, !tbaa !0
+  br label %for.end30
+
+for.end30:                                        ; preds = %for.cond20.for.end30_crit_edge, %for.cond20.preheader
+  call void @IVcopy(i32 %add, i32* %weights, i32* %counts) #4
+  br label %if.end31
+
+if.end31:                                         ; preds = %for.cond.preheader, %for.body, %for.end30
+  ret void
+}

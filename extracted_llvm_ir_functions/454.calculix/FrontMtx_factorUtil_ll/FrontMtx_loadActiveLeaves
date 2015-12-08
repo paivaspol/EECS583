@@ -1,0 +1,59 @@
+define void @FrontMtx_loadActiveLeaves(%struct._FrontMtx* nocapture %frontmtx, i8* nocapture %status, i8 signext %activeFlag, %struct._Ideq* %dequeue) #0 {
+entry:
+  %nfront1 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
+  %0 = load i32* %nfront1, align 4, !tbaa !3
+  %tree = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 10
+  %1 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %fch2 = getelementptr inbounds %struct._Tree* %1, i64 0, i32 3
+  %2 = load i32** %fch2, align 8, !tbaa !0
+  %sib4 = getelementptr inbounds %struct._Tree* %1, i64 0, i32 4
+  %3 = load i32** %sib4, align 8, !tbaa !0
+  %cmp55 = icmp sgt i32 %0, 0
+  br i1 %cmp55, label %for.body, label %for.end37
+
+for.body:                                         ; preds = %entry, %for.inc35
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc35 ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8* %status, i64 %indvars.iv
+  %4 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp6 = icmp eq i8 %4, %activeFlag
+  br i1 %cmp6, label %if.then, label %for.inc35
+
+if.then:                                          ; preds = %for.body
+  %arrayidx9 = getelementptr inbounds i32* %2, i64 %indvars.iv
+  %5 = load i32* %arrayidx9, align 4, !tbaa !3
+  %cmp10 = icmp eq i32 %5, -1
+  br i1 %cmp10, label %if.then12, label %for.body18
+
+if.then12:                                        ; preds = %if.then
+  %6 = trunc i64 %indvars.iv to i32
+  %call = tail call i32 @Ideq_insertAtTail(%struct._Ideq* %dequeue, i32 %6) #5
+  br label %for.inc35
+
+for.body18:                                       ; preds = %if.then, %for.inc
+  %I.054 = phi i32 [ %8, %for.inc ], [ %5, %if.then ]
+  %idxprom19 = sext i32 %I.054 to i64
+  %arrayidx20 = getelementptr inbounds i8* %status, i64 %idxprom19
+  %7 = load i8* %arrayidx20, align 1, !tbaa !1
+  %cmp23 = icmp eq i8 %7, %activeFlag
+  br i1 %cmp23, label %for.inc35, label %for.inc
+
+for.inc:                                          ; preds = %for.body18
+  %arrayidx27 = getelementptr inbounds i32* %3, i64 %idxprom19
+  %8 = load i32* %arrayidx27, align 4, !tbaa !3
+  %cmp16 = icmp eq i32 %8, -1
+  br i1 %cmp16, label %if.then30.critedge, label %for.body18
+
+if.then30.critedge:                               ; preds = %for.inc
+  %9 = trunc i64 %indvars.iv to i32
+  %call31 = tail call i32 @Ideq_insertAtTail(%struct._Ideq* %dequeue, i32 %9) #5
+  br label %for.inc35
+
+for.inc35:                                        ; preds = %for.body18, %for.body, %if.then30.critedge, %if.then12
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %0
+  br i1 %exitcond, label %for.end37, label %for.body
+
+for.end37:                                        ; preds = %for.inc35, %entry
+  ret void
+}

@@ -1,0 +1,23 @@
+define internal fastcc %struct.stcxt* @allocate_context(%struct.stcxt* nocapture %parent_cxt) #1 {
+entry:
+  %call = tail call %struct.sv* @Perl_newSV(i64 255) #7
+  %call1 = tail call %struct.sv* @Perl_newRV_noinc(%struct.sv* %call) #7
+  %call2 = tail call %struct.hv* @Perl_gv_stashpv(i8* getelementptr inbounds ([14 x i8]* @.str29, i64 0, i64 0), i32 1) #7
+  %call3 = tail call %struct.sv* @Perl_sv_bless(%struct.sv* %call1, %struct.hv* %call2) #7
+  %sv_any = getelementptr inbounds %struct.sv* %call, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %0 to i8**
+  %1 = load i8** %xpv_pv, align 8, !tbaa !0
+  %2 = bitcast i8* %1 to %struct.stcxt*
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 248, i32 1, i1 false)
+  %my_sv4 = getelementptr inbounds i8* %1, i64 248
+  %3 = bitcast i8* %my_sv4 to %struct.sv**
+  store %struct.sv* %call1, %struct.sv** %3, align 8, !tbaa !0
+  %my_sv5 = getelementptr inbounds %struct.stcxt* %parent_cxt, i64 0, i32 28
+  %4 = load %struct.sv** %my_sv5, align 8, !tbaa !0
+  %prev = getelementptr inbounds i8* %1, i64 240
+  %5 = bitcast i8* %prev to %struct.sv**
+  store %struct.sv* %4, %struct.sv** %5, align 8, !tbaa !0
+  store %struct.stcxt* %2, %struct.stcxt** @Context_ptr, align 8, !tbaa !0
+  ret %struct.stcxt* %2
+}

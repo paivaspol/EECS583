@@ -1,0 +1,19 @@
+define i64 @PerlIOPop_pushed(%struct._PerlIO** %f, i8* nocapture %mode, %struct.sv* nocapture %arg, %struct._PerlIO_funcs* nocapture %tab) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %return, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  tail call void @PerlIO_pop(%struct._PerlIO** %f) #10
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i64 [ 0, %if.then ], [ -1, %land.lhs.true ], [ -1, %entry ]
+  ret i64 %retval.0
+}

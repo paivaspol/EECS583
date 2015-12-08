@@ -1,0 +1,81 @@
+define void @SampleAlignment(%struct.msa_struct* %msa, i32 %sample, %struct.msa_struct** %ret_new) #0 {
+entry:
+  %nseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 4
+  %0 = load i32* %nseq, align 4, !tbaa !4
+  %conv = sext i32 %0 to i64
+  %mul = shl nsw i64 %conv, 2
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 596, i64 %mul) #5
+  %1 = bitcast i8* %call to i32*
+  %2 = load i32* %nseq, align 4, !tbaa !4
+  %conv2 = sext i32 %2 to i64
+  %mul3 = shl nsw i64 %conv2, 2
+  %call4 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0), i32 597, i64 %mul3) #5
+  %3 = bitcast i8* %call4 to i32*
+  %4 = load i32* %nseq, align 4, !tbaa !4
+  %cmp70 = icmp sgt i32 %4, 0
+  br i1 %cmp70, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv73 = phi i64 [ %indvars.iv.next74, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv73
+  %5 = trunc i64 %indvars.iv73 to i32
+  store i32 %5, i32* %arrayidx, align 4, !tbaa !4
+  %arrayidx8 = getelementptr inbounds i32* %3, i64 %indvars.iv73
+  store i32 0, i32* %arrayidx8, align 4, !tbaa !4
+  %indvars.iv.next74 = add i64 %indvars.iv73, 1
+  %6 = load i32* %nseq, align 4, !tbaa !4
+  %7 = trunc i64 %indvars.iv.next74 to i32
+  %cmp = icmp slt i32 %7, %6
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %.lcssa = phi i32 [ %4, %entry ], [ %6, %for.body ]
+  %cmp10 = icmp sgt i32 %.lcssa, %sample
+  %sample. = select i1 %cmp10, i32 %sample, i32 %.lcssa
+  %cmp1567 = icmp sgt i32 %sample., 0
+  br i1 %cmp1567, label %for.body17.lr.ph, label %for.end39
+
+for.body17.lr.ph:                                 ; preds = %for.end
+  %sqname = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1
+  %8 = sext i32 %.lcssa to i64
+  %9 = xor i32 %.lcssa, -1
+  %10 = xor i32 %sample, -1
+  %11 = icmp sgt i32 %9, %10
+  %smax = select i1 %11, i32 %9, i32 %10
+  %12 = xor i32 %smax, -1
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17, %for.body17.lr.ph
+  %indvars.iv = phi i64 [ %8, %for.body17.lr.ph ], [ %indvars.iv.next, %for.body17 ]
+  %i.168 = phi i32 [ 0, %for.body17.lr.ph ], [ %inc38, %for.body17 ]
+  %call18 = tail call double @sre_random() #5
+  %13 = trunc i64 %indvars.iv to i32
+  %conv19 = sitofp i32 %13 to double
+  %mul20 = fmul double %conv19, %call18
+  %conv21 = fptosi double %mul20 to i32
+  %idxprom22 = sext i32 %conv21 to i64
+  %arrayidx23 = getelementptr inbounds i32* %1, i64 %idxprom22
+  %14 = load i32* %arrayidx23, align 4, !tbaa !4
+  %idxprom26 = sext i32 %14 to i64
+  %15 = load i8*** %sqname, align 8, !tbaa !3
+  %arrayidx27 = getelementptr inbounds i8** %15, i64 %idxprom26
+  %16 = load i8** %arrayidx27, align 8, !tbaa !3
+  %call28 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str4, i64 0, i64 0), i32 %14, i8* %16) #5
+  %17 = load i32* %arrayidx23, align 4, !tbaa !4
+  %idxprom31 = sext i32 %17 to i64
+  %arrayidx32 = getelementptr inbounds i32* %3, i64 %idxprom31
+  store i32 1, i32* %arrayidx32, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx34 = getelementptr inbounds i32* %1, i64 %indvars.iv.next
+  %18 = load i32* %arrayidx34, align 4, !tbaa !4
+  store i32 %18, i32* %arrayidx23, align 4, !tbaa !4
+  %inc38 = add nsw i32 %i.168, 1
+  %exitcond = icmp eq i32 %inc38, %12
+  br i1 %exitcond, label %for.end39, label %for.body17
+
+for.end39:                                        ; preds = %for.body17, %for.end
+  tail call void @MSASmallerAlignment(%struct.msa_struct* %msa, i32* %3, %struct.msa_struct** %ret_new) #5
+  tail call void @free(i8* %call) #5
+  tail call void @free(i8* %call4) #5
+  ret void
+}

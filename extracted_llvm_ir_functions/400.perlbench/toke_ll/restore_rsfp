@@ -1,0 +1,31 @@
+define internal void @restore_rsfp(i8* %f) #0 {
+entry:
+  %0 = bitcast i8* %f to %struct._PerlIO**
+  %1 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %call = tail call %struct._PerlIO** @Perl_PerlIO_stdin() #6
+  %cmp = icmp eq %struct._PerlIO** %1, %call
+  %2 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_PerlIO_clearerr(%struct._PerlIO** %2) #6
+  br label %if.end4
+
+if.else:                                          ; preds = %entry
+  %tobool = icmp eq %struct._PerlIO** %2, null
+  br i1 %tobool, label %if.end4, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else
+  %3 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct._PerlIO** %3, %0
+  br i1 %cmp1, label %if.end4, label %if.then2
+
+if.then2:                                         ; preds = %land.lhs.true
+  %4 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %call3 = tail call i32 @Perl_PerlIO_close(%struct._PerlIO** %4) #6
+  br label %if.end4
+
+if.end4:                                          ; preds = %land.lhs.true, %if.else, %if.then2, %if.then
+  store volatile %struct._PerlIO** %0, %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  ret void
+}

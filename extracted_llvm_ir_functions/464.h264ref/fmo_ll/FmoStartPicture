@@ -1,0 +1,18 @@
+define i32 @FmoStartPicture() #0 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %0 = trunc i64 %indvars.iv to i32
+  %call = tail call i32 @FmoGetFirstMBOfSliceGroup(i32 %0) #9
+  %arrayidx = getelementptr inbounds [8 x i32]* @FirstMBInSlice, i64 0, i64 %indvars.iv
+  store i32 %call, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 8
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret i32 0
+}

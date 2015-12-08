@@ -1,0 +1,18 @@
+define void @Perl_sv_vsetpvf_mg(%struct.sv* %sv, i8* %pat, [1 x %struct.__va_list_tag]* %args) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %pat) #8
+  tail call void @Perl_sv_setpvn(%struct.sv* %sv, i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i64 0) #8
+  tail call void @Perl_sv_vcatpvfn(%struct.sv* %sv, i8* %pat, i64 %call, [1 x %struct.__va_list_tag]* %args, %struct.sv** null, i32 0, i8* undef) #8
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 16384
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @Perl_mg_set(%struct.sv* %sv) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

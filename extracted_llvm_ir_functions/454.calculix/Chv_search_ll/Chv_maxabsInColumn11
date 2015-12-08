@@ -1,0 +1,531 @@
+define i32 @Chv_maxabsInColumn11(%struct._Chv* %chv, i32 %jcol, i32* %rowmark, i32 %tag, double* %pmaxval) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp slt i32 %jcol, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i32* %rowmark, null
+  %or.cond376 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq double* %pmaxval, null
+  %or.cond377 = or i1 %or.cond376, %cmp5
+  br i1 %or.cond377, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), %struct._Chv* %chv, i32 %jcol, i32* %rowmark, i32 %tag, double* %pmaxval) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #5
+  %call6 = call double* @Chv_entries(%struct._Chv* %chv) #5
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %1 = load i32* %type, align 4, !tbaa !3
+  switch i32 %1, label %if.else223 [
+    i32 1, label %if.then8
+    i32 2, label %if.then99
+  ]
+
+if.then8:                                         ; preds = %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %2 = load i32* %symflag, align 4, !tbaa !3
+  switch i32 %2, label %if.end226 [
+    i32 2, label %if.then10
+    i32 0, label %if.then50
+  ]
+
+if.then10:                                        ; preds = %if.then8
+  %3 = load i32* %nD, align 4, !tbaa !3
+  %4 = load i32* %nL, align 4, !tbaa !3
+  %add = add i32 %jcol, -1
+  %add11 = add i32 %add, %3
+  %sub = add i32 %add11, %4
+  %cmp15392 = icmp sgt i32 %jcol, 0
+  br i1 %cmp15392, label %for.body.lr.ph, label %for.cond29.preheader
+
+for.body.lr.ph:                                   ; preds = %if.then10
+  %5 = load i32* %nU, align 4, !tbaa !3
+  %6 = add i32 %4, %5
+  %7 = shl i32 %3, 1
+  %8 = add i32 %6, %7
+  %9 = add i32 %8, -3
+  %10 = sext i32 %9 to i64
+  %11 = add i32 %5, %jcol
+  %12 = add i32 %8, -5
+  %13 = mul i32 %add, %12
+  %14 = add i32 %11, %13
+  %15 = mul i32 %3, 3
+  %16 = add i32 %14, %15
+  %17 = shl i32 %4, 1
+  %18 = add i32 %16, %17
+  %19 = add i32 %jcol, -2
+  %20 = mul i32 %add, %19
+  %21 = and i32 %20, -2
+  br label %for.body
+
+for.cond.for.cond29.preheader_crit_edge:          ; preds = %if.end26
+  %22 = add i32 %18, -4
+  %23 = sub i32 %22, %21
+  br label %for.cond29.preheader
+
+for.cond29.preheader:                             ; preds = %for.cond.for.cond29.preheader_crit_edge, %if.then10
+  %off.0.lcssa = phi i32 [ %23, %for.cond.for.cond29.preheader_crit_edge ], [ %sub, %if.then10 ]
+  %irow.0.lcssa = phi i32 [ %irow.1, %for.cond.for.cond29.preheader_crit_edge ], [ -1, %if.then10 ]
+  %maxval.0.lcssa = phi double [ %maxval.1, %for.cond.for.cond29.preheader_crit_edge ], [ 0.000000e+00, %if.then10 ]
+  %cmp30386 = icmp sgt i32 %3, %jcol
+  br i1 %cmp30386, label %for.body31.lr.ph, label %if.end226
+
+for.body31.lr.ph:                                 ; preds = %for.cond29.preheader
+  %24 = sext i32 %off.0.lcssa to i64
+  %25 = sext i32 %jcol to i64
+  br label %for.body31
+
+for.body:                                         ; preds = %if.end26, %for.body.lr.ph
+  %indvars.iv459 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next460, %if.end26 ]
+  %indvars.iv456 = phi i64 [ %10, %for.body.lr.ph ], [ %indvars.iv.next457, %if.end26 ]
+  %off.0396 = phi i32 [ %sub, %for.body.lr.ph ], [ %add27, %if.end26 ]
+  %irow.0394 = phi i32 [ -1, %for.body.lr.ph ], [ %irow.1, %if.end26 ]
+  %maxval.0393 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %maxval.1, %if.end26 ]
+  %arrayidx = getelementptr inbounds i32* %rowmark, i64 %indvars.iv459
+  %26 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp16 = icmp eq i32 %26, %tag
+  br i1 %cmp16, label %if.then17, label %if.end26
+
+if.then17:                                        ; preds = %for.body
+  %idxprom18 = sext i32 %off.0396 to i64
+  %arrayidx19 = getelementptr inbounds double* %call6, i64 %idxprom18
+  %27 = load double* %arrayidx19, align 8, !tbaa !4
+  %call20 = call double @fabs(double %27) #7
+  %cmp21 = icmp eq i32 %irow.0394, -1
+  %cmp23 = fcmp olt double %maxval.0393, %call20
+  %or.cond378 = or i1 %cmp21, %cmp23
+  %call20.maxval.0 = select i1 %or.cond378, double %call20, double %maxval.0393
+  %28 = trunc i64 %indvars.iv459 to i32
+  %ii.0.irow.0 = select i1 %or.cond378, i32 %28, i32 %irow.0394
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then17, %for.body
+  %maxval.1 = phi double [ %maxval.0393, %for.body ], [ %call20.maxval.0, %if.then17 ]
+  %irow.1 = phi i32 [ %irow.0394, %for.body ], [ %ii.0.irow.0, %if.then17 ]
+  %29 = trunc i64 %indvars.iv456 to i32
+  %add27 = add nsw i32 %29, %off.0396
+  %indvars.iv.next460 = add i64 %indvars.iv459, 1
+  %indvars.iv.next457 = add i64 %indvars.iv456, -2
+  %lftr.wideiv = trunc i64 %indvars.iv.next460 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %jcol
+  br i1 %exitcond, label %for.cond.for.cond29.preheader_crit_edge, label %for.body
+
+for.body31:                                       ; preds = %for.body31.lr.ph, %for.inc45
+  %indvars.iv454 = phi i64 [ %25, %for.body31.lr.ph ], [ %indvars.iv.next455, %for.inc45 ]
+  %indvars.iv = phi i64 [ %24, %for.body31.lr.ph ], [ %indvars.iv.next, %for.inc45 ]
+  %irow.2388 = phi i32 [ %irow.0.lcssa, %for.body31.lr.ph ], [ %irow.3, %for.inc45 ]
+  %maxval.2387 = phi double [ %maxval.0.lcssa, %for.body31.lr.ph ], [ %maxval.3, %for.inc45 ]
+  %arrayidx33 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv454
+  %30 = load i32* %arrayidx33, align 4, !tbaa !3
+  %cmp34 = icmp eq i32 %30, %tag
+  br i1 %cmp34, label %if.then35, label %for.inc45
+
+if.then35:                                        ; preds = %for.body31
+  %arrayidx37 = getelementptr inbounds double* %call6, i64 %indvars.iv
+  %31 = load double* %arrayidx37, align 8, !tbaa !4
+  %call38 = call double @fabs(double %31) #7
+  %cmp39 = icmp eq i32 %irow.2388, -1
+  %cmp41 = fcmp olt double %maxval.2387, %call38
+  %or.cond379 = or i1 %cmp39, %cmp41
+  %call38.maxval.2 = select i1 %or.cond379, double %call38, double %maxval.2387
+  %32 = trunc i64 %indvars.iv454 to i32
+  %ii.1.irow.2 = select i1 %or.cond379, i32 %32, i32 %irow.2388
+  br label %for.inc45
+
+for.inc45:                                        ; preds = %if.then35, %for.body31
+  %maxval.3 = phi double [ %maxval.2387, %for.body31 ], [ %call38.maxval.2, %if.then35 ]
+  %irow.3 = phi i32 [ %irow.2388, %for.body31 ], [ %ii.1.irow.2, %if.then35 ]
+  %indvars.iv.next455 = add i64 %indvars.iv454, 1
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %33 = trunc i64 %indvars.iv.next455 to i32
+  %cmp30 = icmp slt i32 %33, %3
+  br i1 %cmp30, label %for.body31, label %if.end226
+
+if.then50:                                        ; preds = %if.then8
+  %cmp54410 = icmp sgt i32 %jcol, 0
+  br i1 %cmp54410, label %for.body55.lr.ph, label %if.then50.for.cond74.preheader_crit_edge
+
+if.then50.for.cond74.preheader_crit_edge:         ; preds = %if.then50
+  %.pre494 = load i32* %nD, align 4, !tbaa !3
+  br label %for.cond74.preheader
+
+for.body55.lr.ph:                                 ; preds = %if.then50
+  %34 = load i32* %nU, align 4, !tbaa !3
+  %35 = load i32* %nD, align 4, !tbaa !3
+  %add51 = add nsw i32 %34, %35
+  %36 = sext i32 %add51 to i64
+  %37 = add i32 %add51, %jcol
+  %38 = add i32 %jcol, -1
+  %39 = add i32 %add51, -2
+  %40 = mul i32 %38, %39
+  %41 = add i32 %37, %40
+  %42 = zext i32 %38 to i33
+  %43 = add i32 %jcol, -2
+  %44 = zext i32 %43 to i33
+  %45 = mul i33 %42, %44
+  %46 = lshr i33 %45, 1
+  %47 = trunc i33 %46 to i32
+  br label %for.body55
+
+for.cond53.for.cond74.preheader_crit_edge:        ; preds = %if.end68
+  %48 = add i32 %41, -1
+  %49 = sub i32 %48, %47
+  br label %for.cond74.preheader
+
+for.cond74.preheader:                             ; preds = %if.then50.for.cond74.preheader_crit_edge, %for.cond53.for.cond74.preheader_crit_edge
+  %50 = phi i32 [ %35, %for.cond53.for.cond74.preheader_crit_edge ], [ %.pre494, %if.then50.for.cond74.preheader_crit_edge ]
+  %off.2.lcssa = phi i32 [ %49, %for.cond53.for.cond74.preheader_crit_edge ], [ %jcol, %if.then50.for.cond74.preheader_crit_edge ]
+  %irow.4.lcssa = phi i32 [ %irow.5, %for.cond53.for.cond74.preheader_crit_edge ], [ -1, %if.then50.for.cond74.preheader_crit_edge ]
+  %maxval.4.lcssa = phi double [ %maxval.5, %for.cond53.for.cond74.preheader_crit_edge ], [ 0.000000e+00, %if.then50.for.cond74.preheader_crit_edge ]
+  %cmp75402 = icmp sgt i32 %50, %jcol
+  br i1 %cmp75402, label %for.body76.lr.ph, label %if.end226
+
+for.body76.lr.ph:                                 ; preds = %for.cond74.preheader
+  %51 = sext i32 %off.2.lcssa to i64
+  %52 = sext i32 %jcol to i64
+  br label %for.body76
+
+for.body55:                                       ; preds = %if.end68, %for.body55.lr.ph
+  %indvars.iv467 = phi i64 [ 0, %for.body55.lr.ph ], [ %indvars.iv.next468, %if.end68 ]
+  %indvars.iv465 = phi i64 [ %36, %for.body55.lr.ph ], [ %indvars.iv.next466, %if.end68 ]
+  %off.2414 = phi i32 [ %jcol, %for.body55.lr.ph ], [ %add69, %if.end68 ]
+  %irow.4412 = phi i32 [ -1, %for.body55.lr.ph ], [ %irow.5, %if.end68 ]
+  %maxval.4411 = phi double [ 0.000000e+00, %for.body55.lr.ph ], [ %maxval.5, %if.end68 ]
+  %indvars.iv.next466 = add i64 %indvars.iv465, -1
+  %arrayidx57 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv467
+  %53 = load i32* %arrayidx57, align 4, !tbaa !3
+  %cmp58 = icmp eq i32 %53, %tag
+  br i1 %cmp58, label %if.then59, label %if.end68
+
+if.then59:                                        ; preds = %for.body55
+  %idxprom60 = sext i32 %off.2414 to i64
+  %arrayidx61 = getelementptr inbounds double* %call6, i64 %idxprom60
+  %54 = load double* %arrayidx61, align 8, !tbaa !4
+  %call62 = call double @fabs(double %54) #7
+  %cmp63 = icmp eq i32 %irow.4412, -1
+  %cmp65 = fcmp olt double %maxval.4411, %call62
+  %or.cond380 = or i1 %cmp63, %cmp65
+  %call62.maxval.4 = select i1 %or.cond380, double %call62, double %maxval.4411
+  %55 = trunc i64 %indvars.iv467 to i32
+  %ii.2.irow.4 = select i1 %or.cond380, i32 %55, i32 %irow.4412
+  br label %if.end68
+
+if.end68:                                         ; preds = %if.then59, %for.body55
+  %maxval.5 = phi double [ %maxval.4411, %for.body55 ], [ %call62.maxval.4, %if.then59 ]
+  %irow.5 = phi i32 [ %irow.4412, %for.body55 ], [ %ii.2.irow.4, %if.then59 ]
+  %56 = trunc i64 %indvars.iv.next466 to i32
+  %add69 = add nsw i32 %56, %off.2414
+  %indvars.iv.next468 = add i64 %indvars.iv467, 1
+  %lftr.wideiv469 = trunc i64 %indvars.iv.next468 to i32
+  %exitcond470 = icmp eq i32 %lftr.wideiv469, %jcol
+  br i1 %exitcond470, label %for.cond53.for.cond74.preheader_crit_edge, label %for.body55
+
+for.body76:                                       ; preds = %for.body76.lr.ph, %for.inc90
+  %indvars.iv463 = phi i64 [ %52, %for.body76.lr.ph ], [ %indvars.iv.next464, %for.inc90 ]
+  %indvars.iv461 = phi i64 [ %51, %for.body76.lr.ph ], [ %indvars.iv.next462, %for.inc90 ]
+  %irow.6404 = phi i32 [ %irow.4.lcssa, %for.body76.lr.ph ], [ %irow.7, %for.inc90 ]
+  %maxval.6403 = phi double [ %maxval.4.lcssa, %for.body76.lr.ph ], [ %maxval.7, %for.inc90 ]
+  %arrayidx78 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv463
+  %57 = load i32* %arrayidx78, align 4, !tbaa !3
+  %cmp79 = icmp eq i32 %57, %tag
+  br i1 %cmp79, label %if.then80, label %for.inc90
+
+if.then80:                                        ; preds = %for.body76
+  %arrayidx82 = getelementptr inbounds double* %call6, i64 %indvars.iv461
+  %58 = load double* %arrayidx82, align 8, !tbaa !4
+  %call83 = call double @fabs(double %58) #7
+  %cmp84 = icmp eq i32 %irow.6404, -1
+  %cmp86 = fcmp olt double %maxval.6403, %call83
+  %or.cond381 = or i1 %cmp84, %cmp86
+  %call83.maxval.6 = select i1 %or.cond381, double %call83, double %maxval.6403
+  %59 = trunc i64 %indvars.iv463 to i32
+  %ii.3.irow.6 = select i1 %or.cond381, i32 %59, i32 %irow.6404
+  br label %for.inc90
+
+for.inc90:                                        ; preds = %if.then80, %for.body76
+  %maxval.7 = phi double [ %maxval.6403, %for.body76 ], [ %call83.maxval.6, %if.then80 ]
+  %irow.7 = phi i32 [ %irow.6404, %for.body76 ], [ %ii.3.irow.6, %if.then80 ]
+  %indvars.iv.next464 = add i64 %indvars.iv463, 1
+  %indvars.iv.next462 = add i64 %indvars.iv461, 1
+  %60 = trunc i64 %indvars.iv.next464 to i32
+  %cmp75 = icmp slt i32 %60, %50
+  br i1 %cmp75, label %for.body76, label %if.end226
+
+if.then99:                                        ; preds = %if.end
+  %symflag100 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %61 = load i32* %symflag100, align 4, !tbaa !3
+  switch i32 %61, label %if.end226 [
+    i32 2, label %if.then102
+    i32 0, label %if.then167
+    i32 1, label %if.then167
+  ]
+
+if.then102:                                       ; preds = %if.then99
+  %62 = load i32* %nD, align 4, !tbaa !3
+  %63 = load i32* %nL, align 4, !tbaa !3
+  %add103 = add i32 %jcol, -1
+  %add104 = add i32 %add103, %62
+  %sub105 = add i32 %add104, %63
+  %cmp111427 = icmp sgt i32 %jcol, 0
+  br i1 %cmp111427, label %for.body112.lr.ph, label %for.cond136.preheader
+
+for.body112.lr.ph:                                ; preds = %if.then102
+  %64 = load i32* %nU, align 4, !tbaa !3
+  %65 = add i32 %63, %64
+  %66 = shl i32 %62, 1
+  %67 = add i32 %65, %66
+  %68 = add i32 %67, -3
+  %69 = sext i32 %68 to i64
+  %70 = add i32 %64, %jcol
+  %71 = add i32 %67, -5
+  %72 = mul i32 %add103, %71
+  %73 = add i32 %70, %72
+  %74 = mul i32 %62, 3
+  %75 = add i32 %73, %74
+  %76 = shl i32 %63, 1
+  %77 = add i32 %75, %76
+  %78 = add i32 %jcol, -2
+  %79 = mul i32 %add103, %78
+  %80 = and i32 %79, -2
+  br label %for.body112
+
+for.cond110.for.cond136.preheader_crit_edge:      ; preds = %if.end130
+  %81 = add i32 %77, -4
+  %82 = sub i32 %81, %80
+  %.pre = load i32* %nD, align 4, !tbaa !3
+  br label %for.cond136.preheader
+
+for.cond136.preheader:                            ; preds = %for.cond110.for.cond136.preheader_crit_edge, %if.then102
+  %83 = phi i32 [ %.pre, %for.cond110.for.cond136.preheader_crit_edge ], [ %62, %if.then102 ]
+  %off.4.lcssa = phi i32 [ %82, %for.cond110.for.cond136.preheader_crit_edge ], [ %sub105, %if.then102 ]
+  %irow.8.lcssa = phi i32 [ %irow.9, %for.cond110.for.cond136.preheader_crit_edge ], [ -1, %if.then102 ]
+  %maxval.8.lcssa = phi double [ %maxval.9, %for.cond110.for.cond136.preheader_crit_edge ], [ 0.000000e+00, %if.then102 ]
+  %cmp137420 = icmp sgt i32 %83, %jcol
+  br i1 %cmp137420, label %for.body138.lr.ph, label %if.end226
+
+for.body138.lr.ph:                                ; preds = %for.cond136.preheader
+  %84 = sext i32 %off.4.lcssa to i64
+  %85 = sext i32 %jcol to i64
+  br label %for.body138
+
+for.body112:                                      ; preds = %if.end130, %for.body112.lr.ph
+  %indvars.iv478 = phi i64 [ 0, %for.body112.lr.ph ], [ %indvars.iv.next479, %if.end130 ]
+  %indvars.iv475 = phi i64 [ %69, %for.body112.lr.ph ], [ %indvars.iv.next476, %if.end130 ]
+  %off.4431 = phi i32 [ %sub105, %for.body112.lr.ph ], [ %add131, %if.end130 ]
+  %irow.8429 = phi i32 [ -1, %for.body112.lr.ph ], [ %irow.9, %if.end130 ]
+  %maxval.8428 = phi double [ 0.000000e+00, %for.body112.lr.ph ], [ %maxval.9, %if.end130 ]
+  %arrayidx114 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv478
+  %86 = load i32* %arrayidx114, align 4, !tbaa !3
+  %cmp115 = icmp eq i32 %86, %tag
+  br i1 %cmp115, label %if.then116, label %if.end130
+
+if.then116:                                       ; preds = %for.body112
+  %mul117 = shl nsw i32 %off.4431, 1
+  %idxprom118 = sext i32 %mul117 to i64
+  %arrayidx119 = getelementptr inbounds double* %call6, i64 %idxprom118
+  %87 = load double* %arrayidx119, align 8, !tbaa !4
+  %add121375 = or i32 %mul117, 1
+  %idxprom122 = sext i32 %add121375 to i64
+  %arrayidx123 = getelementptr inbounds double* %call6, i64 %idxprom122
+  %88 = load double* %arrayidx123, align 8, !tbaa !4
+  %call124 = call double @Zabs(double %87, double %88) #5
+  %cmp125 = icmp eq i32 %irow.8429, -1
+  %cmp127 = fcmp olt double %maxval.8428, %call124
+  %or.cond382 = or i1 %cmp125, %cmp127
+  %call124.maxval.8 = select i1 %or.cond382, double %call124, double %maxval.8428
+  %89 = trunc i64 %indvars.iv478 to i32
+  %ii.4.irow.8 = select i1 %or.cond382, i32 %89, i32 %irow.8429
+  br label %if.end130
+
+if.end130:                                        ; preds = %if.then116, %for.body112
+  %maxval.9 = phi double [ %maxval.8428, %for.body112 ], [ %call124.maxval.8, %if.then116 ]
+  %irow.9 = phi i32 [ %irow.8429, %for.body112 ], [ %ii.4.irow.8, %if.then116 ]
+  %90 = trunc i64 %indvars.iv475 to i32
+  %add131 = add nsw i32 %90, %off.4431
+  %indvars.iv.next479 = add i64 %indvars.iv478, 1
+  %indvars.iv.next476 = add i64 %indvars.iv475, -2
+  %lftr.wideiv480 = trunc i64 %indvars.iv.next479 to i32
+  %exitcond481 = icmp eq i32 %lftr.wideiv480, %jcol
+  br i1 %exitcond481, label %for.cond110.for.cond136.preheader_crit_edge, label %for.body112
+
+for.body138:                                      ; preds = %for.body138.lr.ph, %for.inc157
+  %91 = phi i32 [ %83, %for.body138.lr.ph ], [ %97, %for.inc157 ]
+  %indvars.iv473 = phi i64 [ %85, %for.body138.lr.ph ], [ %indvars.iv.next474, %for.inc157 ]
+  %indvars.iv471 = phi i64 [ %84, %for.body138.lr.ph ], [ %indvars.iv.next472, %for.inc157 ]
+  %irow.10422 = phi i32 [ %irow.8.lcssa, %for.body138.lr.ph ], [ %irow.11, %for.inc157 ]
+  %maxval.10421 = phi double [ %maxval.8.lcssa, %for.body138.lr.ph ], [ %maxval.11, %for.inc157 ]
+  %arrayidx140 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv473
+  %92 = load i32* %arrayidx140, align 4, !tbaa !3
+  %cmp141 = icmp eq i32 %92, %tag
+  br i1 %cmp141, label %if.then142, label %for.inc157
+
+if.then142:                                       ; preds = %for.body138
+  %93 = trunc i64 %indvars.iv471 to i32
+  %mul143 = shl nsw i32 %93, 1
+  %idxprom144 = sext i32 %mul143 to i64
+  %arrayidx145 = getelementptr inbounds double* %call6, i64 %idxprom144
+  %94 = load double* %arrayidx145, align 8, !tbaa !4
+  %add147374 = or i32 %mul143, 1
+  %idxprom148 = sext i32 %add147374 to i64
+  %arrayidx149 = getelementptr inbounds double* %call6, i64 %idxprom148
+  %95 = load double* %arrayidx149, align 8, !tbaa !4
+  %call150 = call double @Zabs(double %94, double %95) #5
+  %cmp151 = icmp eq i32 %irow.10422, -1
+  %cmp153 = fcmp olt double %maxval.10421, %call150
+  %or.cond383 = or i1 %cmp151, %cmp153
+  %call150.maxval.10 = select i1 %or.cond383, double %call150, double %maxval.10421
+  %96 = trunc i64 %indvars.iv473 to i32
+  %ii.5.irow.10 = select i1 %or.cond383, i32 %96, i32 %irow.10422
+  %.pre492 = load i32* %nD, align 4, !tbaa !3
+  br label %for.inc157
+
+for.inc157:                                       ; preds = %if.then142, %for.body138
+  %97 = phi i32 [ %91, %for.body138 ], [ %.pre492, %if.then142 ]
+  %maxval.11 = phi double [ %maxval.10421, %for.body138 ], [ %call150.maxval.10, %if.then142 ]
+  %irow.11 = phi i32 [ %irow.10422, %for.body138 ], [ %ii.5.irow.10, %if.then142 ]
+  %indvars.iv.next474 = add i64 %indvars.iv473, 1
+  %indvars.iv.next472 = add i64 %indvars.iv471, -1
+  %98 = trunc i64 %indvars.iv.next474 to i32
+  %cmp137 = icmp slt i32 %98, %97
+  br i1 %cmp137, label %for.body138, label %if.end226
+
+if.then167:                                       ; preds = %if.then99, %if.then99
+  %cmp171445 = icmp sgt i32 %jcol, 0
+  br i1 %cmp171445, label %for.body172.lr.ph, label %for.cond196.preheader
+
+for.body172.lr.ph:                                ; preds = %if.then167
+  %99 = load i32* %nU, align 4, !tbaa !3
+  %100 = load i32* %nD, align 4, !tbaa !3
+  %add168 = add nsw i32 %99, %100
+  %101 = sext i32 %add168 to i64
+  %102 = add i32 %add168, %jcol
+  %103 = add i32 %jcol, -1
+  %104 = add i32 %add168, -2
+  %105 = mul i32 %103, %104
+  %106 = add i32 %102, %105
+  %107 = zext i32 %103 to i33
+  %108 = add i32 %jcol, -2
+  %109 = zext i32 %108 to i33
+  %110 = mul i33 %107, %109
+  %111 = lshr i33 %110, 1
+  %112 = trunc i33 %111 to i32
+  br label %for.body172
+
+for.cond170.for.cond196.preheader_crit_edge:      ; preds = %if.end190
+  %113 = add i32 %106, -1
+  %114 = sub i32 %113, %112
+  br label %for.cond196.preheader
+
+for.cond196.preheader:                            ; preds = %if.then167, %for.cond170.for.cond196.preheader_crit_edge
+  %off.6.lcssa = phi i32 [ %114, %for.cond170.for.cond196.preheader_crit_edge ], [ %jcol, %if.then167 ]
+  %irow.12.lcssa = phi i32 [ %irow.13, %for.cond170.for.cond196.preheader_crit_edge ], [ -1, %if.then167 ]
+  %maxval.12.lcssa = phi double [ %maxval.13, %for.cond170.for.cond196.preheader_crit_edge ], [ 0.000000e+00, %if.then167 ]
+  %115 = load i32* %nD, align 4, !tbaa !3
+  %cmp197437 = icmp sgt i32 %115, %jcol
+  br i1 %cmp197437, label %for.body198.lr.ph, label %if.end226
+
+for.body198.lr.ph:                                ; preds = %for.cond196.preheader
+  %116 = sext i32 %off.6.lcssa to i64
+  %117 = sext i32 %jcol to i64
+  br label %for.body198
+
+for.body172:                                      ; preds = %if.end190, %for.body172.lr.ph
+  %indvars.iv488 = phi i64 [ 0, %for.body172.lr.ph ], [ %indvars.iv.next489, %if.end190 ]
+  %indvars.iv486 = phi i64 [ %101, %for.body172.lr.ph ], [ %indvars.iv.next487, %if.end190 ]
+  %off.6449 = phi i32 [ %jcol, %for.body172.lr.ph ], [ %add191, %if.end190 ]
+  %irow.12447 = phi i32 [ -1, %for.body172.lr.ph ], [ %irow.13, %if.end190 ]
+  %maxval.12446 = phi double [ 0.000000e+00, %for.body172.lr.ph ], [ %maxval.13, %if.end190 ]
+  %indvars.iv.next487 = add i64 %indvars.iv486, -1
+  %arrayidx174 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv488
+  %118 = load i32* %arrayidx174, align 4, !tbaa !3
+  %cmp175 = icmp eq i32 %118, %tag
+  br i1 %cmp175, label %if.then176, label %if.end190
+
+if.then176:                                       ; preds = %for.body172
+  %mul177 = shl nsw i32 %off.6449, 1
+  %idxprom178 = sext i32 %mul177 to i64
+  %arrayidx179 = getelementptr inbounds double* %call6, i64 %idxprom178
+  %119 = load double* %arrayidx179, align 8, !tbaa !4
+  %add181373 = or i32 %mul177, 1
+  %idxprom182 = sext i32 %add181373 to i64
+  %arrayidx183 = getelementptr inbounds double* %call6, i64 %idxprom182
+  %120 = load double* %arrayidx183, align 8, !tbaa !4
+  %call184 = call double @Zabs(double %119, double %120) #5
+  %cmp185 = icmp eq i32 %irow.12447, -1
+  %cmp187 = fcmp olt double %maxval.12446, %call184
+  %or.cond384 = or i1 %cmp185, %cmp187
+  %call184.maxval.12 = select i1 %or.cond384, double %call184, double %maxval.12446
+  %121 = trunc i64 %indvars.iv488 to i32
+  %ii.6.irow.12 = select i1 %or.cond384, i32 %121, i32 %irow.12447
+  br label %if.end190
+
+if.end190:                                        ; preds = %if.then176, %for.body172
+  %maxval.13 = phi double [ %maxval.12446, %for.body172 ], [ %call184.maxval.12, %if.then176 ]
+  %irow.13 = phi i32 [ %irow.12447, %for.body172 ], [ %ii.6.irow.12, %if.then176 ]
+  %122 = trunc i64 %indvars.iv.next487 to i32
+  %add191 = add nsw i32 %122, %off.6449
+  %indvars.iv.next489 = add i64 %indvars.iv488, 1
+  %lftr.wideiv490 = trunc i64 %indvars.iv.next489 to i32
+  %exitcond491 = icmp eq i32 %lftr.wideiv490, %jcol
+  br i1 %exitcond491, label %for.cond170.for.cond196.preheader_crit_edge, label %for.body172
+
+for.body198:                                      ; preds = %for.body198.lr.ph, %for.inc217
+  %123 = phi i32 [ %115, %for.body198.lr.ph ], [ %129, %for.inc217 ]
+  %indvars.iv484 = phi i64 [ %117, %for.body198.lr.ph ], [ %indvars.iv.next485, %for.inc217 ]
+  %indvars.iv482 = phi i64 [ %116, %for.body198.lr.ph ], [ %indvars.iv.next483, %for.inc217 ]
+  %irow.14439 = phi i32 [ %irow.12.lcssa, %for.body198.lr.ph ], [ %irow.15, %for.inc217 ]
+  %maxval.14438 = phi double [ %maxval.12.lcssa, %for.body198.lr.ph ], [ %maxval.15, %for.inc217 ]
+  %arrayidx200 = getelementptr inbounds i32* %rowmark, i64 %indvars.iv484
+  %124 = load i32* %arrayidx200, align 4, !tbaa !3
+  %cmp201 = icmp eq i32 %124, %tag
+  br i1 %cmp201, label %if.then202, label %for.inc217
+
+if.then202:                                       ; preds = %for.body198
+  %125 = trunc i64 %indvars.iv482 to i32
+  %mul203 = shl nsw i32 %125, 1
+  %idxprom204 = sext i32 %mul203 to i64
+  %arrayidx205 = getelementptr inbounds double* %call6, i64 %idxprom204
+  %126 = load double* %arrayidx205, align 8, !tbaa !4
+  %add207372 = or i32 %mul203, 1
+  %idxprom208 = sext i32 %add207372 to i64
+  %arrayidx209 = getelementptr inbounds double* %call6, i64 %idxprom208
+  %127 = load double* %arrayidx209, align 8, !tbaa !4
+  %call210 = call double @Zabs(double %126, double %127) #5
+  %cmp211 = icmp eq i32 %irow.14439, -1
+  %cmp213 = fcmp olt double %maxval.14438, %call210
+  %or.cond385 = or i1 %cmp211, %cmp213
+  %call210.maxval.14 = select i1 %or.cond385, double %call210, double %maxval.14438
+  %128 = trunc i64 %indvars.iv484 to i32
+  %ii.7.irow.14 = select i1 %or.cond385, i32 %128, i32 %irow.14439
+  %.pre493 = load i32* %nD, align 4, !tbaa !3
+  br label %for.inc217
+
+for.inc217:                                       ; preds = %if.then202, %for.body198
+  %129 = phi i32 [ %123, %for.body198 ], [ %.pre493, %if.then202 ]
+  %maxval.15 = phi double [ %maxval.14438, %for.body198 ], [ %call210.maxval.14, %if.then202 ]
+  %irow.15 = phi i32 [ %irow.14439, %for.body198 ], [ %ii.7.irow.14, %if.then202 ]
+  %indvars.iv.next485 = add i64 %indvars.iv484, 1
+  %indvars.iv.next483 = add i64 %indvars.iv482, 1
+  %130 = trunc i64 %indvars.iv.next485 to i32
+  %cmp197 = icmp slt i32 %130, %129
+  br i1 %cmp197, label %for.body198, label %if.end226
+
+if.else223:                                       ; preds = %if.end
+  %131 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call224 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %131, i8* getelementptr inbounds ([106 x i8]* @.str9, i64 0, i64 0), %struct._Chv* %chv, i32 %jcol, i32* %rowmark, i32 %tag, double* %pmaxval) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end226:                                        ; preds = %for.cond196.preheader, %for.inc217, %for.cond136.preheader, %for.inc157, %for.cond74.preheader, %for.inc90, %for.cond29.preheader, %for.inc45, %if.then99, %if.then8
+  %maxval.16 = phi double [ 0.000000e+00, %if.then8 ], [ 0.000000e+00, %if.then99 ], [ %maxval.0.lcssa, %for.cond29.preheader ], [ %maxval.3, %for.inc45 ], [ %maxval.4.lcssa, %for.cond74.preheader ], [ %maxval.7, %for.inc90 ], [ %maxval.8.lcssa, %for.cond136.preheader ], [ %maxval.11, %for.inc157 ], [ %maxval.12.lcssa, %for.cond196.preheader ], [ %maxval.15, %for.inc217 ]
+  %irow.16 = phi i32 [ -1, %if.then8 ], [ -1, %if.then99 ], [ %irow.0.lcssa, %for.cond29.preheader ], [ %irow.3, %for.inc45 ], [ %irow.4.lcssa, %for.cond74.preheader ], [ %irow.7, %for.inc90 ], [ %irow.8.lcssa, %for.cond136.preheader ], [ %irow.11, %for.inc157 ], [ %irow.12.lcssa, %for.cond196.preheader ], [ %irow.15, %for.inc217 ]
+  store double %maxval.16, double* %pmaxval, align 8, !tbaa !4
+  ret i32 %irow.16
+}

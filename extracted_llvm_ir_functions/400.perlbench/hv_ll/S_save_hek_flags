@@ -1,0 +1,31 @@
+define internal fastcc %struct.hek* @S_save_hek_flags(i8* %str, i32 %len, i32 %hash, i32 %flags) #0 {
+entry:
+  %conv = sext i32 %len to i64
+  %add1 = add i64 %conv, 10
+  %call = tail call i8* @Perl_safesysmalloc(i64 %add1) #4
+  %0 = bitcast i8* %call to %struct.hek*
+  %hek_key = getelementptr inbounds i8* %call, i64 8
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %hek_key, i8* %str, i64 %conv, i32 1, i1 false)
+  %hek_key.sum = add i64 %conv, 8
+  %arrayidx = getelementptr inbounds i8* %call, i64 %hek_key.sum
+  store i8 0, i8* %arrayidx, align 1, !tbaa !1
+  %hek_len = getelementptr inbounds i8* %call, i64 4
+  %1 = bitcast i8* %hek_len to i32*
+  store i32 %len, i32* %1, align 4, !tbaa !4
+  %hek_hash = bitcast i8* %call to i32*
+  store i32 %hash, i32* %hek_hash, align 4, !tbaa !4
+  %conv5 = trunc i32 %flags to i8
+  %add.ptr.sum = add i64 %conv, 9
+  %add.ptr9 = getelementptr inbounds i8* %call, i64 %add.ptr.sum
+  store i8 %conv5, i8* %add.ptr9, align 1, !tbaa !1
+  %and10 = and i32 %flags, 256
+  %tobool = icmp eq i32 %and10, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_safesysfree(i8* %str) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret %struct.hek* %0
+}

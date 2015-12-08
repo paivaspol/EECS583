@@ -1,0 +1,53 @@
+define void @freenodes(%struct.node* %node) #0 {
+entry:
+  %tobool = icmp eq %struct.node* %node, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %children = getelementptr inbounds %struct.node* %node, i64 0, i32 6
+  %0 = load %struct.node*** %children, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.node** %0, null
+  br i1 %tobool1, label %if.end19, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %num_children = getelementptr inbounds %struct.node* %node, i64 0, i32 1
+  %1 = load i8* %num_children, align 1, !tbaa !1
+  %cmp = icmp eq i8 %1, 0
+  br i1 %cmp, label %if.end19, label %for.body
+
+for.body:                                         ; preds = %for.inc, %if.then2
+  %2 = phi %struct.node** [ %0, %if.then2 ], [ %.pre34, %for.inc ]
+  %3 = phi i8 [ %1, %if.then2 ], [ %5, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %if.then2 ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.node** %2, i64 %indvars.iv
+  %4 = load %struct.node** %arrayidx, align 8, !tbaa !3
+  %cmp10 = icmp eq %struct.node* %4, null
+  br i1 %cmp10, label %for.inc, label %if.then12
+
+if.then12:                                        ; preds = %for.body
+  tail call void @freenodes(%struct.node* %4) #5
+  %.pre33 = load i8* %num_children, align 1, !tbaa !1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then12
+  %5 = phi i8 [ %3, %for.body ], [ %.pre33, %if.then12 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %conv6 = zext i8 %5 to i32
+  %6 = trunc i64 %indvars.iv.next to i32
+  %cmp7 = icmp slt i32 %6, %conv6
+  %.pre34 = load %struct.node*** %children, align 8, !tbaa !3
+  br i1 %cmp7, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  %7 = bitcast %struct.node** %.pre34 to i8*
+  tail call void @free(i8* %7) #6
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then2, %if.end, %for.end
+  %8 = getelementptr inbounds %struct.node* %node, i64 0, i32 0
+  tail call void @free(i8* %8) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.end19
+  ret void
+}

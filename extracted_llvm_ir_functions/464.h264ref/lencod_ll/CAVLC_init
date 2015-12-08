@@ -1,0 +1,63 @@
+define void @CAVLC_init() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %PicSizeInMbs28 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
+  %1 = load i32* %PicSizeInMbs28, align 4, !tbaa !0
+  %cmp29 = icmp eq i32 %1, 0
+  br i1 %cmp29, label %for.end16, label %for.cond1.preheader.lr.ph
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %num_blk8x8_uv23 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 157
+  %.pre.pre = load i32* %num_blk8x8_uv23, align 4, !tbaa !0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc14
+  %.pre = phi i32 [ %.pre.pre, %for.cond1.preheader.lr.ph ], [ %.pre35, %for.inc14 ]
+  %i.030 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc15, %for.inc14 ]
+  %idxprom8 = zext i32 %i.030 to i64
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc11, %for.cond1.preheader
+  %.pre34 = phi i32 [ %.pre, %for.cond1.preheader ], [ %.pre35, %for.inc11 ]
+  %2 = phi i32 [ %.pre, %for.cond1.preheader ], [ %4, %for.inc11 ]
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.inc11 ]
+  %cmp525 = icmp eq i32 %2, -4
+  br i1 %cmp525, label %for.inc11, label %for.body6.lr.ph
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %nz_coeff.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 28
+  %.pre31 = load i32**** %nz_coeff.phi.trans.insert, align 8, !tbaa !3
+  %arrayidx.phi.trans.insert = getelementptr inbounds i32*** %.pre31, i64 %idxprom8
+  %.pre32 = load i32*** %arrayidx.phi.trans.insert, align 8, !tbaa !3
+  %arrayidx9.phi.trans.insert = getelementptr inbounds i32** %.pre32, i64 %indvars.iv
+  %.pre33 = load i32** %arrayidx9.phi.trans.insert, align 8, !tbaa !3
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.body6.lr.ph, %for.body6
+  %l.026 = phi i32 [ 0, %for.body6.lr.ph ], [ %inc, %for.body6 ]
+  %idxprom = zext i32 %l.026 to i64
+  %arrayidx10 = getelementptr inbounds i32* %.pre33, i64 %idxprom
+  store i32 0, i32* %arrayidx10, align 4, !tbaa !0
+  %inc = add i32 %l.026, 1
+  %3 = load i32* %num_blk8x8_uv23, align 4, !tbaa !0
+  %add = add i32 %3, 4
+  %cmp5 = icmp ult i32 %inc, %add
+  br i1 %cmp5, label %for.body6, label %for.inc11
+
+for.inc11:                                        ; preds = %for.body6, %for.cond4.preheader
+  %.pre35 = phi i32 [ %.pre34, %for.cond4.preheader ], [ %3, %for.body6 ]
+  %4 = phi i32 [ -4, %for.cond4.preheader ], [ %3, %for.body6 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.inc14, label %for.cond4.preheader
+
+for.inc14:                                        ; preds = %for.inc11
+  %inc15 = add i32 %i.030, 1
+  %5 = load i32* %PicSizeInMbs28, align 4, !tbaa !0
+  %cmp = icmp ult i32 %inc15, %5
+  br i1 %cmp, label %for.cond1.preheader, label %for.end16
+
+for.end16:                                        ; preds = %for.inc14, %entry
+  ret void
+}

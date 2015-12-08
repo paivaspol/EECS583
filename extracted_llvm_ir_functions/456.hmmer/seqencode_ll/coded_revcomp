@@ -1,0 +1,51 @@
+define i32 @coded_revcomp(i8* nocapture %comp, i8* nocapture %seq) #1 {
+entry:
+  %call = tail call i64 @strlen(i8* %seq) #7
+  %cmp29 = icmp sgt i64 %call, 0
+  br i1 %cmp29, label %for.cond2.preheader.lr.ph, label %return
+
+for.cond2.preheader.lr.ph:                        ; preds = %entry
+  %add.ptr.sum = add i64 %call, -1
+  %add.ptr1 = getelementptr inbounds i8* %seq, i64 %add.ptr.sum
+  br label %for.cond2.preheader
+
+for.cond2.preheader:                              ; preds = %for.cond2.preheader.lr.ph, %if.else
+  %pos.032 = phi i64 [ 0, %for.cond2.preheader.lr.ph ], [ %inc16, %if.else ]
+  %fwdp.031 = phi i8* [ %comp, %for.cond2.preheader.lr.ph ], [ %incdec.ptr, %if.else ]
+  %bckp.030 = phi i8* [ %add.ptr1, %for.cond2.preheader.lr.ph ], [ %incdec.ptr14, %if.else ]
+  %0 = load i8* %bckp.030, align 1, !tbaa !0
+  br label %for.cond2
+
+for.cond2:                                        ; preds = %for.cond2, %for.cond2.preheader
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond2 ], [ 0, %for.cond2.preheader ]
+  %idx.0 = phi i32 [ %inc, %for.cond2 ], [ 0, %for.cond2.preheader ]
+  %code = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2
+  %1 = load i8* %code, align 1, !tbaa !0
+  %cmp4 = icmp ne i8 %0, %1
+  %2 = trunc i64 %indvars.iv to i32
+  %cmp6 = icmp slt i32 %2, 17
+  %or.cond = and i1 %cmp4, %cmp6
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %idx.0, 1
+  br i1 %or.cond, label %for.cond2, label %for.end
+
+for.end:                                          ; preds = %for.cond2
+  %cmp9 = icmp sgt i32 %idx.0, 17
+  br i1 %cmp9, label %return, label %if.else
+
+if.else:                                          ; preds = %for.end
+  %comp13 = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 3
+  %3 = load i8* %comp13, align 1, !tbaa !0
+  store i8 %3, i8* %fwdp.031, align 1, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i8* %fwdp.031, i64 1
+  %incdec.ptr14 = getelementptr inbounds i8* %bckp.030, i64 -1
+  %inc16 = add nsw i64 %pos.032, 1
+  %cmp = icmp slt i64 %inc16, %call
+  br i1 %cmp, label %for.cond2.preheader, label %return
+
+return:                                           ; preds = %if.else, %for.end, %entry
+  %fwdp.0.lcssa = phi i8* [ %comp, %entry ], [ %fwdp.031, %for.end ], [ %incdec.ptr, %if.else ]
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %for.end ], [ 1, %if.else ]
+  store i8 0, i8* %fwdp.0.lcssa, align 1, !tbaa !0
+  ret i32 %retval.0
+}

@@ -1,0 +1,31 @@
+define void @Perl_sv_utf8_encode(%struct.sv* %sv) #0 {
+entry:
+  %call = tail call i64 @Perl_sv_utf8_upgrade_flags(%struct.sv* %sv, i32 2) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 9437184
+  %cmp = icmp eq i32 %and, 9437184
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_sv_force_normal_flags(%struct.sv* %sv, i32 0) #7
+  %.pre = load i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %and2 = and i32 %1, 8388608
+  %tobool = icmp eq i32 %and2, 0
+  br i1 %tobool, label %if.end4, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([0 x i8]* @PL_no_modify, i64 0, i64 0)) #8
+  %.pre11 = load i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then3
+  %2 = phi i32 [ %1, %if.end ], [ %.pre11, %if.then3 ]
+  %and6 = and i32 %2, -536870913
+  store i32 %and6, i32* %sv_flags, align 4, !tbaa !3
+  ret void
+}

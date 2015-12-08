@@ -1,0 +1,13 @@
+define void @PerlIO_default_buffer(%struct.PerlIO_list_s* nocapture %av) #1 {
+entry:
+  %0 = load void (%struct._PerlIO**, i8*, i64)** getelementptr inbounds (%struct._PerlIO_funcs* @PerlIO_stdio, i64 0, i32 27), align 8, !tbaa !3
+  %tobool = icmp ne void (%struct._PerlIO**, i8*, i64)* %0, null
+  %PerlIO_stdio.PerlIO_perlio = select i1 %tobool, %struct._PerlIO_funcs* @PerlIO_stdio, %struct._PerlIO_funcs* @PerlIO_perlio
+  %name = getelementptr inbounds %struct._PerlIO_funcs* %PerlIO_stdio.PerlIO_perlio, i64 0, i32 1
+  %1 = load i8** %name, align 8, !tbaa !3
+  tail call void (i8*, ...)* @PerlIO_debug(i8* undef, i8* %1) #10
+  %2 = load i8** %name, align 8, !tbaa !3
+  %call = tail call %struct._PerlIO_funcs* @PerlIO_find_layer(i8* %2, i64 0, i32 0) #10
+  tail call void @PerlIO_list_push(%struct.PerlIO_list_s* %av, %struct._PerlIO_funcs* %call, %struct.sv* @PL_sv_undef) #10
+  ret void
+}

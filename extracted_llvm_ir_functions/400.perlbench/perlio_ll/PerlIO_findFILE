@@ -1,0 +1,33 @@
+define %struct._IO_FILE* @PerlIO_findFILE(%struct._PerlIO** %f) #1 {
+entry:
+  %l.05 = load %struct._PerlIO** %f, align 8
+  %tobool6 = icmp eq %struct._PerlIO* %l.05, null
+  br i1 %tobool6, label %while.end, label %while.body
+
+while.cond:                                       ; preds = %while.body
+  %next = getelementptr inbounds %struct._PerlIO* %l.07, i64 0, i32 0
+  %l.0 = load %struct._PerlIO** %next, align 8
+  %tobool = icmp eq %struct._PerlIO* %l.0, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.cond
+  %l.07 = phi %struct._PerlIO* [ %l.0, %while.cond ], [ %l.05, %entry ]
+  %tab = getelementptr inbounds %struct._PerlIO* %l.07, i64 0, i32 1
+  %0 = load %struct._PerlIO_funcs** %tab, align 8, !tbaa !3
+  %cmp = icmp eq %struct._PerlIO_funcs* %0, @PerlIO_stdio
+  br i1 %cmp, label %if.then, label %while.cond
+
+if.then:                                          ; preds = %while.body
+  %stdio = getelementptr inbounds %struct._PerlIO* %l.07, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  br label %return
+
+while.end:                                        ; preds = %while.cond, %entry
+  %call = tail call %struct._IO_FILE* @PerlIO_exportFILE(%struct._PerlIO** %f, i8* null) #10
+  br label %return
+
+return:                                           ; preds = %while.end, %if.then
+  %retval.0 = phi %struct._IO_FILE* [ %2, %if.then ], [ %call, %while.end ]
+  ret %struct._IO_FILE* %retval.0
+}

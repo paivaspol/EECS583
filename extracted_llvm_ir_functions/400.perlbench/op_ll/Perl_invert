@@ -1,0 +1,14 @@
+define %struct.op* @Perl_invert(%struct.op* %o) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call %struct.op* @Perl_scalar(%struct.op* %o) #8
+  %call1 = tail call %struct.op* @Perl_newUNOP(i32 96, i32 128, %struct.op* %call) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi %struct.op* [ %call1, %if.end ], [ null, %entry ]
+  ret %struct.op* %retval.0
+}

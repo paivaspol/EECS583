@@ -1,0 +1,56 @@
+define i32 @get_mem2Dpel(i16*** nocapture %array2D, i32 %rows, i32 %columns) #0 {
+entry:
+  %conv = sext i32 %rows to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #3
+  %0 = bitcast i8* %call to i16**
+  store i16** %0, i16*** %array2D, align 8, !tbaa !0
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str2, i64 0, i64 0)) #3
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
+  %.pre = load i16*** %array2D, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = phi i16** [ %.pre, %if.then ], [ %0, %entry ]
+  %mul = mul nsw i32 %columns, %rows
+  %conv2 = sext i32 %mul to i64
+  %call3 = tail call noalias i8* @calloc(i64 %conv2, i64 2) #3
+  %2 = bitcast i8* %call3 to i16*
+  store i16* %2, i16** %1, align 8, !tbaa !0
+  %cmp4 = icmp eq i8* %call3, null
+  br i1 %cmp4, label %if.then6, label %for.cond.preheader
+
+if.then6:                                         ; preds = %if.end
+  %call.i28 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str2, i64 0, i64 0)) #3
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then6, %if.end
+  %cmp829 = icmp sgt i32 %rows, 1
+  br i1 %cmp829, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %idx.ext = sext i32 %columns to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %3 = add nsw i64 %indvars.iv, -1
+  %4 = load i16*** %array2D, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds i16** %4, i64 %3
+  %5 = load i16** %arrayidx10, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i16* %5, i64 %idx.ext
+  %arrayidx12 = getelementptr inbounds i16** %4, i64 %indvars.iv
+  store i16* %add.ptr, i16** %arrayidx12, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %rows
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %mul15 = shl i32 %mul, 1
+  ret i32 %mul15
+}

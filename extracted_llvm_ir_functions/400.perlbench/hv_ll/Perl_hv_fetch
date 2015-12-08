@@ -1,0 +1,15 @@
+define %struct.sv** @Perl_hv_fetch(%struct.hv* %hv, i8* %key, i32 %klen_i32, i32 %lval) #0 {
+entry:
+  %cmp = icmp slt i32 %klen_i32, 0
+  %sub = sub nsw i32 0, %klen_i32
+  %klen.0.in = select i1 %cmp, i32 %sub, i32 %klen_i32
+  %klen_i32.lobit = lshr i32 %klen_i32, 31
+  %klen.0 = sext i32 %klen.0.in to i64
+  %tobool = icmp ne i32 %lval, 0
+  %or = select i1 %tobool, i32 12, i32 8
+  %call = tail call fastcc %struct.he* @S_hv_fetch_common(%struct.hv* %hv, %struct.sv* null, i8* %key, i64 %klen.0, i32 %klen_i32.lobit, i32 %or, %struct.sv* null, i32 0) #5
+  %tobool2 = icmp eq %struct.he* %call, null
+  %hent_val = getelementptr inbounds %struct.he* %call, i64 0, i32 2
+  %.hent_val = select i1 %tobool2, %struct.sv** null, %struct.sv** %hent_val
+  ret %struct.sv** %.hent_val
+}

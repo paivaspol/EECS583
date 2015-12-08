@@ -1,0 +1,94 @@
+define void @skip_intrabk_SAD(i32 %best_mode, i32 %ref_max) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %number = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0
+  %1 = load i32* %number, align 4, !tbaa !4
+  %cmp = icmp sgt i32 %1, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %best_mode.off50 = add i32 %best_mode, -9
+  %2 = icmp ult i32 %best_mode.off50, 2
+  %cond = zext i1 %2 to i32
+  %pix_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 33
+  %3 = load i32* %pix_x, align 4, !tbaa !4
+  %shr = ashr i32 %3, 4
+  %idxprom = sext i32 %shr to i64
+  %4 = load i32** @flag_intra, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom
+  store i32 %cond, i32* %arrayidx, align 4, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %5 = load i32* %type, align 4, !tbaa !4
+  %cmp3 = icmp eq i32 %5, 0
+  br i1 %cmp3, label %if.end39, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %best_mode.off = add i32 %best_mode, -9
+  %6 = icmp ult i32 %best_mode.off, 2
+  br i1 %6, label %for.cond.preheader, label %if.end39
+
+for.cond.preheader:                               ; preds = %land.lhs.true
+  %cmp1551 = icmp sgt i32 %ref_max, 0
+  %pix_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 34
+  %pix_x21 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 33
+  %7 = load i32****** @all_mincost, align 8, !tbaa !3
+  br label %for.cond8.preheader
+
+for.cond8.preheader:                              ; preds = %for.inc36, %for.cond.preheader
+  %i.055 = phi i32 [ 0, %for.cond.preheader ], [ %inc37, %for.inc36 ]
+  br label %for.cond11.preheader
+
+for.cond11.preheader:                             ; preds = %for.inc33, %for.cond8.preheader
+  %j.054 = phi i32 [ 0, %for.cond8.preheader ], [ %inc34, %for.inc33 ]
+  br label %for.cond14.preheader
+
+for.cond14.preheader:                             ; preds = %for.inc30, %for.cond11.preheader
+  %indvars.iv56 = phi i64 [ 1, %for.cond11.preheader ], [ %indvars.iv.next57, %for.inc30 ]
+  br i1 %cmp1551, label %for.body16, label %for.inc30
+
+for.body16:                                       ; preds = %for.cond14.preheader, %for.body16
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body16 ], [ 0, %for.cond14.preheader ]
+  %8 = load i32* %pix_y, align 4, !tbaa !4
+  %shr19 = ashr i32 %8, 2
+  %add = add nsw i32 %shr19, %j.054
+  %idxprom20 = sext i32 %add to i64
+  %9 = load i32* %pix_x21, align 4, !tbaa !4
+  %shr22 = ashr i32 %9, 2
+  %add23 = add nsw i32 %shr22, %i.055
+  %idxprom24 = sext i32 %add23 to i64
+  %arrayidx25 = getelementptr inbounds i32***** %7, i64 %idxprom24
+  %10 = load i32***** %arrayidx25, align 8, !tbaa !3
+  %arrayidx26 = getelementptr inbounds i32**** %10, i64 %idxprom20
+  %11 = load i32**** %arrayidx26, align 8, !tbaa !3
+  %arrayidx27 = getelementptr inbounds i32*** %11, i64 %indvars.iv
+  %12 = load i32*** %arrayidx27, align 8, !tbaa !3
+  %arrayidx28 = getelementptr inbounds i32** %12, i64 %indvars.iv56
+  %13 = load i32** %arrayidx28, align 8, !tbaa !3
+  store i32 0, i32* %13, align 4, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %ref_max
+  br i1 %exitcond, label %for.inc30, label %for.body16
+
+for.inc30:                                        ; preds = %for.body16, %for.cond14.preheader
+  %indvars.iv.next57 = add i64 %indvars.iv56, 1
+  %lftr.wideiv58 = trunc i64 %indvars.iv.next57 to i32
+  %exitcond59 = icmp eq i32 %lftr.wideiv58, 8
+  br i1 %exitcond59, label %for.inc33, label %for.cond14.preheader
+
+for.inc33:                                        ; preds = %for.inc30
+  %inc34 = add nsw i32 %j.054, 1
+  %exitcond60 = icmp eq i32 %inc34, 4
+  br i1 %exitcond60, label %for.inc36, label %for.cond11.preheader
+
+for.inc36:                                        ; preds = %for.inc33
+  %inc37 = add nsw i32 %i.055, 1
+  %exitcond61 = icmp eq i32 %inc37, 4
+  br i1 %exitcond61, label %if.end39, label %for.cond8.preheader
+
+if.end39:                                         ; preds = %for.inc36, %if.end, %land.lhs.true
+  ret void
+}

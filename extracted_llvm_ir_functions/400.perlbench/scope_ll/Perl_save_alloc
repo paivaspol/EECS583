@@ -1,0 +1,56 @@
+define i32 @Perl_save_alloc(i32 %size, i32 %pad) #0 {
+entry:
+  %0 = load i32* @PL_savestack_ix, align 4, !tbaa !4
+  %arrayidx.idx = shl i32 %0, 3
+  %add = add i32 %arrayidx.idx, %pad
+  %add2 = add i32 %size, -1
+  %sub = add i32 %add2, %pad
+  %conv3 = sext i32 %sub to i64
+  %div = lshr i64 %conv3, 3
+  %add4 = add i64 %div, 1
+  %conv5 = trunc i64 %add4 to i32
+  %add620 = add nsw i32 %0, %conv5
+  %add721 = add nsw i32 %add620, 2
+  %1 = load i32* @PL_savestack_max, align 4, !tbaa !4
+  %cmp22 = icmp sgt i32 %add721, %1
+  %.pre = load %union.any** @PL_savestack, align 8, !tbaa !0
+  br i1 %cmp22, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.body
+  %2 = phi %union.any* [ %5, %while.body ], [ %.pre, %entry ]
+  %3 = phi i32 [ %7, %while.body ], [ %1, %entry ]
+  %mul.i = mul nsw i32 %3, 3
+  %div.i = sdiv i32 %mul.i, 2
+  %add.i = add nsw i32 %div.i, 4
+  store i32 %add.i, i32* @PL_savestack_max, align 4, !tbaa !4
+  %4 = bitcast %union.any* %2 to i8*
+  %conv.i = sext i32 %add.i to i64
+  %mul1.i = shl nsw i64 %conv.i, 3
+  %call.i = tail call i8* @Perl_safesysrealloc(i8* %4, i64 %mul1.i) #5
+  %5 = bitcast i8* %call.i to %union.any*
+  store %union.any* %5, %union.any** @PL_savestack, align 8, !tbaa !0
+  %6 = load i32* @PL_savestack_ix, align 4, !tbaa !4
+  %add6 = add nsw i32 %6, %conv5
+  %add7 = add nsw i32 %add6, 2
+  %7 = load i32* @PL_savestack_max, align 4, !tbaa !4
+  %cmp = icmp sgt i32 %add7, %7
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %entry, %while.body
+  %8 = phi %union.any* [ %5, %while.body ], [ %.pre, %entry ]
+  %add6.lcssa = phi i32 [ %add6, %while.body ], [ %add620, %entry ]
+  %inc = add nsw i32 %add6.lcssa, 1
+  store i32 %inc, i32* @PL_savestack_ix, align 4, !tbaa !4
+  %idxprom10 = sext i32 %add6.lcssa to i64
+  %arrayidx11 = getelementptr inbounds %union.any* %8, i64 %idxprom10
+  %any_i32 = bitcast %union.any* %arrayidx11 to i32*
+  store i32 %conv5, i32* %any_i32, align 4, !tbaa !4
+  %9 = load i32* @PL_savestack_ix, align 4, !tbaa !4
+  %inc12 = add nsw i32 %9, 1
+  store i32 %inc12, i32* @PL_savestack_ix, align 4, !tbaa !4
+  %idxprom13 = sext i32 %9 to i64
+  %arrayidx14 = getelementptr inbounds %union.any* %8, i64 %idxprom13
+  %any_i3215 = bitcast %union.any* %arrayidx14 to i32*
+  store i32 28, i32* %any_i3215, align 4, !tbaa !4
+  ret i32 %add
+}

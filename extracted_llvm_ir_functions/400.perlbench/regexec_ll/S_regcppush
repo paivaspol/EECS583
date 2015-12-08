@@ -1,0 +1,139 @@
+define internal fastcc i32 @S_regcppush(i32 %parenfloor) #0 {
+entry:
+  %0 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %1 = load i32* @PL_regsize, align 4, !tbaa !0
+  %sub = sub nsw i32 %1, %parenfloor
+  %mul = shl nsw i32 %sub, 2
+  %cmp = icmp slt i32 %sub, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([31 x i8]* @.str14, i64 0, i64 0)) #6
+  %.pre = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %add = add nsw i32 %mul, 6
+  %add2 = add nsw i32 %2, %add
+  %3 = load i32* @PL_savestack_max, align 4, !tbaa !0
+  %cmp3 = icmp sgt i32 %add2, %3
+  br i1 %cmp3, label %if.then4, label %if.end6
+
+if.then4:                                         ; preds = %if.end
+  tail call void @Perl_savestack_grow_cnt(i32 %add) #6
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %if.then4
+  %4 = load i32* @PL_regsize, align 4, !tbaa !0
+  %cmp760 = icmp sgt i32 %4, %parenfloor
+  br i1 %cmp760, label %for.body.lr.ph, label %if.end6.for.end_crit_edge
+
+if.end6.for.end_crit_edge:                        ; preds = %if.end6
+  %.pre64 = load %union.any** @PL_savestack, align 8, !tbaa !3
+  br label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end6
+  %5 = sext i32 %4 to i64
+  %.pre63 = load %union.any** @PL_savestack, align 8, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %6 = phi %union.any* [ %.pre63, %for.body.lr.ph ], [ %16, %for.body ]
+  %indvars.iv = phi i64 [ %5, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %7 = load i32** @PL_regendp, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32* %7, i64 %indvars.iv
+  %8 = load i32* %arrayidx, align 4, !tbaa !0
+  %9 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc = add nsw i32 %9, 1
+  store i32 %inc, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom8 = sext i32 %9 to i64
+  %arrayidx9 = getelementptr inbounds %union.any* %6, i64 %idxprom8
+  %any_i32 = bitcast %union.any* %arrayidx9 to i32*
+  store i32 %8, i32* %any_i32, align 4, !tbaa !0
+  %10 = load i32** @PL_regstartp, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds i32* %10, i64 %indvars.iv
+  %11 = load i32* %arrayidx11, align 4, !tbaa !0
+  %12 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc12 = add nsw i32 %12, 1
+  store i32 %inc12, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom13 = sext i32 %12 to i64
+  %arrayidx14 = getelementptr inbounds %union.any* %6, i64 %idxprom13
+  %any_i3215 = bitcast %union.any* %arrayidx14 to i32*
+  store i32 %11, i32* %any_i3215, align 4, !tbaa !0
+  %13 = load i8*** @PL_reg_start_tmp, align 8, !tbaa !3
+  %arrayidx17 = getelementptr inbounds i8** %13, i64 %indvars.iv
+  %14 = load i8** %arrayidx17, align 8, !tbaa !3
+  %15 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc18 = add nsw i32 %15, 1
+  %idxprom19 = sext i32 %15 to i64
+  %any_ptr = getelementptr inbounds %union.any* %6, i64 %idxprom19, i32 0
+  store i8* %14, i8** %any_ptr, align 8, !tbaa !3
+  %inc21 = add nsw i32 %15, 2
+  store i32 %inc21, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom22 = sext i32 %inc18 to i64
+  %16 = load %union.any** @PL_savestack, align 8, !tbaa !3
+  %arrayidx23 = getelementptr inbounds %union.any* %16, i64 %idxprom22
+  %any_i3224 = bitcast %union.any* %arrayidx23 to i32*
+  %17 = trunc i64 %indvars.iv to i32
+  store i32 %17, i32* %any_i3224, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %18 = trunc i64 %indvars.iv.next to i32
+  %cmp7 = icmp sgt i32 %18, %parenfloor
+  br i1 %cmp7, label %for.body, label %for.cond.for.end_crit_edge
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre62 = load i32* @PL_regsize, align 4, !tbaa !0
+  br label %for.end
+
+for.end:                                          ; preds = %if.end6.for.end_crit_edge, %for.cond.for.end_crit_edge
+  %19 = phi %union.any* [ %16, %for.cond.for.end_crit_edge ], [ %.pre64, %if.end6.for.end_crit_edge ]
+  %20 = phi i32 [ %.pre62, %for.cond.for.end_crit_edge ], [ %4, %if.end6.for.end_crit_edge ]
+  %21 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc25 = add nsw i32 %21, 1
+  store i32 %inc25, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom26 = sext i32 %21 to i64
+  %arrayidx27 = getelementptr inbounds %union.any* %19, i64 %idxprom26
+  %any_i3228 = bitcast %union.any* %arrayidx27 to i32*
+  store i32 %20, i32* %any_i3228, align 4, !tbaa !0
+  %22 = load i32** @PL_reglastparen, align 8, !tbaa !3
+  %23 = load i32* %22, align 4, !tbaa !0
+  %24 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc29 = add nsw i32 %24, 1
+  store i32 %inc29, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom30 = sext i32 %24 to i64
+  %arrayidx31 = getelementptr inbounds %union.any* %19, i64 %idxprom30
+  %any_i3232 = bitcast %union.any* %arrayidx31 to i32*
+  store i32 %23, i32* %any_i3232, align 4, !tbaa !0
+  %25 = load i32** @PL_reglastcloseparen, align 8, !tbaa !3
+  %26 = load i32* %25, align 4, !tbaa !0
+  %27 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc33 = add nsw i32 %27, 1
+  store i32 %inc33, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom34 = sext i32 %27 to i64
+  %arrayidx35 = getelementptr inbounds %union.any* %19, i64 %idxprom34
+  %any_i3236 = bitcast %union.any* %arrayidx35 to i32*
+  store i32 %26, i32* %any_i3236, align 4, !tbaa !0
+  %28 = load i8** @PL_reginput, align 8, !tbaa !3
+  %29 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc37 = add nsw i32 %29, 1
+  %idxprom38 = sext i32 %29 to i64
+  %any_ptr40 = getelementptr inbounds %union.any* %19, i64 %idxprom38, i32 0
+  store i8* %28, i8** %any_ptr40, align 8, !tbaa !3
+  %sub42 = add nsw i32 %mul, 4
+  %inc43 = add nsw i32 %29, 2
+  store i32 %inc43, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom44 = sext i32 %inc37 to i64
+  %30 = load %union.any** @PL_savestack, align 8, !tbaa !3
+  %arrayidx45 = getelementptr inbounds %union.any* %30, i64 %idxprom44
+  %any_i3246 = bitcast %union.any* %arrayidx45 to i32*
+  store i32 %sub42, i32* %any_i3246, align 4, !tbaa !0
+  %31 = load i32* @PL_savestack_ix, align 4, !tbaa !0
+  %inc47 = add nsw i32 %31, 1
+  store i32 %inc47, i32* @PL_savestack_ix, align 4, !tbaa !0
+  %idxprom48 = sext i32 %31 to i64
+  %arrayidx49 = getelementptr inbounds %union.any* %30, i64 %idxprom48
+  %any_i3250 = bitcast %union.any* %arrayidx49 to i32*
+  store i32 21, i32* %any_i3250, align 4, !tbaa !0
+  ret i32 %0
+}

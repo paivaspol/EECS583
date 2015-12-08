@@ -1,0 +1,42 @@
+define void @IVDVisortDown(i32 %n, i32* nocapture %ivec, double* nocapture %dvec) #1 {
+entry:
+  %cmp52 = icmp sgt i32 %n, 1
+  br i1 %cmp52, label %land.rhs.lr.ph, label %for.end28
+
+land.rhs.lr.ph:                                   ; preds = %for.inc27, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc27 ], [ 1, %entry ]
+  %arrayidx4.phi.trans.insert = getelementptr inbounds i32* %ivec, i64 %indvars.iv
+  %.pre = load i32* %arrayidx4.phi.trans.insert, align 4, !tbaa !0
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body6
+  %indvars.iv54 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next55, %for.body6 ]
+  %indvars.iv.next55 = add i64 %indvars.iv54, -1
+  %arrayidx = getelementptr inbounds i32* %ivec, i64 %indvars.iv.next55
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp5 = icmp slt i32 %0, %.pre
+  br i1 %cmp5, label %for.body6, label %for.inc27
+
+for.body6:                                        ; preds = %land.rhs
+  %arrayidx4 = getelementptr inbounds i32* %ivec, i64 %indvars.iv54
+  store i32 %.pre, i32* %arrayidx, align 4, !tbaa !0
+  store i32 %0, i32* %arrayidx4, align 4, !tbaa !0
+  %arrayidx19 = getelementptr inbounds double* %dvec, i64 %indvars.iv.next55
+  %1 = load double* %arrayidx19, align 8, !tbaa !3
+  %arrayidx21 = getelementptr inbounds double* %dvec, i64 %indvars.iv54
+  %2 = load double* %arrayidx21, align 8, !tbaa !3
+  store double %2, double* %arrayidx19, align 8, !tbaa !3
+  store double %1, double* %arrayidx21, align 8, !tbaa !3
+  %3 = trunc i64 %indvars.iv.next55 to i32
+  %cmp2 = icmp sgt i32 %3, 0
+  br i1 %cmp2, label %land.rhs, label %for.inc27
+
+for.inc27:                                        ; preds = %for.body6, %land.rhs
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end28, label %land.rhs.lr.ph
+
+for.end28:                                        ; preds = %for.inc27, %entry
+  ret void
+}

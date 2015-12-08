@@ -1,0 +1,118 @@
+define void @I2Ohash_insert(%struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8* %value) #0 {
+entry:
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._I2Ohash* null, i32 %key1, i32 %key2, i8* %value) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %add = add nsw i32 %key1, 1
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0
+  %1 = load i32* %nlist, align 4, !tbaa !3
+  %rem = srem i32 %add, %1
+  %add1 = add nsw i32 %key2, 1
+  %rem3 = srem i32 %add1, %1
+  %mul = mul nsw i32 %rem3, %rem
+  %rem5 = srem i32 %mul, %1
+  %freeI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 4
+  %2 = load %struct._I2OP** %freeI2OP, align 8, !tbaa !0
+  %cmp6 = icmp eq %struct._I2OP* %2, null
+  br i1 %cmp6, label %if.then7, label %if.end18
+
+if.then7:                                         ; preds = %if.end
+  %grow = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 1
+  %3 = load i32* %grow, align 4, !tbaa !3
+  %cmp8 = icmp slt i32 %3, 1
+  br i1 %cmp8, label %if.then9, label %if.end12
+
+if.then9:                                         ; preds = %if.then7
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([76 x i8]* @.str1, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8* %value, i32 %3) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end12:                                         ; preds = %if.then7
+  %call14 = tail call %struct._I2OP* @I2OP_init(i32 %3, i32 1) #4
+  %add.ptr = getelementptr inbounds %struct._I2OP* %call14, i64 1
+  store %struct._I2OP* %add.ptr, %struct._I2OP** %freeI2OP, align 8, !tbaa !0
+  %baseI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3
+  %5 = load %struct._I2OP** %baseI2OP, align 8, !tbaa !0
+  %next = getelementptr inbounds %struct._I2OP* %call14, i64 0, i32 3
+  store %struct._I2OP* %5, %struct._I2OP** %next, align 8, !tbaa !0
+  store %struct._I2OP* %call14, %struct._I2OP** %baseI2OP, align 8, !tbaa !0
+  %6 = load %struct._I2OP** %freeI2OP, align 8, !tbaa !0
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end12, %if.end
+  %i2op.0 = phi %struct._I2OP* [ %6, %if.end12 ], [ %2, %if.end ]
+  %next19 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 3
+  %7 = load %struct._I2OP** %next19, align 8, !tbaa !0
+  store %struct._I2OP* %7, %struct._I2OP** %freeI2OP, align 8, !tbaa !0
+  %value0 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 0
+  store i32 %key1, i32* %value0, align 4, !tbaa !3
+  %value1 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 1
+  store i32 %key2, i32* %value1, align 4, !tbaa !3
+  %value2 = getelementptr inbounds %struct._I2OP* %i2op.0, i64 0, i32 2
+  store i8* %value, i8** %value2, align 8, !tbaa !0
+  store %struct._I2OP* null, %struct._I2OP** %next19, align 8, !tbaa !0
+  %idxprom = sext i32 %rem5 to i64
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5
+  %8 = load %struct._I2OP*** %heads, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct._I2OP** %8, i64 %idxprom
+  %j2op.085 = load %struct._I2OP** %arrayidx, align 8
+  %cmp2286 = icmp eq %struct._I2OP* %j2op.085, null
+  br i1 %cmp2286, label %if.then33, label %for.body
+
+for.body:                                         ; preds = %if.end18, %if.end30
+  %j2op.088 = phi %struct._I2OP* [ %j2op.0, %if.end30 ], [ %j2op.085, %if.end18 ]
+  %prev.087 = phi %struct._I2OP* [ %j2op.088, %if.end30 ], [ null, %if.end18 ]
+  %value023 = getelementptr inbounds %struct._I2OP* %j2op.088, i64 0, i32 0
+  %9 = load i32* %value023, align 4, !tbaa !3
+  %cmp24 = icmp sgt i32 %9, %key1
+  br i1 %cmp24, label %for.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %for.body
+  %cmp26 = icmp eq i32 %9, %key1
+  br i1 %cmp26, label %land.lhs.true, label %if.end30
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %value127 = getelementptr inbounds %struct._I2OP* %j2op.088, i64 0, i32 1
+  %10 = load i32* %value127, align 4, !tbaa !3
+  %cmp28 = icmp slt i32 %10, %key2
+  br i1 %cmp28, label %if.end30, label %for.end
+
+if.end30:                                         ; preds = %land.lhs.true, %lor.lhs.false
+  %next31 = getelementptr inbounds %struct._I2OP* %j2op.088, i64 0, i32 3
+  %j2op.0 = load %struct._I2OP** %next31, align 8
+  %cmp22 = icmp eq %struct._I2OP* %j2op.0, null
+  br i1 %cmp22, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end30, %land.lhs.true, %for.body
+  %j2op.0.lcssa = phi %struct._I2OP* [ %j2op.088, %for.body ], [ %j2op.088, %land.lhs.true ], [ null, %if.end30 ]
+  %prev.0.lcssa = phi %struct._I2OP* [ %prev.087, %for.body ], [ %prev.087, %land.lhs.true ], [ %j2op.088, %if.end30 ]
+  %cmp32 = icmp eq %struct._I2OP* %prev.0.lcssa, null
+  br i1 %cmp32, label %if.then33, label %if.else
+
+if.then33:                                        ; preds = %if.end18, %for.end
+  %j2op.0.lcssa95 = phi %struct._I2OP* [ %j2op.0.lcssa, %for.end ], [ null, %if.end18 ]
+  store %struct._I2OP* %i2op.0, %struct._I2OP** %arrayidx, align 8, !tbaa !0
+  br label %if.end38
+
+if.else:                                          ; preds = %for.end
+  %next37 = getelementptr inbounds %struct._I2OP* %prev.0.lcssa, i64 0, i32 3
+  store %struct._I2OP* %i2op.0, %struct._I2OP** %next37, align 8, !tbaa !0
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.else, %if.then33
+  %j2op.0.lcssa94 = phi %struct._I2OP* [ %j2op.0.lcssa, %if.else ], [ %j2op.0.lcssa95, %if.then33 ]
+  store %struct._I2OP* %j2op.0.lcssa94, %struct._I2OP** %next19, align 8, !tbaa !0
+  %nitem = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 2
+  %11 = load i32* %nitem, align 4, !tbaa !3
+  %inc = add nsw i32 %11, 1
+  store i32 %inc, i32* %nitem, align 4, !tbaa !3
+  ret void
+}

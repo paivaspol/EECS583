@@ -1,0 +1,91 @@
+define void @Chv_initWithPointers(%struct._Chv* %chv, i32 %id, i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag, i32* %rowind, i32* %colind, double* %entries) #0 {
+entry:
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp slt i32 %nD, 1
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %nL, 0
+  %or.cond70 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp slt i32 %nU, 0
+  %or.cond71 = or i1 %or.cond70, %cmp5
+  br i1 %or.cond71, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([79 x i8]* @.str14, i64 0, i64 0), %struct._Chv* %chv, i32 %nD, i32 %nL, i32 %nU) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp6 = icmp eq double* %entries, null
+  %cmp8 = icmp eq i32* %colind, null
+  %or.cond72 = or i1 %cmp6, %cmp8
+  br i1 %or.cond72, label %if.then12, label %lor.lhs.false9
+
+lor.lhs.false9:                                   ; preds = %if.end
+  %cmp10 = icmp eq i32 %symflag, 2
+  %cmp11 = icmp eq i32* %rowind, null
+  %or.cond73 = and i1 %cmp10, %cmp11
+  br i1 %or.cond73, label %if.then12, label %if.end14
+
+if.then12:                                        ; preds = %lor.lhs.false9, %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([83 x i8]* @.str15, i64 0, i64 0), double* %entries, i32* %colind, i32* %rowind, i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end14:                                         ; preds = %lor.lhs.false9
+  switch i32 %type, label %sw.default22 [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb17
+  ]
+
+sw.bb:                                            ; preds = %if.end14
+  switch i32 %symflag, label %sw.default [
+    i32 0, label %sw.epilog24
+    i32 2, label %sw.epilog24
+  ]
+
+sw.default:                                       ; preds = %sw.bb
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([127 x i8]* @.str16, i64 0, i64 0), i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+sw.bb17:                                          ; preds = %if.end14
+  %switch = icmp ult i32 %symflag, 3
+  br i1 %switch, label %sw.epilog24, label %sw.default19
+
+sw.default19:                                     ; preds = %sw.bb17
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([150 x i8]* @.str17, i64 0, i64 0), i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+sw.default22:                                     ; preds = %if.end14
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([93 x i8]* @.str18, i64 0, i64 0), i32 %type) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+sw.epilog24:                                      ; preds = %sw.bb17, %sw.bb, %sw.bb
+  %id25 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 0
+  store i32 %id, i32* %id25, align 4, !tbaa !3
+  %nD26 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 1
+  store i32 %nD, i32* %nD26, align 4, !tbaa !3
+  %nL27 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 2
+  store i32 %nL, i32* %nL27, align 4, !tbaa !3
+  %nU28 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 3
+  store i32 %nU, i32* %nU28, align 4, !tbaa !3
+  %type29 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  store i32 %type, i32* %type29, align 4, !tbaa !3
+  %symflag30 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  store i32 %symflag, i32* %symflag30, align 4, !tbaa !3
+  %entries31 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 8
+  store double* %entries, double** %entries31, align 8, !tbaa !0
+  %colind32 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 7
+  store i32* %colind, i32** %colind32, align 8, !tbaa !0
+  %rowind35 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 6
+  %rowind. = select i1 %cmp10, i32* %rowind, i32* null
+  store i32* %rowind., i32** %rowind35, align 8, !tbaa !0
+  ret void
+}

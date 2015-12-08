@@ -1,0 +1,124 @@
+define void @Perl_op_free(%struct.op* %o) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %op_seq = getelementptr inbounds %struct.op* %o, i64 0, i32 5
+  %0 = load i16* %op_seq, align 2, !tbaa !4
+  %cmp = icmp eq i16 %0, -1
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %op_private = getelementptr inbounds %struct.op* %o, i64 0, i32 7
+  %1 = load i8* %op_private, align 1, !tbaa !1
+  %and = and i8 %1, 64
+  %tobool3 = icmp eq i8 %and, 0
+  br i1 %tobool3, label %if.end9, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %2 = load i16* %op_type, align 2, !tbaa !4
+  %conv5 = zext i16 %2 to i32
+  switch i32 %conv5, label %if.end9 [
+    i32 167, label %sw.bb
+    i32 168, label %sw.bb
+    i32 312, label %sw.bb
+    i32 178, label %sw.bb
+    i32 179, label %sw.bb
+    i32 207, label %sw.bb
+  ]
+
+sw.bb:                                            ; preds = %if.then4, %if.then4, %if.then4, %if.then4, %if.then4, %if.then4
+  %op_targ = getelementptr inbounds %struct.op* %o, i64 0, i32 3
+  %3 = load i64* %op_targ, align 8, !tbaa !5
+  %dec = add i64 %3, -1
+  store i64 %dec, i64* %op_targ, align 8, !tbaa !5
+  %tobool6 = icmp eq i64 %dec, 0
+  br i1 %tobool6, label %if.end9, label %return
+
+if.end9:                                          ; preds = %sw.bb, %if.end, %if.then4
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %4 = load i8* %op_flags, align 1, !tbaa !1
+  %and11 = and i8 %4, 4
+  %tobool12 = icmp eq i8 %and11, 0
+  br i1 %tobool12, label %if.end15, label %if.then13
+
+if.then13:                                        ; preds = %if.end9
+  %5 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %6 = load %struct.op** %5, align 8, !tbaa !3
+  %tobool1453 = icmp eq %struct.op* %6, null
+  br i1 %tobool1453, label %if.end15, label %for.body
+
+for.body:                                         ; preds = %if.then13, %for.body
+  %kid.054 = phi %struct.op* [ %7, %for.body ], [ %6, %if.then13 ]
+  %op_sibling = getelementptr inbounds %struct.op* %kid.054, i64 0, i32 1
+  %7 = load %struct.op** %op_sibling, align 8, !tbaa !3
+  tail call void @Perl_op_free(%struct.op* %kid.054) #8
+  %tobool14 = icmp eq %struct.op* %7, null
+  br i1 %tobool14, label %if.end15, label %for.body
+
+if.end15:                                         ; preds = %if.then13, %for.body, %if.end9
+  %op_type16 = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %8 = load i16* %op_type16, align 2, !tbaa !4
+  %cmp18 = icmp eq i16 %8, 0
+  br i1 %cmp18, label %if.then20, label %if.end23
+
+if.then20:                                        ; preds = %if.end15
+  %op_targ21 = getelementptr inbounds %struct.op* %o, i64 0, i32 3
+  %9 = load i64* %op_targ21, align 8, !tbaa !5
+  %conv22 = trunc i64 %9 to i16
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.then20, %if.end15
+  %type.0 = phi i16 [ %conv22, %if.then20 ], [ %8, %if.end15 ]
+  switch i16 %type.0, label %if.end36 [
+    i16 174, label %if.then35
+    i16 349, label %if.then35
+    i16 175, label %if.then35
+  ]
+
+if.then35:                                        ; preds = %if.end23, %if.end23, %if.end23
+  %cop_label.i = getelementptr inbounds %struct.op* %o, i64 1
+  %10 = bitcast %struct.op* %cop_label.i to i8**
+  %11 = load i8** %10, align 8, !tbaa !3
+  tail call void @Perl_safesysfree(i8* %11) #7
+  %cop_filegv.i = getelementptr inbounds %struct.op* %o, i64 1, i32 2
+  %12 = load %struct.op* ()** %cop_filegv.i, align 8
+  %13 = bitcast %struct.op* ()* %12 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %13) #7
+  store %struct.op* ()* null, %struct.op* ()** %cop_filegv.i, align 8, !tbaa !3
+  %cop_warnings.i = getelementptr inbounds %struct.op* %o, i64 2
+  %14 = bitcast %struct.op* %cop_warnings.i to %struct.sv**
+  %15 = load %struct.sv** %14, align 8, !tbaa !3
+  %magicptr20.i = ptrtoint %struct.sv* %15 to i64
+  switch i64 %magicptr20.i, label %if.then.i [
+    i64 0, label %if.end.i
+    i64 16, label %if.end.i
+    i64 32, label %if.end.i
+  ]
+
+if.then.i:                                        ; preds = %if.then35
+  tail call void @Perl_sv_free(%struct.sv* %15) #7
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.then.i, %if.then35, %if.then35, %if.then35
+  %cop_io.i = getelementptr inbounds %struct.op* %o, i64 2, i32 1
+  %16 = load %struct.op** %cop_io.i, align 8
+  %cmp8.i = icmp eq %struct.op* %16, null
+  br i1 %cmp8.i, label %if.end36, label %if.then9.i
+
+if.then9.i:                                       ; preds = %if.end.i
+  %17 = bitcast %struct.op* %16 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %17) #7
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.then9.i, %if.end.i, %if.end23
+  tail call void @Perl_op_clear(%struct.op* %o) #8
+  %18 = bitcast %struct.op* %o to i8*
+  tail call void @Perl_safesysfree(i8* %18) #7
+  br label %return
+
+return:                                           ; preds = %sw.bb, %entry, %lor.lhs.false, %if.end36
+  ret void
+}

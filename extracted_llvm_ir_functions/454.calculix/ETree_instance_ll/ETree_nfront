@@ -1,0 +1,16 @@
+define i32 @ETree_nfront(%struct._ETree* %etree) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), %struct._ETree* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %1 = load i32* %nfront, align 4, !tbaa !3
+  ret i32 %1
+}

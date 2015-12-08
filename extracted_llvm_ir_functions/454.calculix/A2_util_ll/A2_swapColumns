@@ -1,0 +1,209 @@
+define void @A2_swapColumns(%struct._A2* %a, i32 %jcol1, i32 %jcol2) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %a, null
+  %cmp1 = icmp slt i32 %jcol1, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %n2 = getelementptr inbounds %struct._A2* %a, i64 0, i32 2
+  %0 = load i32* %n2, align 4, !tbaa !3
+  %notlhs = icmp sgt i32 %0, %jcol1
+  %notrhs = icmp sgt i32 %jcol2, -1
+  %or.cond271.not = and i1 %notrhs, %notlhs
+  %cmp8 = icmp sgt i32 %0, %jcol2
+  %or.cond272 = and i1 %or.cond271.not, %cmp8
+  br i1 %or.cond272, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([54 x i8]* @.str53, i64 0, i64 0), %struct._A2* %a, i32 %jcol1, i32 %jcol2) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %n19 = getelementptr inbounds %struct._A2* %a, i64 0, i32 1
+  %2 = load i32* %n19, align 4, !tbaa !3
+  %cmp10 = icmp slt i32 %2, 1
+  br i1 %cmp10, label %if.then21, label %lor.lhs.false11
+
+lor.lhs.false11:                                  ; preds = %if.end
+  %inc112 = getelementptr inbounds %struct._A2* %a, i64 0, i32 3
+  %3 = load i32* %inc112, align 4, !tbaa !3
+  %cmp13 = icmp slt i32 %3, 1
+  %cmp16 = icmp slt i32 %0, 1
+  %or.cond273 = or i1 %cmp13, %cmp16
+  br i1 %or.cond273, label %if.then21, label %lor.lhs.false17
+
+lor.lhs.false17:                                  ; preds = %lor.lhs.false11
+  %inc2 = getelementptr inbounds %struct._A2* %a, i64 0, i32 4
+  %4 = load i32* %inc2, align 4, !tbaa !3
+  %cmp18 = icmp slt i32 %4, 1
+  br i1 %cmp18, label %if.then21, label %lor.lhs.false19
+
+lor.lhs.false19:                                  ; preds = %lor.lhs.false17
+  %entries = getelementptr inbounds %struct._A2* %a, i64 0, i32 6
+  %5 = load double** %entries, align 8, !tbaa !0
+  %cmp20 = icmp eq double* %5, null
+  br i1 %cmp20, label %if.then21, label %if.end23
+
+if.then21:                                        ; preds = %lor.lhs.false19, %lor.lhs.false17, %lor.lhs.false11, %if.end
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call22 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([58 x i8]* @.str54, i64 0, i64 0), %struct._A2* %a, i32 %jcol1, i32 %jcol2) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end23:                                         ; preds = %lor.lhs.false19
+  %type = getelementptr inbounds %struct._A2* %a, i64 0, i32 0
+  %7 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %7, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end31, label %if.then28
+
+if.then28:                                        ; preds = %if.end23
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([97 x i8]* @.str55, i64 0, i64 0), %struct._A2* %a, i32 %jcol1, i32 %jcol2, i32 %7) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end31:                                         ; preds = %if.end23
+  %cmp32 = icmp eq i32 %jcol1, %jcol2
+  br i1 %cmp32, label %return, label %if.end34
+
+if.end34:                                         ; preds = %if.end31
+  switch i32 %7, label %return [
+    i32 1, label %if.then37
+    i32 2, label %if.then72
+  ]
+
+if.then37:                                        ; preds = %if.end34
+  %mul = mul nsw i32 %4, %jcol1
+  %idx.ext = sext i32 %mul to i64
+  %mul42 = mul nsw i32 %4, %jcol2
+  %idx.ext43 = sext i32 %mul42 to i64
+  %cmp45 = icmp eq i32 %3, 1
+  %cmp47274 = icmp sgt i32 %2, 0
+  br i1 %cmp45, label %for.cond.preheader, label %for.cond54.preheader
+
+for.cond54.preheader:                             ; preds = %if.then37
+  br i1 %cmp47274, label %for.body56.lr.ph, label %return
+
+for.body56.lr.ph:                                 ; preds = %for.cond54.preheader
+  %9 = sext i32 %3 to i64
+  br label %for.body56
+
+for.cond.preheader:                               ; preds = %if.then37
+  br i1 %cmp47274, label %for.body, label %return
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %add.ptr.sum269 = add i64 %indvars.iv, %idx.ext
+  %arrayidx = getelementptr inbounds double* %5, i64 %add.ptr.sum269
+  %10 = load double* %arrayidx, align 8, !tbaa !4
+  %add.ptr44.sum270 = add i64 %indvars.iv, %idx.ext43
+  %arrayidx49 = getelementptr inbounds double* %5, i64 %add.ptr44.sum270
+  %11 = load double* %arrayidx49, align 8, !tbaa !4
+  store double %11, double* %arrayidx, align 8, !tbaa !4
+  store double %10, double* %arrayidx49, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %return, label %for.body
+
+for.body56:                                       ; preds = %for.body56, %for.body56.lr.ph
+  %indvars.iv289 = phi i64 [ 0, %for.body56.lr.ph ], [ %indvars.iv.next290, %for.body56 ]
+  %i.1278 = phi i32 [ 0, %for.body56.lr.ph ], [ %inc66, %for.body56 ]
+  %add.ptr.sum = add i64 %indvars.iv289, %idx.ext
+  %arrayidx58 = getelementptr inbounds double* %5, i64 %add.ptr.sum
+  %12 = load double* %arrayidx58, align 8, !tbaa !4
+  %add.ptr44.sum = add i64 %indvars.iv289, %idx.ext43
+  %arrayidx60 = getelementptr inbounds double* %5, i64 %add.ptr44.sum
+  %13 = load double* %arrayidx60, align 8, !tbaa !4
+  store double %13, double* %arrayidx58, align 8, !tbaa !4
+  store double %12, double* %arrayidx60, align 8, !tbaa !4
+  %inc66 = add nsw i32 %i.1278, 1
+  %indvars.iv.next290 = add i64 %indvars.iv289, %9
+  %exitcond291 = icmp eq i32 %inc66, %2
+  br i1 %exitcond291, label %return, label %for.body56
+
+if.then72:                                        ; preds = %if.end34
+  %mul74 = shl i32 %jcol1, 1
+  %mul76 = mul nsw i32 %mul74, %4
+  %idx.ext77 = sext i32 %mul76 to i64
+  %mul80 = shl i32 %jcol2, 1
+  %mul82 = mul nsw i32 %mul80, %4
+  %idx.ext83 = sext i32 %mul82 to i64
+  %cmp85 = icmp eq i32 %3, 1
+  %cmp88281 = icmp sgt i32 %2, 0
+  br i1 %cmp85, label %for.cond87.preheader, label %for.cond122.preheader
+
+for.cond122.preheader:                            ; preds = %if.then72
+  br i1 %cmp88281, label %for.body124.lr.ph, label %return
+
+for.body124.lr.ph:                                ; preds = %for.cond122.preheader
+  %14 = sext i32 %3 to i64
+  br label %for.body124
+
+for.cond87.preheader:                             ; preds = %if.then72
+  br i1 %cmp88281, label %for.body89, label %return
+
+for.body89:                                       ; preds = %for.cond87.preheader, %for.body89
+  %indvars.iv292 = phi i64 [ %indvars.iv.next293, %for.body89 ], [ 0, %for.cond87.preheader ]
+  %15 = trunc i64 %indvars.iv292 to i32
+  %mul90 = shl nsw i32 %15, 1
+  %idxprom91 = sext i32 %mul90 to i64
+  %add.ptr78.sum264 = add i64 %idxprom91, %idx.ext77
+  %arrayidx92 = getelementptr inbounds double* %5, i64 %add.ptr78.sum264
+  %16 = load double* %arrayidx92, align 8, !tbaa !4
+  %add.ptr84.sum265 = add i64 %idxprom91, %idx.ext83
+  %arrayidx95 = getelementptr inbounds double* %5, i64 %add.ptr84.sum265
+  %17 = load double* %arrayidx95, align 8, !tbaa !4
+  store double %17, double* %arrayidx92, align 8, !tbaa !4
+  store double %16, double* %arrayidx95, align 8, !tbaa !4
+  %add103266 = or i32 %mul90, 1
+  %idxprom104 = sext i32 %add103266 to i64
+  %add.ptr78.sum267 = add i64 %idxprom104, %idx.ext77
+  %arrayidx105 = getelementptr inbounds double* %5, i64 %add.ptr78.sum267
+  %18 = load double* %arrayidx105, align 8, !tbaa !4
+  %add.ptr84.sum268 = add i64 %idxprom104, %idx.ext83
+  %arrayidx109 = getelementptr inbounds double* %5, i64 %add.ptr84.sum268
+  %19 = load double* %arrayidx109, align 8, !tbaa !4
+  store double %19, double* %arrayidx105, align 8, !tbaa !4
+  store double %18, double* %arrayidx109, align 8, !tbaa !4
+  %indvars.iv.next293 = add i64 %indvars.iv292, 1
+  %lftr.wideiv294 = trunc i64 %indvars.iv.next293 to i32
+  %exitcond295 = icmp eq i32 %lftr.wideiv294, %2
+  br i1 %exitcond295, label %return, label %for.body89
+
+for.body124:                                      ; preds = %for.body124, %for.body124.lr.ph
+  %indvars.iv296 = phi i64 [ 0, %for.body124.lr.ph ], [ %indvars.iv.next297, %for.body124 ]
+  %i.3285 = phi i32 [ 0, %for.body124.lr.ph ], [ %inc154, %for.body124 ]
+  %20 = trunc i64 %indvars.iv296 to i32
+  %mul125 = shl nsw i32 %20, 1
+  %idxprom126 = sext i32 %mul125 to i64
+  %add.ptr78.sum = add i64 %idxprom126, %idx.ext77
+  %arrayidx127 = getelementptr inbounds double* %5, i64 %add.ptr78.sum
+  %21 = load double* %arrayidx127, align 8, !tbaa !4
+  %add.ptr84.sum = add i64 %idxprom126, %idx.ext83
+  %arrayidx130 = getelementptr inbounds double* %5, i64 %add.ptr84.sum
+  %22 = load double* %arrayidx130, align 8, !tbaa !4
+  store double %22, double* %arrayidx127, align 8, !tbaa !4
+  store double %21, double* %arrayidx130, align 8, !tbaa !4
+  %add138261 = or i32 %mul125, 1
+  %idxprom139 = sext i32 %add138261 to i64
+  %add.ptr78.sum262 = add i64 %idxprom139, %idx.ext77
+  %arrayidx140 = getelementptr inbounds double* %5, i64 %add.ptr78.sum262
+  %23 = load double* %arrayidx140, align 8, !tbaa !4
+  %add.ptr84.sum263 = add i64 %idxprom139, %idx.ext83
+  %arrayidx144 = getelementptr inbounds double* %5, i64 %add.ptr84.sum263
+  %24 = load double* %arrayidx144, align 8, !tbaa !4
+  store double %24, double* %arrayidx140, align 8, !tbaa !4
+  store double %23, double* %arrayidx144, align 8, !tbaa !4
+  %inc154 = add nsw i32 %i.3285, 1
+  %indvars.iv.next297 = add i64 %indvars.iv296, %14
+  %exitcond298 = icmp eq i32 %inc154, %2
+  br i1 %exitcond298, label %return, label %for.body124
+
+return:                                           ; preds = %for.cond122.preheader, %for.body124, %for.cond87.preheader, %for.body89, %for.cond54.preheader, %for.body56, %for.cond.preheader, %for.body, %if.end34, %if.end31
+  ret void
+}

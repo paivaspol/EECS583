@@ -1,0 +1,91 @@
+define i32 @get_mem_ACcoeff(i32***** nocapture %cofAC) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %num_blk8x8_uv = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 157
+  %1 = load i32* %num_blk8x8_uv, align 4, !tbaa !0
+  %add = add i32 %1, 4
+  %conv = sext i32 %add to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #6
+  %2 = bitcast i8* %call to i32****
+  store i32**** %2, i32***** %cofAC, align 8, !tbaa !3
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str92, i64 0, i64 0)) #6
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %cmp264 = icmp sgt i32 %add, 0
+  br i1 %cmp264, label %for.body, label %for.end42
+
+for.body:                                         ; preds = %for.inc40, %for.cond.preheader
+  %indvars.iv70 = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next71, %for.inc40 ]
+  %call4 = tail call noalias i8* @calloc(i64 4, i64 8) #6
+  %3 = bitcast i8* %call4 to i32***
+  %4 = load i32***** %cofAC, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32**** %4, i64 %indvars.iv70
+  store i32*** %3, i32**** %arrayidx, align 8, !tbaa !3
+  %cmp5 = icmp eq i8* %call4, null
+  br i1 %cmp5, label %if.then7, label %for.body12
+
+if.then7:                                         ; preds = %for.body
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str92, i64 0, i64 0)) #6
+  br label %for.body12
+
+for.body12:                                       ; preds = %for.body, %if.then7, %for.inc37
+  %indvars.iv66 = phi i64 [ %indvars.iv.next67, %for.inc37 ], [ 0, %if.then7 ], [ 0, %for.body ]
+  %call13 = tail call noalias i8* @calloc(i64 2, i64 8) #6
+  %5 = bitcast i8* %call13 to i32**
+  %6 = load i32***** %cofAC, align 8, !tbaa !3
+  %arrayidx16 = getelementptr inbounds i32**** %6, i64 %indvars.iv70
+  %7 = load i32**** %arrayidx16, align 8, !tbaa !3
+  %arrayidx17 = getelementptr inbounds i32*** %7, i64 %indvars.iv66
+  store i32** %5, i32*** %arrayidx17, align 8, !tbaa !3
+  %cmp18 = icmp eq i8* %call13, null
+  br i1 %cmp18, label %if.then20, label %for.body25
+
+if.then20:                                        ; preds = %for.body12
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str92, i64 0, i64 0)) #6
+  br label %for.body25
+
+for.body25:                                       ; preds = %for.body12, %if.then20, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then20 ], [ 0, %for.body12 ]
+  %call26 = tail call noalias i8* @calloc(i64 65, i64 4) #6
+  %8 = bitcast i8* %call26 to i32*
+  %9 = load i32***** %cofAC, align 8, !tbaa !3
+  %arrayidx30 = getelementptr inbounds i32**** %9, i64 %indvars.iv70
+  %10 = load i32**** %arrayidx30, align 8, !tbaa !3
+  %arrayidx31 = getelementptr inbounds i32*** %10, i64 %indvars.iv66
+  %11 = load i32*** %arrayidx31, align 8, !tbaa !3
+  %arrayidx32 = getelementptr inbounds i32** %11, i64 %indvars.iv
+  store i32* %8, i32** %arrayidx32, align 8, !tbaa !3
+  %cmp33 = icmp eq i8* %call26, null
+  br i1 %cmp33, label %if.then35, label %for.inc
+
+if.then35:                                        ; preds = %for.body25
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str92, i64 0, i64 0)) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body25, %if.then35
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %for.inc37, label %for.body25
+
+for.inc37:                                        ; preds = %for.inc
+  %indvars.iv.next67 = add i64 %indvars.iv66, 1
+  %lftr.wideiv68 = trunc i64 %indvars.iv.next67 to i32
+  %exitcond69 = icmp eq i32 %lftr.wideiv68, 4
+  br i1 %exitcond69, label %for.inc40, label %for.body12
+
+for.inc40:                                        ; preds = %for.inc37
+  %indvars.iv.next71 = add i64 %indvars.iv70, 1
+  %lftr.wideiv72 = trunc i64 %indvars.iv.next71 to i32
+  %exitcond73 = icmp eq i32 %lftr.wideiv72, %add
+  br i1 %exitcond73, label %for.end42, label %for.body
+
+for.end42:                                        ; preds = %for.inc40, %for.cond.preheader
+  %mul46 = mul i32 %add, 2080
+  ret i32 %mul46
+}

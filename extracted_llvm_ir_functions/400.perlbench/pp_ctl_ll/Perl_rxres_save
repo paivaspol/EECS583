@@ -1,0 +1,104 @@
+define void @Perl_rxres_save(i8** nocapture %rsp, %struct.regexp* nocapture %rx) #0 {
+entry:
+  %0 = load i8** %rsp, align 8, !tbaa !0
+  %tobool = icmp eq i8* %0, null
+  br i1 %tobool, label %if.then4, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds i8* %0, i64 8
+  %1 = bitcast i8* %arrayidx to i64*
+  %2 = load i64* %1, align 8, !tbaa !4
+  %nparens = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 12
+  %3 = load i32* %nparens, align 4, !tbaa !3
+  %conv = zext i32 %3 to i64
+  %cmp = icmp ult i64 %2, %conv
+  br i1 %cmp, label %if.else, label %if.end10
+
+if.then4:                                         ; preds = %entry
+  %nparens2 = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 12
+  %4 = load i32* %nparens2, align 4, !tbaa !3
+  %mul = shl i32 %4, 1
+  %add = add i32 %mul, 6
+  %conv7 = zext i32 %add to i64
+  %mul8 = shl nuw nsw i64 %conv7, 3
+  %call = tail call i8* @Perl_safesysmalloc(i64 %mul8) #7
+  br label %if.end
+
+if.else:                                          ; preds = %lor.lhs.false
+  %mul58 = shl i32 %3, 1
+  %add59 = add i32 %mul58, 6
+  %conv760 = zext i32 %add59 to i64
+  %mul861 = shl nuw nsw i64 %conv760, 3
+  %call9 = tail call i8* @Perl_safesysrealloc(i8* %0, i64 %mul861) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then4
+  %p.0.in = phi i8* [ %call9, %if.else ], [ %call, %if.then4 ]
+  store i8* %p.0.in, i8** %rsp, align 8, !tbaa !0
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.end, %lor.lhs.false
+  %p.1.in = phi i8* [ %p.0.in, %if.end ], [ %0, %lor.lhs.false ]
+  %p.1 = bitcast i8* %p.1.in to i64*
+  %reganch = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 15
+  %5 = load i32* %reganch, align 4, !tbaa !3
+  %and = and i32 %5, 262144
+  %tobool11 = icmp eq i32 %and, 0
+  %subbeg17.phi.trans.insert = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 6
+  %.pre = load i8** %subbeg17.phi.trans.insert, align 8, !tbaa !0
+  br i1 %tobool11, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.end10
+  %phitmp = ptrtoint i8* %.pre to i64
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end10, %cond.true
+  %cond = phi i64 [ %phitmp, %cond.true ], [ 0, %if.end10 ]
+  %incdec.ptr = getelementptr inbounds i8* %p.1.in, i64 8
+  %6 = bitcast i8* %incdec.ptr to i64*
+  store i64 %cond, i64* %p.1, align 8, !tbaa !4
+  %and13 = and i32 %5, -262145
+  store i32 %and13, i32* %reganch, align 4, !tbaa !3
+  %nparens14 = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 12
+  %7 = load i32* %nparens14, align 4, !tbaa !3
+  %conv15 = zext i32 %7 to i64
+  %incdec.ptr16 = getelementptr inbounds i8* %p.1.in, i64 16
+  %8 = bitcast i8* %incdec.ptr16 to i64*
+  store i64 %conv15, i64* %6, align 8, !tbaa !4
+  %9 = ptrtoint i8* %.pre to i64
+  %incdec.ptr18 = getelementptr inbounds i8* %p.1.in, i64 24
+  %10 = bitcast i8* %incdec.ptr18 to i64*
+  store i64 %9, i64* %8, align 8, !tbaa !4
+  %sublen = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 8
+  %11 = load i32* %sublen, align 4, !tbaa !3
+  %conv19 = sext i32 %11 to i64
+  %incdec.ptr20 = getelementptr inbounds i8* %p.1.in, i64 32
+  %12 = bitcast i8* %incdec.ptr20 to i64*
+  store i64 %conv19, i64* %10, align 8, !tbaa !4
+  %startp = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 0
+  %13 = load i32** %startp, align 8, !tbaa !0
+  %endp = getelementptr inbounds %struct.regexp* %rx, i64 0, i32 1
+  %14 = load i32** %endp, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %cond.end, %for.body
+  %i.064 = phi i32 [ 0, %cond.end ], [ %inc, %for.body ]
+  %p.263 = phi i64* [ %12, %cond.end ], [ %incdec.ptr30, %for.body ]
+  %idxprom = zext i32 %i.064 to i64
+  %arrayidx24 = getelementptr inbounds i32* %13, i64 %idxprom
+  %15 = load i32* %arrayidx24, align 4, !tbaa !3
+  %conv25 = sext i32 %15 to i64
+  %incdec.ptr26 = getelementptr inbounds i64* %p.263, i64 1
+  store i64 %conv25, i64* %p.263, align 8, !tbaa !4
+  %arrayidx28 = getelementptr inbounds i32* %14, i64 %idxprom
+  %16 = load i32* %arrayidx28, align 4, !tbaa !3
+  %conv29 = sext i32 %16 to i64
+  %incdec.ptr30 = getelementptr inbounds i64* %p.263, i64 2
+  store i64 %conv29, i64* %incdec.ptr26, align 8, !tbaa !4
+  %inc = add i32 %i.064, 1
+  %cmp22 = icmp ugt i32 %inc, %7
+  br i1 %cmp22, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret void
+}

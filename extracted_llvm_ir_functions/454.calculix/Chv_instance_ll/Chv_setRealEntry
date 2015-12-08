@@ -1,0 +1,94 @@
+define void @Chv_setRealEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double %value) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp slt i32 %irow, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %jcol, 0
+  %or.cond83 = or i1 %or.cond, %cmp3
+  br i1 %or.cond83, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([59 x i8]* @.str33, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %value) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %1 = load i32* %type, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %1, 1
+  br i1 %cmp4, label %if.end8, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([79 x i8]* @.str34, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %value, i32 %1) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end8:                                          ; preds = %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %3 = load i32* %symflag, align 4, !tbaa !3
+  switch i32 %3, label %if.then13 [
+    i32 0, label %if.end16
+    i32 2, label %if.end16
+  ]
+
+if.then13:                                        ; preds = %if.end8
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call15 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([115 x i8]* @.str35, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %value, i32 %3) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end16:                                         ; preds = %if.end8, %if.end8
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #6
+  %5 = load i32* %nD, align 4, !tbaa !3
+  %6 = load i32* %nU, align 4, !tbaa !3
+  %add = add nsw i32 %6, %5
+  %7 = load i32* %symflag, align 4, !tbaa !3
+  %cmp18 = icmp eq i32 %7, 0
+  br i1 %cmp18, label %if.end21, label %if.else
+
+if.else:                                          ; preds = %if.end16
+  %8 = load i32* %nL, align 4, !tbaa !3
+  %add20 = add nsw i32 %8, %5
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end16, %if.else
+  %nrow.0 = phi i32 [ %add20, %if.else ], [ %add, %if.end16 ]
+  %cmp22 = icmp sgt i32 %nrow.0, %irow
+  %cmp24 = icmp sgt i32 %add, %jcol
+  %or.cond84 = and i1 %cmp22, %cmp24
+  br i1 %or.cond84, label %if.end27, label %if.then25
+
+if.then25:                                        ; preds = %if.end21
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call26 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([92 x i8]* @.str36, i64 0, i64 0), %struct._Chv* %chv, i32 %irow, i32 %jcol, double %value, i32 %irow, i32 %jcol, i32 %nrow.0, i32 %add) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end27:                                         ; preds = %if.end21
+  %cmp28 = icmp sgt i32 %5, %irow
+  %cmp30 = icmp sgt i32 %5, %jcol
+  %or.cond85 = or i1 %cmp28, %cmp30
+  br i1 %or.cond85, label %if.then31, label %if.end40
+
+if.then31:                                        ; preds = %if.end27
+  %cmp32 = icmp sle i32 %irow, %jcol
+  %cond = select i1 %cmp32, i32 %irow, i32 %jcol
+  %sub = sub nsw i32 %jcol, %irow
+  %cmp35 = icmp slt i32 %sub, 0
+  %or.cond86 = and i1 %cmp18, %cmp35
+  %sub37 = sub nsw i32 0, %sub
+  %off.0 = select i1 %or.cond86, i32 %sub37, i32 %sub
+  %call39 = call double* @Chv_diagLocation(%struct._Chv* %chv, i32 %cond) #6
+  %idxprom = sext i32 %off.0 to i64
+  %arrayidx = getelementptr inbounds double* %call39, i64 %idxprom
+  store double %value, double* %arrayidx, align 8, !tbaa !4
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.end27, %if.then31
+  ret void
+}

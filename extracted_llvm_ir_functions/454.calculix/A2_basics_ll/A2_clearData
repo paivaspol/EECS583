@@ -1,0 +1,31 @@
+define void @A2_clearData(%struct._A2* %mtx) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str3, i64 0, i64 0), %struct._A2* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nowned = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5
+  %1 = load i32* %nowned, align 4, !tbaa !3
+  %cmp1 = icmp sgt i32 %1, 0
+  br i1 %cmp1, label %land.lhs.true, label %if.end5
+
+land.lhs.true:                                    ; preds = %if.end
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  %2 = load double** %entries, align 8, !tbaa !0
+  %cmp2 = icmp eq double* %2, null
+  br i1 %cmp2, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %land.lhs.true
+  tail call void @DVfree(double* %2) #5
+  br label %if.end5
+
+if.end5:                                          ; preds = %land.lhs.true, %if.then3, %if.end
+  tail call void @A2_setDefaultFields(%struct._A2* %mtx) #7
+  ret void
+}

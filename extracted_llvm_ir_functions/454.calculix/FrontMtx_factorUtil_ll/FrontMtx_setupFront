@@ -1,0 +1,97 @@
+define %struct._Chv* @FrontMtx_setupFront(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %nbytes = alloca i32, align 4
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp sgt i32 %msglvl, 4
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([129 x i8]* @.str5, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, i32 %J, i32 %myid, i32* %owners, %struct._ChvManager* %chvmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
+  %call1 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  call void @FrontMtx_initialFrontDimensions(%struct._FrontMtx* %frontmtx, i32 %J, i32* %nD, i32* %nL, i32* %nU, i32* %nbytes) #5
+  %cmp2 = icmp sgt i32 %msglvl, 2
+  br i1 %cmp2, label %if.then9, label %if.end6
+
+if.end6:                                          ; preds = %if.end
+  %0 = load i32* %nbytes, align 4, !tbaa !3
+  %call7 = call %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %chvmanager, i32 %0) #5
+  br label %if.end12
+
+if.then9:                                         ; preds = %if.end
+  %1 = load i32* %nD, align 4, !tbaa !3
+  %2 = load i32* %nL, align 4, !tbaa !3
+  %3 = load i32* %nU, align 4, !tbaa !3
+  %4 = load i32* %nbytes, align 4, !tbaa !3
+  %call4 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([33 x i8]* @.str6, i64 0, i64 0), i32 %1, i32 %2, i32 %3, i32 %4) #5
+  %call5 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  %5 = load i32* %nbytes, align 4, !tbaa !3
+  %call779 = call %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %chvmanager, i32 %5) #5
+  %call10 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([14 x i8]* @.str7, i64 0, i64 0), %struct._Chv* %call779) #5
+  %call11 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end6, %if.then9
+  %call780 = phi %struct._Chv* [ %call779, %if.then9 ], [ %call7, %if.end6 ]
+  %6 = load i32* %nD, align 4, !tbaa !3
+  %7 = load i32* %nL, align 4, !tbaa !3
+  %8 = load i32* %nU, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2
+  %9 = load i32* %type, align 4, !tbaa !3
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
+  %10 = load i32* %symmetryflag, align 4, !tbaa !3
+  call void @Chv_init(%struct._Chv* %call780, i32 %J, i32 %6, i32 %7, i32 %8, i32 %9, i32 %10) #5
+  call void @FrontMtx_initializeFront(%struct._FrontMtx* %frontmtx, %struct._Chv* %call780, i32 %J) #6
+  %11 = load double* %cpus, align 8, !tbaa !4
+  %add = fadd double %11, 0.000000e+00
+  store double %add, double* %cpus, align 8, !tbaa !4
+  %cmp13 = icmp eq %struct._Pencil* %pencil, null
+  br i1 %cmp13, label %if.end26, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end12
+  %cmp14 = icmp eq i32* %owners, null
+  br i1 %cmp14, label %if.then17, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %idxprom = sext i32 %J to i64
+  %arrayidx15 = getelementptr inbounds i32* %owners, i64 %idxprom
+  %12 = load i32* %arrayidx15, align 4, !tbaa !3
+  %cmp16 = icmp eq i32 %12, %myid
+  br i1 %cmp16, label %if.then17, label %if.end26
+
+if.then17:                                        ; preds = %lor.lhs.false, %land.lhs.true
+  call void @FrontMtx_loadEntries(%struct._Chv* %call780, %struct._Pencil* %pencil, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
+  %arrayidx19 = getelementptr inbounds double* %cpus, i64 1
+  %13 = load double* %arrayidx19, align 8, !tbaa !4
+  %add20 = fadd double %13, 0.000000e+00
+  store double %add20, double* %arrayidx19, align 8, !tbaa !4
+  %cmp21 = icmp sgt i32 %msglvl, 1
+  br i1 %cmp21, label %if.end26.thread, label %if.end35
+
+if.end26.thread:                                  ; preds = %if.then17
+  %14 = call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str8, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %msgFile)
+  %call24 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end31
+
+if.end26:                                         ; preds = %if.end12, %lor.lhs.false
+  %cmp27 = icmp sgt i32 %msglvl, 1
+  br i1 %cmp27, label %if.end31, label %if.end35
+
+if.end31:                                         ; preds = %if.end26, %if.end26.thread
+  %15 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str9, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %msgFile)
+  %call30 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  %cmp32 = icmp sgt i32 %msglvl, 3
+  br i1 %cmp32, label %if.then33, label %if.end35
+
+if.then33:                                        ; preds = %if.end31
+  call void @Chv_writeForHumanEye(%struct._Chv* %call780, %struct._IO_FILE* %msgFile) #5
+  %call34 = call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.then17, %if.end26, %if.then33, %if.end31
+  ret %struct._Chv* %call780
+}

@@ -1,0 +1,29 @@
+define %struct.op* @Perl_pp_pushmark() #0 {
+entry:
+  %0 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %0, i64 1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %1 = load i32** @PL_markstack_max, align 8, !tbaa !0
+  %cmp = icmp eq i32* %incdec.ptr, %1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_markstack_grow() #8
+  %.pre = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32* [ %.pre, %if.then ], [ %incdec.ptr, %entry ]
+  %3 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %4 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %3 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %4 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div1 = lshr exact i64 %sub.ptr.sub, 3
+  %conv = trunc i64 %sub.ptr.div1 to i32
+  store i32 %conv, i32* %2, align 4, !tbaa !3
+  %5 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %5, i64 0, i32 0
+  %6 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %6
+}

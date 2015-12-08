@@ -1,0 +1,17 @@
+define i32 @se_v(i8* nocapture %tracestring, i32 %value, %struct.datapartition* nocapture %part) #0 {
+entry:
+  %symbol = alloca %struct.syntaxelement, align 8
+  %0 = bitcast %struct.syntaxelement* %symbol to i8*
+  call void @llvm.lifetime.start(i64 48, i8* %0) #1
+  %type = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 0
+  store i32 0, i32* %type, align 8, !tbaa !0
+  %mapping = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 8
+  store void (i32, i32, i32*, i32*)* @se_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !3
+  %value1 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 1
+  store i32 %value, i32* %value1, align 4, !tbaa !0
+  %value2 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 2
+  store i32 0, i32* %value2, align 8, !tbaa !0
+  %call = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %part) #4
+  call void @llvm.lifetime.end(i64 48, i8* %0) #1
+  ret i32 %call
+}

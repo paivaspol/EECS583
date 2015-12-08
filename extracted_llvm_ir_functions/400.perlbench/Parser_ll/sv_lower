@@ -1,0 +1,50 @@
+define internal fastcc %struct.sv* @sv_lower(%struct.sv* %sv) #0 {
+entry:
+  %len = alloca i64, align 8
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 10223616
+  %cmp = icmp eq i32 %and, 262144
+  br i1 %cmp, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  store i64 %3, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %for.cond
+
+cond.false:                                       ; preds = %entry
+  %call = call i8* @Perl_sv_pvn_force_flags(%struct.sv* %sv, i64* %len, i32 2) #6
+  br label %for.condthread-pre-split
+
+for.condthread-pre-split:                         ; preds = %for.body, %cond.false
+  %s.0.ph = phi i8* [ %call, %cond.false ], [ %incdec.ptr, %for.body ]
+  %.pr = load i64* %len, align 8, !tbaa !4
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.condthread-pre-split, %cond.true
+  %5 = phi i64 [ %.pr, %for.condthread-pre-split ], [ %3, %cond.true ]
+  %s.0 = phi i8* [ %s.0.ph, %for.condthread-pre-split ], [ %4, %cond.true ]
+  %dec = add i64 %5, -1
+  store i64 %dec, i64* %len, align 8, !tbaa !4
+  %tobool = icmp eq i64 %5, 0
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %for.cond
+  %6 = load i8* %s.0, align 1, !tbaa !1
+  %.off = add i8 %6, -65
+  %7 = icmp ult i8 %.off, 26
+  %add = add i8 %6, 32
+  %add. = select i1 %7, i8 %add, i8 %6
+  store i8 %add., i8* %s.0, align 1, !tbaa !1
+  %incdec.ptr = getelementptr inbounds i8* %s.0, i64 1
+  br label %for.condthread-pre-split
+
+for.end:                                          ; preds = %for.cond
+  ret %struct.sv* %sv
+}

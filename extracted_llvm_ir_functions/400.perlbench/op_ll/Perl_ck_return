@@ -1,0 +1,30 @@
+define %struct.op* @Perl_ck_return(%struct.op* %o) #0 {
+entry:
+  %0 = load %struct.cv** @PL_compcv, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.cv* %0, i64 0, i32 0
+  %1 = load %struct.xpvcv** %sv_any, align 8, !tbaa !3
+  %xcv_flags = getelementptr inbounds %struct.xpvcv* %1, i64 0, i32 17
+  %2 = load i16* %xcv_flags, align 2, !tbaa !4
+  %and = and i16 %2, 256
+  %tobool = icmp eq i16 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %4 = load %struct.op** %3, align 8, !tbaa !3
+  %kid.0.in6 = getelementptr inbounds %struct.op* %4, i64 0, i32 1
+  %kid.07 = load %struct.op** %kid.0.in6, align 8
+  %tobool18 = icmp eq %struct.op* %kid.07, null
+  br i1 %tobool18, label %if.end, label %for.body
+
+for.body:                                         ; preds = %if.then, %for.body
+  %kid.09 = phi %struct.op* [ %kid.0, %for.body ], [ %kid.07, %if.then ]
+  %call = tail call %struct.op* @Perl_mod(%struct.op* %kid.09, i32 168) #8
+  %kid.0.in = getelementptr inbounds %struct.op* %kid.09, i64 0, i32 1
+  %kid.0 = load %struct.op** %kid.0.in, align 8
+  %tobool1 = icmp eq %struct.op* %kid.0, null
+  br i1 %tobool1, label %if.end, label %for.body
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret %struct.op* %o
+}

@@ -1,0 +1,37 @@
+define double @ETree_nFactorOps(%struct._ETree* %etree, i32 %type, i32 %symflag) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %0 = load i32* %nfront1, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %0, 1
+  br i1 %cmp2, label %if.then, label %lor.lhs.false3
+
+lor.lhs.false3:                                   ; preds = %lor.lhs.false
+  %nvtx4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1
+  %1 = load i32* %nvtx4, align 4, !tbaa !3
+  %cmp5 = icmp slt i32 %1, 1
+  br i1 %cmp5, label %if.then, label %for.body
+
+if.then:                                          ; preds = %lor.lhs.false3, %lor.lhs.false, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([56 x i8]* @.str3, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+for.body:                                         ; preds = %lor.lhs.false3, %for.body
+  %ops.025 = phi double [ %add9, %for.body ], [ 0.000000e+00, %lor.lhs.false3 ]
+  %J.024 = phi i32 [ %inc, %for.body ], [ 0, %lor.lhs.false3 ]
+  %call7 = tail call double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J.024) #6
+  %call8 = tail call double @ETree_nExternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J.024) #6
+  %add = fadd double %call7, %call8
+  %add9 = fadd double %ops.025, %add
+  %inc = add nsw i32 %J.024, 1
+  %exitcond = icmp eq i32 %inc, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  ret double %add9
+}

@@ -1,0 +1,64 @@
+define internal fastcc void @compare_lists(i32* nocapture %k1, i32* nocapture %k2, i32* nocapture %t1, i32* nocapture %t2, i32 %len1, i32 %len2, float* nocapture %ret_sc) #0 {
+entry:
+  %cmp6 = icmp sgt i32 %len1, 0
+  br i1 %cmp6, label %for.body, label %for.cond9.preheader
+
+for.cond9.preheader:                              ; preds = %for.inc, %entry
+  %tot.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %conv1, %for.inc ]
+  %id.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %id.1, %for.inc ]
+  %cmp101 = icmp sgt i32 %len2, 0
+  br i1 %cmp101, label %for.body12, label %for.end29
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv12 = phi i64 [ %indvars.iv.next13, %for.inc ], [ 0, %entry ]
+  %tot.08 = phi float [ %conv1, %for.inc ], [ 0.000000e+00, %entry ]
+  %id.07 = phi float [ %id.1, %for.inc ], [ 0.000000e+00, %entry ]
+  %conv1 = fadd float %tot.08, 1.000000e+00
+  %arrayidx = getelementptr inbounds i32* %t1, i64 %indvars.iv12
+  %0 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx3 = getelementptr inbounds i32* %k1, i64 %indvars.iv12
+  %1 = load i32* %arrayidx3, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %0, %1
+  br i1 %cmp4, label %if.then, label %for.inc
+
+if.then:                                          ; preds = %for.body
+  %conv8 = fadd float %id.07, 1.000000e+00
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %id.1 = phi float [ %conv8, %if.then ], [ %id.07, %for.body ]
+  %indvars.iv.next13 = add i64 %indvars.iv12, 1
+  %lftr.wideiv14 = trunc i64 %indvars.iv.next13 to i32
+  %exitcond15 = icmp eq i32 %lftr.wideiv14, %len1
+  br i1 %exitcond15, label %for.cond9.preheader, label %for.body
+
+for.body12:                                       ; preds = %for.cond9.preheader, %for.inc27
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc27 ], [ 0, %for.cond9.preheader ]
+  %tot.13 = phi float [ %conv15, %for.inc27 ], [ %tot.0.lcssa, %for.cond9.preheader ]
+  %id.22 = phi float [ %id.3, %for.inc27 ], [ %id.0.lcssa, %for.cond9.preheader ]
+  %conv15 = fadd float %tot.13, 1.000000e+00
+  %arrayidx17 = getelementptr inbounds i32* %k2, i64 %indvars.iv
+  %2 = load i32* %arrayidx17, align 4, !tbaa !3
+  %arrayidx19 = getelementptr inbounds i32* %t2, i64 %indvars.iv
+  %3 = load i32* %arrayidx19, align 4, !tbaa !3
+  %cmp20 = icmp eq i32 %2, %3
+  br i1 %cmp20, label %if.then22, label %for.inc27
+
+if.then22:                                        ; preds = %for.body12
+  %conv25 = fadd float %id.22, 1.000000e+00
+  br label %for.inc27
+
+for.inc27:                                        ; preds = %for.body12, %if.then22
+  %id.3 = phi float [ %conv25, %if.then22 ], [ %id.22, %for.body12 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len2
+  br i1 %exitcond, label %for.end29, label %for.body12
+
+for.end29:                                        ; preds = %for.inc27, %for.cond9.preheader
+  %tot.1.lcssa = phi float [ %tot.0.lcssa, %for.cond9.preheader ], [ %conv15, %for.inc27 ]
+  %id.2.lcssa = phi float [ %id.0.lcssa, %for.cond9.preheader ], [ %id.3, %for.inc27 ]
+  %div = fdiv float %id.2.lcssa, %tot.1.lcssa
+  store float %div, float* %ret_sc, align 4, !tbaa !4
+  ret void
+}

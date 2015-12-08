@@ -1,0 +1,13 @@
+define void @Perl_watch(i8** %addr) #0 {
+entry:
+  store i8** %addr, i8*** @PL_watchaddr, align 8, !tbaa !3
+  %0 = load i8** %addr, align 8, !tbaa !3
+  store i8* %0, i8** @PL_watchok, align 8, !tbaa !3
+  %call = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #3
+  %1 = load i8*** @PL_watchaddr, align 8, !tbaa !3
+  %2 = ptrtoint i8** %1 to i64
+  %3 = load i8** @PL_watchok, align 8, !tbaa !3
+  %4 = ptrtoint i8* %3 to i64
+  %call1 = tail call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %call, i8* getelementptr inbounds ([32 x i8]* @.str376, i64 0, i64 0), i64 %2, i64 %4) #3
+  ret void
+}

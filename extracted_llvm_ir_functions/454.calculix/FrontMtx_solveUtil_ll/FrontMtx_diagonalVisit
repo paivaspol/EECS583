@@ -1,0 +1,59 @@
+define void @FrontMtx_diagonalVisit(%struct._FrontMtx* %frontmtx, i32 %J, i32* %owners, i32 %myid, %struct._SubMtx** nocapture %p_mtx, i8* nocapture %frontIsDone, %struct._SubMtx** nocapture %p_agg, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %cmp = icmp eq i32* %owners, null
+  %idxprom2.pre = sext i32 %J to i64
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %arrayidx = getelementptr inbounds i32* %owners, i64 %idxprom2.pre
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp1 = icmp eq i32 %0, %myid
+  br i1 %cmp1, label %if.then, label %if.end30
+
+if.then:                                          ; preds = %entry, %lor.lhs.false
+  %arrayidx3 = getelementptr inbounds %struct._SubMtx** %p_mtx, i64 %idxprom2.pre
+  %1 = load %struct._SubMtx** %arrayidx3, align 8, !tbaa !3
+  %cmp4 = icmp eq %struct._SubMtx* %1, null
+  br i1 %cmp4, label %if.end27, label %if.then5
+
+if.then5:                                         ; preds = %if.then
+  %cmp6 = icmp sgt i32 %msglvl, 3
+  br i1 %cmp6, label %if.end16.thread, label %if.end16
+
+if.end16.thread:                                  ; preds = %if.then5
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([11 x i8]* @.str7, i64 0, i64 0), %struct._SubMtx* %1) #5
+  %call8 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %1, %struct._IO_FILE* %msgFile) #5
+  %call9 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  %call1055 = tail call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #5
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), %struct._SubMtx* %call1055) #5
+  %call14 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call1055, %struct._IO_FILE* %msgFile) #5
+  %call15 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  tail call void @SubMtx_solve(%struct._SubMtx* %call1055, %struct._SubMtx* %1) #5
+  br label %if.then18
+
+if.end16:                                         ; preds = %if.then5
+  %call10 = tail call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J) #5
+  tail call void @SubMtx_solve(%struct._SubMtx* %call10, %struct._SubMtx* %1) #5
+  %cmp17 = icmp sgt i32 %msglvl, 1
+  br i1 %cmp17, label %if.then18, label %if.end22
+
+if.then18:                                        ; preds = %if.end16.thread, %if.end16
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([33 x i8]* @.str14, i64 0, i64 0), i32 %J) #5
+  %call20 = tail call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %1, %struct._IO_FILE* %msgFile) #5
+  %call21 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then18, %if.end16
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx3, align 8, !tbaa !3
+  %arrayidx26 = getelementptr inbounds %struct._SubMtx** %p_agg, i64 %idxprom2.pre
+  store %struct._SubMtx* %1, %struct._SubMtx** %arrayidx26, align 8, !tbaa !3
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then, %if.end22
+  %arrayidx29 = getelementptr inbounds i8* %frontIsDone, i64 %idxprom2.pre
+  store i8 89, i8* %arrayidx29, align 1, !tbaa !1
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end27, %lor.lhs.false
+  ret void
+}

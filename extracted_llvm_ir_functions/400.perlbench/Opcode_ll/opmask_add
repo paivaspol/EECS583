@@ -1,0 +1,100 @@
+define internal fastcc void @opmask_add(%struct.sv* %opset) #0 {
+entry:
+  %len = alloca i64, align 8
+  %call = call fastcc i32 @verify_opset(%struct.sv* %opset, i32 1) #5
+  %0 = load i8** @PL_op_mask, align 8, !tbaa !0
+  %tobool = icmp eq i8* %0, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([38 x i8]* @.str50, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %sv_flags = getelementptr inbounds %struct.sv* %opset, i64 0, i32 2
+  %1 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %1, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %opset, i64 0, i32 0
+  %2 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %2, i64 8
+  %3 = bitcast i8* %xpv_cur to i64*
+  %4 = load i64* %3, align 8, !tbaa !4
+  store i64 %4, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %2 to i8**
+  %5 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end
+  %call2 = call i8* @Perl_sv_2pv_flags(%struct.sv* %opset, i64* %len, i32 2) #4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %5, %cond.true ], [ %call2, %cond.false ]
+  %6 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %cmp339 = icmp sgt i64 %6, 0
+  br i1 %cmp339, label %for.body, label %for.end23
+
+for.body:                                         ; preds = %cond.end, %for.inc
+  %7 = phi i64 [ %15, %for.inc ], [ %6, %cond.end ]
+  %indvars.iv43 = phi i64 [ %indvars.iv.next44, %for.inc ], [ 0, %cond.end ]
+  %myopcode.040 = phi i32 [ %myopcode.2, %for.inc ], [ 0, %cond.end ]
+  %arrayidx = getelementptr inbounds i8* %cond, i64 %indvars.iv43
+  %8 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv533 = zext i8 %8 to i32
+  %tobool6 = icmp eq i8 %8, 0
+  br i1 %tobool6, label %if.then7, label %for.cond9.preheader
+
+for.cond9.preheader:                              ; preds = %for.body
+  %9 = load i32* @PL_maxo, align 4, !tbaa !3
+  %cmp1235 = icmp slt i32 %myopcode.040, %9
+  br i1 %cmp1235, label %for.body14.lr.ph, label %for.inc
+
+for.body14.lr.ph:                                 ; preds = %for.cond9.preheader
+  %10 = sext i32 %myopcode.040 to i64
+  br label %for.body14
+
+if.then7:                                         ; preds = %for.body
+  %add = add nsw i32 %myopcode.040, 8
+  br label %for.inc
+
+for.body14:                                       ; preds = %for.body14, %for.body14.lr.ph
+  %indvars.iv = phi i64 [ %10, %for.body14.lr.ph ], [ %indvars.iv.next, %for.body14 ]
+  %myopcode.138 = phi i32 [ %myopcode.040, %for.body14.lr.ph ], [ %inc17, %for.body14 ]
+  %j.037 = phi i32 [ 0, %for.body14.lr.ph ], [ %inc, %for.body14 ]
+  %inc = add nsw i32 %j.037, 1
+  %shl = shl i32 1, %j.037
+  %and16 = and i32 %shl, %conv533
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc17 = add nsw i32 %myopcode.138, 1
+  %11 = load i8** @PL_op_mask, align 8, !tbaa !0
+  %arrayidx19 = getelementptr inbounds i8* %11, i64 %indvars.iv
+  %12 = load i8* %arrayidx19, align 1, !tbaa !1
+  %conv2034 = zext i8 %12 to i32
+  %or = or i32 %conv2034, %and16
+  %conv21 = trunc i32 %or to i8
+  store i8 %conv21, i8* %arrayidx19, align 1, !tbaa !1
+  %cmp10 = icmp slt i32 %inc, 8
+  %13 = load i32* @PL_maxo, align 4, !tbaa !3
+  %14 = trunc i64 %indvars.iv.next to i32
+  %cmp12 = icmp slt i32 %14, %13
+  %or.cond = and i1 %cmp10, %cmp12
+  br i1 %or.cond, label %for.body14, label %for.cond9.for.inc.loopexit_crit_edge
+
+for.cond9.for.inc.loopexit_crit_edge:             ; preds = %for.body14
+  %.pre.pre = load i64* @my_cxt.2, align 8, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.cond9.preheader, %for.cond9.for.inc.loopexit_crit_edge, %if.then7
+  %15 = phi i64 [ %7, %if.then7 ], [ %.pre.pre, %for.cond9.for.inc.loopexit_crit_edge ], [ %7, %for.cond9.preheader ]
+  %myopcode.2 = phi i32 [ %add, %if.then7 ], [ %inc17, %for.cond9.for.inc.loopexit_crit_edge ], [ %myopcode.040, %for.cond9.preheader ]
+  %indvars.iv.next44 = add i64 %indvars.iv43, 1
+  %cmp3 = icmp slt i64 %indvars.iv.next44, %15
+  br i1 %cmp3, label %for.body, label %for.end23
+
+for.end23:                                        ; preds = %for.inc, %cond.end
+  ret void
+}

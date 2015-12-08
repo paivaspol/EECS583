@@ -1,0 +1,272 @@
+define i32 @GeneratePic_parameter_set_rbsp(%struct.pic_parameter_set_rbsp_t* %pps, i8* %rbsp) #0 {
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 120) #5
+  %0 = bitcast i8* %call to %struct.datapartition*
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str42, i64 0, i64 0)) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call1 = tail call noalias i8* @calloc(i64 1, i64 48) #5
+  %1 = bitcast i8* %call1 to %struct.Bitstream*
+  %bitstream = bitcast i8* %call to %struct.Bitstream**
+  store %struct.Bitstream* %1, %struct.Bitstream** %bitstream, align 8, !tbaa !0
+  %cmp2 = icmp eq i8* %call1, null
+  br i1 %cmp2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str43, i64 0, i64 0)) #5
+  %.pre = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then3, %if.end
+  %2 = phi %struct.Bitstream* [ %.pre, %if.then3 ], [ %1, %if.end ]
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 9
+  store i8* %rbsp, i8** %streamBuffer, align 8, !tbaa !0
+  %3 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
+  %bits_to_go = getelementptr inbounds %struct.Bitstream* %3, i64 0, i32 1
+  store i32 8, i32* %bits_to_go, align 4, !tbaa !3
+  %4 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %pic_order_present_flag = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 112
+  %5 = load i32* %pic_order_present_flag, align 4, !tbaa !3
+  %pic_order_present_flag7 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 7
+  store i32 %5, i32* %pic_order_present_flag7, align 4, !tbaa !1
+  %pic_parameter_set_id = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 1
+  %6 = load i32* %pic_parameter_set_id, align 4, !tbaa !3
+  %call8 = tail call i32 @ue_v(i8* getelementptr inbounds ([26 x i8]* @.str44, i64 0, i64 0), i32 %6, %struct.datapartition* %0) #5
+  %seq_parameter_set_id = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 2
+  %7 = load i32* %seq_parameter_set_id, align 4, !tbaa !3
+  %call9 = tail call i32 @ue_v(i8* getelementptr inbounds ([26 x i8]* @.str45, i64 0, i64 0), i32 %7, %struct.datapartition* %0) #5
+  %entropy_coding_mode_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 3
+  %8 = load i32* %entropy_coding_mode_flag, align 4, !tbaa !1
+  %call11 = tail call i32 @u_1(i8* getelementptr inbounds ([30 x i8]* @.str46, i64 0, i64 0), i32 %8, %struct.datapartition* %0) #5
+  %9 = load i32* %pic_order_present_flag7, align 4, !tbaa !1
+  %call14 = tail call i32 @u_1(i8* getelementptr inbounds ([28 x i8]* @.str47, i64 0, i64 0), i32 %9, %struct.datapartition* %0) #5
+  %num_slice_groups_minus1 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 8
+  %10 = load i32* %num_slice_groups_minus1, align 4, !tbaa !3
+  %call16 = tail call i32 @ue_v(i8* getelementptr inbounds ([29 x i8]* @.str48, i64 0, i64 0), i32 %10, %struct.datapartition* %0) #5
+  %11 = load i32* %num_slice_groups_minus1, align 4, !tbaa !3
+  %cmp19 = icmp eq i32 %11, 0
+  br i1 %cmp19, label %if.end97, label %if.then20
+
+if.then20:                                        ; preds = %if.end4
+  %slice_group_map_type = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 9
+  %12 = load i32* %slice_group_map_type, align 4, !tbaa !3
+  %call21 = tail call i32 @ue_v(i8* getelementptr inbounds ([26 x i8]* @.str49, i64 0, i64 0), i32 %12, %struct.datapartition* %0) #5
+  %13 = load i32* %slice_group_map_type, align 4, !tbaa !3
+  switch i32 %13, label %if.end97 [
+    i32 0, label %for.body
+    i32 2, label %for.cond33.preheader
+    i32 3, label %if.then56
+    i32 4, label %if.then56
+    i32 5, label %if.then56
+    i32 6, label %if.then64
+  ]
+
+for.cond33.preheader:                             ; preds = %if.then20
+  %14 = load i32* %num_slice_groups_minus1, align 4, !tbaa !3
+  %cmp35352 = icmp eq i32 %14, 0
+  br i1 %cmp35352, label %if.end97, label %for.body36
+
+for.body:                                         ; preds = %if.then20, %for.body
+  %i.0349 = phi i32 [ %inc, %for.body ], [ 0, %if.then20 ]
+  %idxprom = zext i32 %i.0349 to i64
+  %arrayidx = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 10, i64 %idxprom
+  %15 = load i32* %arrayidx, align 4, !tbaa !3
+  %call28 = tail call i32 @ue_v(i8* getelementptr inbounds ([26 x i8]* @.str50, i64 0, i64 0), i32 %15, %struct.datapartition* %0) #5
+  %inc = add i32 %i.0349, 1
+  %16 = load i32* %num_slice_groups_minus1, align 4, !tbaa !3
+  %cmp27 = icmp ugt i32 %inc, %16
+  br i1 %cmp27, label %if.end97, label %for.body
+
+for.body36:                                       ; preds = %for.cond33.preheader, %for.body36
+  %i.1353 = phi i32 [ %inc46, %for.body36 ], [ 0, %for.cond33.preheader ]
+  %idxprom37 = zext i32 %i.1353 to i64
+  %arrayidx38 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 11, i64 %idxprom37
+  %17 = load i32* %arrayidx38, align 4, !tbaa !3
+  %call39 = tail call i32 @ue_v(i8* getelementptr inbounds ([17 x i8]* @.str51, i64 0, i64 0), i32 %17, %struct.datapartition* %0) #5
+  %arrayidx42 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 12, i64 %idxprom37
+  %18 = load i32* %arrayidx42, align 4, !tbaa !3
+  %call43 = tail call i32 @ue_v(i8* getelementptr inbounds ([21 x i8]* @.str52, i64 0, i64 0), i32 %18, %struct.datapartition* %0) #5
+  %inc46 = add i32 %i.1353, 1
+  %19 = load i32* %num_slice_groups_minus1, align 4, !tbaa !3
+  %cmp35 = icmp ult i32 %inc46, %19
+  br i1 %cmp35, label %for.body36, label %if.end97
+
+if.then56:                                        ; preds = %if.then20, %if.then20, %if.then20
+  %slice_group_change_direction_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 13
+  %20 = load i32* %slice_group_change_direction_flag, align 4, !tbaa !1
+  %call57 = tail call i32 @u_1(i8* getelementptr inbounds ([39 x i8]* @.str53, i64 0, i64 0), i32 %20, %struct.datapartition* %0) #5
+  %slice_group_change_rate_minus1 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 14
+  %21 = load i32* %slice_group_change_rate_minus1, align 4, !tbaa !3
+  %call59 = tail call i32 @ue_v(i8* getelementptr inbounds ([36 x i8]* @.str54, i64 0, i64 0), i32 %21, %struct.datapartition* %0) #5
+  br label %if.end97
+
+if.then64:                                        ; preds = %if.then20
+  %22 = load i32* %num_slice_groups_minus1, align 4, !tbaa !3
+  %cmp66 = icmp ugt i32 %22, 3
+  br i1 %cmp66, label %if.end79, label %if.else68
+
+if.else68:                                        ; preds = %if.then64
+  %cmp70 = icmp ugt i32 %22, 1
+  br i1 %cmp70, label %if.end79, label %if.else72
+
+if.else72:                                        ; preds = %if.else68
+  %not.cmp74 = icmp ne i32 %22, 0
+  %. = zext i1 %not.cmp74 to i32
+  br label %if.end79
+
+if.end79:                                         ; preds = %if.else72, %if.else68, %if.then64
+  %NumberBitsPerSliceGroupId.0 = phi i32 [ 3, %if.then64 ], [ 2, %if.else68 ], [ %., %if.else72 ]
+  %pic_size_in_map_units_minus1 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 15
+  %23 = load i32* %pic_size_in_map_units_minus1, align 4, !tbaa !3
+  %call80 = tail call i32 @ue_v(i8* getelementptr inbounds ([34 x i8]* @.str55, i64 0, i64 0), i32 %23, %struct.datapartition* %0) #5
+  %slice_group_id = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 16
+  br label %for.body85
+
+for.body85:                                       ; preds = %if.end79, %for.body85
+  %i.2356 = phi i32 [ 0, %if.end79 ], [ %inc91, %for.body85 ]
+  %idxprom86 = zext i32 %i.2356 to i64
+  %24 = load i8** %slice_group_id, align 8, !tbaa !0
+  %arrayidx87 = getelementptr inbounds i8* %24, i64 %idxprom86
+  %25 = load i8* %arrayidx87, align 1, !tbaa !1
+  %conv = zext i8 %25 to i32
+  %call88 = tail call i32 @u_v(i32 %NumberBitsPerSliceGroupId.0, i8* getelementptr inbounds ([24 x i8]* @.str56, i64 0, i64 0), i32 %conv, %struct.datapartition* %0) #5
+  %inc91 = add i32 %i.2356, 1
+  %26 = load i32* %pic_size_in_map_units_minus1, align 4, !tbaa !3
+  %cmp84 = icmp ugt i32 %inc91, %26
+  br i1 %cmp84, label %if.end97, label %for.body85
+
+if.end97:                                         ; preds = %for.body85, %for.cond33.preheader, %for.body36, %for.body, %if.then20, %if.end4, %if.then56
+  %num_ref_idx_l0_active_minus1 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 17
+  %27 = load i32* %num_ref_idx_l0_active_minus1, align 4, !tbaa !3
+  %call98 = tail call i32 @ue_v(i8* getelementptr inbounds ([34 x i8]* @.str57, i64 0, i64 0), i32 %27, %struct.datapartition* %0) #5
+  %num_ref_idx_l1_active_minus1 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 18
+  %28 = load i32* %num_ref_idx_l1_active_minus1, align 4, !tbaa !3
+  %call100 = tail call i32 @ue_v(i8* getelementptr inbounds ([34 x i8]* @.str58, i64 0, i64 0), i32 %28, %struct.datapartition* %0) #5
+  %weighted_pred_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 19
+  %29 = load i32* %weighted_pred_flag, align 4, !tbaa !1
+  %call102 = tail call i32 @u_1(i8* getelementptr inbounds ([24 x i8]* @.str59, i64 0, i64 0), i32 %29, %struct.datapartition* %0) #5
+  %weighted_bipred_idc = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 20
+  %30 = load i32* %weighted_bipred_idc, align 4, !tbaa !3
+  %call104 = tail call i32 @u_v(i32 2, i8* getelementptr inbounds ([25 x i8]* @.str60, i64 0, i64 0), i32 %30, %struct.datapartition* %0) #5
+  %pic_init_qp_minus26 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 21
+  %31 = load i32* %pic_init_qp_minus26, align 4, !tbaa !3
+  %call106 = tail call i32 @se_v(i8* getelementptr inbounds ([25 x i8]* @.str61, i64 0, i64 0), i32 %31, %struct.datapartition* %0) #5
+  %pic_init_qs_minus26 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 22
+  %32 = load i32* %pic_init_qs_minus26, align 4, !tbaa !3
+  %call108 = tail call i32 @se_v(i8* getelementptr inbounds ([25 x i8]* @.str62, i64 0, i64 0), i32 %32, %struct.datapartition* %0) #5
+  %33 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %ProfileIDC.i = getelementptr inbounds %struct.InputParameters* %33, i64 0, i32 0
+  %34 = load i32* %ProfileIDC.i, align 4, !tbaa !3
+  switch i32 %34, label %if.else125 [
+    i32 144, label %if.then122
+    i32 122, label %if.then122
+    i32 110, label %if.then122
+    i32 100, label %if.then122
+  ]
+
+if.then122:                                       ; preds = %if.end97, %if.end97, %if.end97, %if.end97
+  %cb_qp_index_offset = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 24
+  %35 = load i32* %cb_qp_index_offset, align 4, !tbaa !3
+  %call123 = tail call i32 @se_v(i8* getelementptr inbounds ([28 x i8]* @.str63, i64 0, i64 0), i32 %35, %struct.datapartition* %0) #5
+  br label %if.end128
+
+if.else125:                                       ; preds = %if.end97
+  %chroma_qp_index_offset = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 23
+  %36 = load i32* %chroma_qp_index_offset, align 4, !tbaa !3
+  %call126 = tail call i32 @se_v(i8* getelementptr inbounds ([28 x i8]* @.str63, i64 0, i64 0), i32 %36, %struct.datapartition* %0) #5
+  br label %if.end128
+
+if.end128:                                        ; preds = %if.else125, %if.then122
+  %deblocking_filter_control_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 26
+  %37 = load i32* %deblocking_filter_control_present_flag, align 4, !tbaa !1
+  %call129 = tail call i32 @u_1(i8* getelementptr inbounds ([44 x i8]* @.str64, i64 0, i64 0), i32 %37, %struct.datapartition* %0) #5
+  %constrained_intra_pred_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 27
+  %38 = load i32* %constrained_intra_pred_flag, align 4, !tbaa !1
+  %call131 = tail call i32 @u_1(i8* getelementptr inbounds ([33 x i8]* @.str65, i64 0, i64 0), i32 %38, %struct.datapartition* %0) #5
+  %redundant_pic_cnt_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 28
+  %39 = load i32* %redundant_pic_cnt_present_flag, align 4, !tbaa !1
+  %call133 = tail call i32 @u_1(i8* getelementptr inbounds ([36 x i8]* @.str66, i64 0, i64 0), i32 %39, %struct.datapartition* %0) #5
+  switch i32 %34, label %if.end201 [
+    i32 144, label %if.then146
+    i32 122, label %if.then146
+    i32 110, label %if.then146
+    i32 100, label %if.then146
+  ]
+
+if.then146:                                       ; preds = %if.end128, %if.end128, %if.end128, %if.end128
+  %transform_8x8_mode_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 4
+  %40 = load i32* %transform_8x8_mode_flag, align 4, !tbaa !1
+  %call147 = tail call i32 @u_1(i8* getelementptr inbounds ([29 x i8]* @.str67, i64 0, i64 0), i32 %40, %struct.datapartition* %0) #5
+  %pic_scaling_matrix_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 5
+  %41 = load i32* %pic_scaling_matrix_present_flag, align 4, !tbaa !1
+  %call149 = tail call i32 @u_1(i8* getelementptr inbounds ([37 x i8]* @.str68, i64 0, i64 0), i32 %41, %struct.datapartition* %0) #5
+  %42 = load i32* %pic_scaling_matrix_present_flag, align 4, !tbaa !1
+  %tobool = icmp eq i32 %42, 0
+  br i1 %tobool, label %if.end198, label %if.then152
+
+if.then152:                                       ; preds = %if.then146
+  %43 = load i32* %transform_8x8_mode_flag, align 4, !tbaa !1
+  %shl344.mask = and i32 %43, 2147483647
+  %cmp156346 = icmp eq i32 %shl344.mask, 2147483645
+  br i1 %cmp156346, label %if.end198, label %for.body158
+
+for.body158:                                      ; preds = %if.then152, %for.inc195
+  %i.3347 = phi i32 [ %inc196, %for.inc195 ], [ 0, %if.then152 ]
+  %idxprom159 = zext i32 %i.3347 to i64
+  %arrayidx160 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 6, i64 %idxprom159
+  %44 = load i32* %arrayidx160, align 4, !tbaa !3
+  %call161 = tail call i32 @u_1(i8* getelementptr inbounds ([35 x i8]* @.str69, i64 0, i64 0), i32 %44, %struct.datapartition* %0) #5
+  %45 = load i32* %arrayidx160, align 4, !tbaa !3
+  %tobool166 = icmp eq i32 %45, 0
+  br i1 %tobool166, label %for.inc195, label %if.then167
+
+if.then167:                                       ; preds = %for.body158
+  %cmp168 = icmp ult i32 %i.3347, 6
+  br i1 %cmp168, label %if.then170, label %if.else180
+
+if.then170:                                       ; preds = %if.then167
+  %arraydecay = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4input, i64 0, i64 %idxprom159, i64 0
+  %arraydecay175 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 %idxprom159, i64 0
+  %arrayidx177 = getelementptr inbounds [6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 %idxprom159
+  %call178 = tail call i32 @Scaling_List(i16* %arraydecay, i16* %arraydecay175, i32 16, i16* %arrayidx177, %struct.datapartition* %0) #6
+  br label %for.inc195
+
+if.else180:                                       ; preds = %if.then167
+  %sub = add i32 %i.3347, -6
+  %idxprom181 = zext i32 %sub to i64
+  %arraydecay183 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8input, i64 0, i64 %idxprom181, i64 0
+  %arraydecay187 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8, i64 0, i64 %idxprom181, i64 0
+  %arrayidx190 = getelementptr inbounds [2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 %idxprom181
+  %call191 = tail call i32 @Scaling_List(i16* %arraydecay183, i16* %arraydecay187, i32 64, i16* %arrayidx190, %struct.datapartition* %0) #6
+  br label %for.inc195
+
+for.inc195:                                       ; preds = %for.body158, %if.else180, %if.then170
+  %inc196 = add i32 %i.3347, 1
+  %46 = load i32* %transform_8x8_mode_flag, align 4, !tbaa !1
+  %shl = shl i32 %46, 1
+  %add155 = add i32 %shl, 6
+  %cmp156 = icmp ult i32 %inc196, %add155
+  br i1 %cmp156, label %for.body158, label %if.end198
+
+if.end198:                                        ; preds = %if.then152, %for.inc195, %if.then146
+  %cr_qp_index_offset = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 25
+  %47 = load i32* %cr_qp_index_offset, align 4, !tbaa !3
+  %call199 = tail call i32 @se_v(i8* getelementptr inbounds ([35 x i8]* @.str70, i64 0, i64 0), i32 %47, %struct.datapartition* %0) #5
+  br label %if.end201
+
+if.end201:                                        ; preds = %if.end128, %if.end198
+  %48 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
+  tail call void @SODBtoRBSP(%struct.Bitstream* %48) #5
+  %49 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
+  %byte_pos = getelementptr inbounds %struct.Bitstream* %49, i64 0, i32 0
+  %50 = load i32* %byte_pos, align 4, !tbaa !3
+  %51 = bitcast %struct.Bitstream* %49 to i8*
+  tail call void @free(i8* %51) #5
+  tail call void @free(i8* %call) #5
+  ret i32 %50
+}

@@ -1,0 +1,93 @@
+define %struct.op* @Perl_pp_cond_expr() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds %struct.sv** %0, i64 -1
+  %1 = load %struct.sv** %0, align 8, !tbaa !0
+  store %struct.sv* %1, %struct.sv** @PL_Sv, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %1, null
+  br i1 %tobool, label %cond.end33, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 262144
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %cond.false10, label %cond.true2
+
+cond.true2:                                       ; preds = %cond.false
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %4 = bitcast i8* %3 to %struct.xpv*
+  store %struct.xpv* %4, %struct.xpv** @PL_Xpv, align 8, !tbaa !0
+  %tobool3 = icmp eq i8* %3, null
+  br i1 %tobool3, label %land.end9, label %land.rhs
+
+land.rhs:                                         ; preds = %cond.true2
+  %xpv_cur = getelementptr inbounds i8* %3, i64 8
+  %5 = bitcast i8* %xpv_cur to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  %cmp = icmp ugt i64 %6, 1
+  br i1 %cmp, label %land.end9, label %lor.rhs
+
+lor.rhs:                                          ; preds = %land.rhs
+  %tobool5 = icmp eq i64 %6, 0
+  br i1 %tobool5, label %land.end9, label %land.rhs6
+
+land.rhs6:                                        ; preds = %lor.rhs
+  %xpv_pv = bitcast i8* %3 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !0
+  %8 = load i8* %7, align 1, !tbaa !1
+  %cmp7 = icmp ne i8 %8, 48
+  br label %land.end9
+
+land.end9:                                        ; preds = %lor.rhs, %cond.true2, %land.rhs, %land.rhs6
+  %9 = phi i1 [ false, %cond.true2 ], [ true, %land.rhs ], [ false, %lor.rhs ], [ %cmp7, %land.rhs6 ]
+  %cond = zext i1 %9 to i32
+  br label %cond.end33
+
+cond.false10:                                     ; preds = %cond.false
+  %and12 = and i32 %2, 65536
+  %tobool13 = icmp eq i32 %and12, 0
+  br i1 %tobool13, label %cond.false18, label %cond.true14
+
+cond.true14:                                      ; preds = %cond.false10
+  %sv_any15 = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %10 = load i8** %sv_any15, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %10, i64 24
+  %11 = bitcast i8* %xiv_iv to i64*
+  %12 = load i64* %11, align 8, !tbaa !4
+  %cmp16 = icmp ne i64 %12, 0
+  %conv17 = zext i1 %cmp16 to i32
+  br label %cond.end33
+
+cond.false18:                                     ; preds = %cond.false10
+  %and20 = and i32 %2, 131072
+  %tobool21 = icmp eq i32 %and20, 0
+  br i1 %tobool21, label %cond.false26, label %cond.true22
+
+cond.true22:                                      ; preds = %cond.false18
+  %sv_any23 = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %13 = load i8** %sv_any23, align 8, !tbaa !0
+  %xnv_nv = getelementptr inbounds i8* %13, i64 32
+  %14 = bitcast i8* %xnv_nv to double*
+  %15 = load double* %14, align 8, !tbaa !5
+  %cmp24 = fcmp une double %15, 0.000000e+00
+  %conv25 = zext i1 %cmp24 to i32
+  br label %cond.end33
+
+cond.false26:                                     ; preds = %cond.false18
+  %call = tail call signext i8 @Perl_sv_2bool(%struct.sv* %1) #8
+  %conv27 = sext i8 %call to i32
+  br label %cond.end33
+
+cond.end33:                                       ; preds = %entry, %land.end9, %cond.true22, %cond.false26, %cond.true14
+  %cond34 = phi i32 [ 0, %entry ], [ %cond, %land.end9 ], [ %conv17, %cond.true14 ], [ %conv25, %cond.true22 ], [ %conv27, %cond.false26 ]
+  %tobool35 = icmp eq i32 %cond34, 0
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %16 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %17 = getelementptr inbounds %struct.op* %16, i64 1, i32 1
+  %op_next = getelementptr inbounds %struct.op* %16, i64 0, i32 0
+  %retval.0.in = select i1 %tobool35, %struct.op** %op_next, %struct.op** %17
+  %retval.0 = load %struct.op** %retval.0.in, align 8
+  ret %struct.op* %retval.0
+}

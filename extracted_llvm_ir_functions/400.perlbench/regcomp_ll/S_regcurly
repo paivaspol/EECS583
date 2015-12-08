@@ -1,0 +1,47 @@
+define internal fastcc i32 @S_regcurly(i8* nocapture %s) #4 {
+entry:
+  %incdec.ptr = getelementptr inbounds i8* %s, i64 1
+  %0 = load i8* %s, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 123
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %1 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %.off = add i8 %1, -48
+  %2 = icmp ult i8 %.off, 10
+  br i1 %2, label %while.cond, label %return
+
+while.cond:                                       ; preds = %if.end, %while.cond.while.cond_crit_edge
+  %3 = phi i8 [ %.pre, %while.cond.while.cond_crit_edge ], [ %1, %if.end ]
+  %s.addr.0 = phi i8* [ %incdec.ptr16, %while.cond.while.cond_crit_edge ], [ %incdec.ptr, %if.end ]
+  %.off49 = add i8 %3, -48
+  %4 = icmp ult i8 %.off49, 10
+  %incdec.ptr16 = getelementptr inbounds i8* %s.addr.0, i64 1
+  br i1 %4, label %while.cond.while.cond_crit_edge, label %while.end
+
+while.cond.while.cond_crit_edge:                  ; preds = %while.cond
+  %.pre = load i8* %incdec.ptr16, align 1, !tbaa !1
+  br label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  %cmp18 = icmp eq i8 %3, 44
+  %incdec.ptr21.s.addr.0 = select i1 %cmp18, i8* %incdec.ptr16, i8* %s.addr.0
+  br label %while.cond23
+
+while.cond23:                                     ; preds = %while.cond23, %while.end
+  %s.addr.1 = phi i8* [ %incdec.ptr33, %while.cond23 ], [ %incdec.ptr21.s.addr.0, %while.end ]
+  %5 = load i8* %s.addr.1, align 1, !tbaa !1
+  %.off50 = add i8 %5, -48
+  %6 = icmp ult i8 %.off50, 10
+  %incdec.ptr33 = getelementptr inbounds i8* %s.addr.1, i64 1
+  br i1 %6, label %while.cond23, label %while.end34
+
+while.end34:                                      ; preds = %while.cond23
+  %cmp36 = icmp eq i8 %5, 125
+  %. = zext i1 %cmp36 to i32
+  br label %return
+
+return:                                           ; preds = %while.end34, %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ %., %while.end34 ]
+  ret i32 %retval.0
+}

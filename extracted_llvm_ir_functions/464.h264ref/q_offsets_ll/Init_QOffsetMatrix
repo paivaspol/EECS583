@@ -1,0 +1,38 @@
+define void @Init_QOffsetMatrix() #0 {
+entry:
+  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %OffsetMatrixPresentFlag = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 147
+  %1 = load i32* %OffsetMatrixPresentFlag, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.end9, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 146, i64 0
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i8* %arraydecay) #7
+  %2 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %arraydecay2 = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 146, i64 0
+  %call3 = tail call i8* @GetConfigFileContent(i8* %arraydecay2, i32 0) #7
+  %cmp = icmp eq i8* %call3, null
+  br i1 %cmp, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %if.then
+  %call5 = tail call i64 @strlen(i8* %call3) #5
+  %conv = trunc i64 %call5 to i32
+  tail call void @ParseQOffsetMatrix(i8* %call3, i32 %conv) #6
+  br label %if.end
+
+if.else:                                          ; preds = %if.then
+  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([60 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0)) #7
+  %3 = load %struct.InputParameters** @input, align 8, !tbaa !3
+  %OffsetMatrixPresentFlag7 = getelementptr inbounds %struct.InputParameters* %3, i64 0, i32 147
+  store i32 0, i32* %OffsetMatrixPresentFlag7, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then4
+  %putchar = tail call i32 @putchar(i32 10) #2
+  tail call void @free(i8* %call3) #7
+  br label %if.end9
+
+if.end9:                                          ; preds = %entry, %if.end
+  ret void
+}

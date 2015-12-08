@@ -1,0 +1,50 @@
+define void @Perl_do_gvgv_dump(i32 %level, %struct._PerlIO** %file, i8* %name, %struct.gv* %sv) #0 {
+entry:
+  %0 = ptrtoint %struct.gv* %sv to i64
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %level, %struct._PerlIO** %file, i8* getelementptr inbounds ([11 x i8]* @.str199, i64 0, i64 0), i8* %name, i64 %0) #4
+  %tobool = icmp eq %struct.gv* %sv, null
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.gv* %sv, i64 0, i32 0
+  %1 = load %struct.xpvgv** %sv_any, align 8, !tbaa !3
+  %xgv_name = getelementptr inbounds %struct.xpvgv* %1, i64 0, i32 8
+  %2 = load i8** %xgv_name, align 8, !tbaa !3
+  %tobool1 = icmp eq i8* %2, null
+  br i1 %tobool1, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %file, i8* getelementptr inbounds ([3 x i8]* @.str201, i64 0, i64 0)) #3
+  %3 = load %struct.xpvgv** %sv_any, align 8, !tbaa !3
+  %xgv_stash = getelementptr inbounds %struct.xpvgv* %3, i64 0, i32 10
+  %4 = load %struct.hv** %xgv_stash, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct.hv* %4, null
+  br i1 %tobool3, label %if.end, label %land.lhs.true4
+
+land.lhs.true4:                                   ; preds = %if.then
+  %sv_any7 = getelementptr inbounds %struct.hv* %4, i64 0, i32 0
+  %5 = load %struct.xpvhv** %sv_any7, align 8, !tbaa !3
+  %xhv_name = getelementptr inbounds %struct.xpvhv* %5, i64 0, i32 10
+  %6 = load i8** %xhv_name, align 8, !tbaa !3
+  %tobool8 = icmp eq i8* %6, null
+  br i1 %tobool8, label %if.end, label %if.then9
+
+if.then9:                                         ; preds = %land.lhs.true4
+  %call14 = tail call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %file, i8* getelementptr inbounds ([9 x i8]* @.str202, i64 0, i64 0), i8* %6) #3
+  %.pre = load %struct.xpvgv** %sv_any, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true4, %if.then, %if.then9
+  %7 = phi %struct.xpvgv* [ %3, %land.lhs.true4 ], [ %3, %if.then ], [ %.pre, %if.then9 ]
+  %xgv_name16 = getelementptr inbounds %struct.xpvgv* %7, i64 0, i32 8
+  %8 = load i8** %xgv_name16, align 8, !tbaa !3
+  %call17 = tail call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %file, i8* getelementptr inbounds ([5 x i8]* @.str203, i64 0, i64 0), i8* %8) #3
+  br label %if.end19
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %call18 = tail call i32 @PerlIO_putc(%struct._PerlIO** %file, i32 10) #3
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.else, %if.end
+  ret void
+}

@@ -1,0 +1,33 @@
+define internal fastcc i32 @S_avhv_index_sv(%struct.sv* %sv) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %0, 65536
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %1, i64 24
+  %2 = bitcast i8* %xiv_iv to i64*
+  %3 = load i64* %2, align 8, !tbaa !3
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i64 @Perl_sv_2iv(%struct.sv* %sv) #3
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %3, %cond.true ], [ %call, %cond.false ]
+  %conv = trunc i64 %cond to i32
+  %cmp = icmp slt i32 %conv, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %cond.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([41 x i8]* @.str12, i64 0, i64 0)) #3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %cond.end
+  ret i32 %conv
+}

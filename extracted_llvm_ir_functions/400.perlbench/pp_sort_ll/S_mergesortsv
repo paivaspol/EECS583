@@ -1,0 +1,618 @@
+define internal void @S_mergesortsv(%struct.sv** %base, i64 %nmemb, i32 (%struct.sv*, %struct.sv*)* %cmp, i32 %flags) #0 {
+entry:
+  %small = alloca [200 x %struct.sv*], align 16
+  %which = alloca [3 x %struct.sv**], align 16
+  %stack = alloca [60 x %struct.off_runs], align 16
+  %0 = bitcast [200 x %struct.sv*]* %small to i8*
+  call void @llvm.lifetime.start(i64 1600, i8* %0) #3
+  %1 = bitcast [60 x %struct.off_runs]* %stack to i8*
+  call void @llvm.lifetime.start(i64 960, i8* %1) #3
+  %cmp1 = icmp ult i64 %nmemb, 2
+  br i1 %cmp1, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %tobool = icmp ne i32 %flags, 0
+  br i1 %tobool, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %if.end
+  %2 = load i32 (%struct.sv*, %struct.sv*)** @PL_sort_RealCmp, align 8, !tbaa !0
+  store i32 (%struct.sv*, %struct.sv*)* %cmp, i32 (%struct.sv*, %struct.sv*)** @PL_sort_RealCmp, align 8, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  %cmp.addr.0 = phi i32 (%struct.sv*, %struct.sv*)* [ @cmp_desc, %if.then2 ], [ %cmp, %if.end ]
+  %savecmp.0 = phi i32 (%struct.sv*, %struct.sv*)* [ %2, %if.then2 ], [ null, %if.end ]
+  %cmp4 = icmp ult i64 %nmemb, 201
+  br i1 %cmp4, label %if.then5, label %if.else
+
+if.then5:                                         ; preds = %if.end3
+  %arraydecay = getelementptr inbounds [200 x %struct.sv*]* %small, i64 0, i64 0
+  br label %if.end6
+
+if.else:                                          ; preds = %if.end3
+  %mul = shl i64 %nmemb, 3
+  %call = call i8* @Perl_safesysmalloc(i64 %mul) #4
+  %3 = bitcast i8* %call to %struct.sv**
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.else, %if.then5
+  %aux.0 = phi %struct.sv** [ %arraydecay, %if.then5 ], [ %3, %if.else ]
+  %arraydecay7 = getelementptr inbounds [60 x %struct.off_runs]* %stack, i64 0, i64 0
+  %add.ptr.i = getelementptr inbounds %struct.sv** %base, i64 %nmemb
+  %4 = load %struct.sv** %base, align 8, !tbaa !0
+  %add.ptr1.i = getelementptr inbounds %struct.sv** %base, i64 1
+  %5 = load %struct.sv** %add.ptr1.i, align 8, !tbaa !0
+  %call.i = call i32 %cmp.addr.0(%struct.sv* %4, %struct.sv* %5) #4
+  %cmp3195.i = icmp sgt i64 %nmemb, 0
+  br i1 %cmp3195.i, label %for.cond6.preheader.lr.ph.i, label %dynprep.exit
+
+for.cond6.preheader.lr.ph.i:                      ; preds = %if.end6
+  %cmp2.i = icmp sgt i32 %call.i, 0
+  %conv.i = zext i1 %cmp2.i to i32
+  br label %for.cond6.preheader.i
+
+for.cond6.preheader.i:                            ; preds = %do.end.i, %for.cond6.preheader.lr.ph.i
+  %runs.0199.i = phi i64 [ 0, %for.cond6.preheader.lr.ph.i ], [ %runs.2.lcssa.i, %do.end.i ]
+  %sense.0198.i = phi i32 [ %conv.i, %for.cond6.preheader.lr.ph.i ], [ %18, %do.end.i ]
+  %p2.0197.i = phi %struct.sv** [ %aux.0, %for.cond6.preheader.lr.ph.i ], [ %p2.2.lcssa.i, %do.end.i ]
+  %b.0196.i = phi %struct.sv** [ %base, %for.cond6.preheader.lr.ph.i ], [ %p.7.ph.i, %do.end.i ]
+  br label %for.cond6.i
+
+for.cond6.i:                                      ; preds = %for.body9.i, %for.cond6.preheader.i
+  %p.0.sink.i = phi %struct.sv** [ %incdec.ptr15.i, %for.body9.i ], [ %b.0196.i, %for.cond6.preheader.i ]
+  %incdec.ptr15.i = getelementptr inbounds %struct.sv** %p.0.sink.i, i64 2
+  %incdec.ptr.i = getelementptr inbounds %struct.sv** %p.0.sink.i, i64 3
+  %cmp7.i = icmp ult %struct.sv** %incdec.ptr.i, %add.ptr.i
+  br i1 %cmp7.i, label %for.body9.i, label %do.body.loopexit.i
+
+for.body9.i:                                      ; preds = %for.cond6.i
+  %6 = load %struct.sv** %incdec.ptr15.i, align 8, !tbaa !0
+  %7 = load %struct.sv** %incdec.ptr.i, align 8, !tbaa !0
+  %call10.i = call i32 %cmp.addr.0(%struct.sv* %6, %struct.sv* %7) #4
+  %cmp11.i = icmp sgt i32 %call10.i, 0
+  %conv12.i = zext i1 %cmp11.i to i32
+  %cmp13.i = icmp eq i32 %conv12.i, %sense.0198.i
+  br i1 %cmp13.i, label %for.cond6.i, label %do.body.loopexit.i
+
+do.body.loopexit.i:                               ; preds = %for.body9.i, %for.cond6.i
+  %cmp56.i = icmp eq %struct.sv** %incdec.ptr.i, %add.ptr.i
+  %tobool.i = icmp eq i32 %sense.0198.i, 0
+  %add.ptr59.i = getelementptr inbounds %struct.sv** %p.0.sink.i, i64 1
+  br label %do.body.i
+
+do.body.i:                                        ; preds = %if.end103.i, %do.body.loopexit.i
+  %b.1.i = phi %struct.sv** [ %p.7.ph.i, %if.end103.i ], [ %b.0196.i, %do.body.loopexit.i ]
+  %q.0.i = phi %struct.sv** [ %r.2.ph.i, %if.end103.i ], [ %b.0196.i, %do.body.loopexit.i ]
+  %p2.1.i = phi %struct.sv** [ %p2.2.lcssa.i, %if.end103.i ], [ %p2.0197.i, %do.body.loopexit.i ]
+  %runs.1.i = phi i64 [ %runs.2.lcssa.i, %if.end103.i ], [ %runs.0199.i, %do.body.loopexit.i ]
+  %add.ptr16.i = getelementptr inbounds %struct.sv** %b.1.i, i64 16
+  %cmp17.i = icmp ult %struct.sv** %add.ptr16.i, %incdec.ptr15.i
+  br i1 %cmp17.i, label %while.cond.i, label %if.end48.i
+
+while.cond.i:                                     ; preds = %do.body.i, %land.rhs.i
+  %p.1.i = phi %struct.sv** [ %add.ptr26.i, %land.rhs.i ], [ %add.ptr16.i, %do.body.i ]
+  %add.ptr20.i = getelementptr inbounds %struct.sv** %p.1.i, i64 -1
+  %8 = load %struct.sv** %add.ptr20.i, align 8, !tbaa !0
+  %9 = load %struct.sv** %p.1.i, align 8, !tbaa !0
+  %call21.i = call i32 %cmp.addr.0(%struct.sv* %8, %struct.sv* %9) #4
+  %cmp22.i = icmp sgt i32 %call21.i, 0
+  %conv23.i = zext i1 %cmp22.i to i32
+  %cmp24.i = icmp eq i32 %conv23.i, %sense.0198.i
+  br i1 %cmp24.i, label %land.rhs.i, label %while.end.i
+
+land.rhs.i:                                       ; preds = %while.cond.i
+  %add.ptr26.i = getelementptr inbounds %struct.sv** %p.1.i, i64 -2
+  %cmp27.i = icmp ugt %struct.sv** %add.ptr26.i, %q.0.i
+  br i1 %cmp27.i, label %while.cond.i, label %while.end.i
+
+while.end.i:                                      ; preds = %land.rhs.i, %while.cond.i
+  %p.2.i = phi %struct.sv** [ %add.ptr26.i, %land.rhs.i ], [ %p.1.i, %while.cond.i ]
+  %cmp29.i = icmp ugt %struct.sv** %p.2.i, %q.0.i
+  br i1 %cmp29.i, label %if.end48.i, label %while.cond32.i
+
+while.cond32.i:                                   ; preds = %while.end.i, %land.rhs36.i
+  %p.3.i = phi %struct.sv** [ %add.ptr33.i, %land.rhs36.i ], [ %add.ptr16.i, %while.end.i ]
+  %add.ptr33.i = getelementptr inbounds %struct.sv** %p.3.i, i64 2
+  %cmp34.i = icmp slt %struct.sv** %p.3.i, %p.0.sink.i
+  br i1 %cmp34.i, label %land.rhs36.i, label %if.end48.i
+
+land.rhs36.i:                                     ; preds = %while.cond32.i
+  %add.ptr37.i = getelementptr inbounds %struct.sv** %p.3.i, i64 1
+  %10 = load %struct.sv** %add.ptr37.i, align 8, !tbaa !0
+  %11 = load %struct.sv** %add.ptr33.i, align 8, !tbaa !0
+  %call38.i = call i32 %cmp.addr.0(%struct.sv* %10, %struct.sv* %11) #4
+  %cmp39.i = icmp sgt i32 %call38.i, 0
+  %conv40.i = zext i1 %cmp39.i to i32
+  %cmp41.i = icmp eq i32 %conv40.i, %sense.0198.i
+  br i1 %cmp41.i, label %while.cond32.i, label %if.end48.i
+
+if.end48.i:                                       ; preds = %land.rhs36.i, %while.cond32.i, %while.end.i, %do.body.i
+  %p.4.i = phi %struct.sv** [ %p.2.i, %while.end.i ], [ %incdec.ptr15.i, %do.body.i ], [ %add.ptr33.i, %while.cond32.i ], [ %add.ptr33.i, %land.rhs36.i ]
+  %q.2.i = phi %struct.sv** [ %q.0.i, %while.end.i ], [ %q.0.i, %do.body.i ], [ %p.3.i, %while.cond32.i ], [ %p.3.i, %land.rhs36.i ]
+  %r.0.i = phi %struct.sv** [ %add.ptr16.i, %while.end.i ], [ %incdec.ptr15.i, %do.body.i ], [ %add.ptr33.i, %while.cond32.i ], [ %add.ptr33.i, %land.rhs36.i ]
+  %cmp49.i = icmp ugt %struct.sv** %q.2.i, %b.1.i
+  br i1 %cmp49.i, label %if.then51.i, label %while.cond78.preheader.i
+
+if.then51.i:                                      ; preds = %if.end48.i
+  %add.ptr52.i = getelementptr inbounds %struct.sv** %q.2.i, i64 2
+  %cmp53.i = icmp eq %struct.sv** %q.2.i, %p.0.sink.i
+  %or.cond.i = and i1 %cmp53.i, %cmp56.i
+  br i1 %or.cond.i, label %land.lhs.true58.i, label %if.end66.i
+
+land.lhs.true58.i:                                ; preds = %if.then51.i
+  %12 = load %struct.sv** %add.ptr59.i, align 8, !tbaa !0
+  %13 = load %struct.sv** %add.ptr52.i, align 8, !tbaa !0
+  %call60.i = call i32 %cmp.addr.0(%struct.sv* %12, %struct.sv* %13) #4
+  %cmp61.i = icmp sgt i32 %call60.i, 0
+  %conv62.i = zext i1 %cmp61.i to i32
+  %cmp63.i = icmp eq i32 %conv62.i, %sense.0198.i
+  %add.ptr.add.ptr52.i = select i1 %cmp63.i, %struct.sv** %add.ptr.i, %struct.sv** %add.ptr52.i
+  %add.ptr.r.0.i = select i1 %cmp63.i, %struct.sv** %add.ptr.i, %struct.sv** %r.0.i
+  %add.ptr.p.4.i = select i1 %cmp63.i, %struct.sv** %add.ptr.i, %struct.sv** %p.4.i
+  br label %if.end66.i
+
+if.end66.i:                                       ; preds = %land.lhs.true58.i, %if.then51.i
+  %p.5.i = phi %struct.sv** [ %add.ptr52.i, %if.then51.i ], [ %add.ptr.add.ptr52.i, %land.lhs.true58.i ]
+  %r.1.i = phi %struct.sv** [ %r.0.i, %if.then51.i ], [ %add.ptr.r.0.i, %land.lhs.true58.i ]
+  %savep.0.i = phi %struct.sv** [ %p.4.i, %if.then51.i ], [ %add.ptr.p.4.i, %land.lhs.true58.i ]
+  %sub.ptr.lhs.cast.i = ptrtoint %struct.sv** %p.5.i to i64
+  %sub.ptr.rhs.cast.i = ptrtoint %struct.sv** %b.1.i to i64
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i
+  %sub.ptr.div.i = ashr exact i64 %sub.ptr.sub.i, 3
+  %add.ptr67.i = getelementptr inbounds %struct.sv** %p2.1.i, i64 %sub.ptr.div.i
+  %add.ptr67.c.i = bitcast %struct.sv** %add.ptr67.i to %struct.sv*
+  store %struct.sv* %add.ptr67.c.i, %struct.sv** %p2.1.i, align 8, !tbaa !0
+  %inc.i = add nsw i64 %runs.1.i, 1
+  br i1 %tobool.i, label %while.cond78.preheader.i, label %while.cond69.preheader.i
+
+while.cond69.preheader.i:                         ; preds = %if.end66.i
+  %incdec.ptr70186.i = getelementptr inbounds %struct.sv** %p.5.i, i64 -1
+  %cmp71187.i = icmp ult %struct.sv** %b.1.i, %incdec.ptr70186.i
+  br i1 %cmp71187.i, label %while.body73.i, label %while.cond78.preheader.i
+
+while.body73.i:                                   ; preds = %while.cond69.preheader.i, %while.body73.i
+  %incdec.ptr70189.i = phi %struct.sv** [ %incdec.ptr70.i, %while.body73.i ], [ %incdec.ptr70186.i, %while.cond69.preheader.i ]
+  %b.2188.i = phi %struct.sv** [ %incdec.ptr74.i, %while.body73.i ], [ %b.1.i, %while.cond69.preheader.i ]
+  %14 = load %struct.sv** %b.2188.i, align 8, !tbaa !0
+  %15 = load %struct.sv** %incdec.ptr70189.i, align 8, !tbaa !0
+  %incdec.ptr74.i = getelementptr inbounds %struct.sv** %b.2188.i, i64 1
+  store %struct.sv* %15, %struct.sv** %b.2188.i, align 8, !tbaa !0
+  store %struct.sv* %14, %struct.sv** %incdec.ptr70189.i, align 8, !tbaa !0
+  %incdec.ptr70.i = getelementptr inbounds %struct.sv** %incdec.ptr70189.i, i64 -1
+  %cmp71.i = icmp ult %struct.sv** %incdec.ptr74.i, %incdec.ptr70.i
+  br i1 %cmp71.i, label %while.body73.i, label %while.cond78.preheader.i
+
+while.cond78.preheader.i:                         ; preds = %while.body73.i, %while.cond69.preheader.i, %if.end66.i, %if.end48.i
+  %p.7.ph.i = phi %struct.sv** [ %savep.0.i, %if.end66.i ], [ %p.4.i, %if.end48.i ], [ %savep.0.i, %while.cond69.preheader.i ], [ %savep.0.i, %while.body73.i ]
+  %q.4.ph.i = phi %struct.sv** [ %p.5.i, %if.end66.i ], [ %q.2.i, %if.end48.i ], [ %p.5.i, %while.cond69.preheader.i ], [ %p.5.i, %while.body73.i ]
+  %p2.2.ph.i = phi %struct.sv** [ %add.ptr67.i, %if.end66.i ], [ %p2.1.i, %if.end48.i ], [ %add.ptr67.i, %while.cond69.preheader.i ], [ %add.ptr67.i, %while.body73.i ]
+  %r.2.ph.i = phi %struct.sv** [ %r.1.i, %if.end66.i ], [ %r.0.i, %if.end48.i ], [ %r.1.i, %while.cond69.preheader.i ], [ %r.1.i, %while.body73.i ]
+  %runs.2.ph.i = phi i64 [ %inc.i, %if.end66.i ], [ %runs.1.i, %if.end48.i ], [ %inc.i, %while.cond69.preheader.i ], [ %inc.i, %while.body73.i ]
+  %cmp79190.i = icmp ult %struct.sv** %q.4.ph.i, %p.7.ph.i
+  br i1 %cmp79190.i, label %while.body81.i, label %while.end92.i
+
+while.body81.i:                                   ; preds = %while.cond78.preheader.i, %while.cond78.backedge.i
+  %runs.2193.i = phi i64 [ %inc83.i, %while.cond78.backedge.i ], [ %runs.2.ph.i, %while.cond78.preheader.i ]
+  %p2.2192.i = phi %struct.sv** [ %add.ptr82.i, %while.cond78.backedge.i ], [ %p2.2.ph.i, %while.cond78.preheader.i ]
+  %q.4191.i = phi %struct.sv** [ %q.4.be.i, %while.cond78.backedge.i ], [ %q.4.ph.i, %while.cond78.preheader.i ]
+  %add.ptr82.i = getelementptr inbounds %struct.sv** %p2.2192.i, i64 2
+  %add.ptr82.c.i = bitcast %struct.sv** %add.ptr82.i to %struct.sv*
+  store %struct.sv* %add.ptr82.c.i, %struct.sv** %p2.2192.i, align 8, !tbaa !0
+  %inc83.i = add nsw i64 %runs.2193.i, 1
+  br i1 %tobool.i, label %while.cond78.backedge.i, label %if.then85.i
+
+if.then85.i:                                      ; preds = %while.body81.i
+  %incdec.ptr86.i = getelementptr inbounds %struct.sv** %q.4191.i, i64 1
+  %16 = load %struct.sv** %q.4191.i, align 8, !tbaa !0
+  %17 = load %struct.sv** %incdec.ptr86.i, align 8, !tbaa !0
+  store %struct.sv* %17, %struct.sv** %q.4191.i, align 8, !tbaa !0
+  store %struct.sv* %16, %struct.sv** %incdec.ptr86.i, align 8, !tbaa !0
+  br label %while.cond78.backedge.i
+
+while.cond78.backedge.i:                          ; preds = %if.then85.i, %while.body81.i
+  %q.4.be.i = getelementptr inbounds %struct.sv** %q.4191.i, i64 2
+  %cmp79.i = icmp ult %struct.sv** %q.4.be.i, %p.7.ph.i
+  br i1 %cmp79.i, label %while.body81.i, label %while.end92.i
+
+while.end92.i:                                    ; preds = %while.cond78.backedge.i, %while.cond78.preheader.i
+  %runs.2.lcssa.i = phi i64 [ %runs.2.ph.i, %while.cond78.preheader.i ], [ %inc83.i, %while.cond78.backedge.i ]
+  %p2.2.lcssa.i = phi %struct.sv** [ %p2.2.ph.i, %while.cond78.preheader.i ], [ %add.ptr82.i, %while.cond78.backedge.i ]
+  %cmp93.i = icmp eq %struct.sv** %p.7.ph.i, %incdec.ptr15.i
+  %or.cond185.i = and i1 %cmp93.i, %cmp56.i
+  br i1 %or.cond185.i, label %do.end.i.thread, label %if.end103.i
+
+do.end.i.thread:                                  ; preds = %while.end92.i
+  %add.ptr100.i = getelementptr inbounds %struct.sv** %p2.2.lcssa.i, i64 1
+  %add.ptr100.c.i = bitcast %struct.sv** %add.ptr100.i to %struct.sv*
+  store %struct.sv* %add.ptr100.c.i, %struct.sv** %p2.2.lcssa.i, align 8, !tbaa !0
+  %inc101.i = add nsw i64 %runs.2.lcssa.i, 1
+  br label %dynprep.exit
+
+if.end103.i:                                      ; preds = %while.end92.i
+  %cmp104.i = icmp ult %struct.sv** %p.7.ph.i, %incdec.ptr15.i
+  br i1 %cmp104.i, label %do.body.i, label %do.end.i
+
+do.end.i:                                         ; preds = %if.end103.i
+  %18 = xor i32 %sense.0198.i, 1
+  %cmp3.i = icmp ult %struct.sv** %p.7.ph.i, %add.ptr.i
+  br i1 %cmp3.i, label %for.cond6.preheader.i, label %dynprep.exit
+
+dynprep.exit:                                     ; preds = %do.end.i, %do.end.i.thread, %if.end6
+  %runs.0.lcssa.i = phi i64 [ 0, %if.end6 ], [ %inc101.i, %do.end.i.thread ], [ %runs.2.lcssa.i, %do.end.i ]
+  %runs9 = getelementptr inbounds [60 x %struct.off_runs]* %stack, i64 0, i64 0, i32 1
+  store i64 %runs.0.lcssa.i, i64* %runs9, align 8, !tbaa !4
+  %offset10 = getelementptr inbounds [60 x %struct.off_runs]* %stack, i64 0, i64 0, i32 0
+  store i64 0, i64* %offset10, align 16, !tbaa !4
+  %arrayidx = getelementptr inbounds [3 x %struct.sv**]* %which, i64 0, i64 2
+  store %struct.sv** %base, %struct.sv*** %arrayidx, align 16, !tbaa !0
+  %arrayidx11 = getelementptr inbounds [3 x %struct.sv**]* %which, i64 0, i64 0
+  store %struct.sv** %base, %struct.sv*** %arrayidx11, align 16, !tbaa !0
+  %arrayidx12 = getelementptr inbounds [3 x %struct.sv**]* %which, i64 0, i64 1
+  store %struct.sv** %aux.0, %struct.sv*** %arrayidx12, align 8, !tbaa !0
+  %sub.ptr.rhs.cast142 = ptrtoint %struct.sv** %aux.0 to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.else157, %if.else152, %do.end151, %do.end181, %dynprep.exit
+  %offset.0 = phi i64 [ 0, %dynprep.exit ], [ %sub.ptr.div144, %do.end151 ], [ %offset.1, %if.else152 ], [ %offset.1, %if.else157 ], [ %sub.ptr.div169, %do.end181 ]
+  %level.0 = phi i32 [ 0, %dynprep.exit ], [ %level.3.lcssa, %do.end151 ], [ %level.3.lcssa, %if.else152 ], [ %inc158, %if.else157 ], [ %inc158, %do.end181 ]
+  %stackp.0 = phi %struct.off_runs* [ %arraydecay7, %dynprep.exit ], [ %stackp.3.lcssa, %do.end151 ], [ %stackp.3.lcssa, %if.else152 ], [ %incdec.ptr159, %if.else157 ], [ %incdec.ptr159, %do.end181 ]
+  %runs13 = getelementptr inbounds %struct.off_runs* %stackp.0, i64 0, i32 1
+  %19 = load i64* %runs13, align 8, !tbaa !4
+  %cmp14 = icmp eq i64 %19, 0
+  br i1 %cmp14, label %if.then15, label %if.end122
+
+if.then15:                                        ; preds = %for.cond
+  %and = and i32 %level.0, 1
+  %idxprom335 = zext i32 %and to i64
+  %arrayidx16 = getelementptr inbounds [3 x %struct.sv**]* %which, i64 0, i64 %idxprom335
+  %20 = load %struct.sv*** %arrayidx16, align 8, !tbaa !0
+  %inc = add nsw i32 %and, 1
+  %idxprom17336 = zext i32 %inc to i64
+  %arrayidx18 = getelementptr inbounds [3 x %struct.sv**]* %which, i64 0, i64 %idxprom17336
+  %21 = load %struct.sv*** %arrayidx18, align 8, !tbaa !0
+  br label %do.body
+
+do.body:                                          ; preds = %if.end116, %if.then15
+  %level.1 = phi i32 [ %level.0, %if.then15 ], [ %dec, %if.end116 ]
+  %list1.0 = phi %struct.sv** [ %20, %if.then15 ], [ %list2.0, %if.end116 ]
+  %list2.0 = phi %struct.sv** [ %21, %if.then15 ], [ %list1.0, %if.end116 ]
+  %stackp.1 = phi %struct.off_runs* [ %stackp.0, %if.then15 ], [ %incdec.ptr117, %if.end116 ]
+  %offset19 = getelementptr inbounds %struct.off_runs* %stackp.1, i64 0, i32 0
+  %22 = load i64* %offset19, align 8, !tbaa !4
+  %add.ptr = getelementptr inbounds %struct.sv** %list1.0, i64 %22
+  %add.ptr20 = getelementptr inbounds %struct.sv** %list2.0, i64 %22
+  %23 = load %struct.sv** %add.ptr20, align 8
+  %24 = bitcast %struct.sv** %list1.0 to i8*
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv* %23 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %list2.0 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %add.ptr21 = getelementptr inbounds i8* %24, i64 %sub.ptr.sub
+  %25 = bitcast i8* %add.ptr21 to %struct.sv**
+  %26 = bitcast %struct.sv* %23 to %struct.sv***
+  %27 = load %struct.sv*** %26, align 8, !tbaa !0
+  %sub.ptr.lhs.cast22 = ptrtoint %struct.sv** %27 to i64
+  %sub.ptr.sub24 = sub i64 %sub.ptr.lhs.cast22, %sub.ptr.rhs.cast
+  %add.ptr25 = getelementptr inbounds i8* %24, i64 %sub.ptr.sub24
+  %28 = bitcast i8* %add.ptr25 to %struct.sv**
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub24, 3
+  %cmp29355 = icmp ult %struct.sv** %add.ptr, %25
+  %cmp30356 = icmp slt i64 %sub.ptr.sub, %sub.ptr.sub24
+  %or.cond357 = and i1 %cmp29355, %cmp30356
+  br i1 %or.cond357, label %while.body, label %while.end90
+
+while.body:                                       ; preds = %do.body, %while.cond.backedge
+  %tp2.0360 = phi %struct.sv** [ %tp2.0.be, %while.cond.backedge ], [ %add.ptr20, %do.body ]
+  %f2.0359 = phi %struct.sv** [ %f2.0.be, %while.cond.backedge ], [ %25, %do.body ]
+  %f1.0358 = phi %struct.sv** [ %f1.0.be, %while.cond.backedge ], [ %add.ptr, %do.body ]
+  %29 = load %struct.sv** %f1.0358, align 8, !tbaa !0
+  %30 = load %struct.sv** %f2.0359, align 8, !tbaa !0
+  %call31 = call i32 %cmp.addr.0(%struct.sv* %29, %struct.sv* %30) #4
+  %cmp32 = icmp slt i32 %call31, 1
+  %. = sext i1 %cmp32 to i32
+  %.337 = select i1 %cmp32, %struct.sv** %25, %struct.sv** %28
+  %f1.0.f2.0 = select i1 %cmp32, %struct.sv** %f1.0358, %struct.sv** %f2.0359
+  %f2.0.f1.0 = select i1 %cmp32, %struct.sv** %f2.0359, %struct.sv** %f1.0358
+  %add.ptr37340 = getelementptr inbounds %struct.sv** %f1.0.f2.0, i64 1
+  %cmp38341 = icmp ult %struct.sv** %add.ptr37340, %.337
+  br i1 %cmp38341, label %if.else47, label %if.then39
+
+if.then39:                                        ; preds = %if.else51, %while.body
+  %b.1.lcssa = phi %struct.sv** [ %f1.0.f2.0, %while.body ], [ %add.ptr37345, %if.else51 ]
+  %add.ptr40 = getelementptr inbounds %struct.sv** %.337, i64 -1
+  %cmp41 = icmp ugt %struct.sv** %add.ptr40, %b.1.lcssa
+  br i1 %cmp41, label %land.lhs.true, label %if.else45
+
+land.lhs.true:                                    ; preds = %if.then39
+  %31 = load %struct.sv** %f2.0.f1.0, align 8, !tbaa !0
+  %32 = load %struct.sv** %add.ptr40, align 8, !tbaa !0
+  %call42 = call i32 %cmp.addr.0(%struct.sv* %31, %struct.sv* %32) #4
+  %cmp43 = icmp sgt i32 %call42, %.
+  br i1 %cmp43, label %if.else45, label %for.end
+
+if.else45:                                        ; preds = %land.lhs.true, %if.then39
+  br label %for.end
+
+if.else47:                                        ; preds = %while.body, %if.else51
+  %add.ptr37345 = phi %struct.sv** [ %add.ptr37, %if.else51 ], [ %add.ptr37340, %while.body ]
+  %i.0344 = phi i64 [ %add.i.0, %if.else51 ], [ 1, %while.body ]
+  %b.1343 = phi %struct.sv** [ %add.ptr37345, %if.else51 ], [ %f1.0.f2.0, %while.body ]
+  %run.0342 = phi i64 [ %inc54, %if.else51 ], [ 0, %while.body ]
+  %33 = load %struct.sv** %f2.0.f1.0, align 8, !tbaa !0
+  %34 = load %struct.sv** %add.ptr37345, align 8, !tbaa !0
+  %call48 = call i32 %cmp.addr.0(%struct.sv* %33, %struct.sv* %34) #4
+  %cmp49 = icmp sgt i32 %call48, %.
+  br i1 %cmp49, label %if.else51, label %for.end
+
+if.else51:                                        ; preds = %if.else47
+  %inc54 = add nsw i64 %run.0342, 1
+  %cmp55 = icmp sgt i64 %run.0342, 4
+  %add = zext i1 %cmp55 to i64
+  %add.i.0 = shl nsw i64 %i.0344, %add
+  %add.ptr37 = getelementptr inbounds %struct.sv** %add.ptr37345, i64 %add.i.0
+  %cmp38 = icmp ult %struct.sv** %add.ptr37, %.337
+  br i1 %cmp38, label %if.else47, label %if.then39
+
+for.end:                                          ; preds = %if.else47, %land.lhs.true, %if.else45
+  %t.1 = phi %struct.sv** [ %.337, %if.else45 ], [ %add.ptr40, %land.lhs.true ], [ %add.ptr37345, %if.else47 ]
+  %b.2 = phi %struct.sv** [ %add.ptr40, %if.else45 ], [ %b.1.lcssa, %land.lhs.true ], [ %b.1343, %if.else47 ]
+  %incdec.ptr = getelementptr inbounds %struct.sv** %b.2, i64 1
+  %cmp59347351 = icmp ult %struct.sv** %incdec.ptr, %t.1
+  br i1 %cmp59347351, label %while.body60.lr.ph, label %while.end
+
+while.cond58.outer.loopexit:                      ; preds = %while.body60
+  %cmp59347 = icmp sgt i64 %sub, 1
+  br i1 %cmp59347, label %while.body60.lr.ph, label %while.end
+
+while.body60.lr.ph:                               ; preds = %for.end, %while.cond58.outer.loopexit
+  %b.3.ph353 = phi %struct.sv** [ %b.3348, %while.cond58.outer.loopexit ], [ %incdec.ptr, %for.end ]
+  %t.2.ph352 = phi %struct.sv** [ %add.ptr65, %while.cond58.outer.loopexit ], [ %t.1, %for.end ]
+  %sub.ptr.lhs.cast61 = ptrtoint %struct.sv** %t.2.ph352 to i64
+  br label %while.body60
+
+while.body60:                                     ; preds = %while.body60.lr.ph, %if.else69
+  %b.3348 = phi %struct.sv** [ %b.3.ph353, %while.body60.lr.ph ], [ %add.ptr70, %if.else69 ]
+  %sub.ptr.rhs.cast62 = ptrtoint %struct.sv** %b.3348 to i64
+  %sub.ptr.sub63 = sub i64 %sub.ptr.lhs.cast61, %sub.ptr.rhs.cast62
+  %sub.ptr.div64 = ashr exact i64 %sub.ptr.sub63, 3
+  %sub = add nsw i64 %sub.ptr.div64, -1
+  %div = sdiv i64 %sub, 2
+  %add.ptr65 = getelementptr inbounds %struct.sv** %b.3348, i64 %div
+  %35 = load %struct.sv** %f2.0.f1.0, align 8, !tbaa !0
+  %36 = load %struct.sv** %add.ptr65, align 8, !tbaa !0
+  %call66 = call i32 %cmp.addr.0(%struct.sv* %35, %struct.sv* %36) #4
+  %cmp67 = icmp sgt i32 %call66, %.
+  br i1 %cmp67, label %if.else69, label %while.cond58.outer.loopexit
+
+if.else69:                                        ; preds = %while.body60
+  %add.ptr65.sum = add i64 %div, 1
+  %add.ptr70 = getelementptr inbounds %struct.sv** %b.3348, i64 %add.ptr65.sum
+  %cmp59 = icmp ult %struct.sv** %add.ptr70, %t.2.ph352
+  br i1 %cmp59, label %while.body60, label %while.end
+
+while.end:                                        ; preds = %for.end, %while.cond58.outer.loopexit, %if.else69
+  %t.2.ph350 = phi %struct.sv** [ %t.2.ph352, %if.else69 ], [ %t.1, %for.end ], [ %add.ptr65, %while.cond58.outer.loopexit ]
+  %cmp72 = icmp eq %struct.sv** %f2.0.f1.0, %f1.0358
+  br i1 %cmp72, label %do.body74, label %do.body81
+
+do.body74:                                        ; preds = %while.end, %do.body74
+  %f2.1 = phi %struct.sv** [ %incdec.ptr75, %do.body74 ], [ %f2.0359, %while.end ]
+  %tp2.1 = phi %struct.sv** [ %incdec.ptr76, %do.body74 ], [ %tp2.0360, %while.end ]
+  %incdec.ptr75 = getelementptr inbounds %struct.sv** %f2.1, i64 1
+  %37 = load %struct.sv** %f2.1, align 8, !tbaa !0
+  %incdec.ptr76 = getelementptr inbounds %struct.sv** %tp2.1, i64 1
+  store %struct.sv* %37, %struct.sv** %tp2.1, align 8, !tbaa !0
+  %cmp77 = icmp ult %struct.sv** %incdec.ptr75, %t.2.ph350
+  br i1 %cmp77, label %do.body74, label %do.end
+
+do.end:                                           ; preds = %do.body74
+  %incdec.ptr78 = getelementptr inbounds %struct.sv** %f1.0358, i64 1
+  %38 = load %struct.sv** %f1.0358, align 8, !tbaa !0
+  store %struct.sv* %38, %struct.sv** %incdec.ptr76, align 8, !tbaa !0
+  br label %while.cond.backedge
+
+do.body81:                                        ; preds = %while.end, %do.body81
+  %f1.1 = phi %struct.sv** [ %incdec.ptr82, %do.body81 ], [ %f1.0358, %while.end ]
+  %tp2.2 = phi %struct.sv** [ %incdec.ptr83, %do.body81 ], [ %tp2.0360, %while.end ]
+  %incdec.ptr82 = getelementptr inbounds %struct.sv** %f1.1, i64 1
+  %39 = load %struct.sv** %f1.1, align 8, !tbaa !0
+  %incdec.ptr83 = getelementptr inbounds %struct.sv** %tp2.2, i64 1
+  store %struct.sv* %39, %struct.sv** %tp2.2, align 8, !tbaa !0
+  %cmp85 = icmp ult %struct.sv** %incdec.ptr82, %t.2.ph350
+  br i1 %cmp85, label %do.body81, label %do.end86
+
+do.end86:                                         ; preds = %do.body81
+  %incdec.ptr87 = getelementptr inbounds %struct.sv** %f2.0359, i64 1
+  %40 = load %struct.sv** %f2.0359, align 8, !tbaa !0
+  store %struct.sv* %40, %struct.sv** %incdec.ptr83, align 8, !tbaa !0
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %do.end86, %do.end
+  %f1.0.be = phi %struct.sv** [ %incdec.ptr78, %do.end ], [ %incdec.ptr82, %do.end86 ]
+  %f2.0.be = phi %struct.sv** [ %incdec.ptr75, %do.end ], [ %incdec.ptr87, %do.end86 ]
+  %tp2.1.lcssa.pn = phi %struct.sv** [ %tp2.1, %do.end ], [ %tp2.2, %do.end86 ]
+  %tp2.0.be = getelementptr inbounds %struct.sv** %tp2.1.lcssa.pn, i64 2
+  %cmp29 = icmp ult %struct.sv** %f1.0.be, %25
+  %cmp30 = icmp ult %struct.sv** %f2.0.be, %28
+  %or.cond = and i1 %cmp29, %cmp30
+  br i1 %or.cond, label %while.body, label %while.end90
+
+while.end90:                                      ; preds = %while.cond.backedge, %do.body
+  %cmp30.lcssa = phi i1 [ %cmp30356, %do.body ], [ %cmp30, %while.cond.backedge ]
+  %tp2.0.lcssa = phi %struct.sv** [ %add.ptr20, %do.body ], [ %tp2.0.be, %while.cond.backedge ]
+  %f2.0.lcssa = phi %struct.sv** [ %25, %do.body ], [ %f2.0.be, %while.cond.backedge ]
+  %f1.0.lcssa = phi %struct.sv** [ %add.ptr, %do.body ], [ %f1.0.be, %while.cond.backedge ]
+  %cmp91 = icmp eq %struct.sv** %f1.0.lcssa, %25
+  br i1 %cmp91, label %if.then92, label %do.body103
+
+if.then92:                                        ; preds = %while.end90
+  br i1 %cmp30.lcssa, label %do.body95, label %if.end109
+
+do.body95:                                        ; preds = %if.then92, %do.body95
+  %f2.2 = phi %struct.sv** [ %incdec.ptr96, %do.body95 ], [ %f2.0.lcssa, %if.then92 ]
+  %tp2.3 = phi %struct.sv** [ %incdec.ptr97, %do.body95 ], [ %tp2.0.lcssa, %if.then92 ]
+  %incdec.ptr96 = getelementptr inbounds %struct.sv** %f2.2, i64 1
+  %41 = load %struct.sv** %f2.2, align 8, !tbaa !0
+  %incdec.ptr97 = getelementptr inbounds %struct.sv** %tp2.3, i64 1
+  store %struct.sv* %41, %struct.sv** %tp2.3, align 8, !tbaa !0
+  %cmp99 = icmp ult %struct.sv** %incdec.ptr96, %28
+  br i1 %cmp99, label %do.body95, label %if.end109
+
+do.body103:                                       ; preds = %while.end90, %do.body103
+  %f1.2 = phi %struct.sv** [ %incdec.ptr104, %do.body103 ], [ %f1.0.lcssa, %while.end90 ]
+  %tp2.4 = phi %struct.sv** [ %incdec.ptr105, %do.body103 ], [ %tp2.0.lcssa, %while.end90 ]
+  %incdec.ptr104 = getelementptr inbounds %struct.sv** %f1.2, i64 1
+  %42 = load %struct.sv** %f1.2, align 8, !tbaa !0
+  %incdec.ptr105 = getelementptr inbounds %struct.sv** %tp2.4, i64 1
+  store %struct.sv* %42, %struct.sv** %tp2.4, align 8, !tbaa !0
+  %cmp107 = icmp ult %struct.sv** %incdec.ptr104, %25
+  br i1 %cmp107, label %do.body103, label %if.end109
+
+if.end109:                                        ; preds = %do.body95, %do.body103, %if.then92
+  %tp2.5 = phi %struct.sv** [ %tp2.0.lcssa, %if.then92 ], [ %incdec.ptr105, %do.body103 ], [ %incdec.ptr97, %do.body95 ]
+  %sub.ptr.lhs.cast110 = ptrtoint %struct.sv** %tp2.5 to i64
+  %sub.ptr.sub112 = sub i64 %sub.ptr.lhs.cast110, %sub.ptr.rhs.cast
+  %add.ptr113 = getelementptr inbounds i8* %24, i64 %sub.ptr.sub112
+  %.c = bitcast i8* %add.ptr113 to %struct.sv*
+  store %struct.sv* %.c, %struct.sv** %add.ptr, align 8, !tbaa !0
+  %dec = add nsw i32 %level.1, -1
+  %cmp114 = icmp eq i32 %dec, 0
+  br i1 %cmp114, label %done, label %if.end116
+
+if.end116:                                        ; preds = %if.end109
+  %incdec.ptr117 = getelementptr inbounds %struct.off_runs* %stackp.1, i64 -1
+  %runs119 = getelementptr inbounds %struct.off_runs* %stackp.1, i64 -1, i32 1
+  %43 = load i64* %runs119, align 8, !tbaa !4
+  %cmp120 = icmp eq i64 %43, 0
+  br i1 %cmp120, label %do.body, label %if.end122
+
+if.end122:                                        ; preds = %if.end116, %for.cond
+  %runs.0 = phi i64 [ %19, %for.cond ], [ %43, %if.end116 ]
+  %offset.1 = phi i64 [ %offset.0, %for.cond ], [ %sub.ptr.div, %if.end116 ]
+  %level.2 = phi i32 [ %level.0, %for.cond ], [ %dec, %if.end116 ]
+  %stackp.2 = phi %struct.off_runs* [ %stackp.0, %for.cond ], [ %incdec.ptr117, %if.end116 ]
+  %runs123 = getelementptr inbounds %struct.off_runs* %stackp.2, i64 0, i32 1
+  store i64 0, i64* %runs123, align 8, !tbaa !4
+  %cmp125368 = icmp sgt i64 %runs.0, 2
+  br i1 %cmp125368, label %while.body126, label %while.end133
+
+while.body126:                                    ; preds = %if.end122, %while.body126
+  %stackp.3371 = phi %struct.off_runs* [ %incdec.ptr128, %while.body126 ], [ %stackp.2, %if.end122 ]
+  %level.3370 = phi i32 [ %inc127, %while.body126 ], [ %level.2, %if.end122 ]
+  %runs.1369 = phi i64 [ %sub132, %while.body126 ], [ %runs.0, %if.end122 ]
+  %inc127 = add nsw i32 %level.3370, 1
+  %incdec.ptr128 = getelementptr inbounds %struct.off_runs* %stackp.3371, i64 1
+  %offset129 = getelementptr inbounds %struct.off_runs* %incdec.ptr128, i64 0, i32 0
+  store i64 %offset.1, i64* %offset129, align 8, !tbaa !4
+  %div130 = sdiv i64 %runs.1369, 2
+  %runs131 = getelementptr inbounds %struct.off_runs* %stackp.3371, i64 1, i32 1
+  store i64 %div130, i64* %runs131, align 8, !tbaa !4
+  %sub132 = sub nsw i64 %runs.1369, %div130
+  %cmp125 = icmp sgt i64 %sub132, 2
+  br i1 %cmp125, label %while.body126, label %while.end133
+
+while.end133:                                     ; preds = %while.body126, %if.end122
+  %stackp.3.lcssa = phi %struct.off_runs* [ %stackp.2, %if.end122 ], [ %incdec.ptr128, %while.body126 ]
+  %level.3.lcssa = phi i32 [ %level.2, %if.end122 ], [ %inc127, %while.body126 ]
+  %runs.1.lcssa = phi i64 [ %runs.0, %if.end122 ], [ %sub132, %while.body126 ]
+  %and134 = and i32 %level.3.lcssa, 1
+  %cmp135 = icmp eq i64 %runs.1.lcssa, 1
+  br i1 %cmp135, label %if.then136, label %if.else157
+
+if.then136:                                       ; preds = %while.end133
+  %tobool137 = icmp eq i32 %and134, 0
+  br i1 %tobool137, label %if.else152, label %if.then138
+
+if.then138:                                       ; preds = %if.then136
+  %add.ptr139 = getelementptr inbounds %struct.sv** %base, i64 %offset.1
+  %add.ptr140 = getelementptr inbounds %struct.sv** %aux.0, i64 %offset.1
+  %44 = load %struct.sv** %add.ptr140, align 8
+  %sub.ptr.lhs.cast141 = ptrtoint %struct.sv* %44 to i64
+  %sub.ptr.sub143 = sub i64 %sub.ptr.lhs.cast141, %sub.ptr.rhs.cast142
+  %sub.ptr.div144 = ashr exact i64 %sub.ptr.sub143, 3
+  %add.ptr145 = getelementptr inbounds %struct.sv** %base, i64 %sub.ptr.div144
+  br label %do.body146
+
+do.body146:                                       ; preds = %do.body146, %if.then138
+  %f1.3 = phi %struct.sv** [ %add.ptr139, %if.then138 ], [ %incdec.ptr147, %do.body146 ]
+  %f2.3 = phi %struct.sv** [ %add.ptr140, %if.then138 ], [ %incdec.ptr148, %do.body146 ]
+  %incdec.ptr147 = getelementptr inbounds %struct.sv** %f1.3, i64 1
+  %45 = load %struct.sv** %f1.3, align 8, !tbaa !0
+  %incdec.ptr148 = getelementptr inbounds %struct.sv** %f2.3, i64 1
+  store %struct.sv* %45, %struct.sv** %f2.3, align 8, !tbaa !0
+  %cmp150 = icmp ult %struct.sv** %incdec.ptr147, %add.ptr145
+  br i1 %cmp150, label %do.body146, label %do.end151
+
+do.end151:                                        ; preds = %do.body146
+  %add.ptr145.c = bitcast %struct.sv** %add.ptr145 to %struct.sv*
+  store %struct.sv* %add.ptr145.c, %struct.sv** %add.ptr139, align 8, !tbaa !0
+  br label %for.cond
+
+if.else152:                                       ; preds = %if.then136
+  %cmp153 = icmp eq i32 %level.3.lcssa, 0
+  br i1 %cmp153, label %done, label %for.cond
+
+if.else157:                                       ; preds = %while.end133
+  %inc158 = add nsw i32 %level.3.lcssa, 1
+  %incdec.ptr159 = getelementptr inbounds %struct.off_runs* %stackp.3.lcssa, i64 1
+  %offset160 = getelementptr inbounds %struct.off_runs* %incdec.ptr159, i64 0, i32 0
+  store i64 %offset.1, i64* %offset160, align 8, !tbaa !4
+  %runs161 = getelementptr inbounds %struct.off_runs* %stackp.3.lcssa, i64 1, i32 1
+  store i64 0, i64* %runs161, align 8, !tbaa !4
+  %tobool162 = icmp eq i32 %and134, 0
+  br i1 %tobool162, label %if.then163, label %for.cond
+
+if.then163:                                       ; preds = %if.else157
+  %add.ptr164 = getelementptr inbounds %struct.sv** %base, i64 %offset.1
+  %add.ptr165 = getelementptr inbounds %struct.sv** %aux.0, i64 %offset.1
+  %46 = load %struct.sv** %add.ptr165, align 8
+  %sub.ptr.lhs.cast166 = ptrtoint %struct.sv* %46 to i64
+  %sub.ptr.sub168 = sub i64 %sub.ptr.lhs.cast166, %sub.ptr.rhs.cast142
+  %sub.ptr.div169 = ashr exact i64 %sub.ptr.sub168, 3
+  %47 = bitcast %struct.sv* %46 to %struct.sv***
+  %48 = load %struct.sv*** %47, align 8, !tbaa !0
+  %sub.ptr.lhs.cast171 = ptrtoint %struct.sv** %48 to i64
+  %sub.ptr.sub173 = sub i64 %sub.ptr.lhs.cast171, %sub.ptr.rhs.cast142
+  %sub.ptr.div174 = ashr exact i64 %sub.ptr.sub173, 3
+  %add.ptr175 = getelementptr inbounds %struct.sv** %base, i64 %sub.ptr.div174
+  br label %do.body176
+
+do.body176:                                       ; preds = %do.body176, %if.then163
+  %f1.4 = phi %struct.sv** [ %add.ptr164, %if.then163 ], [ %incdec.ptr177, %do.body176 ]
+  %f2.4 = phi %struct.sv** [ %add.ptr165, %if.then163 ], [ %incdec.ptr178, %do.body176 ]
+  %incdec.ptr177 = getelementptr inbounds %struct.sv** %f1.4, i64 1
+  %49 = load %struct.sv** %f1.4, align 8, !tbaa !0
+  %incdec.ptr178 = getelementptr inbounds %struct.sv** %f2.4, i64 1
+  store %struct.sv* %49, %struct.sv** %f2.4, align 8, !tbaa !0
+  %cmp180 = icmp ult %struct.sv** %incdec.ptr177, %add.ptr175
+  br i1 %cmp180, label %do.body176, label %do.end181
+
+do.end181:                                        ; preds = %do.body176
+  %add.ptr170 = getelementptr inbounds %struct.sv** %base, i64 %sub.ptr.div169
+  %add.ptr170.c = bitcast %struct.sv** %add.ptr170 to %struct.sv*
+  store %struct.sv* %add.ptr170.c, %struct.sv** %add.ptr164, align 8, !tbaa !0
+  %add.ptr175.c = bitcast %struct.sv** %add.ptr175 to %struct.sv*
+  store %struct.sv* %add.ptr175.c, %struct.sv** %add.ptr170, align 8, !tbaa !0
+  br label %for.cond
+
+done:                                             ; preds = %if.else152, %if.end109
+  %arraydecay184 = getelementptr inbounds [200 x %struct.sv*]* %small, i64 0, i64 0
+  %cmp185 = icmp eq %struct.sv** %aux.0, %arraydecay184
+  br i1 %cmp185, label %if.end187, label %if.then186
+
+if.then186:                                       ; preds = %done
+  %50 = bitcast %struct.sv** %aux.0 to i8*
+  call void @Perl_safesysfree(i8* %50) #4
+  br label %if.end187
+
+if.end187:                                        ; preds = %done, %if.then186
+  br i1 %tobool, label %if.then189, label %cleanup
+
+if.then189:                                       ; preds = %if.end187
+  store i32 (%struct.sv*, %struct.sv*)* %savecmp.0, i32 (%struct.sv*, %struct.sv*)** @PL_sort_RealCmp, align 8, !tbaa !0
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.end187, %if.then189, %entry
+  call void @llvm.lifetime.end(i64 960, i8* %1) #3
+  call void @llvm.lifetime.end(i64 1600, i8* %0) #3
+  ret void
+}

@@ -1,0 +1,16 @@
+define void @storeECache(i32 %score) #0 {
+entry:
+  %0 = load i32* @hash, align 4, !tbaa !0
+  %1 = load i32* @ECacheSize, align 4, !tbaa !0
+  %rem = urem i32 %0, %1
+  %idxprom = sext i32 %rem to i64
+  %2 = load %struct.ECacheType** @ECache, align 8, !tbaa !3
+  %stored_hash = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 0
+  store i32 %0, i32* %stored_hash, align 4, !tbaa !0
+  %3 = load i32* @hold_hash, align 4, !tbaa !0
+  %hold_hash = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 1
+  store i32 %3, i32* %hold_hash, align 4, !tbaa !0
+  %score5 = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 2
+  store i32 %score, i32* %score5, align 4, !tbaa !0
+  ret void
+}

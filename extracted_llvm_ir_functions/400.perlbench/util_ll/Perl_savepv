@@ -1,0 +1,16 @@
+define i8* @Perl_savepv(i8* %pv) #0 {
+entry:
+  %tobool = icmp eq i8* %pv, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i64 @strlen(i8* %pv) #8
+  %add = add i64 %call, 1
+  %call1 = tail call i8* @Perl_safesysmalloc(i64 %add) #9
+  %call2 = tail call i8* @strcpy(i8* %call1, i8* %pv) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8* [ %call2, %if.end ], [ null, %entry ]
+  ret i8* %retval.0
+}

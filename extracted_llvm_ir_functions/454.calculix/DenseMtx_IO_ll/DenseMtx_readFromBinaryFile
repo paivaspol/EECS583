@@ -1,0 +1,142 @@
+define i32 @DenseMtx_readFromBinaryFile(%struct._DenseMtx* %mtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  %itemp = alloca [7 x i32], align 16
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([63 x i8]* @.str10, i64 0, i64 0), %struct._DenseMtx* %mtx, %struct._IO_FILE* %fp) #4
+  br label %return
+
+if.end:                                           ; preds = %entry
+  call void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #4
+  %1 = bitcast [7 x i32]* %itemp to i8*
+  %call2 = call i64 @fread(i8* %1, i64 4, i64 7, %struct._IO_FILE* %fp) #4
+  %conv = trunc i64 %call2 to i32
+  %cmp3 = icmp eq i32 %conv, 7
+  br i1 %cmp3, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([63 x i8]* @.str11, i64 0, i64 0), i32 %conv, i32 7) #4
+  br label %return
+
+if.end7:                                          ; preds = %if.end
+  %3 = bitcast [7 x i32]* %itemp to i64*
+  %4 = load i64* %3, align 16
+  %5 = trunc i64 %4 to i32
+  %6 = lshr i64 %4, 32
+  %7 = trunc i64 %6 to i32
+  %arrayidx9 = getelementptr inbounds [7 x i32]* %itemp, i64 0, i64 2
+  %8 = bitcast i32* %arrayidx9 to i64*
+  %9 = load i64* %8, align 8
+  %10 = trunc i64 %9 to i32
+  %11 = lshr i64 %9, 32
+  %12 = trunc i64 %11 to i32
+  %arrayidx11 = getelementptr inbounds [7 x i32]* %itemp, i64 0, i64 4
+  %13 = bitcast i32* %arrayidx11 to i64*
+  %14 = load i64* %13, align 16
+  %15 = trunc i64 %14 to i32
+  %16 = lshr i64 %14, 32
+  %17 = trunc i64 %16 to i32
+  %arrayidx13 = getelementptr inbounds [7 x i32]* %itemp, i64 0, i64 6
+  %18 = load i32* %arrayidx13, align 8, !tbaa !3
+  call void @DenseMtx_init(%struct._DenseMtx* %mtx, i32 %5, i32 %7, i32 %10, i32 %12, i32 %15, i32 %17, i32 %18) #4
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %19 = load i32* %nrow, align 4, !tbaa !3
+  %cmp14 = icmp sgt i32 %19, 0
+  br i1 %cmp14, label %if.then16, label %if.end25
+
+if.then16:                                        ; preds = %if.end7
+  %rowind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7
+  %20 = load i32** %rowind, align 8, !tbaa !0
+  %21 = bitcast i32* %20 to i8*
+  %conv17 = sext i32 %19 to i64
+  %call18 = call i64 @fread(i8* %21, i64 4, i64 %conv17, %struct._IO_FILE* %fp) #4
+  %conv19 = trunc i64 %call18 to i32
+  %cmp20 = icmp eq i32 %conv19, %19
+  br i1 %cmp20, label %if.end25, label %if.then22
+
+if.then22:                                        ; preds = %if.then16
+  %22 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call23 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %22, i8* getelementptr inbounds ([76 x i8]* @.str12, i64 0, i64 0), i32 %conv19, i32 %19) #4
+  br label %return
+
+if.end25:                                         ; preds = %if.then16, %if.end7
+  %ncol = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %23 = load i32* %ncol, align 4, !tbaa !3
+  %cmp26 = icmp sgt i32 %23, 0
+  br i1 %cmp26, label %if.then28, label %if.end37
+
+if.then28:                                        ; preds = %if.end25
+  %colind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 8
+  %24 = load i32** %colind, align 8, !tbaa !0
+  %25 = bitcast i32* %24 to i8*
+  %conv29 = sext i32 %23 to i64
+  %call30 = call i64 @fread(i8* %25, i64 4, i64 %conv29, %struct._IO_FILE* %fp) #4
+  %conv31 = trunc i64 %call30 to i32
+  %cmp32 = icmp eq i32 %conv31, %23
+  br i1 %cmp32, label %if.then28.if.end37_crit_edge, label %if.then34
+
+if.then28.if.end37_crit_edge:                     ; preds = %if.then28
+  %.pre = load i32* %ncol, align 4, !tbaa !3
+  br label %if.end37
+
+if.then34:                                        ; preds = %if.then28
+  %26 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call35 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %26, i8* getelementptr inbounds ([76 x i8]* @.str13, i64 0, i64 0), i32 %conv31, i32 %23) #4
+  br label %return
+
+if.end37:                                         ; preds = %if.end25, %if.then28.if.end37_crit_edge
+  %27 = phi i32 [ %.pre, %if.then28.if.end37_crit_edge ], [ %23, %if.end25 ]
+  %28 = load i32* %nrow, align 4, !tbaa !3
+  %mul = mul nsw i32 %27, %28
+  %cmp40 = icmp sgt i32 %mul, 0
+  br i1 %cmp40, label %if.then42, label %return
+
+if.then42:                                        ; preds = %if.end37
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %29 = load i32* %type, align 4, !tbaa !3
+  switch i32 %29, label %return [
+    i32 1, label %if.then45
+    i32 2, label %if.then57
+  ]
+
+if.then45:                                        ; preds = %if.then42
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %30 = load double** %entries, align 8, !tbaa !0
+  %31 = bitcast double* %30 to i8*
+  %conv46 = sext i32 %mul to i64
+  %call47 = call i64 @fread(i8* %31, i64 8, i64 %conv46, %struct._IO_FILE* %fp) #4
+  %conv48 = trunc i64 %call47 to i32
+  %cmp49 = icmp eq i32 %conv48, %mul
+  br i1 %cmp49, label %return, label %if.then51
+
+if.then51:                                        ; preds = %if.then45
+  %32 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call52 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %32, i8* getelementptr inbounds ([75 x i8]* @.str14, i64 0, i64 0), i32 %conv48, i32 %mul) #4
+  br label %return
+
+if.then57:                                        ; preds = %if.then42
+  %entries58 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %33 = load double** %entries58, align 8, !tbaa !0
+  %34 = bitcast double* %33 to i8*
+  %mul59 = shl nsw i32 %mul, 1
+  %conv60 = sext i32 %mul59 to i64
+  %call61 = call i64 @fread(i8* %34, i64 8, i64 %conv60, %struct._IO_FILE* %fp) #4
+  %conv62 = trunc i64 %call61 to i32
+  %cmp64 = icmp eq i32 %conv62, %mul59
+  br i1 %cmp64, label %return, label %if.then66
+
+if.then66:                                        ; preds = %if.then57
+  %35 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call68 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %35, i8* getelementptr inbounds ([75 x i8]* @.str14, i64 0, i64 0), i32 %conv62, i32 %mul59) #4
+  br label %return
+
+return:                                           ; preds = %if.end37, %if.then57, %if.then45, %if.then42, %if.then66, %if.then51, %if.then34, %if.then22, %if.then5, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then5 ], [ 0, %if.then22 ], [ 0, %if.then34 ], [ 0, %if.then51 ], [ 0, %if.then66 ], [ 1, %if.then42 ], [ 1, %if.then45 ], [ 1, %if.then57 ], [ 1, %if.end37 ]
+  ret i32 %retval.0
+}

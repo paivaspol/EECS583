@@ -1,0 +1,22 @@
+define double @QP2Qstep(i32 %QP) #5 {
+entry:
+  %rem = srem i32 %QP, 6
+  %idxprom = sext i32 %rem to i64
+  %arrayidx = getelementptr inbounds [6 x double]* @QP2Qstep.QP2QSTEP, i64 0, i64 %idxprom
+  %0 = load double* %arrayidx, align 8, !tbaa !4
+  %div = sdiv i32 %QP, 6
+  %cmp3 = icmp sgt i32 %QP, 5
+  br i1 %cmp3, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %Qstep.05 = phi double [ %mul, %for.body ], [ %0, %entry ]
+  %i.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %mul = fmul double %Qstep.05, 2.000000e+00
+  %inc = add nsw i32 %i.04, 1
+  %cmp = icmp slt i32 %inc, %div
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %Qstep.0.lcssa = phi double [ %0, %entry ], [ %mul, %for.body ]
+  ret double %Qstep.0.lcssa
+}

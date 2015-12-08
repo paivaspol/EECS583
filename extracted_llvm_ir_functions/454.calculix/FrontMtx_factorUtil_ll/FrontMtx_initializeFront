@@ -1,0 +1,40 @@
+define void @FrontMtx_initializeFront(%struct._FrontMtx* nocapture %frontmtx, %struct._Chv* %frontJ, i32 %J) #0 {
+entry:
+  %ncolJ = alloca i32, align 4
+  %nrowJ = alloca i32, align 4
+  %colindJ = alloca i32*, align 8
+  %ivec = alloca i32*, align 8
+  %frontETree = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11
+  %0 = load %struct._ETree** %frontETree, align 8, !tbaa !0
+  %call = call i32 @ETree_frontSize(%struct._ETree* %0, i32 %J) #5
+  %symbfacIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13
+  %1 = load %struct._IVL** %symbfacIVL, align 8, !tbaa !0
+  call void @IVL_listAndSize(%struct._IVL* %1, i32 %J, i32* %ncolJ, i32** %colindJ) #5
+  %2 = load i32* %ncolJ, align 4, !tbaa !3
+  %sub = sub nsw i32 %2, %call
+  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2
+  %3 = load i32* %type, align 4, !tbaa !3
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
+  %4 = load i32* %symmetryflag, align 4, !tbaa !3
+  call void @Chv_init(%struct._Chv* %frontJ, i32 %J, i32 %call, i32 %sub, i32 %sub, i32 %3, i32 %4) #5
+  call void @Chv_columnIndices(%struct._Chv* %frontJ, i32* %ncolJ, i32** %ivec) #5
+  %5 = load i32* %ncolJ, align 4, !tbaa !3
+  %6 = load i32** %ivec, align 8, !tbaa !0
+  %7 = load i32** %colindJ, align 8, !tbaa !0
+  call void @IVcopy(i32 %5, i32* %6, i32* %7) #5
+  %8 = load i32* %symmetryflag, align 4, !tbaa !3
+  %cmp = icmp eq i32 %8, 2
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void @Chv_rowIndices(%struct._Chv* %frontJ, i32* %nrowJ, i32** %ivec) #5
+  %9 = load i32* %nrowJ, align 4, !tbaa !3
+  %10 = load i32** %ivec, align 8, !tbaa !0
+  %11 = load i32** %colindJ, align 8, !tbaa !0
+  call void @IVcopy(i32 %9, i32* %10, i32* %11) #5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  call void @Chv_zero(%struct._Chv* %frontJ) #5
+  ret void
+}

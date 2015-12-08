@@ -1,0 +1,53 @@
+define %struct.op* @Perl_ck_shift(%struct.op* %o) #0 {
+entry:
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %conv = zext i16 %0 to i32
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %1, 4
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_op_free(%struct.op* %o) #8
+  %2 = load %struct.cv** @PL_compcv, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.cv* %2, i64 0, i32 0
+  %3 = load %struct.xpvcv** %sv_any, align 8, !tbaa !3
+  %xcv_flags = getelementptr inbounds %struct.xpvcv* %3, i64 0, i32 17
+  %4 = load i16* %xcv_flags, align 2, !tbaa !4
+  %and3 = and i16 %4, 16
+  %tobool4 = icmp ne i16 %and3, 0
+  %5 = load %struct.gv** @PL_argvgv, align 8, !tbaa !3
+  %6 = load %struct.gv** @PL_defgv, align 8, !tbaa !3
+  %cond = select i1 %tobool4, %struct.gv* %5, %struct.gv* %6
+  %7 = bitcast %struct.gv* %cond to %struct.sv*
+  store %struct.sv* %7, %struct.sv** @PL_Sv, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.gv* %cond, null
+  br i1 %tobool.i, label %Perl_newGVOP.exit, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %if.then
+  %8 = getelementptr inbounds %struct.gv* %cond, i64 0, i32 1
+  %9 = load i32* %8, align 4, !tbaa !0
+  %inc.i = add i32 %9, 1
+  store i32 %inc.i, i32* %8, align 4, !tbaa !0
+  br label %Perl_newGVOP.exit
+
+Perl_newGVOP.exit:                                ; preds = %if.then, %land.rhs.i
+  %call.i = tail call %struct.op* @Perl_newSVOP(i32 7, i32 0, %struct.sv* %7) #7
+  %call5 = tail call %struct.op* @Perl_scalar(%struct.op* %call.i) #8
+  %call6 = tail call %struct.op* @Perl_newUNOP(i32 125, i32 0, %struct.op* %call5) #8
+  %call7 = tail call %struct.op* @Perl_scalar(%struct.op* %call6) #8
+  %call8 = tail call %struct.op* @Perl_newUNOP(i32 %conv, i32 0, %struct.op* %call7) #8
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call9 = tail call %struct.op* @Perl_ck_fun(%struct.op* %o) #8
+  %call10 = tail call fastcc %struct.op* @S_modkids(%struct.op* %call9, i32 %conv) #8
+  %call11 = tail call %struct.op* @Perl_scalar(%struct.op* %call10) #8
+  br label %return
+
+return:                                           ; preds = %if.end, %Perl_newGVOP.exit
+  %retval.0 = phi %struct.op* [ %call11, %if.end ], [ %call8, %Perl_newGVOP.exit ]
+  ret %struct.op* %retval.0
+}

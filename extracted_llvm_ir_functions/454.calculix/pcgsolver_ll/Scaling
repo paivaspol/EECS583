@@ -1,0 +1,90 @@
+define void @Scaling(double* nocapture %A, double* nocapture %b, i32 %neq, i32* nocapture %ia, i32* nocapture %iz, double* nocapture %d) #0 {
+entry:
+  %cmp82 = icmp sgt i32 %neq, 0
+  br i1 %cmp82, label %for.body, label %for.end14
+
+for.cond5.preheader:                              ; preds = %for.body
+  br i1 %cmp82, label %for.body7, label %for.end14
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv91 = phi i64 [ %indvars.iv.next92, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %iz, i64 %indvars.iv91
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom1 = sext i32 %0 to i64
+  %arrayidx2 = getelementptr inbounds double* %A, i64 %idxprom1
+  %1 = load double* %arrayidx2, align 8, !tbaa !3
+  %call = tail call double @sqrt(double %1) #5
+  %div = fdiv double 1.000000e+00, %call
+  %arrayidx4 = getelementptr inbounds double* %d, i64 %indvars.iv91
+  store double %div, double* %arrayidx4, align 8, !tbaa !3
+  %indvars.iv.next92 = add i64 %indvars.iv91, 1
+  %lftr.wideiv93 = trunc i64 %indvars.iv.next92 to i32
+  %exitcond94 = icmp eq i32 %lftr.wideiv93, %neq
+  br i1 %exitcond94, label %for.cond5.preheader, label %for.body
+
+for.body7:                                        ; preds = %for.cond5.preheader, %for.body7
+  %indvars.iv87 = phi i64 [ %indvars.iv.next88, %for.body7 ], [ 0, %for.cond5.preheader ]
+  %arrayidx9 = getelementptr inbounds double* %d, i64 %indvars.iv87
+  %2 = load double* %arrayidx9, align 8, !tbaa !3
+  %arrayidx11 = getelementptr inbounds double* %b, i64 %indvars.iv87
+  %3 = load double* %arrayidx11, align 8, !tbaa !3
+  %4 = fmul double %2, %3
+  %mul = fsub double -0.000000e+00, %4
+  store double %mul, double* %arrayidx11, align 8, !tbaa !3
+  %indvars.iv.next88 = add i64 %indvars.iv87, 1
+  %lftr.wideiv89 = trunc i64 %indvars.iv.next88 to i32
+  %exitcond90 = icmp eq i32 %lftr.wideiv89, %neq
+  br i1 %exitcond90, label %for.end14, label %for.body7
+
+for.end14:                                        ; preds = %entry, %for.body7, %for.cond5.preheader
+  %5 = load double* %d, align 8, !tbaa !3
+  %mul17 = fmul double %5, %5
+  %6 = load i32* %iz, align 4, !tbaa !0
+  %idxprom19 = sext i32 %6 to i64
+  %arrayidx20 = getelementptr inbounds double* %A, i64 %idxprom19
+  %7 = load double* %arrayidx20, align 8, !tbaa !3
+  %mul21 = fmul double %mul17, %7
+  store double %mul21, double* %arrayidx20, align 8, !tbaa !3
+  %cmp2378 = icmp sgt i32 %neq, 1
+  br i1 %cmp2378, label %for.body24, label %for.end48
+
+for.body24:                                       ; preds = %for.end14, %for.inc46
+  %8 = phi i32 [ %9, %for.inc46 ], [ %6, %for.end14 ]
+  %indvars.iv84 = phi i64 [ %indvars.iv.next85, %for.inc46 ], [ 1, %for.end14 ]
+  %arrayidx29 = getelementptr inbounds i32* %iz, i64 %indvars.iv84
+  %9 = load i32* %arrayidx29, align 4, !tbaa !0
+  %cmp3176 = icmp slt i32 %8, %9
+  br i1 %cmp3176, label %for.body32.lr.ph, label %for.inc46
+
+for.body32.lr.ph:                                 ; preds = %for.body24
+  %arrayidx34 = getelementptr inbounds double* %d, i64 %indvars.iv84
+  %10 = sext i32 %8 to i64
+  br label %for.body32
+
+for.body32:                                       ; preds = %for.body32.lr.ph, %for.body32
+  %indvars.iv = phi i64 [ %10, %for.body32.lr.ph ], [ %indvars.iv.next, %for.body32 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %11 = load double* %arrayidx34, align 8, !tbaa !3
+  %arrayidx36 = getelementptr inbounds i32* %ia, i64 %indvars.iv.next
+  %12 = load i32* %arrayidx36, align 4, !tbaa !0
+  %idxprom37 = sext i32 %12 to i64
+  %arrayidx38 = getelementptr inbounds double* %d, i64 %idxprom37
+  %13 = load double* %arrayidx38, align 8, !tbaa !3
+  %mul39 = fmul double %11, %13
+  %arrayidx41 = getelementptr inbounds double* %A, i64 %indvars.iv.next
+  %14 = load double* %arrayidx41, align 8, !tbaa !3
+  %mul42 = fmul double %14, %mul39
+  store double %mul42, double* %arrayidx41, align 8, !tbaa !3
+  %15 = trunc i64 %indvars.iv.next to i32
+  %cmp31 = icmp slt i32 %15, %9
+  br i1 %cmp31, label %for.body32, label %for.inc46
+
+for.inc46:                                        ; preds = %for.body32, %for.body24
+  %indvars.iv.next85 = add i64 %indvars.iv84, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next85 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %neq
+  br i1 %exitcond, label %for.end48, label %for.body24
+
+for.end48:                                        ; preds = %for.inc46, %for.end14
+  ret void
+}

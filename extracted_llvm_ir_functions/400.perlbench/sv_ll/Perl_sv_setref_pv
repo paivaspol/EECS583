@@ -1,0 +1,26 @@
+define %struct.sv* @Perl_sv_setref_pv(%struct.sv* %rv, i8* %classname, i8* %pv) #0 {
+entry:
+  %tobool = icmp eq i8* %pv, null
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_sv_setsv_flags(%struct.sv* %rv, %struct.sv* @PL_sv_undef, i32 2) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %rv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 16384
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end4, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %call = tail call i32 @Perl_mg_set(%struct.sv* %rv) #8
+  br label %if.end4
+
+if.else:                                          ; preds = %entry
+  %call3 = tail call %struct.sv* @Perl_newSVrv(%struct.sv* %rv, i8* %classname) #7
+  %1 = ptrtoint i8* %pv to i64
+  tail call void @Perl_sv_setiv(%struct.sv* %call3, i64 %1) #7
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then, %if.then2, %if.else
+  ret %struct.sv* %rv
+}

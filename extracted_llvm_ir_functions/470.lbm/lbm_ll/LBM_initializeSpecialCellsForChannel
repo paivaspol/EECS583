@@ -1,0 +1,62 @@
+define void @LBM_initializeSpecialCellsForChannel(double* nocapture %grid) #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc46, %entry
+  %indvars.iv84 = phi i64 [ -2, %entry ], [ %indvars.iv.next85, %for.inc46 ]
+  %0 = mul i64 %indvars.iv84, 10000
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc43, %for.cond1.preheader
+  %indvars.iv78 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next79, %for.inc43 ]
+  %1 = mul nsw i64 %indvars.iv78, 100
+  %2 = add i64 %1, %0
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.inc, %for.cond4.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.inc ]
+  %3 = trunc i64 %indvars.iv to i32
+  switch i32 %3, label %lor.lhs.false9 [
+    i32 99, label %if.then
+    i32 0, label %if.then
+  ]
+
+lor.lhs.false9:                                   ; preds = %for.body6
+  %4 = trunc i64 %indvars.iv78 to i32
+  switch i32 %4, label %for.inc [
+    i32 99, label %if.then
+    i32 0, label %if.then
+  ]
+
+if.then:                                          ; preds = %lor.lhs.false9, %lor.lhs.false9, %for.body6, %for.body6
+  %5 = add i64 %2, %indvars.iv
+  %6 = mul nsw i64 %5, 20
+  %7 = add nsw i64 %6, 19
+  %arrayidx = getelementptr inbounds double* %grid, i64 %7
+  %8 = bitcast double* %arrayidx to i32*
+  %9 = load i32* %8, align 4, !tbaa !4
+  %or = or i32 %9, 1
+  store i32 %or, i32* %8, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then, %lor.lhs.false9
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 100
+  br i1 %exitcond, label %for.inc43, label %for.body6
+
+for.inc43:                                        ; preds = %for.inc
+  %indvars.iv.next79 = add i64 %indvars.iv78, 1
+  %lftr.wideiv82 = trunc i64 %indvars.iv.next79 to i32
+  %exitcond83 = icmp eq i32 %lftr.wideiv82, 100
+  br i1 %exitcond83, label %for.inc46, label %for.cond4.preheader
+
+for.inc46:                                        ; preds = %for.inc43
+  %indvars.iv.next85 = add i64 %indvars.iv84, 1
+  %lftr.wideiv87 = trunc i64 %indvars.iv.next85 to i32
+  %exitcond88 = icmp eq i32 %lftr.wideiv87, 132
+  br i1 %exitcond88, label %for.end48, label %for.cond1.preheader
+
+for.end48:                                        ; preds = %for.inc46
+  ret void
+}

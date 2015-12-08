@@ -1,0 +1,74 @@
+define i8* @Perl_delimcpy(i8* %to, i8* %toend, i8* %from, i8* %fromend, i32 %delim, i32* nocapture %retlen) #0 {
+entry:
+  %cmp49 = icmp ult i8* %from, %fromend
+  br i1 %cmp49, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %tolen.052 = phi i32 [ %inc26, %for.inc ], [ 0, %entry ]
+  %to.addr.051 = phi i8* [ %to.addr.3, %for.inc ], [ %to, %entry ]
+  %from.addr.050 = phi i8* [ %incdec.ptr25, %for.inc ], [ %from, %entry ]
+  %0 = load i8* %from.addr.050, align 1, !tbaa !0
+  %cmp1 = icmp eq i8 %0, 92
+  br i1 %cmp1, label %if.then, label %if.else13
+
+if.then:                                          ; preds = %for.body
+  %arrayidx = getelementptr inbounds i8* %from.addr.050, i64 1
+  %1 = load i8* %arrayidx, align 1, !tbaa !0
+  %conv3 = sext i8 %1 to i32
+  %cmp4 = icmp eq i32 %conv3, %delim
+  br i1 %cmp4, label %if.end19, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %cmp7 = icmp ult i8* %to.addr.051, %toend
+  br i1 %cmp7, label %if.then9, label %if.end
+
+if.then9:                                         ; preds = %if.else
+  %incdec.ptr10 = getelementptr inbounds i8* %to.addr.051, i64 1
+  store i8 92, i8* %to.addr.051, align 1, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then9, %if.else
+  %to.addr.1 = phi i8* [ %incdec.ptr10, %if.then9 ], [ %to.addr.051, %if.else ]
+  %inc = add nsw i32 %tolen.052, 1
+  br label %if.end19
+
+if.else13:                                        ; preds = %for.body
+  %conv = sext i8 %0 to i32
+  %cmp15 = icmp eq i32 %conv, %delim
+  br i1 %cmp15, label %for.end, label %if.end19
+
+if.end19:                                         ; preds = %if.then, %if.else13, %if.end
+  %from.addr.1 = phi i8* [ %arrayidx, %if.end ], [ %from.addr.050, %if.else13 ], [ %arrayidx, %if.then ]
+  %to.addr.2 = phi i8* [ %to.addr.1, %if.end ], [ %to.addr.051, %if.else13 ], [ %to.addr.051, %if.then ]
+  %tolen.1 = phi i32 [ %inc, %if.end ], [ %tolen.052, %if.else13 ], [ %tolen.052, %if.then ]
+  %cmp20 = icmp ult i8* %to.addr.2, %toend
+  br i1 %cmp20, label %if.then22, label %for.inc
+
+if.then22:                                        ; preds = %if.end19
+  %2 = load i8* %from.addr.1, align 1, !tbaa !0
+  %incdec.ptr23 = getelementptr inbounds i8* %to.addr.2, i64 1
+  store i8 %2, i8* %to.addr.2, align 1, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end19, %if.then22
+  %to.addr.3 = phi i8* [ %incdec.ptr23, %if.then22 ], [ %to.addr.2, %if.end19 ]
+  %incdec.ptr25 = getelementptr inbounds i8* %from.addr.1, i64 1
+  %inc26 = add nsw i32 %tolen.1, 1
+  %cmp = icmp ult i8* %incdec.ptr25, %fromend
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.else13, %entry
+  %tolen.0.lcssa = phi i32 [ 0, %entry ], [ %tolen.052, %if.else13 ], [ %inc26, %for.inc ]
+  %to.addr.0.lcssa = phi i8* [ %to, %entry ], [ %to.addr.051, %if.else13 ], [ %to.addr.3, %for.inc ]
+  %from.addr.0.lcssa = phi i8* [ %from, %entry ], [ %from.addr.050, %if.else13 ], [ %incdec.ptr25, %for.inc ]
+  %cmp27 = icmp ult i8* %to.addr.0.lcssa, %toend
+  br i1 %cmp27, label %if.then29, label %if.end30
+
+if.then29:                                        ; preds = %for.end
+  store i8 0, i8* %to.addr.0.lcssa, align 1, !tbaa !0
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then29, %for.end
+  store i32 %tolen.0.lcssa, i32* %retlen, align 4, !tbaa !3
+  ret i8* %from.addr.0.lcssa
+}

@@ -1,0 +1,17 @@
+define void @rdelay(i32 %time_in_s) #9 {
+entry:
+  %cmp3 = icmp sgt i32 %time_in_s, 0
+  br i1 %cmp3, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %entry
+  %call.i = tail call double @difftime(i64 0, i64 0) #14
+  %conv.i = fptosi double %call.i to i32
+  %cmp = icmp slt i32 %conv.i, %time_in_s
+  br i1 %cmp, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.body, %while.body.lr.ph
+  br label %while.body
+
+while.end:                                        ; preds = %while.body.lr.ph, %entry
+  ret void
+}

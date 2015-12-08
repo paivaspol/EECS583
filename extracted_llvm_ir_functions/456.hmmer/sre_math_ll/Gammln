@@ -1,0 +1,39 @@
+define double @Gammln(double %x) #0 {
+entry:
+  %cmp = fcmp ugt double %x, 0.000000e+00
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %sub = fadd double %x, -1.000000e+00
+  %add = fadd double %sub, 1.100000e+01
+  br label %for.body
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ 10, %if.end ], [ %indvars.iv.next, %for.body ]
+  %value.023 = phi double [ 1.000000e+00, %if.end ], [ %add3, %for.body ]
+  %tmp.022 = phi double [ %add, %if.end ], [ %sub4, %for.body ]
+  %arrayidx = getelementptr inbounds [11 x double]* @Gammln.cof, i64 0, i64 %indvars.iv
+  %0 = load double* %arrayidx, align 8, !tbaa !3
+  %div = fdiv double %0, %tmp.022
+  %add3 = fadd double %value.023, %div
+  %sub4 = fadd double %tmp.022, -1.000000e+00
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %1 = trunc i64 %indvars.iv to i32
+  %cmp2 = icmp sgt i32 %1, 0
+  br i1 %cmp2, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body
+  %call = tail call double @log(double %add3) #4
+  %add5 = fadd double %add, 5.000000e-01
+  %add6 = fadd double %sub, 5.000000e-01
+  %call7 = tail call double @log(double %add5) #4
+  %mul = fmul double %add6, %call7
+  %add8 = fadd double %mul, 0x3FED67F1C8489D6C
+  %sub9 = fsub double %add8, %add5
+  %add10 = fadd double %call, %sub9
+  br label %return
+
+return:                                           ; preds = %entry, %for.end
+  %retval.0 = phi double [ %add10, %for.end ], [ 9.999990e+05, %entry ]
+  ret double %retval.0
+}

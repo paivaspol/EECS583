@@ -1,0 +1,297 @@
+define void @ETree_initFromDenseMatrix(%struct._ETree* %etree, i32 %n, i32 %option, i32 %param) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  %cmp1 = icmp slt i32 %n, 1
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %option.off = add i32 %option, -1
+  %0 = icmp ugt i32 %option.off, 1
+  %cmp7 = icmp slt i32 %param, 1
+  %or.cond307 = or i1 %0, %cmp7
+  br i1 %or.cond307, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), %struct._ETree* %etree, i32 %n, i32 %option, i32 %param) #6
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  tail call void @ETree_clearData(%struct._ETree* %etree) #6
+  switch i32 %option, label %if.end98 [
+    i32 1, label %if.then9
+    i32 2, label %while.cond.preheader
+  ]
+
+while.cond.preheader:                             ; preds = %if.end
+  %cmp32346 = icmp sgt i32 %n, 0
+  br i1 %cmp32346, label %while.body, label %while.end50
+
+if.then9:                                         ; preds = %if.end
+  %add = add i32 %n, -1
+  %sub = add i32 %add, %param
+  %div = sdiv i32 %sub, %param
+  tail call void @ETree_init1(%struct._ETree* %etree, i32 %div, i32 %n) #8
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
+  %2 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
+  %call10 = tail call i32* @IV_entries(%struct._IV* %2) #6
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
+  %3 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
+  %call11 = tail call i32* @IV_entries(%struct._IV* %3) #6
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5
+  %4 = load %struct._IV** %vtxToFrontIV, align 8, !tbaa !0
+  %call12 = tail call i32* @IV_entries(%struct._IV* %4) #6
+  %cmp13327 = icmp sgt i32 %n, 0
+  br i1 %cmp13327, label %for.body, label %for.cond15.preheader
+
+for.cond15.preheader:                             ; preds = %for.body, %if.then9
+  %cmp16324 = icmp sgt i32 %div, 0
+  br i1 %cmp16324, label %for.body17, label %if.end98
+
+for.body:                                         ; preds = %if.then9, %for.body
+  %indvars.iv366 = phi i64 [ %indvars.iv.next367, %for.body ], [ 0, %if.then9 ]
+  %5 = trunc i64 %indvars.iv366 to i32
+  %div14 = sdiv i32 %5, %param
+  %arrayidx = getelementptr inbounds i32* %call12, i64 %indvars.iv366
+  store i32 %div14, i32* %arrayidx, align 4, !tbaa !3
+  %indvars.iv.next367 = add i64 %indvars.iv366, 1
+  %lftr.wideiv368 = trunc i64 %indvars.iv.next367 to i32
+  %exitcond369 = icmp eq i32 %lftr.wideiv368, %n
+  br i1 %exitcond369, label %for.cond15.preheader, label %for.body
+
+for.body17:                                       ; preds = %for.cond15.preheader, %for.body17
+  %indvars.iv362 = phi i64 [ %indvars.iv.next363, %for.body17 ], [ 0, %for.cond15.preheader ]
+  %bnd.0326 = phi i32 [ %sub23, %for.body17 ], [ %n, %for.cond15.preheader ]
+  %cmp18 = icmp sge i32 %bnd.0326, %param
+  %cond = select i1 %cmp18, i32 %param, i32 %bnd.0326
+  %arrayidx20 = getelementptr inbounds i32* %call10, i64 %indvars.iv362
+  store i32 %cond, i32* %arrayidx20, align 4, !tbaa !3
+  %sub23 = sub nsw i32 %bnd.0326, %cond
+  %arrayidx25 = getelementptr inbounds i32* %call11, i64 %indvars.iv362
+  store i32 %sub23, i32* %arrayidx25, align 4, !tbaa !3
+  %indvars.iv.next363 = add i64 %indvars.iv362, 1
+  %lftr.wideiv364 = trunc i64 %indvars.iv.next363 to i32
+  %exitcond365 = icmp eq i32 %lftr.wideiv364, %div
+  br i1 %exitcond365, label %if.end98, label %for.body17
+
+while.body:                                       ; preds = %while.cond.preheader, %while.end
+  %first.0348 = phi i32 [ %last.0.lcssa, %while.end ], [ 0, %while.cond.preheader ]
+  %nfront.0347 = phi i32 [ %inc49, %while.end ], [ 0, %while.cond.preheader ]
+  %last.0341 = add nsw i32 %first.0348, 1
+  %cmp37342 = icmp slt i32 %last.0341, %n
+  br i1 %cmp37342, label %land.rhs.lr.ph, label %while.end
+
+land.rhs.lr.ph:                                   ; preds = %while.body
+  %sub33 = sub nsw i32 %n, %first.0348
+  %mul = shl i32 %sub33, 1
+  %sub34 = add nsw i32 %mul, -1
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.body43
+  %last.0344 = phi i32 [ %last.0341, %land.rhs.lr.ph ], [ %last.0, %while.body43 ]
+  %nent.0343 = phi i32 [ %sub34, %land.rhs.lr.ph ], [ %sub41, %while.body43 ]
+  %sub38 = sub nsw i32 %n, %last.0344
+  %mul39 = shl nsw i32 %sub38, 1
+  %add40 = add i32 %nent.0343, -1
+  %sub41 = add i32 %add40, %mul39
+  %cmp42 = icmp sgt i32 %sub41, %param
+  br i1 %cmp42, label %while.end, label %while.body43
+
+while.body43:                                     ; preds = %land.rhs
+  %last.0 = add nsw i32 %last.0344, 1
+  %cmp37 = icmp slt i32 %last.0, %n
+  br i1 %cmp37, label %land.rhs, label %while.end
+
+while.end:                                        ; preds = %while.body43, %land.rhs, %while.body
+  %last.0.lcssa = phi i32 [ %last.0341, %while.body ], [ %last.0344, %land.rhs ], [ %last.0, %while.body43 ]
+  %inc49 = add nsw i32 %nfront.0347, 1
+  %cmp32 = icmp slt i32 %last.0.lcssa, %n
+  br i1 %cmp32, label %while.body, label %while.end50
+
+while.end50:                                      ; preds = %while.end, %while.cond.preheader
+  %nfront.0.lcssa = phi i32 [ 0, %while.cond.preheader ], [ %inc49, %while.end ]
+  tail call void @ETree_init1(%struct._ETree* %etree, i32 %nfront.0.lcssa, i32 %n) #8
+  %nodwghtsIV51 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
+  %6 = load %struct._IV** %nodwghtsIV51, align 8, !tbaa !0
+  %call52 = tail call i32* @IV_entries(%struct._IV* %6) #6
+  %bndwghtsIV53 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
+  %7 = load %struct._IV** %bndwghtsIV53, align 8, !tbaa !0
+  %call54 = tail call i32* @IV_entries(%struct._IV* %7) #6
+  %vtxToFrontIV55 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5
+  %8 = load %struct._IV** %vtxToFrontIV55, align 8, !tbaa !0
+  %call56 = tail call i32* @IV_entries(%struct._IV* %8) #6
+  br i1 %cmp32346, label %while.body60.lr.ph, label %if.end98
+
+while.body60.lr.ph:                               ; preds = %while.end50
+  %sub90 = add i32 %n, -1
+  br label %while.body60
+
+while.body60:                                     ; preds = %while.body60.lr.ph, %while.end84
+  %indvars.iv377 = phi i64 [ 0, %while.body60.lr.ph ], [ %indvars.iv.next378, %while.end84 ]
+  %first.1340 = phi i32 [ 0, %while.body60.lr.ph ], [ %last.1.lcssa, %while.end84 ]
+  %sub61 = sub nsw i32 %n, %first.1340
+  %mul62 = shl i32 %sub61, 1
+  %sub63 = add nsw i32 %mul62, -1
+  %idxprom64 = sext i32 %first.1340 to i64
+  %arrayidx65 = getelementptr inbounds i32* %call56, i64 %idxprom64
+  %9 = trunc i64 %indvars.iv377 to i32
+  store i32 %9, i32* %arrayidx65, align 4, !tbaa !3
+  %last.1329 = add i32 %first.1340, 1
+  %cmp68330 = icmp slt i32 %last.1329, %n
+  br i1 %cmp68330, label %land.rhs69.lr.ph, label %while.end84
+
+land.rhs69.lr.ph:                                 ; preds = %while.body60
+  %10 = sext i32 %last.1329 to i64
+  br label %land.rhs69
+
+land.rhs69:                                       ; preds = %land.rhs69.lr.ph, %while.body76
+  %indvars.iv374 = phi i64 [ %10, %land.rhs69.lr.ph ], [ %indvars.iv.next375, %while.body76 ]
+  %last.1333 = phi i32 [ %last.1329, %land.rhs69.lr.ph ], [ %last.1, %while.body76 ]
+  %last.1.in332 = phi i32 [ %first.1340, %land.rhs69.lr.ph ], [ %11, %while.body76 ]
+  %nent.1331 = phi i32 [ %sub63, %land.rhs69.lr.ph ], [ %sub73, %while.body76 ]
+  %11 = trunc i64 %indvars.iv374 to i32
+  %sub70 = sub nsw i32 %n, %11
+  %mul71 = shl nsw i32 %sub70, 1
+  %add72 = add i32 %nent.1331, -1
+  %sub73 = add i32 %add72, %mul71
+  %cmp74 = icmp sgt i32 %sub73, %param
+  br i1 %cmp74, label %while.end84, label %while.body76
+
+while.body76:                                     ; preds = %land.rhs69
+  %arrayidx78 = getelementptr inbounds i32* %call56, i64 %indvars.iv374
+  store i32 %9, i32* %arrayidx78, align 4, !tbaa !3
+  %last.1 = add nsw i32 %last.1333, 1
+  %cmp68 = icmp slt i32 %last.1, %n
+  %indvars.iv.next375 = add i64 %indvars.iv374, 1
+  br i1 %cmp68, label %land.rhs69, label %while.end84
+
+while.end84:                                      ; preds = %while.body76, %land.rhs69, %while.body60
+  %last.1.lcssa = phi i32 [ %last.1329, %while.body60 ], [ %last.1333, %land.rhs69 ], [ %last.1, %while.body76 ]
+  %last.1.in.lcssa = phi i32 [ %first.1340, %while.body60 ], [ %last.1.in332, %land.rhs69 ], [ %last.1333, %while.body76 ]
+  %nent.1.lcssa = phi i32 [ %sub63, %while.body60 ], [ %nent.1331, %land.rhs69 ], [ %sub73, %while.body76 ]
+  %12 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
+  %call85 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([47 x i8]* @.str7, i64 0, i64 0), i32 %9, i32 %first.1340, i32 %last.1.in.lcssa, i32 %nent.1.lcssa) #6
+  %sub86 = sub i32 1, %first.1340
+  %add87 = add i32 %sub86, %last.1.in.lcssa
+  %arrayidx89 = getelementptr inbounds i32* %call52, i64 %indvars.iv377
+  store i32 %add87, i32* %arrayidx89, align 4, !tbaa !3
+  %sub91 = sub i32 %sub90, %last.1.in.lcssa
+  %arrayidx93 = getelementptr inbounds i32* %call54, i64 %indvars.iv377
+  store i32 %sub91, i32* %arrayidx93, align 4, !tbaa !3
+  %indvars.iv.next378 = add i64 %indvars.iv377, 1
+  %cmp59 = icmp slt i32 %last.1.lcssa, %n
+  br i1 %cmp59, label %while.body60, label %if.end98
+
+if.end98:                                         ; preds = %while.end50, %while.end84, %for.cond15.preheader, %for.body17, %if.end
+  %nfront.1 = phi i32 [ undef, %if.end ], [ %div, %for.body17 ], [ %div, %for.cond15.preheader ], [ %nfront.0.lcssa, %while.end84 ], [ %nfront.0.lcssa, %while.end50 ]
+  %bndwghts.0 = phi i32* [ undef, %if.end ], [ %call11, %for.body17 ], [ %call11, %for.cond15.preheader ], [ %call54, %while.end84 ], [ %call54, %while.end50 ]
+  %nodwghts.0 = phi i32* [ undef, %if.end ], [ %call10, %for.body17 ], [ %call10, %for.cond15.preheader ], [ %call52, %while.end84 ], [ %call52, %while.end50 ]
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2
+  %13 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %par99 = getelementptr inbounds %struct._Tree* %13, i64 0, i32 2
+  %14 = load i32** %par99, align 8, !tbaa !0
+  tail call void @IVramp(i32 %nfront.1, i32* %14, i32 1, i32 1) #6
+  %sub100 = add nsw i32 %nfront.1, -1
+  %idxprom101 = sext i32 %sub100 to i64
+  %arrayidx102 = getelementptr inbounds i32* %14, i64 %idxprom101
+  store i32 -1, i32* %arrayidx102, align 4, !tbaa !3
+  %15 = load %struct._Tree** %tree, align 8, !tbaa !0
+  tail call void @Tree_setFchSibRoot(%struct._Tree* %15) #6
+  %add107 = add nsw i32 %nfront.1, 1
+  %mul108 = mul nsw i32 %add107, %nfront.1
+  %div109 = sdiv i32 %mul108, 2
+  %call110 = tail call i32* @IVinit(i32 %div109, i32 -1) #6
+  %cmp112314 = icmp sgt i32 %nfront.1, 0
+  br i1 %cmp112314, label %for.body113, label %for.end155
+
+for.body113:                                      ; preds = %if.end98, %for.inc153
+  %indvars.iv358 = phi i64 [ %indvars.iv.next359, %for.inc153 ], [ 0, %if.end98 ]
+  %indvars.iv356 = phi i32 [ %indvars.iv.next357, %for.inc153 ], [ 0, %if.end98 ]
+  %indvars.iv354 = phi i32 [ %indvars.iv.next355, %for.inc153 ], [ 1, %if.end98 ]
+  %updops.0319 = phi double [ %updops.1.lcssa, %for.inc153 ], [ 0.000000e+00, %if.end98 ]
+  %solops.0318 = phi double [ %add127, %for.inc153 ], [ 0.000000e+00, %if.end98 ]
+  %facops.0317 = phi double [ %add122, %for.inc153 ], [ 0.000000e+00, %if.end98 ]
+  %count.0315 = phi i32 [ %count.1.lcssa, %for.inc153 ], [ 0, %if.end98 ]
+  %arrayidx115 = getelementptr inbounds i32* %nodwghts.0, i64 %indvars.iv358
+  %16 = load i32* %arrayidx115, align 4, !tbaa !3
+  %arrayidx117 = getelementptr inbounds i32* %bndwghts.0, i64 %indvars.iv358
+  %17 = load i32* %arrayidx117, align 4, !tbaa !3
+  %mul118 = shl i32 %16, 1
+  %mul119 = mul i32 %mul118, %16
+  %mul120 = mul i32 %mul119, %16
+  %div121 = sdiv i32 %mul120, 3
+  %conv = sitofp i32 %div121 to double
+  %add122 = fadd double %facops.0317, %conv
+  %mul125 = mul nsw i32 %mul119, %17
+  %conv126 = sitofp i32 %mul125 to double
+  %add127 = fadd double %solops.0318, %conv126
+  %add128 = fadd double %add122, %add127
+  %conv129 = fptosi double %add128 to i32
+  %idxprom131 = sext i32 %count.0315 to i64
+  %arrayidx132 = getelementptr inbounds i32* %call110, i64 %idxprom131
+  store i32 %conv129, i32* %arrayidx132, align 4, !tbaa !3
+  %count.1308 = add i32 %count.0315, 1
+  %18 = trunc i64 %indvars.iv358 to i32
+  %cmp134309 = icmp sgt i32 %18, 0
+  br i1 %cmp134309, label %for.body136.lr.ph, label %for.inc153
+
+for.body136.lr.ph:                                ; preds = %for.body113
+  %mul141 = shl i32 %17, 1
+  %add142 = add nsw i32 %mul141, %16
+  %mul140 = mul i32 %mul118, %add142
+  %19 = sext i32 %count.1308 to i64
+  br label %for.body136
+
+for.body136:                                      ; preds = %for.body136, %for.body136.lr.ph
+  %indvars.iv352 = phi i64 [ 0, %for.body136.lr.ph ], [ %indvars.iv.next353, %for.body136 ]
+  %indvars.iv = phi i64 [ %19, %for.body136.lr.ph ], [ %indvars.iv.next, %for.body136 ]
+  %updops.1311 = phi double [ %updops.0319, %for.body136.lr.ph ], [ %add145, %for.body136 ]
+  %arrayidx138 = getelementptr inbounds i32* %nodwghts.0, i64 %indvars.iv352
+  %20 = load i32* %arrayidx138, align 4, !tbaa !3
+  %mul143 = mul i32 %mul140, %20
+  %conv144 = sitofp i32 %mul143 to double
+  %add145 = fadd double %updops.1311, %conv144
+  %conv146 = fptosi double %add145 to i32
+  %arrayidx149 = getelementptr inbounds i32* %call110, i64 %indvars.iv
+  store i32 %conv146, i32* %arrayidx149, align 4, !tbaa !3
+  %indvars.iv.next353 = add i64 %indvars.iv352, 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next353 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv356
+  br i1 %exitcond, label %for.cond133.for.inc153_crit_edge, label %for.body136
+
+for.cond133.for.inc153_crit_edge:                 ; preds = %for.body136
+  %21 = add i32 %count.0315, %indvars.iv354
+  br label %for.inc153
+
+for.inc153:                                       ; preds = %for.cond133.for.inc153_crit_edge, %for.body113
+  %count.1.lcssa = phi i32 [ %21, %for.cond133.for.inc153_crit_edge ], [ %count.1308, %for.body113 ]
+  %updops.1.lcssa = phi double [ %add145, %for.cond133.for.inc153_crit_edge ], [ %updops.0319, %for.body113 ]
+  %indvars.iv.next359 = add i64 %indvars.iv358, 1
+  %indvars.iv.next357 = add i32 %indvars.iv356, 1
+  %indvars.iv.next355 = add i32 %indvars.iv354, 1
+  %lftr.wideiv360 = trunc i64 %indvars.iv.next359 to i32
+  %exitcond361 = icmp eq i32 %lftr.wideiv360, %nfront.1
+  br i1 %exitcond361, label %for.end155, label %for.body113
+
+for.end155:                                       ; preds = %for.inc153, %if.end98
+  %updops.0.lcssa = phi double [ 0.000000e+00, %if.end98 ], [ %updops.1.lcssa, %for.inc153 ]
+  %solops.0.lcssa = phi double [ 0.000000e+00, %if.end98 ], [ %add127, %for.inc153 ]
+  %facops.0.lcssa = phi double [ 0.000000e+00, %if.end98 ], [ %add122, %for.inc153 ]
+  %count.0.lcssa = phi i32 [ 0, %if.end98 ], [ %count.1.lcssa, %for.inc153 ]
+  tail call void @IVqsortUp(i32 %count.0.lcssa, i32* %call110) #6
+  tail call void @IVfree(i32* %call110) #6
+  %22 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
+  %mul156 = fmul double %facops.0.lcssa, 1.000000e+02
+  %add157 = fadd double %facops.0.lcssa, %solops.0.lcssa
+  %add158 = fadd double %add157, %updops.0.lcssa
+  %div159 = fdiv double %mul156, %add158
+  %mul160 = fmul double %solops.0.lcssa, 1.000000e+02
+  %div163 = fdiv double %mul160, %add158
+  %mul164 = fmul double %updops.0.lcssa, 1.000000e+02
+  %div167 = fdiv double %mul164, %add158
+  %call168 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %22, i8* getelementptr inbounds ([133 x i8]* @.str8, i64 0, i64 0), double %facops.0.lcssa, double %div159, double %solops.0.lcssa, double %div163, double %updops.0.lcssa, double %div167) #6
+  ret void
+}

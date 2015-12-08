@@ -1,0 +1,22 @@
+define i32 @MSAFileFormat(%struct.msafile_struct* nocapture %afp) #0 {
+entry:
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0
+  %0 = load %struct._IO_FILE** %f, align 8, !tbaa !0
+  %call = tail call i32 @SeqfileFormat(%struct._IO_FILE* %0) #6
+  %cmp = icmp eq i32 %call, 7
+  %.call = select i1 %cmp, i32 105, i32 %call
+  %cmp1 = icmp eq i32 %.call, 0
+  %cmp2 = icmp sgt i32 %.call, 100
+  %or.cond = or i1 %cmp1, %cmp2
+  br i1 %or.cond, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %entry
+  %fname = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1
+  %1 = load i8** %fname, align 8, !tbaa !0
+  %call4 = tail call i8* @SeqfileFormat2String(i32 %.call) #6
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([156 x i8]* @.str21, i64 0, i64 0), i8* %1, i8* %call4) #6
+  br label %if.end5
+
+if.end5:                                          ; preds = %entry, %if.then3
+  ret i32 %.call
+}

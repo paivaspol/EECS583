@@ -1,0 +1,35 @@
+define void @set_last_dquant() #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
+  %idxprom = sext i32 %1 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %mb_type = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 8
+  %3 = load i32* %mb_type, align 4, !tbaa !3
+  %cond = icmp eq i32 %3, 0
+  br i1 %cond, label %lor.lhs.false17, label %if.then
+
+lor.lhs.false17:                                  ; preds = %entry
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %4 = load i32* %type, align 4, !tbaa !3
+  %cmp18 = icmp eq i32 %4, 1
+  br i1 %cmp18, label %land.lhs.true19, label %if.end
+
+land.lhs.true19:                                  ; preds = %lor.lhs.false17
+  %cbp = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 12
+  %5 = load i32* %cbp, align 4, !tbaa !3
+  %cmp20 = icmp eq i32 %5, 0
+  br i1 %cmp20, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry, %land.lhs.true19
+  %delta_qp = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 2
+  %6 = load i32* %delta_qp, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false17, %land.lhs.true19, %if.then
+  %storemerge = phi i32 [ %6, %if.then ], [ 0, %land.lhs.true19 ], [ 0, %lor.lhs.false17 ]
+  store i32 %storemerge, i32* @last_dquant, align 4, !tbaa !3
+  ret void
+}

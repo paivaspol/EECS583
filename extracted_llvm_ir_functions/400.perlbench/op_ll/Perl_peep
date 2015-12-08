@@ -1,0 +1,1911 @@
+define void @Perl_peep(%struct.op* %o) #0 {
+entry:
+  %n_a = alloca i64, align 8
+  %keylen = alloca i64, align 8
+  %keylen624 = alloca i64, align 8
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %op_seq = getelementptr inbounds %struct.op* %o, i64 0, i32 5
+  %0 = load i16* %op_seq, align 2, !tbaa !4
+  %tobool1 = icmp eq i16 %0, 0
+  br i1 %tobool1, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %lor.lhs.false
+  call void @Perl_push_scope() #7
+  call void @Perl_save_op() #7
+  call void @Perl_save_vptr(i8* bitcast (%struct.cop** @PL_curcop to i8*)) #7
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc1173
+  %1 = phi %struct.op* [ %o, %for.body.lr.ph ], [ %427, %for.inc1173 ]
+  %oldop.01525 = phi %struct.op* [ null, %for.body.lr.ph ], [ %oldop.1, %for.inc1173 ]
+  %op_seq3 = getelementptr inbounds %struct.op* %1, i64 0, i32 5
+  %2 = load i16* %op_seq3, align 2, !tbaa !4
+  %tobool4 = icmp eq i16 %2, 0
+  br i1 %tobool4, label %if.end6, label %for.end1175
+
+if.end6:                                          ; preds = %for.body
+  %3 = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  switch i16 %3, label %if.end12 [
+    i16 0, label %if.then11
+    i16 -1, label %if.then11
+  ]
+
+if.then11:                                        ; preds = %if.end6, %if.end6
+  store i16 1, i16* @PL_op_seqmax, align 2, !tbaa !4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end6, %if.then11
+  %4 = phi i16 [ %3, %if.end6 ], [ 1, %if.then11 ]
+  store %struct.op* %1, %struct.op** @PL_op, align 8, !tbaa !3
+  %op_type = getelementptr inbounds %struct.op* %1, i64 0, i32 4
+  %5 = load i16* %op_type, align 2, !tbaa !4
+  %conv13 = zext i16 %5 to i32
+  switch i32 %conv13, label %sw.default [
+    i32 349, label %sw.bb
+    i32 174, label %sw.bb
+    i32 175, label %sw.bb
+    i32 5, label %sw.bb15
+    i32 66, label %sw.bb22
+    i32 1, label %sw.bb53
+    i32 0, label %sw.bb63
+    i32 2, label %nothin
+    i32 173, label %nothin
+    i32 179, label %nothin
+    i32 10, label %sw.bb96
+    i32 7, label %sw.bb96
+    i32 155, label %sw.bb322
+    i32 153, label %sw.bb322
+    i32 159, label %sw.bb322
+    i32 160, label %sw.bb322
+    i32 163, label %sw.bb322
+    i32 164, label %sw.bb322
+    i32 162, label %sw.bb322
+    i32 156, label %sw.bb322
+    i32 182, label %sw.bb333
+    i32 180, label %sw.bb333
+    i32 32, label %sw.bb369
+    i32 31, label %sw.bb369
+    i32 33, label %sw.bb369
+    i32 285, label %sw.bb385
+    i32 135, label %sw.bb455
+    i32 136, label %sw.bb615
+    i32 150, label %sw.bb777
+    i32 151, label %sw.bb1011
+  ]
+
+sw.bb:                                            ; preds = %if.end12, %if.end12, %if.end12
+  %6 = bitcast %struct.op* %1 to %struct.cop*
+  store volatile %struct.cop* %6, %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %7 = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  %inc = add i16 %7, 1
+  store i16 %inc, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %7, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+sw.bb15:                                          ; preds = %if.end12
+  %8 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %9 = load i8* %8, align 1, !tbaa !1
+  %and = and i8 %9, 8
+  %tobool17 = icmp eq i8 %and, 0
+  br i1 %tobool17, label %if.end19, label %if.then18
+
+if.then18:                                        ; preds = %sw.bb15
+  %op_sv.i = getelementptr inbounds %struct.op* %1, i64 1
+  %10 = bitcast %struct.op* %op_sv.i to %struct.sv**
+  %11 = load %struct.sv** %10, align 8, !tbaa !3
+  %call.i = call %struct.sv* (i8*, ...)* @Perl_mess(i8* getelementptr inbounds ([53 x i8]* @.str155, i64 0, i64 0), %struct.sv* %11) #7
+  call void @Perl_qerror(%struct.sv* %call.i) #7
+  %.pre = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  br label %if.end19
+
+if.end19:                                         ; preds = %sw.bb15, %if.then18
+  %12 = phi i16 [ %4, %sw.bb15 ], [ %.pre, %if.then18 ]
+  %inc20 = add i16 %12, 1
+  store i16 %inc20, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %12, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+sw.bb22:                                          ; preds = %if.end12
+  %op_next = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %13 = load %struct.op** %op_next, align 8, !tbaa !3
+  %tobool23 = icmp eq %struct.op* %13, null
+  br i1 %tobool23, label %ignore_optimization, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %sw.bb22
+  %op_type25 = getelementptr inbounds %struct.op* %13, i64 0, i32 4
+  %14 = load i16* %op_type25, align 2, !tbaa !4
+  %cmp27 = icmp eq i16 %14, 67
+  br i1 %cmp27, label %if.then29, label %ignore_optimization
+
+if.then29:                                        ; preds = %land.lhs.true
+  %op_private31 = getelementptr inbounds %struct.op* %13, i64 0, i32 7
+  %15 = load i8* %op_private31, align 1, !tbaa !1
+  %and33 = and i8 %15, 16
+  %tobool34 = icmp eq i8 %and33, 0
+  br i1 %tobool34, label %if.end48, label %if.then35
+
+if.then35:                                        ; preds = %if.then29
+  %op_flags = getelementptr inbounds %struct.op* %1, i64 0, i32 6
+  %16 = load i8* %op_flags, align 1, !tbaa !1
+  %and37 = and i8 %16, 64
+  %tobool38 = icmp eq i8 %and37, 0
+  br i1 %tobool38, label %if.else, label %ignore_optimization
+
+if.else:                                          ; preds = %if.then35
+  %op_targ = getelementptr inbounds %struct.op* %13, i64 0, i32 3
+  %17 = load i64* %op_targ, align 8, !tbaa !5
+  %op_targ41 = getelementptr inbounds %struct.op* %1, i64 0, i32 3
+  store i64 %17, i64* %op_targ41, align 8, !tbaa !5
+  store i64 0, i64* %op_targ, align 8, !tbaa !5
+  %op_private44 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %18 = load i8* %op_private44, align 1, !tbaa !1
+  %or = or i8 %18, 16
+  store i8 %or, i8* %op_private44, align 1, !tbaa !1
+  br label %if.end48
+
+if.end48:                                         ; preds = %if.then29, %if.else
+  call void @Perl_op_null(%struct.op* %13) #8
+  %.pre1533 = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  br label %ignore_optimization
+
+ignore_optimization:                              ; preds = %if.then35, %sw.bb22, %land.lhs.true, %if.end48
+  %19 = phi i16 [ %4, %if.then35 ], [ %4, %sw.bb22 ], [ %4, %land.lhs.true ], [ %.pre1533, %if.end48 ]
+  %inc51 = add i16 %19, 1
+  store i16 %inc51, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %19, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+sw.bb53:                                          ; preds = %if.end12
+  %op_flags54 = getelementptr inbounds %struct.op* %1, i64 0, i32 6
+  %20 = load i8* %op_flags54, align 1, !tbaa !1
+  %and56 = and i8 %20, 3
+  %cmp57 = icmp eq i8 %and56, 3
+  br i1 %cmp57, label %nothin, label %if.then59
+
+if.then59:                                        ; preds = %sw.bb53
+  %inc60 = add i16 %4, 1
+  store i16 %inc60, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+sw.bb63:                                          ; preds = %if.end12
+  %op_targ64 = getelementptr inbounds %struct.op* %1, i64 0, i32 3
+  %21 = load i64* %op_targ64, align 8, !tbaa !5
+  switch i64 %21, label %if.end76 [
+    i64 174, label %if.then75
+    i64 175, label %if.then75
+    i64 349, label %if.then75
+  ]
+
+if.then75:                                        ; preds = %sw.bb63, %sw.bb63, %sw.bb63
+  %22 = bitcast %struct.op* %1 to %struct.cop*
+  store volatile %struct.cop* %22, %struct.cop** @PL_curcop, align 8, !tbaa !3
+  br label %if.end76
+
+if.end76:                                         ; preds = %sw.bb63, %if.then75
+  %tobool77 = icmp eq %struct.op* %oldop.01525, null
+  br i1 %tobool77, label %for.inc1173, label %land.lhs.true78
+
+land.lhs.true78:                                  ; preds = %if.end76
+  %op_next79 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %23 = load %struct.op** %op_next79, align 8, !tbaa !3
+  %tobool80 = icmp eq %struct.op* %23, null
+  br i1 %tobool80, label %for.inc1173, label %if.then81
+
+if.then81:                                        ; preds = %land.lhs.true78
+  %op_next83 = getelementptr inbounds %struct.op* %oldop.01525, i64 0, i32 0
+  store %struct.op* %23, %struct.op** %op_next83, align 8, !tbaa !3
+  br label %for.inc1173
+
+nothin:                                           ; preds = %sw.bb53, %if.end12, %if.end12, %if.end12
+  %tobool86 = icmp eq %struct.op* %oldop.01525, null
+  br i1 %tobool86, label %if.end93, label %land.lhs.true87
+
+land.lhs.true87:                                  ; preds = %nothin
+  %op_next88 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %24 = load %struct.op** %op_next88, align 8, !tbaa !3
+  %tobool89 = icmp eq %struct.op* %24, null
+  br i1 %tobool89, label %if.end93, label %if.then90
+
+if.then90:                                        ; preds = %land.lhs.true87
+  %op_next92 = getelementptr inbounds %struct.op* %oldop.01525, i64 0, i32 0
+  store %struct.op* %24, %struct.op** %op_next92, align 8, !tbaa !3
+  br label %for.inc1173
+
+if.end93:                                         ; preds = %land.lhs.true87, %nothin
+  %inc94 = add i16 %4, 1
+  store i16 %inc94, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+sw.bb96:                                          ; preds = %if.end12, %if.end12
+  %cmp99 = icmp eq i16 %5, 10
+  %op_next112.phi.trans.insert = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %.pre1545 = load %struct.op** %op_next112.phi.trans.insert, align 8, !tbaa !3
+  br i1 %cmp99, label %if.then107.thread, label %lor.lhs.false101
+
+if.then107.thread:                                ; preds = %sw.bb96
+  br label %cond.end
+
+lor.lhs.false101:                                 ; preds = %sw.bb96
+  %op_type103 = getelementptr inbounds %struct.op* %.pre1545, i64 0, i32 4
+  %25 = load i16* %op_type103, align 2, !tbaa !4
+  switch i16 %25, label %if.else236 [
+    i16 125, label %cond.false
+    i16 15, label %if.then214
+  ]
+
+cond.false:                                       ; preds = %lor.lhs.false101
+  %op_next114 = getelementptr inbounds %struct.op* %.pre1545, i64 0, i32 0
+  %26 = load %struct.op** %op_next114, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then107.thread, %cond.false
+  %cond = phi %struct.op* [ %26, %cond.false ], [ %.pre1545, %if.then107.thread ]
+  %op_next1121556 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %tobool115 = icmp eq %struct.op* %cond, null
+  br i1 %tobool115, label %if.end205, label %land.lhs.true116
+
+land.lhs.true116:                                 ; preds = %cond.end
+  %op_type117 = getelementptr inbounds %struct.op* %cond, i64 0, i32 4
+  %27 = load i16* %op_type117, align 2, !tbaa !4
+  %cmp119 = icmp eq i16 %27, 5
+  br i1 %cmp119, label %land.lhs.true121, label %if.end205
+
+land.lhs.true121:                                 ; preds = %land.lhs.true116
+  %op_next122 = getelementptr inbounds %struct.op* %cond, i64 0, i32 0
+  %28 = load %struct.op** %op_next122, align 8, !tbaa !3
+  store %struct.op* %28, %struct.op** @PL_op, align 8, !tbaa !3
+  %tobool123 = icmp eq %struct.op* %28, null
+  br i1 %tobool123, label %if.end205, label %land.lhs.true124
+
+land.lhs.true124:                                 ; preds = %land.lhs.true121
+  %29 = load %struct.op** %op_next122, align 8, !tbaa !3
+  %op_type126 = getelementptr inbounds %struct.op* %29, i64 0, i32 4
+  %30 = load i16* %op_type126, align 2, !tbaa !4
+  %cmp128 = icmp eq i16 %30, 127
+  br i1 %cmp128, label %land.lhs.true130, label %if.end205
+
+land.lhs.true130:                                 ; preds = %land.lhs.true124
+  %op_private132 = getelementptr inbounds %struct.op* %29, i64 0, i32 7
+  %31 = load i8* %op_private132, align 1, !tbaa !1
+  %tobool135 = icmp ugt i8 %31, 7
+  br i1 %tobool135, label %if.end205, label %land.lhs.true136
+
+land.lhs.true136:                                 ; preds = %land.lhs.true130
+  %op_sv = getelementptr inbounds %struct.op* %cond, i64 1
+  %32 = bitcast %struct.op* %op_sv to %struct.sv**
+  %33 = load %struct.sv** %32, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %33, i64 0, i32 2
+  %34 = load i32* %sv_flags, align 4, !tbaa !0
+  %and137 = and i32 %34, 65536
+  %tobool138 = icmp eq i32 %and137, 0
+  br i1 %tobool138, label %cond.false141, label %cond.true139
+
+cond.true139:                                     ; preds = %land.lhs.true136
+  %sv_any = getelementptr inbounds %struct.sv* %33, i64 0, i32 0
+  %35 = load i8** %sv_any, align 8, !tbaa !3
+  %xiv_iv = getelementptr inbounds i8* %35, i64 24
+  %36 = bitcast i8* %xiv_iv to i64*
+  %37 = load i64* %36, align 8, !tbaa !5
+  br label %cond.end143
+
+cond.false141:                                    ; preds = %land.lhs.true136
+  %call = call i64 @Perl_sv_2iv(%struct.sv* %33) #7
+  br label %cond.end143
+
+cond.end143:                                      ; preds = %cond.false141, %cond.true139
+  %cond144 = phi i64 [ %37, %cond.true139 ], [ %call, %cond.false141 ]
+  %38 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_arybase = getelementptr inbounds %struct.cop* %38, i64 0, i32 12
+  %39 = load i32* %cop_arybase, align 4, !tbaa !0
+  %conv145 = sext i32 %39 to i64
+  %sub = sub nsw i64 %cond144, %conv145
+  %40 = icmp ult i64 %sub, 256
+  br i1 %40, label %if.then151, label %if.end205
+
+if.then151:                                       ; preds = %cond.end143
+  %41 = getelementptr inbounds %struct.op* %cond, i64 0, i32 7
+  %42 = load i8* %41, align 1, !tbaa !1
+  %and154 = and i8 %42, 8
+  %tobool155 = icmp eq i8 %and154, 0
+  br i1 %tobool155, label %if.end157, label %if.then156
+
+if.then156:                                       ; preds = %if.then151
+  %43 = load %struct.sv** %32, align 8, !tbaa !3
+  %call.i1489 = call %struct.sv* (i8*, ...)* @Perl_mess(i8* getelementptr inbounds ([53 x i8]* @.str155, i64 0, i64 0), %struct.sv* %43) #7
+  call void @Perl_qerror(%struct.sv* %call.i1489) #7
+  br label %if.end157
+
+if.end157:                                        ; preds = %if.then151, %if.then156
+  %44 = load i16* %op_type, align 2, !tbaa !4
+  %cmp160 = icmp eq i16 %44, 7
+  br i1 %cmp160, label %if.then162, label %if.end164
+
+if.then162:                                       ; preds = %if.end157
+  %45 = load %struct.op** %op_next1121556, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %45) #8
+  br label %if.end164
+
+if.end164:                                        ; preds = %if.then162, %if.end157
+  %46 = load %struct.op** %op_next122, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %46) #8
+  call void @Perl_op_null(%struct.op* %cond) #8
+  %47 = load %struct.op** %op_next122, align 8, !tbaa !3
+  %op_flags167 = getelementptr inbounds %struct.op* %47, i64 0, i32 6
+  %48 = load i8* %op_flags167, align 1, !tbaa !1
+  %and169 = and i8 %48, 32
+  %op_flags170 = getelementptr inbounds %struct.op* %1, i64 0, i32 6
+  %49 = load i8* %op_flags170, align 1, !tbaa !1
+  %or172 = or i8 %49, %and169
+  store i8 %or172, i8* %op_flags170, align 1, !tbaa !1
+  %50 = load %struct.op** %op_next122, align 8, !tbaa !3
+  %op_next175 = getelementptr inbounds %struct.op* %50, i64 0, i32 0
+  %51 = load %struct.op** %op_next175, align 8, !tbaa !3
+  store %struct.op* %51, %struct.op** %op_next1121556, align 8, !tbaa !3
+  %52 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 126), align 8, !tbaa !3
+  %op_ppaddr = getelementptr inbounds %struct.op* %1, i64 0, i32 2
+  store %struct.op* ()* %52, %struct.op* ()** %op_ppaddr, align 8, !tbaa !3
+  %conv177 = trunc i64 %sub to i8
+  %op_private178 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  store i8 %conv177, i8* %op_private178, align 1, !tbaa !1
+  %53 = load i16* %op_type, align 2, !tbaa !4
+  %cmp181 = icmp eq i16 %53, 7
+  br i1 %cmp181, label %if.then183, label %if.else198
+
+if.then183:                                       ; preds = %if.end164
+  %op_sv184 = getelementptr inbounds %struct.op* %1, i64 1
+  %54 = bitcast %struct.op* %op_sv184 to %struct.sv**
+  %55 = load %struct.sv** %54, align 8, !tbaa !3
+  %sv_any185 = bitcast %struct.sv* %55 to %struct.xpvgv**
+  %56 = load %struct.xpvgv** %sv_any185, align 8, !tbaa !3
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %56, i64 0, i32 7
+  %57 = load %struct.gp** %xgv_gp, align 8, !tbaa !3
+  %gp_av = getelementptr inbounds %struct.gp* %57, i64 0, i32 4
+  %58 = load %struct.av** %gp_av, align 8, !tbaa !3
+  %tobool186 = icmp eq %struct.av* %58, null
+  br i1 %tobool186, label %cond.false191, label %if.end203
+
+cond.false191:                                    ; preds = %if.then183
+  %59 = bitcast %struct.sv* %55 to %struct.gv*
+  %call192 = call %struct.gv* @Perl_gv_AVadd(%struct.gv* %59) #7
+  br label %if.end203
+
+if.else198:                                       ; preds = %if.end164
+  %or201 = or i8 %or172, -128
+  store i8 %or201, i8* %op_flags170, align 1, !tbaa !1
+  br label %if.end203
+
+if.end203:                                        ; preds = %if.then183, %cond.false191, %if.else198
+  store i16 126, i16* %op_type, align 2, !tbaa !4
+  br label %if.end205
+
+if.end205:                                        ; preds = %cond.end143, %land.lhs.true121, %cond.end, %if.end203, %land.lhs.true130, %land.lhs.true124, %land.lhs.true116
+  %60 = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  %inc206 = add i16 %60, 1
+  store i16 %inc206, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %60, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+if.then214:                                       ; preds = %lor.lhs.false101
+  %op_private216 = getelementptr inbounds %struct.op* %.pre1545, i64 0, i32 7
+  %61 = load i8* %op_private216, align 1, !tbaa !1
+  %and218 = and i8 %61, 96
+  %tobool219 = icmp eq i8 %and218, 0
+  br i1 %tobool219, label %if.then220, label %if.end319
+
+if.then220:                                       ; preds = %if.then214
+  call void @Perl_op_null(%struct.op* %.pre1545) #8
+  %62 = load %struct.op** %op_next112.phi.trans.insert, align 8, !tbaa !3
+  %op_private223 = getelementptr inbounds %struct.op* %62, i64 0, i32 7
+  %63 = load i8* %op_private223, align 1, !tbaa !1
+  %and225 = and i8 %63, -112
+  %op_private226 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %64 = load i8* %op_private226, align 1, !tbaa !1
+  %or228 = or i8 %64, %and225
+  store i8 %or228, i8* %op_private226, align 1, !tbaa !1
+  %op_next231 = getelementptr inbounds %struct.op* %62, i64 0, i32 0
+  %65 = load %struct.op** %op_next231, align 8, !tbaa !3
+  store %struct.op* %65, %struct.op** %op_next112.phi.trans.insert, align 8, !tbaa !3
+  store i16 6, i16* %op_type, align 2, !tbaa !4
+  %66 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 6), align 8, !tbaa !3
+  %op_ppaddr234 = getelementptr inbounds %struct.op* %1, i64 0, i32 2
+  store %struct.op* ()* %66, %struct.op* ()** %op_ppaddr234, align 8, !tbaa !3
+  br label %if.end319
+
+if.else236:                                       ; preds = %lor.lhs.false101
+  %op_private237 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %67 = load i8* %op_private237, align 1, !tbaa !1
+  %and239 = and i8 %67, 32
+  %tobool240 = icmp eq i8 %and239, 0
+  br i1 %tobool240, label %if.else287, label %land.lhs.true241
+
+land.lhs.true241:                                 ; preds = %if.else236
+  %68 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings = getelementptr inbounds %struct.cop* %68, i64 0, i32 14
+  %69 = load %struct.sv** %cop_warnings, align 8, !tbaa !3
+  %cmp242 = icmp eq %struct.sv* %69, null
+  br i1 %cmp242, label %lor.lhs.false258, label %land.lhs.true244
+
+land.lhs.true244:                                 ; preds = %land.lhs.true241
+  %70 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings245 = getelementptr inbounds %struct.cop* %70, i64 0, i32 14
+  %71 = load %struct.sv** %cop_warnings245, align 8, !tbaa !3
+  %cmp246 = icmp eq %struct.sv* %71, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp246, label %lor.lhs.false258, label %land.lhs.true248
+
+land.lhs.true248:                                 ; preds = %land.lhs.true244
+  %72 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings249 = getelementptr inbounds %struct.cop* %72, i64 0, i32 14
+  %73 = load %struct.sv** %cop_warnings249, align 8, !tbaa !3
+  %cmp250 = icmp eq %struct.sv* %73, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp250, label %if.then266, label %lor.lhs.false252
+
+lor.lhs.false252:                                 ; preds = %land.lhs.true248
+  %74 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings253 = getelementptr inbounds %struct.cop* %74, i64 0, i32 14
+  %75 = load %struct.sv** %cop_warnings253, align 8, !tbaa !3
+  %sv_any254 = getelementptr inbounds %struct.sv* %75, i64 0, i32 0
+  %76 = load i8** %sv_any254, align 8, !tbaa !3
+  %xpv_pv = bitcast i8* %76 to i8**
+  %77 = load i8** %xpv_pv, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i8* %77, i64 8
+  %78 = load i8* %arrayidx, align 1, !tbaa !1
+  %and256 = and i8 %78, 64
+  %tobool257 = icmp eq i8 %and256, 0
+  br i1 %tobool257, label %lor.lhs.false258, label %if.then266
+
+lor.lhs.false258:                                 ; preds = %lor.lhs.false252, %land.lhs.true244, %land.lhs.true241
+  %79 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings259 = getelementptr inbounds %struct.cop* %79, i64 0, i32 14
+  %80 = load %struct.sv** %cop_warnings259, align 8, !tbaa !3
+  %cmp260 = icmp eq %struct.sv* %80, null
+  br i1 %cmp260, label %land.lhs.true262, label %if.else287
+
+land.lhs.true262:                                 ; preds = %lor.lhs.false258
+  %81 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and264 = and i8 %81, 1
+  %tobool265 = icmp eq i8 %and264, 0
+  br i1 %tobool265, label %if.else287, label %if.then266
+
+if.then266:                                       ; preds = %lor.lhs.false252, %land.lhs.true262, %land.lhs.true248
+  %op_sv268 = getelementptr inbounds %struct.op* %1, i64 1
+  %82 = bitcast %struct.op* %op_sv268 to %struct.sv**
+  %83 = load %struct.sv** %82, align 8, !tbaa !3
+  %84 = bitcast %struct.sv* %83 to %struct.gv*
+  %85 = getelementptr inbounds %struct.sv* %83, i64 0, i32 2
+  %86 = load i32* %85, align 4, !tbaa !0
+  %and270 = and i32 %86, 255
+  %cmp271 = icmp eq i32 %and270, 13
+  br i1 %cmp271, label %land.lhs.true273, label %if.end319
+
+land.lhs.true273:                                 ; preds = %if.then266
+  %sv_any274 = bitcast %struct.sv* %83 to %struct.xpvgv**
+  %87 = load %struct.xpvgv** %sv_any274, align 8, !tbaa !3
+  %xgv_gp275 = getelementptr inbounds %struct.xpvgv* %87, i64 0, i32 7
+  %88 = load %struct.gp** %xgv_gp275, align 8, !tbaa !3
+  %gp_cv = getelementptr inbounds %struct.gp* %88, i64 0, i32 7
+  %89 = load %struct.cv** %gp_cv, align 8, !tbaa !3
+  %tobool276 = icmp eq %struct.cv* %89, null
+  br i1 %tobool276, label %if.end319, label %land.lhs.true277
+
+land.lhs.true277:                                 ; preds = %land.lhs.true273
+  %sv_any281 = getelementptr inbounds %struct.cv* %89, i64 0, i32 0
+  %90 = load %struct.xpvcv** %sv_any281, align 8, !tbaa !3
+  %xpv_pv282 = getelementptr inbounds %struct.xpvcv* %90, i64 0, i32 0
+  %91 = load i8** %xpv_pv282, align 8, !tbaa !3
+  %tobool283 = icmp eq i8* %91, null
+  br i1 %tobool283, label %if.end319, label %if.then284
+
+if.then284:                                       ; preds = %land.lhs.true277
+  %call285 = call %struct.sv* @Perl_sv_newmortal() #7
+  call void @Perl_gv_efullname4(%struct.sv* %call285, %struct.gv* %84, i8* null, i8 signext 1) #7
+  call void (i32, i8*, ...)* @Perl_warner(i32 35, i8* getelementptr inbounds ([41 x i8]* @.str134, i64 0, i64 0), %struct.sv* %call285) #7
+  br label %if.end319
+
+if.else287:                                       ; preds = %land.lhs.true262, %lor.lhs.false258, %if.else236
+  %92 = load %struct.op** %op_next112.phi.trans.insert, align 8, !tbaa !3
+  %op_type289 = getelementptr inbounds %struct.op* %92, i64 0, i32 4
+  %93 = load i16* %op_type289, align 2, !tbaa !4
+  %cmp291 = icmp eq i16 %93, 26
+  br i1 %cmp291, label %land.lhs.true293, label %if.end319
+
+land.lhs.true293:                                 ; preds = %if.else287
+  %op_next295 = getelementptr inbounds %struct.op* %92, i64 0, i32 0
+  %94 = load %struct.op** %op_next295, align 8, !tbaa !3
+  %op_type296 = getelementptr inbounds %struct.op* %94, i64 0, i32 4
+  %95 = load i16* %op_type296, align 2, !tbaa !4
+  %cmp298 = icmp eq i16 %95, 66
+  br i1 %cmp298, label %land.lhs.true300, label %if.end319
+
+land.lhs.true300:                                 ; preds = %land.lhs.true293
+  %op_flags303 = getelementptr inbounds %struct.op* %94, i64 0, i32 6
+  %96 = load i8* %op_flags303, align 1, !tbaa !1
+  %and305 = and i8 %96, 64
+  %tobool306 = icmp eq i8 %and305, 0
+  br i1 %tobool306, label %if.end319, label %if.then307
+
+if.then307:                                       ; preds = %land.lhs.true300
+  store i16 27, i16* %op_type, align 2, !tbaa !4
+  %op_flags309 = getelementptr inbounds %struct.op* %1, i64 0, i32 6
+  %97 = load i8* %op_flags309, align 1, !tbaa !1
+  %or311 = or i8 %97, 64
+  store i8 %or311, i8* %op_flags309, align 1, !tbaa !1
+  %98 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 27), align 8, !tbaa !3
+  %op_ppaddr313 = getelementptr inbounds %struct.op* %1, i64 0, i32 2
+  store %struct.op* ()* %98, %struct.op* ()** %op_ppaddr313, align 8, !tbaa !3
+  %99 = load %struct.op** %op_next295, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %99) #8
+  %100 = load %struct.op** %op_next112.phi.trans.insert, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %100) #8
+  br label %if.end319
+
+if.end319:                                        ; preds = %land.lhs.true300, %land.lhs.true293, %if.else287, %land.lhs.true277, %land.lhs.true273, %if.then266, %if.then214, %if.then284, %if.then307, %if.then220
+  %101 = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  %inc320 = add i16 %101, 1
+  store i16 %inc320, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %101, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+sw.bb322:                                         ; preds = %if.end12, %if.end12, %if.end12, %if.end12, %if.end12, %if.end12, %if.end12, %if.end12
+  %inc323 = add i16 %4, 1
+  store i16 %inc323, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %102 = getelementptr inbounds %struct.op* %1, i64 1, i32 1
+  %103 = load %struct.op** %102, align 8, !tbaa !3
+  %op_type3251521 = getelementptr inbounds %struct.op* %103, i64 0, i32 4
+  %104 = load i16* %op_type3251521, align 2, !tbaa !4
+  %cmp3271522 = icmp eq i16 %104, 0
+  br i1 %cmp3271522, label %while.body, label %while.end
+
+while.body:                                       ; preds = %sw.bb322, %while.body
+  %105 = phi %struct.op* [ %110, %while.body ], [ %103, %sw.bb322 ]
+  %106 = phi %struct.op** [ %109, %while.body ], [ %102, %sw.bb322 ]
+  %op_next330 = getelementptr inbounds %struct.op* %105, i64 0, i32 0
+  %107 = load %struct.op** %op_next330, align 8, !tbaa !3
+  store %struct.op* %107, %struct.op** %106, align 8, !tbaa !3
+  %108 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %109 = getelementptr inbounds %struct.op* %108, i64 1, i32 1
+  %110 = load %struct.op** %109, align 8, !tbaa !3
+  %op_type325 = getelementptr inbounds %struct.op* %110, i64 0, i32 4
+  %111 = load i16* %op_type325, align 2, !tbaa !4
+  %cmp327 = icmp eq i16 %111, 0
+  br i1 %cmp327, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %sw.bb322
+  %.lcssa1520 = phi %struct.op* [ %103, %sw.bb322 ], [ %110, %while.body ]
+  call void @Perl_peep(%struct.op* %.lcssa1520) #8
+  br label %for.inc1173
+
+sw.bb333:                                         ; preds = %if.end12, %if.end12
+  %inc334 = add i16 %4, 1
+  store i16 %inc334, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %op_redoop1505 = getelementptr inbounds %struct.op* %1, i64 1, i32 2
+  %112 = load %struct.op* ()** %op_redoop1505, align 8
+  %113 = bitcast %struct.op* ()* %112 to %struct.op*
+  %op_type3371506 = getelementptr inbounds %struct.op* %113, i64 0, i32 4
+  %114 = load i16* %op_type3371506, align 2, !tbaa !4
+  %cmp3391507 = icmp eq i16 %114, 0
+  br i1 %cmp3391507, label %while.body341, label %while.end345
+
+while.body341:                                    ; preds = %sw.bb333, %while.body341
+  %115 = phi %struct.op* ()* [ %118, %while.body341 ], [ %112, %sw.bb333 ]
+  %op_redoop1508 = phi %struct.op* ()** [ %op_redoop, %while.body341 ], [ %op_redoop1505, %sw.bb333 ]
+  %op_next343 = bitcast %struct.op* ()* %115 to %struct.op**
+  %116 = load %struct.op** %op_next343, align 8, !tbaa !3
+  %.c1485 = bitcast %struct.op* %116 to %struct.op* ()*
+  store %struct.op* ()* %.c1485, %struct.op* ()** %op_redoop1508, align 8, !tbaa !3
+  %117 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_redoop = getelementptr inbounds %struct.op* %117, i64 1, i32 2
+  %118 = load %struct.op* ()** %op_redoop, align 8
+  %119 = bitcast %struct.op* ()* %118 to %struct.op*
+  %op_type337 = getelementptr inbounds %struct.op* %119, i64 0, i32 4
+  %120 = load i16* %op_type337, align 2, !tbaa !4
+  %cmp339 = icmp eq i16 %120, 0
+  br i1 %cmp339, label %while.body341, label %while.end345
+
+while.end345:                                     ; preds = %while.body341, %sw.bb333
+  %.lcssa1504 = phi %struct.op* [ %113, %sw.bb333 ], [ %119, %while.body341 ]
+  call void @Perl_peep(%struct.op* %.lcssa1504) #8
+  %121 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_nextop1510 = getelementptr inbounds %struct.op* %121, i64 1, i32 3
+  %122 = bitcast i64* %op_nextop1510 to %struct.op**
+  %123 = load %struct.op** %122, align 8, !tbaa !3
+  %op_type3481511 = getelementptr inbounds %struct.op* %123, i64 0, i32 4
+  %124 = load i16* %op_type3481511, align 2, !tbaa !4
+  %cmp3501512 = icmp eq i16 %124, 0
+  br i1 %cmp3501512, label %while.body352, label %while.end356
+
+while.body352:                                    ; preds = %while.end345, %while.body352
+  %125 = phi %struct.op* [ %129, %while.body352 ], [ %123, %while.end345 ]
+  %op_nextop1513 = phi i64* [ %op_nextop, %while.body352 ], [ %op_nextop1510, %while.end345 ]
+  %op_next354 = getelementptr inbounds %struct.op* %125, i64 0, i32 0
+  %126 = load %struct.op** %op_next354, align 8, !tbaa !3
+  %.c1484 = ptrtoint %struct.op* %126 to i64
+  store i64 %.c1484, i64* %op_nextop1513, align 8, !tbaa !3
+  %127 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_nextop = getelementptr inbounds %struct.op* %127, i64 1, i32 3
+  %128 = bitcast i64* %op_nextop to %struct.op**
+  %129 = load %struct.op** %128, align 8, !tbaa !3
+  %op_type348 = getelementptr inbounds %struct.op* %129, i64 0, i32 4
+  %130 = load i16* %op_type348, align 2, !tbaa !4
+  %cmp350 = icmp eq i16 %130, 0
+  br i1 %cmp350, label %while.body352, label %while.end356
+
+while.end356:                                     ; preds = %while.body352, %while.end345
+  %.lcssa1509 = phi %struct.op* [ %123, %while.end345 ], [ %129, %while.body352 ]
+  call void @Perl_peep(%struct.op* %.lcssa1509) #8
+  %131 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_lastop1516 = getelementptr inbounds %struct.op* %131, i64 1, i32 4
+  %132 = bitcast i16* %op_lastop1516 to %struct.op**
+  %133 = load %struct.op** %132, align 8, !tbaa !3
+  %op_type3591517 = getelementptr inbounds %struct.op* %133, i64 0, i32 4
+  %134 = load i16* %op_type3591517, align 2, !tbaa !4
+  %cmp3611518 = icmp eq i16 %134, 0
+  br i1 %cmp3611518, label %while.body363, label %while.end367
+
+while.body363:                                    ; preds = %while.end356, %while.body363
+  %135 = phi %struct.op* [ %140, %while.body363 ], [ %133, %while.end356 ]
+  %136 = phi %struct.op** [ %139, %while.body363 ], [ %132, %while.end356 ]
+  %op_next365 = getelementptr inbounds %struct.op* %135, i64 0, i32 0
+  %137 = load %struct.op** %op_next365, align 8, !tbaa !3
+  store %struct.op* %137, %struct.op** %136, align 8, !tbaa !3
+  %138 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_lastop = getelementptr inbounds %struct.op* %138, i64 1, i32 4
+  %139 = bitcast i16* %op_lastop to %struct.op**
+  %140 = load %struct.op** %139, align 8, !tbaa !3
+  %op_type359 = getelementptr inbounds %struct.op* %140, i64 0, i32 4
+  %141 = load i16* %op_type359, align 2, !tbaa !4
+  %cmp361 = icmp eq i16 %141, 0
+  br i1 %cmp361, label %while.body363, label %while.end367
+
+while.end367:                                     ; preds = %while.body363, %while.end356
+  %.lcssa1515 = phi %struct.op* [ %133, %while.end356 ], [ %140, %while.body363 ]
+  call void @Perl_peep(%struct.op* %.lcssa1515) #8
+  br label %for.inc1173
+
+sw.bb369:                                         ; preds = %if.end12, %if.end12, %if.end12
+  %inc370 = add i16 %4, 1
+  store i16 %inc370, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %op_pmreplstart1502 = getelementptr inbounds %struct.op* %1, i64 1, i32 3
+  %142 = bitcast i64* %op_pmreplstart1502 to %struct.op**
+  %143 = load %struct.op** %142, align 8, !tbaa !3
+  %tobool3731503 = icmp eq %struct.op* %143, null
+  br i1 %tobool3731503, label %while.end383, label %land.end
+
+land.end:                                         ; preds = %sw.bb369, %while.body379
+  %144 = phi %struct.op* [ %148, %while.body379 ], [ %1, %sw.bb369 ]
+  %145 = phi %struct.op* [ %150, %while.body379 ], [ %143, %sw.bb369 ]
+  %op_type375 = getelementptr inbounds %struct.op* %145, i64 0, i32 4
+  %146 = load i16* %op_type375, align 2, !tbaa !4
+  %cmp377 = icmp eq i16 %146, 0
+  br i1 %cmp377, label %while.body379, label %while.end383
+
+while.body379:                                    ; preds = %land.end
+  %op_pmreplstart380 = getelementptr inbounds %struct.op* %144, i64 1, i32 3
+  %op_next381 = getelementptr inbounds %struct.op* %145, i64 0, i32 0
+  %147 = load %struct.op** %op_next381, align 8, !tbaa !3
+  %.c = ptrtoint %struct.op* %147 to i64
+  store i64 %.c, i64* %op_pmreplstart380, align 8, !tbaa !3
+  %148 = load %struct.op** @PL_op, align 8, !tbaa !3
+  %op_pmreplstart = getelementptr inbounds %struct.op* %148, i64 1, i32 3
+  %149 = bitcast i64* %op_pmreplstart to %struct.op**
+  %150 = load %struct.op** %149, align 8, !tbaa !3
+  %tobool373 = icmp eq %struct.op* %150, null
+  br i1 %tobool373, label %while.end383, label %land.end
+
+while.end383:                                     ; preds = %land.end, %sw.bb369, %while.body379
+  %151 = phi %struct.op* [ null, %while.body379 ], [ null, %sw.bb369 ], [ %145, %land.end ]
+  call void @Perl_peep(%struct.op* %151) #8
+  br label %for.inc1173
+
+sw.bb385:                                         ; preds = %if.end12
+  %inc386 = add i16 %4, 1
+  store i16 %inc386, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %152 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings388 = getelementptr inbounds %struct.cop* %152, i64 0, i32 14
+  %153 = load %struct.sv** %cop_warnings388, align 8, !tbaa !3
+  %cmp389 = icmp eq %struct.sv* %153, null
+  br i1 %cmp389, label %lor.lhs.false407, label %land.lhs.true391
+
+land.lhs.true391:                                 ; preds = %sw.bb385
+  %154 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings392 = getelementptr inbounds %struct.cop* %154, i64 0, i32 14
+  %155 = load %struct.sv** %cop_warnings392, align 8, !tbaa !3
+  %cmp393 = icmp eq %struct.sv* %155, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp393, label %lor.lhs.false407, label %land.lhs.true395
+
+land.lhs.true395:                                 ; preds = %land.lhs.true391
+  %156 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings396 = getelementptr inbounds %struct.cop* %156, i64 0, i32 14
+  %157 = load %struct.sv** %cop_warnings396, align 8, !tbaa !3
+  %cmp397 = icmp eq %struct.sv* %157, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp397, label %land.lhs.true415, label %lor.lhs.false399
+
+lor.lhs.false399:                                 ; preds = %land.lhs.true395
+  %158 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings400 = getelementptr inbounds %struct.cop* %158, i64 0, i32 14
+  %159 = load %struct.sv** %cop_warnings400, align 8, !tbaa !3
+  %sv_any401 = getelementptr inbounds %struct.sv* %159, i64 0, i32 0
+  %160 = load i8** %sv_any401, align 8, !tbaa !3
+  %xpv_pv402 = bitcast i8* %160 to i8**
+  %161 = load i8** %xpv_pv402, align 8, !tbaa !3
+  %arrayidx403 = getelementptr inbounds i8* %161, i64 7
+  %162 = load i8* %arrayidx403, align 1, !tbaa !1
+  %and405 = and i8 %162, 1
+  %tobool406 = icmp eq i8 %and405, 0
+  br i1 %tobool406, label %lor.lhs.false407, label %land.lhs.true415
+
+lor.lhs.false407:                                 ; preds = %lor.lhs.false399, %land.lhs.true391, %sw.bb385
+  %163 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings408 = getelementptr inbounds %struct.cop* %163, i64 0, i32 14
+  %164 = load %struct.sv** %cop_warnings408, align 8, !tbaa !3
+  %cmp409 = icmp eq %struct.sv* %164, null
+  br i1 %cmp409, label %land.lhs.true411, label %for.inc1173
+
+land.lhs.true411:                                 ; preds = %lor.lhs.false407
+  %165 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and413 = and i8 %165, 1
+  %tobool414 = icmp eq i8 %and413, 0
+  br i1 %tobool414, label %for.inc1173, label %land.lhs.true415
+
+land.lhs.true415:                                 ; preds = %lor.lhs.false399, %land.lhs.true411, %land.lhs.true395
+  %op_next416 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %166 = load %struct.op** %op_next416, align 8, !tbaa !3
+  %tobool417 = icmp eq %struct.op* %166, null
+  br i1 %tobool417, label %for.inc1173, label %land.lhs.true418
+
+land.lhs.true418:                                 ; preds = %land.lhs.true415
+  %op_type420 = getelementptr inbounds %struct.op* %166, i64 0, i32 4
+  %167 = load i16* %op_type420, align 2, !tbaa !4
+  %cmp422 = icmp eq i16 %167, 174
+  br i1 %cmp422, label %if.then424, label %for.inc1173
+
+if.then424:                                       ; preds = %land.lhs.true418
+  %op_sibling = getelementptr inbounds %struct.op* %166, i64 0, i32 1
+  %168 = load %struct.op** %op_sibling, align 8, !tbaa !3
+  %tobool426 = icmp eq %struct.op* %168, null
+  br i1 %tobool426, label %for.inc1173, label %land.lhs.true427
+
+land.lhs.true427:                                 ; preds = %if.then424
+  %op_type430 = getelementptr inbounds %struct.op* %168, i64 0, i32 4
+  %169 = load i16* %op_type430, align 2, !tbaa !4
+  switch i16 %169, label %if.then448 [
+    i16 190, label %for.inc1173
+    i16 170, label %for.inc1173
+    i16 171, label %for.inc1173
+  ]
+
+if.then448:                                       ; preds = %land.lhs.true427
+  %170 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_line = getelementptr inbounds %struct.cop* %170, i64 0, i32 13
+  %171 = load i32* %cop_line, align 4, !tbaa !0
+  %cop_line450 = getelementptr inbounds %struct.op* %166, i64 1, i32 4
+  %172 = bitcast i16* %cop_line450 to i32*
+  %173 = load i32* %172, align 4, !tbaa !0
+  %174 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_line451 = getelementptr inbounds %struct.cop* %174, i64 0, i32 13
+  store i32 %173, i32* %cop_line451, align 4, !tbaa !0
+  call void (i32, i8*, ...)* @Perl_warner(i32 7, i8* getelementptr inbounds ([33 x i8]* @.str135, i64 0, i64 0)) #7
+  call void (i32, i8*, ...)* @Perl_warner(i32 7, i8* getelementptr inbounds ([51 x i8]* @.str136, i64 0, i64 0)) #7
+  %175 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_line452 = getelementptr inbounds %struct.cop* %175, i64 0, i32 13
+  store i32 %171, i32* %cop_line452, align 4, !tbaa !0
+  br label %for.inc1173
+
+sw.bb455:                                         ; preds = %if.end12
+  %inc457 = add i16 %4, 1
+  store i16 %inc457, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %176 = getelementptr inbounds %struct.op* %1, i64 1, i32 1
+  %177 = load %struct.op** %176, align 8, !tbaa !3
+  %op_type459 = getelementptr inbounds %struct.op* %177, i64 0, i32 4
+  %178 = load i16* %op_type459, align 2, !tbaa !4
+  %cmp461 = icmp eq i16 %178, 5
+  br i1 %cmp461, label %if.end464, label %for.inc1173
+
+if.end464:                                        ; preds = %sw.bb455
+  %op_sv466 = getelementptr inbounds %struct.op* %177, i64 1
+  %179 = bitcast %struct.op* %op_sv466 to %struct.sv**
+  %180 = load %struct.sv** %179, align 8, !tbaa !3
+  %sv_flags467 = getelementptr inbounds %struct.sv* %180, i64 0, i32 2
+  %181 = load i32* %sv_flags467, align 4, !tbaa !0
+  %182 = and i32 %181, 9437184
+  %183 = icmp eq i32 %182, 9437184
+  br i1 %183, label %if.end499, label %if.then474
+
+if.then474:                                       ; preds = %if.end464
+  %and476 = and i32 %181, 262144
+  %cmp477 = icmp eq i32 %and476, 0
+  br i1 %cmp477, label %cond.false483, label %cond.true479
+
+cond.true479:                                     ; preds = %if.then474
+  %sv_any480 = getelementptr inbounds %struct.sv* %180, i64 0, i32 0
+  %184 = load i8** %sv_any480, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %184, i64 8
+  %185 = bitcast i8* %xpv_cur to i64*
+  %186 = load i64* %185, align 8, !tbaa !5
+  store i64 %186, i64* %keylen, align 8, !tbaa !5
+  %xpv_pv482 = bitcast i8* %184 to i8**
+  %187 = load i8** %xpv_pv482, align 8, !tbaa !3
+  br label %cond.end485
+
+cond.false483:                                    ; preds = %if.then474
+  %call484 = call i8* @Perl_sv_2pv_flags(%struct.sv* %180, i64* %keylen, i32 2) #7
+  %.pre1538 = load i32* %sv_flags467, align 4, !tbaa !0
+  %.pre1539 = load i64* %keylen, align 8, !tbaa !5
+  br label %cond.end485
+
+cond.end485:                                      ; preds = %cond.false483, %cond.true479
+  %188 = phi i64 [ %186, %cond.true479 ], [ %.pre1539, %cond.false483 ]
+  %189 = phi i32 [ %181, %cond.true479 ], [ %.pre1538, %cond.false483 ]
+  %cond486 = phi i8* [ %187, %cond.true479 ], [ %call484, %cond.false483 ]
+  %and488 = and i32 %189, 536870912
+  %tobool489 = icmp eq i32 %and488, 0
+  br i1 %tobool489, label %cond.end495, label %cond.true490
+
+cond.true490:                                     ; preds = %cond.end485
+  %sub492 = sub i64 0, %188
+  %sext1482 = shl i64 %sub492, 32
+  %conv493 = ashr exact i64 %sext1482, 32
+  br label %cond.end495
+
+cond.end495:                                      ; preds = %cond.end485, %cond.true490
+  %cond496 = phi i64 [ %conv493, %cond.true490 ], [ %188, %cond.end485 ]
+  %conv497 = trunc i64 %cond496 to i32
+  %call498 = call %struct.sv* @Perl_newSVpvn_share(i8* %cond486, i32 %conv497, i32 0) #7
+  call void @Perl_sv_free(%struct.sv* %180) #7
+  %190 = getelementptr inbounds %struct.op* %op_sv466, i64 0, i32 0
+  %call498.c = bitcast %struct.sv* %call498 to %struct.op*
+  store %struct.op* %call498.c, %struct.op** %190, align 8, !tbaa !3
+  br label %if.end499
+
+if.end499:                                        ; preds = %if.end464, %cond.end495
+  %op_private500 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %191 = load i8* %op_private500, align 1, !tbaa !1
+  %tobool503 = icmp slt i8 %191, 0
+  br i1 %tobool503, label %for.inc1173, label %if.end505
+
+if.end505:                                        ; preds = %if.end499
+  %192 = getelementptr inbounds %struct.op* %1, i64 1, i32 0
+  %193 = load %struct.op** %192, align 8, !tbaa !3
+  %194 = getelementptr inbounds %struct.op* %193, i64 0, i32 4
+  %195 = load i16* %194, align 2, !tbaa !4
+  %cmp508 = icmp eq i16 %195, 134
+  br i1 %cmp508, label %lor.lhs.false510, label %for.inc1173
+
+lor.lhs.false510:                                 ; preds = %if.end505
+  %196 = getelementptr inbounds %struct.op* %193, i64 1, i32 0
+  %197 = load %struct.op** %196, align 8, !tbaa !3
+  %op_type512 = getelementptr inbounds %struct.op* %197, i64 0, i32 4
+  %198 = load i16* %op_type512, align 2, !tbaa !4
+  %cmp514 = icmp eq i16 %198, 9
+  br i1 %cmp514, label %if.end517, label %for.inc1173
+
+if.end517:                                        ; preds = %lor.lhs.false510
+  %199 = load %struct.av** @PL_comppad_name, align 8, !tbaa !3
+  %op_targ519 = getelementptr inbounds %struct.op* %197, i64 0, i32 3
+  %200 = load i64* %op_targ519, align 8, !tbaa !5
+  %conv520 = trunc i64 %200 to i32
+  %call521 = call %struct.sv** @Perl_av_fetch(%struct.av* %199, i32 %conv520, i32 1) #7
+  %201 = load %struct.sv** %call521, align 8, !tbaa !3
+  %sv_flags522 = getelementptr inbounds %struct.sv* %201, i64 0, i32 2
+  %202 = load i32* %sv_flags522, align 4, !tbaa !0
+  %and523 = and i32 %202, 1073741824
+  %tobool524 = icmp eq i32 %and523, 0
+  br i1 %tobool524, label %for.inc1173, label %if.end526
+
+if.end526:                                        ; preds = %if.end517
+  %sv_any527 = getelementptr inbounds %struct.sv* %201, i64 0, i32 0
+  %203 = load i8** %sv_any527, align 8, !tbaa !3
+  %xmg_stash = getelementptr inbounds i8* %203, i64 48
+  %204 = bitcast i8* %xmg_stash to %struct.hv**
+  %205 = load %struct.hv** %204, align 8, !tbaa !3
+  %call528 = call %struct.sv** @Perl_hv_fetch(%struct.hv* %205, i8* getelementptr inbounds ([7 x i8]* @.str137, i64 0, i64 0), i32 6, i32 0) #7
+  %tobool529 = icmp eq %struct.sv** %call528, null
+  br i1 %tobool529, label %for.inc1173, label %lor.lhs.false530
+
+lor.lhs.false530:                                 ; preds = %if.end526
+  %206 = load %struct.sv** %call528, align 8
+  %sv_any531 = bitcast %struct.sv* %206 to %struct.xpvgv**
+  %207 = load %struct.xpvgv** %sv_any531, align 8, !tbaa !3
+  %xgv_gp532 = getelementptr inbounds %struct.xpvgv* %207, i64 0, i32 7
+  %208 = load %struct.gp** %xgv_gp532, align 8, !tbaa !3
+  %gp_hv = getelementptr inbounds %struct.gp* %208, i64 0, i32 5
+  %209 = load %struct.hv** %gp_hv, align 8, !tbaa !3
+  %tobool533 = icmp eq %struct.hv* %209, null
+  br i1 %tobool533, label %for.inc1173, label %if.end535
+
+if.end535:                                        ; preds = %lor.lhs.false530
+  %210 = load %struct.sv** %179, align 8, !tbaa !3
+  %sv_flags536 = getelementptr inbounds %struct.sv* %210, i64 0, i32 2
+  %211 = load i32* %sv_flags536, align 4, !tbaa !0
+  %and537 = and i32 %211, 262144
+  %cmp538 = icmp eq i32 %and537, 0
+  br i1 %cmp538, label %cond.false545, label %cond.true540
+
+cond.true540:                                     ; preds = %if.end535
+  %sv_any541 = getelementptr inbounds %struct.sv* %210, i64 0, i32 0
+  %212 = load i8** %sv_any541, align 8, !tbaa !3
+  %xpv_cur542 = getelementptr inbounds i8* %212, i64 8
+  %213 = bitcast i8* %xpv_cur542 to i64*
+  %214 = load i64* %213, align 8, !tbaa !5
+  store i64 %214, i64* %keylen, align 8, !tbaa !5
+  %xpv_pv544 = bitcast i8* %212 to i8**
+  %215 = load i8** %xpv_pv544, align 8, !tbaa !3
+  br label %cond.end547
+
+cond.false545:                                    ; preds = %if.end535
+  %call546 = call i8* @Perl_sv_2pv_flags(%struct.sv* %210, i64* %keylen, i32 2) #7
+  %.pre1534 = load %struct.sv** %179, align 8, !tbaa !3
+  %.pre1535 = load i64* %keylen, align 8, !tbaa !5
+  %sv_flags552.phi.trans.insert = getelementptr inbounds %struct.sv* %.pre1534, i64 0, i32 2
+  %.pre1546 = load i32* %sv_flags552.phi.trans.insert, align 4, !tbaa !0
+  br label %cond.end547
+
+cond.end547:                                      ; preds = %cond.false545, %cond.true540
+  %216 = phi i32 [ %211, %cond.true540 ], [ %.pre1546, %cond.false545 ]
+  %217 = phi i64 [ %214, %cond.true540 ], [ %.pre1535, %cond.false545 ]
+  %cond548 = phi i8* [ %215, %cond.true540 ], [ %call546, %cond.false545 ]
+  %218 = load %struct.sv** %call528, align 8
+  %sv_any549 = bitcast %struct.sv* %218 to %struct.xpvgv**
+  %219 = load %struct.xpvgv** %sv_any549, align 8, !tbaa !3
+  %xgv_gp550 = getelementptr inbounds %struct.xpvgv* %219, i64 0, i32 7
+  %220 = load %struct.gp** %xgv_gp550, align 8, !tbaa !3
+  %gp_hv551 = getelementptr inbounds %struct.gp* %220, i64 0, i32 5
+  %221 = load %struct.hv** %gp_hv551, align 8, !tbaa !3
+  %and553 = and i32 %216, 536870912
+  %tobool554 = icmp eq i32 %and553, 0
+  br i1 %tobool554, label %cond.end560, label %cond.true555
+
+cond.true555:                                     ; preds = %cond.end547
+  %sub557 = sub i64 0, %217
+  %sext1481 = shl i64 %sub557, 32
+  %conv558 = ashr exact i64 %sext1481, 32
+  br label %cond.end560
+
+cond.end560:                                      ; preds = %cond.end547, %cond.true555
+  %cond561 = phi i64 [ %conv558, %cond.true555 ], [ %217, %cond.end547 ]
+  %conv562 = trunc i64 %cond561 to i32
+  %call563 = call %struct.sv** @Perl_hv_fetch(%struct.hv* %221, i8* %cond548, i32 %conv562, i32 0) #7
+  %tobool564 = icmp eq %struct.sv** %call563, null
+  br i1 %tobool564, label %if.then565, label %if.end582
+
+if.then565:                                       ; preds = %cond.end560
+  %222 = load i32* %sv_flags522, align 4, !tbaa !0
+  %and567 = and i32 %222, 262144
+  %cmp568 = icmp eq i32 %and567, 0
+  br i1 %cmp568, label %cond.false575, label %cond.true570
+
+cond.true570:                                     ; preds = %if.then565
+  %223 = load i8** %sv_any527, align 8, !tbaa !3
+  %xpv_cur572 = getelementptr inbounds i8* %223, i64 8
+  %224 = bitcast i8* %xpv_cur572 to i64*
+  %225 = load i64* %224, align 8, !tbaa !5
+  store i64 %225, i64* %n_a, align 8, !tbaa !5
+  %xpv_pv574 = bitcast i8* %223 to i8**
+  %226 = load i8** %xpv_pv574, align 8, !tbaa !3
+  br label %cond.end577
+
+cond.false575:                                    ; preds = %if.then565
+  %call576 = call i8* @Perl_sv_2pv_flags(%struct.sv* %201, i64* %n_a, i32 2) #7
+  %.pre1536 = load i8** %sv_any527, align 8, !tbaa !3
+  br label %cond.end577
+
+cond.end577:                                      ; preds = %cond.false575, %cond.true570
+  %227 = phi i8* [ %223, %cond.true570 ], [ %.pre1536, %cond.false575 ]
+  %cond578 = phi i8* [ %226, %cond.true570 ], [ %call576, %cond.false575 ]
+  %xmg_stash580 = getelementptr inbounds i8* %227, i64 48
+  %228 = bitcast i8* %xmg_stash580 to %struct.hv**
+  %229 = load %struct.hv** %228, align 8, !tbaa !3
+  %sv_any581 = getelementptr inbounds %struct.hv* %229, i64 0, i32 0
+  %230 = load %struct.xpvhv** %sv_any581, align 8, !tbaa !3
+  %xhv_name = getelementptr inbounds %struct.xpvhv* %230, i64 0, i32 10
+  %231 = load i8** %xhv_name, align 8, !tbaa !3
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([57 x i8]* @.str138, i64 0, i64 0), i8* %cond548, i8* %cond578, i8* %231) #7
+  br label %if.end582
+
+if.end582:                                        ; preds = %cond.end560, %cond.end577
+  %232 = load %struct.sv** %call563, align 8, !tbaa !3
+  %sv_flags583 = getelementptr inbounds %struct.sv* %232, i64 0, i32 2
+  %233 = load i32* %sv_flags583, align 4, !tbaa !0
+  %and584 = and i32 %233, 65536
+  %tobool585 = icmp eq i32 %and584, 0
+  br i1 %tobool585, label %cond.false589, label %cond.true586
+
+cond.true586:                                     ; preds = %if.end582
+  %sv_any587 = getelementptr inbounds %struct.sv* %232, i64 0, i32 0
+  %234 = load i8** %sv_any587, align 8, !tbaa !3
+  %xiv_iv588 = getelementptr inbounds i8* %234, i64 24
+  %235 = bitcast i8* %xiv_iv588 to i64*
+  %236 = load i64* %235, align 8, !tbaa !5
+  br label %cond.end591
+
+cond.false589:                                    ; preds = %if.end582
+  %call590 = call i64 @Perl_sv_2iv(%struct.sv* %232) #7
+  br label %cond.end591
+
+cond.end591:                                      ; preds = %cond.false589, %cond.true586
+  %cond592 = phi i64 [ %236, %cond.true586 ], [ %call590, %cond.false589 ]
+  %conv593 = trunc i64 %cond592 to i32
+  %cmp594 = icmp slt i32 %conv593, 1
+  br i1 %cmp594, label %if.then596, label %if.end597
+
+if.then596:                                       ; preds = %cond.end591
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([41 x i8]* @.str139, i64 0, i64 0)) #7
+  br label %if.end597
+
+if.end597:                                        ; preds = %if.then596, %cond.end591
+  store i16 125, i16* %194, align 2, !tbaa !4
+  %237 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 125), align 8, !tbaa !3
+  %238 = getelementptr inbounds %struct.op* %193, i64 0, i32 2
+  store %struct.op* ()* %237, %struct.op* ()** %238, align 8, !tbaa !3
+  store i16 127, i16* %op_type, align 2, !tbaa !4
+  %239 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 127), align 8, !tbaa !3
+  %op_ppaddr601 = getelementptr inbounds %struct.op* %1, i64 0, i32 2
+  store %struct.op* ()* %239, %struct.op* ()** %op_ppaddr601, align 8, !tbaa !3
+  %sext1480 = shl i64 %cond592, 32
+  %conv602 = ashr exact i64 %sext1480, 32
+  %call603 = call %struct.sv* @Perl_newSViv(i64 %conv602) #7
+  %240 = load %struct.sv** %179, align 8, !tbaa !3
+  %sv_flags604 = getelementptr inbounds %struct.sv* %240, i64 0, i32 2
+  %241 = load i32* %sv_flags604, align 4, !tbaa !0
+  %and605 = and i32 %241, 8388608
+  %tobool606 = icmp eq i32 %and605, 0
+  %sv_flags613.phi.trans.insert = getelementptr inbounds %struct.sv* %call603, i64 0, i32 2
+  %.pre1547 = load i32* %sv_flags613.phi.trans.insert, align 4, !tbaa !0
+  br i1 %tobool606, label %if.end610, label %if.then607
+
+if.then607:                                       ; preds = %if.end597
+  %or609 = or i32 %.pre1547, 8388608
+  store i32 %or609, i32* %sv_flags613.phi.trans.insert, align 4, !tbaa !0
+  %.pre1537 = load i32* %sv_flags604, align 4, !tbaa !0
+  br label %if.end610
+
+if.end610:                                        ; preds = %if.end597, %if.then607
+  %242 = phi i32 [ %or609, %if.then607 ], [ %.pre1547, %if.end597 ]
+  %243 = phi i32 [ %.pre1537, %if.then607 ], [ %241, %if.end597 ]
+  %and612 = and i32 %243, 1792
+  %sv_flags613 = getelementptr inbounds %struct.sv* %call603, i64 0, i32 2
+  %or614 = or i32 %242, %and612
+  store i32 %or614, i32* %sv_flags613, align 4, !tbaa !0
+  call void @Perl_sv_free(%struct.sv* %240) #7
+  %244 = getelementptr inbounds %struct.op* %op_sv466, i64 0, i32 0
+  %call603.c = bitcast %struct.sv* %call603 to %struct.op*
+  store %struct.op* %call603.c, %struct.op** %244, align 8, !tbaa !3
+  br label %for.inc1173
+
+sw.bb615:                                         ; preds = %if.end12
+  %inc625 = add i16 %4, 1
+  store i16 %inc625, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %op_private627 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %245 = load i8* %op_private627, align 1, !tbaa !1
+  %tobool630 = icmp slt i8 %245, 0
+  br i1 %tobool630, label %for.inc1173, label %lor.lhs.false631
+
+lor.lhs.false631:                                 ; preds = %sw.bb615
+  %246 = getelementptr inbounds %struct.op* %1, i64 1, i32 0
+  %247 = load %struct.op** %246, align 8, !tbaa !3
+  %op_sibling633 = getelementptr inbounds %struct.op* %247, i64 0, i32 1
+  %248 = load %struct.op** %op_sibling633, align 8, !tbaa !3
+  %op_type634 = getelementptr inbounds %struct.op* %248, i64 0, i32 4
+  %249 = load i16* %op_type634, align 2, !tbaa !4
+  %cmp636 = icmp eq i16 %249, 141
+  br i1 %cmp636, label %if.end639, label %for.inc1173
+
+if.end639:                                        ; preds = %lor.lhs.false631
+  %250 = getelementptr inbounds %struct.op* %1, i64 1, i32 1
+  %251 = load %struct.op** %250, align 8, !tbaa !3
+  %252 = getelementptr inbounds %struct.op* %251, i64 0, i32 4
+  %253 = load i16* %252, align 2, !tbaa !4
+  %cmp643 = icmp eq i16 %253, 134
+  br i1 %cmp643, label %lor.lhs.false645, label %for.inc1173
+
+lor.lhs.false645:                                 ; preds = %if.end639
+  %254 = getelementptr inbounds %struct.op* %251, i64 1, i32 0
+  %255 = load %struct.op** %254, align 8, !tbaa !3
+  %op_type647 = getelementptr inbounds %struct.op* %255, i64 0, i32 4
+  %256 = load i16* %op_type647, align 2, !tbaa !4
+  %cmp649 = icmp eq i16 %256, 9
+  br i1 %cmp649, label %if.end652, label %for.inc1173
+
+if.end652:                                        ; preds = %lor.lhs.false645
+  %257 = load %struct.av** @PL_comppad_name, align 8, !tbaa !3
+  %op_targ654 = getelementptr inbounds %struct.op* %255, i64 0, i32 3
+  %258 = load i64* %op_targ654, align 8, !tbaa !5
+  %conv655 = trunc i64 %258 to i32
+  %call656 = call %struct.sv** @Perl_av_fetch(%struct.av* %257, i32 %conv655, i32 1) #7
+  %259 = load %struct.sv** %call656, align 8, !tbaa !3
+  %sv_flags657 = getelementptr inbounds %struct.sv* %259, i64 0, i32 2
+  %260 = load i32* %sv_flags657, align 4, !tbaa !0
+  %and658 = and i32 %260, 1073741824
+  %tobool659 = icmp eq i32 %and658, 0
+  br i1 %tobool659, label %for.inc1173, label %if.end661
+
+if.end661:                                        ; preds = %if.end652
+  %sv_any662 = getelementptr inbounds %struct.sv* %259, i64 0, i32 0
+  %261 = load i8** %sv_any662, align 8, !tbaa !3
+  %xmg_stash663 = getelementptr inbounds i8* %261, i64 48
+  %262 = bitcast i8* %xmg_stash663 to %struct.hv**
+  %263 = load %struct.hv** %262, align 8, !tbaa !3
+  %call664 = call %struct.sv** @Perl_hv_fetch(%struct.hv* %263, i8* getelementptr inbounds ([7 x i8]* @.str137, i64 0, i64 0), i32 6, i32 0) #7
+  %tobool665 = icmp eq %struct.sv** %call664, null
+  br i1 %tobool665, label %for.inc1173, label %lor.lhs.false666
+
+lor.lhs.false666:                                 ; preds = %if.end661
+  %264 = load %struct.sv** %call664, align 8
+  %sv_any667 = bitcast %struct.sv* %264 to %struct.xpvgv**
+  %265 = load %struct.xpvgv** %sv_any667, align 8, !tbaa !3
+  %xgv_gp668 = getelementptr inbounds %struct.xpvgv* %265, i64 0, i32 7
+  %266 = load %struct.gp** %xgv_gp668, align 8, !tbaa !3
+  %gp_hv669 = getelementptr inbounds %struct.gp* %266, i64 0, i32 5
+  %267 = load %struct.hv** %gp_hv669, align 8, !tbaa !3
+  %tobool670 = icmp eq %struct.hv* %267, null
+  br i1 %tobool670, label %for.inc1173, label %if.end672
+
+if.end672:                                        ; preds = %lor.lhs.false666
+  %268 = load %struct.op** %246, align 8, !tbaa !3
+  %op_sibling674 = getelementptr inbounds %struct.op* %268, i64 0, i32 1
+  %269 = load %struct.op** %op_sibling674, align 8, !tbaa !3
+  %270 = getelementptr inbounds %struct.op* %269, i64 1, i32 0
+  %271 = load %struct.op** %270, align 8, !tbaa !3
+  %op_sibling676 = getelementptr inbounds %struct.op* %271, i64 0, i32 1
+  %272 = load %struct.op** %op_sibling676, align 8, !tbaa !3
+  %273 = bitcast %struct.op* %272 to %struct.svop*
+  %tobool6781497 = icmp eq %struct.op* %272, null
+  br i1 %tobool6781497, label %for.inc1173.critedge, label %for.body679
+
+for.body679:                                      ; preds = %if.end672, %for.inc
+  %key_op.01498 = phi %struct.svop* [ %276, %for.inc ], [ %273, %if.end672 ]
+  %op_type680 = getelementptr inbounds %struct.svop* %key_op.01498, i64 0, i32 4
+  %274 = load i16* %op_type680, align 2, !tbaa !4
+  %cmp682 = icmp eq i16 %274, 5
+  br i1 %cmp682, label %for.inc, label %for.inc1173
+
+for.inc:                                          ; preds = %for.body679
+  %op_sibling686 = getelementptr inbounds %struct.svop* %key_op.01498, i64 0, i32 1
+  %275 = load %struct.op** %op_sibling686, align 8, !tbaa !3
+  %276 = bitcast %struct.op* %275 to %struct.svop*
+  %tobool678 = icmp eq %struct.op* %275, null
+  br i1 %tobool678, label %if.end689, label %for.body679
+
+if.end689:                                        ; preds = %for.inc
+  store i16 125, i16* %252, align 2, !tbaa !4
+  %277 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 125), align 8, !tbaa !3
+  %278 = getelementptr inbounds %struct.op* %251, i64 0, i32 2
+  store %struct.op* ()* %277, %struct.op* ()** %278, align 8, !tbaa !3
+  store i16 128, i16* %op_type, align 2, !tbaa !4
+  %279 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 128), align 8, !tbaa !3
+  %op_ppaddr693 = getelementptr inbounds %struct.op* %1, i64 0, i32 2
+  store %struct.op* ()* %279, %struct.op* ()** %op_ppaddr693, align 8, !tbaa !3
+  br i1 %tobool6781497, label %for.inc1173, label %for.body696
+
+for.body696:                                      ; preds = %if.end689, %if.end769
+  %key_op.11501 = phi %struct.svop* [ %312, %if.end769 ], [ %273, %if.end689 ]
+  %op_sv697 = getelementptr inbounds %struct.svop* %key_op.11501, i64 0, i32 8
+  %280 = load %struct.sv** %op_sv697, align 8, !tbaa !3
+  %sv_flags698 = getelementptr inbounds %struct.sv* %280, i64 0, i32 2
+  %281 = load i32* %sv_flags698, align 4, !tbaa !0
+  %and699 = and i32 %281, 262144
+  %cmp700 = icmp eq i32 %and699, 0
+  br i1 %cmp700, label %cond.false707, label %cond.true702
+
+cond.true702:                                     ; preds = %for.body696
+  %sv_any703 = getelementptr inbounds %struct.sv* %280, i64 0, i32 0
+  %282 = load i8** %sv_any703, align 8, !tbaa !3
+  %xpv_cur704 = getelementptr inbounds i8* %282, i64 8
+  %283 = bitcast i8* %xpv_cur704 to i64*
+  %284 = load i64* %283, align 8, !tbaa !5
+  store i64 %284, i64* %keylen624, align 8, !tbaa !5
+  %xpv_pv706 = bitcast i8* %282 to i8**
+  %285 = load i8** %xpv_pv706, align 8, !tbaa !3
+  br label %cond.end709
+
+cond.false707:                                    ; preds = %for.body696
+  %call708 = call i8* @Perl_sv_2pv_flags(%struct.sv* %280, i64* %keylen624, i32 2) #7
+  %.pre1540 = load %struct.sv** %op_sv697, align 8, !tbaa !3
+  %.pre1541 = load i64* %keylen624, align 8, !tbaa !5
+  %sv_flags714.phi.trans.insert = getelementptr inbounds %struct.sv* %.pre1540, i64 0, i32 2
+  %.pre1548 = load i32* %sv_flags714.phi.trans.insert, align 4, !tbaa !0
+  br label %cond.end709
+
+cond.end709:                                      ; preds = %cond.false707, %cond.true702
+  %286 = phi i32 [ %281, %cond.true702 ], [ %.pre1548, %cond.false707 ]
+  %287 = phi i64 [ %284, %cond.true702 ], [ %.pre1541, %cond.false707 ]
+  %cond710 = phi i8* [ %285, %cond.true702 ], [ %call708, %cond.false707 ]
+  %288 = load %struct.sv** %call664, align 8
+  %sv_any711 = bitcast %struct.sv* %288 to %struct.xpvgv**
+  %289 = load %struct.xpvgv** %sv_any711, align 8, !tbaa !3
+  %xgv_gp712 = getelementptr inbounds %struct.xpvgv* %289, i64 0, i32 7
+  %290 = load %struct.gp** %xgv_gp712, align 8, !tbaa !3
+  %gp_hv713 = getelementptr inbounds %struct.gp* %290, i64 0, i32 5
+  %291 = load %struct.hv** %gp_hv713, align 8, !tbaa !3
+  %and715 = and i32 %286, 536870912
+  %tobool716 = icmp eq i32 %and715, 0
+  br i1 %tobool716, label %cond.end722, label %cond.true717
+
+cond.true717:                                     ; preds = %cond.end709
+  %sub719 = sub i64 0, %287
+  %sext1479 = shl i64 %sub719, 32
+  %conv720 = ashr exact i64 %sext1479, 32
+  br label %cond.end722
+
+cond.end722:                                      ; preds = %cond.end709, %cond.true717
+  %cond723 = phi i64 [ %conv720, %cond.true717 ], [ %287, %cond.end709 ]
+  %conv724 = trunc i64 %cond723 to i32
+  %call725 = call %struct.sv** @Perl_hv_fetch(%struct.hv* %291, i8* %cond710, i32 %conv724, i32 0) #7
+  %tobool726 = icmp eq %struct.sv** %call725, null
+  br i1 %tobool726, label %if.then727, label %if.end745
+
+if.then727:                                       ; preds = %cond.end722
+  %292 = load i32* %sv_flags657, align 4, !tbaa !0
+  %and729 = and i32 %292, 262144
+  %cmp730 = icmp eq i32 %and729, 0
+  br i1 %cmp730, label %cond.false737, label %cond.true732
+
+cond.true732:                                     ; preds = %if.then727
+  %293 = load i8** %sv_any662, align 8, !tbaa !3
+  %xpv_cur734 = getelementptr inbounds i8* %293, i64 8
+  %294 = bitcast i8* %xpv_cur734 to i64*
+  %295 = load i64* %294, align 8, !tbaa !5
+  store i64 %295, i64* %n_a, align 8, !tbaa !5
+  %xpv_pv736 = bitcast i8* %293 to i8**
+  %296 = load i8** %xpv_pv736, align 8, !tbaa !3
+  br label %cond.end739
+
+cond.false737:                                    ; preds = %if.then727
+  %call738 = call i8* @Perl_sv_2pv_flags(%struct.sv* %259, i64* %n_a, i32 2) #7
+  %.pre1542 = load i8** %sv_any662, align 8, !tbaa !3
+  br label %cond.end739
+
+cond.end739:                                      ; preds = %cond.false737, %cond.true732
+  %297 = phi i8* [ %293, %cond.true732 ], [ %.pre1542, %cond.false737 ]
+  %cond740 = phi i8* [ %296, %cond.true732 ], [ %call738, %cond.false737 ]
+  %xmg_stash742 = getelementptr inbounds i8* %297, i64 48
+  %298 = bitcast i8* %xmg_stash742 to %struct.hv**
+  %299 = load %struct.hv** %298, align 8, !tbaa !3
+  %sv_any743 = getelementptr inbounds %struct.hv* %299, i64 0, i32 0
+  %300 = load %struct.xpvhv** %sv_any743, align 8, !tbaa !3
+  %xhv_name744 = getelementptr inbounds %struct.xpvhv* %300, i64 0, i32 10
+  %301 = load i8** %xhv_name744, align 8, !tbaa !3
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([57 x i8]* @.str138, i64 0, i64 0), i8* %cond710, i8* %cond740, i8* %301) #7
+  br label %if.end745
+
+if.end745:                                        ; preds = %cond.end722, %cond.end739
+  %302 = load %struct.sv** %call725, align 8, !tbaa !3
+  %sv_flags746 = getelementptr inbounds %struct.sv* %302, i64 0, i32 2
+  %303 = load i32* %sv_flags746, align 4, !tbaa !0
+  %and747 = and i32 %303, 65536
+  %tobool748 = icmp eq i32 %and747, 0
+  br i1 %tobool748, label %cond.false752, label %cond.true749
+
+cond.true749:                                     ; preds = %if.end745
+  %sv_any750 = getelementptr inbounds %struct.sv* %302, i64 0, i32 0
+  %304 = load i8** %sv_any750, align 8, !tbaa !3
+  %xiv_iv751 = getelementptr inbounds i8* %304, i64 24
+  %305 = bitcast i8* %xiv_iv751 to i64*
+  %306 = load i64* %305, align 8, !tbaa !5
+  br label %cond.end754
+
+cond.false752:                                    ; preds = %if.end745
+  %call753 = call i64 @Perl_sv_2iv(%struct.sv* %302) #7
+  br label %cond.end754
+
+cond.end754:                                      ; preds = %cond.false752, %cond.true749
+  %cond755 = phi i64 [ %306, %cond.true749 ], [ %call753, %cond.false752 ]
+  %conv756 = trunc i64 %cond755 to i32
+  %cmp757 = icmp slt i32 %conv756, 1
+  br i1 %cmp757, label %if.then759, label %if.end760
+
+if.then759:                                       ; preds = %cond.end754
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([41 x i8]* @.str139, i64 0, i64 0)) #7
+  br label %if.end760
+
+if.end760:                                        ; preds = %if.then759, %cond.end754
+  %sext = shl i64 %cond755, 32
+  %conv761 = ashr exact i64 %sext, 32
+  %call762 = call %struct.sv* @Perl_newSViv(i64 %conv761) #7
+  %307 = load %struct.sv** %op_sv697, align 8, !tbaa !3
+  %sv_flags763 = getelementptr inbounds %struct.sv* %307, i64 0, i32 2
+  %308 = load i32* %sv_flags763, align 4, !tbaa !0
+  %and764 = and i32 %308, 8388608
+  %tobool765 = icmp eq i32 %and764, 0
+  %sv_flags772.phi.trans.insert = getelementptr inbounds %struct.sv* %call762, i64 0, i32 2
+  %.pre1549 = load i32* %sv_flags772.phi.trans.insert, align 4, !tbaa !0
+  br i1 %tobool765, label %if.end769, label %if.then766
+
+if.then766:                                       ; preds = %if.end760
+  %or768 = or i32 %.pre1549, 8388608
+  store i32 %or768, i32* %sv_flags772.phi.trans.insert, align 4, !tbaa !0
+  %.pre1543 = load i32* %sv_flags763, align 4, !tbaa !0
+  br label %if.end769
+
+if.end769:                                        ; preds = %if.end760, %if.then766
+  %309 = phi i32 [ %or768, %if.then766 ], [ %.pre1549, %if.end760 ]
+  %310 = phi i32 [ %.pre1543, %if.then766 ], [ %308, %if.end760 ]
+  %and771 = and i32 %310, 1792
+  %sv_flags772 = getelementptr inbounds %struct.sv* %call762, i64 0, i32 2
+  %or773 = or i32 %309, %and771
+  store i32 %or773, i32* %sv_flags772, align 4, !tbaa !0
+  call void @Perl_sv_free(%struct.sv* %307) #7
+  store %struct.sv* %call762, %struct.sv** %op_sv697, align 8, !tbaa !3
+  %op_sibling775 = getelementptr inbounds %struct.svop* %key_op.11501, i64 0, i32 1
+  %311 = load %struct.op** %op_sibling775, align 8, !tbaa !3
+  %312 = bitcast %struct.op* %311 to %struct.svop*
+  %tobool695 = icmp eq %struct.op* %311, null
+  br i1 %tobool695, label %for.inc1173, label %for.body696
+
+sw.bb777:                                         ; preds = %if.end12
+  %313 = getelementptr inbounds %struct.op* %1, i64 1, i32 0
+  %314 = load %struct.op** %313, align 8, !tbaa !3
+  %tobool779 = icmp eq %struct.op* %314, null
+  br i1 %tobool779, label %for.inc1173, label %lor.lhs.false780
+
+lor.lhs.false780:                                 ; preds = %sw.bb777
+  %op_type781 = getelementptr inbounds %struct.op* %314, i64 0, i32 4
+  %315 = load i16* %op_type781, align 2, !tbaa !4
+  %cmp783 = icmp eq i16 %315, 3
+  br i1 %cmp783, label %if.end786, label %for.inc1173
+
+if.end786:                                        ; preds = %lor.lhs.false780
+  %316 = getelementptr inbounds %struct.op* %1, i64 0, i32 1
+  %317 = load %struct.op** %316, align 8, !tbaa !3
+  %tobool788 = icmp eq %struct.op* %317, null
+  br i1 %tobool788, label %if.then789, label %if.end822
+
+if.then789:                                       ; preds = %if.end786
+  %op_next790 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %318 = load %struct.op** %op_next790, align 8, !tbaa !3
+  %op_type791 = getelementptr inbounds %struct.op* %318, i64 0, i32 4
+  %319 = load i16* %op_type791, align 2, !tbaa !4
+  %cmp793 = icmp eq i16 %319, 151
+  br i1 %cmp793, label %land.lhs.true795, label %if.end822
+
+land.lhs.true795:                                 ; preds = %if.then789
+  %op_flags796 = getelementptr inbounds %struct.op* %318, i64 0, i32 6
+  %320 = load i8* %op_flags796, align 1, !tbaa !1
+  %and798 = and i8 %320, 3
+  %cmp799 = icmp eq i8 %and798, 3
+  br i1 %cmp799, label %if.then801, label %if.end822
+
+if.then801:                                       ; preds = %land.lhs.true795
+  %321 = getelementptr inbounds %struct.op* %318, i64 1, i32 0
+  %322 = load %struct.op** %321, align 8, !tbaa !3
+  %tobool803 = icmp eq %struct.op* %322, null
+  br i1 %tobool803, label %if.end822, label %land.lhs.true804
+
+land.lhs.true804:                                 ; preds = %if.then801
+  %op_type805 = getelementptr inbounds %struct.op* %322, i64 0, i32 4
+  %323 = load i16* %op_type805, align 2, !tbaa !4
+  %cmp807 = icmp eq i16 %323, 3
+  br i1 %cmp807, label %land.lhs.true809, label %if.end822
+
+land.lhs.true809:                                 ; preds = %land.lhs.true804
+  %324 = getelementptr inbounds %struct.op* %322, i64 0, i32 1
+  %325 = load %struct.op** %324, align 8, !tbaa !3
+  %cmp811 = icmp eq %struct.op* %325, %1
+  br i1 %cmp811, label %if.then813, label %if.end822
+
+if.then813:                                       ; preds = %land.lhs.true809
+  %op_private814 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %326 = load i8* %op_private814, align 1, !tbaa !1
+  %or816 = or i8 %326, 4
+  store i8 %or816, i8* %op_private814, align 1, !tbaa !1
+  call void @Perl_op_null(%struct.op* %318) #8
+  %op_next818 = getelementptr inbounds %struct.op* %314, i64 0, i32 0
+  %327 = load %struct.op** %op_next818, align 8, !tbaa !3
+  %op_next819 = getelementptr inbounds %struct.op* %322, i64 0, i32 0
+  store %struct.op* %327, %struct.op** %op_next819, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %314) #8
+  %.pre1544 = load i16* @PL_op_seqmax, align 2, !tbaa !4
+  br label %if.end822
+
+if.end822:                                        ; preds = %if.then801, %if.end786, %if.then789, %land.lhs.true795, %if.then813, %land.lhs.true809, %land.lhs.true804
+  %328 = phi i16 [ %4, %if.then801 ], [ %4, %if.end786 ], [ %4, %if.then789 ], [ %4, %land.lhs.true795 ], [ %.pre1544, %if.then813 ], [ %4, %land.lhs.true809 ], [ %4, %land.lhs.true804 ]
+  %inc823 = add i16 %328, 1
+  store i16 %inc823, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %328, i16* %op_seq3, align 2, !tbaa !4
+  %329 = getelementptr inbounds %struct.op* %314, i64 0, i32 1
+  %330 = load %struct.op** %329, align 8, !tbaa !3
+  %tobool826 = icmp eq %struct.op* %330, null
+  br i1 %tobool826, label %for.inc1173, label %if.end828
+
+if.end828:                                        ; preds = %if.end822
+  %op_type829 = getelementptr inbounds %struct.op* %330, i64 0, i32 4
+  %331 = load i16* %op_type829, align 2, !tbaa !4
+  %cmp831 = icmp eq i16 %331, 0
+  br i1 %cmp831, label %if.end835, label %lor.lhs.false837
+
+if.end835:                                        ; preds = %if.end828
+  %332 = getelementptr inbounds %struct.op* %330, i64 0, i32 1
+  %333 = load %struct.op** %332, align 8, !tbaa !3
+  %tobool836 = icmp eq %struct.op* %333, null
+  br i1 %tobool836, label %for.inc1173, label %if.end835.lor.lhs.false837_crit_edge
+
+if.end835.lor.lhs.false837_crit_edge:             ; preds = %if.end835
+  %op_type838.phi.trans.insert = getelementptr inbounds %struct.op* %333, i64 0, i32 4
+  %.pre1550 = load i16* %op_type838.phi.trans.insert, align 2, !tbaa !4
+  br label %lor.lhs.false837
+
+lor.lhs.false837:                                 ; preds = %if.end835.lor.lhs.false837_crit_edge, %if.end828
+  %334 = phi i16 [ %.pre1550, %if.end835.lor.lhs.false837_crit_edge ], [ %331, %if.end828 ]
+  %oright.01492 = phi %struct.op* [ %333, %if.end835.lor.lhs.false837_crit_edge ], [ %330, %if.end828 ]
+  switch i16 %334, label %for.inc1173 [
+    i16 125, label %lor.lhs.false847
+    i16 10, label %lor.lhs.false847
+  ]
+
+lor.lhs.false847:                                 ; preds = %lor.lhs.false837, %lor.lhs.false837
+  %op_next848 = getelementptr inbounds %struct.op* %oright.01492, i64 0, i32 0
+  %335 = load %struct.op** %op_next848, align 8, !tbaa !3
+  %cmp849 = icmp eq %struct.op* %335, %1
+  br i1 %cmp849, label %lor.lhs.false851, label %for.inc1173
+
+lor.lhs.false851:                                 ; preds = %lor.lhs.false847
+  %op_private852 = getelementptr inbounds %struct.op* %oright.01492, i64 0, i32 7
+  %336 = load i8* %op_private852, align 1, !tbaa !1
+  %tobool855 = icmp slt i8 %336, 0
+  br i1 %tobool855, label %for.inc1173, label %if.end857
+
+if.end857:                                        ; preds = %lor.lhs.false851
+  %op_next858 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %337 = load %struct.op** %op_next858, align 8, !tbaa !3
+  %tobool859 = icmp eq %struct.op* %337, null
+  br i1 %tobool859, label %for.inc1173, label %lor.lhs.false860
+
+lor.lhs.false860:                                 ; preds = %if.end857
+  %op_type861 = getelementptr inbounds %struct.op* %337, i64 0, i32 4
+  %338 = load i16* %op_type861, align 2, !tbaa !4
+  %cmp863 = icmp eq i16 %338, 0
+  br i1 %cmp863, label %if.end866, label %for.inc1173
+
+if.end866:                                        ; preds = %lor.lhs.false860
+  %op_next867 = getelementptr inbounds %struct.op* %337, i64 0, i32 0
+  %339 = load %struct.op** %op_next867, align 8, !tbaa !3
+  %tobool868 = icmp eq %struct.op* %339, null
+  br i1 %tobool868, label %for.inc1173, label %lor.lhs.false869
+
+lor.lhs.false869:                                 ; preds = %if.end866
+  %op_type870 = getelementptr inbounds %struct.op* %339, i64 0, i32 4
+  %340 = load i16* %op_type870, align 2, !tbaa !4
+  %cmp872 = icmp eq i16 %340, 3
+  br i1 %cmp872, label %if.end875, label %for.inc1173
+
+if.end875:                                        ; preds = %lor.lhs.false869
+  %op_next876 = getelementptr inbounds %struct.op* %339, i64 0, i32 0
+  %341 = load %struct.op** %op_next876, align 8, !tbaa !3
+  %tobool877 = icmp eq %struct.op* %341, null
+  br i1 %tobool877, label %for.inc1173, label %land.lhs.true878
+
+land.lhs.true878:                                 ; preds = %if.end875
+  %op_type879 = getelementptr inbounds %struct.op* %341, i64 0, i32 4
+  %342 = load i16* %op_type879, align 2, !tbaa !4
+  %cmp881 = icmp eq i16 %342, 7
+  br i1 %cmp881, label %if.end885, label %lor.lhs.false887
+
+if.end885:                                        ; preds = %land.lhs.true878
+  %op_next884 = getelementptr inbounds %struct.op* %341, i64 0, i32 0
+  %343 = load %struct.op** %op_next884, align 8, !tbaa !3
+  %tobool886 = icmp eq %struct.op* %343, null
+  br i1 %tobool886, label %for.inc1173, label %if.end885.lor.lhs.false887_crit_edge
+
+if.end885.lor.lhs.false887_crit_edge:             ; preds = %if.end885
+  %op_type888.phi.trans.insert = getelementptr inbounds %struct.op* %343, i64 0, i32 4
+  %.pre1551 = load i16* %op_type888.phi.trans.insert, align 2, !tbaa !4
+  br label %lor.lhs.false887
+
+lor.lhs.false887:                                 ; preds = %if.end885.lor.lhs.false887_crit_edge, %land.lhs.true878
+  %344 = phi i16 [ %.pre1551, %if.end885.lor.lhs.false887_crit_edge ], [ %342, %land.lhs.true878 ]
+  %o2.01496 = phi %struct.op* [ %343, %if.end885.lor.lhs.false887_crit_edge ], [ %341, %land.lhs.true878 ]
+  switch i16 %344, label %for.inc1173 [
+    i16 10, label %lor.lhs.false897
+    i16 125, label %lor.lhs.false897
+  ]
+
+lor.lhs.false897:                                 ; preds = %lor.lhs.false887, %lor.lhs.false887
+  %op_private898 = getelementptr inbounds %struct.op* %o2.01496, i64 0, i32 7
+  %345 = load i8* %op_private898, align 1, !tbaa !1
+  %tobool901 = icmp slt i8 %345, 0
+  br i1 %tobool901, label %for.inc1173, label %if.end903
+
+if.end903:                                        ; preds = %lor.lhs.false897
+  %op_next904 = getelementptr inbounds %struct.op* %o2.01496, i64 0, i32 0
+  %346 = load %struct.op** %op_next904, align 8, !tbaa !3
+  %tobool905 = icmp eq %struct.op* %346, null
+  br i1 %tobool905, label %for.inc1173, label %lor.lhs.false906
+
+lor.lhs.false906:                                 ; preds = %if.end903
+  %op_type907 = getelementptr inbounds %struct.op* %346, i64 0, i32 4
+  %347 = load i16* %op_type907, align 2, !tbaa !4
+  %cmp909 = icmp eq i16 %347, 0
+  br i1 %cmp909, label %if.end912, label %for.inc1173
+
+if.end912:                                        ; preds = %lor.lhs.false906
+  %op_next913 = getelementptr inbounds %struct.op* %346, i64 0, i32 0
+  %348 = load %struct.op** %op_next913, align 8, !tbaa !3
+  %tobool914 = icmp eq %struct.op* %348, null
+  br i1 %tobool914, label %for.inc1173, label %lor.lhs.false915
+
+lor.lhs.false915:                                 ; preds = %if.end912
+  %op_type916 = getelementptr inbounds %struct.op* %348, i64 0, i32 4
+  %349 = load i16* %op_type916, align 2, !tbaa !4
+  %cmp918 = icmp eq i16 %349, 37
+  br i1 %cmp918, label %lor.lhs.false920, label %for.inc1173
+
+lor.lhs.false920:                                 ; preds = %lor.lhs.false915
+  %op_flags921 = getelementptr inbounds %struct.op* %348, i64 0, i32 6
+  %350 = load i8* %op_flags921, align 1, !tbaa !1
+  %and923 = and i8 %350, 3
+  %cmp924 = icmp eq i8 %and923, 1
+  br i1 %cmp924, label %if.end927, label %for.inc1173
+
+if.end927:                                        ; preds = %lor.lhs.false920
+  %351 = getelementptr inbounds %struct.op* %348, i64 1, i32 0
+  %352 = load %struct.op** %351, align 8, !tbaa !3
+  %tobool929 = icmp eq %struct.op* %352, null
+  br i1 %tobool929, label %for.inc1173, label %lor.lhs.false930
+
+lor.lhs.false930:                                 ; preds = %if.end927
+  %op_type931 = getelementptr inbounds %struct.op* %352, i64 0, i32 4
+  %353 = load i16* %op_type931, align 2, !tbaa !4
+  %cmp933 = icmp eq i16 %353, 0
+  br i1 %cmp933, label %if.end936, label %for.inc1173
+
+if.end936:                                        ; preds = %lor.lhs.false930
+  %354 = getelementptr inbounds %struct.op* %352, i64 1, i32 0
+  %355 = load %struct.op** %354, align 8, !tbaa !3
+  %tobool938 = icmp eq %struct.op* %355, null
+  br i1 %tobool938, label %for.inc1173, label %lor.lhs.false939
+
+lor.lhs.false939:                                 ; preds = %if.end936
+  %op_type940 = getelementptr inbounds %struct.op* %355, i64 0, i32 4
+  %356 = load i16* %op_type940, align 2, !tbaa !4
+  %cmp942 = icmp eq i16 %356, 3
+  br i1 %cmp942, label %if.end945, label %for.inc1173
+
+if.end945:                                        ; preds = %lor.lhs.false939
+  %op_sibling946 = getelementptr inbounds %struct.op* %355, i64 0, i32 1
+  %357 = load %struct.op** %op_sibling946, align 8, !tbaa !3
+  %cmp947 = icmp eq %struct.op* %357, %1
+  br i1 %cmp947, label %if.end950, label %for.inc1173
+
+if.end950:                                        ; preds = %if.end945
+  %cmp953 = icmp eq i16 %344, 125
+  br i1 %cmp953, label %if.then955, label %if.else978
+
+if.then955:                                       ; preds = %if.end950
+  %cmp958 = icmp eq i16 %334, 125
+  br i1 %cmp958, label %lor.lhs.false960, label %for.inc1173
+
+lor.lhs.false960:                                 ; preds = %if.then955
+  %358 = getelementptr inbounds %struct.op* %oright.01492, i64 1, i32 0
+  %359 = load %struct.op** %358, align 8, !tbaa !3
+  %tobool962 = icmp eq %struct.op* %359, null
+  br i1 %tobool962, label %for.inc1173, label %lor.lhs.false963
+
+lor.lhs.false963:                                 ; preds = %lor.lhs.false960
+  %op_type965 = getelementptr inbounds %struct.op* %359, i64 0, i32 4
+  %360 = load i16* %op_type965, align 2, !tbaa !4
+  %cmp967 = icmp eq i16 %360, 7
+  br i1 %cmp967, label %lor.lhs.false969, label %for.inc1173
+
+lor.lhs.false969:                                 ; preds = %lor.lhs.false963
+  %361 = getelementptr inbounds %struct.op* %o2.01496, i64 1, i32 0
+  %362 = load %struct.op** %361, align 8, !tbaa !3
+  %op_sv971 = getelementptr inbounds %struct.op* %362, i64 1
+  %363 = bitcast %struct.op* %op_sv971 to %struct.sv**
+  %364 = load %struct.sv** %363, align 8, !tbaa !3
+  %op_sv973 = getelementptr inbounds %struct.op* %359, i64 1
+  %365 = bitcast %struct.op* %op_sv973 to %struct.sv**
+  %366 = load %struct.sv** %365, align 8, !tbaa !3
+  %cmp974 = icmp eq %struct.sv* %364, %366
+  br i1 %cmp974, label %if.end990, label %for.inc1173
+
+if.else978:                                       ; preds = %if.end950
+  %cmp981 = icmp eq i16 %334, 10
+  br i1 %cmp981, label %lor.lhs.false983, label %for.inc1173
+
+lor.lhs.false983:                                 ; preds = %if.else978
+  %op_targ984 = getelementptr inbounds %struct.op* %oright.01492, i64 0, i32 3
+  %367 = load i64* %op_targ984, align 8, !tbaa !5
+  %op_targ985 = getelementptr inbounds %struct.op* %o2.01496, i64 0, i32 3
+  %368 = load i64* %op_targ985, align 8, !tbaa !5
+  %cmp986 = icmp eq i64 %367, %368
+  br i1 %cmp986, label %if.end990, label %for.inc1173
+
+if.end990:                                        ; preds = %lor.lhs.false969, %lor.lhs.false983
+  %op_flags991 = getelementptr inbounds %struct.op* %o2.01496, i64 0, i32 6
+  %369 = load i8* %op_flags991, align 1, !tbaa !1
+  %op_flags992 = getelementptr inbounds %struct.op* %oright.01492, i64 0, i32 6
+  store i8 %369, i8* %op_flags992, align 1, !tbaa !1
+  %op_private993 = getelementptr inbounds %struct.op* %1, i64 0, i32 7
+  %370 = load i8* %op_private993, align 1, !tbaa !1
+  %or995 = or i8 %370, 8
+  store i8 %or995, i8* %op_private993, align 1, !tbaa !1
+  %371 = load %struct.op** %op_next858, align 8, !tbaa !3
+  %op_next998 = getelementptr inbounds %struct.op* %371, i64 0, i32 0
+  %372 = load %struct.op** %op_next998, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %372) #8
+  %op_next999 = getelementptr inbounds %struct.op* %372, i64 0, i32 0
+  %373 = load %struct.op** %op_next999, align 8, !tbaa !3
+  %op_type1000 = getelementptr inbounds %struct.op* %373, i64 0, i32 4
+  %374 = load i16* %op_type1000, align 2, !tbaa !4
+  %cmp1002 = icmp eq i16 %374, 7
+  br i1 %cmp1002, label %if.then1004, label %if.end1006
+
+if.then1004:                                      ; preds = %if.end990
+  call void @Perl_op_null(%struct.op* %373) #8
+  %op_next1005 = getelementptr inbounds %struct.op* %373, i64 0, i32 0
+  %375 = load %struct.op** %op_next1005, align 8, !tbaa !3
+  br label %if.end1006
+
+if.end1006:                                       ; preds = %if.then1004, %if.end990
+  %o2.1 = phi %struct.op* [ %375, %if.then1004 ], [ %373, %if.end990 ]
+  call void @Perl_op_null(%struct.op* %o2.1) #8
+  %op_next1007 = getelementptr inbounds %struct.op* %o2.1, i64 0, i32 0
+  %376 = load %struct.op** %op_next1007, align 8, !tbaa !3
+  %op_next1008 = getelementptr inbounds %struct.op* %376, i64 0, i32 0
+  %377 = load %struct.op** %op_next1008, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %377) #8
+  %op_next1009 = getelementptr inbounds %struct.op* %377, i64 0, i32 0
+  %378 = load %struct.op** %op_next1009, align 8, !tbaa !3
+  store %struct.op* %378, %struct.op** %op_next858, align 8, !tbaa !3
+  br label %for.inc1173
+
+sw.bb1011:                                        ; preds = %if.end12
+  %inc1012 = add i16 %4, 1
+  store i16 %inc1012, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  %op_next1014 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %379 = load %struct.op** %op_next1014, align 8, !tbaa !3
+  %tobool1015 = icmp eq %struct.op* %379, null
+  br i1 %tobool1015, label %for.inc1173, label %if.end1017
+
+if.end1017:                                       ; preds = %sw.bb1011
+  %380 = getelementptr inbounds %struct.op* %379, i64 0, i32 4
+  %381 = load i16* %380, align 2, !tbaa !4
+  %cmp1020 = icmp eq i16 %381, 0
+  br i1 %cmp1020, label %if.then1022, label %if.end1027
+
+if.then1022:                                      ; preds = %if.end1017
+  %op_next1023 = getelementptr inbounds %struct.op* %379, i64 0, i32 0
+  %382 = load %struct.op** %op_next1023, align 8, !tbaa !3
+  %tobool1024 = icmp eq %struct.op* %382, null
+  br i1 %tobool1024, label %for.inc1173, label %if.then1022.if.end1027_crit_edge
+
+if.then1022.if.end1027_crit_edge:                 ; preds = %if.then1022
+  %.phi.trans.insert = getelementptr inbounds %struct.op* %382, i64 0, i32 4
+  %.pre1552 = load i16* %.phi.trans.insert, align 2, !tbaa !4
+  br label %if.end1027
+
+if.end1027:                                       ; preds = %if.then1022.if.end1027_crit_edge, %if.end1017
+  %383 = phi i16 [ %.pre1552, %if.then1022.if.end1027_crit_edge ], [ %381, %if.end1017 ]
+  %enter.0.in = phi %struct.op* [ %382, %if.then1022.if.end1027_crit_edge ], [ %379, %if.end1017 ]
+  %cmp1030 = icmp eq i16 %383, 7
+  br i1 %cmp1030, label %if.then1032, label %if.end1047
+
+if.then1032:                                      ; preds = %if.end1027
+  %op_next1033 = getelementptr inbounds %struct.op* %enter.0.in, i64 0, i32 0
+  %384 = load %struct.op** %op_next1033, align 8, !tbaa !3
+  %tobool1034 = icmp eq %struct.op* %384, null
+  br i1 %tobool1034, label %for.inc1173, label %if.end1036
+
+if.end1036:                                       ; preds = %if.then1032
+  %385 = getelementptr inbounds %struct.op* %384, i64 0, i32 4
+  %386 = load i16* %385, align 2, !tbaa !4
+  %cmp1039 = icmp eq i16 %386, 14
+  br i1 %cmp1039, label %if.then1041, label %if.end1047
+
+if.then1041:                                      ; preds = %if.end1036
+  %op_next1042 = getelementptr inbounds %struct.op* %384, i64 0, i32 0
+  %387 = load %struct.op** %op_next1042, align 8, !tbaa !3
+  %tobool1043 = icmp eq %struct.op* %387, null
+  br i1 %tobool1043, label %for.inc1173, label %if.then1041.if.end1047_crit_edge
+
+if.then1041.if.end1047_crit_edge:                 ; preds = %if.then1041
+  %.phi.trans.insert1553 = getelementptr inbounds %struct.op* %387, i64 0, i32 4
+  %.pre1554 = load i16* %.phi.trans.insert1553, align 2, !tbaa !4
+  br label %if.end1047
+
+if.end1047:                                       ; preds = %if.then1041.if.end1047_crit_edge, %if.end1036, %if.end1027
+  %388 = phi i16 [ %.pre1554, %if.then1041.if.end1047_crit_edge ], [ %386, %if.end1036 ], [ %383, %if.end1027 ]
+  %gvop.0 = phi %struct.op* [ %enter.0.in, %if.then1041.if.end1047_crit_edge ], [ %enter.0.in, %if.end1036 ], [ null, %if.end1027 ]
+  %enter.1.in = phi %struct.op* [ %387, %if.then1041.if.end1047_crit_edge ], [ %384, %if.end1036 ], [ %enter.0.in, %if.end1027 ]
+  %cmp1050 = icmp eq i16 %388, 180
+  br i1 %cmp1050, label %if.end1053, label %for.inc1173
+
+if.end1053:                                       ; preds = %if.end1047
+  %op_next1054 = getelementptr inbounds %struct.op* %enter.1.in, i64 0, i32 0
+  %389 = load %struct.op** %op_next1054, align 8, !tbaa !3
+  %tobool1055 = icmp eq %struct.op* %389, null
+  br i1 %tobool1055, label %for.inc1173, label %lor.lhs.false1056
+
+lor.lhs.false1056:                                ; preds = %if.end1053
+  %op_type1057 = getelementptr inbounds %struct.op* %389, i64 0, i32 4
+  %390 = load i16* %op_type1057, align 2, !tbaa !4
+  %cmp1059 = icmp eq i16 %390, 181
+  br i1 %cmp1059, label %if.end1062, label %for.inc1173
+
+if.end1062:                                       ; preds = %lor.lhs.false1056
+  %391 = getelementptr inbounds %struct.op* %enter.1.in, i64 1, i32 0
+  %392 = load %struct.op** %391, align 8, !tbaa !3
+  %tobool1064 = icmp eq %struct.op* %392, null
+  br i1 %tobool1064, label %for.inc1173, label %lor.lhs.false1065
+
+lor.lhs.false1065:                                ; preds = %if.end1062
+  %op_type1066 = getelementptr inbounds %struct.op* %392, i64 0, i32 4
+  %393 = load i16* %op_type1066, align 2, !tbaa !4
+  %cmp1068 = icmp eq i16 %393, 0
+  br i1 %cmp1068, label %lor.lhs.false1070, label %for.inc1173
+
+lor.lhs.false1070:                                ; preds = %lor.lhs.false1065
+  %op_targ1071 = getelementptr inbounds %struct.op* %392, i64 0, i32 3
+  %394 = load i64* %op_targ1071, align 8, !tbaa !5
+  %cmp1072 = icmp eq i64 %394, 3
+  br i1 %cmp1072, label %if.end1075, label %for.inc1173
+
+if.end1075:                                       ; preds = %lor.lhs.false1070
+  %op_sibling1076 = getelementptr inbounds %struct.op* %392, i64 0, i32 1
+  %395 = load %struct.op** %op_sibling1076, align 8, !tbaa !3
+  %tobool1077 = icmp eq %struct.op* %395, null
+  br i1 %tobool1077, label %for.inc1173, label %lor.lhs.false1078
+
+lor.lhs.false1078:                                ; preds = %if.end1075
+  %396 = getelementptr inbounds %struct.op* %395, i64 0, i32 4
+  %397 = load i16* %396, align 2, !tbaa !4
+  %cmp1081 = icmp eq i16 %397, 0
+  br i1 %cmp1081, label %lor.lhs.false1083, label %for.inc1173
+
+lor.lhs.false1083:                                ; preds = %lor.lhs.false1078
+  %398 = getelementptr inbounds %struct.op* %395, i64 0, i32 3
+  %399 = load i64* %398, align 8, !tbaa !5
+  %cmp1085 = icmp eq i64 %399, 141
+  br i1 %cmp1085, label %if.end1088, label %for.inc1173
+
+if.end1088:                                       ; preds = %lor.lhs.false1083
+  %400 = getelementptr inbounds %struct.op* %395, i64 1, i32 1
+  %401 = load %struct.op** %400, align 8, !tbaa !3
+  %cmp1090 = icmp eq %struct.op* %401, %1
+  br i1 %cmp1090, label %if.end1093, label %for.inc1173
+
+if.end1093:                                       ; preds = %if.end1088
+  %402 = getelementptr inbounds %struct.op* %395, i64 1, i32 0
+  %403 = load %struct.op** %402, align 8, !tbaa !3
+  %tobool1095 = icmp eq %struct.op* %403, null
+  br i1 %tobool1095, label %for.inc1173, label %lor.lhs.false1096
+
+lor.lhs.false1096:                                ; preds = %if.end1093
+  %op_type1097 = getelementptr inbounds %struct.op* %403, i64 0, i32 4
+  %404 = load i16* %op_type1097, align 2, !tbaa !4
+  %cmp1099 = icmp eq i16 %404, 3
+  br i1 %cmp1099, label %if.end1102, label %for.inc1173
+
+if.end1102:                                       ; preds = %lor.lhs.false1096
+  %op_sibling1103 = getelementptr inbounds %struct.op* %403, i64 0, i32 1
+  %405 = load %struct.op** %op_sibling1103, align 8, !tbaa !3
+  %cmp1104 = icmp eq %struct.op* %405, %1
+  br i1 %cmp1104, label %if.end1107, label %for.inc1173
+
+if.end1107:                                       ; preds = %if.end1102
+  %406 = getelementptr inbounds %struct.op* %1, i64 1, i32 0
+  %407 = load %struct.op** %406, align 8, !tbaa !3
+  %tobool1109 = icmp eq %struct.op* %407, null
+  br i1 %tobool1109, label %for.inc1173, label %lor.lhs.false1110
+
+lor.lhs.false1110:                                ; preds = %if.end1107
+  %op_type1111 = getelementptr inbounds %struct.op* %407, i64 0, i32 4
+  %408 = load i16* %op_type1111, align 2, !tbaa !4
+  %cmp1113 = icmp eq i16 %408, 3
+  br i1 %cmp1113, label %if.end1116, label %for.inc1173
+
+if.end1116:                                       ; preds = %lor.lhs.false1110
+  %409 = getelementptr inbounds %struct.op* %1, i64 1, i32 1
+  %410 = load %struct.op** %409, align 8, !tbaa !3
+  %tobool1118 = icmp eq %struct.op* %410, null
+  br i1 %tobool1118, label %for.inc1173, label %lor.lhs.false1119
+
+lor.lhs.false1119:                                ; preds = %if.end1116
+  %op_next1120 = getelementptr inbounds %struct.op* %410, i64 0, i32 0
+  %411 = load %struct.op** %op_next1120, align 8, !tbaa !3
+  %cmp1121 = icmp eq %struct.op* %411, %1
+  br i1 %cmp1121, label %if.end1124, label %for.inc1173
+
+if.end1124:                                       ; preds = %lor.lhs.false1119
+  %op_sibling1125 = getelementptr inbounds %struct.op* %407, i64 0, i32 1
+  %412 = load %struct.op** %op_sibling1125, align 8, !tbaa !3
+  %tobool1126 = icmp eq %struct.op* %412, null
+  br i1 %tobool1126, label %if.end1152, label %land.lhs.true1127
+
+land.lhs.true1127:                                ; preds = %if.end1124
+  %op_type1128 = getelementptr inbounds %struct.op* %412, i64 0, i32 4
+  %413 = load i16* %op_type1128, align 2, !tbaa !4
+  %cmp1130 = icmp eq i16 %413, 125
+  br i1 %cmp1130, label %land.lhs.true1132, label %if.end1152
+
+land.lhs.true1132:                                ; preds = %land.lhs.true1127
+  %op_sibling1133 = getelementptr inbounds %struct.op* %412, i64 0, i32 1
+  %414 = load %struct.op** %op_sibling1133, align 8, !tbaa !3
+  %cmp1134 = icmp eq %struct.op* %414, null
+  br i1 %cmp1134, label %land.lhs.true1136, label %if.end1152
+
+land.lhs.true1136:                                ; preds = %land.lhs.true1132
+  %op_flags1137 = getelementptr inbounds %struct.op* %412, i64 0, i32 6
+  %415 = load i8* %op_flags1137, align 1, !tbaa !1
+  %cmp1139 = icmp eq i8 %415, 7
+  br i1 %cmp1139, label %land.lhs.true1141, label %if.end1152
+
+land.lhs.true1141:                                ; preds = %land.lhs.true1136
+  %416 = getelementptr inbounds %struct.op* %enter.1.in, i64 0, i32 6
+  %417 = load i8* %416, align 1, !tbaa !1
+  %cmp1144 = icmp eq i8 %417, 7
+  br i1 %cmp1144, label %if.then1146, label %if.end1152
+
+if.then1146:                                      ; preds = %land.lhs.true1141
+  store i8 22, i8* %op_flags1137, align 1, !tbaa !1
+  %418 = load i8* %416, align 1, !tbaa !1
+  %or1150 = or i8 %418, 64
+  store i8 %or1150, i8* %416, align 1, !tbaa !1
+  br label %if.end1152
+
+if.end1152:                                       ; preds = %if.end1124, %if.then1146, %land.lhs.true1141, %land.lhs.true1136, %land.lhs.true1132, %land.lhs.true1127
+  %op_next1153 = getelementptr inbounds %struct.op* %407, i64 0, i32 0
+  %419 = load %struct.op** %op_next1153, align 8, !tbaa !3
+  %op_next1154 = getelementptr inbounds %struct.op* %403, i64 0, i32 0
+  store %struct.op* %419, %struct.op** %op_next1154, align 8, !tbaa !3
+  %op_flags1155 = getelementptr inbounds %struct.op* %407, i64 0, i32 6
+  %420 = load i8* %op_flags1155, align 1, !tbaa !1
+  %op_flags1156 = getelementptr inbounds %struct.op* %403, i64 0, i32 6
+  store i8 %420, i8* %op_flags1156, align 1, !tbaa !1
+  %tobool1157 = icmp eq %struct.op* %gvop.0, null
+  %enter.1.in.gvop.0 = select i1 %tobool1157, %struct.op* %enter.1.in, %struct.op* %gvop.0
+  store %struct.op* %enter.1.in.gvop.0, %struct.op** %op_next1120, align 8, !tbaa !3
+  call void @Perl_op_null(%struct.op* %407) #8
+  call void @Perl_op_null(%struct.op* %1) #8
+  %421 = getelementptr inbounds %struct.op* %enter.1.in, i64 0, i32 7
+  %422 = load i8* %421, align 1, !tbaa !1
+  %or1165 = or i8 %422, 4
+  store i8 %or1165, i8* %421, align 1, !tbaa !1
+  %op_private1167 = getelementptr inbounds %struct.op* %389, i64 0, i32 7
+  %423 = load i8* %op_private1167, align 1, !tbaa !1
+  %or1169 = or i8 %423, 4
+  store i8 %or1169, i8* %op_private1167, align 1, !tbaa !1
+  br label %for.inc1173
+
+sw.default:                                       ; preds = %if.end12
+  %inc1171 = add i16 %4, 1
+  store i16 %inc1171, i16* @PL_op_seqmax, align 2, !tbaa !4
+  store i16 %4, i16* %op_seq3, align 2, !tbaa !4
+  br label %for.inc1173
+
+for.inc1173.critedge:                             ; preds = %if.end672
+  store i16 125, i16* %252, align 2, !tbaa !4
+  %424 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 125), align 8, !tbaa !3
+  %425 = getelementptr inbounds %struct.op* %251, i64 0, i32 2
+  store %struct.op* ()* %424, %struct.op* ()** %425, align 8, !tbaa !3
+  store i16 128, i16* %op_type, align 2, !tbaa !4
+  %426 = load %struct.op* ()** getelementptr inbounds ([0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 128), align 8, !tbaa !3
+  %op_ppaddr693.c = getelementptr inbounds %struct.op* %1, i64 0, i32 2
+  store %struct.op* ()* %426, %struct.op* ()** %op_ppaddr693.c, align 8, !tbaa !3
+  br label %for.inc1173
+
+for.inc1173:                                      ; preds = %for.inc1173.critedge, %if.end689, %if.end769, %for.body679, %lor.lhs.false851, %lor.lhs.false847, %lor.lhs.false837, %if.end835, %if.end822, %lor.lhs.false780, %sw.bb777, %lor.lhs.false666, %if.end661, %if.end652, %lor.lhs.false645, %if.end639, %lor.lhs.false631, %sw.bb615, %lor.lhs.false530, %if.end526, %if.end517, %lor.lhs.false510, %if.end505, %if.end499, %sw.bb455, %land.lhs.true411, %lor.lhs.false407, %if.end76, %if.end875, %sw.bb, %if.end19, %ignore_optimization, %if.then59, %if.end93, %if.end205, %if.end319, %while.end, %while.end367, %while.end383, %if.end610, %if.end1006, %if.end1152, %sw.default, %if.then448, %land.lhs.true418, %lor.lhs.false897, %sw.bb1011, %if.end1047, %if.end1053, %lor.lhs.false1056, %if.end1062, %lor.lhs.false1065, %lor.lhs.false1070, %if.end1075, %lor.lhs.false1078, %lor.lhs.false1083, %if.end1088, %if.end1093, %lor.lhs.false1096, %if.end1102, %if.end1107, %lor.lhs.false1110, %if.end1116, %lor.lhs.false1119, %if.then1032, %if.then1041, %if.then1022, %if.end857, %lor.lhs.false860, %if.end866, %lor.lhs.false869, %if.end885, %if.end903, %lor.lhs.false906, %if.end912, %lor.lhs.false915, %lor.lhs.false920, %if.end927, %lor.lhs.false930, %if.end936, %lor.lhs.false939, %if.end945, %if.else978, %lor.lhs.false983, %if.then955, %lor.lhs.false960, %lor.lhs.false963, %lor.lhs.false969, %land.lhs.true415, %if.then424, %land.lhs.true78, %land.lhs.true427, %land.lhs.true427, %land.lhs.true427, %lor.lhs.false887, %if.then90, %if.then81
+  %oldop.1 = phi %struct.op* [ %oldop.01525, %if.then90 ], [ %oldop.01525, %if.then81 ], [ %1, %lor.lhs.false887 ], [ %1, %land.lhs.true427 ], [ %1, %land.lhs.true427 ], [ %1, %land.lhs.true427 ], [ %1, %land.lhs.true78 ], [ %1, %if.then424 ], [ %1, %land.lhs.true415 ], [ %1, %lor.lhs.false969 ], [ %1, %lor.lhs.false963 ], [ %1, %lor.lhs.false960 ], [ %1, %if.then955 ], [ %1, %lor.lhs.false983 ], [ %1, %if.else978 ], [ %1, %if.end945 ], [ %1, %lor.lhs.false939 ], [ %1, %if.end936 ], [ %1, %lor.lhs.false930 ], [ %1, %if.end927 ], [ %1, %lor.lhs.false920 ], [ %1, %lor.lhs.false915 ], [ %1, %if.end912 ], [ %1, %lor.lhs.false906 ], [ %1, %if.end903 ], [ %1, %if.end885 ], [ %1, %lor.lhs.false869 ], [ %1, %if.end866 ], [ %1, %lor.lhs.false860 ], [ %1, %if.end857 ], [ %1, %if.then1022 ], [ %1, %if.then1041 ], [ %1, %if.then1032 ], [ %1, %lor.lhs.false1119 ], [ %1, %if.end1116 ], [ %1, %lor.lhs.false1110 ], [ %1, %if.end1107 ], [ %1, %if.end1102 ], [ %1, %lor.lhs.false1096 ], [ %1, %if.end1093 ], [ %1, %if.end1088 ], [ %1, %lor.lhs.false1083 ], [ %1, %lor.lhs.false1078 ], [ %1, %if.end1075 ], [ %1, %lor.lhs.false1070 ], [ %1, %lor.lhs.false1065 ], [ %1, %if.end1062 ], [ %1, %lor.lhs.false1056 ], [ %1, %if.end1053 ], [ %1, %if.end1047 ], [ %1, %sw.bb1011 ], [ %1, %lor.lhs.false897 ], [ %1, %land.lhs.true418 ], [ %1, %if.then448 ], [ %1, %sw.default ], [ %1, %if.end1152 ], [ %1, %if.end1006 ], [ %1, %if.end610 ], [ %1, %while.end383 ], [ %1, %while.end367 ], [ %1, %while.end ], [ %1, %if.end319 ], [ %1, %if.end205 ], [ %1, %if.end93 ], [ %1, %if.then59 ], [ %1, %ignore_optimization ], [ %1, %if.end19 ], [ %1, %sw.bb ], [ %1, %if.end875 ], [ %1, %if.end76 ], [ %1, %lor.lhs.false407 ], [ %1, %land.lhs.true411 ], [ %1, %sw.bb455 ], [ %1, %if.end499 ], [ %1, %if.end505 ], [ %1, %lor.lhs.false510 ], [ %1, %if.end517 ], [ %1, %if.end526 ], [ %1, %lor.lhs.false530 ], [ %1, %sw.bb615 ], [ %1, %lor.lhs.false631 ], [ %1, %if.end639 ], [ %1, %lor.lhs.false645 ], [ %1, %if.end652 ], [ %1, %if.end661 ], [ %1, %lor.lhs.false666 ], [ %1, %sw.bb777 ], [ %1, %lor.lhs.false780 ], [ %1, %if.end822 ], [ %1, %if.end835 ], [ %1, %lor.lhs.false837 ], [ %1, %lor.lhs.false847 ], [ %1, %lor.lhs.false851 ], [ %1, %for.body679 ], [ %1, %if.end769 ], [ %1, %if.end689 ], [ %1, %for.inc1173.critedge ]
+  %op_next1174 = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  %427 = load %struct.op** %op_next1174, align 8, !tbaa !3
+  %tobool2 = icmp eq %struct.op* %427, null
+  br i1 %tobool2, label %for.end1175, label %for.body
+
+for.end1175:                                      ; preds = %for.inc1173, %for.body
+  call void @Perl_pop_scope() #7
+  br label %return
+
+return:                                           ; preds = %lor.lhs.false, %entry, %for.end1175
+  ret void
+}

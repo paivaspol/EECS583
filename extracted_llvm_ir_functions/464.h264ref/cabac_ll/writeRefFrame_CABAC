@@ -1,0 +1,246 @@
+define void @writeRefFrame_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  %block_a = alloca %struct.pix_pos, align 4
+  %block_b = alloca %struct.pix_pos, align 4
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
+  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
+  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7
+  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %3 = load i32* %current_mb_nr, align 4, !tbaa !0
+  %idxprom = sext i32 %3 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %4 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %5 = load i32* %value2, align 4, !tbaa !0
+  %idxprom1 = sext i32 %5 to i64
+  %6 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !3
+  %ref_idx = getelementptr inbounds %struct.storable_picture* %6, i64 0, i32 32
+  %7 = load i16**** %ref_idx, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds i16*** %7, i64 %idxprom1
+  %8 = load i16*** %arrayidx2, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %9 = load i32* %type, align 4, !tbaa !0
+  %cmp = icmp eq i32 %9, 1
+  %subblock_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 18
+  %10 = load i32* %subblock_x, align 4, !tbaa !0
+  %subblock_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 19
+  %11 = load i32* %subblock_y, align 4, !tbaa !0
+  call void @getLuma4x4Neighbour(i32 %3, i32 %10, i32 %11, i32 -1, i32 0, %struct.pix_pos* %block_a) #5
+  %12 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %current_mb_nr4 = getelementptr inbounds %struct.ImageParameters* %12, i64 0, i32 3
+  %13 = load i32* %current_mb_nr4, align 4, !tbaa !0
+  %subblock_x5 = getelementptr inbounds %struct.ImageParameters* %12, i64 0, i32 18
+  %14 = load i32* %subblock_x5, align 4, !tbaa !0
+  %subblock_y6 = getelementptr inbounds %struct.ImageParameters* %12, i64 0, i32 19
+  %15 = load i32* %subblock_y6, align 4, !tbaa !0
+  call void @getLuma4x4Neighbour(i32 %13, i32 %14, i32 %15, i32 0, i32 -1, %struct.pix_pos* %block_b) #5
+  %x = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 2
+  %16 = load i32* %x, align 4, !tbaa !0
+  %div = sdiv i32 %16, 2
+  %rem = srem i32 %div, 2
+  %y = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 3
+  %17 = load i32* %y, align 4, !tbaa !0
+  %div7 = sdiv i32 %17, 2
+  %rem8 = srem i32 %div7, 2
+  %mul = shl i32 %rem8, 1
+  %add = add nsw i32 %mul, %rem
+  %x9 = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 2
+  %18 = load i32* %x9, align 4, !tbaa !0
+  %div10 = sdiv i32 %18, 2
+  %rem11 = srem i32 %div10, 2
+  %y12 = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 3
+  %19 = load i32* %y12, align 4, !tbaa !0
+  %div13 = sdiv i32 %19, 2
+  %rem14 = srem i32 %div13, 2
+  %mul15 = shl i32 %rem14, 1
+  %add16 = add nsw i32 %mul15, %rem11
+  %available = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 0
+  %20 = load i32* %available, align 4, !tbaa !0
+  %tobool = icmp eq i32 %20, 0
+  br i1 %tobool, label %if.end69, label %if.else
+
+if.else:                                          ; preds = %entry
+  %mb_addr = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 1
+  %21 = load i32* %mb_addr, align 4, !tbaa !0
+  %idxprom17 = sext i32 %21 to i64
+  %22 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %mb_data18 = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 51
+  %23 = load %struct.macroblock** %mb_data18, align 8, !tbaa !3
+  %mb_type = getelementptr inbounds %struct.macroblock* %23, i64 %idxprom17, i32 8
+  %24 = load i32* %mb_type, align 4, !tbaa !0
+  %cmp20 = icmp eq i32 %24, 0
+  br i1 %cmp20, label %land.lhs.true, label %lor.lhs.false
+
+land.lhs.true:                                    ; preds = %if.else
+  %type22 = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 6
+  %25 = load i32* %type22, align 4, !tbaa !0
+  %cmp23 = icmp eq i32 %25, 1
+  br i1 %cmp23, label %if.end69, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true, %if.else
+  %idxprom25 = sext i32 %add16 to i64
+  %arrayidx30 = getelementptr inbounds %struct.macroblock* %23, i64 %idxprom17, i32 14, i64 %idxprom25
+  %26 = load i32* %arrayidx30, align 4, !tbaa !0
+  %cmp31.not = icmp ne i32 %26, 0
+  %cmp.not = xor i1 %cmp, true
+  %brmerge = or i1 %cmp31.not, %cmp.not
+  br i1 %brmerge, label %if.else36, label %if.end69
+
+if.else36:                                        ; preds = %lor.lhs.false
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 90
+  %27 = load i32* %MbaffFrameFlag, align 4, !tbaa !0
+  %tobool37 = icmp eq i32 %27, 0
+  br i1 %tobool37, label %if.else57, label %land.lhs.true38
+
+land.lhs.true38:                                  ; preds = %if.else36
+  %mb_field = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 22
+  %28 = load i32* %mb_field, align 4, !tbaa !0
+  %cmp39 = icmp eq i32 %28, 0
+  br i1 %cmp39, label %land.lhs.true41, label %if.else57
+
+land.lhs.true41:                                  ; preds = %land.lhs.true38
+  %mb_field46 = getelementptr inbounds %struct.macroblock* %23, i64 %idxprom17, i32 22
+  %29 = load i32* %mb_field46, align 4, !tbaa !0
+  %cmp47 = icmp eq i32 %29, 1
+  br i1 %cmp47, label %if.then49, label %if.else57
+
+if.then49:                                        ; preds = %land.lhs.true41
+  %pos_y = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 5
+  %30 = load i32* %pos_y, align 4, !tbaa !0
+  %idxprom50 = sext i32 %30 to i64
+  %pos_x = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 4
+  %31 = load i32* %pos_x, align 4, !tbaa !0
+  %idxprom51 = sext i32 %31 to i64
+  %arrayidx52 = getelementptr inbounds i16** %8, i64 %idxprom51
+  %32 = load i16** %arrayidx52, align 8, !tbaa !3
+  %arrayidx53 = getelementptr inbounds i16* %32, i64 %idxprom50
+  %33 = load i16* %arrayidx53, align 2, !tbaa !4
+  %cmp55 = icmp sgt i16 %33, 1
+  %cond = select i1 %cmp55, i32 2, i32 0
+  br label %if.end69
+
+if.else57:                                        ; preds = %if.else36, %land.lhs.true41, %land.lhs.true38
+  %pos_y58 = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 5
+  %34 = load i32* %pos_y58, align 4, !tbaa !0
+  %idxprom59 = sext i32 %34 to i64
+  %pos_x60 = getelementptr inbounds %struct.pix_pos* %block_b, i64 0, i32 4
+  %35 = load i32* %pos_x60, align 4, !tbaa !0
+  %idxprom61 = sext i32 %35 to i64
+  %arrayidx62 = getelementptr inbounds i16** %8, i64 %idxprom61
+  %36 = load i16** %arrayidx62, align 8, !tbaa !3
+  %arrayidx63 = getelementptr inbounds i16* %36, i64 %idxprom59
+  %37 = load i16* %arrayidx63, align 2, !tbaa !4
+  %cmp65 = icmp sgt i16 %37, 0
+  %cond67 = select i1 %cmp65, i32 2, i32 0
+  br label %if.end69
+
+if.end69:                                         ; preds = %land.lhs.true, %lor.lhs.false, %entry, %if.else57, %if.then49
+  %b.0 = phi i32 [ %cond, %if.then49 ], [ %cond67, %if.else57 ], [ 0, %entry ], [ 0, %lor.lhs.false ], [ 0, %land.lhs.true ]
+  %available70 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 0
+  %38 = load i32* %available70, align 4, !tbaa !0
+  %tobool71 = icmp eq i32 %38, 0
+  br i1 %tobool71, label %if.end137, label %if.else73
+
+if.else73:                                        ; preds = %if.end69
+  %mb_addr74 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 1
+  %39 = load i32* %mb_addr74, align 4, !tbaa !0
+  %idxprom75 = sext i32 %39 to i64
+  %40 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %mb_data76 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 51
+  %41 = load %struct.macroblock** %mb_data76, align 8, !tbaa !3
+  %mb_type78 = getelementptr inbounds %struct.macroblock* %41, i64 %idxprom75, i32 8
+  %42 = load i32* %mb_type78, align 4, !tbaa !0
+  %cmp79 = icmp eq i32 %42, 0
+  br i1 %cmp79, label %land.lhs.true81, label %lor.lhs.false85
+
+land.lhs.true81:                                  ; preds = %if.else73
+  %type82 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 6
+  %43 = load i32* %type82, align 4, !tbaa !0
+  %cmp83 = icmp eq i32 %43, 1
+  br i1 %cmp83, label %if.end137, label %lor.lhs.false85
+
+lor.lhs.false85:                                  ; preds = %land.lhs.true81, %if.else73
+  %idxprom86 = sext i32 %add to i64
+  %arrayidx92 = getelementptr inbounds %struct.macroblock* %41, i64 %idxprom75, i32 14, i64 %idxprom86
+  %44 = load i32* %arrayidx92, align 4, !tbaa !0
+  %cmp93.not = icmp ne i32 %44, 0
+  %cmp.not174 = xor i1 %cmp, true
+  %brmerge175 = or i1 %cmp93.not, %cmp.not174
+  br i1 %brmerge175, label %if.else98, label %if.end137
+
+if.else98:                                        ; preds = %lor.lhs.false85
+  %MbaffFrameFlag99 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 90
+  %45 = load i32* %MbaffFrameFlag99, align 4, !tbaa !0
+  %tobool100 = icmp eq i32 %45, 0
+  br i1 %tobool100, label %if.else124, label %land.lhs.true101
+
+land.lhs.true101:                                 ; preds = %if.else98
+  %mb_field102 = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 22
+  %46 = load i32* %mb_field102, align 4, !tbaa !0
+  %cmp103 = icmp eq i32 %46, 0
+  br i1 %cmp103, label %land.lhs.true105, label %if.else124
+
+land.lhs.true105:                                 ; preds = %land.lhs.true101
+  %mb_field110 = getelementptr inbounds %struct.macroblock* %41, i64 %idxprom75, i32 22
+  %47 = load i32* %mb_field110, align 4, !tbaa !0
+  %cmp111 = icmp eq i32 %47, 1
+  br i1 %cmp111, label %if.then113, label %if.else124
+
+if.then113:                                       ; preds = %land.lhs.true105
+  %pos_y114 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 5
+  %48 = load i32* %pos_y114, align 4, !tbaa !0
+  %idxprom115 = sext i32 %48 to i64
+  %pos_x116 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 4
+  %49 = load i32* %pos_x116, align 4, !tbaa !0
+  %idxprom117 = sext i32 %49 to i64
+  %arrayidx118 = getelementptr inbounds i16** %8, i64 %idxprom117
+  %50 = load i16** %arrayidx118, align 8, !tbaa !3
+  %arrayidx119 = getelementptr inbounds i16* %50, i64 %idxprom115
+  %51 = load i16* %arrayidx119, align 2, !tbaa !4
+  %cmp121 = icmp sgt i16 %51, 1
+  %cond123 = zext i1 %cmp121 to i32
+  br label %if.end137
+
+if.else124:                                       ; preds = %if.else98, %land.lhs.true105, %land.lhs.true101
+  %pos_y125 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 5
+  %52 = load i32* %pos_y125, align 4, !tbaa !0
+  %idxprom126 = sext i32 %52 to i64
+  %pos_x127 = getelementptr inbounds %struct.pix_pos* %block_a, i64 0, i32 4
+  %53 = load i32* %pos_x127, align 4, !tbaa !0
+  %idxprom128 = sext i32 %53 to i64
+  %arrayidx129 = getelementptr inbounds i16** %8, i64 %idxprom128
+  %54 = load i16** %arrayidx129, align 8, !tbaa !3
+  %arrayidx130 = getelementptr inbounds i16* %54, i64 %idxprom126
+  %55 = load i16* %arrayidx130, align 2, !tbaa !4
+  %cmp132 = icmp sgt i16 %55, 0
+  %cond134 = zext i1 %cmp132 to i32
+  br label %if.end137
+
+if.end137:                                        ; preds = %land.lhs.true81, %lor.lhs.false85, %if.end69, %if.else124, %if.then113
+  %a.0 = phi i32 [ %cond123, %if.then113 ], [ %cond134, %if.else124 ], [ 0, %if.end69 ], [ 0, %lor.lhs.false85 ], [ 0, %land.lhs.true81 ]
+  %add139 = or i32 %a.0, %b.0
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
+  store i32 %add139, i32* %context, align 4, !tbaa !0
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %56 = load i32* %value1, align 4, !tbaa !0
+  %cmp140 = icmp eq i32 %56, 0
+  %idx.ext173 = zext i32 %add139 to i64
+  %add.ptr = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 3, i64 0, i64 %idx.ext173
+  br i1 %cmp140, label %if.then142, label %if.else145
+
+if.then142:                                       ; preds = %if.end137
+  call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #5
+  br label %if.end158
+
+if.else145:                                       ; preds = %if.end137
+  call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr) #5
+  %dec = add nsw i32 %56, -1
+  %add.ptr157 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 3, i64 0, i64 4
+  call void @unary_bin_encode(%struct.EncodingEnvironment* %eep_dp, i32 %dec, %struct.BiContextType* %add.ptr157, i32 1) #7
+  br label %if.end158
+
+if.end158:                                        ; preds = %if.else145, %if.then142
+  ret void
+}

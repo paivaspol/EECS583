@@ -1,0 +1,57 @@
+define void @Chv_init(%struct._Chv* %chv, i32 %id, i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #0 {
+entry:
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp slt i32 %nD, 1
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %nL, 0
+  %or.cond37 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp slt i32 %nU, 0
+  %or.cond38 = or i1 %or.cond37, %cmp5
+  br i1 %or.cond38, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str10, i64 0, i64 0), %struct._Chv* %chv, i32 %nD, i32 %nL, i32 %nU) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  switch i32 %type, label %sw.default13 [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb8
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  switch i32 %symflag, label %sw.default [
+    i32 0, label %sw.epilog15
+    i32 2, label %sw.epilog15
+  ]
+
+sw.default:                                       ; preds = %sw.bb
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([115 x i8]* @.str11, i64 0, i64 0), i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+sw.bb8:                                           ; preds = %if.end
+  %switch = icmp ult i32 %symflag, 3
+  br i1 %switch, label %sw.epilog15, label %sw.default10
+
+sw.default10:                                     ; preds = %sw.bb8
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([138 x i8]* @.str12, i64 0, i64 0), i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+sw.default13:                                     ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([81 x i8]* @.str13, i64 0, i64 0), i32 %type) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+sw.epilog15:                                      ; preds = %sw.bb8, %sw.bb, %sw.bb
+  %call16 = tail call i32 @Chv_nbytesNeeded(i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #6
+  tail call void @Chv_setNbytesInWorkspace(%struct._Chv* %chv, i32 %call16) #6
+  tail call void @Chv_setFields(%struct._Chv* %chv, i32 %id, i32 %nD, i32 %nL, i32 %nU, i32 %type, i32 %symflag) #6
+  ret void
+}

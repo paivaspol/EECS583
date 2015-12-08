@@ -1,0 +1,107 @@
+define signext i8 @Perl_sv_utf8_downgrade(%struct.sv* %sv, i8 signext %fail_ok) #0 {
+entry:
+  %len = alloca i64, align 8
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %1 = and i32 %0, 603979776
+  %2 = icmp eq i32 %1, 603979776
+  br i1 %2, label %if.then, label %if.end41
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %3, i64 8
+  %4 = bitcast i8* %xpv_cur to i64*
+  %5 = load i64* %4, align 8, !tbaa !5
+  %tobool4 = icmp eq i64 %5, 0
+  br i1 %tobool4, label %if.end41, label %if.then5
+
+if.then5:                                         ; preds = %if.then
+  %6 = and i32 %0, 9437184
+  %7 = icmp eq i32 %6, 9437184
+  br i1 %7, label %if.then13, label %if.end
+
+if.then13:                                        ; preds = %if.then5
+  call void @Perl_sv_force_normal_flags(%struct.sv* %sv, i32 0) #8
+  %.pre = load i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then5, %if.then13
+  %8 = phi i32 [ %0, %if.then5 ], [ %.pre, %if.then13 ]
+  %and15 = and i32 %8, 262144
+  %cmp = icmp eq i32 %and15, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %9 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur17 = getelementptr inbounds i8* %9, i64 8
+  %10 = bitcast i8* %xpv_cur17 to i64*
+  %11 = load i64* %10, align 8, !tbaa !5
+  store i64 %11, i64* %len, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %9 to i8**
+  %12 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %len, i32 2) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %12, %cond.true ], [ %call, %cond.false ]
+  %call19 = call i8* @Perl_utf8_to_bytes(i8* %cond, i64* %len) #8
+  %tobool20 = icmp eq i8* %call19, null
+  br i1 %tobool20, label %if.then21, label %if.end37
+
+if.then21:                                        ; preds = %cond.end
+  %tobool22 = icmp eq i8 %fail_ok, 0
+  br i1 %tobool22, label %if.else, label %return
+
+if.else:                                          ; preds = %if.then21
+  %13 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %tobool24 = icmp eq %struct.op* %13, null
+  br i1 %tobool24, label %if.else34, label %if.then25
+
+if.then25:                                        ; preds = %if.else
+  %op_type = getelementptr inbounds %struct.op* %13, i64 0, i32 4
+  %14 = load i16* %op_type, align 2, !tbaa !4
+  %cmp26 = icmp eq i16 %14, 351
+  br i1 %cmp26, label %cond.true28, label %cond.false30
+
+cond.true28:                                      ; preds = %if.then25
+  %call29 = call i8* @Perl_custom_op_desc(%struct.op* %13) #8
+  br label %cond.end32
+
+cond.false30:                                     ; preds = %if.then25
+  %idxprom = zext i16 %14 to i64
+  %arrayidx = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %15 = load i8** %arrayidx, align 8, !tbaa !0
+  br label %cond.end32
+
+cond.end32:                                       ; preds = %cond.false30, %cond.true28
+  %cond33 = phi i8* [ %call29, %cond.true28 ], [ %15, %cond.false30 ]
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([21 x i8]* @.str27, i64 0, i64 0), i8* %cond33) #8
+  br label %if.end37
+
+if.else34:                                        ; preds = %if.else
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([15 x i8]* @.str28, i64 0, i64 0)) #8
+  br label %if.end37
+
+if.end37:                                         ; preds = %cond.end, %if.else34, %cond.end32
+  %16 = load i64* %len, align 8, !tbaa !5
+  %17 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur39 = getelementptr inbounds i8* %17, i64 8
+  %18 = bitcast i8* %xpv_cur39 to i64*
+  store i64 %16, i64* %18, align 8, !tbaa !5
+  %.pre55 = load i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end41
+
+if.end41:                                         ; preds = %entry, %if.then, %if.end37
+  %19 = phi i32 [ %0, %entry ], [ %0, %if.then ], [ %.pre55, %if.end37 ]
+  %and43 = and i32 %19, -536870913
+  store i32 %and43, i32* %sv_flags, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then21, %if.end41
+  %retval.0 = phi i8 [ 1, %if.end41 ], [ 0, %if.then21 ]
+  ret i8 %retval.0
+}

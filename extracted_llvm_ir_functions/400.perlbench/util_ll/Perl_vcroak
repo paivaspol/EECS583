@@ -1,0 +1,85 @@
+define void @Perl_vcroak(i8* %pat, [1 x %struct.__va_list_tag]* %args) #0 {
+entry:
+  %msglen = alloca i64, align 8
+  %utf8 = alloca i32, align 4
+  store i32 0, i32* %utf8, align 4, !tbaa !3
+  %call = call i8* @S_vdie_croak_common(i8* %pat, [1 x %struct.__va_list_tag]* %args, i64* %msglen, i32* %utf8) #9
+  %0 = load volatile i32* @PL_in_eval, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load i64* %msglen, align 8, !tbaa !4
+  %call1 = call %struct.op* @Perl_die_where(i8* %call, i64 %1) #8
+  store %struct.op* %call1, %struct.op** @PL_restartop, align 8, !tbaa !2
+  %2 = load i32* %utf8, align 4, !tbaa !3
+  %3 = load %struct.gv** @PL_errgv, align 8, !tbaa !2
+  %sv_any = getelementptr inbounds %struct.gv* %3, i64 0, i32 0
+  %4 = load %struct.xpvgv** %sv_any, align 8, !tbaa !2
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %4, i64 0, i32 7
+  %5 = load %struct.gp** %xgv_gp, align 8, !tbaa !2
+  %gp_sv = getelementptr inbounds %struct.gp* %5, i64 0, i32 0
+  %6 = load %struct.sv** %gp_sv, align 8, !tbaa !2
+  %sv_flags = getelementptr inbounds %struct.sv* %6, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %7, %2
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  %8 = load %struct.jmpenv** @PL_top_env, align 8, !tbaa !2
+  %je_prev = getelementptr inbounds %struct.jmpenv* %8, i64 0, i32 1
+  %9 = load %struct.jmpenv** %je_prev, align 8, !tbaa !2
+  %tobool2 = icmp eq %struct.jmpenv* %9, null
+  br i1 %tobool2, label %if.end, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %arraydecay = getelementptr inbounds %struct.jmpenv* %8, i64 0, i32 0, i64 0
+  call void @siglongjmp(%struct.__jmp_buf_tag* %arraydecay, i32 3) #10
+  unreachable
+
+if.end:                                           ; preds = %if.then
+  %call4 = call %struct._PerlIO** @Perl_PerlIO_stderr() #8
+  %call5 = call i32 (%struct._PerlIO**, i8*, ...)* @PerlIO_printf(%struct._PerlIO** %call4, i8* getelementptr inbounds ([16 x i8]* @.str9, i64 0, i64 0)) #8
+  call void @exit(i32 1) #10
+  unreachable
+
+if.else:                                          ; preds = %entry
+  %tobool6 = icmp eq i8* %call, null
+  br i1 %tobool6, label %if.then7, label %if.end16
+
+if.then7:                                         ; preds = %if.else
+  %10 = load %struct.gv** @PL_errgv, align 8, !tbaa !2
+  %sv_any8 = getelementptr inbounds %struct.gv* %10, i64 0, i32 0
+  %11 = load %struct.xpvgv** %sv_any8, align 8, !tbaa !2
+  %xgv_gp9 = getelementptr inbounds %struct.xpvgv* %11, i64 0, i32 7
+  %12 = load %struct.gp** %xgv_gp9, align 8, !tbaa !2
+  %gp_sv10 = getelementptr inbounds %struct.gp* %12, i64 0, i32 0
+  %13 = load %struct.sv** %gp_sv10, align 8, !tbaa !2
+  store %struct.sv* %13, %struct.sv** @PL_Sv, align 8, !tbaa !2
+  %sv_flags11 = getelementptr inbounds %struct.sv* %13, i64 0, i32 2
+  %14 = load i32* %sv_flags11, align 4, !tbaa !3
+  %and = and i32 %14, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then7
+  %sv_any12 = getelementptr inbounds %struct.sv* %13, i64 0, i32 0
+  %15 = load i8** %sv_any12, align 8, !tbaa !2
+  %xpv_cur = getelementptr inbounds i8* %15, i64 8
+  %16 = bitcast i8* %xpv_cur to i64*
+  %17 = load i64* %16, align 8, !tbaa !4
+  store i64 %17, i64* %msglen, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %15 to i8**
+  %18 = load i8** %xpv_pv, align 8, !tbaa !2
+  br label %if.end16
+
+cond.false:                                       ; preds = %if.then7
+  %call14 = call i8* @Perl_sv_2pv_flags(%struct.sv* %13, i64* %msglen, i32 2) #8
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else, %cond.true, %cond.false
+  %message.0 = phi i8* [ %18, %cond.true ], [ %call14, %cond.false ], [ %call, %if.else ]
+  %19 = load i64* %msglen, align 8, !tbaa !4
+  %conv = trunc i64 %19 to i32
+  call void @Perl_write_to_stderr(i8* %message.0, i32 %conv) #9
+  call void @Perl_my_failure_exit() #8
+  ret void
+}

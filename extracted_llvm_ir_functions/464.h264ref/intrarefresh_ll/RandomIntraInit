@@ -1,0 +1,83 @@
+define void @RandomIntraInit(i32 %xsize, i32 %ysize, i32 %refresh) #0 {
+entry:
+  tail call void @spec_srand(i32 1) #4
+  %mul = mul nsw i32 %ysize, %xsize
+  store i32 %mul, i32* @NumberOfMBs, align 4, !tbaa !0
+  store i32 %refresh, i32* @NumberIntraPerPicture, align 4, !tbaa !0
+  %add = add nsw i32 %mul, 1
+  %conv = sext i32 %add to i64
+  %mul1 = shl nsw i64 %conv, 2
+  %call = tail call noalias i8* @malloc(i64 %mul1) #4
+  %0 = bitcast i8* %call to i32*
+  store i32* %0, i32** @RefreshPattern, align 8, !tbaa !3
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([32 x i8]* @.str, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %add3 = add nsw i32 %refresh, 1
+  %conv4 = sext i32 %add3 to i64
+  %mul5 = shl nsw i64 %conv4, 2
+  %call6 = tail call noalias i8* @malloc(i64 %mul5) #4
+  %1 = bitcast i8* %call6 to i32*
+  store i32* %1, i32** @IntraMBs, align 8, !tbaa !3
+  %cmp7 = icmp eq i8* %call6, null
+  br i1 %cmp7, label %if.then9, label %for.cond.preheader
+
+if.then9:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #4
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end, %if.then9
+  %2 = load i32* @NumberOfMBs, align 4, !tbaa !0
+  %cmp1138 = icmp sgt i32 %2, 0
+  br i1 %cmp1138, label %for.body.lr.ph, label %for.end28
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %3 = load i32** @RefreshPattern, align 8, !tbaa !3
+  br label %for.body
+
+for.cond13.preheader:                             ; preds = %for.body
+  %cmp1436 = icmp sgt i32 %4, 0
+  br i1 %cmp1436, label %do.body.preheader, label %for.end28
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv
+  store i32 -1, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %4 = load i32* @NumberOfMBs, align 4, !tbaa !0
+  %5 = trunc i64 %indvars.iv.next to i32
+  %cmp11 = icmp slt i32 %5, %4
+  br i1 %cmp11, label %for.body, label %for.cond13.preheader
+
+do.body.preheader:                                ; preds = %for.cond13.preheader, %do.end
+  %i.137 = phi i32 [ %inc27, %do.end ], [ 0, %for.cond13.preheader ]
+  br label %do.body
+
+do.body:                                          ; preds = %do.body.preheader, %do.body
+  %call17 = tail call double @spec_rand() #4
+  %mul18 = fmul double %call17, 0x41DFFFFFFFC00000
+  %conv19 = fptosi double %mul18 to i32
+  %6 = load i32* @NumberOfMBs, align 4, !tbaa !0
+  %rem = srem i32 %conv19, %6
+  %idxprom20 = sext i32 %rem to i64
+  %7 = load i32** @RefreshPattern, align 8, !tbaa !3
+  %arrayidx21 = getelementptr inbounds i32* %7, i64 %idxprom20
+  %8 = load i32* %arrayidx21, align 4, !tbaa !0
+  %cmp22 = icmp eq i32 %8, -1
+  br i1 %cmp22, label %do.end, label %do.body
+
+do.end:                                           ; preds = %do.body
+  store i32 %i.137, i32* %arrayidx21, align 4, !tbaa !0
+  %inc27 = add nsw i32 %i.137, 1
+  %9 = load i32* @NumberOfMBs, align 4, !tbaa !0
+  %cmp14 = icmp slt i32 %inc27, %9
+  br i1 %cmp14, label %do.body.preheader, label %for.end28
+
+for.end28:                                        ; preds = %for.cond.preheader, %do.end, %for.cond13.preheader
+  ret void
+}

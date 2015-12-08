@@ -1,0 +1,22 @@
+define noalias i8* @Perl_savepvn(i8* %pv, i32 %len) #0 {
+entry:
+  %add = add nsw i32 %len, 1
+  %conv = sext i32 %add to i64
+  %call = tail call i8* @Perl_safesysmalloc(i64 %conv) #9
+  %tobool = icmp eq i8* %pv, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %len to i64
+  %arrayidx = getelementptr inbounds i8* %call, i64 %idxprom
+  store i8 0, i8* %arrayidx, align 1, !tbaa !0
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call, i8* %pv, i64 %idxprom, i32 1, i1 false)
+  br label %return
+
+if.else:                                          ; preds = %entry
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %conv, i32 1, i1 false)
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  ret i8* %call
+}

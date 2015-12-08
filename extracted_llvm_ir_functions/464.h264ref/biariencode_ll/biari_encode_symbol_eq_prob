@@ -1,0 +1,260 @@
+define void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep, i16 signext %symbol) #0 {
+entry:
+  %Elow = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 0
+  %0 = load i32* %Elow, align 4, !tbaa !0
+  %shl = shl i32 %0, 1
+  %cmp = icmp eq i16 %symbol, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %Erange = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 1
+  %1 = load i32* %Erange, align 4, !tbaa !0
+  %add = add i32 %1, %shl
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %low.0 = phi i32 [ %add, %if.then ], [ %shl, %entry ]
+  %cmp2 = icmp ugt i32 %low.0, 1023
+  br i1 %cmp2, label %if.then4, label %if.else
+
+if.then4:                                         ; preds = %if.end
+  %Ebuffer = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 2
+  %2 = load i32* %Ebuffer, align 4, !tbaa !0
+  %shl5 = shl i32 %2, 1
+  %or = or i32 %shl5, 1
+  store i32 %or, i32* %Ebuffer, align 4, !tbaa !0
+  %Ebits_to_go = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 3
+  %3 = load i32* %Ebits_to_go, align 4, !tbaa !0
+  %dec = add i32 %3, -1
+  store i32 %dec, i32* %Ebits_to_go, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %dec, 0
+  br i1 %cmp7, label %if.then9, label %while.cond18.preheader
+
+while.cond18.preheader:                           ; preds = %if.then9, %while.body.lr.ph, %if.then4
+  %4 = phi i32 [ %dec, %if.then4 ], [ 8, %while.body.lr.ph ], [ 8, %if.then9 ]
+  %Ebits_to_follow = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 4
+  %5 = load i32* %Ebits_to_follow, align 4, !tbaa !0
+  %cmp19182 = icmp eq i32 %5, 0
+  br i1 %cmp19182, label %while.end51, label %while.body21.lr.ph
+
+while.body21.lr.ph:                               ; preds = %while.cond18.preheader
+  %Ecodestrm_len34 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 6
+  %Ecodestrm37 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 5
+  %C41 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
+  %E47 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 16
+  br label %while.body21
+
+if.then9:                                         ; preds = %if.then4
+  %conv11 = trunc i32 %or to i8
+  %Ecodestrm_len = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 6
+  %6 = load i32** %Ecodestrm_len, align 8, !tbaa !3
+  %7 = load i32* %6, align 4, !tbaa !0
+  %inc = add nsw i32 %7, 1
+  store i32 %inc, i32* %6, align 4, !tbaa !0
+  %idxprom = sext i32 %7 to i64
+  %Ecodestrm = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 5
+  %8 = load i8** %Ecodestrm, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i8* %8, i64 %idxprom
+  store i8 %conv11, i8* %arrayidx, align 1, !tbaa !1
+  store i32 8, i32* %Ebits_to_go, align 4, !tbaa !0
+  %C = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
+  %9 = load i32* %C, align 4, !tbaa !0
+  %cmp13183 = icmp sgt i32 %9, 7
+  br i1 %cmp13183, label %while.body.lr.ph, label %while.cond18.preheader
+
+while.body.lr.ph:                                 ; preds = %if.then9
+  %E = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 16
+  %E.promoted = load i32* %E, align 4, !tbaa !0
+  %10 = add i32 %9, -8
+  %11 = lshr i32 %10, 3
+  %12 = add i32 %E.promoted, %11
+  %13 = shl nuw i32 %11, 3
+  %14 = add i32 %12, 1
+  %15 = sub i32 %10, %13
+  store i32 %15, i32* %C, align 4, !tbaa !0
+  store i32 %14, i32* %E, align 4, !tbaa !0
+  br label %while.cond18.preheader
+
+while.cond18.loopexit:                            ; preds = %while.body44.lr.ph, %if.then31
+  %.pre = load i32* %Ebits_to_follow, align 4, !tbaa !0
+  br label %while.cond18.backedge
+
+while.body21:                                     ; preds = %while.cond18.backedge, %while.body21.lr.ph
+  %16 = phi i32 [ %4, %while.body21.lr.ph ], [ %20, %while.cond18.backedge ]
+  %17 = phi i32 [ %5, %while.body21.lr.ph ], [ %19, %while.cond18.backedge ]
+  %dec23 = add i32 %17, -1
+  store i32 %dec23, i32* %Ebits_to_follow, align 4, !tbaa !0
+  %18 = load i32* %Ebuffer, align 4, !tbaa !0
+  %shl25 = shl i32 %18, 1
+  store i32 %shl25, i32* %Ebuffer, align 4, !tbaa !0
+  %dec28 = add i32 %16, -1
+  store i32 %dec28, i32* %Ebits_to_go, align 4, !tbaa !0
+  %cmp29 = icmp eq i32 %dec28, 0
+  br i1 %cmp29, label %if.then31, label %while.cond18.backedge
+
+while.cond18.backedge:                            ; preds = %while.body21, %while.cond18.loopexit
+  %19 = phi i32 [ %dec23, %while.body21 ], [ %.pre, %while.cond18.loopexit ]
+  %20 = phi i32 [ %dec28, %while.body21 ], [ 8, %while.cond18.loopexit ]
+  %cmp19 = icmp eq i32 %19, 0
+  br i1 %cmp19, label %while.end51, label %while.body21
+
+if.then31:                                        ; preds = %while.body21
+  %conv33 = trunc i32 %shl25 to i8
+  %21 = load i32** %Ecodestrm_len34, align 8, !tbaa !3
+  %22 = load i32* %21, align 4, !tbaa !0
+  %inc35 = add nsw i32 %22, 1
+  store i32 %inc35, i32* %21, align 4, !tbaa !0
+  %idxprom36 = sext i32 %22 to i64
+  %23 = load i8** %Ecodestrm37, align 8, !tbaa !3
+  %arrayidx38 = getelementptr inbounds i8* %23, i64 %idxprom36
+  store i8 %conv33, i8* %arrayidx38, align 1, !tbaa !1
+  store i32 8, i32* %Ebits_to_go, align 4, !tbaa !0
+  %24 = load i32* %C41, align 4, !tbaa !0
+  %cmp42180 = icmp sgt i32 %24, 7
+  br i1 %cmp42180, label %while.body44.lr.ph, label %while.cond18.loopexit
+
+while.body44.lr.ph:                               ; preds = %if.then31
+  %E47.promoted = load i32* %E47, align 4, !tbaa !0
+  %25 = add i32 %24, -8
+  %26 = lshr i32 %25, 3
+  %27 = shl nuw i32 %26, 3
+  %28 = add i32 %E47.promoted, 1
+  %29 = add i32 %28, %26
+  %30 = sub i32 %25, %27
+  store i32 %30, i32* %C41, align 4, !tbaa !0
+  store i32 %29, i32* %E47, align 4, !tbaa !0
+  br label %while.cond18.loopexit
+
+while.end51:                                      ; preds = %while.cond18.backedge, %while.cond18.preheader
+  %sub52 = add i32 %low.0, -1024
+  br label %if.end124
+
+if.else:                                          ; preds = %if.end
+  %cmp53 = icmp ult i32 %low.0, 512
+  br i1 %cmp53, label %if.then55, label %if.else119
+
+if.then55:                                        ; preds = %if.else
+  %Ebuffer56 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 2
+  %31 = load i32* %Ebuffer56, align 4, !tbaa !0
+  %shl57 = shl i32 %31, 1
+  store i32 %shl57, i32* %Ebuffer56, align 4, !tbaa !0
+  %Ebits_to_go59 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 3
+  %32 = load i32* %Ebits_to_go59, align 4, !tbaa !0
+  %dec60 = add i32 %32, -1
+  store i32 %dec60, i32* %Ebits_to_go59, align 4, !tbaa !0
+  %cmp61 = icmp eq i32 %dec60, 0
+  br i1 %cmp61, label %if.then63, label %while.cond83.preheader
+
+while.cond83.preheader:                           ; preds = %if.then63, %while.body76.lr.ph, %if.then55
+  %33 = phi i32 [ %dec60, %if.then55 ], [ 8, %while.body76.lr.ph ], [ 8, %if.then63 ]
+  %Ebits_to_follow84 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 4
+  %34 = load i32* %Ebits_to_follow84, align 4, !tbaa !0
+  %cmp85187 = icmp eq i32 %34, 0
+  br i1 %cmp85187, label %if.end124, label %while.body87.lr.ph
+
+while.body87.lr.ph:                               ; preds = %while.cond83.preheader
+  %Ecodestrm_len101 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 6
+  %Ecodestrm104 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 5
+  %C108 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
+  %E114 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 16
+  br label %while.body87
+
+if.then63:                                        ; preds = %if.then55
+  %conv65 = trunc i32 %shl57 to i8
+  %Ecodestrm_len66 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 6
+  %35 = load i32** %Ecodestrm_len66, align 8, !tbaa !3
+  %36 = load i32* %35, align 4, !tbaa !0
+  %inc67 = add nsw i32 %36, 1
+  store i32 %inc67, i32* %35, align 4, !tbaa !0
+  %idxprom68 = sext i32 %36 to i64
+  %Ecodestrm69 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 5
+  %37 = load i8** %Ecodestrm69, align 8, !tbaa !3
+  %arrayidx70 = getelementptr inbounds i8* %37, i64 %idxprom68
+  store i8 %conv65, i8* %arrayidx70, align 1, !tbaa !1
+  store i32 8, i32* %Ebits_to_go59, align 4, !tbaa !0
+  %C73 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
+  %38 = load i32* %C73, align 4, !tbaa !0
+  %cmp74188 = icmp sgt i32 %38, 7
+  br i1 %cmp74188, label %while.body76.lr.ph, label %while.cond83.preheader
+
+while.body76.lr.ph:                               ; preds = %if.then63
+  %E79 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 16
+  %E79.promoted = load i32* %E79, align 4, !tbaa !0
+  %39 = add i32 %38, -8
+  %40 = lshr i32 %39, 3
+  %41 = add i32 %E79.promoted, %40
+  %42 = shl nuw i32 %40, 3
+  %43 = add i32 %41, 1
+  %44 = sub i32 %39, %42
+  store i32 %44, i32* %C73, align 4, !tbaa !0
+  store i32 %43, i32* %E79, align 4, !tbaa !0
+  br label %while.cond83.preheader
+
+while.cond83.loopexit:                            ; preds = %while.body111.lr.ph, %if.then98
+  %.pre190 = load i32* %Ebits_to_follow84, align 4, !tbaa !0
+  br label %while.cond83.backedge
+
+while.body87:                                     ; preds = %while.cond83.backedge, %while.body87.lr.ph
+  %45 = phi i32 [ %33, %while.body87.lr.ph ], [ %49, %while.cond83.backedge ]
+  %46 = phi i32 [ %34, %while.body87.lr.ph ], [ %48, %while.cond83.backedge ]
+  %dec89 = add i32 %46, -1
+  store i32 %dec89, i32* %Ebits_to_follow84, align 4, !tbaa !0
+  %47 = load i32* %Ebuffer56, align 4, !tbaa !0
+  %shl91 = shl i32 %47, 1
+  %or93 = or i32 %shl91, 1
+  store i32 %or93, i32* %Ebuffer56, align 4, !tbaa !0
+  %dec95 = add i32 %45, -1
+  store i32 %dec95, i32* %Ebits_to_go59, align 4, !tbaa !0
+  %cmp96 = icmp eq i32 %dec95, 0
+  br i1 %cmp96, label %if.then98, label %while.cond83.backedge
+
+while.cond83.backedge:                            ; preds = %while.body87, %while.cond83.loopexit
+  %48 = phi i32 [ %dec89, %while.body87 ], [ %.pre190, %while.cond83.loopexit ]
+  %49 = phi i32 [ %dec95, %while.body87 ], [ 8, %while.cond83.loopexit ]
+  %cmp85 = icmp eq i32 %48, 0
+  br i1 %cmp85, label %if.end124, label %while.body87
+
+if.then98:                                        ; preds = %while.body87
+  %conv100 = trunc i32 %or93 to i8
+  %50 = load i32** %Ecodestrm_len101, align 8, !tbaa !3
+  %51 = load i32* %50, align 4, !tbaa !0
+  %inc102 = add nsw i32 %51, 1
+  store i32 %inc102, i32* %50, align 4, !tbaa !0
+  %idxprom103 = sext i32 %51 to i64
+  %52 = load i8** %Ecodestrm104, align 8, !tbaa !3
+  %arrayidx105 = getelementptr inbounds i8* %52, i64 %idxprom103
+  store i8 %conv100, i8* %arrayidx105, align 1, !tbaa !1
+  store i32 8, i32* %Ebits_to_go59, align 4, !tbaa !0
+  %53 = load i32* %C108, align 4, !tbaa !0
+  %cmp109185 = icmp sgt i32 %53, 7
+  br i1 %cmp109185, label %while.body111.lr.ph, label %while.cond83.loopexit
+
+while.body111.lr.ph:                              ; preds = %if.then98
+  %E114.promoted = load i32* %E114, align 4, !tbaa !0
+  %54 = add i32 %53, -8
+  %55 = lshr i32 %54, 3
+  %56 = shl nuw i32 %55, 3
+  %57 = add i32 %E114.promoted, 1
+  %58 = add i32 %57, %55
+  %59 = sub i32 %54, %56
+  store i32 %59, i32* %C108, align 4, !tbaa !0
+  store i32 %58, i32* %E114, align 4, !tbaa !0
+  br label %while.cond83.loopexit
+
+if.else119:                                       ; preds = %if.else
+  %Ebits_to_follow120 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 4
+  %60 = load i32* %Ebits_to_follow120, align 4, !tbaa !0
+  %inc121 = add i32 %60, 1
+  store i32 %inc121, i32* %Ebits_to_follow120, align 4, !tbaa !0
+  %sub122 = add i32 %low.0, -512
+  br label %if.end124
+
+if.end124:                                        ; preds = %while.cond83.preheader, %while.cond83.backedge, %if.else119, %while.end51
+  %low.1 = phi i32 [ %sub52, %while.end51 ], [ %sub122, %if.else119 ], [ %low.0, %while.cond83.backedge ], [ %low.0, %while.cond83.preheader ]
+  store i32 %low.1, i32* %Elow, align 4, !tbaa !0
+  %C126 = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
+  %61 = load i32* %C126, align 4, !tbaa !0
+  %inc127 = add nsw i32 %61, 1
+  store i32 %inc127, i32* %C126, align 4, !tbaa !0
+  ret void
+}

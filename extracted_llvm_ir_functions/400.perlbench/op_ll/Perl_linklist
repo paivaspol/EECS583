@@ -1,0 +1,73 @@
+define %struct.op* @Perl_linklist(%struct.op* %o) #0 {
+entry:
+  %op_next = getelementptr inbounds %struct.op* %o, i64 0, i32 0
+  %0 = load %struct.op** %op_next, align 8, !tbaa !3
+  %tobool = icmp eq %struct.op* %0, null
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %1 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %2 = load %struct.op** %1, align 8, !tbaa !3
+  %tobool2 = icmp eq %struct.op* %2, null
+  br i1 %tobool2, label %if.else30, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %op_next5 = getelementptr inbounds %struct.op* %2, i64 0, i32 0
+  %3 = load %struct.op** %op_next5, align 8, !tbaa !3
+  %tobool6 = icmp eq %struct.op* %3, null
+  br i1 %tobool6, label %cond.end, label %cond.end.thread
+
+cond.end.thread:                                  ; preds = %if.then3
+  store %struct.op* %3, %struct.op** %op_next, align 8, !tbaa !3
+  br label %for.body
+
+cond.end:                                         ; preds = %if.then3
+  %call = tail call %struct.op* @Perl_linklist(%struct.op* %2) #8
+  %kid.048.pre = load %struct.op** %1, align 8
+  store %struct.op* %call, %struct.op** %op_next, align 8, !tbaa !3
+  %tobool1249 = icmp eq %struct.op* %kid.048.pre, null
+  br i1 %tobool1249, label %return, label %for.body
+
+for.body:                                         ; preds = %for.cond.backedge.thread58, %cond.end, %cond.end.thread, %for.cond.backedge
+  %kid.050 = phi %struct.op* [ %kid.0.pre.pre, %for.cond.backedge ], [ %2, %cond.end.thread ], [ %kid.048.pre, %cond.end ], [ %4, %for.cond.backedge.thread58 ]
+  %op_sibling = getelementptr inbounds %struct.op* %kid.050, i64 0, i32 1
+  %4 = load %struct.op** %op_sibling, align 8, !tbaa !3
+  %tobool13 = icmp eq %struct.op* %4, null
+  br i1 %tobool13, label %for.cond.backedge.thread, label %if.then14
+
+if.then14:                                        ; preds = %for.body
+  %op_next16 = getelementptr inbounds %struct.op* %4, i64 0, i32 0
+  %5 = load %struct.op** %op_next16, align 8, !tbaa !3
+  %tobool17 = icmp eq %struct.op* %5, null
+  br i1 %tobool17, label %for.cond.backedge, label %for.cond.backedge.thread58
+
+for.cond.backedge.thread58:                       ; preds = %if.then14
+  %op_next2659 = getelementptr inbounds %struct.op* %kid.050, i64 0, i32 0
+  store %struct.op* %5, %struct.op** %op_next2659, align 8, !tbaa !3
+  br label %for.body
+
+for.cond.backedge:                                ; preds = %if.then14
+  %call23 = tail call %struct.op* @Perl_linklist(%struct.op* %4) #8
+  %kid.0.pre.pre = load %struct.op** %op_sibling, align 8
+  %op_next26 = getelementptr inbounds %struct.op* %kid.050, i64 0, i32 0
+  store %struct.op* %call23, %struct.op** %op_next26, align 8, !tbaa !3
+  %tobool12 = icmp eq %struct.op* %kid.0.pre.pre, null
+  br i1 %tobool12, label %for.cond.if.end32.loopexit_crit_edge, label %for.body
+
+for.cond.backedge.thread:                         ; preds = %for.body
+  %op_next27 = getelementptr inbounds %struct.op* %kid.050, i64 0, i32 0
+  store %struct.op* %o, %struct.op** %op_next27, align 8, !tbaa !3
+  br label %for.cond.if.end32.loopexit_crit_edge
+
+if.else30:                                        ; preds = %if.end
+  store %struct.op* %o, %struct.op** %op_next, align 8, !tbaa !3
+  br label %return
+
+for.cond.if.end32.loopexit_crit_edge:             ; preds = %for.cond.backedge.thread, %for.cond.backedge
+  %.pre.pre = load %struct.op** %op_next, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.else30, %for.cond.if.end32.loopexit_crit_edge, %cond.end, %entry
+  %retval.0 = phi %struct.op* [ %0, %entry ], [ %o, %if.else30 ], [ %.pre.pre, %for.cond.if.end32.loopexit_crit_edge ], [ %call, %cond.end ]
+  ret %struct.op* %retval.0
+}

@@ -1,0 +1,45 @@
+define internal fastcc i32 @S_lop(i32 %f, i32 %x, i8* %s) #0 {
+entry:
+  store i32 %f, i32* bitcast (%union.YYSTYPE* @PL_yylval to i32*), align 8, !tbaa !3
+  %0 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_line = getelementptr inbounds %struct.cop* %0, i64 0, i32 13
+  %1 = load i32* %cop_line, align 4, !tbaa !3
+  %2 = load i32* @PL_copline, align 4, !tbaa !3
+  %cmp = icmp ult i32 %1, %2
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %entry
+  %3 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_line1 = getelementptr inbounds %struct.cop* %3, i64 0, i32 13
+  %4 = load i32* %cop_line1, align 4, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32 [ %4, %cond.true ], [ %2, %entry ]
+  store i32 %cond, i32* @PL_copline, align 4, !tbaa !3
+  store i32 %x, i32* @PL_expect, align 4, !tbaa !3
+  store i8* %s, i8** @PL_bufptr, align 8, !tbaa !0
+  %5 = load i8** @PL_oldbufptr, align 8, !tbaa !0
+  store i8* %5, i8** @PL_last_lop, align 8, !tbaa !0
+  %conv = trunc i32 %f to i16
+  store i16 %conv, i16* @PL_last_lop_op, align 2, !tbaa !5
+  %6 = load i32* @PL_nexttoke, align 4, !tbaa !3
+  %tobool = icmp eq i32 %6, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %cond.end
+  %7 = load i8* %s, align 1, !tbaa !1
+  %cmp3 = icmp eq i8 %7, 40
+  br i1 %cmp3, label %return, label %if.end6
+
+if.end6:                                          ; preds = %if.end
+  %call = tail call fastcc i8* @S_skipspace(i8* %s) #7
+  %8 = load i8* %call, align 1, !tbaa !1
+  %cmp8 = icmp eq i8 %8, 40
+  %. = select i1 %cmp8, i32 284, i32 286
+  br label %return
+
+return:                                           ; preds = %if.end6, %if.end, %cond.end
+  %retval.0 = phi i32 [ 286, %cond.end ], [ 284, %if.end ], [ %., %if.end6 ]
+  ret i32 %retval.0
+}

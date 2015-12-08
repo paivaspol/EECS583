@@ -1,0 +1,87 @@
+define void @A2_setRowZV(%struct._A2* %mtx, %struct._ZV* %rowZV, i32 %irow) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  %cmp1 = icmp eq %struct._ZV* %rowZV, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %call = tail call i32 @ZV_size(%struct._ZV* %rowZV) #5
+  %n23 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %0 = load i32* %n23, align 4, !tbaa !3
+  %cmp4 = icmp ne i32 %call, %0
+  %cmp6 = icmp slt i32 %irow, 0
+  %or.cond57 = or i1 %cmp4, %cmp6
+  br i1 %or.cond57, label %if.then, label %lor.lhs.false7
+
+lor.lhs.false7:                                   ; preds = %lor.lhs.false2
+  %n1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
+  %1 = load i32* %n1, align 4, !tbaa !3
+  %cmp8 = icmp sgt i32 %1, %irow
+  br i1 %cmp8, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %lor.lhs.false7, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([51 x i8]* @.str28, i64 0, i64 0), %struct._A2* %mtx, %struct._ZV* %rowZV, i32 %irow) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false7
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
+  %3 = load i32* %type, align 4, !tbaa !3
+  %cmp10 = icmp eq i32 %3, 2
+  br i1 %cmp10, label %if.end14, label %if.then11
+
+if.then11:                                        ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([78 x i8]* @.str29, i64 0, i64 0), %struct._A2* %mtx, %struct._ZV* %rowZV, i32 %irow, i32 %3) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end14:                                         ; preds = %if.end
+  %inc1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %5 = load i32* %inc1, align 4, !tbaa !3
+  %inc215 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %6 = load i32* %inc215, align 4, !tbaa !3
+  %entries16 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  %7 = load double** %entries16, align 8, !tbaa !0
+  %call17 = tail call double* @ZV_entries(%struct._ZV* %rowZV) #5
+  %cmp1858 = icmp sgt i32 %call, 0
+  br i1 %cmp1858, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end14
+  %mul = mul nsw i32 %5, %irow
+  %8 = sext i32 %mul to i64
+  %9 = sext i32 %6 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv61 = phi i64 [ %8, %for.body.lr.ph ], [ %indvars.iv.next62, %for.body ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %10 = trunc i64 %indvars.iv to i32
+  %mul19 = shl nsw i32 %10, 1
+  %idxprom = sext i32 %mul19 to i64
+  %arrayidx = getelementptr inbounds double* %call17, i64 %idxprom
+  %11 = load double* %arrayidx, align 8, !tbaa !4
+  %12 = trunc i64 %indvars.iv61 to i32
+  %mul20 = shl nsw i32 %12, 1
+  %idxprom21 = sext i32 %mul20 to i64
+  %arrayidx22 = getelementptr inbounds double* %7, i64 %idxprom21
+  store double %11, double* %arrayidx22, align 8, !tbaa !4
+  %add55 = or i32 %mul19, 1
+  %idxprom24 = sext i32 %add55 to i64
+  %arrayidx25 = getelementptr inbounds double* %call17, i64 %idxprom24
+  %13 = load double* %arrayidx25, align 8, !tbaa !4
+  %add2756 = or i32 %mul20, 1
+  %idxprom28 = sext i32 %add2756 to i64
+  %arrayidx29 = getelementptr inbounds double* %7, i64 %idxprom28
+  store double %13, double* %arrayidx29, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %indvars.iv.next62 = add i64 %indvars.iv61, %9
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %call
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end14
+  ret void
+}

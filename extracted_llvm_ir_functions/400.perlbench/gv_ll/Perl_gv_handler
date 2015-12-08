@@ -1,0 +1,90 @@
+define %struct.cv* @Perl_gv_handler(%struct.hv* %stash, i32 %id) #0 {
+entry:
+  %tobool = icmp eq %struct.hv* %stash, null
+  br i1 %tobool, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.hv* %stash, i64 0, i32 0
+  %0 = load %struct.xpvhv** %sv_any, align 8, !tbaa !3
+  %xhv_name = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 10
+  %1 = load i8** %xhv_name, align 8, !tbaa !3
+  %tobool1 = icmp eq i8* %1, null
+  br i1 %tobool1, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %2 = bitcast %struct.hv* %stash to %struct.sv*
+  %call = tail call %struct.magic* @Perl_mg_find(%struct.sv* %2, i32 99) #6
+  %tobool2 = icmp eq %struct.magic* %call, null
+  br i1 %tobool2, label %do_update, label %if.end6
+
+do_update:                                        ; preds = %lor.lhs.false7, %if.end6, %if.end
+  %call4 = tail call signext i8 @Perl_Gv_AMupdate(%struct.hv* %stash) #7
+  %call5 = tail call %struct.magic* @Perl_mg_find(%struct.sv* %2, i32 99) #6
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end, %do_update
+  %mg.0 = phi %struct.magic* [ %call, %if.end ], [ %call5, %do_update ]
+  %mg_ptr = getelementptr inbounds %struct.magic* %mg.0, i64 0, i32 6
+  %3 = load i8** %mg_ptr, align 8, !tbaa !3
+  %was_ok_am = getelementptr inbounds i8* %3, i64 8
+  %4 = bitcast i8* %was_ok_am to i64*
+  %5 = load i64* %4, align 8, !tbaa !4
+  %6 = load i64* @PL_amagic_generation, align 8, !tbaa !4
+  %cmp = icmp eq i64 %5, %6
+  br i1 %cmp, label %lor.lhs.false7, label %do_update
+
+lor.lhs.false7:                                   ; preds = %if.end6
+  %was_ok_sub = bitcast i8* %3 to i32*
+  %7 = load i32* %was_ok_sub, align 4, !tbaa !0
+  %8 = load i32* @PL_sub_generation, align 4, !tbaa !0
+  %cmp8 = icmp eq i32 %7, %8
+  br i1 %cmp8, label %if.end10, label %do_update
+
+if.end10:                                         ; preds = %lor.lhs.false7
+  %flags = getelementptr inbounds i8* %3, i64 16
+  %9 = bitcast i8* %flags to i32*
+  %10 = load i32* %9, align 4, !tbaa !0
+  %and = and i32 %10, 1
+  %tobool11 = icmp eq i32 %and, 0
+  br i1 %tobool11, label %return, label %if.then12
+
+if.then12:                                        ; preds = %if.end10
+  %idxprom = sext i32 %id to i64
+  %table = getelementptr inbounds i8* %3, i64 24
+  %11 = bitcast i8* %table to [66 x %struct.cv*]*
+  %arrayidx = getelementptr inbounds [66 x %struct.cv*]* %11, i64 0, i64 %idxprom
+  %12 = load %struct.cv** %arrayidx, align 8, !tbaa !3
+  %tobool13 = icmp eq %struct.cv* %12, null
+  br i1 %tobool13, label %if.end29, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then12
+  %sv_flags = getelementptr inbounds %struct.cv* %12, i64 0, i32 2
+  %13 = load i32* %sv_flags, align 4, !tbaa !0
+  %and14 = and i32 %13, 255
+  %cmp15 = icmp eq i32 %and14, 13
+  br i1 %cmp15, label %if.then16, label %if.end29
+
+if.then16:                                        ; preds = %land.lhs.true
+  %arrayidx18 = getelementptr inbounds [66 x i8*]* @PL_AMG_names, i64 0, i64 %idxprom
+  %14 = load i8** %arrayidx18, align 8, !tbaa !3
+  %call.i = tail call %struct.gv* @Perl_gv_fetchmethod_autoload(%struct.hv* %stash, i8* %14, i32 1) #6
+  %tobool20 = icmp eq %struct.gv* %call.i, null
+  br i1 %tobool20, label %if.end29, label %land.lhs.true21
+
+land.lhs.true21:                                  ; preds = %if.then16
+  %sv_any22 = getelementptr inbounds %struct.gv* %call.i, i64 0, i32 0
+  %15 = load %struct.xpvgv** %sv_any22, align 8, !tbaa !3
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %15, i64 0, i32 7
+  %16 = load %struct.gp** %xgv_gp, align 8, !tbaa !3
+  %gp_cv = getelementptr inbounds %struct.gp* %16, i64 0, i32 7
+  %17 = load %struct.cv** %gp_cv, align 8, !tbaa !3
+  %tobool23 = icmp eq %struct.cv* %17, null
+  br i1 %tobool23, label %if.end29, label %return
+
+if.end29:                                         ; preds = %land.lhs.true21, %if.then16, %if.then12, %land.lhs.true
+  br label %return
+
+return:                                           ; preds = %if.end10, %land.lhs.true21, %entry, %lor.lhs.false, %if.end29
+  %retval.0 = phi %struct.cv* [ %12, %if.end29 ], [ null, %lor.lhs.false ], [ null, %entry ], [ %17, %land.lhs.true21 ], [ null, %if.end10 ]
+  ret %struct.cv* %retval.0
+}

@@ -1,0 +1,48 @@
+define internal fastcc i32 @l_bishop_mobility(i32 %square) #3 {
+entry:
+  %0 = sext i32 %square to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond, %entry
+  %indvars.iv48 = phi i64 [ %indvars.iv.next49, %for.cond ], [ %0, %entry ]
+  %m.0 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %indvars.iv.next49 = add i64 %indvars.iv48, -13
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next49
+  %1 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp = icmp eq i32 %1, 13
+  %inc = add nsw i32 %m.0, 1
+  br i1 %cmp, label %for.cond, label %for.cond3
+
+for.cond3:                                        ; preds = %for.cond, %for.cond3
+  %indvars.iv46 = phi i64 [ %indvars.iv.next47, %for.cond3 ], [ %0, %for.cond ]
+  %m.1 = phi i32 [ %inc8, %for.cond3 ], [ %m.0, %for.cond ]
+  %indvars.iv.next47 = add i64 %indvars.iv46, -11
+  %arrayidx5 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next47
+  %2 = load i32* %arrayidx5, align 4, !tbaa !0
+  %cmp6 = icmp eq i32 %2, 13
+  %inc8 = add nsw i32 %m.1, 1
+  br i1 %cmp6, label %for.cond3, label %for.cond12
+
+for.cond12:                                       ; preds = %for.cond3, %for.cond12
+  %indvars.iv44 = phi i64 [ %indvars.iv.next45, %for.cond12 ], [ %0, %for.cond3 ]
+  %m.2 = phi i32 [ %inc17, %for.cond12 ], [ %m.1, %for.cond3 ]
+  %indvars.iv.next45 = add i64 %indvars.iv44, 11
+  %arrayidx14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next45
+  %3 = load i32* %arrayidx14, align 4, !tbaa !0
+  %cmp15 = icmp eq i32 %3, 13
+  %inc17 = add nsw i32 %m.2, 1
+  br i1 %cmp15, label %for.cond12, label %for.cond22
+
+for.cond22:                                       ; preds = %for.cond12, %for.cond22
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond22 ], [ %0, %for.cond12 ]
+  %m.3 = phi i32 [ %inc27, %for.cond22 ], [ %m.2, %for.cond12 ]
+  %indvars.iv.next = add i64 %indvars.iv, 13
+  %arrayidx24 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next
+  %4 = load i32* %arrayidx24, align 4, !tbaa !0
+  %cmp25 = icmp eq i32 %4, 13
+  %inc27 = add nsw i32 %m.3, 1
+  br i1 %cmp25, label %for.cond22, label %for.end30
+
+for.end30:                                        ; preds = %for.cond22
+  ret i32 %m.3
+}

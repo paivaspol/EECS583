@@ -1,0 +1,24 @@
+define void @P7FreeTrace(%struct.p7trace_s* %tr) #0 {
+entry:
+  %cmp = icmp eq %struct.p7trace_s* %tr, null
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %pos = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3
+  %0 = load i32** %pos, align 8, !tbaa !0
+  %1 = bitcast i32* %0 to i8*
+  tail call void @free(i8* %1) #6
+  %nodeidx = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2
+  %2 = load i32** %nodeidx, align 8, !tbaa !0
+  %3 = bitcast i32* %2 to i8*
+  tail call void @free(i8* %3) #6
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1
+  %4 = load i8** %statetype, align 8, !tbaa !0
+  tail call void @free(i8* %4) #6
+  %5 = bitcast %struct.p7trace_s* %tr to i8*
+  tail call void @free(i8* %5) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  ret void
+}

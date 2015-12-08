@@ -1,13 +1,15 @@
-define internal fastcc zeroext i8 @myfeof(%struct.__sFILE* nocapture %f) #0 {
-  %1 = tail call i32 @fgetc(%struct.__sFILE* %f) #9
-  %2 = icmp eq i32 %1, -1
-  br i1 %2, label %5, label %3
+define internal fastcc zeroext i8 @myfeof(i32 %f) #0 {
+entry:
+  %call = tail call i32 @spec_getc(i32 %f) #6
+  %cmp = icmp eq i32 %call, -1
+  br i1 %cmp, label %return, label %if.end
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @ungetc(i32 %1, %struct.__sFILE* %f) #9
-  br label %5
+if.end:                                           ; preds = %entry
+  %conv = trunc i32 %call to i8
+  %call1 = tail call i32 @spec_ungetc(i8 zeroext %conv, i32 %f) #6
+  br label %return
 
-; <label>:5                                       ; preds = %0, %3
-  %.0 = phi i8 [ 0, %3 ], [ 1, %0 ]
-  ret i8 %.0
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8 [ 0, %if.end ], [ 1, %entry ]
+  ret i8 %retval.0
 }

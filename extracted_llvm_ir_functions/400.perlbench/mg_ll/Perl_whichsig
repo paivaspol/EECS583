@@ -1,0 +1,42 @@
+define i32 @Perl_whichsig(i8* nocapture %sig) #2 {
+entry:
+  %0 = load i8** getelementptr inbounds ([0 x i8*]* @PL_sig_name, i64 0, i64 0), align 8, !tbaa !0
+  %tobool14 = icmp eq i8* %0, null
+  br i1 %tobool14, label %for.end, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %1 = load i8** %incdec.ptr, align 8, !tbaa !0
+  %tobool = icmp eq i8* %1, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond
+  %2 = phi i8* [ %1, %for.cond ], [ %0, %entry ]
+  %sigv.015 = phi i8** [ %incdec.ptr, %for.cond ], [ getelementptr inbounds ([0 x i8*]* @PL_sig_name, i64 0, i64 0), %entry ]
+  %call = tail call i32 @strcmp(i8* %sig, i8* %2) #7
+  %tobool1 = icmp eq i32 %call, 0
+  %incdec.ptr = getelementptr inbounds i8** %sigv.015, i64 1
+  br i1 %tobool1, label %if.then, label %for.cond
+
+if.then:                                          ; preds = %for.body
+  %sub.ptr.lhs.cast = ptrtoint i8** %sigv.015 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, ptrtoint ([0 x i8*]* @PL_sig_name to i64)
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub, 3
+  %arrayidx = getelementptr inbounds [0 x i32]* @PL_sig_num, i64 0, i64 %sub.ptr.div
+  %3 = load i32* %arrayidx, align 4, !tbaa !3
+  br label %return
+
+for.end:                                          ; preds = %for.cond, %entry
+  %call2 = tail call i32 @strcmp(i8* %sig, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0)) #7
+  %tobool3 = icmp eq i32 %call2, 0
+  br i1 %tobool3, label %return, label %if.end5
+
+if.end5:                                          ; preds = %for.end
+  %call6 = tail call i32 @strcmp(i8* %sig, i8* getelementptr inbounds ([4 x i8]* @.str40, i64 0, i64 0)) #7
+  %tobool7 = icmp eq i32 %call6, 0
+  %. = select i1 %tobool7, i32 17, i32 -1
+  br label %return
+
+return:                                           ; preds = %if.end5, %for.end, %if.then
+  %retval.0 = phi i32 [ %3, %if.then ], [ 17, %for.end ], [ %., %if.end5 ]
+  ret i32 %retval.0
+}

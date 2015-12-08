@@ -1,0 +1,12 @@
+define void @FmoSetLastMacroblockInSlice(i32 %mb) #0 {
+entry:
+  %idxprom.i = sext i32 %mb to i64
+  %0 = load i8** @MBAmap, align 8, !tbaa !3
+  %arrayidx.i = getelementptr inbounds i8* %0, i64 %idxprom.i
+  %1 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %call1 = tail call i32 @FmoGetNextMBNr(i32 %mb) #9
+  %idxprom = zext i8 %1 to i64
+  %arrayidx = getelementptr inbounds [8 x i32]* @FirstMBInSlice, i64 0, i64 %idxprom
+  store i32 %call1, i32* %arrayidx, align 4, !tbaa !0
+  ret void
+}

@@ -1,0 +1,51 @@
+define i32 @Tree_writeToFormattedFile(%struct._Tree* %tree, %struct._IO_FILE* %fp) #0 {
+entry:
+  %ierr = alloca i32, align 4
+  %cmp = icmp eq %struct._Tree* %tree, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
+  %0 = load i32* %n, align 4, !tbaa !3
+  %cmp3 = icmp slt i32 %0, 1
+  br i1 %cmp3, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str20, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp) #5
+  call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %root = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 1
+  %2 = load i32* %root, align 4, !tbaa !3
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str21, i64 0, i64 0), i32 %0, i32 %2) #5
+  %cmp6 = icmp slt i32 %call5, 0
+  br i1 %cmp6, label %if.then7, label %if.end9
+
+if.then7:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([87 x i8]* @.str22, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp, i32 %call5) #5
+  br label %return
+
+if.end9:                                          ; preds = %if.end
+  %4 = load i32* %n, align 4, !tbaa !3
+  %par = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2
+  %5 = load i32** %par, align 8, !tbaa !0
+  %call11 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %4, i32* %5, i32 80, i32* %ierr) #5
+  %6 = load i32* %n, align 4, !tbaa !3
+  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
+  %7 = load i32** %fch, align 8, !tbaa !0
+  %call13 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %6, i32* %7, i32 80, i32* %ierr) #5
+  %8 = load i32* %n, align 4, !tbaa !3
+  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
+  %9 = load i32** %sib, align 8, !tbaa !0
+  %call15 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %8, i32* %9, i32 80, i32* %ierr) #5
+  br label %return
+
+return:                                           ; preds = %if.end9, %if.then7
+  %retval.0 = phi i32 [ 0, %if.then7 ], [ 1, %if.end9 ]
+  ret i32 %retval.0
+}

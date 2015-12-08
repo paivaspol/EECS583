@@ -1,0 +1,42 @@
+define i64 @Perl_sv_len(%struct.sv* %sv) #0 {
+entry:
+  %len = alloca i64, align 8
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 8192
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %call = call i32 @Perl_mg_length(%struct.sv* %sv) #8
+  %conv = zext i32 %call to i64
+  store i64 %conv, i64* %len, align 8, !tbaa !5
+  br label %return
+
+if.else:                                          ; preds = %if.end
+  %and4 = and i32 %0, 262144
+  %cmp = icmp eq i32 %and4, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.else
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !5
+  store i64 %3, i64* %len, align 8, !tbaa !5
+  br label %return
+
+cond.false:                                       ; preds = %if.else
+  %call7 = call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %len, i32 2) #7
+  %.pre = load i64* %len, align 8, !tbaa !5
+  br label %return
+
+return:                                           ; preds = %if.then2, %cond.false, %cond.true, %entry
+  %retval.0 = phi i64 [ 0, %entry ], [ %3, %cond.true ], [ %.pre, %cond.false ], [ %conv, %if.then2 ]
+  ret i64 %retval.0
+}

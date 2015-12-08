@@ -1,0 +1,53 @@
+define void @XS_PerlIO__Layer__NoWarnings(%struct.cv* nocapture %cv) #1 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %3 = load i32* %2, align 4, !tbaa !0
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %4 = and i64 %sub.ptr.sub3, 34359738360
+  %tobool = icmp eq i64 %4, 0
+  %add = shl nsw i64 %idx.ext, 32
+  %sext.pre = add i64 %add, 4294967296
+  %idx.ext14.pre = ashr exact i64 %sext.pre, 32
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %arrayidx = getelementptr inbounds %struct.sv** %1, i64 %idx.ext14.pre
+  %5 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %5, i64 0, i32 2
+  %6 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %6, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %5, i64 0, i32 0
+  %7 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_pv = bitcast i8* %7 to i8**
+  %8 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %call = tail call i8* @Perl_sv_2pv_nolen(%struct.sv* %5) #9
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %8, %cond.true ], [ %call, %cond.false ]
+  tail call void (i8*, ...)* @PerlIO_debug(i8* undef, i8* %cond) #10
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %cond.end
+  %9 = phi %struct.sv** [ %.pre, %cond.end ], [ %1, %entry ]
+  %add.ptr15.sum = add i64 %idx.ext14.pre, -1
+  %add.ptr16 = getelementptr inbounds %struct.sv** %9, i64 %add.ptr15.sum
+  store %struct.sv** %add.ptr16, %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  ret void
+}

@@ -1,0 +1,85 @@
+define void @Perl_av_undef(%struct.av* %av) #0 {
+entry:
+  %tobool = icmp eq %struct.av* %av, null
+  br i1 %tobool, label %if.end27, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = getelementptr inbounds %struct.av* %av, i64 0, i32 2
+  %1 = load i32* %0, align 4, !tbaa !4
+  %and = and i32 %1, 32768
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end4, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %2 = bitcast %struct.av* %av to %struct.sv*
+  %call = tail call %struct.magic* @Perl_mg_find(%struct.sv* %2, i32 80) #3
+  %tobool2 = icmp eq %struct.magic* %call, null
+  br i1 %tobool2, label %if.end4, label %if.then3
+
+if.then3:                                         ; preds = %cond.true
+  tail call void @Perl_av_fill(%struct.av* %av, i32 -1) #4
+  br label %if.end4
+
+if.end4:                                          ; preds = %cond.true, %if.end, %if.then3
+  %sv_any = getelementptr inbounds %struct.av* %av, i64 0, i32 0
+  %3 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_flags = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 9
+  %4 = load i8* %xav_flags, align 1, !tbaa !1
+  %and5 = and i8 %4, 1
+  %tobool6 = icmp eq i8 %and5, 0
+  br i1 %tobool6, label %if.end12, label %if.then7
+
+if.then7:                                         ; preds = %if.end4
+  %xav_fill = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 1
+  %5 = load i64* %xav_fill, align 8, !tbaa !3
+  %add = add nsw i64 %5, 1
+  %conv9 = trunc i64 %add to i32
+  %tobool1043 = icmp eq i32 %conv9, 0
+  br i1 %tobool1043, label %if.end12, label %while.body
+
+while.body:                                       ; preds = %while.body, %if.then7
+  %6 = phi %struct.xpvav* [ %3, %if.then7 ], [ %.pre.pre, %while.body ]
+  %key.044 = phi i32 [ %conv9, %if.then7 ], [ %dec, %while.body ]
+  %dec = add nsw i32 %key.044, -1
+  %idxprom = sext i32 %dec to i64
+  %xav_array = getelementptr inbounds %struct.xpvav* %6, i64 0, i32 0
+  %7 = load i8** %xav_array, align 8, !tbaa !0
+  %8 = bitcast i8* %7 to %struct.sv**
+  %arrayidx = getelementptr inbounds %struct.sv** %8, i64 %idxprom
+  %9 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %9) #3
+  %tobool10 = icmp eq i32 %dec, 0
+  %.pre.pre = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  br i1 %tobool10, label %if.end12, label %while.body
+
+if.end12:                                         ; preds = %while.body, %if.then7, %if.end4
+  %10 = phi %struct.xpvav* [ %3, %if.end4 ], [ %3, %if.then7 ], [ %.pre.pre, %while.body ]
+  %xav_alloc = getelementptr inbounds %struct.xpvav* %10, i64 0, i32 7
+  %11 = load %struct.sv*** %xav_alloc, align 8, !tbaa !0
+  %12 = bitcast %struct.sv** %11 to i8*
+  tail call void @Perl_safesysfree(i8* %12) #3
+  %13 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_alloc15 = getelementptr inbounds %struct.xpvav* %13, i64 0, i32 7
+  store %struct.sv** null, %struct.sv*** %xav_alloc15, align 8, !tbaa !0
+  %14 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xpv_pv = getelementptr inbounds %struct.xpvav* %14, i64 0, i32 0
+  store i8* null, i8** %xpv_pv, align 8, !tbaa !0
+  %15 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_fill18 = getelementptr inbounds %struct.xpvav* %15, i64 0, i32 1
+  %xav_arylen = getelementptr inbounds %struct.xpvav* %15, i64 0, i32 8
+  %16 = bitcast i64* %xav_fill18 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %16, i8 -1, i64 16, i32 8, i1 false)
+  %17 = load %struct.sv** %xav_arylen, align 8, !tbaa !0
+  %tobool21 = icmp eq %struct.sv* %17, null
+  br i1 %tobool21, label %if.end27, label %if.then22
+
+if.then22:                                        ; preds = %if.end12
+  tail call void @Perl_sv_free(%struct.sv* %17) #3
+  %18 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_arylen26 = getelementptr inbounds %struct.xpvav* %18, i64 0, i32 8
+  store %struct.sv* null, %struct.sv** %xav_arylen26, align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end12, %entry, %if.then22
+  ret void
+}

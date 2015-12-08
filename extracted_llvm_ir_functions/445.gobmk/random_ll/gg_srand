@@ -1,0 +1,21 @@
+define void @gg_srand(i32 %seed) #0 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %seed.addr.05 = phi i32 [ %seed, %entry ], [ %add, %for.body ]
+  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv
+  store i32 %seed.addr.05, i32* %arrayidx, align 4, !tbaa !0
+  %mul = mul i32 %seed.addr.05, 1313
+  %add = add i32 %mul, 88897
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 25
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  store i32 24, i32* @k, align 4, !tbaa !0
+  store i1 true, i1* @rand_initialized, align 1
+  ret void
+}

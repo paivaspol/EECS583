@@ -1,0 +1,13 @@
+define %struct.sv* @PerlIO_sv_dup(%struct.sv* %arg, %struct.clone_params* nocapture %param) #1 {
+entry:
+  %tobool = icmp eq %struct.sv* %arg, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call %struct.sv* @Perl_newSVsv(%struct.sv* %arg) #9
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi %struct.sv* [ %call, %if.end ], [ null, %entry ]
+  ret %struct.sv* %retval.0
+}

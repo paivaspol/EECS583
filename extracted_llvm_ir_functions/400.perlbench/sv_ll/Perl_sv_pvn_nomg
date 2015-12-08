@@ -1,0 +1,27 @@
+define i8* @Perl_sv_pvn_nomg(%struct.sv* %sv, i64* nocapture %lp) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 262144
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !5
+  store i64 %3, i64* %lp, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call = tail call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %lp, i32 0) #7
+  br label %return
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi i8* [ %4, %if.then ], [ %call, %if.end ]
+  ret i8* %retval.0
+}

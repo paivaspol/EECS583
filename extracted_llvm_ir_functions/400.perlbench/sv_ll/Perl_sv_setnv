@@ -1,0 +1,97 @@
+define void @Perl_sv_setnv(%struct.sv* %sv, double %num) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 9961472
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_sv_force_normal_flags(%struct.sv* %sv, i32 0) #8
+  %.pre = load i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = phi i32 [ %0, %entry ], [ %.pre, %if.then ]
+  %and2 = and i32 %1, 255
+  switch i32 %and2, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 3, label %sw.bb3
+    i32 4, label %sw.bb3
+    i32 5, label %sw.bb3
+    i32 13, label %sw.bb5
+    i32 10, label %sw.bb5
+    i32 11, label %sw.bb5
+    i32 12, label %sw.bb5
+    i32 14, label %sw.bb5
+    i32 15, label %sw.bb5
+  ]
+
+sw.bb:                                            ; preds = %if.end, %if.end
+  %call = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %sv, i32 2) #7
+  br label %sw.epilog
+
+sw.bb3:                                           ; preds = %if.end, %if.end, %if.end
+  %call4 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %sv, i32 6) #7
+  br label %sw.epilog
+
+sw.bb5:                                           ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end
+  %call6 = tail call i8* @Perl_sv_reftype(%struct.sv* %sv, i32 0) #7
+  %2 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_type = getelementptr inbounds %struct.op* %2, i64 0, i32 4
+  %3 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %3, 351
+  br i1 %cmp, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %sw.bb5
+  %call8 = tail call i8* @Perl_custom_op_name(%struct.op* %2) #8
+  br label %cond.end
+
+cond.false:                                       ; preds = %sw.bb5
+  %idxprom = zext i16 %3 to i64
+  %arrayidx = getelementptr inbounds [0 x i8*]* @PL_op_name, i64 0, i64 %idxprom
+  %4 = load i8** %arrayidx, align 8, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %call8, %cond.true ], [ %4, %cond.false ]
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([32 x i8]* @.str5, i64 0, i64 0), i8* %call6, i8* %cond) #8
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %cond.end, %if.end, %sw.bb3, %sw.bb
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %5 = load i8** %sv_any, align 8, !tbaa !0
+  %xnv_nv = getelementptr inbounds i8* %5, i64 32
+  %6 = bitcast i8* %xnv_nv to double*
+  store double %num, double* %6, align 8, !tbaa !6
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %and11 = and i32 %7, 1223753727
+  store i32 %and11, i32* %sv_flags, align 4, !tbaa !3
+  %and13 = and i32 %7, 2097152
+  %tobool14 = icmp eq i32 %and13, 0
+  br i1 %tobool14, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %sw.epilog
+  %call15 = tail call i32 @Perl_sv_backoff(%struct.sv* %sv) #7
+  %.pre39 = load i32* %sv_flags, align 4, !tbaa !3
+  br label %land.end
+
+land.end:                                         ; preds = %sw.epilog, %land.rhs
+  %8 = phi i32 [ %and11, %sw.epilog ], [ %.pre39, %land.rhs ]
+  %or = or i32 %8, 33685504
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  %9 = load i8* @PL_tainting, align 1, !tbaa !1
+  %tobool18 = icmp ne i8 %9, 0
+  %10 = load i8* @PL_tainted, align 1, !tbaa !1
+  %tobool20 = icmp ne i8 %10, 0
+  %or.cond = and i1 %tobool18, %tobool20
+  br i1 %or.cond, label %if.then23, label %if.end26
+
+if.then23:                                        ; preds = %land.end
+  tail call void @Perl_sv_magic(%struct.sv* %sv, %struct.sv* null, i32 116, i8* null, i32 0) #8
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then23, %land.end
+  ret void
+}

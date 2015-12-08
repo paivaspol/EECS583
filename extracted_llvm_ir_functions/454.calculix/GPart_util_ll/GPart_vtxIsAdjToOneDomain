@@ -1,0 +1,86 @@
+define i32 @GPart_vtxIsAdjToOneDomain(%struct._GPart* %gpart, i32 %v, i32* %pdomid) #0 {
+entry:
+  %vsize = alloca i32, align 4
+  %vadj = alloca i32*, align 8
+  %cmp = icmp eq %struct._GPart* %gpart, null
+  %cmp1 = icmp slt i32 %v, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nvtx3 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 2
+  %0 = load i32* %nvtx3, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %0, %v
+  br i1 %cmp4, label %lor.lhs.false5, label %if.then
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false2
+  %g6 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 1
+  %1 = load %struct._Graph** %g6, align 8, !tbaa !0
+  %cmp7 = icmp eq %struct._Graph* %1, null
+  %cmp9 = icmp eq i32* %pdomid, null
+  %or.cond41 = or i1 %cmp7, %cmp9
+  br i1 %or.cond41, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %lor.lhs.false5, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), %struct._GPart* %gpart, i32 %v, i32* %pdomid) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false5
+  %compidsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 5
+  %call10 = call i32* @IV_entries(%struct._IV* %compidsIV) #4
+  call void @Graph_adjAndSize(%struct._Graph* %1, i32 %v, i32* %vsize, i32** %vadj) #4
+  store i32 -1, i32* %pdomid, align 4, !tbaa !3
+  %3 = load i32* %vsize, align 4, !tbaa !3
+  %cmp1143 = icmp sgt i32 %3, 0
+  br i1 %cmp1143, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %4 = load i32** %vadj, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %domid.045 = phi i32 [ -1, %for.body.lr.ph ], [ %domid.1, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv
+  %5 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp12 = icmp slt i32 %5, %0
+  br i1 %cmp12, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %idxprom13 = sext i32 %5 to i64
+  %arrayidx14 = getelementptr inbounds i32* %call10, i64 %idxprom13
+  %6 = load i32* %arrayidx14, align 4, !tbaa !3
+  %cmp15 = icmp sgt i32 %6, 0
+  br i1 %cmp15, label %if.then16, label %for.inc
+
+if.then16:                                        ; preds = %land.lhs.true
+  %cmp17 = icmp eq i32 %domid.045, -1
+  br i1 %cmp17, label %if.then18, label %if.else
+
+if.then18:                                        ; preds = %if.then16
+  store i32 %6, i32* %pdomid, align 4, !tbaa !3
+  br label %for.inc
+
+if.else:                                          ; preds = %if.then16
+  %cmp19 = icmp eq i32 %6, %domid.045
+  br i1 %cmp19, label %for.inc, label %return
+
+for.inc:                                          ; preds = %if.else, %for.body, %land.lhs.true, %if.then18
+  %domid.1 = phi i32 [ %6, %if.then18 ], [ %domid.045, %if.else ], [ %domid.045, %land.lhs.true ], [ %domid.045, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp11 = icmp slt i32 %7, %3
+  br i1 %cmp11, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.end
+  %domid.0.lcssa = phi i32 [ -1, %if.end ], [ %domid.1, %for.inc ]
+  %not.cmp24 = icmp ne i32 %domid.0.lcssa, -1
+  %. = zext i1 %not.cmp24 to i32
+  br label %return
+
+return:                                           ; preds = %if.else, %for.end
+  %retval.0 = phi i32 [ %., %for.end ], [ 0, %if.else ]
+  ret i32 %retval.0
+}

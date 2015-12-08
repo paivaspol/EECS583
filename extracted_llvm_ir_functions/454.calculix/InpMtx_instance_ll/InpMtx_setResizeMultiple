@@ -1,0 +1,18 @@
+define void @InpMtx_setResizeMultiple(%struct._InpMtx* %inpmtx, double %resizeMultiple) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = fcmp olt double %resizeMultiple, 0.000000e+00
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str26, i64 0, i64 0), %struct._InpMtx* %inpmtx, double %resizeMultiple) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %resizeMultiple2 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 5
+  store double %resizeMultiple, double* %resizeMultiple2, align 8, !tbaa !4
+  ret void
+}

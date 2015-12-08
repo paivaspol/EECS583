@@ -1,0 +1,71 @@
+define %struct._IV* @Tree_fundChainMap(%struct._Tree* %tree) #0 {
+entry:
+  %cmp = icmp eq %struct._Tree* %tree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
+  %0 = load i32* %n, align 4, !tbaa !0
+  %cmp1 = icmp slt i32 %0, 1
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), %struct._Tree* %tree) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call2 = tail call %struct._IV* @IV_new() #4
+  %2 = load i32* %n, align 4, !tbaa !0
+  tail call void @IV_init(%struct._IV* %call2, i32 %2, i32* null) #4
+  %call4 = tail call i32* @IV_entries(%struct._IV* %call2) #4
+  %call5 = tail call i32 @Tree_postOTfirst(%struct._Tree* %tree) #4
+  %cmp637 = icmp eq i32 %call5, -1
+  br i1 %cmp637, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
+  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %nfc.039 = phi i32 [ 0, %for.body.lr.ph ], [ %nfc.1, %for.inc ]
+  %v.038 = phi i32 [ %call5, %for.body.lr.ph ], [ %call20, %for.inc ]
+  %idxprom = sext i32 %v.038 to i64
+  %3 = load i32** %fch, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom
+  %4 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %4, -1
+  br i1 %cmp7, label %if.then12, label %lor.lhs.false8
+
+lor.lhs.false8:                                   ; preds = %for.body
+  %idxprom9 = sext i32 %4 to i64
+  %5 = load i32** %sib, align 8, !tbaa !3
+  %arrayidx10 = getelementptr inbounds i32* %5, i64 %idxprom9
+  %6 = load i32* %arrayidx10, align 4, !tbaa !0
+  %cmp11 = icmp eq i32 %6, -1
+  br i1 %cmp11, label %if.else, label %if.then12
+
+if.then12:                                        ; preds = %lor.lhs.false8, %for.body
+  %inc = add nsw i32 %nfc.039, 1
+  %arrayidx14 = getelementptr inbounds i32* %call4, i64 %idxprom
+  store i32 %nfc.039, i32* %arrayidx14, align 4, !tbaa !0
+  br label %for.inc
+
+if.else:                                          ; preds = %lor.lhs.false8
+  %arrayidx16 = getelementptr inbounds i32* %call4, i64 %idxprom9
+  %7 = load i32* %arrayidx16, align 4, !tbaa !0
+  %arrayidx18 = getelementptr inbounds i32* %call4, i64 %idxprom
+  store i32 %7, i32* %arrayidx18, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then12, %if.else
+  %nfc.1 = phi i32 [ %inc, %if.then12 ], [ %nfc.039, %if.else ]
+  %call20 = tail call i32 @Tree_postOTnext(%struct._Tree* %tree, i32 %v.038) #4
+  %cmp6 = icmp eq i32 %call20, -1
+  br i1 %cmp6, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %if.end
+  ret %struct._IV* %call2
+}

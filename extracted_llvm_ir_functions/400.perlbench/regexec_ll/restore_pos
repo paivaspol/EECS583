@@ -1,0 +1,39 @@
+define internal void @restore_pos(i8* nocapture %arg) #0 {
+entry:
+  %0 = load i32* @PL_reg_eval_set, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.end3, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load i8** @PL_reg_oldsaved, align 8, !tbaa !3
+  %tobool1 = icmp eq i8* %1, null
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %2 = load %struct.regexp** @PL_reg_re, align 8, !tbaa !3
+  %subbeg = getelementptr inbounds %struct.regexp* %2, i64 0, i32 6
+  store i8* %1, i8** %subbeg, align 8, !tbaa !3
+  %3 = load i64* @PL_reg_oldsavedlen, align 8, !tbaa !4
+  %conv = trunc i64 %3 to i32
+  %4 = load %struct.regexp** @PL_reg_re, align 8, !tbaa !3
+  %sublen = getelementptr inbounds %struct.regexp* %4, i64 0, i32 8
+  store i32 %conv, i32* %sublen, align 4, !tbaa !0
+  %reganch = getelementptr inbounds %struct.regexp* %4, i64 0, i32 15
+  %5 = load i32* %reganch, align 4, !tbaa !0
+  %or = or i32 %5, 262144
+  store i32 %or, i32* %reganch, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %6 = load i32* @PL_reg_oldpos, align 4, !tbaa !0
+  %7 = load %struct.magic** @PL_reg_magic, align 8, !tbaa !3
+  %mg_len = getelementptr inbounds %struct.magic* %7, i64 0, i32 7
+  store i32 %6, i32* %mg_len, align 4, !tbaa !0
+  store i32 0, i32* @PL_reg_eval_set, align 4, !tbaa !0
+  %8 = load %struct.pmop** @PL_reg_oldcurpm, align 8, !tbaa !3
+  store %struct.pmop* %8, %struct.pmop** @PL_curpm, align 8, !tbaa !3
+  br label %if.end3
+
+if.end3:                                          ; preds = %entry, %if.end
+  ret void
+}

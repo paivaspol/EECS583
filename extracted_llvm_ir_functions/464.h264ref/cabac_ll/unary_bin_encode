@@ -1,0 +1,31 @@
+define void @unary_bin_encode(%struct.EncodingEnvironment* %eep_dp, i32 %symbol, %struct.BiContextType* %ctx, i32 %ctx_offset) #0 {
+entry:
+  %cmp = icmp eq i32 %symbol, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #5
+  br label %return
+
+if.else:                                          ; preds = %entry
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #5
+  %idx.ext = sext i32 %ctx_offset to i64
+  %add.ptr = getelementptr inbounds %struct.BiContextType* %ctx, i64 %idx.ext
+  %dec5 = add i32 %symbol, -1
+  %cmp16 = icmp eq i32 %dec5, 0
+  br i1 %cmp16, label %while.end, label %while.body
+
+while.body:                                       ; preds = %if.else, %while.body
+  %dec7 = phi i32 [ %dec, %while.body ], [ %dec5, %if.else ]
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr) #5
+  %dec = add i32 %dec7, -1
+  %cmp1 = icmp eq i32 %dec, 0
+  br i1 %cmp1, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %if.else
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #5
+  br label %return
+
+return:                                           ; preds = %while.end, %if.then
+  ret void
+}

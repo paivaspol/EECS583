@@ -1,0 +1,41 @@
+define void @ZVscale(i32 %size, double* %y, double %areal, double %aimag) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = icmp eq double* %y, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp234 = icmp sgt i32 %size, 0
+  br i1 %cmp234, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str8, i64 0, i64 0), i32 %size, double* %y, double %areal, double %aimag) #5
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %ii.035 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !0
+  %2 = or i64 %indvars.iv, 1
+  %arrayidx4 = getelementptr inbounds double* %y, i64 %2
+  %3 = load double* %arrayidx4, align 8, !tbaa !0
+  %mul = fmul double %1, %areal
+  %mul5 = fmul double %3, %aimag
+  %sub = fsub double %mul, %mul5
+  store double %sub, double* %arrayidx, align 8, !tbaa !0
+  %mul8 = fmul double %3, %areal
+  %mul9 = fmul double %1, %aimag
+  %add10 = fadd double %mul9, %mul8
+  store double %add10, double* %arrayidx4, align 8, !tbaa !0
+  %inc = add nsw i32 %ii.035, 1
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %exitcond = icmp eq i32 %inc, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void
+}

@@ -1,0 +1,49 @@
+define i8* @Perl_custom_op_name(%struct.op* nocapture %o) #0 {
+entry:
+  %0 = load %struct.hv** @PL_custom_op_names, align 8, !tbaa !3
+  %tobool = icmp eq %struct.hv* %0, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load i8** getelementptr inbounds ([0 x i8*]* @PL_op_name, i64 0, i64 351), align 8, !tbaa !3
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %op_ppaddr = getelementptr inbounds %struct.op* %o, i64 0, i32 2
+  %2 = load %struct.op* ()** %op_ppaddr, align 8, !tbaa !3
+  %3 = ptrtoint %struct.op* ()* %2 to i64
+  %call = tail call %struct.sv* @Perl_newSViv(i64 %3) #7
+  %call1 = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %call) #7
+  %4 = load %struct.hv** @PL_custom_op_names, align 8, !tbaa !3
+  %call2 = tail call %struct.he* @Perl_hv_fetch_ent(%struct.hv* %4, %struct.sv* %call1, i32 0, i32 0) #7
+  %tobool3 = icmp eq %struct.he* %call2, null
+  br i1 %tobool3, label %if.then4, label %if.end5
+
+if.then4:                                         ; preds = %if.end
+  %5 = load i8** getelementptr inbounds ([0 x i8*]* @PL_op_name, i64 0, i64 351), align 8, !tbaa !3
+  br label %return
+
+if.end5:                                          ; preds = %if.end
+  %hent_val = getelementptr inbounds %struct.he* %call2, i64 0, i32 2
+  %6 = load %struct.sv** %hent_val, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %6, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %7, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end5
+  %sv_any = getelementptr inbounds %struct.sv* %6, i64 0, i32 0
+  %8 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_pv = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %return
+
+cond.false:                                       ; preds = %if.end5
+  %call8 = tail call i8* @Perl_sv_2pv_nolen(%struct.sv* %6) #7
+  br label %return
+
+return:                                           ; preds = %cond.true, %cond.false, %if.then4, %if.then
+  %retval.0 = phi i8* [ %5, %if.then4 ], [ %1, %if.then ], [ %9, %cond.true ], [ %call8, %cond.false ]
+  ret i8* %retval.0
+}

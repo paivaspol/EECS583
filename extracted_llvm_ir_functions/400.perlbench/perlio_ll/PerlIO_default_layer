@@ -1,0 +1,20 @@
+define %struct._PerlIO_funcs* @PerlIO_default_layer(i32 %n) #1 {
+entry:
+  %call = tail call %struct.PerlIO_list_s* @PerlIO_default_layers() #10
+  %cmp = icmp slt i32 %n, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %cur = getelementptr inbounds %struct.PerlIO_list_s* %call, i64 0, i32 1
+  %0 = load i64* %cur, align 8, !tbaa !4
+  %conv7 = zext i32 %n to i64
+  %add = add nsw i64 %0, %conv7
+  %conv1 = trunc i64 %add to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %n.addr.0 = phi i32 [ %conv1, %if.then ], [ %n, %entry ]
+  %conv2 = sext i32 %n.addr.0 to i64
+  %call3 = tail call %struct._PerlIO_funcs* @PerlIO_layer_fetch(%struct.PerlIO_list_s* %call, i64 %conv2, %struct._PerlIO_funcs* @PerlIO_stdio) #10
+  ret %struct._PerlIO_funcs* %call3
+}

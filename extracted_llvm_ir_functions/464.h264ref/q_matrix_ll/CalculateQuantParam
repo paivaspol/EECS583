@@ -1,0 +1,424 @@
+define void @CalculateQuantParam() #0 {
+entry:
+  %present = alloca [6 x i32], align 16
+  %0 = bitcast [6 x i32]* %present to i8*
+  %1 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !3
+  %seq_scaling_matrix_present_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %1, i64 0, i32 9
+  %2 = load i32* %seq_scaling_matrix_present_flag, align 4, !tbaa !1
+  %tobool = icmp eq i32 %2, 0
+  br i1 %tobool, label %land.lhs.true, label %for.cond.preheader
+
+land.lhs.true:                                    ; preds = %entry
+  %3 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !3
+  %pic_scaling_matrix_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %3, i64 0, i32 5
+  %4 = load i32* %pic_scaling_matrix_present_flag, align 4, !tbaa !1
+  %tobool1 = icmp eq i32 %4, 0
+  br i1 %tobool1, label %for.cond37.preheader, label %if.else.if.end_crit_edge
+
+if.else.if.end_crit_edge:                         ; preds = %land.lhs.true
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 24, i32 16, i1 false)
+  br label %if.end
+
+for.cond.preheader:                               ; preds = %entry
+  %scevgep988 = getelementptr %struct.seq_parameter_set_rbsp_t* %1, i64 0, i32 10, i64 0
+  %scevgep988989 = bitcast i32* %scevgep988 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %scevgep988989, i64 24, i32 4, i1 false)
+  br label %if.end
+
+if.end:                                           ; preds = %if.else.if.end_crit_edge, %for.cond.preheader
+  %5 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !3
+  %pic_scaling_matrix_present_flag7 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %5, i64 0, i32 5
+  %6 = load i32* %pic_scaling_matrix_present_flag7, align 4, !tbaa !1
+  %tobool8 = icmp eq i32 %6, 0
+  br i1 %tobool8, label %for.cond202.preheader, label %for.body12
+
+for.cond202.preheader:                            ; preds = %for.inc27, %if.end
+  %7 = bitcast [6 x i32]* %present to i64*
+  %8 = load i64* %7, align 16
+  %9 = trunc i64 %8 to i32
+  %tobool213 = icmp ne i32 %9, 0
+  %10 = load i16* getelementptr inbounds ([6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 0), align 2, !tbaa !4
+  %tobool215 = icmp eq i16 %10, 0
+  %or.cond = and i1 %tobool213, %tobool215
+  %tobool284 = icmp ult i64 %8, 4294967296
+  %arrayidx359 = getelementptr inbounds [6 x i32]* %present, i64 0, i64 2
+  %11 = bitcast i32* %arrayidx359 to i64*
+  %12 = load i64* %11, align 8
+  %13 = trunc i64 %12 to i32
+  %tobool360 = icmp eq i32 %13, 0
+  %tobool440 = icmp ugt i64 %12, 4294967295
+  %14 = load i16* getelementptr inbounds ([6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 3), align 2, !tbaa !4
+  %tobool443 = icmp eq i16 %14, 0
+  %or.cond931 = and i1 %tobool440, %tobool443
+  %arrayidx513 = getelementptr inbounds [6 x i32]* %present, i64 0, i64 4
+  %15 = bitcast i32* %arrayidx513 to i64*
+  %16 = load i64* %15, align 16
+  %17 = trunc i64 %16 to i32
+  %tobool514 = icmp eq i32 %17, 0
+  %tobool594 = icmp ult i64 %16, 4294967296
+  %18 = load i16* getelementptr inbounds ([6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 5), align 2, !tbaa !4
+  %tobool629 = icmp eq i16 %18, 0
+  %19 = load i16* getelementptr inbounds ([6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 4), align 2, !tbaa !4
+  %tobool549 = icmp eq i16 %19, 0
+  %20 = load i16* getelementptr inbounds ([6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 2), align 2, !tbaa !4
+  %tobool395 = icmp eq i16 %20, 0
+  %21 = load i16* getelementptr inbounds ([6 x i16]* @UseDefaultScalingMatrix4x4Flag, i64 0, i64 1), align 2, !tbaa !4
+  %tobool319 = icmp eq i16 %21, 0
+  br label %for.cond205.preheader
+
+for.body12:                                       ; preds = %if.end, %for.inc27
+  %indvars.iv980 = phi i64 [ %indvars.iv.next981, %for.inc27 ], [ 0, %if.end ]
+  %arrayidx17 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %5, i64 0, i32 6, i64 %indvars.iv980
+  %22 = load i32* %arrayidx17, align 4, !tbaa !0
+  %arrayidx19 = getelementptr inbounds [6 x i32]* %present, i64 0, i64 %indvars.iv980
+  %23 = trunc i64 %indvars.iv980 to i32
+  switch i32 %23, label %for.inc27 [
+    i32 3, label %if.then15
+    i32 0, label %if.then15
+  ]
+
+if.then15:                                        ; preds = %for.body12, %for.body12
+  %24 = load i32* %arrayidx19, align 4, !tbaa !0
+  %or = or i32 %24, %22
+  br label %for.inc27
+
+for.inc27:                                        ; preds = %for.body12, %if.then15
+  %storemerge = phi i32 [ %or, %if.then15 ], [ %22, %for.body12 ]
+  store i32 %storemerge, i32* %arrayidx19, align 4, !tbaa !0
+  %indvars.iv.next981 = add i64 %indvars.iv980, 1
+  %lftr.wideiv982 = trunc i64 %indvars.iv.next981 to i32
+  %exitcond983 = icmp eq i32 %lftr.wideiv982, 6
+  br i1 %exitcond983, label %for.cond202.preheader, label %for.body12
+
+for.cond37.preheader:                             ; preds = %land.lhs.true, %for.inc198
+  %indvars.iv962 = phi i64 [ %indvars.iv.next963, %for.inc198 ], [ 0, %land.lhs.true ]
+  br label %for.cond40.preheader
+
+for.cond40.preheader:                             ; preds = %for.inc195, %for.cond37.preheader
+  %indvars.iv958 = phi i64 [ 0, %for.cond37.preheader ], [ %indvars.iv.next959, %for.inc195 ]
+  %scevgep950 = getelementptr [6 x [4 x [4 x i32]]]* @LevelScale4x4Luma_Inter, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 0
+  %scevgep950951 = bitcast i32* %scevgep950 to i8*
+  %scevgep952 = getelementptr [6 x [4 x [4 x i32]]]* @quant_coef, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 0
+  %scevgep952953 = bitcast i32* %scevgep952 to i8*
+  %scevgep = getelementptr [6 x [4 x [4 x i32]]]* @LevelScale4x4Luma_Intra, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 0
+  %scevgep943 = bitcast i32* %scevgep to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep943, i8* %scevgep952953, i64 16, i32 4, i1 false)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep950951, i8* %scevgep952953, i64 16, i32 4, i1 false)
+  br label %for.body42
+
+for.body42:                                       ; preds = %for.body42, %for.cond40.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond40.preheader ], [ %indvars.iv.next, %for.body42 ]
+  %arrayidx48 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @quant_coef, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  %arrayidx60 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @dequant_coef, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  %25 = load i32* %arrayidx60, align 4, !tbaa !0
+  %shl = shl i32 %25, 4
+  %arrayidx66 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @InvLevelScale4x4Luma_Intra, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx66, align 4, !tbaa !0
+  %26 = load i32* %arrayidx48, align 4, !tbaa !0
+  %arrayidx78 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %26, i32* %arrayidx78, align 4, !tbaa !0
+  %arrayidx91 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx91, align 4, !tbaa !0
+  %arrayidx103 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %26, i32* %arrayidx103, align 4, !tbaa !0
+  %arrayidx116 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx116, align 4, !tbaa !0
+  %arrayidx141 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @InvLevelScale4x4Luma_Inter, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx141, align 4, !tbaa !0
+  %arrayidx153 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %26, i32* %arrayidx153, align 4, !tbaa !0
+  %arrayidx166 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx166, align 4, !tbaa !0
+  %arrayidx178 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %26, i32* %arrayidx178, align 4, !tbaa !0
+  %arrayidx191 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv962, i64 %indvars.iv958, i64 %indvars.iv
+  store i32 %shl, i32* %arrayidx191, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.inc195, label %for.body42
+
+for.inc195:                                       ; preds = %for.body42
+  %indvars.iv.next959 = add i64 %indvars.iv958, 1
+  %lftr.wideiv960 = trunc i64 %indvars.iv.next959 to i32
+  %exitcond961 = icmp eq i32 %lftr.wideiv960, 4
+  br i1 %exitcond961, label %for.inc198, label %for.cond40.preheader
+
+for.inc198:                                       ; preds = %for.inc195
+  %indvars.iv.next963 = add i64 %indvars.iv962, 1
+  %lftr.wideiv964 = trunc i64 %indvars.iv.next963 to i32
+  %exitcond965 = icmp eq i32 %lftr.wideiv964, 6
+  br i1 %exitcond965, label %if.end682, label %for.cond37.preheader
+
+for.cond205.preheader:                            ; preds = %for.inc679, %for.cond202.preheader
+  %indvars.iv976 = phi i64 [ 0, %for.cond202.preheader ], [ %indvars.iv.next977, %for.inc679 ]
+  br label %for.cond208.preheader
+
+for.cond208.preheader:                            ; preds = %for.inc676, %for.cond205.preheader
+  %indvars.iv972 = phi i64 [ 0, %for.cond205.preheader ], [ %indvars.iv.next973, %for.inc676 ]
+  br label %for.body210
+
+for.body210:                                      ; preds = %for.inc673, %for.cond208.preheader
+  %indvars.iv966 = phi i64 [ 0, %for.cond208.preheader ], [ %indvars.iv.next967, %for.inc673 ]
+  %27 = shl i64 %indvars.iv966, 2
+  %28 = add nsw i64 %27, %indvars.iv972
+  %arrayidx254 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @quant_coef, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  %29 = load i32* %arrayidx254, align 4, !tbaa !0
+  %shl255 = shl i32 %29, 4
+  br i1 %or.cond, label %if.else248, label %if.then216
+
+if.then216:                                       ; preds = %for.body210
+  %arrayidx225 = getelementptr inbounds [16 x i16]* @Quant_intra_default, i64 0, i64 %28
+  %30 = load i16* %arrayidx225, align 2, !tbaa !4
+  %conv226 = sext i16 %30 to i32
+  %div = sdiv i32 %shl255, %conv226
+  %arrayidx232 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @LevelScale4x4Luma_Intra, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div, i32* %arrayidx232, align 4, !tbaa !0
+  %arrayidx238 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @dequant_coef, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  %31 = load i32* %arrayidx238, align 4, !tbaa !0
+  %mul = mul nsw i32 %conv226, %31
+  %arrayidx247 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @InvLevelScale4x4Luma_Intra, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul, i32* %arrayidx247, align 4, !tbaa !0
+  br label %if.end282
+
+if.else248:                                       ; preds = %for.body210
+  %arrayidx257 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 0, i64 %28
+  %32 = load i16* %arrayidx257, align 2, !tbaa !4
+  %conv258 = sext i16 %32 to i32
+  %div259 = sdiv i32 %shl255, %conv258
+  %arrayidx265 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @LevelScale4x4Luma_Intra, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div259, i32* %arrayidx265, align 4, !tbaa !0
+  %arrayidx271 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @dequant_coef, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  %33 = load i32* %arrayidx271, align 4, !tbaa !0
+  %mul275 = mul nsw i32 %conv258, %33
+  %arrayidx281 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @InvLevelScale4x4Luma_Intra, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul275, i32* %arrayidx281, align 4, !tbaa !0
+  br label %if.end282
+
+if.end282:                                        ; preds = %if.else248, %if.then216
+  %34 = phi i32 [ %33, %if.else248 ], [ %31, %if.then216 ]
+  %35 = phi i32 [ %mul275, %if.else248 ], [ %mul, %if.then216 ]
+  %36 = phi i32 [ %div259, %if.else248 ], [ %div, %if.then216 ]
+  br i1 %tobool284, label %if.then285, label %if.else310
+
+if.then285:                                       ; preds = %if.end282
+  %arrayidx297 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %36, i32* %arrayidx297, align 4, !tbaa !0
+  %arrayidx309 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %35, i32* %arrayidx309, align 4, !tbaa !0
+  br label %if.end358
+
+if.else310:                                       ; preds = %if.end282
+  br i1 %tobool319, label %cond.false345, label %cond.true341
+
+cond.true341:                                     ; preds = %if.else310
+  %arrayidx321 = getelementptr inbounds [16 x i16]* @Quant_intra_default, i64 0, i64 %28
+  %.sink = load i16* %arrayidx321, align 2
+  %conv322 = sext i16 %.sink to i32
+  %div326 = sdiv i32 %shl255, %conv322
+  %arrayidx332 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div326, i32* %arrayidx332, align 4, !tbaa !0
+  %arrayidx343 = getelementptr inbounds [16 x i16]* @Quant_intra_default, i64 0, i64 %28
+  br label %cond.end349
+
+cond.false345:                                    ; preds = %if.else310
+  %arrayidx324 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 1, i64 %28
+  %.sink991 = load i16* %arrayidx324, align 2
+  %conv322992 = sext i16 %.sink991 to i32
+  %div326993 = sdiv i32 %shl255, %conv322992
+  %arrayidx332994 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div326993, i32* %arrayidx332994, align 4, !tbaa !0
+  %arrayidx347 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 1, i64 %28
+  br label %cond.end349
+
+cond.end349:                                      ; preds = %cond.false345, %cond.true341
+  %div326995 = phi i32 [ %div326, %cond.true341 ], [ %div326993, %cond.false345 ]
+  %.sink683.in = phi i16* [ %arrayidx343, %cond.true341 ], [ %arrayidx347, %cond.false345 ]
+  %.sink683 = load i16* %.sink683.in, align 2
+  %conv344 = sext i16 %.sink683 to i32
+  %mul351 = mul nsw i32 %conv344, %34
+  %arrayidx357 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Intra, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul351, i32* %arrayidx357, align 4, !tbaa !0
+  br label %if.end358
+
+if.end358:                                        ; preds = %cond.end349, %if.then285
+  %37 = phi i32 [ %mul351, %cond.end349 ], [ %35, %if.then285 ]
+  %38 = phi i32 [ %div326995, %cond.end349 ], [ %36, %if.then285 ]
+  br i1 %tobool360, label %if.then361, label %if.else386
+
+if.then361:                                       ; preds = %if.end358
+  %arrayidx373 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %38, i32* %arrayidx373, align 4, !tbaa !0
+  %arrayidx385 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %37, i32* %arrayidx385, align 4, !tbaa !0
+  br label %if.end438
+
+if.else386:                                       ; preds = %if.end358
+  br i1 %tobool395, label %cond.false425, label %cond.true421
+
+cond.true421:                                     ; preds = %if.else386
+  %arrayidx398 = getelementptr inbounds [16 x i16]* @Quant_intra_default, i64 0, i64 %28
+  %.sink684 = load i16* %arrayidx398, align 2
+  %conv399 = sext i16 %.sink684 to i32
+  %div406 = sdiv i32 %shl255, %conv399
+  %arrayidx412 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div406, i32* %arrayidx412, align 4, !tbaa !0
+  %arrayidx423 = getelementptr inbounds [16 x i16]* @Quant_intra_default, i64 0, i64 %28
+  br label %cond.end429
+
+cond.false425:                                    ; preds = %if.else386
+  %arrayidx402 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 2, i64 %28
+  %.sink684997 = load i16* %arrayidx402, align 2
+  %conv399998 = sext i16 %.sink684997 to i32
+  %div406999 = sdiv i32 %shl255, %conv399998
+  %arrayidx4121000 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div406999, i32* %arrayidx4121000, align 4, !tbaa !0
+  %arrayidx427 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 2, i64 %28
+  br label %cond.end429
+
+cond.end429:                                      ; preds = %cond.false425, %cond.true421
+  %.sink685.in = phi i16* [ %arrayidx423, %cond.true421 ], [ %arrayidx427, %cond.false425 ]
+  %.sink685 = load i16* %.sink685.in, align 2
+  %conv424 = sext i16 %.sink685 to i32
+  %mul431 = mul nsw i32 %conv424, %34
+  %arrayidx437 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Intra, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul431, i32* %arrayidx437, align 4, !tbaa !0
+  br label %if.end438
+
+if.end438:                                        ; preds = %cond.end429, %if.then361
+  br i1 %or.cond931, label %if.else478, label %if.then444
+
+if.then444:                                       ; preds = %if.end438
+  %arrayidx453 = getelementptr inbounds [16 x i16]* @Quant_inter_default, i64 0, i64 %28
+  %39 = load i16* %arrayidx453, align 2, !tbaa !4
+  %conv454 = sext i16 %39 to i32
+  %div455 = sdiv i32 %shl255, %conv454
+  %arrayidx461 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @LevelScale4x4Luma_Inter, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div455, i32* %arrayidx461, align 4, !tbaa !0
+  %mul471 = mul nsw i32 %conv454, %34
+  %arrayidx477 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @InvLevelScale4x4Luma_Inter, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul471, i32* %arrayidx477, align 4, !tbaa !0
+  br label %if.end512
+
+if.else478:                                       ; preds = %if.end438
+  %arrayidx487 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 3, i64 %28
+  %40 = load i16* %arrayidx487, align 2, !tbaa !4
+  %conv488 = sext i16 %40 to i32
+  %div489 = sdiv i32 %shl255, %conv488
+  %arrayidx495 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @LevelScale4x4Luma_Inter, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div489, i32* %arrayidx495, align 4, !tbaa !0
+  %mul505 = mul nsw i32 %conv488, %34
+  %arrayidx511 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @InvLevelScale4x4Luma_Inter, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul505, i32* %arrayidx511, align 4, !tbaa !0
+  br label %if.end512
+
+if.end512:                                        ; preds = %if.else478, %if.then444
+  %41 = phi i32 [ %mul505, %if.else478 ], [ %mul471, %if.then444 ]
+  %42 = phi i32 [ %div489, %if.else478 ], [ %div455, %if.then444 ]
+  br i1 %tobool514, label %if.then515, label %if.else540
+
+if.then515:                                       ; preds = %if.end512
+  %arrayidx527 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %42, i32* %arrayidx527, align 4, !tbaa !0
+  %arrayidx539 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %41, i32* %arrayidx539, align 4, !tbaa !0
+  br label %if.end592
+
+if.else540:                                       ; preds = %if.end512
+  br i1 %tobool549, label %cond.false579, label %cond.true575
+
+cond.true575:                                     ; preds = %if.else540
+  %arrayidx552 = getelementptr inbounds [16 x i16]* @Quant_inter_default, i64 0, i64 %28
+  %.sink686 = load i16* %arrayidx552, align 2
+  %conv553 = sext i16 %.sink686 to i32
+  %div560 = sdiv i32 %shl255, %conv553
+  %arrayidx566 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div560, i32* %arrayidx566, align 4, !tbaa !0
+  %arrayidx577 = getelementptr inbounds [16 x i16]* @Quant_inter_default, i64 0, i64 %28
+  br label %cond.end583
+
+cond.false579:                                    ; preds = %if.else540
+  %arrayidx556 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 4, i64 %28
+  %.sink6861001 = load i16* %arrayidx556, align 2
+  %conv5531002 = sext i16 %.sink6861001 to i32
+  %div5601003 = sdiv i32 %shl255, %conv5531002
+  %arrayidx5661004 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div5601003, i32* %arrayidx5661004, align 4, !tbaa !0
+  %arrayidx581 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 4, i64 %28
+  br label %cond.end583
+
+cond.end583:                                      ; preds = %cond.false579, %cond.true575
+  %div5601005 = phi i32 [ %div560, %cond.true575 ], [ %div5601003, %cond.false579 ]
+  %.sink687.in = phi i16* [ %arrayidx577, %cond.true575 ], [ %arrayidx581, %cond.false579 ]
+  %.sink687 = load i16* %.sink687.in, align 2
+  %conv578 = sext i16 %.sink687 to i32
+  %mul585 = mul nsw i32 %conv578, %34
+  %arrayidx591 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Inter, i64 0, i64 0, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul585, i32* %arrayidx591, align 4, !tbaa !0
+  br label %if.end592
+
+if.end592:                                        ; preds = %cond.end583, %if.then515
+  %43 = phi i32 [ %mul585, %cond.end583 ], [ %41, %if.then515 ]
+  %44 = phi i32 [ %div5601005, %cond.end583 ], [ %42, %if.then515 ]
+  br i1 %tobool594, label %if.then595, label %if.else620
+
+if.then595:                                       ; preds = %if.end592
+  %arrayidx607 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %44, i32* %arrayidx607, align 4, !tbaa !0
+  %arrayidx619 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %43, i32* %arrayidx619, align 4, !tbaa !0
+  br label %for.inc673
+
+if.else620:                                       ; preds = %if.end592
+  br i1 %tobool629, label %cond.false659, label %cond.true655
+
+cond.true655:                                     ; preds = %if.else620
+  %arrayidx632 = getelementptr inbounds [16 x i16]* @Quant_inter_default, i64 0, i64 %28
+  %.sink688 = load i16* %arrayidx632, align 2
+  %conv633 = sext i16 %.sink688 to i32
+  %div640 = sdiv i32 %shl255, %conv633
+  %arrayidx646 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div640, i32* %arrayidx646, align 4, !tbaa !0
+  %arrayidx657 = getelementptr inbounds [16 x i16]* @Quant_inter_default, i64 0, i64 %28
+  br label %cond.end663
+
+cond.false659:                                    ; preds = %if.else620
+  %arrayidx636 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 5, i64 %28
+  %.sink6881007 = load i16* %arrayidx636, align 2
+  %conv6331008 = sext i16 %.sink6881007 to i32
+  %div6401009 = sdiv i32 %shl255, %conv6331008
+  %arrayidx6461010 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @LevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %div6401009, i32* %arrayidx6461010, align 4, !tbaa !0
+  %arrayidx661 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4, i64 0, i64 5, i64 %28
+  br label %cond.end663
+
+cond.end663:                                      ; preds = %cond.false659, %cond.true655
+  %.sink689.in = phi i16* [ %arrayidx657, %cond.true655 ], [ %arrayidx661, %cond.false659 ]
+  %.sink689 = load i16* %.sink689.in, align 2
+  %conv658 = sext i16 %.sink689 to i32
+  %mul665 = mul nsw i32 %conv658, %34
+  %arrayidx671 = getelementptr inbounds [2 x [6 x [4 x [4 x i32]]]]* @InvLevelScale4x4Chroma_Inter, i64 0, i64 1, i64 %indvars.iv976, i64 %indvars.iv972, i64 %indvars.iv966
+  store i32 %mul665, i32* %arrayidx671, align 4, !tbaa !0
+  br label %for.inc673
+
+for.inc673:                                       ; preds = %if.then595, %cond.end663
+  %indvars.iv.next967 = add i64 %indvars.iv966, 1
+  %lftr.wideiv970 = trunc i64 %indvars.iv.next967 to i32
+  %exitcond971 = icmp eq i32 %lftr.wideiv970, 4
+  br i1 %exitcond971, label %for.inc676, label %for.body210
+
+for.inc676:                                       ; preds = %for.inc673
+  %indvars.iv.next973 = add i64 %indvars.iv972, 1
+  %lftr.wideiv974 = trunc i64 %indvars.iv.next973 to i32
+  %exitcond975 = icmp eq i32 %lftr.wideiv974, 4
+  br i1 %exitcond975, label %for.inc679, label %for.cond208.preheader
+
+for.inc679:                                       ; preds = %for.inc676
+  %indvars.iv.next977 = add i64 %indvars.iv976, 1
+  %lftr.wideiv978 = trunc i64 %indvars.iv.next977 to i32
+  %exitcond979 = icmp eq i32 %lftr.wideiv978, 6
+  br i1 %exitcond979, label %if.end682, label %for.cond205.preheader
+
+if.end682:                                        ; preds = %for.inc679, %for.inc198
+  ret void
+}

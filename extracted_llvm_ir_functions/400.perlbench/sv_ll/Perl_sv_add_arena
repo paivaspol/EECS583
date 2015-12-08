@@ -1,0 +1,45 @@
+define void @Perl_sv_add_arena(i8* %ptr, i32 %size, i32 %flags) #0 {
+entry:
+  %0 = bitcast i8* %ptr to %struct.sv*
+  %1 = load %struct.sv** @PL_sv_arenaroot, align 8, !tbaa !0
+  %2 = bitcast %struct.sv* %1 to i8*
+  %sv_any = bitcast i8* %ptr to i8**
+  store i8* %2, i8** %sv_any, align 8, !tbaa !0
+  %div = lshr i32 %size, 4
+  %sv_refcnt = getelementptr inbounds i8* %ptr, i64 8
+  %3 = bitcast i8* %sv_refcnt to i32*
+  store i32 %div, i32* %3, align 4, !tbaa !3
+  %sv_flags = getelementptr inbounds i8* %ptr, i64 12
+  %4 = bitcast i8* %sv_flags to i32*
+  store i32 %flags, i32* %4, align 4, !tbaa !3
+  store %struct.sv* %0, %struct.sv** @PL_sv_arenaroot, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i8* %ptr, i64 16
+  %5 = bitcast i8* %add.ptr to %struct.sv*
+  store %struct.sv* %5, %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %sub = add i32 %div, -1
+  %idxprom = zext i32 %sub to i64
+  %arrayidx = getelementptr inbounds %struct.sv* %0, i64 %idxprom
+  %cmp24 = icmp ult %struct.sv* %5, %arrayidx
+  br i1 %cmp24, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.body
+  %sv.025 = phi %struct.sv* [ %add.ptr5, %while.body ], [ %5, %entry ]
+  %add.ptr5 = getelementptr inbounds %struct.sv* %sv.025, i64 1
+  %6 = bitcast %struct.sv* %add.ptr5 to i8*
+  %sv_any6 = getelementptr inbounds %struct.sv* %sv.025, i64 0, i32 0
+  store i8* %6, i8** %sv_any6, align 8, !tbaa !0
+  %sv_refcnt7 = getelementptr inbounds %struct.sv* %sv.025, i64 0, i32 1
+  store i32 0, i32* %sv_refcnt7, align 4, !tbaa !3
+  %sv_flags8 = getelementptr inbounds %struct.sv* %sv.025, i64 0, i32 2
+  store i32 255, i32* %sv_flags8, align 4, !tbaa !3
+  %cmp = icmp ult %struct.sv* %add.ptr5, %arrayidx
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %while.body, %entry
+  %sv.0.lcssa = phi %struct.sv* [ %5, %entry ], [ %add.ptr5, %while.body ]
+  %sv_any9 = getelementptr inbounds %struct.sv* %sv.0.lcssa, i64 0, i32 0
+  store i8* null, i8** %sv_any9, align 8, !tbaa !0
+  %sv_flags10 = getelementptr inbounds %struct.sv* %sv.0.lcssa, i64 0, i32 2
+  store i32 255, i32* %sv_flags10, align 4, !tbaa !3
+  ret void
+}

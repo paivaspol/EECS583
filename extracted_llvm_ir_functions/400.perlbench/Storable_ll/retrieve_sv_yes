@@ -1,0 +1,32 @@
+define internal %struct.sv* @retrieve_sv_yes(%struct.stcxt* nocapture %cxt, i8* %cname) #1 {
+entry:
+  %aseen = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 4
+  %0 = load %struct.av** %aseen, align 8, !tbaa !0
+  %tagnum = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 9
+  %1 = load i64* %tagnum, align 8, !tbaa !4
+  %inc = add nsw i64 %1, 1
+  store i64 %inc, i64* %tagnum, align 8, !tbaa !4
+  %conv = trunc i64 %1 to i32
+  %call = tail call %struct.sv** @Perl_av_store(%struct.av* %0, i32 %conv, %struct.sv* @PL_sv_yes) #7
+  %cmp = icmp eq %struct.sv** %call, null
+  br i1 %cmp, label %return, label %if.end3
+
+if.end3:                                          ; preds = %entry
+  %tobool4 = icmp eq i8* %cname, null
+  br i1 %tobool4, label %return, label %if.then5
+
+if.then5:                                         ; preds = %if.end3
+  %call6 = tail call %struct.hv* @Perl_gv_stashpv(i8* %cname, i32 1) #7
+  %call7 = tail call %struct.sv* @Perl_newRV_noinc(%struct.sv* @PL_sv_yes) #7
+  %call8 = tail call %struct.sv* @Perl_sv_bless(%struct.sv* %call7, %struct.hv* %call6) #7
+  %sv_any = getelementptr inbounds %struct.sv* %call7, i64 0, i32 0
+  %2 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %2 to %struct.sv**
+  store %struct.sv* null, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %call7) #7
+  br label %return
+
+return:                                           ; preds = %if.then5, %if.end3, %entry
+  %retval.0 = phi %struct.sv* [ null, %entry ], [ @PL_sv_yes, %if.end3 ], [ @PL_sv_yes, %if.then5 ]
+  ret %struct.sv* %retval.0
+}

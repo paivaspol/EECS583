@@ -1,0 +1,41 @@
+define internal fastcc i8* @S_get_num(i8* %patptr, i32* nocapture %lenptr) #0 {
+entry:
+  %0 = load i8* %patptr, align 1, !tbaa !1
+  %conv = sext i8 %0 to i32
+  %sub = add nsw i32 %conv, -48
+  %patptr.addr.016 = getelementptr inbounds i8* %patptr, i64 1
+  %1 = load i8* %patptr.addr.016, align 1, !tbaa !1
+  %.off17 = add i8 %1, -48
+  %2 = icmp ult i8 %.off17, 10
+  br i1 %2, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %if.end
+  %3 = phi i8 [ %5, %if.end ], [ %1, %entry ]
+  %patptr.addr.019 = phi i8* [ %patptr.addr.0, %if.end ], [ %patptr.addr.016, %entry ]
+  %len.018 = phi i32 [ %add, %if.end ], [ %sub, %entry ]
+  %cmp6 = icmp sgt i32 %len.018, 214748363
+  br i1 %cmp6, label %if.then, label %if.end
+
+if.then:                                          ; preds = %while.body
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([34 x i8]* @.str30, i64 0, i64 0)) #8
+  %.pre = load i8* %patptr.addr.019, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %while.body
+  %4 = phi i8 [ %.pre, %if.then ], [ %3, %while.body ]
+  %mul = mul nsw i32 %len.018, 10
+  %conv9 = sext i8 %4 to i32
+  %sub10 = add i32 %mul, -48
+  %add = add i32 %sub10, %conv9
+  %patptr.addr.0 = getelementptr inbounds i8* %patptr.addr.019, i64 1
+  %5 = load i8* %patptr.addr.0, align 1, !tbaa !1
+  %.off = add i8 %5, -48
+  %6 = icmp ult i8 %.off, 10
+  br i1 %6, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end, %entry
+  %patptr.addr.0.lcssa = phi i8* [ %patptr.addr.016, %entry ], [ %patptr.addr.0, %if.end ]
+  %len.0.lcssa = phi i32 [ %sub, %entry ], [ %add, %if.end ]
+  store i32 %len.0.lcssa, i32* %lenptr, align 4, !tbaa !3
+  ret i8* %patptr.addr.0.lcssa
+}

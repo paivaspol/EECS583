@@ -1,0 +1,55 @@
+define void @ETree_clearData(%struct._ETree* %etree) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), %struct._ETree* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2
+  %1 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct._Tree* %1, null
+  br i1 %cmp1, label %if.end4, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  tail call void @Tree_free(%struct._Tree* %1) #5
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then2
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
+  %2 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct._IV* %2, null
+  br i1 %cmp5, label %if.end8, label %if.then6
+
+if.then6:                                         ; preds = %if.end4
+  tail call void @IV_free(%struct._IV* %2) #5
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end4, %if.then6
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
+  %3 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct._IV* %3, null
+  br i1 %cmp9, label %if.end12, label %if.then10
+
+if.then10:                                        ; preds = %if.end8
+  tail call void @IV_free(%struct._IV* %3) #5
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end8, %if.then10
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5
+  %4 = load %struct._IV** %vtxToFrontIV, align 8, !tbaa !0
+  %cmp13 = icmp eq %struct._IV* %4, null
+  br i1 %cmp13, label %if.end16, label %if.then14
+
+if.then14:                                        ; preds = %if.end12
+  tail call void @IV_free(%struct._IV* %4) #5
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.end12, %if.then14
+  tail call void @ETree_setDefaultFields(%struct._ETree* %etree) #7
+  ret void
+}

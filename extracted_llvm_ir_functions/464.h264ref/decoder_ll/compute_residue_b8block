@@ -1,0 +1,117 @@
+define void @compute_residue_b8block(i32 %b8block, i32 %i16mode) #0 {
+entry:
+  %rem = srem i32 %b8block, 2
+  %shl = shl i32 %rem, 3
+  %add = add nsw i32 %shl, 8
+  %div = sdiv i32 %b8block, 2
+  %shl1 = shl i32 %div, 3
+  %add2 = add nsw i32 %shl1, 8
+  %cmp = icmp sgt i32 %i16mode, -1
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %pix_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 33
+  %pix_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 34
+  %1 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
+  %imgY = getelementptr inbounds %struct.storable_picture* %1, i64 0, i32 25
+  %2 = load i16*** %imgY, align 8, !tbaa !0
+  br i1 %cmp, label %for.cond.preheader, label %for.cond25.preheader
+
+for.cond25.preheader:                             ; preds = %entry
+  %3 = load %struct.Decoders** @decs, align 8, !tbaa !0
+  %resY51 = getelementptr inbounds %struct.Decoders* %3, i64 0, i32 0
+  %4 = load i32*** %resY51, align 8, !tbaa !0
+  %5 = shl i32 %div, 3
+  %6 = sext i32 %5 to i64
+  %7 = shl i32 %rem, 3
+  %8 = sext i32 %7 to i64
+  br label %for.cond29.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %idxprom13 = sext i32 %i16mode to i64
+  %9 = load %struct.Decoders** @decs, align 8, !tbaa !0
+  %resY = getelementptr inbounds %struct.Decoders* %9, i64 0, i32 0
+  %10 = load i32*** %resY, align 8, !tbaa !0
+  %11 = shl i32 %div, 3
+  %12 = sext i32 %11 to i64
+  %13 = shl i32 %rem, 3
+  %14 = sext i32 %13 to i64
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.cond.preheader, %for.inc22
+  %indvars.iv90 = phi i64 [ %14, %for.cond.preheader ], [ %indvars.iv.next91, %for.inc22 ]
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.cond4.preheader, %for.body6
+  %indvars.iv = phi i64 [ %12, %for.cond4.preheader ], [ %indvars.iv.next, %for.body6 ]
+  %15 = load i32* %pix_x, align 4, !tbaa !3
+  %16 = trunc i64 %indvars.iv90 to i32
+  %add7 = add nsw i32 %15, %16
+  %idxprom = sext i32 %add7 to i64
+  %17 = load i32* %pix_y, align 4, !tbaa !3
+  %18 = trunc i64 %indvars.iv to i32
+  %add8 = add nsw i32 %17, %18
+  %idxprom9 = sext i32 %add8 to i64
+  %arrayidx = getelementptr inbounds i16** %2, i64 %idxprom9
+  %19 = load i16** %arrayidx, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds i16* %19, i64 %idxprom
+  %20 = load i16* %arrayidx10, align 2, !tbaa !4
+  %conv = zext i16 %20 to i32
+  %arrayidx16 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 42, i64 %idxprom13, i64 %indvars.iv, i64 %indvars.iv90
+  %21 = load i16* %arrayidx16, align 2, !tbaa !4
+  %conv17 = zext i16 %21 to i32
+  %sub = sub nsw i32 %conv, %conv17
+  %arrayidx20 = getelementptr inbounds i32** %10, i64 %indvars.iv
+  %22 = load i32** %arrayidx20, align 8, !tbaa !0
+  %arrayidx21 = getelementptr inbounds i32* %22, i64 %indvars.iv90
+  store i32 %sub, i32* %arrayidx21, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %23 = trunc i64 %indvars.iv.next to i32
+  %cmp5 = icmp slt i32 %23, %add2
+  br i1 %cmp5, label %for.body6, label %for.inc22
+
+for.inc22:                                        ; preds = %for.body6
+  %indvars.iv.next91 = add i64 %indvars.iv90, 1
+  %24 = trunc i64 %indvars.iv.next91 to i32
+  %cmp3 = icmp slt i32 %24, %add
+  br i1 %cmp3, label %for.cond4.preheader, label %if.end
+
+for.cond29.preheader:                             ; preds = %for.cond25.preheader, %for.inc57
+  %indvars.iv94 = phi i64 [ %8, %for.cond25.preheader ], [ %indvars.iv.next95, %for.inc57 ]
+  br label %for.body32
+
+for.body32:                                       ; preds = %for.cond29.preheader, %for.body32
+  %indvars.iv92 = phi i64 [ %6, %for.cond29.preheader ], [ %indvars.iv.next93, %for.body32 ]
+  %25 = load i32* %pix_x, align 4, !tbaa !3
+  %26 = trunc i64 %indvars.iv94 to i32
+  %add34 = add nsw i32 %25, %26
+  %idxprom35 = sext i32 %add34 to i64
+  %27 = load i32* %pix_y, align 4, !tbaa !3
+  %28 = trunc i64 %indvars.iv92 to i32
+  %add37 = add nsw i32 %27, %28
+  %idxprom38 = sext i32 %add37 to i64
+  %arrayidx40 = getelementptr inbounds i16** %2, i64 %idxprom38
+  %29 = load i16** %arrayidx40, align 8, !tbaa !0
+  %arrayidx41 = getelementptr inbounds i16* %29, i64 %idxprom35
+  %30 = load i16* %arrayidx41, align 2, !tbaa !4
+  %conv42 = zext i16 %30 to i32
+  %arrayidx46 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 45, i64 %indvars.iv94, i64 %indvars.iv92
+  %31 = load i16* %arrayidx46, align 2, !tbaa !4
+  %conv47 = zext i16 %31 to i32
+  %sub48 = sub nsw i32 %conv42, %conv47
+  %arrayidx52 = getelementptr inbounds i32** %4, i64 %indvars.iv92
+  %32 = load i32** %arrayidx52, align 8, !tbaa !0
+  %arrayidx53 = getelementptr inbounds i32* %32, i64 %indvars.iv94
+  store i32 %sub48, i32* %arrayidx53, align 4, !tbaa !3
+  %indvars.iv.next93 = add i64 %indvars.iv92, 1
+  %33 = trunc i64 %indvars.iv.next93 to i32
+  %cmp30 = icmp slt i32 %33, %add2
+  br i1 %cmp30, label %for.body32, label %for.inc57
+
+for.inc57:                                        ; preds = %for.body32
+  %indvars.iv.next95 = add i64 %indvars.iv94, 1
+  %34 = trunc i64 %indvars.iv.next95 to i32
+  %cmp26 = icmp slt i32 %34, %add
+  br i1 %cmp26, label %for.cond29.preheader, label %if.end
+
+if.end:                                           ; preds = %for.inc57, %for.inc22
+  ret void
+}

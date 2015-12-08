@@ -1,0 +1,56 @@
+define void @free_orig_planes() #0 {
+entry:
+  %0 = load i16*** @imgY_org_frm, align 8, !tbaa !3
+  tail call void @free_mem2Dpel(i16** %0) #6
+  %1 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 159
+  %2 = load i32* %yuv_format, align 4, !tbaa !0
+  %cmp = icmp eq i32 %2, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %3 = load i16**** @imgUV_org_frm, align 8, !tbaa !3
+  tail call void @free_mem3Dpel(i16*** %3, i32 2) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %4 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !3
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %4, i64 0, i32 25
+  %5 = load i32* %frame_mbs_only_flag, align 4, !tbaa !1
+  %tobool = icmp eq i32 %5, 0
+  br i1 %tobool, label %if.then1, label %if.end9
+
+if.then1:                                         ; preds = %if.end
+  %6 = load i16*** @imgY_org_top, align 8, !tbaa !3
+  %7 = load i16*** @imgY_org_bot, align 8, !tbaa !3
+  tail call void @free_top_bot_planes(i16** %6, i16** %7) #6
+  %8 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %yuv_format2 = getelementptr inbounds %struct.ImageParameters* %8, i64 0, i32 159
+  %9 = load i32* %yuv_format2, align 4, !tbaa !0
+  %cmp3 = icmp eq i32 %9, 0
+  br i1 %cmp3, label %if.end9, label %if.then4
+
+if.then4:                                         ; preds = %if.then1
+  %10 = load i16**** @imgUV_org_top, align 8, !tbaa !3
+  %11 = load i16*** %10, align 8, !tbaa !3
+  %12 = load i16**** @imgUV_org_bot, align 8, !tbaa !3
+  %13 = load i16*** %12, align 8, !tbaa !3
+  tail call void @free_top_bot_planes(i16** %11, i16** %13) #6
+  %14 = load i16**** @imgUV_org_top, align 8, !tbaa !3
+  %arrayidx6 = getelementptr inbounds i16*** %14, i64 1
+  %15 = load i16*** %arrayidx6, align 8, !tbaa !3
+  %16 = load i16**** @imgUV_org_bot, align 8, !tbaa !3
+  %arrayidx7 = getelementptr inbounds i16*** %16, i64 1
+  %17 = load i16*** %arrayidx7, align 8, !tbaa !3
+  tail call void @free_top_bot_planes(i16** %15, i16** %17) #6
+  %18 = load i16**** @imgUV_org_top, align 8, !tbaa !3
+  %19 = bitcast i16*** %18 to i8*
+  tail call void @free(i8* %19) #6
+  %20 = load i16**** @imgUV_org_bot, align 8, !tbaa !3
+  %21 = bitcast i16*** %20 to i8*
+  tail call void @free(i8* %21) #6
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then1, %if.end, %if.then4
+  ret void
+}

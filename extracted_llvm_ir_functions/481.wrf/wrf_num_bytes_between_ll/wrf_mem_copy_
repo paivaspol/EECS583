@@ -1,0 +1,22 @@
+define i32 @wrf_mem_copy_(i8* nocapture %a, i8* nocapture %b, i32* nocapture %n) #0 {
+entry:
+  %0 = load i32* %n, align 4, !tbaa !0
+  %cmp3 = icmp sgt i32 %0, 0
+  br i1 %cmp3, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.06 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %a.addr.05 = phi i8* [ %incdec.ptr, %for.body ], [ %a, %entry ]
+  %b.addr.04 = phi i8* [ %incdec.ptr1, %for.body ], [ %b, %entry ]
+  %incdec.ptr = getelementptr inbounds i8* %a.addr.05, i64 1
+  %1 = load i8* %a.addr.05, align 1, !tbaa !1
+  %incdec.ptr1 = getelementptr inbounds i8* %b.addr.04, i64 1
+  store i8 %1, i8* %b.addr.04, align 1, !tbaa !1
+  %inc = add nsw i32 %i.06, 1
+  %2 = load i32* %n, align 4, !tbaa !0
+  %cmp = icmp slt i32 %inc, %2
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  ret i32 undef
+}

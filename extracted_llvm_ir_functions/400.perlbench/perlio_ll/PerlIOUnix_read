@@ -1,0 +1,77 @@
+define i64 @PerlIOUnix_read(%struct._PerlIO** nocapture %f, i8* nocapture %vbuf, i64 %count) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %fd1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %fd1 to i32*
+  %2 = load i32* %1, align 4, !tbaa !0
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %3 = load i32* %flags, align 4, !tbaa !0
+  %4 = and i32 %3, 3328
+  %5 = icmp eq i32 %4, 1024
+  br i1 %5, label %while.body.preheader, label %return
+
+while.body.preheader:                             ; preds = %entry
+  %call40 = tail call i64 @read(i32 %2, i8* %vbuf, i64 %count) #9
+  %cmp41 = icmp sgt i64 %call40, -1
+  br i1 %cmp41, label %if.else, label %lor.lhs.false5
+
+lor.lhs.false5:                                   ; preds = %while.body.preheader, %while.body.backedge
+  %call42 = phi i64 [ %call, %while.body.backedge ], [ %call40, %while.body.preheader ]
+  %call6 = tail call i32* @__errno_location() #9
+  %6 = load i32* %call6, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %6, 4
+  br i1 %cmp7, label %if.end24, label %if.then8
+
+if.then8:                                         ; preds = %lor.lhs.false5
+  %cmp9 = icmp slt i64 %call42, 0
+  br i1 %cmp9, label %if.then10, label %if.else
+
+if.then10:                                        ; preds = %if.then8
+  %call11 = tail call i32* @__errno_location() #9
+  %7 = load i32* %call11, align 4, !tbaa !0
+  %cmp12 = icmp eq i32 %7, 11
+  br i1 %cmp12, label %return, label %if.then13
+
+if.then13:                                        ; preds = %if.then10
+  %8 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags14 = getelementptr inbounds %struct._PerlIO* %8, i64 0, i32 2
+  %9 = load i32* %flags14, align 4, !tbaa !0
+  %or = or i32 %9, 2048
+  store i32 %or, i32* %flags14, align 4, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %while.body.preheader, %while.body.backedge, %if.then8
+  %call39 = phi i64 [ %call42, %if.then8 ], [ %call40, %while.body.preheader ], [ %call, %while.body.backedge ]
+  %cmp16 = icmp ne i64 %call39, 0
+  %cmp17 = icmp eq i64 %count, 0
+  %or.cond36 = or i1 %cmp16, %cmp17
+  br i1 %or.cond36, label %return, label %if.then18
+
+if.then18:                                        ; preds = %if.else
+  %10 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags19 = getelementptr inbounds %struct._PerlIO* %10, i64 0, i32 2
+  %11 = load i32* %flags19, align 4, !tbaa !0
+  %or20 = or i32 %11, 256
+  store i32 %or20, i32* %flags19, align 4, !tbaa !0
+  %call21 = tail call i32* @__errno_location() #9
+  store i32 0, i32* %call21, align 4, !tbaa !0
+  br label %return
+
+if.end24:                                         ; preds = %lor.lhs.false5
+  %12 = load i32* @PL_sig_pending, align 4, !tbaa !0
+  %tobool25 = icmp eq i32 %12, 0
+  br i1 %tobool25, label %while.body.backedge, label %if.then26
+
+if.then26:                                        ; preds = %if.end24
+  tail call void @Perl_despatch_signals() #9
+  br label %while.body.backedge
+
+while.body.backedge:                              ; preds = %if.then26, %if.end24
+  %call = tail call i64 @read(i32 %2, i8* %vbuf, i64 %count) #9
+  %cmp = icmp sgt i64 %call, -1
+  br i1 %cmp, label %if.else, label %lor.lhs.false5
+
+return:                                           ; preds = %if.then13, %if.then18, %if.then10, %if.else, %entry
+  %retval.0 = phi i64 [ 0, %entry ], [ %call39, %if.else ], [ %call42, %if.then10 ], [ 0, %if.then18 ], [ %call42, %if.then13 ]
+  ret i64 %retval.0
+}

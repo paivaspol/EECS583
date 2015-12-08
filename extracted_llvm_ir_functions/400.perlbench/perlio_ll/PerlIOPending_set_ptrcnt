@@ -1,0 +1,16 @@
+define void @PerlIOPending_set_ptrcnt(%struct._PerlIO** %f, i8* %ptr, i64 %cnt) #1 {
+entry:
+  %cmp = icmp slt i64 %cnt, 1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @PerlIOBuf_set_ptrcnt(%struct._PerlIO** %f, i8* %ptr, i64 undef) #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void
+}

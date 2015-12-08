@@ -1,0 +1,163 @@
+define double @A2_oneNormOfRow(%struct._A2* %mtx, i32 %irow) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %entries = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 6
+  %0 = load double** %entries, align 8, !tbaa !3
+  %cmp1 = icmp eq double* %0, null
+  %cmp3 = icmp slt i32 %irow, 0
+  %or.cond = or i1 %cmp1, %cmp3
+  br i1 %or.cond, label %if.then, label %lor.lhs.false4
+
+lor.lhs.false4:                                   ; preds = %lor.lhs.false
+  %n1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
+  %1 = load i32* %n1, align 4, !tbaa !0
+  %cmp5 = icmp slt i32 %1, %irow
+  br i1 %cmp5, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false4, %lor.lhs.false, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([52 x i8]* @.str14, i64 0, i64 0), %struct._A2* %mtx, i32 %irow) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false4
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
+  %3 = load i32* %type, align 4, !tbaa !0
+  %.off = add i32 %3, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end13, label %if.then10
+
+if.then10:                                        ; preds = %if.end
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([95 x i8]* @.str15, i64 0, i64 0), %struct._A2* %mtx, i32 %irow, i32 %3) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end13:                                         ; preds = %if.end
+  %n2 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 2
+  %5 = load i32* %n2, align 4, !tbaa !0
+  switch i32 %3, label %if.end82 [
+    i32 1, label %if.then16
+    i32 2, label %if.then38
+  ]
+
+if.then16:                                        ; preds = %if.end13
+  %inc1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %6 = load i32* %inc1, align 4, !tbaa !0
+  %mul = mul nsw i32 %6, %irow
+  %idx.ext = sext i32 %mul to i64
+  %inc218 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %7 = load i32* %inc218, align 4, !tbaa !0
+  %cmp19 = icmp eq i32 %7, 1
+  %cmp21136 = icmp sgt i32 %5, 0
+  br i1 %cmp19, label %for.cond.preheader, label %for.cond23.preheader
+
+for.cond23.preheader:                             ; preds = %if.then16
+  br i1 %cmp21136, label %for.body25.lr.ph, label %if.end82
+
+for.body25.lr.ph:                                 ; preds = %for.cond23.preheader
+  %8 = sext i32 %7 to i64
+  br label %for.body25
+
+for.cond.preheader:                               ; preds = %if.then16
+  br i1 %cmp21136, label %for.body, label %if.end82
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %sum.0138 = phi double [ %add, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %add.ptr.sum135 = add i64 %indvars.iv, %idx.ext
+  %arrayidx = getelementptr inbounds double* %0, i64 %add.ptr.sum135
+  %9 = load double* %arrayidx, align 8, !tbaa !4
+  %call22 = tail call double @fabs(double %9) #7
+  %add = fadd double %sum.0138, %call22
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %5
+  br i1 %exitcond, label %if.end82, label %for.body
+
+for.body25:                                       ; preds = %for.body25, %for.body25.lr.ph
+  %indvars.iv156 = phi i64 [ 0, %for.body25.lr.ph ], [ %indvars.iv.next157, %for.body25 ]
+  %sum.1143 = phi double [ 0.000000e+00, %for.body25.lr.ph ], [ %add29, %for.body25 ]
+  %jcol.1141 = phi i32 [ 0, %for.body25.lr.ph ], [ %inc31, %for.body25 ]
+  %add.ptr.sum = add i64 %indvars.iv156, %idx.ext
+  %arrayidx27 = getelementptr inbounds double* %0, i64 %add.ptr.sum
+  %10 = load double* %arrayidx27, align 8, !tbaa !4
+  %call28 = tail call double @fabs(double %10) #7
+  %add29 = fadd double %sum.1143, %call28
+  %inc31 = add nsw i32 %jcol.1141, 1
+  %indvars.iv.next157 = add i64 %indvars.iv156, %8
+  %exitcond158 = icmp eq i32 %inc31, %5
+  br i1 %exitcond158, label %if.end82, label %for.body25
+
+if.then38:                                        ; preds = %if.end13
+  %mul40 = shl i32 %irow, 1
+  %inc141 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 3
+  %11 = load i32* %inc141, align 4, !tbaa !0
+  %mul42 = mul nsw i32 %mul40, %11
+  %idx.ext43 = sext i32 %mul42 to i64
+  %inc245 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 4
+  %12 = load i32* %inc245, align 4, !tbaa !0
+  %cmp46 = icmp eq i32 %12, 1
+  %cmp49146 = icmp sgt i32 %5, 0
+  br i1 %cmp46, label %for.cond48.preheader, label %for.cond64.preheader
+
+for.cond64.preheader:                             ; preds = %if.then38
+  br i1 %cmp49146, label %for.body66.lr.ph, label %if.end82
+
+for.body66.lr.ph:                                 ; preds = %for.cond64.preheader
+  %13 = sext i32 %12 to i64
+  br label %for.body66
+
+for.cond48.preheader:                             ; preds = %if.then38
+  br i1 %cmp49146, label %for.body50, label %if.end82
+
+for.body50:                                       ; preds = %for.cond48.preheader, %for.body50
+  %indvars.iv159 = phi i64 [ %indvars.iv.next160, %for.body50 ], [ 0, %for.cond48.preheader ]
+  %sum.2148 = phi double [ %add59, %for.body50 ], [ 0.000000e+00, %for.cond48.preheader ]
+  %14 = trunc i64 %indvars.iv159 to i32
+  %mul51 = shl nsw i32 %14, 1
+  %idxprom52 = sext i32 %mul51 to i64
+  %add.ptr44.sum132 = add i64 %idxprom52, %idx.ext43
+  %arrayidx53 = getelementptr inbounds double* %0, i64 %add.ptr44.sum132
+  %15 = load double* %arrayidx53, align 8, !tbaa !4
+  %add55133 = or i32 %mul51, 1
+  %idxprom56 = sext i32 %add55133 to i64
+  %add.ptr44.sum134 = add i64 %idxprom56, %idx.ext43
+  %arrayidx57 = getelementptr inbounds double* %0, i64 %add.ptr44.sum134
+  %16 = load double* %arrayidx57, align 8, !tbaa !4
+  %call58 = tail call double @Zabs(double %15, double %16) #5
+  %add59 = fadd double %sum.2148, %call58
+  %indvars.iv.next160 = add i64 %indvars.iv159, 1
+  %lftr.wideiv161 = trunc i64 %indvars.iv.next160 to i32
+  %exitcond162 = icmp eq i32 %lftr.wideiv161, %5
+  br i1 %exitcond162, label %if.end82, label %for.body50
+
+for.body66:                                       ; preds = %for.body66, %for.body66.lr.ph
+  %indvars.iv163 = phi i64 [ 0, %for.body66.lr.ph ], [ %indvars.iv.next164, %for.body66 ]
+  %sum.3154 = phi double [ 0.000000e+00, %for.body66.lr.ph ], [ %add75, %for.body66 ]
+  %jcol.3152 = phi i32 [ 0, %for.body66.lr.ph ], [ %inc77, %for.body66 ]
+  %17 = trunc i64 %indvars.iv163 to i32
+  %mul67 = shl nsw i32 %17, 1
+  %idxprom68 = sext i32 %mul67 to i64
+  %add.ptr44.sum = add i64 %idxprom68, %idx.ext43
+  %arrayidx69 = getelementptr inbounds double* %0, i64 %add.ptr44.sum
+  %18 = load double* %arrayidx69, align 8, !tbaa !4
+  %add71130 = or i32 %mul67, 1
+  %idxprom72 = sext i32 %add71130 to i64
+  %add.ptr44.sum131 = add i64 %idxprom72, %idx.ext43
+  %arrayidx73 = getelementptr inbounds double* %0, i64 %add.ptr44.sum131
+  %19 = load double* %arrayidx73, align 8, !tbaa !4
+  %call74 = tail call double @Zabs(double %18, double %19) #5
+  %add75 = fadd double %sum.3154, %call74
+  %inc77 = add nsw i32 %jcol.3152, 1
+  %indvars.iv.next164 = add i64 %indvars.iv163, %13
+  %exitcond165 = icmp eq i32 %inc77, %5
+  br i1 %exitcond165, label %if.end82, label %for.body66
+
+if.end82:                                         ; preds = %for.cond64.preheader, %for.body66, %for.cond48.preheader, %for.body50, %for.cond23.preheader, %for.body25, %for.cond.preheader, %for.body, %if.end13
+  %sum.4 = phi double [ 0.000000e+00, %if.end13 ], [ 0.000000e+00, %for.cond.preheader ], [ %add, %for.body ], [ 0.000000e+00, %for.cond23.preheader ], [ %add29, %for.body25 ], [ 0.000000e+00, %for.cond48.preheader ], [ %add59, %for.body50 ], [ 0.000000e+00, %for.cond64.preheader ], [ %add75, %for.body66 ]
+  ret double %sum.4
+}

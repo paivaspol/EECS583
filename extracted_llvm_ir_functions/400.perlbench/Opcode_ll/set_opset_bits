@@ -1,0 +1,115 @@
+define internal fastcc void @set_opset_bits(i8* nocapture %bitmap, %struct.sv* %bitspec, i32 %on, i8* %opname) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %bitspec, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 65536
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.else26, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %bitspec, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %1, i64 24
+  %2 = bitcast i8* %xiv_iv to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  %conv = trunc i64 %3 to i32
+  %shr = ashr i32 %conv, 3
+  %and4 = and i32 %conv, 7
+  %4 = load i32* @PL_maxo, align 4, !tbaa !3
+  %cmp = icmp sge i32 %conv, %4
+  %cmp6 = icmp slt i32 %conv, 0
+  %or.cond = or i1 %cmp, %cmp6
+  br i1 %or.cond, label %if.then8, label %if.end14
+
+if.then8:                                         ; preds = %cond.true
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([39 x i8]* @.str52, i64 0, i64 0), i8* %opname, i32 %conv) #4
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then8, %cond.true
+  %tobool15 = icmp eq i32 %on, 0
+  %shl = shl i32 1, %and4
+  br i1 %tobool15, label %if.else, label %if.then16
+
+if.then16:                                        ; preds = %if.end14
+  %idxprom = sext i32 %shr to i64
+  %arrayidx = getelementptr inbounds i8* %bitmap, i64 %idxprom
+  %5 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv17111 = zext i8 %5 to i32
+  %or = or i32 %conv17111, %shl
+  %conv18 = trunc i32 %or to i8
+  store i8 %conv18, i8* %arrayidx, align 1, !tbaa !1
+  br label %if.end81
+
+if.else:                                          ; preds = %if.end14
+  %neg = xor i32 %shl, 255
+  %idxprom20 = sext i32 %shr to i64
+  %arrayidx21 = getelementptr inbounds i8* %bitmap, i64 %idxprom20
+  %6 = load i8* %arrayidx21, align 1, !tbaa !1
+  %conv22110 = zext i8 %6 to i32
+  %and23 = and i32 %conv22110, %neg
+  %conv24 = trunc i32 %and23 to i8
+  store i8 %conv24, i8* %arrayidx21, align 1, !tbaa !1
+  br label %if.end81
+
+if.else26:                                        ; preds = %entry
+  %and28 = and i32 %0, 262144
+  %tobool29 = icmp eq i32 %and28, 0
+  br i1 %tobool29, label %if.else77, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.else26
+  %sv_any30 = getelementptr inbounds %struct.sv* %bitspec, i64 0, i32 0
+  %7 = load i8** %sv_any30, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %7, i64 8
+  %8 = bitcast i8* %xpv_cur to i64*
+  %9 = load i64* %8, align 8, !tbaa !4
+  %10 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %cmp31 = icmp eq i64 %9, %10
+  br i1 %cmp31, label %if.end51, label %if.else77
+
+if.end51:                                         ; preds = %land.lhs.true
+  %xpv_pv = bitcast i8* %7 to i8**
+  %11 = load i8** %xpv_pv, align 8, !tbaa !0
+  %tobool52 = icmp eq i32 %on, 0
+  %dec64113 = add i64 %9, -1
+  %cmp65114 = icmp eq i64 %9, 0
+  br i1 %tobool52, label %while.cond63.preheader, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.end51
+  br i1 %cmp65114, label %if.end81, label %while.body
+
+while.cond63.preheader:                           ; preds = %if.end51
+  br i1 %cmp65114, label %if.end81, label %while.body67
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %.pr122 = phi i64 [ %dec, %while.body ], [ %dec64113, %while.cond.preheader ]
+  %arrayidx56 = getelementptr inbounds i8* %11, i64 %.pr122
+  %12 = load i8* %arrayidx56, align 1, !tbaa !1
+  %arrayidx58 = getelementptr inbounds i8* %bitmap, i64 %.pr122
+  %13 = load i8* %arrayidx58, align 1, !tbaa !1
+  %or60109 = or i8 %13, %12
+  store i8 %or60109, i8* %arrayidx58, align 1, !tbaa !1
+  %dec = add i64 %.pr122, -1
+  %cmp54 = icmp eq i64 %.pr122, 0
+  br i1 %cmp54, label %if.end81, label %while.body
+
+while.body67:                                     ; preds = %while.cond63.preheader, %while.body67
+  %.pr112116 = phi i64 [ %dec64, %while.body67 ], [ %dec64113, %while.cond63.preheader ]
+  %arrayidx68 = getelementptr inbounds i8* %11, i64 %.pr112116
+  %14 = load i8* %arrayidx68, align 1, !tbaa !1
+  %neg70 = xor i8 %14, -1
+  %arrayidx71 = getelementptr inbounds i8* %bitmap, i64 %.pr112116
+  %15 = load i8* %arrayidx71, align 1, !tbaa !1
+  %and73 = and i8 %15, %neg70
+  store i8 %and73, i8* %arrayidx71, align 1, !tbaa !1
+  %dec64 = add i64 %.pr112116, -1
+  %cmp65 = icmp eq i64 %.pr112116, 0
+  br i1 %cmp65, label %if.end81, label %while.body67
+
+if.else77:                                        ; preds = %if.else26, %land.lhs.true
+  %and79 = and i32 %0, 255
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([42 x i8]* @.str14, i64 0, i64 0), i8* %opname, i32 %and79) #4
+  br label %if.end81
+
+if.end81:                                         ; preds = %while.cond.preheader, %while.body, %while.cond63.preheader, %while.body67, %if.else77, %if.then16, %if.else
+  ret void
+}

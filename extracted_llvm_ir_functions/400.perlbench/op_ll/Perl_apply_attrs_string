@@ -1,0 +1,87 @@
+define void @Perl_apply_attrs_string(i8* %stashpv, %struct.cv* %cv, i8* %attrstr, i64 %len) #0 {
+entry:
+  %tobool = icmp eq i64 %len, 0
+  br i1 %tobool, label %while.cond.preheader, label %for.cond.preheader.lr.ph
+
+while.cond.preheader:                             ; preds = %entry
+  %call = tail call i64 @strlen(i8* %attrstr) #7
+  %tobool18994 = icmp eq i64 %call, 0
+  br i1 %tobool18994, label %while.end, label %for.cond.preheader.lr.ph
+
+for.cond.preheader.lr.ph:                         ; preds = %entry, %while.cond.preheader, %for.end48
+  %attrstr.addr.0.ph97 = phi i8* [ %attrstr.addr.2, %for.end48 ], [ %attrstr, %while.cond.preheader ], [ %attrstr, %entry ]
+  %attrs.0.ph96 = phi %struct.op* [ %call51, %for.end48 ], [ null, %while.cond.preheader ], [ null, %entry ]
+  %len.addr.0.ph8895 = phi i64 [ %len.addr.2.lcssa, %for.end48 ], [ %call, %while.cond.preheader ], [ %len, %entry ]
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.preheader.lr.ph, %for.inc
+  %len.addr.1 = phi i64 [ %dec, %for.inc ], [ %len.addr.0.ph8895, %for.cond.preheader.lr.ph ]
+  %attrstr.addr.1 = phi i8* [ %incdec.ptr, %for.inc ], [ %attrstr.addr.0.ph97, %for.cond.preheader.lr.ph ]
+  %0 = load i8* %attrstr.addr.1, align 1, !tbaa !1
+  switch i8 %0, label %for.end [
+    i8 32, label %land.rhs
+    i8 9, label %land.rhs
+    i8 10, label %land.rhs
+    i8 13, label %land.rhs
+    i8 12, label %land.rhs
+  ]
+
+land.rhs:                                         ; preds = %for.cond, %for.cond, %for.cond, %for.cond, %for.cond
+  %cond = icmp eq i64 %len.addr.1, 0
+  br i1 %cond, label %while.end, label %for.inc
+
+for.inc:                                          ; preds = %land.rhs
+  %dec = add i64 %len.addr.1, -1
+  %incdec.ptr = getelementptr inbounds i8* %attrstr.addr.1, i64 1
+  br label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  %tobool19 = icmp eq i64 %len.addr.1, 0
+  br i1 %tobool19, label %while.end, label %for.cond21
+
+for.cond21:                                       ; preds = %for.end, %for.inc45
+  %1 = phi i8 [ %.pre, %for.inc45 ], [ %0, %for.end ]
+  %len.addr.2 = phi i64 [ %dec46, %for.inc45 ], [ %len.addr.1, %for.end ]
+  %attrstr.addr.2 = phi i8* [ %incdec.ptr47, %for.inc45 ], [ %attrstr.addr.1, %for.end ]
+  switch i8 %1, label %land.rhs41 [
+    i8 32, label %for.end48
+    i8 9, label %for.end48
+    i8 10, label %for.end48
+    i8 13, label %for.end48
+    i8 12, label %for.end48
+  ]
+
+land.rhs41:                                       ; preds = %for.cond21
+  %tobool42 = icmp eq i64 %len.addr.2, 0
+  br i1 %tobool42, label %for.end48, label %for.inc45
+
+for.inc45:                                        ; preds = %land.rhs41
+  %dec46 = add i64 %len.addr.2, -1
+  %incdec.ptr47 = getelementptr inbounds i8* %attrstr.addr.2, i64 1
+  %.pre = load i8* %incdec.ptr47, align 1, !tbaa !1
+  br label %for.cond21
+
+for.end48:                                        ; preds = %for.cond21, %for.cond21, %for.cond21, %for.cond21, %for.cond21, %land.rhs41
+  %len.addr.2.lcssa = phi i64 [ %len.addr.2, %for.cond21 ], [ %len.addr.2, %for.cond21 ], [ %len.addr.2, %for.cond21 ], [ %len.addr.2, %for.cond21 ], [ %len.addr.2, %for.cond21 ], [ 0, %land.rhs41 ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %attrstr.addr.2 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %attrstr.addr.1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %call49 = tail call %struct.sv* @Perl_newSVpvn(i8* %attrstr.addr.1, i64 %sub.ptr.sub) #7
+  %call50 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %call49) #8
+  %call51 = tail call %struct.op* @Perl_append_elem(i32 141, %struct.op* %attrs.0.ph96, %struct.op* %call50) #8
+  %tobool189 = icmp eq i64 %len.addr.2.lcssa, 0
+  br i1 %tobool189, label %while.end, label %for.cond.preheader.lr.ph
+
+while.end:                                        ; preds = %while.cond.preheader, %for.end48, %land.rhs, %for.end
+  %attrs.0.ph93 = phi %struct.op* [ %attrs.0.ph96, %for.end ], [ %attrs.0.ph96, %land.rhs ], [ null, %while.cond.preheader ], [ %call51, %for.end48 ]
+  %call53 = tail call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([11 x i8]* @.str23, i64 0, i64 0), i64 10) #7
+  %call54 = tail call %struct.sv* @Perl_newSVpv(i8* %stashpv, i64 0) #7
+  %call55 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %call54) #8
+  %2 = bitcast %struct.cv* %cv to %struct.sv*
+  %call56 = tail call %struct.sv* @Perl_newRV(%struct.sv* %2) #7
+  %call57 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %call56) #8
+  %call58 = tail call %struct.op* @Perl_prepend_elem(i32 141, %struct.op* %call57, %struct.op* %attrs.0.ph93) #8
+  %call59 = tail call %struct.op* @Perl_prepend_elem(i32 141, %struct.op* %call55, %struct.op* %call58) #8
+  tail call void (i32, %struct.sv*, %struct.sv*, ...)* @Perl_load_module(i32 4, %struct.sv* %call53, %struct.sv* null, %struct.op* %call59) #8
+  ret void
+}

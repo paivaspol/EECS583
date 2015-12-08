@@ -1,0 +1,71 @@
+define i32 @IVDVsortUpAndCompress(i32 %n, i32* %ivec, double* %dvec) #0 {
+entry:
+  %cmp = icmp slt i32 %n, 0
+  %cmp1 = icmp eq i32* %ivec, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq double* %dvec, null
+  %or.cond61 = or i1 %or.cond, %cmp3
+  br i1 %or.cond61, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([88 x i8]* @.str1, i64 0, i64 0), i32 %n, i32* %ivec, double* %dvec, i32 %n, i32* %ivec, double* %dvec) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp4 = icmp eq i32 %n, 0
+  br i1 %cmp4, label %return, label %if.end6
+
+if.end6:                                          ; preds = %if.end
+  tail call void @IVDVqsortUp(i32 %n, i32* %ivec, double* %dvec) #4
+  %cmp762 = icmp sgt i32 %n, 1
+  br i1 %cmp762, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %if.end6
+  %1 = load i32* %ivec, align 4, !tbaa !3
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %key.065 = phi i32 [ %1, %for.body.lr.ph ], [ %key.1, %for.inc ]
+  %first.063 = phi i32 [ 1, %for.body.lr.ph ], [ %first.1, %for.inc ]
+  %arrayidx8 = getelementptr inbounds i32* %ivec, i64 %indvars.iv
+  %2 = load i32* %arrayidx8, align 4, !tbaa !3
+  %cmp9 = icmp eq i32 %key.065, %2
+  br i1 %cmp9, label %if.then10, label %if.then18
+
+if.then10:                                        ; preds = %for.body
+  %arrayidx12 = getelementptr inbounds double* %dvec, i64 %indvars.iv
+  %3 = load double* %arrayidx12, align 8, !tbaa !4
+  %sub = add nsw i32 %first.063, -1
+  %idxprom13 = sext i32 %sub to i64
+  %arrayidx14 = getelementptr inbounds double* %dvec, i64 %idxprom13
+  %4 = load double* %arrayidx14, align 8, !tbaa !4
+  %add = fadd double %3, %4
+  store double %add, double* %arrayidx14, align 8, !tbaa !4
+  br label %for.inc
+
+if.then18:                                        ; preds = %for.body
+  %idxprom21 = sext i32 %first.063 to i64
+  %arrayidx22 = getelementptr inbounds i32* %ivec, i64 %idxprom21
+  store i32 %2, i32* %arrayidx22, align 4, !tbaa !3
+  %arrayidx24 = getelementptr inbounds double* %dvec, i64 %indvars.iv
+  %5 = load double* %arrayidx24, align 8, !tbaa !4
+  %arrayidx26 = getelementptr inbounds double* %dvec, i64 %idxprom21
+  store double %5, double* %arrayidx26, align 8, !tbaa !4
+  %inc = add nsw i32 %first.063, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then10, %if.then18
+  %first.1 = phi i32 [ %first.063, %if.then10 ], [ %inc, %if.then18 ]
+  %key.1 = phi i32 [ %key.065, %if.then10 ], [ %2, %if.then18 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %return, label %for.body
+
+return:                                           ; preds = %if.end6, %for.inc, %if.end
+  %retval.0 = phi i32 [ 0, %if.end ], [ 1, %if.end6 ], [ %first.1, %for.inc ]
+  ret i32 %retval.0
+}

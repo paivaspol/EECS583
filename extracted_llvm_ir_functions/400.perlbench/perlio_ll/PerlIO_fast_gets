@@ -1,0 +1,44 @@
+define i32 @PerlIO_fast_gets(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.else, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %1, 4194304
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true2
+  %tab4 = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 1
+  %2 = load %struct._PerlIO_funcs** %tab4, align 8, !tbaa !3
+  %tobool5 = icmp eq %struct._PerlIO_funcs* %2, null
+  br i1 %tobool5, label %if.end, label %if.then6
+
+if.then6:                                         ; preds = %if.then
+  %Set_ptrcnt = getelementptr inbounds %struct._PerlIO_funcs* %2, i64 0, i32 27
+  %3 = load void (%struct._PerlIO**, i8*, i64)** %Set_ptrcnt, align 8, !tbaa !3
+  %cmp = icmp ne void (%struct._PerlIO**, i8*, i64)* %3, null
+  %conv = zext i1 %cmp to i32
+  br label %return
+
+if.end:                                           ; preds = %if.then
+  %call = tail call i32* @__errno_location() #9
+  store i32 22, i32* %call, align 4, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %land.lhs.true2, %land.lhs.true, %entry
+  %call7 = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call7, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end, %if.else, %if.then6
+  %retval.0 = phi i32 [ %conv, %if.then6 ], [ 0, %if.else ], [ 0, %if.end ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,19 @@
+define %struct._Chv* @FrontMtx_factorInpMtx(%struct._FrontMtx* %frontmtx, %struct._InpMtx* %inpmtx, double %tau, double %droptol, %struct._ChvManager* %chvmanager, i32* nocapture %perror, double* %cpus, i32* %stats, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %zero = alloca [2 x double], align 16
+  %pencil = alloca %struct._Pencil, align 8
+  %0 = bitcast [2 x double]* %zero to i8*
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 16, i1 false)
+  %1 = bitcast %struct._Pencil* %pencil to i8*
+  call void @llvm.lifetime.start(i64 40, i8* %1) #1
+  call void @Pencil_setDefaultFields(%struct._Pencil* %pencil) #5
+  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2
+  %2 = load i32* %type, align 4, !tbaa !0
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
+  %3 = load i32* %symmetryflag, align 4, !tbaa !0
+  %arraydecay = getelementptr inbounds [2 x double]* %zero, i64 0, i64 0
+  call void @Pencil_init(%struct._Pencil* %pencil, i32 %2, i32 %3, %struct._InpMtx* %inpmtx, double* %arraydecay, %struct._InpMtx* null) #5
+  %call = call %struct._Chv* @FrontMtx_factorPencil(%struct._FrontMtx* %frontmtx, %struct._Pencil* %pencil, double %tau, double %droptol, %struct._ChvManager* %chvmanager, i32* %perror, double* %cpus, i32* %stats, i32 %msglvl, %struct._IO_FILE* %msgFile) #6
+  call void @llvm.lifetime.end(i64 40, i8* %1) #1
+  ret %struct._Chv* %call
+}

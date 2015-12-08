@@ -1,0 +1,63 @@
+define void @AllocAlignment(i32 %nseq, i32 %alen, i8*** nocapture %ret_aseq, %struct.aliinfo_s* nocapture %ainfo) #0 {
+entry:
+  %name.i = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 7
+  %cs.i = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 4
+  %flags.i = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 0
+  store i32 0, i32* %flags.i, align 4, !tbaa !0
+  %0 = bitcast i8** %cs.i to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 8, i1 false) #6
+  %1 = bitcast i8** %name.i to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 56, i32 8, i1 false) #6
+  %conv = sext i32 %nseq to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 50, i64 %mul) #7
+  %2 = bitcast i8* %call to i8**
+  %cmp44 = icmp sgt i32 %nseq, 0
+  br i1 %cmp44, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %add = add nsw i32 %alen, 1
+  %conv2 = sext i32 %add to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv46 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next47, %for.body ]
+  %call4 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 52, i64 %conv2) #7
+  %arrayidx = getelementptr inbounds i8** %2, i64 %indvars.iv46
+  store i8* %call4, i8** %arrayidx, align 8, !tbaa !3
+  %indvars.iv.next47 = add i64 %indvars.iv46, 1
+  %lftr.wideiv48 = trunc i64 %indvars.iv.next47 to i32
+  %exitcond49 = icmp eq i32 %lftr.wideiv48, %nseq
+  br i1 %exitcond49, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %alen5 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 1
+  store i32 %alen, i32* %alen5, align 4, !tbaa !0
+  %nseq6 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 2
+  store i32 %nseq, i32* %nseq6, align 4, !tbaa !0
+  %mul8 = shl nsw i64 %conv, 2
+  %call9 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 57, i64 %mul8) #7
+  %3 = bitcast i8* %call9 to float*
+  %wgt = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 3
+  store float* %3, float** %wgt, align 8, !tbaa !3
+  tail call void @FSet(float* %3, i32 %nseq, float 1.000000e+00) #7
+  %mul12 = mul i64 %conv, 360
+  %call13 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 60, i64 %mul12) #7
+  %4 = bitcast i8* %call13 to %struct.seqinfo_s*
+  %sqinfo = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6
+  store %struct.seqinfo_s* %4, %struct.seqinfo_s** %sqinfo, align 8, !tbaa !3
+  br i1 %cmp44, label %for.body17, label %for.end23
+
+for.body17:                                       ; preds = %for.end, %for.body17
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body17 ], [ 0, %for.end ]
+  %flags = getelementptr inbounds %struct.seqinfo_s* %4, i64 %indvars.iv, i32 0
+  store i32 0, i32* %flags, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
+  br i1 %exitcond, label %for.end23, label %for.body17
+
+for.end23:                                        ; preds = %for.body17, %for.end
+  store i8** %2, i8*** %ret_aseq, align 8, !tbaa !3
+  ret void
+}

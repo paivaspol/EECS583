@@ -1,147 +1,158 @@
-define i32 @BZ2_bzCompress(%struct.bz_stream* readonly %strm, i32 %action) #4 {
-  %1 = icmp eq %struct.bz_stream* %strm, null
-  br i1 %1, label %isempty_RL.exit.thread, label %2
+define i32 @BZ2_bzCompress(%struct.bz_stream* %strm, i32 %action) #4 {
+entry:
+  %cmp = icmp eq %struct.bz_stream* %strm, null
+  br i1 %cmp, label %return, label %if.end
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8
-  %4 = bitcast i8** %3 to %struct.EState**
-  %5 = load %struct.EState** %4, align 8, !tbaa !27
-  %6 = icmp eq %struct.EState* %5, null
-  br i1 %6, label %isempty_RL.exit.thread, label %7
+if.end:                                           ; preds = %entry
+  %state = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8
+  %0 = load i8** %state, align 8, !tbaa !0
+  %cmp1 = icmp eq i8* %0, null
+  br i1 %cmp1, label %return, label %if.end3
 
-; <label>:7                                       ; preds = %2
-  %8 = getelementptr inbounds %struct.EState* %5, i64 0, i32 0
-  %9 = load %struct.bz_stream** %8, align 8, !tbaa !11
-  %10 = icmp eq %struct.bz_stream* %9, %strm
-  br i1 %10, label %.preheader, label %isempty_RL.exit.thread
+if.end3:                                          ; preds = %if.end
+  %strm4 = bitcast i8* %0 to %struct.bz_stream**
+  %1 = load %struct.bz_stream** %strm4, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.bz_stream* %1, %strm
+  br i1 %cmp5, label %preswitch.preheader, label %return
 
-.preheader:                                       ; preds = %7
-  %11 = getelementptr inbounds %struct.EState* %5, i64 0, i32 1
-  %12 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1
-  %13 = getelementptr inbounds %struct.EState* %5, i64 0, i32 3
-  %.pre = load i32* %11, align 4, !tbaa !17
-  br label %14
+preswitch.preheader:                              ; preds = %if.end3
+  %mode = getelementptr inbounds i8* %0, i64 8
+  %2 = bitcast i8* %mode to i32*
+  %avail_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1
+  %avail_in_expect = getelementptr inbounds i8* %0, i64 16
+  %3 = bitcast i8* %avail_in_expect to i32*
+  %.pre = load i32* %2, align 4, !tbaa !3
+  br label %preswitch
 
-; <label>:14                                      ; preds = %.backedge, %.preheader
-  %15 = phi i32 [ %storemerge, %.backedge ], [ %.pre, %.preheader ]
-  switch i32 %15, label %isempty_RL.exit.thread.loopexit8 [
-    i32 1, label %isempty_RL.exit.thread
-    i32 2, label %16
-    i32 3, label %22
-    i32 4, label %46
+preswitch:                                        ; preds = %preswitch.backedge, %preswitch.preheader
+  %4 = phi i32 [ %storemerge, %preswitch.backedge ], [ %.pre, %preswitch.preheader ]
+  switch i32 %4, label %return [
+    i32 1, label %return.loopexit
+    i32 2, label %sw.bb8
+    i32 3, label %sw.bb23
+    i32 4, label %sw.bb47
   ]
 
-; <label>:16                                      ; preds = %14
-  switch i32 %action, label %isempty_RL.exit.thread [
-    i32 0, label %17
-    i32 1, label %.backedge
-    i32 2, label %21
+sw.bb8:                                           ; preds = %preswitch
+  switch i32 %action, label %return.loopexit [
+    i32 0, label %if.then10
+    i32 1, label %preswitch.backedge
+    i32 2, label %if.then18
   ]
 
-; <label>:17                                      ; preds = %16
-  %18 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #12
-  %19 = icmp ne i8 %18, 0
-  %20 = select i1 %19, i32 1, i32 -2
-  br label %isempty_RL.exit.thread
+if.then10:                                        ; preds = %sw.bb8
+  %call = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #13
+  %tobool = icmp ne i8 %call, 0
+  %cond = select i1 %tobool, i32 1, i32 -2
+  br label %return
 
-.backedge:                                        ; preds = %16, %21
-  %storemerge = phi i32 [ 4, %21 ], [ 3, %16 ]
-  %storemerge7 = load i32* %12, align 4
-  store i32 %storemerge7, i32* %13, align 4, !tbaa !39
-  store i32 %storemerge, i32* %11, align 4, !tbaa !17
-  br label %14
+preswitch.backedge:                               ; preds = %sw.bb8, %if.then18
+  %storemerge = phi i32 [ 4, %if.then18 ], [ 3, %sw.bb8 ]
+  %storemerge123 = load i32* %avail_in, align 4
+  store i32 %storemerge123, i32* %3, align 4, !tbaa !3
+  store i32 %storemerge, i32* %2, align 4, !tbaa !3
+  br label %preswitch
 
-; <label>:21                                      ; preds = %16
-  br label %.backedge
+if.then18:                                        ; preds = %sw.bb8
+  br label %preswitch.backedge
 
-; <label>:22                                      ; preds = %14
-  %23 = icmp eq i32 %action, 1
-  br i1 %23, label %24, label %isempty_RL.exit.thread
+sw.bb23:                                          ; preds = %preswitch
+  %cmp24 = icmp eq i32 %action, 1
+  br i1 %cmp24, label %if.end27, label %return
 
-; <label>:24                                      ; preds = %22
-  %25 = load i32* %13, align 4, !tbaa !39
-  %26 = load i32* %12, align 4, !tbaa !40
-  %27 = icmp eq i32 %25, %26
-  br i1 %27, label %28, label %isempty_RL.exit.thread
+if.end27:                                         ; preds = %sw.bb23
+  %5 = load i32* %3, align 4, !tbaa !3
+  %6 = load i32* %avail_in, align 4, !tbaa !3
+  %cmp31 = icmp eq i32 %5, %6
+  br i1 %cmp31, label %if.end34, label %return
 
-; <label>:28                                      ; preds = %24
-  %29 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #12
-  %30 = load i32* %13, align 4, !tbaa !39
-  %31 = icmp eq i32 %30, 0
-  br i1 %31, label %32, label %isempty_RL.exit.thread
+if.end34:                                         ; preds = %if.end27
+  %call35 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #13
+  %7 = load i32* %3, align 4, !tbaa !3
+  %cmp37 = icmp eq i32 %7, 0
+  br i1 %cmp37, label %lor.lhs.false, label %return
 
-; <label>:32                                      ; preds = %28
-  %33 = getelementptr inbounds %struct.EState* %5, i64 0, i32 13
-  %34 = load i32* %33, align 4, !tbaa !32
-  %35 = icmp ult i32 %34, 256
-  br i1 %35, label %36, label %isempty_RL.exit
+lor.lhs.false:                                    ; preds = %if.end34
+  %state_in_ch.i = getelementptr inbounds i8* %0, i64 92
+  %8 = bitcast i8* %state_in_ch.i to i32*
+  %9 = load i32* %8, align 4, !tbaa !3
+  %cmp.i = icmp ult i32 %9, 256
+  br i1 %cmp.i, label %land.lhs.true.i, label %lor.lhs.false41
 
-; <label>:36                                      ; preds = %32
-  %37 = getelementptr inbounds %struct.EState* %5, i64 0, i32 14
-  %38 = load i32* %37, align 4, !tbaa !33
-  %39 = icmp sgt i32 %38, 0
-  br i1 %39, label %isempty_RL.exit.thread, label %isempty_RL.exit
+land.lhs.true.i:                                  ; preds = %lor.lhs.false
+  %state_in_len.i = getelementptr inbounds i8* %0, i64 96
+  %10 = bitcast i8* %state_in_len.i to i32*
+  %11 = load i32* %10, align 4, !tbaa !3
+  %cmp1.i = icmp sgt i32 %11, 0
+  br i1 %cmp1.i, label %return, label %lor.lhs.false41
 
-isempty_RL.exit:                                  ; preds = %36, %32
-  %40 = getelementptr inbounds %struct.EState* %5, i64 0, i32 20
-  %41 = load i32* %40, align 4, !tbaa !36
-  %42 = getelementptr inbounds %struct.EState* %5, i64 0, i32 19
-  %43 = load i32* %42, align 4, !tbaa !35
-  %44 = icmp slt i32 %41, %43
-  br i1 %44, label %isempty_RL.exit.thread, label %45
+lor.lhs.false41:                                  ; preds = %land.lhs.true.i, %lor.lhs.false
+  %state_out_pos = getelementptr inbounds i8* %0, i64 120
+  %12 = bitcast i8* %state_out_pos to i32*
+  %13 = load i32* %12, align 4, !tbaa !3
+  %numZ = getelementptr inbounds i8* %0, i64 116
+  %14 = bitcast i8* %numZ to i32*
+  %15 = load i32* %14, align 4, !tbaa !3
+  %cmp42 = icmp slt i32 %13, %15
+  br i1 %cmp42, label %return, label %if.end45
 
-; <label>:45                                      ; preds = %isempty_RL.exit
-  store i32 2, i32* %11, align 4, !tbaa !17
-  br label %isempty_RL.exit.thread
+if.end45:                                         ; preds = %lor.lhs.false41
+  store i32 2, i32* %2, align 4, !tbaa !3
+  br label %return
 
-; <label>:46                                      ; preds = %14
-  %47 = icmp eq i32 %action, 2
-  br i1 %47, label %48, label %isempty_RL.exit.thread
+sw.bb47:                                          ; preds = %preswitch
+  %cmp48 = icmp eq i32 %action, 2
+  br i1 %cmp48, label %if.end51, label %return
 
-; <label>:48                                      ; preds = %46
-  %49 = load i32* %13, align 4, !tbaa !39
-  %50 = load i32* %12, align 4, !tbaa !40
-  %51 = icmp eq i32 %49, %50
-  br i1 %51, label %52, label %isempty_RL.exit.thread
+if.end51:                                         ; preds = %sw.bb47
+  %16 = load i32* %3, align 4, !tbaa !3
+  %17 = load i32* %avail_in, align 4, !tbaa !3
+  %cmp55 = icmp eq i32 %16, %17
+  br i1 %cmp55, label %if.end58, label %return
 
-; <label>:52                                      ; preds = %48
-  %53 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #12
-  %54 = icmp eq i8 %53, 0
-  br i1 %54, label %isempty_RL.exit.thread, label %55
+if.end58:                                         ; preds = %if.end51
+  %call59 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #13
+  %tobool60 = icmp eq i8 %call59, 0
+  br i1 %tobool60, label %return, label %if.end62
 
-; <label>:55                                      ; preds = %52
-  %56 = load i32* %13, align 4, !tbaa !39
-  %57 = icmp eq i32 %56, 0
-  br i1 %57, label %58, label %isempty_RL.exit.thread
+if.end62:                                         ; preds = %if.end58
+  %18 = load i32* %3, align 4, !tbaa !3
+  %cmp64 = icmp eq i32 %18, 0
+  br i1 %cmp64, label %lor.lhs.false66, label %return
 
-; <label>:58                                      ; preds = %55
-  %59 = getelementptr inbounds %struct.EState* %5, i64 0, i32 13
-  %60 = load i32* %59, align 4, !tbaa !32
-  %61 = icmp ult i32 %60, 256
-  br i1 %61, label %62, label %isempty_RL.exit2
+lor.lhs.false66:                                  ; preds = %if.end62
+  %state_in_ch.i109 = getelementptr inbounds i8* %0, i64 92
+  %19 = bitcast i8* %state_in_ch.i109 to i32*
+  %20 = load i32* %19, align 4, !tbaa !3
+  %cmp.i110 = icmp ult i32 %20, 256
+  br i1 %cmp.i110, label %land.lhs.true.i113, label %lor.lhs.false69
 
-; <label>:62                                      ; preds = %58
-  %63 = getelementptr inbounds %struct.EState* %5, i64 0, i32 14
-  %64 = load i32* %63, align 4, !tbaa !33
-  %65 = icmp sgt i32 %64, 0
-  br i1 %65, label %isempty_RL.exit.thread, label %isempty_RL.exit2
+land.lhs.true.i113:                               ; preds = %lor.lhs.false66
+  %state_in_len.i111 = getelementptr inbounds i8* %0, i64 96
+  %21 = bitcast i8* %state_in_len.i111 to i32*
+  %22 = load i32* %21, align 4, !tbaa !3
+  %cmp1.i112 = icmp sgt i32 %22, 0
+  br i1 %cmp1.i112, label %return, label %lor.lhs.false69
 
-isempty_RL.exit2:                                 ; preds = %62, %58
-  %66 = getelementptr inbounds %struct.EState* %5, i64 0, i32 20
-  %67 = load i32* %66, align 4, !tbaa !36
-  %68 = getelementptr inbounds %struct.EState* %5, i64 0, i32 19
-  %69 = load i32* %68, align 4, !tbaa !35
-  %70 = icmp slt i32 %67, %69
-  br i1 %70, label %isempty_RL.exit.thread, label %71
+lor.lhs.false69:                                  ; preds = %land.lhs.true.i113, %lor.lhs.false66
+  %state_out_pos70 = getelementptr inbounds i8* %0, i64 120
+  %23 = bitcast i8* %state_out_pos70 to i32*
+  %24 = load i32* %23, align 4, !tbaa !3
+  %numZ71 = getelementptr inbounds i8* %0, i64 116
+  %25 = bitcast i8* %numZ71 to i32*
+  %26 = load i32* %25, align 4, !tbaa !3
+  %cmp72 = icmp slt i32 %24, %26
+  br i1 %cmp72, label %return, label %if.end75
 
-; <label>:71                                      ; preds = %isempty_RL.exit2
-  store i32 1, i32* %11, align 4, !tbaa !17
-  br label %isempty_RL.exit.thread
+if.end75:                                         ; preds = %lor.lhs.false69
+  store i32 1, i32* %2, align 4, !tbaa !3
+  br label %return
 
-isempty_RL.exit.thread.loopexit8:                 ; preds = %14
-  br label %isempty_RL.exit.thread
+return.loopexit:                                  ; preds = %preswitch, %sw.bb8
+  %retval.0.ph = phi i32 [ -2, %sw.bb8 ], [ -1, %preswitch ]
+  br label %return
 
-isempty_RL.exit.thread:                           ; preds = %16, %14, %isempty_RL.exit.thread.loopexit8, %62, %36, %isempty_RL.exit2, %55, %52, %48, %46, %isempty_RL.exit, %28, %24, %22, %7, %2, %0, %71, %45, %17
-  %.0 = phi i32 [ 4, %71 ], [ 1, %45 ], [ %20, %17 ], [ -2, %0 ], [ -2, %2 ], [ -2, %7 ], [ -1, %22 ], [ -1, %24 ], [ 2, %28 ], [ 2, %isempty_RL.exit ], [ -1, %46 ], [ -1, %48 ], [ -1, %52 ], [ 3, %55 ], [ 3, %isempty_RL.exit2 ], [ 2, %36 ], [ 3, %62 ], [ 0, %isempty_RL.exit.thread.loopexit8 ], [ -2, %16 ], [ -1, %14 ]
-  ret i32 %.0
+return:                                           ; preds = %preswitch, %return.loopexit, %land.lhs.true.i113, %land.lhs.true.i, %lor.lhs.false69, %if.end62, %if.end58, %if.end51, %sw.bb47, %lor.lhs.false41, %if.end34, %if.end27, %sw.bb23, %if.end3, %if.end, %entry, %if.end75, %if.end45, %if.then10
+  %retval.0 = phi i32 [ 4, %if.end75 ], [ 1, %if.end45 ], [ %cond, %if.then10 ], [ -2, %entry ], [ -2, %if.end ], [ -2, %if.end3 ], [ -1, %sw.bb23 ], [ -1, %if.end27 ], [ 2, %if.end34 ], [ 2, %lor.lhs.false41 ], [ -1, %sw.bb47 ], [ -1, %if.end51 ], [ -1, %if.end58 ], [ 3, %if.end62 ], [ 3, %lor.lhs.false69 ], [ 2, %land.lhs.true.i ], [ 3, %land.lhs.true.i113 ], [ %retval.0.ph, %return.loopexit ], [ 0, %preswitch ]
+  ret i32 %retval.0
 }

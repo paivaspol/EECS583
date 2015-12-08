@@ -1,0 +1,27 @@
+define signext i8 @Perl_is_utf8_alnumc(i8* %p) #0 {
+entry:
+  %call = tail call i64 @Perl_is_utf8_char(i8* %p) #6
+  %tobool = icmp eq i64 %call, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %0 = load %struct.sv** @PL_utf8_alnum, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.sv* %0, null
+  br i1 %tobool1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call %struct.sv* @Perl_swash_init(i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str21, i64 0, i64 0), %struct.sv* @PL_sv_undef, i32 0, i32 0) #6
+  store %struct.sv* %call3, %struct.sv** @PL_utf8_alnum, align 8, !tbaa !0
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then2
+  %1 = phi %struct.sv* [ %0, %if.end ], [ %call3, %if.then2 ]
+  %call5 = tail call i64 @Perl_swash_fetch(%struct.sv* %1, i8* %p, i8 signext 1) #6
+  %cmp = icmp ne i64 %call5, 0
+  %conv6 = zext i1 %cmp to i8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end4
+  %retval.0 = phi i8 [ %conv6, %if.end4 ], [ 0, %entry ]
+  ret i8 %retval.0
+}

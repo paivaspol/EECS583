@@ -1,0 +1,26 @@
+define i32 @FreeIntStack(%struct.intstack_s* nocapture %stack) #0 {
+entry:
+  %nxt.i = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1
+  %0 = load %struct.intstack_s** %nxt.i, align 8, !tbaa !0
+  %cmp.i4 = icmp eq %struct.intstack_s* %0, null
+  br i1 %cmp.i4, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %1 = phi %struct.intstack_s* [ %4, %while.body ], [ %0, %entry ]
+  %count.05 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  %nxt2.i = getelementptr inbounds %struct.intstack_s* %1, i64 0, i32 1
+  %2 = load %struct.intstack_s** %nxt2.i, align 8, !tbaa !0
+  store %struct.intstack_s* %2, %struct.intstack_s** %nxt.i, align 8, !tbaa !0
+  %3 = bitcast %struct.intstack_s* %1 to i8*
+  tail call void @free(i8* %3) #3
+  %inc = add nsw i32 %count.05, 1
+  %4 = load %struct.intstack_s** %nxt.i, align 8, !tbaa !0
+  %cmp.i = icmp eq %struct.intstack_s* %4, null
+  br i1 %cmp.i, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %count.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %while.body ]
+  %5 = bitcast %struct.intstack_s* %stack to i8*
+  tail call void @free(i8* %5) #3
+  ret i32 %count.0.lcssa
+}

@@ -1,0 +1,27 @@
+define i64 @PerlIOUtf8_pushed(%struct._PerlIO** %f, i8* nocapture %mode, %struct.sv* nocapture %arg, %struct._PerlIO_funcs* nocapture %tab) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %return, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %kind = getelementptr inbounds %struct._PerlIO_funcs* %tab, i64 0, i32 3
+  %1 = load i32* %kind, align 4, !tbaa !0
+  %and = and i32 %1, 32768
+  %tobool2 = icmp eq i32 %and, 0
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %2 = load i32* %flags, align 4, !tbaa !0
+  %and5 = and i32 %2, -32769
+  %or = or i32 %2, 32768
+  %storemerge = select i1 %tobool2, i32 %and5, i32 %or
+  store i32 %storemerge, i32* %flags, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i64 [ 0, %if.then ], [ -1, %land.lhs.true ], [ -1, %entry ]
+  ret i64 %retval.0
+}

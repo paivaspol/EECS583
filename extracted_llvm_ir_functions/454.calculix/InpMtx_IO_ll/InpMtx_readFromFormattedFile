@@ -1,0 +1,95 @@
+define i32 @InpMtx_readFromFormattedFile(%struct._InpMtx* %inpmtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  %itemp = alloca [5 x i32], align 16
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([59 x i8]* @.str5, i64 0, i64 0), %struct._InpMtx* %inpmtx, %struct._IO_FILE* %fp) #6
+  br label %return
+
+if.end:                                           ; preds = %entry
+  call void @InpMtx_clearData(%struct._InpMtx* %inpmtx) #6
+  %arraydecay = getelementptr inbounds [5 x i32]* %itemp, i64 0, i64 0
+  %call2 = call i32 @IVfscanf(%struct._IO_FILE* %fp, i32 5, i32* %arraydecay) #6
+  %cmp3 = icmp eq i32 %call2, 5
+  br i1 %cmp3, label %if.end6, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([69 x i8]* @.str6, i64 0, i64 0), %struct._InpMtx* %inpmtx, %struct._IO_FILE* %fp, i32 %call2, i32 5) #6
+  br label %return
+
+if.end6:                                          ; preds = %if.end
+  %2 = bitcast [5 x i32]* %itemp to i64*
+  %3 = load i64* %2, align 16
+  %4 = trunc i64 %3 to i32
+  %coordType = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0
+  store i32 %4, i32* %coordType, align 4, !tbaa !3
+  %5 = lshr i64 %3, 32
+  %6 = trunc i64 %5 to i32
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1
+  store i32 %6, i32* %storageMode, align 4, !tbaa !3
+  %arrayidx8 = getelementptr inbounds [5 x i32]* %itemp, i64 0, i64 2
+  %7 = bitcast i32* %arrayidx8 to i64*
+  %8 = load i64* %7, align 8
+  %9 = trunc i64 %8 to i32
+  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
+  store i32 %9, i32* %inputMode, align 4, !tbaa !3
+  %10 = lshr i64 %8, 32
+  %11 = trunc i64 %10 to i32
+  %nent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4
+  store i32 %11, i32* %nent, align 4, !tbaa !3
+  %arrayidx10 = getelementptr inbounds [5 x i32]* %itemp, i64 0, i64 4
+  %12 = load i32* %arrayidx10, align 16, !tbaa !3
+  %nvector = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 10
+  store i32 %12, i32* %nvector, align 4, !tbaa !3
+  %cmp12 = icmp sgt i32 %11, 0
+  br i1 %cmp12, label %if.then13, label %if.end24
+
+if.then13:                                        ; preds = %if.end6
+  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6
+  %call14 = call i32 @IV_readFromFormattedFile(%struct._IV* %ivec1IV, %struct._IO_FILE* %fp) #6
+  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7
+  %call15 = call i32 @IV_readFromFormattedFile(%struct._IV* %ivec2IV, %struct._IO_FILE* %fp) #6
+  %13 = load i32* %inputMode, align 4, !tbaa !3
+  %.off = add i32 %13, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.then21, label %if.end24thread-pre-split
+
+if.then21:                                        ; preds = %if.then13
+  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
+  %call22 = call i32 @DV_readFromFormattedFile(%struct._DV* %dvecDV, %struct._IO_FILE* %fp) #6
+  br label %if.end24thread-pre-split
+
+if.end24thread-pre-split:                         ; preds = %if.then21, %if.then13
+  %.pr = load i32* %nvector, align 4, !tbaa !3
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end24thread-pre-split, %if.end6
+  %14 = phi i32 [ %.pr, %if.end24thread-pre-split ], [ %12, %if.end6 ]
+  %cmp26 = icmp sgt i32 %14, 0
+  br i1 %cmp26, label %if.then27, label %if.end31
+
+if.then27:                                        ; preds = %if.end24
+  %vecidsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 11
+  %call28 = call i32 @IV_readFromFormattedFile(%struct._IV* %vecidsIV, %struct._IO_FILE* %fp) #6
+  %sizesIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 12
+  %call29 = call i32 @IV_readFromFormattedFile(%struct._IV* %sizesIV, %struct._IO_FILE* %fp) #6
+  %offsetsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 13
+  %call30 = call i32 @IV_readFromFormattedFile(%struct._IV* %offsetsIV, %struct._IO_FILE* %fp) #6
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.end24, %if.then27
+  %15 = load i32* %nent, align 4, !tbaa !3
+  %maxnent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3
+  store i32 %15, i32* %maxnent, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end31, %if.then4, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then4 ], [ 1, %if.end31 ]
+  ret i32 %retval.0
+}

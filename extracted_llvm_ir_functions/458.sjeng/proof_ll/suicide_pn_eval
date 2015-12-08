@@ -1,0 +1,108 @@
+define void @suicide_pn_eval(%struct.node* nocapture %this) #0 {
+entry:
+  %evaluated = getelementptr inbounds %struct.node* %this, i64 0, i32 3
+  store i8 1, i8* %evaluated, align 1, !tbaa !1
+  %0 = load i32* @piece_count, align 4, !tbaa !0
+  %cmp41 = icmp slt i32 %0, 1
+  br i1 %cmp41, label %if.then12, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 1, %entry ]
+  %bp.045 = phi i32 [ %bp.2, %for.inc ], [ 0, %entry ]
+  %wp.044 = phi i32 [ %wp.2, %for.inc ], [ 0, %entry ]
+  %a.042 = phi i32 [ %a.1, %for.inc ], [ 1, %entry ]
+  %arrayidx = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %for.inc, label %if.else
+
+if.else:                                          ; preds = %for.body
+  %inc = add nsw i32 %a.042, 1
+  %idxprom1 = sext i32 %1 to i64
+  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1
+  %2 = load i32* %arrayidx2, align 4, !tbaa !0
+  switch i32 %2, label %sw.epilog [
+    i32 1, label %sw.bb
+    i32 11, label %sw.bb
+    i32 7, label %sw.bb
+    i32 5, label %sw.bb
+    i32 9, label %sw.bb
+    i32 3, label %sw.bb
+    i32 2, label %sw.bb4
+    i32 12, label %sw.bb4
+    i32 8, label %sw.bb4
+    i32 6, label %sw.bb4
+    i32 10, label %sw.bb4
+    i32 4, label %sw.bb4
+  ]
+
+sw.bb:                                            ; preds = %if.else, %if.else, %if.else, %if.else, %if.else, %if.else
+  %inc3 = add nsw i32 %wp.044, 1
+  br label %sw.epilog
+
+sw.bb4:                                           ; preds = %if.else, %if.else, %if.else, %if.else, %if.else, %if.else
+  %inc5 = add nsw i32 %bp.045, 1
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.else, %sw.bb4, %sw.bb
+  %wp.1 = phi i32 [ %wp.044, %if.else ], [ %wp.044, %sw.bb4 ], [ %inc3, %sw.bb ]
+  %bp.1 = phi i32 [ %bp.045, %if.else ], [ %inc5, %sw.bb4 ], [ %bp.045, %sw.bb ]
+  %tobool6 = icmp eq i32 %wp.1, 0
+  %tobool7 = icmp eq i32 %bp.1, 0
+  %or.cond = or i1 %tobool6, %tobool7
+  br i1 %or.cond, label %for.inc, label %for.end
+
+for.inc:                                          ; preds = %sw.epilog, %for.body
+  %a.1 = phi i32 [ %inc, %sw.epilog ], [ %a.042, %for.body ]
+  %wp.2 = phi i32 [ %wp.1, %sw.epilog ], [ %wp.044, %for.body ]
+  %bp.2 = phi i32 [ %bp.1, %sw.epilog ], [ %bp.045, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %cmp = icmp sgt i32 %a.1, %0
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %sw.epilog
+  %wp.3 = phi i32 [ %wp.1, %sw.epilog ], [ %wp.2, %for.inc ]
+  %bp.3 = phi i32 [ %bp.1, %sw.epilog ], [ %bp.2, %for.inc ]
+  %tobool11 = icmp eq i32 %wp.3, 0
+  br i1 %tobool11, label %if.then12, label %if.else18
+
+if.then12:                                        ; preds = %entry, %for.end
+  %3 = load i32* @root_to_move, align 4, !tbaa !0
+  %tobool13 = icmp eq i32 %3, 0
+  %value16 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  br i1 %tobool13, label %if.then14, label %if.else15
+
+if.then14:                                        ; preds = %if.then12
+  store i8 1, i8* %value16, align 1, !tbaa !1
+  br label %if.end30
+
+if.else15:                                        ; preds = %if.then12
+  store i8 0, i8* %value16, align 1, !tbaa !1
+  br label %if.end30
+
+if.else18:                                        ; preds = %for.end
+  %tobool19 = icmp eq i32 %bp.3, 0
+  br i1 %tobool19, label %if.then20, label %if.else27
+
+if.then20:                                        ; preds = %if.else18
+  %4 = load i32* @root_to_move, align 4, !tbaa !0
+  %tobool21 = icmp eq i32 %4, 0
+  %value25 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  br i1 %tobool21, label %if.then22, label %if.else24
+
+if.then22:                                        ; preds = %if.then20
+  store i8 0, i8* %value25, align 1, !tbaa !1
+  br label %if.end30
+
+if.else24:                                        ; preds = %if.then20
+  store i8 1, i8* %value25, align 1, !tbaa !1
+  br label %if.end30
+
+if.else27:                                        ; preds = %if.else18
+  %value28 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
+  store i8 2, i8* %value28, align 1, !tbaa !1
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.else27, %if.else24, %if.then22, %if.then14, %if.else15
+  ret void
+}

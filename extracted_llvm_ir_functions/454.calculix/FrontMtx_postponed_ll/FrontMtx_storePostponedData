@@ -1,0 +1,72 @@
+define void @FrontMtx_storePostponedData(%struct._FrontMtx* nocapture %frontmtx, %struct._Chv* %frontJ, i32 %npost, i32 %K, %struct._ChvList* %chvlist, %struct._ChvManager* %chvmanager) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp sgt i32 %npost, 0
+  %cmp1 = icmp eq %struct._ChvList* %chvlist, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end4, label %if.then
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp eq i32 %K, -1
+  br i1 %cmp2, label %if.then3, label %if.else
+
+if.then3:                                         ; preds = %if.then
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
+  %0 = load i32* %nfront, align 4, !tbaa !0
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* null, i32 %0) #2
+  br label %return
+
+if.else:                                          ; preds = %if.then
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* null, i32 %K) #2
+  br label %return
+
+if.end4:                                          ; preds = %entry
+  call void @Chv_dimensions(%struct._Chv* %frontJ, i32* %nD, i32* %nL, i32* %nU) #2
+  %symflag = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 5
+  %1 = load i32* %nL, align 4, !tbaa !0
+  %2 = load i32* %nU, align 4, !tbaa !0
+  %type = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 4
+  %3 = load i32* %type, align 4, !tbaa !0
+  %4 = load i32* %symflag, align 4, !tbaa !0
+  %call = call i32 @Chv_nbytesNeeded(i32 %npost, i32 %1, i32 %2, i32 %3, i32 %4) #2
+  %call24 = call %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %chvmanager, i32 %call) #2
+  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0
+  %5 = load i32* %id, align 4, !tbaa !0
+  %6 = load i32* %nL, align 4, !tbaa !0
+  %7 = load i32* %nU, align 4, !tbaa !0
+  %8 = load i32* %type, align 4, !tbaa !0
+  %9 = load i32* %symflag, align 4, !tbaa !0
+  call void @Chv_init(%struct._Chv* %call24, i32 %5, i32 %npost, i32 %6, i32 %7, i32 %8, i32 %9) #2
+  %10 = load i32* %nD, align 4, !tbaa !0
+  %sub = sub nsw i32 %10, %npost
+  call void @Chv_copyTrailingPortion(%struct._Chv* %call24, %struct._Chv* %frontJ, i32 %sub) #2
+  %nD27 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 1
+  %11 = load i32* %nD27, align 4, !tbaa !0
+  %sub28 = sub nsw i32 %11, %npost
+  store i32 %sub28, i32* %nD27, align 4, !tbaa !0
+  %nL29 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 2
+  %12 = load i32* %nL29, align 4, !tbaa !0
+  %add30 = add nsw i32 %12, %npost
+  store i32 %add30, i32* %nL29, align 4, !tbaa !0
+  %nU31 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 3
+  %13 = load i32* %nU31, align 4, !tbaa !0
+  %add32 = add nsw i32 %13, %npost
+  store i32 %add32, i32* %nU31, align 4, !tbaa !0
+  %cmp33 = icmp eq i32 %K, -1
+  br i1 %cmp33, label %if.then34, label %if.else36
+
+if.then34:                                        ; preds = %if.end4
+  %nfront35 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
+  %14 = load i32* %nfront35, align 4, !tbaa !0
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* %call24, i32 %14) #2
+  br label %return
+
+if.else36:                                        ; preds = %if.end4
+  call void @ChvList_addObjectToList(%struct._ChvList* %chvlist, %struct._Chv* %call24, i32 %K) #2
+  br label %return
+
+return:                                           ; preds = %if.then34, %if.else36, %if.then3, %if.else
+  ret void
+}

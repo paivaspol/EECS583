@@ -1,0 +1,53 @@
+define i32 @Bishop(i32 %sq, i32 %c) #1 {
+entry:
+  %xor = xor i32 %c, 1
+  %idxprom = sext i32 %sq to i64
+  %arrayidx = getelementptr inbounds [144 x i32]* @sbishop, i64 0, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %add1 = add nsw i32 %0, 325
+  %idxprom2 = sext i32 %xor to i64
+  %arrayidx3 = getelementptr inbounds [2 x i32]* @king_locs, i64 0, i64 %idxprom2
+  %1 = load i32* %arrayidx3, align 4, !tbaa !0
+  %idxprom4 = sext i32 %1 to i64
+  %arrayidx7 = getelementptr inbounds [144 x [144 x i32]]* @distance, i64 0, i64 %idxprom, i64 %idxprom4
+  %2 = load i32* %arrayidx7, align 4, !tbaa !0
+  %idxprom8 = sext i32 %2 to i64
+  %arrayidx9 = getelementptr inbounds [8 x i32]* @std_b_tropism, i64 0, i64 %idxprom8
+  %3 = load i32* %arrayidx9, align 4, !tbaa !0
+  %add10 = add nsw i32 %add1, %3
+  %call = tail call fastcc i32 @bishop_mobility(i32 %sq) #5
+  %shl = shl i32 %call, 1
+  %cmp = icmp slt i32 %shl, 3
+  %sub = add nsw i32 %shl, -5
+  %sub.shl = select i1 %cmp, i32 %sub, i32 %shl
+  %add11 = add nsw i32 %add10, %sub.shl
+  switch i32 %c, label %if.end23 [
+    i32 0, label %land.lhs.true
+    i32 1, label %land.lhs.true17
+  ]
+
+land.lhs.true:                                    ; preds = %entry
+  %cmp13 = icmp eq i32 %sq, 39
+  %4 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 52), align 4, !tbaa !0
+  %cmp15 = icmp eq i32 %4, 1
+  %or.cond = and i1 %cmp13, %cmp15
+  br i1 %or.cond, label %if.then21, label %if.end23
+
+land.lhs.true17:                                  ; preds = %entry
+  %cmp18 = icmp eq i32 %sq, 99
+  %5 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 88), align 4, !tbaa !0
+  %cmp20 = icmp eq i32 %5, 2
+  %or.cond28 = and i1 %cmp18, %cmp20
+  br i1 %or.cond28, label %if.then21, label %if.end23
+
+if.then21:                                        ; preds = %land.lhs.true17, %land.lhs.true
+  %sub22 = add nsw i32 %add11, -5
+  br label %if.end23
+
+if.end23:                                         ; preds = %land.lhs.true, %entry, %if.then21, %land.lhs.true17
+  %s.0 = phi i32 [ %sub22, %if.then21 ], [ %add11, %land.lhs.true17 ], [ %add11, %entry ], [ %add11, %land.lhs.true ]
+  %cmp24 = icmp eq i32 %c, 1
+  %sub26 = sub nsw i32 0, %s.0
+  %sub26.s.0 = select i1 %cmp24, i32 %sub26, i32 %s.0
+  ret i32 %sub26.s.0
+}

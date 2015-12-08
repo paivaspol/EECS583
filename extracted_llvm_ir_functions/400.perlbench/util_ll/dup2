@@ -1,0 +1,14 @@
+define i32 @dup2(i32 %oldfd, i32 %newfd) #0 {
+entry:
+  %cmp = icmp eq i32 %oldfd, %newfd
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = tail call i32 @close(i32 %newfd) #8
+  %call1 = tail call i32 (i32, i32, ...)* @fcntl(i32 %oldfd, i32 0, i32 %newfd) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %call1, %if.end ], [ %oldfd, %entry ]
+  ret i32 %retval.0
+}

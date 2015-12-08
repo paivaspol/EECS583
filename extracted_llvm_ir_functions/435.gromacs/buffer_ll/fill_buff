@@ -1,0 +1,30 @@
+define void @fill_buff(i32* nocapture %data, i32 %items) #1 {
+entry:
+  %cmp4 = icmp sgt i32 %items, 0
+  br i1 %cmp4, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %0 = trunc i64 %indvars.iv to i32
+  %and.i = and i32 %0, 255
+  %add.i = shl i32 %0, 8
+  %and1.i = add i32 %add.i, 256
+  %shl.i = and i32 %and1.i, 65280
+  %add2.i = shl i32 %0, 16
+  %and3.i = add i32 %add2.i, 131072
+  %shl4.i = and i32 %and3.i, 16711680
+  %add6.i = shl i32 %0, 24
+  %shl8.i = add i32 %add6.i, 50331648
+  %or.i = or i32 %shl8.i, %and.i
+  %or5.i = or i32 %or.i, %shl.i
+  %or9.i = or i32 %or5.i, %shl4.i
+  %arrayidx = getelementptr inbounds i32* %data, i64 %indvars.iv
+  store i32 %or9.i, i32* %arrayidx, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %items
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

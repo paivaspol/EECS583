@@ -1,0 +1,205 @@
+define void @ParseMatrix(i8* %buf, i32 %bufsize) #0 {
+entry:
+  %items = alloca [1000 x i8*], align 16
+  %IntContent = alloca i32, align 4
+  %type = alloca i32, align 4
+  %0 = bitcast [1000 x i8*]* %items to i8*
+  call void @llvm.lifetime.start(i64 8000, i8* %0) #2
+  %idxprom = sext i32 %bufsize to i64
+  %arrayidx = getelementptr inbounds i8* %buf, i64 %idxprom
+  %cmp147 = icmp sgt i32 %bufsize, 0
+  br i1 %cmp147, label %while.body, label %for.end98
+
+while.body:                                       ; preds = %while.cond.backedge, %entry
+  %item.0151 = phi i32 [ 0, %entry ], [ %item.0.be, %while.cond.backedge ]
+  %p.0150 = phi i8* [ %buf, %entry ], [ %p.0.be, %while.cond.backedge ]
+  %InItem.0149 = phi i32 [ 0, %entry ], [ %InItem.0.be, %while.cond.backedge ]
+  %InString.0148 = phi i32 [ 0, %entry ], [ %InString.0.be, %while.cond.backedge ]
+  %1 = load i8* %p.0150, align 1, !tbaa !1
+  %conv = sext i8 %1 to i32
+  switch i32 %conv, label %sw.default [
+    i32 13, label %sw.bb
+    i32 35, label %sw.bb1
+    i32 10, label %sw.bb10
+    i32 32, label %sw.bb12
+    i32 9, label %sw.bb12
+    i32 34, label %sw.bb15
+    i32 44, label %sw.bb24
+  ]
+
+sw.bb:                                            ; preds = %while.body
+  %incdec.ptr = getelementptr inbounds i8* %p.0150, i64 1
+  br label %while.cond.backedge
+
+sw.bb1:                                           ; preds = %while.body
+  store i8 0, i8* %p.0150, align 1, !tbaa !1
+  br label %while.cond2
+
+while.cond2:                                      ; preds = %while.cond2.while.cond2_crit_edge, %sw.bb1
+  %2 = phi i1 [ true, %sw.bb1 ], [ %phitmp, %while.cond2.while.cond2_crit_edge ]
+  %p.1 = phi i8* [ %p.0150, %sw.bb1 ], [ %incdec.ptr9, %while.cond2.while.cond2_crit_edge ]
+  %cmp6 = icmp ult i8* %p.1, %arrayidx
+  %or.cond = and i1 %2, %cmp6
+  %incdec.ptr9 = getelementptr inbounds i8* %p.1, i64 1
+  br i1 %or.cond, label %while.cond2.while.cond2_crit_edge, label %while.cond.backedge
+
+while.cond2.while.cond2_crit_edge:                ; preds = %while.cond2
+  %.pre = load i8* %incdec.ptr9, align 1, !tbaa !1
+  %phitmp = icmp ne i8 %.pre, 10
+  br label %while.cond2
+
+sw.bb10:                                          ; preds = %while.body
+  %incdec.ptr11 = getelementptr inbounds i8* %p.0150, i64 1
+  store i8 0, i8* %p.0150, align 1, !tbaa !1
+  br label %while.cond.backedge
+
+sw.bb12:                                          ; preds = %while.body, %while.body
+  %tobool = icmp eq i32 %InString.0148, 0
+  %incdec.ptr13 = getelementptr inbounds i8* %p.0150, i64 1
+  br i1 %tobool, label %if.else, label %while.cond.backedge
+
+if.else:                                          ; preds = %sw.bb12
+  store i8 0, i8* %p.0150, align 1, !tbaa !1
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %while.cond2, %if.else, %if.end32, %sw.bb24, %if.end22, %sw.bb10, %sw.bb, %sw.bb12
+  %InString.0.be = phi i32 [ %InString.0148, %if.end32 ], [ %InString.0148, %sw.bb24 ], [ %neg23, %if.end22 ], [ %InString.0148, %sw.bb12 ], [ 0, %if.else ], [ 0, %sw.bb10 ], [ %InString.0148, %sw.bb ], [ 0, %while.cond2 ]
+  %InItem.0.be = phi i32 [ %InItem.2, %if.end32 ], [ 0, %sw.bb24 ], [ %InItem.1, %if.end22 ], [ %InItem.0149, %sw.bb12 ], [ 0, %if.else ], [ 0, %sw.bb10 ], [ %InItem.0149, %sw.bb ], [ 0, %while.cond2 ]
+  %p.0.be = phi i8* [ %incdec.ptr33, %if.end32 ], [ %incdec.ptr25, %sw.bb24 ], [ %incdec.ptr16, %if.end22 ], [ %incdec.ptr13, %sw.bb12 ], [ %incdec.ptr13, %if.else ], [ %incdec.ptr11, %sw.bb10 ], [ %incdec.ptr, %sw.bb ], [ %p.1, %while.cond2 ]
+  %item.0.be = phi i32 [ %item.2, %if.end32 ], [ %item.0151, %sw.bb24 ], [ %item.1, %if.end22 ], [ %item.0151, %sw.bb12 ], [ %item.0151, %if.else ], [ %item.0151, %sw.bb10 ], [ %item.0151, %sw.bb ], [ %item.0151, %while.cond2 ]
+  %cmp = icmp ult i8* %p.0.be, %arrayidx
+  br i1 %cmp, label %while.body, label %while.end34
+
+sw.bb15:                                          ; preds = %while.body
+  %incdec.ptr16 = getelementptr inbounds i8* %p.0150, i64 1
+  store i8 0, i8* %p.0150, align 1, !tbaa !1
+  %tobool17 = icmp eq i32 %InString.0148, 0
+  br i1 %tobool17, label %if.then18, label %if.end22
+
+if.then18:                                        ; preds = %sw.bb15
+  %inc = add nsw i32 %item.0151, 1
+  %idxprom19 = sext i32 %item.0151 to i64
+  %arrayidx20 = getelementptr inbounds [1000 x i8*]* %items, i64 0, i64 %idxprom19
+  store i8* %incdec.ptr16, i8** %arrayidx20, align 8, !tbaa !3
+  %neg = xor i32 %InItem.0149, -1
+  br label %if.end22
+
+if.end22:                                         ; preds = %sw.bb15, %if.then18
+  %InItem.1 = phi i32 [ %neg, %if.then18 ], [ 0, %sw.bb15 ]
+  %item.1 = phi i32 [ %inc, %if.then18 ], [ %item.0151, %sw.bb15 ]
+  %neg23 = xor i32 %InString.0148, -1
+  br label %while.cond.backedge
+
+sw.bb24:                                          ; preds = %while.body
+  %incdec.ptr25 = getelementptr inbounds i8* %p.0150, i64 1
+  br label %while.cond.backedge
+
+sw.default:                                       ; preds = %while.body
+  %tobool26 = icmp eq i32 %InItem.0149, 0
+  br i1 %tobool26, label %if.then27, label %if.end32
+
+if.then27:                                        ; preds = %sw.default
+  %inc28 = add nsw i32 %item.0151, 1
+  %idxprom29 = sext i32 %item.0151 to i64
+  %arrayidx30 = getelementptr inbounds [1000 x i8*]* %items, i64 0, i64 %idxprom29
+  store i8* %p.0150, i8** %arrayidx30, align 8, !tbaa !3
+  br label %if.end32
+
+if.end32:                                         ; preds = %sw.default, %if.then27
+  %InItem.2 = phi i32 [ %InItem.0149, %sw.default ], [ -1, %if.then27 ]
+  %item.2 = phi i32 [ %item.0151, %sw.default ], [ %inc28, %if.then27 ]
+  %incdec.ptr33 = getelementptr inbounds i8* %p.0150, i64 1
+  br label %while.cond.backedge
+
+while.end34:                                      ; preds = %while.cond.backedge
+  %dec = add nsw i32 %item.0.be, -1
+  %cmp35145 = icmp sgt i32 %dec, 0
+  br i1 %cmp35145, label %for.body, label %for.end98
+
+for.body:                                         ; preds = %while.end34, %for.end
+  %i.0146 = phi i32 [ %add97, %for.end ], [ 0, %while.end34 ]
+  %idxprom37 = sext i32 %i.0146 to i64
+  %arrayidx38 = getelementptr inbounds [1000 x i8*]* %items, i64 0, i64 %idxprom37
+  %3 = load i8** %arrayidx38, align 8, !tbaa !3
+  %call = call i32 @CheckParameterName(i8* %3, i32* %type) #6
+  %cmp39 = icmp slt i32 %call, 0
+  br i1 %cmp39, label %if.then41, label %if.end46
+
+if.then41:                                        ; preds = %for.body
+  %call45 = call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* %3) #7
+  call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 300) #7
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.then41, %for.body
+  %add48 = add nsw i32 %i.0146, 1
+  %idxprom49 = sext i32 %add48 to i64
+  %arrayidx50 = getelementptr inbounds [1000 x i8*]* %items, i64 0, i64 %idxprom49
+  %4 = load i8** %arrayidx50, align 8, !tbaa !3
+  %call51 = call i32 @strcmp(i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0), i8* %4) #5
+  %tobool52 = icmp eq i32 %call51, 0
+  br i1 %tobool52, label %if.end55, label %if.then53
+
+if.then53:                                        ; preds = %if.end46
+  %call54 = call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([78 x i8]* @.str2, i64 0, i64 0)) #7
+  call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 300) #7
+  br label %if.end55
+
+if.end55:                                         ; preds = %if.end46, %if.then53
+  %5 = load i32* %type, align 4, !tbaa !0
+  %tobool57 = icmp eq i32 %5, 0
+  %idxprom59 = sext i32 %call to i64
+  br i1 %tobool57, label %if.then58, label %if.else63
+
+if.then58:                                        ; preds = %if.end55
+  %arraydecay = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4input, i64 0, i64 %idxprom59, i64 0
+  %arrayidx62 = getelementptr inbounds [6 x i32]* @matrix4x4_check, i64 0, i64 %idxprom59
+  store i32 1, i32* %arrayidx62, align 4, !tbaa !0
+  br label %if.end69
+
+if.else63:                                        ; preds = %if.end55
+  %arraydecay66 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8input, i64 0, i64 %idxprom59, i64 0
+  %arrayidx68 = getelementptr inbounds [2 x i32]* @matrix8x8_check, i64 0, i64 %idxprom59
+  store i32 1, i32* %arrayidx68, align 4, !tbaa !0
+  br label %if.end69
+
+if.end69:                                         ; preds = %if.else63, %if.then58
+  %range.0 = phi i32 [ 64, %if.else63 ], [ 16, %if.then58 ]
+  %ScalingList.0 = phi i16* [ %arraydecay66, %if.else63 ], [ %arraydecay, %if.then58 ]
+  %add74 = add i32 %i.0146, 2
+  %6 = sext i32 %add74 to i64
+  br label %for.body73
+
+for.body73:                                       ; preds = %if.end69, %if.end89
+  %indvars.iv = phi i64 [ 0, %if.end69 ], [ %indvars.iv.next, %if.end89 ]
+  %7 = add nsw i64 %6, %indvars.iv
+  %arrayidx77 = getelementptr inbounds [1000 x i8*]* %items, i64 0, i64 %7
+  %8 = load i8** %arrayidx77, align 8, !tbaa !3
+  %call78 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %8, i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i32* %IntContent) #7
+  %cmp79 = icmp eq i32 %call78, 1
+  br i1 %cmp79, label %if.end89, label %if.then81
+
+if.then81:                                        ; preds = %for.body73
+  %call88 = call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([74 x i8]* @.str4, i64 0, i64 0), i8* %3, i8* %8) #7
+  call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 300) #7
+  br label %if.end89
+
+if.end89:                                         ; preds = %for.body73, %if.then81
+  %9 = load i32* %IntContent, align 4, !tbaa !0
+  %conv90 = trunc i32 %9 to i16
+  %arrayidx92 = getelementptr inbounds i16* %ScalingList.0, i64 %indvars.iv
+  store i16 %conv90, i16* %arrayidx92, align 2, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp71 = icmp slt i32 %10, %range.0
+  br i1 %cmp71, label %for.body73, label %for.end
+
+for.end:                                          ; preds = %if.end89
+  %putchar = call i32 @putchar(i32 46) #2
+  %add97 = add i32 %add74, %range.0
+  %cmp35 = icmp slt i32 %add97, %dec
+  br i1 %cmp35, label %for.body, label %for.end98
+
+for.end98:                                        ; preds = %entry, %for.end, %while.end34
+  call void @llvm.lifetime.end(i64 8000, i8* %0) #2
+  ret void
+}

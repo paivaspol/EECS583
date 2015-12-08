@@ -1,0 +1,525 @@
+define internal fastcc i8* @regbranch(%struct.comp* %cp, i32* nocapture %flagp) #0 {
+entry:
+  %flags.i = alloca i32, align 4
+  store i32 0, i32* %flagp, align 4, !tbaa !3
+  %regcode.i = getelementptr inbounds %struct.comp* %cp, i64 0, i32 2
+  %0 = load i8** %regcode.i, align 8, !tbaa !0
+  %arraydecay.i = getelementptr inbounds %struct.comp* %cp, i64 0, i32 3, i64 0
+  %cmp.i = icmp eq i8* %0, %arraydecay.i
+  br i1 %cmp.i, label %if.then.i, label %if.end.i
+
+if.then.i:                                        ; preds = %entry
+  %regsize.i = getelementptr inbounds %struct.comp* %cp, i64 0, i32 4
+  %1 = load i64* %regsize.i, align 8, !tbaa !4
+  %add.i = add nsw i64 %1, 3
+  store i64 %add.i, i64* %regsize.i, align 8, !tbaa !4
+  br label %while.cond.preheader
+
+if.end.i:                                         ; preds = %entry
+  %incdec.ptr.i = getelementptr inbounds i8* %0, i64 1
+  store i8 6, i8* %0, align 1, !tbaa !1
+  %incdec.ptr2.i = getelementptr inbounds i8* %0, i64 2
+  store i8 0, i8* %incdec.ptr.i, align 1, !tbaa !1
+  %incdec.ptr3.i = getelementptr inbounds i8* %0, i64 3
+  store i8 0, i8* %incdec.ptr2.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i, i8** %regcode.i, align 8, !tbaa !0
+  %regsize.i263.i.pre = getelementptr inbounds %struct.comp* %cp, i64 0, i32 4
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then.i, %if.end.i
+  %regsize.i263.i.pre-phi = phi i64* [ %regsize.i, %if.then.i ], [ %regsize.i263.i.pre, %if.end.i ]
+  %regparse = getelementptr inbounds %struct.comp* %cp, i64 0, i32 0
+  %2 = bitcast i32* %flags.i to i8*
+  br label %while.cond
+
+while.cond:                                       ; preds = %if.then11, %if.else, %while.cond.preheader
+  %3 = phi i32 [ undef, %while.cond.preheader ], [ %48, %if.else ], [ %48, %if.then11 ]
+  %chain.0 = phi i8* [ null, %while.cond.preheader ], [ %call.i, %if.else ], [ %call.i, %if.then11 ]
+  %4 = load i8** %regparse, align 8, !tbaa !0
+  %5 = load i8* %4, align 1, !tbaa !1
+  switch i8 %5, label %while.body [
+    i8 0, label %while.end
+    i8 124, label %while.end
+    i8 41, label %while.end
+  ]
+
+while.body:                                       ; preds = %while.cond
+  call void @llvm.lifetime.start(i64 4, i8* %2) #3
+  %call.i = call fastcc i8* @regatom(%struct.comp* %cp, i32* %flags.i) #9
+  %cmp.i43 = icmp eq i8* %call.i, null
+  br i1 %cmp.i43, label %return, label %if.end.i44
+
+if.end.i44:                                       ; preds = %while.body
+  %6 = load i8** %regparse, align 8, !tbaa !0
+  %7 = load i8* %6, align 1, !tbaa !1
+  %conv.i = sext i8 %7 to i32
+  switch i8 %7, label %if.then10.i [
+    i8 63, label %if.end11.i
+    i8 43, label %if.end11.i
+    i8 42, label %if.end11.i
+  ]
+
+if.then10.i:                                      ; preds = %if.end.i44
+  %8 = load i32* %flags.i, align 4, !tbaa !3
+  br label %if.end
+
+if.end11.i:                                       ; preds = %if.end.i44, %if.end.i44, %if.end.i44
+  %9 = load i32* %flags.i, align 4, !tbaa !3
+  %and.i = and i32 %9, 1
+  %tobool.i = icmp ne i32 %and.i, 0
+  %cmp13.i = icmp eq i8 %7, 63
+  %or.cond142.i = or i1 %tobool.i, %cmp13.i
+  br i1 %or.cond142.i, label %if.end16.i, label %if.then15.i
+
+if.then15.i:                                      ; preds = %if.end11.i
+  call void @sqd_regerror(i8* getelementptr inbounds ([26 x i8]* @.str19, i64 0, i64 0)) #9
+  unreachable
+
+if.end16.i:                                       ; preds = %if.end11.i
+  switch i32 %conv.i, label %sw.epilog.i [
+    i32 42, label %sw.bb.i
+    i32 43, label %sw.bb18.i
+    i32 63, label %sw.bb19.i
+  ]
+
+sw.bb.i:                                          ; preds = %if.end16.i
+  br label %sw.epilog.i
+
+sw.bb18.i:                                        ; preds = %if.end16.i
+  br label %sw.epilog.i
+
+sw.bb19.i:                                        ; preds = %if.end16.i
+  br label %sw.epilog.i
+
+sw.epilog.i:                                      ; preds = %sw.bb19.i, %sw.bb18.i, %sw.bb.i, %if.end16.i
+  %10 = phi i32 [ 0, %sw.bb19.i ], [ 5, %sw.bb18.i ], [ 4, %sw.bb.i ], [ %3, %if.end16.i ]
+  switch i8 %7, label %if.else51.i [
+    i8 42, label %land.lhs.true23.i
+    i8 43, label %land.lhs.true38.i
+  ]
+
+land.lhs.true23.i:                                ; preds = %sw.epilog.i
+  %and24.i = and i32 %9, 2
+  %tobool25.i = icmp eq i32 %and24.i, 0
+  %11 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i145.i = icmp eq i8* %11, %arraydecay.i
+  br i1 %tobool25.i, label %if.then30.i, label %if.then26.i
+
+if.then26.i:                                      ; preds = %land.lhs.true23.i
+  br i1 %cmp.i145.i, label %if.then.i.i, label %if.end.i.i
+
+if.then.i.i:                                      ; preds = %if.then26.i
+  %12 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i.i = add nsw i64 %12, 3
+  store i64 %add.i.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %if.end62.i
+
+if.end.i.i:                                       ; preds = %if.then26.i
+  %add.ptr.i.i = getelementptr inbounds i8* %call.i, i64 3
+  %sub.ptr.lhs.cast.i.i = ptrtoint i8* %11 to i64
+  %sub.ptr.rhs.cast.i.i = ptrtoint i8* %call.i to i64
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %add.ptr.i.i, i8* %call.i, i64 %sub.ptr.sub.i.i, i32 1, i1 false) #3
+  %13 = load i8** %regcode.i, align 8, !tbaa !0
+  %add.ptr3.i.i = getelementptr inbounds i8* %13, i64 3
+  store i8* %add.ptr3.i.i, i8** %regcode.i, align 8, !tbaa !0
+  %incdec.ptr.i.i = getelementptr inbounds i8* %call.i, i64 1
+  store i8 10, i8* %call.i, align 1, !tbaa !1
+  %incdec.ptr4.i.i = getelementptr inbounds i8* %call.i, i64 2
+  store i8 0, i8* %incdec.ptr.i.i, align 1, !tbaa !1
+  store i8 0, i8* %incdec.ptr4.i.i, align 1, !tbaa !1
+  br label %if.end62.i
+
+if.then30.i:                                      ; preds = %land.lhs.true23.i
+  br i1 %cmp.i145.i, label %reginsert.exit157.i.thread, label %reginsert.exit157.i
+
+reginsert.exit157.i.thread:                       ; preds = %if.then30.i
+  %14 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i147.i = add nsw i64 %14, 3
+  store i64 %add.i147.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit.i.thread
+
+reginsert.exit157.i:                              ; preds = %if.then30.i
+  %add.ptr.i149.i = getelementptr inbounds i8* %call.i, i64 3
+  %sub.ptr.lhs.cast.i150.i = ptrtoint i8* %11 to i64
+  %sub.ptr.rhs.cast.i151.i = ptrtoint i8* %call.i to i64
+  %sub.ptr.sub.i152.i = sub i64 %sub.ptr.lhs.cast.i150.i, %sub.ptr.rhs.cast.i151.i
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %add.ptr.i149.i, i8* %call.i, i64 %sub.ptr.sub.i152.i, i32 1, i1 false) #3
+  %15 = load i8** %regcode.i, align 8, !tbaa !0
+  %add.ptr3.i153.i = getelementptr inbounds i8* %15, i64 3
+  store i8* %add.ptr3.i153.i, i8** %regcode.i, align 8, !tbaa !0
+  %incdec.ptr.i154.i = getelementptr inbounds i8* %call.i, i64 1
+  store i8 6, i8* %call.i, align 1, !tbaa !1
+  %incdec.ptr4.i155.i = getelementptr inbounds i8* %call.i, i64 2
+  store i8 0, i8* %incdec.ptr.i154.i, align 1, !tbaa !1
+  store i8 0, i8* %incdec.ptr4.i155.i, align 1, !tbaa !1
+  %.pre54 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i160.i = icmp eq i8* %.pre54, %arraydecay.i
+  br i1 %cmp.i160.i, label %regnode.exit.i.thread, label %regnode.exit.i
+
+regnode.exit.i.thread:                            ; preds = %reginsert.exit157.i, %reginsert.exit157.i.thread
+  %16 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i162.i = add nsw i64 %16, 3
+  store i64 %add.i162.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %if.then.i184.i
+
+regnode.exit.i:                                   ; preds = %reginsert.exit157.i
+  %incdec.ptr.i164.i = getelementptr inbounds i8* %.pre54, i64 1
+  store i8 7, i8* %.pre54, align 1, !tbaa !1
+  %incdec.ptr2.i.i = getelementptr inbounds i8* %.pre54, i64 2
+  store i8 0, i8* %incdec.ptr.i164.i, align 1, !tbaa !1
+  %incdec.ptr3.i.i = getelementptr inbounds i8* %.pre54, i64 3
+  store i8 0, i8* %incdec.ptr2.i.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i.i, i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i168.i = icmp eq i8* %incdec.ptr3.i.i, %arraydecay.i
+  br i1 %cmp.i168.i, label %if.then.i184.i, label %lor.lhs.false.i.i
+
+lor.lhs.false.i.i:                                ; preds = %regnode.exit.i
+  %17 = load i8* %call.i, align 1, !tbaa !1
+  %cmp1.i.i = icmp eq i8 %17, 6
+  br i1 %cmp1.i.i, label %if.end.i170.i, label %regoptail.exit.i
+
+if.end.i170.i:                                    ; preds = %lor.lhs.false.i.i
+  %add.ptr.i169.i = getelementptr inbounds i8* %call.i, i64 3
+  call fastcc void @regtail(%struct.comp* %cp, i8* %add.ptr.i169.i, i8* %.pre54) #9
+  %.pre55 = load i8** %regcode.i, align 8, !tbaa !0
+  br label %regoptail.exit.i
+
+regoptail.exit.i:                                 ; preds = %if.end.i170.i, %lor.lhs.false.i.i
+  %18 = phi i8* [ %.pre55, %if.end.i170.i ], [ %incdec.ptr3.i.i, %lor.lhs.false.i.i ]
+  %cmp.i173.i = icmp eq i8* %18, %arraydecay.i
+  br i1 %cmp.i173.i, label %if.then.i184.i, label %lor.lhs.false.i175.i
+
+lor.lhs.false.i175.i:                             ; preds = %regoptail.exit.i
+  %19 = load i8* %call.i, align 1, !tbaa !1
+  %cmp1.i174.i = icmp eq i8 %19, 6
+  br i1 %cmp1.i174.i, label %if.end.i177.i, label %regoptail.exit178.i
+
+if.end.i177.i:                                    ; preds = %lor.lhs.false.i175.i
+  %add.ptr.i176.i = getelementptr inbounds i8* %call.i, i64 3
+  call fastcc void @regtail(%struct.comp* %cp, i8* %add.ptr.i176.i, i8* %call.i) #9
+  %.pre56 = load i8** %regcode.i, align 8, !tbaa !0
+  br label %regoptail.exit178.i
+
+regoptail.exit178.i:                              ; preds = %if.end.i177.i, %lor.lhs.false.i175.i
+  %20 = phi i8* [ %.pre56, %if.end.i177.i ], [ %18, %lor.lhs.false.i175.i ]
+  %cmp.i181.i = icmp eq i8* %20, %arraydecay.i
+  br i1 %cmp.i181.i, label %if.then.i184.i, label %if.end.i188.i
+
+if.then.i184.i:                                   ; preds = %regnode.exit.i.thread, %regnode.exit.i, %regoptail.exit.i, %regoptail.exit178.i
+  %21 = phi i8* [ %20, %regoptail.exit178.i ], [ %arraydecay.i, %regoptail.exit.i ], [ %arraydecay.i, %regnode.exit.i ], [ %arraydecay.i, %regnode.exit.i.thread ]
+  %22 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i183.i = add nsw i64 %22, 3
+  store i64 %add.i183.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit189.i
+
+if.end.i188.i:                                    ; preds = %regoptail.exit178.i
+  %incdec.ptr.i185.i = getelementptr inbounds i8* %20, i64 1
+  store i8 6, i8* %20, align 1, !tbaa !1
+  %incdec.ptr2.i186.i = getelementptr inbounds i8* %20, i64 2
+  store i8 0, i8* %incdec.ptr.i185.i, align 1, !tbaa !1
+  %incdec.ptr3.i187.i = getelementptr inbounds i8* %20, i64 3
+  store i8 0, i8* %incdec.ptr2.i186.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i187.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit189.i
+
+regnode.exit189.i:                                ; preds = %if.end.i188.i, %if.then.i184.i
+  %23 = phi i8* [ %20, %if.end.i188.i ], [ %21, %if.then.i184.i ]
+  call fastcc void @regtail(%struct.comp* %cp, i8* %call.i, i8* %23) #9
+  %24 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i192.i = icmp eq i8* %24, %arraydecay.i
+  br i1 %cmp.i192.i, label %if.then.i195.i, label %if.end.i199.i
+
+if.then.i195.i:                                   ; preds = %regnode.exit189.i
+  %25 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i194.i = add nsw i64 %25, 3
+  store i64 %add.i194.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit200.i
+
+if.end.i199.i:                                    ; preds = %regnode.exit189.i
+  %incdec.ptr.i196.i = getelementptr inbounds i8* %24, i64 1
+  store i8 9, i8* %24, align 1, !tbaa !1
+  %incdec.ptr2.i197.i = getelementptr inbounds i8* %24, i64 2
+  store i8 0, i8* %incdec.ptr.i196.i, align 1, !tbaa !1
+  %incdec.ptr3.i198.i = getelementptr inbounds i8* %24, i64 3
+  store i8 0, i8* %incdec.ptr2.i197.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i198.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit200.i
+
+regnode.exit200.i:                                ; preds = %if.end.i199.i, %if.then.i195.i
+  call fastcc void @regtail(%struct.comp* %cp, i8* %call.i, i8* %24) #9
+  br label %if.end62.i
+
+land.lhs.true38.i:                                ; preds = %sw.epilog.i
+  %and39.i = and i32 %9, 2
+  %tobool40.i = icmp eq i32 %and39.i, 0
+  %26 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i218.i = icmp eq i8* %26, %arraydecay.i
+  br i1 %tobool40.i, label %if.then46.i, label %if.then41.i
+
+if.then41.i:                                      ; preds = %land.lhs.true38.i
+  br i1 %cmp.i218.i, label %if.then.i206.i, label %if.end.i214.i
+
+if.then.i206.i:                                   ; preds = %if.then41.i
+  %27 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i205.i = add nsw i64 %27, 3
+  store i64 %add.i205.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %if.end62.i
+
+if.end.i214.i:                                    ; preds = %if.then41.i
+  %add.ptr.i207.i = getelementptr inbounds i8* %call.i, i64 3
+  %sub.ptr.lhs.cast.i208.i = ptrtoint i8* %26 to i64
+  %sub.ptr.rhs.cast.i209.i = ptrtoint i8* %call.i to i64
+  %sub.ptr.sub.i210.i = sub i64 %sub.ptr.lhs.cast.i208.i, %sub.ptr.rhs.cast.i209.i
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %add.ptr.i207.i, i8* %call.i, i64 %sub.ptr.sub.i210.i, i32 1, i1 false) #3
+  %28 = load i8** %regcode.i, align 8, !tbaa !0
+  %add.ptr3.i211.i = getelementptr inbounds i8* %28, i64 3
+  store i8* %add.ptr3.i211.i, i8** %regcode.i, align 8, !tbaa !0
+  %incdec.ptr.i212.i = getelementptr inbounds i8* %call.i, i64 1
+  store i8 11, i8* %call.i, align 1, !tbaa !1
+  %incdec.ptr4.i213.i = getelementptr inbounds i8* %call.i, i64 2
+  store i8 0, i8* %incdec.ptr.i212.i, align 1, !tbaa !1
+  store i8 0, i8* %incdec.ptr4.i213.i, align 1, !tbaa !1
+  br label %if.end62.i
+
+if.then46.i:                                      ; preds = %land.lhs.true38.i
+  br i1 %cmp.i218.i, label %if.then.i221.i, label %if.end.i225.i
+
+if.then.i221.i:                                   ; preds = %if.then46.i
+  %29 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i220.i = add nsw i64 %29, 3
+  store i64 %add.i220.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit226.i
+
+if.end.i225.i:                                    ; preds = %if.then46.i
+  %incdec.ptr.i222.i = getelementptr inbounds i8* %26, i64 1
+  store i8 6, i8* %26, align 1, !tbaa !1
+  %incdec.ptr2.i223.i = getelementptr inbounds i8* %26, i64 2
+  store i8 0, i8* %incdec.ptr.i222.i, align 1, !tbaa !1
+  %incdec.ptr3.i224.i = getelementptr inbounds i8* %26, i64 3
+  store i8 0, i8* %incdec.ptr2.i223.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i224.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit226.i
+
+regnode.exit226.i:                                ; preds = %if.end.i225.i, %if.then.i221.i
+  call fastcc void @regtail(%struct.comp* %cp, i8* %call.i, i8* %26) #9
+  %30 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i229.i = icmp eq i8* %30, %arraydecay.i
+  br i1 %cmp.i229.i, label %if.then.i232.i, label %if.end.i236.i
+
+if.then.i232.i:                                   ; preds = %regnode.exit226.i
+  %31 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i231.i = add nsw i64 %31, 3
+  store i64 %add.i231.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit237.i
+
+if.end.i236.i:                                    ; preds = %regnode.exit226.i
+  %incdec.ptr.i233.i = getelementptr inbounds i8* %30, i64 1
+  store i8 7, i8* %30, align 1, !tbaa !1
+  %incdec.ptr2.i234.i = getelementptr inbounds i8* %30, i64 2
+  store i8 0, i8* %incdec.ptr.i233.i, align 1, !tbaa !1
+  %incdec.ptr3.i235.i = getelementptr inbounds i8* %30, i64 3
+  store i8 0, i8* %incdec.ptr2.i234.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i235.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit237.i
+
+regnode.exit237.i:                                ; preds = %if.end.i236.i, %if.then.i232.i
+  call fastcc void @regtail(%struct.comp* %cp, i8* %30, i8* %call.i) #9
+  %32 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i240.i = icmp eq i8* %32, %arraydecay.i
+  br i1 %cmp.i240.i, label %if.then.i243.i, label %if.end.i247.i
+
+if.then.i243.i:                                   ; preds = %regnode.exit237.i
+  %33 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i242.i = add nsw i64 %33, 3
+  store i64 %add.i242.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit248.i
+
+if.end.i247.i:                                    ; preds = %regnode.exit237.i
+  %incdec.ptr.i244.i = getelementptr inbounds i8* %32, i64 1
+  store i8 6, i8* %32, align 1, !tbaa !1
+  %incdec.ptr2.i245.i = getelementptr inbounds i8* %32, i64 2
+  store i8 0, i8* %incdec.ptr.i244.i, align 1, !tbaa !1
+  %incdec.ptr3.i246.i = getelementptr inbounds i8* %32, i64 3
+  store i8 0, i8* %incdec.ptr2.i245.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i246.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit248.i
+
+regnode.exit248.i:                                ; preds = %if.end.i247.i, %if.then.i243.i
+  call fastcc void @regtail(%struct.comp* %cp, i8* %26, i8* %32) #9
+  %34 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i251.i = icmp eq i8* %34, %arraydecay.i
+  br i1 %cmp.i251.i, label %if.then.i254.i, label %if.end.i258.i
+
+if.then.i254.i:                                   ; preds = %regnode.exit248.i
+  %35 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i253.i = add nsw i64 %35, 3
+  store i64 %add.i253.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit259.i
+
+if.end.i258.i:                                    ; preds = %regnode.exit248.i
+  %incdec.ptr.i255.i = getelementptr inbounds i8* %34, i64 1
+  store i8 9, i8* %34, align 1, !tbaa !1
+  %incdec.ptr2.i256.i = getelementptr inbounds i8* %34, i64 2
+  store i8 0, i8* %incdec.ptr.i255.i, align 1, !tbaa !1
+  %incdec.ptr3.i257.i = getelementptr inbounds i8* %34, i64 3
+  store i8 0, i8* %incdec.ptr2.i256.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i257.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit259.i
+
+regnode.exit259.i:                                ; preds = %if.end.i258.i, %if.then.i254.i
+  call fastcc void @regtail(%struct.comp* %cp, i8* %call.i, i8* %34) #9
+  br label %if.end62.i
+
+if.else51.i:                                      ; preds = %sw.epilog.i
+  br i1 %cmp13.i, label %if.then55.i, label %if.end62.i
+
+if.then55.i:                                      ; preds = %if.else51.i
+  %36 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i262.i = icmp eq i8* %36, %arraydecay.i
+  br i1 %cmp.i262.i, label %reginsert.exit274.i.thread, label %reginsert.exit274.i
+
+reginsert.exit274.i.thread:                       ; preds = %if.then55.i
+  %37 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i264.i = add nsw i64 %37, 3
+  store i64 %add.i264.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %if.then.i280.i
+
+reginsert.exit274.i:                              ; preds = %if.then55.i
+  %add.ptr.i266.i = getelementptr inbounds i8* %call.i, i64 3
+  %sub.ptr.lhs.cast.i267.i = ptrtoint i8* %36 to i64
+  %sub.ptr.rhs.cast.i268.i = ptrtoint i8* %call.i to i64
+  %sub.ptr.sub.i269.i = sub i64 %sub.ptr.lhs.cast.i267.i, %sub.ptr.rhs.cast.i268.i
+  call void @llvm.memmove.p0i8.p0i8.i64(i8* %add.ptr.i266.i, i8* %call.i, i64 %sub.ptr.sub.i269.i, i32 1, i1 false) #3
+  %38 = load i8** %regcode.i, align 8, !tbaa !0
+  %add.ptr3.i270.i = getelementptr inbounds i8* %38, i64 3
+  store i8* %add.ptr3.i270.i, i8** %regcode.i, align 8, !tbaa !0
+  %incdec.ptr.i271.i = getelementptr inbounds i8* %call.i, i64 1
+  store i8 6, i8* %call.i, align 1, !tbaa !1
+  %incdec.ptr4.i272.i = getelementptr inbounds i8* %call.i, i64 2
+  store i8 0, i8* %incdec.ptr.i271.i, align 1, !tbaa !1
+  store i8 0, i8* %incdec.ptr4.i272.i, align 1, !tbaa !1
+  %.pre = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i277.i = icmp eq i8* %.pre, %arraydecay.i
+  br i1 %cmp.i277.i, label %if.then.i280.i, label %if.end.i284.i
+
+if.then.i280.i:                                   ; preds = %reginsert.exit274.i.thread, %reginsert.exit274.i
+  %39 = phi i8* [ %arraydecay.i, %reginsert.exit274.i.thread ], [ %.pre, %reginsert.exit274.i ]
+  %40 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i279.i = add nsw i64 %40, 3
+  store i64 %add.i279.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit285.i
+
+if.end.i284.i:                                    ; preds = %reginsert.exit274.i
+  %incdec.ptr.i281.i = getelementptr inbounds i8* %.pre, i64 1
+  store i8 6, i8* %.pre, align 1, !tbaa !1
+  %incdec.ptr2.i282.i = getelementptr inbounds i8* %.pre, i64 2
+  store i8 0, i8* %incdec.ptr.i281.i, align 1, !tbaa !1
+  %incdec.ptr3.i283.i = getelementptr inbounds i8* %.pre, i64 3
+  store i8 0, i8* %incdec.ptr2.i282.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i283.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit285.i
+
+regnode.exit285.i:                                ; preds = %if.end.i284.i, %if.then.i280.i
+  %41 = phi i8* [ %.pre, %if.end.i284.i ], [ %39, %if.then.i280.i ]
+  call fastcc void @regtail(%struct.comp* %cp, i8* %call.i, i8* %41) #9
+  %42 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i288.i = icmp eq i8* %42, %arraydecay.i
+  br i1 %cmp.i288.i, label %if.then.i291.i, label %if.end.i295.i
+
+if.then.i291.i:                                   ; preds = %regnode.exit285.i
+  %43 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i290.i = add nsw i64 %43, 3
+  store i64 %add.i290.i, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %regnode.exit296.i
+
+if.end.i295.i:                                    ; preds = %regnode.exit285.i
+  %incdec.ptr.i292.i = getelementptr inbounds i8* %42, i64 1
+  store i8 9, i8* %42, align 1, !tbaa !1
+  %incdec.ptr2.i293.i = getelementptr inbounds i8* %42, i64 2
+  store i8 0, i8* %incdec.ptr.i292.i, align 1, !tbaa !1
+  %incdec.ptr3.i294.i = getelementptr inbounds i8* %42, i64 3
+  store i8 0, i8* %incdec.ptr2.i293.i, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i294.i, i8** %regcode.i, align 8, !tbaa !0
+  br label %regnode.exit296.i
+
+regnode.exit296.i:                                ; preds = %if.end.i295.i, %if.then.i291.i
+  call fastcc void @regtail(%struct.comp* %cp, i8* %call.i, i8* %42) #9
+  %44 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i299.i = icmp eq i8* %44, %arraydecay.i
+  br i1 %cmp.i299.i, label %if.end62.i, label %lor.lhs.false.i301.i
+
+lor.lhs.false.i301.i:                             ; preds = %regnode.exit296.i
+  %45 = load i8* %call.i, align 1, !tbaa !1
+  %cmp1.i300.i = icmp eq i8 %45, 6
+  br i1 %cmp1.i300.i, label %if.end.i303.i, label %if.end62.i
+
+if.end.i303.i:                                    ; preds = %lor.lhs.false.i301.i
+  %add.ptr.i302.i = getelementptr inbounds i8* %call.i, i64 3
+  call fastcc void @regtail(%struct.comp* %cp, i8* %add.ptr.i302.i, i8* %42) #9
+  br label %if.end62.i
+
+if.end62.i:                                       ; preds = %lor.lhs.false.i301.i, %regnode.exit296.i, %if.end.i303.i, %if.then.i206.i, %if.end.i214.i, %if.then.i.i, %if.end.i.i, %if.else51.i, %regnode.exit259.i, %regnode.exit200.i
+  %46 = load i8** %regparse, align 8, !tbaa !0
+  %incdec.ptr.i45 = getelementptr inbounds i8* %46, i64 1
+  store i8* %incdec.ptr.i45, i8** %regparse, align 8, !tbaa !0
+  %47 = load i8* %incdec.ptr.i45, align 1, !tbaa !1
+  switch i8 %47, label %if.end [
+    i8 42, label %if.then78.i
+    i8 43, label %if.then78.i
+    i8 63, label %if.then78.i
+  ]
+
+if.then78.i:                                      ; preds = %if.end62.i, %if.end62.i, %if.end62.i
+  call void @sqd_regerror(i8* getelementptr inbounds ([11 x i8]* @.str20, i64 0, i64 0)) #9
+  unreachable
+
+if.end:                                           ; preds = %if.end62.i, %if.then10.i
+  %48 = phi i32 [ %8, %if.then10.i ], [ %10, %if.end62.i ]
+  call void @llvm.lifetime.end(i64 4, i8* %2) #3
+  %and = and i32 %48, 1
+  %49 = load i32* %flagp, align 4, !tbaa !3
+  %or = or i32 %49, %and
+  store i32 %or, i32* %flagp, align 4, !tbaa !3
+  %cmp9 = icmp eq i8* %chain.0, null
+  br i1 %cmp9, label %if.then11, label %if.else
+
+if.then11:                                        ; preds = %if.end
+  %and12 = and i32 %48, 4
+  %or13 = or i32 %or, %and12
+  store i32 %or13, i32* %flagp, align 4, !tbaa !3
+  br label %while.cond
+
+if.else:                                          ; preds = %if.end
+  call fastcc void @regtail(%struct.comp* %cp, i8* %chain.0, i8* %call.i) #10
+  br label %while.cond
+
+while.end:                                        ; preds = %while.cond, %while.cond, %while.cond
+  %cmp15 = icmp eq i8* %chain.0, null
+  br i1 %cmp15, label %if.then17, label %return
+
+if.then17:                                        ; preds = %while.end
+  %50 = load i8** %regcode.i, align 8, !tbaa !0
+  %cmp.i34 = icmp eq i8* %50, %arraydecay.i
+  br i1 %cmp.i34, label %if.then.i37, label %if.end.i41
+
+if.then.i37:                                      ; preds = %if.then17
+  %51 = load i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  %add.i36 = add nsw i64 %51, 3
+  store i64 %add.i36, i64* %regsize.i263.i.pre-phi, align 8, !tbaa !4
+  br label %return
+
+if.end.i41:                                       ; preds = %if.then17
+  %incdec.ptr.i38 = getelementptr inbounds i8* %50, i64 1
+  store i8 9, i8* %50, align 1, !tbaa !1
+  %incdec.ptr2.i39 = getelementptr inbounds i8* %50, i64 2
+  store i8 0, i8* %incdec.ptr.i38, align 1, !tbaa !1
+  %incdec.ptr3.i40 = getelementptr inbounds i8* %50, i64 3
+  store i8 0, i8* %incdec.ptr2.i39, align 1, !tbaa !1
+  store i8* %incdec.ptr3.i40, i8** %regcode.i, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %while.body, %if.end.i41, %if.then.i37, %while.end
+  %retval.0 = phi i8* [ %0, %while.end ], [ %0, %if.then.i37 ], [ %0, %if.end.i41 ], [ null, %while.body ]
+  ret i8* %retval.0
+}

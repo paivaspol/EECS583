@@ -1,0 +1,27 @@
+define %struct._PerlIO** @PerlIO_tmpfile() #1 {
+entry:
+  %call = tail call %struct._IO_FILE* @tmpfile() #9
+  %tobool = icmp eq %struct._IO_FILE* %call, null
+  br i1 %tobool, label %if.end9, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call %struct._PerlIO** @PerlIO_allocate() #10
+  %call2 = tail call %struct._PerlIO** @PerlIO_push(%struct._PerlIO** %call1, %struct._PerlIO_funcs* @PerlIO_stdio, i8* getelementptr inbounds ([3 x i8]* @.str47, i64 0, i64 0), %struct.sv* null) #10
+  %tobool3 = icmp eq %struct._PerlIO** %call2, null
+  br i1 %tobool3, label %if.end9, label %if.then4
+
+if.then4:                                         ; preds = %if.then
+  %0 = load %struct._PerlIO** %call2, align 8, !tbaa !3
+  %tobool5 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool5, label %if.end9, label %if.then6
+
+if.then6:                                         ; preds = %if.then4
+  %1 = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 0
+  %call.c = bitcast %struct._IO_FILE* %call to %struct._PerlIO*
+  store %struct._PerlIO* %call.c, %struct._PerlIO** %1, align 8, !tbaa !3
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then4, %if.then, %entry, %if.then6
+  %f.0 = phi %struct._PerlIO** [ %call2, %if.then6 ], [ %call2, %if.then4 ], [ null, %if.then ], [ null, %entry ]
+  ret %struct._PerlIO** %f.0
+}

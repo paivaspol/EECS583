@@ -1,0 +1,37 @@
+define internal fastcc i32 @Icentervalue(i32 %n, i32* nocapture %a) #0 {
+entry:
+  %div = sdiv i32 %n, 2
+  %cmp = icmp sgt i32 %n, 7
+  br i1 %cmp, label %if.then, label %if.end14
+
+if.then:                                          ; preds = %entry
+  %sub = add nsw i32 %n, -1
+  %cmp1 = icmp sgt i32 %n, 39
+  br i1 %cmp1, label %if.then2, label %if.end
+
+if.then2:                                         ; preds = %if.then
+  %div3 = sdiv i32 %n, 8
+  %add5 = shl nsw i32 %div3, 1
+  %call = tail call fastcc i32 @Imedian3(i32 0, i32 %div3, i32 %add5, i32* %a) #2
+  %sub6 = sub nsw i32 %div, %div3
+  %add7 = add nsw i32 %div3, %div
+  %call8 = tail call fastcc i32 @Imedian3(i32 %sub6, i32 %div, i32 %add7, i32* %a) #2
+  %sub9 = sub nsw i32 %sub, %div3
+  %sub10 = sub nsw i32 %sub9, %div3
+  %call12 = tail call fastcc i32 @Imedian3(i32 %sub10, i32 %sub9, i32 %sub, i32* %a) #2
+  br label %if.end
+
+if.end:                                           ; preds = %if.then2, %if.then
+  %j.0 = phi i32 [ %call8, %if.then2 ], [ %div, %if.then ]
+  %k.0 = phi i32 [ %call12, %if.then2 ], [ %sub, %if.then ]
+  %i.0 = phi i32 [ %call, %if.then2 ], [ 0, %if.then ]
+  %call13 = tail call fastcc i32 @Imedian3(i32 %i.0, i32 %j.0, i32 %k.0, i32* %a) #2
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.end, %entry
+  %j.1 = phi i32 [ %call13, %if.end ], [ %div, %entry ]
+  %idxprom = sext i32 %j.1 to i64
+  %arrayidx = getelementptr inbounds i32* %a, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  ret i32 %0
+}

@@ -1,0 +1,99 @@
+define %struct.op* @Perl_pp_wantarray() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_max, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %1 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 8
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.sv** @Perl_stack_grow(%struct.sv** %0, %struct.sv** %0, i32 1) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %sp.0 = phi %struct.sv** [ %call, %if.then ], [ %0, %entry ]
+  %2 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxix = getelementptr inbounds %struct.stackinfo* %2, i64 0, i32 2
+  %3 = load i32* %si_cxix, align 4, !tbaa !3
+  %si_cxstack.i = getelementptr inbounds %struct.stackinfo* %2, i64 0, i32 1
+  %4 = load %struct.context** %si_cxstack.i, align 8, !tbaa !0
+  %cmp4.i.i = icmp sgt i32 %3, -1
+  br i1 %cmp4.i.i, label %for.body.lr.ph.i.i, label %if.then3
+
+for.body.lr.ph.i.i:                               ; preds = %if.end
+  %5 = sext i32 %3 to i64
+  br label %for.body.i.i
+
+for.body.i.i:                                     ; preds = %for.inc.i.i, %for.body.lr.ph.i.i
+  %indvars.iv.i.i = phi i64 [ %5, %for.body.lr.ph.i.i ], [ %indvars.iv.next.i.i, %for.inc.i.i ]
+  %i.05.i.i = phi i32 [ %3, %for.body.lr.ph.i.i ], [ %dec.i.i, %for.inc.i.i ]
+  %cx_type.i.i = getelementptr inbounds %struct.context* %4, i64 %indvars.iv.i.i, i32 0
+  %6 = load i32* %cx_type.i.i, align 4, !tbaa !3
+  %and.i.i = and i32 %6, 255
+  switch i32 %and.i.i, label %for.inc.i.i [
+    i32 2, label %S_dopoptosub.exit
+    i32 1, label %S_dopoptosub.exit
+    i32 6, label %S_dopoptosub.exit
+  ]
+
+for.inc.i.i:                                      ; preds = %for.body.i.i
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, -1
+  %dec.i.i = add nsw i32 %i.05.i.i, -1
+  %7 = trunc i64 %indvars.iv.i.i to i32
+  %cmp.i.i = icmp sgt i32 %7, 0
+  br i1 %cmp.i.i, label %for.body.i.i, label %S_dopoptosub.exit
+
+S_dopoptosub.exit:                                ; preds = %for.body.i.i, %for.body.i.i, %for.body.i.i, %for.inc.i.i
+  %i.0.lcssa.i.i = phi i32 [ %i.05.i.i, %for.body.i.i ], [ %i.05.i.i, %for.body.i.i ], [ %i.05.i.i, %for.body.i.i ], [ %dec.i.i, %for.inc.i.i ]
+  %cmp2 = icmp slt i32 %i.0.lcssa.i.i, 0
+  br i1 %cmp2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %if.end, %S_dopoptosub.exit
+  %incdec.ptr = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* @PL_sv_undef, %struct.sv** %incdec.ptr, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %8 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %8, i64 0, i32 0
+  br label %return
+
+if.end4:                                          ; preds = %S_dopoptosub.exit
+  %idxprom = sext i32 %i.0.lcssa.i.i to i64
+  %blku_gimme = getelementptr inbounds %struct.context* %4, i64 %idxprom, i32 1, i32 0, i32 6
+  %9 = load i8* %blku_gimme, align 1, !tbaa !1
+  %conv = zext i8 %9 to i32
+  switch i32 %conv, label %sw.default [
+    i32 1, label %sw.bb
+    i32 0, label %sw.bb7
+  ]
+
+sw.bb:                                            ; preds = %if.end4
+  %incdec.ptr5 = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* @PL_sv_yes, %struct.sv** %incdec.ptr5, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr5, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %10 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next6 = getelementptr inbounds %struct.op* %10, i64 0, i32 0
+  br label %return
+
+sw.bb7:                                           ; preds = %if.end4
+  %incdec.ptr8 = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* @PL_sv_no, %struct.sv** %incdec.ptr8, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr8, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %11 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next9 = getelementptr inbounds %struct.op* %11, i64 0, i32 0
+  br label %return
+
+sw.default:                                       ; preds = %if.end4
+  %incdec.ptr10 = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* @PL_sv_undef, %struct.sv** %incdec.ptr10, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr10, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %12 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next11 = getelementptr inbounds %struct.op* %12, i64 0, i32 0
+  br label %return
+
+return:                                           ; preds = %sw.default, %sw.bb7, %sw.bb, %if.then3
+  %retval.0.in = phi %struct.op** [ %op_next, %if.then3 ], [ %op_next11, %sw.default ], [ %op_next9, %sw.bb7 ], [ %op_next6, %sw.bb ]
+  %retval.0 = load %struct.op** %retval.0.in, align 8
+  ret %struct.op* %retval.0
+}

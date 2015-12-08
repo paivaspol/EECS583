@@ -1,0 +1,68 @@
+define i64 @PerlIOStdio_unread(%struct._PerlIO** %f, i8* %vbuf, i64 %count) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %stdio = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %call = tail call i32 @PerlIO_has_cntptr(%struct._PerlIO** %f) #10
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end16, label %if.then
+
+if.then:                                          ; preds = %entry
+  %_IO_read_ptr = getelementptr inbounds %struct._IO_FILE* %2, i64 0, i32 1
+  %cmp44 = icmp eq i64 %count, 0
+  br i1 %cmp44, label %if.end21, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.then
+  %add.ptr = getelementptr inbounds i8* %vbuf, i64 %count
+  %3 = load i8** %_IO_read_ptr, align 8, !tbaa !3
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end15
+  %count.addr.048 = phi i64 [ %count, %while.body.lr.ph ], [ %dec, %if.end15 ]
+  %buf.047 = phi i8* [ %add.ptr, %while.body.lr.ph ], [ %incdec.ptr, %if.end15 ]
+  %eptr.046 = phi i8* [ %3, %while.body.lr.ph ], [ %5, %if.end15 ]
+  %unread.045 = phi i64 [ 0, %while.body.lr.ph ], [ %inc, %if.end15 ]
+  %incdec.ptr = getelementptr inbounds i8* %buf.047, i64 -1
+  %4 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %conv37 = zext i8 %4 to i32
+  %call1 = tail call i32 @ungetc(i32 %conv37, %struct._IO_FILE* %2) #9
+  %cmp2 = icmp eq i32 %call1, %conv37
+  br i1 %cmp2, label %if.end, label %if.end16
+
+if.end:                                           ; preds = %while.body
+  %5 = load i8** %_IO_read_ptr, align 8, !tbaa !3
+  %incdec.ptr6 = getelementptr inbounds i8* %eptr.046, i64 -1
+  %cmp7 = icmp eq i8* %5, %incdec.ptr6
+  br i1 %cmp7, label %lor.lhs.false, label %if.then13
+
+lor.lhs.false:                                    ; preds = %if.end
+  %6 = load i8* %5, align 1, !tbaa !1
+  %cmp11 = icmp eq i8 %6, %4
+  br i1 %cmp11, label %if.end15, label %if.then13
+
+if.then13:                                        ; preds = %lor.lhs.false, %if.end
+  %call14 = tail call i32 @fgetc(%struct._IO_FILE* %2) #9
+  br label %if.end16
+
+if.end15:                                         ; preds = %lor.lhs.false
+  %dec = add i64 %count.addr.048, -1
+  %inc = add nsw i64 %unread.045, 1
+  %cmp = icmp eq i64 %dec, 0
+  br i1 %cmp, label %if.end21, label %while.body
+
+if.end16:                                         ; preds = %while.body, %entry, %if.then13
+  %unread.1 = phi i64 [ %unread.045, %if.then13 ], [ 0, %entry ], [ %unread.045, %while.body ]
+  %count.addr.1 = phi i64 [ %count.addr.048, %if.then13 ], [ %count, %entry ], [ %count.addr.048, %while.body ]
+  %cmp17 = icmp eq i64 %count.addr.1, 0
+  br i1 %cmp17, label %if.end21, label %if.then19
+
+if.then19:                                        ; preds = %if.end16
+  %call20 = tail call i64 @PerlIOBase_unread(%struct._PerlIO** %f, i8* %vbuf, i64 %count.addr.1) #10
+  %add = add nsw i64 %call20, %unread.1
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then, %if.end15, %if.end16, %if.then19
+  %unread.2 = phi i64 [ %add, %if.then19 ], [ %unread.1, %if.end16 ], [ 0, %if.then ], [ %inc, %if.end15 ]
+  ret i64 %unread.2
+}

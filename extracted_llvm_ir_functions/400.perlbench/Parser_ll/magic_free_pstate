@@ -1,0 +1,59 @@
+define internal i32 @magic_free_pstate(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %call = tail call fastcc %struct.p_state* @get_pstate_iv(%struct.sv* %sv) #5
+  %buf.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 1
+  %0 = load %struct.sv** %buf.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %0) #6
+  %pend_text.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 11
+  %1 = load %struct.sv** %pend_text.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %1) #6
+  %skipped_text.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 16
+  %2 = load %struct.sv** %skipped_text.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %2) #6
+  %ms_stack.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 18
+  %3 = load %struct.av** %ms_stack.i, align 8, !tbaa !0
+  %4 = bitcast %struct.av* %3 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %4) #6
+  %bool_attr_val.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 29
+  %5 = load %struct.sv** %bool_attr_val.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %5) #6
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %for.body.i, %entry
+  %indvars.iv.i = phi i64 [ 0, %entry ], [ %indvars.iv.next.i, %for.body.i ]
+  %cb.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 30, i64 %indvars.iv.i, i32 0
+  %6 = load %struct.sv** %cb.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %6) #6
+  %argspec.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 30, i64 %indvars.iv.i, i32 1
+  %7 = load %struct.sv** %argspec.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %7) #6
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 9
+  br i1 %exitcond, label %free_pstate.exit, label %for.body.i
+
+free_pstate.exit:                                 ; preds = %for.body.i
+  %report_tags.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 32
+  %8 = load %struct.hv** %report_tags.i, align 8, !tbaa !0
+  %9 = bitcast %struct.hv* %8 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %9) #6
+  %ignore_tags.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 33
+  %10 = load %struct.hv** %ignore_tags.i, align 8, !tbaa !0
+  %11 = bitcast %struct.hv* %10 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %11) #6
+  %ignore_elements.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 34
+  %12 = load %struct.hv** %ignore_elements.i, align 8, !tbaa !0
+  %13 = bitcast %struct.hv* %12 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %13) #6
+  %ignoring_element.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 35
+  %14 = load %struct.sv** %ignoring_element.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %14) #6
+  %tmp.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 38
+  %15 = load %struct.sv** %tmp.i, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %15) #6
+  %signature.i = getelementptr inbounds %struct.p_state* %call, i64 0, i32 0
+  store i32 0, i32* %signature.i, align 4, !tbaa !3
+  %16 = bitcast %struct.p_state* %call to i8*
+  tail call void @Perl_safesysfree(i8* %16) #6
+  ret i32 0
+}

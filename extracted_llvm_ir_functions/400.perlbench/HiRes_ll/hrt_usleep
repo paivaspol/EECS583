@@ -1,0 +1,10 @@
+define void @hrt_usleep(i64 %usec) #0 {
+entry:
+  %tv = alloca %struct.timeval, align 8
+  %tv_sec = getelementptr inbounds %struct.timeval* %tv, i64 0, i32 0
+  store i64 0, i64* %tv_sec, align 8, !tbaa !0
+  %tv_usec = getelementptr inbounds %struct.timeval* %tv, i64 0, i32 1
+  store i64 %usec, i64* %tv_usec, align 8, !tbaa !0
+  %call = call i32 @select(i32 0, %struct.fd_set* null, %struct.fd_set* null, %struct.fd_set* null, %struct.timeval* %tv) #4
+  ret void
+}

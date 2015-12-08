@@ -1,0 +1,89 @@
+define float @P7TraceScore(%struct.plan7_s* nocapture %hmm, i8* nocapture %dsq, %struct.p7trace_s* nocapture %tr) #0 {
+entry:
+  %tlen = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 0
+  %0 = load i32* %tlen, align 4, !tbaa !3
+  %sub69 = add nsw i32 %0, -1
+  %cmp70 = icmp sgt i32 %sub69, 0
+  br i1 %cmp70, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %pos = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 3
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1
+  %nodeidx34 = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 2
+  %msc = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 31
+  %isc = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 32
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end29
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %if.end29 ]
+  %score.072 = phi i32 [ 0, %for.body.lr.ph ], [ %add44, %if.end29 ]
+  %1 = load i32** %pos, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
+  %2 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom1 = sext i32 %2 to i64
+  %arrayidx2 = getelementptr inbounds i8* %dsq, i64 %idxprom1
+  %3 = load i8* %arrayidx2, align 1, !tbaa !1
+  %4 = load i8** %statetype, align 8, !tbaa !0
+  %arrayidx4 = getelementptr inbounds i8* %4, i64 %indvars.iv
+  %5 = load i8* %arrayidx4, align 1, !tbaa !1
+  switch i8 %5, label %for.body.if.end29_crit_edge [
+    i8 1, label %if.then
+    i8 3, label %if.then20
+  ]
+
+for.body.if.end29_crit_edge:                      ; preds = %for.body
+  %.pre = load i32** %nodeidx34, align 8, !tbaa !0
+  %arrayidx35.phi.trans.insert = getelementptr inbounds i32* %.pre, i64 %indvars.iv
+  %.pre73 = load i32* %arrayidx35.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end29
+
+if.then:                                          ; preds = %for.body
+  %6 = load i32** %nodeidx34, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i32* %6, i64 %indvars.iv
+  %7 = load i32* %arrayidx9, align 4, !tbaa !3
+  %idxprom10 = sext i32 %7 to i64
+  %idxprom11 = sext i8 %3 to i64
+  %8 = load i32*** %msc, align 8, !tbaa !0
+  %arrayidx12 = getelementptr inbounds i32** %8, i64 %idxprom11
+  %9 = load i32** %arrayidx12, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i32* %9, i64 %idxprom10
+  %10 = load i32* %arrayidx13, align 4, !tbaa !3
+  %add = add nsw i32 %10, %score.072
+  br label %if.end29
+
+if.then20:                                        ; preds = %for.body
+  %11 = load i32** %nodeidx34, align 8, !tbaa !0
+  %arrayidx23 = getelementptr inbounds i32* %11, i64 %indvars.iv
+  %12 = load i32* %arrayidx23, align 4, !tbaa !3
+  %idxprom24 = sext i32 %12 to i64
+  %idxprom25 = sext i8 %3 to i64
+  %13 = load i32*** %isc, align 8, !tbaa !0
+  %arrayidx26 = getelementptr inbounds i32** %13, i64 %idxprom25
+  %14 = load i32** %arrayidx26, align 8, !tbaa !0
+  %arrayidx27 = getelementptr inbounds i32* %14, i64 %idxprom24
+  %15 = load i32* %arrayidx27, align 4, !tbaa !3
+  %add28 = add nsw i32 %15, %score.072
+  br label %if.end29
+
+if.end29:                                         ; preds = %for.body.if.end29_crit_edge, %if.then20, %if.then
+  %16 = phi i32 [ %7, %if.then ], [ %12, %if.then20 ], [ %.pre73, %for.body.if.end29_crit_edge ]
+  %17 = phi i32* [ %6, %if.then ], [ %11, %if.then20 ], [ %.pre, %for.body.if.end29_crit_edge ]
+  %score.1 = phi i32 [ %add, %if.then ], [ %add28, %if.then20 ], [ %score.072, %for.body.if.end29_crit_edge ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx39 = getelementptr inbounds i8* %4, i64 %indvars.iv.next
+  %18 = load i8* %arrayidx39, align 1, !tbaa !1
+  %arrayidx43 = getelementptr inbounds i32* %17, i64 %indvars.iv.next
+  %19 = load i32* %arrayidx43, align 4, !tbaa !3
+  %call = tail call i32 @TransitionScoreLookup(%struct.plan7_s* %hmm, i8 signext %5, i32 %16, i8 signext %18, i32 %19) #7
+  %add44 = add nsw i32 %call, %score.1
+  %20 = load i32* %tlen, align 4, !tbaa !3
+  %sub = add nsw i32 %20, -1
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %21, %sub
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end29, %entry
+  %score.0.lcssa = phi i32 [ 0, %entry ], [ %add44, %if.end29 ]
+  %call45 = tail call float @Scorify(i32 %score.0.lcssa) #6
+  ret float %call45
+}

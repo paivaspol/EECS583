@@ -1,0 +1,32 @@
+define void @InpMtx_setMaxnvector(%struct._InpMtx* %inpmtx, i32 %newmaxnvector) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = icmp slt i32 %newmaxnvector, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str24, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newmaxnvector) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %maxnvector = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 9
+  %1 = load i32* %maxnvector, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %1, %newmaxnvector
+  br i1 %cmp2, label %if.end4, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %vecidsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 11
+  tail call void @IV_setMaxsize(%struct._IV* %vecidsIV, i32 %newmaxnvector) #4
+  %sizesIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 12
+  tail call void @IV_setMaxsize(%struct._IV* %sizesIV, i32 %newmaxnvector) #4
+  %offsetsIV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 13
+  tail call void @IV_setMaxsize(%struct._IV* %offsetsIV, i32 %newmaxnvector) #4
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then3
+  store i32 %newmaxnvector, i32* %maxnvector, align 4, !tbaa !3
+  ret void
+}

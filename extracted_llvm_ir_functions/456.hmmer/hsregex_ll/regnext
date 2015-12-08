@@ -1,0 +1,27 @@
+define internal fastcc i8* @regnext(i8* %p) #5 {
+entry:
+  %add.ptr = getelementptr inbounds i8* %p, i64 1
+  %0 = load i8* %add.ptr, align 1, !tbaa !1
+  %conv15 = zext i8 %0 to i32
+  %and = shl nuw nsw i32 %conv15, 8
+  %shl = and i32 %and, 32512
+  %add.ptr1 = getelementptr inbounds i8* %p, i64 2
+  %1 = load i8* %add.ptr1, align 1, !tbaa !1
+  %conv216 = zext i8 %1 to i32
+  %add = or i32 %shl, %conv216
+  %cmp = icmp eq i32 %add, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %2 = load i8* %p, align 1, !tbaa !1
+  %cmp6 = icmp eq i8 %2, 7
+  %idx.ext17 = zext i32 %add to i64
+  %idx.neg = sub i64 0, %idx.ext17
+  %idx.neg.sink = select i1 %cmp6, i64 %idx.neg, i64 %idx.ext17
+  %add.ptr8 = getelementptr inbounds i8* %p, i64 %idx.neg.sink
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8* [ %add.ptr8, %if.end ], [ null, %entry ]
+  ret i8* %retval.0
+}

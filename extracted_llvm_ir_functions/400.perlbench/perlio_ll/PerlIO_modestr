@@ -1,0 +1,62 @@
+define i8* @PerlIO_modestr(%struct._PerlIO** %f, i8* %buf) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.end31, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.end31, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %flags2 = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags2, align 4, !tbaa !0
+  %conv = zext i32 %1 to i64
+  %and = and i64 %conv, 8192
+  %tobool3 = icmp eq i64 %and, 0
+  br i1 %tobool3, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %if.then
+  %incdec.ptr = getelementptr inbounds i8* %buf, i64 1
+  store i8 97, i8* %buf, align 1, !tbaa !1
+  %and5 = and i64 %conv, 1024
+  %tobool6 = icmp eq i64 %and5, 0
+  br i1 %tobool6, label %if.end31, label %if.then7
+
+if.then7:                                         ; preds = %if.then4
+  %incdec.ptr8 = getelementptr inbounds i8* %buf, i64 2
+  store i8 43, i8* %incdec.ptr, align 1, !tbaa !1
+  br label %if.end31
+
+if.else:                                          ; preds = %if.then
+  %and9 = and i64 %conv, 1024
+  %tobool10 = icmp eq i64 %and9, 0
+  br i1 %tobool10, label %if.else18, label %if.then11
+
+if.then11:                                        ; preds = %if.else
+  %incdec.ptr12 = getelementptr inbounds i8* %buf, i64 1
+  store i8 114, i8* %buf, align 1, !tbaa !1
+  %and13 = and i64 %conv, 512
+  %tobool14 = icmp eq i64 %and13, 0
+  br i1 %tobool14, label %if.end31, label %if.then15
+
+if.then15:                                        ; preds = %if.then11
+  %incdec.ptr16 = getelementptr inbounds i8* %buf, i64 2
+  store i8 43, i8* %incdec.ptr12, align 1, !tbaa !1
+  br label %if.end31
+
+if.else18:                                        ; preds = %if.else
+  %and19 = and i64 %conv, 512
+  %tobool20 = icmp eq i64 %and19, 0
+  br i1 %tobool20, label %if.end31, label %if.then21
+
+if.then21:                                        ; preds = %if.else18
+  %incdec.ptr22 = getelementptr inbounds i8* %buf, i64 1
+  store i8 119, i8* %buf, align 1, !tbaa !1
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.then21, %if.then4, %if.then11, %if.else18, %land.lhs.true, %entry, %if.then7, %if.then15
+  %s.0 = phi i8* [ %incdec.ptr8, %if.then7 ], [ %incdec.ptr, %if.then4 ], [ %incdec.ptr16, %if.then15 ], [ %incdec.ptr12, %if.then11 ], [ %incdec.ptr22, %if.then21 ], [ %buf, %if.else18 ], [ %buf, %land.lhs.true ], [ %buf, %entry ]
+  store i8 0, i8* %s.0, align 1, !tbaa !1
+  ret i8* %buf
+}

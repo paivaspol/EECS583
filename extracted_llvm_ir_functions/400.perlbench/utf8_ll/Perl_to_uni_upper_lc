@@ -1,0 +1,11 @@
+define i32 @Perl_to_uni_upper_lc(i32 %c) #0 {
+entry:
+  %len = alloca i64, align 8
+  %tmpbuf = alloca [7 x i8], align 1
+  %conv = zext i32 %c to i64
+  %arraydecay = getelementptr inbounds [7 x i8]* %tmpbuf, i64 0, i64 0
+  %call.i.i = call i8* @Perl_uvuni_to_utf8_flags(i8* %arraydecay, i64 %conv, i64 0) #5
+  %call.i4.i = call i64 @Perl_to_utf8_case(i8* %arraydecay, i8* %arraydecay, i64* %len, %struct.sv** @PL_utf8_toupper, i8* getelementptr inbounds ([8 x i8]* @.str36, i64 0, i64 0), i8* getelementptr inbounds ([18 x i8]* @.str37, i64 0, i64 0)) #5
+  %conv1 = trunc i64 %call.i4.i to i32
+  ret i32 %conv1
+}

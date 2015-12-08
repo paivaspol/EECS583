@@ -1,0 +1,83 @@
+define %struct.op* @Perl_newUNOP(i32 %type, i32 %flags, %struct.op* %first) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %first, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call %struct.op* @Perl_newOP(i32 1, i32 0) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %first.addr.0 = phi %struct.op* [ %first, %entry ], [ %call, %if.then ]
+  %idxprom = sext i32 %type to i64
+  %arrayidx = getelementptr inbounds [0 x i32]* @PL_opargs, i64 0, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %and = and i32 %0, 1
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end4, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call %struct.op* @Perl_force_list(%struct.op* %first.addr.0) #8
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then2
+  %first.addr.1 = phi %struct.op* [ %call3, %if.then2 ], [ %first.addr.0, %if.end ]
+  %call5 = tail call i8* @Perl_safesysmalloc(i64 48) #7
+  tail call void @llvm.memset.p0i8.i64(i8* %call5, i8 0, i64 48, i32 1, i1 false)
+  %conv = trunc i32 %type to i16
+  %op_type = getelementptr inbounds i8* %call5, i64 32
+  %1 = bitcast i8* %op_type to i16*
+  store i16 %conv, i16* %1, align 2, !tbaa !4
+  %arrayidx7 = getelementptr inbounds [0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 %idxprom
+  %2 = load %struct.op* ()** %arrayidx7, align 8, !tbaa !3
+  %op_ppaddr = getelementptr inbounds i8* %call5, i64 16
+  %3 = bitcast i8* %op_ppaddr to %struct.op* ()**
+  store %struct.op* ()* %2, %struct.op* ()** %3, align 8, !tbaa !3
+  %op_first = getelementptr inbounds i8* %call5, i64 40
+  %4 = bitcast i8* %op_first to %struct.op**
+  store %struct.op* %first.addr.1, %struct.op** %4, align 8, !tbaa !3
+  %or = or i32 %flags, 4
+  %conv8 = trunc i32 %or to i8
+  %5 = getelementptr inbounds i8* %call5, i64 36
+  store i8 %conv8, i8* %5, align 1, !tbaa !1
+  %shr42 = lshr i32 %flags, 8
+  %or9 = or i32 %shr42, 1
+  %conv10 = trunc i32 %or9 to i8
+  %6 = getelementptr inbounds i8* %call5, i64 37
+  store i8 %conv10, i8* %6, align 1, !tbaa !1
+  %7 = load i8** @PL_op_mask, align 8, !tbaa !3
+  %tobool11 = icmp eq i8* %7, null
+  br i1 %tobool11, label %cond.false, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end4
+  %arrayidx13 = getelementptr inbounds i8* %7, i64 %idxprom
+  %8 = load i8* %arrayidx13, align 1, !tbaa !1
+  %tobool15 = icmp eq i8 %8, 0
+  br i1 %tobool15, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %land.lhs.true
+  %9 = bitcast i8* %call5 to %struct.op*
+  tail call void @Perl_op_free(%struct.op* %9) #8
+  %arrayidx17 = getelementptr inbounds [0 x i8*]* @PL_op_desc, i64 0, i64 %idxprom
+  %10 = load i8** %arrayidx17, align 8, !tbaa !3
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([31 x i8]* @.str33, i64 0, i64 0), i8* %10) #7
+  unreachable
+
+cond.false:                                       ; preds = %land.lhs.true, %if.end4
+  %arrayidx19 = getelementptr inbounds [0 x %struct.op* (%struct.op*)*]* @PL_check, i64 0, i64 %idxprom
+  %11 = load %struct.op* (%struct.op*)** %arrayidx19, align 8, !tbaa !3
+  %12 = bitcast i8* %call5 to %struct.op*
+  %call20 = tail call %struct.op* %11(%struct.op* %12) #7
+  %op_next = getelementptr inbounds %struct.op* %call20, i64 0, i32 0
+  %13 = load %struct.op** %op_next, align 8, !tbaa !3
+  %tobool21 = icmp eq %struct.op* %13, null
+  br i1 %tobool21, label %if.end23, label %return
+
+if.end23:                                         ; preds = %cond.false
+  %call24 = tail call %struct.op* @Perl_fold_constants(%struct.op* %call20) #8
+  br label %return
+
+return:                                           ; preds = %cond.false, %if.end23
+  %retval.0 = phi %struct.op* [ %call24, %if.end23 ], [ %call20, %cond.false ]
+  ret %struct.op* %retval.0
+}

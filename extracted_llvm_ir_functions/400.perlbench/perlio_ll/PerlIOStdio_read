@@ -1,0 +1,67 @@
+define i64 @PerlIOStdio_read(%struct._PerlIO** nocapture %f, i8* nocapture %vbuf, i64 %count) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %stdio = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %cmp = icmp eq i64 %count, 1
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.end19, %entry
+  %got.0 = phi i64 [ 0, %entry ], [ %got.2, %if.end19 ]
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.cond
+  %call = tail call i32 @fgetc(%struct._IO_FILE* %2) #9
+  %cmp1 = icmp eq i32 %call, -1
+  br i1 %cmp1, label %if.end4, label %if.end9.thread
+
+if.end9.thread:                                   ; preds = %if.then
+  %conv = trunc i32 %call to i8
+  store i8 %conv, i8* %vbuf, align 1, !tbaa !1
+  br label %for.end
+
+if.else:                                          ; preds = %for.cond
+  %call3 = tail call i64 @fread(i8* %vbuf, i64 1, i64 %count, %struct._IO_FILE* %2) #9
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then, %if.else
+  %got.1 = phi i64 [ %got.0, %if.then ], [ %call3, %if.else ]
+  %cmp5 = icmp eq i64 %got.1, 0
+  br i1 %cmp5, label %land.lhs.true, label %if.end9
+
+land.lhs.true:                                    ; preds = %if.end4
+  %call7 = tail call i32 @ferror(%struct._IO_FILE* %2) #9
+  %not.tobool = icmp ne i32 %call7, 0
+  %got.1. = sext i1 %not.tobool to i64
+  br label %if.end9
+
+if.end9:                                          ; preds = %land.lhs.true, %if.end4
+  %got.2 = phi i64 [ %got.1, %if.end4 ], [ %got.1., %land.lhs.true ]
+  %cmp10 = icmp sgt i64 %got.2, -1
+  br i1 %cmp10, label %for.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end9
+  %call12 = tail call i32* @__errno_location() #9
+  %3 = load i32* %call12, align 4, !tbaa !0
+  %cmp13 = icmp eq i32 %3, 4
+  br i1 %cmp13, label %if.end16, label %for.end
+
+if.end16:                                         ; preds = %lor.lhs.false
+  %4 = load i32* @PL_sig_pending, align 4, !tbaa !0
+  %tobool17 = icmp eq i32 %4, 0
+  br i1 %tobool17, label %if.end19, label %if.then18
+
+if.then18:                                        ; preds = %if.end16
+  tail call void @Perl_despatch_signals() #9
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.end16, %if.then18
+  %call20 = tail call i32* @__errno_location() #9
+  store i32 0, i32* %call20, align 4, !tbaa !0
+  br label %for.cond
+
+for.end:                                          ; preds = %lor.lhs.false, %if.end9, %if.end9.thread
+  %got.229 = phi i64 [ 1, %if.end9.thread ], [ %got.2, %if.end9 ], [ %got.2, %lor.lhs.false ]
+  ret i64 %got.229
+}

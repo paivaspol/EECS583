@@ -1,0 +1,22 @@
+define void @Drand_setNormal(%struct._Drand* %drand, double %mean, double %sigma) #0 {
+entry:
+  %cmp = icmp ne %struct._Drand* %drand, null
+  %cmp1 = fcmp ugt double %sigma, 0.000000e+00
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str4, i64 0, i64 0), %struct._Drand* %drand, double %mean, double %sigma) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %mode = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8
+  store i32 2, i32* %mode, align 4, !tbaa !4
+  %mean2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 6
+  store double %mean, double* %mean2, align 8, !tbaa !3
+  %sigma3 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 7
+  store double %sigma, double* %sigma3, align 8, !tbaa !3
+  ret void
+}

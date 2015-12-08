@@ -1,0 +1,70 @@
+define %struct.op* @Perl_ck_spair(%struct.op* %o) #0 {
+entry:
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %0 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %0, 4
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %if.end32, label %if.then
+
+if.then:                                          ; preds = %entry
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %1 = load i16* %op_type, align 2, !tbaa !4
+  %call = tail call %struct.op* @Perl_ck_fun(%struct.op* %o) #8
+  %conv1 = zext i16 %1 to i32
+  %call2 = tail call fastcc %struct.op* @S_modkids(%struct.op* %call, i32 %conv1) #8
+  %2 = getelementptr inbounds %struct.op* %call2, i64 1, i32 0
+  %3 = load %struct.op** %2, align 8, !tbaa !3
+  %4 = getelementptr inbounds %struct.op* %3, i64 1, i32 0
+  %5 = load %struct.op** %4, align 8, !tbaa !3
+  %op_sibling = getelementptr inbounds %struct.op* %5, i64 0, i32 1
+  %6 = load %struct.op** %op_sibling, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.op* %6, null
+  br i1 %tobool4, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %op_sibling5 = getelementptr inbounds %struct.op* %6, i64 0, i32 1
+  %7 = load %struct.op** %op_sibling5, align 8, !tbaa !3
+  %tobool6 = icmp eq %struct.op* %7, null
+  br i1 %tobool6, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %op_type7 = getelementptr inbounds %struct.op* %6, i64 0, i32 4
+  %8 = load i16* %op_type7, align 2, !tbaa !4
+  %idxprom = zext i16 %8 to i64
+  %arrayidx = getelementptr inbounds [0 x i32]* @PL_opargs, i64 0, i64 %idxprom
+  %9 = load i32* %arrayidx, align 4, !tbaa !0
+  %and8 = and i32 %9, 4
+  %tobool9 = icmp eq i32 %and8, 0
+  %cmp = icmp eq i16 %8, 10
+  %or.cond = or i1 %tobool9, %cmp
+  %cmp17 = icmp eq i16 %8, 11
+  %or.cond53 = or i1 %or.cond, %cmp17
+  %cmp22 = icmp eq i16 %8, 125
+  %or.cond54 = or i1 %or.cond53, %cmp22
+  %cmp27 = icmp eq i16 %8, 134
+  %or.cond55 = or i1 %or.cond54, %cmp27
+  br i1 %or.cond55, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then
+  tail call void @Perl_op_free(%struct.op* %5) #8
+  store %struct.op* %6, %struct.op** %4, align 8, !tbaa !3
+  br label %if.end32
+
+if.end32:                                         ; preds = %entry, %if.end
+  %o.addr.0 = phi %struct.op* [ %call2, %if.end ], [ %o, %entry ]
+  %op_type33 = getelementptr inbounds %struct.op* %o.addr.0, i64 0, i32 4
+  %10 = load i16* %op_type33, align 2, !tbaa !4
+  %inc = add i16 %10, 1
+  store i16 %inc, i16* %op_type33, align 2, !tbaa !4
+  %idxprom34 = zext i16 %inc to i64
+  %arrayidx35 = getelementptr inbounds [0 x %struct.op* ()*]* @PL_ppaddr, i64 0, i64 %idxprom34
+  %11 = load %struct.op* ()** %arrayidx35, align 8, !tbaa !3
+  %op_ppaddr = getelementptr inbounds %struct.op* %o.addr.0, i64 0, i32 2
+  store %struct.op* ()* %11, %struct.op* ()** %op_ppaddr, align 8, !tbaa !3
+  %call36 = tail call %struct.op* @Perl_ck_fun(%struct.op* %o.addr.0) #8
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %lor.lhs.false, %if.end32
+  %retval.0 = phi %struct.op* [ %call36, %if.end32 ], [ %call2, %lor.lhs.false ], [ %call2, %land.lhs.true ]
+  ret %struct.op* %retval.0
+}

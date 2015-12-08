@@ -1,0 +1,261 @@
+define void @Perl_do_pmop_dump(i32 %level, %struct._PerlIO** %file, %struct.pmop* %pm) #0 {
+entry:
+  %tobool = icmp eq %struct.pmop* %pm, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %level, %struct._PerlIO** %file, i8* getelementptr inbounds ([4 x i8]* @.str56, i64 0, i64 0)) #4
+  br label %return
+
+if.end:                                           ; preds = %entry
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %level, %struct._PerlIO** %file, i8* getelementptr inbounds ([3 x i8]* @.str57, i64 0, i64 0)) #4
+  %inc = add nsw i32 %level, 1
+  %op_pmflags = getelementptr inbounds %struct.pmop* %pm, i64 0, i32 14
+  %0 = load i32* %op_pmflags, align 4, !tbaa !0
+  %and = shl i32 %0, 3
+  %1 = and i32 %and, 16
+  %2 = or i32 %1, 47
+  %op_pmregexp = getelementptr inbounds %struct.pmop* %pm, i64 0, i32 13
+  %3 = load %struct.regexp** %op_pmregexp, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.regexp* %3, null
+  br i1 %tobool4, label %if.else11, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %precomp = getelementptr inbounds %struct.regexp* %3, i64 0, i32 4
+  %4 = load i8** %precomp, align 8, !tbaa !3
+  %op_private = getelementptr inbounds %struct.pmop* %pm, i64 0, i32 7
+  %5 = load i8* %op_private, align 1, !tbaa !1
+  %and9 = and i8 %5, 64
+  %tobool10 = icmp ne i8 %and9, 0
+  %cond = select i1 %tobool10, i8* getelementptr inbounds ([11 x i8]* @.str59, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %inc, %struct._PerlIO** %file, i8* getelementptr inbounds ([18 x i8]* @.str58, i64 0, i64 0), i32 %2, i8* %4, i32 %2, i8* %cond) #4
+  br label %if.end12
+
+if.else11:                                        ; preds = %if.end
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %inc, %struct._PerlIO** %file, i8* getelementptr inbounds ([19 x i8]* @.str60, i64 0, i64 0)) #4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.else11, %if.then5
+  %op_type = getelementptr inbounds %struct.pmop* %pm, i64 0, i32 4
+  %6 = load i16* %op_type, align 2, !tbaa !6
+  %cmp = icmp eq i16 %6, 13
+  br i1 %cmp, label %if.end18, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end12
+  %op_pmreplroot = getelementptr inbounds %struct.pmop* %pm, i64 0, i32 10
+  %7 = load %struct.op** %op_pmreplroot, align 8, !tbaa !3
+  %tobool15 = icmp eq %struct.op* %7, null
+  br i1 %tobool15, label %if.end18, label %if.then16
+
+if.then16:                                        ; preds = %land.lhs.true
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %inc, %struct._PerlIO** %file, i8* getelementptr inbounds ([12 x i8]* @.str61, i64 0, i64 0)) #4
+  %8 = load %struct.op** %op_pmreplroot, align 8, !tbaa !3
+  %call.i = tail call %struct._PerlIO** @Perl_PerlIO_stderr() #3
+  tail call void @Perl_do_op_dump(i32 0, %struct._PerlIO** %call.i, %struct.op* %8) #3
+  br label %if.end18
+
+if.end18:                                         ; preds = %land.lhs.true, %if.end12, %if.then16
+  %9 = load i32* %op_pmflags, align 4, !tbaa !0
+  %tobool20 = icmp eq i32 %9, 0
+  br i1 %tobool20, label %lor.lhs.false, label %if.then26
+
+lor.lhs.false:                                    ; preds = %if.end18
+  %10 = load %struct.regexp** %op_pmregexp, align 8, !tbaa !3
+  %tobool22 = icmp eq %struct.regexp* %10, null
+  br i1 %tobool22, label %if.end112, label %land.lhs.true23
+
+land.lhs.true23:                                  ; preds = %lor.lhs.false
+  %substrs = getelementptr inbounds %struct.regexp* %10, i64 0, i32 3
+  %11 = load %struct.reg_substr_data** %substrs, align 8, !tbaa !3
+  %substr = getelementptr inbounds %struct.reg_substr_data* %11, i64 0, i32 0, i64 2, i32 2
+  %12 = load %struct.sv** %substr, align 8, !tbaa !3
+  %tobool25 = icmp eq %struct.sv* %12, null
+  br i1 %tobool25, label %if.end112, label %if.then26
+
+if.then26:                                        ; preds = %land.lhs.true23, %if.end18
+  %call = tail call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i64 0) #3
+  %op_pmdynflags = getelementptr inbounds %struct.pmop* %pm, i64 0, i32 16
+  %13 = load i8* %op_pmdynflags, align 1, !tbaa !1
+  %and28 = and i8 %13, 1
+  %tobool29 = icmp eq i8 %and28, 0
+  br i1 %tobool29, label %if.end31, label %if.then30
+
+if.then30:                                        ; preds = %if.then26
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([6 x i8]* @.str62, i64 0, i64 0)) #3
+  %.pre = load i8* %op_pmdynflags, align 1, !tbaa !1
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.then26, %if.then30
+  %14 = phi i8 [ %13, %if.then26 ], [ %.pre, %if.then30 ]
+  %and34 = and i8 %14, 2
+  %tobool35 = icmp eq i8 %and34, 0
+  br i1 %tobool35, label %if.end37, label %if.then36
+
+if.then36:                                        ; preds = %if.end31
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([9 x i8]* @.str63, i64 0, i64 0)) #3
+  br label %if.end37
+
+if.end37:                                         ; preds = %if.end31, %if.then36
+  %15 = load i32* %op_pmflags, align 4, !tbaa !0
+  %and39 = and i32 %15, 2
+  %tobool40 = icmp eq i32 %and39, 0
+  br i1 %tobool40, label %if.end42, label %if.then41
+
+if.then41:                                        ; preds = %if.end37
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([6 x i8]* @.str64, i64 0, i64 0)) #3
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.end37, %if.then41
+  %16 = load %struct.regexp** %op_pmregexp, align 8, !tbaa !3
+  %tobool44 = icmp eq %struct.regexp* %16, null
+  br i1 %tobool44, label %if.end73, label %land.lhs.true45
+
+land.lhs.true45:                                  ; preds = %if.end42
+  %substrs47 = getelementptr inbounds %struct.regexp* %16, i64 0, i32 3
+  %17 = load %struct.reg_substr_data** %substrs47, align 8, !tbaa !3
+  %substr50 = getelementptr inbounds %struct.reg_substr_data* %17, i64 0, i32 0, i64 2, i32 2
+  %18 = load %struct.sv** %substr50, align 8, !tbaa !3
+  %tobool51 = icmp eq %struct.sv* %18, null
+  br i1 %tobool51, label %land.lhs.true60, label %land.lhs.true52
+
+land.lhs.true52:                                  ; preds = %land.lhs.true45
+  %reganch = getelementptr inbounds %struct.regexp* %16, i64 0, i32 15
+  %19 = load i32* %reganch, align 4, !tbaa !0
+  %and54 = and i32 %19, 64
+  %tobool55 = icmp eq i32 %and54, 0
+  br i1 %tobool55, label %if.then56, label %if.end57
+
+if.then56:                                        ; preds = %land.lhs.true52
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([11 x i8]* @.str65, i64 0, i64 0)) #3
+  %.pr.pre = load %struct.regexp** %op_pmregexp, align 8, !tbaa !3
+  br label %if.end57
+
+if.end57:                                         ; preds = %land.lhs.true52, %if.then56
+  %.pr = phi %struct.regexp* [ %16, %land.lhs.true52 ], [ %.pr.pre, %if.then56 ]
+  %tobool59 = icmp eq %struct.regexp* %.pr, null
+  br i1 %tobool59, label %if.end73, label %land.lhs.true60
+
+land.lhs.true60:                                  ; preds = %land.lhs.true45, %if.end57
+  %.pr172 = phi %struct.regexp* [ %.pr, %if.end57 ], [ %16, %land.lhs.true45 ]
+  %substrs62 = getelementptr inbounds %struct.regexp* %.pr172, i64 0, i32 3
+  %20 = load %struct.reg_substr_data** %substrs62, align 8, !tbaa !3
+  %substr65 = getelementptr inbounds %struct.reg_substr_data* %20, i64 0, i32 0, i64 2, i32 2
+  %21 = load %struct.sv** %substr65, align 8, !tbaa !3
+  %tobool66 = icmp eq %struct.sv* %21, null
+  br i1 %tobool66, label %if.end73, label %land.lhs.true67
+
+land.lhs.true67:                                  ; preds = %land.lhs.true60
+  %reganch69 = getelementptr inbounds %struct.regexp* %.pr172, i64 0, i32 15
+  %22 = load i32* %reganch69, align 4, !tbaa !0
+  %and70 = and i32 %22, 256
+  %tobool71 = icmp eq i32 %and70, 0
+  br i1 %tobool71, label %if.end73, label %if.then72
+
+if.then72:                                        ; preds = %land.lhs.true67
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([5 x i8]* @.str66, i64 0, i64 0)) #3
+  br label %if.end73
+
+if.end73:                                         ; preds = %land.lhs.true67, %land.lhs.true60, %if.end57, %if.end42, %if.then72
+  %23 = load i32* %op_pmflags, align 4, !tbaa !0
+  %and75 = and i32 %23, 16
+  %tobool76 = icmp eq i32 %and75, 0
+  br i1 %tobool76, label %if.end78, label %if.then77
+
+if.then77:                                        ; preds = %if.end73
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([11 x i8]* @.str67, i64 0, i64 0)) #3
+  %.pre164 = load i32* %op_pmflags, align 4, !tbaa !0
+  br label %if.end78
+
+if.end78:                                         ; preds = %if.end73, %if.then77
+  %24 = phi i32 [ %23, %if.end73 ], [ %.pre164, %if.then77 ]
+  %and80 = and i32 %24, 64
+  %tobool81 = icmp eq i32 %and80, 0
+  br i1 %tobool81, label %if.end83, label %if.then82
+
+if.then82:                                        ; preds = %if.end78
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([7 x i8]* @.str68, i64 0, i64 0)) #3
+  %.pre165 = load i32* %op_pmflags, align 4, !tbaa !0
+  br label %if.end83
+
+if.end83:                                         ; preds = %if.end78, %if.then82
+  %25 = phi i32 [ %24, %if.end78 ], [ %.pre165, %if.then82 ]
+  %and85 = and i32 %25, 128
+  %tobool86 = icmp eq i32 %and85, 0
+  br i1 %tobool86, label %if.end88, label %if.then87
+
+if.then87:                                        ; preds = %if.end83
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([6 x i8]* @.str69, i64 0, i64 0)) #3
+  %.pre166 = load i32* %op_pmflags, align 4, !tbaa !0
+  br label %if.end88
+
+if.end88:                                         ; preds = %if.end83, %if.then87
+  %26 = phi i32 [ %25, %if.end83 ], [ %.pre166, %if.then87 ]
+  %and90 = and i32 %26, 256
+  %tobool91 = icmp eq i32 %and90, 0
+  br i1 %tobool91, label %if.end93, label %if.then92
+
+if.then92:                                        ; preds = %if.end88
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([8 x i8]* @.str70, i64 0, i64 0)) #3
+  %.pre167 = load i32* %op_pmflags, align 4, !tbaa !0
+  br label %if.end93
+
+if.end93:                                         ; preds = %if.end88, %if.then92
+  %27 = phi i32 [ %26, %if.end88 ], [ %.pre167, %if.then92 ]
+  %and95 = and i32 %27, 512
+  %tobool96 = icmp eq i32 %and95, 0
+  br i1 %tobool96, label %if.end98, label %if.then97
+
+if.then97:                                        ; preds = %if.end93
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([10 x i8]* @.str71, i64 0, i64 0)) #3
+  %.pre168 = load i32* %op_pmflags, align 4, !tbaa !0
+  br label %if.end98
+
+if.end98:                                         ; preds = %if.end93, %if.then97
+  %28 = phi i32 [ %27, %if.end93 ], [ %.pre168, %if.then97 ]
+  %and100 = and i32 %28, 1
+  %tobool101 = icmp eq i32 %and100, 0
+  br i1 %tobool101, label %if.end103, label %if.then102
+
+if.then102:                                       ; preds = %if.end98
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0)) #3
+  %.pre169 = load i32* %op_pmflags, align 4, !tbaa !0
+  br label %if.end103
+
+if.end103:                                        ; preds = %if.end98, %if.then102
+  %29 = phi i32 [ %28, %if.end98 ], [ %.pre169, %if.then102 ]
+  %and105 = and i32 %29, 1024
+  %tobool106 = icmp eq i32 %and105, 0
+  br i1 %tobool106, label %if.end108, label %if.then107
+
+if.then107:                                       ; preds = %if.end103
+  tail call void @Perl_sv_catpv(%struct.sv* %call, i8* getelementptr inbounds ([6 x i8]* @.str73, i64 0, i64 0)) #3
+  br label %if.end108
+
+if.end108:                                        ; preds = %if.end103, %if.then107
+  %sv_any = getelementptr inbounds %struct.sv* %call, i64 0, i32 0
+  %30 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %30, i64 8
+  %31 = bitcast i8* %xpv_cur to i64*
+  %32 = load i64* %31, align 8, !tbaa !4
+  %tobool109 = icmp eq i64 %32, 0
+  br i1 %tobool109, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.end108
+  %xpv_pv = bitcast i8* %30 to i8**
+  %33 = load i8** %xpv_pv, align 8, !tbaa !3
+  %add.ptr = getelementptr inbounds i8* %33, i64 1
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.end108, %cond.true
+  %cond111 = phi i8* [ %add.ptr, %cond.true ], [ getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), %if.end108 ]
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %inc, %struct._PerlIO** %file, i8* getelementptr inbounds ([16 x i8]* @.str74, i64 0, i64 0), i8* %cond111) #4
+  tail call void @Perl_sv_free(%struct.sv* %call) #3
+  br label %if.end112
+
+if.end112:                                        ; preds = %land.lhs.true23, %lor.lhs.false, %cond.end
+  tail call void (i32, %struct._PerlIO**, i8*, ...)* @Perl_dump_indent(i32 %level, %struct._PerlIO** %file, i8* getelementptr inbounds ([3 x i8]* @.str75, i64 0, i64 0)) #4
+  br label %return
+
+return:                                           ; preds = %if.end112, %if.then
+  ret void
+}

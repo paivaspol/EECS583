@@ -1,0 +1,90 @@
+define internal fastcc i32 @S_add_data(%struct.RExC_state_t* nocapture %pRExC_state, i32 %n, i8* nocapture %s) #0 {
+entry:
+  %rx = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %0 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.regexp* %0, i64 0, i32 5
+  %1 = load %struct.reg_data** %data, align 8, !tbaa !0
+  %tobool = icmp eq %struct.reg_data* %1, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %2 = bitcast %struct.reg_data* %1 to i8*
+  %count = getelementptr inbounds %struct.reg_data* %1, i64 0, i32 0
+  %3 = load i32* %count, align 4, !tbaa !3
+  %add = add i32 %n, -1
+  %sub = add i32 %add, %3
+  %conv = zext i32 %sub to i64
+  %mul = shl nuw nsw i64 %conv, 3
+  %add5 = add i64 %mul, 24
+  %call = tail call i8* @Perl_safesysrealloc(i8* %2, i64 %add5) #8
+  %4 = bitcast i8* %call to %struct.reg_data*
+  %5 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data8 = getelementptr inbounds %struct.regexp* %5, i64 0, i32 5
+  store %struct.reg_data* %4, %struct.reg_data** %data8, align 8, !tbaa !0
+  %6 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data10 = getelementptr inbounds %struct.regexp* %6, i64 0, i32 5
+  %7 = load %struct.reg_data** %data10, align 8, !tbaa !0
+  %what = getelementptr inbounds %struct.reg_data* %7, i64 0, i32 1
+  %8 = load i8** %what, align 8, !tbaa !0
+  %count13 = getelementptr inbounds %struct.reg_data* %7, i64 0, i32 0
+  %9 = load i32* %count13, align 4, !tbaa !3
+  %add14 = add i32 %9, %n
+  %conv15 = zext i32 %add14 to i64
+  %call17 = tail call i8* @Perl_safesysrealloc(i8* %8, i64 %conv15) #8
+  %10 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data19 = getelementptr inbounds %struct.regexp* %10, i64 0, i32 5
+  %11 = load %struct.reg_data** %data19, align 8, !tbaa !0
+  %what20 = getelementptr inbounds %struct.reg_data* %11, i64 0, i32 1
+  store i8* %call17, i8** %what20, align 8, !tbaa !0
+  %12 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data22 = getelementptr inbounds %struct.regexp* %12, i64 0, i32 5
+  %13 = load %struct.reg_data** %data22, align 8, !tbaa !0
+  %count23 = getelementptr inbounds %struct.reg_data* %13, i64 0, i32 0
+  %14 = load i32* %count23, align 4, !tbaa !3
+  %add24 = add i32 %14, %n
+  store i32 %add24, i32* %count23, align 4, !tbaa !3
+  %idx.ext48.pre = sext i32 %n to i64
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %sub25 = add nsw i32 %n, -1
+  %conv26 = sext i32 %sub25 to i64
+  %mul27 = shl nsw i64 %conv26, 3
+  %add28 = add i64 %mul27, 24
+  %call30 = tail call i8* @Perl_safesysmalloc(i64 %add28) #8
+  %15 = bitcast i8* %call30 to %struct.reg_data*
+  %16 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data32 = getelementptr inbounds %struct.regexp* %16, i64 0, i32 5
+  store %struct.reg_data* %15, %struct.reg_data** %data32, align 8, !tbaa !0
+  %conv33 = sext i32 %n to i64
+  %call35 = tail call i8* @Perl_safesysmalloc(i64 %conv33) #8
+  %17 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data37 = getelementptr inbounds %struct.regexp* %17, i64 0, i32 5
+  %18 = load %struct.reg_data** %data37, align 8, !tbaa !0
+  %what38 = getelementptr inbounds %struct.reg_data* %18, i64 0, i32 1
+  store i8* %call35, i8** %what38, align 8, !tbaa !0
+  %19 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data40 = getelementptr inbounds %struct.regexp* %19, i64 0, i32 5
+  %20 = load %struct.reg_data** %data40, align 8, !tbaa !0
+  %count41 = getelementptr inbounds %struct.reg_data* %20, i64 0, i32 0
+  store i32 %n, i32* %count41, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %idx.ext48.pre-phi = phi i64 [ %conv33, %if.else ], [ %idx.ext48.pre, %if.then ]
+  %21 = phi i32 [ %n, %if.else ], [ %add24, %if.then ]
+  %22 = phi %struct.reg_data* [ %20, %if.else ], [ %13, %if.then ]
+  %what44 = getelementptr inbounds %struct.reg_data* %22, i64 0, i32 1
+  %23 = load i8** %what44, align 8, !tbaa !0
+  %idx.ext = zext i32 %21 to i64
+  %add.ptr.sum = sub i64 %idx.ext, %idx.ext48.pre-phi
+  %add.ptr49 = getelementptr inbounds i8* %23, i64 %add.ptr.sum
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr49, i8* %s, i64 %idx.ext48.pre-phi, i32 1, i1 false)
+  %24 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %data53 = getelementptr inbounds %struct.regexp* %24, i64 0, i32 5
+  %25 = load %struct.reg_data** %data53, align 8, !tbaa !0
+  %count54 = getelementptr inbounds %struct.reg_data* %25, i64 0, i32 0
+  %26 = load i32* %count54, align 4, !tbaa !3
+  %sub55 = sub i32 %26, %n
+  ret i32 %sub55
+}

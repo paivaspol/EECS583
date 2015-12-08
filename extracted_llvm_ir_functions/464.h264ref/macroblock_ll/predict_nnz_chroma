@@ -1,0 +1,270 @@
+define i32 @predict_nnz_chroma(i32 %i, i32 %j) #0 {
+entry:
+  %pix = alloca %struct.pix_pos, align 4
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
+  %idxprom = sext i32 %j to i64
+  %arrayidx = getelementptr inbounds [12 x i32]* @predict_nnz_chroma.j_off_tab, i64 0, i64 %idxprom
+  %2 = load i32* %arrayidx, align 4, !tbaa !3
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 159
+  %3 = load i32* %yuv_format, align 4, !tbaa !3
+  %cmp = icmp eq i32 %3, 3
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %rem = srem i32 %i, 2
+  %sub = add nsw i32 %j, -4
+  call void @getChroma4x4Neighbour(i32 %1, i32 %rem, i32 %sub, i32 -1, i32 0, %struct.pix_pos* %pix) #7
+  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  %4 = load i32* %available, align 4, !tbaa !3
+  %tobool = icmp eq i32 %4, 0
+  br i1 %tobool, label %if.end19, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %5 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
+  %constrained_intra_pred_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %5, i64 0, i32 27
+  %6 = load i32* %constrained_intra_pred_flag, align 4, !tbaa !1
+  %tobool1 = icmp eq i32 %6, 0
+  br i1 %tobool1, label %if.then10, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %land.lhs.true
+  %7 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 61
+  %8 = load i32* %partition_mode, align 4, !tbaa !3
+  %cmp3 = icmp eq i32 %8, 0
+  br i1 %cmp3, label %if.then10, label %if.end
+
+if.end:                                           ; preds = %land.lhs.true2
+  %mb_addr = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %9 = load i32* %mb_addr, align 4, !tbaa !3
+  %idxprom5 = sext i32 %9 to i64
+  %10 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %intra_block = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 54
+  %11 = load i32** %intra_block, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds i32* %11, i64 %idxprom5
+  %12 = load i32* %arrayidx6, align 4, !tbaa !3
+  %and = and i32 %12, %4
+  store i32 %and, i32* %available, align 4, !tbaa !3
+  %tobool9 = icmp eq i32 %and, 0
+  br i1 %tobool9, label %if.end19, label %if.then10
+
+if.then10:                                        ; preds = %land.lhs.true2, %land.lhs.true, %if.end
+  %y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
+  %13 = load i32* %y, align 4, !tbaa !3
+  %add = add nsw i32 %13, 4
+  %idxprom11 = sext i32 %add to i64
+  %div = sdiv i32 %i, 2
+  %mul = shl i32 %div, 1
+  %x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
+  %14 = load i32* %x, align 4, !tbaa !3
+  %add12 = add nsw i32 %mul, %14
+  %idxprom13 = sext i32 %add12 to i64
+  %mb_addr14 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %15 = load i32* %mb_addr14, align 4, !tbaa !3
+  %idxprom15 = sext i32 %15 to i64
+  %16 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %nz_coeff = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 28
+  %17 = load i32**** %nz_coeff, align 8, !tbaa !0
+  %arrayidx16 = getelementptr inbounds i32*** %17, i64 %idxprom15
+  %18 = load i32*** %arrayidx16, align 8, !tbaa !0
+  %arrayidx17 = getelementptr inbounds i32** %18, i64 %idxprom13
+  %19 = load i32** %arrayidx17, align 8, !tbaa !0
+  %arrayidx18 = getelementptr inbounds i32* %19, i64 %idxprom11
+  %20 = load i32* %arrayidx18, align 4, !tbaa !3
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then, %if.end, %if.then10
+  %cnt.0 = phi i32 [ 1, %if.then10 ], [ 0, %if.end ], [ 0, %if.then ]
+  %pred_nnz.0 = phi i32 [ %20, %if.then10 ], [ 0, %if.end ], [ 0, %if.then ]
+  call void @getChroma4x4Neighbour(i32 %1, i32 %rem, i32 %sub, i32 0, i32 -1, %struct.pix_pos* %pix) #7
+  %21 = load i32* %available, align 4, !tbaa !3
+  %tobool23 = icmp eq i32 %21, 0
+  br i1 %tobool23, label %if.end130, label %land.lhs.true24
+
+land.lhs.true24:                                  ; preds = %if.end19
+  %22 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
+  %constrained_intra_pred_flag25 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %22, i64 0, i32 27
+  %23 = load i32* %constrained_intra_pred_flag25, align 4, !tbaa !1
+  %tobool26 = icmp eq i32 %23, 0
+  br i1 %tobool26, label %if.then40, label %land.lhs.true27
+
+land.lhs.true27:                                  ; preds = %land.lhs.true24
+  %24 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode28 = getelementptr inbounds %struct.InputParameters* %24, i64 0, i32 61
+  %25 = load i32* %partition_mode28, align 4, !tbaa !3
+  %cmp29 = icmp eq i32 %25, 0
+  br i1 %cmp29, label %if.then40, label %if.end37
+
+if.end37:                                         ; preds = %land.lhs.true27
+  %mb_addr31 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %26 = load i32* %mb_addr31, align 4, !tbaa !3
+  %idxprom32 = sext i32 %26 to i64
+  %27 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %intra_block33 = getelementptr inbounds %struct.ImageParameters* %27, i64 0, i32 54
+  %28 = load i32** %intra_block33, align 8, !tbaa !0
+  %arrayidx34 = getelementptr inbounds i32* %28, i64 %idxprom32
+  %29 = load i32* %arrayidx34, align 4, !tbaa !3
+  %and36 = and i32 %29, %21
+  store i32 %and36, i32* %available, align 4, !tbaa !3
+  %tobool39 = icmp eq i32 %and36, 0
+  br i1 %tobool39, label %if.end130, label %if.then40
+
+if.then40:                                        ; preds = %land.lhs.true27, %land.lhs.true24, %if.end37
+  %y41 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
+  %30 = load i32* %y41, align 4, !tbaa !3
+  %add42 = add nsw i32 %30, 4
+  %idxprom43 = sext i32 %add42 to i64
+  %div44 = sdiv i32 %i, 2
+  %mul45 = shl i32 %div44, 1
+  %x46 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
+  %31 = load i32* %x46, align 4, !tbaa !3
+  %add47 = add nsw i32 %mul45, %31
+  %idxprom48 = sext i32 %add47 to i64
+  %mb_addr49 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %32 = load i32* %mb_addr49, align 4, !tbaa !3
+  %idxprom50 = sext i32 %32 to i64
+  %33 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %nz_coeff51 = getelementptr inbounds %struct.ImageParameters* %33, i64 0, i32 28
+  %34 = load i32**** %nz_coeff51, align 8, !tbaa !0
+  %arrayidx52 = getelementptr inbounds i32*** %34, i64 %idxprom50
+  %35 = load i32*** %arrayidx52, align 8, !tbaa !0
+  %arrayidx53 = getelementptr inbounds i32** %35, i64 %idxprom48
+  %36 = load i32** %arrayidx53, align 8, !tbaa !0
+  %arrayidx54 = getelementptr inbounds i32* %36, i64 %idxprom43
+  %37 = load i32* %arrayidx54, align 4, !tbaa !3
+  %add55 = add nsw i32 %37, %pred_nnz.0
+  br label %if.end125
+
+if.else:                                          ; preds = %entry
+  %sub58 = sub nsw i32 %j, %2
+  call void @getChroma4x4Neighbour(i32 %1, i32 %i, i32 %sub58, i32 -1, i32 0, %struct.pix_pos* %pix) #7
+  %available59 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
+  %38 = load i32* %available59, align 4, !tbaa !3
+  %tobool60 = icmp eq i32 %38, 0
+  br i1 %tobool60, label %if.end90, label %land.lhs.true61
+
+land.lhs.true61:                                  ; preds = %if.else
+  %39 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
+  %constrained_intra_pred_flag62 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %39, i64 0, i32 27
+  %40 = load i32* %constrained_intra_pred_flag62, align 4, !tbaa !1
+  %tobool63 = icmp eq i32 %40, 0
+  br i1 %tobool63, label %if.then77, label %land.lhs.true64
+
+land.lhs.true64:                                  ; preds = %land.lhs.true61
+  %41 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode65 = getelementptr inbounds %struct.InputParameters* %41, i64 0, i32 61
+  %42 = load i32* %partition_mode65, align 4, !tbaa !3
+  %cmp66 = icmp eq i32 %42, 0
+  br i1 %cmp66, label %if.then77, label %if.end74
+
+if.end74:                                         ; preds = %land.lhs.true64
+  %mb_addr68 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %43 = load i32* %mb_addr68, align 4, !tbaa !3
+  %idxprom69 = sext i32 %43 to i64
+  %44 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %intra_block70 = getelementptr inbounds %struct.ImageParameters* %44, i64 0, i32 54
+  %45 = load i32** %intra_block70, align 8, !tbaa !0
+  %arrayidx71 = getelementptr inbounds i32* %45, i64 %idxprom69
+  %46 = load i32* %arrayidx71, align 4, !tbaa !3
+  %and73 = and i32 %46, %38
+  store i32 %and73, i32* %available59, align 4, !tbaa !3
+  %tobool76 = icmp eq i32 %and73, 0
+  br i1 %tobool76, label %if.end90, label %if.then77
+
+if.then77:                                        ; preds = %land.lhs.true64, %land.lhs.true61, %if.end74
+  %y78 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
+  %47 = load i32* %y78, align 4, !tbaa !3
+  %add79 = add nsw i32 %47, %2
+  %idxprom80 = sext i32 %add79 to i64
+  %x81 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
+  %48 = load i32* %x81, align 4, !tbaa !3
+  %idxprom82 = sext i32 %48 to i64
+  %mb_addr83 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %49 = load i32* %mb_addr83, align 4, !tbaa !3
+  %idxprom84 = sext i32 %49 to i64
+  %50 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %nz_coeff85 = getelementptr inbounds %struct.ImageParameters* %50, i64 0, i32 28
+  %51 = load i32**** %nz_coeff85, align 8, !tbaa !0
+  %arrayidx86 = getelementptr inbounds i32*** %51, i64 %idxprom84
+  %52 = load i32*** %arrayidx86, align 8, !tbaa !0
+  %arrayidx87 = getelementptr inbounds i32** %52, i64 %idxprom82
+  %53 = load i32** %arrayidx87, align 8, !tbaa !0
+  %arrayidx88 = getelementptr inbounds i32* %53, i64 %idxprom80
+  %54 = load i32* %arrayidx88, align 4, !tbaa !3
+  br label %if.end90
+
+if.end90:                                         ; preds = %if.else, %if.end74, %if.then77
+  %cnt.1 = phi i32 [ 1, %if.then77 ], [ 0, %if.end74 ], [ 0, %if.else ]
+  %pred_nnz.1 = phi i32 [ %54, %if.then77 ], [ 0, %if.end74 ], [ 0, %if.else ]
+  call void @getChroma4x4Neighbour(i32 %1, i32 %i, i32 %sub58, i32 0, i32 -1, %struct.pix_pos* %pix) #7
+  %55 = load i32* %available59, align 4, !tbaa !3
+  %tobool93 = icmp eq i32 %55, 0
+  br i1 %tobool93, label %if.end130, label %land.lhs.true94
+
+land.lhs.true94:                                  ; preds = %if.end90
+  %56 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
+  %constrained_intra_pred_flag95 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %56, i64 0, i32 27
+  %57 = load i32* %constrained_intra_pred_flag95, align 4, !tbaa !1
+  %tobool96 = icmp eq i32 %57, 0
+  br i1 %tobool96, label %if.then110, label %land.lhs.true97
+
+land.lhs.true97:                                  ; preds = %land.lhs.true94
+  %58 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %partition_mode98 = getelementptr inbounds %struct.InputParameters* %58, i64 0, i32 61
+  %59 = load i32* %partition_mode98, align 4, !tbaa !3
+  %cmp99 = icmp eq i32 %59, 0
+  br i1 %cmp99, label %if.then110, label %if.end107
+
+if.end107:                                        ; preds = %land.lhs.true97
+  %mb_addr101 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %60 = load i32* %mb_addr101, align 4, !tbaa !3
+  %idxprom102 = sext i32 %60 to i64
+  %61 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %intra_block103 = getelementptr inbounds %struct.ImageParameters* %61, i64 0, i32 54
+  %62 = load i32** %intra_block103, align 8, !tbaa !0
+  %arrayidx104 = getelementptr inbounds i32* %62, i64 %idxprom102
+  %63 = load i32* %arrayidx104, align 4, !tbaa !3
+  %and106 = and i32 %63, %55
+  store i32 %and106, i32* %available59, align 4, !tbaa !3
+  %tobool109 = icmp eq i32 %and106, 0
+  br i1 %tobool109, label %if.end130, label %if.then110
+
+if.then110:                                       ; preds = %land.lhs.true97, %land.lhs.true94, %if.end107
+  %y111 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
+  %64 = load i32* %y111, align 4, !tbaa !3
+  %add112 = add nsw i32 %64, %2
+  %idxprom113 = sext i32 %add112 to i64
+  %x114 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
+  %65 = load i32* %x114, align 4, !tbaa !3
+  %idxprom115 = sext i32 %65 to i64
+  %mb_addr116 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
+  %66 = load i32* %mb_addr116, align 4, !tbaa !3
+  %idxprom117 = sext i32 %66 to i64
+  %67 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %nz_coeff118 = getelementptr inbounds %struct.ImageParameters* %67, i64 0, i32 28
+  %68 = load i32**** %nz_coeff118, align 8, !tbaa !0
+  %arrayidx119 = getelementptr inbounds i32*** %68, i64 %idxprom117
+  %69 = load i32*** %arrayidx119, align 8, !tbaa !0
+  %arrayidx120 = getelementptr inbounds i32** %69, i64 %idxprom115
+  %70 = load i32** %arrayidx120, align 8, !tbaa !0
+  %arrayidx121 = getelementptr inbounds i32* %70, i64 %idxprom113
+  %71 = load i32* %arrayidx121, align 4, !tbaa !3
+  %add122 = add nsw i32 %71, %pred_nnz.1
+  br label %if.end125
+
+if.end125:                                        ; preds = %if.then110, %if.then40
+  %cnt.0.sink = phi i32 [ %cnt.0, %if.then40 ], [ %cnt.1, %if.then110 ]
+  %pred_nnz.2 = phi i32 [ %add55, %if.then40 ], [ %add122, %if.then110 ]
+  %cmp126 = icmp eq i32 %cnt.0.sink, 1
+  br i1 %cmp126, label %if.then127, label %if.end130
+
+if.then127:                                       ; preds = %if.end125
+  %inc128 = add nsw i32 %pred_nnz.2, 1
+  %div129 = sdiv i32 %inc128, 2
+  br label %if.end130
+
+if.end130:                                        ; preds = %if.end90, %if.end19, %if.end107, %if.end37, %if.then127, %if.end125
+  %pred_nnz.3 = phi i32 [ %div129, %if.then127 ], [ %pred_nnz.2, %if.end125 ], [ %pred_nnz.0, %if.end37 ], [ %pred_nnz.1, %if.end107 ], [ %pred_nnz.0, %if.end19 ], [ %pred_nnz.1, %if.end90 ]
+  ret i32 %pred_nnz.3
+}

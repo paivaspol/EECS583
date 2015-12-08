@@ -1,0 +1,53 @@
+define void @Pencil_init(%struct._Pencil* %pencil, i32 %type, i32 %symflag, %struct._InpMtx* %inpmtxA, double* %sigma, %struct._InpMtx* %inpmtxB) #0 {
+entry:
+  %cmp = icmp eq %struct._Pencil* %pencil, null
+  %cmp1 = icmp eq double* %sigma, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str, i64 0, i64 0), %struct._Pencil* %pencil, i32 %type, i32 %symflag, %struct._InpMtx* %inpmtxA, double* %sigma, %struct._InpMtx* %inpmtxB) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type.off = add i32 %type, -1
+  %1 = icmp ult i32 %type.off, 2
+  br i1 %1, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([103 x i8]* @.str1, i64 0, i64 0), %struct._Pencil* %pencil, i32 %type, i32 %symflag, %struct._InpMtx* %inpmtxA, double* %sigma, %struct._InpMtx* %inpmtxB, i32 %type) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end7:                                          ; preds = %if.end
+  %3 = icmp ult i32 %symflag, 3
+  br i1 %3, label %if.end15, label %if.then13
+
+if.then13:                                        ; preds = %if.end7
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([136 x i8]* @.str2, i64 0, i64 0), %struct._Pencil* %pencil, i32 %type, i32 %symflag, %struct._InpMtx* %inpmtxA, double* %sigma, %struct._InpMtx* %inpmtxB, i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end15:                                         ; preds = %if.end7
+  tail call void @Pencil_clearData(%struct._Pencil* %pencil) #4
+  %type16 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 0
+  store i32 %type, i32* %type16, align 4, !tbaa !3
+  %symflag17 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 1
+  store i32 %symflag, i32* %symflag17, align 4, !tbaa !3
+  %inpmtxA18 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2
+  store %struct._InpMtx* %inpmtxA, %struct._InpMtx** %inpmtxA18, align 8, !tbaa !0
+  %5 = load double* %sigma, align 8, !tbaa !4
+  %arrayidx20 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 4, i64 0
+  store double %5, double* %arrayidx20, align 8, !tbaa !4
+  %arrayidx21 = getelementptr inbounds double* %sigma, i64 1
+  %6 = load double* %arrayidx21, align 8, !tbaa !4
+  %arrayidx23 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 4, i64 1
+  store double %6, double* %arrayidx23, align 8, !tbaa !4
+  %inpmtxB24 = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3
+  store %struct._InpMtx* %inpmtxB, %struct._InpMtx** %inpmtxB24, align 8, !tbaa !0
+  ret void
+}

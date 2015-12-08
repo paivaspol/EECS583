@@ -1,0 +1,72 @@
+define internal fastcc void @S_apply_attrs(%struct.hv* %stash, %struct.sv* %target, %struct.op* nocapture %attrs, i8 signext %for_my) #0 {
+entry:
+  tail call void @Perl_push_scope() #7
+  tail call void @Perl_save_int(i32* @PL_expect) #7
+  %tobool = icmp eq %struct.hv* %stash, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.hv* %stash, i64 0, i32 0
+  %0 = load %struct.xpvhv** %sv_any, align 8, !tbaa !3
+  %xhv_name = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 10
+  %1 = load i8** %xhv_name, align 8, !tbaa !3
+  %call = tail call %struct.sv* @Perl_newSVpv(i8* %1, i64 0) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %stashsv.0 = phi %struct.sv* [ %call, %if.then ], [ @PL_sv_no, %entry ]
+  %tobool1 = icmp eq i8 %for_my, 0
+  br i1 %tobool1, label %if.else18, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct.gv** @PL_incgv, align 8, !tbaa !3
+  %sv_any3 = getelementptr inbounds %struct.gv* %2, i64 0, i32 0
+  %3 = load %struct.xpvgv** %sv_any3, align 8, !tbaa !3
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %3, i64 0, i32 7
+  %4 = load %struct.gp** %xgv_gp, align 8, !tbaa !3
+  %gp_hv = getelementptr inbounds %struct.gp* %4, i64 0, i32 5
+  %5 = load %struct.hv** %gp_hv, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct.hv* %5, null
+  br i1 %tobool4, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.then2
+  %call8 = tail call %struct.gv* @Perl_gv_HVadd(%struct.gv* %2) #7
+  %sv_any9 = getelementptr inbounds %struct.gv* %call8, i64 0, i32 0
+  %6 = load %struct.xpvgv** %sv_any9, align 8, !tbaa !3
+  %xgv_gp10 = getelementptr inbounds %struct.xpvgv* %6, i64 0, i32 7
+  %7 = load %struct.gp** %xgv_gp10, align 8, !tbaa !3
+  %gp_hv11 = getelementptr inbounds %struct.gp* %7, i64 0, i32 5
+  %8 = load %struct.hv** %gp_hv11, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then2, %cond.false
+  %cond = phi %struct.hv* [ %8, %cond.false ], [ %5, %if.then2 ]
+  %call12 = tail call %struct.sv** @Perl_hv_fetch(%struct.hv* %cond, i8* getelementptr inbounds ([14 x i8]* @.str146, i64 0, i64 0), i32 13, i32 0) #7
+  %tobool13 = icmp eq %struct.sv** %call12, null
+  br i1 %tobool13, label %if.else15, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %cond.end
+  %9 = load %struct.sv** %call12, align 8, !tbaa !3
+  %cmp = icmp eq %struct.sv* %9, @PL_sv_undef
+  br i1 %cmp, label %if.else15, label %if.end26
+
+if.else15:                                        ; preds = %land.lhs.true, %cond.end
+  %call16 = tail call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([11 x i8]* @.str23, i64 0, i64 0), i64 10) #7
+  tail call void (i32, %struct.sv*, %struct.sv*, ...)* @Perl_load_module(i32 2, %struct.sv* %call16, %struct.sv* null) #8
+  br label %if.end26
+
+if.else18:                                        ; preds = %if.end
+  %call19 = tail call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([11 x i8]* @.str23, i64 0, i64 0), i64 10) #7
+  %call20 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %stashsv.0) #8
+  %call21 = tail call %struct.sv* @Perl_newRV(%struct.sv* %target) #7
+  %call22 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 0, %struct.sv* %call21) #8
+  %call23 = tail call fastcc %struct.op* @S_dup_attrlist(%struct.op* %attrs) #8
+  %call24 = tail call %struct.op* @Perl_prepend_elem(i32 141, %struct.op* %call22, %struct.op* %call23) #8
+  %call25 = tail call %struct.op* @Perl_prepend_elem(i32 141, %struct.op* %call20, %struct.op* %call24) #8
+  tail call void (i32, %struct.sv*, %struct.sv*, ...)* @Perl_load_module(i32 4, %struct.sv* %call19, %struct.sv* null, %struct.op* %call25) #8
+  br label %if.end26
+
+if.end26:                                         ; preds = %land.lhs.true, %if.else15, %if.else18
+  tail call void @Perl_pop_scope() #7
+  ret void
+}

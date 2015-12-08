@@ -1,0 +1,78 @@
+define i32 @Perl_magic_setglob(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %n_a = alloca i64, align 8
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 118423552
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %and2 = and i32 %0, 262144
+  %cmp = icmp eq i32 %and2, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  store i64 %3, i64* %n_a, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %n_a, i32 2) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %4, %cond.true ], [ %call, %cond.false ]
+  %5 = load i8* %cond, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %5, 42
+  br i1 %cmp4, label %land.lhs.true, label %if.end9
+
+land.lhs.true:                                    ; preds = %cond.end
+  %arrayidx = getelementptr inbounds i8* %cond, i64 1
+  %6 = load i8* %arrayidx, align 1, !tbaa !1
+  %tobool7 = icmp eq i8 %6, 0
+  %cond.incdec.ptr = select i1 %tobool7, i8* %cond, i8* %arrayidx
+  br label %if.end9
+
+if.end9:                                          ; preds = %land.lhs.true, %cond.end
+  %s.0 = phi i8* [ %cond, %cond.end ], [ %cond.incdec.ptr, %land.lhs.true ]
+  %call10 = call %struct.gv* @Perl_gv_fetchpv(i8* %s.0, i32 1, i32 13) #7
+  %7 = bitcast %struct.gv* %call10 to %struct.sv*
+  %cmp11 = icmp eq %struct.sv* %7, %sv
+  br i1 %cmp11, label %return, label %if.end14
+
+if.end14:                                         ; preds = %if.end9
+  %sv_any15 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %8 = load i8** %sv_any15, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds i8* %8, i64 56
+  %9 = bitcast i8* %xgv_gp to %struct.gp**
+  %10 = load %struct.gp** %9, align 8, !tbaa !0
+  %tobool16 = icmp eq %struct.gp* %10, null
+  br i1 %tobool16, label %if.end18, label %if.then17
+
+if.then17:                                        ; preds = %if.end14
+  %11 = bitcast %struct.sv* %sv to %struct.gv*
+  call void @Perl_gp_free(%struct.gv* %11) #7
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end14, %if.then17
+  %sv_any19 = getelementptr inbounds %struct.gv* %call10, i64 0, i32 0
+  %12 = load %struct.xpvgv** %sv_any19, align 8, !tbaa !0
+  %xgv_gp20 = getelementptr inbounds %struct.xpvgv* %12, i64 0, i32 7
+  %13 = load %struct.gp** %xgv_gp20, align 8, !tbaa !0
+  %call21 = call %struct.gp* @Perl_gp_ref(%struct.gp* %13) #7
+  %14 = load i8** %sv_any15, align 8, !tbaa !0
+  %xgv_gp23 = getelementptr inbounds i8* %14, i64 56
+  %15 = bitcast i8* %xgv_gp23 to %struct.gp**
+  store %struct.gp* %call21, %struct.gp** %15, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end9, %entry, %if.end18
+  ret i32 0
+}

@@ -1,0 +1,40 @@
+define i8* @sre_strtok(i8** nocapture %s, i8* nocapture %delim, i32* %len) #0 {
+entry:
+  %0 = load i8** %s, align 8, !tbaa !0
+  %call = tail call i64 @strspn(i8* %0, i8* %delim) #7
+  %add.ptr = getelementptr inbounds i8* %0, i64 %call
+  %1 = load i8* %add.ptr, align 1, !tbaa !1
+  %tobool = icmp eq i8 %1, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i64 @strcspn(i8* %add.ptr, i8* %delim) #7
+  %conv = trunc i64 %call1 to i32
+  %sext = shl i64 %call1, 32
+  %idx.ext = ashr exact i64 %sext, 32
+  %add.ptr.sum = add i64 %idx.ext, %call
+  %add.ptr2 = getelementptr inbounds i8* %0, i64 %add.ptr.sum
+  %2 = load i8* %add.ptr2, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 0
+  br i1 %cmp, label %if.end7, label %if.else
+
+if.else:                                          ; preds = %if.end
+  store i8 0, i8* %add.ptr2, align 1, !tbaa !1
+  %add.ptr2.sum = add i64 %add.ptr.sum, 1
+  %add.ptr6 = getelementptr inbounds i8* %0, i64 %add.ptr2.sum
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end, %if.else
+  %storemerge = phi i8* [ %add.ptr6, %if.else ], [ %add.ptr2, %if.end ]
+  store i8* %storemerge, i8** %s, align 8, !tbaa !0
+  %cmp8 = icmp eq i32* %len, null
+  br i1 %cmp8, label %return, label %if.then10
+
+if.then10:                                        ; preds = %if.end7
+  store i32 %conv, i32* %len, align 4, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.then10, %if.end7, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ %add.ptr, %if.end7 ], [ %add.ptr, %if.then10 ]
+  ret i8* %retval.0
+}

@@ -1,0 +1,114 @@
+define %struct._IV* @GPart_bndWeightsIV(%struct._GPart* %gpart) #0 {
+entry:
+  %vsize = alloca i32, align 4
+  %vadj = alloca i32*, align 8
+  %cmp = icmp eq %struct._GPart* %gpart, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %g = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 1
+  %0 = load %struct._Graph** %g, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct._Graph* %0, null
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str6, i64 0, i64 0), %struct._GPart* %gpart) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %nvtx2 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 2
+  %2 = load i32* %nvtx2, align 4, !tbaa !3
+  %ncomp3 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 4
+  %3 = load i32* %ncomp3, align 4, !tbaa !3
+  %compidsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 5
+  %call4 = call i32* @IV_entries(%struct._IV* %compidsIV) #4
+  %cweightsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 6
+  %call5 = call i32* @IV_entries(%struct._IV* %cweightsIV) #4
+  %vwghts6 = getelementptr inbounds %struct._Graph* %0, i64 0, i32 7
+  %4 = load i32** %vwghts6, align 8, !tbaa !0
+  %call7 = call %struct._IV* @IV_new() #4
+  %add = add nsw i32 %3, 1
+  call void @IV_init(%struct._IV* %call7, i32 %add, i32* null) #4
+  call void @IV_fill(%struct._IV* %call7, i32 0) #4
+  %call8 = call i32* @IV_entries(%struct._IV* %call7) #4
+  %call10 = call i32* @IVinit(i32 %add, i32 -1) #4
+  %cmp1166 = icmp sgt i32 %2, 0
+  br i1 %cmp1166, label %for.body.lr.ph, label %for.end38
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %cmp14 = icmp eq i32* %4, null
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc36, %for.body.lr.ph
+  %indvars.iv68 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next69, %for.inc36 ]
+  %arrayidx = getelementptr inbounds i32* %call4, i64 %indvars.iv68
+  %5 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp12 = icmp eq i32 %5, 0
+  br i1 %cmp12, label %if.then13, label %for.inc36
+
+if.then13:                                        ; preds = %for.body
+  br i1 %cmp14, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %if.then13
+  %arrayidx16 = getelementptr inbounds i32* %4, i64 %indvars.iv68
+  %6 = load i32* %arrayidx16, align 4, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then13, %cond.false
+  %cond = phi i32 [ %6, %cond.false ], [ 1, %if.then13 ]
+  %7 = trunc i64 %indvars.iv68 to i32
+  call void @Graph_adjAndSize(%struct._Graph* %0, i32 %7, i32* %vsize, i32** %vadj) #4
+  %8 = load i32* %vsize, align 4, !tbaa !3
+  %cmp1864 = icmp sgt i32 %8, 0
+  br i1 %cmp1864, label %for.body19.lr.ph, label %for.inc36
+
+for.body19.lr.ph:                                 ; preds = %cond.end
+  %9 = load i32** %vadj, align 8, !tbaa !0
+  br label %for.body19
+
+for.body19:                                       ; preds = %for.body19.lr.ph, %for.inc
+  %10 = phi i32 [ %8, %for.body19.lr.ph ], [ %15, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.body19.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx21 = getelementptr inbounds i32* %9, i64 %indvars.iv
+  %11 = load i32* %arrayidx21, align 4, !tbaa !3
+  %idxprom22 = sext i32 %11 to i64
+  %arrayidx23 = getelementptr inbounds i32* %call4, i64 %idxprom22
+  %12 = load i32* %arrayidx23, align 4, !tbaa !3
+  %cmp24 = icmp eq i32 %12, 0
+  br i1 %cmp24, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body19
+  %idxprom25 = sext i32 %12 to i64
+  %arrayidx26 = getelementptr inbounds i32* %call10, i64 %idxprom25
+  %13 = load i32* %arrayidx26, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %13, %7
+  br i1 %cmp27, label %for.inc, label %if.then28
+
+if.then28:                                        ; preds = %land.lhs.true
+  store i32 %7, i32* %arrayidx26, align 4, !tbaa !3
+  %arrayidx32 = getelementptr inbounds i32* %call8, i64 %idxprom25
+  %14 = load i32* %arrayidx32, align 4, !tbaa !3
+  %add33 = add nsw i32 %14, %cond
+  store i32 %add33, i32* %arrayidx32, align 4, !tbaa !3
+  %.pre = load i32* %vsize, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body19, %if.then28
+  %15 = phi i32 [ %10, %land.lhs.true ], [ %10, %for.body19 ], [ %.pre, %if.then28 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %16 = trunc i64 %indvars.iv.next to i32
+  %cmp18 = icmp slt i32 %16, %15
+  br i1 %cmp18, label %for.body19, label %for.inc36
+
+for.inc36:                                        ; preds = %cond.end, %for.inc, %for.body
+  %indvars.iv.next69 = add i64 %indvars.iv68, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next69 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %for.end38, label %for.body
+
+for.end38:                                        ; preds = %for.inc36, %if.end
+  call void @IVfree(i32* %call10) #4
+  ret %struct._IV* %call7
+}

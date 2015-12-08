@@ -1,0 +1,27 @@
+define void @DVzero(i32 %size, double* %y) #0 {
+entry:
+  %y13 = bitcast double* %y to i8*
+  %cmp = icmp sgt i32 %size, 0
+  br i1 %cmp, label %if.then, label %if.end4
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null
+  br i1 %cmp1, label %if.then2, label %if.end4.loopexit
+
+if.then2:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str35, i64 0, i64 0), i32 %size, double* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end4.loopexit:                                 ; preds = %if.then
+  %1 = add i32 %size, -1
+  %2 = zext i32 %1 to i64
+  %3 = shl nuw nsw i64 %2, 3
+  %4 = add i64 %3, 8
+  call void @llvm.memset.p0i8.i64(i8* %y13, i8 0, i64 %4, i32 8, i1 false)
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end4.loopexit, %entry
+  ret void
+}

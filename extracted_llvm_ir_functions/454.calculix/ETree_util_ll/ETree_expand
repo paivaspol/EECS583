@@ -1,0 +1,91 @@
+define %struct._ETree* @ETree_expand(%struct._ETree* %etree, %struct._IV* %eqmapIV) #0 {
+entry:
+  %ndof = alloca i32, align 4
+  %map = alloca i32*, align 8
+  %cmp = icmp eq %struct._ETree* %etree, null
+  %cmp1 = icmp eq %struct._IV* %eqmapIV, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), %struct._ETree* %etree, %struct._IV* %eqmapIV) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nfront2 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %1 = load i32* %nfront2, align 4, !tbaa !3
+  call void @IV_sizeAndEntries(%struct._IV* %eqmapIV, i32* %ndof, i32** %map) #4
+  %call3 = call %struct._ETree* @ETree_new() #4
+  %2 = load i32* %ndof, align 4, !tbaa !3
+  call void @ETree_init1(%struct._ETree* %call3, i32 %1, i32 %2) #4
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %call3, i64 0, i32 3
+  %3 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
+  %nodwghtsIV4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
+  %4 = load %struct._IV** %nodwghtsIV4, align 8, !tbaa !0
+  call void @IV_copy(%struct._IV* %3, %struct._IV* %4) #4
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %call3, i64 0, i32 4
+  %5 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
+  %bndwghtsIV5 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
+  %6 = load %struct._IV** %bndwghtsIV5, align 8, !tbaa !0
+  call void @IV_copy(%struct._IV* %5, %struct._IV* %6) #4
+  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2
+  %7 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %root = getelementptr inbounds %struct._Tree* %7, i64 0, i32 1
+  %8 = load i32* %root, align 4, !tbaa !3
+  %tree6 = getelementptr inbounds %struct._ETree* %call3, i64 0, i32 2
+  %9 = load %struct._Tree** %tree6, align 8, !tbaa !0
+  %root7 = getelementptr inbounds %struct._Tree* %9, i64 0, i32 1
+  store i32 %8, i32* %root7, align 4, !tbaa !3
+  %par = getelementptr inbounds %struct._Tree* %9, i64 0, i32 2
+  %10 = load i32** %par, align 8, !tbaa !0
+  %par10 = getelementptr inbounds %struct._Tree* %7, i64 0, i32 2
+  %11 = load i32** %par10, align 8, !tbaa !0
+  call void @IVcopy(i32 %1, i32* %10, i32* %11) #4
+  %12 = load %struct._Tree** %tree6, align 8, !tbaa !0
+  %fch = getelementptr inbounds %struct._Tree* %12, i64 0, i32 3
+  %13 = load i32** %fch, align 8, !tbaa !0
+  %14 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %fch13 = getelementptr inbounds %struct._Tree* %14, i64 0, i32 3
+  %15 = load i32** %fch13, align 8, !tbaa !0
+  call void @IVcopy(i32 %1, i32* %13, i32* %15) #4
+  %16 = load %struct._Tree** %tree6, align 8, !tbaa !0
+  %sib = getelementptr inbounds %struct._Tree* %16, i64 0, i32 4
+  %17 = load i32** %sib, align 8, !tbaa !0
+  %18 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %sib16 = getelementptr inbounds %struct._Tree* %18, i64 0, i32 4
+  %19 = load i32** %sib16, align 8, !tbaa !0
+  call void @IVcopy(i32 %1, i32* %17, i32* %19) #4
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5
+  %20 = load %struct._IV** %vtxToFrontIV, align 8, !tbaa !0
+  %call17 = call i32* @IV_entries(%struct._IV* %20) #4
+  %vtxToFrontIV18 = getelementptr inbounds %struct._ETree* %call3, i64 0, i32 5
+  %21 = load %struct._IV** %vtxToFrontIV18, align 8, !tbaa !0
+  %call19 = call i32* @IV_entries(%struct._IV* %21) #4
+  %22 = load i32* %ndof, align 4, !tbaa !3
+  %cmp2050 = icmp sgt i32 %22, 0
+  br i1 %cmp2050, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %23 = load i32** %map, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %23, i64 %indvars.iv
+  %24 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom21 = sext i32 %24 to i64
+  %arrayidx22 = getelementptr inbounds i32* %call17, i64 %idxprom21
+  %25 = load i32* %arrayidx22, align 4, !tbaa !3
+  %arrayidx24 = getelementptr inbounds i32* %call19, i64 %indvars.iv
+  store i32 %25, i32* %arrayidx24, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %26 = load i32* %ndof, align 4, !tbaa !3
+  %27 = trunc i64 %indvars.iv.next to i32
+  %cmp20 = icmp slt i32 %27, %26
+  br i1 %cmp20, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret %struct._ETree* %call3
+}

@@ -1,0 +1,87 @@
+define void @Plan7FSConfig(%struct.plan7_s* nocapture %hmm, float %pentry, float %pexit) #0 {
+entry:
+  %p1 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 29
+  %0 = load float* %p1, align 4, !tbaa !3
+  %sub = fsub float 1.000000e+00, %0
+  %arrayidx1 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 0, i64 0
+  store float %sub, float* %arrayidx1, align 4, !tbaa !3
+  %arrayidx5 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 0, i64 1
+  store float %0, float* %arrayidx5, align 4, !tbaa !3
+  %arrayidx8 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 1, i64 0
+  store float 5.000000e-01, float* %arrayidx8, align 4, !tbaa !3
+  %arrayidx11 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 1, i64 1
+  store float 5.000000e-01, float* %arrayidx11, align 4, !tbaa !3
+  %arrayidx16 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 2, i64 0
+  store float %sub, float* %arrayidx16, align 4, !tbaa !3
+  %arrayidx20 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 2, i64 1
+  store float %0, float* %arrayidx20, align 4, !tbaa !3
+  %arrayidx26 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 3, i64 0
+  store float %sub, float* %arrayidx26, align 4, !tbaa !3
+  %arrayidx30 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 25, i64 3, i64 1
+  store float %0, float* %arrayidx30, align 4, !tbaa !3
+  %conv31 = fpext float %pentry to double
+  %sub32 = fsub double 1.000000e+00, %conv31
+  %tbd1 = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 24
+  %1 = load float* %tbd1, align 4, !tbaa !3
+  %conv33 = fpext float %1 to double
+  %sub34 = fsub double 1.000000e+00, %conv33
+  %mul = fmul double %sub32, %sub34
+  %conv35 = fptrunc double %mul to float
+  %begin = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 26
+  %2 = load float** %begin, align 8, !tbaa !4
+  %arrayidx36 = getelementptr inbounds float* %2, i64 1
+  store float %conv35, float* %arrayidx36, align 4, !tbaa !3
+  %add.ptr = getelementptr inbounds float* %2, i64 2
+  %M = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 20
+  %3 = load i32* %M, align 4, !tbaa !0
+  %sub38 = add nsw i32 %3, -1
+  %4 = load float* %tbd1, align 4, !tbaa !3
+  %conv41 = fpext float %4 to double
+  %sub42 = fsub double 1.000000e+00, %conv41
+  %mul43 = fmul double %conv31, %sub42
+  %conv46 = sitofp i32 %sub38 to float
+  %conv47 = fpext float %conv46 to double
+  %div = fdiv double %mul43, %conv47
+  %conv48 = fptrunc double %div to float
+  tail call void @FSet(float* %add.ptr, i32 %sub38, float %conv48) #7
+  %5 = load i32* %M, align 4, !tbaa !0
+  %idxprom = sext i32 %5 to i64
+  %end = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 27
+  %6 = load float** %end, align 8, !tbaa !4
+  %arrayidx50 = getelementptr inbounds float* %6, i64 %idxprom
+  store float 1.000000e+00, float* %arrayidx50, align 4, !tbaa !3
+  %sub52 = add nsw i32 %5, -1
+  %conv53 = sitofp i32 %sub52 to float
+  %div54 = fdiv float %pexit, %conv53
+  %cmp99 = icmp sgt i32 %5, 1
+  br i1 %cmp99, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %entry
+  %conv57 = fpext float %div54 to double
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %7 = add nsw i64 %indvars.iv, 4294967295
+  %8 = trunc i64 %7 to i32
+  %conv59 = sitofp i32 %8 to float
+  %mul60 = fmul float %div54, %conv59
+  %conv61 = fpext float %mul60 to double
+  %sub62 = fsub double 1.000000e+00, %conv61
+  %div63 = fdiv double %conv57, %sub62
+  %conv64 = fptrunc double %div63 to float
+  %arrayidx67 = getelementptr inbounds float* %6, i64 %indvars.iv
+  store float %conv64, float* %arrayidx67, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %9, %5
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  tail call void @Plan7RenormalizeExits(%struct.plan7_s* %hmm) #8
+  %flags = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 47
+  %10 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %10, -2
+  store i32 %and, i32* %flags, align 4, !tbaa !0
+  ret void
+}

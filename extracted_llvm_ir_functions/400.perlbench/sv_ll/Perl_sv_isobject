@@ -1,0 +1,38 @@
+define i32 @Perl_sv_isobject(%struct.sv* %sv) #0 {
+entry:
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 8192
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end3, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %call = tail call i32 @Perl_mg_get(%struct.sv* %sv) #8
+  %.pre = load i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then2
+  %1 = phi i32 [ %0, %if.end ], [ %.pre, %if.then2 ]
+  %and5 = and i32 %1, 524288
+  %tobool6 = icmp eq i32 %and5, 0
+  br i1 %tobool6, label %return, label %if.end8
+
+if.end8:                                          ; preds = %if.end3
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %2 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %2 to %struct.sv**
+  %3 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %sv_flags9 = getelementptr inbounds %struct.sv* %3, i64 0, i32 2
+  %4 = load i32* %sv_flags9, align 4, !tbaa !3
+  %and10 = lshr i32 %4, 12
+  %and10.lobit = and i32 %and10, 1
+  br label %return
+
+return:                                           ; preds = %if.end8, %if.end3, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end3 ], [ %and10.lobit, %if.end8 ]
+  ret i32 %retval.0
+}
