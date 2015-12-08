@@ -31,7 +31,7 @@ def extract_function_name(func_definition):
     return func_definition[ampersand_index + 1:open_paren_index]
 
 def output_to_file(function_name, path, function_body):
-    full_path = os.path.join(path, function_name + '.txt')
+    full_path = os.path.join(path, function_name)
     with open(full_path, 'wb') as output_file:
         output_file.write(function_body)
 
