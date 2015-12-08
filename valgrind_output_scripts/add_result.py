@@ -3,7 +3,7 @@ import os
 import string
 import numpy as np
 
-path ="../extracted_sources"
+path ="../extracted_llvm_ir_functions/"
 results_path = "../valgrind_output/"
 input_path = "./"
 num_buckets = 10
@@ -22,7 +22,7 @@ def split_macros(word):
 
 def find_bucket(buckets, value):
     for i in range(len(buckets)):
-        if bucket[i].count(value) > 0:
+        if value in buckets[i]:
             return i
     print "couldn't find the bucket!"
 
@@ -32,14 +32,14 @@ def parse_file(input_filename, out_filename, sources_path, buckets):
         with open(input_filename, 'rb') as input_file:
             for line in input_file:
                 words = line.split()
-                this_path =  words[0].replace(".","_")
+                this_path =  words[0].replace(".c","_ll")
                 found = False
                 if os.path.isdir(sources_path + this_path):
                     for f in os.listdir(sources_path + this_path):
                         if f == words[1]:                                                    
                             found = True
                             out_file.write(this_path +"/" + f + "\t" + str(find_bucket(buckets, float(words[2]))) + "\n")
-                        
+                    
                 if not found:
                     not_found[words[0] + " : " + words[1]] = 1
 
@@ -110,11 +110,14 @@ def main():
             inst_filename = benchname + ".instruction.results.unlinked"
           
 
-            not_found =parse_file(data_filename, results_data_path, sources_path, data_buckets)
-            #    parse_file(inst_filename, results_inst_path, sources_path)
+            not_found = parse_file(data_filename, results_data_path, sources_path, data_buckets)
+            not_found2 = parse_file(inst_filename, results_inst_path, sources_path, inst_buckets)
 
-#    for word in not_found:
-#        print word
-
+            with open(results_path + benchname + ".not.found", "w+") as out_file:
+                for word in not_found:
+                    out_file.write(word + "\n")
+                for word in not_found2:
+                    if word not in not_found:
+                        out_file.write(word + "\n")
 
 main()
