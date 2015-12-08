@@ -1,7 +1,11 @@
 int
-Perl_magic_setbm(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setdefelem(pTHX_ SV *sv, MAGIC *mg)
 {
-    sv_unmagic(sv, PERL_MAGIC_bm);
-    SvVALID_off(sv);
+    if (LvTARGLEN(sv))
+	vivify_defelem(sv);
+    if (LvTARG(sv)) {
+	sv_setsv(LvTARG(sv), sv);
+	SvSETMAGIC(LvTARG(sv));
+    }
     return 0;
 }

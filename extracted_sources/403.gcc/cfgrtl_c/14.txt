@@ -1,33 +1,50 @@
 void
-tidy_fallthru_edges ()
+tidy_fallthru_edge (e, b, c)
+     edge e;
+     basic_block b, c;
 {
-  int i;
+  rtx q;
 
-  for (i = 1; i < n_basic_blocks; i++)
+  /* ??? In a late-running flow pass, other folks may have deleted basic
+     blocks by nopping out blocks, leaving multiple BARRIERs between here
+     and the target label. They ought to be chastized and fixed.
+
+     We can also wind up with a sequence of undeletable labels between
+     one block and the next.
+
+     So search through a sequence of barriers, labels, and notes for
+     the head of block C and assert that we really do fall through.  */
+
+  if (next_real_insn (b->end) != next_real_insn (PREV_INSN (c->head)))
+    return;
+
+  /* Remove what will soon cease being the jump insn from the source block.
+     If block B consisted only of this single jump, turn it into a deleted
+     note.  */
+  q = b->end;
+  if (GET_CODE (q) == JUMP_INSN
+      && onlyjump_p (q)
+      && (any_uncondjump_p (q)
+	  || (b->succ == e && e->succ_next == NULL)))
     {
-      basic_block b = BASIC_BLOCK (i - 1);
-      basic_block c = BASIC_BLOCK (i);
-      edge s;
+#ifdef HAVE_cc0
+      /* If this was a conditional jump, we need to also delete
+	 the insn that set cc0.  */
+      if (any_condjump_p (q) && only_sets_cc0_p (PREV_INSN (q)))
+	q = PREV_INSN (q);
+#endif
 
-      /* We care about simple conditional or unconditional jumps with
-	 a single successor.
+      q = PREV_INSN (q);
 
-	 If we had a conditional branch to the next instruction when
-	 find_basic_blocks was called, then there will only be one
-	 out edge for the block which ended with the conditional
-	 branch (since we do not create duplicate edges).
-
-	 Furthermore, the edge will be marked as a fallthru because we
-	 merge the flags for the duplicate edges.  So we do not want to
-	 check that the edge is not a FALLTHRU edge.  */
-
-      if ((s = b->succ) != NULL
-	  && ! (s->flags & EDGE_COMPLEX)
-	  && s->succ_next == NULL
-	  && s->dest == c
-	  /* If the jump insn has side effects, we can't tidy the edge.  */
-	  && (GET_CODE (b->end) != JUMP_INSN
-	      || onlyjump_p (b->end)))
-	tidy_fallthru_edge (s, b, c);
+      /* We don't want a block to end on a line-number note since that has
+	 the potential of changing the code between -g and not -g.  */
+      while (GET_CODE (q) == NOTE && NOTE_LINE_NUMBER (q) >= 0)
+	q = PREV_INSN (q);
     }
+
+  /* Selectively unlink the sequence.  */
+  if (q != PREV_INSN (c->head))
+    delete_insn_chain (NEXT_INSN (q), PREV_INSN (c->head));
+
+  e->flags |= EDGE_FALLTHRU;
 }

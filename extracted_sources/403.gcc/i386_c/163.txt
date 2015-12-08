@@ -1,59 +1,64 @@
-static int
-ix86_variable_issue (dump, sched_verbose, insn, can_issue_more)
-     FILE *dump;
-     int sched_verbose;
-     rtx insn;
-     int can_issue_more;
+static void
+ix86_sched_reorder_pentium (ready, e_ready)
+     rtx *ready;
+     rtx *e_ready;
 {
-  int i;
-  switch (ix86_cpu)
+  enum attr_pent_pair pair1, pair2;
+  rtx *insnp;
+
+  /* This wouldn't be necessary if Haifa knew that static insn ordering
+     is important to which pipe an insn is issued to.  So we have to make
+     some minor rearrangements.  */
+
+  pair1 = ix86_safe_pent_pair (*e_ready);
+
+  /* If the first insn is non-pairable, let it be.  */
+  if (pair1 == PENT_PAIR_NP)
+    return;
+
+  pair2 = PENT_PAIR_NP;
+  insnp = 0;
+
+  /* If the first insn is UV or PV pairable, search for a PU
+     insn to go with.  */
+  if (pair1 == PENT_PAIR_UV || pair1 == PENT_PAIR_PV)
     {
-    default:
-      return can_issue_more - 1;
-
-    case PROCESSOR_PENTIUMPRO:
-      {
-	enum attr_ppro_uops uops = ix86_safe_ppro_uops (insn);
-
-	if (uops == PPRO_UOPS_MANY)
-	  {
-	    if (sched_verbose)
-	      ix86_dump_ppro_packet (dump);
-	    ix86_sched_data.ppro.decode[0] = insn;
-	    ix86_sched_data.ppro.decode[1] = NULL;
-	    ix86_sched_data.ppro.decode[2] = NULL;
-	    if (sched_verbose)
-	      ix86_dump_ppro_packet (dump);
-	    ix86_sched_data.ppro.decode[0] = NULL;
-	  }
-	else if (uops == PPRO_UOPS_FEW)
-	  {
-	    if (sched_verbose)
-	      ix86_dump_ppro_packet (dump);
-	    ix86_sched_data.ppro.decode[0] = insn;
-	    ix86_sched_data.ppro.decode[1] = NULL;
-	    ix86_sched_data.ppro.decode[2] = NULL;
-	  }
-	else
-	  {
-	    for (i = 0; i < 3; ++i)
-	      if (ix86_sched_data.ppro.decode[i] == NULL)
-		{
-		  ix86_sched_data.ppro.decode[i] = insn;
-		  break;
-		}
-	    if (i == 3)
-	      abort ();
-	    if (i == 2)
-	      {
-	        if (sched_verbose)
-	          ix86_dump_ppro_packet (dump);
-		ix86_sched_data.ppro.decode[0] = NULL;
-		ix86_sched_data.ppro.decode[1] = NULL;
-		ix86_sched_data.ppro.decode[2] = NULL;
-	      }
-	  }
-      }
-      return --ix86_sched_data.ppro.issued_this_cycle;
+      insnp = ix86_pent_find_pair (e_ready-1, ready,
+				   PENT_PAIR_PU, *e_ready);
+      if (insnp)
+	pair2 = PENT_PAIR_PU;
     }
+
+  /* If the first insn is PU or UV pairable, search for a PV
+     insn to go with.  */
+  if (pair2 == PENT_PAIR_NP
+      && (pair1 == PENT_PAIR_PU || pair1 == PENT_PAIR_UV))
+    {
+      insnp = ix86_pent_find_pair (e_ready-1, ready,
+				   PENT_PAIR_PV, *e_ready);
+      if (insnp)
+	pair2 = PENT_PAIR_PV;
+    }
+
+  /* If the first insn is pairable, search for a UV
+     insn to go with.  */
+  if (pair2 == PENT_PAIR_NP)
+    {
+      insnp = ix86_pent_find_pair (e_ready-1, ready,
+				   PENT_PAIR_UV, *e_ready);
+      if (insnp)
+	pair2 = PENT_PAIR_UV;
+    }
+
+  if (pair2 == PENT_PAIR_NP)
+    return;
+
+  /* Found something!  Decide if we need to swap the order.  */
+  if (pair1 == PENT_PAIR_PV || pair2 == PENT_PAIR_PU
+      || (pair1 == PENT_PAIR_UV && pair2 == PENT_PAIR_UV
+	  && ix86_safe_memory (*e_ready) == MEMORY_BOTH
+	  && ix86_safe_memory (*insnp) == MEMORY_LOAD))
+    ix86_reorder_insn (insnp, e_ready);
+  else
+    ix86_reorder_insn (insnp, e_ready - 1);
 }

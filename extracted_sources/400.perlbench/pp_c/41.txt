@@ -1,0 +1,68 @@
+PP(pp_ne)
+{
+    dSP; tryAMAGICbinSET(ne,0);
+#ifndef NV_PRESERVES_UV
+    if (SvROK(TOPs) && !SvAMAGIC(TOPs) && SvROK(TOPm1s) && !SvAMAGIC(TOPm1s)) {
+        SP--;
+	SETs(boolSV(SvRV(TOPs) != SvRV(TOPp1s)));
+	RETURN;
+    }
+#endif
+#ifdef PERL_PRESERVE_IVUV
+    SvIV_please(TOPs);
+    if (SvIOK(TOPs)) {
+	SvIV_please(TOPm1s);
+	if (SvIOK(TOPm1s)) {
+	    bool auvok = SvUOK(TOPm1s);
+	    bool buvok = SvUOK(TOPs);
+	
+	    if (auvok == buvok) { /* ## IV == IV or UV == UV ## */
+                /* Casting IV to UV before comparison isn't going to matter
+                   on 2s complement. On 1s complement or sign&magnitude
+                   (if we have any of them) it could make negative zero
+                   differ from normal zero. As I understand it. (Need to
+                   check - is negative zero implementation defined behaviour
+                   anyway?). NWC  */
+		UV buv = SvUVX(POPs);
+		UV auv = SvUVX(TOPs);
+		
+		SETs(boolSV(auv != buv));
+		RETURN;
+	    }
+	    {			/* ## Mixed IV,UV ## */
+		IV iv;
+		UV uv;
+		
+		/* != is commutative so swap if needed (save code) */
+		if (auvok) {
+		    /* swap. top of stack (b) is the iv */
+		    iv = SvIVX(TOPs);
+		    SP--;
+		    if (iv < 0) {
+			/* As (a) is a UV, it's >0, so it cannot be == */
+			SETs(&PL_sv_yes);
+			RETURN;
+		    }
+		    uv = SvUVX(TOPs);
+		} else {
+		    iv = SvIVX(TOPm1s);
+		    SP--;
+		    if (iv < 0) {
+			/* As (b) is a UV, it's >0, so it cannot be == */
+			SETs(&PL_sv_yes);
+			RETURN;
+		    }
+		    uv = SvUVX(*(SP+1)); /* Do I want TOPp1s() ? */
+		}
+		SETs(boolSV((UV)iv != uv));
+		RETURN;
+	    }
+	}
+    }
+#endif
+    {
+      dPOPnv;
+      SETs(boolSV(TOPn != value));
+      RETURN;
+    }
+}

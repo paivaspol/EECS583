@@ -1,17 +1,20 @@
 static void
-sjlj_output_call_site_table ()
+push_sleb128 (data_area, value)
+     varray_type *data_area;
+     int value;
 {
-  int n = cfun->eh->call_site_data_used;
-  int i;
+  unsigned char byte;
+  int more;
 
-  for (i = 0; i < n; ++i)
+  do
     {
-      struct call_site_record *cs = &cfun->eh->call_site_data[i];
-
-      dw2_asm_output_data_uleb128 (INTVAL (cs->landing_pad),
-				   "region %d landing pad", i);
-      dw2_asm_output_data_uleb128 (cs->action, "action");
+      byte = value & 0x7f;
+      value >>= 7;
+      more = ! ((value == 0 && (byte & 0x40) == 0)
+		|| (value == -1 && (byte & 0x40) != 0));
+      if (more)
+	byte |= 0x80;
+      VARRAY_PUSH_UCHAR (*data_area, byte);
     }
-
-  call_site_base += n;
+  while (more);
 }

@@ -1,0 +1,65 @@
+IV
+PerlIOBuf_fill(pTHX_ PerlIO *f)
+{
+    PerlIOBuf *b = PerlIOSelf(f, PerlIOBuf);
+    PerlIO *n = PerlIONext(f);
+    SSize_t avail;
+    /*
+     * Down-stream flush is defined not to loose read data so is harmless.
+     * we would not normally be fill'ing if there was data left in anycase.
+     */
+    if (PerlIO_flush(f) != 0)
+	return -1;
+    if (PerlIOBase(f)->flags & PERLIO_F_TTY)
+	PerlIOBase_flush_linebuf(aTHX);
+
+    if (!b->buf)
+	PerlIO_get_base(f);     /* allocate via vtable */
+
+    b->ptr = b->end = b->buf;
+
+    if (!PerlIOValid(n)) {
+	PerlIOBase(f)->flags |= PERLIO_F_EOF;
+	return -1;
+    }
+
+    if (PerlIO_fast_gets(n)) {
+	/*
+	 * Layer below is also buffered. We do _NOT_ want to call its
+	 * ->Read() because that will loop till it gets what we asked for
+	 * which may hang on a pipe etc. Instead take anything it has to
+	 * hand, or ask it to fill _once_.
+	 */
+	avail = PerlIO_get_cnt(n);
+	if (avail <= 0) {
+	    avail = PerlIO_fill(n);
+	    if (avail == 0)
+		avail = PerlIO_get_cnt(n);
+	    else {
+		if (!PerlIO_error(n) && PerlIO_eof(n))
+		    avail = 0;
+	    }
+	}
+	if (avail > 0) {
+	    STDCHAR *ptr = PerlIO_get_ptr(n);
+	    SSize_t cnt = avail;
+	    if (avail > (SSize_t)b->bufsiz)
+		avail = b->bufsiz;
+	    Copy(ptr, b->buf, avail, STDCHAR);
+	    PerlIO_set_ptrcnt(n, ptr + avail, cnt - avail);
+	}
+    }
+    else {
+	avail = PerlIO_read(n, b->ptr, b->bufsiz);
+    }
+    if (avail <= 0) {
+	if (avail == 0)
+	    PerlIOBase(f)->flags |= PERLIO_F_EOF;
+	else
+	    PerlIOBase(f)->flags |= PERLIO_F_ERROR;
+	return -1;
+    }
+    b->end = b->buf + avail;
+    PerlIOBase(f)->flags |= PERLIO_F_RDBUF;
+    return 0;
+}

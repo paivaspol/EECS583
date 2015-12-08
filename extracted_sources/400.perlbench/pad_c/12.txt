@@ -1,25 +1,35 @@
-STATIC void
-S_cv_dump(pTHX_ CV *cv, char *title)
+void
+Perl_pad_leavemy(pTHX)
 {
-    CV *outside = CvOUTSIDE(cv);
-    AV* padlist = CvPADLIST(cv);
+    I32 off;
+    SV **svp = AvARRAY(PL_comppad_name);
+    SV *sv;
 
-    PerlIO_printf(Perl_debug_log,
-		  "  %s: CV=0x%"UVxf" (%s), OUTSIDE=0x%"UVxf" (%s)\n",
-		  title,
-		  PTR2UV(cv),
-		  (CvANON(cv) ? "ANON"
-		   : (cv == PL_main_cv) ? "MAIN"
-		   : CvUNIQUE(cv) ? "UNIQUE"
-		   : CvGV(cv) ? GvNAME(CvGV(cv)) : "UNDEFINED"),
-		  PTR2UV(outside),
-		  (!outside ? "null"
-		   : CvANON(outside) ? "ANON"
-		   : (outside == PL_main_cv) ? "MAIN"
-		   : CvUNIQUE(outside) ? "UNIQUE"
-		   : CvGV(outside) ? GvNAME(CvGV(outside)) : "UNDEFINED"));
+    PL_pad_reset_pending = FALSE;
 
-    PerlIO_printf(Perl_debug_log,
-		    "    PADLIST = 0x%"UVxf"\n", PTR2UV(padlist));
-    do_dump_pad(1, Perl_debug_log, padlist, 1);
+    ASSERT_CURPAD_ACTIVE("pad_leavemy");
+    if (PL_min_intro_pending && PL_comppad_name_fill < PL_min_intro_pending) {
+	for (off = PL_max_intro_pending; off >= PL_min_intro_pending; off--) {
+	    if ((sv = svp[off]) && sv != &PL_sv_undef
+		    && !SvFAKE(sv) && ckWARN_d(WARN_INTERNAL))
+		Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
+					"%"SVf" never introduced", sv);
+	}
+    }
+    /* "Deintroduce" my variables that are leaving with this scope. */
+    for (off = AvFILLp(PL_comppad_name); off > PL_comppad_name_fill; off--) {
+	if ((sv = svp[off]) && sv != &PL_sv_undef
+		&& !SvFAKE(sv) && SvIVX(sv) == PAD_MAX)
+	{
+	    SvIVX(sv) = PL_cop_seqmax;
+	    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"Pad leavemy: %ld \"%s\", (%lu,%lu)\n",
+		(long)off, SvPVX(sv),
+		(unsigned long)U_32(SvNVX(sv)), (unsigned long)SvIVX(sv))
+	    );
+	}
+    }
+    PL_cop_seqmax++;
+    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+	    "Pad leavemy: seq = %ld\n", (long)PL_cop_seqmax));
 }

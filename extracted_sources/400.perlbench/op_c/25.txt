@@ -1,11 +1,327 @@
-STATIC OP *
-S_newDEFSVOP(pTHX)
+OP *
+Perl_mod(pTHX_ OP *o, I32 type)
 {
+    OP *kid;
+
+    if (!o || PL_error_count)
+	return o;
+
+    if ((o->op_private & OPpTARGET_MY)
+	&& (PL_opargs[o->op_type] & OA_TARGLEX))/* OPp share the meaning */
+    {
+	return o;
+    }
+
+    switch (o->op_type) {
+    case OP_UNDEF:
+	PL_modcount++;
+	return o;
+    case OP_CONST:
+	if (!(o->op_private & (OPpCONST_ARYBASE)))
+	    goto nomod;
+	if (PL_eval_start && PL_eval_start->op_type == OP_CONST) {
+	    PL_compiling.cop_arybase = (I32)SvIV(cSVOPx(PL_eval_start)->op_sv);
+	    PL_eval_start = 0;
+	}
+	else if (!type) {
+	    SAVEI32(PL_compiling.cop_arybase);
+	    PL_compiling.cop_arybase = 0;
+	}
+	else if (type == OP_REFGEN)
+	    goto nomod;
+	else
+	    Perl_croak(aTHX_ "That use of $[ is unsupported");
+	break;
+    case OP_STUB:
+	if (o->op_flags & OPf_PARENS)
+	    break;
+	goto nomod;
+    case OP_ENTERSUB:
+	if ((type == OP_UNDEF || type == OP_REFGEN) &&
+	    !(o->op_flags & OPf_STACKED)) {
+	    o->op_type = OP_RV2CV;		/* entersub => rv2cv */
+	    o->op_ppaddr = PL_ppaddr[OP_RV2CV];
+	    assert(cUNOPo->op_first->op_type == OP_NULL);
+	    op_null(((LISTOP*)cUNOPo->op_first)->op_first);/* disable pushmark */
+	    break;
+	}
+	else if (o->op_private & OPpENTERSUB_NOMOD)
+	    return o;
+	else {				/* lvalue subroutine call */
+	    o->op_private |= OPpLVAL_INTRO;
+	    PL_modcount = RETURN_UNLIMITED_NUMBER;
+	    if (type == OP_GREPSTART || type == OP_ENTERSUB || type == OP_REFGEN) {
+		/* Backward compatibility mode: */
+		o->op_private |= OPpENTERSUB_INARGS;
+		break;
+	    }
+	    else {                      /* Compile-time error message: */
+		OP *kid = cUNOPo->op_first;
+		CV *cv;
+		OP *okid;
+
+		if (kid->op_type == OP_PUSHMARK)
+		    goto skip_kids;
+		if (kid->op_type != OP_NULL || kid->op_targ != OP_LIST)
+		    Perl_croak(aTHX_
+			       "panic: unexpected lvalue entersub "
+			       "args: type/targ %ld:%"UVuf,
+			       (long)kid->op_type, (UV)kid->op_targ);
+		kid = kLISTOP->op_first;
+	      skip_kids:
+		while (kid->op_sibling)
+		    kid = kid->op_sibling;
+		if (!(kid->op_type == OP_NULL && kid->op_targ == OP_RV2CV)) {
+		    /* Indirect call */
+		    if (kid->op_type == OP_METHOD_NAMED
+			|| kid->op_type == OP_METHOD)
+		    {
+			UNOP *newop;
+
+			NewOp(1101, newop, 1, UNOP);
+			newop->op_type = OP_RV2CV;
+			newop->op_ppaddr = PL_ppaddr[OP_RV2CV];
+			newop->op_first = Nullop;
+                        newop->op_next = (OP*)newop;
+			kid->op_sibling = (OP*)newop;
+			newop->op_private |= OPpLVAL_INTRO;
+			break;
+		    }
+
+		    if (kid->op_type != OP_RV2CV)
+			Perl_croak(aTHX_
+				   "panic: unexpected lvalue entersub "
+				   "entry via type/targ %ld:%"UVuf,
+				   (long)kid->op_type, (UV)kid->op_targ);
+		    kid->op_private |= OPpLVAL_INTRO;
+		    break;	/* Postpone until runtime */
+		}
+
+		okid = kid;
+		kid = kUNOP->op_first;
+		if (kid->op_type == OP_NULL && kid->op_targ == OP_RV2SV)
+		    kid = kUNOP->op_first;
+		if (kid->op_type == OP_NULL)
+		    Perl_croak(aTHX_
+			       "Unexpected constant lvalue entersub "
+			       "entry via type/targ %ld:%"UVuf,
+			       (long)kid->op_type, (UV)kid->op_targ);
+		if (kid->op_type != OP_GV) {
+		    /* Restore RV2CV to check lvalueness */
+		  restore_2cv:
+		    if (kid->op_next && kid->op_next != kid) { /* Happens? */
+			okid->op_next = kid->op_next;
+			kid->op_next = okid;
+		    }
+		    else
+			okid->op_next = Nullop;
+		    okid->op_type = OP_RV2CV;
+		    okid->op_targ = 0;
+		    okid->op_ppaddr = PL_ppaddr[OP_RV2CV];
+		    okid->op_private |= OPpLVAL_INTRO;
+		    break;
+		}
+
+		cv = GvCV(kGVOP_gv);
+		if (!cv)
+		    goto restore_2cv;
+		if (CvLVALUE(cv))
+		    break;
+	    }
+	}
+	/* FALL THROUGH */
+    default:
+      nomod:
+	/* grep, foreach, subcalls, refgen */
+	if (type == OP_GREPSTART || type == OP_ENTERSUB || type == OP_REFGEN)
+	    break;
+	yyerror(Perl_form(aTHX_ "Can't modify %s in %s",
+		     (o->op_type == OP_NULL && (o->op_flags & OPf_SPECIAL)
+		      ? "do block"
+		      : (o->op_type == OP_ENTERSUB
+			? "non-lvalue subroutine call"
+			: OP_DESC(o))),
+		     type ? PL_op_desc[type] : "local"));
+	return o;
+
+    case OP_PREINC:
+    case OP_PREDEC:
+    case OP_POW:
+    case OP_MULTIPLY:
+    case OP_DIVIDE:
+    case OP_MODULO:
+    case OP_REPEAT:
+    case OP_ADD:
+    case OP_SUBTRACT:
+    case OP_CONCAT:
+    case OP_LEFT_SHIFT:
+    case OP_RIGHT_SHIFT:
+    case OP_BIT_AND:
+    case OP_BIT_XOR:
+    case OP_BIT_OR:
+    case OP_I_MULTIPLY:
+    case OP_I_DIVIDE:
+    case OP_I_MODULO:
+    case OP_I_ADD:
+    case OP_I_SUBTRACT:
+	if (!(o->op_flags & OPf_STACKED))
+	    goto nomod;
+	PL_modcount++;
+	break;
+
+    case OP_COND_EXPR:
+	for (kid = cUNOPo->op_first->op_sibling; kid; kid = kid->op_sibling)
+	    mod(kid, type);
+	break;
+
+    case OP_RV2AV:
+    case OP_RV2HV:
+	if (type == OP_REFGEN && o->op_flags & OPf_PARENS) {
+           PL_modcount = RETURN_UNLIMITED_NUMBER;
+	    return o;		/* Treat \(@foo) like ordinary list. */
+	}
+	/* FALL THROUGH */
+    case OP_RV2GV:
+	if (scalar_mod_type(o, type))
+	    goto nomod;
+	ref(cUNOPo->op_first, o->op_type);
+	/* FALL THROUGH */
+    case OP_ASLICE:
+    case OP_HSLICE:
+	if (type == OP_LEAVESUBLV)
+	    o->op_private |= OPpMAYBE_LVSUB;
+	/* FALL THROUGH */
+    case OP_AASSIGN:
+    case OP_NEXTSTATE:
+    case OP_DBSTATE:
+       PL_modcount = RETURN_UNLIMITED_NUMBER;
+	break;
+    case OP_RV2SV:
+	ref(cUNOPo->op_first, o->op_type);
+	/* FALL THROUGH */
+    case OP_GV:
+    case OP_AV2ARYLEN:
+	PL_hints |= HINT_BLOCK_SCOPE;
+    case OP_SASSIGN:
+    case OP_ANDASSIGN:
+    case OP_ORASSIGN:
+    case OP_AELEMFAST:
+	/* Needed if maint gets patch 19588
+	   localize = -1;
+	*/
+	PL_modcount++;
+	break;
+
+    case OP_PADAV:
+    case OP_PADHV:
+       PL_modcount = RETURN_UNLIMITED_NUMBER;
+	if (type == OP_REFGEN && o->op_flags & OPf_PARENS)
+	    return o;		/* Treat \(@foo) like ordinary list. */
+	if (scalar_mod_type(o, type))
+	    goto nomod;
+	if (type == OP_LEAVESUBLV)
+	    o->op_private |= OPpMAYBE_LVSUB;
+	/* FALL THROUGH */
+    case OP_PADSV:
+	PL_modcount++;
+	if (!type)
+	{   /* XXX DAPM 2002.08.25 tmp assert test */
+	    /* XXX */ assert(av_fetch(PL_comppad_name, (o->op_targ), FALSE));
+	    /* XXX */ assert(*av_fetch(PL_comppad_name, (o->op_targ), FALSE));
+
+	    Perl_croak(aTHX_ "Can't localize lexical variable %s",
+		 PAD_COMPNAME_PV(o->op_targ));
+	}
+	break;
+
 #ifdef USE_5005THREADS
-    OP *o = newOP(OP_THREADSV, 0);
-    o->op_targ = find_threadsv("_");
-    return o;
-#else
-    return newSVREF(newGVOP(OP_GV, 0, PL_defgv));
+    case OP_THREADSV:
+	PL_modcount++;	/* XXX ??? */
+	break;
 #endif /* USE_5005THREADS */
+
+    case OP_PUSHMARK:
+	break;
+
+    case OP_KEYS:
+	if (type != OP_SASSIGN)
+	    goto nomod;
+	goto lvalue_func;
+    case OP_SUBSTR:
+	if (o->op_private == 4) /* don't allow 4 arg substr as lvalue */
+	    goto nomod;
+	/* FALL THROUGH */
+    case OP_POS:
+    case OP_VEC:
+	if (type == OP_LEAVESUBLV)
+	    o->op_private |= OPpMAYBE_LVSUB;
+      lvalue_func:
+	pad_free(o->op_targ);
+	o->op_targ = pad_alloc(o->op_type, SVs_PADMY);
+	assert(SvTYPE(PAD_SV(o->op_targ)) == SVt_NULL);
+	if (o->op_flags & OPf_KIDS)
+	    mod(cBINOPo->op_first->op_sibling, type);
+	break;
+
+    case OP_AELEM:
+    case OP_HELEM:
+	ref(cBINOPo->op_first, o->op_type);
+	if (type == OP_ENTERSUB &&
+	     !(o->op_private & (OPpLVAL_INTRO | OPpDEREF)))
+	    o->op_private |= OPpLVAL_DEFER;
+	if (type == OP_LEAVESUBLV)
+	    o->op_private |= OPpMAYBE_LVSUB;
+	PL_modcount++;
+	break;
+
+    case OP_SCOPE:
+    case OP_LEAVE:
+    case OP_ENTER:
+    case OP_LINESEQ:
+	if (o->op_flags & OPf_KIDS)
+	    mod(cLISTOPo->op_last, type);
+	break;
+
+    case OP_NULL:
+	if (o->op_flags & OPf_SPECIAL)		/* do BLOCK */
+	    goto nomod;
+	else if (!(o->op_flags & OPf_KIDS))
+	    break;
+	if (o->op_targ != OP_LIST) {
+	    mod(cBINOPo->op_first, type);
+	    break;
+	}
+	/* FALL THROUGH */
+    case OP_LIST:
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    mod(kid, type);
+	break;
+
+    case OP_RETURN:
+	if (type != OP_LEAVESUBLV)
+	    goto nomod;
+	break; /* mod()ing was handled by ck_return() */
+    }
+
+    /* [20011101.069] File test operators interpret OPf_REF to mean that
+       their argument is a filehandle; thus \stat(".") should not set
+       it. AMS 20011102 */
+    if (type == OP_REFGEN &&
+        PL_check[o->op_type] == MEMBER_TO_FPTR(Perl_ck_ftst))
+        return o;
+
+    if (type != OP_LEAVESUBLV)
+        o->op_flags |= OPf_MOD;
+
+    if (type == OP_AASSIGN || type == OP_SASSIGN)
+	o->op_flags |= OPf_SPECIAL|OPf_REF;
+    else if (!type) {
+	o->op_private |= OPpLVAL_INTRO;
+	o->op_flags &= ~OPf_SPECIAL;
+	PL_hints |= HINT_BLOCK_SCOPE;
+    }
+    else if (type != OP_GREPSTART && type != OP_ENTERSUB
+             && type != OP_LEAVESUBLV)
+	o->op_flags |= OPf_REF;
+    return o;
 }

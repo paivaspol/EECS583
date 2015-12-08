@@ -1,179 +1,224 @@
-static void
-ix86_expand_strlensi_unroll_1 (out, align_rtx)
-     rtx out, align_rtx;
+int
+ix86_expand_movstr (dst, src, count_exp, align_exp)
+     rtx dst, src, count_exp, align_exp;
 {
-  int align;
-  rtx tmp;
-  rtx align_2_label = NULL_RTX;
-  rtx align_3_label = NULL_RTX;
-  rtx align_4_label = gen_label_rtx ();
-  rtx end_0_label = gen_label_rtx ();
-  rtx mem;
-  rtx tmpreg = gen_reg_rtx (SImode);
-  rtx scratch = gen_reg_rtx (SImode);
+  rtx srcreg, destreg, countreg;
+  enum machine_mode counter_mode;
+  HOST_WIDE_INT align = 0;
+  unsigned HOST_WIDE_INT count = 0;
+  rtx insns;
 
-  align = 0;
-  if (GET_CODE (align_rtx) == CONST_INT)
-    align = INTVAL (align_rtx);
+  start_sequence ();
 
-  /* Loop to check 1..3 bytes for null to get an aligned pointer.  */
+  if (GET_CODE (align_exp) == CONST_INT)
+    align = INTVAL (align_exp);
 
-  /* Is there a known alignment and is it less than 4?  */
-  if (align < 4)
+  /* This simple hack avoids all inlining code and simplifies code below.  */
+  if (!TARGET_ALIGN_STRINGOPS)
+    align = 64;
+
+  if (GET_CODE (count_exp) == CONST_INT)
+    count = INTVAL (count_exp);
+
+  /* Figure out proper mode for counter.  For 32bits it is always SImode,
+     for 64bits use SImode when possible, otherwise DImode.
+     Set count to number of bytes copied when known at compile time.  */
+  if (!TARGET_64BIT || GET_MODE (count_exp) == SImode
+      || x86_64_zero_extended_value (count_exp))
+    counter_mode = SImode;
+  else
+    counter_mode = DImode;
+
+  if (counter_mode != SImode && counter_mode != DImode)
+    abort ();
+
+  destreg = copy_to_mode_reg (Pmode, XEXP (dst, 0));
+  srcreg = copy_to_mode_reg (Pmode, XEXP (src, 0));
+
+  emit_insn (gen_cld ());
+
+  /* When optimizing for size emit simple rep ; movsb instruction for
+     counts not divisible by 4.  */
+
+  if ((!optimize || optimize_size) && (count == 0 || (count & 0x03)))
     {
-      rtx scratch1 = gen_reg_rtx (Pmode);
-      emit_move_insn (scratch1, out);
-      /* Is there a known alignment and is it not 2? */
-      if (align != 2)
-	{
-	  align_3_label = gen_label_rtx (); /* Label when aligned to 3-byte */
-	  align_2_label = gen_label_rtx (); /* Label when aligned to 2-byte */
-
-	  /* Leave just the 3 lower bits.  */
-	  align_rtx = expand_binop (Pmode, and_optab, scratch1, GEN_INT (3),
-				    NULL_RTX, 0, OPTAB_WIDEN);
-
-	  emit_cmp_and_jump_insns (align_rtx, const0_rtx, EQ, NULL,
-				   Pmode, 1, align_4_label);
-	  emit_cmp_and_jump_insns (align_rtx, GEN_INT (2), EQ, NULL,
-				   Pmode, 1, align_2_label);
-	  emit_cmp_and_jump_insns (align_rtx, GEN_INT (2), GTU, NULL,
-				   Pmode, 1, align_3_label);
-	}
-      else
-        {
-	  /* Since the alignment is 2, we have to check 2 or 0 bytes;
-	     check if is aligned to 4 - byte.  */
-
-	  align_rtx = expand_binop (Pmode, and_optab, scratch1, GEN_INT (2),
-				    NULL_RTX, 0, OPTAB_WIDEN);
-
-	  emit_cmp_and_jump_insns (align_rtx, const0_rtx, EQ, NULL,
-				   Pmode, 1, align_4_label);
-        }
-
-      mem = gen_rtx_MEM (QImode, out);
-
-      /* Now compare the bytes.  */
-
-      /* Compare the first n unaligned byte on a byte per byte basis.  */
-      emit_cmp_and_jump_insns (mem, const0_rtx, EQ, NULL,
-			       QImode, 1, end_0_label);
-
-      /* Increment the address.  */
+      countreg = ix86_zero_extend_to_Pmode (count_exp);
       if (TARGET_64BIT)
-	emit_insn (gen_adddi3 (out, out, const1_rtx));
+	emit_insn (gen_rep_movqi_rex64 (destreg, srcreg, countreg,
+				        destreg, srcreg, countreg));
       else
-	emit_insn (gen_addsi3 (out, out, const1_rtx));
+	emit_insn (gen_rep_movqi (destreg, srcreg, countreg,
+				  destreg, srcreg, countreg));
+    }
 
-      /* Not needed with an alignment of 2 */
-      if (align != 2)
+  /* For constant aligned (or small unaligned) copies use rep movsl
+     followed by code copying the rest.  For PentiumPro ensure 8 byte
+     alignment to allow rep movsl acceleration.  */
+
+  else if (count != 0
+	   && (align >= 8
+	       || (!TARGET_PENTIUMPRO && !TARGET_64BIT && align >= 4)
+	       || optimize_size || count < (unsigned int) 64))
+    {
+      int size = TARGET_64BIT && !optimize_size ? 8 : 4;
+      if (count & ~(size - 1))
 	{
-	  emit_label (align_2_label);
-
-	  emit_cmp_and_jump_insns (mem, const0_rtx, EQ, NULL, QImode, 1,
-				   end_0_label);
-
-	  if (TARGET_64BIT)
-	    emit_insn (gen_adddi3 (out, out, const1_rtx));
+	  countreg = copy_to_mode_reg (counter_mode,
+				       GEN_INT ((count >> (size == 4 ? 2 : 3))
+						& (TARGET_64BIT ? -1 : 0x3fffffff)));
+	  countreg = ix86_zero_extend_to_Pmode (countreg);
+	  if (size == 4)
+	    {
+	      if (TARGET_64BIT)
+		emit_insn (gen_rep_movsi_rex64 (destreg, srcreg, countreg,
+					        destreg, srcreg, countreg));
+	      else
+		emit_insn (gen_rep_movsi (destreg, srcreg, countreg,
+					  destreg, srcreg, countreg));
+	    }
 	  else
-	    emit_insn (gen_addsi3 (out, out, const1_rtx));
+	    emit_insn (gen_rep_movdi_rex64 (destreg, srcreg, countreg,
+					    destreg, srcreg, countreg));
+	}
+      if (size == 8 && (count & 0x04))
+	emit_insn (gen_strmovsi (destreg, srcreg));
+      if (count & 0x02)
+	emit_insn (gen_strmovhi (destreg, srcreg));
+      if (count & 0x01)
+	emit_insn (gen_strmovqi (destreg, srcreg));
+    }
+  /* The generic code based on the glibc implementation:
+     - align destination to 4 bytes (8 byte alignment is used for PentiumPro
+     allowing accelerated copying there)
+     - copy the data using rep movsl
+     - copy the rest.  */
+  else
+    {
+      rtx countreg2;
+      rtx label = NULL;
+      int desired_alignment = (TARGET_PENTIUMPRO
+			       && (count == 0 || count >= (unsigned int) 260)
+			       ? 8 : UNITS_PER_WORD);
 
-	  emit_label (align_3_label);
+      /* In case we don't know anything about the alignment, default to
+         library version, since it is usually equally fast and result in
+         shorter code.  */
+      if (!TARGET_INLINE_ALL_STRINGOPS && align < UNITS_PER_WORD)
+	{
+	  end_sequence ();
+	  return 0;
 	}
 
-      emit_cmp_and_jump_insns (mem, const0_rtx, EQ, NULL, QImode, 1,
-			       end_0_label);
+      if (TARGET_SINGLE_STRINGOP)
+	emit_insn (gen_cld ());
 
+      countreg2 = gen_reg_rtx (Pmode);
+      countreg = copy_to_mode_reg (counter_mode, count_exp);
+
+      /* We don't use loops to align destination and to copy parts smaller
+         than 4 bytes, because gcc is able to optimize such code better (in
+         the case the destination or the count really is aligned, gcc is often
+         able to predict the branches) and also it is friendlier to the
+         hardware branch prediction.
+
+         Using loops is benefical for generic case, because we can
+         handle small counts using the loops.  Many CPUs (such as Athlon)
+         have large REP prefix setup costs.
+
+         This is quite costy.  Maybe we can revisit this decision later or
+         add some customizability to this code.  */
+
+      if (count == 0 && align < desired_alignment)
+	{
+	  label = gen_label_rtx ();
+	  emit_cmp_and_jump_insns (countreg, GEN_INT (desired_alignment - 1),
+				   LEU, 0, counter_mode, 1, label);
+	}
+      if (align <= 1)
+	{
+	  rtx label = ix86_expand_aligntest (destreg, 1);
+	  emit_insn (gen_strmovqi (destreg, srcreg));
+	  ix86_adjust_counter (countreg, 1);
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
+      if (align <= 2)
+	{
+	  rtx label = ix86_expand_aligntest (destreg, 2);
+	  emit_insn (gen_strmovhi (destreg, srcreg));
+	  ix86_adjust_counter (countreg, 2);
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
+      if (align <= 4 && desired_alignment > 4)
+	{
+	  rtx label = ix86_expand_aligntest (destreg, 4);
+	  emit_insn (gen_strmovsi (destreg, srcreg));
+	  ix86_adjust_counter (countreg, 4);
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
+
+      if (label && desired_alignment > 4 && !TARGET_64BIT)
+	{
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	  label = NULL_RTX;
+	}
+      if (!TARGET_SINGLE_STRINGOP)
+	emit_insn (gen_cld ());
       if (TARGET_64BIT)
-	emit_insn (gen_adddi3 (out, out, const1_rtx));
+	{
+	  emit_insn (gen_lshrdi3 (countreg2, ix86_zero_extend_to_Pmode (countreg),
+				  GEN_INT (3)));
+	  emit_insn (gen_rep_movdi_rex64 (destreg, srcreg, countreg2,
+					  destreg, srcreg, countreg2));
+	}
       else
-	emit_insn (gen_addsi3 (out, out, const1_rtx));
+	{
+	  emit_insn (gen_lshrsi3 (countreg2, countreg, GEN_INT (2)));
+	  emit_insn (gen_rep_movsi (destreg, srcreg, countreg2,
+				    destreg, srcreg, countreg2));
+	}
+
+      if (label)
+	{
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
+      if (TARGET_64BIT && align > 4 && count != 0 && (count & 4))
+	emit_insn (gen_strmovsi (destreg, srcreg));
+      if ((align <= 4 || count == 0) && TARGET_64BIT)
+	{
+	  rtx label = ix86_expand_aligntest (countreg, 4);
+	  emit_insn (gen_strmovsi (destreg, srcreg));
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
+      if (align > 2 && count != 0 && (count & 2))
+	emit_insn (gen_strmovhi (destreg, srcreg));
+      if (align <= 2 || count == 0)
+	{
+	  rtx label = ix86_expand_aligntest (countreg, 2);
+	  emit_insn (gen_strmovhi (destreg, srcreg));
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
+      if (align > 1 && count != 0 && (count & 1))
+	emit_insn (gen_strmovqi (destreg, srcreg));
+      if (align <= 1 || count == 0)
+	{
+	  rtx label = ix86_expand_aligntest (countreg, 1);
+	  emit_insn (gen_strmovqi (destreg, srcreg));
+	  emit_label (label);
+	  LABEL_NUSES (label) = 1;
+	}
     }
 
-  /* Generate loop to check 4 bytes at a time.  It is not a good idea to
-     align this loop.  It gives only huge programs, but does not help to
-     speed up.  */
-  emit_label (align_4_label);
+  insns = get_insns ();
+  end_sequence ();
 
-  mem = gen_rtx_MEM (SImode, out);
-  emit_move_insn (scratch, mem);
-  if (TARGET_64BIT)
-    emit_insn (gen_adddi3 (out, out, GEN_INT (4)));
-  else
-    emit_insn (gen_addsi3 (out, out, GEN_INT (4)));
-
-  /* This formula yields a nonzero result iff one of the bytes is zero.
-     This saves three branches inside loop and many cycles.  */
-
-  emit_insn (gen_addsi3 (tmpreg, scratch, GEN_INT (-0x01010101)));
-  emit_insn (gen_one_cmplsi2 (scratch, scratch));
-  emit_insn (gen_andsi3 (tmpreg, tmpreg, scratch));
-  emit_insn (gen_andsi3 (tmpreg, tmpreg,
-			 GEN_INT (trunc_int_for_mode
-				  (0x80808080, SImode))));
-  emit_cmp_and_jump_insns (tmpreg, const0_rtx, EQ, 0, SImode, 1,
-			   align_4_label);
-
-  if (TARGET_CMOVE)
-    {
-       rtx reg = gen_reg_rtx (SImode);
-       rtx reg2 = gen_reg_rtx (Pmode);
-       emit_move_insn (reg, tmpreg);
-       emit_insn (gen_lshrsi3 (reg, reg, GEN_INT (16)));
-
-       /* If zero is not in the first two bytes, move two bytes forward.  */
-       emit_insn (gen_testsi_ccno_1 (tmpreg, GEN_INT (0x8080)));
-       tmp = gen_rtx_REG (CCNOmode, FLAGS_REG);
-       tmp = gen_rtx_EQ (VOIDmode, tmp, const0_rtx);
-       emit_insn (gen_rtx_SET (VOIDmode, tmpreg,
-			       gen_rtx_IF_THEN_ELSE (SImode, tmp,
-						     reg,
-						     tmpreg)));
-       /* Emit lea manually to avoid clobbering of flags.  */
-       emit_insn (gen_rtx_SET (SImode, reg2,
-			       gen_rtx_PLUS (Pmode, out, GEN_INT (2))));
-
-       tmp = gen_rtx_REG (CCNOmode, FLAGS_REG);
-       tmp = gen_rtx_EQ (VOIDmode, tmp, const0_rtx);
-       emit_insn (gen_rtx_SET (VOIDmode, out,
-			       gen_rtx_IF_THEN_ELSE (Pmode, tmp,
-						     reg2,
-						     out)));
-
-    }
-  else
-    {
-       rtx end_2_label = gen_label_rtx ();
-       /* Is zero in the first two bytes? */
-
-       emit_insn (gen_testsi_ccno_1 (tmpreg, GEN_INT (0x8080)));
-       tmp = gen_rtx_REG (CCNOmode, FLAGS_REG);
-       tmp = gen_rtx_NE (VOIDmode, tmp, const0_rtx);
-       tmp = gen_rtx_IF_THEN_ELSE (VOIDmode, tmp,
-                            gen_rtx_LABEL_REF (VOIDmode, end_2_label),
-                            pc_rtx);
-       tmp = emit_jump_insn (gen_rtx_SET (VOIDmode, pc_rtx, tmp));
-       JUMP_LABEL (tmp) = end_2_label;
-
-       /* Not in the first two.  Move two bytes forward.  */
-       emit_insn (gen_lshrsi3 (tmpreg, tmpreg, GEN_INT (16)));
-       if (TARGET_64BIT)
-	 emit_insn (gen_adddi3 (out, out, GEN_INT (2)));
-       else
-	 emit_insn (gen_addsi3 (out, out, GEN_INT (2)));
-
-       emit_label (end_2_label);
-
-    }
-
-  /* Avoid branch in fixing the byte.  */
-  tmpreg = gen_lowpart (QImode, tmpreg);
-  emit_insn (gen_addqi3_cc (tmpreg, tmpreg, tmpreg));
-  if (TARGET_64BIT)
-    emit_insn (gen_subdi3_carry_rex64 (out, out, GEN_INT (3)));
-  else
-    emit_insn (gen_subsi3_carry (out, out, GEN_INT (3)));
-
-  emit_label (end_0_label);
+  ix86_set_move_mem_attrs (insns, dst, src, destreg, srcreg);
+  emit_insns (insns);
+  return 1;
 }

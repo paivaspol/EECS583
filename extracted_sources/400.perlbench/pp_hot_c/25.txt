@@ -1,0 +1,44 @@
+STATIC int
+S_do_maybe_phash(pTHX_ AV *ary, SV **lelem, SV **firstlelem, SV **relem,
+		 SV **lastrelem)
+{
+    OP *leftop;
+    I32 i;
+
+    leftop = ((BINOP*)PL_op)->op_last;
+    assert(leftop);
+    assert(leftop->op_type == OP_NULL && leftop->op_targ == OP_LIST);
+    leftop = ((LISTOP*)leftop)->op_first;
+    assert(leftop);
+    /* Skip PUSHMARK and each element already assigned to. */
+    for (i = lelem - firstlelem; i > 0; i--) {
+	leftop = leftop->op_sibling;
+	assert(leftop);
+    }
+    if (leftop->op_type != OP_RV2HV)
+	return 0;
+
+    /* pseudohash */
+    if (av_len(ary) > 0)
+	av_fill(ary, 0);		/* clear all but the fields hash */
+    if (lastrelem >= relem) {
+	while (relem < lastrelem) {	/* gobble up all the rest */
+	    SV *tmpstr;
+	    assert(relem[0]);
+	    assert(relem[1]);
+	    /* Avoid a memory leak when avhv_store_ent dies. */
+	    tmpstr = sv_newmortal();
+	    sv_setsv(tmpstr,relem[1]);	/* value */
+	    relem[1] = tmpstr;
+	    if (avhv_store_ent(ary,relem[0],tmpstr,0))
+		(void)SvREFCNT_inc(tmpstr);
+	    if (SvMAGICAL(ary) != 0 && SvSMAGICAL(tmpstr))
+		mg_set(tmpstr);
+	    relem += 2;
+	    TAINT_NOT;
+	}
+    }
+    if (relem == lastrelem)
+	return 1;
+    return 2;
+}

@@ -1,0 +1,51 @@
+PP(pp_exec)
+{
+    dSP; dMARK; dORIGMARK; dTARGET;
+    I32 value;
+    STRLEN n_a;
+
+    if (PL_tainting) {
+	TAINT_ENV();
+	while (++MARK <= SP) {
+	    (void)SvPV_nolen(*MARK);      /* stringify for taint check */
+	    if (PL_tainted)
+		break;
+	}
+	MARK = ORIGMARK;
+	TAINT_PROPER("exec");
+    }
+    PERL_FLUSHALL_FOR_CHILD;
+    if (PL_op->op_flags & OPf_STACKED) {
+	SV *really = *++MARK;
+	value = (I32)do_aexec(really, MARK, SP);
+    }
+    else if (SP - MARK != 1)
+#ifdef VMS
+	value = (I32)vms_do_aexec(Nullsv, MARK, SP);
+#else
+#  ifdef __OPEN_VM
+	{
+	   (void ) do_aspawn(Nullsv, MARK, SP);
+	   value = 0;
+	}
+#  else
+	value = (I32)do_aexec(Nullsv, MARK, SP);
+#  endif
+#endif
+    else {
+#ifdef VMS
+	value = (I32)vms_do_exec(SvPVx(sv_mortalcopy(*SP), n_a));
+#else
+#  ifdef __OPEN_VM
+	(void) do_spawn(SvPVx(sv_mortalcopy(*SP), n_a));
+	value = 0;
+#  else
+	value = (I32)do_exec(SvPVx(sv_mortalcopy(*SP), n_a));
+#  endif
+#endif
+    }
+
+    SP = ORIGMARK;
+    PUSHi(value);
+    RETURN;
+}

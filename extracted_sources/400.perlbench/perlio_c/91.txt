@@ -1,0 +1,56 @@
+IV
+PerlIOBuf_flush(pTHX_ PerlIO *f)
+{
+    PerlIOBuf *b = PerlIOSelf(f, PerlIOBuf);
+    int code = 0;
+    PerlIO *n = PerlIONext(f);
+    if (PerlIOBase(f)->flags & PERLIO_F_WRBUF) {
+	/*
+	 * write() the buffer
+	 */
+	STDCHAR *buf = b->buf;
+	STDCHAR *p = buf;
+	while (p < b->ptr) {
+	    SSize_t count = PerlIO_write(n, p, b->ptr - p);
+	    if (count > 0) {
+		p += count;
+	    }
+	    else if (count < 0 || PerlIO_error(n)) {
+		PerlIOBase(f)->flags |= PERLIO_F_ERROR;
+		code = -1;
+		break;
+	    }
+	}
+	b->posn += (p - buf);
+    }
+    else if (PerlIOBase(f)->flags & PERLIO_F_RDBUF) {
+	STDCHAR *buf = PerlIO_get_base(f);
+	/*
+	 * Note position change
+	 */
+	b->posn += (b->ptr - buf);
+	if (b->ptr < b->end) {
+	    /* We did not consume all of it - try and seek downstream to
+	       our logical position
+	     */
+	    if (PerlIOValid(n) && PerlIO_seek(n, b->posn, SEEK_SET) == 0) {
+		/* Reload n as some layers may pop themselves on seek */
+		b->posn = PerlIO_tell(n = PerlIONext(f));
+	    }
+	    else {
+		/* Seek failed (e.g. pipe or tty). Do NOT clear buffer or pre-read
+		   data is lost for good - so return saying "ok" having undone
+		   the position adjust
+		 */
+		b->posn -= (b->ptr - buf);
+		return code;
+	    }
+	}
+    }
+    b->ptr = b->end = b->buf;
+    PerlIOBase(f)->flags &= ~(PERLIO_F_RDBUF | PERLIO_F_WRBUF);
+    /* We check for Valid because of dubious decision to make PerlIO_flush(NULL) flush all */
+    if (PerlIOValid(n) && PerlIO_flush(n) != 0)
+	code = -1;
+    return code;
+}

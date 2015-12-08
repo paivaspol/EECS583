@@ -1,0 +1,32 @@
+CV *
+Perl_newCONSTSUB(pTHX_ HV *stash, char *name, SV *sv)
+{
+    CV* cv;
+
+    ENTER;
+
+    SAVECOPLINE(PL_curcop);
+    CopLINE_set(PL_curcop, PL_copline);
+
+    SAVEHINTS();
+    PL_hints &= ~HINT_BLOCK_SCOPE;
+
+    if (stash) {
+	SAVESPTR(PL_curstash);
+	SAVECOPSTASH(PL_curcop);
+	PL_curstash = stash;
+	CopSTASH_set(PL_curcop,stash);
+    }
+
+    cv = newXS(name, const_sv_xsub, savepv(CopFILE(PL_curcop)));
+    CvXSUBANY(cv).any_ptr = sv;
+    CvCONST_on(cv);
+    sv_setpv((SV*)cv, "");  /* prototype is "" */
+
+    if (stash)
+	CopSTASH_free(PL_curcop);
+
+    LEAVE;
+
+    return cv;
+}

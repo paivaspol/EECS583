@@ -1,32 +1,15 @@
 int
-redirect_jump (jump, nlabel, delete_unused)
+redirect_jump_1 (jump, nlabel)
      rtx jump, nlabel;
-     int delete_unused;
 {
-  rtx olabel = JUMP_LABEL (jump);
+  int ochanges = num_validated_changes ();
+  rtx *loc;
 
-  if (nlabel == olabel)
-    return 1;
+  if (GET_CODE (PATTERN (jump)) == PARALLEL)
+    loc = &XVECEXP (PATTERN (jump), 0, 0);
+  else
+    loc = &PATTERN (jump);
 
-  if (! redirect_exp (olabel, nlabel, jump))
-    return 0;
-
-  JUMP_LABEL (jump) = nlabel;
-  if (nlabel)
-    ++LABEL_NUSES (nlabel);
-
-  /* If we're eliding the jump over exception cleanups at the end of a
-     function, move the function end note so that -Wreturn-type works.  */
-  if (olabel && nlabel
-      && NEXT_INSN (olabel)
-      && GET_CODE (NEXT_INSN (olabel)) == NOTE
-      && NOTE_LINE_NUMBER (NEXT_INSN (olabel)) == NOTE_INSN_FUNCTION_END)
-    emit_note_after (NOTE_INSN_FUNCTION_END, nlabel);
-
-  if (olabel && --LABEL_NUSES (olabel) == 0 && delete_unused
-      /* Undefined labels will remain outside the insn stream.  */
-      && INSN_UID (olabel))
-    delete_related_insns (olabel);
-
-  return 1;
+  redirect_exp_1 (loc, JUMP_LABEL (jump), nlabel, jump);
+  return num_validated_changes () > ochanges;
 }

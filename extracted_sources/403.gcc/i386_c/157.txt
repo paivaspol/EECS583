@@ -1,8 +1,9 @@
-static void
-ix86_sched_init (dump, sched_verbose, veclen)
-     FILE *dump ATTRIBUTE_UNUSED;
-     int sched_verbose ATTRIBUTE_UNUSED;
-     int veclen ATTRIBUTE_UNUSED;
+static enum attr_pent_pair
+ix86_safe_pent_pair (insn)
+     rtx insn;
 {
-  memset (&ix86_sched_data, 0, sizeof (ix86_sched_data));
+  if (recog_memoized (insn) >= 0)
+    return get_attr_pent_pair (insn);
+  else
+    return PENT_PAIR_NP;
 }

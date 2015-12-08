@@ -1,112 +1,60 @@
 STATIC OP *
-S_new_logop(pTHX_ I32 type, I32 flags, OP** firstp, OP** otherp)
+S_my_kid(pTHX_ OP *o, OP *attrs, OP **imopsp)
 {
-    LOGOP *logop;
-    OP *o;
-    OP *first = *firstp;
-    OP *other = *otherp;
+    OP *kid;
+    I32 type;
 
-    if (type == OP_XOR)		/* Not short circuit, but here by precedence. */
-	return newBINOP(type, flags, scalar(first), scalar(other));
+    if (!o || PL_error_count)
+	return o;
 
-    scalarboolean(first);
-    /* optimize "!a && b" to "a || b", and "!a || b" to "a && b" */
-    if (first->op_type == OP_NOT && (first->op_flags & OPf_SPECIAL)) {
-	if (type == OP_AND || type == OP_OR) {
-	    if (type == OP_AND)
-		type = OP_OR;
-	    else
-		type = OP_AND;
-	    o = first;
-	    first = *firstp = cUNOPo->op_first;
-	    if (o->op_next)
-		first->op_next = o->op_next;
-	    cUNOPo->op_first = Nullop;
-	    op_free(o);
+    type = o->op_type;
+    if (type == OP_LIST) {
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    my_kid(kid, attrs, imopsp);
+    } else if (type == OP_UNDEF) {
+	return o;
+    } else if (type == OP_RV2SV ||	/* "our" declaration */
+	       type == OP_RV2AV ||
+	       type == OP_RV2HV) { /* XXX does this let anything illegal in? */
+	if (cUNOPo->op_first->op_type != OP_GV) { /* MJD 20011224 */
+	    yyerror(Perl_form(aTHX_ "Can't declare %s in %s",
+			OP_DESC(o), PL_in_my == KEY_our ? "our" : "my"));
+	} else if (attrs) {
+	    GV *gv = cGVOPx_gv(cUNOPo->op_first);
+	    PL_in_my = FALSE;
+	    PL_in_my_stash = Nullhv;
+	    apply_attrs(GvSTASH(gv),
+			(type == OP_RV2SV ? GvSV(gv) :
+			 type == OP_RV2AV ? (SV*)GvAV(gv) :
+			 type == OP_RV2HV ? (SV*)GvHV(gv) : (SV*)gv),
+			attrs, FALSE);
 	}
+	o->op_private |= OPpOUR_INTRO;
+	return o;
     }
-    if (first->op_type == OP_CONST) {
-	if (first->op_private & OPpCONST_STRICT)
-	    no_bareword_allowed(first);
-	else if (ckWARN(WARN_BAREWORD) && (first->op_private & OPpCONST_BARE))
-		Perl_warner(aTHX_ packWARN(WARN_BAREWORD), "Bareword found in conditional");
-	if ((type == OP_AND) == (SvTRUE(((SVOP*)first)->op_sv))) {
-	    op_free(first);
-	    *firstp = Nullop;
-	    if (other->op_type == OP_CONST)
-		other->op_private |= OPpCONST_SHORTCIRCUIT;
-	    return other;
-	}
-	else {
-	    op_free(other);
-	    *otherp = Nullop;
-	    if (first->op_type == OP_CONST)
-		first->op_private |= OPpCONST_SHORTCIRCUIT;
-	    return first;
-	}
+    else if (type != OP_PADSV &&
+	     type != OP_PADAV &&
+	     type != OP_PADHV &&
+	     type != OP_PUSHMARK)
+    {
+	yyerror(Perl_form(aTHX_ "Can't declare %s in \"%s\"",
+			  OP_DESC(o),
+			  PL_in_my == KEY_our ? "our" : "my"));
+	return o;
     }
-    else if (ckWARN(WARN_MISC) && (first->op_flags & OPf_KIDS)) {
-	OP *k1 = ((UNOP*)first)->op_first;
-	OP *k2 = k1->op_sibling;
-	OPCODE warnop = 0;
-	switch (first->op_type)
-	{
-	case OP_NULL:
-	    if (k2 && k2->op_type == OP_READLINE
-		  && (k2->op_flags & OPf_STACKED)
-		  && ((k1->op_flags & OPf_WANT) == OPf_WANT_SCALAR))
-	    {
-		warnop = k2->op_type;
-	    }
-	    break;
+    else if (attrs && type != OP_PUSHMARK) {
+	HV *stash;
 
-	case OP_SASSIGN:
-	    if (k1->op_type == OP_READDIR
-		  || k1->op_type == OP_GLOB
-		  || (k1->op_type == OP_NULL && k1->op_targ == OP_GLOB)
-		  || k1->op_type == OP_EACH)
-	    {
-		warnop = ((k1->op_type == OP_NULL)
-			  ? (OPCODE)k1->op_targ : k1->op_type);
-	    }
-	    break;
-	}
-	if (warnop) {
-	    line_t oldline = CopLINE(PL_curcop);
-	    CopLINE_set(PL_curcop, PL_copline);
-	    Perl_warner(aTHX_ packWARN(WARN_MISC),
-		 "Value of %s%s can be \"0\"; test with defined()",
-		 PL_op_desc[warnop],
-		 ((warnop == OP_READLINE || warnop == OP_GLOB)
-		  ? " construct" : "() operator"));
-	    CopLINE_set(PL_curcop, oldline);
-	}
+	PL_in_my = FALSE;
+	PL_in_my_stash = Nullhv;
+
+	/* check for C<my Dog $spot> when deciding package */
+	stash = PAD_COMPNAME_TYPE(o->op_targ);
+	if (!stash)
+	    stash = PL_curstash;
+	apply_attrs_my(stash, o, attrs, imopsp);
     }
-
-    if (!other)
-	return first;
-
-    if (type == OP_ANDASSIGN || type == OP_ORASSIGN)
-	other->op_private |= OPpASSIGN_BACKWARDS;  /* other is an OP_SASSIGN */
-
-    NewOp(1101, logop, 1, LOGOP);
-
-    logop->op_type = (OPCODE)type;
-    logop->op_ppaddr = PL_ppaddr[type];
-    logop->op_first = first;
-    logop->op_flags = flags | OPf_KIDS;
-    logop->op_other = LINKLIST(other);
-    logop->op_private = (U8)(1 | (flags >> 8));
-
-    /* establish postfix order */
-    logop->op_next = LINKLIST(first);
-    first->op_next = (OP*)logop;
-    first->op_sibling = other;
-
-    CHECKOP(type,logop);
-
-    o = newUNOP(OP_NULL, 0, (OP*)logop);
-    other->op_next = o;
-
+    o->op_flags |= OPf_MOD;
+    o->op_private |= OPpLVAL_INTRO;
     return o;
 }

@@ -1,0 +1,28 @@
+void
+PerlIO_destruct(pTHX)
+{
+    PerlIO **table = &PL_perlio;
+    PerlIO *f;
+#ifdef USE_ITHREADS
+    PerlIO_debug("Destruct %p\n",aTHX);
+#endif
+    while ((f = *table)) {
+	int i;
+	table = (PerlIO **) (f++);
+	for (i = 1; i < PERLIO_TABLE_SIZE; i++) {
+	    PerlIO *x = f;
+	    PerlIOl *l;
+	    while ((l = *x)) {
+		if (l->tab->kind & PERLIO_K_DESTRUCT) {
+		    PerlIO_debug("Destruct popping %s\n", l->tab->name);
+		    PerlIO_flush(x);
+		    PerlIO_pop(aTHX_ x);
+		}
+		else {
+		    x = PerlIONext(x);
+		}
+	    }
+	    f++;
+	}
+    }
+}

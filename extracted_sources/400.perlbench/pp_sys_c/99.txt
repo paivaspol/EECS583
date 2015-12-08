@@ -1,0 +1,43 @@
+PP(pp_fork)
+{
+#ifdef HAS_FORK
+    dSP; dTARGET;
+    Pid_t childpid;
+    GV *tmpgv;
+
+    EXTEND(SP, 1);
+    PERL_FLUSHALL_FOR_CHILD;
+    childpid = PerlProc_fork();
+    if (childpid < 0)
+	RETSETUNDEF;
+    if (!childpid) {
+	/*SUPPRESS 560*/
+	if ((tmpgv = gv_fetchpv("$", TRUE, SVt_PV))) {
+            SvREADONLY_off(GvSV(tmpgv));
+	    sv_setiv(GvSV(tmpgv), (IV)PerlProc_getpid());
+            SvREADONLY_on(GvSV(tmpgv));
+        }
+#ifdef THREADS_HAVE_PIDS
+	PL_ppid = (IV)getppid();
+#endif
+	hv_clear(PL_pidstatus);	/* no kids, so don't wait for 'em */
+    }
+    PUSHi(childpid);
+    RETURN;
+#else
+#  if defined(USE_ITHREADS) && defined(PERL_IMPLICIT_SYS)
+    dSP; dTARGET;
+    Pid_t childpid;
+
+    EXTEND(SP, 1);
+    PERL_FLUSHALL_FOR_CHILD;
+    childpid = PerlProc_fork();
+    if (childpid == -1)
+	RETSETUNDEF;
+    PUSHi(childpid);
+    RETURN;
+#  else
+    DIE(aTHX_ PL_no_func, "fork");
+#  endif
+#endif
+}

@@ -1,0 +1,109 @@
+OP *
+Perl_ck_rvconst(pTHX_ register OP *o)
+{
+    SVOP *kid = (SVOP*)cUNOPo->op_first;
+
+    o->op_private |= (PL_hints & HINT_STRICT_REFS);
+    if (kid->op_type == OP_CONST) {
+	char *name;
+	int iscv;
+	GV *gv;
+	SV *kidsv = kid->op_sv;
+	STRLEN n_a;
+
+	/* Is it a constant from cv_const_sv()? */
+	if (SvROK(kidsv) && SvREADONLY(kidsv)) {
+	    SV *rsv = SvRV(kidsv);
+	    int svtype = SvTYPE(rsv);
+	    char *badtype = Nullch;
+
+	    switch (o->op_type) {
+	    case OP_RV2SV:
+		if (svtype > SVt_PVMG)
+		    badtype = "a SCALAR";
+		break;
+	    case OP_RV2AV:
+		if (svtype != SVt_PVAV)
+		    badtype = "an ARRAY";
+		break;
+	    case OP_RV2HV:
+		if (svtype != SVt_PVHV) {
+		    if (svtype == SVt_PVAV) {	/* pseudohash? */
+			SV **ksv = av_fetch((AV*)rsv, 0, FALSE);
+			if (ksv && SvROK(*ksv)
+			    && SvTYPE(SvRV(*ksv)) == SVt_PVHV)
+			{
+				break;
+			}
+		    }
+		    badtype = "a HASH";
+		}
+		break;
+	    case OP_RV2CV:
+		if (svtype != SVt_PVCV)
+		    badtype = "a CODE";
+		break;
+	    }
+	    if (badtype)
+		Perl_croak(aTHX_ "Constant is not %s reference", badtype);
+	    return o;
+	}
+	name = SvPV(kidsv, n_a);
+	if ((PL_hints & HINT_STRICT_REFS) && (kid->op_private & OPpCONST_BARE)) {
+	    char *badthing = Nullch;
+	    switch (o->op_type) {
+	    case OP_RV2SV:
+		badthing = "a SCALAR";
+		break;
+	    case OP_RV2AV:
+		badthing = "an ARRAY";
+		break;
+	    case OP_RV2HV:
+		badthing = "a HASH";
+		break;
+	    }
+	    if (badthing)
+		Perl_croak(aTHX_
+	  "Can't use bareword (\"%s\") as %s ref while \"strict refs\" in use",
+		      name, badthing);
+	}
+	/*
+	 * This is a little tricky.  We only want to add the symbol if we
+	 * didn't add it in the lexer.  Otherwise we get duplicate strict
+	 * warnings.  But if we didn't add it in the lexer, we must at
+	 * least pretend like we wanted to add it even if it existed before,
+	 * or we get possible typo warnings.  OPpCONST_ENTERED says
+	 * whether the lexer already added THIS instance of this symbol.
+	 */
+	iscv = (o->op_type == OP_RV2CV) * 2;
+	do {
+	    gv = gv_fetchpv(name,
+		iscv | !(kid->op_private & OPpCONST_ENTERED),
+		iscv
+		    ? SVt_PVCV
+		    : o->op_type == OP_RV2SV
+			? SVt_PV
+			: o->op_type == OP_RV2AV
+			    ? SVt_PVAV
+			    : o->op_type == OP_RV2HV
+				? SVt_PVHV
+				: SVt_PVGV);
+	} while (!gv && !(kid->op_private & OPpCONST_ENTERED) && !iscv++);
+	if (gv) {
+	    kid->op_type = OP_GV;
+	    SvREFCNT_dec(kid->op_sv);
+#ifdef USE_ITHREADS
+	    /* XXX hack: dependence on sizeof(PADOP) <= sizeof(SVOP) */
+	    kPADOP->op_padix = pad_alloc(OP_GV, SVs_PADTMP);
+	    SvREFCNT_dec(PAD_SVl(kPADOP->op_padix));
+	    GvIN_PAD_on(gv);
+	    PAD_SETSV(kPADOP->op_padix, (SV*) SvREFCNT_inc(gv));
+#else
+	    kid->op_sv = SvREFCNT_inc(gv);
+#endif
+	    kid->op_private = 0;
+	    kid->op_ppaddr = PL_ppaddr[OP_GV];
+	}
+    }
+    return o;
+}

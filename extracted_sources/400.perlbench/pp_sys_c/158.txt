@@ -1,0 +1,96 @@
+PP(pp_syscall)
+{
+#ifdef HAS_SYSCALL
+    dSP; dMARK; dORIGMARK; dTARGET;
+    register I32 items = SP - MARK;
+    unsigned long a[20];
+    register I32 i = 0;
+    I32 retval = -1;
+    STRLEN n_a;
+
+    if (PL_tainting) {
+	while (++MARK <= SP) {
+	    if (SvTAINTED(*MARK)) {
+		TAINT;
+		break;
+	    }
+	}
+	MARK = ORIGMARK;
+	TAINT_PROPER("syscall");
+    }
+
+    /* This probably won't work on machines where sizeof(long) != sizeof(int)
+     * or where sizeof(long) != sizeof(char*).  But such machines will
+     * not likely have syscall implemented either, so who cares?
+     */
+    while (++MARK <= SP) {
+	if (SvNIOK(*MARK) || !i)
+	    a[i++] = SvIV(*MARK);
+	else if (*MARK == &PL_sv_undef)
+	    a[i++] = 0;
+	else
+	    a[i++] = (unsigned long)SvPV_force(*MARK, n_a);
+	if (i > 15)
+	    break;
+    }
+    switch (items) {
+    default:
+	DIE(aTHX_ "Too many args to syscall");
+    case 0:
+	DIE(aTHX_ "Too few args to syscall");
+    case 1:
+	retval = syscall(a[0]);
+	break;
+    case 2:
+	retval = syscall(a[0],a[1]);
+	break;
+    case 3:
+	retval = syscall(a[0],a[1],a[2]);
+	break;
+    case 4:
+	retval = syscall(a[0],a[1],a[2],a[3]);
+	break;
+    case 5:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4]);
+	break;
+    case 6:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5]);
+	break;
+    case 7:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);
+	break;
+    case 8:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
+	break;
+#ifdef atarist
+    case 9:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8]);
+	break;
+    case 10:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9]);
+	break;
+    case 11:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],
+	  a[10]);
+	break;
+    case 12:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],
+	  a[10],a[11]);
+	break;
+    case 13:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],
+	  a[10],a[11],a[12]);
+	break;
+    case 14:
+	retval = syscall(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],
+	  a[10],a[11],a[12],a[13]);
+	break;
+#endif /* atarist */
+    }
+    SP = ORIGMARK;
+    PUSHi(retval);
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "syscall");
+#endif
+}

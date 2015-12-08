@@ -1,54 +1,13 @@
-STATIC SV *
-S_gv_share(pTHX_ SV *sstr, CLONE_PARAMS *param)
+void *
+Perl_ptr_table_fetch(pTHX_ PTR_TBL_t *tbl, void *sv)
 {
-    GV *gv = (GV*)sstr;
-    SV *sv = &param->proto_perl->Isv_no; /* just need SvREADONLY-ness */
-
-    if (GvIO(gv) || GvFORM(gv)) {
-        GvUNIQUE_off(gv); /* GvIOs cannot be shared. nor can GvFORMs */
+    PTR_TBL_ENT_t *tblent;
+    UV hash = PTR_TABLE_HASH(sv);
+    assert(tbl);
+    tblent = tbl->tbl_ary[hash & tbl->tbl_max];
+    for (; tblent; tblent = tblent->next) {
+	if (tblent->oldval == sv)
+	    return tblent->newval;
     }
-    else if (!GvCV(gv)) {
-        GvCV(gv) = (CV*)sv;
-    }
-    else {
-        /* CvPADLISTs cannot be shared */
-        if (!SvREADONLY(GvCV(gv)) && !CvXSUB(GvCV(gv))) {
-            GvUNIQUE_off(gv);
-        }
-    }
-
-    if (!GvUNIQUE(gv)) {
-#if 0
-        PerlIO_printf(Perl_debug_log, "gv_share: unable to share %s::%s\n",
-                      HvNAME(GvSTASH(gv)), GvNAME(gv));
-#endif
-        return Nullsv;
-    }
-
-    /*
-     * write attempts will die with
-     * "Modification of a read-only value attempted"
-     */
-    if (!GvSV(gv)) {
-        GvSV(gv) = sv;
-    }
-    else {
-        SvREADONLY_on(GvSV(gv));
-    }
-
-    if (!GvAV(gv)) {
-        GvAV(gv) = (AV*)sv;
-    }
-    else {
-        SvREADONLY_on(GvAV(gv));
-    }
-
-    if (!GvHV(gv)) {
-        GvHV(gv) = (HV*)sv;
-    }
-    else {
-        SvREADONLY_on(GvHV(gv));
-    }
-
-    return sstr; /* he_dup() will SvREFCNT_inc() */
+    return (void*)NULL;
 }

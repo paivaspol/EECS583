@@ -1,0 +1,22 @@
+PP(pp_bit_xor)
+{
+    dSP; dATARGET; tryAMAGICbin(bxor,opASSIGN);
+    {
+      dPOPTOPssrl;
+      if (SvNIOKp(left) || SvNIOKp(right)) {
+	if (PL_op->op_private & HINT_INTEGER) {
+	  IV i = (USE_LEFT(left) ? SvIV(left) : 0) ^ SvIV(right);
+	  SETi(i);
+	}
+	else {
+	  UV u = (USE_LEFT(left) ? SvUV(left) : 0) ^ SvUV(right);
+	  SETu(u);
+	}
+      }
+      else {
+	do_vop(PL_op->op_type, TARG, left, right);
+	SETTARG;
+      }
+      RETURN;
+    }
+}

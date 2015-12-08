@@ -1,135 +1,25 @@
-STATIC CV *
-S_cv_clone2(pTHX_ CV *proto, CV *outside)
+void
+Perl_pad_swipe(pTHX_ PADOFFSET po, bool refadjust)
 {
-    I32 ix;
-    AV* protopadlist = CvPADLIST(proto);
-    AV* protopad_name = (AV*)*av_fetch(protopadlist, 0, FALSE);
-    AV* protopad = (AV*)*av_fetch(protopadlist, 1, FALSE);
-    SV** pname = AvARRAY(protopad_name);
-    SV** ppad = AvARRAY(protopad);
-    I32 fname = AvFILLp(protopad_name);
-    I32 fpad = AvFILLp(protopad);
-    AV* comppadlist;
-    CV* cv;
+    ASSERT_CURPAD_LEGAL("pad_swipe");
+    if (!PL_curpad)
+	return;
+    if (AvARRAY(PL_comppad) != PL_curpad)
+	Perl_croak(aTHX_ "panic: pad_swipe curpad");
+    if (!po)
+	Perl_croak(aTHX_ "panic: pad_swipe po");
 
-    assert(!CvUNIQUE(proto));
+    DEBUG_X(PerlIO_printf(Perl_debug_log,
+		"Pad 0x%"UVxf"[0x%"UVxf"] swipe:   %ld\n",
+		PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po));
 
-    ENTER;
-    SAVESPTR(PL_compcv);
+    if (PL_curpad[po])
+	SvPADTMP_off(PL_curpad[po]);
+    if (refadjust)
+	SvREFCNT_dec(PL_curpad[po]);
 
-    cv = PL_compcv = (CV*)NEWSV(1104, 0);
-    sv_upgrade((SV *)cv, SvTYPE(proto));
-    CvFLAGS(cv) = CvFLAGS(proto) & ~(CVf_CLONE|CVf_WEAKOUTSIDE);
-    CvCLONED_on(cv);
-
-#ifdef USE_5005THREADS
-    New(666, CvMUTEXP(cv), 1, perl_mutex);
-    MUTEX_INIT(CvMUTEXP(cv));
-    CvOWNER(cv)		= 0;
-#endif /* USE_5005THREADS */
-#ifdef USE_ITHREADS
-    CvFILE(cv)		= CvXSUB(proto) ? CvFILE(proto)
-					: savepv(CvFILE(proto));
-#else
-    CvFILE(cv)		= CvFILE(proto);
-#endif
-    CvGV(cv)		= CvGV(proto);
-    CvSTASH(cv)		= CvSTASH(proto);
-    OP_REFCNT_LOCK;
-    CvROOT(cv)		= OpREFCNT_inc(CvROOT(proto));
-    OP_REFCNT_UNLOCK;
-    CvSTART(cv)		= CvSTART(proto);
-    if (outside) {
-	CvOUTSIDE(cv)	= (CV*)SvREFCNT_inc(outside);
-	CvOUTSIDE_SEQ(cv) = CvOUTSIDE_SEQ(proto);
-    }
-
-    if (SvPOK(proto))
-	sv_setpvn((SV*)cv, SvPVX(proto), SvCUR(proto));
-
-    CvPADLIST(cv) = comppadlist = pad_new(padnew_CLONE|padnew_SAVE);
-
-    for (ix = fname; ix >= 0; ix--)
-	av_store(PL_comppad_name, ix, SvREFCNT_inc(pname[ix]));
-
-    av_fill(PL_comppad, fpad);
-    PL_curpad = AvARRAY(PL_comppad);
-
-    for (ix = fpad; ix > 0; ix--) {
-	SV* namesv = (ix <= fname) ? pname[ix] : Nullsv;
-	if (namesv && namesv != &PL_sv_undef) {
-	    char *name = SvPVX(namesv);    /* XXX */
-	    if (SvFLAGS(namesv) & SVf_FAKE) {   /* lexical from outside? */
-		I32 off = pad_findlex(name, ix, cv);
-		if (!off)
-		    PL_curpad[ix] = SvREFCNT_inc(ppad[ix]);
-		else if (off != ix)
-		    Perl_croak(aTHX_ "panic: cv_clone: %s", name);
-	    }
-	    else {				/* our own lexical */
-		SV* sv;
-		if (*name == '&') {
-		    /* anon code -- we'll come back for it */
-		    sv = SvREFCNT_inc(ppad[ix]);
-		}
-		else if (*name == '@')
-		    sv = (SV*)newAV();
-		else if (*name == '%')
-		    sv = (SV*)newHV();
-		else
-		    sv = NEWSV(0, 0);
-		if (!SvPADBUSY(sv))
-		    SvPADMY_on(sv);
-		PL_curpad[ix] = sv;
-	    }
-	}
-	else if (IS_PADGV(ppad[ix]) || IS_PADCONST(ppad[ix])) {
-	    PL_curpad[ix] = SvREFCNT_inc(ppad[ix]);
-	}
-	else {
-	    SV* sv = NEWSV(0, 0);
-	    SvPADTMP_on(sv);
-	    PL_curpad[ix] = sv;
-	}
-    }
-
-    /* Now that vars are all in place, clone nested closures. */
-
-    for (ix = fpad; ix > 0; ix--) {
-	SV* namesv = (ix <= fname) ? pname[ix] : Nullsv;
-	if (namesv
-	    && namesv != &PL_sv_undef
-	    && !(SvFLAGS(namesv) & SVf_FAKE)
-	    && *SvPVX(namesv) == '&'
-	    && CvCLONE(ppad[ix]))
-	{
-	    CV *kid = cv_clone2((CV*)ppad[ix], cv);
-	    SvREFCNT_dec(ppad[ix]);
-	    CvCLONE_on(kid);
-	    SvPADMY_on(kid);
-	    PL_curpad[ix] = (SV*)kid;
-	    /* '&' entry points to child, so child mustn't refcnt parent */
-	    CvWEAKOUTSIDE_on(kid);
-	    SvREFCNT_dec(cv);
-	}
-    }
-
-    DEBUG_Xv(
-	PerlIO_printf(Perl_debug_log, "\nPad CV clone\n");
-	cv_dump(outside, "Outside");
-	cv_dump(proto,	 "Proto");
-	cv_dump(cv,	 "To");
-    );
-
-    LEAVE;
-
-    if (CvCONST(cv)) {
-	SV* const_sv = op_const_sv(CvSTART(cv), cv);
-	assert(const_sv);
-	/* constant sub () { $x } closing over $x - see lib/constant.pm */
-	SvREFCNT_dec(cv);
-	cv = newCONSTSUB(CvSTASH(proto), 0, const_sv);
-    }
-
-    return cv;
+    PL_curpad[po] = NEWSV(1107,0);
+    SvPADTMP_on(PL_curpad[po]);
+    if ((I32)po < PL_padix)
+	PL_padix = po - 1;
 }

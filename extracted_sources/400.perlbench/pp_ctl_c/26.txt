@@ -1,0 +1,90 @@
+OP *
+Perl_die_where(pTHX_ char *message, STRLEN msglen)
+{
+    STRLEN n_a;
+
+    if (PL_in_eval) {
+	I32 cxix;
+	register PERL_CONTEXT *cx;
+	I32 gimme;
+	SV **newsp;
+
+	if (message) {
+	    if (PL_in_eval & EVAL_KEEPERR) {
+		static char prefix[] = "\t(in cleanup) ";
+		SV *err = ERRSV;
+		char *e = Nullch;
+		if (!SvPOK(err))
+		    sv_setpv(err,"");
+		else if (SvCUR(err) >= sizeof(prefix)+msglen-1) {
+		    e = SvPV(err, n_a);
+		    e += n_a - msglen;
+		    if (*e != *message || strNE(e,message))
+			e = Nullch;
+		}
+		if (!e) {
+		    SvGROW(err, SvCUR(err)+sizeof(prefix)+msglen);
+		    sv_catpvn(err, prefix, sizeof(prefix)-1);
+		    sv_catpvn(err, message, msglen);
+		    if (ckWARN(WARN_MISC)) {
+			STRLEN start = SvCUR(err)-msglen-sizeof(prefix)+1;
+			Perl_warner(aTHX_ packWARN(WARN_MISC), SvPVX(err)+start);
+		    }
+		}
+	    }
+	    else {
+		sv_setpvn(ERRSV, message, msglen);
+	    }
+	}
+
+	while ((cxix = dopoptoeval(cxstack_ix)) < 0
+	       && PL_curstackinfo->si_prev)
+	{
+	    dounwind(-1);
+	    POPSTACK;
+	}
+
+	if (cxix >= 0) {
+	    I32 optype;
+
+	    if (cxix < cxstack_ix)
+		dounwind(cxix);
+
+	    POPBLOCK(cx,PL_curpm);
+	    if (CxTYPE(cx) != CXt_EVAL) {
+		if (!message)
+		    message = SvPVx(ERRSV, msglen);
+		PerlIO_write(Perl_error_log, "panic: die ", 11);
+		PerlIO_write(Perl_error_log, message, msglen);
+		my_exit(1);
+	    }
+	    POPEVAL(cx);
+
+	    if (gimme == G_SCALAR)
+		*++newsp = &PL_sv_undef;
+	    PL_stack_sp = newsp;
+
+	    LEAVE;
+
+	    /* LEAVE could clobber PL_curcop (see save_re_context())
+	     * XXX it might be better to find a way to avoid messing with
+	     * PL_curcop in save_re_context() instead, but this is a more
+	     * minimal fix --GSAR */
+	    PL_curcop = cx->blk_oldcop;
+
+	    if (optype == OP_REQUIRE) {
+		char* msg = SvPVx(ERRSV, n_a);
+		DIE(aTHX_ "%sCompilation failed in require",
+		    *msg ? msg : "Unknown error\n");
+	    }
+	    return pop_return();
+	}
+    }
+    if (!message)
+	message = SvPVx(ERRSV, msglen);
+
+    write_to_stderr(message, msglen);
+    my_failure_exit();
+    /* NOTREACHED */
+    return 0;
+}

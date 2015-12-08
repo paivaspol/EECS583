@@ -1,14 +1,31 @@
 static void
-expand_null_return_1 (last_insn)
-     rtx last_insn;
+expand_value_return (val)
+     rtx val;
 {
-  rtx end_label = cleanup_label ? cleanup_label : return_label;
+  rtx last_insn = get_last_insn ();
+  rtx return_reg = DECL_RTL (DECL_RESULT (current_function_decl));
 
-  clear_pending_stack_adjust ();
-  do_pending_stack_adjust ();
-  last_expr_type = 0;
+  /* Copy the value to the return location
+     unless it's already there.  */
 
-  if (end_label == 0)
-     end_label = return_label = gen_label_rtx ();
-  expand_goto_internal (NULL_TREE, end_label, last_insn);
+  if (return_reg != val)
+    {
+      tree type = TREE_TYPE (DECL_RESULT (current_function_decl));
+#ifdef PROMOTE_FUNCTION_RETURN
+      int unsignedp = TREE_UNSIGNED (type);
+      enum machine_mode old_mode
+	= DECL_MODE (DECL_RESULT (current_function_decl));
+      enum machine_mode mode
+	= promote_mode (type, old_mode, &unsignedp, 1);
+
+      if (mode != old_mode)
+	val = convert_modes (mode, old_mode, val, unsignedp);
+#endif
+      if (GET_CODE (return_reg) == PARALLEL)
+	emit_group_load (return_reg, val, int_size_in_bytes (type));
+      else
+	emit_move_insn (return_reg, val);
+    }
+
+  expand_null_return_1 (last_insn);
 }

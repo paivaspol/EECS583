@@ -1,24 +1,30 @@
-int fget_lines(FILE *in,char ***strings)
+int get_strings(char *db,char ***strings)
 {
+  FILE *in;
   char **ptr;
   char buf[256];
   int  i,nstr;
+
+  in=libopen(db);
   
-  fgets(buf,255,in);  
-  if (sscanf(buf,"%d",&nstr) != 1) {
-    sprintf(warn_buf,"File is empty");
+  set_warning_line(db,1);
+  if (fscanf(in,"%d",&nstr) != 1) {
+    sprintf(warn_buf,"File %s is empty",db);
     warning(NULL);
     fclose(in);
-    
     return 0;
   }
   snew(ptr,nstr);
   for(i=0; (i<nstr); i++) {
-    fgets2(buf,255,in);
+    fscanf(in,"%s",buf);
+#ifdef DEBUG
+    fprintf(stderr,"Have read: %s\n",buf);
+#endif
     ptr[i] = strdup(buf);
   }
-  
-  (*strings) = ptr;
+  fclose(in);
+
+  *strings=ptr;
   
   return nstr;
 }

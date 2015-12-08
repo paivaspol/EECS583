@@ -1,7 +1,7 @@
-static void fe(int eio,char *desc,char *srcfile,int line)
+static void _check_nitem(int eio,int nitem,char *file,int line)
 {
-  fatal_error(0,"Trying to %s %s type %d (%s), src %s, line %d",
-	      curfio->bRead ? "read" : "write",desc,eio,
-	      ((eio >= 0) && (eio < eioNR)) ? eioNames[eio] : "unknown",
-	      srcfile,line);
+  if ((nitem != 1) && !((eio == eioNRVEC) || (eio == eioNUCHAR)))
+    fatal_error(0,"nitem (%d) may differ from 1 only for %s or %s, not for %s"
+		"(%s, %d)",nitem,eioNames[eioNUCHAR],eioNames[eioNRVEC],
+		eioNames[eio],file,line);
 }

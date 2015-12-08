@@ -1,8 +1,15 @@
 void
-Perl_save_destructor_x(pTHX_ DESTRUCTORFUNC_t f, void* p)
+Perl_save_list(pTHX_ register SV **sarg, I32 maxsarg)
 {
-    SSCHECK(3);
-    SSPUSHDXPTR(f);
-    SSPUSHPTR(p);
-    SSPUSHINT(SAVEt_DESTRUCTOR_X);
+    register SV *sv;
+    register I32 i;
+
+    for (i = 1; i <= maxsarg; i++) {
+	sv = NEWSV(0,0);
+	sv_setsv(sv,sarg[i]);
+	SSCHECK(3);
+	SSPUSHPTR(sarg[i]);		/* remember the pointer */
+	SSPUSHPTR(sv);			/* remember the value */
+	SSPUSHINT(SAVEt_ITEM);
+    }
 }

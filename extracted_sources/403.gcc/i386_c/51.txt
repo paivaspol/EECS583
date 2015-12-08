@@ -1,13 +1,11 @@
 int
-reg_no_sp_operand (op, mode)
+incdec_operand (op, mode)
      register rtx op;
-     enum machine_mode mode;
+     enum machine_mode mode ATTRIBUTE_UNUSED;
 {
-  rtx t = op;
-  if (GET_CODE (t) == SUBREG)
-    t = SUBREG_REG (t);
-  if (t == stack_pointer_rtx || t == arg_pointer_rtx || t == frame_pointer_rtx)
+  /* On Pentium4, the inc and dec operations causes extra dependency on flag
+     registers, since carry flag is not set.  */
+  if (TARGET_PENTIUM4 && !optimize_size)
     return 0;
-
-  return register_operand (op, mode);
+  return op == const1_rtx || op == constm1_rtx;
 }

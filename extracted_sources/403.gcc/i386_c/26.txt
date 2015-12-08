@@ -1,135 +1,39 @@
-static rtx
-construct_container (mode, type, in_return, nintregs, nsseregs, intreg, sse_regno)
+static int
+examine_argument (mode, type, in_return, int_nregs, sse_nregs)
      enum machine_mode mode;
      tree type;
+     int *int_nregs, *sse_nregs;
      int in_return;
-     int nintregs, nsseregs;
-     const int * intreg;
-     int sse_regno;
 {
-  enum machine_mode tmpmode;
-  int bytes =
-    (mode == BLKmode) ? int_size_in_bytes (type) : (int) GET_MODE_SIZE (mode);
   enum x86_64_reg_class class[MAX_CLASSES];
-  int n;
-  int i;
-  int nexps = 0;
-  int needed_sseregs, needed_intregs;
-  rtx exp[MAX_CLASSES];
-  rtx ret;
+  int n = classify_argument (mode, type, class, 0);
 
-  n = classify_argument (mode, type, class, 0);
-  if (TARGET_DEBUG_ARG)
-    {
-      if (!n)
-	fprintf (stderr, "Memory class\n");
-      else
-	{
-	  fprintf (stderr, "Classes:");
-	  for (i = 0; i < n; i++)
-	    {
-	      fprintf (stderr, " %s", x86_64_reg_class_name[class[i]]);
-	    }
-	   fprintf (stderr, "\n");
-	}
-    }
+  *int_nregs = 0;
+  *sse_nregs = 0;
   if (!n)
-    return NULL;
-  if (!examine_argument (mode, type, in_return, &needed_intregs, &needed_sseregs))
-    return NULL;
-  if (needed_intregs > nintregs || needed_sseregs > nsseregs)
-    return NULL;
-
-  /* First construct simple cases.  Avoid SCmode, since we want to use
-     single register to pass this type.  */
-  if (n == 1 && mode != SCmode)
-    switch (class[0])
+    return 0;
+  for (n--; n >= 0; n--)
+    switch (class[n])
       {
       case X86_64_INTEGER_CLASS:
       case X86_64_INTEGERSI_CLASS:
-	return gen_rtx_REG (mode, intreg[0]);
+	(*int_nregs)++;
+	break;
       case X86_64_SSE_CLASS:
       case X86_64_SSESF_CLASS:
       case X86_64_SSEDF_CLASS:
-	return gen_rtx_REG (mode, SSE_REGNO (sse_regno));
-      case X86_64_X87_CLASS:
-	return gen_rtx_REG (mode, FIRST_STACK_REG);
+	(*sse_nregs)++;
+	break;
       case X86_64_NO_CLASS:
-	/* Zero sized array, struct or class.  */
-	return NULL;
-      default:
+      case X86_64_SSEUP_CLASS:
+	break;
+      case X86_64_X87_CLASS:
+      case X86_64_X87UP_CLASS:
+	if (!in_return)
+	  return 0;
+	break;
+      case X86_64_MEMORY_CLASS:
 	abort ();
       }
-  if (n == 2 && class[0] == X86_64_SSE_CLASS && class[1] == X86_64_SSEUP_CLASS)
-    return gen_rtx_REG (mode, SSE_REGNO (sse_regno));
-  if (n == 2
-      && class[0] == X86_64_X87_CLASS && class[1] == X86_64_X87UP_CLASS)
-    return gen_rtx_REG (TFmode, FIRST_STACK_REG);
-  if (n == 2 && class[0] == X86_64_INTEGER_CLASS
-      && class[1] == X86_64_INTEGER_CLASS
-      && (mode == CDImode || mode == TImode)
-      && intreg[0] + 1 == intreg[1])
-    return gen_rtx_REG (mode, intreg[0]);
-  if (n == 4
-      && class[0] == X86_64_X87_CLASS && class[1] == X86_64_X87UP_CLASS
-      && class[2] == X86_64_X87_CLASS && class[3] == X86_64_X87UP_CLASS)
-    return gen_rtx_REG (TCmode, FIRST_STACK_REG);
-
-  /* Otherwise figure out the entries of the PARALLEL.  */
-  for (i = 0; i < n; i++)
-    {
-      switch (class[i])
-        {
-	  case X86_64_NO_CLASS:
-	    break;
-	  case X86_64_INTEGER_CLASS:
-	  case X86_64_INTEGERSI_CLASS:
-	    /* Merge TImodes on aligned occassions here too.  */
-	    if (i * 8 + 8 > bytes)
-	      tmpmode = mode_for_size ((bytes - i * 8) * BITS_PER_UNIT, MODE_INT, 0);
-	    else if (class[i] == X86_64_INTEGERSI_CLASS)
-	      tmpmode = SImode;
-	    else
-	      tmpmode = DImode;
-	    /* We've requested 24 bytes we don't have mode for.  Use DImode.  */
-	    if (tmpmode == BLKmode)
-	      tmpmode = DImode;
-	    exp [nexps++] = gen_rtx_EXPR_LIST (VOIDmode,
-					       gen_rtx_REG (tmpmode, *intreg),
-					       GEN_INT (i*8));
-	    intreg++;
-	    break;
-	  case X86_64_SSESF_CLASS:
-	    exp [nexps++] = gen_rtx_EXPR_LIST (VOIDmode,
-					       gen_rtx_REG (SFmode,
-							    SSE_REGNO (sse_regno)),
-					       GEN_INT (i*8));
-	    sse_regno++;
-	    break;
-	  case X86_64_SSEDF_CLASS:
-	    exp [nexps++] = gen_rtx_EXPR_LIST (VOIDmode,
-					       gen_rtx_REG (DFmode,
-							    SSE_REGNO (sse_regno)),
-					       GEN_INT (i*8));
-	    sse_regno++;
-	    break;
-	  case X86_64_SSE_CLASS:
-	    if (i < n - 1 && class[i + 1] == X86_64_SSEUP_CLASS)
-	      tmpmode = TImode, i++;
-	    else
-	      tmpmode = DImode;
-	    exp [nexps++] = gen_rtx_EXPR_LIST (VOIDmode,
-					       gen_rtx_REG (tmpmode,
-							    SSE_REGNO (sse_regno)),
-					       GEN_INT (i*8));
-	    sse_regno++;
-	    break;
-	  default:
-	    abort ();
-	}
-    }
-  ret =  gen_rtx_PARALLEL (mode, rtvec_alloc (nexps));
-  for (i = 0; i < nexps; i++)
-    XVECEXP (ret, 0, i) = exp [i];
-  return ret;
+  return 1;
 }

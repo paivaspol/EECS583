@@ -1,0 +1,29 @@
+PP(pp_connect)
+{
+#ifdef HAS_SOCKET
+    dSP;
+    SV *addrsv = POPs;
+    char *addr;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+    STRLEN len;
+
+    if (!io || !IoIFP(io))
+	goto nuts;
+
+    addr = SvPV(addrsv, len);
+    TAINT_PROPER("connect");
+    if (PerlSock_connect(PerlIO_fileno(IoIFP(io)), (struct sockaddr *)addr, len) >= 0)
+	RETPUSHYES;
+    else
+	RETPUSHUNDEF;
+
+nuts:
+    if (ckWARN(WARN_CLOSED))
+	report_evil_fh(gv, io, PL_op->op_type);
+    SETERRNO(EBADF,SS_IVCHAN);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_sock_func, "connect");
+#endif
+}

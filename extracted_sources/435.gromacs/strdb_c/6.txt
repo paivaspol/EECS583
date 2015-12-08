@@ -1,0 +1,25 @@
+int get_file(char *db,char ***strings)
+{
+  FILE *in;
+  char **ptr=NULL;
+  char buf[256];
+  int  i,nstr,maxi;
+
+  in=libopen(db);
+  
+  i=maxi=0;
+  while (fgets2(buf,255,in)) {
+    if (i>=maxi) {
+      maxi+=50;
+      srenew(ptr,maxi);
+    }
+    ptr[i] = strdup(buf);
+    i++;
+  }
+  nstr=i;
+  fclose(in);
+  srenew(ptr,nstr);
+  *strings=ptr;
+  
+  return nstr;
+}

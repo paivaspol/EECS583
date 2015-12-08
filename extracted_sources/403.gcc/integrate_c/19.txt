@@ -1,36 +1,17 @@
 void
-output_inline_function (fndecl)
-     tree fndecl;
+set_decl_abstract_flags (decl, setting)
+     tree decl;
+     int setting;
 {
-  struct function *old_cfun = cfun;
-  enum debug_info_type old_write_symbols = write_symbols;
-  struct gcc_debug_hooks *old_debug_hooks = debug_hooks;
-  struct function *f = DECL_SAVED_INSNS (fndecl);
-
-  cfun = f;
-  current_function_decl = fndecl;
-  clear_emit_caches ();
-
-  set_new_last_label_num (f->inl_max_label_num);
-
-  /* We're not deferring this any longer.  */
-  DECL_DEFER_OUTPUT (fndecl) = 0;
-
-  /* If requested, suppress debugging information.  */
-  if (f->no_debugging_symbols)
+  DECL_ABSTRACT (decl) = setting;
+  if (TREE_CODE (decl) == FUNCTION_DECL)
     {
-      write_symbols = NO_DEBUG;
-      debug_hooks = &do_nothing_debug_hooks;
+      tree arg;
+
+      for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
+	DECL_ABSTRACT (arg) = setting;
+      if (DECL_INITIAL (decl) != NULL_TREE
+	  && DECL_INITIAL (decl) != error_mark_node)
+	set_block_abstract_flags (DECL_INITIAL (decl), setting);
     }
-
-  /* Compile this function all the way down to assembly code.  As a
-     side effect this destroys the saved RTL representation, but
-     that's okay, because we don't need to inline this anymore.  */
-  rest_of_compilation (fndecl);
-  DECL_INLINE (fndecl) = 0;
-
-  cfun = old_cfun;
-  current_function_decl = old_cfun ? old_cfun->decl : 0;
-  write_symbols = old_write_symbols;
-  debug_hooks = old_debug_hooks;
 }

@@ -1,69 +1,35 @@
-static I32
-run_user_filter(pTHX_ int idx, SV *buf_sv, int maxlen)
+void
+Perl_dounwind(pTHX_ I32 cxix)
 {
-    SV *datasv = FILTER_DATA(idx);
-    int filter_has_file = IoLINES(datasv);
-    GV *filter_child_proc = (GV *)IoFMT_GV(datasv);
-    SV *filter_state = (SV *)IoTOP_GV(datasv);
-    SV *filter_sub = (SV *)IoBOTTOM_GV(datasv);
-    int len = 0;
+    register PERL_CONTEXT *cx;
+    I32 optype;
 
-    /* I was having segfault trouble under Linux 2.2.5 after a
-       parse error occured.  (Had to hack around it with a test
-       for PL_error_count == 0.)  Solaris doesn't segfault --
-       not sure where the trouble is yet.  XXX */
-
-    if (filter_has_file) {
-	len = FILTER_READ(idx+1, buf_sv, maxlen);
+    while (cxstack_ix > cxix) {
+	SV *sv;
+	cx = &cxstack[cxstack_ix];
+	DEBUG_l(PerlIO_printf(Perl_debug_log, "Unwinding block %ld, type %s\n",
+			      (long) cxstack_ix, PL_block_type[CxTYPE(cx)]));
+	/* Note: we don't need to restore the base context info till the end. */
+	switch (CxTYPE(cx)) {
+	case CXt_SUBST:
+	    POPSUBST(cx);
+	    continue;  /* not break */
+	case CXt_SUB:
+	    POPSUB(cx,sv);
+	    LEAVESUB(sv);
+	    break;
+	case CXt_EVAL:
+	    POPEVAL(cx);
+	    break;
+	case CXt_LOOP:
+	    POPLOOP(cx);
+	    break;
+	case CXt_NULL:
+	    break;
+	case CXt_FORMAT:
+	    POPFORMAT(cx);
+	    break;
+	}
+	cxstack_ix--;
     }
-
-    if (filter_sub && len >= 0) {
-	dSP;
-	int count;
-
-	ENTER;
-	SAVE_DEFSV;
-	SAVETMPS;
-	EXTEND(SP, 2);
-
-	DEFSV = buf_sv;
-	PUSHMARK(SP);
-	PUSHs(sv_2mortal(newSViv(maxlen)));
-	if (filter_state) {
-	    PUSHs(filter_state);
-	}
-	PUTBACK;
-	count = call_sv(filter_sub, G_SCALAR);
-	SPAGAIN;
-
-	if (count > 0) {
-	    SV *out = POPs;
-	    if (SvOK(out)) {
-		len = SvIV(out);
-	    }
-	}
-
-	PUTBACK;
-	FREETMPS;
-	LEAVE;
-    }
-
-    if (len <= 0) {
-	IoLINES(datasv) = 0;
-	if (filter_child_proc) {
-	    SvREFCNT_dec(filter_child_proc);
-	    IoFMT_GV(datasv) = Nullgv;
-	}
-	if (filter_state) {
-	    SvREFCNT_dec(filter_state);
-	    IoTOP_GV(datasv) = Nullgv;
-	}
-	if (filter_sub) {
-	    SvREFCNT_dec(filter_sub);
-	    IoBOTTOM_GV(datasv) = Nullgv;
-	}
-	filter_del(run_user_filter);
-    }
-
-    return len;
 }

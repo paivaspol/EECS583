@@ -1,21 +1,86 @@
 int
-ix86_frame_pointer_required ()
+x86_64_sign_extended_value (value)
+     rtx value;
 {
-  /* If we accessed previous frames, then the generated code expects
-     to be able to access the saved ebp value in our frame.  */
-  if (cfun->machine->accesses_prev_frame)
-    return 1;
+  switch (GET_CODE (value))
+    {
+      /* CONST_DOUBLES never match, since HOST_BITS_PER_WIDE_INT is known
+         to be at least 32 and this all acceptable constants are
+	 represented as CONST_INT.  */
+      case CONST_INT:
+	if (HOST_BITS_PER_WIDE_INT == 32)
+	  return 1;
+	else
+	  {
+	    HOST_WIDE_INT val = trunc_int_for_mode (INTVAL (value), DImode);
+	    return trunc_int_for_mode (val, SImode) == val;
+	  }
+	break;
 
-  /* Several x86 os'es need a frame pointer for other reasons,
-     usually pertaining to setjmp.  */
-  if (SUBTARGET_FRAME_POINTER_REQUIRED)
-    return 1;
+      /* For certain code models, the symbolic references are known to fit.  */
+      case SYMBOL_REF:
+	return ix86_cmodel == CM_SMALL || ix86_cmodel == CM_KERNEL;
 
-  /* In override_options, TARGET_OMIT_LEAF_FRAME_POINTER turns off
-     the frame pointer by default.  Turn it back on now if we've not
-     got a leaf function.  */
-  if (TARGET_OMIT_LEAF_FRAME_POINTER && ! leaf_function_p ())
-    return 1;
+      /* For certain code models, the code is near as well.  */
+      case LABEL_REF:
+	return ix86_cmodel != CM_LARGE && ix86_cmodel != CM_SMALL_PIC;
 
-  return 0;
+      /* We also may accept the offsetted memory references in certain special
+         cases.  */
+      case CONST:
+	if (GET_CODE (XEXP (value, 0)) == UNSPEC
+	    && XVECLEN (XEXP (value, 0), 0) == 1
+	    && XINT (XEXP (value, 0), 1) ==  15)
+	  return 1;
+	else if (GET_CODE (XEXP (value, 0)) == PLUS)
+	  {
+	    rtx op1 = XEXP (XEXP (value, 0), 0);
+	    rtx op2 = XEXP (XEXP (value, 0), 1);
+	    HOST_WIDE_INT offset;
+
+	    if (ix86_cmodel == CM_LARGE)
+	      return 0;
+	    if (GET_CODE (op2) != CONST_INT)
+	      return 0;
+	    offset = trunc_int_for_mode (INTVAL (op2), DImode);
+	    switch (GET_CODE (op1))
+	      {
+		case SYMBOL_REF:
+		  /* For CM_SMALL assume that latest object is 1MB before
+		     end of 31bits boundary.  We may also accept pretty
+		     large negative constants knowing that all objects are
+		     in the positive half of address space.  */
+		  if (ix86_cmodel == CM_SMALL
+		      && offset < 1024*1024*1024
+		      && trunc_int_for_mode (offset, SImode) == offset)
+		    return 1;
+		  /* For CM_KERNEL we know that all object resist in the
+		     negative half of 32bits address space.  We may not
+		     accept negative offsets, since they may be just off
+		     and we may accept pretty large positive ones.  */
+		  if (ix86_cmodel == CM_KERNEL
+		      && offset > 0
+		      && trunc_int_for_mode (offset, SImode) == offset)
+		    return 1;
+		  break;
+		case LABEL_REF:
+		  /* These conditions are similar to SYMBOL_REF ones, just the
+		     constraints for code models differ.  */
+		  if ((ix86_cmodel == CM_SMALL || ix86_cmodel == CM_MEDIUM)
+		      && offset < 1024*1024*1024
+		      && trunc_int_for_mode (offset, SImode) == offset)
+		    return 1;
+		  if (ix86_cmodel == CM_KERNEL
+		      && offset > 0
+		      && trunc_int_for_mode (offset, SImode) == offset)
+		    return 1;
+		  break;
+		default:
+		  return 0;
+	      }
+	  }
+	return 0;
+      default:
+	return 0;
+    }
 }

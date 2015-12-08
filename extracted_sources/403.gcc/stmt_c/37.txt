@@ -1,10 +1,11 @@
 void
-expand_start_else ()
+expand_start_elseif (cond)
+     tree cond;
 {
   if (cond_stack->data.cond.endif_label == 0)
     cond_stack->data.cond.endif_label = gen_label_rtx ();
-
   emit_jump (cond_stack->data.cond.endif_label);
   emit_label (cond_stack->data.cond.next_label);
-  cond_stack->data.cond.next_label = 0;  /* No more _else or _elseif calls.  */
+  cond_stack->data.cond.next_label = gen_label_rtx ();
+  do_jump (cond, cond_stack->data.cond.next_label, NULL_RTX);
 }

@@ -1,0 +1,50 @@
+SV *
+Perl_op_const_sv(pTHX_ OP *o, CV *cv)
+{
+    SV *sv = Nullsv;
+
+    if (!o)
+	return Nullsv;
+
+    if (o->op_type == OP_LINESEQ && cLISTOPo->op_first)
+	o = cLISTOPo->op_first->op_sibling;
+
+    for (; o; o = o->op_next) {
+	OPCODE type = o->op_type;
+
+	if (sv && o->op_next == o)
+	    return sv;
+	if (o->op_next != o) {
+	    if (type == OP_NEXTSTATE || type == OP_NULL || type == OP_PUSHMARK)
+		continue;
+	    if (type == OP_DBSTATE)
+		continue;
+	}
+	if (type == OP_LEAVESUB || type == OP_RETURN)
+	    break;
+	if (sv)
+	    return Nullsv;
+	if (type == OP_CONST && cSVOPo->op_sv)
+	    sv = cSVOPo->op_sv;
+	else if ((type == OP_PADSV || type == OP_CONST) && cv) {
+	    sv = PAD_BASE_SV(CvPADLIST(cv), o->op_targ);
+	    if (!sv)
+		return Nullsv;
+	    if (CvCONST(cv)) {
+		/* We get here only from cv_clone2() while creating a closure.
+		   Copy the const value here instead of in cv_clone2 so that
+		   SvREADONLY_on doesn't lead to problems when leaving
+		   scope.
+		*/
+		sv = newSVsv(sv);
+	    }
+	    if (!SvREADONLY(sv) && SvREFCNT(sv) > 1)
+		return Nullsv;
+	}
+	else
+	    return Nullsv;
+    }
+    if (sv)
+	SvREADONLY_on(sv);
+    return sv;
+}

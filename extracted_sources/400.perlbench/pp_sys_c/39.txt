@@ -1,0 +1,37 @@
+PP(pp_flock)
+{
+#ifdef FLOCK
+    dSP; dTARGET;
+    I32 value;
+    int argtype;
+    GV *gv;
+    IO *io = NULL;
+    PerlIO *fp;
+
+    argtype = POPi;
+    if (MAXARG == 0)
+	gv = PL_last_in_gv;
+    else
+	gv = (GV*)POPs;
+    if (gv && (io = GvIO(gv)))
+	fp = IoIFP(io);
+    else {
+	fp = Nullfp;
+	io = NULL;
+    }
+    if (fp) {
+	(void)PerlIO_flush(fp);
+	value = (I32)(PerlLIO_flock(PerlIO_fileno(fp), argtype) >= 0);
+    }
+    else {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	value = 0;
+	SETERRNO(EBADF,RMS_IFI);
+    }
+    PUSHi(value);
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "flock()");
+#endif
+}

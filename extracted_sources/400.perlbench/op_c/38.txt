@@ -1,50 +1,49 @@
-SV *
-Perl_op_const_sv(pTHX_ OP *o, CV *cv)
+OP *
+Perl_bind_match(pTHX_ I32 type, OP *left, OP *right)
 {
-    SV *sv = Nullsv;
+    OP *o;
 
-    if (!o)
-	return Nullsv;
-
-    if (o->op_type == OP_LINESEQ && cLISTOPo->op_first)
-	o = cLISTOPo->op_first->op_sibling;
-
-    for (; o; o = o->op_next) {
-	OPCODE type = o->op_type;
-
-	if (sv && o->op_next == o)
-	    return sv;
-	if (o->op_next != o) {
-	    if (type == OP_NEXTSTATE || type == OP_NULL || type == OP_PUSHMARK)
-		continue;
-	    if (type == OP_DBSTATE)
-		continue;
-	}
-	if (type == OP_LEAVESUB || type == OP_RETURN)
-	    break;
-	if (sv)
-	    return Nullsv;
-	if (type == OP_CONST && cSVOPo->op_sv)
-	    sv = cSVOPo->op_sv;
-	else if ((type == OP_PADSV || type == OP_CONST) && cv) {
-	    sv = PAD_BASE_SV(CvPADLIST(cv), o->op_targ);
-	    if (!sv)
-		return Nullsv;
-	    if (CvCONST(cv)) {
-		/* We get here only from cv_clone2() while creating a closure.
-		   Copy the const value here instead of in cv_clone2 so that
-		   SvREADONLY_on doesn't lead to problems when leaving
-		   scope.
-		*/
-		sv = newSVsv(sv);
-	    }
-	    if (!SvREADONLY(sv) && SvREFCNT(sv) > 1)
-		return Nullsv;
-	}
-	else
-	    return Nullsv;
+    if (ckWARN(WARN_MISC) &&
+      (left->op_type == OP_RV2AV ||
+       left->op_type == OP_RV2HV ||
+       left->op_type == OP_PADAV ||
+       left->op_type == OP_PADHV)) {
+      char *desc = PL_op_desc[(right->op_type == OP_SUBST ||
+                            right->op_type == OP_TRANS)
+                           ? right->op_type : OP_MATCH];
+      const char *sample = ((left->op_type == OP_RV2AV ||
+			     left->op_type == OP_PADAV)
+			    ? "@array" : "%hash");
+      Perl_warner(aTHX_ packWARN(WARN_MISC),
+             "Applying %s to %s will act on scalar(%s)",
+             desc, sample, sample);
     }
-    if (sv)
-	SvREADONLY_on(sv);
-    return sv;
+
+    if (right->op_type == OP_CONST &&
+	cSVOPx(right)->op_private & OPpCONST_BARE &&
+	cSVOPx(right)->op_private & OPpCONST_STRICT)
+    {
+	no_bareword_allowed(right);
+    }
+
+    if (!(right->op_flags & OPf_STACKED) &&
+       (right->op_type == OP_MATCH ||
+	right->op_type == OP_SUBST ||
+	right->op_type == OP_TRANS)) {
+	right->op_flags |= OPf_STACKED;
+	if (right->op_type != OP_MATCH &&
+            ! (right->op_type == OP_TRANS &&
+               right->op_private & OPpTRANS_IDENTICAL))
+	    left = mod(left, right->op_type);
+	if (right->op_type == OP_TRANS)
+	    o = newBINOP(OP_NULL, OPf_STACKED, scalar(left), right);
+	else
+	    o = prepend_elem(right->op_type, scalar(left), right);
+	if (type == OP_NOT)
+	    return newUNOP(OP_NOT, 0, scalar(o));
+	return o;
+    }
+    else
+	return bind_match(type, left,
+		pmruntime(newPMOP(OP_MATCH, 0), right, Nullop));
 }

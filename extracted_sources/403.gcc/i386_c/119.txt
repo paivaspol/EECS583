@@ -1,33 +1,30 @@
-static int
-ix86_fp_comparison_arithmetics_cost (code)
+static enum rtx_code
+ix86_fp_compare_code_to_integer (code)
      enum rtx_code code;
 {
-  if (!TARGET_IEEE_FP)
-    return 4;
-  /* The cost of code output by ix86_expand_fp_compare.  */
   switch (code)
     {
-    case UNLE:
-    case UNLT:
-    case LTGT:
     case GT:
+      return GTU;
     case GE:
-    case UNORDERED:
+      return GEU;
     case ORDERED:
+    case UNORDERED:
+      return code;
+      break;
     case UNEQ:
-      return 4;
+      return EQ;
       break;
-    case LT:
-    case NE:
-    case EQ:
-    case UNGE:
-      return 5;
+    case UNLT:
+      return LTU;
       break;
-    case LE:
-    case UNGT:
-      return 6;
+    case UNLE:
+      return LEU;
+      break;
+    case LTGT:
+      return NE;
       break;
     default:
-      abort ();
+      return UNKNOWN;
     }
 }

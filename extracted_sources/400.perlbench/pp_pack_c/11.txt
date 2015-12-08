@@ -1,10 +1,25 @@
-void
-Perl_pack_cat(pTHX_ SV *cat, char *pat, register char *patend, register SV **beglist, SV **endlist, SV ***next_in_list, U32 flags)
+STATIC int
+S_div128(pTHX_ SV *pnum, bool *done)
 {
-    tempsym_t sym = { 0 };
-    sym.patptr = pat;
-    sym.patend = patend;
-    sym.flags  = FLAG_PACK;
+  STRLEN          len;
+  char           *s = SvPV(pnum, len);
+  int             m = 0;
+  int             r = 0;
+  char           *t = s;
 
-    (void)pack_rec( cat, &sym, beglist, endlist );
+  *done = 1;
+  while (*t) {
+    int             i;
+
+    i = m * 10 + (*t - '0');
+    m = i & 0x7F;
+    r = (i >> 7);		/* r < 10 */
+    if (r) {
+      *done = 0;
+    }
+    *(t++) = '0' + r;
+  }
+  *(t++) = '\0';
+  SvCUR_set(pnum, (STRLEN) (t - s));
+  return (m);
 }

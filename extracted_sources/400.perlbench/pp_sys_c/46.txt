@@ -1,0 +1,23 @@
+PP(pp_shutdown)
+{
+#ifdef HAS_SOCKET
+    dSP; dTARGET;
+    int how = POPi;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+
+    if (!io || !IoIFP(io))
+	goto nuts;
+
+    PUSHi( PerlSock_shutdown(PerlIO_fileno(IoIFP(io)), how) >= 0 );
+    RETURN;
+
+nuts:
+    if (ckWARN(WARN_CLOSED))
+	report_evil_fh(gv, io, PL_op->op_type);
+    SETERRNO(EBADF,SS_IVCHAN);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_sock_func, "shutdown");
+#endif
+}

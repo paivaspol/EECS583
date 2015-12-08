@@ -1,5 +1,19 @@
 int
-conditional_context ()
+is_body_block (stmt)
+     tree stmt;
 {
-  return block_stack && block_stack->data.block.conditional_code;
+  if (TREE_CODE (stmt) == BLOCK)
+    {
+      tree parent = BLOCK_SUPERCONTEXT (stmt);
+
+      if (parent && TREE_CODE (parent) == BLOCK)
+	{
+	  tree grandparent = BLOCK_SUPERCONTEXT (parent);
+
+	  if (grandparent && TREE_CODE (grandparent) == FUNCTION_DECL)
+	    return 1;
+	}
+    }
+
+  return 0;
 }

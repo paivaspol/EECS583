@@ -1,0 +1,62 @@
+OP *
+Perl_ck_sort(pTHX_ OP *o)
+{
+    OP *firstkid;
+
+    if (o->op_type == OP_SORT && o->op_flags & OPf_STACKED)
+	simplify_sort(o);
+    firstkid = cLISTOPo->op_first->op_sibling;		/* get past pushmark */
+    if (o->op_flags & OPf_STACKED) {			/* may have been cleared */
+	OP *k = NULL;
+	OP *kid = cUNOPx(firstkid)->op_first;		/* get past null */
+
+	if (kid->op_type == OP_SCOPE || kid->op_type == OP_LEAVE) {
+	    linklist(kid);
+	    if (kid->op_type == OP_SCOPE) {
+		k = kid->op_next;
+		kid->op_next = 0;
+	    }
+	    else if (kid->op_type == OP_LEAVE) {
+		if (o->op_type == OP_SORT) {
+		    op_null(kid);			/* wipe out leave */
+		    kid->op_next = kid;
+
+		    for (k = kLISTOP->op_first->op_next; k; k = k->op_next) {
+			if (k->op_next == kid)
+			    k->op_next = 0;
+			/* don't descend into loops */
+			else if (k->op_type == OP_ENTERLOOP
+				 || k->op_type == OP_ENTERITER)
+			{
+			    k = cLOOPx(k)->op_lastop;
+			}
+		    }
+		}
+		else
+		    kid->op_next = 0;		/* just disconnect the leave */
+		k = kLISTOP->op_first;
+	    }
+	    CALL_PEEP(k);
+
+	    kid = firstkid;
+	    if (o->op_type == OP_SORT) {
+		/* provide scalar context for comparison function/block */
+		kid = scalar(kid);
+		kid->op_next = kid;
+	    }
+	    else
+		kid->op_next = k;
+	    o->op_flags |= OPf_SPECIAL;
+	}
+	else if (kid->op_type == OP_RV2SV || kid->op_type == OP_PADSV)
+	    op_null(firstkid);
+
+	firstkid = firstkid->op_sibling;
+    }
+
+    /* provide list context for arguments */
+    if (o->op_type == OP_SORT)
+	list(firstkid);
+
+    return o;
+}

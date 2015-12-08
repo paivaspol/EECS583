@@ -1,0 +1,20 @@
+PP(pp_ord)
+{
+    dSP; dTARGET;
+    SV *argsv = POPs;
+    STRLEN len;
+    U8 *s = (U8*)SvPVx(argsv, len);
+    SV *tmpsv;
+
+    if (PL_encoding && SvPOK(argsv) && !DO_UTF8(argsv)) {
+        tmpsv = sv_2mortal(newSVsv(argsv));
+        s = (U8*)sv_recode_to_utf8(tmpsv, PL_encoding);
+        argsv = tmpsv;
+    }
+
+    XPUSHu(DO_UTF8(argsv) ?
+	   utf8n_to_uvchr(s, UTF8_MAXBYTES, 0, UTF8_ALLOW_ANYUV) :
+	   (*s & 0xff));
+
+    RETURN;
+}

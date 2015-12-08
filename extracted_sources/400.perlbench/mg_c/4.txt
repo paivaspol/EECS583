@@ -1,8 +1,8 @@
-I32
-Perl_mg_size(pTHX_ SV *sv)
+U32
+Perl_mg_length(pTHX_ SV *sv)
 {
     MAGIC* mg;
-    I32 len;
+    STRLEN len;
 
     for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
 	MGVTBL* vtbl = mg->mg_virtual;
@@ -18,15 +18,12 @@ Perl_mg_size(pTHX_ SV *sv)
 	}
     }
 
-    switch(SvTYPE(sv)) {
-	case SVt_PVAV:
-	    len = AvFILLp((AV *) sv); /* Fallback to non-tied array */
-	    return len;
-	case SVt_PVHV:
-	    /* FIXME */
-	default:
-	    Perl_croak(aTHX_ "Size magic not implemented");
-	    break;
+    if (DO_UTF8(sv))
+    {
+        U8 *s = (U8*)SvPV(sv, len);
+        len = Perl_utf8_length(aTHX_ s, s + len);
     }
-    return 0;
+    else
+        (void)SvPV(sv, len);
+    return len;
 }

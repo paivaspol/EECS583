@@ -1,0 +1,33 @@
+OP *
+Perl_ck_ftst(pTHX_ OP *o)
+{
+    I32 type = o->op_type;
+
+    if (o->op_flags & OPf_REF) {
+	/* nothing */
+    }
+    else if (o->op_flags & OPf_KIDS && cUNOPo->op_first->op_type != OP_STUB) {
+	SVOP *kid = (SVOP*)cUNOPo->op_first;
+
+	if (kid->op_type == OP_CONST && (kid->op_private & OPpCONST_BARE)) {
+	    STRLEN n_a;
+	    OP *newop = newGVOP(type, OPf_REF,
+		gv_fetchpv(SvPVx(kid->op_sv, n_a), TRUE, SVt_PVIO));
+	    op_free(o);
+	    o = newop;
+	}
+	else {
+	  if ((PL_hints & HINT_FILETEST_ACCESS) &&
+	      OP_IS_FILETEST_ACCESS(o))
+	    o->op_private |= OPpFT_ACCESS;
+	}
+    }
+    else {
+	op_free(o);
+	if (type == OP_FTTTY)
+	    o = newGVOP(type, OPf_REF, PL_stdingv);
+	else
+	    o = newUNOP(type, 0, newDEFSVOP());
+    }
+    return o;
+}

@@ -1,0 +1,181 @@
+OP *
+Perl_newASSIGNOP(pTHX_ I32 flags, OP *left, I32 optype, OP *right)
+{
+    OP *o;
+
+    if (optype) {
+	if (optype == OP_ANDASSIGN || optype == OP_ORASSIGN) {
+	    return newLOGOP(optype, 0,
+		mod(scalar(left), optype),
+		newUNOP(OP_SASSIGN, 0, scalar(right)));
+	}
+	else {
+	    return newBINOP(optype, OPf_STACKED,
+		mod(scalar(left), optype), scalar(right));
+	}
+    }
+
+    if (list_assignment(left)) {
+	OP *curop;
+
+	PL_modcount = 0;
+	PL_eval_start = right;	/* Grandfathering $[ assignment here.  Bletch.*/
+	left = mod(left, OP_AASSIGN);
+	if (PL_eval_start)
+	    PL_eval_start = 0;
+	else {
+	    op_free(left);
+	    op_free(right);
+	    return Nullop;
+	}
+	/* optimise C<my @x = ()> to C<my @x>, and likewise for hashes */
+	if ((left->op_type == OP_PADAV || left->op_type == OP_PADHV)
+		&& right->op_type == OP_STUB
+		&& (left->op_private & OPpLVAL_INTRO))
+	{
+	    op_free(right);
+	    left->op_flags &= ~(OPf_REF|OPf_SPECIAL);
+	    return left;
+	}
+	curop = list(force_list(left));
+	o = newBINOP(OP_AASSIGN, flags, list(force_list(right)), curop);
+	o->op_private = (U8)(0 | (flags >> 8));
+	for (curop = ((LISTOP*)curop)->op_first;
+	     curop; curop = curop->op_sibling)
+	{
+	    if (curop->op_type == OP_RV2HV &&
+		((UNOP*)curop)->op_first->op_type != OP_GV) {
+		o->op_private |= OPpASSIGN_HASH;
+		break;
+	    }
+	}
+
+	/* PL_generation sorcery:
+	 * an assignment like ($a,$b) = ($c,$d) is easier than
+	 * ($a,$b) = ($c,$a), since there is no need for temporary vars.
+	 * To detect whether there are common vars, the global var
+	 * PL_generation is incremented for each assign op we compile.
+	 * Then, while compiling the assign op, we run through all the
+	 * variables on both sides of the assignment, setting a spare slot
+	 * in each of them to PL_generation. If any of them already have
+	 * that value, we know we've got commonality.  We could use a
+	 * single bit marker, but then we'd have to make 2 passes, first
+	 * to clear the flag, then to test and set it.  To find somewhere
+	 * to store these values, evil chicanery is done with SvCUR().
+	 */
+	
+	if (!(left->op_private & OPpLVAL_INTRO)) {
+	    OP *lastop = o;
+	    PL_generation++;
+	    for (curop = LINKLIST(o); curop != o; curop = LINKLIST(curop)) {
+		if (PL_opargs[curop->op_type] & OA_DANGEROUS) {
+		    if (curop->op_type == OP_GV) {
+			GV *gv = cGVOPx_gv(curop);
+			if (gv == PL_defgv || (int)SvCUR(gv) == PL_generation)
+			    break;
+			SvCUR(gv) = PL_generation;
+		    }
+		    else if (curop->op_type == OP_PADSV ||
+			     curop->op_type == OP_PADAV ||
+			     curop->op_type == OP_PADHV ||
+			     curop->op_type == OP_PADANY)
+		    {
+			if ((int)PAD_COMPNAME_GEN(curop->op_targ)
+						    == PL_generation)
+			    break;
+			PAD_COMPNAME_GEN(curop->op_targ)
+			    				= PL_generation;
+
+		    }
+		    else if (curop->op_type == OP_RV2CV)
+			break;
+		    else if (curop->op_type == OP_RV2SV ||
+			     curop->op_type == OP_RV2AV ||
+			     curop->op_type == OP_RV2HV ||
+			     curop->op_type == OP_RV2GV) {
+			if (lastop->op_type != OP_GV)	/* funny deref? */
+			    break;
+		    }
+		    else if (curop->op_type == OP_PUSHRE) {
+			if (((PMOP*)curop)->op_pmreplroot) {
+#ifdef USE_ITHREADS
+			    GV *gv = (GV*)PAD_SVl(INT2PTR(PADOFFSET,
+					((PMOP*)curop)->op_pmreplroot));
+#else
+			    GV *gv = (GV*)((PMOP*)curop)->op_pmreplroot;
+#endif
+			    if (gv == PL_defgv || (int)SvCUR(gv) == PL_generation)
+				break;
+			    SvCUR(gv) = PL_generation;
+			}
+		    }
+		    else
+			break;
+		}
+		lastop = curop;
+	    }
+	    if (curop != o)
+		o->op_private |= OPpASSIGN_COMMON;
+	}
+	if (right && right->op_type == OP_SPLIT) {
+	    OP* tmpop;
+	    if ((tmpop = ((LISTOP*)right)->op_first) &&
+		tmpop->op_type == OP_PUSHRE)
+	    {
+		PMOP *pm = (PMOP*)tmpop;
+		if (left->op_type == OP_RV2AV &&
+		    !(left->op_private & OPpLVAL_INTRO) &&
+		    !(o->op_private & OPpASSIGN_COMMON) )
+		{
+		    tmpop = ((UNOP*)left)->op_first;
+		    if (tmpop->op_type == OP_GV && !pm->op_pmreplroot) {
+#ifdef USE_ITHREADS
+			pm->op_pmreplroot = INT2PTR(OP*, cPADOPx(tmpop)->op_padix);
+			cPADOPx(tmpop)->op_padix = 0;	/* steal it */
+#else
+			pm->op_pmreplroot = (OP*)cSVOPx(tmpop)->op_sv;
+			cSVOPx(tmpop)->op_sv = Nullsv;	/* steal it */
+#endif
+			pm->op_pmflags |= PMf_ONCE;
+			tmpop = cUNOPo->op_first;	/* to list (nulled) */
+			tmpop = ((UNOP*)tmpop)->op_first; /* to pushmark */
+			tmpop->op_sibling = Nullop;	/* don't free split */
+			right->op_next = tmpop->op_next;  /* fix starting loc */
+			op_free(o);			/* blow off assign */
+			right->op_flags &= ~OPf_WANT;
+				/* "I don't know and I don't care." */
+			return right;
+		    }
+		}
+		else {
+                   if (PL_modcount < RETURN_UNLIMITED_NUMBER &&
+		      ((LISTOP*)right)->op_last->op_type == OP_CONST)
+		    {
+			SV *sv = ((SVOP*)((LISTOP*)right)->op_last)->op_sv;
+			if (SvIVX(sv) == 0)
+			    sv_setiv(sv, PL_modcount+1);
+		    }
+		}
+	    }
+	}
+	return o;
+    }
+    if (!right)
+	right = newOP(OP_UNDEF, 0);
+    if (right->op_type == OP_READLINE) {
+	right->op_flags |= OPf_STACKED;
+	return newBINOP(OP_NULL, flags, mod(scalar(left), OP_SASSIGN), scalar(right));
+    }
+    else {
+	PL_eval_start = right;	/* Grandfathering $[ assignment here.  Bletch.*/
+	o = newBINOP(OP_SASSIGN, flags,
+	    scalar(right), mod(scalar(left), OP_SASSIGN) );
+	if (PL_eval_start)
+	    PL_eval_start = 0;
+	else {
+	    op_free(o);
+	    return Nullop;
+	}
+    }
+    return o;
+}

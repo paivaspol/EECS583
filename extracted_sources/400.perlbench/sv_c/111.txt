@@ -1,11 +1,12 @@
 SV *
-Perl_sv_newmortal(pTHX)
+Perl_sv_mortalcopy(pTHX_ SV *oldstr)
 {
     register SV *sv;
 
     new_SV(sv);
-    SvFLAGS(sv) = SVs_TEMP;
+    sv_setsv(sv,oldstr);
     EXTEND_MORTAL(1);
     PL_tmps_stack[++PL_tmps_ix] = sv;
+    SvTEMP_on(sv);
     return sv;
 }

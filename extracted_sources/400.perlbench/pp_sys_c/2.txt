@@ -1,9 +1,69 @@
-void
-Perl_setdefout(pTHX_ GV *gv)
+PP(pp_backtick)
 {
-    if (gv)
-	(void)SvREFCNT_inc(gv);
-    if (PL_defoutgv)
-	SvREFCNT_dec(PL_defoutgv);
-    PL_defoutgv = gv;
+    dSP; dTARGET;
+    PerlIO *fp;
+    STRLEN n_a;
+    char *tmps = POPpx;
+    I32 gimme = GIMME_V;
+    char *mode = "r";
+
+    TAINT_PROPER("``");
+    if (PL_op->op_private & OPpOPEN_IN_RAW)
+	mode = "rb";
+    else if (PL_op->op_private & OPpOPEN_IN_CRLF)
+	mode = "rt";
+    fp = PerlProc_popen(tmps, mode);
+    if (fp) {
+	char *type = NULL;
+	if (PL_curcop->cop_io) {
+	    type = SvPV_nolen(PL_curcop->cop_io);
+	}
+	if (type && *type)
+	    PerlIO_apply_layers(aTHX_ fp,mode,type);
+
+	if (gimme == G_VOID) {
+	    char tmpbuf[256];
+	    while (PerlIO_read(fp, tmpbuf, sizeof tmpbuf) > 0)
+		/*SUPPRESS 530*/
+		;
+	}
+	else if (gimme == G_SCALAR) {
+	    ENTER;
+	    SAVESPTR(PL_rs);
+	    PL_rs = &PL_sv_undef;
+	    sv_setpv(TARG, "");	/* note that this preserves previous buffer */
+	    while (sv_gets(TARG, fp, SvCUR(TARG)) != Nullch)
+		/*SUPPRESS 530*/
+		;
+	    LEAVE;
+	    XPUSHs(TARG);
+	    SvTAINTED_on(TARG);
+	}
+	else {
+	    SV *sv;
+
+	    for (;;) {
+		sv = NEWSV(56, 79);
+		if (sv_gets(sv, fp, 0) == Nullch) {
+		    SvREFCNT_dec(sv);
+		    break;
+		}
+		XPUSHs(sv_2mortal(sv));
+		if (SvLEN(sv) - SvCUR(sv) > 20) {
+		    SvLEN_set(sv, SvCUR(sv)+1);
+		    Renew(SvPVX(sv), SvLEN(sv), char);
+		}
+		SvTAINTED_on(sv);
+	    }
+	}
+	STATUS_NATIVE_SET(PerlProc_pclose(fp));
+	TAINT;		/* "I believe that this is not gratuitous!" */
+    }
+    else {
+	STATUS_NATIVE_SET(-1);
+	if (gimme == G_SCALAR)
+	    RETPUSHUNDEF;
+    }
+
+    RETURN;
 }

@@ -1,13 +1,11 @@
-static void
-ix86_emit_save_regs ()
+static int
+ix86_nsaved_regs ()
 {
-  register int regno;
-  rtx insn;
+  int nregs = 0;
+  int regno;
 
   for (regno = FIRST_PSEUDO_REGISTER - 1; regno >= 0; regno--)
     if (ix86_save_reg (regno, true))
-      {
-	insn = emit_insn (gen_push (gen_rtx_REG (Pmode, regno)));
-	RTX_FRAME_RELATED_P (insn) = 1;
-      }
+      nregs++;
+  return nregs;
 }

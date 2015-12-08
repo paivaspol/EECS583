@@ -1,31 +1,50 @@
-static int
-ix86_sched_reorder (dump, sched_verbose, ready, n_readyp, clock_var)
-     FILE *dump ATTRIBUTE_UNUSED;
-     int sched_verbose ATTRIBUTE_UNUSED;
+static rtx *
+ix86_pent_find_pair (e_ready, ready, type, first)
+     rtx *e_ready;
      rtx *ready;
-     int *n_readyp;
-     int clock_var ATTRIBUTE_UNUSED;
+     enum attr_pent_pair type;
+     rtx first;
 {
-  int n_ready = *n_readyp;
-  rtx *e_ready = ready + n_ready - 1;
+  int mincycles, cycles;
+  enum attr_pent_pair tmp;
+  enum attr_memory memory;
+  rtx *insnp, *bestinsnp = NULL;
 
-  if (n_ready < 2)
-    goto out;
+  if (ix86_safe_length (first) > 7 + ix86_safe_length_prefix (first))
+    return NULL;
 
-  switch (ix86_cpu)
-    {
-    default:
-      break;
+  memory = ix86_safe_memory (first);
+  cycles = result_ready_cost (first);
+  mincycles = INT_MAX;
 
-    case PROCESSOR_PENTIUM:
-      ix86_sched_reorder_pentium (ready, e_ready);
-      break;
+  for (insnp = e_ready; insnp >= ready && mincycles; --insnp)
+    if ((tmp = ix86_safe_pent_pair (*insnp)) == type
+	&& ix86_safe_length (*insnp) <= 7 + ix86_safe_length_prefix (*insnp))
+      {
+	enum attr_memory second_memory;
+	int secondcycles, currentcycles;
 
-    case PROCESSOR_PENTIUMPRO:
-      ix86_sched_reorder_ppro (ready, e_ready);
-      break;
-    }
+	second_memory = ix86_safe_memory (*insnp);
+	secondcycles = result_ready_cost (*insnp);
+	currentcycles = abs (cycles - secondcycles);
 
-out:
-  return ix86_issue_rate ();
+	if (secondcycles >= 1 && cycles >= 1)
+	  {
+	    /* Two read/modify/write instructions together takes two
+	       cycles longer.  */
+	    if (memory == MEMORY_BOTH && second_memory == MEMORY_BOTH)
+	      currentcycles += 2;
+
+	    /* Read modify/write instruction followed by read/modify
+	       takes one cycle longer.  */
+	    if (memory == MEMORY_BOTH && second_memory == MEMORY_LOAD
+	        && tmp != PENT_PAIR_UV
+	        && ix86_safe_pent_pair (first) != PENT_PAIR_UV)
+	      currentcycles += 1;
+	  }
+	if (currentcycles < mincycles)
+	  bestinsnp = insnp, mincycles = currentcycles;
+      }
+
+  return bestinsnp;
 }

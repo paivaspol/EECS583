@@ -1,37 +1,59 @@
-static unsigned HOST_WIDE_INT
-array_size_for_constructor (val)
-     tree val;
+static void
+mark_constants (x)
+     rtx x;
 {
-  tree max_index, i;
+  int i;
+  const char *format_ptr;
 
-  /* This code used to attempt to handle string constants that are not
-     arrays of single-bytes, but nothing else does, so there's no point in
-     doing it here.  */
-  if (TREE_CODE (val) == STRING_CST)
-    return TREE_STRING_LENGTH (val);
+  if (x == 0)
+    return;
 
-  max_index = NULL_TREE;
-  for (i = CONSTRUCTOR_ELTS (val); i ; i = TREE_CHAIN (i))
+  if (GET_CODE (x) == SYMBOL_REF)
     {
-      tree index = TREE_PURPOSE (i);
-
-      if (TREE_CODE (index) == RANGE_EXPR)
-	index = TREE_OPERAND (index, 1);
-      if (max_index == NULL_TREE || tree_int_cst_lt (max_index, index))
-	max_index = index;
+      mark_constant (&x, NULL);
+      return;
     }
 
-  if (max_index == NULL_TREE)
-    return 0;
+  /* Insns may appear inside a SEQUENCE.  Only check the patterns of
+     insns, not any notes that may be attached.  We don't want to mark
+     a constant just because it happens to appear in a REG_EQUIV note.  */
+  if (INSN_P (x))
+    {
+      mark_constants (PATTERN (x));
+      return;
+    }
 
-  /* Compute the total number of array elements.  */
-  i = size_binop (MINUS_EXPR, convert (sizetype, max_index),
-		  convert (sizetype,
-			   TYPE_MIN_VALUE (TYPE_DOMAIN (TREE_TYPE (val)))));
-  i = size_binop (PLUS_EXPR, i, convert (sizetype, integer_one_node));
+  format_ptr = GET_RTX_FORMAT (GET_CODE (x));
 
-  /* Multiply by the array element unit size to find number of bytes.  */
-  i = size_binop (MULT_EXPR, i, TYPE_SIZE_UNIT (TREE_TYPE (TREE_TYPE (val))));
+  for (i = 0; i < GET_RTX_LENGTH (GET_CODE (x)); i++)
+    {
+      switch (*format_ptr++)
+	{
+	case 'e':
+	  mark_constants (XEXP (x, i));
+	  break;
 
-  return tree_low_cst (i, 1);
+	case 'E':
+	  if (XVEC (x, i) != 0)
+	    {
+	      int j;
+
+	      for (j = 0; j < XVECLEN (x, i); j++)
+		mark_constants (XVECEXP (x, i, j));
+	    }
+	  break;
+
+	case 'S':
+	case 's':
+	case '0':
+	case 'i':
+	case 'w':
+	case 'n':
+	case 'u':
+	  break;
+
+	default:
+	  abort ();
+	}
+    }
 }

@@ -1,0 +1,54 @@
+OP *
+Perl_ck_split(pTHX_ OP *o)
+{
+    register OP *kid;
+
+    if (o->op_flags & OPf_STACKED)
+	return no_fh_allowed(o);
+
+    kid = cLISTOPo->op_first;
+    if (kid->op_type != OP_NULL)
+	Perl_croak(aTHX_ "panic: ck_split");
+    kid = kid->op_sibling;
+    op_free(cLISTOPo->op_first);
+    cLISTOPo->op_first = kid;
+    if (!kid) {
+	cLISTOPo->op_first = kid = newSVOP(OP_CONST, 0, newSVpvn(" ", 1));
+	cLISTOPo->op_last = kid; /* There was only one element previously */
+    }
+
+    if (kid->op_type != OP_MATCH || kid->op_flags & OPf_STACKED) {
+	OP *sibl = kid->op_sibling;
+	kid->op_sibling = 0;
+	kid = pmruntime( newPMOP(OP_MATCH, OPf_SPECIAL), kid, Nullop);
+	if (cLISTOPo->op_first == cLISTOPo->op_last)
+	    cLISTOPo->op_last = kid;
+	cLISTOPo->op_first = kid;
+	kid->op_sibling = sibl;
+    }
+
+    kid->op_type = OP_PUSHRE;
+    kid->op_ppaddr = PL_ppaddr[OP_PUSHRE];
+    scalar(kid);
+    if (ckWARN(WARN_REGEXP) && ((PMOP *)kid)->op_pmflags & PMf_GLOBAL) {
+      Perl_warner(aTHX_ packWARN(WARN_REGEXP),
+                  "Use of /g modifier is meaningless in split");
+    }
+
+    if (!kid->op_sibling)
+	append_elem(OP_SPLIT, o, newDEFSVOP());
+
+    kid = kid->op_sibling;
+    scalar(kid);
+
+    if (!kid->op_sibling)
+	append_elem(OP_SPLIT, o, newSVOP(OP_CONST, 0, newSViv(0)));
+
+    kid = kid->op_sibling;
+    scalar(kid);
+
+    if (kid->op_sibling)
+	return too_many_arguments(o,OP_DESC(o));
+
+    return o;
+}

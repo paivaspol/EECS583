@@ -1,19 +1,13 @@
 void
-Perl_repeatcpy(pTHX_ register char *to, register const char *from, I32 len, register I32 count)
+/*SUPPRESS 590*/
+Perl_pidgone(pTHX_ Pid_t pid, int status)
 {
-    register I32 todo;
-    register const char *frombase = from;
+    register SV *sv;
+    char spid[TYPE_CHARS(IV)];
 
-    if (len == 1) {
-	register const char c = *from;
-	while (count-- > 0)
-	    *to++ = c;
-	return;
-    }
-    while (count-- > 0) {
-	for (todo = len; todo > 0; todo--) {
-	    *to++ = *from++;
-	}
-	from = frombase;
-    }
+    sprintf(spid, "%"IVdf, (IV)pid);
+    sv = *hv_fetch(PL_pidstatus,spid,strlen(spid),TRUE);
+    (void)SvUPGRADE(sv,SVt_IV);
+    SvIVX(sv) = status;
+    return;
 }

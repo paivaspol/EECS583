@@ -1,0 +1,17 @@
+PP(pp_refgen)
+{
+    dSP; dMARK;
+    if (GIMME != G_ARRAY) {
+	if (++MARK <= SP)
+	    *MARK = *SP;
+	else
+	    *MARK = &PL_sv_undef;
+	*MARK = refto(*MARK);
+	SP = MARK;
+	RETURN;
+    }
+    EXTEND_MORTAL(SP - MARK);
+    while (++MARK <= SP)
+	*MARK = refto(*MARK);
+    RETURN;
+}

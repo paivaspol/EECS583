@@ -1,39 +1,47 @@
-void
-Perl_vload_module(pTHX_ U32 flags, SV *name, SV *ver, va_list *args)
+STATIC void
+S_apply_attrs_my(pTHX_ HV *stash, OP *target, OP *attrs, OP **imopsp)
 {
-    OP *modname, *veop, *imop;
+    OP *pack, *imop, *arg;
+    SV *meth, *stashsv;
 
-    modname = newSVOP(OP_CONST, 0, name);
-    modname->op_private |= OPpCONST_BARE;
-    if (ver) {
-	veop = newSVOP(OP_CONST, 0, ver);
-    }
+    if (!attrs)
+	return;
+
+    assert(target->op_type == OP_PADSV ||
+	   target->op_type == OP_PADHV ||
+	   target->op_type == OP_PADAV);
+
+    /* Ensure that attributes.pm is loaded. */
+    apply_attrs(stash, PAD_SV(target->op_targ), attrs, TRUE);
+
+    /* Need package name for method call. */
+    pack = newSVOP(OP_CONST, 0, newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1));
+
+    /* Build up the real arg-list. */
+    if (stash)
+	stashsv = newSVpv(HvNAME(stash), 0);
     else
-	veop = Nullop;
-    if (flags & PERL_LOADMOD_NOIMPORT) {
-	imop = sawparens(newNULLLIST());
-    }
-    else if (flags & PERL_LOADMOD_IMPORT_OPS) {
-	imop = va_arg(*args, OP*);
-    }
-    else {
-	SV *sv;
-	imop = Nullop;
-	sv = va_arg(*args, SV*);
-	while (sv) {
-	    imop = append_elem(OP_LIST, imop, newSVOP(OP_CONST, 0, sv));
-	    sv = va_arg(*args, SV*);
-	}
-    }
-    {
-	line_t ocopline = PL_copline;
-	COP *ocurcop = PL_curcop;
-	int oexpect = PL_expect;
+	stashsv = &PL_sv_no;
+    arg = newOP(OP_PADSV, 0);
+    arg->op_targ = target->op_targ;
+    arg = prepend_elem(OP_LIST,
+		       newSVOP(OP_CONST, 0, stashsv),
+		       prepend_elem(OP_LIST,
+				    newUNOP(OP_REFGEN, 0,
+					    mod(arg, OP_REFGEN)),
+				    dup_attrlist(attrs)));
 
-	utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(FALSE, 0),
-		veop, modname, imop);
-	PL_expect = oexpect;
-	PL_copline = ocopline;
-	PL_curcop = ocurcop;
-    }
+    /* Fake up a method call to import */
+    meth = newSVpvn("import", 6);
+    (void)SvUPGRADE(meth, SVt_PVIV);
+    (void)SvIOK_on(meth);
+    PERL_HASH(SvUVX(meth), SvPVX(meth), SvCUR(meth));
+    imop = convert(OP_ENTERSUB, OPf_STACKED|OPf_SPECIAL|OPf_WANT_VOID,
+		   append_elem(OP_LIST,
+			       prepend_elem(OP_LIST, pack, list(arg)),
+			       newSVOP(OP_METHOD_NAMED, 0, meth)));
+    imop->op_private |= OPpENTERSUB_NOMOD;
+
+    /* Combine the ops. */
+    *imopsp = append_elem(OP_LIST, *imopsp, imop);
 }

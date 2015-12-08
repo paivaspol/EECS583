@@ -1,9 +1,11 @@
 bool
-Perl_is_utf8_space(pTHX_ U8 *p)
+Perl_is_utf8_idfirst(pTHX_ U8 *p) /* The naming is historical. */
 {
+    if (*p == '_')
+	return TRUE;
     if (!is_utf8_char(p))
 	return FALSE;
-    if (!PL_utf8_space)
-	PL_utf8_space = swash_init("utf8", "IsSpacePerl", &PL_sv_undef, 0, 0);
-    return swash_fetch(PL_utf8_space, p, TRUE) != 0;
+    if (!PL_utf8_idstart) /* is_utf8_idstart would be more logical. */
+	PL_utf8_idstart = swash_init("utf8", "IdStart", &PL_sv_undef, 0, 0);
+    return swash_fetch(PL_utf8_idstart, p, TRUE) != 0;
 }

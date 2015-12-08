@@ -1,79 +1,19 @@
-void
-Perl_sv_reset(pTHX_ register char *s, HV *stash)
+SV *
+Perl_newSVsv(pTHX_ register SV *old)
 {
-    register HE *entry;
-    register GV *gv;
     register SV *sv;
-    register I32 i;
-    register PMOP *pm;
-    register I32 max;
-    char todo[PERL_UCHAR_MAX+1];
 
-    if (!stash)
-	return;
-
-    if (!*s) {		/* reset ?? searches */
-	for (pm = HvPMROOT(stash); pm; pm = pm->op_pmnext) {
-	    pm->op_pmdynflags &= ~PMdf_USED;
-	}
-	return;
+    if (!old)
+	return Nullsv;
+    if (SvTYPE(old) == SVTYPEMASK) {
+        if (ckWARN_d(WARN_INTERNAL))
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL), "semi-panic: attempt to dup freed string");
+	return Nullsv;
     }
-
-    /* reset variables */
-
-    if (!HvARRAY(stash))
-	return;
-
-    Zero(todo, 256, char);
-    while (*s) {
-	i = (unsigned char)*s;
-	if (s[1] == '-') {
-	    s += 2;
-	}
-	max = (unsigned char)*s++;
-	for ( ; i <= max; i++) {
-	    todo[i] = 1;
-	}
-	for (i = 0; i <= (I32) HvMAX(stash); i++) {
-	    for (entry = HvARRAY(stash)[i];
-		 entry;
-		 entry = HeNEXT(entry))
-	    {
-		if (!todo[(U8)*HeKEY(entry)])
-		    continue;
-		gv = (GV*)HeVAL(entry);
-		sv = GvSV(gv);
-		if (SvTHINKFIRST(sv)) {
-		    if (!SvREADONLY(sv) && SvROK(sv))
-			sv_unref(sv);
-		    continue;
-		}
-		SvOK_off(sv);
-		if (SvTYPE(sv) >= SVt_PV) {
-		    SvCUR_set(sv, 0);
-		    if (SvPVX(sv) != Nullch)
-			*SvPVX(sv) = '\0';
-		    SvTAINT(sv);
-		}
-		if (GvAV(gv)) {
-		    av_clear(GvAV(gv));
-		}
-		if (GvHV(gv) && !HvNAME(GvHV(gv))) {
-		    hv_clear(GvHV(gv));
-#ifndef PERL_MICRO
-#ifdef USE_ENVIRON_ARRAY
-		    if (gv == PL_envgv
-#  ifdef USE_ITHREADS
-			&& PL_curinterp == aTHX
-#  endif
-		    )
-		    {
-			environ[0] = Nullch;
-		    }
-#endif
-#endif /* !PERL_MICRO */
-		}
-	    }
-	}
-    }
+    new_SV(sv);
+    /* SV_GMAGIC is the default for sv_setv()
+       SV_NOSTEAL prevents TEMP buffers being, well, stolen, and saves games
+       with SvTEMP_off and SvTEMP_on round a call to sv_setsv.  */
+    sv_setsv_flags(sv, old, SV_GMAGIC | SV_NOSTEAL);
+    return sv;
 }

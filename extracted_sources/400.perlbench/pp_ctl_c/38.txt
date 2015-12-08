@@ -1,0 +1,110 @@
+PP(pp_return)
+{
+    dSP; dMARK;
+    I32 cxix;
+    register PERL_CONTEXT *cx;
+    bool popsub2 = FALSE;
+    bool clear_errsv = FALSE;
+    I32 gimme;
+    SV **newsp;
+    PMOP *newpm;
+    I32 optype = 0;
+    SV *sv;
+
+    if (PL_curstackinfo->si_type == PERLSI_SORT) {
+	if (cxstack_ix == PL_sortcxix
+	    || dopoptosub(cxstack_ix) <= PL_sortcxix)
+	{
+	    if (cxstack_ix > PL_sortcxix)
+		dounwind(PL_sortcxix);
+	    AvARRAY(PL_curstack)[1] = *SP;
+	    PL_stack_sp = PL_stack_base + 1;
+	    return 0;
+	}
+    }
+
+    cxix = dopoptosub(cxstack_ix);
+    if (cxix < 0)
+	DIE(aTHX_ "Can't return outside a subroutine");
+    if (cxix < cxstack_ix)
+	dounwind(cxix);
+
+    POPBLOCK(cx,newpm);
+    switch (CxTYPE(cx)) {
+    case CXt_SUB:
+	popsub2 = TRUE;
+	cxstack_ix++; /* preserve cx entry on stack for use by POPSUB */
+	break;
+    case CXt_EVAL:
+	if (!(PL_in_eval & EVAL_KEEPERR))
+	    clear_errsv = TRUE;
+	POPEVAL(cx);
+	if (CxTRYBLOCK(cx))
+	    break;
+	lex_end();
+	if (optype == OP_REQUIRE &&
+	    (MARK == SP || (gimme == G_SCALAR && !SvTRUE(*SP))) )
+	{
+	    /* Unassume the success we assumed earlier. */
+	    SV *nsv = cx->blk_eval.old_namesv;
+	    (void)hv_delete(GvHVn(PL_incgv), SvPVX(nsv), SvCUR(nsv), G_DISCARD);
+	    DIE(aTHX_ "%"SVf" did not return a true value", nsv);
+	}
+	break;
+    case CXt_FORMAT:
+	POPFORMAT(cx);
+	break;
+    default:
+	DIE(aTHX_ "panic: return");
+    }
+
+    TAINT_NOT;
+    if (gimme == G_SCALAR) {
+	if (MARK < SP) {
+	    if (popsub2) {
+		if (cx->blk_sub.cv && CvDEPTH(cx->blk_sub.cv) > 1) {
+		    if (SvTEMP(TOPs)) {
+			*++newsp = SvREFCNT_inc(*SP);
+			FREETMPS;
+			sv_2mortal(*newsp);
+		    }
+		    else {
+			sv = SvREFCNT_inc(*SP);	/* FREETMPS could clobber it */
+			FREETMPS;
+			*++newsp = sv_mortalcopy(sv);
+			SvREFCNT_dec(sv);
+		    }
+		}
+		else
+		    *++newsp = (SvTEMP(*SP)) ? *SP : sv_mortalcopy(*SP);
+	    }
+	    else
+		*++newsp = sv_mortalcopy(*SP);
+	}
+	else
+	    *++newsp = &PL_sv_undef;
+    }
+    else if (gimme == G_ARRAY) {
+	while (++MARK <= SP) {
+	    *++newsp = (popsub2 && SvTEMP(*MARK))
+			? *MARK : sv_mortalcopy(*MARK);
+	    TAINT_NOT;		/* Each item is independent */
+	}
+    }
+    PL_stack_sp = newsp;
+
+    LEAVE;
+    /* Stack values are safe: */
+    if (popsub2) {
+	cxstack_ix--;
+	POPSUB(cx,sv);	/* release CV and @_ ... */
+    }
+    else
+	sv = Nullsv;
+    PL_curpm = newpm;	/* ... and pop $1 et al */
+
+    LEAVESUB(sv);
+    if (clear_errsv)
+	sv_setpv(ERRSV,"");
+    return pop_return();
+}

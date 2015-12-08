@@ -1,84 +1,15 @@
-void
-Perl_sv_insert(pTHX_ SV *bigstr, STRLEN offset, STRLEN len, char *little, STRLEN littlelen)
+STATIC void
+S_sv_del_backref(pTHX_ SV *sv)
 {
-    register char *big;
-    register char *mid;
-    register char *midend;
-    register char *bigend;
-    register I32 i;
-    STRLEN curlen;
-
-
-    if (!bigstr)
-	Perl_croak(aTHX_ "Can't modify non-existent substring");
-    SvPV_force(bigstr, curlen);
-    (void)SvPOK_only_UTF8(bigstr);
-    if (offset + len > curlen) {
-	SvGROW(bigstr, offset+len+1);
-	Zero(SvPVX(bigstr)+curlen, offset+len-curlen, char);
-	SvCUR_set(bigstr, offset+len);
-    }
-
-    SvTAINT(bigstr);
-    i = littlelen - len;
-    if (i > 0) {			/* string might grow */
-	big = SvGROW(bigstr, SvCUR(bigstr) + i + 1);
-	mid = big + offset + len;
-	midend = bigend = big + SvCUR(bigstr);
-	bigend += i;
-	*bigend = '\0';
-	while (midend > mid)		/* shove everything down */
-	    *--bigend = *--midend;
-	Move(little,big+offset,littlelen,char);
-	SvCUR(bigstr) += i;
-	SvSETMAGIC(bigstr);
-	return;
-    }
-    else if (i == 0) {
-	Move(little,SvPVX(bigstr)+offset,len,char);
-	SvSETMAGIC(bigstr);
-	return;
-    }
-
-    big = SvPVX(bigstr);
-    mid = big + offset;
-    midend = mid + len;
-    bigend = big + SvCUR(bigstr);
-
-    if (midend > bigend)
-	Perl_croak(aTHX_ "panic: sv_insert");
-
-    if (mid - big > bigend - midend) {	/* faster to shorten from end */
-	if (littlelen) {
-	    Move(little, mid, littlelen,char);
-	    mid += littlelen;
-	}
-	i = bigend - midend;
-	if (i > 0) {
-	    Move(midend, mid, i,char);
-	    mid += i;
-	}
-	*mid = '\0';
-	SvCUR_set(bigstr, mid - big);
-    }
-    /*SUPPRESS 560*/
-    else if ((i = mid - big)) {	/* faster from front */
-	midend -= littlelen;
-	mid = midend;
-	sv_chop(bigstr,midend-i);
-	big += i;
-	while (i--)
-	    *--midend = *--big;
-	if (littlelen)
-	    Move(little, mid, littlelen,char);
-    }
-    else if (littlelen) {
-	midend -= littlelen;
-	sv_chop(bigstr,midend);
-	Move(little,midend,littlelen,char);
-    }
-    else {
-	sv_chop(bigstr,midend);
-    }
-    SvSETMAGIC(bigstr);
+    AV *av;
+    SV **svp;
+    I32 i;
+    SV *tsv = SvRV(sv);
+    MAGIC *mg = NULL;
+    if (!SvMAGICAL(tsv) || !(mg = mg_find(tsv, PERL_MAGIC_backref)))
+	Perl_croak(aTHX_ "panic: del_backref");
+    av = (AV *)mg->mg_obj;
+    svp = AvARRAY(av);
+    for (i = AvFILLp(av); i >= 0; i--)
+	if (svp[i] == sv) svp[i] = Nullsv;
 }

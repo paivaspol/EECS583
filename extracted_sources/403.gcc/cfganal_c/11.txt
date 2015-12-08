@@ -1,15 +1,15 @@
-static void
-remove_fake_successors (bb)
-     basic_block bb;
+void
+flow_nodes_print (str, nodes, file)
+     const char *str;
+     const sbitmap nodes;
+     FILE *file;
 {
-  edge e;
+  int node;
 
-  for (e = bb->succ; e;)
-    {
-      edge tmp = e;
+  if (! nodes)
+    return;
 
-      e = e->succ_next;
-      if ((tmp->flags & EDGE_FAKE) == EDGE_FAKE)
-	remove_edge (tmp);
-    }
+  fprintf (file, "%s { ", str);
+  EXECUTE_IF_SET_IN_SBITMAP (nodes, 0, node, {fprintf (file, "%d ", node);});
+  fputs ("}\n", file);
 }

@@ -1,10 +1,13 @@
-STATIC struct ptr_tbl_ent*
-S_new_pte(pTHX)
+STATIC I32
+S_expect_number(pTHX_ char** pattern)
 {
-    struct ptr_tbl_ent* pte;
-    if (!PL_pte_root)
-	S_more_pte(aTHX);
-    pte = PL_pte_root;
-    PL_pte_root = pte->next;
-    return pte;
+    I32 var = 0;
+    switch (**pattern) {
+    case '1': case '2': case '3':
+    case '4': case '5': case '6':
+    case '7': case '8': case '9':
+	while (isDIGIT(**pattern))
+	    var = var * 10 + (*(*pattern)++ - '0');
+    }
+    return var;
 }

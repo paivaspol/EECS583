@@ -1,41 +1,16 @@
-int
-ix86_attr_length_immediate_default (insn, shortform)
-     rtx insn;
-     int shortform;
+static void
+ix86_mark_machine_status (p)
+     struct function *p;
 {
-  int len = 0;
-  int i;
-  extract_insn_cached (insn);
-  for (i = recog_data.n_operands - 1; i >= 0; --i)
-    if (CONSTANT_P (recog_data.operand[i]))
-      {
-	if (len)
-	  abort ();
-	if (shortform
-	    && GET_CODE (recog_data.operand[i]) == CONST_INT
-	    && CONST_OK_FOR_LETTER_P (INTVAL (recog_data.operand[i]), 'K'))
-	  len = 1;
-	else
-	  {
-	    switch (get_attr_mode (insn))
-	      {
-		case MODE_QI:
-		  len+=1;
-		  break;
-		case MODE_HI:
-		  len+=2;
-		  break;
-		case MODE_SI:
-		  len+=4;
-		  break;
-		/* Immediates for DImode instructions are encoded as 32bit sign extended values.  */
-		case MODE_DI:
-		  len+=4;
-		  break;
-		default:
-		  fatal_insn ("unknown insn mode", insn);
-	      }
-	  }
-      }
-  return len;
+  struct machine_function *machine = p->machine;
+  enum machine_mode mode;
+  int n;
+
+  if (! machine)
+    return;
+
+  for (mode = VOIDmode; (int) mode < (int) MAX_MACHINE_MODE;
+       mode = (enum machine_mode) ((int) mode + 1))
+    for (n = 0; n < MAX_386_STACK_LOCALS; n++)
+      ggc_mark_rtx (machine->stack_locals[(int) mode][n]);
 }

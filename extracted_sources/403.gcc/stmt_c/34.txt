@@ -1,5 +1,105 @@
-void
-clear_last_expr ()
+int
+warn_if_unused_value (exp)
+     tree exp;
 {
-  last_expr_type = 0;
+  if (TREE_USED (exp))
+    return 0;
+
+  /* Don't warn about void constructs.  This includes casting to void,
+     void function calls, and statement expressions with a final cast
+     to void.  */
+  if (VOID_TYPE_P (TREE_TYPE (exp)))
+    return 0;
+
+  switch (TREE_CODE (exp))
+    {
+    case PREINCREMENT_EXPR:
+    case POSTINCREMENT_EXPR:
+    case PREDECREMENT_EXPR:
+    case POSTDECREMENT_EXPR:
+    case MODIFY_EXPR:
+    case INIT_EXPR:
+    case TARGET_EXPR:
+    case CALL_EXPR:
+    case METHOD_CALL_EXPR:
+    case RTL_EXPR:
+    case TRY_CATCH_EXPR:
+    case WITH_CLEANUP_EXPR:
+    case EXIT_EXPR:
+      return 0;
+
+    case BIND_EXPR:
+      /* For a binding, warn if no side effect within it.  */
+      return warn_if_unused_value (TREE_OPERAND (exp, 1));
+
+    case SAVE_EXPR:
+      return warn_if_unused_value (TREE_OPERAND (exp, 1));
+
+    case TRUTH_ORIF_EXPR:
+    case TRUTH_ANDIF_EXPR:
+      /* In && or ||, warn if 2nd operand has no side effect.  */
+      return warn_if_unused_value (TREE_OPERAND (exp, 1));
+
+    case COMPOUND_EXPR:
+      if (TREE_NO_UNUSED_WARNING (exp))
+	return 0;
+      if (warn_if_unused_value (TREE_OPERAND (exp, 0)))
+	return 1;
+      /* Let people do `(foo (), 0)' without a warning.  */
+      if (TREE_CONSTANT (TREE_OPERAND (exp, 1)))
+	return 0;
+      return warn_if_unused_value (TREE_OPERAND (exp, 1));
+
+    case NOP_EXPR:
+    case CONVERT_EXPR:
+    case NON_LVALUE_EXPR:
+      /* Don't warn about conversions not explicit in the user's program.  */
+      if (TREE_NO_UNUSED_WARNING (exp))
+	return 0;
+      /* Assignment to a cast usually results in a cast of a modify.
+	 Don't complain about that.  There can be an arbitrary number of
+	 casts before the modify, so we must loop until we find the first
+	 non-cast expression and then test to see if that is a modify.  */
+      {
+	tree tem = TREE_OPERAND (exp, 0);
+
+	while (TREE_CODE (tem) == CONVERT_EXPR || TREE_CODE (tem) == NOP_EXPR)
+	  tem = TREE_OPERAND (tem, 0);
+
+	if (TREE_CODE (tem) == MODIFY_EXPR || TREE_CODE (tem) == INIT_EXPR
+	    || TREE_CODE (tem) == CALL_EXPR)
+	  return 0;
+      }
+      goto maybe_warn;
+
+    case INDIRECT_REF:
+      /* Don't warn about automatic dereferencing of references, since
+	 the user cannot control it.  */
+      if (TREE_CODE (TREE_TYPE (TREE_OPERAND (exp, 0))) == REFERENCE_TYPE)
+	return warn_if_unused_value (TREE_OPERAND (exp, 0));
+      /* Fall through.  */
+
+    default:
+      /* Referencing a volatile value is a side effect, so don't warn.  */
+      if ((DECL_P (exp)
+	   || TREE_CODE_CLASS (TREE_CODE (exp)) == 'r')
+	  && TREE_THIS_VOLATILE (exp))
+	return 0;
+
+      /* If this is an expression which has no operands, there is no value
+	 to be unused.  There are no such language-independent codes,
+	 but front ends may define such.  */
+      if (TREE_CODE_CLASS (TREE_CODE (exp)) == 'e'
+	  && TREE_CODE_LENGTH (TREE_CODE (exp)) == 0)
+	return 0;
+
+    maybe_warn:
+      /* If this is an expression with side effects, don't warn.  */
+      if (TREE_SIDE_EFFECTS (exp))
+	return 0;
+
+      warning_with_file_and_line (emit_filename, emit_lineno,
+				  "value computed is not used");
+      return 1;
+    }
 }

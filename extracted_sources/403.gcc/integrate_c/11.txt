@@ -1,63 +1,28 @@
-static tree
-integrate_decl_tree (let, map)
-     tree let;
+static void
+integrate_parm_decls (args, map, arg_vector)
+     tree args;
      struct inline_remap *map;
+     rtvec arg_vector;
 {
-  tree t;
-  tree new_block;
-  tree *next;
+  tree tail;
+  int i;
 
-  new_block = make_node (BLOCK);
-  VARRAY_PUSH_TREE (map->block_map, new_block);
-  next = &BLOCK_VARS (new_block);
-
-  for (t = BLOCK_VARS (let); t; t = TREE_CHAIN (t))
+  for (tail = args, i = 0; tail; tail = TREE_CHAIN (tail), i++)
     {
-      tree d;
+      tree decl = copy_decl_for_inlining (tail, map->fndecl,
+					  current_function_decl);
+      rtx new_decl_rtl
+	= copy_rtx_and_substitute (RTVEC_ELT (arg_vector, i), map, 1);
 
-      d = copy_decl_for_inlining (t, map->fndecl, current_function_decl);
-
-      if (DECL_RTL_SET_P (t))
-	{
-	  rtx r;
-
-	  SET_DECL_RTL (d, copy_rtx_and_substitute (DECL_RTL (t), map, 1));
-
-	  /* Fully instantiate the address with the equivalent form so that the
-	     debugging information contains the actual register, instead of the
-	     virtual register.   Do this by not passing an insn to
-	     subst_constants.  */
-	  r = DECL_RTL (d);
-	  subst_constants (&r, NULL_RTX, map, 1);
-	  SET_DECL_RTL (d, r);
-
-	  if (GET_CODE (r) == REG)
-	    REGNO_DECL (REGNO (r)) = d;
-	  else if (GET_CODE (r) == CONCAT)
-	    {
-	      REGNO_DECL (REGNO (XEXP (r, 0))) = d;
-	      REGNO_DECL (REGNO (XEXP (r, 1))) = d;
-	    }
-
-	  apply_change_group ();
-	}
-
-      /* Add this declaration to the list of variables in the new
-	 block.  */
-      *next = d;
-      next = &TREE_CHAIN (d);
+      /* We really should be setting DECL_INCOMING_RTL to something reasonable
+	 here, but that's going to require some more work.  */
+      /* DECL_INCOMING_RTL (decl) = ?; */
+      /* Fully instantiate the address with the equivalent form so that the
+	 debugging information contains the actual register, instead of the
+	 virtual register.   Do this by not passing an insn to
+	 subst_constants.  */
+      subst_constants (&new_decl_rtl, NULL_RTX, map, 1);
+      apply_change_group ();
+      SET_DECL_RTL (decl, new_decl_rtl);
     }
-
-  next = &BLOCK_SUBBLOCKS (new_block);
-  for (t = BLOCK_SUBBLOCKS (let); t; t = BLOCK_CHAIN (t))
-    {
-      *next = integrate_decl_tree (t, map);
-      BLOCK_SUPERCONTEXT (*next) = new_block;
-      next = &BLOCK_CHAIN (*next);
-    }
-
-  TREE_USED (new_block) = TREE_USED (let);
-  BLOCK_ABSTRACT_ORIGIN (new_block) = let;
-
-  return new_block;
 }

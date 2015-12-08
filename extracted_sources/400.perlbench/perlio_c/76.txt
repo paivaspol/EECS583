@@ -1,0 +1,27 @@
+IV
+PerlIOUnix_close(pTHX_ PerlIO *f)
+{
+    int fd = PerlIOSelf(f, PerlIOUnix)->fd;
+    int code = 0;
+    if (PerlIOBase(f)->flags & PERLIO_F_OPEN) {
+	if (PerlIOUnix_refcnt_dec(fd) > 0) {
+	    PerlIOBase(f)->flags &= ~PERLIO_F_OPEN;
+	    return 0;
+	}
+    }
+    else {
+	SETERRNO(EBADF,SS_IVCHAN);
+	return -1;
+    }
+    while (PerlLIO_close(fd) != 0) {
+	if (errno != EINTR) {
+	    code = -1;
+	    break;
+	}
+	PERL_ASYNC_CHECK();
+    }
+    if (code == 0) {
+	PerlIOBase(f)->flags &= ~PERLIO_F_OPEN;
+    }
+    return code;
+}

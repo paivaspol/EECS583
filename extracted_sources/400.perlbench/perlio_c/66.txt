@@ -1,0 +1,16 @@
+SV *
+PerlIO_sv_dup(pTHX_ SV *arg, CLONE_PARAMS *param)
+{
+    if (!arg)
+	return Nullsv;
+#ifdef sv_dup
+    if (param) {
+	return sv_dup(arg, param);
+    }
+    else {
+	return newSVsv(arg);
+    }
+#else
+    return newSVsv(arg);
+#endif
+}

@@ -1,0 +1,29 @@
+OP *
+Perl_ck_listiob(pTHX_ OP *o)
+{
+    register OP *kid;
+
+    kid = cLISTOPo->op_first;
+    if (!kid) {
+	o = force_list(o);
+	kid = cLISTOPo->op_first;
+    }
+    if (kid->op_type == OP_PUSHMARK)
+	kid = kid->op_sibling;
+    if (kid && o->op_flags & OPf_STACKED)
+	kid = kid->op_sibling;
+    else if (kid && !kid->op_sibling) {		/* print HANDLE; */
+	if (kid->op_type == OP_CONST && kid->op_private & OPpCONST_BARE) {
+	    o->op_flags |= OPf_STACKED;	/* make it a filehandle */
+	    kid = newUNOP(OP_RV2GV, OPf_REF, scalar(kid));
+	    cLISTOPo->op_first->op_sibling = kid;
+	    cLISTOPo->op_last = kid;
+	    kid = kid->op_sibling;
+	}
+    }
+
+    if (!kid)
+	append_elem(o->op_type, o, newDEFSVOP());
+
+    return listkids(o);
+}

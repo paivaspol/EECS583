@@ -1,67 +1,20 @@
-static enum rtx_code
-ix86_prepare_fp_compare_args (code, pop0, pop1)
+static rtx
+ix86_expand_int_compare (code, op0, op1)
      enum rtx_code code;
-     rtx *pop0, *pop1;
+     rtx op0, op1;
 {
-  enum machine_mode fpcmp_mode = ix86_fp_compare_mode (code);
-  rtx op0 = *pop0, op1 = *pop1;
-  enum machine_mode op_mode = GET_MODE (op0);
-  int is_sse = SSE_REG_P (op0) | SSE_REG_P (op1);
+  enum machine_mode cmpmode;
+  rtx tmp, flags;
 
-  /* All of the unordered compare instructions only work on registers.
-     The same is true of the XFmode compare instructions.  The same is
-     true of the fcomi compare instructions.  */
+  cmpmode = SELECT_CC_MODE (code, op0, op1);
+  flags = gen_rtx_REG (cmpmode, FLAGS_REG);
 
-  if (!is_sse
-      && (fpcmp_mode == CCFPUmode
-	  || op_mode == XFmode
-	  || op_mode == TFmode
-	  || ix86_use_fcomi_compare (code)))
-    {
-      op0 = force_reg (op_mode, op0);
-      op1 = force_reg (op_mode, op1);
-    }
-  else
-    {
-      /* %%% We only allow op1 in memory; op0 must be st(0).  So swap
-	 things around if they appear profitable, otherwise force op0
-	 into a register.  */
+  /* This is very simple, but making the interface the same as in the
+     FP case makes the rest of the code easier.  */
+  tmp = gen_rtx_COMPARE (cmpmode, op0, op1);
+  emit_insn (gen_rtx_SET (VOIDmode, flags, tmp));
 
-      if (standard_80387_constant_p (op0) == 0
-	  || (GET_CODE (op0) == MEM
-	      && ! (standard_80387_constant_p (op1) == 0
-		    || GET_CODE (op1) == MEM)))
-	{
-	  rtx tmp;
-	  tmp = op0, op0 = op1, op1 = tmp;
-	  code = swap_condition (code);
-	}
-
-      if (GET_CODE (op0) != REG)
-	op0 = force_reg (op_mode, op0);
-
-      if (CONSTANT_P (op1))
-	{
-	  if (standard_80387_constant_p (op1))
-	    op1 = force_reg (op_mode, op1);
-	  else
-	    op1 = validize_mem (force_const_mem (op_mode, op1));
-	}
-    }
-
-  /* Try to rearrange the comparison to make it cheaper.  */
-  if (ix86_fp_comparison_cost (code)
-      > ix86_fp_comparison_cost (swap_condition (code))
-      && (GET_CODE (op1) == REG || !no_new_pseudos))
-    {
-      rtx tmp;
-      tmp = op0, op0 = op1, op1 = tmp;
-      code = swap_condition (code);
-      if (GET_CODE (op0) != REG)
-	op0 = force_reg (op_mode, op0);
-    }
-
-  *pop0 = op0;
-  *pop1 = op1;
-  return code;
+  /* Return the test that should be put into the flags user, i.e.
+     the bcc, scc, or cmov instruction.  */
+  return gen_rtx_fmt_ee (code, VOIDmode, flags, const0_rtx);
 }

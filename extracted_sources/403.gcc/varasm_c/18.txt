@@ -1,72 +1,32 @@
 void
-mergeable_string_section (decl, align, flags)
-  tree decl ATTRIBUTE_UNUSED;
-  unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED;
-  unsigned int flags ATTRIBUTE_UNUSED;
+variable_section (decl, reloc)
+     tree decl;
+     int reloc;
 {
-#ifdef HAVE_GAS_SHF_MERGE
-  if (flag_merge_constants
-      && TREE_CODE (decl) == STRING_CST
-      && TREE_CODE (TREE_TYPE (decl)) == ARRAY_TYPE
-      && align <= 256
-      && TREE_STRING_LENGTH (decl) >= int_size_in_bytes (TREE_TYPE (decl)))
+  if (IN_NAMED_SECTION (decl))
+    named_section (decl, NULL, reloc);
+  else
     {
-      enum machine_mode mode;
-      unsigned int modesize;
-      const char *str;
-      int i, j, len, unit;
-      char name[30];
+      /* C++ can have const variables that get initialized from constructors,
+	 and thus can not be in a readonly section.  We prevent this by
+	 verifying that the initial value is constant for objects put in a
+	 readonly section.
 
-      mode = TYPE_MODE (TREE_TYPE (TREE_TYPE (decl)));
-      modesize = GET_MODE_BITSIZE (mode);
-      if (modesize >= 8 && modesize <= 256
-	  && (modesize & (modesize - 1)) == 0)
-	{
-	  if (align < modesize)
-	    align = modesize;
+	 error_mark_node is used by the C front end to indicate that the
+	 initializer has not been seen yet.  In this case, we assume that
+	 the initializer must be constant.
 
-	  str = TREE_STRING_POINTER (decl);
-	  len = TREE_STRING_LENGTH (decl);
-	  unit = GET_MODE_SIZE (mode);
+	 C++ uses error_mark_node for variables that have complicated
+	 initializers, but these variables go in BSS so we won't be called
+	 for them.  */
 
-	  /* Check for embedded NUL characters.  */
-	  for (i = 0; i < len; i += unit)
-	    {
-	      for (j = 0; j < unit; j++)
-		if (str [i + j] != '\0')
-		  break;
-	      if (j == unit)
-		break;
-	    }
-	  if (i == len - unit)
-	    {
-	      sprintf (name, ".rodata.str%d.%d", modesize / 8,
-		       (int) (align / 8));
-	      flags |= (modesize / 8) | SECTION_MERGE | SECTION_STRINGS;
-	      if (!i && modesize < align)
-		{
-		  /* A "" string with requested alignment greater than
-		     character size might cause a problem:
-		     if some other string required even bigger
-		     alignment than "", then linker might think the
-		     "" is just part of padding after some other string
-		     and not put it into the hash table initially.
-		     But this means "" could have smaller alignment
-		     than requested.  */
-#ifdef ASM_OUTPUT_SECTION_START
-		  named_section_flags (name, flags);
-		  ASM_OUTPUT_SECTION_START (asm_out_file);
+#ifdef SELECT_SECTION
+      SELECT_SECTION (decl, reloc, DECL_ALIGN (decl));
 #else
-		  readonly_data_section ();
+      if (DECL_READONLY_SECTION (decl, reloc))
+	readonly_data_section ();
+      else
+	data_section ();
 #endif
-		  return;
-		}
-
-	      named_section_flags (name, flags);
-	      return;
-	    }
-	}
     }
-#endif
-  readonly_data_section ();
-}  
+}

@@ -1,33 +1,14 @@
-STATIC SV *
-S_save_scalar_at(pTHX_ SV **sptr)
+void
+Perl_free_tmps(pTHX)
 {
-    register SV *sv;
-    SV *osv = *sptr;
-
-    sv = *sptr = NEWSV(0,0);
-    if (SvTYPE(osv) >= SVt_PVMG && SvMAGIC(osv) && SvTYPE(osv) != SVt_PVGV) {
-	sv_upgrade(sv, SvTYPE(osv));
-	if (SvGMAGICAL(osv)) {
-	    MAGIC* mg;
-	    bool oldtainted = PL_tainted;
-	    mg_get(osv);		/* note, can croak! */
-	    if (PL_tainting && PL_tainted &&
-			(mg = mg_find(osv, PERL_MAGIC_taint))) {
-		SAVESPTR(mg->mg_obj);
-		mg->mg_obj = osv;
-	    }
-	    SvFLAGS(osv) |= (SvFLAGS(osv) &
-	       (SVp_NOK|SVp_POK)) >> PRIVSHIFT;
-	    PL_tainted = oldtainted;
+    /* XXX should tmps_floor live in cxstack? */
+    I32 myfloor = PL_tmps_floor;
+    while (PL_tmps_ix > myfloor) {      /* clean up after last statement */
+	SV* sv = PL_tmps_stack[PL_tmps_ix];
+	PL_tmps_stack[PL_tmps_ix--] = Nullsv;
+	if (sv && sv != &PL_sv_undef) {
+	    SvTEMP_off(sv);
+	    SvREFCNT_dec(sv);		/* note, can modify tmps_ix!!! */
 	}
-	SvMAGIC(sv) = SvMAGIC(osv);
-	SvFLAGS(sv) |= SvMAGICAL(osv);
-	/* XXX SvMAGIC() is *shared* between osv and sv.  This can
-	 * lead to coredumps when both SVs are destroyed without one
-	 * of their SvMAGIC() slots being NULLed. */
-	PL_localizing = 1;
-	SvSETMAGIC(sv);
-	PL_localizing = 0;
     }
-    return sv;
 }

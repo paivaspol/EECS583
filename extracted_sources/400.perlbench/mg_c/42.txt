@@ -1,20 +1,6 @@
 int
-Perl_magic_setglob(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setarylen(pTHX_ SV *sv, MAGIC *mg)
 {
-    register char *s;
-    GV* gv;
-    STRLEN n_a;
-
-    if (!SvOK(sv))
-	return 0;
-    s = SvPV(sv, n_a);
-    if (*s == '*' && s[1])
-	s++;
-    gv = gv_fetchpv(s,TRUE, SVt_PVGV);
-    if (sv == (SV*)gv)
-	return 0;
-    if (GvGP(sv))
-	gp_free((GV*)sv);
-    GvGP(sv) = gp_ref(GvGP(gv));
+    av_fill((AV*)mg->mg_obj, SvIV(sv) - PL_curcop->cop_arybase);
     return 0;
 }

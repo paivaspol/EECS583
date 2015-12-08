@@ -1,14 +1,28 @@
-static xdr_int32_t *
-xdrstdio_inline (XDR *xdrs, int len)
+bool_t
+xdr_bool (XDR *xdrs, int *bp)
 {
-  /*
-   * Must do some work to implement this: must insure
-   * enough data in the underlying stdio buffer,
-   * that the buffer is aligned so that we can indirect through a
-   * long *, and stuff this pointer in xdrs->x_buf.  Doing
-   * a fread or fwrite to a scratch buffer would defeat
-   * most of the gains to be had here and require storage
-   * management on this buffer, so we don't do this.
-   */
-  return NULL;
+#define XDR_FALSE	((long) 0)
+#define XDR_TRUE	((long) 1)
+  long lb;
+
+  switch (xdrs->x_op)
+    {
+    case XDR_ENCODE:
+      lb = *bp ? XDR_TRUE : XDR_FALSE;
+      return xdr_putlong (xdrs, &lb);
+
+    case XDR_DECODE:
+      if (!xdr_getlong (xdrs, &lb))
+	{
+	  return FALSE;
+	}
+      *bp = (lb == XDR_FALSE) ? FALSE : TRUE;
+      return TRUE;
+
+    case XDR_FREE:
+      return TRUE;
+    }
+  return FALSE;
+#undef XDR_FALSE
+#undef XDR_TRUE
 }

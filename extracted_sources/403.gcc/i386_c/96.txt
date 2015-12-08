@@ -1,18 +1,8 @@
-void
-i386_dwarf_output_addr_const (file, x)
-     FILE *file;
-     rtx x;
+static HOST_WIDE_INT
+ix86_GOT_alias_set ()
 {
-#ifdef ASM_QUAD
-  fprintf (file, "%s", TARGET_64BIT ? ASM_QUAD : ASM_LONG);
-#else
-  if (TARGET_64BIT)
-    abort ();
-  fprintf (file, "%s", ASM_LONG);
-#endif
-  if (flag_pic)
-    output_pic_addr_const (file, x, '\0');
-  else
-    output_addr_const (file, x);
-  fputc ('\n', file);
+    static HOST_WIDE_INT set = -1;
+    if (set == -1)
+      set = new_alias_set ();
+    return set;
 }

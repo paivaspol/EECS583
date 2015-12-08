@@ -1,53 +1,182 @@
 void
-ix86_split_lshrdi (operands, scratch)
-     rtx *operands, scratch;
+ix86_split_long_move (operands)
+     rtx operands[];
 {
-  rtx low[2], high[2];
-  int count;
+  rtx part[2][3];
+  int nparts;
+  int push = 0;
+  int collisions = 0;
+  enum machine_mode mode = GET_MODE (operands[0]);
 
-  if (GET_CODE (operands[2]) == CONST_INT)
+  /* The DFmode expanders may ask us to move double.
+     For 64bit target this is single move.  By hiding the fact
+     here we simplify i386.md splitters.  */
+  if (GET_MODE_SIZE (GET_MODE (operands[0])) == 8 && TARGET_64BIT)
     {
-      split_di (operands, 2, low, high);
-      count = INTVAL (operands[2]) & 63;
+      /* Optimize constant pool reference to immediates.  This is used by
+	 fp moves, that force all constants to memory to allow combining.  */
 
-      if (count >= 32)
+      if (GET_CODE (operands[1]) == MEM
+	  && GET_CODE (XEXP (operands[1], 0)) == SYMBOL_REF
+	  && CONSTANT_POOL_ADDRESS_P (XEXP (operands[1], 0)))
+	operands[1] = get_pool_constant (XEXP (operands[1], 0));
+      if (push_operand (operands[0], VOIDmode))
 	{
-	  emit_move_insn (low[0], high[1]);
-	  emit_move_insn (high[0], const0_rtx);
+	  operands[0] = copy_rtx (operands[0]);
+	  PUT_MODE (operands[0], Pmode);
+	}
+      else
+        operands[0] = gen_lowpart (DImode, operands[0]);
+      operands[1] = gen_lowpart (DImode, operands[1]);
+      emit_move_insn (operands[0], operands[1]);
+      return;
+    }
 
-	  if (count > 32)
-	    emit_insn (gen_lshrsi3 (low[0], low[0], GEN_INT (count - 32)));
+  /* The only non-offsettable memory we handle is push.  */
+  if (push_operand (operands[0], VOIDmode))
+    push = 1;
+  else if (GET_CODE (operands[0]) == MEM
+	   && ! offsettable_memref_p (operands[0]))
+    abort ();
+
+  nparts = ix86_split_to_parts (operands[1], part[1], GET_MODE (operands[0]));
+  ix86_split_to_parts (operands[0], part[0], GET_MODE (operands[0]));
+
+  /* When emitting push, take care for source operands on the stack.  */
+  if (push && GET_CODE (operands[1]) == MEM
+      && reg_overlap_mentioned_p (stack_pointer_rtx, operands[1]))
+    {
+      if (nparts == 3)
+	part[1][1] = change_address (part[1][1], GET_MODE (part[1][1]),
+				     XEXP (part[1][2], 0));
+      part[1][0] = change_address (part[1][0], GET_MODE (part[1][0]),
+				   XEXP (part[1][1], 0));
+    }
+
+  /* We need to do copy in the right order in case an address register
+     of the source overlaps the destination.  */
+  if (REG_P (part[0][0]) && GET_CODE (part[1][0]) == MEM)
+    {
+      if (reg_overlap_mentioned_p (part[0][0], XEXP (part[1][0], 0)))
+	collisions++;
+      if (reg_overlap_mentioned_p (part[0][1], XEXP (part[1][0], 0)))
+	collisions++;
+      if (nparts == 3
+	  && reg_overlap_mentioned_p (part[0][2], XEXP (part[1][0], 0)))
+	collisions++;
+
+      /* Collision in the middle part can be handled by reordering.  */
+      if (collisions == 1 && nparts == 3
+	  && reg_overlap_mentioned_p (part[0][1], XEXP (part[1][0], 0)))
+	{
+	  rtx tmp;
+	  tmp = part[0][1]; part[0][1] = part[0][2]; part[0][2] = tmp;
+	  tmp = part[1][1]; part[1][1] = part[1][2]; part[1][2] = tmp;
+	}
+
+      /* If there are more collisions, we can't handle it by reordering.
+	 Do an lea to the last part and use only one colliding move.  */
+      else if (collisions > 1)
+	{
+	  collisions = 1;
+	  emit_insn (gen_rtx_SET (VOIDmode, part[0][nparts - 1],
+				  XEXP (part[1][0], 0)));
+	  part[1][0] = change_address (part[1][0],
+				       TARGET_64BIT ? DImode : SImode,
+				       part[0][nparts - 1]);
+	  part[1][1] = adjust_address (part[1][0], VOIDmode, UNITS_PER_WORD);
+	  if (nparts == 3)
+	    part[1][2] = adjust_address (part[1][0], VOIDmode, 8);
+	}
+    }
+
+  if (push)
+    {
+      if (!TARGET_64BIT)
+	{
+	  if (nparts == 3)
+	    {
+	      /* We use only first 12 bytes of TFmode value, but for pushing we
+		 are required to adjust stack as if we were pushing real 16byte
+		 value.  */
+	      if (mode == TFmode && !TARGET_64BIT)
+		emit_insn (gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx,
+				       GEN_INT (-4)));
+	      emit_move_insn (part[0][2], part[1][2]);
+	    }
 	}
       else
 	{
-	  if (!rtx_equal_p (operands[0], operands[1]))
-	    emit_move_insn (operands[0], operands[1]);
-	  emit_insn (gen_x86_shrd_1 (low[0], high[0], GEN_INT (count)));
-	  emit_insn (gen_lshrsi3 (high[0], high[0], GEN_INT (count)));
+	  /* In 64bit mode we don't have 32bit push available.  In case this is
+	     register, it is OK - we will just use larger counterpart.  We also
+	     retype memory - these comes from attempt to avoid REX prefix on
+	     moving of second half of TFmode value.  */
+	  if (GET_MODE (part[1][1]) == SImode)
+	    {
+	      if (GET_CODE (part[1][1]) == MEM)
+		part[1][1] = adjust_address (part[1][1], DImode, 0);
+	      else if (REG_P (part[1][1]))
+		part[1][1] = gen_rtx_REG (DImode, REGNO (part[1][1]));
+	      else
+		abort ();
+	      if (GET_MODE (part[1][0]) == SImode)
+		part[1][0] = part[1][1];
+	    }
+	}
+      emit_move_insn (part[0][1], part[1][1]);
+      emit_move_insn (part[0][0], part[1][0]);
+      return;
+    }
+
+  /* Choose correct order to not overwrite the source before it is copied.  */
+  if ((REG_P (part[0][0])
+       && REG_P (part[1][1])
+       && (REGNO (part[0][0]) == REGNO (part[1][1])
+	   || (nparts == 3
+	       && REGNO (part[0][0]) == REGNO (part[1][2]))))
+      || (collisions > 0
+	  && reg_overlap_mentioned_p (part[0][0], XEXP (part[1][0], 0))))
+    {
+      if (nparts == 3)
+	{
+	  operands[2] = part[0][2];
+	  operands[3] = part[0][1];
+	  operands[4] = part[0][0];
+	  operands[5] = part[1][2];
+	  operands[6] = part[1][1];
+	  operands[7] = part[1][0];
+	}
+      else
+	{
+	  operands[2] = part[0][1];
+	  operands[3] = part[0][0];
+	  operands[5] = part[1][1];
+	  operands[6] = part[1][0];
 	}
     }
   else
     {
-      if (!rtx_equal_p (operands[0], operands[1]))
-	emit_move_insn (operands[0], operands[1]);
-
-      split_di (operands, 1, low, high);
-
-      emit_insn (gen_x86_shrd_1 (low[0], high[0], operands[2]));
-      emit_insn (gen_lshrsi3 (high[0], high[0], operands[2]));
-
-      /* Heh.  By reversing the arguments, we can reuse this pattern.  */
-      if (TARGET_CMOVE && (! no_new_pseudos || scratch))
+      if (nparts == 3)
 	{
-	  if (! no_new_pseudos)
-	    scratch = force_reg (SImode, const0_rtx);
-	  else
-	    emit_move_insn (scratch, const0_rtx);
-
-	  emit_insn (gen_x86_shift_adj_1 (low[0], high[0], operands[2],
-					  scratch));
+	  operands[2] = part[0][0];
+	  operands[3] = part[0][1];
+	  operands[4] = part[0][2];
+	  operands[5] = part[1][0];
+	  operands[6] = part[1][1];
+	  operands[7] = part[1][2];
 	}
       else
-	emit_insn (gen_x86_shift_adj_2 (low[0], high[0], operands[2]));
+	{
+	  operands[2] = part[0][0];
+	  operands[3] = part[0][1];
+	  operands[5] = part[1][0];
+	  operands[6] = part[1][1];
+	}
     }
+  emit_move_insn (operands[2], operands[5]);
+  emit_move_insn (operands[3], operands[6]);
+  if (nparts == 3)
+    emit_move_insn (operands[4], operands[7]);
+
+  return;
 }

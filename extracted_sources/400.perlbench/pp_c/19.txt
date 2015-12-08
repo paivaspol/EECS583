@@ -1,0 +1,15 @@
+PP(pp_trans)
+{
+    dSP; dTARG;
+    SV *sv;
+
+    if (PL_op->op_flags & OPf_STACKED)
+	sv = POPs;
+    else {
+	sv = DEFSV;
+	EXTEND(SP,1);
+    }
+    TARG = sv_newmortal();
+    PUSHi(do_trans(sv));
+    RETURN;
+}

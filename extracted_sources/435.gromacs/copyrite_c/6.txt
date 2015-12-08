@@ -1,44 +1,28 @@
-void CopyRight(FILE *out,char *szProgram)
+static char *pukeit(char *db,char *defstring)
 {
-  /* Dont change szProgram arbitrarily - it must be argv[0], i.e. the 
-   * name of a file. Otherwise, we won't be able to find the library dir.
-   */
-#define NCR (int)asize(CopyrightText)
-#define NGPL (int)asize(GPLText)
-
-  char buf[256];
-  char *ptr;
+  static char hulp[STRLEN];
+  FILE *fp;
+  char **help;
+  int  i,nhlp;
+  int  seed;
   
-  int i;
-
-  set_program_name(szProgram);
-
-  if(out)
-  {
-      ster_print(out,"G  R  O  M  A  C  S");
-      fprintf(out,"\n");
+  if (!be_cool())
+    return defstring;
+  else if ((fp = low_libopen(db,FALSE)) != NULL) {
+    nhlp=fget_lines(fp,&help);
+    fclose(fp);
+    seed=time(NULL);
+    nran=nhlp*rando(&seed);
+    if (strlen(help[nran]) >= STRLEN)
+      help[nran][STRLEN-1] = '\0';
+    strcpy(hulp,help[nran]);
+    f(hulp);
+    for(i=0; (i<nhlp); i++)
+      sfree(help[i]);
+    sfree(help);
   
-      ptr=bromacs();
-      sp_print(out,ptr); 
-      fprintf(out,"\n");
-      
-      ster_print(out,GromacsVersion());
-      fprintf(out,"\n");
-      
-      fprintf(out,"\n");
-      
-      for(i=0; (i<NCR); i++) 
-          sp_print(out,CopyrightText[i]);
-      for(i=0; (i<NGPL); i++)
-          sp_print(out,GPLText[i]);
-      
-      fprintf(out,"\n");
-      
-      sprintf(buf,"%s",Program());
-#ifdef DOUBLE
-      strcat(buf," (double precision)");
-#endif
-      ster_print(out,buf);
-      fprintf(out,"\n");
+    return hulp;
   }
+  else
+    return defstring;
 }

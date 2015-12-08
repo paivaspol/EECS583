@@ -1,33 +1,11 @@
 static I32
-sortcv_stacked(pTHX_ SV *a, SV *b)
+sortcv(pTHX_ SV *a, SV *b)
 {
     I32 oldsaveix = PL_savestack_ix;
     I32 oldscopeix = PL_scopestack_ix;
     I32 result;
-    AV *av;
-
-#ifdef USE_5005THREADS
-    av = (AV*)PAD_SVl(0);
-#else
-    av = GvAV(PL_defgv);
-#endif
-
-    if (AvMAX(av) < 1) {
-	SV** ary = AvALLOC(av);
-	if (AvARRAY(av) != ary) {
-	    AvMAX(av) += AvARRAY(av) - AvALLOC(av);
-	    SvPVX(av) = (char*)ary;
-	}
-	if (AvMAX(av) < 1) {
-	    AvMAX(av) = 1;
-	    Renew(ary,2,SV*);
-	    SvPVX(av) = (char*)ary;
-	}
-    }
-    AvFILLp(av) = 1;
-
-    AvARRAY(av)[0] = a;
-    AvARRAY(av)[1] = b;
+    GvSV(PL_firstgv) = a;
+    GvSV(PL_secondgv) = b;
     PL_stack_sp = PL_stack_base;
     PL_op = PL_sortcop;
     CALLRUNOPS(aTHX);

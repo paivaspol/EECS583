@@ -1,14 +1,7 @@
-static void encode_string(int maxlen,char dst[],char src[])
+static void fe(int eio,char *desc,char *srcfile,int line)
 {
-  int i;
-  
-  for(i=0; (src[i] != '\0') && (i < maxlen-1); i++)
-    if ((src[i] == ' ') || (src[i] == '\t'))
-      dst[i] = '_';
-    else
-      dst[i] = src[i];
-  dst[i] = '\0';
-  
-  if (i == maxlen)
-    fprintf(stderr,"String '%s' truncated to '%s'\n",src,dst);
+  fatal_error(0,"Trying to %s %s type %d (%s), src %s, line %d",
+	      curfio->bRead ? "read" : "write",desc,eio,
+	      ((eio >= 0) && (eio < eioNR)) ? eioNames[eio] : "unknown",
+	      srcfile,line);
 }

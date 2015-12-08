@@ -1,34 +1,72 @@
-static int
-contains_pointers_p (type)
-     tree type;
+static void
+asm_emit_uninitialised (decl, name, size, rounded)
+     tree decl;
+     const char * name;
+     int size ATTRIBUTE_UNUSED;
+     int rounded ATTRIBUTE_UNUSED;
 {
-  switch (TREE_CODE (type))
+  enum
+  {
+    asm_dest_common,
+    asm_dest_bss,
+    asm_dest_local
+  }
+  destination = asm_dest_local;
+
+  if (TREE_PUBLIC (decl))
     {
-    case POINTER_TYPE:
-    case REFERENCE_TYPE:
-      /* I'm not sure whether OFFSET_TYPE needs this treatment,
-	 so I'll play safe and return 1.  */
-    case OFFSET_TYPE:
-      return 1;
-
-    case RECORD_TYPE:
-    case UNION_TYPE:
-    case QUAL_UNION_TYPE:
-      {
-	tree fields;
-	/* For a type that has fields, see if the fields have pointers.  */
-	for (fields = TYPE_FIELDS (type); fields; fields = TREE_CHAIN (fields))
-	  if (TREE_CODE (fields) == FIELD_DECL
-	      && contains_pointers_p (TREE_TYPE (fields)))
-	    return 1;
-	return 0;
-      }
-
-    case ARRAY_TYPE:
-      /* An array type contains pointers if its element type does.  */
-      return contains_pointers_p (TREE_TYPE (type));
-
-    default:
-      return 0;
+#if defined ASM_EMIT_BSS
+      if (! DECL_COMMON (decl))
+	destination = asm_dest_bss;
+      else
+#endif
+	destination = asm_dest_common;
     }
+
+  if (destination == asm_dest_bss)
+    globalize_decl (decl);
+  resolve_unique_section (decl, 0, flag_data_sections);
+
+  if (flag_shared_data)
+    {
+      switch (destination)
+	{
+#ifdef ASM_OUTPUT_SHARED_BSS
+	case asm_dest_bss:
+	  ASM_OUTPUT_SHARED_BSS (asm_out_file, decl, name, size, rounded);
+	  return;
+#endif
+#ifdef ASM_OUTPUT_SHARED_COMMON
+	case asm_dest_common:
+	  ASM_OUTPUT_SHARED_COMMON (asm_out_file, name, size, rounded);
+	  return;
+#endif
+#ifdef ASM_OUTPUT_SHARED_LOCAL
+	case asm_dest_local:
+	  ASM_OUTPUT_SHARED_LOCAL (asm_out_file, name, size, rounded);
+	  return;
+#endif
+	default:
+	  break;
+	}
+    }
+
+  switch (destination)
+    {
+#ifdef ASM_EMIT_BSS
+    case asm_dest_bss:
+      ASM_EMIT_BSS (decl, name, size, rounded);
+      break;
+#endif
+    case asm_dest_common:
+      ASM_EMIT_COMMON (decl, name, size, rounded);
+      break;
+    case asm_dest_local:
+      ASM_EMIT_LOCAL (decl, name, size, rounded);
+      break;
+    default:
+      abort ();
+    }
+
+  return;
 }

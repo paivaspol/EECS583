@@ -1,29 +1,40 @@
-static int
-type_hash_eq (va, vb)
-     const void *va;
-     const void *vb;
+int
+is_attribute_p (attr, ident)
+     const char *attr;
+     tree ident;
 {
-  const struct type_hash *a = va, *b = vb;
-  if (a->hash == b->hash
-      && TREE_CODE (a->type) == TREE_CODE (b->type)
-      && TREE_TYPE (a->type) == TREE_TYPE (b->type)
-      && attribute_list_equal (TYPE_ATTRIBUTES (a->type),
-			       TYPE_ATTRIBUTES (b->type))
-      && TYPE_ALIGN (a->type) == TYPE_ALIGN (b->type)
-      && (TYPE_MAX_VALUE (a->type) == TYPE_MAX_VALUE (b->type)
-	  || tree_int_cst_equal (TYPE_MAX_VALUE (a->type),
-				 TYPE_MAX_VALUE (b->type)))
-      && (TYPE_MIN_VALUE (a->type) == TYPE_MIN_VALUE (b->type)
-	  || tree_int_cst_equal (TYPE_MIN_VALUE (a->type),
-				 TYPE_MIN_VALUE (b->type)))
-      /* Note that TYPE_DOMAIN is TYPE_ARG_TYPES for FUNCTION_TYPE.  */
-      && (TYPE_DOMAIN (a->type) == TYPE_DOMAIN (b->type)
-	  || (TYPE_DOMAIN (a->type)
-	      && TREE_CODE (TYPE_DOMAIN (a->type)) == TREE_LIST
-	      && TYPE_DOMAIN (b->type)
-	      && TREE_CODE (TYPE_DOMAIN (b->type)) == TREE_LIST
-	      && type_list_equal (TYPE_DOMAIN (a->type),
-				  TYPE_DOMAIN (b->type)))))
+  int ident_len, attr_len;
+  const char *p;
+
+  if (TREE_CODE (ident) != IDENTIFIER_NODE)
+    return 0;
+
+  if (strcmp (attr, IDENTIFIER_POINTER (ident)) == 0)
     return 1;
+
+  p = IDENTIFIER_POINTER (ident);
+  ident_len = strlen (p);
+  attr_len = strlen (attr);
+
+  /* If ATTR is `__text__', IDENT must be `text'; and vice versa.  */
+  if (attr[0] == '_')
+    {
+      if (attr[1] != '_'
+	  || attr[attr_len - 2] != '_'
+	  || attr[attr_len - 1] != '_')
+	abort ();
+      if (ident_len == attr_len - 4
+	  && strncmp (attr + 2, p, attr_len - 4) == 0)
+	return 1;
+    }
+  else
+    {
+      if (ident_len == attr_len + 4
+	  && p[0] == '_' && p[1] == '_'
+	  && p[ident_len - 2] == '_' && p[ident_len - 1] == '_'
+	  && strncmp (attr, p + 2, attr_len) == 0)
+	return 1;
+    }
+
   return 0;
 }

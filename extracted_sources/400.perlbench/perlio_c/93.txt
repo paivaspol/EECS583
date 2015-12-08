@@ -1,0 +1,14 @@
+IV
+PerlIOBuf_seek(pTHX_ PerlIO *f, Off_t offset, int whence)
+{
+    IV code;
+    if ((code = PerlIO_flush(f)) == 0) {
+	PerlIOBuf *b = PerlIOSelf(f, PerlIOBuf);
+	PerlIOBase(f)->flags &= ~PERLIO_F_EOF;
+	code = PerlIO_seek(PerlIONext(f), offset, whence);
+	if (code == 0) {
+	    b->posn = PerlIO_tell(PerlIONext(f));
+	}
+    }
+    return code;
+}

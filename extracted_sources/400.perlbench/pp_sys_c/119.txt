@@ -1,0 +1,12 @@
+PP(pp_shmwrite)
+{
+#if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
+    dSP; dMARK; dTARGET;
+    I32 value = (I32)(do_shmio(PL_op->op_type, MARK, SP) >= 0);
+    SP = MARK;
+    PUSHi(value);
+    RETURN;
+#else
+    return pp_semget();
+#endif
+}

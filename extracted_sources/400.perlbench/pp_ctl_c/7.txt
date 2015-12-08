@@ -1,13 +1,11 @@
-I32
-Perl_is_lvalue_sub(pTHX)
+void
+Perl_rxres_free(pTHX_ void **rsp)
 {
-    I32 cxix;
+    UV *p = (UV*)*rsp;
 
-    cxix = dopoptosub(cxstack_ix);
-    assert(cxix >= 0);  /* We should only be called from inside subs */
-
-    if (cxstack[cxix].blk_sub.lval && CvLVALUE(cxstack[cxix].blk_sub.cv))
-	return cxstack[cxix].blk_sub.lval;
-    else
-	return 0;
+    if (p) {
+	Safefree(INT2PTR(char*,*p));
+	Safefree(p);
+	*rsp = Null(void*);
+    }
 }

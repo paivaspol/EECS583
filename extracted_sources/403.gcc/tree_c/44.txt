@@ -1,42 +1,8 @@
-int
-attribute_list_contained (l1, l2)
-     tree l1, l2;
+static void
+print_type_hash_statistics ()
 {
-  tree t1, t2;
-
-  /* First check the obvious, maybe the lists are identical.  */
-  if (l1 == l2)
-    return 1;
-
-  /* Maybe the lists are similar.  */
-  for (t1 = l1, t2 = l2;
-       t1 != 0 && t2 != 0
-        && TREE_PURPOSE (t1) == TREE_PURPOSE (t2)
-        && TREE_VALUE (t1) == TREE_VALUE (t2);
-       t1 = TREE_CHAIN (t1), t2 = TREE_CHAIN (t2));
-
-  /* Maybe the lists are equal.  */
-  if (t1 == 0 && t2 == 0)
-    return 1;
-
-  for (; t2 != 0; t2 = TREE_CHAIN (t2))
-    {
-      tree attr;
-      for (attr = lookup_attribute (IDENTIFIER_POINTER (TREE_PURPOSE (t2)), l1);
-	   attr != NULL_TREE;
-	   attr = lookup_attribute (IDENTIFIER_POINTER (TREE_PURPOSE (t2)),
-				    TREE_CHAIN (attr)))
-	{
-	  if (simple_cst_equal (TREE_VALUE (t2), TREE_VALUE (attr)) == 1)
-	    break;
-	}
-
-      if (attr == 0)
-	return 0;
-
-      if (simple_cst_equal (TREE_VALUE (t2), TREE_VALUE (attr)) != 1)
-	return 0;
-    }
-
-  return 1;
+  fprintf (stderr, "Type hash: size %ld, %ld elements, %f collisions\n",
+	   (long) htab_size (type_hash_table),
+	   (long) htab_elements (type_hash_table),
+	   htab_collisions (type_hash_table));
 }

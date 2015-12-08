@@ -1,16 +1,11 @@
-static bool
-S_path_is_absolute(pTHX_ char *name)
+void
+Perl_qerror(pTHX_ SV *err)
 {
-    if (PERL_FILE_IS_ABSOLUTE(name)
-#ifdef MACOS_TRADITIONAL
-	|| (*name == ':'))
-#else
-	|| (*name == '.' && (name[1] == '/' ||
-			     (name[1] == '.' && name[2] == '/'))))
-#endif
-    {
-	return TRUE;
-    }
+    if (PL_in_eval)
+	sv_catsv(ERRSV, err);
+    else if (PL_errors)
+	sv_catsv(PL_errors, err);
     else
-    	return FALSE;
+	Perl_warn(aTHX_ "%"SVf, err);
+    ++PL_error_count;
 }

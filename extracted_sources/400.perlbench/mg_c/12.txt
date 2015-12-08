@@ -1,75 +1,91 @@
-int
-Perl_magic_setenv(pTHX_ SV *sv, MAGIC *mg)
+U32
+Perl_magic_len(pTHX_ SV *sv, MAGIC *mg)
 {
-    register char *s;
-    char *ptr;
-    STRLEN len, klen;
+    register I32 paren;
+    register I32 i;
+    register REGEXP *rx;
+    I32 s1, t1;
 
-    s = SvPV(sv,len);
-    ptr = MgPV(mg,klen);
-    my_setenv(ptr, s);
+    switch (*mg->mg_ptr) {
+    case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9': case '&':
+	if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
 
-#ifdef DYNAMIC_ENV_FETCH
-     /* We just undefd an environment var.  Is a replacement */
-     /* waiting in the wings? */
-    if (!len) {
-	SV **valp;
-	if ((valp = hv_fetch(GvHVn(PL_envgv), ptr, klen, FALSE)))
-	    s = SvPV(*valp, len);
-    }
-#endif
+	    paren = atoi(mg->mg_ptr); /* $& is in [0] */
+	  getparen:
+	    if (paren <= (I32)rx->nparens &&
+		(s1 = rx->startp[paren]) != -1 &&
+		(t1 = rx->endp[paren]) != -1)
+	    {
+		i = t1 - s1;
+	      getlen:
+		if (i > 0 && RX_MATCH_UTF8(rx)) {
+		    char *s    = rx->subbeg + s1;
+		    char *send = rx->subbeg + t1;
 
-#if !defined(OS2) && !defined(AMIGAOS) && !defined(WIN32) && !defined(MSDOS)
-			    /* And you'll never guess what the dog had */
-			    /*   in its mouth... */
-    if (PL_tainting) {
-	MgTAINTEDDIR_off(mg);
-#ifdef VMS
-	if (s && klen == 8 && strEQ(ptr, "DCL$PATH")) {
-	    char pathbuf[256], eltbuf[256], *cp, *elt = s;
-	    Stat_t sbuf;
-	    int i = 0, j = 0;
-
-	    do {          /* DCL$PATH may be a search list */
-		while (1) {   /* as may dev portion of any element */
-		    if ( ((cp = strchr(elt,'[')) || (cp = strchr(elt,'<'))) ) {
-			if ( *(cp+1) == '.' || *(cp+1) == '-' ||
-			     cando_by_name(S_IWUSR,0,elt) ) {
-			    MgTAINTEDDIR_on(mg);
-			    return 0;
-			}
-		    }
-		    if ((cp = strchr(elt, ':')) != Nullch)
-			*cp = '\0';
-		    if (my_trnlnm(elt, eltbuf, j++))
-			elt = eltbuf;
-		    else
-			break;
+                    i = t1 - s1;
+		    if (is_utf8_string((U8*)s, i))
+			i = Perl_utf8_length(aTHX_ (U8*)s, (U8*)send);
 		}
-		j = 0;
-	    } while (my_trnlnm(s, pathbuf, i++) && (elt = pathbuf));
+		if (i < 0)
+		    Perl_croak(aTHX_ "panic: magic_len: %"IVdf, (IV)i);
+		return i;
+	    }
+	    else {
+		if (ckWARN(WARN_UNINITIALIZED))
+		    report_uninit();
+	    }
 	}
-#endif /* VMS */
-	if (s && klen == 4 && strEQ(ptr,"PATH")) {
-	    char *strend = s + len;
-
-	    while (s < strend) {
-		char tmpbuf[256];
-		Stat_t st;
-		I32 i;
-		s = delimcpy(tmpbuf, tmpbuf + sizeof tmpbuf,
-			     s, strend, ':', &i);
-		s++;
-		if (i >= sizeof tmpbuf   /* too long -- assume the worst */
-		      || *tmpbuf != '/'
-		      || (PerlLIO_stat(tmpbuf, &st) == 0 && (st.st_mode & 2)) ) {
-		    MgTAINTEDDIR_on(mg);
-		    return 0;
+	else {
+	    if (ckWARN(WARN_UNINITIALIZED))
+		report_uninit();
+	}
+	return 0;
+    case '+':
+	if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	    paren = rx->lastparen;
+	    if (paren)
+		goto getparen;
+	}
+	return 0;
+    case '\016': /* ^N */
+	if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	    paren = rx->lastcloseparen;
+	    if (paren)
+		goto getparen;
+	}
+	return 0;
+    case '`':
+	if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	    if (rx->startp[0] != -1) {
+		i = rx->startp[0];
+		if (i > 0) {
+		    s1 = 0;
+		    t1 = i;
+		    goto getlen;
 		}
 	    }
 	}
+	return 0;
+    case '\'':
+	if (PL_curpm && (rx = PM_GETRE(PL_curpm))) {
+	    if (rx->endp[0] != -1) {
+		i = rx->sublen - rx->endp[0];
+		if (i > 0) {
+		    s1 = rx->endp[0];
+		    t1 = rx->sublen;
+		    goto getlen;
+		}
+	    }
+	}
+	return 0;
     }
-#endif /* neither OS2 nor AMIGAOS nor WIN32 nor MSDOS */
-
+    magic_get(sv,mg);
+    if (!SvPOK(sv) && SvNIOK(sv)) {
+	STRLEN n_a;
+	sv_2pv(sv, &n_a);
+    }
+    if (SvPOK(sv))
+	return SvCUR(sv);
     return 0;
 }

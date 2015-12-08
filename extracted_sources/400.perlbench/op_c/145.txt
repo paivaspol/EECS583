@@ -1,0 +1,16 @@
+OP *
+Perl_ck_join(pTHX_ OP *o)
+{
+    if (ckWARN(WARN_SYNTAX)) {
+	OP *kid = cLISTOPo->op_first->op_sibling;
+	if (kid && kid->op_type == OP_MATCH) {
+	    char *pmstr = "STRING";
+	    if (PM_GETRE(kPMOP))
+		pmstr = PM_GETRE(kPMOP)->precomp;
+	    Perl_warner(aTHX_ packWARN(WARN_SYNTAX),
+			"/%s/ should probably be written as \"%s\"",
+			pmstr, pmstr);
+	}
+    }
+    return ck_fun(o);
+}

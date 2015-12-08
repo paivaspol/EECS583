@@ -1,0 +1,51 @@
+void PerlIO_debug(const char *fmt, ...)
+    __attribute__format__(__printf__, 1, 2);
+
+void
+PerlIO_debug(const char *fmt, ...)
+{
+    static int dbg = 0;
+    va_list ap;
+    dSYS;
+    va_start(ap, fmt);
+#if !defined(SPEC_CPU)
+    if (!dbg && !PL_tainting && PL_uid == PL_euid && PL_gid == PL_egid) {
+	char *s = PerlEnv_getenv("PERLIO_DEBUG");
+	if (s && *s)
+	    dbg = PerlLIO_open3(s, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	else
+	    dbg = -1;
+    }
+    if (dbg > 0) {
+	dTHX;
+#ifdef USE_ITHREADS
+	/* Use fixed buffer as sv_catpvf etc. needs SVs */
+	char buffer[1024];
+	char *s;
+	STRLEN len;
+	s = CopFILE(PL_curcop);
+	if (!s)
+	    s = "(none)";
+	sprintf(buffer, "%.40s:%" IVdf " ", s, (IV) CopLINE(PL_curcop));
+	len = strlen(buffer);
+	vsprintf(buffer+len, fmt, ap);
+	PerlLIO_write(dbg, buffer, strlen(buffer));
+#else
+	SV *sv = newSVpvn("", 0);
+	char *s;
+	STRLEN len;
+	s = CopFILE(PL_curcop);
+	if (!s)
+	    s = "(none)";
+	Perl_sv_catpvf(aTHX_ sv, "%s:%" IVdf " ", s,
+		       (IV) CopLINE(PL_curcop));
+	Perl_sv_vcatpvf(aTHX_ sv, fmt, &ap);
+
+	s = SvPV(sv, len);
+	PerlLIO_write(dbg, s, len);
+	SvREFCNT_dec(sv);
+#endif
+    }
+#endif /* !SPEC_CPU */
+    va_end(ap);
+}

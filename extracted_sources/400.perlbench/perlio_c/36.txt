@@ -1,0 +1,25 @@
+static const char *
+PerlIO_context_layers(pTHX_ const char *mode)
+{
+    const char *type = NULL;
+    /*
+     * Need to supply default layer info from open.pm
+     */
+    if (PL_curcop) {
+	SV *layers = PL_curcop->cop_io;
+	if (layers) {
+	    STRLEN len;
+	    type = SvPV(layers, len);
+	    if (type && mode[0] != 'r') {
+		/*
+		 * Skip to write part
+		 */
+		const char *s = strchr(type, 0);
+		if (s && (STRLEN)(s - type) < len) {
+		    type = s + 1;
+		}
+	    }
+	}
+    }
+    return type;
+}

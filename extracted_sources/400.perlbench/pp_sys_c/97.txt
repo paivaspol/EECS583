@@ -1,0 +1,20 @@
+PP(pp_rewinddir)
+{
+#if defined(HAS_REWINDDIR) || defined(rewinddir)
+    dSP;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+
+    if (!io || !IoDIRP(io))
+	goto nope;
+
+    (void)PerlDir_rewind(IoDIRP(io));
+    RETPUSHYES;
+nope:
+    if (!errno)
+	SETERRNO(EBADF,RMS_ISI);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_dir_func, "rewinddir");
+#endif
+}

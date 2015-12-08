@@ -1,9 +1,9 @@
 void
-delete_barrier (insn)
+delete_jump (insn)
      rtx insn;
 {
-  if (GET_CODE (insn) != BARRIER)
-    abort ();
+  rtx set = single_set (insn);
 
-  delete_insn (insn);
+  if (set && GET_CODE (SET_DEST (set)) == PC)
+    delete_computation (insn);
 }

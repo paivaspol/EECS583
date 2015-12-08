@@ -1,0 +1,14 @@
+PP(pp_setpriority)
+{
+#ifdef HAS_SETPRIORITY
+    dSP; dTARGET;
+    int niceval = POPi;
+    int who = POPi;
+    int which = TOPi;
+    TAINT_PROPER("setpriority");
+    SETi( setpriority(which, who, niceval) >= 0 );
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "setpriority()");
+#endif
+}

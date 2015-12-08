@@ -1,0 +1,17 @@
+void
+PerlIO_list_free(pTHX_ PerlIO_list_t *list)
+{
+    if (list) {
+	if (--list->refcnt == 0) {
+	    if (list->array) {
+		IV i;
+		for (i = 0; i < list->cur; i++) {
+		    if (list->array[i].arg)
+			SvREFCNT_dec(list->array[i].arg);
+		}
+		Safefree(list->array);
+	    }
+	    Safefree(list);
+	}
+    }
+}

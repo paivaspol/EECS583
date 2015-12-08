@@ -1,27 +1,19 @@
-void
-Perl_rxres_save(pTHX_ void **rsp, REGEXP *rx)
+PP(pp_wantarray)
 {
-    UV *p = (UV*)*rsp;
-    U32 i;
+    dSP;
+    I32 cxix;
+    EXTEND(SP, 1);
 
-    if (!p || p[1] < rx->nparens) {
-	i = 6 + rx->nparens * 2;
-	if (!p)
-	    New(501, p, i, UV);
-	else
-	    Renew(p, i, UV);
-	*rsp = (void*)p;
-    }
+    cxix = dopoptosub(cxstack_ix);
+    if (cxix < 0)
+	RETPUSHUNDEF;
 
-    *p++ = PTR2UV(RX_MATCH_COPIED(rx) ? rx->subbeg : Nullch);
-    RX_MATCH_COPIED_off(rx);
-
-    *p++ = rx->nparens;
-
-    *p++ = PTR2UV(rx->subbeg);
-    *p++ = (UV)rx->sublen;
-    for (i = 0; i <= rx->nparens; ++i) {
-	*p++ = (UV)rx->startp[i];
-	*p++ = (UV)rx->endp[i];
+    switch (cxstack[cxix].blk_gimme) {
+    case G_ARRAY:
+	RETPUSHYES;
+    case G_SCALAR:
+	RETPUSHNO;
+    default:
+	RETPUSHUNDEF;
     }
 }

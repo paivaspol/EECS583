@@ -1,38 +1,10 @@
-SV*
-Perl_newSVrv(pTHX_ SV *rv, const char *classname)
+IV
+Perl_sv_iv(pTHX_ register SV *sv)
 {
-    SV *sv;
-
-    new_SV(sv);
-
-    SV_CHECK_THINKFIRST(rv);
-    SvAMAGIC_off(rv);
-
-    if (SvTYPE(rv) >= SVt_PVMG) {
-	U32 refcnt = SvREFCNT(rv);
-	SvREFCNT(rv) = 0;
-	sv_clear(rv);
-	SvFLAGS(rv) = 0;
-	SvREFCNT(rv) = refcnt;
+    if (SvIOK(sv)) {
+	if (SvIsUV(sv))
+	    return (IV)SvUVX(sv);
+	return SvIVX(sv);
     }
-
-    if (SvTYPE(rv) < SVt_RV)
-	sv_upgrade(rv, SVt_RV);
-    else if (SvTYPE(rv) > SVt_RV) {
-	SvOOK_off(rv);
-	if (SvPVX(rv) && SvLEN(rv))
-	    Safefree(SvPVX(rv));
-	SvCUR_set(rv, 0);
-	SvLEN_set(rv, 0);
-    }
-
-    SvOK_off(rv);
-    SvRV(rv) = sv;
-    SvROK_on(rv);
-
-    if (classname) {
-	HV* stash = gv_stashpv(classname, TRUE);
-	(void)sv_bless(rv, stash);
-    }
-    return sv;
+    return sv_2iv(sv);
 }

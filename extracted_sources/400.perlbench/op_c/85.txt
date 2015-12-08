@@ -1,0 +1,27 @@
+OP*
+Perl_newLOOPEX(pTHX_ I32 type, OP *label)
+{
+    OP *o;
+    STRLEN n_a;
+
+    if (type != OP_GOTO || label->op_type == OP_CONST) {
+	/* "last()" means "last" */
+	if (label->op_type == OP_STUB && (label->op_flags & OPf_PARENS))
+	    o = newOP(type, OPf_SPECIAL);
+	else {
+	    o = newPVOP(type, 0, savepv(label->op_type == OP_CONST
+					? SvPVx(((SVOP*)label)->op_sv, n_a)
+					: ""));
+	}
+	op_free(label);
+    }
+    else {
+	/* Check whether it's going to be a goto &function */
+	if (label->op_type == OP_ENTERSUB
+		&& !(label->op_flags & OPf_STACKED))
+	    label = newUNOP(OP_REFGEN, 0, mod(label, OP_REFGEN));
+	o = newUNOP(type, OPf_STACKED, label);
+    }
+    PL_hints |= HINT_BLOCK_SCOPE;
+    return o;
+}

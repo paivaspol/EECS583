@@ -1,0 +1,67 @@
+PP(pp_leaveeval)
+{
+    dSP;
+    register SV **mark;
+    SV **newsp;
+    PMOP *newpm;
+    I32 gimme;
+    register PERL_CONTEXT *cx;
+    OP *retop;
+    U8 save_flags = PL_op -> op_flags;
+    I32 optype;
+
+    POPBLOCK(cx,newpm);
+    POPEVAL(cx);
+    retop = pop_return();
+
+    TAINT_NOT;
+    if (gimme == G_VOID)
+	MARK = newsp;
+    else if (gimme == G_SCALAR) {
+	MARK = newsp + 1;
+	if (MARK <= SP) {
+	    if (SvFLAGS(TOPs) & SVs_TEMP)
+		*MARK = TOPs;
+	    else
+		*MARK = sv_mortalcopy(TOPs);
+	}
+	else {
+	    MEXTEND(mark,0);
+	    *MARK = &PL_sv_undef;
+	}
+	SP = MARK;
+    }
+    else {
+	/* in case LEAVE wipes old return values */
+	for (mark = newsp + 1; mark <= SP; mark++) {
+	    if (!(SvFLAGS(*mark) & SVs_TEMP)) {
+		*mark = sv_mortalcopy(*mark);
+		TAINT_NOT;	/* Each item is independent */
+	    }
+	}
+    }
+    PL_curpm = newpm;	/* Don't pop $1 et al till now */
+
+#ifdef DEBUGGING
+    assert(CvDEPTH(PL_compcv) == 1);
+#endif
+    CvDEPTH(PL_compcv) = 0;
+    lex_end();
+
+    if (optype == OP_REQUIRE &&
+	!(gimme == G_SCALAR ? SvTRUE(*SP) : SP > newsp))
+    {
+	/* Unassume the success we assumed earlier. */
+	SV *nsv = cx->blk_eval.old_namesv;
+	(void)hv_delete(GvHVn(PL_incgv), SvPVX(nsv), SvCUR(nsv), G_DISCARD);
+	retop = Perl_die(aTHX_ "%"SVf" did not return a true value", nsv);
+	/* die_where() did LEAVE, or we won't be here */
+    }
+    else {
+	LEAVE;
+	if (!(save_flags & OPf_SPECIAL))
+	    sv_setpv(ERRSV,"");
+    }
+
+    RETURNOP(retop);
+}

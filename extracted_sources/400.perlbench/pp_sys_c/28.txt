@@ -1,0 +1,253 @@
+PP(pp_sysread)
+{
+    dSP; dMARK; dORIGMARK; dTARGET;
+    int offset;
+    GV *gv;
+    IO *io;
+    char *buffer;
+    SSize_t length;
+    SSize_t count;
+    Sock_size_t bufsize;
+    SV *bufsv;
+    STRLEN blen;
+    MAGIC *mg;
+    int fp_utf8;
+    int buffer_utf8;
+    SV *read_target;
+    Size_t got = 0;
+    Size_t wanted;
+    bool charstart = FALSE;
+    STRLEN charskip = 0;
+    STRLEN skip = 0;
+
+    gv = (GV*)*++MARK;
+    if ((PL_op->op_type == OP_READ || PL_op->op_type == OP_SYSREAD)
+	&& gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	SV *sv;
+	
+	PUSHMARK(MARK-1);
+	*MARK = SvTIED_obj((SV*)io, mg);
+	ENTER;
+	call_method("READ", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	sv = POPs;
+	SP = ORIGMARK;
+	PUSHs(sv);
+	RETURN;
+    }
+
+    if (!gv)
+	goto say_undef;
+    bufsv = *++MARK;
+    if (! SvOK(bufsv))
+	sv_setpvn(bufsv, "", 0);
+    length = SvIVx(*++MARK);
+    SETERRNO(0,0);
+    if (MARK < SP)
+	offset = SvIVx(*++MARK);
+    else
+	offset = 0;
+    io = GvIO(gv);
+    if (!io || !IoIFP(io)) {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	SETERRNO(EBADF,RMS_IFI);
+	goto say_undef;
+    }
+    if ((fp_utf8 = PerlIO_isutf8(IoIFP(io))) && !IN_BYTES) {
+	buffer = SvPVutf8_force(bufsv, blen);
+	/* UTF-8 may not have been set if they are all low bytes */
+	SvUTF8_on(bufsv);
+	buffer_utf8 = 0;
+    }
+    else {
+	buffer = SvPV_force(bufsv, blen);
+	buffer_utf8 = !IN_BYTES && SvUTF8(bufsv);
+    }
+    if (length < 0)
+	DIE(aTHX_ "Negative length");
+    wanted = length;
+
+    charstart = TRUE;
+    charskip  = 0;
+    skip = 0;
+
+#ifdef HAS_SOCKET
+    if (PL_op->op_type == OP_RECV) {
+	char namebuf[MAXPATHLEN];
+#if (defined(VMS_DO_SOCKETS) && defined(DECCRTL_SOCKETS)) || defined(MPE) || defined(__QNXNTO__)
+	bufsize = sizeof (struct sockaddr_in);
+#else
+	bufsize = sizeof namebuf;
+#endif
+#ifdef OS2	/* At least Warp3+IAK: only the first byte of bufsize set */
+	if (bufsize >= 256)
+	    bufsize = 255;
+#endif
+	buffer = SvGROW(bufsv, (STRLEN)(length+1));
+	/* 'offset' means 'flags' here */
+	count = PerlSock_recvfrom(PerlIO_fileno(IoIFP(io)), buffer, length, offset,
+			  (struct sockaddr *)namebuf, &bufsize);
+	if (count < 0)
+	    RETPUSHUNDEF;
+#ifdef EPOC
+        /* Bogus return without padding */
+	bufsize = sizeof (struct sockaddr_in);
+#endif
+	SvCUR_set(bufsv, count);
+	*SvEND(bufsv) = '\0';
+	(void)SvPOK_only(bufsv);
+	if (fp_utf8)
+	    SvUTF8_on(bufsv);
+	SvSETMAGIC(bufsv);
+	/* This should not be marked tainted if the fp is marked clean */
+	if (!(IoFLAGS(io) & IOf_UNTAINT))
+	    SvTAINTED_on(bufsv);
+	SP = ORIGMARK;
+	sv_setpvn(TARG, namebuf, bufsize);
+	PUSHs(TARG);
+	RETURN;
+    }
+#else
+    if (PL_op->op_type == OP_RECV)
+	DIE(aTHX_ PL_no_sock_func, "recv");
+#endif
+    if (DO_UTF8(bufsv)) {
+	/* offset adjust in characters not bytes */
+	blen = sv_len_utf8(bufsv);
+    }
+    if (offset < 0) {
+	if (-offset > (int)blen)
+	    DIE(aTHX_ "Offset outside string");
+	offset += blen;
+    }
+    if (DO_UTF8(bufsv)) {
+	/* convert offset-as-chars to offset-as-bytes */
+	if (offset >= (int)blen)
+	    offset += SvCUR(bufsv) - blen;
+	else
+	    offset = utf8_hop((U8 *)buffer,offset) - (U8 *) buffer;
+    }
+ more_bytes:
+    bufsize = SvCUR(bufsv);
+    /* Allocating length + offset + 1 isn't perfect in the case of reading
+       bytes from a byte file handle into a UTF8 buffer, but it won't harm us
+       unduly.
+       (should be 2 * length + offset + 1, or possibly something longer if
+       PL_encoding is true) */
+    buffer  = SvGROW(bufsv, (STRLEN)(length+offset+1));
+    if (offset > bufsize) { /* Zero any newly allocated space */
+    	Zero(buffer+bufsize, offset-bufsize, char);
+    }
+    buffer = buffer + offset;
+    if (!buffer_utf8) {
+	read_target = bufsv;
+    } else {
+	/* Best to read the bytes into a new SV, upgrade that to UTF8, then
+	   concatenate it to the current buffer.  */
+
+	/* Truncate the existing buffer to the start of where we will be
+	   reading to:  */
+	SvCUR_set(bufsv, offset);
+
+	read_target = sv_newmortal();
+	(void)SvUPGRADE(read_target, SVt_PV);
+	buffer = SvGROW(read_target, (STRLEN)(length + 1));
+    }
+
+    if (PL_op->op_type == OP_SYSREAD) {
+#ifdef PERL_SOCK_SYSREAD_IS_RECV
+	if (IoTYPE(io) == IoTYPE_SOCKET) {
+	    count = PerlSock_recv(PerlIO_fileno(IoIFP(io)),
+				   buffer, length, 0);
+	}
+	else
+#endif
+	{
+	    count = PerlLIO_read(PerlIO_fileno(IoIFP(io)),
+				  buffer, length);
+	}
+    }
+    else
+#ifdef HAS_SOCKET__bad_code_maybe
+    if (IoTYPE(io) == IoTYPE_SOCKET) {
+	char namebuf[MAXPATHLEN];
+#if defined(VMS_DO_SOCKETS) && defined(DECCRTL_SOCKETS)
+	bufsize = sizeof (struct sockaddr_in);
+#else
+	bufsize = sizeof namebuf;
+#endif
+	count = PerlSock_recvfrom(PerlIO_fileno(IoIFP(io)), buffer, length, 0,
+			  (struct sockaddr *)namebuf, &bufsize);
+    }
+    else
+#endif
+    {
+	count = PerlIO_read(IoIFP(io), buffer, length);
+	/* PerlIO_read() - like fread() returns 0 on both error and EOF */
+	if (count == 0 && PerlIO_error(IoIFP(io)))
+	    count = -1;
+    }
+    if (count < 0) {
+	if ((IoTYPE(io) == IoTYPE_WRONLY) && ckWARN(WARN_IO))
+		report_evil_fh(gv, io, OP_phoney_OUTPUT_ONLY);
+	goto say_undef;
+    }
+    SvCUR_set(read_target, count+(buffer - SvPVX(read_target)));
+    *SvEND(read_target) = '\0';
+    (void)SvPOK_only(read_target);
+    if (fp_utf8 && !IN_BYTES) {
+	/* Look at utf8 we got back and count the characters */
+	char *bend = buffer + count;
+	while (buffer < bend) {
+	    if (charstart) {
+	        skip = UTF8SKIP(buffer);
+		charskip = 0;
+	    }
+	    if (buffer - charskip + skip > bend) {
+		/* partial character - try for rest of it */
+		length = skip - (bend-buffer);
+		offset = bend - SvPVX(bufsv);
+		charstart = FALSE;
+		charskip += count;
+		goto more_bytes;
+	    }
+	    else {
+		got++;
+		buffer += skip;
+		charstart = TRUE;
+		charskip  = 0;
+	    }
+        }
+	/* If we have not 'got' the number of _characters_ we 'wanted' get some more
+	   provided amount read (count) was what was requested (length)
+	 */
+	if (got < wanted && count == length) {
+	    length = wanted - got;
+	    offset = bend - SvPVX(bufsv);
+	    goto more_bytes;
+	}
+	/* return value is character count */
+	count = got;
+	SvUTF8_on(bufsv);
+    }
+    else if (buffer_utf8) {
+	/* Let svcatsv upgrade the bytes we read in to utf8.
+	   The buffer is a mortal so will be freed soon.  */
+	sv_catsv_nomg(bufsv, read_target);
+    }
+    SvSETMAGIC(bufsv);
+    /* This should not be marked tainted if the fp is marked clean */
+    if (!(IoFLAGS(io) & IOf_UNTAINT))
+	SvTAINTED_on(bufsv);
+    SP = ORIGMARK;
+    PUSHi(count);
+    RETURN;
+
+  say_undef:
+    SP = ORIGMARK;
+    RETPUSHUNDEF;
+}

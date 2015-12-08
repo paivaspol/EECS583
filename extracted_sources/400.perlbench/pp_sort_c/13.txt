@@ -1,19 +1,36 @@
 static I32
-sortcv_xsub(pTHX_ SV *a, SV *b)
+sortcv_stacked(pTHX_ SV *a, SV *b)
 {
-    dSP;
     I32 oldsaveix = PL_savestack_ix;
     I32 oldscopeix = PL_scopestack_ix;
     I32 result;
-    CV *cv=(CV*)PL_sortcop;
+    AV *av;
 
-    SP = PL_stack_base;
-    PUSHMARK(SP);
-    EXTEND(SP, 2);
-    *++SP = a;
-    *++SP = b;
-    PUTBACK;
-    (void)(*CvXSUB(cv))(aTHX_ cv);
+#ifdef USE_5005THREADS
+    av = (AV*)PAD_SVl(0);
+#else
+    av = GvAV(PL_defgv);
+#endif
+
+    if (AvMAX(av) < 1) {
+	SV** ary = AvALLOC(av);
+	if (AvARRAY(av) != ary) {
+	    AvMAX(av) += AvARRAY(av) - AvALLOC(av);
+	    SvPVX(av) = (char*)ary;
+	}
+	if (AvMAX(av) < 1) {
+	    AvMAX(av) = 1;
+	    Renew(ary,2,SV*);
+	    SvPVX(av) = (char*)ary;
+	}
+    }
+    AvFILLp(av) = 1;
+
+    AvARRAY(av)[0] = a;
+    AvARRAY(av)[1] = b;
+    PL_stack_sp = PL_stack_base;
+    PL_op = PL_sortcop;
+    CALLRUNOPS(aTHX);
     if (PL_stack_sp != PL_stack_base + 1)
 	Perl_croak(aTHX_ "Sort subroutine didn't return single value");
     if (!SvNIOKp(*PL_stack_sp))

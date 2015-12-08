@@ -1,0 +1,371 @@
+PP(pp_goto)
+{
+    dSP;
+    OP *retop = 0;
+    I32 ix;
+    register PERL_CONTEXT *cx;
+#define GOTO_DEPTH 64
+    OP *enterops[GOTO_DEPTH];
+    char *label;
+    int do_dump = (PL_op->op_type == OP_DUMP);
+    static char must_have_label[] = "goto must have label";
+
+    label = 0;
+    if (PL_op->op_flags & OPf_STACKED) {
+	SV *sv = POPs;
+	STRLEN n_a;
+
+	/* This egregious kludge implements goto &subroutine */
+	if (SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVCV) {
+	    I32 cxix;
+	    register PERL_CONTEXT *cx;
+	    CV* cv = (CV*)SvRV(sv);
+	    SV** mark;
+	    I32 items = 0;
+	    I32 oldsave;
+	    bool reified = 0;
+
+	retry:
+	    if (!CvROOT(cv) && !CvXSUB(cv)) {
+		GV *gv = CvGV(cv);
+		GV *autogv;
+		if (gv) {
+		    SV *tmpstr;
+		    /* autoloaded stub? */
+		    if (cv != GvCV(gv) && (cv = GvCV(gv)))
+			goto retry;
+		    autogv = gv_autoload4(GvSTASH(gv), GvNAME(gv),
+					  GvNAMELEN(gv), FALSE);
+		    if (autogv && (cv = GvCV(autogv)))
+			goto retry;
+		    tmpstr = sv_newmortal();
+		    gv_efullname3(tmpstr, gv, Nullch);
+		    DIE(aTHX_ "Goto undefined subroutine &%"SVf"",tmpstr);
+		}
+		DIE(aTHX_ "Goto undefined subroutine");
+	    }
+
+	    /* First do some returnish stuff. */
+	    SvREFCNT_inc(cv); /* avoid premature free during unwind */
+	    FREETMPS;
+	    cxix = dopoptosub(cxstack_ix);
+	    if (cxix < 0)
+		DIE(aTHX_ "Can't goto subroutine outside a subroutine");
+	    if (cxix < cxstack_ix)
+		dounwind(cxix);
+	    TOPBLOCK(cx);
+	    if (CxREALEVAL(cx))
+		DIE(aTHX_ "Can't goto subroutine from an eval-string");
+	    if (CxTYPE(cx) == CXt_SUB && cx->blk_sub.hasargs) {
+		/* put @_ back onto stack */
+		AV* av = cx->blk_sub.argarray;
+		
+		items = AvFILLp(av) + 1;
+		EXTEND(SP, items+1); /* @_ could have been extended. */
+		Copy(AvARRAY(av), SP + 1, items, SV*);
+#ifndef USE_5005THREADS
+		SvREFCNT_dec(GvAV(PL_defgv));
+		GvAV(PL_defgv) = cx->blk_sub.savearray;
+#endif /* USE_5005THREADS */
+		CLEAR_ARGARRAY(av);
+		/* abandon @_ if it got reified */
+		if (AvREAL(av)) {
+		    reified = 1;
+		    SvREFCNT_dec(av);
+		    av = newAV();
+		    av_extend(av, items-1);
+		    AvFLAGS(av) = AVf_REIFY;
+		    PAD_SVl(0) = (SV*)(cx->blk_sub.argarray = av);
+		}
+	    }
+	    else if (CvXSUB(cv)) {	/* put GvAV(defgv) back onto stack */
+		AV* av;
+#ifdef USE_5005THREADS
+		av = (AV*)PAD_SVl(0);
+#else
+		av = GvAV(PL_defgv);
+#endif
+		items = AvFILLp(av) + 1;
+		EXTEND(SP, items+1); /* @_ could have been extended. */
+		Copy(AvARRAY(av), SP + 1, items, SV*);
+	    }
+	    mark = SP;
+	    SP += items;
+	    if (CxTYPE(cx) == CXt_SUB &&
+		!(CvDEPTH(cx->blk_sub.cv) = cx->blk_sub.olddepth))
+		SvREFCNT_dec(cx->blk_sub.cv);
+	    oldsave = PL_scopestack[PL_scopestack_ix - 1];
+	    LEAVE_SCOPE(oldsave);
+
+	    /* Now do some callish stuff. */
+	    SAVETMPS;
+	    SAVEFREESV(cv); /* later, undo the 'avoid premature free' hack */
+	    if (CvXSUB(cv)) {
+		if (reified) {
+		    I32 index;
+		    for (index=0; index<items; index++)
+			sv_2mortal(SP[-index]);
+		}
+#ifdef PERL_XSUB_OLDSTYLE
+		if (CvOLDSTYLE(cv)) {
+		    I32 (*fp3)(int,int,int);
+		    while (SP > mark) {
+			SP[1] = SP[0];
+			SP--;
+		    }
+		    fp3 = (I32(*)(int,int,int))CvXSUB(cv);
+		    items = (*fp3)(CvXSUBANY(cv).any_i32,
+		                   mark - PL_stack_base + 1,
+				   items);
+		    SP = PL_stack_base + items;
+		}
+		else
+#endif /* PERL_XSUB_OLDSTYLE */
+		{
+		    SV **newsp;
+		    I32 gimme;
+
+		    /* Push a mark for the start of arglist */
+		    PUSHMARK(mark);
+		    PUTBACK;
+		    (void)(*CvXSUB(cv))(aTHX_ cv);
+		    /* Pop the current context like a decent sub should */
+		    POPBLOCK(cx, PL_curpm);
+		    /* Do _not_ use PUTBACK, keep the XSUB's return stack! */
+		}
+		LEAVE;
+		return pop_return();
+	    }
+	    else {
+		AV* padlist = CvPADLIST(cv);
+		if (CxTYPE(cx) == CXt_EVAL) {
+		    PL_in_eval = cx->blk_eval.old_in_eval;
+		    PL_eval_root = cx->blk_eval.old_eval_root;
+		    cx->cx_type = CXt_SUB;
+		    cx->blk_sub.hasargs = 0;
+		}
+		cx->blk_sub.cv = cv;
+		cx->blk_sub.olddepth = (U16)CvDEPTH(cv);
+
+		CvDEPTH(cv)++;
+		if (CvDEPTH(cv) < 2)
+		    (void)SvREFCNT_inc(cv);
+		else {
+		    if (CvDEPTH(cv) == 100 && ckWARN(WARN_RECURSION))
+			sub_crush_depth(cv);
+		    pad_push(padlist, CvDEPTH(cv), 1);
+		}
+#ifdef USE_5005THREADS
+		if (!cx->blk_sub.hasargs) {
+		    AV* av = (AV*)PAD_SVl(0);
+		
+		    items = AvFILLp(av) + 1;
+		    if (items) {
+			/* Mark is at the end of the stack. */
+			EXTEND(SP, items);
+			Copy(AvARRAY(av), SP + 1, items, SV*);
+			SP += items;
+			PUTBACK ;		
+		    }
+		}
+#endif /* USE_5005THREADS */
+		PAD_SET_CUR(padlist, CvDEPTH(cv));
+#ifndef USE_5005THREADS
+		if (cx->blk_sub.hasargs)
+#endif /* USE_5005THREADS */
+		{
+		    AV* av = (AV*)PAD_SVl(0);
+		    SV** ary;
+
+#ifndef USE_5005THREADS
+		    cx->blk_sub.savearray = GvAV(PL_defgv);
+		    GvAV(PL_defgv) = (AV*)SvREFCNT_inc(av);
+#endif /* USE_5005THREADS */
+		    CX_CURPAD_SAVE(cx->blk_sub);
+		    cx->blk_sub.argarray = av;
+
+		    if (items >= AvMAX(av) + 1) {
+			ary = AvALLOC(av);
+			if (AvARRAY(av) != ary) {
+			    AvMAX(av) += AvARRAY(av) - AvALLOC(av);
+			    SvPVX(av) = (char*)ary;
+			}
+			if (items >= AvMAX(av) + 1) {
+			    AvMAX(av) = items - 1;
+			    Renew(ary,items+1,SV*);
+			    AvALLOC(av) = ary;
+			    SvPVX(av) = (char*)ary;
+			}
+		    }
+		    ++mark;
+		    Copy(mark,AvARRAY(av),items,SV*);
+		    AvFILLp(av) = items - 1;
+		    assert(!AvREAL(av));
+		    if (reified) {
+			/* transfer 'ownership' of refcnts to new @_ */
+			AvREAL_on(av);
+			AvREIFY_off(av);
+		    }
+		    while (items--) {
+			if (*mark)
+			    SvTEMP_off(*mark);
+			mark++;
+		    }
+		}
+		if (PERLDB_SUB) {	/* Checking curstash breaks DProf. */
+		    /*
+		     * We do not care about using sv to call CV;
+		     * it's for informational purposes only.
+		     */
+		    SV *sv = GvSV(PL_DBsub);
+		    CV *gotocv;
+		
+		    if (PERLDB_SUB_NN) {
+			(void)SvUPGRADE(sv, SVt_PVIV);
+			(void)SvIOK_on(sv);
+			SAVEIV(SvIVX(sv));
+			SvIVX(sv) = PTR2IV(cv); /* Do it the quickest way */
+		    } else {
+			save_item(sv);
+			gv_efullname3(sv, CvGV(cv), Nullch);
+		    }
+		    if (  PERLDB_GOTO
+			  && (gotocv = get_cv("DB::goto", FALSE)) ) {
+			PUSHMARK( PL_stack_sp );
+			call_sv((SV*)gotocv, G_SCALAR | G_NODEBUG);
+			PL_stack_sp--;
+		    }
+		}
+		RETURNOP(CvSTART(cv));
+	    }
+	}
+	else {
+	    label = SvPV(sv,n_a);
+	    if (!(do_dump || *label))
+		DIE(aTHX_ must_have_label);
+	}
+    }
+    else if (PL_op->op_flags & OPf_SPECIAL) {
+	if (! do_dump)
+	    DIE(aTHX_ must_have_label);
+    }
+    else
+	label = cPVOP->op_pv;
+
+    if (label && *label) {
+	OP *gotoprobe = 0;
+	bool leaving_eval = FALSE;
+	bool in_block = FALSE;
+        PERL_CONTEXT *last_eval_cx = 0;
+
+	/* find label */
+
+	PL_lastgotoprobe = 0;
+	*enterops = 0;
+	for (ix = cxstack_ix; ix >= 0; ix--) {
+	    cx = &cxstack[ix];
+	    switch (CxTYPE(cx)) {
+	    case CXt_EVAL:
+		leaving_eval = TRUE;
+                if (!CxTRYBLOCK(cx)) {
+		    gotoprobe = (last_eval_cx ?
+				last_eval_cx->blk_eval.old_eval_root :
+				PL_eval_root);
+		    last_eval_cx = cx;
+		    break;
+                }
+                /* else fall through */
+	    case CXt_LOOP:
+		gotoprobe = cx->blk_oldcop->op_sibling;
+		break;
+	    case CXt_SUBST:
+		continue;
+	    case CXt_BLOCK:
+		if (ix) {
+		    gotoprobe = cx->blk_oldcop->op_sibling;
+		    in_block = TRUE;
+		} else
+		    gotoprobe = PL_main_root;
+		break;
+	    case CXt_SUB:
+		if (CvDEPTH(cx->blk_sub.cv)) {
+		    gotoprobe = CvROOT(cx->blk_sub.cv);
+		    break;
+		}
+		/* FALL THROUGH */
+	    case CXt_FORMAT:
+	    case CXt_NULL:
+		DIE(aTHX_ "Can't \"goto\" out of a pseudo block");
+	    default:
+		if (ix)
+		    DIE(aTHX_ "panic: goto");
+		gotoprobe = PL_main_root;
+		break;
+	    }
+	    if (gotoprobe) {
+		retop = dofindlabel(gotoprobe, label,
+				    enterops, enterops + GOTO_DEPTH);
+		if (retop)
+		    break;
+	    }
+	    PL_lastgotoprobe = gotoprobe;
+	}
+	if (!retop)
+	    DIE(aTHX_ "Can't find label %s", label);
+
+	/* if we're leaving an eval, check before we pop any frames
+           that we're not going to punt, otherwise the error
+	   won't be caught */
+
+	if (leaving_eval && *enterops && enterops[1]) {
+	    I32 i;
+            for (i = 1; enterops[i]; i++)
+                if (enterops[i]->op_type == OP_ENTERITER)
+                    DIE(aTHX_ "Can't \"goto\" into the middle of a foreach loop");
+	}
+
+	/* pop unwanted frames */
+
+	if (ix < cxstack_ix) {
+	    I32 oldsave;
+
+	    if (ix < 0)
+		ix = 0;
+	    dounwind(ix);
+	    TOPBLOCK(cx);
+	    oldsave = PL_scopestack[PL_scopestack_ix];
+	    LEAVE_SCOPE(oldsave);
+	}
+
+	/* push wanted frames */
+
+	if (*enterops && enterops[1]) {
+	    OP *oldop = PL_op;
+	    ix = enterops[1]->op_type == OP_ENTER && in_block ? 2 : 1;
+	    for (; enterops[ix]; ix++) {
+		PL_op = enterops[ix];
+		/* Eventually we may want to stack the needed arguments
+		 * for each op.  For now, we punt on the hard ones. */
+		if (PL_op->op_type == OP_ENTERITER)
+		    DIE(aTHX_ "Can't \"goto\" into the middle of a foreach loop");
+		CALL_FPTR(PL_op->op_ppaddr)(aTHX);
+	    }
+	    PL_op = oldop;
+	}
+    }
+
+    if (do_dump) {
+#ifdef VMS
+	if (!retop) retop = PL_main_start;
+#endif
+	PL_restartop = retop;
+	PL_do_undump = TRUE;
+
+	my_unexec();
+
+	PL_restartop = 0;		/* hmm, must be GNU unexec().. */
+	PL_do_undump = FALSE;
+    }
+
+    RETURNOP(retop);
+}

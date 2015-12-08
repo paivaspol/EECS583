@@ -1,0 +1,26 @@
+PP(pp_rename)
+{
+    dSP; dTARGET;
+    int anum;
+    STRLEN n_a;
+
+    char *tmps2 = POPpx;
+    char *tmps = SvPV(TOPs, n_a);
+    TAINT_PROPER("rename");
+#ifdef HAS_RENAME
+    anum = PerlLIO_rename(tmps, tmps2);
+#else
+    if (!(anum = PerlLIO_stat(tmps, &PL_statbuf))) {
+	if (same_dirent(tmps2, tmps))	/* can always rename to same name */
+	    anum = 1;
+	else {
+	    if (PL_euid || PerlLIO_stat(tmps2, &PL_statbuf) < 0 || !S_ISDIR(PL_statbuf.st_mode))
+		(void)UNLINK(tmps2);
+	    if (!(anum = link(tmps, tmps2)))
+		anum = UNLINK(tmps);
+	}
+    }
+#endif
+    SETi( anum >= 0 );
+    RETURN;
+}

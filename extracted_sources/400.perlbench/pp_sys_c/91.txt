@@ -1,0 +1,31 @@
+PP(pp_mkdir)
+{
+    dSP; dTARGET;
+    int mode;
+#ifndef HAS_MKDIR
+    int oldumask;
+#endif
+    STRLEN len;
+    char *tmps;
+    bool copy = FALSE;
+
+    if (MAXARG > 1)
+	mode = POPi;
+    else
+	mode = 0777;
+
+    TRIMSLASHES(tmps,len,copy);
+
+    TAINT_PROPER("mkdir");
+#ifdef HAS_MKDIR
+    SETi( PerlDir_mkdir(tmps, mode) >= 0 );
+#else
+    SETi( dooneliner("mkdir", tmps) );
+    oldumask = PerlLIO_umask(0);
+    PerlLIO_umask(oldumask);
+    PerlLIO_chmod(tmps, (mode & ~oldumask) & 0777);
+#endif
+    if (copy)
+	Safefree(tmps);
+    RETURN;
+}

@@ -1,5 +1,21 @@
 void
-Perl_gv_fullname3(pTHX_ SV *sv, GV *gv, const char *prefix)
+Perl_gv_fullname4(pTHX_ SV *sv, GV *gv, const char *prefix, bool keepmain)
 {
-    gv_fullname4(sv, gv, prefix, TRUE);
+    char *name;
+    HV *hv = GvSTASH(gv);
+    if (!hv) {
+	SvOK_off(sv);
+	return;
+    }
+    sv_setpv(sv, prefix ? prefix : "");
+    
+    name = HvNAME(hv);
+    if (!name)
+	name = "__ANON__";
+	
+    if (keepmain || strNE(name, "main")) {
+	sv_catpv(sv,name);
+	sv_catpvn(sv,"::", 2);
+    }
+    sv_catpvn(sv,GvNAME(gv),GvNAMELEN(gv));
 }

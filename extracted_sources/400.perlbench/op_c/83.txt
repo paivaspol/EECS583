@@ -1,0 +1,92 @@
+OP *
+Perl_newWHILEOP(pTHX_ I32 flags, I32 debuggable, LOOP *loop, I32 whileline, OP *expr, OP *block, OP *cont)
+{
+    OP *redo;
+    OP *next = 0;
+    OP *listop;
+    OP *o;
+    U8 loopflags = 0;
+
+    if (expr && (expr->op_type == OP_READLINE || expr->op_type == OP_GLOB
+		 || (expr->op_type == OP_NULL && expr->op_targ == OP_GLOB))) {
+	expr = newUNOP(OP_DEFINED, 0,
+	    newASSIGNOP(0, newDEFSVOP(), 0, expr) );
+    } else if (expr && (expr->op_flags & OPf_KIDS)) {
+	OP *k1 = ((UNOP*)expr)->op_first;
+	OP *k2 = (k1) ? k1->op_sibling : NULL;
+	switch (expr->op_type) {
+	  case OP_NULL:
+	    if (k2 && k2->op_type == OP_READLINE
+		  && (k2->op_flags & OPf_STACKED)
+		  && ((k1->op_flags & OPf_WANT) == OPf_WANT_SCALAR))
+		expr = newUNOP(OP_DEFINED, 0, expr);
+	    break;
+
+	  case OP_SASSIGN:
+	    if (k1->op_type == OP_READDIR
+		  || k1->op_type == OP_GLOB
+		  || (k1->op_type == OP_NULL && k1->op_targ == OP_GLOB)
+		  || k1->op_type == OP_EACH)
+		expr = newUNOP(OP_DEFINED, 0, expr);
+	    break;
+	}
+    }
+
+    if (!block)
+	block = newOP(OP_NULL, 0);
+    else if (cont) {
+	block = scope(block);
+    }
+
+    if (cont) {
+	next = LINKLIST(cont);
+    }
+    if (expr) {
+	OP *unstack = newOP(OP_UNSTACK, 0);
+	if (!next)
+	    next = unstack;
+	cont = append_elem(OP_LINESEQ, cont, unstack);
+    }
+
+    listop = append_list(OP_LINESEQ, (LISTOP*)block, (LISTOP*)cont);
+    redo = LINKLIST(listop);
+
+    if (expr) {
+	PL_copline = (line_t)whileline;
+	scalar(listop);
+	o = new_logop(OP_AND, 0, &expr, &listop);
+	if (o == expr && o->op_type == OP_CONST && !SvTRUE(cSVOPo->op_sv)) {
+	    op_free(expr);		/* oops, it's a while (0) */
+	    op_free((OP*)loop);
+	    return Nullop;		/* listop already freed by new_logop */
+	}
+	if (listop)
+	    ((LISTOP*)listop)->op_last->op_next =
+		(o == listop ? redo : LINKLIST(o));
+    }
+    else
+	o = listop;
+
+    if (!loop) {
+	NewOp(1101,loop,1,LOOP);
+	loop->op_type = OP_ENTERLOOP;
+	loop->op_ppaddr = PL_ppaddr[OP_ENTERLOOP];
+	loop->op_private = 0;
+	loop->op_next = (OP*)loop;
+    }
+
+    o = newBINOP(OP_LEAVELOOP, 0, (OP*)loop, o);
+
+    loop->op_redoop = redo;
+    loop->op_lastop = o;
+    o->op_private |= loopflags;
+
+    if (next)
+	loop->op_nextop = next;
+    else
+	loop->op_nextop = o;
+
+    o->op_flags |= flags;
+    o->op_private |= (flags >> 8);
+    return o;
+}

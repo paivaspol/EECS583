@@ -1,28 +1,102 @@
-void
-commit_edge_insertions ()
+static void
+commit_one_edge_insertion (e)
+     edge e;
 {
-  int i;
+  rtx before = NULL_RTX, after = NULL_RTX, insns, tmp, last;
   basic_block bb;
 
-#ifdef ENABLE_CHECKING
-  verify_flow_info ();
-#endif
+  /* Pull the insns off the edge now since the edge might go away.  */
+  insns = e->insns;
+  e->insns = NULL_RTX;
 
-  i = -1;
-  bb = ENTRY_BLOCK_PTR;
-  while (1)
+  /* Figure out where to put these things.  If the destination has
+     one predecessor, insert there.  Except for the exit block.  */
+  if (e->dest->pred->pred_next == NULL
+      && e->dest != EXIT_BLOCK_PTR)
     {
-      edge e, next;
+      bb = e->dest;
 
-      for (e = bb->succ; e; e = next)
-	{
-	  next = e->succ_next;
-	  if (e->insns)
-	    commit_one_edge_insertion (e);
-	}
-
-      if (++i >= n_basic_blocks)
-	break;
-      bb = BASIC_BLOCK (i);
+      /* Get the location correct wrt a code label, and "nice" wrt
+	 a basic block note, and before everything else.  */
+      tmp = bb->head;
+      if (GET_CODE (tmp) == CODE_LABEL)
+	tmp = NEXT_INSN (tmp);
+      if (NOTE_INSN_BASIC_BLOCK_P (tmp))
+	tmp = NEXT_INSN (tmp);
+      if (tmp == bb->head)
+	before = tmp;
+      else
+	after = PREV_INSN (tmp);
     }
+
+  /* If the source has one successor and the edge is not abnormal,
+     insert there.  Except for the entry block.  */
+  else if ((e->flags & EDGE_ABNORMAL) == 0
+	   && e->src->succ->succ_next == NULL
+	   && e->src != ENTRY_BLOCK_PTR)
+    {
+      bb = e->src;
+
+      /* It is possible to have a non-simple jump here.  Consider a target
+	 where some forms of unconditional jumps clobber a register.  This
+	 happens on the fr30 for example.
+
+	 We know this block has a single successor, so we can just emit
+	 the queued insns before the jump.  */
+      if (GET_CODE (bb->end) == JUMP_INSN)
+	for (before = bb->end;
+	     GET_CODE (PREV_INSN (before)) == NOTE
+	     && NOTE_LINE_NUMBER (PREV_INSN (before)) == NOTE_INSN_LOOP_BEG;
+	     before = PREV_INSN (before))
+	  ;
+      else
+	{
+	  /* We'd better be fallthru, or we've lost track of what's what.  */
+	  if ((e->flags & EDGE_FALLTHRU) == 0)
+	    abort ();
+
+	  after = bb->end;
+	}
+    }
+
+  /* Otherwise we must split the edge.  */
+  else
+    {
+      bb = split_edge (e);
+      after = bb->end;
+    }
+
+  /* Now that we've found the spot, do the insertion.  */
+
+  if (before)
+    {
+      emit_insns_before (insns, before);
+      last = prev_nonnote_insn (before);
+    }
+  else
+    last = emit_insns_after (insns, after);
+
+  if (returnjump_p (last))
+    {
+      /* ??? Remove all outgoing edges from BB and add one for EXIT.
+         This is not currently a problem because this only happens
+	 for the (single) epilogue, which already has a fallthru edge
+	 to EXIT.  */
+
+      e = bb->succ;
+      if (e->dest != EXIT_BLOCK_PTR
+	  || e->succ_next != NULL
+	  || (e->flags & EDGE_FALLTHRU) == 0)
+	abort ();
+
+      e->flags &= ~EDGE_FALLTHRU;
+      emit_barrier_after (last);
+
+      if (before)
+	delete_insn (before);
+    }
+  else if (GET_CODE (last) == JUMP_INSN)
+    abort ();
+
+  find_sub_basic_blocks (bb);
 }

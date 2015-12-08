@@ -1,34 +1,18 @@
-SV *
-Perl_magic_scalarpack(pTHX_ HV *hv, MAGIC *mg)
+U32
+Perl_magic_sizepack(pTHX_ SV *sv, MAGIC *mg)
 {
     dSP;
-    SV *retval = &PL_sv_undef;
-    SV *tied = SvTIED_obj((SV*)hv, mg);
-    HV *pkg = SvSTASH((SV*)SvRV(tied));
-   
-    if (!gv_fetchmethod_autoload(pkg, "SCALAR", FALSE)) {
-        SV *key;
-        if (HvEITER(hv))
-            /* we are in an iteration so the hash cannot be empty */
-            return &PL_sv_yes;
-        /* no xhv_eiter so now use FIRSTKEY */
-        key = sv_newmortal();
-        magic_nextpack((SV*)hv, mg, key);
-        HvEITER(hv) = NULL;     /* need to reset iterator */
-        return SvOK(key) ? &PL_sv_yes : &PL_sv_no;
-    }
-   
-    /* there is a SCALAR method that we can call */
-    ENTER;
-    PUSHSTACKi(PERLSI_MAGIC);
-    PUSHMARK(SP);
-    EXTEND(SP, 1);
-    PUSHs(tied);
-    PUTBACK;
+    U32 retval = 0;
 
-    if (call_method("SCALAR", G_SCALAR))
-        retval = *PL_stack_sp--; 
+    ENTER;
+    SAVETMPS;
+    PUSHSTACKi(PERLSI_MAGIC);
+    if (magic_methcall(sv, mg, "FETCHSIZE", G_SCALAR, 2, NULL)) {
+	sv = *PL_stack_sp--;
+	retval = (U32) SvIV(sv)-1;
+    }
     POPSTACK;
+    FREETMPS;
     LEAVE;
     return retval;
 }

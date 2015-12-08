@@ -1,0 +1,24 @@
+PP(pp_getpgrp)
+{
+#ifdef HAS_GETPGRP
+    dSP; dTARGET;
+    Pid_t pid;
+    Pid_t pgrp;
+
+    if (MAXARG < 1)
+	pid = 0;
+    else
+	pid = SvIVx(POPs);
+#ifdef BSD_GETPGRP
+    pgrp = (I32)BSD_GETPGRP(pid);
+#else
+    if (pid != 0 && pid != PerlProc_getpid())
+	DIE(aTHX_ "POSIX getpgrp can't take an argument");
+    pgrp = getpgrp();
+#endif
+    XPUSHi(pgrp);
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "getpgrp()");
+#endif
+}

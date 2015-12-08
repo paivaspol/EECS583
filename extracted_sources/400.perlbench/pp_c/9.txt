@@ -1,0 +1,24 @@
+PP(pp_rv2cv)
+{
+    dSP;
+    GV *gv;
+    HV *stash;
+
+    /* We usually try to add a non-existent subroutine in case of AUTOLOAD. */
+    /* (But not in defined().) */
+    CV *cv = sv_2cv(TOPs, &stash, &gv, !(PL_op->op_flags & OPf_SPECIAL));
+    if (cv) {
+	if (CvCLONE(cv))
+	    cv = (CV*)sv_2mortal((SV*)cv_clone(cv));
+	if ((PL_op->op_private & OPpLVAL_INTRO)) {
+	    if (gv && GvCV(gv) == cv && (gv = gv_autoload4(GvSTASH(gv), GvNAME(gv), GvNAMELEN(gv), FALSE)))
+		cv = GvCV(gv);
+	    if (!CvLVALUE(cv))
+		DIE(aTHX_ "Can't modify non-lvalue subroutine call");
+	}
+    }
+    else
+	cv = (CV*)&PL_sv_undef;
+    SETs((SV*)cv);
+    RETURN;
+}

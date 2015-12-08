@@ -1,6 +1,9 @@
-UV
-Perl_to_utf8_title(pTHX_ U8 *p, U8* ustrp, STRLEN *lenp)
+bool
+Perl_is_utf8_xdigit(pTHX_ U8 *p)
 {
-    return Perl_to_utf8_case(aTHX_ p, ustrp, lenp,
-                             &PL_utf8_totitle, "ToTitle", "utf8::ToSpecTitle");
+    if (!is_utf8_char(p))
+	return FALSE;
+    if (!PL_utf8_xdigit)
+	PL_utf8_xdigit = swash_init("utf8", "IsXDigit", &PL_sv_undef, 0, 0);
+    return swash_fetch(PL_utf8_xdigit, p, TRUE) != 0;
 }

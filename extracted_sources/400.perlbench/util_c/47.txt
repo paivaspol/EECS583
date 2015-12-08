@@ -1,19 +1,12 @@
 void
-Perl_cond_signal(pTHX_ perl_cond *cp)
+Perl_set_context(void *t)
 {
-    perl_os_thread t;
-    perl_cond cond = *cp;
-
-    if (!cond)
-	return;
-    t = cond->thread;
-    /* Insert t in the runnable queue just ahead of us */
-    t->i.next_run = thr->i.next_run;
-    thr->i.next_run->i.prev_run = t;
-    t->i.prev_run = thr;
-    thr->i.next_run = t;
-    thr->i.wait_queue = 0;
-    /* Remove from the wait queue */
-    *cp = cond->next;
-    Safefree(cond);
+#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
+#  ifdef I_MACH_CTHREADS
+    cthread_set_data(cthread_self(), t);
+#  else
+    if (pthread_setspecific(PL_thr_key, t))
+	Perl_croak_nocontext("panic: pthread_setspecific");
+#  endif
+#endif
 }

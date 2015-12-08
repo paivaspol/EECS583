@@ -1,13 +1,25 @@
 int
-c_unsafe_for_reeval (exp)
+c_safe_from_p (target, exp)
+     rtx target;
      tree exp;
 {
-  /* Statement expressions may not be reevaluated, likewise compound
-     literals.  */
-  if (TREE_CODE (exp) == STMT_EXPR
-      || TREE_CODE (exp) == COMPOUND_LITERAL_EXPR)
-    return 2;
+  /* We can see statements here when processing the body of a
+     statement-expression.  For a declaration statement declaring a
+     variable, look at the variable's initializer.  */
+  if (TREE_CODE (exp) == DECL_STMT) 
+    {
+      tree decl = DECL_STMT_DECL (exp);
 
-  /* Walk all other expressions.  */
-  return -1;
+      if (TREE_CODE (decl) == VAR_DECL
+	  && DECL_INITIAL (decl)
+	  && !safe_from_p (target, DECL_INITIAL (decl), /*top_p=*/0))
+	return 0;
+    }
+
+  /* For any statement, we must follow the statement-chain.  */
+  if (statement_code_p (TREE_CODE (exp)) && TREE_CHAIN (exp))
+    return safe_from_p (target, TREE_CHAIN (exp), /*top_p=*/0);
+
+  /* Assume everything else is safe.  */
+  return 1;
 }

@@ -1,0 +1,35 @@
+bool search_subdirs(char *parent, char *libdir)
+{
+  char *ptr;
+  bool found;
+  
+  /* Search a few common subdirectory names for the gromacs library dir */
+  sprintf(libdir,"%s%cshare%ctop%cgurgle.dat",parent,
+	  DIR_SEPARATOR,DIR_SEPARATOR,DIR_SEPARATOR);
+  found=fexist(libdir);
+  if(!found) {
+    sprintf(libdir,"%s%cshare%cgromacs%ctop%cgurgle.dat",parent,
+	    DIR_SEPARATOR,DIR_SEPARATOR,
+	    DIR_SEPARATOR,DIR_SEPARATOR);
+    found=fexist(libdir);
+  }    
+  if(!found) {
+    sprintf(libdir,"%s%cshare%cgromacs-%s%ctop%cgurgle.dat",parent,
+	    DIR_SEPARATOR,DIR_SEPARATOR,VERSION,
+	    DIR_SEPARATOR,DIR_SEPARATOR);
+    found=fexist(libdir);
+  }    
+  if(!found) {
+    sprintf(libdir,"%s%cshare%cgromacs%cgromacs-%s%ctop%cgurgle.dat",parent,
+	    DIR_SEPARATOR,DIR_SEPARATOR,DIR_SEPARATOR,
+	    VERSION,DIR_SEPARATOR,DIR_SEPARATOR);
+      found=fexist(libdir);
+  }    
+  
+  /* Remove the gurgle.dat part from libdir if we found something */
+  if(found) {
+    ptr=strrchr(libdir,DIR_SEPARATOR); /* slash or backslash always present, no check necessary */
+    *ptr='\0';
+  }
+  return found;
+}

@@ -1,29 +1,19 @@
-void
-Perl_ptr_table_split(pTHX_ PTR_TBL_t *tbl)
+STATIC void
+S_more_pte(pTHX)
 {
-    PTR_TBL_ENT_t **ary = tbl->tbl_ary;
-    UV oldsize = tbl->tbl_max + 1;
-    UV newsize = oldsize * 2;
-    UV i;
+    register struct ptr_tbl_ent* pte;
+    register struct ptr_tbl_ent* pteend;
+    XPV *ptr;
+    New(54, ptr, PERL_ARENA_SIZE/sizeof(XPV), XPV);
+    ptr->xpv_pv = (char*)PL_pte_arenaroot;
+    PL_pte_arenaroot = ptr;
 
-    Renew(ary, newsize, PTR_TBL_ENT_t*);
-    Zero(&ary[oldsize], newsize-oldsize, PTR_TBL_ENT_t*);
-    tbl->tbl_max = --newsize;
-    tbl->tbl_ary = ary;
-    for (i=0; i < oldsize; i++, ary++) {
-	PTR_TBL_ENT_t **curentp, **entp, *ent;
-	if (!*ary)
-	    continue;
-	curentp = ary + oldsize;
-	for (entp = ary, ent = *ary; ent; ent = *entp) {
-	    if ((newsize & PTR_TABLE_HASH(ent->oldval)) != i) {
-		*entp = ent->next;
-		ent->next = *curentp;
-		*curentp = ent;
-		continue;
-	    }
-	    else
-		entp = &ent->next;
-	}
+    pte = (struct ptr_tbl_ent*)ptr;
+    pteend = &pte[PERL_ARENA_SIZE / sizeof(struct ptr_tbl_ent) - 1];
+    PL_pte_root = ++pte;
+    while (pte < pteend) {
+	pte->next = pte + 1;
+	pte++;
     }
+    pte->next = 0;
 }

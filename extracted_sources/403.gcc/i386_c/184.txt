@@ -1,24 +1,49 @@
-int
-ix86_secondary_memory_needed (class1, class2, mode, strict)
-     enum reg_class class1, class2;
-     enum machine_mode mode;
-     int strict;
+static rtx
+ix86_expand_sse_compare (d, arglist, target)
+     const struct builtin_description *d;
+     tree arglist;
+     rtx target;
 {
-  if (MAYBE_FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class1)
-      || MAYBE_FLOAT_CLASS_P (class2) != FLOAT_CLASS_P (class2)
-      || MAYBE_SSE_CLASS_P (class1) != SSE_CLASS_P (class1)
-      || MAYBE_SSE_CLASS_P (class2) != SSE_CLASS_P (class2)
-      || MAYBE_MMX_CLASS_P (class1) != MMX_CLASS_P (class1)
-      || MAYBE_MMX_CLASS_P (class2) != MMX_CLASS_P (class2))
+  rtx pat;
+  tree arg0 = TREE_VALUE (arglist);
+  tree arg1 = TREE_VALUE (TREE_CHAIN (arglist));
+  rtx op0 = expand_expr (arg0, NULL_RTX, VOIDmode, 0);
+  rtx op1 = expand_expr (arg1, NULL_RTX, VOIDmode, 0);
+  rtx op2;
+  enum machine_mode tmode = insn_data[d->icode].operand[0].mode;
+  enum machine_mode mode0 = insn_data[d->icode].operand[1].mode;
+  enum machine_mode mode1 = insn_data[d->icode].operand[2].mode;
+  enum rtx_code comparison = d->comparison;
+
+  if (VECTOR_MODE_P (mode0))
+    op0 = safe_vector_operand (op0, mode0);
+  if (VECTOR_MODE_P (mode1))
+    op1 = safe_vector_operand (op1, mode1);
+
+  /* Swap operands if we have a comparison that isn't available in
+     hardware.  */
+  if (d->flag)
     {
-      if (strict)
-	abort ();
-      else
-	return 1;
+      rtx tmp = gen_reg_rtx (mode1);
+      emit_move_insn (tmp, op1);
+      op1 = op0;
+      op0 = tmp;
     }
-  return (FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class2)
-	  || (SSE_CLASS_P (class1) != SSE_CLASS_P (class2)
-	      && (mode) != SImode)
-	  || (MMX_CLASS_P (class1) != MMX_CLASS_P (class2)
-	      && (mode) != SImode));
+
+  if (! target
+      || GET_MODE (target) != tmode
+      || ! (*insn_data[d->icode].operand[0].predicate) (target, tmode))
+    target = gen_reg_rtx (tmode);
+
+  if (! (*insn_data[d->icode].operand[1].predicate) (op0, mode0))
+    op0 = copy_to_mode_reg (mode0, op0);
+  if (! (*insn_data[d->icode].operand[2].predicate) (op1, mode1))
+    op1 = copy_to_mode_reg (mode1, op1);
+
+  op2 = gen_rtx_fmt_ee (comparison, mode0, op0, op1);
+  pat = GEN_FCN (d->icode) (target, op0, op1, op2);
+  if (! pat)
+    return 0;
+  emit_insn (pat);
+  return target;
 }

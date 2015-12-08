@@ -1,24 +1,43 @@
 void
-print_edge_list (f, elist)
-     FILE *f;
-     struct edge_list *elist;
+find_unreachable_blocks ()
 {
-  int x;
+  edge e;
+  int i, n;
+  basic_block *tos, *worklist;
 
-  fprintf (f, "Compressed edge list, %d BBs + entry & exit, and %d edges\n",
-	   elist->num_blocks - 2, elist->num_edges);
+  n = n_basic_blocks;
+  tos = worklist = (basic_block *) xmalloc (sizeof (basic_block) * n);
 
-  for (x = 0; x < elist->num_edges; x++)
+  /* Clear all the reachability flags.  */
+
+  for (i = 0; i < n; ++i)
+    BASIC_BLOCK (i)->flags &= ~BB_REACHABLE;
+
+  /* Add our starting points to the worklist.  Almost always there will
+     be only one.  It isn't inconceivable that we might one day directly
+     support Fortran alternate entry points.  */
+
+  for (e = ENTRY_BLOCK_PTR->succ; e; e = e->succ_next)
     {
-      fprintf (f, " %-4d - edge(", x);
-      if (INDEX_EDGE_PRED_BB (elist, x) == ENTRY_BLOCK_PTR)
-	fprintf (f, "entry,");
-      else
-	fprintf (f, "%d,", INDEX_EDGE_PRED_BB (elist, x)->index);
+      *tos++ = e->dest;
 
-      if (INDEX_EDGE_SUCC_BB (elist, x) == EXIT_BLOCK_PTR)
-	fprintf (f, "exit)\n");
-      else
-	fprintf (f, "%d)\n", INDEX_EDGE_SUCC_BB (elist, x)->index);
+      /* Mark the block reachable.  */
+      e->dest->flags |= BB_REACHABLE;
     }
+
+  /* Iterate: find everything reachable from what we've already seen.  */
+
+  while (tos != worklist)
+    {
+      basic_block b = *--tos;
+
+      for (e = b->succ; e; e = e->succ_next)
+	if (!(e->dest->flags & BB_REACHABLE))
+	  {
+	    *tos++ = e->dest;
+	    e->dest->flags |= BB_REACHABLE;
+	  }
+    }
+
+  free (worklist);
 }

@@ -1,10 +1,29 @@
-static void
-ix86_svr3_asm_out_constructor (symbol, priority)
-     rtx symbol;
-     int priority ATTRIBUTE_UNUSED;
+int
+ix86_register_move_cost (mode, class1, class2)
+     enum machine_mode mode;
+     enum reg_class class1, class2;
 {
-  init_section ();
-  fputs ("\tpushl $", asm_out_file);
-  assemble_name (asm_out_file, XSTR (symbol, 0));
-  fputc ('\n', asm_out_file);
+  /* In case we require secondary memory, compute cost of the store followed
+     by load.  In case of copying from general_purpose_register we may emit
+     multiple stores followed by single load causing memory size mismatch
+     stall.  Count this as arbitarily high cost of 20.  */
+  if (ix86_secondary_memory_needed (class1, class2, mode, 0))
+    {
+      int add_cost = 0;
+      if (CLASS_MAX_NREGS (class1, mode) > CLASS_MAX_NREGS (class2, mode))
+	  add_cost = 20;
+      return (MEMORY_MOVE_COST (mode, class1, 0)
+	      + MEMORY_MOVE_COST (mode, class2, 1) + add_cost);
+    }
+  /* Moves between SSE/MMX and integer unit are expensive.  */
+  if (MMX_CLASS_P (class1) != MMX_CLASS_P (class2)
+      || SSE_CLASS_P (class1) != SSE_CLASS_P (class2))
+    return ix86_cost->mmxsse_to_integer;
+  if (MAYBE_FLOAT_CLASS_P (class1))
+    return ix86_cost->fp_move;
+  if (MAYBE_SSE_CLASS_P (class1))
+    return ix86_cost->sse_move;
+  if (MAYBE_MMX_CLASS_P (class1))
+    return ix86_cost->mmx_move;
+  return 2;
 }

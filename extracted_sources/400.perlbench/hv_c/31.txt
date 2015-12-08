@@ -1,5 +1,9 @@
-void
-Perl_unsharepvn(pTHX_ const char *str, I32 len, U32 hash)
+SV *
+Perl_hv_iternextsv(pTHX_ HV *hv, char **key, I32 *retlen)
 {
-    unshare_hek_or_pvn (NULL, str, len, hash);
+    HE *he;
+    if ( (he = hv_iternext_flags(hv, 0)) == NULL)
+	return NULL;
+    *key = hv_iterkey(he, retlen);
+    return hv_iterval(hv, he);
 }

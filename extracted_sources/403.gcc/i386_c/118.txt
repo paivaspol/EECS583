@@ -1,60 +1,67 @@
-static void
-ix86_fp_comparison_codes (code, bypass_code, first_code, second_code)
-     enum rtx_code code, *bypass_code, *first_code, *second_code;
+static enum rtx_code
+ix86_prepare_fp_compare_args (code, pop0, pop1)
+     enum rtx_code code;
+     rtx *pop0, *pop1;
 {
-  *first_code = code;
-  *bypass_code = NIL;
-  *second_code = NIL;
+  enum machine_mode fpcmp_mode = ix86_fp_compare_mode (code);
+  rtx op0 = *pop0, op1 = *pop1;
+  enum machine_mode op_mode = GET_MODE (op0);
+  int is_sse = SSE_REG_P (op0) | SSE_REG_P (op1);
 
-  /* The fcomi comparison sets flags as follows:
+  /* All of the unordered compare instructions only work on registers.
+     The same is true of the XFmode compare instructions.  The same is
+     true of the fcomi compare instructions.  */
 
-     cmp    ZF PF CF
-     >      0  0  0
-     <      0  0  1
-     =      1  0  0
-     un     1  1  1 */
-
-  switch (code)
+  if (!is_sse
+      && (fpcmp_mode == CCFPUmode
+	  || op_mode == XFmode
+	  || op_mode == TFmode
+	  || ix86_use_fcomi_compare (code)))
     {
-    case GT:			/* GTU - CF=0 & ZF=0 */
-    case GE:			/* GEU - CF=0 */
-    case ORDERED:		/* PF=0 */
-    case UNORDERED:		/* PF=1 */
-    case UNEQ:			/* EQ - ZF=1 */
-    case UNLT:			/* LTU - CF=1 */
-    case UNLE:			/* LEU - CF=1 | ZF=1 */
-    case LTGT:			/* EQ - ZF=0 */
-      break;
-    case LT:			/* LTU - CF=1 - fails on unordered */
-      *first_code = UNLT;
-      *bypass_code = UNORDERED;
-      break;
-    case LE:			/* LEU - CF=1 | ZF=1 - fails on unordered */
-      *first_code = UNLE;
-      *bypass_code = UNORDERED;
-      break;
-    case EQ:			/* EQ - ZF=1 - fails on unordered */
-      *first_code = UNEQ;
-      *bypass_code = UNORDERED;
-      break;
-    case NE:			/* NE - ZF=0 - fails on unordered */
-      *first_code = LTGT;
-      *second_code = UNORDERED;
-      break;
-    case UNGE:			/* GEU - CF=0 - fails on unordered */
-      *first_code = GE;
-      *second_code = UNORDERED;
-      break;
-    case UNGT:			/* GTU - CF=0 & ZF=0 - fails on unordered */
-      *first_code = GT;
-      *second_code = UNORDERED;
-      break;
-    default:
-      abort ();
+      op0 = force_reg (op_mode, op0);
+      op1 = force_reg (op_mode, op1);
     }
-  if (!TARGET_IEEE_FP)
+  else
     {
-      *second_code = NIL;
-      *bypass_code = NIL;
+      /* %%% We only allow op1 in memory; op0 must be st(0).  So swap
+	 things around if they appear profitable, otherwise force op0
+	 into a register.  */
+
+      if (standard_80387_constant_p (op0) == 0
+	  || (GET_CODE (op0) == MEM
+	      && ! (standard_80387_constant_p (op1) == 0
+		    || GET_CODE (op1) == MEM)))
+	{
+	  rtx tmp;
+	  tmp = op0, op0 = op1, op1 = tmp;
+	  code = swap_condition (code);
+	}
+
+      if (GET_CODE (op0) != REG)
+	op0 = force_reg (op_mode, op0);
+
+      if (CONSTANT_P (op1))
+	{
+	  if (standard_80387_constant_p (op1))
+	    op1 = force_reg (op_mode, op1);
+	  else
+	    op1 = validize_mem (force_const_mem (op_mode, op1));
+	}
     }
+
+  /* Try to rearrange the comparison to make it cheaper.  */
+  if (ix86_fp_comparison_cost (code)
+      > ix86_fp_comparison_cost (swap_condition (code))
+      && (GET_CODE (op1) == REG || !no_new_pseudos))
+    {
+      rtx tmp;
+      tmp = op0, op0 = op1, op1 = tmp;
+      code = swap_condition (code);
+      if (GET_CODE (op0) != REG)
+	op0 = force_reg (op_mode, op0);
+    }
+
+  *pop0 = op0;
+  *pop1 = op1;
+  return code;
 }

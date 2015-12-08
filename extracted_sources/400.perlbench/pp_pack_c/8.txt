@@ -1,27 +1,30 @@
-STATIC void
-S_doencodes(pTHX_ register SV *sv, register char *s, register I32 len)
+PP(pp_unpack)
 {
-    char hunk[5];
+    dSP;
+    dPOPPOPssrl;
+    I32 gimme = GIMME_V;
+    STRLEN llen;
+    STRLEN rlen;
+    register char *pat = SvPV(left, llen);
+#ifdef PACKED_IS_OCTETS
+    /* Packed side is assumed to be octets - so force downgrade if it
+       has been UTF-8 encoded by accident
+     */
+    register char *s = SvPVbyte(right, rlen);
+#else
+    register char *s = SvPV(right, rlen);
+#endif
+    char *strend = s + rlen;
+    register char *patend = pat + llen;
+    register I32 cnt;
 
-    *hunk = PL_uuemap[len];
-    sv_catpvn(sv, hunk, 1);
-    hunk[4] = '\0';
-    while (len > 2) {
-	hunk[0] = PL_uuemap[(077 & (*s >> 2))];
-	hunk[1] = PL_uuemap[(077 & (((*s << 4) & 060) | ((s[1] >> 4) & 017)))];
-	hunk[2] = PL_uuemap[(077 & (((s[1] << 2) & 074) | ((s[2] >> 6) & 03)))];
-	hunk[3] = PL_uuemap[(077 & (s[2] & 077))];
-	sv_catpvn(sv, hunk, 4);
-	s += 3;
-	len -= 3;
-    }
-    if (len > 0) {
-	char r = (len > 1 ? s[1] : '\0');
-	hunk[0] = PL_uuemap[(077 & (*s >> 2))];
-	hunk[1] = PL_uuemap[(077 & (((*s << 4) & 060) | ((r >> 4) & 017)))];
-	hunk[2] = PL_uuemap[(077 & ((r << 2) & 074))];
-	hunk[3] = PL_uuemap[0];
-	sv_catpvn(sv, hunk, 4);
-    }
-    sv_catpvn(sv, "\n", 1);
+    PUTBACK;
+    cnt = unpackstring(pat, patend, s, strend,
+		     ((gimme == G_SCALAR) ? FLAG_UNPACK_ONLY_ONE : 0)
+		     | (DO_UTF8(right) ? FLAG_UNPACK_DO_UTF8 : 0));
+
+    SPAGAIN;
+    if ( !cnt && gimme == G_SCALAR )
+       PUSHs(&PL_sv_undef);
+    RETURN;
 }

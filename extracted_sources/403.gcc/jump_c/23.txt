@@ -1,35 +1,44 @@
-void
-delete_for_peephole (from, to)
-     rtx from, to;
+static void
+delete_computation (insn)
+     rtx insn;
 {
-  rtx insn = from;
+  rtx note, next;
 
-  while (1)
+#ifdef HAVE_cc0
+  if (reg_referenced_p (cc0_rtx, PATTERN (insn)))
     {
-      rtx next = NEXT_INSN (insn);
-      rtx prev = PREV_INSN (insn);
-
-      if (GET_CODE (insn) != NOTE)
+      rtx prev = prev_nonnote_insn (insn);
+      /* We assume that at this stage
+	 CC's are always set explicitly
+	 and always immediately before the jump that
+	 will use them.  So if the previous insn
+	 exists to set the CC's, delete it
+	 (unless it performs auto-increments, etc.).  */
+      if (prev && GET_CODE (prev) == INSN
+	  && sets_cc0_p (PATTERN (prev)))
 	{
-	  INSN_DELETED_P (insn) = 1;
-
-	  /* Patch this insn out of the chain.  */
-	  /* We don't do this all at once, because we
-	     must preserve all NOTEs.  */
-	  if (prev)
-	    NEXT_INSN (prev) = next;
-
-	  if (next)
-	    PREV_INSN (next) = prev;
+	  if (sets_cc0_p (PATTERN (prev)) > 0
+	      && ! side_effects_p (PATTERN (prev)))
+	    delete_computation (prev);
+	  else
+	    /* Otherwise, show that cc0 won't be used.  */
+	    REG_NOTES (prev) = gen_rtx_EXPR_LIST (REG_UNUSED,
+						  cc0_rtx, REG_NOTES (prev));
 	}
+    }
+#endif
 
-      if (insn == to)
-	break;
-      insn = next;
+  for (note = REG_NOTES (insn); note; note = next)
+    {
+      next = XEXP (note, 1);
+
+      if (REG_NOTE_KIND (note) != REG_DEAD
+	  /* Verify that the REG_NOTE is legitimate.  */
+	  || GET_CODE (XEXP (note, 0)) != REG)
+	continue;
+
+      delete_prior_computation (note, insn);
     }
 
-  /* Note that if TO is an unconditional jump
-     we *do not* delete the BARRIER that follows,
-     since the peephole that replaces this sequence
-     is also an unconditional jump in that case.  */
+  delete_related_insns (insn);
 }

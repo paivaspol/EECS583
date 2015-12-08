@@ -1,0 +1,16 @@
+PP(pp_left_shift)
+{
+    dSP; dATARGET; tryAMAGICbin(lshift,opASSIGN);
+    {
+      IV shift = POPi;
+      if (PL_op->op_private & HINT_INTEGER) {
+	IV i = TOPi;
+	SETi(i << shift);
+      }
+      else {
+	UV u = TOPu;
+	SETu(u << shift);
+      }
+      RETURN;
+    }
+}

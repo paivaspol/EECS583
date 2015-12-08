@@ -1,0 +1,14 @@
+OP *
+Perl_newSVREF(pTHX_ OP *o)
+{
+    if (o->op_type == OP_PADANY) {
+	o->op_type = OP_PADSV;
+	o->op_ppaddr = PL_ppaddr[OP_PADSV];
+	return o;
+    }
+    else if (o->op_type == OP_THREADSV && !(o->op_flags & OPpDONE_SVREF)) {
+	o->op_flags |= OPpDONE_SVREF;
+	return o;
+    }
+    return newUNOP(OP_RV2SV, 0, scalar(o));
+}

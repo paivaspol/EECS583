@@ -1,22 +1,20 @@
-I32
-Perl_block_gimme(pTHX)
+void
+Perl_rxres_restore(pTHX_ void **rsp, REGEXP *rx)
 {
-    I32 cxix;
+    UV *p = (UV*)*rsp;
+    U32 i;
 
-    cxix = dopoptosub(cxstack_ix);
-    if (cxix < 0)
-	return G_VOID;
+    if (RX_MATCH_COPIED(rx))
+	Safefree(rx->subbeg);
+    RX_MATCH_COPIED_set(rx, *p);
+    *p++ = 0;
 
-    switch (cxstack[cxix].blk_gimme) {
-    case G_VOID:
-	return G_VOID;
-    case G_SCALAR:
-	return G_SCALAR;
-    case G_ARRAY:
-	return G_ARRAY;
-    default:
-	Perl_croak(aTHX_ "panic: bad gimme: %d\n", cxstack[cxix].blk_gimme);
-	/* NOTREACHED */
-	return 0;
+    rx->nparens = *p++;
+
+    rx->subbeg = INT2PTR(char*,*p++);
+    rx->sublen = (I32)(*p++);
+    for (i = 0; i <= rx->nparens; ++i) {
+	rx->startp[i] = (I32)(*p++);
+	rx->endp[i] = (I32)(*p++);
     }
 }

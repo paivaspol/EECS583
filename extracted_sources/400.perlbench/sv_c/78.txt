@@ -1,6 +1,20 @@
 void
-Perl_sv_usepvn_mg(pTHX_ register SV *sv, register char *ptr, register STRLEN len)
+Perl_sv_usepvn(pTHX_ register SV *sv, register char *ptr, register STRLEN len)
 {
-    sv_usepvn(sv,ptr,len);
-    SvSETMAGIC(sv);
+    SV_CHECK_THINKFIRST(sv);
+    (void)SvUPGRADE(sv, SVt_PV);
+    if (!ptr) {
+	(void)SvOK_off(sv);
+	return;
+    }
+    (void)SvOOK_off(sv);
+    if (SvPVX(sv) && SvLEN(sv))
+	Safefree(SvPVX(sv));
+    Renew(ptr, len+1, char);
+    SvPVX(sv) = ptr;
+    SvCUR_set(sv, len);
+    SvLEN_set(sv, len+1);
+    *SvEND(sv) = '\0';
+    (void)SvPOK_only_UTF8(sv);		/* validate pointer */
+    SvTAINT(sv);
 }

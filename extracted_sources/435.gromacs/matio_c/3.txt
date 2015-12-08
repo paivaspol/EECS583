@@ -1,11 +1,29 @@
-int readcmap(char *fn,t_mapping **map)
+int getcmap(FILE *in,char *fn,t_mapping **map)
 {
-  FILE      *in;
-  int       n;
+  int       i,n;
+  char      line[STRLEN];
+  char      code[STRLEN],desc[STRLEN];
+  double    r,g,b;
+  t_mapping *m;
   
-  in=libopen(fn);
-  n=getcmap(in,fn,map);
-  fclose(in);
+  if (fgets2(line,STRLEN-1,in) == NULL)
+    fatal_error(0,"Not enough lines in colormap file %s"
+		"(just wanted to read number of entries)",fn);
+  sscanf(line,"%d",&n);
+  snew(m,n);
+  for(i=0; (i<n); i++) {
+    if (fgets2(line,STRLEN-1,in) == NULL)
+      fatal_error(0,"Not enough lines in colormap file %s"
+		  "(should be %d, found only %d)",fn,n+1,i);
+    sscanf(line,"%s%s%lf%lf%lf",code,desc,&r,&g,&b);
+    m[i].code.c1=code[0];
+    m[i].code.c2=0;
+    m[i].desc=strdup(desc);
+    m[i].rgb.r=r;
+    m[i].rgb.g=g;
+    m[i].rgb.b=b;
+  }
+  *map=m;
   
   return n;
 }

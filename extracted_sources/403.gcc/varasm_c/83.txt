@@ -1,41 +1,5 @@
-static int
-mark_constant (current_rtx, data)
-     rtx *current_rtx;
-     void *data ATTRIBUTE_UNUSED;
+int
+get_pool_size ()
 {
-  rtx x = *current_rtx;
-
-  if (x == NULL_RTX)
-    return 0;
-
-  else if (GET_CODE (x) == SYMBOL_REF)
-    {
-      if (CONSTANT_POOL_ADDRESS_P (x))
-	{
-	  struct pool_constant *pool = find_pool_constant (cfun, x);
-	  if (pool->mark == 0) {
-	    pool->mark = 1;
-	    for_each_rtx (&(pool->constant), &mark_constant, NULL);
-	  }
-	  else
-	    return -1;
-	}
-      else if (STRING_POOL_ADDRESS_P (x))
-	{
-	  struct deferred_string **defstr;
-
-	  defstr = (struct deferred_string **)
-	    htab_find_slot_with_hash (const_str_htab, XSTR (x, 0),
-				      STRHASH (XSTR (x, 0)), NO_INSERT);
-	  if (defstr)
-	    {
-	      struct deferred_string *p = *defstr;
-
-	      STRING_POOL_ADDRESS_P (x) = 0;
-	      output_constant_def_contents (p->exp, 0, p->labelno);
-	      htab_clear_slot (const_str_htab, (void **) defstr);
-	    }
-	}
-    }
-  return 0;
+  return pool_offset;
 }

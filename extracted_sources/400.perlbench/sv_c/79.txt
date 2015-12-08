@@ -1,23 +1,6 @@
 void
-Perl_sv_force_normal_flags(pTHX_ register SV *sv, U32 flags)
+Perl_sv_usepvn_mg(pTHX_ register SV *sv, register char *ptr, register STRLEN len)
 {
-    if (SvREADONLY(sv)) {
-	if (SvFAKE(sv)) {
-	    char *pvx = SvPVX(sv);
-	    STRLEN len = SvCUR(sv);
-            U32 hash   = SvUVX(sv);
-	    SvFAKE_off(sv);
-	    SvREADONLY_off(sv);
-	    SvGROW(sv, len + 1);
-	    Move(pvx,SvPVX(sv),len,char);
-	    *SvEND(sv) = '\0';
-	    unsharepvn(pvx, SvUTF8(sv) ? -(I32)len : len, hash);
-	}
-	else if (IN_PERL_RUNTIME)
-	    Perl_croak(aTHX_ PL_no_modify);
-    }
-    if (SvROK(sv))
-	sv_unref_flags(sv, flags);
-    else if (SvFAKE(sv) && SvTYPE(sv) == SVt_PVGV)
-	sv_unglob(sv);
+    sv_usepvn(sv,ptr,len);
+    SvSETMAGIC(sv);
 }

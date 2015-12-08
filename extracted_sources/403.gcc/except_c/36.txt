@@ -1,66 +1,32 @@
-int
-duplicate_eh_regions (ifun, map)
-     struct function *ifun;
-     struct inline_remap *map;
+static void
+duplicate_eh_region_2 (o, n_array)
+     struct eh_region *o;
+     struct eh_region **n_array;
 {
-  int ifun_last_region_number = ifun->eh->last_region_number;
-  struct eh_region **n_array, *root, *cur;
-  int i;
+  struct eh_region *n = n_array[o->region_number];
 
-  if (ifun_last_region_number == 0)
-    return 0;
-
-  n_array = xcalloc (ifun_last_region_number + 1, sizeof (*n_array));
-
-  for (i = 1; i <= ifun_last_region_number; ++i)
+  switch (n->type)
     {
-      cur = ifun->eh->region_array[i];
-      if (!cur || cur->region_number != i)
-	continue;
-      n_array[i] = duplicate_eh_region_1 (cur, map);
-    }
-  for (i = 1; i <= ifun_last_region_number; ++i)
-    {
-      cur = ifun->eh->region_array[i];
-      if (!cur || cur->region_number != i)
-	continue;
-      duplicate_eh_region_2 (cur, n_array);
+    case ERT_TRY:
+      n->u.try.catch = n_array[o->u.try.catch->region_number];
+      n->u.try.last_catch = n_array[o->u.try.last_catch->region_number];
+      break;
+
+    case ERT_CATCH:
+      if (o->u.catch.next_catch)
+        n->u.catch.next_catch = n_array[o->u.catch.next_catch->region_number];
+      if (o->u.catch.prev_catch)
+        n->u.catch.prev_catch = n_array[o->u.catch.prev_catch->region_number];
+      break;
+
+    default:
+      break;
     }
 
-  root = n_array[ifun->eh->region_tree->region_number];
-  cur = cfun->eh->cur_region;
-  if (cur)
-    {
-      struct eh_region *p = cur->inner;
-      if (p)
-	{
-	  while (p->next_peer)
-	    p = p->next_peer;
-	  p->next_peer = root;
-	}
-      else
-	cur->inner = root;
-
-      for (i = 1; i <= ifun_last_region_number; ++i)
-	if (n_array[i] && n_array[i]->outer == NULL)
-	  n_array[i]->outer = cur;
-    }
-  else
-    {
-      struct eh_region *p = cfun->eh->region_tree;
-      if (p)
-	{
-	  while (p->next_peer)
-	    p = p->next_peer;
-	  p->next_peer = root;
-	}
-      else
-	cfun->eh->region_tree = root;
-    }
-
-  free (n_array);
-
-  i = cfun->eh->last_region_number;
-  cfun->eh->last_region_number = i + ifun_last_region_number;
-  return i;
+  if (o->outer)
+    n->outer = n_array[o->outer->region_number];
+  if (o->inner)
+    n->inner = n_array[o->inner->region_number];
+  if (o->next_peer)
+    n->next_peer = n_array[o->next_peer->region_number];
 }

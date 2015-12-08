@@ -1,15 +1,47 @@
-SV *
-Perl_pad_sv(pTHX_ PADOFFSET po)
+PADOFFSET
+Perl_pad_alloc(pTHX_ I32 optype, U32 tmptype)
 {
-    ASSERT_CURPAD_ACTIVE("pad_sv");
+    SV *sv;
+    I32 retval;
 
-#ifndef USE_5005THREADS
-    if (!po)
-	Perl_croak(aTHX_ "panic: pad_sv po");
-#endif
+    ASSERT_CURPAD_ACTIVE("pad_alloc");
+
+    if (AvARRAY(PL_comppad) != PL_curpad)
+	Perl_croak(aTHX_ "panic: pad_alloc");
+    if (PL_pad_reset_pending)
+	pad_reset();
+    if (tmptype & SVs_PADMY) {
+	do {
+	    sv = *av_fetch(PL_comppad, AvFILLp(PL_comppad) + 1, TRUE);
+	} while (SvPADBUSY(sv));		/* need a fresh one */
+	retval = AvFILLp(PL_comppad);
+    }
+    else {
+	SV **names = AvARRAY(PL_comppad_name);
+	SSize_t names_fill = AvFILLp(PL_comppad_name);
+	for (;;) {
+	    /*
+	     * "foreach" index vars temporarily become aliases to non-"my"
+	     * values.  Thus we must skip, not just pad values that are
+	     * marked as current pad values, but also those with names.
+	     */
+	    /* HVDS why copy to sv here? we don't seem to use it */
+	    if (++PL_padix <= names_fill &&
+		   (sv = names[PL_padix]) && sv != &PL_sv_undef)
+		continue;
+	    sv = *av_fetch(PL_comppad, PL_padix, TRUE);
+	    if (!(SvFLAGS(sv) & (SVs_PADTMP | SVs_PADMY)) &&
+		!IS_PADGV(sv) && !IS_PADCONST(sv))
+		break;
+	}
+	retval = PL_padix;
+    }
+    SvFLAGS(sv) |= tmptype;
+    PL_curpad = AvARRAY(PL_comppad);
+
     DEBUG_X(PerlIO_printf(Perl_debug_log,
-	"Pad 0x%"UVxf"[0x%"UVxf"] sv:      %ld sv=0x%"UVxf"\n",
-	PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po, PTR2UV(PL_curpad[po]))
-    );
-    return PL_curpad[po];
+	  "Pad 0x%"UVxf"[0x%"UVxf"] alloc:   %ld for %s\n",
+	  PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long) retval,
+	  PL_op_name[optype]));
+    return (PADOFFSET)retval;
 }

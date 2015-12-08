@@ -1,11 +1,8 @@
-void
-Perl_rxres_free(pTHX_ void **rsp)
+PP(pp_regcreset)
 {
-    UV *p = (UV*)*rsp;
-
-    if (p) {
-	Safefree(INT2PTR(char*,*p));
-	Safefree(p);
-	*rsp = Null(void*);
-    }
+    /* XXXX Should store the old value to allow for tie/overload - and
+       restore in regcomp, where marked with XXXX. */
+    PL_reginterp_cnt = 0;
+    TAINT_NOT;
+    return NORMAL;
 }

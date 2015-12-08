@@ -1,30 +1,47 @@
-void
-free_varasm_status (f)
-     struct function *f;
+static void
+output_constant_def_contents (exp, reloc, labelno)
+     tree exp;
+     int reloc;
+     int labelno;
 {
-  struct varasm_status *p;
-  int i;
+  int align;
 
-  p = f->varasm;
+  /* Align the location counter as required by EXP's data type.  */
+  align = TYPE_ALIGN (TREE_TYPE (exp));
+#ifdef CONSTANT_ALIGNMENT
+  align = CONSTANT_ALIGNMENT (exp, align);
+#endif
 
-  /* Clear out the hash tables.  */
-  for (i = 0; i < MAX_RTX_HASH_TABLE; ++i)
+  if (IN_NAMED_SECTION (exp))
+    named_section (exp, NULL, reloc);
+  else
     {
-      struct constant_descriptor *cd;
-
-      cd = p->x_const_rtx_hash_table[i];
-      while (cd)
-	{
-	  struct constant_descriptor *next = cd->next;
-
-	  free (cd);
-	  cd = next;
-	}
+      /* First switch to text section, except for writable strings.  */
+#ifdef SELECT_SECTION
+      SELECT_SECTION (exp, reloc, align);
+#else
+      if (((TREE_CODE (exp) == STRING_CST) && flag_writable_strings)
+	  || (flag_pic && reloc))
+	data_section ();
+      else
+	readonly_data_section ();
+#endif
     }
 
-  free (p->x_const_rtx_hash_table);
-  free (p->x_const_rtx_sym_hash_table);
-  free (p);
+  if (align > BITS_PER_UNIT)
+    {
+      ASM_OUTPUT_ALIGN (asm_out_file, floor_log2 (align / BITS_PER_UNIT));
+    }
 
-  f->varasm = NULL;
+  /* Output the label itself.  */
+  ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "LC", labelno);
+
+  /* Output the value of EXP.  */
+  output_constant (exp,
+		   (TREE_CODE (exp) == STRING_CST
+		    ? MAX (TREE_STRING_LENGTH (exp),
+			   int_size_in_bytes (TREE_TYPE (exp)))
+		    : int_size_in_bytes (TREE_TYPE (exp))),
+		   align);
+
 }

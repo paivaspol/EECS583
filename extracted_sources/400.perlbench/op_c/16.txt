@@ -1,46 +1,23 @@
-STATIC bool
-S_scalar_mod_type(pTHX_ OP *o, I32 type)
+OP *
+Perl_linklist(pTHX_ OP *o)
 {
-    switch (type) {
-    case OP_SASSIGN:
-	if (o->op_type == OP_RV2GV)
-	    return FALSE;
-	/* FALL THROUGH */
-    case OP_PREINC:
-    case OP_PREDEC:
-    case OP_POSTINC:
-    case OP_POSTDEC:
-    case OP_I_PREINC:
-    case OP_I_PREDEC:
-    case OP_I_POSTINC:
-    case OP_I_POSTDEC:
-    case OP_POW:
-    case OP_MULTIPLY:
-    case OP_DIVIDE:
-    case OP_MODULO:
-    case OP_REPEAT:
-    case OP_ADD:
-    case OP_SUBTRACT:
-    case OP_I_MULTIPLY:
-    case OP_I_DIVIDE:
-    case OP_I_MODULO:
-    case OP_I_ADD:
-    case OP_I_SUBTRACT:
-    case OP_LEFT_SHIFT:
-    case OP_RIGHT_SHIFT:
-    case OP_BIT_AND:
-    case OP_BIT_XOR:
-    case OP_BIT_OR:
-    case OP_CONCAT:
-    case OP_SUBST:
-    case OP_TRANS:
-    case OP_READ:
-    case OP_SYSREAD:
-    case OP_RECV:
-    case OP_ANDASSIGN:
-    case OP_ORASSIGN:
-	return TRUE;
-    default:
-	return FALSE;
+    register OP *kid;
+
+    if (o->op_next)
+	return o->op_next;
+
+    /* establish postfix order */
+    if (cUNOPo->op_first) {
+	o->op_next = LINKLIST(cUNOPo->op_first);
+	for (kid = cUNOPo->op_first; kid; kid = kid->op_sibling) {
+	    if (kid->op_sibling)
+		kid->op_next = LINKLIST(kid->op_sibling);
+	    else
+		kid->op_next = o;
+	}
     }
+    else
+	o->op_next = o;
+
+    return o->op_next;
 }

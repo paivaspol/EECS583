@@ -1,0 +1,53 @@
+PP(pp_sysseek)
+{
+    dSP;
+    GV *gv;
+    IO *io;
+    int whence = POPi;
+#if LSEEKSIZE > IVSIZE
+    Off_t offset = (Off_t)SvNVx(POPs);
+#else
+    Off_t offset = (Off_t)SvIVx(POPs);
+#endif
+    MAGIC *mg;
+
+    gv = PL_last_in_gv = (GV*)POPs;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)io, mg));
+#if LSEEKSIZE > IVSIZE
+	XPUSHs(sv_2mortal(newSVnv((NV) offset)));
+#else
+	XPUSHs(sv_2mortal(newSViv(offset)));
+#endif
+	XPUSHs(sv_2mortal(newSViv(whence)));
+	PUTBACK;
+	ENTER;
+	call_method("SEEK", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	RETURN;
+    }
+
+    if (PL_op->op_type == OP_SEEK)
+	PUSHs(boolSV(do_seek(gv, offset, whence)));
+    else {
+	Off_t sought = do_sysseek(gv, offset, whence);
+        if (sought < 0)
+            PUSHs(&PL_sv_undef);
+        else {
+            SV* sv = sought ?
+#if LSEEKSIZE > IVSIZE
+                newSVnv((NV)sought)
+#else
+                newSViv(sought)
+#endif
+                : newSVpvn(zero_but_true, ZBTLEN);
+            PUSHs(sv_2mortal(sv));
+        }
+    }
+    RETURN;
+}

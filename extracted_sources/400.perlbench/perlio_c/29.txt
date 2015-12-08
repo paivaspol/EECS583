@@ -1,0 +1,37 @@
+IV
+PerlIORaw_pushed(pTHX_ PerlIO *f, const char *mode, SV *arg, PerlIO_funcs *tab)
+{
+
+    if (PerlIOValid(f)) {
+	PerlIO *t;
+	PerlIOl *l;
+	PerlIO_flush(f);
+	/*
+	 * Strip all layers that are not suitable for a raw stream
+	 */
+	t = f;
+	while (t && (l = *t)) {
+	    if (l->tab->Binmode) {
+		/* Has a handler - normal case */
+		if ((*l->tab->Binmode)(aTHX_ f) == 0) {
+		    if (*t == l) {
+			/* Layer still there - move down a layer */
+			t = PerlIONext(t);
+		    }
+		}
+		else {
+		    return -1;
+		}
+	    }
+	    else {
+		/* No handler - pop it */
+		PerlIO_pop(aTHX_ t);
+	    }
+	}
+	if (PerlIOValid(f)) {
+	    PerlIO_debug(":raw f=%p :%s\n", (void*)f, PerlIOBase(f)->tab->name);
+	    return 0;
+	}
+    }
+    return -1;
+}

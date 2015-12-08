@@ -1,22 +1,10 @@
-static int
-compare_constant_rtx (mode, x, desc)
-     enum machine_mode mode;
-     rtx x;
-     struct constant_descriptor *desc;
+void
+mark_varasm_status (p)
+     struct varasm_status *p;
 {
-  int *p = (int *) desc->u.contents;
-  int *strp;
-  int len;
-  struct rtx_const value;
+  if (p == NULL)
+    return;
 
-  decode_rtx_const (mode, x, &value);
-  strp = (int *) &value;
-  len = sizeof value / sizeof (int);
-
-  /* Compare constant contents.  */
-  while (--len >= 0)
-    if (*p++ != *strp++)
-      return 0;
-
-  return 1;
+  mark_pool_constant (p->x_first_pool);
+  ggc_mark_rtx (p->x_const_double_chain);
 }

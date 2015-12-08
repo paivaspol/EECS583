@@ -1,11 +1,26 @@
-void
-Perl_pad_setsv(pTHX_ PADOFFSET po, SV* sv)
+PADOFFSET
+Perl_pad_add_anon(pTHX_ SV* sv, OPCODE op_type)
 {
-    ASSERT_CURPAD_ACTIVE("pad_setsv");
+    PADOFFSET ix;
+    SV* name;
 
-    DEBUG_X(PerlIO_printf(Perl_debug_log,
-	"Pad 0x%"UVxf"[0x%"UVxf"] setsv:   %ld sv=0x%"UVxf"\n",
-	PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po, PTR2UV(sv))
-    );
-    PL_curpad[po] = sv;
+    name = NEWSV(1106, 0);
+    sv_upgrade(name, SVt_PVNV);
+    sv_setpvn(name, "&", 1);
+    SvIVX(name) = -1;
+    SvNVX(name) = 1;
+    ix = pad_alloc(op_type, SVs_PADMY);
+    av_store(PL_comppad_name, ix, name);
+    /* XXX DAPM use PL_curpad[] ? */
+    av_store(PL_comppad, ix, sv);
+    SvPADMY_on(sv);
+
+    /* to avoid ref loops, we never have parent + child referencing each
+     * other simultaneously */
+    if (CvOUTSIDE((CV*)sv)) {
+	assert(!CvWEAKOUTSIDE((CV*)sv));
+	CvWEAKOUTSIDE_on((CV*)sv);
+	SvREFCNT_dec(CvOUTSIDE((CV*)sv));
+    }
+    return ix;
 }

@@ -1,0 +1,56 @@
+void analyse(t_atoms *atoms,t_block *gb,char ***gn,bool bASK,bool bVerb)
+{
+  eRestp  *restp;
+  char    *resnm;
+  atom_id *aid;
+  int     nra;
+  int     i,j;
+
+  if (bVerb)
+    printf("Analysing residue names:\n");
+  snew(restp,atoms->nres);
+  aid=mk_aid(atoms,restp,etOther,&nra,TRUE);
+  add_grp(gb,gn,nra,aid,"System"); 
+  sfree(aid);
+
+  for(i=0; (i<atoms->nres); i++) {
+    resnm=*atoms->resname[i];
+    if ((restp[i] == etOther) && is_protein(resnm))
+      restp[i] = etProt;
+    if (restp[i] == etOther)
+      for(j=0; (j<NDNA);  j++) {
+	if (strcasecmp(Sugars[j],resnm) == 0)
+	  restp[i] = etDNA;
+      }
+  }
+  p_status(atoms->nres,restp,bVerb);
+
+  /* Protein */
+  aid=mk_aid(atoms,restp,etProt,&nra,TRUE);
+  if (nra > 0) 
+    analyse_prot(restp,atoms,gb,gn,bASK,bVerb);
+  
+  sfree(aid);
+
+  /* Non-Protein */
+  aid=mk_aid(atoms,restp,etProt,&nra,FALSE);
+  if ((nra > 0) && (nra < atoms->nr))
+    add_grp(gb,gn,nra,aid,"Non-Protein"); 
+  sfree(aid);
+
+  /* DNA */
+  aid=mk_aid(atoms,restp,etDNA,&nra,TRUE);
+  if (nra > 0) {
+    add_grp(gb,gn,nra,aid,"DNA"); 
+    analyse_dna(restp,atoms,gb,gn,bASK,bVerb);
+  }
+  sfree(aid);
+
+  /* Other */
+  analyse_other(restp,atoms,gb,gn,bASK,bVerb);
+  aid=mk_aid(atoms,restp,etOther,&nra,TRUE);
+  if ((nra > 0) && (nra < atoms->nr))
+    add_grp(gb,gn,nra,aid,"Other"); 
+  sfree(aid);
+  sfree(restp);
+}

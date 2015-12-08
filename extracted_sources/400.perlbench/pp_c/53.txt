@@ -1,0 +1,70 @@
+PP(pp_negate)
+{
+    dSP; dTARGET; tryAMAGICun(neg);
+    {
+	dTOPss;
+	int flags = SvFLAGS(sv);
+	if (SvGMAGICAL(sv))
+	    mg_get(sv);
+	if ((flags & SVf_IOK) || ((flags & (SVp_IOK | SVp_NOK)) == SVp_IOK)) {
+	    /* It's publicly an integer, or privately an integer-not-float */
+	oops_its_an_int:
+	    if (SvIsUV(sv)) {
+		if (SvIVX(sv) == IV_MIN) {
+		    /* 2s complement assumption. */
+		    SETi(SvIVX(sv));	/* special case: -((UV)IV_MAX+1) == IV_MIN */
+		    RETURN;
+		}
+		else if (SvUVX(sv) <= IV_MAX) {
+		    SETi(-SvIVX(sv));
+		    RETURN;
+		}
+	    }
+	    else if (SvIVX(sv) != IV_MIN) {
+		SETi(-SvIVX(sv));
+		RETURN;
+	    }
+#ifdef PERL_PRESERVE_IVUV
+	    else {
+		SETu((UV)IV_MIN);
+		RETURN;
+	    }
+#endif
+	}
+	if (SvNIOKp(sv))
+	    SETn(-SvNV(sv));
+	else if (SvPOKp(sv)) {
+	    STRLEN len;
+	    char *s = SvPV(sv, len);
+	    if (isIDFIRST(*s)) {
+		sv_setpvn(TARG, "-", 1);
+		sv_catsv(TARG, sv);
+	    }
+	    else if (*s == '+' || *s == '-') {
+		sv_setsv(TARG, sv);
+		*SvPV_force(TARG, len) = *s == '-' ? '+' : '-';
+	    }
+	    else if (DO_UTF8(sv)) {
+		SvIV_please(sv);
+		if (SvIOK(sv))
+		    goto oops_its_an_int;
+		if (SvNOK(sv))
+		    sv_setnv(TARG, -SvNV(sv));
+		else {
+		    sv_setpvn(TARG, "-", 1);
+		    sv_catsv(TARG, sv);
+		}
+	    }
+	    else {
+		SvIV_please(sv);
+		if (SvIOK(sv))
+		  goto oops_its_an_int;
+		sv_setnv(TARG, -SvNV(sv));
+	    }
+	    SETTARG;
+	}
+	else
+	    SETn(-SvNV(sv));
+    }
+    RETURN;
+}

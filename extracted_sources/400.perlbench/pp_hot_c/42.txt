@@ -1,0 +1,56 @@
+PP(pp_aelem)
+{
+    dSP;
+    SV** svp;
+    SV* elemsv = POPs;
+    IV elem = SvIV(elemsv);
+    AV* av = (AV*)POPs;
+    U32 lval = PL_op->op_flags & OPf_MOD || LVRET;
+    U32 defer = (PL_op->op_private & OPpLVAL_DEFER) && (elem > AvFILL(av));
+    SV *sv;
+
+    if (SvROK(elemsv) && !SvGAMAGIC(elemsv) && ckWARN(WARN_MISC))
+	Perl_warner(aTHX_ packWARN(WARN_MISC), "Use of reference \"%"SVf"\" as array index", elemsv);
+    if (elem > 0)
+	elem -= PL_curcop->cop_arybase;
+    if (SvTYPE(av) != SVt_PVAV)
+	RETPUSHUNDEF;
+    svp = av_fetch(av, elem, lval && !defer);
+    if (lval) {
+#ifdef PERL_MALLOC_WRAP
+	 static const char oom_array_extend[] =
+	      "Out of memory during array extend"; /* Duplicated in av.c */
+	 if (SvUOK(elemsv)) {
+	      UV uv = SvUV(elemsv);
+	      elem = uv > IV_MAX ? IV_MAX : uv;
+	 }
+	 else if (SvNOK(elemsv))
+	      elem = (IV)SvNV(elemsv);
+	 if (elem > 0)
+	      MEM_WRAP_CHECK_1(elem,SV*,oom_array_extend);
+#endif
+	if (!svp || *svp == &PL_sv_undef) {
+	    SV* lv;
+	    if (!defer)
+		DIE(aTHX_ PL_no_aelem, elem);
+	    lv = sv_newmortal();
+	    sv_upgrade(lv, SVt_PVLV);
+	    LvTYPE(lv) = 'y';
+	    sv_magic(lv, Nullsv, PERL_MAGIC_defelem, Nullch, 0);
+	    LvTARG(lv) = SvREFCNT_inc(av);
+	    LvTARGOFF(lv) = elem;
+	    LvTARGLEN(lv) = 1;
+	    PUSHs(lv);
+	    RETURN;
+	}
+	if (PL_op->op_private & OPpLVAL_INTRO)
+	    save_aelem(av, elem, svp);
+	else if (PL_op->op_private & OPpDEREF)
+	    vivify_ref(*svp, PL_op->op_private & OPpDEREF);
+    }
+    sv = (svp ? *svp : &PL_sv_undef);
+    if (!lval && SvGMAGICAL(sv))	/* see note in pp_helem() */
+	sv = sv_mortalcopy(sv);
+    PUSHs(sv);
+    RETURN;
+}

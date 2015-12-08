@@ -1,6 +1,23 @@
+into the SV.  The C<classname> argument indicates the package for the
+blessing.  Set C<classname> to C<Nullch> to avoid the blessing.  The new SV
+will have a reference count of 1, and the RV will be returned.
+
+Do not use with other Perl types such as HV, AV, SV, CV, because those
+objects will become corrupted by the pointer copy process.
+
+Note that C<sv_setref_pvn> copies the string while this copies the pointer.
+
+=cut
+*/
+
 SV*
-Perl_sv_setref_pvn(pTHX_ SV *rv, const char *classname, char *pv, STRLEN n)
+Perl_sv_setref_pv(pTHX_ SV *rv, const char *classname, void *pv)
 {
-    sv_setpvn(newSVrv(rv,classname), pv, n);
+    if (!pv) {
+	sv_setsv(rv, &PL_sv_undef);
+	SvSETMAGIC(rv);
+    }
+    else
+	sv_setiv(newSVrv(rv,classname), PTR2IV(pv));
     return rv;
 }

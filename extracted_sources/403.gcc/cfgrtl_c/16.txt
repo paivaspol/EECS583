@@ -1,20 +1,24 @@
-void
-insert_insn_on_edge (pattern, e)
-     rtx pattern;
-     edge e;
+static bool
+back_edge_of_syntactic_loop_p (bb1, bb2)
+	basic_block bb1, bb2;
 {
-  /* We cannot insert instructions on an abnormal critical edge.
-     It will be easier to find the culprit if we die now.  */
-  if ((e->flags & EDGE_ABNORMAL) && EDGE_CRITICAL_P (e))
-    abort ();
+  rtx insn;
+  int count = 0;
 
-  if (e->insns == NULL_RTX)
-    start_sequence ();
-  else
-    push_to_sequence (e->insns);
+  if (bb1->index > bb2->index)
+    return false;
+  else if (bb1->index == bb2->index)
+    return true;
 
-  emit_insn (pattern);
+  for (insn = bb1->end; insn != bb2->head && count >= 0;
+       insn = NEXT_INSN (insn))
+    if (GET_CODE (insn) == NOTE)
+      {
+	if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG)
+	  count++;
+	else if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END)
+	  count--;
+      }
 
-  e->insns = get_insns ();
-  end_sequence ();
+  return count >= 0;
 }

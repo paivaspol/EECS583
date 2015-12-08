@@ -1,6 +1,14 @@
-SV*
-Perl_sv_setref_iv(pTHX_ SV *rv, const char *classname, IV iv)
+int
+Perl_sv_isobject(pTHX_ SV *sv)
 {
-    sv_setiv(newSVrv(rv,classname), iv);
-    return rv;
+    if (!sv)
+	return 0;
+    if (SvGMAGICAL(sv))
+	mg_get(sv);
+    if (!SvROK(sv))
+	return 0;
+    sv = (SV*)SvRV(sv);
+    if (!SvOBJECT(sv))
+	return 0;
+    return 1;
 }

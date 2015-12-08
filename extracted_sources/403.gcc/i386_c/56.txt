@@ -1,11 +1,15 @@
 int
-non_q_regs_operand (op, mode)
+nonmemory_no_elim_operand (op, mode)
      register rtx op;
      enum machine_mode mode;
 {
-  if (mode != VOIDmode && GET_MODE (op) != mode)
+  rtx t = op;
+  if (GET_CODE (t) == SUBREG)
+    t = SUBREG_REG (t);
+  if (t == arg_pointer_rtx || t == frame_pointer_rtx
+      || t == virtual_incoming_args_rtx || t == virtual_stack_vars_rtx
+      || t == virtual_stack_dynamic_rtx)
     return 0;
-  if (GET_CODE (op) == SUBREG)
-    op = SUBREG_REG (op);
-  return NON_QI_REG_P (op);
+
+  return GET_CODE (op) == CONST_INT || register_operand (op, mode);
 }

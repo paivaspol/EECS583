@@ -1,0 +1,28 @@
+IV
+PerlIOBase_close(pTHX_ PerlIO *f)
+{
+    IV code = -1;
+    if (PerlIOValid(f)) {
+	PerlIO *n = PerlIONext(f);
+	code = PerlIO_flush(f);
+	PerlIOBase(f)->flags &=
+	   ~(PERLIO_F_CANREAD | PERLIO_F_CANWRITE | PERLIO_F_OPEN);
+	while (PerlIOValid(n)) {
+	    PerlIO_funcs *tab = PerlIOBase(n)->tab;
+	    if (tab && tab->Close) {
+		if ((*tab->Close)(aTHX_ n) != 0)
+		    code = -1;
+		break;
+	    }
+	    else {
+		PerlIOBase(n)->flags &=
+		    ~(PERLIO_F_CANREAD | PERLIO_F_CANWRITE | PERLIO_F_OPEN);
+	    }
+	    n = PerlIONext(n);
+	}
+    }
+    else {
+	SETERRNO(EBADF, SS_IVCHAN);
+    }
+    return code;
+}

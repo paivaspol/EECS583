@@ -1,50 +1,106 @@
-void
-tidy_fallthru_edge (e, b, c)
+static basic_block
+force_nonfallthru_and_redirect (e, target)
      edge e;
-     basic_block b, c;
+     basic_block target;
 {
-  rtx q;
+  basic_block jump_block, new_bb = NULL;
+  rtx note;
+  edge new_edge;
 
-  /* ??? In a late-running flow pass, other folks may have deleted basic
-     blocks by nopping out blocks, leaving multiple BARRIERs between here
-     and the target label. They ought to be chastized and fixed.
-
-     We can also wind up with a sequence of undeletable labels between
-     one block and the next.
-
-     So search through a sequence of barriers, labels, and notes for
-     the head of block C and assert that we really do fall through.  */
-
-  if (next_real_insn (b->end) != next_real_insn (PREV_INSN (c->head)))
-    return;
-
-  /* Remove what will soon cease being the jump insn from the source block.
-     If block B consisted only of this single jump, turn it into a deleted
-     note.  */
-  q = b->end;
-  if (GET_CODE (q) == JUMP_INSN
-      && onlyjump_p (q)
-      && (any_uncondjump_p (q)
-	  || (b->succ == e && e->succ_next == NULL)))
+  if (e->flags & EDGE_ABNORMAL)
+    abort ();
+  else if (!(e->flags & EDGE_FALLTHRU))
+    abort ();
+  else if (e->src == ENTRY_BLOCK_PTR)
     {
-#ifdef HAVE_cc0
-      /* If this was a conditional jump, we need to also delete
-	 the insn that set cc0.  */
-      if (any_condjump_p (q) && only_sets_cc0_p (PREV_INSN (q)))
-	q = PREV_INSN (q);
-#endif
+      /* We can't redirect the entry block.  Create an empty block at the
+         start of the function which we use to add the new jump.  */
+      edge *pe1;
+      basic_block bb = create_basic_block (0, e->dest->head, NULL);
 
-      q = PREV_INSN (q);
-
-      /* We don't want a block to end on a line-number note since that has
-	 the potential of changing the code between -g and not -g.  */
-      while (GET_CODE (q) == NOTE && NOTE_LINE_NUMBER (q) >= 0)
-	q = PREV_INSN (q);
+      /* Change the existing edge's source to be the new block, and add
+	 a new edge from the entry block to the new block.  */
+      e->src = bb;
+      bb->count = e->count;
+      bb->frequency = EDGE_FREQUENCY (e);
+      bb->loop_depth = 0;
+      for (pe1 = &ENTRY_BLOCK_PTR->succ; *pe1; pe1 = &(*pe1)->succ_next)
+	if (*pe1 == e)
+	  {
+	    *pe1 = e->succ_next;
+	    break;
+	  }
+      e->succ_next = 0;
+      bb->succ = e;
+      make_single_succ_edge (ENTRY_BLOCK_PTR, bb, EDGE_FALLTHRU);
     }
 
-  /* Selectively unlink the sequence.  */
-  if (q != PREV_INSN (c->head))
-    delete_insn_chain (NEXT_INSN (q), PREV_INSN (c->head));
+  if (e->src->succ->succ_next)
+    {
+      /* Create the new structures.  */
 
-  e->flags |= EDGE_FALLTHRU;
+      /* Position the new block correctly relative to loop notes.  */
+      note = last_loop_beg_note (e->src->end);
+      note = NEXT_INSN (note);
+
+      /* ... and ADDR_VECs.  */
+      if (note != NULL
+	  && GET_CODE (note) == CODE_LABEL
+	  && NEXT_INSN (note)
+	  && GET_CODE (NEXT_INSN (note)) == JUMP_INSN
+	  && (GET_CODE (PATTERN (NEXT_INSN (note))) == ADDR_DIFF_VEC
+	      || GET_CODE (PATTERN (NEXT_INSN (note))) == ADDR_VEC))
+	note = NEXT_INSN (NEXT_INSN (note));
+
+      jump_block = create_basic_block (e->src->index + 1, note, NULL);
+      jump_block->count = e->count;
+      jump_block->frequency = EDGE_FREQUENCY (e);
+      jump_block->loop_depth = target->loop_depth;
+
+      if (target->global_live_at_start)
+	{
+	  jump_block->global_live_at_start
+	    = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+	  jump_block->global_live_at_end
+	    = OBSTACK_ALLOC_REG_SET (&flow_obstack);
+	  COPY_REG_SET (jump_block->global_live_at_start,
+			target->global_live_at_start);
+	  COPY_REG_SET (jump_block->global_live_at_end,
+			target->global_live_at_start);
+	}
+
+      /* Wire edge in.  */
+      new_edge = make_edge (e->src, jump_block, EDGE_FALLTHRU);
+      new_edge->probability = e->probability;
+      new_edge->count = e->count;
+
+      /* Redirect old edge.  */
+      redirect_edge_pred (e, jump_block);
+      e->probability = REG_BR_PROB_BASE;
+
+      new_bb = jump_block;
+    }
+  else
+    jump_block = e->src;
+
+  e->flags &= ~EDGE_FALLTHRU;
+  if (target == EXIT_BLOCK_PTR)
+    {
+      if (HAVE_return)
+	emit_jump_insn_after (gen_return (), jump_block->end);
+      else
+	abort ();
+    }
+  else
+    {
+      rtx label = block_label (target);
+      emit_jump_insn_after (gen_jump (label), jump_block->end);
+      JUMP_LABEL (jump_block->end) = label;
+      LABEL_NUSES (label)++;
+    }
+
+  emit_barrier_after (jump_block->end);
+  redirect_edge_succ_nodup (e, target);
+
+  return new_bb;
 }

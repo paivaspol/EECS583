@@ -1,41 +1,35 @@
-void
-c_common_post_options ()
+boolean_increment (code, arg)
+     enum tree_code code;
+     tree arg;
 {
-  cpp_post_options (parse_in);
-
-  flag_inline_trees = 1;
-
-  /* Use tree inlining if possible.  Function instrumentation is only
-     done in the RTL level, so we disable tree inlining.  */
-  if (! flag_instrument_function_entry_exit)
+  tree val;
+  tree true_res = (c_language == clk_cplusplus
+		   ? boolean_true_node
+		   : c_bool_true_node);
+  arg = stabilize_reference (arg);
+  switch (code)
     {
-      if (!flag_no_inline)
-	flag_no_inline = 1;
-      if (flag_inline_functions)
-	{
-	  flag_inline_trees = 2;
-	  flag_inline_functions = 0;
-	}
+    case PREINCREMENT_EXPR:
+      val = build (MODIFY_EXPR, TREE_TYPE (arg), arg, true_res);
+      break;
+    case POSTINCREMENT_EXPR:
+      val = build (MODIFY_EXPR, TREE_TYPE (arg), arg, true_res);
+      arg = save_expr (arg);
+      val = build (COMPOUND_EXPR, TREE_TYPE (arg), val, arg);
+      val = build (COMPOUND_EXPR, TREE_TYPE (arg), arg, val);
+      break;
+    case PREDECREMENT_EXPR:
+      val = build (MODIFY_EXPR, TREE_TYPE (arg), arg, invert_truthvalue (arg));
+      break;
+    case POSTDECREMENT_EXPR:
+      val = build (MODIFY_EXPR, TREE_TYPE (arg), arg, invert_truthvalue (arg));
+      arg = save_expr (arg);
+      val = build (COMPOUND_EXPR, TREE_TYPE (arg), val, arg);
+      val = build (COMPOUND_EXPR, TREE_TYPE (arg), arg, val);
+      break;
+    default:
+      abort ();
     }
-
-  /* If still "unspecified", make it match -fbounded-pointers.  */
-  if (flag_bounds_check == -1)
-    flag_bounds_check = flag_bounded_pointers;
-
-  /* Special format checking options don't work without -Wformat; warn if
-     they are used.  */
-  if (warn_format_y2k && !warn_format)
-    warning ("-Wformat-y2k ignored without -Wformat");
-  if (warn_format_extra_args && !warn_format)
-    warning ("-Wformat-extra-args ignored without -Wformat");
-  if (warn_format_nonliteral && !warn_format)
-    warning ("-Wformat-nonliteral ignored without -Wformat");
-  if (warn_format_security && !warn_format)
-    warning ("-Wformat-security ignored without -Wformat");
-  if (warn_missing_format_attribute && !warn_format)
-    warning ("-Wmissing-format-attribute ignored without -Wformat");
-
-  /* If an error has occurred in cpplib, note it so we fail
-     immediately.  */
-  errorcount += cpp_errors (parse_in);
+  TREE_SIDE_EFFECTS (val) = 1;
+  return val;
 }

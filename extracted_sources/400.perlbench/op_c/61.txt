@@ -1,0 +1,306 @@
+OP *
+Perl_pmtrans(pTHX_ OP *o, OP *expr, OP *repl)
+{
+    SV *tstr = ((SVOP*)expr)->op_sv;
+    SV *rstr = ((SVOP*)repl)->op_sv;
+    STRLEN tlen;
+    STRLEN rlen;
+    U8 *t = (U8*)SvPV(tstr, tlen);
+    U8 *r = (U8*)SvPV(rstr, rlen);
+    register I32 i;
+    register I32 j;
+    I32 del;
+    I32 complement;
+    I32 squash;
+    I32 grows = 0;
+    register short *tbl;
+
+    PL_hints |= HINT_BLOCK_SCOPE;
+    complement	= o->op_private & OPpTRANS_COMPLEMENT;
+    del		= o->op_private & OPpTRANS_DELETE;
+    squash	= o->op_private & OPpTRANS_SQUASH;
+
+    if (SvUTF8(tstr))
+        o->op_private |= OPpTRANS_FROM_UTF;
+
+    if (SvUTF8(rstr))
+        o->op_private |= OPpTRANS_TO_UTF;
+
+    if (o->op_private & (OPpTRANS_FROM_UTF|OPpTRANS_TO_UTF)) {
+	SV* listsv = newSVpvn("# comment\n",10);
+	SV* transv = 0;
+	U8* tend = t + tlen;
+	U8* rend = r + rlen;
+	STRLEN ulen;
+	UV tfirst = 1;
+	UV tlast = 0;
+	IV tdiff;
+	UV rfirst = 1;
+	UV rlast = 0;
+	IV rdiff;
+	IV diff;
+	I32 none = 0;
+	U32 max = 0;
+	I32 bits;
+	I32 havefinal = 0;
+	U32 final = 0;
+	I32 from_utf	= o->op_private & OPpTRANS_FROM_UTF;
+	I32 to_utf	= o->op_private & OPpTRANS_TO_UTF;
+	U8* tsave = NULL;
+	U8* rsave = NULL;
+
+	if (!from_utf) {
+	    STRLEN len = tlen;
+	    tsave = t = bytes_to_utf8(t, &len);
+	    tend = t + len;
+	}
+	if (!to_utf && rlen) {
+	    STRLEN len = rlen;
+	    rsave = r = bytes_to_utf8(r, &len);
+	    rend = r + len;
+	}
+
+/* There are several snags with this code on EBCDIC:
+   1. 0xFF is a legal UTF-EBCDIC byte (there are no illegal bytes).
+   2. scan_const() in toke.c has encoded chars in native encoding which makes
+      ranges at least in EBCDIC 0..255 range the bottom odd.
+*/
+
+	if (complement) {
+	    U8 tmpbuf[UTF8_MAXBYTES+1];
+	    UV *cp;
+	    UV nextmin = 0;
+	    New(1109, cp, 2*tlen, UV);
+	    i = 0;
+	    transv = newSVpvn("",0);
+	    while (t < tend) {
+		cp[2*i] = utf8n_to_uvuni(t, tend-t, &ulen, 0);
+		t += ulen;
+		if (t < tend && NATIVE_TO_UTF(*t) == 0xff) {
+		    t++;
+		    cp[2*i+1] = utf8n_to_uvuni(t, tend-t, &ulen, 0);
+		    t += ulen;
+		}
+		else {
+		 cp[2*i+1] = cp[2*i];
+		}
+		i++;
+	    }
+	    qsort(cp, i, 2*sizeof(UV), uvcompare);
+	    for (j = 0; j < i; j++) {
+		UV  val = cp[2*j];
+		diff = val - nextmin;
+		if (diff > 0) {
+		    t = uvuni_to_utf8(tmpbuf,nextmin);
+		    sv_catpvn(transv, (char*)tmpbuf, t - tmpbuf);
+		    if (diff > 1) {
+			U8  range_mark = UTF_TO_NATIVE(0xff);
+			t = uvuni_to_utf8(tmpbuf, val - 1);
+			sv_catpvn(transv, (char *)&range_mark, 1);
+			sv_catpvn(transv, (char*)tmpbuf, t - tmpbuf);
+		    }
+	        }
+		val = cp[2*j+1];
+		if (val >= nextmin)
+		    nextmin = val + 1;
+	    }
+	    t = uvuni_to_utf8(tmpbuf,nextmin);
+	    sv_catpvn(transv, (char*)tmpbuf, t - tmpbuf);
+	    {
+		U8 range_mark = UTF_TO_NATIVE(0xff);
+		sv_catpvn(transv, (char *)&range_mark, 1);
+	    }
+	    t = uvuni_to_utf8_flags(tmpbuf, 0x7fffffff,
+				    UNICODE_ALLOW_SUPER);
+	    sv_catpvn(transv, (char*)tmpbuf, t - tmpbuf);
+	    t = (U8*)SvPVX(transv);
+	    tlen = SvCUR(transv);
+	    tend = t + tlen;
+	    Safefree(cp);
+	}
+	else if (!rlen && !del) {
+	    r = t; rlen = tlen; rend = tend;
+	}
+	if (!squash) {
+		if ((!rlen && !del) || t == r ||
+		    (tlen == rlen && memEQ((char *)t, (char *)r, tlen)))
+		{
+		    o->op_private |= OPpTRANS_IDENTICAL;
+		}
+	}
+
+	while (t < tend || tfirst <= tlast) {
+	    /* see if we need more "t" chars */
+	    if (tfirst > tlast) {
+		tfirst = (I32)utf8n_to_uvuni(t, tend - t, &ulen, 0);
+		t += ulen;
+		if (t < tend && NATIVE_TO_UTF(*t) == 0xff) {	/* illegal utf8 val indicates range */
+		    t++;
+		    tlast = (I32)utf8n_to_uvuni(t, tend - t, &ulen, 0);
+		    t += ulen;
+		}
+		else
+		    tlast = tfirst;
+	    }
+
+	    /* now see if we need more "r" chars */
+	    if (rfirst > rlast) {
+		if (r < rend) {
+		    rfirst = (I32)utf8n_to_uvuni(r, rend - r, &ulen, 0);
+		    r += ulen;
+		    if (r < rend && NATIVE_TO_UTF(*r) == 0xff) {	/* illegal utf8 val indicates range */
+			r++;
+			rlast = (I32)utf8n_to_uvuni(r, rend - r, &ulen, 0);
+			r += ulen;
+		    }
+		    else
+			rlast = rfirst;
+		}
+		else {
+		    if (!havefinal++)
+			final = rlast;
+		    rfirst = rlast = 0xffffffff;
+		}
+	    }
+
+	    /* now see which range will peter our first, if either. */
+	    tdiff = tlast - tfirst;
+	    rdiff = rlast - rfirst;
+
+	    if (tdiff <= rdiff)
+		diff = tdiff;
+	    else
+		diff = rdiff;
+
+	    if (rfirst == 0xffffffff) {
+		diff = tdiff;	/* oops, pretend rdiff is infinite */
+		if (diff > 0)
+		    Perl_sv_catpvf(aTHX_ listsv, "%04lx\t%04lx\tXXXX\n",
+				   (long)tfirst, (long)tlast);
+		else
+		    Perl_sv_catpvf(aTHX_ listsv, "%04lx\t\tXXXX\n", (long)tfirst);
+	    }
+	    else {
+		if (diff > 0)
+		    Perl_sv_catpvf(aTHX_ listsv, "%04lx\t%04lx\t%04lx\n",
+				   (long)tfirst, (long)(tfirst + diff),
+				   (long)rfirst);
+		else
+		    Perl_sv_catpvf(aTHX_ listsv, "%04lx\t\t%04lx\n",
+				   (long)tfirst, (long)rfirst);
+
+		if (rfirst + diff > max)
+		    max = rfirst + diff;
+		if (!grows)
+		    grows = (tfirst < rfirst &&
+			     UNISKIP(tfirst) < UNISKIP(rfirst + diff));
+		rfirst += diff + 1;
+	    }
+	    tfirst += diff + 1;
+	}
+
+	none = ++max;
+	if (del)
+	    del = ++max;
+
+	if (max > 0xffff)
+	    bits = 32;
+	else if (max > 0xff)
+	    bits = 16;
+	else
+	    bits = 8;
+
+	Safefree(cPVOPo->op_pv);
+	cSVOPo->op_sv = (SV*)swash_init("utf8", "", listsv, bits, none);
+	SvREFCNT_dec(listsv);
+	if (transv)
+	    SvREFCNT_dec(transv);
+
+	if (!del && havefinal && rlen)
+	    (void)hv_store((HV*)SvRV((cSVOPo->op_sv)), "FINAL", 5,
+			   newSVuv((UV)final), 0);
+
+	if (grows)
+	    o->op_private |= OPpTRANS_GROWS;
+
+	if (tsave)
+	    Safefree(tsave);
+	if (rsave)
+	    Safefree(rsave);
+
+	op_free(expr);
+	op_free(repl);
+	return o;
+    }
+
+    tbl = (short*)cPVOPo->op_pv;
+    if (complement) {
+	Zero(tbl, 256, short);
+	for (i = 0; i < (I32)tlen; i++)
+	    tbl[t[i]] = -1;
+	for (i = 0, j = 0; i < 256; i++) {
+	    if (!tbl[i]) {
+		if (j >= (I32)rlen) {
+		    if (del)
+			tbl[i] = -2;
+		    else if (rlen)
+			tbl[i] = r[j-1];
+		    else
+			tbl[i] = (short)i;
+		}
+		else {
+		    if (i < 128 && r[j] >= 128)
+			grows = 1;
+		    tbl[i] = r[j++];
+		}
+	    }
+	}
+	if (!del) {
+	    if (!rlen) {
+		j = rlen;
+		if (!squash)
+		    o->op_private |= OPpTRANS_IDENTICAL;
+	    }
+	    else if (j >= (I32)rlen)
+		j = rlen - 1;
+	    else
+		cPVOPo->op_pv = (char*)Renew(tbl, 0x101+rlen-j, short);
+	    tbl[0x100] = rlen - j;
+	    for (i=0; i < (I32)rlen - j; i++)
+		tbl[0x101+i] = r[j+i];
+	}
+    }
+    else {
+	if (!rlen && !del) {
+	    r = t; rlen = tlen;
+	    if (!squash)
+		o->op_private |= OPpTRANS_IDENTICAL;
+	}
+	else if (!squash && rlen == tlen && memEQ((char*)t, (char*)r, tlen)) {
+	    o->op_private |= OPpTRANS_IDENTICAL;
+	}
+	for (i = 0; i < 256; i++)
+	    tbl[i] = -1;
+	for (i = 0, j = 0; i < (I32)tlen; i++,j++) {
+	    if (j >= (I32)rlen) {
+		if (del) {
+		    if (tbl[t[i]] == -1)
+			tbl[t[i]] = -2;
+		    continue;
+		}
+		--j;
+	    }
+	    if (tbl[t[i]] == -1) {
+		if (t[i] < 128 && r[j] >= 128)
+		    grows = 1;
+		tbl[t[i]] = r[j];
+	    }
+	}
+    }
+    if (grows)
+	o->op_private |= OPpTRANS_GROWS;
+    op_free(expr);
+    op_free(repl);
+
+    return o;
+}

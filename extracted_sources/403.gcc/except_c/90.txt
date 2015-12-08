@@ -1,0 +1,17 @@
+static void
+sjlj_output_call_site_table ()
+{
+  int n = cfun->eh->call_site_data_used;
+  int i;
+
+  for (i = 0; i < n; ++i)
+    {
+      struct call_site_record *cs = &cfun->eh->call_site_data[i];
+
+      dw2_asm_output_data_uleb128 (INTVAL (cs->landing_pad),
+				   "region %d landing pad", i);
+      dw2_asm_output_data_uleb128 (cs->action, "action");
+    }
+
+  call_site_base += n;
+}

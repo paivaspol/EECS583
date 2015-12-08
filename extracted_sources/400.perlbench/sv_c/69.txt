@@ -1,30 +1,12 @@
-bool
-Perl_sv_utf8_decode(pTHX_ register SV *sv)
+void
+Perl_sv_utf8_encode(pTHX_ register SV *sv)
 {
-    if (SvPOKp(sv)) {
-        U8 *c;
-        U8 *e;
-
-	/* The octets may have got themselves encoded - get them back as
-	 * bytes
-	 */
-	if (!sv_utf8_downgrade(sv, TRUE))
-	    return FALSE;
-
-        /* it is actually just a matter of turning the utf8 flag on, but
-         * we want to make sure everything inside is valid utf8 first.
-         */
-        c = (U8 *) SvPVX(sv);
-	if (!is_utf8_string(c, SvCUR(sv)+1))
-	    return FALSE;
-        e = (U8 *) SvEND(sv);
-        while (c < e) {
-	    U8 ch = *c++;
-            if (!UTF8_IS_INVARIANT(ch)) {
-		SvUTF8_on(sv);
-		break;
-	    }
-        }
+    (void) sv_utf8_upgrade(sv);
+    if (SvIsCOW(sv)) {
+        sv_force_normal_flags(sv, 0);
     }
-    return TRUE;
+    if (SvREADONLY(sv)) {
+	Perl_croak(aTHX_ PL_no_modify);
+    }
+    SvUTF8_off(sv);
 }

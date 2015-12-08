@@ -1,0 +1,26 @@
+PP(pp_open_dir)
+{
+#if defined(Direntry_t) && defined(HAS_READDIR)
+    dSP;
+    STRLEN n_a;
+    char *dirname = POPpx;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+
+    if (!io)
+	goto nope;
+
+    if (IoDIRP(io))
+	PerlDir_close(IoDIRP(io));
+    if (!(IoDIRP(io) = PerlDir_open(dirname)))
+	goto nope;
+
+    RETPUSHYES;
+nope:
+    if (!errno)
+	SETERRNO(EBADF,RMS_DIR);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_dir_func, "opendir");
+#endif
+}

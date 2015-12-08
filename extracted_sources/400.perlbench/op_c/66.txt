@@ -1,0 +1,11 @@
+OP *
+Perl_newGVOP(pTHX_ I32 type, I32 flags, GV *gv)
+{
+#ifdef USE_ITHREADS
+    if (gv)
+	GvIN_PAD_on(gv);
+    return newPADOP(type, flags, SvREFCNT_inc(gv));
+#else
+    return newSVOP(type, flags, SvREFCNT_inc(gv));
+#endif
+}

@@ -1,48 +1,73 @@
-static bool
-sjlj_find_directly_reachable_regions (lp_info)
-     struct sjlj_lp_info *lp_info;
+static void
+dw2_build_landing_pads ()
 {
-  rtx insn;
-  bool found_one = false;
+  int i;
+  unsigned int j;
 
-  for (insn = get_insns (); insn ; insn = NEXT_INSN (insn))
+  for (i = cfun->eh->last_region_number; i > 0; --i)
     {
-      struct eh_region *region;
-      enum reachable_code rc;
-      tree type_thrown;
-      rtx note;
+      struct eh_region *region = cfun->eh->region_array[i];
+      rtx seq;
+      bool clobbers_hard_regs = false;
 
-      if (! INSN_P (insn))
+      /* Mind we don't process a region more than once.  */
+      if (!region || region->region_number != i)
 	continue;
 
-      note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
-      if (!note || INTVAL (XEXP (note, 0)) <= 0)
+      if (region->type != ERT_CLEANUP
+	  && region->type != ERT_TRY
+	  && region->type != ERT_ALLOWED_EXCEPTIONS)
 	continue;
 
-      region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+      start_sequence ();
 
-      type_thrown = NULL_TREE;
-      if (region->type == ERT_THROW)
-	{
-	  type_thrown = region->u.throw.type;
-	  region = region->outer;
-	}
+      region->landing_pad = gen_label_rtx ();
+      emit_label (region->landing_pad);
 
-      /* Find the first containing region that might handle the exception.
-	 That's the landing pad to which we will transfer control.  */
-      rc = RNL_NOT_CAUGHT;
-      for (; region; region = region->outer)
+#ifdef HAVE_exception_receiver
+      if (HAVE_exception_receiver)
+	emit_insn (gen_exception_receiver ());
+      else
+#endif
+#ifdef HAVE_nonlocal_goto_receiver
+	if (HAVE_nonlocal_goto_receiver)
+	  emit_insn (gen_nonlocal_goto_receiver ());
+	else
+#endif
+	  { /* Nothing */ }
+
+      /* If the eh_return data registers are call-saved, then we
+	 won't have considered them clobbered from the call that
+	 threw.  Kill them now.  */
+      for (j = 0; ; ++j)
 	{
-	  rc = reachable_next_level (region, type_thrown, 0);
-	  if (rc != RNL_NOT_CAUGHT)
+	  unsigned r = EH_RETURN_DATA_REGNO (j);
+	  if (r == INVALID_REGNUM)
 	    break;
+	  if (! call_used_regs[r])
+	    {
+	      emit_insn (gen_rtx_CLOBBER (VOIDmode, gen_rtx_REG (Pmode, r)));
+	      clobbers_hard_regs = true;
+	    }
 	}
-      if (rc == RNL_MAYBE_CAUGHT || rc == RNL_CAUGHT)
-	{
-	  lp_info[region->region_number].directly_reachable = 1;
-	  found_one = true;
-	}
-    }
 
-  return found_one;
+      if (clobbers_hard_regs)
+	{
+	  /* @@@ This is a kludge.  Not all machine descriptions define a
+	     blockage insn, but we must not allow the code we just generated
+	     to be reordered by scheduling.  So emit an ASM_INPUT to act as
+	     blockage insn.  */
+	  emit_insn (gen_rtx_ASM_INPUT (VOIDmode, ""));
+	}
+
+      emit_move_insn (cfun->eh->exc_ptr,
+		      gen_rtx_REG (Pmode, EH_RETURN_DATA_REGNO (0)));
+      emit_move_insn (cfun->eh->filter,
+		      gen_rtx_REG (word_mode, EH_RETURN_DATA_REGNO (1)));
+
+      seq = get_insns ();
+      end_sequence ();
+
+      emit_insns_before (seq, region->post_landing_pad);
+    }
 }

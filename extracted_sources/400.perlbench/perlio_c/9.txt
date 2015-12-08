@@ -1,0 +1,17 @@
+void
+PerlIO_cleantable(pTHX_ PerlIO **tablep)
+{
+    PerlIO *table = *tablep;
+    if (table) {
+	int i;
+	PerlIO_cleantable(aTHX_(PerlIO **) & (table[0]));
+	for (i = PERLIO_TABLE_SIZE - 1; i > 0; i--) {
+	    PerlIO *f = table + i;
+	    if (*f) {
+		PerlIO_close(f);
+	    }
+	}
+	Safefree(table);
+	*tablep = NULL;
+    }
+}

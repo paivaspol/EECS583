@@ -1,26 +1,13 @@
 int
-invert_jump (jump, nlabel, delete_unused)
+invert_jump_1 (jump, nlabel)
      rtx jump, nlabel;
-     int delete_unused;
 {
-  /* We have to either invert the condition and change the label or
-     do neither.  Either operation could fail.  We first try to invert
-     the jump. If that succeeds, we try changing the label.  If that fails,
-     we invert the jump back to what it was.  */
+  int ochanges;
 
-  if (! invert_exp (jump))
+  ochanges = num_validated_changes ();
+  invert_exp_1 (jump);
+  if (num_validated_changes () == ochanges)
     return 0;
 
-  if (redirect_jump (jump, nlabel, delete_unused))
-    {
-      invert_br_probabilities (jump);
-
-      return 1;
-    }
-
-  if (! invert_exp (jump))
-    /* This should just be putting it back the way it was.  */
-    abort ();
-
-  return 0;
+  return redirect_jump_1 (jump, nlabel);
 }

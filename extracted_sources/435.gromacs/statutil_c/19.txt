@@ -1,0 +1,24 @@
+void parse_common_args(int *argc,char *argv[],unsigned long Flags,
+		       int nfile,t_filenm fnm[],int npargs,t_pargs *pa,
+		       int ndesc,char **desc,int nbugs,char **bugs)
+{
+  static bool bHelp=FALSE,bHidden=FALSE,bQuiet=FALSE;
+  static char *manstr[]      = { NULL, "no", "html", "tex", "nroff", "ascii", "completion", NULL };
+  static char *not_nicestr[] = { NULL, "0", "4", "10", "19", NULL };
+  static char *nicestr[]     = { NULL, "19", "10", "4", "0", NULL };
+  static char *not_npristr[] = { NULL, "0", "128", "100", "200", "250", NULL };
+  static char *npristr[]     = { NULL, "128", "250", "200", "100", "0", NULL };
+  static int  nicelevel=0,mantp=0,npri=0;
+  static bool bGUI=FALSE,bDebug=FALSE;
+  static char *deffnm=NULL;
+     
+  FILE *fp;  
+  bool bPrint,bExit;
+  int  i,j,k,npall;
+  char *ptr,*newdesc;
+  char *envstr;
+
+  t_pargs *all_pa=NULL;
+  
+  t_pargs motif_pa  = { "-X",    FALSE, etBOOL,  {&bGUI},
+		       "Use dialog box GUI to edit command line options" };

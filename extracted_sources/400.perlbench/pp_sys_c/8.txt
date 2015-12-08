@@ -1,0 +1,28 @@
+PP(pp_close)
+{
+    dSP;
+    GV *gv;
+    IO *io;
+    MAGIC *mg;
+
+    if (MAXARG == 0)
+	gv = PL_defoutgv;
+    else
+	gv = (GV*)POPs;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)io, mg));
+	PUTBACK;
+	ENTER;
+	call_method("CLOSE", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	RETURN;
+    }
+    EXTEND(SP, 1);
+    PUSHs(boolSV(do_close(gv, TRUE)));
+    RETURN;
+}

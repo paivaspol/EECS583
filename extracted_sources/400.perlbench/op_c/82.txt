@@ -1,0 +1,58 @@
+OP *
+Perl_newLOOPOP(pTHX_ I32 flags, I32 debuggable, OP *expr, OP *block)
+{
+    OP* listop;
+    OP* o;
+    int once = block && block->op_flags & OPf_SPECIAL &&
+      (block->op_type == OP_ENTERSUB || block->op_type == OP_NULL);
+
+    if (expr) {
+	if (once && expr->op_type == OP_CONST && !SvTRUE(((SVOP*)expr)->op_sv))
+	    return block;	/* do {} while 0 does once */
+	if (expr->op_type == OP_READLINE || expr->op_type == OP_GLOB
+	    || (expr->op_type == OP_NULL && expr->op_targ == OP_GLOB)) {
+	    expr = newUNOP(OP_DEFINED, 0,
+		newASSIGNOP(0, newDEFSVOP(), 0, expr) );
+	} else if (expr->op_flags & OPf_KIDS) {
+	    OP *k1 = ((UNOP*)expr)->op_first;
+	    OP *k2 = (k1) ? k1->op_sibling : NULL;
+	    switch (expr->op_type) {
+	      case OP_NULL:
+		if (k2 && k2->op_type == OP_READLINE
+		      && (k2->op_flags & OPf_STACKED)
+		      && ((k1->op_flags & OPf_WANT) == OPf_WANT_SCALAR))
+		    expr = newUNOP(OP_DEFINED, 0, expr);
+		break;
+
+	      case OP_SASSIGN:
+		if (k1->op_type == OP_READDIR
+		      || k1->op_type == OP_GLOB
+		      || (k1->op_type == OP_NULL && k1->op_targ == OP_GLOB)
+		      || k1->op_type == OP_EACH)
+		    expr = newUNOP(OP_DEFINED, 0, expr);
+		break;
+	    }
+	}
+    }
+
+    /* if block is null, the next append_elem() would put UNSTACK, a scalar
+     * op, in listop. This is wrong. [perl #27024] */
+    if (!block)
+	block = newOP(OP_NULL, 0);
+    listop = append_elem(OP_LINESEQ, block, newOP(OP_UNSTACK, 0));
+    o = new_logop(OP_AND, 0, &expr, &listop);
+
+    if (listop)
+	((LISTOP*)listop)->op_last->op_next = LINKLIST(o);
+
+    if (once && o != listop)
+	o->op_next = ((LOGOP*)cUNOPo->op_first)->op_other;
+
+    if (o == listop)
+	o = newUNOP(OP_NULL, 0, o);	/* or do {} while 1 loses outer block */
+
+    o->op_flags |= flags;
+    o = scope(o);
+    o->op_flags |= OPf_SPECIAL;	/* suppress POPBLOCK curpm restoration*/
+    return o;
+}

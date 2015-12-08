@@ -1,0 +1,23 @@
+void
+PerlIO_clone(pTHX_ PerlInterpreter *proto, CLONE_PARAMS *param)
+{
+#ifdef USE_ITHREADS
+    PerlIO **table = &proto->Iperlio;
+    PerlIO *f;
+    PL_perlio = NULL;
+    PL_known_layers = PerlIO_clone_list(aTHX_ proto->Iknown_layers, param);
+    PL_def_layerlist = PerlIO_clone_list(aTHX_ proto->Idef_layerlist, param);
+    PerlIO_allocate(aTHX); /* root slot is never used */
+    PerlIO_debug("Clone %p from %p\n",aTHX,proto);
+    while ((f = *table)) {
+	    int i;
+	    table = (PerlIO **) (f++);
+	    for (i = 1; i < PERLIO_TABLE_SIZE; i++) {
+		if (*f) {
+		    (void) fp_dup(f, 0, param);
+		}
+		f++;
+	    }
+	}
+#endif
+}

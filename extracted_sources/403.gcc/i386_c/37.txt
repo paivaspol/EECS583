@@ -1,9 +1,13 @@
 int
-x86_64_immediate_operand (op, mode)
+x86_64_movabs_operand (op, mode)
      rtx op;
      enum machine_mode mode;
 {
-  if (!TARGET_64BIT)
-    return immediate_operand (op, mode);
-  return x86_64_sign_extended_value (op);
+  if (!TARGET_64BIT || !flag_pic)
+    return nonmemory_operand (op, mode);
+  if (register_operand (op, mode) || x86_64_sign_extended_value (op))
+    return 1;
+  if (CONSTANT_P (op) && !symbolic_reference_mentioned_p (op))
+    return 1;
+  return 0;
 }

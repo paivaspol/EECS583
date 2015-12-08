@@ -1,47 +1,217 @@
-STATIC void
-S_apply_attrs_my(pTHX_ HV *stash, OP *target, OP *attrs, OP **imopsp)
+OP *
+Perl_scalarvoid(pTHX_ OP *o)
 {
-    OP *pack, *imop, *arg;
-    SV *meth, *stashsv;
+    OP *kid;
+    char* useless = 0;
+    SV* sv;
+    U8 want;
 
-    if (!attrs)
-	return;
+    if (o->op_type == OP_NEXTSTATE
+	|| o->op_type == OP_SETSTATE
+	|| o->op_type == OP_DBSTATE
+	|| (o->op_type == OP_NULL && (o->op_targ == OP_NEXTSTATE
+				      || o->op_targ == OP_SETSTATE
+				      || o->op_targ == OP_DBSTATE)))
+	PL_curcop = (COP*)o;		/* for warning below */
 
-    assert(target->op_type == OP_PADSV ||
-	   target->op_type == OP_PADHV ||
-	   target->op_type == OP_PADAV);
+    /* assumes no premature commitment */
+    want = o->op_flags & OPf_WANT;
+    if ((want && want != OPf_WANT_SCALAR) || PL_error_count
+	 || o->op_type == OP_RETURN)
+    {
+	return o;
+    }
 
-    /* Ensure that attributes.pm is loaded. */
-    apply_attrs(stash, PAD_SV(target->op_targ), attrs, TRUE);
+    if ((o->op_private & OPpTARGET_MY)
+	&& (PL_opargs[o->op_type] & OA_TARGLEX))/* OPp share the meaning */
+    {
+	return scalar(o);			/* As if inside SASSIGN */
+    }
 
-    /* Need package name for method call. */
-    pack = newSVOP(OP_CONST, 0, newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1));
+    o->op_flags = (o->op_flags & ~OPf_WANT) | OPf_WANT_VOID;
 
-    /* Build up the real arg-list. */
-    if (stash)
-	stashsv = newSVpv(HvNAME(stash), 0);
-    else
-	stashsv = &PL_sv_no;
-    arg = newOP(OP_PADSV, 0);
-    arg->op_targ = target->op_targ;
-    arg = prepend_elem(OP_LIST,
-		       newSVOP(OP_CONST, 0, stashsv),
-		       prepend_elem(OP_LIST,
-				    newUNOP(OP_REFGEN, 0,
-					    mod(arg, OP_REFGEN)),
-				    dup_attrlist(attrs)));
+    switch (o->op_type) {
+    default:
+	if (!(PL_opargs[o->op_type] & OA_FOLDCONST))
+	    break;
+	/* FALL THROUGH */
+    case OP_REPEAT:
+	if (o->op_flags & OPf_STACKED)
+	    break;
+	goto func_ops;
+    case OP_SUBSTR:
+	if (o->op_private == 4)
+	    break;
+	/* FALL THROUGH */
+    case OP_GVSV:
+    case OP_WANTARRAY:
+    case OP_GV:
+    case OP_PADSV:
+    case OP_PADAV:
+    case OP_PADHV:
+    case OP_PADANY:
+    case OP_AV2ARYLEN:
+    case OP_REF:
+    case OP_REFGEN:
+    case OP_SREFGEN:
+    case OP_DEFINED:
+    case OP_HEX:
+    case OP_OCT:
+    case OP_LENGTH:
+    case OP_VEC:
+    case OP_INDEX:
+    case OP_RINDEX:
+    case OP_SPRINTF:
+    case OP_AELEM:
+    case OP_AELEMFAST:
+    case OP_ASLICE:
+    case OP_HELEM:
+    case OP_HSLICE:
+    case OP_UNPACK:
+    case OP_PACK:
+    case OP_JOIN:
+    case OP_LSLICE:
+    case OP_ANONLIST:
+    case OP_ANONHASH:
+    case OP_SORT:
+    case OP_REVERSE:
+    case OP_RANGE:
+    case OP_FLIP:
+    case OP_FLOP:
+    case OP_CALLER:
+    case OP_FILENO:
+    case OP_EOF:
+    case OP_TELL:
+    case OP_GETSOCKNAME:
+    case OP_GETPEERNAME:
+    case OP_READLINK:
+    case OP_TELLDIR:
+    case OP_GETPPID:
+    case OP_GETPGRP:
+    case OP_GETPRIORITY:
+    case OP_TIME:
+    case OP_TMS:
+    case OP_LOCALTIME:
+    case OP_GMTIME:
+    case OP_GHBYNAME:
+    case OP_GHBYADDR:
+    case OP_GHOSTENT:
+    case OP_GNBYNAME:
+    case OP_GNBYADDR:
+    case OP_GNETENT:
+    case OP_GPBYNAME:
+    case OP_GPBYNUMBER:
+    case OP_GPROTOENT:
+    case OP_GSBYNAME:
+    case OP_GSBYPORT:
+    case OP_GSERVENT:
+    case OP_GPWNAM:
+    case OP_GPWUID:
+    case OP_GGRNAM:
+    case OP_GGRGID:
+    case OP_GETLOGIN:
+    case OP_PROTOTYPE:
+      func_ops:
+	if (!(o->op_private & (OPpLVAL_INTRO|OPpOUR_INTRO)))
+	    useless = OP_DESC(o);
+	break;
 
-    /* Fake up a method call to import */
-    meth = newSVpvn("import", 6);
-    (void)SvUPGRADE(meth, SVt_PVIV);
-    (void)SvIOK_on(meth);
-    PERL_HASH(SvUVX(meth), SvPVX(meth), SvCUR(meth));
-    imop = convert(OP_ENTERSUB, OPf_STACKED|OPf_SPECIAL|OPf_WANT_VOID,
-		   append_elem(OP_LIST,
-			       prepend_elem(OP_LIST, pack, list(arg)),
-			       newSVOP(OP_METHOD_NAMED, 0, meth)));
-    imop->op_private |= OPpENTERSUB_NOMOD;
+    case OP_RV2GV:
+    case OP_RV2SV:
+    case OP_RV2AV:
+    case OP_RV2HV:
+	if (!(o->op_private & (OPpLVAL_INTRO|OPpOUR_INTRO)) &&
+		(!o->op_sibling || o->op_sibling->op_type != OP_READLINE))
+	    useless = "a variable";
+	break;
 
-    /* Combine the ops. */
-    *imopsp = append_elem(OP_LIST, *imopsp, imop);
+    case OP_CONST:
+	sv = cSVOPo_sv;
+	if (cSVOPo->op_private & OPpCONST_STRICT)
+	    no_bareword_allowed(o);
+	else {
+	    if (ckWARN(WARN_VOID)) {
+		useless = "a constant";
+		/* don't warn on optimised away booleans, eg 
+		 * use constant Foo, 5; Foo || print; */
+		if (cSVOPo->op_private & OPpCONST_SHORTCIRCUIT)
+		    useless = 0;
+		/* the constants 0 and 1 are permitted as they are
+		   conventionally used as dummies in constructs like
+		        1 while some_condition_with_side_effects;  */
+		else if (SvNIOK(sv) && (SvNV(sv) == 0.0 || SvNV(sv) == 1.0))
+		    useless = 0;
+		else if (SvPOK(sv)) {
+                  /* perl4's way of mixing documentation and code
+                     (before the invention of POD) was based on a
+                     trick to mix nroff and perl code. The trick was
+                     built upon these three nroff macros being used in
+                     void context. The pink camel has the details in
+                     the script wrapman near page 319. */
+		    if (strnEQ(SvPVX(sv), "di", 2) ||
+			strnEQ(SvPVX(sv), "ds", 2) ||
+			strnEQ(SvPVX(sv), "ig", 2))
+			    useless = 0;
+		}
+	    }
+	}
+	op_null(o);		/* don't execute or even remember it */
+	break;
+
+    case OP_POSTINC:
+	o->op_type = OP_PREINC;		/* pre-increment is faster */
+	o->op_ppaddr = PL_ppaddr[OP_PREINC];
+	break;
+
+    case OP_POSTDEC:
+	o->op_type = OP_PREDEC;		/* pre-decrement is faster */
+	o->op_ppaddr = PL_ppaddr[OP_PREDEC];
+	break;
+
+    case OP_OR:
+    case OP_AND:
+    case OP_COND_EXPR:
+	for (kid = cUNOPo->op_first->op_sibling; kid; kid = kid->op_sibling)
+	    scalarvoid(kid);
+	break;
+
+    case OP_NULL:
+	if (o->op_flags & OPf_STACKED)
+	    break;
+	/* FALL THROUGH */
+    case OP_NEXTSTATE:
+    case OP_DBSTATE:
+    case OP_ENTERTRY:
+    case OP_ENTER:
+	if (!(o->op_flags & OPf_KIDS))
+	    break;
+	/* FALL THROUGH */
+    case OP_SCOPE:
+    case OP_LEAVE:
+    case OP_LEAVETRY:
+    case OP_LEAVELOOP:
+    case OP_LINESEQ:
+    case OP_LIST:
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    scalarvoid(kid);
+	break;
+    case OP_ENTEREVAL:
+	scalarkids(o);
+	break;
+    case OP_REQUIRE:
+	/* all requires must return a boolean value */
+	o->op_flags &= ~OPf_WANT;
+	/* FALL THROUGH */
+    case OP_SCALAR:
+	return scalar(o);
+    case OP_SPLIT:
+	if ((kid = cLISTOPo->op_first) && kid->op_type == OP_PUSHRE) {
+	    if (!kPMOP->op_pmreplroot)
+		deprecate_old("implicit split to @_");
+	}
+	break;
+    }
+    if (useless && ckWARN(WARN_VOID))
+	Perl_warner(aTHX_ packWARN(WARN_VOID), "Useless use of %s in void context", useless);
+    return o;
 }

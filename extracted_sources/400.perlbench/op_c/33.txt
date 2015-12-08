@@ -1,38 +1,30 @@
-STATIC I32
-S_list_assignment(pTHX_ register OP *o)
+void
+Perl_apply_attrs_string(pTHX_ char *stashpv, CV *cv,
+                        char *attrstr, STRLEN len)
 {
-    if (!o)
-	return TRUE;
+    OP *attrs = Nullop;
 
-    if (o->op_type == OP_NULL && o->op_flags & OPf_KIDS)
-	o = cUNOPo->op_first;
-
-    if (o->op_type == OP_COND_EXPR) {
-	I32 t = list_assignment(cLOGOPo->op_first->op_sibling);
-	I32 f = list_assignment(cLOGOPo->op_first->op_sibling->op_sibling);
-
-	if (t && f)
-	    return TRUE;
-	if (t || f)
-	    yyerror("Assignment to both a list and a scalar");
-	return FALSE;
+    if (!len) {
+        len = strlen(attrstr);
     }
 
-    if (o->op_type == OP_LIST &&
-	(o->op_flags & OPf_WANT) == OPf_WANT_SCALAR &&
-	o->op_private & OPpLVAL_INTRO)
-	return FALSE;
+    while (len) {
+        for (; isSPACE(*attrstr) && len; --len, ++attrstr) ;
+        if (len) {
+            char *sstr = attrstr;
+            for (; !isSPACE(*attrstr) && len; --len, ++attrstr) ;
+            attrs = append_elem(OP_LIST, attrs,
+                                newSVOP(OP_CONST, 0,
+                                        newSVpvn(sstr, attrstr-sstr)));
+        }
+    }
 
-    if (o->op_type == OP_LIST || o->op_flags & OPf_PARENS ||
-	o->op_type == OP_RV2AV || o->op_type == OP_RV2HV ||
-	o->op_type == OP_ASLICE || o->op_type == OP_HSLICE)
-	return TRUE;
-
-    if (o->op_type == OP_PADAV || o->op_type == OP_PADHV)
-	return TRUE;
-
-    if (o->op_type == OP_RV2SV)
-	return FALSE;
-
-    return FALSE;
+    Perl_load_module(aTHX_ PERL_LOADMOD_IMPORT_OPS,
+                     newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1),
+                     Nullsv, prepend_elem(OP_LIST,
+				  newSVOP(OP_CONST, 0, newSVpv(stashpv,0)),
+				  prepend_elem(OP_LIST,
+					       newSVOP(OP_CONST, 0,
+						       newRV((SV*)cv)),
+                                               attrs)));
 }

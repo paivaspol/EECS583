@@ -1,0 +1,63 @@
+PP(pp_getpeername)
+{
+#ifdef HAS_SOCKET
+    dSP;
+    int optype = PL_op->op_type;
+    SV *sv;
+    int fd;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+    Sock_size_t len;
+
+    if (!io || !IoIFP(io))
+	goto nuts;
+
+    sv = sv_2mortal(NEWSV(22, 257));
+    (void)SvPOK_only(sv);
+    len = 256;
+    SvCUR_set(sv, len);
+    *SvEND(sv) ='\0';
+    fd = PerlIO_fileno(IoIFP(io));
+    switch (optype) {
+    case OP_GETSOCKNAME:
+	if (PerlSock_getsockname(fd, (struct sockaddr *)SvPVX(sv), &len) < 0)
+	    goto nuts2;
+	break;
+    case OP_GETPEERNAME:
+	if (PerlSock_getpeername(fd, (struct sockaddr *)SvPVX(sv), &len) < 0)
+	    goto nuts2;
+#if defined(VMS_DO_SOCKETS) && defined (DECCRTL_SOCKETS)
+	{
+	    static const char nowhere[] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+	    /* If the call succeeded, make sure we don't have a zeroed port/addr */
+	    if (((struct sockaddr *)SvPVX(sv))->sa_family == AF_INET &&
+		!memcmp((char *)SvPVX(sv) + sizeof(u_short), nowhere,
+			sizeof(u_short) + sizeof(struct in_addr))) {
+		goto nuts2;	
+	    }
+	}
+#endif
+	break;
+    }
+#ifdef BOGUS_GETNAME_RETURN
+    /* Interactive Unix, getpeername() and getsockname()
+      does not return valid namelen */
+    if (len == BOGUS_GETNAME_RETURN)
+	len = sizeof(struct sockaddr);
+#endif
+    SvCUR_set(sv, len);
+    *SvEND(sv) ='\0';
+    PUSHs(sv);
+    RETURN;
+
+nuts:
+    if (ckWARN(WARN_CLOSED))
+	report_evil_fh(gv, io, optype);
+    SETERRNO(EBADF,SS_IVCHAN);
+nuts2:
+    RETPUSHUNDEF;
+
+#else
+    DIE(aTHX_ PL_no_sock_func, "getpeername");
+#endif
+}

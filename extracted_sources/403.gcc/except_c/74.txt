@@ -1,43 +1,61 @@
-void
-expand_eh_return ()
+bool
+can_throw_external (insn)
+     rtx insn;
 {
-  rtx sa, ra, around_label;
+  struct eh_region *region;
+  tree type_thrown;
+  rtx note;
 
-  if (! cfun->eh->ehr_label)
-    return;
+  if (! INSN_P (insn))
+    return false;
 
-  sa = EH_RETURN_STACKADJ_RTX;
-  if (! sa)
+  if (GET_CODE (insn) == INSN
+      && GET_CODE (PATTERN (insn)) == SEQUENCE)
+    insn = XVECEXP (PATTERN (insn), 0, 0);
+
+  if (GET_CODE (insn) == CALL_INSN
+      && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
     {
-      error ("__builtin_eh_return not supported on this target");
-      return;
-    }
-
-  current_function_calls_eh_return = 1;
-
-  around_label = gen_label_rtx ();
-  emit_move_insn (sa, const0_rtx);
-  emit_jump (around_label);
-
-  emit_label (cfun->eh->ehr_label);
-  clobber_return_register ();
-
-#ifdef HAVE_eh_return
-  if (HAVE_eh_return)
-    emit_insn (gen_eh_return (cfun->eh->ehr_stackadj, cfun->eh->ehr_handler));
-  else
-#endif
-    {
-      ra = EH_RETURN_HANDLER_RTX;
-      if (! ra)
+      int i;
+      for (i = 0; i < 3; ++i)
 	{
-	  error ("__builtin_eh_return not supported on this target");
-	  ra = gen_reg_rtx (Pmode);
+	  rtx sub = XEXP (PATTERN (insn), i);
+	  for (; sub ; sub = NEXT_INSN (sub))
+	    if (can_throw_external (sub))
+	      return true;
 	}
-
-      emit_move_insn (sa, cfun->eh->ehr_stackadj);
-      emit_move_insn (ra, cfun->eh->ehr_handler);
+      return false;
     }
 
-  emit_label (around_label);
+  note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+  if (!note)
+    {
+      /* Calls (and trapping insns) without notes are outside any
+	 exception handling region in this function.  We have to
+	 assume it might throw.  Given that the front end and middle
+	 ends mark known NOTHROW functions, this isn't so wildly
+	 inaccurate.  */
+      return (GET_CODE (insn) == CALL_INSN
+	      || (flag_non_call_exceptions
+		  && may_trap_p (PATTERN (insn))));
+    }
+  if (INTVAL (XEXP (note, 0)) <= 0)
+    return false;
+
+  region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+
+  type_thrown = NULL_TREE;
+  if (region->type == ERT_THROW)
+    {
+      type_thrown = region->u.throw.type;
+      region = region->outer;
+    }
+
+  /* If the exception is caught or blocked by any containing region,
+     then it is not seen by any calling function.  */
+  for (; region ; region = region->outer)
+    if (reachable_next_level (region, type_thrown, NULL) >= RNL_CAUGHT)
+      return false;
+
+  return true;
 }

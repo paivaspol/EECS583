@@ -1,0 +1,19 @@
+PP(pp_semctl)
+{
+#if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
+    dSP; dMARK; dTARGET;
+    int anum = do_ipcctl(PL_op->op_type, MARK, SP);
+    SP = MARK;
+    if (anum == -1)
+	RETSETUNDEF;
+    if (anum != 0) {
+	PUSHi(anum);
+    }
+    else {
+	PUSHp(zero_but_true, ZBTLEN);
+    }
+    RETURN;
+#else
+    return pp_semget();
+#endif
+}

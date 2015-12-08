@@ -1,5 +1,20 @@
-void
-Perl_cond_init(pTHX_ perl_cond *cp)
+void *
+Perl_get_context(void)
 {
-    *cp = 0;
+#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
+#  ifdef OLD_PTHREADS_API
+    pthread_addr_t t;
+    if (pthread_getspecific(PL_thr_key, &t))
+	Perl_croak_nocontext("panic: pthread_getspecific");
+    return (void*)t;
+#  else
+#    ifdef I_MACH_CTHREADS
+    return (void*)cthread_data(cthread_self());
+#    else
+    return (void*)PTHREAD_GETSPECIFIC(PL_thr_key);
+#    endif
+#  endif
+#else
+    return (void*)NULL;
+#endif
 }

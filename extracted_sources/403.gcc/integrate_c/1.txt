@@ -1,47 +1,29 @@
-static rtvec
-initialize_for_inline (fndecl)
+bool
+function_attribute_inlinable_p (fndecl)
      tree fndecl;
 {
-  int i;
-  rtvec arg_vector;
-  tree parms;
+  bool has_machine_attr = false;
+  tree a;
 
-  /* Clear out PARMDECL_MAP.  It was allocated in the caller's frame.  */
-  memset ((char *) parmdecl_map, 0, max_parm_reg * sizeof (tree));
-  arg_vector = rtvec_alloc (list_length (DECL_ARGUMENTS (fndecl)));
-
-  for (parms = DECL_ARGUMENTS (fndecl), i = 0;
-       parms;
-       parms = TREE_CHAIN (parms), i++)
+  for (a = DECL_ATTRIBUTES (fndecl); a; a = TREE_CHAIN (a))
     {
-      rtx p = DECL_RTL (parms);
+      tree name = TREE_PURPOSE (a);
+      int i;
 
-      /* If we have (mem (addressof (mem ...))), use the inner MEM since
-	 otherwise the copy_rtx call below will not unshare the MEM since
-	 it shares ADDRESSOF.  */
-      if (GET_CODE (p) == MEM && GET_CODE (XEXP (p, 0)) == ADDRESSOF
-	  && GET_CODE (XEXP (XEXP (p, 0), 0)) == MEM)
-	p = XEXP (XEXP (p, 0), 0);
-
-      RTVEC_ELT (arg_vector, i) = p;
-
-      if (GET_CODE (p) == REG)
-	parmdecl_map[REGNO (p)] = parms;
-      else if (GET_CODE (p) == CONCAT)
+      for (i = 0; targetm.attribute_table[i].name != NULL; i++)
 	{
-	  rtx preal = gen_realpart (GET_MODE (XEXP (p, 0)), p);
-	  rtx pimag = gen_imagpart (GET_MODE (preal), p);
-
-	  if (GET_CODE (preal) == REG)
-	    parmdecl_map[REGNO (preal)] = parms;
-	  if (GET_CODE (pimag) == REG)
-	    parmdecl_map[REGNO (pimag)] = parms;
+	  if (is_attribute_p (targetm.attribute_table[i].name, name))
+	    {
+	      has_machine_attr = true;
+	      break;
+	    }
 	}
-
-      /* This flag is cleared later
-	 if the function ever modifies the value of the parm.  */
-      TREE_READONLY (parms) = 1;
+      if (has_machine_attr)
+	break;
     }
 
-  return arg_vector;
+  if (has_machine_attr)
+    return (*targetm.function_attribute_inlinable_p) (fndecl);
+  else
+    return true;
 }

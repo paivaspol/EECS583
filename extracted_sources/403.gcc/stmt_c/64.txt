@@ -1,73 +1,52 @@
 static void
-expand_nl_goto_receivers (thisblock)
-     struct nesting *thisblock;
+expand_nl_goto_receiver ()
 {
-  tree link;
-  rtx afterward = gen_label_rtx ();
-  rtx insns, slot;
-  rtx label_list;
-  int any_invalid;
+#ifdef HAVE_nonlocal_goto
+  if (! HAVE_nonlocal_goto)
+#endif
+    /* First adjust our frame pointer to its actual value.  It was
+       previously set to the start of the virtual area corresponding to
+       the stacked variables when we branched here and now needs to be
+       adjusted to the actual hardware fp value.
 
-  /* Record the handler address in the stack slot for that purpose,
-     during this block, saving and restoring the outer value.  */
-  if (thisblock->next != 0)
-    for (slot = nonlocal_goto_handler_slots; slot; slot = XEXP (slot, 1))
-      {
-	rtx save_receiver = gen_reg_rtx (Pmode);
-	emit_move_insn (XEXP (slot, 0), save_receiver);
+       Assignments are to virtual registers are converted by
+       instantiate_virtual_regs into the corresponding assignment
+       to the underlying register (fp in this case) that makes
+       the original assignment true.
+       So the following insn will actually be
+       decrementing fp by STARTING_FRAME_OFFSET.  */
+    emit_move_insn (virtual_stack_vars_rtx, hard_frame_pointer_rtx);
 
-	start_sequence ();
-	emit_move_insn (save_receiver, XEXP (slot, 0));
-	insns = get_insns ();
-	end_sequence ();
-	emit_insns_before (insns, thisblock->data.block.first_insn);
-      }
-
-  /* Jump around the handlers; they run only when specially invoked.  */
-  emit_jump (afterward);
-
-  /* Make a separate handler for each label.  */
-  link = nonlocal_labels;
-  slot = nonlocal_goto_handler_slots;
-  label_list = NULL_RTX;
-  for (; link; link = TREE_CHAIN (link), slot = XEXP (slot, 1))
-    /* Skip any labels we shouldn't be able to jump to from here,
-       we generate one special handler for all of them below which just calls
-       abort.  */
-    if (! DECL_TOO_LATE (TREE_VALUE (link)))
-      {
-	rtx lab;
-	lab = expand_nl_handler_label (XEXP (slot, 0),
-				       thisblock->data.block.first_insn);
-	label_list = gen_rtx_EXPR_LIST (VOIDmode, lab, label_list);
-
-	expand_nl_goto_receiver ();
-
-	/* Jump to the "real" nonlocal label.  */
-	expand_goto (TREE_VALUE (link));
-      }
-
-  /* A second pass over all nonlocal labels; this time we handle those
-     we should not be able to jump to at this point.  */
-  link = nonlocal_labels;
-  slot = nonlocal_goto_handler_slots;
-  any_invalid = 0;
-  for (; link; link = TREE_CHAIN (link), slot = XEXP (slot, 1))
-    if (DECL_TOO_LATE (TREE_VALUE (link)))
-      {
-	rtx lab;
-	lab = expand_nl_handler_label (XEXP (slot, 0),
-				       thisblock->data.block.first_insn);
-	label_list = gen_rtx_EXPR_LIST (VOIDmode, lab, label_list);
-	any_invalid = 1;
-      }
-
-  if (any_invalid)
+#if ARG_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+  if (fixed_regs[ARG_POINTER_REGNUM])
     {
-      expand_nl_goto_receiver ();
-      expand_builtin_trap ();
-    }
+#ifdef ELIMINABLE_REGS
+      /* If the argument pointer can be eliminated in favor of the
+	 frame pointer, we don't need to restore it.  We assume here
+	 that if such an elimination is present, it can always be used.
+	 This is the case on all known machines; if we don't make this
+	 assumption, we do unnecessary saving on many machines.  */
+      static const struct elims {const int from, to;} elim_regs[] = ELIMINABLE_REGS;
+      size_t i;
 
-  nonlocal_goto_handler_labels = label_list;
-  emit_label (afterward);
+      for (i = 0; i < ARRAY_SIZE (elim_regs); i++)
+	if (elim_regs[i].from == ARG_POINTER_REGNUM
+	    && elim_regs[i].to == HARD_FRAME_POINTER_REGNUM)
+	  break;
+
+      if (i == ARRAY_SIZE (elim_regs))
+#endif
+	{
+	  /* Now restore our arg pointer from the address at which it
+	     was saved in our stack frame.  */
+	  emit_move_insn (virtual_incoming_args_rtx,
+			  copy_to_reg (get_arg_pointer_save_area (cfun)));
+	}
+    }
+#endif
+
+#ifdef HAVE_nonlocal_goto_receiver
+  if (HAVE_nonlocal_goto_receiver)
+    emit_insn (gen_nonlocal_goto_receiver ());
+#endif
 }

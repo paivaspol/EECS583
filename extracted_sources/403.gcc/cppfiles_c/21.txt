@@ -1,21 +1,28 @@
-static int
-remove_component_p (path)
-     const char *path;
+static char *
+read_filename_string (ch, f)
+     int ch;
+     FILE *f;
 {
-  struct stat s;
-  int result;
+  char *alloc, *set;
+  int len;
 
-#ifdef HAVE_LSTAT
-  result = lstat (path, &s);
-#else
-  result = stat (path, &s);
-#endif
-
-  /* There's no guarantee that errno will be unchanged, even on
-     success.  Cygwin's lstat(), for example, will often set errno to
-     ENOSYS.  In case of success, reset errno to zero.  */
-  if (result == 0)
-    errno = 0;
-
-  return result == 0 && S_ISDIR (s.st_mode);
+  len = 20;
+  set = alloc = xmalloc (len + 1);
+  if (! is_space(ch))
+    {
+      *set++ = ch;
+      while ((ch = getc (f)) != EOF && ! is_space(ch))
+	{
+	  if (set - alloc == len)
+	    {
+	      len *= 2;
+	      alloc = xrealloc (alloc, len + 1);
+	      set = alloc + len / 2;
+	    }
+	  *set++ = ch;
+	}
+    }
+  *set = '\0';
+  ungetc (ch, f);
+  return alloc;
 }

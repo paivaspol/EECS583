@@ -1,6 +1,19 @@
 void
-expand_end_case_dummy ()
+expand_start_case_dummy ()
 {
-  end_cleanup_deferral ();
-  POPSTACK (case_stack);
+  struct nesting *thiscase = ALLOC_NESTING ();
+
+  /* Make an entry on case_stack for the dummy.  */
+
+  thiscase->next = case_stack;
+  thiscase->all = nesting_stack;
+  thiscase->depth = ++nesting_depth;
+  thiscase->exit_label = 0;
+  thiscase->data.case_stmt.case_list = 0;
+  thiscase->data.case_stmt.start = 0;
+  thiscase->data.case_stmt.nominal_type = 0;
+  thiscase->data.case_stmt.default_label = 0;
+  case_stack = thiscase;
+  nesting_stack = thiscase;
+  start_cleanup_deferral ();
 }

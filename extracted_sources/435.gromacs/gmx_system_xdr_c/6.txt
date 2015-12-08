@@ -1,6 +1,21 @@
-static void
-xdrstdio_destroy (XDR *xdrs)
+bool_t
+xdr_u_int (XDR *xdrs, unsigned int *up)
 {
-  (void) fflush ((FILE *) xdrs->x_private);
-  /* xx should we close the file ?? */
+  unsigned long l;
+
+  switch (xdrs->x_op)
+    {
+    case XDR_ENCODE:
+      l = (unsigned long) * up;
+      return xdr_putlong (xdrs, (long *)&l);
+
+    case XDR_DECODE:
+      if (!xdr_getlong (xdrs, (long *)&l))
+	{
+	  return FALSE;
+	}
+      *up = (unsigned int) l;
+    case XDR_FREE:
+      return TRUE;
+    }
 }

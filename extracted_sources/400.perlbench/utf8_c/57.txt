@@ -1,6 +1,87 @@
 UV
-Perl_to_utf8_fold(pTHX_ U8 *p, U8* ustrp, STRLEN *lenp)
+Perl_to_utf8_case(pTHX_ U8 *p, U8* ustrp, STRLEN *lenp, SV **swashp, char *normal, char *special)
 {
-    return Perl_to_utf8_case(aTHX_ p, ustrp, lenp,
-                             &PL_utf8_tofold, "ToFold", "utf8::ToSpecFold");
+    UV uv0, uv1;
+    U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
+    STRLEN len = 0;
+
+    uv0 = utf8_to_uvchr(p, 0);
+    /* The NATIVE_TO_UNI() and UNI_TO_NATIVE() mappings
+     * are necessary in EBCDIC, they are redundant no-ops
+     * in ASCII-ish platforms, and hopefully optimized away. */
+    uv1 = NATIVE_TO_UNI(uv0);
+    uvuni_to_utf8(tmpbuf, uv1);
+
+    if (!*swashp) /* load on-demand */
+         *swashp = swash_init("utf8", normal, &PL_sv_undef, 4, 0);
+
+    /* The 0xDF is the only special casing Unicode code point below 0x100. */
+    if (special && (uv1 == 0xDF || uv1 > 0xFF)) {
+         /* It might be "special" (sometimes, but not always,
+	  * a multicharacter mapping) */
+	 HV *hv;
+	 SV **svp;
+
+	 if ((hv  = get_hv(special, FALSE)) &&
+	     (svp = hv_fetch(hv, (const char*)tmpbuf, UNISKIP(uv1), FALSE)) &&
+	     (*svp)) {
+	      char *s;
+
+	      s = SvPV(*svp, len);
+	      if (len == 1)
+		   len = uvuni_to_utf8(ustrp, NATIVE_TO_UNI(*(U8*)s)) - ustrp;
+	      else {
+#ifdef EBCDIC
+		   /* If we have EBCDIC we need to remap the characters
+		    * since any characters in the low 256 are Unicode
+		    * code points, not EBCDIC. */
+		   U8 *t = (U8*)s, *tend = t + len, *d;
+		
+		   d = tmpbuf;
+		   if (SvUTF8(*svp)) {
+			STRLEN tlen = 0;
+			
+			while (t < tend) {
+			     UV c = utf8_to_uvchr(t, &tlen);
+			     if (tlen > 0) {
+				  d = uvchr_to_utf8(d, UNI_TO_NATIVE(c));
+				  t += tlen;
+			     }
+			     else
+				  break;
+			}
+		   }
+		   else {
+			while (t < tend) {
+			     d = uvchr_to_utf8(d, UNI_TO_NATIVE(*t));
+			     t++;
+			}
+		   }
+		   len = d - tmpbuf;
+		   Copy(tmpbuf, ustrp, len, U8);
+#else
+		   Copy(s, ustrp, len, U8);
+#endif
+	      }
+	 }
+    }
+
+    if (!len && *swashp) {
+	 UV uv2 = swash_fetch(*swashp, tmpbuf, TRUE);
+	 
+	 if (uv2) {
+	      /* It was "normal" (a single character mapping). */
+	      UV uv3 = UNI_TO_NATIVE(uv2);
+	      
+	      len = uvchr_to_utf8(ustrp, uv3) - ustrp;
+	 }
+    }
+
+    if (!len) /* Neither: just copy. */
+	 len = uvchr_to_utf8(ustrp, uv0) - ustrp;
+
+    if (lenp)
+	 *lenp = len;
+
+    return len ? utf8_to_uvchr(ustrp, 0) : 0;
 }

@@ -1,0 +1,32 @@
+PP(pp_tell)
+{
+    dSP; dTARGET;
+    GV *gv;
+    IO *io;
+    MAGIC *mg;
+
+    if (MAXARG == 0)
+	gv = PL_last_in_gv;
+    else
+	gv = PL_last_in_gv = (GV*)POPs;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)io, mg));
+	PUTBACK;
+	ENTER;
+	call_method("TELL", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	RETURN;
+    }
+
+#if LSEEKSIZE > IVSIZE
+    PUSHn( do_tell(gv) );
+#else
+    PUSHi( do_tell(gv) );
+#endif
+    RETURN;
+}

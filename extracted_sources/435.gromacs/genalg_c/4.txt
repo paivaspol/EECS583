@@ -1,0 +1,107 @@
+bool print_ga(FILE *fp,t_genalg *ga,real rmsf,real energy,t_range range[],
+	      real tol)
+{
+  static int nfeval=0;          /* number of function evaluations     */
+  static bool bImproved;
+  real trial_cost;
+  real cvar;            /* computes the cost variance         */
+  real cmean;           /* mean cost                          */
+  int  i,j;
+  real **pswap;
+  
+  /* When we get here we have done an initial evaluation for all
+   * animals in the population
+   */
+  trial_cost = cost(rmsf,energy);
+  if (nfeval < ga->NP) {
+    ga->cost[nfeval]   = trial_cost;
+    ga->rmsf[nfeval]   = rmsf;
+    ga->energy[nfeval] = energy;
+    nfeval++;
+    return FALSE;
+  }
+  if (ga->ipop == 0)
+    bImproved = FALSE;
+    
+  /* First iteration after first round of trials */
+  if (nfeval == ga->NP) {
+    /* Evaluate who is ga->best */  
+    ga->imin = 0;
+    for (j=1; (j<ga->NP); j++) {
+      if (ga->cost[j] < ga->cost[ga->imin]) 
+	ga->imin = j;
+    }
+    assignd(ga->D,ga->best,ga->pold[ga->imin]);   /* save best member ever          */
+    assignd(ga->D,ga->bestit,ga->pold[ga->imin]); /* save best member of generation */
+  }
+
+  if (trial_cost <= ga->cost[ga->ipop]) {
+    /* improved objective function value ? */
+    ga->cost[ga->ipop]   = trial_cost;         
+    ga->rmsf[ga->ipop]   = rmsf;         
+    ga->energy[ga->ipop] = energy;         
+    assignd(ga->D,ga->pnew[ga->ipop],ga->tmp);
+    if (trial_cost < ga->cost[ga->imin]) {
+      /* Was this a new minimum? */
+      /* if so, reset cmin to new low...*/
+      ga->imin = ga->ipop;
+      assignd(ga->D,ga->best,ga->tmp);
+      bImproved = TRUE;
+    }                           
+  }                            
+  else {
+    assignd(ga->D,ga->pnew[ga->ipop],ga->pold[ga->ipop]); 
+    /* replace target with old value */
+  }
+  /* Increase population member count */
+  ga->ipop++;
+  
+  if (ga->ipop == ga->NP) {
+    /* End mutation loop through pop. */
+    assignd(ga->D,ga->bestit,ga->best);  
+    /* Save ga->best population member of current iteration */
+    
+    /* swap population arrays. New generation becomes old one */
+    pswap = ga->pold;
+    ga->pold  = ga->pnew;
+    ga->pnew  = pswap;
+    
+    /*----Compute the energy variance (just for monitoring purposes)-----------*/
+    /* compute the mean value first */
+    cmean = 0.;          
+    for (j=0; (j<ga->NP); j++) 
+      cmean += ga->cost[j];
+    cmean = cmean/ga->NP;
+    
+    /* now the variance              */
+    cvar = 0.;   
+    for (j=0; (j<ga->NP); j++) 
+      cvar += sqr(ga->cost[j] - cmean);
+    cvar = cvar/(ga->NP-1);
+    
+    /*----Output part----------------------------------------------------------*/
+    if (1 || bImproved || (nfeval == ga->NP)) {
+      fprintf(fp,"\nGen: %6d Cost:%8.3f  Ener: %8.3f RMSF: %8.3f  <Cost>: %8.3f\n",
+	      ga->gen,ga->cost[ga->imin],
+	      ga->energy[ga->imin],ga->rmsf[ga->imin],cmean);
+      
+      for (j=0; (j<ga->D); j++)
+	fprintf(fp,"\tbest[%d]=%-15.10g\n",j,ga->best[j]);
+
+      if (ga->cost[ga->imin] < tol) {
+	for (i=0; (i<ga->NP); i++) {
+	  fprintf(fp,"Animal: %3d Cost:%8.3f  Ener: %8.3f RMSF: %8.3f%s\n",
+		  i,ga->cost[i],ga->energy[i],ga->rmsf[i],
+		  (i == ga->imin) ? " ***" : "");
+	  for (j=0; (j<ga->D); j++)
+	    fprintf(fp,"\tParam[%d][%d]=%15.10g\n",i,j,ga->pold[i][j]);
+	}
+	return TRUE;
+      }
+      fflush(fp);
+    }
+  }
+  nfeval++;
+  
+  return FALSE;
+}

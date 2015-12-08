@@ -1,13 +1,22 @@
-static int
-uvcompare(const void *a, const void *b)
+STATIC bool
+S_is_handle_constructor(pTHX_ OP *o, I32 argnum)
 {
-    if (*((UV *)a) < (*(UV *)b))
-	return -1;
-    if (*((UV *)a) > (*(UV *)b))
-	return 1;
-    if (*((UV *)a+1) < (*(UV *)b+1))
-	return -1;
-    if (*((UV *)a+1) > (*(UV *)b+1))
-	return 1;
-    return 0;
+    switch (o->op_type) {
+    case OP_PIPE_OP:
+    case OP_SOCKPAIR:
+	if (argnum == 2)
+	    return TRUE;
+	/* FALL THROUGH */
+    case OP_SYSOPEN:
+    case OP_OPEN:
+    case OP_SELECT:		/* XXX c.f. SelectSaver.pm */
+    case OP_SOCKET:
+    case OP_OPEN_DIR:
+    case OP_ACCEPT:
+	if (argnum == 1)
+	    return TRUE;
+	/* FALL THROUGH */
+    default:
+	return FALSE;
+    }
 }

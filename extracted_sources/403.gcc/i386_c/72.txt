@@ -1,8 +1,51 @@
 int
-standard_sse_constant_p (x)
-     rtx x;
+aligned_operand (op, mode)
+     rtx op;
+     enum machine_mode mode;
 {
-  if (GET_CODE (x) != CONST_DOUBLE)
-    return -1;
-  return (x == CONST0_RTX (GET_MODE (x)));
+  struct ix86_address parts;
+
+  if (!general_operand (op, mode))
+    return 0;
+
+  /* Registers and immediate operands are always "aligned".  */
+  if (GET_CODE (op) != MEM)
+    return 1;
+
+  /* Don't even try to do any aligned optimizations with volatiles.  */
+  if (MEM_VOLATILE_P (op))
+    return 0;
+
+  op = XEXP (op, 0);
+
+  /* Pushes and pops are only valid on the stack pointer.  */
+  if (GET_CODE (op) == PRE_DEC
+      || GET_CODE (op) == POST_INC)
+    return 1;
+
+  /* Decode the address.  */
+  if (! ix86_decompose_address (op, &parts))
+    abort ();
+
+  /* Look for some component that isn't known to be aligned.  */
+  if (parts.index)
+    {
+      if (parts.scale < 4
+	  && REGNO_POINTER_ALIGN (REGNO (parts.index)) < 32)
+	return 0;
+    }
+  if (parts.base)
+    {
+      if (REGNO_POINTER_ALIGN (REGNO (parts.base)) < 32)
+	return 0;
+    }
+  if (parts.disp)
+    {
+      if (GET_CODE (parts.disp) != CONST_INT
+	  || (INTVAL (parts.disp) & 3) != 0)
+	return 0;
+    }
+
+  /* Didn't find one -- this must be an aligned address.  */
+  return 1;
 }

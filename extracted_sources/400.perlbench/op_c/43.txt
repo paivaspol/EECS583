@@ -1,14 +1,14 @@
-static void
-const_sv_xsub(pTHX_ CV* cv)
+OP*
+Perl_block_end(pTHX_ I32 floor, OP *seq)
 {
-    dXSARGS;
-    if (items != 0) {
-#if 0
-        Perl_croak(aTHX_ "usage: %s::%s()",
-                   HvNAME(GvSTASH(CvGV(cv))), GvNAME(CvGV(cv)));
-#endif
-    }
-    EXTEND(sp, 1);
-    ST(0) = (SV*)XSANY.any_ptr;
-    XSRETURN(1);
+    int needblockscope = PL_hints & HINT_BLOCK_SCOPE;
+    OP* retval = scalarseq(seq);
+    /* If there were syntax errors, don't try to close a block */
+    if (PL_yynerrs) return retval;
+    LEAVE_SCOPE(floor);
+    PL_compiling.op_private = (U8)(PL_hints & HINT_PRIVATE_MASK);
+    if (needblockscope)
+	PL_hints |= HINT_BLOCK_SCOPE; /* propagate out */
+    pad_leavemy();
+    return retval;
 }

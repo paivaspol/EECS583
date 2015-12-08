@@ -1,29 +1,25 @@
-void
-named_section (decl, name, reloc)
-     tree decl;
-     const char *name;
-     int reloc;
+bool
+set_named_section_flags (section, flags)
+     const char *section;
+     unsigned int flags;
 {
-  unsigned int flags;
+  struct in_named_entry **slot, *entry;
 
-  if (decl != NULL_TREE && !DECL_P (decl))
-    abort ();
-  if (name == NULL)
-    name = TREE_STRING_POINTER (DECL_SECTION_NAME (decl));
+  slot = (struct in_named_entry**)
+    htab_find_slot_with_hash (in_named_htab, section,
+			      htab_hash_string (section), INSERT);
+  entry = *slot;
 
-  flags = (* targetm.section_type_flags) (decl, name, reloc);
-
-  /* Sanity check user variables for flag changes.  Non-user
-     section flag changes will abort in named_section_flags.
-     However, don't complain if SECTION_OVERRIDE is set.
-     We trust that the setter knows that it is safe to ignore
-     the default flags for this decl.  */
-  if (decl && ! set_named_section_flags (name, flags))
+  if (!entry)
     {
-      flags = get_named_section_flags (name);
-      if ((flags & SECTION_OVERRIDE) == 0)
-	error_with_decl (decl, "%s causes a section type conflict");
+      entry = (struct in_named_entry *) xmalloc (sizeof (*entry));
+      *slot = entry;
+      entry->name = ggc_strdup (section);
+      entry->flags = flags;
+      entry->declared = false;
     }
+  else if (entry->flags != flags)
+    return false;
 
-  named_section_flags (name, flags);
+  return true;
 }

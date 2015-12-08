@@ -1,74 +1,81 @@
-void
-x86_output_mi_thunk (file, delta, function)
-     FILE *file;
-     int delta;
-     tree function;
+int
+ix86_memory_move_cost (mode, class, in)
+     enum machine_mode mode;
+     enum reg_class class;
+     int in;
 {
-  tree parm;
-  rtx xops[3];
-
-  if (ix86_regparm > 0)
-    parm = TYPE_ARG_TYPES (TREE_TYPE (function));
-  else
-    parm = NULL_TREE;
-  for (; parm; parm = TREE_CHAIN (parm))
-    if (TREE_VALUE (parm) == void_type_node)
-      break;
-
-  xops[0] = GEN_INT (delta);
-  if (TARGET_64BIT)
+  if (FLOAT_CLASS_P (class))
     {
-      int n = aggregate_value_p (TREE_TYPE (TREE_TYPE (function))) != 0;
-      xops[1] = gen_rtx_REG (DImode, x86_64_int_parameter_registers[n]);
-      output_asm_insn ("add{q} {%0, %1|%1, %0}", xops);
-      if (flag_pic)
+      int index;
+      switch (mode)
 	{
-	  fprintf (file, "\tjmp *");
-	  assemble_name (file, XSTR (XEXP (DECL_RTL (function), 0), 0));
-	  fprintf (file, "@GOTPCREL(%%rip)\n");
+	  case SFmode:
+	    index = 0;
+	    break;
+	  case DFmode:
+	    index = 1;
+	    break;
+	  case XFmode:
+	  case TFmode:
+	    index = 2;
+	    break;
+	  default:
+	    return 100;
 	}
-      else
-	{
-	  fprintf (file, "\tjmp ");
-	  assemble_name (file, XSTR (XEXP (DECL_RTL (function), 0), 0));
-	  fprintf (file, "\n");
-	}
+      return in ? ix86_cost->fp_load [index] : ix86_cost->fp_store [index];
     }
-  else
+  if (SSE_CLASS_P (class))
     {
-      if (parm)
-	xops[1] = gen_rtx_REG (SImode, 0);
-      else if (aggregate_value_p (TREE_TYPE (TREE_TYPE (function))))
-	xops[1] = gen_rtx_MEM (SImode, plus_constant (stack_pointer_rtx, 8));
-      else
-	xops[1] = gen_rtx_MEM (SImode, plus_constant (stack_pointer_rtx, 4));
-      output_asm_insn ("add{l} {%0, %1|%1, %0}", xops);
-
-      if (flag_pic)
+      int index;
+      switch (GET_MODE_SIZE (mode))
 	{
-	  xops[0] = pic_offset_table_rtx;
-	  xops[1] = gen_label_rtx ();
-	  xops[2] = gen_rtx_SYMBOL_REF (Pmode, "_GLOBAL_OFFSET_TABLE_");
-
-	  if (ix86_regparm > 2)
-	    abort ();
-	  output_asm_insn ("push{l}\t%0", xops);
-	  output_asm_insn ("call\t%P1", xops);
-	  ASM_OUTPUT_INTERNAL_LABEL (file, "L", CODE_LABEL_NUMBER (xops[1]));
-	  output_asm_insn ("pop{l}\t%0", xops);
-	  output_asm_insn
-	    ("add{l}\t{%2+[.-%P1], %0|%0, OFFSET FLAT: %2+[.-%P1]}", xops);
-	  xops[0] = gen_rtx_MEM (SImode, XEXP (DECL_RTL (function), 0));
-	  output_asm_insn
-	    ("mov{l}\t{%0@GOT(%%ebx), %%ecx|%%ecx, %0@GOT[%%ebx]}", xops);
-	  asm_fprintf (file, "\tpop{l\t%%ebx|\t%%ebx}\n");
-	  asm_fprintf (file, "\tjmp\t{*%%ecx|%%ecx}\n");
+	  case 4:
+	    index = 0;
+	    break;
+	  case 8:
+	    index = 1;
+	    break;
+	  case 16:
+	    index = 2;
+	    break;
+	  default:
+	    return 100;
 	}
-      else
+      return in ? ix86_cost->sse_load [index] : ix86_cost->sse_store [index];
+    }
+  if (MMX_CLASS_P (class))
+    {
+      int index;
+      switch (GET_MODE_SIZE (mode))
 	{
-	  fprintf (file, "\tjmp ");
-	  assemble_name (file, XSTR (XEXP (DECL_RTL (function), 0), 0));
-	  fprintf (file, "\n");
+	  case 4:
+	    index = 0;
+	    break;
+	  case 8:
+	    index = 1;
+	    break;
+	  default:
+	    return 100;
 	}
+      return in ? ix86_cost->mmx_load [index] : ix86_cost->mmx_store [index];
+    }
+  switch (GET_MODE_SIZE (mode))
+    {
+      case 1:
+	if (in)
+	  return (Q_CLASS_P (class) ? ix86_cost->int_load[0]
+		  : ix86_cost->movzbl_load);
+	else
+	  return (Q_CLASS_P (class) ? ix86_cost->int_store[0]
+		  : ix86_cost->int_store[0] + 4);
+	break;
+      case 2:
+	return in ? ix86_cost->int_load[1] : ix86_cost->int_store[1];
+      default:
+	/* Compute number of 32bit moves needed.  TFmode is moved as XFmode.  */
+	if (mode == TFmode)
+	  mode = XFmode;
+	return ((in ? ix86_cost->int_load[2] : ix86_cost->int_store[2])
+		* (int) GET_MODE_SIZE (mode) / 4);
     }
 }

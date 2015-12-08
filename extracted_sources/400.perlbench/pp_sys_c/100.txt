@@ -1,0 +1,27 @@
+PP(pp_wait)
+{
+#if (!defined(DOSISH) || defined(OS2) || defined(WIN32)) && !defined(MACOS_TRADITIONAL)
+    dSP; dTARGET;
+    Pid_t childpid;
+    int argflags;
+
+    if (PL_signals & PERL_SIGNALS_UNSAFE_FLAG)
+        childpid = wait4pid(-1, &argflags, 0);
+    else {
+        while ((childpid = wait4pid(-1, &argflags, 0)) == -1 &&
+	       errno == EINTR) {
+	  PERL_ASYNC_CHECK();
+	}
+    }
+#  if defined(USE_ITHREADS) && defined(PERL_IMPLICIT_SYS)
+    /* 0 and -1 are both error returns (the former applies to WNOHANG case) */
+    STATUS_NATIVE_SET((childpid && childpid != -1) ? argflags : -1);
+#  else
+    STATUS_NATIVE_SET((childpid > 0) ? argflags : -1);
+#  endif
+    XPUSHi(childpid);
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "wait");
+#endif
+}

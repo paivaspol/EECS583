@@ -1,0 +1,62 @@
+OP *
+Perl_newSTATEOP(pTHX_ I32 flags, char *label, OP *o)
+{
+    U32 seq = intro_my();
+    register COP *cop;
+
+    NewOp(1101, cop, 1, COP);
+    if (PERLDB_LINE && CopLINE(PL_curcop) && PL_curstash != PL_debstash) {
+	cop->op_type = OP_DBSTATE;
+	cop->op_ppaddr = PL_ppaddr[ OP_DBSTATE ];
+    }
+    else {
+	cop->op_type = OP_NEXTSTATE;
+	cop->op_ppaddr = PL_ppaddr[ OP_NEXTSTATE ];
+    }
+    cop->op_flags = (U8)flags;
+    cop->op_private = (U8)(PL_hints & HINT_PRIVATE_MASK);
+#ifdef NATIVE_HINTS
+    cop->op_private |= NATIVE_HINTS;
+#endif
+    PL_compiling.op_private = cop->op_private;
+    cop->op_next = (OP*)cop;
+
+    if (label) {
+	cop->cop_label = label;
+	PL_hints |= HINT_BLOCK_SCOPE;
+    }
+    cop->cop_seq = seq;
+    cop->cop_arybase = PL_curcop->cop_arybase;
+    if (specialWARN(PL_curcop->cop_warnings))
+        cop->cop_warnings = PL_curcop->cop_warnings ;
+    else
+        cop->cop_warnings = newSVsv(PL_curcop->cop_warnings) ;
+    if (specialCopIO(PL_curcop->cop_io))
+        cop->cop_io = PL_curcop->cop_io;
+    else
+        cop->cop_io = newSVsv(PL_curcop->cop_io) ;
+
+
+    if (PL_copline == NOLINE)
+        CopLINE_set(cop, CopLINE(PL_curcop));
+    else {
+	CopLINE_set(cop, PL_copline);
+        PL_copline = NOLINE;
+    }
+#ifdef USE_ITHREADS
+    CopFILE_set(cop, CopFILE(PL_curcop));	/* XXX share in a pvtable? */
+#else
+    CopFILEGV_set(cop, CopFILEGV(PL_curcop));
+#endif
+    CopSTASH_set(cop, PL_curstash);
+
+    if (PERLDB_LINE && PL_curstash != PL_debstash) {
+	SV **svp = av_fetch(CopFILEAV(PL_curcop), (I32)CopLINE(cop), FALSE);
+        if (svp && *svp != &PL_sv_undef ) {
+           (void)SvIOK_on(*svp);
+	    SvIVX(*svp) = PTR2IV(cop);
+	}
+    }
+
+    return prepend_elem(OP_LINESEQ, (OP*)cop, o);
+}

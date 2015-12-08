@@ -1,388 +1,122 @@
-void
-expand_asm_operands (string, outputs, inputs, clobbers, vol, filename, line)
-     tree string, outputs, inputs, clobbers;
-     int vol;
-     const char *filename;
-     int line;
+static bool
+parse_input_constraint (constraint_p, input_num, ninputs, noutputs, ninout,
+			constraints, allows_mem, allows_reg)
+     const char **constraint_p;
+     int input_num;
+     int ninputs;
+     int noutputs;
+     int ninout;
+     const char * const * constraints;
+     bool *allows_mem;
+     bool *allows_reg;
 {
-  rtvec argvec, constraintvec;
-  rtx body;
-  int ninputs = list_length (inputs);
-  int noutputs = list_length (outputs);
-  int ninout;
-  int nclobbers;
-  tree tail;
-  int i;
-  /* Vector of RTX's of evaluated output operands.  */
-  rtx *output_rtx = (rtx *) alloca (noutputs * sizeof (rtx));
-  int *inout_opnum = (int *) alloca (noutputs * sizeof (int));
-  rtx *real_output_rtx = (rtx *) alloca (noutputs * sizeof (rtx));
-  enum machine_mode *inout_mode
-    = (enum machine_mode *) alloca (noutputs * sizeof (enum machine_mode));
-  const char **constraints
-    = (const char **) alloca ((noutputs + ninputs) * sizeof (const char *));
-  /* The insn we have emitted.  */
-  rtx insn;
-  int old_generating_concat_p = generating_concat_p;
+  const char *constraint = *constraint_p;
+  const char *orig_constraint = constraint;
+  size_t c_len = strlen (constraint);
+  size_t j;
 
-  /* An ASM with no outputs needs to be treated as volatile, for now.  */
-  if (noutputs == 0)
-    vol = 1;
+  /* Assume the constraint doesn't allow the use of either
+     a register or memory.  */
+  *allows_mem = false;
+  *allows_reg = false;
 
-  if (! check_operand_nalternatives (outputs, inputs))
-    return;
+  /* Make sure constraint has neither `=', `+', nor '&'.  */
 
-  if (! check_unique_operand_names (outputs, inputs))
-    return;
+  for (j = 0; j < c_len; j++)
+    switch (constraint[j])
+      {
+      case '+':  case '=':  case '&':
+	if (constraint == orig_constraint)
+	  {
+	    error ("input operand constraint contains `%c'", constraint[j]);
+	    return false;
+	  }
+	break;
 
-  string = resolve_operand_names (string, outputs, inputs, constraints);
+      case '%':
+	if (constraint == orig_constraint
+	    && input_num + 1 == ninputs - ninout)
+	  {
+	    error ("`%%' constraint used with last operand");
+	    return false;
+	  }
+	break;
 
-#ifdef MD_ASM_CLOBBERS
-  /* Sometimes we wish to automatically clobber registers across an asm.
-     Case in point is when the i386 backend moved from cc0 to a hard reg --
-     maintaining source-level compatibility means automatically clobbering
-     the flags register.  */
-  MD_ASM_CLOBBERS (clobbers);
-#endif
+      case 'V':  case 'm':  case 'o':
+	*allows_mem = true;
+	break;
 
-  /* Count the number of meaningful clobbered registers, ignoring what
-     we would ignore later.  */
-  nclobbers = 0;
-  for (tail = clobbers; tail; tail = TREE_CHAIN (tail))
-    {
-      const char *regname = TREE_STRING_POINTER (TREE_VALUE (tail));
+      case '<':  case '>':
+      case '?':  case '!':  case '*':  case '#':
+      case 'E':  case 'F':  case 'G':  case 'H':
+      case 's':  case 'i':  case 'n':
+      case 'I':  case 'J':  case 'K':  case 'L':  case 'M':
+      case 'N':  case 'O':  case 'P':  case ',':
+	break;
 
-      i = decode_reg_name (regname);
-      if (i >= 0 || i == -4)
-	++nclobbers;
-      else if (i == -2)
-	error ("unknown register name `%s' in `asm'", regname);
-    }
-
-  last_expr_type = 0;
-
-  /* First pass over inputs and outputs checks validity and sets
-     mark_addressable if needed.  */
-
-  ninout = 0;
-  for (i = 0, tail = outputs; tail; tail = TREE_CHAIN (tail), i++)
-    {
-      tree val = TREE_VALUE (tail);
-      tree type = TREE_TYPE (val);
-      const char *constraint;
-      bool is_inout;
-      bool allows_reg;
-      bool allows_mem;
-
-      /* If there's an erroneous arg, emit no insn.  */
-      if (type == error_mark_node)
-	return;
-
-      /* Try to parse the output constraint.  If that fails, there's
-	 no point in going further.  */
-      constraint = constraints[i];
-      if (!parse_output_constraint (&constraint, i, ninputs, noutputs,
-				    &allows_mem, &allows_reg, &is_inout))
-	return;
-
-      if (! allows_reg
-	  && (allows_mem
-	      || is_inout
-	      || (DECL_P (val)
-		  && GET_CODE (DECL_RTL (val)) == REG
-		  && GET_MODE (DECL_RTL (val)) != TYPE_MODE (type))))
-	mark_addressable (val);
-
-      if (is_inout)
-	ninout++;
-    }
-
-  ninputs += ninout;
-  if (ninputs + noutputs > MAX_RECOG_OPERANDS)
-    {
-      error ("more than %d operands in `asm'", MAX_RECOG_OPERANDS);
-      return;
-    }
-
-  for (i = 0, tail = inputs; tail; i++, tail = TREE_CHAIN (tail))
-    {
-      bool allows_reg, allows_mem;
-      const char *constraint;
-
-      /* If there's an erroneous arg, emit no insn, because the ASM_INPUT
-	 would get VOIDmode and that could cause a crash in reload.  */
-      if (TREE_TYPE (TREE_VALUE (tail)) == error_mark_node)
-	return;
-
-      constraint = constraints[i + noutputs];
-      if (! parse_input_constraint (&constraint, i, ninputs, noutputs, ninout,
-				    constraints, &allows_mem, &allows_reg))
-	return;
-
-      if (! allows_reg && allows_mem)
-	mark_addressable (TREE_VALUE (tail));
-    }
-
-  /* Second pass evaluates arguments.  */
-
-  ninout = 0;
-  for (i = 0, tail = outputs; tail; tail = TREE_CHAIN (tail), i++)
-    {
-      tree val = TREE_VALUE (tail);
-      tree type = TREE_TYPE (val);
-      bool is_inout;
-      bool allows_reg;
-      bool allows_mem;
-
-      if (!parse_output_constraint (&constraints[i], i, ninputs,
-				    noutputs, &allows_mem, &allows_reg,
-				    &is_inout))
-	abort ();
-
-      /* If an output operand is not a decl or indirect ref and our constraint
-	 allows a register, make a temporary to act as an intermediate.
-	 Make the asm insn write into that, then our caller will copy it to
-	 the real output operand.  Likewise for promoted variables.  */
-
-      generating_concat_p = 0;
-
-      real_output_rtx[i] = NULL_RTX;
-      if ((TREE_CODE (val) == INDIRECT_REF
-	   && allows_mem)
-	  || (DECL_P (val)
-	      && (allows_mem || GET_CODE (DECL_RTL (val)) == REG)
-	      && ! (GET_CODE (DECL_RTL (val)) == REG
-		    && GET_MODE (DECL_RTL (val)) != TYPE_MODE (type)))
-	  || ! allows_reg
-	  || is_inout)
+	/* Whether or not a numeric constraint allows a register is
+	   decided by the matching constraint, and so there is no need
+	   to do anything special with them.  We must handle them in
+	   the default case, so that we don't unnecessarily force
+	   operands to memory.  */
+      case '0':  case '1':  case '2':  case '3':  case '4':
+      case '5':  case '6':  case '7':  case '8':  case '9':
 	{
-	  output_rtx[i] = expand_expr (val, NULL_RTX, VOIDmode, EXPAND_WRITE);
+	  char *end;
+	  unsigned long match;
 
-	  if (! allows_reg && GET_CODE (output_rtx[i]) != MEM)
-	    error ("output number %d not directly addressable", i);
-	  if ((! allows_mem && GET_CODE (output_rtx[i]) == MEM)
-	      || GET_CODE (output_rtx[i]) == CONCAT)
+	  match = strtoul (constraint + j, &end, 10);
+	  if (match >= (unsigned long) noutputs)
 	    {
-    	      real_output_rtx[i] = protect_from_queue (output_rtx[i], 1);
-	      output_rtx[i] = gen_reg_rtx (GET_MODE (output_rtx[i]));
-	      if (is_inout)
-		emit_move_insn (output_rtx[i], real_output_rtx[i]);
-	    }
-	}
-      else
-	{
-	  output_rtx[i] = assign_temp (type, 0, 0, 1);
-	  TREE_VALUE (tail) = make_tree (type, output_rtx[i]);
-	}
-
-      generating_concat_p = old_generating_concat_p;
-
-      if (is_inout)
-	{
-	  inout_mode[ninout] = TYPE_MODE (type);
-	  inout_opnum[ninout++] = i;
-	}
-    }
-
-  /* Make vectors for the expression-rtx, constraint strings,
-     and named operands.  */
-
-  argvec = rtvec_alloc (ninputs);
-  constraintvec = rtvec_alloc (ninputs);
-
-  body = gen_rtx_ASM_OPERANDS ((noutputs == 0 ? VOIDmode
-				: GET_MODE (output_rtx[0])),
-			       TREE_STRING_POINTER (string), 
-			       empty_string, 0, argvec, constraintvec,
-			       filename, line);
-
-  MEM_VOLATILE_P (body) = vol;
-
-  /* Eval the inputs and put them into ARGVEC.
-     Put their constraints into ASM_INPUTs and store in CONSTRAINTS.  */
-
-  for (i = 0, tail = inputs; tail; tail = TREE_CHAIN (tail), ++i)
-    {
-      bool allows_reg, allows_mem;
-      const char *constraint;
-      tree val, type;
-      rtx op;
-
-      constraint = constraints[i + noutputs];
-      if (! parse_input_constraint (&constraint, i, ninputs, noutputs, ninout,
-				    constraints, &allows_mem, &allows_reg))
-	abort ();
-
-      generating_concat_p = 0;
-
-      val = TREE_VALUE (tail);
-      type = TREE_TYPE (val);
-      op = expand_expr (val, NULL_RTX, VOIDmode, 0);
-
-      /* Never pass a CONCAT to an ASM.  */
-      if (GET_CODE (op) == CONCAT)
-	op = force_reg (GET_MODE (op), op);
-
-      if (asm_operand_ok (op, constraint) <= 0)
-	{
-	  if (allows_reg)
-	    op = force_reg (TYPE_MODE (type), op);
-	  else if (!allows_mem)
-	    warning ("asm operand %d probably doesn't match constraints",
-		     i + noutputs);
-	  else if (CONSTANT_P (op))
-	    op = force_const_mem (TYPE_MODE (type), op);
-	  else if (GET_CODE (op) == REG
-		   || GET_CODE (op) == SUBREG
-		   || GET_CODE (op) == ADDRESSOF
-		   || GET_CODE (op) == CONCAT)
-	    {
-	      tree qual_type = build_qualified_type (type,
-						     (TYPE_QUALS (type)
-						      | TYPE_QUAL_CONST));
-	      rtx memloc = assign_temp (qual_type, 1, 1, 1);
-
-	      emit_move_insn (memloc, op);
-	      op = memloc;
+	      error ("matching constraint references invalid operand number");
+	      return false;
 	    }
 
-	  else if (GET_CODE (op) == MEM && MEM_VOLATILE_P (op))
+	  /* Try and find the real constraint for this dup.  Only do this
+	     if the matching constraint is the only alternative.  */
+	  if (*end == '\0'
+	      && (j == 0 || (j == 1 && constraint[0] == '%')))
 	    {
-	      /* We won't recognize volatile memory as available a
-		 memory_operand at this point.  Ignore it.  */
+	      constraint = constraints[match];
+	      *constraint_p = constraint;
+	      c_len = strlen (constraint);
+	      j = 0;
+	      break;
 	    }
-	  else if (queued_subexp_p (op))
-	    ;
 	  else
-	    /* ??? Leave this only until we have experience with what
-	       happens in combine and elsewhere when constraints are
-	       not satisfied.  */
-	    warning ("asm operand %d probably doesn't match constraints",
-		     i + noutputs);
+	    j = end - constraint;
 	}
+	/* Fall through.  */
 
-      generating_concat_p = old_generating_concat_p;
-      ASM_OPERANDS_INPUT (body, i) = op;
+      case 'p':  case 'r':
+	*allows_reg = true;
+	break;
 
-      ASM_OPERANDS_INPUT_CONSTRAINT_EXP (body, i)
-	= gen_rtx_ASM_INPUT (TYPE_MODE (type), constraints[i + noutputs]);
-    }
+      case 'g':  case 'X':
+	*allows_reg = true;
+	*allows_mem = true;
+	break;
 
-  /* Protect all the operands from the queue now that they have all been
-     evaluated.  */
+      default:
+	if (! ISALPHA (constraint[j]))
+	  {
+	    error ("invalid punctuation `%c' in constraint", constraint[j]);
+	    return false;
+	  }
+	if (REG_CLASS_FROM_LETTER (constraint[j]) != NO_REGS)
+	  *allows_reg = true;
+#ifdef EXTRA_CONSTRAINT
+	else
+	  {
+	    /* Otherwise we can't assume anything about the nature of
+	       the constraint except that it isn't purely registers.
+	       Treat it like "g" and hope for the best.  */
+	    *allows_reg = true;
+	    *allows_mem = true;
+	  }
+#endif
+	break;
+      }
 
-  generating_concat_p = 0;
-
-  for (i = 0; i < ninputs - ninout; i++)
-    ASM_OPERANDS_INPUT (body, i)
-      = protect_from_queue (ASM_OPERANDS_INPUT (body, i), 0);
-
-  for (i = 0; i < noutputs; i++)
-    output_rtx[i] = protect_from_queue (output_rtx[i], 1);
-
-  /* For in-out operands, copy output rtx to input rtx.  */
-  for (i = 0; i < ninout; i++)
-    {
-      int j = inout_opnum[i];
-      char buffer[16];
-
-      ASM_OPERANDS_INPUT (body, ninputs - ninout + i)
-	= output_rtx[j];
-
-      sprintf (buffer, "%d", j);
-      ASM_OPERANDS_INPUT_CONSTRAINT_EXP (body, ninputs - ninout + i)
-	= gen_rtx_ASM_INPUT (inout_mode[i], ggc_alloc_string (buffer, -1));
-    }
-
-  generating_concat_p = old_generating_concat_p;
-
-  /* Now, for each output, construct an rtx
-     (set OUTPUT (asm_operands INSN OUTPUTCONSTRAINT OUTPUTNUMBER
-			       ARGVEC CONSTRAINTS OPNAMES))
-     If there is more than one, put them inside a PARALLEL.  */
-
-  if (noutputs == 1 && nclobbers == 0)
-    {
-      ASM_OPERANDS_OUTPUT_CONSTRAINT (body) = constraints[0];
-      insn = emit_insn (gen_rtx_SET (VOIDmode, output_rtx[0], body));
-    }
-
-  else if (noutputs == 0 && nclobbers == 0)
-    {
-      /* No output operands: put in a raw ASM_OPERANDS rtx.  */
-      insn = emit_insn (body);
-    }
-
-  else
-    {
-      rtx obody = body;
-      int num = noutputs;
-
-      if (num == 0)
-	num = 1;
-
-      body = gen_rtx_PARALLEL (VOIDmode, rtvec_alloc (num + nclobbers));
-
-      /* For each output operand, store a SET.  */
-      for (i = 0, tail = outputs; tail; tail = TREE_CHAIN (tail), i++)
-	{
-	  XVECEXP (body, 0, i)
-	    = gen_rtx_SET (VOIDmode,
-			   output_rtx[i],
-			   gen_rtx_ASM_OPERANDS
-			   (GET_MODE (output_rtx[i]),
-			    TREE_STRING_POINTER (string),
-			    constraints[i], i, argvec, constraintvec,
-			    filename, line));
-
-	  MEM_VOLATILE_P (SET_SRC (XVECEXP (body, 0, i))) = vol;
-	}
-
-      /* If there are no outputs (but there are some clobbers)
-	 store the bare ASM_OPERANDS into the PARALLEL.  */
-
-      if (i == 0)
-	XVECEXP (body, 0, i++) = obody;
-
-      /* Store (clobber REG) for each clobbered register specified.  */
-
-      for (tail = clobbers; tail; tail = TREE_CHAIN (tail))
-	{
-	  const char *regname = TREE_STRING_POINTER (TREE_VALUE (tail));
-	  int j = decode_reg_name (regname);
-
-	  if (j < 0)
-	    {
-	      if (j == -3)	/* `cc', which is not a register */
-		continue;
-
-	      if (j == -4)	/* `memory', don't cache memory across asm */
-		{
-		  XVECEXP (body, 0, i++)
-		    = gen_rtx_CLOBBER (VOIDmode,
-				       gen_rtx_MEM
-				       (BLKmode,
-					gen_rtx_SCRATCH (VOIDmode)));
-		  continue;
-		}
-
-	      /* Ignore unknown register, error already signaled.  */
-	      continue;
-	    }
-
-	  /* Use QImode since that's guaranteed to clobber just one reg.  */
-	  XVECEXP (body, 0, i++)
-	    = gen_rtx_CLOBBER (VOIDmode, gen_rtx_REG (QImode, j));
-	}
-
-      insn = emit_insn (body);
-    }
-
-  /* For any outputs that needed reloading into registers, spill them
-     back to where they belong.  */
-  for (i = 0; i < noutputs; ++i)
-    if (real_output_rtx[i])
-      emit_move_insn (real_output_rtx[i], output_rtx[i]);
-
-  free_temp_slots ();
+  return true;
 }

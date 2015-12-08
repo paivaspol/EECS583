@@ -1,23 +1,27 @@
-int
-self_promoting_args_p (parms)
-     tree parms;
+bool
+c_promoting_integer_type_p (t)
+     tree t;
 {
-  tree t;
-  for (t = parms; t; t = TREE_CHAIN (t))
+  switch (TREE_CODE (t))
     {
-      tree type = TREE_VALUE (t);
+    case INTEGER_TYPE:
+      return (TYPE_MAIN_VARIANT (t) == char_type_node
+	      || TYPE_MAIN_VARIANT (t) == signed_char_type_node
+	      || TYPE_MAIN_VARIANT (t) == unsigned_char_type_node
+	      || TYPE_MAIN_VARIANT (t) == short_integer_type_node
+	      || TYPE_MAIN_VARIANT (t) == short_unsigned_type_node
+	      || TYPE_PRECISION (t) < TYPE_PRECISION (integer_type_node));
 
-      if (TREE_CHAIN (t) == 0 && type != void_type_node)
-	return 0;
+    case ENUMERAL_TYPE:
+      /* ??? Technically all enumerations not larger than an int
+	 promote to an int.  But this is used along code paths
+	 that only want to notice a size change.  */
+      return TYPE_PRECISION (t) < TYPE_PRECISION (integer_type_node);
 
-      if (type == 0)
-	return 0;
+    case BOOLEAN_TYPE:
+      return 1;
 
-      if (TYPE_MAIN_VARIANT (type) == float_type_node)
-	return 0;
-
-      if (c_promoting_integer_type_p (type))
-	return 0;
+    default:
+      return 0;
     }
-  return 1;
 }

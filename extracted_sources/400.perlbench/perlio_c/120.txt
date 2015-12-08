@@ -1,0 +1,13 @@
+int
+PerlIO_setpos(PerlIO *f, SV *pos)
+{
+    dTHX;
+    if (SvOK(pos)) {
+	STRLEN len;
+	Off_t *posn = (Off_t *) SvPV(pos, len);
+	if (f && len == sizeof(Off_t))
+	    return PerlIO_seek(f, *posn, SEEK_SET);
+    }
+    SETERRNO(EINVAL, SS_IVCHAN);
+    return -1;
+}

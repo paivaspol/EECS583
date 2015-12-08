@@ -1,24 +1,119 @@
 void
-split_ti (operands, num, lo_half, hi_half)
-     rtx operands[];
-     int num;
-     rtx lo_half[], hi_half[];
+print_operand_address (file, addr)
+     FILE *file;
+     register rtx addr;
 {
-  while (num--)
-    {
-      rtx op = operands[num];
+  struct ix86_address parts;
+  rtx base, index, disp;
+  int scale;
 
-      /* simplify_subreg refuse to split volatile memory addresses, but we
-         still have to handle it.  */
-      if (GET_CODE (op) == MEM)
+  if (! ix86_decompose_address (addr, &parts))
+    abort ();
+
+  base = parts.base;
+  index = parts.index;
+  disp = parts.disp;
+  scale = parts.scale;
+
+  if (!base && !index)
+    {
+      /* Displacement only requires special attention.  */
+
+      if (GET_CODE (disp) == CONST_INT)
 	{
-	  lo_half[num] = adjust_address (op, DImode, 0);
-	  hi_half[num] = adjust_address (op, DImode, 8);
+	  if (ASSEMBLER_DIALECT == ASM_INTEL)
+	    {
+	      if (USER_LABEL_PREFIX[0] == 0)
+		putc ('%', file);
+	      fputs ("ds:", file);
+	    }
+	  fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (addr));
+	}
+      else if (flag_pic)
+	output_pic_addr_const (file, addr, 0);
+      else
+	output_addr_const (file, addr);
+
+      /* Use one byte shorter RIP relative addressing for 64bit mode.  */
+      if (GET_CODE (disp) != CONST_INT && TARGET_64BIT)
+	fputs ("(%rip)", file);
+    }
+  else
+    {
+      if (ASSEMBLER_DIALECT == ASM_ATT)
+	{
+	  if (disp)
+	    {
+	      if (flag_pic)
+		output_pic_addr_const (file, disp, 0);
+	      else if (GET_CODE (disp) == LABEL_REF)
+		output_asm_label (disp);
+	      else
+		output_addr_const (file, disp);
+	    }
+
+	  putc ('(', file);
+	  if (base)
+	    PRINT_REG (base, 0, file);
+	  if (index)
+	    {
+	      putc (',', file);
+	      PRINT_REG (index, 0, file);
+	      if (scale != 1)
+		fprintf (file, ",%d", scale);
+	    }
+	  putc (')', file);
 	}
       else
 	{
-	  lo_half[num] = simplify_gen_subreg (DImode, op, TImode, 0);
-	  hi_half[num] = simplify_gen_subreg (DImode, op, TImode, 8);
+	  rtx offset = NULL_RTX;
+
+	  if (disp)
+	    {
+	      /* Pull out the offset of a symbol; print any symbol itself.  */
+	      if (GET_CODE (disp) == CONST
+		  && GET_CODE (XEXP (disp, 0)) == PLUS
+		  && GET_CODE (XEXP (XEXP (disp, 0), 1)) == CONST_INT)
+		{
+		  offset = XEXP (XEXP (disp, 0), 1);
+		  disp = gen_rtx_CONST (VOIDmode,
+					XEXP (XEXP (disp, 0), 0));
+		}
+
+	      if (flag_pic)
+		output_pic_addr_const (file, disp, 0);
+	      else if (GET_CODE (disp) == LABEL_REF)
+		output_asm_label (disp);
+	      else if (GET_CODE (disp) == CONST_INT)
+		offset = disp;
+	      else
+		output_addr_const (file, disp);
+	    }
+
+	  putc ('[', file);
+	  if (base)
+	    {
+	      PRINT_REG (base, 0, file);
+	      if (offset)
+		{
+		  if (INTVAL (offset) >= 0)
+		    putc ('+', file);
+		  fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (offset));
+		}
+	    }
+	  else if (offset)
+	    fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (offset));
+	  else
+	    putc ('0', file);
+
+	  if (index)
+	    {
+	      putc ('+', file);
+	      PRINT_REG (index, 0, file);
+	      if (scale != 1)
+		fprintf (file, "*%d", scale);
+	    }
+	  putc (']', file);
 	}
     }
 }

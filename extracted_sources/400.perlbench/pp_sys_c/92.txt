@@ -1,0 +1,18 @@
+PP(pp_rmdir)
+{
+    dSP; dTARGET;
+    STRLEN len;
+    char *tmps;
+    bool copy = FALSE;
+
+    TRIMSLASHES(tmps,len,copy);
+    TAINT_PROPER("rmdir");
+#ifdef HAS_RMDIR
+    SETi( PerlDir_rmdir(tmps) >= 0 );
+#else
+    SETi( dooneliner("rmdir", tmps) );
+#endif
+    if (copy)
+	Safefree(tmps);
+    RETURN;
+}

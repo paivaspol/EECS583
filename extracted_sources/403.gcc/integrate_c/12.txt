@@ -1,50 +1,63 @@
-void
-try_constants (insn, map)
-     rtx insn;
+static tree
+integrate_decl_tree (let, map)
+     tree let;
      struct inline_remap *map;
 {
-  int i;
+  tree t;
+  tree new_block;
+  tree *next;
 
-  map->num_sets = 0;
+  new_block = make_node (BLOCK);
+  VARRAY_PUSH_TREE (map->block_map, new_block);
+  next = &BLOCK_VARS (new_block);
 
-  /* First try just updating addresses, then other things.  This is
-     important when we have something like the store of a constant
-     into memory and we can update the memory address but the machine
-     does not support a constant source.  */
-  subst_constants (&PATTERN (insn), insn, map, 1);
-  apply_change_group ();
-  subst_constants (&PATTERN (insn), insn, map, 0);
-  apply_change_group ();
-
-  /* Show we don't know the value of anything stored or clobbered.  */
-  note_stores (PATTERN (insn), mark_stores, NULL);
-  map->last_pc_value = 0;
-#ifdef HAVE_cc0
-  map->last_cc0_value = 0;
-#endif
-
-  /* Set up any constant equivalences made in this insn.  */
-  for (i = 0; i < map->num_sets; i++)
+  for (t = BLOCK_VARS (let); t; t = TREE_CHAIN (t))
     {
-      if (GET_CODE (map->equiv_sets[i].dest) == REG)
-	{
-	  int regno = REGNO (map->equiv_sets[i].dest);
+      tree d;
 
-	  MAYBE_EXTEND_CONST_EQUIV_VARRAY (map, regno);
-	  if (VARRAY_CONST_EQUIV (map->const_equiv_varray, regno).rtx == 0
-	      /* Following clause is a hack to make case work where GNU C++
-		 reassigns a variable to make cse work right.  */
-	      || ! rtx_equal_p (VARRAY_CONST_EQUIV (map->const_equiv_varray,
-						    regno).rtx,
-				map->equiv_sets[i].equiv))
-	    SET_CONST_EQUIV_DATA (map, map->equiv_sets[i].dest,
-				  map->equiv_sets[i].equiv, map->const_age);
+      d = copy_decl_for_inlining (t, map->fndecl, current_function_decl);
+
+      if (DECL_RTL_SET_P (t))
+	{
+	  rtx r;
+
+	  SET_DECL_RTL (d, copy_rtx_and_substitute (DECL_RTL (t), map, 1));
+
+	  /* Fully instantiate the address with the equivalent form so that the
+	     debugging information contains the actual register, instead of the
+	     virtual register.   Do this by not passing an insn to
+	     subst_constants.  */
+	  r = DECL_RTL (d);
+	  subst_constants (&r, NULL_RTX, map, 1);
+	  SET_DECL_RTL (d, r);
+
+	  if (GET_CODE (r) == REG)
+	    REGNO_DECL (REGNO (r)) = d;
+	  else if (GET_CODE (r) == CONCAT)
+	    {
+	      REGNO_DECL (REGNO (XEXP (r, 0))) = d;
+	      REGNO_DECL (REGNO (XEXP (r, 1))) = d;
+	    }
+
+	  apply_change_group ();
 	}
-      else if (map->equiv_sets[i].dest == pc_rtx)
-	map->last_pc_value = map->equiv_sets[i].equiv;
-#ifdef HAVE_cc0
-      else if (map->equiv_sets[i].dest == cc0_rtx)
-	map->last_cc0_value = map->equiv_sets[i].equiv;
-#endif
+
+      /* Add this declaration to the list of variables in the new
+	 block.  */
+      *next = d;
+      next = &TREE_CHAIN (d);
     }
+
+  next = &BLOCK_SUBBLOCKS (new_block);
+  for (t = BLOCK_SUBBLOCKS (let); t; t = BLOCK_CHAIN (t))
+    {
+      *next = integrate_decl_tree (t, map);
+      BLOCK_SUPERCONTEXT (*next) = new_block;
+      next = &BLOCK_CHAIN (*next);
+    }
+
+  TREE_USED (new_block) = TREE_USED (let);
+  BLOCK_ABSTRACT_ORIGIN (new_block) = let;
+
+  return new_block;
 }

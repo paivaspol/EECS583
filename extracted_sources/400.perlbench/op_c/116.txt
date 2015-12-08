@@ -1,0 +1,14 @@
+OP *
+Perl_ck_exit(pTHX_ OP *o)
+{
+#ifdef VMS
+    HV *table = GvHV(PL_hintgv);
+    if (table) {
+       SV **svp = hv_fetch(table, "vmsish_exit", 11, FALSE);
+       if (svp && *svp && SvTRUE(*svp))
+           o->op_private |= OPpEXIT_VMSISH;
+    }
+    if (VMSISH_HUSHED) o->op_private |= OPpHUSH_VMSISH;
+#endif
+    return ck_fun(o);
+}

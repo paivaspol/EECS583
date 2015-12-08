@@ -1,0 +1,26 @@
+PP(pp_ftrread)
+{
+    I32 result;
+    dSP;
+#if defined(HAS_ACCESS) && defined(R_OK)
+    STRLEN n_a;
+    if ((PL_op->op_private & OPpFT_ACCESS) && SvPOK(TOPs)) {
+	result = access(POPpx, R_OK);
+	if (result == 0)
+	    RETPUSHYES;
+	if (result < 0)
+	    RETPUSHUNDEF;
+	RETPUSHNO;
+    }
+    else
+	result = my_stat();
+#else
+    result = my_stat();
+#endif
+    SPAGAIN;
+    if (result < 0)
+	RETPUSHUNDEF;
+    if (cando(S_IRUSR, 0, &PL_statcache))
+	RETPUSHYES;
+    RETPUSHNO;
+}

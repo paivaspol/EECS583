@@ -1,0 +1,24 @@
+bool_t
+xdr_vector (xdrs, basep, nelem, elemsize, xdr_elem)
+     XDR *xdrs;
+     char *basep;
+     unsigned int nelem;
+     unsigned int elemsize;
+     xdrproc_t xdr_elem;
+{
+#define LASTUNSIGNED	((unsigned int)0-1)
+  unsigned int i;
+  char *elptr;
+
+  elptr = basep;
+  for (i = 0; i < nelem; i++)
+    {
+      if (!(*xdr_elem) (xdrs, elptr, LASTUNSIGNED))
+	{
+	  return FALSE;
+	}
+      elptr += elemsize;
+    }
+  return TRUE;
+#undef LASTUNSIGNED
+}

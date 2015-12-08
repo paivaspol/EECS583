@@ -1,19 +1,6 @@
 void
-Perl_sv_setpv(pTHX_ register SV *sv, register const char *ptr)
+Perl_sv_setpvn_mg(pTHX_ register SV *sv, register const char *ptr, register STRLEN len)
 {
-    register STRLEN len;
-
-    SV_CHECK_THINKFIRST(sv);
-    if (!ptr) {
-	(void)SvOK_off(sv);
-	return;
-    }
-    len = strlen(ptr);
-    (void)SvUPGRADE(sv, SVt_PV);
-
-    SvGROW(sv, len + 1);
-    Move(ptr,SvPVX(sv),len+1,char);
-    SvCUR_set(sv, len);
-    (void)SvPOK_only_UTF8(sv);		/* validate pointer */
-    SvTAINT(sv);
+    sv_setpvn(sv,ptr,len);
+    SvSETMAGIC(sv);
 }

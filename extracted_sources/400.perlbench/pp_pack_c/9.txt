@@ -1,48 +1,27 @@
-STATIC SV *
-S_is_an_int(pTHX_ char *s, STRLEN l)
+STATIC void
+S_doencodes(pTHX_ register SV *sv, register char *s, register I32 len)
 {
-  STRLEN	 n_a;
-  SV             *result = newSVpvn(s, l);
-  char           *result_c = SvPV(result, n_a);	/* convenience */
-  char           *out = result_c;
-  bool            skip = 1;
-  bool            ignore = 0;
+    char hunk[5];
 
-  while (*s) {
-    switch (*s) {
-    case ' ':
-      break;
-    case '+':
-      if (!skip) {
-	SvREFCNT_dec(result);
-	return (NULL);
-      }
-      break;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      skip = 0;
-      if (!ignore) {
-	*(out++) = *s;
-      }
-      break;
-    case '.':
-      ignore = 1;
-      break;
-    default:
-      SvREFCNT_dec(result);
-      return (NULL);
+    *hunk = PL_uuemap[len];
+    sv_catpvn(sv, hunk, 1);
+    hunk[4] = '\0';
+    while (len > 2) {
+	hunk[0] = PL_uuemap[(077 & (*s >> 2))];
+	hunk[1] = PL_uuemap[(077 & (((*s << 4) & 060) | ((s[1] >> 4) & 017)))];
+	hunk[2] = PL_uuemap[(077 & (((s[1] << 2) & 074) | ((s[2] >> 6) & 03)))];
+	hunk[3] = PL_uuemap[(077 & (s[2] & 077))];
+	sv_catpvn(sv, hunk, 4);
+	s += 3;
+	len -= 3;
     }
-    s++;
-  }
-  *(out++) = '\0';
-  SvCUR_set(result, out - result_c);
-  return (result);
+    if (len > 0) {
+	char r = (len > 1 ? s[1] : '\0');
+	hunk[0] = PL_uuemap[(077 & (*s >> 2))];
+	hunk[1] = PL_uuemap[(077 & (((*s << 4) & 060) | ((r >> 4) & 017)))];
+	hunk[2] = PL_uuemap[(077 & ((r << 2) & 074))];
+	hunk[3] = PL_uuemap[0];
+	sv_catpvn(sv, hunk, 4);
+    }
+    sv_catpvn(sv, "\n", 1);
 }

@@ -1,9 +1,21 @@
 int
-Perl_magic_setuvar(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_killbackrefs(pTHX_ SV *sv, MAGIC *mg)
 {
-    struct ufuncs *uf = (struct ufuncs *)mg->mg_ptr;
-
-    if (uf && uf->uf_set)
-	(*uf->uf_set)(aTHX_ uf->uf_index, sv);
+    AV *av = (AV*)mg->mg_obj;
+    SV **svp = AvARRAY(av);
+    I32 i = AvFILLp(av);
+    while (i >= 0) {
+	if (svp[i]) {
+	    if (!SvWEAKREF(svp[i]))
+		Perl_croak(aTHX_ "panic: magic_killbackrefs");
+	    /* XXX Should we check that it hasn't changed? */
+	    SvRV(svp[i]) = 0;
+	    SvOK_off(svp[i]);
+	    SvWEAKREF_off(svp[i]);
+	    svp[i] = Nullsv;
+	}
+	i--;
+    }
+    SvREFCNT_dec(av); /* remove extra count added by sv_add_backref() */
     return 0;
 }

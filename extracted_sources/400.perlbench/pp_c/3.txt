@@ -1,16 +1,25 @@
-void
-Perl_unlock_condpair(pTHX_ void *svv)
+PP(pp_padhv)
 {
-    MAGIC *mg = mg_find((SV*)svv, PERL_MAGIC_mutex);
+    dSP; dTARGET;
+    I32 gimme;
 
-    if (!mg)
-	Perl_croak(aTHX_ "panic: unlock_condpair unlocking non-mutex");
-    MUTEX_LOCK(MgMUTEXP(mg));
-    if (MgOWNER(mg) != thr)
-	Perl_croak(aTHX_ "panic: unlock_condpair unlocking mutex that we don't own");
-    MgOWNER(mg) = 0;
-    COND_SIGNAL(MgOWNERCONDP(mg));
-    DEBUG_S(PerlIO_printf(Perl_debug_log, "0x%"UVxf": unlock 0x%"UVxf"\n",
-			  PTR2UV(thr), PTR2UV(svv)));
-    MUTEX_UNLOCK(MgMUTEXP(mg));
+    XPUSHs(TARG);
+    if (PL_op->op_private & OPpLVAL_INTRO)
+	SAVECLEARSV(PAD_SVl(PL_op->op_targ));
+    if (PL_op->op_flags & OPf_REF)
+	RETURN;
+    else if (LVRET) {
+	if (GIMME == G_SCALAR)
+	    Perl_croak(aTHX_ "Can't return hash to lvalue scalar context");
+	RETURN;
+    }
+    gimme = GIMME_V;
+    if (gimme == G_ARRAY) {
+	RETURNOP(do_kv());
+    }
+    else if (gimme == G_SCALAR) {
+	SV* sv = Perl_hv_scalar(aTHX_ (HV*)TARG);
+	SETs(sv);
+    }
+    RETURN;
 }

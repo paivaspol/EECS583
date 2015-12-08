@@ -1,27 +1,10 @@
 void
-mergeable_constant_section (mode, align, flags)
-  enum machine_mode mode ATTRIBUTE_UNUSED;
-  unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED;
-  unsigned int flags ATTRIBUTE_UNUSED;
+default_exception_section ()
 {
-#ifdef HAVE_GAS_SHF_MERGE
-  unsigned int modesize = GET_MODE_BITSIZE (mode);
-
-  if (flag_merge_constants
-      && mode != VOIDmode
-      && mode != BLKmode
-      && modesize <= align
-      && align >= 8
-      && align <= 256
-      && (align & (align - 1)) == 0)
-    {
-      char name[24];
-
-      sprintf (name, ".rodata.cst%d", (int) (align / 8));
-      flags |= (align / 8) | SECTION_MERGE;
-      named_section_flags (name, flags);
-      return;
-    }            
-#endif
-  readonly_data_section ();
+  if (targetm.have_named_sections)
+    named_section (NULL_TREE, ".gcc_except_table", 0);
+  else if (flag_pic)
+    data_section ();
+  else
+    readonly_data_section ();
 }

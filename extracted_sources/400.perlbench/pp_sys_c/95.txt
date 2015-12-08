@@ -1,0 +1,27 @@
+PP(pp_telldir)
+{
+#if defined(HAS_TELLDIR) || defined(telldir)
+    dSP; dTARGET;
+ /* XXX does _anyone_ need this? --AD 2/20/1998 */
+ /* XXX netbsd still seemed to.
+    XXX HAS_TELLDIR_PROTO is new style, NEED_TELLDIR_PROTO is old style.
+    --JHI 1999-Feb-02 */
+# if !defined(HAS_TELLDIR_PROTO) || defined(NEED_TELLDIR_PROTO)
+    long telldir (DIR *);
+# endif
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+
+    if (!io || !IoDIRP(io))
+	goto nope;
+
+    PUSHi( PerlDir_tell(IoDIRP(io)) );
+    RETURN;
+nope:
+    if (!errno)
+	SETERRNO(EBADF,RMS_ISI);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_dir_func, "telldir");
+#endif
+}

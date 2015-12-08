@@ -1,0 +1,350 @@
+static void
+emit_case_nodes (index, node, default_label, index_type)
+     rtx index;
+     case_node_ptr node;
+     rtx default_label;
+     tree index_type;
+{
+  /* If INDEX has an unsigned type, we must make unsigned branches.  */
+  int unsignedp = TREE_UNSIGNED (index_type);
+  enum machine_mode mode = GET_MODE (index);
+  enum machine_mode imode = TYPE_MODE (index_type);
+
+  /* See if our parents have already tested everything for us.
+     If they have, emit an unconditional jump for this node.  */
+  if (node_is_bounded (node, index_type))
+    emit_jump (label_rtx (node->code_label));
+
+  else if (tree_int_cst_equal (node->low, node->high))
+    {
+      /* Node is single valued.  First see if the index expression matches
+	 this node and then check our children, if any.  */
+
+      do_jump_if_equal (index,
+			convert_modes (mode, imode,
+				       expand_expr (node->low, NULL_RTX,
+						    VOIDmode, 0),
+				       unsignedp),
+			label_rtx (node->code_label), unsignedp);
+
+      if (node->right != 0 && node->left != 0)
+	{
+	  /* This node has children on both sides.
+	     Dispatch to one side or the other
+	     by comparing the index value with this node's value.
+	     If one subtree is bounded, check that one first,
+	     so we can avoid real branches in the tree.  */
+
+	  if (node_is_bounded (node->right, index_type))
+	    {
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->high, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       GT, NULL_RTX, mode, unsignedp,
+				       label_rtx (node->right->code_label));
+	      emit_case_nodes (index, node->left, default_label, index_type);
+	    }
+
+	  else if (node_is_bounded (node->left, index_type))
+	    {
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->high, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       LT, NULL_RTX, mode, unsignedp,
+				       label_rtx (node->left->code_label));
+	      emit_case_nodes (index, node->right, default_label, index_type);
+	    }
+
+	  else
+	    {
+	      /* Neither node is bounded.  First distinguish the two sides;
+		 then emit the code for one side at a time.  */
+
+	      tree test_label = build_decl (LABEL_DECL, NULL_TREE, NULL_TREE);
+
+	      /* See if the value is on the right.  */
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->high, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       GT, NULL_RTX, mode, unsignedp,
+				       label_rtx (test_label));
+
+	      /* Value must be on the left.
+		 Handle the left-hand subtree.  */
+	      emit_case_nodes (index, node->left, default_label, index_type);
+	      /* If left-hand subtree does nothing,
+		 go to default.  */
+	      emit_jump_if_reachable (default_label);
+
+	      /* Code branches here for the right-hand subtree.  */
+	      expand_label (test_label);
+	      emit_case_nodes (index, node->right, default_label, index_type);
+	    }
+	}
+
+      else if (node->right != 0 && node->left == 0)
+	{
+	  /* Here we have a right child but no left so we issue conditional
+	     branch to default and process the right child.
+
+	     Omit the conditional branch to default if we it avoid only one
+	     right child; it costs too much space to save so little time.  */
+
+	  if (node->right->right || node->right->left
+	      || !tree_int_cst_equal (node->right->low, node->right->high))
+	    {
+	      if (!node_has_low_bound (node, index_type))
+		{
+		  emit_cmp_and_jump_insns (index,
+					   convert_modes
+					   (mode, imode,
+					    expand_expr (node->high, NULL_RTX,
+							 VOIDmode, 0),
+					    unsignedp),
+					   LT, NULL_RTX, mode, unsignedp,
+					   default_label);
+		}
+
+	      emit_case_nodes (index, node->right, default_label, index_type);
+	    }
+	  else
+	    /* We cannot process node->right normally
+	       since we haven't ruled out the numbers less than
+	       this node's value.  So handle node->right explicitly.  */
+	    do_jump_if_equal (index,
+			      convert_modes
+			      (mode, imode,
+			       expand_expr (node->right->low, NULL_RTX,
+					    VOIDmode, 0),
+			       unsignedp),
+			      label_rtx (node->right->code_label), unsignedp);
+	}
+
+      else if (node->right == 0 && node->left != 0)
+	{
+	  /* Just one subtree, on the left.  */
+	  if (node->left->left || node->left->right
+	      || !tree_int_cst_equal (node->left->low, node->left->high))
+	    {
+	      if (!node_has_high_bound (node, index_type))
+		{
+		  emit_cmp_and_jump_insns (index,
+					   convert_modes
+					   (mode, imode,
+					    expand_expr (node->high, NULL_RTX,
+							 VOIDmode, 0),
+					    unsignedp),
+					   GT, NULL_RTX, mode, unsignedp,
+					   default_label);
+		}
+
+	      emit_case_nodes (index, node->left, default_label, index_type);
+	    }
+	  else
+	    /* We cannot process node->left normally
+	       since we haven't ruled out the numbers less than
+	       this node's value.  So handle node->left explicitly.  */
+	    do_jump_if_equal (index,
+			      convert_modes
+			      (mode, imode,
+			       expand_expr (node->left->low, NULL_RTX,
+					    VOIDmode, 0),
+			       unsignedp),
+			      label_rtx (node->left->code_label), unsignedp);
+	}
+    }
+  else
+    {
+      /* Node is a range.  These cases are very similar to those for a single
+	 value, except that we do not start by testing whether this node
+	 is the one to branch to.  */
+
+      if (node->right != 0 && node->left != 0)
+	{
+	  /* Node has subtrees on both sides.
+	     If the right-hand subtree is bounded,
+	     test for it first, since we can go straight there.
+	     Otherwise, we need to make a branch in the control structure,
+	     then handle the two subtrees.  */
+	  tree test_label = 0;
+
+	  if (node_is_bounded (node->right, index_type))
+	    /* Right hand node is fully bounded so we can eliminate any
+	       testing and branch directly to the target code.  */
+	    emit_cmp_and_jump_insns (index,
+				     convert_modes
+				     (mode, imode,
+				      expand_expr (node->high, NULL_RTX,
+						   VOIDmode, 0),
+				      unsignedp),
+				     GT, NULL_RTX, mode, unsignedp,
+				     label_rtx (node->right->code_label));
+	  else
+	    {
+	      /* Right hand node requires testing.
+		 Branch to a label where we will handle it later.  */
+
+	      test_label = build_decl (LABEL_DECL, NULL_TREE, NULL_TREE);
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->high, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       GT, NULL_RTX, mode, unsignedp,
+				       label_rtx (test_label));
+	    }
+
+	  /* Value belongs to this node or to the left-hand subtree.  */
+
+	  emit_cmp_and_jump_insns (index,
+				   convert_modes
+				   (mode, imode,
+				    expand_expr (node->low, NULL_RTX,
+						 VOIDmode, 0),
+				    unsignedp),
+				   GE, NULL_RTX, mode, unsignedp,
+				   label_rtx (node->code_label));
+
+	  /* Handle the left-hand subtree.  */
+	  emit_case_nodes (index, node->left, default_label, index_type);
+
+	  /* If right node had to be handled later, do that now.  */
+
+	  if (test_label)
+	    {
+	      /* If the left-hand subtree fell through,
+		 don't let it fall into the right-hand subtree.  */
+	      emit_jump_if_reachable (default_label);
+
+	      expand_label (test_label);
+	      emit_case_nodes (index, node->right, default_label, index_type);
+	    }
+	}
+
+      else if (node->right != 0 && node->left == 0)
+	{
+	  /* Deal with values to the left of this node,
+	     if they are possible.  */
+	  if (!node_has_low_bound (node, index_type))
+	    {
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->low, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       LT, NULL_RTX, mode, unsignedp,
+				       default_label);
+	    }
+
+	  /* Value belongs to this node or to the right-hand subtree.  */
+
+	  emit_cmp_and_jump_insns (index,
+				   convert_modes
+				   (mode, imode,
+				    expand_expr (node->high, NULL_RTX,
+						 VOIDmode, 0),
+				    unsignedp),
+				   LE, NULL_RTX, mode, unsignedp,
+				   label_rtx (node->code_label));
+
+	  emit_case_nodes (index, node->right, default_label, index_type);
+	}
+
+      else if (node->right == 0 && node->left != 0)
+	{
+	  /* Deal with values to the right of this node,
+	     if they are possible.  */
+	  if (!node_has_high_bound (node, index_type))
+	    {
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->high, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       GT, NULL_RTX, mode, unsignedp,
+				       default_label);
+	    }
+
+	  /* Value belongs to this node or to the left-hand subtree.  */
+
+	  emit_cmp_and_jump_insns (index,
+				   convert_modes
+				   (mode, imode,
+				    expand_expr (node->low, NULL_RTX,
+						 VOIDmode, 0),
+				    unsignedp),
+				   GE, NULL_RTX, mode, unsignedp,
+				   label_rtx (node->code_label));
+
+	  emit_case_nodes (index, node->left, default_label, index_type);
+	}
+
+      else
+	{
+	  /* Node has no children so we check low and high bounds to remove
+	     redundant tests.  Only one of the bounds can exist,
+	     since otherwise this node is bounded--a case tested already.  */
+	  int high_bound = node_has_high_bound (node, index_type);
+	  int low_bound = node_has_low_bound (node, index_type);
+
+	  if (!high_bound && low_bound)
+	    {
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->high, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       GT, NULL_RTX, mode, unsignedp,
+				       default_label);
+	    }
+
+	  else if (!low_bound && high_bound)
+	    {
+	      emit_cmp_and_jump_insns (index,
+				       convert_modes
+				       (mode, imode,
+					expand_expr (node->low, NULL_RTX,
+						     VOIDmode, 0),
+					unsignedp),
+				       LT, NULL_RTX, mode, unsignedp,
+				       default_label);
+	    }
+	  else if (!low_bound && !high_bound)
+	    {
+	      /* Widen LOW and HIGH to the same width as INDEX.  */
+	      tree type = type_for_mode (mode, unsignedp);
+	      tree low = build1 (CONVERT_EXPR, type, node->low);
+	      tree high = build1 (CONVERT_EXPR, type, node->high);
+	      rtx low_rtx, new_index, new_bound;
+
+	      /* Instead of doing two branches, emit one unsigned branch for
+		 (index-low) > (high-low).  */
+	      low_rtx = expand_expr (low, NULL_RTX, mode, 0);
+	      new_index = expand_simple_binop (mode, MINUS, index, low_rtx,
+					       NULL_RTX, unsignedp,
+					       OPTAB_WIDEN);
+	      new_bound = expand_expr (fold (build (MINUS_EXPR, type,
+						    high, low)),
+				       NULL_RTX, mode, 0);
+				
+	      emit_cmp_and_jump_insns (new_index, new_bound, GT, NULL_RTX,
+				       mode, 1, default_label);
+	    }
+
+	  emit_jump (label_rtx (node->code_label));
+	}
+    }
+}

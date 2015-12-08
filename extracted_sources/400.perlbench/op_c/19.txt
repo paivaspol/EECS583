@@ -1,41 +1,69 @@
-STATIC void
-S_apply_attrs(pTHX_ HV *stash, SV *target, OP *attrs, bool for_my)
+OP *
+Perl_scalar(pTHX_ OP *o)
 {
-    SV *stashsv;
+    OP *kid;
 
-    /* fake up C<use attributes $pkg,$rv,@attrs> */
-    ENTER;		/* need to protect against side-effects of 'use' */
-    SAVEINT(PL_expect);
-    if (stash)
-	stashsv = newSVpv(HvNAME(stash), 0);
-    else
-	stashsv = &PL_sv_no;
-
-#define ATTRSMODULE "attributes"
-#define ATTRSMODULE_PM "attributes.pm"
-
-    if (for_my) {
-	SV **svp;
-	/* Don't force the C<use> if we don't need it. */
-	svp = hv_fetch(GvHVn(PL_incgv), ATTRSMODULE_PM,
-		       sizeof(ATTRSMODULE_PM)-1, 0);
-	if (svp && *svp != &PL_sv_undef)
-	    ; 		/* already in %INC */
-	else
-	    Perl_load_module(aTHX_ PERL_LOADMOD_NOIMPORT,
-			     newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1),
-			     Nullsv);
+    /* assumes no premature commitment */
+    if (!o || (o->op_flags & OPf_WANT) || PL_error_count
+	 || o->op_type == OP_RETURN)
+    {
+	return o;
     }
-    else {
-	Perl_load_module(aTHX_ PERL_LOADMOD_IMPORT_OPS,
-			 newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1),
-			 Nullsv,
-			 prepend_elem(OP_LIST,
-				      newSVOP(OP_CONST, 0, stashsv),
-				      prepend_elem(OP_LIST,
-						   newSVOP(OP_CONST, 0,
-							   newRV(target)),
-						   dup_attrlist(attrs))));
+
+    o->op_flags = (o->op_flags & ~OPf_WANT) | OPf_WANT_SCALAR;
+
+    switch (o->op_type) {
+    case OP_REPEAT:
+	scalar(cBINOPo->op_first);
+	break;
+    case OP_OR:
+    case OP_AND:
+    case OP_COND_EXPR:
+	for (kid = cUNOPo->op_first->op_sibling; kid; kid = kid->op_sibling)
+	    scalar(kid);
+	break;
+    case OP_SPLIT:
+	if ((kid = cLISTOPo->op_first) && kid->op_type == OP_PUSHRE) {
+	    if (!kPMOP->op_pmreplroot)
+		deprecate_old("implicit split to @_");
+	}
+	/* FALL THROUGH */
+    case OP_MATCH:
+    case OP_QR:
+    case OP_SUBST:
+    case OP_NULL:
+    default:
+	if (o->op_flags & OPf_KIDS) {
+	    for (kid = cUNOPo->op_first; kid; kid = kid->op_sibling)
+		scalar(kid);
+	}
+	break;
+    case OP_LEAVE:
+    case OP_LEAVETRY:
+	kid = cLISTOPo->op_first;
+	scalar(kid);
+	while ((kid = kid->op_sibling)) {
+	    if (kid->op_sibling)
+		scalarvoid(kid);
+	    else
+		scalar(kid);
+	}
+	WITH_THR(PL_curcop = &PL_compiling);
+	break;
+    case OP_SCOPE:
+    case OP_LINESEQ:
+    case OP_LIST:
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling) {
+	    if (kid->op_sibling)
+		scalarvoid(kid);
+	    else
+		scalar(kid);
+	}
+	WITH_THR(PL_curcop = &PL_compiling);
+	break;
+    case OP_SORT:
+	if (ckWARN(WARN_VOID))
+	    Perl_warner(aTHX_ packWARN(WARN_VOID), "Useless use of sort in scalar context");
     }
-    LEAVE;
+    return o;
 }
