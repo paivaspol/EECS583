@@ -1,8 +1,24 @@
-static void
-do_report_used(pTHX_ SV *sv)
+STATIC void
+S_del_sv(pTHX_ SV *p)
 {
-    if (SvTYPE(sv) != SVTYPEMASK) {
-	PerlIO_printf(Perl_debug_log, "****\n");
-	sv_dump(sv);
+    if (DEBUG_D_TEST) {
+	SV* sva;
+	SV* sv;
+	SV* svend;
+	int ok = 0;
+	for (sva = PL_sv_arenaroot; sva; sva = (SV *) SvANY(sva)) {
+	    sv = sva + 1;
+	    svend = &sva[SvREFCNT(sva)];
+	    if (p >= sv && p < svend)
+		ok = 1;
+	}
+	if (!ok) {
+	    if (ckWARN_d(WARN_INTERNAL))	
+	        Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
+			    "Attempt to free non-arena SV: 0x%"UVxf
+                            pTHX__FORMAT, PTR2UV(p) pTHX__VALUE);
+	    return;
+	}
     }
+    plant_SV(p);
 }

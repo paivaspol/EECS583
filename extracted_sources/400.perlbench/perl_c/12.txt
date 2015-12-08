@@ -1,28 +1,117 @@
-void
-Perl_my_unexec(pTHX)
+STATIC void
+S_incpush(pTHX_ char *p, int addsubdirs, int addoldvers, int usesep)
 {
-#if !defined(SPEC_CPU)
-#ifdef UNEXEC
-    SV*    prog;
-    SV*    file;
-    int    status = 1;
-    extern int etext;
+    SV *subdir = Nullsv;
 
-    prog = newSVpv(BIN_EXP, 0);
-    sv_catpv(prog, "/perl");
-    file = newSVpv(PL_origfilename, 0);
-    sv_catpv(file, ".perldump");
+    if (!p || !*p)
+	return;
 
-    unexec(SvPVX(file), SvPVX(prog), &etext, sbrk(0), 0);
-    /* unexec prints msg to stderr in case of failure */
-    PerlProc_exit(status);
-#else
-#  ifdef VMS
-#    include <lib$routines.h>
-     lib$signal(SS$_DEBUG);  /* ssdef.h #included from vmsish.h */
-#  else
-    ABORT();		/* for use with undump */
-#  endif
+    if (addsubdirs || addoldvers) {
+	subdir = NEWSV(0,0);
+    }
+
+    /* Break at all separators */
+    while (p && *p) {
+	SV *libdir = NEWSV(55,0);
+	char *s;
+
+	/* skip any consecutive separators */
+	if (usesep) {
+	    while ( *p == PERLLIB_SEP ) {
+		/* Uncomment the next line for PATH semantics */
+		/* av_push(GvAVn(PL_incgv), newSVpvn(".", 1)); */
+		p++;
+	    }
+	}
+
+	if ( usesep && (s = strchr(p, PERLLIB_SEP)) != Nullch ) {
+	    sv_setpvn(libdir, PERLLIB_MANGLE(p, (STRLEN)(s - p)),
+		      (STRLEN)(s - p));
+	    p = s + 1;
+	}
+	else {
+	    sv_setpv(libdir, PERLLIB_MANGLE(p, 0));
+	    p = Nullch;	/* break out */
+	}
+#ifdef MACOS_TRADITIONAL
+	if (!strchr(SvPVX(libdir), ':')) {
+	    char buf[256];
+
+	    sv_setpv(libdir, MacPerl_CanonDir(SvPVX(libdir), buf, 0));
+	}
+	if (SvPVX(libdir)[SvCUR(libdir)-1] != ':')
+	    sv_catpv(libdir, ":");
 #endif
-#endif /* !SPEC_CPU */
+
+	/*
+	 * BEFORE pushing libdir onto @INC we may first push version- and
+	 * archname-specific sub-directories.
+	 */
+	if (addsubdirs || addoldvers) {
+#ifdef PERL_INC_VERSION_LIST
+	    /* Configure terminates PERL_INC_VERSION_LIST with a NULL */
+	    const char *incverlist[] = { PERL_INC_VERSION_LIST };
+	    const char **incver;
+#endif
+#ifdef VMS
+	    char *unix;
+	    STRLEN len;
+
+	    if ((unix = tounixspec_ts(SvPV(libdir,len),Nullch)) != Nullch) {
+		len = strlen(unix);
+		while (unix[len-1] == '/') len--;  /* Cosmetic */
+		sv_usepvn(libdir,unix,len);
+	    }
+	    else
+		PerlIO_printf(Perl_error_log,
+		              "Failed to unixify @INC element \"%s\"\n",
+			      SvPV(libdir,len));
+#endif
+	    if (addsubdirs) {
+#ifdef MACOS_TRADITIONAL
+#define PERL_AV_SUFFIX_FMT	""
+#define PERL_ARCH_FMT 		"%s:"
+#define PERL_ARCH_FMT_PATH	PERL_FS_VER_FMT PERL_AV_SUFFIX_FMT
+#else
+#define PERL_AV_SUFFIX_FMT 	"/"
+#define PERL_ARCH_FMT 		"/%s"
+#define PERL_ARCH_FMT_PATH	PERL_AV_SUFFIX_FMT PERL_FS_VER_FMT
+#endif
+		/* .../version/archname if -d .../version/archname */
+		Perl_sv_setpvf(aTHX_ subdir, "%"SVf PERL_ARCH_FMT_PATH PERL_ARCH_FMT,
+				libdir,
+			       (int)PERL_REVISION, (int)PERL_VERSION,
+			       (int)PERL_SUBVERSION, ARCHNAME);
+		subdir = S_incpush_if_exists(aTHX_ subdir);
+
+		/* .../version if -d .../version */
+		Perl_sv_setpvf(aTHX_ subdir, "%"SVf PERL_ARCH_FMT_PATH, libdir,
+			       (int)PERL_REVISION, (int)PERL_VERSION,
+			       (int)PERL_SUBVERSION);
+		subdir = S_incpush_if_exists(aTHX_ subdir);
+
+		/* .../archname if -d .../archname */
+		Perl_sv_setpvf(aTHX_ subdir, "%"SVf PERL_ARCH_FMT, libdir, ARCHNAME);
+		subdir = S_incpush_if_exists(aTHX_ subdir);
+
+	    }
+
+#ifdef PERL_INC_VERSION_LIST
+	    if (addoldvers) {
+		for (incver = incverlist; *incver; incver++) {
+		    /* .../xxx if -d .../xxx */
+		    Perl_sv_setpvf(aTHX_ subdir, "%"SVf PERL_ARCH_FMT, libdir, *incver);
+		    subdir = S_incpush_if_exists(aTHX_ subdir);
+		}
+	    }
+#endif
+	}
+
+	/* finally push this lib directory on the end of @INC */
+	av_push(GvAVn(PL_incgv), libdir);
+    }
+    if (subdir) {
+	assert (SvREFCNT(subdir) == 1);
+	SvREFCNT_dec(subdir);
+    }
 }

@@ -1,6 +1,12 @@
-void
-Perl_sv_catpv_mg(pTHX_ register SV *sv, register const char *ptr)
+STATIC XPVHV*
+S_new_xpvhv(pTHX)
 {
-    sv_catpv(sv,ptr);
-    SvSETMAGIC(sv);
+    XPVHV* xpvhv;
+    LOCK_SV_MUTEX;
+    if (!PL_xpvhv_root)
+	more_xpvhv();
+    xpvhv = PL_xpvhv_root;
+    PL_xpvhv_root = (XPVHV*)xpvhv->xhv_array;
+    UNLOCK_SV_MUTEX;
+    return xpvhv;
 }

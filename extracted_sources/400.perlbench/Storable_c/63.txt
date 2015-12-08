@@ -1,39 +1,9 @@
-static SV *retrieve_array(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_sv_yes(pTHX_ stcxt_t *cxt, char *cname)
 {
-	I32 len;
-	I32 i;
-	AV *av;
-	SV *sv;
+	SV *sv = &PL_sv_yes;
 
-	TRACEME(("retrieve_array (#%d)", cxt->tagnum));
+	TRACEME(("retrieve_sv_yes"));
 
-	/*
-	 * Read length, and allocate array, then pre-extend it.
-	 */
-
-	RLEN(len);
-	TRACEME(("size = %d", len));
-	av = newAV();
-	SEEN(av, cname, 0);			/* Will return if array not allocated nicely */
-	if (len)
-		av_extend(av, len);
-	else
-		return (SV *) av;		/* No data follow if array is empty */
-
-	/*
-	 * Now get each item in turn...
-	 */
-
-	for (i = 0; i < len; i++) {
-		TRACEME(("(#%d) item", i));
-		sv = retrieve(aTHX_ cxt, 0);			/* Retrieve item */
-		if (!sv)
-			return (SV *) 0;
-		if (av_store(av, i, sv) == 0)
-			return (SV *) 0;
-	}
-
-	TRACEME(("ok (retrieve_array at 0x%"UVxf")", PTR2UV(av)));
-
-	return (SV *) av;
+	SEEN(sv, cname, 1);
+	return sv;
 }

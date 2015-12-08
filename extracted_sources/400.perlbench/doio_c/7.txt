@@ -1,0 +1,18 @@
+bool
+Perl_do_seek(pTHX_ GV *gv, Off_t pos, int whence)
+{
+    register IO *io = 0;
+    register PerlIO *fp;
+
+    if (gv && (io = GvIO(gv)) && (fp = IoIFP(io))) {
+#ifdef ULTRIX_STDIO_BOTCH
+	if (PerlIO_eof(fp))
+	    (void)PerlIO_seek(fp, 0L, 2);	/* ultrix 1.2 workaround */
+#endif
+	return PerlIO_seek(fp, pos, whence) >= 0;
+    }
+    if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	report_evil_fh(gv, io, PL_op->op_type);
+    SETERRNO(EBADF,RMS_IFI);
+    return FALSE;
+}

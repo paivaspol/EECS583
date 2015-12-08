@@ -1,31 +1,15 @@
-int
-dup2(int oldfd, int newfd)
+void
+Perl_my_setenv(pTHX_ char *nam,char *val)
 {
-#if defined(HAS_FCNTL) && defined(F_DUPFD)
-    if (oldfd == newfd)
-	return oldfd;
-    PerlLIO_close(newfd);
-    return fcntl(oldfd, F_DUPFD, newfd);
-#else
-#define DUP2_MAX_FDS 256
-    int fdtmp[DUP2_MAX_FDS];
-    I32 fdx = 0;
-    int fd;
+    register char *envstr;
+    int nlen = strlen(nam), vlen;
 
-    if (oldfd == newfd)
-	return oldfd;
-    PerlLIO_close(newfd);
-    /* good enough for low fd's... */
-    while ((fd = PerlLIO_dup(oldfd)) != newfd && fd >= 0) {
-	if (fdx >= DUP2_MAX_FDS) {
-	    PerlLIO_close(fd);
-	    fd = -1;
-	    break;
-	}
-	fdtmp[fdx++] = fd;
+    if (!val) {
+	val = "";
     }
-    while (fdx > 0)
-	PerlLIO_close(fdtmp[--fdx]);
-    return fd;
-#endif
+    vlen = strlen(val);
+    New(904, envstr, nlen+vlen+2, char);
+    my_setenv_format(envstr, nam, nlen, val, vlen);
+    (void)PerlEnv_putenv(envstr);
+    Safefree(envstr);
 }

@@ -1,0 +1,227 @@
+static SV *do_retrieve(
+        pTHX_
+	PerlIO *f,
+	SV *in,
+	int optype)
+{
+	dSTCXT;
+	SV *sv;
+	int is_tainted;				/* Is input source tainted? */
+	int pre_06_fmt = 0;			/* True with pre Storable 0.6 formats */
+
+	TRACEME(("do_retrieve (optype = 0x%x)", optype));
+
+	optype |= ST_RETRIEVE;
+
+	/*
+	 * Sanity assertions for retrieve dispatch tables.
+	 */
+
+	ASSERT(sizeof(sv_old_retrieve) == sizeof(sv_retrieve),
+		("old and new retrieve dispatch table have same size"));
+	ASSERT(sv_old_retrieve[SX_ERROR] == retrieve_other,
+		("SX_ERROR entry correctly initialized in old dispatch table"));
+	ASSERT(sv_retrieve[SX_ERROR] == retrieve_other,
+		("SX_ERROR entry correctly initialized in new dispatch table"));
+
+	/*
+	 * Workaround for CROAK leak: if they enter with a "dirty" context,
+	 * free up memory for them now.
+	 */
+
+	if (cxt->s_dirty)
+		clean_context(aTHX_ cxt);
+
+	/*
+	 * Now that STORABLE_xxx hooks exist, it is possible that they try to
+	 * re-enter retrieve() via the hooks.
+	 */
+
+	if (cxt->entry)
+		cxt = allocate_context(aTHX_ cxt);
+
+	cxt->entry++;
+
+	ASSERT(cxt->entry == 1, ("starting new recursion"));
+	ASSERT(!cxt->s_dirty, ("clean context"));
+
+	/*
+	 * Prepare context.
+	 *
+	 * Data is loaded into the memory buffer when f is NULL, unless `in' is
+	 * also NULL, in which case we're expecting the data to already lie
+	 * in the buffer (dclone case).
+	 */
+
+	KBUFINIT();			 		/* Allocate hash key reading pool once */
+
+	if (!f && in) {
+#ifdef SvUTF8_on
+		if (SvUTF8(in)) {
+			STRLEN length;
+			const char *orig = SvPV(in, length);
+			char *asbytes;
+			/* This is quite deliberate. I want the UTF8 routines
+			   to encounter the '\0' which perl adds at the end
+			   of all scalars, so that any new string also has
+			   this.
+			*/
+			STRLEN klen_tmp = length + 1;
+			bool is_utf8 = TRUE;
+
+			/* Just casting the &klen to (STRLEN) won't work
+			   well if STRLEN and I32 are of different widths.
+			   --jhi */
+			asbytes = (char*)bytes_from_utf8((U8*)orig,
+							 &klen_tmp,
+							 &is_utf8);
+			if (is_utf8) {
+				CROAK(("Frozen string corrupt - contains characters outside 0-255"));
+			}
+			if (asbytes != orig) {
+				/* String has been converted.
+				   There is no need to keep any reference to
+				   the old string.  */
+				in = sv_newmortal();
+				/* We donate the SV the malloc()ed string
+				   bytes_from_utf8 returned us.  */
+				SvUPGRADE(in, SVt_PV);
+				SvPOK_on(in);
+				SvPVX(in) = asbytes;
+				SvLEN(in) = klen_tmp;
+				SvCUR(in) = klen_tmp - 1;
+			}
+		}
+#endif
+		MBUF_SAVE_AND_LOAD(in);
+	}
+
+	/*
+	 * Magic number verifications.
+	 *
+	 * This needs to be done before calling init_retrieve_context()
+	 * since the format indication in the file are necessary to conduct
+	 * some of the initializations.
+	 */
+
+	cxt->fio = f;				/* Where I/O are performed */
+
+	if (!magic_check(aTHX_ cxt))
+		CROAK(("Magic number checking on storable %s failed",
+			cxt->fio ? "file" : "string"));
+
+	TRACEME(("data stored in %s format",
+		cxt->netorder ? "net order" : "native"));
+
+	/*
+	 * Check whether input source is tainted, so that we don't wrongly
+	 * taint perfectly good values...
+	 *
+	 * We assume file input is always tainted.  If both `f' and `in' are
+	 * NULL, then we come from dclone, and tainted is already filled in
+	 * the context.  That's a kludge, but the whole dclone() thing is
+	 * already quite a kludge anyway! -- RAM, 15/09/2000.
+	 */
+
+	is_tainted = f ? 1 : (in ? SvTAINTED(in) : cxt->s_tainted);
+	TRACEME(("input source is %s", is_tainted ? "tainted" : "trusted"));
+	init_retrieve_context(aTHX_ cxt, optype, is_tainted);
+
+	ASSERT(is_retrieving(), ("within retrieve operation"));
+
+	sv = retrieve(aTHX_ cxt, 0);		/* Recursively retrieve object, get root SV */
+
+	/*
+	 * Final cleanup.
+	 */
+
+	if (!f && in)
+		MBUF_RESTORE();
+
+	pre_06_fmt = cxt->hseen != NULL;	/* Before we clean context */
+
+	/*
+	 * The "root" context is never freed.
+	 */
+
+	clean_retrieve_context(aTHX_ cxt);
+	if (cxt->prev)				/* This context was stacked */
+		free_context(aTHX_ cxt);		/* It was not the "root" context */
+
+	/*
+	 * Prepare returned value.
+	 */
+
+	if (!sv) {
+		TRACEME(("retrieve ERROR"));
+#if (PATCHLEVEL <= 4) 
+		/* perl 5.00405 seems to screw up at this point with an
+		   'attempt to modify a read only value' error reported in the
+		   eval { $self = pretrieve(*FILE) } in _retrieve.
+		   I can't see what the cause of this error is, but I suspect a
+		   bug in 5.004, as it seems to be capable of issuing spurious
+		   errors or core dumping with matches on $@. I'm not going to
+		   spend time on what could be a fruitless search for the cause,
+		   so here's a bodge. If you're running 5.004 and don't like
+		   this inefficiency, either upgrade to a newer perl, or you are
+		   welcome to find the problem and send in a patch.
+		 */
+		return newSV(0);
+#else
+		return &PL_sv_undef;		/* Something went wrong, return undef */
+#endif
+	}
+
+	TRACEME(("retrieve got %s(0x%"UVxf")",
+		sv_reftype(sv, FALSE), PTR2UV(sv)));
+
+	/*
+	 * Backward compatibility with Storable-0.5@9 (which we know we
+	 * are retrieving if hseen is non-null): don't create an extra RV
+	 * for objects since we special-cased it at store time.
+	 *
+	 * Build a reference to the SV returned by pretrieve even if it is
+	 * already one and not a scalar, for consistency reasons.
+	 */
+
+	if (pre_06_fmt) {			/* Was not handling overloading by then */
+		SV *rv;
+		TRACEME(("fixing for old formats -- pre 0.6"));
+		if (sv_type(aTHX_ sv) == svis_REF && (rv = SvRV(sv)) && SvOBJECT(rv)) {
+			TRACEME(("ended do_retrieve() with an object -- pre 0.6"));
+			return sv;
+		}
+	}
+
+	/*
+	 * If reference is overloaded, restore behaviour.
+	 *
+	 * NB: minor glitch here: normally, overloaded refs are stored specially
+	 * so that we can croak when behaviour cannot be re-installed, and also
+	 * avoid testing for overloading magic at each reference retrieval.
+	 *
+	 * Unfortunately, the root reference is implicitely stored, so we must
+	 * check for possible overloading now.  Furthermore, if we don't restore
+	 * overloading, we cannot croak as if the original ref was, because we
+	 * have no way to determine whether it was an overloaded ref or not in
+	 * the first place.
+	 *
+	 * It's a pity that overloading magic is attached to the rv, and not to
+	 * the underlying sv as blessing is.
+	 */
+
+	if (SvOBJECT(sv)) {
+		HV *stash = (HV *) SvSTASH(sv);
+		SV *rv = newRV_noinc(sv);
+		if (stash && Gv_AMG(stash)) {
+			SvAMAGIC_on(rv);
+			TRACEME(("restored overloading on root reference"));
+		}
+		TRACEME(("ended do_retrieve() with an object"));
+		return rv;
+	}
+
+	TRACEME(("regular do_retrieve() end"));
+
+	return newRV_noinc(sv);
+}

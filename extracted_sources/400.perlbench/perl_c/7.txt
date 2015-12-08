@@ -1,61 +1,8 @@
-int
-perl_run(pTHXx)
+STATIC void *
+S_vparse_body(pTHX_ va_list args)
 {
-    I32 oldscope;
-    int ret = 0;
-    dJMPENV;
-#ifdef USE_5005THREADS
-    dTHX;
-#endif
+    char **env = va_arg(args, char**);
+    XSINIT_t xsinit = va_arg(args, XSINIT_t);
 
-    oldscope = PL_scopestack_ix;
-#ifdef VMS
-    VMSISH_HUSHED = 0;
-#endif
-
-#ifdef PERL_FLEXIBLE_EXCEPTIONS
- redo_body:
-    CALLPROTECT(aTHX_ pcur_env, &ret, MEMBER_TO_FPTR(S_vrun_body), oldscope);
-#else
-    JMPENV_PUSH(ret);
-#endif
-    switch (ret) {
-    case 1:
-	cxstack_ix = -1;		/* start context stack again */
-	goto redo_body;
-    case 0:				/* normal completion */
-#ifndef PERL_FLEXIBLE_EXCEPTIONS
- redo_body:
-	run_body(oldscope);
-#endif
-	/* FALL THROUGH */
-    case 2:				/* my_exit() */
-	while (PL_scopestack_ix > oldscope)
-	    LEAVE;
-	FREETMPS;
-	PL_curstash = PL_defstash;
-	if (!(PL_exit_flags & PERL_EXIT_DESTRUCT_END) &&
-	    PL_endav && !PL_minus_c)
-	    call_list(oldscope, PL_endav);
-#if !defined(SPEC_CPU)
-#ifdef MYMALLOC
-	if (PerlEnv_getenv("PERL_DEBUG_MSTATS"))
-	    dump_mstats("after execution:  ");
-#endif
-#endif /* !SPEC_CPU */
-	ret = STATUS_NATIVE_EXPORT;
-	break;
-    case 3:
-	if (PL_restartop) {
-	    POPSTACK_TO(PL_mainstack);
-	    goto redo_body;
-	}
-	PerlIO_printf(Perl_error_log, "panic: restartop\n");
-	FREETMPS;
-	ret = 1;
-	break;
-    }
-
-    JMPENV_POP;
-    return ret;
+    return parse_body(env, xsinit);
 }

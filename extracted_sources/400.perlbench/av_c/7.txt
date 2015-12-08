@@ -1,46 +1,43 @@
 void
-Perl_av_fill(pTHX_ register AV *av, I32 fill)
+Perl_av_clear(pTHX_ register AV *av)
 {
-    MAGIC *mg;
-    if (!av)
-	Perl_croak(aTHX_ "panic: null array");
-    if (fill < 0)
-	fill = -1;
-    if ((mg = SvTIED_mg((SV*)av, PERL_MAGIC_tied))) {
-	dSP;            
-	ENTER;
-	SAVETMPS;
-	PUSHSTACKi(PERLSI_MAGIC);
-	PUSHMARK(SP);
-	EXTEND(SP,2);
-	PUSHs(SvTIED_obj((SV*)av, mg));
-	PUSHs(sv_2mortal(newSViv(fill+1)));
-	PUTBACK;
-	call_method("STORESIZE", G_SCALAR|G_DISCARD);
-	POPSTACK;
-	FREETMPS;
-	LEAVE;
-	return;
-    }
-    if (fill <= AvMAX(av)) {
-	I32 key = AvFILLp(av);
-	SV** ary = AvARRAY(av);
+    register I32 key;
+    SV** ary;
 
-	if (AvREAL(av)) {
-	    while (key > fill) {
-		SvREFCNT_dec(ary[key]);
-		ary[key--] = &PL_sv_undef;
-	    }
-	}
-	else {
-	    while (key < fill)
-		ary[++key] = &PL_sv_undef;
-	}
-	    
-	AvFILLp(av) = fill;
-	if (SvSMAGICAL(av))
-	    mg_set((SV*)av);
+#ifdef DEBUGGING
+    if (SvREFCNT(av) == 0 && ckWARN_d(WARN_DEBUGGING)) {
+	Perl_warner(aTHX_ packWARN(WARN_DEBUGGING), "Attempt to clear deleted array");
     }
-    else
-	(void)av_store(av,fill,&PL_sv_undef);
+#endif
+    if (!av)
+	return;
+    /*SUPPRESS 560*/
+
+    if (SvREADONLY(av))
+	Perl_croak(aTHX_ PL_no_modify);
+
+    /* Give any tie a chance to cleanup first */
+    if (SvRMAGICAL(av))
+	mg_clear((SV*)av); 
+
+    if (AvMAX(av) < 0)
+	return;
+
+    if (AvREAL(av)) {
+	ary = AvARRAY(av);
+	key = AvFILLp(av) + 1;
+	while (key) {
+	    SV * sv = ary[--key];
+	    /* undef the slot before freeing the value, because a
+	     * destructor might try to modify this arrray */
+	    ary[key] = &PL_sv_undef;
+	    SvREFCNT_dec(sv);
+	}
+    }
+    if ((key = AvARRAY(av) - AvALLOC(av))) {
+	AvMAX(av) += key;
+	SvPVX(av) = (char*)AvALLOC(av);
+    }
+    AvFILLp(av) = -1;
+
 }

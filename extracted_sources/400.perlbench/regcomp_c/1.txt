@@ -1,23 +1,41 @@
-void
-Perl_reginitcolors(pTHX)
+STATIC void
+S_scan_commit(pTHX_ RExC_state_t *pRExC_state, scan_data_t *data)
 {
-    int i = 0;
-    char *s = PerlEnv_getenv("PERL_RE_COLORS");
-	
-    if (s) {
-	PL_colors[0] = s = savepv(s);
-	while (++i < 6) {
-	    s = strchr(s, '\t');
-	    if (s) {
-		*s = '\0';
-		PL_colors[i] = ++s;
-	    }
+    STRLEN l = CHR_SVLEN(data->last_found);
+    STRLEN old_l = CHR_SVLEN(*data->longest);
+
+    if ((l >= old_l) && ((l > old_l) || (data->flags & SF_BEFORE_EOL))) {
+	SvSetMagicSV(*data->longest, data->last_found);
+	if (*data->longest == data->longest_fixed) {
+	    data->offset_fixed = l ? data->last_start_min : data->pos_min;
+	    if (data->flags & SF_BEFORE_EOL)
+		data->flags
+		    |= ((data->flags & SF_BEFORE_EOL) << SF_FIX_SHIFT_EOL);
 	    else
-		PL_colors[i] = s = "";
+		data->flags &= ~SF_FIX_BEFORE_EOL;
 	}
-    } else {
-	while (i < 6)
-	    PL_colors[i++] = "";
+	else {
+	    data->offset_float_min = l ? data->last_start_min : data->pos_min;
+	    data->offset_float_max = (l
+				      ? data->last_start_max
+				      : data->pos_min + data->pos_delta);
+	    if ((U32)data->offset_float_max > (U32)I32_MAX)
+		data->offset_float_max = I32_MAX;
+	    if (data->flags & SF_BEFORE_EOL)
+		data->flags
+		    |= ((data->flags & SF_BEFORE_EOL) << SF_FL_SHIFT_EOL);
+	    else
+		data->flags &= ~SF_FL_BEFORE_EOL;
+	}
     }
-    PL_colorset = 1;
+    SvCUR_set(data->last_found, 0);
+    {
+	SV * sv = data->last_found;
+	MAGIC *mg =
+	    SvUTF8(sv) && SvMAGICAL(sv) ? mg_find(sv, PERL_MAGIC_utf8) : NULL;
+	if (mg && mg->mg_len > 0)
+	    mg->mg_len = 0;
+    }
+    data->last_end = -1;
+    data->flags &= ~SF_BEFORE_EOL;
 }

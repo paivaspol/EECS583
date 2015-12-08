@@ -1,5 +1,17 @@
-void
-Perl_sv_catsv(pTHX_ SV *dstr, register SV *sstr)
+STATIC void
+S_more_xpvcv(pTHX)
 {
-    sv_catsv_flags(dstr, sstr, SV_GMAGIC);
+    register XPVCV* xpvcv;
+    register XPVCV* xpvcvend;
+    New(716, xpvcv, PERL_ARENA_SIZE/sizeof(XPVCV), XPVCV);
+    xpvcv->xpv_pv = (char*)PL_xpvcv_arenaroot;
+    PL_xpvcv_arenaroot = xpvcv;
+
+    xpvcvend = &xpvcv[PERL_ARENA_SIZE / sizeof(XPVCV) - 1];
+    PL_xpvcv_root = ++xpvcv;
+    while (xpvcv < xpvcvend) {
+	xpvcv->xpv_pv = (char*)(xpvcv + 1);
+	xpvcv++;
+    }
+    xpvcv->xpv_pv = 0;
 }

@@ -1,0 +1,20 @@
+STATIC I32
+S_lop(pTHX_ I32 f, int x, char *s)
+{
+    yylval.ival = f;
+    CLINE;
+    REPORT("lop", f)
+    PL_expect = x;
+    PL_bufptr = s;
+    PL_last_lop = PL_oldbufptr;
+    PL_last_lop_op = (OPCODE)f;
+    if (PL_nexttoke)
+	return LSTOP;
+    if (*s == '(')
+	return FUNC;
+    s = skipspace(s);
+    if (*s == '(')
+	return FUNC;
+    else
+	return LSTOP;
+}

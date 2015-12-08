@@ -1,0 +1,18 @@
+I32
+Perl_whichsig(pTHX_ char *sig)
+{
+    register char **sigv;
+
+    for (sigv = PL_sig_name; *sigv; sigv++)
+	if (strEQ(sig,*sigv))
+	    return PL_sig_num[sigv - PL_sig_name];
+#ifdef SIGCLD
+    if (strEQ(sig,"CHLD"))
+	return SIGCLD;
+#endif
+#ifdef SIGCHLD
+    if (strEQ(sig,"CLD"))
+	return SIGCHLD;
+#endif
+    return -1;
+}

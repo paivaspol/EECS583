@@ -1,0 +1,34 @@
+SV *
+Perl_av_pop(pTHX_ register AV *av)
+{
+    SV *retval;
+    MAGIC* mg;
+
+    if (!av)
+      return &PL_sv_undef;
+    if (SvREADONLY(av))
+	Perl_croak(aTHX_ PL_no_modify);
+    if ((mg = SvTIED_mg((SV*)av, PERL_MAGIC_tied))) {
+	dSP;    
+	PUSHSTACKi(PERLSI_MAGIC);
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)av, mg));
+	PUTBACK;
+	ENTER;
+	if (call_method("POP", G_SCALAR)) {
+	    retval = newSVsv(*PL_stack_sp--);    
+	} else {    
+	    retval = &PL_sv_undef;
+	}
+	LEAVE;
+	POPSTACK;
+	return retval;
+    }
+    if (AvFILL(av) < 0)
+	return &PL_sv_undef;
+    retval = AvARRAY(av)[AvFILLp(av)];
+    AvARRAY(av)[AvFILLp(av)--] = &PL_sv_undef;
+    if (SvSMAGICAL(av))
+	mg_set((SV*)av);
+    return retval;
+}

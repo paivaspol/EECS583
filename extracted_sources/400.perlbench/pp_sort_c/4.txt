@@ -1,11 +1,23 @@
-static I32
-cmpindir(pTHX_ gptr a, gptr b)
+static void
+doqsort_all_asserts(
+   void * array,
+   size_t num_elts,
+   size_t elt_size,
+   int (*compare)(const void * elt1, const void * elt2),
+   int pc_left, int pc_right, int u_left, int u_right)
 {
-    I32 sense;
-    gptr *ap = (gptr *)a;
-    gptr *bp = (gptr *)b;
+   int i;
 
-    if ((sense = PL_sort_RealCmp(aTHX_ *ap, *bp)) == 0)
-	 sense = (ap > bp) ? 1 : ((ap < bp) ? -1 : 0);
-    return sense;
+   qsort_assert(pc_left <= pc_right);
+   qsort_assert(u_right < pc_left);
+   qsort_assert(pc_right < u_left);
+   for (i = u_right + 1; i < pc_left; ++i) {
+      qsort_assert(qsort_cmp(i, pc_left) < 0);
+   }
+   for (i = pc_left; i < pc_right; ++i) {
+      qsort_assert(qsort_cmp(i, pc_right) == 0);
+   }
+   for (i = pc_right + 1; i < u_left; ++i) {
+      qsort_assert(qsort_cmp(pc_right, i) < 0);
+   }
 }

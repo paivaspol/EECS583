@@ -1,50 +1,57 @@
 void
-Perl_pad_push(pTHX_ PADLIST *padlist, int depth, int has_args)
+Perl_do_dump_pad(pTHX_ I32 level, PerlIO *file, PADLIST *padlist, int full)
 {
-    if (depth <= AvFILLp(padlist))
-	return;
+    AV *pad_name;
+    AV *pad;
+    SV **pname;
+    SV **ppad;
+    SV *namesv;
+    I32 ix;
 
-    {
-	SV** svp = AvARRAY(padlist);
-	AV *newpad = newAV();
-	SV **oldpad = AvARRAY(svp[depth-1]);
-	I32 ix = AvFILLp((AV*)svp[1]);
-	I32 names_fill = AvFILLp((AV*)svp[0]);
-	SV** names = AvARRAY(svp[0]);
-	SV* sv;
-	for ( ;ix > 0; ix--) {
-	    if (names_fill >= ix && names[ix] != &PL_sv_undef) {
-		char *name = SvPVX(names[ix]);
-		if ((SvFLAGS(names[ix]) & SVf_FAKE) || *name == '&') {
-		    /* outer lexical or anon code */
-		    av_store(newpad, ix, SvREFCNT_inc(oldpad[ix]));
-		}
-		else {		/* our own lexical */
-		    if (*name == '@')
-			av_store(newpad, ix, sv = (SV*)newAV());
-		    else if (*name == '%')
-			av_store(newpad, ix, sv = (SV*)newHV());
-		    else
-			av_store(newpad, ix, sv = NEWSV(0, 0));
-		    SvPADMY_on(sv);
-		}
-	    }
-	    else if (IS_PADGV(oldpad[ix]) || IS_PADCONST(oldpad[ix])) {
-		av_store(newpad, ix, sv = SvREFCNT_inc(oldpad[ix]));
-	    }
-	    else {
-		/* save temporaries on recursion? */
-		av_store(newpad, ix, sv = NEWSV(0, 0));
-		SvPADTMP_on(sv);
-	    }
+    if (!padlist) {
+	return;
+    }
+    pad_name = (AV*)*av_fetch((AV*)padlist, 0, FALSE);
+    pad = (AV*)*av_fetch((AV*)padlist, 1, FALSE);
+    pname = AvARRAY(pad_name);
+    ppad = AvARRAY(pad);
+    Perl_dump_indent(aTHX_ level, file,
+	    "PADNAME = 0x%"UVxf"(0x%"UVxf") PAD = 0x%"UVxf"(0x%"UVxf")\n",
+	    PTR2UV(pad_name), PTR2UV(pname), PTR2UV(pad), PTR2UV(ppad)
+    );
+
+    for (ix = 1; ix <= AvFILLp(pad_name); ix++) {
+	namesv = pname[ix];
+	if (namesv && namesv == &PL_sv_undef) {
+	    namesv = Nullsv;
 	}
-	if (has_args) {
-	    AV* av = newAV();
-	    av_extend(av, 0);
-	    av_store(newpad, 0, (SV*)av);
-	    AvFLAGS(av) = AVf_REIFY;
+	if (namesv) {
+	    if (SvFAKE(namesv))
+		Perl_dump_indent(aTHX_ level+1, file,
+		    "%2d. 0x%"UVxf"<%lu> FAKE \"%s\"\n",
+		    (int) ix,
+		    PTR2UV(ppad[ix]),
+		    (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
+		    SvPVX(namesv)
+		);
+	    else
+		Perl_dump_indent(aTHX_ level+1, file,
+		    "%2d. 0x%"UVxf"<%lu> (%lu,%lu) \"%s\"\n",
+		    (int) ix,
+		    PTR2UV(ppad[ix]),
+		    (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
+		    (unsigned long)U_32(SvNVX(namesv)),
+		    (unsigned long)SvIVX(namesv),
+		    SvPVX(namesv)
+		);
 	}
-	av_store(padlist, depth, (SV*)newpad);
-	AvFILLp(padlist) = depth;
+	else if (full) {
+	    Perl_dump_indent(aTHX_ level+1, file,
+		"%2d. 0x%"UVxf"<%lu>\n",
+		(int) ix,
+		PTR2UV(ppad[ix]),
+		(unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0)
+	    );
+	}
     }
 }

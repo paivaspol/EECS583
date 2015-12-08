@@ -1,6 +1,8 @@
-void
-Perl_sv_usepvn_mg(pTHX_ register SV *sv, register char *ptr, register STRLEN len)
+STATIC void
+S_del_xpviv(pTHX_ XPVIV *p)
 {
-    sv_usepvn(sv,ptr,len);
-    SvSETMAGIC(sv);
+    LOCK_SV_MUTEX;
+    p->xpv_pv = (char*)PL_xpviv_root;
+    PL_xpviv_root = p;
+    UNLOCK_SV_MUTEX;
 }

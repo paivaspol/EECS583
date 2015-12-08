@@ -1,8 +1,30 @@
-void
-Perl_raise_signal(pTHX_ int sig)
+int
+Perl_magic_getsig(pTHX_ SV *sv, MAGIC *mg)
 {
-    /* Set a flag to say this signal is pending */
-    PL_psig_pend[sig]++;
-    /* And one to say _a_ signal is pending */
-    PL_sig_pending = 1;
+    I32 i;
+    STRLEN n_a;
+    /* Are we fetching a signal entry? */
+    i = whichsig(MgPV(mg,n_a));
+    if (i > 0) {
+    	if(PL_psig_ptr[i])
+    	    sv_setsv(sv,PL_psig_ptr[i]);
+    	else {
+    	    Sighandler_t sigstate;
+    	    sigstate = rsignal_state(i);
+#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+    	    if (sig_handlers_initted && sig_ignoring[i]) sigstate = SIG_IGN;
+#endif
+#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+    	    if (sig_handlers_initted && sig_defaulting[i]) sigstate = SIG_DFL;
+#endif
+    	    /* cache state so we don't fetch it again */
+    	    if(sigstate == SIG_IGN)
+    	    	sv_setpv(sv,"IGNORE");
+    	    else
+    	    	sv_setsv(sv,&PL_sv_undef);
+    	    PL_psig_ptr[i] = SvREFCNT_inc(sv);
+    	    SvTEMP_off(sv);
+    	}
+    }
+    return 0;
 }

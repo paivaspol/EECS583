@@ -1,5 +1,128 @@
-void
-Perl_gv_efullname(pTHX_ SV *sv, GV *gv)
+GV *
+Perl_gv_fetchmeth(pTHX_ HV *stash, const char *name, STRLEN len, I32 level)
 {
-    gv_efullname3(sv, gv, sv == (SV*)gv ? "*" : "");
+    AV* av;
+    GV* topgv;
+    GV* gv;
+    GV** gvp;
+    CV* cv;
+
+    /* UNIVERSAL methods should be callable without a stash */
+    if (!stash) {
+	level = -1;  /* probably appropriate */
+	if(!(stash = gv_stashpvn("UNIVERSAL", 9, FALSE)))
+	    return 0;
+    }
+
+    if (!HvNAME(stash))
+      Perl_croak(aTHX_
+		 "Can't use anonymous symbol table for method lookup");
+
+    if ((level > 100) || (level < -100))
+	Perl_croak(aTHX_ "Recursive inheritance detected while looking for method '%s' in package '%s'",
+	      name, HvNAME(stash));
+
+    DEBUG_o( Perl_deb(aTHX_ "Looking for method %s in package %s\n",name,HvNAME(stash)) );
+
+    gvp = (GV**)hv_fetch(stash, name, len, (level >= 0));
+    if (!gvp)
+	topgv = Nullgv;
+    else {
+	topgv = *gvp;
+	if (SvTYPE(topgv) != SVt_PVGV)
+	    gv_init(topgv, stash, name, len, TRUE);
+	if ((cv = GvCV(topgv))) {
+	    /* If genuine method or valid cache entry, use it */
+	    if (!GvCVGEN(topgv) || GvCVGEN(topgv) == PL_sub_generation)
+		return topgv;
+	    /* Stale cached entry: junk it */
+	    SvREFCNT_dec(cv);
+	    GvCV(topgv) = cv = Nullcv;
+	    GvCVGEN(topgv) = 0;
+	}
+	else if (GvCVGEN(topgv) == PL_sub_generation)
+	    return 0;  /* cache indicates sub doesn't exist */
+    }
+
+    gvp = (GV**)hv_fetch(stash, "ISA", 3, FALSE);
+    av = (gvp && (gv = *gvp) && gv != (GV*)&PL_sv_undef) ? GvAV(gv) : Nullav;
+
+    /* create and re-create @.*::SUPER::ISA on demand */
+    if (!av || !SvMAGIC(av)) {
+	char* packname = HvNAME(stash);
+	STRLEN packlen = strlen(packname);
+
+	if (packlen >= 7 && strEQ(packname + packlen - 7, "::SUPER")) {
+	    HV* basestash;
+
+	    packlen -= 7;
+	    basestash = gv_stashpvn(packname, packlen, TRUE);
+	    gvp = (GV**)hv_fetch(basestash, "ISA", 3, FALSE);
+	    if (gvp && (gv = *gvp) != (GV*)&PL_sv_undef && (av = GvAV(gv))) {
+		gvp = (GV**)hv_fetch(stash, "ISA", 3, TRUE);
+		if (!gvp || !(gv = *gvp))
+		    Perl_croak(aTHX_ "Cannot create %s::ISA", HvNAME(stash));
+		if (SvTYPE(gv) != SVt_PVGV)
+		    gv_init(gv, stash, "ISA", 3, TRUE);
+		SvREFCNT_dec(GvAV(gv));
+		GvAV(gv) = (AV*)SvREFCNT_inc(av);
+	    }
+	}
+    }
+
+    if (av) {
+	SV** svp = AvARRAY(av);
+	/* NOTE: No support for tied ISA */
+	I32 items = AvFILLp(av) + 1;
+	while (items--) {
+	    SV* sv = *svp++;
+	    HV* basestash = gv_stashsv(sv, FALSE);
+	    if (!basestash) {
+		if (ckWARN(WARN_MISC))
+		    Perl_warner(aTHX_ packWARN(WARN_MISC), "Can't locate package %"SVf" for @%s::ISA",
+			sv, HvNAME(stash));
+		continue;
+	    }
+	    gv = gv_fetchmeth(basestash, name, len,
+			      (level >= 0) ? level + 1 : level - 1);
+	    if (gv)
+		goto gotcha;
+	}
+    }
+
+    /* if at top level, try UNIVERSAL */
+
+    if (level == 0 || level == -1) {
+	HV* lastchance;
+
+	if ((lastchance = gv_stashpvn("UNIVERSAL", 9, FALSE))) {
+	    if ((gv = gv_fetchmeth(lastchance, name, len,
+				  (level >= 0) ? level + 1 : level - 1)))
+	    {
+	  gotcha:
+		/*
+		 * Cache method in topgv if:
+		 *  1. topgv has no synonyms (else inheritance crosses wires)
+		 *  2. method isn't a stub (else AUTOLOAD fails spectacularly)
+		 */
+		if (topgv &&
+		    GvREFCNT(topgv) == 1 &&
+		    (cv = GvCV(gv)) &&
+		    (CvROOT(cv) || CvXSUB(cv)))
+		{
+		    if ((cv = GvCV(topgv)))
+			SvREFCNT_dec(cv);
+		    GvCV(topgv) = (CV*)SvREFCNT_inc(GvCV(gv));
+		    GvCVGEN(topgv) = PL_sub_generation;
+		}
+		return gv;
+	    }
+	    else if (topgv && GvREFCNT(topgv) == 1) {
+		/* cache the fact that the method is not defined */
+		GvCVGEN(topgv) = PL_sub_generation;
+	    }
+	}
+    }
+
+    return 0;
 }

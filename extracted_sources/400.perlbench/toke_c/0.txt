@@ -1,6 +1,17 @@
-void
-Perl_deprecate(pTHX_ char *s)
+STATIC void
+S_tokereport(pTHX_ char *thing, char* s, I32 rv)
 {
-    if (ckWARN(WARN_DEPRECATED))
-	Perl_warner(aTHX_ packWARN(WARN_DEPRECATED), "Use of %s is deprecated", s);
+    DEBUG_T({
+        SV* report = newSVpv(thing, 0);
+        Perl_sv_catpvf(aTHX_ report, ":line %d:%"IVdf":", CopLINE(PL_curcop),
+		(IV)rv);
+
+        if (s - PL_bufptr > 0)
+            sv_catpvn(report, PL_bufptr, s - PL_bufptr);
+        else {
+            if (PL_oldbufptr && *PL_oldbufptr)
+                sv_catpv(report, PL_tokenbuf);
+        }
+        PerlIO_printf(Perl_debug_log, "### %s\n", SvPV_nolen(report));
+    });
 }

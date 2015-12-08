@@ -1,0 +1,53 @@
+STATIC I32
+S_sublex_done(pTHX)
+{
+    if (!PL_lex_starts++) {
+	SV *sv = newSVpvn("",0);
+	if (SvUTF8(PL_linestr))
+	    SvUTF8_on(sv);
+	PL_expect = XOPERATOR;
+	yylval.opval = (OP*)newSVOP(OP_CONST, 0, sv);
+	return THING;
+    }
+
+    if (PL_lex_casemods) {		/* oops, we've got some unbalanced parens */
+	PL_lex_state = LEX_INTERPCASEMOD;
+	return yylex();
+    }
+
+    /* Is there a right-hand side to take care of? (s//RHS/ or tr//RHS/) */
+    if (PL_lex_repl && (PL_lex_inwhat == OP_SUBST || PL_lex_inwhat == OP_TRANS)) {
+	PL_linestr = PL_lex_repl;
+	PL_lex_inpat = 0;
+	PL_bufend = PL_bufptr = PL_oldbufptr = PL_oldoldbufptr = PL_linestart = SvPVX(PL_linestr);
+	PL_bufend += SvCUR(PL_linestr);
+	PL_last_lop = PL_last_uni = Nullch;
+	SAVEFREESV(PL_linestr);
+	PL_lex_dojoin = FALSE;
+	PL_lex_brackets = 0;
+	PL_lex_casemods = 0;
+	*PL_lex_casestack = '\0';
+	PL_lex_starts = 0;
+	if (SvEVALED(PL_lex_repl)) {
+	    PL_lex_state = LEX_INTERPNORMAL;
+	    PL_lex_starts++;
+	    /*	we don't clear PL_lex_repl here, so that we can check later
+		whether this is an evalled subst; that means we rely on the
+		logic to ensure sublex_done() is called again only via the
+		branch (in yylex()) that clears PL_lex_repl, else we'll loop */
+	}
+	else {
+	    PL_lex_state = LEX_INTERPCONCAT;
+	    PL_lex_repl = Nullsv;
+	}
+	return ',';
+    }
+    else {
+	LEAVE;
+	PL_bufend = SvPVX(PL_linestr);
+	PL_bufend += SvCUR(PL_linestr);
+	PL_expect = XOPERATOR;
+	PL_sublex_info.sub_inwhat = 0;
+	return ')';
+    }
+}

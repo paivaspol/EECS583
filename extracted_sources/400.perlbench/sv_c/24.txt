@@ -1,19 +1,8 @@
-void
-Perl_sv_setpv(pTHX_ register SV *sv, register const char *ptr)
+STATIC void
+S_del_xpv(pTHX_ XPV *p)
 {
-    register STRLEN len;
-
-    SV_CHECK_THINKFIRST(sv);
-    if (!ptr) {
-	(void)SvOK_off(sv);
-	return;
-    }
-    len = strlen(ptr);
-    (void)SvUPGRADE(sv, SVt_PV);
-
-    SvGROW(sv, len + 1);
-    Move(ptr,SvPVX(sv),len+1,char);
-    SvCUR_set(sv, len);
-    (void)SvPOK_only_UTF8(sv);		/* validate pointer */
-    SvTAINT(sv);
+    LOCK_SV_MUTEX;
+    p->xpv_pv = (char*)PL_xpv_root;
+    PL_xpv_root = p;
+    UNLOCK_SV_MUTEX;
 }

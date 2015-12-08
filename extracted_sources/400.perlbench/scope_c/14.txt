@@ -1,10 +1,9 @@
-void
-Perl_save_item(pTHX_ register SV *item)
+SV*
+Perl_save_svref(pTHX_ SV **sptr)
 {
-    register SV *sv = newSVsv(item);
-
     SSCHECK(3);
-    SSPUSHPTR(item);		/* remember the pointer */
-    SSPUSHPTR(sv);		/* remember the value */
-    SSPUSHINT(SAVEt_ITEM);
+    SSPUSHPTR(sptr);
+    SSPUSHPTR(SvREFCNT_inc(*sptr));
+    SSPUSHINT(SAVEt_SVREF);
+    return save_scalar_at(sptr);
 }

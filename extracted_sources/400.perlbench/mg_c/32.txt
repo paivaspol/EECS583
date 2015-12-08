@@ -1,6 +1,16 @@
 int
-Perl_magic_getarylen(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_wipepack(pTHX_ SV *sv, MAGIC *mg)
 {
-    sv_setiv(sv, AvFILL((AV*)mg->mg_obj) + PL_curcop->cop_arybase);
+    dSP;
+
+    ENTER;
+    PUSHSTACKi(PERLSI_MAGIC);
+    PUSHMARK(SP);
+    XPUSHs(SvTIED_obj(sv, mg));
+    PUTBACK;
+    call_method("CLEAR", G_SCALAR|G_DISCARD);
+    POPSTACK;
+    LEAVE;
+
     return 0;
 }

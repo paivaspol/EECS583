@@ -1,21 +1,7 @@
 void
-Perl_save_aelem(pTHX_ AV *av, I32 idx, SV **sptr)
+Perl_save_freeop(pTHX_ OP *o)
 {
-    SV *sv;
-    SSCHECK(4);
-    SSPUSHPTR(SvREFCNT_inc(av));
-    SSPUSHINT(idx);
-    SSPUSHPTR(SvREFCNT_inc(*sptr));
-    SSPUSHINT(SAVEt_AELEM);
-    /* if it gets reified later, the restore will have the wrong refcnt */
-    if (!AvREAL(av) && AvREIFY(av))
-	SvREFCNT_inc(*sptr);
-    save_scalar_at(sptr);
-    sv = *sptr;
-    /* If we're localizing a tied array element, this new sv
-     * won't actually be stored in the array - so it won't get
-     * reaped when the localize ends. Ensure it gets reaped by
-     * mortifying it instead. DAPM */
-    if (SvTIED_mg(sv, PERL_MAGIC_tiedelem))
-	sv_2mortal(sv);
+    SSCHECK(2);
+    SSPUSHPTR(o);
+    SSPUSHINT(SAVEt_FREEOP);
 }

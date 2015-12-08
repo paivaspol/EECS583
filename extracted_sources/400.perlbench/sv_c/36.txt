@@ -1,6 +1,8 @@
-void
-Perl_sv_catsv_mg(pTHX_ SV *dsv, register SV *ssv)
+STATIC void
+S_del_xpvav(pTHX_ XPVAV *p)
 {
-    sv_catsv(dsv,ssv);
-    SvSETMAGIC(dsv);
+    LOCK_SV_MUTEX;
+    p->xav_array = (char*)PL_xpvav_root;
+    PL_xpvav_root = p;
+    UNLOCK_SV_MUTEX;
 }

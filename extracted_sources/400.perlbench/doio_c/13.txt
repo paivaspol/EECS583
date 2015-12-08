@@ -1,0 +1,35 @@
+I32
+Perl_my_lstat(pTHX)
+{
+    dSP;
+    SV *sv;
+    STRLEN n_a;
+    if (PL_op->op_flags & OPf_REF) {
+	EXTEND(SP,1);
+	if (cGVOP_gv == PL_defgv) {
+	    if (PL_laststype != OP_LSTAT)
+		Perl_croak(aTHX_ "The stat preceding -l _ wasn't an lstat");
+	    return PL_laststatval;
+	}
+	if (ckWARN(WARN_IO)) {
+	    Perl_warner(aTHX_ packWARN(WARN_IO), "Use of -l on filehandle %s",
+		    GvENAME(cGVOP_gv));
+	    return (PL_laststatval = -1);
+	}
+    }
+
+    PL_laststype = OP_LSTAT;
+    PL_statgv = Nullgv;
+    sv = POPs;
+    PUTBACK;
+    if (SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVGV && ckWARN(WARN_IO)) {
+	Perl_warner(aTHX_ packWARN(WARN_IO), "Use of -l on filehandle %s",
+		GvENAME((GV*) SvRV(sv)));
+	return (PL_laststatval = -1);
+    }
+    sv_setpv(PL_statname,SvPV(sv, n_a));
+    PL_laststatval = PerlLIO_lstat(SvPV(sv, n_a),&PL_statcache);
+    if (PL_laststatval < 0 && ckWARN(WARN_NEWLINE) && strchr(SvPV(sv, n_a), '\n'))
+	Perl_warner(aTHX_ packWARN(WARN_NEWLINE), PL_warn_nl, "lstat");
+    return PL_laststatval;
+}

@@ -1,68 +1,98 @@
-void
-Perl_do_chop(pTHX_ register SV *astr, register SV *sv)
+STATIC I32
+S_do_trans_simple_utf8(pTHX_ SV *sv)
 {
+    U8 *s;
+    U8 *send;
+    U8 *d;
+    U8 *start;
+    U8 *dstart, *dend;
+    I32 matches = 0;
+    I32 grows = PL_op->op_private & OPpTRANS_GROWS;
     STRLEN len;
-    char *s;
 
-    if (SvTYPE(sv) == SVt_PVAV) {
-	register I32 i;
-        I32 max;
-	AV* av = (AV*)sv;
-        max = AvFILL(av);
-        for (i = 0; i <= max; i++) {
-	    sv = (SV*)av_fetch(av, i, FALSE);
-	    if (sv && ((sv = *(SV**)sv), sv != &PL_sv_undef))
-		do_chop(astr, sv);
+    SV* rv = (SV*)cSVOP->op_sv;
+    HV* hv = (HV*)SvRV(rv);
+    SV** svp = hv_fetch(hv, "NONE", 4, FALSE);
+    UV none = svp ? SvUV(*svp) : 0x7fffffff;
+    UV extra = none + 1;
+    UV final = 0;
+    UV uv;
+    I32 isutf8;
+    U8 hibit = 0;
+
+    s = (U8*)SvPV(sv, len);
+    isutf8 = SvUTF8(sv);
+    if (!isutf8) {
+	U8 *t = s, *e = s + len;
+	while (t < e) {
+	    U8 ch = *t++;
+	    if ((hibit = !NATIVE_IS_INVARIANT(ch)))
+		break;
 	}
-        return;
+	if (hibit)
+	    s = bytes_to_utf8(s, &len);
     }
-    else if (SvTYPE(sv) == SVt_PVHV) {
-        HV* hv = (HV*)sv;
-	HE* entry;
-        (void)hv_iterinit(hv);
-        /*SUPPRESS 560*/
-        while ((entry = hv_iternext(hv)))
-            do_chop(astr,hv_iterval(hv,entry));
-        return;
+    send = s + len;
+    start = s;
+
+    svp = hv_fetch(hv, "FINAL", 5, FALSE);
+    if (svp)
+	final = SvUV(*svp);
+
+    if (grows) {
+	/* d needs to be bigger than s, in case e.g. upgrading is required */
+	New(0, d, len * 3 + UTF8_MAXBYTES, U8);
+	dend = d + len * 3;
+	dstart = d;
     }
-    else if (SvREADONLY(sv)) {
-        if (SvFAKE(sv)) {
-            /* SV is copy-on-write */
-	    sv_force_normal_flags(sv, 0);
-        }
-        if (SvREADONLY(sv))
-            Perl_croak(aTHX_ PL_no_modify);
+    else {
+	dstart = d = s;
+	dend = d + len;
     }
-    s = SvPV(sv, len);
-    if (len && !SvPOK(sv))
-	s = SvPV_force(sv, len);
-    if (DO_UTF8(sv)) {
-	if (s && len) {
-	    char *send = s + len;
-	    char *start = s;
-	    s = send - 1;
-	    while (s > start && UTF8_IS_CONTINUATION(*s))
-		s--;
-	    if (utf8_to_uvchr((U8*)s, 0)) {
-		sv_setpvn(astr, s, send - s);
-		*s = '\0';
-		SvCUR_set(sv, s - start);
-		SvNIOK_off(sv);
-		SvUTF8_on(astr);
-	    }
+
+    while (s < send) {
+	if ((uv = swash_fetch(rv, s, TRUE)) < none) {
+	    s += UTF8SKIP(s);
+	    matches++;
+	    d = uvuni_to_utf8(d, uv);
+	}
+	else if (uv == none) {
+	    int i = UTF8SKIP(s);
+	    Move(s, d, i, U8);
+	    d += i;
+	    s += i;
+	}
+	else if (uv == extra) {
+	    int i = UTF8SKIP(s);
+	    s += i;
+	    matches++;
+	    d = uvuni_to_utf8(d, final);
 	}
 	else
-	    sv_setpvn(astr, "", 0);
+	    s += UTF8SKIP(s);
+
+	if (d > dend) {
+	    STRLEN clen = d - dstart;
+	    STRLEN nlen = dend - dstart + len + UTF8_MAXBYTES;
+	    if (!grows)
+		Perl_croak(aTHX_ "panic: do_trans_simple_utf8 line %d",__LINE__);
+	    Renew(dstart, nlen + UTF8_MAXBYTES, U8);
+	    d = dstart + clen;
+	    dend = dstart + nlen;
+	}
     }
-    else if (s && len) {
-	s += --len;
-	sv_setpvn(astr, s, 1);
-	*s = '\0';
-	SvCUR_set(sv, len);
-	SvUTF8_off(sv);
-	SvNIOK_off(sv);
+    if (grows || hibit) {
+	sv_setpvn(sv, (char*)dstart, d - dstart);
+	Safefree(dstart);
+	if (grows && hibit)
+	    Safefree(start);
     }
-    else
-	sv_setpvn(astr, "", 0);
+    else {
+	*d = '\0';
+	SvCUR_set(sv, d - dstart);
+    }
     SvSETMAGIC(sv);
+    SvUTF8_on(sv);
+
+    return matches;
 }

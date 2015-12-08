@@ -1,9 +1,10 @@
-void
-Perl_load_module_nocontext(U32 flags, SV *name, SV *ver, ...)
+STATIC OP *
+S_modkids(pTHX_ OP *o, I32 type)
 {
-    dTHX;
-    va_list args;
-    va_start(args, ver);
-    vload_module(flags, name, ver, &args);
-    va_end(args);
+    OP *kid;
+    if (o && o->op_flags & OPf_KIDS) {
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    mod(kid, type);
+    }
+    return o;
 }

@@ -1,21 +1,7 @@
 static I32
-amagic_i_ncmp(pTHX_ register SV *a, register SV *b)
+sv_ncmp(pTHX_ SV *a, SV *b)
 {
-    SV *tmpsv;
-    tryCALL_AMAGICbin(a,b,ncmp,&tmpsv);
-    if (tmpsv) {
-    	NV d;
-
-        if (SvIOK(tmpsv)) {
-            I32 i = SvIVX(tmpsv);
-            if (i > 0)
-               return 1;
-            return i? -1 : 0;
-        }
-        d = SvNV(tmpsv);
-        if (d > 0)
-           return 1;
-        return d? -1 : 0;
-    }
-    return sv_i_ncmp(aTHX_ a, b);
+    NV nv1 = SvNV(a);
+    NV nv2 = SvNV(b);
+    return nv1 < nv2 ? -1 : nv1 > nv2 ? 1 : 0;
 }

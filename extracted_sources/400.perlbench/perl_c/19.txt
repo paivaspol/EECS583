@@ -1,15 +1,22 @@
-static I32
-read_e_script(pTHX_ int idx, SV *buf_sv, int maxlen)
+STATIC void
+S_my_exit_jump(pTHX)
 {
-    char *p, *nl;
-    p  = SvPVX(PL_e_script);
-    nl = strchr(p, '\n');
-    nl = (nl) ? nl+1 : SvEND(PL_e_script);
-    if (nl-p == 0) {
-	filter_del(read_e_script);
-	return 0;
+    register PERL_CONTEXT *cx;
+    I32 gimme;
+    SV **newsp;
+
+    if (PL_e_script) {
+	SvREFCNT_dec(PL_e_script);
+	PL_e_script = Nullsv;
     }
-    sv_catpvn(buf_sv, p, nl-p);
-    sv_chop(PL_e_script, nl);
-    return 1;
+
+    POPSTACK_TO(PL_mainstack);
+    if (cxstack_ix >= 0) {
+	if (cxstack_ix > 0)
+	    dounwind(0);
+	POPBLOCK(cx,PL_curpm);
+	LEAVE;
+    }
+
+    JMPENV_JUMP(2);
 }

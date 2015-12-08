@@ -1,0 +1,174 @@
+STATIC SV *
+S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+		   int k_flags, I32 d_flags, U32 hash)
+{
+    register XPVHV* xhv;
+    register I32 i;
+    register HE *entry;
+    register HE **oentry;
+    SV *sv;
+    bool is_utf8;
+    int masked_flags;
+
+    if (!hv)
+	return Nullsv;
+
+    if (keysv) {
+	if (k_flags & HVhek_FREEKEY)
+	    Safefree(key);
+	key = SvPV(keysv, klen);
+	k_flags = 0;
+	is_utf8 = (SvUTF8(keysv) != 0);
+    } else {
+	is_utf8 = ((k_flags & HVhek_UTF8) ? TRUE : FALSE);
+    }
+
+    if (SvRMAGICAL(hv)) {
+	bool needs_copy;
+	bool needs_store;
+	hv_magic_check (hv, &needs_copy, &needs_store);
+
+	if (needs_copy) {
+	    entry = hv_fetch_common(hv, keysv, key, klen,
+				    k_flags & ~HVhek_FREEKEY, HV_FETCH_LVALUE,
+				    Nullsv, hash);
+	    sv = entry ? HeVAL(entry) : NULL;
+	    if (sv) {
+		if (SvMAGICAL(sv)) {
+		    mg_clear(sv);
+		}
+		if (!needs_store) {
+		    if (mg_find(sv, PERL_MAGIC_tiedelem)) {
+			/* No longer an element */
+			sv_unmagic(sv, PERL_MAGIC_tiedelem);
+			return sv;
+		    }		
+		    return Nullsv;		/* element cannot be deleted */
+		}
+#ifdef ENV_IS_CASELESS
+		else if (mg_find((SV*)hv, PERL_MAGIC_env)) {
+		    /* XXX This code isn't UTF8 clean.  */
+		    keysv = sv_2mortal(newSVpvn(key,klen));
+		    if (k_flags & HVhek_FREEKEY) {
+			Safefree(key);
+		    }
+		    key = strupr(SvPVX(keysv));
+		    is_utf8 = 0;
+		    k_flags = 0;
+		    hash = 0;
+		}
+#endif
+	    }
+	}
+    }
+    xhv = (XPVHV*)SvANY(hv);
+    if (!xhv->xhv_array /* !HvARRAY(hv) */)
+	return Nullsv;
+
+    if (is_utf8) {
+    const char *keysave = key;
+    key = (char*)bytes_from_utf8((U8*)key, &klen, &is_utf8);
+
+        if (is_utf8)
+            k_flags |= HVhek_UTF8;
+	else
+            k_flags &= ~HVhek_UTF8;
+        if (key != keysave) {
+	    if (k_flags & HVhek_FREEKEY) {
+		/* This shouldn't happen if our caller does what we expect,
+		   but strictly the API allows it.  */
+		Safefree(keysave);
+	    }
+	    k_flags |= HVhek_WASUTF8 | HVhek_FREEKEY;
+	}
+        HvHASKFLAGS_on((SV*)hv);
+    }
+
+    if (HvREHASH(hv)) {
+	PERL_HASH_INTERNAL(hash, key, klen);
+    } else if (!hash) {
+	/* Not enough shared hash key scalars around to make this worthwhile
+	   (about 4% slowdown in perlbench with this in)
+        if (keysv && (SvIsCOW_shared_hash(keysv))) {
+            hash = SvUVX(keysv);
+        } else
+	*/
+	{
+            PERL_HASH(hash, key, klen);
+        }
+    }
+
+    masked_flags = (k_flags & HVhek_MASK);
+
+    /* oentry = &(HvARRAY(hv))[hash & (I32) HvMAX(hv)]; */
+    oentry = &((HE**)xhv->xhv_array)[hash & (I32) xhv->xhv_max];
+    entry = *oentry;
+    i = 1;
+    for (; entry; i=0, oentry = &HeNEXT(entry), entry = *oentry) {
+	if (HeHASH(entry) != hash)		/* strings can't be equal */
+	    continue;
+	if (HeKLEN(entry) != (I32)klen)
+	    continue;
+	if (HeKEY(entry) != key && memNE(HeKEY(entry),key,klen))	/* is this it? */
+	    continue;
+	if ((HeKFLAGS(entry) ^ masked_flags) & HVhek_UTF8)
+	    continue;
+
+	/* if placeholder is here, it's already been deleted.... */
+	if (HeVAL(entry) == &PL_sv_placeholder)
+	{
+	  if (k_flags & HVhek_FREEKEY)
+            Safefree(key);
+	  return Nullsv;
+	}
+	else if (SvREADONLY(hv) && HeVAL(entry) && SvREADONLY(HeVAL(entry))) {
+	    S_hv_notallowed(aTHX_ k_flags, key, klen,
+			    "delete readonly key '%"SVf"' from"
+			    );
+	}
+        if (k_flags & HVhek_FREEKEY)
+            Safefree(key);
+
+	if (d_flags & G_DISCARD)
+	    sv = Nullsv;
+	else {
+	    sv = sv_2mortal(HeVAL(entry));
+	    HeVAL(entry) = &PL_sv_placeholder;
+	}
+
+	/*
+	 * If a restricted hash, rather than really deleting the entry, put
+	 * a placeholder there. This marks the key as being "approved", so
+	 * we can still access via not-really-existing key without raising
+	 * an error.
+	 */
+	if (SvREADONLY(hv)) {
+	    SvREFCNT_dec(HeVAL(entry));
+	    HeVAL(entry) = &PL_sv_placeholder;
+	    /* We'll be saving this slot, so the number of allocated keys
+	     * doesn't go down, but the number placeholders goes up */
+	    xhv->xhv_placeholders++; /* HvPLACEHOLDERS(hv)++ */
+	} else {
+	    *oentry = HeNEXT(entry);
+	    if (i && !*oentry)
+		xhv->xhv_fill--; /* HvFILL(hv)-- */
+	    if (entry == xhv->xhv_eiter /* HvEITER(hv) */)
+		HvLAZYDEL_on(hv);
+	    else
+		hv_free_ent(hv, entry);
+	    xhv->xhv_keys--; /* HvKEYS(hv)-- */
+	    if (xhv->xhv_keys == 0)
+	        HvHASKFLAGS_off(hv);
+	}
+	return sv;
+    }
+    if (SvREADONLY(hv)) {
+        S_hv_notallowed(aTHX_ k_flags, key, klen,
+			"delete disallowed key '%"SVf"' from"
+			);
+    }
+
+    if (k_flags & HVhek_FREEKEY)
+	Safefree(key);
+    return Nullsv;
+}

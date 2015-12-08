@@ -1,26 +1,8 @@
-void
-Perl_sv_replace(pTHX_ register SV *sv, register SV *nsv)
+STATIC void
+S_del_xpvmg(pTHX_ XPVMG *p)
 {
-    U32 refcnt = SvREFCNT(sv);
-    SV_CHECK_THINKFIRST(sv);
-    if (SvREFCNT(nsv) != 1 && ckWARN_d(WARN_INTERNAL))
-	Perl_warner(aTHX_ packWARN(WARN_INTERNAL), "Reference miscount in sv_replace()");
-    if (SvMAGICAL(sv)) {
-	if (SvMAGICAL(nsv))
-	    mg_free(nsv);
-	else
-	    sv_upgrade(nsv, SVt_PVMG);
-	SvMAGIC(nsv) = SvMAGIC(sv);
-	SvFLAGS(nsv) |= SvMAGICAL(sv);
-	SvMAGICAL_off(sv);
-	SvMAGIC(sv) = 0;
-    }
-    SvREFCNT(sv) = 0;
-    sv_clear(sv);
-    assert(!SvREFCNT(sv));
-    StructCopy(nsv,sv,SV);
-    SvREFCNT(sv) = refcnt;
-    SvFLAGS(nsv) |= SVTYPEMASK;		/* Mark as freed */
-    SvREFCNT(nsv) = 0;
-    del_SV(nsv);
+    LOCK_SV_MUTEX;
+    p->xpv_pv = (char*)PL_xpvmg_root;
+    PL_xpvmg_root = p;
+    UNLOCK_SV_MUTEX;
 }

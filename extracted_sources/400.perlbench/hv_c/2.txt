@@ -1,15 +1,19 @@
-static location, so be sure to make a copy of the structure if you need to
-store it somewhere.
-
-See L<perlguts/"Understanding the Magic of Tied Hashes and Arrays"> for more
-information on how to use this function on tied hashes.
-
-=cut
-*/
-
-HE *
-Perl_hv_fetch_ent(pTHX_ HV *hv, SV *keysv, I32 lval, register U32 hash)
+STATIC void
+S_more_he(pTHX)
 {
-    return hv_fetch_common(hv, keysv, NULL, 0, 0, 
-			   (lval ? HV_FETCH_LVALUE : 0), Nullsv, hash);
+    register HE* he;
+    register HE* heend;
+    XPV *ptr;
+    New(54, ptr, PERL_ARENA_SIZE/sizeof(XPV), XPV);
+    ptr->xpv_pv = (char*)PL_he_arenaroot;
+    PL_he_arenaroot = ptr;
+
+    he = (HE*)ptr;
+    heend = &he[PERL_ARENA_SIZE / sizeof(HE) - 1];
+    PL_he_root = ++he;
+    while (he < heend) {
+	HeNEXT(he) = (HE*)(he + 1);
+	he++;
+    }
+    HeNEXT(he) = 0;
 }

@@ -1,6 +1,8 @@
-void
-Perl_sv_setsv_mg(pTHX_ SV *dstr, register SV *sstr)
+STATIC void
+S_del_xrv(pTHX_ XRV *p)
 {
-    sv_setsv(dstr,sstr);
-    SvSETMAGIC(dstr);
+    LOCK_SV_MUTEX;
+    p->xrv_rv = (SV*)PL_xrv_root;
+    PL_xrv_root = p;
+    UNLOCK_SV_MUTEX;
 }

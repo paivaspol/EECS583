@@ -1,0 +1,19 @@
+SV *
+Perl_sv_rvweaken(pTHX_ SV *sv)
+{
+    SV *tsv;
+    if (!SvOK(sv))  /* let undefs pass */
+	return sv;
+    if (!SvROK(sv))
+	Perl_croak(aTHX_ "Can't weaken a nonreference");
+    else if (SvWEAKREF(sv)) {
+	if (ckWARN(WARN_MISC))
+	    Perl_warner(aTHX_ packWARN(WARN_MISC), "Reference is already weak");
+	return sv;
+    }
+    tsv = SvRV(sv);
+    sv_add_backref(tsv, sv);
+    SvWEAKREF_on(sv);
+    SvREFCNT_dec(tsv);
+    return sv;
+}

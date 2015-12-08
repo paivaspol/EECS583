@@ -1,26 +1,18 @@
 int
-Perl_magic_setsubstr(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getpos(pTHX_ SV *sv, MAGIC *mg)
 {
-    STRLEN len;
-    char *tmps = SvPV(sv, len);
-    SV *lsv = LvTARG(sv);
-    I32 lvoff = LvTARGOFF(sv);
-    I32 lvlen = LvTARGLEN(sv);
+    SV* lsv = LvTARG(sv);
 
-    if (DO_UTF8(sv)) {
-	sv_utf8_upgrade(lsv);
- 	sv_pos_u2b(lsv, &lvoff, &lvlen);
-	sv_insert(lsv, lvoff, lvlen, tmps, len);
-	SvUTF8_on(lsv);
+    if (SvTYPE(lsv) >= SVt_PVMG && SvMAGIC(lsv)) {
+	mg = mg_find(lsv, PERL_MAGIC_regex_global);
+	if (mg && mg->mg_len >= 0) {
+	    I32 i = mg->mg_len;
+	    if (DO_UTF8(lsv))
+		sv_pos_b2u(lsv, &i);
+	    sv_setiv(sv, i + PL_curcop->cop_arybase);
+	    return 0;
+	}
     }
-    else if (lsv && SvUTF8(lsv)) {
-	sv_pos_u2b(lsv, &lvoff, &lvlen);
-	tmps = (char*)bytes_to_utf8((U8*)tmps, &len);
-	sv_insert(lsv, lvoff, lvlen, tmps, len);
-	Safefree(tmps);
-    }
-    else
-        sv_insert(lsv, lvoff, lvlen, tmps, len);
-
+    SvOK_off(sv);
     return 0;
 }

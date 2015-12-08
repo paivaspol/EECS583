@@ -1,44 +1,23 @@
 void
-Perl_rvpv_dup(pTHX_ SV *dstr, SV *sstr, CLONE_PARAMS* param)
+Perl_sv_force_normal_flags(pTHX_ register SV *sv, U32 flags)
 {
-    if (SvROK(sstr)) {
-        SvRV(dstr) = SvWEAKREF(sstr)
-		     ? sv_dup(SvRV(sstr), param)
-		     : sv_dup_inc(SvRV(sstr), param);
-    }
-    else if (SvPVX(sstr)) {
-	/* Has something there */
-	if (SvLEN(sstr)) {
-	    /* Normal PV - clone whole allocated space */
-	    SvPVX(dstr) = SAVEPVN(SvPVX(sstr), SvLEN(sstr)-1);
+    if (SvREADONLY(sv)) {
+	if (SvFAKE(sv)) {
+	    char *pvx = SvPVX(sv);
+	    STRLEN len = SvCUR(sv);
+            U32 hash   = SvUVX(sv);
+	    SvFAKE_off(sv);
+	    SvREADONLY_off(sv);
+	    SvGROW(sv, len + 1);
+	    Move(pvx,SvPVX(sv),len,char);
+	    *SvEND(sv) = '\0';
+	    unsharepvn(pvx, SvUTF8(sv) ? -(I32)len : len, hash);
 	}
-	else {
-	    /* Special case - not normally malloced for some reason */
-	    if (SvREADONLY(sstr) && SvFAKE(sstr)) {
-		/* A "shared" PV - clone it as unshared string */
-                if(SvPADTMP(sstr)) {
-                    /* However, some of them live in the pad
-                       and they should not have these flags
-                       turned off */
-
-                    SvPVX(dstr) = sharepvn(SvPVX(sstr), SvCUR(sstr),
-                                           SvUVX(sstr));
-                    SvUVX(dstr) = SvUVX(sstr);
-                } else {
-
-                    SvPVX(dstr) = SAVEPVN(SvPVX(sstr), SvCUR(sstr));
-                    SvFAKE_off(dstr);
-                    SvREADONLY_off(dstr);
-                }
-	    }
-	    else {
-		/* Some other special case - random pointer */
-		SvPVX(dstr) = SvPVX(sstr);		
-            }
-	}
+	else if (IN_PERL_RUNTIME)
+	    Perl_croak(aTHX_ PL_no_modify);
     }
-    else {
-	/* Copy the Null */
-	SvPVX(dstr) = SvPVX(sstr);
-    }
+    if (SvROK(sv))
+	sv_unref_flags(sv, flags);
+    else if (SvFAKE(sv) && SvTYPE(sv) == SVt_PVGV)
+	sv_unglob(sv);
 }

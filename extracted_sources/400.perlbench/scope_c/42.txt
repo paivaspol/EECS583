@@ -1,104 +1,15 @@
 void
-Perl_cx_dump(pTHX_ PERL_CONTEXT *cx)
+Perl_save_list(pTHX_ register SV **sarg, I32 maxsarg)
 {
-#ifdef DEBUGGING
-    PerlIO_printf(Perl_debug_log, "CX %ld = %s\n", (long)(cx - cxstack), PL_block_type[CxTYPE(cx)]);
-    if (CxTYPE(cx) != CXt_SUBST) {
-	PerlIO_printf(Perl_debug_log, "BLK_OLDSP = %ld\n", (long)cx->blk_oldsp);
-	PerlIO_printf(Perl_debug_log, "BLK_OLDCOP = 0x%"UVxf"\n",
-		      PTR2UV(cx->blk_oldcop));
-	PerlIO_printf(Perl_debug_log, "BLK_OLDMARKSP = %ld\n", (long)cx->blk_oldmarksp);
-	PerlIO_printf(Perl_debug_log, "BLK_OLDSCOPESP = %ld\n", (long)cx->blk_oldscopesp);
-	PerlIO_printf(Perl_debug_log, "BLK_OLDRETSP = %ld\n", (long)cx->blk_oldretsp);
-	PerlIO_printf(Perl_debug_log, "BLK_OLDPM = 0x%"UVxf"\n",
-		      PTR2UV(cx->blk_oldpm));
-	PerlIO_printf(Perl_debug_log, "BLK_GIMME = %s\n", cx->blk_gimme ? "LIST" : "SCALAR");
-    }
-    switch (CxTYPE(cx)) {
-    case CXt_NULL:
-    case CXt_BLOCK:
-	break;
-    case CXt_FORMAT:
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.CV = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_sub.cv));
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.GV = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_sub.gv));
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.DFOUTGV = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_sub.dfoutgv));
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.HASARGS = %d\n",
-		(int)cx->blk_sub.hasargs);
-	break;
-    case CXt_SUB:
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.CV = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_sub.cv));
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.OLDDEPTH = %ld\n",
-		(long)cx->blk_sub.olddepth);
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.HASARGS = %d\n",
-		(int)cx->blk_sub.hasargs);
-	PerlIO_printf(Perl_debug_log, "BLK_SUB.LVAL = %d\n",
-		(int)cx->blk_sub.lval);
-	break;
-    case CXt_EVAL:
-	PerlIO_printf(Perl_debug_log, "BLK_EVAL.OLD_IN_EVAL = %ld\n",
-		(long)cx->blk_eval.old_in_eval);
-	PerlIO_printf(Perl_debug_log, "BLK_EVAL.OLD_OP_TYPE = %s (%s)\n",
-		PL_op_name[cx->blk_eval.old_op_type],
-		PL_op_desc[cx->blk_eval.old_op_type]);
-	if (cx->blk_eval.old_namesv)
-	    PerlIO_printf(Perl_debug_log, "BLK_EVAL.OLD_NAME = %s\n",
-			  SvPVX(cx->blk_eval.old_namesv));
-	PerlIO_printf(Perl_debug_log, "BLK_EVAL.OLD_EVAL_ROOT = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_eval.old_eval_root));
-	break;
+    register SV *sv;
+    register I32 i;
 
-    case CXt_LOOP:
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.LABEL = %s\n",
-		cx->blk_loop.label);
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.RESETSP = %ld\n",
-		(long)cx->blk_loop.resetsp);
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.REDO_OP = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_loop.redo_op));
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.NEXT_OP = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_loop.next_op));
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.LAST_OP = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_loop.last_op));
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.ITERIX = %ld\n",
-		(long)cx->blk_loop.iterix);
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.ITERARY = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_loop.iterary));
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.ITERVAR = 0x%"UVxf"\n",
-		PTR2UV(CxITERVAR(cx)));
-	if (CxITERVAR(cx))
-	    PerlIO_printf(Perl_debug_log, "BLK_LOOP.ITERSAVE = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_loop.itersave));
-	PerlIO_printf(Perl_debug_log, "BLK_LOOP.ITERLVAL = 0x%"UVxf"\n",
-		PTR2UV(cx->blk_loop.iterlval));
-	break;
-
-    case CXt_SUBST:
-	PerlIO_printf(Perl_debug_log, "SB_ITERS = %ld\n",
-		(long)cx->sb_iters);
-	PerlIO_printf(Perl_debug_log, "SB_MAXITERS = %ld\n",
-		(long)cx->sb_maxiters);
-	PerlIO_printf(Perl_debug_log, "SB_RFLAGS = %ld\n",
-		(long)cx->sb_rflags);
-	PerlIO_printf(Perl_debug_log, "SB_ONCE = %ld\n",
-		(long)cx->sb_once);
-	PerlIO_printf(Perl_debug_log, "SB_ORIG = %s\n",
-		cx->sb_orig);
-	PerlIO_printf(Perl_debug_log, "SB_DSTR = 0x%"UVxf"\n",
-		PTR2UV(cx->sb_dstr));
-	PerlIO_printf(Perl_debug_log, "SB_TARG = 0x%"UVxf"\n",
-		PTR2UV(cx->sb_targ));
-	PerlIO_printf(Perl_debug_log, "SB_S = 0x%"UVxf"\n",
-		PTR2UV(cx->sb_s));
-	PerlIO_printf(Perl_debug_log, "SB_M = 0x%"UVxf"\n",
-		PTR2UV(cx->sb_m));
-	PerlIO_printf(Perl_debug_log, "SB_STREND = 0x%"UVxf"\n",
-		PTR2UV(cx->sb_strend));
-	PerlIO_printf(Perl_debug_log, "SB_RXRES = 0x%"UVxf"\n",
-		PTR2UV(cx->sb_rxres));
-	break;
+    for (i = 1; i <= maxsarg; i++) {
+	sv = NEWSV(0,0);
+	sv_setsv(sv,sarg[i]);
+	SSCHECK(3);
+	SSPUSHPTR(sarg[i]);		/* remember the pointer */
+	SSPUSHPTR(sv);			/* remember the value */
+	SSPUSHINT(SAVEt_ITEM);
     }
-#endif	/* DEBUGGING */
 }

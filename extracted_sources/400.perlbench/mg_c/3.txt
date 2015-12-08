@@ -1,18 +1,22 @@
 int
-Perl_mg_clear(pTHX_ SV *sv)
+Perl_mg_set(pTHX_ SV *sv)
 {
     I32 mgs_ix;
     MAGIC* mg;
+    MAGIC* nextmg;
 
     mgs_ix = SSNEW(sizeof(MGS));
     save_magic(mgs_ix, sv);
 
-    for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
+    for (mg = SvMAGIC(sv); mg; mg = nextmg) {
 	MGVTBL* vtbl = mg->mg_virtual;
-	/* omit GSKIP -- never set here */
-
-	if (vtbl && vtbl->svt_clear)
-	    CALL_FPTR(vtbl->svt_clear)(aTHX_ sv, mg);
+	nextmg = mg->mg_moremagic;	/* it may delete itself */
+	if (mg->mg_flags & MGf_GSKIP) {
+	    mg->mg_flags &= ~MGf_GSKIP;	/* setting requires another read */
+	    (SSPTR(mgs_ix, MGS*))->mgs_flags = 0;
+	}
+	if (vtbl && vtbl->svt_set)
+	    CALL_FPTR(vtbl->svt_set)(aTHX_ sv, mg);
     }
 
     restore_magic(aTHX_ INT2PTR(void*, (IV)mgs_ix));

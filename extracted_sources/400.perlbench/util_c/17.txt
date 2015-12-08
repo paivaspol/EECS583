@@ -1,11 +1,8 @@
 void
-Perl_atfork_lock(void)
+Perl_warner(pTHX_ U32  err, const char* pat,...)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-    /* locks must be held in locking order (if any) */
-#  ifdef MYMALLOC
-    MUTEX_LOCK(&PL_malloc_mutex);
-#  endif
-    OP_REFCNT_LOCK;
-#endif
+    va_list args;
+    va_start(args, pat);
+    vwarner(err, pat, &args);
+    va_end(args);
 }

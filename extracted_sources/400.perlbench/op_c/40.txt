@@ -1,0 +1,46 @@
+void
+Perl_newFORM(pTHX_ I32 floor, OP *o, OP *block)
+{
+    register CV *cv;
+    char *name;
+    GV *gv;
+    STRLEN n_a;
+
+    if (o)
+	name = SvPVx(cSVOPo->op_sv, n_a);
+    else
+	name = "STDOUT";
+    gv = gv_fetchpv(name,TRUE, SVt_PVFM);
+#ifdef GV_UNIQUE_CHECK
+    if (GvUNIQUE(gv)) {
+        Perl_croak(aTHX_ "Bad symbol for form (GV is unique)");
+    }
+#endif
+    GvMULTI_on(gv);
+    if ((cv = GvFORM(gv))) {
+	if (ckWARN(WARN_REDEFINE)) {
+	    line_t oldline = CopLINE(PL_curcop);
+	    if (PL_copline != NOLINE)
+		CopLINE_set(PL_curcop, PL_copline);
+	    Perl_warner(aTHX_ packWARN(WARN_REDEFINE), "Format %s redefined",name);
+	    CopLINE_set(PL_curcop, oldline);
+	}
+	SvREFCNT_dec(cv);
+    }
+    cv = PL_compcv;
+    GvFORM(gv) = cv;
+    CvGV(cv) = gv;
+    CvFILE_set_from_cop(cv, PL_curcop);
+
+
+    pad_tidy(padtidy_FORMAT);
+    CvROOT(cv) = newUNOP(OP_LEAVEWRITE, 0, scalarseq(block));
+    CvROOT(cv)->op_private |= OPpREFCOUNTED;
+    OpREFCNT_set(CvROOT(cv), 1);
+    CvSTART(cv) = LINKLIST(CvROOT(cv));
+    CvROOT(cv)->op_next = 0;
+    CALL_PEEP(CvSTART(cv));
+    op_free(o);
+    PL_copline = NOLINE;
+    LEAVE_SCOPE(floor);
+}

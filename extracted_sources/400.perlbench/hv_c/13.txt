@@ -1,0 +1,18 @@
+STATIC void
+S_hv_magic_check(pTHX_ HV *hv, bool *needs_copy, bool *needs_store)
+{
+    MAGIC *mg = SvMAGIC(hv);
+    *needs_copy = FALSE;
+    *needs_store = TRUE;
+    while (mg) {
+	if (isUPPER(mg->mg_type)) {
+	    *needs_copy = TRUE;
+	    switch (mg->mg_type) {
+	    case PERL_MAGIC_tied:
+	    case PERL_MAGIC_sig:
+		*needs_store = FALSE;
+	    }
+	}
+	mg = mg->mg_moremagic;
+    }
+}

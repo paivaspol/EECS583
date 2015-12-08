@@ -1,0 +1,12 @@
+SV *
+Perl_sv_2mortal(pTHX_ register SV *sv)
+{
+    if (!sv)
+	return sv;
+    if (SvREADONLY(sv) && SvIMMORTAL(sv))
+	return sv;
+    EXTEND_MORTAL(1);
+    PL_tmps_stack[++PL_tmps_ix] = sv;
+    SvTEMP_on(sv);
+    return sv;
+}

@@ -1,12 +1,12 @@
-void
-Perl_sv_copypv(pTHX_ SV *dsv, register SV *ssv)
+STATIC XPVNV*
+S_new_xnv(pTHX)
 {
-    STRLEN len;
-    char *s;
-    s = SvPV(ssv,len);
-    sv_setpvn(dsv,s,len);
-    if (SvUTF8(ssv))
-	SvUTF8_on(dsv);
-    else
-	SvUTF8_off(dsv);
+    NV* xnv;
+    LOCK_SV_MUTEX;
+    if (!PL_xnv_root)
+	more_xnv();
+    xnv = PL_xnv_root;
+    PL_xnv_root = *(NV**)xnv;
+    UNLOCK_SV_MUTEX;
+    return (XPVNV*)((char*)xnv - STRUCT_OFFSET(XPVNV, xnv_nv));
 }

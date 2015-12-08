@@ -1,0 +1,11 @@
+void
+Perl_qerror(pTHX_ SV *err)
+{
+    if (PL_in_eval)
+	sv_catsv(ERRSV, err);
+    else if (PL_errors)
+	sv_catsv(PL_errors, err);
+    else
+	Perl_warn(aTHX_ "%"SVf, err);
+    ++PL_error_count;
+}

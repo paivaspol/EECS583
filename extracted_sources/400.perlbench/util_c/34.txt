@@ -1,20 +1,11 @@
-void
-Perl_cond_broadcast(pTHX_ perl_cond *cp)
+int
+Perl_rsignal_save(pTHX_ int signo, Sighandler_t handler, Sigsave_t *save)
 {
-    perl_os_thread t;
-    perl_cond cond, cond_next;
-
-    for (cond = *cp; cond; cond = cond_next) {
-	t = cond->thread;
-	/* Insert t in the runnable queue just ahead of us */
-	t->i.next_run = thr->i.next_run;
-	thr->i.next_run->i.prev_run = t;
-	t->i.prev_run = thr;
-	thr->i.next_run = t;
-	thr->i.wait_queue = 0;
-	/* Remove from the wait queue */
-	cond_next = cond->next;
-	Safefree(cond);
-    }
-    *cp = 0;
+#if defined(USE_ITHREADS) && !defined(WIN32)
+    /* only "parent" interpreter can diddle signals */
+    if (PL_curinterp != aTHX)
+	return -1;
+#endif
+    *save = PerlProc_signal(signo, handler);
+    return (*save == SIG_ERR) ? -1 : 0;
 }

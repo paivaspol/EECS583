@@ -1,21 +1,52 @@
-static SV *retrieve_lutf8str(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_scalar(pTHX_ stcxt_t *cxt, char *cname)
 {
-    SV *sv;
+	int len;
+	SV *sv;
 
-    TRACEME(("retrieve_lutf8str"));
+	GETMARK(len);
+	TRACEME(("retrieve_scalar (#%d), len = %d", cxt->tagnum, len));
 
-    sv = retrieve_lscalar(aTHX_ cxt, cname);
-    if (sv) {
-#ifdef HAS_UTF8_SCALARS
-        SvUTF8_on(sv);
-#else
-        if (cxt->use_bytes < 0)
-            cxt->use_bytes
-                = (SvTRUE(get_sv("Storable::drop_utf8", TRUE))
-                   ? 1 : 0);
-        if (cxt->use_bytes == 0)
-            UTF8_CROAK();
-#endif
-    }
-    return sv;
+	/*
+	 * Allocate an empty scalar of the suitable length.
+	 */
+
+	sv = NEWSV(10002, len);
+	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
+
+	/*
+	 * WARNING: duplicates parts of sv_setpv and breaks SV data encapsulation.
+	 */
+
+	if (len == 0) {
+		/*
+		 * newSV did not upgrade to SVt_PV so the scalar is undefined.
+		 * To make it defined with an empty length, upgrade it now...
+		 * Don't upgrade to a PV if the original type contains more
+		 * information than a scalar.
+		 */
+		if (SvTYPE(sv) <= SVt_PV) {
+			sv_upgrade(sv, SVt_PV);
+		}
+		SvGROW(sv, 1);
+		*SvEND(sv) = '\0';			/* Ensure it's null terminated anyway */
+		TRACEME(("ok (retrieve_scalar empty at 0x%"UVxf")", PTR2UV(sv)));
+	} else {
+		/*
+		 * Now, for efficiency reasons, read data directly inside the SV buffer,
+		 * and perform the SV final settings directly by duplicating the final
+		 * work done by sv_setpv. Since we're going to allocate lots of scalars
+		 * this way, it's worth the hassle and risk.
+		 */
+		SAFEREAD(SvPVX(sv), len, sv);
+		SvCUR_set(sv, len);			/* Record C string length */
+		*SvEND(sv) = '\0';			/* Ensure it's null terminated anyway */
+		TRACEME(("small scalar len %d '%s'", len, SvPVX(sv)));
+	}
+
+	(void) SvPOK_only(sv);			/* Validate string pointer */
+	if (cxt->s_tainted)				/* Is input source tainted? */
+		SvTAINT(sv);				/* External data cannot be trusted */
+
+	TRACEME(("ok (retrieve_scalar at 0x%"UVxf")", PTR2UV(sv)));
+	return sv;
 }

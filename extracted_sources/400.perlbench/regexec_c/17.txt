@@ -1,0 +1,14 @@
+static void
+restore_pos(pTHX_ void *arg)
+{
+    if (PL_reg_eval_set) {
+	if (PL_reg_oldsaved) {
+	    PL_reg_re->subbeg = PL_reg_oldsaved;
+	    PL_reg_re->sublen = PL_reg_oldsavedlen;
+	    RX_MATCH_COPIED_on(PL_reg_re);
+	}
+	PL_reg_magic->mg_len = PL_reg_oldpos;
+	PL_reg_eval_set = 0;
+	PL_curpm = PL_reg_oldcurpm;
+    }	
+}

@@ -1,0 +1,21 @@
+STATIC void
+S_force_ident(pTHX_ register char *s, int kind)
+{
+    if (s && *s) {
+	OP* o = (OP*)newSVOP(OP_CONST, 0, newSVpv(s,0));
+	PL_nextval[PL_nexttoke].opval = o;
+	force_next(WORD);
+	if (kind) {
+	    o->op_private = OPpCONST_ENTERED;
+	    /* XXX see note in pp_entereval() for why we forgo typo
+	       warnings if the symbol must be introduced in an eval.
+	       GSAR 96-10-12 */
+	    gv_fetchpv(s, PL_in_eval ? (GV_ADDMULTI | GV_ADDINEVAL) : TRUE,
+		kind == '$' ? SVt_PV :
+		kind == '@' ? SVt_PVAV :
+		kind == '%' ? SVt_PVHV :
+			      SVt_PVGV
+		);
+	}
+    }
+}

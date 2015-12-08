@@ -1,0 +1,19 @@
+I32
+Perl_hv_iterinit(pTHX_ HV *hv)
+{
+    register XPVHV* xhv;
+    HE *entry;
+
+    if (!hv)
+	Perl_croak(aTHX_ "Bad hash");
+    xhv = (XPVHV*)SvANY(hv);
+    entry = xhv->xhv_eiter; /* HvEITER(hv) */
+    if (entry && HvLAZYDEL(hv)) {	/* was deleted earlier? */
+	HvLAZYDEL_off(hv);
+	hv_free_ent(hv, entry);
+    }
+    xhv->xhv_riter = -1; 	/* HvRITER(hv) = -1 */
+    xhv->xhv_eiter = Null(HE*); /* HvEITER(hv) = Null(HE*) */
+    /* used to be xhv->xhv_fill before 5.004_65 */
+    return XHvTOTALKEYS(xhv);
+}

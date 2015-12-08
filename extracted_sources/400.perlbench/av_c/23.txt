@@ -1,0 +1,12 @@
+bool
+Perl_avhv_exists_ent(pTHX_ AV *av, SV *keysv, U32 hash)
+{
+    HV *keys = avhv_keys(av);
+    HE *he;
+	
+    he = hv_fetch_ent(keys, keysv, FALSE, hash);
+    if (!he || !SvOK(HeVAL(he)))
+	return FALSE;
+
+    return av_exists(av, avhv_index_sv(HeVAL(he)));
+}

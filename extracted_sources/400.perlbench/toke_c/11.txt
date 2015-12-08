@@ -1,0 +1,50 @@
+STATIC void
+S_incline(pTHX_ char *s)
+{
+    char *t;
+    char *n;
+    char *e;
+    char ch;
+
+    CopLINE_inc(PL_curcop);
+    if (*s++ != '#')
+	return;
+    while (SPACE_OR_TAB(*s)) s++;
+    if (strnEQ(s, "line", 4))
+	s += 4;
+    else
+	return;
+    if (SPACE_OR_TAB(*s))
+	s++;
+    else
+	return;
+    while (SPACE_OR_TAB(*s)) s++;
+    if (!isDIGIT(*s))
+	return;
+    n = s;
+    while (isDIGIT(*s))
+	s++;
+    while (SPACE_OR_TAB(*s))
+	s++;
+    if (*s == '"' && (t = strchr(s+1, '"'))) {
+	s++;
+	e = t + 1;
+    }
+    else {
+	for (t = s; !isSPACE(*t); t++) ;
+	e = t;
+    }
+    while (SPACE_OR_TAB(*e) || *e == '\r' || *e == '\f')
+	e++;
+    if (*e != '\n' && *e != '\0')
+	return;		/* false alarm */
+
+    ch = *t;
+    *t = '\0';
+    if (t - s > 0) {
+	CopFILE_free(PL_curcop);
+	CopFILE_set(PL_curcop, s);
+    }
+    *t = ch;
+    CopLINE_set(PL_curcop, atoi(n)-1);
+}

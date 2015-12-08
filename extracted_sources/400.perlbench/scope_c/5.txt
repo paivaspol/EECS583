@@ -1,10 +1,10 @@
 void
-Perl_markstack_grow(pTHX)
+Perl_push_scope(pTHX)
 {
-    I32 oldmax = PL_markstack_max - PL_markstack;
-    I32 newmax = GROW(oldmax);
+    if (PL_scopestack_ix == PL_scopestack_max) {
+	PL_scopestack_max = GROW(PL_scopestack_max);
+	Renew(PL_scopestack, PL_scopestack_max, I32);
+    }
+    PL_scopestack[PL_scopestack_ix++] = PL_savestack_ix;
 
-    Renew(PL_markstack, newmax, I32);
-    PL_markstack_ptr = PL_markstack + oldmax;
-    PL_markstack_max = PL_markstack + newmax;
 }

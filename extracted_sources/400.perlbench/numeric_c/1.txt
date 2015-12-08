@@ -1,0 +1,17 @@
+UV
+Perl_cast_uv(pTHX_ NV f)
+{
+  if (f < 0.0)
+    return f < IV_MIN ? (UV) IV_MIN : (UV)(IV) f;
+  if (f < UV_MAX_P1) {
+#if CASTFLAGS & 2
+    if (f < UV_MAX_P1_HALF)
+      return (UV) f;
+    f -= UV_MAX_P1_HALF;
+    return ((UV) f) | (1 + UV_MAX >> 1);
+#else
+    return (UV) f;
+#endif
+  }
+  return f > 0 ? UV_MAX : 0 /* NaN */;
+}

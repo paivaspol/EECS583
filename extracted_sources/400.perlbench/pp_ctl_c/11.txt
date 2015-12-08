@@ -1,0 +1,26 @@
+STATIC I32
+S_dopoptoloop(pTHX_ I32 startingblock)
+{
+    I32 i;
+    register PERL_CONTEXT *cx;
+    for (i = startingblock; i >= 0; i--) {
+	cx = &cxstack[i];
+	switch (CxTYPE(cx)) {
+	case CXt_SUBST:
+	case CXt_SUB:
+	case CXt_FORMAT:
+	case CXt_EVAL:
+	case CXt_NULL:
+	    if (ckWARN(WARN_EXITING))
+		Perl_warner(aTHX_ packWARN(WARN_EXITING), "Exiting %s via %s",
+			context_name[CxTYPE(cx)], OP_NAME(PL_op));
+	    if ((CxTYPE(cx)) == CXt_NULL)
+		return -1;
+	    break;
+	case CXt_LOOP:
+	    DEBUG_l( Perl_deb(aTHX_ "(Found loop #%ld)\n", (long)i));
+	    return i;
+	}
+    }
+    return i;
+}

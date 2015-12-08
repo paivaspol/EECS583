@@ -1,18 +1,19 @@
-void
-Perl_hv_delayfree_ent(pTHX_ HV *hv, register HE *entry)
+static void
+S_hv_notallowed(pTHX_ int flags, const char *key, I32 klen,
+		const char *msg)
 {
-    if (!entry)
-	return;
-    if (isGV(HeVAL(entry)) && GvCVu(HeVAL(entry)) && HvNAME(hv))
-	PL_sub_generation++;	/* may be deletion of method from stash */
-    sv_2mortal(HeVAL(entry));	/* free between statements */
-    if (HeKLEN(entry) == HEf_SVKEY) {
-	sv_2mortal(HeKEY_sv(entry));
-	Safefree(HeKEY_hek(entry));
+    SV *sv = sv_newmortal(), *esv = sv_newmortal();
+    if (!(flags & HVhek_FREEKEY)) {
+	sv_setpvn(sv, key, klen);
     }
-    else if (HvSHAREKEYS(hv))
-	unshare_hek(HeKEY_hek(entry));
-    else
-	Safefree(HeKEY_hek(entry));
-    del_HE(entry);
+    else {
+	/* Need to free saved eventually assign to mortal SV */
+	/* XXX is this line an error ???:  SV *sv = sv_newmortal(); */
+	sv_usepvn(sv, (char *) key, klen);
+    }
+    if (flags & HVhek_UTF8) {
+	SvUTF8_on(sv);
+    }
+    Perl_sv_setpvf(aTHX_ esv, "Attempt to %s a restricted hash", msg);
+    Perl_croak(aTHX_ SvPVX(esv), sv);
 }

@@ -1,9 +1,40 @@
 void
-Perl_warner_nocontext(U32 err, const char *pat, ...)
+S_vdie_common(pTHX_ const char *message, STRLEN msglen, I32 utf8)
 {
-    dTHX;
-    va_list args;
-    va_start(args, pat);
-    vwarner(err, pat, &args);
-    va_end(args);
+    HV *stash;
+    GV *gv;
+    CV *cv;
+    /* sv_2cv might call Perl_croak() */
+    SV *olddiehook = PL_diehook;
+
+    assert(PL_diehook);
+    ENTER;
+    SAVESPTR(PL_diehook);
+    PL_diehook = Nullsv;
+    cv = sv_2cv(olddiehook, &stash, &gv, 0);
+    LEAVE;
+    if (cv && !CvDEPTH(cv) && (CvROOT(cv) || CvXSUB(cv))) {
+	dSP;
+	SV *msg;
+
+	ENTER;
+	save_re_context();
+	if (message) {
+	    msg = newSVpvn(message, msglen);
+	    SvFLAGS(msg) |= utf8;
+	    SvREADONLY_on(msg);
+	    SAVEFREESV(msg);
+	}
+	else {
+	    msg = ERRSV;
+	}
+
+	PUSHSTACKi(PERLSI_DIEHOOK);
+	PUSHMARK(SP);
+	XPUSHs(msg);
+	PUTBACK;
+	call_sv((SV*)cv, G_DISCARD);
+	POPSTACK;
+	LEAVE;
+    }
 }

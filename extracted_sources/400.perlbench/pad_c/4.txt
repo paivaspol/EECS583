@@ -1,35 +1,11 @@
 void
-Perl_pad_leavemy(pTHX)
+Perl_pad_setsv(pTHX_ PADOFFSET po, SV* sv)
 {
-    I32 off;
-    SV **svp = AvARRAY(PL_comppad_name);
-    SV *sv;
+    ASSERT_CURPAD_ACTIVE("pad_setsv");
 
-    PL_pad_reset_pending = FALSE;
-
-    ASSERT_CURPAD_ACTIVE("pad_leavemy");
-    if (PL_min_intro_pending && PL_comppad_name_fill < PL_min_intro_pending) {
-	for (off = PL_max_intro_pending; off >= PL_min_intro_pending; off--) {
-	    if ((sv = svp[off]) && sv != &PL_sv_undef
-		    && !SvFAKE(sv) && ckWARN_d(WARN_INTERNAL))
-		Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
-					"%"SVf" never introduced", sv);
-	}
-    }
-    /* "Deintroduce" my variables that are leaving with this scope. */
-    for (off = AvFILLp(PL_comppad_name); off > PL_comppad_name_fill; off--) {
-	if ((sv = svp[off]) && sv != &PL_sv_undef
-		&& !SvFAKE(sv) && SvIVX(sv) == PAD_MAX)
-	{
-	    SvIVX(sv) = PL_cop_seqmax;
-	    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
-		"Pad leavemy: %ld \"%s\", (%lu,%lu)\n",
-		(long)off, SvPVX(sv),
-		(unsigned long)U_32(SvNVX(sv)), (unsigned long)SvIVX(sv))
-	    );
-	}
-    }
-    PL_cop_seqmax++;
-    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
-	    "Pad leavemy: seq = %ld\n", (long)PL_cop_seqmax));
+    DEBUG_X(PerlIO_printf(Perl_debug_log,
+	"Pad 0x%"UVxf"[0x%"UVxf"] setsv:   %ld sv=0x%"UVxf"\n",
+	PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po, PTR2UV(sv))
+    );
+    PL_curpad[po] = sv;
 }

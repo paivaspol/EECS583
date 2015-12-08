@@ -1,16 +1,22 @@
-static SV *retrieve_integer(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_utf8str(pTHX_ stcxt_t *cxt, char *cname)
 {
-	SV *sv;
-	IV iv;
+    SV *sv;
 
-	TRACEME(("retrieve_integer (#%d)", cxt->tagnum));
+    TRACEME(("retrieve_utf8str"));
 
-	READ(&iv, sizeof(iv));
-	sv = newSViv(iv);
-	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
+    sv = retrieve_scalar(aTHX_ cxt, cname);
+    if (sv) {
+#ifdef HAS_UTF8_SCALARS
+        SvUTF8_on(sv);
+#else
+        if (cxt->use_bytes < 0)
+            cxt->use_bytes
+                = (SvTRUE(get_sv("Storable::drop_utf8", TRUE))
+                   ? 1 : 0);
+        if (cxt->use_bytes == 0)
+            UTF8_CROAK();
+#endif
+    }
 
-	TRACEME(("integer %"IVdf, iv));
-	TRACEME(("ok (retrieve_integer at 0x%"UVxf")", PTR2UV(sv)));
-
-	return sv;
+    return sv;
 }

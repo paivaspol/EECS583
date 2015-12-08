@@ -1,0 +1,15 @@
+STATIC void
+S_regoptail(pTHX_ RExC_state_t *pRExC_state, regnode *p, regnode *val)
+{
+    /* "Operandless" and "op != BRANCH" are synonymous in practice. */
+    if (p == NULL || SIZE_ONLY)
+	return;
+    if (PL_regkind[(U8)OP(p)] == BRANCH) {
+	regtail(pRExC_state, NEXTOPER(p), val);
+    }
+    else if ( PL_regkind[(U8)OP(p)] == BRANCHJ) {
+	regtail(pRExC_state, NEXTOPER(NEXTOPER(p)), val);
+    }
+    else
+	return;
+}

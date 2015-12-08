@@ -1,51 +1,34 @@
-int
-Perl_magic_setpos(pTHX_ SV *sv, MAGIC *mg)
+SV *
+Perl_magic_scalarpack(pTHX_ HV *hv, MAGIC *mg)
 {
-    SV* lsv = LvTARG(sv);
-    SSize_t pos;
-    STRLEN len;
-    STRLEN ulen = 0;
-
-    mg = 0;
-
-    if (SvTYPE(lsv) >= SVt_PVMG && SvMAGIC(lsv))
-	mg = mg_find(lsv, PERL_MAGIC_regex_global);
-    if (!mg) {
-	if (!SvOK(sv))
-	    return 0;
-	sv_magic(lsv, (SV*)0, PERL_MAGIC_regex_global, Nullch, 0);
-	mg = mg_find(lsv, PERL_MAGIC_regex_global);
+    dSP;
+    SV *retval = &PL_sv_undef;
+    SV *tied = SvTIED_obj((SV*)hv, mg);
+    HV *pkg = SvSTASH((SV*)SvRV(tied));
+   
+    if (!gv_fetchmethod_autoload(pkg, "SCALAR", FALSE)) {
+        SV *key;
+        if (HvEITER(hv))
+            /* we are in an iteration so the hash cannot be empty */
+            return &PL_sv_yes;
+        /* no xhv_eiter so now use FIRSTKEY */
+        key = sv_newmortal();
+        magic_nextpack((SV*)hv, mg, key);
+        HvEITER(hv) = NULL;     /* need to reset iterator */
+        return SvOK(key) ? &PL_sv_yes : &PL_sv_no;
     }
-    else if (!SvOK(sv)) {
-	mg->mg_len = -1;
-	return 0;
-    }
-    len = SvPOK(lsv) ? SvCUR(lsv) : sv_len(lsv);
+   
+    /* there is a SCALAR method that we can call */
+    ENTER;
+    PUSHSTACKi(PERLSI_MAGIC);
+    PUSHMARK(SP);
+    EXTEND(SP, 1);
+    PUSHs(tied);
+    PUTBACK;
 
-    pos = SvIV(sv) - PL_curcop->cop_arybase;
-
-    if (DO_UTF8(lsv)) {
-	ulen = sv_len_utf8(lsv);
-	if (ulen)
-	    len = ulen;
-    }
-
-    if (pos < 0) {
-	pos += len;
-	if (pos < 0)
-	    pos = 0;
-    }
-    else if (pos > (SSize_t)len)
-	pos = len;
-
-    if (ulen) {
-	I32 p = pos;
-	sv_pos_u2b(lsv, &p, 0);
-	pos = p;
-    }
-
-    mg->mg_len = pos;
-    mg->mg_flags &= ~MGf_MINMATCH;
-
-    return 0;
+    if (call_method("SCALAR", G_SCALAR))
+        retval = *PL_stack_sp--; 
+    POPSTACK;
+    LEAVE;
+    return retval;
 }

@@ -1,8 +1,15 @@
-void
-Perl_load_module(pTHX_ U32 flags, SV *name, SV *ver, ...)
+STATIC OP *
+S_scalarboolean(pTHX_ OP *o)
 {
-    va_list args;
-    va_start(args, ver);
-    vload_module(flags, name, ver, &args);
-    va_end(args);
+    if (o->op_type == OP_SASSIGN && cBINOPo->op_first->op_type == OP_CONST) {
+	if (ckWARN(WARN_SYNTAX)) {
+	    line_t oldline = CopLINE(PL_curcop);
+
+	    if (PL_copline != NOLINE)
+		CopLINE_set(PL_curcop, PL_copline);
+	    Perl_warner(aTHX_ packWARN(WARN_SYNTAX), "Found = in conditional, should be ==");
+	    CopLINE_set(PL_curcop, oldline);
+	}
+    }
+    return scalar(o);
 }

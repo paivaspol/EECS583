@@ -1,0 +1,38 @@
+STATIC I32
+S_list_assignment(pTHX_ register OP *o)
+{
+    if (!o)
+	return TRUE;
+
+    if (o->op_type == OP_NULL && o->op_flags & OPf_KIDS)
+	o = cUNOPo->op_first;
+
+    if (o->op_type == OP_COND_EXPR) {
+	I32 t = list_assignment(cLOGOPo->op_first->op_sibling);
+	I32 f = list_assignment(cLOGOPo->op_first->op_sibling->op_sibling);
+
+	if (t && f)
+	    return TRUE;
+	if (t || f)
+	    yyerror("Assignment to both a list and a scalar");
+	return FALSE;
+    }
+
+    if (o->op_type == OP_LIST &&
+	(o->op_flags & OPf_WANT) == OPf_WANT_SCALAR &&
+	o->op_private & OPpLVAL_INTRO)
+	return FALSE;
+
+    if (o->op_type == OP_LIST || o->op_flags & OPf_PARENS ||
+	o->op_type == OP_RV2AV || o->op_type == OP_RV2HV ||
+	o->op_type == OP_ASLICE || o->op_type == OP_HSLICE)
+	return TRUE;
+
+    if (o->op_type == OP_PADAV || o->op_type == OP_PADHV)
+	return TRUE;
+
+    if (o->op_type == OP_RV2SV)
+	return FALSE;
+
+    return FALSE;
+}

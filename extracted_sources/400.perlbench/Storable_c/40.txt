@@ -1,18 +1,11 @@
-static SV *retrieve_other(pTHX_ stcxt_t *cxt, char *cname)
+SV *mstore(pTHX_ SV *sv)
 {
-	if (
-		cxt->ver_major != STORABLE_BIN_MAJOR &&
-		cxt->ver_minor != STORABLE_BIN_MINOR
-	) {
-		CROAK(("Corrupted storable %s (binary v%d.%d), current is v%d.%d",
-			cxt->fio ? "file" : "string",
-			cxt->ver_major, cxt->ver_minor,
-			STORABLE_BIN_MAJOR, STORABLE_BIN_MINOR));
-	} else {
-		CROAK(("Corrupted storable %s (binary v%d.%d)",
-			cxt->fio ? "file" : "string",
-			cxt->ver_major, cxt->ver_minor));
-	}
+	SV *out;
 
-	return (SV *) 0;		/* Just in case */
+	TRACEME(("mstore"));
+
+	if (!do_store(aTHX_ (PerlIO*) 0, sv, 0, FALSE, &out))
+		return &PL_sv_undef;
+
+	return out;
 }

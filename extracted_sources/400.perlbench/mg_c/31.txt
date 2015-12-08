@@ -1,22 +1,5 @@
 int
-Perl_magic_setdbline(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_clearpack(pTHX_ SV *sv, MAGIC *mg)
 {
-    OP *o;
-    I32 i;
-    GV* gv;
-    SV** svp;
-    STRLEN n_a;
-
-    gv = PL_DBline;
-    i = SvTRUE(sv);
-    svp = av_fetch(GvAV(gv),
-		     atoi(MgPV(mg,n_a)), FALSE);
-    if (svp && SvIOKp(*svp) && (o = INT2PTR(OP*,SvIVX(*svp)))) {
-	/* set or clear breakpoint in the relevant control op */
-	if (i)
-	    o->op_flags |= OPf_SPECIAL;
-	else
-	    o->op_flags &= ~OPf_SPECIAL;
-    }
-    return 0;
+    return magic_methpack(sv,mg,"DELETE");
 }

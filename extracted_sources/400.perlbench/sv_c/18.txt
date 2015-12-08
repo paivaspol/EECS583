@@ -1,12 +1,9 @@
-void
-Perl_sv_utf8_encode(pTHX_ register SV *sv)
+STATIC void
+S_del_xnv(pTHX_ XPVNV *p)
 {
-    (void) sv_utf8_upgrade(sv);
-    if (SvIsCOW(sv)) {
-        sv_force_normal_flags(sv, 0);
-    }
-    if (SvREADONLY(sv)) {
-	Perl_croak(aTHX_ PL_no_modify);
-    }
-    SvUTF8_off(sv);
+    NV* xnv = (NV*)((char*)(p) + STRUCT_OFFSET(XPVNV, xnv_nv));
+    LOCK_SV_MUTEX;
+    *(NV**)xnv = PL_xnv_root;
+    PL_xnv_root = xnv;
+    UNLOCK_SV_MUTEX;
 }

@@ -1,6 +1,24 @@
-void
-Perl_sv_vsetpvf_mg(pTHX_ SV *sv, const char* pat, va_list* args)
+static char *
+uiv_2buf(char *buf, IV iv, UV uv, int is_uv, char **peob)
 {
-    sv_vsetpvfn(sv, pat, strlen(pat), args, Null(SV**), 0, Null(bool*));
-    SvSETMAGIC(sv);
+    char *ptr = buf + TYPE_CHARS(UV);
+    char *ebuf = ptr;
+    int sign;
+
+    if (is_uv)
+	sign = 0;
+    else if (iv >= 0) {
+	uv = iv;
+	sign = 0;
+    } else {
+	uv = -iv;
+	sign = 1;
+    }
+    do {
+	*--ptr = '0' + (char)(uv % 10);
+    } while (uv /= 10);
+    if (sign)
+	*--ptr = '-';
+    *peob = ebuf;
+    return ptr;
 }

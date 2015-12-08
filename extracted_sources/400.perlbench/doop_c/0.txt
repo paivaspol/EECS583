@@ -1,55 +1,69 @@
-void
-Perl_do_join(pTHX_ register SV *sv, SV *del, register SV **mark, register SV **sp)
+STATIC I32
+S_do_trans_simple(pTHX_ SV *sv)
 {
-    SV **oldmark = mark;
-    register I32 items = sp - mark;
-    register STRLEN len;
-    STRLEN delimlen;
-    STRLEN tmplen;
+    U8 *s;
+    U8 *d;
+    U8 *send;
+    U8 *dstart;
+    I32 matches = 0;
+    I32 grows = PL_op->op_private & OPpTRANS_GROWS;
+    STRLEN len;
+    short *tbl;
+    I32 ch;
 
-    (void) SvPV(del, delimlen); /* stringify and get the delimlen */
-    /* SvCUR assumes it's SvPOK() and woe betide you if it's not. */
+    tbl = (short*)cPVOP->op_pv;
+    if (!tbl)
+	Perl_croak(aTHX_ "panic: do_trans_simple line %d",__LINE__);
 
-    mark++;
-    len = (items > 0 ? (delimlen * (items - 1) ) : 0);
-    (void)SvUPGRADE(sv, SVt_PV);
-    if (SvLEN(sv) < len + items) {	/* current length is way too short */
-	while (items-- > 0) {
-	    if (*mark && !SvGAMAGIC(*mark) && SvOK(*mark)) {
-		SvPV(*mark, tmplen);
-		len += tmplen;
+    s = (U8*)SvPV(sv, len);
+    send = s + len;
+
+    /* First, take care of non-UTF-8 input strings, because they're easy */
+    if (!SvUTF8(sv)) {
+	while (s < send) {
+	    if ((ch = tbl[*s]) >= 0) {
+		matches++;
+		*s++ = (U8)ch;
 	    }
-	    mark++;
+	    else
+		s++;
 	}
-	SvGROW(sv, len + 1);		/* so try to pre-extend */
-
-	mark = oldmark;
-	items = sp - mark;
-	++mark;
+	SvSETMAGIC(sv);
+        return matches;
     }
 
-    sv_setpvn(sv, "", 0);
-    /* sv_setpv retains old UTF8ness [perl #24846] */
-    SvUTF8_off(sv);
+    /* Allow for expansion: $_="a".chr(400); tr/a/\xFE/, FE needs encoding */
+    if (grows)
+	New(0, d, len*2+1, U8);
+    else
+	d = s;
+    dstart = d;
+    while (s < send) {
+        STRLEN ulen;
+        UV c;
 
-    if (PL_tainting && SvMAGICAL(sv))
-	SvTAINTED_off(sv);
-
-    if (items-- > 0) {
-	if (*mark)
-	    sv_catsv(sv, *mark);
-	mark++;
+        /* Need to check this, otherwise 128..255 won't match */
+	c = utf8n_to_uvchr(s, send - s, &ulen, 0);
+        if (c < 0x100 && (ch = tbl[c]) >= 0) {
+            matches++;
+	    d = uvchr_to_utf8(d, ch);
+            s += ulen;
+        }
+	else { /* No match -> copy */
+	    Move(s, d, ulen, U8);
+	    d += ulen;
+	    s += ulen;
+        }
     }
-
-    if (delimlen) {
-	for (; items > 0; items--,mark++) {
-	    sv_catsv(sv,del);
-	    sv_catsv(sv,*mark);
-	}
+    if (grows) {
+	sv_setpvn(sv, (char*)dstart, d - dstart);
+	Safefree(dstart);
     }
     else {
-	for (; items > 0; items--,mark++)
-	    sv_catsv(sv,*mark);
+	*d = '\0';
+	SvCUR_set(sv, d - dstart);
     }
+    SvUTF8_on(sv);
     SvSETMAGIC(sv);
+    return matches;
 }

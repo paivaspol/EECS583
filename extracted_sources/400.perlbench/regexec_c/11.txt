@@ -1,0 +1,41 @@
+SV *
+Perl_regclass_swash(pTHX_ register regnode* node, bool doinit, SV** listsvp, SV **altsvp)
+{
+    SV *sw  = NULL;
+    SV *si  = NULL;
+    SV *alt = NULL;
+
+    if (PL_regdata && PL_regdata->count) {
+	U32 n = ARG(node);
+
+	if (PL_regdata->what[n] == 's') {
+	    SV *rv = (SV*)PL_regdata->data[n];
+	    AV *av = (AV*)SvRV((SV*)rv);
+	    SV **ary = AvARRAY(av);
+	    SV **a, **b;
+	
+	    /* See the end of regcomp.c:S_reglass() for
+	     * documentation of these array elements. */
+
+	    si = *ary;
+	    a  = SvTYPE(ary[1]) == SVt_RV   ? &ary[1] : 0;
+	    b  = SvTYPE(ary[2]) == SVt_PVAV ? &ary[2] : 0;
+
+	    if (a)
+		sw = *a;
+	    else if (si && doinit) {
+		sw = swash_init("utf8", "", si, 1, 0);
+		(void)av_store(av, 1, sw);
+	    }
+	    if (b)
+	        alt = *b;
+	}
+    }
+	
+    if (listsvp)
+	*listsvp = si;
+    if (altsvp)
+	*altsvp  = alt;
+
+    return sw;
+}

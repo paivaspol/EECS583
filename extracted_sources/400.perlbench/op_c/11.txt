@@ -1,13 +1,10 @@
-static int
-uvcompare(const void *a, const void *b)
+void
+Perl_op_null(pTHX_ OP *o)
 {
-    if (*((UV *)a) < (*(UV *)b))
-	return -1;
-    if (*((UV *)a) > (*(UV *)b))
-	return 1;
-    if (*((UV *)a+1) < (*(UV *)b+1))
-	return -1;
-    if (*((UV *)a+1) > (*(UV *)b+1))
-	return 1;
-    return 0;
+    if (o->op_type == OP_NULL)
+	return;
+    op_clear(o);
+    o->op_targ = o->op_type;
+    o->op_type = OP_NULL;
+    o->op_ppaddr = PL_ppaddr[OP_NULL];
 }

@@ -1,29 +1,6 @@
 void
-Perl_ptr_table_split(pTHX_ PTR_TBL_t *tbl)
+Perl_sv_setpv_mg(pTHX_ register SV *sv, register const char *ptr)
 {
-    PTR_TBL_ENT_t **ary = tbl->tbl_ary;
-    UV oldsize = tbl->tbl_max + 1;
-    UV newsize = oldsize * 2;
-    UV i;
-
-    Renew(ary, newsize, PTR_TBL_ENT_t*);
-    Zero(&ary[oldsize], newsize-oldsize, PTR_TBL_ENT_t*);
-    tbl->tbl_max = --newsize;
-    tbl->tbl_ary = ary;
-    for (i=0; i < oldsize; i++, ary++) {
-	PTR_TBL_ENT_t **curentp, **entp, *ent;
-	if (!*ary)
-	    continue;
-	curentp = ary + oldsize;
-	for (entp = ary, ent = *ary; ent; ent = *entp) {
-	    if ((newsize & PTR_TABLE_HASH(ent->oldval)) != i) {
-		*entp = ent->next;
-		ent->next = *curentp;
-		*curentp = ent;
-		continue;
-	    }
-	    else
-		entp = &ent->next;
-	}
-    }
+    sv_setpv(sv,ptr);
+    SvSETMAGIC(sv);
 }

@@ -1,0 +1,210 @@
+I32
+Perl_apply(pTHX_ I32 type, register SV **mark, register SV **sp)
+{
+    register I32 val;
+    register I32 val2;
+    register I32 tot = 0;
+    char *what;
+    char *s;
+    SV **oldmark = mark;
+    STRLEN n_a;
+
+#define APPLY_TAINT_PROPER() \
+    STMT_START {							\
+	if (PL_tainted) { TAINT_PROPER(what); }				\
+    } STMT_END
+
+    /* This is a first heuristic; it doesn't catch tainting magic. */
+    if (PL_tainting) {
+	while (++mark <= sp) {
+	    if (SvTAINTED(*mark)) {
+		TAINT;
+		break;
+	    }
+	}
+	mark = oldmark;
+    }
+    switch (type) {
+    case OP_CHMOD:
+	what = "chmod";
+	APPLY_TAINT_PROPER();
+	if (++mark <= sp) {
+	    val = SvIVx(*mark);
+	    APPLY_TAINT_PROPER();
+	    tot = sp - mark;
+	    while (++mark <= sp) {
+		char *name = SvPVx(*mark, n_a);
+		APPLY_TAINT_PROPER();
+		if (PerlLIO_chmod(name, val))
+		    tot--;
+	    }
+	}
+	break;
+#ifdef HAS_CHOWN
+    case OP_CHOWN:
+	what = "chown";
+	APPLY_TAINT_PROPER();
+	if (sp - mark > 2) {
+	    val = SvIVx(*++mark);
+	    val2 = SvIVx(*++mark);
+	    APPLY_TAINT_PROPER();
+	    tot = sp - mark;
+	    while (++mark <= sp) {
+		char *name = SvPVx(*mark, n_a);
+		APPLY_TAINT_PROPER();
+		if (PerlLIO_chown(name, val, val2))
+		    tot--;
+	    }
+	}
+	break;
+#endif
+/*
+XXX Should we make lchown() directly available from perl?
+For now, we'll let Configure test for HAS_LCHOWN, but do
+nothing in the core.
+    --AD  5/1998
+*/
+#ifdef HAS_KILL
+    case OP_KILL:
+	what = "kill";
+	APPLY_TAINT_PROPER();
+	if (mark == sp)
+	    break;
+	s = SvPVx(*++mark, n_a);
+	if (isALPHA(*s)) {
+	    if (*s == 'S' && s[1] == 'I' && s[2] == 'G')
+		s += 3;
+	    if ((val = whichsig(s)) < 0)
+		Perl_croak(aTHX_ "Unrecognized signal name \"%s\"",s);
+	}
+	else
+	    val = SvIVx(*mark);
+	APPLY_TAINT_PROPER();
+	tot = sp - mark;
+#ifdef VMS
+	/* kill() doesn't do process groups (job trees?) under VMS */
+	if (val < 0) val = -val;
+	if (val == SIGKILL) {
+#	    include <starlet.h>
+	    /* Use native sys$delprc() to insure that target process is
+	     * deleted; supervisor-mode images don't pay attention to
+	     * CRTL's emulation of Unix-style signals and kill()
+	     */
+	    while (++mark <= sp) {
+		I32 proc = SvIVx(*mark);
+		register unsigned long int __vmssts;
+		APPLY_TAINT_PROPER();
+		if (!((__vmssts = sys$delprc(&proc,0)) & 1)) {
+		    tot--;
+		    switch (__vmssts) {
+			case SS$_NONEXPR:
+			case SS$_NOSUCHNODE:
+			    SETERRNO(ESRCH,__vmssts);
+			    break;
+			case SS$_NOPRIV:
+			    SETERRNO(EPERM,__vmssts);
+			    break;
+			default:
+			    SETERRNO(EVMSERR,__vmssts);
+		    }
+		}
+	    }
+	    break;
+	}
+#endif
+	if (val < 0) {
+	    val = -val;
+	    while (++mark <= sp) {
+		I32 proc = SvIVx(*mark);
+		APPLY_TAINT_PROPER();
+#ifdef HAS_KILLPG
+		if (PerlProc_killpg(proc,val))	/* BSD */
+#else
+		if (PerlProc_kill(-proc,val))	/* SYSV */
+#endif
+		    tot--;
+	    }
+	}
+	else {
+	    while (++mark <= sp) {
+		I32 proc = SvIVx(*mark);
+		APPLY_TAINT_PROPER();
+		if (PerlProc_kill(proc, val))
+		    tot--;
+	    }
+	}
+	break;
+#endif
+    case OP_UNLINK:
+	what = "unlink";
+	APPLY_TAINT_PROPER();
+	tot = sp - mark;
+	while (++mark <= sp) {
+	    s = SvPVx(*mark, n_a);
+	    APPLY_TAINT_PROPER();
+	    if (PL_euid || PL_unsafe) {
+		if (UNLINK(s))
+		    tot--;
+	    }
+	    else {	/* don't let root wipe out directories without -U */
+		if (PerlLIO_lstat(s,&PL_statbuf) < 0 || S_ISDIR(PL_statbuf.st_mode))
+		    tot--;
+		else {
+		    if (UNLINK(s))
+			tot--;
+		}
+	    }
+	}
+	break;
+#ifdef HAS_UTIME
+    case OP_UTIME:
+	what = "utime";
+	APPLY_TAINT_PROPER();
+	if (sp - mark > 2) {
+#if defined(I_UTIME) || defined(VMS)
+	    struct utimbuf utbuf;
+#else
+	    struct {
+		Time_t	actime;
+		Time_t	modtime;
+	    } utbuf;
+#endif
+
+           SV* accessed = *++mark;
+           SV* modified = *++mark;
+           void * utbufp = &utbuf;
+
+           /* Be like C, and if both times are undefined, let the C
+            * library figure out what to do.  This usually means
+            * "current time". */
+
+           if ( accessed == &PL_sv_undef && modified == &PL_sv_undef )
+                utbufp = NULL;
+           else {
+                Zero(&utbuf, sizeof utbuf, char);
+#ifdef BIG_TIME
+                utbuf.actime = (Time_t)SvNVx(accessed);  /* time accessed */
+                utbuf.modtime = (Time_t)SvNVx(modified); /* time modified */
+#else
+                utbuf.actime = (Time_t)SvIVx(accessed);  /* time accessed */
+                utbuf.modtime = (Time_t)SvIVx(modified); /* time modified */
+#endif
+            }
+            APPLY_TAINT_PROPER();
+	    tot = sp - mark;
+	    while (++mark <= sp) {
+		char *name = SvPVx(*mark, n_a);
+		APPLY_TAINT_PROPER();
+               if (PerlLIO_utime(name, utbufp))
+		    tot--;
+	    }
+	}
+	else
+	    tot = 0;
+	break;
+#endif
+    }
+    return tot;
+
+#undef APPLY_TAINT_PROPER
+}

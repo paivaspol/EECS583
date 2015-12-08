@@ -1,13 +1,71 @@
 void
-Perl_dump_fds(pTHX_ char *s)
+Perl_my_setenv(pTHX_ char *nam, char *val)
 {
-    int fd;
-    Stat_t tmpstatbuf;
+#ifdef USE_ITHREADS
+  /* only parent thread can modify process environment */
+  if (PL_curinterp == aTHX)
+#endif
+  {
+#ifndef PERL_USE_SAFE_PUTENV
+    if (!PL_use_safe_putenv) {
+    /* most putenv()s leak, so we manipulate environ directly */
+    register I32 i=setenv_getix(nam);		/* where does it go? */
+    int nlen, vlen;
 
-    PerlIO_printf(Perl_debug_log,"%s", s);
-    for (fd = 0; fd < 32; fd++) {
-	if (PerlLIO_fstat(fd,&tmpstatbuf) >= 0)
-	    PerlIO_printf(Perl_debug_log," %d",fd);
+    if (environ == PL_origenviron) {	/* need we copy environment? */
+	I32 j;
+	I32 max;
+	char **tmpenv;
+
+	/*SUPPRESS 530*/
+	for (max = i; environ[max]; max++) ;
+	tmpenv = (char**)safesysmalloc((max+2) * sizeof(char*));
+	for (j=0; j<max; j++) {		/* copy environment */
+	    int len = strlen(environ[j]);
+	    tmpenv[j] = (char*)safesysmalloc((len+1)*sizeof(char));
+	    Copy(environ[j], tmpenv[j], len+1, char);
+	}
+	tmpenv[max] = Nullch;
+	environ = tmpenv;		/* tell exec where it is now */
     }
-    PerlIO_printf(Perl_debug_log,"\n");
+    if (!val) {
+	safesysfree(environ[i]);
+	while (environ[i]) {
+	    environ[i] = environ[i+1];
+	    i++;
+	}
+	return;
+    }
+    if (!environ[i]) {			/* does not exist yet */
+	environ = (char**)safesysrealloc(environ, (i+2) * sizeof(char*));
+	environ[i+1] = Nullch;	/* make sure it's null terminated */
+    }
+    else
+	safesysfree(environ[i]);
+    nlen = strlen(nam);
+    vlen = strlen(val);
+
+    environ[i] = (char*)safesysmalloc((nlen+vlen+2) * sizeof(char));
+    /* all that work just for this */
+    my_setenv_format(environ[i], nam, nlen, val, vlen);
+    } else {
+# endif
+#   if defined(__CYGWIN__) || defined( EPOC)
+    setenv(nam, val, 1);
+#   else
+    char *new_env;
+    int nlen = strlen(nam), vlen;
+    if (!val) {
+	val = "";
+    }
+    vlen = strlen(val);
+    new_env = (char*)safesysmalloc((nlen + vlen + 2) * sizeof(char));
+    /* all that work just for this */
+    my_setenv_format(new_env, nam, nlen, val, vlen);
+    (void)putenv(new_env);
+#   endif /* __CYGWIN__ */
+#ifndef PERL_USE_SAFE_PUTENV
+    }
+#endif
+  }
 }

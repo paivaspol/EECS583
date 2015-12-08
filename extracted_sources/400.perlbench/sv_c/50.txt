@@ -1,14 +1,251 @@
-int
-Perl_sv_isobject(pTHX_ SV *sv)
+bool
+Perl_sv_upgrade(pTHX_ register SV *sv, U32 mt)
 {
-    if (!sv)
-	return 0;
-    if (SvGMAGICAL(sv))
-	mg_get(sv);
-    if (!SvROK(sv))
-	return 0;
-    sv = (SV*)SvRV(sv);
-    if (!SvOBJECT(sv))
-	return 0;
-    return 1;
+
+    char*	pv;
+    U32		cur;
+    U32		len;
+    IV		iv;
+    NV		nv;
+    MAGIC*	magic;
+    HV*		stash;
+
+    if (mt != SVt_PV && SvREADONLY(sv) && SvFAKE(sv)) {
+	sv_force_normal(sv);
+    }
+
+    if (SvTYPE(sv) == mt)
+	return TRUE;
+
+    if (mt < SVt_PVIV)
+	(void)SvOOK_off(sv);
+
+    pv = NULL;
+    cur = 0;
+    len = 0;
+    iv = 0;
+    nv = 0.0;
+    magic = NULL;
+    stash = Nullhv;
+
+    switch (SvTYPE(sv)) {
+    case SVt_NULL:
+	break;
+    case SVt_IV:
+	iv	= SvIVX(sv);
+	del_XIV(SvANY(sv));
+	if (mt == SVt_NV)
+	    mt = SVt_PVNV;
+	else if (mt < SVt_PVIV)
+	    mt = SVt_PVIV;
+	break;
+    case SVt_NV:
+	nv	= SvNVX(sv);
+	del_XNV(SvANY(sv));
+	if (mt < SVt_PVNV)
+	    mt = SVt_PVNV;
+	break;
+    case SVt_RV:
+	pv	= (char*)SvRV(sv);
+	del_XRV(SvANY(sv));
+	break;
+    case SVt_PV:
+	pv	= SvPVX(sv);
+	cur	= SvCUR(sv);
+	len	= SvLEN(sv);
+	del_XPV(SvANY(sv));
+	if (mt <= SVt_IV)
+	    mt = SVt_PVIV;
+	else if (mt == SVt_NV)
+	    mt = SVt_PVNV;
+	break;
+    case SVt_PVIV:
+	pv	= SvPVX(sv);
+	cur	= SvCUR(sv);
+	len	= SvLEN(sv);
+	iv	= SvIVX(sv);
+	del_XPVIV(SvANY(sv));
+	break;
+    case SVt_PVNV:
+	pv	= SvPVX(sv);
+	cur	= SvCUR(sv);
+	len	= SvLEN(sv);
+	iv	= SvIVX(sv);
+	nv	= SvNVX(sv);
+	del_XPVNV(SvANY(sv));
+	break;
+    case SVt_PVMG:
+	pv	= SvPVX(sv);
+	cur	= SvCUR(sv);
+	len	= SvLEN(sv);
+	iv	= SvIVX(sv);
+	nv	= SvNVX(sv);
+	magic	= SvMAGIC(sv);
+	stash	= SvSTASH(sv);
+	del_XPVMG(SvANY(sv));
+	break;
+    default:
+	Perl_croak(aTHX_ "Can't upgrade that kind of scalar");
+    }
+
+    switch (mt) {
+    case SVt_NULL:
+	Perl_croak(aTHX_ "Can't upgrade to undef");
+    case SVt_IV:
+	SvANY(sv) = new_XIV();
+	SvIVX(sv)	= iv;
+	break;
+    case SVt_NV:
+	SvANY(sv) = new_XNV();
+	SvNVX(sv)	= nv;
+	break;
+    case SVt_RV:
+	SvANY(sv) = new_XRV();
+	SvRV(sv) = (SV*)pv;
+	break;
+    case SVt_PV:
+	SvANY(sv) = new_XPV();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	break;
+    case SVt_PVIV:
+	SvANY(sv) = new_XPVIV();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	if (SvNIOK(sv))
+	    (void)SvIOK_on(sv);
+	SvNOK_off(sv);
+	break;
+    case SVt_PVNV:
+	SvANY(sv) = new_XPVNV();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	break;
+    case SVt_PVMG:
+	SvANY(sv) = new_XPVMG();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	break;
+    case SVt_PVLV:
+	SvANY(sv) = new_XPVLV();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	LvTARGOFF(sv)	= 0;
+	LvTARGLEN(sv)	= 0;
+	LvTARG(sv)	= 0;
+	LvTYPE(sv)	= 0;
+	break;
+    case SVt_PVAV:
+	SvANY(sv) = new_XPVAV();
+	if (pv)
+	    Safefree(pv);
+	SvPVX(sv)	= 0;
+	AvMAX(sv)	= -1;
+	AvFILLp(sv)	= -1;
+	SvIVX(sv)	= 0;
+	SvNVX(sv)	= 0.0;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	AvALLOC(sv)	= 0;
+	AvARYLEN(sv)	= 0;
+	AvFLAGS(sv)	= AVf_REAL;
+	break;
+    case SVt_PVHV:
+	SvANY(sv) = new_XPVHV();
+	if (pv)
+	    Safefree(pv);
+	SvPVX(sv)	= 0;
+	HvFILL(sv)	= 0;
+	HvMAX(sv)	= 0;
+	HvTOTALKEYS(sv)	= 0;
+	HvPLACEHOLDERS(sv) = 0;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	HvRITER(sv)	= 0;
+	HvEITER(sv)	= 0;
+	HvPMROOT(sv)	= 0;
+	HvNAME(sv)	= 0;
+	break;
+    case SVt_PVCV:
+	SvANY(sv) = new_XPVCV();
+	Zero(SvANY(sv), 1, XPVCV);
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	break;
+    case SVt_PVGV:
+	SvANY(sv) = new_XPVGV();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	GvGP(sv)	= 0;
+	GvNAME(sv)	= 0;
+	GvNAMELEN(sv)	= 0;
+	GvSTASH(sv)	= 0;
+	GvFLAGS(sv)	= 0;
+	break;
+    case SVt_PVBM:
+	SvANY(sv) = new_XPVBM();
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	BmRARE(sv)	= 0;
+	BmUSEFUL(sv)	= 0;
+	BmPREVIOUS(sv)	= 0;
+	break;
+    case SVt_PVFM:
+	SvANY(sv) = new_XPVFM();
+	Zero(SvANY(sv), 1, XPVFM);
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	break;
+    case SVt_PVIO:
+	SvANY(sv) = new_XPVIO();
+	Zero(SvANY(sv), 1, XPVIO);
+	SvPVX(sv)	= pv;
+	SvCUR(sv)	= cur;
+	SvLEN(sv)	= len;
+	SvIVX(sv)	= iv;
+	SvNVX(sv)	= nv;
+	SvMAGIC(sv)	= magic;
+	SvSTASH(sv)	= stash;
+	IoPAGE_LEN(sv)	= 60;
+	break;
+    }
+    SvFLAGS(sv) &= ~SVTYPEMASK;
+    SvFLAGS(sv) |= mt;
+    return TRUE;
 }

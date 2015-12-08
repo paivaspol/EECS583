@@ -1,0 +1,11 @@
+STATIC OP *
+S_newDEFSVOP(pTHX)
+{
+#ifdef USE_5005THREADS
+    OP *o = newOP(OP_THREADSV, 0);
+    o->op_targ = find_threadsv("_");
+    return o;
+#else
+    return newSVREF(newGVOP(OP_GV, 0, PL_defgv));
+#endif /* USE_5005THREADS */
+}

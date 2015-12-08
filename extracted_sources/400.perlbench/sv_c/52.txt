@@ -1,23 +1,29 @@
-into the SV.  The C<classname> argument indicates the package for the
-blessing.  Set C<classname> to C<Nullch> to avoid the blessing.  The new SV
-will have a reference count of 1, and the RV will be returned.
-
-Do not use with other Perl types such as HV, AV, SV, CV, because those
-objects will become corrupted by the pointer copy process.
-
-Note that C<sv_setref_pvn> copies the string while this copies the pointer.
-
-=cut
-*/
-
-SV*
-Perl_sv_setref_pv(pTHX_ SV *rv, const char *classname, void *pv)
+void
+Perl_sv_setiv(pTHX_ register SV *sv, IV i)
 {
-    if (!pv) {
-	sv_setsv(rv, &PL_sv_undef);
-	SvSETMAGIC(rv);
+    SV_CHECK_THINKFIRST(sv);
+    switch (SvTYPE(sv)) {
+    case SVt_NULL:
+	sv_upgrade(sv, SVt_IV);
+	break;
+    case SVt_NV:
+	sv_upgrade(sv, SVt_PVNV);
+	break;
+    case SVt_RV:
+    case SVt_PV:
+	sv_upgrade(sv, SVt_PVIV);
+	break;
+
+    case SVt_PVGV:
+    case SVt_PVAV:
+    case SVt_PVHV:
+    case SVt_PVCV:
+    case SVt_PVFM:
+    case SVt_PVIO:
+	Perl_croak(aTHX_ "Can't coerce %s to integer in %s", sv_reftype(sv,0),
+		   OP_DESC(PL_op));
     }
-    else
-	sv_setiv(newSVrv(rv,classname), PTR2IV(pv));
-    return rv;
+    (void)SvIOK_only(sv);			/* validate number */
+    SvIVX(sv) = i;
+    SvTAINT(sv);
 }

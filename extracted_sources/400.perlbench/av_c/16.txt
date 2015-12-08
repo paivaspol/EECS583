@@ -1,0 +1,55 @@
+bool
+Perl_av_exists(pTHX_ AV *av, I32 key)
+{
+    if (!av)
+	return FALSE;
+
+
+    if (SvRMAGICAL(av)) {
+        MAGIC *tied_magic = mg_find((SV*)av, PERL_MAGIC_tied);
+        if (tied_magic || mg_find((SV*)av, PERL_MAGIC_regdata)) {
+            SV *sv = sv_newmortal();
+            MAGIC *mg;
+            /* Handle negative array indices 20020222 MJD */
+            if (key < 0) {
+                unsigned adjust_index = 1;
+                if (tied_magic) {
+                    SV **negative_indices_glob = 
+                        hv_fetch(SvSTASH(SvRV(SvTIED_obj((SV *)av, 
+                                                         tied_magic))), 
+                                 NEGATIVE_INDICES_VAR, 16, 0);
+                    if (negative_indices_glob
+                        && SvTRUE(GvSV(*negative_indices_glob)))
+                        adjust_index = 0;
+                }
+                if (adjust_index) {
+                    key += AvFILL(av) + 1;
+                    if (key < 0)
+                        return FALSE;
+                }
+            }
+
+            mg_copy((SV*)av, sv, 0, key);
+            mg = mg_find(sv, PERL_MAGIC_tiedelem);
+            if (mg) {
+                magic_existspack(sv, mg);
+                return (bool)SvTRUE(sv);
+            }
+
+        }
+    }
+
+    if (key < 0) {
+	key += AvFILL(av) + 1;
+	if (key < 0)
+	    return FALSE;
+    }
+
+    if (key <= AvFILLp(av) && AvARRAY(av)[key] != &PL_sv_undef
+	&& AvARRAY(av)[key])
+    {
+	return TRUE;
+    }
+    else
+	return FALSE;
+}

@@ -1,7 +1,44 @@
 static I32
-sv_i_ncmp(pTHX_ SV *a, SV *b)
+sortcv_stacked(pTHX_ SV *a, SV *b)
 {
-    IV iv1 = SvIV(a);
-    IV iv2 = SvIV(b);
-    return iv1 < iv2 ? -1 : iv1 > iv2 ? 1 : 0;
+    I32 oldsaveix = PL_savestack_ix;
+    I32 oldscopeix = PL_scopestack_ix;
+    I32 result;
+    AV *av;
+
+#ifdef USE_5005THREADS
+    av = (AV*)PAD_SVl(0);
+#else
+    av = GvAV(PL_defgv);
+#endif
+
+    if (AvMAX(av) < 1) {
+	SV** ary = AvALLOC(av);
+	if (AvARRAY(av) != ary) {
+	    AvMAX(av) += AvARRAY(av) - AvALLOC(av);
+	    SvPVX(av) = (char*)ary;
+	}
+	if (AvMAX(av) < 1) {
+	    AvMAX(av) = 1;
+	    Renew(ary,2,SV*);
+	    SvPVX(av) = (char*)ary;
+	}
+    }
+    AvFILLp(av) = 1;
+
+    AvARRAY(av)[0] = a;
+    AvARRAY(av)[1] = b;
+    PL_stack_sp = PL_stack_base;
+    PL_op = PL_sortcop;
+    CALLRUNOPS(aTHX);
+    if (PL_stack_sp != PL_stack_base + 1)
+	Perl_croak(aTHX_ "Sort subroutine didn't return single value");
+    if (!SvNIOKp(*PL_stack_sp))
+	Perl_croak(aTHX_ "Sort subroutine didn't return a numeric value");
+    result = SvIV(*PL_stack_sp);
+    while (PL_scopestack_ix > oldscopeix) {
+	LEAVE;
+    }
+    leave_scope(oldsaveix);
+    return result;
 }

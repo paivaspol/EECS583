@@ -1,0 +1,40 @@
+STATIC SV *
+S_tokeq(pTHX_ SV *sv)
+{
+    register char *s;
+    register char *send;
+    register char *d;
+    STRLEN len = 0;
+    SV *pv = sv;
+
+    if (!SvLEN(sv))
+	goto finish;
+
+    s = SvPV_force(sv, len);
+    if (SvTYPE(sv) >= SVt_PVIV && SvIVX(sv) == -1)
+	goto finish;
+    send = s + len;
+    while (s < send && *s != '\\')
+	s++;
+    if (s == send)
+	goto finish;
+    d = s;
+    if ( PL_hints & HINT_NEW_STRING ) {
+	pv = sv_2mortal(newSVpvn(SvPVX(pv), len));
+	if (SvUTF8(sv))
+	    SvUTF8_on(pv);
+    }
+    while (s < send) {
+	if (*s == '\\') {
+	    if (s + 1 < send && (s[1] == '\\'))
+		s++;		/* all that, just for this */
+	}
+	*d++ = *s++;
+    }
+    *d = '\0';
+    SvCUR_set(sv, d - SvPVX(sv));
+  finish:
+    if ( PL_hints & HINT_NEW_STRING )
+       return new_constant(NULL, 0, "q", sv, pv, "q");
+    return sv;
+}

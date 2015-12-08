@@ -1,0 +1,29 @@
+STATIC void
+S_to_byte_substr(pTHX_ register regexp *prog)
+{
+    SV* sv;
+    if (prog->float_utf8 && !prog->float_substr) {
+	prog->float_substr = sv = newSVsv(prog->float_utf8);
+	if (sv_utf8_downgrade(sv, TRUE)) {
+	    if (SvTAIL(prog->float_utf8))
+		SvTAIL_on(sv);
+	} else {
+	    SvREFCNT_dec(sv);
+	    prog->float_substr = sv = &PL_sv_undef;
+	}
+	if (prog->float_utf8 == prog->check_utf8)
+	    prog->check_substr = sv;
+    }
+    if (prog->anchored_utf8 && !prog->anchored_substr) {
+	prog->anchored_substr = sv = newSVsv(prog->anchored_utf8);
+	if (sv_utf8_downgrade(sv, TRUE)) {
+	    if (SvTAIL(prog->anchored_utf8))
+		SvTAIL_on(sv);
+	} else {
+	    SvREFCNT_dec(sv);
+	    prog->anchored_substr = sv = &PL_sv_undef;
+	}
+	if (prog->anchored_utf8 == prog->check_utf8)
+	    prog->check_substr = sv;
+    }
+}

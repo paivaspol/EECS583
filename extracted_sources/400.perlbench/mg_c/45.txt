@@ -1,11 +1,7 @@
 int
-Perl_magic_setdefelem(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_gettaint(pTHX_ SV *sv, MAGIC *mg)
 {
-    if (LvTARGLEN(sv))
-	vivify_defelem(sv);
-    if (LvTARG(sv)) {
-	sv_setsv(LvTARG(sv), sv);
-	SvSETMAGIC(LvTARG(sv));
-    }
+    TAINT_IF((mg->mg_len & 1) ||
+	     ((mg->mg_len & 2) && mg->mg_obj == sv));	/* kludge */
     return 0;
 }

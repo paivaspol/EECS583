@@ -1,10 +1,113 @@
-void
-Perl_packlist(pTHX_ SV *cat, char *pat, register char *patend, register SV **beglist, SV **endlist )
+STATIC I32
+S_measure_struct(pTHX_ register tempsym_t* symptr)
 {
-    tempsym_t sym = { 0 };
-    sym.patptr = pat;
-    sym.patend = patend;
-    sym.flags  = FLAG_PACK;
+    register I32 len = 0;
+    register I32 total = 0;
+    int star;
 
-    (void)pack_rec( cat, &sym, beglist, endlist );
+    register int size;
+
+    while (next_symbol(symptr)) {
+	int which = (symptr->code & TYPE_IS_SHRIEKING)
+	    ? PACK_SIZE_SHRIEKING : PACK_SIZE_NORMAL;
+	int offset
+	    = TYPE_NO_MODIFIERS(symptr->code) - packsize[which].first;
+
+        switch( symptr->howlen ){
+        case e_no_len:
+	case e_number:
+	    len = symptr->length;
+	    break;
+        case e_star:
+   	    Perl_croak(aTHX_ "Within []-length '*' not allowed in %s",
+                       symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+            break;
+        }
+
+	if ((offset >= 0) && (offset < packsize[which].size))
+	    size = packsize[which].array[offset] & PACK_SIZE_MASK;
+	else
+	    size = 0;
+
+	if (!size) {
+	    /* endianness doesn't influence the size of a type */
+	    switch(TYPE_NO_ENDIANNESS(symptr->code)) {
+	    default:
+		Perl_croak(aTHX_ "Invalid type '%c' in %s",
+			   (int)TYPE_NO_MODIFIERS(symptr->code),
+			   symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+	    case '@':
+	    case '/':
+	    case 'U':			/* XXXX Is it correct? */
+	    case 'w':
+	    case 'u':
+		Perl_croak(aTHX_ "Within []-length '%c' not allowed in %s",
+			   (int)symptr->code,
+			   symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+	    case '%':
+		size = 0;
+		break;
+	    case '(':
+		{
+		    tempsym_t savsym = *symptr;
+		    symptr->patptr = savsym.grpbeg;
+		    symptr->patend = savsym.grpend;
+		    /* XXXX Theoretically, we need to measure many times at
+		       different positions, since the subexpression may contain
+		       alignment commands, but be not of aligned length.
+		       Need to detect this and croak().  */
+		    size = measure_struct(symptr);
+		    *symptr = savsym;
+		    break;
+		}
+	    case 'X' | TYPE_IS_SHRIEKING:
+		/* XXXX Is this useful?  Then need to treat MEASURE_BACKWARDS.
+		 */
+		if (!len)		/* Avoid division by 0 */
+		    len = 1;
+		len = total % len;	/* Assumed: the start is aligned. */
+		/* FALL THROUGH */
+	    case 'X':
+		size = -1;
+		if (total < len)
+		    Perl_croak(aTHX_ "'X' outside of string in %s",
+			       symptr->flags & FLAG_PACK ? "pack" : "unpack" );
+		break;
+	    case 'x' | TYPE_IS_SHRIEKING:
+		if (!len)		/* Avoid division by 0 */
+		    len = 1;
+		star = total % len;	/* Assumed: the start is aligned. */
+		if (star)		/* Other portable ways? */
+		    len = len - star;
+		else
+		    len = 0;
+		/* FALL THROUGH */
+	    case 'x':
+	    case 'A':
+	    case 'Z':
+	    case 'a':
+	    case 'c':
+	    case 'C':
+		size = 1;
+		break;
+	    case 'B':
+	    case 'b':
+		len = (len + 7)/8;
+		size = 1;
+		break;
+	    case 'H':
+	    case 'h':
+		len = (len + 1)/2;
+		size = 1;
+		break;
+
+	    case 'P':
+		len = 1;
+		size = sizeof(char*);
+		break;
+	    }
+	}
+	total += len * size;
+    }
+    return total;
 }

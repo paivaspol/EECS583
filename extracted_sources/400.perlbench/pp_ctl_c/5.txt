@@ -1,11 +1,6 @@
-void
-Perl_qerror(pTHX_ SV *err)
+I32
+Perl_dowantarray(pTHX)
 {
-    if (PL_in_eval)
-	sv_catsv(ERRSV, err);
-    else if (PL_errors)
-	sv_catsv(PL_errors, err);
-    else
-	Perl_warn(aTHX_ "%"SVf, err);
-    ++PL_error_count;
+    I32 gimme = block_gimme();
+    return (gimme == G_VOID) ? G_SCALAR : gimme;
 }

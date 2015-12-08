@@ -1,0 +1,190 @@
+void
+Perl_do_vop(pTHX_ I32 optype, SV *sv, SV *left, SV *right)
+{
+#ifdef LIBERAL
+    register long *dl;
+    register long *ll;
+    register long *rl;
+#endif
+    register char *dc;
+    STRLEN leftlen;
+    STRLEN rightlen;
+    register char *lc;
+    register char *rc;
+    register I32 len;
+    I32 lensave;
+    char *lsave;
+    char *rsave;
+    bool left_utf = DO_UTF8(left);
+    bool right_utf = DO_UTF8(right);
+    I32 needlen = 0;
+
+    if (left_utf && !right_utf)
+	sv_utf8_upgrade(right);
+    else if (!left_utf && right_utf)
+	sv_utf8_upgrade(left);
+
+    if (sv != left || (optype != OP_BIT_AND && !SvOK(sv) && !SvGMAGICAL(sv)))
+	sv_setpvn(sv, "", 0);	/* avoid undef warning on |= and ^= */
+    lsave = lc = SvPV(left, leftlen);
+    rsave = rc = SvPV(right, rightlen);
+    len = leftlen < rightlen ? leftlen : rightlen;
+    lensave = len;
+    if ((left_utf || right_utf) && (sv == left || sv == right)) {
+	needlen = optype == OP_BIT_AND ? len : leftlen + rightlen;
+	Newz(801, dc, needlen + 1, char);
+    }
+    else if (SvOK(sv) || SvTYPE(sv) > SVt_PVMG) {
+	STRLEN n_a;
+	dc = SvPV_force(sv, n_a);
+	if (SvCUR(sv) < (STRLEN)len) {
+	    dc = SvGROW(sv, (STRLEN)(len + 1));
+	    (void)memzero(dc + SvCUR(sv), len - SvCUR(sv) + 1);
+	}
+	if (optype != OP_BIT_AND && (left_utf || right_utf))
+	    dc = SvGROW(sv, leftlen + rightlen + 1);
+    }
+    else {
+	needlen = ((optype == OP_BIT_AND)
+		    ? len : (leftlen > rightlen ? leftlen : rightlen));
+	Newz(801, dc, needlen + 1, char);
+	(void)sv_usepvn(sv, dc, needlen);
+	dc = SvPVX(sv);		/* sv_usepvn() calls Renew() */
+    }
+    SvCUR_set(sv, len);
+    (void)SvPOK_only(sv);
+    if (left_utf || right_utf) {
+	UV duc, luc, ruc;
+	char *dcsave = dc;
+	STRLEN lulen = leftlen;
+	STRLEN rulen = rightlen;
+	STRLEN ulen;
+
+	switch (optype) {
+	case OP_BIT_AND:
+	    while (lulen && rulen) {
+		luc = utf8n_to_uvchr((U8*)lc, lulen, &ulen, UTF8_ALLOW_ANYUV);
+		lc += ulen;
+		lulen -= ulen;
+		ruc = utf8n_to_uvchr((U8*)rc, rulen, &ulen, UTF8_ALLOW_ANYUV);
+		rc += ulen;
+		rulen -= ulen;
+		duc = luc & ruc;
+		dc = (char*)uvchr_to_utf8((U8*)dc, duc);
+	    }
+	    if (sv == left || sv == right)
+		(void)sv_usepvn(sv, dcsave, needlen);
+	    SvCUR_set(sv, dc - dcsave);
+	    break;
+	case OP_BIT_XOR:
+	    while (lulen && rulen) {
+		luc = utf8n_to_uvchr((U8*)lc, lulen, &ulen, UTF8_ALLOW_ANYUV);
+		lc += ulen;
+		lulen -= ulen;
+		ruc = utf8n_to_uvchr((U8*)rc, rulen, &ulen, UTF8_ALLOW_ANYUV);
+		rc += ulen;
+		rulen -= ulen;
+		duc = luc ^ ruc;
+		dc = (char*)uvchr_to_utf8((U8*)dc, duc);
+	    }
+	    goto mop_up_utf;
+	case OP_BIT_OR:
+	    while (lulen && rulen) {
+		luc = utf8n_to_uvchr((U8*)lc, lulen, &ulen, UTF8_ALLOW_ANYUV);
+		lc += ulen;
+		lulen -= ulen;
+		ruc = utf8n_to_uvchr((U8*)rc, rulen, &ulen, UTF8_ALLOW_ANYUV);
+		rc += ulen;
+		rulen -= ulen;
+		duc = luc | ruc;
+		dc = (char*)uvchr_to_utf8((U8*)dc, duc);
+	    }
+	  mop_up_utf:
+	    if (sv == left || sv == right)
+		(void)sv_usepvn(sv, dcsave, needlen);
+	    SvCUR_set(sv, dc - dcsave);
+	    if (rulen)
+		sv_catpvn(sv, rc, rulen);
+	    else if (lulen)
+		sv_catpvn(sv, lc, lulen);
+	    else
+		*SvEND(sv) = '\0';
+	    break;
+	}
+	SvUTF8_on(sv);
+	goto finish;
+    }
+    else
+#ifdef LIBERAL
+    if (len >= sizeof(long)*4 &&
+	!((long)dc % sizeof(long)) &&
+	!((long)lc % sizeof(long)) &&
+	!((long)rc % sizeof(long)))	/* It's almost always aligned... */
+    {
+	I32 remainder = len % (sizeof(long)*4);
+	len /= (sizeof(long)*4);
+
+	dl = (long*)dc;
+	ll = (long*)lc;
+	rl = (long*)rc;
+
+	switch (optype) {
+	case OP_BIT_AND:
+	    while (len--) {
+		*dl++ = *ll++ & *rl++;
+		*dl++ = *ll++ & *rl++;
+		*dl++ = *ll++ & *rl++;
+		*dl++ = *ll++ & *rl++;
+	    }
+	    break;
+	case OP_BIT_XOR:
+	    while (len--) {
+		*dl++ = *ll++ ^ *rl++;
+		*dl++ = *ll++ ^ *rl++;
+		*dl++ = *ll++ ^ *rl++;
+		*dl++ = *ll++ ^ *rl++;
+	    }
+	    break;
+	case OP_BIT_OR:
+	    while (len--) {
+		*dl++ = *ll++ | *rl++;
+		*dl++ = *ll++ | *rl++;
+		*dl++ = *ll++ | *rl++;
+		*dl++ = *ll++ | *rl++;
+	    }
+	}
+
+	dc = (char*)dl;
+	lc = (char*)ll;
+	rc = (char*)rl;
+
+	len = remainder;
+    }
+#endif
+    {
+	switch (optype) {
+	case OP_BIT_AND:
+	    while (len--)
+		*dc++ = *lc++ & *rc++;
+	    break;
+	case OP_BIT_XOR:
+	    while (len--)
+		*dc++ = *lc++ ^ *rc++;
+	    goto mop_up;
+	case OP_BIT_OR:
+	    while (len--)
+		*dc++ = *lc++ | *rc++;
+	  mop_up:
+	    len = lensave;
+	    if (rightlen > (STRLEN)len)
+		sv_catpvn(sv, rsave + len, rightlen - len);
+	    else if (leftlen > (STRLEN)len)
+		sv_catpvn(sv, lsave + len, leftlen - len);
+	    else
+		*SvEND(sv) = '\0';
+	    break;
+	}
+    }
+finish:
+    SvTAINT(sv);
+}

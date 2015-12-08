@@ -1,0 +1,16 @@
+void
+Perl_unlock_condpair(pTHX_ void *svv)
+{
+    MAGIC *mg = mg_find((SV*)svv, PERL_MAGIC_mutex);
+
+    if (!mg)
+	Perl_croak(aTHX_ "panic: unlock_condpair unlocking non-mutex");
+    MUTEX_LOCK(MgMUTEXP(mg));
+    if (MgOWNER(mg) != thr)
+	Perl_croak(aTHX_ "panic: unlock_condpair unlocking mutex that we don't own");
+    MgOWNER(mg) = 0;
+    COND_SIGNAL(MgOWNERCONDP(mg));
+    DEBUG_S(PerlIO_printf(Perl_debug_log, "0x%"UVxf": unlock 0x%"UVxf"\n",
+			  PTR2UV(thr), PTR2UV(svv)));
+    MUTEX_UNLOCK(MgMUTEXP(mg));
+}

@@ -1,24 +1,20 @@
-static char *
-uiv_2buf(char *buf, IV iv, UV uv, int is_uv, char **peob)
+STATIC void
+S_more_xiv(pTHX)
 {
-    char *ptr = buf + TYPE_CHARS(UV);
-    char *ebuf = ptr;
-    int sign;
+    register IV* xiv;
+    register IV* xivend;
+    XPV* ptr;
+    New(705, ptr, PERL_ARENA_SIZE/sizeof(XPV), XPV);
+    ptr->xpv_pv = (char*)PL_xiv_arenaroot;	/* linked list of xiv arenas */
+    PL_xiv_arenaroot = ptr;			/* to keep Purify happy */
 
-    if (is_uv)
-	sign = 0;
-    else if (iv >= 0) {
-	uv = iv;
-	sign = 0;
-    } else {
-	uv = -iv;
-	sign = 1;
+    xiv = (IV*) ptr;
+    xivend = &xiv[PERL_ARENA_SIZE / sizeof(IV) - 1];
+    xiv += (sizeof(XPV) - 1) / sizeof(IV) + 1;	/* fudge by size of XPV */
+    PL_xiv_root = xiv;
+    while (xiv < xivend) {
+	*(IV**)xiv = (IV *)(xiv + 1);
+	xiv++;
     }
-    do {
-	*--ptr = '0' + (char)(uv % 10);
-    } while (uv /= 10);
-    if (sign)
-	*--ptr = '-';
-    *peob = ebuf;
-    return ptr;
+    *(IV**)xiv = 0;
 }

@@ -1,16 +1,18 @@
-int
-Perl_magic_wipepack(pTHX_ SV *sv, MAGIC *mg)
+STATIC int
+S_magic_methpack(pTHX_ SV *sv, MAGIC *mg, char *meth)
 {
     dSP;
 
     ENTER;
+    SAVETMPS;
     PUSHSTACKi(PERLSI_MAGIC);
-    PUSHMARK(SP);
-    XPUSHs(SvTIED_obj(sv, mg));
-    PUTBACK;
-    call_method("CLEAR", G_SCALAR|G_DISCARD);
-    POPSTACK;
-    LEAVE;
 
+    if (magic_methcall(sv, mg, meth, G_SCALAR, 2, NULL)) {
+	sv_setsv(sv, *PL_stack_sp--);
+    }
+
+    POPSTACK;
+    FREETMPS;
+    LEAVE;
     return 0;
 }

@@ -1,30 +1,36 @@
 int
-Perl_magic_getsig(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_clear_all_env(pTHX_ SV *sv, MAGIC *mg)
 {
+#ifndef PERL_MICRO
+#if defined(VMS) || defined(EPOC)
+    Perl_die(aTHX_ "Can't make list assignment to %%ENV on this system");
+#else
+#  if defined(PERL_IMPLICIT_SYS) || defined(WIN32)
+    PerlEnv_clearenv();
+#  else
+#    ifdef USE_ENVIRON_ARRAY
+#      if defined(USE_ITHREADS)
+    /* only the parent thread can clobber the process environment */
+    if (PL_curinterp == aTHX)
+#      endif
+    {
+#      ifndef PERL_USE_SAFE_PUTENV
+    if (!PL_use_safe_putenv) {
     I32 i;
-    STRLEN n_a;
-    /* Are we fetching a signal entry? */
-    i = whichsig(MgPV(mg,n_a));
-    if (i > 0) {
-    	if(PL_psig_ptr[i])
-    	    sv_setsv(sv,PL_psig_ptr[i]);
-    	else {
-    	    Sighandler_t sigstate;
-    	    sigstate = rsignal_state(i);
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
-    	    if (sig_handlers_initted && sig_ignoring[i]) sigstate = SIG_IGN;
-#endif
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
-    	    if (sig_handlers_initted && sig_defaulting[i]) sigstate = SIG_DFL;
-#endif
-    	    /* cache state so we don't fetch it again */
-    	    if(sigstate == SIG_IGN)
-    	    	sv_setpv(sv,"IGNORE");
-    	    else
-    	    	sv_setsv(sv,&PL_sv_undef);
-    	    PL_psig_ptr[i] = SvREFCNT_inc(sv);
-    	    SvTEMP_off(sv);
-    	}
+
+    if (environ == PL_origenviron)
+	environ = (char**)safesysmalloc(sizeof(char*));
+    else
+	for (i = 0; environ[i]; i++)
+	    safesysfree(environ[i]);
     }
+#      endif /* PERL_USE_SAFE_PUTENV */
+
+    environ[0] = Nullch;
+    }
+#    endif /* USE_ENVIRON_ARRAY */
+#   endif /* PERL_IMPLICIT_SYS || WIN32 */
+#endif /* VMS || EPOC */
+#endif /* !PERL_MICRO */
     return 0;
 }

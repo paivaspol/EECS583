@@ -1,62 +1,22 @@
-void
-Perl_av_unshift(pTHX_ register AV *av, register I32 num)
+AV *
+Perl_av_fake(pTHX_ register I32 size, register SV **strp)
 {
-    register I32 i;
-    register SV **ary;
-    MAGIC* mg;
-    I32 slide;
+    register AV *av;
+    register SV** ary;
 
-    if (!av)
-	return;
-    if (SvREADONLY(av))
-	Perl_croak(aTHX_ PL_no_modify);
-
-    if ((mg = SvTIED_mg((SV*)av, PERL_MAGIC_tied))) {
-	dSP;
-	PUSHSTACKi(PERLSI_MAGIC);
-	PUSHMARK(SP);
-	EXTEND(SP,1+num);
-	PUSHs(SvTIED_obj((SV*)av, mg));
-	while (num-- > 0) {
-	    PUSHs(&PL_sv_undef);
-	}
-	PUTBACK;
-	ENTER;
-	call_method("UNSHIFT", G_SCALAR|G_DISCARD);
-	LEAVE;
-	POPSTACK;
-	return;
+    av = (AV*)NEWSV(9,0);
+    sv_upgrade((SV *)av, SVt_PVAV);
+    New(4,ary,size+1,SV*);
+    AvALLOC(av) = ary;
+    Copy(strp,ary,size,SV*);
+    AvFLAGS(av) = AVf_REIFY;
+    SvPVX(av) = (char*)ary;
+    AvFILLp(av) = size - 1;
+    AvMAX(av) = size - 1;
+    while (size--) {
+	assert (*strp);
+	SvTEMP_off(*strp);
+	strp++;
     }
-
-    if (num <= 0)
-      return;
-    if (!AvREAL(av) && AvREIFY(av))
-	av_reify(av);
-    i = AvARRAY(av) - AvALLOC(av);
-    if (i) {
-	if (i > num)
-	    i = num;
-	num -= i;
-    
-	AvMAX(av) += i;
-	AvFILLp(av) += i;
-	SvPVX(av) = (char*)(AvARRAY(av) - i);
-    }
-    if (num) {
-	i = AvFILLp(av);
-	/* Create extra elements */
-	slide = i > 0 ? i : 0;
-	num += slide;
-	av_extend(av, i + num);
-	AvFILLp(av) += num;
-	ary = AvARRAY(av);
-	Move(ary, ary + num, i + 1, SV*);
-	do {
-	    ary[--num] = &PL_sv_undef;
-	} while (num);
-	/* Make extra elements into a buffer */
-	AvMAX(av) -= slide;
-	AvFILLp(av) -= slide;
-	SvPVX(av) = (char*)(AvARRAY(av) + slide);
-    }
+    return av;
 }

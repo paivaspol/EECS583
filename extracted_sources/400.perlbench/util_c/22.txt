@@ -1,11 +1,8 @@
-int
-Perl_rsignal_restore(pTHX_ int signo, Sigsave_t *save)
+I32
+Perl_unlnk(pTHX_ char *f)	/* unlink all versions of a file */
 {
-#ifdef USE_ITHREADS
-    /* only "parent" interpreter can diddle signals */
-    if (PL_curinterp != aTHX)
-	return -1;
-#endif
+    I32 i;
 
-    return sigaction(signo, save, (struct sigaction *)NULL);
+    for (i = 0; PerlLIO_unlink(f) >= 0; i++) ;
+    return i ? 0 : -1;
 }

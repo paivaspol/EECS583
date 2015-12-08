@@ -1,37 +1,93 @@
 void
-Perl_init_stacks(pTHX)
+Perl_call_list(pTHX_ I32 oldscope, AV *paramList)
 {
-    /* start with 128-item stack and 8K cxstack */
-    PL_curstackinfo = new_stackinfo(REASONABLE(128),
-				 REASONABLE(8192/sizeof(PERL_CONTEXT) - 1));
-    PL_curstackinfo->si_type = PERLSI_MAIN;
-    PL_curstack = PL_curstackinfo->si_stack;
-    PL_mainstack = PL_curstack;		/* remember in case we switch stacks */
+    SV *atsv;
+    line_t oldline = CopLINE(PL_curcop);
+    CV *cv;
+    STRLEN len;
+    int ret;
+    dJMPENV;
 
-    PL_stack_base = AvARRAY(PL_curstack);
-    PL_stack_sp = PL_stack_base;
-    PL_stack_max = PL_stack_base + AvMAX(PL_curstack);
-
-    New(50,PL_tmps_stack,REASONABLE(128),SV*);
-    PL_tmps_floor = -1;
-    PL_tmps_ix = -1;
-    PL_tmps_max = REASONABLE(128);
-
-    New(54,PL_markstack,REASONABLE(32),I32);
-    PL_markstack_ptr = PL_markstack;
-    PL_markstack_max = PL_markstack + REASONABLE(32);
-
-    SET_MARK_OFFSET;
-
-    New(54,PL_scopestack,REASONABLE(32),I32);
-    PL_scopestack_ix = 0;
-    PL_scopestack_max = REASONABLE(32);
-
-    New(54,PL_savestack,REASONABLE(128),ANY);
-    PL_savestack_ix = 0;
-    PL_savestack_max = REASONABLE(128);
-
-    New(54,PL_retstack,REASONABLE(16),OP*);
-    PL_retstack_ix = 0;
-    PL_retstack_max = REASONABLE(16);
+    while (AvFILL(paramList) >= 0) {
+	cv = (CV*)av_shift(paramList);
+	if (PL_savebegin) {
+	    if (paramList == PL_beginav) {
+		/* save PL_beginav for compiler */
+		if (! PL_beginav_save)
+		    PL_beginav_save = newAV();
+		av_push(PL_beginav_save, (SV*)cv);
+	    }
+	    else if (paramList == PL_checkav) {
+		/* save PL_checkav for compiler */
+		if (! PL_checkav_save)
+		    PL_checkav_save = newAV();
+		av_push(PL_checkav_save, (SV*)cv);
+	    }
+	} else {
+	    SAVEFREESV(cv);
+	}
+#ifdef PERL_FLEXIBLE_EXCEPTIONS
+	CALLPROTECT(aTHX_ pcur_env, &ret, MEMBER_TO_FPTR(S_vcall_list_body), cv);
+#else
+	JMPENV_PUSH(ret);
+#endif
+	switch (ret) {
+	case 0:
+#ifndef PERL_FLEXIBLE_EXCEPTIONS
+	    call_list_body(cv);
+#endif
+	    atsv = ERRSV;
+	    (void)SvPV(atsv, len);
+	    if (len) {
+		PL_curcop = &PL_compiling;
+		CopLINE_set(PL_curcop, oldline);
+		if (paramList == PL_beginav)
+		    sv_catpv(atsv, "BEGIN failed--compilation aborted");
+		else
+		    Perl_sv_catpvf(aTHX_ atsv,
+				   "%s failed--call queue aborted",
+				   paramList == PL_checkav ? "CHECK"
+				   : paramList == PL_initav ? "INIT"
+				   : "END");
+		while (PL_scopestack_ix > oldscope)
+		    LEAVE;
+		JMPENV_POP;
+		Perl_croak(aTHX_ "%"SVf"", atsv);
+	    }
+	    break;
+	case 1:
+	    STATUS_ALL_FAILURE;
+	    /* FALL THROUGH */
+	case 2:
+	    /* my_exit() was called */
+	    while (PL_scopestack_ix > oldscope)
+		LEAVE;
+	    FREETMPS;
+	    PL_curstash = PL_defstash;
+	    PL_curcop = &PL_compiling;
+	    CopLINE_set(PL_curcop, oldline);
+	    JMPENV_POP;
+	    if (PL_statusvalue && !(PL_exit_flags & PERL_EXIT_EXPECTED)) {
+		if (paramList == PL_beginav)
+		    Perl_croak(aTHX_ "BEGIN failed--compilation aborted");
+		else
+		    Perl_croak(aTHX_ "%s failed--call queue aborted",
+			       paramList == PL_checkav ? "CHECK"
+			       : paramList == PL_initav ? "INIT"
+			       : "END");
+	    }
+	    my_exit_jump();
+	    /* NOTREACHED */
+	case 3:
+	    if (PL_restartop) {
+		PL_curcop = &PL_compiling;
+		CopLINE_set(PL_curcop, oldline);
+		JMPENV_JUMP(3);
+	    }
+	    PerlIO_printf(Perl_error_log, "panic: restartop\n");
+	    FREETMPS;
+	    break;
+	}
+	JMPENV_POP;
+    }
 }

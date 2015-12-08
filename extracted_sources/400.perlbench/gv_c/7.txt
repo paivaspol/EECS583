@@ -1,50 +1,30 @@
-void
-Perl_gv_check(pTHX_ HV *stash)
+GV *
+Perl_gv_fetchmeth_autoload(pTHX_ HV *stash, const char *name, STRLEN len, I32 level)
 {
-    register HE *entry;
-    register I32 i;
-    register GV *gv;
-    HV *hv;
+    GV *gv = gv_fetchmeth(stash, name, len, level);
 
-    if (!HvARRAY(stash))
-	return;
-    for (i = 0; i <= (I32) HvMAX(stash); i++) {
-	for (entry = HvARRAY(stash)[i]; entry; entry = HeNEXT(entry)) {
-	    if (HeKEY(entry)[HeKLEN(entry)-1] == ':' &&
-		(gv = (GV*)HeVAL(entry)) && isGV(gv) && (hv = GvHV(gv)))
-	    {
-		if (hv != PL_defstash && hv != stash)
-		     gv_check(hv);              /* nested package */
-	    }
-	    else if (isALPHA(*HeKEY(entry))) {
-		char *file;
-		gv = (GV*)HeVAL(entry);
-		if (SvTYPE(gv) != SVt_PVGV || GvMULTI(gv))
-		    continue;
-		file = GvFILE(gv);
-		/* performance hack: if filename is absolute and it's a standard
-		 * module, don't bother warning */
-		if (file
-		    && PERL_FILE_IS_ABSOLUTE(file)
-#ifdef MACOS_TRADITIONAL
-		    && (instr(file, ":lib:")
-#else
-		    && (instr(file, "/lib/")
-#endif
-		    || instr(file, ".pm")))
-		{
-		    continue;
-		}
-		CopLINE_set(PL_curcop, GvLINE(gv));
-#ifdef USE_ITHREADS
-		CopFILE(PL_curcop) = file;	/* set for warning */
-#else
-		CopFILEGV(PL_curcop) = gv_fetchfile(file);
-#endif
-		Perl_warner(aTHX_ packWARN(WARN_ONCE),
-			"Name \"%s::%s\" used only once: possible typo",
-			HvNAME(stash), GvNAME(gv));
-	    }
-	}
+    if (!gv) {
+	char autoload[] = "AUTOLOAD";
+	STRLEN autolen = sizeof(autoload)-1;
+	CV *cv;
+	GV **gvp;
+
+	if (!stash)
+	    return Nullgv;	/* UNIVERSAL::AUTOLOAD could cause trouble */
+	if (len == autolen && strnEQ(name, autoload, autolen))
+	    return Nullgv;
+	if (!(gv = gv_fetchmeth(stash, autoload, autolen, FALSE)))
+	    return Nullgv;
+	cv = GvCV(gv);
+	if (!(CvROOT(cv) || CvXSUB(cv)))
+	    return Nullgv;
+	/* Have an autoload */
+	if (level < 0)	/* Cannot do without a stub */
+	    gv_fetchmeth(stash, name, len, 0);
+	gvp = (GV**)hv_fetch(stash, name, len, (level >= 0));
+	if (!gvp)
+	    return Nullgv;
+	return *gvp;
     }
+    return gv;
 }

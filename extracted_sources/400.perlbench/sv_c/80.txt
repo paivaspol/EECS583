@@ -1,22 +1,5 @@
-void *
-Perl_any_dup(pTHX_ void *v, PerlInterpreter *proto_perl)
+void
+Perl_sv_force_normal(pTHX_ register SV *sv)
 {
-    void *ret;
-
-    if (!v)
-	return (void*)NULL;
-
-    /* look for it in the table first */
-    ret = ptr_table_fetch(PL_ptr_table, v);
-    if (ret)
-	return ret;
-
-    /* see if it is part of the interpreter structure */
-    if (v >= (void*)proto_perl && v < (void*)(proto_perl+1))
-	ret = (void*)(((char*)aTHX) + (((char*)v) - (char*)proto_perl));
-    else {
-	ret = v;
-    }
-
-    return ret;
+    sv_force_normal_flags(sv, 0);
 }

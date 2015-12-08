@@ -1,0 +1,59 @@
+SV *dclone(pTHX_ SV *sv)
+{
+	dSTCXT;
+	int size;
+	stcxt_t *real_context;
+	SV *out;
+
+	TRACEME(("dclone"));
+
+	/*
+	 * Workaround for CROAK leak: if they enter with a "dirty" context,
+	 * free up memory for them now.
+	 */
+
+	if (cxt->s_dirty)
+		clean_context(aTHX_ cxt);
+
+	/*
+	 * do_store() optimizes for dclone by not freeing its context, should
+	 * we need to allocate one because we're deep cloning from a hook.
+	 */
+
+	if (!do_store(aTHX_ (PerlIO*) 0, sv, ST_CLONE, FALSE, (SV**) 0))
+		return &PL_sv_undef;				/* Error during store */
+
+	/*
+	 * Because of the above optimization, we have to refresh the context,
+	 * since a new one could have been allocated and stacked by do_store().
+	 */
+
+	{ dSTCXT; real_context = cxt; }		/* Sub-block needed for macro */
+	cxt = real_context;					/* And we need this temporary... */
+
+	/*
+	 * Now, `cxt' may refer to a new context.
+	 */
+
+	ASSERT(!cxt->s_dirty, ("clean context"));
+	ASSERT(!cxt->entry, ("entry will not cause new context allocation"));
+
+	size = MBUF_SIZE();
+	TRACEME(("dclone stored %d bytes", size));
+	MBUF_INIT(size);
+
+	/*
+	 * Since we're passing do_retrieve() both a NULL file and sv, we need
+	 * to pre-compute the taintedness of the input by setting cxt->tainted
+	 * to whatever state our own input string was.	-- RAM, 15/09/2000
+	 *
+	 * do_retrieve() will free non-root context.
+	 */
+
+	cxt->s_tainted = SvTAINTED(sv);
+	out = do_retrieve(aTHX_ (PerlIO*) 0, Nullsv, ST_CLONE);
+
+	TRACEME(("dclone returns 0x%"UVxf, PTR2UV(out)));
+
+	return out;
+}

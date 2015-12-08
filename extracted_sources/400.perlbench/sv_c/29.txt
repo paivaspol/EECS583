@@ -1,5 +1,12 @@
-void
-Perl_sv_force_normal(pTHX_ register SV *sv)
+STATIC XPVNV*
+S_new_xpvnv(pTHX)
 {
-    sv_force_normal_flags(sv, 0);
+    XPVNV* xpvnv;
+    LOCK_SV_MUTEX;
+    if (!PL_xpvnv_root)
+	more_xpvnv();
+    xpvnv = PL_xpvnv_root;
+    PL_xpvnv_root = (XPVNV*)xpvnv->xpv_pv;
+    UNLOCK_SV_MUTEX;
+    return xpvnv;
 }

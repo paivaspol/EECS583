@@ -1,46 +1,47 @@
-void
-Perl_newFORM(pTHX_ I32 floor, OP *o, OP *block)
+STATIC void
+S_apply_attrs_my(pTHX_ HV *stash, OP *target, OP *attrs, OP **imopsp)
 {
-    register CV *cv;
-    char *name;
-    GV *gv;
-    STRLEN n_a;
+    OP *pack, *imop, *arg;
+    SV *meth, *stashsv;
 
-    if (o)
-	name = SvPVx(cSVOPo->op_sv, n_a);
+    if (!attrs)
+	return;
+
+    assert(target->op_type == OP_PADSV ||
+	   target->op_type == OP_PADHV ||
+	   target->op_type == OP_PADAV);
+
+    /* Ensure that attributes.pm is loaded. */
+    apply_attrs(stash, PAD_SV(target->op_targ), attrs, TRUE);
+
+    /* Need package name for method call. */
+    pack = newSVOP(OP_CONST, 0, newSVpvn(ATTRSMODULE, sizeof(ATTRSMODULE)-1));
+
+    /* Build up the real arg-list. */
+    if (stash)
+	stashsv = newSVpv(HvNAME(stash), 0);
     else
-	name = "STDOUT";
-    gv = gv_fetchpv(name,TRUE, SVt_PVFM);
-#ifdef GV_UNIQUE_CHECK
-    if (GvUNIQUE(gv)) {
-        Perl_croak(aTHX_ "Bad symbol for form (GV is unique)");
-    }
-#endif
-    GvMULTI_on(gv);
-    if ((cv = GvFORM(gv))) {
-	if (ckWARN(WARN_REDEFINE)) {
-	    line_t oldline = CopLINE(PL_curcop);
-	    if (PL_copline != NOLINE)
-		CopLINE_set(PL_curcop, PL_copline);
-	    Perl_warner(aTHX_ packWARN(WARN_REDEFINE), "Format %s redefined",name);
-	    CopLINE_set(PL_curcop, oldline);
-	}
-	SvREFCNT_dec(cv);
-    }
-    cv = PL_compcv;
-    GvFORM(gv) = cv;
-    CvGV(cv) = gv;
-    CvFILE_set_from_cop(cv, PL_curcop);
+	stashsv = &PL_sv_no;
+    arg = newOP(OP_PADSV, 0);
+    arg->op_targ = target->op_targ;
+    arg = prepend_elem(OP_LIST,
+		       newSVOP(OP_CONST, 0, stashsv),
+		       prepend_elem(OP_LIST,
+				    newUNOP(OP_REFGEN, 0,
+					    mod(arg, OP_REFGEN)),
+				    dup_attrlist(attrs)));
 
+    /* Fake up a method call to import */
+    meth = newSVpvn("import", 6);
+    (void)SvUPGRADE(meth, SVt_PVIV);
+    (void)SvIOK_on(meth);
+    PERL_HASH(SvUVX(meth), SvPVX(meth), SvCUR(meth));
+    imop = convert(OP_ENTERSUB, OPf_STACKED|OPf_SPECIAL|OPf_WANT_VOID,
+		   append_elem(OP_LIST,
+			       prepend_elem(OP_LIST, pack, list(arg)),
+			       newSVOP(OP_METHOD_NAMED, 0, meth)));
+    imop->op_private |= OPpENTERSUB_NOMOD;
 
-    pad_tidy(padtidy_FORMAT);
-    CvROOT(cv) = newUNOP(OP_LEAVEWRITE, 0, scalarseq(block));
-    CvROOT(cv)->op_private |= OPpREFCOUNTED;
-    OpREFCNT_set(CvROOT(cv), 1);
-    CvSTART(cv) = LINKLIST(CvROOT(cv));
-    CvROOT(cv)->op_next = 0;
-    CALL_PEEP(CvSTART(cv));
-    op_free(o);
-    PL_copline = NOLINE;
-    LEAVE_SCOPE(floor);
+    /* Combine the ops. */
+    *imopsp = append_elem(OP_LIST, *imopsp, imop);
 }

@@ -1,41 +1,18 @@
 void
-Perl_new_collate(pTHX_ char *newcoll)
+Perl_new_ctype(pTHX_ char *newctype)
 {
-#ifdef USE_LOCALE_COLLATE
+#ifdef USE_LOCALE_CTYPE
 
-    if (! newcoll) {
-	if (PL_collation_name) {
-	    ++PL_collation_ix;
-	    Safefree(PL_collation_name);
-	    PL_collation_name = NULL;
-	}
-	PL_collation_standard = TRUE;
-	PL_collxfrm_base = 0;
-	PL_collxfrm_mult = 2;
-	return;
+    int i;
+
+    for (i = 0; i < 256; i++) {
+	if (isUPPER_LC(i))
+	    PL_fold_locale[i] = toLOWER_LC(i);
+	else if (isLOWER_LC(i))
+	    PL_fold_locale[i] = toUPPER_LC(i);
+	else
+	    PL_fold_locale[i] = i;
     }
 
-    if (! PL_collation_name || strNE(PL_collation_name, newcoll)) {
-	++PL_collation_ix;
-	Safefree(PL_collation_name);
-	PL_collation_name = stdize_locale(savepv(newcoll));
-	PL_collation_standard = ((*newcoll == 'C' && newcoll[1] == '\0')
-				 || strEQ(newcoll, "POSIX"));
-
-	{
-	  /*  2: at most so many chars ('a', 'b'). */
-	  /* 50: surely no system expands a char more. */
-#define XFRMBUFSIZE  (2 * 50)
-	  char xbuf[XFRMBUFSIZE];
-	  Size_t fa = strxfrm(xbuf, "a",  XFRMBUFSIZE);
-	  Size_t fb = strxfrm(xbuf, "ab", XFRMBUFSIZE);
-	  SSize_t mult = fb - fa;
-	  if (mult < 1)
-	      Perl_croak(aTHX_ "strxfrm() gets absurd");
-	  PL_collxfrm_base = (fa > (Size_t)mult) ? (fa - mult) : 0;
-	  PL_collxfrm_mult = mult;
-	}
-    }
-
-#endif /* USE_LOCALE_COLLATE */
+#endif /* USE_LOCALE_CTYPE */
 }

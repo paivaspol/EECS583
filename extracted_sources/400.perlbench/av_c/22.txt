@@ -1,0 +1,12 @@
+SV *
+Perl_avhv_delete_ent(pTHX_ AV *av, SV *keysv, I32 flags, U32 hash)
+{
+    HV *keys = avhv_keys(av);
+    HE *he;
+	
+    he = hv_fetch_ent(keys, keysv, FALSE, hash);
+    if (!he || !SvOK(HeVAL(he)))
+	return Nullsv;
+
+    return av_delete(av, avhv_index_sv(HeVAL(he)), flags);
+}

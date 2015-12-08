@@ -1,16 +1,13 @@
-static bool
-S_path_is_absolute(pTHX_ char *name)
+I32
+Perl_is_lvalue_sub(pTHX)
 {
-    if (PERL_FILE_IS_ABSOLUTE(name)
-#ifdef MACOS_TRADITIONAL
-	|| (*name == ':'))
-#else
-	|| (*name == '.' && (name[1] == '/' ||
-			     (name[1] == '.' && name[2] == '/'))))
-#endif
-    {
-	return TRUE;
-    }
+    I32 cxix;
+
+    cxix = dopoptosub(cxstack_ix);
+    assert(cxix >= 0);  /* We should only be called from inside subs */
+
+    if (cxstack[cxix].blk_sub.lval && CvLVALUE(cxstack[cxix].blk_sub.cv))
+	return cxstack[cxix].blk_sub.lval;
     else
-    	return FALSE;
+	return 0;
 }

@@ -1,6 +1,20 @@
-static void
-restore_sigmask(pTHX_ SV *save_sv)
+int
+Perl_magic_set_all_env(pTHX_ SV *sv, MAGIC *mg)
 {
-    sigset_t *ossetp = (sigset_t *) SvPV_nolen( save_sv );
-    (void)sigprocmask(SIG_SETMASK, ossetp, (sigset_t *)0);
+#if defined(VMS)
+    Perl_die(aTHX_ "Can't make list assignment to %%ENV on this system");
+#else
+    if (PL_localizing) {
+	HE* entry;
+	STRLEN n_a;
+	magic_clear_all_env(sv,mg);
+	hv_iterinit((HV*)sv);
+	while ((entry = hv_iternext((HV*)sv))) {
+	    I32 keylen;
+	    my_setenv(hv_iterkey(entry, &keylen),
+		      SvPV(hv_iterval((HV*)sv, entry), n_a));
+	}
+    }
+#endif
+    return 0;
 }

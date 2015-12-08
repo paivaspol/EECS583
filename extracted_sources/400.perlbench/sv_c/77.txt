@@ -1,33 +1,20 @@
 void
-Perl_ptr_table_clear(pTHX_ PTR_TBL_t *tbl)
+Perl_sv_usepvn(pTHX_ register SV *sv, register char *ptr, register STRLEN len)
 {
-    register PTR_TBL_ENT_t **array;
-    register PTR_TBL_ENT_t *entry;
-    register PTR_TBL_ENT_t *oentry = Null(PTR_TBL_ENT_t*);
-    UV riter = 0;
-    UV max;
-
-    if (!tbl || !tbl->tbl_items) {
-        return;
+    SV_CHECK_THINKFIRST(sv);
+    (void)SvUPGRADE(sv, SVt_PV);
+    if (!ptr) {
+	(void)SvOK_off(sv);
+	return;
     }
-
-    array = tbl->tbl_ary;
-    entry = array[0];
-    max = tbl->tbl_max;
-
-    for (;;) {
-        if (entry) {
-            oentry = entry;
-            entry = entry->next;
-            S_del_pte(aTHX_ oentry);
-        }
-        if (!entry) {
-            if (++riter > max) {
-                break;
-            }
-            entry = array[riter];
-        }
-    }
-
-    tbl->tbl_items = 0;
+    (void)SvOOK_off(sv);
+    if (SvPVX(sv) && SvLEN(sv))
+	Safefree(SvPVX(sv));
+    Renew(ptr, len+1, char);
+    SvPVX(sv) = ptr;
+    SvCUR_set(sv, len);
+    SvLEN_set(sv, len+1);
+    *SvEND(sv) = '\0';
+    (void)SvPOK_only_UTF8(sv);		/* validate pointer */
+    SvTAINT(sv);
 }

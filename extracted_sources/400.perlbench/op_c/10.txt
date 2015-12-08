@@ -1,44 +1,20 @@
-void
-Perl_newPROG(pTHX_ OP *o)
+STATIC void
+S_cop_free(pTHX_ COP* cop)
 {
-    if (PL_in_eval) {
-	if (PL_eval_root)
-		return;
-	PL_eval_root = newUNOP(OP_LEAVEEVAL,
-			       ((PL_in_eval & EVAL_KEEPERR)
-				? OPf_SPECIAL : 0), o);
-	PL_eval_start = linklist(PL_eval_root);
-	PL_eval_root->op_private |= OPpREFCOUNTED;
-	OpREFCNT_set(PL_eval_root, 1);
-	PL_eval_root->op_next = 0;
-	CALL_PEEP(PL_eval_start);
-    }
-    else {
-	if (o->op_type == OP_STUB) {
-	    PL_comppad_name = 0;
-	    PL_compcv = 0;
-	    FreeOp(o);
-	    return;
-	}
-	PL_main_root = scope(sawparens(scalarvoid(o)));
-	PL_curcop = &PL_compiling;
-	PL_main_start = LINKLIST(PL_main_root);
-	PL_main_root->op_private |= OPpREFCOUNTED;
-	OpREFCNT_set(PL_main_root, 1);
-	PL_main_root->op_next = 0;
-	CALL_PEEP(PL_main_start);
-	PL_compcv = 0;
-
-	/* Register with debugger */
-	if (PERLDB_INTER) {
-	    CV *cv = get_cv("DB::postponed", FALSE);
-	    if (cv) {
-		dSP;
-		PUSHMARK(SP);
-		XPUSHs((SV*)CopFILEGV(&PL_compiling));
-		PUTBACK;
-		call_sv((SV*)cv, G_DISCARD);
-	    }
-	}
+    Safefree(cop->cop_label);   /* FIXME: treaddead ??? */
+    CopFILE_free(cop);
+    CopSTASH_free(cop);
+    if (! specialWARN(cop->cop_warnings))
+	SvREFCNT_dec(cop->cop_warnings);
+    if (! specialCopIO(cop->cop_io)) {
+#ifdef USE_ITHREADS
+#if 0
+	STRLEN len;
+        char *s = SvPV(cop->cop_io,len);
+	Perl_warn(aTHX_ "io='%.*s'",(int) len,s); /* ??? --jhi */
+#endif
+#else
+	SvREFCNT_dec(cop->cop_io);
+#endif
     }
 }

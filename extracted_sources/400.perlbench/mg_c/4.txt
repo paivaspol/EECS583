@@ -1,21 +1,32 @@
-int
-Perl_mg_copy(pTHX_ SV *sv, SV *nsv, const char *key, I32 klen)
+I32
+Perl_mg_size(pTHX_ SV *sv)
 {
-    int count = 0;
     MAGIC* mg;
+    I32 len;
+
     for (mg = SvMAGIC(sv); mg; mg = mg->mg_moremagic) {
 	MGVTBL* vtbl = mg->mg_virtual;
-	if ((mg->mg_flags & MGf_COPY) && vtbl->svt_copy){
-	    count += CALL_FPTR(vtbl->svt_copy)(aTHX_ sv, mg, nsv, key, klen);
-	}
-	else if (isUPPER(mg->mg_type)) {
-	    sv_magic(nsv,
-		     mg->mg_type == PERL_MAGIC_tied ? SvTIED_obj(sv, mg) :
-		     (mg->mg_type == PERL_MAGIC_regdata && mg->mg_obj)
-							? sv : mg->mg_obj,
-		     toLOWER(mg->mg_type), key, klen);
-	    count++;
+	if (vtbl && vtbl->svt_len) {
+            I32 mgs_ix;
+
+	    mgs_ix = SSNEW(sizeof(MGS));
+	    save_magic(mgs_ix, sv);
+	    /* omit MGf_GSKIP -- not changed here */
+	    len = CALL_FPTR(vtbl->svt_len)(aTHX_ sv, mg);
+	    restore_magic(aTHX_ INT2PTR(void*, (IV)mgs_ix));
+	    return len;
 	}
     }
-    return count;
+
+    switch(SvTYPE(sv)) {
+	case SVt_PVAV:
+	    len = AvFILLp((AV *) sv); /* Fallback to non-tied array */
+	    return len;
+	case SVt_PVHV:
+	    /* FIXME */
+	default:
+	    Perl_croak(aTHX_ "Size magic not implemented");
+	    break;
+    }
+    return 0;
 }

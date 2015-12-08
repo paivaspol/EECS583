@@ -1,8 +1,30 @@
-void
-Perl_sv_catpvf_mg(pTHX_ SV *sv, const char* pat, ...)
+bool
+Perl_sv_utf8_decode(pTHX_ register SV *sv)
 {
-    va_list args;
-    va_start(args, pat);
-    sv_vcatpvf_mg(sv, pat, &args);
-    va_end(args);
+    if (SvPOKp(sv)) {
+        U8 *c;
+        U8 *e;
+
+	/* The octets may have got themselves encoded - get them back as
+	 * bytes
+	 */
+	if (!sv_utf8_downgrade(sv, TRUE))
+	    return FALSE;
+
+        /* it is actually just a matter of turning the utf8 flag on, but
+         * we want to make sure everything inside is valid utf8 first.
+         */
+        c = (U8 *) SvPVX(sv);
+	if (!is_utf8_string(c, SvCUR(sv)+1))
+	    return FALSE;
+        e = (U8 *) SvEND(sv);
+        while (c < e) {
+	    U8 ch = *c++;
+            if (!UTF8_IS_INVARIANT(ch)) {
+		SvUTF8_on(sv);
+		break;
+	    }
+        }
+    }
+    return TRUE;
 }

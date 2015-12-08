@@ -1,8 +1,26 @@
-void
-Perl_save_I16(pTHX_ I16 *intp)
+AV *
+Perl_save_ary(pTHX_ GV *gv)
 {
+    AV *oav = GvAVn(gv);
+    AV *av;
+
+    if (!AvREAL(oav) && AvREIFY(oav))
+	av_reify(oav);
     SSCHECK(3);
-    SSPUSHINT(*intp);
-    SSPUSHPTR(intp);
-    SSPUSHINT(SAVEt_I16);
+    SSPUSHPTR(gv);
+    SSPUSHPTR(oav);
+    SSPUSHINT(SAVEt_AV);
+
+    GvAV(gv) = Null(AV*);
+    av = GvAVn(gv);
+    if (SvMAGIC(oav)) {
+	SvMAGIC(av) = SvMAGIC(oav);
+	SvFLAGS((SV*)av) |= SvMAGICAL(oav);
+	SvMAGICAL_off(oav);
+	SvMAGIC(oav) = 0;
+	PL_localizing = 1;
+	SvSETMAGIC((SV*)av);
+	PL_localizing = 0;
+    }
+    return av;
 }

@@ -1,9 +1,45 @@
-void
-Perl_sv_setpvf_mg_nocontext(SV *sv, const char* pat, ...)
+STATIC int
+S_sv_2iuv_non_preserve(pTHX_ register SV *sv, I32 numtype)
 {
-    dTHX;
-    va_list args;
-    va_start(args, pat);
-    sv_vsetpvf_mg(sv, pat, &args);
-    va_end(args);
+    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_2iuv_non '%s', IV=0x%"UVxf" NV=%"NVgf" inttype=%"UVXf"\n", SvPVX(sv), SvIVX(sv), SvNVX(sv), (UV)numtype));
+    if (SvNVX(sv) < (NV)IV_MIN) {
+	(void)SvIOKp_on(sv);
+	(void)SvNOK_on(sv);
+	SvIVX(sv) = IV_MIN;
+	return IS_NUMBER_UNDERFLOW_IV;
+    }
+    if (SvNVX(sv) > (NV)UV_MAX) {
+	(void)SvIOKp_on(sv);
+	(void)SvNOK_on(sv);
+	SvIsUV_on(sv);
+	SvUVX(sv) = UV_MAX;
+	return IS_NUMBER_OVERFLOW_UV;
+    }
+    (void)SvIOKp_on(sv);
+    (void)SvNOK_on(sv);
+    /* Can't use strtol etc to convert this string.  (See truth table in
+       sv_2iv  */
+    if (SvNVX(sv) <= (UV)IV_MAX) {
+        SvIVX(sv) = I_V(SvNVX(sv));
+        if ((NV)(SvIVX(sv)) == SvNVX(sv)) {
+            SvIOK_on(sv); /* Integer is precise. NOK, IOK */
+        } else {
+            /* Integer is imprecise. NOK, IOKp */
+        }
+        return SvNVX(sv) < 0 ? IS_NUMBER_UNDERFLOW_UV : IS_NUMBER_IV_AND_UV;
+    }
+    SvIsUV_on(sv);
+    SvUVX(sv) = U_V(SvNVX(sv));
+    if ((NV)(SvUVX(sv)) == SvNVX(sv)) {
+        if (SvUVX(sv) == UV_MAX) {
+            /* As we know that NVs don't preserve UVs, UV_MAX cannot
+               possibly be preserved by NV. Hence, it must be overflow.
+               NOK, IOKp */
+            return IS_NUMBER_OVERFLOW_UV;
+        }
+        SvIOK_on(sv); /* Integer is precise. NOK, UOK */
+    } else {
+        /* Integer is imprecise. NOK, IOKp */
+    }
+    return IS_NUMBER_OVERFLOW_IV;
 }

@@ -1,12 +1,31 @@
-void
-Perl_set_context(void *t)
+int
+dup2(int oldfd, int newfd)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-#  ifdef I_MACH_CTHREADS
-    cthread_set_data(cthread_self(), t);
-#  else
-    if (pthread_setspecific(PL_thr_key, t))
-	Perl_croak_nocontext("panic: pthread_setspecific");
-#  endif
+#if defined(HAS_FCNTL) && defined(F_DUPFD)
+    if (oldfd == newfd)
+	return oldfd;
+    PerlLIO_close(newfd);
+    return fcntl(oldfd, F_DUPFD, newfd);
+#else
+#define DUP2_MAX_FDS 256
+    int fdtmp[DUP2_MAX_FDS];
+    I32 fdx = 0;
+    int fd;
+
+    if (oldfd == newfd)
+	return oldfd;
+    PerlLIO_close(newfd);
+    /* good enough for low fd's... */
+    while ((fd = PerlLIO_dup(oldfd)) != newfd && fd >= 0) {
+	if (fdx >= DUP2_MAX_FDS) {
+	    PerlLIO_close(fd);
+	    fd = -1;
+	    break;
+	}
+	fdtmp[fdx++] = fd;
+    }
+    while (fdx > 0)
+	PerlLIO_close(fdtmp[--fdx]);
+    return fd;
 #endif
 }

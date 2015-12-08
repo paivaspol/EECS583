@@ -1,8 +1,10 @@
 void
-Perl_save_generic_svref(pTHX_ SV **sptr)
+Perl_tmps_grow(pTHX_ I32 n)
 {
-    SSCHECK(3);
-    SSPUSHPTR(sptr);
-    SSPUSHPTR(SvREFCNT_inc(*sptr));
-    SSPUSHINT(SAVEt_GENERIC_SVREF);
+#ifndef STRESS_REALLOC
+    if (n < 128)
+	n = (PL_tmps_max < 512) ? 128 : 512;
+#endif
+    PL_tmps_max = PL_tmps_ix + n + 1;
+    Renew(PL_tmps_stack, PL_tmps_max, SV*);
 }

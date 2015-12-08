@@ -1,45 +1,12 @@
-void
-Perl_write_to_stderr(pTHX_ const char* message, int msglen)
+I32
+Perl_ibcmp(pTHX_ const char *s1, const char *s2, register I32 len)
 {
-    IO *io;
-    MAGIC *mg;
-
-    if (PL_stderrgv && SvREFCNT(PL_stderrgv) 
-	&& (io = GvIO(PL_stderrgv))
-	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar))) 
-    {
-	dSP;
-	ENTER;
-	SAVETMPS;
-
-	save_re_context();
-	SAVESPTR(PL_stderrgv);
-	PL_stderrgv = Nullgv;
-
-	PUSHSTACKi(PERLSI_MAGIC);
-
-	PUSHMARK(SP);
-	EXTEND(SP,2);
-	PUSHs(SvTIED_obj((SV*)io, mg));
-	PUSHs(sv_2mortal(newSVpvn(message, msglen)));
-	PUTBACK;
-	call_method("PRINT", G_SCALAR);
-
-	POPSTACK;
-	FREETMPS;
-	LEAVE;
+    register U8 *a = (U8 *)s1;
+    register U8 *b = (U8 *)s2;
+    while (len--) {
+	if (*a != *b && *a != PL_fold[*b])
+	    return 1;
+	a++,b++;
     }
-    else {
-#ifdef USE_SFIO
-	/* SFIO can really mess with your errno */
-	int e = errno;
-#endif
-	PerlIO *serr = Perl_error_log;
-
-	PERL_WRITE_MSG_TO_CONSOLE(serr, message, msglen);
-	(void)PerlIO_flush(serr);
-#ifdef USE_SFIO
-	errno = e;
-#endif
-    }
+    return 0;
 }

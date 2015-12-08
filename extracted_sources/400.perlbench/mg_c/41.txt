@@ -1,15 +1,12 @@
 int
-Perl_magic_settaint(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getglob(pTHX_ SV *sv, MAGIC *mg)
 {
-    if (PL_localizing) {
-	if (PL_localizing == 1)
-	    mg->mg_len <<= 1;
-	else
-	    mg->mg_len >>= 1;
+    if (SvFAKE(sv)) {			/* FAKE globs can get coerced */
+	SvFAKE_off(sv);
+	gv_efullname3(sv,((GV*)sv), "*");
+	SvFAKE_on(sv);
     }
-    else if (PL_tainted)
-	mg->mg_len |= 1;
     else
-	mg->mg_len &= ~1;
+	gv_efullname3(sv,((GV*)sv), "*");	/* a gv value, be nice */
     return 0;
 }

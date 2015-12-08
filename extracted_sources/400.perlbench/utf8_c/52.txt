@@ -1,0 +1,9 @@
+bool
+Perl_is_utf8_mark(pTHX_ U8 *p)
+{
+    if (!is_utf8_char(p))
+	return FALSE;
+    if (!PL_utf8_mark)
+	PL_utf8_mark = swash_init("utf8", "IsM", &PL_sv_undef, 0, 0);
+    return swash_fetch(PL_utf8_mark, p, TRUE) != 0;
+}

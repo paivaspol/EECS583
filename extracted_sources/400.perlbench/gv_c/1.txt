@@ -1,21 +1,9 @@
-void
-Perl_gv_fullname4(pTHX_ SV *sv, GV *gv, const char *prefix, bool keepmain)
+GV *
+Perl_gv_HVadd(pTHX_ register GV *gv)
 {
-    char *name;
-    HV *hv = GvSTASH(gv);
-    if (!hv) {
-	SvOK_off(sv);
-	return;
-    }
-    sv_setpv(sv, prefix ? prefix : "");
-    
-    name = HvNAME(hv);
-    if (!name)
-	name = "__ANON__";
-	
-    if (keepmain || strNE(name, "main")) {
-	sv_catpv(sv,name);
-	sv_catpvn(sv,"::", 2);
-    }
-    sv_catpvn(sv,GvNAME(gv),GvNAMELEN(gv));
+    if (!gv || SvTYPE((SV*)gv) != SVt_PVGV)
+	Perl_croak(aTHX_ "Bad symbol for hash");
+    if (!GvHV(gv))
+	GvHV(gv) = newHV();
+    return gv;
 }

@@ -1,20 +1,13 @@
-void *
-Perl_get_context(void)
+void
+Perl_dump_fds(pTHX_ char *s)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-#  ifdef OLD_PTHREADS_API
-    pthread_addr_t t;
-    if (pthread_getspecific(PL_thr_key, &t))
-	Perl_croak_nocontext("panic: pthread_getspecific");
-    return (void*)t;
-#  else
-#    ifdef I_MACH_CTHREADS
-    return (void*)cthread_data(cthread_self());
-#    else
-    return (void*)PTHREAD_GETSPECIFIC(PL_thr_key);
-#    endif
-#  endif
-#else
-    return (void*)NULL;
-#endif
+    int fd;
+    Stat_t tmpstatbuf;
+
+    PerlIO_printf(Perl_debug_log,"%s", s);
+    for (fd = 0; fd < 32; fd++) {
+	if (PerlLIO_fstat(fd,&tmpstatbuf) >= 0)
+	    PerlIO_printf(Perl_debug_log," %d",fd);
+    }
+    PerlIO_printf(Perl_debug_log,"\n");
 }

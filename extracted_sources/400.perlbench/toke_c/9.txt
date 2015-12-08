@@ -1,0 +1,71 @@
+void
+Perl_lex_start(pTHX_ SV *line)
+{
+    char *s;
+    STRLEN len;
+
+    SAVEI32(PL_lex_dojoin);
+    SAVEI32(PL_lex_brackets);
+    SAVEI32(PL_lex_casemods);
+    SAVEI32(PL_lex_starts);
+    SAVEI32(PL_lex_state);
+    SAVEVPTR(PL_lex_inpat);
+    SAVEI32(PL_lex_inwhat);
+    if (PL_lex_state == LEX_KNOWNEXT) {
+	I32 toke = PL_nexttoke;
+	while (--toke >= 0) {
+	    SAVEI32(PL_nexttype[toke]);
+	    SAVEVPTR(PL_nextval[toke]);
+	}
+	SAVEI32(PL_nexttoke);
+    }
+    SAVECOPLINE(PL_curcop);
+    SAVEPPTR(PL_bufptr);
+    SAVEPPTR(PL_bufend);
+    SAVEPPTR(PL_oldbufptr);
+    SAVEPPTR(PL_oldoldbufptr);
+    SAVEPPTR(PL_last_lop);
+    SAVEPPTR(PL_last_uni);
+    SAVEPPTR(PL_linestart);
+    SAVESPTR(PL_linestr);
+    SAVEGENERICPV(PL_lex_brackstack);
+    SAVEGENERICPV(PL_lex_casestack);
+    SAVEDESTRUCTOR_X(restore_rsfp, PL_rsfp);
+    SAVESPTR(PL_lex_stuff);
+    SAVEI32(PL_lex_defer);
+    SAVEI32(PL_sublex_info.sub_inwhat);
+    SAVESPTR(PL_lex_repl);
+    SAVEINT(PL_expect);
+    SAVEINT(PL_lex_expect);
+
+    PL_lex_state = LEX_NORMAL;
+    PL_lex_defer = 0;
+    PL_expect = XSTATE;
+    PL_lex_brackets = 0;
+    New(899, PL_lex_brackstack, 120, char);
+    New(899, PL_lex_casestack, 12, char);
+    PL_lex_casemods = 0;
+    *PL_lex_casestack = '\0';
+    PL_lex_dojoin = 0;
+    PL_lex_starts = 0;
+    PL_lex_stuff = Nullsv;
+    PL_lex_repl = Nullsv;
+    PL_lex_inpat = 0;
+    PL_nexttoke = 0;
+    PL_lex_inwhat = 0;
+    PL_sublex_info.sub_inwhat = 0;
+    PL_linestr = line;
+    if (SvREADONLY(PL_linestr))
+	PL_linestr = sv_2mortal(newSVsv(PL_linestr));
+    s = SvPV(PL_linestr, len);
+    if (!len || s[len-1] != ';') {
+	if (!(SvFLAGS(PL_linestr) & SVs_TEMP))
+	    PL_linestr = sv_2mortal(newSVsv(PL_linestr));
+	sv_catpvn(PL_linestr, "\n;", 2);
+    }
+    SvTEMP_off(PL_linestr);
+    PL_oldoldbufptr = PL_oldbufptr = PL_bufptr = PL_linestart = SvPVX(PL_linestr);
+    PL_bufend = PL_bufptr + SvCUR(PL_linestr);
+    PL_last_lop = PL_last_uni = Nullch;
+    PL_rsfp = 0;
+}

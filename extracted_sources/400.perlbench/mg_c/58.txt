@@ -1,40 +1,7 @@
-static void
-restore_magic(pTHX_ void *p)
+int
+Perl_magic_freeregexp(pTHX_ SV *sv, MAGIC *mg)
 {
-    MGS* mgs = SSPTR(PTR2IV(p), MGS*);
-    SV* sv = mgs->mgs_sv;
-
-    if (!sv)
-        return;
-
-    if (SvTYPE(sv) >= SVt_PVMG && SvMAGIC(sv))
-    {
-	if (mgs->mgs_flags)
-	    SvFLAGS(sv) |= mgs->mgs_flags;
-	else
-	    mg_magical(sv);
-	if (SvGMAGICAL(sv))
-	    SvFLAGS(sv) &= ~(SVf_IOK|SVf_NOK|SVf_POK);
-    }
-
-    mgs->mgs_sv = NULL;  /* mark the MGS structure as restored */
-
-    /* If we're still on top of the stack, pop us off.  (That condition
-     * will be satisfied if restore_magic was called explicitly, but *not*
-     * if it's being called via leave_scope.)
-     * The reason for doing this is that otherwise, things like sv_2cv()
-     * may leave alloc gunk on the savestack, and some code
-     * (e.g. sighandler) doesn't expect that...
-     */
-    if (PL_savestack_ix == mgs->mgs_ss_ix)
-    {
-	I32 popval = SSPOPINT;
-        assert(popval == SAVEt_DESTRUCTOR_X);
-        PL_savestack_ix -= 2;
-	popval = SSPOPINT;
-        assert(popval == SAVEt_ALLOC);
-	popval = SSPOPINT;
-        PL_savestack_ix -= popval;
-    }
-
+    regexp *re = (regexp *)mg->mg_obj;
+    ReREFCNT_dec(re);
+    return 0;
 }

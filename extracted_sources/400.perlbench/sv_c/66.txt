@@ -1,9 +1,36 @@
-void
-Perl_sv_catpvf_mg_nocontext(SV *sv, const char* pat, ...)
+bool
+Perl_sv_2bool(pTHX_ register SV *sv)
 {
-    dTHX;
-    va_list args;
-    va_start(args, pat);
-    sv_vcatpvf_mg(sv, pat, &args);
-    va_end(args);
+    if (SvGMAGICAL(sv))
+	mg_get(sv);
+
+    if (!SvOK(sv))
+	return 0;
+    if (SvROK(sv)) {
+	SV* tmpsv;
+        if (SvAMAGIC(sv) && (tmpsv=AMG_CALLun(sv,bool_)) &&
+                (!SvROK(tmpsv) || (SvRV(tmpsv) != SvRV(sv))))
+	    return (bool)SvTRUE(tmpsv);
+      return SvRV(sv) != 0;
+    }
+    if (SvPOKp(sv)) {
+	register XPV* Xpvtmp;
+	if ((Xpvtmp = (XPV*)SvANY(sv)) &&
+		(*Xpvtmp->xpv_pv > '0' ||
+		Xpvtmp->xpv_cur > 1 ||
+		(Xpvtmp->xpv_cur && *Xpvtmp->xpv_pv != '0')))
+	    return 1;
+	else
+	    return 0;
+    }
+    else {
+	if (SvIOKp(sv))
+	    return SvIVX(sv) != 0;
+	else {
+	    if (SvNOKp(sv))
+		return SvNVX(sv) != 0.0;
+	    else
+		return FALSE;
+	}
+    }
 }

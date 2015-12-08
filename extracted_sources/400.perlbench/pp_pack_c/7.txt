@@ -1,0 +1,907 @@
+STATIC
+I32
+S_unpack_rec(pTHX_ register tempsym_t* symptr, register char *s, char *strbeg, char *strend, char **new_s )
+{
+    dSP;
+    I32 datumtype;
+    register I32 len = 0;
+    register I32 bits = 0;
+    register char *str;
+    SV *sv;
+    I32 start_sp_offset = SP - PL_stack_base;
+    howlen_t howlen;
+
+    /* These must not be in registers: */
+    I16 ai16;
+    U16 au16;
+    I32 ai32;
+    U32 au32;
+#ifdef HAS_QUAD
+    Quad_t aquad;
+    Uquad_t auquad;
+#endif
+#if SHORTSIZE != SIZE16
+    short ashort;
+    unsigned short aushort;
+#endif
+    int aint;
+    unsigned int auint;
+    long along;
+#if LONGSIZE != SIZE32
+    unsigned long aulong;
+#endif
+    char *aptr;
+    float afloat;
+    double adouble;
+#if defined(HAS_LONG_DOUBLE) && defined(USE_LONG_DOUBLE)
+    long double aldouble;
+#endif
+    IV aiv;
+    UV auv;
+    NV anv;
+
+    I32 checksum = 0;
+    UV cuv = 0;
+    NV cdouble = 0.0;
+    const int bits_in_uv = 8 * sizeof(cuv);
+    char* strrelbeg = s;
+    bool beyond = FALSE;
+    bool explicit_length;
+    bool unpack_only_one = (symptr->flags & FLAG_UNPACK_ONLY_ONE) != 0;
+
+    while (next_symbol(symptr)) {
+        datumtype = symptr->code;
+	/* do first one only unless in list context
+	   / is implemented by unpacking the count, then poping it from the
+	   stack, so must check that we're not in the middle of a /  */
+        if ( unpack_only_one
+	     && (SP - PL_stack_base == start_sp_offset + 1)
+	     && (datumtype != '/') )   /* XXX can this be omitted */
+            break;
+
+        switch( howlen = symptr->howlen ){
+        case e_no_len:
+	case e_number:
+	    len = symptr->length;
+	    break;
+        case e_star:
+	    len = strend - strbeg;	/* long enough */          
+	    break;
+        }
+
+        explicit_length = TRUE;
+      redo_switch:
+        beyond = s >= strend;
+	{
+	    int which = (symptr->code & TYPE_IS_SHRIEKING)
+		? PACK_SIZE_SHRIEKING : PACK_SIZE_NORMAL;
+	    const int rawtype = TYPE_NO_MODIFIERS(datumtype);
+	    int offset = rawtype - packsize[which].first;
+
+	    if (offset >= 0 && offset < packsize[which].size) {
+		/* Data about this template letter  */
+		unsigned char data = packsize[which].array[offset];
+
+		if (data) {
+		    /* data nonzero means we can process this letter.  */
+		    long size = data & PACK_SIZE_MASK;
+		    long howmany = (strend - s) / size;
+		    if (len > howmany)
+			len = howmany;
+
+		    /* In the old code, 'p' was the only type without shortcut
+		       code to curtail unpacking to only one.  As far as I can
+		       see the only point of retaining this anomaly is to make
+		       code such as $_ = unpack "p2", pack "pI", "Hi", 2
+		       continue to segfault. ie, it probably should be
+		       construed as a bug.
+		    */
+
+		    if (!checksum || (data & PACK_SIZE_CANNOT_CSUM)) {
+			if (len && unpack_only_one &&
+			    rawtype != 'p')
+			    len = 1;
+			EXTEND(SP, len);
+			EXTEND_MORTAL(len);
+		    }
+		}
+	    }
+	}
+	switch(TYPE_NO_ENDIANNESS(datumtype)) {
+	default:
+	    Perl_croak(aTHX_ "Invalid type '%c' in unpack", (int)TYPE_NO_MODIFIERS(datumtype) );
+
+	case '%':
+	    if (howlen == e_no_len)
+		len = 16;		/* len is not specified */
+	    checksum = len;
+	    cuv = 0;
+	    cdouble = 0;
+	    continue;
+	    break;
+	case '(':
+	{
+	    char *ss = s;		/* Move from register */
+            tempsym_t savsym = *symptr;
+	    U32 group_modifiers = TYPE_MODIFIERS(datumtype & ~symptr->flags);
+	    symptr->flags |= group_modifiers;
+            symptr->patend = savsym.grpend;
+            symptr->level++;
+	    PUTBACK;
+	    while (len--) {
+  	        symptr->patptr = savsym.grpbeg;
+ 	        unpack_rec(symptr, ss, strbeg, strend, &ss );
+		if (savsym.flags & FLAG_UNPACK_DO_UTF8)
+		    symptr->flags |=  FLAG_UNPACK_DO_UTF8;
+		else
+		    symptr->flags &= ~FLAG_UNPACK_DO_UTF8;
+                if (ss == strend && savsym.howlen == e_star)
+		    break; /* No way to continue */
+	    }
+	    SPAGAIN;
+	    s = ss;
+	    symptr->flags &= ~group_modifiers;
+            savsym.flags = symptr->flags;
+            *symptr = savsym;
+	    break;
+	}
+	case '@':
+	    if (len > strend - strrelbeg)
+		Perl_croak(aTHX_ "'@' outside of string in unpack");
+	    s = strrelbeg + len;
+	    break;
+ 	case 'X' | TYPE_IS_SHRIEKING:
+ 	    if (!len)			/* Avoid division by 0 */
+ 		len = 1;
+ 	    len = (s - strbeg) % len;
+ 	    /* FALL THROUGH */
+	case 'X':
+	    if (len > s - strbeg)
+		Perl_croak(aTHX_ "'X' outside of string in unpack" );
+	    s -= len;
+	    break;
+ 	case 'x' | TYPE_IS_SHRIEKING:
+ 	    if (!len)			/* Avoid division by 0 */
+ 		len = 1;
+ 	    aint = (s - strbeg) % len;
+ 	    if (aint)			/* Other portable ways? */
+ 		len = len - aint;
+ 	    else
+ 		len = 0;
+ 	    /* FALL THROUGH */
+	case 'x':
+	    if (len > strend - s)
+		Perl_croak(aTHX_ "'x' outside of string in unpack");
+	    s += len;
+	    break;
+	case '/':
+	    Perl_croak(aTHX_ "'/' must follow a numeric type in unpack");
+            break;
+	case 'A':
+	case 'Z':
+	case 'a':
+	    if (len > strend - s)
+		len = strend - s;
+	    if (checksum)
+		goto uchar_checksum;
+	    sv = newSVpvn(s, len);
+	    if (len > 0 && (datumtype == 'A' || datumtype == 'Z')) {
+		aptr = s;	/* borrow register */
+		if (datumtype == 'Z') {	/* 'Z' strips stuff after first null */
+		    s = SvPVX(sv);
+		    while (*s)
+			s++;
+		    if (howlen == e_star) /* exact for 'Z*' */
+		        len = s - SvPVX(sv) + 1;
+		}
+		else {		/* 'A' strips both nulls and spaces */
+		    s = SvPVX(sv) + len - 1;
+		    while (s >= SvPVX(sv) && (!*s || isSPACE(*s)))
+			s--;
+		    *++s = '\0';
+		}
+		SvCUR_set(sv, s - SvPVX(sv));
+		s = aptr;	/* unborrow register */
+	    }
+	    s += len;
+	    XPUSHs(sv_2mortal(sv));
+	    break;
+	case 'B':
+	case 'b':
+	    if (howlen == e_star || len > (strend - s) * 8)
+		len = (strend - s) * 8;
+	    if (checksum) {
+		if (!PL_bitcount) {
+		    Newz(601, PL_bitcount, 256, char);
+		    for (bits = 1; bits < 256; bits++) {
+			if (bits & 1)	PL_bitcount[bits]++;
+			if (bits & 2)	PL_bitcount[bits]++;
+			if (bits & 4)	PL_bitcount[bits]++;
+			if (bits & 8)	PL_bitcount[bits]++;
+			if (bits & 16)	PL_bitcount[bits]++;
+			if (bits & 32)	PL_bitcount[bits]++;
+			if (bits & 64)	PL_bitcount[bits]++;
+			if (bits & 128)	PL_bitcount[bits]++;
+		    }
+		}
+		while (len >= 8) {
+		    cuv += PL_bitcount[*(unsigned char*)s++];
+		    len -= 8;
+		}
+		if (len) {
+		    bits = *s++;
+		    if (datumtype == 'b') {
+			while (len-- > 0) {
+			    if (bits & 1) cuv++;
+			    bits >>= 1;
+			}
+		    }
+		    else {
+			while (len-- > 0) {
+			    if (bits & 128) cuv++;
+			    bits <<= 1;
+			}
+		    }
+		}
+		break;
+	    }
+	    sv = NEWSV(35, len + 1);
+	    SvCUR_set(sv, len);
+	    SvPOK_on(sv);
+	    str = SvPVX(sv);
+	    if (datumtype == 'b') {
+		aint = len;
+		for (len = 0; len < aint; len++) {
+		    if (len & 7)		/*SUPPRESS 595*/
+			bits >>= 1;
+		    else
+			bits = *s++;
+		    *str++ = '0' + (bits & 1);
+		}
+	    }
+	    else {
+		aint = len;
+		for (len = 0; len < aint; len++) {
+		    if (len & 7)
+			bits <<= 1;
+		    else
+			bits = *s++;
+		    *str++ = '0' + ((bits & 128) != 0);
+		}
+	    }
+	    *str = '\0';
+	    XPUSHs(sv_2mortal(sv));
+	    break;
+	case 'H':
+	case 'h':
+	    if (howlen == e_star || len > (strend - s) * 2)
+		len = (strend - s) * 2;
+	    sv = NEWSV(35, len + 1);
+	    SvCUR_set(sv, len);
+	    SvPOK_on(sv);
+	    str = SvPVX(sv);
+	    if (datumtype == 'h') {
+		aint = len;
+		for (len = 0; len < aint; len++) {
+		    if (len & 1)
+			bits >>= 4;
+		    else
+			bits = *s++;
+		    *str++ = PL_hexdigit[bits & 15];
+		}
+	    }
+	    else {
+		aint = len;
+		for (len = 0; len < aint; len++) {
+		    if (len & 1)
+			bits <<= 4;
+		    else
+			bits = *s++;
+		    *str++ = PL_hexdigit[(bits >> 4) & 15];
+		}
+	    }
+	    *str = '\0';
+	    XPUSHs(sv_2mortal(sv));
+	    break;
+	case 'c':
+	    while (len-- > 0) {
+		aint = *s++;
+		if (aint >= 128)	/* fake up signed chars */
+		    aint -= 256;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)aint)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)aint;
+		else
+		    cuv += aint;
+	    }
+	    break;
+	case 'C':
+	unpack_C: /* unpack U will jump here if not UTF-8 */
+            if (len == 0) {
+                if (explicit_length) 
+                    symptr->flags &= ~FLAG_UNPACK_DO_UTF8;
+		break;
+	    }
+	    if (checksum) {
+	      uchar_checksum:
+		while (len-- > 0) {
+		    auint = *s++ & 255;
+		    if (checksum > bits_in_uv)
+			cdouble += (NV)auint;
+		    else
+			cuv += auint;
+		}
+	    }
+	    else {
+		while (len-- > 0) {
+		    auint = *s++ & 255;
+		    PUSHs(sv_2mortal(newSViv((IV)auint)));
+		}
+	    }
+	    break;
+	case 'U':
+	    if (len == 0) {
+                if (explicit_length) 
+                    symptr->flags |= FLAG_UNPACK_DO_UTF8;
+		break;
+	    }
+	    if ((symptr->flags & FLAG_UNPACK_DO_UTF8) == 0)
+		 goto unpack_C;
+	    while (len-- > 0 && s < strend) {
+		STRLEN alen;
+		auint = NATIVE_TO_UNI(utf8n_to_uvchr((U8*)s, strend - s, &alen, ckWARN(WARN_UTF8) ? 0 : UTF8_ALLOW_ANYUV));
+		along = alen;
+		s += along;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVuv((UV)auint)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)auint;
+		else
+		    cuv += auint;
+	    }
+	    break;
+	case 's' | TYPE_IS_SHRIEKING:
+#if SHORTSIZE != SIZE16
+	    while (len-- > 0) {
+		COPYNN(s, &ashort, sizeof(short));
+		DO_BO_UNPACK(ashort, s);
+		s += sizeof(short);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)ashort)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)ashort;
+		else
+		    cuv += ashort;
+	    }
+	    break;
+#else
+	    /* Fallthrough! */
+#endif
+	case 's':
+	    while (len-- > 0) {
+		COPY16(s, &ai16);
+		DO_BO_UNPACK(ai16, 16);
+#if U16SIZE > SIZE16
+		if (ai16 > 32767)
+		    ai16 -= 65536;
+#endif
+		s += SIZE16;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)ai16)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)ai16;
+		else
+		    cuv += ai16;
+	    }
+	    break;
+	case 'S' | TYPE_IS_SHRIEKING:
+#if SHORTSIZE != SIZE16
+	    while (len-- > 0) {
+		COPYNN(s, &aushort, sizeof(unsigned short));
+		DO_BO_UNPACK(aushort, s);
+		s += sizeof(unsigned short);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((UV)aushort)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)aushort;
+		else
+		    cuv += aushort;
+	    }
+	    break;
+#else
+            /* Fallhrough! */
+#endif
+	case 'v':
+	case 'n':
+	case 'S':
+	    while (len-- > 0) {
+		COPY16(s, &au16);
+		DO_BO_UNPACK(au16, 16);
+		s += SIZE16;
+#ifdef HAS_NTOHS
+		if (datumtype == 'n')
+		    au16 = PerlSock_ntohs(au16);
+#endif
+#ifdef HAS_VTOHS
+		if (datumtype == 'v')
+		    au16 = vtohs(au16);
+#endif
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((UV)au16)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)au16;
+		else
+		    cuv += au16;
+	    }
+	    break;
+#ifdef PERL_PACK_CAN_SHRIEKSIGN
+	case 'v' | TYPE_IS_SHRIEKING:
+	case 'n' | TYPE_IS_SHRIEKING:
+	    while (len-- > 0) {
+		COPY16(s, &ai16);
+		s += SIZE16;
+#ifdef HAS_NTOHS
+		if (datumtype == ('n' | TYPE_IS_SHRIEKING))
+		    ai16 = (I16)PerlSock_ntohs((U16)ai16);
+#endif
+#ifdef HAS_VTOHS
+		if (datumtype == ('v' | TYPE_IS_SHRIEKING))
+		    ai16 = (I16)vtohs((U16)ai16);
+#endif
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)ai16)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)ai16;
+		else
+		    cuv += ai16;
+	    }
+	    break;
+#endif
+	case 'i':
+	case 'i' | TYPE_IS_SHRIEKING:
+	    while (len-- > 0) {
+		Copy(s, &aint, 1, int);
+		DO_BO_UNPACK(aint, i);
+		s += sizeof(int);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)aint)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)aint;
+		else
+		    cuv += aint;
+	    }
+	    break;
+	case 'I':
+	case 'I' | TYPE_IS_SHRIEKING:
+	    while (len-- > 0) {
+		Copy(s, &auint, 1, unsigned int);
+		DO_BO_UNPACK(auint, i);
+		s += sizeof(unsigned int);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVuv((UV)auint)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)auint;
+		else
+		    cuv += auint;
+	    }
+	    break;
+	case 'j':
+	    while (len-- > 0) {
+		Copy(s, &aiv, 1, IV);
+#if IVSIZE == INTSIZE
+		DO_BO_UNPACK(aiv, i);
+#elif IVSIZE == LONGSIZE
+		DO_BO_UNPACK(aiv, l);
+#elif defined(HAS_QUAD) && IVSIZE == U64SIZE
+		DO_BO_UNPACK(aiv, 64);
+#endif
+		s += IVSIZE;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv(aiv)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)aiv;
+		else
+		    cuv += aiv;
+	    }
+	    break;
+	case 'J':
+	    while (len-- > 0) {
+		Copy(s, &auv, 1, UV);
+#if UVSIZE == INTSIZE
+		DO_BO_UNPACK(auv, i);
+#elif UVSIZE == LONGSIZE
+		DO_BO_UNPACK(auv, l);
+#elif defined(HAS_QUAD) && UVSIZE == U64SIZE
+		DO_BO_UNPACK(auv, 64);
+#endif
+		s += UVSIZE;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVuv(auv)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)auv;
+		else
+		    cuv += auv;
+	    }
+	    break;
+	case 'l' | TYPE_IS_SHRIEKING:
+#if LONGSIZE != SIZE32
+	    while (len-- > 0) {
+		COPYNN(s, &along, sizeof(long));
+		DO_BO_UNPACK(along, l);
+		s += sizeof(long);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)along)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)along;
+		else
+		    cuv += along;
+	    }
+	    break;
+#else
+	    /* Fallthrough! */
+#endif
+	case 'l':
+	    while (len-- > 0) {
+		COPY32(s, &ai32);
+		DO_BO_UNPACK(ai32, 32);
+#if U32SIZE > SIZE32
+		if (ai32 > 2147483647)
+		    ai32 -= 4294967296;
+#endif
+		s += SIZE32;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)ai32)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)ai32;
+		else
+		    cuv += ai32;
+	    }
+	    break;
+	case 'L' | TYPE_IS_SHRIEKING:
+#if LONGSIZE != SIZE32
+	    while (len-- > 0) {
+		COPYNN(s, &aulong, sizeof(unsigned long));
+		DO_BO_UNPACK(aulong, l);
+		s += sizeof(unsigned long);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVuv((UV)aulong)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)aulong;
+		else
+		    cuv += aulong;
+	    }
+	    break;
+#else
+            /* Fall through! */
+#endif
+	case 'V':
+	case 'N':
+	case 'L':
+	    while (len-- > 0) {
+		COPY32(s, &au32);
+		DO_BO_UNPACK(au32, 32);
+		s += SIZE32;
+#ifdef HAS_NTOHL
+		if (datumtype == 'N')
+		    au32 = PerlSock_ntohl(au32);
+#endif
+#ifdef HAS_VTOHL
+		if (datumtype == 'V')
+		    au32 = vtohl(au32);
+#endif
+		 if (!checksum) {
+		     PUSHs(sv_2mortal(newSVuv((UV)au32)));
+		 }
+		 else if (checksum > bits_in_uv)
+		     cdouble += (NV)au32;
+		 else
+		     cuv += au32;
+	    }
+	    break;
+#ifdef PERL_PACK_CAN_SHRIEKSIGN
+	case 'V' | TYPE_IS_SHRIEKING:
+	case 'N' | TYPE_IS_SHRIEKING:
+	    while (len-- > 0) {
+		COPY32(s, &ai32);
+		s += SIZE32;
+#ifdef HAS_NTOHL
+		if (datumtype == ('N' | TYPE_IS_SHRIEKING))
+		    ai32 = (I32)PerlSock_ntohl((U32)ai32);
+#endif
+#ifdef HAS_VTOHL
+		if (datumtype == ('V' | TYPE_IS_SHRIEKING))
+		    ai32 = (I32)vtohl((U32)ai32);
+#endif
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSViv((IV)ai32)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)ai32;
+		else
+		    cuv += ai32;
+	    }
+	    break;
+#endif
+	case 'p':
+	    while (len-- > 0) {
+		assert (sizeof(char*) <= strend - s);
+		Copy(s, &aptr, 1, char*);
+		DO_BO_UNPACK_P(aptr);
+		s += sizeof(char*);
+		/* newSVpv generates undef if aptr is NULL */
+		PUSHs(sv_2mortal(newSVpv(aptr, 0)));
+	    }
+	    break;
+	case 'w':
+	    {
+		UV auv = 0;
+		U32 bytes = 0;
+		
+		while ((len > 0) && (s < strend)) {
+		    auv = (auv << 7) | (*s & 0x7f);
+		    /* UTF8_IS_XXXXX not right here - using constant 0x80 */
+		    if ((U8)(*s++) < 0x80) {
+			bytes = 0;
+			PUSHs(sv_2mortal(newSVuv(auv)));
+			len--;
+			auv = 0;
+		    }
+		    else if (++bytes >= sizeof(UV)) {	/* promote to string */
+			char *t;
+			STRLEN n_a;
+
+			sv = Perl_newSVpvf(aTHX_ "%.*"UVf, (int)TYPE_DIGITS(UV), auv);
+			while (s < strend) {
+			    sv = mul128(sv, (U8)(*s & 0x7f));
+			    if (!(*s++ & 0x80)) {
+				bytes = 0;
+				break;
+			    }
+			}
+			t = SvPV(sv, n_a);
+			while (*t == '0')
+			    t++;
+			sv_chop(sv, t);
+			PUSHs(sv_2mortal(sv));
+			len--;
+			auv = 0;
+		    }
+		}
+		if ((s >= strend) && bytes)
+		    Perl_croak(aTHX_ "Unterminated compressed integer in unpack");
+	    }
+	    break;
+	case 'P':
+	    if (symptr->howlen == e_star)
+	        Perl_croak(aTHX_ "'P' must have an explicit size in unpack");
+	    EXTEND(SP, 1);
+	    if (sizeof(char*) > strend - s)
+		break;
+	    else {
+		Copy(s, &aptr, 1, char*);
+		DO_BO_UNPACK_P(aptr);
+		s += sizeof(char*);
+	    }
+	    /* newSVpvn generates undef if aptr is NULL */
+	    PUSHs(sv_2mortal(newSVpvn(aptr, len)));
+	    break;
+#ifdef HAS_QUAD
+	case 'q':
+	    while (len-- > 0) {
+		assert (s + sizeof(Quad_t) <= strend);
+		Copy(s, &aquad, 1, Quad_t);
+		DO_BO_UNPACK(aquad, 64);
+		s += sizeof(Quad_t);
+		if (!checksum) {
+                    PUSHs(sv_2mortal((aquad >= IV_MIN && aquad <= IV_MAX) ?
+				     newSViv((IV)aquad) : newSVnv((NV)aquad)));
+                }
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)aquad;
+		else
+		    cuv += aquad;
+	    }
+	    break;
+	case 'Q':
+	    while (len-- > 0) {
+		assert (s + sizeof(Uquad_t) <= strend);
+		Copy(s, &auquad, 1, Uquad_t);
+		DO_BO_UNPACK(auquad, 64);
+		s += sizeof(Uquad_t);
+		if (!checksum) {
+		    PUSHs(sv_2mortal((auquad <= UV_MAX) ?
+				     newSVuv((UV)auquad) : newSVnv((NV)auquad)));
+		}
+		else if (checksum > bits_in_uv)
+		    cdouble += (NV)auquad;
+		else
+		    cuv += auquad;
+	    }
+	    break;
+#endif
+	/* float and double added gnb@melba.bby.oz.au 22/11/89 */
+	case 'f':
+	    while (len-- > 0) {
+		Copy(s, &afloat, 1, float);
+		DO_BO_UNPACK_N(afloat, float);
+		s += sizeof(float);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVnv((NV)afloat)));
+		}
+		else {
+		    cdouble += afloat;
+		}
+	    }
+	    break;
+	case 'd':
+	    while (len-- > 0) {
+		Copy(s, &adouble, 1, double);
+		DO_BO_UNPACK_N(adouble, double);
+		s += sizeof(double);
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVnv((NV)adouble)));
+		}
+		else {
+		    cdouble += adouble;
+		}
+	    }
+	    break;
+	case 'F':
+	    while (len-- > 0) {
+		Copy(s, &anv, 1, NV);
+		DO_BO_UNPACK_N(anv, NV);
+		s += NVSIZE;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVnv(anv)));
+		}
+		else {
+		    cdouble += anv;
+		}
+	    }
+	    break;
+#if defined(HAS_LONG_DOUBLE) && defined(USE_LONG_DOUBLE)
+	case 'D':
+	    while (len-- > 0) {
+		Copy(s, &aldouble, 1, long double);
+		DO_BO_UNPACK_N(aldouble, long double);
+		s += LONG_DOUBLESIZE;
+		if (!checksum) {
+		    PUSHs(sv_2mortal(newSVnv((NV)aldouble)));
+		}
+		else {cdouble += aldouble;
+		}
+	    }
+	    break;
+#endif
+	case 'u':
+	    /* MKS:
+	     * Initialise the decode mapping.  By using a table driven
+             * algorithm, the code will be character-set independent
+             * (and just as fast as doing character arithmetic)
+             */
+            if (PL_uudmap['M'] == 0) {
+                int i;
+
+                for (i = 0; i < sizeof(PL_uuemap); i += 1)
+                    PL_uudmap[(U8)PL_uuemap[i]] = i;
+                /*
+                 * Because ' ' and '`' map to the same value,
+                 * we need to decode them both the same.
+                 */
+                PL_uudmap[' '] = 0;
+            }
+
+	    along = (strend - s) * 3 / 4;
+	    sv = NEWSV(42, along);
+	    if (along)
+		SvPOK_on(sv);
+	    while (s < strend && *s > ' ' && ISUUCHAR(*s)) {
+		I32 a, b, c, d;
+		char hunk[4];
+
+		hunk[3] = '\0';
+		len = PL_uudmap[*(U8*)s++] & 077;
+		while (len > 0) {
+		    if (s < strend && ISUUCHAR(*s))
+			a = PL_uudmap[*(U8*)s++] & 077;
+ 		    else
+ 			a = 0;
+		    if (s < strend && ISUUCHAR(*s))
+			b = PL_uudmap[*(U8*)s++] & 077;
+ 		    else
+ 			b = 0;
+		    if (s < strend && ISUUCHAR(*s))
+			c = PL_uudmap[*(U8*)s++] & 077;
+ 		    else
+ 			c = 0;
+		    if (s < strend && ISUUCHAR(*s))
+			d = PL_uudmap[*(U8*)s++] & 077;
+		    else
+			d = 0;
+		    hunk[0] = (char)((a << 2) | (b >> 4));
+		    hunk[1] = (char)((b << 4) | (c >> 2));
+		    hunk[2] = (char)((c << 6) | d);
+		    sv_catpvn(sv, hunk, (len > 3) ? 3 : len);
+		    len -= 3;
+		}
+		if (*s == '\n')
+		    s++;
+		else	/* possible checksum byte */
+		    if (s + 1 < strend && s[1] == '\n')
+		        s += 2;
+	    }
+	    XPUSHs(sv_2mortal(sv));
+	    break;
+	}
+
+	if (checksum) {
+	    if (strchr("fFdD", TYPE_NO_MODIFIERS(datumtype)) ||
+	      (checksum > bits_in_uv &&
+	       strchr("cCsSiIlLnNUvVqQjJ", TYPE_NO_MODIFIERS(datumtype))) ) {
+		NV trouble;
+
+                adouble = (NV) (1 << (checksum & 15));
+		while (checksum >= 16) {
+		    checksum -= 16;
+		    adouble *= 65536.0;
+		}
+		while (cdouble < 0.0)
+		    cdouble += adouble;
+		cdouble = Perl_modf(cdouble / adouble, &trouble) * adouble;
+		sv = newSVnv(cdouble);
+	    }
+	    else {
+		if (checksum < bits_in_uv) {
+		    UV mask = ((UV)1 << checksum) - 1;
+		    cuv &= mask;
+		}
+		sv = newSVuv(cuv);
+	    }
+	    XPUSHs(sv_2mortal(sv));
+	    checksum = 0;
+	}
+    
+        if (symptr->flags & FLAG_SLASH){
+            if (SP - PL_stack_base - start_sp_offset <= 0)
+                Perl_croak(aTHX_ "'/' must follow a numeric type in unpack");
+            if( next_symbol(symptr) ){
+              if( symptr->howlen == e_number )
+		Perl_croak(aTHX_ "Count after length/code in unpack" );
+              if( beyond ){
+         	/* ...end of char buffer then no decent length available */
+		Perl_croak(aTHX_ "length/code after end of string in unpack" );
+              } else {
+         	/* take top of stack (hope it's numeric) */
+                len = POPi;
+                if( len < 0 )
+                    Perl_croak(aTHX_ "Negative '/' count in unpack" );
+              }
+            } else {
+		Perl_croak(aTHX_ "Code missing after '/' in unpack" );
+            }
+            datumtype = symptr->code;
+            explicit_length = FALSE;
+	    goto redo_switch;
+        }
+    }
+
+    if (new_s)
+	*new_s = s;
+    PUTBACK;
+    return SP - PL_stack_base - start_sp_offset;
+}

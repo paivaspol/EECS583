@@ -1,21 +1,13 @@
 void
-Perl_hv_free_ent(pTHX_ HV *hv, register HE *entry)
+Perl_free_tied_hv_pool(pTHX)
 {
-    SV *val;
-
-    if (!entry)
-	return;
-    val = HeVAL(entry);
-    if (val && isGV(val) && GvCVu(val) && HvNAME(hv))
-	PL_sub_generation++;	/* may be deletion of method from stash */
-    SvREFCNT_dec(val);
-    if (HeKLEN(entry) == HEf_SVKEY) {
-	SvREFCNT_dec(HeKEY_sv(entry));
-	Safefree(HeKEY_hek(entry));
+    HE *ohe;
+    HE *he = PL_hv_fetch_ent_mh;
+    while (he) {
+	Safefree(HeKEY_hek(he));
+	ohe = he;
+	he = HeNEXT(he);
+	del_HE(ohe);
     }
-    else if (HvSHAREKEYS(hv))
-	unshare_hek(HeKEY_hek(entry));
-    else
-	Safefree(HeKEY_hek(entry));
-    del_HE(entry);
+    PL_hv_fetch_ent_mh = Nullhe;
 }

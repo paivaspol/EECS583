@@ -1,6 +1,9 @@
-void
-Perl_sv_setnv_mg(pTHX_ register SV *sv, NV num)
+STATIC void
+S_del_xiv(pTHX_ XPVIV *p)
 {
-    sv_setnv(sv,num);
-    SvSETMAGIC(sv);
+    IV* xiv = (IV*)((char*)(p) + STRUCT_OFFSET(XPVIV, xiv_iv));
+    LOCK_SV_MUTEX;
+    *(IV**)xiv = PL_xiv_root;
+    PL_xiv_root = xiv;
+    UNLOCK_SV_MUTEX;
 }

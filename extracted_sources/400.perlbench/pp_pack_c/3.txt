@@ -1,0 +1,12 @@
+STATIC char *
+S_get_num(pTHX_ register char *patptr, I32 *lenptr )
+{
+  I32 len = *patptr++ - '0';
+  while (isDIGIT(*patptr)) {
+    if (len >= 0x7FFFFFFF/10)
+      Perl_croak(aTHX_ "pack/unpack repeat count overflow");
+    len = (len * 10) + (*patptr++ - '0');
+  }
+  *lenptr = len;
+  return patptr;
+}

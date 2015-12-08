@@ -1,0 +1,25 @@
+STATIC void
+S_regtail(pTHX_ RExC_state_t *pRExC_state, regnode *p, regnode *val)
+{
+    register regnode *scan;
+    register regnode *temp;
+
+    if (SIZE_ONLY)
+	return;
+
+    /* Find last node. */
+    scan = p;
+    for (;;) {
+	temp = regnext(scan);
+	if (temp == NULL)
+	    break;
+	scan = temp;
+    }
+
+    if (reg_off_by_arg[OP(scan)]) {
+	ARG_SET(scan, val - scan);
+    }
+    else {
+	NEXT_OFF(scan) = val - scan;
+    }
+}

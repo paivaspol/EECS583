@@ -1,0 +1,25 @@
+I32
+Perl_sv_true(pTHX_ register SV *sv)
+{
+    if (!sv)
+	return 0;
+    if (SvPOK(sv)) {
+	register XPV* tXpv;
+	if ((tXpv = (XPV*)SvANY(sv)) &&
+		(tXpv->xpv_cur > 1 ||
+		(tXpv->xpv_cur && *tXpv->xpv_pv != '0')))
+	    return 1;
+	else
+	    return 0;
+    }
+    else {
+	if (SvIOK(sv))
+	    return SvIVX(sv) != 0;
+	else {
+	    if (SvNOK(sv))
+		return SvNVX(sv) != 0.0;
+	    else
+		return sv_2bool(sv);
+	}
+    }
+}

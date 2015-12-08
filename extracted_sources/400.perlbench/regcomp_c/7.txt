@@ -1,0 +1,57 @@
+STATIC void
+S_cl_or(pTHX_ RExC_state_t *pRExC_state, struct regnode_charclass_class *cl, struct regnode_charclass_class *or_with)
+{
+    if (or_with->flags & ANYOF_INVERT) {
+	/* We do not use
+	 * (B1 | CL1) | (!B2 & !CL2) = (B1 | !B2 & !CL2) | (CL1 | (!B2 & !CL2))
+	 *   <= (B1 | !B2) | (CL1 | !CL2)
+	 * which is wasteful if CL2 is small, but we ignore CL2:
+	 *   (B1 | CL1) | (!B2 & !CL2) <= (B1 | CL1) | !B2 = (B1 | !B2) | CL1
+	 * XXXX Can we handle case-fold?  Unclear:
+	 *   (OK1(i) | OK1(i')) | !(OK1(i) | OK1(i')) =
+	 *   (OK1(i) | OK1(i')) | (!OK1(i) & !OK1(i'))
+	 */
+	if ( (or_with->flags & ANYOF_LOCALE) == (cl->flags & ANYOF_LOCALE)
+	     && !(or_with->flags & ANYOF_FOLD)
+	     && !(cl->flags & ANYOF_FOLD) ) {
+	    int i;
+
+	    for (i = 0; i < ANYOF_BITMAP_SIZE; i++)
+		cl->bitmap[i] |= ~or_with->bitmap[i];
+	} /* XXXX: logic is complicated otherwise */
+	else {
+	    cl_anything(pRExC_state, cl);
+	}
+    } else {
+	/* (B1 | CL1) | (B2 | CL2) = (B1 | B2) | (CL1 | CL2)) */
+	if ( (or_with->flags & ANYOF_LOCALE) == (cl->flags & ANYOF_LOCALE)
+	     && (!(or_with->flags & ANYOF_FOLD)
+		 || (cl->flags & ANYOF_FOLD)) ) {
+	    int i;
+
+	    /* OR char bitmap and class bitmap separately */
+	    for (i = 0; i < ANYOF_BITMAP_SIZE; i++)
+		cl->bitmap[i] |= or_with->bitmap[i];
+	    if (or_with->flags & ANYOF_CLASS) {
+		for (i = 0; i < ANYOF_CLASSBITMAP_SIZE; i++)
+		    cl->classflags[i] |= or_with->classflags[i];
+		cl->flags |= ANYOF_CLASS;
+	    }
+	}
+	else { /* XXXX: logic is complicated, leave it along for a moment. */
+	    cl_anything(pRExC_state, cl);
+	}
+    }
+    if (or_with->flags & ANYOF_EOS)
+	cl->flags |= ANYOF_EOS;
+
+    if (cl->flags & ANYOF_UNICODE && or_with->flags & ANYOF_UNICODE &&
+	ARG(cl) != ARG(or_with)) {
+	cl->flags |= ANYOF_UNICODE_ALL;
+	cl->flags &= ~ANYOF_UNICODE;
+    }
+    if (or_with->flags & ANYOF_UNICODE_ALL) {
+	cl->flags |= ANYOF_UNICODE_ALL;
+	cl->flags &= ~ANYOF_UNICODE;
+    }
+}

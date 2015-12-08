@@ -1,10 +1,20 @@
 int
-Perl_rsignal_restore(pTHX_ int signo, Sigsave_t *save)
-{
-#if defined(USE_ITHREADS) && !defined(WIN32)
-    /* only "parent" interpreter can diddle signals */
-    if (PL_curinterp != aTHX)
-	return -1;
 #endif
-    return (PerlProc_signal(signo, *save) == SIG_ERR) ? -1 : 0;
+vsprintf(char *dest, const char *pat, char *args)
+{
+    FILE fakebuf;
+
+    fakebuf._ptr = dest;
+    fakebuf._cnt = 32767;
+#ifndef _IOSTRG
+#define _IOSTRG 0
+#endif
+    fakebuf._flag = _IOWRT|_IOSTRG;
+    _doprnt(pat, args, &fakebuf);	/* what a kludge */
+    (void)putc('\0', &fakebuf);
+#ifdef USE_CHAR_VSPRINTF
+    return(dest);
+#else
+    return 0;		/* perl doesn't use return value */
+#endif
 }

@@ -1,14 +1,11 @@
-int
-Perl_sv_backoff(pTHX_ register SV *sv)
+void
+Perl_sv_clean_objs(pTHX)
 {
-    assert(SvOOK(sv));
-    if (SvIVX(sv)) {
-	char *s = SvPVX(sv);
-	SvLEN(sv) += SvIVX(sv);
-	SvPVX(sv) -= SvIVX(sv);
-	SvIV_set(sv, 0);
-	Move(s, SvPVX(sv), SvCUR(sv)+1, char);
-    }
-    SvFLAGS(sv) &= ~SVf_OOK;
-    return 0;
+    PL_in_clean_objs = TRUE;
+    visit(do_clean_objs, SVf_ROK, SVf_ROK);
+#ifndef DISABLE_DESTRUCTOR_KLUDGE
+    /* some barnacles may yet remain, clinging to typeglobs */
+    visit(do_clean_named_objs, SVt_PVGV, SVTYPEMASK);
+#endif
+    PL_in_clean_objs = FALSE;
 }

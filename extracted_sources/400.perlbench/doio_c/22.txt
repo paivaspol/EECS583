@@ -1,0 +1,31 @@
+I32
+Perl_do_ipcget(pTHX_ I32 optype, SV **mark, SV **sp)
+{
+    key_t key;
+    I32 n, flags;
+
+    key = (key_t)SvNVx(*++mark);
+    n = (optype == OP_MSGGET) ? 0 : SvIVx(*++mark);
+    flags = SvIVx(*++mark);
+    SETERRNO(0,0);
+    switch (optype)
+    {
+#ifdef HAS_MSG
+    case OP_MSGGET:
+	return msgget(key, flags);
+#endif
+#ifdef HAS_SEM
+    case OP_SEMGET:
+	return semget(key, n, flags);
+#endif
+#ifdef HAS_SHM
+    case OP_SHMGET:
+	return shmget(key, n, flags);
+#endif
+#if !defined(HAS_MSG) || !defined(HAS_SEM) || !defined(HAS_SHM)
+    default:
+	Perl_croak(aTHX_ "%s not implemented", PL_op_desc[optype]);
+#endif
+    }
+    return -1;			/* should never happen */
+}

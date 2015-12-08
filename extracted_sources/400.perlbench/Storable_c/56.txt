@@ -1,21 +1,21 @@
-static SV *retrieve_netint(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_lutf8str(pTHX_ stcxt_t *cxt, char *cname)
 {
-	SV *sv;
-	I32 iv;
+    SV *sv;
 
-	TRACEME(("retrieve_netint (#%d)", cxt->tagnum));
+    TRACEME(("retrieve_lutf8str"));
 
-	READ_I32(iv);
-#ifdef HAS_NTOHL
-	sv = newSViv((int) ntohl(iv));
-	TRACEME(("network integer %d", (int) ntohl(iv)));
+    sv = retrieve_lscalar(aTHX_ cxt, cname);
+    if (sv) {
+#ifdef HAS_UTF8_SCALARS
+        SvUTF8_on(sv);
 #else
-	sv = newSViv(iv);
-	TRACEME(("network integer (as-is) %d", iv));
+        if (cxt->use_bytes < 0)
+            cxt->use_bytes
+                = (SvTRUE(get_sv("Storable::drop_utf8", TRUE))
+                   ? 1 : 0);
+        if (cxt->use_bytes == 0)
+            UTF8_CROAK();
 #endif
-	SEEN(sv, cname, 0);	/* Associate this new scalar with tag "tagnum" */
-
-	TRACEME(("ok (retrieve_netint at 0x%"UVxf")", PTR2UV(sv)));
-
-	return sv;
+    }
+    return sv;
 }

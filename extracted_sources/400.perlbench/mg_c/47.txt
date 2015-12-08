@@ -1,21 +1,13 @@
 int
-Perl_magic_killbackrefs(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getvec(pTHX_ SV *sv, MAGIC *mg)
 {
-    AV *av = (AV*)mg->mg_obj;
-    SV **svp = AvARRAY(av);
-    I32 i = AvFILLp(av);
-    while (i >= 0) {
-	if (svp[i]) {
-	    if (!SvWEAKREF(svp[i]))
-		Perl_croak(aTHX_ "panic: magic_killbackrefs");
-	    /* XXX Should we check that it hasn't changed? */
-	    SvRV(svp[i]) = 0;
-	    SvOK_off(svp[i]);
-	    SvWEAKREF_off(svp[i]);
-	    svp[i] = Nullsv;
-	}
-	i--;
+    SV *lsv = LvTARG(sv);
+
+    if (!lsv) {
+	SvOK_off(sv);
+	return 0;
     }
-    SvREFCNT_dec(av); /* remove extra count added by sv_add_backref() */
+
+    sv_setuv(sv, do_vecget(lsv, LvTARGOFF(sv), LvTARGLEN(sv)));
     return 0;
 }

@@ -1,25 +1,6 @@
-static char *
-F0convert(NV nv, char *endbuf, STRLEN *len)
+void
+Perl_sv_setsv_mg(pTHX_ SV *dstr, register SV *sstr)
 {
-    int neg = nv < 0;
-    UV uv;
-    char *p = endbuf;
-
-    if (neg)
-	nv = -nv;
-    if (nv < UV_MAX) {
-	nv += 0.5;
-	uv = (UV)nv;
-	if (uv & 1 && uv == nv)
-	    uv--;			/* Round to even */
-	do {
-	    unsigned dig = uv % 10;
-	    *--p = '0' + dig;
-	} while (uv /= 10);
-	if (neg)
-	    *--p = '-';
-	*len = endbuf - p;
-	return p;
-    }
-    return Nullch;
+    sv_setsv(dstr,sstr);
+    SvSETMAGIC(dstr);
 }

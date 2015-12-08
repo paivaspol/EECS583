@@ -1,0 +1,93 @@
+void
+Perl_pregfree(pTHX_ struct regexp *r)
+{
+#ifdef DEBUGGING
+    SV *dsv = PERL_DEBUG_PAD_ZERO(0);
+#endif
+
+    if (!r || (--r->refcnt > 0))
+	return;
+    DEBUG_r({
+	 int len;
+         char *s;
+
+	 s = (r->reganch & ROPT_UTF8) ? pv_uni_display(dsv, (U8*)r->precomp,
+		r->prelen, 60, UNI_DISPLAY_REGEX)
+            : pv_display(dsv, r->precomp, r->prelen, 0, 60);
+	 len = SvCUR(dsv);
+	 if (!PL_colorset)
+	      reginitcolors();
+	 PerlIO_printf(Perl_debug_log,
+		       "%sFreeing REx:%s `%s%*.*s%s%s'\n",
+		       PL_colors[4],PL_colors[5],PL_colors[0],
+		       len, len, s,
+		       PL_colors[1],
+		       len > 60 ? "..." : "");
+    });
+
+    if (r->precomp)
+	Safefree(r->precomp);
+    if (r->offsets)             /* 20010421 MJD */
+	Safefree(r->offsets);
+    if (RX_MATCH_COPIED(r))
+	Safefree(r->subbeg);
+    if (r->substrs) {
+	if (r->anchored_substr)
+	    SvREFCNT_dec(r->anchored_substr);
+	if (r->anchored_utf8)
+	    SvREFCNT_dec(r->anchored_utf8);
+	if (r->float_substr)
+	    SvREFCNT_dec(r->float_substr);
+	if (r->float_utf8)
+	    SvREFCNT_dec(r->float_utf8);
+	Safefree(r->substrs);
+    }
+    if (r->data) {
+	int n = r->data->count;
+	PAD* new_comppad = NULL;
+	PAD* old_comppad;
+	PADOFFSET refcnt;
+
+	while (--n >= 0) {
+          /* If you add a ->what type here, update the comment in regcomp.h */
+	    switch (r->data->what[n]) {
+	    case 's':
+		SvREFCNT_dec((SV*)r->data->data[n]);
+		break;
+	    case 'f':
+		Safefree(r->data->data[n]);
+		break;
+	    case 'p':
+		new_comppad = (AV*)r->data->data[n];
+		break;
+	    case 'o':
+		if (new_comppad == NULL)
+		    Perl_croak(aTHX_ "panic: pregfree comppad");
+		PAD_SAVE_LOCAL(old_comppad,
+		    /* Watch out for global destruction's random ordering. */
+		    (SvTYPE(new_comppad) == SVt_PVAV) ?
+		    		new_comppad : Null(PAD *)
+		);
+		OP_REFCNT_LOCK;
+		refcnt = OpREFCNT_dec((OP_4tree*)r->data->data[n]);
+		OP_REFCNT_UNLOCK;
+		if (!refcnt)
+                    op_free((OP_4tree*)r->data->data[n]);
+
+		PAD_RESTORE_LOCAL(old_comppad);
+		SvREFCNT_dec((SV*)new_comppad);
+		new_comppad = NULL;
+		break;
+	    case 'n':
+	        break;
+	    default:
+		Perl_croak(aTHX_ "panic: regfree data code '%c'", r->data->what[n]);
+	    }
+	}
+	Safefree(r->data->what);
+	Safefree(r->data);
+    }
+    Safefree(r->startp);
+    Safefree(r->endp);
+    Safefree(r);
+}

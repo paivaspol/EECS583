@@ -1,21 +1,62 @@
-static SV *retrieve_tied_hash(pTHX_ stcxt_t *cxt, char *cname)
+static SV *retrieve_overloaded(pTHX_ stcxt_t *cxt, char *cname)
 {
-	SV *tv;
+	SV *rv;
 	SV *sv;
+	HV *stash;
 
-	TRACEME(("retrieve_tied_hash (#%d)", cxt->tagnum));
+	TRACEME(("retrieve_overloaded (#%d)", cxt->tagnum));
 
-	tv = NEWSV(10002, 0);
-	SEEN(tv, cname, 0);			/* Will return if tv is null */
-	sv = retrieve(aTHX_ cxt, 0);		/* Retrieve <object> */
+	/*
+	 * Same code as retrieve_ref(), duplicated to avoid extra call.
+	 */
+
+	rv = NEWSV(10002, 0);
+	SEEN(rv, cname, 0);		/* Will return if rv is null */
+	sv = retrieve(aTHX_ cxt, 0);	/* Retrieve <object> */
 	if (!sv)
-		return (SV *) 0;		/* Failed */
+		return (SV *) 0;	/* Failed */
 
-	sv_upgrade(tv, SVt_PVHV);
-	sv_magic(tv, sv, 'P', Nullch, 0);
-	SvREFCNT_dec(sv);			/* Undo refcnt inc from sv_magic() */
+	/*
+	 * WARNING: breaks RV encapsulation.
+	 */
 
-	TRACEME(("ok (retrieve_tied_hash at 0x%"UVxf")", PTR2UV(tv)));
+	sv_upgrade(rv, SVt_RV);
+	SvRV(rv) = sv;				/* $rv = \$sv */
+	SvROK_on(rv);
 
-	return tv;
+	/*
+	 * Restore overloading magic.
+	 */
+
+	stash = SvTYPE(sv) ? (HV *) SvSTASH (sv) : 0;
+	if (!stash) {
+		CROAK(("Cannot restore overloading on %s(0x%"UVxf
+		       ") (package <unknown>)",
+		       sv_reftype(sv, FALSE),
+		       PTR2UV(sv)));
+	}
+	if (!Gv_AMG(stash)) {
+		SV *psv = newSVpvn("require ", 8);
+		const char *package = HvNAME(stash);
+		sv_catpv(psv, package);
+
+		TRACEME(("No overloading defined for package %s", package));
+		TRACEME(("Going to require module '%s' with '%s'", package, SvPVX(psv)));
+
+		eval_sv(psv, G_DISCARD);
+		sv_free(psv);
+		if (!Gv_AMG(stash)) {
+			CROAK(("Cannot restore overloading on %s(0x%"UVxf
+			       ") (package %s) (even after a \"require %s;\")",
+			       sv_reftype(sv, FALSE),
+			       PTR2UV(sv),
+			       package, package));
+		}
+	}
+
+	SvAMAGIC_on(rv);
+
+	TRACEME(("ok (retrieve_overloaded at 0x%"UVxf")", PTR2UV(rv)));
+
+	return rv;
 }

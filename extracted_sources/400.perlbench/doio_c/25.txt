@@ -1,0 +1,36 @@
+I32
+Perl_do_msgrcv(pTHX_ SV **mark, SV **sp)
+{
+#ifdef HAS_MSG
+    SV *mstr;
+    char *mbuf;
+    long mtype;
+    I32 id, msize, flags, ret;
+    STRLEN len;
+
+    id = SvIVx(*++mark);
+    mstr = *++mark;
+    /* suppress warning when reading into undef var --jhi */
+    if (! SvOK(mstr))
+	sv_setpvn(mstr, "", 0);
+    msize = SvIVx(*++mark);
+    mtype = (long)SvIVx(*++mark);
+    flags = SvIVx(*++mark);
+    SvPV_force(mstr, len);
+    mbuf = SvGROW(mstr, sizeof(long)+msize+1);
+
+    SETERRNO(0,0);
+    ret = msgrcv(id, (struct msgbuf *)mbuf, msize, mtype, flags);
+    if (ret >= 0) {
+	SvCUR_set(mstr, sizeof(long)+ret);
+	*SvEND(mstr) = '\0';
+#ifndef INCOMPLETE_TAINTS
+	/* who knows who has been playing with this message? */
+	SvTAINTED_on(mstr);
+#endif
+    }
+    return ret;
+#else
+    Perl_croak(aTHX_ "msgrcv not implemented");
+#endif
+}

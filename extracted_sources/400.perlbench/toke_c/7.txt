@@ -1,0 +1,21 @@
+static void
+strip_return(SV *sv)
+{
+    register char *s = SvPVX(sv);
+    register char *e = s + SvCUR(sv);
+    /* outer loop optimized to do nothing if there are no CR-LFs */
+    while (s < e) {
+	if (*s++ == '\r' && *s == '\n') {
+	    /* hit a CR-LF, need to copy the rest */
+	    register char *d = s - 1;
+	    *d++ = *s++;
+	    while (s < e) {
+		if (*s == '\r' && s[1] == '\n')
+		    s++;
+		*d++ = *s++;
+	    }
+	    SvCUR(sv) -= s - d;
+	    return;
+	}
+    }
+}

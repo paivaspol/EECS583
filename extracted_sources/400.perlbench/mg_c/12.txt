@@ -1,20 +1,75 @@
 int
-Perl_magic_set_all_env(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setenv(pTHX_ SV *sv, MAGIC *mg)
 {
-#if defined(VMS)
-    Perl_die(aTHX_ "Can't make list assignment to %%ENV on this system");
-#else
-    if (PL_localizing) {
-	HE* entry;
-	STRLEN n_a;
-	magic_clear_all_env(sv,mg);
-	hv_iterinit((HV*)sv);
-	while ((entry = hv_iternext((HV*)sv))) {
-	    I32 keylen;
-	    my_setenv(hv_iterkey(entry, &keylen),
-		      SvPV(hv_iterval((HV*)sv, entry), n_a));
-	}
+    register char *s;
+    char *ptr;
+    STRLEN len, klen;
+
+    s = SvPV(sv,len);
+    ptr = MgPV(mg,klen);
+    my_setenv(ptr, s);
+
+#ifdef DYNAMIC_ENV_FETCH
+     /* We just undefd an environment var.  Is a replacement */
+     /* waiting in the wings? */
+    if (!len) {
+	SV **valp;
+	if ((valp = hv_fetch(GvHVn(PL_envgv), ptr, klen, FALSE)))
+	    s = SvPV(*valp, len);
     }
 #endif
+
+#if !defined(OS2) && !defined(AMIGAOS) && !defined(WIN32) && !defined(MSDOS)
+			    /* And you'll never guess what the dog had */
+			    /*   in its mouth... */
+    if (PL_tainting) {
+	MgTAINTEDDIR_off(mg);
+#ifdef VMS
+	if (s && klen == 8 && strEQ(ptr, "DCL$PATH")) {
+	    char pathbuf[256], eltbuf[256], *cp, *elt = s;
+	    Stat_t sbuf;
+	    int i = 0, j = 0;
+
+	    do {          /* DCL$PATH may be a search list */
+		while (1) {   /* as may dev portion of any element */
+		    if ( ((cp = strchr(elt,'[')) || (cp = strchr(elt,'<'))) ) {
+			if ( *(cp+1) == '.' || *(cp+1) == '-' ||
+			     cando_by_name(S_IWUSR,0,elt) ) {
+			    MgTAINTEDDIR_on(mg);
+			    return 0;
+			}
+		    }
+		    if ((cp = strchr(elt, ':')) != Nullch)
+			*cp = '\0';
+		    if (my_trnlnm(elt, eltbuf, j++))
+			elt = eltbuf;
+		    else
+			break;
+		}
+		j = 0;
+	    } while (my_trnlnm(s, pathbuf, i++) && (elt = pathbuf));
+	}
+#endif /* VMS */
+	if (s && klen == 4 && strEQ(ptr,"PATH")) {
+	    char *strend = s + len;
+
+	    while (s < strend) {
+		char tmpbuf[256];
+		Stat_t st;
+		I32 i;
+		s = delimcpy(tmpbuf, tmpbuf + sizeof tmpbuf,
+			     s, strend, ':', &i);
+		s++;
+		if (i >= sizeof tmpbuf   /* too long -- assume the worst */
+		      || *tmpbuf != '/'
+		      || (PerlLIO_stat(tmpbuf, &st) == 0 && (st.st_mode & 2)) ) {
+		    MgTAINTEDDIR_on(mg);
+		    return 0;
+		}
+	    }
+	}
+    }
+#endif /* neither OS2 nor AMIGAOS nor WIN32 nor MSDOS */
+
     return 0;
 }

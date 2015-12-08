@@ -1,227 +1,167 @@
-static SV *do_retrieve(
-        pTHX_
-	PerlIO *f,
-	SV *in,
-	int optype)
+static SV *magic_check(pTHX_ stcxt_t *cxt)
 {
-	dSTCXT;
-	SV *sv;
-	int is_tainted;				/* Is input source tainted? */
-	int pre_06_fmt = 0;			/* True with pre Storable 0.6 formats */
+    /* The worst case for a malicious header would be old magic (which is
+       longer), major, minor, byteorder length byte of 255, 255 bytes of
+       garbage, sizeof int, long, pointer, NV.
+       So the worse of that we can read is 255 bytes of garbage plus 4.
+       Err, I am assuming 8 bit bytes here. Please file a bug report if you're
+       compiling perl on a system with chars that are larger than 8 bits.
+       (Even Crays aren't *that* perverse).
+    */
+    unsigned char buf[4 + 255];
+    unsigned char *current;
+    int c;
+    int length;
+    int use_network_order;
+    int use_NV_size;
+    int version_major;
+    int version_minor = 0;
 
-	TRACEME(("do_retrieve (optype = 0x%x)", optype));
+    TRACEME(("magic_check"));
 
-	optype |= ST_RETRIEVE;
+    /*
+     * The "magic number" is only for files, not when freezing in memory.
+     */
 
-	/*
-	 * Sanity assertions for retrieve dispatch tables.
-	 */
+    if (cxt->fio) {
+        /* This includes the '\0' at the end.  I want to read the extra byte,
+           which is usually going to be the major version number.  */
+        STRLEN len = sizeof(magicstr);
+        STRLEN old_len;
 
-	ASSERT(sizeof(sv_old_retrieve) == sizeof(sv_retrieve),
-		("old and new retrieve dispatch table have same size"));
-	ASSERT(sv_old_retrieve[SX_ERROR] == retrieve_other,
-		("SX_ERROR entry correctly initialized in old dispatch table"));
-	ASSERT(sv_retrieve[SX_ERROR] == retrieve_other,
-		("SX_ERROR entry correctly initialized in new dispatch table"));
+        READ(buf, (SSize_t)(len));	/* Not null-terminated */
 
-	/*
-	 * Workaround for CROAK leak: if they enter with a "dirty" context,
-	 * free up memory for them now.
-	 */
+        /* Point at the byte after the byte we read.  */
+        current = buf + --len;	/* Do the -- outside of macros.  */
 
-	if (cxt->s_dirty)
-		clean_context(aTHX_ cxt);
+        if (memNE(buf, magicstr, len)) {
+            /*
+             * Try to read more bytes to check for the old magic number, which
+             * was longer.
+             */
 
-	/*
-	 * Now that STORABLE_xxx hooks exist, it is possible that they try to
-	 * re-enter retrieve() via the hooks.
-	 */
+            TRACEME(("trying for old magic number"));
 
-	if (cxt->entry)
-		cxt = allocate_context(aTHX_ cxt);
+            old_len = sizeof(old_magicstr) - 1;
+            READ(current + 1, (SSize_t)(old_len - len));
+            
+            if (memNE(buf, old_magicstr, old_len))
+                CROAK(("File is not a perl storable"));
+            current = buf + old_len;
+        }
+        use_network_order = *current;
+    } else
+	GETMARK(use_network_order);
+        
+    /*
+     * Starting with 0.6, the "use_network_order" byte flag is also used to
+     * indicate the version number of the binary, and therefore governs the
+     * setting of sv_retrieve_vtbl. See magic_write().
+     */
 
-	cxt->entry++;
+    version_major = use_network_order >> 1;
+    cxt->retrieve_vtbl = version_major ? sv_retrieve : sv_old_retrieve;
 
-	ASSERT(cxt->entry == 1, ("starting new recursion"));
-	ASSERT(!cxt->s_dirty, ("clean context"));
+    TRACEME(("magic_check: netorder = 0x%x", use_network_order));
 
-	/*
-	 * Prepare context.
-	 *
-	 * Data is loaded into the memory buffer when f is NULL, unless `in' is
-	 * also NULL, in which case we're expecting the data to already lie
-	 * in the buffer (dclone case).
-	 */
 
-	KBUFINIT();			 		/* Allocate hash key reading pool once */
+    /*
+     * Starting with 0.7 (binary major 2), a full byte is dedicated to the
+     * minor version of the protocol.  See magic_write().
+     */
 
-	if (!f && in) {
-#ifdef SvUTF8_on
-		if (SvUTF8(in)) {
-			STRLEN length;
-			const char *orig = SvPV(in, length);
-			char *asbytes;
-			/* This is quite deliberate. I want the UTF8 routines
-			   to encounter the '\0' which perl adds at the end
-			   of all scalars, so that any new string also has
-			   this.
-			*/
-			STRLEN klen_tmp = length + 1;
-			bool is_utf8 = TRUE;
+    if (version_major > 1)
+        GETMARK(version_minor);
 
-			/* Just casting the &klen to (STRLEN) won't work
-			   well if STRLEN and I32 are of different widths.
-			   --jhi */
-			asbytes = (char*)bytes_from_utf8((U8*)orig,
-							 &klen_tmp,
-							 &is_utf8);
-			if (is_utf8) {
-				CROAK(("Frozen string corrupt - contains characters outside 0-255"));
-			}
-			if (asbytes != orig) {
-				/* String has been converted.
-				   There is no need to keep any reference to
-				   the old string.  */
-				in = sv_newmortal();
-				/* We donate the SV the malloc()ed string
-				   bytes_from_utf8 returned us.  */
-				SvUPGRADE(in, SVt_PV);
-				SvPOK_on(in);
-				SvPVX(in) = asbytes;
-				SvLEN(in) = klen_tmp;
-				SvCUR(in) = klen_tmp - 1;
-			}
-		}
+    cxt->ver_major = version_major;
+    cxt->ver_minor = version_minor;
+
+    TRACEME(("binary image version is %d.%d", version_major, version_minor));
+
+    /*
+     * Inter-operability sanity check: we can't retrieve something stored
+     * using a format more recent than ours, because we have no way to
+     * know what has changed, and letting retrieval go would mean a probable
+     * failure reporting a "corrupted" storable file.
+     */
+
+    if (
+        version_major > STORABLE_BIN_MAJOR ||
+        (version_major == STORABLE_BIN_MAJOR &&
+         version_minor > STORABLE_BIN_MINOR)
+        ) {
+        int croak_now = 1;
+        TRACEME(("but I am version is %d.%d", STORABLE_BIN_MAJOR,
+                 STORABLE_BIN_MINOR));
+
+        if (version_major == STORABLE_BIN_MAJOR) {
+            TRACEME(("cxt->accept_future_minor is %d",
+                     cxt->accept_future_minor));
+            if (cxt->accept_future_minor < 0)
+                cxt->accept_future_minor
+                    = (SvTRUE(get_sv("Storable::accept_future_minor",
+                                          TRUE))
+                       ? 1 : 0);
+            if (cxt->accept_future_minor == 1)
+                croak_now = 0;  /* Don't croak yet.  */
+        }
+        if (croak_now) {
+            CROAK(("Storable binary image v%d.%d more recent than I am (v%d.%d)",
+                   version_major, version_minor,
+                   STORABLE_BIN_MAJOR, STORABLE_BIN_MINOR));
+        }
+    }
+
+    /*
+     * If they stored using network order, there's no byte ordering
+     * information to check.
+     */
+
+    if ((cxt->netorder = (use_network_order & 0x1)))	/* Extra () for -Wall */
+        return &PL_sv_undef;			/* No byte ordering info */
+
+    /* In C truth is 1, falsehood is 0. Very convienient.  */
+    use_NV_size = version_major >= 2 && version_minor >= 2;
+
+    GETMARK(c);
+    length = c + 3 + use_NV_size;
+    READ(buf, length);	/* Not null-terminated */
+
+    TRACEME(("byte order '%.*s' %d", c, buf, c));
+
+#ifdef USE_56_INTERWORK_KLUDGE
+    /* No point in caching this in the context as we only need it once per
+       retrieve, and we need to recheck it each read.  */
+    if (SvTRUE(get_sv("Storable::interwork_56_64bit", TRUE))) {
+        if ((c != (sizeof (byteorderstr_56) - 1))
+            || memNE(buf, byteorderstr_56, c))
+            CROAK(("Byte order is not compatible"));
+    } else
 #endif
-		MBUF_SAVE_AND_LOAD(in);
-	}
+    {
+        if ((c != (sizeof (byteorderstr) - 1)) || memNE(buf, byteorderstr, c))
+            CROAK(("Byte order is not compatible"));
+    }
 
-	/*
-	 * Magic number verifications.
-	 *
-	 * This needs to be done before calling init_retrieve_context()
-	 * since the format indication in the file are necessary to conduct
-	 * some of the initializations.
-	 */
+    current = buf + c;
+    
+    /* sizeof(int) */
+    if ((int) *current++ != sizeof(int))
+        CROAK(("Integer size is not compatible"));
 
-	cxt->fio = f;				/* Where I/O are performed */
+    /* sizeof(long) */
+    if ((int) *current++ != sizeof(long))
+        CROAK(("Long integer size is not compatible"));
 
-	if (!magic_check(aTHX_ cxt))
-		CROAK(("Magic number checking on storable %s failed",
-			cxt->fio ? "file" : "string"));
+    /* sizeof(char *) */
+    if ((int) *current != sizeof(char *))
+        CROAK(("Pointer size is not compatible"));
 
-	TRACEME(("data stored in %s format",
-		cxt->netorder ? "net order" : "native"));
+    if (use_NV_size) {
+        /* sizeof(NV) */
+        if ((int) *++current != sizeof(NV))
+            CROAK(("Double size is not compatible"));
+    }
 
-	/*
-	 * Check whether input source is tainted, so that we don't wrongly
-	 * taint perfectly good values...
-	 *
-	 * We assume file input is always tainted.  If both `f' and `in' are
-	 * NULL, then we come from dclone, and tainted is already filled in
-	 * the context.  That's a kludge, but the whole dclone() thing is
-	 * already quite a kludge anyway! -- RAM, 15/09/2000.
-	 */
-
-	is_tainted = f ? 1 : (in ? SvTAINTED(in) : cxt->s_tainted);
-	TRACEME(("input source is %s", is_tainted ? "tainted" : "trusted"));
-	init_retrieve_context(aTHX_ cxt, optype, is_tainted);
-
-	ASSERT(is_retrieving(), ("within retrieve operation"));
-
-	sv = retrieve(aTHX_ cxt, 0);		/* Recursively retrieve object, get root SV */
-
-	/*
-	 * Final cleanup.
-	 */
-
-	if (!f && in)
-		MBUF_RESTORE();
-
-	pre_06_fmt = cxt->hseen != NULL;	/* Before we clean context */
-
-	/*
-	 * The "root" context is never freed.
-	 */
-
-	clean_retrieve_context(aTHX_ cxt);
-	if (cxt->prev)				/* This context was stacked */
-		free_context(aTHX_ cxt);		/* It was not the "root" context */
-
-	/*
-	 * Prepare returned value.
-	 */
-
-	if (!sv) {
-		TRACEME(("retrieve ERROR"));
-#if (PATCHLEVEL <= 4) 
-		/* perl 5.00405 seems to screw up at this point with an
-		   'attempt to modify a read only value' error reported in the
-		   eval { $self = pretrieve(*FILE) } in _retrieve.
-		   I can't see what the cause of this error is, but I suspect a
-		   bug in 5.004, as it seems to be capable of issuing spurious
-		   errors or core dumping with matches on $@. I'm not going to
-		   spend time on what could be a fruitless search for the cause,
-		   so here's a bodge. If you're running 5.004 and don't like
-		   this inefficiency, either upgrade to a newer perl, or you are
-		   welcome to find the problem and send in a patch.
-		 */
-		return newSV(0);
-#else
-		return &PL_sv_undef;		/* Something went wrong, return undef */
-#endif
-	}
-
-	TRACEME(("retrieve got %s(0x%"UVxf")",
-		sv_reftype(sv, FALSE), PTR2UV(sv)));
-
-	/*
-	 * Backward compatibility with Storable-0.5@9 (which we know we
-	 * are retrieving if hseen is non-null): don't create an extra RV
-	 * for objects since we special-cased it at store time.
-	 *
-	 * Build a reference to the SV returned by pretrieve even if it is
-	 * already one and not a scalar, for consistency reasons.
-	 */
-
-	if (pre_06_fmt) {			/* Was not handling overloading by then */
-		SV *rv;
-		TRACEME(("fixing for old formats -- pre 0.6"));
-		if (sv_type(aTHX_ sv) == svis_REF && (rv = SvRV(sv)) && SvOBJECT(rv)) {
-			TRACEME(("ended do_retrieve() with an object -- pre 0.6"));
-			return sv;
-		}
-	}
-
-	/*
-	 * If reference is overloaded, restore behaviour.
-	 *
-	 * NB: minor glitch here: normally, overloaded refs are stored specially
-	 * so that we can croak when behaviour cannot be re-installed, and also
-	 * avoid testing for overloading magic at each reference retrieval.
-	 *
-	 * Unfortunately, the root reference is implicitely stored, so we must
-	 * check for possible overloading now.  Furthermore, if we don't restore
-	 * overloading, we cannot croak as if the original ref was, because we
-	 * have no way to determine whether it was an overloaded ref or not in
-	 * the first place.
-	 *
-	 * It's a pity that overloading magic is attached to the rv, and not to
-	 * the underlying sv as blessing is.
-	 */
-
-	if (SvOBJECT(sv)) {
-		HV *stash = (HV *) SvSTASH(sv);
-		SV *rv = newRV_noinc(sv);
-		if (stash && Gv_AMG(stash)) {
-			SvAMAGIC_on(rv);
-			TRACEME(("restored overloading on root reference"));
-		}
-		TRACEME(("ended do_retrieve() with an object"));
-		return rv;
-	}
-
-	TRACEME(("regular do_retrieve() end"));
-
-	return newRV_noinc(sv);
+    return &PL_sv_undef;	/* OK */
 }

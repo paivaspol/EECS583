@@ -1,19 +1,17 @@
-void
-Perl_sv_catpv(pTHX_ register SV *sv, register const char *ptr)
+STATIC void
+S_more_xpvav(pTHX)
 {
-    register STRLEN len;
-    STRLEN tlen;
-    char *junk;
+    register XPVAV* xpvav;
+    register XPVAV* xpvavend;
+    New(717, xpvav, PERL_ARENA_SIZE/sizeof(XPVAV), XPVAV);
+    xpvav->xav_array = (char*)PL_xpvav_arenaroot;
+    PL_xpvav_arenaroot = xpvav;
 
-    if (!ptr)
-	return;
-    junk = SvPV_force(sv, tlen);
-    len = strlen(ptr);
-    SvGROW(sv, tlen + len + 1);
-    if (ptr == junk)
-	ptr = SvPVX(sv);
-    Move(ptr,SvPVX(sv)+tlen,len+1,char);
-    SvCUR(sv) += len;
-    (void)SvPOK_only_UTF8(sv);		/* validate pointer */
-    SvTAINT(sv);
+    xpvavend = &xpvav[PERL_ARENA_SIZE / sizeof(XPVAV) - 1];
+    PL_xpvav_root = ++xpvav;
+    while (xpvav < xpvavend) {
+	xpvav->xav_array = (char*)(xpvav + 1);
+	xpvav++;
+    }
+    xpvav->xav_array = 0;
 }

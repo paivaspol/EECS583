@@ -1,11 +1,11 @@
-void
-_fill_mstats(struct mstats_buffer *b, int level)
+bool
+_runops_debug(int flag)
 {
     dTHX;
-    b->buffer.nfree  = b->buf;
-    b->buffer.ntotal = b->buf + _NBUCKETS;
-    b->buffer.bucket_mem_size = b->buf + 2*_NBUCKETS;
-    b->buffer.bucket_available_size = b->buf + 3*_NBUCKETS;
-    Zero(b->buf, (level ? 4*_NBUCKETS: 2*_NBUCKETS), unsigned long);
-    get_mstats(&(b->buffer), _NBUCKETS, level);
+    bool d = PL_runops == MEMBER_TO_FPTR(Perl_runops_debug);
+
+    if (flag >= 0)
+	PL_runops 
+	    = MEMBER_TO_FPTR(flag ? Perl_runops_debug : Perl_runops_standard);
+    return d;
 }

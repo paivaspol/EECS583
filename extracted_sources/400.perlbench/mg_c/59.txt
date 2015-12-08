@@ -1,13 +1,14 @@
-static void
-unwind_handler_stack(pTHX_ void *p)
+int
+Perl_magic_setcollxfrm(pTHX_ SV *sv, MAGIC *mg)
 {
-    U32 flags = *(U32*)p;
-
-    if (flags & 1)
-	PL_savestack_ix -= 5; /* Unprotect save in progress. */
-    /* cxstack_ix-- Not needed, die already unwound it. */
-#if !defined(PERL_IMPLICIT_CONTEXT)
-    if (flags & 64)
-	SvREFCNT_dec(sig_sv);
-#endif
+    /*
+     * RenE<eacute> Descartes said "I think not."
+     * and vanished with a faint plop.
+     */
+    if (mg->mg_ptr) {
+	Safefree(mg->mg_ptr);
+	mg->mg_ptr = NULL;
+	mg->mg_len = -1;
+    }
+    return 0;
 }

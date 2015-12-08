@@ -1,12 +1,13 @@
 void
-Perl_init_tm(pTHX_ struct tm *ptm)	/* see mktime, strftime and asctime */
+/*SUPPRESS 590*/
+Perl_pidgone(pTHX_ Pid_t pid, int status)
 {
-#ifdef HAS_TM_TM_ZONE
-    Time_t now;
-    struct tm* my_tm;
-    (void)time(&now);
-    my_tm = localtime(&now);
-    if (my_tm)
-        Copy(my_tm, ptm, 1, struct tm);
-#endif
+    register SV *sv;
+    char spid[TYPE_CHARS(IV)];
+
+    sprintf(spid, "%"IVdf, (IV)pid);
+    sv = *hv_fetch(PL_pidstatus,spid,strlen(spid),TRUE);
+    (void)SvUPGRADE(sv,SVt_IV);
+    SvIVX(sv) = status;
+    return;
 }

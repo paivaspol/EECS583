@@ -1,0 +1,53 @@
+I32 my_chsize(fd, length)
+I32 fd;			/* file descriptor */
+Off_t length;		/* length to set file to */
+{
+#ifdef F_FREESP
+	/* code courtesy of William Kucharski */
+#define HAS_CHSIZE
+
+    struct flock fl;
+    Stat_t filebuf;
+
+    if (PerlLIO_fstat(fd, &filebuf) < 0)
+	return -1;
+
+    if (filebuf.st_size < length) {
+
+	/* extend file length */
+
+	if ((PerlLIO_lseek(fd, (length - 1), 0)) < 0)
+	    return -1;
+
+	/* write a "0" byte */
+
+	if ((PerlLIO_write(fd, "", 1)) != 1)
+	    return -1;
+    }
+    else {
+	/* truncate length */
+
+	fl.l_whence = 0;
+	fl.l_len = 0;
+	fl.l_start = length;
+	fl.l_type = F_WRLCK;    /* write lock on file space */
+
+	/*
+	* This relies on the UNDOCUMENTED F_FREESP argument to
+	* fcntl(2), which truncates the file so that it ends at the
+	* position indicated by fl.l_start.
+	*
+	* Will minor miracles never cease?
+	*/
+
+	if (fcntl(fd, F_FREESP, &fl) < 0)
+	    return -1;
+
+    }
+
+    return 0;
+#else
+    dTHX;
+    DIE(aTHX_ "truncate not implemented");
+#endif /* F_FREESP */
+}

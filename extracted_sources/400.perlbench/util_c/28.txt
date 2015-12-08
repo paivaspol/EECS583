@@ -1,19 +1,11 @@
 void
-Perl_repeatcpy(pTHX_ register char *to, register const char *from, I32 len, register I32 count)
+Perl_atfork_unlock(void)
 {
-    register I32 todo;
-    register const char *frombase = from;
-
-    if (len == 1) {
-	register const char c = *from;
-	while (count-- > 0)
-	    *to++ = c;
-	return;
-    }
-    while (count-- > 0) {
-	for (todo = len; todo > 0; todo--) {
-	    *to++ = *from++;
-	}
-	from = frombase;
-    }
+#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
+    /* locks must be released in same order as in atfork_lock() */
+#  ifdef MYMALLOC
+    MUTEX_UNLOCK(&PL_malloc_mutex);
+#  endif
+    OP_REFCNT_UNLOCK;
+#endif
 }

@@ -1,0 +1,236 @@
+STATIC I32
+S_regrepeat(pTHX_ regnode *p, I32 max)
+{
+    register char *scan;
+    register I32 c;
+    register char *loceol = PL_regeol;
+    register I32 hardcount = 0;
+    register bool do_utf8 = PL_reg_match_utf8;
+
+    scan = PL_reginput;
+    if (max == REG_INFTY)
+	max = I32_MAX;
+    else if (max < loceol - scan)
+      loceol = scan + max;
+    switch (OP(p)) {
+    case REG_ANY:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (scan < loceol && hardcount < max && *scan != '\n') {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && *scan != '\n')
+		scan++;
+	}
+	break;
+    case SANY:
+        if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (scan < loceol && hardcount < max) {
+	        scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	}
+	else
+	    scan = loceol;
+	break;
+    case CANY:
+	scan = loceol;
+	break;
+    case EXACT:		/* length of string is 1 */
+	c = (U8)*STRING(p);
+	while (scan < loceol && UCHARAT(scan) == c)
+	    scan++;
+	break;
+    case EXACTF:	/* length of string is 1 */
+	c = (U8)*STRING(p);
+	while (scan < loceol &&
+	       (UCHARAT(scan) == c || UCHARAT(scan) == PL_fold[c]))
+	    scan++;
+	break;
+    case EXACTFL:	/* length of string is 1 */
+	PL_reg_flags |= RF_tainted;
+	c = (U8)*STRING(p);
+	while (scan < loceol &&
+	       (UCHARAT(scan) == c || UCHARAT(scan) == PL_fold_locale[c]))
+	    scan++;
+	break;
+    case ANYOF:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (hardcount < max && scan < loceol &&
+		   reginclass(p, (U8*)scan, 0, do_utf8)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && REGINCLASS(p, (U8*)scan))
+		scan++;
+	}
+	break;
+    case ALNUM:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    LOAD_UTF8_CHARCLASS(alnum,"a");
+	    while (hardcount < max && scan < loceol &&
+		   swash_fetch(PL_utf8_alnum, (U8*)scan, do_utf8)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && isALNUM(*scan))
+		scan++;
+	}
+	break;
+    case ALNUML:
+	PL_reg_flags |= RF_tainted;
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (hardcount < max && scan < loceol &&
+		   isALNUM_LC_utf8((U8*)scan)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && isALNUM_LC(*scan))
+		scan++;
+	}
+	break;
+    case NALNUM:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    LOAD_UTF8_CHARCLASS(alnum,"a");
+	    while (hardcount < max && scan < loceol &&
+		   !swash_fetch(PL_utf8_alnum, (U8*)scan, do_utf8)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && !isALNUM(*scan))
+		scan++;
+	}
+	break;
+    case NALNUML:
+	PL_reg_flags |= RF_tainted;
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (hardcount < max && scan < loceol &&
+		   !isALNUM_LC_utf8((U8*)scan)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && !isALNUM_LC(*scan))
+		scan++;
+	}
+	break;
+    case SPACE:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    LOAD_UTF8_CHARCLASS(space," ");
+	    while (hardcount < max && scan < loceol &&
+		   (*scan == ' ' ||
+		    swash_fetch(PL_utf8_space,(U8*)scan, do_utf8))) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && isSPACE(*scan))
+		scan++;
+	}
+	break;
+    case SPACEL:
+	PL_reg_flags |= RF_tainted;
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (hardcount < max && scan < loceol &&
+		   (*scan == ' ' || isSPACE_LC_utf8((U8*)scan))) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && isSPACE_LC(*scan))
+		scan++;
+	}
+	break;
+    case NSPACE:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    LOAD_UTF8_CHARCLASS(space," ");
+	    while (hardcount < max && scan < loceol &&
+		   !(*scan == ' ' ||
+		     swash_fetch(PL_utf8_space,(U8*)scan, do_utf8))) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && !isSPACE(*scan))
+		scan++;
+	    break;
+	}
+    case NSPACEL:
+	PL_reg_flags |= RF_tainted;
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    while (hardcount < max && scan < loceol &&
+		   !(*scan == ' ' || isSPACE_LC_utf8((U8*)scan))) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && !isSPACE_LC(*scan))
+		scan++;
+	}
+	break;
+    case DIGIT:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    LOAD_UTF8_CHARCLASS(digit,"0");
+	    while (hardcount < max && scan < loceol &&
+		   swash_fetch(PL_utf8_digit, (U8*)scan, do_utf8)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && isDIGIT(*scan))
+		scan++;
+	}
+	break;
+    case NDIGIT:
+	if (do_utf8) {
+	    loceol = PL_regeol;
+	    LOAD_UTF8_CHARCLASS(digit,"0");
+	    while (hardcount < max && scan < loceol &&
+		   !swash_fetch(PL_utf8_digit, (U8*)scan, do_utf8)) {
+		scan += UTF8SKIP(scan);
+		hardcount++;
+	    }
+	} else {
+	    while (scan < loceol && !isDIGIT(*scan))
+		scan++;
+	}
+	break;
+    default:		/* Called on something of 0 width. */
+	break;		/* So match right here or not at all. */
+    }
+
+    if (hardcount)
+	c = hardcount;
+    else
+	c = scan - PL_reginput;
+    PL_reginput = scan;
+
+    DEBUG_r(
+	{
+		SV *prop = sv_newmortal();
+
+		regprop(prop, p);
+		PerlIO_printf(Perl_debug_log,
+			      "%*s  %s can match %"IVdf" times out of %"IVdf"...\n",
+			      REPORT_CODE_OFF+1, "", SvPVX(prop),(IV)c,(IV)max);
+	});
+
+    return(c);
+}

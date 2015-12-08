@@ -1,0 +1,18 @@
+I32
+Perl_debstack(pTHX)
+{
+#ifndef SKIP_DEBUGGING
+    if (CopSTASH_eq(PL_curcop, PL_debstash) && !DEBUG_J_TEST_)
+	return 0;
+
+    PerlIO_printf(Perl_debug_log, "    =>  ");
+    deb_stack_n(PL_stack_base,
+		0,
+		PL_stack_sp - PL_stack_base,
+		PL_curstackinfo->si_markoff,
+		PL_markstack_ptr - PL_markstack);
+
+
+#endif /* SKIP_DEBUGGING */
+    return 0;
+}
