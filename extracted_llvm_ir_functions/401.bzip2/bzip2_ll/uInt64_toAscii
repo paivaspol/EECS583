@@ -1,0 +1,75 @@
+define internal fastcc void @uInt64_toAscii(i8* nocapture %outbuf, %struct.UInt64* nocapture readonly %n) #0 {
+  %buf = alloca [32 x i8], align 16
+  %n_copy = alloca i64, align 8
+  %tmpcast = bitcast i64* %n_copy to %struct.UInt64*
+  %1 = bitcast %struct.UInt64* %n to i64*
+  %2 = load i64* %1, align 1
+  store i64 %2, i64* %n_copy, align 8
+  br label %uInt64_isZero.exit.thread
+
+uInt64_isZero.exit.thread:                        ; preds = %18, %0
+  %indvars.iv7 = phi i64 [ 0, %0 ], [ %indvars.iv.next8, %18 ]
+  br label %3
+
+; <label>:3                                       ; preds = %3, %uInt64_isZero.exit.thread
+  %indvars.iv.i = phi i64 [ 7, %uInt64_isZero.exit.thread ], [ %indvars.iv.next.i, %3 ]
+  %rem.01.i = phi i32 [ 0, %uInt64_isZero.exit.thread ], [ %11, %3 ]
+  %4 = shl nuw nsw i32 %rem.01.i, 8
+  %5 = getelementptr inbounds %struct.UInt64* %tmpcast, i64 0, i32 0, i64 %indvars.iv.i
+  %6 = load i8* %5, align 1, !tbaa !6
+  %7 = zext i8 %6 to i32
+  %8 = or i32 %7, %4
+  %9 = udiv i32 %8, 10
+  %10 = trunc i32 %9 to i8
+  store i8 %10, i8* %5, align 1, !tbaa !6
+  %11 = urem i32 %8, 10
+  %indvars.iv.next.i = add nsw i64 %indvars.iv.i, -1
+  %12 = icmp sgt i64 %indvars.iv.i, 0
+  br i1 %12, label %3, label %uInt64_qrm10.exit
+
+uInt64_qrm10.exit:                                ; preds = %3
+  %13 = or i32 %11, 48
+  %14 = trunc i32 %13 to i8
+  %15 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 %indvars.iv7
+  store i8 %14, i8* %15, align 1, !tbaa !6
+  %indvars.iv.next8 = add nuw i64 %indvars.iv7, 1
+  br label %18
+
+; <label>:16                                      ; preds = %18
+  %17 = icmp slt i64 %indvars.iv.next.i2, 8
+  br i1 %17, label %18, label %22
+
+; <label>:18                                      ; preds = %16, %uInt64_qrm10.exit
+  %indvars.iv.i1 = phi i64 [ 0, %uInt64_qrm10.exit ], [ %indvars.iv.next.i2, %16 ]
+  %19 = getelementptr inbounds %struct.UInt64* %tmpcast, i64 0, i32 0, i64 %indvars.iv.i1
+  %20 = load i8* %19, align 1, !tbaa !6
+  %21 = icmp eq i8 %20, 0
+  %indvars.iv.next.i2 = add nuw nsw i64 %indvars.iv.i1, 1
+  br i1 %21, label %16, label %uInt64_isZero.exit.thread
+
+; <label>:22                                      ; preds = %16
+  %23 = trunc i64 %indvars.iv7 to i32
+  %sext = shl i64 %indvars.iv.next8, 32
+  %24 = ashr exact i64 %sext, 32
+  %25 = getelementptr inbounds i8* %outbuf, i64 %24
+  store i8 0, i8* %25, align 1, !tbaa !6
+  %26 = icmp slt i32 %23, 0
+  br i1 %26, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %22, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %22 ]
+  %27 = trunc i64 %indvars.iv to i32
+  %28 = sub i64 %indvars.iv7, %indvars.iv
+  %sext9 = shl i64 %28, 32
+  %29 = ashr exact i64 %sext9, 32
+  %30 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 %29
+  %31 = load i8* %30, align 1, !tbaa !6
+  %32 = getelementptr inbounds i8* %outbuf, i64 %indvars.iv
+  store i8 %31, i8* %32, align 1, !tbaa !6
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %27, %23
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+
+._crit_edge:                                      ; preds = %.lr.ph, %22
+  ret void
+}

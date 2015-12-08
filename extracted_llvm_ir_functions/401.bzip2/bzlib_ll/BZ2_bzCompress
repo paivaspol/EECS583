@@ -1,0 +1,147 @@
+define i32 @BZ2_bzCompress(%struct.bz_stream* readonly %strm, i32 %action) #4 {
+  %1 = icmp eq %struct.bz_stream* %strm, null
+  br i1 %1, label %isempty_RL.exit.thread, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8
+  %4 = bitcast i8** %3 to %struct.EState**
+  %5 = load %struct.EState** %4, align 8, !tbaa !27
+  %6 = icmp eq %struct.EState* %5, null
+  br i1 %6, label %isempty_RL.exit.thread, label %7
+
+; <label>:7                                       ; preds = %2
+  %8 = getelementptr inbounds %struct.EState* %5, i64 0, i32 0
+  %9 = load %struct.bz_stream** %8, align 8, !tbaa !11
+  %10 = icmp eq %struct.bz_stream* %9, %strm
+  br i1 %10, label %.preheader, label %isempty_RL.exit.thread
+
+.preheader:                                       ; preds = %7
+  %11 = getelementptr inbounds %struct.EState* %5, i64 0, i32 1
+  %12 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1
+  %13 = getelementptr inbounds %struct.EState* %5, i64 0, i32 3
+  %.pre = load i32* %11, align 4, !tbaa !17
+  br label %14
+
+; <label>:14                                      ; preds = %.backedge, %.preheader
+  %15 = phi i32 [ %storemerge, %.backedge ], [ %.pre, %.preheader ]
+  switch i32 %15, label %isempty_RL.exit.thread.loopexit8 [
+    i32 1, label %isempty_RL.exit.thread
+    i32 2, label %16
+    i32 3, label %22
+    i32 4, label %46
+  ]
+
+; <label>:16                                      ; preds = %14
+  switch i32 %action, label %isempty_RL.exit.thread [
+    i32 0, label %17
+    i32 1, label %.backedge
+    i32 2, label %21
+  ]
+
+; <label>:17                                      ; preds = %16
+  %18 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #12
+  %19 = icmp ne i8 %18, 0
+  %20 = select i1 %19, i32 1, i32 -2
+  br label %isempty_RL.exit.thread
+
+.backedge:                                        ; preds = %16, %21
+  %storemerge = phi i32 [ 4, %21 ], [ 3, %16 ]
+  %storemerge7 = load i32* %12, align 4
+  store i32 %storemerge7, i32* %13, align 4, !tbaa !39
+  store i32 %storemerge, i32* %11, align 4, !tbaa !17
+  br label %14
+
+; <label>:21                                      ; preds = %16
+  br label %.backedge
+
+; <label>:22                                      ; preds = %14
+  %23 = icmp eq i32 %action, 1
+  br i1 %23, label %24, label %isempty_RL.exit.thread
+
+; <label>:24                                      ; preds = %22
+  %25 = load i32* %13, align 4, !tbaa !39
+  %26 = load i32* %12, align 4, !tbaa !40
+  %27 = icmp eq i32 %25, %26
+  br i1 %27, label %28, label %isempty_RL.exit.thread
+
+; <label>:28                                      ; preds = %24
+  %29 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #12
+  %30 = load i32* %13, align 4, !tbaa !39
+  %31 = icmp eq i32 %30, 0
+  br i1 %31, label %32, label %isempty_RL.exit.thread
+
+; <label>:32                                      ; preds = %28
+  %33 = getelementptr inbounds %struct.EState* %5, i64 0, i32 13
+  %34 = load i32* %33, align 4, !tbaa !32
+  %35 = icmp ult i32 %34, 256
+  br i1 %35, label %36, label %isempty_RL.exit
+
+; <label>:36                                      ; preds = %32
+  %37 = getelementptr inbounds %struct.EState* %5, i64 0, i32 14
+  %38 = load i32* %37, align 4, !tbaa !33
+  %39 = icmp sgt i32 %38, 0
+  br i1 %39, label %isempty_RL.exit.thread, label %isempty_RL.exit
+
+isempty_RL.exit:                                  ; preds = %36, %32
+  %40 = getelementptr inbounds %struct.EState* %5, i64 0, i32 20
+  %41 = load i32* %40, align 4, !tbaa !36
+  %42 = getelementptr inbounds %struct.EState* %5, i64 0, i32 19
+  %43 = load i32* %42, align 4, !tbaa !35
+  %44 = icmp slt i32 %41, %43
+  br i1 %44, label %isempty_RL.exit.thread, label %45
+
+; <label>:45                                      ; preds = %isempty_RL.exit
+  store i32 2, i32* %11, align 4, !tbaa !17
+  br label %isempty_RL.exit.thread
+
+; <label>:46                                      ; preds = %14
+  %47 = icmp eq i32 %action, 2
+  br i1 %47, label %48, label %isempty_RL.exit.thread
+
+; <label>:48                                      ; preds = %46
+  %49 = load i32* %13, align 4, !tbaa !39
+  %50 = load i32* %12, align 4, !tbaa !40
+  %51 = icmp eq i32 %49, %50
+  br i1 %51, label %52, label %isempty_RL.exit.thread
+
+; <label>:52                                      ; preds = %48
+  %53 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #12
+  %54 = icmp eq i8 %53, 0
+  br i1 %54, label %isempty_RL.exit.thread, label %55
+
+; <label>:55                                      ; preds = %52
+  %56 = load i32* %13, align 4, !tbaa !39
+  %57 = icmp eq i32 %56, 0
+  br i1 %57, label %58, label %isempty_RL.exit.thread
+
+; <label>:58                                      ; preds = %55
+  %59 = getelementptr inbounds %struct.EState* %5, i64 0, i32 13
+  %60 = load i32* %59, align 4, !tbaa !32
+  %61 = icmp ult i32 %60, 256
+  br i1 %61, label %62, label %isempty_RL.exit2
+
+; <label>:62                                      ; preds = %58
+  %63 = getelementptr inbounds %struct.EState* %5, i64 0, i32 14
+  %64 = load i32* %63, align 4, !tbaa !33
+  %65 = icmp sgt i32 %64, 0
+  br i1 %65, label %isempty_RL.exit.thread, label %isempty_RL.exit2
+
+isempty_RL.exit2:                                 ; preds = %62, %58
+  %66 = getelementptr inbounds %struct.EState* %5, i64 0, i32 20
+  %67 = load i32* %66, align 4, !tbaa !36
+  %68 = getelementptr inbounds %struct.EState* %5, i64 0, i32 19
+  %69 = load i32* %68, align 4, !tbaa !35
+  %70 = icmp slt i32 %67, %69
+  br i1 %70, label %isempty_RL.exit.thread, label %71
+
+; <label>:71                                      ; preds = %isempty_RL.exit2
+  store i32 1, i32* %11, align 4, !tbaa !17
+  br label %isempty_RL.exit.thread
+
+isempty_RL.exit.thread.loopexit8:                 ; preds = %14
+  br label %isempty_RL.exit.thread
+
+isempty_RL.exit.thread:                           ; preds = %16, %14, %isempty_RL.exit.thread.loopexit8, %62, %36, %isempty_RL.exit2, %55, %52, %48, %46, %isempty_RL.exit, %28, %24, %22, %7, %2, %0, %71, %45, %17
+  %.0 = phi i32 [ 4, %71 ], [ 1, %45 ], [ %20, %17 ], [ -2, %0 ], [ -2, %2 ], [ -2, %7 ], [ -1, %22 ], [ -1, %24 ], [ 2, %28 ], [ 2, %isempty_RL.exit ], [ -1, %46 ], [ -1, %48 ], [ -1, %52 ], [ 3, %55 ], [ 3, %isempty_RL.exit2 ], [ 2, %36 ], [ 3, %62 ], [ 0, %isempty_RL.exit.thread.loopexit8 ], [ -2, %16 ], [ -1, %14 ]
+  ret i32 %.0
+}

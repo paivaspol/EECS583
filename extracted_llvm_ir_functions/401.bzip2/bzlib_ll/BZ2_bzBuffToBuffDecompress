@@ -1,0 +1,65 @@
+define i32 @BZ2_bzBuffToBuffDecompress(i8* %dest, i32* %destLen, i8* %source, i32 %sourceLen, i32 %small, i32 %verbosity) #4 {
+  %strm = alloca %struct.bz_stream, align 8
+  %1 = bitcast %struct.bz_stream* %strm to i8*
+  call void @llvm.lifetime.start(i64 80, i8* %1) #8
+  %2 = icmp eq i8* %dest, null
+  %3 = icmp eq i32* %destLen, null
+  %or.cond = or i1 %2, %3
+  %4 = icmp eq i8* %source, null
+  %or.cond3 = or i1 %or.cond, %4
+  br i1 %or.cond3, label %31, label %5
+
+; <label>:5                                       ; preds = %0
+  %small.cmp = icmp ugt i32 %small, 1
+  %6 = icmp ugt i32 %verbosity, 4
+  %7 = or i1 %small.cmp, %6
+  br i1 %7, label %31, label %8
+
+; <label>:8                                       ; preds = %5
+  %9 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 9
+  %10 = bitcast i8* (i8*, i32, i32)** %9 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %10, i8 0, i64 24, i32 8, i1 false)
+  %11 = call i32 @BZ2_bzDecompressInit(%struct.bz_stream* %strm, i32 %verbosity, i32 %small) #12
+  %12 = icmp eq i32 %11, 0
+  br i1 %12, label %13, label %31
+
+; <label>:13                                      ; preds = %8
+  %14 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 0
+  store i8* %source, i8** %14, align 8, !tbaa !44
+  %15 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 4
+  store i8* %dest, i8** %15, align 8, !tbaa !43
+  %16 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1
+  store i32 %sourceLen, i32* %16, align 8, !tbaa !40
+  %17 = load i32* %destLen, align 4, !tbaa !45
+  %18 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 5
+  store i32 %17, i32* %18, align 8, !tbaa !41
+  %19 = call i32 @BZ2_bzDecompress(%struct.bz_stream* %strm) #12
+  switch i32 %19, label %29 [
+    i32 0, label %25
+    i32 4, label %20
+  ]
+
+; <label>:20                                      ; preds = %13
+  %21 = load i32* %18, align 8, !tbaa !41
+  %22 = load i32* %destLen, align 4, !tbaa !45
+  %23 = sub i32 %22, %21
+  store i32 %23, i32* %destLen, align 4, !tbaa !45
+  %24 = call i32 @BZ2_bzDecompressEnd(%struct.bz_stream* %strm) #12
+  br label %31
+
+; <label>:25                                      ; preds = %13
+  %26 = load i32* %18, align 8, !tbaa !41
+  %27 = icmp eq i32 %26, 0
+  %28 = call i32 @BZ2_bzDecompressEnd(%struct.bz_stream* %strm) #12
+  %. = select i1 %27, i32 -8, i32 -7
+  br label %31
+
+; <label>:29                                      ; preds = %13
+  %30 = call i32 @BZ2_bzDecompressEnd(%struct.bz_stream* %strm) #12
+  br label %31
+
+; <label>:31                                      ; preds = %25, %8, %0, %5, %29, %20
+  %.0 = phi i32 [ %19, %29 ], [ 0, %20 ], [ -2, %5 ], [ -2, %0 ], [ %11, %8 ], [ %., %25 ]
+  call void @llvm.lifetime.end(i64 80, i8* %1) #8
+  ret i32 %.0
+}

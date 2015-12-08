@@ -1,0 +1,138 @@
+define void @BZ2_hbCreateDecodeTables(i32* nocapture %limit, i32* nocapture %base, i32* nocapture %perm, i8* nocapture readonly %length, i32 %minLen, i32 %maxLen, i32 %alphaSize) #0 {
+  %limit29 = bitcast i32* %limit to i8*
+  %base40 = bitcast i32* %base to i8*
+  %1 = icmp sgt i32 %minLen, %maxLen
+  br i1 %1, label %.preheader5, label %.preheader6.lr.ph
+
+.preheader6.lr.ph:                                ; preds = %0
+  %2 = icmp sgt i32 %alphaSize, 0
+  %3 = add i32 %alphaSize, -1
+  br label %.preheader6
+
+.preheader6:                                      ; preds = %._crit_edge21, %.preheader6.lr.ph
+  %i.023 = phi i32 [ %minLen, %.preheader6.lr.ph ], [ %15, %._crit_edge21 ]
+  %pp.022 = phi i32 [ 0, %.preheader6.lr.ph ], [ %pp.1.lcssa, %._crit_edge21 ]
+  br i1 %2, label %.lr.ph20, label %._crit_edge21
+
+.preheader5:                                      ; preds = %._crit_edge21, %0
+  call void @llvm.memset.p0i8.i64(i8* %base40, i8 0, i64 92, i32 4, i1 false)
+  %4 = icmp sgt i32 %alphaSize, 0
+  br i1 %4, label %.lr.ph16, label %.preheader3
+
+.lr.ph20:                                         ; preds = %.preheader6, %14
+  %indvars.iv41 = phi i64 [ %indvars.iv.next42, %14 ], [ 0, %.preheader6 ]
+  %pp.118 = phi i32 [ %pp.2, %14 ], [ %pp.022, %.preheader6 ]
+  %5 = getelementptr inbounds i8* %length, i64 %indvars.iv41
+  %6 = load i8* %5, align 1, !tbaa !6
+  %7 = zext i8 %6 to i32
+  %8 = icmp eq i32 %7, %i.023
+  br i1 %8, label %9, label %._crit_edge45
+
+._crit_edge45:                                    ; preds = %.lr.ph20
+  %.pre = trunc i64 %indvars.iv41 to i32
+  br label %14
+
+; <label>:9                                       ; preds = %.lr.ph20
+  %10 = sext i32 %pp.118 to i64
+  %11 = getelementptr inbounds i32* %perm, i64 %10
+  %12 = trunc i64 %indvars.iv41 to i32
+  store i32 %12, i32* %11, align 4, !tbaa !2
+  %13 = add nsw i32 %pp.118, 1
+  br label %14
+
+; <label>:14                                      ; preds = %._crit_edge45, %9
+  %lftr.wideiv43.pre-phi = phi i32 [ %.pre, %._crit_edge45 ], [ %12, %9 ]
+  %pp.2 = phi i32 [ %pp.118, %._crit_edge45 ], [ %13, %9 ]
+  %indvars.iv.next42 = add nuw nsw i64 %indvars.iv41, 1
+  %exitcond44 = icmp eq i32 %lftr.wideiv43.pre-phi, %3
+  br i1 %exitcond44, label %._crit_edge21, label %.lr.ph20
+
+._crit_edge21:                                    ; preds = %14, %.preheader6
+  %pp.1.lcssa = phi i32 [ %pp.022, %.preheader6 ], [ %pp.2, %14 ]
+  %15 = add nsw i32 %i.023, 1
+  %16 = icmp slt i32 %i.023, %maxLen
+  br i1 %16, label %.preheader6, label %.preheader5
+
+.lr.ph16:                                         ; preds = %.preheader5
+  %17 = add i32 %alphaSize, -1
+  br label %18
+
+; <label>:18                                      ; preds = %18, %.lr.ph16
+  %indvars.iv33 = phi i64 [ 0, %.lr.ph16 ], [ %indvars.iv.next34, %18 ]
+  %19 = getelementptr inbounds i8* %length, i64 %indvars.iv33
+  %20 = load i8* %19, align 1, !tbaa !6
+  %21 = zext i8 %20 to i64
+  %22 = add nuw nsw i64 %21, 1
+  %23 = getelementptr inbounds i32* %base, i64 %22
+  %24 = load i32* %23, align 4, !tbaa !2
+  %25 = add nsw i32 %24, 1
+  store i32 %25, i32* %23, align 4, !tbaa !2
+  %indvars.iv.next34 = add nuw nsw i64 %indvars.iv33, 1
+  %lftr.wideiv35 = trunc i64 %indvars.iv33 to i32
+  %exitcond36 = icmp eq i32 %lftr.wideiv35, %17
+  br i1 %exitcond36, label %.preheader3, label %18
+
+.preheader2:                                      ; preds = %.preheader3
+  call void @llvm.memset.p0i8.i64(i8* %limit29, i8 0, i64 92, i32 4, i1 false)
+  br i1 %1, label %.preheader, label %.lr.ph12
+
+.preheader3:                                      ; preds = %.preheader5, %18, %.preheader3
+  %26 = phi i32 [ %29, %.preheader3 ], [ 0, %18 ], [ 0, %.preheader5 ]
+  %indvars.iv30 = phi i64 [ %indvars.iv.next31, %.preheader3 ], [ 1, %18 ], [ 1, %.preheader5 ]
+  %27 = getelementptr inbounds i32* %base, i64 %indvars.iv30
+  %28 = load i32* %27, align 4, !tbaa !2
+  %29 = add nsw i32 %28, %26
+  store i32 %29, i32* %27, align 4, !tbaa !2
+  %indvars.iv.next31 = add nuw nsw i64 %indvars.iv30, 1
+  %exitcond32 = icmp eq i64 %indvars.iv.next31, 23
+  br i1 %exitcond32, label %.preheader2, label %.preheader3
+
+.lr.ph12:                                         ; preds = %.preheader2
+  %30 = sext i32 %minLen to i64
+  %31 = sext i32 %maxLen to i64
+  br label %35
+
+.preheader:                                       ; preds = %35, %.preheader2
+  %32 = icmp slt i32 %minLen, %maxLen
+  br i1 %32, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %.preheader
+  %33 = sext i32 %minLen to i64
+  %34 = add i32 %maxLen, -1
+  br label %46
+
+; <label>:35                                      ; preds = %35, %.lr.ph12
+  %indvars.iv24 = phi i64 [ %indvars.iv.next25, %35 ], [ %30, %.lr.ph12 ]
+  %vec.011 = phi i32 [ %44, %35 ], [ 0, %.lr.ph12 ]
+  %indvars.iv.next25 = add nsw i64 %indvars.iv24, 1
+  %36 = getelementptr inbounds i32* %base, i64 %indvars.iv.next25
+  %37 = load i32* %36, align 4, !tbaa !2
+  %38 = getelementptr inbounds i32* %base, i64 %indvars.iv24
+  %39 = load i32* %38, align 4, !tbaa !2
+  %40 = sub nsw i32 %37, %39
+  %41 = add nsw i32 %40, %vec.011
+  %42 = add nsw i32 %41, -1
+  %43 = getelementptr inbounds i32* %limit, i64 %indvars.iv24
+  store i32 %42, i32* %43, align 4, !tbaa !2
+  %44 = shl i32 %41, 1
+  %45 = icmp slt i64 %indvars.iv24, %31
+  br i1 %45, label %35, label %.preheader
+
+; <label>:46                                      ; preds = %46, %.lr.ph
+  %indvars.iv = phi i64 [ %33, %.lr.ph ], [ %indvars.iv.next, %46 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1
+  %47 = getelementptr inbounds i32* %limit, i64 %indvars.iv
+  %48 = load i32* %47, align 4, !tbaa !2
+  %49 = shl i32 %48, 1
+  %50 = add i32 %49, 2
+  %51 = getelementptr inbounds i32* %base, i64 %indvars.iv.next
+  %52 = load i32* %51, align 4, !tbaa !2
+  %53 = sub i32 %50, %52
+  store i32 %53, i32* %51, align 4, !tbaa !2
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %34
+  br i1 %exitcond, label %._crit_edge, label %46
+
+._crit_edge:                                      ; preds = %46, %.preheader
+  ret void
+}
