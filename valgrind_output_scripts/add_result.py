@@ -15,10 +15,8 @@ def split_macros(word):
 
     return rtn_words
 
-
-
 def get_bucket(val):
-    return int((val*100) / num_buckets) * num_buckets
+    return (int(val*100) / num_buckets)
 
 def parse_file(input_filename, out_filename, sources_path): 
     
@@ -27,11 +25,11 @@ def parse_file(input_filename, out_filename, sources_path):
         with open(input_filename, 'rb') as input_file:
             for line in input_file:
                 words = line.split()
-                this_path = sources_path + words[0].replace(".","_")
+                this_path =  words[0].replace(".","_")
                 found = False
-                if os.path.isdir(this_path):
-                    for f in os.listdir(this_path):
-                        with open(this_path + "/" + f, "rb") as next_file:
+                if os.path.isdir(sources_path + this_path):
+                    for f in os.listdir(sources_path + this_path):
+                        with open(sources_path + this_path + "/" + f, "rb") as next_file:
                             lines = next_file.read()
                             lines_words = lines.split()
                             endpoint = len(lines_words)
@@ -45,7 +43,7 @@ def parse_file(input_filename, out_filename, sources_path):
                                                 if found:
                                                     print "I already found this!",word
                                                 found = True                                
-                                                out_file.write(this_path + f +": " + str(get_bucket(float(words[2]))) + "\n")                                
+                                                out_file.write(this_path +"/"+ f +"\t" + str(get_bucket(float(words[2]))) + "\n")                                
                 
                                     else:
                                         word = lines_words[i]
@@ -54,7 +52,7 @@ def parse_file(input_filename, out_filename, sources_path):
                                                 print "I already found this!",word
 
                                             found = True                                
-                                            out_file.write(this_path + f +": " + str(get_bucket(float(words[2]))) + "\n")
+                                            out_file.write(this_path +"/"+ f +"\t" + str(get_bucket(float(words[2]))) + "\n")
         
 
                 if not found:
