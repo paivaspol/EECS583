@@ -1,0 +1,33 @@
+bool_t
+xdr_float(xdrs, fp)
+     XDR *xdrs;
+     float *fp;
+{
+	switch (xdrs->x_op) {
+
+	case XDR_ENCODE:
+		if (sizeof(float) == sizeof(long))
+			return (xdr_putlong(xdrs, (long *)fp));
+		else if (sizeof(float) == sizeof(int)) {
+			long tmp = *(int *)fp;
+			return (xdr_putlong(xdrs, &tmp));
+		}
+		break;
+
+	case XDR_DECODE:
+		if (sizeof(float) == sizeof(long))
+			return (xdr_getlong(xdrs, (long *)fp));
+		else if (sizeof(float) == sizeof(int)) {
+			long tmp;
+			if (xdr_getlong(xdrs, &tmp)) {
+				*(int *)fp = tmp;
+				return (TRUE);
+			}
+		}
+		break;
+
+	case XDR_FREE:
+		return (TRUE);
+	}
+	return (FALSE);
+}

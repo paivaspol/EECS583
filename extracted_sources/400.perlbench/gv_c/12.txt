@@ -1,28 +1,5 @@
 HV*
-Perl_gv_stashpvn(pTHX_ const char *name, U32 namelen, I32 create)
+Perl_gv_stashpv(pTHX_ const char *name, I32 create)
 {
-    char smallbuf[256];
-    char *tmpbuf;
-    HV *stash;
-    GV *tmpgv;
-
-    if (namelen + 3 < sizeof smallbuf)
-	tmpbuf = smallbuf;
-    else
-	New(606, tmpbuf, namelen + 3, char);
-    Copy(name,tmpbuf,namelen,char);
-    tmpbuf[namelen++] = ':';
-    tmpbuf[namelen++] = ':';
-    tmpbuf[namelen] = '\0';
-    tmpgv = gv_fetchpv(tmpbuf, create, SVt_PVHV);
-    if (tmpbuf != smallbuf)
-	Safefree(tmpbuf);
-    if (!tmpgv)
-	return 0;
-    if (!GvHV(tmpgv))
-	GvHV(tmpgv) = newHV();
-    stash = GvHV(tmpgv);
-    if (!HvNAME(stash))
-	HvNAME(stash) = savepv(name);
-    return stash;
+    return gv_stashpvn(name, strlen(name), create);
 }

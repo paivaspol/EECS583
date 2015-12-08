@@ -1,0 +1,27 @@
+PP(pp_next)
+{
+    I32 cxix;
+    register PERL_CONTEXT *cx;
+    I32 inner;
+
+    if (PL_op->op_flags & OPf_SPECIAL) {
+	cxix = dopoptoloop(cxstack_ix);
+	if (cxix < 0)
+	    DIE(aTHX_ "Can't \"next\" outside a loop block");
+    }
+    else {
+	cxix = dopoptolabel(cPVOP->op_pv);
+	if (cxix < 0)
+	    DIE(aTHX_ "Label not found for \"next %s\"", cPVOP->op_pv);
+    }
+    if (cxix < cxstack_ix)
+	dounwind(cxix);
+
+    /* clear off anything above the scope we're re-entering, but
+     * save the rest until after a possible continue block */
+    inner = PL_scopestack_ix;
+    TOPBLOCK(cx);
+    if (PL_scopestack_ix < inner)
+	leave_scope(PL_scopestack[PL_scopestack_ix]);
+    return cx->blk_loop.next_op;
+}

@@ -1,8 +1,24 @@
-static bool_t
-xdrstdio_getbytes (XDR *xdrs, char *addr, unsigned int len)
+bool_t
+xdr_short (XDR *xdrs, short *sp)
 {
-  if ((len != 0) && (fread (addr, (int) len, 1,
-			    (FILE *) xdrs->x_private) != 1))
-    return FALSE;
-  return TRUE;
+  long l;
+
+  switch (xdrs->x_op)
+    {
+    case XDR_ENCODE:
+      l = (long) *sp;
+      return xdr_putlong (xdrs, &l);
+
+    case XDR_DECODE:
+      if (!xdr_getlong (xdrs, &l))
+	{
+	  return FALSE;
+	}
+      *sp = (short) l;
+      return TRUE;
+
+    case XDR_FREE:
+      return TRUE;
+    }
+  return FALSE;
 }

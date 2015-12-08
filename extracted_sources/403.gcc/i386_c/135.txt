@@ -1,10 +1,58 @@
-static void
-ix86_adjust_counter (countreg, value)
-     rtx countreg;
-     HOST_WIDE_INT value;
+void
+ix86_split_ashrdi (operands, scratch)
+     rtx *operands, scratch;
 {
-  if (GET_MODE (countreg) == DImode)
-    emit_insn (gen_adddi3 (countreg, countreg, GEN_INT (-value)));
+  rtx low[2], high[2];
+  int count;
+
+  if (GET_CODE (operands[2]) == CONST_INT)
+    {
+      split_di (operands, 2, low, high);
+      count = INTVAL (operands[2]) & 63;
+
+      if (count >= 32)
+	{
+	  emit_move_insn (low[0], high[1]);
+
+	  if (! reload_completed)
+	    emit_insn (gen_ashrsi3 (high[0], low[0], GEN_INT (31)));
+	  else
+	    {
+	      emit_move_insn (high[0], low[0]);
+	      emit_insn (gen_ashrsi3 (high[0], high[0], GEN_INT (31)));
+	    }
+
+	  if (count > 32)
+	    emit_insn (gen_ashrsi3 (low[0], low[0], GEN_INT (count - 32)));
+	}
+      else
+	{
+	  if (!rtx_equal_p (operands[0], operands[1]))
+	    emit_move_insn (operands[0], operands[1]);
+	  emit_insn (gen_x86_shrd_1 (low[0], high[0], GEN_INT (count)));
+	  emit_insn (gen_ashrsi3 (high[0], high[0], GEN_INT (count)));
+	}
+    }
   else
-    emit_insn (gen_addsi3 (countreg, countreg, GEN_INT (-value)));
+    {
+      if (!rtx_equal_p (operands[0], operands[1]))
+	emit_move_insn (operands[0], operands[1]);
+
+      split_di (operands, 1, low, high);
+
+      emit_insn (gen_x86_shrd_1 (low[0], high[0], operands[2]));
+      emit_insn (gen_ashrsi3 (high[0], high[0], operands[2]));
+
+      if (TARGET_CMOVE && (! no_new_pseudos || scratch))
+	{
+	  if (! no_new_pseudos)
+	    scratch = gen_reg_rtx (SImode);
+	  emit_move_insn (scratch, high[0]);
+	  emit_insn (gen_ashrsi3 (scratch, scratch, GEN_INT (31)));
+	  emit_insn (gen_x86_shift_adj_1 (low[0], high[0], operands[2],
+					  scratch));
+	}
+      else
+	emit_insn (gen_x86_shift_adj_3 (low[0], high[0], operands[2]));
+    }
 }

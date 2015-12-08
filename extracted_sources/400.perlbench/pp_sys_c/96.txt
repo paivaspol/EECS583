@@ -1,0 +1,22 @@
+PP(pp_seekdir)
+{
+#if defined(HAS_SEEKDIR) || defined(seekdir)
+    dSP;
+    long along = POPl;
+    GV *gv = (GV*)POPs;
+    register IO *io = GvIOn(gv);
+
+    if (!io || !IoDIRP(io))
+	goto nope;
+
+    (void)PerlDir_seek(IoDIRP(io), along);
+
+    RETPUSHYES;
+nope:
+    if (!errno)
+	SETERRNO(EBADF,RMS_ISI);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_dir_func, "seekdir");
+#endif
+}

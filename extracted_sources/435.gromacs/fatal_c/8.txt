@@ -1,8 +1,37 @@
-void _set_fatal_tmp_file(char *fn, char *file, int line)
+void quit_gmx(int fatal_errno,char *msg)
 {
-  if (fatal_tmp_file == NULL)
-    fatal_tmp_file = strdup(fn);
-  else
-    fprintf(stderr,"BUGWARNING: fatal_tmp_file already set at %s:%d",
-	    file,line);
+  if (!fatal_errno) {
+    if (stdlog) 
+      fprintf(stdlog,"%s\n",msg);
+    fprintf(stderr,"%s\n",msg);
+  }
+  else {
+    if (fatal_errno != -1)
+      errno=fatal_errno;
+    perror(msg);
+  }
+  
+#ifdef USE_MPI
+  if (gmx_parallel) {
+    int  nnodes;
+    int  nodeid;
+    
+    nnodes = gmx_node_num();
+    nodeid    = gmx_node_id();
+    
+    if (nnodes > 1) 
+      fprintf(stderr,"Error on node %d, will try to stop all the nodes\n",nodeid);
+    gmx_abort(nodeid,nnodes,-1);
+  }
+#else
+  if (debug)
+    fflush(debug);
+  if (bDebug) {
+    fprintf(stderr,"dump core (y/n):"); 
+    fflush(stderr);
+    if (toupper(getc(stdin))!='N') 
+      (void) abort(); 
+  }
+#endif 
+  exit(-1);
 }

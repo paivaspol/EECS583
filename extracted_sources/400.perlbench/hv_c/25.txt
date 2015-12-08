@@ -1,22 +1,46 @@
 void
-Perl_hv_undef(pTHX_ HV *hv)
+Perl_hv_clear_placeholders(pTHX_ HV *hv)
 {
-    register XPVHV* xhv;
-    if (!hv)
-	return;
-    xhv = (XPVHV*)SvANY(hv);
-    hfreeentries(hv);
-    Safefree(xhv->xhv_array /* HvARRAY(hv) */);
-    if (HvNAME(hv)) {
-        if(PL_stashcache)
-	    hv_delete(PL_stashcache, HvNAME(hv), strlen(HvNAME(hv)), G_DISCARD);
-	Safefree(HvNAME(hv));
-	HvNAME(hv) = 0;
-    }
-    xhv->xhv_max   = 7;	/* HvMAX(hv) = 7 (it's a normal hash) */
-    xhv->xhv_array = 0;	/* HvARRAY(hv) = 0 */
-    xhv->xhv_placeholders = 0; /* HvPLACEHOLDERS(hv) = 0 */
+    I32 items = (I32)HvPLACEHOLDERS(hv);
+    I32 i = HvMAX(hv);
 
-    if (SvRMAGICAL(hv))
-	mg_clear((SV*)hv);
+    if (items == 0)
+	return;
+
+    do {
+	/* Loop down the linked list heads  */
+	int first = 1;
+	HE **oentry = &(HvARRAY(hv))[i];
+	HE *entry = *oentry;
+
+	if (!entry)
+	    continue;
+
+	for (; entry; entry = *oentry) {
+	    if (HeVAL(entry) == &PL_sv_placeholder) {
+		*oentry = HeNEXT(entry);
+		if (first && !*oentry)
+		    HvFILL(hv)--; /* This linked list is now empty.  */
+		if (HvEITER(hv))
+		    HvLAZYDEL_on(hv);
+		else
+		    hv_free_ent(hv, entry);
+
+		if (--items == 0) {
+		    /* Finished.  */
+		    HvTOTALKEYS(hv) -= (IV)HvPLACEHOLDERS(hv);
+		    if (HvKEYS(hv) == 0)
+			HvHASKFLAGS_off(hv);
+		    HvPLACEHOLDERS(hv) = 0;
+		    return;
+		}
+	    } else {
+		oentry = &HeNEXT(entry);
+		first = 0;
+	    }
+	}
+    } while (--i >= 0);
+    /* You can't get here, hence assertion should always fail.  */
+    assert (items == 0);
+    assert (0);
 }

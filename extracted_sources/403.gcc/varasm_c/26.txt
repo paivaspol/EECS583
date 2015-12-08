@@ -1,12 +1,17 @@
 void
-default_stabs_asm_out_destructor (symbol, priority)
-     rtx symbol;
-     int priority ATTRIBUTE_UNUSED;
+assemble_constant_align (exp)
+     tree exp;
 {
-  /* Tell GNU LD that this is part of the static destructor set.
-     This will work for any system that uses stabs, most usefully
-     aout systems.  */
-  fprintf (asm_out_file, "%s\"___DTOR_LIST__\",22,0,0,", ASM_STABS_OP);
-  assemble_name (asm_out_file, XSTR (symbol, 0));
-  fputc ('\n', asm_out_file);
+  int align;
+
+  /* Align the location counter as required by EXP's data type.  */
+  align = TYPE_ALIGN (TREE_TYPE (exp));
+#ifdef CONSTANT_ALIGNMENT
+  align = CONSTANT_ALIGNMENT (exp, align);
+#endif
+
+  if (align > BITS_PER_UNIT)
+    {
+      ASM_OUTPUT_ALIGN (asm_out_file, floor_log2 (align / BITS_PER_UNIT));
+    }
 }

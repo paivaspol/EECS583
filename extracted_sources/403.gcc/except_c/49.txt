@@ -1,68 +1,32 @@
-static void
-assign_filter_values ()
+static int
+add_ehspec_entry (ehspec_hash, ttypes_hash, list)
+     htab_t ehspec_hash;
+     htab_t ttypes_hash;
+     tree list;
 {
-  int i;
-  htab_t ttypes, ehspec;
+  struct ttypes_filter **slot, *n;
+  struct ttypes_filter dummy;
 
-  VARRAY_TREE_INIT (cfun->eh->ttype_data, 16, "ttype_data");
-  VARRAY_UCHAR_INIT (cfun->eh->ehspec_data, 64, "ehspec_data");
+  dummy.t = list;
+  slot = (struct ttypes_filter **)
+    htab_find_slot (ehspec_hash, &dummy, INSERT);
 
-  ttypes = htab_create (31, ttypes_filter_hash, ttypes_filter_eq, free);
-  ehspec = htab_create (31, ehspec_filter_hash, ehspec_filter_eq, free);
-
-  for (i = cfun->eh->last_region_number; i > 0; --i)
+  if ((n = *slot) == NULL)
     {
-      struct eh_region *r = cfun->eh->region_array[i];
+      /* Filter value is a -1 based byte index into a uleb128 buffer.  */
 
-      /* Mind we don't process a region more than once.  */
-      if (!r || r->region_number != i)
-	continue;
+      n = (struct ttypes_filter *) xmalloc (sizeof (*n));
+      n->t = list;
+      n->filter = -(VARRAY_ACTIVE_SIZE (cfun->eh->ehspec_data) + 1);
+      *slot = n;
 
-      switch (r->type)
-	{
-	case ERT_CATCH:
-	  /* Whatever type_list is (NULL or true list), we build a list
-	     of filters for the region.  */
-	  r->u.catch.filter_list = NULL_TREE;
-
-	  if (r->u.catch.type_list != NULL)
-	    {
-	      /* Get a filter value for each of the types caught and store
-		 them in the region's dedicated list.  */
-	      tree tp_node = r->u.catch.type_list;
-
-	      for (;tp_node; tp_node = TREE_CHAIN (tp_node))
-		{
-		  int flt = add_ttypes_entry (ttypes, TREE_VALUE (tp_node));
-		  tree flt_node = build_int_2 (flt, 0);
-
-		  r->u.catch.filter_list
-		    = tree_cons (NULL_TREE, flt_node, r->u.catch.filter_list);
-		}
-	    }
-	  else
-	    {
-	      /* Get a filter value for the NULL list also since it will need
-		 an action record anyway.  */
-	      int flt = add_ttypes_entry (ttypes, NULL);
-	      tree flt_node = build_int_2 (flt, 0);
-
-	      r->u.catch.filter_list
-		= tree_cons (NULL_TREE, flt_node, r->u.catch.filter_list);
-	    }
-
-	  break;
-
-	case ERT_ALLOWED_EXCEPTIONS:
-	  r->u.allowed.filter
-	    = add_ehspec_entry (ehspec, ttypes, r->u.allowed.type_list);
-	  break;
-
-	default:
-	  break;
-	}
+      /* Look up each type in the list and encode its filter
+	 value as a uleb128.  Terminate the list with 0.  */
+      for (; list ; list = TREE_CHAIN (list))
+	push_uleb128 (&cfun->eh->ehspec_data,
+		      add_ttypes_entry (ttypes_hash, TREE_VALUE (list)));
+      VARRAY_PUSH_UCHAR (cfun->eh->ehspec_data, 0);
     }
 
-  htab_delete (ttypes);
-  htab_delete (ehspec);
+  return n->filter;
 }

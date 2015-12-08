@@ -1,19 +1,36 @@
-SV *
-Perl_sv_rvweaken(pTHX_ SV *sv)
+int
+Perl_sv_unmagic(pTHX_ SV *sv, int type)
 {
-    SV *tsv;
-    if (!SvOK(sv))  /* let undefs pass */
-	return sv;
-    if (!SvROK(sv))
-	Perl_croak(aTHX_ "Can't weaken a nonreference");
-    else if (SvWEAKREF(sv)) {
-	if (ckWARN(WARN_MISC))
-	    Perl_warner(aTHX_ packWARN(WARN_MISC), "Reference is already weak");
-	return sv;
+    MAGIC* mg;
+    MAGIC** mgp;
+    if (SvTYPE(sv) < SVt_PVMG || !SvMAGIC(sv))
+	return 0;
+    mgp = &SvMAGIC(sv);
+    for (mg = *mgp; mg; mg = *mgp) {
+	if (mg->mg_type == type) {
+	    MGVTBL* vtbl = mg->mg_virtual;
+	    *mgp = mg->mg_moremagic;
+	    if (vtbl && vtbl->svt_free)
+		CALL_FPTR(vtbl->svt_free)(aTHX_ sv, mg);
+	    if (mg->mg_ptr && mg->mg_type != PERL_MAGIC_regex_global) {
+		if (mg->mg_len > 0)
+		    Safefree(mg->mg_ptr);
+		else if (mg->mg_len == HEf_SVKEY)
+		    SvREFCNT_dec((SV*)mg->mg_ptr);
+		else if (mg->mg_type == PERL_MAGIC_utf8 && mg->mg_ptr)
+		    Safefree(mg->mg_ptr);
+            }
+	    if (mg->mg_flags & MGf_REFCOUNTED)
+		SvREFCNT_dec(mg->mg_obj);
+	    Safefree(mg);
+	}
+	else
+	    mgp = &mg->mg_moremagic;
     }
-    tsv = SvRV(sv);
-    sv_add_backref(tsv, sv);
-    SvWEAKREF_on(sv);
-    SvREFCNT_dec(tsv);
-    return sv;
+    if (!SvMAGIC(sv)) {
+	SvMAGICAL_off(sv);
+       SvFLAGS(sv) |= (SvFLAGS(sv) & (SVp_NOK|SVp_POK)) >> PRIVSHIFT;
+    }
+
+    return 0;
 }

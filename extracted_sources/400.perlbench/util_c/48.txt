@@ -1,20 +1,5 @@
 void
-Perl_cond_broadcast(pTHX_ perl_cond *cp)
+schedule(void)
 {
-    perl_os_thread t;
-    perl_cond cond, cond_next;
-
-    for (cond = *cp; cond; cond = cond_next) {
-	t = cond->thread;
-	/* Insert t in the runnable queue just ahead of us */
-	t->i.next_run = thr->i.next_run;
-	thr->i.next_run->i.prev_run = t;
-	t->i.prev_run = thr;
-	thr->i.next_run = t;
-	thr->i.wait_queue = 0;
-	/* Remove from the wait queue */
-	cond_next = cond->next;
-	Safefree(cond);
-    }
-    *cp = 0;
+    thr = thr->i.next_run;
 }

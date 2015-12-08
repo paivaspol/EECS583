@@ -1,0 +1,45 @@
+PP(pp_dbstate)
+{
+    PL_curcop = (COP*)PL_op;
+    TAINT_NOT;		/* Each statement is presumed innocent */
+    PL_stack_sp = PL_stack_base + cxstack[cxstack_ix].blk_oldsp;
+    FREETMPS;
+
+    if (PL_op->op_flags & OPf_SPECIAL /* breakpoint */
+	    || SvIV(PL_DBsingle) || SvIV(PL_DBsignal) || SvIV(PL_DBtrace))
+    {
+	dSP;
+	register CV *cv;
+	register PERL_CONTEXT *cx;
+	I32 gimme = G_ARRAY;
+	U8 hasargs;
+	GV *gv;
+
+	gv = PL_DBgv;
+	cv = GvCV(gv);
+	if (!cv)
+	    DIE(aTHX_ "No DB::DB routine defined");
+
+	if (CvDEPTH(cv) >= 1 && !(PL_debug & DEBUG_DB_RECURSE_FLAG))
+	    /* don't do recursive DB::DB call */
+	    return NORMAL;
+
+	ENTER;
+	SAVETMPS;
+
+	SAVEI32(PL_debug);
+	SAVESTACK_POS();
+	PL_debug = 0;
+	hasargs = 0;
+	SPAGAIN;
+
+	push_return(PL_op->op_next);
+	PUSHBLOCK(cx, CXt_SUB, SP);
+	PUSHSUB_DB(cx);
+	CvDEPTH(cv)++;
+	PAD_SET_CUR(CvPADLIST(cv),1);
+	RETURNOP(CvSTART(cv));
+    }
+    else
+	return NORMAL;
+}

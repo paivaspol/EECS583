@@ -1,52 +1,59 @@
-static int
-lockf_emulate_flock(int fd, int operation)
+PP(pp_die)
 {
-    int i;
-    int save_errno;
-    Off_t pos;
-
-    /* flock locks entire file so for lockf we need to do the same	*/
-    save_errno = errno;
-    pos = PerlLIO_lseek(fd, (Off_t)0, SEEK_CUR);    /* get pos to restore later */
-    if (pos > 0)	/* is seekable and needs to be repositioned	*/
-	if (PerlLIO_lseek(fd, (Off_t)0, SEEK_SET) < 0)
-	    pos = -1;	/* seek failed, so don't seek back afterwards	*/
-    errno = save_errno;
-
-    switch (operation) {
-
-	/* LOCK_SH - get a shared lock */
-	case LOCK_SH:
-	/* LOCK_EX - get an exclusive lock */
-	case LOCK_EX:
-	    i = lockf (fd, F_LOCK, 0);
-	    break;
-
-	/* LOCK_SH|LOCK_NB - get a non-blocking shared lock */
-	case LOCK_SH|LOCK_NB:
-	/* LOCK_EX|LOCK_NB - get a non-blocking exclusive lock */
-	case LOCK_EX|LOCK_NB:
-	    i = lockf (fd, F_TLOCK, 0);
-	    if (i == -1)
-		if ((errno == EAGAIN) || (errno == EACCES))
-		    errno = EWOULDBLOCK;
-	    break;
-
-	/* LOCK_UN - unlock (non-blocking is a no-op) */
-	case LOCK_UN:
-	case LOCK_UN|LOCK_NB:
-	    i = lockf (fd, F_ULOCK, 0);
-	    break;
-
-	/* Default - can't decipher operation */
-	default:
-	    i = -1;
-	    errno = EINVAL;
-	    break;
+    dSP; dMARK;
+    char *tmps;
+    SV *tmpsv;
+    STRLEN len;
+    bool multiarg = 0;
+#ifdef VMS
+    VMSISH_HUSHED  = VMSISH_HUSHED || (PL_op->op_private & OPpHUSH_VMSISH);
+#endif
+    if (SP - MARK != 1) {
+	dTARGET;
+	do_join(TARG, &PL_sv_no, MARK, SP);
+	tmpsv = TARG;
+	tmps = SvPV(tmpsv, len);
+	multiarg = 1;
+	SP = MARK + 1;
     }
+    else {
+	tmpsv = TOPs;
+        tmps = SvROK(tmpsv) ? Nullch : SvPV(tmpsv, len);
+    }
+    if (!tmps || !len) {
+  	SV *error = ERRSV;
+	(void)SvUPGRADE(error, SVt_PV);
+	if (multiarg ? SvROK(error) : SvROK(tmpsv)) {
+	    if (!multiarg)
+		SvSetSV(error,tmpsv);
+	    else if (sv_isobject(error)) {
+		HV *stash = SvSTASH(SvRV(error));
+		GV *gv = gv_fetchmethod(stash, "PROPAGATE");
+		if (gv) {
+		    SV *file = sv_2mortal(newSVpv(CopFILE(PL_curcop),0));
+		    SV *line = sv_2mortal(newSVuv(CopLINE(PL_curcop)));
+		    EXTEND(SP, 3);
+		    PUSHMARK(SP);
+		    PUSHs(error);
+		    PUSHs(file);
+ 		    PUSHs(line);
+		    PUTBACK;
+		    call_sv((SV*)GvCV(gv),
+			    G_SCALAR|G_EVAL|G_KEEPERR);
+		    sv_setsv(error,*PL_stack_sp--);
+		}
+	    }
+	    DIE_NULL;
+	}
+	else {
+	    if (SvPOK(error) && SvCUR(error))
+		sv_catpv(error, "\t...propagated");
+	    tmpsv = error;
+	    tmps = SvPV(tmpsv, len);
+	}
+    }
+    if (!tmps || !len)
+	tmpsv = sv_2mortal(newSVpvn("Died", 4));
 
-    if (pos > 0)      /* need to restore position of the handle	*/
-	PerlLIO_lseek(fd, pos, SEEK_SET);	/* ignore error here	*/
-
-    return (i);
+    DIE(aTHX_ "%"SVf, tmpsv);
 }

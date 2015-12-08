@@ -1,24 +1,18 @@
-static char *
-uiv_2buf(char *buf, IV iv, UV uv, int is_uv, char **peob)
+STATIC UV
+S_asUV(pTHX_ SV *sv)
 {
-    char *ptr = buf + TYPE_CHARS(UV);
-    char *ebuf = ptr;
-    int sign;
+    UV value;
+    int numtype = grok_number(SvPVX(sv), SvCUR(sv), &value);
 
-    if (is_uv)
-	sign = 0;
-    else if (iv >= 0) {
-	uv = iv;
-	sign = 0;
-    } else {
-	uv = -iv;
-	sign = 1;
+    if ((numtype & (IS_NUMBER_IN_UV | IS_NUMBER_NOT_INT))
+	== IS_NUMBER_IN_UV) {
+	/* It's definitely an integer */
+	if (!(numtype & IS_NUMBER_NEG))
+	    return value;
     }
-    do {
-	*--ptr = '0' + (char)(uv % 10);
-    } while (uv /= 10);
-    if (sign)
-	*--ptr = '-';
-    *peob = ebuf;
-    return ptr;
+    if (!numtype) {
+	if (ckWARN(WARN_NUMERIC))
+	    not_a_number(sv);
+    }
+    return U_V(Atof(SvPVX(sv)));
 }

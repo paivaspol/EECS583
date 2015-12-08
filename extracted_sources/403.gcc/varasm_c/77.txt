@@ -1,15 +1,125 @@
-static struct pool_constant *
-find_pool_constant (f, addr)
-     struct function *f;
-     rtx addr;
+static void
+decode_rtx_const (mode, x, value)
+     enum machine_mode mode;
+     rtx x;
+     struct rtx_const *value;
 {
-  struct pool_constant *pool;
-  const char *label = XSTR (addr, 0);
+  /* Clear the whole structure, including any gaps.  */
+  memset (value, 0, sizeof (struct rtx_const));
 
-  for (pool = f->varasm->x_const_rtx_sym_hash_table[SYMHASH (label)]; pool;
-       pool = pool->next_sym)
-    if (XSTR (XEXP (pool->desc->rtl, 0), 0) == label)
-      return pool;
+  value->kind = RTX_INT;	/* Most usual kind.  */
+  value->mode = mode;
 
-  abort ();
+  switch (GET_CODE (x))
+    {
+    case CONST_DOUBLE:
+      value->kind = RTX_DOUBLE;
+      if (GET_MODE (x) != VOIDmode)
+	{
+	  value->mode = GET_MODE (x);
+	  memcpy ((char *) &value->un.du,
+		  (char *) &CONST_DOUBLE_LOW (x), sizeof value->un.du);
+	}
+      else
+	{
+	  value->un.di.low = CONST_DOUBLE_LOW (x);
+	  value->un.di.high = CONST_DOUBLE_HIGH (x);
+	}
+      break;
+
+    case CONST_VECTOR:
+      {
+	int units, i;
+	rtx elt;
+
+	units = CONST_VECTOR_NUNITS (x);
+	value->kind = RTX_VECTOR;
+	value->mode = mode;
+
+	for (i = 0; i < units; ++i)
+	  {
+	    elt = CONST_VECTOR_ELT (x, i);
+	    if (GET_MODE_CLASS (mode) == MODE_VECTOR_INT)
+	      {
+		value->un.veclo[i] = (HOST_WIDE_INT) INTVAL (elt);
+		value->un.vechi[i] = 0;
+	      }
+	    else if (GET_MODE_CLASS (mode) == MODE_VECTOR_FLOAT)
+	      {
+		value->un.veclo[i] = (HOST_WIDE_INT) CONST_DOUBLE_LOW (elt);
+		value->un.vechi[i] = (HOST_WIDE_INT) CONST_DOUBLE_HIGH (elt);
+	      }
+	    else
+	      abort ();
+	  }
+      }
+      break;
+
+    case CONST_INT:
+      value->un.addr.offset = INTVAL (x);
+      break;
+
+    case SYMBOL_REF:
+    case LABEL_REF:
+    case PC:
+      value->un.addr.base = x;
+      break;
+
+    case CONST:
+      x = XEXP (x, 0);
+      if (GET_CODE (x) == PLUS && GET_CODE (XEXP (x, 1)) == CONST_INT)
+	{
+	  value->un.addr.base = XEXP (x, 0);
+	  value->un.addr.offset = INTVAL (XEXP (x, 1));
+	}
+      else if (GET_CODE (x) == MINUS && GET_CODE (XEXP (x, 1)) == CONST_INT)
+	{
+	  value->un.addr.base = XEXP (x, 0);
+	  value->un.addr.offset = - INTVAL (XEXP (x, 1));
+	}
+      else
+	{
+	  value->un.addr.base = x;
+	  value->un.addr.offset = 0;
+	}
+      break;
+
+    default:
+      value->kind = RTX_UNKNOWN;
+      break;
+    }
+
+  if (value->kind == RTX_INT && value->un.addr.base != 0
+      && GET_CODE (value->un.addr.base) == UNSPEC)
+    {      
+      /* For a simple UNSPEC, the base is set to the
+	 operand, the kind field is set to the index of
+	 the unspec expression. 
+	 Together with the code below, in case that
+	 the operand is a SYMBOL_REF or LABEL_REF, 
+	 the address of the string or the code_label 
+	 is taken as base.  */
+      if (XVECLEN (value->un.addr.base, 0) == 1)
+        {
+	  value->kind = RTX_UNSPEC + XINT (value->un.addr.base, 1);
+	  value->un.addr.base = XVECEXP (value->un.addr.base, 0, 0);
+	}
+    }
+
+  if (value->kind > RTX_DOUBLE && value->un.addr.base != 0)
+    switch (GET_CODE (value->un.addr.base))
+      {
+      case SYMBOL_REF:
+	/* Use the string's address, not the SYMBOL_REF's address,
+	   for the sake of addresses of library routines.  */
+	value->un.addr.base = (rtx) XSTR (value->un.addr.base, 0);
+	break;
+
+      case LABEL_REF:
+	/* For a LABEL_REF, compare labels.  */
+	value->un.addr.base = XEXP (value->un.addr.base, 0);
+
+      default:
+	break;
+      }
 }

@@ -1,22 +1,8 @@
 int
-optimize_tail_recursion (arguments, last_insn)
-     tree arguments;
-     rtx last_insn;
+drop_through_at_end_p ()
 {
-  /* Finish checking validity, and if valid emit code to set the
-     argument variables for the new call.  */
-  if (tail_recursion_args (arguments, DECL_ARGUMENTS (current_function_decl)))
-    {
-      if (tail_recursion_label == 0)
-	{
-	  tail_recursion_label = gen_label_rtx ();
-	  emit_label_after (tail_recursion_label,
-			    tail_recursion_reentry);
-	}
-      emit_queue ();
-      expand_goto_internal (NULL_TREE, tail_recursion_label, last_insn);
-      emit_barrier ();
-      return 1;
-    }
-  return 0;
+  rtx insn = get_last_insn ();
+  while (insn && GET_CODE (insn) == NOTE)
+    insn = PREV_INSN (insn);
+  return insn && GET_CODE (insn) != BARRIER;
 }

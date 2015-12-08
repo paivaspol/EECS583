@@ -1,25 +1,46 @@
-STATIC bool
-S_utf8_mg_pos_init(pTHX_ SV *sv, MAGIC **mgp, STRLEN **cachep, I32 i, I32 *offsetp, U8 *s, U8 *start)
+void
+Perl_sv_free(pTHX_ SV *sv)
 {
-    bool found = FALSE; 
+    int refcount_is_zero;
 
-    if (SvMAGICAL(sv) && !SvREADONLY(sv)) {
-	if (!*mgp)
-	    *mgp = sv_magicext(sv, 0, PERL_MAGIC_utf8, &PL_vtbl_utf8, 0, 0);
-	assert(*mgp);
-
-        if ((*mgp)->mg_ptr)
-            *cachep = (STRLEN *) (*mgp)->mg_ptr;
-        else {
-            Newz(0, *cachep, PERL_MAGIC_UTF8_CACHESIZE * 2, STRLEN);
-            (*mgp)->mg_ptr = (char *) *cachep;
-        }
-        assert(*cachep);
-
-        (*cachep)[i]   = *offsetp;
-        (*cachep)[i+1] = s - start;
-        found = TRUE;
+    if (!sv)
+	return;
+    if (SvREFCNT(sv) == 0) {
+	if (SvFLAGS(sv) & SVf_BREAK)
+	    /* this SV's refcnt has been artificially decremented to
+	     * trigger cleanup */
+	    return;
+	if (PL_in_clean_all) /* All is fair */
+	    return;
+	if (SvREADONLY(sv) && SvIMMORTAL(sv)) {
+	    /* make sure SvREFCNT(sv)==0 happens very seldom */
+	    SvREFCNT(sv) = (~(U32)0)/2;
+	    return;
+	}
+	if (ckWARN_d(WARN_INTERNAL))
+	    Perl_warner(aTHX_ packWARN(WARN_INTERNAL),
+                        "Attempt to free unreferenced scalar: SV 0x%"UVxf
+                        pTHX__FORMAT, PTR2UV(sv) pTHX__VALUE);
+	return;
     }
-
-    return found;
+    ATOMIC_DEC_AND_TEST(refcount_is_zero, SvREFCNT(sv));
+    if (!refcount_is_zero)
+	return;
+#ifdef DEBUGGING
+    if (SvTEMP(sv)) {
+	if (ckWARN_d(WARN_DEBUGGING))
+	    Perl_warner(aTHX_ packWARN(WARN_DEBUGGING),
+			"Attempt to free temp prematurely: SV 0x%"UVxf
+                        pTHX__FORMAT, PTR2UV(sv) pTHX__VALUE);
+	return;
+    }
+#endif
+    if (SvREADONLY(sv) && SvIMMORTAL(sv)) {
+	/* make sure SvREFCNT(sv)==0 happens very seldom */
+	SvREFCNT(sv) = (~(U32)0)/2;
+	return;
+    }
+    sv_clear(sv);
+    if (! SvREFCNT(sv))
+	del_SV(sv);
 }

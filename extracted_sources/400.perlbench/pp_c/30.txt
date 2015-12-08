@@ -1,0 +1,117 @@
+PP(pp_multiply)
+{
+    dSP; dATARGET; tryAMAGICbin(mult,opASSIGN);
+#ifdef PERL_PRESERVE_IVUV
+    SvIV_please(TOPs);
+    if (SvIOK(TOPs)) {
+	/* Unless the left argument is integer in range we are going to have to
+	   use NV maths. Hence only attempt to coerce the right argument if
+	   we know the left is integer.  */
+	/* Left operand is defined, so is it IV? */
+	SvIV_please(TOPm1s);
+	if (SvIOK(TOPm1s)) {
+	    bool auvok = SvUOK(TOPm1s);
+	    bool buvok = SvUOK(TOPs);
+	    const UV topmask = (~ (UV)0) << (4 * sizeof (UV));
+	    const UV botmask = ~((~ (UV)0) << (4 * sizeof (UV)));
+	    UV alow;
+	    UV ahigh;
+	    UV blow;
+	    UV bhigh;
+
+	    if (auvok) {
+		alow = SvUVX(TOPm1s);
+	    } else {
+		IV aiv = SvIVX(TOPm1s);
+		if (aiv >= 0) {
+		    alow = aiv;
+		    auvok = TRUE; /* effectively it's a UV now */
+		} else {
+		    alow = -aiv; /* abs, auvok == false records sign */
+		}
+	    }
+	    if (buvok) {
+		blow = SvUVX(TOPs);
+	    } else {
+		IV biv = SvIVX(TOPs);
+		if (biv >= 0) {
+		    blow = biv;
+		    buvok = TRUE; /* effectively it's a UV now */
+		} else {
+		    blow = -biv; /* abs, buvok == false records sign */
+		}
+	    }
+
+	    /* If this does sign extension on unsigned it's time for plan B  */
+	    ahigh = alow >> (4 * sizeof (UV));
+	    alow &= botmask;
+	    bhigh = blow >> (4 * sizeof (UV));
+	    blow &= botmask;
+	    if (ahigh && bhigh) {
+		/* eg 32 bit is at least 0x10000 * 0x10000 == 0x100000000
+		   which is overflow. Drop to NVs below.  */
+	    } else if (!ahigh && !bhigh) {
+		/* eg 32 bit is at most 0xFFFF * 0xFFFF == 0xFFFE0001
+		   so the unsigned multiply cannot overflow.  */
+		UV product = alow * blow;
+		if (auvok == buvok) {
+		    /* -ve * -ve or +ve * +ve gives a +ve result.  */
+		    SP--;
+		    SETu( product );
+		    RETURN;
+		} else if (product <= (UV)IV_MIN) {
+		    /* 2s complement assumption that (UV)-IV_MIN is correct.  */
+		    /* -ve result, which could overflow an IV  */
+		    SP--;
+		    SETi( -(IV)product );
+		    RETURN;
+		} /* else drop to NVs below. */
+	    } else {
+		/* One operand is large, 1 small */
+		UV product_middle;
+		if (bhigh) {
+		    /* swap the operands */
+		    ahigh = bhigh;
+		    bhigh = blow; /* bhigh now the temp var for the swap */
+		    blow = alow;
+		    alow = bhigh;
+		}
+		/* now, ((ahigh * blow) << half_UV_len) + (alow * blow)
+		   multiplies can't overflow. shift can, add can, -ve can.  */
+		product_middle = ahigh * blow;
+		if (!(product_middle & topmask)) {
+		    /* OK, (ahigh * blow) won't lose bits when we shift it.  */
+		    UV product_low;
+		    product_middle <<= (4 * sizeof (UV));
+		    product_low = alow * blow;
+
+		    /* as for pp_add, UV + something mustn't get smaller.
+		       IIRC ANSI mandates this wrapping *behaviour* for
+		       unsigned whatever the actual representation*/
+		    product_low += product_middle;
+		    if (product_low >= product_middle) {
+			/* didn't overflow */
+			if (auvok == buvok) {
+			    /* -ve * -ve or +ve * +ve gives a +ve result.  */
+			    SP--;
+			    SETu( product_low );
+			    RETURN;
+			} else if (product_low <= (UV)IV_MIN) {
+			    /* 2s complement assumption again  */
+			    /* -ve result, which could overflow an IV  */
+			    SP--;
+			    SETi( -(IV)product_low );
+			    RETURN;
+			} /* else drop to NVs below. */
+		    }
+		} /* product_middle too large */
+	    } /* ahigh && bhigh */
+	} /* SvIOK(TOPm1s) */
+    } /* SvIOK(TOPs) */
+#endif
+    {
+      dPOPTOPnnrl;
+      SETn( left * right );
+      RETURN;
+    }
+}

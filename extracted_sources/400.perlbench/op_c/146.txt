@@ -1,0 +1,214 @@
+OP *
+Perl_ck_subr(pTHX_ OP *o)
+{
+    OP *prev = ((cUNOPo->op_first->op_sibling)
+	     ? cUNOPo : ((UNOP*)cUNOPo->op_first))->op_first;
+    OP *o2 = prev->op_sibling;
+    OP *cvop;
+    char *proto = 0;
+    CV *cv = 0;
+    GV *namegv = 0;
+    int optional = 0;
+    I32 arg = 0;
+    I32 contextclass = 0;
+    char *e = 0;
+    STRLEN n_a;
+
+    o->op_private |= OPpENTERSUB_HASTARG;
+    for (cvop = o2; cvop->op_sibling; cvop = cvop->op_sibling) ;
+    if (cvop->op_type == OP_RV2CV) {
+	SVOP* tmpop;
+	o->op_private |= (cvop->op_private & OPpENTERSUB_AMPER);
+	op_null(cvop);		/* disable rv2cv */
+	tmpop = (SVOP*)((UNOP*)cvop)->op_first;
+	if (tmpop->op_type == OP_GV && !(o->op_private & OPpENTERSUB_AMPER)) {
+	    GV *gv = cGVOPx_gv(tmpop);
+	    cv = GvCVu(gv);
+	    if (!cv)
+		tmpop->op_private |= OPpEARLY_CV;
+	    else if (SvPOK(cv)) {
+		namegv = CvANON(cv) ? gv : CvGV(cv);
+		proto = SvPV((SV*)cv, n_a);
+	    }
+	}
+    }
+    else if (cvop->op_type == OP_METHOD || cvop->op_type == OP_METHOD_NAMED) {
+	if (o2->op_type == OP_CONST)
+	    o2->op_private &= ~OPpCONST_STRICT;
+	else if (o2->op_type == OP_LIST) {
+	    OP *o = ((UNOP*)o2)->op_first->op_sibling;
+	    if (o && o->op_type == OP_CONST)
+		o->op_private &= ~OPpCONST_STRICT;
+	}
+    }
+    o->op_private |= (PL_hints & HINT_STRICT_REFS);
+    if (PERLDB_SUB && PL_curstash != PL_debstash)
+	o->op_private |= OPpENTERSUB_DB;
+    while (o2 != cvop) {
+	if (proto) {
+	    switch (*proto) {
+	    case '\0':
+		return too_many_arguments(o, gv_ename(namegv));
+	    case ';':
+		optional = 1;
+		proto++;
+		continue;
+	    case '$':
+		proto++;
+		arg++;
+		scalar(o2);
+		break;
+	    case '%':
+	    case '@':
+		list(o2);
+		arg++;
+		break;
+	    case '&':
+		proto++;
+		arg++;
+		if (o2->op_type != OP_REFGEN && o2->op_type != OP_UNDEF)
+		    bad_type(arg,
+			arg == 1 ? "block or sub {}" : "sub {}",
+			gv_ename(namegv), o2);
+		break;
+	    case '*':
+		/* '*' allows any scalar type, including bareword */
+		proto++;
+		arg++;
+		if (o2->op_type == OP_RV2GV)
+		    goto wrapref;	/* autoconvert GLOB -> GLOBref */
+		else if (o2->op_type == OP_CONST)
+		    o2->op_private &= ~OPpCONST_STRICT;
+		else if (o2->op_type == OP_ENTERSUB) {
+		    /* accidental subroutine, revert to bareword */
+		    OP *gvop = ((UNOP*)o2)->op_first;
+		    if (gvop && gvop->op_type == OP_NULL) {
+			gvop = ((UNOP*)gvop)->op_first;
+			if (gvop) {
+			    for (; gvop->op_sibling; gvop = gvop->op_sibling)
+				;
+			    if (gvop &&
+				(gvop->op_private & OPpENTERSUB_NOPAREN) &&
+				(gvop = ((UNOP*)gvop)->op_first) &&
+				gvop->op_type == OP_GV)
+			    {
+				GV *gv = cGVOPx_gv(gvop);
+				OP *sibling = o2->op_sibling;
+				SV *n = newSVpvn("",0);
+				op_free(o2);
+				gv_fullname4(n, gv, "", FALSE);
+				o2 = newSVOP(OP_CONST, 0, n);
+				prev->op_sibling = o2;
+				o2->op_sibling = sibling;
+			    }
+			}
+		    }
+		}
+		scalar(o2);
+		break;
+	    case '[': case ']':
+		 goto oops;
+		 break;
+	    case '\\':
+		proto++;
+		arg++;
+	    again:
+		switch (*proto++) {
+		case '[':
+		     if (contextclass++ == 0) {
+		          e = strchr(proto, ']');
+			  if (!e || e == proto)
+			       goto oops;
+		     }
+		     else
+			  goto oops;
+		     goto again;
+		     break;
+		case ']':
+		     if (contextclass) {
+			 char *p = proto;
+			 char s = *p;
+			 contextclass = 0;
+			 *p = '\0';
+			 while (*--p != '[');
+			 bad_type(arg, Perl_form(aTHX_ "one of %s", p),
+				 gv_ename(namegv), o2);
+			 *proto = s;
+		     } else
+			  goto oops;
+		     break;
+		case '*':
+		     if (o2->op_type == OP_RV2GV)
+			  goto wrapref;
+		     if (!contextclass)
+			  bad_type(arg, "symbol", gv_ename(namegv), o2);
+		     break;
+		case '&':
+		     if (o2->op_type == OP_ENTERSUB)
+			  goto wrapref;
+		     if (!contextclass)
+			  bad_type(arg, "subroutine entry", gv_ename(namegv), o2);
+		     break;
+		case '$':
+		    if (o2->op_type == OP_RV2SV ||
+			o2->op_type == OP_PADSV ||
+			o2->op_type == OP_HELEM ||
+			o2->op_type == OP_AELEM ||
+			o2->op_type == OP_THREADSV)
+			 goto wrapref;
+		    if (!contextclass)
+			bad_type(arg, "scalar", gv_ename(namegv), o2);
+		     break;
+		case '@':
+		    if (o2->op_type == OP_RV2AV ||
+			o2->op_type == OP_PADAV)
+			 goto wrapref;
+		    if (!contextclass)
+			bad_type(arg, "array", gv_ename(namegv), o2);
+		    break;
+		case '%':
+		    if (o2->op_type == OP_RV2HV ||
+			o2->op_type == OP_PADHV)
+			 goto wrapref;
+		    if (!contextclass)
+			 bad_type(arg, "hash", gv_ename(namegv), o2);
+		    break;
+		wrapref:
+		    {
+			OP* kid = o2;
+			OP* sib = kid->op_sibling;
+			kid->op_sibling = 0;
+			o2 = newUNOP(OP_REFGEN, 0, kid);
+			o2->op_sibling = sib;
+			prev->op_sibling = o2;
+		    }
+		    if (contextclass && e) {
+			 proto = e + 1;
+			 contextclass = 0;
+		    }
+		    break;
+		default: goto oops;
+		}
+		if (contextclass)
+		     goto again;
+		break;
+	    case ' ':
+		proto++;
+		continue;
+	    default:
+	      oops:
+		Perl_croak(aTHX_ "Malformed prototype for %s: %"SVf,
+			   gv_ename(namegv), cv);
+	    }
+	}
+	else
+	    list(o2);
+	mod(o2, OP_ENTERSUB);
+	prev = o2;
+	o2 = o2->op_sibling;
+    }
+    if (proto && !optional &&
+	  (*proto && *proto != '@' && *proto != '%' && *proto != ';'))
+	return too_few_arguments(o, gv_ename(namegv));
+    return o;
+}

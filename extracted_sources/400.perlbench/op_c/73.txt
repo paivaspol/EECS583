@@ -1,0 +1,22 @@
+OP *
+Perl_dofile(pTHX_ OP *term)
+{
+    OP *doop;
+    GV *gv;
+
+    gv = gv_fetchpv("do", FALSE, SVt_PVCV);
+    if (!(gv && GvCVu(gv) && GvIMPORTED_CV(gv)))
+	gv = gv_fetchpv("CORE::GLOBAL::do", FALSE, SVt_PVCV);
+
+    if (gv && GvCVu(gv) && GvIMPORTED_CV(gv)) {
+	doop = ck_subr(newUNOP(OP_ENTERSUB, OPf_STACKED,
+			       append_elem(OP_LIST, term,
+					   scalar(newUNOP(OP_RV2CV, 0,
+							  newGVOP(OP_GV, 0,
+								  gv))))));
+    }
+    else {
+	doop = newUNOP(OP_DOFILE, 0, scalar(term));
+    }
+    return doop;
+}

@@ -1,0 +1,94 @@
+PP(pp_truncate)
+{
+    dSP;
+    /* There seems to be no consensus on the length type of truncate()
+     * and ftruncate(), both off_t and size_t have supporters. In
+     * general one would think that when using large files, off_t is
+     * at least as wide as size_t, so using an off_t should be okay. */
+    /* XXX Configure probe for the length type of *truncate() needed XXX */
+    Off_t len;
+
+#if Off_t_size > IVSIZE
+    len = (Off_t)POPn;
+#else
+    len = (Off_t)POPi;
+#endif
+    /* Checking for length < 0 is problematic as the type might or
+     * might not be signed: if it is not, clever compilers will moan. */
+    /* XXX Configure probe for the signedness of the length type of *truncate() needed? XXX */
+    SETERRNO(0,0);
+    {
+        STRLEN n_a;
+	int result = 1;
+	GV *tmpgv;
+	IO *io;
+
+	if (PL_op->op_flags & OPf_SPECIAL) {
+	    tmpgv = gv_fetchpv(POPpx, FALSE, SVt_PVIO);
+
+	do_ftruncate_gv:
+	    if (!GvIO(tmpgv))
+		result = 0;
+	    else {
+		PerlIO *fp;
+		io = GvIOp(tmpgv);
+	    do_ftruncate_io:
+		TAINT_PROPER("truncate");
+		if (!(fp = IoIFP(io))) {
+		    result = 0;
+		}
+		else {
+		    PerlIO_flush(fp);
+#ifdef HAS_TRUNCATE
+		    if (ftruncate(PerlIO_fileno(fp), len) < 0)
+#else
+		    if (my_chsize(PerlIO_fileno(fp), len) < 0)
+#endif
+			result = 0;
+		}
+	    }
+	}
+	else {
+	    SV *sv = POPs;
+	    char *name;
+	
+	    if (SvTYPE(sv) == SVt_PVGV) {
+	        tmpgv = (GV*)sv;		/* *main::FRED for example */
+		goto do_ftruncate_gv;
+	    }
+	    else if (SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVGV) {
+	        tmpgv = (GV*) SvRV(sv);	/* \*main::FRED for example */
+		goto do_ftruncate_gv;
+	    }
+	    else if (SvROK(sv) && SvTYPE(SvRV(sv)) == SVt_PVIO) {
+		io = (IO*) SvRV(sv); /* *main::FRED{IO} for example */
+		goto do_ftruncate_io;
+	    }
+
+	    name = SvPV(sv, n_a);
+	    TAINT_PROPER("truncate");
+#ifdef HAS_TRUNCATE
+	    if (truncate(name, len) < 0)
+	        result = 0;
+#else
+	    {
+	        int tmpfd;
+
+		if ((tmpfd = PerlLIO_open(name, O_RDWR)) < 0)
+		    result = 0;
+		else {
+		    if (my_chsize(tmpfd, len) < 0)
+		        result = 0;
+		    PerlLIO_close(tmpfd);
+		}
+	    }
+#endif
+	}
+
+	if (result)
+	    RETPUSHYES;
+	if (!errno)
+	    SETERRNO(EBADF,RMS_IFI);
+	RETPUSHUNDEF;
+    }
+}

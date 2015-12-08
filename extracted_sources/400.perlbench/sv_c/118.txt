@@ -1,8 +1,10 @@
 SV *
-Perl_vnewSVpvf(pTHX_ const char* pat, va_list* args)
+Perl_newSVpvf(pTHX_ const char* pat, ...)
 {
     register SV *sv;
-    new_SV(sv);
-    sv_vsetpvfn(sv, pat, strlen(pat), args, Null(SV**), 0, Null(bool*));
+    va_list args;
+    va_start(args, pat);
+    sv = vnewSVpvf(pat, &args);
+    va_end(args);
     return sv;
 }

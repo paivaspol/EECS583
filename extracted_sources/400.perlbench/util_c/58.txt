@@ -1,95 +1,34 @@
 int
-Perl_my_socketpair (int family, int type, int protocol, int fd[2]) {
-    /* Stevens says that family must be AF_LOCAL, protocol 0.
-       I'm going to enforce that, then ignore it, and use TCP (or UDP).  */
-    dTHX;
-    int listener = -1;
-    int connector = -1;
-    int acceptor = -1;
-    struct sockaddr_in listen_addr;
-    struct sockaddr_in connect_addr;
-    Sock_size_t size;
+Perl_ebcdic_control(pTHX_ int ch)
+{
+    if (ch > 'a') {
+	char *ctlp;
 
-    if (protocol
-#ifdef AF_UNIX
-	|| family != AF_UNIX
-#endif
-    ) {
-	errno = EAFNOSUPPORT;
-	return -1;
-    }
-    if (!fd) {
-	errno = EINVAL;
-	return -1;
-    }
+	if (islower(ch))
+	    ch = toupper(ch);
 
-#ifdef EMULATE_SOCKETPAIR_UDP
-    if (type == SOCK_DGRAM)
-	return S_socketpair_udp(fd);
-#endif
+	if ((ctlp = strchr(controllablechars, ch)) == 0) {
+	    Perl_die(aTHX_ "unrecognised control character '%c'\n", ch);
+	}
 
-    listener = PerlSock_socket(AF_INET, type, 0);
-    if (listener == -1)
-	return -1;
-    memset(&listen_addr, 0, sizeof(listen_addr));
-    listen_addr.sin_family = AF_INET;
-    listen_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    listen_addr.sin_port = 0;	/* kernel choses port.  */
-    if (PerlSock_bind(listener, (struct sockaddr *) &listen_addr,
-	    sizeof(listen_addr)) == -1)
-	goto tidy_up_and_fail;
-    if (PerlSock_listen(listener, 1) == -1)
-	goto tidy_up_and_fail;
-
-    connector = PerlSock_socket(AF_INET, type, 0);
-    if (connector == -1)
-	goto tidy_up_and_fail;
-    /* We want to find out the port number to connect to.  */
-    size = sizeof(connect_addr);
-    if (PerlSock_getsockname(listener, (struct sockaddr *) &connect_addr,
-	    &size) == -1)
-	goto tidy_up_and_fail;
-    if (size != sizeof(connect_addr))
-	goto abort_tidy_up_and_fail;
-    if (PerlSock_connect(connector, (struct sockaddr *) &connect_addr,
-	    sizeof(connect_addr)) == -1)
-	goto tidy_up_and_fail;
-
-    size = sizeof(listen_addr);
-    acceptor = PerlSock_accept(listener, (struct sockaddr *) &listen_addr,
-	    &size);
-    if (acceptor == -1)
-	goto tidy_up_and_fail;
-    if (size != sizeof(listen_addr))
-	goto abort_tidy_up_and_fail;
-    PerlLIO_close(listener);
-    /* Now check we are talking to ourself by matching port and host on the
-       two sockets.  */
-    if (PerlSock_getsockname(connector, (struct sockaddr *) &connect_addr,
-	    &size) == -1)
-	goto tidy_up_and_fail;
-    if (size != sizeof(connect_addr)
-	    || listen_addr.sin_family != connect_addr.sin_family
-	    || listen_addr.sin_addr.s_addr != connect_addr.sin_addr.s_addr
-	    || listen_addr.sin_port != connect_addr.sin_port) {
-	goto abort_tidy_up_and_fail;
-    }
-    fd[0] = connector;
-    fd[1] = acceptor;
-    return 0;
-
-  abort_tidy_up_and_fail:
-  errno = ECONNABORTED; /* I hope this is portable and appropriate.  */
-  tidy_up_and_fail:
-    {
-	int save_errno = errno;
-	if (listener != -1)
-	    PerlLIO_close(listener);
-	if (connector != -1)
-	    PerlLIO_close(connector);
-	if (acceptor != -1)
-	    PerlLIO_close(acceptor);
-	errno = save_errno;
-	return -1;
+	if (ctlp == controllablechars)
+	    return('\177'); /* DEL */
+	else
+	    return((unsigned char)(ctlp - controllablechars - 1));
+    } else { /* Want uncontrol */
+	if (ch == '\177' || ch == -1)
+	    return('?');
+	else if (ch == '\157')
+	    return('\177');
+	else if (ch == '\174')
+	    return('\000');
+	else if (ch == '^')    /* '\137' in 1047, '\260' in 819 */
+	    return('\036');
+	else if (ch == '\155')
+	    return('\037');
+	else if (0 < ch && ch < (sizeof(controllablechars) - 1))
+	    return(controllablechars[ch+1]);
+	else
+	    Perl_die(aTHX_ "invalid control request: '\\%03o'\n", ch & 0xFF);
     }
 }

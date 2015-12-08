@@ -1,147 +1,47 @@
-void
-Perl_sv_inc(pTHX_ register SV *sv)
+I32
+Perl_sv_cmp_locale(pTHX_ register SV *sv1, register SV *sv2)
 {
-    register char *d;
-    int flags;
+#ifdef USE_LOCALE_COLLATE
 
-    if (!sv)
-	return;
-    if (SvGMAGICAL(sv))
-	mg_get(sv);
-    if (SvTHINKFIRST(sv)) {
-	if (SvREADONLY(sv) && SvFAKE(sv))
-	    sv_force_normal(sv);
-	if (SvREADONLY(sv)) {
-	    if (IN_PERL_RUNTIME)
-		Perl_croak(aTHX_ PL_no_modify);
-	}
-	if (SvROK(sv)) {
-	    IV i;
-	    if (SvAMAGIC(sv) && AMG_CALLun(sv,inc))
-		return;
-	    i = PTR2IV(SvRV(sv));
-	    sv_unref(sv);
-	    sv_setiv(sv, i);
-	}
+    char *pv1, *pv2;
+    STRLEN len1, len2;
+    I32 retval;
+
+    if (PL_collation_standard)
+	goto raw_compare;
+
+    len1 = 0;
+    pv1 = sv1 ? sv_collxfrm(sv1, &len1) : (char *) NULL;
+    len2 = 0;
+    pv2 = sv2 ? sv_collxfrm(sv2, &len2) : (char *) NULL;
+
+    if (!pv1 || !len1) {
+	if (pv2 && len2)
+	    return -1;
+	else
+	    goto raw_compare;
     }
-    flags = SvFLAGS(sv);
-    if ((flags & (SVp_NOK|SVp_IOK)) == SVp_NOK) {
-	/* It's (privately or publicly) a float, but not tested as an
-	   integer, so test it to see. */
-	(void) SvIV(sv);
-	flags = SvFLAGS(sv);
-    }
-    if ((flags & SVf_IOK) || ((flags & (SVp_IOK | SVp_NOK)) == SVp_IOK)) {
-	/* It's publicly an integer, or privately an integer-not-float */
-#ifdef PERL_PRESERVE_IVUV
-      oops_its_int:
-#endif
-	if (SvIsUV(sv)) {
-	    if (SvUVX(sv) == UV_MAX)
-		sv_setnv(sv, UV_MAX_P1);
-	    else
-		(void)SvIOK_only_UV(sv);
-		++SvUVX(sv);
-	} else {
-	    if (SvIVX(sv) == IV_MAX)
-		sv_setuv(sv, (UV)IV_MAX + 1);
-	    else {
-		(void)SvIOK_only(sv);
-		++SvIVX(sv);
-	    }	
-	}
-	return;
-    }
-    if (flags & SVp_NOK) {
-	(void)SvNOK_only(sv);
-	SvNVX(sv) += 1.0;
-	return;
+    else {
+	if (!pv2 || !len2)
+	    return 1;
     }
 
-    if (!(flags & SVp_POK) || !*SvPVX(sv)) {
-	if ((flags & SVTYPEMASK) < SVt_PVIV)
-	    sv_upgrade(sv, SVt_IV);
-	(void)SvIOK_only(sv);
-	SvIVX(sv) = 1;
-	return;
-    }
-    d = SvPVX(sv);
-    while (isALPHA(*d)) d++;
-    while (isDIGIT(*d)) d++;
-    if (*d) {
-#ifdef PERL_PRESERVE_IVUV
-	/* Got to punt this as an integer if needs be, but we don't issue
-	   warnings. Probably ought to make the sv_iv_please() that does
-	   the conversion if possible, and silently.  */
-	int numtype = grok_number(SvPVX(sv), SvCUR(sv), NULL);
-	if (numtype && !(numtype & IS_NUMBER_INFINITY)) {
-	    /* Need to try really hard to see if it's an integer.
-	       9.22337203685478e+18 is an integer.
-	       but "9.22337203685478e+18" + 0 is UV=9223372036854779904
-	       so $a="9.22337203685478e+18"; $a+0; $a++
-	       needs to be the same as $a="9.22337203685478e+18"; $a++
-	       or we go insane. */
-	
-	    (void) sv_2iv(sv);
-	    if (SvIOK(sv))
-		goto oops_its_int;
+    retval = memcmp((void*)pv1, (void*)pv2, len1 < len2 ? len1 : len2);
 
-	    /* sv_2iv *should* have made this an NV */
-	    if (flags & SVp_NOK) {
-		(void)SvNOK_only(sv);
-		SvNVX(sv) += 1.0;
-		return;
-	    }
-	    /* I don't think we can get here. Maybe I should assert this
-	       And if we do get here I suspect that sv_setnv will croak. NWC
-	       Fall through. */
-#if defined(USE_LONG_DOUBLE)
-	    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_inc punt failed to convert '%s' to IOK or NOKp, UV=0x%"UVxf" NV=%"PERL_PRIgldbl"\n",
-				  SvPVX(sv), SvIVX(sv), SvNVX(sv)));
-#else
-	    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_inc punt failed to convert '%s' to IOK or NOKp, UV=0x%"UVxf" NV=%"NVgf"\n",
-				  SvPVX(sv), SvIVX(sv), SvNVX(sv)));
-#endif
-	}
-#endif /* PERL_PRESERVE_IVUV */
-	sv_setnv(sv,Atof(SvPVX(sv)) + 1.0);
-	return;
-    }
-    d--;
-    while (d >= SvPVX(sv)) {
-	if (isDIGIT(*d)) {
-	    if (++*d <= '9')
-		return;
-	    *(d--) = '0';
-	}
-	else {
-#ifdef EBCDIC
-	    /* MKS: The original code here died if letters weren't consecutive.
-	     * at least it didn't have to worry about non-C locales.  The
-	     * new code assumes that ('z'-'a')==('Z'-'A'), letters are
-	     * arranged in order (although not consecutively) and that only
-	     * [A-Za-z] are accepted by isALPHA in the C locale.
-	     */
-	    if (*d != 'z' && *d != 'Z') {
-		do { ++*d; } while (!isALPHA(*d));
-		return;
-	    }
-	    *(d--) -= 'z' - 'a';
-#else
-	    ++*d;
-	    if (isALPHA(*d))
-		return;
-	    *(d--) -= 'z' - 'a' + 1;
-#endif
-	}
-    }
-    /* oh,oh, the number grew */
-    SvGROW(sv, SvCUR(sv) + 2);
-    SvCUR(sv)++;
-    for (d = SvPVX(sv) + SvCUR(sv); d > SvPVX(sv); d--)
-	*d = d[-1];
-    if (isDIGIT(d[1]))
-	*d = '1';
-    else
-	*d = d[1];
+    if (retval)
+	return retval < 0 ? -1 : 1;
+
+    /*
+     * When the result of collation is equality, that doesn't mean
+     * that there are no differences -- some locales exclude some
+     * characters from consideration.  So to avoid false equalities,
+     * we use the raw string as a tiebreaker.
+     */
+
+  raw_compare:
+    /* FALL THROUGH */
+
+#endif /* USE_LOCALE_COLLATE */
+
+    return sv_cmp(sv1, sv2);
 }

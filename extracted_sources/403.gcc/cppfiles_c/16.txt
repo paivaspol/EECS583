@@ -1,18 +1,22 @@
-int
-_cpp_compare_file_date (pfile, header)
+bool
+_cpp_execute_include (pfile, header, type)
      cpp_reader *pfile;
      const cpp_token *header;
+     enum include_type type;
 {
-  struct include_file *inc = find_include_file (pfile, header, 0);
-  
-  if (inc == NULL || inc == NO_INCLUDE_PATH)
-    return -1;
+  bool stacked = false;
+  struct include_file *inc = find_include_file (pfile, header, type);
 
-  if (inc->fd > 0)
+  if (inc == 0)
+    handle_missing_header (pfile, (const char *) header->val.str.text,
+			   header->type == CPP_HEADER_NAME);
+  else if (inc != NO_INCLUDE_PATH)
     {
-      close (inc->fd);
-      inc->fd = -1;
+      stacked = stack_include_file (pfile, inc);
+
+      if (type == IT_IMPORT)
+	_cpp_never_reread (inc);
     }
-    
-  return inc->st.st_mtime > pfile->buffer->inc->st.st_mtime;
+
+  return stacked;
 }

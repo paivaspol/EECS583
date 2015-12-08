@@ -1,15 +1,24 @@
 void
-default_coff_asm_named_section (name, flags)
-     const char *name;
-     unsigned int flags;
+make_decl_one_only (decl)
+     tree decl;
 {
-  char flagchars[8], *f = flagchars;
+  if (TREE_CODE (decl) != VAR_DECL && TREE_CODE (decl) != FUNCTION_DECL)
+    abort ();
 
-  if (flags & SECTION_WRITE)
-    *f++ = 'w';
-  if (flags & SECTION_CODE)
-    *f++ = 'x';
-  *f = '\0';
+  TREE_PUBLIC (decl) = 1;
 
-  fprintf (asm_out_file, "\t.section\t%s,\"%s\"\n", name, flagchars);
+  if (TREE_CODE (decl) == VAR_DECL
+      && (DECL_INITIAL (decl) == 0 || DECL_INITIAL (decl) == error_mark_node))
+    DECL_COMMON (decl) = 1;
+  else if (SUPPORTS_ONE_ONLY)
+    {
+#ifdef MAKE_DECL_ONE_ONLY
+      MAKE_DECL_ONE_ONLY (decl);
+#endif
+      DECL_ONE_ONLY (decl) = 1;
+    }
+  else if (SUPPORTS_WEAK)
+    DECL_WEAK (decl) = 1;
+  else
+    abort ();
 }

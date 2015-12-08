@@ -1,6 +1,7 @@
 void
-Perl_sv_dec(pTHX_ register SV *sv)
+Perl_sv_inc(pTHX_ register SV *sv)
 {
+    register char *d;
     int flags;
 
     if (!sv)
@@ -16,61 +17,69 @@ Perl_sv_dec(pTHX_ register SV *sv)
 	}
 	if (SvROK(sv)) {
 	    IV i;
-	    if (SvAMAGIC(sv) && AMG_CALLun(sv,dec))
+	    if (SvAMAGIC(sv) && AMG_CALLun(sv,inc))
 		return;
 	    i = PTR2IV(SvRV(sv));
 	    sv_unref(sv);
 	    sv_setiv(sv, i);
 	}
     }
-    /* Unlike sv_inc we don't have to worry about string-never-numbers
-       and keeping them magic. But we mustn't warn on punting */
     flags = SvFLAGS(sv);
+    if ((flags & (SVp_NOK|SVp_IOK)) == SVp_NOK) {
+	/* It's (privately or publicly) a float, but not tested as an
+	   integer, so test it to see. */
+	(void) SvIV(sv);
+	flags = SvFLAGS(sv);
+    }
     if ((flags & SVf_IOK) || ((flags & (SVp_IOK | SVp_NOK)) == SVp_IOK)) {
 	/* It's publicly an integer, or privately an integer-not-float */
 #ifdef PERL_PRESERVE_IVUV
       oops_its_int:
 #endif
 	if (SvIsUV(sv)) {
-	    if (SvUVX(sv) == 0) {
-		(void)SvIOK_only(sv);
-		SvIVX(sv) = -1;
-	    }
-	    else {
+	    if (SvUVX(sv) == UV_MAX)
+		sv_setnv(sv, UV_MAX_P1);
+	    else
 		(void)SvIOK_only_UV(sv);
-		--SvUVX(sv);
-	    }	
+		++SvUVX(sv);
 	} else {
-	    if (SvIVX(sv) == IV_MIN)
-		sv_setnv(sv, (NV)IV_MIN - 1.0);
+	    if (SvIVX(sv) == IV_MAX)
+		sv_setuv(sv, (UV)IV_MAX + 1);
 	    else {
 		(void)SvIOK_only(sv);
-		--SvIVX(sv);
+		++SvIVX(sv);
 	    }	
 	}
 	return;
     }
     if (flags & SVp_NOK) {
-	SvNVX(sv) -= 1.0;
 	(void)SvNOK_only(sv);
+	SvNVX(sv) += 1.0;
 	return;
     }
-    if (!(flags & SVp_POK)) {
-	if ((flags & SVTYPEMASK) < SVt_PVNV)
-	    sv_upgrade(sv, SVt_NV);
-	SvNVX(sv) = -1.0;
-	(void)SvNOK_only(sv);
+
+    if (!(flags & SVp_POK) || !*SvPVX(sv)) {
+	if ((flags & SVTYPEMASK) < SVt_PVIV)
+	    sv_upgrade(sv, SVt_IV);
+	(void)SvIOK_only(sv);
+	SvIVX(sv) = 1;
 	return;
     }
+    d = SvPVX(sv);
+    while (isALPHA(*d)) d++;
+    while (isDIGIT(*d)) d++;
+    if (*d) {
 #ifdef PERL_PRESERVE_IVUV
-    {
+	/* Got to punt this as an integer if needs be, but we don't issue
+	   warnings. Probably ought to make the sv_iv_please() that does
+	   the conversion if possible, and silently.  */
 	int numtype = grok_number(SvPVX(sv), SvCUR(sv), NULL);
 	if (numtype && !(numtype & IS_NUMBER_INFINITY)) {
 	    /* Need to try really hard to see if it's an integer.
 	       9.22337203685478e+18 is an integer.
 	       but "9.22337203685478e+18" + 0 is UV=9223372036854779904
-	       so $a="9.22337203685478e+18"; $a+0; $a--
-	       needs to be the same as $a="9.22337203685478e+18"; $a--
+	       so $a="9.22337203685478e+18"; $a+0; $a++
+	       needs to be the same as $a="9.22337203685478e+18"; $a++
 	       or we go insane. */
 	
 	    (void) sv_2iv(sv);
@@ -80,21 +89,59 @@ Perl_sv_dec(pTHX_ register SV *sv)
 	    /* sv_2iv *should* have made this an NV */
 	    if (flags & SVp_NOK) {
 		(void)SvNOK_only(sv);
-		SvNVX(sv) -= 1.0;
+		SvNVX(sv) += 1.0;
 		return;
 	    }
 	    /* I don't think we can get here. Maybe I should assert this
 	       And if we do get here I suspect that sv_setnv will croak. NWC
 	       Fall through. */
 #if defined(USE_LONG_DOUBLE)
-	    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_dec punt failed to convert '%s' to IOK or NOKp, UV=0x%"UVxf" NV=%"PERL_PRIgldbl"\n",
+	    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_inc punt failed to convert '%s' to IOK or NOKp, UV=0x%"UVxf" NV=%"PERL_PRIgldbl"\n",
 				  SvPVX(sv), SvIVX(sv), SvNVX(sv)));
 #else
-	    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_dec punt failed to convert '%s' to IOK or NOKp, UV=0x%"UVxf" NV=%"NVgf"\n",
+	    DEBUG_c(PerlIO_printf(Perl_debug_log,"sv_inc punt failed to convert '%s' to IOK or NOKp, UV=0x%"UVxf" NV=%"NVgf"\n",
 				  SvPVX(sv), SvIVX(sv), SvNVX(sv)));
 #endif
 	}
-    }
 #endif /* PERL_PRESERVE_IVUV */
-    sv_setnv(sv,Atof(SvPVX(sv)) - 1.0);	/* punt */
+	sv_setnv(sv,Atof(SvPVX(sv)) + 1.0);
+	return;
+    }
+    d--;
+    while (d >= SvPVX(sv)) {
+	if (isDIGIT(*d)) {
+	    if (++*d <= '9')
+		return;
+	    *(d--) = '0';
+	}
+	else {
+#ifdef EBCDIC
+	    /* MKS: The original code here died if letters weren't consecutive.
+	     * at least it didn't have to worry about non-C locales.  The
+	     * new code assumes that ('z'-'a')==('Z'-'A'), letters are
+	     * arranged in order (although not consecutively) and that only
+	     * [A-Za-z] are accepted by isALPHA in the C locale.
+	     */
+	    if (*d != 'z' && *d != 'Z') {
+		do { ++*d; } while (!isALPHA(*d));
+		return;
+	    }
+	    *(d--) -= 'z' - 'a';
+#else
+	    ++*d;
+	    if (isALPHA(*d))
+		return;
+	    *(d--) -= 'z' - 'a' + 1;
+#endif
+	}
+    }
+    /* oh,oh, the number grew */
+    SvGROW(sv, SvCUR(sv) + 2);
+    SvCUR(sv)++;
+    for (d = SvPVX(sv) + SvCUR(sv); d > SvPVX(sv); d--)
+	*d = d[-1];
+    if (isDIGIT(d[1]))
+	*d = '1';
+    else
+	*d = d[1];
 }

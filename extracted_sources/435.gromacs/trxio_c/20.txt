@@ -1,75 +1,79 @@
-int read_first_frame(int *status,char *fn,t_trxframe *fr,int flags)
+bool read_next_frame(int status,t_trxframe *fr)
 {
-  int  fp;
-  bool bFirst,bOK;
+  real pt;
+  int  ct;
+  bool bOK,bRet,bMissingData=FALSE,bSkip=FALSE;
 
-  clear_trxframe(fr,TRUE);
-  fr->flags = flags;
+  bRet = FALSE;
+  pt=fr->time; 
 
-  bFirst = TRUE;
-  INITCOUNT;
-  
-  fp = *status =gmx_fio_open(fn,"r");
-  switch (gmx_fio_getftp(fp)) {
-  case efTRJ:
-  case efTRR:
-  case efMTX:
-    break;
-  case efG96:
-    /* Can not rewind a compressed file, so open it twice */
-    read_g96_conf(gmx_fio_getfp(fp),fn,fr);
-    gmx_fio_close(fp);
+  do {
     clear_trxframe(fr,FALSE);
-    if (flags & (TRX_READ_X | TRX_NEED_X))
-      snew(fr->x,fr->natoms);
-    if (flags & (TRX_READ_V | TRX_NEED_V))
-      snew(fr->v,fr->natoms);
-    fp = *status =gmx_fio_open(fn,"r");
-    break;
-  case efG87:
-    fr->natoms=xyz_first_x(gmx_fio_getfp(fp),&fr->time,&fr->x,fr->box);
-    if (fr->natoms) {
-      fr->bTime = TRUE;
-      fr->bX    = TRUE;
-      fr->bBox  = TRUE;
-      printcount(fr->time);
+    fr->tppf = fr->tpf;
+    fr->tpf  = fr->time;
+    
+    switch (gmx_fio_getftp(status)) {
+    case efTRJ:
+    case efTRR:
+    case efMTX:
+      bRet = gmx_next_frame(status,fr);
+      break;
+    case efG96:
+      read_g96_conf(gmx_fio_getfp(status),NULL,fr);
+      bRet = (fr->natoms > 0);
+      break;
+    case efG87:
+      bRet = xyz_next_x(gmx_fio_getfp(status),&fr->time,fr->natoms,fr->x,fr->box);
+      fr->bTime = bRet;
+      fr->bX    = bRet;
+      fr->bBox  = bRet;
+      break;
+    case efXTC:
+      bRet = read_next_xtc(status,fr->natoms,&fr->step,&fr->time,fr->box,
+			   fr->x,&fr->prec,&bOK);
+      fr->bPrec = bRet;
+      fr->bStep = bRet;
+      fr->bTime = bRet;
+      fr->bX    = bRet;
+      fr->bBox  = bRet;
+      break;
+    case efPDB:
+      bRet = pdb_next_x(gmx_fio_getfp(status),fr);
+      break;
+    case efGRO:
+      bRet = gro_next_x_or_v(gmx_fio_getfp(status),fr);
+      break;
+    default:
+      fatal_error(0,"DEATH HORROR in read_next_frame ftp=%s,status=%d",
+		  ftp2ext(gmx_fio_getftp(status)),status);
     }
-    bFirst = FALSE;
-    break;
-  case efXTC:
-    if (read_first_xtc(fp,&fr->natoms,&fr->step,&fr->time,fr->box,&fr->x,
-		       &fr->prec,&bOK) == 0)
-      fatal_error(0,"No XTC!\n");
-    fr->bPrec = TRUE;
-    fr->bStep = TRUE;
-    fr->bTime = TRUE;
-    fr->bX    = TRUE;
-    fr->bBox  = TRUE;
-    printcount(fr->time);
-    bFirst = FALSE;
-    break;
-  case efPDB:
-    pdb_first_x(gmx_fio_getfp(fp),fr);
-    if (fr->natoms)
-      printcount(fr->time);
-    bFirst = FALSE;
-    break;
-  case efGRO:
-    if (gro_first_x_or_v(gmx_fio_getfp(fp),fr))
-      printcount(fr->time);
-    bFirst = FALSE;
-    break;
-  default:
-    fatal_error(0,"Not supported in read_first_frame: %s",fn);
-    break;
+    
+    if (bRet) {
+      bMissingData = ((fr->flags & TRX_NEED_X && !fr->bX) ||
+		      (fr->flags & TRX_NEED_V && !fr->bV) ||
+		      (fr->flags & TRX_NEED_F && !fr->bF));
+      bSkip = FALSE;
+      if (!bMissingData) {
+	ct=check_times2(fr->time,fr->t0,fr->tpf,fr->tppf);
+	if (ct == 0 || (fr->flags & TRX_DONT_SKIP && ct<0)) {
+	  printcount2(fr->time,fr->t0,fr->tpf,fr->tppf);
+	  init_pbc(fr->box);  
+	} else if (ct > 0)
+	  bRet = FALSE;
+	else {
+	  printcount2(fr->time,fr->t0,fr->tpf,fr->tppf);
+	  bSkip = TRUE;
+	}
+      }
+    }
+    
+  } while (bRet && (bMissingData || bSkip));
+  
+  if (!bRet) {
+    printlast(pt);
+    if (fr->not_ok)
+      printincomp(fr);
   }
   
-  if (bFirst || 
-      (!(fr->flags & TRX_DONT_SKIP) && (check_times(fr->time) < 0)))
-    /* Read a frame when no frame was read or the first was skipped */
-    if (!read_next_frame(*status,fr))
-      return FALSE;
-  fr->t0 = fr->time;
-  
-  return (fr->natoms > 0);
+  return bRet;
 }

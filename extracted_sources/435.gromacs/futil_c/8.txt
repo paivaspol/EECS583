@@ -1,0 +1,13 @@
+bool eof(FILE *fp)
+{
+  char data[4];
+  bool beof;
+
+  if (is_pipe(fp))
+    return feof(fp);
+  else {
+    if ((beof=fread(data,1,1,fp))==1)
+      fseek(fp,-1,SEEK_CUR);
+    return !beof;
+  }
+}

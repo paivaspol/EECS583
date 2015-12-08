@@ -1,0 +1,35 @@
+PP(pp_abs)
+{
+    dSP; dTARGET; tryAMAGICun(abs);
+    {
+      /* This will cache the NV value if string isn't actually integer  */
+      IV iv = TOPi;
+
+      if (!SvOK(TOPs))
+        SETu(0);
+      else if (SvIOK(TOPs)) {
+	/* IVX is precise  */
+	if (SvIsUV(TOPs)) {
+	  SETu(TOPu);	/* force it to be numeric only */
+	} else {
+	  if (iv >= 0) {
+	    SETi(iv);
+	  } else {
+	    if (iv != IV_MIN) {
+	      SETi(-iv);
+	    } else {
+	      /* 2s complement assumption. Also, not really needed as
+		 IV_MIN and -IV_MIN should both be %100...00 and NV-able  */
+	      SETu(IV_MIN);
+	    }
+	  }
+	}
+      } else{
+	NV value = TOPn;
+	if (value < 0.0)
+	  value = -value;
+	SETn(value);
+      }
+    }
+    RETURN;
+}

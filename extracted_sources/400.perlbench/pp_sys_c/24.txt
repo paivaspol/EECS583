@@ -1,0 +1,43 @@
+PP(pp_enterwrite)
+{
+    dSP;
+    register GV *gv;
+    register IO *io;
+    GV *fgv;
+    CV *cv;
+
+    if (MAXARG == 0)
+	gv = PL_defoutgv;
+    else {
+	gv = (GV*)POPs;
+	if (!gv)
+	    gv = PL_defoutgv;
+    }
+    EXTEND(SP, 1);
+    io = GvIO(gv);
+    if (!io) {
+	RETPUSHNO;
+    }
+    if (IoFMT_GV(io))
+	fgv = IoFMT_GV(io);
+    else
+	fgv = gv;
+
+    cv = GvFORM(fgv);
+    if (!cv) {
+        char *name = NULL;
+	if (fgv) {
+	    SV *tmpsv = sv_newmortal();
+	    gv_efullname4(tmpsv, fgv, Nullch, FALSE);
+	    name = SvPV_nolen(tmpsv);
+	}
+	if (name && *name)
+	    DIE(aTHX_ "Undefined format \"%s\" called", name);
+	DIE(aTHX_ "Not a format reference");
+    }
+    if (CvCLONE(cv))
+	cv = (CV*)sv_2mortal((SV*)cv_clone(cv));
+
+    IoFLAGS(io) &= ~IOf_DIDTOP;
+    return doform(cv,gv,PL_op->op_next);
+}

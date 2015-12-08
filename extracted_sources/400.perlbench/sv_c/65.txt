@@ -1,12 +1,24 @@
-void
-Perl_sv_copypv(pTHX_ SV *dsv, register SV *ssv)
+static char *
+uiv_2buf(char *buf, IV iv, UV uv, int is_uv, char **peob)
 {
-    STRLEN len;
-    char *s;
-    s = SvPV(ssv,len);
-    sv_setpvn(dsv,s,len);
-    if (SvUTF8(ssv))
-	SvUTF8_on(dsv);
-    else
-	SvUTF8_off(dsv);
+    char *ptr = buf + TYPE_CHARS(UV);
+    char *ebuf = ptr;
+    int sign;
+
+    if (is_uv)
+	sign = 0;
+    else if (iv >= 0) {
+	uv = iv;
+	sign = 0;
+    } else {
+	uv = -iv;
+	sign = 1;
+    }
+    do {
+	*--ptr = '0' + (char)(uv % 10);
+    } while (uv /= 10);
+    if (sign)
+	*--ptr = '-';
+    *peob = ebuf;
+    return ptr;
 }

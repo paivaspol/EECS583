@@ -1,0 +1,17 @@
+void
+PerlIO_list_push(pTHX_ PerlIO_list_t *list, PerlIO_funcs *funcs, SV *arg)
+{
+    PerlIO_pair_t *p;
+    if (list->cur >= list->len) {
+	list->len += 8;
+	if (list->array)
+	    Renew(list->array, list->len, PerlIO_pair_t);
+	else
+	    New('l', list->array, list->len, PerlIO_pair_t);
+    }
+    p = &(list->array[list->cur++]);
+    p->funcs = funcs;
+    if ((p->arg = arg)) {
+	SvREFCNT_inc(arg);
+    }
+}

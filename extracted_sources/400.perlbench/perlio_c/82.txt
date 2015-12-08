@@ -1,0 +1,25 @@
+IV
+PerlIOStdio_flush(pTHX_ PerlIO *f)
+{
+    FILE *stdio = PerlIOSelf(f, PerlIOStdio)->stdio;
+    if (PerlIOBase(f)->flags & PERLIO_F_CANWRITE) {
+	return PerlSIO_fflush(stdio);
+    }
+    else {
+#if 0
+	/*
+	 * FIXME: This discards ungetc() and pre-read stuff which is not
+	 * right if this is just a "sync" from a layer above Suspect right
+	 * design is to do _this_ but not have layer above flush this
+	 * layer read-to-read
+	 */
+	/*
+	 * Not writeable - sync by attempting a seek
+	 */
+	int err = errno;
+	if (PerlSIO_fseek(stdio, (Off_t) 0, SEEK_CUR) != 0)
+	    errno = err;
+#endif
+    }
+    return 0;
+}

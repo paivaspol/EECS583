@@ -1,0 +1,54 @@
+PP(pp_lslice)
+{
+    dSP;
+    SV **lastrelem = PL_stack_sp;
+    SV **lastlelem = PL_stack_base + POPMARK;
+    SV **firstlelem = PL_stack_base + POPMARK + 1;
+    register SV **firstrelem = lastlelem + 1;
+    I32 arybase = PL_curcop->cop_arybase;
+    I32 lval = PL_op->op_flags & OPf_MOD;
+    I32 is_something_there = lval;
+
+    register I32 max = lastrelem - lastlelem;
+    register SV **lelem;
+    register I32 ix;
+
+    if (GIMME != G_ARRAY) {
+	ix = SvIVx(*lastlelem);
+	if (ix < 0)
+	    ix += max;
+	else
+	    ix -= arybase;
+	if (ix < 0 || ix >= max)
+	    *firstlelem = &PL_sv_undef;
+	else
+	    *firstlelem = firstrelem[ix];
+	SP = firstlelem;
+	RETURN;
+    }
+
+    if (max == 0) {
+	SP = firstlelem - 1;
+	RETURN;
+    }
+
+    for (lelem = firstlelem; lelem <= lastlelem; lelem++) {
+	ix = SvIVx(*lelem);
+	if (ix < 0)
+	    ix += max;
+	else
+	    ix -= arybase;
+	if (ix < 0 || ix >= max)
+	    *lelem = &PL_sv_undef;
+	else {
+	    is_something_there = TRUE;
+	    if (!(*lelem = firstrelem[ix]))
+		*lelem = &PL_sv_undef;
+	}
+    }
+    if (is_something_there)
+	SP = lastlelem;
+    else
+	SP = firstlelem - 1;
+    RETURN;
+}

@@ -1,20 +1,47 @@
-int gro_first_x_or_v(FILE *status,t_trxframe *fr)
+bool gro_next_x_or_v(FILE *status,t_trxframe *fr)
 {
-  char title[STRLEN];
+  t_atoms atoms;
+  char    title[STRLEN],*p;
+  double  tt;
+  int     ndec,i;
+
+  if (eof(status))
+    return FALSE;
+
+  atoms.nr=fr->natoms;
+  snew(atoms.atom,fr->natoms);
+  atoms.nres=fr->natoms;
+  snew(atoms.resname,fr->natoms);
+  snew(atoms.atomname,fr->natoms);
   
-  frewind(status);
-  fprintf(stderr,"Reading frames from gro file");
-  get_coordnum_fp(status, title, &fr->natoms);
-  frewind(status);
-  fprintf(stderr," '%s', %d atoms.\n",title, fr->natoms);
-  fr->bTitle = TRUE;
+  fr->bV = get_w_conf(status,title,title,&atoms,&ndec,fr->x,fr->v,fr->box);
+  fr->bPrec = TRUE;
+  fr->prec = 1;
+  /* prec = 10^ndec: */
+  for(i=0; i<ndec; i++)
+    fr->prec *= 10;
   fr->title = title;
-  if (fr->natoms==0)
-    fatal_error(1,"No coordinates in gro file\n");
+  fr->bTitle = TRUE;
+  fr->bX = TRUE;
+  fr->bBox = TRUE;
+
+  sfree(atoms.atom);
+  sfree(atoms.resname);
+  sfree(atoms.atomname);
+
+  if ((p=strstr(title,"t=")) != NULL) {
+    p+=2;
+    if (sscanf(p,"%lf",&tt)==1) {
+      fr->time = tt;
+      fr->bTime = TRUE;
+    } else {
+      fr->time = 0;
+      fr->bTime = FALSE;
+    }
+  }
   
-  snew(fr->x,fr->natoms);
-  snew(fr->v,fr->natoms);
-  gro_next_x_or_v(status, fr);
+  if (atoms.nr != fr->natoms)
+    fatal_error(0,"Number of atoms in gro frame (%d) doesn't match the number in the previous frame (%d)",atoms.nr,fr->natoms);
   
-  return fr->natoms;
+  return TRUE;
 }

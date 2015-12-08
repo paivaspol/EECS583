@@ -1,18 +1,59 @@
-int
-ix86_constant_alignment (exp, align)
-     tree exp;
-     int align;
+static int
+ix86_variable_issue (dump, sched_verbose, insn, can_issue_more)
+     FILE *dump;
+     int sched_verbose;
+     rtx insn;
+     int can_issue_more;
 {
-  if (TREE_CODE (exp) == REAL_CST)
+  int i;
+  switch (ix86_cpu)
     {
-      if (TYPE_MODE (TREE_TYPE (exp)) == DFmode && align < 64)
-	return 64;
-      else if (ALIGN_MODE_128 (TYPE_MODE (TREE_TYPE (exp))) && align < 128)
-	return 128;
-    }
-  else if (TREE_CODE (exp) == STRING_CST && TREE_STRING_LENGTH (exp) >= 31
-	   && align < 256)
-    return 256;
+    default:
+      return can_issue_more - 1;
 
-  return align;
+    case PROCESSOR_PENTIUMPRO:
+      {
+	enum attr_ppro_uops uops = ix86_safe_ppro_uops (insn);
+
+	if (uops == PPRO_UOPS_MANY)
+	  {
+	    if (sched_verbose)
+	      ix86_dump_ppro_packet (dump);
+	    ix86_sched_data.ppro.decode[0] = insn;
+	    ix86_sched_data.ppro.decode[1] = NULL;
+	    ix86_sched_data.ppro.decode[2] = NULL;
+	    if (sched_verbose)
+	      ix86_dump_ppro_packet (dump);
+	    ix86_sched_data.ppro.decode[0] = NULL;
+	  }
+	else if (uops == PPRO_UOPS_FEW)
+	  {
+	    if (sched_verbose)
+	      ix86_dump_ppro_packet (dump);
+	    ix86_sched_data.ppro.decode[0] = insn;
+	    ix86_sched_data.ppro.decode[1] = NULL;
+	    ix86_sched_data.ppro.decode[2] = NULL;
+	  }
+	else
+	  {
+	    for (i = 0; i < 3; ++i)
+	      if (ix86_sched_data.ppro.decode[i] == NULL)
+		{
+		  ix86_sched_data.ppro.decode[i] = insn;
+		  break;
+		}
+	    if (i == 3)
+	      abort ();
+	    if (i == 2)
+	      {
+	        if (sched_verbose)
+	          ix86_dump_ppro_packet (dump);
+		ix86_sched_data.ppro.decode[0] = NULL;
+		ix86_sched_data.ppro.decode[1] = NULL;
+		ix86_sched_data.ppro.decode[2] = NULL;
+	      }
+	  }
+      }
+      return --ix86_sched_data.ppro.issued_this_cycle;
+    }
 }

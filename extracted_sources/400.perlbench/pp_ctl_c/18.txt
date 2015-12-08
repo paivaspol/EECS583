@@ -1,56 +1,22 @@
-STATIC OP *
-S_docatch(pTHX_ OP *o)
+I32
+Perl_block_gimme(pTHX)
 {
-    int ret;
-    OP *oldop = PL_op;
-    OP *retop;
-    volatile PERL_SI *cursi = PL_curstackinfo;
-    dJMPENV;
+    I32 cxix;
 
-#ifdef DEBUGGING
-    assert(CATCH_GET == TRUE);
-#endif
-    PL_op = o;
+    cxix = dopoptosub(cxstack_ix);
+    if (cxix < 0)
+	return G_VOID;
 
-    /* Normally, the leavetry at the end of this block of ops will
-     * pop an op off the return stack and continue there. By setting
-     * the op to Nullop, we force an exit from the inner runops()
-     * loop. DAPM.
-     */
-    retop = pop_return();
-    push_return(Nullop);
-
-#ifdef PERL_FLEXIBLE_EXCEPTIONS
- redo_body:
-    CALLPROTECT(aTHX_ pcur_env, &ret, MEMBER_TO_FPTR(S_docatch_body));
-#else
-    JMPENV_PUSH(ret);
-#endif
-    switch (ret) {
-    case 0:
-#ifndef PERL_FLEXIBLE_EXCEPTIONS
- redo_body:
-	docatch_body();
-#endif
-	break;
-    case 3:
-	/* die caught by an inner eval - continue inner loop */
-	if (PL_restartop && cursi == PL_curstackinfo) {
-	    PL_op = PL_restartop;
-	    PL_restartop = 0;
-	    goto redo_body;
-	}
-	/* a die in this eval - continue in outer loop */
-	if (!PL_restartop)
-	    break;
-	/* FALL THROUGH */
+    switch (cxstack[cxix].blk_gimme) {
+    case G_VOID:
+	return G_VOID;
+    case G_SCALAR:
+	return G_SCALAR;
+    case G_ARRAY:
+	return G_ARRAY;
     default:
-	JMPENV_POP;
-	PL_op = oldop;
-	JMPENV_JUMP(ret);
+	Perl_croak(aTHX_ "panic: bad gimme: %d\n", cxstack[cxix].blk_gimme);
 	/* NOTREACHED */
+	return 0;
     }
-    JMPENV_POP;
-    PL_op = oldop;
-    return retop;
 }

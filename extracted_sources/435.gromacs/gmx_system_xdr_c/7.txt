@@ -1,10 +1,17 @@
-static bool_t
-xdrstdio_getlong (XDR *xdrs, long *lp)
+bool_t
+xdr_long (XDR *xdrs, long *lp)
 {
-  xdr_int32_t mycopy;
 
-  if (fread ((char *) & mycopy, 4, 1, (FILE *) xdrs->x_private) != 1)
-    return FALSE;
-  *lp = (xdr_int32_t) xdr_ntohl (mycopy);
-  return TRUE;
+  if (xdrs->x_op == XDR_ENCODE
+      && (sizeof (xdr_int32_t) == sizeof (long)
+	  || (xdr_int32_t) *lp == *lp))
+    return xdr_putlong (xdrs, lp);
+
+  if (xdrs->x_op == XDR_DECODE)
+    return xdr_getlong (xdrs, lp);
+
+  if (xdrs->x_op == XDR_FREE)
+    return TRUE;
+
+  return FALSE;
 }

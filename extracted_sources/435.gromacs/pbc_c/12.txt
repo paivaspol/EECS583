@@ -1,0 +1,26 @@
+void put_atoms_in_triclinic_unitcell(matrix box,int natoms,rvec x[])
+{
+  rvec   box_center;
+  matrix shift_mat;
+  real   shift;
+  int    i,m,d;
+  
+  calc_box_center(box,box_center);
+
+  for(m=DIM-1; m>=0; m--)
+    for(d=m+1; d<DIM; d++)
+      shift_mat[d][m] = box[d][m]/box[d][d];
+
+  for(i=0; (i<natoms); i++)
+    for(m=DIM-1; m>=0; m--) {
+      shift=0;
+      for(d=m+1; d<DIM; d++)
+	shift += (x[i][d]-box_center[d])*shift_mat[d][m];
+      while (x[i][m]-shift < 0) 
+	for(d=0; d<=m; d++)
+	  x[i][d] += box[m][d];
+      while (x[i][m]-shift >= box[m][m])
+	for(d=0; d<=m; d++)
+	  x[i][d] -= box[m][d];
+    }
+}

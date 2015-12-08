@@ -1,0 +1,21 @@
+OP *
+Perl_convert(pTHX_ I32 type, I32 flags, OP *o)
+{
+    if (!o || o->op_type != OP_LIST)
+	o = newLISTOP(OP_LIST, 0, o, Nullop);
+    else
+	o->op_flags &= ~OPf_WANT;
+
+    if (!(PL_opargs[type] & OA_MARK))
+	op_null(cLISTOPo->op_first);
+
+    o->op_type = (OPCODE)type;
+    o->op_ppaddr = PL_ppaddr[type];
+    o->op_flags |= flags;
+
+    o = CHECKOP(type, o);
+    if (o->op_type != (unsigned)type)
+	return o;
+
+    return fold_constants(o);
+}

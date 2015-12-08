@@ -1,0 +1,28 @@
+void
+Perl_pad_free(pTHX_ PADOFFSET po)
+{
+    ASSERT_CURPAD_LEGAL("pad_free");
+    if (!PL_curpad)
+	return;
+    if (AvARRAY(PL_comppad) != PL_curpad)
+	Perl_croak(aTHX_ "panic: pad_free curpad");
+    if (!po)
+	Perl_croak(aTHX_ "panic: pad_free po");
+
+    DEBUG_X(PerlIO_printf(Perl_debug_log,
+	    "Pad 0x%"UVxf"[0x%"UVxf"] free:    %ld\n",
+	    PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po)
+    );
+
+    if (PL_curpad[po] && PL_curpad[po] != &PL_sv_undef) {
+	SvPADTMP_off(PL_curpad[po]);
+#ifdef USE_ITHREADS
+	/* SV could be a shared hash key (eg bugid #19022) */
+	if (!SvFAKE(PL_curpad[po]))
+	    SvREADONLY_off(PL_curpad[po]);	/* could be a freed constant */
+#endif
+
+    }
+    if ((I32)po < PL_padix)
+	PL_padix = po - 1;
+}

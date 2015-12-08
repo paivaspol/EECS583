@@ -1,16 +1,36 @@
 void
-mark_hard_reg_initial_vals (fun)
-     struct function *fun;
+output_inline_function (fndecl)
+     tree fndecl;
 {
-  struct initial_value_struct *ivs = fun->hard_reg_initial_vals;
-  int i;
+  struct function *old_cfun = cfun;
+  enum debug_info_type old_write_symbols = write_symbols;
+  struct gcc_debug_hooks *old_debug_hooks = debug_hooks;
+  struct function *f = DECL_SAVED_INSNS (fndecl);
 
-  if (ivs == 0)
-    return;
+  cfun = f;
+  current_function_decl = fndecl;
+  clear_emit_caches ();
 
-  for (i = 0; i < ivs->num_entries; i ++)
+  set_new_last_label_num (f->inl_max_label_num);
+
+  /* We're not deferring this any longer.  */
+  DECL_DEFER_OUTPUT (fndecl) = 0;
+
+  /* If requested, suppress debugging information.  */
+  if (f->no_debugging_symbols)
     {
-      ggc_mark_rtx (ivs->entries[i].hard_reg);
-      ggc_mark_rtx (ivs->entries[i].pseudo);
+      write_symbols = NO_DEBUG;
+      debug_hooks = &do_nothing_debug_hooks;
     }
+
+  /* Compile this function all the way down to assembly code.  As a
+     side effect this destroys the saved RTL representation, but
+     that's okay, because we don't need to inline this anymore.  */
+  rest_of_compilation (fndecl);
+  DECL_INLINE (fndecl) = 0;
+
+  cfun = old_cfun;
+  current_function_decl = old_cfun ? old_cfun->decl : 0;
+  write_symbols = old_write_symbols;
+  debug_hooks = old_debug_hooks;
 }

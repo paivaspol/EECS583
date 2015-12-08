@@ -1,5 +1,19 @@
-HV*
-Perl_gv_stashpv(pTHX_ const char *name, I32 create)
+STATIC void
+S_require_errno(pTHX_ GV *gv)
 {
-    return gv_stashpvn(name, strlen(name), create);
+    HV* stash = gv_stashpvn("Errno",5,FALSE);
+
+    if (!stash || !(gv_fetchmethod(stash, "TIEHASH"))) { 
+	dSP;
+	PUTBACK;
+	ENTER;
+	save_scalar(gv); /* keep the value of $! */
+        Perl_load_module(aTHX_ PERL_LOADMOD_NOIMPORT,
+                         newSVpvn("Errno",5), Nullsv);
+	LEAVE;
+	SPAGAIN;
+	stash = gv_stashpvn("Errno",5,FALSE);
+	if (!stash || !(gv_fetchmethod(stash, "TIEHASH")))
+	    Perl_croak(aTHX_ "Can't use %%! because Errno.pm is not available");
+    }
 }

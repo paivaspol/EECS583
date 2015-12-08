@@ -1,23 +1,9 @@
-STATIC void
-S_save_lines(pTHX_ AV *array, SV *sv)
-{
-    register char *s = SvPVX(sv);
-    register char *send = SvPVX(sv) + SvCUR(sv);
-    register char *t;
-    register I32 line = 1;
-
-    while (s && s < send) {
-	SV *tmpstr = NEWSV(85,0);
-
-	sv_upgrade(tmpstr, SVt_PVMG);
-	t = strchr(s, '\n');
-	if (t)
-	    t++;
-	else
-	    t = send;
-
-	sv_setpvn(tmpstr, s, t - s);
-	av_store(array, line++, tmpstr);
-	s = t;
-    }
-}
+static char *context_name[] = {
+    "pseudo-block",
+    "subroutine",
+    "eval",
+    "loop",
+    "substitution",
+    "block",
+    "format"
+};

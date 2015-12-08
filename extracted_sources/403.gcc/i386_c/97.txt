@@ -1,89 +1,112 @@
 static void
-put_condition_code (code, mode, reverse, fp, file)
-     enum rtx_code code;
-     enum machine_mode mode;
-     int reverse, fp;
+output_pic_addr_const (file, x, code)
      FILE *file;
+     rtx x;
+     int code;
 {
-  const char *suffix;
+  char buf[256];
 
-  if (mode == CCFPmode || mode == CCFPUmode)
+  switch (GET_CODE (x))
     {
-      enum rtx_code second_code, bypass_code;
-      ix86_fp_comparison_codes (code, &bypass_code, &code, &second_code);
-      if (bypass_code != NIL || second_code != NIL)
-	abort ();
-      code = ix86_fp_compare_code_to_integer (code);
-      mode = CCmode;
-    }
-  if (reverse)
-    code = reverse_condition (code);
-
-  switch (code)
-    {
-    case EQ:
-      suffix = "e";
-      break;
-    case NE:
-      suffix = "ne";
-      break;
-    case GT:
-      if (mode != CCmode && mode != CCNOmode && mode != CCGCmode)
-	abort ();
-      suffix = "g";
-      break;
-    case GTU:
-      /* ??? Use "nbe" instead of "a" for fcmov losage on some assemblers.
-	 Those same assemblers have the same but opposite losage on cmov.  */
-      if (mode != CCmode)
-	abort ();
-      suffix = fp ? "nbe" : "a";
-      break;
-    case LT:
-      if (mode == CCNOmode || mode == CCGOCmode)
-	suffix = "s";
-      else if (mode == CCmode || mode == CCGCmode)
-	suffix = "l";
+    case PC:
+      if (flag_pic)
+	putc ('.', file);
       else
 	abort ();
       break;
-    case LTU:
-      if (mode != CCmode)
-	abort ();
-      suffix = "b";
+
+    case SYMBOL_REF:
+      assemble_name (file, XSTR (x, 0));
+      if (code == 'P' && ! SYMBOL_REF_FLAG (x))
+	fputs ("@PLT", file);
       break;
-    case GE:
-      if (mode == CCNOmode || mode == CCGOCmode)
-	suffix = "ns";
-      else if (mode == CCmode || mode == CCGCmode)
-	suffix = "ge";
+
+    case LABEL_REF:
+      x = XEXP (x, 0);
+      /* FALLTHRU */
+    case CODE_LABEL:
+      ASM_GENERATE_INTERNAL_LABEL (buf, "L", CODE_LABEL_NUMBER (x));
+      assemble_name (asm_out_file, buf);
+      break;
+
+    case CONST_INT:
+      fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (x));
+      break;
+
+    case CONST:
+      /* This used to output parentheses around the expression,
+	 but that does not work on the 386 (either ATT or BSD assembler).  */
+      output_pic_addr_const (file, XEXP (x, 0), code);
+      break;
+
+    case CONST_DOUBLE:
+      if (GET_MODE (x) == VOIDmode)
+	{
+	  /* We can use %d if the number is <32 bits and positive.  */
+	  if (CONST_DOUBLE_HIGH (x) || CONST_DOUBLE_LOW (x) < 0)
+	    fprintf (file, "0x%lx%08lx",
+		     (unsigned long) CONST_DOUBLE_HIGH (x),
+		     (unsigned long) CONST_DOUBLE_LOW (x));
+	  else
+	    fprintf (file, HOST_WIDE_INT_PRINT_DEC, CONST_DOUBLE_LOW (x));
+	}
+      else
+	/* We can't handle floating point constants;
+	   PRINT_OPERAND must handle them.  */
+	output_operand_lossage ("floating constant misused");
+      break;
+
+    case PLUS:
+      /* Some assemblers need integer constants to appear first.  */
+      if (GET_CODE (XEXP (x, 0)) == CONST_INT)
+	{
+	  output_pic_addr_const (file, XEXP (x, 0), code);
+	  putc ('+', file);
+	  output_pic_addr_const (file, XEXP (x, 1), code);
+	}
+      else if (GET_CODE (XEXP (x, 1)) == CONST_INT)
+	{
+	  output_pic_addr_const (file, XEXP (x, 1), code);
+	  putc ('+', file);
+	  output_pic_addr_const (file, XEXP (x, 0), code);
+	}
       else
 	abort ();
       break;
-    case GEU:
-      /* ??? As above.  */
-      if (mode != CCmode)
+
+    case MINUS:
+      putc (ASSEMBLER_DIALECT == ASM_INTEL ? '(' : '[', file);
+      output_pic_addr_const (file, XEXP (x, 0), code);
+      putc ('-', file);
+      output_pic_addr_const (file, XEXP (x, 1), code);
+      putc (ASSEMBLER_DIALECT == ASM_INTEL ? ')' : ']', file);
+      break;
+
+     case UNSPEC:
+       if (XVECLEN (x, 0) != 1)
 	abort ();
-      suffix = fp ? "nb" : "ae";
-      break;
-    case LE:
-      if (mode != CCmode && mode != CCGCmode && mode != CCNOmode)
-	abort ();
-      suffix = "le";
-      break;
-    case LEU:
-      if (mode != CCmode)
-	abort ();
-      suffix = "be";
-      break;
-    case UNORDERED:
-      suffix = fp ? "u" : "p";
-      break;
-    case ORDERED:
-      suffix = fp ? "nu" : "np";
-      break;
+       output_pic_addr_const (file, XVECEXP (x, 0, 0), code);
+       switch (XINT (x, 1))
+	{
+	case 6:
+	  fputs ("@GOT", file);
+	  break;
+	case 7:
+	  fputs ("@GOTOFF", file);
+	  break;
+	case 8:
+	  fputs ("@PLT", file);
+	  break;
+	case 15:
+	  fputs ("@GOTPCREL(%RIP)", file);
+	  break;
+	default:
+	  output_operand_lossage ("invalid UNSPEC as operand");
+	  break;
+	}
+       break;
+
     default:
-      abort ();
+      output_operand_lossage ("invalid expression as operand");
     }
-  fputs (suffix, file);
 }

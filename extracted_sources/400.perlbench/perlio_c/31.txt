@@ -1,0 +1,14 @@
+int
+PerlIO_apply_layers(pTHX_ PerlIO *f, const char *mode, const char *names)
+{
+    int code = 0;
+    if (f && names) {
+	PerlIO_list_t *layers = PerlIO_list_alloc(aTHX);
+	code = PerlIO_parse_layers(aTHX_ layers, names);
+	if (code == 0) {
+	    code = PerlIO_apply_layera(aTHX_ f, mode, layers, 0, layers->cur);
+	}
+	PerlIO_list_free(aTHX_ layers);
+    }
+    return code;
+}

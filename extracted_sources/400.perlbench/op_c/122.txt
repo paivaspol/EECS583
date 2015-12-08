@@ -1,0 +1,256 @@
+OP *
+Perl_ck_fun(pTHX_ OP *o)
+{
+    register OP *kid;
+    OP **tokid;
+    OP *sibl;
+    I32 numargs = 0;
+    int type = o->op_type;
+    register I32 oa = PL_opargs[type] >> OASHIFT;
+
+    if (o->op_flags & OPf_STACKED) {
+	if ((oa & OA_OPTIONAL) && (oa >> 4) && !((oa >> 4) & OA_OPTIONAL))
+	    oa &= ~OA_OPTIONAL;
+	else
+	    return no_fh_allowed(o);
+    }
+
+    if (o->op_flags & OPf_KIDS) {
+	STRLEN n_a;
+	tokid = &cLISTOPo->op_first;
+	kid = cLISTOPo->op_first;
+	if (kid->op_type == OP_PUSHMARK ||
+	    (kid->op_type == OP_NULL && kid->op_targ == OP_PUSHMARK))
+	{
+	    tokid = &kid->op_sibling;
+	    kid = kid->op_sibling;
+	}
+	if (!kid && PL_opargs[type] & OA_DEFGV)
+	    *tokid = kid = newDEFSVOP();
+
+	while (oa && kid) {
+	    numargs++;
+	    sibl = kid->op_sibling;
+	    switch (oa & 7) {
+	    case OA_SCALAR:
+		/* list seen where single (scalar) arg expected? */
+		if (numargs == 1 && !(oa >> 4)
+		    && kid->op_type == OP_LIST && type != OP_SCALAR)
+		{
+		    return too_many_arguments(o,PL_op_desc[type]);
+		}
+		scalar(kid);
+		break;
+	    case OA_LIST:
+		if (oa < 16) {
+		    kid = 0;
+		    continue;
+		}
+		else
+		    list(kid);
+		break;
+	    case OA_AVREF:
+		if ((type == OP_PUSH || type == OP_UNSHIFT)
+		    && !kid->op_sibling && ckWARN(WARN_SYNTAX))
+		    Perl_warner(aTHX_ packWARN(WARN_SYNTAX),
+			"Useless use of %s with no values",
+			PL_op_desc[type]);
+
+		if (kid->op_type == OP_CONST &&
+		    (kid->op_private & OPpCONST_BARE))
+		{
+		    char *name = SvPVx(((SVOP*)kid)->op_sv, n_a);
+		    OP *newop = newAVREF(newGVOP(OP_GV, 0,
+			gv_fetchpv(name, TRUE, SVt_PVAV) ));
+		    if (ckWARN2(WARN_DEPRECATED, WARN_SYNTAX))
+			Perl_warner(aTHX_ packWARN2(WARN_DEPRECATED, WARN_SYNTAX),
+			    "Array @%s missing the @ in argument %"IVdf" of %s()",
+			    name, (IV)numargs, PL_op_desc[type]);
+		    op_free(kid);
+		    kid = newop;
+		    kid->op_sibling = sibl;
+		    *tokid = kid;
+		}
+		else if (kid->op_type != OP_RV2AV && kid->op_type != OP_PADAV)
+		    bad_type(numargs, "array", PL_op_desc[type], kid);
+		mod(kid, type);
+		break;
+	    case OA_HVREF:
+		if (kid->op_type == OP_CONST &&
+		    (kid->op_private & OPpCONST_BARE))
+		{
+		    char *name = SvPVx(((SVOP*)kid)->op_sv, n_a);
+		    OP *newop = newHVREF(newGVOP(OP_GV, 0,
+			gv_fetchpv(name, TRUE, SVt_PVHV) ));
+		    if (ckWARN2(WARN_DEPRECATED, WARN_SYNTAX))
+			Perl_warner(aTHX_ packWARN2(WARN_DEPRECATED, WARN_SYNTAX),
+			    "Hash %%%s missing the %% in argument %"IVdf" of %s()",
+			    name, (IV)numargs, PL_op_desc[type]);
+		    op_free(kid);
+		    kid = newop;
+		    kid->op_sibling = sibl;
+		    *tokid = kid;
+		}
+		else if (kid->op_type != OP_RV2HV && kid->op_type != OP_PADHV)
+		    bad_type(numargs, "hash", PL_op_desc[type], kid);
+		mod(kid, type);
+		break;
+	    case OA_CVREF:
+		{
+		    OP *newop = newUNOP(OP_NULL, 0, kid);
+		    kid->op_sibling = 0;
+		    linklist(kid);
+		    newop->op_next = newop;
+		    kid = newop;
+		    kid->op_sibling = sibl;
+		    *tokid = kid;
+		}
+		break;
+	    case OA_FILEREF:
+		if (kid->op_type != OP_GV && kid->op_type != OP_RV2GV) {
+		    if (kid->op_type == OP_CONST &&
+			(kid->op_private & OPpCONST_BARE))
+		    {
+			OP *newop = newGVOP(OP_GV, 0,
+			    gv_fetchpv(SvPVx(((SVOP*)kid)->op_sv, n_a), TRUE,
+					SVt_PVIO) );
+			if (!(o->op_private & 1) && /* if not unop */
+			    kid == cLISTOPo->op_last)
+			    cLISTOPo->op_last = newop;
+			op_free(kid);
+			kid = newop;
+		    }
+		    else if (kid->op_type == OP_READLINE) {
+			/* neophyte patrol: open(<FH>), close(<FH>) etc. */
+			bad_type(numargs, "HANDLE", OP_DESC(o), kid);
+		    }
+		    else {
+			I32 flags = OPf_SPECIAL;
+			I32 priv = 0;
+			PADOFFSET targ = 0;
+
+			/* is this op a FH constructor? */
+			if (is_handle_constructor(o,numargs)) {
+			    char *name = Nullch;
+			    STRLEN len = 0;
+
+			    flags = 0;
+			    /* Set a flag to tell rv2gv to vivify
+			     * need to "prove" flag does not mean something
+			     * else already - NI-S 1999/05/07
+			     */
+			    priv = OPpDEREF;
+			    if (kid->op_type == OP_PADSV) {
+				/*XXX DAPM 2002.08.25 tmp assert test */
+				/*XXX*/ assert(av_fetch(PL_comppad_name, (kid->op_targ), FALSE));
+				/*XXX*/ assert(*av_fetch(PL_comppad_name, (kid->op_targ), FALSE));
+
+				name = PAD_COMPNAME_PV(kid->op_targ);
+				/* SvCUR of a pad namesv can't be trusted
+				 * (see PL_generation), so calc its length
+				 * manually */
+				if (name)
+				    len = strlen(name);
+
+			    }
+			    else if (kid->op_type == OP_RV2SV
+				     && kUNOP->op_first->op_type == OP_GV)
+			    {
+				GV *gv = cGVOPx_gv(kUNOP->op_first);
+				name = GvNAME(gv);
+				len = GvNAMELEN(gv);
+			    }
+			    else if (kid->op_type == OP_AELEM
+				     || kid->op_type == OP_HELEM)
+			    {
+				 OP *op;
+
+				 name = 0;
+				 if ((op = ((BINOP*)kid)->op_first)) {
+				      SV *tmpstr = Nullsv;
+				      char *a =
+					   kid->op_type == OP_AELEM ?
+					   "[]" : "{}";
+				      if (((op->op_type == OP_RV2AV) ||
+					   (op->op_type == OP_RV2HV)) &&
+					  (op = ((UNOP*)op)->op_first) &&
+					  (op->op_type == OP_GV)) {
+					   /* packagevar $a[] or $h{} */
+					   GV *gv = cGVOPx_gv(op);
+					   if (gv)
+						tmpstr =
+						     Perl_newSVpvf(aTHX_
+								   "%s%c...%c",
+								   GvNAME(gv),
+								   a[0], a[1]);
+				      }
+				      else if (op->op_type == OP_PADAV
+					       || op->op_type == OP_PADHV) {
+					   /* lexicalvar $a[] or $h{} */
+					   char *padname =
+						PAD_COMPNAME_PV(op->op_targ);
+					   if (padname)
+						tmpstr =
+						     Perl_newSVpvf(aTHX_
+								   "%s%c...%c",
+								   padname + 1,
+								   a[0], a[1]);
+					   
+				      }
+				      if (tmpstr) {
+					   name = SvPV(tmpstr, len);
+					   sv_2mortal(tmpstr);
+				      }
+				 }
+				 if (!name) {
+				      name = "__ANONIO__";
+				      len = 10;
+				 }
+				 mod(kid, type);
+			    }
+			    if (name) {
+				SV *namesv;
+				targ = pad_alloc(OP_RV2GV, SVs_PADTMP);
+				namesv = PAD_SVl(targ);
+				(void)SvUPGRADE(namesv, SVt_PV);
+				if (*name != '$')
+				    sv_setpvn(namesv, "$", 1);
+				sv_catpvn(namesv, name, len);
+			    }
+			}
+			kid->op_sibling = 0;
+			kid = newUNOP(OP_RV2GV, flags, scalar(kid));
+			kid->op_targ = targ;
+			kid->op_private |= priv;
+		    }
+		    kid->op_sibling = sibl;
+		    *tokid = kid;
+		}
+		scalar(kid);
+		break;
+	    case OA_SCALARREF:
+		mod(scalar(kid), type);
+		break;
+	    }
+	    oa >>= 4;
+	    tokid = &kid->op_sibling;
+	    kid = kid->op_sibling;
+	}
+	o->op_private |= numargs;
+	if (kid)
+	    return too_many_arguments(o,OP_DESC(o));
+	listkids(o);
+    }
+    else if (PL_opargs[type] & OA_DEFGV) {
+	op_free(o);
+	return newUNOP(type, 0, newDEFSVOP());
+    }
+
+    if (oa) {
+	while (oa & OA_OPTIONAL)
+	    oa >>= 4;
+	if (oa && oa != OA_LIST)
+	    return too_few_arguments(o,OP_DESC(o));
+    }
+    return o;
+}

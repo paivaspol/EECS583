@@ -1,0 +1,16 @@
+void
+default_pe_asm_named_section (name, flags)
+     const char *name;
+     unsigned int flags;
+{
+  default_coff_asm_named_section (name, flags);
+
+  if (flags & SECTION_LINKONCE)
+    {
+      /* Functions may have been compiled at various levels of
+         optimization so we can't use `same_size' here.
+         Instead, have the linker pick one.  */
+      fprintf (asm_out_file, "\t.linkonce %s\n",
+	       (flags & SECTION_CODE ? "discard" : "same_size"));
+    }
+}

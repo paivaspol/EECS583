@@ -1,9 +1,10 @@
-void
-Perl_sv_setpvf_mg_nocontext(SV *sv, const char* pat, ...)
+bool
+Perl_sv_tainted(pTHX_ SV *sv)
 {
-    dTHX;
-    va_list args;
-    va_start(args, pat);
-    sv_vsetpvf_mg(sv, pat, &args);
-    va_end(args);
+    if (SvTYPE(sv) >= SVt_PVMG && SvMAGIC(sv)) {
+	MAGIC *mg = mg_find(sv, PERL_MAGIC_taint);
+	if (mg && ((mg->mg_len & 1) || ((mg->mg_len & 2) && mg->mg_obj == sv)))
+	    return TRUE;
+    }
+    return FALSE;
 }

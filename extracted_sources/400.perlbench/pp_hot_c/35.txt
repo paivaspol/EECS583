@@ -1,0 +1,306 @@
+PP(pp_subst)
+{
+    dSP; dTARG;
+    register PMOP *pm = cPMOP;
+    PMOP *rpm = pm;
+    register SV *dstr;
+    register char *s;
+    char *strend;
+    register char *m;
+    char *c;
+    register char *d;
+    STRLEN clen;
+    I32 iters = 0;
+    I32 maxiters;
+    register I32 i;
+    bool once;
+    bool rxtainted;
+    char *orig;
+    I32 r_flags;
+    register REGEXP *rx = PM_GETRE(pm);
+    STRLEN len;
+    int force_on_match = 0;
+    I32 oldsave = PL_savestack_ix;
+    STRLEN slen;
+    bool doutf8 = FALSE;
+    SV *nsv = Nullsv;
+
+    /* known replacement string? */
+    dstr = (pm->op_pmflags & PMf_CONST) ? POPs : Nullsv;
+    if (PL_op->op_flags & OPf_STACKED)
+	TARG = POPs;
+    else {
+	TARG = DEFSV;
+	EXTEND(SP,1);
+    }
+
+    if (SvFAKE(TARG) && SvREADONLY(TARG))
+	sv_force_normal(TARG);
+    if (SvREADONLY(TARG)
+	|| (SvTYPE(TARG) > SVt_PVLV
+	    && !(SvTYPE(TARG) == SVt_PVGV && SvFAKE(TARG))))
+	DIE(aTHX_ PL_no_modify);
+    PUTBACK;
+
+    s = SvPV(TARG, len);
+    if (!SvPOKp(TARG) || SvTYPE(TARG) == SVt_PVGV)
+	force_on_match = 1;
+    rxtainted = ((pm->op_pmdynflags & PMdf_TAINTED) ||
+		 (PL_tainted && (pm->op_pmflags & PMf_RETAINT)));
+    if (PL_tainted)
+	rxtainted |= 2;
+    TAINT_NOT;
+
+    RX_MATCH_UTF8_set(rx, DO_UTF8(TARG));
+
+  force_it:
+    if (!pm || !s)
+	DIE(aTHX_ "panic: pp_subst");
+
+    strend = s + len;
+    slen = RX_MATCH_UTF8(rx) ? utf8_length((U8*)s, (U8*)strend) : len;
+    maxiters = 2 * slen + 10;	/* We can match twice at each
+				   position, once with zero-length,
+				   second time with non-zero. */
+
+    if (!rx->prelen && PL_curpm) {
+	pm = PL_curpm;
+	rx = PM_GETRE(pm);
+    }
+    r_flags = (rx->nparens || SvTEMP(TARG) || PL_sawampersand)
+		? REXEC_COPY_STR : 0;
+    if (SvSCREAM(TARG))
+	r_flags |= REXEC_SCREAM;
+    if (pm->op_pmflags & (PMf_MULTILINE|PMf_SINGLELINE)) {
+	SAVEINT(PL_multiline);
+	PL_multiline = pm->op_pmflags & PMf_MULTILINE;
+    }
+    orig = m = s;
+    if (rx->reganch & RE_USE_INTUIT) {
+	PL_bostr = orig;
+	s = CALLREG_INTUIT_START(aTHX_ rx, TARG, s, strend, r_flags, NULL);
+
+	if (!s)
+	    goto nope;
+	/* How to do it in subst? */
+/*	if ( (rx->reganch & ROPT_CHECK_ALL)
+	     && !PL_sawampersand
+	     && ((rx->reganch & ROPT_NOSCAN)
+		 || !((rx->reganch & RE_INTUIT_TAIL)
+		      && (r_flags & REXEC_SCREAM))))
+	    goto yup;
+*/
+    }
+
+    /* only replace once? */
+    once = !(rpm->op_pmflags & PMf_GLOBAL);
+
+    /* known replacement string? */
+    if (dstr) {
+	/* replacement needing upgrading? */
+	if (DO_UTF8(TARG) && !doutf8) {
+	     nsv = sv_newmortal();
+	     SvSetSV(nsv, dstr);
+	     if (PL_encoding)
+		  sv_recode_to_utf8(nsv, PL_encoding);
+	     else
+		  sv_utf8_upgrade(nsv);
+	     c = SvPV(nsv, clen);
+	     doutf8 = TRUE;
+	}
+	else {
+	    c = SvPV(dstr, clen);
+	    doutf8 = DO_UTF8(dstr);
+	}
+    }
+    else {
+        c = Nullch;
+	doutf8 = FALSE;
+    }
+    
+    /* can do inplace substitution? */
+    if (c && (I32)clen <= rx->minlen && (once || !(r_flags & REXEC_COPY_STR))
+	&& !(rx->reganch & ROPT_LOOKBEHIND_SEEN)
+	&& (!doutf8 || SvUTF8(TARG))) {
+	if (!CALLREGEXEC(aTHX_ rx, s, strend, orig, 0, TARG, NULL,
+			 r_flags | REXEC_CHECKED))
+	{
+	    SPAGAIN;
+	    PUSHs(&PL_sv_no);
+	    LEAVE_SCOPE(oldsave);
+	    RETURN;
+	}
+	if (force_on_match) {
+	    force_on_match = 0;
+	    s = SvPV_force(TARG, len);
+	    goto force_it;
+	}
+	d = s;
+	PL_curpm = pm;
+	SvSCREAM_off(TARG);	/* disable possible screamer */
+	if (once) {
+	    rxtainted |= RX_MATCH_TAINTED(rx);
+	    m = orig + rx->startp[0];
+	    d = orig + rx->endp[0];
+	    s = orig;
+	    if (m - s > strend - d) {  /* faster to shorten from end */
+		if (clen) {
+		    Copy(c, m, clen, char);
+		    m += clen;
+		}
+		i = strend - d;
+		if (i > 0) {
+		    Move(d, m, i, char);
+		    m += i;
+		}
+		*m = '\0';
+		SvCUR_set(TARG, m - s);
+	    }
+	    /*SUPPRESS 560*/
+	    else if ((i = m - s)) {	/* faster from front */
+		d -= clen;
+		m = d;
+		sv_chop(TARG, d-i);
+		s += i;
+		while (i--)
+		    *--d = *--s;
+		if (clen)
+		    Copy(c, m, clen, char);
+	    }
+	    else if (clen) {
+		d -= clen;
+		sv_chop(TARG, d);
+		Copy(c, d, clen, char);
+	    }
+	    else {
+		sv_chop(TARG, d);
+	    }
+	    TAINT_IF(rxtainted & 1);
+	    SPAGAIN;
+	    PUSHs(&PL_sv_yes);
+	}
+	else {
+	    do {
+		if (iters++ > maxiters)
+		    DIE(aTHX_ "Substitution loop");
+		rxtainted |= RX_MATCH_TAINTED(rx);
+		m = rx->startp[0] + orig;
+		/*SUPPRESS 560*/
+		if ((i = m - s)) {
+		    if (s != d)
+			Move(s, d, i, char);
+		    d += i;
+		}
+		if (clen) {
+		    Copy(c, d, clen, char);
+		    d += clen;
+		}
+		s = rx->endp[0] + orig;
+	    } while (CALLREGEXEC(aTHX_ rx, s, strend, orig, s == m,
+				 TARG, NULL,
+				 /* don't match same null twice */
+				 REXEC_NOT_FIRST|REXEC_IGNOREPOS));
+	    if (s != d) {
+		i = strend - s;
+		SvCUR_set(TARG, d - SvPVX(TARG) + i);
+		Move(s, d, i+1, char);		/* include the NUL */
+	    }
+	    TAINT_IF(rxtainted & 1);
+	    SPAGAIN;
+	    PUSHs(sv_2mortal(newSViv((I32)iters)));
+	}
+	(void)SvPOK_only_UTF8(TARG);
+	TAINT_IF(rxtainted);
+	if (SvSMAGICAL(TARG)) {
+	    PUTBACK;
+	    mg_set(TARG);
+	    SPAGAIN;
+	}
+	SvTAINT(TARG);
+	if (doutf8)
+	    SvUTF8_on(TARG);
+	LEAVE_SCOPE(oldsave);
+	RETURN;
+    }
+
+    if (CALLREGEXEC(aTHX_ rx, s, strend, orig, 0, TARG, NULL,
+		    r_flags | REXEC_CHECKED))
+    {
+	if (force_on_match) {
+	    force_on_match = 0;
+	    s = SvPV_force(TARG, len);
+	    goto force_it;
+	}
+	rxtainted |= RX_MATCH_TAINTED(rx);
+	dstr = newSVpvn(m, s-m);
+	if (DO_UTF8(TARG))
+	    SvUTF8_on(dstr);
+	PL_curpm = pm;
+	if (!c) {
+	    register PERL_CONTEXT *cx;
+	    SPAGAIN;
+	    ReREFCNT_inc(rx);
+	    PUSHSUBST(cx);
+	    RETURNOP(cPMOP->op_pmreplroot);
+	}
+	r_flags |= REXEC_IGNOREPOS | REXEC_NOT_FIRST;
+	do {
+	    if (iters++ > maxiters)
+		DIE(aTHX_ "Substitution loop");
+	    rxtainted |= RX_MATCH_TAINTED(rx);
+	    if (RX_MATCH_COPIED(rx) && rx->subbeg != orig) {
+		m = s;
+		s = orig;
+		orig = rx->subbeg;
+		s = orig + (m - s);
+		strend = s + (strend - m);
+	    }
+	    m = rx->startp[0] + orig;
+	    if (doutf8 && !SvUTF8(dstr))
+		sv_catpvn_utf8_upgrade(dstr, s, m - s, nsv);
+            else
+		sv_catpvn(dstr, s, m-s);
+	    s = rx->endp[0] + orig;
+	    if (clen)
+		sv_catpvn(dstr, c, clen);
+	    if (once)
+		break;
+	} while (CALLREGEXEC(aTHX_ rx, s, strend, orig, s == m,
+			     TARG, NULL, r_flags));
+	if (doutf8 && !DO_UTF8(TARG))
+	    sv_catpvn_utf8_upgrade(dstr, s, strend - s, nsv);
+	else
+	    sv_catpvn(dstr, s, strend - s);
+
+	SvOOK_off(TARG);
+	if (SvLEN(TARG))
+	    Safefree(SvPVX(TARG));
+	SvPVX(TARG) = SvPVX(dstr);
+	SvCUR_set(TARG, SvCUR(dstr));
+	SvLEN_set(TARG, SvLEN(dstr));
+	doutf8 |= DO_UTF8(dstr);
+	SvPVX(dstr) = 0;
+	sv_free(dstr);
+
+	TAINT_IF(rxtainted & 1);
+	SPAGAIN;
+	PUSHs(sv_2mortal(newSViv((I32)iters)));
+
+	(void)SvPOK_only(TARG);
+	if (doutf8)
+	    SvUTF8_on(TARG);
+	TAINT_IF(rxtainted);
+	SvSETMAGIC(TARG);
+	SvTAINT(TARG);
+	LEAVE_SCOPE(oldsave);
+	RETURN;
+    }
+    goto ret_no;
+
+nope:
+ret_no:
+    SPAGAIN;
+    PUSHs(&PL_sv_no);
+    LEAVE_SCOPE(oldsave);
+    RETURN;
+}

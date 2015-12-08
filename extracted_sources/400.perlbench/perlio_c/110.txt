@@ -1,0 +1,13 @@
+IV
+PerlIOMmap_fill(pTHX_ PerlIO *f)
+{
+    PerlIOBuf *b = PerlIOSelf(f, PerlIOBuf);
+    IV code = PerlIO_flush(f);
+    if (code == 0 && !b->buf) {
+	code = PerlIOMmap_map(aTHX_ f);
+    }
+    if (code == 0 && !(PerlIOBase(f)->flags & PERLIO_F_RDBUF)) {
+	code = PerlIOBuf_fill(aTHX_ f);
+    }
+    return code;
+}

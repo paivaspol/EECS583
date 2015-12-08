@@ -1,8 +1,6 @@
-void
-Perl_raise_signal(pTHX_ int sig)
+static void
+restore_sigmask(pTHX_ SV *save_sv)
 {
-    /* Set a flag to say this signal is pending */
-    PL_psig_pend[sig]++;
-    /* And one to say _a_ signal is pending */
-    PL_sig_pending = 1;
+    sigset_t *ossetp = (sigset_t *) SvPV_nolen( save_sv );
+    (void)sigprocmask(SIG_SETMASK, ossetp, (sigset_t *)0);
 }

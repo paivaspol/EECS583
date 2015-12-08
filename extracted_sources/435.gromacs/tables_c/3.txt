@@ -1,16 +1,30 @@
-static void init_table(FILE *fp,int n,int nx0,int tabsel,
-		       real tabscale,t_tabledata *td,bool bAlloc)
+static void copy2table(int n,int offset,int stride,
+		       real x[],real Vtab[],real Vtab2[],
+		       real dest[],real r_zeros)
 {
-  int i;
-  
-  td->nx  = n;
-  td->nx0 = nx0;
-  td->tabscale = tabscale;
-  if (bAlloc) {
-    snew(td->x,td->nx);
-    snew(td->v,td->nx);
-    snew(td->v2,td->nx);
+  int  i,nn0;
+  real F,G,H,h;
+    
+  for(i=1; (i<n-1); i++) {
+    h   = x[i+1]-x[i];
+    F   = (Vtab[i+1]-Vtab[i]-(h*h/6.0)*(2*Vtab2[i]+Vtab2[i+1]));
+    G   = (h*h/2.0)*Vtab2[i];
+    H   = (h*h/6.0)*(Vtab2[i+1]-Vtab2[i]);
+    nn0 = offset+i*stride;
+    dest[nn0]   = Vtab[i];
+    dest[nn0+1] = F;
+    dest[nn0+2] = G;
+    dest[nn0+3] = H;
   }
-  for(i=td->nx0; (i<td->nx); i++)
-    td->x[i] = i/tabscale;
+  if (r_zeros > 0.0) {
+    for(i=1; (i<n-1); i++) {
+      if (0.5*(x[i]+x[i+1]) >= r_zeros) {
+	nn0 = offset+i*stride;
+	dest[nn0]   = 0.0;
+	dest[nn0+1] = 0.0;
+	dest[nn0+2] = 0.0;
+	dest[nn0+3] = 0.0;
+      }
+    }
+  }
 }

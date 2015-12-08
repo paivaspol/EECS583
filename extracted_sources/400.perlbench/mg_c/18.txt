@@ -1,67 +1,36 @@
 int
-Perl_magic_clearsig(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_clear_all_env(pTHX_ SV *sv, MAGIC *mg)
 {
-    /* XXX Some of this code was copied from Perl_magic_setsig. A little
-     * refactoring might be in order.
-     */
-    register char *s;
-    STRLEN n_a;
-    SV* to_dec;
-    s = MgPV(mg,n_a);
-    if (*s == '_') {
-	SV** svp;
-	if (strEQ(s,"__DIE__"))
-	    svp = &PL_diehook;
-	else if (strEQ(s,"__WARN__"))
-	    svp = &PL_warnhook;
-	else
-	    Perl_croak(aTHX_ "No such hook: %s", s);
-	if (*svp) {
-	    to_dec = *svp;
-	    *svp = 0;
-    	    SvREFCNT_dec(to_dec);
-	}
-    }
-    else {
-	I32 i;
-	/* Are we clearing a signal entry? */
-	i = whichsig(s);
-	if (i > 0) {
-#ifdef HAS_SIGPROCMASK
-	    sigset_t set, save;
-	    SV* save_sv;
-	    /* Avoid having the signal arrive at a bad time, if possible. */
-	    sigemptyset(&set);
-	    sigaddset(&set,i);
-	    sigprocmask(SIG_BLOCK, &set, &save);
-	    ENTER;
-	    save_sv = newSVpv((char *)(&save), sizeof(sigset_t));
-	    SAVEFREESV(save_sv);
-	    SAVEDESTRUCTOR_X(restore_sigmask, save_sv);
-#endif
-	    PERL_ASYNC_CHECK();
-#if defined(FAKE_PERSISTENT_SIGNAL_HANDLERS) || defined(FAKE_DEFAULT_SIGNAL_HANDLERS)
-	    if (!sig_handlers_initted) Perl_csighandler_init();
-#endif
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
-	    sig_defaulting[i] = 1;
-	    (void)rsignal(i, PL_csighandlerp);
+#ifndef PERL_MICRO
+#if defined(VMS) || defined(EPOC)
+    Perl_die(aTHX_ "Can't make list assignment to %%ENV on this system");
 #else
-	    (void)rsignal(i, SIG_DFL);
-#endif
-    	    if(PL_psig_name[i]) {
-    		SvREFCNT_dec(PL_psig_name[i]);
-    		PL_psig_name[i]=0;
-    	    }
-    	    if(PL_psig_ptr[i]) {
-		to_dec=PL_psig_ptr[i];
-    		PL_psig_ptr[i]=0;
-		LEAVE;
-    		SvREFCNT_dec(to_dec);
-    	    }
-	    else
-		LEAVE;
-	}
+#  if defined(PERL_IMPLICIT_SYS) || defined(WIN32)
+    PerlEnv_clearenv();
+#  else
+#    ifdef USE_ENVIRON_ARRAY
+#      if defined(USE_ITHREADS)
+    /* only the parent thread can clobber the process environment */
+    if (PL_curinterp == aTHX)
+#      endif
+    {
+#      ifndef PERL_USE_SAFE_PUTENV
+    if (!PL_use_safe_putenv) {
+    I32 i;
+
+    if (environ == PL_origenviron)
+	environ = (char**)safesysmalloc(sizeof(char*));
+    else
+	for (i = 0; environ[i]; i++)
+	    safesysfree(environ[i]);
     }
+#      endif /* PERL_USE_SAFE_PUTENV */
+
+    environ[0] = Nullch;
+    }
+#    endif /* USE_ENVIRON_ARRAY */
+#   endif /* PERL_IMPLICIT_SYS || WIN32 */
+#endif /* VMS || EPOC */
+#endif /* !PERL_MICRO */
     return 0;
 }

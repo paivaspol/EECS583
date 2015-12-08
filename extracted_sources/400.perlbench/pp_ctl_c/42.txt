@@ -1,0 +1,46 @@
+STATIC OP *
+S_dofindlabel(pTHX_ OP *o, char *label, OP **opstack, OP **oplimit)
+{
+    OP *kid = Nullop;
+    OP **ops = opstack;
+    static char too_deep[] = "Target of goto is too deeply nested";
+
+    if (ops >= oplimit)
+	Perl_croak(aTHX_ too_deep);
+    if (o->op_type == OP_LEAVE ||
+	o->op_type == OP_SCOPE ||
+	o->op_type == OP_LEAVELOOP ||
+	o->op_type == OP_LEAVESUB ||
+	o->op_type == OP_LEAVETRY)
+    {
+	*ops++ = cUNOPo->op_first;
+	if (ops >= oplimit)
+	    Perl_croak(aTHX_ too_deep);
+    }
+    *ops = 0;
+    if (o->op_flags & OPf_KIDS) {
+	/* First try all the kids at this level, since that's likeliest. */
+	for (kid = cUNOPo->op_first; kid; kid = kid->op_sibling) {
+	    if ((kid->op_type == OP_NEXTSTATE || kid->op_type == OP_DBSTATE) &&
+		    kCOP->cop_label && strEQ(kCOP->cop_label, label))
+		return kid;
+	}
+	for (kid = cUNOPo->op_first; kid; kid = kid->op_sibling) {
+	    if (kid == PL_lastgotoprobe)
+		continue;
+	    if (kid->op_type == OP_NEXTSTATE || kid->op_type == OP_DBSTATE) {
+	        if (ops == opstack)
+		    *ops++ = kid;
+		else if (ops[-1]->op_type == OP_NEXTSTATE ||
+		         ops[-1]->op_type == OP_DBSTATE)
+		    ops[-1] = kid;
+		else
+		    *ops++ = kid;
+	    }
+	    if ((o = dofindlabel(kid, label, ops, oplimit)))
+		return o;
+	}
+    }
+    *ops = 0;
+    return 0;
+}

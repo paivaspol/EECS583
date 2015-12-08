@@ -1,15 +1,26 @@
 STATIC void
-S_sv_del_backref(pTHX_ SV *sv)
+S_sv_add_backref(pTHX_ SV *tsv, SV *sv)
 {
     AV *av;
-    SV **svp;
-    I32 i;
-    SV *tsv = SvRV(sv);
-    MAGIC *mg = NULL;
-    if (!SvMAGICAL(tsv) || !(mg = mg_find(tsv, PERL_MAGIC_backref)))
-	Perl_croak(aTHX_ "panic: del_backref");
-    av = (AV *)mg->mg_obj;
-    svp = AvARRAY(av);
-    for (i = AvFILLp(av); i >= 0; i--)
-	if (svp[i] == sv) svp[i] = Nullsv;
+    MAGIC *mg;
+    if (SvMAGICAL(tsv) && (mg = mg_find(tsv, PERL_MAGIC_backref)))
+	av = (AV*)mg->mg_obj;
+    else {
+	av = newAV();
+	sv_magic(tsv, (SV*)av, PERL_MAGIC_backref, NULL, 0);
+	/* av now has a refcnt of 2, which avoids it getting freed
+	 * before us during global cleanup. The extra ref is removed
+	 * by magic_killbackrefs() when tsv is being freed */
+    }
+    if (AvFILLp(av) >= AvMAX(av)) {
+        I32 i;
+        SV **svp = AvARRAY(av);
+        for (i = AvFILLp(av); i >= 0; i--)
+            if (!svp[i]) {
+                svp[i] = sv;        /* reuse the slot */
+                return;
+            }
+        av_extend(av, AvFILLp(av)+1);
+    }
+    AvARRAY(av)[++AvFILLp(av)] = sv; /* av_push() */
 }

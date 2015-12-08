@@ -1,18 +1,20 @@
-static FILE *man_file(char *program,char *mantp)
+static void pdesc(char *desc)
 {
-  FILE   *fp;
-  char   buf[256],*pr;
-
-  if ((pr=strrchr(program,'/')) == NULL)
-    pr=program;
-  else 
-    pr+=1;
-    
-  if (strcmp(mantp,"ascii") != 0)
-    sprintf(buf,"%s.%s",pr,mantp);
-  else
-    sprintf(buf,"%s.txt",pr);
-  fp = ffopen(buf,"w");
+  char *ptr,*nptr;
   
-  return fp;
+  ptr=desc;
+  if ((int)strlen(ptr) < 70)
+    fprintf(stderr,"\t%s\n",ptr);
+  else {
+    for(nptr=ptr+70; (nptr != ptr) && (!isspace(*nptr)); nptr--)
+      ;
+    if (nptr == ptr)
+      fprintf(stderr,"\t%s\n",ptr);
+    else {
+      *nptr='\0';
+      nptr++;
+      fprintf(stderr,"\t%s\n",ptr);
+      pdesc(nptr);
+    }
+  }
 }

@@ -1,11 +1,13 @@
-void
-Perl_atfork_lock(void)
+I32
+Perl_my_memcmp(const char *s1, const char *s2, register I32 len)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-    /* locks must be held in locking order (if any) */
-#  ifdef MYMALLOC
-    MUTEX_LOCK(&PL_malloc_mutex);
-#  endif
-    OP_REFCNT_LOCK;
-#endif
+    register U8 *a = (U8 *)s1;
+    register U8 *b = (U8 *)s2;
+    register I32 tmp;
+
+    while (len--) {
+	if (tmp = *a++ - *b++)
+	    return tmp;
+    }
+    return 0;
 }

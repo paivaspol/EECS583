@@ -1,0 +1,29 @@
+PP(pp_push)
+{
+    dSP; dMARK; dORIGMARK; dTARGET;
+    register AV *ary = (AV*)*++MARK;
+    register SV *sv = &PL_sv_undef;
+    MAGIC *mg;
+
+    if ((mg = SvTIED_mg((SV*)ary, PERL_MAGIC_tied))) {
+	*MARK-- = SvTIED_obj((SV*)ary, mg);
+	PUSHMARK(MARK);
+	PUTBACK;
+	ENTER;
+	call_method("PUSH",G_SCALAR|G_DISCARD);
+	LEAVE;
+	SPAGAIN;
+    }
+    else {
+	/* Why no pre-extend of ary here ? */
+	for (++MARK; MARK <= SP; MARK++) {
+	    sv = NEWSV(51, 0);
+	    if (*MARK)
+		sv_setsv(sv, *MARK);
+	    av_push(ary, sv);
+	}
+    }
+    SP = ORIGMARK;
+    PUSHi( AvFILL(ary) + 1 );
+    RETURN;
+}

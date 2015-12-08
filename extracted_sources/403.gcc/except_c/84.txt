@@ -1,16 +1,122 @@
-static int
-sjlj_size_of_call_site_table ()
+void
+convert_to_eh_region_ranges ()
 {
-  int n = cfun->eh->call_site_data_used;
-  int size = 0;
-  int i;
+  rtx insn, iter, note;
+  htab_t ar_hash;
+  int last_action = -3;
+  rtx last_action_insn = NULL_RTX;
+  rtx last_landing_pad = NULL_RTX;
+  rtx first_no_action_insn = NULL_RTX;
+  int call_site = 0;
 
-  for (i = 0; i < n; ++i)
+  if (USING_SJLJ_EXCEPTIONS || cfun->eh->region_tree == NULL)
+    return;
+
+  VARRAY_UCHAR_INIT (cfun->eh->action_record_data, 64, "action_record_data");
+
+  ar_hash = htab_create (31, action_record_hash, action_record_eq, free);
+
+  for (iter = get_insns (); iter ; iter = NEXT_INSN (iter))
+    if (INSN_P (iter))
+      {
+	struct eh_region *region;
+	int this_action;
+	rtx this_landing_pad;
+
+	insn = iter;
+	if (GET_CODE (insn) == INSN
+	    && GET_CODE (PATTERN (insn)) == SEQUENCE)
+	  insn = XVECEXP (PATTERN (insn), 0, 0);
+
+	note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+	if (!note)
+	  {
+	    if (! (GET_CODE (insn) == CALL_INSN
+		   || (flag_non_call_exceptions
+		       && may_trap_p (PATTERN (insn)))))
+	      continue;
+	    this_action = -1;
+	    region = NULL;
+	  }
+	else
+	  {
+	    if (INTVAL (XEXP (note, 0)) <= 0)
+	      continue;
+	    region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+	    this_action = collect_one_action_chain (ar_hash, region);
+	  }
+
+	/* Existence of catch handlers, or must-not-throw regions
+	   implies that an lsda is needed (even if empty).  */
+	if (this_action != -1)
+	  cfun->uses_eh_lsda = 1;
+
+	/* Delay creation of region notes for no-action regions
+	   until we're sure that an lsda will be required.  */
+	else if (last_action == -3)
+	  {
+	    first_no_action_insn = iter;
+	    last_action = -1;
+	  }
+
+	/* Cleanups and handlers may share action chains but not
+	   landing pads.  Collect the landing pad for this region.  */
+	if (this_action >= 0)
+	  {
+	    struct eh_region *o;
+	    for (o = region; ! o->landing_pad ; o = o->outer)
+	      continue;
+	    this_landing_pad = o->landing_pad;
+	  }
+	else
+	  this_landing_pad = NULL_RTX;
+
+	/* Differing actions or landing pads implies a change in call-site
+	   info, which implies some EH_REGION note should be emitted.  */
+	if (last_action != this_action
+	    || last_landing_pad != this_landing_pad)
+	  {
+	    /* If we'd not seen a previous action (-3) or the previous
+	       action was must-not-throw (-2), then we do not need an
+	       end note.  */
+	    if (last_action >= -1)
+	      {
+		/* If we delayed the creation of the begin, do it now.  */
+		if (first_no_action_insn)
+		  {
+		    call_site = add_call_site (NULL_RTX, 0);
+		    note = emit_note_before (NOTE_INSN_EH_REGION_BEG,
+					     first_no_action_insn);
+		    NOTE_EH_HANDLER (note) = call_site;
+		    first_no_action_insn = NULL_RTX;
+		  }
+
+		note = emit_note_after (NOTE_INSN_EH_REGION_END,
+					last_action_insn);
+		NOTE_EH_HANDLER (note) = call_site;
+	      }
+
+	    /* If the new action is must-not-throw, then no region notes
+	       are created.  */
+	    if (this_action >= -1)
+	      {
+		call_site = add_call_site (this_landing_pad,
+					   this_action < 0 ? 0 : this_action);
+		note = emit_note_before (NOTE_INSN_EH_REGION_BEG, iter);
+		NOTE_EH_HANDLER (note) = call_site;
+	      }
+
+	    last_action = this_action;
+	    last_landing_pad = this_landing_pad;
+	  }
+	last_action_insn = iter;
+      }
+
+  if (last_action >= -1 && ! first_no_action_insn)
     {
-      struct call_site_record *cs = &cfun->eh->call_site_data[i];
-      size += size_of_uleb128 (INTVAL (cs->landing_pad));
-      size += size_of_uleb128 (cs->action);
+      note = emit_note_after (NOTE_INSN_EH_REGION_END, last_action_insn);
+      NOTE_EH_HANDLER (note) = call_site;
     }
 
-  return size;
+  htab_delete (ar_hash);
 }

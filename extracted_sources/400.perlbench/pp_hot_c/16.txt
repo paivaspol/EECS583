@@ -1,0 +1,16 @@
+PP(pp_preinc)
+{
+    dSP;
+    if (SvTYPE(TOPs) > SVt_PVLV)
+	DIE(aTHX_ PL_no_modify);
+    if (!SvREADONLY(TOPs) && SvIOK_notUV(TOPs) && !SvNOK(TOPs) && !SvPOK(TOPs)
+        && SvIVX(TOPs) != IV_MAX)
+    {
+	++SvIVX(TOPs);
+	SvFLAGS(TOPs) &= ~(SVp_NOK|SVp_POK);
+    }
+    else /* Do all the PERL_PRESERVE_IVUV conditionals in sv_inc */
+	sv_inc(TOPs);
+    SvSETMAGIC(TOPs);
+    return NORMAL;
+}

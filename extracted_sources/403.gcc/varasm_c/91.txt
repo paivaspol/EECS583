@@ -1,27 +1,302 @@
-void
-weak_finish ()
+static void
+output_constructor (exp, size, align)
+     tree exp;
+     HOST_WIDE_INT size;
+     unsigned int align;
 {
-  tree t;
+  tree type = TREE_TYPE (exp);
+  tree link, field = 0;
+  tree min_index = 0;
+  /* Number of bytes output or skipped so far.
+     In other words, current position within the constructor.  */
+  HOST_WIDE_INT total_bytes = 0;
+  /* Non-zero means BYTE contains part of a byte, to be output.  */
+  int byte_buffer_in_use = 0;
+  int byte = 0;
 
-  for (t = weak_decls; t ; t = TREE_CHAIN (t))
+  if (HOST_BITS_PER_WIDE_INT < BITS_PER_UNIT)
+    abort ();
+
+  if (TREE_CODE (type) == RECORD_TYPE)
+    field = TYPE_FIELDS (type);
+
+  if (TREE_CODE (type) == ARRAY_TYPE
+      && TYPE_DOMAIN (type) != 0)
+    min_index = TYPE_MIN_VALUE (TYPE_DOMAIN (type));
+
+  /* As LINK goes through the elements of the constant,
+     FIELD goes through the structure fields, if the constant is a structure.
+     if the constant is a union, then we override this,
+     by getting the field from the TREE_LIST element.
+     But the constant could also be an array.  Then FIELD is zero.
+
+     There is always a maximum of one element in the chain LINK for unions
+     (even if the initializer in a source program incorrectly contains
+     more one).  */
+  for (link = CONSTRUCTOR_ELTS (exp);
+       link;
+       link = TREE_CHAIN (link),
+       field = field ? TREE_CHAIN (field) : 0)
     {
-      tree decl = TREE_VALUE (t);
-      const char *name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl));
+      tree val = TREE_VALUE (link);
+      tree index = 0;
 
-      if (! TREE_USED (decl))
-	continue;
+      /* The element in a union constructor specifies the proper field
+	 or index.  */
+      if ((TREE_CODE (type) == RECORD_TYPE || TREE_CODE (type) == UNION_TYPE
+	   || TREE_CODE (type) == QUAL_UNION_TYPE)
+	  && TREE_PURPOSE (link) != 0)
+	field = TREE_PURPOSE (link);
 
-#ifdef ASM_WEAKEN_DECL
-      ASM_WEAKEN_DECL (asm_out_file, decl, name, NULL);
-#else
-#ifdef ASM_WEAKEN_LABEL
-      ASM_WEAKEN_LABEL (asm_out_file, name);
-#else
-#ifdef ASM_OUTPUT_WEAK_ALIAS
-      warning ("only weak aliases are supported in this configuration");
-      return;
-#endif
-#endif
-#endif
+      else if (TREE_CODE (type) == ARRAY_TYPE)
+	index = TREE_PURPOSE (link);
+
+      /* Eliminate the marker that makes a cast not be an lvalue.  */
+      if (val != 0)
+	STRIP_NOPS (val);
+
+      if (index && TREE_CODE (index) == RANGE_EXPR)
+	{
+	  unsigned HOST_WIDE_INT fieldsize
+	    = int_size_in_bytes (TREE_TYPE (type));
+	  HOST_WIDE_INT lo_index = tree_low_cst (TREE_OPERAND (index, 0), 0);
+	  HOST_WIDE_INT hi_index = tree_low_cst (TREE_OPERAND (index, 1), 0);
+	  HOST_WIDE_INT index;
+	  unsigned int align2 = min_align (align, fieldsize * BITS_PER_UNIT);
+
+	  for (index = lo_index; index <= hi_index; index++)
+	    {
+	      /* Output the element's initial value.  */
+	      if (val == 0)
+		assemble_zeros (fieldsize);
+	      else
+		output_constant (val, fieldsize, align2);
+
+	      /* Count its size.  */
+	      total_bytes += fieldsize;
+	    }
+	}
+      else if (field == 0 || !DECL_BIT_FIELD (field))
+	{
+	  /* An element that is not a bit-field.  */
+
+	  unsigned HOST_WIDE_INT fieldsize;
+	  /* Since this structure is static,
+	     we know the positions are constant.  */
+	  HOST_WIDE_INT pos = field ? int_byte_position (field) : 0;
+	  unsigned int align2;
+
+	  if (index != 0)
+	    pos = (tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (val)), 1)
+		   * (tree_low_cst (index, 0) - tree_low_cst (min_index, 0)));
+
+	  /* Output any buffered-up bit-fields preceding this element.  */
+	  if (byte_buffer_in_use)
+	    {
+	      assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+	      total_bytes++;
+	      byte_buffer_in_use = 0;
+	    }
+
+	  /* Advance to offset of this element.
+	     Note no alignment needed in an array, since that is guaranteed
+	     if each element has the proper size.  */
+	  if ((field != 0 || index != 0) && pos != total_bytes)
+	    {
+	      assemble_zeros (pos - total_bytes);
+	      total_bytes = pos;
+	    }
+
+	  /* Find the alignment of this element.  */
+	  align2 = min_align (align, BITS_PER_UNIT * pos);
+
+	  /* Determine size this element should occupy.  */
+	  if (field)
+	    {
+	      fieldsize = 0;
+
+	      /* If this is an array with an unspecified upper bound,
+		 the initializer determines the size.  */
+	      /* ??? This ought to only checked if DECL_SIZE_UNIT is NULL,
+		 but we cannot do this until the deprecated support for
+		 initializing zero-length array members is removed.  */
+	      if (TREE_CODE (TREE_TYPE (field)) == ARRAY_TYPE
+		  && TYPE_DOMAIN (TREE_TYPE (field))
+		  && ! TYPE_MAX_VALUE (TYPE_DOMAIN (TREE_TYPE (field))))
+		{
+		  fieldsize = array_size_for_constructor (val);
+		  /* Given a non-empty initialization, this field had
+		     better be last.  */
+		  if (fieldsize != 0 && TREE_CHAIN (field) != NULL_TREE)
+		    abort ();
+		}
+	      else if (DECL_SIZE_UNIT (field))
+		{
+		  /* ??? This can't be right.  If the decl size overflows
+		     a host integer we will silently emit no data.  */
+		  if (host_integerp (DECL_SIZE_UNIT (field), 1))
+		    fieldsize = tree_low_cst (DECL_SIZE_UNIT (field), 1);
+		}
+	    }
+	  else
+	    fieldsize = int_size_in_bytes (TREE_TYPE (type));
+
+	  /* Output the element's initial value.  */
+	  if (val == 0)
+	    assemble_zeros (fieldsize);
+	  else
+	    output_constant (val, fieldsize, align2);
+
+	  /* Count its size.  */
+	  total_bytes += fieldsize;
+	}
+      else if (val != 0 && TREE_CODE (val) != INTEGER_CST)
+	error ("invalid initial value for member `%s'",
+	       IDENTIFIER_POINTER (DECL_NAME (field)));
+      else
+	{
+	  /* Element that is a bit-field.  */
+
+	  HOST_WIDE_INT next_offset = int_bit_position (field);
+	  HOST_WIDE_INT end_offset
+	    = (next_offset + tree_low_cst (DECL_SIZE (field), 1));
+
+	  if (val == 0)
+	    val = integer_zero_node;
+
+	  /* If this field does not start in this (or, next) byte,
+	     skip some bytes.  */
+	  if (next_offset / BITS_PER_UNIT != total_bytes)
+	    {
+	      /* Output remnant of any bit field in previous bytes.  */
+	      if (byte_buffer_in_use)
+		{
+		  assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+		  total_bytes++;
+		  byte_buffer_in_use = 0;
+		}
+
+	      /* If still not at proper byte, advance to there.  */
+	      if (next_offset / BITS_PER_UNIT != total_bytes)
+		{
+		  assemble_zeros (next_offset / BITS_PER_UNIT - total_bytes);
+		  total_bytes = next_offset / BITS_PER_UNIT;
+		}
+	    }
+
+	  if (! byte_buffer_in_use)
+	    byte = 0;
+
+	  /* We must split the element into pieces that fall within
+	     separate bytes, and combine each byte with previous or
+	     following bit-fields.  */
+
+	  /* next_offset is the offset n fbits from the beginning of
+	     the structure to the next bit of this element to be processed.
+	     end_offset is the offset of the first bit past the end of
+	     this element.  */
+	  while (next_offset < end_offset)
+	    {
+	      int this_time;
+	      int shift;
+	      HOST_WIDE_INT value;
+	      HOST_WIDE_INT next_byte = next_offset / BITS_PER_UNIT;
+	      HOST_WIDE_INT next_bit = next_offset % BITS_PER_UNIT;
+
+	      /* Advance from byte to byte
+		 within this element when necessary.  */
+	      while (next_byte != total_bytes)
+		{
+		  assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+		  total_bytes++;
+		  byte = 0;
+		}
+
+	      /* Number of bits we can process at once
+		 (all part of the same byte).  */
+	      this_time = MIN (end_offset - next_offset,
+			       BITS_PER_UNIT - next_bit);
+	      if (BYTES_BIG_ENDIAN)
+		{
+		  /* On big-endian machine, take the most significant bits
+		     first (of the bits that are significant)
+		     and put them into bytes from the most significant end.  */
+		  shift = end_offset - next_offset - this_time;
+
+		  /* Don't try to take a bunch of bits that cross
+		     the word boundary in the INTEGER_CST. We can
+		     only select bits from the LOW or HIGH part
+		     not from both.  */
+		  if (shift < HOST_BITS_PER_WIDE_INT
+		      && shift + this_time > HOST_BITS_PER_WIDE_INT)
+		    {
+		      this_time = shift + this_time - HOST_BITS_PER_WIDE_INT;
+		      shift = HOST_BITS_PER_WIDE_INT;
+		    }
+
+		  /* Now get the bits from the appropriate constant word.  */
+		  if (shift < HOST_BITS_PER_WIDE_INT)
+		    value = TREE_INT_CST_LOW (val);
+		  else if (shift < 2 * HOST_BITS_PER_WIDE_INT)
+		    {
+		      value = TREE_INT_CST_HIGH (val);
+		      shift -= HOST_BITS_PER_WIDE_INT;
+		    }
+		  else
+		    abort ();
+
+		  /* Get the result. This works only when:
+		     1 <= this_time <= HOST_BITS_PER_WIDE_INT.  */
+		  byte |= (((value >> shift)
+			    & (((HOST_WIDE_INT) 2 << (this_time - 1)) - 1))
+			   << (BITS_PER_UNIT - this_time - next_bit));
+		}
+	      else
+		{
+		  /* On little-endian machines,
+		     take first the least significant bits of the value
+		     and pack them starting at the least significant
+		     bits of the bytes.  */
+		  shift = next_offset - int_bit_position (field);
+
+		  /* Don't try to take a bunch of bits that cross
+		     the word boundary in the INTEGER_CST. We can
+		     only select bits from the LOW or HIGH part
+		     not from both.  */
+		  if (shift < HOST_BITS_PER_WIDE_INT
+		      && shift + this_time > HOST_BITS_PER_WIDE_INT)
+		    this_time = (HOST_BITS_PER_WIDE_INT - shift);
+
+		  /* Now get the bits from the appropriate constant word.  */
+		  if (shift < HOST_BITS_PER_WIDE_INT)
+		    value = TREE_INT_CST_LOW (val);
+		  else if (shift < 2 * HOST_BITS_PER_WIDE_INT)
+		    {
+		      value = TREE_INT_CST_HIGH (val);
+		      shift -= HOST_BITS_PER_WIDE_INT;
+		    }
+		  else
+		    abort ();
+
+		  /* Get the result. This works only when:
+		     1 <= this_time <= HOST_BITS_PER_WIDE_INT.  */
+		  byte |= (((value >> shift)
+			    & (((HOST_WIDE_INT) 2 << (this_time - 1)) - 1))
+			   << next_bit);
+		}
+
+	      next_offset += this_time;
+	      byte_buffer_in_use = 1;
+	    }
+	}
     }
+
+  if (byte_buffer_in_use)
+    {
+      assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+      total_bytes++;
+    }
+
+  if (total_bytes < size)
+    assemble_zeros (size - total_bytes);
 }

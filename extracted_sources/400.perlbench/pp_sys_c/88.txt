@@ -1,0 +1,14 @@
+PP(pp_symlink)
+{
+#ifdef HAS_SYMLINK
+    dSP; dTARGET;
+    STRLEN n_a;
+    char *tmps2 = POPpx;
+    char *tmps = SvPV(TOPs, n_a);
+    TAINT_PROPER("symlink");
+    SETi( symlink(tmps, tmps2) >= 0 );
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "symlink");
+#endif
+}

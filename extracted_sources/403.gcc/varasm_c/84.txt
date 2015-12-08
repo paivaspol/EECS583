@@ -1,56 +1,150 @@
-static int
-output_addressed_constants (exp)
-     tree exp;
+void
+output_constant_pool (fnname, fndecl)
+  const char *fnname ATTRIBUTE_UNUSED;
+  tree fndecl ATTRIBUTE_UNUSED;
 {
-  int reloc = 0;
-  tree tem;
+  struct pool_constant *pool;
+  rtx x;
+  union real_extract u;
 
-  /* Give the front-end a chance to convert VALUE to something that
-     looks more like a constant to the back-end.  */
-  exp = (*lang_hooks.expand_constant) (exp);
+  /* It is possible for gcc to call force_const_mem and then to later
+     discard the instructions which refer to the constant.  In such a
+     case we do not need to output the constant.  */
+  mark_constant_pool ();
 
-  switch (TREE_CODE (exp))
+#ifdef ASM_OUTPUT_POOL_PROLOGUE
+  ASM_OUTPUT_POOL_PROLOGUE (asm_out_file, fnname, fndecl, pool_offset);
+#endif
+
+  for (pool = first_pool; pool; pool = pool->next)
     {
-    case ADDR_EXPR:
-    case FDESC_EXPR:
-      /* Go inside any operations that get_inner_reference can handle and see
-	 if what's inside is a constant: no need to do anything here for
-	 addresses of variables or functions.  */
-      for (tem = TREE_OPERAND (exp, 0); handled_component_p (tem);
-	   tem = TREE_OPERAND (tem, 0))
-	;
+      rtx tmp;
 
-      if (TREE_CODE_CLASS (TREE_CODE (tem)) == 'c'
-	    || TREE_CODE (tem) == CONSTRUCTOR)
-	  output_constant_def (tem, 0);
+      x = pool->constant;
 
-      if (TREE_PUBLIC (tem))
-	reloc |= 2;
-      else
-	reloc |= 1;
-      break;
+      if (! pool->mark)
+	continue;
 
-    case PLUS_EXPR:
-    case MINUS_EXPR:
-      reloc = output_addressed_constants (TREE_OPERAND (exp, 0));
-      reloc |= output_addressed_constants (TREE_OPERAND (exp, 1));
-      break;
+      /* See if X is a LABEL_REF (or a CONST referring to a LABEL_REF)
+	 whose CODE_LABEL has been deleted.  This can occur if a jump table
+	 is eliminated by optimization.  If so, write a constant of zero
+	 instead.  Note that this can also happen by turning the
+	 CODE_LABEL into a NOTE.  */
+      /* ??? This seems completely and utterly wrong.  Certainly it's
+	 not true for NOTE_INSN_DELETED_LABEL, but I disbelieve proper
+	 functioning even with INSN_DELETED_P and friends.  */
 
-    case NOP_EXPR:
-    case CONVERT_EXPR:
-    case NON_LVALUE_EXPR:
-      reloc = output_addressed_constants (TREE_OPERAND (exp, 0));
-      break;
+      tmp = x;
+      switch (GET_CODE (x))
+	{
+	case CONST:
+	  if (GET_CODE (XEXP (x, 0)) != PLUS
+	      || GET_CODE (XEXP (XEXP (x, 0), 0)) != LABEL_REF)
+	    break;
+	  tmp = XEXP (XEXP (x, 0), 0);
+	  /* FALLTHRU */
 
-    case CONSTRUCTOR:
-      for (tem = CONSTRUCTOR_ELTS (exp); tem; tem = TREE_CHAIN (tem))
-	if (TREE_VALUE (tem) != 0)
-	    reloc |= output_addressed_constants (TREE_VALUE (tem));
+	case LABEL_REF:
+	  tmp = XEXP (x, 0);
+	  if (INSN_DELETED_P (tmp)
+	      || (GET_CODE (tmp) == NOTE
+		  && NOTE_LINE_NUMBER (tmp) == NOTE_INSN_DELETED))
+	    {
+	      abort ();
+	      x = const0_rtx;
+	    }
+	  break;
 
-      break;
+	default:
+	  break;
+	}
 
-    default:
-      break;
+      /* First switch to correct section.  */
+#ifdef SELECT_RTX_SECTION
+      SELECT_RTX_SECTION (pool->mode, x, pool->align);
+#else
+      readonly_data_section ();
+#endif
+
+#ifdef ASM_OUTPUT_SPECIAL_POOL_ENTRY
+      ASM_OUTPUT_SPECIAL_POOL_ENTRY (asm_out_file, x, pool->mode,
+				     pool->align, pool->labelno, done);
+#endif
+
+      assemble_align (pool->align);
+
+      /* Output the label.  */
+      ASM_OUTPUT_INTERNAL_LABEL (asm_out_file, "LC", pool->labelno);
+
+      /* Output the value of the constant itself.  */
+      switch (GET_MODE_CLASS (pool->mode))
+	{
+	case MODE_FLOAT:
+	  if (GET_CODE (x) != CONST_DOUBLE)
+	    abort ();
+
+	  memcpy ((char *) &u, (char *) &CONST_DOUBLE_LOW (x), sizeof u);
+	  assemble_real (u.d, pool->mode, pool->align);
+	  break;
+
+	case MODE_INT:
+	case MODE_PARTIAL_INT:
+	  assemble_integer (x, GET_MODE_SIZE (pool->mode), pool->align, 1);
+	  break;
+
+	case MODE_VECTOR_FLOAT:
+	  {
+	    int i, units;
+	    rtx elt;
+
+	    if (GET_CODE (x) != CONST_VECTOR)
+	      abort ();
+
+	    units = CONST_VECTOR_NUNITS (x);
+
+	    for (i = 0; i < units; i++)
+	      {
+		elt = CONST_VECTOR_ELT (x, i);
+		memcpy ((char *) &u,
+			(char *) &CONST_DOUBLE_LOW (elt),
+			sizeof u);
+		assemble_real (u.d, GET_MODE_INNER (pool->mode), pool->align);
+	      }
+	  }
+	  break;
+
+        case MODE_VECTOR_INT:
+	  {
+	    int i, units;
+	    rtx elt;
+
+	    if (GET_CODE (x) != CONST_VECTOR)
+	      abort ();
+
+	    units = CONST_VECTOR_NUNITS (x);
+
+	    for (i = 0; i < units; i++)
+	      {
+		elt = CONST_VECTOR_ELT (x, i);
+		assemble_integer (elt, GET_MODE_UNIT_SIZE (pool->mode),
+				  pool->align, 1);
+	      }
+	  }
+	  break;
+
+	default:
+	  abort ();
+	}
+
+#ifdef ASM_OUTPUT_SPECIAL_POOL_ENTRY
+    done: ;
+#endif
     }
-  return reloc;
+
+#ifdef ASM_OUTPUT_POOL_EPILOGUE
+  ASM_OUTPUT_POOL_EPILOGUE (asm_out_file, fnname, fndecl, pool_offset);
+#endif
+
+  /* Done with this pool.  */
+  first_pool = last_pool = 0;
 }

@@ -1,0 +1,50 @@
+PP(pp_quotemeta)
+{
+    dSP; dTARGET;
+    SV *sv = TOPs;
+    STRLEN len;
+    register char *s = SvPV(sv,len);
+    register char *d;
+
+    SvUTF8_off(TARG);				/* decontaminate */
+    if (len) {
+	(void)SvUPGRADE(TARG, SVt_PV);
+	SvGROW(TARG, (len * 2) + 1);
+	d = SvPVX(TARG);
+	if (DO_UTF8(sv)) {
+	    while (len) {
+		if (UTF8_IS_CONTINUED(*s)) {
+		    STRLEN ulen = UTF8SKIP(s);
+		    if (ulen > len)
+			ulen = len;
+		    len -= ulen;
+		    while (ulen--)
+			*d++ = *s++;
+		}
+		else {
+		    if (!isALNUM(*s))
+			*d++ = '\\';
+		    *d++ = *s++;
+		    len--;
+		}
+	    }
+	    SvUTF8_on(TARG);
+	}
+	else {
+	    while (len--) {
+		if (!isALNUM(*s))
+		    *d++ = '\\';
+		*d++ = *s++;
+	    }
+	}
+	*d = '\0';
+	SvCUR_set(TARG, d - SvPVX(TARG));
+	(void)SvPOK_only_UTF8(TARG);
+    }
+    else
+	sv_setpvn(TARG, s, len);
+    SETs(TARG);
+    if (SvSMAGICAL(TARG))
+	mg_set(TARG);
+    RETURN;
+}

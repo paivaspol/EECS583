@@ -1,94 +1,13 @@
-void
-ix86_expand_prologue ()
+static void
+ix86_emit_save_regs ()
 {
+  register int regno;
   rtx insn;
-  int pic_reg_used = (flag_pic && (current_function_uses_pic_offset_table
-				  || current_function_uses_const_pool)
-		      && !TARGET_64BIT);
-  struct ix86_frame frame;
-  int use_mov = 0;
-  HOST_WIDE_INT allocate;
 
-  if (!optimize_size)
-    {
-      use_fast_prologue_epilogue
-	 = !expensive_function_p (FAST_PROLOGUE_INSN_COUNT);
-      if (TARGET_PROLOGUE_USING_MOVE)
-        use_mov = use_fast_prologue_epilogue;
-    }
-  ix86_compute_frame_layout (&frame);
-
-  /* Note: AT&T enter does NOT have reversed args.  Enter is probably
-     slower on all targets.  Also sdb doesn't like it.  */
-
-  if (frame_pointer_needed)
-    {
-      insn = emit_insn (gen_push (hard_frame_pointer_rtx));
-      RTX_FRAME_RELATED_P (insn) = 1;
-
-      insn = emit_move_insn (hard_frame_pointer_rtx, stack_pointer_rtx);
-      RTX_FRAME_RELATED_P (insn) = 1;
-    }
-
-  allocate = frame.to_allocate;
-  /* In case we are dealing only with single register and empty frame,
-     push is equivalent of the mov+add sequence.  */
-  if (allocate == 0 && frame.nregs <= 1)
-    use_mov = 0;
-
-  if (!use_mov)
-    ix86_emit_save_regs ();
-  else
-    allocate += frame.nregs * UNITS_PER_WORD;
-
-  if (allocate == 0)
-    ;
-  else if (! TARGET_STACK_PROBE || allocate < CHECK_STACK_LIMIT)
-    {
-      insn = emit_insn (gen_pro_epilogue_adjust_stack
-			(stack_pointer_rtx, stack_pointer_rtx,
-			 GEN_INT (-allocate)));
-      RTX_FRAME_RELATED_P (insn) = 1;
-    }
-  else
-    {
-      /* ??? Is this only valid for Win32?  */
-
-      rtx arg0, sym;
-
-      if (TARGET_64BIT)
-	abort ();
-
-      arg0 = gen_rtx_REG (SImode, 0);
-      emit_move_insn (arg0, GEN_INT (allocate));
-
-      sym = gen_rtx_MEM (FUNCTION_MODE,
-			 gen_rtx_SYMBOL_REF (Pmode, "_alloca"));
-      insn = emit_call_insn (gen_call (sym, const0_rtx, constm1_rtx));
-
-      CALL_INSN_FUNCTION_USAGE (insn)
-	= gen_rtx_EXPR_LIST (VOIDmode, gen_rtx_USE (VOIDmode, arg0),
-			     CALL_INSN_FUNCTION_USAGE (insn));
-    }
-  if (use_mov)
-    {
-      if (!frame_pointer_needed || !frame.to_allocate)
-        ix86_emit_save_regs_using_mov (stack_pointer_rtx, frame.to_allocate);
-      else
-        ix86_emit_save_regs_using_mov (hard_frame_pointer_rtx,
-				       -frame.nregs * UNITS_PER_WORD);
-    }
-
-#ifdef SUBTARGET_PROLOGUE
-  SUBTARGET_PROLOGUE;
-#endif
-
-  if (pic_reg_used)
-    load_pic_register ();
-
-  /* If we are profiling, make sure no instructions are scheduled before
-     the call to mcount.  However, if -fpic, the above call will have
-     done that.  */
-  if (current_function_profile && ! pic_reg_used)
-    emit_insn (gen_blockage ());
+  for (regno = FIRST_PSEUDO_REGISTER - 1; regno >= 0; regno--)
+    if (ix86_save_reg (regno, true))
+      {
+	insn = emit_insn (gen_push (gen_rtx_REG (Pmode, regno)));
+	RTX_FRAME_RELATED_P (insn) = 1;
+      }
 }

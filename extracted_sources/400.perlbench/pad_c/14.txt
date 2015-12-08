@@ -1,20 +1,26 @@
 void
-Perl_pad_fixup_inner_anons(pTHX_ PADLIST *padlist, CV *old_cv, CV *new_cv)
+Perl_pad_reset(pTHX)
 {
-    I32 ix;
-    AV *comppad_name = (AV*)AvARRAY(padlist)[0];
-    AV *comppad = (AV*)AvARRAY(padlist)[1];
-    SV **namepad = AvARRAY(comppad_name);
-    SV **curpad = AvARRAY(comppad);
-    for (ix = AvFILLp(comppad_name); ix > 0; ix--) {
-	SV *namesv = namepad[ix];
-	if (namesv && namesv != &PL_sv_undef
-	    && *SvPVX(namesv) == '&')
-	{
-	    CV *innercv = (CV*)curpad[ix];
-	    assert(CvWEAKOUTSIDE(innercv));
-	    assert(CvOUTSIDE(innercv) == old_cv);
-	    CvOUTSIDE(innercv) = new_cv;
+#ifdef USE_BROKEN_PAD_RESET
+    register I32 po;
+
+    if (AvARRAY(PL_comppad) != PL_curpad)
+	Perl_croak(aTHX_ "panic: pad_reset curpad");
+
+    DEBUG_X(PerlIO_printf(Perl_debug_log,
+	    "Pad 0x%"UVxf"[0x%"UVxf"] reset:     padix %ld -> %ld",
+	    PTR2UV(PL_comppad), PTR2UV(PL_curpad),
+		(long)PL_padix, (long)PL_padix_floor
+	    )
+    );
+
+    if (!PL_tainting) {	/* Can't mix tainted and non-tainted temporaries. */
+	for (po = AvMAX(PL_comppad); po > PL_padix_floor; po--) {
+	    if (PL_curpad[po] && !SvIMMORTAL(PL_curpad[po]))
+		SvPADTMP_off(PL_curpad[po]);
 	}
+	PL_padix = PL_padix_floor;
     }
+#endif
+    PL_pad_reset_pending = FALSE;
 }

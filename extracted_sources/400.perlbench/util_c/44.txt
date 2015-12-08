@@ -1,12 +1,19 @@
 void
-Perl_set_context(void *t)
+Perl_repeatcpy(pTHX_ register char *to, register const char *from, I32 len, register I32 count)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-#  ifdef I_MACH_CTHREADS
-    cthread_set_data(cthread_self(), t);
-#  else
-    if (pthread_setspecific(PL_thr_key, t))
-	Perl_croak_nocontext("panic: pthread_setspecific");
-#  endif
-#endif
+    register I32 todo;
+    register const char *frombase = from;
+
+    if (len == 1) {
+	register const char c = *from;
+	while (count-- > 0)
+	    *to++ = c;
+	return;
+    }
+    while (count-- > 0) {
+	for (todo = len; todo > 0; todo--) {
+	    *to++ = *from++;
+	}
+	from = frombase;
+    }
 }

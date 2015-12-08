@@ -1,6 +1,25 @@
-STATIC void
-S_del_pte(pTHX_ struct ptr_tbl_ent*p)
+static char *
+F0convert(NV nv, char *endbuf, STRLEN *len)
 {
-    p->next = PL_pte_root;
-    PL_pte_root = p;
+    int neg = nv < 0;
+    UV uv;
+    char *p = endbuf;
+
+    if (neg)
+	nv = -nv;
+    if (nv < UV_MAX) {
+	nv += 0.5;
+	uv = (UV)nv;
+	if (uv & 1 && uv == nv)
+	    uv--;			/* Round to even */
+	do {
+	    unsigned dig = uv % 10;
+	    *--p = '0' + dig;
+	} while (uv /= 10);
+	if (neg)
+	    *--p = '-';
+	*len = endbuf - p;
+	return p;
+    }
+    return Nullch;
 }

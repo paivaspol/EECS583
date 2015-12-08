@@ -1,26 +1,51 @@
 int
-Perl_magic_setsubstr(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setpos(pTHX_ SV *sv, MAGIC *mg)
 {
+    SV* lsv = LvTARG(sv);
+    SSize_t pos;
     STRLEN len;
-    char *tmps = SvPV(sv, len);
-    SV *lsv = LvTARG(sv);
-    I32 lvoff = LvTARGOFF(sv);
-    I32 lvlen = LvTARGLEN(sv);
+    STRLEN ulen = 0;
 
-    if (DO_UTF8(sv)) {
-	sv_utf8_upgrade(lsv);
- 	sv_pos_u2b(lsv, &lvoff, &lvlen);
-	sv_insert(lsv, lvoff, lvlen, tmps, len);
-	SvUTF8_on(lsv);
+    mg = 0;
+
+    if (SvTYPE(lsv) >= SVt_PVMG && SvMAGIC(lsv))
+	mg = mg_find(lsv, PERL_MAGIC_regex_global);
+    if (!mg) {
+	if (!SvOK(sv))
+	    return 0;
+	sv_magic(lsv, (SV*)0, PERL_MAGIC_regex_global, Nullch, 0);
+	mg = mg_find(lsv, PERL_MAGIC_regex_global);
     }
-    else if (lsv && SvUTF8(lsv)) {
-	sv_pos_u2b(lsv, &lvoff, &lvlen);
-	tmps = (char*)bytes_to_utf8((U8*)tmps, &len);
-	sv_insert(lsv, lvoff, lvlen, tmps, len);
-	Safefree(tmps);
+    else if (!SvOK(sv)) {
+	mg->mg_len = -1;
+	return 0;
     }
-    else
-        sv_insert(lsv, lvoff, lvlen, tmps, len);
+    len = SvPOK(lsv) ? SvCUR(lsv) : sv_len(lsv);
+
+    pos = SvIV(sv) - PL_curcop->cop_arybase;
+
+    if (DO_UTF8(lsv)) {
+	ulen = sv_len_utf8(lsv);
+	if (ulen)
+	    len = ulen;
+    }
+
+    if (pos < 0) {
+	pos += len;
+	if (pos < 0)
+	    pos = 0;
+    }
+    else if (pos > (SSize_t)len)
+	pos = len;
+
+    if (ulen) {
+	I32 p = pos;
+	sv_pos_u2b(lsv, &p, 0);
+	pos = p;
+    }
+
+    mg->mg_len = pos;
+    mg->mg_flags &= ~MGf_MINMATCH;
 
     return 0;
 }

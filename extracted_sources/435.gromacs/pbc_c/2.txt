@@ -1,20 +1,31 @@
-void calc_shifts(matrix box,rvec box_size,rvec shift_vec[])
+bool image_rect(ivec xi,ivec xj,ivec box_size,real rlong2,int *shift,real *r2)
 {
-  int k,l,m,d,n,test;
+  int 	m,t;
+  int 	dx,b,b_2;
+  real  dxr,rij2;
+
+  rij2=0.0;
+  t=0;
+  for(m=0; (m<DIM); m++) {
+    dx=xi[m]-xj[m];
+    t*=DIM;
+    b=box_size[m];
+    b_2=b/2;
+    if (dx < -b_2) {
+      t+=2;
+      dx+=b;
+    }
+    else if (dx > b_2)
+      dx-=b;
+    else
+      t+=1;
+    dxr=dx;
+    rij2+=dxr*dxr;
+    if (rij2 >= rlong2) 
+      return FALSE;
+  }
   
-  init_pbc(box);
-  for (m=0; (m<DIM); m++)
-    box_size[m]=box[m][m];
-  
-  n=0;
-  
-  for(m = -D_BOX_Z; m <= D_BOX_Z; m++)
-    for(l = -D_BOX_Y; l <= D_BOX_Y; l++) 
-      for(k = -D_BOX_X; k <= D_BOX_X; k++,n++) {
-	test=XYZ2IS(k,l,m);
-	if (n != test && stdlog) 
-	  fprintf(stdlog,"n=%d, test=%d\n",n,test);
-	for(d = 0; d < DIM; d++)
-	  shift_vec[n][d]=k*box[XX][d] + l*box[YY][d] + m*box[ZZ][d];
-      }
+  *shift = t;
+  *r2 = rij2;
+  return TRUE;
 }

@@ -1,0 +1,86 @@
+OP *
+Perl_sv_compile_2op(pTHX_ SV *sv, OP** startop, char *code, PAD** padp)
+/* sv Text to convert to OP tree. */
+/* startop op_free() this to undo. */
+/* code Short string id of the caller. */
+{
+    dSP;				/* Make POPBLOCK work. */
+    PERL_CONTEXT *cx;
+    SV **newsp;
+    I32 gimme = 0;   /* SUSPECT - INITIALZE TO WHAT?  NI-S */
+    I32 optype;
+    OP dummy;
+    OP *rop;
+    char tbuf[TYPE_DIGITS(long) + 12 + 10];
+    char *tmpbuf = tbuf;
+    char *safestr;
+    int runtime;
+    CV* runcv = Nullcv;	/* initialise to avoid compiler warnings */
+
+    ENTER;
+    lex_start(sv);
+    SAVETMPS;
+    /* switch to eval mode */
+
+    if (IN_PERL_COMPILETIME) {
+	SAVECOPSTASH_FREE(&PL_compiling);
+	CopSTASH_set(&PL_compiling, PL_curstash);
+    }
+    if (PERLDB_NAMEEVAL && CopLINE(PL_curcop)) {
+	SV *sv = sv_newmortal();
+	Perl_sv_setpvf(aTHX_ sv, "_<(%.10seval %lu)[%s:%"IVdf"]",
+		       code, (unsigned long)++PL_evalseq,
+		       CopFILE(PL_curcop), (IV)CopLINE(PL_curcop));
+	tmpbuf = SvPVX(sv);
+    }
+    else
+	sprintf(tmpbuf, "_<(%.10s_eval %lu)", code, (unsigned long)++PL_evalseq);
+    SAVECOPFILE_FREE(&PL_compiling);
+    CopFILE_set(&PL_compiling, tmpbuf+2);
+    SAVECOPLINE(&PL_compiling);
+    CopLINE_set(&PL_compiling, 1);
+    /* XXX For C<eval "...">s within BEGIN {} blocks, this ends up
+       deleting the eval's FILEGV from the stash before gv_check() runs
+       (i.e. before run-time proper). To work around the coredump that
+       ensues, we always turn GvMULTI_on for any globals that were
+       introduced within evals. See force_ident(). GSAR 96-10-12 */
+    safestr = savepv(tmpbuf);
+    SAVEDELETE(PL_defstash, safestr, strlen(safestr));
+    SAVEHINTS();
+#ifdef OP_IN_REGISTER
+    PL_opsave = op;
+#else
+    SAVEVPTR(PL_op);
+#endif
+
+    /* we get here either during compilation, or via pp_regcomp at runtime */
+    runtime = IN_PERL_RUNTIME;
+    if (runtime)
+	runcv = find_runcv(NULL);
+
+    PL_op = &dummy;
+    PL_op->op_type = OP_ENTEREVAL;
+    PL_op->op_flags = 0;			/* Avoid uninit warning. */
+    PUSHBLOCK(cx, CXt_EVAL|(IN_PERL_COMPILETIME ? 0 : CXp_REAL), SP);
+    PUSHEVAL(cx, 0, Nullgv);
+
+    if (runtime)
+	rop = doeval(G_SCALAR, startop, runcv, PL_curcop->cop_seq);
+    else
+	rop = doeval(G_SCALAR, startop, PL_compcv, PL_cop_seqmax);
+    POPBLOCK(cx,PL_curpm);
+    POPEVAL(cx);
+
+    (*startop)->op_type = OP_NULL;
+    (*startop)->op_ppaddr = PL_ppaddr[OP_NULL];
+    lex_end();
+    /* XXX DAPM do this properly one year */
+    *padp = (AV*)SvREFCNT_inc(PL_comppad);
+    LEAVE;
+    if (IN_PERL_COMPILETIME)
+	PL_compiling.op_private = (U8)(PL_hints & HINT_PRIVATE_MASK);
+#ifdef OP_IN_REGISTER
+    op = PL_opsave;
+#endif
+    return rop;
+}

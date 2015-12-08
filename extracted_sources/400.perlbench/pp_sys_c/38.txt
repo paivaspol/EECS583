@@ -1,0 +1,74 @@
+PP(pp_ioctl)
+{
+    dSP; dTARGET;
+    SV *argsv = POPs;
+    unsigned int func = POPu;
+    int optype = PL_op->op_type;
+    char *s;
+    IV retval;
+    GV *gv = (GV*)POPs;
+    IO *io = gv ? GvIOn(gv) : 0;
+
+    if (!io || !argsv || !IoIFP(io)) {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	SETERRNO(EBADF,RMS_IFI);	/* well, sort of... */
+	RETPUSHUNDEF;
+    }
+
+    if (SvPOK(argsv) || !SvNIOK(argsv)) {
+	STRLEN len;
+	STRLEN need;
+	s = SvPV_force(argsv, len);
+	need = IOCPARM_LEN(func);
+	if (len < need) {
+	    s = Sv_Grow(argsv, need + 1);
+	    SvCUR_set(argsv, need);
+	}
+
+	s[SvCUR(argsv)] = 17;	/* a little sanity check here */
+    }
+    else {
+	retval = SvIV(argsv);
+	s = INT2PTR(char*,retval);		/* ouch */
+    }
+
+    TAINT_PROPER(optype == OP_IOCTL ? "ioctl" : "fcntl");
+
+    if (optype == OP_IOCTL)
+#ifdef HAS_IOCTL
+	retval = PerlLIO_ioctl(PerlIO_fileno(IoIFP(io)), func, s);
+#else
+	DIE(aTHX_ "ioctl is not implemented");
+#endif
+    else
+#ifndef HAS_FCNTL
+      DIE(aTHX_ "fcntl is not implemented");
+#else
+#if defined(OS2) && defined(__EMX__)
+	retval = fcntl(PerlIO_fileno(IoIFP(io)), func, (int)s);
+#else
+	retval = fcntl(PerlIO_fileno(IoIFP(io)), func, s);
+#endif
+#endif
+
+#if defined(HAS_IOCTL) || defined(HAS_FCNTL)
+    if (SvPOK(argsv)) {
+	if (s[SvCUR(argsv)] != 17)
+	    DIE(aTHX_ "Possible memory corruption: %s overflowed 3rd argument",
+		OP_NAME(PL_op));
+	s[SvCUR(argsv)] = 0;		/* put our null back */
+	SvSETMAGIC(argsv);		/* Assume it has changed */
+    }
+
+    if (retval == -1)
+	RETPUSHUNDEF;
+    if (retval != 0) {
+	PUSHi(retval);
+    }
+    else {
+	PUSHp(zero_but_true, ZBTLEN);
+    }
+#endif
+    RETURN;
+}

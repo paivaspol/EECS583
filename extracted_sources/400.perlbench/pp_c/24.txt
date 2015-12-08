@@ -1,0 +1,31 @@
+PP(pp_defined)
+{
+    dSP;
+    register SV* sv;
+
+    sv = POPs;
+    if (!sv || !SvANY(sv))
+	RETPUSHNO;
+    switch (SvTYPE(sv)) {
+    case SVt_PVAV:
+	if (AvMAX(sv) >= 0 || SvGMAGICAL(sv)
+		|| (SvRMAGICAL(sv) && mg_find(sv, PERL_MAGIC_tied)))
+	    RETPUSHYES;
+	break;
+    case SVt_PVHV:
+	if (HvARRAY(sv) || SvGMAGICAL(sv)
+		|| (SvRMAGICAL(sv) && mg_find(sv, PERL_MAGIC_tied)))
+	    RETPUSHYES;
+	break;
+    case SVt_PVCV:
+	if (CvROOT(sv) || CvXSUB(sv))
+	    RETPUSHYES;
+	break;
+    default:
+	if (SvGMAGICAL(sv))
+	    mg_get(sv);
+	if (SvOK(sv))
+	    RETPUSHYES;
+    }
+    RETPUSHNO;
+}

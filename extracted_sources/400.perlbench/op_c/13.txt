@@ -1,5 +1,10 @@
 void
-Perl_op_refcnt_unlock(pTHX)
+Perl_op_null(pTHX_ OP *o)
 {
-    OP_REFCNT_UNLOCK;
+    if (o->op_type == OP_NULL)
+	return;
+    op_clear(o);
+    o->op_targ = o->op_type;
+    o->op_type = OP_NULL;
+    o->op_ppaddr = PL_ppaddr[OP_NULL];
 }

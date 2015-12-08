@@ -1,0 +1,24 @@
+PP(pp_umask)
+{
+    dSP; dTARGET;
+#ifdef HAS_UMASK
+    Mode_t anum;
+
+    if (MAXARG < 1) {
+	anum = PerlLIO_umask(0);
+	(void)PerlLIO_umask(anum);
+    }
+    else
+	anum = PerlLIO_umask(POPi);
+    TAINT_PROPER("umask");
+    XPUSHi(anum);
+#else
+    /* Only DIE if trying to restrict permissions on `user' (self).
+     * Otherwise it's harmless and more useful to just return undef
+     * since 'group' and 'other' concepts probably don't exist here. */
+    if (MAXARG >= 1 && (POPi & 0700))
+	DIE(aTHX_ "umask not implemented");
+    XPUSHs(&PL_sv_undef);
+#endif
+    RETURN;
+}

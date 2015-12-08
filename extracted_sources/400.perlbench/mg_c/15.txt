@@ -1,36 +1,75 @@
 int
-Perl_magic_clear_all_env(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setenv(pTHX_ SV *sv, MAGIC *mg)
 {
-#ifndef PERL_MICRO
-#if defined(VMS) || defined(EPOC)
-    Perl_die(aTHX_ "Can't make list assignment to %%ENV on this system");
-#else
-#  if defined(PERL_IMPLICIT_SYS) || defined(WIN32)
-    PerlEnv_clearenv();
-#  else
-#    ifdef USE_ENVIRON_ARRAY
-#      if defined(USE_ITHREADS)
-    /* only the parent thread can clobber the process environment */
-    if (PL_curinterp == aTHX)
-#      endif
-    {
-#      ifndef PERL_USE_SAFE_PUTENV
-    if (!PL_use_safe_putenv) {
-    I32 i;
+    register char *s;
+    char *ptr;
+    STRLEN len, klen;
 
-    if (environ == PL_origenviron)
-	environ = (char**)safesysmalloc(sizeof(char*));
-    else
-	for (i = 0; environ[i]; i++)
-	    safesysfree(environ[i]);
-    }
-#      endif /* PERL_USE_SAFE_PUTENV */
+    s = SvPV(sv,len);
+    ptr = MgPV(mg,klen);
+    my_setenv(ptr, s);
 
-    environ[0] = Nullch;
+#ifdef DYNAMIC_ENV_FETCH
+     /* We just undefd an environment var.  Is a replacement */
+     /* waiting in the wings? */
+    if (!len) {
+	SV **valp;
+	if ((valp = hv_fetch(GvHVn(PL_envgv), ptr, klen, FALSE)))
+	    s = SvPV(*valp, len);
     }
-#    endif /* USE_ENVIRON_ARRAY */
-#   endif /* PERL_IMPLICIT_SYS || WIN32 */
-#endif /* VMS || EPOC */
-#endif /* !PERL_MICRO */
+#endif
+
+#if !defined(OS2) && !defined(AMIGAOS) && !defined(WIN32) && !defined(MSDOS)
+			    /* And you'll never guess what the dog had */
+			    /*   in its mouth... */
+    if (PL_tainting) {
+	MgTAINTEDDIR_off(mg);
+#ifdef VMS
+	if (s && klen == 8 && strEQ(ptr, "DCL$PATH")) {
+	    char pathbuf[256], eltbuf[256], *cp, *elt = s;
+	    Stat_t sbuf;
+	    int i = 0, j = 0;
+
+	    do {          /* DCL$PATH may be a search list */
+		while (1) {   /* as may dev portion of any element */
+		    if ( ((cp = strchr(elt,'[')) || (cp = strchr(elt,'<'))) ) {
+			if ( *(cp+1) == '.' || *(cp+1) == '-' ||
+			     cando_by_name(S_IWUSR,0,elt) ) {
+			    MgTAINTEDDIR_on(mg);
+			    return 0;
+			}
+		    }
+		    if ((cp = strchr(elt, ':')) != Nullch)
+			*cp = '\0';
+		    if (my_trnlnm(elt, eltbuf, j++))
+			elt = eltbuf;
+		    else
+			break;
+		}
+		j = 0;
+	    } while (my_trnlnm(s, pathbuf, i++) && (elt = pathbuf));
+	}
+#endif /* VMS */
+	if (s && klen == 4 && strEQ(ptr,"PATH")) {
+	    char *strend = s + len;
+
+	    while (s < strend) {
+		char tmpbuf[256];
+		Stat_t st;
+		I32 i;
+		s = delimcpy(tmpbuf, tmpbuf + sizeof tmpbuf,
+			     s, strend, ':', &i);
+		s++;
+		if (i >= sizeof tmpbuf   /* too long -- assume the worst */
+		      || *tmpbuf != '/'
+		      || (PerlLIO_stat(tmpbuf, &st) == 0 && (st.st_mode & 2)) ) {
+		    MgTAINTEDDIR_on(mg);
+		    return 0;
+		}
+	    }
+	}
+    }
+#endif /* neither OS2 nor AMIGAOS nor WIN32 nor MSDOS */
+
     return 0;
 }

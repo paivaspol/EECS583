@@ -1,28 +1,36 @@
 bool
-Perl_sv_utf8_downgrade(pTHX_ register SV* sv, bool fail_ok)
+Perl_sv_2bool(pTHX_ register SV *sv)
 {
-    if (SvPOKp(sv) && SvUTF8(sv)) {
-        if (SvCUR(sv)) {
-	    U8 *s;
-	    STRLEN len;
+    if (SvGMAGICAL(sv))
+	mg_get(sv);
 
-	    if (SvREADONLY(sv) && SvFAKE(sv))
-		sv_force_normal(sv);
-	    s = (U8 *) SvPV(sv, len);
-	    if (!utf8_to_bytes(s, &len)) {
-	        if (fail_ok)
-		    return FALSE;
-		else {
-		    if (PL_op)
-		        Perl_croak(aTHX_ "Wide character in %s",
-				   OP_DESC(PL_op));
-		    else
-		        Perl_croak(aTHX_ "Wide character");
-		}
-	    }
-	    SvCUR(sv) = len;
+    if (!SvOK(sv))
+	return 0;
+    if (SvROK(sv)) {
+	SV* tmpsv;
+        if (SvAMAGIC(sv) && (tmpsv=AMG_CALLun(sv,bool_)) &&
+                (!SvROK(tmpsv) || (SvRV(tmpsv) != SvRV(sv))))
+	    return (bool)SvTRUE(tmpsv);
+      return SvRV(sv) != 0;
+    }
+    if (SvPOKp(sv)) {
+	register XPV* Xpvtmp;
+	if ((Xpvtmp = (XPV*)SvANY(sv)) &&
+		(*Xpvtmp->xpv_pv > '0' ||
+		Xpvtmp->xpv_cur > 1 ||
+		(Xpvtmp->xpv_cur && *Xpvtmp->xpv_pv != '0')))
+	    return 1;
+	else
+	    return 0;
+    }
+    else {
+	if (SvIOKp(sv))
+	    return SvIVX(sv) != 0;
+	else {
+	    if (SvNOKp(sv))
+		return SvNVX(sv) != 0.0;
+	    else
+		return FALSE;
 	}
     }
-    SvUTF8_off(sv);
-    return TRUE;
 }

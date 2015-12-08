@@ -1,0 +1,22 @@
+OP *
+Perl_newUNOP(pTHX_ I32 type, I32 flags, OP *first)
+{
+    UNOP *unop;
+
+    if (!first)
+	first = newOP(OP_STUB, 0);
+    if (PL_opargs[type] & OA_MARK)
+	first = force_list(first);
+
+    NewOp(1101, unop, 1, UNOP);
+    unop->op_type = (OPCODE)type;
+    unop->op_ppaddr = PL_ppaddr[type];
+    unop->op_first = first;
+    unop->op_flags = flags | OPf_KIDS;
+    unop->op_private = (U8)(1 | (flags >> 8));
+    unop = (UNOP*) CHECKOP(type, unop);
+    if (unop->op_next)
+	return (OP*)unop;
+
+    return fold_constants((OP *) unop);
+}

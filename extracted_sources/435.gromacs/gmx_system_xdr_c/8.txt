@@ -1,9 +1,28 @@
-static bool_t
-xdrstdio_putlong (XDR *xdrs, long *lp)
+bool_t
+xdr_u_long (XDR *xdrs, unsigned long *ulp)
 {
-  long mycopy = xdr_htonl (*lp);
-  lp = &mycopy;
-  if (fwrite ((char *) lp, 4, 1, (FILE *) xdrs->x_private) != 1)
-    return FALSE;
-  return TRUE;
+  switch (xdrs->x_op)
+    {
+    case XDR_DECODE:
+      {
+	long int tmp;
+
+	if (xdr_getlong (xdrs, &tmp) == FALSE)
+	  return FALSE;
+
+	*ulp = (xdr_uint32_t) tmp;
+	return TRUE;
+      }
+
+    case XDR_ENCODE:
+      if (sizeof (xdr_uint32_t) != sizeof (unsigned long)
+	  && (xdr_uint32_t) *ulp != *ulp)
+	return FALSE;
+
+      return xdr_putlong (xdrs, (long *) ulp);
+
+    case XDR_FREE:
+      return TRUE;
+    }
+  return FALSE;
 }

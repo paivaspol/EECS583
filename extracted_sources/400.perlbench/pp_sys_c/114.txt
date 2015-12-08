@@ -1,0 +1,16 @@
+PP(pp_alarm)
+{
+#ifdef HAS_ALARM
+    dSP; dTARGET;
+    int anum;
+    anum = POPi;
+    anum = alarm((unsigned int)anum);
+    EXTEND(SP, 1);
+    if (anum < 0)
+	RETPUSHUNDEF;
+    PUSHi(anum);
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_func, "alarm");
+#endif
+}

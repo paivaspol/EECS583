@@ -1,0 +1,11 @@
+OP *
+Perl_ck_repeat(pTHX_ OP *o)
+{
+    if (cBINOPo->op_first->op_flags & OPf_PARENS) {
+	o->op_private |= OPpREPEAT_DOLIST;
+	cBINOPo->op_first = force_list(cBINOPo->op_first);
+    }
+    else
+	scalar(o);
+    return o;
+}

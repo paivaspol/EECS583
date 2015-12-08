@@ -1,17 +1,21 @@
 int
-ext_register_operand (op, mode)
+promotable_binary_operator (op, mode)
      register rtx op;
      enum machine_mode mode ATTRIBUTE_UNUSED;
 {
-  int regno;
-  if ((!TARGET_64BIT || GET_MODE (op) != DImode)
-      && GET_MODE (op) != SImode && GET_MODE (op) != HImode)
-    return 0;
-
-  if (!register_operand (op, VOIDmode))
-    return 0;
-
-  /* Be curefull to accept only registers having upper parts.  */
-  regno = REG_P (op) ? REGNO (op) : REGNO (SUBREG_REG (op));
-  return (regno > LAST_VIRTUAL_REGISTER || regno < 4);
+  switch (GET_CODE (op))
+    {
+    case MULT:
+      /* Modern CPUs have same latency for HImode and SImode multiply,
+         but 386 and 486 do HImode multiply faster.  */
+      return ix86_cpu > PROCESSOR_I486;
+    case PLUS:
+    case AND:
+    case IOR:
+    case XOR:
+    case ASHIFT:
+      return 1;
+    default:
+      return 0;
+    }
 }

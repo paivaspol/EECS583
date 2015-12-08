@@ -1,5 +1,22 @@
-int
-get_pool_size ()
+static int
+compare_constant_rtx (mode, x, desc)
+     enum machine_mode mode;
+     rtx x;
+     struct constant_descriptor *desc;
 {
-  return pool_offset;
+  int *p = (int *) desc->u.contents;
+  int *strp;
+  int len;
+  struct rtx_const value;
+
+  decode_rtx_const (mode, x, &value);
+  strp = (int *) &value;
+  len = sizeof value / sizeof (int);
+
+  /* Compare constant contents.  */
+  while (--len >= 0)
+    if (*p++ != *strp++)
+      return 0;
+
+  return 1;
 }

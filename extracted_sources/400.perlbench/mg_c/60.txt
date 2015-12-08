@@ -1,8 +1,9 @@
 int
-Perl_magic_setutf8(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_setuvar(pTHX_ SV *sv, MAGIC *mg)
 {
-     Safefree(mg->mg_ptr);	/* The mg_ptr holds the pos cache. */
-     mg->mg_ptr = 0;
-     mg->mg_len = -1; 		/* The mg_len holds the len cache. */
-     return 0;
+    struct ufuncs *uf = (struct ufuncs *)mg->mg_ptr;
+
+    if (uf && uf->uf_set)
+	(*uf->uf_set)(aTHX_ uf->uf_index, sv);
+    return 0;
 }

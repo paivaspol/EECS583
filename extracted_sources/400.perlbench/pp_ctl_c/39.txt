@@ -1,0 +1,87 @@
+PP(pp_last)
+{
+    dSP;
+    I32 cxix;
+    register PERL_CONTEXT *cx;
+    I32 pop2 = 0;
+    I32 gimme;
+    I32 optype;
+    OP *nextop;
+    SV **newsp;
+    PMOP *newpm;
+    SV **mark;
+    SV *sv = Nullsv;
+
+    if (PL_op->op_flags & OPf_SPECIAL) {
+	cxix = dopoptoloop(cxstack_ix);
+	if (cxix < 0)
+	    DIE(aTHX_ "Can't \"last\" outside a loop block");
+    }
+    else {
+	cxix = dopoptolabel(cPVOP->op_pv);
+	if (cxix < 0)
+	    DIE(aTHX_ "Label not found for \"last %s\"", cPVOP->op_pv);
+    }
+    if (cxix < cxstack_ix)
+	dounwind(cxix);
+
+    POPBLOCK(cx,newpm);
+    cxstack_ix++; /* temporarily protect top context */
+    mark = newsp;
+    switch (CxTYPE(cx)) {
+    case CXt_LOOP:
+	pop2 = CXt_LOOP;
+	newsp = PL_stack_base + cx->blk_loop.resetsp;
+	nextop = cx->blk_loop.last_op->op_next;
+	break;
+    case CXt_SUB:
+	pop2 = CXt_SUB;
+	nextop = pop_return();
+	break;
+    case CXt_EVAL:
+	POPEVAL(cx);
+	nextop = pop_return();
+	break;
+    case CXt_FORMAT:
+	POPFORMAT(cx);
+	nextop = pop_return();
+	break;
+    default:
+	DIE(aTHX_ "panic: last");
+    }
+
+    TAINT_NOT;
+    if (gimme == G_SCALAR) {
+	if (MARK < SP)
+	    *++newsp = ((pop2 == CXt_SUB) && SvTEMP(*SP))
+			? *SP : sv_mortalcopy(*SP);
+	else
+	    *++newsp = &PL_sv_undef;
+    }
+    else if (gimme == G_ARRAY) {
+	while (++MARK <= SP) {
+	    *++newsp = ((pop2 == CXt_SUB) && SvTEMP(*MARK))
+			? *MARK : sv_mortalcopy(*MARK);
+	    TAINT_NOT;		/* Each item is independent */
+	}
+    }
+    SP = newsp;
+    PUTBACK;
+
+    LEAVE;
+    cxstack_ix--;
+    /* Stack values are safe: */
+    switch (pop2) {
+    case CXt_LOOP:
+	POPLOOP(cx);	/* release loop vars ... */
+	LEAVE;
+	break;
+    case CXt_SUB:
+	POPSUB(cx,sv);	/* release CV and @_ ... */
+	break;
+    }
+    PL_curpm = newpm;	/* ... and pop $1 et al */
+
+    LEAVESUB(sv);
+    return nextop;
+}

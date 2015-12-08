@@ -1,0 +1,25 @@
+STATIC void
+S_cv_dump(pTHX_ CV *cv, char *title)
+{
+    CV *outside = CvOUTSIDE(cv);
+    AV* padlist = CvPADLIST(cv);
+
+    PerlIO_printf(Perl_debug_log,
+		  "  %s: CV=0x%"UVxf" (%s), OUTSIDE=0x%"UVxf" (%s)\n",
+		  title,
+		  PTR2UV(cv),
+		  (CvANON(cv) ? "ANON"
+		   : (cv == PL_main_cv) ? "MAIN"
+		   : CvUNIQUE(cv) ? "UNIQUE"
+		   : CvGV(cv) ? GvNAME(CvGV(cv)) : "UNDEFINED"),
+		  PTR2UV(outside),
+		  (!outside ? "null"
+		   : CvANON(outside) ? "ANON"
+		   : (outside == PL_main_cv) ? "MAIN"
+		   : CvUNIQUE(outside) ? "UNIQUE"
+		   : CvGV(outside) ? GvNAME(CvGV(outside)) : "UNDEFINED"));
+
+    PerlIO_printf(Perl_debug_log,
+		    "    PADLIST = 0x%"UVxf"\n", PTR2UV(padlist));
+    do_dump_pad(1, Perl_debug_log, padlist, 1);
+}

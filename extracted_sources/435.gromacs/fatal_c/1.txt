@@ -1,4 +1,31 @@
-static void bputc(char *msg,int *len,char ch)
+void _where(char *file,int line)
 {
-  msg[(*len)++]=ch;
+  static bool bFirst = TRUE;
+  static int  nskip  = -1;
+  static int  nwhere =  0;
+  FILE *fp;
+  char *temp; 
+  
+  if ( bFirst ) {
+#ifdef SPEC_CPU
+    temp = NULL;
+#else
+    temp = getenv("WHERE");
+#endif
+    if (temp != NULL)
+      nskip = atoi(temp);
+    bFirst = FALSE;
+  } 
+
+  if (nskip >= 0) {
+    /* Skip the first n occasions, this allows to see where it goes wrong */
+    if (nwhere >= nskip) {
+      if (stdlog)
+	fp = stdlog;
+      else
+	fp = stderr;
+      fprintf(fp,"WHERE %d, file %s - line %d\n",nwhere,file,line);
+    }
+    nwhere++;
+  }
 }

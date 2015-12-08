@@ -1,13 +1,10 @@
-void
-/*SUPPRESS 590*/
-Perl_pidgone(pTHX_ Pid_t pid, int status)
+int
+Perl_rsignal_restore(pTHX_ int signo, Sigsave_t *save)
 {
-    register SV *sv;
-    char spid[TYPE_CHARS(IV)];
-
-    sprintf(spid, "%"IVdf, (IV)pid);
-    sv = *hv_fetch(PL_pidstatus,spid,strlen(spid),TRUE);
-    (void)SvUPGRADE(sv,SVt_IV);
-    SvIVX(sv) = status;
-    return;
+#if defined(USE_ITHREADS) && !defined(WIN32)
+    /* only "parent" interpreter can diddle signals */
+    if (PL_curinterp != aTHX)
+	return -1;
+#endif
+    return (PerlProc_signal(signo, *save) == SIG_ERR) ? -1 : 0;
 }

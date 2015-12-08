@@ -1,43 +1,32 @@
-static void
-invert_exp_1 (insn)
-     rtx insn;
+int
+redirect_jump (jump, nlabel, delete_unused)
+     rtx jump, nlabel;
+     int delete_unused;
 {
-  RTX_CODE code;
-  rtx x = pc_set (insn);
+  rtx olabel = JUMP_LABEL (jump);
 
-  if (!x)
-    abort ();
-  x = SET_SRC (x);
+  if (nlabel == olabel)
+    return 1;
 
-  code = GET_CODE (x);
+  if (! redirect_exp (olabel, nlabel, jump))
+    return 0;
 
-  if (code == IF_THEN_ELSE)
-    {
-      rtx comp = XEXP (x, 0);
-      rtx tem;
-      enum rtx_code reversed_code;
+  JUMP_LABEL (jump) = nlabel;
+  if (nlabel)
+    ++LABEL_NUSES (nlabel);
 
-      /* We can do this in two ways:  The preferable way, which can only
-	 be done if this is not an integer comparison, is to reverse
-	 the comparison code.  Otherwise, swap the THEN-part and ELSE-part
-	 of the IF_THEN_ELSE.  If we can't do either, fail.  */
+  /* If we're eliding the jump over exception cleanups at the end of a
+     function, move the function end note so that -Wreturn-type works.  */
+  if (olabel && nlabel
+      && NEXT_INSN (olabel)
+      && GET_CODE (NEXT_INSN (olabel)) == NOTE
+      && NOTE_LINE_NUMBER (NEXT_INSN (olabel)) == NOTE_INSN_FUNCTION_END)
+    emit_note_after (NOTE_INSN_FUNCTION_END, nlabel);
 
-      reversed_code = reversed_comparison_code (comp, insn);
+  if (olabel && --LABEL_NUSES (olabel) == 0 && delete_unused
+      /* Undefined labels will remain outside the insn stream.  */
+      && INSN_UID (olabel))
+    delete_related_insns (olabel);
 
-      if (reversed_code != UNKNOWN)
-	{
-	  validate_change (insn, &XEXP (x, 0),
-			   gen_rtx_fmt_ee (reversed_code,
-					   GET_MODE (comp), XEXP (comp, 0),
-					   XEXP (comp, 1)),
-			   1);
-	  return;
-	}
-
-      tem = XEXP (x, 1);
-      validate_change (insn, &XEXP (x, 1), XEXP (x, 2), 1);
-      validate_change (insn, &XEXP (x, 2), tem, 1);
-    }
-  else
-    abort ();
+  return 1;
 }

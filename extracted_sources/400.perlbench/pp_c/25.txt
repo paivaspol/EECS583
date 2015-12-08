@@ -1,0 +1,66 @@
+PP(pp_undef)
+{
+    dSP;
+    SV *sv;
+
+    if (!PL_op->op_private) {
+	EXTEND(SP, 1);
+	RETPUSHUNDEF;
+    }
+
+    sv = POPs;
+    if (!sv)
+	RETPUSHUNDEF;
+
+    if (SvTHINKFIRST(sv))
+	sv_force_normal(sv);
+
+    switch (SvTYPE(sv)) {
+    case SVt_NULL:
+	break;
+    case SVt_PVAV:
+	av_undef((AV*)sv);
+	break;
+    case SVt_PVHV:
+	hv_undef((HV*)sv);
+	break;
+    case SVt_PVCV:
+	if (ckWARN(WARN_MISC) && cv_const_sv((CV*)sv))
+	    Perl_warner(aTHX_ packWARN(WARN_MISC), "Constant subroutine %s undefined",
+		 CvANON((CV*)sv) ? "(anonymous)" : GvENAME(CvGV((CV*)sv)));
+	/* FALL THROUGH */
+    case SVt_PVFM:
+	{
+	    /* let user-undef'd sub keep its identity */
+	    GV* gv = CvGV((CV*)sv);
+	    cv_undef((CV*)sv);
+	    CvGV((CV*)sv) = gv;
+	}
+	break;
+    case SVt_PVGV:
+	if (SvFAKE(sv))
+	    SvSetMagicSV(sv, &PL_sv_undef);
+	else {
+	    GP *gp;
+	    gp_free((GV*)sv);
+	    Newz(602, gp, 1, GP);
+	    GvGP(sv) = gp_ref(gp);
+	    GvSV(sv) = NEWSV(72,0);
+	    GvLINE(sv) = CopLINE(PL_curcop);
+	    GvEGV(sv) = (GV*)sv;
+	    GvMULTI_on(sv);
+	}
+	break;
+    default:
+	if (SvTYPE(sv) >= SVt_PV && SvPVX(sv) && SvLEN(sv)) {
+	    SvOOK_off(sv);
+	    Safefree(SvPVX(sv));
+	    SvPV_set(sv, Nullch);
+	    SvLEN_set(sv, 0);
+	}
+	SvOK_off(sv);
+	SvSETMAGIC(sv);
+    }
+
+    RETPUSHUNDEF;
+}

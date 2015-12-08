@@ -1,7 +1,38 @@
 int
-Perl_magic_setmglob(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getdefelem(pTHX_ SV *sv, MAGIC *mg)
 {
-    mg->mg_len = -1;
-    SvSCREAM_off(sv);
+    SV *targ = Nullsv;
+    if (LvTARGLEN(sv)) {
+	if (mg->mg_obj) {
+	    SV *ahv = LvTARG(sv);
+	    if (SvTYPE(ahv) == SVt_PVHV) {
+		HE *he = hv_fetch_ent((HV*)ahv, mg->mg_obj, FALSE, 0);
+		if (he)
+		    targ = HeVAL(he);
+	    }
+	    else {
+		SV **svp = avhv_fetch_ent((AV*)ahv, mg->mg_obj, FALSE, 0);
+		if (svp)
+		    targ = *svp;
+	    }
+	}
+	else {
+	    AV* av = (AV*)LvTARG(sv);
+	    if ((I32)LvTARGOFF(sv) <= AvFILL(av))
+		targ = AvARRAY(av)[LvTARGOFF(sv)];
+	}
+	if (targ && targ != &PL_sv_undef) {
+	    /* somebody else defined it for us */
+	    SvREFCNT_dec(LvTARG(sv));
+	    LvTARG(sv) = SvREFCNT_inc(targ);
+	    LvTARGLEN(sv) = 0;
+	    SvREFCNT_dec(mg->mg_obj);
+	    mg->mg_obj = Nullsv;
+	    mg->mg_flags &= ~MGf_REFCOUNTED;
+	}
+    }
+    else
+	targ = LvTARG(sv);
+    sv_setsv(sv, targ ? targ : &PL_sv_undef);
     return 0;
 }

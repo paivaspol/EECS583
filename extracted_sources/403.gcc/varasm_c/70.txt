@@ -1,12 +1,14 @@
 static void
-mark_pool_constant (pc)
-     struct pool_constant *pc;
+output_after_function_constants ()
 {
-  while (pc)
+  struct deferred_constant *p, *next;
+
+  for (p = after_function_constants; p; p = next)
     {
-      ggc_mark (pc);
-      ggc_mark_rtx (pc->constant);
-      ggc_mark_rtx (pc->desc->rtl);
-      pc = pc->next;
+      output_constant_def_contents (p->exp, p->reloc, p->labelno);
+      next = p->next;
+      free (p);
     }
+
+  after_function_constants = 0;
 }

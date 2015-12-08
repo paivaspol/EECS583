@@ -1,0 +1,93 @@
+int
+PerlIO_parse_layers(pTHX_ PerlIO_list_t *av, const char *names)
+{
+    if (names) {
+	const char *s = names;
+	while (*s) {
+	    while (isSPACE(*s) || *s == ':')
+		s++;
+	    if (*s) {
+		STRLEN llen = 0;
+		const char *e = s;
+		const char *as = Nullch;
+		STRLEN alen = 0;
+		if (!isIDFIRST(*s)) {
+		    /*
+		     * Message is consistent with how attribute lists are
+		     * passed. Even though this means "foo : : bar" is
+		     * seen as an invalid separator character.
+		     */
+		    char q = ((*s == '\'') ? '"' : '\'');
+		    if (ckWARN(WARN_LAYER))
+			Perl_warner(aTHX_ packWARN(WARN_LAYER),
+			      "Invalid separator character %c%c%c in PerlIO layer specification %s",
+			      q, *s, q, s);
+		    SETERRNO(EINVAL, LIB_INVARG);
+		    return -1;
+		}
+		do {
+		    e++;
+		} while (isALNUM(*e));
+		llen = e - s;
+		if (*e == '(') {
+		    int nesting = 1;
+		    as = ++e;
+		    while (nesting) {
+			switch (*e++) {
+			case ')':
+			    if (--nesting == 0)
+				alen = (e - 1) - as;
+			    break;
+			case '(':
+			    ++nesting;
+			    break;
+			case '\\':
+			    /*
+			     * It's a nul terminated string, not allowed
+			     * to \ the terminating null. Anything other
+			     * character is passed over.
+			     */
+			    if (*e++) {
+				break;
+			    }
+			    /*
+			     * Drop through
+			     */
+			case '\0':
+			    e--;
+			    if (ckWARN(WARN_LAYER))
+				Perl_warner(aTHX_ packWARN(WARN_LAYER),
+				      "Argument list not closed for PerlIO layer \"%.*s\"",
+				      (int) (e - s), s);
+			    return -1;
+			default:
+			    /*
+			     * boring.
+			     */
+			    break;
+			}
+		    }
+		}
+		if (e > s) {
+		    bool warn_layer = ckWARN(WARN_LAYER);
+		    PerlIO_funcs *layer =
+			PerlIO_find_layer(aTHX_ s, llen, 1);
+		    if (layer) {
+			PerlIO_list_push(aTHX_ av, layer,
+					 (as) ? newSVpvn(as,
+							 alen) :
+					 &PL_sv_undef);
+		    }
+		    else {
+			if (warn_layer)
+			    Perl_warner(aTHX_ packWARN(WARN_LAYER), "Unknown PerlIO layer \"%.*s\"",
+				  (int) llen, s);
+			return -1;
+		    }
+		}
+		s = e;
+	    }
+	}
+    }
+    return 0;
+}

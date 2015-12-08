@@ -1,16 +1,32 @@
-void
-init_varasm_once ()
+static void
+globalize_decl (decl)
+     tree decl;
 {
-  const_str_htab = htab_create (128, const_str_htab_hash, const_str_htab_eq,
-  				const_str_htab_del);
-  in_named_htab = htab_create (31, in_named_entry_hash,
-			       in_named_entry_eq, NULL);
+  const char *name = XSTR (XEXP (DECL_RTL (decl), 0), 0);
 
-  ggc_add_root (const_hash_table, MAX_HASH_TABLE, sizeof const_hash_table[0],
-		mark_const_hash_entry);
-  ggc_add_root (&const_str_htab, 1, sizeof const_str_htab,
-		mark_const_str_htab);
-  ggc_add_tree_root (&weak_decls, 1);
+#if defined (ASM_WEAKEN_LABEL) || defined (ASM_WEAKEN_DECL)
+  if (DECL_WEAK (decl))
+    {
+      tree *p, t;
 
-  const_alias_set = new_alias_set ();
+#ifdef ASM_WEAKEN_DECL
+      ASM_WEAKEN_DECL (asm_out_file, decl, name, 0);
+#else
+      ASM_WEAKEN_LABEL (asm_out_file, name);
+#endif
+
+      /* Remove this function from the pending weak list so that
+	 we do not emit multiple .weak directives for it.  */
+      for (p = &weak_decls; (t = *p) ; )
+	{
+	  if (DECL_ASSEMBLER_NAME (decl) == DECL_ASSEMBLER_NAME (TREE_VALUE (t)))
+	    *p = TREE_CHAIN (t);
+	  else
+	    p = &TREE_CHAIN (t);
+	}
+      return;
+    }
+#endif
+
+  ASM_GLOBALIZE_LABEL (asm_out_file, name);
 }

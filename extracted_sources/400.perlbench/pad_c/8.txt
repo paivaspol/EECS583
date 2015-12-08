@@ -1,26 +1,15 @@
-void
-Perl_pad_reset(pTHX)
+SV *
+Perl_pad_sv(pTHX_ PADOFFSET po)
 {
-#ifdef USE_BROKEN_PAD_RESET
-    register I32 po;
+    ASSERT_CURPAD_ACTIVE("pad_sv");
 
-    if (AvARRAY(PL_comppad) != PL_curpad)
-	Perl_croak(aTHX_ "panic: pad_reset curpad");
-
-    DEBUG_X(PerlIO_printf(Perl_debug_log,
-	    "Pad 0x%"UVxf"[0x%"UVxf"] reset:     padix %ld -> %ld",
-	    PTR2UV(PL_comppad), PTR2UV(PL_curpad),
-		(long)PL_padix, (long)PL_padix_floor
-	    )
-    );
-
-    if (!PL_tainting) {	/* Can't mix tainted and non-tainted temporaries. */
-	for (po = AvMAX(PL_comppad); po > PL_padix_floor; po--) {
-	    if (PL_curpad[po] && !SvIMMORTAL(PL_curpad[po]))
-		SvPADTMP_off(PL_curpad[po]);
-	}
-	PL_padix = PL_padix_floor;
-    }
+#ifndef USE_5005THREADS
+    if (!po)
+	Perl_croak(aTHX_ "panic: pad_sv po");
 #endif
-    PL_pad_reset_pending = FALSE;
+    DEBUG_X(PerlIO_printf(Perl_debug_log,
+	"Pad 0x%"UVxf"[0x%"UVxf"] sv:      %ld sv=0x%"UVxf"\n",
+	PTR2UV(PL_comppad), PTR2UV(PL_curpad), (long)po, PTR2UV(PL_curpad[po]))
+    );
+    return PL_curpad[po];
 }

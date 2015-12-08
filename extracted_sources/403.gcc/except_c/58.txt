@@ -1,19 +1,6 @@
-static void
-sjlj_emit_function_exit ()
+void
+sjlj_emit_function_exit_after (after)
+     rtx after;
 {
-  rtx seq;
-
-  start_sequence ();
-
-  emit_library_call (unwind_sjlj_unregister_libfunc, LCT_NORMAL, VOIDmode,
-		     1, XEXP (cfun->eh->sjlj_fc, 0), Pmode);
-
-  seq = get_insns ();
-  end_sequence ();
-
-  /* ??? Really this can be done in any block at loop level 0 that
-     post-dominates all can_throw_internal instructions.  This is
-     the last possible moment.  */
-
-  emit_insns_after (seq, cfun->eh->sjlj_exit_after);
+  cfun->eh->sjlj_exit_after = after;
 }

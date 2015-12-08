@@ -1,6 +1,12 @@
-static void
-mark_const_str_htab (htab)
-     void *htab;
+void
+clear_const_double_mem ()
 {
-  htab_traverse (*((htab_t *) htab), mark_const_str_htab_1, NULL);
+  rtx r, next;
+
+  for (r = const_double_chain; r; r = next)
+    {
+      next = CONST_DOUBLE_CHAIN (r);
+      CONST_DOUBLE_CHAIN (r) = 0;
+    }
+  const_double_chain = 0;
 }

@@ -1,0 +1,137 @@
+PP(pp_iter)
+{
+    dSP;
+    register PERL_CONTEXT *cx;
+    SV *sv, *oldsv;
+    AV* av;
+    SV **itersvp;
+
+    EXTEND(SP, 1);
+    cx = &cxstack[cxstack_ix];
+    if (CxTYPE(cx) != CXt_LOOP)
+	DIE(aTHX_ "panic: pp_iter");
+
+    itersvp = CxITERVAR(cx);
+    av = cx->blk_loop.iterary;
+    if (SvTYPE(av) != SVt_PVAV) {
+	/* iterate ($min .. $max) */
+	if (cx->blk_loop.iterlval) {
+	    /* string increment */
+	    register SV* cur = cx->blk_loop.iterlval;
+	    STRLEN maxlen = 0;
+	    char *max = SvOK((SV*)av) ? SvPV((SV*)av, maxlen) : "";
+	    if (!SvNIOK(cur) && SvCUR(cur) <= maxlen) {
+#ifndef USE_5005THREADS			  /* don't risk potential race */
+		if (SvREFCNT(*itersvp) == 1 && !SvMAGICAL(*itersvp)) {
+		    /* safe to reuse old SV */
+		    sv_setsv(*itersvp, cur);
+		}
+		else
+#endif
+		{
+		    /* we need a fresh SV every time so that loop body sees a
+		     * completely new SV for closures/references to work as
+		     * they used to */
+		    oldsv = *itersvp;
+		    *itersvp = newSVsv(cur);
+		    SvREFCNT_dec(oldsv);
+		}
+		if (strEQ(SvPVX(cur), max))
+		    sv_setiv(cur, 0); /* terminate next time */
+		else
+		    sv_inc(cur);
+		RETPUSHYES;
+	    }
+	    RETPUSHNO;
+	}
+	/* integer increment */
+	if (cx->blk_loop.iterix > cx->blk_loop.itermax)
+	    RETPUSHNO;
+
+#ifndef USE_5005THREADS			  /* don't risk potential race */
+	if (SvREFCNT(*itersvp) == 1 && !SvMAGICAL(*itersvp)) {
+	    /* safe to reuse old SV */
+	    sv_setiv(*itersvp, cx->blk_loop.iterix++);
+	}
+	else
+#endif
+	{
+	    /* we need a fresh SV every time so that loop body sees a
+	     * completely new SV for closures/references to work as they
+	     * used to */
+	    oldsv = *itersvp;
+	    *itersvp = newSViv(cx->blk_loop.iterix++);
+	    SvREFCNT_dec(oldsv);
+	}
+	RETPUSHYES;
+    }
+
+    /* iterate array */
+    if (PL_op->op_private & OPpITER_REVERSED) {
+	/* In reverse, use itermax as the min :-)  */
+	if (cx->blk_loop.iterix <= cx->blk_loop.itermax)
+	    RETPUSHNO;
+
+	if (SvMAGICAL(av) || AvREIFY(av)) {
+	    SV **svp = av_fetch(av, cx->blk_loop.iterix--, FALSE);
+	    if (svp)
+		sv = *svp;
+	    else
+		sv = Nullsv;
+	}
+	else {
+	    sv = AvARRAY(av)[cx->blk_loop.iterix--];
+	}
+    }
+    else {
+	if (cx->blk_loop.iterix >= (av == PL_curstack ? cx->blk_oldsp :
+				    AvFILL(av)))
+	    RETPUSHNO;
+
+	if (SvMAGICAL(av) || AvREIFY(av)) {
+	    SV **svp = av_fetch(av, ++cx->blk_loop.iterix, FALSE);
+	    if (svp)
+		sv = *svp;
+	    else
+		sv = Nullsv;
+	}
+	else {
+	    sv = AvARRAY(av)[++cx->blk_loop.iterix];
+	}
+    }
+
+    if (sv && SvREFCNT(sv) == 0) {
+	*itersvp = Nullsv;
+	Perl_croak(aTHX_ "Use of freed value in iteration");
+    }
+
+    if (sv)
+	SvTEMP_off(sv);
+    else
+	sv = &PL_sv_undef;
+    if (av != PL_curstack && sv == &PL_sv_undef) {
+	SV *lv = cx->blk_loop.iterlval;
+	if (lv && SvREFCNT(lv) > 1) {
+	    SvREFCNT_dec(lv);
+	    lv = Nullsv;
+	}
+	if (lv)
+	    SvREFCNT_dec(LvTARG(lv));
+	else {
+	    lv = cx->blk_loop.iterlval = NEWSV(26, 0);
+	    sv_upgrade(lv, SVt_PVLV);
+	    LvTYPE(lv) = 'y';
+	    sv_magic(lv, Nullsv, PERL_MAGIC_defelem, Nullch, 0);
+	}
+	LvTARG(lv) = SvREFCNT_inc(av);
+	LvTARGOFF(lv) = cx->blk_loop.iterix;
+	LvTARGLEN(lv) = (STRLEN)UV_MAX;
+	sv = (SV*)lv;
+    }
+
+    oldsv = *itersvp;
+    *itersvp = SvREFCNT_inc(sv);
+    SvREFCNT_dec(oldsv);
+
+    RETPUSHYES;
+}

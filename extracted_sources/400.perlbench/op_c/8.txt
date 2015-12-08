@@ -1,47 +1,56 @@
-void
-Perl_op_free(pTHX_ OP *o)
+PADOFFSET
+Perl_allocmy(pTHX_ char *name)
 {
-    register OP *kid, *nextkid;
-    OPCODE type;
-    PADOFFSET refcnt;
+    PADOFFSET off;
 
-    if (!o || o->op_seq == (U16)-1)
-	return;
-
-    if (o->op_private & OPpREFCOUNTED) {
-	switch (o->op_type) {
-	case OP_LEAVESUB:
-	case OP_LEAVESUBLV:
-	case OP_LEAVEEVAL:
-	case OP_LEAVE:
-	case OP_SCOPE:
-	case OP_LEAVEWRITE:
-	    OP_REFCNT_LOCK;
-	    refcnt = OpREFCNT_dec(o);
-	    OP_REFCNT_UNLOCK;
-	    if (refcnt)
-		return;
-	    break;
-	default:
-	    break;
+    /* complain about "my $_" etc etc */
+    if (!(PL_in_my == KEY_our ||
+	  isALPHA(name[1]) ||
+	  (USE_UTF8_IN_NAMES && UTF8_IS_START(name[1])) ||
+	  (name[1] == '_' && (int)strlen(name) > 2)))
+    {
+	if (!isPRINT(name[1]) || strchr("\t\n\r\f", name[1])) {
+	    /* 1999-02-27 mjd@plover.com */
+	    char *p;
+	    p = strchr(name, '\0');
+	    /* The next block assumes the buffer is at least 205 chars
+	       long.  At present, it's always at least 256 chars. */
+	    if (p-name > 200) {
+		strcpy(name+200, "...");
+		p = name+199;
+	    }
+	    else {
+		p[1] = '\0';
+	    }
+	    /* Move everything else down one character */
+	    for (; p-name > 2; p--)
+		*p = *(p-1);
+	    name[2] = toCTRL(name[1]);
+	    name[1] = '^';
 	}
+	yyerror(Perl_form(aTHX_ "Can't use global %s in \"my\"",name));
+    }
+    /* check for duplicate declaration */
+    pad_check_dup(name,
+		(bool)(PL_in_my == KEY_our),
+		(PL_curstash ? PL_curstash : PL_defstash)
+    );
+
+    if (PL_in_my_stash && *name != '$') {
+	yyerror(Perl_form(aTHX_
+		    "Can't declare class for non-scalar %s in \"%s\"",
+		     name, PL_in_my == KEY_our ? "our" : "my"));
     }
 
-    if (o->op_flags & OPf_KIDS) {
-	for (kid = cUNOPo->op_first; kid; kid = nextkid) {
-	    nextkid = kid->op_sibling; /* Get before next freeing kid */
-	    op_free(kid);
-	}
-    }
-    type = o->op_type;
-    if (type == OP_NULL)
-	type = (OPCODE)o->op_targ;
+    /* allocate a spare slot and store the name in that slot */
 
-    /* COP* is not cleared by op_clear() so that we may track line
-     * numbers etc even after null() */
-    if (type == OP_NEXTSTATE || type == OP_SETSTATE || type == OP_DBSTATE)
-	cop_free((COP*)o);
-
-    op_clear(o);
-    FreeOp(o);
+    off = pad_add_name(name,
+		    PL_in_my_stash,
+		    (PL_in_my == KEY_our 
+			? (PL_curstash ? PL_curstash : PL_defstash)
+			: Nullhv
+		    ),
+		    0 /*  not fake */
+    );
+    return off;
 }

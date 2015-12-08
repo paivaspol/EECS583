@@ -1,12 +1,88 @@
 void
-update_br_prob_note (bb)
-     basic_block bb;
+print_rtl_with_bb (outf, rtx_first)
+     FILE *outf;
+     rtx rtx_first;
 {
-  rtx note;
-  if (GET_CODE (bb->end) != JUMP_INSN)
-    return;
-  note = find_reg_note (bb->end, REG_BR_PROB, NULL_RTX);
-  if (!note || INTVAL (XEXP (note, 0)) == BRANCH_EDGE (bb)->probability)
-    return;
-  XEXP (note, 0) = GEN_INT (BRANCH_EDGE (bb)->probability);
+  rtx tmp_rtx;
+
+  if (rtx_first == 0)
+    fprintf (outf, "(nil)\n");
+  else
+    {
+      int i;
+      enum bb_state { NOT_IN_BB, IN_ONE_BB, IN_MULTIPLE_BB };
+      int max_uid = get_max_uid ();
+      basic_block *start
+	= (basic_block *) xcalloc (max_uid, sizeof (basic_block));
+      basic_block *end
+	= (basic_block *) xcalloc (max_uid, sizeof (basic_block));
+      enum bb_state *in_bb_p
+	= (enum bb_state *) xcalloc (max_uid, sizeof (enum bb_state));
+
+      for (i = n_basic_blocks - 1; i >= 0; i--)
+	{
+	  basic_block bb = BASIC_BLOCK (i);
+	  rtx x;
+
+	  start[INSN_UID (bb->head)] = bb;
+	  end[INSN_UID (bb->end)] = bb;
+	  for (x = bb->head; x != NULL_RTX; x = NEXT_INSN (x))
+	    {
+	      enum bb_state state = IN_MULTIPLE_BB;
+
+	      if (in_bb_p[INSN_UID (x)] == NOT_IN_BB)
+		state = IN_ONE_BB;
+	      in_bb_p[INSN_UID (x)] = state;
+
+	      if (x == bb->end)
+		break;
+	    }
+	}
+
+      for (tmp_rtx = rtx_first; NULL != tmp_rtx; tmp_rtx = NEXT_INSN (tmp_rtx))
+	{
+	  int did_output;
+	  basic_block bb;
+
+	  if ((bb = start[INSN_UID (tmp_rtx)]) != NULL)
+	    {
+	      fprintf (outf, ";; Start of basic block %d, registers live:",
+		       bb->index);
+	      dump_regset (bb->global_live_at_start, outf);
+	      putc ('\n', outf);
+	    }
+
+	  if (in_bb_p[INSN_UID (tmp_rtx)] == NOT_IN_BB
+	      && GET_CODE (tmp_rtx) != NOTE
+	      && GET_CODE (tmp_rtx) != BARRIER)
+	    fprintf (outf, ";; Insn is not within a basic block\n");
+	  else if (in_bb_p[INSN_UID (tmp_rtx)] == IN_MULTIPLE_BB)
+	    fprintf (outf, ";; Insn is in multiple basic blocks\n");
+
+	  did_output = print_rtl_single (outf, tmp_rtx);
+
+	  if ((bb = end[INSN_UID (tmp_rtx)]) != NULL)
+	    {
+	      fprintf (outf, ";; End of basic block %d, registers live:\n",
+		       bb->index);
+	      dump_regset (bb->global_live_at_end, outf);
+	      putc ('\n', outf);
+	    }
+
+	  if (did_output)
+	    putc ('\n', outf);
+	}
+
+      free (start);
+      free (end);
+      free (in_bb_p);
+    }
+
+  if (current_function_epilogue_delay_list != 0)
+    {
+      fprintf (outf, "\n;; Insns in epilogue delay list:\n\n");
+      for (tmp_rtx = current_function_epilogue_delay_list; tmp_rtx != 0;
+	   tmp_rtx = XEXP (tmp_rtx, 1))
+	print_rtl_single (outf, XEXP (tmp_rtx, 0));
+    }
 }

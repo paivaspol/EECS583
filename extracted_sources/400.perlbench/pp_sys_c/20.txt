@@ -1,0 +1,33 @@
+PP(pp_select)
+{
+    dSP; dTARGET;
+    GV *newdefout, *egv;
+    HV *hv;
+
+    newdefout = (PL_op->op_private > 0) ? ((GV *) POPs) : (GV *) NULL;
+
+    egv = GvEGV(PL_defoutgv);
+    if (!egv)
+	egv = PL_defoutgv;
+    hv = GvSTASH(egv);
+    if (! hv)
+	XPUSHs(&PL_sv_undef);
+    else {
+	GV **gvp = (GV**)hv_fetch(hv, GvNAME(egv), GvNAMELEN(egv), FALSE);
+	if (gvp && *gvp == egv) {
+	    gv_efullname4(TARG, PL_defoutgv, Nullch, TRUE);
+	    XPUSHTARG;
+	}
+	else {
+	    XPUSHs(sv_2mortal(newRV((SV*)egv)));
+	}
+    }
+
+    if (newdefout) {
+	if (!GvIO(newdefout))
+	    gv_IOadd(newdefout);
+	setdefout(newdefout);
+    }
+
+    RETURN;
+}

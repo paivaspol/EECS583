@@ -1,0 +1,19 @@
+PP(pp_ref)
+{
+    dSP; dTARGET;
+    SV *sv;
+    char *pv;
+
+    sv = POPs;
+
+    if (sv && SvGMAGICAL(sv))
+	mg_get(sv);
+
+    if (!sv || !SvROK(sv))
+	RETPUSHNO;
+
+    sv = SvRV(sv);
+    pv = sv_reftype(sv,TRUE);
+    PUSHp(pv, strlen(pv));
+    RETURN;
+}

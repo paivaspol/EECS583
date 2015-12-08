@@ -1,7 +1,31 @@
 int
-const0_operand (op, mode)
-     register rtx op;
-     enum machine_mode mode;
+call_insn_operand (op, mode)
+     rtx op;
+     enum machine_mode mode ATTRIBUTE_UNUSED;
 {
-  return op == CONST0_RTX (mode);
+  /* Disallow indirect through a virtual register.  This leads to
+     compiler aborts when trying to eliminate them.  */
+  if (GET_CODE (op) == REG
+      && (op == arg_pointer_rtx
+	  || op == frame_pointer_rtx
+	  || (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	      && REGNO (op) <= LAST_VIRTUAL_REGISTER)))
+    return 0;
+
+  /* Disallow `call 1234'.  Due to varying assembler lameness this
+     gets either rejected or translated to `call .+1234'.  */
+  if (GET_CODE (op) == CONST_INT)
+    return 0;
+
+  /* Explicitly allow SYMBOL_REF even if pic.  */
+  if (GET_CODE (op) == SYMBOL_REF)
+    return 1;
+
+  /* Half-pic doesn't allow anything but registers and constants.
+     We've just taken care of the later.  */
+  if (HALF_PIC_P ())
+    return register_operand (op, Pmode);
+
+  /* Otherwise we can allow any general_operand in the address.  */
+  return general_operand (op, Pmode);
 }

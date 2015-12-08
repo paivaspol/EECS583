@@ -1,31 +1,5 @@
 void
-Perl_sv_chop(pTHX_ register SV *sv, register char *ptr)
+Perl_sv_force_normal(pTHX_ register SV *sv)
 {
-    register STRLEN delta;
-    if (!ptr || !SvPOKp(sv))
-	return;
-    delta = ptr - SvPVX(sv);
-    SV_CHECK_THINKFIRST(sv);
-    if (SvTYPE(sv) < SVt_PVIV)
-	sv_upgrade(sv,SVt_PVIV);
-
-    if (!SvOOK(sv)) {
-	if (!SvLEN(sv)) { /* make copy of shared string */
-	    char *pvx = SvPVX(sv);
-	    STRLEN len = SvCUR(sv);
-	    SvGROW(sv, len + 1);
-	    Move(pvx,SvPVX(sv),len,char);
-	    *SvEND(sv) = '\0';
-	}
-	SvIVX(sv) = 0;
-	/* Same SvOOK_on but SvOOK_on does a SvIOK_off
-	   and we do that anyway inside the SvNIOK_off
-	*/
-	SvFLAGS(sv) |= SVf_OOK; 
-    }
-    SvNIOK_off(sv);
-    SvLEN(sv) -= delta;
-    SvCUR(sv) -= delta;
-    SvPVX(sv) += delta;
-    SvIVX(sv) += delta;
+    sv_force_normal_flags(sv, 0);
 }

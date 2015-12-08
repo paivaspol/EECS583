@@ -1,27 +1,64 @@
 static void
-sjlj_build_landing_pads ()
+sjlj_emit_dispatch_table (dispatch_label, lp_info)
+     rtx dispatch_label;
+     struct sjlj_lp_info *lp_info;
 {
-  struct sjlj_lp_info *lp_info;
+  int i, first_reachable;
+  rtx mem, dispatch, seq, fc;
 
-  lp_info = (struct sjlj_lp_info *) xcalloc (cfun->eh->last_region_number + 1,
-					     sizeof (struct sjlj_lp_info));
+  fc = cfun->eh->sjlj_fc;
 
-  if (sjlj_find_directly_reachable_regions (lp_info))
+  start_sequence ();
+
+  emit_label (dispatch_label);
+
+#ifndef DONT_USE_BUILTIN_SETJMP
+  expand_builtin_setjmp_receiver (dispatch_label);
+#endif
+
+  /* Load up dispatch index, exc_ptr and filter values from the
+     function context.  */
+  mem = adjust_address (fc, TYPE_MODE (integer_type_node),
+			sjlj_fc_call_site_ofs);
+  dispatch = copy_to_reg (mem);
+
+  mem = adjust_address (fc, word_mode, sjlj_fc_data_ofs);
+  if (word_mode != Pmode)
     {
-      rtx dispatch_label = gen_label_rtx ();
+#ifdef POINTERS_EXTEND_UNSIGNED
+      mem = convert_memory_address (Pmode, mem);
+#else
+      mem = convert_to_mode (Pmode, mem, 0);
+#endif
+    }
+  emit_move_insn (cfun->eh->exc_ptr, mem);
 
-      cfun->eh->sjlj_fc
-	= assign_stack_local (TYPE_MODE (sjlj_fc_type_node),
-			      int_size_in_bytes (sjlj_fc_type_node),
-			      TYPE_ALIGN (sjlj_fc_type_node));
+  mem = adjust_address (fc, word_mode, sjlj_fc_data_ofs + UNITS_PER_WORD);
+  emit_move_insn (cfun->eh->filter, mem);
 
-      sjlj_assign_call_site_values (dispatch_label, lp_info);
-      sjlj_mark_call_sites (lp_info);
+  /* Jump to one of the directly reachable regions.  */
+  /* ??? This really ought to be using a switch statement.  */
 
-      sjlj_emit_function_enter (dispatch_label);
-      sjlj_emit_dispatch_table (dispatch_label, lp_info);
-      sjlj_emit_function_exit ();
+  first_reachable = 0;
+  for (i = cfun->eh->last_region_number; i > 0; --i)
+    {
+      if (! lp_info[i].directly_reachable)
+	continue;
+
+      if (! first_reachable)
+	{
+	  first_reachable = i;
+	  continue;
+	}
+
+      emit_cmp_and_jump_insns (dispatch, GEN_INT (lp_info[i].dispatch_index),
+			       EQ, NULL_RTX, TYPE_MODE (integer_type_node), 0,
+			       cfun->eh->region_array[i]->post_landing_pad);
     }
 
-  free (lp_info);
+  seq = get_insns ();
+  end_sequence ();
+
+  emit_insns_before (seq, (cfun->eh->region_array[first_reachable]
+			   ->post_landing_pad));
 }

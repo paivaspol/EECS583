@@ -1,0 +1,73 @@
+PP(pp_prtf)
+{
+    dSP; dMARK; dORIGMARK;
+    GV *gv;
+    IO *io;
+    PerlIO *fp;
+    SV *sv;
+    MAGIC *mg;
+
+    if (PL_op->op_flags & OPf_STACKED)
+	gv = (GV*)*++MARK;
+    else
+	gv = PL_defoutgv;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	if (MARK == ORIGMARK) {
+	    MEXTEND(SP, 1);
+	    ++MARK;
+	    Move(MARK, MARK + 1, (SP - MARK) + 1, SV*);
+	    ++SP;
+	}
+	PUSHMARK(MARK - 1);
+	*MARK = SvTIED_obj((SV*)io, mg);
+	PUTBACK;
+	ENTER;
+	call_method("PRINTF", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	MARK = ORIGMARK + 1;
+	*MARK = *SP;
+	SP = MARK;
+	RETURN;
+    }
+
+    sv = NEWSV(0,0);
+    if (!(io = GvIO(gv))) {
+	if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	SETERRNO(EBADF,RMS_IFI);
+	goto just_say_no;
+    }
+    else if (!(fp = IoOFP(io))) {
+	if (ckWARN2(WARN_CLOSED,WARN_IO))  {
+	    if (IoIFP(io))
+		report_evil_fh(gv, io, OP_phoney_INPUT_ONLY);
+	    else if (ckWARN(WARN_CLOSED))
+		report_evil_fh(gv, io, PL_op->op_type);
+	}
+	SETERRNO(EBADF,IoIFP(io)?RMS_FAC:RMS_IFI);
+	goto just_say_no;
+    }
+    else {
+	do_sprintf(sv, SP - MARK, MARK + 1);
+	if (!do_print(sv, fp))
+	    goto just_say_no;
+
+	if (IoFLAGS(io) & IOf_FLUSH)
+	    if (PerlIO_flush(fp) == EOF)
+		goto just_say_no;
+    }
+    SvREFCNT_dec(sv);
+    SP = ORIGMARK;
+    PUSHs(&PL_sv_yes);
+    RETURN;
+
+  just_say_no:
+    SvREFCNT_dec(sv);
+    SP = ORIGMARK;
+    PUSHs(&PL_sv_undef);
+    RETURN;
+}

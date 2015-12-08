@@ -1,18 +1,77 @@
-void
-Perl_hv_delayfree_ent(pTHX_ HV *hv, register HE *entry)
+HV *
+Perl_newHVhv(pTHX_ HV *ohv)
 {
-    if (!entry)
-	return;
-    if (isGV(HeVAL(entry)) && GvCVu(HeVAL(entry)) && HvNAME(hv))
-	PL_sub_generation++;	/* may be deletion of method from stash */
-    sv_2mortal(HeVAL(entry));	/* free between statements */
-    if (HeKLEN(entry) == HEf_SVKEY) {
-	sv_2mortal(HeKEY_sv(entry));
-	Safefree(HeKEY_hek(entry));
+    HV *hv = newHV();
+    STRLEN hv_max, hv_fill;
+
+    if (!ohv || (hv_fill = HvFILL(ohv)) == 0)
+	return hv;
+    hv_max = HvMAX(ohv);
+
+    if (!SvMAGICAL((SV *)ohv)) {
+	/* It's an ordinary hash, so copy it fast. AMS 20010804 */
+	STRLEN i;
+	bool shared = !!HvSHAREKEYS(ohv);
+	HE **ents, **oents = (HE **)HvARRAY(ohv);
+	char *a;
+	New(0, a, PERL_HV_ARRAY_ALLOC_BYTES(hv_max+1), char);
+	ents = (HE**)a;
+
+	/* In each bucket... */
+	for (i = 0; i <= hv_max; i++) {
+	    HE *prev = NULL, *ent = NULL, *oent = oents[i];
+
+	    if (!oent) {
+		ents[i] = NULL;
+		continue;
+	    }
+
+	    /* Copy the linked list of entries. */
+	    for (oent = oents[i]; oent; oent = HeNEXT(oent)) {
+		U32 hash   = HeHASH(oent);
+		char *key  = HeKEY(oent);
+		STRLEN len = HeKLEN(oent);
+                int flags  = HeKFLAGS(oent);
+
+		ent = new_HE();
+		HeVAL(ent)     = newSVsv(HeVAL(oent));
+		HeKEY_hek(ent)
+                    = shared ? share_hek_flags(key, len, hash, flags)
+                             :  save_hek_flags(key, len, hash, flags);
+		if (prev)
+		    HeNEXT(prev) = ent;
+		else
+		    ents[i] = ent;
+		prev = ent;
+		HeNEXT(ent) = NULL;
+	    }
+	}
+
+	HvMAX(hv)   = hv_max;
+	HvFILL(hv)  = hv_fill;
+	HvTOTALKEYS(hv)  = HvTOTALKEYS(ohv);
+	HvARRAY(hv) = ents;
     }
-    else if (HvSHAREKEYS(hv))
-	unshare_hek(HeKEY_hek(entry));
-    else
-	Safefree(HeKEY_hek(entry));
-    del_HE(entry);
+    else {
+	/* Iterate over ohv, copying keys and values one at a time. */
+	HE *entry;
+	I32 riter = HvRITER(ohv);
+	HE *eiter = HvEITER(ohv);
+
+	/* Can we use fewer buckets? (hv_max is always 2^n-1) */
+	while (hv_max && hv_max + 1 >= hv_fill * 2)
+	    hv_max = hv_max / 2;
+	HvMAX(hv) = hv_max;
+
+	hv_iterinit(ohv);
+	while ((entry = hv_iternext_flags(ohv, 0))) {
+	    hv_store_flags(hv, HeKEY(entry), HeKLEN(entry),
+                           newSVsv(HeVAL(entry)), HeHASH(entry),
+                           HeKFLAGS(entry));
+	}
+	HvRITER(ohv) = riter;
+	HvEITER(ohv) = eiter;
+    }
+
+    return hv;
 }

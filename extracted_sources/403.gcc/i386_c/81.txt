@@ -1,10 +1,48 @@
-static rtx
-gen_push (arg)
-     rtx arg;
+void
+ix86_asm_file_end (file)
+     FILE *file;
 {
-  return gen_rtx_SET (VOIDmode,
-		      gen_rtx_MEM (Pmode,
-				   gen_rtx_PRE_DEC (Pmode,
-						    stack_pointer_rtx)),
-		      arg);
+  rtx xops[2];
+
+  if (! TARGET_DEEP_BRANCH_PREDICTION || pic_label_name[0] == 0)
+    return;
+
+  /* ??? Binutils 2.10 and earlier has a linkonce elimination bug related
+     to updating relocations to a section being discarded such that this
+     doesn't work.  Ought to detect this at configure time.  */
+#if 0
+  /* The trick here is to create a linkonce section containing the
+     pic label thunk, but to refer to it with an internal label.
+     Because the label is internal, we don't have inter-dso name
+     binding issues on hosts that don't support ".hidden".
+
+     In order to use these macros, however, we must create a fake
+     function decl.  */
+  if (targetm.have_named_sections)
+    {
+      tree decl = build_decl (FUNCTION_DECL,
+			      get_identifier ("i686.get_pc_thunk"),
+			      error_mark_node);
+      DECL_ONE_ONLY (decl) = 1;
+      UNIQUE_SECTION (decl, 0);
+      named_section (decl, NULL);
+    }
+  else
+#else
+    text_section ();
+#endif
+
+  /* This used to call ASM_DECLARE_FUNCTION_NAME() but since it's an
+     internal (non-global) label that's being emitted, it didn't make
+     sense to have .type information for local labels.   This caused
+     the SCO OpenServer 5.0.4 ELF assembler grief (why are you giving
+     me debug info for a label that you're declaring non-global?) this
+     was changed to call ASM_OUTPUT_LABEL() instead.  */
+
+  ASM_OUTPUT_LABEL (file, pic_label_name);
+
+  xops[0] = pic_offset_table_rtx;
+  xops[1] = gen_rtx_MEM (SImode, stack_pointer_rtx);
+  output_asm_insn ("mov{l}\t{%1, %0|%0, %1}", xops);
+  output_asm_insn ("ret", xops);
 }

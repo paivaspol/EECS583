@@ -1,10 +1,136 @@
 void
-Perl_op_null(pTHX_ OP *o)
+Perl_op_clear(pTHX_ OP *o)
 {
-    if (o->op_type == OP_NULL)
-	return;
-    op_clear(o);
-    o->op_targ = o->op_type;
-    o->op_type = OP_NULL;
-    o->op_ppaddr = PL_ppaddr[OP_NULL];
+
+    switch (o->op_type) {
+    case OP_NULL:	/* Was holding old type, if any. */
+    case OP_ENTEREVAL:	/* Was holding hints. */
+#ifdef USE_5005THREADS
+    case OP_THREADSV:	/* Was holding index into thr->threadsv AV. */
+#endif
+	o->op_targ = 0;
+	break;
+#ifdef USE_5005THREADS
+    case OP_ENTERITER:
+	if (!(o->op_flags & OPf_SPECIAL))
+	    break;
+	/* FALL THROUGH */
+#endif /* USE_5005THREADS */
+    default:
+	if (!(o->op_flags & OPf_REF)
+	    || (PL_check[o->op_type] != MEMBER_TO_FPTR(Perl_ck_ftst)))
+	    break;
+	/* FALL THROUGH */
+    case OP_GVSV:
+    case OP_GV:
+    case OP_AELEMFAST:
+	if (! (o->op_type == OP_AELEMFAST && o->op_flags & OPf_SPECIAL)) {
+	    /* not an OP_PADAV replacement */
+#ifdef USE_ITHREADS
+	    if (cPADOPo->op_padix > 0) {
+		/* No GvIN_PAD_off(cGVOPo_gv) here, because other references
+		 * may still exist on the pad */
+		pad_swipe(cPADOPo->op_padix, TRUE);
+		cPADOPo->op_padix = 0;
+	    }
+#else
+	    SvREFCNT_dec(cSVOPo->op_sv);
+	    cSVOPo->op_sv = Nullsv;
+#endif
+	}
+	break;
+    case OP_METHOD_NAMED:
+    case OP_CONST:
+	SvREFCNT_dec(cSVOPo->op_sv);
+	cSVOPo->op_sv = Nullsv;
+#ifdef USE_ITHREADS
+	/** Bug #15654
+	  Even if op_clear does a pad_free for the target of the op,
+	  pad_free doesn't actually remove the sv that exists in the pad;
+	  instead it lives on. This results in that it could be reused as 
+	  a target later on when the pad was reallocated.
+	**/
+        if(o->op_targ) {
+          pad_swipe(o->op_targ,1);
+          o->op_targ = 0;
+        }
+#endif
+	break;
+    case OP_GOTO:
+    case OP_NEXT:
+    case OP_LAST:
+    case OP_REDO:
+	if (o->op_flags & (OPf_SPECIAL|OPf_STACKED|OPf_KIDS))
+	    break;
+	/* FALL THROUGH */
+    case OP_TRANS:
+	if (o->op_private & (OPpTRANS_FROM_UTF|OPpTRANS_TO_UTF)) {
+	    SvREFCNT_dec(cSVOPo->op_sv);
+	    cSVOPo->op_sv = Nullsv;
+	}
+	else {
+	    Safefree(cPVOPo->op_pv);
+	    cPVOPo->op_pv = Nullch;
+	}
+	break;
+    case OP_SUBST:
+	op_free(cPMOPo->op_pmreplroot);
+	goto clear_pmop;
+    case OP_PUSHRE:
+#ifdef USE_ITHREADS
+        if (INT2PTR(PADOFFSET, cPMOPo->op_pmreplroot)) {
+	    /* No GvIN_PAD_off here, because other references may still
+	     * exist on the pad */
+	    pad_swipe(INT2PTR(PADOFFSET, cPMOPo->op_pmreplroot), TRUE);
+	}
+#else
+	SvREFCNT_dec((SV*)cPMOPo->op_pmreplroot);
+#endif
+	/* FALL THROUGH */
+    case OP_MATCH:
+    case OP_QR:
+clear_pmop:
+	{
+	    HV *pmstash = PmopSTASH(cPMOPo);
+	    if (pmstash && SvREFCNT(pmstash)) {
+		PMOP *pmop = HvPMROOT(pmstash);
+		PMOP *lastpmop = NULL;
+		while (pmop) {
+		    if (cPMOPo == pmop) {
+			if (lastpmop)
+			    lastpmop->op_pmnext = pmop->op_pmnext;
+			else
+			    HvPMROOT(pmstash) = pmop->op_pmnext;
+			break;
+		    }
+		    lastpmop = pmop;
+		    pmop = pmop->op_pmnext;
+		}
+	    }
+	    PmopSTASH_free(cPMOPo);
+	}
+	cPMOPo->op_pmreplroot = Nullop;
+        /* we use the "SAFE" version of the PM_ macros here
+         * since sv_clean_all might release some PMOPs
+         * after PL_regex_padav has been cleared
+         * and the clearing of PL_regex_padav needs to
+         * happen before sv_clean_all
+         */
+	ReREFCNT_dec(PM_GETRE_SAFE(cPMOPo));
+	PM_SETRE_SAFE(cPMOPo, (REGEXP*)NULL);
+#ifdef USE_ITHREADS
+	if(PL_regex_pad) {        /* We could be in destruction */
+            av_push((AV*) PL_regex_pad[0],(SV*) PL_regex_pad[(cPMOPo)->op_pmoffset]);
+	    SvREPADTMP_on(PL_regex_pad[(cPMOPo)->op_pmoffset]);
+            PM_SETRE(cPMOPo, (cPMOPo)->op_pmoffset);
+        }
+#endif
+
+	break;
+    }
+
+    if (o->op_targ > 0) {
+	pad_free(o->op_targ);
+	o->op_targ = 0;
+    }
 }

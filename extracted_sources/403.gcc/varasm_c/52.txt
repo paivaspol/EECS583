@@ -1,63 +1,9 @@
-static void
-decode_addr_const (exp, value)
-     tree exp;
-     struct addr_const *value;
+bool
+default_assemble_integer (x, size, aligned_p)
+     rtx x ATTRIBUTE_UNUSED;
+     unsigned int size ATTRIBUTE_UNUSED;
+     int aligned_p ATTRIBUTE_UNUSED;
 {
-  tree target = TREE_OPERAND (exp, 0);
-  int offset = 0;
-  rtx x;
-
-  while (1)
-    {
-      if (TREE_CODE (target) == COMPONENT_REF
-	  && host_integerp (byte_position (TREE_OPERAND (target, 1)), 0))
-
-	{
-	  offset += int_byte_position (TREE_OPERAND (target, 1));
-	  target = TREE_OPERAND (target, 0);
-	}
-      else if (TREE_CODE (target) == ARRAY_REF
-	       || TREE_CODE (target) == ARRAY_RANGE_REF)
-	{
-	  offset += (tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (target)), 1)
-		     * tree_low_cst (TREE_OPERAND (target, 1), 0));
-	  target = TREE_OPERAND (target, 0);
-	}
-      else
-	break;
-    }
-
-  switch (TREE_CODE (target))
-    {
-    case VAR_DECL:
-    case FUNCTION_DECL:
-      x = DECL_RTL (target);
-      break;
-
-    case LABEL_DECL:
-      x = gen_rtx_MEM (FUNCTION_MODE,
-		       gen_rtx_LABEL_REF (VOIDmode,
-					  label_rtx (TREE_OPERAND (exp, 0))));
-      break;
-
-    case REAL_CST:
-    case STRING_CST:
-    case COMPLEX_CST:
-    case CONSTRUCTOR:
-    case INTEGER_CST:
-      /* This constant should have been output already, but we can't simply
-	 use TREE_CST_RTL since INTEGER_CST doesn't have one.  */
-      x = output_constant_def (target, 1);
-      break;
-
-    default:
-      abort ();
-    }
-
-  if (GET_CODE (x) != MEM)
-    abort ();
-  x = XEXP (x, 0);
-
-  value->base = x;
-  value->offset = offset;
+  const char *op = integer_asm_op (size, aligned_p);
+  return op && (assemble_integer_with_op (op, x), true);
 }

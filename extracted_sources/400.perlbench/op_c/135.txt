@@ -1,0 +1,48 @@
+OP *
+Perl_ck_open(pTHX_ OP *o)
+{
+    HV *table = GvHV(PL_hintgv);
+    if (table) {
+	SV **svp;
+	I32 mode;
+	svp = hv_fetch(table, "open_IN", 7, FALSE);
+	if (svp && *svp) {
+	    mode = mode_from_discipline(*svp);
+	    if (mode & O_BINARY)
+		o->op_private |= OPpOPEN_IN_RAW;
+	    else if (mode & O_TEXT)
+		o->op_private |= OPpOPEN_IN_CRLF;
+	}
+
+	svp = hv_fetch(table, "open_OUT", 8, FALSE);
+	if (svp && *svp) {
+	    mode = mode_from_discipline(*svp);
+	    if (mode & O_BINARY)
+		o->op_private |= OPpOPEN_OUT_RAW;
+	    else if (mode & O_TEXT)
+		o->op_private |= OPpOPEN_OUT_CRLF;
+	}
+    }
+    if (o->op_type == OP_BACKTICK)
+	return o;
+    {
+	 /* In case of three-arg dup open remove strictness
+	  * from the last arg if it is a bareword. */
+	 OP *first = cLISTOPx(o)->op_first; /* The pushmark. */
+	 OP *last  = cLISTOPx(o)->op_last;  /* The bareword. */
+	 OP *oa;
+	 char *mode;
+
+	 if ((last->op_type == OP_CONST) &&		/* The bareword. */
+	     (last->op_private & OPpCONST_BARE) &&
+	     (last->op_private & OPpCONST_STRICT) &&
+	     (oa = first->op_sibling) &&		/* The fh. */
+	     (oa = oa->op_sibling) &&			/* The mode. */
+	     SvPOK(((SVOP*)oa)->op_sv) &&
+	     (mode = SvPVX(((SVOP*)oa)->op_sv)) &&
+	     mode[0] == '>' && mode[1] == '&' &&	/* A dup open. */
+	     (last == oa->op_sibling))			/* The bareword. */
+	      last->op_private &= ~OPpCONST_STRICT;
+    }
+    return ck_fun(o);
+}

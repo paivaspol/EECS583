@@ -1,0 +1,67 @@
+PP(pp_reverse)
+{
+    dSP; dMARK;
+    register SV *tmp;
+    SV **oldsp = SP;
+
+    if (GIMME == G_ARRAY) {
+	MARK++;
+	while (MARK < SP) {
+	    tmp = *MARK;
+	    *MARK++ = *SP;
+	    *SP-- = tmp;
+	}
+	/* safe as long as stack cannot get extended in the above */
+	SP = oldsp;
+    }
+    else {
+	register char *up;
+	register char *down;
+	register I32 tmp;
+	dTARGET;
+	STRLEN len;
+
+	SvUTF8_off(TARG);				/* decontaminate */
+	if (SP - MARK > 1)
+	    do_join(TARG, &PL_sv_no, MARK, SP);
+	else
+	    sv_setsv(TARG, (SP > MARK) ? *SP : DEFSV);
+	up = SvPV_force(TARG, len);
+	if (len > 1) {
+	    if (DO_UTF8(TARG)) {	/* first reverse each character */
+		U8* s = (U8*)SvPVX(TARG);
+		U8* send = (U8*)(s + len);
+		while (s < send) {
+		    if (UTF8_IS_INVARIANT(*s)) {
+			s++;
+			continue;
+		    }
+		    else {
+			if (!utf8_to_uvchr(s, 0))
+			    break;
+			up = (char*)s;
+			s += UTF8SKIP(s);
+			down = (char*)(s - 1);
+			/* reverse this character */
+			while (down > up) {
+			    tmp = *up;
+			    *up++ = *down;
+			    *down-- = (char)tmp;
+			}
+		    }
+		}
+		up = SvPVX(TARG);
+	    }
+	    down = SvPVX(TARG) + len - 1;
+	    while (down > up) {
+		tmp = *up;
+		*up++ = *down;
+		*down-- = (char)tmp;
+	    }
+	    (void)SvPOK_only_UTF8(TARG);
+	}
+	SP = MARK + 1;
+	SETTARG;
+    }
+    RETURN;
+}

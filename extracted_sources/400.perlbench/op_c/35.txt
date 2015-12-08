@@ -1,56 +1,31 @@
-void
-Perl_cv_undef(pTHX_ CV *cv)
+OP *
+Perl_my_attrs(pTHX_ OP *o, OP *attrs)
 {
-#ifdef USE_5005THREADS
-    if (CvMUTEXP(cv)) {
-	MUTEX_DESTROY(CvMUTEXP(cv));
-	Safefree(CvMUTEXP(cv));
-	CvMUTEXP(cv) = 0;
-    }
-#endif /* USE_5005THREADS */
+    OP *rops = Nullop;
+    int maybe_scalar = 0;
 
-#ifdef USE_ITHREADS
-    if (CvFILE(cv) && !CvXSUB(cv)) {
-	/* for XSUBs CvFILE point directly to static memory; __FILE__ */
-	Safefree(CvFILE(cv));
-    }
-    CvFILE(cv) = 0;
-#endif
-
-    if (!CvXSUB(cv) && CvROOT(cv)) {
-#ifdef USE_5005THREADS
-	if (CvDEPTH(cv) || (CvOWNER(cv) && CvOWNER(cv) != thr))
-	    Perl_croak(aTHX_ "Can't undef active subroutine");
+/* [perl #17376]: this appears to be premature, and results in code such as
+   C< our(%x); > executing in list mode rather than void mode */
+#if 0
+    if (o->op_flags & OPf_PARENS)
+	list(o);
+    else
+	maybe_scalar = 1;
 #else
-	if (CvDEPTH(cv))
-	    Perl_croak(aTHX_ "Can't undef active subroutine");
-#endif /* USE_5005THREADS */
-	ENTER;
-
-	PAD_SAVE_SETNULLPAD();
-
-	op_free(CvROOT(cv));
-	CvROOT(cv) = Nullop;
-	LEAVE;
+    maybe_scalar = 1;
+#endif
+    if (attrs)
+	SAVEFREEOP(attrs);
+    o = my_kid(o, attrs, &rops);
+    if (rops) {
+	if (maybe_scalar && o->op_type == OP_PADSV) {
+	    o = scalar(append_list(OP_LIST, (LISTOP*)rops, (LISTOP*)o));
+	    o->op_private |= OPpLVAL_INTRO;
+	}
+	else
+	    o = append_list(OP_LIST, (LISTOP*)o, (LISTOP*)rops);
     }
-    SvPOK_off((SV*)cv);		/* forget prototype */
-    CvGV(cv) = Nullgv;
-
-    pad_undef(cv);
-
-    /* remove CvOUTSIDE unless this is an undef rather than a free */
-    if (!SvREFCNT(cv) && CvOUTSIDE(cv)) {
-	if (!CvWEAKOUTSIDE(cv))
-	    SvREFCNT_dec(CvOUTSIDE(cv));
-	CvOUTSIDE(cv) = Nullcv;
-    }
-    if (CvCONST(cv)) {
-	SvREFCNT_dec((SV*)CvXSUBANY(cv).any_ptr);
-	CvCONST_off(cv);
-    }
-    if (CvXSUB(cv)) {
-        CvXSUB(cv) = 0;
-    }
-    /* delete all flags except WEAKOUTSIDE */
-    CvFLAGS(cv) &= CVf_WEAKOUTSIDE;
+    PL_in_my = FALSE;
+    PL_in_my_stash = Nullhv;
+    return o;
 }

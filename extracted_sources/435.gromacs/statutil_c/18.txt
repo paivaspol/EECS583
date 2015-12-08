@@ -1,0 +1,60 @@
+static char *mk_desc(t_pargs *pa, char *time_unit_str)
+{
+  char *newdesc=NULL,*ndesc=NULL,*ptr=NULL;
+  int  len,k;
+  
+  /* First compute length for description */
+  len = strlen(pa->desc)+1;
+  if ((ptr = strstr(pa->desc,"HIDDEN")) != NULL)
+    len += 4;
+  if (pa->type == etENUM) {
+    len += 10;
+    for(k=1; (pa->u.c[k] != NULL); k++) {
+      len += strlen(pa->u.c[k])+12;
+    }
+  }
+  snew(newdesc,len);
+  
+  /* add label for hidden options */
+  if (is_hidden(pa)) 
+    sprintf(newdesc,"[hidden] %s",ptr+6);
+  else
+    strcpy(newdesc,pa->desc);
+  
+  /* change '%t' into time_unit */
+#define TUNITLABEL "%t"
+#define NTUNIT strlen(TUNITLABEL)
+  if (pa->type == etTIME)
+    while( (ptr=strstr(newdesc,TUNITLABEL)) != NULL ) {
+      ptr[0]='\0';
+      ptr+=NTUNIT;
+      len+=strlen(time_unit_str)-NTUNIT;
+      snew(ndesc,len);
+      strcpy(ndesc,newdesc);
+      strcat(ndesc,time_unit_str);
+      strcat(ndesc,ptr);
+      sfree(newdesc);
+      newdesc=ndesc;
+      ndesc=NULL;
+    }
+#undef TUNITLABEL
+#undef NTUNIT
+  
+  /* Add extra comment for enumerateds */
+  if (pa->type == etENUM) {
+    strcat(newdesc,": ");
+    for(k=1; (pa->u.c[k] != NULL); k++) {
+      strcat(newdesc,"[TT]");
+      strcat(newdesc,pa->u.c[k]);
+      strcat(newdesc,"[tt]");
+      /* Print a comma everywhere but at the last one */
+      if (pa->u.c[k+1] != NULL) {
+	if (pa->u.c[k+2] == NULL)
+	  strcat(newdesc," or ");
+	else
+	  strcat(newdesc,", ");
+      }
+    }
+  }
+  return newdesc;
+}

@@ -1,6 +1,36 @@
 void
-debug_bb (bb)
+dump_bb (bb, outf)
      basic_block bb;
+     FILE *outf;
 {
-  dump_bb (bb, stderr);
+  rtx insn;
+  rtx last;
+  edge e;
+
+  fprintf (outf, ";; Basic block %d, loop depth %d, count ",
+	   bb->index, bb->loop_depth);
+  fprintf (outf, HOST_WIDEST_INT_PRINT_DEC, (HOST_WIDEST_INT) bb->count);
+  putc ('\n', outf);
+
+  fputs (";; Predecessors: ", outf);
+  for (e = bb->pred; e; e = e->pred_next)
+    dump_edge_info (outf, e, 0);
+  putc ('\n', outf);
+
+  fputs (";; Registers live at start:", outf);
+  dump_regset (bb->global_live_at_start, outf);
+  putc ('\n', outf);
+
+  for (insn = bb->head, last = NEXT_INSN (bb->end); insn != last;
+       insn = NEXT_INSN (insn))
+    print_rtl_single (outf, insn);
+
+  fputs (";; Registers live at end:", outf);
+  dump_regset (bb->global_live_at_end, outf);
+  putc ('\n', outf);
+
+  fputs (";; Successors: ", outf);
+  for (e = bb->succ; e; e = e->succ_next)
+    dump_edge_info (outf, e, 1);
+  putc ('\n', outf);
 }

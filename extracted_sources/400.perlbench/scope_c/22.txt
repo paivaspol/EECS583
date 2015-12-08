@@ -1,8 +1,10 @@
 void
-Perl_save_long(pTHX_ long int *longp)
+Perl_save_item(pTHX_ register SV *item)
 {
+    register SV *sv = newSVsv(item);
+
     SSCHECK(3);
-    SSPUSHLONG(*longp);
-    SSPUSHPTR(longp);
-    SSPUSHINT(SAVEt_LONG);
+    SSPUSHPTR(item);		/* remember the pointer */
+    SSPUSHPTR(sv);		/* remember the value */
+    SSPUSHINT(SAVEt_ITEM);
 }

@@ -1,6 +1,10 @@
 void
-Perl_savestack_grow(pTHX)
+Perl_markstack_grow(pTHX)
 {
-    PL_savestack_max = GROW(PL_savestack_max) + 4;
-    Renew(PL_savestack, PL_savestack_max, ANY);
+    I32 oldmax = PL_markstack_max - PL_markstack;
+    I32 newmax = GROW(oldmax);
+
+    Renew(PL_markstack, newmax, I32);
+    PL_markstack_ptr = PL_markstack + oldmax;
+    PL_markstack_max = PL_markstack + newmax;
 }

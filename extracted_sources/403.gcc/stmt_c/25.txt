@@ -1,41 +1,76 @@
-static bool
-parse_input_constraint (constraint_p, input_num, ninputs, noutputs, ninout,
-			constraints, allows_mem, allows_reg)
+bool
+parse_output_constraint (constraint_p, operand_num, ninputs, noutputs,
+			 allows_mem, allows_reg, is_inout)
      const char **constraint_p;
-     int input_num;
+     int operand_num;
      int ninputs;
      int noutputs;
-     int ninout;
-     const char * const * constraints;
      bool *allows_mem;
      bool *allows_reg;
+     bool *is_inout;
 {
   const char *constraint = *constraint_p;
-  const char *orig_constraint = constraint;
-  size_t c_len = strlen (constraint);
-  size_t j;
+  const char *p;
 
-  /* Assume the constraint doesn't allow the use of either
-     a register or memory.  */
+  /* Assume the constraint doesn't allow the use of either a register
+     or memory.  */
   *allows_mem = false;
   *allows_reg = false;
 
-  /* Make sure constraint has neither `=', `+', nor '&'.  */
+  /* Allow the `=' or `+' to not be at the beginning of the string,
+     since it wasn't explicitly documented that way, and there is a
+     large body of code that puts it last.  Swap the character to
+     the front, so as not to uglify any place else.  */
+  p = strchr (constraint, '=');
+  if (!p)
+    p = strchr (constraint, '+');
 
-  for (j = 0; j < c_len; j++)
-    switch (constraint[j])
+  /* If the string doesn't contain an `=', issue an error
+     message.  */
+  if (!p)
+    {
+      error ("output operand constraint lacks `='");
+      return false;
+    }
+
+  /* If the constraint begins with `+', then the operand is both read
+     from and written to.  */
+  *is_inout = (*p == '+');
+
+  /* Canonicalize the output constraint so that it begins with `='.  */
+  if (p != constraint || is_inout)
+    {
+      char *buf;
+      size_t c_len = strlen (constraint);
+
+      if (p != constraint)
+	warning ("output constraint `%c' for operand %d is not at the beginning",
+		 *p, operand_num);
+
+      /* Make a copy of the constraint.  */
+      buf = alloca (c_len + 1);
+      strcpy (buf, constraint);
+      /* Swap the first character and the `=' or `+'.  */
+      buf[p - constraint] = buf[0];
+      /* Make sure the first character is an `='.  (Until we do this,
+	 it might be a `+'.)  */
+      buf[0] = '=';
+      /* Replace the constraint with the canonicalized string.  */
+      *constraint_p = ggc_alloc_string (buf, c_len);
+      constraint = *constraint_p;
+    }
+
+  /* Loop through the constraint string.  */
+  for (p = constraint + 1; *p; ++p)
+    switch (*p)
       {
-      case '+':  case '=':  case '&':
-	if (constraint == orig_constraint)
-	  {
-	    error ("input operand constraint contains `%c'", constraint[j]);
-	    return false;
-	  }
-	break;
-
+      case '+':
+      case '=':
+	error ("operand constraint contains incorrectly positioned '+' or '='");
+	return false;
+	
       case '%':
-	if (constraint == orig_constraint
-	    && input_num + 1 == ninputs - ninout)
+	if (operand_num + 1 == ninputs + noutputs)
 	  {
 	    error ("`%%' constraint used with last operand");
 	    return false;
@@ -46,64 +81,39 @@ parse_input_constraint (constraint_p, input_num, ninputs, noutputs, ninout,
 	*allows_mem = true;
 	break;
 
-      case '<':  case '>':
-      case '?':  case '!':  case '*':  case '#':
+      case '?':  case '!':  case '*':  case '&':  case '#':
       case 'E':  case 'F':  case 'G':  case 'H':
       case 's':  case 'i':  case 'n':
       case 'I':  case 'J':  case 'K':  case 'L':  case 'M':
       case 'N':  case 'O':  case 'P':  case ',':
 	break;
 
-	/* Whether or not a numeric constraint allows a register is
-	   decided by the matching constraint, and so there is no need
-	   to do anything special with them.  We must handle them in
-	   the default case, so that we don't unnecessarily force
-	   operands to memory.  */
       case '0':  case '1':  case '2':  case '3':  case '4':
       case '5':  case '6':  case '7':  case '8':  case '9':
-	{
-	  char *end;
-	  unsigned long match;
+      case '[':
+	error ("matching constraint not valid in output operand");
+	return false;
 
-	  match = strtoul (constraint + j, &end, 10);
-	  if (match >= (unsigned long) noutputs)
-	    {
-	      error ("matching constraint references invalid operand number");
-	      return false;
-	    }
-
-	  /* Try and find the real constraint for this dup.  Only do this
-	     if the matching constraint is the only alternative.  */
-	  if (*end == '\0'
-	      && (j == 0 || (j == 1 && constraint[0] == '%')))
-	    {
-	      constraint = constraints[match];
-	      *constraint_p = constraint;
-	      c_len = strlen (constraint);
-	      j = 0;
-	      break;
-	    }
-	  else
-	    j = end - constraint;
-	}
-	/* Fall through.  */
-
-      case 'p':  case 'r':
-	*allows_reg = true;
+      case '<':  case '>':
+	/* ??? Before flow, auto inc/dec insns are not supposed to exist,
+	   excepting those that expand_call created.  So match memory
+	   and hope.  */
+	*allows_mem = true;
 	break;
 
       case 'g':  case 'X':
 	*allows_reg = true;
 	*allows_mem = true;
 	break;
+	
+      case 'p': case 'r':
+	*allows_reg = true;
+	break;
 
       default:
-	if (! ISALPHA (constraint[j]))
-	  {
-	    error ("invalid punctuation `%c' in constraint", constraint[j]);
-	    return false;
-	  }
-	if (REG_CLASS_FROM_LETTER (constraint[j]) != NO_REGS)
+	if (!ISALPHA (*p))
+	  break;
+	if (REG_CLASS_FROM_LETTER (*p) != NO_REGS)
 	  *allows_reg = true;
 #ifdef EXTRA_CONSTRAINT
 	else

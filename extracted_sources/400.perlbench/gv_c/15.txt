@@ -1,21 +1,450 @@
-void
-Perl_gv_fullname4(pTHX_ SV *sv, GV *gv, const char *prefix, bool keepmain)
+GV *
+Perl_gv_fetchpv(pTHX_ const char *nambeg, I32 add, I32 sv_type)
 {
-    char *name;
-    HV *hv = GvSTASH(gv);
-    if (!hv) {
-	SvOK_off(sv);
-	return;
+    register const char *name = nambeg;
+    register GV *gv = 0;
+    GV**gvp;
+    I32 len;
+    register const char *namend;
+    HV *stash = 0;
+
+    if (*name == '*' && isALPHA(name[1])) /* accidental stringify on a GV? */
+	name++;
+
+    for (namend = name; *namend; namend++) {
+	if ((*namend == ':' && namend[1] == ':')
+	    || (*namend == '\'' && namend[1]))
+	{
+	    if (!stash)
+		stash = PL_defstash;
+	    if (!stash || !SvREFCNT(stash)) /* symbol table under destruction */
+		return Nullgv;
+
+	    len = namend - name;
+	    if (len > 0) {
+		char smallbuf[256];
+		char *tmpbuf;
+
+		if (len + 3 < sizeof (smallbuf))
+		    tmpbuf = smallbuf;
+		else
+		    New(601, tmpbuf, len+3, char);
+		Copy(name, tmpbuf, len, char);
+		tmpbuf[len++] = ':';
+		tmpbuf[len++] = ':';
+		tmpbuf[len] = '\0';
+		gvp = (GV**)hv_fetch(stash,tmpbuf,len,add);
+		gv = gvp ? *gvp : Nullgv;
+		if (gv && gv != (GV*)&PL_sv_undef) {
+		    if (SvTYPE(gv) != SVt_PVGV)
+			gv_init(gv, stash, tmpbuf, len, (add & GV_ADDMULTI));
+		    else
+			GvMULTI_on(gv);
+		}
+		if (tmpbuf != smallbuf)
+		    Safefree(tmpbuf);
+		if (!gv || gv == (GV*)&PL_sv_undef)
+		    return Nullgv;
+
+		if (!(stash = GvHV(gv)))
+		    stash = GvHV(gv) = newHV();
+
+		if (!HvNAME(stash))
+		    HvNAME(stash) = savepvn(nambeg, namend - nambeg);
+	    }
+
+	    if (*namend == ':')
+		namend++;
+	    namend++;
+	    name = namend;
+	    if (!*name)
+		return gv ? gv : (GV*)*hv_fetch(PL_defstash, "main::", 6, TRUE);
+	}
     }
-    sv_setpv(sv, prefix ? prefix : "");
-    
-    name = HvNAME(hv);
-    if (!name)
-	name = "__ANON__";
-	
-    if (keepmain || strNE(name, "main")) {
-	sv_catpv(sv,name);
-	sv_catpvn(sv,"::", 2);
+    len = namend - name;
+
+    /* No stash in name, so see how we can default */
+
+    if (!stash) {
+	if (isIDFIRST_lazy(name)) {
+	    bool global = FALSE;
+
+	    /* name is always \0 terminated, and initial \0 wouldn't return
+	       true from isIDFIRST_lazy, so we know that name[1] is defined  */
+	    switch (name[1]) {
+	    case '\0':
+		if (*name == '_')
+		    global = TRUE;
+		break;
+	    case 'N':
+		if (strEQ(name, "INC") || strEQ(name, "ENV"))
+		    global = TRUE;
+		break;
+	    case 'I':
+		if (strEQ(name, "SIG"))
+		    global = TRUE;
+		break;
+	    case 'T':
+		if (strEQ(name, "STDIN") || strEQ(name, "STDOUT") ||
+		    strEQ(name, "STDERR"))
+		    global = TRUE;
+		break;
+	    case 'R':
+		if (strEQ(name, "ARGV") || strEQ(name, "ARGVOUT"))
+		    global = TRUE;
+		break;
+	    }
+
+	    if (global)
+		stash = PL_defstash;
+	    else if (IN_PERL_COMPILETIME) {
+		stash = PL_curstash;
+		if (add && (PL_hints & HINT_STRICT_VARS) &&
+		    sv_type != SVt_PVCV &&
+		    sv_type != SVt_PVGV &&
+		    sv_type != SVt_PVFM &&
+		    sv_type != SVt_PVIO &&
+		    !(len == 1 && sv_type == SVt_PV &&
+		      (*name == 'a' || *name == 'b')) )
+		{
+		    gvp = (GV**)hv_fetch(stash,name,len,0);
+		    if (!gvp ||
+			*gvp == (GV*)&PL_sv_undef ||
+			SvTYPE(*gvp) != SVt_PVGV)
+		    {
+			stash = 0;
+		    }
+		    else if ((sv_type == SVt_PV   && !GvIMPORTED_SV(*gvp)) ||
+			     (sv_type == SVt_PVAV && !GvIMPORTED_AV(*gvp)) ||
+			     (sv_type == SVt_PVHV && !GvIMPORTED_HV(*gvp)) )
+		    {
+			Perl_warn(aTHX_ "Variable \"%c%s\" is not imported",
+			    sv_type == SVt_PVAV ? '@' :
+			    sv_type == SVt_PVHV ? '%' : '$',
+			    name);
+			if (GvCVu(*gvp))
+			    Perl_warn(aTHX_ "\t(Did you mean &%s instead?)\n", name);
+			stash = 0;
+		    }
+		}
+	    }
+	    else
+		stash = CopSTASH(PL_curcop);
+	}
+	else
+	    stash = PL_defstash;
     }
-    sv_catpvn(sv,GvNAME(gv),GvNAMELEN(gv));
+
+    /* By this point we should have a stash and a name */
+
+    if (!stash) {
+	if (add) {
+	    register SV *err = Perl_mess(aTHX_
+		 "Global symbol \"%s%s\" requires explicit package name",
+		 (sv_type == SVt_PV ? "$"
+		  : sv_type == SVt_PVAV ? "@"
+		  : sv_type == SVt_PVHV ? "%"
+		  : ""), name);
+	    if (USE_UTF8_IN_NAMES)
+		SvUTF8_on(err);
+	    qerror(err);
+	    stash = PL_nullstash;
+	}
+	else
+	    return Nullgv;
+    }
+
+    if (!SvREFCNT(stash))	/* symbol table under destruction */
+	return Nullgv;
+
+    gvp = (GV**)hv_fetch(stash,name,len,add);
+    if (!gvp || *gvp == (GV*)&PL_sv_undef)
+	return Nullgv;
+    gv = *gvp;
+    if (SvTYPE(gv) == SVt_PVGV) {
+	if (add) {
+	    GvMULTI_on(gv);
+	    gv_init_sv(gv, sv_type);
+	    if (*name=='!' && sv_type == SVt_PVHV && len==1)
+		require_errno(gv);
+	}
+	return gv;
+    } else if (add & GV_NOINIT) {
+	return gv;
+    }
+
+    /* Adding a new symbol */
+
+    if (add & GV_ADDWARN && ckWARN_d(WARN_INTERNAL))
+	Perl_warner(aTHX_ packWARN(WARN_INTERNAL), "Had to create %s unexpectedly", nambeg);
+    gv_init(gv, stash, name, len, add & GV_ADDMULTI);
+    gv_init_sv(gv, sv_type);
+
+    if (isALPHA(name[0]) && ! (isLEXWARN_on ? ckWARN(WARN_ONCE) 
+			                    : (PL_dowarn & G_WARN_ON ) ) )
+        GvMULTI_on(gv) ;
+
+    /* set up magic where warranted */
+    if (len > 1) {
+#ifndef EBCDIC
+	if (*name > 'V' ) {
+	    /* Nothing else to do.
+	       The compiler will probably turn the switch statement into a
+	       branch table. Make sure we avoid even that small overhead for
+	       the common case of lower case variable names.  */
+	} else
+#endif
+	{
+	    const char *name2 = name + 1;
+	    switch (*name) {
+	    case 'A':
+		if (strEQ(name2, "RGV")) {
+		    IoFLAGS(GvIOn(gv)) |= IOf_ARGV|IOf_START;
+		}
+		break;
+	    case 'E':
+		if (strnEQ(name2, "XPORT", 5))
+		    GvMULTI_on(gv);
+		break;
+	    case 'I':
+		if (strEQ(name2, "SA")) {
+		    AV* av = GvAVn(gv);
+		    GvMULTI_on(gv);
+		    sv_magic((SV*)av, (SV*)gv, PERL_MAGIC_isa, Nullch, 0);
+		    /* NOTE: No support for tied ISA */
+		    if ((add & GV_ADDMULTI) && strEQ(nambeg,"AnyDBM_File::ISA")
+			&& AvFILLp(av) == -1)
+			{
+			    char *pname;
+			    av_push(av, newSVpvn(pname = "NDBM_File",9));
+			    gv_stashpvn(pname, 9, TRUE);
+			    av_push(av, newSVpvn(pname = "DB_File",7));
+			    gv_stashpvn(pname, 7, TRUE);
+			    av_push(av, newSVpvn(pname = "GDBM_File",9));
+			    gv_stashpvn(pname, 9, TRUE);
+			    av_push(av, newSVpvn(pname = "SDBM_File",9));
+			    gv_stashpvn(pname, 9, TRUE);
+			    av_push(av, newSVpvn(pname = "ODBM_File",9));
+			    gv_stashpvn(pname, 9, TRUE);
+			}
+		}
+		break;
+	    case 'O':
+		if (strEQ(name2, "VERLOAD")) {
+		    HV* hv = GvHVn(gv);
+		    GvMULTI_on(gv);
+		    hv_magic(hv, Nullgv, PERL_MAGIC_overload);
+		}
+		break;
+	    case 'S':
+		if (strEQ(name2, "IG")) {
+		    HV *hv;
+		    I32 i;
+		    if (!PL_psig_ptr) {
+			Newz(73, PL_psig_ptr,  SIG_SIZE, SV*);
+			Newz(73, PL_psig_name, SIG_SIZE, SV*);
+			Newz(73, PL_psig_pend, SIG_SIZE, int);
+		    }
+		    GvMULTI_on(gv);
+		    hv = GvHVn(gv);
+		    hv_magic(hv, Nullgv, PERL_MAGIC_sig);
+		    for (i = 1; i < SIG_SIZE; i++) {
+			SV ** init;
+			init = hv_fetch(hv, PL_sig_name[i], strlen(PL_sig_name[i]), 1);
+			if (init)
+			    sv_setsv(*init, &PL_sv_undef);
+			PL_psig_ptr[i] = 0;
+			PL_psig_name[i] = 0;
+			PL_psig_pend[i] = 0;
+		    }
+		}
+		break;
+	    case 'V':
+		if (strEQ(name2, "ERSION"))
+		    GvMULTI_on(gv);
+		break;
+	    case '\005':	/* $^ENCODING */
+		if (strEQ(name2, "NCODING"))
+		    goto magicalize;
+		break;
+	    case '\017':	/* $^OPEN */
+		if (strEQ(name2, "PEN"))
+		    goto magicalize;
+		break;
+	    case '\024':	/* ${^TAINT} */
+		if (strEQ(name2, "AINT"))
+		    goto ro_magicalize;
+		break;
+	    case '\025':	/* ${^UNICODE}, ${^UTF8LOCALE} */
+		if (strEQ(name2, "NICODE")) 
+		    goto ro_magicalize;
+		if (strEQ(name2, "TF8LOCALE")) 
+		    goto ro_magicalize;
+		break;
+	    case '\027':	/* $^WARNING_BITS */
+		if (strEQ(name2, "ARNING_BITS"))
+		    goto magicalize;
+		break;
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+	    case '9':
+	    {
+		/* ensures variable is only digits */
+		/* ${"1foo"} fails this test (and is thus writeable) */
+		/* added by japhy, but borrowed from is_gv_magical */
+		const char *end = name + len;
+		while (--end > name) {
+		    if (!isDIGIT(*end)) return gv;
+		}
+		goto ro_magicalize;
+	    }
+	    }
+	}
+    } else {
+	/* Names of length 1.  (Or 0. But name is NUL terminated, so that will
+	   be case '\0' in this switch statement (ie a default case)  */
+	switch (*name) {
+	case '&':
+	case '`':
+	case '\'':
+	    if (
+		sv_type == SVt_PVAV ||
+		sv_type == SVt_PVHV ||
+		sv_type == SVt_PVCV ||
+		sv_type == SVt_PVFM ||
+		sv_type == SVt_PVIO
+		) { break; }
+	    PL_sawampersand = TRUE;
+	    goto ro_magicalize;
+
+	case ':':
+	    sv_setpv(GvSV(gv),PL_chopset);
+	    goto magicalize;
+
+	case '?':
+#ifdef COMPLEX_STATUS
+	    (void)SvUPGRADE(GvSV(gv), SVt_PVLV);
+#endif
+	    goto magicalize;
+
+	case '!':
+
+	    /* If %! has been used, automatically load Errno.pm.
+	       The require will itself set errno, so in order to
+	       preserve its value we have to set up the magic
+	       now (rather than going to magicalize)
+	    */
+
+	    sv_magic(GvSV(gv), (SV*)gv, PERL_MAGIC_sv, name, len);
+
+	    if (sv_type == SVt_PVHV)
+		require_errno(gv);
+
+	    break;
+	case '-':
+	{
+            AV* av = GvAVn(gv);
+            sv_magic((SV*)av, Nullsv, PERL_MAGIC_regdata, Nullch, 0);
+	    SvREADONLY_on(av);
+	    goto magicalize;
+	}
+	case '#':
+	case '*':
+	    if (sv_type == SVt_PV && ckWARN2(WARN_DEPRECATED, WARN_SYNTAX))
+		Perl_warner(aTHX_ packWARN2(WARN_DEPRECATED, WARN_SYNTAX),
+			    "Use of $%s is deprecated", name);
+	    goto magicalize;
+	case '|':
+	    sv_setiv(GvSV(gv), (IV)(IoFLAGS(GvIOp(PL_defoutgv)) & IOf_FLUSH) != 0);
+	    goto magicalize;
+
+	case '+':
+	{
+	    AV* av = GvAVn(gv);
+            sv_magic((SV*)av, (SV*)av, PERL_MAGIC_regdata, Nullch, 0);
+	    SvREADONLY_on(av);
+	    /* FALL THROUGH */
+	}
+	case '\023':	/* $^S */
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	ro_magicalize:
+	    SvREADONLY_on(GvSV(gv));
+	    /* FALL THROUGH */
+	case '[':
+	case '^':
+	case '~':
+	case '=':
+	case '%':
+	case '.':
+	case '(':
+	case ')':
+	case '<':
+	case '>':
+	case ',':
+	case '\\':
+	case '/':
+	case '\001':	/* $^A */
+	case '\003':	/* $^C */
+	case '\004':	/* $^D */
+	case '\005':	/* $^E */
+	case '\006':	/* $^F */
+	case '\010':	/* $^H */
+	case '\011':	/* $^I, NOT \t in EBCDIC */
+	case '\016':	/* $^N */
+	case '\017':	/* $^O */
+	case '\020':	/* $^P */
+	case '\024':	/* $^T */
+	case '\027':	/* $^W */
+	magicalize:
+	    sv_magic(GvSV(gv), (SV*)gv, PERL_MAGIC_sv, name, len);
+	    break;
+
+	case '\014':	/* $^L */
+	    sv_setpv(GvSV(gv),"\f");
+	    PL_formfeed = GvSV(gv);
+	    break;
+	case ';':
+	    sv_setpv(GvSV(gv),"\034");
+	    break;
+	case ']':
+	{
+	    SV *sv = GvSV(gv);
+	    (void)SvUPGRADE(sv, SVt_PVNV);
+	    Perl_sv_setpvf(aTHX_ sv,
+#if defined(PERL_SUBVERSION) && (PERL_SUBVERSION > 0)
+			    "%8.6"
+#else
+			    "%5.3"
+#endif
+			    NVff,
+			    SvNVX(PL_patchlevel));
+	    SvNVX(sv) = SvNVX(PL_patchlevel);
+	    SvNOK_on(sv);
+	    SvREADONLY_on(sv);
+	}
+	break;
+	case '\026':	/* $^V */
+	{
+	    SV *sv = GvSV(gv);
+	    GvSV(gv) = SvREFCNT_inc(PL_patchlevel);
+	    SvREFCNT_dec(sv);
+	}
+	break;
+	}
+    }
+    return gv;
 }

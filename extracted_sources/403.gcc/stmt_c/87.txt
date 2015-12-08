@@ -1,11 +1,104 @@
-static void 
-free_case_nodes (cn)
-     case_node_ptr cn;
+void
+check_for_full_enumeration_handling (type)
+     tree type;
 {
-  if (cn) 
+  struct case_node *n;
+  tree chain;
+
+  /* True iff the selector type is a numbered set mode.  */
+  int sparseness = 0;
+
+  /* The number of possible selector values.  */
+  HOST_WIDE_INT size;
+
+  /* For each possible selector value. a one iff it has been matched
+     by a case value alternative.  */
+  unsigned char *cases_seen;
+
+  /* The allocated size of cases_seen, in chars.  */
+  HOST_WIDE_INT bytes_needed;
+
+  if (! warn_switch)
+    return;
+
+  size = all_cases_count (type, &sparseness);
+  bytes_needed = (size + HOST_BITS_PER_CHAR) / HOST_BITS_PER_CHAR;
+
+  if (size > 0 && size < 600000
+      /* We deliberately use calloc here, not cmalloc, so that we can suppress
+	 this optimization if we don't have enough memory rather than
+	 aborting, as xmalloc would do.  */
+      && (cases_seen =
+	  (unsigned char *) really_call_calloc (bytes_needed, 1)) != NULL)
     {
-      free_case_nodes (cn->left);
-      free_case_nodes (cn->right);
-      free (cn);
+      HOST_WIDE_INT i;
+      tree v = TYPE_VALUES (type);
+
+      /* The time complexity of this code is normally O(N), where
+	 N being the number of members in the enumerated type.
+	 However, if type is a ENUMERAL_TYPE whose values do not
+	 increase monotonically, O(N*log(N)) time may be needed.  */
+
+      mark_seen_cases (type, cases_seen, size, sparseness);
+
+      for (i = 0; v != NULL_TREE && i < size; i++, v = TREE_CHAIN (v))
+	if (BITARRAY_TEST (cases_seen, i) == 0)
+	  warning ("enumeration value `%s' not handled in switch",
+		   IDENTIFIER_POINTER (TREE_PURPOSE (v)));
+
+      free (cases_seen);
     }
+
+  /* Now we go the other way around; we warn if there are case
+     expressions that don't correspond to enumerators.  This can
+     occur since C and C++ don't enforce type-checking of
+     assignments to enumeration variables.  */
+
+  if (case_stack->data.case_stmt.case_list
+      && case_stack->data.case_stmt.case_list->left)
+    case_stack->data.case_stmt.case_list
+      = case_tree2list (case_stack->data.case_stmt.case_list, 0);
+  if (warn_switch)
+    for (n = case_stack->data.case_stmt.case_list; n; n = n->right)
+      {
+	for (chain = TYPE_VALUES (type);
+	     chain && !tree_int_cst_equal (n->low, TREE_VALUE (chain));
+	     chain = TREE_CHAIN (chain))
+	  ;
+
+	if (!chain)
+	  {
+	    if (TYPE_NAME (type) == 0)
+	      warning ("case value `%ld' not in enumerated type",
+		       (long) TREE_INT_CST_LOW (n->low));
+	    else
+	      warning ("case value `%ld' not in enumerated type `%s'",
+		       (long) TREE_INT_CST_LOW (n->low),
+		       IDENTIFIER_POINTER ((TREE_CODE (TYPE_NAME (type))
+					    == IDENTIFIER_NODE)
+					   ? TYPE_NAME (type)
+					   : DECL_NAME (TYPE_NAME (type))));
+	  }
+	if (!tree_int_cst_equal (n->low, n->high))
+	  {
+	    for (chain = TYPE_VALUES (type);
+		 chain && !tree_int_cst_equal (n->high, TREE_VALUE (chain));
+		 chain = TREE_CHAIN (chain))
+	      ;
+
+	    if (!chain)
+	      {
+		if (TYPE_NAME (type) == 0)
+		  warning ("case value `%ld' not in enumerated type",
+			   (long) TREE_INT_CST_LOW (n->high));
+		else
+		  warning ("case value `%ld' not in enumerated type `%s'",
+			   (long) TREE_INT_CST_LOW (n->high),
+			   IDENTIFIER_POINTER ((TREE_CODE (TYPE_NAME (type))
+						== IDENTIFIER_NODE)
+					       ? TYPE_NAME (type)
+					       : DECL_NAME (TYPE_NAME (type))));
+	      }
+	  }
+      }
 }

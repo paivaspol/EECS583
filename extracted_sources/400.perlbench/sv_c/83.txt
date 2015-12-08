@@ -1,16 +1,5 @@
 void
-Perl_sv_catpvn_flags(pTHX_ register SV *dsv, register const char *sstr, register STRLEN slen, I32 flags)
+Perl_sv_catpvn(pTHX_ SV *dsv, const char* sstr, STRLEN slen)
 {
-    STRLEN dlen;
-    char *dstr;
-
-    dstr = SvPV_force_flags(dsv, dlen, flags);
-    SvGROW(dsv, dlen + slen + 1);
-    if (sstr == dstr)
-	sstr = SvPVX(dsv);
-    Move(sstr, SvPVX(dsv) + dlen, slen, char);
-    SvCUR(dsv) += slen;
-    *SvEND(dsv) = '\0';
-    (void)SvPOK_only_UTF8(dsv);		/* validate pointer */
-    SvTAINT(dsv);
+    sv_catpvn_flags(dsv, sstr, slen, SV_GMAGIC);
 }

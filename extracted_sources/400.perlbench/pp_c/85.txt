@@ -1,0 +1,30 @@
+PP(pp_vec)
+{
+    dSP; dTARGET;
+    register IV size   = POPi;
+    register IV offset = POPi;
+    register SV *src = POPs;
+    I32 lvalue = PL_op->op_flags & OPf_MOD || LVRET;
+
+    SvTAINTED_off(TARG);		/* decontaminate */
+    if (lvalue) {			/* it's an lvalue! */
+	if (SvREFCNT(TARG) > 1)	/* don't share the TARG (#20933) */
+	    TARG = sv_newmortal();
+	if (SvTYPE(TARG) < SVt_PVLV) {
+	    sv_upgrade(TARG, SVt_PVLV);
+	    sv_magic(TARG, Nullsv, PERL_MAGIC_vec, Nullch, 0);
+	}
+	LvTYPE(TARG) = 'v';
+	if (LvTARG(TARG) != src) {
+	    if (LvTARG(TARG))
+		SvREFCNT_dec(LvTARG(TARG));
+	    LvTARG(TARG) = SvREFCNT_inc(src);
+	}
+	LvTARGOFF(TARG) = offset;
+	LvTARGLEN(TARG) = size;
+    }
+
+    sv_setuv(TARG, do_vecget(src, offset, size));
+    PUSHs(TARG);
+    RETURN;
+}

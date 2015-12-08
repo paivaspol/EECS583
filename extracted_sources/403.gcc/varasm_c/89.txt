@@ -1,53 +1,129 @@
 void
-merge_weak (newdecl, olddecl)
-     tree newdecl;
-     tree olddecl;
+output_constant (exp, size, align)
+     tree exp;
+     HOST_WIDE_INT size;
+     unsigned int align;
 {
-  if (DECL_WEAK (newdecl) == DECL_WEAK (olddecl))
+  enum tree_code code;
+  HOST_WIDE_INT thissize;
+
+  /* Some front-ends use constants other than the standard language-indepdent
+     varieties, but which may still be output directly.  Give the front-end a
+     chance to convert EXP to a language-independent representation.  */
+  exp = (*lang_hooks.expand_constant) (exp);
+
+  if (size == 0 || flag_syntax_only)
     return;
 
-  if (DECL_WEAK (newdecl))
+  /* Eliminate any conversions since we'll be outputting the underlying
+     constant.  */
+  while (TREE_CODE (exp) == NOP_EXPR || TREE_CODE (exp) == CONVERT_EXPR
+	 || TREE_CODE (exp) == NON_LVALUE_EXPR
+	 || TREE_CODE (exp) == VIEW_CONVERT_EXPR)
+    exp = TREE_OPERAND (exp, 0);
+
+  code = TREE_CODE (TREE_TYPE (exp));
+  thissize = int_size_in_bytes (TREE_TYPE (exp));
+
+  /* Allow a constructor with no elements for any data type.
+     This means to fill the space with zeros.  */
+  if (TREE_CODE (exp) == CONSTRUCTOR && CONSTRUCTOR_ELTS (exp) == 0)
     {
-      tree wd;
-      
-      /* NEWDECL is weak, but OLDDECL is not.  */
-
-      /* If we already output the OLDDECL, we're in trouble; we can't
-	 go back and make it weak.  This error cannot caught in
-	 declare_weak because the NEWDECL and OLDDECL was not yet
-	 been merged; therefore, TREE_ASM_WRITTEN was not set.  */
-      if (TREE_ASM_WRITTEN (olddecl))
-	error_with_decl (newdecl, 
-			 "weak declaration of `%s' must precede definition");
-
-      /* If we've already generated rtl referencing OLDDECL, we may
-	 have done so in a way that will not function properly with
-	 a weak symbol.  */
-      else if (TREE_USED (olddecl)
-	       && TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (olddecl)))
-	warning_with_decl (newdecl, "weak declaration of `%s' after first use results in unspecified behavior");
-
-      if (SUPPORTS_WEAK)
-	{
-	  /* We put the NEWDECL on the weak_decls list at some point.
-	     Replace it with the OLDDECL.  */
-	  for (wd = weak_decls; wd; wd = TREE_CHAIN (wd))
-	    if (TREE_VALUE (wd) == newdecl)
-	      {
-		TREE_VALUE (wd) = olddecl;
-		break;
-	      }
-	  /* We may not find the entry on the list.  If NEWDECL is a
-	     weak alias, then we will have already called
-	     globalize_decl to remove the entry; in that case, we do
-	     not need to do anything.  */
-	}
-
-      /* Make the OLDDECL weak; it's OLDDECL that we'll be keeping.  */
-      mark_weak (olddecl);
+      assemble_zeros (size);
+      return;
     }
-  else
-    /* OLDDECL was weak, but NEWDECL was not explicitly marked as
-       weak.  Just update NEWDECL to indicate that it's weak too.  */
-    mark_weak (newdecl);
+
+  if (TREE_CODE (exp) == FDESC_EXPR)
+    {
+#ifdef ASM_OUTPUT_FDESC
+      HOST_WIDE_INT part = tree_low_cst (TREE_OPERAND (exp, 1), 0);
+      tree decl = TREE_OPERAND (exp, 0);
+      ASM_OUTPUT_FDESC (asm_out_file, decl, part);
+#else
+      abort ();
+#endif
+      return;
+    }
+
+  /* Now output the underlying data.  If we've handling the padding, return.
+     Otherwise, break and ensure THISSIZE is the size written.  */
+  switch (code)
+    {
+    case CHAR_TYPE:
+    case BOOLEAN_TYPE:
+    case INTEGER_TYPE:
+    case ENUMERAL_TYPE:
+    case POINTER_TYPE:
+    case REFERENCE_TYPE:
+      if (! assemble_integer (expand_expr (exp, NULL_RTX, VOIDmode,
+					   EXPAND_INITIALIZER),
+			      size, align, 0))
+	error ("initializer for integer value is too complicated");
+      break;
+
+    case REAL_TYPE:
+      if (TREE_CODE (exp) != REAL_CST)
+	error ("initializer for floating value is not a floating constant");
+
+      assemble_real (TREE_REAL_CST (exp),
+		     mode_for_size (size * BITS_PER_UNIT, MODE_FLOAT, 0),
+		     align);
+      break;
+
+    case COMPLEX_TYPE:
+      output_constant (TREE_REALPART (exp), thissize / 2, align);
+      output_constant (TREE_IMAGPART (exp), thissize / 2,
+		       min_align (align, BITS_PER_UNIT * (thissize / 2)));
+      break;
+
+    case ARRAY_TYPE:
+    case VECTOR_TYPE:
+      if (TREE_CODE (exp) == CONSTRUCTOR)
+	{
+	  output_constructor (exp, size, align);
+	  return;
+	}
+      else if (TREE_CODE (exp) == STRING_CST)
+	{
+	  thissize = MIN (TREE_STRING_LENGTH (exp), size);
+	  assemble_string (TREE_STRING_POINTER (exp), thissize);
+	}
+      else
+	abort ();
+      break;
+
+    case RECORD_TYPE:
+    case UNION_TYPE:
+      if (TREE_CODE (exp) == CONSTRUCTOR)
+	output_constructor (exp, size, align);
+      else
+	abort ();
+      return;
+
+    case SET_TYPE:
+      if (TREE_CODE (exp) == INTEGER_CST)
+	assemble_integer (expand_expr (exp, NULL_RTX,
+				       VOIDmode, EXPAND_INITIALIZER),
+			 thissize, align, 1);
+      else if (TREE_CODE (exp) == CONSTRUCTOR)
+	{
+	  unsigned char *buffer = (unsigned char *) alloca (thissize);
+	  if (get_set_constructor_bytes (exp, buffer, thissize))
+	    abort ();
+	  assemble_string ((char *) buffer, thissize);
+	}
+      else
+	error ("unknown set constructor type");
+      return;
+
+    case ERROR_MARK:
+      return;
+
+    default:
+      abort ();
+    }
+
+  size -= thissize;
+  if (size > 0)
+    assemble_zeros (size);
 }

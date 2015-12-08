@@ -1,14 +1,7 @@
-int
-ix86_attr_length_address_default (insn)
-     rtx insn;
+static void
+ix86_free_machine_status (p)
+     struct function *p;
 {
-  int i;
-  extract_insn_cached (insn);
-  for (i = recog_data.n_operands - 1; i >= 0; --i)
-    if (GET_CODE (recog_data.operand[i]) == MEM)
-      {
-	return memory_address_length (XEXP (recog_data.operand[i], 0));
-	break;
-      }
-  return 0;
+  free (p->machine);
+  p->machine = NULL;
 }

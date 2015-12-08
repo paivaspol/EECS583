@@ -1,0 +1,119 @@
+static void
+estimate_bb_frequencies (loops)
+     struct loops *loops;
+{
+  int i;
+  double freq_max = 0;
+
+  mark_dfs_back_edges ();
+  if (flag_branch_probabilities)
+    {
+      counts_to_freqs ();
+      return;
+    }
+
+  /* Fill in the probability values in flowgraph based on the REG_BR_PROB
+     notes.  */
+  for (i = 0; i < n_basic_blocks; i++)
+    {
+      rtx last_insn = BLOCK_END (i);
+      int probability;
+      edge fallthru, branch;
+
+      if (GET_CODE (last_insn) != JUMP_INSN || !any_condjump_p (last_insn)
+	  /* Avoid handling of conditional jumps jumping to fallthru edge.  */
+	  || BASIC_BLOCK (i)->succ->succ_next == NULL)
+	{
+	  /* We can predict only conditional jumps at the moment.
+	     Expect each edge to be equally probable.
+	     ?? In the future we want to make abnormal edges improbable.  */
+	  int nedges = 0;
+	  edge e;
+
+	  for (e = BASIC_BLOCK (i)->succ; e; e = e->succ_next)
+	    {
+	      nedges++;
+	      if (e->probability != 0)
+		break;
+	    }
+	  if (!e)
+	    for (e = BASIC_BLOCK (i)->succ; e; e = e->succ_next)
+	      e->probability = (REG_BR_PROB_BASE + nedges / 2) / nedges;
+	}
+      else
+	{
+	  probability = INTVAL (XEXP (find_reg_note (last_insn,
+						     REG_BR_PROB, 0), 0));
+	  fallthru = BASIC_BLOCK (i)->succ;
+	  if (!fallthru->flags & EDGE_FALLTHRU)
+	    fallthru = fallthru->succ_next;
+	  branch = BASIC_BLOCK (i)->succ;
+	  if (branch->flags & EDGE_FALLTHRU)
+	    branch = branch->succ_next;
+
+	  branch->probability = probability;
+	  fallthru->probability = REG_BR_PROB_BASE - probability;
+	}
+    }
+
+  ENTRY_BLOCK_PTR->succ->probability = REG_BR_PROB_BASE;
+
+  /* Set up block info for each basic block.  */
+  alloc_aux_for_blocks (sizeof (struct block_info_def));
+  alloc_aux_for_edges (sizeof (struct edge_info_def));
+  for (i = -2; i < n_basic_blocks; i++)
+    {
+      edge e;
+      basic_block bb;
+
+      if (i == -2)
+	bb = ENTRY_BLOCK_PTR;
+      else if (i == -1)
+	bb = EXIT_BLOCK_PTR;
+      else
+	bb = BASIC_BLOCK (i);
+
+      BLOCK_INFO (bb)->tovisit = 0;
+      for (e = bb->succ; e; e = e->succ_next)
+	EDGE_INFO (e)->back_edge_prob = ((double) e->probability
+					 / REG_BR_PROB_BASE);
+    }
+
+  /* First compute probabilities locally for each loop from innermost
+     to outermost to examine probabilities for back edges.  */
+  estimate_loops_at_level (loops->tree_root);
+
+  /* Now fake loop around whole function to finalize probabilities.  */
+  for (i = 0; i < n_basic_blocks; i++)
+    BLOCK_INFO (BASIC_BLOCK (i))->tovisit = 1;
+
+  BLOCK_INFO (ENTRY_BLOCK_PTR)->tovisit = 1;
+  BLOCK_INFO (EXIT_BLOCK_PTR)->tovisit = 1;
+  propagate_freq (ENTRY_BLOCK_PTR);
+
+  for (i = 0; i < n_basic_blocks; i++)
+    if (BLOCK_INFO (BASIC_BLOCK (i))->frequency > freq_max)
+      freq_max = BLOCK_INFO (BASIC_BLOCK (i))->frequency;
+
+  for (i = -2; i < n_basic_blocks; i++)
+    {
+      basic_block bb;
+      volatile double tmp;
+
+      if (i == -2)
+	bb = ENTRY_BLOCK_PTR;
+      else if (i == -1)
+	bb = EXIT_BLOCK_PTR;
+      else
+	bb = BASIC_BLOCK (i);
+
+      /* ??? Prevent rounding differences due to optimization on x86.  */
+      tmp = BLOCK_INFO (bb)->frequency * BB_FREQ_MAX;
+      tmp /= freq_max;
+      tmp += 0.5;
+      bb->frequency = tmp;
+    }
+
+  free_aux_for_blocks ();
+  free_aux_for_edges ();
+}

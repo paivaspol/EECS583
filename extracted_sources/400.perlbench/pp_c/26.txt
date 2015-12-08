@@ -1,0 +1,16 @@
+PP(pp_predec)
+{
+    dSP;
+    if (SvTYPE(TOPs) > SVt_PVLV)
+	DIE(aTHX_ PL_no_modify);
+    if (!SvREADONLY(TOPs) && SvIOK_notUV(TOPs) && !SvNOK(TOPs) && !SvPOK(TOPs)
+        && SvIVX(TOPs) != IV_MIN)
+    {
+	--SvIVX(TOPs);
+	SvFLAGS(TOPs) &= ~(SVp_NOK|SVp_POK);
+    }
+    else
+	sv_dec(TOPs);
+    SvSETMAGIC(TOPs);
+    return NORMAL;
+}

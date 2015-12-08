@@ -1,109 +1,24 @@
 STATIC bool
-S_utf8_mg_pos(pTHX_ SV *sv, MAGIC **mgp, STRLEN **cachep, I32 i, I32 *offsetp, I32 uoff, U8 **sp, U8 *start, U8 *send)
+S_utf8_mg_pos_init(pTHX_ SV *sv, MAGIC **mgp, STRLEN **cachep, I32 i, I32 *offsetp, U8 *s, U8 *start)
 {
-    bool found = FALSE;
+    bool found = FALSE; 
 
     if (SvMAGICAL(sv) && !SvREADONLY(sv)) {
-        if (!*mgp)
-            *mgp = mg_find(sv, PERL_MAGIC_utf8);
-        if (*mgp && (*mgp)->mg_ptr) {
+	if (!*mgp)
+	    *mgp = sv_magicext(sv, 0, PERL_MAGIC_utf8, &PL_vtbl_utf8, 0, 0);
+	assert(*mgp);
+
+        if ((*mgp)->mg_ptr)
             *cachep = (STRLEN *) (*mgp)->mg_ptr;
-	    ASSERT_UTF8_CACHE(*cachep);
-            if ((*cachep)[i] == (STRLEN)uoff)	/* An exact match. */
-		 found = TRUE;
-	    else {			/* We will skip to the right spot. */
-		 STRLEN forw  = 0;
-		 STRLEN backw = 0;
-		 U8* p = NULL;
+        else {
+            Newz(0, *cachep, PERL_MAGIC_UTF8_CACHESIZE * 2, STRLEN);
+            (*mgp)->mg_ptr = (char *) *cachep;
+        }
+        assert(*cachep);
 
-		 /* The assumption is that going backward is half
-		  * the speed of going forward (that's where the
-		  * 2 * backw in the below comes from).  (The real
-		  * figure of course depends on the UTF-8 data.) */
-
-		 if ((*cachep)[i] > (STRLEN)uoff) {
-		      forw  = uoff;
-		      backw = (*cachep)[i] - (STRLEN)uoff;
-
-		      if (forw < 2 * backw)
-			   p = start;
-		      else
-			   p = start + (*cachep)[i+1];
-		 }
-		 /* Try this only for the substr offset (i == 0),
-		  * not for the substr length (i == 2). */
-		 else if (i == 0) { /* (*cachep)[i] < uoff */
-		      STRLEN ulen = sv_len_utf8(sv);
-
-		      if ((STRLEN)uoff < ulen) {
-			   forw  = (STRLEN)uoff - (*cachep)[i];
-			   backw = ulen - (STRLEN)uoff;
-
-			   if (forw < 2 * backw)
-				p = start + (*cachep)[i+1];
-			   else
-				p = send;
-		      }
-
-		      /* If the string is not long enough for uoff,
-		       * we could extend it, but not at this low a level. */
-		 }
-
-		 if (p) {
-		      if (forw < 2 * backw) {
-			   while (forw--)
-				p += UTF8SKIP(p);
-		      }
-		      else {
-			   while (backw--) {
-				p--;
-				while (UTF8_IS_CONTINUATION(*p))
-				     p--;
-			   }
-		      }
-
-		      /* Update the cache. */
-		      (*cachep)[i]   = (STRLEN)uoff;
-		      (*cachep)[i+1] = p - start;
-
-		      /* Drop the stale "length" cache */
-		      if (i == 0) {
-			  (*cachep)[2] = 0;
-			  (*cachep)[3] = 0;
-		      }
-
-		      found = TRUE;
-		 }
-	    }
-	    if (found) {	/* Setup the return values. */
-		 *offsetp = (*cachep)[i+1];
-		 *sp = start + *offsetp;
-		 if (*sp >= send) {
-		      *sp = send;
-		      *offsetp = send - start;
-		 }
-		 else if (*sp < start) {
-		      *sp = start;
-		      *offsetp = 0;
-		 }
-	    }
-	}
-#ifdef PERL_UTF8_CACHE_ASSERT
-	if (found) {
-	     U8 *s = start;
-	     I32 n = uoff;
-
-	     while (n-- && s < send)
-		  s += UTF8SKIP(s);
-
-	     if (i == 0) {
-		  assert(*offsetp == s - start);
-		  assert((*cachep)[0] == (STRLEN)uoff);
-		  assert((*cachep)[1] == *offsetp);
-	     }
-	     ASSERT_UTF8_CACHE(*cachep);
-	}
-#endif
+        (*cachep)[i]   = *offsetp;
+        (*cachep)[i+1] = s - start;
+        found = TRUE;
     }
 
     return found;

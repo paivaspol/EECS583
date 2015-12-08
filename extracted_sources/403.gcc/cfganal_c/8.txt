@@ -1,14 +1,24 @@
-int
-find_edge_index (edge_list, pred, succ)
-     struct edge_list *edge_list;
-     basic_block pred, succ;
+void
+print_edge_list (f, elist)
+     FILE *f;
+     struct edge_list *elist;
 {
   int x;
 
-  for (x = 0; x < NUM_EDGES (edge_list); x++)
-    if (INDEX_EDGE_PRED_BB (edge_list, x) == pred
-	&& INDEX_EDGE_SUCC_BB (edge_list, x) == succ)
-      return x;
+  fprintf (f, "Compressed edge list, %d BBs + entry & exit, and %d edges\n",
+	   elist->num_blocks - 2, elist->num_edges);
 
-  return (EDGE_INDEX_NO_EDGE);
+  for (x = 0; x < elist->num_edges; x++)
+    {
+      fprintf (f, " %-4d - edge(", x);
+      if (INDEX_EDGE_PRED_BB (elist, x) == ENTRY_BLOCK_PTR)
+	fprintf (f, "entry,");
+      else
+	fprintf (f, "%d,", INDEX_EDGE_PRED_BB (elist, x)->index);
+
+      if (INDEX_EDGE_SUCC_BB (elist, x) == EXIT_BLOCK_PTR)
+	fprintf (f, "exit)\n");
+      else
+	fprintf (f, "%d)\n", INDEX_EDGE_SUCC_BB (elist, x)->index);
+    }
 }

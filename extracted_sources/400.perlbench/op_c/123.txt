@@ -1,0 +1,53 @@
+OP *
+Perl_ck_glob(pTHX_ OP *o)
+{
+    GV *gv;
+
+    o = ck_fun(o);
+    if ((o->op_flags & OPf_KIDS) && !cLISTOPo->op_first->op_sibling)
+	append_elem(OP_GLOB, o, newDEFSVOP());
+
+    if (!((gv = gv_fetchpv("glob", FALSE, SVt_PVCV))
+	  && GvCVu(gv) && GvIMPORTED_CV(gv)))
+    {
+	gv = gv_fetchpv("CORE::GLOBAL::glob", FALSE, SVt_PVCV);
+    }
+
+#if !defined(PERL_EXTERNAL_GLOB)
+    /* XXX this can be tightened up and made more failsafe. */
+    if (!(gv && GvCVu(gv) && GvIMPORTED_CV(gv))) {
+	GV *glob_gv;
+	ENTER;
+	Perl_load_module(aTHX_ PERL_LOADMOD_NOIMPORT,
+		newSVpvn("File::Glob", 10), Nullsv, Nullsv, Nullsv);
+	gv = gv_fetchpv("CORE::GLOBAL::glob", FALSE, SVt_PVCV);
+	glob_gv = gv_fetchpv("File::Glob::csh_glob", FALSE, SVt_PVCV);
+	GvCV(gv) = GvCV(glob_gv);
+	SvREFCNT_inc((SV*)GvCV(gv));
+	GvIMPORTED_CV_on(gv);
+	LEAVE;
+    }
+#endif /* PERL_EXTERNAL_GLOB */
+
+    if (gv && GvCVu(gv) && GvIMPORTED_CV(gv)) {
+	append_elem(OP_GLOB, o,
+		    newSVOP(OP_CONST, 0, newSViv(PL_glob_index++)));
+	o->op_type = OP_LIST;
+	o->op_ppaddr = PL_ppaddr[OP_LIST];
+	cLISTOPo->op_first->op_type = OP_PUSHMARK;
+	cLISTOPo->op_first->op_ppaddr = PL_ppaddr[OP_PUSHMARK];
+	cLISTOPo->op_first->op_targ = 0;
+	o = newUNOP(OP_ENTERSUB, OPf_STACKED,
+		    append_elem(OP_LIST, o,
+				scalar(newUNOP(OP_RV2CV, 0,
+					       newGVOP(OP_GV, 0, gv)))));
+	o = newUNOP(OP_NULL, 0, ck_subr(o));
+	o->op_targ = OP_GLOB;		/* hint at what it used to be */
+	return o;
+    }
+    gv = newGVgen("main");
+    gv_IOadd(gv);
+    append_elem(OP_GLOB, o, newGVOP(OP_GV, 0, gv));
+    scalarkids(o);
+    return o;
+}

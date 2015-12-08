@@ -1,64 +1,19 @@
 static void
-sjlj_emit_dispatch_table (dispatch_label, lp_info)
-     rtx dispatch_label;
-     struct sjlj_lp_info *lp_info;
+sjlj_emit_function_exit ()
 {
-  int i, first_reachable;
-  rtx mem, dispatch, seq, fc;
-
-  fc = cfun->eh->sjlj_fc;
+  rtx seq;
 
   start_sequence ();
 
-  emit_label (dispatch_label);
-
-#ifndef DONT_USE_BUILTIN_SETJMP
-  expand_builtin_setjmp_receiver (dispatch_label);
-#endif
-
-  /* Load up dispatch index, exc_ptr and filter values from the
-     function context.  */
-  mem = adjust_address (fc, TYPE_MODE (integer_type_node),
-			sjlj_fc_call_site_ofs);
-  dispatch = copy_to_reg (mem);
-
-  mem = adjust_address (fc, word_mode, sjlj_fc_data_ofs);
-  if (word_mode != Pmode)
-    {
-#ifdef POINTERS_EXTEND_UNSIGNED
-      mem = convert_memory_address (Pmode, mem);
-#else
-      mem = convert_to_mode (Pmode, mem, 0);
-#endif
-    }
-  emit_move_insn (cfun->eh->exc_ptr, mem);
-
-  mem = adjust_address (fc, word_mode, sjlj_fc_data_ofs + UNITS_PER_WORD);
-  emit_move_insn (cfun->eh->filter, mem);
-
-  /* Jump to one of the directly reachable regions.  */
-  /* ??? This really ought to be using a switch statement.  */
-
-  first_reachable = 0;
-  for (i = cfun->eh->last_region_number; i > 0; --i)
-    {
-      if (! lp_info[i].directly_reachable)
-	continue;
-
-      if (! first_reachable)
-	{
-	  first_reachable = i;
-	  continue;
-	}
-
-      emit_cmp_and_jump_insns (dispatch, GEN_INT (lp_info[i].dispatch_index),
-			       EQ, NULL_RTX, TYPE_MODE (integer_type_node), 0,
-			       cfun->eh->region_array[i]->post_landing_pad);
-    }
+  emit_library_call (unwind_sjlj_unregister_libfunc, LCT_NORMAL, VOIDmode,
+		     1, XEXP (cfun->eh->sjlj_fc, 0), Pmode);
 
   seq = get_insns ();
   end_sequence ();
 
-  emit_insns_before (seq, (cfun->eh->region_array[first_reachable]
-			   ->post_landing_pad));
+  /* ??? Really this can be done in any block at loop level 0 that
+     post-dominates all can_throw_internal instructions.  This is
+     the last possible moment.  */
+
+  emit_insns_after (seq, cfun->eh->sjlj_exit_after);
 }

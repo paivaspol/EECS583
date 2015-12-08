@@ -1,0 +1,30 @@
+OP *
+Perl_prepend_elem(pTHX_ I32 type, OP *first, OP *last)
+{
+    if (!first)
+	return last;
+
+    if (!last)
+	return first;
+
+    if (last->op_type == (unsigned)type) {
+	if (type == OP_LIST) {	/* already a PUSHMARK there */
+	    first->op_sibling = ((LISTOP*)last)->op_first->op_sibling;
+	    ((LISTOP*)last)->op_first->op_sibling = first;
+            if (!(first->op_flags & OPf_PARENS))
+                last->op_flags &= ~OPf_PARENS;
+	}
+	else {
+	    if (!(last->op_flags & OPf_KIDS)) {
+		((LISTOP*)last)->op_last = first;
+		last->op_flags |= OPf_KIDS;
+	    }
+	    first->op_sibling = ((LISTOP*)last)->op_first;
+	    ((LISTOP*)last)->op_first = first;
+	}
+	last->op_flags |= OPf_KIDS;
+	return last;
+    }
+
+    return newLISTOP(type, 0, first, last);
+}

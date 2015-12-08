@@ -1,0 +1,25 @@
+PP(pp_readlink)
+{
+    dSP;
+#ifdef HAS_SYMLINK
+    dTARGET;
+    char *tmps;
+    char buf[MAXPATHLEN];
+    int len;
+    STRLEN n_a;
+
+#ifndef INCOMPLETE_TAINTS
+    TAINT;
+#endif
+    tmps = POPpx;
+    len = readlink(tmps, buf, sizeof(buf) - 1);
+    EXTEND(SP, 1);
+    if (len < 0)
+	RETPUSHUNDEF;
+    PUSHp(buf, len);
+    RETURN;
+#else
+    EXTEND(SP, 1);
+    RETSETUNDEF;		/* just pretend it's a normal file */
+#endif
+}

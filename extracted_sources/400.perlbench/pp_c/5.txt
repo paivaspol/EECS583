@@ -1,0 +1,93 @@
+PP(pp_rv2gv)
+{
+    dSP; dTOPss;
+
+    if (SvROK(sv)) {
+      wasref:
+	tryAMAGICunDEREF(to_gv);
+
+	sv = SvRV(sv);
+	if (SvTYPE(sv) == SVt_PVIO) {
+	    GV *gv = (GV*) sv_newmortal();
+	    gv_init(gv, 0, "", 0, 0);
+	    GvIOp(gv) = (IO *)sv;
+	    (void)SvREFCNT_inc(sv);
+	    sv = (SV*) gv;
+	}
+	else if (SvTYPE(sv) != SVt_PVGV)
+	    DIE(aTHX_ "Not a GLOB reference");
+    }
+    else {
+	if (SvTYPE(sv) != SVt_PVGV) {
+	    char *sym;
+	    STRLEN len;
+
+	    if (SvGMAGICAL(sv)) {
+		mg_get(sv);
+		if (SvROK(sv))
+		    goto wasref;
+	    }
+	    if (!SvOK(sv) && sv != &PL_sv_undef) {
+		/* If this is a 'my' scalar and flag is set then vivify
+		 * NI-S 1999/05/07
+		 */
+		if (SvREADONLY(sv))
+		    Perl_croak(aTHX_ PL_no_modify);
+		if (PL_op->op_private & OPpDEREF) {
+		    char *name;
+		    GV *gv;
+		    if (cUNOP->op_targ) {
+			STRLEN len;
+			SV *namesv = PAD_SV(cUNOP->op_targ);
+			name = SvPV(namesv, len);
+			gv = (GV*)NEWSV(0,0);
+			gv_init(gv, CopSTASH(PL_curcop), name, len, 0);
+		    }
+		    else {
+			name = CopSTASHPV(PL_curcop);
+			gv = newGVgen(name);
+		    }
+		    if (SvTYPE(sv) < SVt_RV)
+			sv_upgrade(sv, SVt_RV);
+		    if (SvPVX(sv)) {
+			SvOOK_off(sv);		/* backoff */
+			if (SvLEN(sv))
+			    Safefree(SvPVX(sv));
+			SvLEN(sv)=SvCUR(sv)=0;
+		    }
+		    SvRV(sv) = (SV*)gv;
+		    SvROK_on(sv);
+		    SvSETMAGIC(sv);
+		    goto wasref;
+		}
+		if (PL_op->op_flags & OPf_REF ||
+		    PL_op->op_private & HINT_STRICT_REFS)
+		    DIE(aTHX_ PL_no_usym, "a symbol");
+		if (ckWARN(WARN_UNINITIALIZED))
+		    report_uninit();
+		RETSETUNDEF;
+	    }
+	    sym = SvPV(sv,len);
+	    if ((PL_op->op_flags & OPf_SPECIAL) &&
+		!(PL_op->op_flags & OPf_MOD))
+	    {
+		sv = (SV*)gv_fetchpv(sym, FALSE, SVt_PVGV);
+		if (!sv
+		    && (!is_gv_magical(sym,len,0)
+			|| !(sv = (SV*)gv_fetchpv(sym, TRUE, SVt_PVGV))))
+		{
+		    RETSETUNDEF;
+		}
+	    }
+	    else {
+		if (PL_op->op_private & HINT_STRICT_REFS)
+		    DIE(aTHX_ PL_no_symref, sym, "a symbol");
+		sv = (SV*)gv_fetchpv(sym, TRUE, SVt_PVGV);
+	    }
+	}
+    }
+    if (PL_op->op_private & OPpLVAL_INTRO)
+	save_gp((GV*)sv, !(PL_op->op_flags & OPf_SPECIAL));
+    SETs(sv);
+    RETURN;
+}

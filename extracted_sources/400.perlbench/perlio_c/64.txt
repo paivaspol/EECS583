@@ -1,0 +1,10 @@
+void
+PerlIOBase_clearerr(pTHX_ PerlIO *f)
+{
+    if (PerlIOValid(f)) {
+	PerlIO *n = PerlIONext(f);
+	PerlIOBase(f)->flags &= ~(PERLIO_F_ERROR | PERLIO_F_EOF);
+	if (PerlIOValid(n))
+	    PerlIO_clearerr(n);
+    }
+}

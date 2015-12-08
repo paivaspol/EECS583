@@ -1,0 +1,98 @@
+PP(pp_ghostent)
+{
+#if defined(HAS_GETHOSTBYNAME) || defined(HAS_GETHOSTBYADDR) || defined(HAS_GETHOSTENT)
+    dSP;
+    I32 which = PL_op->op_type;
+    register char **elem;
+    register SV *sv;
+#ifndef HAS_GETHOST_PROTOS /* XXX Do we need individual probes? */
+    struct hostent *gethostbyaddr(Netdb_host_t, Netdb_hlen_t, int);
+    struct hostent *gethostbyname(Netdb_name_t);
+    struct hostent *gethostent(void);
+#endif
+    struct hostent *hent;
+    unsigned long len;
+    STRLEN n_a;
+
+    EXTEND(SP, 10);
+    if (which == OP_GHBYNAME) {
+#ifdef HAS_GETHOSTBYNAME
+        char* name = POPpbytex;
+	hent = PerlSock_gethostbyname(name);
+#else
+	DIE(aTHX_ PL_no_sock_func, "gethostbyname");
+#endif
+    }
+    else if (which == OP_GHBYADDR) {
+#ifdef HAS_GETHOSTBYADDR
+	int addrtype = POPi;
+	SV *addrsv = POPs;
+	STRLEN addrlen;
+	Netdb_host_t addr = (Netdb_host_t) SvPVbyte(addrsv, addrlen);
+
+	hent = PerlSock_gethostbyaddr(addr, (Netdb_hlen_t) addrlen, addrtype);
+#else
+	DIE(aTHX_ PL_no_sock_func, "gethostbyaddr");
+#endif
+    }
+    else
+#ifdef HAS_GETHOSTENT
+	hent = PerlSock_gethostent();
+#else
+	DIE(aTHX_ PL_no_sock_func, "gethostent");
+#endif
+
+#ifdef HOST_NOT_FOUND
+	if (!hent) {
+#ifdef USE_REENTRANT_API
+#   ifdef USE_GETHOSTENT_ERRNO
+	    h_errno = PL_reentrant_buffer->_gethostent_errno;
+#   endif
+#endif
+	    STATUS_NATIVE_SET(h_errno);
+	}
+#endif
+
+    if (GIMME != G_ARRAY) {
+	PUSHs(sv = sv_newmortal());
+	if (hent) {
+	    if (which == OP_GHBYNAME) {
+		if (hent->h_addr)
+		    sv_setpvn(sv, hent->h_addr, hent->h_length);
+	    }
+	    else
+		sv_setpv(sv, (char*)hent->h_name);
+	}
+	RETURN;
+    }
+
+    if (hent) {
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setpv(sv, (char*)hent->h_name);
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	for (elem = hent->h_aliases; elem && *elem; elem++) {
+	    sv_catpv(sv, *elem);
+	    if (elem[1])
+		sv_catpvn(sv, " ", 1);
+	}
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setiv(sv, (IV)hent->h_addrtype);
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	len = hent->h_length;
+	sv_setiv(sv, (IV)len);
+#ifdef h_addr
+	for (elem = hent->h_addr_list; elem && *elem; elem++) {
+	    XPUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	    sv_setpvn(sv, *elem, len);
+	}
+#else
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	if (hent->h_addr)
+	    sv_setpvn(sv, hent->h_addr, len);
+#endif /* h_addr */
+    }
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_sock_func, "gethostent");
+#endif
+}

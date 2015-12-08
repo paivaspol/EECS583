@@ -1,16 +1,9 @@
-bool
-Perl_is_utf8_alnumc(pTHX_ U8 *p)
+U32
+Perl_to_uni_upper_lc(pTHX_ U32 c)
 {
-    if (!is_utf8_char(p))
-	return FALSE;
-    if (!PL_utf8_alnum)
-	PL_utf8_alnum = swash_init("utf8", "IsAlnumC", &PL_sv_undef, 0, 0);
-    return swash_fetch(PL_utf8_alnum, p, TRUE) != 0;
-/*    return is_utf8_alpha(p) || is_utf8_digit(p); */
-#ifdef SURPRISINGLY_SLOWER  /* probably because alpha is usually true */
-    if (!PL_utf8_alnum)
-	PL_utf8_alnum = swash_init("utf8", "",
-	    sv_2mortal(newSVpv("+utf8::IsAlpha\n+utf8::IsDigit\n005F\n",0)), 0, 0);
-    return swash_fetch(PL_utf8_alnum, p, TRUE) != 0;
-#endif
+    /* XXX returns only the first character -- do not use XXX */
+    /* XXX no locale support yet */
+    STRLEN len;
+    U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
+    return (U32)to_uni_upper(c, tmpbuf, &len);
 }

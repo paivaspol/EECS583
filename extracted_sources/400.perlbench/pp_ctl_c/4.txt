@@ -1,33 +1,110 @@
-STATIC I32
-S_dopoptolabel(pTHX_ char *label)
+PP(pp_substcont)
 {
-    register I32 i;
-    register PERL_CONTEXT *cx;
-
-    for (i = cxstack_ix; i >= 0; i--) {
-	cx = &cxstack[i];
-	switch (CxTYPE(cx)) {
-	case CXt_SUBST:
-	case CXt_SUB:
-	case CXt_FORMAT:
-	case CXt_EVAL:
-	case CXt_NULL:
-	    if (ckWARN(WARN_EXITING))
-		Perl_warner(aTHX_ packWARN(WARN_EXITING), "Exiting %s via %s",
-			context_name[CxTYPE(cx)], OP_NAME(PL_op));
-	    if (CxTYPE(cx) == CXt_NULL)
-		return -1;
-	    break;
-	case CXt_LOOP:
-	    if (!cx->blk_loop.label ||
-	      strNE(label, cx->blk_loop.label) ) {
-		DEBUG_l(Perl_deb(aTHX_ "(Skipping label #%ld %s)\n",
-			(long)i, cx->blk_loop.label));
-		continue;
-	    }
-	    DEBUG_l( Perl_deb(aTHX_ "(Found label #%ld %s)\n", (long)i, label));
-	    return i;
-	}
+    dSP;
+    register PMOP *pm = (PMOP*) cLOGOP->op_other;
+    register PERL_CONTEXT *cx = &cxstack[cxstack_ix];
+    register SV *dstr = cx->sb_dstr;
+    register char *s = cx->sb_s;
+    register char *m = cx->sb_m;
+    char *orig = cx->sb_orig;
+    register REGEXP *rx = cx->sb_rx;
+    SV *nsv = Nullsv;
+    REGEXP *old = PM_GETRE(pm);
+    if(old != rx) {
+	if(old) 
+	    ReREFCNT_dec(old);
+	PM_SETRE(pm,rx);
     }
-    return i;
+
+    rxres_restore(&cx->sb_rxres, rx);
+    RX_MATCH_UTF8_set(rx, SvUTF8(cx->sb_targ));
+
+    if (cx->sb_iters++) {
+	I32 saviters = cx->sb_iters;
+	if (cx->sb_iters > cx->sb_maxiters)
+	    DIE(aTHX_ "Substitution loop");
+
+	if (!(cx->sb_rxtainted & 2) && SvTAINTED(TOPs))
+	    cx->sb_rxtainted |= 2;
+	sv_catsv(dstr, POPs);
+
+	/* Are we done */
+	if (cx->sb_once || !CALLREGEXEC(aTHX_ rx, s, cx->sb_strend, orig,
+				     s == m, cx->sb_targ, NULL,
+				     ((cx->sb_rflags & REXEC_COPY_STR)
+				      ? (REXEC_IGNOREPOS|REXEC_NOT_FIRST)
+				      : (REXEC_COPY_STR|REXEC_IGNOREPOS|REXEC_NOT_FIRST))))
+	{
+	    SV *targ = cx->sb_targ;
+
+	    assert(cx->sb_strend >= s);
+	    if(cx->sb_strend > s) {
+		 if (DO_UTF8(dstr) && !SvUTF8(targ))
+		      sv_catpvn_utf8_upgrade(dstr, s, cx->sb_strend - s, nsv);
+		 else
+		      sv_catpvn(dstr, s, cx->sb_strend - s);
+	    }
+	    cx->sb_rxtainted |= RX_MATCH_TAINTED(rx);
+
+	    SvOOK_off(targ);
+	    if (SvLEN(targ))
+		Safefree(SvPVX(targ));
+	    SvPVX(targ) = SvPVX(dstr);
+	    SvCUR_set(targ, SvCUR(dstr));
+	    SvLEN_set(targ, SvLEN(dstr));
+	    if (DO_UTF8(dstr))
+		SvUTF8_on(targ);
+	    SvPVX(dstr) = 0;
+	    sv_free(dstr);
+
+	    TAINT_IF(cx->sb_rxtainted & 1);
+	    PUSHs(sv_2mortal(newSViv(saviters - 1)));
+
+	    (void)SvPOK_only_UTF8(targ);
+	    TAINT_IF(cx->sb_rxtainted);
+	    SvSETMAGIC(targ);
+	    SvTAINT(targ);
+
+	    LEAVE_SCOPE(cx->sb_oldsave);
+	    ReREFCNT_dec(rx);
+	    POPSUBST(cx);
+	    RETURNOP(pm->op_next);
+	}
+	cx->sb_iters = saviters;
+    }
+    if (RX_MATCH_COPIED(rx) && rx->subbeg != orig) {
+	m = s;
+	s = orig;
+	cx->sb_orig = orig = rx->subbeg;
+	s = orig + (m - s);
+	cx->sb_strend = s + (cx->sb_strend - m);
+    }
+    cx->sb_m = m = rx->startp[0] + orig;
+    if (m > s) {
+	if (DO_UTF8(dstr) && !SvUTF8(cx->sb_targ)) 
+	    sv_catpvn_utf8_upgrade(dstr, s, m - s, nsv);
+	else
+	    sv_catpvn(dstr, s, m-s);
+    }
+    cx->sb_s = rx->endp[0] + orig;
+    { /* Update the pos() information. */
+	SV *sv = cx->sb_targ;
+	MAGIC *mg;
+	I32 i;
+	if (SvTYPE(sv) < SVt_PVMG)
+	    (void)SvUPGRADE(sv, SVt_PVMG);
+	if (!(mg = mg_find(sv, PERL_MAGIC_regex_global))) {
+	    sv_magic(sv, Nullsv, PERL_MAGIC_regex_global, Nullch, 0);
+	    mg = mg_find(sv, PERL_MAGIC_regex_global);
+	}
+	i = m - orig;
+	if (DO_UTF8(sv))
+	    sv_pos_b2u(sv, &i);
+	mg->mg_len = i;
+    }
+    if (old != rx)
+	ReREFCNT_inc(rx);
+    cx->sb_rxtainted |= RX_MATCH_TAINTED(rx);
+    rxres_save(&cx->sb_rxres, rx);
+    RETURNOP(pm->op_pmreplstart);
 }

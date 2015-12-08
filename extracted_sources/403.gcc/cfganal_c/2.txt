@@ -1,20 +1,81 @@
-static bool
-keep_with_call_p (insn)
-     rtx insn;
+bool
+mark_dfs_back_edges ()
 {
-  rtx set;
+  edge *stack;
+  int *pre;
+  int *post;
+  int sp;
+  int prenum = 1;
+  int postnum = 1;
+  sbitmap visited;
+  bool found = false;
 
-  if (INSN_P (insn) && (set = single_set (insn)) != NULL)
+  /* Allocate the preorder and postorder number arrays.  */
+  pre = (int *) xcalloc (n_basic_blocks, sizeof (int));
+  post = (int *) xcalloc (n_basic_blocks, sizeof (int));
+
+  /* Allocate stack for back-tracking up CFG.  */
+  stack = (edge *) xmalloc ((n_basic_blocks + 1) * sizeof (edge));
+  sp = 0;
+
+  /* Allocate bitmap to track nodes that have been visited.  */
+  visited = sbitmap_alloc (n_basic_blocks);
+
+  /* None of the nodes in the CFG have been visited yet.  */
+  sbitmap_zero (visited);
+
+  /* Push the first edge on to the stack.  */
+  stack[sp++] = ENTRY_BLOCK_PTR->succ;
+
+  while (sp)
     {
-      if (GET_CODE (SET_DEST (set)) == REG
-	  && fixed_regs[REGNO (SET_DEST (set))]
-	  && general_operand (SET_SRC (set), VOIDmode))
-	return true;
-      if (GET_CODE (SET_SRC (set)) == REG
-	  && FUNCTION_VALUE_REGNO_P (REGNO (SET_SRC (set)))
-	  && GET_CODE (SET_DEST (set)) == REG
-	  && REGNO (SET_DEST (set)) >= FIRST_PSEUDO_REGISTER)
-	return true;
+      edge e;
+      basic_block src;
+      basic_block dest;
+
+      /* Look at the edge on the top of the stack.  */
+      e = stack[sp - 1];
+      src = e->src;
+      dest = e->dest;
+      e->flags &= ~EDGE_DFS_BACK;
+
+      /* Check if the edge destination has been visited yet.  */
+      if (dest != EXIT_BLOCK_PTR && ! TEST_BIT (visited, dest->index))
+	{
+	  /* Mark that we have visited the destination.  */
+	  SET_BIT (visited, dest->index);
+
+	  pre[dest->index] = prenum++;
+	  if (dest->succ)
+	    {
+	      /* Since the DEST node has been visited for the first
+		 time, check its successors.  */
+	      stack[sp++] = dest->succ;
+	    }
+	  else
+	    post[dest->index] = postnum++;
+	}
+      else
+	{
+	  if (dest != EXIT_BLOCK_PTR && src != ENTRY_BLOCK_PTR
+	      && pre[src->index] >= pre[dest->index]
+	      && post[dest->index] == 0)
+	    e->flags |= EDGE_DFS_BACK, found = true;
+
+	  if (! e->succ_next && src != ENTRY_BLOCK_PTR)
+	    post[src->index] = postnum++;
+
+	  if (e->succ_next)
+	    stack[sp - 1] = e->succ_next;
+	  else
+	    sp--;
+	}
     }
-  return false;
+
+  free (pre);
+  free (post);
+  free (stack);
+  sbitmap_free (visited);
+
+  return found;
 }

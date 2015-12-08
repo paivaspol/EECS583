@@ -1,7 +1,48 @@
-bool
-Perl_is_uni_alnum(pTHX_ UV c)
+IV
+Perl_utf8_distance(pTHX_ U8 *a, U8 *b)
 {
-    U8 tmpbuf[UTF8_MAXBYTES+1];
-    uvchr_to_utf8(tmpbuf, c);
-    return is_utf8_alnum(tmpbuf);
+    IV off = 0;
+
+    /* Note: cannot use UTF8_IS_...() too eagerly here since  e.g.
+     * the bitops (especially ~) can create illegal UTF-8.
+     * In other words: in Perl UTF-8 is not just for Unicode. */
+
+    if (a < b) {
+	while (a < b) {
+	    U8 c = UTF8SKIP(a);
+
+	    if (b - a < c) {
+	        if (ckWARN_d(WARN_UTF8)) {
+		    if (PL_op)
+		        Perl_warner(aTHX_ packWARN(WARN_UTF8),
+				    "%s in %s", unees, OP_DESC(PL_op));
+		    else
+		        Perl_warner(aTHX_ packWARN(WARN_UTF8), unees);
+		}
+		return off;
+	    }
+	    a += c;
+	    off--;
+	}
+    }
+    else {
+	while (b < a) {
+	    U8 c = UTF8SKIP(b);
+
+	    if (a - b < c) {
+	        if (ckWARN_d(WARN_UTF8)) {
+		    if (PL_op)
+		        Perl_warner(aTHX_ packWARN(WARN_UTF8),
+				    "%s in %s", unees, OP_DESC(PL_op));
+		    else
+		        Perl_warner(aTHX_ packWARN(WARN_UTF8), unees);
+		}
+		return off;
+	    }
+	    b += c;
+	    off++;
+	}
+    }
+
+    return off;
 }

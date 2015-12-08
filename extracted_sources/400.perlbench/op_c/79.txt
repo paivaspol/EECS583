@@ -1,0 +1,112 @@
+STATIC OP *
+S_new_logop(pTHX_ I32 type, I32 flags, OP** firstp, OP** otherp)
+{
+    LOGOP *logop;
+    OP *o;
+    OP *first = *firstp;
+    OP *other = *otherp;
+
+    if (type == OP_XOR)		/* Not short circuit, but here by precedence. */
+	return newBINOP(type, flags, scalar(first), scalar(other));
+
+    scalarboolean(first);
+    /* optimize "!a && b" to "a || b", and "!a || b" to "a && b" */
+    if (first->op_type == OP_NOT && (first->op_flags & OPf_SPECIAL)) {
+	if (type == OP_AND || type == OP_OR) {
+	    if (type == OP_AND)
+		type = OP_OR;
+	    else
+		type = OP_AND;
+	    o = first;
+	    first = *firstp = cUNOPo->op_first;
+	    if (o->op_next)
+		first->op_next = o->op_next;
+	    cUNOPo->op_first = Nullop;
+	    op_free(o);
+	}
+    }
+    if (first->op_type == OP_CONST) {
+	if (first->op_private & OPpCONST_STRICT)
+	    no_bareword_allowed(first);
+	else if (ckWARN(WARN_BAREWORD) && (first->op_private & OPpCONST_BARE))
+		Perl_warner(aTHX_ packWARN(WARN_BAREWORD), "Bareword found in conditional");
+	if ((type == OP_AND) == (SvTRUE(((SVOP*)first)->op_sv))) {
+	    op_free(first);
+	    *firstp = Nullop;
+	    if (other->op_type == OP_CONST)
+		other->op_private |= OPpCONST_SHORTCIRCUIT;
+	    return other;
+	}
+	else {
+	    op_free(other);
+	    *otherp = Nullop;
+	    if (first->op_type == OP_CONST)
+		first->op_private |= OPpCONST_SHORTCIRCUIT;
+	    return first;
+	}
+    }
+    else if (ckWARN(WARN_MISC) && (first->op_flags & OPf_KIDS)) {
+	OP *k1 = ((UNOP*)first)->op_first;
+	OP *k2 = k1->op_sibling;
+	OPCODE warnop = 0;
+	switch (first->op_type)
+	{
+	case OP_NULL:
+	    if (k2 && k2->op_type == OP_READLINE
+		  && (k2->op_flags & OPf_STACKED)
+		  && ((k1->op_flags & OPf_WANT) == OPf_WANT_SCALAR))
+	    {
+		warnop = k2->op_type;
+	    }
+	    break;
+
+	case OP_SASSIGN:
+	    if (k1->op_type == OP_READDIR
+		  || k1->op_type == OP_GLOB
+		  || (k1->op_type == OP_NULL && k1->op_targ == OP_GLOB)
+		  || k1->op_type == OP_EACH)
+	    {
+		warnop = ((k1->op_type == OP_NULL)
+			  ? (OPCODE)k1->op_targ : k1->op_type);
+	    }
+	    break;
+	}
+	if (warnop) {
+	    line_t oldline = CopLINE(PL_curcop);
+	    CopLINE_set(PL_curcop, PL_copline);
+	    Perl_warner(aTHX_ packWARN(WARN_MISC),
+		 "Value of %s%s can be \"0\"; test with defined()",
+		 PL_op_desc[warnop],
+		 ((warnop == OP_READLINE || warnop == OP_GLOB)
+		  ? " construct" : "() operator"));
+	    CopLINE_set(PL_curcop, oldline);
+	}
+    }
+
+    if (!other)
+	return first;
+
+    if (type == OP_ANDASSIGN || type == OP_ORASSIGN)
+	other->op_private |= OPpASSIGN_BACKWARDS;  /* other is an OP_SASSIGN */
+
+    NewOp(1101, logop, 1, LOGOP);
+
+    logop->op_type = (OPCODE)type;
+    logop->op_ppaddr = PL_ppaddr[type];
+    logop->op_first = first;
+    logop->op_flags = flags | OPf_KIDS;
+    logop->op_other = LINKLIST(other);
+    logop->op_private = (U8)(1 | (flags >> 8));
+
+    /* establish postfix order */
+    logop->op_next = LINKLIST(first);
+    first->op_next = (OP*)logop;
+    first->op_sibling = other;
+
+    CHECKOP(type,logop);
+
+    o = newUNOP(OP_NULL, 0, (OP*)logop);
+    other->op_next = o;
+
+    return o;
+}

@@ -1,22 +1,10 @@
-int
-Perl_block_start(pTHX_ int full)
+STATIC OP *
+S_modkids(pTHX_ OP *o, I32 type)
 {
-    int retval = PL_savestack_ix;
-    /* If there were syntax errors, don't try to start a block */
-    if (PL_yynerrs) return retval;
-
-    pad_block_start(full);
-    SAVEHINTS();
-    PL_hints &= ~HINT_BLOCK_SCOPE;
-    SAVESPTR(PL_compiling.cop_warnings);
-    if (! specialWARN(PL_compiling.cop_warnings)) {
-        PL_compiling.cop_warnings = newSVsv(PL_compiling.cop_warnings) ;
-        SAVEFREESV(PL_compiling.cop_warnings) ;
+    OP *kid;
+    if (o && o->op_flags & OPf_KIDS) {
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    mod(kid, type);
     }
-    SAVESPTR(PL_compiling.cop_io);
-    if (! specialCopIO(PL_compiling.cop_io)) {
-        PL_compiling.cop_io = newSVsv(PL_compiling.cop_io) ;
-        SAVEFREESV(PL_compiling.cop_io) ;
-    }
-    return retval;
+    return o;
 }

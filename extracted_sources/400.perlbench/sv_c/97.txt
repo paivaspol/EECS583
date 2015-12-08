@@ -1,26 +1,84 @@
 void
-Perl_sv_replace(pTHX_ register SV *sv, register SV *nsv)
+Perl_sv_insert(pTHX_ SV *bigstr, STRLEN offset, STRLEN len, char *little, STRLEN littlelen)
 {
-    U32 refcnt = SvREFCNT(sv);
-    SV_CHECK_THINKFIRST(sv);
-    if (SvREFCNT(nsv) != 1 && ckWARN_d(WARN_INTERNAL))
-	Perl_warner(aTHX_ packWARN(WARN_INTERNAL), "Reference miscount in sv_replace()");
-    if (SvMAGICAL(sv)) {
-	if (SvMAGICAL(nsv))
-	    mg_free(nsv);
-	else
-	    sv_upgrade(nsv, SVt_PVMG);
-	SvMAGIC(nsv) = SvMAGIC(sv);
-	SvFLAGS(nsv) |= SvMAGICAL(sv);
-	SvMAGICAL_off(sv);
-	SvMAGIC(sv) = 0;
+    register char *big;
+    register char *mid;
+    register char *midend;
+    register char *bigend;
+    register I32 i;
+    STRLEN curlen;
+
+
+    if (!bigstr)
+	Perl_croak(aTHX_ "Can't modify non-existent substring");
+    SvPV_force(bigstr, curlen);
+    (void)SvPOK_only_UTF8(bigstr);
+    if (offset + len > curlen) {
+	SvGROW(bigstr, offset+len+1);
+	Zero(SvPVX(bigstr)+curlen, offset+len-curlen, char);
+	SvCUR_set(bigstr, offset+len);
     }
-    SvREFCNT(sv) = 0;
-    sv_clear(sv);
-    assert(!SvREFCNT(sv));
-    StructCopy(nsv,sv,SV);
-    SvREFCNT(sv) = refcnt;
-    SvFLAGS(nsv) |= SVTYPEMASK;		/* Mark as freed */
-    SvREFCNT(nsv) = 0;
-    del_SV(nsv);
+
+    SvTAINT(bigstr);
+    i = littlelen - len;
+    if (i > 0) {			/* string might grow */
+	big = SvGROW(bigstr, SvCUR(bigstr) + i + 1);
+	mid = big + offset + len;
+	midend = bigend = big + SvCUR(bigstr);
+	bigend += i;
+	*bigend = '\0';
+	while (midend > mid)		/* shove everything down */
+	    *--bigend = *--midend;
+	Move(little,big+offset,littlelen,char);
+	SvCUR(bigstr) += i;
+	SvSETMAGIC(bigstr);
+	return;
+    }
+    else if (i == 0) {
+	Move(little,SvPVX(bigstr)+offset,len,char);
+	SvSETMAGIC(bigstr);
+	return;
+    }
+
+    big = SvPVX(bigstr);
+    mid = big + offset;
+    midend = mid + len;
+    bigend = big + SvCUR(bigstr);
+
+    if (midend > bigend)
+	Perl_croak(aTHX_ "panic: sv_insert");
+
+    if (mid - big > bigend - midend) {	/* faster to shorten from end */
+	if (littlelen) {
+	    Move(little, mid, littlelen,char);
+	    mid += littlelen;
+	}
+	i = bigend - midend;
+	if (i > 0) {
+	    Move(midend, mid, i,char);
+	    mid += i;
+	}
+	*mid = '\0';
+	SvCUR_set(bigstr, mid - big);
+    }
+    /*SUPPRESS 560*/
+    else if ((i = mid - big)) {	/* faster from front */
+	midend -= littlelen;
+	mid = midend;
+	sv_chop(bigstr,midend-i);
+	big += i;
+	while (i--)
+	    *--midend = *--big;
+	if (littlelen)
+	    Move(little, mid, littlelen,char);
+    }
+    else if (littlelen) {
+	midend -= littlelen;
+	sv_chop(bigstr,midend);
+	Move(little,midend,littlelen,char);
+    }
+    else {
+	sv_chop(bigstr,midend);
+    }
+    SvSETMAGIC(bigstr);
 }

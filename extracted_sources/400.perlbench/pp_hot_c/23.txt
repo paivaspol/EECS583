@@ -1,0 +1,129 @@
+PP(pp_rv2av)
+{
+    dSP; dTOPss;
+    AV *av;
+
+    if (SvROK(sv)) {
+      wasref:
+	tryAMAGICunDEREF(to_av);
+
+	av = (AV*)SvRV(sv);
+	if (SvTYPE(av) != SVt_PVAV)
+	    DIE(aTHX_ "Not an ARRAY reference");
+	if (PL_op->op_flags & OPf_REF) {
+	    SETs((SV*)av);
+	    RETURN;
+	}
+	else if (LVRET) {
+	    if (GIMME == G_SCALAR)
+		Perl_croak(aTHX_ "Can't return array to lvalue scalar context");
+	    SETs((SV*)av);
+	    RETURN;
+	}
+	else if (PL_op->op_flags & OPf_MOD
+		&& PL_op->op_private & OPpLVAL_INTRO)
+	    Perl_croak(aTHX_ PL_no_localize_ref);
+    }
+    else {
+	if (SvTYPE(sv) == SVt_PVAV) {
+	    av = (AV*)sv;
+	    if (PL_op->op_flags & OPf_REF) {
+		SETs((SV*)av);
+		RETURN;
+	    }
+	    else if (LVRET) {
+		if (GIMME == G_SCALAR)
+		    Perl_croak(aTHX_ "Can't return array to lvalue"
+			       " scalar context");
+		SETs((SV*)av);
+		RETURN;
+	    }
+	}
+	else {
+	    GV *gv;
+	
+	    if (SvTYPE(sv) != SVt_PVGV) {
+		char *sym;
+		STRLEN len;
+
+		if (SvGMAGICAL(sv)) {
+		    mg_get(sv);
+		    if (SvROK(sv))
+			goto wasref;
+		}
+		if (!SvOK(sv)) {
+		    if (PL_op->op_flags & OPf_REF ||
+		      PL_op->op_private & HINT_STRICT_REFS)
+			DIE(aTHX_ PL_no_usym, "an ARRAY");
+		    if (ckWARN(WARN_UNINITIALIZED))
+			report_uninit();
+		    if (GIMME == G_ARRAY) {
+			(void)POPs;
+			RETURN;
+		    }
+		    RETSETUNDEF;
+		}
+		sym = SvPV(sv,len);
+		if ((PL_op->op_flags & OPf_SPECIAL) &&
+		    !(PL_op->op_flags & OPf_MOD))
+		{
+		    gv = (GV*)gv_fetchpv(sym, FALSE, SVt_PVAV);
+		    if (!gv
+			&& (!is_gv_magical(sym,len,0)
+			    || !(gv = (GV*)gv_fetchpv(sym, TRUE, SVt_PVAV))))
+		    {
+			RETSETUNDEF;
+		    }
+		}
+		else {
+		    if (PL_op->op_private & HINT_STRICT_REFS)
+			DIE(aTHX_ PL_no_symref, sym, "an ARRAY");
+		    gv = (GV*)gv_fetchpv(sym, TRUE, SVt_PVAV);
+		}
+	    }
+	    else {
+		gv = (GV*)sv;
+	    }
+	    av = GvAVn(gv);
+	    if (PL_op->op_private & OPpLVAL_INTRO)
+		av = save_ary(gv);
+	    if (PL_op->op_flags & OPf_REF) {
+		SETs((SV*)av);
+		RETURN;
+	    }
+	    else if (LVRET) {
+		if (GIMME == G_SCALAR)
+		    Perl_croak(aTHX_ "Can't return array to lvalue"
+			       " scalar context");
+		SETs((SV*)av);
+		RETURN;
+	    }
+	}
+    }
+
+    if (GIMME == G_ARRAY) {
+	I32 maxarg = AvFILL(av) + 1;
+	(void)POPs;			/* XXXX May be optimized away? */
+	EXTEND(SP, maxarg);
+	if (SvRMAGICAL(av)) {
+	    U32 i;
+	    for (i=0; i < (U32)maxarg; i++) {
+		SV **svp = av_fetch(av, i, FALSE);
+		/* See note in pp_helem, and bug id #27839 */
+		SP[i+1] = svp
+		    ? SvGMAGICAL(*svp) ? sv_mortalcopy(*svp) : *svp
+		    : &PL_sv_undef;
+	    }
+	}
+	else {
+	    Copy(AvARRAY(av), SP+1, maxarg, SV*);
+	}
+	SP += maxarg;
+    }
+    else if (GIMME_V == G_SCALAR) {
+	dTARGET;
+	I32 maxarg = AvFILL(av) + 1;
+	SETi(maxarg);
+    }
+    RETURN;
+}

@@ -1,49 +1,64 @@
-static void
-init_dependency_output (pfile)
+void
+cpp_post_options (pfile)
      cpp_reader *pfile;
 {
-  char *spec, *s, *output_file;
-
-  /* Either of two environment variables can specify output of deps.
-     Its value is either "OUTPUT_FILE" or "OUTPUT_FILE DEPS_TARGET",
-     where OUTPUT_FILE is the file to write deps info to
-     and DEPS_TARGET is the target to mention in the deps.  */
-
-  if (CPP_OPTION (pfile, print_deps) == 0)
+  if (pfile->print_version)
     {
-      spec = getenv ("DEPENDENCIES_OUTPUT");
-      if (spec)
-	CPP_OPTION (pfile, print_deps) = 1;
-      else
-	{
-	  spec = getenv ("SUNPRO_DEPENDENCIES");
-	  if (spec)
-	    CPP_OPTION (pfile, print_deps) = 2;
-	  else
-	    return;
-	}
-
-      /* Find the space before the DEPS_TARGET, if there is one.  */
-      s = strchr (spec, ' ');
-      if (s)
-	{
-	  /* Let the caller perform MAKE quoting.  */
-	  deps_add_target (pfile->deps, s + 1, 0);
-	  output_file = (char *) xmalloc (s - spec + 1);
-	  memcpy (output_file, spec, s - spec);
-	  output_file[s - spec] = 0;
-	}
-      else
-	output_file = spec;
-
-      /* Command line -MF overrides environment variables and default.  */
-      if (CPP_OPTION (pfile, deps_file) == 0)
-	CPP_OPTION (pfile, deps_file) = output_file;
-
-      CPP_OPTION (pfile, print_deps_append) = 1;
+      fprintf (stderr, _("GNU CPP version %s (cpplib)"), version_string);
+#ifdef TARGET_VERSION
+      TARGET_VERSION;
+#endif
+      fputc ('\n', stderr);
     }
-  else if (CPP_OPTION (pfile, deps_file) == 0)
-    /* If -M or -MM was seen without -MF, default output to wherever
-       was specified with -o.  out_fname is non-NULL here.  */
-    CPP_OPTION (pfile, deps_file) = CPP_OPTION (pfile, out_fname);
+
+  /* Canonicalize in_fname and out_fname.  We guarantee they are not
+     NULL, and that the empty string represents stdin / stdout.  */
+  if (CPP_OPTION (pfile, in_fname) == NULL
+      || !strcmp (CPP_OPTION (pfile, in_fname), "-"))
+    CPP_OPTION (pfile, in_fname) = "";
+
+  if (CPP_OPTION (pfile, out_fname) == NULL
+      || !strcmp (CPP_OPTION (pfile, out_fname), "-"))
+    CPP_OPTION (pfile, out_fname) = "";
+
+  /* -Wtraditional is not useful in C++ mode.  */
+  if (CPP_OPTION (pfile, cplusplus))
+    CPP_OPTION (pfile, warn_traditional) = 0;
+
+  /* Set this if it hasn't been set already.  */
+  if (CPP_OPTION (pfile, user_label_prefix) == NULL)
+    CPP_OPTION (pfile, user_label_prefix) = USER_LABEL_PREFIX;
+
+  /* Permanently disable macro expansion if we are rescanning
+     preprocessed text.  */
+  if (CPP_OPTION (pfile, preprocessed))
+    pfile->state.prevent_expansion = 1;
+
+  /* -dM makes no normal output.  This is set here so that -dM -dD
+     works as expected.  */
+  if (CPP_OPTION (pfile, dump_macros) == dump_only)
+    CPP_OPTION (pfile, no_output) = 1;
+
+  /* Disable -dD, -dN and -dI if we should make no normal output
+     (such as with -M). Allow -M -dM since some software relies on
+     this.  */
+  if (CPP_OPTION (pfile, no_output))
+    {
+      if (CPP_OPTION (pfile, dump_macros) != dump_only)
+	CPP_OPTION (pfile, dump_macros) = dump_none;
+      CPP_OPTION (pfile, dump_includes) = 0;
+    }
+
+  /* We need to do this after option processing and before
+     cpp_start_read, as cppmain.c relies on the options->no_output to
+     set its callbacks correctly before calling cpp_start_read.  */
+  init_dependency_output (pfile);
+
+  /* After checking the environment variables, check if -M or -MM has
+     not been specified, but other -M options have.  */
+  if (CPP_OPTION (pfile, print_deps) == 0 &&
+      (CPP_OPTION (pfile, print_deps_missing_files)
+       || CPP_OPTION (pfile, deps_file)
+       || CPP_OPTION (pfile, deps_phony_targets)))
+    cpp_fatal (pfile, "you must additionally specify either -M or -MM");
 }

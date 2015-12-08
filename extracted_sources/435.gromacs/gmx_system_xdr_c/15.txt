@@ -1,10 +1,69 @@
-static bool_t
-xdrstdio_putint32 (XDR *xdrs, xdr_int32_t *ip)
+bool_t
+xdr_string (xdrs, cpp, maxsize)
+     XDR *xdrs;
+     char **cpp;
+     unsigned int maxsize;
 {
-  xdr_int32_t mycopy = xdr_htonl (*ip);
+  char *sp = *cpp;	/* sp is the actual string pointer */
+  unsigned int size;
+  unsigned int nodesize;
 
-  ip = &mycopy;
-  if (fwrite ((char *) ip, 4, 1, (FILE *) xdrs->x_private) != 1)
-    return FALSE;
-  return TRUE;
+  /*
+   * first deal with the length since xdr strings are counted-strings
+   */
+  switch (xdrs->x_op)
+    {
+    case XDR_FREE:
+      if (sp == NULL)
+	{
+	  return TRUE;		/* already free */
+	}
+      /* fall through... */
+    case XDR_ENCODE:
+      if (sp == NULL)
+	return FALSE;
+      size = strlen (sp);
+      break;
+    case XDR_DECODE:
+      break;
+    }
+  if (!xdr_u_int (xdrs, &size))
+    {
+      return FALSE;
+    }
+  if (size > maxsize)
+    {
+      return FALSE;
+    }
+  nodesize = size + 1;
+
+  /*
+   * now deal with the actual bytes
+   */
+  switch (xdrs->x_op)
+    {
+    case XDR_DECODE:
+      if (nodesize == 0)
+	{
+	  return TRUE;
+	}
+      if (sp == NULL)
+	*cpp = sp = (char *) malloc (nodesize);
+      if (sp == NULL)
+	{
+	  (void) fputs ("xdr_string: out of memory\n", stderr);
+	  return FALSE;
+	}
+      sp[size] = 0;
+      /* fall into ... */
+
+    case XDR_ENCODE:
+      return xdr_opaque (xdrs, sp, size);
+
+    case XDR_FREE:
+      free (sp);
+      *cpp = NULL;
+      return TRUE;
+    }
+  return FALSE;
 }

@@ -1,33 +1,57 @@
-void
-expand_builtin_eh_return (stackadj_tree, handler_tree)
-    tree stackadj_tree, handler_tree;
+bool
+can_throw_internal (insn)
+     rtx insn;
 {
-  rtx stackadj, handler;
+  struct eh_region *region;
+  tree type_thrown;
+  rtx note;
 
-  stackadj = expand_expr (stackadj_tree, cfun->eh->ehr_stackadj, VOIDmode, 0);
-  handler = expand_expr (handler_tree, cfun->eh->ehr_handler, VOIDmode, 0);
+  if (! INSN_P (insn))
+    return false;
 
-#ifdef POINTERS_EXTEND_UNSIGNED
-  if (GET_MODE (stackadj) != Pmode)
-    stackadj = convert_memory_address (Pmode, stackadj);
+  if (GET_CODE (insn) == INSN
+      && GET_CODE (PATTERN (insn)) == SEQUENCE)
+    insn = XVECEXP (PATTERN (insn), 0, 0);
 
-  if (GET_MODE (handler) != Pmode)
-    handler = convert_memory_address (Pmode, handler);
-#endif
-
-  if (! cfun->eh->ehr_label)
+  if (GET_CODE (insn) == CALL_INSN
+      && GET_CODE (PATTERN (insn)) == CALL_PLACEHOLDER)
     {
-      cfun->eh->ehr_stackadj = copy_to_reg (stackadj);
-      cfun->eh->ehr_handler = copy_to_reg (handler);
-      cfun->eh->ehr_label = gen_label_rtx ();
-    }
-  else
-    {
-      if (stackadj != cfun->eh->ehr_stackadj)
-	emit_move_insn (cfun->eh->ehr_stackadj, stackadj);
-      if (handler != cfun->eh->ehr_handler)
-	emit_move_insn (cfun->eh->ehr_handler, handler);
+      int i;
+      for (i = 0; i < 3; ++i)
+	{
+	  rtx sub = XEXP (PATTERN (insn), i);
+	  for (; sub ; sub = NEXT_INSN (sub))
+	    if (can_throw_internal (sub))
+	      return true;
+	}
+      return false;
     }
 
-  emit_jump (cfun->eh->ehr_label);
+  /* Every insn that might throw has an EH_REGION note.  */
+  note = find_reg_note (insn, REG_EH_REGION, NULL_RTX);
+  if (!note || INTVAL (XEXP (note, 0)) <= 0)
+    return false;
+
+  region = cfun->eh->region_array[INTVAL (XEXP (note, 0))];
+
+  type_thrown = NULL_TREE;
+  if (region->type == ERT_THROW)
+    {
+      type_thrown = region->u.throw.type;
+      region = region->outer;
+    }
+
+  /* If this exception is ignored by each and every containing region,
+     then control passes straight out.  The runtime may handle some
+     regions, which also do not require processing internally.  */
+  for (; region; region = region->outer)
+    {
+      enum reachable_code how = reachable_next_level (region, type_thrown, 0);
+      if (how == RNL_BLOCKED)
+	return false;
+      if (how != RNL_NOT_CAUGHT)
+        return true;
+    }
+
+  return false;
 }

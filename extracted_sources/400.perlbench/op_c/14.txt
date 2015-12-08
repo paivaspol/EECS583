@@ -1,15 +1,5 @@
-STATIC OP *
-S_scalarboolean(pTHX_ OP *o)
+void
+Perl_op_refcnt_lock(pTHX)
 {
-    if (o->op_type == OP_SASSIGN && cBINOPo->op_first->op_type == OP_CONST) {
-	if (ckWARN(WARN_SYNTAX)) {
-	    line_t oldline = CopLINE(PL_curcop);
-
-	    if (PL_copline != NOLINE)
-		CopLINE_set(PL_curcop, PL_copline);
-	    Perl_warner(aTHX_ packWARN(WARN_SYNTAX), "Found = in conditional, should be ==");
-	    CopLINE_set(PL_curcop, oldline);
-	}
-    }
-    return scalar(o);
+    OP_REFCNT_LOCK;
 }

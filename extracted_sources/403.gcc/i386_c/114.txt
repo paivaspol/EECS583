@@ -1,20 +1,13 @@
-static rtx
-ix86_expand_int_compare (code, op0, op1)
-     enum rtx_code code;
-     rtx op0, op1;
+int
+ix86_unary_operator_ok (code, mode, operands)
+     enum rtx_code code ATTRIBUTE_UNUSED;
+     enum machine_mode mode ATTRIBUTE_UNUSED;
+     rtx operands[2] ATTRIBUTE_UNUSED;
 {
-  enum machine_mode cmpmode;
-  rtx tmp, flags;
-
-  cmpmode = SELECT_CC_MODE (code, op0, op1);
-  flags = gen_rtx_REG (cmpmode, FLAGS_REG);
-
-  /* This is very simple, but making the interface the same as in the
-     FP case makes the rest of the code easier.  */
-  tmp = gen_rtx_COMPARE (cmpmode, op0, op1);
-  emit_insn (gen_rtx_SET (VOIDmode, flags, tmp));
-
-  /* Return the test that should be put into the flags user, i.e.
-     the bcc, scc, or cmov instruction.  */
-  return gen_rtx_fmt_ee (code, VOIDmode, flags, const0_rtx);
+  /* If one of operands is memory, source and destination must match.  */
+  if ((GET_CODE (operands[0]) == MEM
+       || GET_CODE (operands[1]) == MEM)
+      && ! rtx_equal_p (operands[0], operands[1]))
+    return FALSE;
+  return TRUE;
 }

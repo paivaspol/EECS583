@@ -1,15 +1,16 @@
-static void
-setup_initial_hard_reg_value_integration (inl_f, remap)
-     struct function *inl_f;
-     struct inline_remap *remap;
+void
+mark_hard_reg_initial_vals (fun)
+     struct function *fun;
 {
-  struct initial_value_struct *ivs = inl_f->hard_reg_initial_vals;
+  struct initial_value_struct *ivs = fun->hard_reg_initial_vals;
   int i;
 
   if (ivs == 0)
     return;
 
   for (i = 0; i < ivs->num_entries; i ++)
-    remap->reg_map[REGNO (ivs->entries[i].pseudo)]
-      = get_func_hard_reg_initial_val (cfun, ivs->entries[i].hard_reg);
+    {
+      ggc_mark_rtx (ivs->entries[i].hard_reg);
+      ggc_mark_rtx (ivs->entries[i].pseudo);
+    }
 }

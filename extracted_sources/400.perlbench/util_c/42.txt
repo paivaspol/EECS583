@@ -1,34 +1,14 @@
+int					/* Cannot prototype with I32
+					   in os2ish.h. */
+my_syspclose(PerlIO *ptr)
+#else
 I32
-Perl_same_dirent(pTHX_ char *a, char *b)
+Perl_my_pclose(pTHX_ PerlIO *ptr)
+#endif
 {
-    char *fa = strrchr(a,'/');
-    char *fb = strrchr(b,'/');
-    Stat_t tmpstatbuf1;
-    Stat_t tmpstatbuf2;
-    SV *tmpsv = sv_newmortal();
-
-    if (fa)
-	fa++;
-    else
-	fa = a;
-    if (fb)
-	fb++;
-    else
-	fb = b;
-    if (strNE(a,b))
-	return FALSE;
-    if (fa == a)
-	sv_setpv(tmpsv, ".");
-    else
-	sv_setpvn(tmpsv, a, fa - a);
-    if (PerlLIO_stat(SvPVX(tmpsv), &tmpstatbuf1) < 0)
-	return FALSE;
-    if (fb == b)
-	sv_setpv(tmpsv, ".");
-    else
-	sv_setpvn(tmpsv, b, fb - b);
-    if (PerlLIO_stat(SvPVX(tmpsv), &tmpstatbuf2) < 0)
-	return FALSE;
-    return tmpstatbuf1.st_dev == tmpstatbuf2.st_dev &&
-	   tmpstatbuf1.st_ino == tmpstatbuf2.st_ino;
+    /* Needs work for PerlIO ! */
+    FILE *f = PerlIO_findFILE(ptr);
+    I32 result = pclose(f);
+    PerlIO_releaseFILE(ptr,f);
+    return result;
 }

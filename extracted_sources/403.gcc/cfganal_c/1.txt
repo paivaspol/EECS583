@@ -1,21 +1,13 @@
-static bool
-need_fake_edge_p (insn)
-     rtx insn;
+bool
+can_fallthru (src, target)
+     basic_block src, target;
 {
-  if (!INSN_P (insn))
-    return false;
+  rtx insn = src->end;
+  rtx insn2 = target->head;
 
-  if ((GET_CODE (insn) == CALL_INSN
-       && !SIBLING_CALL_P (insn)
-       && !find_reg_note (insn, REG_NORETURN, NULL)
-       && !find_reg_note (insn, REG_ALWAYS_RETURN, NULL)
-       && !CONST_OR_PURE_CALL_P (insn)))
-    return true;
+  if (src->index + 1 == target->index && !active_insn_p (insn2))
+    insn2 = next_active_insn (insn2);
 
-  return ((GET_CODE (PATTERN (insn)) == ASM_OPERANDS
-	   && MEM_VOLATILE_P (PATTERN (insn)))
-	  || (GET_CODE (PATTERN (insn)) == PARALLEL
-	      && asm_noperands (insn) != -1
-	      && MEM_VOLATILE_P (XVECEXP (PATTERN (insn), 0, 0)))
-	  || GET_CODE (PATTERN (insn)) == ASM_INPUT);
+  /* ??? Later we may add code to move jump tables offline.  */
+  return next_active_insn (insn) == insn2;
 }

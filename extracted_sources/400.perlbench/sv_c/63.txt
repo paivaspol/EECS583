@@ -1,5 +1,5 @@
-STATIC UV
-S_asUV(pTHX_ SV *sv)
+STATIC IV
+S_asIV(pTHX_ SV *sv)
 {
     UV value;
     int numtype = grok_number(SvPVX(sv), SvCUR(sv), &value);
@@ -7,12 +7,17 @@ S_asUV(pTHX_ SV *sv)
     if ((numtype & (IS_NUMBER_IN_UV | IS_NUMBER_NOT_INT))
 	== IS_NUMBER_IN_UV) {
 	/* It's definitely an integer */
-	if (!(numtype & IS_NUMBER_NEG))
-	    return value;
+	if (numtype & IS_NUMBER_NEG) {
+	    if (value < (UV)IV_MIN)
+		return -(IV)value;
+	} else {
+	    if (value < (UV)IV_MAX)
+		return (IV)value;
+	}
     }
     if (!numtype) {
 	if (ckWARN(WARN_NUMERIC))
 	    not_a_number(sv);
     }
-    return U_V(Atof(SvPVX(sv)));
+    return I_V(Atof(SvPVX(sv)));
 }

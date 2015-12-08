@@ -1,35 +1,19 @@
-STATIC PerlIO *
-S_doopen_pm(pTHX_ const char *name, const char *mode)
+STATIC I32
+S_dopoptosub_at(pTHX_ PERL_CONTEXT *cxstk, I32 startingblock)
 {
-#ifndef PERL_DISABLE_PMC
-    STRLEN namelen = strlen(name);
-    PerlIO *fp;
-
-    if (namelen > 3 && strEQ(name + namelen - 3, ".pm")) {
-	SV *pmcsv = Perl_newSVpvf(aTHX_ "%s%c", name, 'c');
-	char *pmc = SvPV_nolen(pmcsv);
-	Stat_t pmstat;
-	Stat_t pmcstat;
-	if (PerlLIO_stat(pmc, &pmcstat) < 0) {
-	    fp = PerlIO_open(name, mode);
+    I32 i;
+    register PERL_CONTEXT *cx;
+    for (i = startingblock; i >= 0; i--) {
+	cx = &cxstk[i];
+	switch (CxTYPE(cx)) {
+	default:
+	    continue;
+	case CXt_EVAL:
+	case CXt_SUB:
+	case CXt_FORMAT:
+	    DEBUG_l( Perl_deb(aTHX_ "(Found sub #%ld)\n", (long)i));
+	    return i;
 	}
-	else {
-	    if (PerlLIO_stat(name, &pmstat) < 0 ||
-	        pmstat.st_mtime < pmcstat.st_mtime)
-	    {
-		fp = PerlIO_open(pmc, mode);
-	    }
-	    else {
-		fp = PerlIO_open(name, mode);
-	    }
-	}
-	SvREFCNT_dec(pmcsv);
     }
-    else {
-	fp = PerlIO_open(name, mode);
-    }
-    return fp;
-#else
-    return PerlIO_open(name, mode);
-#endif /* !PERL_DISABLE_PMC */
+    return i;
 }

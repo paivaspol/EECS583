@@ -1,0 +1,92 @@
+bool do_enx(int fp,t_enxframe *fr)
+{
+  int       i,block;
+  bool      bRead,bOK,bOK1,bSane;
+  real      tmp1,tmp2;
+
+  bOK = TRUE;
+  bRead = gmx_fio_getread(fp);
+  if (!bRead) {  
+    fr->e_size = fr->nre*sizeof(fr->ener[0].e)*4;
+    fr->d_size = fr->ndisre*(sizeof(fr->rav[0]) + 
+			   sizeof(fr->rt[0]));
+  }
+  gmx_fio_select(fp);
+
+  if (!do_eheader(fp,fr,&bOK)) {
+    if (bRead) {
+	fprintf(stderr,"\rLast frame read %d                          ",framenr-1);
+	if (!bOK)
+	  fprintf(stderr,"\nWARNING: Incomplete frame: nr %6d time %8.3f\n",
+		  framenr,fr->t);
+    }
+    return FALSE;
+  }
+  if (bRead) {
+    if ( ( framenr<10 ) || ( framenr%10 == 0) ) 
+      fprintf(stderr,"\rReading frame %6d time %8.3f           ",framenr,fr->t);
+    framenr++;
+  }
+  /* Check sanity of this header */
+  bSane = (fr->nre > 0 || fr->ndisre > 0);
+  for(block=0; block<fr->nblock; block++)
+    bSane = bSane || (fr->nr[block] > 0);
+  if (!((fr->step >= 0) && bSane)) {
+    fprintf(stderr,"\nWARNING: there may be something wrong with energy file %s\n",
+	    gmx_fio_getname(fp));
+    fprintf(stderr,"Found: step=%d, nre=%d, ndisre=%d, nblock=%d, time=%g.\n"
+	    "Trying to skip frame expect a crash though\n",
+	    fr->step,fr->nre,fr->ndisre,fr->nblock,fr->t);
+  }
+  if (bRead && fr->nre>fr->e_alloc) {
+    srenew(fr->ener,fr->nre);
+    fr->e_alloc = fr->nre;
+  }
+  for(i=0; i<fr->nre; i++) {
+    bOK = bOK && do_real(fr->ener[i].e);
+    
+    tmp1 = fr->ener[i].eav;
+    if((tmp1/(fr->step+1))<GMX_REAL_EPS)
+      tmp1=0;
+    bOK = bOK && do_real(tmp1);
+    fr->ener[i].eav = tmp1;
+    
+    /* This is to save only in single precision (unless compiled in DP) */
+    tmp2 = fr->ener[i].esum;
+    bOK = bOK && do_real(tmp2);
+    fr->ener[i].esum = tmp2;
+    
+    bOK = bOK && do_real(fr->ener[i].e2sum);
+  }
+  if (fr->ndisre) {
+    if (bRead && fr->ndisre>fr->d_alloc) {
+      srenew(fr->rav,fr->ndisre);
+      srenew(fr->rt,fr->ndisre);
+      fr->d_alloc = fr->ndisre;
+    }
+    ndo_real(fr->rav,fr->ndisre,bOK1);
+    bOK = bOK && bOK1;
+    ndo_real(fr->rt,fr->ndisre,bOK1);
+    bOK = bOK && bOK1;
+  }
+  for(block=0; block<fr->nblock; block++) {
+    if (bRead && fr->nr[block]>fr->b_alloc[block]) {
+      srenew(fr->block[block],fr->nr[block]);
+      fr->b_alloc[block] = fr->nr[block];
+    }
+    ndo_real(fr->block[block],fr->nr[block],bOK1);
+    bOK = bOK && bOK1;
+  }
+  if (!bOK) {
+    if (bRead) {
+      fprintf(stderr,"\nLast frame read %d                               ",
+	      framenr-1);
+      fprintf(stderr,"\nWARNING: Incomplete frame: nr %6d time %8.3f     \n",
+	      framenr,fr->t);
+    } else 
+      fatal_error(-1,"could not write energies");
+    return FALSE; 
+  }
+  
+  return TRUE;
+}

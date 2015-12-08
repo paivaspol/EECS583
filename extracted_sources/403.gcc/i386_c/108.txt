@@ -1,31 +1,25 @@
 void
-ix86_expand_vector_move (mode, operands)
-     enum machine_mode mode;
-     rtx operands[];
+ix86_expand_clear (dest)
+     rtx dest;
 {
-  /* Force constants other than zero into memory.  We do not know how
-     the instructions used to build constants modify the upper 64 bits
-     of the register, once we have that information we may be able
-     to handle some of them more efficiently.  */
-  if ((reload_in_progress | reload_completed) == 0
-      && register_operand (operands[0], mode)
-      && CONSTANT_P (operands[1]))
+  rtx tmp;
+
+  /* We play register width games, which are only valid after reload.  */
+  if (!reload_completed)
+    abort ();
+
+  /* Avoid HImode and its attendant prefix byte.  */
+  if (GET_MODE_SIZE (GET_MODE (dest)) < 4)
+    dest = gen_rtx_REG (SImode, REGNO (dest));
+
+  tmp = gen_rtx_SET (VOIDmode, dest, const0_rtx);
+
+  /* This predicate should match that for movsi_xor and movdi_xor_rex64.  */
+  if (reload_completed && (!TARGET_USE_MOV0 || optimize_size))
     {
-      rtx addr = gen_reg_rtx (Pmode);
-      emit_move_insn (addr, XEXP (force_const_mem (mode, operands[1]), 0));
-      operands[1] = gen_rtx_MEM (mode, addr);
+      rtx clob = gen_rtx_CLOBBER (VOIDmode, gen_rtx_REG (CCmode, 17));
+      tmp = gen_rtx_PARALLEL (VOIDmode, gen_rtvec (2, tmp, clob));
     }
 
-  /* Make operand1 a register if it isn't already.  */
-  if ((reload_in_progress | reload_completed) == 0
-      && !register_operand (operands[0], mode)
-      && !register_operand (operands[1], mode)
-      && operands[1] != CONST0_RTX (mode))
-    {
-      rtx temp = force_reg (GET_MODE (operands[1]), operands[1]);
-      emit_move_insn (operands[0], temp);
-      return;
-    }
-
-  emit_insn (gen_rtx_SET (VOIDmode, operands[0], operands[1]));
-}  
+  emit_insn (tmp);
+}

@@ -1,6 +1,10 @@
 void
-Perl_pop_scope(pTHX)
+Perl_push_scope(pTHX)
 {
-    I32 oldsave = PL_scopestack[--PL_scopestack_ix];
-    LEAVE_SCOPE(oldsave);
+    if (PL_scopestack_ix == PL_scopestack_max) {
+	PL_scopestack_max = GROW(PL_scopestack_max);
+	Renew(PL_scopestack, PL_scopestack_max, I32);
+    }
+    PL_scopestack[PL_scopestack_ix++] = PL_savestack_ix;
+
 }

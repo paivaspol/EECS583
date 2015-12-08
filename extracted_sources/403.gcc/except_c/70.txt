@@ -1,17 +1,22 @@
-static void
-add_reachable_handler (info, lp_region, region)
-     struct reachable_info *info;
-     struct eh_region *lp_region;
-     struct eh_region *region;
+static int
+check_handled (handled, type)
+     tree handled, type;
 {
-  if (! info)
-    return;
+  tree t;
 
-  if (cfun->eh->built_landing_pads)
+  /* We can check for exact matches without front-end help.  */
+  if (! lang_eh_type_covers)
     {
-      if (! info->handlers)
-	info->handlers = alloc_INSN_LIST (lp_region->landing_pad, NULL_RTX);
+      for (t = handled; t ; t = TREE_CHAIN (t))
+	if (TREE_VALUE (t) == type)
+	  return 1;
     }
   else
-    info->handlers = alloc_INSN_LIST (region->label, info->handlers);
+    {
+      for (t = handled; t ; t = TREE_CHAIN (t))
+	if ((*lang_eh_type_covers) (TREE_VALUE (t), type))
+	  return 1;
+    }
+
+  return 0;
 }

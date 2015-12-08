@@ -1,15 +1,8 @@
 void
-Perl_save_list(pTHX_ register SV **sarg, I32 maxsarg)
+Perl_save_clearsv(pTHX_ SV **svp)
 {
-    register SV *sv;
-    register I32 i;
-
-    for (i = 1; i <= maxsarg; i++) {
-	sv = NEWSV(0,0);
-	sv_setsv(sv,sarg[i]);
-	SSCHECK(3);
-	SSPUSHPTR(sarg[i]);		/* remember the pointer */
-	SSPUSHPTR(sv);			/* remember the value */
-	SSPUSHINT(SAVEt_ITEM);
-    }
+    ASSERT_CURPAD_ACTIVE("save_clearsv");
+    SSCHECK(2);
+    SSPUSHLONG((long)(svp-PL_curpad));
+    SSPUSHINT(SAVEt_CLEARSV);
 }

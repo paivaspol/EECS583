@@ -1,44 +1,46 @@
-void
-Perl_newPROG(pTHX_ OP *o)
+STATIC bool
+S_scalar_mod_type(pTHX_ OP *o, I32 type)
 {
-    if (PL_in_eval) {
-	if (PL_eval_root)
-		return;
-	PL_eval_root = newUNOP(OP_LEAVEEVAL,
-			       ((PL_in_eval & EVAL_KEEPERR)
-				? OPf_SPECIAL : 0), o);
-	PL_eval_start = linklist(PL_eval_root);
-	PL_eval_root->op_private |= OPpREFCOUNTED;
-	OpREFCNT_set(PL_eval_root, 1);
-	PL_eval_root->op_next = 0;
-	CALL_PEEP(PL_eval_start);
-    }
-    else {
-	if (o->op_type == OP_STUB) {
-	    PL_comppad_name = 0;
-	    PL_compcv = 0;
-	    FreeOp(o);
-	    return;
-	}
-	PL_main_root = scope(sawparens(scalarvoid(o)));
-	PL_curcop = &PL_compiling;
-	PL_main_start = LINKLIST(PL_main_root);
-	PL_main_root->op_private |= OPpREFCOUNTED;
-	OpREFCNT_set(PL_main_root, 1);
-	PL_main_root->op_next = 0;
-	CALL_PEEP(PL_main_start);
-	PL_compcv = 0;
-
-	/* Register with debugger */
-	if (PERLDB_INTER) {
-	    CV *cv = get_cv("DB::postponed", FALSE);
-	    if (cv) {
-		dSP;
-		PUSHMARK(SP);
-		XPUSHs((SV*)CopFILEGV(&PL_compiling));
-		PUTBACK;
-		call_sv((SV*)cv, G_DISCARD);
-	    }
-	}
+    switch (type) {
+    case OP_SASSIGN:
+	if (o->op_type == OP_RV2GV)
+	    return FALSE;
+	/* FALL THROUGH */
+    case OP_PREINC:
+    case OP_PREDEC:
+    case OP_POSTINC:
+    case OP_POSTDEC:
+    case OP_I_PREINC:
+    case OP_I_PREDEC:
+    case OP_I_POSTINC:
+    case OP_I_POSTDEC:
+    case OP_POW:
+    case OP_MULTIPLY:
+    case OP_DIVIDE:
+    case OP_MODULO:
+    case OP_REPEAT:
+    case OP_ADD:
+    case OP_SUBTRACT:
+    case OP_I_MULTIPLY:
+    case OP_I_DIVIDE:
+    case OP_I_MODULO:
+    case OP_I_ADD:
+    case OP_I_SUBTRACT:
+    case OP_LEFT_SHIFT:
+    case OP_RIGHT_SHIFT:
+    case OP_BIT_AND:
+    case OP_BIT_XOR:
+    case OP_BIT_OR:
+    case OP_CONCAT:
+    case OP_SUBST:
+    case OP_TRANS:
+    case OP_READ:
+    case OP_SYSREAD:
+    case OP_RECV:
+    case OP_ANDASSIGN:
+    case OP_ORASSIGN:
+	return TRUE;
+    default:
+	return FALSE;
     }
 }

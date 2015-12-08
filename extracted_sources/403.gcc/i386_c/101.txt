@@ -1,28 +1,368 @@
 void
-split_di (operands, num, lo_half, hi_half)
-     rtx operands[];
-     int num;
-     rtx lo_half[], hi_half[];
+print_operand (file, x, code)
+     FILE *file;
+     rtx x;
+     int code;
 {
-  while (num--)
+  if (code)
     {
-      rtx op = operands[num];
+      switch (code)
+	{
+	case '*':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('*', file);
+	  return;
 
-      /* simplify_subreg refuse to split volatile memory addresses,
-         but we still have to handle it.  */
-      if (GET_CODE (op) == MEM)
-	{
-	  lo_half[num] = adjust_address (op, SImode, 0);
-	  hi_half[num] = adjust_address (op, SImode, 4);
+	case 'A':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('*', file);
+	  else if (ASSEMBLER_DIALECT == ASM_INTEL)
+	    {
+	      /* Intel syntax. For absolute addresses, registers should not
+		 be surrounded by braces.  */
+	      if (GET_CODE (x) != REG)
+		{
+		  putc ('[', file);
+		  PRINT_OPERAND (file, x, 0);
+		  putc (']', file);
+		  return;
+		}
+	    }
+	  else
+	    abort ();
+
+	  PRINT_OPERAND (file, x, 0);
+	  return;
+
+
+	case 'L':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('l', file);
+	  return;
+
+	case 'W':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('w', file);
+	  return;
+
+	case 'B':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('b', file);
+	  return;
+
+	case 'Q':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('l', file);
+	  return;
+
+	case 'S':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('s', file);
+	  return;
+
+	case 'T':
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('t', file);
+	  return;
+
+	case 'z':
+	  /* 387 opcodes don't get size suffixes if the operands are
+	     registers.  */
+	  if (STACK_REG_P (x))
+	    return;
+
+	  /* Likewise if using Intel opcodes.  */
+	  if (ASSEMBLER_DIALECT == ASM_INTEL)
+	    return;
+
+	  /* This is the size of op from size of operand.  */
+	  switch (GET_MODE_SIZE (GET_MODE (x)))
+	    {
+	    case 2:
+#ifdef HAVE_GAS_FILDS_FISTS
+	      putc ('s', file);
+#endif
+	      return;
+
+	    case 4:
+	      if (GET_MODE (x) == SFmode)
+		{
+		  putc ('s', file);
+		  return;
+		}
+	      else
+		putc ('l', file);
+	      return;
+
+	    case 12:
+	    case 16:
+	      putc ('t', file);
+	      return;
+
+	    case 8:
+	      if (GET_MODE_CLASS (GET_MODE (x)) == MODE_INT)
+		{
+#ifdef GAS_MNEMONICS
+		  putc ('q', file);
+#else
+		  putc ('l', file);
+		  putc ('l', file);
+#endif
+		}
+	      else
+	        putc ('l', file);
+	      return;
+
+	    default:
+	      abort ();
+	    }
+
+	case 'b':
+	case 'w':
+	case 'k':
+	case 'q':
+	case 'h':
+	case 'y':
+	case 'X':
+	case 'P':
+	  break;
+
+	case 's':
+	  if (GET_CODE (x) == CONST_INT || ! SHIFT_DOUBLE_OMITS_COUNT)
+	    {
+	      PRINT_OPERAND (file, x, 0);
+	      putc (',', file);
+	    }
+	  return;
+
+	case 'D':
+	  /* Little bit of braindamage here.  The SSE compare instructions
+	     does use completely different names for the comparisons that the
+	     fp conditional moves.  */
+	  switch (GET_CODE (x))
+	    {
+	    case EQ:
+	    case UNEQ:
+	      fputs ("eq", file);
+	      break;
+	    case LT:
+	    case UNLT:
+	      fputs ("lt", file);
+	      break;
+	    case LE:
+	    case UNLE:
+	      fputs ("le", file);
+	      break;
+	    case UNORDERED:
+	      fputs ("unord", file);
+	      break;
+	    case NE:
+	    case LTGT:
+	      fputs ("neq", file);
+	      break;
+	    case UNGE:
+	    case GE:
+	      fputs ("nlt", file);
+	      break;
+	    case UNGT:
+	    case GT:
+	      fputs ("nle", file);
+	      break;
+	    case ORDERED:
+	      fputs ("ord", file);
+	      break;
+	    default:
+	      abort ();
+	      break;
+	    }
+	  return;
+	case 'O':
+#ifdef CMOV_SUN_AS_SYNTAX
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    {
+	      switch (GET_MODE (x))
+		{
+		case HImode: putc ('w', file); break;
+		case SImode:
+		case SFmode: putc ('l', file); break;
+		case DImode:
+		case DFmode: putc ('q', file); break;
+		default: abort ();
+		}
+	      putc ('.', file);
+	    }
+#endif
+	  return;
+	case 'C':
+	  put_condition_code (GET_CODE (x), GET_MODE (XEXP (x, 0)), 0, 0, file);
+	  return;
+	case 'F':
+#ifdef CMOV_SUN_AS_SYNTAX
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('.', file);
+#endif
+	  put_condition_code (GET_CODE (x), GET_MODE (XEXP (x, 0)), 0, 1, file);
+	  return;
+
+	  /* Like above, but reverse condition */
+	case 'c':
+	  /* Check to see if argument to %c is really a constant 
+	     and not a condition code which needs to be reversed.  */
+	  if (GET_RTX_CLASS (GET_CODE (x)) != '<')
+	  {
+	    output_operand_lossage ("operand is neither a constant nor a condition code, invalid operand code 'c'");
+	     return;
+	  }
+	  put_condition_code (GET_CODE (x), GET_MODE (XEXP (x, 0)), 1, 0, file);
+	  return;
+	case 'f':
+#ifdef CMOV_SUN_AS_SYNTAX
+	  if (ASSEMBLER_DIALECT == ASM_ATT)
+	    putc ('.', file);
+#endif
+	  put_condition_code (GET_CODE (x), GET_MODE (XEXP (x, 0)), 1, 1, file);
+	  return;
+	case '+':
+	  {
+	    rtx x;
+
+	    if (!optimize || optimize_size || !TARGET_BRANCH_PREDICTION_HINTS)
+	      return;
+
+	    x = find_reg_note (current_output_insn, REG_BR_PROB, 0);
+	    if (x)
+	      {
+		int pred_val = INTVAL (XEXP (x, 0));
+
+		if (pred_val < REG_BR_PROB_BASE * 45 / 100
+		    || pred_val > REG_BR_PROB_BASE * 55 / 100)
+		  {
+		    int taken = pred_val > REG_BR_PROB_BASE / 2;
+		    int cputaken = final_forward_branch_p (current_output_insn) == 0;
+
+		    /* Emit hints only in the case default branch prediction
+		       heruistics would fail.  */
+		    if (taken != cputaken)
+		      {
+			/* We use 3e (DS) prefix for taken branches and
+			   2e (CS) prefix for not taken branches.  */
+			if (taken)
+			  fputs ("ds ; ", file);
+			else
+			  fputs ("cs ; ", file);
+		      }
+		  }
+	      }
+	    return;
+	  }
+	default:
+	    output_operand_lossage ("invalid operand code `%c'", code);
 	}
+    }
+
+  if (GET_CODE (x) == REG)
+    {
+      PRINT_REG (x, code, file);
+    }
+
+  else if (GET_CODE (x) == MEM)
+    {
+      /* No `byte ptr' prefix for call instructions.  */
+      if (ASSEMBLER_DIALECT == ASM_INTEL && code != 'X' && code != 'P')
+	{
+	  const char * size;
+	  switch (GET_MODE_SIZE (GET_MODE (x)))
+	    {
+	    case 1: size = "BYTE"; break;
+	    case 2: size = "WORD"; break;
+	    case 4: size = "DWORD"; break;
+	    case 8: size = "QWORD"; break;
+	    case 12: size = "XWORD"; break;
+	    case 16: size = "XMMWORD"; break;
+	    default:
+	      abort ();
+	    }
+
+	  /* Check for explicit size override (codes 'b', 'w' and 'k')  */
+	  if (code == 'b')
+	    size = "BYTE";
+	  else if (code == 'w')
+	    size = "WORD";
+	  else if (code == 'k')
+	    size = "DWORD";
+
+	  fputs (size, file);
+	  fputs (" PTR ", file);
+	}
+
+      x = XEXP (x, 0);
+      if (flag_pic && CONSTANT_ADDRESS_P (x))
+	output_pic_addr_const (file, x, code);
+      /* Avoid (%rip) for call operands.  */
+      else if (CONSTANT_ADDRESS_P (x) && code =='P'
+	       && GET_CODE (x) != CONST_INT)
+	output_addr_const (file, x);
       else
+	output_address (x);
+    }
+
+  else if (GET_CODE (x) == CONST_DOUBLE && GET_MODE (x) == SFmode)
+    {
+      REAL_VALUE_TYPE r;
+      long l;
+
+      REAL_VALUE_FROM_CONST_DOUBLE (r, x);
+      REAL_VALUE_TO_TARGET_SINGLE (r, l);
+
+      if (ASSEMBLER_DIALECT == ASM_ATT)
+	putc ('$', file);
+      fprintf (file, "0x%lx", l);
+    }
+
+ /* These float cases don't actually occur as immediate operands.  */
+ else if (GET_CODE (x) == CONST_DOUBLE && GET_MODE (x) == DFmode)
+    {
+      REAL_VALUE_TYPE r;
+      char dstr[30];
+
+      REAL_VALUE_FROM_CONST_DOUBLE (r, x);
+      REAL_VALUE_TO_DECIMAL (r, "%.22e", dstr);
+      fprintf (file, "%s", dstr);
+    }
+
+  else if (GET_CODE (x) == CONST_DOUBLE
+	   && (GET_MODE (x) == XFmode || GET_MODE (x) == TFmode))
+    {
+      REAL_VALUE_TYPE r;
+      char dstr[30];
+
+      REAL_VALUE_FROM_CONST_DOUBLE (r, x);
+      REAL_VALUE_TO_DECIMAL (r, "%.22e", dstr);
+      fprintf (file, "%s", dstr);
+    }
+  else
+    {
+      if (code != 'P')
 	{
-	  lo_half[num] = simplify_gen_subreg (SImode, op,
-					      GET_MODE (op) == VOIDmode
-					      ? DImode : GET_MODE (op), 0);
-	  hi_half[num] = simplify_gen_subreg (SImode, op,
-					      GET_MODE (op) == VOIDmode
-					      ? DImode : GET_MODE (op), 4);
+	  if (GET_CODE (x) == CONST_INT || GET_CODE (x) == CONST_DOUBLE)
+	    {
+	      if (ASSEMBLER_DIALECT == ASM_ATT)
+		putc ('$', file);
+	    }
+	  else if (GET_CODE (x) == CONST || GET_CODE (x) == SYMBOL_REF
+		   || GET_CODE (x) == LABEL_REF)
+	    {
+	      if (ASSEMBLER_DIALECT == ASM_ATT)
+		putc ('$', file);
+	      else
+		fputs ("OFFSET FLAT:", file);
+	    }
 	}
+      if (GET_CODE (x) == CONST_INT)
+	fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (x));
+      else if (flag_pic)
+	output_pic_addr_const (file, x, code);
+      else
+	output_addr_const (file, x);
     }
 }

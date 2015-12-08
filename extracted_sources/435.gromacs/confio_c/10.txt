@@ -1,71 +1,20 @@
-void write_hconf_indexed_p(FILE *out,char *title,t_atoms *atoms,
-			   int nx,atom_id index[], int pr,
-			   rvec *x,rvec *v,matrix box)
+int gro_first_x_or_v(FILE *status,t_trxframe *fr)
 {
-  char resnm[6],nm[6],format[100];
-  int  ai,i,resnr,l,vpr;
-
-  fprintf (out,"%s\n",(title && title[0])?title:bromacs());
-  fprintf (out,"%5d\n",nx);
-  /* build format string for printing, 
-     something like "%8.3f" for x and "%8.4f" for v */
-  if (pr<0)
-    pr=0;
-  if (pr>30)
-    pr=30;
-  l=pr+5;
-  vpr=pr+1;
-  if (v)
-    sprintf(format,"%%%d.%df%%%d.%df%%%d.%df%%%d.%df%%%d.%df%%%d.%df\n",
-	    l,pr,l,pr,l,pr,l,vpr,l,vpr,l,vpr);
-  else
-    sprintf(format,"%%%d.%df%%%d.%df%%%d.%df\n",l,pr,l,pr,l,pr);
+  char title[STRLEN];
   
-  for (i=0; (i<nx); i++) {
-    ai=index[i];
-    
-    resnr=atoms->atom[ai].resnr;
-    strcpy(resnm," ??? ");
-    if (resnr < atoms->nres)
-      strcpy(resnm,*atoms->resname[resnr]);
-    
-    if (atoms->atom)
-      strcpy(nm,*atoms->atomname[ai]);
-    else
-      strcpy(nm," ??? ");
-
-    fprintf(out,"%5d%-5.5s%5.5s%5d",(resnr+1)%100000,resnm,nm,(ai+1)%100000);
-    /* next fprintf uses built format string */
-    if (v)
-      fprintf(out,format,
-	      x[ai][XX], x[ai][YY], x[ai][ZZ], v[ai][XX],v[ai][YY],v[ai][ZZ]);
-    else
-      fprintf(out,format,
-	      x[ai][XX], x[ai][YY], x[ai][ZZ]);
-  }
-
-  if (pr<5) 
-    pr=5;
-  l=pr+5;
+  frewind(status);
+  fprintf(stderr,"Reading frames from gro file");
+  get_coordnum_fp(status, title, &fr->natoms);
+  frewind(status);
+  fprintf(stderr," '%s', %d atoms.\n",title, fr->natoms);
+  fr->bTitle = TRUE;
+  fr->title = title;
+  if (fr->natoms==0)
+    fatal_error(1,"No coordinates in gro file\n");
   
-  if (fabs(box[XX][YY]) > GMX_REAL_MIN ||
-      fabs(box[XX][ZZ]) > GMX_REAL_MIN ||
-      fabs(box[YY][XX]) > GMX_REAL_MIN ||
-      fabs(box[YY][ZZ]) > GMX_REAL_MIN ||
-      fabs(box[ZZ][XX]) > GMX_REAL_MIN ||
-      fabs(box[ZZ][YY]) > GMX_REAL_MIN)
-    {
-    sprintf(format,"%%%d.%df%%%d.%df%%%d.%df"
-	    "%%%d.%df%%%d.%df%%%d.%df%%%d.%df%%%d.%df%%%d.%df\n",
-	    l,pr,l,pr,l,pr,l,pr,l,pr,l,pr,l,pr,l,pr,l,pr);
-    fprintf(out,format,
-	    box[XX][XX],box[YY][YY],box[ZZ][ZZ],
-	    box[XX][YY],box[XX][ZZ],box[YY][XX],
-	    box[YY][ZZ],box[ZZ][XX],box[ZZ][YY]);
-  } else {
-    sprintf(format,"%%%d.%df%%%d.%df%%%d.%df\n",l,pr,l,pr,l,pr);
-    fprintf(out,format,
-	    box[XX][XX],box[YY][YY],box[ZZ][ZZ]);
-  }
-  fflush(out);
+  snew(fr->x,fr->natoms);
+  snew(fr->v,fr->natoms);
+  gro_next_x_or_v(status, fr);
+  
+  return fr->natoms;
 }

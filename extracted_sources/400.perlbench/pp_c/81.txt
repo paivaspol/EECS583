@@ -1,0 +1,29 @@
+PP(pp_hex)
+{
+    dSP; dTARGET;
+    char *tmps;
+    I32 flags = PERL_SCAN_ALLOW_UNDERSCORES;
+    STRLEN len;
+    NV result_nv;
+    UV result_uv;
+    SV* sv = POPs;
+
+    tmps = (SvPVx(sv, len));
+    if (DO_UTF8(sv)) {
+	 /* If Unicode, try to downgrade
+	  * If not possible, croak. */
+         SV* tsv = sv_2mortal(newSVsv(sv));
+	
+	 SvUTF8_on(tsv);
+	 sv_utf8_downgrade(tsv, FALSE);
+	 tmps = SvPVX(tsv);
+    }
+    result_uv = grok_hex (tmps, &len, &flags, &result_nv);
+    if (flags & PERL_SCAN_GREATER_THAN_UV_MAX) {
+        XPUSHn(result_nv);
+    }
+    else {
+        XPUSHu(result_uv);
+    }
+    RETURN;
+}

@@ -1,0 +1,16 @@
+void init_rama(char *infile,char *topfile,t_xrama *xr)
+{
+  static t_topology *top;
+  real   t;
+
+  top=read_top(topfile);
+  
+  /*get_dih2(xr,top->idef.functype,&(top->idef.bondeds),&(top->atoms));*/
+  get_dih(xr,&(top->atoms));
+  get_dih_props(xr,&(top->idef));
+  xr->natoms=read_first_x(&xr->traj,infile,&t,&(xr->x),xr->box);
+  xr->idef=&(top->idef);
+  
+  min_max(xr);
+  calc_dihs(xr);
+}

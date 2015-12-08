@@ -1,4 +1,24 @@
-int check_times(real t)
+int check_times2(real t,real t0,real tp, real tpp)
 {
-  return check_times2(t,t,t,t);
+  int  r;
+  real margin;
+  
+  if (t-tp>0 && tp-tpp>0)
+    margin = 0.1*min(t-tp,tp-tpp);
+  else
+    margin = 0;
+
+  r=-1;
+  if ((((tbegin >= 0.0) && (t >= tbegin)) || ( fabs(tbegin-(-1.0))<GMX_REAL_MIN  )) &&
+      (((tend   >= 0.0) && (t <= tend+margin))   || ( fabs(tend-(-1.0))<GMX_REAL_MIN  ))) {
+    if (tdelta > 0 && !bRmod(t-t0,tdelta))
+      r = -1;
+    else
+      r = 0;
+  }
+  else if (( fabs(tend -(-1.0)) > GMX_REAL_MIN) && (t>=tend))
+    r = 1;
+  if (debug) fprintf(debug,"t=%g, t0=%g, b=%g, e=%g, dt=%g: r=%d\n",
+		     t,t0,tbegin,tend,tdelta,r);
+  return r;
 }

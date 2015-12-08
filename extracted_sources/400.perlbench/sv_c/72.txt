@@ -1,6 +1,448 @@
 void
-Perl_sv_setsv_mg(pTHX_ SV *dstr, register SV *sstr)
+Perl_sv_setsv_flags(pTHX_ SV *dstr, register SV *sstr, I32 flags)
 {
-    sv_setsv(dstr,sstr);
-    SvSETMAGIC(dstr);
+    register U32 sflags;
+    register int dtype;
+    register int stype;
+
+    if (sstr == dstr)
+	return;
+    SV_CHECK_THINKFIRST(dstr);
+    if (!sstr)
+	sstr = &PL_sv_undef;
+    stype = SvTYPE(sstr);
+    dtype = SvTYPE(dstr);
+
+    SvAMAGIC_off(dstr);
+    if ( SvVOK(dstr) ) 
+    {
+	/* need to nuke the magic */
+	mg_free(dstr);
+	SvRMAGICAL_off(dstr);
+    }
+
+    /* There's a lot of redundancy below but we're going for speed here */
+
+    switch (stype) {
+    case SVt_NULL:
+      undef_sstr:
+	if (dtype != SVt_PVGV) {
+	    (void)SvOK_off(dstr);
+	    return;
+	}
+	break;
+    case SVt_IV:
+	if (SvIOK(sstr)) {
+	    switch (dtype) {
+	    case SVt_NULL:
+		sv_upgrade(dstr, SVt_IV);
+		break;
+	    case SVt_NV:
+		sv_upgrade(dstr, SVt_PVNV);
+		break;
+	    case SVt_RV:
+	    case SVt_PV:
+		sv_upgrade(dstr, SVt_PVIV);
+		break;
+	    }
+	    (void)SvIOK_only(dstr);
+	    SvIVX(dstr) = SvIVX(sstr);
+	    if (SvIsUV(sstr))
+		SvIsUV_on(dstr);
+	    if (SvTAINTED(sstr))
+		SvTAINT(dstr);
+	    return;
+	}
+	goto undef_sstr;
+
+    case SVt_NV:
+	if (SvNOK(sstr)) {
+	    switch (dtype) {
+	    case SVt_NULL:
+	    case SVt_IV:
+		sv_upgrade(dstr, SVt_NV);
+		break;
+	    case SVt_RV:
+	    case SVt_PV:
+	    case SVt_PVIV:
+		sv_upgrade(dstr, SVt_PVNV);
+		break;
+	    }
+	    SvNVX(dstr) = SvNVX(sstr);
+	    (void)SvNOK_only(dstr);
+	    if (SvTAINTED(sstr))
+		SvTAINT(dstr);
+	    return;
+	}
+	goto undef_sstr;
+
+    case SVt_RV:
+	if (dtype < SVt_RV)
+	    sv_upgrade(dstr, SVt_RV);
+	else if (dtype == SVt_PVGV &&
+		 SvROK(sstr) && SvTYPE(SvRV(sstr)) == SVt_PVGV) {
+	    sstr = SvRV(sstr);
+	    if (sstr == dstr) {
+		if (GvIMPORTED(dstr) != GVf_IMPORTED
+		    && CopSTASH_ne(PL_curcop, GvSTASH(dstr)))
+		{
+		    GvIMPORTED_on(dstr);
+		}
+		GvMULTI_on(dstr);
+		return;
+	    }
+	    goto glob_assign;
+	}
+	break;
+    case SVt_PV:
+    case SVt_PVFM:
+	if (dtype < SVt_PV)
+	    sv_upgrade(dstr, SVt_PV);
+	break;
+    case SVt_PVIV:
+	if (dtype < SVt_PVIV)
+	    sv_upgrade(dstr, SVt_PVIV);
+	break;
+    case SVt_PVNV:
+	if (dtype < SVt_PVNV)
+	    sv_upgrade(dstr, SVt_PVNV);
+	break;
+    case SVt_PVAV:
+    case SVt_PVHV:
+    case SVt_PVCV:
+    case SVt_PVIO:
+	if (PL_op)
+	    Perl_croak(aTHX_ "Bizarre copy of %s in %s", sv_reftype(sstr, 0),
+		OP_NAME(PL_op));
+	else
+	    Perl_croak(aTHX_ "Bizarre copy of %s", sv_reftype(sstr, 0));
+	break;
+
+    case SVt_PVGV:
+	if (dtype <= SVt_PVGV) {
+  glob_assign:
+	    if (dtype != SVt_PVGV) {
+		char *name = GvNAME(sstr);
+		STRLEN len = GvNAMELEN(sstr);
+		sv_upgrade(dstr, SVt_PVGV);
+		sv_magic(dstr, dstr, PERL_MAGIC_glob, Nullch, 0);
+		GvSTASH(dstr) = (HV*)SvREFCNT_inc(GvSTASH(sstr));
+		GvNAME(dstr) = savepvn(name, len);
+		GvNAMELEN(dstr) = len;
+		SvFAKE_on(dstr);	/* can coerce to non-glob */
+	    }
+	    /* ahem, death to those who redefine active sort subs */
+	    else if (PL_curstackinfo->si_type == PERLSI_SORT
+		     && GvCV(dstr) && PL_sortcop == CvSTART(GvCV(dstr)))
+		Perl_croak(aTHX_ "Can't redefine active sort subroutine %s",
+		      GvNAME(dstr));
+
+#ifdef GV_UNIQUE_CHECK
+                if (GvUNIQUE((GV*)dstr)) {
+                    Perl_croak(aTHX_ PL_no_modify);
+                }
+#endif
+
+	    (void)SvOK_off(dstr);
+	    GvINTRO_off(dstr);		/* one-shot flag */
+	    gp_free((GV*)dstr);
+	    GvGP(dstr) = gp_ref(GvGP(sstr));
+	    if (SvTAINTED(sstr))
+		SvTAINT(dstr);
+	    if (GvIMPORTED(dstr) != GVf_IMPORTED
+		&& CopSTASH_ne(PL_curcop, GvSTASH(dstr)))
+	    {
+		GvIMPORTED_on(dstr);
+	    }
+	    GvMULTI_on(dstr);
+	    return;
+	}
+	/* FALL THROUGH */
+
+    default:
+	if (SvGMAGICAL(sstr) && (flags & SV_GMAGIC)) {
+	    mg_get(sstr);
+	    if ((int)SvTYPE(sstr) != stype) {
+		stype = SvTYPE(sstr);
+		if (stype == SVt_PVGV && dtype <= SVt_PVGV)
+		    goto glob_assign;
+	    }
+	}
+	if (stype == SVt_PVLV)
+	    (void)SvUPGRADE(dstr, SVt_PVNV);
+	else
+	    (void)SvUPGRADE(dstr, (U32)stype);
+    }
+
+    sflags = SvFLAGS(sstr);
+
+    if (sflags & SVf_ROK) {
+	if (dtype >= SVt_PV) {
+	    if (dtype == SVt_PVGV) {
+		SV *sref = SvREFCNT_inc(SvRV(sstr));
+		SV *dref = 0;
+		int intro = GvINTRO(dstr);
+
+#ifdef GV_UNIQUE_CHECK
+                if (GvUNIQUE((GV*)dstr)) {
+                    Perl_croak(aTHX_ PL_no_modify);
+                }
+#endif
+
+		if (intro) {
+		    GvINTRO_off(dstr);	/* one-shot flag */
+		    GvLINE(dstr) = CopLINE(PL_curcop);
+		    GvEGV(dstr) = (GV*)dstr;
+		}
+		GvMULTI_on(dstr);
+		switch (SvTYPE(sref)) {
+		case SVt_PVAV:
+		    if (intro)
+			SAVEGENERICSV(GvAV(dstr));
+		    else
+			dref = (SV*)GvAV(dstr);
+		    GvAV(dstr) = (AV*)sref;
+		    if (!GvIMPORTED_AV(dstr)
+			&& CopSTASH_ne(PL_curcop, GvSTASH(dstr)))
+		    {
+			GvIMPORTED_AV_on(dstr);
+		    }
+		    break;
+		case SVt_PVHV:
+		    if (intro)
+			SAVEGENERICSV(GvHV(dstr));
+		    else
+			dref = (SV*)GvHV(dstr);
+		    GvHV(dstr) = (HV*)sref;
+		    if (!GvIMPORTED_HV(dstr)
+			&& CopSTASH_ne(PL_curcop, GvSTASH(dstr)))
+		    {
+			GvIMPORTED_HV_on(dstr);
+		    }
+		    break;
+		case SVt_PVCV:
+		    if (intro) {
+			if (GvCVGEN(dstr) && GvCV(dstr) != (CV*)sref) {
+			    SvREFCNT_dec(GvCV(dstr));
+			    GvCV(dstr) = Nullcv;
+			    GvCVGEN(dstr) = 0; /* Switch off cacheness. */
+			    PL_sub_generation++;
+			}
+			SAVEGENERICSV(GvCV(dstr));
+		    }
+		    else
+			dref = (SV*)GvCV(dstr);
+		    if (GvCV(dstr) != (CV*)sref) {
+			CV* cv = GvCV(dstr);
+			if (cv) {
+			    if (!GvCVGEN((GV*)dstr) &&
+				(CvROOT(cv) || CvXSUB(cv)))
+			    {
+				/* ahem, death to those who redefine
+				 * active sort subs */
+				if (PL_curstackinfo->si_type == PERLSI_SORT &&
+				      PL_sortcop == CvSTART(cv))
+				    Perl_croak(aTHX_
+				    "Can't redefine active sort subroutine %s",
+					  GvENAME((GV*)dstr));
+ 				/* Redefining a sub - warning is mandatory if
+ 				   it was a const and its value changed. */
+ 				if (ckWARN(WARN_REDEFINE)
+ 				    || (CvCONST(cv)
+ 					&& (!CvCONST((CV*)sref)
+ 					    || sv_cmp(cv_const_sv(cv),
+ 						      cv_const_sv((CV*)sref)))))
+ 				{
+ 				    Perl_warner(aTHX_ packWARN(WARN_REDEFINE),
+ 					CvCONST(cv)
+ 					? "Constant subroutine %s::%s redefined"
+ 					: "Subroutine %s::%s redefined",
+					HvNAME(GvSTASH((GV*)dstr)),
+ 					GvENAME((GV*)dstr));
+ 				}
+			    }
+			    if (!intro)
+				cv_ckproto(cv, (GV*)dstr,
+					SvPOK(sref) ? SvPVX(sref) : Nullch);
+			}
+			GvCV(dstr) = (CV*)sref;
+			GvCVGEN(dstr) = 0; /* Switch off cacheness. */
+			GvASSUMECV_on(dstr);
+			PL_sub_generation++;
+		    }
+		    if (!GvIMPORTED_CV(dstr)
+			&& CopSTASH_ne(PL_curcop, GvSTASH(dstr)))
+		    {
+			GvIMPORTED_CV_on(dstr);
+		    }
+		    break;
+		case SVt_PVIO:
+		    if (intro)
+			SAVEGENERICSV(GvIOp(dstr));
+		    else
+			dref = (SV*)GvIOp(dstr);
+		    GvIOp(dstr) = (IO*)sref;
+		    break;
+		case SVt_PVFM:
+		    if (intro)
+			SAVEGENERICSV(GvFORM(dstr));
+		    else
+			dref = (SV*)GvFORM(dstr);
+		    GvFORM(dstr) = (CV*)sref;
+		    break;
+		default:
+		    if (intro)
+			SAVEGENERICSV(GvSV(dstr));
+		    else
+			dref = (SV*)GvSV(dstr);
+		    GvSV(dstr) = sref;
+		    if (!GvIMPORTED_SV(dstr)
+			&& CopSTASH_ne(PL_curcop, GvSTASH(dstr)))
+		    {
+			GvIMPORTED_SV_on(dstr);
+		    }
+		    break;
+		}
+		if (dref)
+		    SvREFCNT_dec(dref);
+		if (SvTAINTED(sstr))
+		    SvTAINT(dstr);
+		return;
+	    }
+	    if (SvPVX(dstr)) {
+		(void)SvOOK_off(dstr);		/* backoff */
+		if (SvLEN(dstr))
+		    Safefree(SvPVX(dstr));
+		SvLEN(dstr)=SvCUR(dstr)=0;
+	    }
+	}
+	(void)SvOK_off(dstr);
+	SvRV(dstr) = SvREFCNT_inc(SvRV(sstr));
+	SvROK_on(dstr);
+	if (sflags & SVp_NOK) {
+	    SvNOKp_on(dstr);
+	    /* Only set the public OK flag if the source has public OK.  */
+	    if (sflags & SVf_NOK)
+		SvFLAGS(dstr) |= SVf_NOK;
+	    SvNVX(dstr) = SvNVX(sstr);
+	}
+	if (sflags & SVp_IOK) {
+	    (void)SvIOKp_on(dstr);
+	    if (sflags & SVf_IOK)
+		SvFLAGS(dstr) |= SVf_IOK;
+	    if (sflags & SVf_IVisUV)
+		SvIsUV_on(dstr);
+	    SvIVX(dstr) = SvIVX(sstr);
+	}
+	if (SvAMAGIC(sstr)) {
+	    SvAMAGIC_on(dstr);
+	}
+    }
+    else if (sflags & SVp_POK) {
+
+	/*
+	 * Check to see if we can just swipe the string.  If so, it's a
+	 * possible small lose on short strings, but a big win on long ones.
+	 * It might even be a win on short strings if SvPVX(dstr)
+	 * has to be allocated and SvPVX(sstr) has to be freed.
+	 */
+
+	if (SvTEMP(sstr) &&		/* slated for free anyway? */
+	    SvREFCNT(sstr) == 1 && 	/* and no other references to it? */
+	    (!(flags & SV_NOSTEAL)) &&	/* and we're allowed to steal temps */
+	    !(sflags & SVf_OOK) && 	/* and not involved in OOK hack? */
+	    SvLEN(sstr) 	&&	/* and really is a string */
+	    			/* and won't be needed again, potentially */
+	    !(PL_op && PL_op->op_type == OP_AASSIGN))
+	{
+	    if (SvPVX(dstr)) {		/* we know that dtype >= SVt_PV */
+		if (SvOOK(dstr)) {
+		    SvFLAGS(dstr) &= ~SVf_OOK;
+		    Safefree(SvPVX(dstr) - SvIVX(dstr));
+		}
+		else if (SvLEN(dstr))
+		    Safefree(SvPVX(dstr));
+	    }
+	    (void)SvPOK_only(dstr);
+	    SvPV_set(dstr, SvPVX(sstr));
+	    SvLEN_set(dstr, SvLEN(sstr));
+	    SvCUR_set(dstr, SvCUR(sstr));
+
+	    SvTEMP_off(dstr);
+	    (void)SvOK_off(sstr);	/* NOTE: nukes most SvFLAGS on sstr */
+	    SvPV_set(sstr, Nullch);
+	    SvLEN_set(sstr, 0);
+	    SvCUR_set(sstr, 0);
+	    SvTEMP_off(sstr);
+	}
+	else {				/* have to copy actual string */
+	    STRLEN len = SvCUR(sstr);
+	    SvGROW(dstr, len + 1);	/* inlined from sv_setpvn */
+	    Move(SvPVX(sstr),SvPVX(dstr),len,char);
+	    SvCUR_set(dstr, len);
+	    *SvEND(dstr) = '\0';
+	    (void)SvPOK_only(dstr);
+	}
+	if (sflags & SVf_UTF8)
+	    SvUTF8_on(dstr);
+	/*SUPPRESS 560*/
+	if (sflags & SVp_NOK) {
+	    SvNOKp_on(dstr);
+	    if (sflags & SVf_NOK)
+		SvFLAGS(dstr) |= SVf_NOK;
+	    SvNVX(dstr) = SvNVX(sstr);
+	}
+	if (sflags & SVp_IOK) {
+	    (void)SvIOKp_on(dstr);
+	    if (sflags & SVf_IOK)
+		SvFLAGS(dstr) |= SVf_IOK;
+	    if (sflags & SVf_IVisUV)
+		SvIsUV_on(dstr);
+	    SvIVX(dstr) = SvIVX(sstr);
+	}
+	if ( SvVOK(sstr) ) {
+	    MAGIC *smg = mg_find(sstr,PERL_MAGIC_vstring);
+	    sv_magic(dstr, NULL, PERL_MAGIC_vstring,
+		     smg->mg_ptr, smg->mg_len);
+	    SvRMAGICAL_on(dstr);
+	} 
+    }
+    else if (sflags & SVp_IOK) {
+	if (sflags & SVf_IOK)
+	    (void)SvIOK_only(dstr);
+	else {
+	    (void)SvOK_off(dstr);
+	    (void)SvIOKp_on(dstr);
+	}
+	/* XXXX Do we want to set IsUV for IV(ROK)?  Be extra safe... */
+	if (sflags & SVf_IVisUV)
+	    SvIsUV_on(dstr);
+	SvIVX(dstr) = SvIVX(sstr);
+	if (sflags & SVp_NOK) {
+	    if (sflags & SVf_NOK)
+		(void)SvNOK_on(dstr);
+	    else
+		(void)SvNOKp_on(dstr);
+	    SvNVX(dstr) = SvNVX(sstr);
+	}
+    }
+    else if (sflags & SVp_NOK) {
+	if (sflags & SVf_NOK)
+	    (void)SvNOK_only(dstr);
+	else {
+	    (void)SvOK_off(dstr);
+	    SvNOKp_on(dstr);
+	}
+	SvNVX(dstr) = SvNVX(sstr);
+    }
+    else {
+	if (dtype == SVt_PVGV) {
+	    if (ckWARN(WARN_MISC))
+		Perl_warner(aTHX_ packWARN(WARN_MISC), "Undefined value assigned to typeglob");
+	}
+	else
+	    (void)SvOK_off(dstr);
+    }
+    if (SvTAINTED(sstr))
+	SvTAINT(dstr);
 }

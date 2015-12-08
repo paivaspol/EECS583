@@ -1,18 +1,37 @@
-void
-declare_weak (decl)
-     tree decl;
+static unsigned HOST_WIDE_INT
+array_size_for_constructor (val)
+     tree val;
 {
-  if (! TREE_PUBLIC (decl))
-    error_with_decl (decl, "weak declaration of `%s' must be public");
-  else if (TREE_CODE (decl) == FUNCTION_DECL && TREE_ASM_WRITTEN (decl))
-    error_with_decl (decl, "weak declaration of `%s' must precede definition");
-  else if (SUPPORTS_WEAK)
-    {
-      if (! DECL_WEAK (decl))
-	weak_decls = tree_cons (NULL, decl, weak_decls);
-    }
-  else
-    warning_with_decl (decl, "weak declaration of `%s' not supported");
+  tree max_index, i;
 
-  mark_weak (decl);
+  /* This code used to attempt to handle string constants that are not
+     arrays of single-bytes, but nothing else does, so there's no point in
+     doing it here.  */
+  if (TREE_CODE (val) == STRING_CST)
+    return TREE_STRING_LENGTH (val);
+
+  max_index = NULL_TREE;
+  for (i = CONSTRUCTOR_ELTS (val); i ; i = TREE_CHAIN (i))
+    {
+      tree index = TREE_PURPOSE (i);
+
+      if (TREE_CODE (index) == RANGE_EXPR)
+	index = TREE_OPERAND (index, 1);
+      if (max_index == NULL_TREE || tree_int_cst_lt (max_index, index))
+	max_index = index;
+    }
+
+  if (max_index == NULL_TREE)
+    return 0;
+
+  /* Compute the total number of array elements.  */
+  i = size_binop (MINUS_EXPR, convert (sizetype, max_index),
+		  convert (sizetype,
+			   TYPE_MIN_VALUE (TYPE_DOMAIN (TREE_TYPE (val)))));
+  i = size_binop (PLUS_EXPR, i, convert (sizetype, integer_one_node));
+
+  /* Multiply by the array element unit size to find number of bytes.  */
+  i = size_binop (MULT_EXPR, i, TYPE_SIZE_UNIT (TREE_TYPE (TREE_TYPE (val))));
+
+  return tree_low_cst (i, 1);
 }

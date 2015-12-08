@@ -1,0 +1,21 @@
+PP(pp_postinc)
+{
+    dSP; dTARGET;
+    if (SvTYPE(TOPs) > SVt_PVLV)
+	DIE(aTHX_ PL_no_modify);
+    sv_setsv(TARG, TOPs);
+    if (!SvREADONLY(TOPs) && SvIOK_notUV(TOPs) && !SvNOK(TOPs) && !SvPOK(TOPs)
+        && SvIVX(TOPs) != IV_MAX)
+    {
+	++SvIVX(TOPs);
+	SvFLAGS(TOPs) &= ~(SVp_NOK|SVp_POK);
+    }
+    else
+	sv_inc(TOPs);
+    SvSETMAGIC(TOPs);
+    /* special case for undef: see thread at 2003-03/msg00536.html in archive */
+    if (!SvOK(TARG))
+	sv_setiv(TARG, 0);
+    SETs(TARG);
+    return NORMAL;
+}

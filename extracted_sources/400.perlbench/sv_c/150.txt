@@ -1,6 +1,9 @@
 void
-Perl_sv_vsetpvf_mg(pTHX_ SV *sv, const char* pat, va_list* args)
+Perl_sv_setpvf_mg_nocontext(SV *sv, const char* pat, ...)
 {
-    sv_vsetpvfn(sv, pat, strlen(pat), args, Null(SV**), 0, Null(bool*));
-    SvSETMAGIC(sv);
+    dTHX;
+    va_list args;
+    va_start(args, pat);
+    sv_vsetpvf_mg(sv, pat, &args);
+    va_end(args);
 }

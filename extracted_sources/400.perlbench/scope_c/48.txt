@@ -1,16 +1,18 @@
-I32
-Perl_save_alloc(pTHX_ I32 size, I32 pad)
+void
+Perl_save_helem(pTHX_ HV *hv, SV *key, SV **sptr)
 {
-    register I32 start = pad + ((char*)&PL_savestack[PL_savestack_ix]
-				- (char*)PL_savestack);
-    register I32 elems = 1 + ((size + pad - 1) / sizeof(*PL_savestack));
-
-    /* SSCHECK may not be good enough */
-    while (PL_savestack_ix + elems + 2 > PL_savestack_max)
-	savestack_grow();
-
-    PL_savestack_ix += elems;
-    SSPUSHINT(elems);
-    SSPUSHINT(SAVEt_ALLOC);
-    return start;
+    SV *sv;
+    SSCHECK(4);
+    SSPUSHPTR(SvREFCNT_inc(hv));
+    SSPUSHPTR(SvREFCNT_inc(key));
+    SSPUSHPTR(SvREFCNT_inc(*sptr));
+    SSPUSHINT(SAVEt_HELEM);
+    save_scalar_at(sptr);
+    sv = *sptr;
+    /* If we're localizing a tied hash element, this new sv
+     * won't actually be stored in the hash - so it won't get
+     * reaped when the localize ends. Ensure it gets reaped by
+     * mortifying it instead. DAPM */
+    if (SvTIED_mg(sv, PERL_MAGIC_tiedelem))
+	sv_2mortal(sv);
 }

@@ -1,14 +1,19 @@
-SV *
-Perl_hv_iterval(pTHX_ HV *hv, register HE *entry)
+I32
+Perl_hv_iterinit(pTHX_ HV *hv)
 {
-    if (SvRMAGICAL(hv)) {
-	if (mg_find((SV*)hv, PERL_MAGIC_tied)) {
-	    SV* sv = sv_newmortal();
-	    if (HeKLEN(entry) == HEf_SVKEY)
-		mg_copy((SV*)hv, sv, (char*)HeKEY_sv(entry), HEf_SVKEY);
-	    else mg_copy((SV*)hv, sv, HeKEY(entry), HeKLEN(entry));
-	    return sv;
-	}
+    register XPVHV* xhv;
+    HE *entry;
+
+    if (!hv)
+	Perl_croak(aTHX_ "Bad hash");
+    xhv = (XPVHV*)SvANY(hv);
+    entry = xhv->xhv_eiter; /* HvEITER(hv) */
+    if (entry && HvLAZYDEL(hv)) {	/* was deleted earlier? */
+	HvLAZYDEL_off(hv);
+	hv_free_ent(hv, entry);
     }
-    return HeVAL(entry);
+    xhv->xhv_riter = -1; 	/* HvRITER(hv) = -1 */
+    xhv->xhv_eiter = Null(HE*); /* HvEITER(hv) = Null(HE*) */
+    /* used to be xhv->xhv_fill before 5.004_65 */
+    return XHvTOTALKEYS(xhv);
 }

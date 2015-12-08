@@ -1,11 +1,20 @@
-void
-Perl_atfork_unlock(void)
+int
+#endif
+vsprintf(char *dest, const char *pat, char *args)
 {
-#if defined(USE_5005THREADS) || defined(USE_ITHREADS)
-    /* locks must be released in same order as in atfork_lock() */
-#  ifdef MYMALLOC
-    MUTEX_UNLOCK(&PL_malloc_mutex);
-#  endif
-    OP_REFCNT_UNLOCK;
+    FILE fakebuf;
+
+    fakebuf._ptr = dest;
+    fakebuf._cnt = 32767;
+#ifndef _IOSTRG
+#define _IOSTRG 0
+#endif
+    fakebuf._flag = _IOWRT|_IOSTRG;
+    _doprnt(pat, args, &fakebuf);	/* what a kludge */
+    (void)putc('\0', &fakebuf);
+#ifdef USE_CHAR_VSPRINTF
+    return(dest);
+#else
+    return 0;		/* perl doesn't use return value */
 #endif
 }

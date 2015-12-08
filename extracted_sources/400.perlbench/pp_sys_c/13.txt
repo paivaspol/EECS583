@@ -1,0 +1,89 @@
+PP(pp_tie)
+{
+    dSP;
+    dMARK;
+    SV *varsv;
+    HV* stash;
+    GV *gv;
+    SV *sv;
+    I32 markoff = MARK - PL_stack_base;
+    char *methname;
+    int how = PERL_MAGIC_tied;
+    U32 items;
+
+    varsv = *++MARK;
+    switch(SvTYPE(varsv)) {
+	case SVt_PVHV:
+	    methname = "TIEHASH";
+	    HvEITER((HV *)varsv) = Null(HE *);
+	    break;
+	case SVt_PVAV:
+	    methname = "TIEARRAY";
+	    break;
+	case SVt_PVGV:
+#ifdef GV_UNIQUE_CHECK
+	    if (GvUNIQUE((GV*)varsv)) {
+                Perl_croak(aTHX_ "Attempt to tie unique GV");
+	    }
+#endif
+	    methname = "TIEHANDLE";
+	    how = PERL_MAGIC_tiedscalar;
+	    /* For tied filehandles, we apply tiedscalar magic to the IO
+	       slot of the GP rather than the GV itself. AMS 20010812 */
+	    if (!GvIOp(varsv))
+		GvIOp(varsv) = newIO();
+	    varsv = (SV *)GvIOp(varsv);
+	    break;
+	default:
+	    methname = "TIESCALAR";
+	    how = PERL_MAGIC_tiedscalar;
+	    break;
+    }
+    items = SP - MARK++;
+    if (sv_isobject(*MARK)) {
+	ENTER;
+	PUSHSTACKi(PERLSI_MAGIC);
+	PUSHMARK(SP);
+	EXTEND(SP,(I32)items);
+	while (items--)
+	    PUSHs(*MARK++);
+	PUTBACK;
+	call_method(methname, G_SCALAR);
+    }
+    else {
+	/* Not clear why we don't call call_method here too.
+	 * perhaps to get different error message ?
+	 */
+	stash = gv_stashsv(*MARK, FALSE);
+	if (!stash || !(gv = gv_fetchmethod(stash, methname))) {
+	    DIE(aTHX_ "Can't locate object method \"%s\" via package \"%"SVf"\"",
+		 methname, *MARK);
+	}
+	ENTER;
+	PUSHSTACKi(PERLSI_MAGIC);
+	PUSHMARK(SP);
+	EXTEND(SP,(I32)items);
+	while (items--)
+	    PUSHs(*MARK++);
+	PUTBACK;
+	call_sv((SV*)GvCV(gv), G_SCALAR);
+    }
+    SPAGAIN;
+
+    sv = TOPs;
+    POPSTACK;
+    if (sv_isobject(sv)) {
+	sv_unmagic(varsv, how);
+	/* Croak if a self-tie on an aggregate is attempted. */
+	if (varsv == SvRV(sv) &&
+	    (SvTYPE(varsv) == SVt_PVAV ||
+	     SvTYPE(varsv) == SVt_PVHV))
+	    Perl_croak(aTHX_
+		       "Self-ties of arrays and hashes are not supported");
+	sv_magic(varsv, (SvRV(sv) == varsv ? Nullsv : sv), how, Nullch, 0);
+    }
+    LEAVE;
+    SP = PL_stack_base + markoff;
+    PUSHs(sv);
+    RETURN;
+}

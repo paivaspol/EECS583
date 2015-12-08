@@ -1,46 +1,18 @@
 void
-Perl_hv_clear_placeholders(pTHX_ HV *hv)
+Perl_hv_delayfree_ent(pTHX_ HV *hv, register HE *entry)
 {
-    I32 items = (I32)HvPLACEHOLDERS(hv);
-    I32 i = HvMAX(hv);
-
-    if (items == 0)
+    if (!entry)
 	return;
-
-    do {
-	/* Loop down the linked list heads  */
-	int first = 1;
-	HE **oentry = &(HvARRAY(hv))[i];
-	HE *entry = *oentry;
-
-	if (!entry)
-	    continue;
-
-	for (; entry; entry = *oentry) {
-	    if (HeVAL(entry) == &PL_sv_placeholder) {
-		*oentry = HeNEXT(entry);
-		if (first && !*oentry)
-		    HvFILL(hv)--; /* This linked list is now empty.  */
-		if (HvEITER(hv))
-		    HvLAZYDEL_on(hv);
-		else
-		    hv_free_ent(hv, entry);
-
-		if (--items == 0) {
-		    /* Finished.  */
-		    HvTOTALKEYS(hv) -= (IV)HvPLACEHOLDERS(hv);
-		    if (HvKEYS(hv) == 0)
-			HvHASKFLAGS_off(hv);
-		    HvPLACEHOLDERS(hv) = 0;
-		    return;
-		}
-	    } else {
-		oentry = &HeNEXT(entry);
-		first = 0;
-	    }
-	}
-    } while (--i >= 0);
-    /* You can't get here, hence assertion should always fail.  */
-    assert (items == 0);
-    assert (0);
+    if (isGV(HeVAL(entry)) && GvCVu(HeVAL(entry)) && HvNAME(hv))
+	PL_sub_generation++;	/* may be deletion of method from stash */
+    sv_2mortal(HeVAL(entry));	/* free between statements */
+    if (HeKLEN(entry) == HEf_SVKEY) {
+	sv_2mortal(HeKEY_sv(entry));
+	Safefree(HeKEY_hek(entry));
+    }
+    else if (HvSHAREKEYS(hv))
+	unshare_hek(HeKEY_hek(entry));
+    else
+	Safefree(HeKEY_hek(entry));
+    del_HE(entry);
 }

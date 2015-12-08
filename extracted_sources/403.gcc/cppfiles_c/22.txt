@@ -1,0 +1,79 @@
+static struct file_name_map *
+read_name_map (pfile, dirname)
+     cpp_reader *pfile;
+     const char *dirname;
+{
+  struct file_name_map_list *map_list_ptr;
+  char *name;
+  FILE *f;
+
+  /* Check the cache of directories, and mappings in their remap file.  */
+  for (map_list_ptr = CPP_OPTION (pfile, map_list); map_list_ptr;
+       map_list_ptr = map_list_ptr->map_list_next)
+    if (! strcmp (map_list_ptr->map_list_name, dirname))
+      return map_list_ptr->map_list_map;
+
+  map_list_ptr = ((struct file_name_map_list *)
+		  xmalloc (sizeof (struct file_name_map_list)));
+  map_list_ptr->map_list_name = xstrdup (dirname);
+
+  /* The end of the list ends in NULL.  */
+  map_list_ptr->map_list_map = NULL;
+
+  name = (char *) alloca (strlen (dirname) + strlen (FILE_NAME_MAP_FILE) + 2);
+  strcpy (name, dirname);
+  if (*dirname)
+    strcat (name, "/");
+  strcat (name, FILE_NAME_MAP_FILE);
+  f = fopen (name, "r");
+
+  /* Silently return NULL if we cannot open.  */
+  if (f)
+    {
+      int ch;
+      int dirlen = strlen (dirname);
+
+      while ((ch = getc (f)) != EOF)
+	{
+	  char *from, *to;
+	  struct file_name_map *ptr;
+
+	  if (is_space(ch))
+	    continue;
+	  from = read_filename_string (ch, f);
+	  while ((ch = getc (f)) != EOF && is_hspace(ch))
+	    ;
+	  to = read_filename_string (ch, f);
+
+	  ptr = ((struct file_name_map *)
+		 xmalloc (sizeof (struct file_name_map)));
+	  ptr->map_from = from;
+
+	  /* Make the real filename absolute.  */
+	  if (IS_ABSOLUTE_PATHNAME (to))
+	    ptr->map_to = to;
+	  else
+	    {
+	      ptr->map_to = xmalloc (dirlen + strlen (to) + 2);
+	      strcpy (ptr->map_to, dirname);
+	      ptr->map_to[dirlen] = '/';
+	      strcpy (ptr->map_to + dirlen + 1, to);
+	      free (to);
+	    }	      
+
+	  ptr->map_next = map_list_ptr->map_list_map;
+	  map_list_ptr->map_list_map = ptr;
+
+	  while ((ch = getc (f)) != '\n')
+	    if (ch == EOF)
+	      break;
+	}
+      fclose (f);
+    }
+  
+  /* Add this information to the cache.  */
+  map_list_ptr->map_list_next = CPP_OPTION (pfile, map_list);
+  CPP_OPTION (pfile, map_list) = map_list_ptr;
+
+  return map_list_ptr->map_list_map;
+}  

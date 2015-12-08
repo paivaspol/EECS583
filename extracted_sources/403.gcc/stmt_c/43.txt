@@ -1,13 +1,10 @@
-int
-expand_continue_loop (whichloop)
-     struct nesting *whichloop;
+void
+expand_end_null_loop ()
 {
+  do_pending_stack_adjust ();
+  emit_label (loop_stack->data.loop.end_label);
+
+  POPSTACK (loop_stack);
+
   last_expr_type = 0;
-  if (whichloop == 0)
-    whichloop = loop_stack;
-  if (whichloop == 0)
-    return 0;
-  expand_goto_internal (NULL_TREE, whichloop->data.loop.continue_label,
-			NULL_RTX);
-  return 1;
 }

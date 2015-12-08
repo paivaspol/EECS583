@@ -1,0 +1,15 @@
+IV
+PerlIOCrlf_binmode(pTHX_ PerlIO *f)
+{
+    if ((PerlIOBase(f)->flags & PERLIO_F_CRLF)) {
+	/* In text mode - flush any pending stuff and flip it */
+	PerlIOBase(f)->flags &= ~PERLIO_F_CRLF;
+#ifndef PERLIO_USING_CRLF
+	/* CRLF is unusual case - if this is just the :crlf layer pop it */
+	if (PerlIOBase(f)->tab == &PerlIO_crlf) {
+		PerlIO_pop(aTHX_ f);
+	}
+#endif
+    }
+    return 0;
+}

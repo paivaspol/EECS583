@@ -1,0 +1,25 @@
+PP(pp_listen)
+{
+#ifdef HAS_SOCKET
+    dSP;
+    int backlog = POPi;
+    GV *gv = (GV*)POPs;
+    register IO *io = gv ? GvIOn(gv) : NULL;
+
+    if (!gv || !io || !IoIFP(io))
+	goto nuts;
+
+    if (PerlSock_listen(PerlIO_fileno(IoIFP(io)), backlog) >= 0)
+	RETPUSHYES;
+    else
+	RETPUSHUNDEF;
+
+nuts:
+    if (ckWARN(WARN_CLOSED))
+	report_evil_fh(gv, io, PL_op->op_type);
+    SETERRNO(EBADF,SS_IVCHAN);
+    RETPUSHUNDEF;
+#else
+    DIE(aTHX_ PL_no_sock_func, "listen");
+#endif
+}

@@ -1,13 +1,8 @@
-void
-Perl_newMYSUB(pTHX_ I32 floor, OP *o, OP *proto, OP *attrs, OP *block)
+OP *
+Perl_invert(pTHX_ OP *o)
 {
-    if (o)
-	SAVEFREEOP(o);
-    if (proto)
-	SAVEFREEOP(proto);
-    if (attrs)
-	SAVEFREEOP(attrs);
-    if (block)
-	SAVEFREEOP(block);
-    Perl_croak(aTHX_ "\"my sub\" not yet implemented");
+    if (!o)
+	return o;
+    /* XXX need to optimize away NOT NOT here?  Or do we let optimizer do it? */
+    return newUNOP(OP_NOT, OPf_SPECIAL, scalar(o));
 }

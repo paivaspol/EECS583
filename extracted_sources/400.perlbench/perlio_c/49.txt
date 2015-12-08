@@ -1,0 +1,15 @@
+int
+PerlIO_has_cntptr(PerlIO *f)
+{
+    if (PerlIOValid(f)) {
+	PerlIO_funcs *tab = PerlIOBase(f)->tab;
+
+	if (tab)
+	     return (tab->Get_ptr != NULL && tab->Get_cnt != NULL);
+	  SETERRNO(EINVAL, LIB_INVARG);
+    }
+    else
+	 SETERRNO(EBADF, SS_IVCHAN);
+
+    return 0;
+}

@@ -1,0 +1,82 @@
+PP(pp_gnetent)
+{
+#if defined(HAS_GETNETBYNAME) || defined(HAS_GETNETBYADDR) || defined(HAS_GETNETENT)
+    dSP;
+    I32 which = PL_op->op_type;
+    register char **elem;
+    register SV *sv;
+#ifndef HAS_GETNET_PROTOS /* XXX Do we need individual probes? */
+    struct netent *getnetbyaddr(Netdb_net_t, int);
+    struct netent *getnetbyname(Netdb_name_t);
+    struct netent *getnetent(void);
+#endif
+    struct netent *nent;
+    STRLEN n_a;
+
+    if (which == OP_GNBYNAME){
+#ifdef HAS_GETNETBYNAME
+        char *name = POPpbytex;
+	nent = PerlSock_getnetbyname(name);
+#else
+        DIE(aTHX_ PL_no_sock_func, "getnetbyname");
+#endif
+    }
+    else if (which == OP_GNBYADDR) {
+#ifdef HAS_GETNETBYADDR
+	int addrtype = POPi;
+	Netdb_net_t addr = (Netdb_net_t) (U32)POPu;
+	nent = PerlSock_getnetbyaddr(addr, addrtype);
+#else
+	DIE(aTHX_ PL_no_sock_func, "getnetbyaddr");
+#endif
+    }
+    else
+#ifdef HAS_GETNETENT
+	nent = PerlSock_getnetent();
+#else
+        DIE(aTHX_ PL_no_sock_func, "getnetent");
+#endif
+
+#ifdef HOST_NOT_FOUND
+	if (!nent) {
+#ifdef USE_REENTRANT_API
+#   ifdef USE_GETNETENT_ERRNO
+	     h_errno = PL_reentrant_buffer->_getnetent_errno;
+#   endif
+#endif
+	    STATUS_NATIVE_SET(h_errno);
+	}
+#endif
+
+    EXTEND(SP, 4);
+    if (GIMME != G_ARRAY) {
+	PUSHs(sv = sv_newmortal());
+	if (nent) {
+	    if (which == OP_GNBYNAME)
+		sv_setiv(sv, (IV)nent->n_net);
+	    else
+		sv_setpv(sv, nent->n_name);
+	}
+	RETURN;
+    }
+
+    if (nent) {
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setpv(sv, nent->n_name);
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	for (elem = nent->n_aliases; elem && *elem; elem++) {
+	    sv_catpv(sv, *elem);
+	    if (elem[1])
+		sv_catpvn(sv, " ", 1);
+	}
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setiv(sv, (IV)nent->n_addrtype);
+	PUSHs(sv = sv_mortalcopy(&PL_sv_no));
+	sv_setiv(sv, (IV)nent->n_net);
+    }
+
+    RETURN;
+#else
+    DIE(aTHX_ PL_no_sock_func, "getnetent");
+#endif
+}

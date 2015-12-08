@@ -1,48 +1,76 @@
 void
-ix86_expand_unary_operator (code, mode, operands)
+ix86_expand_binary_operator (code, mode, operands)
      enum rtx_code code;
      enum machine_mode mode;
      rtx operands[];
 {
   int matching_memory;
-  rtx src, dst, op, clob;
+  rtx src1, src2, dst, op, clob;
 
   dst = operands[0];
-  src = operands[1];
+  src1 = operands[1];
+  src2 = operands[2];
+
+  /* Recognize <var1> = <value> <op> <var1> for commutative operators */
+  if (GET_RTX_CLASS (code) == 'c'
+      && (rtx_equal_p (dst, src2)
+	  || immediate_operand (src1, mode)))
+    {
+      rtx temp = src1;
+      src1 = src2;
+      src2 = temp;
+    }
 
   /* If the destination is memory, and we do not have matching source
      operands, do things in registers.  */
   matching_memory = 0;
   if (GET_CODE (dst) == MEM)
     {
-      if (rtx_equal_p (dst, src))
+      if (rtx_equal_p (dst, src1))
 	matching_memory = 1;
+      else if (GET_RTX_CLASS (code) == 'c'
+	       && rtx_equal_p (dst, src2))
+	matching_memory = 2;
       else
 	dst = gen_reg_rtx (mode);
     }
 
-  /* When source operand is memory, destination must match.  */
-  if (!matching_memory && GET_CODE (src) == MEM)
-    src = force_reg (mode, src);
+  /* Both source operands cannot be in memory.  */
+  if (GET_CODE (src1) == MEM && GET_CODE (src2) == MEM)
+    {
+      if (matching_memory != 2)
+	src2 = force_reg (mode, src2);
+      else
+	src1 = force_reg (mode, src1);
+    }
+
+  /* If the operation is not commutable, source 1 cannot be a constant
+     or non-matching memory.  */
+  if ((CONSTANT_P (src1)
+       || (!matching_memory && GET_CODE (src1) == MEM))
+      && GET_RTX_CLASS (code) != 'c')
+    src1 = force_reg (mode, src1);
 
   /* If optimizing, copy to regs to improve CSE */
   if (optimize && ! no_new_pseudos)
     {
       if (GET_CODE (dst) == MEM)
 	dst = gen_reg_rtx (mode);
-      if (GET_CODE (src) == MEM)
-	src = force_reg (mode, src);
+      if (GET_CODE (src1) == MEM)
+	src1 = force_reg (mode, src1);
+      if (GET_CODE (src2) == MEM)
+	src2 = force_reg (mode, src2);
     }
 
   /* Emit the instruction.  */
 
-  op = gen_rtx_SET (VOIDmode, dst, gen_rtx_fmt_e (code, mode, src));
-  if (reload_in_progress || code == NOT)
+  op = gen_rtx_SET (VOIDmode, dst, gen_rtx_fmt_ee (code, mode, src1, src2));
+  if (reload_in_progress)
     {
       /* Reload doesn't know about the flags register, and doesn't know that
-         it doesn't want to clobber it.  */
-      if (code != NOT)
-        abort ();
+         it doesn't want to clobber it.  We can only do this with PLUS.  */
+      if (code != PLUS)
+	abort ();
       emit_insn (op);
     }
   else

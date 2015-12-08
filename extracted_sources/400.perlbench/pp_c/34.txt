@@ -1,0 +1,116 @@
+PP(pp_subtract)
+{
+    dSP; dATARGET; bool useleft; tryAMAGICbin(subtr,opASSIGN);
+    useleft = USE_LEFT(TOPm1s);
+#ifdef PERL_PRESERVE_IVUV
+    /* See comments in pp_add (in pp_hot.c) about Overflow, and how
+       "bad things" happen if you rely on signed integers wrapping.  */
+    SvIV_please(TOPs);
+    if (SvIOK(TOPs)) {
+	/* Unless the left argument is integer in range we are going to have to
+	   use NV maths. Hence only attempt to coerce the right argument if
+	   we know the left is integer.  */
+	register UV auv = 0;
+	bool auvok = FALSE;
+	bool a_valid = 0;
+
+	if (!useleft) {
+	    auv = 0;
+	    a_valid = auvok = 1;
+	    /* left operand is undef, treat as zero.  */
+	} else {
+	    /* Left operand is defined, so is it IV? */
+	    SvIV_please(TOPm1s);
+	    if (SvIOK(TOPm1s)) {
+		if ((auvok = SvUOK(TOPm1s)))
+		    auv = SvUVX(TOPm1s);
+		else {
+		    register IV aiv = SvIVX(TOPm1s);
+		    if (aiv >= 0) {
+			auv = aiv;
+			auvok = 1;	/* Now acting as a sign flag.  */
+		    } else { /* 2s complement assumption for IV_MIN */
+			auv = (UV)-aiv;
+		    }
+		}
+		a_valid = 1;
+	    }
+	}
+	if (a_valid) {
+	    bool result_good = 0;
+	    UV result;
+	    register UV buv;
+	    bool buvok = SvUOK(TOPs);
+	
+	    if (buvok)
+		buv = SvUVX(TOPs);
+	    else {
+		register IV biv = SvIVX(TOPs);
+		if (biv >= 0) {
+		    buv = biv;
+		    buvok = 1;
+		} else
+		    buv = (UV)-biv;
+	    }
+	    /* ?uvok if value is >= 0. basically, flagged as UV if it's +ve,
+	       else "IV" now, independent of how it came in.
+	       if a, b represents positive, A, B negative, a maps to -A etc
+	       a - b =>  (a - b)
+	       A - b => -(a + b)
+	       a - B =>  (a + b)
+	       A - B => -(a - b)
+	       all UV maths. negate result if A negative.
+	       subtract if signs same, add if signs differ. */
+
+	    if (auvok ^ buvok) {
+		/* Signs differ.  */
+		result = auv + buv;
+		if (result >= auv)
+		    result_good = 1;
+	    } else {
+		/* Signs same */
+		if (auv >= buv) {
+		    result = auv - buv;
+		    /* Must get smaller */
+		    if (result <= auv)
+			result_good = 1;
+		} else {
+		    result = buv - auv;
+		    if (result <= buv) {
+			/* result really should be -(auv-buv). as its negation
+			   of true value, need to swap our result flag  */
+			auvok = !auvok;
+			result_good = 1;
+		    }
+		}
+	    }
+	    if (result_good) {
+		SP--;
+		if (auvok)
+		    SETu( result );
+		else {
+		    /* Negate result */
+		    if (result <= (UV)IV_MIN)
+			SETi( -(IV)result );
+		    else {
+			/* result valid, but out of range for IV.  */
+			SETn( -(NV)result );
+		    }
+		}
+		RETURN;
+	    } /* Overflow, drop through to NVs.  */
+	}
+    }
+#endif
+    useleft = USE_LEFT(TOPm1s);
+    {
+	dPOPnv;
+	if (!useleft) {
+	    /* left operand is undef, treat as zero - value */
+	    SETn(-value);
+	    RETURN;
+	}
+	SETn( TOPn - value );
+	RETURN;
+    }
+}

@@ -1,26 +1,19 @@
-STATIC void
-S_sv_add_backref(pTHX_ SV *tsv, SV *sv)
+SV *
+Perl_sv_rvweaken(pTHX_ SV *sv)
 {
-    AV *av;
-    MAGIC *mg;
-    if (SvMAGICAL(tsv) && (mg = mg_find(tsv, PERL_MAGIC_backref)))
-	av = (AV*)mg->mg_obj;
-    else {
-	av = newAV();
-	sv_magic(tsv, (SV*)av, PERL_MAGIC_backref, NULL, 0);
-	/* av now has a refcnt of 2, which avoids it getting freed
-	 * before us during global cleanup. The extra ref is removed
-	 * by magic_killbackrefs() when tsv is being freed */
+    SV *tsv;
+    if (!SvOK(sv))  /* let undefs pass */
+	return sv;
+    if (!SvROK(sv))
+	Perl_croak(aTHX_ "Can't weaken a nonreference");
+    else if (SvWEAKREF(sv)) {
+	if (ckWARN(WARN_MISC))
+	    Perl_warner(aTHX_ packWARN(WARN_MISC), "Reference is already weak");
+	return sv;
     }
-    if (AvFILLp(av) >= AvMAX(av)) {
-        I32 i;
-        SV **svp = AvARRAY(av);
-        for (i = AvFILLp(av); i >= 0; i--)
-            if (!svp[i]) {
-                svp[i] = sv;        /* reuse the slot */
-                return;
-            }
-        av_extend(av, AvFILLp(av)+1);
-    }
-    AvARRAY(av)[++AvFILLp(av)] = sv; /* av_push() */
+    tsv = SvRV(sv);
+    sv_add_backref(tsv, sv);
+    SvWEAKREF_on(sv);
+    SvREFCNT_dec(tsv);
+    return sv;
 }

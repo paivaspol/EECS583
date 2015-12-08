@@ -1,73 +1,10 @@
 void
-assemble_start_function (decl, fnname)
-     tree decl;
-     const char *fnname;
+ctors_section ()
 {
-  int align;
-
-  /* The following code does not need preprocessing in the assembler.  */
-
-  app_disable ();
-
-  if (CONSTANT_POOL_BEFORE_FUNCTION)
-    output_constant_pool (fnname, decl);
-
-  resolve_unique_section (decl, 0, flag_function_sections);
-  function_section (decl);
-
-  /* Tell assembler to move to target machine's alignment for functions.  */
-  align = floor_log2 (FUNCTION_BOUNDARY / BITS_PER_UNIT);
-  if (align > 0)
+  if (in_section != in_ctors)
     {
-      ASM_OUTPUT_ALIGN (asm_out_file, align);
+      in_section = in_ctors;
+      fputs (CTORS_SECTION_ASM_OP, asm_out_file);
+      fputc ('\n', asm_out_file);
     }
-
-  /* Handle a user-specified function alignment.
-     Note that we still need to align to FUNCTION_BOUNDARY, as above,
-     because ASM_OUTPUT_MAX_SKIP_ALIGN might not do any alignment at all.  */
-  if (align_functions_log > align)
-    {
-#ifdef ASM_OUTPUT_MAX_SKIP_ALIGN
-      ASM_OUTPUT_MAX_SKIP_ALIGN (asm_out_file,
-				 align_functions_log, align_functions-1);
-#else
-      ASM_OUTPUT_ALIGN (asm_out_file, align_functions_log);
-#endif
-    }
-
-#ifdef ASM_OUTPUT_FUNCTION_PREFIX
-  ASM_OUTPUT_FUNCTION_PREFIX (asm_out_file, fnname);
-#endif
-
-  (*debug_hooks->begin_function) (decl);
-
-  /* Make function name accessible from other files, if appropriate.  */
-
-  if (TREE_PUBLIC (decl))
-    {
-      if (! first_global_object_name)
-	{
-	  const char *p;
-	  char *name;
-
-	  STRIP_NAME_ENCODING (p, fnname);
-	  name = permalloc (strlen (p) + 1);
-	  strcpy (name, p);
-
-	  if (! DECL_WEAK (decl) && ! DECL_ONE_ONLY (decl))
-	    first_global_object_name = name;
-	  else
-	    weak_global_object_name = name;
-	}
-
-      globalize_decl (decl);
-    }
-
-  /* Do any machine/system dependent processing of the function name */
-#ifdef ASM_DECLARE_FUNCTION_NAME
-  ASM_DECLARE_FUNCTION_NAME (asm_out_file, fnname, current_function_decl);
-#else
-  /* Standard thing is just output label for the function.  */
-  ASM_OUTPUT_LABEL (asm_out_file, fnname);
-#endif /* ASM_DECLARE_FUNCTION_NAME */
 }

@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 
 import os
 
-def parse_file(input_filename):
+def parse_file(input_filename, retval_type_list):
     function_counter = 0
     result = dict()
     with open(input_filename, 'rb') as input_file:
@@ -16,14 +16,14 @@ def parse_file(input_filename):
         for raw_line in input_file:
             line = raw_line
             # print line
-            if (check_defined(line) and not in_a_function) or (is_start_function(line) and not in_a_function):
+            if (check_defined(line) and not in_a_function) or (is_start_function(line, retval_type_list) and not in_a_function):
                 # Detect if it is the start of a function.
                 if check_defined(line):
                     last_line_was_defined = True
                 in_a_function = True
                 curly_brace_stack = []
                 function_str = ''
-            elif last_line_was_defined and not is_start_function(line):
+            elif last_line_was_defined and not is_start_function(line, retval_type_list):
                 last_line_was_defined = False
                 in_a_function = False
                 found_first_curly_brace = False
@@ -55,10 +55,13 @@ def parse_file(input_filename):
                 function_str = ''
     return result
 
-def is_start_function(line):
-    retval = (line.startswith('static') or line.startswith('Int32') or line.startswith('void') or line.startswith('IntNative') or \
-            line.startswith('Bool') or line.startswith('int') or line.startswith('BZFILE*')) and ';' not in line
-    return retval
+def is_start_function(line, return_value_list):
+    check_return_type = False
+    for retval_type in return_value_list:
+        if line.startswith(retval_type):
+            check_return_type = True
+            break
+    return check_return_type and ';' not in line
 
 def check_defined(line):
     return line.startswith('#if defined(SPEC_CPU)')
@@ -80,10 +83,20 @@ def find_last_path_delim(path):
             retval = i
     return retval
 
+def parse_return_value_list(return_value_list_filename):
+    retval = []
+    with open(return_value_list_filename, 'rb') as input_file:
+        for raw_line in input_file:
+            if not raw_line.startswith('#'):
+                retval.append(raw_line.strip())
+    return retval
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('input_filename')
+    parser.add_argument('return_value_list')
     parser.add_argument('--output-dir', default='.')
     args = parser.parse_args()
-    functions = parse_file(args.input_filename)
+    retval_type_list = parse_return_value_list(args.return_value_list)
+    functions = parse_file(args.input_filename, retval_type_list)
     output_to_file(args.input_filename, functions, args.output_dir)

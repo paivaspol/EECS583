@@ -1,15 +1,9 @@
-static void
-ix86_dump_ppro_packet (dump)
-     FILE *dump;
+static enum attr_memory
+ix86_safe_memory (insn)
+     rtx insn;
 {
-  if (ix86_sched_data.ppro.decode[0])
-    {
-      fprintf (dump, "PPRO packet: %d",
-	       INSN_UID (ix86_sched_data.ppro.decode[0]));
-      if (ix86_sched_data.ppro.decode[1])
-	fprintf (dump, " %d", INSN_UID (ix86_sched_data.ppro.decode[1]));
-      if (ix86_sched_data.ppro.decode[2])
-	fprintf (dump, " %d", INSN_UID (ix86_sched_data.ppro.decode[2]));
-      fputc ('\n', dump);
-    }
+  if (recog_memoized (insn) >= 0)
+    return get_attr_memory (insn);
+  else
+    return MEMORY_UNKNOWN;
 }

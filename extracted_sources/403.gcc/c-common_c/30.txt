@@ -1,14 +1,32 @@
 int
-case_compare (k1, k2)
-     splay_tree_key k1;
-     splay_tree_key k2;
+statement_code_p (code)
+     enum tree_code code;
 {
-  /* Consider a NULL key (such as arises with a `default' label) to be
-     smaller than anything else.  */
-  if (!k1)
-    return k2 ? -1 : 0;
-  else if (!k2)
-    return k1 ? 1 : 0;
+  switch (code)
+    {
+    case CLEANUP_STMT:
+    case EXPR_STMT:
+    case COMPOUND_STMT:
+    case DECL_STMT:
+    case IF_STMT:
+    case FOR_STMT:
+    case WHILE_STMT:
+    case DO_STMT:
+    case RETURN_STMT:
+    case BREAK_STMT:
+    case CONTINUE_STMT:
+    case SCOPE_STMT:
+    case SWITCH_STMT:
+    case GOTO_STMT:
+    case LABEL_STMT:
+    case ASM_STMT:
+    case FILE_STMT:
+    case CASE_LABEL:
+      return 1;
 
-  return tree_int_cst_compare ((tree) k1, (tree) k2);
+    default:
+      if (lang_statement_code_p)
+	return (*lang_statement_code_p) (code);
+      return 0;
+    }
 }

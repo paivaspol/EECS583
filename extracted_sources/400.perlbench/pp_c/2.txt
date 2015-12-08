@@ -1,15 +1,40 @@
-STATIC
-PP(pp_i_modulo_1)
+PP(pp_padav)
 {
-     /* This is the i_modulo with the workaround for the _moddi3 bug
-      * in (at least) glibc 2.2.5 (the PERL_ABS() the workaround).
-      * See below for pp_i_modulo. */
-     dSP; dATARGET; tryAMAGICbin(modulo,opASSIGN);
-     {
-	  dPOPTOPiirl;
-	  if (!right)
-	       DIE(aTHX_ "Illegal modulus zero");
-	  SETi( left % PERL_ABS(right) );
-	  RETURN;
-     }
+    dSP; dTARGET;
+    I32 gimme;
+    if (PL_op->op_private & OPpLVAL_INTRO)
+	SAVECLEARSV(PAD_SVl(PL_op->op_targ));
+    EXTEND(SP, 1);
+    if (PL_op->op_flags & OPf_REF) {
+	PUSHs(TARG);
+	RETURN;
+    } else if (LVRET) {
+	if (GIMME == G_SCALAR)
+	    Perl_croak(aTHX_ "Can't return array to lvalue scalar context");
+	PUSHs(TARG);
+	RETURN;
+    }
+    gimme = GIMME_V;
+    if (gimme == G_ARRAY) {
+	I32 maxarg = AvFILL((AV*)TARG) + 1;
+	EXTEND(SP, maxarg);
+	if (SvMAGICAL(TARG)) {
+	    U32 i;
+	    for (i=0; i < (U32)maxarg; i++) {
+		SV **svp = av_fetch((AV*)TARG, i, FALSE);
+		SP[i+1] = (svp) ? *svp : &PL_sv_undef;
+	    }
+	}
+	else {
+	    Copy(AvARRAY((AV*)TARG), SP+1, maxarg, SV*);
+	}
+	SP += maxarg;
+    }
+    else if (gimme == G_SCALAR) {
+	SV* sv = sv_newmortal();
+	I32 maxarg = AvFILL((AV*)TARG) + 1;
+	sv_setiv(sv, maxarg);
+	PUSHs(sv);
+    }
+    RETURN;
 }

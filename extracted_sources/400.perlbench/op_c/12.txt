@@ -1,5 +1,20 @@
-void
-Perl_op_refcnt_lock(pTHX)
+STATIC void
+S_cop_free(pTHX_ COP* cop)
 {
-    OP_REFCNT_LOCK;
+    Safefree(cop->cop_label);   /* FIXME: treaddead ??? */
+    CopFILE_free(cop);
+    CopSTASH_free(cop);
+    if (! specialWARN(cop->cop_warnings))
+	SvREFCNT_dec(cop->cop_warnings);
+    if (! specialCopIO(cop->cop_io)) {
+#ifdef USE_ITHREADS
+#if 0
+	STRLEN len;
+        char *s = SvPV(cop->cop_io,len);
+	Perl_warn(aTHX_ "io='%.*s'",(int) len,s); /* ??? --jhi */
+#endif
+#else
+	SvREFCNT_dec(cop->cop_io);
+#endif
+    }
 }

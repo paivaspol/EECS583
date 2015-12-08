@@ -1,0 +1,23 @@
+OP *
+Perl_append_list(pTHX_ I32 type, LISTOP *first, LISTOP *last)
+{
+    if (!first)
+	return (OP*)last;
+
+    if (!last)
+	return (OP*)first;
+
+    if (first->op_type != (unsigned)type)
+	return prepend_elem(type, (OP*)first, (OP*)last);
+
+    if (last->op_type != (unsigned)type)
+	return append_elem(type, (OP*)first, (OP*)last);
+
+    first->op_last->op_sibling = last->op_first;
+    first->op_last = last->op_last;
+    first->op_flags |= (last->op_flags & OPf_KIDS);
+
+    FreeOp(last);
+
+    return (OP*)first;
+}

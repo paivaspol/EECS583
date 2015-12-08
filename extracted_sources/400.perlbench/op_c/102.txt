@@ -1,0 +1,15 @@
+OP *
+Perl_newAVREF(pTHX_ OP *o)
+{
+    if (o->op_type == OP_PADANY) {
+	o->op_type = OP_PADAV;
+	o->op_ppaddr = PL_ppaddr[OP_PADAV];
+	return o;
+    }
+    else if ((o->op_type == OP_RV2AV || o->op_type == OP_PADAV)
+		&& ckWARN(WARN_DEPRECATED)) {
+	Perl_warner(aTHX_ packWARN(WARN_DEPRECATED),
+		"Using an array as a reference is deprecated");
+    }
+    return newUNOP(OP_RV2AV, 0, scalar(o));
+}

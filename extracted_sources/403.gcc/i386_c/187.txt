@@ -1,81 +1,24 @@
 int
-ix86_memory_move_cost (mode, class, in)
+ix86_secondary_memory_needed (class1, class2, mode, strict)
+     enum reg_class class1, class2;
      enum machine_mode mode;
-     enum reg_class class;
-     int in;
+     int strict;
 {
-  if (FLOAT_CLASS_P (class))
+  if (MAYBE_FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class1)
+      || MAYBE_FLOAT_CLASS_P (class2) != FLOAT_CLASS_P (class2)
+      || MAYBE_SSE_CLASS_P (class1) != SSE_CLASS_P (class1)
+      || MAYBE_SSE_CLASS_P (class2) != SSE_CLASS_P (class2)
+      || MAYBE_MMX_CLASS_P (class1) != MMX_CLASS_P (class1)
+      || MAYBE_MMX_CLASS_P (class2) != MMX_CLASS_P (class2))
     {
-      int index;
-      switch (mode)
-	{
-	  case SFmode:
-	    index = 0;
-	    break;
-	  case DFmode:
-	    index = 1;
-	    break;
-	  case XFmode:
-	  case TFmode:
-	    index = 2;
-	    break;
-	  default:
-	    return 100;
-	}
-      return in ? ix86_cost->fp_load [index] : ix86_cost->fp_store [index];
+      if (strict)
+	abort ();
+      else
+	return 1;
     }
-  if (SSE_CLASS_P (class))
-    {
-      int index;
-      switch (GET_MODE_SIZE (mode))
-	{
-	  case 4:
-	    index = 0;
-	    break;
-	  case 8:
-	    index = 1;
-	    break;
-	  case 16:
-	    index = 2;
-	    break;
-	  default:
-	    return 100;
-	}
-      return in ? ix86_cost->sse_load [index] : ix86_cost->sse_store [index];
-    }
-  if (MMX_CLASS_P (class))
-    {
-      int index;
-      switch (GET_MODE_SIZE (mode))
-	{
-	  case 4:
-	    index = 0;
-	    break;
-	  case 8:
-	    index = 1;
-	    break;
-	  default:
-	    return 100;
-	}
-      return in ? ix86_cost->mmx_load [index] : ix86_cost->mmx_store [index];
-    }
-  switch (GET_MODE_SIZE (mode))
-    {
-      case 1:
-	if (in)
-	  return (Q_CLASS_P (class) ? ix86_cost->int_load[0]
-		  : ix86_cost->movzbl_load);
-	else
-	  return (Q_CLASS_P (class) ? ix86_cost->int_store[0]
-		  : ix86_cost->int_store[0] + 4);
-	break;
-      case 2:
-	return in ? ix86_cost->int_load[1] : ix86_cost->int_store[1];
-      default:
-	/* Compute number of 32bit moves needed.  TFmode is moved as XFmode.  */
-	if (mode == TFmode)
-	  mode = XFmode;
-	return ((in ? ix86_cost->int_load[2] : ix86_cost->int_store[2])
-		* (int) GET_MODE_SIZE (mode) / 4);
-    }
+  return (FLOAT_CLASS_P (class1) != FLOAT_CLASS_P (class2)
+	  || (SSE_CLASS_P (class1) != SSE_CLASS_P (class2)
+	      && (mode) != SImode)
+	  || (MMX_CLASS_P (class1) != MMX_CLASS_P (class2)
+	      && (mode) != SImode));
 }

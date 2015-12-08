@@ -1,79 +1,51 @@
-int
-comparison_dominates_p (code1, code2)
-     enum rtx_code code1, code2;
+bool
+squeeze_notes (startp, endp)
+     rtx* startp;
+     rtx* endp;
 {
-  /* UNKNOWN comparison codes can happen as a result of trying to revert
-     comparison codes.
-     They can't match anything, so we have to reject them here.  */
-  if (code1 == UNKNOWN || code2 == UNKNOWN)
-    return 0;
+  rtx start = *startp;
+  rtx end = *endp;
 
-  if (code1 == code2)
-    return 1;
+  rtx insn;
+  rtx next;
+  rtx last = NULL;
+  rtx past_end = NEXT_INSN (end);
 
-  switch (code1)
+  for (insn = start; insn != past_end; insn = next)
     {
-    case UNEQ:
-      if (code2 == UNLE || code2 == UNGE)
-	return 1;
-      break;
-
-    case EQ:
-      if (code2 == LE || code2 == LEU || code2 == GE || code2 == GEU
-	  || code2 == ORDERED)
-	return 1;
-      break;
-
-    case UNLT:
-      if (code2 == UNLE || code2 == NE)
-	return 1;
-      break;
-
-    case LT:
-      if (code2 == LE || code2 == NE || code2 == ORDERED || code2 == LTGT)
-	return 1;
-      break;
-
-    case UNGT:
-      if (code2 == UNGE || code2 == NE)
-	return 1;
-      break;
-
-    case GT:
-      if (code2 == GE || code2 == NE || code2 == ORDERED || code2 == LTGT)
-	return 1;
-      break;
-
-    case GE:
-    case LE:
-      if (code2 == ORDERED)
-	return 1;
-      break;
-
-    case LTGT:
-      if (code2 == NE || code2 == ORDERED)
-	return 1;
-      break;
-
-    case LTU:
-      if (code2 == LEU || code2 == NE)
-	return 1;
-      break;
-
-    case GTU:
-      if (code2 == GEU || code2 == NE)
-	return 1;
-      break;
-
-    case UNORDERED:
-      if (code2 == NE || code2 == UNEQ || code2 == UNLE || code2 == UNLT
-	  || code2 == UNGE || code2 == UNGT)
-	return 1;
-      break;
-
-    default:
-      break;
+      next = NEXT_INSN (insn);
+      if (GET_CODE (insn) == NOTE
+	  && (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_END
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_BEG
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_BEG
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_END
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_CONT
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_LOOP_VTOP))
+	{
+	  if (insn == start)
+	    start = next;
+	  else
+	    {
+	      rtx prev = PREV_INSN (insn);
+	      PREV_INSN (insn) = PREV_INSN (start);
+	      NEXT_INSN (insn) = start;
+	      NEXT_INSN (PREV_INSN (insn)) = insn;
+	      PREV_INSN (NEXT_INSN (insn)) = insn;
+	      NEXT_INSN (prev) = next;
+	      PREV_INSN (next) = prev;
+	    }
+	}
+      else
+	last = insn;
     }
 
-  return 0;
+  /* There were no real instructions.  */
+  if (start == past_end)
+    return true;
+
+  end = last;
+
+  *startp = start;
+  *endp = end;
+  return false;
 }

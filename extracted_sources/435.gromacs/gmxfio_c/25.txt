@@ -1,12 +1,11 @@
-void gmx_fio_seek(int fio,off_t fpos)
+void gmx_fio_rewind(int fio)
 {
   gmx_fio_check(fio);
-  if (FIO[fio].fp)
-#ifdef HAVE_FSEEKO
-    fseeko(FIO[fio].fp,fpos,SEEK_SET);
-#else
-    fseek(FIO[fio].fp,fpos,SEEK_SET);
-#endif
+  if (FIO[fio].xdr) {
+    xdrclose(FIO[fio].xdr);
+    /* File is always opened as binary by xdropen */
+    xdropen(FIO[fio].xdr,FIO[fio].fn,FIO[fio].bRead ? "r" : "w");
+  }
   else
-    fatal_error(0,"Can not seek on file %s",FIO[fio].fn);
+    frewind(FIO[fio].fp);
 }

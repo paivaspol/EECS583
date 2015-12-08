@@ -1,13 +1,19 @@
 int
-only_sets_cc0_p (x)
-     rtx x;
+onlyjump_p (insn)
+     rtx insn;
 {
+  rtx set;
 
-  if (! x)
+  if (GET_CODE (insn) != JUMP_INSN)
     return 0;
 
-  if (INSN_P (x))
-    x = PATTERN (x);
+  set = single_set (insn);
+  if (set == NULL)
+    return 0;
+  if (GET_CODE (SET_DEST (set)) != PC)
+    return 0;
+  if (side_effects_p (SET_SRC (set)))
+    return 0;
 
-  return sets_cc0_p (x) == 1 && ! side_effects_p (x);
+  return 1;
 }

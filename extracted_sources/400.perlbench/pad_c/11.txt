@@ -1,57 +1,32 @@
-void
-Perl_do_dump_pad(pTHX_ I32 level, PerlIO *file, PADLIST *padlist, int full)
+U32
+Perl_intro_my(pTHX)
 {
-    AV *pad_name;
-    AV *pad;
-    SV **pname;
-    SV **ppad;
-    SV *namesv;
-    I32 ix;
+    SV **svp;
+    SV *sv;
+    I32 i;
 
-    if (!padlist) {
-	return;
-    }
-    pad_name = (AV*)*av_fetch((AV*)padlist, 0, FALSE);
-    pad = (AV*)*av_fetch((AV*)padlist, 1, FALSE);
-    pname = AvARRAY(pad_name);
-    ppad = AvARRAY(pad);
-    Perl_dump_indent(aTHX_ level, file,
-	    "PADNAME = 0x%"UVxf"(0x%"UVxf") PAD = 0x%"UVxf"(0x%"UVxf")\n",
-	    PTR2UV(pad_name), PTR2UV(pname), PTR2UV(pad), PTR2UV(ppad)
-    );
+    ASSERT_CURPAD_ACTIVE("intro_my");
+    if (! PL_min_intro_pending)
+	return PL_cop_seqmax;
 
-    for (ix = 1; ix <= AvFILLp(pad_name); ix++) {
-	namesv = pname[ix];
-	if (namesv && namesv == &PL_sv_undef) {
-	    namesv = Nullsv;
-	}
-	if (namesv) {
-	    if (SvFAKE(namesv))
-		Perl_dump_indent(aTHX_ level+1, file,
-		    "%2d. 0x%"UVxf"<%lu> FAKE \"%s\"\n",
-		    (int) ix,
-		    PTR2UV(ppad[ix]),
-		    (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
-		    SvPVX(namesv)
-		);
-	    else
-		Perl_dump_indent(aTHX_ level+1, file,
-		    "%2d. 0x%"UVxf"<%lu> (%lu,%lu) \"%s\"\n",
-		    (int) ix,
-		    PTR2UV(ppad[ix]),
-		    (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
-		    (unsigned long)U_32(SvNVX(namesv)),
-		    (unsigned long)SvIVX(namesv),
-		    SvPVX(namesv)
-		);
-	}
-	else if (full) {
-	    Perl_dump_indent(aTHX_ level+1, file,
-		"%2d. 0x%"UVxf"<%lu>\n",
-		(int) ix,
-		PTR2UV(ppad[ix]),
-		(unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0)
+    svp = AvARRAY(PL_comppad_name);
+    for (i = PL_min_intro_pending; i <= PL_max_intro_pending; i++) {
+	if ((sv = svp[i]) && sv != &PL_sv_undef
+		&& !SvFAKE(sv) && !SvIVX(sv))
+	{
+	    SvIVX(sv) = PAD_MAX;	/* Don't know scope end yet. */
+	    SvNVX(sv) = (NV)PL_cop_seqmax;
+	    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"Pad intromy: %ld \"%s\", (%lu,%lu)\n",
+		(long)i, SvPVX(sv),
+		(unsigned long)U_32(SvNVX(sv)), (unsigned long)SvIVX(sv))
 	    );
 	}
     }
+    PL_min_intro_pending = 0;
+    PL_comppad_name_fill = PL_max_intro_pending; /* Needn't search higher */
+    DEBUG_Xv(PerlIO_printf(Perl_debug_log,
+		"Pad intromy: seq -> %ld\n", (long)(PL_cop_seqmax+1)));
+
+    return PL_cop_seqmax++;
 }

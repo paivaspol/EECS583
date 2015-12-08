@@ -1,0 +1,35 @@
+PP(pp_pos)
+{
+    dSP; dTARGET; dPOPss;
+
+    if (PL_op->op_flags & OPf_MOD || LVRET) {
+	if (SvTYPE(TARG) < SVt_PVLV) {
+	    sv_upgrade(TARG, SVt_PVLV);
+	    sv_magic(TARG, Nullsv, PERL_MAGIC_pos, Nullch, 0);
+	}
+
+	LvTYPE(TARG) = '.';
+	if (LvTARG(TARG) != sv) {
+	    if (LvTARG(TARG))
+		SvREFCNT_dec(LvTARG(TARG));
+	    LvTARG(TARG) = SvREFCNT_inc(sv);
+	}
+	PUSHs(TARG);	/* no SvSETMAGIC */
+	RETURN;
+    }
+    else {
+	MAGIC* mg;
+
+	if (SvTYPE(sv) >= SVt_PVMG && SvMAGIC(sv)) {
+	    mg = mg_find(sv, PERL_MAGIC_regex_global);
+	    if (mg && mg->mg_len >= 0) {
+		I32 i = mg->mg_len;
+		if (DO_UTF8(sv))
+		    sv_pos_b2u(sv, &i);
+		PUSHi(i + PL_curcop->cop_arybase);
+		RETURN;
+	    }
+	}
+	RETPUSHUNDEF;
+    }
+}

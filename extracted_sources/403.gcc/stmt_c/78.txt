@@ -1,35 +1,21 @@
-void
-expand_start_case (exit_flag, expr, type, printname)
-     int exit_flag;
-     tree expr;
-     tree type;
-     const char *printname;
+int
+any_pending_cleanups (this_contour)
+     int this_contour;
 {
-  struct nesting *thiscase = ALLOC_NESTING ();
+  struct nesting *block;
 
-  /* Make an entry on case_stack for the case we are entering.  */
+  if (cfun == NULL || cfun->stmt == NULL || block_stack == 0)
+    return 0;
 
-  thiscase->next = case_stack;
-  thiscase->all = nesting_stack;
-  thiscase->depth = ++nesting_depth;
-  thiscase->exit_label = exit_flag ? gen_label_rtx () : 0;
-  thiscase->data.case_stmt.case_list = 0;
-  thiscase->data.case_stmt.index_expr = expr;
-  thiscase->data.case_stmt.nominal_type = type;
-  thiscase->data.case_stmt.default_label = 0;
-  thiscase->data.case_stmt.printname = printname;
-  thiscase->data.case_stmt.line_number_status = force_line_numbers ();
-  case_stack = thiscase;
-  nesting_stack = thiscase;
+  if (this_contour && block_stack->data.block.cleanups != NULL)
+    return 1;
+  if (block_stack->data.block.cleanups == 0
+      && block_stack->data.block.outer_cleanups == 0)
+    return 0;
 
-  do_pending_stack_adjust ();
+  for (block = block_stack->next; block; block = block->next)
+    if (block->data.block.cleanups != 0)
+      return 1;
 
-  /* Make sure case_stmt.start points to something that won't
-     need any transformation before expand_end_case.  */
-  if (GET_CODE (get_last_insn ()) != NOTE)
-    emit_note (NULL, NOTE_INSN_DELETED);
-
-  thiscase->data.case_stmt.start = get_last_insn ();
-
-  start_cleanup_deferral ();
+  return 0;
 }

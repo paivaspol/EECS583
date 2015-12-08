@@ -1,0 +1,27 @@
+PP(pp_fttty)
+{
+    dSP;
+    int fd;
+    GV *gv;
+    char *tmps = Nullch;
+    STRLEN n_a;
+
+    if (PL_op->op_flags & OPf_REF)
+	gv = cGVOP_gv;
+    else if (isGV(TOPs))
+	gv = (GV*)POPs;
+    else if (SvROK(TOPs) && isGV(SvRV(TOPs)))
+	gv = (GV*)SvRV(POPs);
+    else
+	gv = gv_fetchpv(tmps = POPpx, FALSE, SVt_PVIO);
+
+    if (GvIO(gv) && IoIFP(GvIOp(gv)))
+	fd = PerlIO_fileno(IoIFP(GvIOp(gv)));
+    else if (tmps && isDIGIT(*tmps))
+	fd = atoi(tmps);
+    else
+	RETPUSHUNDEF;
+    if (PerlLIO_isatty(fd))
+	RETPUSHYES;
+    RETPUSHNO;
+}

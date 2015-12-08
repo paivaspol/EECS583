@@ -1,36 +1,14 @@
-static int
-ix86_agi_dependant (insn, dep_insn, insn_type)
-     rtx insn, dep_insn;
-     enum attr_type insn_type;
+int
+ix86_attr_length_address_default (insn)
+     rtx insn;
 {
-  rtx addr;
-
-  if (insn_type == TYPE_LEA
-      && TARGET_PENTIUM)
-    {
-      addr = PATTERN (insn);
-      if (GET_CODE (addr) == SET)
-	;
-      else if (GET_CODE (addr) == PARALLEL
-	       && GET_CODE (XVECEXP (addr, 0, 0)) == SET)
-	addr = XVECEXP (addr, 0, 0);
-      else
-	abort ();
-      addr = SET_SRC (addr);
-    }
-  else
-    {
-      int i;
-      extract_insn_cached (insn);
-      for (i = recog_data.n_operands - 1; i >= 0; --i)
-	if (GET_CODE (recog_data.operand[i]) == MEM)
-	  {
-	    addr = XEXP (recog_data.operand[i], 0);
-	    goto found;
-	  }
-      return 0;
-    found:;
-    }
-
-  return modified_in_p (addr, dep_insn);
+  int i;
+  extract_insn_cached (insn);
+  for (i = recog_data.n_operands - 1; i >= 0; --i)
+    if (GET_CODE (recog_data.operand[i]) == MEM)
+      {
+	return memory_address_length (XEXP (recog_data.operand[i], 0));
+	break;
+      }
+  return 0;
 }

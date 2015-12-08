@@ -1,0 +1,37 @@
+PP(pp_fileno)
+{
+    dSP; dTARGET;
+    GV *gv;
+    IO *io;
+    PerlIO *fp;
+    MAGIC  *mg;
+
+    if (MAXARG < 1)
+	RETPUSHUNDEF;
+    gv = (GV*)POPs;
+
+    if (gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	PUSHMARK(SP);
+	XPUSHs(SvTIED_obj((SV*)io, mg));
+	PUTBACK;
+	ENTER;
+	call_method("FILENO", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	RETURN;
+    }
+
+    if (!gv || !(io = GvIO(gv)) || !(fp = IoIFP(io))) {
+	/* Can't do this because people seem to do things like
+	   defined(fileno($foo)) to check whether $foo is a valid fh.
+	  if (ckWARN2(WARN_UNOPENED,WARN_CLOSED))
+	      report_evil_fh(gv, io, PL_op->op_type);
+	    */
+	RETPUSHUNDEF;
+    }
+
+    PUSHi(PerlIO_fileno(fp));
+    RETURN;
+}

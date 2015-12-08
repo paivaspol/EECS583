@@ -1,38 +1,35 @@
-void calc_cgcm(FILE *log,int cg0,int cg1,t_block *cgs,
-	       rvec pos[],rvec cg_cm[])
+bool image_cylindric(ivec xi,ivec xj,ivec box_size,real rlong2,
+		     int *shift,real *r2)
 {
-  int  icg,ai,k,k0,k1,d,nrcg;
-  rvec cg;
-  real inv_ncg;
-  atom_id *cga,*cgindex;
-  
-#ifdef DEBUG
-  fprintf(log,"Calculating centre of geometry for charge groups %d to %d\n",
-	  cg0,cg1);
-#endif
-  cga     = cgs->a;
-  cgindex = cgs->index;
-  
-  /* Compute the center of geometry for all charge groups */
-  for(icg=cg0; (icg<cg1); icg++) {
-    k0      = cgindex[icg];
-    k1      = cgindex[icg+1];
-    nrcg    = k1-k0;
-    if (nrcg == 1) {
-      ai = cga[k0];
-      copy_rvec(pos[ai],cg_cm[icg]);
+  int 	m,t;
+  int 	dx,b,b_2;
+  real  dxr,rij2;
+
+  rij2=0.0;
+  t=0;
+  for(m=0; (m<DIM); m++) {
+    dx=xi[m]-xj[m];
+    t*=DIM;
+    b=box_size[m];
+    b_2=b/2;
+    if (dx < -b_2) {
+      t+=2;
+      dx+=b;
     }
-    else {
-      inv_ncg = 1.0/nrcg;
-      
-      clear_rvec(cg);
-      for(k=k0; (k<k1); k++)  {
-	ai     = cga[k];
-	for(d=0; (d<DIM); d++)
-	  cg[d] += pos[ai][d];
-      }
-      for(d=0; (d<DIM); d++)
-	cg_cm[icg][d] = inv_ncg*cg[d];
+    else if (dx > b_2)
+      dx-=b;
+    else
+      t+=1;
+
+    dxr=dx;
+    rij2+=dxr*dxr;
+    if (m < ZZ) {
+      if (rij2 >= rlong2) 
+	return FALSE;
     }
   }
+  
+  *shift = t;
+  *r2 = rij2;
+  return TRUE;
 }

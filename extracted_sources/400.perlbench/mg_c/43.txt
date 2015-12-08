@@ -1,20 +1,18 @@
 int
-Perl_magic_getsubstr(pTHX_ SV *sv, MAGIC *mg)
+Perl_magic_getpos(pTHX_ SV *sv, MAGIC *mg)
 {
-    STRLEN len;
-    SV *lsv = LvTARG(sv);
-    char *tmps = SvPV(lsv,len);
-    I32 offs = LvTARGOFF(sv);
-    I32 rem = LvTARGLEN(sv);
+    SV* lsv = LvTARG(sv);
 
-    if (SvUTF8(lsv))
-	sv_pos_u2b(lsv, &offs, &rem);
-    if (offs > (I32)len)
-	offs = len;
-    if (rem + offs > (I32)len)
-	rem = len - offs;
-    sv_setpvn(sv, tmps + offs, (STRLEN)rem);
-    if (SvUTF8(lsv))
-        SvUTF8_on(sv);
+    if (SvTYPE(lsv) >= SVt_PVMG && SvMAGIC(lsv)) {
+	mg = mg_find(lsv, PERL_MAGIC_regex_global);
+	if (mg && mg->mg_len >= 0) {
+	    I32 i = mg->mg_len;
+	    if (DO_UTF8(lsv))
+		sv_pos_b2u(lsv, &i);
+	    sv_setiv(sv, i + PL_curcop->cop_arybase);
+	    return 0;
+	}
+    }
+    SvOK_off(sv);
     return 0;
 }

@@ -1,28 +1,19 @@
-SV *
-Perl_sv_lock(pTHX_ SV *osv)
+void
+Perl_cond_signal(pTHX_ perl_cond *cp)
 {
-    MAGIC *mg;
-    SV *sv = osv;
+    perl_os_thread t;
+    perl_cond cond = *cp;
 
-    LOCK_SV_LOCK_MUTEX;
-    if (SvROK(sv)) {
-	sv = SvRV(sv);
-    }
-
-    mg = condpair_magic(sv);
-    MUTEX_LOCK(MgMUTEXP(mg));
-    if (MgOWNER(mg) == thr)
-	MUTEX_UNLOCK(MgMUTEXP(mg));
-    else {
-	while (MgOWNER(mg))
-	    COND_WAIT(MgOWNERCONDP(mg), MgMUTEXP(mg));
-	MgOWNER(mg) = thr;
-	DEBUG_S(PerlIO_printf(Perl_debug_log,
-			      "0x%"UVxf": Perl_lock lock 0x%"UVxf"\n",
-			      PTR2UV(thr), PTR2UV(sv)));
-	MUTEX_UNLOCK(MgMUTEXP(mg));
-	SAVEDESTRUCTOR_X(Perl_unlock_condpair, sv);
-    }
-    UNLOCK_SV_LOCK_MUTEX;
-    return sv;
+    if (!cond)
+	return;
+    t = cond->thread;
+    /* Insert t in the runnable queue just ahead of us */
+    t->i.next_run = thr->i.next_run;
+    thr->i.next_run->i.prev_run = t;
+    t->i.prev_run = thr;
+    thr->i.next_run = t;
+    thr->i.wait_queue = 0;
+    /* Remove from the wait queue */
+    *cp = cond->next;
+    Safefree(cond);
 }

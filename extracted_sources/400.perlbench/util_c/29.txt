@@ -1,13 +1,13 @@
 void
-Perl_dump_fds(pTHX_ char *s)
+Perl_my_swabn(void *ptr, int n)
 {
-    int fd;
-    Stat_t tmpstatbuf;
+    register char *s = (char *)ptr;
+    register char *e = s + (n-1);
+    register char tc;
 
-    PerlIO_printf(Perl_debug_log,"%s", s);
-    for (fd = 0; fd < 32; fd++) {
-	if (PerlLIO_fstat(fd,&tmpstatbuf) >= 0)
-	    PerlIO_printf(Perl_debug_log," %d",fd);
+    for (n /= 2; n > 0; s++, e--, n--) {
+      tc = *s;
+      *s = *e;
+      *e = tc;
     }
-    PerlIO_printf(Perl_debug_log,"\n");
 }

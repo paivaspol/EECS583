@@ -1,0 +1,89 @@
+PP(pp_helem)
+{
+    dSP;
+    HE* he;
+    SV **svp;
+    SV *keysv = POPs;
+    HV *hv = (HV*)POPs;
+    U32 lval = PL_op->op_flags & OPf_MOD || LVRET;
+    U32 defer = PL_op->op_private & OPpLVAL_DEFER;
+    SV *sv;
+    U32 hash = (SvFAKE(keysv) && SvREADONLY(keysv)) ? SvUVX(keysv) : 0;
+    I32 preeminent = 0;
+
+    if (SvTYPE(hv) == SVt_PVHV) {
+	if (PL_op->op_private & OPpLVAL_INTRO) {
+	    MAGIC *mg;
+	    HV *stash;
+	    /* does the element we're localizing already exist? */
+	    preeminent =  
+		/* can we determine whether it exists? */
+		(    !SvRMAGICAL(hv)
+		  || mg_find((SV*)hv, PERL_MAGIC_env)
+		  || (     (mg = mg_find((SV*)hv, PERL_MAGIC_tied))
+			/* Try to preserve the existenceness of a tied hash
+			 * element by using EXISTS and DELETE if possible.
+			 * Fallback to FETCH and STORE otherwise */
+			&& (stash = SvSTASH(SvRV(SvTIED_obj((SV*)hv, mg))))
+			&& gv_fetchmethod_autoload(stash, "EXISTS", TRUE)
+			&& gv_fetchmethod_autoload(stash, "DELETE", TRUE)
+		    )
+		) ? hv_exists_ent(hv, keysv, 0) : 1;
+
+	}
+	he = hv_fetch_ent(hv, keysv, lval && !defer, hash);
+	svp = he ? &HeVAL(he) : 0;
+    }
+    else if (SvTYPE(hv) == SVt_PVAV) {
+	if (PL_op->op_private & OPpLVAL_INTRO)
+	    DIE(aTHX_ "Can't localize pseudo-hash element");
+	svp = avhv_fetch_ent((AV*)hv, keysv, lval && !defer, hash);
+    }
+    else {
+	RETPUSHUNDEF;
+    }
+    if (lval) {
+	if (!svp || *svp == &PL_sv_undef) {
+	    SV* lv;
+	    SV* key2;
+	    if (!defer) {
+		STRLEN n_a;
+		DIE(aTHX_ PL_no_helem, SvPV(keysv, n_a));
+	    }
+	    lv = sv_newmortal();
+	    sv_upgrade(lv, SVt_PVLV);
+	    LvTYPE(lv) = 'y';
+	    sv_magic(lv, key2 = newSVsv(keysv), PERL_MAGIC_defelem, Nullch, 0);
+	    SvREFCNT_dec(key2);	/* sv_magic() increments refcount */
+	    LvTARG(lv) = SvREFCNT_inc(hv);
+	    LvTARGLEN(lv) = 1;
+	    PUSHs(lv);
+	    RETURN;
+	}
+	if (PL_op->op_private & OPpLVAL_INTRO) {
+	    if (HvNAME(hv) && isGV(*svp))
+		save_gp((GV*)*svp, !(PL_op->op_flags & OPf_SPECIAL));
+	    else {
+		if (!preeminent) {
+		    STRLEN keylen;
+		    char *key = SvPV(keysv, keylen);
+		    SAVEDELETE(hv, savepvn(key,keylen), keylen);
+		} else
+		    save_helem(hv, keysv, svp);
+            }
+	}
+	else if (PL_op->op_private & OPpDEREF)
+	    vivify_ref(*svp, PL_op->op_private & OPpDEREF);
+    }
+    sv = (svp ? *svp : &PL_sv_undef);
+    /* This makes C<local $tied{foo} = $tied{foo}> possible.
+     * Pushing the magical RHS on to the stack is useless, since
+     * that magic is soon destined to be misled by the local(),
+     * and thus the later pp_sassign() will fail to mg_get() the
+     * old value.  This should also cure problems with delayed
+     * mg_get()s.  GSAR 98-07-03 */
+    if (!lval && SvGMAGICAL(sv))
+	sv = sv_mortalcopy(sv);
+    PUSHs(sv);
+    RETURN;
+}

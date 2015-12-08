@@ -1,10 +1,6 @@
-void
-Perl_ptr_table_free(pTHX_ PTR_TBL_t *tbl)
+STATIC void
+S_del_pte(pTHX_ struct ptr_tbl_ent*p)
 {
-    if (!tbl) {
-        return;
-    }
-    ptr_table_clear(tbl);
-    Safefree(tbl->tbl_ary);
-    Safefree(tbl);
+    p->next = PL_pte_root;
+    PL_pte_root = p;
 }

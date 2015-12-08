@@ -1,19 +1,31 @@
-STATIC I32
-S_dopoptosub_at(pTHX_ PERL_CONTEXT *cxstk, I32 startingblock)
+PP(pp_grepstart)
 {
-    I32 i;
-    register PERL_CONTEXT *cx;
-    for (i = startingblock; i >= 0; i--) {
-	cx = &cxstk[i];
-	switch (CxTYPE(cx)) {
-	default:
-	    continue;
-	case CXt_EVAL:
-	case CXt_SUB:
-	case CXt_FORMAT:
-	    DEBUG_l( Perl_deb(aTHX_ "(Found sub #%ld)\n", (long)i));
-	    return i;
-	}
+    dSP;
+    SV *src;
+
+    if (PL_stack_base + *PL_markstack_ptr == SP) {
+	(void)POPMARK;
+	if (GIMME_V == G_SCALAR)
+	    XPUSHs(sv_2mortal(newSViv(0)));
+	RETURNOP(PL_op->op_next->op_next);
     }
-    return i;
+    PL_stack_sp = PL_stack_base + *PL_markstack_ptr + 1;
+    pp_pushmark();				/* push dst */
+    pp_pushmark();				/* push src */
+    ENTER;					/* enter outer scope */
+
+    SAVETMPS;
+    /* SAVE_DEFSV does *not* suffice here for USE_5005THREADS */
+    SAVESPTR(DEFSV);
+    ENTER;					/* enter inner scope */
+    SAVEVPTR(PL_curpm);
+
+    src = PL_stack_base[*PL_markstack_ptr];
+    SvTEMP_off(src);
+    DEFSV = src;
+
+    PUTBACK;
+    if (PL_op->op_type == OP_MAPSTART)
+	pp_pushmark();			/* push top */
+    return ((LOGOP*)PL_op->op_next)->op_other;
 }

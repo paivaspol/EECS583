@@ -1,11 +1,7 @@
-static int
-for_each_eh_label_1 (pentry, data)
-     PTR *pentry;
-     PTR data;
+void
+for_each_eh_label (callback)
+     void (*callback) PARAMS ((rtx));
 {
-  struct ehl_map_entry *entry = *(struct ehl_map_entry **)pentry;
-  void (*callback) PARAMS ((rtx)) = (void (*) PARAMS ((rtx))) data;
-
-  (*callback) (entry->label);
-  return 1;
+  htab_traverse (exception_handler_label_map, for_each_eh_label_1,
+		 (void *)callback);
 }

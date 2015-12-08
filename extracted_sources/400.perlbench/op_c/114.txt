@@ -1,0 +1,14 @@
+OP *
+Perl_ck_eof(pTHX_ OP *o)
+{
+    I32 type = o->op_type;
+
+    if (o->op_flags & OPf_KIDS) {
+	if (cLISTOPo->op_first->op_type == OP_STUB) {
+	    op_free(o);
+	    o = newUNOP(type, OPf_SPECIAL, newGVOP(OP_GV, 0, PL_argvgv));
+	}
+	return ck_fun(o);
+    }
+    return o;
+}

@@ -1,0 +1,30 @@
+OP *
+Perl_newBINOP(pTHX_ I32 type, I32 flags, OP *first, OP *last)
+{
+    BINOP *binop;
+    NewOp(1101, binop, 1, BINOP);
+
+    if (!first)
+	first = newOP(OP_NULL, 0);
+
+    binop->op_type = (OPCODE)type;
+    binop->op_ppaddr = PL_ppaddr[type];
+    binop->op_first = first;
+    binop->op_flags = flags | OPf_KIDS;
+    if (!last) {
+	last = first;
+	binop->op_private = (U8)(1 | (flags >> 8));
+    }
+    else {
+	binop->op_private = (U8)(2 | (flags >> 8));
+	first->op_sibling = last;
+    }
+
+    binop = (BINOP*)CHECKOP(type, binop);
+    if (binop->op_next || binop->op_type != (OPCODE)type)
+	return (OP*)binop;
+
+    binop->op_last = binop->op_first->op_sibling;
+
+    return fold_constants((OP *)binop);
+}

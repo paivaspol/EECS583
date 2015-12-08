@@ -1,0 +1,62 @@
+PP(pp_study)
+{
+    dSP; dPOPss;
+    register unsigned char *s;
+    register I32 pos;
+    register I32 ch;
+    register I32 *sfirst;
+    register I32 *snext;
+    STRLEN len;
+
+    if (sv == PL_lastscream) {
+	if (SvSCREAM(sv))
+	    RETPUSHYES;
+    }
+    else {
+	if (PL_lastscream) {
+	    SvSCREAM_off(PL_lastscream);
+	    SvREFCNT_dec(PL_lastscream);
+	}
+	PL_lastscream = SvREFCNT_inc(sv);
+    }
+
+    s = (unsigned char*)(SvPV(sv, len));
+    pos = len;
+    if (pos <= 0)
+	RETPUSHNO;
+    if (pos > PL_maxscream) {
+	if (PL_maxscream < 0) {
+	    PL_maxscream = pos + 80;
+	    New(301, PL_screamfirst, 256, I32);
+	    New(302, PL_screamnext, PL_maxscream, I32);
+	}
+	else {
+	    PL_maxscream = pos + pos / 4;
+	    Renew(PL_screamnext, PL_maxscream, I32);
+	}
+    }
+
+    sfirst = PL_screamfirst;
+    snext = PL_screamnext;
+
+    if (!sfirst || !snext)
+	DIE(aTHX_ "do_study: out of memory");
+
+    for (ch = 256; ch; --ch)
+	*sfirst++ = -1;
+    sfirst -= 256;
+
+    while (--pos >= 0) {
+	ch = s[pos];
+	if (sfirst[ch] >= 0)
+	    snext[pos] = sfirst[ch] - pos;
+	else
+	    snext[pos] = -pos;
+	sfirst[ch] = pos;
+    }
+
+    SvSCREAM_on(sv);
+    /* piggyback on m//g magic */
+    sv_magic(sv, Nullsv, PERL_MAGIC_regex_global, Nullch, 0);
+    RETPUSHYES;
+}

@@ -1,0 +1,22 @@
+PP(pp_bit_and)
+{
+    dSP; dATARGET; tryAMAGICbin(band,opASSIGN);
+    {
+      dPOPTOPssrl;
+      if (SvNIOKp(left) || SvNIOKp(right)) {
+	if (PL_op->op_private & HINT_INTEGER) {
+	  IV i = SvIV(left) & SvIV(right);
+	  SETi(i);
+	}
+	else {
+	  UV u = SvUV(left) & SvUV(right);
+	  SETu(u);
+	}
+      }
+      else {
+	do_vop(PL_op->op_type, TARG, left, right);
+	SETTARG;
+      }
+      RETURN;
+    }
+}

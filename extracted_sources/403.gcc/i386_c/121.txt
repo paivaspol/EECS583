@@ -1,12 +1,33 @@
 static int
-ix86_fp_comparison_sahf_cost (code)
+ix86_fp_comparison_arithmetics_cost (code)
      enum rtx_code code;
 {
-  enum rtx_code bypass_code, first_code, second_code;
-  /* Return arbitarily high cost when instruction is not preferred - this
-     avoids gcc from using it.  */
-  if (!TARGET_USE_SAHF && !optimize_size)
-    return 1024;
-  ix86_fp_comparison_codes (code, &bypass_code, &first_code, &second_code);
-  return (bypass_code != NIL || second_code != NIL) + 3;
+  if (!TARGET_IEEE_FP)
+    return 4;
+  /* The cost of code output by ix86_expand_fp_compare.  */
+  switch (code)
+    {
+    case UNLE:
+    case UNLT:
+    case LTGT:
+    case GT:
+    case GE:
+    case UNORDERED:
+    case ORDERED:
+    case UNEQ:
+      return 4;
+      break;
+    case LT:
+    case NE:
+    case EQ:
+    case UNGE:
+      return 5;
+      break;
+    case LE:
+    case UNGT:
+      return 6;
+      break;
+    default:
+      abort ();
+    }
 }

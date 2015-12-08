@@ -1,25 +1,10 @@
-void
-Perl_package(pTHX_ OP *o)
+OP *
+Perl_refkids(pTHX_ OP *o, I32 type)
 {
-    SV *sv;
-
-    save_hptr(&PL_curstash);
-    save_item(PL_curstname);
-    if (o) {
-	STRLEN len;
-	char *name;
-	sv = cSVOPo->op_sv;
-	name = SvPV(sv, len);
-	PL_curstash = gv_stashpvn(name,len,TRUE);
-	sv_setpvn(PL_curstname, name, len);
-	op_free(o);
+    OP *kid;
+    if (o && o->op_flags & OPf_KIDS) {
+	for (kid = cLISTOPo->op_first; kid; kid = kid->op_sibling)
+	    ref(kid, type);
     }
-    else {
-	deprecate("\"package\" with no arguments");
-	sv_setpv(PL_curstname,"<none>");
-	PL_curstash = Nullhv;
-    }
-    PL_hints |= HINT_BLOCK_SCOPE;
-    PL_copline = NOLINE;
-    PL_expect = XSTATE;
+    return o;
 }

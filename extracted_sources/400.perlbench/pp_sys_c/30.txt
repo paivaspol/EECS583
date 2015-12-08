@@ -1,0 +1,136 @@
+PP(pp_send)
+{
+    dSP; dMARK; dORIGMARK; dTARGET;
+    GV *gv;
+    IO *io;
+    SV *bufsv;
+    char *buffer;
+    Size_t length;
+    SSize_t retval;
+    STRLEN blen;
+    MAGIC *mg;
+
+    gv = (GV*)*++MARK;
+    if (PL_op->op_type == OP_SYSWRITE
+	&& gv && (io = GvIO(gv))
+	&& (mg = SvTIED_mg((SV*)io, PERL_MAGIC_tiedscalar)))
+    {
+	SV *sv;
+	
+	PUSHMARK(MARK-1);
+	*MARK = SvTIED_obj((SV*)io, mg);
+	ENTER;
+	call_method("WRITE", G_SCALAR);
+	LEAVE;
+	SPAGAIN;
+	sv = POPs;
+	SP = ORIGMARK;
+	PUSHs(sv);
+	RETURN;
+    }
+    if (!gv)
+	goto say_undef;
+    bufsv = *++MARK;
+#if Size_t_size > IVSIZE
+    length = (Size_t)SvNVx(*++MARK);
+#else
+    length = (Size_t)SvIVx(*++MARK);
+#endif
+    if ((SSize_t)length < 0)
+	DIE(aTHX_ "Negative length");
+    SETERRNO(0,0);
+    io = GvIO(gv);
+    if (!io || !IoIFP(io)) {
+	retval = -1;
+	if (ckWARN(WARN_CLOSED))
+	    report_evil_fh(gv, io, PL_op->op_type);
+	SETERRNO(EBADF,RMS_IFI);
+	goto say_undef;
+    }
+
+    if (PerlIO_isutf8(IoIFP(io))) {
+	if (!SvUTF8(bufsv)) {
+	    bufsv = sv_2mortal(newSVsv(bufsv));
+	    buffer = sv_2pvutf8(bufsv, &blen);
+	} else
+	    buffer = SvPV(bufsv, blen);
+    }
+    else {
+	 if (DO_UTF8(bufsv)) {
+	      /* Not modifying source SV, so making a temporary copy. */
+	      bufsv = sv_2mortal(newSVsv(bufsv));
+	      sv_utf8_downgrade(bufsv, FALSE);
+	 }
+	 buffer = SvPV(bufsv, blen);
+    }
+
+    if (PL_op->op_type == OP_SYSWRITE) {
+	IV offset;
+	if (DO_UTF8(bufsv)) {
+	    /* length and offset are in chars */
+	    blen   = sv_len_utf8(bufsv);
+	}
+	if (MARK < SP) {
+	    offset = SvIVx(*++MARK);
+	    if (offset < 0) {
+		if (-offset > (IV)blen)
+		    DIE(aTHX_ "Offset outside string");
+		offset += blen;
+	    } else if (offset >= (IV)blen && blen > 0)
+		DIE(aTHX_ "Offset outside string");
+	} else
+	    offset = 0;
+	if (length > blen - offset)
+	    length = blen - offset;
+	if (DO_UTF8(bufsv)) {
+	    buffer = (char*)utf8_hop((U8 *)buffer, offset);
+	    length = utf8_hop((U8 *)buffer, length) - (U8 *)buffer;
+	}
+	else {
+	    buffer = buffer+offset;
+	}
+#ifdef PERL_SOCK_SYSWRITE_IS_SEND
+	if (IoTYPE(io) == IoTYPE_SOCKET) {
+	    retval = PerlSock_send(PerlIO_fileno(IoIFP(io)),
+				   buffer, length, 0);
+	}
+	else
+#endif
+	{
+	    /* See the note at doio.c:do_print about filesize limits. --jhi */
+	    retval = PerlLIO_write(PerlIO_fileno(IoIFP(io)),
+				   buffer, length);
+	}
+    }
+#ifdef HAS_SOCKET
+    else if (SP > MARK) {
+	char *sockbuf;
+	STRLEN mlen;
+	sockbuf = SvPVx(*++MARK, mlen);
+	/* length is really flags */
+	retval = PerlSock_sendto(PerlIO_fileno(IoIFP(io)), buffer, blen,
+				 length, (struct sockaddr *)sockbuf, mlen);
+    }
+    else
+	/* length is really flags */
+	retval = PerlSock_send(PerlIO_fileno(IoIFP(io)), buffer, blen, length);
+#else
+    else
+	DIE(aTHX_ PL_no_sock_func, "send");
+#endif
+    if (retval < 0)
+	goto say_undef;
+    SP = ORIGMARK;
+    if (DO_UTF8(bufsv))
+        retval = utf8_length((U8*)buffer, (U8*)buffer + retval);
+#if Size_t_size > IVSIZE
+    PUSHn(retval);
+#else
+    PUSHi(retval);
+#endif
+    RETURN;
+
+  say_undef:
+    SP = ORIGMARK;
+    RETPUSHUNDEF;
+}
