@@ -1,0 +1,99 @@
+define i32 @spec_load(i32 %num, i8* %filename, i32 %size) #0 {
+  %1 = tail call i32 (i8*, i32, ...)* @"\01_open"(i8* %filename, i32 0) #6
+  %2 = icmp slt i32 %1, 0
+  br i1 %2, label %3, label %9
+
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
+  %5 = tail call i32* @__error() #6
+  %6 = load i32* %5, align 4, !tbaa !6
+  %7 = tail call i8* @"\01_strerror"(i32 %6) #6
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([24 x i8]* @.str5, i64 0, i64 0), i8* %filename, i8* %7) #6
+  tail call void @exit(i32 0) #7
+  unreachable
+
+; <label>:9                                       ; preds = %0
+  %10 = sext i32 %num to i64
+  %11 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 1
+  store i32 0, i32* %11, align 4, !tbaa !13
+  %12 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 2
+  store i32 0, i32* %12, align 8, !tbaa !15
+  %13 = icmp sgt i32 %size, 0
+  br i1 %13, label %.lr.ph3, label %._crit_edge4
+
+.lr.ph3:                                          ; preds = %9
+  %14 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 3
+  br label %15
+
+; <label>:15                                      ; preds = %.lr.ph3, %30
+  %i.01 = phi i32 [ 0, %.lr.ph3 ], [ %33, %30 ]
+  %16 = load i8** %14, align 8, !tbaa !11
+  %17 = sext i32 %i.01 to i64
+  %18 = getelementptr inbounds i8* %16, i64 %17
+  %19 = tail call i64 @"\01_read"(i32 %1, i8* %18, i64 131072) #6
+  %20 = trunc i64 %19 to i32
+  %21 = icmp eq i32 %20, 0
+  br i1 %21, label %._crit_edge4, label %22
+
+; <label>:22                                      ; preds = %15
+  %23 = icmp slt i32 %20, 0
+  br i1 %23, label %24, label %30
+
+; <label>:24                                      ; preds = %22
+  %25 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
+  %26 = tail call i32* @__error() #6
+  %27 = load i32* %26, align 4, !tbaa !6
+  %28 = tail call i8* @"\01_strerror"(i32 %27) #6
+  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %25, i8* getelementptr inbounds ([27 x i8]* @.str6, i64 0, i64 0), i8* %filename, i8* %28) #6
+  tail call void @exit(i32 0) #7
+  unreachable
+
+; <label>:30                                      ; preds = %22
+  %31 = load i32* %11, align 4, !tbaa !13
+  %32 = add nsw i32 %31, %20
+  store i32 %32, i32* %11, align 4, !tbaa !13
+  %33 = add nsw i32 %20, %i.01
+  %34 = icmp slt i32 %33, %size
+  br i1 %34, label %15, label %._crit_edge4
+
+._crit_edge4:                                     ; preds = %30, %15, %9
+  %35 = tail call i32 @"\01_close"(i32 %1) #6
+  %36 = load i32* %11, align 4, !tbaa !13
+  %37 = icmp slt i32 %36, %size
+  br i1 %37, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %._crit_edge4
+  %38 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %10, i32 3
+  br label %39
+
+; <label>:39                                      ; preds = %.lr.ph, %47
+  %40 = phi i32 [ %36, %.lr.ph ], [ %56, %47 ]
+  %41 = sub nsw i32 %size, %40
+  %42 = icmp sgt i32 %41, %40
+  %. = select i1 %42, i32 %40, i32 %41
+  %43 = load i32* @dbglvl, align 4, !tbaa !6
+  %44 = icmp sgt i32 %43, 3
+  br i1 %44, label %45, label %47
+
+; <label>:45                                      ; preds = %39
+  %46 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i32 %.) #6
+  %.pre = load i32* %11, align 4, !tbaa !13
+  br label %47
+
+; <label>:47                                      ; preds = %45, %39
+  %48 = phi i32 [ %.pre, %45 ], [ %40, %39 ]
+  %49 = load i8** %38, align 8, !tbaa !11
+  %50 = sext i32 %48 to i64
+  %51 = getelementptr inbounds i8* %49, i64 %50
+  %52 = sext i32 %. to i64
+  %53 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %51, i1 false)
+  %54 = tail call i8* @__memcpy_chk(i8* %51, i8* %49, i64 %52, i64 %53) #6
+  %55 = load i32* %11, align 4, !tbaa !13
+  %56 = add nsw i32 %55, %.
+  store i32 %56, i32* %11, align 4, !tbaa !13
+  %57 = icmp slt i32 %56, %size
+  br i1 %57, label %39, label %._crit_edge
+
+._crit_edge:                                      ; preds = %47, %._crit_edge4
+  ret i32 0
+}

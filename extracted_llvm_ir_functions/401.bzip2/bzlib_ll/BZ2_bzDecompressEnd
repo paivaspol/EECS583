@@ -1,0 +1,78 @@
+define i32 @BZ2_bzDecompressEnd(%struct.bz_stream* %strm) #4 {
+  %1 = icmp eq %struct.bz_stream* %strm, null
+  br i1 %1, label %43, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8
+  %4 = bitcast i8** %3 to %struct.DState**
+  %5 = load %struct.DState** %4, align 8, !tbaa !27
+  %6 = icmp eq %struct.DState* %5, null
+  br i1 %6, label %43, label %7
+
+; <label>:7                                       ; preds = %2
+  %8 = getelementptr inbounds %struct.DState* %5, i64 0, i32 0
+  %9 = load %struct.bz_stream** %8, align 8, !tbaa !46
+  %10 = icmp eq %struct.bz_stream* %9, %strm
+  br i1 %10, label %11, label %43
+
+; <label>:11                                      ; preds = %7
+  %12 = getelementptr inbounds %struct.DState* %5, i64 0, i32 20
+  %13 = load i32** %12, align 8, !tbaa !69
+  %14 = icmp eq i32* %13, null
+  br i1 %14, label %21, label %15
+
+; <label>:15                                      ; preds = %11
+  %16 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 10
+  %17 = load void (i8*, i8*)** %16, align 8, !tbaa !9
+  %18 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 11
+  %19 = load i8** %18, align 8, !tbaa !10
+  %20 = bitcast i32* %13 to i8*
+  tail call void %17(i8* %19, i8* %20) #10
+  br label %21
+
+; <label>:21                                      ; preds = %11, %15
+  %22 = getelementptr inbounds %struct.DState* %5, i64 0, i32 21
+  %23 = load i16** %22, align 8, !tbaa !63
+  %24 = icmp eq i16* %23, null
+  br i1 %24, label %31, label %25
+
+; <label>:25                                      ; preds = %21
+  %26 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 10
+  %27 = load void (i8*, i8*)** %26, align 8, !tbaa !9
+  %28 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 11
+  %29 = load i8** %28, align 8, !tbaa !10
+  %30 = bitcast i16* %23 to i8*
+  tail call void %27(i8* %29, i8* %30) #10
+  br label %31
+
+; <label>:31                                      ; preds = %21, %25
+  %32 = getelementptr inbounds %struct.DState* %5, i64 0, i32 22
+  %33 = load i8** %32, align 8, !tbaa !66
+  %34 = icmp eq i8* %33, null
+  %.pre = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 10
+  br i1 %34, label %._crit_edge, label %35
+
+._crit_edge:                                      ; preds = %31
+  %.pre1 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 11
+  br label %39
+
+; <label>:35                                      ; preds = %31
+  %36 = load void (i8*, i8*)** %.pre, align 8, !tbaa !9
+  %37 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 11
+  %38 = load i8** %37, align 8, !tbaa !10
+  tail call void %36(i8* %38, i8* %33) #10
+  br label %39
+
+; <label>:39                                      ; preds = %._crit_edge, %35
+  %.pre-phi2 = phi i8** [ %.pre1, %._crit_edge ], [ %37, %35 ]
+  %40 = load void (i8*, i8*)** %.pre, align 8, !tbaa !9
+  %41 = load i8** %.pre-phi2, align 8, !tbaa !10
+  %42 = load i8** %3, align 8, !tbaa !27
+  tail call void %40(i8* %41, i8* %42) #10
+  store i8* null, i8** %3, align 8, !tbaa !27
+  br label %43
+
+; <label>:43                                      ; preds = %7, %2, %0, %39
+  %.0 = phi i32 [ 0, %39 ], [ -2, %0 ], [ -2, %2 ], [ -2, %7 ]
+  ret i32 %.0
+}

@@ -1,0 +1,114 @@
+define i32 @spec_random_load(i32 %fd) #0 {
+  %random_text = alloca [32 x [131072 x i8]], align 16
+  %1 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4194304, i8* %1) #4
+  %2 = load i32* @dbglvl, align 4, !tbaa !6
+  %3 = icmp sgt i32 %2, 4
+  br i1 %3, label %4, label %.preheader
+
+; <label>:4                                       ; preds = %0
+  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([16 x i8]* @str25, i64 0, i64 0))
+  br label %5
+
+; <label>:5                                       ; preds = %4, %27
+  %i.0.ph = phi i32 [ 0, %4 ], [ %28, %27 ]
+  %.pr = load i32* @dbglvl, align 4, !tbaa !6
+  %6 = icmp slt i32 %i.0.ph, 32
+  br i1 %6, label %7, label %29
+
+; <label>:7                                       ; preds = %5
+  %8 = icmp sgt i32 %.pr, 5
+  br i1 %8, label %9, label %.preheader
+
+; <label>:9                                       ; preds = %7
+  %10 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str3, i64 0, i64 0), i32 %i.0.ph) #6
+  br label %.preheader
+
+.preheader:                                       ; preds = %0, %9, %7
+  %i.0911 = phi i32 [ %i.0.ph, %9 ], [ %i.0.ph, %7 ], [ 0, %0 ]
+  %11 = sext i32 %i.0911 to i64
+  %seedi.promoted = load i64* @seedi, align 8, !tbaa !2
+  br label %12
+
+; <label>:12                                      ; preds = %12, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %12 ]
+  %storemerge.i5 = phi i64 [ %seedi.promoted, %.preheader ], [ %storemerge.i, %12 ]
+  %13 = sdiv i64 %storemerge.i5, 127773
+  %14 = srem i64 %storemerge.i5, 127773
+  %15 = mul nsw i64 %14, 16807
+  %16 = mul nsw i64 %13, -2836
+  %17 = add i64 %15, %16
+  %18 = icmp sgt i64 %17, 0
+  %19 = add nsw i64 %17, 2147483647
+  %storemerge.i = select i1 %18, i64 %17, i64 %19
+  %20 = sitofp i64 %storemerge.i to float
+  %21 = fmul float %20, 0x3E00000000000000
+  %22 = fpext float %21 to double
+  %23 = fmul double %22, 2.560000e+02
+  %24 = fptosi double %23 to i32
+  %25 = trunc i32 %24 to i8
+  %26 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 %11, i64 %indvars.iv
+  store i8 %25, i8* %26, align 1, !tbaa !12
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 131072
+  br i1 %exitcond, label %27, label %12
+
+; <label>:27                                      ; preds = %12
+  store i64 %storemerge.i, i64* @seedi, align 8, !tbaa !2
+  %28 = add nsw i32 %i.0911, 1
+  br label %5
+
+; <label>:29                                      ; preds = %5
+  %30 = icmp sgt i32 %.pr, 4
+  br i1 %30, label %31, label %.preheader3
+
+; <label>:31                                      ; preds = %29
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str24, i64 0, i64 0))
+  br label %.preheader3
+
+.preheader3:                                      ; preds = %31, %29
+  %32 = sext i32 %fd to i64
+  %33 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %32, i32 0
+  %34 = load i32* %33, align 8, !tbaa !8
+  %35 = icmp sgt i32 %34, 0
+  br i1 %35, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %.preheader3
+  %36 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %32, i32 3
+  br label %37
+
+; <label>:37                                      ; preds = %.lr.ph, %37
+  %indvars.iv7 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next8, %37 ]
+  %38 = load i8** %36, align 8, !tbaa !11
+  %39 = getelementptr inbounds i8* %38, i64 %indvars.iv7
+  %40 = load i64* @seedi, align 8, !tbaa !2
+  %41 = sdiv i64 %40, 127773
+  %42 = srem i64 %40, 127773
+  %43 = mul nsw i64 %42, 16807
+  %44 = mul nsw i64 %41, -2836
+  %45 = add i64 %43, %44
+  %46 = icmp sgt i64 %45, 0
+  %47 = add nsw i64 %45, 2147483647
+  %storemerge.i2 = select i1 %46, i64 %45, i64 %47
+  store i64 %storemerge.i2, i64* @seedi, align 8, !tbaa !2
+  %48 = sitofp i64 %storemerge.i2 to float
+  %49 = fmul float %48, 0x3E00000000000000
+  %50 = fpext float %49 to double
+  %51 = fmul double %50, 3.200000e+01
+  %52 = fptosi double %51 to i32
+  %53 = sext i32 %52 to i64
+  %54 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 %53, i64 0
+  %55 = call i64 @llvm.objectsize.i64.p0i8(i8* %39, i1 false)
+  %56 = call i8* @__memcpy_chk(i8* %39, i8* %54, i64 131072, i64 %55) #6
+  %indvars.iv.next8 = add nsw i64 %indvars.iv7, 131072
+  %57 = load i32* %33, align 8, !tbaa !8
+  %58 = sext i32 %57 to i64
+  %59 = icmp slt i64 %indvars.iv.next8, %58
+  br i1 %59, label %37, label %._crit_edge
+
+._crit_edge:                                      ; preds = %37, %.preheader3
+  %60 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %32, i32 1
+  store i32 1048576, i32* %60, align 4, !tbaa !13
+  call void @llvm.lifetime.end(i64 4194304, i8* %1) #4
+  ret i32 0
+}

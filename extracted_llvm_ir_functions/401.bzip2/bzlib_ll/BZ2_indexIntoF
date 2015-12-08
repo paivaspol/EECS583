@@ -1,0 +1,21 @@
+define i32 @BZ2_indexIntoF(i32 %indx, i32* nocapture readonly %cftab) #5 {
+  br label %1
+
+; <label>:1                                       ; preds = %1, %0
+  %na.0 = phi i32 [ 256, %0 ], [ %.na.0, %1 ]
+  %nb.0 = phi i32 [ 0, %0 ], [ %nb.0., %1 ]
+  %2 = add nsw i32 %nb.0, %na.0
+  %3 = ashr i32 %2, 1
+  %4 = sext i32 %3 to i64
+  %5 = getelementptr inbounds i32* %cftab, i64 %4
+  %6 = load i32* %5, align 4, !tbaa !45
+  %7 = icmp sgt i32 %6, %indx
+  %.na.0 = select i1 %7, i32 %3, i32 %na.0
+  %nb.0. = select i1 %7, i32 %nb.0, i32 %3
+  %8 = sub nsw i32 %.na.0, %nb.0.
+  %9 = icmp eq i32 %8, 1
+  br i1 %9, label %10, label %1
+
+; <label>:10                                      ; preds = %1
+  ret i32 %nb.0.
+}

@@ -1,0 +1,49 @@
+define i32 @spec_fwrite(i8* %buf, i32 %size, i32 %num, i32 %fd) #0 {
+  %1 = load i32* @dbglvl, align 4, !tbaa !6
+  %2 = icmp sgt i32 %1, 4
+  br i1 %2, label %3, label %5
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str20, i64 0, i64 0), i8* %buf, i32 %size, i32 %num, i32 %fd) #6
+  br label %5
+
+; <label>:5                                       ; preds = %3, %0
+  %6 = icmp sgt i32 %fd, 3
+  br i1 %6, label %7, label %10
+
+; <label>:7                                       ; preds = %5
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i32 %fd) #6
+  tail call void @exit(i32 0) #7
+  unreachable
+
+; <label>:10                                      ; preds = %5
+  %11 = sext i32 %fd to i64
+  %12 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %11, i32 2
+  %13 = load i32* %12, align 8, !tbaa !15
+  %14 = sext i32 %13 to i64
+  %15 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %11, i32 3
+  %16 = load i8** %15, align 8, !tbaa !11
+  %17 = getelementptr inbounds i8* %16, i64 %14
+  %18 = mul nsw i32 %num, %size
+  %19 = sext i32 %18 to i64
+  %20 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %17, i1 false)
+  %21 = tail call i8* @__memcpy_chk(i8* %17, i8* %buf, i64 %19, i64 %20) #6
+  %22 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %11, i32 1
+  %23 = load i32* %22, align 4, !tbaa !13
+  %24 = add nsw i32 %23, %18
+  store i32 %24, i32* %22, align 4, !tbaa !13
+  %25 = load i32* %12, align 8, !tbaa !15
+  %26 = add nsw i32 %25, %18
+  store i32 %26, i32* %12, align 8, !tbaa !15
+  %27 = load i32* @dbglvl, align 4, !tbaa !6
+  %28 = icmp sgt i32 %27, 4
+  br i1 %28, label %29, label %31
+
+; <label>:29                                      ; preds = %10
+  %30 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str11, i64 0, i64 0), i32 %num) #6
+  br label %31
+
+; <label>:31                                      ; preds = %29, %10
+  ret i32 %num
+}

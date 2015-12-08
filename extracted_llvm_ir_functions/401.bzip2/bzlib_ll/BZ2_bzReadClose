@@ -1,0 +1,58 @@
+define void @BZ2_bzReadClose(i32* %bzerror, i8* %b) #4 {
+  %1 = icmp ne i32* %bzerror, null
+  br i1 %1, label %2, label %3
+
+; <label>:2                                       ; preds = %0
+  store i32 0, i32* %bzerror, align 4, !tbaa !45
+  br label %3
+
+; <label>:3                                       ; preds = %2, %0
+  %4 = icmp eq i8* %b, null
+  br i1 %4, label %5, label %7
+
+; <label>:5                                       ; preds = %3
+  br i1 %1, label %6, label %25
+
+; <label>:6                                       ; preds = %5
+  store i32 0, i32* %bzerror, align 4, !tbaa !45
+  br label %25
+
+; <label>:7                                       ; preds = %3
+  %8 = getelementptr inbounds i8* %b, i64 5096
+  %9 = bitcast i8* %8 to i32*
+  store i32 0, i32* %9, align 4, !tbaa !72
+  %10 = getelementptr inbounds i8* %b, i64 5012
+  %11 = load i8* %10, align 1, !tbaa !77
+  %12 = icmp eq i8 %11, 0
+  br i1 %12, label %16, label %13
+
+; <label>:13                                      ; preds = %7
+  br i1 %1, label %14, label %15
+
+; <label>:14                                      ; preds = %13
+  store i32 -1, i32* %bzerror, align 4, !tbaa !45
+  br label %15
+
+; <label>:15                                      ; preds = %13, %14
+  store i32 -1, i32* %9, align 4, !tbaa !72
+  br label %25
+
+; <label>:16                                      ; preds = %7
+  %17 = getelementptr inbounds i8* %b, i64 5100
+  %18 = load i8* %17, align 1, !tbaa !74
+  %19 = icmp eq i8 %18, 0
+  br i1 %19, label %24, label %20
+
+; <label>:20                                      ; preds = %16
+  %21 = getelementptr inbounds i8* %b, i64 5016
+  %22 = bitcast i8* %21 to %struct.bz_stream*
+  %23 = tail call i32 @BZ2_bzDecompressEnd(%struct.bz_stream* %22) #12
+  br label %24
+
+; <label>:24                                      ; preds = %16, %20
+  tail call void @free(i8* %b) #12
+  br label %25
+
+; <label>:25                                      ; preds = %5, %6, %15, %24
+  ret void
+}
