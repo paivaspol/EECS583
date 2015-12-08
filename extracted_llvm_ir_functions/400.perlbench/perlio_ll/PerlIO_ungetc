@@ -1,0 +1,20 @@
+define i32 @PerlIO_ungetc(%struct._PerlIO** %f, i32 %ch) #1 {
+entry:
+  %buf = alloca i8, align 1
+  %cmp = icmp eq i32 %ch, -1
+  br i1 %cmp, label %if.end4, label %if.then
+
+if.then:                                          ; preds = %entry
+  %conv = trunc i32 %ch to i8
+  store i8 %conv, i8* %buf, align 1, !tbaa !1
+  %call = call i64 @Perl_PerlIO_unread(%struct._PerlIO** %f, i8* %buf, i64 1) #10
+  %cmp1 = icmp eq i64 %call, 1
+  br i1 %cmp1, label %return, label %if.end4
+
+if.end4:                                          ; preds = %entry, %if.then
+  br label %return
+
+return:                                           ; preds = %if.then, %if.end4
+  %retval.0 = phi i32 [ -1, %if.end4 ], [ %ch, %if.then ]
+  ret i32 %retval.0
+}

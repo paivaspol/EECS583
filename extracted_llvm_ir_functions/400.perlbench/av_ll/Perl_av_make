@@ -1,0 +1,50 @@
+define %struct.av* @Perl_av_make(i32 %size, %struct.sv** nocapture %strp) #0 {
+entry:
+  %call = tail call %struct.sv* @Perl_newSV(i64 0) #3
+  %0 = bitcast %struct.sv* %call to %struct.av*
+  %call1 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %call, i32 10) #3
+  %sv_any = bitcast %struct.sv* %call to %struct.xpvav**
+  %1 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_flags = getelementptr inbounds %struct.xpvav* %1, i64 0, i32 9
+  store i8 1, i8* %xav_flags, align 1, !tbaa !1
+  %tobool = icmp eq i32 %size, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %conv = sext i32 %size to i64
+  %mul = shl nsw i64 %conv, 3
+  %call2 = tail call i8* @Perl_safesysmalloc(i64 %mul) #3
+  %2 = bitcast i8* %call2 to %struct.sv**
+  %3 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_alloc = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 7
+  store %struct.sv** %2, %struct.sv*** %xav_alloc, align 8, !tbaa !0
+  %4 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xpv_pv = getelementptr inbounds %struct.xpvav* %4, i64 0, i32 0
+  store i8* %call2, i8** %xpv_pv, align 8, !tbaa !0
+  %sub = add nsw i32 %size, -1
+  %conv5 = sext i32 %sub to i64
+  %5 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_fill = getelementptr inbounds %struct.xpvav* %5, i64 0, i32 1
+  store i64 %conv5, i64* %xav_fill, align 8, !tbaa !3
+  %xav_max = getelementptr inbounds %struct.xpvav* %5, i64 0, i32 2
+  store i64 %conv5, i64* %xav_max, align 8, !tbaa !3
+  %cmp31 = icmp sgt i32 %size, 0
+  br i1 %cmp31, label %for.body, label %if.end
+
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %strp.addr.033 = phi %struct.sv** [ %incdec.ptr, %for.body ], [ %strp, %if.then ]
+  %call11 = tail call %struct.sv* @Perl_newSV(i64 0) #3
+  %arrayidx = getelementptr inbounds %struct.sv** %2, i64 %indvars.iv
+  store %struct.sv* %call11, %struct.sv** %arrayidx, align 8, !tbaa !0
+  %6 = load %struct.sv** %strp.addr.033, align 8, !tbaa !0
+  tail call void @Perl_sv_setsv_flags(%struct.sv* %call11, %struct.sv* %6, i32 2) #3
+  %incdec.ptr = getelementptr inbounds %struct.sv** %strp.addr.033, i64 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %if.end, label %for.body
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret %struct.av* %0
+}

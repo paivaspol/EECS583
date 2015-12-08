@@ -1,0 +1,82 @@
+define %struct.op* @Perl_pp_sprintf() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !4
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %4 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_targ = getelementptr inbounds %struct.op* %4, i64 0, i32 3
+  %5 = load i64* %op_targ, align 8, !tbaa !3
+  %6 = load %struct.sv*** @PL_curpad, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %6, i64 %5
+  %7 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sub.ptr.div441 = lshr exact i64 %sub.ptr.sub3, 3
+  %conv5 = trunc i64 %sub.ptr.div441 to i32
+  %add.ptr.sum = add i64 %idx.ext, 1
+  %add.ptr6 = getelementptr inbounds %struct.sv** %1, i64 %add.ptr.sum
+  tail call void @Perl_do_sprintf(%struct.sv* %7, i32 %conv5, %struct.sv** %add.ptr6) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %7, i64 0, i32 2
+  %8 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %8, 57344
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %call = tail call signext i8 @Perl_sv_tainted(%struct.sv* %7) #7
+  %tobool8 = icmp eq i8 %call, 0
+  br i1 %tobool8, label %if.end, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  store i8 1, i8* @PL_tainted, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %entry, %if.then
+  %9 = load %struct.sv** %add.ptr6, align 8, !tbaa !0
+  %sv_flags10 = getelementptr inbounds %struct.sv* %9, i64 0, i32 2
+  %10 = load i32* %sv_flags10, align 4, !tbaa !4
+  %and11 = and i32 %10, 536870912
+  %tobool12 = icmp eq i32 %and11, 0
+  br i1 %tobool12, label %if.end19, label %land.lhs.true13
+
+land.lhs.true13:                                  ; preds = %if.end
+  %11 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %op_private = getelementptr inbounds %struct.cop* %11, i64 0, i32 7
+  %12 = load i8* %op_private, align 1, !tbaa !1
+  %and15 = and i8 %12, 8
+  %tobool16 = icmp eq i8 %and15, 0
+  br i1 %tobool16, label %if.then17, label %if.end19
+
+if.then17:                                        ; preds = %land.lhs.true13
+  %13 = load i32* %sv_flags, align 4, !tbaa !4
+  %or = or i32 %13, 536870912
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !4
+  br label %if.end19
+
+if.end19:                                         ; preds = %land.lhs.true13, %if.end, %if.then17
+  %14 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %15 = load i32* %sv_flags, align 4, !tbaa !4
+  %and23 = and i32 %15, 16384
+  %tobool24 = icmp eq i32 %and23, 0
+  br i1 %tobool24, label %if.end27, label %if.then25
+
+if.then25:                                        ; preds = %if.end19
+  %call26 = tail call i32 @Perl_mg_set(%struct.sv* %7) #7
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end19, %if.then25
+  %add.ptr21.sum = add i64 %idx.ext, 1
+  %incdec.ptr28 = getelementptr inbounds %struct.sv** %14, i64 %add.ptr21.sum
+  store %struct.sv* %7, %struct.sv** %incdec.ptr28, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr28, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %16 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %16, i64 0, i32 0
+  %17 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %17
+}

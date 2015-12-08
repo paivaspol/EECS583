@@ -1,0 +1,48 @@
+define void @InitRandomAccess() #0 {
+entry:
+  %call = tail call noalias i8* @malloc(i64 48) #6
+  %0 = bitcast i8* %call to %struct.Bitstream*
+  store %struct.Bitstream* %0, %struct.Bitstream** getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 3), align 8, !tbaa !0
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([39 x i8]* @.str19, i64 0, i64 0)) #6
+  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 3), align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = phi %struct.Bitstream* [ %.pre, %if.then ], [ %0, %entry ]
+  %call1 = tail call noalias i8* @malloc(i64 65496) #6
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %1, i64 0, i32 9
+  store i8* %call1, i8** %streamBuffer, align 8, !tbaa !0
+  %2 = load %struct.Bitstream** getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 3), align 8, !tbaa !0
+  %streamBuffer2 = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 9
+  %3 = load i8** %streamBuffer2, align 8, !tbaa !0
+  %cmp3 = icmp eq i8* %3, null
+  br i1 %cmp3, label %if.then4, label %if.end5
+
+if.then4:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([53 x i8]* @.str20, i64 0, i64 0)) #6
+  %.pre6 = load %struct.Bitstream** getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 3), align 8, !tbaa !0
+  %streamBuffer.i.phi.trans.insert = getelementptr inbounds %struct.Bitstream* %.pre6, i64 0, i32 9
+  %.pre7 = load i8** %streamBuffer.i.phi.trans.insert, align 8, !tbaa !0
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.then4, %if.end
+  %4 = phi i8* [ %.pre7, %if.then4 ], [ %3, %if.end ]
+  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 65496, i32 1, i1 false) #4
+  %5 = load %struct.Bitstream** getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 3), align 8, !tbaa !0
+  %bits_to_go.i = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 1
+  store i32 8, i32* %bits_to_go.i, align 4, !tbaa !3
+  %byte_pos.i = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 0
+  store i32 0, i32* %byte_pos.i, align 4, !tbaa !3
+  %byte_buf.i = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 2
+  store i8 0, i8* %byte_buf.i, align 1, !tbaa !1
+  store i32 0, i32* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 4), align 8, !tbaa !3
+  store i8 0, i8* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 0), align 8, !tbaa !1
+  store i8 0, i8* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 2), align 2, !tbaa !1
+  store i8 0, i8* getelementptr inbounds (%struct.randomaccess_information_struct* @seiRandomAccess, i64 0, i32 1), align 1, !tbaa !1
+  store i32 0, i32* @seiHasRandomAccess_info, align 4, !tbaa !1
+  ret void
+}

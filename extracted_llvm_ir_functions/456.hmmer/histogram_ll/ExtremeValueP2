@@ -1,0 +1,18 @@
+define double @ExtremeValueP2(float %x, float %mu, float %lambda, i32 %N) #0 {
+entry:
+  %conv = sitofp i32 %N to double
+  %call = tail call double @ExtremeValueP(float %x, float %mu, float %lambda) #6
+  %mul = fmul double %conv, %call
+  %cmp = fcmp olt double %mul, 1.000000e-07
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %mul2 = fmul double %mul, -1.000000e+00
+  %call3 = tail call double @exp(double %mul2) #4
+  %sub = fsub double 1.000000e+00, %call3
+  br label %return
+
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi double [ %sub, %if.else ], [ %mul, %entry ]
+  ret double %retval.0
+}

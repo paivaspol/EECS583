@@ -1,0 +1,88 @@
+define internal fastcc void @readLoop(i32 %addfirst, i32 (i8*, i32*)* nocapture %endTest, %struct.ReadSeqVars* %V) #0 {
+entry:
+  %addend = alloca i32, align 4
+  store i32 0, i32* %addend, align 4, !tbaa !0
+  %seqlen = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18
+  store i32 0, i32* %seqlen, align 4, !tbaa !0
+  %lastbpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 13
+  store i32 0, i32* %lastbpl, align 4, !tbaa !0
+  %lastrpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 10
+  store i32 0, i32* %lastrpl, align 4, !tbaa !0
+  %tobool = icmp eq i32 %addfirst, 0
+  %ssimode = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5
+  %0 = load i32* %ssimode, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, -1
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  br i1 %cmp, label %if.then1, label %if.end
+
+if.then1:                                         ; preds = %if.then
+  %1 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 8, i32 0
+  %2 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %2, i64 16, i32 8, i1 false), !tbaa.struct !5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then1, %if.then
+  %buf = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
+  %3 = load i8** %buf, align 8, !tbaa !3
+  call fastcc void @addseq(i8* %3, %struct.ReadSeqVars* %V) #7
+  br label %do.body.preheader
+
+if.else:                                          ; preds = %entry
+  br i1 %cmp, label %if.then4, label %do.body.preheader
+
+if.then4:                                         ; preds = %if.else
+  %f = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 0
+  %4 = load %struct._IO_FILE** %f, align 8, !tbaa !3
+  %d_off6 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 8
+  %call = call i32 @SSIGetFilePosition(%struct._IO_FILE* %4, i32 %0, %struct.ssioffset_s* %d_off6) #8
+  %cmp7 = icmp eq i32 %call, 0
+  br i1 %cmp7, label %do.body.preheader, label %if.then8
+
+if.then8:                                         ; preds = %if.then4
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str120, i64 0, i64 0)) #8
+  br label %do.body.preheader
+
+do.body.preheader:                                ; preds = %if.else, %if.then8, %if.end, %if.then4
+  %buf12 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
+  %f15 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 0
+  br label %do.body
+
+do.body:                                          ; preds = %do.body.preheader, %do.cond
+  call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #7
+  %5 = load i8** %buf12, align 8, !tbaa !3
+  %6 = load i8* %5, align 1, !tbaa !1
+  %cmp13 = icmp eq i8 %6, 0
+  br i1 %cmp13, label %land.lhs.true, label %if.end19
+
+land.lhs.true:                                    ; preds = %do.body
+  %7 = load %struct._IO_FILE** %f15, align 8, !tbaa !3
+  %call16 = call i32 @feof(%struct._IO_FILE* %7) #8
+  %not.tobool17 = icmp ne i32 %call16, 0
+  %done.0. = zext i1 %not.tobool17 to i32
+  %.pre = load i8** %buf12, align 8, !tbaa !3
+  br label %if.end19
+
+if.end19:                                         ; preds = %land.lhs.true, %do.body
+  %8 = phi i8* [ %5, %do.body ], [ %.pre, %land.lhs.true ]
+  %done.1 = phi i32 [ 0, %do.body ], [ %done.0., %land.lhs.true ]
+  %call21 = call i32 %endTest(i8* %8, i32* %addend) #8
+  %or = or i32 %call21, %done.1
+  %9 = load i32* %addend, align 4, !tbaa !0
+  %tobool22 = icmp ne i32 %9, 0
+  %tobool23 = icmp eq i32 %or, 0
+  %or.cond = or i1 %tobool22, %tobool23
+  br i1 %or.cond, label %if.then24, label %do.cond
+
+if.then24:                                        ; preds = %if.end19
+  %10 = load i8** %buf12, align 8, !tbaa !3
+  call fastcc void @addseq(i8* %10, %struct.ReadSeqVars* %V) #7
+  br label %do.cond
+
+do.cond:                                          ; preds = %if.end19, %if.then24
+  br i1 %tobool23, label %do.body, label %do.end
+
+do.end:                                           ; preds = %do.cond
+  ret void
+}

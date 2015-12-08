@@ -1,0 +1,141 @@
+define void @Chv_sub(%struct._Chv* %chvJ, %struct._Chv* %chvI) #0 {
+entry:
+  %nDI = alloca i32, align 4
+  %nDJ = alloca i32, align 4
+  %nLI = alloca i32, align 4
+  %nLJ = alloca i32, align 4
+  %nUI = alloca i32, align 4
+  %nUJ = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chvI, null
+  %cmp1 = icmp eq %struct._Chv* %chvJ, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str7, i64 0, i64 0), %struct._Chv* %chvI, %struct._Chv* %chvJ) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  call void @Chv_dimensions(%struct._Chv* %chvJ, i32* %nDJ, i32* %nLJ, i32* %nUJ) #4
+  call void @Chv_dimensions(%struct._Chv* %chvI, i32* %nDI, i32* %nLI, i32* %nUI) #4
+  %1 = load i32* %nDJ, align 4, !tbaa !3
+  %2 = load i32* %nDI, align 4, !tbaa !3
+  %cmp2 = icmp eq i32 %1, %2
+  br i1 %cmp2, label %lor.lhs.false3, label %if.then7
+
+lor.lhs.false3:                                   ; preds = %if.end
+  %3 = load i32* %nLJ, align 4, !tbaa !3
+  %4 = load i32* %nLI, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %3, %4
+  br i1 %cmp4, label %lor.lhs.false5, label %if.then7
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false3
+  %5 = load i32* %nUJ, align 4, !tbaa !3
+  %6 = load i32* %nUI, align 4, !tbaa !3
+  %cmp6 = icmp eq i32 %5, %6
+  br i1 %cmp6, label %if.end9, label %if.then7
+
+if.then7:                                         ; preds = %lor.lhs.false5, %lor.lhs.false3, %if.end
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([58 x i8]* @.str8, i64 0, i64 0), %struct._Chv* %chvJ, %struct._Chv* %chvI) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end9:                                          ; preds = %lor.lhs.false5
+  %call10 = call double* @Chv_entries(%struct._Chv* %chvJ) #4
+  %call11 = call double* @Chv_entries(%struct._Chv* %chvI) #4
+  %cmp12 = icmp eq double* %call10, null
+  %cmp14 = icmp eq double* %call11, null
+  %or.cond98 = or i1 %cmp12, %cmp14
+  br i1 %or.cond98, label %if.then15, label %if.end17
+
+if.then15:                                        ; preds = %if.end9
+  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([63 x i8]* @.str9, i64 0, i64 0), %struct._Chv* %chvJ, %struct._Chv* %chvI, double* %call10, double* %call11) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end17:                                         ; preds = %if.end9
+  %type = getelementptr inbounds %struct._Chv* %chvJ, i64 0, i32 4
+  %9 = load i32* %type, align 4, !tbaa !3
+  switch i32 %9, label %if.else.if.else53_crit_edge [
+    i32 1, label %land.lhs.true
+    i32 2, label %land.lhs.true28
+  ]
+
+land.lhs.true:                                    ; preds = %if.end17
+  %type19 = getelementptr inbounds %struct._Chv* %chvI, i64 0, i32 4
+  %10 = load i32* %type19, align 4, !tbaa !3
+  %cmp20 = icmp eq i32 %10, 1
+  br i1 %cmp20, label %if.then21, label %if.else.if.else53_crit_edge
+
+if.then21:                                        ; preds = %land.lhs.true
+  %call22 = call i32 @Chv_nent(%struct._Chv* %chvJ) #4
+  %cmp2399 = icmp sgt i32 %call22, 0
+  br i1 %cmp2399, label %for.body, label %if.end58
+
+for.body:                                         ; preds = %if.then21, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then21 ]
+  %arrayidx = getelementptr inbounds double* %call11, i64 %indvars.iv
+  %11 = load double* %arrayidx, align 8, !tbaa !4
+  %arrayidx25 = getelementptr inbounds double* %call10, i64 %indvars.iv
+  %12 = load double* %arrayidx25, align 8, !tbaa !4
+  %sub = fsub double %12, %11
+  store double %sub, double* %arrayidx25, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %call22
+  br i1 %exitcond, label %if.end58, label %for.body
+
+if.else.if.else53_crit_edge:                      ; preds = %if.end17, %land.lhs.true
+  %type55.phi.trans.insert = getelementptr inbounds %struct._Chv* %chvI, i64 0, i32 4
+  %.pre = load i32* %type55.phi.trans.insert, align 4, !tbaa !3
+  br label %if.else53
+
+land.lhs.true28:                                  ; preds = %if.end17
+  %type29 = getelementptr inbounds %struct._Chv* %chvI, i64 0, i32 4
+  %13 = load i32* %type29, align 4, !tbaa !3
+  %cmp30 = icmp eq i32 %13, 2
+  br i1 %cmp30, label %if.then31, label %if.else53
+
+if.then31:                                        ; preds = %land.lhs.true28
+  %call32 = call i32 @Chv_nent(%struct._Chv* %chvJ) #4
+  %cmp34102 = icmp sgt i32 %call32, 0
+  br i1 %cmp34102, label %for.body35, label %if.end58
+
+for.body35:                                       ; preds = %if.then31, %for.body35
+  %indvars.iv104 = phi i64 [ %indvars.iv.next105, %for.body35 ], [ 0, %if.then31 ]
+  %14 = trunc i64 %indvars.iv104 to i32
+  %mul = shl nsw i32 %14, 1
+  %idxprom36 = sext i32 %mul to i64
+  %arrayidx37 = getelementptr inbounds double* %call11, i64 %idxprom36
+  %15 = load double* %arrayidx37, align 8, !tbaa !4
+  %arrayidx40 = getelementptr inbounds double* %call10, i64 %idxprom36
+  %16 = load double* %arrayidx40, align 8, !tbaa !4
+  %sub41 = fsub double %16, %15
+  store double %sub41, double* %arrayidx40, align 8, !tbaa !4
+  %add97 = or i32 %mul, 1
+  %idxprom43 = sext i32 %add97 to i64
+  %arrayidx44 = getelementptr inbounds double* %call11, i64 %idxprom43
+  %17 = load double* %arrayidx44, align 8, !tbaa !4
+  %arrayidx48 = getelementptr inbounds double* %call10, i64 %idxprom43
+  %18 = load double* %arrayidx48, align 8, !tbaa !4
+  %sub49 = fsub double %18, %17
+  store double %sub49, double* %arrayidx48, align 8, !tbaa !4
+  %indvars.iv.next105 = add i64 %indvars.iv104, 1
+  %lftr.wideiv106 = trunc i64 %indvars.iv.next105 to i32
+  %exitcond107 = icmp eq i32 %lftr.wideiv106, %call32
+  br i1 %exitcond107, label %if.end58, label %for.body35
+
+if.else53:                                        ; preds = %if.else.if.else53_crit_edge, %land.lhs.true28
+  %19 = phi i32 [ %.pre, %if.else.if.else53_crit_edge ], [ %13, %land.lhs.true28 ]
+  %20 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call56 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %20, i8* getelementptr inbounds ([102 x i8]* @.str10, i64 0, i64 0), %struct._Chv* %chvJ, %struct._Chv* %chvI, i32 %9, i32 %19) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end58:                                         ; preds = %if.then31, %for.body35, %if.then21, %for.body
+  ret void
+}

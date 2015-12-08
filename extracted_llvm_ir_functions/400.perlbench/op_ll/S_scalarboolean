@@ -1,0 +1,88 @@
+define internal fastcc void @S_scalarboolean(%struct.op* %o) #0 {
+entry:
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %0, 36
+  br i1 %cmp, label %land.lhs.true, label %if.end33
+
+land.lhs.true:                                    ; preds = %entry
+  %1 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %2 = load %struct.op** %1, align 8, !tbaa !3
+  %op_type2 = getelementptr inbounds %struct.op* %2, i64 0, i32 4
+  %3 = load i16* %op_type2, align 2, !tbaa !4
+  %cmp4 = icmp eq i16 %3, 5
+  br i1 %cmp4, label %if.then, label %if.end33
+
+if.then:                                          ; preds = %land.lhs.true
+  %4 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings = getelementptr inbounds %struct.cop* %4, i64 0, i32 14
+  %5 = load %struct.sv** %cop_warnings, align 8, !tbaa !3
+  %cmp6 = icmp eq %struct.sv* %5, null
+  br i1 %cmp6, label %lor.lhs.false18, label %land.lhs.true8
+
+land.lhs.true8:                                   ; preds = %if.then
+  %6 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings9 = getelementptr inbounds %struct.cop* %6, i64 0, i32 14
+  %7 = load %struct.sv** %cop_warnings9, align 8, !tbaa !3
+  %cmp10 = icmp eq %struct.sv* %7, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp10, label %lor.lhs.false18, label %land.lhs.true12
+
+land.lhs.true12:                                  ; preds = %land.lhs.true8
+  %8 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings13 = getelementptr inbounds %struct.cop* %8, i64 0, i32 14
+  %9 = load %struct.sv** %cop_warnings13, align 8, !tbaa !3
+  %cmp14 = icmp eq %struct.sv* %9, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp14, label %if.then26, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true12
+  %10 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings16 = getelementptr inbounds %struct.cop* %10, i64 0, i32 14
+  %11 = load %struct.sv** %cop_warnings16, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.sv* %11, i64 0, i32 0
+  %12 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_pv = bitcast i8* %12 to i8**
+  %13 = load i8** %xpv_pv, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i8* %13, i64 7
+  %14 = load i8* %arrayidx, align 1, !tbaa !1
+  %and = and i8 %14, 1
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %lor.lhs.false18, label %if.then26
+
+lor.lhs.false18:                                  ; preds = %lor.lhs.false, %land.lhs.true8, %if.then
+  %15 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_warnings19 = getelementptr inbounds %struct.cop* %15, i64 0, i32 14
+  %16 = load %struct.sv** %cop_warnings19, align 8, !tbaa !3
+  %cmp20 = icmp eq %struct.sv* %16, null
+  br i1 %cmp20, label %land.lhs.true22, label %if.end33
+
+land.lhs.true22:                                  ; preds = %lor.lhs.false18
+  %17 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and24 = and i8 %17, 1
+  %tobool25 = icmp eq i8 %and24, 0
+  br i1 %tobool25, label %if.end33, label %if.then26
+
+if.then26:                                        ; preds = %lor.lhs.false, %land.lhs.true22, %land.lhs.true12
+  %18 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_line = getelementptr inbounds %struct.cop* %18, i64 0, i32 13
+  %19 = load i32* %cop_line, align 4, !tbaa !0
+  %20 = load i32* @PL_copline, align 4, !tbaa !0
+  %cmp27 = icmp eq i32 %20, -1
+  br i1 %cmp27, label %if.end, label %if.then29
+
+if.then29:                                        ; preds = %if.then26
+  %21 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_line30 = getelementptr inbounds %struct.cop* %21, i64 0, i32 13
+  store i32 %20, i32* %cop_line30, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then26, %if.then29
+  tail call void (i32, i8*, ...)* @Perl_warner(i32 28, i8* getelementptr inbounds ([37 x i8]* @.str147, i64 0, i64 0)) #7
+  %22 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_line31 = getelementptr inbounds %struct.cop* %22, i64 0, i32 13
+  store i32 %19, i32* %cop_line31, align 4, !tbaa !0
+  br label %if.end33
+
+if.end33:                                         ; preds = %land.lhs.true22, %lor.lhs.false18, %if.end, %land.lhs.true, %entry
+  %call = tail call %struct.op* @Perl_scalar(%struct.op* %o) #8
+  ret void
+}

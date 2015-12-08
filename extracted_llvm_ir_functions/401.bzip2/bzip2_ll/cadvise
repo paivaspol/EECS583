@@ -1,0 +1,14 @@
+define internal fastcc void @cadvise() #0 {
+entry:
+  %0 = load i8* @noisy, align 1, !tbaa !1
+  %tobool = icmp eq i8 %0, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([241 x i8]* @.str15, i64 0, i64 0), i64 240, i64 1, %struct._IO_FILE* %1)
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

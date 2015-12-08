@@ -1,0 +1,44 @@
+define i64 @PerlIOBuf_tell(%struct._PerlIO** %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %posn1 = getelementptr inbounds %struct._PerlIO* %0, i64 2
+  %1 = bitcast %struct._PerlIO* %posn1 to i64*
+  %2 = load i64* %1, align 8, !tbaa !4
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %3 = load i32* %flags, align 4, !tbaa !0
+  %4 = and i32 %3, 139264
+  %5 = icmp eq i32 %4, 139264
+  br i1 %5, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  %6 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %next = getelementptr inbounds %struct._PerlIO* %6, i64 0, i32 0
+  %call5 = tail call i64 @Perl_PerlIO_tell(%struct._PerlIO** %next) #10
+  %7 = getelementptr inbounds %struct._PerlIO* %posn1, i64 0, i32 0
+  %call5.c = inttoptr i64 %call5 to %struct._PerlIO*
+  store %struct._PerlIO* %call5.c, %struct._PerlIO** %7, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %posn.0 = phi i64 [ %call5, %if.then ], [ %2, %entry ]
+  %buf = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %8 = bitcast %struct._PerlIO* %buf to i8**
+  %9 = load i8** %8, align 8, !tbaa !3
+  %tobool7 = icmp eq i8* %9, null
+  br i1 %tobool7, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %if.end
+  %ptr = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 2
+  %10 = bitcast i32* %ptr to i8**
+  %11 = load i8** %10, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %11 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %9 to i64
+  %sub.ptr.sub = sub i64 %posn.0, %sub.ptr.rhs.cast
+  %add = add i64 %sub.ptr.sub, %sub.ptr.lhs.cast
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.end, %if.then8
+  %posn.1 = phi i64 [ %add, %if.then8 ], [ %posn.0, %if.end ]
+  ret i64 %posn.1
+}

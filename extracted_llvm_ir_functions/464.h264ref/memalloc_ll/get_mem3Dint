@@ -1,0 +1,34 @@
+define i32 @get_mem3Dint(i32**** nocapture %array3D, i32 %frames, i32 %rows, i32 %columns) #0 {
+entry:
+  %conv = sext i32 %frames to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #3
+  %0 = bitcast i8* %call to i32***
+  store i32*** %0, i32**** %array3D, align 8, !tbaa !0
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str10, i64 0, i64 0)) #3
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %cmp216 = icmp sgt i32 %frames, 0
+  br i1 %cmp216, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.body, %for.cond.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next, %for.body ]
+  %1 = load i32**** %array3D, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i32*** %1, i64 %indvars.iv
+  %call4 = tail call i32 @get_mem2Dint(i32*** %add.ptr, i32 %rows, i32 %columns) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %frames
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %mul = shl i32 %frames, 2
+  %mul5 = mul i32 %mul, %rows
+  %mul7 = mul i32 %mul5, %columns
+  ret i32 %mul7
+}

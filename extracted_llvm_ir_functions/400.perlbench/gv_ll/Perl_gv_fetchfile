@@ -1,0 +1,95 @@
+define %struct.gv* @Perl_gv_fetchfile(i8* %name) #0 {
+entry:
+  %smallbuf = alloca [256 x i8], align 16
+  %0 = getelementptr inbounds [256 x i8]* %smallbuf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %0) #2
+  %1 = load %struct.hv** @PL_defstash, align 8, !tbaa !3
+  %tobool = icmp eq %struct.hv* %1, null
+  br i1 %tobool, label %cleanup, label %if.end
+
+if.end:                                           ; preds = %entry
+  %call = call i64 @strlen(i8* %name) #6
+  %add = add i64 %call, 2
+  %cmp = icmp ult i64 %add, 256
+  br i1 %cmp, label %if.end4, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %add2 = add i64 %call, 3
+  %call3 = call i8* @Perl_safesysmalloc(i64 %add2) #6
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.else
+  %tmpbuf.0 = phi i8* [ %call3, %if.else ], [ %0, %if.end ]
+  store i8 95, i8* %tmpbuf.0, align 1, !tbaa !1
+  %arrayidx5 = getelementptr inbounds i8* %tmpbuf.0, i64 1
+  store i8 60, i8* %arrayidx5, align 1, !tbaa !1
+  %add.ptr = getelementptr inbounds i8* %tmpbuf.0, i64 2
+  %call6 = call i8* @strcpy(i8* %add.ptr, i8* %name) #6
+  %2 = load %struct.hv** @PL_defstash, align 8, !tbaa !3
+  %conv = trunc i64 %add to i32
+  %call7 = call %struct.sv** @Perl_hv_fetch(%struct.hv* %2, i8* %tmpbuf.0, i32 %conv, i32 1) #6
+  %3 = load %struct.sv** %call7, align 8
+  %4 = bitcast %struct.sv* %3 to %struct.gv*
+  %5 = getelementptr inbounds %struct.sv* %3, i64 0, i32 2
+  %6 = load i32* %5, align 4, !tbaa !0
+  %and = and i32 %6, 255
+  %cmp8 = icmp eq i32 %and, 13
+  br i1 %cmp8, label %if.end29, label %if.then10
+
+if.then10:                                        ; preds = %if.end4
+  %7 = load %struct.hv** @PL_defstash, align 8, !tbaa !3
+  call void @Perl_gv_init(%struct.gv* %4, %struct.hv* %7, i8* %tmpbuf.0, i64 %add, i32 0) #7
+  %sv_any = bitcast %struct.sv* %3 to %struct.xpvgv**
+  %8 = load %struct.xpvgv** %sv_any, align 8, !tbaa !3
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %8, i64 0, i32 7
+  %9 = load %struct.gp** %xgv_gp, align 8, !tbaa !3
+  %gp_sv = getelementptr inbounds %struct.gp* %9, i64 0, i32 0
+  %10 = load %struct.sv** %gp_sv, align 8, !tbaa !3
+  call void @Perl_sv_setpv(%struct.sv* %10, i8* %name) #6
+  %11 = load i32* @PL_perldb, align 4, !tbaa !0
+  %tobool11 = icmp eq i32 %11, 0
+  %and12 = and i32 %11, 2
+  %tobool13 = icmp eq i32 %and12, 0
+  %or.cond = or i1 %tobool11, %tobool13
+  br i1 %or.cond, label %if.end29, label %if.then14
+
+if.then14:                                        ; preds = %if.then10
+  %call15 = call %struct.gv* @Perl_gv_AVadd(%struct.gv* %4) #7
+  %sv_any16 = getelementptr inbounds %struct.gv* %call15, i64 0, i32 0
+  %12 = load %struct.xpvgv** %sv_any16, align 8, !tbaa !3
+  %xgv_gp17 = getelementptr inbounds %struct.xpvgv* %12, i64 0, i32 7
+  %13 = load %struct.gp** %xgv_gp17, align 8, !tbaa !3
+  %gp_hv = getelementptr inbounds %struct.gp* %13, i64 0, i32 5
+  %14 = load %struct.hv** %gp_hv, align 8, !tbaa !3
+  %tobool18 = icmp eq %struct.hv* %14, null
+  %call19 = call %struct.gv* @Perl_gv_AVadd(%struct.gv* %4) #7
+  br i1 %tobool18, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %if.then14
+  %call24 = call %struct.gv* @Perl_gv_HVadd(%struct.gv* %call19) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then14, %cond.false
+  %call19.pn = phi %struct.gv* [ %call24, %cond.false ], [ %call19, %if.then14 ]
+  %.pn51.in = getelementptr inbounds %struct.gv* %call19.pn, i64 0, i32 0
+  %.pn51 = load %struct.xpvgv** %.pn51.in, align 8
+  %.pn.in = getelementptr inbounds %struct.xpvgv* %.pn51, i64 0, i32 7
+  %.pn = load %struct.gp** %.pn.in, align 8
+  %cond.in = getelementptr inbounds %struct.gp* %.pn, i64 0, i32 5
+  %cond = load %struct.hv** %cond.in, align 8
+  call void @Perl_hv_magic(%struct.hv* %cond, %struct.gv* null, i32 76) #6
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.then10, %cond.end, %if.end4
+  %cmp31 = icmp eq i8* %tmpbuf.0, %0
+  br i1 %cmp31, label %cleanup, label %if.then33
+
+if.then33:                                        ; preds = %if.end29
+  call void @Perl_safesysfree(i8* %tmpbuf.0) #6
+  br label %cleanup
+
+cleanup:                                          ; preds = %if.then33, %if.end29, %entry
+  %retval.0 = phi %struct.gv* [ null, %entry ], [ %4, %if.end29 ], [ %4, %if.then33 ]
+  call void @llvm.lifetime.end(i64 256, i8* %0) #2
+  ret %struct.gv* %retval.0
+}

@@ -1,0 +1,65 @@
+define i64 @PerlIORaw_pushed(%struct._PerlIO** %f, i8* nocapture %mode, %struct.sv* nocapture %arg, %struct._PerlIO_funcs* nocapture %tab) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %return, label %land.rhs.lr.ph.lr.ph
+
+land.rhs.lr.ph.lr.ph:                             ; preds = %land.lhs.true
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  br label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %land.rhs.lr.ph.lr.ph, %if.then10
+  %t.0.ph39 = phi %struct._PerlIO** [ %f, %land.rhs.lr.ph.lr.ph ], [ %next.t.0, %if.then10 ]
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %if.else14, %land.rhs.lr.ph
+  %1 = load %struct._PerlIO** %t.0.ph39, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct._PerlIO* %1, null
+  br i1 %tobool3, label %land.lhs.true17, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %tab4 = getelementptr inbounds %struct._PerlIO* %1, i64 0, i32 1
+  %2 = load %struct._PerlIO_funcs** %tab4, align 8, !tbaa !3
+  %Binmode = getelementptr inbounds %struct._PerlIO_funcs* %2, i64 0, i32 7
+  %3 = load i64 (%struct._PerlIO**)** %Binmode, align 8, !tbaa !3
+  %tobool5 = icmp eq i64 (%struct._PerlIO**)* %3, null
+  br i1 %tobool5, label %if.else14, label %if.then6
+
+if.then6:                                         ; preds = %while.body
+  %call9 = tail call i64 %3(%struct._PerlIO** %f) #9
+  %cmp = icmp eq i64 %call9, 0
+  br i1 %cmp, label %if.then10, label %return
+
+if.then10:                                        ; preds = %if.then6
+  %4 = load %struct._PerlIO** %t.0.ph39, align 8, !tbaa !3
+  %cmp11 = icmp eq %struct._PerlIO* %4, %1
+  %next = getelementptr inbounds %struct._PerlIO* %4, i64 0, i32 0
+  %next.t.0 = select i1 %cmp11, %struct._PerlIO** %next, %struct._PerlIO** %t.0.ph39
+  %tobool2 = icmp eq %struct._PerlIO** %next.t.0, null
+  br i1 %tobool2, label %land.lhs.true17, label %land.rhs.lr.ph
+
+if.else14:                                        ; preds = %while.body
+  tail call void @PerlIO_pop(%struct._PerlIO** %t.0.ph39) #10
+  br label %land.rhs
+
+land.lhs.true17:                                  ; preds = %land.rhs, %if.then10
+  %5 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool18 = icmp eq %struct._PerlIO* %5, null
+  br i1 %tobool18, label %return, label %if.then19
+
+if.then19:                                        ; preds = %land.lhs.true17
+  %tab20 = getelementptr inbounds %struct._PerlIO* %5, i64 0, i32 1
+  %6 = load %struct._PerlIO_funcs** %tab20, align 8, !tbaa !3
+  %name = getelementptr inbounds %struct._PerlIO_funcs* %6, i64 0, i32 1
+  %7 = load i8** %name, align 8, !tbaa !3
+  tail call void (i8*, ...)* @PerlIO_debug(i8* undef, %struct._PerlIO** %f, i8* %7) #10
+  br label %return
+
+return:                                           ; preds = %if.then6, %entry, %land.lhs.true, %land.lhs.true17, %if.then19
+  %retval.0 = phi i64 [ 0, %if.then19 ], [ -1, %land.lhs.true17 ], [ -1, %land.lhs.true ], [ -1, %entry ], [ -1, %if.then6 ]
+  ret i64 %retval.0
+}

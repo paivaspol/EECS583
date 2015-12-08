@@ -1,0 +1,469 @@
+define void @writeMB_typeInfo_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %1 = load i32* %type, align 4, !tbaa !0
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
+  %2 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
+  %mot_ctx = getelementptr inbounds %struct.Slice* %2, i64 0, i32 7
+  %3 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %4 = load i32* %current_mb_nr, align 4, !tbaa !0
+  %idxprom = sext i32 %4 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %5 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %6 = load i32* %value1, align 4, !tbaa !0
+  switch i32 %1, label %if.then141 [
+    i32 2, label %if.then
+    i32 1, label %if.then107
+  ]
+
+if.then:                                          ; preds = %entry
+  %mb_available_up = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 6
+  %7 = load %struct.macroblock** %mb_available_up, align 8, !tbaa !3
+  %cmp4 = icmp eq %struct.macroblock* %7, null
+  br i1 %cmp4, label %if.end, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %mb_type = getelementptr inbounds %struct.macroblock* %7, i64 0, i32 8
+  %8 = load i32* %mb_type, align 4, !tbaa !0
+  %cmp12 = icmp ne i32 %8, 13
+  %not.cmp8 = icmp ne i32 %8, 9
+  %.cmp12 = and i1 %cmp12, %not.cmp8
+  %cond = zext i1 %.cmp12 to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.else
+  %b.0 = phi i32 [ %cond, %if.else ], [ 0, %if.then ]
+  %mb_available_left = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 7
+  %9 = load %struct.macroblock** %mb_available_left, align 8, !tbaa !3
+  %cmp14 = icmp eq %struct.macroblock* %9, null
+  br i1 %cmp14, label %if.end29, label %if.else17
+
+if.else17:                                        ; preds = %if.end
+  %mb_type19 = getelementptr inbounds %struct.macroblock* %9, i64 0, i32 8
+  %10 = load i32* %mb_type19, align 4, !tbaa !0
+  %cmp25 = icmp ne i32 %10, 13
+  %not.cmp20 = icmp ne i32 %10, 9
+  %.cmp25 = and i1 %cmp25, %not.cmp20
+  %cond28 = zext i1 %.cmp25 to i32
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.end, %if.else17
+  %a.0 = phi i32 [ %cond28, %if.else17 ], [ 0, %if.end ]
+  %add = add nsw i32 %a.0, %b.0
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
+  store i32 %add, i32* %context, align 4, !tbaa !0
+  %cmp30 = icmp eq i32 %6, 0
+  br i1 %cmp30, label %if.then32, label %if.else34
+
+if.then32:                                        ; preds = %if.end29
+  %idx.ext648 = zext i32 %add to i64
+  %add.ptr = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 %idx.ext648
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #5
+  br label %if.end448
+
+if.else34:                                        ; preds = %if.end29
+  %cmp35 = icmp eq i32 %6, 25
+  %idx.ext41646 = zext i32 %add to i64
+  %add.ptr42 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 %idx.ext41646
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr42) #5
+  br i1 %cmp35, label %if.then37, label %if.else43
+
+if.then37:                                        ; preds = %if.else34
+  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %eep_dp, i16 signext 1) #5
+  br label %if.end448
+
+if.else43:                                        ; preds = %if.else34
+  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %eep_dp, i16 signext 0) #5
+  %sub = add nsw i32 %6, -1
+  %div = sdiv i32 %sub, 12
+  %conv49 = trunc i32 %div to i16
+  %conv50 = and i16 %conv49, 255
+  %add.ptr55 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv50, %struct.BiContextType* %add.ptr55) #5
+  %rem = srem i32 %sub, 12
+  %rem.off = add i32 %rem, 3
+  %11 = icmp ult i32 %rem.off, 7
+  %add.ptr64 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 5
+  br i1 %11, label %if.then59, label %if.else65
+
+if.then59:                                        ; preds = %if.else43
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr64) #5
+  br label %if.end86
+
+if.else65:                                        ; preds = %if.else43
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr64) #5
+  %rem.off647 = add i32 %rem, -4
+  %12 = icmp ult i32 %rem.off647, 4
+  %add.ptr78 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 6
+  br i1 %12, label %if.then73, label %if.else79
+
+if.then73:                                        ; preds = %if.else65
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr78) #5
+  br label %if.end86
+
+if.else79:                                        ; preds = %if.else65
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr78) #5
+  br label %if.end86
+
+if.end86:                                         ; preds = %if.then73, %if.else79, %if.then59
+  %rem87 = srem i32 %rem, 4
+  %div88 = sdiv i32 %rem87, 2
+  %conv89 = trunc i32 %div88 to i16
+  %conv90 = and i16 %conv89, 255
+  %add.ptr95 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 7
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv90, %struct.BiContextType* %add.ptr95) #5
+  %rem96 = srem i32 %rem87, 2
+  %conv97 = trunc i32 %rem96 to i16
+  %conv98 = and i16 %conv97, 255
+  %add.ptr103 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 0, i64 8
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv98, %struct.BiContextType* %add.ptr103) #5
+  br label %if.end448
+
+if.then107:                                       ; preds = %entry
+  %mb_available_up108 = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 6
+  %13 = load %struct.macroblock** %mb_available_up108, align 8, !tbaa !3
+  %cmp109 = icmp eq %struct.macroblock* %13, null
+  br i1 %cmp109, label %if.end118, label %if.else112
+
+if.else112:                                       ; preds = %if.then107
+  %mb_type114 = getelementptr inbounds %struct.macroblock* %13, i64 0, i32 8
+  %14 = load i32* %mb_type114, align 4, !tbaa !0
+  %cmp115 = icmp ne i32 %14, 0
+  %cond117 = zext i1 %cmp115 to i32
+  br label %if.end118
+
+if.end118:                                        ; preds = %if.then107, %if.else112
+  %b.1 = phi i32 [ %cond117, %if.else112 ], [ 0, %if.then107 ]
+  %mb_available_left119 = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 7
+  %15 = load %struct.macroblock** %mb_available_left119, align 8, !tbaa !3
+  %cmp120 = icmp eq %struct.macroblock* %15, null
+  br i1 %cmp120, label %if.else195, label %if.else123
+
+if.else123:                                       ; preds = %if.end118
+  %mb_type125 = getelementptr inbounds %struct.macroblock* %15, i64 0, i32 8
+  %16 = load i32* %mb_type125, align 4, !tbaa !0
+  %cmp126 = icmp ne i32 %16, 0
+  %cond128 = zext i1 %cmp126 to i32
+  br label %if.else195
+
+if.then141:                                       ; preds = %entry
+  %cmp135650 = icmp slt i32 %6, 7
+  %.cond134653 = select i1 %cmp135650, i32 %6, i32 7
+  switch i32 %.cond134653, label %sw.default [
+    i32 0, label %if.end448
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb151
+    i32 3, label %sw.bb161
+    i32 4, label %sw.bb171
+    i32 5, label %sw.bb171
+    i32 6, label %sw.bb181
+    i32 7, label %if.end382.thread660
+  ]
+
+sw.bb:                                            ; preds = %if.then141
+  %arrayidx144 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx144) #5
+  %arrayidx147 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx147) #5
+  %arrayidx150 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 6
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx150) #5
+  br label %if.end448
+
+sw.bb151:                                         ; preds = %if.then141
+  %arrayidx154 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx154) #5
+  %arrayidx157 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx157) #5
+  %arrayidx160 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 7
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx160) #5
+  br label %if.end448
+
+sw.bb161:                                         ; preds = %if.then141
+  %arrayidx164 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx164) #5
+  %arrayidx167 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx167) #5
+  %arrayidx170 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 7
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx170) #5
+  br label %if.end448
+
+sw.bb171:                                         ; preds = %if.then141, %if.then141
+  %arrayidx174 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx174) #5
+  %arrayidx177 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx177) #5
+  %arrayidx180 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 6
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx180) #5
+  br label %if.end448
+
+sw.bb181:                                         ; preds = %if.then141
+  %arrayidx184 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx184) #5
+  %arrayidx187 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 7
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx187) #5
+  br label %if.end448
+
+if.end382.thread660:                              ; preds = %if.then141
+  %sub138651 = add nsw i32 %6, -7
+  %.sub138652 = select i1 %cmp135650, i32 0, i32 %sub138651
+  %arrayidx191 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx191) #5
+  %arrayidx194 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 7
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx194) #5
+  br label %if.then385
+
+sw.default:                                       ; preds = %if.then141
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([47 x i8]* @str, i64 0, i64 0))
+  tail call void @exit(i32 1) #6
+  unreachable
+
+if.else195:                                       ; preds = %if.end118, %if.else123
+  %a.1 = phi i32 [ %cond128, %if.else123 ], [ 0, %if.end118 ]
+  %add130 = add nsw i32 %a.1, %b.1
+  %context131 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
+  store i32 %add130, i32* %context131, align 4, !tbaa !0
+  %phitmp640 = zext i32 %add130 to i64
+  %cmp135 = icmp slt i32 %6, 24
+  %sub138 = add nsw i32 %6, -24
+  %.sub138 = select i1 %cmp135, i32 0, i32 %sub138
+  %.cond134 = select i1 %cmp135, i32 %6, i32 24
+  %cmp196 = icmp eq i32 %.cond134, 0
+  br i1 %cmp196, label %if.then198, label %if.else203
+
+if.then198:                                       ; preds = %if.else195
+  %arrayidx202 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %phitmp640
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx202) #5
+  br label %if.end448
+
+if.else203:                                       ; preds = %if.else195
+  %cmp204 = icmp slt i32 %.cond134, 3
+  br i1 %cmp204, label %if.then206, label %if.else225
+
+if.then206:                                       ; preds = %if.else203
+  %arrayidx210 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %phitmp640
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx210) #5
+  %arrayidx213 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx213) #5
+  %tobool215 = icmp eq i32 %.cond134, 1
+  %arrayidx219 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 6
+  br i1 %tobool215, label %if.else220, label %if.then216
+
+if.then216:                                       ; preds = %if.then206
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx219) #5
+  br label %if.end382
+
+if.else220:                                       ; preds = %if.then206
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx219) #5
+  br label %if.end448
+
+if.else225:                                       ; preds = %if.else203
+  %cmp226 = icmp slt i32 %.cond134, 11
+  br i1 %cmp226, label %if.then228, label %if.else275
+
+if.then228:                                       ; preds = %if.else225
+  %arrayidx232 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %phitmp640
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx232) #5
+  %arrayidx235 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx235) #5
+  %arrayidx238 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx238) #5
+  %sub239 = add nsw i32 %.cond134, -3
+  %and = and i32 %sub239, 4
+  %tobool240 = icmp eq i32 %and, 0
+  %arrayidx244 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 6
+  br i1 %tobool240, label %if.else245, label %if.then241
+
+if.then241:                                       ; preds = %if.then228
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx244) #5
+  br label %if.end249
+
+if.else245:                                       ; preds = %if.then228
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx244) #5
+  br label %if.end249
+
+if.end249:                                        ; preds = %if.else245, %if.then241
+  %and252 = and i32 %sub239, 2
+  %tobool253 = icmp eq i32 %and252, 0
+  br i1 %tobool253, label %if.else258, label %if.then254
+
+if.then254:                                       ; preds = %if.end249
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx244) #5
+  br label %if.end262
+
+if.else258:                                       ; preds = %if.end249
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx244) #5
+  br label %if.end262
+
+if.end262:                                        ; preds = %if.else258, %if.then254
+  %and264 = and i32 %sub239, 1
+  %tobool265 = icmp eq i32 %and264, 0
+  br i1 %tobool265, label %if.else270, label %if.then266
+
+if.then266:                                       ; preds = %if.end262
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx244) #5
+  br label %if.end382
+
+if.else270:                                       ; preds = %if.end262
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx244) #5
+  br label %if.end382
+
+if.else275:                                       ; preds = %if.else225
+  %cmp276 = icmp eq i32 %.cond134, 11
+  switch i32 %.cond134, label %if.else308 [
+    i32 22, label %if.then280
+    i32 11, label %if.then280
+  ]
+
+if.then280:                                       ; preds = %if.else275, %if.else275
+  %arrayidx284 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %phitmp640
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx284) #5
+  %arrayidx287 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx287) #5
+  %arrayidx290 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx290) #5
+  %arrayidx293 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 6
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx293) #5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx293) #5
+  br i1 %cmp276, label %if.then299, label %if.else303
+
+if.then299:                                       ; preds = %if.then280
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx293) #5
+  br label %if.end448
+
+if.else303:                                       ; preds = %if.then280
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx293) #5
+  br label %if.end382
+
+if.else308:                                       ; preds = %if.else275
+  %cmp309 = icmp sgt i32 %.cond134, 22
+  %dec = sext i1 %cmp309 to i32
+  %dec..cond134 = add nsw i32 %dec, %.cond134
+  %arrayidx316 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 %phitmp640
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx316) #5
+  %arrayidx319 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 4
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx319) #5
+  %arrayidx322 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx322) #5
+  %sub323 = add nsw i32 %dec..cond134, -12
+  %and325 = and i32 %sub323, 8
+  %tobool326 = icmp eq i32 %and325, 0
+  %arrayidx330 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 2, i64 6
+  br i1 %tobool326, label %if.else331, label %if.then327
+
+if.then327:                                       ; preds = %if.else308
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end335
+
+if.else331:                                       ; preds = %if.else308
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end335
+
+if.end335:                                        ; preds = %if.else331, %if.then327
+  %and338 = and i32 %sub323, 4
+  %tobool339 = icmp eq i32 %and338, 0
+  br i1 %tobool339, label %if.else344, label %if.then340
+
+if.then340:                                       ; preds = %if.end335
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end348
+
+if.else344:                                       ; preds = %if.end335
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end348
+
+if.end348:                                        ; preds = %if.else344, %if.then340
+  %and351 = and i32 %sub323, 2
+  %tobool352 = icmp eq i32 %and351, 0
+  br i1 %tobool352, label %if.else357, label %if.then353
+
+if.then353:                                       ; preds = %if.end348
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end361
+
+if.else357:                                       ; preds = %if.end348
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end361
+
+if.end361:                                        ; preds = %if.else357, %if.then353
+  %and363 = and i32 %sub323, 1
+  %tobool364 = icmp eq i32 %and363, 0
+  br i1 %tobool364, label %if.else369, label %if.then365
+
+if.then365:                                       ; preds = %if.end361
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end373
+
+if.else369:                                       ; preds = %if.end361
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx330) #5
+  br label %if.end373
+
+if.end373:                                        ; preds = %if.else369, %if.then365
+  %cmp374 = icmp sgt i32 %dec..cond134, 21
+  %inc = zext i1 %cmp374 to i32
+  %inc.dec..cond134 = add nsw i32 %inc, %dec..cond134
+  br label %if.end382
+
+if.end382:                                        ; preds = %if.end373, %if.else270, %if.then266, %if.else303, %if.then216
+  %act_sym.2 = phi i32 [ %.cond134, %if.then216 ], [ %.cond134, %if.then266 ], [ %.cond134, %if.else270 ], [ %.cond134, %if.else303 ], [ %inc.dec..cond134, %if.end373 ]
+  %cmp383 = icmp eq i32 %act_sym.2, 24
+  br i1 %cmp383, label %if.then385, label %if.end448
+
+if.then385:                                       ; preds = %if.end382.thread660, %if.end382
+  %.sub138656662 = phi i32 [ %.sub138652, %if.end382.thread660 ], [ %.sub138, %if.end382 ]
+  %cmp386 = icmp eq i32 %.sub138656662, 25
+  br i1 %cmp386, label %if.then388, label %if.end389
+
+if.then388:                                       ; preds = %if.then385
+  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %eep_dp, i16 signext 1) #5
+  br label %if.end448
+
+if.end389:                                        ; preds = %if.then385
+  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %eep_dp, i16 signext 0) #5
+  %div390 = sdiv i32 %.sub138656662, 12
+  %conv391 = trunc i32 %div390 to i16
+  %conv392 = and i16 %conv391, 255
+  %add.ptr397 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 8
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv392, %struct.BiContextType* %add.ptr397) #5
+  %rem398 = srem i32 %.sub138656662, 12
+  %rem398.off = add i32 %rem398, 3
+  %17 = icmp ult i32 %rem398.off, 7
+  %add.ptr407 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 9
+  br i1 %17, label %if.then402, label %if.else408
+
+if.then402:                                       ; preds = %if.end389
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr407) #5
+  br label %if.end429
+
+if.else408:                                       ; preds = %if.end389
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr407) #5
+  %rem398.off639 = add i32 %rem398, -4
+  %18 = icmp ult i32 %rem398.off639, 4
+  br i1 %18, label %if.then416, label %if.else422
+
+if.then416:                                       ; preds = %if.else408
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr407) #5
+  br label %if.end429
+
+if.else422:                                       ; preds = %if.else408
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr407) #5
+  br label %if.end429
+
+if.end429:                                        ; preds = %if.then416, %if.else422, %if.then402
+  %rem430 = srem i32 %rem398, 4
+  %div431 = sdiv i32 %rem430, 2
+  %conv432 = trunc i32 %div431 to i16
+  %conv433 = and i16 %conv432, 255
+  %add.ptr438 = getelementptr inbounds %struct.MotionInfoContexts* %3, i64 0, i32 0, i64 1, i64 10
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv433, %struct.BiContextType* %add.ptr438) #5
+  %rem439 = srem i32 %rem430, 2
+  %conv440 = trunc i32 %rem439 to i16
+  %conv441 = and i16 %conv440, 255
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv441, %struct.BiContextType* %add.ptr438) #5
+  br label %if.end448
+
+if.end448:                                        ; preds = %if.then141, %sw.bb, %sw.bb151, %sw.bb161, %sw.bb171, %sw.bb181, %if.then299, %if.else220, %if.then198, %if.end382, %if.end429, %if.then32, %if.end86, %if.then37, %if.then388
+  ret void
+}

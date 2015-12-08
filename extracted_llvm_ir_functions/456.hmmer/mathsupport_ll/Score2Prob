@@ -1,0 +1,20 @@
+define float @Score2Prob(i32 %sc, float %null) #0 {
+entry:
+  %cmp = icmp eq i32 %sc, -987654321
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %conv = fpext float %null to double
+  %conv1 = sitofp i32 %sc to float
+  %conv2 = fpext float %conv1 to double
+  %div = fdiv double %conv2, 1.000000e+03
+  %mul = fmul double %div, 0x3FE62E42FEAD449C
+  %call = tail call double @exp(double %mul) #5
+  %mul3 = fmul double %conv, %call
+  %conv4 = fptrunc double %mul3 to float
+  br label %return
+
+return:                                           ; preds = %entry, %if.else
+  %retval.0 = phi float [ %conv4, %if.else ], [ 0.000000e+00, %entry ]
+  ret float %retval.0
+}

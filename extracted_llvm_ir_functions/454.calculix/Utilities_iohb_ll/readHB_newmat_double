@@ -1,0 +1,76 @@
+define i32 @readHB_newmat_double(i8* %filename, i32* nocapture %M, i32* nocapture %N, i32* nocapture %nonzeros, i32** nocapture %colptr, i32** nocapture %rowind, double** nocapture %val) #0 {
+entry:
+  %Nrhs = alloca i32, align 4
+  %Type = alloca i8*, align 8
+  %call = call i32 @readHB_info(i8* %filename, i32* %M, i32* %N, i32* %nonzeros, i8** %Type, i32* %Nrhs) #9
+  %0 = load i32* %N, align 4, !tbaa !3
+  %add = add nsw i32 %0, 1
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 2
+  %call1 = call noalias i8* @malloc(i64 %mul) #8
+  %1 = bitcast i8* %call1 to i32*
+  store i32* %1, i32** %colptr, align 8, !tbaa !0
+  %cmp = icmp eq i8* %call1, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([33 x i8]* @.str31, i64 0, i64 0)) #9
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %2 = load i32* %nonzeros, align 4, !tbaa !3
+  %conv3 = sext i32 %2 to i64
+  %mul4 = shl nsw i64 %conv3, 2
+  %call5 = call noalias i8* @malloc(i64 %mul4) #8
+  %3 = bitcast i8* %call5 to i32*
+  store i32* %3, i32** %rowind, align 8, !tbaa !0
+  %cmp6 = icmp eq i8* %call5, null
+  br i1 %cmp6, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.end
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([33 x i8]* @.str32, i64 0, i64 0)) #9
+  unreachable
+
+if.end9:                                          ; preds = %if.end
+  %4 = load i8** %Type, align 8, !tbaa !0
+  %5 = load i8* %4, align 1, !tbaa !1
+  switch i8 %5, label %if.then26 [
+    i8 67, label %if.then13
+    i8 80, label %if.end9.if.end35_crit_edge
+  ]
+
+if.end9.if.end35_crit_edge:                       ; preds = %if.end9
+  %.pre = load double** %val, align 8, !tbaa !0
+  br label %if.end35
+
+if.then13:                                        ; preds = %if.end9
+  %mul16 = shl nsw i64 %conv3, 4
+  %call17 = call noalias i8* @malloc(i64 %mul16) #8
+  %6 = bitcast i8* %call17 to double*
+  store double* %6, double** %val, align 8, !tbaa !0
+  %cmp18 = icmp eq i8* %call17, null
+  br i1 %cmp18, label %if.then20, label %if.end35
+
+if.then20:                                        ; preds = %if.then13
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str33, i64 0, i64 0)) #9
+  unreachable
+
+if.then26:                                        ; preds = %if.end9
+  %mul28 = shl nsw i64 %conv3, 3
+  %call29 = call noalias i8* @malloc(i64 %mul28) #8
+  %7 = bitcast i8* %call29 to double*
+  store double* %7, double** %val, align 8, !tbaa !0
+  %cmp30 = icmp eq i8* %call29, null
+  br i1 %cmp30, label %if.then32, label %if.end35
+
+if.then32:                                        ; preds = %if.then26
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str33, i64 0, i64 0)) #9
+  unreachable
+
+if.end35:                                         ; preds = %if.then26, %if.then13, %if.end9.if.end35_crit_edge
+  %8 = phi double* [ %.pre, %if.end9.if.end35_crit_edge ], [ %6, %if.then13 ], [ %7, %if.then26 ]
+  %9 = load i32** %colptr, align 8, !tbaa !0
+  %10 = load i32** %rowind, align 8, !tbaa !0
+  %call36 = call i32 @readHB_mat_double(i8* %filename, i32* %9, i32* %10, double* %8) #9
+  ret i32 %call36
+}

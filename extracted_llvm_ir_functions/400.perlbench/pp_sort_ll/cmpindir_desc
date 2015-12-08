@@ -1,0 +1,28 @@
+define internal i32 @cmpindir_desc(%struct.sv* %a, %struct.sv* %b) #0 {
+entry:
+  %0 = bitcast %struct.sv* %a to %struct.sv**
+  %1 = bitcast %struct.sv* %b to %struct.sv**
+  %2 = load i32 (%struct.sv*, %struct.sv*)** @PL_sort_RealCmp, align 8, !tbaa !0
+  %3 = load %struct.sv** %0, align 8, !tbaa !0
+  %4 = load %struct.sv** %1, align 8, !tbaa !0
+  %call = tail call i32 %2(%struct.sv* %3, %struct.sv* %4) #4
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %sub = sub nsw i32 0, %call
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp = icmp ugt %struct.sv* %a, %b
+  br i1 %cmp, label %return, label %cond.false
+
+cond.false:                                       ; preds = %if.end
+  %cmp1 = icmp ult %struct.sv* %a, %b
+  %cond = sext i1 %cmp1 to i32
+  br label %return
+
+return:                                           ; preds = %cond.false, %if.end, %if.then
+  %retval.0 = phi i32 [ %sub, %if.then ], [ %cond, %cond.false ], [ 1, %if.end ]
+  ret i32 %retval.0
+}

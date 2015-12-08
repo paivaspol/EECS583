@@ -1,0 +1,90 @@
+define void @Chv_fastBunchParlettPivot(%struct._Chv* %chv, i32* %mark, i32 %tag, i32* %pirow, i32* %pjcol) #0 {
+entry:
+  %maxdiag = alloca double, align 8
+  %gamma_r = alloca double, align 8
+  %gamma_s = alloca double, align 8
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp eq i32* %mark, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i32* %pirow, null
+  %or.cond58 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq i32* %pjcol, null
+  %or.cond59 = or i1 %or.cond58, %cmp5
+  br i1 %or.cond59, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([71 x i8]* @.str16, i64 0, i64 0), %struct._Chv* %chv, i32* %mark, i32 %tag, i32* %pirow, i32* %pjcol) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #5
+  %call6 = call double* @Chv_entries(%struct._Chv* %chv) #5
+  store i32 -1, i32* %pjcol, align 4, !tbaa !3
+  store i32 -1, i32* %pirow, align 4, !tbaa !3
+  %call7 = call i32 @Chv_maxabsInDiagonal11(%struct._Chv* %chv, i32* %mark, i32 %tag, double* %maxdiag) #8
+  %cmp8 = icmp eq i32 %call7, -1
+  br i1 %cmp8, label %if.then9, label %if.end10
+
+if.then9:                                         ; preds = %if.end
+  store i32 -1, i32* %pjcol, align 4, !tbaa !3
+  store i32 -1, i32* %pirow, align 4, !tbaa !3
+  br label %return
+
+if.end10:                                         ; preds = %if.end
+  store double 0.000000e+00, double* %gamma_r, align 8, !tbaa !4
+  %call11 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %call7, i32* %mark, i32 %tag, double* %gamma_r) #8
+  %cmp12 = icmp eq i32 %call11, -1
+  br i1 %cmp12, label %if.then13, label %if.end14
+
+if.then13:                                        ; preds = %if.end10
+  store i32 %call7, i32* %pjcol, align 4, !tbaa !3
+  store i32 %call7, i32* %pirow, align 4, !tbaa !3
+  br label %return
+
+if.end14:                                         ; preds = %if.end10
+  %1 = load double* %maxdiag, align 8, !tbaa !4
+  %2 = load double* %gamma_r, align 8, !tbaa !4
+  %mul = fmul double %2, 6.404000e-01
+  %cmp15 = fcmp ult double %1, %mul
+  br i1 %cmp15, label %while.body.preheader, label %if.then16
+
+while.body.preheader:                             ; preds = %if.end14
+  %call1760 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %call11, i32* %mark, i32 %tag, double* %gamma_s) #8
+  %cmp1861 = icmp eq i32 %call1760, %call7
+  br i1 %cmp1861, label %if.then21, label %lor.lhs.false19
+
+if.then16:                                        ; preds = %if.end14
+  store i32 %call7, i32* %pjcol, align 4, !tbaa !3
+  store i32 %call7, i32* %pirow, align 4, !tbaa !3
+  br label %return
+
+lor.lhs.false19:                                  ; preds = %while.body.preheader, %if.else22
+  %call1764 = phi i32 [ %call17, %if.else22 ], [ %call1760, %while.body.preheader ]
+  %r.063 = phi i32 [ %s.062, %if.else22 ], [ %call7, %while.body.preheader ]
+  %s.062 = phi i32 [ %call1764, %if.else22 ], [ %call11, %while.body.preheader ]
+  %3 = load double* %gamma_s, align 8, !tbaa !4
+  %4 = load double* %gamma_r, align 8, !tbaa !4
+  %cmp20 = fcmp oeq double %3, %4
+  br i1 %cmp20, label %if.then21, label %if.else22
+
+if.then21:                                        ; preds = %if.else22, %lor.lhs.false19, %while.body.preheader
+  %r.0.lcssa = phi i32 [ %call7, %while.body.preheader ], [ %r.063, %lor.lhs.false19 ], [ %s.062, %if.else22 ]
+  %s.0.lcssa = phi i32 [ %call11, %while.body.preheader ], [ %s.062, %lor.lhs.false19 ], [ %call1764, %if.else22 ]
+  store i32 %r.0.lcssa, i32* %pirow, align 4, !tbaa !3
+  store i32 %s.0.lcssa, i32* %pjcol, align 4, !tbaa !3
+  br label %return
+
+if.else22:                                        ; preds = %lor.lhs.false19
+  store double %3, double* %gamma_r, align 8, !tbaa !4
+  %call17 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %call1764, i32* %mark, i32 %tag, double* %gamma_s) #8
+  %cmp18 = icmp eq i32 %call17, %s.062
+  br i1 %cmp18, label %if.then21, label %lor.lhs.false19
+
+return:                                           ; preds = %if.then21, %if.then16, %if.then13, %if.then9
+  ret void
+}

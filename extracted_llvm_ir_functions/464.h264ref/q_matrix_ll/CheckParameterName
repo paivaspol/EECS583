@@ -1,0 +1,49 @@
+define i32 @CheckParameterName(i8* nocapture %s, i32* nocapture %type) #0 {
+entry:
+  store i32 0, i32* %type, align 4, !tbaa !0
+  br label %while.body
+
+while.cond:                                       ; preds = %while.body
+  %inc = add nsw i32 %i.039, 1
+  %arraydecay = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv.next43, i64 0
+  %cmp = icmp ne i8* %arraydecay, null
+  %0 = trunc i64 %indvars.iv.next43 to i32
+  %cmp1 = icmp slt i32 %0, 6
+  %or.cond = and i1 %cmp, %cmp1
+  br i1 %or.cond, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %while.cond
+  %indvars.iv42 = phi i64 [ 0, %entry ], [ %indvars.iv.next43, %while.cond ]
+  %arraydecay40 = phi i8* [ getelementptr inbounds ([6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 0, i64 0), %entry ], [ %arraydecay, %while.cond ]
+  %i.039 = phi i32 [ 0, %entry ], [ %inc, %while.cond ]
+  %call = tail call i32 @strcmp(i8* %arraydecay40, i8* %s) #5
+  %cmp5 = icmp eq i32 %call, 0
+  %indvars.iv.next43 = add i64 %indvars.iv42, 1
+  br i1 %cmp5, label %return, label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  store i32 1, i32* %type, align 4, !tbaa !0
+  br label %while.body14
+
+while.cond6:                                      ; preds = %while.body14
+  %inc22 = add nsw i32 %i.135, 1
+  %arraydecay9 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv.next, i64 0
+  %cmp10 = icmp ne i8* %arraydecay9, null
+  %1 = trunc i64 %indvars.iv.next to i32
+  %cmp12 = icmp slt i32 %1, 2
+  %or.cond34 = and i1 %cmp10, %cmp12
+  br i1 %or.cond34, label %while.body14, label %return
+
+while.body14:                                     ; preds = %while.end, %while.cond6
+  %indvars.iv = phi i64 [ 0, %while.end ], [ %indvars.iv.next, %while.cond6 ]
+  %arraydecay936 = phi i8* [ getelementptr inbounds ([2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 0, i64 0), %while.end ], [ %arraydecay9, %while.cond6 ]
+  %i.135 = phi i32 [ 0, %while.end ], [ %inc22, %while.cond6 ]
+  %call18 = tail call i32 @strcmp(i8* %arraydecay936, i8* %s) #5
+  %cmp19 = icmp eq i32 %call18, 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp19, label %return, label %while.cond6
+
+return:                                           ; preds = %while.body, %while.cond6, %while.body14
+  %retval.0 = phi i32 [ -1, %while.cond6 ], [ %i.135, %while.body14 ], [ %i.039, %while.body ]
+  ret i32 %retval.0
+}

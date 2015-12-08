@@ -1,0 +1,103 @@
+define void @Perl_av_clear(%struct.av* %av) #0 {
+entry:
+  %tobool = icmp eq %struct.av* %av, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.av* %av, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %0, 8388608
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end3, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([0 x i8]* @PL_no_modify, i64 0, i64 0)) #3
+  %.pre = load i32* %sv_flags, align 4, !tbaa !4
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then2
+  %1 = phi i32 [ %0, %if.end ], [ %.pre, %if.then2 ]
+  %and5 = and i32 %1, 32768
+  %tobool6 = icmp eq i32 %and5, 0
+  br i1 %tobool6, label %if.end8, label %if.then7
+
+if.then7:                                         ; preds = %if.end3
+  %2 = bitcast %struct.av* %av to %struct.sv*
+  %call = tail call i32 @Perl_mg_clear(%struct.sv* %2) #3
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end3, %if.then7
+  %sv_any = getelementptr inbounds %struct.av* %av, i64 0, i32 0
+  %3 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_max = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 2
+  %4 = load i64* %xav_max, align 8, !tbaa !3
+  %cmp = icmp slt i64 %4, 0
+  br i1 %cmp, label %return, label %if.end10
+
+if.end10:                                         ; preds = %if.end8
+  %xav_flags = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 9
+  %5 = load i8* %xav_flags, align 1, !tbaa !1
+  %and12 = and i8 %5, 1
+  %tobool13 = icmp eq i8 %and12, 0
+  br i1 %tobool13, label %if.end21, label %if.then14
+
+if.then14:                                        ; preds = %if.end10
+  %xav_array = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 0
+  %6 = load i8** %xav_array, align 8, !tbaa !0
+  %7 = bitcast i8* %6 to %struct.sv**
+  %xav_fill = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 1
+  %8 = load i64* %xav_fill, align 8, !tbaa !3
+  %add = add nsw i64 %8, 1
+  %conv17 = trunc i64 %add to i32
+  %tobool1856 = icmp eq i32 %conv17, 0
+  br i1 %tobool1856, label %if.end21, label %while.body
+
+while.body:                                       ; preds = %if.then14, %while.body
+  %key.057 = phi i32 [ %dec, %while.body ], [ %conv17, %if.then14 ]
+  %dec = add nsw i32 %key.057, -1
+  %idxprom = sext i32 %dec to i64
+  %arrayidx = getelementptr inbounds %struct.sv** %7, i64 %idxprom
+  %9 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  store %struct.sv* @PL_sv_undef, %struct.sv** %arrayidx, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %9) #3
+  %tobool18 = icmp eq i32 %dec, 0
+  br i1 %tobool18, label %while.cond.if.end21.loopexit_crit_edge, label %while.body
+
+while.cond.if.end21.loopexit_crit_edge:           ; preds = %while.body
+  %.pre59.pre = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then14, %while.cond.if.end21.loopexit_crit_edge, %if.end10
+  %10 = phi %struct.xpvav* [ %3, %if.end10 ], [ %.pre59.pre, %while.cond.if.end21.loopexit_crit_edge ], [ %3, %if.then14 ]
+  %xav_array23 = getelementptr inbounds %struct.xpvav* %10, i64 0, i32 0
+  %11 = load i8** %xav_array23, align 8, !tbaa !0
+  %xav_alloc = getelementptr inbounds %struct.xpvav* %10, i64 0, i32 7
+  %12 = load %struct.sv*** %xav_alloc, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %11 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %12 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %13 = and i64 %sub.ptr.sub, 34359738360
+  %tobool26 = icmp eq i64 %13, 0
+  br i1 %tobool26, label %if.end35, label %if.then27
+
+if.then27:                                        ; preds = %if.end21
+  %sext = shl i64 %sub.ptr.sub, 29
+  %conv28 = ashr exact i64 %sext, 32
+  %xav_max30 = getelementptr inbounds %struct.xpvav* %10, i64 0, i32 2
+  %14 = load i64* %xav_max30, align 8, !tbaa !3
+  %add31 = add nsw i64 %14, %conv28
+  store i64 %add31, i64* %xav_max30, align 8, !tbaa !3
+  %15 = bitcast %struct.sv** %12 to i8*
+  store i8* %15, i8** %xav_array23, align 8, !tbaa !0
+  %.pre60 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end21, %if.then27
+  %16 = phi %struct.xpvav* [ %10, %if.end21 ], [ %.pre60, %if.then27 ]
+  %xav_fill37 = getelementptr inbounds %struct.xpvav* %16, i64 0, i32 1
+  store i64 -1, i64* %xav_fill37, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %entry, %if.end8, %if.end35
+  ret void
+}

@@ -1,0 +1,78 @@
+define void @SubMtx_init(%struct._SubMtx* %mtx, i32 %type, i32 %mode, i32 %rowid, i32 %colid, i32 %nrow, i32 %ncol, i32 %nent) #0 {
+entry:
+  %nrow.addr = alloca i32, align 4
+  %ncol.addr = alloca i32, align 4
+  %colind = alloca i32*, align 8
+  %rowind = alloca i32*, align 8
+  store i32 %nrow, i32* %nrow.addr, align 4, !tbaa !3
+  store i32 %ncol, i32* %ncol.addr, align 4, !tbaa !3
+  %cmp = icmp eq %struct._SubMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([45 x i8]* @.str13, i64 0, i64 0), i64 44, i64 1, %struct._IO_FILE* %0)
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp slt i32 %nrow, 1
+  br i1 %cmp1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call3 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([48 x i8]* @.str14, i64 0, i64 0), i32 %nrow) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end4:                                          ; preds = %if.end
+  %cmp5 = icmp slt i32 %ncol, 1
+  br i1 %cmp5, label %if.then6, label %if.end12
+
+if.then6:                                         ; preds = %if.end4
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([48 x i8]* @.str15, i64 0, i64 0), i32 %ncol) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end12:                                         ; preds = %if.end4
+  %.off = add i32 %type, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %sw.epilog, label %sw.default
+
+sw.default:                                       ; preds = %if.end12
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([48 x i8]* @.str17, i64 0, i64 0), i32 %type) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+sw.epilog:                                        ; preds = %if.end12
+  %switch21 = icmp ult i32 %mode, 10
+  br i1 %switch21, label %sw.epilog17, label %sw.default15
+
+sw.default15:                                     ; preds = %sw.epilog
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([48 x i8]* @.str18, i64 0, i64 0), i32 %mode) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+sw.epilog17:                                      ; preds = %sw.epilog
+  %call18 = call i32 @SubMtx_nbytesNeeded(i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #7
+  call void @SubMtx_setNbytesInWorkspace(%struct._SubMtx* %mtx, i32 %call18) #7
+  %conv = sext i32 %call18 to i64
+  %div = lshr i64 %conv, 3
+  %conv19 = trunc i64 %div to i32
+  %call20 = call i8* @SubMtx_workspace(%struct._SubMtx* %mtx) #7
+  %6 = bitcast i8* %call20 to double*
+  call void @DVzero(i32 %conv19, double* %6) #5
+  call void @SubMtx_setFields(%struct._SubMtx* %mtx, i32 %type, i32 %mode, i32 %rowid, i32 %colid, i32 %nrow, i32 %ncol, i32 %nent) #7
+  call void @SubMtx_rowIndices(%struct._SubMtx* %mtx, i32* %nrow.addr, i32** %rowind) #5
+  %7 = load i32* %nrow.addr, align 4, !tbaa !3
+  %8 = load i32** %rowind, align 8, !tbaa !0
+  call void @IVramp(i32 %7, i32* %8, i32 0, i32 1) #5
+  call void @SubMtx_columnIndices(%struct._SubMtx* %mtx, i32* %ncol.addr, i32** %colind) #5
+  %9 = load i32* %ncol.addr, align 4, !tbaa !3
+  %10 = load i32** %colind, align 8, !tbaa !0
+  call void @IVramp(i32 %9, i32* %10, i32 0, i32 1) #5
+  ret void
+}

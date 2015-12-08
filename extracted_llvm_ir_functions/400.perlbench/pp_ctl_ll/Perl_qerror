@@ -1,0 +1,36 @@
+define void @Perl_qerror(%struct.sv* %err) #0 {
+entry:
+  %0 = load volatile i32* @PL_in_eval, align 4, !tbaa !3
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.gv** @PL_errgv, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.gv* %1, i64 0, i32 0
+  %2 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %2, i64 0, i32 7
+  %3 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_sv = getelementptr inbounds %struct.gp* %3, i64 0, i32 0
+  %4 = load %struct.sv** %gp_sv, align 8, !tbaa !0
+  tail call void @Perl_sv_catsv_flags(%struct.sv* %4, %struct.sv* %err, i32 2) #7
+  br label %if.end4
+
+if.else:                                          ; preds = %entry
+  %5 = load %struct.sv** @PL_errors, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.sv* %5, null
+  br i1 %tobool1, label %if.else3, label %if.then2
+
+if.then2:                                         ; preds = %if.else
+  tail call void @Perl_sv_catsv_flags(%struct.sv* %5, %struct.sv* %err, i32 2) #7
+  br label %if.end4
+
+if.else3:                                         ; preds = %if.else
+  tail call void (i8*, ...)* @Perl_warn(i8* getelementptr inbounds ([3 x i8]* @.str15, i64 0, i64 0), %struct.sv* %err) #7
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then2, %if.else3, %if.then
+  %6 = load i32* @PL_error_count, align 4, !tbaa !3
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* @PL_error_count, align 4, !tbaa !3
+  ret void
+}

@@ -1,0 +1,41 @@
+define i32 @Pencil_writeForHumanEye(%struct._Pencil* %pencil, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._Pencil* %pencil, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str2, i64 0, i64 0), %struct._Pencil* %pencil, %struct._IO_FILE* %fp) #6
+  tail call void @exit(i32 -1) #8
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call i32 @Pencil_writeStats(%struct._Pencil* %pencil, %struct._IO_FILE* %fp) #9
+  %inpmtxA = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2
+  %1 = load %struct._InpMtx** %inpmtxA, align 8, !tbaa !0
+  %cmp3 = icmp eq %struct._InpMtx* %1, null
+  br i1 %cmp3, label %if.end8, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %fp)
+  %3 = load %struct._InpMtx** %inpmtxA, align 8, !tbaa !0
+  %call7 = tail call i32 @InpMtx_writeForHumanEye(%struct._InpMtx* %3, %struct._IO_FILE* %fp) #6
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end, %if.then4
+  %inpmtxB = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3
+  %4 = load %struct._InpMtx** %inpmtxB, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct._InpMtx* %4, null
+  br i1 %cmp9, label %if.end14, label %if.then10
+
+if.then10:                                        ; preds = %if.end8
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([11 x i8]* @.str4, i64 0, i64 0), i64 10, i64 1, %struct._IO_FILE* %fp)
+  %6 = load %struct._InpMtx** %inpmtxB, align 8, !tbaa !0
+  %call13 = tail call i32 @InpMtx_writeForHumanEye(%struct._InpMtx* %6, %struct._IO_FILE* %fp) #6
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.end8, %if.then10
+  ret i32 1
+}

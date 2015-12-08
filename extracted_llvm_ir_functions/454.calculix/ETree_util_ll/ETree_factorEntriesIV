@@ -1,0 +1,35 @@
+define %struct._IV* @ETree_factorEntriesIV(%struct._ETree* %etree, i32 %symflag) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str11, i64 0, i64 0), %struct._ETree* null, i32 %symflag) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %call1 = tail call i32 @ETree_nfront(%struct._ETree* %etree) #4
+  %call2 = tail call %struct._IV* @IV_new() #4
+  tail call void @IV_init(%struct._IV* %call2, i32 %call1, i32* null) #4
+  %call3 = tail call i32* @IV_entries(%struct._IV* %call2) #4
+  tail call void @IV_fill(%struct._IV* %call2, i32 0) #4
+  %cmp417 = icmp sgt i32 %call1, 0
+  br i1 %cmp417, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %1 = trunc i64 %indvars.iv to i32
+  %call5 = tail call double @ETree_nFactorEntriesInFront(%struct._ETree* %etree, i32 %symflag, i32 %1) #6
+  %conv = fptosi double %call5 to i32
+  %arrayidx = getelementptr inbounds i32* %call3, i64 %indvars.iv
+  store i32 %conv, i32* %arrayidx, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %call1
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret %struct._IV* %call2
+}

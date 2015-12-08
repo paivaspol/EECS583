@@ -1,0 +1,32 @@
+define i64 @PerlIOStdio_fill(%struct._PerlIO** nocapture %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %stdio1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio1 to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %3 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %3, 512
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end3, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @fflush(%struct._IO_FILE* %2) #9
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %if.end3, label %return
+
+if.end3:                                          ; preds = %if.then, %entry
+  %call4 = tail call i32 @fgetc(%struct._IO_FILE* %2) #9
+  %cmp5 = icmp eq i32 %call4, -1
+  br i1 %cmp5, label %return, label %if.end7
+
+if.end7:                                          ; preds = %if.end3
+  %call8 = tail call i32 @ungetc(i32 %call4, %struct._IO_FILE* %2) #9
+  %not.cmp9 = icmp ne i32 %call8, %call4
+  %. = sext i1 %not.cmp9 to i64
+  br label %return
+
+return:                                           ; preds = %if.end7, %if.end3, %if.then
+  %retval.0 = phi i64 [ -1, %if.then ], [ -1, %if.end3 ], [ %., %if.end7 ]
+  ret i64 %retval.0
+}

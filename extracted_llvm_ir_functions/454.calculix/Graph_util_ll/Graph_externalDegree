@@ -1,0 +1,70 @@
+define i32 @Graph_externalDegree(%struct._Graph* %g, i32 %v) #0 {
+entry:
+  %vsize = alloca i32, align 4
+  %vadj = alloca i32*, align 8
+  %cmp = icmp eq %struct._Graph* %g, null
+  %cmp1 = icmp slt i32 %v, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
+  %0 = load i32* %nvtx, align 4, !tbaa !0
+  %nvbnd = getelementptr inbounds %struct._Graph* %g, i64 0, i32 2
+  %1 = load i32* %nvbnd, align 4, !tbaa !0
+  %add = add nsw i32 %1, %0
+  %cmp3 = icmp sgt i32 %add, %v
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), %struct._Graph* %g, i32 %v) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %vwghts4 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 7
+  %3 = load i32** %vwghts4, align 8, !tbaa !3
+  call void @Graph_adjAndSize(%struct._Graph* %g, i32 %v, i32* %vsize, i32** %vadj) #6
+  %4 = load i32* %vsize, align 4, !tbaa !0
+  %cmp526 = icmp sgt i32 %4, 0
+  br i1 %cmp526, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %5 = load i32** %vadj, align 8, !tbaa !3
+  %cmp8 = icmp eq i32* %3, null
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %weight.027 = phi i32 [ 0, %for.body.lr.ph ], [ %weight.1, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %5, i64 %indvars.iv
+  %6 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp6 = icmp eq i32 %6, %v
+  br i1 %cmp6, label %for.inc, label %if.then7
+
+if.then7:                                         ; preds = %for.body
+  br i1 %cmp8, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.then7
+  %idxprom9 = sext i32 %6 to i64
+  %arrayidx10 = getelementptr inbounds i32* %3, i64 %idxprom9
+  %7 = load i32* %arrayidx10, align 4, !tbaa !0
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then7, %cond.true
+  %cond = phi i32 [ %7, %cond.true ], [ 1, %if.then7 ]
+  %add11 = add nsw i32 %cond, %weight.027
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %cond.end
+  %weight.1 = phi i32 [ %add11, %cond.end ], [ %weight.027, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %8 = trunc i64 %indvars.iv.next to i32
+  %cmp5 = icmp slt i32 %8, %4
+  br i1 %cmp5, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.end
+  %weight.0.lcssa = phi i32 [ 0, %if.end ], [ %weight.1, %for.inc ]
+  ret i32 %weight.0.lcssa
+}

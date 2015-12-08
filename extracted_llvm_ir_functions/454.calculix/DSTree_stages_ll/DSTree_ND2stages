@@ -1,0 +1,96 @@
+define %struct._IV* @DSTree_ND2stages(%struct._DSTree* %dstree) #0 {
+entry:
+  %nvtx = alloca i32, align 4
+  %map = alloca i32*, align 8
+  %cmp = icmp eq %struct._DSTree* %dstree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %tree1 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 0
+  %0 = load %struct._Tree** %tree1, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct._Tree* %0, null
+  br i1 %cmp2, label %if.then, label %lor.lhs.false3
+
+lor.lhs.false3:                                   ; preds = %lor.lhs.false
+  %n = getelementptr inbounds %struct._Tree* %0, i64 0, i32 0
+  %1 = load i32* %n, align 4, !tbaa !3
+  %cmp4 = icmp slt i32 %1, 1
+  br i1 %cmp4, label %if.then, label %lor.lhs.false5
+
+lor.lhs.false5:                                   ; preds = %lor.lhs.false3
+  %mapIV6 = getelementptr inbounds %struct._DSTree* %dstree, i64 0, i32 1
+  %2 = load %struct._IV** %mapIV6, align 8, !tbaa !0
+  %cmp7 = icmp eq %struct._IV* %2, null
+  br i1 %cmp7, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false5, %lor.lhs.false3, %lor.lhs.false, %entry
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([50 x i8]* @.str2, i64 0, i64 0), %struct._DSTree* %dstree) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false5
+  call void @IV_sizeAndEntries(%struct._IV* %2, i32* %nvtx, i32** %map) #4
+  %4 = load i32** %map, align 8, !tbaa !0
+  %cmp8 = icmp eq i32* %4, null
+  br i1 %cmp8, label %if.then11, label %lor.lhs.false9
+
+lor.lhs.false9:                                   ; preds = %if.end
+  %5 = load i32* %nvtx, align 4, !tbaa !3
+  %cmp10 = icmp slt i32 %5, 1
+  br i1 %cmp10, label %if.then11, label %if.end13
+
+if.then11:                                        ; preds = %lor.lhs.false9, %if.end
+  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call12 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._DSTree* %dstree) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end13:                                         ; preds = %lor.lhs.false9
+  %call14 = call %struct._IV* @IV_new() #4
+  call void @IV_init(%struct._IV* %call14, i32 %1, i32* null) #4
+  call void @IV_fill(%struct._IV* %call14, i32 1) #4
+  %call15 = call %struct._IV* @Tree_setHeightImetric(%struct._Tree* %0, %struct._IV* %call14) #4
+  %call16 = call i32* @IV_entries(%struct._IV* %call15) #4
+  %call17 = call %struct._IV* @IV_new() #4
+  %7 = load i32* %nvtx, align 4, !tbaa !3
+  call void @IV_init(%struct._IV* %call17, i32 %7, i32* null) #4
+  %call18 = call i32* @IV_entries(%struct._IV* %call17) #4
+  %8 = load i32* %nvtx, align 4, !tbaa !3
+  %cmp1953 = icmp sgt i32 %8, 0
+  br i1 %cmp1953, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end13
+  %9 = load i32** %map, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %9, i64 %indvars.iv
+  %10 = load i32* %arrayidx, align 4, !tbaa !3
+  %idxprom20 = sext i32 %10 to i64
+  %arrayidx21 = getelementptr inbounds i32* %call16, i64 %idxprom20
+  %11 = load i32* %arrayidx21, align 4, !tbaa !3
+  %sub = add nsw i32 %11, -1
+  %arrayidx23 = getelementptr inbounds i32* %call18, i64 %indvars.iv
+  %cmp26 = icmp sgt i32 %sub, 0
+  br i1 %cmp26, label %if.then27, label %for.inc
+
+if.then27:                                        ; preds = %for.body
+  %div = sdiv i32 %11, 2
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then27
+  %storemerge = phi i32 [ %div, %if.then27 ], [ %sub, %for.body ]
+  store i32 %storemerge, i32* %arrayidx23, align 4, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %12 = load i32* %nvtx, align 4, !tbaa !3
+  %13 = trunc i64 %indvars.iv.next to i32
+  %cmp19 = icmp slt i32 %13, %12
+  br i1 %cmp19, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %if.end13
+  call void @IV_free(%struct._IV* %call14) #4
+  call void @IV_free(%struct._IV* %call15) #4
+  ret %struct._IV* %call17
+}

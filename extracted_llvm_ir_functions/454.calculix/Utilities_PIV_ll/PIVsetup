@@ -1,0 +1,48 @@
+define void @PIVsetup(i32 %length, i32* %sizes, i32* %ivec, i32** %p_ivec) #0 {
+entry:
+  %cmp = icmp sgt i32 %length, 0
+  br i1 %cmp, label %if.then, label %if.end17
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i32* %sizes, null
+  %cmp2 = icmp eq i32* %ivec, null
+  %or.cond = or i1 %cmp1, %cmp2
+  %cmp4 = icmp eq i32** %p_ivec, null
+  %or.cond34 = or i1 %or.cond, %cmp4
+  br i1 %or.cond34, label %if.then5, label %for.body
+
+if.then5:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([90 x i8]* @.str3, i64 0, i64 0), i32 %length, i32* %sizes, i32* %ivec, i32** %p_ivec) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then ]
+  %ivec.addr.036 = phi i32* [ %ivec.addr.1, %for.inc ], [ %ivec, %if.then ]
+  %arrayidx = getelementptr inbounds i32* %sizes, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp7 = icmp sgt i32 %1, 0
+  %arrayidx10 = getelementptr inbounds i32** %p_ivec, i64 %indvars.iv
+  br i1 %cmp7, label %if.then8, label %if.else13
+
+if.then8:                                         ; preds = %for.body
+  store i32* %ivec.addr.036, i32** %arrayidx10, align 8, !tbaa !0
+  %idx.ext = sext i32 %1 to i64
+  %add.ptr = getelementptr inbounds i32* %ivec.addr.036, i64 %idx.ext
+  br label %for.inc
+
+if.else13:                                        ; preds = %for.body
+  store i32* null, i32** %arrayidx10, align 8, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then8, %if.else13
+  %ivec.addr.1 = phi i32* [ %add.ptr, %if.then8 ], [ %ivec.addr.036, %if.else13 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %length
+  br i1 %exitcond, label %if.end17, label %for.body
+
+if.end17:                                         ; preds = %for.inc, %entry
+  ret void
+}

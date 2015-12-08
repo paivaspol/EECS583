@@ -1,0 +1,49 @@
+define void @refresh_neighbour_lists(%struct.network* nocapture %net) #0 {
+entry:
+  %nodes = getelementptr inbounds %struct.network* %net, i64 0, i32 21
+  %0 = load %struct.node** %nodes, align 8, !tbaa !0
+  %stop_nodes = getelementptr inbounds %struct.network* %net, i64 0, i32 22
+  %1 = load %struct.node** %stop_nodes, align 8, !tbaa !0
+  %cmp31 = icmp ult %struct.node* %0, %1
+  br i1 %cmp31, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %node.032 = phi %struct.node* [ %incdec.ptr, %for.body ], [ %0, %entry ]
+  %firstout = getelementptr inbounds %struct.node* %node.032, i64 0, i32 7
+  %incdec.ptr = getelementptr inbounds %struct.node* %node.032, i64 1
+  %cmp = icmp ult %struct.node* %incdec.ptr, %1
+  %2 = bitcast %struct.arc** %firstout to i8*
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 8, i1 false)
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23
+  %3 = load %struct.arc** %arcs, align 8, !tbaa !0
+  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24
+  %4 = load %struct.arc** %stop_arcs, align 8, !tbaa !0
+  %cmp229 = icmp ult %struct.arc* %3, %4
+  br i1 %cmp229, label %for.body3, label %for.end12
+
+for.body3:                                        ; preds = %for.end, %for.body3
+  %arc.030 = phi %struct.arc* [ %incdec.ptr11, %for.body3 ], [ %3, %for.end ]
+  %tail = getelementptr inbounds %struct.arc* %arc.030, i64 0, i32 1
+  %5 = load %struct.node** %tail, align 8, !tbaa !0
+  %firstout4 = getelementptr inbounds %struct.node* %5, i64 0, i32 7
+  %6 = load %struct.arc** %firstout4, align 8, !tbaa !0
+  %nextout = getelementptr inbounds %struct.arc* %arc.030, i64 0, i32 4
+  store %struct.arc* %6, %struct.arc** %nextout, align 8, !tbaa !0
+  store %struct.arc* %arc.030, %struct.arc** %firstout4, align 8, !tbaa !0
+  %head = getelementptr inbounds %struct.arc* %arc.030, i64 0, i32 2
+  %7 = load %struct.node** %head, align 8, !tbaa !0
+  %firstin7 = getelementptr inbounds %struct.node* %7, i64 0, i32 8
+  %8 = load %struct.arc** %firstin7, align 8, !tbaa !0
+  %nextin = getelementptr inbounds %struct.arc* %arc.030, i64 0, i32 5
+  store %struct.arc* %8, %struct.arc** %nextin, align 8, !tbaa !0
+  store %struct.arc* %arc.030, %struct.arc** %firstin7, align 8, !tbaa !0
+  %incdec.ptr11 = getelementptr inbounds %struct.arc* %arc.030, i64 1
+  %cmp2 = icmp ult %struct.arc* %incdec.ptr11, %4
+  br i1 %cmp2, label %for.body3, label %for.end12
+
+for.end12:                                        ; preds = %for.body3, %for.end
+  ret void
+}

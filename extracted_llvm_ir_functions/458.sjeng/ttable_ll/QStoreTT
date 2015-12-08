@@ -1,0 +1,54 @@
+define void @QStoreTT(i32 %score, i32 %alpha, i32 %beta, i32 %best) #0 {
+entry:
+  %0 = load i32* @TTStores, align 4, !tbaa !3
+  %inc = add i32 %0, 1
+  store i32 %inc, i32* @TTStores, align 4, !tbaa !3
+  %1 = load i32* @hash, align 4, !tbaa !3
+  %2 = load i32* @TTSize, align 4, !tbaa !3
+  %rem = urem i32 %1, %2
+  %cmp = icmp sgt i32 %score, %alpha
+  br i1 %cmp, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idxprom = zext i32 %rem to i64
+  %3 = load %struct.QTType** @QS_TTable, align 8, !tbaa !0
+  %Type = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 1
+  store i8 1, i8* %Type, align 1, !tbaa !1
+  br label %if.end10
+
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp slt i32 %score, %beta
+  %idxprom3 = zext i32 %rem to i64
+  %4 = load %struct.QTType** @QS_TTable, align 8, !tbaa !0
+  %Type5 = getelementptr inbounds %struct.QTType* %4, i64 %idxprom3, i32 1
+  br i1 %cmp1, label %if.else6, label %if.then2
+
+if.then2:                                         ; preds = %if.else
+  store i8 2, i8* %Type5, align 1, !tbaa !1
+  br label %if.end10
+
+if.else6:                                         ; preds = %if.else
+  store i8 3, i8* %Type5, align 1, !tbaa !1
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then2, %if.else6, %if.then
+  %5 = load i32* @hash, align 4, !tbaa !3
+  %idxprom11 = zext i32 %rem to i64
+  %6 = load %struct.QTType** @QS_TTable, align 8, !tbaa !0
+  %HashKey = getelementptr inbounds %struct.QTType* %6, i64 %idxprom11, i32 3
+  store i32 %5, i32* %HashKey, align 4, !tbaa !3
+  %7 = load i32* @hold_hash, align 4, !tbaa !3
+  %Hold_hash = getelementptr inbounds %struct.QTType* %6, i64 %idxprom11, i32 4
+  store i32 %7, i32* %Hold_hash, align 4, !tbaa !3
+  %conv = trunc i32 %best to i16
+  %Bestmove = getelementptr inbounds %struct.QTType* %6, i64 %idxprom11, i32 2
+  store i16 %conv, i16* %Bestmove, align 2, !tbaa !4
+  %Bound = getelementptr inbounds %struct.QTType* %6, i64 %idxprom11, i32 5
+  store i32 %score, i32* %Bound, align 4, !tbaa !3
+  %8 = load i32* @white_to_move, align 4, !tbaa !3
+  %not.tobool = icmp eq i32 %8, 0
+  %conv19 = zext i1 %not.tobool to i8
+  %OnMove = getelementptr inbounds %struct.QTType* %6, i64 %idxprom11, i32 0
+  store i8 %conv19, i8* %OnMove, align 1, !tbaa !1
+  ret void
+}

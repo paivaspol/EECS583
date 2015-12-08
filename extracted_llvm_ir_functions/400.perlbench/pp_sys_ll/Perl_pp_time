@@ -1,0 +1,43 @@
+define %struct.op* @Perl_pp_time() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_targ = getelementptr inbounds %struct.op* %1, i64 0, i32 3
+  %2 = load i64* %op_targ, align 8, !tbaa !3
+  %3 = load %struct.sv*** @PL_curpad, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %3, i64 %2
+  %4 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %call = tail call i64 @time(i64* null) #6
+  tail call void @Perl_sv_setiv(%struct.sv* %4, i64 %call) #6
+  %sv_flags = getelementptr inbounds %struct.sv* %4, i64 0, i32 2
+  %5 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %5, 16384
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @Perl_mg_set(%struct.sv* %4) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %6 = load %struct.sv*** @PL_stack_max, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %6 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp = icmp slt i64 %sub.ptr.sub, 8
+  br i1 %cmp, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call %struct.sv** @Perl_stack_grow(%struct.sv** %0, %struct.sv** %0, i32 1) #6
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then2, %if.end
+  %sp.0 = phi %struct.sv** [ %call3, %if.then2 ], [ %0, %if.end ]
+  %incdec.ptr = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* %4, %struct.sv** %incdec.ptr, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %7 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %7, i64 0, i32 0
+  %8 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %8
+}

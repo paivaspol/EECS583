@@ -1,0 +1,45 @@
+define i8* @Perl_rninstr(i8* %big, i8* %bigend, i8* %little, i8* %lend) #5 {
+entry:
+  %0 = load i8* %little, align 1, !tbaa !0
+  %tobool = icmp ne i8 %0, 0
+  %cmp = icmp ult i8* %little, %lend
+  %or.cond = or i1 %tobool, %cmp
+  br i1 %or.cond, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %sub.ptr.lhs.cast = ptrtoint i8* %lend to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %little to i64
+  %sub.ptr.sub42 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.lhs.cast
+  %add.ptr = getelementptr inbounds i8* %bigend, i64 %sub.ptr.sub42
+  %cmp246 = icmp ult i8* %add.ptr, %big
+  br i1 %cmp246, label %return, label %while.body
+
+while.body:                                       ; preds = %if.end, %while.cond.backedge
+  %big.addr.047 = phi i8* [ %incdec.ptr4, %while.cond.backedge ], [ %add.ptr, %if.end ]
+  %incdec.ptr4 = getelementptr inbounds i8* %big.addr.047, i64 -1
+  %1 = load i8* %big.addr.047, align 1, !tbaa !0
+  %cmp6 = icmp eq i8 %1, %0
+  br i1 %cmp6, label %for.cond, label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %for.body, %while.body
+  %cmp2 = icmp ult i8* %incdec.ptr4, %big
+  br i1 %cmp2, label %return, label %while.body
+
+for.cond:                                         ; preds = %while.body, %for.body
+  %little.pn = phi i8* [ %s.0, %for.body ], [ %little, %while.body ]
+  %big.addr.0.pn = phi i8* [ %x.0, %for.body ], [ %big.addr.047, %while.body ]
+  %s.0 = getelementptr inbounds i8* %little.pn, i64 1
+  %x.0 = getelementptr inbounds i8* %big.addr.0.pn, i64 1
+  %cmp11 = icmp ult i8* %s.0, %lend
+  br i1 %cmp11, label %for.body, label %return
+
+for.body:                                         ; preds = %for.cond
+  %2 = load i8* %s.0, align 1, !tbaa !0
+  %3 = load i8* %x.0, align 1, !tbaa !0
+  %cmp17 = icmp eq i8 %2, %3
+  br i1 %cmp17, label %for.cond, label %while.cond.backedge
+
+return:                                           ; preds = %if.end, %while.cond.backedge, %for.cond, %entry
+  %retval.0 = phi i8* [ %bigend, %entry ], [ %big.addr.047, %for.cond ], [ null, %while.cond.backedge ], [ null, %if.end ]
+  ret i8* %retval.0
+}

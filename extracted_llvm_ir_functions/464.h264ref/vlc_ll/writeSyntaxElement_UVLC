@@ -1,0 +1,38 @@
+define i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %se, %struct.datapartition* nocapture %this_dataPart) #0 {
+entry:
+  %mapping = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 8
+  %0 = load void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !3
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %1 = load i32* %value1, align 4, !tbaa !0
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
+  %2 = load i32* %value2, align 4, !tbaa !0
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
+  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
+  tail call void %0(i32 %1, i32 %2, i32* %len, i32* %inf) #5
+  %3 = load i32* %len, align 4, !tbaa !0
+  %div.i = sdiv i32 %3, 2
+  %shl.i = shl i32 1, %div.i
+  %4 = load i32* %inf, align 4, !tbaa !0
+  %sub.i = add nsw i32 %shl.i, -1
+  %and.i = and i32 %sub.i, %4
+  %or.i = or i32 %and.i, %shl.i
+  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
+  store i32 %or.i, i32* %bitpattern.i, align 4, !tbaa !0
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
+  %5 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %5) #4
+  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0
+  %6 = load i32* %type, align 4, !tbaa !0
+  %cmp = icmp eq i32 %6, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %7 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
+  %write_flag = getelementptr inbounds %struct.Bitstream* %7, i64 0, i32 10
+  store i32 1, i32* %write_flag, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %8 = load i32* %len, align 4, !tbaa !0
+  ret i32 %8
+}

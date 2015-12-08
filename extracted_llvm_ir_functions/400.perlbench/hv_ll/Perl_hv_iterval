@@ -1,0 +1,44 @@
+define %struct.sv* @Perl_hv_iterval(%struct.hv* %hv, %struct.he* nocapture %entry1) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.hv* %hv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %0, 32768
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end15, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct.hv* %hv to %struct.sv*
+  %call = tail call %struct.magic* @Perl_mg_find(%struct.sv* %1, i32 80) #4
+  %tobool2 = icmp eq %struct.magic* %call, null
+  br i1 %tobool2, label %if.end15, label %if.then3
+
+if.then3:                                         ; preds = %if.then
+  %call4 = tail call %struct.sv* @Perl_sv_newmortal() #4
+  %hent_hek = getelementptr inbounds %struct.he* %entry1, i64 0, i32 1
+  %2 = load %struct.hek** %hent_hek, align 8, !tbaa !0
+  %hek_len = getelementptr inbounds %struct.hek* %2, i64 0, i32 1
+  %3 = load i32* %hek_len, align 4, !tbaa !4
+  %cmp = icmp eq i32 %3, -2
+  %arraydecay = getelementptr inbounds %struct.hek* %2, i64 0, i32 2, i64 0
+  br i1 %cmp, label %if.then5, label %if.else
+
+if.then5:                                         ; preds = %if.then3
+  %4 = bitcast i8* %arraydecay to %struct.sv**
+  %5 = load %struct.sv** %4, align 8, !tbaa !0
+  %6 = bitcast %struct.sv* %5 to i8*
+  %call7 = tail call i32 @Perl_mg_copy(%struct.sv* %1, %struct.sv* %call4, i8* %6, i32 -2) #4
+  br label %return
+
+if.else:                                          ; preds = %if.then3
+  %call13 = tail call i32 @Perl_mg_copy(%struct.sv* %1, %struct.sv* %call4, i8* %arraydecay, i32 %3) #4
+  br label %return
+
+if.end15:                                         ; preds = %if.then, %entry
+  %hent_val = getelementptr inbounds %struct.he* %entry1, i64 0, i32 2
+  %7 = load %struct.sv** %hent_val, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.then5, %if.else, %if.end15
+  %retval.0 = phi %struct.sv* [ %7, %if.end15 ], [ %call4, %if.else ], [ %call4, %if.then5 ]
+  ret %struct.sv* %retval.0
+}

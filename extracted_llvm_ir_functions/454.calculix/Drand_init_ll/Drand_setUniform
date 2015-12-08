@@ -1,0 +1,22 @@
+define void @Drand_setUniform(%struct._Drand* %drand, double %lower, double %upper) #0 {
+entry:
+  %cmp = icmp eq %struct._Drand* %drand, null
+  %cmp1 = fcmp ogt double %lower, %upper
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str3, i64 0, i64 0), %struct._Drand* %drand, double %lower, double %upper) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %mode = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8
+  store i32 1, i32* %mode, align 4, !tbaa !4
+  %lower2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 4
+  store double %lower, double* %lower2, align 8, !tbaa !3
+  %upper3 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 5
+  store double %upper, double* %upper3, align 8, !tbaa !3
+  ret void
+}

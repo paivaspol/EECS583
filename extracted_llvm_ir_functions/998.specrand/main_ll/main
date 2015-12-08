@@ -1,0 +1,53 @@
+define i32 @main(i32 %argc, i8** nocapture %argv) #0 {
+entry:
+  %cmp = icmp slt i32 %argc, 2
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([29 x i8]* @str, i64 0, i64 0))
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %arrayidx = getelementptr inbounds i8** %argv, i64 1
+  %0 = load i8** %arrayidx, align 8, !tbaa !0
+  %call1 = tail call i32 @atoi(i8* %0) #5
+  %arrayidx2 = getelementptr inbounds i8** %argv, i64 2
+  %1 = load i8** %arrayidx2, align 8, !tbaa !0
+  %call3 = tail call i32 @atoi(i8* %1) #5
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([22 x i8]* @.str1, i64 0, i64 0), i32 %call1, i32 %call3) #6
+  %call5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0)) #6
+  tail call void @spec_srand(i32 %call1) #6
+  %cmp627 = icmp sgt i32 %call3, 0
+  br i1 %cmp627, label %for.body, label %for.end.thread
+
+for.end.thread:                                   ; preds = %if.end
+  %call930 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0)) #6
+  br label %return
+
+for.body:                                         ; preds = %if.end, %for.body
+  %i.028 = phi i32 [ %inc, %for.body ], [ 0, %if.end ]
+  %call7 = tail call double @spec_rand() #6
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), double %call7) #6
+  %inc = add nsw i32 %i.028, 1
+  %exitcond29 = icmp eq i32 %inc, %call3
+  br i1 %exitcond29, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %call9 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0)) #6
+  br i1 %cmp627, label %for.body12, label %return
+
+for.body12:                                       ; preds = %for.end, %for.body12
+  %i.126 = phi i32 [ %inc16, %for.body12 ], [ 0, %for.end ]
+  %call13 = tail call double @spec_rand() #6
+  %mul = fmul double %call13, 2.048000e+06
+  %add = fadd double %mul, 1.000000e+00
+  %conv = fptosi double %add to i32
+  %call14 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 %conv) #6
+  %inc16 = add nsw i32 %i.126, 1
+  %exitcond = icmp eq i32 %inc16, %call3
+  br i1 %exitcond, label %return, label %for.body12
+
+return:                                           ; preds = %for.end, %for.end.thread, %for.body12, %if.then
+  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %for.body12 ], [ 0, %for.end.thread ], [ 0, %for.end ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,26 @@
+define i32 @Perl_av_len(%struct.av* %av) #0 {
+entry:
+  %0 = getelementptr inbounds %struct.av* %av, i64 0, i32 2
+  %1 = load i32* %0, align 4, !tbaa !4
+  %and = and i32 %1, 32768
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %2 = bitcast %struct.av* %av to %struct.sv*
+  %call = tail call i32 @Perl_mg_size(%struct.sv* %2) #3
+  %conv = sext i32 %call to i64
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.av* %av, i64 0, i32 0
+  %3 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_fill = getelementptr inbounds %struct.xpvav* %3, i64 0, i32 1
+  %4 = load i64* %xav_fill, align 8, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %conv, %cond.true ], [ %4, %cond.false ]
+  %conv1 = trunc i64 %cond to i32
+  ret i32 %conv1
+}

@@ -1,0 +1,33 @@
+define %struct.op* @Perl_pp_nextstate() #0 {
+entry:
+  %0 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %1 = bitcast %struct.op* %0 to %struct.cop*
+  store volatile %struct.cop* %1, %struct.cop** @PL_curcop, align 8, !tbaa !0
+  store i8 0, i8* @PL_tainted, align 1, !tbaa !1
+  %2 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %3 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxix = getelementptr inbounds %struct.stackinfo* %3, i64 0, i32 2
+  %4 = load i32* %si_cxix, align 4, !tbaa !3
+  %idxprom = sext i32 %4 to i64
+  %si_cxstack = getelementptr inbounds %struct.stackinfo* %3, i64 0, i32 1
+  %5 = load %struct.context** %si_cxstack, align 8, !tbaa !0
+  %blku_oldsp = getelementptr inbounds %struct.context* %5, i64 %idxprom, i32 1, i32 0, i32 0
+  %6 = load i32* %blku_oldsp, align 4, !tbaa !3
+  %idx.ext = sext i32 %6 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %2, i64 %idx.ext
+  store %struct.sv** %add.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %7 = load i32* @PL_tmps_ix, align 4, !tbaa !3
+  %8 = load i32* @PL_tmps_floor, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %7, %8
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_free_tmps() #8
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %9 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %9, i64 0, i32 0
+  %10 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %10
+}

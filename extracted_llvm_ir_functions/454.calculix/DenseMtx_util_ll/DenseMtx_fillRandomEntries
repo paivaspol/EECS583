@@ -1,0 +1,47 @@
+define void @DenseMtx_fillRandomEntries(%struct._DenseMtx* %mtx, %struct._Drand* %drand) #0 {
+entry:
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  %cmp1 = icmp eq %struct._Drand* %drand, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* %mtx, %struct._Drand* %drand) #6
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  switch i32 %1, label %if.end13 [
+    i32 1, label %if.then3
+    i32 2, label %if.then6
+  ]
+
+if.then3:                                         ; preds = %if.end
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %2 = load i32* %nrow, align 4, !tbaa !3
+  %ncol = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %3 = load i32* %ncol, align 4, !tbaa !3
+  %mul = mul nsw i32 %3, %2
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %4 = load double** %entries, align 8, !tbaa !0
+  tail call void @Drand_fillDvector(%struct._Drand* %drand, i32 %mul, double* %4) #6
+  br label %if.end13
+
+if.then6:                                         ; preds = %if.end
+  %nrow7 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %5 = load i32* %nrow7, align 4, !tbaa !3
+  %mul8 = shl i32 %5, 1
+  %ncol9 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %6 = load i32* %ncol9, align 4, !tbaa !3
+  %mul10 = mul nsw i32 %mul8, %6
+  %entries11 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %7 = load double** %entries11, align 8, !tbaa !0
+  tail call void @Drand_fillDvector(%struct._Drand* %drand, i32 %mul10, double* %7) #6
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end, %if.then6, %if.then3
+  ret void
+}

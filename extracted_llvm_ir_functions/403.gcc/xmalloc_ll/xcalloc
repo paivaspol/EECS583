@@ -1,0 +1,19 @@
+define noalias i8* @xcalloc(i64 %nelem, i64 %elsize) #0 {
+entry:
+  %cmp = icmp eq i64 %nelem, 0
+  %cmp1 = icmp eq i64 %elsize, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %elsize.addr.0 = select i1 %or.cond, i64 1, i64 %elsize
+  %nelem.addr.0 = select i1 %or.cond, i64 1, i64 %nelem
+  %call = tail call i8* @calloc(i64 %nelem.addr.0, i64 %elsize.addr.0) #4
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %if.then2, label %if.end3
+
+if.then2:                                         ; preds = %entry
+  %mul = mul i64 %nelem.addr.0, %elsize.addr.0
+  tail call void @xmalloc_failed(i64 %mul) #6
+  unreachable
+
+if.end3:                                          ; preds = %entry
+  ret i8* %call
+}

@@ -1,0 +1,18 @@
+define i32 @PerlIOUnix_refcnt_dec(i32 %fd) #1 {
+entry:
+  %0 = icmp ult i32 %fd, 2048
+  br i1 %0, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %fd to i64
+  %arrayidx = getelementptr inbounds [2048 x i32]* @PerlIO_fd_refcnt, i64 0, i64 %idxprom
+  %1 = load i32* %arrayidx, align 4, !tbaa !0
+  %dec = add nsw i32 %1, -1
+  store i32 %dec, i32* %arrayidx, align 4, !tbaa !0
+  tail call void (i8*, ...)* @PerlIO_debug(i8* undef, i32 %fd, i32 %dec) #10
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %cnt.0 = phi i32 [ %dec, %if.then ], [ 0, %entry ]
+  ret i32 %cnt.0
+}

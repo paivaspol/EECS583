@@ -1,0 +1,38 @@
+define i32 @Perl_cxinc() #0 {
+entry:
+  %0 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxmax = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 3
+  %1 = load i32* %si_cxmax, align 4, !tbaa !4
+  %conv = sext i32 %1 to i64
+  %mul = mul nsw i32 %1, 3
+  %div = sdiv i32 %mul, 2
+  store i32 %div, i32* %si_cxmax, align 4, !tbaa !4
+  %si_cxstack = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 1
+  %2 = load %struct.context** %si_cxstack, align 8, !tbaa !0
+  %3 = bitcast %struct.context* %2 to i8*
+  %add = add nsw i32 %div, 1
+  %conv4 = sext i32 %add to i64
+  %mul5 = mul i64 %conv4, 144
+  %call = tail call i8* @Perl_safesysrealloc(i8* %3, i64 %mul5) #5
+  %4 = bitcast i8* %call to %struct.context*
+  %5 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxstack6 = getelementptr inbounds %struct.stackinfo* %5, i64 0, i32 1
+  store %struct.context* %4, %struct.context** %si_cxstack6, align 8, !tbaa !0
+  %6 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxstack7 = getelementptr inbounds %struct.stackinfo* %6, i64 0, i32 1
+  %7 = load %struct.context** %si_cxstack7, align 8, !tbaa !0
+  %add.ptr.sum = add i64 %conv, 1
+  %add.ptr8 = getelementptr inbounds %struct.context* %7, i64 %add.ptr.sum
+  %8 = bitcast %struct.context* %add.ptr8 to i8*
+  %si_cxmax9 = getelementptr inbounds %struct.stackinfo* %6, i64 0, i32 3
+  %9 = load i32* %si_cxmax9, align 4, !tbaa !4
+  %conv10 = sext i32 %9 to i64
+  %sub = sub nsw i64 %conv10, %conv
+  %mul11 = mul i64 %sub, 144
+  tail call void @llvm.memset.p0i8.i64(i8* %8, i8 -85, i64 %mul11, i32 1, i1 false)
+  %10 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxix = getelementptr inbounds %struct.stackinfo* %10, i64 0, i32 2
+  %11 = load i32* %si_cxix, align 4, !tbaa !4
+  %add12 = add nsw i32 %11, 1
+  ret i32 %add12
+}

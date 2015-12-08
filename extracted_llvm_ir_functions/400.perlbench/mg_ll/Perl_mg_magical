@@ -1,0 +1,78 @@
+define void @Perl_mg_magical(%struct.sv* nocapture %sv) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %0, i64 40
+  %1 = bitcast i8* %xmg_magic to %struct.magic**
+  %mg.029 = load %struct.magic** %1, align 8
+  %tobool30 = icmp eq %struct.magic* %mg.029, null
+  br i1 %tobool30, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %sv_flags10 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %mg.031 = phi %struct.magic* [ %mg.029, %for.body.lr.ph ], [ %mg.0, %for.inc ]
+  %mg_virtual = getelementptr inbounds %struct.magic* %mg.031, i64 0, i32 1
+  %2 = load %struct.mgvtbl** %mg_virtual, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.mgvtbl* %2, null
+  br i1 %tobool1, label %for.inc, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %svt_get = getelementptr inbounds %struct.mgvtbl* %2, i64 0, i32 0
+  %3 = load i32 (%struct.sv*, %struct.magic*)** %svt_get, align 8, !tbaa !0
+  %tobool2 = icmp eq i32 (%struct.sv*, %struct.magic*)* %3, null
+  br i1 %tobool2, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then
+  %mg_flags = getelementptr inbounds %struct.magic* %mg.031, i64 0, i32 4
+  %4 = load i8* %mg_flags, align 1, !tbaa !1
+  %and = and i8 %4, 4
+  %tobool3 = icmp eq i8 %and, 0
+  br i1 %tobool3, label %if.then4, label %if.end
+
+if.then4:                                         ; preds = %land.lhs.true
+  %5 = load i32* %sv_flags10, align 4, !tbaa !3
+  %or = or i32 %5, 8192
+  store i32 %or, i32* %sv_flags10, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true, %if.then, %if.then4
+  %svt_set = getelementptr inbounds %struct.mgvtbl* %2, i64 0, i32 1
+  %6 = load i32 (%struct.sv*, %struct.magic*)** %svt_set, align 8, !tbaa !0
+  %tobool5 = icmp eq i32 (%struct.sv*, %struct.magic*)* %6, null
+  %.pre = load i32* %sv_flags10, align 4, !tbaa !3
+  br i1 %tobool5, label %if.end9, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %or8 = or i32 %.pre, 16384
+  store i32 %or8, i32* %sv_flags10, align 4, !tbaa !3
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end, %if.then6
+  %7 = phi i32 [ %or8, %if.then6 ], [ %.pre, %if.end ]
+  %and11 = and i32 %7, 24576
+  %tobool12 = icmp eq i32 %and11, 0
+  br i1 %tobool12, label %if.then14, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end9
+  %svt_clear = getelementptr inbounds %struct.mgvtbl* %2, i64 0, i32 3
+  %8 = load i32 (%struct.sv*, %struct.magic*)** %svt_clear, align 8, !tbaa !0
+  %tobool13 = icmp eq i32 (%struct.sv*, %struct.magic*)* %8, null
+  br i1 %tobool13, label %for.inc, label %if.then14
+
+if.then14:                                        ; preds = %lor.lhs.false, %if.end9
+  %or16 = or i32 %7, 32768
+  store i32 %or16, i32* %sv_flags10, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %lor.lhs.false, %for.body, %if.then14
+  %mg_moremagic = getelementptr inbounds %struct.magic* %mg.031, i64 0, i32 0
+  %mg.0 = load %struct.magic** %mg_moremagic, align 8
+  %tobool = icmp eq %struct.magic* %mg.0, null
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void
+}

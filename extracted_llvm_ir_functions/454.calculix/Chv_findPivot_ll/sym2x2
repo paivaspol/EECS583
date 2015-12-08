@@ -1,0 +1,137 @@
+define internal fastcc i32 @sym2x2(%struct._Chv* %chv, i32 %irow, i32 %jcol, double %tau, double* nocapture %rowmaxes) #0 {
+entry:
+  %a = alloca double, align 8
+  %b = alloca double, align 8
+  %c = alloca double, align 8
+  %aimag = alloca double, align 8
+  %areal = alloca double, align 8
+  %bimag = alloca double, align 8
+  %breal = alloca double, align 8
+  %cimag = alloca double, align 8
+  %creal = alloca double, align 8
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %0 = load i32* %type, align 4, !tbaa !3
+  switch i32 %0, label %if.end44 [
+    i32 1, label %if.then
+    i32 2, label %if.then7
+  ]
+
+if.then:                                          ; preds = %entry
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %irow, double* %a) #6
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %b) #6
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %jcol, i32 %jcol, double* %c) #6
+  %1 = load double* %a, align 8, !tbaa !4
+  %call = call double @fabs(double %1) #8
+  %2 = load double* %b, align 8, !tbaa !4
+  %call1 = call double @fabs(double %2) #8
+  %3 = load double* %c, align 8, !tbaa !4
+  %call2 = call double @fabs(double %3) #8
+  %mul = fmul double %1, %3
+  %mul3 = fmul double %2, %2
+  %sub = fsub double %mul, %mul3
+  %call4 = call double @fabs(double %sub) #8
+  br label %if.end41
+
+if.then7:                                         ; preds = %entry
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %irow, double* %areal, double* %aimag) #6
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %breal, double* %bimag) #6
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %jcol, i32 %jcol, double* %creal, double* %cimag) #6
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %4 = load i32* %symflag, align 4, !tbaa !3
+  switch i32 %4, label %if.end44 [
+    i32 1, label %if.then9
+    i32 0, label %if.then22
+  ]
+
+if.then9:                                         ; preds = %if.then7
+  %5 = load double* %areal, align 8, !tbaa !4
+  %call10 = call double @fabs(double %5) #8
+  %6 = load double* %breal, align 8, !tbaa !4
+  %7 = load double* %bimag, align 8, !tbaa !4
+  %call11 = call double @Zabs(double %6, double %7) #6
+  %8 = load double* %creal, align 8, !tbaa !4
+  %call12 = call double @fabs(double %8) #8
+  %9 = load double* %areal, align 8, !tbaa !4
+  %mul13 = fmul double %8, %9
+  %10 = load double* %breal, align 8, !tbaa !4
+  %mul14 = fmul double %10, %10
+  %sub15 = fsub double %mul13, %mul14
+  %11 = load double* %bimag, align 8, !tbaa !4
+  %mul16 = fmul double %11, %11
+  %sub17 = fsub double %sub15, %mul16
+  %call18 = call double @fabs(double %sub17) #8
+  br label %if.end41
+
+if.then22:                                        ; preds = %if.then7
+  %12 = load double* %areal, align 8, !tbaa !4
+  %13 = load double* %aimag, align 8, !tbaa !4
+  %call23 = call double @Zabs(double %12, double %13) #6
+  %14 = load double* %breal, align 8, !tbaa !4
+  %15 = load double* %bimag, align 8, !tbaa !4
+  %call24 = call double @Zabs(double %14, double %15) #6
+  %16 = load double* %creal, align 8, !tbaa !4
+  %17 = load double* %cimag, align 8, !tbaa !4
+  %call25 = call double @Zabs(double %16, double %17) #6
+  %18 = load double* %areal, align 8, !tbaa !4
+  %19 = load double* %creal, align 8, !tbaa !4
+  %mul26 = fmul double %18, %19
+  %20 = load double* %aimag, align 8, !tbaa !4
+  %21 = load double* %cimag, align 8, !tbaa !4
+  %mul27 = fmul double %20, %21
+  %sub28 = fsub double %mul26, %mul27
+  %22 = load double* %breal, align 8, !tbaa !4
+  %mul29 = fmul double %22, %22
+  %sub30 = fsub double %sub28, %mul29
+  %23 = load double* %bimag, align 8, !tbaa !4
+  %mul31 = fmul double %23, %23
+  %add = fadd double %sub30, %mul31
+  %mul32 = fmul double %18, %21
+  %mul33 = fmul double %19, %20
+  %add34 = fadd double %mul33, %mul32
+  %mul35 = fmul double %22, 2.000000e+00
+  %mul36 = fmul double %mul35, %23
+  %sub37 = fsub double %add34, %mul36
+  %call38 = call double @Zabs(double %add, double %sub37) #6
+  br label %if.end41
+
+if.end41:                                         ; preds = %if.then22, %if.then9, %if.then
+  %denom.0 = phi double [ %call4, %if.then ], [ %call18, %if.then9 ], [ %call38, %if.then22 ]
+  %cmag.0 = phi double [ %call2, %if.then ], [ %call12, %if.then9 ], [ %call25, %if.then22 ]
+  %bmag.0 = phi double [ %call1, %if.then ], [ %call11, %if.then9 ], [ %call24, %if.then22 ]
+  %amag.0 = phi double [ %call, %if.then ], [ %call10, %if.then9 ], [ %call23, %if.then22 ]
+  %cmp42 = fcmp oeq double %denom.0, 0.000000e+00
+  br i1 %cmp42, label %return, label %if.end44
+
+if.end44:                                         ; preds = %if.then7, %entry, %if.end41
+  %amag.096 = phi double [ %amag.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
+  %bmag.095 = phi double [ %bmag.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
+  %cmag.094 = phi double [ %cmag.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
+  %denom.093 = phi double [ %denom.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
+  %idxprom = sext i32 %irow to i64
+  %arrayidx = getelementptr inbounds double* %rowmaxes, i64 %idxprom
+  %24 = load double* %arrayidx, align 8, !tbaa !4
+  %mul45 = fmul double %cmag.094, %24
+  %idxprom46 = sext i32 %jcol to i64
+  %arrayidx47 = getelementptr inbounds double* %rowmaxes, i64 %idxprom46
+  %25 = load double* %arrayidx47, align 8, !tbaa !4
+  %mul48 = fmul double %bmag.095, %25
+  %add49 = fadd double %mul45, %mul48
+  %div = fdiv double %add49, %denom.093
+  %cmp58 = fcmp ugt double %div, %tau
+  br i1 %cmp58, label %if.else61, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end44
+  %mul55 = fmul double %amag.096, %25
+  %mul52 = fmul double %bmag.095, %24
+  %add56 = fadd double %mul52, %mul55
+  %div57 = fdiv double %add56, %denom.093
+  %cmp59 = fcmp ugt double %div57, %tau
+  br i1 %cmp59, label %if.else61, label %return
+
+if.else61:                                        ; preds = %land.lhs.true, %if.end44
+  br label %return
+
+return:                                           ; preds = %if.else61, %land.lhs.true, %if.end41
+  %retval.0 = phi i32 [ 0, %if.end41 ], [ 0, %if.else61 ], [ 2, %land.lhs.true ]
+  ret i32 %retval.0
+}

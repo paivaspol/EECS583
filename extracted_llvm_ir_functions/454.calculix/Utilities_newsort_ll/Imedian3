@@ -1,0 +1,36 @@
+define internal fastcc i32 @Imedian3(i32 %i, i32 %j, i32 %k, i32* nocapture %a) #0 {
+entry:
+  %idxprom = sext i32 %i to i64
+  %arrayidx = getelementptr inbounds i32* %a, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %idxprom1 = sext i32 %j to i64
+  %arrayidx2 = getelementptr inbounds i32* %a, i64 %idxprom1
+  %1 = load i32* %arrayidx2, align 4, !tbaa !0
+  %cmp = icmp slt i32 %0, %1
+  %idxprom5 = sext i32 %k to i64
+  %arrayidx6 = getelementptr inbounds i32* %a, i64 %idxprom5
+  %2 = load i32* %arrayidx6, align 4, !tbaa !0
+  br i1 %cmp, label %if.then, label %if.else16
+
+if.then:                                          ; preds = %entry
+  %cmp7 = icmp slt i32 %1, %2
+  br i1 %cmp7, label %return, label %if.else
+
+if.else:                                          ; preds = %if.then
+  %cmp13 = icmp slt i32 %0, %2
+  %k.i = select i1 %cmp13, i32 %k, i32 %i
+  br label %return
+
+if.else16:                                        ; preds = %entry
+  %cmp21 = icmp slt i32 %0, %2
+  br i1 %cmp21, label %return, label %if.else23
+
+if.else23:                                        ; preds = %if.else16
+  %cmp28 = icmp slt i32 %1, %2
+  %k.j = select i1 %cmp28, i32 %k, i32 %j
+  br label %return
+
+return:                                           ; preds = %if.else23, %if.else16, %if.else, %if.then
+  %retval.0 = phi i32 [ %j, %if.then ], [ %k.i, %if.else ], [ %i, %if.else16 ], [ %k.j, %if.else23 ]
+  ret i32 %retval.0
+}

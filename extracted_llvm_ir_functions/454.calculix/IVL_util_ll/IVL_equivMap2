@@ -1,0 +1,17 @@
+define %struct._IV* @IVL_equivMap2(%struct._IVL* %ivl) #0 {
+entry:
+  %call = tail call i32* @IVL_equivMap1(%struct._IVL* %ivl) #6
+  %cmp = icmp eq i32* %call, null
+  br i1 %cmp, label %if.end, label %if.else
+
+if.else:                                          ; preds = %entry
+  %call1 = tail call %struct._IV* @IV_new() #4
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
+  %0 = load i32* %nlist, align 4, !tbaa !3
+  tail call void @IV_init2(%struct._IV* %call1, i32 %0, i32 %0, i32 1, i32* %call) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.else
+  %mapIV.0 = phi %struct._IV* [ %call1, %if.else ], [ null, %entry ]
+  ret %struct._IV* %mapIV.0
+}

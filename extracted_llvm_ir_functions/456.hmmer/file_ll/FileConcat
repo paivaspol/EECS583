@@ -1,0 +1,22 @@
+define i8* @FileConcat(i8* %dir, i8* %file) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %dir) #5
+  %call1 = tail call i64 @strlen(i8* %file) #5
+  %add = add i64 %call, 2
+  %add2 = add i64 %add, %call1
+  %call3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 170, i64 %add2) #6
+  %0 = load i8* %file, align 1, !tbaa !0
+  %cmp = icmp eq i8 %0, 47
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call5 = tail call i8* @strcpy(i8* %call3, i8* %file) #6
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %call6 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %call3, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* %dir, i32 47, i8* %file) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret i8* %call3
+}

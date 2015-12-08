@@ -1,0 +1,128 @@
+define void @SAMizeAlignmentByGapFrac(i8** nocapture %aseq, i32 %nseq, i32 %alen, float %maxgap) #0 {
+entry:
+  %cmp257 = icmp sgt i32 %alen, 0
+  br i1 %cmp257, label %for.cond1.preheader.lr.ph, label %for.end176
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp2249 = icmp sgt i32 %nseq, 0
+  %conv41 = sitofp i32 %nseq to float
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc174, %for.cond1.preheader.lr.ph
+  %indvars.iv267 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next268, %for.inc174 ]
+  br i1 %cmp2249, label %for.body3, label %for.end
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond1.preheader ]
+  %ngap.0250 = phi i32 [ %ngap.1, %for.inc ], [ 0, %for.cond1.preheader ]
+  %arrayidx = getelementptr inbounds i8** %aseq, i64 %indvars.iv
+  %0 = load i8** %arrayidx, align 8, !tbaa !3
+  %arrayidx5 = getelementptr inbounds i8* %0, i64 %indvars.iv267
+  %1 = load i8* %arrayidx5, align 1, !tbaa !1
+  switch i8 %1, label %for.inc [
+    i8 32, label %if.then
+    i8 46, label %if.then
+    i8 95, label %if.then
+    i8 45, label %if.then
+    i8 126, label %if.then
+  ]
+
+if.then:                                          ; preds = %for.body3, %for.body3, %for.body3, %for.body3, %for.body3
+  %inc = add nsw i32 %ngap.0250, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body3, %if.then
+  %ngap.1 = phi i32 [ %inc, %if.then ], [ %ngap.0250, %for.body3 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
+  br i1 %exitcond, label %for.end, label %for.body3
+
+for.end:                                          ; preds = %for.inc, %for.cond1.preheader
+  %ngap.0.lcssa = phi i32 [ 0, %for.cond1.preheader ], [ %ngap.1, %for.inc ]
+  %conv40 = sitofp i32 %ngap.0.lcssa to float
+  %div = fdiv float %conv40, %conv41
+  %cmp42 = fcmp ogt float %div, %maxgap
+  br i1 %cmp42, label %for.cond45.preheader, label %for.cond108.preheader
+
+for.cond45.preheader:                             ; preds = %for.end
+  br i1 %cmp2249, label %for.body48, label %for.inc174
+
+for.cond108.preheader:                            ; preds = %for.end
+  br i1 %cmp2249, label %for.body111, label %for.inc174
+
+for.body48:                                       ; preds = %for.cond45.preheader, %for.inc104
+  %indvars.iv263 = phi i64 [ %indvars.iv.next264, %for.inc104 ], [ 0, %for.cond45.preheader ]
+  %arrayidx51 = getelementptr inbounds i8** %aseq, i64 %indvars.iv263
+  %2 = load i8** %arrayidx51, align 8, !tbaa !3
+  %arrayidx52 = getelementptr inbounds i8* %2, i64 %indvars.iv267
+  %3 = load i8* %arrayidx52, align 1, !tbaa !1
+  switch i8 %3, label %if.else [
+    i8 32, label %if.then88
+    i8 46, label %if.then88
+    i8 95, label %if.then88
+    i8 45, label %if.then88
+    i8 126, label %if.then88
+  ]
+
+if.then88:                                        ; preds = %for.body48, %for.body48, %for.body48, %for.body48, %for.body48
+  store i8 46, i8* %arrayidx52, align 1, !tbaa !1
+  br label %for.inc104
+
+if.else:                                          ; preds = %for.body48
+  %conv53 = sext i8 %3 to i32
+  %call = tail call i32 @tolower(i32 %conv53) #7
+  %conv98 = trunc i32 %call to i8
+  %4 = load i8** %arrayidx51, align 8, !tbaa !3
+  %arrayidx102 = getelementptr inbounds i8* %4, i64 %indvars.iv267
+  store i8 %conv98, i8* %arrayidx102, align 1, !tbaa !1
+  br label %for.inc104
+
+for.inc104:                                       ; preds = %if.then88, %if.else
+  %indvars.iv.next264 = add i64 %indvars.iv263, 1
+  %lftr.wideiv265 = trunc i64 %indvars.iv.next264 to i32
+  %exitcond266 = icmp eq i32 %lftr.wideiv265, %nseq
+  br i1 %exitcond266, label %for.inc174, label %for.body48
+
+for.body111:                                      ; preds = %for.cond108.preheader, %for.inc170
+  %indvars.iv259 = phi i64 [ %indvars.iv.next260, %for.inc170 ], [ 0, %for.cond108.preheader ]
+  %arrayidx114 = getelementptr inbounds i8** %aseq, i64 %indvars.iv259
+  %5 = load i8** %arrayidx114, align 8, !tbaa !3
+  %arrayidx115 = getelementptr inbounds i8* %5, i64 %indvars.iv267
+  %6 = load i8* %arrayidx115, align 1, !tbaa !1
+  switch i8 %6, label %if.else156 [
+    i8 32, label %if.then151
+    i8 46, label %if.then151
+    i8 95, label %if.then151
+    i8 45, label %if.then151
+    i8 126, label %if.then151
+  ]
+
+if.then151:                                       ; preds = %for.body111, %for.body111, %for.body111, %for.body111, %for.body111
+  store i8 45, i8* %arrayidx115, align 1, !tbaa !1
+  br label %for.inc170
+
+if.else156:                                       ; preds = %for.body111
+  %conv116 = sext i8 %6 to i32
+  %call163 = tail call i32 @toupper(i32 %conv116) #7
+  %conv164 = trunc i32 %call163 to i8
+  %7 = load i8** %arrayidx114, align 8, !tbaa !3
+  %arrayidx168 = getelementptr inbounds i8* %7, i64 %indvars.iv267
+  store i8 %conv164, i8* %arrayidx168, align 1, !tbaa !1
+  br label %for.inc170
+
+for.inc170:                                       ; preds = %if.then151, %if.else156
+  %indvars.iv.next260 = add i64 %indvars.iv259, 1
+  %lftr.wideiv261 = trunc i64 %indvars.iv.next260 to i32
+  %exitcond262 = icmp eq i32 %lftr.wideiv261, %nseq
+  br i1 %exitcond262, label %for.inc174, label %for.body111
+
+for.inc174:                                       ; preds = %for.cond45.preheader, %for.inc104, %for.cond108.preheader, %for.inc170
+  %indvars.iv.next268 = add i64 %indvars.iv267, 1
+  %lftr.wideiv269 = trunc i64 %indvars.iv.next268 to i32
+  %exitcond270 = icmp eq i32 %lftr.wideiv269, %alen
+  br i1 %exitcond270, label %for.end176, label %for.cond1.preheader
+
+for.end176:                                       ; preds = %for.inc174, %entry
+  ret void
+}

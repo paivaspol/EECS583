@@ -1,0 +1,48 @@
+define internal fastcc i32 @S_cl_is_anything(%struct.regnode_charclass_class* nocapture %cl) #4 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %value.036 = phi i32 [ 0, %entry ], [ %add14, %for.inc ]
+  %shr31 = lshr i32 %value.036, 3
+  %and = and i32 %shr31, 3
+  %idxprom32 = zext i32 %and to i64
+  %arrayidx = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 5, i64 %idxprom32
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = sext i8 %0 to i32
+  %and1 = and i32 %value.036, 6
+  %shl = shl i32 1, %and1
+  %and2 = and i32 %conv, %shl
+  %tobool = icmp eq i32 %and2, 0
+  br i1 %tobool, label %for.inc, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body
+  %and10 = or i32 %and1, 1
+  %shl11 = shl i32 1, %and10
+  %and12 = and i32 %conv, %shl11
+  %tobool13 = icmp eq i32 %and12, 0
+  br i1 %tobool13, label %for.inc, label %return
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %add14 = add nsw i32 %value.036, 2
+  %cmp = icmp slt i32 %add14, 33
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  %flags = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 0
+  %1 = load i8* %flags, align 1, !tbaa !1
+  %and16 = and i8 %1, 64
+  %tobool17 = icmp eq i8 %and16, 0
+  br i1 %tobool17, label %return, label %if.end19
+
+if.end19:                                         ; preds = %for.end
+  %arraydecay = getelementptr inbounds %struct.regnode_charclass_class* %cl, i64 0, i32 4, i64 0
+  %call = tail call i32 @memcmp(i8* %arraydecay, i8* getelementptr inbounds ([33 x i8]* @.str95, i64 0, i64 0), i64 32) #8
+  %tobool20 = icmp eq i32 %call, 0
+  %. = zext i1 %tobool20 to i32
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.end19, %for.end
+  %retval.0 = phi i32 [ 0, %for.end ], [ %., %if.end19 ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0
+}

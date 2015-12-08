@@ -1,0 +1,26 @@
+define void @Perl_tmps_grow(i32 %n) #0 {
+entry:
+  %cmp = icmp slt i32 %n, 128
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load i32* @PL_tmps_max, align 4, !tbaa !4
+  %cmp1 = icmp slt i32 %0, 512
+  %cond = select i1 %cmp1, i32 128, i32 512
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %n.addr.0 = phi i32 [ %cond, %if.then ], [ %n, %entry ]
+  %1 = load i32* @PL_tmps_ix, align 4, !tbaa !4
+  %add = add i32 %n.addr.0, 1
+  %add2 = add i32 %add, %1
+  store i32 %add2, i32* @PL_tmps_max, align 4, !tbaa !4
+  %2 = load %struct.sv*** @PL_tmps_stack, align 8, !tbaa !0
+  %3 = bitcast %struct.sv** %2 to i8*
+  %conv = sext i32 %add2 to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call i8* @Perl_safesysrealloc(i8* %3, i64 %mul) #5
+  %4 = bitcast i8* %call to %struct.sv**
+  store %struct.sv** %4, %struct.sv*** @PL_tmps_stack, align 8, !tbaa !0
+  ret void
+}

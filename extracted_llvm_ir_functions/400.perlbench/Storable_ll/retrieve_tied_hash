@@ -1,0 +1,53 @@
+define internal %struct.sv* @retrieve_tied_hash(%struct.stcxt* %cxt, i8* %cname) #1 {
+entry:
+  %call = tail call %struct.sv* @Perl_newSV(i64 0) #7
+  %tobool = icmp eq %struct.sv* %call, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %aseen = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 4
+  %0 = load %struct.av** %aseen, align 8, !tbaa !0
+  %tagnum = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 9
+  %1 = load i64* %tagnum, align 8, !tbaa !4
+  %inc = add nsw i64 %1, 1
+  store i64 %inc, i64* %tagnum, align 8, !tbaa !4
+  %conv = trunc i64 %1 to i32
+  store %struct.sv* %call, %struct.sv** @PL_Sv, align 8, !tbaa !0
+  %sv_refcnt = getelementptr inbounds %struct.sv* %call, i64 0, i32 1
+  %2 = load i32* %sv_refcnt, align 4, !tbaa !3
+  %inc2 = add i32 %2, 1
+  store i32 %inc2, i32* %sv_refcnt, align 4, !tbaa !3
+  %call4 = tail call %struct.sv** @Perl_av_store(%struct.av* %0, i32 %conv, %struct.sv* %call) #7
+  %cmp = icmp eq %struct.sv** %call4, null
+  br i1 %cmp, label %return, label %if.end7
+
+if.end7:                                          ; preds = %if.end
+  %tobool8 = icmp eq i8* %cname, null
+  br i1 %tobool8, label %if.end13, label %if.then9
+
+if.then9:                                         ; preds = %if.end7
+  %call10 = tail call %struct.hv* @Perl_gv_stashpv(i8* %cname, i32 1) #7
+  %call11 = tail call %struct.sv* @Perl_newRV_noinc(%struct.sv* %call) #7
+  %call12 = tail call %struct.sv* @Perl_sv_bless(%struct.sv* %call11, %struct.hv* %call10) #7
+  %sv_any = getelementptr inbounds %struct.sv* %call11, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %3 to %struct.sv**
+  store %struct.sv* null, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %call11) #7
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end7, %if.then9
+  %call14 = tail call fastcc %struct.sv* @retrieve(%struct.stcxt* %cxt, i8* null) #6
+  %tobool15 = icmp eq %struct.sv* %call14, null
+  br i1 %tobool15, label %return, label %if.end17
+
+if.end17:                                         ; preds = %if.end13
+  %call18 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %call, i32 11) #7
+  tail call void @Perl_sv_magic(%struct.sv* %call, %struct.sv* %call14, i32 80, i8* null, i32 0) #7
+  tail call void @Perl_sv_free(%struct.sv* %call14) #7
+  br label %return
+
+return:                                           ; preds = %entry, %if.end13, %if.end, %if.end17
+  %retval.0 = phi %struct.sv* [ %call, %if.end17 ], [ null, %entry ], [ null, %if.end ], [ null, %if.end13 ]
+  ret %struct.sv* %retval.0
+}

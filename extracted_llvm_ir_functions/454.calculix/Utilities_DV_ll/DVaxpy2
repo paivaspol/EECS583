@@ -1,0 +1,40 @@
+define void @DVaxpy2(i32 %size, double* nocapture %z, double %a, double* %x, double %b, double* %y) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = icmp eq double* %y, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq double* %x, null
+  %or.cond18 = or i1 %or.cond, %cmp3
+  br i1 %or.cond18, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp419 = icmp sgt i32 %size, 0
+  br i1 %cmp419, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([39 x i8]* @.str38, i64 0, i64 0), i64 38, i64 1, %struct._IO_FILE* %0)
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
+  %2 = load double* %arrayidx, align 8, !tbaa !3
+  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv
+  %3 = load double* %arrayidx6, align 8, !tbaa !3
+  %mul = fmul double %2, %a
+  %mul7 = fmul double %3, %b
+  %add = fadd double %mul, %mul7
+  %arrayidx9 = getelementptr inbounds double* %z, i64 %indvars.iv
+  %4 = load double* %arrayidx9, align 8, !tbaa !3
+  %add10 = fadd double %4, %add
+  store double %add10, double* %arrayidx9, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void
+}

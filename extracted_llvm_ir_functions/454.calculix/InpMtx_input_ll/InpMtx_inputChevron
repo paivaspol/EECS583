@@ -1,0 +1,33 @@
+define void @InpMtx_inputChevron(%struct._InpMtx* %inpmtx, i32 %chv, i32 %chvsize, i32* %chvind) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = icmp slt i32 %chv, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %chvsize, 0
+  %or.cond23 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq i32* %chvind, null
+  %or.cond24 = or i1 %or.cond23, %cmp5
+  br i1 %or.cond24, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str21, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %chv, i32 %chvsize, i32* %chvind) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
+  %1 = load i32* %inputMode, align 4, !tbaa !3
+  %cmp6 = icmp eq i32 %1, 0
+  br i1 %cmp6, label %if.end9, label %if.then7
+
+if.then7:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([90 x i8]* @.str22, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %chv, i32 %chvsize, i32* %chvind) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end9:                                          ; preds = %if.end
+  tail call fastcc void @inputChevron(%struct._InpMtx* %inpmtx, i32 %chv, i32 %chvsize, i32* %chvind, double* null) #6
+  ret void
+}

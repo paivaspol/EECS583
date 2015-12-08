@@ -1,0 +1,45 @@
+define i8* @Perl_utf8_hop(i8* %s, i32 %off) #2 {
+entry:
+  %cmp = icmp sgt i32 %off, -1
+  br i1 %cmp, label %while.cond.preheader, label %while.cond4.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %tobool23 = icmp eq i32 %off, 0
+  br i1 %tobool23, label %if.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %off.addr.025 = phi i32 [ %dec, %while.body ], [ %off, %while.cond.preheader ]
+  %s.addr.024 = phi i8* [ %add.ptr, %while.body ], [ %s, %while.cond.preheader ]
+  %dec = add nsw i32 %off.addr.025, -1
+  %0 = load i8* %s.addr.024, align 1, !tbaa !1
+  %idxprom = zext i8 %0 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %1 = load i8* %arrayidx, align 1, !tbaa !1
+  %idx.ext = zext i8 %1 to i64
+  %add.ptr = getelementptr inbounds i8* %s.addr.024, i64 %idx.ext
+  %tobool = icmp eq i32 %dec, 0
+  br i1 %tobool, label %if.end, label %while.body
+
+while.cond1.loopexit:                             ; preds = %while.cond4
+  %inc30 = add nsw i32 %inc30.in, 1
+  %tobool2 = icmp eq i32 %inc30, 0
+  br i1 %tobool2, label %if.end, label %while.cond4.preheader
+
+while.cond4.preheader:                            ; preds = %entry, %while.cond1.loopexit
+  %inc30.in = phi i32 [ %inc30, %while.cond1.loopexit ], [ %off, %entry ]
+  %s.addr.129 = phi i8* [ %s.addr.2, %while.cond1.loopexit ], [ %s, %entry ]
+  br label %while.cond4
+
+while.cond4:                                      ; preds = %while.cond4.preheader, %while.cond4
+  %s.addr.1.pn = phi i8* [ %s.addr.2, %while.cond4 ], [ %s.addr.129, %while.cond4.preheader ]
+  %s.addr.2 = getelementptr inbounds i8* %s.addr.1.pn, i64 -1
+  %2 = load i8* %s.addr.2, align 1, !tbaa !1
+  %cmp6 = icmp slt i8 %2, 0
+  %cmp9 = icmp ult i8 %2, -64
+  %or.cond = and i1 %cmp6, %cmp9
+  br i1 %or.cond, label %while.cond4, label %while.cond1.loopexit
+
+if.end:                                           ; preds = %while.cond1.loopexit, %while.cond.preheader, %while.body
+  %s.addr.3 = phi i8* [ %s, %while.cond.preheader ], [ %add.ptr, %while.body ], [ %s.addr.2, %while.cond1.loopexit ]
+  ret i8* %s.addr.3
+}

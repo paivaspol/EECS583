@@ -1,0 +1,52 @@
+define internal void @yydestruct(i8* %ptr) #0 {
+entry:
+  %yyss = bitcast i8* %ptr to i16**
+  %0 = load i16** %yyss, align 8, !tbaa !3
+  %tobool = icmp eq i16* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast i16* %0 to i8*
+  tail call void @Perl_safesysfree(i8* %1) #3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %yyvs = getelementptr inbounds i8* %ptr, i64 8
+  %2 = bitcast i8* %yyvs to %union.YYSTYPE**
+  %3 = load %union.YYSTYPE** %2, align 8, !tbaa !3
+  %tobool2 = icmp eq %union.YYSTYPE* %3, null
+  br i1 %tobool2, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  %4 = bitcast %union.YYSTYPE* %3 to i8*
+  tail call void @Perl_safesysfree(i8* %4) #3
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then3
+  %oldyydebug = getelementptr inbounds i8* %ptr, i64 16
+  %5 = bitcast i8* %oldyydebug to i32*
+  %6 = load i32* %5, align 4, !tbaa !0
+  store i32 %6, i32* @PL_yydebug, align 4, !tbaa !0
+  %oldyynerrs = getelementptr inbounds i8* %ptr, i64 20
+  %7 = bitcast i8* %oldyynerrs to i32*
+  %8 = load i32* %7, align 4, !tbaa !0
+  store i32 %8, i32* @PL_yynerrs, align 4, !tbaa !0
+  %oldyyerrflag = getelementptr inbounds i8* %ptr, i64 24
+  %9 = bitcast i8* %oldyyerrflag to i32*
+  %10 = load i32* %9, align 4, !tbaa !0
+  store i32 %10, i32* @PL_yyerrflag, align 4, !tbaa !0
+  %oldyychar = getelementptr inbounds i8* %ptr, i64 28
+  %11 = bitcast i8* %oldyychar to i32*
+  %12 = load i32* %11, align 4, !tbaa !0
+  store i32 %12, i32* @PL_yychar, align 4, !tbaa !0
+  %oldyyval = getelementptr inbounds i8* %ptr, i64 32
+  %13 = bitcast i8* %oldyyval to i8**
+  %14 = load i8** %13, align 8
+  store i8* %14, i8** getelementptr inbounds (%union.YYSTYPE* @PL_yyval, i64 0, i32 0), align 8
+  %oldyylval = getelementptr inbounds i8* %ptr, i64 40
+  %15 = bitcast i8* %oldyylval to i8**
+  %16 = load i8** %15, align 8
+  store i8* %16, i8** getelementptr inbounds (%union.YYSTYPE* @PL_yylval, i64 0, i32 0), align 8
+  tail call void @Perl_safesysfree(i8* %ptr) #3
+  ret void
+}

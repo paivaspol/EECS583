@@ -1,0 +1,42 @@
+define double @DVdoti(i32 %size, double* %y, i32* %index, double* %x) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = icmp eq double* %y, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i32* %index, null
+  %or.cond23 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq double* %x, null
+  %or.cond24 = or i1 %or.cond23, %cmp5
+  br i1 %or.cond24, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp625 = icmp sgt i32 %size, 0
+  br i1 %cmp625, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str6, i64 0, i64 0), i32 %size, double* %y, i32* %index, double* %x) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %sum.026 = phi double [ %add, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !4
+  %idxprom7 = sext i32 %1 to i64
+  %arrayidx8 = getelementptr inbounds double* %y, i64 %idxprom7
+  %2 = load double* %arrayidx8, align 8, !tbaa !3
+  %arrayidx10 = getelementptr inbounds double* %x, i64 %indvars.iv
+  %3 = load double* %arrayidx10, align 8, !tbaa !3
+  %mul = fmul double %2, %3
+  %add = fadd double %sum.026, %mul
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %sum.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add, %for.body ]
+  ret double %sum.0.lcssa
+}

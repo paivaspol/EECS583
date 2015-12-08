@@ -1,0 +1,32 @@
+define void @GPart_setDefaultFields(%struct._GPart* %gpart) #0 {
+entry:
+  %cmp = icmp eq %struct._GPart* %gpart, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._GPart* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %id = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 0
+  store i32 -1, i32* %id, align 4, !tbaa !3
+  %g = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 1
+  %par = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 7
+  %compidsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 5
+  %1 = bitcast %struct._Graph** %g to i8*
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 20, i32 8, i1 false)
+  %2 = bitcast %struct._GPart** %par to i8*
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 24, i32 8, i1 false)
+  tail call void @IV_setDefaultFields(%struct._IV* %compidsIV) #5
+  %cweightsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 6
+  tail call void @IV_setDefaultFields(%struct._IV* %cweightsIV) #5
+  %vtxMapIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 10
+  tail call void @IV_setDefaultFields(%struct._IV* %vtxMapIV) #5
+  %msglvl = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 11
+  store i32 0, i32* %msglvl, align 4, !tbaa !3
+  %msgFile = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12
+  store %struct._IO_FILE* null, %struct._IO_FILE** %msgFile, align 8, !tbaa !0
+  ret void
+}

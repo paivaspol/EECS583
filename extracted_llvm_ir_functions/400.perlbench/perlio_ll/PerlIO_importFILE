@@ -1,0 +1,59 @@
+define %struct._PerlIO** @PerlIO_importFILE(%struct._IO_FILE* %stdio, i8* %mode) #1 {
+entry:
+  %tobool = icmp eq %struct._IO_FILE* %stdio, null
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %tobool1 = icmp eq i8* %mode, null
+  br i1 %tobool1, label %if.then3, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.then
+  %0 = load i8* %mode, align 1, !tbaa !1
+  %tobool2 = icmp eq i8 %0, 0
+  br i1 %tobool2, label %if.then3, label %if.end18
+
+if.then3:                                         ; preds = %lor.lhs.false, %if.then
+  %call = tail call i32 @fileno(%struct._IO_FILE* %stdio) #9
+  %call4 = tail call i32 @dup(i32 %call) #9
+  %call5 = tail call %struct._IO_FILE* @fdopen(i32 %call4, i8* getelementptr inbounds ([3 x i8]* @.str39, i64 0, i64 0)) #9
+  %tobool6 = icmp eq %struct._IO_FILE* %call5, null
+  br i1 %tobool6, label %if.end, label %if.end16
+
+if.end:                                           ; preds = %if.then3
+  %call8 = tail call %struct._IO_FILE* @fdopen(i32 %call4, i8* getelementptr inbounds ([2 x i8]* @.str40, i64 0, i64 0)) #9
+  %tobool9 = icmp eq %struct._IO_FILE* %call8, null
+  br i1 %tobool9, label %if.end12, label %if.end16
+
+if.end12:                                         ; preds = %if.end
+  %call11 = tail call %struct._IO_FILE* @fdopen(i32 %call4, i8* getelementptr inbounds ([2 x i8]* @.str34, i64 0, i64 0)) #9
+  %tobool13 = icmp eq %struct._IO_FILE* %call11, null
+  br i1 %tobool13, label %if.then14, label %if.end16
+
+if.then14:                                        ; preds = %if.end12
+  %call15 = tail call i32 @close(i32 %call4) #9
+  br label %return
+
+if.end16:                                         ; preds = %if.then3, %if.end, %if.end12
+  %f2.141 = phi %struct._IO_FILE* [ %call11, %if.end12 ], [ %call8, %if.end ], [ %call5, %if.then3 ]
+  %mode.addr.140 = phi i8* [ getelementptr inbounds ([2 x i8]* @.str34, i64 0, i64 0), %if.end12 ], [ getelementptr inbounds ([2 x i8]* @.str40, i64 0, i64 0), %if.end ], [ getelementptr inbounds ([3 x i8]* @.str39, i64 0, i64 0), %if.then3 ]
+  %call17 = tail call i32 @fclose(%struct._IO_FILE* %f2.141) #9
+  br label %if.end18
+
+if.end18:                                         ; preds = %lor.lhs.false, %if.end16
+  %mode.addr.2 = phi i8* [ %mode, %lor.lhs.false ], [ %mode.addr.140, %if.end16 ]
+  %call19 = tail call %struct._PerlIO** @PerlIO_allocate() #10
+  %call20 = tail call %struct._PerlIO** @PerlIO_push(%struct._PerlIO** %call19, %struct._PerlIO_funcs* @PerlIO_stdio, i8* %mode.addr.2, %struct.sv* null) #10
+  %tobool21 = icmp eq %struct._PerlIO** %call20, null
+  br i1 %tobool21, label %return, label %if.then22
+
+if.then22:                                        ; preds = %if.end18
+  %1 = load %struct._PerlIO** %call20, align 8, !tbaa !3
+  %2 = getelementptr inbounds %struct._PerlIO* %1, i64 1, i32 0
+  %stdio.c = bitcast %struct._IO_FILE* %stdio to %struct._PerlIO*
+  store %struct._PerlIO* %stdio.c, %struct._PerlIO** %2, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.then22, %entry, %if.end18, %if.then14
+  %retval.0 = phi %struct._PerlIO** [ null, %if.then14 ], [ %call20, %if.then22 ], [ null, %if.end18 ], [ null, %entry ]
+  ret %struct._PerlIO** %retval.0
+}

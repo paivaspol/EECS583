@@ -1,0 +1,54 @@
+define %struct.op* @Perl_pp_list() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !4
+  %idx.ext = sext i32 %3 to i64
+  %4 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_flags = getelementptr inbounds %struct.op* %4, i64 0, i32 6
+  %5 = load i8* %op_flags, align 1, !tbaa !1
+  %conv = zext i8 %5 to i32
+  %and = and i32 %conv, 3
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %cmp = icmp eq i32 %and, 3
+  %cond = zext i1 %cmp to i32
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = tail call i32 @Perl_dowantarray() #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond5 = phi i32 [ %cond, %cond.true ], [ %call, %cond.false ]
+  %cmp6 = icmp eq i32 %cond5, 1
+  br i1 %cmp6, label %if.end12, label %if.then
+
+if.then:                                          ; preds = %cond.end
+  %add.ptr.sum = add i64 %idx.ext, 1
+  %incdec.ptr8 = getelementptr inbounds %struct.sv** %1, i64 %add.ptr.sum
+  %cmp9 = icmp ugt %struct.sv** %incdec.ptr8, %0
+  br i1 %cmp9, label %if.end, label %if.then11
+
+if.then11:                                        ; preds = %if.then
+  %6 = load %struct.sv** %0, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then11
+  %storemerge = phi %struct.sv* [ %6, %if.then11 ], [ @PL_sv_undef, %if.then ]
+  store %struct.sv* %storemerge, %struct.sv** %incdec.ptr8, align 8, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %cond.end, %if.end
+  %sp.0 = phi %struct.sv** [ %incdec.ptr8, %if.end ], [ %0, %cond.end ]
+  store %struct.sv** %sp.0, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %7 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %7, i64 0, i32 0
+  %8 = load %struct.op** %op_next, align 8, !tbaa !0
+  ret %struct.op* %8
+}

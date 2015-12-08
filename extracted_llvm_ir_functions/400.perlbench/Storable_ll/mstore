@@ -1,0 +1,9 @@
+define %struct.sv* @mstore(%struct.sv* nocapture %sv) #1 {
+entry:
+  %out = alloca %struct.sv*, align 8
+  %call = call fastcc i32 @do_store(%struct._PerlIO** null, %struct.sv* %sv, i32 0, i32 0, %struct.sv** %out) #6
+  %tobool = icmp eq i32 %call, 0
+  %0 = load %struct.sv** %out, align 8, !tbaa !0
+  %retval.0 = select i1 %tobool, %struct.sv* @PL_sv_undef, %struct.sv* %0
+  ret %struct.sv* %retval.0
+}

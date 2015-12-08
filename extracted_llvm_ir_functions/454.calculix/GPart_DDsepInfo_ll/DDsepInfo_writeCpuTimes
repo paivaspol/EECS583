@@ -1,0 +1,58 @@
+define void @DDsepInfo_writeCpuTimes(%struct._DDsepInfo* %info, %struct._IO_FILE* %msgFile) #0 {
+entry:
+  %cmp = icmp eq %struct._DDsepInfo* %info, null
+  %cmp1 = icmp eq %struct._IO_FILE* %msgFile, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str5, i64 0, i64 0), %struct._DDsepInfo* %info, %struct._IO_FILE* %msgFile) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %cpuTotal = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 15
+  %1 = load double* %cpuTotal, align 8, !tbaa !4
+  %cpuDD = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 9
+  %2 = load double* %cpuDD, align 8, !tbaa !4
+  %sub = fsub double %1, %2
+  %cpuSplit = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 14
+  %3 = load double* %cpuSplit, align 8, !tbaa !4
+  %sub2 = fsub double %sub, %3
+  %cpuMap = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 10
+  %4 = load double* %cpuMap, align 8, !tbaa !4
+  %sub3 = fsub double %sub2, %4
+  %cpuBPG = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 11
+  %5 = load double* %cpuBPG, align 8, !tbaa !4
+  %sub4 = fsub double %sub3, %5
+  %cpuBKL = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 12
+  %6 = load double* %cpuBKL, align 8, !tbaa !4
+  %sub5 = fsub double %sub4, %6
+  %cpuSmooth = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 13
+  %7 = load double* %cpuSmooth, align 8, !tbaa !4
+  %sub6 = fsub double %sub5, %7
+  %cmp8 = fcmp ogt double %1, 0.000000e+00
+  br i1 %cmp8, label %if.then9, label %if.end43
+
+if.then9:                                         ; preds = %if.end
+  %mul = fmul double %sub6, 1.000000e+02
+  %div = fdiv double %mul, %1
+  %mul13 = fmul double %3, 1.000000e+02
+  %div15 = fdiv double %mul13, %1
+  %mul18 = fmul double %2, 1.000000e+02
+  %div20 = fdiv double %mul18, %1
+  %mul23 = fmul double %4, 1.000000e+02
+  %div25 = fdiv double %mul23, %1
+  %mul28 = fmul double %5, 1.000000e+02
+  %div30 = fdiv double %mul28, %1
+  %mul33 = fmul double %6, 1.000000e+02
+  %div35 = fdiv double %mul33, %1
+  %mul38 = fmul double %7, 1.000000e+02
+  %div40 = fdiv double %mul38, %1
+  %call42 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([295 x i8]* @.str6, i64 0, i64 0), double %sub6, double %div, double %3, double %div15, double %2, double %div20, double %4, double %div25, double %5, double %div30, double %6, double %div35, double %7, double %div40, double %1, double 1.000000e+02) #4
+  br label %if.end43
+
+if.end43:                                         ; preds = %if.then9, %if.end
+  ret void
+}

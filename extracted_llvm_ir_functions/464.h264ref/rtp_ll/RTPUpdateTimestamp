@@ -1,0 +1,23 @@
+define void @RTPUpdateTimestamp(i32 %tr) #0 {
+entry:
+  %0 = load i32* @RTPUpdateTimestamp.oldtr, align 4, !tbaa !0
+  %cmp = icmp eq i32 %0, -1
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sub = sub nsw i32 %tr, %0
+  %cmp1 = icmp slt i32 %sub, -10
+  %add = add nsw i32 %sub, 256
+  %add.sub = select i1 %cmp1, i32 %add, i32 %sub
+  %mul = mul nsw i32 %add.sub, 1000
+  %1 = load i32* @CurrentRTPTimestamp, align 4, !tbaa !0
+  %add4 = add nsw i32 %1, %mul
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %storemerge8 = phi i32 [ %add4, %if.end ], [ 0, %entry ]
+  %storemerge = phi i32 [ %tr, %if.end ], [ 0, %entry ]
+  store i32 %storemerge8, i32* @CurrentRTPTimestamp, align 4, !tbaa !0
+  store i32 %storemerge, i32* @RTPUpdateTimestamp.oldtr, align 4, !tbaa !0
+  ret void
+}

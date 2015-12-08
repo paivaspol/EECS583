@@ -1,0 +1,186 @@
+define %struct._DSTree* @GPart_RBviaDDsep(%struct._GPart* %gpart, %struct._DDsepInfo* %info) #0 {
+entry:
+  %ierr = alloca i32, align 4
+  %cmp = icmp eq %struct._GPart* %gpart, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nvtx1 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 2
+  %0 = load i32* %nvtx1, align 4, !tbaa !0
+  %cmp2 = icmp slt i32 %0, 1
+  %cmp4 = icmp eq %struct._DDsepInfo* %info, null
+  %or.cond = or i1 %cmp2, %cmp4
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), %struct._GPart* %gpart, %struct._DDsepInfo* %info) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %msglvl5 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 11
+  %2 = load i32* %msglvl5, align 4, !tbaa !0
+  %msgFile6 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12
+  %3 = load %struct._IO_FILE** %msgFile6, align 8, !tbaa !3
+  %par = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 7
+  %4 = load %struct._GPart** %par, align 8, !tbaa !3
+  %cmp7 = icmp eq %struct._GPart* %4, null
+  br i1 %cmp7, label %if.end10, label %if.then8
+
+if.then8:                                         ; preds = %if.end
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call9 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), %struct._GPart* %gpart, %struct._DDsepInfo* %info) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end10:                                         ; preds = %if.end
+  %call11 = call i32* @IVinit(i32 %0, i32 -1) #5
+  %call12 = call %struct._IV* @IV_new() #5
+  call void @IV_init(%struct._IV* %call12, i32 %0, i32* null) #5
+  %call13 = call i32* @IV_entries(%struct._IV* %call12) #5
+  call void @IVfill(i32 %0, i32* %call13, i32 -1) #5
+  %ntreeobj = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 6
+  store i32 0, i32* %ntreeobj, align 4, !tbaa !0
+  %DDoption = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 7
+  %6 = load i32* %DDoption, align 4, !tbaa !0
+  %cmp14 = icmp eq i32 %6, 2
+  br i1 %cmp14, label %if.then15, label %if.end18
+
+if.then15:                                        ; preds = %if.end10
+  %freeze = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 3
+  %7 = load double* %freeze, align 8, !tbaa !4
+  %minweight = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 1
+  %8 = load i32* %minweight, align 4, !tbaa !0
+  %maxweight = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 2
+  %9 = load i32* %maxweight, align 4, !tbaa !0
+  %seed = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 0
+  %10 = load i32* %seed, align 4, !tbaa !0
+  call void @GPart_DDviaFishnet(%struct._GPart* %gpart, double %7, i32 %8, i32 %9, i32 %10) #5
+  %call16 = call %struct._IV* @IV_new() #5
+  call void @IV_init(%struct._IV* %call16, i32 %0, i32* null) #5
+  %compidsIV = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 5
+  call void @IV_copy(%struct._IV* %call16, %struct._IV* %compidsIV) #5
+  call void @IV_fill(%struct._IV* %compidsIV, i32 1) #5
+  %cpuDD = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 9
+  %11 = load double* %cpuDD, align 8, !tbaa !4
+  %add = fadd double %11, 0.000000e+00
+  store double %add, double* %cpuDD, align 8, !tbaa !4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end10, %if.then15
+  %DDmapIV.0 = phi %struct._IV* [ %call16, %if.then15 ], [ null, %if.end10 ]
+  call void @GPart_split(%struct._GPart* %gpart) #5
+  %cpuSplit = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 14
+  %12 = load double* %cpuSplit, align 8, !tbaa !4
+  %add20 = fadd double %12, 0.000000e+00
+  store double %add20, double* %cpuSplit, align 8, !tbaa !4
+  %cmp21 = icmp sgt i32 %2, 2
+  %cmp21.not = xor i1 %cmp21, true
+  %cmp22 = icmp eq %struct._IO_FILE* %3, null
+  %or.cond149 = or i1 %cmp22, %cmp21.not
+  %ncomp27.pre = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 4
+  br i1 %or.cond149, label %if.end26, label %if.then23
+
+if.then23:                                        ; preds = %if.end18
+  %13 = load i32* %ncomp27.pre, align 4, !tbaa !0
+  %call24 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i32 %13) #5
+  %call25 = call i32 @fflush(%struct._IO_FILE* %3) #5
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.end18, %if.then23
+  %14 = load i32* %ncomp27.pre, align 4, !tbaa !0
+  %cmp28 = icmp sgt i32 %14, 0
+  %fch = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 8
+  br i1 %cmp28, label %if.then29, label %if.end56
+
+if.then29:                                        ; preds = %if.end26
+  %child.0151 = load %struct._GPart** %fch, align 8
+  %cmp30152 = icmp eq %struct._GPart* %child.0151, null
+  br i1 %cmp30152, label %if.end56, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.then29
+  %cmp34 = icmp ne %struct._IO_FILE* %3, null
+  %cmp39.not = icmp slt i32 %2, 4
+  %cmp34.not = xor i1 %cmp34, true
+  %brmerge = or i1 %cmp39.not, %cmp34.not
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end54
+  %child.0153 = phi %struct._GPart* [ %child.0151, %for.body.lr.ph ], [ %child.0, %if.end54 ]
+  %15 = load i32* %ntreeobj, align 4, !tbaa !0
+  %inc = add nsw i32 %15, 1
+  store i32 %inc, i32* %ntreeobj, align 4, !tbaa !0
+  %id = getelementptr inbounds %struct._GPart* %child.0153, i64 0, i32 0
+  store i32 %15, i32* %id, align 4, !tbaa !0
+  %brmerge156.demorgan = and i1 %cmp21, %cmp34
+  br i1 %brmerge156.demorgan, label %if.then35, label %if.end54
+
+if.then35:                                        ; preds = %for.body
+  %call37 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([20 x i8]* @.str3, i64 0, i64 0), i32 %15) #5
+  %g = getelementptr inbounds %struct._GPart* %child.0153, i64 0, i32 1
+  %16 = load %struct._Graph** %g, align 8, !tbaa !3
+  %call38 = call i32 @Graph_writeStats(%struct._Graph* %16, %struct._IO_FILE* %3) #5
+  br i1 %brmerge, label %if.end54, label %if.then42
+
+if.then42:                                        ; preds = %if.then35
+  %17 = load %struct._Graph** %g, align 8, !tbaa !3
+  %call44 = call i32 @Graph_writeForHumanEye(%struct._Graph* %17, %struct._IO_FILE* %3) #5
+  %vtxMapIV = getelementptr inbounds %struct._GPart* %child.0153, i64 0, i32 10
+  %call45 = call i32 @IV_size(%struct._IV* %vtxMapIV) #5
+  %cmp46 = icmp sgt i32 %call45, 0
+  br i1 %cmp46, label %if.then47, label %if.end54
+
+if.then47:                                        ; preds = %if.then42
+  %nvtx48 = getelementptr inbounds %struct._GPart* %child.0153, i64 0, i32 2
+  %18 = load i32* %nvtx48, align 4, !tbaa !0
+  %call49 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([15 x i8]* @.str4, i64 0, i64 0), i32 %18) #5
+  %call51 = call i32 @IV_fp80(%struct._IV* %vtxMapIV, %struct._IO_FILE* %3, i32 80, i32* %ierr) #5
+  br label %if.end54
+
+if.end54:                                         ; preds = %for.body, %if.then35, %if.then47, %if.then42
+  %call55 = call i32 @fflush(%struct._IO_FILE* %3) #5
+  %sib = getelementptr inbounds %struct._GPart* %child.0153, i64 0, i32 9
+  %child.0 = load %struct._GPart** %sib, align 8
+  %cmp30 = icmp eq %struct._GPart* %child.0, null
+  br i1 %cmp30, label %if.end56, label %for.body
+
+if.end56:                                         ; preds = %if.end26, %if.then29, %if.end54
+  %19 = load %struct._GPart** %fch, align 8, !tbaa !3
+  %cmp58 = icmp eq %struct._GPart* %19, null
+  br i1 %cmp58, label %if.else65, label %while.body
+
+while.body:                                       ; preds = %if.end56, %while.body
+  %20 = phi %struct._GPart* [ %.pr, %while.body ], [ %19, %if.end56 ]
+  %sib62 = getelementptr inbounds %struct._GPart* %20, i64 0, i32 9
+  %21 = load %struct._GPart** %sib62, align 8, !tbaa !3
+  store %struct._GPart* %21, %struct._GPart** %fch, align 8, !tbaa !3
+  call fastcc void @visit(%struct._GPart* %20, i32* %call13, i32* %call11, %struct._IV* %DDmapIV.0, %struct._DDsepInfo* %info) #7
+  %g64 = getelementptr inbounds %struct._GPart* %20, i64 0, i32 1
+  %22 = load %struct._Graph** %g64, align 8, !tbaa !3
+  call void @Graph_free(%struct._Graph* %22) #5
+  call void @GPart_free(%struct._GPart* %20) #5
+  %.pr = load %struct._GPart** %fch, align 8, !tbaa !3
+  %cmp61 = icmp eq %struct._GPart* %.pr, null
+  br i1 %cmp61, label %if.end69, label %while.body
+
+if.else65:                                        ; preds = %if.end56
+  %23 = load i32* %ntreeobj, align 4, !tbaa !0
+  %inc67 = add nsw i32 %23, 1
+  store i32 %inc67, i32* %ntreeobj, align 4, !tbaa !0
+  %id68 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 0
+  store i32 %23, i32* %id68, align 4, !tbaa !0
+  call fastcc void @visit(%struct._GPart* %gpart, i32* %call13, i32* %call11, %struct._IV* %DDmapIV.0, %struct._DDsepInfo* %info) #7
+  br label %if.end69
+
+if.end69:                                         ; preds = %while.body, %if.else65
+  %call70 = call %struct._Tree* @Tree_new() #5
+  %24 = load i32* %ntreeobj, align 4, !tbaa !0
+  call void @Tree_init2(%struct._Tree* %call70, i32 %24, i32* %call11) #5
+  %call72 = call %struct._DSTree* @DSTree_new() #5
+  call void @DSTree_init2(%struct._DSTree* %call72, %struct._Tree* %call70, %struct._IV* %call12) #5
+  call void @IVfree(i32* %call11) #5
+  %cpuTotal = getelementptr inbounds %struct._DDsepInfo* %info, i64 0, i32 15
+  store double 0.000000e+00, double* %cpuTotal, align 8, !tbaa !4
+  ret %struct._DSTree* %call72
+}

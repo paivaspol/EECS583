@@ -1,0 +1,235 @@
+define %struct._DV* @ETree_backwardOps(%struct._ETree* %etree, i32 %type, i32 %symflag, i32* %vwghts, %struct._IVL* %symbfacIVL) #0 {
+entry:
+  %size = alloca i32, align 4
+  %indices = alloca i32*, align 8
+  %cmp = icmp eq %struct._ETree* %etree, null
+  %cmp1 = icmp eq %struct._IVL* %symbfacIVL, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str10, i64 0, i64 0), %struct._ETree* %etree, i32* %vwghts, %struct._IVL* %symbfacIVL) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nfront2 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
+  %1 = load i32* %nfront2, align 4, !tbaa !3
+  %vtxToFrontIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 5
+  %2 = load %struct._IV** %vtxToFrontIV, align 8, !tbaa !0
+  %call3 = call i32* @IV_entries(%struct._IV* %2) #4
+  %call4 = call i32* @IVinit(i32 %1, i32 -1) #4
+  %call5 = call i32* @IVinit(i32 %1, i32 -1) #4
+  %call6 = call i32* @IVinit(i32 %1, i32 0) #4
+  %call7 = call %struct._DV* @DV_new() #4
+  call void @DV_init(%struct._DV* %call7, i32 %1, double* null) #4
+  %call8 = call double* @DV_entries(%struct._DV* %call7) #4
+  call void @DV_fill(%struct._DV* %call7, double 0.000000e+00) #4
+  %cmp9233 = icmp sgt i32 %1, 0
+  br i1 %cmp9233, label %for.body.lr.ph, label %for.end118
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %cmp105 = icmp eq i32 %symflag, 2
+  %3 = icmp ult i32 %symflag, 2
+  %cmp22 = icmp eq i32* %vwghts, null
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc116, %for.body.lr.ph
+  %indvars.iv239 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next240, %for.inc116 ]
+  %opsKbndK.0236 = phi double [ undef, %for.body.lr.ph ], [ %opsKbndK.1.lcssa, %for.inc116 ]
+  %opsKK.0235 = phi double [ undef, %for.body.lr.ph ], [ %opsKK.1.lcssa, %for.inc116 ]
+  %4 = trunc i64 %indvars.iv239 to i32
+  %call10 = call double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %4) #6
+  %arrayidx = getelementptr inbounds double* %call8, i64 %indvars.iv239
+  %5 = load double* %arrayidx, align 8, !tbaa !4
+  %add = fadd double %call10, %5
+  store double %add, double* %arrayidx, align 8, !tbaa !4
+  %call11 = call i32 @ETree_frontSize(%struct._ETree* %etree, i32 %4) #4
+  %call12 = call i32 @ETree_frontBoundarySize(%struct._ETree* %etree, i32 %4) #4
+  call void @IVL_listAndSize(%struct._IVL* %symbfacIVL, i32 %4, i32* %size, i32** %indices) #4
+  %6 = load i32* %size, align 4, !tbaa !3
+  %cmp14222 = icmp sgt i32 %6, 0
+  br i1 %cmp14222, label %for.body15.lr.ph, label %for.end.thread
+
+for.end.thread:                                   ; preds = %for.body
+  call void @IVqsortUp(i32 0, i32* %call4) #4
+  br label %for.inc116
+
+for.body15.lr.ph:                                 ; preds = %for.body
+  %7 = load i32** %indices, align 8, !tbaa !0
+  br label %for.body15
+
+for.body15:                                       ; preds = %for.body15.lr.ph, %for.inc
+  %8 = phi i32 [ %6, %for.body15.lr.ph ], [ %14, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.body15.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %nadj.0223 = phi i32 [ 0, %for.body15.lr.ph ], [ %nadj.2, %for.inc ]
+  %arrayidx17 = getelementptr inbounds i32* %7, i64 %indvars.iv
+  %9 = load i32* %arrayidx17, align 4, !tbaa !3
+  %idxprom18 = sext i32 %9 to i64
+  %arrayidx19 = getelementptr inbounds i32* %call3, i64 %idxprom18
+  %10 = load i32* %arrayidx19, align 4, !tbaa !3
+  %cmp20 = icmp eq i32 %10, %4
+  br i1 %cmp20, label %for.inc, label %if.then21
+
+if.then21:                                        ; preds = %for.body15
+  br i1 %cmp22, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %if.then21
+  %arrayidx24 = getelementptr inbounds i32* %vwghts, i64 %idxprom18
+  %11 = load i32* %arrayidx24, align 4, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then21, %cond.false
+  %cond = phi i32 [ %11, %cond.false ], [ 1, %if.then21 ]
+  %idxprom25 = sext i32 %10 to i64
+  %arrayidx26 = getelementptr inbounds i32* %call5, i64 %idxprom25
+  %12 = load i32* %arrayidx26, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %12, %4
+  %arrayidx37.pre = getelementptr inbounds i32* %call6, i64 %idxprom25
+  br i1 %cmp27, label %if.end35, label %if.then28
+
+if.then28:                                        ; preds = %cond.end
+  store i32 0, i32* %arrayidx37.pre, align 4, !tbaa !3
+  store i32 %4, i32* %arrayidx26, align 4, !tbaa !3
+  %inc = add nsw i32 %nadj.0223, 1
+  %idxprom33 = sext i32 %nadj.0223 to i64
+  %arrayidx34 = getelementptr inbounds i32* %call4, i64 %idxprom33
+  store i32 %10, i32* %arrayidx34, align 4, !tbaa !3
+  br label %if.end35
+
+if.end35:                                         ; preds = %cond.end, %if.then28
+  %nadj.1 = phi i32 [ %inc, %if.then28 ], [ %nadj.0223, %cond.end ]
+  %13 = load i32* %arrayidx37.pre, align 4, !tbaa !3
+  %add38 = add nsw i32 %13, %cond
+  store i32 %add38, i32* %arrayidx37.pre, align 4, !tbaa !3
+  %.pre = load i32* %size, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body15, %if.end35
+  %14 = phi i32 [ %.pre, %if.end35 ], [ %8, %for.body15 ]
+  %nadj.2 = phi i32 [ %nadj.1, %if.end35 ], [ %nadj.0223, %for.body15 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %15 = trunc i64 %indvars.iv.next to i32
+  %cmp14 = icmp slt i32 %15, %14
+  br i1 %cmp14, label %for.body15, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  call void @IVqsortUp(i32 %nadj.2, i32* %call4) #4
+  %cmp42225 = icmp sgt i32 %nadj.2, 0
+  br i1 %cmp42225, label %for.body43.lr.ph, label %for.inc116
+
+for.body43.lr.ph:                                 ; preds = %for.end
+  %mul = shl nsw i32 %call11, 1
+  %mul72 = shl nsw i32 %call11, 3
+  %mul82 = shl i32 %call11, 2
+  br label %for.body43
+
+for.body43:                                       ; preds = %for.inc113, %for.body43.lr.ph
+  %indvars.iv237 = phi i64 [ 0, %for.body43.lr.ph ], [ %indvars.iv.next238, %for.inc113 ]
+  %opsKbndK.1229 = phi double [ %opsKbndK.0236, %for.body43.lr.ph ], [ %opsKbndK.2206, %for.inc113 ]
+  %opsKK.1228 = phi double [ %opsKK.0235, %for.body43.lr.ph ], [ %opsKK.2205, %for.inc113 ]
+  %bndwghtJ.0227 = phi i32 [ %call12, %for.body43.lr.ph ], [ %sub, %for.inc113 ]
+  %arrayidx45 = getelementptr inbounds i32* %call4, i64 %indvars.iv237
+  %16 = load i32* %arrayidx45, align 4, !tbaa !3
+  %idxprom46 = sext i32 %16 to i64
+  %arrayidx47 = getelementptr inbounds i32* %call6, i64 %idxprom46
+  %17 = load i32* %arrayidx47, align 4, !tbaa !3
+  %sub = sub nsw i32 %bndwghtJ.0227, %17
+  switch i32 %type, label %if.end98 [
+    i32 1, label %if.then49
+    i32 2, label %if.then71
+  ]
+
+if.then49:                                        ; preds = %for.body43
+  %mul50 = mul nsw i32 %17, %mul
+  %mul51 = mul nsw i32 %mul50, %sub
+  %conv = sitofp i32 %mul51 to double
+  switch i32 %symflag, label %if.end98.thread [
+    i32 0, label %if.then54
+    i32 2, label %if.end98.thread211
+  ]
+
+if.then54:                                        ; preds = %if.then49
+  %mul55 = mul nsw i32 %17, %call11
+  %add56 = add nsw i32 %17, 1
+  %mul57 = mul nsw i32 %mul55, %add56
+  %conv58 = sitofp i32 %mul57 to double
+  br label %if.end98.thread
+
+if.then71:                                        ; preds = %for.body43
+  %mul73 = mul nsw i32 %17, %mul72
+  %mul74 = mul nsw i32 %mul73, %sub
+  %conv75 = sitofp i32 %mul74 to double
+  br i1 %3, label %if.then81, label %if.else87
+
+if.then81:                                        ; preds = %if.then71
+  %mul83 = mul nsw i32 %mul82, %17
+  %add84 = add nsw i32 %17, 1
+  %mul85 = mul nsw i32 %mul83, %add84
+  %conv86 = sitofp i32 %mul85 to double
+  br label %if.end98.thread
+
+if.else87:                                        ; preds = %if.then71
+  br i1 %cmp105, label %if.end98.thread211, label %if.end98.thread
+
+if.end98.thread:                                  ; preds = %if.then49, %if.else87, %if.then81, %if.then54
+  %opsKK.2.ph = phi double [ %opsKK.1228, %if.then49 ], [ %opsKK.1228, %if.else87 ], [ %conv86, %if.then81 ], [ %conv58, %if.then54 ]
+  %opsKbndK.2.ph = phi double [ %conv, %if.then49 ], [ %conv75, %if.else87 ], [ %conv75, %if.then81 ], [ %conv, %if.then54 ]
+  %add99200 = fadd double %opsKK.2.ph, %opsKbndK.2.ph
+  %arrayidx103202 = getelementptr inbounds double* %call8, i64 %idxprom46
+  %18 = load double* %arrayidx103202, align 8, !tbaa !4
+  %add104203 = fadd double %18, %add99200
+  br label %for.inc113
+
+if.end98.thread211:                               ; preds = %if.then49, %if.else87
+  %mul50.sink = phi i32 [ %mul73, %if.else87 ], [ %mul50, %if.then49 ]
+  %opsKbndK.2.ph210 = phi double [ %conv75, %if.else87 ], [ %conv, %if.then49 ]
+  %mul64 = mul nsw i32 %mul50.sink, %17
+  %conv65 = sitofp i32 %mul64 to double
+  %add99212 = fadd double %opsKbndK.2.ph210, %conv65
+  %arrayidx103214 = getelementptr inbounds double* %call8, i64 %idxprom46
+  %19 = load double* %arrayidx103214, align 8, !tbaa !4
+  %add104215 = fadd double %19, %add99212
+  br label %if.then107
+
+if.end98:                                         ; preds = %for.body43
+  %add99 = fadd double %opsKK.1228, %opsKbndK.1229
+  %arrayidx103 = getelementptr inbounds double* %call8, i64 %idxprom46
+  %20 = load double* %arrayidx103, align 8, !tbaa !4
+  %add104 = fadd double %add99, %20
+  br i1 %cmp105, label %if.then107, label %for.inc113
+
+if.then107:                                       ; preds = %if.end98.thread211, %if.end98
+  %add104221 = phi double [ %add104215, %if.end98.thread211 ], [ %add104, %if.end98 ]
+  %arrayidx103220 = phi double* [ %arrayidx103214, %if.end98.thread211 ], [ %arrayidx103, %if.end98 ]
+  %opsKbndK.2218 = phi double [ %opsKbndK.2.ph210, %if.end98.thread211 ], [ %opsKbndK.1229, %if.end98 ]
+  %opsKK.2217 = phi double [ %conv65, %if.end98.thread211 ], [ %opsKK.1228, %if.end98 ]
+  %add111 = fadd double %add104221, %opsKbndK.2218
+  br label %for.inc113
+
+for.inc113:                                       ; preds = %if.end98.thread, %if.end98, %if.then107
+  %arrayidx103207 = phi double* [ %arrayidx103220, %if.then107 ], [ %arrayidx103, %if.end98 ], [ %arrayidx103202, %if.end98.thread ]
+  %opsKbndK.2206 = phi double [ %opsKbndK.2218, %if.then107 ], [ %opsKbndK.1229, %if.end98 ], [ %opsKbndK.2.ph, %if.end98.thread ]
+  %opsKK.2205 = phi double [ %opsKK.2217, %if.then107 ], [ %opsKK.1228, %if.end98 ], [ %opsKK.2.ph, %if.end98.thread ]
+  %storemerge = phi double [ %add111, %if.then107 ], [ %add104, %if.end98 ], [ %add104203, %if.end98.thread ]
+  store double %storemerge, double* %arrayidx103207, align 8, !tbaa !4
+  %indvars.iv.next238 = add i64 %indvars.iv237, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next238 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nadj.2
+  br i1 %exitcond, label %for.inc116, label %for.body43
+
+for.inc116:                                       ; preds = %for.inc113, %for.end.thread, %for.end
+  %opsKbndK.1.lcssa = phi double [ %opsKbndK.0236, %for.end ], [ %opsKbndK.0236, %for.end.thread ], [ %opsKbndK.2206, %for.inc113 ]
+  %opsKK.1.lcssa = phi double [ %opsKK.0235, %for.end ], [ %opsKK.0235, %for.end.thread ], [ %opsKK.2205, %for.inc113 ]
+  %indvars.iv.next240 = add i64 %indvars.iv239, 1
+  %lftr.wideiv241 = trunc i64 %indvars.iv.next240 to i32
+  %exitcond242 = icmp eq i32 %lftr.wideiv241, %1
+  br i1 %exitcond242, label %for.end118, label %for.body
+
+for.end118:                                       ; preds = %for.inc116, %if.end
+  call void @IVfree(i32* %call4) #4
+  call void @IVfree(i32* %call5) #4
+  call void @IVfree(i32* %call6) #4
+  ret %struct._DV* %call7
+}

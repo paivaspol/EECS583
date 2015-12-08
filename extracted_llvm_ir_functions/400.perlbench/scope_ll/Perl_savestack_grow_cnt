@@ -1,0 +1,14 @@
+define void @Perl_savestack_grow_cnt(i32 %need) #0 {
+entry:
+  %0 = load i32* @PL_savestack_ix, align 4, !tbaa !4
+  %add = add nsw i32 %0, %need
+  store i32 %add, i32* @PL_savestack_max, align 4, !tbaa !4
+  %1 = load %union.any** @PL_savestack, align 8, !tbaa !0
+  %2 = bitcast %union.any* %1 to i8*
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call i8* @Perl_safesysrealloc(i8* %2, i64 %mul) #5
+  %3 = bitcast i8* %call to %union.any*
+  store %union.any* %3, %union.any** @PL_savestack, align 8, !tbaa !0
+  ret void
+}

@@ -1,0 +1,153 @@
+define void @gtp_print_vertices(i32 %n, i32* nocapture %movei, i32* nocapture %movej) #0 {
+entry:
+  %ri = alloca i32, align 4
+  %rj = alloca i32, align 4
+  %b.067.i = add i32 %n, -1
+  %cmp68.i = icmp sgt i32 %b.067.i, 0
+  br i1 %cmp68.i, label %for.cond1.preheader.lr.ph.i, label %for.cond.preheader
+
+for.cond1.preheader.lr.ph.i:                      ; preds = %entry
+  %0 = sext i32 %b.067.i to i64
+  br label %for.body3.lr.ph.i
+
+for.cond.loopexit.i:                              ; preds = %for.inc.i
+  %indvars.iv.next65 = add i32 %indvars.iv64, -1
+  %cmp.i = icmp sgt i32 %indvars.iv.next65, 0
+  %indvars.iv.next73.i = add i64 %indvars.iv72.i, -1
+  br i1 %cmp.i, label %for.body3.lr.ph.i, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %for.cond.loopexit.i, %entry
+  %cmp62 = icmp sgt i32 %n, 0
+  br i1 %cmp62, label %for.body, label %for.end
+
+for.body3.lr.ph.i:                                ; preds = %for.cond.loopexit.i, %for.cond1.preheader.lr.ph.i
+  %indvars.iv64 = phi i32 [ %indvars.iv.next65, %for.cond.loopexit.i ], [ %b.067.i, %for.cond1.preheader.lr.ph.i ]
+  %indvars.iv72.i = phi i64 [ %indvars.iv.next73.i, %for.cond.loopexit.i ], [ %0, %for.cond1.preheader.lr.ph.i ]
+  %arrayidx5.i = getelementptr inbounds i32* %movei, i64 %indvars.iv72.i
+  %arrayidx26.i = getelementptr inbounds i32* %movej, i64 %indvars.iv72.i
+  br label %for.body3.i
+
+for.body3.i:                                      ; preds = %for.inc.i, %for.body3.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body3.lr.ph.i ], [ %indvars.iv.next.i, %for.inc.i ]
+  %arrayidx.i = getelementptr inbounds i32* %movei, i64 %indvars.iv.i
+  %1 = load i32* %arrayidx.i, align 4, !tbaa !2
+  %2 = load i32* %arrayidx5.i, align 4, !tbaa !2
+  %cmp6.i = icmp sgt i32 %1, %2
+  br i1 %cmp6.i, label %for.body3.if.then_crit_edge.i, label %lor.lhs.false.i
+
+for.body3.if.then_crit_edge.i:                    ; preds = %for.body3.i
+  %arrayidx28.pre.i = getelementptr inbounds i32* %movej, i64 %indvars.iv.i
+  br label %if.then.i
+
+lor.lhs.false.i:                                  ; preds = %for.body3.i
+  %cmp11.i = icmp eq i32 %1, %2
+  br i1 %cmp11.i, label %land.lhs.true.i, label %for.inc.i
+
+land.lhs.true.i:                                  ; preds = %lor.lhs.false.i
+  %arrayidx13.i = getelementptr inbounds i32* %movej, i64 %indvars.iv.i
+  %3 = load i32* %arrayidx13.i, align 4, !tbaa !2
+  %4 = load i32* %arrayidx26.i, align 4, !tbaa !2
+  %cmp16.i = icmp sgt i32 %3, %4
+  br i1 %cmp16.i, label %if.then.i, label %for.inc.i
+
+if.then.i:                                        ; preds = %land.lhs.true.i, %for.body3.if.then_crit_edge.i
+  %arrayidx28.pre-phi.i = phi i32* [ %arrayidx28.pre.i, %for.body3.if.then_crit_edge.i ], [ %arrayidx13.i, %land.lhs.true.i ]
+  store i32 %1, i32* %arrayidx5.i, align 4, !tbaa !2
+  store i32 %2, i32* %arrayidx.i, align 4, !tbaa !2
+  %5 = load i32* %arrayidx26.i, align 4, !tbaa !2
+  %6 = load i32* %arrayidx28.pre-phi.i, align 4, !tbaa !2
+  store i32 %6, i32* %arrayidx26.i, align 4, !tbaa !2
+  store i32 %5, i32* %arrayidx28.pre-phi.i, align 4, !tbaa !2
+  br label %for.inc.i
+
+for.inc.i:                                        ; preds = %if.then.i, %land.lhs.true.i, %lor.lhs.false.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
+  %lftr.wideiv66 = trunc i64 %indvars.iv.next.i to i32
+  %exitcond67 = icmp eq i32 %lftr.wideiv66, %indvars.iv64
+  br i1 %exitcond67, label %for.cond.loopexit.i, label %for.body3.i
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
+  %7 = trunc i64 %indvars.iv to i32
+  %cmp1 = icmp sgt i32 %7, 0
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.body
+  call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([2 x i8]* @.str11, i64 0, i64 0)) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %for.body
+  %arrayidx = getelementptr inbounds i32* %movei, i64 %indvars.iv
+  %8 = load i32* %arrayidx, align 4, !tbaa !2
+  %cmp2 = icmp eq i32 %8, -1
+  br i1 %cmp2, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %if.end
+  %arrayidx4 = getelementptr inbounds i32* %movej, i64 %indvars.iv
+  %9 = load i32* %arrayidx4, align 4, !tbaa !2
+  %cmp5 = icmp eq i32 %9, -1
+  br i1 %cmp5, label %if.then6, label %if.then21
+
+if.then6:                                         ; preds = %land.lhs.true
+  call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0)) #6
+  br label %for.inc
+
+if.else:                                          ; preds = %if.end
+  %cmp9 = icmp slt i32 %8, 0
+  br i1 %cmp9, label %if.then21, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else
+  %10 = load i32* @gtp_boardsize, align 4, !tbaa !2
+  %cmp12 = icmp slt i32 %8, %10
+  br i1 %cmp12, label %lor.lhs.false13, label %if.then21
+
+lor.lhs.false13:                                  ; preds = %lor.lhs.false
+  %arrayidx15 = getelementptr inbounds i32* %movej, i64 %indvars.iv
+  %11 = load i32* %arrayidx15, align 4, !tbaa !2
+  %cmp16 = icmp sgt i32 %11, -1
+  %cmp20 = icmp slt i32 %11, %10
+  %or.cond = and i1 %cmp16, %cmp20
+  br i1 %or.cond, label %if.else22, label %if.then21
+
+if.then21:                                        ; preds = %land.lhs.true, %lor.lhs.false13, %lor.lhs.false, %if.else
+  call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([3 x i8]* @.str22, i64 0, i64 0)) #6
+  br label %for.inc
+
+if.else22:                                        ; preds = %lor.lhs.false13
+  %12 = load void (i32, i32, i32*, i32*)** @vertex_transform_output_hook, align 8, !tbaa !3
+  %cmp23 = icmp eq void (i32, i32, i32*, i32*)* %12, null
+  br i1 %cmp23, label %if.else29, label %if.then24
+
+if.then24:                                        ; preds = %if.else22
+  call void %12(i32 %8, i32 %11, i32* %ri, i32* %rj) #4
+  %.pre = load i32* %rj, align 4, !tbaa !2
+  %.pre68 = load i32* @gtp_boardsize, align 4, !tbaa !2
+  %.pre69 = load i32* %ri, align 4, !tbaa !2
+  br label %if.end34
+
+if.else29:                                        ; preds = %if.else22
+  store i32 %8, i32* %ri, align 4, !tbaa !2
+  store i32 %11, i32* %rj, align 4, !tbaa !2
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.else29, %if.then24
+  %13 = phi i32 [ %8, %if.else29 ], [ %.pre69, %if.then24 ]
+  %14 = phi i32 [ %10, %if.else29 ], [ %.pre68, %if.then24 ]
+  %15 = phi i32 [ %11, %if.else29 ], [ %.pre, %if.then24 ]
+  %add = add nsw i32 %15, 65
+  %cmp35 = icmp sgt i32 %15, 7
+  %conv = zext i1 %cmp35 to i32
+  %add36 = add nsw i32 %add, %conv
+  %sub = sub nsw i32 %14, %13
+  call void (i8*, ...)* @gtp_printf(i8* getelementptr inbounds ([5 x i8]* @.str23, i64 0, i64 0), i32 %add36, i32 %sub) #6
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then6, %if.end34, %if.then21
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  ret void
+}

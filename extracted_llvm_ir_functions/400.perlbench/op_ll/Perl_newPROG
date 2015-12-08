@@ -1,0 +1,148 @@
+define void @Perl_newPROG(%struct.op* %o) #0 {
+entry:
+  %0 = load volatile i32* @PL_in_eval, align 4, !tbaa !0
+  %tobool = icmp eq i32 %0, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.op** @PL_eval_root, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.op* %1, null
+  br i1 %tobool1, label %if.end, label %if.end49
+
+if.end:                                           ; preds = %if.then
+  %2 = load volatile i32* @PL_in_eval, align 4, !tbaa !0
+  %and = shl i32 %2, 5
+  %3 = and i32 %and, 128
+  %call = tail call %struct.op* @Perl_newUNOP(i32 312, i32 %3, %struct.op* %o) #8
+  store %struct.op* %call, %struct.op** @PL_eval_root, align 8, !tbaa !3
+  %call4 = tail call %struct.op* @Perl_linklist(%struct.op* %call) #8
+  store %struct.op* %call4, %struct.op** @PL_eval_start, align 8, !tbaa !3
+  %4 = load %struct.op** @PL_eval_root, align 8, !tbaa !3
+  %op_private = getelementptr inbounds %struct.op* %4, i64 0, i32 7
+  %5 = load i8* %op_private, align 1, !tbaa !1
+  %or = or i8 %5, 64
+  store i8 %or, i8* %op_private, align 1, !tbaa !1
+  %6 = load %struct.op** @PL_eval_root, align 8, !tbaa !3
+  %op_targ = getelementptr inbounds %struct.op* %6, i64 0, i32 3
+  store i64 1, i64* %op_targ, align 8, !tbaa !5
+  %op_next = getelementptr inbounds %struct.op* %6, i64 0, i32 0
+  store %struct.op* null, %struct.op** %op_next, align 8, !tbaa !3
+  %7 = load void (%struct.op*)** @PL_peepp, align 8, !tbaa !3
+  %8 = load %struct.op** @PL_eval_start, align 8, !tbaa !3
+  tail call void %7(%struct.op* %8) #7
+  br label %if.end49
+
+if.else:                                          ; preds = %entry
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %9 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %9, 1
+  br i1 %cmp, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.else
+  store %struct.av* null, %struct.av** @PL_comppad_name, align 8, !tbaa !3
+  store %struct.cv* null, %struct.cv** @PL_compcv, align 8, !tbaa !3
+  %10 = bitcast %struct.op* %o to i8*
+  tail call void @Perl_safesysfree(i8* %10) #7
+  br label %if.end49
+
+if.end9:                                          ; preds = %if.else
+  %call10 = tail call %struct.op* @Perl_scalarvoid(%struct.op* %o) #8
+  %tobool.i = icmp eq %struct.op* %call10, null
+  br i1 %tobool.i, label %Perl_sawparens.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %if.end9
+  %op_flags.i = getelementptr inbounds %struct.op* %call10, i64 0, i32 6
+  %11 = load i8* %op_flags.i, align 1, !tbaa !1
+  %or.i = or i8 %11, 8
+  store i8 %or.i, i8* %op_flags.i, align 1, !tbaa !1
+  br label %Perl_sawparens.exit
+
+Perl_sawparens.exit:                              ; preds = %if.end9, %if.then.i
+  %call12 = tail call %struct.op* @Perl_scope(%struct.op* %call10) #8
+  store %struct.op* %call12, %struct.op** @PL_main_root, align 8, !tbaa !3
+  store volatile %struct.cop* @PL_compiling, %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %op_next13 = getelementptr inbounds %struct.op* %call12, i64 0, i32 0
+  %12 = load %struct.op** %op_next13, align 8, !tbaa !3
+  %tobool14 = icmp eq %struct.op* %12, null
+  br i1 %tobool14, label %cond.false, label %cond.end
+
+cond.false:                                       ; preds = %Perl_sawparens.exit
+  %call16 = tail call %struct.op* @Perl_linklist(%struct.op* %call12) #8
+  br label %cond.end
+
+cond.end:                                         ; preds = %Perl_sawparens.exit, %cond.false
+  %cond17 = phi %struct.op* [ %call16, %cond.false ], [ %12, %Perl_sawparens.exit ]
+  store %struct.op* %cond17, %struct.op** @PL_main_start, align 8, !tbaa !3
+  %13 = load %struct.op** @PL_main_root, align 8, !tbaa !3
+  %op_private18 = getelementptr inbounds %struct.op* %13, i64 0, i32 7
+  %14 = load i8* %op_private18, align 1, !tbaa !1
+  %or20 = or i8 %14, 64
+  store i8 %or20, i8* %op_private18, align 1, !tbaa !1
+  %15 = load %struct.op** @PL_main_root, align 8, !tbaa !3
+  %op_targ22 = getelementptr inbounds %struct.op* %15, i64 0, i32 3
+  store i64 1, i64* %op_targ22, align 8, !tbaa !5
+  %op_next23 = getelementptr inbounds %struct.op* %15, i64 0, i32 0
+  store %struct.op* null, %struct.op** %op_next23, align 8, !tbaa !3
+  %16 = load void (%struct.op*)** @PL_peepp, align 8, !tbaa !3
+  %17 = load %struct.op** @PL_main_start, align 8, !tbaa !3
+  tail call void %16(%struct.op* %17) #7
+  store %struct.cv* null, %struct.cv** @PL_compcv, align 8, !tbaa !3
+  %18 = load i32* @PL_perldb, align 4, !tbaa !0
+  %tobool24 = icmp eq i32 %18, 0
+  %and25 = and i32 %18, 8
+  %tobool26 = icmp eq i32 %and25, 0
+  %or.cond = or i1 %tobool24, %tobool26
+  br i1 %or.cond, label %if.end49, label %if.then27
+
+if.then27:                                        ; preds = %cond.end
+  %call28 = tail call %struct.cv* @Perl_get_cv(i8* getelementptr inbounds ([14 x i8]* @.str28, i64 0, i64 0), i32 0) #7
+  %tobool29 = icmp eq %struct.cv* %call28, null
+  br i1 %tobool29, label %if.end49, label %if.then30
+
+if.then30:                                        ; preds = %if.then27
+  %19 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  %20 = load i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %incdec.ptr = getelementptr inbounds i32* %20, i64 1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !3
+  %21 = load i32** @PL_markstack_max, align 8, !tbaa !3
+  %cmp31 = icmp eq i32* %incdec.ptr, %21
+  br i1 %cmp31, label %if.then33, label %if.end34
+
+if.then33:                                        ; preds = %if.then30
+  tail call void @Perl_markstack_grow() #7
+  %.pre = load i32** @PL_markstack_ptr, align 8, !tbaa !3
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.then33, %if.then30
+  %22 = phi i32* [ %.pre, %if.then33 ], [ %incdec.ptr, %if.then30 ]
+  %23 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %19 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %23 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div59 = lshr exact i64 %sub.ptr.sub, 3
+  %conv35 = trunc i64 %sub.ptr.div59 to i32
+  store i32 %conv35, i32* %22, align 4, !tbaa !0
+  %24 = load %struct.sv*** @PL_stack_max, align 8, !tbaa !3
+  %sub.ptr.lhs.cast36 = ptrtoint %struct.sv** %24 to i64
+  %sub.ptr.sub38 = sub i64 %sub.ptr.lhs.cast36, %sub.ptr.lhs.cast
+  %cmp40 = icmp slt i64 %sub.ptr.sub38, 8
+  br i1 %cmp40, label %if.then42, label %if.end44
+
+if.then42:                                        ; preds = %if.end34
+  %call43 = tail call %struct.sv** @Perl_stack_grow(%struct.sv** %19, %struct.sv** %19, i32 1) #7
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.then42, %if.end34
+  %sp.0 = phi %struct.sv** [ %call43, %if.then42 ], [ %19, %if.end34 ]
+  %25 = load %struct.gv** getelementptr inbounds (%struct.cop* @PL_compiling, i64 0, i32 10), align 8, !tbaa !3
+  %26 = bitcast %struct.gv* %25 to %struct.sv*
+  %incdec.ptr45 = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* %26, %struct.sv** %incdec.ptr45, align 8, !tbaa !3
+  store %struct.sv** %incdec.ptr45, %struct.sv*** @PL_stack_sp, align 8, !tbaa !3
+  %27 = bitcast %struct.cv* %call28 to %struct.sv*
+  %call46 = tail call i32 @Perl_call_sv(%struct.sv* %27, i32 2) #7
+  br label %if.end49
+
+if.end49:                                         ; preds = %if.then, %if.then27, %cond.end, %if.end44, %if.then8, %if.end
+  ret void
+}

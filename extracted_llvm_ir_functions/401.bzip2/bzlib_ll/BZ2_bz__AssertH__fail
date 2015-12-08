@@ -1,15 +1,16 @@
 define void @BZ2_bz__AssertH__fail(i32 %errcode) #0 {
-  %1 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %2 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([443 x i8]* @.str, i64 0, i64 0), i32 %errcode, i8* getelementptr inbounds ([19 x i8]* @.str5, i64 0, i64 0)) #10
-  %3 = icmp eq i32 %errcode, 1007
-  br i1 %3, label %4, label %7
+entry:
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([269 x i8]* @.str, i64 0, i64 0), i32 %errcode, i8* getelementptr inbounds ([19 x i8]* @.str5, i64 0, i64 0)) #11
+  %cmp = icmp eq i32 %errcode, 1007
+  br i1 %cmp, label %if.then, label %if.end
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([1057 x i8]* @.str1, i64 0, i64 0), i64 1056, i64 1, %struct.__sFILE* %5)
-  br label %7
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([1057 x i8]* @.str1, i64 0, i64 0), i64 1056, i64 1, %struct._IO_FILE* %1)
+  br label %if.end
 
-; <label>:7                                       ; preds = %4, %0
-  tail call void @exit(i32 3) #11
+if.end:                                           ; preds = %if.then, %entry
+  tail call void @exit(i32 0) #12
   unreachable
 }

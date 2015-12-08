@@ -1,0 +1,96 @@
+define i32 @ETree_writeToFile(%struct._ETree* %etree, i8* %fn) #0 {
+entry:
+  %cmp = icmp eq %struct._ETree* %etree, null
+  %cmp1 = icmp eq i8* %fn, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str9, i64 0, i64 0), %struct._ETree* %etree, i8* %fn) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call2 = tail call i64 @strlen(i8* %fn) #6
+  %conv = trunc i64 %call2 to i32
+  %cmp5 = icmp sgt i32 %conv, 7
+  br i1 %cmp5, label %if.then7, label %if.else49
+
+if.then7:                                         ; preds = %if.end
+  %sub = shl i64 %call2, 32
+  %sext = add i64 %sub, -30064771072
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds i8* %fn, i64 %idxprom
+  %call8 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([8 x i8]* @.str36, i64 0, i64 0)) #6
+  %cmp9 = icmp eq i32 %call8, 0
+  br i1 %cmp9, label %if.then11, label %if.else20
+
+if.then11:                                        ; preds = %if.then7
+  %call12 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([3 x i8]* @.str10, i64 0, i64 0)) #5
+  %cmp13 = icmp eq %struct._IO_FILE* %call12, null
+  br i1 %cmp13, label %if.then15, label %if.else
+
+if.then15:                                        ; preds = %if.then11
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([60 x i8]* @.str11, i64 0, i64 0), %struct._ETree* %etree, i8* %fn, i8* %fn) #5
+  br label %if.end59
+
+if.else:                                          ; preds = %if.then11
+  %call17 = tail call i32 @ETree_writeToBinaryFile(%struct._ETree* %etree, %struct._IO_FILE* %call12) #7
+  %call18 = tail call i32 @fclose(%struct._IO_FILE* %call12) #5
+  br label %if.end59
+
+if.else20:                                        ; preds = %if.then7
+  %call24 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([8 x i8]* @.str35, i64 0, i64 0)) #6
+  %cmp25 = icmp eq i32 %call24, 0
+  br i1 %cmp25, label %if.then27, label %if.else37
+
+if.then27:                                        ; preds = %if.else20
+  %call28 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0)) #5
+  %cmp29 = icmp eq %struct._IO_FILE* %call28, null
+  br i1 %cmp29, label %if.then31, label %if.else33
+
+if.then31:                                        ; preds = %if.then27
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([60 x i8]* @.str11, i64 0, i64 0), %struct._ETree* %etree, i8* %fn, i8* %fn) #5
+  br label %if.end59
+
+if.else33:                                        ; preds = %if.then27
+  %call34 = tail call i32 @ETree_writeToFormattedFile(%struct._ETree* %etree, %struct._IO_FILE* %call28) #7
+  %call35 = tail call i32 @fclose(%struct._IO_FILE* %call28) #5
+  br label %if.end59
+
+if.else37:                                        ; preds = %if.else20
+  %call38 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #5
+  %cmp39 = icmp eq %struct._IO_FILE* %call38, null
+  br i1 %cmp39, label %if.then41, label %if.else43
+
+if.then41:                                        ; preds = %if.else37
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call42 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([60 x i8]* @.str11, i64 0, i64 0), %struct._ETree* %etree, i8* %fn, i8* %fn) #5
+  br label %if.end59
+
+if.else43:                                        ; preds = %if.else37
+  %call44 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %etree, %struct._IO_FILE* %call38) #7
+  %call45 = tail call i32 @fclose(%struct._IO_FILE* %call38) #5
+  br label %if.end59
+
+if.else49:                                        ; preds = %if.end
+  %call50 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #5
+  %cmp51 = icmp eq %struct._IO_FILE* %call50, null
+  br i1 %cmp51, label %if.then53, label %if.else55
+
+if.then53:                                        ; preds = %if.else49
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call54 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([60 x i8]* @.str11, i64 0, i64 0), %struct._ETree* %etree, i8* %fn, i8* %fn) #5
+  br label %if.end59
+
+if.else55:                                        ; preds = %if.else49
+  %call56 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %etree, %struct._IO_FILE* %call50) #7
+  %call57 = tail call i32 @fclose(%struct._IO_FILE* %call50) #5
+  br label %if.end59
+
+if.end59:                                         ; preds = %if.then53, %if.else55, %if.else, %if.then15, %if.then41, %if.else43, %if.then31, %if.else33
+  %rc.0 = phi i32 [ 0, %if.then15 ], [ %call17, %if.else ], [ 0, %if.then31 ], [ %call34, %if.else33 ], [ 0, %if.then41 ], [ %call44, %if.else43 ], [ 0, %if.then53 ], [ %call56, %if.else55 ]
+  ret i32 %rc.0
+}

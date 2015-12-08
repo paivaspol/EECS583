@@ -1,0 +1,21 @@
+define %struct.hv* @Perl_newHV() #0 {
+entry:
+  %call = tail call %struct.sv* @Perl_newSV(i64 0) #4
+  %0 = bitcast %struct.sv* %call to %struct.hv*
+  %call1 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %call, i32 11) #4
+  %sv_any = bitcast %struct.sv* %call to %struct.xpvhv**
+  %1 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %2 = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %3 = load i32* %2, align 4, !tbaa !4
+  %and3 = and i32 %3, -637927425
+  %or = or i32 %and3, 536870912
+  store i32 %or, i32* %2, align 4, !tbaa !4
+  %xhv_max = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 2
+  store i64 7, i64* %xhv_max, align 8, !tbaa !3
+  %xhv_fill = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 1
+  store i64 0, i64* %xhv_fill, align 8, !tbaa !3
+  %xhv_pmroot = getelementptr inbounds %struct.xpvhv* %1, i64 0, i32 9
+  store %struct.pmop* null, %struct.pmop** %xhv_pmroot, align 8, !tbaa !0
+  %call5 = tail call i32 @Perl_hv_iterinit(%struct.hv* %0) #5
+  ret %struct.hv* %0
+}

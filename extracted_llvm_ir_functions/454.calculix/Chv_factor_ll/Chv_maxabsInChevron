@@ -1,0 +1,135 @@
+define void @Chv_maxabsInChevron(%struct._Chv* %chv, i32 %ichv, double* %pdiagmaxabs, double* %prowmaxabs, double* %pcolmaxabs) #0 {
+entry:
+  %loc = alloca i32, align 4
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp slt i32 %ichv, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nD3 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 1
+  %0 = load i32* %nD3, align 4, !tbaa !3
+  %cmp4 = icmp sle i32 %0, %ichv
+  %cmp6 = icmp eq double* %pdiagmaxabs, null
+  %or.cond115 = or i1 %cmp4, %cmp6
+  %cmp8 = icmp eq double* %prowmaxabs, null
+  %or.cond116 = or i1 %or.cond115, %cmp8
+  %cmp10 = icmp eq double* %pcolmaxabs, null
+  %or.cond117 = or i1 %or.cond116, %cmp10
+  br i1 %or.cond117, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([51 x i8]* @.str11, i64 0, i64 0), i64 50, i64 1, %struct._IO_FILE* %1)
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #7
+  %call11 = call double* @Chv_diagLocation(%struct._Chv* %chv, i32 %ichv) #7
+  %3 = load i32* %nD, align 4, !tbaa !3
+  %4 = load i32* %nU, align 4, !tbaa !3
+  %sub = xor i32 %ichv, -1
+  %sub12 = add i32 %3, %sub
+  %add = add i32 %sub12, %4
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %5 = load i32* %type, align 4, !tbaa !3
+  switch i32 %5, label %if.else63 [
+    i32 1, label %if.then14
+    i32 2, label %if.then35
+  ]
+
+if.then14:                                        ; preds = %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %6 = load i32* %symflag, align 4, !tbaa !3
+  switch i32 %6, label %if.else27 [
+    i32 0, label %if.then16
+    i32 2, label %if.then21
+  ]
+
+if.then16:                                        ; preds = %if.then14
+  %7 = load double* %call11, align 8, !tbaa !4
+  %call17 = call double @fabs(double %7) #9
+  store double %call17, double* %pdiagmaxabs, align 8, !tbaa !4
+  %add.ptr = getelementptr inbounds double* %call11, i64 1
+  %call18 = call double @DVmaxabs(i32 %add, double* %add.ptr, i32* %loc) #7
+  store double %call18, double* %prowmaxabs, align 8, !tbaa !4
+  store double %call18, double* %pcolmaxabs, align 8, !tbaa !4
+  br label %if.end67
+
+if.then21:                                        ; preds = %if.then14
+  %8 = load double* %call11, align 8, !tbaa !4
+  %call22 = call double @fabs(double %8) #9
+  store double %call22, double* %pdiagmaxabs, align 8, !tbaa !4
+  %add.ptr23 = getelementptr inbounds double* %call11, i64 1
+  %call24 = call double @DVmaxabs(i32 %add, double* %add.ptr23, i32* %loc) #7
+  store double %call24, double* %prowmaxabs, align 8, !tbaa !4
+  %idx.ext = sext i32 %add to i64
+  %idx.neg = sub i64 0, %idx.ext
+  %add.ptr25 = getelementptr inbounds double* %call11, i64 %idx.neg
+  %call26 = call double @DVmaxabs(i32 %add, double* %add.ptr25, i32* %loc) #7
+  store double %call26, double* %pcolmaxabs, align 8, !tbaa !4
+  br label %if.end67
+
+if.else27:                                        ; preds = %if.then14
+  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call29 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([107 x i8]* @.str12, i64 0, i64 0), i32 %6) #7
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.then35:                                        ; preds = %if.end
+  %symflag36 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %10 = load i32* %symflag36, align 4, !tbaa !3
+  switch i32 %10, label %if.else58 [
+    i32 0, label %if.then41
+    i32 1, label %if.then41
+    i32 2, label %if.then49
+  ]
+
+if.then41:                                        ; preds = %if.then35, %if.then35
+  %11 = load double* %call11, align 8, !tbaa !4
+  %add.ptr42 = getelementptr inbounds double* %call11, i64 1
+  %12 = load double* %add.ptr42, align 8, !tbaa !4
+  %call43 = call double @Zabs(double %11, double %12) #7
+  store double %call43, double* %pdiagmaxabs, align 8, !tbaa !4
+  %add.ptr44 = getelementptr inbounds double* %call11, i64 2
+  %call45 = call double @ZVmaxabs(i32 %add, double* %add.ptr44) #7
+  store double %call45, double* %prowmaxabs, align 8, !tbaa !4
+  store double %call45, double* %pcolmaxabs, align 8, !tbaa !4
+  br label %if.end67
+
+if.then49:                                        ; preds = %if.then35
+  %13 = load double* %call11, align 8, !tbaa !4
+  %add.ptr50 = getelementptr inbounds double* %call11, i64 1
+  %14 = load double* %add.ptr50, align 8, !tbaa !4
+  %call51 = call double @Zabs(double %13, double %14) #7
+  store double %call51, double* %pdiagmaxabs, align 8, !tbaa !4
+  %add.ptr52 = getelementptr inbounds double* %call11, i64 2
+  %call53 = call double @ZVmaxabs(i32 %add, double* %add.ptr52) #7
+  store double %call53, double* %prowmaxabs, align 8, !tbaa !4
+  %mul = shl nsw i32 %add, 1
+  %idx.ext54 = sext i32 %mul to i64
+  %idx.neg55 = sub i64 0, %idx.ext54
+  %add.ptr56 = getelementptr inbounds double* %call11, i64 %idx.neg55
+  %call57 = call double @ZVmaxabs(i32 %add, double* %add.ptr56) #7
+  store double %call57, double* %pcolmaxabs, align 8, !tbaa !4
+  br label %if.end67
+
+if.else58:                                        ; preds = %if.then35
+  %15 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call60 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([110 x i8]* @.str13, i64 0, i64 0), i32 %10) #7
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.else63:                                        ; preds = %if.end
+  %16 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call65 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %16, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0), i32 %5) #7
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end67:                                         ; preds = %if.then49, %if.then41, %if.then16, %if.then21
+  ret void
+}

@@ -1,0 +1,20 @@
+define noalias %struct.frame_store* @alloc_frame_store() #1 {
+entry:
+  %call = tail call noalias i8* @calloc(i64 1, i64 64) #6
+  %0 = bitcast i8* %call to %struct.frame_store*
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([21 x i8]* @.str6, i64 0, i64 0)) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %is_output = getelementptr inbounds i8* %call, i64 32
+  %1 = bitcast i8* %is_output to i32*
+  store i32 0, i32* %1, align 4, !tbaa !3
+  %frame = getelementptr inbounds i8* %call, i64 40
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 4, i1 false)
+  call void @llvm.memset.p0i8.i64(i8* %frame, i8 0, i64 24, i32 8, i1 false)
+  ret %struct.frame_store* %0
+}

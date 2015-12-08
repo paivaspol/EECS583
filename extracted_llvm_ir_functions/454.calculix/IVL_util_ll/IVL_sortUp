@@ -1,0 +1,43 @@
+define void @IVL_sortUp(%struct._IVL* %ivl) #0 {
+entry:
+  %size = alloca i32, align 4
+  %ent = alloca i32*, align 8
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %nlist1 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
+  %0 = load i32* %nlist1, align 4, !tbaa !3
+  %cmp2 = icmp slt i32 %0, 0
+  br i1 %cmp2, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %lor.lhs.false
+  %cmp312 = icmp sgt i32 %0, 0
+  br i1 %cmp312, label %for.body, label %for.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([44 x i8]* @.str5, i64 0, i64 0), %struct._IVL* %ivl) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %ilist.013 = phi i32 [ %inc, %for.inc ], [ 0, %for.cond.preheader ]
+  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.013, i32* %size, i32** %ent) #4
+  %2 = load i32* %size, align 4, !tbaa !3
+  %cmp4 = icmp sgt i32 %2, 0
+  br i1 %cmp4, label %if.then5, label %for.inc
+
+if.then5:                                         ; preds = %for.body
+  %3 = load i32** %ent, align 8, !tbaa !0
+  call void @IVqsortUp(i32 %2, i32* %3) #4
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then5
+  %inc = add nsw i32 %ilist.013, 1
+  %exitcond = icmp eq i32 %inc, %0
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  ret void
+}

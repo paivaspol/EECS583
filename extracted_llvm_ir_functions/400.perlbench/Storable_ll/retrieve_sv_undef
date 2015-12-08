@@ -1,0 +1,43 @@
+define internal %struct.sv* @retrieve_sv_undef(%struct.stcxt* nocapture %cxt, i8* %cname) #1 {
+entry:
+  %where_is_undef = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 5
+  %0 = load i64* %where_is_undef, align 8, !tbaa !4
+  %cmp = icmp eq i64 %0, -1
+  %tagnum = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 9
+  %1 = load i64* %tagnum, align 8, !tbaa !4
+  br i1 %cmp, label %if.then, label %if.end3
+
+if.then:                                          ; preds = %entry
+  store i64 %1, i64* %where_is_undef, align 8, !tbaa !4
+  br label %if.end3
+
+if.end3:                                          ; preds = %entry, %if.then
+  %aseen = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 4
+  %2 = load %struct.av** %aseen, align 8, !tbaa !0
+  %tagnum4 = getelementptr inbounds %struct.stcxt* %cxt, i64 0, i32 9
+  %inc = add nsw i64 %1, 1
+  store i64 %inc, i64* %tagnum4, align 8, !tbaa !4
+  %conv = trunc i64 %1 to i32
+  %call = tail call %struct.sv** @Perl_av_store(%struct.av* %2, i32 %conv, %struct.sv* @PL_sv_undef) #7
+  %cmp5 = icmp eq %struct.sv** %call, null
+  br i1 %cmp5, label %return, label %if.end8
+
+if.end8:                                          ; preds = %if.end3
+  %tobool9 = icmp eq i8* %cname, null
+  br i1 %tobool9, label %return, label %if.then10
+
+if.then10:                                        ; preds = %if.end8
+  %call11 = tail call %struct.hv* @Perl_gv_stashpv(i8* %cname, i32 1) #7
+  %call12 = tail call %struct.sv* @Perl_newRV_noinc(%struct.sv* @PL_sv_undef) #7
+  %call13 = tail call %struct.sv* @Perl_sv_bless(%struct.sv* %call12, %struct.hv* %call11) #7
+  %sv_any = getelementptr inbounds %struct.sv* %call12, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xrv_rv = bitcast i8* %3 to %struct.sv**
+  store %struct.sv* null, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %call12) #7
+  br label %return
+
+return:                                           ; preds = %if.then10, %if.end8, %if.end3
+  %retval.0 = phi %struct.sv* [ null, %if.end3 ], [ @PL_sv_undef, %if.end8 ], [ @PL_sv_undef, %if.then10 ]
+  ret %struct.sv* %retval.0
+}

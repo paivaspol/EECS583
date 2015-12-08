@@ -1,0 +1,39 @@
+define void @SeqfileLineParameters(%struct.ReadSeqVars* nocapture %V, i32* nocapture %ret_bpl, i32* nocapture %ret_rpl) #0 {
+entry:
+  %rpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 9
+  %0 = load i32* %rpl, align 4, !tbaa !0
+  %cmp = icmp sgt i32 %0, 0
+  br i1 %cmp, label %land.lhs.true, label %if.else
+
+land.lhs.true:                                    ; preds = %entry
+  %maxrpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 11
+  %1 = load i32* %maxrpl, align 4, !tbaa !0
+  %cmp2 = icmp eq i32 %1, %0
+  br i1 %cmp2, label %land.lhs.true3, label %if.else
+
+land.lhs.true3:                                   ; preds = %land.lhs.true
+  %bpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 12
+  %2 = load i32* %bpl, align 4, !tbaa !0
+  %cmp4 = icmp sgt i32 %2, 0
+  br i1 %cmp4, label %land.lhs.true5, label %if.else
+
+land.lhs.true5:                                   ; preds = %land.lhs.true3
+  %maxbpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 14
+  %3 = load i32* %maxbpl, align 4, !tbaa !0
+  %cmp7 = icmp eq i32 %3, %2
+  br i1 %cmp7, label %if.then, label %if.else
+
+if.then:                                          ; preds = %land.lhs.true5
+  store i32 %2, i32* %ret_bpl, align 4, !tbaa !0
+  %4 = load i32* %rpl, align 4, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %land.lhs.true5, %land.lhs.true3, %land.lhs.true, %entry
+  store i32 0, i32* %ret_bpl, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %storemerge = phi i32 [ 0, %if.else ], [ %4, %if.then ]
+  store i32 %storemerge, i32* %ret_rpl, align 4, !tbaa !0
+  ret void
+}

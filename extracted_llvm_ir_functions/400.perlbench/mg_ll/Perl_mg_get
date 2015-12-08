@@ -1,0 +1,143 @@
+define i32 @Perl_mg_get(%struct.sv* %sv) #0 {
+entry:
+  %call = tail call i32 @Perl_save_alloc(i32 16, i32 0) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 2048
+  store %struct.sv* %sv, %struct.sv** @PL_Sv, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %sv_refcnt = getelementptr inbounds %struct.sv* %sv, i64 0, i32 1
+  %1 = load i32* %sv_refcnt, align 4, !tbaa !3
+  %inc = add i32 %1, 1
+  store i32 %inc, i32* %sv_refcnt, align 4, !tbaa !3
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %call2 = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %sv) #7
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.end
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and5 = and i32 %2, -2049
+  store i32 %and5, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %land.end, %if.then
+  tail call fastcc void @S_save_magic(i32 %call, %struct.sv* %sv) #8
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %3, i64 40
+  %4 = bitcast i8* %xmg_magic to %struct.magic**
+  %5 = load %struct.magic** %4, align 8, !tbaa !0
+  %idx.ext = sext i32 %call to i64
+  %add.ptr.sum = add i64 %idx.ext, 8
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %land.lhs.true34, %if.end
+  %6 = phi i8* [ %3, %if.end ], [ %18, %land.lhs.true34 ]
+  %cur.0.ph = phi %struct.magic* [ %5, %if.end ], [ %cur.0.mg.1, %land.lhs.true34 ]
+  %mg.0.ph = phi %struct.magic* [ %5, %if.end ], [ %mg.1., %land.lhs.true34 ]
+  %head.0.ph = phi %struct.magic* [ %5, %if.end ], [ %head.1, %land.lhs.true34 ]
+  %newmg.0.ph = phi %struct.magic* [ %5, %if.end ], [ %21, %land.lhs.true34 ]
+  %have_new.0.ph = phi i32 [ 0, %if.end ], [ %have_new.1., %land.lhs.true34 ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer, %if.end26
+  %7 = phi i8* [ %18, %if.end26 ], [ %6, %while.cond.outer ]
+  %mg.0 = phi %struct.magic* [ %mg.1, %if.end26 ], [ %mg.0.ph, %while.cond.outer ]
+  %head.0 = phi %struct.magic* [ %head.1, %if.end26 ], [ %head.0.ph, %while.cond.outer ]
+  %have_new.0 = phi i32 [ %have_new.1, %if.end26 ], [ %have_new.0.ph, %while.cond.outer ]
+  %tobool6 = icmp eq %struct.magic* %mg.0, null
+  br i1 %tobool6, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond
+  %mg_virtual = getelementptr inbounds %struct.magic* %mg.0, i64 0, i32 1
+  %8 = load %struct.mgvtbl** %mg_virtual, align 8, !tbaa !0
+  %mg_flags = getelementptr inbounds %struct.magic* %mg.0, i64 0, i32 4
+  %9 = load i8* %mg_flags, align 1, !tbaa !1
+  %and7 = and i8 %9, 4
+  %tobool8 = icmp ne i8 %and7, 0
+  %tobool9 = icmp eq %struct.mgvtbl* %8, null
+  %or.cond = or i1 %tobool8, %tobool9
+  br i1 %or.cond, label %if.end26, label %land.lhs.true10
+
+land.lhs.true10:                                  ; preds = %while.body
+  %svt_get = getelementptr inbounds %struct.mgvtbl* %8, i64 0, i32 0
+  %10 = load i32 (%struct.sv*, %struct.magic*)** %svt_get, align 8, !tbaa !0
+  %tobool11 = icmp eq i32 (%struct.sv*, %struct.magic*)* %10, null
+  br i1 %tobool11, label %if.end26, label %if.then12
+
+if.then12:                                        ; preds = %land.lhs.true10
+  %call14 = tail call i32 %10(%struct.sv* %sv, %struct.magic* %mg.0) #7
+  %11 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic16 = getelementptr inbounds i8* %11, i64 40
+  %12 = bitcast i8* %xmg_magic16 to %struct.magic**
+  %13 = load %struct.magic** %12, align 8, !tbaa !0
+  %tobool17 = icmp eq %struct.magic* %13, null
+  br i1 %tobool17, label %while.end, label %if.end19
+
+if.end19:                                         ; preds = %if.then12
+  %14 = load i8* %mg_flags, align 1, !tbaa !1
+  %and22 = and i8 %14, 4
+  %tobool23 = icmp eq i8 %and22, 0
+  br i1 %tobool23, label %if.end26, label %if.then24
+
+if.then24:                                        ; preds = %if.end19
+  %15 = load %union.any** @PL_savestack, align 8, !tbaa !0
+  %16 = bitcast %union.any* %15 to i8*
+  %mgs_flags = getelementptr inbounds i8* %16, i64 %add.ptr.sum
+  %17 = bitcast i8* %mgs_flags to i32*
+  store i32 0, i32* %17, align 4, !tbaa !3
+  br label %if.end26
+
+if.end26:                                         ; preds = %while.body, %if.end19, %land.lhs.true10, %if.then24
+  %18 = phi i8* [ %7, %while.body ], [ %11, %if.end19 ], [ %7, %land.lhs.true10 ], [ %11, %if.then24 ]
+  %mg_moremagic = getelementptr inbounds %struct.magic* %mg.0, i64 0, i32 0
+  %19 = load %struct.magic** %mg_moremagic, align 8, !tbaa !0
+  %tobool27 = icmp ne i32 %have_new.0, 0
+  %cmp = icmp eq %struct.magic* %19, %head.0
+  %or.cond82 = and i1 %tobool27, %cmp
+  %mg.1 = select i1 %or.cond82, %struct.magic* %cur.0.ph, %struct.magic* %19
+  %head.1 = select i1 %or.cond82, %struct.magic* %newmg.0.ph, %struct.magic* %head.0
+  %have_new.1 = select i1 %or.cond82, i32 0, i32 %have_new.0
+  %tobool33 = icmp eq i32 %have_new.1, 0
+  br i1 %tobool33, label %land.lhs.true34, label %while.cond
+
+land.lhs.true34:                                  ; preds = %if.end26
+  %xmg_magic36 = getelementptr inbounds i8* %18, i64 40
+  %20 = bitcast i8* %xmg_magic36 to %struct.magic**
+  %21 = load %struct.magic** %20, align 8, !tbaa !0
+  %cmp37 = icmp eq %struct.magic* %21, %head.1
+  %cur.0.mg.1 = select i1 %cmp37, %struct.magic* %cur.0.ph, %struct.magic* %mg.1
+  %mg.1. = select i1 %cmp37, %struct.magic* %mg.1, %struct.magic* %21
+  %22 = zext i1 %cmp37 to i32
+  %have_new.1. = xor i32 %22, 1
+  br label %while.cond.outer
+
+while.end:                                        ; preds = %if.then12, %while.cond
+  %23 = inttoptr i64 %idx.ext to i8*
+  tail call void @restore_magic(i8* %23) #8
+  %sv_refcnt42 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 1
+  %24 = load i32* %sv_refcnt42, align 4, !tbaa !3
+  %cmp43 = icmp eq i32 %24, 1
+  br i1 %cmp43, label %if.then45, label %if.end56
+
+if.then45:                                        ; preds = %while.end
+  %25 = load i32* %sv_flags, align 4, !tbaa !3
+  %and47 = and i32 %25, 1223753727
+  store i32 %and47, i32* %sv_flags, align 4, !tbaa !3
+  %and49 = and i32 %25, 2097152
+  %tobool50 = icmp eq i32 %and49, 0
+  br i1 %tobool50, label %if.end56, label %land.rhs51
+
+land.rhs51:                                       ; preds = %if.then45
+  %call52 = tail call i32 @Perl_sv_backoff(%struct.sv* %sv) #7
+  br label %if.end56
+
+if.end56:                                         ; preds = %land.rhs51, %if.then45, %while.end
+  ret i32 0
+}

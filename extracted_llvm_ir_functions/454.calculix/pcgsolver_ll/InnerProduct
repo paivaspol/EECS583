@@ -1,0 +1,24 @@
+define void @InnerProduct(double* nocapture %a, double* nocapture %b, i32 %n, double* nocapture %Sum) #0 {
+entry:
+  store double 0.000000e+00, double* %Sum, align 8, !tbaa !3
+  %cmp7 = icmp sgt i32 %n, 0
+  br i1 %cmp7, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %0 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds double* %a, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !3
+  %arrayidx2 = getelementptr inbounds double* %b, i64 %indvars.iv
+  %2 = load double* %arrayidx2, align 8, !tbaa !3
+  %mul = fmul double %1, %2
+  %add = fadd double %0, %mul
+  store double %add, double* %Sum, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void
+}

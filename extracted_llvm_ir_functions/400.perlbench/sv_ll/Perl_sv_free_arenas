@@ -1,0 +1,317 @@
+define void @Perl_sv_free_arenas() #0 {
+entry:
+  %0 = load %struct.sv** @PL_sv_arenaroot, align 8, !tbaa !0
+  %tobool174 = icmp eq %struct.sv* %0, null
+  br i1 %tobool174, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.cond.backedge
+  %sva.0175 = phi %struct.sv* [ %svanext.0.lcssa, %for.cond.backedge ], [ %0, %entry ]
+  %sv_any = getelementptr inbounds %struct.sv* %sva.0175, i64 0, i32 0
+  %svanext.0.in169 = load i8** %sv_any, align 8
+  %svanext.0170 = bitcast i8* %svanext.0.in169 to %struct.sv*
+  %tobool1171 = icmp eq i8* %svanext.0.in169, null
+  br i1 %tobool1171, label %while.end, label %land.rhs
+
+land.rhs:                                         ; preds = %for.body, %while.body
+  %svanext.0173 = phi %struct.sv* [ %svanext.0, %while.body ], [ %svanext.0170, %for.body ]
+  %svanext.0.in172 = phi i8* [ %svanext.0.in, %while.body ], [ %svanext.0.in169, %for.body ]
+  %sv_flags = getelementptr inbounds i8* %svanext.0.in172, i64 12
+  %1 = bitcast i8* %sv_flags to i32*
+  %2 = load i32* %1, align 4, !tbaa !3
+  %and = and i32 %2, 1048576
+  %tobool2 = icmp eq i32 %and, 0
+  br i1 %tobool2, label %while.end, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %sv_any3 = bitcast i8* %svanext.0.in172 to i8**
+  %svanext.0.in = load i8** %sv_any3, align 8
+  %svanext.0 = bitcast i8* %svanext.0.in to %struct.sv*
+  %tobool1 = icmp eq i8* %svanext.0.in, null
+  br i1 %tobool1, label %while.end, label %land.rhs
+
+while.end:                                        ; preds = %while.body, %land.rhs, %for.body
+  %svanext.0.lcssa = phi %struct.sv* [ %svanext.0170, %for.body ], [ %svanext.0173, %land.rhs ], [ %svanext.0, %while.body ]
+  %sv_flags4 = getelementptr inbounds %struct.sv* %sva.0175, i64 0, i32 2
+  %3 = load i32* %sv_flags4, align 4, !tbaa !3
+  %and5 = and i32 %3, 1048576
+  %tobool6 = icmp eq i32 %and5, 0
+  br i1 %tobool6, label %if.then, label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %while.end, %if.then
+  %tobool = icmp eq %struct.sv* %svanext.0.lcssa, null
+  br i1 %tobool, label %for.end, label %for.body
+
+if.then:                                          ; preds = %while.end
+  %4 = bitcast %struct.sv* %sva.0175 to i8*
+  tail call void @Perl_safesysfree(i8* %4) #8
+  br label %for.cond.backedge
+
+for.end:                                          ; preds = %for.cond.backedge, %entry
+  %5 = load %struct.xpv** @PL_xiv_arenaroot, align 8, !tbaa !0
+  %tobool8167 = icmp eq %struct.xpv* %5, null
+  br i1 %tobool8167, label %for.end11, label %for.body9
+
+for.body9:                                        ; preds = %for.end, %for.body9
+  %arena.0168 = phi %struct.xpv* [ %7, %for.body9 ], [ %5, %for.end ]
+  %xpv_pv = getelementptr inbounds %struct.xpv* %arena.0168, i64 0, i32 0
+  %6 = load i8** %xpv_pv, align 8, !tbaa !0
+  %7 = bitcast i8* %6 to %struct.xpv*
+  %8 = bitcast %struct.xpv* %arena.0168 to i8*
+  tail call void @Perl_safesysfree(i8* %8) #8
+  %tobool8 = icmp eq i8* %6, null
+  br i1 %tobool8, label %for.end11, label %for.body9
+
+for.end11:                                        ; preds = %for.body9, %for.end
+  store %struct.xpv* null, %struct.xpv** @PL_xiv_arenaroot, align 8, !tbaa !0
+  store i64* null, i64** @PL_xiv_root, align 8, !tbaa !0
+  %9 = load %struct.xpv** @PL_xnv_arenaroot, align 8, !tbaa !0
+  %tobool13165 = icmp eq %struct.xpv* %9, null
+  br i1 %tobool13165, label %for.end17, label %for.body14
+
+for.body14:                                       ; preds = %for.end11, %for.body14
+  %arena.1166 = phi %struct.xpv* [ %11, %for.body14 ], [ %9, %for.end11 ]
+  %xpv_pv15 = getelementptr inbounds %struct.xpv* %arena.1166, i64 0, i32 0
+  %10 = load i8** %xpv_pv15, align 8, !tbaa !0
+  %11 = bitcast i8* %10 to %struct.xpv*
+  %12 = bitcast %struct.xpv* %arena.1166 to i8*
+  tail call void @Perl_safesysfree(i8* %12) #8
+  %tobool13 = icmp eq i8* %10, null
+  br i1 %tobool13, label %for.end17, label %for.body14
+
+for.end17:                                        ; preds = %for.body14, %for.end11
+  store %struct.xpv* null, %struct.xpv** @PL_xnv_arenaroot, align 8, !tbaa !0
+  store double* null, double** @PL_xnv_root, align 8, !tbaa !0
+  %13 = load %struct.xpv** @PL_xrv_arenaroot, align 8, !tbaa !0
+  %tobool19163 = icmp eq %struct.xpv* %13, null
+  br i1 %tobool19163, label %for.end23, label %for.body20
+
+for.body20:                                       ; preds = %for.end17, %for.body20
+  %arena.2164 = phi %struct.xpv* [ %15, %for.body20 ], [ %13, %for.end17 ]
+  %xpv_pv21 = getelementptr inbounds %struct.xpv* %arena.2164, i64 0, i32 0
+  %14 = load i8** %xpv_pv21, align 8, !tbaa !0
+  %15 = bitcast i8* %14 to %struct.xpv*
+  %16 = bitcast %struct.xpv* %arena.2164 to i8*
+  tail call void @Perl_safesysfree(i8* %16) #8
+  %tobool19 = icmp eq i8* %14, null
+  br i1 %tobool19, label %for.end23, label %for.body20
+
+for.end23:                                        ; preds = %for.body20, %for.end17
+  store %struct.xpv* null, %struct.xpv** @PL_xrv_arenaroot, align 8, !tbaa !0
+  store %struct.xrv* null, %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  %17 = load %struct.xpv** @PL_xpv_arenaroot, align 8, !tbaa !0
+  %tobool25161 = icmp eq %struct.xpv* %17, null
+  br i1 %tobool25161, label %for.end29, label %for.body26
+
+for.body26:                                       ; preds = %for.end23, %for.body26
+  %arena.3162 = phi %struct.xpv* [ %19, %for.body26 ], [ %17, %for.end23 ]
+  %xpv_pv27 = getelementptr inbounds %struct.xpv* %arena.3162, i64 0, i32 0
+  %18 = load i8** %xpv_pv27, align 8, !tbaa !0
+  %19 = bitcast i8* %18 to %struct.xpv*
+  %20 = bitcast %struct.xpv* %arena.3162 to i8*
+  tail call void @Perl_safesysfree(i8* %20) #8
+  %tobool25 = icmp eq i8* %18, null
+  br i1 %tobool25, label %for.end29, label %for.body26
+
+for.end29:                                        ; preds = %for.body26, %for.end23
+  store %struct.xpv* null, %struct.xpv** @PL_xpv_arenaroot, align 8, !tbaa !0
+  store %struct.xpv* null, %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  %21 = load %struct.xpviv** @PL_xpviv_arenaroot, align 8, !tbaa !0
+  %tobool31159 = icmp eq %struct.xpviv* %21, null
+  br i1 %tobool31159, label %for.end35, label %for.body32.lr.ph
+
+for.body32.lr.ph:                                 ; preds = %for.end29
+  %22 = bitcast %struct.xpviv* %21 to %struct.xpv*
+  br label %for.body32
+
+for.body32:                                       ; preds = %for.body32.lr.ph, %for.body32
+  %arena.4160 = phi %struct.xpv* [ %22, %for.body32.lr.ph ], [ %24, %for.body32 ]
+  %xpv_pv33 = getelementptr inbounds %struct.xpv* %arena.4160, i64 0, i32 0
+  %23 = load i8** %xpv_pv33, align 8, !tbaa !0
+  %24 = bitcast i8* %23 to %struct.xpv*
+  %25 = bitcast %struct.xpv* %arena.4160 to i8*
+  tail call void @Perl_safesysfree(i8* %25) #8
+  %tobool31 = icmp eq i8* %23, null
+  br i1 %tobool31, label %for.end35, label %for.body32
+
+for.end35:                                        ; preds = %for.body32, %for.end29
+  store %struct.xpviv* null, %struct.xpviv** @PL_xpviv_arenaroot, align 8, !tbaa !0
+  store %struct.xpviv* null, %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  %26 = load %struct.xpvnv** @PL_xpvnv_arenaroot, align 8, !tbaa !0
+  %tobool37157 = icmp eq %struct.xpvnv* %26, null
+  br i1 %tobool37157, label %for.end41, label %for.body38.lr.ph
+
+for.body38.lr.ph:                                 ; preds = %for.end35
+  %27 = bitcast %struct.xpvnv* %26 to %struct.xpv*
+  br label %for.body38
+
+for.body38:                                       ; preds = %for.body38.lr.ph, %for.body38
+  %arena.5158 = phi %struct.xpv* [ %27, %for.body38.lr.ph ], [ %29, %for.body38 ]
+  %xpv_pv39 = getelementptr inbounds %struct.xpv* %arena.5158, i64 0, i32 0
+  %28 = load i8** %xpv_pv39, align 8, !tbaa !0
+  %29 = bitcast i8* %28 to %struct.xpv*
+  %30 = bitcast %struct.xpv* %arena.5158 to i8*
+  tail call void @Perl_safesysfree(i8* %30) #8
+  %tobool37 = icmp eq i8* %28, null
+  br i1 %tobool37, label %for.end41, label %for.body38
+
+for.end41:                                        ; preds = %for.body38, %for.end35
+  store %struct.xpvnv* null, %struct.xpvnv** @PL_xpvnv_arenaroot, align 8, !tbaa !0
+  store %struct.xpvnv* null, %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  %31 = load %struct.xpvcv** @PL_xpvcv_arenaroot, align 8, !tbaa !0
+  %tobool43155 = icmp eq %struct.xpvcv* %31, null
+  br i1 %tobool43155, label %for.end47, label %for.body44.lr.ph
+
+for.body44.lr.ph:                                 ; preds = %for.end41
+  %32 = bitcast %struct.xpvcv* %31 to %struct.xpv*
+  br label %for.body44
+
+for.body44:                                       ; preds = %for.body44.lr.ph, %for.body44
+  %arena.6156 = phi %struct.xpv* [ %32, %for.body44.lr.ph ], [ %34, %for.body44 ]
+  %xpv_pv45 = getelementptr inbounds %struct.xpv* %arena.6156, i64 0, i32 0
+  %33 = load i8** %xpv_pv45, align 8, !tbaa !0
+  %34 = bitcast i8* %33 to %struct.xpv*
+  %35 = bitcast %struct.xpv* %arena.6156 to i8*
+  tail call void @Perl_safesysfree(i8* %35) #8
+  %tobool43 = icmp eq i8* %33, null
+  br i1 %tobool43, label %for.end47, label %for.body44
+
+for.end47:                                        ; preds = %for.body44, %for.end41
+  store %struct.xpvcv* null, %struct.xpvcv** @PL_xpvcv_arenaroot, align 8, !tbaa !0
+  store %struct.xpvcv* null, %struct.xpvcv** @PL_xpvcv_root, align 8, !tbaa !0
+  %36 = load %struct.xpvav** @PL_xpvav_arenaroot, align 8, !tbaa !0
+  %tobool49153 = icmp eq %struct.xpvav* %36, null
+  br i1 %tobool49153, label %for.end53, label %for.body50.lr.ph
+
+for.body50.lr.ph:                                 ; preds = %for.end47
+  %37 = bitcast %struct.xpvav* %36 to %struct.xpv*
+  br label %for.body50
+
+for.body50:                                       ; preds = %for.body50.lr.ph, %for.body50
+  %arena.7154 = phi %struct.xpv* [ %37, %for.body50.lr.ph ], [ %39, %for.body50 ]
+  %xpv_pv51 = getelementptr inbounds %struct.xpv* %arena.7154, i64 0, i32 0
+  %38 = load i8** %xpv_pv51, align 8, !tbaa !0
+  %39 = bitcast i8* %38 to %struct.xpv*
+  %40 = bitcast %struct.xpv* %arena.7154 to i8*
+  tail call void @Perl_safesysfree(i8* %40) #8
+  %tobool49 = icmp eq i8* %38, null
+  br i1 %tobool49, label %for.end53, label %for.body50
+
+for.end53:                                        ; preds = %for.body50, %for.end47
+  store %struct.xpvav* null, %struct.xpvav** @PL_xpvav_arenaroot, align 8, !tbaa !0
+  store %struct.xpvav* null, %struct.xpvav** @PL_xpvav_root, align 8, !tbaa !0
+  %41 = load %struct.xpvhv** @PL_xpvhv_arenaroot, align 8, !tbaa !0
+  %tobool55151 = icmp eq %struct.xpvhv* %41, null
+  br i1 %tobool55151, label %for.end59, label %for.body56.lr.ph
+
+for.body56.lr.ph:                                 ; preds = %for.end53
+  %42 = bitcast %struct.xpvhv* %41 to %struct.xpv*
+  br label %for.body56
+
+for.body56:                                       ; preds = %for.body56.lr.ph, %for.body56
+  %arena.8152 = phi %struct.xpv* [ %42, %for.body56.lr.ph ], [ %44, %for.body56 ]
+  %xpv_pv57 = getelementptr inbounds %struct.xpv* %arena.8152, i64 0, i32 0
+  %43 = load i8** %xpv_pv57, align 8, !tbaa !0
+  %44 = bitcast i8* %43 to %struct.xpv*
+  %45 = bitcast %struct.xpv* %arena.8152 to i8*
+  tail call void @Perl_safesysfree(i8* %45) #8
+  %tobool55 = icmp eq i8* %43, null
+  br i1 %tobool55, label %for.end59, label %for.body56
+
+for.end59:                                        ; preds = %for.body56, %for.end53
+  store %struct.xpvhv* null, %struct.xpvhv** @PL_xpvhv_arenaroot, align 8, !tbaa !0
+  store %struct.xpvhv* null, %struct.xpvhv** @PL_xpvhv_root, align 8, !tbaa !0
+  %46 = load %struct.xpvmg** @PL_xpvmg_arenaroot, align 8, !tbaa !0
+  %tobool61149 = icmp eq %struct.xpvmg* %46, null
+  br i1 %tobool61149, label %for.end65, label %for.body62.lr.ph
+
+for.body62.lr.ph:                                 ; preds = %for.end59
+  %47 = bitcast %struct.xpvmg* %46 to %struct.xpv*
+  br label %for.body62
+
+for.body62:                                       ; preds = %for.body62.lr.ph, %for.body62
+  %arena.9150 = phi %struct.xpv* [ %47, %for.body62.lr.ph ], [ %49, %for.body62 ]
+  %xpv_pv63 = getelementptr inbounds %struct.xpv* %arena.9150, i64 0, i32 0
+  %48 = load i8** %xpv_pv63, align 8, !tbaa !0
+  %49 = bitcast i8* %48 to %struct.xpv*
+  %50 = bitcast %struct.xpv* %arena.9150 to i8*
+  tail call void @Perl_safesysfree(i8* %50) #8
+  %tobool61 = icmp eq i8* %48, null
+  br i1 %tobool61, label %for.end65, label %for.body62
+
+for.end65:                                        ; preds = %for.body62, %for.end59
+  store %struct.xpvmg* null, %struct.xpvmg** @PL_xpvmg_arenaroot, align 8, !tbaa !0
+  store %struct.xpvmg* null, %struct.xpvmg** @PL_xpvmg_root, align 8, !tbaa !0
+  %51 = load %struct.xpvlv** @PL_xpvlv_arenaroot, align 8, !tbaa !0
+  %tobool67147 = icmp eq %struct.xpvlv* %51, null
+  br i1 %tobool67147, label %for.end71, label %for.body68.lr.ph
+
+for.body68.lr.ph:                                 ; preds = %for.end65
+  %52 = bitcast %struct.xpvlv* %51 to %struct.xpv*
+  br label %for.body68
+
+for.body68:                                       ; preds = %for.body68.lr.ph, %for.body68
+  %arena.10148 = phi %struct.xpv* [ %52, %for.body68.lr.ph ], [ %54, %for.body68 ]
+  %xpv_pv69 = getelementptr inbounds %struct.xpv* %arena.10148, i64 0, i32 0
+  %53 = load i8** %xpv_pv69, align 8, !tbaa !0
+  %54 = bitcast i8* %53 to %struct.xpv*
+  %55 = bitcast %struct.xpv* %arena.10148 to i8*
+  tail call void @Perl_safesysfree(i8* %55) #8
+  %tobool67 = icmp eq i8* %53, null
+  br i1 %tobool67, label %for.end71, label %for.body68
+
+for.end71:                                        ; preds = %for.body68, %for.end65
+  store %struct.xpvlv* null, %struct.xpvlv** @PL_xpvlv_arenaroot, align 8, !tbaa !0
+  store %struct.xpvlv* null, %struct.xpvlv** @PL_xpvlv_root, align 8, !tbaa !0
+  %56 = load %struct.xpvbm** @PL_xpvbm_arenaroot, align 8, !tbaa !0
+  %tobool73145 = icmp eq %struct.xpvbm* %56, null
+  br i1 %tobool73145, label %for.end77, label %for.body74.lr.ph
+
+for.body74.lr.ph:                                 ; preds = %for.end71
+  %57 = bitcast %struct.xpvbm* %56 to %struct.xpv*
+  br label %for.body74
+
+for.body74:                                       ; preds = %for.body74.lr.ph, %for.body74
+  %arena.11146 = phi %struct.xpv* [ %57, %for.body74.lr.ph ], [ %59, %for.body74 ]
+  %xpv_pv75 = getelementptr inbounds %struct.xpv* %arena.11146, i64 0, i32 0
+  %58 = load i8** %xpv_pv75, align 8, !tbaa !0
+  %59 = bitcast i8* %58 to %struct.xpv*
+  %60 = bitcast %struct.xpv* %arena.11146 to i8*
+  tail call void @Perl_safesysfree(i8* %60) #8
+  %tobool73 = icmp eq i8* %58, null
+  br i1 %tobool73, label %for.end77, label %for.body74
+
+for.end77:                                        ; preds = %for.body74, %for.end71
+  store %struct.xpvbm* null, %struct.xpvbm** @PL_xpvbm_arenaroot, align 8, !tbaa !0
+  store %struct.xpvbm* null, %struct.xpvbm** @PL_xpvbm_root, align 8, !tbaa !0
+  %61 = load %struct.xpv** @PL_he_arenaroot, align 8, !tbaa !0
+  %tobool79143 = icmp eq %struct.xpv* %61, null
+  br i1 %tobool79143, label %for.end83, label %for.body80
+
+for.body80:                                       ; preds = %for.end77, %for.body80
+  %arena.12144 = phi %struct.xpv* [ %63, %for.body80 ], [ %61, %for.end77 ]
+  %xpv_pv81 = getelementptr inbounds %struct.xpv* %arena.12144, i64 0, i32 0
+  %62 = load i8** %xpv_pv81, align 8, !tbaa !0
+  %63 = bitcast i8* %62 to %struct.xpv*
+  %64 = bitcast %struct.xpv* %arena.12144 to i8*
+  tail call void @Perl_safesysfree(i8* %64) #8
+  %tobool79 = icmp eq i8* %62, null
+  br i1 %tobool79, label %for.end83, label %for.body80
+
+for.end83:                                        ; preds = %for.body80, %for.end77
+  store %struct.xpv* null, %struct.xpv** @PL_he_arenaroot, align 8, !tbaa !0
+  store %struct.he* null, %struct.he** @PL_he_root, align 8, !tbaa !0
+  %65 = load i8** @PL_nice_chunk, align 8, !tbaa !0
+  %tobool84 = icmp eq i8* %65, null
+  br i1 %tobool84, label %if.end86, label %if.then85
+
+if.then85:                                        ; preds = %for.end83
+  tail call void @Perl_safesysfree(i8* %65) #8
+  br label %if.end86
+
+if.end86:                                         ; preds = %for.end83, %if.then85
+  store i8* null, i8** @PL_nice_chunk, align 8, !tbaa !0
+  store i32 0, i32* @PL_nice_chunk_size, align 4, !tbaa !3
+  store %struct.sv* null, %struct.sv** @PL_sv_arenaroot, align 8, !tbaa !0
+  store %struct.sv* null, %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  ret void
+}

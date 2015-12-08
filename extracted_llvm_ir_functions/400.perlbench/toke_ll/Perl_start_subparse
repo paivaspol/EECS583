@@ -1,0 +1,59 @@
+define i32 @Perl_start_subparse(i32 %is_format, i32 %flags) #0 {
+entry:
+  %0 = load i32* @PL_savestack_ix, align 4, !tbaa !3
+  %1 = load %struct.cv** @PL_compcv, align 8, !tbaa !0
+  tail call void @Perl_save_I32(i32* @PL_subline) #6
+  %2 = load %struct.sv** @PL_subname, align 8, !tbaa !0
+  tail call void @Perl_save_item(%struct.sv* %2) #6
+  tail call void @Perl_save_sptr(%struct.sv** bitcast (%struct.cv** @PL_compcv to %struct.sv**)) #6
+  %call = tail call %struct.sv* @Perl_newSV(i64 0) #6
+  %3 = bitcast %struct.sv* %call to %struct.cv*
+  store %struct.cv* %3, %struct.cv** @PL_compcv, align 8, !tbaa !0
+  %tobool1 = icmp ne i32 %is_format, 0
+  %cond = select i1 %tobool1, i32 14, i32 12
+  %call2 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %call, i32 %cond) #6
+  %4 = load %struct.cv** @PL_compcv, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.cv* %4, i64 0, i32 0
+  %5 = load %struct.xpvcv** %sv_any, align 8, !tbaa !0
+  %xcv_flags = getelementptr inbounds %struct.xpvcv* %5, i64 0, i32 17
+  %6 = load i16* %xcv_flags, align 2, !tbaa !5
+  %conv = zext i16 %6 to i32
+  %or = or i32 %conv, %flags
+  %conv3 = trunc i32 %or to i16
+  store i16 %conv3, i16* %xcv_flags, align 2, !tbaa !5
+  %7 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_line = getelementptr inbounds %struct.cop* %7, i64 0, i32 13
+  %8 = load i32* %cop_line, align 4, !tbaa !3
+  store i32 %8, i32* @PL_subline, align 4, !tbaa !3
+  %call4 = tail call %struct.av* @Perl_pad_new(i32 6) #6
+  %9 = load %struct.cv** @PL_compcv, align 8, !tbaa !0
+  %sv_any5 = getelementptr inbounds %struct.cv* %9, i64 0, i32 0
+  %10 = load %struct.xpvcv** %sv_any5, align 8, !tbaa !0
+  %xcv_padlist = getelementptr inbounds %struct.xpvcv* %10, i64 0, i32 15
+  store %struct.av* %call4, %struct.av** %xcv_padlist, align 8, !tbaa !0
+  %11 = bitcast %struct.cv* %1 to %struct.sv*
+  store %struct.sv* %11, %struct.sv** @PL_Sv, align 8, !tbaa !0
+  %tobool6 = icmp eq %struct.cv* %1, null
+  br i1 %tobool6, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %12 = getelementptr inbounds %struct.cv* %1, i64 0, i32 1
+  %13 = load i32* %12, align 4, !tbaa !3
+  %inc = add i32 %13, 1
+  store i32 %inc, i32* %12, align 4, !tbaa !3
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %14 = load %struct.cv** @PL_compcv, align 8, !tbaa !0
+  %sv_any8 = getelementptr inbounds %struct.cv* %14, i64 0, i32 0
+  %15 = load %struct.xpvcv** %sv_any8, align 8, !tbaa !0
+  %xcv_outside = getelementptr inbounds %struct.xpvcv* %15, i64 0, i32 16
+  store %struct.cv* %1, %struct.cv** %xcv_outside, align 8, !tbaa !0
+  %16 = load i32* @PL_cop_seqmax, align 4, !tbaa !3
+  %17 = load %struct.cv** @PL_compcv, align 8, !tbaa !0
+  %sv_any9 = getelementptr inbounds %struct.cv* %17, i64 0, i32 0
+  %18 = load %struct.xpvcv** %sv_any9, align 8, !tbaa !0
+  %xcv_outside_seq = getelementptr inbounds %struct.xpvcv* %18, i64 0, i32 18
+  store i32 %16, i32* %xcv_outside_seq, align 4, !tbaa !3
+  ret i32 %0
+}

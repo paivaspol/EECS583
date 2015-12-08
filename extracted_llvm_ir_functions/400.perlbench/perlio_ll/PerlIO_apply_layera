@@ -1,0 +1,29 @@
+define i32 @PerlIO_apply_layera(%struct._PerlIO** %f, i8* %mode, %struct.PerlIO_list_s* nocapture %layers, i64 %n, i64 %max) #1 {
+entry:
+  %array.i = getelementptr inbounds %struct.PerlIO_list_s* %layers, i64 0, i32 3
+  %cmp11 = icmp slt i64 %n, %max
+  br i1 %cmp11, label %while.body, label %while.end
+
+while.body:                                       ; preds = %entry, %if.end5
+  %n.addr.012 = phi i64 [ %inc, %if.end5 ], [ %n, %entry ]
+  %call = tail call %struct._PerlIO_funcs* @PerlIO_layer_fetch(%struct.PerlIO_list_s* %layers, i64 %n.addr.012, %struct._PerlIO_funcs* null) #10
+  %tobool = icmp eq %struct._PerlIO_funcs* %call, null
+  br i1 %tobool, label %if.end5, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %0 = load %struct.PerlIO_pair_t** %array.i, align 8, !tbaa !3
+  %arg.i = getelementptr inbounds %struct.PerlIO_pair_t* %0, i64 %n.addr.012, i32 1
+  %1 = load %struct.sv** %arg.i, align 8, !tbaa !3
+  %call2 = tail call %struct._PerlIO** @PerlIO_push(%struct._PerlIO** %f, %struct._PerlIO_funcs* %call, i8* %mode, %struct.sv* %1) #10
+  %tobool3 = icmp eq %struct._PerlIO** %call2, null
+  br i1 %tobool3, label %while.end, label %if.end5
+
+if.end5:                                          ; preds = %if.then, %while.body
+  %inc = add nsw i64 %n.addr.012, 1
+  %cmp = icmp slt i64 %inc, %max
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end5, %if.then, %entry
+  %code.0 = phi i32 [ 0, %entry ], [ -1, %if.then ], [ 0, %if.end5 ]
+  ret i32 %code.0
+}

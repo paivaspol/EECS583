@@ -1,0 +1,31 @@
+define %struct.hek* @Perl_share_hek(i8* %str, i32 %len, i32 %hash) #0 {
+entry:
+  %is_utf8 = alloca i8, align 1
+  %tmplen = alloca i64, align 8
+  store i8 0, i8* %is_utf8, align 1, !tbaa !1
+  %cmp = icmp slt i32 %len, 0
+  br i1 %cmp, label %if.then, label %if.end7
+
+if.then:                                          ; preds = %entry
+  %sub = sub nsw i32 0, %len
+  %conv = sext i32 %sub to i64
+  store i64 %conv, i64* %tmplen, align 8, !tbaa !3
+  store i8 1, i8* %is_utf8, align 1, !tbaa !1
+  %call = call i8* @Perl_bytes_from_utf8(i8* %str, i64* %tmplen, i8* %is_utf8) #4
+  %0 = load i64* %tmplen, align 8, !tbaa !3
+  %conv1 = trunc i64 %0 to i32
+  %1 = load i8* %is_utf8, align 1, !tbaa !1
+  %not.tobool = icmp ne i8 %1, 0
+  %. = zext i1 %not.tobool to i32
+  %cmp3 = icmp eq i8* %call, %str
+  %or = or i32 %., 258
+  %..or = select i1 %cmp3, i32 %., i32 %or
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.then, %entry
+  %len.addr.0 = phi i32 [ %len, %entry ], [ %conv1, %if.then ]
+  %flags.1 = phi i32 [ 0, %entry ], [ %..or, %if.then ]
+  %str.addr.0 = phi i8* [ %str, %entry ], [ %call, %if.then ]
+  %call8 = call fastcc %struct.hek* @S_share_hek_flags(i8* %str.addr.0, i32 %len.addr.0, i32 %hash, i32 %flags.1) #5
+  ret %struct.hek* %call8
+}

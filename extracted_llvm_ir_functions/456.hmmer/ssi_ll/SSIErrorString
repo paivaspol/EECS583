@@ -1,0 +1,14 @@
+define i8* @SSIErrorString(i32 %n) #2 {
+entry:
+  %0 = icmp ult i32 %n, 17
+  br i1 %0, label %switch.lookup, label %return
+
+switch.lookup:                                    ; preds = %entry
+  %1 = sext i32 %n to i64
+  %switch.gep = getelementptr inbounds [17 x i8*]* @switch.table, i64 0, i64 %1
+  %switch.load = load i8** %switch.gep, align 8
+  ret i8* %switch.load
+
+return:                                           ; preds = %entry
+  ret i8* getelementptr inbounds ([18 x i8]* @.str28, i64 0, i64 0)
+}

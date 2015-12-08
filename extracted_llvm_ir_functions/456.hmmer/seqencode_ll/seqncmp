@@ -1,0 +1,63 @@
+define i32 @seqncmp(i8* nocapture %s1, i8* nocapture %s2, i32 %n, i32 %allow) #0 {
+entry:
+  %0 = load i8* %s2, align 1, !tbaa !0
+  %cmp47 = icmp eq i8 %0, 0
+  br i1 %cmp47, label %while.cond12.preheader, label %land.rhs
+
+land.rhs:                                         ; preds = %entry, %if.end
+  %1 = phi i8 [ %3, %if.end ], [ %0, %entry ]
+  %mmat.051 = phi i32 [ %mmat.1, %if.end ], [ 0, %entry ]
+  %n.addr.050 = phi i32 [ %dec, %if.end ], [ %n, %entry ]
+  %s2.addr.049 = phi i8* [ %incdec.ptr11, %if.end ], [ %s2, %entry ]
+  %s1.addr.048 = phi i8* [ %incdec.ptr, %if.end ], [ %s1, %entry ]
+  %dec = add nsw i32 %n.addr.050, -1
+  %cmp2 = icmp eq i32 %n.addr.050, 0
+  br i1 %cmp2, label %while.cond12.preheader, label %while.body
+
+while.cond12.preheader:                           ; preds = %if.end, %land.rhs, %entry
+  %mmat.0.lcssa = phi i32 [ 0, %entry ], [ %mmat.051, %land.rhs ], [ %mmat.1, %if.end ]
+  %s1.addr.0.lcssa = phi i8* [ %s1, %entry ], [ %s1.addr.048, %land.rhs ], [ %incdec.ptr, %if.end ]
+  %n.addr.1.ph = phi i32 [ %n, %entry ], [ %dec, %land.rhs ], [ %dec, %if.end ]
+  %cmp1440 = icmp eq i32 %n.addr.1.ph, 0
+  br i1 %cmp1440, label %return, label %land.end24
+
+while.body:                                       ; preds = %land.rhs
+  %2 = load i8* %s1.addr.048, align 1, !tbaa !0
+  %and38 = and i8 %2, %1
+  %cmp7 = icmp eq i8 %and38, %1
+  br i1 %cmp7, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %while.body
+  %inc = add nsw i32 %mmat.051, 1
+  %cmp9 = icmp slt i32 %mmat.051, %allow
+  br i1 %cmp9, label %if.end, label %return
+
+if.end:                                           ; preds = %land.lhs.true, %while.body
+  %mmat.1 = phi i32 [ %mmat.051, %while.body ], [ %inc, %land.lhs.true ]
+  %incdec.ptr = getelementptr inbounds i8* %s1.addr.048, i64 1
+  %incdec.ptr11 = getelementptr inbounds i8* %s2.addr.049, i64 1
+  %3 = load i8* %incdec.ptr11, align 1, !tbaa !0
+  %cmp = icmp eq i8 %3, 0
+  br i1 %cmp, label %while.cond12.preheader, label %land.rhs
+
+land.end24:                                       ; preds = %while.cond12.preheader, %while.body25
+  %dec1343.in = phi i32 [ %dec1343, %while.body25 ], [ %n.addr.1.ph, %while.cond12.preheader ]
+  %mmat.242 = phi i32 [ %inc26, %while.body25 ], [ %mmat.0.lcssa, %while.cond12.preheader ]
+  %s1.addr.141 = phi i8* [ %incdec.ptr17, %while.body25 ], [ %s1.addr.0.lcssa, %while.cond12.preheader ]
+  %dec1343 = add nsw i32 %dec1343.in, -1
+  %4 = load i8* %s1.addr.141, align 1, !tbaa !0
+  %cmp22 = icmp sle i32 %mmat.242, %allow
+  %not.cmp19 = icmp ne i8 %4, 0
+  %.cmp22 = and i1 %cmp22, %not.cmp19
+  br i1 %.cmp22, label %while.body25, label %return
+
+while.body25:                                     ; preds = %land.end24
+  %incdec.ptr17 = getelementptr inbounds i8* %s1.addr.141, i64 1
+  %inc26 = add nsw i32 %mmat.242, 1
+  %cmp14 = icmp eq i32 %dec1343, 0
+  br i1 %cmp14, label %return, label %land.end24
+
+return:                                           ; preds = %land.lhs.true, %while.cond12.preheader, %land.end24, %while.body25
+  %retval.0 = phi i32 [ %mmat.0.lcssa, %while.cond12.preheader ], [ %mmat.242, %land.end24 ], [ %inc26, %while.body25 ], [ %inc, %land.lhs.true ]
+  ret i32 %retval.0
+}

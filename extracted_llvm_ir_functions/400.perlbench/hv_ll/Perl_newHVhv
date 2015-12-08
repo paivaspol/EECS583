@@ -1,0 +1,203 @@
+define %struct.hv* @Perl_newHVhv(%struct.hv* %ohv) #0 {
+entry:
+  %call = tail call %struct.hv* @Perl_newHV() #5
+  %tobool = icmp eq %struct.hv* %ohv, null
+  br i1 %tobool, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.hv* %ohv, i64 0, i32 0
+  %0 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %xhv_fill = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 1
+  %1 = load i64* %xhv_fill, align 8, !tbaa !3
+  %cmp = icmp eq i64 %1, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false
+  %xhv_max = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 2
+  %2 = load i64* %xhv_max, align 8, !tbaa !3
+  %3 = getelementptr inbounds %struct.hv* %ohv, i64 0, i32 2
+  %4 = load i32* %3, align 4, !tbaa !4
+  %and = and i32 %4, 57344
+  %tobool2 = icmp eq i32 %and, 0
+  br i1 %tobool2, label %if.then3, label %if.else68
+
+if.then3:                                         ; preds = %if.end
+  %conv = and i32 %4, 536870912
+  %5 = bitcast %struct.xpvhv* %0 to %struct.he***
+  %6 = load %struct.he*** %5, align 8, !tbaa !0
+  %add = add i64 %2, 1
+  %cmp9 = icmp ult i64 %add, 64
+  %mul = shl i64 %add, 3
+  br i1 %cmp9, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %if.then3
+  %mul14 = shl i64 %add, 4
+  %sub = add i64 %mul14, -16
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then3, %cond.false
+  %cond = phi i64 [ %sub, %cond.false ], [ %mul, %if.then3 ]
+  %call16 = tail call i8* @Perl_safesysmalloc(i64 %cond) #4
+  %7 = bitcast i8* %call16 to %struct.he**
+  %tobool41 = icmp eq i32 %conv, 0
+  br label %for.body
+
+for.body:                                         ; preds = %cond.end, %for.inc57
+  %i.0163 = phi i64 [ 0, %cond.end ], [ %inc, %for.inc57 ]
+  %arrayidx = getelementptr inbounds %struct.he** %6, i64 %i.0163
+  %8 = load %struct.he** %arrayidx, align 8, !tbaa !0
+  %tobool19 = icmp eq %struct.he* %8, null
+  %arrayidx21 = getelementptr inbounds %struct.he** %7, i64 %i.0163
+  br i1 %tobool19, label %if.then20, label %for.body26
+
+if.then20:                                        ; preds = %for.body
+  store %struct.he* null, %struct.he** %arrayidx21, align 8, !tbaa !0
+  br label %for.inc57
+
+for.body26:                                       ; preds = %for.body, %if.end54
+  %prev.0162 = phi %struct.he* [ %call37, %if.end54 ], [ null, %for.body ]
+  %oent.0161 = phi %struct.he* [ %14, %if.end54 ], [ %8, %for.body ]
+  %hent_hek = getelementptr inbounds %struct.he* %oent.0161, i64 0, i32 1
+  %9 = load %struct.hek** %hent_hek, align 8, !tbaa !0
+  %hek_hash = getelementptr inbounds %struct.hek* %9, i64 0, i32 0
+  %10 = load i32* %hek_hash, align 4, !tbaa !4
+  %arraydecay = getelementptr inbounds %struct.hek* %9, i64 0, i32 2, i64 0
+  %hek_len = getelementptr inbounds %struct.hek* %9, i64 0, i32 1
+  %11 = load i32* %hek_len, align 4, !tbaa !4
+  %conv29 = sext i32 %11 to i64
+  %add.ptr.sum = add i64 %conv29, 1
+  %add.ptr35 = getelementptr inbounds %struct.hek* %9, i64 0, i32 2, i64 %add.ptr.sum
+  %12 = load i8* %add.ptr35, align 1, !tbaa !1
+  %conv36 = zext i8 %12 to i32
+  %call37 = tail call fastcc %struct.he* @S_new_he() #5
+  %hent_val = getelementptr inbounds %struct.he* %oent.0161, i64 0, i32 2
+  %13 = load %struct.sv** %hent_val, align 8, !tbaa !0
+  %call38 = tail call %struct.sv* @Perl_newSVsv(%struct.sv* %13) #4
+  %hent_val39 = getelementptr inbounds %struct.he* %call37, i64 0, i32 2
+  store %struct.sv* %call38, %struct.sv** %hent_val39, align 8, !tbaa !0
+  br i1 %tobool41, label %cond.false45, label %cond.true42
+
+cond.true42:                                      ; preds = %for.body26
+  %call44 = tail call fastcc %struct.hek* @S_share_hek_flags(i8* %arraydecay, i32 %11, i32 %10, i32 %conv36) #5
+  br label %cond.end48
+
+cond.false45:                                     ; preds = %for.body26
+  %call47 = tail call fastcc %struct.hek* @S_save_hek_flags(i8* %arraydecay, i32 %11, i32 %10, i32 %conv36) #5
+  br label %cond.end48
+
+cond.end48:                                       ; preds = %cond.false45, %cond.true42
+  %cond49 = phi %struct.hek* [ %call44, %cond.true42 ], [ %call47, %cond.false45 ]
+  %hent_hek50 = getelementptr inbounds %struct.he* %call37, i64 0, i32 1
+  store %struct.hek* %cond49, %struct.hek** %hent_hek50, align 8, !tbaa !0
+  %tobool51 = icmp eq %struct.he* %prev.0162, null
+  br i1 %tobool51, label %if.else, label %if.then52
+
+if.then52:                                        ; preds = %cond.end48
+  %hent_next = getelementptr inbounds %struct.he* %prev.0162, i64 0, i32 0
+  store %struct.he* %call37, %struct.he** %hent_next, align 8, !tbaa !0
+  br label %if.end54
+
+if.else:                                          ; preds = %cond.end48
+  store %struct.he* %call37, %struct.he** %arrayidx21, align 8, !tbaa !0
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.else, %if.then52
+  %hent_next55 = getelementptr inbounds %struct.he* %call37, i64 0, i32 0
+  store %struct.he* null, %struct.he** %hent_next55, align 8, !tbaa !0
+  %hent_next56 = getelementptr inbounds %struct.he* %oent.0161, i64 0, i32 0
+  %14 = load %struct.he** %hent_next56, align 8, !tbaa !0
+  %tobool25 = icmp eq %struct.he* %14, null
+  br i1 %tobool25, label %for.inc57, label %for.body26
+
+for.inc57:                                        ; preds = %if.end54, %if.then20
+  %inc = add i64 %i.0163, 1
+  %cmp17 = icmp ugt i64 %inc, %2
+  br i1 %cmp17, label %for.end58, label %for.body
+
+for.end58:                                        ; preds = %for.inc57
+  %sv_any59 = getelementptr inbounds %struct.hv* %call, i64 0, i32 0
+  %15 = load %struct.xpvhv** %sv_any59, align 8, !tbaa !0
+  %xhv_max60 = getelementptr inbounds %struct.xpvhv* %15, i64 0, i32 2
+  store i64 %2, i64* %xhv_max60, align 8, !tbaa !3
+  %xhv_fill62 = getelementptr inbounds %struct.xpvhv* %15, i64 0, i32 1
+  store i64 %1, i64* %xhv_fill62, align 8, !tbaa !3
+  %16 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %xhv_keys = getelementptr inbounds %struct.xpvhv* %16, i64 0, i32 3
+  %17 = load i64* %xhv_keys, align 8, !tbaa !3
+  %xhv_keys65 = getelementptr inbounds %struct.xpvhv* %15, i64 0, i32 3
+  store i64 %17, i64* %xhv_keys65, align 8, !tbaa !3
+  %18 = getelementptr inbounds %struct.xpvhv* %15, i64 0, i32 0
+  store i8* %call16, i8** %18, align 8, !tbaa !0
+  br label %return
+
+if.else68:                                        ; preds = %if.end
+  %xhv_riter = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 7
+  %19 = load i32* %xhv_riter, align 4, !tbaa !4
+  %xhv_eiter = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 8
+  %20 = load %struct.he** %xhv_eiter, align 8, !tbaa !0
+  %tobool72167 = icmp eq i64 %2, 0
+  br i1 %tobool72167, label %while.end, label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %if.else68
+  %mul74 = shl i64 %1, 1
+  br label %land.rhs
+
+while.cond:                                       ; preds = %land.rhs
+  %tobool72 = icmp eq i64 %div, 0
+  br i1 %tobool72, label %while.end, label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
+  %hv_max.0168 = phi i64 [ %2, %land.rhs.lr.ph ], [ %div, %while.cond ]
+  %add73 = add i64 %hv_max.0168, 1
+  %cmp75 = icmp ult i64 %add73, %mul74
+  %div = lshr i64 %hv_max.0168, 1
+  br i1 %cmp75, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %while.cond, %land.rhs, %if.else68
+  %hv_max.0.lcssa = phi i64 [ 0, %if.else68 ], [ %hv_max.0168, %land.rhs ], [ 0, %while.cond ]
+  %sv_any77 = getelementptr inbounds %struct.hv* %call, i64 0, i32 0
+  %21 = load %struct.xpvhv** %sv_any77, align 8, !tbaa !0
+  %xhv_max78 = getelementptr inbounds %struct.xpvhv* %21, i64 0, i32 2
+  store i64 %hv_max.0.lcssa, i64* %xhv_max78, align 8, !tbaa !3
+  %call79 = tail call i32 @Perl_hv_iterinit(%struct.hv* %ohv) #5
+  %call81164 = tail call %struct.he* @Perl_hv_iternext_flags(%struct.hv* %ohv, i32 0) #5
+  %tobool82165 = icmp eq %struct.he* %call81164, null
+  br i1 %tobool82165, label %while.end103, label %while.body83
+
+while.body83:                                     ; preds = %while.end, %while.body83
+  %call81166 = phi %struct.he* [ %call81, %while.body83 ], [ %call81164, %while.end ]
+  %hent_hek84 = getelementptr inbounds %struct.he* %call81166, i64 0, i32 1
+  %22 = load %struct.hek** %hent_hek84, align 8, !tbaa !0
+  %arraydecay86 = getelementptr inbounds %struct.hek* %22, i64 0, i32 2, i64 0
+  %hek_len88 = getelementptr inbounds %struct.hek* %22, i64 0, i32 1
+  %23 = load i32* %hek_len88, align 4, !tbaa !4
+  %hent_val89 = getelementptr inbounds %struct.he* %call81166, i64 0, i32 2
+  %24 = load %struct.sv** %hent_val89, align 8, !tbaa !0
+  %call90 = tail call %struct.sv* @Perl_newSVsv(%struct.sv* %24) #4
+  %25 = load %struct.hek** %hent_hek84, align 8, !tbaa !0
+  %hek_hash92 = getelementptr inbounds %struct.hek* %25, i64 0, i32 0
+  %26 = load i32* %hek_hash92, align 4, !tbaa !4
+  %hek_len97 = getelementptr inbounds %struct.hek* %25, i64 0, i32 1
+  %27 = load i32* %hek_len97, align 4, !tbaa !4
+  %idx.ext98 = sext i32 %27 to i64
+  %add.ptr99.sum = add i64 %idx.ext98, 1
+  %add.ptr100 = getelementptr inbounds %struct.hek* %25, i64 0, i32 2, i64 %add.ptr99.sum
+  %28 = load i8* %add.ptr100, align 1, !tbaa !1
+  %conv101 = zext i8 %28 to i32
+  %conv.i = sext i32 %23 to i64
+  %call.i = tail call fastcc %struct.he* @S_hv_fetch_common(%struct.hv* %call, %struct.sv* null, i8* %arraydecay86, i64 %conv.i, i32 %conv101, i32 9, %struct.sv* %call90, i32 %26) #4
+  %call81 = tail call %struct.he* @Perl_hv_iternext_flags(%struct.hv* %ohv, i32 0) #5
+  %tobool82 = icmp eq %struct.he* %call81, null
+  br i1 %tobool82, label %while.end103, label %while.body83
+
+while.end103:                                     ; preds = %while.body83, %while.end
+  %29 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %xhv_riter105 = getelementptr inbounds %struct.xpvhv* %29, i64 0, i32 7
+  store i32 %19, i32* %xhv_riter105, align 4, !tbaa !4
+  %xhv_eiter107 = getelementptr inbounds %struct.xpvhv* %29, i64 0, i32 8
+  store %struct.he* %20, %struct.he** %xhv_eiter107, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %for.end58, %while.end103, %lor.lhs.false, %entry
+  ret %struct.hv* %call
+}

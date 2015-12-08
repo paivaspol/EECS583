@@ -1,0 +1,76 @@
+define void @PerlIOCrlf_set_ptrcnt(%struct._PerlIO** %f, i8* %ptr, i64 %cnt) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %buf = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %buf to i8**
+  %2 = load i8** %1, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @Perl_PerlIO_get_base(%struct._PerlIO** %f) #10
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %tobool1 = icmp eq i8* %ptr, null
+  %nl = getelementptr inbounds %struct._PerlIO* %0, i64 3
+  %3 = bitcast %struct._PerlIO* %nl to i8**
+  %4 = load i8** %3, align 8, !tbaa !3
+  br i1 %tobool1, label %if.then2, label %if.end15
+
+if.then2:                                         ; preds = %if.end
+  %tobool3 = icmp eq i8* %4, null
+  br i1 %tobool3, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %if.then2
+  %add.ptr = getelementptr inbounds i8* %4, i64 1
+  %end = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 1
+  %5 = load %struct._PerlIO_funcs** %end, align 8
+  %6 = bitcast %struct._PerlIO_funcs* %5 to i8*
+  %cmp = icmp eq i8* %add.ptr, %6
+  br i1 %cmp, label %land.lhs.true, label %if.end12
+
+land.lhs.true:                                    ; preds = %if.then4
+  %7 = load i8* %4, align 1, !tbaa !1
+  %cmp7 = icmp eq i8 %7, 13
+  %.add.ptr = select i1 %cmp7, i8* %4, i8* %add.ptr
+  br label %if.end12
+
+if.else:                                          ; preds = %if.then2
+  %end11 = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 1
+  %8 = load %struct._PerlIO_funcs** %end11, align 8
+  %9 = bitcast %struct._PerlIO_funcs* %8 to i8*
+  br label %if.end12
+
+if.end12:                                         ; preds = %land.lhs.true, %if.then4, %if.else
+  %ptr.addr.0 = phi i8* [ %add.ptr, %if.then4 ], [ %9, %if.else ], [ %.add.ptr, %land.lhs.true ]
+  %idx.neg = sub i64 0, %cnt
+  %add.ptr13 = getelementptr inbounds i8* %ptr.addr.0, i64 %idx.neg
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end, %if.end12
+  %ptr.addr.1 = phi i8* [ %add.ptr13, %if.end12 ], [ %ptr, %if.end ]
+  %tobool17 = icmp ne i8* %4, null
+  %cmp20 = icmp ugt i8* %ptr.addr.1, %4
+  %or.cond = and i1 %tobool17, %cmp20
+  br i1 %or.cond, label %if.then22, label %if.end27
+
+if.then22:                                        ; preds = %if.end15
+  store i8 13, i8* %4, align 1, !tbaa !1
+  %10 = getelementptr inbounds %struct._PerlIO* %0, i64 3, i32 0
+  store %struct._PerlIO* null, %struct._PerlIO** %10, align 8, !tbaa !3
+  %incdec.ptr25 = getelementptr inbounds i8* %ptr.addr.1, i64 1
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end15, %if.then22
+  %ptr.addr.2 = phi i8* [ %incdec.ptr25, %if.then22 ], [ %ptr.addr.1, %if.end15 ]
+  %ptr28 = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 2
+  %11 = bitcast i32* %ptr28 to i8**
+  store i8* %ptr.addr.2, i8** %11, align 8, !tbaa !3
+  %12 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %12, i64 0, i32 2
+  %13 = load i32* %flags, align 4, !tbaa !0
+  %or = or i32 %13, 262144
+  store i32 %or, i32* %flags, align 4, !tbaa !0
+  ret void
+}

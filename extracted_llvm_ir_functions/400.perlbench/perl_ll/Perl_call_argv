@@ -1,0 +1,71 @@
+define i32 @Perl_call_argv(i8* %sub_name, i32 %flags, i8** %argv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %1, i64 1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_max, align 8, !tbaa !0
+  %cmp = icmp eq i32* %incdec.ptr, %2
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_markstack_grow() #7
+  %.pre = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi i32* [ %.pre, %if.then ], [ %incdec.ptr, %entry ]
+  %4 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %4 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div25 = lshr exact i64 %sub.ptr.sub, 3
+  %conv = trunc i64 %sub.ptr.div25 to i32
+  store i32 %conv, i32* %3, align 4, !tbaa !3
+  %tobool = icmp eq i8** %argv, null
+  br i1 %tobool, label %if.end15, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.end
+  %5 = load i8** %argv, align 8, !tbaa !0
+  %tobool226 = icmp eq i8* %5, null
+  br i1 %tobool226, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %if.end10
+  %6 = phi i8* [ %9, %if.end10 ], [ %5, %while.cond.preheader ]
+  %sp.028 = phi %struct.sv** [ %incdec.ptr13, %if.end10 ], [ %0, %while.cond.preheader ]
+  %argv.addr.027 = phi i8** [ %incdec.ptr14, %if.end10 ], [ %argv, %while.cond.preheader ]
+  %7 = load %struct.sv*** @PL_stack_max, align 8, !tbaa !0
+  %sub.ptr.lhs.cast3 = ptrtoint %struct.sv** %7 to i64
+  %sub.ptr.rhs.cast4 = ptrtoint %struct.sv** %sp.028 to i64
+  %sub.ptr.sub5 = sub i64 %sub.ptr.lhs.cast3, %sub.ptr.rhs.cast4
+  %cmp7 = icmp slt i64 %sub.ptr.sub5, 8
+  br i1 %cmp7, label %if.then9, label %if.end10
+
+if.then9:                                         ; preds = %while.body
+  %call = tail call %struct.sv** @Perl_stack_grow(%struct.sv** %sp.028, %struct.sv** %sp.028, i32 1) #7
+  %.pre29 = load i8** %argv.addr.027, align 8, !tbaa !0
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then9, %while.body
+  %8 = phi i8* [ %.pre29, %if.then9 ], [ %6, %while.body ]
+  %sp.1 = phi %struct.sv** [ %call, %if.then9 ], [ %sp.028, %while.body ]
+  %call11 = tail call %struct.sv* @Perl_newSVpv(i8* %8, i64 0) #7
+  %call12 = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %call11) #7
+  %incdec.ptr13 = getelementptr inbounds %struct.sv** %sp.1, i64 1
+  store %struct.sv* %call12, %struct.sv** %incdec.ptr13, align 8, !tbaa !0
+  %incdec.ptr14 = getelementptr inbounds i8** %argv.addr.027, i64 1
+  %9 = load i8** %incdec.ptr14, align 8, !tbaa !0
+  %tobool2 = icmp eq i8* %9, null
+  br i1 %tobool2, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end10, %while.cond.preheader
+  %sp.0.lcssa = phi %struct.sv** [ %0, %while.cond.preheader ], [ %incdec.ptr13, %if.end10 ]
+  store %struct.sv** %sp.0.lcssa, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end, %while.end
+  %call.i = tail call %struct.cv* @Perl_get_cv(i8* %sub_name, i32 1) #7
+  %10 = bitcast %struct.cv* %call.i to %struct.sv*
+  %call1.i = tail call i32 @Perl_call_sv(%struct.sv* %10, i32 %flags) #7
+  ret i32 %call1.i
+}

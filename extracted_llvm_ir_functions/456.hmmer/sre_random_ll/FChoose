@@ -1,0 +1,35 @@
+define i32 @FChoose(float* nocapture %p, i32 %N) #0 {
+entry:
+  %call = tail call double @sre_random() #2
+  %conv = fptrunc double %call to float
+  %cmp12 = icmp sgt i32 %N, 0
+  br i1 %cmp12, label %for.body, label %for.end
+
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.014, 1
+  %0 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %0, %N
+  br i1 %cmp, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %i.014 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %sum.013 = phi float [ %add, %for.cond ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %p, i64 %indvars.iv
+  %1 = load float* %arrayidx, align 4, !tbaa !5
+  %add = fadd float %sum.013, %1
+  %cmp2 = fcmp olt float %conv, %add
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp2, label %return, label %for.cond
+
+for.end:                                          ; preds = %for.cond, %entry
+  %call4 = tail call double @sre_random() #2
+  %conv5 = sitofp i32 %N to double
+  %mul = fmul double %conv5, %call4
+  %conv6 = fptosi double %mul to i32
+  br label %return
+
+return:                                           ; preds = %for.body, %for.end
+  %retval.0 = phi i32 [ %conv6, %for.end ], [ %i.014, %for.body ]
+  ret i32 %retval.0
+}

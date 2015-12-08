@@ -1,0 +1,94 @@
+define void @Perl_hv_free_ent(%struct.hv* nocapture %hv, %struct.he* %entry1) #0 {
+entry:
+  %tobool = icmp eq %struct.he* %entry1, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %hent_val = getelementptr inbounds %struct.he* %entry1, i64 0, i32 2
+  %0 = load %struct.sv** %hent_val, align 8, !tbaa !0
+  %tobool2 = icmp eq %struct.sv* %0, null
+  br i1 %tobool2, label %if.end12, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %sv_flags = getelementptr inbounds %struct.sv* %0, i64 0, i32 2
+  %1 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %1, 255
+  %cmp = icmp eq i32 %and, 13
+  br i1 %cmp, label %land.lhs.true3, label %if.end12
+
+land.lhs.true3:                                   ; preds = %land.lhs.true
+  %sv_any = getelementptr inbounds %struct.sv* %0, i64 0, i32 0
+  %2 = load i8** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds i8* %2, i64 56
+  %3 = bitcast i8* %xgv_gp to %struct.gp**
+  %4 = load %struct.gp** %3, align 8, !tbaa !0
+  %gp_cvgen = getelementptr inbounds %struct.gp* %4, i64 0, i32 8
+  %5 = load i32* %gp_cvgen, align 4, !tbaa !4
+  %tobool4 = icmp eq i32 %5, 0
+  br i1 %tobool4, label %cond.false, label %if.end12
+
+cond.false:                                       ; preds = %land.lhs.true3
+  %gp_cv = getelementptr inbounds %struct.gp* %4, i64 0, i32 7
+  %6 = load %struct.cv** %gp_cv, align 8, !tbaa !0
+  %tobool7 = icmp eq %struct.cv* %6, null
+  br i1 %tobool7, label %if.end12, label %land.lhs.true8
+
+land.lhs.true8:                                   ; preds = %cond.false
+  %sv_any9 = getelementptr inbounds %struct.hv* %hv, i64 0, i32 0
+  %7 = load %struct.xpvhv** %sv_any9, align 8, !tbaa !0
+  %xhv_name = getelementptr inbounds %struct.xpvhv* %7, i64 0, i32 10
+  %8 = load i8** %xhv_name, align 8, !tbaa !0
+  %tobool10 = icmp eq i8* %8, null
+  br i1 %tobool10, label %if.end12, label %if.then11
+
+if.then11:                                        ; preds = %land.lhs.true8
+  %9 = load i32* @PL_sub_generation, align 4, !tbaa !4
+  %inc = add i32 %9, 1
+  store i32 %inc, i32* @PL_sub_generation, align 4, !tbaa !4
+  br label %if.end12
+
+if.end12:                                         ; preds = %land.lhs.true8, %cond.false, %land.lhs.true3, %if.end, %if.then11, %land.lhs.true
+  tail call void @Perl_sv_free(%struct.sv* %0) #4
+  %hent_hek = getelementptr inbounds %struct.he* %entry1, i64 0, i32 1
+  %10 = load %struct.hek** %hent_hek, align 8, !tbaa !0
+  %hek_len = getelementptr inbounds %struct.hek* %10, i64 0, i32 1
+  %11 = load i32* %hek_len, align 4, !tbaa !4
+  %cmp13 = icmp eq i32 %11, -2
+  br i1 %cmp13, label %if.then14, label %if.else
+
+if.then14:                                        ; preds = %if.end12
+  %arraydecay = getelementptr inbounds %struct.hek* %10, i64 0, i32 2, i64 0
+  %12 = bitcast i8* %arraydecay to %struct.sv**
+  %13 = load %struct.sv** %12, align 8, !tbaa !0
+  tail call void @Perl_sv_free(%struct.sv* %13) #4
+  %14 = load %struct.hek** %hent_hek, align 8, !tbaa !0
+  %15 = bitcast %struct.hek* %14 to i8*
+  tail call void @Perl_safesysfree(i8* %15) #4
+  br label %if.end25
+
+if.else:                                          ; preds = %if.end12
+  %sv_flags17 = getelementptr inbounds %struct.hv* %hv, i64 0, i32 2
+  %16 = load i32* %sv_flags17, align 4, !tbaa !4
+  %and18 = and i32 %16, 536870912
+  %tobool19 = icmp eq i32 %and18, 0
+  br i1 %tobool19, label %if.else22, label %if.then20
+
+if.then20:                                        ; preds = %if.else
+  tail call fastcc void @S_unshare_hek_or_pvn(%struct.hek* %10, i8* null, i32 0, i32 0) #4
+  br label %if.end25
+
+if.else22:                                        ; preds = %if.else
+  %17 = bitcast %struct.hek* %10 to i8*
+  tail call void @Perl_safesysfree(i8* %17) #4
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.then20, %if.else22, %if.then14
+  %18 = load %struct.he** @PL_he_root, align 8, !tbaa !0
+  %hent_next.i = getelementptr inbounds %struct.he* %entry1, i64 0, i32 0
+  store %struct.he* %18, %struct.he** %hent_next.i, align 8, !tbaa !0
+  store %struct.he* %entry1, %struct.he** @PL_he_root, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.end25
+  ret void
+}

@@ -1,21 +1,22 @@
-define i32 @BZ2_indexIntoF(i32 %indx, i32* nocapture readonly %cftab) #5 {
-  br label %1
+define i32 @BZ2_indexIntoF(i32 %indx, i32* nocapture %cftab) #5 {
+entry:
+  br label %do.body
 
-; <label>:1                                       ; preds = %1, %0
-  %na.0 = phi i32 [ 256, %0 ], [ %.na.0, %1 ]
-  %nb.0 = phi i32 [ 0, %0 ], [ %nb.0., %1 ]
-  %2 = add nsw i32 %nb.0, %na.0
-  %3 = ashr i32 %2, 1
-  %4 = sext i32 %3 to i64
-  %5 = getelementptr inbounds i32* %cftab, i64 %4
-  %6 = load i32* %5, align 4, !tbaa !45
-  %7 = icmp sgt i32 %6, %indx
-  %.na.0 = select i1 %7, i32 %3, i32 %na.0
-  %nb.0. = select i1 %7, i32 %nb.0, i32 %3
-  %8 = sub nsw i32 %.na.0, %nb.0.
-  %9 = icmp eq i32 %8, 1
-  br i1 %9, label %10, label %1
+do.body:                                          ; preds = %do.body, %entry
+  %na.0 = phi i32 [ 256, %entry ], [ %shr.na.0, %do.body ]
+  %nb.0 = phi i32 [ 0, %entry ], [ %nb.0.shr, %do.body ]
+  %add = add nsw i32 %nb.0, %na.0
+  %shr = ashr i32 %add, 1
+  %idxprom = sext i32 %shr to i64
+  %arrayidx = getelementptr inbounds i32* %cftab, i64 %idxprom
+  %0 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %0, %indx
+  %shr.na.0 = select i1 %cmp, i32 %shr, i32 %na.0
+  %nb.0.shr = select i1 %cmp, i32 %nb.0, i32 %shr
+  %sub = sub nsw i32 %shr.na.0, %nb.0.shr
+  %cmp1 = icmp eq i32 %sub, 1
+  br i1 %cmp1, label %do.end, label %do.body
 
-; <label>:10                                      ; preds = %1
-  ret i32 %nb.0.
+do.end:                                           ; preds = %do.body
+  ret i32 %nb.0.shr
 }

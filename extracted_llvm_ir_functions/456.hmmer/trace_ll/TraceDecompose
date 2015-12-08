@@ -1,0 +1,202 @@
+define void @TraceDecompose(%struct.p7trace_s* nocapture %otr, %struct.p7trace_s*** nocapture %ret_tr, i32* nocapture %ret_ntr) #0 {
+entry:
+  %tlen = getelementptr inbounds %struct.p7trace_s* %otr, i64 0, i32 0
+  %0 = load i32* %tlen, align 4, !tbaa !3
+  %cmp218 = icmp sgt i32 %0, 0
+  br i1 %cmp218, label %for.body.lr.ph, label %if.then6
+
+for.body.lr.ph:                                   ; preds = %entry
+  %statetype = getelementptr inbounds %struct.p7trace_s* %otr, i64 0, i32 1
+  %1 = load i8** %statetype, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv226 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next227, %for.body ]
+  %ntr.0219 = phi i32 [ 0, %for.body.lr.ph ], [ %inc.ntr.0, %for.body ]
+  %arrayidx = getelementptr inbounds i8* %1, i64 %indvars.iv226
+  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp1 = icmp eq i8 %2, 6
+  %inc = zext i1 %cmp1 to i32
+  %inc.ntr.0 = add nsw i32 %inc, %ntr.0219
+  %indvars.iv.next227 = add i64 %indvars.iv226, 1
+  %3 = trunc i64 %indvars.iv.next227 to i32
+  %cmp = icmp slt i32 %3, %0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body
+  %cmp4 = icmp eq i32 %inc.ntr.0, 0
+  br i1 %cmp4, label %if.then6, label %if.end7
+
+if.then6:                                         ; preds = %entry, %for.end
+  store i32 0, i32* %ret_ntr, align 4, !tbaa !3
+  store %struct.p7trace_s** null, %struct.p7trace_s*** %ret_tr, align 8, !tbaa !0
+  br label %return
+
+if.end7:                                          ; preds = %for.end
+  %conv8 = sext i32 %inc.ntr.0 to i64
+  %mul = shl nsw i64 %conv8, 3
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 893, i64 %mul) #6
+  %4 = bitcast i8* %call to %struct.p7trace_s**
+  %5 = load i32* %tlen, align 4, !tbaa !3
+  %cmp11215 = icmp sgt i32 %5, 0
+  br i1 %cmp11215, label %for.body13.lr.ph, label %for.end137
+
+for.body13.lr.ph:                                 ; preds = %if.end7
+  %statetype15 = getelementptr inbounds %struct.p7trace_s* %otr, i64 0, i32 1
+  %nodeidx76 = getelementptr inbounds %struct.p7trace_s* %otr, i64 0, i32 2
+  %pos84 = getelementptr inbounds %struct.p7trace_s* %otr, i64 0, i32 3
+  br label %for.body13
+
+for.body13:                                       ; preds = %for.inc135, %for.body13.lr.ph
+  %6 = phi i32 [ %5, %for.body13.lr.ph ], [ %41, %for.inc135 ]
+  %idx.0217 = phi i32 [ 0, %for.body13.lr.ph ], [ %idx.1, %for.inc135 ]
+  %i.1216 = phi i32 [ 0, %for.body13.lr.ph ], [ %inc136, %for.inc135 ]
+  %idxprom14 = sext i32 %i.1216 to i64
+  %7 = load i8** %statetype15, align 8, !tbaa !0
+  %arrayidx16 = getelementptr inbounds i8* %7, i64 %idxprom14
+  %8 = load i8* %arrayidx16, align 1, !tbaa !1
+  %cmp18 = icmp eq i8 %8, 6
+  br i1 %cmp18, label %for.cond21, label %for.inc135
+
+for.cond21:                                       ; preds = %for.body13, %for.body25
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body25 ], [ %idxprom14, %for.body13 ]
+  %j.0.in = phi i32 [ %j.0, %for.body25 ], [ %i.1216, %for.body13 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %j.0 = add nsw i32 %j.0.in, 1
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp23 = icmp slt i32 %9, %6
+  br i1 %cmp23, label %for.body25, label %for.end36
+
+for.body25:                                       ; preds = %for.cond21
+  %arrayidx28 = getelementptr inbounds i8* %7, i64 %indvars.iv.next
+  %10 = load i8* %arrayidx28, align 1, !tbaa !1
+  %cmp30 = icmp eq i8 %10, 7
+  br i1 %cmp30, label %for.end36, label %for.cond21
+
+for.end36:                                        ; preds = %for.body25, %for.cond21
+  %sub = sub nsw i32 %j.0, %i.1216
+  %add37 = add nsw i32 %sub, 5
+  %idxprom38 = sext i32 %idx.0217 to i64
+  %arrayidx39 = getelementptr inbounds %struct.p7trace_s** %4, i64 %idxprom38
+  tail call void @P7AllocTrace(i32 %add37, %struct.p7trace_s** %arrayidx39) #7
+  %11 = load %struct.p7trace_s** %arrayidx39, align 8, !tbaa !0
+  %tlen44 = getelementptr inbounds %struct.p7trace_s* %11, i64 0, i32 0
+  store i32 %add37, i32* %tlen44, align 4, !tbaa !3
+  %statetype47 = getelementptr inbounds %struct.p7trace_s* %11, i64 0, i32 1
+  %12 = load i8** %statetype47, align 8, !tbaa !0
+  store i8 4, i8* %12, align 1, !tbaa !1
+  %13 = load %struct.p7trace_s** %arrayidx39, align 8, !tbaa !0
+  %nodeidx = getelementptr inbounds %struct.p7trace_s* %13, i64 0, i32 2
+  %14 = load i32** %nodeidx, align 8, !tbaa !0
+  store i32 0, i32* %14, align 4, !tbaa !3
+  %pos = getelementptr inbounds %struct.p7trace_s* %13, i64 0, i32 3
+  %15 = load i32** %pos, align 8, !tbaa !0
+  store i32 0, i32* %15, align 4, !tbaa !3
+  %statetype57 = getelementptr inbounds %struct.p7trace_s* %13, i64 0, i32 1
+  %16 = load i8** %statetype57, align 8, !tbaa !0
+  %arrayidx58 = getelementptr inbounds i8* %16, i64 1
+  store i8 5, i8* %arrayidx58, align 1, !tbaa !1
+  %17 = load %struct.p7trace_s** %arrayidx39, align 8, !tbaa !0
+  %nodeidx61 = getelementptr inbounds %struct.p7trace_s* %17, i64 0, i32 2
+  %18 = load i32** %nodeidx61, align 8, !tbaa !0
+  %arrayidx62 = getelementptr inbounds i32* %18, i64 1
+  store i32 0, i32* %arrayidx62, align 4, !tbaa !3
+  %pos65 = getelementptr inbounds %struct.p7trace_s* %17, i64 0, i32 3
+  %19 = load i32** %pos65, align 8, !tbaa !0
+  %arrayidx66 = getelementptr inbounds i32* %19, i64 1
+  store i32 0, i32* %arrayidx66, align 4, !tbaa !3
+  %.pre228 = load i8** %statetype15, align 8, !tbaa !0
+  br label %while.body
+
+while.body:                                       ; preds = %for.end36, %if.end98
+  %20 = phi %struct.p7trace_s* [ %17, %for.end36 ], [ %26, %if.end98 ]
+  %21 = phi i8* [ %.pre228, %for.end36 ], [ %31, %if.end98 ]
+  %indvars.iv224 = phi i64 [ 2, %for.end36 ], [ %indvars.iv.next225, %if.end98 ]
+  %indvars.iv222 = phi i64 [ %idxprom14, %for.end36 ], [ %indvars.iv.next223, %if.end98 ]
+  %i.2 = phi i32 [ %i.1216, %for.end36 ], [ %inc99, %if.end98 ]
+  %j.1 = phi i32 [ 2, %for.end36 ], [ %inc100, %if.end98 ]
+  %arrayidx69 = getelementptr inbounds i8* %21, i64 %indvars.iv222
+  %22 = load i8* %arrayidx69, align 1, !tbaa !1
+  %statetype73 = getelementptr inbounds %struct.p7trace_s* %20, i64 0, i32 1
+  %23 = load i8** %statetype73, align 8, !tbaa !0
+  %arrayidx74 = getelementptr inbounds i8* %23, i64 %indvars.iv224
+  store i8 %22, i8* %arrayidx74, align 1, !tbaa !1
+  %24 = load i32** %nodeidx76, align 8, !tbaa !0
+  %arrayidx77 = getelementptr inbounds i32* %24, i64 %indvars.iv222
+  %25 = load i32* %arrayidx77, align 4, !tbaa !3
+  %26 = load %struct.p7trace_s** %arrayidx39, align 8, !tbaa !0
+  %nodeidx81 = getelementptr inbounds %struct.p7trace_s* %26, i64 0, i32 2
+  %27 = load i32** %nodeidx81, align 8, !tbaa !0
+  %arrayidx82 = getelementptr inbounds i32* %27, i64 %indvars.iv224
+  store i32 %25, i32* %arrayidx82, align 4, !tbaa !3
+  %28 = load i32** %pos84, align 8, !tbaa !0
+  %arrayidx85 = getelementptr inbounds i32* %28, i64 %indvars.iv222
+  %29 = load i32* %arrayidx85, align 4, !tbaa !3
+  %pos89 = getelementptr inbounds %struct.p7trace_s* %26, i64 0, i32 3
+  %30 = load i32** %pos89, align 8, !tbaa !0
+  %arrayidx90 = getelementptr inbounds i32* %30, i64 %indvars.iv224
+  store i32 %29, i32* %arrayidx90, align 4, !tbaa !3
+  %31 = load i8** %statetype15, align 8, !tbaa !0
+  %arrayidx93 = getelementptr inbounds i8* %31, i64 %indvars.iv222
+  %32 = load i8* %arrayidx93, align 1, !tbaa !1
+  %cmp95 = icmp eq i8 %32, 7
+  br i1 %cmp95, label %while.end, label %if.end98
+
+if.end98:                                         ; preds = %while.body
+  %indvars.iv.next223 = add i64 %indvars.iv222, 1
+  %inc99 = add nsw i32 %i.2, 1
+  %indvars.iv.next225 = add i64 %indvars.iv224, 1
+  %inc100 = add nsw i32 %j.1, 1
+  br label %while.body
+
+while.end:                                        ; preds = %while.body
+  %inc101 = add nsw i32 %j.1, 1
+  %idxprom102 = sext i32 %inc101 to i64
+  %statetype105 = getelementptr inbounds %struct.p7trace_s* %26, i64 0, i32 1
+  %33 = load i8** %statetype105, align 8, !tbaa !0
+  %arrayidx106 = getelementptr inbounds i8* %33, i64 %idxprom102
+  store i8 8, i8* %arrayidx106, align 1, !tbaa !1
+  %34 = load %struct.p7trace_s** %arrayidx39, align 8, !tbaa !0
+  %nodeidx110 = getelementptr inbounds %struct.p7trace_s* %34, i64 0, i32 2
+  %35 = load i32** %nodeidx110, align 8, !tbaa !0
+  %arrayidx111 = getelementptr inbounds i32* %35, i64 %idxprom102
+  store i32 0, i32* %arrayidx111, align 4, !tbaa !3
+  %pos115 = getelementptr inbounds %struct.p7trace_s* %34, i64 0, i32 3
+  %36 = load i32** %pos115, align 8, !tbaa !0
+  %arrayidx116 = getelementptr inbounds i32* %36, i64 %idxprom102
+  store i32 0, i32* %arrayidx116, align 4, !tbaa !3
+  %inc117 = add nsw i32 %j.1, 2
+  %idxprom118 = sext i32 %inc117 to i64
+  %statetype121 = getelementptr inbounds %struct.p7trace_s* %34, i64 0, i32 1
+  %37 = load i8** %statetype121, align 8, !tbaa !0
+  %arrayidx122 = getelementptr inbounds i8* %37, i64 %idxprom118
+  store i8 9, i8* %arrayidx122, align 1, !tbaa !1
+  %38 = load %struct.p7trace_s** %arrayidx39, align 8, !tbaa !0
+  %nodeidx126 = getelementptr inbounds %struct.p7trace_s* %38, i64 0, i32 2
+  %39 = load i32** %nodeidx126, align 8, !tbaa !0
+  %arrayidx127 = getelementptr inbounds i32* %39, i64 %idxprom118
+  store i32 0, i32* %arrayidx127, align 4, !tbaa !3
+  %pos131 = getelementptr inbounds %struct.p7trace_s* %38, i64 0, i32 3
+  %40 = load i32** %pos131, align 8, !tbaa !0
+  %arrayidx132 = getelementptr inbounds i32* %40, i64 %idxprom118
+  store i32 0, i32* %arrayidx132, align 4, !tbaa !3
+  %inc133 = add nsw i32 %idx.0217, 1
+  %.pre = load i32* %tlen, align 4, !tbaa !3
+  br label %for.inc135
+
+for.inc135:                                       ; preds = %for.body13, %while.end
+  %41 = phi i32 [ %.pre, %while.end ], [ %6, %for.body13 ]
+  %i.3 = phi i32 [ %i.2, %while.end ], [ %i.1216, %for.body13 ]
+  %idx.1 = phi i32 [ %inc133, %while.end ], [ %idx.0217, %for.body13 ]
+  %inc136 = add nsw i32 %i.3, 1
+  %cmp11 = icmp slt i32 %inc136, %41
+  br i1 %cmp11, label %for.body13, label %for.end137
+
+for.end137:                                       ; preds = %for.inc135, %if.end7
+  store %struct.p7trace_s** %4, %struct.p7trace_s*** %ret_tr, align 8, !tbaa !0
+  store i32 %inc.ntr.0, i32* %ret_ntr, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %for.end137, %if.then6
+  ret void
+}

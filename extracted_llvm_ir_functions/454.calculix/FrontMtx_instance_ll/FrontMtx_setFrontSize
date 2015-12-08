@@ -1,0 +1,31 @@
+define void @FrontMtx_setFrontSize(%struct._FrontMtx* %frontmtx, i32 %J, i32 %size) #0 {
+entry:
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %frontsizesIV = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 12
+  %0 = load %struct._IV** %frontsizesIV, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct._IV* %0, null
+  %cmp3 = icmp slt i32 %J, 0
+  %or.cond = or i1 %cmp1, %cmp3
+  br i1 %or.cond, label %if.then, label %lor.lhs.false4
+
+lor.lhs.false4:                                   ; preds = %lor.lhs.false
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
+  %1 = load i32* %nfront, align 4, !tbaa !3
+  %cmp5 = icmp sle i32 %1, %J
+  %cmp7 = icmp slt i32 %size, 0
+  %or.cond18 = or i1 %cmp5, %cmp7
+  br i1 %or.cond18, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false4, %lor.lhs.false, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([61 x i8]* @.str7, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32 %size) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false4
+  tail call void @IV_setEntry(%struct._IV* %0, i32 %J, i32 %size) #5
+  ret void
+}

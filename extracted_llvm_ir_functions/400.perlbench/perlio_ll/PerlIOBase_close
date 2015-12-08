@@ -1,0 +1,61 @@
+define i64 @PerlIOBase_close(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.else17, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.else17, label %land.rhs.lr.ph
+
+land.rhs.lr.ph:                                   ; preds = %land.lhs.true
+  %call = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  %conv = sext i32 %call to i64
+  %1 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %1, i64 0, i32 2
+  %2 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %2, -2098689
+  store i32 %and, i32* %flags, align 4, !tbaa !0
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %if.else, %land.rhs.lr.ph
+  %.pn = phi %struct._PerlIO* [ %0, %land.rhs.lr.ph ], [ %3, %if.else ]
+  %n.034 = getelementptr inbounds %struct._PerlIO* %.pn, i64 0, i32 0
+  %3 = load %struct._PerlIO** %n.034, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct._PerlIO* %3, null
+  br i1 %tobool3, label %if.end19, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %tab4 = getelementptr inbounds %struct._PerlIO* %3, i64 0, i32 1
+  %4 = load %struct._PerlIO_funcs** %tab4, align 8, !tbaa !3
+  %tobool5 = icmp eq %struct._PerlIO_funcs* %4, null
+  br i1 %tobool5, label %if.else, label %land.lhs.true6
+
+land.lhs.true6:                                   ; preds = %while.body
+  %Close = getelementptr inbounds %struct._PerlIO_funcs* %4, i64 0, i32 16
+  %5 = load i64 (%struct._PerlIO**)** %Close, align 8, !tbaa !3
+  %tobool7 = icmp eq i64 (%struct._PerlIO**)* %5, null
+  br i1 %tobool7, label %if.else, label %if.then8
+
+if.then8:                                         ; preds = %land.lhs.true6
+  %call10 = tail call i64 %5(%struct._PerlIO** %n.034) #9
+  %cmp = icmp eq i64 %call10, 0
+  %conv. = select i1 %cmp, i64 %conv, i64 -1
+  ret i64 %conv.
+
+if.else:                                          ; preds = %land.lhs.true6, %while.body
+  %flags13 = getelementptr inbounds %struct._PerlIO* %3, i64 0, i32 2
+  %6 = load i32* %flags13, align 4, !tbaa !0
+  %and14 = and i32 %6, -2098689
+  store i32 %and14, i32* %flags13, align 4, !tbaa !0
+  br label %land.rhs
+
+if.else17:                                        ; preds = %land.lhs.true, %entry
+  %call18 = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call18, align 4, !tbaa !0
+  br label %if.end19
+
+if.end19:                                         ; preds = %land.rhs, %if.else17
+  %code.0 = phi i64 [ -1, %if.else17 ], [ %conv, %land.rhs ]
+  ret i64 %code.0
+}

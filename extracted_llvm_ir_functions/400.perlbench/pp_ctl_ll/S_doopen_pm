@@ -1,0 +1,84 @@
+define internal fastcc %struct._PerlIO** @S_doopen_pm(i8* %name) #0 {
+entry:
+  %pmstat = alloca %struct.stat, align 8
+  %pmcstat = alloca %struct.stat, align 8
+  %call = call i64 @strlen(i8* %name) #7
+  %cmp = icmp ugt i64 %call, 3
+  br i1 %cmp, label %land.lhs.true, label %if.else20
+
+land.lhs.true:                                    ; preds = %entry
+  %add.ptr.sum = add i64 %call, -3
+  %add.ptr1 = getelementptr inbounds i8* %name, i64 %add.ptr.sum
+  %call2 = call i32 @strcmp(i8* %add.ptr1, i8* getelementptr inbounds ([4 x i8]* @.str75, i64 0, i64 0)) #7
+  %tobool = icmp eq i32 %call2, 0
+  br i1 %tobool, label %if.then, label %if.else20
+
+if.then:                                          ; preds = %land.lhs.true
+  %call3 = call %struct.sv* (i8*, ...)* @Perl_newSVpvf(i8* getelementptr inbounds ([5 x i8]* @.str76, i64 0, i64 0), i8* %name, i32 99) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %call3, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 262144
+  %cmp4 = icmp eq i32 %and, 0
+  br i1 %cmp4, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %call3, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %1 to i8**
+  %2 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %call5 = call i8* @Perl_sv_2pv_nolen(%struct.sv* %call3) #7
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %2, %cond.true ], [ %call5, %cond.false ]
+  %3 = bitcast %struct.stat* %pmstat to i8*
+  call void @llvm.lifetime.start(i64 144, i8* %3) #4
+  %4 = bitcast %struct.stat* %pmcstat to i8*
+  call void @llvm.lifetime.start(i64 144, i8* %4) #4
+  %call6 = call i32 @stat(i8* %cond, %struct.stat* %pmcstat) #7
+  %cmp7 = icmp slt i32 %call6, 0
+  br i1 %cmp7, label %if.then8, label %if.else
+
+if.then8:                                         ; preds = %cond.end
+  %call9 = call %struct._PerlIO** @PerlIO_open(i8* %name, i8* getelementptr inbounds ([2 x i8]* @.str53, i64 0, i64 0)) #7
+  br label %if.end19
+
+if.else:                                          ; preds = %cond.end
+  %call10 = call i32 @stat(i8* %name, %struct.stat* %pmstat) #7
+  %cmp11 = icmp slt i32 %call10, 0
+  br i1 %cmp11, label %if.then15, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else
+  %tv_sec = getelementptr inbounds %struct.stat* %pmstat, i64 0, i32 12, i32 0
+  %5 = load i64* %tv_sec, align 8, !tbaa !4
+  %tv_sec13 = getelementptr inbounds %struct.stat* %pmcstat, i64 0, i32 12, i32 0
+  %6 = load i64* %tv_sec13, align 8, !tbaa !4
+  %cmp14 = icmp slt i64 %5, %6
+  br i1 %cmp14, label %if.then15, label %if.else17
+
+if.then15:                                        ; preds = %lor.lhs.false, %if.else
+  %call16 = call %struct._PerlIO** @PerlIO_open(i8* %cond, i8* getelementptr inbounds ([2 x i8]* @.str53, i64 0, i64 0)) #7
+  br label %if.end19
+
+if.else17:                                        ; preds = %lor.lhs.false
+  %call18 = call %struct._PerlIO** @PerlIO_open(i8* %name, i8* getelementptr inbounds ([2 x i8]* @.str53, i64 0, i64 0)) #7
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then15, %if.else17, %if.then8
+  %fp.0 = phi %struct._PerlIO** [ %call9, %if.then8 ], [ %call16, %if.then15 ], [ %call18, %if.else17 ]
+  call void @Perl_sv_free(%struct.sv* %call3) #7
+  call void @llvm.lifetime.end(i64 144, i8* %4) #4
+  call void @llvm.lifetime.end(i64 144, i8* %3) #4
+  br label %if.end22
+
+if.else20:                                        ; preds = %land.lhs.true, %entry
+  %call21 = call %struct._PerlIO** @PerlIO_open(i8* %name, i8* getelementptr inbounds ([2 x i8]* @.str53, i64 0, i64 0)) #7
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.else20, %if.end19
+  %fp.1 = phi %struct._PerlIO** [ %call21, %if.else20 ], [ %fp.0, %if.end19 ]
+  ret %struct._PerlIO** %fp.1
+}

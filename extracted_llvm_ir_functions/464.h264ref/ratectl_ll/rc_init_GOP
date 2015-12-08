@@ -1,0 +1,146 @@
+define void @rc_init_GOP(i32 %np, i32 %nb) #0 {
+entry:
+  %0 = load i32* @R, align 4, !tbaa !3
+  %conv = sitofp i32 %0 to double
+  %1 = load double* @bit_rate, align 8, !tbaa !4
+  %2 = load double* @frame_rate, align 8, !tbaa !4
+  %div = fdiv double %1, %2
+  %add = fadd double %conv, %div
+  %conv1 = fptosi double %add to i64
+  store i64 %conv1, i64* @LowerBound, align 8, !tbaa !6
+  %3 = load double* @InitialDelayOffset, align 8, !tbaa !4
+  %add3 = fadd double %conv, %3
+  %conv4 = fptosi double %add3 to i64
+  store i64 %conv4, i64* @UpperBound1, align 8, !tbaa !6
+  %add5 = add i32 %np, 1
+  %add6 = add i32 %add5, %nb
+  %conv7 = sitofp i32 %add6 to double
+  %mul = fmul double %conv7, %1
+  %div8 = fdiv double %mul, %2
+  %add9 = fadd double %div8, 5.000000e-01
+  %call = tail call double @floor(double %add9) #8
+  %conv10 = fptosi double %call to i32
+  %add11 = add nsw i32 %0, %conv10
+  store i32 %add11, i32* @R, align 4, !tbaa !3
+  store i32 %np, i32* @Np, align 4, !tbaa !3
+  store i32 %nb, i32* @Nb, align 4, !tbaa !3
+  store i32 0, i32* @GOPOverdue, align 4, !tbaa !1
+  %4 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %IFLAG = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 137
+  store i32 1, i32* %IFLAG, align 4, !tbaa !3
+  store i32 %np, i32* @TotalPFrame, align 4, !tbaa !3
+  %NumberofGOP = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 128
+  %5 = load i32* %NumberofGOP, align 4, !tbaa !3
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* %NumberofGOP, align 4, !tbaa !3
+  %cmp18 = icmp eq i32 %5, 0
+  %6 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  br i1 %cmp18, label %if.then20, label %if.else
+
+if.then20:                                        ; preds = %entry
+  %SeinitialQP = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 129
+  %7 = load i32* %SeinitialQP, align 4, !tbaa !3
+  store i32 %7, i32* @MyInitialQp, align 4, !tbaa !3
+  %sub21 = add nsw i32 %7, -1
+  store i32 %sub21, i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %7, i32* @QPLastGOP, align 4, !tbaa !3
+  %TotalQpforPPicture84.pre = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129
+  %NumberofPPicture85.pre = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 130
+  br label %if.end83
+
+if.else:                                          ; preds = %entry
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 91
+  %8 = load i32* %PicInterlace, align 4, !tbaa !3
+  %cmp22 = icmp eq i32 %8, 2
+  br i1 %cmp22, label %if.then24, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.else
+  %MbInterlace = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 92
+  %9 = load i32* %MbInterlace, align 4, !tbaa !3
+  %tobool = icmp eq i32 %9, 0
+  br i1 %tobool, label %lor.lhs.false.if.end33_crit_edge, label %if.then24
+
+lor.lhs.false.if.end33_crit_edge:                 ; preds = %lor.lhs.false
+  %.pre = load i32* @QPLastPFrame, align 4, !tbaa !3
+  %TotalQpforPPicture34.pre = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129
+  br label %if.end33
+
+if.then24:                                        ; preds = %lor.lhs.false, %if.else
+  %FieldFrame = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 135
+  %10 = load i32* %FieldFrame, align 4, !tbaa !3
+  %cmp25 = icmp eq i32 %10, 1
+  br i1 %cmp25, label %if.then27, label %if.else29
+
+if.then27:                                        ; preds = %if.then24
+  %11 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  %TotalQpforPPicture = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129
+  %12 = load i32* %TotalQpforPPicture, align 4, !tbaa !3
+  %add28 = add nsw i32 %12, %11
+  store i32 %add28, i32* %TotalQpforPPicture, align 4, !tbaa !3
+  %13 = load i32* @FrameQPBuffer, align 4, !tbaa !3
+  store i32 %13, i32* @QPLastPFrame, align 4, !tbaa !3
+  br label %if.end33
+
+if.else29:                                        ; preds = %if.then24
+  %14 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  %TotalQpforPPicture30 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 129
+  %15 = load i32* %TotalQpforPPicture30, align 4, !tbaa !3
+  %add31 = add nsw i32 %15, %14
+  store i32 %add31, i32* %TotalQpforPPicture30, align 4, !tbaa !3
+  %16 = load i32* @FieldQPBuffer, align 4, !tbaa !3
+  store i32 %16, i32* @QPLastPFrame, align 4, !tbaa !3
+  br label %if.end33
+
+if.end33:                                         ; preds = %lor.lhs.false.if.end33_crit_edge, %if.then27, %if.else29
+  %TotalQpforPPicture34.pre-phi = phi i32* [ %TotalQpforPPicture34.pre, %lor.lhs.false.if.end33_crit_edge ], [ %TotalQpforPPicture, %if.then27 ], [ %TotalQpforPPicture30, %if.else29 ]
+  %17 = phi i32 [ %.pre, %lor.lhs.false.if.end33_crit_edge ], [ %13, %if.then27 ], [ %16, %if.else29 ]
+  %18 = load i32* %TotalQpforPPicture34.pre-phi, align 4, !tbaa !3
+  %conv35 = sitofp i32 %18 to double
+  %NumberofPPicture = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 130
+  %19 = load i32* %NumberofPPicture, align 4, !tbaa !3
+  %conv37 = sitofp i32 %19 to double
+  %div38 = fdiv double %conv35, %conv37
+  %add39 = fadd double %div38, 5.000000e-01
+  %conv40 = fptosi double %add39 to i32
+  %div45 = fdiv double %conv7, 1.500000e+01
+  %add46 = fadd double %div45, 5.000000e-01
+  %conv47 = fptosi double %add46 to i32
+  %cmp48 = icmp sgt i32 %conv47, 2
+  %.conv47 = select i1 %cmp48, i32 2, i32 %conv47
+  %sub52 = sub nsw i32 %conv40, %.conv47
+  %sub53 = add nsw i32 %17, -2
+  %cmp54 = icmp sgt i32 %sub52, %sub53
+  %dec = sext i1 %cmp54 to i32
+  %dec.sub52 = add nsw i32 %sub52, %dec
+  %20 = load i32* @QPLastGOP, align 4, !tbaa !3
+  %sub58 = add nsw i32 %20, -2
+  %cmp59 = icmp slt i32 %sub58, %dec.sub52
+  %.sub58 = select i1 %cmp59, i32 %dec.sub52, i32 %sub58
+  %add62 = add nsw i32 %20, 2
+  %cmp63 = icmp slt i32 %add62, %.sub58
+  %cond69 = select i1 %cmp63, i32 %add62, i32 %.sub58
+  %21 = load i32* @RC_MAX_QUANT, align 4, !tbaa !3
+  %cmp70 = icmp slt i32 %21, %cond69
+  %cond75 = select i1 %cmp70, i32 %21, i32 %cond69
+  %22 = load i32* @RC_MIN_QUANT, align 4, !tbaa !3
+  %cmp76 = icmp slt i32 %22, %cond75
+  %cond81 = select i1 %cmp76, i32 %cond75, i32 %22
+  store i32 %cond81, i32* @PAverageQp, align 4, !tbaa !3
+  store i32 %cond81, i32* @MyInitialQp, align 4, !tbaa !3
+  store i32 %cond81, i32* @QPLastGOP, align 4, !tbaa !3
+  store i32 %cond81, i32* @Pm_Qp, align 4, !tbaa !3
+  store i32 %cond81, i32* @PAveFrameQP, align 4, !tbaa !3
+  %23 = load i32* @PreviousQp2, align 4, !tbaa !3
+  store i32 %23, i32* @PreviousQp1, align 4, !tbaa !3
+  %sub82 = add nsw i32 %cond81, -1
+  store i32 %sub82, i32* @PreviousQp2, align 4, !tbaa !3
+  br label %if.end83
+
+if.end83:                                         ; preds = %if.end33, %if.then20
+  %NumberofPPicture85.pre-phi = phi i32* [ %NumberofPPicture, %if.end33 ], [ %NumberofPPicture85.pre, %if.then20 ]
+  %TotalQpforPPicture84.pre-phi = phi i32* [ %TotalQpforPPicture34.pre-phi, %if.end33 ], [ %TotalQpforPPicture84.pre, %if.then20 ]
+  store i32 0, i32* %TotalQpforPPicture84.pre-phi, align 4, !tbaa !3
+  store i32 0, i32* %NumberofPPicture85.pre-phi, align 4, !tbaa !3
+  store i32 0, i32* @NumberofBFrames, align 4, !tbaa !3
+  ret void
+}

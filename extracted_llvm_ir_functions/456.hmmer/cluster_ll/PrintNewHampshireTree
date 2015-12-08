@@ -1,0 +1,121 @@
+define void @PrintNewHampshireTree(%struct._IO_FILE* nocapture %fp, %struct.aliinfo_s* nocapture %ainfo, %struct.phylo_s* nocapture %tree, i32 %N) #0 {
+entry:
+  %code = alloca i32, align 4
+  %mul = shl nsw i32 %N, 1
+  %sub = add nsw i32 %mul, -1
+  %conv = sext i32 %sub to i64
+  %mul1 = shl nsw i64 %conv, 2
+  %call = call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 464, i64 %mul1) #4
+  %0 = bitcast i8* %call to float*
+  %call2 = call %struct.intstack_s* @InitIntStack() #4
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %N) #4
+  %call395 = call i32 @PopIntStack(%struct.intstack_s* %call2, i32* %code) #4
+  %tobool96 = icmp eq i32 %call395, 0
+  br i1 %tobool96, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %entry
+  %sqinfo = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %docomma.097 = phi i32 [ 0, %while.body.lr.ph ], [ %docomma.0.be, %while.cond.backedge ]
+  %1 = load i32* %code, align 4, !tbaa !4
+  %cmp = icmp slt i32 %1, %N
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %while.body
+  %tobool5 = icmp eq i32 %docomma.097, 0
+  br i1 %tobool5, label %if.end, label %if.then6
+
+if.then6:                                         ; preds = %if.then
+  %fputc94 = call i32 @fputc(i32 44, %struct._IO_FILE* %fp)
+  %.pre = load i32* %code, align 4, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then6
+  %2 = phi i32 [ %1, %if.then ], [ %.pre, %if.then6 ]
+  %idxprom = sext i32 %2 to i64
+  %3 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
+  %arraydecay = getelementptr inbounds %struct.seqinfo_s* %3, i64 %idxprom, i32 1, i64 0
+  %arrayidx9 = getelementptr inbounds float* %0, i64 %idxprom
+  %4 = load float* %arrayidx9, align 4, !tbaa !3
+  %conv10 = fpext float %4 to double
+  %call11 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* %arraydecay, double %conv10) #4
+  br label %while.cond.backedge
+
+if.else:                                          ; preds = %while.body
+  %cmp13 = icmp slt i32 %1, %mul
+  br i1 %cmp13, label %if.then15, label %if.else45
+
+if.then15:                                        ; preds = %if.else
+  %tobool16 = icmp eq i32 %docomma.097, 0
+  br i1 %tobool16, label %if.end19, label %if.then17
+
+if.then17:                                        ; preds = %if.then15
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
+  br label %if.end19
+
+if.end19:                                         ; preds = %if.then15, %if.then17
+  %fputc = call i32 @fputc(i32 40, %struct._IO_FILE* %fp)
+  %6 = load i32* %code, align 4, !tbaa !4
+  %add = add nsw i32 %6, %N
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %add) #4
+  %7 = load i32* %code, align 4, !tbaa !4
+  %sub21 = sub nsw i32 %7, %N
+  %idxprom22 = sext i32 %sub21 to i64
+  %right = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom22, i32 2
+  %8 = load i32* %right, align 4, !tbaa !4
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %8) #4
+  %9 = load i32* %code, align 4, !tbaa !4
+  %sub24 = sub nsw i32 %9, %N
+  %idxprom25 = sext i32 %sub24 to i64
+  %left = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom25, i32 1
+  %10 = load i32* %left, align 4, !tbaa !4
+  call void @PushIntStack(%struct.intstack_s* %call2, i32 %10) #4
+  %11 = load i32* %code, align 4, !tbaa !4
+  %sub27 = sub nsw i32 %11, %N
+  %idxprom28 = sext i32 %sub27 to i64
+  %rblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 5
+  %12 = load float* %rblen, align 4, !tbaa !3
+  %right33 = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 2
+  %13 = load i32* %right33, align 4, !tbaa !4
+  %idxprom34 = sext i32 %13 to i64
+  %arrayidx35 = getelementptr inbounds float* %0, i64 %idxprom34
+  store float %12, float* %arrayidx35, align 4, !tbaa !3
+  %lblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 4
+  %14 = load float* %lblen, align 4, !tbaa !3
+  %left42 = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom28, i32 1
+  %15 = load i32* %left42, align 4, !tbaa !4
+  %idxprom43 = sext i32 %15 to i64
+  %arrayidx44 = getelementptr inbounds float* %0, i64 %idxprom43
+  store float %14, float* %arrayidx44, align 4, !tbaa !3
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.end19, %if.end, %if.else51, %if.then49
+  %docomma.0.be = phi i32 [ 1, %if.end ], [ 0, %if.end19 ], [ 1, %if.else51 ], [ 1, %if.then49 ]
+  %call3 = call i32 @PopIntStack(%struct.intstack_s* %call2, i32* %code) #4
+  %tobool = icmp eq i32 %call3, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+if.else45:                                        ; preds = %if.else
+  %cmp47 = icmp eq i32 %1, %mul
+  br i1 %cmp47, label %if.then49, label %if.else51
+
+if.then49:                                        ; preds = %if.else45
+  %16 = call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str6, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %fp)
+  br label %while.cond.backedge
+
+if.else51:                                        ; preds = %if.else45
+  %sub52 = sub nsw i32 %1, %N
+  %idxprom53 = sext i32 %sub52 to i64
+  %arrayidx54 = getelementptr inbounds float* %0, i64 %idxprom53
+  %17 = load float* %arrayidx54, align 4, !tbaa !3
+  %conv55 = fpext float %17 to double
+  %call56 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0), double %conv55) #4
+  br label %while.cond.backedge
+
+while.end:                                        ; preds = %while.cond.backedge, %entry
+  %call60 = call i32 @FreeIntStack(%struct.intstack_s* %call2) #4
+  call void @free(i8* %call) #4
+  ret void
+}

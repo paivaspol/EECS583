@@ -1,0 +1,38 @@
+define void @Tree_fillOldToNewPerm(%struct._Tree* %tree, i32* %oldToNew) #0 {
+entry:
+  %cmp = icmp eq %struct._Tree* %tree, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
+  %0 = load i32* %n, align 4, !tbaa !0
+  %cmp1 = icmp slt i32 %0, 1
+  %cmp3 = icmp eq i32* %oldToNew, null
+  %or.cond = or i1 %cmp1, %cmp3
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str1, i64 0, i64 0), %struct._Tree* %tree, i32* %oldToNew) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call4 = tail call i32 @Tree_postOTfirst(%struct._Tree* %tree) #4
+  %cmp515 = icmp eq i32 %call4, -1
+  br i1 %cmp515, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.end, %for.body
+  %v.017 = phi i32 [ %call6, %for.body ], [ %call4, %if.end ]
+  %i.016 = phi i32 [ %inc, %for.body ], [ 0, %if.end ]
+  %inc = add nsw i32 %i.016, 1
+  %idxprom = sext i32 %v.017 to i64
+  %arrayidx = getelementptr inbounds i32* %oldToNew, i64 %idxprom
+  store i32 %i.016, i32* %arrayidx, align 4, !tbaa !0
+  %call6 = tail call i32 @Tree_postOTnext(%struct._Tree* %tree, i32 %v.017) #4
+  %cmp5 = icmp eq i32 %call6, -1
+  br i1 %cmp5, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %if.end
+  ret void
+}

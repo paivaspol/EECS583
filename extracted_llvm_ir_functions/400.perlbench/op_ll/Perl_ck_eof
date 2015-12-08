@@ -1,0 +1,48 @@
+define %struct.op* @Perl_ck_eof(%struct.op* %o) #0 {
+entry:
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %conv = zext i16 %0 to i32
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %1, 4
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %2 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %3 = load %struct.op** %2, align 8, !tbaa !3
+  %op_type2 = getelementptr inbounds %struct.op* %3, i64 0, i32 4
+  %4 = load i16* %op_type2, align 2, !tbaa !4
+  %cmp = icmp eq i16 %4, 1
+  br i1 %cmp, label %if.then5, label %if.end
+
+if.then5:                                         ; preds = %if.then
+  tail call void @Perl_op_free(%struct.op* %o) #8
+  %5 = load %struct.gv** @PL_argvgv, align 8, !tbaa !3
+  %6 = bitcast %struct.gv* %5 to %struct.sv*
+  store %struct.sv* %6, %struct.sv** @PL_Sv, align 8, !tbaa !3
+  %tobool.i = icmp eq %struct.gv* %5, null
+  br i1 %tobool.i, label %Perl_newGVOP.exit, label %land.rhs.i
+
+land.rhs.i:                                       ; preds = %if.then5
+  %7 = getelementptr inbounds %struct.gv* %5, i64 0, i32 1
+  %8 = load i32* %7, align 4, !tbaa !0
+  %inc.i = add i32 %8, 1
+  store i32 %inc.i, i32* %7, align 4, !tbaa !0
+  br label %Perl_newGVOP.exit
+
+Perl_newGVOP.exit:                                ; preds = %if.then5, %land.rhs.i
+  %call.i = tail call %struct.op* @Perl_newSVOP(i32 7, i32 0, %struct.sv* %6) #7
+  %call6 = tail call %struct.op* @Perl_newUNOP(i32 %conv, i32 128, %struct.op* %call.i) #8
+  br label %if.end
+
+if.end:                                           ; preds = %Perl_newGVOP.exit, %if.then
+  %o.addr.0 = phi %struct.op* [ %call6, %Perl_newGVOP.exit ], [ %o, %if.then ]
+  %call7 = tail call %struct.op* @Perl_ck_fun(%struct.op* %o.addr.0) #8
+  br label %return
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi %struct.op* [ %call7, %if.end ], [ %o, %entry ]
+  ret %struct.op* %retval.0
+}

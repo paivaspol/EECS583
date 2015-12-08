@@ -1,0 +1,52 @@
+define internal fastcc %struct._SubMtx* @initBJ(i32 %type, i32 %J, i32 %nJ, i32 %nrhs, %struct._SubMtxManager* %mtxmanager) #0 {
+entry:
+  %nJ.addr = alloca i32, align 4
+  %nrhs.addr = alloca i32, align 4
+  %entries = alloca double*, align 8
+  %inc1 = alloca i32, align 4
+  %inc2 = alloca i32, align 4
+  store i32 %nJ, i32* %nJ.addr, align 4, !tbaa !0
+  store i32 %nrhs, i32* %nrhs.addr, align 4, !tbaa !0
+  %mul = mul nsw i32 %nrhs, %nJ
+  %call = call i32 @SubMtx_nbytesNeeded(i32 %type, i32 1, i32 %nJ, i32 %nrhs, i32 %mul) #5
+  %call1 = call %struct._SubMtx* @SubMtxManager_newObjectOfSizeNbytes(%struct._SubMtxManager* %mtxmanager, i32 %call) #5
+  %cmp = icmp eq %struct._SubMtx* %call1, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str50, i64 0, i64 0), i32 %J) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %1 = load i32* %nJ.addr, align 4, !tbaa !0
+  %2 = load i32* %nrhs.addr, align 4, !tbaa !0
+  %mul3 = mul nsw i32 %2, %1
+  call void @SubMtx_init(%struct._SubMtx* %call1, i32 %type, i32 1, i32 %J, i32 0, i32 %1, i32 %2, i32 %mul3) #5
+  call void @SubMtx_denseInfo(%struct._SubMtx* %call1, i32* %nJ.addr, i32* %nrhs.addr, i32* %inc1, i32* %inc2, double** %entries) #5
+  switch i32 %type, label %if.end12 [
+    i32 1, label %if.then5
+    i32 2, label %if.then8
+  ]
+
+if.then5:                                         ; preds = %if.end
+  %3 = load i32* %nJ.addr, align 4, !tbaa !0
+  %4 = load i32* %nrhs.addr, align 4, !tbaa !0
+  %mul6 = mul nsw i32 %4, %3
+  %5 = load double** %entries, align 8, !tbaa !3
+  call void @DVzero(i32 %mul6, double* %5) #5
+  br label %if.end12
+
+if.then8:                                         ; preds = %if.end
+  %6 = load i32* %nJ.addr, align 4, !tbaa !0
+  %mul9 = shl i32 %6, 1
+  %7 = load i32* %nrhs.addr, align 4, !tbaa !0
+  %mul10 = mul nsw i32 %mul9, %7
+  %8 = load double** %entries, align 8, !tbaa !3
+  call void @DVzero(i32 %mul10, double* %8) #5
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %if.then8, %if.then5
+  ret %struct._SubMtx* %call1
+}

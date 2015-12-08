@@ -1,0 +1,43 @@
+define i32 @Perl_PerlIO_error(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.else10, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.else10, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %tab2 = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 1
+  %1 = load %struct._PerlIO_funcs** %tab2, align 8, !tbaa !3
+  %tobool3 = icmp eq %struct._PerlIO_funcs* %1, null
+  br i1 %tobool3, label %if.then.i, label %land.lhs.true4
+
+land.lhs.true4:                                   ; preds = %if.then
+  %Error = getelementptr inbounds %struct._PerlIO_funcs* %1, i64 0, i32 20
+  %2 = load i64 (%struct._PerlIO**)** %Error, align 8, !tbaa !3
+  %tobool5 = icmp eq i64 (%struct._PerlIO**)* %2, null
+  br i1 %tobool5, label %if.then.i, label %if.then6
+
+if.then6:                                         ; preds = %land.lhs.true4
+  %call = tail call i64 %2(%struct._PerlIO** %f) #9
+  %conv = trunc i64 %call to i32
+  br label %return
+
+if.then.i:                                        ; preds = %land.lhs.true4, %if.then
+  %flags.i = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %3 = load i32* %flags.i, align 4, !tbaa !0
+  %and.i = lshr i32 %3, 11
+  %and.lobit.i = and i32 %and.i, 1
+  br label %return
+
+if.else10:                                        ; preds = %land.lhs.true, %entry
+  %call11 = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call11, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.then.i, %if.else10, %if.then6
+  %retval.0 = phi i32 [ %conv, %if.then6 ], [ -1, %if.else10 ], [ %and.lobit.i, %if.then.i ]
+  ret i32 %retval.0
+}

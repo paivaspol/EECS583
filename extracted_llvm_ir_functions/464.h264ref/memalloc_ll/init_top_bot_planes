@@ -1,0 +1,57 @@
+define i32 @init_top_bot_planes(i16** nocapture %imgFrame, i32 %rows, i32 %columns, i16*** nocapture %imgTopField, i16*** nocapture %imgBotField) #0 {
+entry:
+  %div = sdiv i32 %rows, 2
+  %conv = sext i32 %div to i64
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #3
+  %0 = bitcast i8* %call to i16**
+  store i16** %0, i16*** %imgTopField, align 8, !tbaa !0
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([33 x i8]* @.str, i64 0, i64 0)) #3
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call4 = tail call noalias i8* @calloc(i64 %conv, i64 8) #3
+  %1 = bitcast i8* %call4 to i16**
+  store i16** %1, i16*** %imgBotField, align 8, !tbaa !0
+  %cmp5 = icmp eq i8* %call4, null
+  br i1 %cmp5, label %if.then7, label %for.cond.preheader
+
+if.then7:                                         ; preds = %if.end
+  %call.i34 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([33 x i8]* @.str1, i64 0, i64 0)) #3
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then7, %if.end
+  %cmp1035 = icmp sgt i32 %rows, 1
+  br i1 %cmp1035, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %2 = trunc i64 %indvars.iv to i32
+  %mul = shl nsw i32 %2, 1
+  %idxprom = sext i32 %mul to i64
+  %arrayidx = getelementptr inbounds i16** %imgFrame, i64 %idxprom
+  %3 = load i16** %arrayidx, align 8, !tbaa !0
+  %4 = load i16*** %imgTopField, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i16** %4, i64 %indvars.iv
+  store i16* %3, i16** %arrayidx13, align 8, !tbaa !0
+  %add33 = or i32 %mul, 1
+  %idxprom15 = sext i32 %add33 to i64
+  %arrayidx16 = getelementptr inbounds i16** %imgFrame, i64 %idxprom15
+  %5 = load i16** %arrayidx16, align 8, !tbaa !0
+  %6 = load i16*** %imgBotField, align 8, !tbaa !0
+  %arrayidx18 = getelementptr inbounds i16** %6, i64 %indvars.iv
+  store i16* %5, i16** %arrayidx18, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv.next to i32
+  %cmp10 = icmp slt i32 %7, %div
+  br i1 %cmp10, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %mul20 = shl i32 %rows, 3
+  ret i32 %mul20
+}

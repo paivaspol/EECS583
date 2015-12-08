@@ -1,0 +1,36 @@
+define %struct._PerlIO_funcs* @PerlIO_layer_fetch(%struct.PerlIO_list_s* nocapture %av, i64 %n, %struct._PerlIO_funcs* %def) #1 {
+entry:
+  %cmp = icmp sgt i64 %n, -1
+  br i1 %cmp, label %land.lhs.true, label %if.end
+
+land.lhs.true:                                    ; preds = %entry
+  %cur = getelementptr inbounds %struct.PerlIO_list_s* %av, i64 0, i32 1
+  %0 = load i64* %cur, align 8, !tbaa !4
+  %cmp1 = icmp sgt i64 %0, %n
+  br i1 %cmp1, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  %array = getelementptr inbounds %struct.PerlIO_list_s* %av, i64 0, i32 3
+  %1 = load %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  %funcs = getelementptr inbounds %struct.PerlIO_pair_t* %1, i64 %n, i32 0
+  %2 = load %struct._PerlIO_funcs** %funcs, align 8, !tbaa !3
+  %name = getelementptr inbounds %struct._PerlIO_funcs* %2, i64 0, i32 1
+  %3 = load i8** %name, align 8, !tbaa !3
+  tail call void (i8*, ...)* @PerlIO_debug(i8* undef, i64 %n, i8* %3) #10
+  %4 = load %struct.PerlIO_pair_t** %array, align 8, !tbaa !3
+  %funcs4 = getelementptr inbounds %struct.PerlIO_pair_t* %4, i64 %n, i32 0
+  %5 = load %struct._PerlIO_funcs** %funcs4, align 8, !tbaa !3
+  br label %return
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  %tobool = icmp eq %struct._PerlIO_funcs* %def, null
+  br i1 %tobool, label %if.then5, label %return
+
+if.then5:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([34 x i8]* @.str17, i64 0, i64 0)) #9
+  br label %return
+
+return:                                           ; preds = %if.then5, %if.end, %if.then
+  %retval.0 = phi %struct._PerlIO_funcs* [ %5, %if.then ], [ %def, %if.end ], [ null, %if.then5 ]
+  ret %struct._PerlIO_funcs* %retval.0
+}

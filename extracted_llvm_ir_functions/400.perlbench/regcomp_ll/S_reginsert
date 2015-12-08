@@ -1,0 +1,195 @@
+define internal fastcc void @S_reginsert(%struct.RExC_state_t* nocapture %pRExC_state, i8 zeroext %op, %struct.regnode* %opnd) #0 {
+entry:
+  %idxprom = zext i8 %op to i64
+  %arrayidx = getelementptr inbounds [62 x i8]* @regarglen, i64 0, i64 %idxprom
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %0 to i32
+  %emit = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %1 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp = icmp eq %struct.regnode* %1, @PL_regdummy
+  %add = add nsw i32 %conv, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %size = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 12
+  %2 = load i32* %size, align 4, !tbaa !3
+  %add2 = add nsw i32 %2, %add
+  store i32 %add2, i32* %size, align 4, !tbaa !3
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %idx.ext207 = zext i32 %add to i64
+  %add.ptr = getelementptr inbounds %struct.regnode* %1, i64 %idx.ext207
+  store %struct.regnode* %add.ptr, %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp7211 = icmp ugt %struct.regnode* %1, %opnd
+  %rx = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  br i1 %cmp7211, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %if.end
+  %emit_start = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %src.0213 = phi %struct.regnode* [ %1, %while.body.lr.ph ], [ %incdec.ptr9, %while.cond.backedge ]
+  %dst.0212 = phi %struct.regnode* [ %add.ptr, %while.body.lr.ph ], [ %incdec.ptr, %while.cond.backedge ]
+  %incdec.ptr = getelementptr inbounds %struct.regnode* %dst.0212, i64 -1
+  %incdec.ptr9 = getelementptr inbounds %struct.regnode* %src.0213, i64 -1
+  %3 = bitcast %struct.regnode* %incdec.ptr9 to i32*
+  %4 = bitcast %struct.regnode* %incdec.ptr to i32*
+  %5 = load i32* %3, align 2
+  store i32 %5, i32* %4, align 2
+  %6 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %offsets = getelementptr inbounds %struct.regexp* %6, i64 0, i32 7
+  %7 = load i32** %offsets, align 8, !tbaa !0
+  %tobool = icmp eq i32* %7, null
+  br i1 %tobool, label %while.cond.backedge, label %if.then10
+
+if.then10:                                        ; preds = %while.body
+  %8 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp12 = icmp eq %struct.regnode* %8, @PL_regdummy
+  br i1 %cmp12, label %while.cond.backedge, label %if.then14
+
+if.then14:                                        ; preds = %if.then10
+  %9 = load %struct.regnode** %emit_start, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.regnode* %incdec.ptr to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.regnode* %9 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp15 = icmp slt i64 %sub.ptr.sub, 0
+  br i1 %cmp15, label %if.then17, label %if.else
+
+if.then17:                                        ; preds = %if.then14
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub, 2
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div) #8
+  %.pr.pre = load %struct.regnode** %emit, align 8, !tbaa !0
+  br label %if.end42
+
+if.else:                                          ; preds = %if.then14
+  %sub.ptr.lhs.cast24 = ptrtoint %struct.regnode* %incdec.ptr9 to i64
+  %sub.ptr.sub26 = sub i64 %sub.ptr.lhs.cast24, %sub.ptr.rhs.cast
+  %mul = ashr exact i64 %sub.ptr.sub26, 1
+  %sub = add nsw i64 %mul, -1
+  %arrayidx30 = getelementptr inbounds i32* %7, i64 %sub
+  %10 = load i32* %arrayidx30, align 4, !tbaa !3
+  %mul36 = ashr exact i64 %sub.ptr.sub, 1
+  %sub37 = add nsw i64 %mul36, -1
+  %arrayidx40 = getelementptr inbounds i32* %7, i64 %sub37
+  store i32 %10, i32* %arrayidx40, align 4, !tbaa !3
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.then17, %if.else
+  %.pr = phi %struct.regnode* [ %.pr.pre, %if.then17 ], [ %8, %if.else ]
+  %cmp44 = icmp eq %struct.regnode* %.pr, @PL_regdummy
+  br i1 %cmp44, label %while.cond.backedge, label %if.then46
+
+while.cond.backedge:                              ; preds = %if.end42, %if.else60, %if.then54, %while.body, %if.then10
+  %cmp7 = icmp ugt %struct.regnode* %incdec.ptr9, %opnd
+  br i1 %cmp7, label %while.body, label %while.end
+
+if.then46:                                        ; preds = %if.end42
+  %11 = load %struct.regnode** %emit_start, align 8, !tbaa !0
+  %sub.ptr.rhs.cast49 = ptrtoint %struct.regnode* %11 to i64
+  %sub.ptr.sub50 = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast49
+  %cmp52 = icmp slt i64 %sub.ptr.sub50, 0
+  br i1 %cmp52, label %if.then54, label %if.else60
+
+if.then54:                                        ; preds = %if.then46
+  %sub.ptr.div51 = ashr exact i64 %sub.ptr.sub50, 2
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div51) #8
+  br label %while.cond.backedge
+
+if.else60:                                        ; preds = %if.then46
+  %sub.ptr.lhs.cast62 = ptrtoint %struct.regnode* %incdec.ptr9 to i64
+  %sub.ptr.sub64 = sub i64 %sub.ptr.lhs.cast62, %sub.ptr.rhs.cast49
+  %mul66 = ashr exact i64 %sub.ptr.sub64, 1
+  %12 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %offsets68 = getelementptr inbounds %struct.regexp* %12, i64 0, i32 7
+  %13 = load i32** %offsets68, align 8, !tbaa !0
+  %arrayidx69 = getelementptr inbounds i32* %13, i64 %mul66
+  %14 = load i32* %arrayidx69, align 4, !tbaa !3
+  %mul75 = ashr exact i64 %sub.ptr.sub50, 1
+  %arrayidx78 = getelementptr inbounds i32* %13, i64 %mul75
+  store i32 %14, i32* %arrayidx78, align 4, !tbaa !3
+  br label %while.cond.backedge
+
+while.end:                                        ; preds = %if.end, %while.cond.backedge
+  %15 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %offsets83 = getelementptr inbounds %struct.regexp* %15, i64 0, i32 7
+  %16 = load i32** %offsets83, align 8, !tbaa !0
+  %tobool84 = icmp eq i32* %16, null
+  br i1 %tobool84, label %if.end149, label %if.then85
+
+if.then85:                                        ; preds = %while.end
+  %17 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp87 = icmp eq %struct.regnode* %17, @PL_regdummy
+  br i1 %cmp87, label %if.end149, label %if.then89
+
+if.then89:                                        ; preds = %if.then85
+  %emit_start90 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %18 = load %struct.regnode** %emit_start90, align 8, !tbaa !0
+  %sub.ptr.lhs.cast91 = ptrtoint %struct.regnode* %opnd to i64
+  %sub.ptr.rhs.cast92 = ptrtoint %struct.regnode* %18 to i64
+  %sub.ptr.sub93 = sub i64 %sub.ptr.lhs.cast91, %sub.ptr.rhs.cast92
+  %cmp95 = icmp slt i64 %sub.ptr.sub93, 0
+  br i1 %cmp95, label %if.then97, label %if.else103
+
+if.then97:                                        ; preds = %if.then89
+  %sub.ptr.div94 = ashr exact i64 %sub.ptr.sub93, 2
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div94) #8
+  %.pr209.pre = load %struct.regnode** %emit, align 8, !tbaa !0
+  br label %if.end119
+
+if.else103:                                       ; preds = %if.then89
+  %parse = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 5
+  %19 = load i8** %parse, align 8, !tbaa !0
+  %start = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %20 = load i8** %start, align 8, !tbaa !0
+  %sub.ptr.lhs.cast104 = ptrtoint i8* %19 to i64
+  %sub.ptr.rhs.cast105 = ptrtoint i8* %20 to i64
+  %sub.ptr.sub106 = sub i64 %sub.ptr.lhs.cast104, %sub.ptr.rhs.cast105
+  %conv107 = trunc i64 %sub.ptr.sub106 to i32
+  %mul113 = ashr exact i64 %sub.ptr.sub93, 1
+  %sub114 = add nsw i64 %mul113, -1
+  %arrayidx117 = getelementptr inbounds i32* %16, i64 %sub114
+  store i32 %conv107, i32* %arrayidx117, align 4, !tbaa !3
+  br label %if.end119
+
+if.end119:                                        ; preds = %if.then97, %if.else103
+  %.pr209 = phi %struct.regnode* [ %.pr209.pre, %if.then97 ], [ %17, %if.else103 ]
+  %cmp121 = icmp eq %struct.regnode* %.pr209, @PL_regdummy
+  br i1 %cmp121, label %if.end149, label %if.then123
+
+if.then123:                                       ; preds = %if.end119
+  %21 = load %struct.regnode** %emit_start90, align 8, !tbaa !0
+  %sub.ptr.rhs.cast126 = ptrtoint %struct.regnode* %21 to i64
+  %sub.ptr.sub127 = sub i64 %sub.ptr.lhs.cast91, %sub.ptr.rhs.cast126
+  %cmp129 = icmp slt i64 %sub.ptr.sub127, 0
+  br i1 %cmp129, label %if.then131, label %if.else137
+
+if.then131:                                       ; preds = %if.then123
+  %sub.ptr.div128 = ashr exact i64 %sub.ptr.sub127, 2
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div128) #8
+  br label %if.end149
+
+if.else137:                                       ; preds = %if.then123
+  %mul143 = ashr exact i64 %sub.ptr.sub127, 1
+  %22 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %offsets145 = getelementptr inbounds %struct.regexp* %22, i64 0, i32 7
+  %23 = load i32** %offsets145, align 8, !tbaa !0
+  %arrayidx146 = getelementptr inbounds i32* %23, i64 %mul143
+  store i32 1, i32* %arrayidx146, align 4, !tbaa !3
+  br label %if.end149
+
+if.end149:                                        ; preds = %if.then85, %while.end, %if.end119, %if.else137, %if.then131
+  %type = getelementptr inbounds %struct.regnode* %opnd, i64 0, i32 1
+  store i8 %op, i8* %type, align 1, !tbaa !1
+  %next_off = getelementptr inbounds %struct.regnode* %opnd, i64 0, i32 2
+  store i16 0, i16* %next_off, align 2, !tbaa !4
+  %24 = getelementptr inbounds %struct.regnode* %opnd, i64 1, i32 0
+  %conv152 = zext i8 %0 to i64
+  %mul153 = shl nuw nsw i64 %conv152, 2
+  tail call void @llvm.memset.p0i8.i64(i8* %24, i8 0, i64 %mul153, i32 1, i1 false)
+  br label %return
+
+return:                                           ; preds = %if.end149, %if.then
+  ret void
+}

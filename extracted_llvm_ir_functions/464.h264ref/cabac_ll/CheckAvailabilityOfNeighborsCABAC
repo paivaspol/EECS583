@@ -1,0 +1,63 @@
+define void @CheckAvailabilityOfNeighborsCABAC() #0 {
+entry:
+  %up = alloca %struct.pix_pos, align 4
+  %left = alloca %struct.pix_pos, align 4
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %1 = load i32* %current_mb_nr, align 4, !tbaa !0
+  %idxprom = sext i32 %1 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  call void @getNeighbour(i32 %1, i32 -1, i32 0, i32 1, %struct.pix_pos* %left) #5
+  %3 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %current_mb_nr2 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 3
+  %4 = load i32* %current_mb_nr2, align 4, !tbaa !0
+  call void @getNeighbour(i32 %4, i32 0, i32 -1, i32 1, %struct.pix_pos* %up) #5
+  %available = getelementptr inbounds %struct.pix_pos* %up, i64 0, i32 0
+  %5 = load i32* %available, align 4, !tbaa !0
+  %tobool = icmp eq i32 %5, 0
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %mb_addr = getelementptr inbounds %struct.pix_pos* %up, i64 0, i32 1
+  %6 = load i32* %mb_addr, align 4, !tbaa !0
+  %idxprom3 = sext i32 %6 to i64
+  %7 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %mb_data4 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 51
+  %8 = load %struct.macroblock** %mb_data4, align 8, !tbaa !3
+  %arrayidx5 = getelementptr inbounds %struct.macroblock* %8, i64 %idxprom3
+  %mb_available_up = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 6
+  store %struct.macroblock* %arrayidx5, %struct.macroblock** %mb_available_up, align 8, !tbaa !3
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %mb_available_up6 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 6
+  store %struct.macroblock* null, %struct.macroblock** %mb_available_up6, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %available7 = getelementptr inbounds %struct.pix_pos* %left, i64 0, i32 0
+  %9 = load i32* %available7, align 4, !tbaa !0
+  %tobool8 = icmp eq i32 %9, 0
+  br i1 %tobool8, label %if.else14, label %if.then9
+
+if.then9:                                         ; preds = %if.end
+  %mb_addr10 = getelementptr inbounds %struct.pix_pos* %left, i64 0, i32 1
+  %10 = load i32* %mb_addr10, align 4, !tbaa !0
+  %idxprom11 = sext i32 %10 to i64
+  %11 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %mb_data12 = getelementptr inbounds %struct.ImageParameters* %11, i64 0, i32 51
+  %12 = load %struct.macroblock** %mb_data12, align 8, !tbaa !3
+  %arrayidx13 = getelementptr inbounds %struct.macroblock* %12, i64 %idxprom11
+  %mb_available_left = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 7
+  store %struct.macroblock* %arrayidx13, %struct.macroblock** %mb_available_left, align 8, !tbaa !3
+  br label %if.end16
+
+if.else14:                                        ; preds = %if.end
+  %mb_available_left15 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 7
+  store %struct.macroblock* null, %struct.macroblock** %mb_available_left15, align 8, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else14, %if.then9
+  ret void
+}

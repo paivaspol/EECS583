@@ -1,0 +1,19 @@
+define %struct.op* @Perl_pop_return() #0 {
+entry:
+  %0 = load i32* @PL_retstack_ix, align 4, !tbaa !4
+  %cmp = icmp sgt i32 %0, 0
+  br i1 %cmp, label %if.then, label %return
+
+if.then:                                          ; preds = %entry
+  %dec = add nsw i32 %0, -1
+  store i32 %dec, i32* @PL_retstack_ix, align 4, !tbaa !4
+  %idxprom = sext i32 %dec to i64
+  %1 = load %struct.op*** @PL_retstack, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.op** %1, i64 %idxprom
+  %2 = load %struct.op** %arrayidx, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi %struct.op* [ %2, %if.then ], [ null, %entry ]
+  ret %struct.op* %retval.0
+}

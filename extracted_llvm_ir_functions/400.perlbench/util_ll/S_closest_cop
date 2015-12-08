@@ -1,0 +1,55 @@
+define internal fastcc %struct.cop* @S_closest_cop(%struct.cop* %cop, %struct.op* %o) #5 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  %0 = load %struct.op** @PL_op, align 8, !tbaa !2
+  %cmp = icmp eq %struct.op* %0, %o
+  %or.cond = or i1 %tobool, %cmp
+  br i1 %or.cond, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !0
+  %and = and i8 %1, 4
+  %tobool1 = icmp eq i8 %and, 0
+  br i1 %tobool1, label %return, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %2 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %kid.025 = load %struct.op** %2, align 8
+  %tobool326 = icmp eq %struct.op* %kid.025, null
+  br i1 %tobool326, label %return, label %for.body
+
+for.cond:                                         ; preds = %if.end10
+  %op_sibling = getelementptr inbounds %struct.op* %kid.028, i64 0, i32 1
+  %kid.0 = load %struct.op** %op_sibling, align 8
+  %tobool3 = icmp eq %struct.op* %kid.0, null
+  br i1 %tobool3, label %return, label %for.body
+
+for.body:                                         ; preds = %if.then2, %for.cond
+  %kid.028 = phi %struct.op* [ %kid.0, %for.cond ], [ %kid.025, %if.then2 ]
+  %cop.addr.027 = phi %struct.cop* [ %cop.addr.1, %for.cond ], [ %cop, %if.then2 ]
+  %op_type = getelementptr inbounds %struct.op* %kid.028, i64 0, i32 4
+  %3 = load i16* %op_type, align 2, !tbaa !5
+  %cmp5 = icmp eq i16 %3, 0
+  br i1 %cmp5, label %land.lhs.true, label %if.end10
+
+land.lhs.true:                                    ; preds = %for.body
+  %op_targ = getelementptr inbounds %struct.op* %kid.028, i64 0, i32 3
+  %4 = load i64* %op_targ, align 8, !tbaa !4
+  %cmp7 = icmp eq i64 %4, 174
+  br i1 %cmp7, label %if.then9, label %if.end10
+
+if.then9:                                         ; preds = %land.lhs.true
+  %5 = bitcast %struct.op* %kid.028 to %struct.cop*
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then9, %land.lhs.true, %for.body
+  %cop.addr.1 = phi %struct.cop* [ %5, %if.then9 ], [ %cop.addr.027, %land.lhs.true ], [ %cop.addr.027, %for.body ]
+  %call = tail call fastcc %struct.cop* @S_closest_cop(%struct.cop* %cop.addr.1, %struct.op* %kid.028) #9
+  %tobool11 = icmp eq %struct.cop* %call, null
+  br i1 %tobool11, label %for.cond, label %return
+
+return:                                           ; preds = %if.then2, %if.end10, %for.cond, %if.end, %entry
+  %retval.0 = phi %struct.cop* [ %cop, %entry ], [ null, %if.end ], [ null, %if.then2 ], [ %call, %if.end10 ], [ null, %for.cond ]
+  ret %struct.cop* %retval.0
+}

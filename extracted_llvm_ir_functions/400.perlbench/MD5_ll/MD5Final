@@ -1,0 +1,128 @@
+define internal fastcc void @MD5Final(i8* nocapture %digest, %struct.MD5_CTX* nocapture %ctx) #0 {
+entry:
+  %bytes_low = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 5
+  %0 = load i32* %bytes_low, align 4, !tbaa !3
+  %and = and i32 %0, 63
+  %conv = zext i32 %and to i64
+  %cmp = icmp ult i32 %and, 56
+  %conv2 = select i1 %cmp, i64 56, i64 120
+  %sub = sub i64 %conv2, %conv
+  %arraydecay = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 0
+  %add.ptr = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %conv
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* getelementptr inbounds ([64 x i8]* @PADDING, i64 0, i64 0), i64 %sub, i32 1, i1 false)
+  %1 = load i32* %bytes_low, align 4, !tbaa !3
+  %shl = shl i32 %1, 3
+  %bytes_high = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 6
+  %2 = load i32* %bytes_high, align 4, !tbaa !3
+  %shl4 = shl i32 %2, 3
+  %shr = lshr i32 %1, 29
+  %or = or i32 %shl4, %shr
+  %add.ptr8 = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %conv2
+  %conv.i = trunc i32 %shl to i8
+  %add.ptr8.sum95 = or i64 %conv2, 1
+  %incdec.ptr.i = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add.ptr8.sum95
+  store i8 %conv.i, i8* %add.ptr8, align 1, !tbaa !1
+  %3 = lshr i32 %1, 5
+  %conv2.i = trunc i32 %3 to i8
+  %add.ptr8.sum96 = or i64 %conv2, 2
+  %incdec.ptr3.i = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add.ptr8.sum96
+  store i8 %conv2.i, i8* %incdec.ptr.i, align 1, !tbaa !1
+  %4 = lshr i32 %1, 13
+  %conv6.i = trunc i32 %4 to i8
+  %add.ptr8.sum97 = or i64 %conv2, 3
+  %incdec.ptr7.i = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add.ptr8.sum97
+  store i8 %conv6.i, i8* %incdec.ptr3.i, align 1, !tbaa !1
+  %5 = lshr i32 %1, 21
+  %conv10.i = trunc i32 %5 to i8
+  store i8 %conv10.i, i8* %incdec.ptr7.i, align 1, !tbaa !1
+  %add944 = or i64 %conv2, 4
+  %add.ptr12 = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add944
+  %conv.i85 = trunc i32 %or to i8
+  %add.ptr12.sum98 = or i64 %conv2, 5
+  %incdec.ptr.i86 = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add.ptr12.sum98
+  store i8 %conv.i85, i8* %add.ptr12, align 1, !tbaa !1
+  %6 = lshr i32 %2, 5
+  %conv2.i88 = trunc i32 %6 to i8
+  %add.ptr12.sum99 = or i64 %conv2, 6
+  %incdec.ptr3.i89 = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add.ptr12.sum99
+  store i8 %conv2.i88, i8* %incdec.ptr.i86, align 1, !tbaa !1
+  %7 = lshr i32 %2, 13
+  %conv6.i91 = trunc i32 %7 to i8
+  %add.ptr12.sum100 = or i64 %conv2, 7
+  %incdec.ptr7.i92 = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 7, i64 %add.ptr12.sum100
+  store i8 %conv6.i91, i8* %incdec.ptr3.i89, align 1, !tbaa !1
+  %8 = lshr i32 %2, 21
+  %conv10.i94 = trunc i32 %8 to i8
+  store i8 %conv10.i94, i8* %incdec.ptr7.i92, align 1, !tbaa !1
+  %add13 = add i64 %add944, 4
+  %shr16 = lshr i64 %add13, 6
+  tail call fastcc void @MD5Transform(%struct.MD5_CTX* %ctx, i8* %arraydecay, i64 %shr16) #5
+  %A = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 1
+  %9 = load i32* %A, align 4, !tbaa !3
+  %conv.i75 = trunc i32 %9 to i8
+  %incdec.ptr.i76 = getelementptr inbounds i8* %digest, i64 1
+  store i8 %conv.i75, i8* %digest, align 1, !tbaa !1
+  %shr.i77 = lshr i32 %9, 8
+  %conv2.i78 = trunc i32 %shr.i77 to i8
+  %incdec.ptr3.i79 = getelementptr inbounds i8* %digest, i64 2
+  store i8 %conv2.i78, i8* %incdec.ptr.i76, align 1, !tbaa !1
+  %shr4.i80 = lshr i32 %9, 16
+  %conv6.i81 = trunc i32 %shr4.i80 to i8
+  %incdec.ptr7.i82 = getelementptr inbounds i8* %digest, i64 3
+  store i8 %conv6.i81, i8* %incdec.ptr3.i79, align 1, !tbaa !1
+  %shr8.i83 = lshr i32 %9, 24
+  %conv10.i84 = trunc i32 %shr8.i83 to i8
+  store i8 %conv10.i84, i8* %incdec.ptr7.i82, align 1, !tbaa !1
+  %B = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 2
+  %10 = load i32* %B, align 4, !tbaa !3
+  %add.ptr17 = getelementptr inbounds i8* %digest, i64 4
+  %conv.i65 = trunc i32 %10 to i8
+  %incdec.ptr.i66 = getelementptr inbounds i8* %digest, i64 5
+  store i8 %conv.i65, i8* %add.ptr17, align 1, !tbaa !1
+  %shr.i67 = lshr i32 %10, 8
+  %conv2.i68 = trunc i32 %shr.i67 to i8
+  %incdec.ptr3.i69 = getelementptr inbounds i8* %digest, i64 6
+  store i8 %conv2.i68, i8* %incdec.ptr.i66, align 1, !tbaa !1
+  %shr4.i70 = lshr i32 %10, 16
+  %conv6.i71 = trunc i32 %shr4.i70 to i8
+  %incdec.ptr7.i72 = getelementptr inbounds i8* %digest, i64 7
+  store i8 %conv6.i71, i8* %incdec.ptr3.i69, align 1, !tbaa !1
+  %shr8.i73 = lshr i32 %10, 24
+  %conv10.i74 = trunc i32 %shr8.i73 to i8
+  store i8 %conv10.i74, i8* %incdec.ptr7.i72, align 1, !tbaa !1
+  %C = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 3
+  %11 = load i32* %C, align 4, !tbaa !3
+  %add.ptr18 = getelementptr inbounds i8* %digest, i64 8
+  %conv.i55 = trunc i32 %11 to i8
+  %incdec.ptr.i56 = getelementptr inbounds i8* %digest, i64 9
+  store i8 %conv.i55, i8* %add.ptr18, align 1, !tbaa !1
+  %shr.i57 = lshr i32 %11, 8
+  %conv2.i58 = trunc i32 %shr.i57 to i8
+  %incdec.ptr3.i59 = getelementptr inbounds i8* %digest, i64 10
+  store i8 %conv2.i58, i8* %incdec.ptr.i56, align 1, !tbaa !1
+  %shr4.i60 = lshr i32 %11, 16
+  %conv6.i61 = trunc i32 %shr4.i60 to i8
+  %incdec.ptr7.i62 = getelementptr inbounds i8* %digest, i64 11
+  store i8 %conv6.i61, i8* %incdec.ptr3.i59, align 1, !tbaa !1
+  %shr8.i63 = lshr i32 %11, 24
+  %conv10.i64 = trunc i32 %shr8.i63 to i8
+  store i8 %conv10.i64, i8* %incdec.ptr7.i62, align 1, !tbaa !1
+  %D = getelementptr inbounds %struct.MD5_CTX* %ctx, i64 0, i32 4
+  %12 = load i32* %D, align 4, !tbaa !3
+  %add.ptr19 = getelementptr inbounds i8* %digest, i64 12
+  %conv.i45 = trunc i32 %12 to i8
+  %incdec.ptr.i46 = getelementptr inbounds i8* %digest, i64 13
+  store i8 %conv.i45, i8* %add.ptr19, align 1, !tbaa !1
+  %shr.i47 = lshr i32 %12, 8
+  %conv2.i48 = trunc i32 %shr.i47 to i8
+  %incdec.ptr3.i49 = getelementptr inbounds i8* %digest, i64 14
+  store i8 %conv2.i48, i8* %incdec.ptr.i46, align 1, !tbaa !1
+  %shr4.i50 = lshr i32 %12, 16
+  %conv6.i51 = trunc i32 %shr4.i50 to i8
+  %incdec.ptr7.i52 = getelementptr inbounds i8* %digest, i64 15
+  store i8 %conv6.i51, i8* %incdec.ptr3.i49, align 1, !tbaa !1
+  %shr8.i53 = lshr i32 %12, 24
+  %conv10.i54 = trunc i32 %shr8.i53 to i8
+  store i8 %conv10.i54, i8* %incdec.ptr7.i52, align 1, !tbaa !1
+  ret void
+}

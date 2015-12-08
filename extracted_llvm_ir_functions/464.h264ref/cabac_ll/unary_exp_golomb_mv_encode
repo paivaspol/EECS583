@@ -1,0 +1,52 @@
+define void @unary_exp_golomb_mv_encode(%struct.EncodingEnvironment* %eep_dp, i32 %symbol, %struct.BiContextType* %ctx, i32 %max_bin) #0 {
+entry:
+  %cmp = icmp eq i32 %symbol, 0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #5
+  br label %return
+
+if.else:                                          ; preds = %entry
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #5
+  %incdec.ptr = getelementptr inbounds %struct.BiContextType* %ctx, i64 1
+  %cmp130 = icmp eq i32 %symbol, 1
+  br i1 %cmp130, label %if.then12, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %if.else
+  %0 = sub i32 1, %symbol
+  %1 = icmp ugt i32 %0, -7
+  %2 = select i1 %1, i32 %symbol, i32 8
+  br label %while.body
+
+while.body:                                       ; preds = %while.body, %while.body.lr.ph
+  %ictx.033 = phi %struct.BiContextType* [ %incdec.ptr, %while.body.lr.ph ], [ %incdec.ptr9.incdec.ptr6.ictx.0, %while.body ]
+  %bin.032 = phi i32 [ 1, %while.body.lr.ph ], [ %inc3, %while.body ]
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ictx.033) #5
+  %inc3 = add i32 %bin.032, 1
+  %cmp4 = icmp eq i32 %inc3, 2
+  %incdec.ptr6 = getelementptr inbounds %struct.BiContextType* %ictx.033, i64 1
+  %incdec.ptr6.ictx.0 = select i1 %cmp4, %struct.BiContextType* %incdec.ptr6, %struct.BiContextType* %ictx.033
+  %cmp7 = icmp eq i32 %inc3, %max_bin
+  %incdec.ptr9 = getelementptr inbounds %struct.BiContextType* %incdec.ptr6.ictx.0, i64 1
+  %incdec.ptr9.incdec.ptr6.ictx.0 = select i1 %cmp7, %struct.BiContextType* %incdec.ptr9, %struct.BiContextType* %incdec.ptr6.ictx.0
+  %exitcond = icmp eq i32 %inc3, %2
+  br i1 %exitcond, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body
+  %cmp11 = icmp ult i32 %symbol, 8
+  br i1 %cmp11, label %if.then12, label %if.else13
+
+if.then12:                                        ; preds = %if.else, %while.end
+  %ictx.0.lcssa36 = phi %struct.BiContextType* [ %incdec.ptr9.incdec.ptr6.ictx.0, %while.end ], [ %incdec.ptr, %if.else ]
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ictx.0.lcssa36) #5
+  br label %return
+
+if.else13:                                        ; preds = %while.end
+  %sub = add i32 %symbol, -8
+  tail call void @exp_golomb_encode_eq_prob(%struct.EncodingEnvironment* %eep_dp, i32 %sub, i32 3) #7
+  br label %return
+
+return:                                           ; preds = %if.else13, %if.then12, %if.then
+  ret void
+}

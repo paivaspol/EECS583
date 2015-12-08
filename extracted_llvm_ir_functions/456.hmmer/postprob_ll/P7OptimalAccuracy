@@ -1,0 +1,20 @@
+define float @P7OptimalAccuracy(i8* %dsq, i32 %L, %struct.plan7_s* %hmm, %struct.p7trace_s** %ret_tr) #0 {
+entry:
+  %forward = alloca %struct.dpmatrix_s*, align 8
+  %backward = alloca %struct.dpmatrix_s*, align 8
+  %call = call float @P7Forward(i8* %dsq, i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s** %forward) #2
+  %call1 = call float @P7Backward(i8* %dsq, i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s** %backward) #3
+  %0 = load %struct.dpmatrix_s** %forward, align 8, !tbaa !0
+  %1 = load %struct.dpmatrix_s** %backward, align 8, !tbaa !0
+  call void @P7EmitterPosterior(i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s* %0, %struct.dpmatrix_s* %1, %struct.dpmatrix_s* %1) #3
+  %M = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 20
+  %2 = load i32* %M, align 4, !tbaa !3
+  %3 = load %struct.dpmatrix_s** %backward, align 8, !tbaa !0
+  %4 = load %struct.dpmatrix_s** %forward, align 8, !tbaa !0
+  %call2 = call float @P7FillOptimalAccuracy(i32 %L, i32 %2, %struct.dpmatrix_s* %3, %struct.dpmatrix_s* %4, %struct.p7trace_s** %ret_tr) #3
+  %5 = load %struct.dpmatrix_s** %forward, align 8, !tbaa !0
+  call void @FreePlan7Matrix(%struct.dpmatrix_s* %5) #2
+  %6 = load %struct.dpmatrix_s** %backward, align 8, !tbaa !0
+  call void @FreePlan7Matrix(%struct.dpmatrix_s* %6) #2
+  ret float %call2
+}

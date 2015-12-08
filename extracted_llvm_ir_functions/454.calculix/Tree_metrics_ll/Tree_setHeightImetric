@@ -1,0 +1,110 @@
+define %struct._IV* @Tree_setHeightImetric(%struct._Tree* %tree, %struct._IV* %vmetricIV) #0 {
+entry:
+  %cmp = icmp eq %struct._Tree* %tree, null
+  br i1 %cmp, label %if.then.thread, label %lor.lhs.false
+
+if.then.thread:                                   ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call1069 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), %struct._Tree* null, %struct._IV* %vmetricIV) #4
+  br label %if.end
+
+lor.lhs.false:                                    ; preds = %entry
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
+  %1 = load i32* %n, align 4, !tbaa !0
+  %cmp1 = icmp slt i32 %1, 1
+  %cmp3 = icmp eq %struct._IV* %vmetricIV, null
+  %or.cond = or i1 %cmp1, %cmp3
+  br i1 %or.cond, label %if.then.thread70, label %lor.lhs.false4
+
+if.then.thread70:                                 ; preds = %lor.lhs.false
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call1071 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), %struct._Tree* %tree, %struct._IV* %vmetricIV) #4
+  br label %if.then12
+
+lor.lhs.false4:                                   ; preds = %lor.lhs.false
+  %call = tail call i32 @IV_size(%struct._IV* %vmetricIV) #4
+  %cmp6 = icmp eq i32 %1, %call
+  br i1 %cmp6, label %lor.lhs.false7, label %if.then
+
+lor.lhs.false7:                                   ; preds = %lor.lhs.false4
+  %call8 = tail call i32* @IV_entries(%struct._IV* %vmetricIV) #4
+  %cmp9 = icmp eq i32* %call8, null
+  br i1 %cmp9, label %if.then, label %if.end18
+
+if.then:                                          ; preds = %lor.lhs.false4, %lor.lhs.false7
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), %struct._Tree* %tree, %struct._IV* %vmetricIV) #4
+  br label %if.then12
+
+if.then12:                                        ; preds = %if.then, %if.then.thread70
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call13 = tail call i32 @Tree_writeForHumanEye(%struct._Tree* %tree, %struct._IO_FILE* %4) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then.thread, %if.then12
+  %cmp14 = icmp eq %struct._IV* %vmetricIV, null
+  br i1 %cmp14, label %if.end17, label %if.then15
+
+if.then15:                                        ; preds = %if.end
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call16 = tail call i32 @IV_writeForHumanEye(%struct._IV* %vmetricIV, %struct._IO_FILE* %5) #4
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end, %if.then15
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end18:                                         ; preds = %lor.lhs.false7
+  %call19 = tail call %struct._IV* @IV_new() #4
+  %6 = load i32* %n, align 4, !tbaa !0
+  tail call void @IV_init(%struct._IV* %call19, i32 %6, i32* null) #4
+  %call21 = tail call i32* @IV_entries(%struct._IV* %call19) #4
+  %call22 = tail call i32 @Tree_postOTfirst(%struct._Tree* %tree) #4
+  %cmp2376 = icmp eq i32 %call22, -1
+  br i1 %cmp2376, label %for.end42, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end18
+  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
+  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.end
+  %v.077 = phi i32 [ %call22, %for.body.lr.ph ], [ %call41, %for.end ]
+  %idxprom = sext i32 %v.077 to i64
+  %7 = load i32** %fch, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i32* %7, i64 %idxprom
+  %u.072 = load i32* %arrayidx, align 4
+  %cmp2573 = icmp eq i32 %u.072, -1
+  br i1 %cmp2573, label %for.end, label %for.body26.lr.ph
+
+for.body26.lr.ph:                                 ; preds = %for.body
+  %8 = load i32** %sib, align 8, !tbaa !3
+  br label %for.body26
+
+for.body26:                                       ; preds = %for.body26.lr.ph, %for.body26
+  %u.075 = phi i32 [ %u.072, %for.body26.lr.ph ], [ %u.0, %for.body26 ]
+  %val.074 = phi i32 [ 0, %for.body26.lr.ph ], [ %.val.0, %for.body26 ]
+  %idxprom27 = sext i32 %u.075 to i64
+  %arrayidx28 = getelementptr inbounds i32* %call21, i64 %idxprom27
+  %9 = load i32* %arrayidx28, align 4, !tbaa !0
+  %cmp29 = icmp slt i32 %val.074, %9
+  %.val.0 = select i1 %cmp29, i32 %9, i32 %val.074
+  %arrayidx35 = getelementptr inbounds i32* %8, i64 %idxprom27
+  %u.0 = load i32* %arrayidx35, align 4
+  %cmp25 = icmp eq i32 %u.0, -1
+  br i1 %cmp25, label %for.end, label %for.body26
+
+for.end:                                          ; preds = %for.body26, %for.body
+  %val.0.lcssa = phi i32 [ 0, %for.body ], [ %.val.0, %for.body26 ]
+  %arrayidx37 = getelementptr inbounds i32* %call8, i64 %idxprom
+  %10 = load i32* %arrayidx37, align 4, !tbaa !0
+  %add = add nsw i32 %10, %val.0.lcssa
+  %arrayidx39 = getelementptr inbounds i32* %call21, i64 %idxprom
+  store i32 %add, i32* %arrayidx39, align 4, !tbaa !0
+  %call41 = tail call i32 @Tree_postOTnext(%struct._Tree* %tree, i32 %v.077) #4
+  %cmp23 = icmp eq i32 %call41, -1
+  br i1 %cmp23, label %for.end42, label %for.body
+
+for.end42:                                        ; preds = %for.end, %if.end18
+  ret %struct._IV* %call19
+}

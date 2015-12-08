@@ -1,0 +1,65 @@
+define void @mem_dump(%struct._IO_FILE* %log, i8* %title, i8* nocapture %mem, i32 %len) #0 {
+entry:
+  %s = alloca [17 x i8], align 16
+  %arrayidx = getelementptr inbounds [17 x i8]* %s, i64 0, i64 0
+  store i8 0, i8* %arrayidx, align 16, !tbaa !0
+  %tobool = icmp eq i32 %len, 0
+  %tobool1 = icmp eq %struct._IO_FILE* %log, null
+  %or.cond = or i1 %tobool, %tobool1
+  br i1 %or.cond, label %for.cond.preheader, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0), i8* %title) #3
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry, %if.then
+  %cmp41 = icmp sgt i32 %len, 0
+  br i1 %cmp41, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end14
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end14 ], [ 0, %for.cond.preheader ]
+  %index.042 = phi i32 [ %inc, %if.end14 ], [ 0, %for.cond.preheader ]
+  %arrayidx2 = getelementptr inbounds i8* %mem, i64 %indvars.iv
+  %0 = load i8* %arrayidx2, align 1, !tbaa !0
+  %1 = and i32 %index.042, -17
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %if.then5, label %if.end10
+
+if.then5:                                         ; preds = %for.body
+  call fastcc void @print_chars(%struct._IO_FILE* %log, i8* %arrayidx, i32 %index.042) #4
+  br i1 %tobool1, label %if.end14, label %if.end10.thread39
+
+if.end10.thread39:                                ; preds = %if.then5
+  %3 = trunc i64 %indvars.iv to i32
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i32 %3) #3
+  br label %if.then12
+
+if.end10:                                         ; preds = %for.body
+  br i1 %tobool1, label %if.end14, label %if.then12
+
+if.then12:                                        ; preds = %if.end10.thread39, %if.end10
+  %index.140 = phi i32 [ 0, %if.end10.thread39 ], [ %index.042, %if.end10 ]
+  %conv = zext i8 %0 to i32
+  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %conv) #3
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then5, %if.end10, %if.then12
+  %index.138 = phi i32 [ %index.042, %if.end10 ], [ %index.140, %if.then12 ], [ 0, %if.then5 ]
+  %b.off.i = add i8 %0, -32
+  %4 = icmp ugt i8 %b.off.i, 94
+  %retval.0.i = select i1 %4, i8 46, i8 %0
+  %inc = add nsw i32 %index.138, 1
+  %idxprom16 = sext i32 %index.138 to i64
+  %arrayidx17 = getelementptr inbounds [17 x i8]* %s, i64 0, i64 %idxprom16
+  store i8 %retval.0.i, i8* %arrayidx17, align 1, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %len
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %if.end14, %for.cond.preheader
+  %index.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %inc, %if.end14 ]
+  call fastcc void @print_chars(%struct._IO_FILE* %log, i8* %arrayidx, i32 %index.0.lcssa) #4
+  %call20 = call i32 @fflush(%struct._IO_FILE* %log) #3
+  ret void
+}

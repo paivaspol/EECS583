@@ -1,0 +1,47 @@
+define internal fastcc void @regtail(%struct.comp* %cp, i8* %p, i8* %val) #0 {
+entry:
+  %regcode = getelementptr inbounds %struct.comp* %cp, i64 0, i32 2
+  %0 = load i8** %regcode, align 8, !tbaa !0
+  %arraydecay = getelementptr inbounds %struct.comp* %cp, i64 0, i32 3, i64 0
+  %cmp = icmp eq i8* %0, %arraydecay
+  br i1 %cmp, label %return, label %for.cond
+
+for.cond:                                         ; preds = %entry, %for.cond
+  %scan.0 = phi i8* [ %call, %for.cond ], [ %p, %entry ]
+  %call = tail call fastcc i8* @regnext(i8* %scan.0) #10
+  %cmp1 = icmp eq i8* %call, null
+  br i1 %cmp1, label %for.end, label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  %1 = load i8* %scan.0, align 1, !tbaa !1
+  %cmp2 = icmp eq i8 %1, 7
+  br i1 %cmp2, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %for.end
+  %sub.ptr.lhs.cast = ptrtoint i8* %scan.0 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %val to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  br label %cond.end
+
+cond.false:                                       ; preds = %for.end
+  %sub.ptr.lhs.cast4 = ptrtoint i8* %val to i64
+  %sub.ptr.rhs.cast5 = ptrtoint i8* %scan.0 to i64
+  %sub.ptr.sub6 = sub i64 %sub.ptr.lhs.cast4, %sub.ptr.rhs.cast5
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %sub.ptr.sub, %cond.true ], [ %sub.ptr.sub6, %cond.false ]
+  %conv7 = trunc i64 %cond to i32
+  %shr20 = lshr i32 %conv7, 8
+  %shr20.tr = trunc i32 %shr20 to i8
+  %conv8 = and i8 %shr20.tr, 127
+  %add.ptr = getelementptr inbounds i8* %scan.0, i64 1
+  store i8 %conv8, i8* %add.ptr, align 1, !tbaa !1
+  %conv10 = trunc i64 %cond to i8
+  %add.ptr11 = getelementptr inbounds i8* %scan.0, i64 2
+  store i8 %conv10, i8* %add.ptr11, align 1, !tbaa !1
+  br label %return
+
+return:                                           ; preds = %entry, %cond.end
+  ret void
+}

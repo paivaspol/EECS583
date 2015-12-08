@@ -1,0 +1,77 @@
+define internal fastcc %struct.op* @S_dup_attrlist(%struct.op* nocapture %o) #0 {
+entry:
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %0, 5
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %1 = load i8* %op_flags, align 1, !tbaa !1
+  %conv2 = zext i8 %1 to i32
+  %op_sv = getelementptr inbounds %struct.op* %o, i64 1
+  %2 = bitcast %struct.op* %op_sv to %struct.sv**
+  %3 = load %struct.sv** %2, align 8, !tbaa !3
+  store %struct.sv* %3, %struct.sv** @PL_Sv, align 8, !tbaa !3
+  %tobool = icmp eq %struct.sv* %3, null
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %if.then
+  %sv_refcnt = getelementptr inbounds %struct.sv* %3, i64 0, i32 1
+  %4 = load i32* %sv_refcnt, align 4, !tbaa !0
+  %inc = add i32 %4, 1
+  store i32 %inc, i32* %sv_refcnt, align 4, !tbaa !0
+  br label %land.end
+
+land.end:                                         ; preds = %if.then, %land.rhs
+  %call = tail call %struct.op* @Perl_newSVOP(i32 5, i32 %conv2, %struct.sv* %3) #8
+  br label %if.end22
+
+if.else:                                          ; preds = %entry
+  %5 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %o.addr.031 = load %struct.op** %5, align 8
+  %tobool432 = icmp eq %struct.op* %o.addr.031, null
+  br i1 %tobool432, label %if.end22, label %for.body
+
+for.body:                                         ; preds = %if.else, %for.inc
+  %o.addr.034 = phi %struct.op* [ %o.addr.0, %for.inc ], [ %o.addr.031, %if.else ]
+  %rop.033 = phi %struct.op* [ %rop.1, %for.inc ], [ null, %if.else ]
+  %op_type5 = getelementptr inbounds %struct.op* %o.addr.034, i64 0, i32 4
+  %6 = load i16* %op_type5, align 2, !tbaa !4
+  %cmp7 = icmp eq i16 %6, 5
+  br i1 %cmp7, label %if.then9, label %for.inc
+
+if.then9:                                         ; preds = %for.body
+  %op_flags10 = getelementptr inbounds %struct.op* %o.addr.034, i64 0, i32 6
+  %7 = load i8* %op_flags10, align 1, !tbaa !1
+  %conv11 = zext i8 %7 to i32
+  %op_sv12 = getelementptr inbounds %struct.op* %o.addr.034, i64 1
+  %8 = bitcast %struct.op* %op_sv12 to %struct.sv**
+  %9 = load %struct.sv** %8, align 8, !tbaa !3
+  store %struct.sv* %9, %struct.sv** @PL_Sv, align 8, !tbaa !3
+  %tobool13 = icmp eq %struct.sv* %9, null
+  br i1 %tobool13, label %land.end18, label %land.rhs14
+
+land.rhs14:                                       ; preds = %if.then9
+  %sv_refcnt15 = getelementptr inbounds %struct.sv* %9, i64 0, i32 1
+  %10 = load i32* %sv_refcnt15, align 4, !tbaa !0
+  %inc16 = add i32 %10, 1
+  store i32 %inc16, i32* %sv_refcnt15, align 4, !tbaa !0
+  br label %land.end18
+
+land.end18:                                       ; preds = %if.then9, %land.rhs14
+  %call20 = tail call %struct.op* @Perl_newSVOP(i32 5, i32 %conv11, %struct.sv* %9) #8
+  %call21 = tail call %struct.op* @Perl_append_elem(i32 141, %struct.op* %rop.033, %struct.op* %call20) #8
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %land.end18
+  %rop.1 = phi %struct.op* [ %call21, %land.end18 ], [ %rop.033, %for.body ]
+  %op_sibling = getelementptr inbounds %struct.op* %o.addr.034, i64 0, i32 1
+  %o.addr.0 = load %struct.op** %op_sibling, align 8
+  %tobool4 = icmp eq %struct.op* %o.addr.0, null
+  br i1 %tobool4, label %if.end22, label %for.body
+
+if.end22:                                         ; preds = %if.else, %for.inc, %land.end
+  %rop.2 = phi %struct.op* [ %call, %land.end ], [ null, %if.else ], [ %rop.1, %for.inc ]
+  ret %struct.op* %rop.2
+}

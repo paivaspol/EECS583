@@ -1,0 +1,42 @@
+define %struct.op* @Perl_pp_syswrite() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint %struct.sv** %1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %sub.ptr.div21 = lshr exact i64 %sub.ptr.sub, 3
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !4
+  %conv22 = zext i32 %3 to i64
+  %sub = sub nsw i64 %sub.ptr.div21, %conv22
+  %conv1 = trunc i64 %sub to i32
+  %cmp = icmp eq i32 %conv1, 2
+  br i1 %cmp, label %if.then, label %if.end13
+
+if.then:                                          ; preds = %entry
+  %4 = load %struct.sv*** @PL_stack_max, align 8, !tbaa !0
+  %sub.ptr.lhs.cast3 = ptrtoint %struct.sv** %4 to i64
+  %sub.ptr.sub5 = sub i64 %sub.ptr.lhs.cast3, %sub.ptr.lhs.cast
+  %cmp7 = icmp slt i64 %sub.ptr.sub5, 8
+  br i1 %cmp7, label %if.then9, label %if.end
+
+if.then9:                                         ; preds = %if.then
+  %call = tail call %struct.sv** @Perl_stack_grow(%struct.sv** %0, %struct.sv** %0, i32 1) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then9, %if.then
+  %sp.0 = phi %struct.sv** [ %call, %if.then9 ], [ %0, %if.then ]
+  %5 = load %struct.sv** %sp.0, align 8, !tbaa !0
+  %call10 = tail call i64 @Perl_sv_len(%struct.sv* %5) #6
+  %call11 = tail call %struct.sv* @Perl_newSViv(i64 %call10) #6
+  %call12 = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %call11) #6
+  %incdec.ptr = getelementptr inbounds %struct.sv** %sp.0, i64 1
+  store %struct.sv* %call12, %struct.sv** %incdec.ptr, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.end, %entry
+  %call14 = tail call %struct.op* @Perl_pp_send() #7
+  ret %struct.op* %call14
+}

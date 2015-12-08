@@ -1,0 +1,133 @@
+define void @rc_update_pict_frame(i32 %nbits) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 139
+  %1 = load i32* %BasicUnit, align 4, !tbaa !3
+  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 136
+  %2 = load i32* %Frame_Total_Number_MB, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, %2
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %3 = load i32* @m_Qc, align 4, !tbaa !3
+  %mul = mul nsw i32 %3, %nbits
+  %conv = sitofp i32 %mul to double
+  %add = fadd double %conv, 5.000000e-01
+  %call = tail call double @floor(double %add) #8
+  %conv1 = fptosi double %call to i32
+  %type31.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %.pre68 = load i32* %type31.phi.trans.insert, align 4, !tbaa !3
+  br label %if.end30
+
+if.else:                                          ; preds = %entry
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
+  %4 = load i32* %type, align 4, !tbaa !3
+  switch i32 %4, label %if.end30 [
+    i32 0, label %if.then4
+    i32 1, label %if.end30.thread70
+  ]
+
+if.then4:                                         ; preds = %if.else
+  %IFLAG = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 137
+  %5 = load i32* %IFLAG, align 4, !tbaa !3
+  %cmp5 = icmp eq i32 %5, 0
+  %FieldControl = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %6 = load i32* %FieldControl, align 4, !tbaa !3
+  %cmp7 = icmp eq i32 %6, 1
+  %or.cond72 = and i1 %cmp5, %cmp7
+  %cmp10 = icmp eq i32 %6, 0
+  %or.cond73 = or i1 %or.cond72, %cmp10
+  br i1 %or.cond73, label %if.then12, label %sw.bb
+
+if.then12:                                        ; preds = %if.then4
+  %7 = load i32* @TotalFrameQP, align 4, !tbaa !3
+  %8 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
+  %div = sdiv i32 %7, %8
+  %mul13 = mul nsw i32 %div, %nbits
+  %conv14 = sitofp i32 %mul13 to double
+  %add15 = fadd double %conv14, 5.000000e-01
+  %call16 = tail call double @floor(double %add15) #8
+  %conv17 = fptosi double %call16 to i32
+  br label %sw.bb
+
+if.end30.thread70:                                ; preds = %if.else
+  %9 = load i32* @m_Qc, align 4, !tbaa !3
+  %mul23 = mul nsw i32 %9, %nbits
+  %conv24 = sitofp i32 %mul23 to double
+  %add25 = fadd double %conv24, 5.000000e-01
+  %call26 = tail call double @floor(double %add25) #8
+  %conv27 = fptosi double %call26 to i32
+  br label %sw.bb58
+
+if.end30:                                         ; preds = %if.else, %if.then
+  %10 = phi i32 [ %.pre68, %if.then ], [ %4, %if.else ]
+  %X.0 = phi i32 [ %conv1, %if.then ], [ 0, %if.else ]
+  switch i32 %10, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb58
+  ]
+
+sw.bb:                                            ; preds = %if.then4, %if.then12, %if.end30
+  %X.069 = phi i32 [ %X.0, %if.end30 ], [ %conv17, %if.then12 ], [ 0, %if.then4 ]
+  %IFLAG32 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 137
+  %11 = load i32* %IFLAG32, align 4, !tbaa !3
+  %cmp33 = icmp eq i32 %11, 0
+  %FieldControl36 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 134
+  %12 = load i32* %FieldControl36, align 4, !tbaa !3
+  %cmp37 = icmp eq i32 %12, 1
+  %or.cond74 = and i1 %cmp33, %cmp37
+  %cmp41 = icmp eq i32 %12, 0
+  %or.cond75 = or i1 %or.cond74, %cmp41
+  br i1 %or.cond75, label %if.then43, label %if.else46
+
+if.then43:                                        ; preds = %sw.bb
+  store i32 %X.069, i32* @Xp, align 4, !tbaa !3
+  %13 = load i32* @Np, align 4, !tbaa !3
+  %dec = add nsw i32 %13, -1
+  store i32 %dec, i32* @Np, align 4, !tbaa !3
+  %conv44 = sitofp i32 %X.069 to double
+  store double %conv44, double* @Wp, align 8, !tbaa !4
+  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 119
+  %14 = load i32* %NumberofHeaderBits, align 4, !tbaa !3
+  store i32 %14, i32* @Pm_Hp, align 4, !tbaa !3
+  %NumberofCodedPFrame = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 127
+  %15 = load i32* %NumberofCodedPFrame, align 4, !tbaa !3
+  %inc = add nsw i32 %15, 1
+  store i32 %inc, i32* %NumberofCodedPFrame, align 4, !tbaa !3
+  %NumberofPPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 130
+  %16 = load i32* %NumberofPPicture, align 4, !tbaa !3
+  %inc45 = add nsw i32 %16, 1
+  store i32 %inc45, i32* %NumberofPPicture, align 4, !tbaa !3
+  br label %sw.epilog
+
+if.else46:                                        ; preds = %sw.bb
+  %cmp48 = icmp ne i32 %11, 0
+  %cmp52 = icmp eq i32 %12, 1
+  %or.cond = and i1 %cmp48, %cmp52
+  br i1 %or.cond, label %if.then54, label %sw.epilog
+
+if.then54:                                        ; preds = %if.else46
+  store i32 0, i32* %IFLAG32, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.bb58:                                          ; preds = %if.end30.thread70, %if.end30
+  %X.071 = phi i32 [ %conv27, %if.end30.thread70 ], [ %X.0, %if.end30 ]
+  store i32 %X.071, i32* @Xb, align 4, !tbaa !3
+  %17 = load i32* @Nb, align 4, !tbaa !3
+  %dec59 = add nsw i32 %17, -1
+  store i32 %dec59, i32* @Nb, align 4, !tbaa !3
+  %conv60 = sitofp i32 %X.071 to double
+  %div61 = fdiv double %conv60, 1.363600e+00
+  store double %div61, double* @Wb, align 8, !tbaa !4
+  %NumberofCodedBFrame = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 126
+  %18 = load i32* %NumberofCodedBFrame, align 4, !tbaa !3
+  %inc62 = add nsw i32 %18, 1
+  store i32 %inc62, i32* %NumberofCodedBFrame, align 4, !tbaa !3
+  %19 = load i32* @NumberofBFrames, align 4, !tbaa !3
+  %inc63 = add nsw i32 %19, 1
+  store i32 %inc63, i32* @NumberofBFrames, align 4, !tbaa !3
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.else46, %if.then43, %if.then54, %if.end30, %sw.bb58
+  ret void
+}

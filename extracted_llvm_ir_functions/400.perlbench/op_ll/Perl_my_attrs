@@ -1,0 +1,46 @@
+define %struct.op* @Perl_my_attrs(%struct.op* %o, %struct.op* %attrs) #0 {
+entry:
+  %rops = alloca %struct.op*, align 8
+  store %struct.op* null, %struct.op** %rops, align 8, !tbaa !3
+  %tobool = icmp eq %struct.op* %attrs, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  call void @Perl_save_freeop(%struct.op* %attrs) #7
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %call = call fastcc %struct.op* @S_my_kid(%struct.op* %o, %struct.op* %attrs, %struct.op** %rops) #8
+  %0 = load %struct.op** %rops, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.op* %0, null
+  br i1 %tobool1, label %if.end12, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end
+  %op_type = getelementptr inbounds %struct.op* %call, i64 0, i32 4
+  %1 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %1, 9
+  br i1 %cmp, label %if.then5, label %if.else
+
+if.then5:                                         ; preds = %land.lhs.true
+  %2 = bitcast %struct.op* %0 to %struct.listop*
+  %3 = bitcast %struct.op* %call to %struct.listop*
+  %call6 = call %struct.op* @Perl_append_list(i32 141, %struct.listop* %2, %struct.listop* %3) #8
+  %call7 = call %struct.op* @Perl_scalar(%struct.op* %call6) #8
+  %op_private = getelementptr inbounds %struct.op* %call7, i64 0, i32 7
+  %4 = load i8* %op_private, align 1, !tbaa !1
+  %or = or i8 %4, -128
+  store i8 %or, i8* %op_private, align 1, !tbaa !1
+  br label %if.end12
+
+if.else:                                          ; preds = %land.lhs.true
+  %5 = bitcast %struct.op* %call to %struct.listop*
+  %6 = bitcast %struct.op* %0 to %struct.listop*
+  %call10 = call %struct.op* @Perl_append_list(i32 141, %struct.listop* %5, %struct.listop* %6) #8
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %if.then5, %if.else
+  %o.addr.0 = phi %struct.op* [ %call7, %if.then5 ], [ %call10, %if.else ], [ %call, %if.end ]
+  store i32 0, i32* @PL_in_my, align 4, !tbaa !0
+  store %struct.hv* null, %struct.hv** @PL_in_my_stash, align 8, !tbaa !3
+  ret %struct.op* %o.addr.0
+}

@@ -1,0 +1,26 @@
+define i32 @PerlIO_isutf8(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = lshr i32 %1, 15
+  %and.lobit = and i32 %and, 1
+  br label %return
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %call = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %and.lobit, %if.then ], [ -1, %if.else ]
+  ret i32 %retval.0
+}

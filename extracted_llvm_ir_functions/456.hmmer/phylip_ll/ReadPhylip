@@ -1,0 +1,147 @@
+define %struct.msa_struct* @ReadPhylip(%struct.msafile_struct* %afp) #0 {
+entry:
+  %s = alloca i8*, align 8
+  %name = alloca [11 x i8], align 1
+  %slen = alloca i32, align 4
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0
+  %0 = load %struct._IO_FILE** %f, align 8, !tbaa !0
+  %call = call i32 @feof(%struct._IO_FILE* %0) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %while.cond, label %return
+
+while.cond:                                       ; preds = %entry, %while.body
+  %call1 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6
+  store i8* %call1, i8** %s, align 8, !tbaa !0
+  %cmp = icmp eq i8* %call1, null
+  br i1 %cmp, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond
+  %call2 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i32* null) #6
+  %cmp3 = icmp eq i8* %call2, null
+  br i1 %cmp3, label %while.cond, label %if.end5
+
+if.end5:                                          ; preds = %while.body
+  %call6 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i32* null) #6
+  %cmp7 = icmp eq i8* %call6, null
+  br i1 %cmp7, label %if.then8, label %if.end9
+
+if.then8:                                         ; preds = %if.end5
+  %fname = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1
+  %1 = load i8** %fname, align 8, !tbaa !0
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([61 x i8]* @.str1, i64 0, i64 0), i8* %1) #6
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then8, %if.end5
+  %call10 = call i32 @IsInt(i8* %call2) #6
+  %tobool11 = icmp eq i32 %call10, 0
+  br i1 %tobool11, label %if.then14, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end9
+  %call12 = call i32 @IsInt(i8* %call6) #6
+  %tobool13 = icmp eq i32 %call12, 0
+  br i1 %tobool13, label %if.then14, label %if.end16
+
+if.then14:                                        ; preds = %lor.lhs.false, %if.end9
+  %fname15 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1
+  %2 = load i8** %fname15, align 8, !tbaa !0
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([65 x i8]* @.str2, i64 0, i64 0), i8* %2) #6
+  br label %if.end16
+
+if.end16:                                         ; preds = %lor.lhs.false, %if.then14
+  %call17 = call i32 @atoi(i8* %call2) #7
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond, %if.end16
+  %nseq.0 = phi i32 [ %call17, %if.end16 ], [ 0, %while.cond ]
+  %call19 = call %struct.msa_struct* @MSAAlloc(i32 %nseq.0, i32 0) #6
+  %arraydecay = getelementptr inbounds [11 x i8]* %name, i64 0, i64 0
+  %arrayidx33 = getelementptr inbounds [11 x i8]* %name, i64 0, i64 10
+  %index = getelementptr inbounds %struct.msa_struct* %call19, i64 0, i32 39
+  %sqname = getelementptr inbounds %struct.msa_struct* %call19, i64 0, i32 1
+  %linenumber = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 2
+  %fname45 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1
+  %aseq = getelementptr inbounds %struct.msa_struct* %call19, i64 0, i32 0
+  %sqlen = getelementptr inbounds %struct.msa_struct* %call19, i64 0, i32 42
+  br label %while.cond20.outer
+
+while.cond20.outer:                               ; preds = %if.end46, %while.end
+  %idx.0.ph = phi i32 [ 0, %while.end ], [ %.inc, %if.end46 ]
+  %nblock.0.ph = phi i32 [ 0, %while.end ], [ %inc58.nblock.0, %if.end46 ]
+  br label %while.cond20
+
+while.cond20:                                     ; preds = %while.cond20.outer, %while.body23
+  %call21 = call i8* @MSAFileGetLine(%struct.msafile_struct* %afp) #6
+  store i8* %call21, i8** %s, align 8, !tbaa !0
+  %cmp22 = icmp eq i8* %call21, null
+  br i1 %cmp22, label %while.end60, label %while.body23
+
+while.body23:                                     ; preds = %while.cond20
+  %3 = load i8* %call21, align 1, !tbaa !1
+  %idxprom = sext i8 %3 to i64
+  %call24 = call i16** @__ctype_b_loc() #8
+  %4 = load i16** %call24, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i16* %4, i64 %idxprom
+  %5 = load i16* %arrayidx, align 2, !tbaa !3
+  %and = and i16 %5, 8192
+  %tobool26 = icmp eq i16 %and, 0
+  br i1 %tobool26, label %if.end28, label %while.cond20
+
+if.end28:                                         ; preds = %while.body23
+  %cmp29 = icmp eq i32 %nblock.0.ph, 0
+  br i1 %cmp29, label %if.then31, label %if.end40
+
+if.then31:                                        ; preds = %if.end28
+  %call32 = call i8* @strncpy(i8* %arraydecay, i8* %call21, i64 10) #6
+  store i8 0, i8* %arrayidx33, align 1, !tbaa !1
+  %6 = load %struct.GKI** %index, align 8, !tbaa !0
+  %call35 = call i32 @GKIStoreKey(%struct.GKI* %6, i8* %arraydecay) #6
+  %call37 = call i8* @sre_strdup(i8* %arraydecay, i32 -1) #6
+  %idxprom38 = sext i32 %idx.0.ph to i64
+  %7 = load i8*** %sqname, align 8, !tbaa !0
+  %arrayidx39 = getelementptr inbounds i8** %7, i64 %idxprom38
+  store i8* %call37, i8** %arrayidx39, align 8, !tbaa !0
+  %8 = load i8** %s, align 8, !tbaa !0
+  %add.ptr = getelementptr inbounds i8* %8, i64 10
+  store i8* %add.ptr, i8** %s, align 8, !tbaa !0
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.then31, %if.end28
+  %call41 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i32* %slen) #6
+  %cmp42 = icmp eq i8* %call41, null
+  br i1 %cmp42, label %if.then44, label %if.end46
+
+if.then44:                                        ; preds = %if.end40
+  %9 = load i32* %linenumber, align 4, !tbaa !4
+  %10 = load i8** %fname45, align 8, !tbaa !0
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([55 x i8]* @.str3, i64 0, i64 0), i32 %9, i8* %10) #6
+  br label %if.end46
+
+if.end46:                                         ; preds = %if.then44, %if.end40
+  %idxprom47 = sext i32 %idx.0.ph to i64
+  %11 = load i8*** %aseq, align 8, !tbaa !0
+  %arrayidx48 = getelementptr inbounds i8** %11, i64 %idxprom47
+  %12 = load i32** %sqlen, align 8, !tbaa !0
+  %arrayidx50 = getelementptr inbounds i32* %12, i64 %idxprom47
+  %13 = load i32* %arrayidx50, align 4, !tbaa !4
+  %14 = load i32* %slen, align 4, !tbaa !4
+  %call51 = call i32 @sre_strcat(i8** %arrayidx48, i32 %13, i8* %call41, i32 %14) #6
+  %15 = load i32** %sqlen, align 8, !tbaa !0
+  %arrayidx54 = getelementptr inbounds i32* %15, i64 %idxprom47
+  store i32 %call51, i32* %arrayidx54, align 4, !tbaa !4
+  %inc = add nsw i32 %idx.0.ph, 1
+  %cmp55 = icmp eq i32 %inc, %nseq.0
+  %.inc = select i1 %cmp55, i32 0, i32 %inc
+  %inc58 = zext i1 %cmp55 to i32
+  %inc58.nblock.0 = add nsw i32 %inc58, %nblock.0.ph
+  br label %while.cond20.outer
+
+while.end60:                                      ; preds = %while.cond20
+  %nseq61 = getelementptr inbounds %struct.msa_struct* %call19, i64 0, i32 4
+  store i32 %nseq.0, i32* %nseq61, align 4, !tbaa !4
+  call void @MSAVerifyParse(%struct.msa_struct* %call19) #6
+  br label %return
+
+return:                                           ; preds = %entry, %while.end60
+  %retval.0 = phi %struct.msa_struct* [ %call19, %while.end60 ], [ null, %entry ]
+  ret %struct.msa_struct* %retval.0
+}

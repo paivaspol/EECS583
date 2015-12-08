@@ -1,0 +1,63 @@
+define i64 @PerlIOStdio_close(%struct._PerlIO** %f) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %stdio1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %stdio1 to %struct._IO_FILE**
+  %2 = load %struct._IO_FILE** %1, align 8, !tbaa !3
+  %tobool = icmp eq %struct._IO_FILE* %2, null
+  br i1 %tobool, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32* @__errno_location() #9
+  store i32 9, i32* %call, align 4, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 @fileno(%struct._IO_FILE* %2) #9
+  %call3 = tail call i32 @PerlIOUnix_refcnt_dec(i32 %call2) #10
+  %cmp = icmp sgt i32 %call3, 0
+  br i1 %cmp, label %if.then6, label %if.end24
+
+if.then6:                                         ; preds = %if.else
+  %3 = load %struct._IO_FILE** @stdin, align 8, !tbaa !3
+  %cmp7 = icmp eq %struct._IO_FILE* %2, %3
+  br i1 %cmp7, label %return, label %if.else9
+
+if.else9:                                         ; preds = %if.then6
+  %4 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
+  %cmp10 = icmp eq %struct._IO_FILE* %2, %4
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %cmp11 = icmp eq %struct._IO_FILE* %2, %5
+  %or.cond = or i1 %cmp10, %cmp11
+  %call13 = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  br i1 %or.cond, label %if.then12, label %if.end15
+
+if.then12:                                        ; preds = %if.else9
+  %conv = sext i32 %call13 to i64
+  br label %return
+
+if.end15:                                         ; preds = %if.else9
+  %call18 = tail call i32* @__errno_location() #9
+  %6 = load i32* %call18, align 4, !tbaa !0
+  %_fileno.i = getelementptr inbounds %struct._IO_FILE* %2, i64 0, i32 14
+  store i32 -1, i32* %_fileno.i, align 4, !tbaa !0
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.else, %if.end15
+  %invalidate.1 = phi i1 [ false, %if.end15 ], [ true, %if.else ]
+  %saveerr.0 = phi i32 [ %6, %if.end15 ], [ 0, %if.else ]
+  %call25 = tail call i32 @fclose(%struct._IO_FILE* %2) #9
+  %conv26 = sext i32 %call25 to i64
+  %cmp28 = icmp eq i32 %call25, 0
+  %or.cond58 = or i1 %invalidate.1, %cmp28
+  br i1 %or.cond58, label %return, label %if.then30
+
+if.then30:                                        ; preds = %if.end24
+  %call31 = tail call i32* @__errno_location() #9
+  store i32 %saveerr.0, i32* %call31, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.then30, %if.end24, %if.then6, %if.then12, %if.then
+  %retval.0 = phi i64 [ %conv, %if.then12 ], [ -1, %if.then ], [ 0, %if.then6 ], [ 0, %if.then30 ], [ %conv26, %if.end24 ]
+  ret i64 %retval.0
+}

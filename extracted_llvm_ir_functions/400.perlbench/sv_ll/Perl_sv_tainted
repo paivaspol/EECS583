@@ -1,0 +1,47 @@
+define signext i8 @Perl_sv_tainted(%struct.sv* %sv) #0 {
+entry:
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 255
+  %cmp = icmp ugt i32 %and, 6
+  br i1 %cmp, label %land.lhs.true, label %if.end11
+
+land.lhs.true:                                    ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %1, i64 40
+  %2 = bitcast i8* %xmg_magic to %struct.magic**
+  %3 = load %struct.magic** %2, align 8, !tbaa !0
+  %tobool = icmp eq %struct.magic* %3, null
+  br i1 %tobool, label %if.end11, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call %struct.magic* @Perl_mg_find(%struct.sv* %sv, i32 116) #8
+  %tobool1 = icmp eq %struct.magic* %call, null
+  br i1 %tobool1, label %if.end11, label %land.lhs.true2
+
+land.lhs.true2:                                   ; preds = %if.then
+  %mg_len = getelementptr inbounds %struct.magic* %call, i64 0, i32 7
+  %4 = load i32* %mg_len, align 4, !tbaa !3
+  %and3 = and i32 %4, 1
+  %tobool4 = icmp eq i32 %and3, 0
+  br i1 %tobool4, label %lor.lhs.false, label %return
+
+lor.lhs.false:                                    ; preds = %land.lhs.true2
+  %and6 = and i32 %4, 2
+  %tobool7 = icmp eq i32 %and6, 0
+  br i1 %tobool7, label %if.end11, label %land.lhs.true8
+
+land.lhs.true8:                                   ; preds = %lor.lhs.false
+  %mg_obj = getelementptr inbounds %struct.magic* %call, i64 0, i32 5
+  %5 = load %struct.sv** %mg_obj, align 8, !tbaa !0
+  %cmp9 = icmp eq %struct.sv* %5, %sv
+  br i1 %cmp9, label %return, label %if.end11
+
+if.end11:                                         ; preds = %lor.lhs.false, %if.then, %land.lhs.true, %land.lhs.true8, %entry
+  br label %return
+
+return:                                           ; preds = %land.lhs.true8, %land.lhs.true2, %if.end11
+  %retval.0 = phi i8 [ 0, %if.end11 ], [ 1, %land.lhs.true2 ], [ 1, %land.lhs.true8 ]
+  ret i8 %retval.0
+}

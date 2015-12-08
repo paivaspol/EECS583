@@ -1,0 +1,65 @@
+define internal fastcc i8* @PerlIO_context_layers(i8* nocapture %mode) #1 {
+entry:
+  %len = alloca i64, align 8
+  %0 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %tobool = icmp eq %struct.cop* %0, null
+  br i1 %tobool, label %if.end16, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !3
+  %cop_io = getelementptr inbounds %struct.cop* %1, i64 0, i32 15
+  %2 = load %struct.sv** %cop_io, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.sv* %2, null
+  br i1 %tobool1, label %if.end16, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %sv_flags = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %3, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then2
+  %sv_any = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %4 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %4, i64 8
+  %5 = bitcast i8* %xpv_cur to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  store i64 %6, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %4 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then2
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %2, i64* %len, i32 2) #9
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i8* [ %7, %cond.true ], [ %call, %cond.false ]
+  %tobool4 = icmp eq i8* %cond, null
+  br i1 %tobool4, label %if.end16, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %cond.end
+  %8 = load i8* %mode, align 1, !tbaa !1
+  %cmp5 = icmp eq i8 %8, 114
+  br i1 %cmp5, label %if.end16, label %if.then7
+
+if.then7:                                         ; preds = %land.lhs.true
+  %call8 = call i8* @strchr(i8* %cond, i32 0) #9
+  %tobool9 = icmp eq i8* %call8, null
+  br i1 %tobool9, label %if.end16, label %land.lhs.true10
+
+land.lhs.true10:                                  ; preds = %if.then7
+  %sub.ptr.lhs.cast = ptrtoint i8* %call8 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %cond to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %9 = load i64* %len, align 8, !tbaa !4
+  %cmp11 = icmp ult i64 %sub.ptr.sub, %9
+  %add.ptr = getelementptr inbounds i8* %call8, i64 1
+  %add.ptr.cond = select i1 %cmp11, i8* %add.ptr, i8* %cond
+  ret i8* %add.ptr.cond
+
+if.end16:                                         ; preds = %if.then7, %land.lhs.true, %cond.end, %if.then, %entry
+  %type.0 = phi i8* [ %cond, %if.then7 ], [ %cond, %land.lhs.true ], [ null, %cond.end ], [ null, %if.then ], [ null, %entry ]
+  ret i8* %type.0
+}

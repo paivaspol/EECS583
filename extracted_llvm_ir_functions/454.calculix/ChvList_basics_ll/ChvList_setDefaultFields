@@ -1,0 +1,19 @@
+define void @ChvList_setDefaultFields(%struct._ChvList* %chvlist) #0 {
+entry:
+  %cmp = icmp eq %struct._ChvList* %chvlist, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._ChvList* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nlist = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0
+  store i32 0, i32* %nlist, align 4, !tbaa !3
+  %heads = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1
+  %1 = bitcast %struct._Chv*** %heads to i8*
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 36, i32 8, i1 false)
+  ret void
+}

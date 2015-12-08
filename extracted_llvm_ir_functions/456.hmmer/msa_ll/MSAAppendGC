@@ -1,0 +1,88 @@
+define void @MSAAppendGC(%struct.msa_struct* nocapture %msa, i8* %tag, i8* %value) #0 {
+entry:
+  %gc_tag = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 31
+  %0 = load i8*** %gc_tag, align 8, !tbaa !0
+  %cmp = icmp eq i8** %0, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 517, i64 8) #6
+  %1 = bitcast i8* %call to i8**
+  store i8** %1, i8*** %gc_tag, align 8, !tbaa !0
+  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 518, i64 8) #6
+  %2 = bitcast i8* %call2 to i8**
+  %gc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 32
+  store i8** %2, i8*** %gc, align 8, !tbaa !0
+  %call3 = tail call %struct.GKI* @GKIInit() #6
+  %gc_idx = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 33
+  store %struct.GKI* %call3, %struct.GKI** %gc_idx, align 8, !tbaa !0
+  %call5 = tail call i32 @GKIStoreKey(%struct.GKI* %call3, i8* %tag) #6
+  %3 = load i8*** %gc, align 8, !tbaa !0
+  store i8* null, i8** %3, align 8, !tbaa !0
+  br label %if.end25
+
+if.else:                                          ; preds = %entry
+  %gc_idx7 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 33
+  %4 = load %struct.GKI** %gc_idx7, align 8, !tbaa !0
+  %call8 = tail call i32 @GKIKeyIndex(%struct.GKI* %4, i8* %tag) #6
+  %cmp9 = icmp slt i32 %call8, 0
+  br i1 %cmp9, label %if.then10, label %if.end25
+
+if.then10:                                        ; preds = %if.else
+  %5 = load %struct.GKI** %gc_idx7, align 8, !tbaa !0
+  %call12 = tail call i32 @GKIStoreKey(%struct.GKI* %5, i8* %tag) #6
+  %6 = load i8*** %gc_tag, align 8, !tbaa !0
+  %7 = bitcast i8** %6 to i8*
+  %ngc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 34
+  %8 = load i32* %ngc, align 4, !tbaa !3
+  %add = add nsw i32 %8, 1
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call14 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 533, i8* %7, i64 %mul) #6
+  %9 = bitcast i8* %call14 to i8**
+  store i8** %9, i8*** %gc_tag, align 8, !tbaa !0
+  %gc16 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 32
+  %10 = load i8*** %gc16, align 8, !tbaa !0
+  %11 = bitcast i8** %10 to i8*
+  %12 = load i32* %ngc, align 4, !tbaa !3
+  %add18 = add nsw i32 %12, 1
+  %conv19 = sext i32 %add18 to i64
+  %mul20 = shl nsw i64 %conv19, 3
+  %call21 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 534, i8* %11, i64 %mul20) #6
+  %13 = bitcast i8* %call21 to i8**
+  store i8** %13, i8*** %gc16, align 8, !tbaa !0
+  %idxprom = sext i32 %call12 to i64
+  %arrayidx24 = getelementptr inbounds i8** %13, i64 %idxprom
+  store i8* null, i8** %arrayidx24, align 8, !tbaa !0
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.else, %if.then10, %if.then
+  %tagidx.0 = phi i32 [ %call5, %if.then ], [ %call12, %if.then10 ], [ %call8, %if.else ]
+  %ngc26 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 34
+  %14 = load i32* %ngc26, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %tagidx.0, %14
+  br i1 %cmp27, label %if.then29, label %if.end25.if.end35_crit_edge
+
+if.end25.if.end35_crit_edge:                      ; preds = %if.end25
+  %idxprom36.pre = sext i32 %tagidx.0 to i64
+  br label %if.end35
+
+if.then29:                                        ; preds = %if.end25
+  %call30 = tail call i8* @sre_strdup(i8* %tag, i32 -1) #6
+  %idxprom31 = sext i32 %tagidx.0 to i64
+  %15 = load i8*** %gc_tag, align 8, !tbaa !0
+  %arrayidx33 = getelementptr inbounds i8** %15, i64 %idxprom31
+  store i8* %call30, i8** %arrayidx33, align 8, !tbaa !0
+  %16 = load i32* %ngc26, align 4, !tbaa !3
+  %inc = add nsw i32 %16, 1
+  store i32 %inc, i32* %ngc26, align 4, !tbaa !3
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.end25.if.end35_crit_edge, %if.then29
+  %idxprom36.pre-phi = phi i64 [ %idxprom36.pre, %if.end25.if.end35_crit_edge ], [ %idxprom31, %if.then29 ]
+  %gc37 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 32
+  %17 = load i8*** %gc37, align 8, !tbaa !0
+  %arrayidx38 = getelementptr inbounds i8** %17, i64 %idxprom36.pre-phi
+  %call39 = tail call i32 @sre_strcat(i8** %arrayidx38, i32 -1, i8* %value, i32 -1) #6
+  ret void
+}

@@ -1,0 +1,39 @@
+define i32 @PerlIO_vprintf(%struct._PerlIO** %f, i8* %fmt, %struct.__va_list_tag* %ap) #1 {
+entry:
+  %len = alloca i64, align 8
+  %apc = alloca [1 x %struct.__va_list_tag], align 16
+  %call = call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([1 x i8]* @.str46, i64 0, i64 0), i64 0) #9
+  %0 = bitcast [1 x %struct.__va_list_tag]* %apc to i8*
+  %1 = bitcast %struct.__va_list_tag* %ap to i8*
+  call void @llvm.va_copy(i8* %0, i8* %1)
+  call void @Perl_sv_vcatpvf(%struct.sv* %call, i8* %fmt, [1 x %struct.__va_list_tag]* %apc) #9
+  %sv_flags = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %2, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %call, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %3, i64 8
+  %4 = bitcast i8* %xpv_cur to i64*
+  %5 = load i64* %4, align 8, !tbaa !4
+  store i64 %5, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %3 to i8**
+  %6 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call2 = call i8* @Perl_sv_2pv_flags(%struct.sv* %call, i64* %len, i32 2) #9
+  %.pre = load i64* %len, align 8, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %7 = phi i64 [ %5, %cond.true ], [ %.pre, %cond.false ]
+  %cond = phi i8* [ %6, %cond.true ], [ %call2, %cond.false ]
+  %call3 = call i64 @Perl_PerlIO_write(%struct._PerlIO** %f, i8* %cond, i64 %7) #10
+  call void @Perl_sv_free(%struct.sv* %call) #9
+  %conv = trunc i64 %call3 to i32
+  ret i32 %conv
+}

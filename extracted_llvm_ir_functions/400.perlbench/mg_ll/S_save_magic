@@ -1,0 +1,30 @@
+define internal fastcc void @S_save_magic(i32 %mgs_ix, %struct.sv* %sv) #0 {
+entry:
+  %conv = sext i32 %mgs_ix to i64
+  %0 = inttoptr i64 %conv to i8*
+  tail call void @Perl_save_destructor_x(void (i8*)* @restore_magic, i8* %0) #7
+  %1 = load %union.any** @PL_savestack, align 8, !tbaa !0
+  %2 = bitcast %union.any* %1 to i8*
+  %add.ptr = getelementptr inbounds i8* %2, i64 %conv
+  %mgs_sv = bitcast i8* %add.ptr to %struct.sv**
+  store %struct.sv* %sv, %struct.sv** %mgs_sv, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = and i32 %3, 8445952
+  %add.ptr.sum = add i64 %conv, 8
+  %mgs_flags = getelementptr inbounds i8* %2, i64 %add.ptr.sum
+  %4 = bitcast i8* %mgs_flags to i32*
+  store i32 %or, i32* %4, align 4, !tbaa !3
+  %5 = load i32* @PL_savestack_ix, align 4, !tbaa !3
+  %add.ptr.sum20 = add i64 %conv, 12
+  %mgs_ss_ix = getelementptr inbounds i8* %2, i64 %add.ptr.sum20
+  %6 = bitcast i8* %mgs_ss_ix to i32*
+  store i32 %5, i32* %6, align 4, !tbaa !3
+  %7 = load i32* %sv_flags, align 4, !tbaa !3
+  %and6 = and i32 %7, -8445953
+  %and8 = lshr i32 %7, 8
+  %shr = and i32 %and8, 393216
+  %or10 = or i32 %shr, %and6
+  store i32 %or10, i32* %sv_flags, align 4, !tbaa !3
+  ret void
+}

@@ -1,0 +1,96 @@
+define internal fastcc i32 @S_sublex_start() #0 {
+entry:
+  %len = alloca i64, align 8
+  %0 = load i32* bitcast (%union.YYSTYPE* @PL_yylval to i32*), align 8, !tbaa !3
+  switch i32 %0, label %if.end19 [
+    i32 0, label %if.then
+    i32 26, label %if.then3
+    i32 5, label %if.then3
+  ]
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct.op** @PL_lex_op, align 8, !tbaa !0
+  %.c33 = bitcast %struct.op* %1 to i8*
+  store i8* %.c33, i8** getelementptr inbounds (%union.YYSTYPE* @PL_yylval, i64 0, i32 0), align 8, !tbaa !0
+  store %struct.op* null, %struct.op** @PL_lex_op, align 8, !tbaa !0
+  br label %return
+
+if.then3:                                         ; preds = %entry, %entry
+  %2 = load %struct.sv** @PL_lex_stuff, align 8, !tbaa !0
+  %call = call fastcc %struct.sv* @S_tokeq(%struct.sv* %2) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %3, 255
+  %cmp4 = icmp eq i32 %and, 5
+  br i1 %cmp4, label %if.then5, label %if.end17
+
+if.then5:                                         ; preds = %if.then3
+  %and7 = and i32 %3, 262144
+  %cmp8 = icmp eq i32 %and7, 0
+  br i1 %cmp8, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then5
+  %sv_any = getelementptr inbounds %struct.sv* %call, i64 0, i32 0
+  %4 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %4, i64 8
+  %5 = bitcast i8* %xpv_cur to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  store i64 %6, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %4 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then5
+  %call10 = call i8* @Perl_sv_2pv_flags(%struct.sv* %call, i64* %len, i32 2) #6
+  %.pre = load i64* %len, align 8, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %8 = phi i64 [ %6, %cond.true ], [ %.pre, %cond.false ]
+  %cond = phi i8* [ %7, %cond.true ], [ %call10, %cond.false ]
+  %call11 = call %struct.sv* @Perl_newSVpvn(i8* %cond, i64 %8) #6
+  %9 = load i32* %sv_flags, align 4, !tbaa !3
+  %and13 = and i32 %9, 536870912
+  %tobool = icmp eq i32 %and13, 0
+  br i1 %tobool, label %if.end16, label %if.then14
+
+if.then14:                                        ; preds = %cond.end
+  %sv_flags15 = getelementptr inbounds %struct.sv* %call11, i64 0, i32 2
+  %10 = load i32* %sv_flags15, align 4, !tbaa !3
+  %or = or i32 %10, 536870912
+  store i32 %or, i32* %sv_flags15, align 4, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %cond.end, %if.then14
+  call void @Perl_sv_free(%struct.sv* %call) #6
+  br label %if.end17
+
+if.end17:                                         ; preds = %if.end16, %if.then3
+  %sv.0 = phi %struct.sv* [ %call11, %if.end16 ], [ %call, %if.then3 ]
+  %call18 = call %struct.op* @Perl_newSVOP(i32 %0, i32 0, %struct.sv* %sv.0) #6
+  %call18.c = bitcast %struct.op* %call18 to i8*
+  store i8* %call18.c, i8** getelementptr inbounds (%union.YYSTYPE* @PL_yylval, i64 0, i32 0), align 8, !tbaa !0
+  store %struct.sv* null, %struct.sv** @PL_lex_stuff, align 8, !tbaa !0
+  br label %return
+
+if.end19:                                         ; preds = %entry
+  %11 = load i32* @PL_lex_state, align 4, !tbaa !3
+  store i32 %11, i32* getelementptr inbounds (%struct._sublex_info* @PL_sublex_info, i64 0, i32 0), align 8, !tbaa !3
+  store i32 %0, i32* getelementptr inbounds (%struct._sublex_info* @PL_sublex_info, i64 0, i32 1), align 4, !tbaa !3
+  %12 = load %struct.op** @PL_lex_op, align 8, !tbaa !0
+  store %struct.op* %12, %struct.op** getelementptr inbounds (%struct._sublex_info* @PL_sublex_info, i64 0, i32 2), align 8, !tbaa !0
+  store i32 7, i32* @PL_lex_state, align 4, !tbaa !3
+  store i32 1, i32* @PL_expect, align 4, !tbaa !3
+  %tobool20 = icmp eq %struct.op* %12, null
+  br i1 %tobool20, label %return, label %if.then21
+
+if.then21:                                        ; preds = %if.end19
+  %.c = bitcast %struct.op* %12 to i8*
+  store i8* %.c, i8** getelementptr inbounds (%union.YYSTYPE* @PL_yylval, i64 0, i32 0), align 8, !tbaa !0
+  store %struct.op* null, %struct.op** @PL_lex_op, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end19, %if.then21, %if.end17, %if.then
+  %retval.0 = phi i32 [ 260, %if.then ], [ 260, %if.end17 ], [ 261, %if.then21 ], [ 284, %if.end19 ]
+  ret i32 %retval.0
+}

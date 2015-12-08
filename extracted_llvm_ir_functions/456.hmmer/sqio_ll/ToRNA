@@ -1,0 +1,28 @@
+define void @ToRNA(i8* nocapture %seq) #0 {
+entry:
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.inc, %entry
+  %seq.addr.0 = phi i8* [ %seq, %entry ], [ %incdec.ptr, %for.inc ]
+  %0 = load i8* %seq.addr.0, align 1, !tbaa !1
+  switch i8 %0, label %for.inc [
+    i8 0, label %for.end
+    i8 84, label %if.then
+    i8 116, label %if.then8
+  ]
+
+if.then:                                          ; preds = %for.cond
+  store i8 85, i8* %seq.addr.0, align 1, !tbaa !1
+  br label %for.inc
+
+if.then8:                                         ; preds = %for.cond
+  store i8 117, i8* %seq.addr.0, align 1, !tbaa !1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.cond, %if.then, %if.then8
+  %incdec.ptr = getelementptr inbounds i8* %seq.addr.0, i64 1
+  br label %for.cond
+
+for.end:                                          ; preds = %for.cond
+  ret void
+}

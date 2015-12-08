@@ -1,0 +1,173 @@
+define void @TophitsReport(%struct.tophit_s* nocapture %h, double %E, i32 %nseq) #0 {
+entry:
+  %alloc = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 2
+  %0 = load i32* %alloc, align 4, !tbaa !3
+  %mul = mul i32 %0, 104
+  %add = add i32 %mul, 32
+  %num = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 3
+  %1 = load i32* %num, align 4, !tbaa !3
+  %cmp229 = icmp sgt i32 %1, 0
+  br i1 %cmp229, label %for.body.lr.ph, label %for.end159
+
+for.body.lr.ph:                                   ; preds = %entry
+  %unsrt = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1
+  %2 = load %struct.hit_s** %unsrt, align 8, !tbaa !0
+  br label %for.body
+
+for.cond143.preheader:                            ; preds = %for.inc
+  br i1 %cmp229, label %for.body147.lr.ph, label %for.end159
+
+for.body147.lr.ph:                                ; preds = %for.cond143.preheader
+  %hit = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0
+  %3 = load %struct.hit_s*** %hit, align 8, !tbaa !0
+  %conv150 = sitofp i32 %nseq to double
+  br label %for.body147
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv235 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next236, %for.inc ]
+  %memused.0231 = phi i32 [ %add, %for.body.lr.ph ], [ %memused.5, %for.inc ]
+  %name = getelementptr inbounds %struct.hit_s* %2, i64 %indvars.iv235, i32 5
+  %4 = load i8** %name, align 8, !tbaa !0
+  %cmp3 = icmp eq i8* %4, null
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.body
+  %call = tail call i64 @strlen(i8* %4) #8
+  %conv10225 = zext i32 %memused.0231 to i64
+  %add9 = add i64 %conv10225, 1
+  %add11 = add i64 %add9, %call
+  %conv12 = trunc i64 %add11 to i32
+  br label %if.end
+
+if.end:                                           ; preds = %for.body, %if.then
+  %memused.1 = phi i32 [ %conv12, %if.then ], [ %memused.0231, %for.body ]
+  %acc = getelementptr inbounds %struct.hit_s* %2, i64 %indvars.iv235, i32 6
+  %5 = load i8** %acc, align 8, !tbaa !0
+  %cmp16 = icmp eq i8* %5, null
+  br i1 %cmp16, label %if.end28, label %if.then18
+
+if.then18:                                        ; preds = %if.end
+  %call23 = tail call i64 @strlen(i8* %5) #8
+  %conv25224 = zext i32 %memused.1 to i64
+  %add24 = add i64 %conv25224, 1
+  %add26 = add i64 %add24, %call23
+  %conv27 = trunc i64 %add26 to i32
+  br label %if.end28
+
+if.end28:                                         ; preds = %if.end, %if.then18
+  %memused.2 = phi i32 [ %conv27, %if.then18 ], [ %memused.1, %if.end ]
+  %desc = getelementptr inbounds %struct.hit_s* %2, i64 %indvars.iv235, i32 7
+  %6 = load i8** %desc, align 8, !tbaa !0
+  %cmp32 = icmp eq i8* %6, null
+  br i1 %cmp32, label %if.end44, label %if.then34
+
+if.then34:                                        ; preds = %if.end28
+  %call39 = tail call i64 @strlen(i8* %6) #8
+  %conv41223 = zext i32 %memused.2 to i64
+  %add40 = add i64 %conv41223, 1
+  %add42 = add i64 %add40, %call39
+  %conv43 = trunc i64 %add42 to i32
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.end28, %if.then34
+  %memused.3 = phi i32 [ %conv43, %if.then34 ], [ %memused.2, %if.end28 ]
+  %ali = getelementptr inbounds %struct.hit_s* %2, i64 %indvars.iv235, i32 16
+  %7 = load %struct.fancyali_s** %ali, align 8, !tbaa !0
+  %cmp48 = icmp eq %struct.fancyali_s* %7, null
+  br i1 %cmp48, label %for.inc, label %if.then50
+
+if.then50:                                        ; preds = %if.end44
+  %add52 = add i32 %memused.3, 72
+  %rfline = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 0
+  %8 = load i8** %rfline, align 8, !tbaa !0
+  %not.cmp58 = icmp ne i8* %8, null
+  %. = zext i1 %not.cmp58 to i32
+  %csline = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 1
+  %9 = load i8** %csline, align 8, !tbaa !0
+  %cmp66 = icmp eq i8* %9, null
+  %inc69 = select i1 %not.cmp58, i32 2, i32 1
+  %x.1 = select i1 %cmp66, i32 %., i32 %inc69
+  %model = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 2
+  %10 = load i8** %model, align 8, !tbaa !0
+  %not.cmp75 = icmp ne i8* %10, null
+  %inc78 = zext i1 %not.cmp75 to i32
+  %x.1.inc78 = add nsw i32 %inc78, %x.1
+  %mline = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 3
+  %11 = load i8** %mline, align 8, !tbaa !0
+  %not.cmp84 = icmp ne i8* %11, null
+  %inc87 = zext i1 %not.cmp84 to i32
+  %x.3 = add nsw i32 %x.1.inc78, %inc87
+  %aseq = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 4
+  %12 = load i8** %aseq, align 8, !tbaa !0
+  %not.cmp93 = icmp ne i8* %12, null
+  %inc96 = zext i1 %not.cmp93 to i32
+  %x.3.inc96 = add nsw i32 %x.3, %inc96
+  %len = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 5
+  %13 = load i32* %len, align 4, !tbaa !3
+  %add102 = add nsw i32 %13, 1
+  %mul103 = mul nsw i32 %x.3.inc96, %add102
+  %add104 = add nsw i32 %add52, %mul103
+  %query = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 6
+  %14 = load i8** %query, align 8, !tbaa !0
+  %cmp109 = icmp eq i8* %14, null
+  br i1 %cmp109, label %if.end122, label %if.then111
+
+if.then111:                                       ; preds = %if.then50
+  %call117 = tail call i64 @strlen(i8* %14) #8
+  %conv119222 = zext i32 %add104 to i64
+  %add118 = add i64 %conv119222, 1
+  %add120 = add i64 %add118, %call117
+  %conv121 = trunc i64 %add120 to i32
+  br label %if.end122
+
+if.end122:                                        ; preds = %if.then50, %if.then111
+  %memused.4 = phi i32 [ %conv121, %if.then111 ], [ %add104, %if.then50 ]
+  %target = getelementptr inbounds %struct.fancyali_s* %7, i64 0, i32 7
+  %15 = load i8** %target, align 8, !tbaa !0
+  %cmp127 = icmp eq i8* %15, null
+  br i1 %cmp127, label %for.inc, label %if.then129
+
+if.then129:                                       ; preds = %if.end122
+  %call135 = tail call i64 @strlen(i8* %15) #8
+  %conv137221 = zext i32 %memused.4 to i64
+  %add136 = add i64 %conv137221, 1
+  %add138 = add i64 %add136, %call135
+  %conv139 = trunc i64 %add138 to i32
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end122, %if.end44, %if.then129
+  %memused.5 = phi i32 [ %conv139, %if.then129 ], [ %memused.4, %if.end122 ], [ %memused.3, %if.end44 ]
+  %indvars.iv.next236 = add i64 %indvars.iv235, 1
+  %16 = trunc i64 %indvars.iv.next236 to i32
+  %cmp = icmp slt i32 %16, %1
+  br i1 %cmp, label %for.body, label %for.cond143.preheader
+
+for.body147:                                      ; preds = %for.body147.lr.ph, %if.end155
+  %indvars.iv = phi i64 [ 0, %for.body147.lr.ph ], [ %indvars.iv.next, %if.end155 ]
+  %n.0228 = phi i32 [ 0, %for.body147.lr.ph ], [ %inc156, %if.end155 ]
+  %arrayidx149 = getelementptr inbounds %struct.hit_s** %3, i64 %indvars.iv
+  %17 = load %struct.hit_s** %arrayidx149, align 8, !tbaa !0
+  %pvalue = getelementptr inbounds %struct.hit_s* %17, i64 0, i32 2
+  %18 = load double* %pvalue, align 8, !tbaa !4
+  %mul151 = fmul double %conv150, %18
+  %cmp152 = fcmp ult double %mul151, %E
+  br i1 %cmp152, label %if.end155, label %for.end159
+
+if.end155:                                        ; preds = %for.body147
+  %inc156 = add nsw i32 %n.0228, 1
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %19 = trunc i64 %indvars.iv.next to i32
+  %cmp145 = icmp slt i32 %19, %1
+  br i1 %cmp145, label %for.body147, label %for.end159
+
+for.end159:                                       ; preds = %entry, %if.end155, %for.body147, %for.cond143.preheader
+  %memused.0.lcssa237 = phi i32 [ %memused.5, %for.cond143.preheader ], [ %memused.5, %for.body147 ], [ %memused.5, %if.end155 ], [ %add, %entry ]
+  %n.0.lcssa = phi i32 [ 0, %for.cond143.preheader ], [ %n.0228, %for.body147 ], [ %inc156, %if.end155 ], [ 0, %entry ]
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([18 x i8]* @str, i64 0, i64 0))
+  %20 = load i32* %num, align 4, !tbaa !3
+  %call162 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str2, i64 0, i64 0), i32 %20) #6
+  %call163 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([31 x i8]* @.str3, i64 0, i64 0), i32 %n.0.lcssa) #6
+  %div = sdiv i32 %memused.0.lcssa237, 1000
+  %call164 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([32 x i8]* @.str4, i64 0, i64 0), i32 %div) #6
+  ret void
+}

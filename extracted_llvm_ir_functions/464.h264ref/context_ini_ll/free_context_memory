@@ -1,0 +1,54 @@
+define void @free_context_memory() #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.end, %entry
+  %indvars.iv27 = phi i64 [ 0, %entry ], [ %indvars.iv.next28, %for.end ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %0 = load i32**** @initialized, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32*** %0, i64 %indvars.iv27
+  %1 = load i32*** %arrayidx, align 8, !tbaa !0
+  %arrayidx5 = getelementptr inbounds i32** %1, i64 %indvars.iv
+  %2 = load i32** %arrayidx5, align 8, !tbaa !0
+  %3 = bitcast i32* %2 to i8*
+  tail call void @free(i8* %3) #4
+  %4 = load i32**** @model_number, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds i32*** %4, i64 %indvars.iv27
+  %5 = load i32*** %arrayidx8, align 8, !tbaa !0
+  %arrayidx9 = getelementptr inbounds i32** %5, i64 %indvars.iv
+  %6 = load i32** %arrayidx9, align 8, !tbaa !0
+  %7 = bitcast i32* %6 to i8*
+  tail call void @free(i8* %7) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 4
+  br i1 %exitcond, label %for.end, label %for.body3
+
+for.end:                                          ; preds = %for.body3
+  %8 = load i32**** @initialized, align 8, !tbaa !0
+  %arrayidx11 = getelementptr inbounds i32*** %8, i64 %indvars.iv27
+  %9 = load i32*** %arrayidx11, align 8, !tbaa !0
+  %10 = bitcast i32** %9 to i8*
+  tail call void @free(i8* %10) #4
+  %11 = load i32**** @model_number, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i32*** %11, i64 %indvars.iv27
+  %12 = load i32*** %arrayidx13, align 8, !tbaa !0
+  %13 = bitcast i32** %12 to i8*
+  tail call void @free(i8* %13) #4
+  %indvars.iv.next28 = add i64 %indvars.iv27, 1
+  %lftr.wideiv29 = trunc i64 %indvars.iv.next28 to i32
+  %exitcond30 = icmp eq i32 %lftr.wideiv29, 3
+  br i1 %exitcond30, label %for.end16, label %for.cond1.preheader
+
+for.end16:                                        ; preds = %for.end
+  %14 = load i32**** @initialized, align 8, !tbaa !0
+  %15 = bitcast i32*** %14 to i8*
+  tail call void @free(i8* %15) #4
+  %16 = load i32**** @model_number, align 8, !tbaa !0
+  %17 = bitcast i32*** %16 to i8*
+  tail call void @free(i8* %17) #4
+  ret void
+}

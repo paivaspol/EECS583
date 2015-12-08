@@ -1,0 +1,12 @@
+define i32 @PerlIO_getpos(%struct._PerlIO** %f, %struct.sv* %pos) #1 {
+entry:
+  %posn = alloca i64, align 8
+  %call = call i64 @Perl_PerlIO_tell(%struct._PerlIO** %f) #10
+  store i64 %call, i64* %posn, align 8, !tbaa !4
+  %0 = bitcast i64* %posn to i8*
+  call void @Perl_sv_setpvn(%struct.sv* %pos, i8* %0, i64 8) #9
+  %1 = load i64* %posn, align 8, !tbaa !4
+  %cmp = icmp eq i64 %1, -1
+  %cond = sext i1 %cmp to i32
+  ret i32 %cond
+}

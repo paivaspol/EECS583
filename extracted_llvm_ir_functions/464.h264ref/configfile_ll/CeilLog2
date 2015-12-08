@@ -1,0 +1,18 @@
+define i32 @CeilLog2(i32 %uiVal) #7 {
+entry:
+  %sub = add i32 %uiVal, -1
+  %cmp3 = icmp eq i32 %sub, 0
+  br i1 %cmp3, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %uiRet.05 = phi i32 [ %inc, %while.body ], [ 0, %entry ]
+  %uiTmp.04 = phi i32 [ %shr, %while.body ], [ %sub, %entry ]
+  %shr = lshr i32 %uiTmp.04, 1
+  %inc = add i32 %uiRet.05, 1
+  %cmp = icmp eq i32 %shr, 0
+  br i1 %cmp, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  %uiRet.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %while.body ]
+  ret i32 %uiRet.0.lcssa
+}

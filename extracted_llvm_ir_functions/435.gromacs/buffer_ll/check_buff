@@ -1,0 +1,85 @@
+define i32 @check_buff(%struct._IO_FILE* %fp, i8* %title, i32* nocapture %data, i32 %items, i32 %verbose) #1 {
+entry:
+  %tobool = icmp eq i32 %verbose, 0
+  %cmp48 = icmp sgt i32 %items, 0
+  br i1 %tobool, label %for.cond.preheader, label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %entry
+  br i1 %cmp48, label %for.body6.lr.ph, label %if.end21
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %tobool12 = icmp eq %struct._IO_FILE* %fp, null
+  br label %for.body6
+
+for.cond.preheader:                               ; preds = %entry
+  br i1 %cmp48, label %for.body, label %if.end21
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %errs.049 = phi i32 [ %errs.0.inc, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i32* %data, i64 %indvars.iv
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %1 = trunc i64 %indvars.iv to i32
+  %and.i = and i32 %1, 255
+  %add.i = shl i32 %1, 8
+  %and1.i = add i32 %add.i, 256
+  %shl.i = and i32 %and1.i, 65280
+  %add2.i = shl i32 %1, 16
+  %and3.i = add i32 %add2.i, 131072
+  %shl4.i = and i32 %and3.i, 16711680
+  %add6.i = shl i32 %1, 24
+  %shl8.i = add i32 %add6.i, 50331648
+  %or.i = or i32 %shl8.i, %and.i
+  %or5.i = or i32 %or.i, %shl.i
+  %or9.i = or i32 %or5.i, %shl4.i
+  %not.cmp1 = icmp ne i32 %0, %or9.i
+  %inc = zext i1 %not.cmp1 to i32
+  %errs.0.inc = add nsw i32 %inc, %errs.049
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %items
+  br i1 %exitcond, label %if.end21, label %for.body
+
+for.body6:                                        ; preds = %for.inc18, %for.body6.lr.ph
+  %indvars.iv56 = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next57, %for.inc18 ]
+  %errs.253 = phi i32 [ 0, %for.body6.lr.ph ], [ %errs.3, %for.inc18 ]
+  %arrayidx8 = getelementptr inbounds i32* %data, i64 %indvars.iv56
+  %2 = load i32* %arrayidx8, align 4, !tbaa !0
+  %3 = trunc i64 %indvars.iv56 to i32
+  %and.i36 = and i32 %3, 255
+  %add.i37 = shl i32 %3, 8
+  %and1.i38 = add i32 %add.i37, 256
+  %shl.i39 = and i32 %and1.i38, 65280
+  %add2.i40 = shl i32 %3, 16
+  %and3.i41 = add i32 %add2.i40, 131072
+  %shl4.i42 = and i32 %and3.i41, 16711680
+  %add6.i43 = shl i32 %3, 24
+  %shl8.i44 = add i32 %add6.i43, 50331648
+  %or.i45 = or i32 %shl8.i44, %and.i36
+  %or5.i46 = or i32 %or.i45, %shl.i39
+  %or9.i47 = or i32 %or5.i46, %shl4.i42
+  %cmp10 = icmp eq i32 %2, %or9.i47
+  br i1 %cmp10, label %for.inc18, label %if.then11
+
+if.then11:                                        ; preds = %for.body6
+  br i1 %tobool12, label %if.end15, label %if.then13
+
+if.then13:                                        ; preds = %if.then11
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i8* %title, i32 %2, i32 %or9.i47) #4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then11, %if.then13
+  %inc16 = add nsw i32 %errs.253, 1
+  br label %for.inc18
+
+for.inc18:                                        ; preds = %for.body6, %if.end15
+  %errs.3 = phi i32 [ %inc16, %if.end15 ], [ %errs.253, %for.body6 ]
+  %indvars.iv.next57 = add i64 %indvars.iv56, 1
+  %lftr.wideiv58 = trunc i64 %indvars.iv.next57 to i32
+  %exitcond59 = icmp eq i32 %lftr.wideiv58, %items
+  br i1 %exitcond59, label %if.end21, label %for.body6
+
+if.end21:                                         ; preds = %for.cond4.preheader, %for.inc18, %for.cond.preheader, %for.body
+  %errs.4 = phi i32 [ 0, %for.cond.preheader ], [ %errs.0.inc, %for.body ], [ 0, %for.cond4.preheader ], [ %errs.3, %for.inc18 ]
+  ret i32 %errs.4
+}

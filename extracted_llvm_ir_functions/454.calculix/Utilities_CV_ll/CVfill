@@ -1,0 +1,29 @@
+define void @CVfill(i32 %size, i8* %y, i8 signext %c) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 1
+  br i1 %cmp, label %return, label %if.else
+
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp eq i8* %y, null
+  br i1 %cmp1, label %if.then2, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else
+  %cmp412 = icmp sgt i32 %size, 0
+  br i1 %cmp412, label %for.body.lr.ph, label %return
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %0 = add i32 %size, -1
+  %1 = zext i32 %0 to i64
+  %2 = add i64 %1, 1
+  call void @llvm.memset.p0i8.i64(i8* %y, i8 %c, i64 %2, i32 1, i1 false)
+  br label %return
+
+if.then2:                                         ; preds = %if.else
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), i32 %size, i8* null) #6
+  tail call void @exit(i32 0) #7
+  unreachable
+
+return:                                           ; preds = %for.cond.preheader, %for.body.lr.ph, %entry
+  ret void
+}

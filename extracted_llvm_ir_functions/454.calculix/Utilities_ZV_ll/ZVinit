@@ -1,0 +1,46 @@
+define noalias double* @ZVinit(i32 %n, double %real, double %imag) #0 {
+entry:
+  %cmp = icmp slt i32 %n, 1
+  br i1 %cmp, label %if.then, label %if.then2
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 %n, double %real, double %imag) #5
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+if.then2:                                         ; preds = %entry
+  %mul = shl nsw i32 %n, 1
+  %conv = sext i32 %mul to i64
+  %mul4 = shl nsw i64 %conv, 3
+  %call5 = tail call noalias i8* @malloc(i64 %mul4) #5
+  %1 = bitcast i8* %call5 to double*
+  %cmp6 = icmp eq i8* %call5, null
+  br i1 %cmp6, label %if.then8, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then2
+  %cmp2645 = icmp sgt i32 %n, 0
+  br i1 %cmp2645, label %for.body, label %for.end
+
+if.then8:                                         ; preds = %if.then2
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul4, i32 181, i8* getelementptr inbounds ([83 x i8]* @.str2, i64 0, i64 0)) #5
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %ii.046 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %1, i64 %indvars.iv
+  store double %real, double* %arrayidx, align 8, !tbaa !0
+  %3 = or i64 %indvars.iv, 1
+  %arrayidx29 = getelementptr inbounds double* %1, i64 %3
+  store double %imag, double* %arrayidx29, align 8, !tbaa !0
+  %inc = add nsw i32 %ii.046, 1
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %exitcond = icmp eq i32 %inc, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret double* %1
+}

@@ -1,0 +1,112 @@
+define i32 @DenseMtx_writeToBinaryFile(%struct._DenseMtx* %mtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([59 x i8]* @.str24, i64 0, i64 0), i64 58, i64 1, %struct._IO_FILE* %0) #7
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  br i1 %cmp1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([58 x i8]* @.str25, i64 0, i64 0), i64 57, i64 1, %struct._IO_FILE* %2) #7
+  br label %return
+
+if.end4:                                          ; preds = %if.end
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %4 = bitcast %struct._DenseMtx* %mtx to i8*
+  %call5 = tail call i64 @fwrite(i8* %4, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %rowid = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 1
+  %5 = bitcast i32* %rowid to i8*
+  %call6 = tail call i64 @fwrite(i8* %5, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %colid = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 2
+  %6 = bitcast i32* %colid to i8*
+  %call7 = tail call i64 @fwrite(i8* %6, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
+  %7 = bitcast i32* %nrow to i8*
+  %call8 = tail call i64 @fwrite(i8* %7, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %ncol = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %8 = bitcast i32* %ncol to i8*
+  %call9 = tail call i64 @fwrite(i8* %8, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %inc1 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 5
+  %9 = bitcast i32* %inc1 to i8*
+  %call10 = tail call i64 @fwrite(i8* %9, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %inc2 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6
+  %10 = bitcast i32* %inc2 to i8*
+  %call11 = tail call i64 @fwrite(i8* %10, i64 4, i64 1, %struct._IO_FILE* %fp) #4
+  %11 = load i32* %nrow, align 4, !tbaa !3
+  %cmp13 = icmp sgt i32 %11, 0
+  br i1 %cmp13, label %land.lhs.true, label %if.end18
+
+land.lhs.true:                                    ; preds = %if.end4
+  %rowind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7
+  %12 = load i32** %rowind, align 8, !tbaa !0
+  %cmp14 = icmp eq i32* %12, null
+  br i1 %cmp14, label %if.end18, label %if.then15
+
+if.then15:                                        ; preds = %land.lhs.true
+  %13 = bitcast i32* %12 to i8*
+  %conv = sext i32 %11 to i64
+  %call17 = tail call i64 @fwrite(i8* %13, i64 4, i64 %conv, %struct._IO_FILE* %fp) #4
+  br label %if.end18
+
+if.end18:                                         ; preds = %land.lhs.true, %if.then15, %if.end4
+  %14 = load i32* %ncol, align 4, !tbaa !3
+  %cmp20 = icmp sgt i32 %14, 0
+  br i1 %cmp20, label %land.lhs.true22, label %if.end29
+
+land.lhs.true22:                                  ; preds = %if.end18
+  %colind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 8
+  %15 = load i32** %colind, align 8, !tbaa !0
+  %cmp23 = icmp eq i32* %15, null
+  br i1 %cmp23, label %if.end29, label %if.then25
+
+if.then25:                                        ; preds = %land.lhs.true22
+  %16 = bitcast i32* %15 to i8*
+  %conv27 = sext i32 %14 to i64
+  %call28 = tail call i64 @fwrite(i8* %16, i64 4, i64 %conv27, %struct._IO_FILE* %fp) #4
+  %.pre = load i32* %ncol, align 4, !tbaa !3
+  br label %if.end29
+
+if.end29:                                         ; preds = %land.lhs.true22, %if.end18, %if.then25
+  %17 = phi i32 [ %.pre, %if.then25 ], [ %14, %if.end18 ], [ %14, %land.lhs.true22 ]
+  %18 = load i32* %nrow, align 4, !tbaa !3
+  %mul = mul nsw i32 %17, %18
+  %cmp32 = icmp sgt i32 %mul, 0
+  br i1 %cmp32, label %land.lhs.true34, label %return
+
+land.lhs.true34:                                  ; preds = %if.end29
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %19 = load double** %entries, align 8, !tbaa !0
+  %cmp35 = icmp eq double* %19, null
+  br i1 %cmp35, label %return, label %if.then37
+
+if.then37:                                        ; preds = %land.lhs.true34
+  %20 = load i32* %type, align 4, !tbaa !3
+  switch i32 %20, label %return [
+    i32 1, label %if.then41
+    i32 2, label %if.then48
+  ]
+
+if.then41:                                        ; preds = %if.then37
+  %21 = bitcast double* %19 to i8*
+  %conv43 = sext i32 %mul to i64
+  %call44 = tail call i64 @fwrite(i8* %21, i64 8, i64 %conv43, %struct._IO_FILE* %fp) #4
+  br label %return
+
+if.then48:                                        ; preds = %if.then37
+  %22 = bitcast double* %19 to i8*
+  %mul50 = shl nsw i32 %mul, 1
+  %conv51 = sext i32 %mul50 to i64
+  %call52 = tail call i64 @fwrite(i8* %22, i64 8, i64 %conv51, %struct._IO_FILE* %fp) #4
+  br label %return
+
+return:                                           ; preds = %if.end29, %if.then48, %if.then41, %land.lhs.true34, %if.then37, %if.then2, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ -2, %if.then2 ], [ 1, %if.then37 ], [ 1, %land.lhs.true34 ], [ 1, %if.then41 ], [ 1, %if.then48 ], [ 1, %if.end29 ]
+  ret i32 %retval.0
+}

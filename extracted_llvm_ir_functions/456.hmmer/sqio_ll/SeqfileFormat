@@ -1,0 +1,286 @@
+define i32 @SeqfileFormat(%struct._IO_FILE* %fp) #0 {
+entry:
+  %buf = alloca i8*, align 8
+  %len = alloca i32, align 4
+  %s = alloca i8*, align 8
+  store i8* null, i8** %buf, align 8, !tbaa !3
+  store i32 0, i32* %len, align 4, !tbaa !0
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %if.end179, %entry
+  %ndataline.0.ph = phi i32 [ 0, %entry ], [ %inc, %if.end179 ]
+  %has_junk.0.ph = phi i32 [ 0, %entry ], [ %has_junk.2, %if.end179 ]
+  %call208 = call i8* @sre_fgets(i8** %buf, i32* %len, %struct._IO_FILE* %fp) #8
+  %cmp209 = icmp eq i8* %call208, null
+  br i1 %cmp209, label %while.end, label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.cond.outer
+  %cmp2 = icmp eq i32 %ndataline.0.ph, 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %0 = load i8** %buf, align 8, !tbaa !3
+  %call1 = call i32 @IsBlankline(i8* %0) #8
+  %tobool = icmp eq i32 %call1, 0
+  br i1 %tobool, label %if.end, label %while.cond.backedge
+
+if.end:                                           ; preds = %while.body
+  br i1 %cmp2, label %if.then3, label %if.end61
+
+if.then3:                                         ; preds = %if.end
+  %1 = load i8** %buf, align 8, !tbaa !3
+  %call4 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i64 4) #9
+  %cmp5 = icmp eq i32 %call4, 0
+  br i1 %cmp5, label %land.lhs.true, label %if.end9
+
+land.lhs.true:                                    ; preds = %if.then3
+  %call6 = call i8* @strstr(i8* %1, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0)) #9
+  %tobool7 = icmp eq i8* %call6, null
+  br i1 %tobool7, label %if.end9, label %DONEthread-pre-split
+
+if.end9:                                          ; preds = %land.lhs.true, %if.then3
+  %2 = load i8* %1, align 1, !tbaa !1
+  %cmp10 = icmp eq i8 %2, 62
+  br i1 %cmp10, label %DONE, label %if.end13
+
+if.end13:                                         ; preds = %if.end9
+  %call14 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i64 13) #9
+  %cmp15 = icmp eq i32 %call14, 0
+  br i1 %cmp15, label %DONEthread-pre-split, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end13
+  %call17 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0), i64 13) #9
+  %cmp18 = icmp eq i32 %call17, 0
+  br i1 %cmp18, label %DONEthread-pre-split, label %if.end21
+
+if.end21:                                         ; preds = %lor.lhs.false
+  %call22 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([15 x i8]* @.str11, i64 0, i64 0), i64 14) #9
+  %cmp23 = icmp eq i32 %call22, 0
+  br i1 %cmp23, label %DONEthread-pre-split, label %if.end26
+
+if.end26:                                         ; preds = %if.end21
+  %call27 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([8 x i8]* @.str12, i64 0, i64 0), i64 7) #9
+  %cmp28 = icmp eq i32 %call27, 0
+  br i1 %cmp28, label %land.lhs.true30, label %if.end35
+
+land.lhs.true30:                                  ; preds = %if.end26
+  %call31 = call i8* @strstr(i8* %1, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0)) #9
+  %cmp32 = icmp eq i8* %call31, null
+  br i1 %cmp32, label %if.end35, label %DONEthread-pre-split
+
+if.end35:                                         ; preds = %land.lhs.true30, %if.end26
+  %call36 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([24 x i8]* @.str14, i64 0, i64 0), i64 23) #9
+  %cmp37 = icmp eq i32 %call36, 0
+  br i1 %cmp37, label %DONE, label %lor.lhs.false39
+
+lor.lhs.false39:                                  ; preds = %if.end35
+  %call40 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([24 x i8]* @.str15, i64 0, i64 0), i64 23) #9
+  %cmp41 = icmp eq i32 %call40, 0
+  br i1 %cmp41, label %DONEthread-pre-split, label %if.end44
+
+if.end44:                                         ; preds = %lor.lhs.false39
+  %call45 = call i8* @sre_strdup(i8* %1, i32 -1) #8
+  store i8* %call45, i8** %s, align 8, !tbaa !3
+  %call46 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
+  %cmp47 = icmp eq i8* %call46, null
+  br i1 %cmp47, label %if.end60, label %land.lhs.true49
+
+land.lhs.true49:                                  ; preds = %if.end44
+  %call50 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
+  %cmp51 = icmp eq i8* %call50, null
+  br i1 %cmp51, label %if.end60, label %land.lhs.true53
+
+land.lhs.true53:                                  ; preds = %land.lhs.true49
+  %call54 = call i32 @IsInt(i8* %call46) #8
+  %tobool55 = icmp eq i32 %call54, 0
+  br i1 %tobool55, label %if.end60, label %land.lhs.true56
+
+land.lhs.true56:                                  ; preds = %land.lhs.true53
+  %call57 = call i32 @IsInt(i8* %call50) #8
+  %tobool58 = icmp eq i32 %call57, 0
+  br i1 %tobool58, label %if.end60, label %if.then59
+
+if.then59:                                        ; preds = %land.lhs.true56
+  call void @free(i8* %call45) #8
+  br label %DONEthread-pre-split
+
+if.end60:                                         ; preds = %land.lhs.true56, %land.lhs.true53, %land.lhs.true49, %if.end44
+  call void @free(i8* %call45) #8
+  br label %if.end61
+
+if.end61:                                         ; preds = %if.end60, %if.end
+  %3 = load i8** %buf, align 8, !tbaa !3
+  %call62 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i64 4) #9
+  %cmp63 = icmp eq i32 %call62, 0
+  br i1 %cmp63, label %DONE, label %lor.lhs.false65
+
+lor.lhs.false65:                                  ; preds = %if.end61
+  %call66 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), i64 4) #9
+  %cmp67 = icmp eq i32 %call66, 0
+  br i1 %cmp67, label %DONEthread-pre-split, label %lor.lhs.false69
+
+lor.lhs.false69:                                  ; preds = %lor.lhs.false65
+  %call70 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i64 4) #9
+  %cmp71 = icmp eq i32 %call70, 0
+  br i1 %cmp71, label %DONEthread-pre-split, label %lor.lhs.false73
+
+lor.lhs.false73:                                  ; preds = %lor.lhs.false69
+  %call74 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str20, i64 0, i64 0), i64 4) #9
+  %cmp75 = icmp eq i32 %call74, 0
+  br i1 %cmp75, label %DONEthread-pre-split, label %lor.lhs.false77
+
+lor.lhs.false77:                                  ; preds = %lor.lhs.false73
+  %call78 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i64 4) #9
+  %cmp79 = icmp eq i32 %call78, 0
+  br i1 %cmp79, label %DONEthread-pre-split, label %lor.lhs.false81
+
+lor.lhs.false81:                                  ; preds = %lor.lhs.false77
+  %call82 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str22, i64 0, i64 0), i64 4) #9
+  %cmp83 = icmp eq i32 %call82, 0
+  br i1 %cmp83, label %DONEthread-pre-split, label %lor.lhs.false85
+
+lor.lhs.false85:                                  ; preds = %lor.lhs.false81
+  %call86 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str23, i64 0, i64 0), i64 4) #9
+  %cmp87 = icmp eq i32 %call86, 0
+  br i1 %cmp87, label %DONEthread-pre-split, label %lor.lhs.false89
+
+lor.lhs.false89:                                  ; preds = %lor.lhs.false85
+  %call90 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str24, i64 0, i64 0), i64 4) #9
+  %cmp91 = icmp eq i32 %call90, 0
+  br i1 %cmp91, label %DONEthread-pre-split, label %lor.lhs.false93
+
+lor.lhs.false93:                                  ; preds = %lor.lhs.false89
+  %call94 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str25, i64 0, i64 0), i64 4) #9
+  %cmp95 = icmp eq i32 %call94, 0
+  br i1 %cmp95, label %DONEthread-pre-split, label %lor.lhs.false97
+
+lor.lhs.false97:                                  ; preds = %lor.lhs.false93
+  %call98 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str26, i64 0, i64 0), i64 4) #9
+  %cmp99 = icmp eq i32 %call98, 0
+  br i1 %cmp99, label %DONEthread-pre-split, label %lor.lhs.false101
+
+lor.lhs.false101:                                 ; preds = %lor.lhs.false97
+  %call102 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0), i64 4) #9
+  %cmp103 = icmp eq i32 %call102, 0
+  br i1 %cmp103, label %DONEthread-pre-split, label %if.end106
+
+if.end106:                                        ; preds = %lor.lhs.false101
+  %call107 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0), i64 3) #9
+  %cmp108 = icmp eq i32 %call107, 0
+  br i1 %cmp108, label %DONEthread-pre-split, label %lor.lhs.false110
+
+lor.lhs.false110:                                 ; preds = %if.end106
+  %call111 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([7 x i8]* @.str29, i64 0, i64 0), i64 6) #9
+  %cmp112 = icmp eq i32 %call111, 0
+  br i1 %cmp112, label %DONEthread-pre-split, label %if.end115
+
+if.end115:                                        ; preds = %lor.lhs.false110
+  %call116 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #9
+  %cmp117 = icmp eq i8* %call116, null
+  br i1 %cmp117, label %if.end128, label %land.lhs.true119
+
+land.lhs.true119:                                 ; preds = %if.end115
+  %call120 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str30, i64 0, i64 0)) #9
+  %cmp121 = icmp eq i8* %call120, null
+  br i1 %cmp121, label %if.end128, label %land.lhs.true123
+
+land.lhs.true123:                                 ; preds = %land.lhs.true119
+  %call124 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([7 x i8]* @.str31, i64 0, i64 0)) #9
+  %cmp125 = icmp eq i8* %call124, null
+  br i1 %cmp125, label %if.end128, label %DONEthread-pre-split
+
+if.end128:                                        ; preds = %land.lhs.true123, %land.lhs.true119, %if.end115
+  %call129 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([9 x i8]* @.str32, i64 0, i64 0)) #9
+  %cmp130 = icmp eq i8* %call129, null
+  %brmerge = or i1 %cmp130, %cmp117
+  br i1 %brmerge, label %if.end137, label %DONEthread-pre-split
+
+if.end137:                                        ; preds = %if.end128
+  %call138 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([7 x i8]* @.str33, i64 0, i64 0), i64 6) #9
+  %cmp139 = icmp eq i32 %call138, 0
+  br i1 %cmp139, label %DONE, label %lor.lhs.false141
+
+lor.lhs.false141:                                 ; preds = %if.end137
+  %call142 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([8 x i8]* @.str34, i64 0, i64 0), i64 6) #9
+  %cmp143 = icmp eq i32 %call142, 0
+  br i1 %cmp143, label %DONEthread-pre-split, label %if.end146
+
+if.end146:                                        ; preds = %lor.lhs.false141
+  %call147 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([6 x i8]* @.str35, i64 0, i64 0), i64 5) #9
+  %cmp148 = icmp eq i32 %call147, 0
+  br i1 %cmp148, label %DONEthread-pre-split, label %lor.lhs.false150
+
+lor.lhs.false150:                                 ; preds = %if.end146
+  %call151 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([6 x i8]* @.str36, i64 0, i64 0), i64 5) #9
+  %cmp152 = icmp eq i32 %call151, 0
+  br i1 %cmp152, label %DONEthread-pre-split, label %if.end155
+
+if.end155:                                        ; preds = %lor.lhs.false150
+  store i8* %3, i8** %s, align 8, !tbaa !3
+  %call156 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
+  %cmp157 = icmp eq i8* %call156, null
+  br i1 %cmp157, label %while.cond.backedge, label %if.end160
+
+while.cond.backedge:                              ; preds = %if.end155, %while.body, %if.end160
+  %call = call i8* @sre_fgets(i8** %buf, i32* %len, %struct._IO_FILE* %fp) #8
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %while.end, label %while.body
+
+if.end160:                                        ; preds = %if.end155
+  %4 = load i8* %call156, align 1, !tbaa !1
+  %conv161 = sext i8 %4 to i32
+  %memchr = call i8* @memchr(i8* getelementptr inbounds ([3 x i8]* @.str37, i64 0, i64 0), i32 %conv161, i64 3)
+  %cmp163 = icmp eq i8* %memchr, null
+  br i1 %cmp163, label %if.end166, label %while.cond.backedge
+
+if.end166:                                        ; preds = %if.end160
+  %call167 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
+  %cmp168 = icmp eq i8* %call167, null
+  %.has_junk.0 = select i1 %cmp168, i32 1, i32 %has_junk.0.ph
+  br i1 %cmp168, label %if.end179, label %land.lhs.true174
+
+land.lhs.true174:                                 ; preds = %if.end166
+  %call175 = call i32 @Seqtype(i8* %call167) #7
+  %cmp176 = icmp eq i32 %call175, 0
+  %..has_junk.0 = select i1 %cmp176, i32 1, i32 %.has_junk.0
+  br label %if.end179
+
+if.end179:                                        ; preds = %land.lhs.true174, %if.end166
+  %has_junk.2 = phi i32 [ %.has_junk.0, %if.end166 ], [ %..has_junk.0, %land.lhs.true174 ]
+  %inc = add nsw i32 %ndataline.0.ph, 1
+  %cmp180 = icmp eq i32 %inc, 300
+  br i1 %cmp180, label %if.end187, label %while.cond.outer
+
+while.end:                                        ; preds = %while.cond.outer, %while.cond.backedge
+  %cmp184 = icmp eq i32 %ndataline.0.ph, 0
+  br i1 %cmp184, label %if.then186, label %if.end187
+
+if.then186:                                       ; preds = %while.end
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([31 x i8]* @.str38, i64 0, i64 0)) #8
+  br label %if.end187
+
+if.end187:                                        ; preds = %if.end179, %if.then186, %while.end
+  %has_junk.3206 = phi i32 [ %has_junk.0.ph, %if.then186 ], [ %has_junk.0.ph, %while.end ], [ %has_junk.2, %if.end179 ]
+  %cmp188 = icmp eq i32 %has_junk.3206, 1
+  %. = select i1 %cmp188, i32 0, i32 102
+  br label %DONEthread-pre-split
+
+DONEthread-pre-split:                             ; preds = %if.end128, %land.lhs.true, %lor.lhs.false, %if.end13, %if.end21, %land.lhs.true30, %lor.lhs.false39, %lor.lhs.false101, %lor.lhs.false97, %lor.lhs.false93, %lor.lhs.false89, %lor.lhs.false85, %lor.lhs.false81, %lor.lhs.false77, %lor.lhs.false73, %lor.lhs.false69, %lor.lhs.false65, %lor.lhs.false110, %if.end106, %land.lhs.true123, %lor.lhs.false141, %lor.lhs.false150, %if.end146, %if.then59, %if.end187
+  %fmt.0.ph = phi i32 [ %., %if.end187 ], [ 106, %if.then59 ], [ 16, %land.lhs.true ], [ 5, %lor.lhs.false ], [ 5, %if.end13 ], [ 101, %if.end21 ], [ 104, %land.lhs.true30 ], [ 103, %lor.lhs.false39 ], [ 102, %lor.lhs.false101 ], [ 102, %lor.lhs.false97 ], [ 102, %lor.lhs.false93 ], [ 102, %lor.lhs.false89 ], [ 102, %lor.lhs.false85 ], [ 102, %lor.lhs.false81 ], [ 102, %lor.lhs.false77 ], [ 102, %lor.lhs.false73 ], [ 102, %lor.lhs.false69 ], [ 102, %lor.lhs.false65 ], [ 12, %lor.lhs.false110 ], [ 12, %if.end106 ], [ 103, %land.lhs.true123 ], [ 2, %lor.lhs.false141 ], [ 4, %lor.lhs.false150 ], [ 4, %if.end146 ], [ 5, %if.end128 ]
+  %.pr = load i8** %buf, align 8, !tbaa !3
+  br label %DONE
+
+DONE:                                             ; preds = %if.end137, %if.end61, %if.end35, %if.end9, %DONEthread-pre-split
+  %5 = phi i8* [ %.pr, %DONEthread-pre-split ], [ %3, %if.end137 ], [ %3, %if.end61 ], [ %1, %if.end35 ], [ %1, %if.end9 ]
+  %fmt.0 = phi i32 [ %fmt.0.ph, %DONEthread-pre-split ], [ 2, %if.end137 ], [ 102, %if.end61 ], [ 103, %if.end35 ], [ 7, %if.end9 ]
+  %cmp192 = icmp eq i8* %5, null
+  br i1 %cmp192, label %if.end195, label %if.then194
+
+if.then194:                                       ; preds = %DONE
+  call void @free(i8* %5) #8
+  br label %if.end195
+
+if.end195:                                        ; preds = %DONE, %if.then194
+  call void @rewind(%struct._IO_FILE* %fp) #8
+  ret i32 %fmt.0
+}

@@ -1,0 +1,127 @@
+define i64 @PerlIOBase_pushed(%struct._PerlIO** nocapture %f, i8* %mode, %struct.sv* nocapture %arg, %struct._PerlIO_funcs* nocapture %tab) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %1, -13825
+  store i32 %and, i32* %flags, align 4, !tbaa !0
+  %Set_ptrcnt = getelementptr inbounds %struct._PerlIO_funcs* %tab, i64 0, i32 27
+  %2 = load void (%struct._PerlIO**, i8*, i64)** %Set_ptrcnt, align 8, !tbaa !3
+  %cmp = icmp eq void (%struct._PerlIO**, i8*, i64)* %2, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %or = or i32 %and, 4194304
+  store i32 %or, i32* %flags, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = phi i32 [ %and, %entry ], [ %or, %if.then ]
+  %tobool = icmp eq i8* %mode, null
+  br i1 %tobool, label %if.else, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %4 = load i8* %mode, align 1, !tbaa !1
+  switch i8 %4, label %if.end9 [
+    i8 35, label %if.then8
+    i8 73, label %if.then8
+  ]
+
+if.then8:                                         ; preds = %if.then2, %if.then2
+  %incdec.ptr = getelementptr inbounds i8* %mode, i64 1
+  %.pre = load i8* %incdec.ptr, align 1, !tbaa !1
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.then2, %if.then8
+  %5 = phi i8 [ %.pre, %if.then8 ], [ %4, %if.then2 ]
+  %mode.addr.0 = phi i8* [ %incdec.ptr, %if.then8 ], [ %mode, %if.then2 ]
+  %incdec.ptr10 = getelementptr inbounds i8* %mode.addr.0, i64 1
+  %conv11 = sext i8 %5 to i32
+  switch i32 %conv11, label %sw.default [
+    i32 114, label %sw.bb
+    i32 97, label %sw.bb14
+    i32 119, label %sw.bb17
+  ]
+
+sw.bb:                                            ; preds = %if.end9
+  %or13 = or i32 %3, 1024
+  store i32 %or13, i32* %flags, align 4, !tbaa !0
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %sw.bb17, %sw.bb14, %sw.bb
+  %6 = phi i32 [ %or19, %sw.bb17 ], [ %or16, %sw.bb14 ], [ %or13, %sw.bb ]
+  %7 = load i8* %incdec.ptr10, align 1, !tbaa !1
+  %tobool2060 = icmp eq i8 %7, 0
+  br i1 %tobool2060, label %return, label %while.body
+
+sw.bb14:                                          ; preds = %if.end9
+  %or16 = or i32 %3, 8704
+  store i32 %or16, i32* %flags, align 4, !tbaa !0
+  br label %while.cond.preheader
+
+sw.bb17:                                          ; preds = %if.end9
+  %or19 = or i32 %3, 4608
+  store i32 %or19, i32* %flags, align 4, !tbaa !0
+  br label %while.cond.preheader
+
+sw.default:                                       ; preds = %if.end9
+  %call = tail call i32* @__errno_location() #9
+  store i32 22, i32* %call, align 4, !tbaa !0
+  br label %return
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond.backedge
+  %8 = phi i32 [ %10, %while.cond.backedge ], [ %6, %while.cond.preheader ]
+  %9 = phi i8 [ %11, %while.cond.backedge ], [ %7, %while.cond.preheader ]
+  %mode.addr.161 = phi i8* [ %incdec.ptr21, %while.cond.backedge ], [ %incdec.ptr10, %while.cond.preheader ]
+  %incdec.ptr21 = getelementptr inbounds i8* %mode.addr.161, i64 1
+  %conv22 = sext i8 %9 to i32
+  switch i32 %conv22, label %sw.default32 [
+    i32 43, label %sw.bb23
+    i32 98, label %sw.bb26
+    i32 116, label %sw.bb29
+  ]
+
+sw.bb23:                                          ; preds = %while.body
+  %or25 = or i32 %8, 1536
+  store i32 %or25, i32* %flags, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb26:                                          ; preds = %while.body
+  %and28 = and i32 %8, -16385
+  store i32 %and28, i32* %flags, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+sw.bb29:                                          ; preds = %while.body
+  %or31 = or i32 %8, 16384
+  store i32 %or31, i32* %flags, align 4, !tbaa !0
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %sw.bb29, %sw.bb26, %sw.bb23
+  %10 = phi i32 [ %or31, %sw.bb29 ], [ %and28, %sw.bb26 ], [ %or25, %sw.bb23 ]
+  %11 = load i8* %incdec.ptr21, align 1, !tbaa !1
+  %tobool20 = icmp eq i8 %11, 0
+  br i1 %tobool20, label %return, label %while.body
+
+sw.default32:                                     ; preds = %while.body
+  %call33 = tail call i32* @__errno_location() #9
+  store i32 22, i32* %call33, align 4, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %if.end
+  %next = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 0
+  %12 = load %struct._PerlIO** %next, align 8, !tbaa !3
+  %tobool35 = icmp eq %struct._PerlIO* %12, null
+  br i1 %tobool35, label %return, label %if.then36
+
+if.then36:                                        ; preds = %if.else
+  %flags38 = getelementptr inbounds %struct._PerlIO* %12, i64 0, i32 2
+  %13 = load i32* %flags38, align 4, !tbaa !0
+  %and39 = and i32 %13, 13824
+  %or41 = or i32 %3, %and39
+  store i32 %or41, i32* %flags, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %while.cond.preheader, %while.cond.backedge, %if.then36, %if.else, %sw.default32, %sw.default
+  %retval.0 = phi i64 [ -1, %sw.default ], [ -1, %sw.default32 ], [ 0, %if.else ], [ 0, %if.then36 ], [ 0, %while.cond.backedge ], [ 0, %while.cond.preheader ]
+  ret i64 %retval.0
+}

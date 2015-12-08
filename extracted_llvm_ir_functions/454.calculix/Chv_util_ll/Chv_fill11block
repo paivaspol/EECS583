@@ -1,0 +1,317 @@
+define void @Chv_fill11block(%struct._Chv* %chv, %struct._A2* %mtx) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  %cmp1 = icmp eq %struct._A2* %mtx, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), %struct._Chv* %chv, %struct._A2* %mtx) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %1 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %1, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end9, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([77 x i8]* @.str14, i64 0, i64 0), %struct._Chv* %chv, %struct._A2* %mtx, i32 %1) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end9:                                          ; preds = %if.end
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #4
+  %call10 = call double* @Chv_entries(%struct._Chv* %chv) #4
+  %3 = load i32* %type, align 4, !tbaa !3
+  switch i32 %3, label %if.end187 [
+    i32 1, label %if.then13
+    i32 2, label %if.then78
+  ]
+
+if.then13:                                        ; preds = %if.end9
+  %4 = load i32* %nD, align 4, !tbaa !3
+  call void @A2_init(%struct._A2* %mtx, i32 1, i32 %4, i32 %4, i32 1, i32 %4, double* null) #4
+  call void @A2_zero(%struct._A2* %mtx) #4
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %5 = load i32* %symflag, align 4, !tbaa !3
+  switch i32 %5, label %if.end187 [
+    i32 0, label %if.then15
+    i32 2, label %if.then31
+  ]
+
+if.then15:                                        ; preds = %if.then13
+  %6 = load i32* %nD, align 4, !tbaa !3
+  %cmp16312 = icmp sgt i32 %6, 0
+  br i1 %cmp16312, label %for.body.lr.ph, label %if.end187
+
+for.body.lr.ph:                                   ; preds = %if.then15
+  %7 = load i32* %nU, align 4, !tbaa !3
+  %add = add nsw i32 %7, %6
+  %8 = sext i32 %add to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.end
+  %indvars.iv = phi i64 [ %8, %for.body.lr.ph ], [ %indvars.iv.next, %for.end ]
+  %ioff.0314 = phi i32 [ 0, %for.body.lr.ph ], [ %add25, %for.end ]
+  %ii.0313 = phi i32 [ 0, %for.body.lr.ph ], [ %add17, %for.end ]
+  %idxprom = sext i32 %ioff.0314 to i64
+  %arrayidx = getelementptr inbounds double* %call10, i64 %idxprom
+  %9 = load double* %arrayidx, align 8, !tbaa !4
+  call void @A2_setRealEntry(%struct._A2* %mtx, i32 %ii.0313, i32 %ii.0313, double %9) #4
+  %add17 = add nsw i32 %ii.0313, 1
+  %10 = load i32* %nD, align 4, !tbaa !3
+  %cmp20309 = icmp slt i32 %add17, %10
+  br i1 %cmp20309, label %for.body21, label %for.end
+
+for.body21:                                       ; preds = %for.body, %for.body21
+  %iioff.0311.in = phi i32 [ %iioff.0311, %for.body21 ], [ %ioff.0314, %for.body ]
+  %jj.0310 = phi i32 [ %inc, %for.body21 ], [ %add17, %for.body ]
+  %iioff.0311 = add nsw i32 %iioff.0311.in, 1
+  %idxprom22 = sext i32 %iioff.0311 to i64
+  %arrayidx23 = getelementptr inbounds double* %call10, i64 %idxprom22
+  %11 = load double* %arrayidx23, align 8, !tbaa !4
+  call void @A2_setRealEntry(%struct._A2* %mtx, i32 %ii.0313, i32 %jj.0310, double %11) #4
+  call void @A2_setRealEntry(%struct._A2* %mtx, i32 %jj.0310, i32 %ii.0313, double 0.000000e+00) #4
+  %inc = add nsw i32 %jj.0310, 1
+  %12 = load i32* %nD, align 4, !tbaa !3
+  %cmp20 = icmp slt i32 %inc, %12
+  br i1 %cmp20, label %for.body21, label %for.end
+
+for.end:                                          ; preds = %for.body21, %for.body
+  %13 = phi i32 [ %10, %for.body ], [ %12, %for.body21 ]
+  %14 = trunc i64 %indvars.iv to i32
+  %add25 = add nsw i32 %14, %ioff.0314
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %cmp16 = icmp slt i32 %add17, %13
+  br i1 %cmp16, label %for.body, label %if.end187
+
+if.then31:                                        ; preds = %if.then13
+  %15 = load i32* %nD, align 4, !tbaa !3
+  %16 = load i32* %nL, align 4, !tbaa !3
+  %cmp42326 = icmp sgt i32 %15, 0
+  br i1 %cmp42326, label %for.body43.lr.ph, label %if.end187
+
+for.body43.lr.ph:                                 ; preds = %if.then31
+  %17 = load i32* %nU, align 4, !tbaa !3
+  %add37 = add i32 %15, -1
+  %sub = add i32 %add37, %16
+  %18 = add i32 %16, %17
+  %19 = shl i32 %15, 1
+  %20 = add i32 %18, %19
+  %21 = sext i32 %20 to i64
+  br label %for.body43
+
+for.body43:                                       ; preds = %for.body43.lr.ph, %for.end67
+  %indvars.iv360 = phi i64 [ %21, %for.body43.lr.ph ], [ %indvars.iv.next361, %for.end67 ]
+  %ioff34.0328 = phi i32 [ %sub, %for.body43.lr.ph ], [ %add68, %for.end67 ]
+  %ii32.0327 = phi i32 [ 0, %for.body43.lr.ph ], [ %add46, %for.end67 ]
+  %indvars.iv.next361 = add i64 %indvars.iv360, -2
+  %idxprom44 = sext i32 %ioff34.0328 to i64
+  %arrayidx45 = getelementptr inbounds double* %call10, i64 %idxprom44
+  %22 = load double* %arrayidx45, align 8, !tbaa !4
+  call void @A2_setRealEntry(%struct._A2* %mtx, i32 %ii32.0327, i32 %ii32.0327, double %22) #4
+  %add46 = add nsw i32 %ii32.0327, 1
+  %23 = load i32* %nD, align 4, !tbaa !3
+  %cmp49317 = icmp slt i32 %add46, %23
+  br i1 %cmp49317, label %for.body50, label %for.cond59.loopexit
+
+for.body50:                                       ; preds = %for.body43, %for.body50
+  %iioff33.0319.in = phi i32 [ %iioff33.0319, %for.body50 ], [ %ioff34.0328, %for.body43 ]
+  %jj36.0318 = phi i32 [ %inc54, %for.body50 ], [ %add46, %for.body43 ]
+  %iioff33.0319 = add nsw i32 %iioff33.0319.in, 1
+  %idxprom51 = sext i32 %iioff33.0319 to i64
+  %arrayidx52 = getelementptr inbounds double* %call10, i64 %idxprom51
+  %24 = load double* %arrayidx52, align 8, !tbaa !4
+  call void @A2_setRealEntry(%struct._A2* %mtx, i32 %ii32.0327, i32 %jj36.0318, double %24) #4
+  %inc54 = add nsw i32 %jj36.0318, 1
+  %25 = load i32* %nD, align 4, !tbaa !3
+  %cmp49 = icmp slt i32 %inc54, %25
+  br i1 %cmp49, label %for.body50, label %for.cond59.loopexit
+
+for.cond59.loopexit:                              ; preds = %for.body50, %for.body43
+  %26 = phi i32 [ %23, %for.body43 ], [ %25, %for.body50 ]
+  %cmp60321 = icmp slt i32 %add46, %26
+  br i1 %cmp60321, label %for.body61, label %for.end67
+
+for.body61:                                       ; preds = %for.cond59.loopexit, %for.body61
+  %iioff33.1323.in = phi i32 [ %iioff33.1323, %for.body61 ], [ %ioff34.0328, %for.cond59.loopexit ]
+  %jj36.1322 = phi i32 [ %inc65, %for.body61 ], [ %add46, %for.cond59.loopexit ]
+  %iioff33.1323 = add nsw i32 %iioff33.1323.in, -1
+  %idxprom62 = sext i32 %iioff33.1323 to i64
+  %arrayidx63 = getelementptr inbounds double* %call10, i64 %idxprom62
+  %27 = load double* %arrayidx63, align 8, !tbaa !4
+  call void @A2_setRealEntry(%struct._A2* %mtx, i32 %jj36.1322, i32 %ii32.0327, double %27) #4
+  %inc65 = add nsw i32 %jj36.1322, 1
+  %28 = load i32* %nD, align 4, !tbaa !3
+  %cmp60 = icmp slt i32 %inc65, %28
+  br i1 %cmp60, label %for.body61, label %for.end67
+
+for.end67:                                        ; preds = %for.body61, %for.cond59.loopexit
+  %29 = phi i32 [ %26, %for.cond59.loopexit ], [ %28, %for.body61 ]
+  %30 = trunc i64 %indvars.iv.next361 to i32
+  %add68 = add nsw i32 %30, %ioff34.0328
+  %cmp42 = icmp slt i32 %add46, %29
+  br i1 %cmp42, label %for.body43, label %if.end187
+
+if.then78:                                        ; preds = %if.end9
+  %31 = load i32* %nD, align 4, !tbaa !3
+  call void @A2_init(%struct._A2* %mtx, i32 2, i32 %31, i32 %31, i32 1, i32 %31, double* null) #4
+  call void @A2_zero(%struct._A2* %mtx) #4
+  %symflag79 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %32 = load i32* %symflag79, align 4, !tbaa !3
+  switch i32 %32, label %if.end187 [
+    i32 0, label %if.then84
+    i32 1, label %if.then84
+    i32 2, label %if.then125
+  ]
+
+if.then84:                                        ; preds = %if.then78, %if.then78
+  %33 = load i32* %nD, align 4, !tbaa !3
+  %cmp92335 = icmp sgt i32 %33, 0
+  br i1 %cmp92335, label %for.body93.lr.ph, label %if.end187
+
+for.body93.lr.ph:                                 ; preds = %if.then84
+  %34 = load i32* %nU, align 4, !tbaa !3
+  %add90 = add nsw i32 %34, %33
+  %35 = sext i32 %add90 to i64
+  br label %for.body93
+
+for.body93:                                       ; preds = %for.body93.lr.ph, %for.end116
+  %indvars.iv365 = phi i64 [ %35, %for.body93.lr.ph ], [ %indvars.iv.next366, %for.end116 ]
+  %ioff87.0337 = phi i32 [ 0, %for.body93.lr.ph ], [ %add117, %for.end116 ]
+  %ii85.0336 = phi i32 [ 0, %for.body93.lr.ph ], [ %add101, %for.end116 ]
+  %mul94 = shl nsw i32 %ioff87.0337, 1
+  %idxprom95 = sext i32 %mul94 to i64
+  %arrayidx96 = getelementptr inbounds double* %call10, i64 %idxprom95
+  %36 = load double* %arrayidx96, align 8, !tbaa !4
+  %add98306 = or i32 %mul94, 1
+  %idxprom99 = sext i32 %add98306 to i64
+  %arrayidx100 = getelementptr inbounds double* %call10, i64 %idxprom99
+  %37 = load double* %arrayidx100, align 8, !tbaa !4
+  call void @A2_setComplexEntry(%struct._A2* %mtx, i32 %ii85.0336, i32 %ii85.0336, double %36, double %37) #4
+  %add101 = add nsw i32 %ii85.0336, 1
+  %38 = load i32* %nD, align 4, !tbaa !3
+  %cmp104331 = icmp slt i32 %add101, %38
+  br i1 %cmp104331, label %for.body105, label %for.end116
+
+for.body105:                                      ; preds = %for.body93, %for.body105
+  %iioff86.0333.in = phi i32 [ %iioff86.0333, %for.body105 ], [ %ioff87.0337, %for.body93 ]
+  %jj89.0332 = phi i32 [ %inc114, %for.body105 ], [ %add101, %for.body93 ]
+  %iioff86.0333 = add nsw i32 %iioff86.0333.in, 1
+  %mul106 = shl nsw i32 %iioff86.0333, 1
+  %idxprom107 = sext i32 %mul106 to i64
+  %arrayidx108 = getelementptr inbounds double* %call10, i64 %idxprom107
+  %39 = load double* %arrayidx108, align 8, !tbaa !4
+  %add110307 = or i32 %mul106, 1
+  %idxprom111 = sext i32 %add110307 to i64
+  %arrayidx112 = getelementptr inbounds double* %call10, i64 %idxprom111
+  %40 = load double* %arrayidx112, align 8, !tbaa !4
+  call void @A2_setComplexEntry(%struct._A2* %mtx, i32 %ii85.0336, i32 %jj89.0332, double %39, double %40) #4
+  call void @A2_setComplexEntry(%struct._A2* %mtx, i32 %jj89.0332, i32 %ii85.0336, double 0.000000e+00, double 0.000000e+00) #4
+  %inc114 = add nsw i32 %jj89.0332, 1
+  %41 = load i32* %nD, align 4, !tbaa !3
+  %cmp104 = icmp slt i32 %inc114, %41
+  br i1 %cmp104, label %for.body105, label %for.end116
+
+for.end116:                                       ; preds = %for.body105, %for.body93
+  %42 = phi i32 [ %38, %for.body93 ], [ %41, %for.body105 ]
+  %43 = trunc i64 %indvars.iv365 to i32
+  %add117 = add nsw i32 %43, %ioff87.0337
+  %indvars.iv.next366 = add i64 %indvars.iv365, -1
+  %cmp92 = icmp slt i32 %add101, %42
+  br i1 %cmp92, label %for.body93, label %if.end187
+
+if.then125:                                       ; preds = %if.then78
+  %44 = load i32* %nD, align 4, !tbaa !3
+  %45 = load i32* %nL, align 4, !tbaa !3
+  %cmp138349 = icmp sgt i32 %44, 0
+  br i1 %cmp138349, label %for.body139.lr.ph, label %if.end187
+
+for.body139.lr.ph:                                ; preds = %if.then125
+  %46 = load i32* %nU, align 4, !tbaa !3
+  %add131 = add i32 %44, -1
+  %sub132 = add i32 %add131, %45
+  %47 = add i32 %45, %46
+  %48 = shl i32 %44, 1
+  %49 = add i32 %47, %48
+  %50 = sext i32 %49 to i64
+  br label %for.body139
+
+for.body139:                                      ; preds = %for.body139.lr.ph, %for.end178
+  %indvars.iv373 = phi i64 [ %50, %for.body139.lr.ph ], [ %indvars.iv.next374, %for.end178 ]
+  %ioff128.0351 = phi i32 [ %sub132, %for.body139.lr.ph ], [ %add179, %for.end178 ]
+  %ii126.0350 = phi i32 [ 0, %for.body139.lr.ph ], [ %add147, %for.end178 ]
+  %indvars.iv.next374 = add i64 %indvars.iv373, -2
+  %mul140 = shl nsw i32 %ioff128.0351, 1
+  %idxprom141 = sext i32 %mul140 to i64
+  %arrayidx142 = getelementptr inbounds double* %call10, i64 %idxprom141
+  %51 = load double* %arrayidx142, align 8, !tbaa !4
+  %add144303 = or i32 %mul140, 1
+  %idxprom145 = sext i32 %add144303 to i64
+  %arrayidx146 = getelementptr inbounds double* %call10, i64 %idxprom145
+  %52 = load double* %arrayidx146, align 8, !tbaa !4
+  call void @A2_setComplexEntry(%struct._A2* %mtx, i32 %ii126.0350, i32 %ii126.0350, double %51, double %52) #4
+  %add147 = add nsw i32 %ii126.0350, 1
+  %53 = load i32* %nD, align 4, !tbaa !3
+  %cmp150340 = icmp slt i32 %add147, %53
+  br i1 %cmp150340, label %for.body151, label %for.cond165.loopexit
+
+for.body151:                                      ; preds = %for.body139, %for.body151
+  %iioff127.0342.in = phi i32 [ %iioff127.0342, %for.body151 ], [ %ioff128.0351, %for.body139 ]
+  %jj130.0341 = phi i32 [ %inc160, %for.body151 ], [ %add147, %for.body139 ]
+  %iioff127.0342 = add nsw i32 %iioff127.0342.in, 1
+  %mul152 = shl nsw i32 %iioff127.0342, 1
+  %idxprom153 = sext i32 %mul152 to i64
+  %arrayidx154 = getelementptr inbounds double* %call10, i64 %idxprom153
+  %54 = load double* %arrayidx154, align 8, !tbaa !4
+  %add156305 = or i32 %mul152, 1
+  %idxprom157 = sext i32 %add156305 to i64
+  %arrayidx158 = getelementptr inbounds double* %call10, i64 %idxprom157
+  %55 = load double* %arrayidx158, align 8, !tbaa !4
+  call void @A2_setComplexEntry(%struct._A2* %mtx, i32 %ii126.0350, i32 %jj130.0341, double %54, double %55) #4
+  %inc160 = add nsw i32 %jj130.0341, 1
+  %56 = load i32* %nD, align 4, !tbaa !3
+  %cmp150 = icmp slt i32 %inc160, %56
+  br i1 %cmp150, label %for.body151, label %for.cond165.loopexit
+
+for.cond165.loopexit:                             ; preds = %for.body151, %for.body139
+  %57 = phi i32 [ %53, %for.body139 ], [ %56, %for.body151 ]
+  %cmp166344 = icmp slt i32 %add147, %57
+  br i1 %cmp166344, label %for.body167, label %for.end178
+
+for.body167:                                      ; preds = %for.cond165.loopexit, %for.body167
+  %iioff127.1346.in = phi i32 [ %iioff127.1346, %for.body167 ], [ %ioff128.0351, %for.cond165.loopexit ]
+  %jj130.1345 = phi i32 [ %inc176, %for.body167 ], [ %add147, %for.cond165.loopexit ]
+  %iioff127.1346 = add nsw i32 %iioff127.1346.in, -1
+  %mul168 = shl nsw i32 %iioff127.1346, 1
+  %idxprom169 = sext i32 %mul168 to i64
+  %arrayidx170 = getelementptr inbounds double* %call10, i64 %idxprom169
+  %58 = load double* %arrayidx170, align 8, !tbaa !4
+  %add172304 = or i32 %mul168, 1
+  %idxprom173 = sext i32 %add172304 to i64
+  %arrayidx174 = getelementptr inbounds double* %call10, i64 %idxprom173
+  %59 = load double* %arrayidx174, align 8, !tbaa !4
+  call void @A2_setComplexEntry(%struct._A2* %mtx, i32 %jj130.1345, i32 %ii126.0350, double %58, double %59) #4
+  %inc176 = add nsw i32 %jj130.1345, 1
+  %60 = load i32* %nD, align 4, !tbaa !3
+  %cmp166 = icmp slt i32 %inc176, %60
+  br i1 %cmp166, label %for.body167, label %for.end178
+
+for.end178:                                       ; preds = %for.body167, %for.cond165.loopexit
+  %61 = phi i32 [ %57, %for.cond165.loopexit ], [ %60, %for.body167 ]
+  %62 = trunc i64 %indvars.iv.next374 to i32
+  %add179 = add nsw i32 %62, %ioff128.0351
+  %cmp138 = icmp slt i32 %add147, %61
+  br i1 %cmp138, label %for.body139, label %if.end187
+
+if.end187:                                        ; preds = %if.then125, %for.end178, %if.then84, %for.end116, %if.then31, %for.end67, %if.then15, %for.end, %if.then78, %if.end9, %if.then13
+  ret void
+}

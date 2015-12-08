@@ -1,46 +1,46 @@
-define void @BZ2_hbAssignCodes(i32* nocapture %code, i8* nocapture readonly %length, i32 %minLen, i32 %maxLen, i32 %alphaSize) #0 {
-  %1 = icmp sgt i32 %minLen, %maxLen
-  br i1 %1, label %._crit_edge5, label %.preheader.lr.ph
+define void @BZ2_hbAssignCodes(i32* nocapture %code, i8* nocapture %length, i32 %minLen, i32 %maxLen, i32 %alphaSize) #0 {
+entry:
+  %cmp22 = icmp sgt i32 %minLen, %maxLen
+  br i1 %cmp22, label %for.end11, label %for.cond1.preheader.lr.ph
 
-.preheader.lr.ph:                                 ; preds = %0
-  %2 = icmp sgt i32 %alphaSize, 0
-  %3 = add i32 %alphaSize, -1
-  br label %.preheader
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp219 = icmp sgt i32 %alphaSize, 0
+  br label %for.cond1.preheader
 
-.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
-  %vec.04 = phi i32 [ 0, %.preheader.lr.ph ], [ %12, %._crit_edge ]
-  %n.03 = phi i32 [ %minLen, %.preheader.lr.ph ], [ %13, %._crit_edge ]
-  br i1 %2, label %.lr.ph, label %._crit_edge
+for.cond1.preheader:                              ; preds = %for.end, %for.cond1.preheader.lr.ph
+  %vec.024 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %shl, %for.end ]
+  %n.023 = phi i32 [ %minLen, %for.cond1.preheader.lr.ph ], [ %inc10, %for.end ]
+  br i1 %cmp219, label %for.body3, label %for.end
 
-.lr.ph:                                           ; preds = %.preheader, %11
-  %indvars.iv = phi i64 [ %indvars.iv.next, %11 ], [ 0, %.preheader ]
-  %vec.11 = phi i32 [ %vec.2, %11 ], [ %vec.04, %.preheader ]
-  %4 = getelementptr inbounds i8* %length, i64 %indvars.iv
-  %5 = load i8* %4, align 1, !tbaa !6
-  %6 = zext i8 %5 to i32
-  %7 = icmp eq i32 %6, %n.03
-  br i1 %7, label %8, label %11
+for.body3:                                        ; preds = %for.cond1.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond1.preheader ]
+  %vec.120 = phi i32 [ %vec.2, %for.inc ], [ %vec.024, %for.cond1.preheader ]
+  %arrayidx = getelementptr inbounds i8* %length, i64 %indvars.iv
+  %0 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv = zext i8 %0 to i32
+  %cmp4 = icmp eq i32 %conv, %n.023
+  br i1 %cmp4, label %if.then, label %for.inc
 
-; <label>:8                                       ; preds = %.lr.ph
-  %9 = getelementptr inbounds i32* %code, i64 %indvars.iv
-  store i32 %vec.11, i32* %9, align 4, !tbaa !2
-  %10 = add nsw i32 %vec.11, 1
-  br label %11
+if.then:                                          ; preds = %for.body3
+  %arrayidx7 = getelementptr inbounds i32* %code, i64 %indvars.iv
+  store i32 %vec.120, i32* %arrayidx7, align 4, !tbaa !0
+  %inc = add nsw i32 %vec.120, 1
+  br label %for.inc
 
-; <label>:11                                      ; preds = %.lr.ph, %8
-  %vec.2 = phi i32 [ %10, %8 ], [ %vec.11, %.lr.ph ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %3
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+for.inc:                                          ; preds = %for.body3, %if.then
+  %vec.2 = phi i32 [ %inc, %if.then ], [ %vec.120, %for.body3 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %alphaSize
+  br i1 %exitcond, label %for.end, label %for.body3
 
-._crit_edge:                                      ; preds = %11, %.preheader
-  %vec.1.lcssa = phi i32 [ %vec.04, %.preheader ], [ %vec.2, %11 ]
-  %12 = shl i32 %vec.1.lcssa, 1
-  %13 = add nsw i32 %n.03, 1
-  %14 = icmp slt i32 %n.03, %maxLen
-  br i1 %14, label %.preheader, label %._crit_edge5
+for.end:                                          ; preds = %for.inc, %for.cond1.preheader
+  %vec.1.lcssa = phi i32 [ %vec.024, %for.cond1.preheader ], [ %vec.2, %for.inc ]
+  %shl = shl i32 %vec.1.lcssa, 1
+  %inc10 = add nsw i32 %n.023, 1
+  %cmp = icmp slt i32 %n.023, %maxLen
+  br i1 %cmp, label %for.cond1.preheader, label %for.end11
 
-._crit_edge5:                                     ; preds = %._crit_edge, %0
+for.end11:                                        ; preds = %for.end, %entry
   ret void
 }

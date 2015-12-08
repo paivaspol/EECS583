@@ -1,0 +1,164 @@
+define i64 @PerlIOBuf_write(%struct._PerlIO** %f, i8* %vbuf, i64 %count) #1 {
+entry:
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %buf1 = getelementptr inbounds %struct._PerlIO* %0, i64 1
+  %1 = bitcast %struct._PerlIO* %buf1 to i8**
+  %2 = load i8** %1, align 8, !tbaa !3
+  %tobool = icmp eq i8* %2, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @Perl_PerlIO_get_base(%struct._PerlIO** %f) #10
+  %.pre = load %struct._PerlIO** %f, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %3 = phi %struct._PerlIO* [ %0, %entry ], [ %.pre, %if.then ]
+  %flags = getelementptr inbounds %struct._PerlIO* %3, i64 0, i32 2
+  %4 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %4, 512
+  %tobool2 = icmp eq i32 %and, 0
+  br i1 %tobool2, label %return, label %if.end4
+
+if.end4:                                          ; preds = %if.end
+  %and6 = and i32 %4, 262144
+  %tobool7 = icmp eq i32 %and6, 0
+  br i1 %tobool7, label %if.end12, label %if.then8
+
+if.then8:                                         ; preds = %if.end4
+  %call9 = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  %cmp = icmp eq i32 %call9, 0
+  br i1 %cmp, label %if.then8.if.end12_crit_edge, label %return
+
+if.then8.if.end12_crit_edge:                      ; preds = %if.then8
+  %.pre123 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags13.phi.trans.insert = getelementptr inbounds %struct._PerlIO* %.pre123, i64 0, i32 2
+  %.pre124 = load i32* %flags13.phi.trans.insert, align 4, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.then8.if.end12_crit_edge, %if.end4
+  %5 = phi i32 [ %.pre124, %if.then8.if.end12_crit_edge ], [ %4, %if.end4 ]
+  %and14 = and i32 %5, 524288
+  %tobool15 = icmp eq i32 %and14, 0
+  br i1 %tobool15, label %while.cond22.preheader, label %if.then16
+
+if.then16:                                        ; preds = %if.end12
+  %add.ptr = getelementptr inbounds i8* %vbuf, i64 %count
+  br label %while.cond
+
+while.cond:                                       ; preds = %land.rhs, %if.then16
+  %flushptr.0 = phi i8* [ %add.ptr, %if.then16 ], [ %add.ptr18, %land.rhs ]
+  %cmp17 = icmp ugt i8* %flushptr.0, %vbuf
+  br i1 %cmp17, label %land.rhs, label %while.cond22.preheader
+
+land.rhs:                                         ; preds = %while.cond
+  %add.ptr18 = getelementptr inbounds i8* %flushptr.0, i64 -1
+  %6 = load i8* %add.ptr18, align 1, !tbaa !1
+  %cmp19 = icmp eq i8 %6, 10
+  br i1 %cmp19, label %while.cond22.preheader, label %while.cond
+
+while.cond22.preheader:                           ; preds = %while.cond, %land.rhs, %if.end12
+  %flushptr.1.ph = phi i8* [ %vbuf, %if.end12 ], [ %flushptr.0, %land.rhs ], [ %flushptr.0, %while.cond ]
+  %cmp23116 = icmp eq i64 %count, 0
+  br i1 %cmp23116, label %while.end64, label %while.body25.lr.ph
+
+while.body25.lr.ph:                               ; preds = %while.cond22.preheader
+  %bufsiz = getelementptr inbounds %struct._PerlIO* %0, i64 2, i32 1
+  %7 = bitcast %struct._PerlIO_funcs** %bufsiz to i64*
+  %ptr = getelementptr inbounds %struct._PerlIO* %0, i64 1, i32 2
+  %8 = bitcast i32* %ptr to i8**
+  %sub.ptr.lhs.cast37 = ptrtoint i8* %flushptr.1.ph to i64
+  br label %while.body25
+
+while.body25:                                     ; preds = %while.cond22.backedge, %while.body25.lr.ph
+  %written.0119 = phi i64 [ 0, %while.body25.lr.ph ], [ %written.1, %while.cond22.backedge ]
+  %buf.0118 = phi i8* [ %vbuf, %while.body25.lr.ph ], [ %buf.1, %while.cond22.backedge ]
+  %count.addr.0117 = phi i64 [ %count, %while.body25.lr.ph ], [ %count.addr.1, %while.cond22.backedge ]
+  %9 = load i64* %7, align 8, !tbaa !4
+  %10 = load i8** %8, align 8, !tbaa !3
+  %11 = load i8** %1, align 8, !tbaa !3
+  %sub.ptr.lhs.cast = ptrtoint i8* %10 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %11 to i64
+  %sub.ptr.sub115 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.lhs.cast
+  %sub = add i64 %sub.ptr.sub115, %9
+  %cmp27 = icmp slt i64 %count.addr.0117, %sub
+  %count.addr.0.sub = select i1 %cmp27, i64 %count.addr.0117, i64 %sub
+  %cmp31 = icmp ugt i8* %flushptr.1.ph, %buf.0118
+  br i1 %cmp31, label %land.lhs.true, label %if.end40
+
+land.lhs.true:                                    ; preds = %while.body25
+  %add.ptr33 = getelementptr inbounds i8* %buf.0118, i64 %count.addr.0.sub
+  %cmp34 = icmp ugt i8* %flushptr.1.ph, %add.ptr33
+  br i1 %cmp34, label %if.end40, label %if.then36
+
+if.then36:                                        ; preds = %land.lhs.true
+  %sub.ptr.rhs.cast38 = ptrtoint i8* %buf.0118 to i64
+  %sub.ptr.sub39 = sub i64 %sub.ptr.lhs.cast37, %sub.ptr.rhs.cast38
+  br label %if.end40
+
+if.end40:                                         ; preds = %land.lhs.true, %while.body25, %if.then36
+  %avail.1 = phi i64 [ %sub.ptr.sub39, %if.then36 ], [ %count.addr.0.sub, %while.body25 ], [ %count.addr.0.sub, %land.lhs.true ]
+  %12 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags41 = getelementptr inbounds %struct._PerlIO* %12, i64 0, i32 2
+  %13 = load i32* %flags41, align 4, !tbaa !0
+  %or = or i32 %13, 131072
+  store i32 %or, i32* %flags41, align 4, !tbaa !0
+  %tobool42 = icmp eq i64 %avail.1, 0
+  br i1 %tobool42, label %if.end54, label %if.then43
+
+if.then43:                                        ; preds = %if.end40
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %buf.0118, i64 %avail.1, i32 1, i1 false)
+  %sub45 = sub i64 %count.addr.0117, %avail.1
+  %add.ptr46 = getelementptr inbounds i8* %buf.0118, i64 %avail.1
+  %add = add i64 %avail.1, %written.0119
+  %14 = load i8** %8, align 8, !tbaa !3
+  %add.ptr48 = getelementptr inbounds i8* %14, i64 %avail.1
+  store i8* %add.ptr48, i8** %8, align 8, !tbaa !3
+  %cmp49 = icmp eq i8* %add.ptr46, %flushptr.1.ph
+  br i1 %cmp49, label %if.then51, label %if.end54
+
+if.then51:                                        ; preds = %if.then43
+  %call52 = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  %.pre122 = load i8** %8, align 8, !tbaa !3
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.then43, %if.end40, %if.then51
+  %15 = phi i8* [ %.pre122, %if.then51 ], [ %10, %if.end40 ], [ %add.ptr48, %if.then43 ]
+  %count.addr.1 = phi i64 [ %sub45, %if.then51 ], [ %count.addr.0117, %if.end40 ], [ %sub45, %if.then43 ]
+  %buf.1 = phi i8* [ %flushptr.1.ph, %if.then51 ], [ %buf.0118, %if.end40 ], [ %add.ptr46, %if.then43 ]
+  %written.1 = phi i64 [ %add, %if.then51 ], [ %written.0119, %if.end40 ], [ %add, %if.then43 ]
+  %16 = load i8** %1, align 8, !tbaa !3
+  %17 = load i64* %7, align 8, !tbaa !4
+  %add.ptr58 = getelementptr inbounds i8* %16, i64 %17
+  %cmp59 = icmp ult i8* %15, %add.ptr58
+  br i1 %cmp59, label %while.cond22.backedge, label %if.then61
+
+if.then61:                                        ; preds = %if.end54
+  %call62 = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  br label %while.cond22.backedge
+
+while.cond22.backedge:                            ; preds = %if.then61, %if.end54
+  %cmp23 = icmp eq i64 %count.addr.1, 0
+  br i1 %cmp23, label %while.cond22.while.end64_crit_edge, label %while.body25
+
+while.cond22.while.end64_crit_edge:               ; preds = %while.cond22.backedge
+  %.pre120 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %flags65.phi.trans.insert = getelementptr inbounds %struct._PerlIO* %.pre120, i64 0, i32 2
+  %.pre121 = load i32* %flags65.phi.trans.insert, align 4, !tbaa !0
+  br label %while.end64
+
+while.end64:                                      ; preds = %while.cond22.while.end64_crit_edge, %while.cond22.preheader
+  %18 = phi i32 [ %.pre121, %while.cond22.while.end64_crit_edge ], [ %5, %while.cond22.preheader ]
+  %written.0.lcssa = phi i64 [ %written.1, %while.cond22.while.end64_crit_edge ], [ 0, %while.cond22.preheader ]
+  %and66 = and i32 %18, 65536
+  %tobool67 = icmp eq i32 %and66, 0
+  br i1 %tobool67, label %return, label %if.then68
+
+if.then68:                                        ; preds = %while.end64
+  %call69 = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %f) #10
+  br label %return
+
+return:                                           ; preds = %if.then68, %while.end64, %if.then8, %if.end
+  %retval.0 = phi i64 [ 0, %if.end ], [ 0, %if.then8 ], [ %written.0.lcssa, %while.end64 ], [ %written.0.lcssa, %if.then68 ]
+  ret i64 %retval.0
+}

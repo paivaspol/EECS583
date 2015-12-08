@@ -1,0 +1,105 @@
+define void @XS_Opcode_opmask(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %4 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %4, 0
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([24 x i8]* @.str21, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %call2.i = tail call %struct.sv* @Perl_newSV(i64 %5) #4
+  %sv_any.i = getelementptr inbounds %struct.sv* %call2.i, i64 0, i32 0
+  %6 = load i8** %sv_any.i, align 8, !tbaa !0
+  %xpv_pv.i = bitcast i8* %6 to i8**
+  %7 = load i8** %xpv_pv.i, align 8, !tbaa !0
+  %8 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %add.i = add nsw i64 %8, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %7, i8 0, i64 %add.i, i32 1, i1 false) #3
+  %9 = load i64* @my_cxt.2, align 8, !tbaa !4
+  %10 = load i8** %sv_any.i, align 8, !tbaa !0
+  %xpv_cur.i = getelementptr inbounds i8* %10, i64 8
+  %11 = bitcast i8* %xpv_cur.i to i64*
+  store i64 %9, i64* %11, align 8, !tbaa !4
+  %sv_flags.i = getelementptr inbounds %struct.sv* %call2.i, i64 0, i32 2
+  %12 = load i32* %sv_flags.i, align 4, !tbaa !3
+  %and.i = and i32 %12, 1223753727
+  %or.i = or i32 %and.i, 67371008
+  store i32 %or.i, i32* %sv_flags.i, align 4, !tbaa !3
+  %call7 = tail call %struct.sv* @Perl_sv_2mortal(%struct.sv* %call2.i) #4
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %13 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.sv** %13, i64 %idxprom
+  store %struct.sv* %call7, %struct.sv** %arrayidx, align 8, !tbaa !0
+  %14 = load i8** @PL_op_mask, align 8, !tbaa !0
+  %tobool = icmp eq i8* %14, null
+  br i1 %tobool, label %if.end24, label %if.then9
+
+if.then9:                                         ; preds = %if.end
+  %15 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx12 = getelementptr inbounds %struct.sv** %15, i64 %idxprom
+  %16 = load %struct.sv** %arrayidx12, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.sv* %16, i64 0, i32 0
+  %17 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %17 to i8**
+  %18 = load i8** %xpv_pv, align 8, !tbaa !0
+  %19 = load i32* @PL_maxo, align 4, !tbaa !3
+  %cmp1338 = icmp sgt i32 %19, 0
+  br i1 %cmp1338, label %for.body, label %if.end24
+
+for.body:                                         ; preds = %if.then9, %for.inc.for.body_crit_edge
+  %20 = phi i8* [ %.pre40, %for.inc.for.body_crit_edge ], [ %14, %if.then9 ]
+  %21 = phi i32 [ %25, %for.inc.for.body_crit_edge ], [ %19, %if.then9 ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc.for.body_crit_edge ], [ 0, %if.then9 ]
+  %arrayidx16 = getelementptr inbounds i8* %20, i64 %indvars.iv
+  %22 = load i8* %arrayidx16, align 1, !tbaa !1
+  %tobool17 = icmp eq i8 %22, 0
+  br i1 %tobool17, label %for.inc, label %if.then18
+
+if.then18:                                        ; preds = %for.body
+  %23 = trunc i64 %indvars.iv to i32
+  %and = and i32 %23, 7
+  %shl = shl i32 1, %and
+  %shr = ashr i32 %23, 3
+  %idxprom19 = sext i32 %shr to i64
+  %arrayidx20 = getelementptr inbounds i8* %18, i64 %idxprom19
+  %24 = load i8* %arrayidx20, align 1, !tbaa !1
+  %conv2137 = zext i8 %24 to i32
+  %or = or i32 %conv2137, %shl
+  %conv22 = trunc i32 %or to i8
+  store i8 %conv22, i8* %arrayidx20, align 1, !tbaa !1
+  %.pre = load i32* @PL_maxo, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then18
+  %25 = phi i32 [ %21, %for.body ], [ %.pre, %if.then18 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %26 = trunc i64 %indvars.iv.next to i32
+  %cmp13 = icmp slt i32 %26, %25
+  br i1 %cmp13, label %for.inc.for.body_crit_edge, label %if.end24
+
+for.inc.for.body_crit_edge:                       ; preds = %for.inc
+  %.pre40 = load i8** @PL_op_mask, align 8, !tbaa !0
+  br label %for.body
+
+if.end24:                                         ; preds = %if.then9, %for.inc, %if.end
+  %27 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr26 = getelementptr inbounds %struct.sv** %27, i64 %idxprom
+  store %struct.sv** %add.ptr26, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

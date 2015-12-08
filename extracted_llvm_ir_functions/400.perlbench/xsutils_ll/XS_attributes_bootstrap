@@ -1,0 +1,45 @@
+define void @XS_attributes_bootstrap(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sub.ptr.div420 = lshr exact i64 %sub.ptr.sub3, 3
+  %conv5 = trunc i64 %sub.ptr.div420 to i32
+  %cmp = icmp sgt i32 %conv5, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([37 x i8]* @.str2, i64 0, i64 0)) #4
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([27 x i8]* @.str3, i64 0, i64 0), void (%struct.cv*)* @XS_attributes__warn_reserved, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0)) #4
+  %4 = bitcast %struct.cv* %call to %struct.sv*
+  tail call void @Perl_sv_setpv(%struct.sv* %4, i8* getelementptr inbounds ([1 x i8]* @.str4, i64 0, i64 0)) #4
+  %call7 = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([26 x i8]* @.str5, i64 0, i64 0), void (%struct.cv*)* @XS_attributes__modify_attrs, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0)) #4
+  %call8 = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([25 x i8]* @.str6, i64 0, i64 0), void (%struct.cv*)* @XS_attributes__guess_stash, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0)) #4
+  %5 = bitcast %struct.cv* %call8 to %struct.sv*
+  tail call void @Perl_sv_setpv(%struct.sv* %5, i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0)) #4
+  %call9 = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([25 x i8]* @.str8, i64 0, i64 0), void (%struct.cv*)* @XS_attributes__fetch_attrs, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0)) #4
+  %6 = bitcast %struct.cv* %call9 to %struct.sv*
+  tail call void @Perl_sv_setpv(%struct.sv* %6, i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0)) #4
+  %call10 = tail call %struct.cv* @Perl_newXS(i8* getelementptr inbounds ([20 x i8]* @.str9, i64 0, i64 0), void (%struct.cv*)* @XS_attributes_reftype, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0)) #4
+  %7 = bitcast %struct.cv* %call10 to %struct.sv*
+  tail call void @Perl_sv_setpv(%struct.sv* %7, i8* getelementptr inbounds ([2 x i8]* @.str7, i64 0, i64 0)) #4
+  %8 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idx.ext11 = ashr exact i64 %sext, 32
+  %add.ptr12.sum = add i64 %idx.ext11, -1
+  %add.ptr13 = getelementptr inbounds %struct.sv** %8, i64 %add.ptr12.sum
+  store %struct.sv** %add.ptr13, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

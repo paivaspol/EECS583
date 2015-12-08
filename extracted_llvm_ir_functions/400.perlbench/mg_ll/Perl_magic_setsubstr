@@ -1,0 +1,108 @@
+define i32 @Perl_magic_setsubstr(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %len = alloca i64, align 8
+  %lvoff = alloca i32, align 4
+  %lvlen = alloca i32, align 4
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  store i64 %3, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %len, i32 2) #7
+  %sv_any2.phi.trans.insert = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %.pre = load i8** %sv_any2.phi.trans.insert, align 8, !tbaa !0
+  %.pre48 = load i32* %sv_flags, align 4, !tbaa !3
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %5 = phi i32 [ %0, %cond.true ], [ %.pre48, %cond.false ]
+  %6 = phi i8* [ %1, %cond.true ], [ %.pre, %cond.false ]
+  %cond = phi i8* [ %4, %cond.true ], [ %call, %cond.false ]
+  %xlv_targ = getelementptr inbounds i8* %6, i64 72
+  %7 = bitcast i8* %xlv_targ to %struct.sv**
+  %8 = load %struct.sv** %7, align 8, !tbaa !0
+  %xlv_targoff = getelementptr inbounds i8* %6, i64 56
+  %9 = bitcast i8* %xlv_targoff to i64*
+  %10 = load i64* %9, align 8, !tbaa !4
+  %conv = trunc i64 %10 to i32
+  store i32 %conv, i32* %lvoff, align 4, !tbaa !3
+  %xlv_targlen = getelementptr inbounds i8* %6, i64 64
+  %11 = bitcast i8* %xlv_targlen to i64*
+  %12 = load i64* %11, align 8, !tbaa !4
+  %conv5 = trunc i64 %12 to i32
+  store i32 %conv5, i32* %lvlen, align 4, !tbaa !3
+  %and7 = and i32 %5, 536870912
+  %tobool = icmp eq i32 %and7, 0
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %cond.end
+  %13 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %op_private = getelementptr inbounds %struct.cop* %13, i64 0, i32 7
+  %14 = load i8* %op_private, align 1, !tbaa !1
+  %and9 = and i8 %14, 8
+  %tobool10 = icmp eq i8 %and9, 0
+  br i1 %tobool10, label %if.then, label %if.else
+
+if.then:                                          ; preds = %land.lhs.true
+  %call11 = call i64 @Perl_sv_utf8_upgrade_flags(%struct.sv* %8, i32 2) #7
+  call void @Perl_sv_pos_u2b(%struct.sv* %8, i32* %lvoff, i32* %lvlen) #7
+  %15 = load i32* %lvoff, align 4, !tbaa !3
+  %conv12 = sext i32 %15 to i64
+  %16 = load i32* %lvlen, align 4, !tbaa !3
+  %conv13 = sext i32 %16 to i64
+  %17 = load i64* %len, align 8, !tbaa !4
+  call void @Perl_sv_insert(%struct.sv* %8, i64 %conv12, i64 %conv13, i8* %cond, i64 %17) #7
+  %sv_flags14 = getelementptr inbounds %struct.sv* %8, i64 0, i32 2
+  %18 = load i32* %sv_flags14, align 4, !tbaa !3
+  %or = or i32 %18, 536870912
+  store i32 %or, i32* %sv_flags14, align 4, !tbaa !3
+  br label %if.end27
+
+if.else:                                          ; preds = %land.lhs.true, %cond.end
+  %tobool15 = icmp eq %struct.sv* %8, null
+  br i1 %tobool15, label %if.else24, label %land.lhs.true16
+
+land.lhs.true16:                                  ; preds = %if.else
+  %sv_flags17 = getelementptr inbounds %struct.sv* %8, i64 0, i32 2
+  %19 = load i32* %sv_flags17, align 4, !tbaa !3
+  %and18 = and i32 %19, 536870912
+  %tobool19 = icmp eq i32 %and18, 0
+  br i1 %tobool19, label %if.else24, label %if.then20
+
+if.then20:                                        ; preds = %land.lhs.true16
+  call void @Perl_sv_pos_u2b(%struct.sv* %8, i32* %lvoff, i32* %lvlen) #7
+  %call21 = call i8* @Perl_bytes_to_utf8(i8* %cond, i64* %len) #7
+  %20 = load i32* %lvoff, align 4, !tbaa !3
+  %conv22 = sext i32 %20 to i64
+  %21 = load i32* %lvlen, align 4, !tbaa !3
+  %conv23 = sext i32 %21 to i64
+  %22 = load i64* %len, align 8, !tbaa !4
+  call void @Perl_sv_insert(%struct.sv* %8, i64 %conv22, i64 %conv23, i8* %call21, i64 %22) #7
+  call void @Perl_safesysfree(i8* %call21) #7
+  br label %if.end27
+
+if.else24:                                        ; preds = %land.lhs.true16, %if.else
+  %23 = load i32* %lvoff, align 4, !tbaa !3
+  %conv25 = sext i32 %23 to i64
+  %24 = load i32* %lvlen, align 4, !tbaa !3
+  %conv26 = sext i32 %24 to i64
+  %25 = load i64* %len, align 8, !tbaa !4
+  call void @Perl_sv_insert(%struct.sv* %8, i64 %conv25, i64 %conv26, i8* %cond, i64 %25) #7
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then20, %if.else24, %if.then
+  ret i32 0
+}

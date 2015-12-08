@@ -1,0 +1,11 @@
+define i8* @Perl_vform(i8* %pat, [1 x %struct.__va_list_tag]* %args) #0 {
+entry:
+  %call = tail call fastcc %struct.sv* @S_mess_alloc() #9
+  %call1 = tail call i64 @strlen(i8* %pat) #8
+  tail call void @Perl_sv_vsetpvfn(%struct.sv* %call, i8* %pat, i64 %call1, [1 x %struct.__va_list_tag]* %args, %struct.sv** null, i32 0, i8* null) #8
+  %sv_any = getelementptr inbounds %struct.sv* %call, i64 0, i32 0
+  %0 = load i8** %sv_any, align 8, !tbaa !2
+  %xpv_pv = bitcast i8* %0 to i8**
+  %1 = load i8** %xpv_pv, align 8, !tbaa !2
+  ret i8* %1
+}

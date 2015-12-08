@@ -1,0 +1,44 @@
+define i32 @IVL_sum(%struct._IVL* %ivl) #0 {
+entry:
+  %jsize = alloca i32, align 4
+  %jind = alloca i32*, align 8
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
+  %0 = load i32* %nlist, align 4, !tbaa !3
+  %cmp112 = icmp sgt i32 %0, 0
+  br i1 %cmp112, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), %struct._IVL* null) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %sum.014 = phi i32 [ %sum.1, %for.inc ], [ 0, %for.cond.preheader ]
+  %j.013 = phi i32 [ %inc, %for.inc ], [ 0, %for.cond.preheader ]
+  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %j.013, i32* %jsize, i32** %jind) #4
+  %2 = load i32* %jsize, align 4, !tbaa !3
+  %cmp2 = icmp sgt i32 %2, 0
+  br i1 %cmp2, label %if.then3, label %for.inc
+
+if.then3:                                         ; preds = %for.body
+  %3 = load i32** %jind, align 8, !tbaa !0
+  %call4 = call i32 @IVsum(i32 %2, i32* %3) #4
+  %add = add nsw i32 %call4, %sum.014
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %sum.1 = phi i32 [ %add, %if.then3 ], [ %sum.014, %for.body ]
+  %inc = add nsw i32 %j.013, 1
+  %4 = load i32* %nlist, align 4, !tbaa !3
+  %cmp1 = icmp slt i32 %inc, %4
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %sum.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %sum.1, %for.inc ]
+  ret i32 %sum.0.lcssa
+}

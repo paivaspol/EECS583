@@ -1,0 +1,222 @@
+define i32 @GaussianFitHistogram(%struct.histogram_s* nocapture %h, float %high_hint) #0 {
+entry:
+  %expect.i = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7
+  %0 = load float** %expect.i, align 8, !tbaa !3
+  %cmp.i = icmp eq float* %0, null
+  br i1 %cmp.i, label %UnfitHistogram.exit, label %if.then.i
+
+if.then.i:                                        ; preds = %entry
+  %1 = bitcast float* %0 to i8*
+  tail call void @free(i8* %1) #4
+  br label %UnfitHistogram.exit
+
+UnfitHistogram.exit:                              ; preds = %entry, %if.then.i
+  store float* null, float** %expect.i, align 8, !tbaa !3
+  %fit_type.i = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8
+  store i32 0, i32* %fit_type.i, align 4, !tbaa !0
+  %total = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 6
+  %2 = load i32* %total, align 4, !tbaa !0
+  %cmp = icmp slt i32 %2, 1000
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %UnfitHistogram.exit
+  store i32 0, i32* %fit_type.i, align 4, !tbaa !0
+  br label %return
+
+if.end:                                           ; preds = %UnfitHistogram.exit
+  %lowscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 4
+  %3 = load i32* %lowscore, align 4, !tbaa !0
+  %highscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 3
+  %4 = load i32* %highscore, align 4, !tbaa !0
+  %cmp1238 = icmp sgt i32 %3, %4
+  %min32.pre = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 1
+  br i1 %cmp1238, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %5 = load i32* %min32.pre, align 4, !tbaa !0
+  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %6 = load i32** %histogram, align 8, !tbaa !3
+  %7 = sext i32 %3 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv247 = phi i64 [ %indvars.iv.next248, %for.body ], [ %7, %for.body.lr.ph ]
+  %sqsum.0240 = phi float [ %add14, %for.body ], [ 0.000000e+00, %for.body.lr.ph ]
+  %sum.0239 = phi float [ %add5, %for.body ], [ 0.000000e+00, %for.body.lr.ph ]
+  %8 = trunc i64 %indvars.iv247 to i32
+  %conv = sitofp i32 %8 to float
+  %conv3 = fadd float %conv, 5.000000e-01
+  %sub = sub nsw i32 %8, %5
+  %idxprom = sext i32 %sub to i64
+  %arrayidx = getelementptr inbounds i32* %6, i64 %idxprom
+  %9 = load i32* %arrayidx, align 4, !tbaa !0
+  %conv4 = sitofp i32 %9 to float
+  %mul = fmul float %conv3, %conv4
+  %add5 = fadd float %sum.0239, %mul
+  %mul13 = fmul float %conv3, %mul
+  %add14 = fadd float %sqsum.0240, %mul13
+  %indvars.iv.next248 = add i64 %indvars.iv247, 1
+  %cmp1 = icmp slt i32 %8, %4
+  br i1 %cmp1, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end, %for.body
+  %sqsum.0.lcssa = phi float [ %add14, %for.body ], [ 0.000000e+00, %if.end ]
+  %sum.0.lcssa = phi float [ %add5, %for.body ], [ 0.000000e+00, %if.end ]
+  store i32 2, i32* %fit_type.i, align 4, !tbaa !0
+  %conv17 = sitofp i32 %2 to float
+  %div = fdiv float %sum.0.lcssa, %conv17
+  %arrayidx18 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0
+  store float %div, float* %arrayidx18, align 4, !tbaa !4
+  %mul19 = fmul float %sum.0.lcssa, %sum.0.lcssa
+  %div22 = fdiv float %mul19, %conv17
+  %sub23 = fsub float %sqsum.0.lcssa, %div22
+  %sub25 = add nsw i32 %2, -1
+  %conv26 = sitofp i32 %sub25 to float
+  %div27 = fdiv float %sub23, %conv26
+  %conv29 = tail call float @sqrtf(float %div27) #2
+  %arrayidx31 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1
+  store float %conv29, float* %arrayidx31, align 4, !tbaa !4
+  %max = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 2
+  %10 = load i32* %max, align 4, !tbaa !0
+  %11 = load i32* %min32.pre, align 4, !tbaa !0
+  %sub33 = sub nsw i32 %10, %11
+  %add34 = add nsw i32 %sub33, 1
+  %conv35 = sext i32 %add34 to i64
+  %mul36 = shl nsw i64 %conv35, 2
+  %call37 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 790, i64 %mul36) #4
+  %12 = bitcast i8* %call37 to float*
+  store float* %12, float** %expect.i, align 8, !tbaa !3
+  %cmp39236 = icmp sgt i32 %sub33, -1
+  br i1 %cmp39236, label %for.body41.lr.ph, label %for.end47
+
+for.body41.lr.ph:                                 ; preds = %for.end
+  %13 = add i32 %10, 1
+  %14 = sub i32 %13, %11
+  %15 = icmp sgt i32 %14, 1
+  %.op = add i32 %14, -1
+  %16 = zext i32 %.op to i64
+  %.op249 = shl nuw nsw i64 %16, 2
+  %.op249.op = add i64 %.op249, 4
+  %17 = select i1 %15, i64 %.op249.op, i64 4
+  call void @llvm.memset.p0i8.i64(i8* %call37, i8 0, i64 %17, i32 4, i1 false)
+  br label %for.end47
+
+for.end47:                                        ; preds = %for.body41.lr.ph, %for.end
+  %18 = load i32* %min32.pre, align 4, !tbaa !0
+  %19 = load i32* %max, align 4, !tbaa !0
+  %cmp51234 = icmp sgt i32 %18, %19
+  br i1 %cmp51234, label %for.end95, label %for.body53
+
+for.body53:                                       ; preds = %for.end47, %for.body53
+  %sc.1235 = phi i32 [ %inc94, %for.body53 ], [ %18, %for.end47 ]
+  %conv54 = sitofp i32 %sc.1235 to float
+  %conv55 = fpext float %conv54 to double
+  %add56 = fadd double %conv55, 5.000000e-01
+  %20 = load float* %arrayidx18, align 4, !tbaa !4
+  %conv59 = fpext float %20 to double
+  %sub60 = fsub double %add56, %conv59
+  %conv61 = fptrunc double %sub60 to float
+  %21 = load i32* %total, align 4, !tbaa !0
+  %conv63 = sitofp i32 %21 to float
+  %conv64 = fpext float %conv63 to double
+  %22 = load float* %arrayidx31, align 4, !tbaa !4
+  %conv67 = fpext float %22 to double
+  %mul69 = fmul double %conv67, 0x40040D9291DFEC75
+  %div70 = fdiv double 1.000000e+00, %mul69
+  %conv71 = fpext float %conv61 to double
+  %mul72 = fmul double %conv71, -1.000000e+00
+  %mul74 = fmul double %conv71, %mul72
+  %mul78 = fmul double %conv67, 2.000000e+00
+  %mul82 = fmul double %conv67, %mul78
+  %div83 = fdiv double %mul74, %mul82
+  %call84 = tail call double @exp(double %div83) #4
+  %mul85 = fmul double %div70, %call84
+  %mul86 = fmul double %conv64, %mul85
+  %conv87 = fptrunc double %mul86 to float
+  %23 = load i32* %min32.pre, align 4, !tbaa !0
+  %sub89 = sub nsw i32 %sc.1235, %23
+  %idxprom90 = sext i32 %sub89 to i64
+  %24 = load float** %expect.i, align 8, !tbaa !3
+  %arrayidx92 = getelementptr inbounds float* %24, i64 %idxprom90
+  store float %conv87, float* %arrayidx92, align 4, !tbaa !4
+  %inc94 = add nsw i32 %sc.1235, 1
+  %25 = load i32* %max, align 4, !tbaa !0
+  %cmp51 = icmp slt i32 %sc.1235, %25
+  br i1 %cmp51, label %for.body53, label %for.end95
+
+for.end95:                                        ; preds = %for.body53, %for.end47
+  %26 = phi i32 [ %18, %for.end47 ], [ %23, %for.body53 ]
+  %chisq = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 10
+  store float 0.000000e+00, float* %chisq, align 4, !tbaa !4
+  %27 = load i32* %lowscore, align 4, !tbaa !0
+  %28 = load i32* %highscore, align 4, !tbaa !0
+  %cmp99231 = icmp sgt i32 %27, %28
+  br i1 %cmp99231, label %if.else, label %for.body101.lr.ph
+
+for.body101.lr.ph:                                ; preds = %for.end95
+  %29 = load float** %expect.i, align 8, !tbaa !3
+  %histogram113 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
+  %30 = sext i32 %27 to i64
+  br label %for.body101
+
+for.body101:                                      ; preds = %for.inc141, %for.body101.lr.ph
+  %31 = phi float [ %36, %for.inc141 ], [ 0.000000e+00, %for.body101.lr.ph ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc141 ], [ %30, %for.body101.lr.ph ]
+  %nbins.0233 = phi i32 [ %nbins.1, %for.inc141 ], [ 0, %for.body101.lr.ph ]
+  %32 = trunc i64 %indvars.iv to i32
+  %sub103 = sub nsw i32 %32, %26
+  %idxprom104 = sext i32 %sub103 to i64
+  %arrayidx106 = getelementptr inbounds float* %29, i64 %idxprom104
+  %33 = load float* %arrayidx106, align 4, !tbaa !4
+  %cmp108 = fcmp ult float %33, 5.000000e+00
+  br i1 %cmp108, label %for.inc141, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %for.body101
+  %34 = load i32** %histogram113, align 8, !tbaa !3
+  %arrayidx114 = getelementptr inbounds i32* %34, i64 %idxprom104
+  %35 = load i32* %arrayidx114, align 4, !tbaa !0
+  %cmp115 = icmp sgt i32 %35, 4
+  br i1 %cmp115, label %if.then117, label %for.inc141
+
+if.then117:                                       ; preds = %land.lhs.true
+  %conv123 = sitofp i32 %35 to float
+  %sub129 = fsub float %conv123, %33
+  %mul130 = fmul float %sub129, %sub129
+  %div136 = fdiv float %mul130, %33
+  %add138 = fadd float %div136, %31
+  store float %add138, float* %chisq, align 4, !tbaa !4
+  %inc139 = add nsw i32 %nbins.0233, 1
+  br label %for.inc141
+
+for.inc141:                                       ; preds = %for.body101, %land.lhs.true, %if.then117
+  %36 = phi float [ %add138, %if.then117 ], [ %31, %land.lhs.true ], [ %31, %for.body101 ]
+  %nbins.1 = phi i32 [ %inc139, %if.then117 ], [ %nbins.0233, %land.lhs.true ], [ %nbins.0233, %for.body101 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %cmp99 = icmp slt i32 %32, %28
+  br i1 %cmp99, label %for.body101, label %for.end143
+
+for.end143:                                       ; preds = %for.inc141
+  %cmp144 = icmp sgt i32 %nbins.1, 3
+  br i1 %cmp144, label %if.then146, label %if.else
+
+if.then146:                                       ; preds = %for.end143
+  %sub147 = add nsw i32 %nbins.1, -3
+  %conv148 = sitofp i32 %sub147 to double
+  %div149 = fmul double %conv148, 5.000000e-01
+  %conv151 = fpext float %36 to double
+  %div152 = fmul double %conv151, 5.000000e-01
+  %call153 = tail call double @IncompleteGamma(double %div149, double %div152) #4
+  %conv154 = fptrunc double %call153 to float
+  %chip = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11
+  store float %conv154, float* %chip, align 4, !tbaa !4
+  br label %return
+
+if.else:                                          ; preds = %for.end95, %for.end143
+  %chip155 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 11
+  store float 0.000000e+00, float* %chip155, align 4, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.then146, %if.else, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 1, %if.else ], [ 1, %if.then146 ]
+  ret i32 %retval.0
+}

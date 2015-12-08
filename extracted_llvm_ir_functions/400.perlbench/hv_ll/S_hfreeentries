@@ -1,0 +1,65 @@
+define internal fastcc void @S_hfreeentries(%struct.hv* %hv) #0 {
+entry:
+  %tobool = icmp eq %struct.hv* %hv, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.hv* %hv, i64 0, i32 0
+  %0 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %1 = bitcast %struct.xpvhv* %0 to %struct.he***
+  %2 = load %struct.he*** %1, align 8, !tbaa !0
+  %tobool2 = icmp eq %struct.he** %2, null
+  br i1 %tobool2, label %return, label %if.end4
+
+if.end4:                                          ; preds = %if.end
+  %xhv_max = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 2
+  %3 = load i64* %xhv_max, align 8, !tbaa !3
+  %conv = trunc i64 %3 to i32
+  %4 = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 0
+  store i8* null, i8** %4, align 8, !tbaa !0
+  %5 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %xhv_fill = getelementptr inbounds %struct.xpvhv* %5, i64 0, i32 1
+  store i64 0, i64* %xhv_fill, align 8, !tbaa !3
+  %xhv_keys = getelementptr inbounds %struct.xpvhv* %5, i64 0, i32 3
+  store i64 0, i64* %xhv_keys, align 8, !tbaa !3
+  br label %for.cond.outer
+
+for.cond.outer:                                   ; preds = %if.end19, %if.end4
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end19 ], [ 0, %if.end4 ]
+  %entry1.0.ph.in = phi %struct.he** [ %arrayidx20, %if.end19 ], [ %2, %if.end4 ]
+  %entry1.0.ph = load %struct.he** %entry1.0.ph.in, align 8
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %if.end14
+  %entry1.0 = phi %struct.he* [ %6, %if.end14 ], [ %entry1.0.ph, %for.cond.outer ]
+  %tobool12 = icmp eq %struct.he* %entry1.0, null
+  br i1 %tobool12, label %if.then16, label %if.end14
+
+if.end14:                                         ; preds = %for.cond
+  %hent_next = getelementptr inbounds %struct.he* %entry1.0, i64 0, i32 0
+  %6 = load %struct.he** %hent_next, align 8, !tbaa !0
+  tail call void @Perl_hv_free_ent(%struct.hv* %hv, %struct.he* %entry1.0) #5
+  %tobool15 = icmp eq %struct.he* %6, null
+  br i1 %tobool15, label %if.then16, label %for.cond
+
+if.then16:                                        ; preds = %for.cond, %if.end14
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = trunc i64 %indvars.iv to i32
+  %cmp = icmp slt i32 %7, %conv
+  br i1 %cmp, label %if.end19, label %for.end
+
+if.end19:                                         ; preds = %if.then16
+  %arrayidx20 = getelementptr inbounds %struct.he** %2, i64 %indvars.iv.next
+  br label %for.cond.outer
+
+for.end:                                          ; preds = %if.then16
+  %8 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %9 = getelementptr inbounds %struct.xpvhv* %8, i64 0, i32 0
+  %.c = bitcast %struct.he** %2 to i8*
+  store i8* %.c, i8** %9, align 8, !tbaa !0
+  %call = tail call i32 @Perl_hv_iterinit(%struct.hv* %hv) #5
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %for.end
+  ret void
+}

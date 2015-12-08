@@ -1,0 +1,138 @@
+define %struct._IVL* @IVL_expand(%struct._IVL* %ivl, %struct._IV* %eqmapIV) #0 {
+entry:
+  %nlist2 = alloca i32, align 4
+  %size = alloca i32, align 4
+  %list = alloca i32*, align 8
+  %map = alloca i32*, align 8
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  %cmp1 = icmp eq %struct._IV* %eqmapIV, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str12, i64 0, i64 0), %struct._IVL* %ivl, %struct._IV* %eqmapIV) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
+  %1 = load i32* %nlist, align 4, !tbaa !3
+  call void @IV_sizeAndEntries(%struct._IV* %eqmapIV, i32* %nlist2, i32** %map) #4
+  %call2 = call i32 @IV_max(%struct._IV* %eqmapIV) #4
+  %add = add nsw i32 %call2, 1
+  %call3 = call i32* @IVinit(i32 %add, i32 -1) #4
+  %2 = load i32* %nlist2, align 4, !tbaa !3
+  %call4 = call i32* @IVinit(i32 %2, i32 -1) #4
+  %3 = load i32* %nlist2, align 4, !tbaa !3
+  %cmp597 = icmp sgt i32 %3, 0
+  br i1 %cmp597, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %4 = load i32** %map, align 8, !tbaa !0
+  %5 = sext i32 %3 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end11
+  %indvars.iv103 = phi i64 [ %5, %for.body.lr.ph ], [ %indvars.iv.next104, %if.end11 ]
+  %ii.098.in = phi i32 [ %3, %for.body.lr.ph ], [ %ii.098, %if.end11 ]
+  %indvars.iv.next104 = add i64 %indvars.iv103, -1
+  %ii.098 = add nsw i32 %ii.098.in, -1
+  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv.next104
+  %6 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp6 = icmp sgt i32 %6, -1
+  %cmp8 = icmp slt i32 %6, %add
+  %or.cond84 = and i1 %cmp6, %cmp8
+  br i1 %or.cond84, label %if.end11, label %if.then9
+
+if.then9:                                         ; preds = %for.body
+  %7 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call10 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([74 x i8]* @.str13, i64 0, i64 0), %struct._IVL* %ivl, %struct._IV* %eqmapIV, i32 %1, i32 %add, i32 %ii.098, i32 %6) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end11:                                         ; preds = %for.body
+  %idxprom12 = sext i32 %6 to i64
+  %arrayidx13 = getelementptr inbounds i32* %call3, i64 %idxprom12
+  %8 = load i32* %arrayidx13, align 4, !tbaa !3
+  %arrayidx15 = getelementptr inbounds i32* %call4, i64 %indvars.iv.next104
+  store i32 %8, i32* %arrayidx15, align 4, !tbaa !3
+  %9 = trunc i64 %indvars.iv.next104 to i32
+  store i32 %9, i32* %arrayidx13, align 4, !tbaa !3
+  %cmp5 = icmp sgt i32 %9, 0
+  br i1 %cmp5, label %for.body, label %for.end
+
+for.end:                                          ; preds = %if.end11, %if.end
+  %call18 = call %struct._IVL* @IVL_new() #4
+  call void @IVL_init1(%struct._IVL* %call18, i32 1, i32 %1) #4
+  %10 = load i32* %nlist2, align 4, !tbaa !3
+  %call19 = call i32* @IVinit(i32 %10, i32 -1) #4
+  %cmp2193 = icmp sgt i32 %1, 0
+  br i1 %cmp2193, label %for.body22, label %for.end44
+
+for.body22:                                       ; preds = %for.end, %for.end41
+  %ilist.094 = phi i32 [ %inc43, %for.end41 ], [ 0, %for.end ]
+  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.094, i32* %size, i32** %list) #4
+  %11 = load i32* %size, align 4, !tbaa !3
+  %cmp2489 = icmp sgt i32 %11, 0
+  br i1 %cmp2489, label %for.body25.lr.ph, label %for.end41
+
+for.body25.lr.ph:                                 ; preds = %for.body22
+  %.pre = load i32** %list, align 8, !tbaa !0
+  br label %for.body25
+
+for.body25:                                       ; preds = %for.body25.lr.ph, %for.inc39
+  %12 = phi i32 [ %11, %for.body25.lr.ph ], [ %15, %for.inc39 ]
+  %indvars.iv99 = phi i64 [ 0, %for.body25.lr.ph ], [ %indvars.iv.next100, %for.inc39 ]
+  %count.091 = phi i32 [ 0, %for.body25.lr.ph ], [ %count.1.lcssa, %for.inc39 ]
+  %arrayidx27 = getelementptr inbounds i32* %.pre, i64 %indvars.iv99
+  %13 = load i32* %arrayidx27, align 4, !tbaa !3
+  %idxprom28 = sext i32 %13 to i64
+  %arrayidx29 = getelementptr inbounds i32* %call3, i64 %idxprom28
+  %kk.085 = load i32* %arrayidx29, align 4
+  %cmp3186 = icmp eq i32 %kk.085, -1
+  br i1 %cmp3186, label %for.inc39, label %for.body32.lr.ph
+
+for.body32.lr.ph:                                 ; preds = %for.body25
+  %14 = sext i32 %count.091 to i64
+  br label %for.body32
+
+for.body32:                                       ; preds = %for.body32.lr.ph, %for.body32
+  %indvars.iv = phi i64 [ %14, %for.body32.lr.ph ], [ %indvars.iv.next, %for.body32 ]
+  %kk.088 = phi i32 [ %kk.085, %for.body32.lr.ph ], [ %kk.0, %for.body32 ]
+  %count.187 = phi i32 [ %count.091, %for.body32.lr.ph ], [ %inc, %for.body32 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %count.187, 1
+  %arrayidx34 = getelementptr inbounds i32* %call19, i64 %indvars.iv
+  store i32 %kk.088, i32* %arrayidx34, align 4, !tbaa !3
+  %idxprom36 = sext i32 %kk.088 to i64
+  %arrayidx37 = getelementptr inbounds i32* %call4, i64 %idxprom36
+  %kk.0 = load i32* %arrayidx37, align 4
+  %cmp31 = icmp eq i32 %kk.0, -1
+  br i1 %cmp31, label %for.cond30.for.inc39_crit_edge, label %for.body32
+
+for.cond30.for.inc39_crit_edge:                   ; preds = %for.body32
+  %.pre105 = load i32* %size, align 4, !tbaa !3
+  br label %for.inc39
+
+for.inc39:                                        ; preds = %for.cond30.for.inc39_crit_edge, %for.body25
+  %15 = phi i32 [ %.pre105, %for.cond30.for.inc39_crit_edge ], [ %12, %for.body25 ]
+  %count.1.lcssa = phi i32 [ %inc, %for.cond30.for.inc39_crit_edge ], [ %count.091, %for.body25 ]
+  %indvars.iv.next100 = add i64 %indvars.iv99, 1
+  %16 = trunc i64 %indvars.iv.next100 to i32
+  %cmp24 = icmp slt i32 %16, %15
+  br i1 %cmp24, label %for.body25, label %for.end41
+
+for.end41:                                        ; preds = %for.inc39, %for.body22
+  %count.0.lcssa = phi i32 [ 0, %for.body22 ], [ %count.1.lcssa, %for.inc39 ]
+  call void @IVL_setList(%struct._IVL* %call18, i32 %ilist.094, i32 %count.0.lcssa, i32* %call19) #4
+  %inc43 = add nsw i32 %ilist.094, 1
+  %exitcond = icmp eq i32 %inc43, %1
+  br i1 %exitcond, label %for.end44, label %for.body22
+
+for.end44:                                        ; preds = %for.end41, %for.end
+  call void @IVfree(i32* %call3) #4
+  call void @IVfree(i32* %call4) #4
+  call void @IVfree(i32* %call19) #4
+  ret %struct._IVL* %call18
+}

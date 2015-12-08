@@ -1,0 +1,66 @@
+define i32 @BKL_segColor(%struct._BKL* %bkl, i32 %iseg) #0 {
+entry:
+  %size = alloca i32, align 4
+  %adj = alloca i32*, align 8
+  %cmp = icmp eq %struct._BKL* %bkl, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %ndom = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1
+  %0 = load i32* %ndom, align 4, !tbaa !3
+  %cmp1 = icmp sgt i32 %0, %iseg
+  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %nreg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 3
+  %1 = load i32* %nreg, align 4, !tbaa !3
+  %cmp3 = icmp sgt i32 %1, %iseg
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %lor.lhs.false, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), %struct._BKL* %bkl, i32 %iseg) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  %colors4 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10
+  %3 = load i32** %colors4, align 8, !tbaa !0
+  %bpg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0
+  %4 = load %struct._BPG** %bpg, align 8, !tbaa !0
+  %graph = getelementptr inbounds %struct._BPG* %4, i64 0, i32 2
+  %5 = load %struct._Graph** %graph, align 8, !tbaa !0
+  call void @Graph_adjAndSize(%struct._Graph* %5, i32 %iseg, i32* %size, i32** %adj) #5
+  %6 = load i32* %size, align 4, !tbaa !3
+  %cmp5 = icmp sgt i32 %6, 0
+  br i1 %cmp5, label %if.then6, label %if.end16
+
+if.then6:                                         ; preds = %if.end
+  %7 = load i32** %adj, align 8, !tbaa !0
+  %8 = load i32* %7, align 4, !tbaa !3
+  %idxprom = sext i32 %8 to i64
+  %arrayidx7 = getelementptr inbounds i32* %3, i64 %idxprom
+  %9 = load i32* %arrayidx7, align 4, !tbaa !3
+  %cmp829 = icmp sgt i32 %6, 1
+  br i1 %cmp829, label %for.body, label %if.end16
+
+for.cond:                                         ; preds = %for.body
+  %10 = trunc i64 %indvars.iv.next to i32
+  %cmp8 = icmp slt i32 %10, %6
+  br i1 %cmp8, label %for.body, label %if.end16
+
+for.body:                                         ; preds = %if.then6, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 1, %if.then6 ]
+  %arrayidx10 = getelementptr inbounds i32* %7, i64 %indvars.iv
+  %11 = load i32* %arrayidx10, align 4, !tbaa !3
+  %idxprom11 = sext i32 %11 to i64
+  %arrayidx12 = getelementptr inbounds i32* %3, i64 %idxprom11
+  %12 = load i32* %arrayidx12, align 4, !tbaa !3
+  %cmp13 = icmp eq i32 %9, %12
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  br i1 %cmp13, label %for.cond, label %if.end16
+
+if.end16:                                         ; preds = %if.then6, %for.body, %for.cond, %if.end
+  %color.0 = phi i32 [ 0, %if.end ], [ %9, %if.then6 ], [ 0, %for.body ], [ %9, %for.cond ]
+  ret i32 %color.0
+}

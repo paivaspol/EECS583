@@ -1,0 +1,31 @@
+define void @S_sortsv_desc(%struct.sv** %array, i64 %nmemb, i32 (%struct.sv*, %struct.sv*)* %cmp) #0 {
+entry:
+  %call = tail call %struct.gv* @Perl_gv_fetchpv(i8* getelementptr inbounds ([12 x i8]* @.str, i64 0, i64 0), i32 2, i32 1) #4
+  %sv_any = getelementptr inbounds %struct.gv* %call, i64 0, i32 0
+  %0 = load %struct.xpvgv** %sv_any, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds %struct.xpvgv* %0, i64 0, i32 7
+  %1 = load %struct.gp** %xgv_gp, align 8, !tbaa !0
+  %gp_sv = getelementptr inbounds %struct.gp* %1, i64 0, i32 0
+  %2 = load %struct.sv** %gp_sv, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %3, 65536
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %cond.end8, label %cond.true4
+
+cond.true4:                                       ; preds = %entry
+  %sv_any5 = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %4 = load i8** %sv_any5, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %4, i64 24
+  %5 = bitcast i8* %xiv_iv to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  %phitmp = and i64 %6, 1
+  %phitmp14 = icmp ne i64 %phitmp, 0
+  %phitmp15 = select i1 %phitmp14, void (%struct.sv**, i64, i32 (%struct.sv*, %struct.sv*)*, i32)* @S_qsortsv, void (%struct.sv**, i64, i32 (%struct.sv*, %struct.sv*)*, i32)* @S_mergesortsv
+  br label %cond.end8
+
+cond.end8:                                        ; preds = %entry, %cond.true4
+  %cond9 = phi void (%struct.sv**, i64, i32 (%struct.sv*, %struct.sv*)*, i32)* [ %phitmp15, %cond.true4 ], [ @S_mergesortsv, %entry ]
+  tail call void %cond9(%struct.sv** %array, i64 %nmemb, i32 (%struct.sv*, %struct.sv*)* %cmp, i32 1) #4
+  ret void
+}

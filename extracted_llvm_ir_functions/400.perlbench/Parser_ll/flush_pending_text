@@ -1,0 +1,60 @@
+define internal fastcc void @flush_pending_text(%struct.p_state* %p_state, %struct.sv* %self) #0 {
+entry:
+  %unbroken_text = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 24
+  %0 = load i8* %unbroken_text, align 1, !tbaa !1
+  %pend_text = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 11
+  %1 = load %struct.sv** %pend_text, align 8, !tbaa !0
+  %is_cdata = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 8
+  %2 = load i8* %is_cdata, align 1, !tbaa !1
+  %offset = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 2
+  %3 = load i64* %offset, align 8, !tbaa !4
+  %line = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 3
+  %4 = load i64* %line, align 8, !tbaa !4
+  %column = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 4
+  %5 = load i64* %column, align 8, !tbaa !4
+  store i8 0, i8* %unbroken_text, align 1, !tbaa !1
+  store %struct.sv* null, %struct.sv** %pend_text, align 8, !tbaa !0
+  %pend_text_is_cdata = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 12
+  %6 = load i8* %pend_text_is_cdata, align 1, !tbaa !1
+  store i8 %6, i8* %is_cdata, align 1, !tbaa !1
+  %pend_text_offset = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 13
+  %7 = load i64* %pend_text_offset, align 8, !tbaa !4
+  store i64 %7, i64* %offset, align 8, !tbaa !4
+  %pend_text_line = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 14
+  %8 = load i64* %pend_text_line, align 8, !tbaa !4
+  store i64 %8, i64* %line, align 8, !tbaa !4
+  %pend_text_column = getelementptr inbounds %struct.p_state* %p_state, i64 0, i32 15
+  %9 = load i64* %pend_text_column, align 8, !tbaa !4
+  store i64 %9, i64* %column, align 8, !tbaa !4
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %10 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %10 to i8**
+  %11 = load i8** %xpv_pv, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %10, i64 8
+  %12 = bitcast i8* %xpv_cur to i64*
+  %13 = load i64* %12, align 8, !tbaa !4
+  %add.ptr = getelementptr inbounds i8* %11, i64 %13
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %14 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %14, 536870912
+  tail call fastcc void @report_event(%struct.p_state* %p_state, i32 4, i8* %11, i8* %add.ptr, i32 %and, %struct.token_pos* null, i32 0, %struct.sv* %self) #5
+  %15 = load i32* %sv_flags, align 4, !tbaa !3
+  %and11 = and i32 %15, 1223753727
+  store i32 %and11, i32* %sv_flags, align 4, !tbaa !3
+  %and13 = and i32 %15, 2097152
+  %tobool = icmp eq i32 %and13, 0
+  br i1 %tobool, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry
+  %call = tail call i32 @Perl_sv_backoff(%struct.sv* %1) #6
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  store i8 %0, i8* %unbroken_text, align 1, !tbaa !1
+  store %struct.sv* %1, %struct.sv** %pend_text, align 8, !tbaa !0
+  store i8 %2, i8* %is_cdata, align 1, !tbaa !1
+  store i64 %3, i64* %offset, align 8, !tbaa !4
+  store i64 %4, i64* %line, align 8, !tbaa !4
+  store i64 %5, i64* %column, align 8, !tbaa !4
+  ret void
+}

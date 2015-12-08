@@ -1,0 +1,74 @@
+define i32 @DenseMtx_column(%struct._DenseMtx* %mtx, i32 %jcol, double** %pcolent) #0 {
+entry:
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str33, i64 0, i64 0), i64 42, i64 1, %struct._IO_FILE* %0)
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %2 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %2, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end7, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([47 x i8]* @.str34, i64 0, i64 0), i32 %2) #5
+  br label %return
+
+if.end7:                                          ; preds = %if.end
+  %cmp8 = icmp sgt i32 %jcol, -1
+  %ncol11.phi.trans.insert = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 4
+  %.pre = load i32* %ncol11.phi.trans.insert, align 4, !tbaa !3
+  %cmp9 = icmp sgt i32 %.pre, %jcol
+  %or.cond = and i1 %cmp8, %cmp9
+  br i1 %or.cond, label %if.end13, label %if.then10
+
+if.then10:                                        ; preds = %if.end7
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([53 x i8]* @.str35, i64 0, i64 0), i32 %.pre, i32 %jcol) #5
+  br label %return
+
+if.end13:                                         ; preds = %if.end7
+  %cmp14 = icmp eq double** %pcolent, null
+  br i1 %cmp14, label %if.then15, label %if.end17
+
+if.then15:                                        ; preds = %if.end13
+  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([47 x i8]* @.str36, i64 0, i64 0), i64 46, i64 1, %struct._IO_FILE* %5)
+  br label %return
+
+if.end17:                                         ; preds = %if.end13
+  %cmp19 = icmp eq i32 %2, 1
+  %entries = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 9
+  %7 = load double** %entries, align 8, !tbaa !0
+  br i1 %cmp19, label %if.then20, label %if.else
+
+if.then20:                                        ; preds = %if.end17
+  %inc2 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6
+  %8 = load i32* %inc2, align 4, !tbaa !3
+  %mul = mul nsw i32 %8, %jcol
+  br label %if.end27
+
+if.else:                                          ; preds = %if.end17
+  %mul22 = shl i32 %jcol, 1
+  %inc223 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 6
+  %9 = load i32* %inc223, align 4, !tbaa !3
+  %mul24 = mul nsw i32 %mul22, %9
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.else, %if.then20
+  %idx.ext25.pn.in = phi i32 [ %mul24, %if.else ], [ %mul, %if.then20 ]
+  %idx.ext25.pn = sext i32 %idx.ext25.pn.in to i64
+  %storemerge = getelementptr inbounds double* %7, i64 %idx.ext25.pn
+  store double* %storemerge, double** %pcolent, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end27, %if.then15, %if.then10, %if.then4, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ -2, %if.then4 ], [ -3, %if.then10 ], [ -4, %if.then15 ], [ 1, %if.end27 ]
+  ret i32 %retval.0
+}

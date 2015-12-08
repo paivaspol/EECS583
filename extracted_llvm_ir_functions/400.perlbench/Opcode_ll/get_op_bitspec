@@ -1,0 +1,67 @@
+define internal fastcc %struct.sv* @get_op_bitspec(i8* %opname, i64 %len) #0 {
+entry:
+  %tobool = icmp eq i64 %len, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call i64 @strlen(i8* %opname) #4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %len.addr.0 = phi i64 [ %len, %entry ], [ %call, %if.then ]
+  %0 = load %struct.hv** @my_cxt.0, align 8, !tbaa !0
+  %conv = trunc i64 %len.addr.0 to i32
+  %call1 = tail call %struct.sv** @Perl_hv_fetch(%struct.hv* %0, i8* %opname, i32 %conv, i32 0) #4
+  %tobool2 = icmp eq %struct.sv** %call1, null
+  br i1 %tobool2, label %if.end7, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %1 = load %struct.sv** %call1, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 118423552
+  %tobool3 = icmp eq i32 %and, 0
+  br i1 %tobool3, label %if.end7, label %return
+
+if.end7:                                          ; preds = %if.end, %lor.lhs.false
+  %3 = load i8* %opname, align 1, !tbaa !1
+  %cmp = icmp eq i8 %3, 58
+  br i1 %cmp, label %if.then10, label %if.end11
+
+if.then10:                                        ; preds = %if.end7
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([26 x i8]* @.str57, i64 0, i64 0), i8* %opname) #4
+  %.pr = load i8* %opname, align 1, !tbaa !1
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.then10, %if.end7
+  %4 = phi i8 [ %.pr, %if.then10 ], [ %3, %if.end7 ]
+  %cmp13 = icmp eq i8 %4, 33
+  br i1 %cmp13, label %if.then15, label %if.end16
+
+if.then15:                                        ; preds = %if.end11
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([35 x i8]* @.str58, i64 0, i64 0), i8* %opname) #4
+  %.pre = load i8* %opname, align 1, !tbaa !1
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.then15, %if.end11
+  %5 = phi i8 [ %.pre, %if.then15 ], [ %4, %if.end11 ]
+  %.off = add i8 %5, -65
+  %6 = icmp ult i8 %.off, 26
+  %.off2 = add i8 %5, -97
+  %7 = icmp ult i8 %.off2, 26
+  %or.cond = or i1 %6, %7
+  br i1 %or.cond, label %if.then31, label %if.end32
+
+if.then31:                                        ; preds = %if.end16
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([27 x i8]* @.str59, i64 0, i64 0), i8* %opname) #4
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.end16, %if.then31
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([29 x i8]* @.str60, i64 0, i64 0), i8* %opname) #4
+  %.pre4 = load %struct.sv** %call1, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.end32, %lor.lhs.false
+  %8 = phi %struct.sv* [ %.pre4, %if.end32 ], [ %1, %lor.lhs.false ]
+  ret %struct.sv* %8
+}

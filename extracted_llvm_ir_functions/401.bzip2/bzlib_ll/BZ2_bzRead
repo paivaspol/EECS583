@@ -1,20 +1,21 @@
 define i32 @BZ2_bzread(i8* %b, i8* %buf, i32 %len) #4 {
+entry:
   %bzerr = alloca i32, align 4
-  %1 = getelementptr inbounds i8* %b, i64 5096
-  %2 = bitcast i8* %1 to i32*
-  %3 = load i32* %2, align 4, !tbaa !72
-  %4 = icmp eq i32 %3, 4
-  br i1 %4, label %10, label %5
+  %lastErr = getelementptr inbounds i8* %b, i64 5096
+  %0 = bitcast i8* %lastErr to i32*
+  %1 = load i32* %0, align 4, !tbaa !3
+  %cmp = icmp eq i32 %1, 4
+  br i1 %cmp, label %return, label %if.end
 
-; <label>:5                                       ; preds = %0
-  %6 = call i32 @BZ2_bzRead(i32* %bzerr, i8* %b, i8* %buf, i32 %len) #12
-  %7 = load i32* %bzerr, align 4, !tbaa !45
-  %8 = and i32 %7, -5
-  %9 = icmp eq i32 %8, 0
-  %. = select i1 %9, i32 %6, i32 -1
-  br label %10
+if.end:                                           ; preds = %entry
+  %call = call i32 @BZ2_bzRead(i32* %bzerr, i8* %b, i8* %buf, i32 %len) #13
+  %2 = load i32* %bzerr, align 4, !tbaa !3
+  %3 = and i32 %2, -5
+  %4 = icmp eq i32 %3, 0
+  %call. = select i1 %4, i32 %call, i32 -1
+  br label %return
 
-; <label>:10                                      ; preds = %5, %0
-  %.0 = phi i32 [ 0, %0 ], [ %., %5 ]
-  ret i32 %.0
+return:                                           ; preds = %if.end, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %call., %if.end ]
+  ret i32 %retval.0
 }

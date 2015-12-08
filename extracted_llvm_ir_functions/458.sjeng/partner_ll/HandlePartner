@@ -1,0 +1,30 @@
+define void @HandlePartner(i8* nocapture %input) #0 {
+entry:
+  %0 = load i8* %input, align 1, !tbaa !0
+  %cmp = icmp eq i8 %0, 32
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %1 = load i32* @have_partner, align 4, !tbaa !0
+  %tobool = icmp eq i32 %1, 0
+  br i1 %tobool, label %if.then2, label %if.end6
+
+if.then2:                                         ; preds = %if.then
+  %add.ptr = getelementptr inbounds i8* %input, i64 1
+  %call = tail call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %add.ptr, i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([256 x i8]* @my_partner, i64 0, i64 0)) #8
+  store i32 1, i32* @have_partner, align 4, !tbaa !0
+  %puts.i = tail call i32 @puts(i8* getelementptr inbounds ([68 x i8]* @str, i64 0, i64 0)) #1
+  %puts2.i = tail call i32 @puts(i8* getelementptr inbounds ([75 x i8]* @str84, i64 0, i64 0)) #1
+  %puts8 = tail call i32 @puts(i8* getelementptr inbounds ([24 x i8]* @str102, i64 0, i64 0))
+  %puts9 = tail call i32 @puts(i8* getelementptr inbounds ([15 x i8]* @str87, i64 0, i64 0))
+  br label %if.end6
+
+if.else:                                          ; preds = %entry
+  tail call void @llvm.memset.p0i8.i64(i8* getelementptr inbounds ([256 x i8]* @my_partner, i64 0, i64 0), i8 0, i64 256, i32 16, i1 false)
+  store i32 0, i32* @have_partner, align 4, !tbaa !0
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str85, i64 0, i64 0))
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then, %if.then2, %if.else
+  ret void
+}

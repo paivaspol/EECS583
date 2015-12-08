@@ -1,0 +1,41 @@
+define internal fastcc void @S_hv_magic_check(%struct.hv* nocapture %hv, i8* nocapture %needs_copy, i8* nocapture %needs_store) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.hv* %hv, i64 0, i32 0
+  %0 = load %struct.xpvhv** %sv_any, align 8, !tbaa !0
+  %1 = getelementptr inbounds %struct.xpvhv* %0, i64 0, i32 5
+  %2 = load %struct.magic** %1, align 8, !tbaa !0
+  store i8 0, i8* %needs_copy, align 1, !tbaa !1
+  store i8 1, i8* %needs_store, align 1, !tbaa !1
+  %tobool14 = icmp eq %struct.magic* %2, null
+  br i1 %tobool14, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %if.end
+  %mg.015 = phi %struct.magic* [ %6, %if.end ], [ %2, %entry ]
+  %mg_type = getelementptr inbounds %struct.magic* %mg.015, i64 0, i32 3
+  %3 = load i8* %mg_type, align 1, !tbaa !1
+  %.off = add i8 %3, -65
+  %4 = icmp ult i8 %.off, 26
+  br i1 %4, label %if.then, label %if.end
+
+if.then:                                          ; preds = %while.body
+  store i8 1, i8* %needs_copy, align 1, !tbaa !1
+  %5 = load i8* %mg_type, align 1, !tbaa !1
+  %conv7 = sext i8 %5 to i32
+  switch i32 %conv7, label %if.end [
+    i32 80, label %sw.bb
+    i32 83, label %sw.bb
+  ]
+
+sw.bb:                                            ; preds = %if.then, %if.then
+  store i8 0, i8* %needs_store, align 1, !tbaa !1
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %sw.bb, %while.body
+  %mg_moremagic = getelementptr inbounds %struct.magic* %mg.015, i64 0, i32 0
+  %6 = load %struct.magic** %mg_moremagic, align 8, !tbaa !0
+  %tobool = icmp eq %struct.magic* %6, null
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end, %entry
+  ret void
+}

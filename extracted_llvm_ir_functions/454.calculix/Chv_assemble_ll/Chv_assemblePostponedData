@@ -1,0 +1,105 @@
+define i32 @Chv_assemblePostponedData(%struct._Chv* %newchv, %struct._Chv* %oldchv, %struct._Chv* %firstchild) #0 {
+entry:
+  %cmp = icmp eq %struct._Chv* %newchv, null
+  %cmp1 = icmp eq %struct._Chv* %oldchv, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq %struct._Chv* %firstchild, null
+  %or.cond80 = or i1 %or.cond, %cmp3
+  br i1 %or.cond80, label %if.then, label %for.body.lr.ph
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str21, i64 0, i64 0), %struct._Chv* %newchv, %struct._Chv* %oldchv, %struct._Chv* %firstchild) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body.lr.ph:                                   ; preds = %entry
+  tail call void @Chv_zero(%struct._Chv* %newchv) #5
+  %colind = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 7
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %ndelay.088 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
+  %child.087 = phi %struct._Chv* [ %firstchild, %for.body.lr.ph ], [ %5, %for.body ]
+  %nD = getelementptr inbounds %struct._Chv* %child.087, i64 0, i32 1
+  %1 = load i32* %nD, align 4, !tbaa !3
+  %2 = load i32** %colind, align 8, !tbaa !0
+  %idx.ext = sext i32 %ndelay.088 to i64
+  %add.ptr = getelementptr inbounds i32* %2, i64 %idx.ext
+  %colind5 = getelementptr inbounds %struct._Chv* %child.087, i64 0, i32 7
+  %3 = load i32** %colind5, align 8, !tbaa !0
+  tail call void @IVcopy(i32 %1, i32* %add.ptr, i32* %3) #5
+  %4 = load i32* %nD, align 4, !tbaa !3
+  %add = add nsw i32 %4, %ndelay.088
+  %next = getelementptr inbounds %struct._Chv* %child.087, i64 0, i32 10
+  %5 = load %struct._Chv** %next, align 8, !tbaa !0
+  %cmp4 = icmp eq %struct._Chv* %5, null
+  br i1 %cmp4, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %nD7 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 1
+  %6 = load i32* %nD7, align 4, !tbaa !3
+  %nU = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 3
+  %7 = load i32* %nU, align 4, !tbaa !3
+  %add8 = add nsw i32 %7, %6
+  %8 = load i32** %colind, align 8, !tbaa !0
+  %idx.ext10 = sext i32 %add to i64
+  %add.ptr11 = getelementptr inbounds i32* %8, i64 %idx.ext10
+  %colind12 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 7
+  %9 = load i32** %colind12, align 8, !tbaa !0
+  tail call void @IVcopy(i32 %add8, i32* %add.ptr11, i32* %9) #5
+  %symflag = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 5
+  %10 = load i32* %symflag, align 4, !tbaa !3
+  %cmp13 = icmp eq i32 %10, 2
+  br i1 %cmp13, label %for.body17.lr.ph, label %for.body37.lr.ph
+
+for.body17.lr.ph:                                 ; preds = %for.end
+  %rowind = getelementptr inbounds %struct._Chv* %newchv, i64 0, i32 6
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17.lr.ph, %for.body17
+  %ndelay.185 = phi i32 [ 0, %for.body17.lr.ph ], [ %add23, %for.body17 ]
+  %child.184 = phi %struct._Chv* [ %firstchild, %for.body17.lr.ph ], [ %15, %for.body17 ]
+  %nD18 = getelementptr inbounds %struct._Chv* %child.184, i64 0, i32 1
+  %11 = load i32* %nD18, align 4, !tbaa !3
+  %12 = load i32** %rowind, align 8, !tbaa !0
+  %idx.ext19 = sext i32 %ndelay.185 to i64
+  %add.ptr20 = getelementptr inbounds i32* %12, i64 %idx.ext19
+  %rowind21 = getelementptr inbounds %struct._Chv* %child.184, i64 0, i32 6
+  %13 = load i32** %rowind21, align 8, !tbaa !0
+  tail call void @IVcopy(i32 %11, i32* %add.ptr20, i32* %13) #5
+  %14 = load i32* %nD18, align 4, !tbaa !3
+  %add23 = add nsw i32 %14, %ndelay.185
+  %next25 = getelementptr inbounds %struct._Chv* %child.184, i64 0, i32 10
+  %15 = load %struct._Chv** %next25, align 8, !tbaa !0
+  %cmp16 = icmp eq %struct._Chv* %15, null
+  br i1 %cmp16, label %for.end26, label %for.body17
+
+for.end26:                                        ; preds = %for.body17
+  %16 = load i32* %nD7, align 4, !tbaa !3
+  %17 = load i32* %nU, align 4, !tbaa !3
+  %add29 = add nsw i32 %17, %16
+  %18 = load i32** %rowind, align 8, !tbaa !0
+  %idx.ext31 = sext i32 %add23 to i64
+  %add.ptr32 = getelementptr inbounds i32* %18, i64 %idx.ext31
+  %rowind33 = getelementptr inbounds %struct._Chv* %oldchv, i64 0, i32 6
+  %19 = load i32** %rowind33, align 8, !tbaa !0
+  tail call void @IVcopy(i32 %add29, i32* %add.ptr32, i32* %19) #5
+  br label %for.body37.lr.ph
+
+for.body37.lr.ph:                                 ; preds = %for.end, %for.end26
+  %ndelay.2 = phi i32 [ %add23, %for.end26 ], [ %add, %for.end ]
+  tail call void @Chv_assembleChv(%struct._Chv* %newchv, %struct._Chv* %oldchv) #7
+  br label %for.body37
+
+for.body37:                                       ; preds = %for.body37.lr.ph, %for.body37
+  %child.282 = phi %struct._Chv* [ %firstchild, %for.body37.lr.ph ], [ %20, %for.body37 ]
+  tail call void @Chv_assembleChv(%struct._Chv* %newchv, %struct._Chv* %child.282) #7
+  %next39 = getelementptr inbounds %struct._Chv* %child.282, i64 0, i32 10
+  %20 = load %struct._Chv** %next39, align 8, !tbaa !0
+  %cmp36 = icmp eq %struct._Chv* %20, null
+  br i1 %cmp36, label %for.end40, label %for.body37
+
+for.end40:                                        ; preds = %for.body37
+  ret i32 %ndelay.2
+}

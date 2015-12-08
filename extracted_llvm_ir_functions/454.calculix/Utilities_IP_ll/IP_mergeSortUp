@@ -1,0 +1,41 @@
+define %struct._IP* @IP_mergeSortUp(%struct._IP* %ip0) #0 {
+entry:
+  %cmp25 = icmp eq %struct._IP* %ip0, null
+  br i1 %cmp25, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %ip.027 = phi %struct._IP* [ %0, %for.body ], [ %ip0, %entry ]
+  %m.026 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %inc = add nsw i32 %m.026, 1
+  %next = getelementptr inbounds %struct._IP* %ip.027, i64 0, i32 1
+  %0 = load %struct._IP** %next, align 8, !tbaa !3
+  %cmp = icmp eq %struct._IP* %0, null
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %cmp1 = icmp slt i32 %inc, 2
+  br i1 %cmp1, label %return, label %if.else
+
+if.else:                                          ; preds = %for.end
+  %div = sdiv i32 %inc, 2
+  br label %for.cond2
+
+for.cond2:                                        ; preds = %for.cond2, %if.else
+  %ip.1 = phi %struct._IP* [ %ip0, %if.else ], [ %1, %for.cond2 ]
+  %i.0 = phi i32 [ 1, %if.else ], [ %inc7, %for.cond2 ]
+  %cmp3 = icmp slt i32 %i.0, %div
+  %next5 = getelementptr inbounds %struct._IP* %ip.1, i64 0, i32 1
+  %1 = load %struct._IP** %next5, align 8, !tbaa !3
+  %inc7 = add nsw i32 %i.0, 1
+  br i1 %cmp3, label %for.cond2, label %for.end8
+
+for.end8:                                         ; preds = %for.cond2
+  store %struct._IP* null, %struct._IP** %next5, align 8, !tbaa !3
+  %call = tail call %struct._IP* @IP_mergeSortUp(%struct._IP* %ip0) #6
+  %call11 = tail call %struct._IP* @IP_mergeSortUp(%struct._IP* %1) #6
+  %call12 = tail call %struct._IP* @IP_mergeUp(%struct._IP* %call, %struct._IP* %call11) #6
+  ret %struct._IP* %call12
+
+return:                                           ; preds = %entry, %for.end
+  ret %struct._IP* %ip0
+}

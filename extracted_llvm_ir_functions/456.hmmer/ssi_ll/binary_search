@@ -1,0 +1,94 @@
+define internal fastcc i32 @binary_search(%struct.ssifile_s* nocapture %sfp, i8* nocapture %key, i32 %klen, %struct.ssioffset_s* nocapture %base, i32 %recsize, i32 %maxidx) #0 {
+entry:
+  %cmp1 = icmp eq i32 %maxidx, 0
+  br i1 %cmp1, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %conv = sext i32 %klen to i64
+  %call = tail call noalias i8* @malloc(i64 %conv) #8
+  %cmp2 = icmp eq i8* %call, null
+  br i1 %cmp2, label %return, label %if.end5
+
+if.end5:                                          ; preds = %if.end
+  %sub = add i32 %maxidx, -1
+  %div7282 = lshr i32 %sub, 1
+  %call67383 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %div7282) #9
+  %cmp77484 = icmp eq i32 %call67383, 0
+  br i1 %cmp77484, label %if.end10.lr.ph.lr.ph, label %if.then9
+
+if.end10.lr.ph.lr.ph:                             ; preds = %if.end5
+  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
+  br label %if.end10.lr.ph
+
+while.body.outer:                                 ; preds = %if.then33
+  %add71 = add i32 %left.075, %sub38
+  %div72 = lshr i32 %add71, 1
+  %call673 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %div72) #9
+  %cmp774 = icmp eq i32 %call673, 0
+  br i1 %cmp774, label %if.end10.lr.ph, label %if.then9
+
+if.end10.lr.ph:                                   ; preds = %if.end10.lr.ph.lr.ph, %while.body.outer
+  %div7287 = phi i32 [ %div7282, %if.end10.lr.ph.lr.ph ], [ %div72, %while.body.outer ]
+  %left.0.ph86 = phi i32 [ 0, %if.end10.lr.ph.lr.ph ], [ %left.075, %while.body.outer ]
+  %right.0.ph85 = phi i32 [ %sub, %if.end10.lr.ph.lr.ph ], [ %sub38, %while.body.outer ]
+  br label %if.end10
+
+while.body:                                       ; preds = %if.else25
+  %add = add i32 %add29, %right.0.ph85
+  %div = lshr i32 %add, 1
+  %call6 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %div) #9
+  %cmp7 = icmp eq i32 %call6, 0
+  br i1 %cmp7, label %if.end10, label %if.then9
+
+if.then9:                                         ; preds = %if.end5, %while.body.outer, %while.body
+  %call6.lcssa = phi i32 [ %call6, %while.body ], [ %call67383, %if.end5 ], [ %call673, %while.body.outer ]
+  tail call void @free(i8* %call) #8
+  br label %return
+
+if.end10:                                         ; preds = %if.end10.lr.ph, %while.body
+  %div76 = phi i32 [ %div7287, %if.end10.lr.ph ], [ %div, %while.body ]
+  %left.075 = phi i32 [ %left.0.ph86, %if.end10.lr.ph ], [ %add29, %while.body ]
+  %0 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call12 = tail call i64 @fread(i8* %call, i64 1, i64 %conv, %struct._IO_FILE* %0) #8
+  %cmp14 = icmp eq i64 %call12, %conv
+  br i1 %cmp14, label %if.end17, label %if.then16
+
+if.then16:                                        ; preds = %if.end10
+  tail call void @free(i8* %call) #8
+  br label %return
+
+if.end17:                                         ; preds = %if.end10
+  %call18 = tail call i32 @strcmp(i8* %call, i8* %key) #10
+  %cmp19 = icmp eq i32 %call18, 0
+  br i1 %cmp19, label %while.end, label %if.else
+
+if.else:                                          ; preds = %if.end17
+  %cmp22 = icmp ult i32 %left.075, %right.0.ph85
+  br i1 %cmp22, label %if.else25, label %if.then24
+
+if.then24:                                        ; preds = %if.else
+  tail call void @free(i8* %call) #8
+  br label %return
+
+if.else25:                                        ; preds = %if.else
+  %cmp26 = icmp slt i32 %call18, 0
+  %add29 = add i32 %div76, 1
+  br i1 %cmp26, label %while.body, label %if.then33
+
+if.then33:                                        ; preds = %if.else25
+  %cmp34 = icmp eq i32 %div76, 0
+  %sub38 = add i32 %div76, -1
+  br i1 %cmp34, label %if.then36, label %while.body.outer
+
+if.then36:                                        ; preds = %if.then33
+  tail call void @free(i8* %call) #8
+  br label %return
+
+while.end:                                        ; preds = %if.end17
+  tail call void @free(i8* %call) #8
+  br label %return
+
+return:                                           ; preds = %if.end, %entry, %while.end, %if.then36, %if.then24, %if.then16, %if.then9
+  %retval.0 = phi i32 [ %call6.lcssa, %if.then9 ], [ 1, %if.then16 ], [ 0, %while.end ], [ 2, %if.then24 ], [ 2, %if.then36 ], [ 2, %entry ], [ 3, %if.end ]
+  ret i32 %retval.0
+}

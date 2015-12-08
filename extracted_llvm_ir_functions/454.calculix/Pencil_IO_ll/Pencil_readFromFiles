@@ -1,0 +1,41 @@
+define i32 @Pencil_readFromFiles(%struct._Pencil* %pencil, i8* %inpmtxAfileName, i8* %inpmtxBfileName) #0 {
+entry:
+  %cmp = icmp eq %struct._Pencil* %pencil, null
+  %cmp1 = icmp eq i8* %inpmtxAfileName, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq i8* %inpmtxBfileName, null
+  %or.cond33 = or i1 %or.cond, %cmp3
+  br i1 %or.cond33, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), %struct._Pencil* %pencil, i8* %inpmtxAfileName, i8* %inpmtxBfileName) #6
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %call4 = tail call i32 @strcmp(i8* %inpmtxAfileName, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7
+  %cmp5 = icmp eq i32 %call4, 0
+  br i1 %cmp5, label %if.end11, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %inpmtxA = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 2
+  %1 = load %struct._InpMtx** %inpmtxA, align 8, !tbaa !0
+  %call7 = tail call i32 @InpMtx_readFromFile(%struct._InpMtx* %1, i8* %inpmtxAfileName) #6
+  %cmp8 = icmp eq i32 %call7, 1
+  br i1 %cmp8, label %if.end11, label %return
+
+if.end11:                                         ; preds = %if.then6, %if.end
+  %call12 = tail call i32 @strcmp(i8* %inpmtxBfileName, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0)) #7
+  %cmp13 = icmp eq i32 %call12, 0
+  br i1 %cmp13, label %return, label %if.then14
+
+if.then14:                                        ; preds = %if.end11
+  %inpmtxB = getelementptr inbounds %struct._Pencil* %pencil, i64 0, i32 3
+  %2 = load %struct._InpMtx** %inpmtxB, align 8, !tbaa !0
+  %call15 = tail call i32 @InpMtx_readFromFile(%struct._InpMtx* %2, i8* %inpmtxBfileName) #6
+  ret i32 %call15
+
+return:                                           ; preds = %if.end11, %if.then6, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ %call7, %if.then6 ], [ 1, %if.end11 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,72 @@
+define signext i8 @Perl_is_utf8_string_loc(i8* %s, i64 %len, i8** %p) #0 {
+entry:
+  %tobool = icmp ne i64 %len, 0
+  %tobool1 = icmp eq i8* %s, null
+  %or.cond = or i1 %tobool, %tobool1
+  br i1 %or.cond, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = tail call i64 @strlen(i8* %s) #5
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %len.addr.0 = phi i64 [ %len, %entry ], [ %call, %if.then ]
+  %add.ptr = getelementptr inbounds i8* %s, i64 %len.addr.0
+  %cmp56 = icmp sgt i64 %len.addr.0, 0
+  br i1 %cmp56, label %while.body, label %while.end
+
+while.body:                                       ; preds = %if.end, %if.end25
+  %x.057 = phi i8* [ %add.ptr26, %if.end25 ], [ %s, %if.end ]
+  %0 = load i8* %x.057, align 1, !tbaa !1
+  %cmp2 = icmp sgt i8 %0, -1
+  br i1 %cmp2, label %if.end25, label %if.else
+
+if.else:                                          ; preds = %while.body
+  %.off = add i8 %0, 64
+  %1 = icmp ult i8 %.off, 62
+  br i1 %1, label %if.else16, label %if.then12
+
+if.then12:                                        ; preds = %if.else
+  %tobool13 = icmp eq i8** %p, null
+  br i1 %tobool13, label %return, label %if.then14
+
+if.then14:                                        ; preds = %if.then12
+  store i8* %x.057, i8** %p, align 8, !tbaa !0
+  br label %return
+
+if.else16:                                        ; preds = %if.else
+  %call17 = tail call i64 @Perl_is_utf8_char(i8* %x.057) #6
+  %tobool18 = icmp eq i64 %call17, 0
+  br i1 %tobool18, label %if.then19, label %if.end25
+
+if.then19:                                        ; preds = %if.else16
+  %tobool20 = icmp eq i8** %p, null
+  br i1 %tobool20, label %return, label %if.then21
+
+if.then21:                                        ; preds = %if.then19
+  store i8* %x.057, i8** %p, align 8, !tbaa !0
+  br label %return
+
+if.end25:                                         ; preds = %while.body, %if.else16
+  %c.0 = phi i64 [ %call17, %if.else16 ], [ 1, %while.body ]
+  %add.ptr26 = getelementptr inbounds i8* %x.057, i64 %c.0
+  %cmp = icmp ult i8* %add.ptr26, %add.ptr
+  br i1 %cmp, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end25, %if.end
+  %x.0.lcssa = phi i8* [ %s, %if.end ], [ %add.ptr26, %if.end25 ]
+  %cmp27 = icmp eq i8* %x.0.lcssa, %add.ptr
+  br i1 %cmp27, label %return, label %if.then29
+
+if.then29:                                        ; preds = %while.end
+  %tobool30 = icmp eq i8** %p, null
+  br i1 %tobool30, label %return, label %if.then31
+
+if.then31:                                        ; preds = %if.then29
+  store i8* %x.0.lcssa, i8** %p, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %while.end, %if.then31, %if.then29, %if.then21, %if.then19, %if.then14, %if.then12
+  %retval.0 = phi i8 [ 0, %if.then12 ], [ 0, %if.then14 ], [ 0, %if.then19 ], [ 0, %if.then21 ], [ 0, %if.then29 ], [ 0, %if.then31 ], [ 1, %while.end ]
+  ret i8 %retval.0
+}

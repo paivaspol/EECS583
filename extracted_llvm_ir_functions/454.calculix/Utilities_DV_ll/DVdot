@@ -1,0 +1,35 @@
+define double @DVdot(i32 %size, double* %y, double* %x) #0 {
+entry:
+  %cmp = icmp sgt i32 %size, 0
+  br i1 %cmp, label %if.then, label %if.end7
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null
+  %cmp2 = icmp eq double* %x, null
+  %or.cond = or i1 %cmp1, %cmp2
+  br i1 %or.cond, label %if.then3, label %for.body
+
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str5, i64 0, i64 0), i32 %size, double* %y, double* %x) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %sum.019 = phi double [ %add, %for.body ], [ 0.000000e+00, %if.then ]
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !3
+  %arrayidx6 = getelementptr inbounds double* %x, i64 %indvars.iv
+  %2 = load double* %arrayidx6, align 8, !tbaa !3
+  %mul = fmul double %1, %2
+  %add = fadd double %sum.019, %mul
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %if.end7, label %for.body
+
+if.end7:                                          ; preds = %for.body, %entry
+  %sum.1 = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  ret double %sum.1
+}

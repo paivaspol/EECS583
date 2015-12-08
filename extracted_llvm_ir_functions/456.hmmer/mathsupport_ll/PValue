@@ -1,0 +1,45 @@
+define double @PValue(%struct.plan7_s* %hmm, float %sc) #0 {
+entry:
+  %conv = fpext float %sc to double
+  %cmp = fcmp ult double %conv, 0x408FFFFFFFAB5002
+  br i1 %cmp, label %if.else, label %if.end13
+
+if.else:                                          ; preds = %entry
+  %cmp6 = fcmp ugt double %conv, 0xC08FFFFFFFAB5002
+  br i1 %cmp6, label %if.else9, label %if.end13
+
+if.else9:                                         ; preds = %if.else
+  %mul11 = fmul double %conv, 0x3FE62E42FEAD449C
+  %call12 = tail call double @exp(double %mul11) #5
+  %add = fadd double %call12, 1.000000e+00
+  %div = fdiv double 1.000000e+00, %add
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.else, %entry, %if.else9
+  %pval.0 = phi double [ %div, %if.else9 ], [ 0.000000e+00, %entry ], [ 1.000000e+00, %if.else ]
+  %cmp14 = icmp eq %struct.plan7_s* %hmm, null
+  br i1 %cmp14, label %if.end22, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.end13
+  %flags = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 47
+  %0 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %0, 128
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end22, label %if.then16
+
+if.then16:                                        ; preds = %land.lhs.true
+  %mu = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 45
+  %1 = load float* %mu, align 4, !tbaa !3
+  %lambda = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 46
+  %2 = load float* %lambda, align 4, !tbaa !3
+  %call17 = tail call double @ExtremeValueP(float %sc, float %1, float %2) #5
+  %cmp18 = fcmp olt double %call17, %pval.0
+  br i1 %cmp18, label %if.then20, label %if.end22
+
+if.then20:                                        ; preds = %if.then16
+  br label %if.end22
+
+if.end22:                                         ; preds = %land.lhs.true, %if.end13, %if.then16, %if.then20
+  %pval.1 = phi double [ %call17, %if.then20 ], [ %pval.0, %if.then16 ], [ %pval.0, %land.lhs.true ], [ %pval.0, %if.end13 ]
+  ret double %pval.1
+}

@@ -1,0 +1,185 @@
+define void @ResizePlan7Matrix(%struct.dpmatrix_s* %mx, i32 %N, i32 %M, i32*** %xmx, i32*** %mmx, i32*** %imx, i32*** %dmx) #0 {
+entry:
+  %maxN = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 8
+  %0 = load i32* %maxN, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, %N
+  br i1 %cmp, label %if.then4, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %maxM = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 9
+  %1 = load i32* %maxM, align 4, !tbaa !3
+  %cmp1 = icmp slt i32 %1, %M
+  br i1 %cmp1, label %if.end27, label %DONE
+
+if.then4:                                         ; preds = %entry
+  %padN = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 10
+  %2 = load i32* %padN, align 4, !tbaa !3
+  %add = add nsw i32 %2, %N
+  store i32 %add, i32* %maxN, align 4, !tbaa !3
+  %xmx6 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 0
+  %3 = load i32*** %xmx6, align 8, !tbaa !0
+  %4 = bitcast i32** %3 to i8*
+  %add7 = add nsw i32 %add, 1
+  %conv = sext i32 %add7 to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 133, i8* %4, i64 %mul) #5
+  %5 = bitcast i8* %call to i32**
+  store i32** %5, i32*** %xmx6, align 8, !tbaa !0
+  %mmx9 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 1
+  %6 = load i32*** %mmx9, align 8, !tbaa !0
+  %7 = bitcast i32** %6 to i8*
+  %call13 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 134, i8* %7, i64 %mul) #5
+  %8 = bitcast i8* %call13 to i32**
+  store i32** %8, i32*** %mmx9, align 8, !tbaa !0
+  %imx15 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 2
+  %9 = load i32*** %imx15, align 8, !tbaa !0
+  %10 = bitcast i32** %9 to i8*
+  %call19 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 135, i8* %10, i64 %mul) #5
+  %11 = bitcast i8* %call19 to i32**
+  store i32** %11, i32*** %imx15, align 8, !tbaa !0
+  %dmx21 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 3
+  %12 = load i32*** %dmx21, align 8, !tbaa !0
+  %13 = bitcast i32** %12 to i8*
+  %call25 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 136, i8* %13, i64 %mul) #5
+  %14 = bitcast i8* %call25 to i32**
+  store i32** %14, i32*** %dmx21, align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %land.lhs.true, %if.then4
+  %N.addr.0 = phi i32 [ %add, %if.then4 ], [ %N, %land.lhs.true ]
+  %maxM28 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 9
+  %15 = load i32* %maxM28, align 4, !tbaa !3
+  %cmp29 = icmp slt i32 %15, %M
+  br i1 %cmp29, label %if.then31, label %if.end34
+
+if.then31:                                        ; preds = %if.end27
+  %padM = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 11
+  %16 = load i32* %padM, align 4, !tbaa !3
+  %add32 = add nsw i32 %16, %M
+  store i32 %add32, i32* %maxM28, align 4, !tbaa !3
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.then31, %if.end27
+  %M.addr.0 = phi i32 [ %add32, %if.then31 ], [ %M, %if.end27 ]
+  %xmx_mem = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 4
+  %17 = load i8** %xmx_mem, align 8, !tbaa !0
+  %add35 = add i32 %N.addr.0, 1
+  %mul36 = mul nsw i32 %add35, 5
+  %conv37 = sext i32 %mul36 to i64
+  %mul38 = shl nsw i64 %conv37, 2
+  %call39 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 144, i8* %17, i64 %mul38) #5
+  store i8* %call39, i8** %xmx_mem, align 8, !tbaa !0
+  %mmx_mem = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 5
+  %18 = load i8** %mmx_mem, align 8, !tbaa !0
+  %add42 = add nsw i32 %M.addr.0, 2
+  %mul43 = mul nsw i32 %add42, %add35
+  %conv44 = sext i32 %mul43 to i64
+  %mul45 = shl nsw i64 %conv44, 2
+  %call46 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 145, i8* %18, i64 %mul45) #5
+  store i8* %call46, i8** %mmx_mem, align 8, !tbaa !0
+  %imx_mem = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 6
+  %19 = load i8** %imx_mem, align 8, !tbaa !0
+  %call53 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 146, i8* %19, i64 %mul45) #5
+  store i8* %call53, i8** %imx_mem, align 8, !tbaa !0
+  %dmx_mem = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 7
+  %20 = load i8** %dmx_mem, align 8, !tbaa !0
+  %call60 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 147, i8* %20, i64 %mul45) #5
+  store i8* %call60, i8** %dmx_mem, align 8, !tbaa !0
+  %21 = load i8** %xmx_mem, align 8, !tbaa !0
+  %22 = bitcast i8* %21 to i32*
+  %xmx63 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 0
+  %23 = load i32*** %xmx63, align 8, !tbaa !0
+  store i32* %22, i32** %23, align 8, !tbaa !0
+  %24 = load i8** %mmx_mem, align 8, !tbaa !0
+  %25 = bitcast i8* %24 to i32*
+  %mmx65 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 1
+  %26 = load i32*** %mmx65, align 8, !tbaa !0
+  store i32* %25, i32** %26, align 8, !tbaa !0
+  %27 = load i8** %imx_mem, align 8, !tbaa !0
+  %28 = bitcast i8* %27 to i32*
+  %imx68 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 2
+  %29 = load i32*** %imx68, align 8, !tbaa !0
+  store i32* %28, i32** %29, align 8, !tbaa !0
+  %30 = load i8** %dmx_mem, align 8, !tbaa !0
+  %31 = bitcast i8* %30 to i32*
+  %dmx71 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 3
+  %32 = load i32*** %dmx71, align 8, !tbaa !0
+  store i32* %31, i32** %32, align 8, !tbaa !0
+  %cmp73204 = icmp slt i32 %N.addr.0, 1
+  br i1 %cmp73204, label %DONE, label %for.body
+
+for.body:                                         ; preds = %if.end34, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %if.end34 ]
+  %33 = load i32*** %xmx63, align 8, !tbaa !0
+  %34 = load i32** %33, align 8, !tbaa !0
+  %35 = trunc i64 %indvars.iv to i32
+  %sext = mul i64 %indvars.iv, 21474836480
+  %idx.ext = ashr exact i64 %sext, 32
+  %add.ptr = getelementptr inbounds i32* %34, i64 %idx.ext
+  %arrayidx79 = getelementptr inbounds i32** %33, i64 %indvars.iv
+  store i32* %add.ptr, i32** %arrayidx79, align 8, !tbaa !0
+  %36 = load i32*** %mmx65, align 8, !tbaa !0
+  %37 = load i32** %36, align 8, !tbaa !0
+  %mul83 = mul nsw i32 %35, %add42
+  %idx.ext84 = sext i32 %mul83 to i64
+  %add.ptr85 = getelementptr inbounds i32* %37, i64 %idx.ext84
+  %arrayidx88 = getelementptr inbounds i32** %36, i64 %indvars.iv
+  store i32* %add.ptr85, i32** %arrayidx88, align 8, !tbaa !0
+  %38 = load i32*** %imx68, align 8, !tbaa !0
+  %39 = load i32** %38, align 8, !tbaa !0
+  %add.ptr94 = getelementptr inbounds i32* %39, i64 %idx.ext84
+  %arrayidx97 = getelementptr inbounds i32** %38, i64 %indvars.iv
+  store i32* %add.ptr94, i32** %arrayidx97, align 8, !tbaa !0
+  %40 = load i32*** %dmx71, align 8, !tbaa !0
+  %41 = load i32** %40, align 8, !tbaa !0
+  %add.ptr103 = getelementptr inbounds i32* %41, i64 %idx.ext84
+  %arrayidx106 = getelementptr inbounds i32** %40, i64 %indvars.iv
+  store i32* %add.ptr103, i32** %arrayidx106, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %add35
+  br i1 %exitcond, label %DONE, label %for.body
+
+DONE:                                             ; preds = %if.end34, %for.body, %land.lhs.true
+  %cmp107 = icmp eq i32*** %xmx, null
+  br i1 %cmp107, label %if.end111, label %if.then109
+
+if.then109:                                       ; preds = %DONE
+  %xmx110 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 0
+  %42 = load i32*** %xmx110, align 8, !tbaa !0
+  store i32** %42, i32*** %xmx, align 8, !tbaa !0
+  br label %if.end111
+
+if.end111:                                        ; preds = %DONE, %if.then109
+  %cmp112 = icmp eq i32*** %mmx, null
+  br i1 %cmp112, label %if.end116, label %if.then114
+
+if.then114:                                       ; preds = %if.end111
+  %mmx115 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 1
+  %43 = load i32*** %mmx115, align 8, !tbaa !0
+  store i32** %43, i32*** %mmx, align 8, !tbaa !0
+  br label %if.end116
+
+if.end116:                                        ; preds = %if.end111, %if.then114
+  %cmp117 = icmp eq i32*** %imx, null
+  br i1 %cmp117, label %if.end121, label %if.then119
+
+if.then119:                                       ; preds = %if.end116
+  %imx120 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 2
+  %44 = load i32*** %imx120, align 8, !tbaa !0
+  store i32** %44, i32*** %imx, align 8, !tbaa !0
+  br label %if.end121
+
+if.end121:                                        ; preds = %if.end116, %if.then119
+  %cmp122 = icmp eq i32*** %dmx, null
+  br i1 %cmp122, label %if.end126, label %if.then124
+
+if.then124:                                       ; preds = %if.end121
+  %dmx125 = getelementptr inbounds %struct.dpmatrix_s* %mx, i64 0, i32 3
+  %45 = load i32*** %dmx125, align 8, !tbaa !0
+  store i32** %45, i32*** %dmx, align 8, !tbaa !0
+  br label %if.end126
+
+if.end126:                                        ; preds = %if.end121, %if.then124
+  ret void
+}

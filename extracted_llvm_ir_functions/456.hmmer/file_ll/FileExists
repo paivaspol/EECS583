@@ -1,0 +1,14 @@
+define i32 @FileExists(i8* nocapture %filename) #0 {
+entry:
+  %call = tail call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6
+  %tobool = icmp eq %struct._IO_FILE* %call, null
+  br i1 %tobool, label %return, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @fclose(%struct._IO_FILE* %call) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %entry ]
+  ret i32 %retval.0
+}

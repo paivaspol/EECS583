@@ -1,0 +1,177 @@
+define internal fastcc void @S_incline(i8* %s) #0 {
+entry:
+  %0 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_line = getelementptr inbounds %struct.cop* %0, i64 0, i32 13
+  %1 = load i32* %cop_line, align 4, !tbaa !3
+  %inc = add i32 %1, 1
+  store i32 %inc, i32* %cop_line, align 4, !tbaa !3
+  %2 = load i8* %s, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 35
+  br i1 %cmp, label %while.cond, label %return
+
+while.cond:                                       ; preds = %while.cond, %while.cond, %entry
+  %s.pn = phi i8* [ %s, %entry ], [ %s.addr.0, %while.cond ], [ %s.addr.0, %while.cond ]
+  %s.addr.0 = getelementptr inbounds i8* %s.pn, i64 1
+  %3 = load i8* %s.addr.0, align 1, !tbaa !1
+  switch i8 %3, label %while.end [
+    i8 32, label %while.cond
+    i8 9, label %while.cond
+  ]
+
+while.end:                                        ; preds = %while.cond
+  %call = tail call i32 @strncmp(i8* %s.addr.0, i8* getelementptr inbounds ([5 x i8]* @.str205, i64 0, i64 0), i64 4) #6
+  %tobool = icmp eq i32 %call, 0
+  br i1 %tobool, label %if.then9, label %return
+
+if.then9:                                         ; preds = %while.end
+  %add.ptr = getelementptr inbounds i8* %s.pn, i64 5
+  %4 = load i8* %add.ptr, align 1, !tbaa !1
+  switch i8 %4, label %return [
+    i8 32, label %if.then17
+    i8 9, label %if.then17
+  ]
+
+if.then17:                                        ; preds = %if.then9, %if.then9
+  %incdec.ptr18 = getelementptr inbounds i8* %s.pn, i64 6
+  br label %while.cond21
+
+while.cond21:                                     ; preds = %while.body30, %if.then17
+  %s.addr.1 = phi i8* [ %incdec.ptr18, %if.then17 ], [ %incdec.ptr31, %while.body30 ]
+  %5 = load i8* %s.addr.1, align 1, !tbaa !1
+  switch i8 %5, label %while.end32 [
+    i8 32, label %while.body30
+    i8 9, label %while.body30
+  ]
+
+while.body30:                                     ; preds = %while.cond21, %while.cond21
+  %incdec.ptr31 = getelementptr inbounds i8* %s.addr.1, i64 1
+  br label %while.cond21
+
+while.end32:                                      ; preds = %while.cond21
+  %.off = add i8 %5, -48
+  %6 = icmp ult i8 %.off, 10
+  br i1 %6, label %while.cond41, label %return
+
+while.cond41:                                     ; preds = %while.end32, %while.cond41.while.cond41_crit_edge
+  %7 = phi i8 [ %.pre185, %while.cond41.while.cond41_crit_edge ], [ %5, %while.end32 ]
+  %s.addr.2 = phi i8* [ %incdec.ptr49, %while.cond41.while.cond41_crit_edge ], [ %s.addr.1, %while.end32 ]
+  %.off179 = add i8 %7, -48
+  %8 = icmp ult i8 %.off179, 10
+  %incdec.ptr49 = getelementptr inbounds i8* %s.addr.2, i64 1
+  br i1 %8, label %while.cond41.while.cond41_crit_edge, label %while.cond51
+
+while.cond41.while.cond41_crit_edge:              ; preds = %while.cond41
+  %.pre185 = load i8* %incdec.ptr49, align 1, !tbaa !1
+  br label %while.cond41
+
+while.cond51:                                     ; preds = %while.cond41, %while.body60
+  %9 = phi i8 [ %.pre, %while.body60 ], [ %7, %while.cond41 ]
+  %s.addr.3 = phi i8* [ %incdec.ptr61, %while.body60 ], [ %s.addr.2, %while.cond41 ]
+  switch i8 %9, label %for.cond [
+    i8 32, label %while.body60
+    i8 9, label %while.body60
+    i8 34, label %land.lhs.true66
+  ]
+
+while.body60:                                     ; preds = %while.cond51, %while.cond51
+  %incdec.ptr61 = getelementptr inbounds i8* %s.addr.3, i64 1
+  %.pre = load i8* %incdec.ptr61, align 1, !tbaa !1
+  br label %while.cond51
+
+land.lhs.true66:                                  ; preds = %while.cond51
+  %add.ptr67 = getelementptr inbounds i8* %s.addr.3, i64 1
+  %call68 = tail call i8* @strchr(i8* %add.ptr67, i32 34) #6
+  %tobool69 = icmp eq i8* %call68, null
+  br i1 %tobool69, label %for.cond, label %if.then70
+
+if.then70:                                        ; preds = %land.lhs.true66
+  %add.ptr72 = getelementptr inbounds i8* %call68, i64 1
+  br label %while.cond96.preheader
+
+for.cond:                                         ; preds = %land.lhs.true66, %while.cond51, %for.inc.critedge
+  %10 = phi i8 [ %.pre184, %for.inc.critedge ], [ %9, %while.cond51 ], [ 34, %land.lhs.true66 ]
+  %t.0 = phi i8* [ %incdec.ptr94, %for.inc.critedge ], [ %s.addr.3, %while.cond51 ], [ %s.addr.3, %land.lhs.true66 ]
+  switch i8 %10, label %for.inc.critedge [
+    i8 32, label %while.cond96.preheader
+    i8 9, label %while.cond96.preheader
+    i8 10, label %while.cond96.preheader
+    i8 13, label %while.cond96.preheader
+    i8 12, label %while.cond96.preheader
+  ]
+
+while.cond96.preheader:                           ; preds = %for.cond, %for.cond, %for.cond, %for.cond, %for.cond, %if.then70
+  %t.1.ph = phi i8* [ %call68, %if.then70 ], [ %t.0, %for.cond ], [ %t.0, %for.cond ], [ %t.0, %for.cond ], [ %t.0, %for.cond ], [ %t.0, %for.cond ]
+  %e.0.ph = phi i8* [ %add.ptr72, %if.then70 ], [ %t.0, %for.cond ], [ %t.0, %for.cond ], [ %t.0, %for.cond ], [ %t.0, %for.cond ], [ %t.0, %for.cond ]
+  %s.addr.4.ph = phi i8* [ %add.ptr67, %if.then70 ], [ %s.addr.3, %for.cond ], [ %s.addr.3, %for.cond ], [ %s.addr.3, %for.cond ], [ %s.addr.3, %for.cond ], [ %s.addr.3, %for.cond ]
+  br label %while.cond96
+
+for.inc.critedge:                                 ; preds = %for.cond
+  %incdec.ptr94 = getelementptr inbounds i8* %t.0, i64 1
+  %.pre184 = load i8* %incdec.ptr94, align 1, !tbaa !1
+  br label %for.cond
+
+while.cond96:                                     ; preds = %while.cond96.preheader, %while.body113
+  %e.0 = phi i8* [ %incdec.ptr114, %while.body113 ], [ %e.0.ph, %while.cond96.preheader ]
+  %11 = load i8* %e.0, align 1, !tbaa !1
+  switch i8 %11, label %return [
+    i8 32, label %while.body113
+    i8 9, label %while.body113
+    i8 13, label %while.body113
+    i8 12, label %while.body113
+    i8 10, label %if.end124
+    i8 0, label %if.end124
+  ]
+
+while.body113:                                    ; preds = %while.cond96, %while.cond96, %while.cond96, %while.cond96
+  %incdec.ptr114 = getelementptr inbounds i8* %e.0, i64 1
+  br label %while.cond96
+
+if.end124:                                        ; preds = %while.cond96, %while.cond96
+  %12 = load i8* %t.1.ph, align 1, !tbaa !1
+  store i8 0, i8* %t.1.ph, align 1, !tbaa !1
+  %sub.ptr.lhs.cast = ptrtoint i8* %t.1.ph to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %s.addr.4.ph to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp125 = icmp sgt i64 %sub.ptr.sub, 0
+  br i1 %cmp125, label %if.then127, label %if.end136
+
+if.then127:                                       ; preds = %if.end124
+  %13 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_filegv = getelementptr inbounds %struct.cop* %13, i64 0, i32 10
+  %14 = load %struct.gv** %cop_filegv, align 8, !tbaa !0
+  %15 = bitcast %struct.gv* %14 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %15) #6
+  %16 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_filegv128 = getelementptr inbounds %struct.cop* %16, i64 0, i32 10
+  store %struct.gv* null, %struct.gv** %cop_filegv128, align 8, !tbaa !0
+  %call129 = tail call %struct.gv* @Perl_gv_fetchfile(i8* %s.addr.4.ph) #6
+  %17 = bitcast %struct.gv* %call129 to %struct.sv*
+  store %struct.sv* %17, %struct.sv** @PL_Sv, align 8, !tbaa !0
+  %tobool130 = icmp eq %struct.gv* %call129, null
+  br i1 %tobool130, label %land.end134, label %land.rhs131
+
+land.rhs131:                                      ; preds = %if.then127
+  %18 = getelementptr inbounds %struct.gv* %call129, i64 0, i32 1
+  %19 = load i32* %18, align 4, !tbaa !3
+  %inc132 = add i32 %19, 1
+  store i32 %inc132, i32* %18, align 4, !tbaa !3
+  br label %land.end134
+
+land.end134:                                      ; preds = %if.then127, %land.rhs131
+  %20 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_filegv135 = getelementptr inbounds %struct.cop* %20, i64 0, i32 10
+  store %struct.gv* %call129, %struct.gv** %cop_filegv135, align 8, !tbaa !0
+  br label %if.end136
+
+if.end136:                                        ; preds = %land.end134, %if.end124
+  store i8 %12, i8* %t.1.ph, align 1, !tbaa !1
+  %call137 = tail call i32 @atoi(i8* %s.addr.1) #6
+  %sub = add nsw i32 %call137, -1
+  %21 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_line138 = getelementptr inbounds %struct.cop* %21, i64 0, i32 13
+  store i32 %sub, i32* %cop_line138, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %while.cond96, %if.then9, %while.end, %entry, %while.end32, %if.end136
+  ret void
+}

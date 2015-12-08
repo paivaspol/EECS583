@@ -1,0 +1,93 @@
+define internal fastcc %struct.sv* @S_save_scalar_at(%struct.sv** nocapture %sptr) #0 {
+entry:
+  %0 = load %struct.sv** %sptr, align 8, !tbaa !0
+  %call = tail call %struct.sv* @Perl_newSV(i64 0) #5
+  store %struct.sv* %call, %struct.sv** %sptr, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %0, i64 0, i32 2
+  %1 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %1, 255
+  %cmp = icmp ugt i32 %and, 6
+  br i1 %cmp, label %land.lhs.true, label %if.end40
+
+land.lhs.true:                                    ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %0, i64 0, i32 0
+  %2 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic = getelementptr inbounds i8* %2, i64 40
+  %3 = bitcast i8* %xmg_magic to %struct.magic**
+  %4 = load %struct.magic** %3, align 8, !tbaa !0
+  %tobool = icmp eq %struct.magic* %4, null
+  %cmp4 = icmp eq i32 %and, 13
+  %or.cond = or i1 %tobool, %cmp4
+  br i1 %or.cond, label %if.end40, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %call7 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %call, i32 %and) #5
+  %5 = load i32* %sv_flags, align 4, !tbaa !4
+  %and9 = and i32 %5, 8192
+  %tobool10 = icmp eq i32 %and9, 0
+  br i1 %tobool10, label %if.end25, label %if.then11
+
+if.then11:                                        ; preds = %if.then
+  %6 = load i8* @PL_tainted, align 1, !tbaa !1
+  %call12 = tail call i32 @Perl_mg_get(%struct.sv* %0) #5
+  %7 = load i8* @PL_tainting, align 1, !tbaa !1
+  %tobool13 = icmp eq i8 %7, 0
+  %8 = load i8* @PL_tainted, align 1, !tbaa !1
+  %tobool16 = icmp eq i8 %8, 0
+  %or.cond59 = or i1 %tobool13, %tobool16
+  br i1 %or.cond59, label %if.end, label %land.lhs.true17
+
+land.lhs.true17:                                  ; preds = %if.then11
+  %call18 = tail call %struct.magic* @Perl_mg_find(%struct.sv* %0, i32 116) #5
+  %tobool19 = icmp eq %struct.magic* %call18, null
+  br i1 %tobool19, label %if.end, label %if.then20
+
+if.then20:                                        ; preds = %land.lhs.true17
+  %mg_obj = getelementptr inbounds %struct.magic* %call18, i64 0, i32 5
+  tail call void @Perl_save_sptr(%struct.sv** %mg_obj) #6
+  store %struct.sv* %0, %struct.sv** %mg_obj, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %land.lhs.true17, %if.then11, %if.then20
+  %9 = load i32* %sv_flags, align 4, !tbaa !4
+  %and23 = lshr i32 %9, 8
+  %shr = and i32 %and23, 393216
+  %or = or i32 %shr, %9
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !4
+  store i8 %6, i8* @PL_tainted, align 1, !tbaa !1
+  %.pre = load i32* %sv_flags, align 4, !tbaa !4
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.then, %if.end
+  %10 = phi i32 [ %5, %if.then ], [ %.pre, %if.end ]
+  %11 = load i8** %sv_any, align 8, !tbaa !0
+  %xmg_magic27 = getelementptr inbounds i8* %11, i64 40
+  %12 = bitcast i8* %xmg_magic27 to %struct.magic**
+  %13 = load %struct.magic** %12, align 8, !tbaa !0
+  %sv_any28 = getelementptr inbounds %struct.sv* %call, i64 0, i32 0
+  %14 = load i8** %sv_any28, align 8, !tbaa !0
+  %xmg_magic29 = getelementptr inbounds i8* %14, i64 40
+  %15 = bitcast i8* %xmg_magic29 to %struct.magic**
+  store %struct.magic* %13, %struct.magic** %15, align 8, !tbaa !0
+  %and31 = and i32 %10, 57344
+  %sv_flags32 = getelementptr inbounds %struct.sv* %call, i64 0, i32 2
+  %16 = load i32* %sv_flags32, align 4, !tbaa !4
+  %or33 = or i32 %16, %and31
+  store i32 %or33, i32* %sv_flags32, align 4, !tbaa !4
+  store i32 1, i32* @PL_localizing, align 4, !tbaa !4
+  %17 = load i32* %sv_flags32, align 4, !tbaa !4
+  %and35 = and i32 %17, 16384
+  %tobool36 = icmp eq i32 %and35, 0
+  br i1 %tobool36, label %if.end39, label %if.then37
+
+if.then37:                                        ; preds = %if.end25
+  %call38 = tail call i32 @Perl_mg_set(%struct.sv* %call) #5
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end25, %if.then37
+  store i32 0, i32* @PL_localizing, align 4, !tbaa !4
+  br label %if.end40
+
+if.end40:                                         ; preds = %land.lhs.true, %if.end39, %entry
+  ret %struct.sv* %call
+}

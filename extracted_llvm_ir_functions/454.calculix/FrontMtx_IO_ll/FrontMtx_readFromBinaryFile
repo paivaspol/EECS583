@@ -1,0 +1,816 @@
+define i32 @FrontMtx_readFromBinaryFile(%struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp) #0 {
+entry:
+  %nmtx = alloca i32, align 4
+  %itemp = alloca [10 x i32], align 16
+  %0 = bitcast [10 x i32]* %itemp to i8*
+  call void @llvm.lifetime.start(i64 40, i8* %0) #3
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str22, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp) #6
+  br label %cleanup
+
+if.end:                                           ; preds = %entry
+  call void @FrontMtx_clearData(%struct._FrontMtx* %frontmtx) #6
+  %call2 = call i64 @fread(i8* %0, i64 4, i64 10, %struct._IO_FILE* %fp) #6
+  %conv = trunc i64 %call2 to i32
+  %cmp3 = icmp eq i32 %conv, 10
+  br i1 %cmp3, label %if.end7, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv, i32 10) #6
+  br label %cleanup
+
+if.end7:                                          ; preds = %if.end
+  %3 = bitcast [10 x i32]* %itemp to i64*
+  %4 = load i64* %3, align 16
+  %5 = trunc i64 %4 to i32
+  %nfront8 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
+  store i32 %5, i32* %nfront8, align 4, !tbaa !3
+  %6 = lshr i64 %4, 32
+  %7 = trunc i64 %6 to i32
+  %neqns = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 1
+  store i32 %7, i32* %neqns, align 4, !tbaa !3
+  %arrayidx10 = getelementptr inbounds [10 x i32]* %itemp, i64 0, i64 2
+  %8 = bitcast i32* %arrayidx10 to i64*
+  %9 = load i64* %8, align 8
+  %10 = trunc i64 %9 to i32
+  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2
+  store i32 %10, i32* %type, align 4, !tbaa !3
+  %11 = lshr i64 %9, 32
+  %12 = trunc i64 %11 to i32
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
+  store i32 %12, i32* %symmetryflag, align 4, !tbaa !3
+  %arrayidx12 = getelementptr inbounds [10 x i32]* %itemp, i64 0, i64 4
+  %13 = bitcast i32* %arrayidx12 to i64*
+  %14 = load i64* %13, align 16
+  %15 = trunc i64 %14 to i32
+  %pivotingflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5
+  store i32 %15, i32* %pivotingflag, align 4, !tbaa !3
+  %16 = lshr i64 %14, 32
+  %17 = trunc i64 %16 to i32
+  %sparsityflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 4
+  store i32 %17, i32* %sparsityflag, align 4, !tbaa !3
+  %arrayidx14 = getelementptr inbounds [10 x i32]* %itemp, i64 0, i64 6
+  %18 = bitcast i32* %arrayidx14 to i64*
+  %19 = load i64* %18, align 8
+  %20 = trunc i64 %19 to i32
+  %dataMode = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6
+  store i32 %20, i32* %dataMode, align 4, !tbaa !3
+  %21 = lshr i64 %19, 32
+  %22 = trunc i64 %21 to i32
+  %nentD = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 7
+  store i32 %22, i32* %nentD, align 4, !tbaa !3
+  %arrayidx16 = getelementptr inbounds [10 x i32]* %itemp, i64 0, i64 8
+  %23 = bitcast i32* %arrayidx16 to i64*
+  %24 = load i64* %23, align 16
+  %25 = trunc i64 %24 to i32
+  %nentL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 8
+  store i32 %25, i32* %nentL, align 4, !tbaa !3
+  %26 = lshr i64 %24, 32
+  %27 = trunc i64 %26 to i32
+  %nentU = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 9
+  store i32 %27, i32* %nentU, align 4, !tbaa !3
+  %call18 = call %struct._ETree* @ETree_new() #6
+  %frontETree = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11
+  store %struct._ETree* %call18, %struct._ETree** %frontETree, align 8, !tbaa !0
+  %call20 = call i32 @ETree_readFromBinaryFile(%struct._ETree* %call18, %struct._IO_FILE* %fp) #6
+  %cmp21 = icmp eq i32 %call20, 1
+  br i1 %cmp21, label %if.end25, label %if.then23
+
+if.then23:                                        ; preds = %if.end7
+  %28 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call24 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %28, i8* getelementptr inbounds ([92 x i8]* @.str24, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call20) #6
+  br label %cleanup
+
+if.end25:                                         ; preds = %if.end7
+  %29 = load %struct._ETree** %frontETree, align 8, !tbaa !0
+  %tree = getelementptr inbounds %struct._ETree* %29, i64 0, i32 2
+  %30 = load %struct._Tree** %tree, align 8, !tbaa !0
+  %tree27 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 10
+  store %struct._Tree* %30, %struct._Tree** %tree27, align 8, !tbaa !0
+  %call28 = call %struct._IVL* @IVL_new() #6
+  %symbfacIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13
+  store %struct._IVL* %call28, %struct._IVL** %symbfacIVL, align 8, !tbaa !0
+  %type30 = getelementptr inbounds %struct._IVL* %call28, i64 0, i32 0
+  store i32 1, i32* %type30, align 4, !tbaa !3
+  %call32 = call i32 @IVL_readFromBinaryFile(%struct._IVL* %call28, %struct._IO_FILE* %fp) #6
+  %cmp33 = icmp eq i32 %call32, 1
+  br i1 %cmp33, label %if.end37, label %if.then35
+
+if.then35:                                        ; preds = %if.end25
+  %31 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call36 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %31, i8* getelementptr inbounds ([92 x i8]* @.str25, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call32) #6
+  br label %cleanup
+
+if.end37:                                         ; preds = %if.end25
+  %call38 = call %struct._IV* @IV_new() #6
+  %frontsizesIV = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 12
+  store %struct._IV* %call38, %struct._IV** %frontsizesIV, align 8, !tbaa !0
+  %32 = load i32* %pivotingflag, align 4, !tbaa !3
+  %cmp40 = icmp eq i32 %32, 1
+  br i1 %cmp40, label %if.then42, label %if.else
+
+if.then42:                                        ; preds = %if.end37
+  %call44 = call i32 @IV_readFromBinaryFile(%struct._IV* %call38, %struct._IO_FILE* %fp) #6
+  %cmp45 = icmp eq i32 %call44, 1
+  br i1 %cmp45, label %if.end56, label %if.then47
+
+if.then47:                                        ; preds = %if.then42
+  %33 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call48 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %33, i8* getelementptr inbounds ([94 x i8]* @.str26, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call44) #6
+  br label %cleanup
+
+if.else:                                          ; preds = %if.end37
+  %34 = load i32* %nfront8, align 4, !tbaa !3
+  call void @IV_init(%struct._IV* %call38, i32 %34, i32* null) #6
+  %35 = load %struct._IV** %frontsizesIV, align 8, !tbaa !0
+  %call53 = call i32* @IV_entries(%struct._IV* %35) #6
+  %36 = load %struct._ETree** %frontETree, align 8, !tbaa !0
+  %call55 = call i32* @ETree_nodwghts(%struct._ETree* %36) #6
+  call void @IVcopy(i32 %5, i32* %call53, i32* %call55) #6
+  br label %if.end56
+
+if.end56:                                         ; preds = %if.then42, %if.else
+  %37 = load i32* %pivotingflag, align 4, !tbaa !3
+  %cmp58 = icmp eq i32 %37, 1
+  br i1 %cmp58, label %if.then60, label %if.end86
+
+if.then60:                                        ; preds = %if.end56
+  %38 = load i32* %symmetryflag, align 4, !tbaa !3
+  %cmp62 = icmp eq i32 %38, 2
+  br i1 %cmp62, label %if.then64, label %if.end75
+
+if.then64:                                        ; preds = %if.then60
+  %call65 = call %struct._IVL* @IVL_new() #6
+  %rowadjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 14
+  store %struct._IVL* %call65, %struct._IVL** %rowadjIVL, align 8, !tbaa !0
+  %type67 = getelementptr inbounds %struct._IVL* %call65, i64 0, i32 0
+  store i32 1, i32* %type67, align 4, !tbaa !3
+  %call69 = call i32 @IVL_readFromBinaryFile(%struct._IVL* %call65, %struct._IO_FILE* %fp) #6
+  %cmp70 = icmp eq i32 %call69, 1
+  br i1 %cmp70, label %if.end75, label %if.then72
+
+if.then72:                                        ; preds = %if.then64
+  %39 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call73 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %39, i8* getelementptr inbounds ([91 x i8]* @.str27, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call69) #6
+  br label %cleanup
+
+if.end75:                                         ; preds = %if.then64, %if.then60
+  %call76 = call %struct._IVL* @IVL_new() #6
+  %coladjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 15
+  store %struct._IVL* %call76, %struct._IVL** %coladjIVL, align 8, !tbaa !0
+  %type78 = getelementptr inbounds %struct._IVL* %call76, i64 0, i32 0
+  store i32 1, i32* %type78, align 4, !tbaa !3
+  %call80 = call i32 @IVL_readFromBinaryFile(%struct._IVL* %call76, %struct._IO_FILE* %fp) #6
+  %cmp81 = icmp eq i32 %call80, 1
+  br i1 %cmp81, label %if.end86, label %if.then83
+
+if.then83:                                        ; preds = %if.end75
+  %40 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call84 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %40, i8* getelementptr inbounds ([91 x i8]* @.str28, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call80) #6
+  br label %cleanup
+
+if.end86:                                         ; preds = %if.end75, %if.end56
+  %41 = load i32* %dataMode, align 4, !tbaa !3
+  %cmp88 = icmp eq i32 %41, 1
+  br i1 %cmp88, label %if.then90, label %if.else371
+
+if.then90:                                        ; preds = %if.end86
+  %cmp91 = icmp sgt i32 %5, 0
+  br i1 %cmp91, label %if.then93, label %if.else104
+
+if.then93:                                        ; preds = %if.then90
+  %sext827 = shl i64 %4, 32
+  %mul = ashr exact i64 %sext827, 29
+  %call95 = call noalias i8* @malloc(i64 %mul) #6
+  %42 = bitcast i8* %call95 to %struct._SubMtx**
+  %p_mtxDJJ = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  store %struct._SubMtx** %42, %struct._SubMtx*** %p_mtxDJJ, align 8, !tbaa !0
+  %cmp96 = icmp eq i8* %call95, null
+  br i1 %cmp96, label %if.then98, label %if.then117
+
+if.then98:                                        ; preds = %if.then93
+  %43 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call101 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %43, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), i64 %mul, i32 640, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.else104:                                       ; preds = %if.then90
+  %cmp105 = icmp eq i32 %5, 0
+  br i1 %cmp105, label %if.then157, label %if.else109
+
+if.else109:                                       ; preds = %if.else104
+  %44 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %sext824 = shl i64 %4, 32
+  %mul111 = ashr exact i64 %sext824, 29
+  %call112 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %44, i8* getelementptr inbounds ([47 x i8]* @.str15, i64 0, i64 0), i64 %mul111, i32 640, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.then117:                                       ; preds = %if.then93
+  %call120 = call noalias i8* @malloc(i64 %mul) #6
+  %45 = bitcast i8* %call120 to %struct._SubMtx**
+  %p_mtxUJJ = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 19
+  store %struct._SubMtx** %45, %struct._SubMtx*** %p_mtxUJJ, align 8, !tbaa !0
+  %cmp121 = icmp eq i8* %call120, null
+  br i1 %cmp121, label %if.then123, label %if.then142
+
+if.then123:                                       ; preds = %if.then117
+  %46 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call126 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %46, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), i64 %mul, i32 641, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.then142:                                       ; preds = %if.then117
+  %call145 = call noalias i8* @malloc(i64 %mul) #6
+  %47 = bitcast i8* %call145 to %struct._SubMtx**
+  %p_mtxUJN = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 20
+  store %struct._SubMtx** %47, %struct._SubMtx*** %p_mtxUJN, align 8, !tbaa !0
+  %cmp146 = icmp eq i8* %call145, null
+  br i1 %cmp146, label %if.then148, label %for.cond.preheader
+
+if.then148:                                       ; preds = %if.then142
+  %48 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call151 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %48, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), i64 %mul, i32 642, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.then157:                                       ; preds = %if.else104
+  %p_mtxDJJ108 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  %49 = bitcast %struct._SubMtx*** %p_mtxDJJ108 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %49, i8 0, i64 24, i32 8, i1 false)
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then142, %if.then157
+  %50 = phi %struct._SubMtx** [ %42, %if.then142 ], [ null, %if.then157 ]
+  br i1 %cmp91, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %p_mtxDJJ167 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  %p_mtxUJJ170 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 19
+  %p_mtxUJN173 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 20
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
+  %51 = phi %struct._SubMtx** [ %50, %for.body.lr.ph ], [ %.pre821, %for.body.for.body_crit_edge ]
+  %indvars.iv810 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next811, %for.body.for.body_crit_edge ]
+  %arrayidx168 = getelementptr inbounds %struct._SubMtx** %51, i64 %indvars.iv810
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx168, align 8, !tbaa !0
+  %52 = load %struct._SubMtx*** %p_mtxUJJ170, align 8, !tbaa !0
+  %arrayidx171 = getelementptr inbounds %struct._SubMtx** %52, i64 %indvars.iv810
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx171, align 8, !tbaa !0
+  %53 = load %struct._SubMtx*** %p_mtxUJN173, align 8, !tbaa !0
+  %arrayidx174 = getelementptr inbounds %struct._SubMtx** %53, i64 %indvars.iv810
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx174, align 8, !tbaa !0
+  %indvars.iv.next811 = add i64 %indvars.iv810, 1
+  %lftr.wideiv812 = trunc i64 %indvars.iv.next811 to i32
+  %exitcond813 = icmp eq i32 %lftr.wideiv812, %5
+  br i1 %exitcond813, label %for.end, label %for.body.for.body_crit_edge
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre821 = load %struct._SubMtx*** %p_mtxDJJ167, align 8, !tbaa !0
+  br label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %54 = load i32* %symmetryflag, align 4, !tbaa !3
+  %cmp176 = icmp eq i32 %54, 2
+  br i1 %cmp176, label %if.then178, label %if.end296
+
+if.then178:                                       ; preds = %for.end
+  br i1 %cmp91, label %if.then181, label %if.else193
+
+if.then181:                                       ; preds = %if.then178
+  %sext826 = shl i64 %4, 32
+  %mul183 = ashr exact i64 %sext826, 29
+  %call184 = call noalias i8* @malloc(i64 %mul183) #6
+  %55 = bitcast i8* %call184 to %struct._SubMtx**
+  %p_mtxLJJ = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 21
+  store %struct._SubMtx** %55, %struct._SubMtx*** %p_mtxLJJ, align 8, !tbaa !0
+  %cmp185 = icmp eq i8* %call184, null
+  br i1 %cmp185, label %if.then187, label %if.then206
+
+if.then187:                                       ; preds = %if.then181
+  %56 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call190 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %56, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), i64 %mul183, i32 649, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.else193:                                       ; preds = %if.then178
+  %cmp194 = icmp eq i32 %5, 0
+  br i1 %cmp194, label %if.then221, label %if.else198
+
+if.else198:                                       ; preds = %if.else193
+  %57 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %sext825 = shl i64 %4, 32
+  %mul200 = ashr exact i64 %sext825, 29
+  %call201 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %57, i8* getelementptr inbounds ([47 x i8]* @.str15, i64 0, i64 0), i64 %mul200, i32 649, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.then206:                                       ; preds = %if.then181
+  %call209 = call noalias i8* @malloc(i64 %mul183) #6
+  %58 = bitcast i8* %call209 to %struct._SubMtx**
+  %p_mtxLNJ = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 22
+  store %struct._SubMtx** %58, %struct._SubMtx*** %p_mtxLNJ, align 8, !tbaa !0
+  %cmp210 = icmp eq i8* %call209, null
+  br i1 %cmp210, label %if.then212, label %for.cond229.preheader
+
+if.then212:                                       ; preds = %if.then206
+  %59 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call215 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %59, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), i64 %mul183, i32 650, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.then221:                                       ; preds = %if.else193
+  %p_mtxLJJ197 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 21
+  %60 = bitcast %struct._SubMtx*** %p_mtxLJJ197 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %60, i8 0, i64 16, i32 8, i1 false)
+  br label %for.cond229.preheader
+
+for.cond229.preheader:                            ; preds = %if.then206, %if.then221
+  %61 = phi %struct._SubMtx** [ %55, %if.then206 ], [ null, %if.then221 ]
+  br i1 %cmp91, label %for.body232.lr.ph, label %if.then246
+
+for.body232.lr.ph:                                ; preds = %for.cond229.preheader
+  %p_mtxLJJ234 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 21
+  %p_mtxLNJ237 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 22
+  br label %for.body232
+
+for.body232:                                      ; preds = %for.body232.for.body232_crit_edge, %for.body232.lr.ph
+  %62 = phi %struct._SubMtx** [ %61, %for.body232.lr.ph ], [ %.pre, %for.body232.for.body232_crit_edge ]
+  %indvars.iv = phi i64 [ 0, %for.body232.lr.ph ], [ %indvars.iv.next, %for.body232.for.body232_crit_edge ]
+  %arrayidx235 = getelementptr inbounds %struct._SubMtx** %62, i64 %indvars.iv
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx235, align 8, !tbaa !0
+  %63 = load %struct._SubMtx*** %p_mtxLNJ237, align 8, !tbaa !0
+  %arrayidx238 = getelementptr inbounds %struct._SubMtx** %63, i64 %indvars.iv
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx238, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %5
+  br i1 %exitcond, label %if.then246, label %for.body232.for.body232_crit_edge
+
+for.body232.for.body232_crit_edge:                ; preds = %for.body232
+  %.pre = load %struct._SubMtx*** %p_mtxLJJ234, align 8, !tbaa !0
+  br label %for.body232
+
+if.then246:                                       ; preds = %for.cond229.preheader, %for.body232
+  %64 = bitcast i32* %nmtx to i8*
+  %call247 = call i64 @fread(i8* %64, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv248 = trunc i64 %call247 to i32
+  %cmp249 = icmp eq i32 %conv248, 1
+  br i1 %cmp249, label %for.cond254.preheader, label %if.then251
+
+for.cond254.preheader:                            ; preds = %if.then246
+  %65 = load i32* %nmtx, align 4, !tbaa !3
+  %cmp255790 = icmp sgt i32 %65, 0
+  br i1 %cmp255790, label %for.body257.lr.ph, label %for.end270
+
+for.body257.lr.ph:                                ; preds = %for.cond254.preheader
+  %p_mtxLJJ266 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 21
+  br label %for.body257
+
+if.then251:                                       ; preds = %if.then246
+  %66 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call252 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %66, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv248, i32 1) #6
+  br label %cleanup
+
+for.body257:                                      ; preds = %for.body257.lr.ph, %if.end264
+  %imtx.0791 = phi i32 [ 0, %for.body257.lr.ph ], [ %inc269, %if.end264 ]
+  %call258 = call %struct._SubMtx* @SubMtx_new() #6
+  %call259 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call258, %struct._IO_FILE* %fp) #6
+  %cmp260 = icmp eq i32 %call259, 1
+  br i1 %cmp260, label %if.end264, label %if.then262
+
+if.then262:                                       ; preds = %for.body257
+  %67 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call263 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %67, i8* getelementptr inbounds ([93 x i8]* @.str29, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call259) #6
+  br label %cleanup
+
+if.end264:                                        ; preds = %for.body257
+  %colid = getelementptr inbounds %struct._SubMtx* %call258, i64 0, i32 3
+  %68 = load i32* %colid, align 4, !tbaa !3
+  %idxprom265 = sext i32 %68 to i64
+  %69 = load %struct._SubMtx*** %p_mtxLJJ266, align 8, !tbaa !0
+  %arrayidx267 = getelementptr inbounds %struct._SubMtx** %69, i64 %idxprom265
+  store %struct._SubMtx* %call258, %struct._SubMtx** %arrayidx267, align 8, !tbaa !0
+  %inc269 = add nsw i32 %imtx.0791, 1
+  %cmp255 = icmp slt i32 %inc269, %65
+  br i1 %cmp255, label %for.body257, label %for.end270
+
+for.end270:                                       ; preds = %if.end264, %for.cond254.preheader
+  %call271 = call i64 @fread(i8* %64, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv272 = trunc i64 %call271 to i32
+  %cmp273 = icmp eq i32 %conv272, 1
+  br i1 %cmp273, label %for.cond278.preheader, label %if.then275
+
+for.cond278.preheader:                            ; preds = %for.end270
+  %70 = load i32* %nmtx, align 4, !tbaa !3
+  %cmp279788 = icmp sgt i32 %70, 0
+  br i1 %cmp279788, label %for.body281.lr.ph, label %if.end296
+
+for.body281.lr.ph:                                ; preds = %for.cond278.preheader
+  %p_mtxLNJ291 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 22
+  br label %for.body281
+
+if.then275:                                       ; preds = %for.end270
+  %71 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call276 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %71, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv272, i32 1) #6
+  br label %cleanup
+
+for.body281:                                      ; preds = %for.body281.lr.ph, %if.end288
+  %imtx.1789 = phi i32 [ 0, %for.body281.lr.ph ], [ %inc294, %if.end288 ]
+  %call282 = call %struct._SubMtx* @SubMtx_new() #6
+  %call283 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call282, %struct._IO_FILE* %fp) #6
+  %cmp284 = icmp eq i32 %call283, 1
+  br i1 %cmp284, label %if.end288, label %if.then286
+
+if.then286:                                       ; preds = %for.body281
+  %72 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call287 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %72, i8* getelementptr inbounds ([93 x i8]* @.str29, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call283) #6
+  br label %cleanup
+
+if.end288:                                        ; preds = %for.body281
+  %colid289 = getelementptr inbounds %struct._SubMtx* %call282, i64 0, i32 3
+  %73 = load i32* %colid289, align 4, !tbaa !3
+  %idxprom290 = sext i32 %73 to i64
+  %74 = load %struct._SubMtx*** %p_mtxLNJ291, align 8, !tbaa !0
+  %arrayidx292 = getelementptr inbounds %struct._SubMtx** %74, i64 %idxprom290
+  store %struct._SubMtx* %call282, %struct._SubMtx** %arrayidx292, align 8, !tbaa !0
+  %inc294 = add nsw i32 %imtx.1789, 1
+  %cmp279 = icmp slt i32 %inc294, %70
+  br i1 %cmp279, label %for.body281, label %if.end296
+
+if.end296:                                        ; preds = %for.cond278.preheader, %if.end288, %for.end
+  %75 = bitcast i32* %nmtx to i8*
+  %call297 = call i64 @fread(i8* %75, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv298 = trunc i64 %call297 to i32
+  %cmp299 = icmp eq i32 %conv298, 1
+  br i1 %cmp299, label %for.cond304.preheader, label %if.then301
+
+for.cond304.preheader:                            ; preds = %if.end296
+  %76 = load i32* %nmtx, align 4, !tbaa !3
+  %cmp305786 = icmp sgt i32 %76, 0
+  br i1 %cmp305786, label %for.body307.lr.ph, label %for.end320
+
+for.body307.lr.ph:                                ; preds = %for.cond304.preheader
+  %p_mtxDJJ316 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  br label %for.body307
+
+if.then301:                                       ; preds = %if.end296
+  %77 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call302 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %77, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv298, i32 1) #6
+  br label %cleanup
+
+for.body307:                                      ; preds = %for.body307.lr.ph, %if.end314
+  %imtx.2787 = phi i32 [ 0, %for.body307.lr.ph ], [ %inc319, %if.end314 ]
+  %call308 = call %struct._SubMtx* @SubMtx_new() #6
+  %call309 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call308, %struct._IO_FILE* %fp) #6
+  %cmp310 = icmp eq i32 %call309, 1
+  br i1 %cmp310, label %if.end314, label %if.then312
+
+if.then312:                                       ; preds = %for.body307
+  %78 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call313 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %78, i8* getelementptr inbounds ([93 x i8]* @.str29, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call309) #6
+  br label %cleanup
+
+if.end314:                                        ; preds = %for.body307
+  %rowid = getelementptr inbounds %struct._SubMtx* %call308, i64 0, i32 2
+  %79 = load i32* %rowid, align 4, !tbaa !3
+  %idxprom315 = sext i32 %79 to i64
+  %80 = load %struct._SubMtx*** %p_mtxDJJ316, align 8, !tbaa !0
+  %arrayidx317 = getelementptr inbounds %struct._SubMtx** %80, i64 %idxprom315
+  store %struct._SubMtx* %call308, %struct._SubMtx** %arrayidx317, align 8, !tbaa !0
+  %inc319 = add nsw i32 %imtx.2787, 1
+  %cmp305 = icmp slt i32 %inc319, %76
+  br i1 %cmp305, label %for.body307, label %for.end320
+
+for.end320:                                       ; preds = %if.end314, %for.cond304.preheader
+  %call321 = call i64 @fread(i8* %75, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv322 = trunc i64 %call321 to i32
+  %cmp323 = icmp eq i32 %conv322, 1
+  br i1 %cmp323, label %for.cond328.preheader, label %if.then325
+
+for.cond328.preheader:                            ; preds = %for.end320
+  %81 = load i32* %nmtx, align 4, !tbaa !3
+  %cmp329784 = icmp sgt i32 %81, 0
+  br i1 %cmp329784, label %for.body331.lr.ph, label %for.end345
+
+for.body331.lr.ph:                                ; preds = %for.cond328.preheader
+  %p_mtxUJJ341 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 19
+  br label %for.body331
+
+if.then325:                                       ; preds = %for.end320
+  %82 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call326 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %82, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv322, i32 1) #6
+  br label %cleanup
+
+for.body331:                                      ; preds = %for.body331.lr.ph, %if.end338
+  %imtx.3785 = phi i32 [ 0, %for.body331.lr.ph ], [ %inc344, %if.end338 ]
+  %call332 = call %struct._SubMtx* @SubMtx_new() #6
+  %call333 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call332, %struct._IO_FILE* %fp) #6
+  %cmp334 = icmp eq i32 %call333, 1
+  br i1 %cmp334, label %if.end338, label %if.then336
+
+if.then336:                                       ; preds = %for.body331
+  %83 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call337 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %83, i8* getelementptr inbounds ([93 x i8]* @.str29, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call333) #6
+  br label %cleanup
+
+if.end338:                                        ; preds = %for.body331
+  %rowid339 = getelementptr inbounds %struct._SubMtx* %call332, i64 0, i32 2
+  %84 = load i32* %rowid339, align 4, !tbaa !3
+  %idxprom340 = sext i32 %84 to i64
+  %85 = load %struct._SubMtx*** %p_mtxUJJ341, align 8, !tbaa !0
+  %arrayidx342 = getelementptr inbounds %struct._SubMtx** %85, i64 %idxprom340
+  store %struct._SubMtx* %call332, %struct._SubMtx** %arrayidx342, align 8, !tbaa !0
+  %inc344 = add nsw i32 %imtx.3785, 1
+  %cmp329 = icmp slt i32 %inc344, %81
+  br i1 %cmp329, label %for.body331, label %for.end345
+
+for.end345:                                       ; preds = %if.end338, %for.cond328.preheader
+  %call346 = call i64 @fread(i8* %75, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv347 = trunc i64 %call346 to i32
+  %cmp348 = icmp eq i32 %conv347, 1
+  br i1 %cmp348, label %for.cond353.preheader, label %if.then350
+
+for.cond353.preheader:                            ; preds = %for.end345
+  %86 = load i32* %nmtx, align 4, !tbaa !3
+  %cmp354782 = icmp sgt i32 %86, 0
+  br i1 %cmp354782, label %for.body356.lr.ph, label %cleanup
+
+for.body356.lr.ph:                                ; preds = %for.cond353.preheader
+  %p_mtxUJN366 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 20
+  br label %for.body356
+
+if.then350:                                       ; preds = %for.end345
+  %87 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call351 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %87, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv347, i32 1) #6
+  br label %cleanup
+
+for.body356:                                      ; preds = %for.body356.lr.ph, %if.end363
+  %imtx.4783 = phi i32 [ 0, %for.body356.lr.ph ], [ %inc369, %if.end363 ]
+  %call357 = call %struct._SubMtx* @SubMtx_new() #6
+  %call358 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call357, %struct._IO_FILE* %fp) #6
+  %cmp359 = icmp eq i32 %call358, 1
+  br i1 %cmp359, label %if.end363, label %if.then361
+
+if.then361:                                       ; preds = %for.body356
+  %88 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call362 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %88, i8* getelementptr inbounds ([93 x i8]* @.str29, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call358) #6
+  br label %cleanup
+
+if.end363:                                        ; preds = %for.body356
+  %rowid364 = getelementptr inbounds %struct._SubMtx* %call357, i64 0, i32 2
+  %89 = load i32* %rowid364, align 4, !tbaa !3
+  %idxprom365 = sext i32 %89 to i64
+  %90 = load %struct._SubMtx*** %p_mtxUJN366, align 8, !tbaa !0
+  %arrayidx367 = getelementptr inbounds %struct._SubMtx** %90, i64 %idxprom365
+  store %struct._SubMtx* %call357, %struct._SubMtx** %arrayidx367, align 8, !tbaa !0
+  %inc369 = add nsw i32 %imtx.4783, 1
+  %cmp354 = icmp slt i32 %inc369, %86
+  br i1 %cmp354, label %for.body356, label %cleanup
+
+if.else371:                                       ; preds = %if.end86
+  %91 = load i32* %symmetryflag, align 4, !tbaa !3
+  %cmp373 = icmp eq i32 %91, 2
+  br i1 %cmp373, label %if.then375, label %if.end386
+
+if.then375:                                       ; preds = %if.else371
+  %call376 = call %struct._IVL* @IVL_new() #6
+  %lowerblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16
+  store %struct._IVL* %call376, %struct._IVL** %lowerblockIVL, align 8, !tbaa !0
+  %type378 = getelementptr inbounds %struct._IVL* %call376, i64 0, i32 0
+  store i32 1, i32* %type378, align 4, !tbaa !3
+  %call380 = call i32 @IVL_readFromBinaryFile(%struct._IVL* %call376, %struct._IO_FILE* %fp) #6
+  %cmp381 = icmp eq i32 %call380, 1
+  br i1 %cmp381, label %if.end386, label %if.then383
+
+if.then383:                                       ; preds = %if.then375
+  %92 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call384 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %92, i8* getelementptr inbounds ([95 x i8]* @.str30, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call380) #6
+  br label %cleanup
+
+if.end386:                                        ; preds = %if.then375, %if.else371
+  %call387 = call %struct._IVL* @IVL_new() #6
+  %upperblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17
+  store %struct._IVL* %call387, %struct._IVL** %upperblockIVL, align 8, !tbaa !0
+  %type389 = getelementptr inbounds %struct._IVL* %call387, i64 0, i32 0
+  store i32 1, i32* %type389, align 4, !tbaa !3
+  %call391 = call i32 @IVL_readFromBinaryFile(%struct._IVL* %call387, %struct._IO_FILE* %fp) #6
+  %cmp392 = icmp eq i32 %call391, 1
+  br i1 %cmp392, label %if.end396, label %if.then394
+
+if.then394:                                       ; preds = %if.end386
+  %93 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call395 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %93, i8* getelementptr inbounds ([95 x i8]* @.str31, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call391) #6
+  br label %cleanup
+
+if.end396:                                        ; preds = %if.end386
+  %94 = load i32* %symmetryflag, align 4, !tbaa !3
+  %cmp398 = icmp eq i32 %94, 2
+  br i1 %cmp398, label %if.then400, label %if.end428
+
+if.then400:                                       ; preds = %if.end396
+  %call401 = call %struct._I2Ohash* @I2Ohash_new() #6
+  %lowerhash = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 23
+  store %struct._I2Ohash* %call401, %struct._I2Ohash** %lowerhash, align 8, !tbaa !0
+  %95 = bitcast i32* %nmtx to i8*
+  %call402 = call i64 @fread(i8* %95, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv403 = trunc i64 %call402 to i32
+  %cmp404 = icmp eq i32 %conv403, 1
+  br i1 %cmp404, label %if.end408, label %if.then406
+
+if.then406:                                       ; preds = %if.then400
+  %96 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call407 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %96, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv403, i32 1) #6
+  br label %cleanup
+
+if.end408:                                        ; preds = %if.then400
+  %97 = load %struct._I2Ohash** %lowerhash, align 8, !tbaa !0
+  %98 = load i32* %nfront8, align 4, !tbaa !3
+  %sub = add nsw i32 %98, -1
+  %99 = load i32* %nmtx, align 4, !tbaa !3
+  call void @I2Ohash_init(%struct._I2Ohash* %97, i32 %sub, i32 %99, i32 0) #6
+  %cmp412803 = icmp sgt i32 %99, 0
+  br i1 %cmp412803, label %for.body414, label %if.end428
+
+for.body414:                                      ; preds = %if.end408, %if.end421
+  %KJ.0804 = phi i32 [ %inc426, %if.end421 ], [ 0, %if.end408 ]
+  %call415 = call %struct._SubMtx* @SubMtx_new() #6
+  %call416 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call415, %struct._IO_FILE* %fp) #6
+  %cmp417 = icmp eq i32 %call416, 1
+  br i1 %cmp417, label %if.end421, label %if.then419
+
+if.then419:                                       ; preds = %for.body414
+  %100 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call420 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %100, i8* getelementptr inbounds ([94 x i8]* @.str32, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call416) #6
+  br label %cleanup
+
+if.end421:                                        ; preds = %for.body414
+  %101 = load %struct._I2Ohash** %lowerhash, align 8, !tbaa !0
+  %rowid423 = getelementptr inbounds %struct._SubMtx* %call415, i64 0, i32 2
+  %102 = load i32* %rowid423, align 4, !tbaa !3
+  %colid424 = getelementptr inbounds %struct._SubMtx* %call415, i64 0, i32 3
+  %103 = load i32* %colid424, align 4, !tbaa !3
+  %104 = bitcast %struct._SubMtx* %call415 to i8*
+  call void @I2Ohash_insert(%struct._I2Ohash* %101, i32 %102, i32 %103, i8* %104) #6
+  %inc426 = add nsw i32 %KJ.0804, 1
+  %cmp412 = icmp slt i32 %inc426, %99
+  br i1 %cmp412, label %for.body414, label %if.end428
+
+if.end428:                                        ; preds = %if.end408, %if.end421, %if.end396
+  %cmp429 = icmp sgt i32 %5, 0
+  br i1 %cmp429, label %if.then431, label %if.else444
+
+if.then431:                                       ; preds = %if.end428
+  %sext823 = shl i64 %4, 32
+  %mul433 = ashr exact i64 %sext823, 29
+  %call434 = call noalias i8* @malloc(i64 %mul433) #6
+  %105 = bitcast i8* %call434 to %struct._SubMtx**
+  %p_mtxDJJ435 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  store %struct._SubMtx** %105, %struct._SubMtx*** %p_mtxDJJ435, align 8, !tbaa !0
+  %cmp436 = icmp eq i8* %call434, null
+  br i1 %cmp436, label %if.then438, label %for.body458.lr.ph
+
+if.then438:                                       ; preds = %if.then431
+  %106 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call441 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %106, i8* getelementptr inbounds ([49 x i8]* @.str13, i64 0, i64 0), i64 %mul433, i32 840, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+if.else444:                                       ; preds = %if.end428
+  %cmp445 = icmp eq i32 %5, 0
+  br i1 %cmp445, label %for.cond455.preheader, label %if.else449
+
+for.cond455.preheader:                            ; preds = %if.else444
+  %p_mtxDJJ448 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  store %struct._SubMtx** null, %struct._SubMtx*** %p_mtxDJJ448, align 8, !tbaa !0
+  br label %for.end464
+
+for.body458.lr.ph:                                ; preds = %if.then431
+  %p_mtxDJJ460 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  br label %for.body458
+
+if.else449:                                       ; preds = %if.else444
+  %107 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %sext = shl i64 %4, 32
+  %mul451 = ashr exact i64 %sext, 29
+  %call452 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %107, i8* getelementptr inbounds ([47 x i8]* @.str15, i64 0, i64 0), i64 %mul451, i32 840, i8* getelementptr inbounds ([81 x i8]* @.str14, i64 0, i64 0)) #6
+  call void @exit(i32 -1) #9
+  unreachable
+
+for.body458:                                      ; preds = %for.body458.for.body458_crit_edge, %for.body458.lr.ph
+  %108 = phi %struct._SubMtx** [ %105, %for.body458.lr.ph ], [ %.pre822, %for.body458.for.body458_crit_edge ]
+  %indvars.iv816 = phi i64 [ 0, %for.body458.lr.ph ], [ %indvars.iv.next817, %for.body458.for.body458_crit_edge ]
+  %arrayidx461 = getelementptr inbounds %struct._SubMtx** %108, i64 %indvars.iv816
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx461, align 8, !tbaa !0
+  %indvars.iv.next817 = add i64 %indvars.iv816, 1
+  %lftr.wideiv818 = trunc i64 %indvars.iv.next817 to i32
+  %exitcond819 = icmp eq i32 %lftr.wideiv818, %5
+  br i1 %exitcond819, label %for.end464, label %for.body458.for.body458_crit_edge
+
+for.body458.for.body458_crit_edge:                ; preds = %for.body458
+  %.pre822 = load %struct._SubMtx*** %p_mtxDJJ460, align 8, !tbaa !0
+  br label %for.body458
+
+for.end464:                                       ; preds = %for.body458, %for.cond455.preheader
+  %109 = bitcast i32* %nmtx to i8*
+  %call465 = call i64 @fread(i8* %109, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv466 = trunc i64 %call465 to i32
+  %cmp467 = icmp eq i32 %conv466, 1
+  br i1 %cmp467, label %for.cond472.preheader, label %if.then469
+
+for.cond472.preheader:                            ; preds = %for.end464
+  %110 = load i32* %nmtx, align 4, !tbaa !3
+  %cmp473799 = icmp sgt i32 %110, 0
+  br i1 %cmp473799, label %for.body475.lr.ph, label %for.end489
+
+for.body475.lr.ph:                                ; preds = %for.cond472.preheader
+  %p_mtxDJJ485 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 18
+  br label %for.body475
+
+if.then469:                                       ; preds = %for.end464
+  %111 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call470 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %111, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv466, i32 1) #6
+  br label %cleanup
+
+for.body475:                                      ; preds = %for.body475.lr.ph, %if.end482
+  %J.3800 = phi i32 [ 0, %for.body475.lr.ph ], [ %inc488, %if.end482 ]
+  %call476 = call %struct._SubMtx* @SubMtx_new() #6
+  %call477 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call476, %struct._IO_FILE* %fp) #6
+  %cmp478 = icmp eq i32 %call477, 1
+  br i1 %cmp478, label %if.end482, label %if.then480
+
+if.then480:                                       ; preds = %for.body475
+  %112 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call481 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %112, i8* getelementptr inbounds ([93 x i8]* @.str29, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call477) #6
+  br label %cleanup
+
+if.end482:                                        ; preds = %for.body475
+  %rowid483 = getelementptr inbounds %struct._SubMtx* %call476, i64 0, i32 2
+  %113 = load i32* %rowid483, align 4, !tbaa !3
+  %idxprom484 = sext i32 %113 to i64
+  %114 = load %struct._SubMtx*** %p_mtxDJJ485, align 8, !tbaa !0
+  %arrayidx486 = getelementptr inbounds %struct._SubMtx** %114, i64 %idxprom484
+  store %struct._SubMtx* %call476, %struct._SubMtx** %arrayidx486, align 8, !tbaa !0
+  %inc488 = add nsw i32 %J.3800, 1
+  %cmp473 = icmp slt i32 %inc488, %110
+  br i1 %cmp473, label %for.body475, label %for.end489
+
+for.end489:                                       ; preds = %if.end482, %for.cond472.preheader
+  %call490 = call %struct._I2Ohash* @I2Ohash_new() #6
+  %upperhash = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 24
+  store %struct._I2Ohash* %call490, %struct._I2Ohash** %upperhash, align 8, !tbaa !0
+  %call491 = call i64 @fread(i8* %109, i64 4, i64 1, %struct._IO_FILE* %fp) #6
+  %conv492 = trunc i64 %call491 to i32
+  %cmp493 = icmp eq i32 %conv492, 1
+  br i1 %cmp493, label %if.end497, label %if.then495
+
+if.then495:                                       ; preds = %for.end489
+  %115 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call496 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %115, i8* getelementptr inbounds ([68 x i8]* @.str23, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %conv492, i32 1) #6
+  br label %cleanup
+
+if.end497:                                        ; preds = %for.end489
+  %116 = load %struct._I2Ohash** %upperhash, align 8, !tbaa !0
+  %sub499 = add nsw i32 %5, -1
+  %117 = load i32* %nmtx, align 4, !tbaa !3
+  call void @I2Ohash_init(%struct._I2Ohash* %116, i32 %sub499, i32 %117, i32 0) #6
+  %cmp501797 = icmp sgt i32 %117, 0
+  br i1 %cmp501797, label %for.body503, label %cleanup
+
+for.body503:                                      ; preds = %if.end497, %if.end510
+  %JK.0798 = phi i32 [ %inc515, %if.end510 ], [ 0, %if.end497 ]
+  %call504 = call %struct._SubMtx* @SubMtx_new() #6
+  %call505 = call i32 @SubMtx_readFromBinaryFile(%struct._SubMtx* %call504, %struct._IO_FILE* %fp) #6
+  %cmp506 = icmp eq i32 %call505, 1
+  br i1 %cmp506, label %if.end510, label %if.then508
+
+if.then508:                                       ; preds = %for.body503
+  %118 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call509 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %118, i8* getelementptr inbounds ([94 x i8]* @.str33, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp, i32 %call505) #6
+  br label %cleanup
+
+if.end510:                                        ; preds = %for.body503
+  %119 = load %struct._I2Ohash** %upperhash, align 8, !tbaa !0
+  %rowid512 = getelementptr inbounds %struct._SubMtx* %call504, i64 0, i32 2
+  %120 = load i32* %rowid512, align 4, !tbaa !3
+  %colid513 = getelementptr inbounds %struct._SubMtx* %call504, i64 0, i32 3
+  %121 = load i32* %colid513, align 4, !tbaa !3
+  %122 = bitcast %struct._SubMtx* %call504 to i8*
+  call void @I2Ohash_insert(%struct._I2Ohash* %119, i32 %120, i32 %121, i8* %122) #6
+  %inc515 = add nsw i32 %JK.0798, 1
+  %cmp501 = icmp slt i32 %inc515, %117
+  br i1 %cmp501, label %for.body503, label %cleanup
+
+cleanup:                                          ; preds = %if.end497, %if.end510, %for.cond353.preheader, %if.end363, %if.then508, %if.then495, %if.then480, %if.then469, %if.then419, %if.then406, %if.then394, %if.then383, %if.then361, %if.then350, %if.then336, %if.then325, %if.then312, %if.then301, %if.then286, %if.then275, %if.then262, %if.then251, %if.then83, %if.then72, %if.then47, %if.then35, %if.then23, %if.then5, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then5 ], [ 0, %if.then23 ], [ 0, %if.then35 ], [ 0, %if.then47 ], [ 0, %if.then72 ], [ 0, %if.then83 ], [ 0, %if.then251 ], [ 0, %if.then262 ], [ 0, %if.then275 ], [ 0, %if.then286 ], [ 0, %if.then301 ], [ 0, %if.then312 ], [ 0, %if.then325 ], [ 0, %if.then336 ], [ 0, %if.then350 ], [ 0, %if.then361 ], [ 0, %if.then383 ], [ 0, %if.then394 ], [ 0, %if.then406 ], [ 0, %if.then419 ], [ 0, %if.then469 ], [ 0, %if.then480 ], [ 0, %if.then495 ], [ 0, %if.then508 ], [ 1, %if.end363 ], [ 1, %for.cond353.preheader ], [ 1, %if.end510 ], [ 1, %if.end497 ]
+  call void @llvm.lifetime.end(i64 40, i8* %0) #3
+  ret i32 %retval.0
+}

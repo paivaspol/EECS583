@@ -1,0 +1,62 @@
+define void @Perl_package(%struct.op* %o) #0 {
+entry:
+  %len = alloca i64, align 8
+  call void @Perl_save_hptr(%struct.hv** @PL_curstash) #7
+  %0 = load %struct.sv** @PL_curstname, align 8, !tbaa !3
+  call void @Perl_save_item(%struct.sv* %0) #7
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %op_sv = getelementptr inbounds %struct.op* %o, i64 1
+  %1 = bitcast %struct.op* %op_sv to %struct.sv**
+  %2 = load %struct.sv** %1, align 8, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %2, i64 0, i32 2
+  %3 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %3, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.then
+  %sv_any = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %4 = load i8** %sv_any, align 8, !tbaa !3
+  %xpv_cur = getelementptr inbounds i8* %4, i64 8
+  %5 = bitcast i8* %xpv_cur to i64*
+  %6 = load i64* %5, align 8, !tbaa !5
+  store i64 %6, i64* %len, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %4 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !3
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.then
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %2, i64* %len, i32 2) #7
+  %.pre = load i64* %len, align 8, !tbaa !5
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %8 = phi i64 [ %6, %cond.true ], [ %.pre, %cond.false ]
+  %cond = phi i8* [ %7, %cond.true ], [ %call, %cond.false ]
+  %conv = trunc i64 %8 to i32
+  %call2 = call %struct.hv* @Perl_gv_stashpvn(i8* %cond, i32 %conv, i32 1) #7
+  store %struct.hv* %call2, %struct.hv** @PL_curstash, align 8, !tbaa !3
+  %9 = load %struct.sv** @PL_curstname, align 8, !tbaa !3
+  %10 = load i64* %len, align 8, !tbaa !5
+  call void @Perl_sv_setpvn(%struct.sv* %9, i8* %cond, i64 %10) #7
+  call void @Perl_op_free(%struct.op* %o) #8
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  call void @Perl_deprecate(i8* getelementptr inbounds ([28 x i8]* @.str44, i64 0, i64 0)) #7
+  %11 = load %struct.sv** @PL_curstname, align 8, !tbaa !3
+  call void @Perl_sv_setpv(%struct.sv* %11, i8* getelementptr inbounds ([7 x i8]* @.str45, i64 0, i64 0)) #7
+  store %struct.hv* null, %struct.hv** @PL_curstash, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %cond.end
+  %12 = load i32* @PL_hints, align 4, !tbaa !0
+  %or = or i32 %12, 256
+  store i32 %or, i32* @PL_hints, align 4, !tbaa !0
+  store i32 -1, i32* @PL_copline, align 4, !tbaa !0
+  store i32 3, i32* @PL_expect, align 4, !tbaa !0
+  ret void
+}

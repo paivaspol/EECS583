@@ -1,0 +1,41 @@
+define void @ChvManager_clearData(%struct._ChvManager* %manager) #0 {
+entry:
+  %cmp = icmp eq %struct._ChvManager* %manager, null
+  br i1 %cmp, label %if.then, label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %entry
+  %head = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0
+  %0 = load %struct._Chv** %head, align 8, !tbaa !0
+  %cmp114 = icmp eq %struct._Chv* %0, null
+  br i1 %cmp114, label %while.end, label %while.body
+
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([54 x i8]* @.str3, i64 0, i64 0), %struct._ChvManager* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %2 = phi %struct._Chv* [ %4, %while.body ], [ %0, %while.cond.preheader ]
+  %next = getelementptr inbounds %struct._Chv* %2, i64 0, i32 10
+  %3 = load %struct._Chv** %next, align 8, !tbaa !0
+  store %struct._Chv* %3, %struct._Chv** %head, align 8, !tbaa !0
+  tail call void @Chv_free(%struct._Chv* %2) #5
+  %4 = load %struct._Chv** %head, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct._Chv* %4, null
+  br i1 %cmp1, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1
+  %5 = load %struct._Lock** %lock, align 8, !tbaa !0
+  %cmp3 = icmp eq %struct._Lock* %5, null
+  br i1 %cmp3, label %if.end6, label %if.then4
+
+if.then4:                                         ; preds = %while.end
+  tail call void @Lock_free(%struct._Lock* %5) #5
+  br label %if.end6
+
+if.end6:                                          ; preds = %while.end, %if.then4
+  tail call void @ChvManager_setDefaultFields(%struct._ChvManager* %manager) #7
+  ret void
+}

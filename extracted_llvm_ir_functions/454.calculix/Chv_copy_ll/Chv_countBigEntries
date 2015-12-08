@@ -1,0 +1,1501 @@
+define i32 @Chv_countBigEntries(%struct._Chv* %chv, i32 %npivot, i32* %pivotsizes, i32 %countflag, double %droptol) #0 {
+entry:
+  %nD = alloca i32, align 4
+  %nL = alloca i32, align 4
+  %nU = alloca i32, align 4
+  %cmp = icmp eq %struct._Chv* %chv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str11, i64 0, i64 0), %struct._Chv* null, i32 %npivot, i32* %pivotsizes, i32 %countflag, double %droptol) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  switch i32 %countflag, label %sw.default [
+    i32 1, label %sw.epilog
+    i32 3, label %sw.epilog
+    i32 4, label %sw.epilog
+    i32 5, label %sw.epilog
+    i32 6, label %sw.epilog
+    i32 7, label %sw.epilog
+  ]
+
+sw.default:                                       ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call1 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([351 x i8]* @.str12, i64 0, i64 0), %struct._Chv* %chv, i32 %npivot, i32* %pivotsizes, i32 %countflag, double %droptol, i32 %countflag) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+sw.epilog:                                        ; preds = %if.end, %if.end, %if.end, %if.end, %if.end, %if.end
+  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
+  %2 = load i32* %symflag, align 4, !tbaa !3
+  %switch = icmp ult i32 %2, 2
+  br i1 %switch, label %land.lhs.true, label %if.end12
+
+land.lhs.true:                                    ; preds = %sw.epilog
+  switch i32 %countflag, label %if.end12 [
+    i32 5, label %if.then10
+    i32 4, label %if.then10
+    i32 1, label %if.then10
+  ]
+
+if.then10:                                        ; preds = %land.lhs.true, %land.lhs.true, %land.lhs.true
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call11 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([112 x i8]* @.str13, i64 0, i64 0), %struct._Chv* %chv, i32 %npivot, i32* %pivotsizes, i32 %countflag, double %droptol, i32 %countflag) #5
+  call void @exit(i32 -1) #6
+  unreachable
+
+if.end12:                                         ; preds = %sw.epilog, %land.lhs.true
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #5
+  %call13 = call double* @Chv_entries(%struct._Chv* %chv) #5
+  switch i32 %countflag, label %sw.epilog894 [
+    i32 1, label %sw.bb14
+    i32 3, label %sw.bb77
+    i32 4, label %sw.bb378
+    i32 5, label %sw.bb451
+    i32 6, label %sw.bb523
+    i32 7, label %sw.bb751
+  ]
+
+sw.bb14:                                          ; preds = %if.end12
+  %4 = load i32* %nD, align 4, !tbaa !3
+  %5 = load i32* %nL, align 4, !tbaa !3
+  %add = add i32 %5, %4
+  %sub = add nsw i32 %add, -1
+  %6 = load i32* %nU, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %7 = load i32* %type, align 4, !tbaa !3
+  switch i32 %7, label %sw.epilog894 [
+    i32 1, label %for.cond.preheader
+    i32 2, label %for.cond41.preheader
+  ]
+
+for.cond41.preheader:                             ; preds = %sw.bb14
+  %cmp421395 = icmp sgt i32 %add, 0
+  br i1 %cmp421395, label %for.body43.lr.ph, label %sw.epilog894
+
+for.body43.lr.ph:                                 ; preds = %for.cond41.preheader
+  %8 = add i32 %5, %6
+  %9 = shl i32 %4, 1
+  %10 = add i32 %8, %9
+  %11 = add i32 %10, -1
+  %12 = sext i32 %11 to i64
+  br label %for.body43
+
+for.cond.preheader:                               ; preds = %sw.bb14
+  %cmp211383 = icmp sgt i32 %add, 0
+  br i1 %cmp211383, label %for.body.lr.ph, label %sw.epilog894
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %13 = add i32 %5, %6
+  %14 = shl i32 %4, 1
+  %15 = add i32 %13, %14
+  %16 = add i32 %15, -1
+  %17 = sext i32 %16 to i64
+  br label %for.body
+
+for.body:                                         ; preds = %for.end, %for.body.lr.ph
+  %count.01386 = phi i32 [ 0, %for.body.lr.ph ], [ %count.1.lcssa, %for.end ]
+  %ii.01385 = phi i32 [ 0, %for.body.lr.ph ], [ %inc36, %for.end ]
+  %kstart.01384 = phi i32 [ %sub, %for.body.lr.ph ], [ %dec, %for.end ]
+  %cmp22 = icmp slt i32 %ii.01385, %4
+  %.sink = select i1 %cmp22, i32 %ii.01385, i32 %4
+  %sub23 = add nsw i32 %.sink, -1
+  %cmp261378 = icmp slt i32 %.sink, 1
+  br i1 %cmp261378, label %for.end, label %for.body27
+
+for.body27:                                       ; preds = %for.body, %for.body27
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body27 ], [ %17, %for.body ]
+  %count.11382 = phi i32 [ %count.2, %for.body27 ], [ %count.01386, %for.body ]
+  %jj.01381 = phi i32 [ %inc34, %for.body27 ], [ 0, %for.body ]
+  %kk.01379 = phi i32 [ %add32, %for.body27 ], [ %kstart.01384, %for.body ]
+  %idxprom = sext i32 %kk.01379 to i64
+  %arrayidx = getelementptr inbounds double* %call13, i64 %idxprom
+  %18 = load double* %arrayidx, align 8, !tbaa !4
+  %call28 = call double @fabs(double %18) #7
+  %not.cmp29 = fcmp oge double %call28, %droptol
+  %inc = zext i1 %not.cmp29 to i32
+  %count.2 = add nsw i32 %inc, %count.11382
+  %19 = trunc i64 %indvars.iv to i32
+  %add32 = add nsw i32 %19, %kk.01379
+  %inc34 = add nsw i32 %jj.01381, 1
+  %cmp26 = icmp slt i32 %jj.01381, %sub23
+  %indvars.iv.next = add i64 %indvars.iv, -2
+  br i1 %cmp26, label %for.body27, label %for.end
+
+for.end:                                          ; preds = %for.body27, %for.body
+  %count.1.lcssa = phi i32 [ %count.01386, %for.body ], [ %count.2, %for.body27 ]
+  %dec = add nsw i32 %kstart.01384, -1
+  %inc36 = add nsw i32 %ii.01385, 1
+  %exitcond = icmp eq i32 %inc36, %add
+  br i1 %exitcond, label %sw.epilog894, label %for.body
+
+for.body43:                                       ; preds = %for.end70.for.body43_crit_edge, %for.body43.lr.ph
+  %20 = phi i32 [ %4, %for.body43.lr.ph ], [ %.pre1816, %for.end70.for.body43_crit_edge ]
+  %count.31398 = phi i32 [ 0, %for.body43.lr.ph ], [ %count.4.lcssa, %for.end70.for.body43_crit_edge ]
+  %ii.11397 = phi i32 [ 0, %for.body43.lr.ph ], [ %inc73, %for.end70.for.body43_crit_edge ]
+  %kstart.11396 = phi i32 [ %sub, %for.body43.lr.ph ], [ %dec71, %for.end70.for.body43_crit_edge ]
+  %cmp44 = icmp slt i32 %ii.11397, %20
+  %.sink896 = select i1 %cmp44, i32 %ii.11397, i32 %20
+  %sub46 = add nsw i32 %.sink896, -1
+  %cmp521388 = icmp slt i32 %.sink896, 1
+  br i1 %cmp521388, label %for.end70, label %for.body53
+
+for.body53:                                       ; preds = %for.body43, %for.body53
+  %indvars.iv1693 = phi i64 [ %indvars.iv.next1694, %for.body53 ], [ %12, %for.body43 ]
+  %count.41392 = phi i32 [ %count.5, %for.body53 ], [ %count.31398, %for.body43 ]
+  %jj.11391 = phi i32 [ %inc69, %for.body53 ], [ 0, %for.body43 ]
+  %kk.11389 = phi i32 [ %add66, %for.body53 ], [ %kstart.11396, %for.body43 ]
+  %mul54 = shl nsw i32 %kk.11389, 1
+  %idxprom55 = sext i32 %mul54 to i64
+  %arrayidx56 = getelementptr inbounds double* %call13, i64 %idxprom55
+  %21 = load double* %arrayidx56, align 8, !tbaa !4
+  %add581374 = or i32 %mul54, 1
+  %idxprom59 = sext i32 %add581374 to i64
+  %arrayidx60 = getelementptr inbounds double* %call13, i64 %idxprom59
+  %22 = load double* %arrayidx60, align 8, !tbaa !4
+  %call61 = call double @Zabs(double %21, double %22) #5
+  %not.cmp62 = fcmp oge double %call61, %droptol
+  %inc64 = zext i1 %not.cmp62 to i32
+  %count.5 = add nsw i32 %inc64, %count.41392
+  %23 = trunc i64 %indvars.iv1693 to i32
+  %add66 = add nsw i32 %23, %kk.11389
+  %inc69 = add nsw i32 %jj.11391, 1
+  %cmp52 = icmp slt i32 %jj.11391, %sub46
+  %indvars.iv.next1694 = add i64 %indvars.iv1693, -2
+  br i1 %cmp52, label %for.body53, label %for.end70
+
+for.end70:                                        ; preds = %for.body53, %for.body43
+  %count.4.lcssa = phi i32 [ %count.31398, %for.body43 ], [ %count.5, %for.body53 ]
+  %inc73 = add nsw i32 %ii.11397, 1
+  %exitcond1696 = icmp eq i32 %inc73, %add
+  br i1 %exitcond1696, label %sw.epilog894, label %for.end70.for.body43_crit_edge
+
+for.end70.for.body43_crit_edge:                   ; preds = %for.end70
+  %dec71 = add nsw i32 %kstart.11396, -1
+  %.pre1816 = load i32* %nD, align 4, !tbaa !3
+  br label %for.body43
+
+sw.bb77:                                          ; preds = %if.end12
+  %24 = load i32* %nD, align 4, !tbaa !3
+  %25 = load i32* %nU, align 4, !tbaa !3
+  %add84 = add i32 %25, %24
+  %26 = load i32* %symflag, align 4, !tbaa !3
+  %switch1375 = icmp ult i32 %26, 2
+  br i1 %switch1375, label %if.then90, label %if.else298
+
+if.then90:                                        ; preds = %sw.bb77
+  %cmp93 = icmp eq i32* %pivotsizes, null
+  %type95 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %27 = load i32* %type95, align 4, !tbaa !3
+  %cmp96 = icmp eq i32 %27, 1
+  br i1 %cmp93, label %if.then94, label %if.else167
+
+if.then94:                                        ; preds = %if.then90
+  br i1 %cmp96, label %for.cond98.preheader, label %if.else127
+
+for.cond98.preheader:                             ; preds = %if.then94
+  %cmp991407 = icmp sgt i32 %add84, 0
+  br i1 %cmp991407, label %for.body100.lr.ph, label %sw.epilog894
+
+for.body100.lr.ph:                                ; preds = %for.cond98.preheader
+  %28 = sext i32 %add84 to i64
+  br label %for.body100
+
+for.body100:                                      ; preds = %for.end122, %for.body100.lr.ph
+  %count.61410 = phi i32 [ 0, %for.body100.lr.ph ], [ %count.7.lcssa, %for.end122 ]
+  %kstart82.01409 = phi i32 [ 0, %for.body100.lr.ph ], [ %inc123, %for.end122 ]
+  %cmp101 = icmp slt i32 %kstart82.01409, %24
+  %.sink897 = select i1 %cmp101, i32 %kstart82.01409, i32 %24
+  %sub103 = add nsw i32 %.sink897, -1
+  %cmp1091400 = icmp slt i32 %.sink897, 1
+  br i1 %cmp1091400, label %for.end122, label %for.body110
+
+for.body110:                                      ; preds = %for.body100, %for.body110
+  %indvars.iv1697.in = phi i64 [ %indvars.iv1697, %for.body110 ], [ %28, %for.body100 ]
+  %count.71404 = phi i32 [ %count.8, %for.body110 ], [ %count.61410, %for.body100 ]
+  %kk81.01403 = phi i32 [ %add118, %for.body110 ], [ %kstart82.01409, %for.body100 ]
+  %ii78.01401 = phi i32 [ %inc121, %for.body110 ], [ 0, %for.body100 ]
+  %indvars.iv1697 = add i64 %indvars.iv1697.in, -1
+  %idxprom111 = sext i32 %kk81.01403 to i64
+  %arrayidx112 = getelementptr inbounds double* %call13, i64 %idxprom111
+  %29 = load double* %arrayidx112, align 8, !tbaa !4
+  %call113 = call double @fabs(double %29) #7
+  %not.cmp114 = fcmp oge double %call113, %droptol
+  %inc116 = zext i1 %not.cmp114 to i32
+  %count.8 = add nsw i32 %inc116, %count.71404
+  %30 = trunc i64 %indvars.iv1697 to i32
+  %add118 = add nsw i32 %kk81.01403, %30
+  %inc121 = add nsw i32 %ii78.01401, 1
+  %cmp109 = icmp slt i32 %ii78.01401, %sub103
+  br i1 %cmp109, label %for.body110, label %for.end122
+
+for.end122:                                       ; preds = %for.body110, %for.body100
+  %count.7.lcssa = phi i32 [ %count.61410, %for.body100 ], [ %count.8, %for.body110 ]
+  %inc123 = add nsw i32 %kstart82.01409, 1
+  %exitcond1700 = icmp eq i32 %inc123, %add84
+  br i1 %exitcond1700, label %sw.epilog894, label %for.body100
+
+if.else127:                                       ; preds = %if.then94
+  %cmp129 = icmp eq i32 %27, 2
+  %cmp1321419 = icmp sgt i32 %add84, 0
+  %or.cond = and i1 %cmp129, %cmp1321419
+  br i1 %or.cond, label %for.body133.lr.ph, label %sw.epilog894
+
+for.body133.lr.ph:                                ; preds = %if.else127
+  %31 = sext i32 %add84 to i64
+  br label %for.body133
+
+for.body133:                                      ; preds = %for.end160.for.body133_crit_edge, %for.body133.lr.ph
+  %32 = phi i32 [ %24, %for.body133.lr.ph ], [ %.pre1817, %for.end160.for.body133_crit_edge ]
+  %count.91422 = phi i32 [ 0, %for.body133.lr.ph ], [ %count.10.lcssa, %for.end160.for.body133_crit_edge ]
+  %kstart82.11421 = phi i32 [ 0, %for.body133.lr.ph ], [ %inc161, %for.end160.for.body133_crit_edge ]
+  %cmp134 = icmp slt i32 %kstart82.11421, %32
+  %.sink898 = select i1 %cmp134, i32 %kstart82.11421, i32 %32
+  %sub136 = add nsw i32 %.sink898, -1
+  %cmp1421412 = icmp slt i32 %.sink898, 1
+  br i1 %cmp1421412, label %for.end160, label %for.body143
+
+for.body143:                                      ; preds = %for.body133, %for.body143
+  %indvars.iv1701.in = phi i64 [ %indvars.iv1701, %for.body143 ], [ %31, %for.body133 ]
+  %count.101416 = phi i32 [ %count.11, %for.body143 ], [ %count.91422, %for.body133 ]
+  %kk81.11415 = phi i32 [ %add156, %for.body143 ], [ %kstart82.11421, %for.body133 ]
+  %ii78.11413 = phi i32 [ %inc159, %for.body143 ], [ 0, %for.body133 ]
+  %indvars.iv1701 = add i64 %indvars.iv1701.in, -1
+  %mul144 = shl nsw i32 %kk81.11415, 1
+  %idxprom145 = sext i32 %mul144 to i64
+  %arrayidx146 = getelementptr inbounds double* %call13, i64 %idxprom145
+  %33 = load double* %arrayidx146, align 8, !tbaa !4
+  %add1481373 = or i32 %mul144, 1
+  %idxprom149 = sext i32 %add1481373 to i64
+  %arrayidx150 = getelementptr inbounds double* %call13, i64 %idxprom149
+  %34 = load double* %arrayidx150, align 8, !tbaa !4
+  %call151 = call double @Zabs(double %33, double %34) #5
+  %not.cmp152 = fcmp oge double %call151, %droptol
+  %inc154 = zext i1 %not.cmp152 to i32
+  %count.11 = add nsw i32 %inc154, %count.101416
+  %35 = trunc i64 %indvars.iv1701 to i32
+  %add156 = add nsw i32 %kk81.11415, %35
+  %inc159 = add nsw i32 %ii78.11413, 1
+  %cmp142 = icmp slt i32 %ii78.11413, %sub136
+  br i1 %cmp142, label %for.body143, label %for.end160
+
+for.end160:                                       ; preds = %for.body143, %for.body133
+  %count.10.lcssa = phi i32 [ %count.91422, %for.body133 ], [ %count.11, %for.body143 ]
+  %inc161 = add nsw i32 %kstart82.11421, 1
+  %exitcond1704 = icmp eq i32 %inc161, %add84
+  br i1 %exitcond1704, label %sw.epilog894, label %for.end160.for.body133_crit_edge
+
+for.end160.for.body133_crit_edge:                 ; preds = %for.end160
+  %.pre1817 = load i32* %nD, align 4, !tbaa !3
+  br label %for.body133
+
+if.else167:                                       ; preds = %if.then90
+  br i1 %cmp96, label %for.cond171.preheader, label %if.else226
+
+for.cond171.preheader:                            ; preds = %if.else167
+  %cmp1721448 = icmp sgt i32 %npivot, 0
+  br i1 %cmp1721448, label %for.body173.lr.ph, label %for.end203
+
+for.body173.lr.ph:                                ; preds = %for.cond171.preheader
+  %36 = add i32 %add84, -1
+  %37 = sext i32 %36 to i64
+  br label %for.body173
+
+for.body173:                                      ; preds = %for.end199, %for.body173.lr.ph
+  %indvars.iv1714 = phi i64 [ 0, %for.body173.lr.ph ], [ %indvars.iv.next1715, %for.end199 ]
+  %count.121452 = phi i32 [ 0, %for.body173.lr.ph ], [ %count.13.lcssa, %for.end199 ]
+  %kstart82.21451 = phi i32 [ 0, %for.body173.lr.ph ], [ %kstart82.3.lcssa, %for.end199 ]
+  %first.01449 = phi i32 [ 0, %for.body173.lr.ph ], [ %add176, %for.end199 ]
+  %arrayidx175 = getelementptr inbounds i32* %pivotsizes, i64 %indvars.iv1714
+  %38 = load i32* %arrayidx175, align 4, !tbaa !3
+  %add176 = add nsw i32 %38, %first.01449
+  %sub177 = add nsw i32 %add176, -1
+  %cmp1791442 = icmp sgt i32 %first.01449, %sub177
+  br i1 %cmp1791442, label %for.end199, label %for.cond181.preheader.lr.ph
+
+for.cond181.preheader.lr.ph:                      ; preds = %for.body173
+  %cmp1821436 = icmp sgt i32 %first.01449, 0
+  %39 = add i32 %kstart82.21451, 1
+  %40 = add i32 %first.01449, -1
+  %41 = add i32 %40, %38
+  %42 = icmp sgt i32 %first.01449, %41
+  %smax = select i1 %42, i32 %first.01449, i32 %41
+  %43 = add i32 %39, %smax
+  br label %for.cond181.preheader
+
+for.cond181.preheader:                            ; preds = %for.end195, %for.cond181.preheader.lr.ph
+  %count.131445 = phi i32 [ %count.121452, %for.cond181.preheader.lr.ph ], [ %count.14.lcssa, %for.end195 ]
+  %kstart82.31444 = phi i32 [ %kstart82.21451, %for.cond181.preheader.lr.ph ], [ %inc196, %for.end195 ]
+  %jj79.21443 = phi i32 [ %first.01449, %for.cond181.preheader.lr.ph ], [ %inc198, %for.end195 ]
+  br i1 %cmp1821436, label %for.body183, label %for.end195
+
+for.body183:                                      ; preds = %for.cond181.preheader, %for.body183
+  %indvars.iv1710 = phi i64 [ %indvars.iv.next1711, %for.body183 ], [ %37, %for.cond181.preheader ]
+  %count.141440 = phi i32 [ %count.15, %for.body183 ], [ %count.131445, %for.cond181.preheader ]
+  %kk81.21439 = phi i32 [ %add191, %for.body183 ], [ %kstart82.31444, %for.cond181.preheader ]
+  %ii78.21437 = phi i32 [ %inc194, %for.body183 ], [ 0, %for.cond181.preheader ]
+  %idxprom184 = sext i32 %kk81.21439 to i64
+  %arrayidx185 = getelementptr inbounds double* %call13, i64 %idxprom184
+  %44 = load double* %arrayidx185, align 8, !tbaa !4
+  %call186 = call double @fabs(double %44) #7
+  %not.cmp187 = fcmp oge double %call186, %droptol
+  %inc189 = zext i1 %not.cmp187 to i32
+  %count.15 = add nsw i32 %inc189, %count.141440
+  %45 = trunc i64 %indvars.iv1710 to i32
+  %add191 = add nsw i32 %kk81.21439, %45
+  %inc194 = add nsw i32 %ii78.21437, 1
+  %indvars.iv.next1711 = add i64 %indvars.iv1710, -1
+  %exitcond1713 = icmp eq i32 %inc194, %first.01449
+  br i1 %exitcond1713, label %for.end195, label %for.body183
+
+for.end195:                                       ; preds = %for.body183, %for.cond181.preheader
+  %count.14.lcssa = phi i32 [ %count.131445, %for.cond181.preheader ], [ %count.15, %for.body183 ]
+  %inc196 = add nsw i32 %kstart82.31444, 1
+  %inc198 = add nsw i32 %jj79.21443, 1
+  %cmp179 = icmp slt i32 %jj79.21443, %sub177
+  br i1 %cmp179, label %for.cond181.preheader, label %for.cond178.for.end199_crit_edge
+
+for.cond178.for.end199_crit_edge:                 ; preds = %for.end195
+  %46 = sub i32 %43, %first.01449
+  br label %for.end199
+
+for.end199:                                       ; preds = %for.cond178.for.end199_crit_edge, %for.body173
+  %count.13.lcssa = phi i32 [ %count.14.lcssa, %for.cond178.for.end199_crit_edge ], [ %count.121452, %for.body173 ]
+  %kstart82.3.lcssa = phi i32 [ %46, %for.cond178.for.end199_crit_edge ], [ %kstart82.21451, %for.body173 ]
+  %indvars.iv.next1715 = add i64 %indvars.iv1714, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next1715 to i32
+  %exitcond1716 = icmp eq i32 %lftr.wideiv, %npivot
+  br i1 %exitcond1716, label %for.end203, label %for.body173
+
+for.end203:                                       ; preds = %for.end199, %for.cond171.preheader
+  %count.12.lcssa = phi i32 [ 0, %for.cond171.preheader ], [ %count.13.lcssa, %for.end199 ]
+  %kstart82.2.lcssa = phi i32 [ 0, %for.cond171.preheader ], [ %kstart82.3.lcssa, %for.end199 ]
+  %cmp2051431 = icmp slt i32 %24, %add84
+  br i1 %cmp2051431, label %for.cond207.preheader.lr.ph, label %sw.epilog894
+
+for.cond207.preheader.lr.ph:                      ; preds = %for.end203
+  %cmp2081424 = icmp sgt i32 %24, 0
+  %47 = sext i32 %add84 to i64
+  %48 = add i32 %kstart82.2.lcssa, %25
+  br label %for.cond207.preheader
+
+for.cond207.preheader:                            ; preds = %for.end221, %for.cond207.preheader.lr.ph
+  %count.161434 = phi i32 [ %count.12.lcssa, %for.cond207.preheader.lr.ph ], [ %count.17.lcssa, %for.end221 ]
+  %kstart82.41433 = phi i32 [ %kstart82.2.lcssa, %for.cond207.preheader.lr.ph ], [ %inc222, %for.end221 ]
+  br i1 %cmp2081424, label %for.body209, label %for.end221
+
+for.body209:                                      ; preds = %for.cond207.preheader, %for.body209
+  %indvars.iv1705.in = phi i64 [ %indvars.iv1705, %for.body209 ], [ %47, %for.cond207.preheader ]
+  %count.171428 = phi i32 [ %count.18, %for.body209 ], [ %count.161434, %for.cond207.preheader ]
+  %kk81.31427 = phi i32 [ %add217, %for.body209 ], [ %kstart82.41433, %for.cond207.preheader ]
+  %ii78.31425 = phi i32 [ %inc220, %for.body209 ], [ 0, %for.cond207.preheader ]
+  %indvars.iv1705 = add i64 %indvars.iv1705.in, -1
+  %idxprom210 = sext i32 %kk81.31427 to i64
+  %arrayidx211 = getelementptr inbounds double* %call13, i64 %idxprom210
+  %49 = load double* %arrayidx211, align 8, !tbaa !4
+  %call212 = call double @fabs(double %49) #7
+  %not.cmp213 = fcmp oge double %call212, %droptol
+  %inc215 = zext i1 %not.cmp213 to i32
+  %count.18 = add nsw i32 %inc215, %count.171428
+  %50 = trunc i64 %indvars.iv1705 to i32
+  %add217 = add nsw i32 %kk81.31427, %50
+  %inc220 = add nsw i32 %ii78.31425, 1
+  %exitcond1708 = icmp eq i32 %inc220, %24
+  br i1 %exitcond1708, label %for.end221, label %for.body209
+
+for.end221:                                       ; preds = %for.body209, %for.cond207.preheader
+  %count.17.lcssa = phi i32 [ %count.161434, %for.cond207.preheader ], [ %count.18, %for.body209 ]
+  %inc222 = add nsw i32 %kstart82.41433, 1
+  %exitcond1709 = icmp eq i32 %inc222, %48
+  br i1 %exitcond1709, label %sw.epilog894, label %for.cond207.preheader
+
+if.else226:                                       ; preds = %if.else167
+  %cmp228 = icmp eq i32 %27, 2
+  br i1 %cmp228, label %for.cond230.preheader, label %sw.epilog894
+
+for.cond230.preheader:                            ; preds = %if.else226
+  %cmp2311479 = icmp sgt i32 %npivot, 0
+  br i1 %cmp2311479, label %for.body232.lr.ph, label %for.end267
+
+for.body232.lr.ph:                                ; preds = %for.cond230.preheader
+  %51 = add i32 %add84, -1
+  %52 = sext i32 %51 to i64
+  br label %for.body232
+
+for.body232:                                      ; preds = %for.end263, %for.body232.lr.ph
+  %indvars.iv1726 = phi i64 [ 0, %for.body232.lr.ph ], [ %indvars.iv.next1727, %for.end263 ]
+  %count.191483 = phi i32 [ 0, %for.body232.lr.ph ], [ %count.20.lcssa, %for.end263 ]
+  %kstart82.51482 = phi i32 [ 0, %for.body232.lr.ph ], [ %kstart82.6.lcssa, %for.end263 ]
+  %first.11480 = phi i32 [ 0, %for.body232.lr.ph ], [ %add235, %for.end263 ]
+  %arrayidx234 = getelementptr inbounds i32* %pivotsizes, i64 %indvars.iv1726
+  %53 = load i32* %arrayidx234, align 4, !tbaa !3
+  %add235 = add nsw i32 %53, %first.11480
+  %sub236 = add nsw i32 %add235, -1
+  %cmp2381473 = icmp sgt i32 %first.11480, %sub236
+  br i1 %cmp2381473, label %for.end263, label %for.cond240.preheader.lr.ph
+
+for.cond240.preheader.lr.ph:                      ; preds = %for.body232
+  %cmp2411467 = icmp sgt i32 %first.11480, 0
+  %54 = add i32 %kstart82.51482, 1
+  %55 = add i32 %first.11480, -1
+  %56 = add i32 %55, %53
+  %57 = icmp sgt i32 %first.11480, %56
+  %smax1725 = select i1 %57, i32 %first.11480, i32 %56
+  %58 = add i32 %54, %smax1725
+  br label %for.cond240.preheader
+
+for.cond240.preheader:                            ; preds = %for.end259, %for.cond240.preheader.lr.ph
+  %count.201476 = phi i32 [ %count.191483, %for.cond240.preheader.lr.ph ], [ %count.21.lcssa, %for.end259 ]
+  %kstart82.61475 = phi i32 [ %kstart82.51482, %for.cond240.preheader.lr.ph ], [ %inc260, %for.end259 ]
+  %jj79.41474 = phi i32 [ %first.11480, %for.cond240.preheader.lr.ph ], [ %inc262, %for.end259 ]
+  br i1 %cmp2411467, label %for.body242, label %for.end259
+
+for.body242:                                      ; preds = %for.cond240.preheader, %for.body242
+  %indvars.iv1721 = phi i64 [ %indvars.iv.next1722, %for.body242 ], [ %52, %for.cond240.preheader ]
+  %count.211471 = phi i32 [ %count.22, %for.body242 ], [ %count.201476, %for.cond240.preheader ]
+  %kk81.41470 = phi i32 [ %add255, %for.body242 ], [ %kstart82.61475, %for.cond240.preheader ]
+  %ii78.41468 = phi i32 [ %inc258, %for.body242 ], [ 0, %for.cond240.preheader ]
+  %mul243 = shl nsw i32 %kk81.41470, 1
+  %idxprom244 = sext i32 %mul243 to i64
+  %arrayidx245 = getelementptr inbounds double* %call13, i64 %idxprom244
+  %59 = load double* %arrayidx245, align 8, !tbaa !4
+  %add2471372 = or i32 %mul243, 1
+  %idxprom248 = sext i32 %add2471372 to i64
+  %arrayidx249 = getelementptr inbounds double* %call13, i64 %idxprom248
+  %60 = load double* %arrayidx249, align 8, !tbaa !4
+  %call250 = call double @Zabs(double %59, double %60) #5
+  %not.cmp251 = fcmp oge double %call250, %droptol
+  %inc253 = zext i1 %not.cmp251 to i32
+  %count.22 = add nsw i32 %inc253, %count.211471
+  %61 = trunc i64 %indvars.iv1721 to i32
+  %add255 = add nsw i32 %kk81.41470, %61
+  %inc258 = add nsw i32 %ii78.41468, 1
+  %indvars.iv.next1722 = add i64 %indvars.iv1721, -1
+  %exitcond1724 = icmp eq i32 %inc258, %first.11480
+  br i1 %exitcond1724, label %for.end259, label %for.body242
+
+for.end259:                                       ; preds = %for.body242, %for.cond240.preheader
+  %count.21.lcssa = phi i32 [ %count.201476, %for.cond240.preheader ], [ %count.22, %for.body242 ]
+  %inc260 = add nsw i32 %kstart82.61475, 1
+  %inc262 = add nsw i32 %jj79.41474, 1
+  %cmp238 = icmp slt i32 %jj79.41474, %sub236
+  br i1 %cmp238, label %for.cond240.preheader, label %for.cond237.for.end263_crit_edge
+
+for.cond237.for.end263_crit_edge:                 ; preds = %for.end259
+  %62 = sub i32 %58, %first.11480
+  br label %for.end263
+
+for.end263:                                       ; preds = %for.cond237.for.end263_crit_edge, %for.body232
+  %count.20.lcssa = phi i32 [ %count.21.lcssa, %for.cond237.for.end263_crit_edge ], [ %count.191483, %for.body232 ]
+  %kstart82.6.lcssa = phi i32 [ %62, %for.cond237.for.end263_crit_edge ], [ %kstart82.51482, %for.body232 ]
+  %indvars.iv.next1727 = add i64 %indvars.iv1726, 1
+  %lftr.wideiv1728 = trunc i64 %indvars.iv.next1727 to i32
+  %exitcond1729 = icmp eq i32 %lftr.wideiv1728, %npivot
+  br i1 %exitcond1729, label %for.cond230.for.end267_crit_edge, label %for.body232
+
+for.cond230.for.end267_crit_edge:                 ; preds = %for.end263
+  %.pre = load i32* %nD, align 4, !tbaa !3
+  br label %for.end267
+
+for.end267:                                       ; preds = %for.cond230.for.end267_crit_edge, %for.cond230.preheader
+  %63 = phi i32 [ %.pre, %for.cond230.for.end267_crit_edge ], [ %24, %for.cond230.preheader ]
+  %count.19.lcssa = phi i32 [ %count.20.lcssa, %for.cond230.for.end267_crit_edge ], [ 0, %for.cond230.preheader ]
+  %kstart82.5.lcssa = phi i32 [ %kstart82.6.lcssa, %for.cond230.for.end267_crit_edge ], [ 0, %for.cond230.preheader ]
+  %cmp2691462 = icmp slt i32 %63, %add84
+  br i1 %cmp2691462, label %for.cond271.preheader.lr.ph, label %sw.epilog894
+
+for.cond271.preheader.lr.ph:                      ; preds = %for.end267
+  %64 = sext i32 %add84 to i64
+  %65 = add i32 %kstart82.5.lcssa, %25
+  %66 = add i32 %65, %24
+  %67 = sub i32 %66, %63
+  br label %for.cond271.preheader
+
+for.cond271.preheader:                            ; preds = %for.end290, %for.cond271.preheader.lr.ph
+  %68 = phi i32 [ %63, %for.cond271.preheader.lr.ph ], [ %73, %for.end290 ]
+  %count.231465 = phi i32 [ %count.19.lcssa, %for.cond271.preheader.lr.ph ], [ %count.24.lcssa, %for.end290 ]
+  %kstart82.71464 = phi i32 [ %kstart82.5.lcssa, %for.cond271.preheader.lr.ph ], [ %inc291, %for.end290 ]
+  %cmp2721455 = icmp sgt i32 %68, 0
+  br i1 %cmp2721455, label %for.body273, label %for.end290
+
+for.body273:                                      ; preds = %for.cond271.preheader, %for.body273
+  %indvars.iv1717.in = phi i64 [ %indvars.iv1717, %for.body273 ], [ %64, %for.cond271.preheader ]
+  %count.241459 = phi i32 [ %count.25, %for.body273 ], [ %count.231465, %for.cond271.preheader ]
+  %kk81.51458 = phi i32 [ %add286, %for.body273 ], [ %kstart82.71464, %for.cond271.preheader ]
+  %ii78.51456 = phi i32 [ %inc289, %for.body273 ], [ 0, %for.cond271.preheader ]
+  %indvars.iv1717 = add i64 %indvars.iv1717.in, -1
+  %mul274 = shl nsw i32 %kk81.51458, 1
+  %idxprom275 = sext i32 %mul274 to i64
+  %arrayidx276 = getelementptr inbounds double* %call13, i64 %idxprom275
+  %69 = load double* %arrayidx276, align 8, !tbaa !4
+  %add2781371 = or i32 %mul274, 1
+  %idxprom279 = sext i32 %add2781371 to i64
+  %arrayidx280 = getelementptr inbounds double* %call13, i64 %idxprom279
+  %70 = load double* %arrayidx280, align 8, !tbaa !4
+  %call281 = call double @Zabs(double %69, double %70) #5
+  %not.cmp282 = fcmp oge double %call281, %droptol
+  %inc284 = zext i1 %not.cmp282 to i32
+  %count.25 = add nsw i32 %inc284, %count.241459
+  %71 = trunc i64 %indvars.iv1717 to i32
+  %add286 = add nsw i32 %kk81.51458, %71
+  %inc289 = add nsw i32 %ii78.51456, 1
+  %72 = load i32* %nD, align 4, !tbaa !3
+  %cmp272 = icmp slt i32 %inc289, %72
+  br i1 %cmp272, label %for.body273, label %for.end290
+
+for.end290:                                       ; preds = %for.body273, %for.cond271.preheader
+  %73 = phi i32 [ %68, %for.cond271.preheader ], [ %72, %for.body273 ]
+  %count.24.lcssa = phi i32 [ %count.231465, %for.cond271.preheader ], [ %count.25, %for.body273 ]
+  %inc291 = add nsw i32 %kstart82.71464, 1
+  %exitcond1720 = icmp eq i32 %inc291, %67
+  br i1 %exitcond1720, label %sw.epilog894, label %for.cond271.preheader
+
+if.else298:                                       ; preds = %sw.bb77
+  %74 = load i32* %nL, align 4, !tbaa !3
+  %add299 = add i32 %24, -1
+  %sub300 = add i32 %add299, %74
+  %type305 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %75 = load i32* %type305, align 4, !tbaa !3
+  switch i32 %75, label %sw.epilog894 [
+    i32 1, label %for.cond308.preheader
+    i32 2, label %for.cond341.preheader
+  ]
+
+for.cond341.preheader:                            ; preds = %if.else298
+  %cmp3421505 = icmp sgt i32 %add84, 0
+  br i1 %cmp3421505, label %for.body343.lr.ph, label %sw.epilog894
+
+for.body343.lr.ph:                                ; preds = %for.cond341.preheader
+  %76 = add i32 %25, %74
+  %77 = shl i32 %24, 1
+  %78 = add i32 %76, %77
+  %79 = add i32 %78, -3
+  %80 = sext i32 %79 to i64
+  br label %for.body343
+
+for.cond308.preheader:                            ; preds = %if.else298
+  %cmp3091493 = icmp sgt i32 %add84, 0
+  br i1 %cmp3091493, label %for.body310.lr.ph, label %sw.epilog894
+
+for.body310.lr.ph:                                ; preds = %for.cond308.preheader
+  %81 = add i32 %25, %74
+  %82 = shl i32 %24, 1
+  %83 = add i32 %81, %82
+  %84 = add i32 %83, -3
+  %85 = sext i32 %84 to i64
+  br label %for.body310
+
+for.body310:                                      ; preds = %for.end332, %for.body310.lr.ph
+  %count.261496 = phi i32 [ 0, %for.body310.lr.ph ], [ %count.27.lcssa, %for.end332 ]
+  %kstart82.81495 = phi i32 [ %sub300, %for.body310.lr.ph ], [ %inc333, %for.end332 ]
+  %jj79.61494 = phi i32 [ 0, %for.body310.lr.ph ], [ %inc335, %for.end332 ]
+  %cmp311 = icmp slt i32 %jj79.61494, %24
+  %.sink899 = select i1 %cmp311, i32 %jj79.61494, i32 %24
+  %sub313 = add nsw i32 %.sink899, -1
+  %cmp3191486 = icmp slt i32 %.sink899, 1
+  br i1 %cmp3191486, label %for.end332, label %for.body320
+
+for.body320:                                      ; preds = %for.body310, %for.body320
+  %indvars.iv1730 = phi i64 [ %indvars.iv.next1731, %for.body320 ], [ %85, %for.body310 ]
+  %count.271490 = phi i32 [ %count.28, %for.body320 ], [ %count.261496, %for.body310 ]
+  %kk81.61489 = phi i32 [ %add328, %for.body320 ], [ %kstart82.81495, %for.body310 ]
+  %ii78.61487 = phi i32 [ %inc331, %for.body320 ], [ 0, %for.body310 ]
+  %idxprom321 = sext i32 %kk81.61489 to i64
+  %arrayidx322 = getelementptr inbounds double* %call13, i64 %idxprom321
+  %86 = load double* %arrayidx322, align 8, !tbaa !4
+  %call323 = call double @fabs(double %86) #7
+  %not.cmp324 = fcmp oge double %call323, %droptol
+  %inc326 = zext i1 %not.cmp324 to i32
+  %count.28 = add nsw i32 %inc326, %count.271490
+  %87 = trunc i64 %indvars.iv1730 to i32
+  %add328 = add nsw i32 %kk81.61489, %87
+  %inc331 = add nsw i32 %ii78.61487, 1
+  %cmp319 = icmp slt i32 %ii78.61487, %sub313
+  %indvars.iv.next1731 = add i64 %indvars.iv1730, -2
+  br i1 %cmp319, label %for.body320, label %for.end332
+
+for.end332:                                       ; preds = %for.body320, %for.body310
+  %count.27.lcssa = phi i32 [ %count.261496, %for.body310 ], [ %count.28, %for.body320 ]
+  %inc333 = add nsw i32 %kstart82.81495, 1
+  %inc335 = add nsw i32 %jj79.61494, 1
+  %exitcond1733 = icmp eq i32 %inc335, %add84
+  br i1 %exitcond1733, label %sw.epilog894, label %for.body310
+
+for.body343:                                      ; preds = %for.end370.for.body343_crit_edge, %for.body343.lr.ph
+  %88 = phi i32 [ %24, %for.body343.lr.ph ], [ %.pre1818, %for.end370.for.body343_crit_edge ]
+  %count.291508 = phi i32 [ 0, %for.body343.lr.ph ], [ %count.30.lcssa, %for.end370.for.body343_crit_edge ]
+  %kstart82.91507 = phi i32 [ %sub300, %for.body343.lr.ph ], [ %inc371, %for.end370.for.body343_crit_edge ]
+  %jj79.71506 = phi i32 [ 0, %for.body343.lr.ph ], [ %inc373, %for.end370.for.body343_crit_edge ]
+  %cmp344 = icmp slt i32 %jj79.71506, %88
+  %.sink900 = select i1 %cmp344, i32 %jj79.71506, i32 %88
+  %sub346 = add nsw i32 %.sink900, -1
+  %cmp3521498 = icmp slt i32 %.sink900, 1
+  br i1 %cmp3521498, label %for.end370, label %for.body353
+
+for.body353:                                      ; preds = %for.body343, %for.body353
+  %indvars.iv1734 = phi i64 [ %indvars.iv.next1735, %for.body353 ], [ %80, %for.body343 ]
+  %count.301502 = phi i32 [ %count.31, %for.body353 ], [ %count.291508, %for.body343 ]
+  %kk81.71501 = phi i32 [ %add366, %for.body353 ], [ %kstart82.91507, %for.body343 ]
+  %ii78.71499 = phi i32 [ %inc369, %for.body353 ], [ 0, %for.body343 ]
+  %mul354 = shl nsw i32 %kk81.71501, 1
+  %idxprom355 = sext i32 %mul354 to i64
+  %arrayidx356 = getelementptr inbounds double* %call13, i64 %idxprom355
+  %89 = load double* %arrayidx356, align 8, !tbaa !4
+  %add3581370 = or i32 %mul354, 1
+  %idxprom359 = sext i32 %add3581370 to i64
+  %arrayidx360 = getelementptr inbounds double* %call13, i64 %idxprom359
+  %90 = load double* %arrayidx360, align 8, !tbaa !4
+  %call361 = call double @Zabs(double %89, double %90) #5
+  %not.cmp362 = fcmp oge double %call361, %droptol
+  %inc364 = zext i1 %not.cmp362 to i32
+  %count.31 = add nsw i32 %inc364, %count.301502
+  %91 = trunc i64 %indvars.iv1734 to i32
+  %add366 = add nsw i32 %kk81.71501, %91
+  %inc369 = add nsw i32 %ii78.71499, 1
+  %cmp352 = icmp slt i32 %ii78.71499, %sub346
+  %indvars.iv.next1735 = add i64 %indvars.iv1734, -2
+  br i1 %cmp352, label %for.body353, label %for.end370
+
+for.end370:                                       ; preds = %for.body353, %for.body343
+  %count.30.lcssa = phi i32 [ %count.291508, %for.body343 ], [ %count.31, %for.body353 ]
+  %inc373 = add nsw i32 %jj79.71506, 1
+  %exitcond1737 = icmp eq i32 %inc373, %add84
+  br i1 %exitcond1737, label %sw.epilog894, label %for.end370.for.body343_crit_edge
+
+for.end370.for.body343_crit_edge:                 ; preds = %for.end370
+  %inc371 = add nsw i32 %kstart82.91507, 1
+  %.pre1818 = load i32* %nD, align 4, !tbaa !3
+  br label %for.body343
+
+sw.bb378:                                         ; preds = %if.end12
+  %92 = load i32* %nD, align 4, !tbaa !3
+  %93 = load i32* %nL, align 4, !tbaa !3
+  %add387 = add i32 %92, -1
+  %sub388 = add i32 %add387, %93
+  %94 = load i32* %nU, align 4, !tbaa !3
+  %type393 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %95 = load i32* %type393, align 4, !tbaa !3
+  switch i32 %95, label %sw.epilog894 [
+    i32 1, label %for.cond396.preheader
+    i32 2, label %for.cond422.preheader
+  ]
+
+for.cond422.preheader:                            ; preds = %sw.bb378
+  %cmp4231529 = icmp sgt i32 %92, 0
+  br i1 %cmp4231529, label %for.cond425.preheader.lr.ph, label %sw.epilog894
+
+for.cond425.preheader.lr.ph:                      ; preds = %for.cond422.preheader
+  %96 = add i32 %93, %94
+  %97 = shl i32 %92, 1
+  %98 = add i32 %96, %97
+  %99 = add i32 %98, -1
+  %100 = sext i32 %99 to i64
+  br label %for.cond425.preheader
+
+for.cond396.preheader:                            ; preds = %sw.bb378
+  %cmp3971517 = icmp sgt i32 %92, 0
+  br i1 %cmp3971517, label %for.cond399.preheader.lr.ph, label %sw.epilog894
+
+for.cond399.preheader.lr.ph:                      ; preds = %for.cond396.preheader
+  %101 = add i32 %93, %94
+  %102 = shl i32 %92, 1
+  %103 = add i32 %101, %102
+  %104 = add i32 %103, -1
+  %105 = sext i32 %104 to i64
+  br label %for.cond399.preheader
+
+for.cond399.preheader:                            ; preds = %for.cond399.preheader.lr.ph, %for.end413
+  %indvars.iv1741 = phi i32 [ 0, %for.cond399.preheader.lr.ph ], [ %indvars.iv.next1742, %for.end413 ]
+  %count.321520 = phi i32 [ 0, %for.cond399.preheader.lr.ph ], [ %count.33.lcssa, %for.end413 ]
+  %kstart383.01519 = phi i32 [ %sub388, %for.cond399.preheader.lr.ph ], [ %dec414, %for.end413 ]
+  %cmp4001510 = icmp sgt i32 %indvars.iv1741, 0
+  br i1 %cmp4001510, label %for.body401, label %for.end413
+
+for.body401:                                      ; preds = %for.cond399.preheader, %for.body401
+  %indvars.iv1738 = phi i64 [ %indvars.iv.next1739, %for.body401 ], [ %105, %for.cond399.preheader ]
+  %count.331514 = phi i32 [ %count.34, %for.body401 ], [ %count.321520, %for.cond399.preheader ]
+  %kk382.01513 = phi i32 [ %add409, %for.body401 ], [ %kstart383.01519, %for.cond399.preheader ]
+  %jj380.01511 = phi i32 [ %inc412, %for.body401 ], [ 0, %for.cond399.preheader ]
+  %idxprom402 = sext i32 %kk382.01513 to i64
+  %arrayidx403 = getelementptr inbounds double* %call13, i64 %idxprom402
+  %106 = load double* %arrayidx403, align 8, !tbaa !4
+  %call404 = call double @fabs(double %106) #7
+  %not.cmp405 = fcmp oge double %call404, %droptol
+  %inc407 = zext i1 %not.cmp405 to i32
+  %count.34 = add nsw i32 %inc407, %count.331514
+  %107 = trunc i64 %indvars.iv1738 to i32
+  %add409 = add nsw i32 %kk382.01513, %107
+  %inc412 = add nsw i32 %jj380.01511, 1
+  %indvars.iv.next1739 = add i64 %indvars.iv1738, -2
+  %exitcond1743 = icmp eq i32 %inc412, %indvars.iv1741
+  br i1 %exitcond1743, label %for.end413, label %for.body401
+
+for.end413:                                       ; preds = %for.body401, %for.cond399.preheader
+  %count.33.lcssa = phi i32 [ %count.321520, %for.cond399.preheader ], [ %count.34, %for.body401 ]
+  %dec414 = add nsw i32 %kstart383.01519, -1
+  %indvars.iv.next1742 = add i32 %indvars.iv1741, 1
+  %cmp397 = icmp slt i32 %indvars.iv.next1742, %92
+  br i1 %cmp397, label %for.cond399.preheader, label %sw.epilog894
+
+for.cond425.preheader:                            ; preds = %for.cond425.preheader.lr.ph, %for.end444
+  %108 = phi i32 [ %92, %for.cond425.preheader.lr.ph ], [ %112, %for.end444 ]
+  %indvars.iv1747 = phi i32 [ 0, %for.cond425.preheader.lr.ph ], [ %indvars.iv.next1748, %for.end444 ]
+  %count.351532 = phi i32 [ 0, %for.cond425.preheader.lr.ph ], [ %count.36.lcssa, %for.end444 ]
+  %kstart383.11531 = phi i32 [ %sub388, %for.cond425.preheader.lr.ph ], [ %dec445, %for.end444 ]
+  %cmp4261522 = icmp sgt i32 %indvars.iv1747, 0
+  br i1 %cmp4261522, label %for.body427, label %for.end444
+
+for.body427:                                      ; preds = %for.cond425.preheader, %for.body427
+  %indvars.iv1744 = phi i64 [ %indvars.iv.next1745, %for.body427 ], [ %100, %for.cond425.preheader ]
+  %count.361526 = phi i32 [ %count.37, %for.body427 ], [ %count.351532, %for.cond425.preheader ]
+  %kk382.11525 = phi i32 [ %add440, %for.body427 ], [ %kstart383.11531, %for.cond425.preheader ]
+  %jj380.11523 = phi i32 [ %inc443, %for.body427 ], [ 0, %for.cond425.preheader ]
+  %mul428 = shl nsw i32 %kk382.11525, 1
+  %idxprom429 = sext i32 %mul428 to i64
+  %arrayidx430 = getelementptr inbounds double* %call13, i64 %idxprom429
+  %109 = load double* %arrayidx430, align 8, !tbaa !4
+  %add4321369 = or i32 %mul428, 1
+  %idxprom433 = sext i32 %add4321369 to i64
+  %arrayidx434 = getelementptr inbounds double* %call13, i64 %idxprom433
+  %110 = load double* %arrayidx434, align 8, !tbaa !4
+  %call435 = call double @Zabs(double %109, double %110) #5
+  %not.cmp436 = fcmp oge double %call435, %droptol
+  %inc438 = zext i1 %not.cmp436 to i32
+  %count.37 = add nsw i32 %inc438, %count.361526
+  %111 = trunc i64 %indvars.iv1744 to i32
+  %add440 = add nsw i32 %kk382.11525, %111
+  %inc443 = add nsw i32 %jj380.11523, 1
+  %indvars.iv.next1745 = add i64 %indvars.iv1744, -2
+  %exitcond1749 = icmp eq i32 %inc443, %indvars.iv1747
+  br i1 %exitcond1749, label %for.cond425.for.end444_crit_edge, label %for.body427
+
+for.cond425.for.end444_crit_edge:                 ; preds = %for.body427
+  %.pre1813 = load i32* %nD, align 4, !tbaa !3
+  br label %for.end444
+
+for.end444:                                       ; preds = %for.cond425.for.end444_crit_edge, %for.cond425.preheader
+  %112 = phi i32 [ %.pre1813, %for.cond425.for.end444_crit_edge ], [ %108, %for.cond425.preheader ]
+  %count.36.lcssa = phi i32 [ %count.37, %for.cond425.for.end444_crit_edge ], [ %count.351532, %for.cond425.preheader ]
+  %dec445 = add nsw i32 %kstart383.11531, -1
+  %indvars.iv.next1748 = add i32 %indvars.iv1747, 1
+  %cmp423 = icmp slt i32 %indvars.iv.next1748, %112
+  br i1 %cmp423, label %for.cond425.preheader, label %sw.epilog894
+
+sw.bb451:                                         ; preds = %if.end12
+  %113 = load i32* %nD, align 4, !tbaa !3
+  %114 = load i32* %nL, align 4, !tbaa !3
+  %add459 = add nsw i32 %114, %113
+  %sub460 = add nsw i32 %114, -1
+  %115 = load i32* %nU, align 4, !tbaa !3
+  %type465 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %116 = load i32* %type465, align 4, !tbaa !3
+  switch i32 %116, label %sw.epilog894 [
+    i32 1, label %for.cond468.preheader
+    i32 2, label %for.cond494.preheader
+  ]
+
+for.cond494.preheader:                            ; preds = %sw.bb451
+  %cmp4951553 = icmp sgt i32 %114, 0
+  br i1 %cmp4951553, label %for.cond497.preheader.lr.ph, label %sw.epilog894
+
+for.cond497.preheader.lr.ph:                      ; preds = %for.cond494.preheader
+  %117 = add i32 %114, %115
+  %118 = shl i32 %113, 1
+  %119 = add i32 %117, %118
+  %120 = add i32 %119, -1
+  %121 = sext i32 %120 to i64
+  br label %for.cond497.preheader
+
+for.cond468.preheader:                            ; preds = %sw.bb451
+  %cmp4691541 = icmp sgt i32 %114, 0
+  br i1 %cmp4691541, label %for.cond471.preheader.lr.ph, label %sw.epilog894
+
+for.cond471.preheader.lr.ph:                      ; preds = %for.cond468.preheader
+  %cmp4721534 = icmp sgt i32 %113, 0
+  %122 = add i32 %114, %115
+  %123 = shl i32 %113, 1
+  %124 = add i32 %122, %123
+  %125 = add i32 %124, -1
+  %126 = sext i32 %125 to i64
+  br label %for.cond471.preheader
+
+for.cond471.preheader:                            ; preds = %for.cond471.preheader.lr.ph, %for.end485
+  %count.381544 = phi i32 [ 0, %for.cond471.preheader.lr.ph ], [ %count.39.lcssa, %for.end485 ]
+  %kstart456.01543 = phi i32 [ %sub460, %for.cond471.preheader.lr.ph ], [ %dec486, %for.end485 ]
+  %ii452.01542 = phi i32 [ %113, %for.cond471.preheader.lr.ph ], [ %inc488, %for.end485 ]
+  br i1 %cmp4721534, label %for.body473, label %for.end485
+
+for.body473:                                      ; preds = %for.cond471.preheader, %for.body473
+  %indvars.iv1750 = phi i64 [ %indvars.iv.next1751, %for.body473 ], [ %126, %for.cond471.preheader ]
+  %count.391538 = phi i32 [ %count.40, %for.body473 ], [ %count.381544, %for.cond471.preheader ]
+  %kk455.01537 = phi i32 [ %add481, %for.body473 ], [ %kstart456.01543, %for.cond471.preheader ]
+  %jj453.01535 = phi i32 [ %inc484, %for.body473 ], [ 0, %for.cond471.preheader ]
+  %idxprom474 = sext i32 %kk455.01537 to i64
+  %arrayidx475 = getelementptr inbounds double* %call13, i64 %idxprom474
+  %127 = load double* %arrayidx475, align 8, !tbaa !4
+  %call476 = call double @fabs(double %127) #7
+  %not.cmp477 = fcmp oge double %call476, %droptol
+  %inc479 = zext i1 %not.cmp477 to i32
+  %count.40 = add nsw i32 %inc479, %count.391538
+  %128 = trunc i64 %indvars.iv1750 to i32
+  %add481 = add nsw i32 %kk455.01537, %128
+  %inc484 = add nsw i32 %jj453.01535, 1
+  %indvars.iv.next1751 = add i64 %indvars.iv1750, -2
+  %exitcond1753 = icmp eq i32 %inc484, %113
+  br i1 %exitcond1753, label %for.end485, label %for.body473
+
+for.end485:                                       ; preds = %for.body473, %for.cond471.preheader
+  %count.39.lcssa = phi i32 [ %count.381544, %for.cond471.preheader ], [ %count.40, %for.body473 ]
+  %dec486 = add nsw i32 %kstart456.01543, -1
+  %inc488 = add nsw i32 %ii452.01542, 1
+  %cmp469 = icmp slt i32 %inc488, %add459
+  br i1 %cmp469, label %for.cond471.preheader, label %sw.epilog894
+
+for.cond497.preheader:                            ; preds = %for.cond497.preheader.lr.ph, %for.end516
+  %129 = phi i32 [ %113, %for.cond497.preheader.lr.ph ], [ %134, %for.end516 ]
+  %count.411556 = phi i32 [ 0, %for.cond497.preheader.lr.ph ], [ %count.42.lcssa, %for.end516 ]
+  %kstart456.11555 = phi i32 [ %sub460, %for.cond497.preheader.lr.ph ], [ %dec517, %for.end516 ]
+  %ii452.11554 = phi i32 [ %113, %for.cond497.preheader.lr.ph ], [ %inc519, %for.end516 ]
+  %cmp4981546 = icmp sgt i32 %129, 0
+  br i1 %cmp4981546, label %for.body499, label %for.end516
+
+for.body499:                                      ; preds = %for.cond497.preheader, %for.body499
+  %indvars.iv1754 = phi i64 [ %indvars.iv.next1755, %for.body499 ], [ %121, %for.cond497.preheader ]
+  %count.421550 = phi i32 [ %count.43, %for.body499 ], [ %count.411556, %for.cond497.preheader ]
+  %kk455.11549 = phi i32 [ %add512, %for.body499 ], [ %kstart456.11555, %for.cond497.preheader ]
+  %jj453.11547 = phi i32 [ %inc515, %for.body499 ], [ 0, %for.cond497.preheader ]
+  %mul500 = shl nsw i32 %kk455.11549, 1
+  %idxprom501 = sext i32 %mul500 to i64
+  %arrayidx502 = getelementptr inbounds double* %call13, i64 %idxprom501
+  %130 = load double* %arrayidx502, align 8, !tbaa !4
+  %add5041368 = or i32 %mul500, 1
+  %idxprom505 = sext i32 %add5041368 to i64
+  %arrayidx506 = getelementptr inbounds double* %call13, i64 %idxprom505
+  %131 = load double* %arrayidx506, align 8, !tbaa !4
+  %call507 = call double @Zabs(double %130, double %131) #5
+  %not.cmp508 = fcmp oge double %call507, %droptol
+  %inc510 = zext i1 %not.cmp508 to i32
+  %count.43 = add nsw i32 %inc510, %count.421550
+  %132 = trunc i64 %indvars.iv1754 to i32
+  %add512 = add nsw i32 %kk455.11549, %132
+  %inc515 = add nsw i32 %jj453.11547, 1
+  %133 = load i32* %nD, align 4, !tbaa !3
+  %cmp498 = icmp slt i32 %inc515, %133
+  %indvars.iv.next1755 = add i64 %indvars.iv1754, -2
+  br i1 %cmp498, label %for.body499, label %for.end516
+
+for.end516:                                       ; preds = %for.body499, %for.cond497.preheader
+  %134 = phi i32 [ %129, %for.cond497.preheader ], [ %133, %for.body499 ]
+  %count.42.lcssa = phi i32 [ %count.411556, %for.cond497.preheader ], [ %count.43, %for.body499 ]
+  %dec517 = add nsw i32 %kstart456.11555, -1
+  %inc519 = add nsw i32 %ii452.11554, 1
+  %cmp495 = icmp slt i32 %inc519, %add459
+  br i1 %cmp495, label %for.cond497.preheader, label %sw.epilog894
+
+sw.bb523:                                         ; preds = %if.end12
+  %135 = load i32* %nD, align 4, !tbaa !3
+  %136 = load i32* %nU, align 4, !tbaa !3
+  %137 = load i32* %symflag, align 4, !tbaa !3
+  %switch1376 = icmp ult i32 %137, 2
+  br i1 %switch1376, label %if.then540, label %if.else685
+
+if.then540:                                       ; preds = %sw.bb523
+  %cmp543 = icmp eq i32* %pivotsizes, null
+  %type545 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %138 = load i32* %type545, align 4, !tbaa !3
+  %cmp546 = icmp eq i32 %138, 1
+  br i1 %cmp543, label %if.then544, label %if.else603
+
+if.then544:                                       ; preds = %if.then540
+  br i1 %cmp546, label %for.cond548.preheader, label %if.else570
+
+for.cond548.preheader:                            ; preds = %if.then544
+  %cmp5491565 = icmp sgt i32 %135, 0
+  br i1 %cmp5491565, label %for.cond551.preheader.lr.ph, label %sw.epilog894
+
+for.cond551.preheader.lr.ph:                      ; preds = %for.cond548.preheader
+  %139 = add i32 %135, %136
+  %140 = add i32 %139, -1
+  %141 = sext i32 %140 to i64
+  br label %for.cond551.preheader
+
+for.cond551.preheader:                            ; preds = %for.cond551.preheader.lr.ph, %for.end565
+  %indvars.iv1760 = phi i32 [ 0, %for.cond551.preheader.lr.ph ], [ %indvars.iv.next1761, %for.end565 ]
+  %count.441568 = phi i32 [ 0, %for.cond551.preheader.lr.ph ], [ %count.45.lcssa, %for.end565 ]
+  %cmp5521558 = icmp sgt i32 %indvars.iv1760, 0
+  br i1 %cmp5521558, label %for.body553, label %for.end565
+
+for.body553:                                      ; preds = %for.cond551.preheader, %for.body553
+  %indvars.iv1757 = phi i64 [ %indvars.iv.next1758, %for.body553 ], [ %141, %for.cond551.preheader ]
+  %count.451562 = phi i32 [ %count.46, %for.body553 ], [ %count.441568, %for.cond551.preheader ]
+  %kk529.01561 = phi i32 [ %add561, %for.body553 ], [ %indvars.iv1760, %for.cond551.preheader ]
+  %ii525.01559 = phi i32 [ %inc564, %for.body553 ], [ 0, %for.cond551.preheader ]
+  %idxprom554 = sext i32 %kk529.01561 to i64
+  %arrayidx555 = getelementptr inbounds double* %call13, i64 %idxprom554
+  %142 = load double* %arrayidx555, align 8, !tbaa !4
+  %call556 = call double @fabs(double %142) #7
+  %not.cmp557 = fcmp oge double %call556, %droptol
+  %inc559 = zext i1 %not.cmp557 to i32
+  %count.46 = add nsw i32 %inc559, %count.451562
+  %143 = trunc i64 %indvars.iv1757 to i32
+  %add561 = add nsw i32 %kk529.01561, %143
+  %inc564 = add nsw i32 %ii525.01559, 1
+  %indvars.iv.next1758 = add i64 %indvars.iv1757, -1
+  %exitcond1762 = icmp eq i32 %inc564, %indvars.iv1760
+  br i1 %exitcond1762, label %for.end565, label %for.body553
+
+for.end565:                                       ; preds = %for.body553, %for.cond551.preheader
+  %count.45.lcssa = phi i32 [ %count.441568, %for.cond551.preheader ], [ %count.46, %for.body553 ]
+  %indvars.iv.next1761 = add i32 %indvars.iv1760, 1
+  %cmp549 = icmp slt i32 %indvars.iv.next1761, %135
+  br i1 %cmp549, label %for.cond551.preheader, label %sw.epilog894
+
+if.else570:                                       ; preds = %if.then544
+  %cmp572 = icmp eq i32 %138, 2
+  %cmp5751577 = icmp sgt i32 %135, 0
+  %or.cond1819 = and i1 %cmp572, %cmp5751577
+  br i1 %or.cond1819, label %for.cond577.preheader.lr.ph, label %sw.epilog894
+
+for.cond577.preheader.lr.ph:                      ; preds = %if.else570
+  %144 = add i32 %135, %136
+  %145 = add i32 %144, -1
+  %146 = sext i32 %145 to i64
+  br label %for.cond577.preheader
+
+for.cond577.preheader:                            ; preds = %for.cond577.preheader.lr.ph, %for.end596
+  %147 = phi i32 [ %135, %for.cond577.preheader.lr.ph ], [ %151, %for.end596 ]
+  %indvars.iv1766 = phi i32 [ 0, %for.cond577.preheader.lr.ph ], [ %indvars.iv.next1767, %for.end596 ]
+  %count.471580 = phi i32 [ 0, %for.cond577.preheader.lr.ph ], [ %count.48.lcssa, %for.end596 ]
+  %cmp5781570 = icmp sgt i32 %indvars.iv1766, 0
+  br i1 %cmp5781570, label %for.body579, label %for.end596
+
+for.body579:                                      ; preds = %for.cond577.preheader, %for.body579
+  %indvars.iv1763 = phi i64 [ %indvars.iv.next1764, %for.body579 ], [ %146, %for.cond577.preheader ]
+  %count.481574 = phi i32 [ %count.49, %for.body579 ], [ %count.471580, %for.cond577.preheader ]
+  %kk529.11573 = phi i32 [ %add592, %for.body579 ], [ %indvars.iv1766, %for.cond577.preheader ]
+  %ii525.11571 = phi i32 [ %inc595, %for.body579 ], [ 0, %for.cond577.preheader ]
+  %mul580 = shl nsw i32 %kk529.11573, 1
+  %idxprom581 = sext i32 %mul580 to i64
+  %arrayidx582 = getelementptr inbounds double* %call13, i64 %idxprom581
+  %148 = load double* %arrayidx582, align 8, !tbaa !4
+  %add5841367 = or i32 %mul580, 1
+  %idxprom585 = sext i32 %add5841367 to i64
+  %arrayidx586 = getelementptr inbounds double* %call13, i64 %idxprom585
+  %149 = load double* %arrayidx586, align 8, !tbaa !4
+  %call587 = call double @Zabs(double %148, double %149) #5
+  %not.cmp588 = fcmp oge double %call587, %droptol
+  %inc590 = zext i1 %not.cmp588 to i32
+  %count.49 = add nsw i32 %inc590, %count.481574
+  %150 = trunc i64 %indvars.iv1763 to i32
+  %add592 = add nsw i32 %kk529.11573, %150
+  %inc595 = add nsw i32 %ii525.11571, 1
+  %indvars.iv.next1764 = add i64 %indvars.iv1763, -1
+  %exitcond1768 = icmp eq i32 %inc595, %indvars.iv1766
+  br i1 %exitcond1768, label %for.cond577.for.end596_crit_edge, label %for.body579
+
+for.cond577.for.end596_crit_edge:                 ; preds = %for.body579
+  %.pre1814 = load i32* %nD, align 4, !tbaa !3
+  br label %for.end596
+
+for.end596:                                       ; preds = %for.cond577.for.end596_crit_edge, %for.cond577.preheader
+  %151 = phi i32 [ %.pre1814, %for.cond577.for.end596_crit_edge ], [ %147, %for.cond577.preheader ]
+  %count.48.lcssa = phi i32 [ %count.49, %for.cond577.for.end596_crit_edge ], [ %count.471580, %for.cond577.preheader ]
+  %indvars.iv.next1767 = add i32 %indvars.iv1766, 1
+  %cmp575 = icmp slt i32 %indvars.iv.next1767, %151
+  br i1 %cmp575, label %for.cond577.preheader, label %sw.epilog894
+
+if.else603:                                       ; preds = %if.then540
+  br i1 %cmp546, label %for.cond607.preheader, label %if.else640
+
+for.cond607.preheader:                            ; preds = %if.else603
+  %cmp6081595 = icmp sgt i32 %npivot, 0
+  br i1 %cmp6081595, label %for.body609.lr.ph, label %sw.epilog894
+
+for.body609.lr.ph:                                ; preds = %for.cond607.preheader
+  %152 = add i32 %135, %136
+  %153 = add i32 %152, -1
+  %154 = sext i32 %153 to i64
+  br label %for.body609
+
+for.body609:                                      ; preds = %for.end635, %for.body609.lr.ph
+  %indvars.iv1774 = phi i64 [ 0, %for.body609.lr.ph ], [ %indvars.iv.next1775, %for.end635 ]
+  %count.501599 = phi i32 [ 0, %for.body609.lr.ph ], [ %count.51.lcssa, %for.end635 ]
+  %kstart530.21598 = phi i32 [ 0, %for.body609.lr.ph ], [ %kstart530.3.lcssa, %for.end635 ]
+  %first524.01596 = phi i32 [ 0, %for.body609.lr.ph ], [ %add612, %for.end635 ]
+  %arrayidx611 = getelementptr inbounds i32* %pivotsizes, i64 %indvars.iv1774
+  %155 = load i32* %arrayidx611, align 4, !tbaa !3
+  %add612 = add nsw i32 %155, %first524.01596
+  %sub613 = add nsw i32 %add612, -1
+  %cmp6151588 = icmp sgt i32 %first524.01596, %sub613
+  br i1 %cmp6151588, label %for.end635, label %for.cond617.preheader.lr.ph
+
+for.cond617.preheader.lr.ph:                      ; preds = %for.body609
+  %cmp6181582 = icmp sgt i32 %first524.01596, 0
+  %156 = add i32 %kstart530.21598, 1
+  %157 = add i32 %first524.01596, -1
+  %158 = add i32 %157, %155
+  %159 = icmp sgt i32 %first524.01596, %158
+  %smax1773 = select i1 %159, i32 %first524.01596, i32 %158
+  %160 = add i32 %156, %smax1773
+  br label %for.cond617.preheader
+
+for.cond617.preheader:                            ; preds = %for.end631, %for.cond617.preheader.lr.ph
+  %count.511591 = phi i32 [ %count.501599, %for.cond617.preheader.lr.ph ], [ %count.52.lcssa, %for.end631 ]
+  %kstart530.31590 = phi i32 [ %kstart530.21598, %for.cond617.preheader.lr.ph ], [ %inc632, %for.end631 ]
+  %jj527.21589 = phi i32 [ %first524.01596, %for.cond617.preheader.lr.ph ], [ %inc634, %for.end631 ]
+  br i1 %cmp6181582, label %for.body619, label %for.end631
+
+for.body619:                                      ; preds = %for.cond617.preheader, %for.body619
+  %indvars.iv1769 = phi i64 [ %indvars.iv.next1770, %for.body619 ], [ %154, %for.cond617.preheader ]
+  %count.521586 = phi i32 [ %count.53, %for.body619 ], [ %count.511591, %for.cond617.preheader ]
+  %kk529.21585 = phi i32 [ %add627, %for.body619 ], [ %kstart530.31590, %for.cond617.preheader ]
+  %ii525.21583 = phi i32 [ %inc630, %for.body619 ], [ 0, %for.cond617.preheader ]
+  %idxprom620 = sext i32 %kk529.21585 to i64
+  %arrayidx621 = getelementptr inbounds double* %call13, i64 %idxprom620
+  %161 = load double* %arrayidx621, align 8, !tbaa !4
+  %call622 = call double @fabs(double %161) #7
+  %not.cmp623 = fcmp oge double %call622, %droptol
+  %inc625 = zext i1 %not.cmp623 to i32
+  %count.53 = add nsw i32 %inc625, %count.521586
+  %162 = trunc i64 %indvars.iv1769 to i32
+  %add627 = add nsw i32 %kk529.21585, %162
+  %inc630 = add nsw i32 %ii525.21583, 1
+  %indvars.iv.next1770 = add i64 %indvars.iv1769, -1
+  %exitcond1772 = icmp eq i32 %inc630, %first524.01596
+  br i1 %exitcond1772, label %for.end631, label %for.body619
+
+for.end631:                                       ; preds = %for.body619, %for.cond617.preheader
+  %count.52.lcssa = phi i32 [ %count.511591, %for.cond617.preheader ], [ %count.53, %for.body619 ]
+  %inc632 = add nsw i32 %kstart530.31590, 1
+  %inc634 = add nsw i32 %jj527.21589, 1
+  %cmp615 = icmp slt i32 %jj527.21589, %sub613
+  br i1 %cmp615, label %for.cond617.preheader, label %for.cond614.for.end635_crit_edge
+
+for.cond614.for.end635_crit_edge:                 ; preds = %for.end631
+  %163 = sub i32 %160, %first524.01596
+  br label %for.end635
+
+for.end635:                                       ; preds = %for.cond614.for.end635_crit_edge, %for.body609
+  %count.51.lcssa = phi i32 [ %count.52.lcssa, %for.cond614.for.end635_crit_edge ], [ %count.501599, %for.body609 ]
+  %kstart530.3.lcssa = phi i32 [ %163, %for.cond614.for.end635_crit_edge ], [ %kstart530.21598, %for.body609 ]
+  %indvars.iv.next1775 = add i64 %indvars.iv1774, 1
+  %lftr.wideiv1776 = trunc i64 %indvars.iv.next1775 to i32
+  %exitcond1777 = icmp eq i32 %lftr.wideiv1776, %npivot
+  br i1 %exitcond1777, label %sw.epilog894, label %for.body609
+
+if.else640:                                       ; preds = %if.else603
+  %cmp642 = icmp eq i32 %138, 2
+  %cmp6451614 = icmp sgt i32 %npivot, 0
+  %or.cond1820 = and i1 %cmp642, %cmp6451614
+  br i1 %or.cond1820, label %for.body646.lr.ph, label %sw.epilog894
+
+for.body646.lr.ph:                                ; preds = %if.else640
+  %164 = add i32 %135, %136
+  %165 = add i32 %164, -1
+  %166 = sext i32 %165 to i64
+  br label %for.body646
+
+for.body646:                                      ; preds = %for.end677, %for.body646.lr.ph
+  %indvars.iv1783 = phi i64 [ 0, %for.body646.lr.ph ], [ %indvars.iv.next1784, %for.end677 ]
+  %count.541618 = phi i32 [ 0, %for.body646.lr.ph ], [ %count.55.lcssa, %for.end677 ]
+  %kstart530.41617 = phi i32 [ 0, %for.body646.lr.ph ], [ %kstart530.5.lcssa, %for.end677 ]
+  %first524.11615 = phi i32 [ 0, %for.body646.lr.ph ], [ %add649, %for.end677 ]
+  %arrayidx648 = getelementptr inbounds i32* %pivotsizes, i64 %indvars.iv1783
+  %167 = load i32* %arrayidx648, align 4, !tbaa !3
+  %add649 = add nsw i32 %167, %first524.11615
+  %sub650 = add nsw i32 %add649, -1
+  %cmp6521607 = icmp sgt i32 %first524.11615, %sub650
+  br i1 %cmp6521607, label %for.end677, label %for.cond654.preheader.lr.ph
+
+for.cond654.preheader.lr.ph:                      ; preds = %for.body646
+  %cmp6551601 = icmp sgt i32 %first524.11615, 0
+  %168 = add i32 %kstart530.41617, 1
+  %169 = add i32 %first524.11615, -1
+  %170 = add i32 %169, %167
+  %171 = icmp sgt i32 %first524.11615, %170
+  %smax1782 = select i1 %171, i32 %first524.11615, i32 %170
+  %172 = add i32 %168, %smax1782
+  br label %for.cond654.preheader
+
+for.cond654.preheader:                            ; preds = %for.end673, %for.cond654.preheader.lr.ph
+  %count.551610 = phi i32 [ %count.541618, %for.cond654.preheader.lr.ph ], [ %count.56.lcssa, %for.end673 ]
+  %kstart530.51609 = phi i32 [ %kstart530.41617, %for.cond654.preheader.lr.ph ], [ %inc674, %for.end673 ]
+  %jj527.31608 = phi i32 [ %first524.11615, %for.cond654.preheader.lr.ph ], [ %inc676, %for.end673 ]
+  br i1 %cmp6551601, label %for.body656, label %for.end673
+
+for.body656:                                      ; preds = %for.cond654.preheader, %for.body656
+  %indvars.iv1778 = phi i64 [ %indvars.iv.next1779, %for.body656 ], [ %166, %for.cond654.preheader ]
+  %count.561605 = phi i32 [ %count.57, %for.body656 ], [ %count.551610, %for.cond654.preheader ]
+  %kk529.31604 = phi i32 [ %add669, %for.body656 ], [ %kstart530.51609, %for.cond654.preheader ]
+  %ii525.31602 = phi i32 [ %inc672, %for.body656 ], [ 0, %for.cond654.preheader ]
+  %mul657 = shl nsw i32 %kk529.31604, 1
+  %idxprom658 = sext i32 %mul657 to i64
+  %arrayidx659 = getelementptr inbounds double* %call13, i64 %idxprom658
+  %173 = load double* %arrayidx659, align 8, !tbaa !4
+  %add6611366 = or i32 %mul657, 1
+  %idxprom662 = sext i32 %add6611366 to i64
+  %arrayidx663 = getelementptr inbounds double* %call13, i64 %idxprom662
+  %174 = load double* %arrayidx663, align 8, !tbaa !4
+  %call664 = call double @Zabs(double %173, double %174) #5
+  %not.cmp665 = fcmp oge double %call664, %droptol
+  %inc667 = zext i1 %not.cmp665 to i32
+  %count.57 = add nsw i32 %inc667, %count.561605
+  %175 = trunc i64 %indvars.iv1778 to i32
+  %add669 = add nsw i32 %kk529.31604, %175
+  %inc672 = add nsw i32 %ii525.31602, 1
+  %indvars.iv.next1779 = add i64 %indvars.iv1778, -1
+  %exitcond1781 = icmp eq i32 %inc672, %first524.11615
+  br i1 %exitcond1781, label %for.end673, label %for.body656
+
+for.end673:                                       ; preds = %for.body656, %for.cond654.preheader
+  %count.56.lcssa = phi i32 [ %count.551610, %for.cond654.preheader ], [ %count.57, %for.body656 ]
+  %inc674 = add nsw i32 %kstart530.51609, 1
+  %inc676 = add nsw i32 %jj527.31608, 1
+  %cmp652 = icmp slt i32 %jj527.31608, %sub650
+  br i1 %cmp652, label %for.cond654.preheader, label %for.cond651.for.end677_crit_edge
+
+for.cond651.for.end677_crit_edge:                 ; preds = %for.end673
+  %176 = sub i32 %172, %first524.11615
+  br label %for.end677
+
+for.end677:                                       ; preds = %for.cond651.for.end677_crit_edge, %for.body646
+  %count.55.lcssa = phi i32 [ %count.56.lcssa, %for.cond651.for.end677_crit_edge ], [ %count.541618, %for.body646 ]
+  %kstart530.5.lcssa = phi i32 [ %176, %for.cond651.for.end677_crit_edge ], [ %kstart530.41617, %for.body646 ]
+  %indvars.iv.next1784 = add i64 %indvars.iv1783, 1
+  %lftr.wideiv1785 = trunc i64 %indvars.iv.next1784 to i32
+  %exitcond1786 = icmp eq i32 %lftr.wideiv1785, %npivot
+  br i1 %exitcond1786, label %sw.epilog894, label %for.body646
+
+if.else685:                                       ; preds = %sw.bb523
+  %177 = load i32* %nL, align 4, !tbaa !3
+  %add686 = add i32 %135, -1
+  %sub687 = add i32 %add686, %177
+  %type692 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %178 = load i32* %type692, align 4, !tbaa !3
+  switch i32 %178, label %sw.epilog894 [
+    i32 1, label %for.cond695.preheader
+    i32 2, label %for.cond721.preheader
+  ]
+
+for.cond721.preheader:                            ; preds = %if.else685
+  %cmp7221639 = icmp sgt i32 %135, 0
+  br i1 %cmp7221639, label %for.cond724.preheader.lr.ph, label %sw.epilog894
+
+for.cond724.preheader.lr.ph:                      ; preds = %for.cond721.preheader
+  %179 = add i32 %136, %177
+  %180 = shl i32 %135, 1
+  %181 = add i32 %179, %180
+  %182 = add i32 %181, -3
+  %183 = sext i32 %182 to i64
+  br label %for.cond724.preheader
+
+for.cond695.preheader:                            ; preds = %if.else685
+  %cmp6961627 = icmp sgt i32 %135, 0
+  br i1 %cmp6961627, label %for.cond698.preheader.lr.ph, label %sw.epilog894
+
+for.cond698.preheader.lr.ph:                      ; preds = %for.cond695.preheader
+  %184 = add i32 %136, %177
+  %185 = shl i32 %135, 1
+  %186 = add i32 %184, %185
+  %187 = add i32 %186, -3
+  %188 = sext i32 %187 to i64
+  br label %for.cond698.preheader
+
+for.cond698.preheader:                            ; preds = %for.cond698.preheader.lr.ph, %for.end712
+  %indvars.iv1790 = phi i32 [ 0, %for.cond698.preheader.lr.ph ], [ %indvars.iv.next1791, %for.end712 ]
+  %count.581630 = phi i32 [ 0, %for.cond698.preheader.lr.ph ], [ %count.59.lcssa, %for.end712 ]
+  %kstart530.61629 = phi i32 [ %sub687, %for.cond698.preheader.lr.ph ], [ %inc713, %for.end712 ]
+  %cmp6991620 = icmp sgt i32 %indvars.iv1790, 0
+  br i1 %cmp6991620, label %for.body700, label %for.end712
+
+for.body700:                                      ; preds = %for.cond698.preheader, %for.body700
+  %indvars.iv1787 = phi i64 [ %indvars.iv.next1788, %for.body700 ], [ %188, %for.cond698.preheader ]
+  %count.591624 = phi i32 [ %count.60, %for.body700 ], [ %count.581630, %for.cond698.preheader ]
+  %kk529.41623 = phi i32 [ %add708, %for.body700 ], [ %kstart530.61629, %for.cond698.preheader ]
+  %ii525.41621 = phi i32 [ %inc711, %for.body700 ], [ 0, %for.cond698.preheader ]
+  %idxprom701 = sext i32 %kk529.41623 to i64
+  %arrayidx702 = getelementptr inbounds double* %call13, i64 %idxprom701
+  %189 = load double* %arrayidx702, align 8, !tbaa !4
+  %call703 = call double @fabs(double %189) #7
+  %not.cmp704 = fcmp oge double %call703, %droptol
+  %inc706 = zext i1 %not.cmp704 to i32
+  %count.60 = add nsw i32 %inc706, %count.591624
+  %190 = trunc i64 %indvars.iv1787 to i32
+  %add708 = add nsw i32 %kk529.41623, %190
+  %inc711 = add nsw i32 %ii525.41621, 1
+  %indvars.iv.next1788 = add i64 %indvars.iv1787, -2
+  %exitcond1792 = icmp eq i32 %inc711, %indvars.iv1790
+  br i1 %exitcond1792, label %for.end712, label %for.body700
+
+for.end712:                                       ; preds = %for.body700, %for.cond698.preheader
+  %count.59.lcssa = phi i32 [ %count.581630, %for.cond698.preheader ], [ %count.60, %for.body700 ]
+  %inc713 = add nsw i32 %kstart530.61629, 1
+  %indvars.iv.next1791 = add i32 %indvars.iv1790, 1
+  %cmp696 = icmp slt i32 %indvars.iv.next1791, %135
+  br i1 %cmp696, label %for.cond698.preheader, label %sw.epilog894
+
+for.cond724.preheader:                            ; preds = %for.cond724.preheader.lr.ph, %for.end743
+  %191 = phi i32 [ %135, %for.cond724.preheader.lr.ph ], [ %195, %for.end743 ]
+  %indvars.iv1796 = phi i32 [ 0, %for.cond724.preheader.lr.ph ], [ %indvars.iv.next1797, %for.end743 ]
+  %count.611642 = phi i32 [ 0, %for.cond724.preheader.lr.ph ], [ %count.62.lcssa, %for.end743 ]
+  %kstart530.71641 = phi i32 [ %sub687, %for.cond724.preheader.lr.ph ], [ %inc744, %for.end743 ]
+  %cmp7251632 = icmp sgt i32 %indvars.iv1796, 0
+  br i1 %cmp7251632, label %for.body726, label %for.end743
+
+for.body726:                                      ; preds = %for.cond724.preheader, %for.body726
+  %indvars.iv1793 = phi i64 [ %indvars.iv.next1794, %for.body726 ], [ %183, %for.cond724.preheader ]
+  %count.621636 = phi i32 [ %count.63, %for.body726 ], [ %count.611642, %for.cond724.preheader ]
+  %kk529.51635 = phi i32 [ %add739, %for.body726 ], [ %kstart530.71641, %for.cond724.preheader ]
+  %ii525.51633 = phi i32 [ %inc742, %for.body726 ], [ 0, %for.cond724.preheader ]
+  %mul727 = shl nsw i32 %kk529.51635, 1
+  %idxprom728 = sext i32 %mul727 to i64
+  %arrayidx729 = getelementptr inbounds double* %call13, i64 %idxprom728
+  %192 = load double* %arrayidx729, align 8, !tbaa !4
+  %add7311365 = or i32 %mul727, 1
+  %idxprom732 = sext i32 %add7311365 to i64
+  %arrayidx733 = getelementptr inbounds double* %call13, i64 %idxprom732
+  %193 = load double* %arrayidx733, align 8, !tbaa !4
+  %call734 = call double @Zabs(double %192, double %193) #5
+  %not.cmp735 = fcmp oge double %call734, %droptol
+  %inc737 = zext i1 %not.cmp735 to i32
+  %count.63 = add nsw i32 %inc737, %count.621636
+  %194 = trunc i64 %indvars.iv1793 to i32
+  %add739 = add nsw i32 %kk529.51635, %194
+  %inc742 = add nsw i32 %ii525.51633, 1
+  %indvars.iv.next1794 = add i64 %indvars.iv1793, -2
+  %exitcond1798 = icmp eq i32 %inc742, %indvars.iv1796
+  br i1 %exitcond1798, label %for.cond724.for.end743_crit_edge, label %for.body726
+
+for.cond724.for.end743_crit_edge:                 ; preds = %for.body726
+  %.pre1815 = load i32* %nD, align 4, !tbaa !3
+  br label %for.end743
+
+for.end743:                                       ; preds = %for.cond724.for.end743_crit_edge, %for.cond724.preheader
+  %195 = phi i32 [ %.pre1815, %for.cond724.for.end743_crit_edge ], [ %191, %for.cond724.preheader ]
+  %count.62.lcssa = phi i32 [ %count.63, %for.cond724.for.end743_crit_edge ], [ %count.611642, %for.cond724.preheader ]
+  %inc744 = add nsw i32 %kstart530.71641, 1
+  %indvars.iv.next1797 = add i32 %indvars.iv1796, 1
+  %cmp722 = icmp slt i32 %indvars.iv.next1797, %195
+  br i1 %cmp722, label %for.cond724.preheader, label %sw.epilog894
+
+sw.bb751:                                         ; preds = %if.end12
+  %196 = load i32* %nD, align 4, !tbaa !3
+  %197 = load i32* %nU, align 4, !tbaa !3
+  %add759 = add i32 %197, %196
+  %198 = load i32* %symflag, align 4, !tbaa !3
+  %switch1377 = icmp ult i32 %198, 2
+  br i1 %switch1377, label %if.then765, label %if.else826
+
+if.then765:                                       ; preds = %sw.bb751
+  %type768 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %199 = load i32* %type768, align 4, !tbaa !3
+  switch i32 %199, label %sw.epilog894 [
+    i32 1, label %for.cond771.preheader
+    i32 2, label %for.cond797.preheader
+  ]
+
+for.cond797.preheader:                            ; preds = %if.then765
+  %cmp7981663 = icmp sgt i32 %197, 0
+  br i1 %cmp7981663, label %for.cond800.preheader.lr.ph, label %sw.epilog894
+
+for.cond800.preheader.lr.ph:                      ; preds = %for.cond797.preheader
+  %200 = add i32 %add759, -1
+  %201 = sext i32 %200 to i64
+  br label %for.cond800.preheader
+
+for.cond771.preheader:                            ; preds = %if.then765
+  %cmp7721651 = icmp sgt i32 %197, 0
+  br i1 %cmp7721651, label %for.cond774.preheader.lr.ph, label %sw.epilog894
+
+for.cond774.preheader.lr.ph:                      ; preds = %for.cond771.preheader
+  %cmp7751644 = icmp sgt i32 %196, 0
+  %202 = add i32 %add759, -1
+  %203 = sext i32 %202 to i64
+  br label %for.cond774.preheader
+
+for.cond774.preheader:                            ; preds = %for.cond774.preheader.lr.ph, %for.end788
+  %kstart756.01654 = phi i32 [ %196, %for.cond774.preheader.lr.ph ], [ %inc789, %for.end788 ]
+  %count.641652 = phi i32 [ 0, %for.cond774.preheader.lr.ph ], [ %count.65.lcssa, %for.end788 ]
+  br i1 %cmp7751644, label %for.body776, label %for.end788
+
+for.body776:                                      ; preds = %for.cond774.preheader, %for.body776
+  %indvars.iv1799 = phi i64 [ %indvars.iv.next1800, %for.body776 ], [ %203, %for.cond774.preheader ]
+  %kk755.01648 = phi i32 [ %add784, %for.body776 ], [ %kstart756.01654, %for.cond774.preheader ]
+  %ii752.01646 = phi i32 [ %inc787, %for.body776 ], [ 0, %for.cond774.preheader ]
+  %count.651645 = phi i32 [ %count.66, %for.body776 ], [ %count.641652, %for.cond774.preheader ]
+  %idxprom777 = sext i32 %kk755.01648 to i64
+  %arrayidx778 = getelementptr inbounds double* %call13, i64 %idxprom777
+  %204 = load double* %arrayidx778, align 8, !tbaa !4
+  %call779 = call double @fabs(double %204) #7
+  %not.cmp780 = fcmp oge double %call779, %droptol
+  %inc782 = zext i1 %not.cmp780 to i32
+  %count.66 = add nsw i32 %inc782, %count.651645
+  %205 = trunc i64 %indvars.iv1799 to i32
+  %add784 = add nsw i32 %kk755.01648, %205
+  %inc787 = add nsw i32 %ii752.01646, 1
+  %indvars.iv.next1800 = add i64 %indvars.iv1799, -1
+  %exitcond1802 = icmp eq i32 %inc787, %196
+  br i1 %exitcond1802, label %for.end788, label %for.body776
+
+for.end788:                                       ; preds = %for.body776, %for.cond774.preheader
+  %count.65.lcssa = phi i32 [ %count.641652, %for.cond774.preheader ], [ %count.66, %for.body776 ]
+  %inc789 = add nsw i32 %kstart756.01654, 1
+  %cmp772 = icmp slt i32 %inc789, %add759
+  br i1 %cmp772, label %for.cond774.preheader, label %sw.epilog894
+
+for.cond800.preheader:                            ; preds = %for.cond800.preheader.lr.ph, %for.end819
+  %206 = phi i32 [ %196, %for.cond800.preheader.lr.ph ], [ %211, %for.end819 ]
+  %kstart756.11666 = phi i32 [ %196, %for.cond800.preheader.lr.ph ], [ %inc820, %for.end819 ]
+  %count.671664 = phi i32 [ 0, %for.cond800.preheader.lr.ph ], [ %count.68.lcssa, %for.end819 ]
+  %cmp8011656 = icmp sgt i32 %206, 0
+  br i1 %cmp8011656, label %for.body802, label %for.end819
+
+for.body802:                                      ; preds = %for.cond800.preheader, %for.body802
+  %indvars.iv1803 = phi i64 [ %indvars.iv.next1804, %for.body802 ], [ %201, %for.cond800.preheader ]
+  %kk755.11660 = phi i32 [ %add815, %for.body802 ], [ %kstart756.11666, %for.cond800.preheader ]
+  %ii752.11658 = phi i32 [ %inc818, %for.body802 ], [ 0, %for.cond800.preheader ]
+  %count.681657 = phi i32 [ %count.69, %for.body802 ], [ %count.671664, %for.cond800.preheader ]
+  %mul803 = shl nsw i32 %kk755.11660, 1
+  %idxprom804 = sext i32 %mul803 to i64
+  %arrayidx805 = getelementptr inbounds double* %call13, i64 %idxprom804
+  %207 = load double* %arrayidx805, align 8, !tbaa !4
+  %add8071364 = or i32 %mul803, 1
+  %idxprom808 = sext i32 %add8071364 to i64
+  %arrayidx809 = getelementptr inbounds double* %call13, i64 %idxprom808
+  %208 = load double* %arrayidx809, align 8, !tbaa !4
+  %call810 = call double @Zabs(double %207, double %208) #5
+  %not.cmp811 = fcmp oge double %call810, %droptol
+  %inc813 = zext i1 %not.cmp811 to i32
+  %count.69 = add nsw i32 %inc813, %count.681657
+  %209 = trunc i64 %indvars.iv1803 to i32
+  %add815 = add nsw i32 %kk755.11660, %209
+  %inc818 = add nsw i32 %ii752.11658, 1
+  %210 = load i32* %nD, align 4, !tbaa !3
+  %cmp801 = icmp slt i32 %inc818, %210
+  %indvars.iv.next1804 = add i64 %indvars.iv1803, -1
+  br i1 %cmp801, label %for.body802, label %for.end819
+
+for.end819:                                       ; preds = %for.body802, %for.cond800.preheader
+  %211 = phi i32 [ %206, %for.cond800.preheader ], [ %210, %for.body802 ]
+  %count.68.lcssa = phi i32 [ %count.671664, %for.cond800.preheader ], [ %count.69, %for.body802 ]
+  %inc820 = add nsw i32 %kstart756.11666, 1
+  %cmp798 = icmp slt i32 %inc820, %add759
+  br i1 %cmp798, label %for.cond800.preheader, label %sw.epilog894
+
+if.else826:                                       ; preds = %sw.bb751
+  %mul827 = shl nsw i32 %196, 1
+  %212 = load i32* %nL, align 4, !tbaa !3
+  %add828 = add nsw i32 %212, %mul827
+  %sub829 = add nsw i32 %add828, -1
+  %type834 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
+  %213 = load i32* %type834, align 4, !tbaa !3
+  switch i32 %213, label %sw.epilog894 [
+    i32 1, label %for.cond837.preheader
+    i32 2, label %for.cond863.preheader
+  ]
+
+for.cond863.preheader:                            ; preds = %if.else826
+  %cmp8641687 = icmp sgt i32 %197, 0
+  br i1 %cmp8641687, label %for.cond866.preheader.lr.ph, label %sw.epilog894
+
+for.cond866.preheader.lr.ph:                      ; preds = %for.cond863.preheader
+  %214 = add i32 %212, %197
+  %215 = shl i32 %196, 1
+  %216 = add i32 %214, %215
+  %217 = add i32 %216, -3
+  %218 = sext i32 %217 to i64
+  br label %for.cond866.preheader
+
+for.cond837.preheader:                            ; preds = %if.else826
+  %cmp8381675 = icmp sgt i32 %197, 0
+  br i1 %cmp8381675, label %for.cond840.preheader.lr.ph, label %sw.epilog894
+
+for.cond840.preheader.lr.ph:                      ; preds = %for.cond837.preheader
+  %cmp8411668 = icmp sgt i32 %196, 0
+  %219 = add i32 %212, %197
+  %220 = shl i32 %196, 1
+  %221 = add i32 %219, %220
+  %222 = add i32 %221, -3
+  %223 = sext i32 %222 to i64
+  br label %for.cond840.preheader
+
+for.cond840.preheader:                            ; preds = %for.cond840.preheader.lr.ph, %for.end854
+  %kstart756.21678 = phi i32 [ %sub829, %for.cond840.preheader.lr.ph ], [ %inc855, %for.end854 ]
+  %jj753.21677 = phi i32 [ %196, %for.cond840.preheader.lr.ph ], [ %inc857, %for.end854 ]
+  %count.701676 = phi i32 [ 0, %for.cond840.preheader.lr.ph ], [ %count.71.lcssa, %for.end854 ]
+  br i1 %cmp8411668, label %for.body842, label %for.end854
+
+for.body842:                                      ; preds = %for.cond840.preheader, %for.body842
+  %indvars.iv1806 = phi i64 [ %indvars.iv.next1807, %for.body842 ], [ %223, %for.cond840.preheader ]
+  %kk755.21672 = phi i32 [ %add850, %for.body842 ], [ %kstart756.21678, %for.cond840.preheader ]
+  %ii752.21670 = phi i32 [ %inc853, %for.body842 ], [ 0, %for.cond840.preheader ]
+  %count.711669 = phi i32 [ %count.72, %for.body842 ], [ %count.701676, %for.cond840.preheader ]
+  %idxprom843 = sext i32 %kk755.21672 to i64
+  %arrayidx844 = getelementptr inbounds double* %call13, i64 %idxprom843
+  %224 = load double* %arrayidx844, align 8, !tbaa !4
+  %call845 = call double @fabs(double %224) #7
+  %not.cmp846 = fcmp oge double %call845, %droptol
+  %inc848 = zext i1 %not.cmp846 to i32
+  %count.72 = add nsw i32 %inc848, %count.711669
+  %225 = trunc i64 %indvars.iv1806 to i32
+  %add850 = add nsw i32 %kk755.21672, %225
+  %inc853 = add nsw i32 %ii752.21670, 1
+  %indvars.iv.next1807 = add i64 %indvars.iv1806, -2
+  %exitcond1809 = icmp eq i32 %inc853, %196
+  br i1 %exitcond1809, label %for.end854, label %for.body842
+
+for.end854:                                       ; preds = %for.body842, %for.cond840.preheader
+  %count.71.lcssa = phi i32 [ %count.701676, %for.cond840.preheader ], [ %count.72, %for.body842 ]
+  %inc855 = add nsw i32 %kstart756.21678, 1
+  %inc857 = add nsw i32 %jj753.21677, 1
+  %cmp838 = icmp slt i32 %inc857, %add759
+  br i1 %cmp838, label %for.cond840.preheader, label %sw.epilog894
+
+for.cond866.preheader:                            ; preds = %for.cond866.preheader.lr.ph, %for.end885
+  %226 = phi i32 [ %196, %for.cond866.preheader.lr.ph ], [ %231, %for.end885 ]
+  %kstart756.31690 = phi i32 [ %sub829, %for.cond866.preheader.lr.ph ], [ %inc886, %for.end885 ]
+  %jj753.31689 = phi i32 [ %196, %for.cond866.preheader.lr.ph ], [ %inc888, %for.end885 ]
+  %count.731688 = phi i32 [ 0, %for.cond866.preheader.lr.ph ], [ %count.74.lcssa, %for.end885 ]
+  %cmp8671680 = icmp sgt i32 %226, 0
+  br i1 %cmp8671680, label %for.body868, label %for.end885
+
+for.body868:                                      ; preds = %for.cond866.preheader, %for.body868
+  %indvars.iv1810 = phi i64 [ %indvars.iv.next1811, %for.body868 ], [ %218, %for.cond866.preheader ]
+  %kk755.31684 = phi i32 [ %add881, %for.body868 ], [ %kstart756.31690, %for.cond866.preheader ]
+  %ii752.31682 = phi i32 [ %inc884, %for.body868 ], [ 0, %for.cond866.preheader ]
+  %count.741681 = phi i32 [ %count.75, %for.body868 ], [ %count.731688, %for.cond866.preheader ]
+  %mul869 = shl nsw i32 %kk755.31684, 1
+  %idxprom870 = sext i32 %mul869 to i64
+  %arrayidx871 = getelementptr inbounds double* %call13, i64 %idxprom870
+  %227 = load double* %arrayidx871, align 8, !tbaa !4
+  %add8731363 = or i32 %mul869, 1
+  %idxprom874 = sext i32 %add8731363 to i64
+  %arrayidx875 = getelementptr inbounds double* %call13, i64 %idxprom874
+  %228 = load double* %arrayidx875, align 8, !tbaa !4
+  %call876 = call double @Zabs(double %227, double %228) #5
+  %not.cmp877 = fcmp oge double %call876, %droptol
+  %inc879 = zext i1 %not.cmp877 to i32
+  %count.75 = add nsw i32 %inc879, %count.741681
+  %229 = trunc i64 %indvars.iv1810 to i32
+  %add881 = add nsw i32 %kk755.31684, %229
+  %inc884 = add nsw i32 %ii752.31682, 1
+  %230 = load i32* %nD, align 4, !tbaa !3
+  %cmp867 = icmp slt i32 %inc884, %230
+  %indvars.iv.next1811 = add i64 %indvars.iv1810, -2
+  br i1 %cmp867, label %for.body868, label %for.end885
+
+for.end885:                                       ; preds = %for.body868, %for.cond866.preheader
+  %231 = phi i32 [ %226, %for.cond866.preheader ], [ %230, %for.body868 ]
+  %count.74.lcssa = phi i32 [ %count.731688, %for.cond866.preheader ], [ %count.75, %for.body868 ]
+  %inc886 = add nsw i32 %kstart756.31690, 1
+  %inc888 = add nsw i32 %jj753.31689, 1
+  %cmp864 = icmp slt i32 %inc888, %add759
+  br i1 %cmp864, label %for.cond866.preheader, label %sw.epilog894
+
+sw.epilog894:                                     ; preds = %for.cond863.preheader, %for.end885, %for.cond837.preheader, %for.end854, %for.cond797.preheader, %for.end819, %for.cond771.preheader, %for.end788, %for.cond721.preheader, %for.end743, %for.cond695.preheader, %for.end712, %for.end677, %for.cond607.preheader, %for.end635, %for.end596, %for.cond548.preheader, %for.end565, %for.cond494.preheader, %for.end516, %for.cond468.preheader, %for.end485, %for.cond422.preheader, %for.end444, %for.cond396.preheader, %for.end413, %for.cond341.preheader, %for.end370, %for.cond308.preheader, %for.end332, %for.end267, %for.end290, %for.end203, %for.end221, %for.end160, %for.cond98.preheader, %for.end122, %for.cond41.preheader, %for.end70, %for.cond.preheader, %for.end, %if.else826, %if.then765, %if.else685, %sw.bb451, %sw.bb378, %if.else298, %sw.bb14, %if.end12, %if.else640, %if.else570, %if.else226, %if.else127
+  %count.76 = phi i32 [ undef, %if.end12 ], [ 0, %if.else570 ], [ 0, %if.else640 ], [ 0, %if.else127 ], [ 0, %if.else226 ], [ 0, %sw.bb14 ], [ 0, %if.else298 ], [ 0, %sw.bb378 ], [ 0, %sw.bb451 ], [ 0, %if.else685 ], [ 0, %if.then765 ], [ 0, %if.else826 ], [ 0, %for.cond.preheader ], [ %count.1.lcssa, %for.end ], [ 0, %for.cond41.preheader ], [ %count.4.lcssa, %for.end70 ], [ 0, %for.cond98.preheader ], [ %count.7.lcssa, %for.end122 ], [ %count.10.lcssa, %for.end160 ], [ %count.12.lcssa, %for.end203 ], [ %count.17.lcssa, %for.end221 ], [ %count.19.lcssa, %for.end267 ], [ %count.24.lcssa, %for.end290 ], [ 0, %for.cond308.preheader ], [ %count.27.lcssa, %for.end332 ], [ 0, %for.cond341.preheader ], [ %count.30.lcssa, %for.end370 ], [ 0, %for.cond396.preheader ], [ %count.33.lcssa, %for.end413 ], [ 0, %for.cond422.preheader ], [ %count.36.lcssa, %for.end444 ], [ 0, %for.cond468.preheader ], [ %count.39.lcssa, %for.end485 ], [ 0, %for.cond494.preheader ], [ %count.42.lcssa, %for.end516 ], [ 0, %for.cond548.preheader ], [ %count.45.lcssa, %for.end565 ], [ %count.48.lcssa, %for.end596 ], [ 0, %for.cond607.preheader ], [ %count.51.lcssa, %for.end635 ], [ %count.55.lcssa, %for.end677 ], [ 0, %for.cond695.preheader ], [ %count.59.lcssa, %for.end712 ], [ 0, %for.cond721.preheader ], [ %count.62.lcssa, %for.end743 ], [ 0, %for.cond771.preheader ], [ %count.65.lcssa, %for.end788 ], [ 0, %for.cond797.preheader ], [ %count.68.lcssa, %for.end819 ], [ 0, %for.cond837.preheader ], [ %count.71.lcssa, %for.end854 ], [ 0, %for.cond863.preheader ], [ %count.74.lcssa, %for.end885 ]
+  ret i32 %count.76
+}

@@ -1,0 +1,14 @@
+define i8* @xstrerror(i32 %errnum) #0 {
+entry:
+  %call = tail call i8* @strerror(i32 %errnum) #3
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0), i32 %errnum) #3
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %errstr.0 = phi i8* [ %call, %entry ], [ getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), %if.then ]
+  ret i8* %errstr.0
+}

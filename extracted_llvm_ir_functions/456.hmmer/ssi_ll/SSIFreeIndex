@@ -1,0 +1,197 @@
+define void @SSIFreeIndex(%struct.ssiindex_s* %g) #0 {
+entry:
+  %cmp = icmp eq %struct.ssiindex_s* %g, null
+  br i1 %cmp, label %if.end74, label %if.then
+
+if.then:                                          ; preds = %entry
+  %external = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 2
+  %0 = load i32* %external, align 4, !tbaa !4
+  %cmp1 = icmp eq i32 %0, 0
+  br i1 %cmp1, label %for.cond.preheader, label %if.else
+
+for.cond.preheader:                               ; preds = %if.then
+  %nprimary = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 12
+  %1 = load i32* %nprimary, align 4, !tbaa !4
+  %cmp3121 = icmp eq i32 %1, 0
+  br i1 %cmp3121, label %for.cond4.preheader, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %pkeys = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 10
+  br label %for.body
+
+for.cond4.preheader:                              ; preds = %for.body, %for.cond.preheader
+  %nsecondary = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 17
+  %2 = load i32* %nsecondary, align 4, !tbaa !4
+  %cmp5119 = icmp eq i32 %2, 0
+  br i1 %cmp5119, label %for.end22, label %for.body6.lr.ph
+
+for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
+  %skeys = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 15
+  br label %for.body6
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv127 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next128, %for.body ]
+  %3 = load %struct.ssipkey_s** %pkeys, align 8, !tbaa !0
+  %key = getelementptr inbounds %struct.ssipkey_s* %3, i64 %indvars.iv127, i32 0
+  %4 = load i8** %key, align 8, !tbaa !0
+  tail call void @free(i8* %4) #8
+  %indvars.iv.next128 = add i64 %indvars.iv127, 1
+  %5 = load i32* %nprimary, align 4, !tbaa !4
+  %6 = trunc i64 %indvars.iv.next128 to i32
+  %cmp3 = icmp ult i32 %6, %5
+  br i1 %cmp3, label %for.body, label %for.cond4.preheader
+
+for.cond13.preheader:                             ; preds = %for.body6
+  %phitmp = icmp eq i32 %9, 0
+  br i1 %phitmp, label %for.end22, label %for.body16.lr.ph
+
+for.body16.lr.ph:                                 ; preds = %for.cond13.preheader
+  %skeys18 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 15
+  br label %for.body16
+
+for.body6:                                        ; preds = %for.body6.lr.ph, %for.body6
+  %indvars.iv125 = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next126, %for.body6 ]
+  %7 = load %struct.ssiskey_s** %skeys, align 8, !tbaa !0
+  %key9 = getelementptr inbounds %struct.ssiskey_s* %7, i64 %indvars.iv125, i32 0
+  %8 = load i8** %key9, align 8, !tbaa !0
+  tail call void @free(i8* %8) #8
+  %indvars.iv.next126 = add i64 %indvars.iv125, 1
+  %9 = load i32* %nsecondary, align 4, !tbaa !4
+  %10 = trunc i64 %indvars.iv.next126 to i32
+  %cmp5 = icmp ult i32 %10, %9
+  br i1 %cmp5, label %for.body6, label %for.cond13.preheader
+
+for.body16:                                       ; preds = %for.body16.lr.ph, %for.body16
+  %indvars.iv123 = phi i64 [ 0, %for.body16.lr.ph ], [ %indvars.iv.next124, %for.body16 ]
+  %11 = load %struct.ssiskey_s** %skeys18, align 8, !tbaa !0
+  %pkey = getelementptr inbounds %struct.ssiskey_s* %11, i64 %indvars.iv123, i32 1
+  %12 = load i8** %pkey, align 8, !tbaa !0
+  tail call void @free(i8* %12) #8
+  %indvars.iv.next124 = add i64 %indvars.iv123, 1
+  %13 = load i32* %nsecondary, align 4, !tbaa !4
+  %14 = trunc i64 %indvars.iv.next124 to i32
+  %cmp15 = icmp ult i32 %14, %13
+  br i1 %cmp15, label %for.body16, label %for.end22
+
+for.end22:                                        ; preds = %for.cond4.preheader, %for.body16, %for.cond13.preheader
+  %pkeys23 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 10
+  %15 = load %struct.ssipkey_s** %pkeys23, align 8, !tbaa !0
+  %cmp24 = icmp eq %struct.ssipkey_s* %15, null
+  br i1 %cmp24, label %if.end, label %if.then25
+
+if.then25:                                        ; preds = %for.end22
+  %16 = bitcast %struct.ssipkey_s* %15 to i8*
+  tail call void @free(i8* %16) #8
+  br label %if.end
+
+if.end:                                           ; preds = %for.end22, %if.then25
+  %skeys27 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 15
+  %17 = load %struct.ssiskey_s** %skeys27, align 8, !tbaa !0
+  %cmp28 = icmp eq %struct.ssiskey_s* %17, null
+  br i1 %cmp28, label %for.cond44.preheader, label %if.then29
+
+if.then29:                                        ; preds = %if.end
+  %18 = bitcast %struct.ssiskey_s* %17 to i8*
+  tail call void @free(i8* %18) #8
+  br label %for.cond44.preheader
+
+if.else:                                          ; preds = %if.then
+  %ptmp = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 14
+  %19 = load %struct._IO_FILE** %ptmp, align 8, !tbaa !0
+  %cmp32 = icmp eq %struct._IO_FILE* %19, null
+  br i1 %cmp32, label %if.end35, label %if.then33
+
+if.then33:                                        ; preds = %if.else
+  %call = tail call i32 @fclose(%struct._IO_FILE* %19) #8
+  br label %if.end35
+
+if.end35:                                         ; preds = %if.else, %if.then33
+  %stmp = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 19
+  %20 = load %struct._IO_FILE** %stmp, align 8, !tbaa !0
+  %cmp36 = icmp eq %struct._IO_FILE* %20, null
+  br i1 %cmp36, label %if.end40, label %if.then37
+
+if.then37:                                        ; preds = %if.end35
+  %call39 = tail call i32 @fclose(%struct._IO_FILE* %20) #8
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.end35, %if.then37
+  %ptmpfile = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 13
+  %21 = load i8** %ptmpfile, align 8, !tbaa !0
+  %call41 = tail call i32 @remove(i8* %21) #8
+  %stmpfile = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 18
+  %22 = load i8** %stmpfile, align 8, !tbaa !0
+  %call42 = tail call i32 @remove(i8* %22) #8
+  br label %for.cond44.preheader
+
+for.cond44.preheader:                             ; preds = %if.end, %if.then29, %if.end40
+  %nfiles = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 9
+  %23 = load i16* %nfiles, align 2, !tbaa !3
+  %cmp45115 = icmp eq i16 %23, 0
+  %filenames53.pre = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 4
+  br i1 %cmp45115, label %for.end52, label %for.body47
+
+for.body47:                                       ; preds = %for.cond44.preheader, %for.body47
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body47 ], [ 0, %for.cond44.preheader ]
+  %24 = load i8*** %filenames53.pre, align 8, !tbaa !0
+  %arrayidx49 = getelementptr inbounds i8** %24, i64 %indvars.iv
+  %25 = load i8** %arrayidx49, align 8, !tbaa !0
+  tail call void @free(i8* %25) #8
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %26 = load i16* %nfiles, align 2, !tbaa !3
+  %conv = zext i16 %26 to i32
+  %27 = trunc i64 %indvars.iv.next to i32
+  %cmp45 = icmp slt i32 %27, %conv
+  br i1 %cmp45, label %for.body47, label %for.end52
+
+for.end52:                                        ; preds = %for.cond44.preheader, %for.body47
+  %28 = load i8*** %filenames53.pre, align 8, !tbaa !0
+  %cmp54 = icmp eq i8** %28, null
+  br i1 %cmp54, label %if.end58, label %if.then56
+
+if.then56:                                        ; preds = %for.end52
+  %29 = bitcast i8** %28 to i8*
+  tail call void @free(i8* %29) #8
+  br label %if.end58
+
+if.end58:                                         ; preds = %for.end52, %if.then56
+  %fileformat = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 5
+  %30 = load i32** %fileformat, align 8, !tbaa !0
+  %cmp59 = icmp eq i32* %30, null
+  br i1 %cmp59, label %if.end63, label %if.then61
+
+if.then61:                                        ; preds = %if.end58
+  %31 = bitcast i32* %30 to i8*
+  tail call void @free(i8* %31) #8
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.end58, %if.then61
+  %bpl = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 6
+  %32 = load i32** %bpl, align 8, !tbaa !0
+  %cmp64 = icmp eq i32* %32, null
+  br i1 %cmp64, label %if.end68, label %if.then66
+
+if.then66:                                        ; preds = %if.end63
+  %33 = bitcast i32* %32 to i8*
+  tail call void @free(i8* %33) #8
+  br label %if.end68
+
+if.end68:                                         ; preds = %if.end63, %if.then66
+  %rpl = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 7
+  %34 = load i32** %rpl, align 8, !tbaa !0
+  %cmp69 = icmp eq i32* %34, null
+  br i1 %cmp69, label %if.end73, label %if.then71
+
+if.then71:                                        ; preds = %if.end68
+  %35 = bitcast i32* %34 to i8*
+  tail call void @free(i8* %35) #8
+  br label %if.end73
+
+if.end73:                                         ; preds = %if.end68, %if.then71
+  %36 = bitcast %struct.ssiindex_s* %g to i8*
+  tail call void @free(i8* %36) #8
+  br label %if.end74
+
+if.end74:                                         ; preds = %entry, %if.end73
+  ret void
+}

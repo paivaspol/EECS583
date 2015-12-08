@@ -1,0 +1,34 @@
+define void @ZVfprintf(%struct._IO_FILE* %fp, i32 %size, double* %y) #0 {
+entry:
+  %cmp = icmp slt i32 %size, 0
+  %cmp1 = icmp eq double* %y, null
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp217 = icmp sgt i32 %size, 0
+  br i1 %cmp217, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str9, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, double* %y) #5
+  tail call void @exit(i32 -1) #7
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %ii.018 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !0
+  %2 = or i64 %indvars.iv, 1
+  %arrayidx4 = getelementptr inbounds double* %y, i64 %2
+  %3 = load double* %arrayidx4, align 8, !tbaa !0
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([21 x i8]* @.str10, i64 0, i64 0), double %1, double %3) #5
+  %inc = add nsw i32 %ii.018, 1
+  %indvars.iv.next = add i64 %indvars.iv, 2
+  %exitcond = icmp eq i32 %inc, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void
+}

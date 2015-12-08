@@ -1,0 +1,20 @@
+define i64 @PerlIOBase_fileno(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %cond.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %land.lhs.true
+  %next = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 0
+  %call = tail call i32 @Perl_PerlIO_fileno(%struct._PerlIO** %next) #10
+  %phitmp = sext i32 %call to i64
+  br label %cond.end
+
+cond.end:                                         ; preds = %land.lhs.true, %entry, %cond.true
+  %cond = phi i64 [ %phitmp, %cond.true ], [ -1, %land.lhs.true ], [ -1, %entry ]
+  ret i64 %cond
+}

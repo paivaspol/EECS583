@@ -1,0 +1,75 @@
+define float @PairwiseIdentity(i8* nocapture %s1, i8* nocapture %s2) #2 {
+entry:
+  %0 = load i8* %s1, align 1, !tbaa !1
+  %cmp121 = icmp eq i8 %0, 0
+  br i1 %cmp121, label %for.end, label %land.rhs
+
+land.rhs:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %1 = phi i8 [ %3, %for.inc ], [ %0, %entry ]
+  %len2.0124 = phi i32 [ %len2.1, %for.inc ], [ 0, %entry ]
+  %len1.0123 = phi i32 [ %len1.1, %for.inc ], [ 0, %entry ]
+  %idents.0122 = phi i32 [ %idents.1, %for.inc ], [ 0, %entry ]
+  %arrayidx3 = getelementptr inbounds i8* %s2, i64 %indvars.iv
+  %2 = load i8* %arrayidx3, align 1, !tbaa !1
+  %cmp5 = icmp eq i8 %2, 0
+  br i1 %cmp5, label %for.end, label %for.body
+
+for.body:                                         ; preds = %land.rhs
+  switch i8 %1, label %if.then [
+    i8 32, label %if.end45
+    i8 46, label %if.end45
+    i8 95, label %if.end45
+    i8 45, label %if.end45
+    i8 126, label %if.end45
+  ]
+
+if.then:                                          ; preds = %for.body
+  %inc = add nsw i32 %len1.0123, 1
+  %cmp41 = icmp eq i8 %1, %2
+  %inc44 = zext i1 %cmp41 to i32
+  %inc44.idents.0 = add nsw i32 %inc44, %idents.0122
+  br label %if.end45
+
+if.end45:                                         ; preds = %if.then, %for.body, %for.body, %for.body, %for.body, %for.body
+  %idents.1 = phi i32 [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %inc44.idents.0, %if.then ]
+  %len1.1 = phi i32 [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %inc, %if.then ]
+  switch i8 %2, label %if.then75 [
+    i8 32, label %for.inc
+    i8 46, label %for.inc
+    i8 95, label %for.inc
+    i8 45, label %for.inc
+    i8 126, label %for.inc
+  ]
+
+if.then75:                                        ; preds = %if.end45
+  %inc76 = add nsw i32 %len2.0124, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end45, %if.end45, %if.end45, %if.end45, %if.end45, %if.then75
+  %len2.1 = phi i32 [ %len2.0124, %if.end45 ], [ %inc76, %if.then75 ], [ %len2.0124, %if.end45 ], [ %len2.0124, %if.end45 ], [ %len2.0124, %if.end45 ], [ %len2.0124, %if.end45 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %arrayidx = getelementptr inbounds i8* %s1, i64 %indvars.iv.next
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp = icmp eq i8 %3, 0
+  br i1 %cmp, label %for.end, label %land.rhs
+
+for.end:                                          ; preds = %for.inc, %land.rhs, %entry
+  %len2.0.lcssa = phi i32 [ 0, %entry ], [ %len2.0124, %land.rhs ], [ %len2.1, %for.inc ]
+  %len1.0.lcssa = phi i32 [ 0, %entry ], [ %len1.0123, %land.rhs ], [ %len1.1, %for.inc ]
+  %idents.0.lcssa = phi i32 [ 0, %entry ], [ %idents.0122, %land.rhs ], [ %idents.1, %for.inc ]
+  %cmp79 = icmp slt i32 %len2.0.lcssa, %len1.0.lcssa
+  %len2.0.len1.0 = select i1 %cmp79, i32 %len2.0.lcssa, i32 %len1.0.lcssa
+  %cmp83 = icmp eq i32 %len2.0.len1.0, 0
+  br i1 %cmp83, label %cond.end, label %cond.false
+
+cond.false:                                       ; preds = %for.end
+  %conv85 = sitofp i32 %idents.0.lcssa to float
+  %conv86 = sitofp i32 %len2.0.len1.0 to float
+  %div = fdiv float %conv85, %conv86
+  br label %cond.end
+
+cond.end:                                         ; preds = %for.end, %cond.false
+  %cond = phi float [ %div, %cond.false ], [ 0.000000e+00, %for.end ]
+  ret float %cond
+}

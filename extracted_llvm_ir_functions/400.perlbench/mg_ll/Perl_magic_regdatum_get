@@ -1,0 +1,78 @@
+define i32 @Perl_magic_regdatum_get(%struct.sv* %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %0 = load %struct.pmop** @PL_curpm, align 8, !tbaa !0
+  %tobool = icmp eq %struct.pmop* %0, null
+  br i1 %tobool, label %return, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %op_pmregexp = getelementptr inbounds %struct.pmop* %0, i64 0, i32 13
+  %1 = load %struct.regexp** %op_pmregexp, align 8, !tbaa !0
+  %tobool1 = icmp eq %struct.regexp* %1, null
+  br i1 %tobool1, label %return, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %mg_len = getelementptr inbounds %struct.magic* %mg, i64 0, i32 7
+  %2 = load i32* %mg_len, align 4, !tbaa !3
+  %cmp = icmp slt i32 %2, 0
+  br i1 %cmp, label %return, label %if.end
+
+if.end:                                           ; preds = %if.then
+  %nparens = getelementptr inbounds %struct.regexp* %1, i64 0, i32 12
+  %3 = load i32* %nparens, align 4, !tbaa !3
+  %cmp3 = icmp sgt i32 %2, %3
+  br i1 %cmp3, label %return, label %land.lhs.true4
+
+land.lhs.true4:                                   ; preds = %if.end
+  %idxprom = sext i32 %2 to i64
+  %startp = getelementptr inbounds %struct.regexp* %1, i64 0, i32 0
+  %4 = load i32** %startp, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom
+  %5 = load i32* %arrayidx, align 4, !tbaa !3
+  %cmp5 = icmp eq i32 %5, -1
+  br i1 %cmp5, label %return, label %land.lhs.true6
+
+land.lhs.true6:                                   ; preds = %land.lhs.true4
+  %endp = getelementptr inbounds %struct.regexp* %1, i64 0, i32 1
+  %6 = load i32** %endp, align 8, !tbaa !0
+  %arrayidx8 = getelementptr inbounds i32* %6, i64 %idxprom
+  %7 = load i32* %arrayidx8, align 4, !tbaa !3
+  %cmp9 = icmp eq i32 %7, -1
+  br i1 %cmp9, label %return, label %if.then10
+
+if.then10:                                        ; preds = %land.lhs.true6
+  %mg_obj = getelementptr inbounds %struct.magic* %mg, i64 0, i32 5
+  %8 = load %struct.sv** %mg_obj, align 8, !tbaa !0
+  %tobool11 = icmp eq %struct.sv* %8, null
+  %. = select i1 %tobool11, i32 %5, i32 %7
+  %cmp14 = icmp sgt i32 %., 0
+  br i1 %cmp14, label %land.lhs.true15, label %if.end21
+
+land.lhs.true15:                                  ; preds = %if.then10
+  %reganch = getelementptr inbounds %struct.regexp* %1, i64 0, i32 15
+  %9 = load i32* %reganch, align 4, !tbaa !3
+  %and = and i32 %9, 268435456
+  %tobool16 = icmp eq i32 %and, 0
+  br i1 %tobool16, label %if.end21, label %if.then17
+
+if.then17:                                        ; preds = %land.lhs.true15
+  %subbeg = getelementptr inbounds %struct.regexp* %1, i64 0, i32 6
+  %10 = load i8** %subbeg, align 8, !tbaa !0
+  %tobool18 = icmp eq i8* %10, null
+  br i1 %tobool18, label %if.end21, label %if.then19
+
+if.then19:                                        ; preds = %if.then17
+  %idx.ext = sext i32 %. to i64
+  %add.ptr = getelementptr inbounds i8* %10, i64 %idx.ext
+  %call = tail call i64 @Perl_utf8_length(i8* %10, i8* %add.ptr) #7
+  %conv = trunc i64 %call to i32
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then17, %land.lhs.true15, %if.then19, %if.then10
+  %i.1 = phi i32 [ %conv, %if.then19 ], [ %., %if.then17 ], [ %., %land.lhs.true15 ], [ %., %if.then10 ]
+  %conv22 = sext i32 %i.1 to i64
+  tail call void @Perl_sv_setiv(%struct.sv* %sv, i64 %conv22) #7
+  br label %return
+
+return:                                           ; preds = %if.end21, %entry, %land.lhs.true, %if.end, %land.lhs.true4, %land.lhs.true6, %if.then
+  ret i32 0
+}

@@ -1,0 +1,167 @@
+define i32 @DenseMtx_writeForMatlab(%struct._DenseMtx* %mtx, i8* %mtxname, %struct._IO_FILE* %fp) #0 {
+entry:
+  %ncol = alloca i32, align 4
+  %nrow = alloca i32, align 4
+  %colind = alloca i32*, align 8
+  %rowind = alloca i32*, align 8
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([57 x i8]* @.str39, i64 0, i64 0), i64 56, i64 1, %struct._IO_FILE* %0) #7
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq i8* %mtxname, null
+  br i1 %cmp1, label %if.then2, label %if.end4
+
+if.then2:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %3 = call i64 @fwrite(i8* getelementptr inbounds ([61 x i8]* @.str40, i64 0, i64 0), i64 60, i64 1, %struct._IO_FILE* %2) #7
+  br label %return
+
+if.end4:                                          ; preds = %if.end
+  %cmp5 = icmp eq %struct._IO_FILE* %fp, null
+  br i1 %cmp5, label %if.then6, label %if.end8
+
+if.then6:                                         ; preds = %if.end4
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str41, i64 0, i64 0), i64 55, i64 1, %struct._IO_FILE* %4) #7
+  br label %return
+
+if.end8:                                          ; preds = %if.end4
+  call void @DenseMtx_rowIndices(%struct._DenseMtx* %mtx, i32* %nrow, i32** %rowind) #4
+  call void @DenseMtx_columnIndices(%struct._DenseMtx* %mtx, i32* %ncol, i32** %colind) #4
+  call void @DenseMtx_dimensions(%struct._DenseMtx* %mtx, i32* %nrow, i32* %ncol) #4
+  %call9 = call i32 @DenseMtx_rowIncrement(%struct._DenseMtx* %mtx) #4
+  %call10 = call i32 @DenseMtx_columnIncrement(%struct._DenseMtx* %mtx) #4
+  %call11 = call double* @DenseMtx_entries(%struct._DenseMtx* %mtx) #4
+  %type = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 0
+  %6 = load i32* %type, align 4, !tbaa !3
+  switch i32 %6, label %return [
+    i32 1, label %for.cond.preheader
+    i32 2, label %for.cond32.preheader
+  ]
+
+for.cond32.preheader:                             ; preds = %if.end8
+  %7 = load i32* %ncol, align 4, !tbaa !3
+  %cmp33108 = icmp sgt i32 %7, 0
+  br i1 %cmp33108, label %for.cond35.preheader.lr.ph, label %return
+
+for.cond35.preheader.lr.ph:                       ; preds = %for.cond32.preheader
+  %.pre117 = load i32* %nrow, align 4, !tbaa !3
+  br label %for.cond35.preheader
+
+for.cond.preheader:                               ; preds = %if.end8
+  %8 = load i32* %ncol, align 4, !tbaa !3
+  %cmp14103 = icmp sgt i32 %8, 0
+  br i1 %cmp14103, label %for.cond15.preheader.lr.ph, label %return
+
+for.cond15.preheader.lr.ph:                       ; preds = %for.cond.preheader
+  %.pre = load i32* %nrow, align 4, !tbaa !3
+  br label %for.cond15.preheader
+
+for.cond15.preheader:                             ; preds = %for.cond15.preheader.lr.ph, %for.inc26
+  %9 = phi i32 [ %8, %for.cond15.preheader.lr.ph ], [ %20, %for.inc26 ]
+  %10 = phi i32 [ %.pre, %for.cond15.preheader.lr.ph ], [ %21, %for.inc26 ]
+  %indvars.iv110 = phi i64 [ 0, %for.cond15.preheader.lr.ph ], [ %indvars.iv.next111, %for.inc26 ]
+  %cmp16101 = icmp sgt i32 %10, 0
+  br i1 %cmp16101, label %for.body17.lr.ph, label %for.inc26
+
+for.body17.lr.ph:                                 ; preds = %for.cond15.preheader
+  %11 = trunc i64 %indvars.iv110 to i32
+  %mul21 = mul nsw i32 %11, %call10
+  br label %for.body17
+
+for.body17:                                       ; preds = %for.body17.lr.ph, %for.body17
+  %indvars.iv = phi i64 [ 0, %for.body17.lr.ph ], [ %indvars.iv.next, %for.body17 ]
+  %12 = load i32** %rowind, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %12, i64 %indvars.iv
+  %13 = load i32* %arrayidx, align 4, !tbaa !3
+  %add = add nsw i32 %13, 1
+  %14 = load i32** %colind, align 8, !tbaa !0
+  %arrayidx19 = getelementptr inbounds i32* %14, i64 %indvars.iv110
+  %15 = load i32* %arrayidx19, align 4, !tbaa !3
+  %add20 = add nsw i32 %15, 1
+  %16 = trunc i64 %indvars.iv to i32
+  %mul = mul nsw i32 %16, %call9
+  %add22 = add nsw i32 %mul, %mul21
+  %idxprom23 = sext i32 %add22 to i64
+  %arrayidx24 = getelementptr inbounds double* %call11, i64 %idxprom23
+  %17 = load double* %arrayidx24, align 8, !tbaa !4
+  %call25 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([24 x i8]* @.str42, i64 0, i64 0), i8* %mtxname, i32 %add, i32 %add20, double %17) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %18 = load i32* %nrow, align 4, !tbaa !3
+  %19 = trunc i64 %indvars.iv.next to i32
+  %cmp16 = icmp slt i32 %19, %18
+  br i1 %cmp16, label %for.body17, label %for.cond15.for.inc26_crit_edge
+
+for.cond15.for.inc26_crit_edge:                   ; preds = %for.body17
+  %.pre116 = load i32* %ncol, align 4, !tbaa !3
+  br label %for.inc26
+
+for.inc26:                                        ; preds = %for.cond15.for.inc26_crit_edge, %for.cond15.preheader
+  %20 = phi i32 [ %.pre116, %for.cond15.for.inc26_crit_edge ], [ %9, %for.cond15.preheader ]
+  %21 = phi i32 [ %18, %for.cond15.for.inc26_crit_edge ], [ %10, %for.cond15.preheader ]
+  %indvars.iv.next111 = add i64 %indvars.iv110, 1
+  %22 = trunc i64 %indvars.iv.next111 to i32
+  %cmp14 = icmp slt i32 %22, %20
+  br i1 %cmp14, label %for.cond15.preheader, label %return
+
+for.cond35.preheader:                             ; preds = %for.cond35.preheader.lr.ph, %for.inc61
+  %23 = phi i32 [ %7, %for.cond35.preheader.lr.ph ], [ %35, %for.inc61 ]
+  %24 = phi i32 [ %.pre117, %for.cond35.preheader.lr.ph ], [ %36, %for.inc61 ]
+  %indvars.iv114 = phi i64 [ 0, %for.cond35.preheader.lr.ph ], [ %indvars.iv.next115, %for.inc61 ]
+  %cmp36105 = icmp sgt i32 %24, 0
+  br i1 %cmp36105, label %for.body37.lr.ph, label %for.inc61
+
+for.body37.lr.ph:                                 ; preds = %for.cond35.preheader
+  %25 = trunc i64 %indvars.iv114 to i32
+  %mul45 = mul nsw i32 %25, %call10
+  br label %for.body37
+
+for.body37:                                       ; preds = %for.body37.lr.ph, %for.body37
+  %indvars.iv112 = phi i64 [ 0, %for.body37.lr.ph ], [ %indvars.iv.next113, %for.body37 ]
+  %26 = load i32** %rowind, align 8, !tbaa !0
+  %arrayidx39 = getelementptr inbounds i32* %26, i64 %indvars.iv112
+  %27 = load i32* %arrayidx39, align 4, !tbaa !3
+  %add40 = add nsw i32 %27, 1
+  %28 = load i32** %colind, align 8, !tbaa !0
+  %arrayidx42 = getelementptr inbounds i32* %28, i64 %indvars.iv114
+  %29 = load i32* %arrayidx42, align 4, !tbaa !3
+  %add43 = add nsw i32 %29, 1
+  %30 = trunc i64 %indvars.iv112 to i32
+  %mul44 = mul nsw i32 %30, %call9
+  %add46 = add nsw i32 %mul44, %mul45
+  %mul47 = shl nsw i32 %add46, 1
+  %idxprom48 = sext i32 %mul47 to i64
+  %arrayidx49 = getelementptr inbounds double* %call11, i64 %idxprom48
+  %31 = load double* %arrayidx49, align 8, !tbaa !4
+  %add54100 = or i32 %mul47, 1
+  %idxprom55 = sext i32 %add54100 to i64
+  %arrayidx56 = getelementptr inbounds double* %call11, i64 %idxprom55
+  %32 = load double* %arrayidx56, align 8, !tbaa !4
+  %call57 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([36 x i8]* @.str43, i64 0, i64 0), i8* %mtxname, i32 %add40, i32 %add43, double %31, double %32) #4
+  %indvars.iv.next113 = add i64 %indvars.iv112, 1
+  %33 = load i32* %nrow, align 4, !tbaa !3
+  %34 = trunc i64 %indvars.iv.next113 to i32
+  %cmp36 = icmp slt i32 %34, %33
+  br i1 %cmp36, label %for.body37, label %for.cond35.for.inc61_crit_edge
+
+for.cond35.for.inc61_crit_edge:                   ; preds = %for.body37
+  %.pre118 = load i32* %ncol, align 4, !tbaa !3
+  br label %for.inc61
+
+for.inc61:                                        ; preds = %for.cond35.for.inc61_crit_edge, %for.cond35.preheader
+  %35 = phi i32 [ %.pre118, %for.cond35.for.inc61_crit_edge ], [ %23, %for.cond35.preheader ]
+  %36 = phi i32 [ %33, %for.cond35.for.inc61_crit_edge ], [ %24, %for.cond35.preheader ]
+  %indvars.iv.next115 = add i64 %indvars.iv114, 1
+  %37 = trunc i64 %indvars.iv.next115 to i32
+  %cmp33 = icmp slt i32 %37, %35
+  br i1 %cmp33, label %for.cond35.preheader, label %return
+
+return:                                           ; preds = %for.cond32.preheader, %for.inc61, %for.cond.preheader, %for.inc26, %if.end8, %if.then6, %if.then2, %if.then
+  %retval.0 = phi i32 [ -1, %if.then ], [ -2, %if.then2 ], [ -3, %if.then6 ], [ 1, %if.end8 ], [ 1, %for.inc26 ], [ 1, %for.cond.preheader ], [ 1, %for.inc61 ], [ 1, %for.cond32.preheader ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,66 @@
+define void @XS_Digest__MD5_digest(%struct.cv* nocapture %cv) #0 {
+entry:
+  %digeststr = alloca [16 x i8], align 16
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sub.ptr.div428 = lshr exact i64 %sub.ptr.sub3, 3
+  %conv5 = trunc i64 %sub.ptr.div428 to i32
+  %sv_any = getelementptr inbounds %struct.cv* %cv, i64 0, i32 0
+  %4 = load %struct.xpvcv** %sv_any, align 8, !tbaa !0
+  %xcv_xsubany = getelementptr inbounds %struct.xpvcv* %4, i64 0, i32 11
+  %any_i32 = bitcast %union.any* %xcv_xsubany to i32*
+  %5 = load i32* %any_i32, align 4, !tbaa !3
+  %cmp = icmp eq i32 %conv5, 1
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %xcv_gv = getelementptr inbounds %struct.xpvcv* %4, i64 0, i32 12
+  %6 = load %struct.gv** %xcv_gv, align 8, !tbaa !0
+  %sv_any8 = getelementptr inbounds %struct.gv* %6, i64 0, i32 0
+  %7 = load %struct.xpvgv** %sv_any8, align 8, !tbaa !0
+  %xgv_name = getelementptr inbounds %struct.xpvgv* %7, i64 0, i32 8
+  %8 = load i8** %xgv_name, align 8, !tbaa !0
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([19 x i8]* @.str7, i64 0, i64 0), i8* %8) #4
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %9 = phi %struct.sv** [ %1, %entry ], [ %.pre, %if.then ]
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %9, i64 %idxprom
+  %10 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %call = call fastcc %struct.MD5_CTX* @get_md5_ctx(%struct.sv* %10) #5
+  %arraydecay = getelementptr inbounds [16 x i8]* %digeststr, i64 0, i64 0
+  call fastcc void @MD5Final(i8* %arraydecay, %struct.MD5_CTX* %call) #5
+  %A.i = getelementptr inbounds %struct.MD5_CTX* %call, i64 0, i32 1
+  store i32 1732584193, i32* %A.i, align 4, !tbaa !3
+  %B.i = getelementptr inbounds %struct.MD5_CTX* %call, i64 0, i32 2
+  store i32 -271733879, i32* %B.i, align 4, !tbaa !3
+  %C.i = getelementptr inbounds %struct.MD5_CTX* %call, i64 0, i32 3
+  store i32 -1732584194, i32* %C.i, align 4, !tbaa !3
+  %D.i = getelementptr inbounds %struct.MD5_CTX* %call, i64 0, i32 4
+  store i32 271733878, i32* %D.i, align 4, !tbaa !3
+  %bytes_high.i = getelementptr inbounds %struct.MD5_CTX* %call, i64 0, i32 6
+  store i32 0, i32* %bytes_high.i, align 4, !tbaa !3
+  %bytes_low.i = getelementptr inbounds %struct.MD5_CTX* %call, i64 0, i32 5
+  store i32 0, i32* %bytes_low.i, align 4, !tbaa !3
+  %call13 = call fastcc %struct.sv* @make_mortal_sv(i8* %arraydecay, i32 %5) #5
+  %11 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx16 = getelementptr inbounds %struct.sv** %11, i64 %idxprom
+  store %struct.sv* %call13, %struct.sv** %arrayidx16, align 8, !tbaa !0
+  %12 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr18 = getelementptr inbounds %struct.sv** %12, i64 %idxprom
+  store %struct.sv** %add.ptr18, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

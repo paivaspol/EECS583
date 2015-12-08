@@ -1,0 +1,77 @@
+define void @XS_IO__Handle_flush(%struct.cv* nocapture %cv) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add.ptr.idx = shl nsw i64 %idx.ext, 32
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %4 = and i64 %sub.ptr.sub3, 34359738360
+  %cmp = icmp eq i64 %4, 8
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([33 x i8]* @.str12, i64 0, i64 0)) #2
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %5 = phi %struct.sv** [ %1, %entry ], [ %.pre, %if.then ]
+  %sext = add i64 %add.ptr.idx, 4294967296
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %idxprom
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %call = tail call %struct.io* @Perl_sv_2io(%struct.sv* %6) #2
+  %sv_any = getelementptr inbounds %struct.io* %call, i64 0, i32 0
+  %7 = load %struct.xpvio** %sv_any, align 8, !tbaa !0
+  %xio_ofp = getelementptr inbounds %struct.xpvio* %7, i64 0, i32 8
+  %8 = load %struct._PerlIO*** %xio_ofp, align 8, !tbaa !0
+  %tobool = icmp eq %struct._PerlIO** %8, null
+  br i1 %tobool, label %if.else, label %if.then8
+
+if.then8:                                         ; preds = %if.end
+  %call9 = tail call i32 @Perl_PerlIO_flush(%struct._PerlIO** %8) #2
+  br label %if.end11
+
+if.else:                                          ; preds = %if.end
+  %call10 = tail call i32* @__errno_location() #2
+  store i32 22, i32* %call10, align 4, !tbaa !3
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.else, %if.then8
+  %RETVAL.0 = phi i32 [ %call9, %if.then8 ], [ -1, %if.else ]
+  %call12 = tail call %struct.sv* @Perl_sv_newmortal() #2
+  %9 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds %struct.sv** %9, i64 %idxprom
+  store %struct.sv* %call12, %struct.sv** %arrayidx15, align 8, !tbaa !0
+  %cmp16 = icmp eq i32 %RETVAL.0, -1
+  br i1 %cmp16, label %if.end31, label %if.then18
+
+if.then18:                                        ; preds = %if.end11
+  %cmp19 = icmp eq i32 %RETVAL.0, 0
+  %10 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx24 = getelementptr inbounds %struct.sv** %10, i64 %idxprom
+  %11 = load %struct.sv** %arrayidx24, align 8, !tbaa !0
+  br i1 %cmp19, label %if.then21, label %if.else25
+
+if.then21:                                        ; preds = %if.then18
+  tail call void @Perl_sv_setpvn(%struct.sv* %11, i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i64 10) #2
+  br label %if.end31
+
+if.else25:                                        ; preds = %if.then18
+  %conv29 = sext i32 %RETVAL.0 to i64
+  tail call void @Perl_sv_setiv(%struct.sv* %11, i64 %conv29) #2
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.end11, %if.then21, %if.else25
+  %12 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr33 = getelementptr inbounds %struct.sv** %12, i64 %idxprom
+  store %struct.sv** %add.ptr33, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

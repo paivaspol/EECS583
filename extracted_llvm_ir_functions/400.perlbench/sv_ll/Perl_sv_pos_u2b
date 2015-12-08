@@ -1,0 +1,186 @@
+define void @Perl_sv_pos_u2b(%struct.sv* %sv, i32* nocapture %offsetp, i32* %lenp) #0 {
+entry:
+  %s = alloca i8*, align 8
+  %len = alloca i64, align 8
+  %cache = alloca i64*, align 8
+  %mg = alloca %struct.magic*, align 8
+  store i64* null, i64** %cache, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %sv, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !5
+  store i64 %3, i64* %len, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %len, i32 2) #7
+  %.pr = load i64* %len, align 8, !tbaa !5
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %5 = phi i64 [ %.pr, %cond.false ], [ %3, %cond.true ]
+  %cond = phi i8* [ %call, %cond.false ], [ %4, %cond.true ]
+  store i8* %cond, i8** %s, align 8, !tbaa !0
+  %tobool2 = icmp eq i64 %5, 0
+  br i1 %tobool2, label %if.else, label %if.then3
+
+if.then3:                                         ; preds = %cond.end
+  %6 = load i32* %offsetp, align 4, !tbaa !3
+  %add.ptr = getelementptr inbounds i8* %cond, i64 %5
+  store %struct.magic* null, %struct.magic** %mg, align 8, !tbaa !0
+  %call4 = call fastcc signext i8 @S_utf8_mg_pos(%struct.sv* %sv, %struct.magic** %mg, i64** %cache, i32 0, i32* %offsetp, i32 %6, i8** %s, i8* %cond, i8* %add.ptr) #7
+  %..not = icmp eq i8 %call4, 0
+  %cmp9 = icmp sgt i32 %6, 0
+  %or.cond = and i1 %..not, %cmp9
+  br i1 %or.cond, label %while.cond.preheader, label %if.end24
+
+while.cond.preheader:                             ; preds = %if.then3
+  %7 = load i8** %s, align 8, !tbaa !0
+  %cmp11113 = icmp ult i8* %7, %add.ptr
+  br i1 %cmp11113, label %land.end, label %while.end
+
+land.end:                                         ; preds = %while.cond.preheader, %while.body
+  %8 = phi i8* [ %add.ptr13, %while.body ], [ %7, %while.cond.preheader ]
+  %uoffset.0114 = phi i32 [ %dec, %while.body ], [ %6, %while.cond.preheader ]
+  %tobool12 = icmp eq i32 %uoffset.0114, 0
+  br i1 %tobool12, label %while.end, label %while.body
+
+while.body:                                       ; preds = %land.end
+  %dec = add nsw i32 %uoffset.0114, -1
+  %9 = load i8* %8, align 1, !tbaa !1
+  %idxprom = zext i8 %9 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %10 = load i8* %arrayidx, align 1, !tbaa !1
+  %idx.ext = zext i8 %10 to i64
+  %add.ptr13 = getelementptr inbounds i8* %8, i64 %idx.ext
+  store i8* %add.ptr13, i8** %s, align 8, !tbaa !0
+  %cmp11 = icmp ult i8* %add.ptr13, %add.ptr
+  br i1 %cmp11, label %land.end, label %while.end
+
+while.end:                                        ; preds = %land.end, %while.cond.preheader, %while.body
+  %11 = phi i8* [ %7, %while.cond.preheader ], [ %add.ptr13, %while.body ], [ %8, %land.end ]
+  %cmp14 = icmp ult i8* %11, %add.ptr
+  br i1 %cmp14, label %if.end17, label %if.then16
+
+if.then16:                                        ; preds = %while.end
+  store i8* %add.ptr, i8** %s, align 8, !tbaa !0
+  br label %if.end17
+
+if.end17:                                         ; preds = %while.end, %if.then16
+  %12 = phi i8* [ %11, %while.end ], [ %add.ptr, %if.then16 ]
+  %call18 = call fastcc signext i8 @S_utf8_mg_pos_init(%struct.sv* %sv, %struct.magic** %mg, i64** %cache, i32 0, i32* %offsetp, i8* %12, i8* %cond) #7
+  %tobool19 = icmp eq i8 %call18, 0
+  br i1 %tobool19, label %if.end22, label %if.then20
+
+if.then20:                                        ; preds = %if.end17
+  %13 = load i64** %cache, align 8, !tbaa !0
+  %arrayidx21 = getelementptr inbounds i64* %13, i64 1
+  %14 = load i64* %arrayidx21, align 8, !tbaa !5
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.end17, %if.then20
+  %boffset.0 = phi i64 [ %14, %if.then20 ], [ 0, %if.end17 ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %12 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %cond to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv23 = trunc i64 %sub.ptr.sub to i32
+  store i32 %conv23, i32* %offsetp, align 4, !tbaa !3
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.then3, %if.end22
+  %boffset.1 = phi i64 [ 0, %if.then3 ], [ %boffset.0, %if.end22 ]
+  %tobool25 = icmp eq i32* %lenp, null
+  br i1 %tobool25, label %return, label %if.then26
+
+if.then26:                                        ; preds = %if.end24
+  %15 = load i8** %s, align 8, !tbaa !0
+  %16 = load i32* %lenp, align 4, !tbaa !3
+  %call27 = call fastcc signext i8 @S_utf8_mg_pos(%struct.sv* %sv, %struct.magic** %mg, i64** %cache, i32 2, i32* %lenp, i32 %16, i8** %s, i8* %15, i8* %add.ptr) #7
+  %tobool28 = icmp eq i8 %call27, 0
+  %17 = load i32* %lenp, align 4, !tbaa !3
+  br i1 %tobool28, label %land.lhs.true34, label %if.then29
+
+if.then29:                                        ; preds = %if.then26
+  %conv30106 = zext i32 %17 to i64
+  %sub = sub i64 %conv30106, %boffset.1
+  %conv31 = trunc i64 %sub to i32
+  store i32 %conv31, i32* %lenp, align 4, !tbaa !3
+  br label %if.end61
+
+land.lhs.true34:                                  ; preds = %if.then26
+  %cmp35 = icmp sgt i32 %17, 0
+  br i1 %cmp35, label %while.cond41.preheader, label %if.end61
+
+while.cond41.preheader:                           ; preds = %land.lhs.true34
+  %18 = load i8** %s, align 8, !tbaa !0
+  %cmp42108 = icmp ult i8* %18, %add.ptr
+  br i1 %cmp42108, label %while.body48, label %if.end55
+
+while.body48:                                     ; preds = %while.cond41.preheader, %while.body48
+  %19 = phi i8* [ %add.ptr53, %while.body48 ], [ %18, %while.cond41.preheader ]
+  %ulen.0111 = phi i32 [ %dec45, %while.body48 ], [ %17, %while.cond41.preheader ]
+  %dec45 = add nsw i32 %ulen.0111, -1
+  %20 = load i8* %19, align 1, !tbaa !1
+  %idxprom49 = zext i8 %20 to i64
+  %arrayidx50 = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom49
+  %21 = load i8* %arrayidx50, align 1, !tbaa !1
+  %idx.ext52 = zext i8 %21 to i64
+  %add.ptr53 = getelementptr inbounds i8* %19, i64 %idx.ext52
+  %cmp42 = icmp uge i8* %add.ptr53, %add.ptr
+  %tobool46 = icmp eq i32 %dec45, 0
+  %or.cond107 = or i1 %cmp42, %tobool46
+  br i1 %or.cond107, label %while.cond41.if.end55_crit_edge, label %while.body48
+
+while.cond41.if.end55_crit_edge:                  ; preds = %while.body48
+  store i8* %add.ptr53, i8** %s, align 8, !tbaa !0
+  br label %if.end55
+
+if.end55:                                         ; preds = %while.cond41.preheader, %while.cond41.if.end55_crit_edge
+  %.lcssa = phi i8* [ %add.ptr53, %while.cond41.if.end55_crit_edge ], [ %18, %while.cond41.preheader ]
+  %cmp56 = icmp ult i8* %.lcssa, %add.ptr
+  br i1 %cmp56, label %if.end59, label %if.then58
+
+if.then58:                                        ; preds = %if.end55
+  store i8* %add.ptr, i8** %s, align 8, !tbaa !0
+  br label %if.end59
+
+if.end59:                                         ; preds = %if.end55, %if.then58
+  %22 = phi i8* [ %.lcssa, %if.end55 ], [ %add.ptr, %if.then58 ]
+  %call60 = call fastcc signext i8 @S_utf8_mg_pos_init(%struct.sv* %sv, %struct.magic** %mg, i64** %cache, i32 2, i32* %lenp, i8* %22, i8* %15) #7
+  br label %if.end61
+
+if.end61:                                         ; preds = %land.lhs.true34, %if.then29, %if.end59
+  %23 = load i8** %s, align 8, !tbaa !0
+  %sub.ptr.lhs.cast62 = ptrtoint i8* %23 to i64
+  %sub.ptr.rhs.cast63 = ptrtoint i8* %15 to i64
+  %sub.ptr.sub64 = sub i64 %sub.ptr.lhs.cast62, %sub.ptr.rhs.cast63
+  %conv65 = trunc i64 %sub.ptr.sub64 to i32
+  store i32 %conv65, i32* %lenp, align 4, !tbaa !3
+  br label %return
+
+if.else:                                          ; preds = %cond.end
+  store i32 0, i32* %offsetp, align 4, !tbaa !3
+  %tobool67 = icmp eq i32* %lenp, null
+  br i1 %tobool67, label %return, label %if.then68
+
+if.then68:                                        ; preds = %if.else
+  store i32 0, i32* %lenp, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end24, %if.else, %entry, %if.end61, %if.then68
+  ret void
+}

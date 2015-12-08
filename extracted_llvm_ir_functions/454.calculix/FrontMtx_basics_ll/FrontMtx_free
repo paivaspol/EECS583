@@ -1,0 +1,17 @@
+define void @FrontMtx_free(%struct._FrontMtx* %frontmtx) #0 {
+entry:
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), %struct._FrontMtx* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  tail call void @FrontMtx_clearData(%struct._FrontMtx* %frontmtx) #7
+  %1 = bitcast %struct._FrontMtx* %frontmtx to i8*
+  tail call void @free(i8* %1) #5
+  ret void
+}

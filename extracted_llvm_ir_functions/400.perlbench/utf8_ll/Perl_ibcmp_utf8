@@ -1,0 +1,287 @@
+define i32 @Perl_ibcmp_utf8(i8* %s1, i8** %pe1, i64 %l1, i8 signext %u1, i8* %s2, i8** %pe2, i64 %l2, i8 signext %u2) #0 {
+entry:
+  %foldbuf1 = alloca [7 x i8], align 1
+  %foldbuf2 = alloca [7 x i8], align 1
+  %natbuf = alloca [2 x i8], align 1
+  %foldlen1 = alloca i64, align 8
+  %foldlen2 = alloca i64, align 8
+  %tobool = icmp ne i8** %pe1, null
+  br i1 %tobool, label %if.end, label %if.then3
+
+if.end:                                           ; preds = %entry
+  %0 = load i8** %pe1, align 8, !tbaa !0
+  %cmp = icmp eq i8* %0, null
+  br i1 %cmp, label %if.then3, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end
+  %tobool1 = icmp eq i64 %l1, 0
+  br i1 %tobool1, label %if.end4, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %lor.lhs.false
+  %sub.ptr.lhs.cast = ptrtoint i8* %0 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %s1 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %cmp2 = icmp ugt i64 %sub.ptr.sub, %l1
+  br i1 %cmp2, label %if.then3, label %if.end4
+
+if.then3:                                         ; preds = %entry, %land.lhs.true, %if.end
+  %cmp262 = phi i1 [ false, %land.lhs.true ], [ true, %if.end ], [ true, %entry ]
+  %e1.0260 = phi i8* [ %0, %land.lhs.true ], [ null, %if.end ], [ null, %entry ]
+  %add.ptr = getelementptr inbounds i8* %s1, i64 %l1
+  br label %if.end4
+
+if.end4:                                          ; preds = %lor.lhs.false, %if.then3, %land.lhs.true
+  %cmp261 = phi i1 [ %cmp262, %if.then3 ], [ false, %land.lhs.true ], [ false, %lor.lhs.false ]
+  %e1.0259 = phi i8* [ %e1.0260, %if.then3 ], [ %0, %land.lhs.true ], [ %0, %lor.lhs.false ]
+  %f1.0 = phi i8* [ %add.ptr, %if.then3 ], [ null, %land.lhs.true ], [ null, %lor.lhs.false ]
+  %tobool5 = icmp ne i8** %pe2, null
+  br i1 %tobool5, label %if.end7, label %if.then16
+
+if.end7:                                          ; preds = %if.end4
+  %1 = load i8** %pe2, align 8, !tbaa !0
+  %cmp8 = icmp eq i8* %1, null
+  br i1 %cmp8, label %if.then16, label %lor.lhs.false9
+
+lor.lhs.false9:                                   ; preds = %if.end7
+  %tobool10 = icmp eq i64 %l2, 0
+  br i1 %tobool10, label %if.end18, label %land.lhs.true11
+
+land.lhs.true11:                                  ; preds = %lor.lhs.false9
+  %sub.ptr.lhs.cast12 = ptrtoint i8* %1 to i64
+  %sub.ptr.rhs.cast13 = ptrtoint i8* %s2 to i64
+  %sub.ptr.sub14 = sub i64 %sub.ptr.lhs.cast12, %sub.ptr.rhs.cast13
+  %cmp15 = icmp ugt i64 %sub.ptr.sub14, %l2
+  br i1 %cmp15, label %if.then16, label %if.end18
+
+if.then16:                                        ; preds = %if.end4, %land.lhs.true11, %if.end7
+  %cmp8267 = phi i1 [ false, %land.lhs.true11 ], [ true, %if.end7 ], [ true, %if.end4 ]
+  %e2.0265 = phi i8* [ %1, %land.lhs.true11 ], [ null, %if.end7 ], [ null, %if.end4 ]
+  %add.ptr17 = getelementptr inbounds i8* %s2, i64 %l2
+  br label %if.end18
+
+if.end18:                                         ; preds = %lor.lhs.false9, %if.then16, %land.lhs.true11
+  %cmp8266 = phi i1 [ %cmp8267, %if.then16 ], [ false, %land.lhs.true11 ], [ false, %lor.lhs.false9 ]
+  %e2.0264 = phi i8* [ %e2.0265, %if.then16 ], [ %1, %land.lhs.true11 ], [ %1, %lor.lhs.false9 ]
+  %f2.0 = phi i8* [ %add.ptr17, %if.then16 ], [ null, %land.lhs.true11 ], [ null, %lor.lhs.false9 ]
+  %cmp21 = icmp eq i8* %f1.0, null
+  %or.cond = and i1 %cmp261, %cmp21
+  br i1 %or.cond, label %return, label %lor.lhs.false22
+
+lor.lhs.false22:                                  ; preds = %if.end18
+  %cmp25 = icmp eq i8* %f2.0, null
+  %or.cond245269 = or i1 %cmp8266, %cmp21
+  %or.cond268 = and i1 %or.cond245269, %cmp25
+  br i1 %or.cond268, label %return, label %if.end31
+
+if.end31:                                         ; preds = %lor.lhs.false22
+  %tobool32 = icmp ne i8 %u1, 0
+  %tobool32.not = xor i1 %tobool32, true
+  %tobool34 = icmp eq i8 %u2, 0
+  %or.cond247 = or i1 %tobool34, %tobool32.not
+  br i1 %or.cond247, label %if.then35, label %while.cond.preheader
+
+if.then35:                                        ; preds = %if.end31
+  %arrayidx = getelementptr inbounds [2 x i8]* %natbuf, i64 0, i64 1
+  store i8 0, i8* %arrayidx, align 1, !tbaa !1
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then35, %if.end31
+  %arraydecay = getelementptr inbounds [7 x i8]* %foldbuf1, i64 0, i64 0
+  %arrayidx54 = getelementptr inbounds [2 x i8]* %natbuf, i64 0, i64 0
+  %arraydecay70 = getelementptr inbounds [7 x i8]* %foldbuf2, i64 0, i64 0
+  %tobool126 = icmp eq i8 %u1, 0
+  br label %while.cond.outer
+
+while.cond.outer:                                 ; preds = %while.cond.preheader, %cond.end143
+  %p1.0.ph = phi i8* [ %p1.1, %cond.end143 ], [ %s1, %while.cond.preheader ]
+  %p2.0.ph = phi i8* [ %add.ptr146, %cond.end143 ], [ %s2, %while.cond.preheader ]
+  %q1.0.ph = phi i8* [ %q1.2.lcssa, %cond.end143 ], [ null, %while.cond.preheader ]
+  %q2.0.ph = phi i8* [ %q2.1.lcssa, %cond.end143 ], [ null, %while.cond.preheader ]
+  %n1.0.ph = phi i64 [ %n1.2.lcssa, %cond.end143 ], [ 0, %while.cond.preheader ]
+  %n2.0.ph = phi i64 [ %n2.1.lcssa, %cond.end143 ], [ 0, %while.cond.preheader ]
+  %cmp47 = icmp ult i8* %p2.0.ph, %e2.0264
+  %or.cond250 = or i1 %cmp8266, %cmp47
+  %cmp49 = icmp ult i8* %p2.0.ph, %f2.0
+  %or.cond251 = or i1 %cmp25, %cmp49
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer, %if.end132
+  %p1.0 = phi i8* [ %p1.1, %if.end132 ], [ %p1.0.ph, %while.cond.outer ]
+  %q1.0 = phi i8* [ %q1.2.lcssa, %if.end132 ], [ %q1.0.ph, %while.cond.outer ]
+  %q2.0 = phi i8* [ %q2.1.lcssa, %if.end132 ], [ %q2.0.ph, %while.cond.outer ]
+  %n1.0 = phi i64 [ %n1.2.lcssa, %if.end132 ], [ %n1.0.ph, %while.cond.outer ]
+  %n2.0 = phi i64 [ %n2.1.lcssa, %if.end132 ], [ %n2.0.ph, %while.cond.outer ]
+  %cmp39 = icmp ult i8* %p1.0, %e1.0259
+  %or.cond248 = or i1 %cmp261, %cmp39
+  br i1 %or.cond248, label %land.lhs.true40, label %while.end148
+
+land.lhs.true40:                                  ; preds = %while.cond
+  %cmp43 = icmp ult i8* %p1.0, %f1.0
+  %or.cond249 = or i1 %cmp21, %cmp43
+  %brmerge.demorgan = and i1 %or.cond249, %or.cond250
+  %brmerge296.demorgan = and i1 %brmerge.demorgan, %or.cond251
+  br i1 %brmerge296.demorgan, label %while.body, label %while.end148
+
+while.body:                                       ; preds = %land.lhs.true40
+  %cmp50 = icmp eq i64 %n1.0, 0
+  br i1 %cmp50, label %if.then51, label %if.end60
+
+if.then51:                                        ; preds = %while.body
+  br i1 %tobool32, label %if.then53, label %if.else
+
+if.then53:                                        ; preds = %if.then51
+  %call.i = call i64 @Perl_to_utf8_case(i8* %p1.0, i8* %arraydecay, i64* %foldlen1, %struct.sv** @PL_utf8_tofold, i8* getelementptr inbounds ([7 x i8]* @.str42, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str43, i64 0, i64 0)) #5
+  br label %if.end58
+
+if.else:                                          ; preds = %if.then51
+  %2 = load i8* %p1.0, align 1, !tbaa !1
+  store i8 %2, i8* %arrayidx54, align 1, !tbaa !1
+  %call.i255 = call i64 @Perl_to_utf8_case(i8* %arrayidx54, i8* %arraydecay, i64* %foldlen1, %struct.sv** @PL_utf8_tofold, i8* getelementptr inbounds ([7 x i8]* @.str42, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str43, i64 0, i64 0)) #5
+  br label %if.end58
+
+if.end58:                                         ; preds = %if.else, %if.then53
+  %3 = load i64* %foldlen1, align 8, !tbaa !3
+  br label %if.end60
+
+if.end60:                                         ; preds = %if.end58, %while.body
+  %q1.1 = phi i8* [ %arraydecay, %if.end58 ], [ %q1.0, %while.body ]
+  %n1.1 = phi i64 [ %3, %if.end58 ], [ %n1.0, %while.body ]
+  %cmp61 = icmp eq i64 %n2.0, 0
+  br i1 %cmp61, label %if.then62, label %while.cond75.preheader
+
+if.then62:                                        ; preds = %if.end60
+  br i1 %tobool34, label %if.else67, label %if.then64
+
+if.then64:                                        ; preds = %if.then62
+  %call.i256 = call i64 @Perl_to_utf8_case(i8* %p2.0.ph, i8* %arraydecay70, i64* %foldlen2, %struct.sv** @PL_utf8_tofold, i8* getelementptr inbounds ([7 x i8]* @.str42, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str43, i64 0, i64 0)) #5
+  br label %if.end72
+
+if.else67:                                        ; preds = %if.then62
+  %4 = load i8* %p2.0.ph, align 1, !tbaa !1
+  store i8 %4, i8* %arrayidx54, align 1, !tbaa !1
+  %call.i257 = call i64 @Perl_to_utf8_case(i8* %arrayidx54, i8* %arraydecay70, i64* %foldlen2, %struct.sv** @PL_utf8_tofold, i8* getelementptr inbounds ([7 x i8]* @.str42, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str43, i64 0, i64 0)) #5
+  br label %if.end72
+
+if.end72:                                         ; preds = %if.else67, %if.then64
+  %5 = load i64* %foldlen2, align 8, !tbaa !3
+  br label %while.cond75.preheader
+
+while.cond75.preheader:                           ; preds = %if.end72, %if.end60
+  %q2.1.ph = phi i8* [ %q2.0, %if.end60 ], [ %arraydecay70, %if.end72 ]
+  %n2.1.ph = phi i64 [ %n2.0, %if.end60 ], [ %5, %if.end72 ]
+  %tobool76276 = icmp eq i64 %n1.1, 0
+  %tobool78277 = icmp eq i64 %n2.1.ph, 0
+  %or.cond252278 = or i1 %tobool76276, %tobool78277
+  br i1 %or.cond252278, label %while.end, label %while.body80
+
+while.body80:                                     ; preds = %while.cond75.preheader, %if.end105
+  %n2.1282 = phi i64 [ %sub116, %if.end105 ], [ %n2.1.ph, %while.cond75.preheader ]
+  %n1.2281 = phi i64 [ %sub, %if.end105 ], [ %n1.1, %while.cond75.preheader ]
+  %q2.1280 = phi i8* [ %add.ptr121, %if.end105 ], [ %q2.1.ph, %while.cond75.preheader ]
+  %q1.2279 = phi i8* [ %add.ptr112, %if.end105 ], [ %q1.1, %while.cond75.preheader ]
+  %6 = load i8* %q1.2279, align 1, !tbaa !1
+  %idxprom = zext i8 %6 to i64
+  %arrayidx81 = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %7 = load i8* %arrayidx81, align 1, !tbaa !1
+  %8 = load i8* %q2.1280, align 1, !tbaa !1
+  %idxprom82 = zext i8 %8 to i64
+  %arrayidx83 = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom82
+  %9 = load i8* %arrayidx83, align 1, !tbaa !1
+  %cmp85 = icmp eq i8 %7, %9
+  br i1 %cmp85, label %lor.lhs.false87, label %return
+
+lor.lhs.false87:                                  ; preds = %while.body80
+  %cmp91 = icmp ne i8 %7, 1
+  %cmp96 = icmp eq i8 %6, %8
+  %or.cond253 = or i1 %cmp91, %cmp96
+  br i1 %or.cond253, label %lor.lhs.false98, label %return
+
+lor.lhs.false98:                                  ; preds = %lor.lhs.false87
+  %conv101 = zext i8 %7 to i64
+  %call102 = call i32 @memcmp(i8* %q1.2279, i8* %q2.1280, i64 %conv101) #5
+  %tobool103 = icmp eq i32 %call102, 0
+  br i1 %tobool103, label %if.end105, label %return
+
+if.end105:                                        ; preds = %lor.lhs.false98
+  %sub = sub i64 %n1.2281, %conv101
+  %add.ptr112 = getelementptr inbounds i8* %q1.2279, i64 %conv101
+  %sub116 = sub i64 %n2.1282, %conv101
+  %add.ptr121 = getelementptr inbounds i8* %q2.1280, i64 %conv101
+  %tobool76 = icmp eq i64 %n1.2281, %conv101
+  %tobool78 = icmp eq i64 %n2.1282, %conv101
+  %or.cond252 = or i1 %tobool76, %tobool78
+  br i1 %or.cond252, label %while.end, label %while.body80
+
+while.end:                                        ; preds = %if.end105, %while.cond75.preheader
+  %tobool78.lcssa = phi i1 [ %tobool78277, %while.cond75.preheader ], [ %tobool78, %if.end105 ]
+  %tobool76.lcssa = phi i1 [ %tobool76276, %while.cond75.preheader ], [ %tobool76, %if.end105 ]
+  %n2.1.lcssa = phi i64 [ %n2.1.ph, %while.cond75.preheader ], [ %sub116, %if.end105 ]
+  %n1.2.lcssa = phi i64 [ %n1.1, %while.cond75.preheader ], [ %sub, %if.end105 ]
+  %q2.1.lcssa = phi i8* [ %q2.1.ph, %while.cond75.preheader ], [ %add.ptr121, %if.end105 ]
+  %q1.2.lcssa = phi i8* [ %q1.1, %while.cond75.preheader ], [ %add.ptr112, %if.end105 ]
+  br i1 %tobool76.lcssa, label %if.then124, label %if.end132
+
+if.then124:                                       ; preds = %while.end
+  br i1 %tobool126, label %cond.end, label %cond.true
+
+cond.true:                                        ; preds = %if.then124
+  %10 = load i8* %p1.0, align 1, !tbaa !1
+  %idxprom127 = zext i8 %10 to i64
+  %arrayidx128 = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom127
+  %11 = load i8* %arrayidx128, align 1, !tbaa !1
+  %phitmp244 = zext i8 %11 to i64
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then124, %cond.true
+  %cond = phi i64 [ %phitmp244, %cond.true ], [ 1, %if.then124 ]
+  %add.ptr131 = getelementptr inbounds i8* %p1.0, i64 %cond
+  br label %if.end132
+
+if.end132:                                        ; preds = %cond.end, %while.end
+  %p1.1 = phi i8* [ %add.ptr131, %cond.end ], [ %p1.0, %while.end ]
+  br i1 %tobool78.lcssa, label %if.then135, label %while.cond
+
+if.then135:                                       ; preds = %if.end132
+  br i1 %tobool34, label %cond.end143, label %cond.true138
+
+cond.true138:                                     ; preds = %if.then135
+  %12 = load i8* %p2.0.ph, align 1, !tbaa !1
+  %idxprom139 = zext i8 %12 to i64
+  %arrayidx140 = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom139
+  %13 = load i8* %arrayidx140, align 1, !tbaa !1
+  %phitmp = zext i8 %13 to i64
+  br label %cond.end143
+
+cond.end143:                                      ; preds = %if.then135, %cond.true138
+  %cond144 = phi i64 [ %phitmp, %cond.true138 ], [ 1, %if.then135 ]
+  %add.ptr146 = getelementptr inbounds i8* %p2.0.ph, i64 %cond144
+  br label %while.cond.outer
+
+while.end148:                                     ; preds = %land.lhs.true40, %while.cond
+  %cmp152 = icmp eq i8* %p1.0, %f1.0
+  %or.cond254 = or i1 %cmp21, %cmp152
+  br i1 %or.cond254, label %land.end161, label %return
+
+land.end161:                                      ; preds = %while.end148
+  %cmp158 = icmp eq i8* %p2.0.ph, %f2.0
+  %.cmp158 = or i1 %cmp25, %cmp158
+  br i1 %.cmp158, label %if.then164, label %return
+
+if.then164:                                       ; preds = %land.end161
+  br i1 %tobool, label %if.then166, label %if.end167
+
+if.then166:                                       ; preds = %if.then164
+  store i8* %p1.0, i8** %pe1, align 8, !tbaa !0
+  br label %if.end167
+
+if.end167:                                        ; preds = %if.then166, %if.then164
+  br i1 %tobool5, label %if.then169, label %return
+
+if.then169:                                       ; preds = %if.end167
+  store i8* %p2.0.ph, i8** %pe2, align 8, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %while.body80, %lor.lhs.false98, %lor.lhs.false87, %land.end161, %if.then169, %if.end167, %while.end148, %if.end18, %lor.lhs.false22
+  %retval.0 = phi i32 [ 1, %lor.lhs.false22 ], [ 1, %if.end18 ], [ 0, %if.end167 ], [ 0, %if.then169 ], [ 1, %land.end161 ], [ 1, %while.end148 ], [ 1, %lor.lhs.false87 ], [ 1, %lor.lhs.false98 ], [ 1, %while.body80 ]
+  ret i32 %retval.0
+}

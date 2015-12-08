@@ -1,0 +1,98 @@
+define void @clear_picture(%struct.storable_picture* nocapture %p) #1 {
+entry:
+  %size_y = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 19
+  %0 = load i32* %size_y, align 4, !tbaa !3
+  %cmp50 = icmp sgt i32 %0, 0
+  br i1 %cmp50, label %for.body.lr.ph, label %for.cond1.preheader
+
+for.body.lr.ph:                                   ; preds = %entry
+  %imgY = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 25
+  %size_x = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 18
+  br label %for.body
+
+for.cond1.preheader:                              ; preds = %for.body, %entry
+  %size_y_cr = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 21
+  %1 = load i32* %size_y_cr, align 4, !tbaa !3
+  %cmp248 = icmp sgt i32 %1, 0
+  br i1 %cmp248, label %for.body4.lr.ph, label %for.end29
+
+for.body4.lr.ph:                                  ; preds = %for.cond1.preheader
+  %imgUV = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 30
+  %size_x_cr = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 20
+  br label %for.body4
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv54 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next55, %for.body ]
+  %2 = load i16*** %imgY, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i16** %2, i64 %indvars.iv54
+  %3 = load i16** %arrayidx, align 8, !tbaa !0
+  %4 = bitcast i16* %3 to i8*
+  %5 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %dc_pred_value = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 154
+  %6 = load i32* %dc_pred_value, align 4, !tbaa !3
+  %7 = trunc i32 %6 to i8
+  %8 = load i32* %size_x, align 4, !tbaa !3
+  %conv = sext i32 %8 to i64
+  %mul = shl nsw i64 %conv, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 %7, i64 %mul, i32 2, i1 false)
+  %indvars.iv.next55 = add i64 %indvars.iv54, 1
+  %9 = load i32* %size_y, align 4, !tbaa !3
+  %10 = trunc i64 %indvars.iv.next55 to i32
+  %cmp = icmp slt i32 %10, %9
+  br i1 %cmp, label %for.body, label %for.cond1.preheader
+
+for.cond14.preheader:                             ; preds = %for.body4
+  %cmp1646 = icmp sgt i32 %19, 0
+  br i1 %cmp1646, label %for.body18.lr.ph, label %for.end29
+
+for.body18.lr.ph:                                 ; preds = %for.cond14.preheader
+  %imgUV20 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 30
+  %size_x_cr24 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 20
+  br label %for.body18
+
+for.body4:                                        ; preds = %for.body4.lr.ph, %for.body4
+  %indvars.iv52 = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next53, %for.body4 ]
+  %11 = load i16**** %imgUV, align 8, !tbaa !0
+  %12 = load i16*** %11, align 8, !tbaa !0
+  %arrayidx7 = getelementptr inbounds i16** %12, i64 %indvars.iv52
+  %13 = load i16** %arrayidx7, align 8, !tbaa !0
+  %14 = bitcast i16* %13 to i8*
+  %15 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %dc_pred_value8 = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 154
+  %16 = load i32* %dc_pred_value8, align 4, !tbaa !3
+  %17 = trunc i32 %16 to i8
+  %18 = load i32* %size_x_cr, align 4, !tbaa !3
+  %conv9 = sext i32 %18 to i64
+  %mul10 = shl nsw i64 %conv9, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %14, i8 %17, i64 %mul10, i32 2, i1 false)
+  %indvars.iv.next53 = add i64 %indvars.iv52, 1
+  %19 = load i32* %size_y_cr, align 4, !tbaa !3
+  %20 = trunc i64 %indvars.iv.next53 to i32
+  %cmp2 = icmp slt i32 %20, %19
+  br i1 %cmp2, label %for.body4, label %for.cond14.preheader
+
+for.body18:                                       ; preds = %for.body18.lr.ph, %for.body18
+  %indvars.iv = phi i64 [ 0, %for.body18.lr.ph ], [ %indvars.iv.next, %for.body18 ]
+  %21 = load i16**** %imgUV20, align 8, !tbaa !0
+  %arrayidx21 = getelementptr inbounds i16*** %21, i64 1
+  %22 = load i16*** %arrayidx21, align 8, !tbaa !0
+  %arrayidx22 = getelementptr inbounds i16** %22, i64 %indvars.iv
+  %23 = load i16** %arrayidx22, align 8, !tbaa !0
+  %24 = bitcast i16* %23 to i8*
+  %25 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %dc_pred_value23 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 154
+  %26 = load i32* %dc_pred_value23, align 4, !tbaa !3
+  %27 = trunc i32 %26 to i8
+  %28 = load i32* %size_x_cr24, align 4, !tbaa !3
+  %conv25 = sext i32 %28 to i64
+  %mul26 = shl nsw i64 %conv25, 1
+  tail call void @llvm.memset.p0i8.i64(i8* %24, i8 %27, i64 %mul26, i32 2, i1 false)
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %29 = load i32* %size_y_cr, align 4, !tbaa !3
+  %30 = trunc i64 %indvars.iv.next to i32
+  %cmp16 = icmp slt i32 %30, %29
+  br i1 %cmp16, label %for.body18, label %for.end29
+
+for.end29:                                        ; preds = %for.cond1.preheader, %for.body18, %for.cond14.preheader
+  ret void
+}

@@ -1,0 +1,43 @@
+define void @DropaddHolding(i32 %what, i32 %who) #0 {
+entry:
+  %idxprom = sext i32 %what to i64
+  %idxprom1 = sext i32 %who to i64
+  %arrayidx2 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom1, i64 %idxprom
+  %0 = load i32* %arrayidx2, align 4, !tbaa !0
+  %inc = add nsw i32 %0, 1
+  store i32 %inc, i32* %arrayidx2, align 4, !tbaa !0
+  %arrayidx4 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %idxprom1
+  %1 = load i32* %arrayidx4, align 4, !tbaa !0
+  %inc5 = add nsw i32 %1, 1
+  store i32 %inc5, i32* %arrayidx4, align 4, !tbaa !0
+  %idxprom10 = sext i32 %inc to i64
+  %arrayidx13 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom, i64 %idxprom10
+  %2 = load i32* %arrayidx13, align 4, !tbaa !0
+  %3 = load i32* @hold_hash, align 4, !tbaa !0
+  %xor = xor i32 %3, %2
+  store i32 %xor, i32* @hold_hash, align 4, !tbaa !0
+  %cmp = icmp eq i32 %who, 0
+  %arrayidx15 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %idxprom
+  %4 = load i32* %arrayidx15, align 4, !tbaa !0
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %5 = load i32* @white_hand_eval, align 4, !tbaa !0
+  %add = add nsw i32 %5, %4
+  store i32 %add, i32* @white_hand_eval, align 4, !tbaa !0
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  %6 = load i32* @black_hand_eval, align 4, !tbaa !0
+  %add18 = add nsw i32 %6, %4
+  store i32 %add18, i32* @black_hand_eval, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %arrayidx20 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom
+  %7 = load i32* %arrayidx20, align 4, !tbaa !0
+  %8 = load i32* @Material, align 4, !tbaa !0
+  %add21 = add nsw i32 %8, %7
+  store i32 %add21, i32* @Material, align 4, !tbaa !0
+  ret void
+}

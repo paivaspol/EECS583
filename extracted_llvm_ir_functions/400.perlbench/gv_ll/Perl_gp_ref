@@ -1,0 +1,38 @@
+define %struct.gp* @Perl_gp_ref(%struct.gp* %gp) #0 {
+entry:
+  %tobool = icmp eq %struct.gp* %gp, null
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %gp_refcnt = getelementptr inbounds %struct.gp* %gp, i64 0, i32 1
+  %0 = load i32* %gp_refcnt, align 4, !tbaa !0
+  %inc = add i32 %0, 1
+  store i32 %inc, i32* %gp_refcnt, align 4, !tbaa !0
+  %gp_cv = getelementptr inbounds %struct.gp* %gp, i64 0, i32 7
+  %1 = load %struct.cv** %gp_cv, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct.cv* %1, null
+  br i1 %tobool1, label %return, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %gp_cvgen = getelementptr inbounds %struct.gp* %gp, i64 0, i32 8
+  %2 = load i32* %gp_cvgen, align 4, !tbaa !0
+  %tobool3 = icmp eq i32 %2, 0
+  br i1 %tobool3, label %if.else, label %if.then4
+
+if.then4:                                         ; preds = %if.then2
+  %3 = bitcast %struct.cv* %1 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %3) #6
+  store %struct.cv* null, %struct.cv** %gp_cv, align 8, !tbaa !3
+  store i32 0, i32* %gp_cvgen, align 4, !tbaa !0
+  br label %return
+
+if.else:                                          ; preds = %if.then2
+  %4 = load i32* @PL_sub_generation, align 4, !tbaa !0
+  %inc8 = add i32 %4, 1
+  store i32 %inc8, i32* @PL_sub_generation, align 4, !tbaa !0
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then4, %if.end, %entry
+  %retval.0 = phi %struct.gp* [ null, %entry ], [ %gp, %if.end ], [ %gp, %if.then4 ], [ %gp, %if.else ]
+  ret %struct.gp* %retval.0
+}

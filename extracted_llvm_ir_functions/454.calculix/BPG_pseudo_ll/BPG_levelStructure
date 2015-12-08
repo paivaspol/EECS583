@@ -1,0 +1,122 @@
+define i32 @BPG_levelStructure(%struct._BPG* %bpg, i32 %root, i32* %list, i32* %dist, i32* %mark, i32 %tag) #0 {
+entry:
+  %usize = alloca i32, align 4
+  %vsize = alloca i32, align 4
+  %uadj = alloca i32*, align 8
+  %vadj = alloca i32*, align 8
+  %cmp = icmp eq %struct._BPG* %bpg, null
+  %cmp1 = icmp slt i32 %root, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nX = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 0
+  %0 = load i32* %nX, align 4, !tbaa !3
+  %nY = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 1
+  %1 = load i32* %nY, align 4, !tbaa !3
+  %add = add nsw i32 %1, %0
+  %cmp3 = icmp sle i32 %add, %root
+  %cmp5 = icmp eq i32* %list, null
+  %or.cond80 = or i1 %cmp3, %cmp5
+  %cmp7 = icmp eq i32* %dist, null
+  %or.cond81 = or i1 %or.cond80, %cmp7
+  %cmp9 = icmp eq i32* %mark, null
+  %or.cond82 = or i1 %or.cond81, %cmp9
+  br i1 %or.cond82, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([67 x i8]* @.str1, i64 0, i64 0), %struct._BPG* %bpg, i32 %root, i32* %list, i32* %dist, i32* %mark, i32 %tag) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false2
+  store i32 %root, i32* %list, align 4, !tbaa !3
+  %idxprom = sext i32 %root to i64
+  %arrayidx10 = getelementptr inbounds i32* %dist, i64 %idxprom
+  store i32 0, i32* %arrayidx10, align 4, !tbaa !3
+  %arrayidx12 = getelementptr inbounds i32* %mark, i64 %idxprom
+  store i32 %tag, i32* %arrayidx12, align 4, !tbaa !3
+  %graph = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 2
+  br label %while.body
+
+while.cond.loopexit:                              ; preds = %for.inc41, %while.body
+  %last.1.lcssa = phi i32 [ %last.091, %while.body ], [ %last.2.lcssa, %for.inc41 ]
+  %3 = trunc i64 %indvars.iv94 to i32
+  %cmp13 = icmp slt i32 %3, %last.1.lcssa
+  br i1 %cmp13, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond.loopexit, %if.end
+  %indvars.iv94 = phi i64 [ %indvars.iv.next95, %while.cond.loopexit ], [ 0, %if.end ]
+  %last.091 = phi i32 [ %last.1.lcssa, %while.cond.loopexit ], [ 0, %if.end ]
+  %indvars.iv.next95 = add i64 %indvars.iv94, 1
+  %arrayidx15 = getelementptr inbounds i32* %list, i64 %indvars.iv94
+  %4 = load i32* %arrayidx15, align 4, !tbaa !3
+  %5 = load %struct._Graph** %graph, align 8, !tbaa !0
+  call void @Graph_adjAndSize(%struct._Graph* %5, i32 %4, i32* %usize, i32** %uadj) #4
+  %6 = load i32* %usize, align 4, !tbaa !3
+  %cmp1686 = icmp sgt i32 %6, 0
+  br i1 %cmp1686, label %for.body.lr.ph, label %while.cond.loopexit
+
+for.body.lr.ph:                                   ; preds = %while.body
+  %idxprom34 = sext i32 %4 to i64
+  %arrayidx35 = getelementptr inbounds i32* %dist, i64 %idxprom34
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc41
+  %indvars.iv92 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next93, %for.inc41 ]
+  %last.187 = phi i32 [ %last.091, %for.body.lr.ph ], [ %last.2.lcssa, %for.inc41 ]
+  %7 = load i32** %uadj, align 8, !tbaa !0
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %indvars.iv92
+  %8 = load i32* %arrayidx18, align 4, !tbaa !3
+  %9 = load %struct._Graph** %graph, align 8, !tbaa !0
+  call void @Graph_adjAndSize(%struct._Graph* %9, i32 %8, i32* %vsize, i32** %vadj) #4
+  %10 = load i32* %vsize, align 4, !tbaa !3
+  %cmp2183 = icmp sgt i32 %10, 0
+  br i1 %cmp2183, label %for.body22.lr.ph, label %for.inc41
+
+for.body22.lr.ph:                                 ; preds = %for.body
+  %11 = load i32** %vadj, align 8, !tbaa !0
+  br label %for.body22
+
+for.body22:                                       ; preds = %for.body22.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body22.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %last.284 = phi i32 [ %last.187, %for.body22.lr.ph ], [ %last.3, %for.inc ]
+  %arrayidx24 = getelementptr inbounds i32* %11, i64 %indvars.iv
+  %12 = load i32* %arrayidx24, align 4, !tbaa !3
+  %idxprom25 = sext i32 %12 to i64
+  %arrayidx26 = getelementptr inbounds i32* %mark, i64 %idxprom25
+  %13 = load i32* %arrayidx26, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %13, %tag
+  br i1 %cmp27, label %for.inc, label %if.then28
+
+if.then28:                                        ; preds = %for.body22
+  store i32 %tag, i32* %arrayidx26, align 4, !tbaa !3
+  %inc31 = add nsw i32 %last.284, 1
+  %idxprom32 = sext i32 %inc31 to i64
+  %arrayidx33 = getelementptr inbounds i32* %list, i64 %idxprom32
+  store i32 %12, i32* %arrayidx33, align 4, !tbaa !3
+  %14 = load i32* %arrayidx35, align 4, !tbaa !3
+  %add36 = add nsw i32 %14, 1
+  %arrayidx38 = getelementptr inbounds i32* %dist, i64 %idxprom25
+  store i32 %add36, i32* %arrayidx38, align 4, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body22, %if.then28
+  %last.3 = phi i32 [ %inc31, %if.then28 ], [ %last.284, %for.body22 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %15 = trunc i64 %indvars.iv.next to i32
+  %cmp21 = icmp slt i32 %15, %10
+  br i1 %cmp21, label %for.body22, label %for.inc41
+
+for.inc41:                                        ; preds = %for.inc, %for.body
+  %last.2.lcssa = phi i32 [ %last.187, %for.body ], [ %last.3, %for.inc ]
+  %indvars.iv.next93 = add i64 %indvars.iv92, 1
+  %16 = load i32* %usize, align 4, !tbaa !3
+  %17 = trunc i64 %indvars.iv.next93 to i32
+  %cmp16 = icmp slt i32 %17, %16
+  br i1 %cmp16, label %for.body, label %while.cond.loopexit
+
+while.end:                                        ; preds = %while.cond.loopexit
+  ret i32 %last.1.lcssa
+}

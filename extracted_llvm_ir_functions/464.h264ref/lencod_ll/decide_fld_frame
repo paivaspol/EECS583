@@ -1,0 +1,14 @@
+define i32 @decide_fld_frame(float %snr_frame_Y, float %snr_field_Y, i32 %bit_field, i32 %bit_frame, double %lambda_picture) #5 {
+entry:
+  %conv = sitofp i32 %bit_frame to double
+  %mul = fmul double %conv, %lambda_picture
+  %conv1 = fpext float %snr_frame_Y to double
+  %add = fadd double %conv1, %mul
+  %conv2 = sitofp i32 %bit_field to double
+  %mul3 = fmul double %conv2, %lambda_picture
+  %conv4 = fpext float %snr_field_Y to double
+  %add5 = fadd double %conv4, %mul3
+  %not.cmp = fcmp ule double %add5, %add
+  %. = zext i1 %not.cmp to i32
+  ret i32 %.
+}

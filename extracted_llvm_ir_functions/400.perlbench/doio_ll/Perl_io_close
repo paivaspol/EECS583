@@ -1,0 +1,109 @@
+define signext i8 @Perl_io_close(%struct.io* nocapture %io, i8 signext %not_implicit) #0 {
+entry:
+  %sv_any = getelementptr inbounds %struct.io* %io, i64 0, i32 0
+  %0 = load %struct.xpvio** %sv_any, align 8, !tbaa !3
+  %xio_ifp = getelementptr inbounds %struct.xpvio* %0, i64 0, i32 7
+  %1 = load %struct._PerlIO*** %xio_ifp, align 8, !tbaa !3
+  %tobool = icmp eq %struct._PerlIO** %1, null
+  br i1 %tobool, label %if.else74, label %if.then
+
+if.then:                                          ; preds = %entry
+  %xio_type = getelementptr inbounds %struct.xpvio* %0, i64 0, i32 21
+  %2 = load i8* %xio_type, align 1, !tbaa !1
+  switch i8 %2, label %if.else26 [
+    i8 124, label %if.then4
+    i8 45, label %if.end69
+  ]
+
+if.then4:                                         ; preds = %if.then
+  %call = tail call i32 @Perl_my_pclose(%struct._PerlIO** %1) #8
+  %tobool7 = icmp eq i8 %not_implicit, 0
+  br i1 %tobool7, label %if.else, label %if.then8
+
+if.then8:                                         ; preds = %if.then4
+  %cmp9 = icmp eq i32 %call, -1
+  %and = and i32 %call, 65535
+  %call.and = select i1 %cmp9, i32 -1, i32 %and
+  store i32 %call.and, i32* @PL_statusvalue, align 4, !tbaa !0
+  %cmp12 = icmp eq i32 %call.and, 0
+  %conv14 = zext i1 %cmp12 to i8
+  br label %if.end69
+
+if.else:                                          ; preds = %if.then4
+  %cmp15 = icmp ne i32 %call, -1
+  %conv17 = zext i1 %cmp15 to i8
+  br label %if.end69
+
+if.else26:                                        ; preds = %if.then
+  %xio_ofp = getelementptr inbounds %struct.xpvio* %0, i64 0, i32 8
+  %3 = load %struct._PerlIO*** %xio_ofp, align 8, !tbaa !3
+  %tobool28 = icmp eq %struct._PerlIO** %3, null
+  %cmp33 = icmp eq %struct._PerlIO** %3, %1
+  %or.cond = or i1 %tobool28, %cmp33
+  br i1 %or.cond, label %if.else50, label %if.then35
+
+if.then35:                                        ; preds = %if.else26
+  %call38 = tail call i32 @Perl_PerlIO_error(%struct._PerlIO** %3) #8
+  %4 = load %struct.xpvio** %sv_any, align 8, !tbaa !3
+  %xio_ofp41 = getelementptr inbounds %struct.xpvio* %4, i64 0, i32 8
+  %5 = load %struct._PerlIO*** %xio_ofp41, align 8, !tbaa !3
+  %call42 = tail call i32 @Perl_PerlIO_close(%struct._PerlIO** %5) #8
+  %cmp43 = icmp eq i32 %call42, -1
+  br i1 %cmp43, label %land.end, label %land.rhs
+
+land.rhs:                                         ; preds = %if.then35
+  %conv39 = trunc i32 %call38 to i8
+  %lnot = icmp eq i8 %conv39, 0
+  br label %land.end
+
+land.end:                                         ; preds = %if.then35, %land.rhs
+  %6 = phi i1 [ false, %if.then35 ], [ %lnot, %land.rhs ]
+  %conv46 = zext i1 %6 to i8
+  %7 = load %struct.xpvio** %sv_any, align 8, !tbaa !3
+  %xio_ifp48 = getelementptr inbounds %struct.xpvio* %7, i64 0, i32 7
+  %8 = load %struct._PerlIO*** %xio_ifp48, align 8, !tbaa !3
+  %call49 = tail call i32 @Perl_PerlIO_close(%struct._PerlIO** %8) #8
+  br label %if.end69
+
+if.else50:                                        ; preds = %if.else26
+  %call54 = tail call i32 @Perl_PerlIO_error(%struct._PerlIO** %1) #8
+  %9 = load %struct.xpvio** %sv_any, align 8, !tbaa !3
+  %xio_ifp57 = getelementptr inbounds %struct.xpvio* %9, i64 0, i32 7
+  %10 = load %struct._PerlIO*** %xio_ifp57, align 8, !tbaa !3
+  %call58 = tail call i32 @Perl_PerlIO_close(%struct._PerlIO** %10) #8
+  %cmp59 = icmp eq i32 %call58, -1
+  br i1 %cmp59, label %land.end64, label %land.rhs61
+
+land.rhs61:                                       ; preds = %if.else50
+  %conv55 = trunc i32 %call54 to i8
+  %lnot63 = icmp eq i8 %conv55, 0
+  br label %land.end64
+
+land.end64:                                       ; preds = %if.else50, %land.rhs61
+  %11 = phi i1 [ false, %if.else50 ], [ %lnot63, %land.rhs61 ]
+  %conv66 = zext i1 %11 to i8
+  br label %if.end69
+
+if.end69:                                         ; preds = %if.then, %land.end64, %land.end, %if.then8, %if.else
+  %retval1.0 = phi i8 [ %conv14, %if.then8 ], [ %conv17, %if.else ], [ %conv46, %land.end ], [ %conv66, %land.end64 ], [ 1, %if.then ]
+  %12 = load %struct.xpvio** %sv_any, align 8, !tbaa !3
+  %xio_ifp71 = getelementptr inbounds %struct.xpvio* %12, i64 0, i32 7
+  store %struct._PerlIO** null, %struct._PerlIO*** %xio_ifp71, align 8, !tbaa !3
+  %13 = load %struct.xpvio** %sv_any, align 8, !tbaa !3
+  %xio_ofp73 = getelementptr inbounds %struct.xpvio* %13, i64 0, i32 8
+  store %struct._PerlIO** null, %struct._PerlIO*** %xio_ofp73, align 8, !tbaa !3
+  br label %if.end79
+
+if.else74:                                        ; preds = %entry
+  %tobool75 = icmp eq i8 %not_implicit, 0
+  br i1 %tobool75, label %if.end79, label %if.then76
+
+if.then76:                                        ; preds = %if.else74
+  %call77 = tail call i32* @__errno_location() #8
+  store i32 9, i32* %call77, align 4, !tbaa !0
+  br label %if.end79
+
+if.end79:                                         ; preds = %if.else74, %if.then76, %if.end69
+  %retval1.1 = phi i8 [ %retval1.0, %if.end69 ], [ 0, %if.then76 ], [ 0, %if.else74 ]
+  ret i8 %retval1.1
+}

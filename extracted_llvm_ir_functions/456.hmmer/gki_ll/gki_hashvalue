@@ -1,0 +1,42 @@
+define internal fastcc i32 @gki_hashvalue(%struct.GKI* nocapture %hash, i8* nocapture %key) #2 {
+entry:
+  %0 = load i8* %key, align 1, !tbaa !1
+  %cmp20 = icmp eq i8 %0, 0
+  br i1 %cmp20, label %for.end, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %entry
+  %nhash9 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %if.end
+  %1 = phi i8 [ %0, %for.body.lr.ph ], [ %5, %if.end ]
+  %val.022 = phi i32 [ 0, %for.body.lr.ph ], [ %rem10, %if.end ]
+  %key.addr.021 = phi i8* [ %key, %for.body.lr.ph ], [ %incdec.ptr11, %if.end ]
+  %conv = sext i8 %1 to i32
+  %mul = shl nsw i32 %val.022, 7
+  %add = add nsw i32 %conv, %mul
+  %incdec.ptr = getelementptr inbounds i8* %key.addr.021, i64 1
+  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %cmp4 = icmp eq i8 %2, 0
+  br i1 %cmp4, label %if.then, label %if.end
+
+if.then:                                          ; preds = %for.body
+  %3 = load i32* %nhash9, align 4, !tbaa !0
+  %rem = srem i32 %add, %3
+  br label %for.end
+
+if.end:                                           ; preds = %for.body
+  %conv3 = sext i8 %2 to i32
+  %mul6 = shl i32 %add, 7
+  %add8 = add nsw i32 %conv3, %mul6
+  %4 = load i32* %nhash9, align 4, !tbaa !0
+  %rem10 = srem i32 %add8, %4
+  %incdec.ptr11 = getelementptr inbounds i8* %key.addr.021, i64 2
+  %5 = load i8* %incdec.ptr11, align 1, !tbaa !1
+  %cmp = icmp eq i8 %5, 0
+  br i1 %cmp, label %for.end, label %for.body
+
+for.end:                                          ; preds = %entry, %if.end, %if.then
+  %val.1 = phi i32 [ %rem, %if.then ], [ 0, %entry ], [ %rem10, %if.end ]
+  ret i32 %val.1
+}

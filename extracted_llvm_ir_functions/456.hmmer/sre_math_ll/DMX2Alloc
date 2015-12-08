@@ -1,0 +1,35 @@
+define double** @DMX2Alloc(i32 %rows, i32 %cols) #0 {
+entry:
+  %conv = sext i32 %rows to i64
+  %mul = shl nsw i64 %conv, 3
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 190, i64 %mul) #4
+  %0 = bitcast i8* %call to double**
+  %conv3 = sext i32 %cols to i64
+  %mul4 = mul i64 %mul, %conv3
+  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 191, i64 %mul4) #4
+  %1 = bitcast i8* %call5 to double*
+  store double* %1, double** %0, align 8, !tbaa !4
+  %cmp18 = icmp sgt i32 %rows, 1
+  br i1 %cmp18, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
+  %2 = phi double* [ %.pre, %for.body.for.body_crit_edge ], [ %1, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 1, %entry ]
+  %3 = trunc i64 %indvars.iv to i32
+  %mul8 = mul nsw i32 %3, %cols
+  %idx.ext = sext i32 %mul8 to i64
+  %add.ptr = getelementptr inbounds double* %2, i64 %idx.ext
+  %arrayidx9 = getelementptr inbounds double** %0, i64 %indvars.iv
+  store double* %add.ptr, double** %arrayidx9, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %rows
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load double** %0, align 8, !tbaa !4
+  br label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  ret double** %0
+}

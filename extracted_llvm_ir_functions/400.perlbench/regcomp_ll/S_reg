@@ -1,0 +1,1711 @@
+define internal fastcc %struct.regnode* @S_reg(%struct.RExC_state_t* %pRExC_state, i32 %paren, i32* nocapture %flagp) #0 {
+entry:
+  %flags = alloca i32, align 4
+  %posflags = alloca i32, align 4
+  %negflags = alloca i32, align 4
+  %sop = alloca %struct.op*, align 8
+  %pad = alloca %struct.av*, align 8
+  %flag = alloca i32, align 4
+  %flags1 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 0
+  %0 = load i32* %flags1, align 4, !tbaa !3
+  %parse = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 5
+  %1 = load i8** %parse, align 8, !tbaa !0
+  store i32 0, i32* %flagp, align 4, !tbaa !3
+  %tobool = icmp eq i32 %paren, 0
+  br i1 %tobool, label %if.end828, label %if.then
+
+if.then:                                          ; preds = %entry
+  %2 = load i8* %1, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 63
+  br i1 %cmp, label %if.then5, label %if.else757
+
+if.then5:                                         ; preds = %if.then
+  store i32 0, i32* %posflags, align 4, !tbaa !3
+  store i32 0, i32* %negflags, align 4, !tbaa !3
+  %incdec.ptr = getelementptr inbounds i8* %1, i64 1
+  %incdec.ptr9 = getelementptr inbounds i8* %1, i64 2
+  store i8* %incdec.ptr9, i8** %parse, align 8, !tbaa !0
+  %3 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %conv10 = sext i8 %3 to i32
+  switch i32 %conv10, label %sw.default [
+    i32 60, label %sw.bb
+    i32 61, label %sw.bb28
+    i32 33, label %sw.bb28
+    i32 58, label %if.end828
+    i32 62, label %if.end828
+    i32 36, label %sw.bb30
+    i32 64, label %sw.bb30
+    i32 35, label %while.cond
+    i32 112, label %sw.bb71
+    i32 63, label %sw.bb117
+    i32 123, label %sw.bb127
+    i32 40, label %sw.bb363
+    i32 0, label %sw.bb534
+  ]
+
+sw.bb:                                            ; preds = %if.then5
+  %seen = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 11
+  %4 = load i32* %seen, align 4, !tbaa !3
+  %or = or i32 %4, 2
+  store i32 %or, i32* %seen, align 4, !tbaa !3
+  %5 = load i8* %incdec.ptr9, align 1, !tbaa !1
+  %cmp13 = icmp eq i8 %5, 33
+  %.conv10 = select i1 %cmp13, i32 44, i32 60
+  switch i8 %5, label %unknown [
+    i8 61, label %if.end25
+    i8 33, label %if.end25
+  ]
+
+if.end25:                                         ; preds = %sw.bb, %sw.bb
+  %incdec.ptr27 = getelementptr inbounds i8* %1, i64 3
+  store i8* %incdec.ptr27, i8** %parse, align 8, !tbaa !0
+  br label %sw.bb28
+
+sw.bb28:                                          ; preds = %if.then5, %if.then5, %if.end25
+  %paren.addr.1 = phi i32 [ %conv10, %if.then5 ], [ %conv10, %if.then5 ], [ %.conv10, %if.end25 ]
+  %seen_zerolen = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 15
+  %6 = load i32* %seen_zerolen, align 4, !tbaa !3
+  %inc = add nsw i32 %6, 1
+  store i32 %inc, i32* %seen_zerolen, align 4, !tbaa !3
+  br label %if.end828
+
+sw.bb30:                                          ; preds = %if.then5, %if.then5
+  %emit = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %7 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp31 = icmp eq %struct.regnode* %7, @PL_regdummy
+  br i1 %cmp31, label %if.end34, label %if.then33
+
+if.then33:                                        ; preds = %sw.bb30
+  %rx = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %8 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %9 = bitcast %struct.regexp* %8 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %9) #8
+  %.pre1712 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end34
+
+if.end34:                                         ; preds = %if.then33, %sw.bb30
+  %10 = phi i8* [ %.pre1712, %if.then33 ], [ %incdec.ptr9, %sw.bb30 ]
+  %precomp = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %11 = load i8** %precomp, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %10 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %11 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv36 = trunc i64 %sub.ptr.sub to i32
+  %add.ptr = getelementptr inbounds i8* %11, i64 %sub.ptr.sub
+  call void (i8*, ...)* @S_re_croak2(i8* getelementptr inbounds ([34 x i8]* @.str10, i64 0, i64 0), i32 %conv10, i32 %conv36, i8* %11, i8* %add.ptr) #9
+  br label %if.end828
+
+while.cond:                                       ; preds = %if.then5, %while.body
+  %12 = phi i8* [ %incdec.ptr48, %while.body ], [ %incdec.ptr9, %if.then5 ]
+  %13 = load i8* %12, align 1, !tbaa !1
+  switch i8 %13, label %while.body [
+    i8 41, label %if.end70
+    i8 0, label %if.then53
+  ]
+
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr48 = getelementptr inbounds i8* %12, i64 1
+  store i8* %incdec.ptr48, i8** %parse, align 8, !tbaa !0
+  br label %while.cond
+
+if.then53:                                        ; preds = %while.cond
+  %end = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 4
+  %14 = load i8** %end, align 8, !tbaa !0
+  %precomp54 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %15 = load i8** %precomp54, align 8, !tbaa !0
+  %sub.ptr.lhs.cast55 = ptrtoint i8* %14 to i64
+  %sub.ptr.rhs.cast56 = ptrtoint i8* %15 to i64
+  %sub.ptr.sub57 = sub i64 %sub.ptr.lhs.cast55, %sub.ptr.rhs.cast56
+  %emit58 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %16 = load %struct.regnode** %emit58, align 8, !tbaa !0
+  %cmp59 = icmp eq %struct.regnode* %16, @PL_regdummy
+  br i1 %cmp59, label %if.end63, label %if.then61
+
+if.then61:                                        ; preds = %if.then53
+  %rx62 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %17 = load %struct.regexp** %rx62, align 8, !tbaa !0
+  %18 = bitcast %struct.regexp* %17 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %18) #8
+  %.pre1720 = load i8** %precomp54, align 8, !tbaa !0
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.then61, %if.then53
+  %19 = phi i8* [ %.pre1720, %if.then61 ], [ %15, %if.then53 ]
+  %cmp64 = icmp sgt i64 %sub.ptr.sub57, 127
+  %. = select i1 %cmp64, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  %20 = trunc i64 %sub.ptr.sub57 to i32
+  %conv68 = select i1 %cmp64, i32 117, i32 %20
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([31 x i8]* @.str12, i64 0, i64 0), i32 %conv68, i8* %19, i8* %.) #8
+  br label %if.end70
+
+if.end70:                                         ; preds = %while.cond, %if.end63
+  %call = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  store i32 8, i32* %flagp, align 4, !tbaa !3
+  br label %return
+
+sw.bb71:                                          ; preds = %if.then5
+  %emit72 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %21 = load %struct.regnode** %emit72, align 8, !tbaa !0
+  %cmp73 = icmp eq %struct.regnode* %21, @PL_regdummy
+  br i1 %cmp73, label %land.lhs.true75, label %sw.bb117
+
+land.lhs.true75:                                  ; preds = %sw.bb71
+  %22 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings = getelementptr inbounds %struct.cop* %22, i64 0, i32 14
+  %23 = load %struct.sv** %cop_warnings, align 8, !tbaa !0
+  %cmp76 = icmp eq %struct.sv* %23, null
+  br i1 %cmp76, label %lor.lhs.false97, label %land.lhs.true78
+
+land.lhs.true78:                                  ; preds = %land.lhs.true75
+  %24 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings79 = getelementptr inbounds %struct.cop* %24, i64 0, i32 14
+  %25 = load %struct.sv** %cop_warnings79, align 8, !tbaa !0
+  %cmp80 = icmp eq %struct.sv* %25, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp80, label %lor.lhs.false97, label %land.lhs.true82
+
+land.lhs.true82:                                  ; preds = %land.lhs.true78
+  %26 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings83 = getelementptr inbounds %struct.cop* %26, i64 0, i32 14
+  %27 = load %struct.sv** %cop_warnings83, align 8, !tbaa !0
+  %cmp84 = icmp eq %struct.sv* %27, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp84, label %if.then105, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true82
+  %28 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings86 = getelementptr inbounds %struct.cop* %28, i64 0, i32 14
+  %29 = load %struct.sv** %cop_warnings86, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.sv* %29, i64 0, i32 0
+  %30 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %30 to i8**
+  %31 = load i8** %xpv_pv, align 8, !tbaa !0
+  %32 = load i8* %31, align 1, !tbaa !1
+  %and = and i8 %32, 16
+  %tobool88 = icmp eq i8 %and, 0
+  br i1 %tobool88, label %lor.lhs.false89, label %if.then105
+
+lor.lhs.false89:                                  ; preds = %lor.lhs.false
+  %33 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings90 = getelementptr inbounds %struct.cop* %33, i64 0, i32 14
+  %34 = load %struct.sv** %cop_warnings90, align 8, !tbaa !0
+  %sv_any91 = getelementptr inbounds %struct.sv* %34, i64 0, i32 0
+  %35 = load i8** %sv_any91, align 8, !tbaa !0
+  %xpv_pv92 = bitcast i8* %35 to i8**
+  %36 = load i8** %xpv_pv92, align 8, !tbaa !0
+  %arrayidx93 = getelementptr inbounds i8* %36, i64 5
+  %37 = load i8* %arrayidx93, align 1, !tbaa !1
+  %and95 = and i8 %37, 1
+  %tobool96 = icmp eq i8 %and95, 0
+  br i1 %tobool96, label %lor.lhs.false97, label %if.then105
+
+lor.lhs.false97:                                  ; preds = %lor.lhs.false89, %land.lhs.true78, %land.lhs.true75
+  %38 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings98 = getelementptr inbounds %struct.cop* %38, i64 0, i32 14
+  %39 = load %struct.sv** %cop_warnings98, align 8, !tbaa !0
+  %cmp99 = icmp eq %struct.sv* %39, null
+  br i1 %cmp99, label %land.lhs.true101, label %sw.bb117
+
+land.lhs.true101:                                 ; preds = %lor.lhs.false97
+  %40 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and103 = and i8 %40, 1
+  %tobool104 = icmp eq i8 %and103, 0
+  br i1 %tobool104, label %sw.bb117, label %if.then105
+
+if.then105:                                       ; preds = %lor.lhs.false89, %lor.lhs.false, %land.lhs.true101, %land.lhs.true82
+  %41 = load i8** %parse, align 8, !tbaa !0
+  %precomp108 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %42 = load i8** %precomp108, align 8, !tbaa !0
+  %sub.ptr.lhs.cast109 = ptrtoint i8* %41 to i64
+  %sub.ptr.rhs.cast110 = ptrtoint i8* %42 to i64
+  %sub.ptr.sub111 = sub i64 %sub.ptr.lhs.cast109, %sub.ptr.rhs.cast110
+  %conv112 = trunc i64 %sub.ptr.sub111 to i32
+  %add.ptr115 = getelementptr inbounds i8* %42, i64 %sub.ptr.sub111
+  call void (i32, i8*, ...)* @Perl_warner(i32 5122, i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([34 x i8]* @.str14, i64 0, i64 0), i32 %conv112, i8* %42, i8* %add.ptr115) #8
+  br label %sw.bb117
+
+sw.bb117:                                         ; preds = %land.lhs.true101, %lor.lhs.false97, %sw.bb71, %if.then105, %if.then5
+  %43 = load i8** %parse, align 8, !tbaa !0
+  %44 = load i8* %43, align 1, !tbaa !1
+  %cmp120 = icmp eq i8 %44, 123
+  br i1 %cmp120, label %if.end123, label %unknown
+
+if.end123:                                        ; preds = %sw.bb117
+  %incdec.ptr125 = getelementptr inbounds i8* %43, i64 1
+  store i8* %incdec.ptr125, i8** %parse, align 8, !tbaa !0
+  br label %sw.bb127
+
+sw.bb127:                                         ; preds = %if.then5, %if.end123
+  %45 = phi i8* [ %incdec.ptr9, %if.then5 ], [ %incdec.ptr125, %if.end123 ]
+  %logical.0 = phi i32 [ 0, %if.then5 ], [ 1, %if.end123 ]
+  %seen_zerolen130 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 15
+  %46 = load i32* %seen_zerolen130, align 4, !tbaa !3
+  %inc131 = add nsw i32 %46, 1
+  store i32 %inc131, i32* %seen_zerolen130, align 4, !tbaa !3
+  %seen132 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 11
+  %47 = load i32* %seen132, align 4, !tbaa !3
+  %or133 = or i32 %47, 8
+  store i32 %or133, i32* %seen132, align 4, !tbaa !3
+  br label %land.rhs136
+
+land.rhs136:                                      ; preds = %sw.bb127, %if.end165
+  %48 = phi i8* [ %45, %sw.bb127 ], [ %incdec.ptr167, %if.end165 ]
+  %count.01698 = phi i32 [ 1, %sw.bb127 ], [ %count.1, %if.end165 ]
+  %49 = load i8* %48, align 1, !tbaa !1
+  switch i8 %49, label %if.end165 [
+    i8 0, label %if.then173
+    i8 92, label %land.lhs.true145
+    i8 123, label %if.then156
+    i8 125, label %if.then162
+  ]
+
+land.lhs.true145:                                 ; preds = %land.rhs136
+  %arrayidx147 = getelementptr inbounds i8* %48, i64 1
+  %50 = load i8* %arrayidx147, align 1, !tbaa !1
+  %tobool149 = icmp eq i8 %50, 0
+  br i1 %tobool149, label %if.end165, label %if.then150
+
+if.then150:                                       ; preds = %land.lhs.true145
+  store i8* %arrayidx147, i8** %parse, align 8, !tbaa !0
+  br label %if.end165
+
+if.then156:                                       ; preds = %land.rhs136
+  %inc157 = add nsw i32 %count.01698, 1
+  br label %if.end165
+
+if.then162:                                       ; preds = %land.rhs136
+  %dec = add nsw i32 %count.01698, -1
+  br label %if.end165
+
+if.end165:                                        ; preds = %land.lhs.true145, %land.rhs136, %if.then156, %if.then162, %if.then150
+  %51 = phi i8* [ %arrayidx147, %if.then150 ], [ %48, %if.then156 ], [ %48, %if.then162 ], [ %48, %land.rhs136 ], [ %48, %land.lhs.true145 ]
+  %count.1 = phi i32 [ %count.01698, %if.then150 ], [ %inc157, %if.then156 ], [ %dec, %if.then162 ], [ %count.01698, %land.rhs136 ], [ %count.01698, %land.lhs.true145 ]
+  %incdec.ptr167 = getelementptr inbounds i8* %51, i64 1
+  store i8* %incdec.ptr167, i8** %parse, align 8, !tbaa !0
+  %tobool135 = icmp eq i32 %count.1, 0
+  br i1 %tobool135, label %while.end168, label %land.rhs136
+
+while.end168:                                     ; preds = %if.end165
+  %.pre1723 = load i8* %incdec.ptr167, align 1, !tbaa !1
+  %phitmp = icmp eq i8 %.pre1723, 41
+  br i1 %phitmp, label %while.end168.if.end191_crit_edge, label %if.then173
+
+while.end168.if.end191_crit_edge:                 ; preds = %while.end168
+  %emit192.pre = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  br label %if.end191
+
+if.then173:                                       ; preds = %land.rhs136, %while.end168
+  store i8* %45, i8** %parse, align 8, !tbaa !0
+  %emit175 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %52 = load %struct.regnode** %emit175, align 8, !tbaa !0
+  %cmp176 = icmp eq %struct.regnode* %52, @PL_regdummy
+  br i1 %cmp176, label %if.end180, label %if.then178
+
+if.then178:                                       ; preds = %if.then173
+  %rx179 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %53 = load %struct.regexp** %rx179, align 8, !tbaa !0
+  %54 = bitcast %struct.regexp* %53 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %54) #8
+  %.pre1716 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end180
+
+if.end180:                                        ; preds = %if.then178, %if.then173
+  %55 = phi i8* [ %.pre1716, %if.then178 ], [ %45, %if.then173 ]
+  %precomp183 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %56 = load i8** %precomp183, align 8, !tbaa !0
+  %sub.ptr.lhs.cast184 = ptrtoint i8* %55 to i64
+  %sub.ptr.rhs.cast185 = ptrtoint i8* %56 to i64
+  %sub.ptr.sub186 = sub i64 %sub.ptr.lhs.cast184, %sub.ptr.rhs.cast185
+  %conv187 = trunc i64 %sub.ptr.sub186 to i32
+  %add.ptr190 = getelementptr inbounds i8* %56, i64 %sub.ptr.sub186
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str15, i64 0, i64 0), i32 %conv187, i8* %56, i8* %add.ptr190) #8
+  br label %if.end191
+
+if.end191:                                        ; preds = %while.end168.if.end191_crit_edge, %if.end180
+  %emit192.pre-phi = phi %struct.regnode** [ %emit192.pre, %while.end168.if.end191_crit_edge ], [ %emit175, %if.end180 ]
+  %57 = load %struct.regnode** %emit192.pre-phi, align 8, !tbaa !0
+  %cmp193 = icmp eq %struct.regnode* %57, @PL_regdummy
+  br i1 %cmp193, label %if.else231, label %if.then195
+
+if.then195:                                       ; preds = %if.end191
+  %58 = load i8** %parse, align 8, !tbaa !0
+  %add.ptr197 = getelementptr inbounds i8* %58, i64 -1
+  %tobool201 = icmp eq i8* %add.ptr197, %45
+  br i1 %tobool201, label %if.else209, label %if.then202
+
+if.then202:                                       ; preds = %if.then195
+  %sub.ptr.lhs.cast198 = ptrtoint i8* %add.ptr197 to i64
+  %sub.ptr.rhs.cast199 = ptrtoint i8* %45 to i64
+  %sub.ptr.sub200 = sub i64 %sub.ptr.lhs.cast198, %sub.ptr.rhs.cast199
+  %call208 = call %struct.sv* @Perl_newSVpvn(i8* %45, i64 %sub.ptr.sub200) #8
+  br label %if.end211
+
+if.else209:                                       ; preds = %if.then195
+  %call210 = call %struct.sv* @Perl_newSVpvn(i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0), i64 0) #8
+  br label %if.end211
+
+if.end211:                                        ; preds = %if.else209, %if.then202
+  %sv.0 = phi %struct.sv* [ %call208, %if.then202 ], [ %call210, %if.else209 ]
+  call void @Perl_push_scope() #8
+  call void @Perl_save_re_context() #9
+  %call212 = call %struct.op* @Perl_sv_compile_2op(%struct.sv* %sv.0, %struct.op** %sop, i8* getelementptr inbounds ([3 x i8]* @.str16, i64 0, i64 0), %struct.av** %pad) #8
+  %59 = load %struct.op** %sop, align 8, !tbaa !0
+  %op_private = getelementptr inbounds %struct.op* %59, i64 0, i32 7
+  %60 = load i8* %op_private, align 1, !tbaa !1
+  %or214 = or i8 %60, 64
+  store i8 %or214, i8* %op_private, align 1, !tbaa !1
+  %61 = load %struct.op** %sop, align 8, !tbaa !0
+  %op_targ = getelementptr inbounds %struct.op* %61, i64 0, i32 3
+  store i64 1, i64* %op_targ, align 8, !tbaa !5
+  call void @Perl_pop_scope() #8
+  %call216 = call fastcc i32 @S_add_data(%struct.RExC_state_t* %pRExC_state, i32 3, i8* getelementptr inbounds ([4 x i8]* @.str17, i64 0, i64 0)) #9
+  %62 = bitcast %struct.op* %call212 to i8*
+  %idxprom = sext i32 %call216 to i64
+  %rx217 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %63 = load %struct.regexp** %rx217, align 8, !tbaa !0
+  %data = getelementptr inbounds %struct.regexp* %63, i64 0, i32 5
+  %64 = load %struct.reg_data** %data, align 8, !tbaa !0
+  %arrayidx219 = getelementptr inbounds %struct.reg_data* %64, i64 0, i32 2, i64 %idxprom
+  store i8* %62, i8** %arrayidx219, align 8, !tbaa !0
+  %65 = load %struct.op** %sop, align 8, !tbaa !0
+  %66 = bitcast %struct.op* %65 to i8*
+  %add = add nsw i32 %call216, 1
+  %idxprom220 = sext i32 %add to i64
+  %67 = load %struct.regexp** %rx217, align 8, !tbaa !0
+  %data222 = getelementptr inbounds %struct.regexp* %67, i64 0, i32 5
+  %68 = load %struct.reg_data** %data222, align 8, !tbaa !0
+  %arrayidx224 = getelementptr inbounds %struct.reg_data* %68, i64 0, i32 2, i64 %idxprom220
+  store i8* %66, i8** %arrayidx224, align 8, !tbaa !0
+  %69 = load %struct.av** %pad, align 8, !tbaa !0
+  %70 = bitcast %struct.av* %69 to i8*
+  %add225 = add nsw i32 %call216, 2
+  %idxprom226 = sext i32 %add225 to i64
+  %71 = load %struct.regexp** %rx217, align 8, !tbaa !0
+  %data228 = getelementptr inbounds %struct.regexp* %71, i64 0, i32 5
+  %72 = load %struct.reg_data** %data228, align 8, !tbaa !0
+  %arrayidx230 = getelementptr inbounds %struct.reg_data* %72, i64 0, i32 2, i64 %idxprom226
+  store i8* %70, i8** %arrayidx230, align 8, !tbaa !0
+  call void @Perl_sv_free(%struct.sv* %sv.0) #8
+  br label %if.end285
+
+if.else231:                                       ; preds = %if.end191
+  %73 = load i32* @PL_reginterp_cnt, align 4, !tbaa !3
+  %seen_evals = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 16
+  %74 = load i32* %seen_evals, align 4, !tbaa !3
+  %inc232 = add nsw i32 %74, 1
+  store i32 %inc232, i32* %seen_evals, align 4, !tbaa !3
+  %cmp233 = icmp slt i32 %73, %inc232
+  br i1 %cmp233, label %land.lhs.true235, label %if.end258
+
+land.lhs.true235:                                 ; preds = %if.else231
+  %75 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cmp236 = icmp eq %struct.cop* %75, @PL_compiling
+  br i1 %cmp236, label %if.end258, label %if.then238
+
+if.then238:                                       ; preds = %land.lhs.true235
+  %end241 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 4
+  %76 = load i8** %end241, align 8, !tbaa !0
+  %precomp242 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %77 = load i8** %precomp242, align 8, !tbaa !0
+  %sub.ptr.lhs.cast243 = ptrtoint i8* %76 to i64
+  %sub.ptr.rhs.cast244 = ptrtoint i8* %77 to i64
+  %sub.ptr.sub245 = sub i64 %sub.ptr.lhs.cast243, %sub.ptr.rhs.cast244
+  %78 = load %struct.regnode** %emit192.pre-phi, align 8, !tbaa !0
+  %cmp247 = icmp eq %struct.regnode* %78, @PL_regdummy
+  br i1 %cmp247, label %if.end251, label %if.then249
+
+if.then249:                                       ; preds = %if.then238
+  %rx250 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %79 = load %struct.regexp** %rx250, align 8, !tbaa !0
+  %80 = bitcast %struct.regexp* %79 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %80) #8
+  %.pre1713 = load i8** %precomp242, align 8, !tbaa !0
+  br label %if.end251
+
+if.end251:                                        ; preds = %if.then249, %if.then238
+  %81 = phi i8* [ %.pre1713, %if.then249 ], [ %77, %if.then238 ]
+  %cmp252 = icmp sgt i64 %sub.ptr.sub245, 127
+  %.1663 = select i1 %cmp252, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  %82 = trunc i64 %sub.ptr.sub245 to i32
+  %conv256 = select i1 %cmp252, i32 117, i32 %82
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([49 x i8]* @.str18, i64 0, i64 0), i32 %conv256, i8* %81, i8* %.1663) #8
+  br label %if.end258
+
+if.end258:                                        ; preds = %land.lhs.true235, %if.end251, %if.else231
+  %83 = load i8* @PL_tainting, align 1, !tbaa !1
+  %tobool260 = icmp eq i8 %83, 0
+  %84 = load i8* @PL_tainted, align 1, !tbaa !1
+  %tobool263 = icmp eq i8 %84, 0
+  %or.cond = or i1 %tobool260, %tobool263
+  br i1 %or.cond, label %if.end285, label %if.then264
+
+if.then264:                                       ; preds = %if.end258
+  %end267 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 4
+  %85 = load i8** %end267, align 8, !tbaa !0
+  %precomp268 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %86 = load i8** %precomp268, align 8, !tbaa !0
+  %sub.ptr.lhs.cast269 = ptrtoint i8* %85 to i64
+  %sub.ptr.rhs.cast270 = ptrtoint i8* %86 to i64
+  %sub.ptr.sub271 = sub i64 %sub.ptr.lhs.cast269, %sub.ptr.rhs.cast270
+  %87 = load %struct.regnode** %emit192.pre-phi, align 8, !tbaa !0
+  %cmp273 = icmp eq %struct.regnode* %87, @PL_regdummy
+  br i1 %cmp273, label %if.end277, label %if.then275
+
+if.then275:                                       ; preds = %if.then264
+  %rx276 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %88 = load %struct.regexp** %rx276, align 8, !tbaa !0
+  %89 = bitcast %struct.regexp* %88 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %89) #8
+  %.pre1714 = load i8** %precomp268, align 8, !tbaa !0
+  br label %if.end277
+
+if.end277:                                        ; preds = %if.then275, %if.then264
+  %90 = phi i8* [ %.pre1714, %if.then275 ], [ %86, %if.then264 ]
+  %cmp278 = icmp sgt i64 %sub.ptr.sub271, 127
+  %.1664 = select i1 %cmp278, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  %91 = trunc i64 %sub.ptr.sub271 to i32
+  %conv282 = select i1 %cmp278, i32 117, i32 %91
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str19, i64 0, i64 0), i32 %conv282, i8* %90, i8* %.1664) #8
+  br label %if.end285
+
+if.end285:                                        ; preds = %if.end258, %if.end277, %if.end211
+  %n.0 = phi i32 [ 0, %if.end277 ], [ 0, %if.end258 ], [ %call216, %if.end211 ]
+  %call286 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  %tobool287 = icmp eq i32 %logical.0, 0
+  br i1 %tobool287, label %if.end297, label %if.then288
+
+if.then288:                                       ; preds = %if.end285
+  %call289 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 59) #9
+  %92 = load %struct.regnode** %emit192.pre-phi, align 8, !tbaa !0
+  %cmp291 = icmp eq %struct.regnode* %92, @PL_regdummy
+  br i1 %cmp291, label %if.end295, label %if.then293
+
+if.then293:                                       ; preds = %if.then288
+  %flags294 = getelementptr inbounds %struct.regnode* %call289, i64 0, i32 0
+  store i8 2, i8* %flags294, align 1, !tbaa !1
+  br label %if.end295
+
+if.end295:                                        ; preds = %if.then293, %if.then288
+  %call296 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 57, i32 %n.0) #9
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %call289, %struct.regnode* %call296) #9
+  br label %return
+
+if.end297:                                        ; preds = %if.end285
+  %call298 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 57, i32 %n.0) #9
+  %93 = load %struct.regnode** %emit192.pre-phi, align 8, !tbaa !0
+  %cmp300 = icmp eq %struct.regnode* %93, @PL_regdummy
+  br i1 %cmp300, label %return, label %if.then302
+
+if.then302:                                       ; preds = %if.end297
+  %emit_start = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %94 = load %struct.regnode** %emit_start, align 8, !tbaa !0
+  %sub.ptr.lhs.cast303 = ptrtoint %struct.regnode* %call298 to i64
+  %sub.ptr.rhs.cast304 = ptrtoint %struct.regnode* %94 to i64
+  %sub.ptr.sub305 = sub i64 %sub.ptr.lhs.cast303, %sub.ptr.rhs.cast304
+  %cmp306 = icmp slt i64 %sub.ptr.sub305, 0
+  br i1 %cmp306, label %if.then308, label %if.else314
+
+if.then308:                                       ; preds = %if.then302
+  %sub.ptr.div = ashr exact i64 %sub.ptr.sub305, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div) #8
+  %.pr.pre = load %struct.regnode** %emit192.pre-phi, align 8, !tbaa !0
+  br label %if.end329
+
+if.else314:                                       ; preds = %if.then302
+  %95 = load i8** %parse, align 8, !tbaa !0
+  %sub.ptr.lhs.cast316 = ptrtoint i8* %95 to i64
+  %sub.ptr.rhs.cast317 = ptrtoint i8* %1 to i64
+  %sub.ptr.sub318 = sub i64 1, %sub.ptr.rhs.cast317
+  %add319 = add i64 %sub.ptr.sub318, %sub.ptr.lhs.cast316
+  %conv320 = trunc i64 %add319 to i32
+  %mul = ashr exact i64 %sub.ptr.sub305, 1
+  %rx326 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %96 = load %struct.regexp** %rx326, align 8, !tbaa !0
+  %offsets = getelementptr inbounds %struct.regexp* %96, i64 0, i32 7
+  %97 = load i32** %offsets, align 8, !tbaa !0
+  %arrayidx327 = getelementptr inbounds i32* %97, i64 %mul
+  store i32 %conv320, i32* %arrayidx327, align 4, !tbaa !3
+  br label %if.end329
+
+if.end329:                                        ; preds = %if.then308, %if.else314
+  %.pr = phi %struct.regnode* [ %.pr.pre, %if.then308 ], [ %93, %if.else314 ]
+  %cmp331 = icmp eq %struct.regnode* %.pr, @PL_regdummy
+  br i1 %cmp331, label %return, label %if.then333
+
+if.then333:                                       ; preds = %if.end329
+  %98 = load %struct.regnode** %emit_start, align 8, !tbaa !0
+  %sub.ptr.rhs.cast336 = ptrtoint %struct.regnode* %98 to i64
+  %sub.ptr.sub337 = sub i64 %sub.ptr.lhs.cast303, %sub.ptr.rhs.cast336
+  %cmp339 = icmp slt i64 %sub.ptr.sub337, 0
+  br i1 %cmp339, label %if.then341, label %if.else347
+
+if.then341:                                       ; preds = %if.then333
+  %sub.ptr.div338 = ashr exact i64 %sub.ptr.sub337, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div338) #8
+  br label %return
+
+if.else347:                                       ; preds = %if.then333
+  %start = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %99 = load i8** %start, align 8, !tbaa !0
+  %sub.ptr.lhs.cast348 = ptrtoint i8* %1 to i64
+  %sub.ptr.rhs.cast349 = ptrtoint i8* %99 to i64
+  %sub.ptr.sub350 = sub i64 %sub.ptr.lhs.cast348, %sub.ptr.rhs.cast349
+  %conv351 = trunc i64 %sub.ptr.sub350 to i32
+  %mul357 = ashr exact i64 %sub.ptr.sub337, 1
+  %sub = add nsw i64 %mul357, -1
+  %rx358 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %100 = load %struct.regexp** %rx358, align 8, !tbaa !0
+  %offsets359 = getelementptr inbounds %struct.regexp* %100, i64 0, i32 7
+  %101 = load i32** %offsets359, align 8, !tbaa !0
+  %arrayidx360 = getelementptr inbounds i32* %101, i64 %sub
+  store i32 %conv351, i32* %arrayidx360, align 4, !tbaa !3
+  br label %return
+
+sw.bb363:                                         ; preds = %if.then5
+  %102 = load i8* %incdec.ptr9, align 1, !tbaa !1
+  %cmp367 = icmp eq i8 %102, 63
+  br i1 %cmp367, label %if.then369, label %if.else403
+
+if.then369:                                       ; preds = %sw.bb363
+  %arrayidx371 = getelementptr inbounds i8* %1, i64 3
+  %103 = load i8* %arrayidx371, align 1, !tbaa !1
+  switch i8 %103, label %sw.bb534 [
+    i8 61, label %if.then393
+    i8 33, label %if.then393
+    i8 60, label %if.then393
+    i8 123, label %if.then393
+  ]
+
+if.then393:                                       ; preds = %if.then369, %if.then369, %if.then369, %if.then369
+  %call394 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 59) #9
+  %emit395 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %104 = load %struct.regnode** %emit395, align 8, !tbaa !0
+  %cmp396 = icmp eq %struct.regnode* %104, @PL_regdummy
+  br i1 %cmp396, label %if.end400, label %if.then398
+
+if.then398:                                       ; preds = %if.then393
+  %flags399 = getelementptr inbounds %struct.regnode* %call394, i64 0, i32 0
+  store i8 1, i8* %flags399, align 1, !tbaa !1
+  br label %if.end400
+
+if.end400:                                        ; preds = %if.then398, %if.then393
+  %call401 = call fastcc %struct.regnode* @S_reg(%struct.RExC_state_t* %pRExC_state, i32 1, i32* %flag) #9
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %call394, %struct.regnode* %call401) #9
+  br label %insert_if
+
+if.else403:                                       ; preds = %sw.bb363
+  %.off = add i8 %102, -49
+  %105 = icmp ult i8 %.off, 9
+  br i1 %105, label %if.then415, label %if.else514
+
+if.then415:                                       ; preds = %if.else403
+  %incdec.ptr417 = getelementptr inbounds i8* %1, i64 3
+  store i8* %incdec.ptr417, i8** %parse, align 8, !tbaa !0
+  %call418 = call i32 @atoi(i8* %incdec.ptr9) #8
+  %106 = load i8* %incdec.ptr417, align 1, !tbaa !1
+  %.off16851699 = add i8 %106, -48
+  %107 = icmp ult i8 %.off16851699, 10
+  br i1 %107, label %while.body430, label %while.end433
+
+while.body430:                                    ; preds = %if.then415, %while.body430
+  %108 = phi i8* [ %incdec.ptr432, %while.body430 ], [ %incdec.ptr417, %if.then415 ]
+  %incdec.ptr432 = getelementptr inbounds i8* %108, i64 1
+  store i8* %incdec.ptr432, i8** %parse, align 8, !tbaa !0
+  %109 = load i8* %incdec.ptr432, align 1, !tbaa !1
+  %.off1685 = add i8 %109, -48
+  %110 = icmp ult i8 %.off1685, 10
+  br i1 %110, label %while.body430, label %while.end433
+
+while.end433:                                     ; preds = %while.body430, %if.then415
+  %call434 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 54, i32 %call418) #9
+  %call435 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  %111 = load i8* %call435, align 1, !tbaa !1
+  %cmp437 = icmp eq i8 %111, 41
+  br i1 %cmp437, label %insert_if, label %if.then439
+
+if.then439:                                       ; preds = %while.end433
+  %emit440 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %112 = load %struct.regnode** %emit440, align 8, !tbaa !0
+  %cmp441 = icmp eq %struct.regnode* %112, @PL_regdummy
+  br i1 %cmp441, label %if.end445, label %if.then443
+
+if.then443:                                       ; preds = %if.then439
+  %rx444 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %113 = load %struct.regexp** %rx444, align 8, !tbaa !0
+  %114 = bitcast %struct.regexp* %113 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %114) #8
+  br label %if.end445
+
+if.end445:                                        ; preds = %if.then443, %if.then439
+  %115 = load i8** %parse, align 8, !tbaa !0
+  %precomp448 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %116 = load i8** %precomp448, align 8, !tbaa !0
+  %sub.ptr.lhs.cast449 = ptrtoint i8* %115 to i64
+  %sub.ptr.rhs.cast450 = ptrtoint i8* %116 to i64
+  %sub.ptr.sub451 = sub i64 %sub.ptr.lhs.cast449, %sub.ptr.rhs.cast450
+  %conv452 = trunc i64 %sub.ptr.sub451 to i32
+  %add.ptr455 = getelementptr inbounds i8* %116, i64 %sub.ptr.sub451
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([32 x i8]* @.str22, i64 0, i64 0), i32 %conv452, i8* %116, i8* %add.ptr455) #8
+  br label %insert_if
+
+insert_if:                                        ; preds = %while.end433, %if.end445, %if.end400
+  %ret.0 = phi %struct.regnode* [ %call394, %if.end400 ], [ %call434, %if.end445 ], [ %call434, %while.end433 ]
+  %call457 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 53, i32 0) #9
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %ret.0, %struct.regnode* %call457) #9
+  %call458 = call fastcc %struct.regnode* @S_regbranch(%struct.RExC_state_t* %pRExC_state, i32* %flags, i32 1) #9
+  %cmp459 = icmp eq %struct.regnode* %call458, null
+  %call462 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 55, i32 0) #9
+  br i1 %cmp459, label %if.end465, label %if.else463
+
+if.else463:                                       ; preds = %insert_if
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %call458, %struct.regnode* %call462) #9
+  br label %if.end465
+
+if.end465:                                        ; preds = %insert_if, %if.else463
+  %br.0 = phi %struct.regnode* [ %call458, %if.else463 ], [ %call462, %insert_if ]
+  %call466 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  %117 = load i8* %call466, align 1, !tbaa !1
+  %118 = load i32* %flags, align 4, !tbaa !3
+  %and467 = and i32 %118, 1
+  %tobool468 = icmp eq i32 %and467, 0
+  br i1 %tobool468, label %if.end471, label %if.then469
+
+if.then469:                                       ; preds = %if.end465
+  %119 = load i32* %flagp, align 4, !tbaa !3
+  %or470 = or i32 %119, 1
+  store i32 %or470, i32* %flagp, align 4, !tbaa !3
+  br label %if.end471
+
+if.end471:                                        ; preds = %if.end465, %if.then469
+  %cmp473 = icmp eq i8 %117, 124
+  br i1 %cmp473, label %if.then475, label %if.end485
+
+if.then475:                                       ; preds = %if.end471
+  %call476 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 53, i32 0) #9
+  %call477 = call fastcc %struct.regnode* @S_regbranch(%struct.RExC_state_t* %pRExC_state, i32* %flags, i32 1) #9
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %ret.0, %struct.regnode* %call476) #9
+  %120 = load i32* %flags, align 4, !tbaa !3
+  %and478 = and i32 %120, 1
+  %tobool479 = icmp eq i32 %and478, 0
+  br i1 %tobool479, label %if.end482, label %if.then480
+
+if.then480:                                       ; preds = %if.then475
+  %121 = load i32* %flagp, align 4, !tbaa !3
+  %or481 = or i32 %121, 1
+  store i32 %or481, i32* %flagp, align 4, !tbaa !3
+  br label %if.end482
+
+if.end482:                                        ; preds = %if.then475, %if.then480
+  %call483 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  %122 = load i8* %call483, align 1, !tbaa !1
+  br label %if.end485
+
+if.end485:                                        ; preds = %if.end471, %if.end482
+  %c.0 = phi i8 [ %122, %if.end482 ], [ %117, %if.end471 ]
+  %lastbr.0 = phi %struct.regnode* [ %call476, %if.end482 ], [ null, %if.end471 ]
+  %cmp487 = icmp eq i8 %c.0, 41
+  br i1 %cmp487, label %if.end506, label %if.then489
+
+if.then489:                                       ; preds = %if.end485
+  %emit490 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %123 = load %struct.regnode** %emit490, align 8, !tbaa !0
+  %cmp491 = icmp eq %struct.regnode* %123, @PL_regdummy
+  br i1 %cmp491, label %if.end495, label %if.then493
+
+if.then493:                                       ; preds = %if.then489
+  %rx494 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %124 = load %struct.regexp** %rx494, align 8, !tbaa !0
+  %125 = bitcast %struct.regexp* %124 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %125) #8
+  br label %if.end495
+
+if.end495:                                        ; preds = %if.then493, %if.then489
+  %126 = load i8** %parse, align 8, !tbaa !0
+  %precomp498 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %127 = load i8** %precomp498, align 8, !tbaa !0
+  %sub.ptr.lhs.cast499 = ptrtoint i8* %126 to i64
+  %sub.ptr.rhs.cast500 = ptrtoint i8* %127 to i64
+  %sub.ptr.sub501 = sub i64 %sub.ptr.lhs.cast499, %sub.ptr.rhs.cast500
+  %conv502 = trunc i64 %sub.ptr.sub501 to i32
+  %add.ptr505 = getelementptr inbounds i8* %127, i64 %sub.ptr.sub501
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str23, i64 0, i64 0), i32 %conv502, i8* %127, i8* %add.ptr505) #8
+  br label %if.end506
+
+if.end506:                                        ; preds = %if.end485, %if.end495
+  %call507 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 37) #9
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %br.0, %struct.regnode* %call507) #9
+  %tobool508 = icmp eq %struct.regnode* %lastbr.0, null
+  br i1 %tobool508, label %if.else512, label %if.then509
+
+if.then509:                                       ; preds = %if.end506
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %lastbr.0, %struct.regnode* %call507) #9
+  %add.ptr511 = getelementptr inbounds %struct.regnode* %lastbr.0, i64 2
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %add.ptr511, %struct.regnode* %call507) #9
+  br label %return
+
+if.else512:                                       ; preds = %if.end506
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %ret.0, %struct.regnode* %call507) #9
+  br label %return
+
+if.else514:                                       ; preds = %if.else403
+  %emit515 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %128 = load %struct.regnode** %emit515, align 8, !tbaa !0
+  %cmp516 = icmp eq %struct.regnode* %128, @PL_regdummy
+  br i1 %cmp516, label %if.end520, label %if.then518
+
+if.then518:                                       ; preds = %if.else514
+  %rx519 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %129 = load %struct.regexp** %rx519, align 8, !tbaa !0
+  %130 = bitcast %struct.regexp* %129 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %130) #8
+  %.pre1717 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end520
+
+if.end520:                                        ; preds = %if.then518, %if.else514
+  %131 = phi i8* [ %.pre1717, %if.then518 ], [ %incdec.ptr9, %if.else514 ]
+  %precomp523 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %132 = load i8** %precomp523, align 8, !tbaa !0
+  %sub.ptr.lhs.cast524 = ptrtoint i8* %131 to i64
+  %sub.ptr.rhs.cast525 = ptrtoint i8* %132 to i64
+  %sub.ptr.sub526 = sub i64 %sub.ptr.lhs.cast524, %sub.ptr.rhs.cast525
+  %conv528 = trunc i64 %sub.ptr.sub526 to i32
+  %add.ptr531 = getelementptr inbounds i8* %132, i64 %sub.ptr.sub526
+  call void (i8*, ...)* @S_re_croak2(i8* getelementptr inbounds ([33 x i8]* @.str24, i64 0, i64 0), i8* %131, i32 %conv528, i8* %132, i8* %add.ptr531) #9
+  %.pre1718 = load i8** %parse, align 8, !tbaa !0
+  br label %sw.bb534
+
+sw.bb534:                                         ; preds = %if.then369, %if.end520, %if.then5
+  %133 = phi i8* [ %incdec.ptr9, %if.then369 ], [ %.pre1718, %if.end520 ], [ %incdec.ptr9, %if.then5 ]
+  %incdec.ptr536 = getelementptr inbounds i8* %133, i64 -1
+  store i8* %incdec.ptr536, i8** %parse, align 8, !tbaa !0
+  %emit537 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %134 = load %struct.regnode** %emit537, align 8, !tbaa !0
+  %cmp538 = icmp eq %struct.regnode* %134, @PL_regdummy
+  br i1 %cmp538, label %if.end542, label %if.then540
+
+if.then540:                                       ; preds = %sw.bb534
+  %rx541 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %135 = load %struct.regexp** %rx541, align 8, !tbaa !0
+  %136 = bitcast %struct.regexp* %135 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %136) #8
+  %.pre1719 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end542
+
+if.end542:                                        ; preds = %if.then540, %sw.bb534
+  %137 = phi i8* [ %.pre1719, %if.then540 ], [ %incdec.ptr536, %sw.bb534 ]
+  %precomp545 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %138 = load i8** %precomp545, align 8, !tbaa !0
+  %sub.ptr.lhs.cast546 = ptrtoint i8* %137 to i64
+  %sub.ptr.rhs.cast547 = ptrtoint i8* %138 to i64
+  %sub.ptr.sub548 = sub i64 %sub.ptr.lhs.cast546, %sub.ptr.rhs.cast547
+  %conv549 = trunc i64 %sub.ptr.sub548 to i32
+  %add.ptr552 = getelementptr inbounds i8* %138, i64 %sub.ptr.sub548
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str25, i64 0, i64 0), i32 %conv549, i8* %138, i8* %add.ptr552) #8
+  br label %if.end828
+
+sw.default:                                       ; preds = %if.then5
+  store i8* %incdec.ptr, i8** %parse, align 8, !tbaa !0
+  %emit576 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %precomp619 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  br label %while.cond555.outer
+
+while.cond555.outer:                              ; preds = %if.then712, %sw.default
+  %139 = phi i8* [ %incdec.ptr, %sw.default ], [ %incdec.ptr714, %if.then712 ]
+  %flagsp.0.ph = phi i32* [ %posflags, %sw.default ], [ %negflags, %if.then712 ]
+  %140 = load i8* %139, align 1, !tbaa !1
+  %tobool5581695 = icmp eq i8 %140, 0
+  br i1 %tobool5581695, label %if.end715, label %land.end564.lr.ph
+
+land.end564.lr.ph:                                ; preds = %while.cond555.outer
+  %cmp623 = icmp eq i32* %flagsp.0.ph, %negflags
+  %cond625 = select i1 %cmp623, i8* getelementptr inbounds ([3 x i8]* @.str28, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str29, i64 0, i64 0)
+  %cond630 = select i1 %cmp623, i8* getelementptr inbounds ([7 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  br label %land.end564
+
+land.end564:                                      ; preds = %land.end564.lr.ph, %if.end704
+  %141 = phi i8* [ %139, %land.end564.lr.ph ], [ %incdec.ptr706, %if.end704 ]
+  %142 = phi i8 [ %140, %land.end564.lr.ph ], [ %179, %if.end704 ]
+  %wastedflags.01696 = phi i32 [ 0, %land.end564.lr.ph ], [ %wastedflags.1, %if.end704 ]
+  %conv557 = sext i8 %142 to i32
+  %memchr = call i8* @memchr(i8* getelementptr inbounds ([8 x i8]* @.str26, i64 0, i64 0), i32 %conv557, i64 8)
+  %tobool563 = icmp eq i8* %memchr, null
+  br i1 %tobool563, label %while.end707, label %while.body565
+
+while.body565:                                    ; preds = %land.end564
+  switch i8 %142, label %if.else700 [
+    i8 111, label %if.then575
+    i8 103, label %if.then575
+    i8 99, label %if.then644
+  ]
+
+if.then575:                                       ; preds = %while.body565, %while.body565
+  %143 = load %struct.regnode** %emit576, align 8, !tbaa !0
+  %cmp577 = icmp eq %struct.regnode* %143, @PL_regdummy
+  br i1 %cmp577, label %land.lhs.true579, label %if.end704
+
+land.lhs.true579:                                 ; preds = %if.then575
+  %144 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings580 = getelementptr inbounds %struct.cop* %144, i64 0, i32 14
+  %145 = load %struct.sv** %cop_warnings580, align 8, !tbaa !0
+  %cmp581 = icmp eq %struct.sv* %145, null
+  br i1 %cmp581, label %lor.lhs.false599, label %land.lhs.true583
+
+land.lhs.true583:                                 ; preds = %land.lhs.true579
+  %146 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings584 = getelementptr inbounds %struct.cop* %146, i64 0, i32 14
+  %147 = load %struct.sv** %cop_warnings584, align 8, !tbaa !0
+  %cmp585 = icmp eq %struct.sv* %147, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp585, label %lor.lhs.false599, label %land.lhs.true587
+
+land.lhs.true587:                                 ; preds = %land.lhs.true583
+  %148 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings588 = getelementptr inbounds %struct.cop* %148, i64 0, i32 14
+  %149 = load %struct.sv** %cop_warnings588, align 8, !tbaa !0
+  %cmp589 = icmp eq %struct.sv* %149, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp589, label %if.then607, label %lor.lhs.false591
+
+lor.lhs.false591:                                 ; preds = %land.lhs.true587
+  %150 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings592 = getelementptr inbounds %struct.cop* %150, i64 0, i32 14
+  %151 = load %struct.sv** %cop_warnings592, align 8, !tbaa !0
+  %sv_any593 = getelementptr inbounds %struct.sv* %151, i64 0, i32 0
+  %152 = load i8** %sv_any593, align 8, !tbaa !0
+  %xpv_pv594 = bitcast i8* %152 to i8**
+  %153 = load i8** %xpv_pv594, align 8, !tbaa !0
+  %arrayidx595 = getelementptr inbounds i8* %153, i64 5
+  %154 = load i8* %arrayidx595, align 1, !tbaa !1
+  %and597 = and i8 %154, 1
+  %tobool598 = icmp eq i8 %and597, 0
+  br i1 %tobool598, label %lor.lhs.false599, label %if.then607
+
+lor.lhs.false599:                                 ; preds = %lor.lhs.false591, %land.lhs.true583, %land.lhs.true579
+  %155 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings600 = getelementptr inbounds %struct.cop* %155, i64 0, i32 14
+  %156 = load %struct.sv** %cop_warnings600, align 8, !tbaa !0
+  %cmp601 = icmp eq %struct.sv* %156, null
+  br i1 %cmp601, label %land.lhs.true603, label %if.end704
+
+land.lhs.true603:                                 ; preds = %lor.lhs.false599
+  %157 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and605 = and i8 %157, 1
+  %tobool606 = icmp eq i8 %and605, 0
+  br i1 %tobool606, label %if.end704, label %if.then607
+
+if.then607:                                       ; preds = %lor.lhs.false591, %land.lhs.true603, %land.lhs.true587
+  %158 = load i8** %parse, align 8, !tbaa !0
+  %159 = load i8* %158, align 1, !tbaa !1
+  %conv609 = sext i8 %159 to i32
+  %cmp610 = icmp eq i8 %159, 111
+  %cond = select i1 %cmp610, i32 1, i32 2
+  %and612 = and i32 %cond, %wastedflags.01696
+  %tobool613 = icmp eq i32 %and612, 0
+  br i1 %tobool613, label %if.then614, label %if.end704
+
+if.then614:                                       ; preds = %if.then607
+  %or615 = or i32 %cond, %wastedflags.01696
+  %add.ptr618 = getelementptr inbounds i8* %158, i64 1
+  %160 = load i8** %precomp619, align 8, !tbaa !0
+  %sub.ptr.lhs.cast620 = ptrtoint i8* %add.ptr618 to i64
+  %sub.ptr.rhs.cast621 = ptrtoint i8* %160 to i64
+  %sub.ptr.sub622 = sub i64 %sub.ptr.lhs.cast620, %sub.ptr.rhs.cast621
+  %conv633 = trunc i64 %sub.ptr.sub622 to i32
+  %add.ptr636 = getelementptr inbounds i8* %160, i64 %sub.ptr.sub622
+  call void (i32, i8*, ...)* @Perl_warner(i32 20, i8* getelementptr inbounds ([88 x i8]* @.str27, i64 0, i64 0), i8* %cond625, i32 %conv609, i8* %cond630, i32 %conv609, i32 %conv633, i8* %160, i8* %add.ptr636) #8
+  br label %if.end704
+
+if.then644:                                       ; preds = %while.body565
+  %161 = load %struct.regnode** %emit576, align 8, !tbaa !0
+  %cmp646 = icmp eq %struct.regnode* %161, @PL_regdummy
+  br i1 %cmp646, label %land.lhs.true648, label %if.end704
+
+land.lhs.true648:                                 ; preds = %if.then644
+  %162 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings649 = getelementptr inbounds %struct.cop* %162, i64 0, i32 14
+  %163 = load %struct.sv** %cop_warnings649, align 8, !tbaa !0
+  %cmp650 = icmp eq %struct.sv* %163, null
+  br i1 %cmp650, label %lor.lhs.false668, label %land.lhs.true652
+
+land.lhs.true652:                                 ; preds = %land.lhs.true648
+  %164 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings653 = getelementptr inbounds %struct.cop* %164, i64 0, i32 14
+  %165 = load %struct.sv** %cop_warnings653, align 8, !tbaa !0
+  %cmp654 = icmp eq %struct.sv* %165, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp654, label %lor.lhs.false668, label %land.lhs.true656
+
+land.lhs.true656:                                 ; preds = %land.lhs.true652
+  %166 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings657 = getelementptr inbounds %struct.cop* %166, i64 0, i32 14
+  %167 = load %struct.sv** %cop_warnings657, align 8, !tbaa !0
+  %cmp658 = icmp eq %struct.sv* %167, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp658, label %if.then676, label %lor.lhs.false660
+
+lor.lhs.false660:                                 ; preds = %land.lhs.true656
+  %168 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings661 = getelementptr inbounds %struct.cop* %168, i64 0, i32 14
+  %169 = load %struct.sv** %cop_warnings661, align 8, !tbaa !0
+  %sv_any662 = getelementptr inbounds %struct.sv* %169, i64 0, i32 0
+  %170 = load i8** %sv_any662, align 8, !tbaa !0
+  %xpv_pv663 = bitcast i8* %170 to i8**
+  %171 = load i8** %xpv_pv663, align 8, !tbaa !0
+  %arrayidx664 = getelementptr inbounds i8* %171, i64 5
+  %172 = load i8* %arrayidx664, align 1, !tbaa !1
+  %and666 = and i8 %172, 1
+  %tobool667 = icmp eq i8 %and666, 0
+  br i1 %tobool667, label %lor.lhs.false668, label %if.then676
+
+lor.lhs.false668:                                 ; preds = %lor.lhs.false660, %land.lhs.true652, %land.lhs.true648
+  %173 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings669 = getelementptr inbounds %struct.cop* %173, i64 0, i32 14
+  %174 = load %struct.sv** %cop_warnings669, align 8, !tbaa !0
+  %cmp670 = icmp eq %struct.sv* %174, null
+  br i1 %cmp670, label %land.lhs.true672, label %if.end704
+
+land.lhs.true672:                                 ; preds = %lor.lhs.false668
+  %175 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and674 = and i8 %175, 1
+  %tobool675 = icmp eq i8 %and674, 0
+  br i1 %tobool675, label %if.end704, label %if.then676
+
+if.then676:                                       ; preds = %lor.lhs.false660, %land.lhs.true672, %land.lhs.true656
+  %and677 = and i32 %wastedflags.01696, 4
+  %tobool678 = icmp eq i32 %and677, 0
+  br i1 %tobool678, label %if.then679, label %if.end704
+
+if.then679:                                       ; preds = %if.then676
+  %or680 = or i32 %wastedflags.01696, 6
+  %176 = load i8** %parse, align 8, !tbaa !0
+  %add.ptr683 = getelementptr inbounds i8* %176, i64 1
+  %177 = load i8** %precomp619, align 8, !tbaa !0
+  %sub.ptr.lhs.cast685 = ptrtoint i8* %add.ptr683 to i64
+  %sub.ptr.rhs.cast686 = ptrtoint i8* %177 to i64
+  %sub.ptr.sub687 = sub i64 %sub.ptr.lhs.cast685, %sub.ptr.rhs.cast686
+  %conv694 = trunc i64 %sub.ptr.sub687 to i32
+  %add.ptr697 = getelementptr inbounds i8* %177, i64 %sub.ptr.sub687
+  call void (i32, i8*, ...)* @Perl_warner(i32 20, i8* getelementptr inbounds ([87 x i8]* @.str31, i64 0, i64 0), i8* %cond625, i8* %cond630, i32 %conv694, i8* %177, i8* %add.ptr697) #8
+  br label %if.end704
+
+if.else700:                                       ; preds = %while.body565
+  call void @Perl_pmflag(i32* %flagsp.0.ph, i32 %conv557) #8
+  br label %if.end704
+
+if.end704:                                        ; preds = %if.then676, %land.lhs.true672, %lor.lhs.false668, %land.lhs.true603, %lor.lhs.false599, %if.then607, %if.else700, %if.then679, %if.then644, %if.then575, %if.then614
+  %wastedflags.1 = phi i32 [ %wastedflags.01696, %if.then607 ], [ %or615, %if.then614 ], [ %wastedflags.01696, %if.then575 ], [ %or680, %if.then679 ], [ %wastedflags.01696, %if.then644 ], [ %wastedflags.01696, %if.else700 ], [ %wastedflags.01696, %lor.lhs.false599 ], [ %wastedflags.01696, %land.lhs.true603 ], [ %wastedflags.01696, %lor.lhs.false668 ], [ %wastedflags.01696, %land.lhs.true672 ], [ %wastedflags.01696, %if.then676 ]
+  %178 = load i8** %parse, align 8, !tbaa !0
+  %incdec.ptr706 = getelementptr inbounds i8* %178, i64 1
+  store i8* %incdec.ptr706, i8** %parse, align 8, !tbaa !0
+  %179 = load i8* %incdec.ptr706, align 1, !tbaa !1
+  %tobool558 = icmp eq i8 %179, 0
+  br i1 %tobool558, label %if.end715, label %land.end564
+
+while.end707:                                     ; preds = %land.end564
+  %cmp710 = icmp eq i8 %142, 45
+  br i1 %cmp710, label %if.then712, label %if.end715
+
+if.then712:                                       ; preds = %while.end707
+  %incdec.ptr714 = getelementptr inbounds i8* %141, i64 1
+  store i8* %incdec.ptr714, i8** %parse, align 8, !tbaa !0
+  br label %while.cond555.outer
+
+if.end715:                                        ; preds = %while.cond555.outer, %if.end704, %while.end707
+  %180 = phi i8* [ %141, %while.end707 ], [ %incdec.ptr706, %if.end704 ], [ %139, %while.cond555.outer ]
+  %181 = load i32* %posflags, align 4, !tbaa !3
+  %182 = load i32* %flags1, align 4, !tbaa !3
+  %or717 = or i32 %182, %181
+  %183 = load i32* %negflags, align 4, !tbaa !3
+  %neg = xor i32 %183, -1
+  %and719 = and i32 %or717, %neg
+  store i32 %and719, i32* %flags1, align 4, !tbaa !3
+  %184 = load i8* %180, align 1, !tbaa !1
+  %cmp722 = icmp eq i8 %184, 58
+  br i1 %cmp722, label %if.then724, label %unknown
+
+if.then724:                                       ; preds = %if.end715
+  %incdec.ptr726 = getelementptr inbounds i8* %180, i64 1
+  store i8* %incdec.ptr726, i8** %parse, align 8, !tbaa !0
+  br label %if.end828
+
+unknown:                                          ; preds = %sw.bb, %sw.bb117, %if.end715
+  %185 = phi i8 [ %5, %sw.bb ], [ %44, %sw.bb117 ], [ %184, %if.end715 ]
+  %186 = phi i8* [ %incdec.ptr9, %sw.bb ], [ %43, %sw.bb117 ], [ %180, %if.end715 ]
+  %cmp730 = icmp eq i8 %185, 41
+  br i1 %cmp730, label %if.end755, label %if.then732
+
+if.then732:                                       ; preds = %unknown
+  %incdec.ptr734 = getelementptr inbounds i8* %186, i64 1
+  store i8* %incdec.ptr734, i8** %parse, align 8, !tbaa !0
+  %emit735 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %187 = load %struct.regnode** %emit735, align 8, !tbaa !0
+  %cmp736 = icmp eq %struct.regnode* %187, @PL_regdummy
+  br i1 %cmp736, label %if.end740, label %if.then738
+
+if.then738:                                       ; preds = %if.then732
+  %rx739 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %188 = load %struct.regexp** %rx739, align 8, !tbaa !0
+  %189 = bitcast %struct.regexp* %188 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %189) #8
+  %.pre1711 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end740
+
+if.end740:                                        ; preds = %if.then738, %if.then732
+  %190 = phi i8* [ %.pre1711, %if.then738 ], [ %incdec.ptr734, %if.then732 ]
+  %precomp743 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %191 = load i8** %precomp743, align 8, !tbaa !0
+  %sub.ptr.lhs.cast744 = ptrtoint i8* %190 to i64
+  %sub.ptr.rhs.cast745 = ptrtoint i8* %191 to i64
+  %sub.ptr.sub746 = sub i64 %sub.ptr.lhs.cast744, %sub.ptr.rhs.cast745
+  %sub.ptr.rhs.cast749 = ptrtoint i8* %1 to i64
+  %sub.ptr.sub750 = sub i64 %sub.ptr.lhs.cast744, %sub.ptr.rhs.cast749
+  %conv751 = trunc i64 %sub.ptr.sub746 to i32
+  %add.ptr754 = getelementptr inbounds i8* %191, i64 %sub.ptr.sub746
+  call void (i8*, ...)* @S_re_croak2(i8* getelementptr inbounds ([34 x i8]* @.str32, i64 0, i64 0), i64 %sub.ptr.sub750, i8* %1, i32 %conv751, i8* %191, i8* %add.ptr754) #9
+  br label %if.end755
+
+if.end755:                                        ; preds = %unknown, %if.end740
+  %call756 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  store i32 8, i32* %flagp, align 4, !tbaa !3
+  br label %return
+
+if.else757:                                       ; preds = %if.then
+  %npar = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 13
+  %192 = load i32* %npar, align 4, !tbaa !3
+  %inc759 = add nsw i32 %192, 1
+  store i32 %inc759, i32* %npar, align 4, !tbaa !3
+  %call760 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 45, i32 %192) #9
+  %emit761 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %193 = load %struct.regnode** %emit761, align 8, !tbaa !0
+  %cmp762 = icmp eq %struct.regnode* %193, @PL_regdummy
+  br i1 %cmp762, label %if.end828, label %if.then764
+
+if.then764:                                       ; preds = %if.else757
+  %emit_start765 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %194 = load %struct.regnode** %emit_start765, align 8, !tbaa !0
+  %sub.ptr.lhs.cast766 = ptrtoint %struct.regnode* %call760 to i64
+  %sub.ptr.rhs.cast767 = ptrtoint %struct.regnode* %194 to i64
+  %sub.ptr.sub768 = sub i64 %sub.ptr.lhs.cast766, %sub.ptr.rhs.cast767
+  %cmp770 = icmp slt i64 %sub.ptr.sub768, 0
+  br i1 %cmp770, label %if.then772, label %if.else778
+
+if.then772:                                       ; preds = %if.then764
+  %sub.ptr.div769 = ashr exact i64 %sub.ptr.sub768, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div769) #8
+  %.pr1670.pre = load %struct.regnode** %emit761, align 8, !tbaa !0
+  br label %if.end789
+
+if.else778:                                       ; preds = %if.then764
+  %mul784 = ashr exact i64 %sub.ptr.sub768, 1
+  %rx785 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %195 = load %struct.regexp** %rx785, align 8, !tbaa !0
+  %offsets786 = getelementptr inbounds %struct.regexp* %195, i64 0, i32 7
+  %196 = load i32** %offsets786, align 8, !tbaa !0
+  %arrayidx787 = getelementptr inbounds i32* %196, i64 %mul784
+  store i32 1, i32* %arrayidx787, align 4, !tbaa !3
+  br label %if.end789
+
+if.end789:                                        ; preds = %if.then772, %if.else778
+  %.pr1670 = phi %struct.regnode* [ %.pr1670.pre, %if.then772 ], [ %193, %if.else778 ]
+  %cmp791 = icmp eq %struct.regnode* %.pr1670, @PL_regdummy
+  br i1 %cmp791, label %if.end828, label %if.then793
+
+if.then793:                                       ; preds = %if.end789
+  %197 = load %struct.regnode** %emit_start765, align 8, !tbaa !0
+  %sub.ptr.rhs.cast796 = ptrtoint %struct.regnode* %197 to i64
+  %sub.ptr.sub797 = sub i64 %sub.ptr.lhs.cast766, %sub.ptr.rhs.cast796
+  %cmp799 = icmp slt i64 %sub.ptr.sub797, 0
+  br i1 %cmp799, label %if.then801, label %if.else807
+
+if.then801:                                       ; preds = %if.then793
+  %sub.ptr.div798 = ashr exact i64 %sub.ptr.sub797, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div798) #8
+  br label %if.end828
+
+if.else807:                                       ; preds = %if.then793
+  %198 = load i8** %parse, align 8, !tbaa !0
+  %start809 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %199 = load i8** %start809, align 8, !tbaa !0
+  %sub.ptr.lhs.cast810 = ptrtoint i8* %198 to i64
+  %sub.ptr.rhs.cast811 = ptrtoint i8* %199 to i64
+  %sub.ptr.sub812 = sub i64 %sub.ptr.lhs.cast810, %sub.ptr.rhs.cast811
+  %conv813 = trunc i64 %sub.ptr.sub812 to i32
+  %mul819 = ashr exact i64 %sub.ptr.sub797, 1
+  %sub820 = add nsw i64 %mul819, -1
+  %rx821 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %200 = load %struct.regexp** %rx821, align 8, !tbaa !0
+  %offsets822 = getelementptr inbounds %struct.regexp* %200, i64 0, i32 7
+  %201 = load i32** %offsets822, align 8, !tbaa !0
+  %arrayidx823 = getelementptr inbounds i32* %201, i64 %sub820
+  store i32 %conv813, i32* %arrayidx823, align 4, !tbaa !3
+  br label %if.end828
+
+if.end828:                                        ; preds = %if.end789, %if.else757, %entry, %if.else807, %if.then801, %sw.bb28, %if.then5, %if.then5, %if.then724, %if.end542, %if.end34
+  %open.0 = phi i32 [ 0, %if.then724 ], [ 0, %if.end542 ], [ 0, %if.end34 ], [ 0, %if.then5 ], [ 0, %if.then5 ], [ 0, %sw.bb28 ], [ 1, %if.then801 ], [ 1, %if.else807 ], [ 0, %entry ], [ 1, %if.else757 ], [ 1, %if.end789 ]
+  %parno.0 = phi i32 [ 0, %if.then724 ], [ 0, %if.end542 ], [ 0, %if.end34 ], [ 0, %if.then5 ], [ 0, %if.then5 ], [ 0, %sw.bb28 ], [ %192, %if.then801 ], [ %192, %if.else807 ], [ 0, %entry ], [ %192, %if.else757 ], [ %192, %if.end789 ]
+  %ret.1 = phi %struct.regnode* [ null, %if.then724 ], [ null, %if.end542 ], [ null, %if.end34 ], [ null, %if.then5 ], [ null, %if.then5 ], [ null, %sw.bb28 ], [ %call760, %if.then801 ], [ %call760, %if.else807 ], [ null, %entry ], [ %call760, %if.else757 ], [ %call760, %if.end789 ]
+  %paren.addr.2 = phi i32 [ 58, %if.then724 ], [ %conv10, %if.end542 ], [ %conv10, %if.end34 ], [ %conv10, %if.then5 ], [ %conv10, %if.then5 ], [ %paren.addr.1, %sw.bb28 ], [ %paren, %if.then801 ], [ %paren, %if.else807 ], [ 0, %entry ], [ %paren, %if.else757 ], [ %paren, %if.end789 ]
+  %202 = load i8** %parse, align 8, !tbaa !0
+  %call830 = call fastcc %struct.regnode* @S_regbranch(%struct.RExC_state_t* %pRExC_state, i32* %flags, i32 1) #9
+  %cmp831 = icmp eq %struct.regnode* %call830, null
+  br i1 %cmp831, label %return, label %if.end834
+
+if.end834:                                        ; preds = %if.end828
+  %203 = load i8** %parse, align 8, !tbaa !0
+  %204 = load i8* %203, align 1, !tbaa !1
+  %cmp837 = icmp eq i8 %204, 124
+  br i1 %cmp837, label %if.then839, label %if.else921
+
+if.then839:                                       ; preds = %if.end834
+  %emit840 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %205 = load %struct.regnode** %emit840, align 8, !tbaa !0
+  %cmp841 = icmp eq %struct.regnode* %205, @PL_regdummy
+  br i1 %cmp841, label %if.else846, label %land.lhs.true843
+
+land.lhs.true843:                                 ; preds = %if.then839
+  %extralen = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 14
+  %206 = load i32* %extralen, align 4, !tbaa !3
+  %tobool844 = icmp eq i32 %206, 0
+  br i1 %tobool844, label %if.else846, label %if.then845
+
+if.then845:                                       ; preds = %land.lhs.true843
+  call fastcc void @S_reginsert(%struct.RExC_state_t* %pRExC_state, i8 zeroext 56, %struct.regnode* %call830) #9
+  br label %if.end913
+
+if.else846:                                       ; preds = %land.lhs.true843, %if.then839
+  call fastcc void @S_reginsert(%struct.RExC_state_t* %pRExC_state, i8 zeroext 31, %struct.regnode* %call830) #9
+  %207 = load %struct.regnode** %emit840, align 8, !tbaa !0
+  %cmp848 = icmp eq %struct.regnode* %207, @PL_regdummy
+  br i1 %cmp848, label %if.then917, label %if.then850
+
+if.then850:                                       ; preds = %if.else846
+  %emit_start851 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %208 = load %struct.regnode** %emit_start851, align 8, !tbaa !0
+  %sub.ptr.lhs.cast852 = ptrtoint %struct.regnode* %call830 to i64
+  %sub.ptr.rhs.cast853 = ptrtoint %struct.regnode* %208 to i64
+  %sub.ptr.sub854 = sub i64 %sub.ptr.lhs.cast852, %sub.ptr.rhs.cast853
+  %cmp856 = icmp slt i64 %sub.ptr.sub854, 0
+  br i1 %cmp856, label %if.then858, label %if.else864
+
+if.then858:                                       ; preds = %if.then850
+  %sub.ptr.div855 = ashr exact i64 %sub.ptr.sub854, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div855) #8
+  %.pr1672.pre = load %struct.regnode** %emit840, align 8, !tbaa !0
+  br label %if.end877
+
+if.else864:                                       ; preds = %if.then850
+  %cmp865 = icmp ne i32 %paren.addr.2, 0
+  %conv866 = zext i1 %cmp865 to i32
+  %mul872 = ashr exact i64 %sub.ptr.sub854, 1
+  %rx873 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %209 = load %struct.regexp** %rx873, align 8, !tbaa !0
+  %offsets874 = getelementptr inbounds %struct.regexp* %209, i64 0, i32 7
+  %210 = load i32** %offsets874, align 8, !tbaa !0
+  %arrayidx875 = getelementptr inbounds i32* %210, i64 %mul872
+  store i32 %conv866, i32* %arrayidx875, align 4, !tbaa !3
+  br label %if.end877
+
+if.end877:                                        ; preds = %if.then858, %if.else864
+  %.pr1672 = phi %struct.regnode* [ %.pr1672.pre, %if.then858 ], [ %207, %if.else864 ]
+  %cmp879 = icmp eq %struct.regnode* %.pr1672, @PL_regdummy
+  br i1 %cmp879, label %if.then917, label %if.then881
+
+if.then881:                                       ; preds = %if.end877
+  %211 = load %struct.regnode** %emit_start851, align 8, !tbaa !0
+  %sub.ptr.rhs.cast884 = ptrtoint %struct.regnode* %211 to i64
+  %sub.ptr.sub885 = sub i64 %sub.ptr.lhs.cast852, %sub.ptr.rhs.cast884
+  %cmp887 = icmp slt i64 %sub.ptr.sub885, 0
+  br i1 %cmp887, label %if.then889, label %if.else895
+
+if.then889:                                       ; preds = %if.then881
+  %sub.ptr.div886 = ashr exact i64 %sub.ptr.sub885, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div886) #8
+  br label %if.end913
+
+if.else895:                                       ; preds = %if.then881
+  %start896 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %212 = load i8** %start896, align 8, !tbaa !0
+  %sub.ptr.lhs.cast897 = ptrtoint i8* %202 to i64
+  %sub.ptr.rhs.cast898 = ptrtoint i8* %212 to i64
+  %sub.ptr.sub899 = sub i64 %sub.ptr.lhs.cast897, %sub.ptr.rhs.cast898
+  %conv900 = trunc i64 %sub.ptr.sub899 to i32
+  %mul906 = ashr exact i64 %sub.ptr.sub885, 1
+  %sub907 = add nsw i64 %mul906, -1
+  %rx908 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %213 = load %struct.regexp** %rx908, align 8, !tbaa !0
+  %offsets909 = getelementptr inbounds %struct.regexp* %213, i64 0, i32 7
+  %214 = load i32** %offsets909, align 8, !tbaa !0
+  %arrayidx910 = getelementptr inbounds i32* %214, i64 %sub907
+  store i32 %conv900, i32* %arrayidx910, align 4, !tbaa !3
+  br label %if.end913
+
+if.end913:                                        ; preds = %if.else895, %if.then889, %if.then845
+  %.pr1674.pr = load %struct.regnode** %emit840, align 8, !tbaa !0
+  %cmp915 = icmp eq %struct.regnode* %.pr1674.pr, @PL_regdummy
+  br i1 %cmp915, label %if.then917, label %if.end928
+
+if.then917:                                       ; preds = %if.else846, %if.end877, %if.end913
+  %extralen918 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 14
+  %215 = load i32* %extralen918, align 4, !tbaa !3
+  %add919 = add nsw i32 %215, 1
+  store i32 %add919, i32* %extralen918, align 4, !tbaa !3
+  br label %if.end928
+
+if.else921:                                       ; preds = %if.end834
+  %cmp922 = icmp eq i32 %paren.addr.2, 58
+  br i1 %cmp922, label %if.then924, label %if.end928
+
+if.then924:                                       ; preds = %if.else921
+  %216 = load i32* %flags, align 4, !tbaa !3
+  %and925 = and i32 %216, 2
+  %217 = load i32* %flagp, align 4, !tbaa !3
+  %or926 = or i32 %217, %and925
+  store i32 %or926, i32* %flagp, align 4, !tbaa !3
+  br label %if.end928
+
+if.end928:                                        ; preds = %if.else921, %if.then924, %if.end913, %if.then917
+  %have_branch.0 = phi i32 [ 1, %if.then917 ], [ 1, %if.end913 ], [ 0, %if.then924 ], [ 0, %if.else921 ]
+  %tobool929 = icmp eq i32 %open.0, 0
+  br i1 %tobool929, label %if.else931, label %if.then930
+
+if.then930:                                       ; preds = %if.end928
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %ret.1, %struct.regnode* %call830) #9
+  br label %if.end936
+
+if.else931:                                       ; preds = %if.end928
+  %cmp932 = icmp eq i32 %paren.addr.2, 63
+  %ret.1.call830 = select i1 %cmp932, %struct.regnode* %ret.1, %struct.regnode* %call830
+  br label %if.end936
+
+if.end936:                                        ; preds = %if.else931, %if.then930
+  %ret.2 = phi %struct.regnode* [ %ret.1, %if.then930 ], [ %ret.1.call830, %if.else931 ]
+  %218 = load i32* %flags, align 4, !tbaa !3
+  %and937 = and i32 %218, 5
+  %219 = load i32* %flagp, align 4, !tbaa !3
+  %or938 = or i32 %219, %and937
+  store i32 %or938, i32* %flagp, align 4, !tbaa !3
+  %220 = load i8** %parse, align 8, !tbaa !0
+  %221 = load i8* %220, align 1, !tbaa !1
+  %cmp9421690 = icmp eq i8 %221, 124
+  br i1 %cmp9421690, label %while.body944.lr.ph, label %while.end976
+
+while.body944.lr.ph:                              ; preds = %if.end936
+  %emit945 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %extralen960 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 14
+  br label %while.body944
+
+while.body944:                                    ; preds = %if.end973, %while.body944.lr.ph
+  %lastbr.11692 = phi %struct.regnode* [ %call830, %while.body944.lr.ph ], [ %call964, %if.end973 ]
+  %ender.01691 = phi %struct.regnode* [ null, %while.body944.lr.ph ], [ %ender.11678, %if.end973 ]
+  %222 = load %struct.regnode** %emit945, align 8, !tbaa !0
+  %cmp946 = icmp eq %struct.regnode* %222, @PL_regdummy
+  br i1 %cmp946, label %if.then959, label %land.lhs.true948
+
+land.lhs.true948:                                 ; preds = %while.body944
+  %223 = load i32* %extralen960, align 4, !tbaa !3
+  %tobool950 = icmp eq i32 %223, 0
+  br i1 %tobool950, label %if.end962, label %if.end955
+
+if.end955:                                        ; preds = %land.lhs.true948
+  %call952 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 55, i32 0) #9
+  %add.ptr954 = getelementptr inbounds %struct.regnode* %lastbr.11692, i64 2
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %add.ptr954, %struct.regnode* %call952) #9
+  %.pr1676.pre = load %struct.regnode** %emit945, align 8, !tbaa !0
+  %cmp957 = icmp eq %struct.regnode* %.pr1676.pre, @PL_regdummy
+  br i1 %cmp957, label %if.then959, label %if.end962
+
+if.then959:                                       ; preds = %if.end955, %while.body944
+  %ender.11679 = phi %struct.regnode* [ %ender.01691, %while.body944 ], [ %call952, %if.end955 ]
+  %224 = load i32* %extralen960, align 4, !tbaa !3
+  %add961 = add nsw i32 %224, 2
+  store i32 %add961, i32* %extralen960, align 4, !tbaa !3
+  br label %if.end962
+
+if.end962:                                        ; preds = %land.lhs.true948, %if.then959, %if.end955
+  %ender.11678 = phi %struct.regnode* [ %ender.11679, %if.then959 ], [ %call952, %if.end955 ], [ %ender.01691, %land.lhs.true948 ]
+  %call963 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  %call964 = call fastcc %struct.regnode* @S_regbranch(%struct.RExC_state_t* %pRExC_state, i32* %flags, i32 0) #9
+  %cmp965 = icmp eq %struct.regnode* %call964, null
+  br i1 %cmp965, label %return, label %if.end968
+
+if.end968:                                        ; preds = %if.end962
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %lastbr.11692, %struct.regnode* %call964) #9
+  %225 = load i32* %flags, align 4, !tbaa !3
+  %and969 = and i32 %225, 1
+  %tobool970 = icmp eq i32 %and969, 0
+  %.pre1722 = load i32* %flagp, align 4, !tbaa !3
+  br i1 %tobool970, label %if.end973, label %if.then971
+
+if.then971:                                       ; preds = %if.end968
+  %or972 = or i32 %.pre1722, 1
+  store i32 %or972, i32* %flagp, align 4, !tbaa !3
+  br label %if.end973
+
+if.end973:                                        ; preds = %if.end968, %if.then971
+  %226 = phi i32 [ %or972, %if.then971 ], [ %.pre1722, %if.end968 ]
+  %and974 = and i32 %225, 4
+  %or975 = or i32 %226, %and974
+  store i32 %or975, i32* %flagp, align 4, !tbaa !3
+  %227 = load i8** %parse, align 8, !tbaa !0
+  %228 = load i8* %227, align 1, !tbaa !1
+  %cmp942 = icmp eq i8 %228, 124
+  br i1 %cmp942, label %while.body944, label %while.end976
+
+while.end976:                                     ; preds = %if.end973, %if.end936
+  %229 = phi i32 [ %or938, %if.end936 ], [ %or975, %if.end973 ]
+  %lastbr.1.lcssa = phi %struct.regnode* [ %call830, %if.end936 ], [ %call964, %if.end973 ]
+  %ender.0.lcssa = phi %struct.regnode* [ null, %if.end936 ], [ %ender.11678, %if.end973 ]
+  %tobool977 = icmp ne i32 %have_branch.0, 0
+  %tobool977.not = xor i1 %tobool977, true
+  %cmp979 = icmp eq i32 %paren.addr.2, 58
+  %or.cond1666 = and i1 %cmp979, %tobool977.not
+  br i1 %or.cond1666, label %if.end1065, label %if.then981
+
+if.then981:                                       ; preds = %while.end976
+  switch i32 %paren.addr.2, label %sw.epilog1058 [
+    i32 58, label %sw.bb982
+    i32 1, label %sw.bb984
+    i32 60, label %sw.bb1052
+    i32 44, label %sw.bb1052
+    i32 61, label %sw.bb1052
+    i32 33, label %sw.bb1052
+    i32 62, label %sw.bb1054
+    i32 0, label %sw.bb1056
+  ]
+
+sw.bb982:                                         ; preds = %if.then981
+  %call983 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 37) #9
+  br label %sw.epilog1058
+
+sw.bb984:                                         ; preds = %if.then981
+  %call985 = call fastcc %struct.regnode* @S_reganode(%struct.RExC_state_t* %pRExC_state, i8 zeroext 46, i32 %parno.0) #9
+  %emit986 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %230 = load %struct.regnode** %emit986, align 8, !tbaa !0
+  %cmp987 = icmp eq %struct.regnode* %230, @PL_regdummy
+  br i1 %cmp987, label %sw.epilog1058, label %if.then989
+
+if.then989:                                       ; preds = %sw.bb984
+  %emit_start990 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %231 = load %struct.regnode** %emit_start990, align 8, !tbaa !0
+  %sub.ptr.lhs.cast991 = ptrtoint %struct.regnode* %call985 to i64
+  %sub.ptr.rhs.cast992 = ptrtoint %struct.regnode* %231 to i64
+  %sub.ptr.sub993 = sub i64 %sub.ptr.lhs.cast991, %sub.ptr.rhs.cast992
+  %cmp995 = icmp slt i64 %sub.ptr.sub993, 0
+  br i1 %cmp995, label %if.then997, label %if.else1003
+
+if.then997:                                       ; preds = %if.then989
+  %sub.ptr.div994 = ashr exact i64 %sub.ptr.sub993, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div994) #8
+  %.pr1680.pre = load %struct.regnode** %emit986, align 8, !tbaa !0
+  br label %if.end1022
+
+if.else1003:                                      ; preds = %if.then989
+  %232 = load i8** %parse, align 8, !tbaa !0
+  %add.ptr1005 = getelementptr inbounds i8* %232, i64 1
+  %start1006 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %233 = load i8** %start1006, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1007 = ptrtoint i8* %add.ptr1005 to i64
+  %sub.ptr.rhs.cast1008 = ptrtoint i8* %233 to i64
+  %sub.ptr.sub1009 = sub i64 %sub.ptr.lhs.cast1007, %sub.ptr.rhs.cast1008
+  %conv1010 = trunc i64 %sub.ptr.sub1009 to i32
+  %mul1016 = ashr exact i64 %sub.ptr.sub993, 1
+  %sub1017 = add nsw i64 %mul1016, -1
+  %rx1018 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %234 = load %struct.regexp** %rx1018, align 8, !tbaa !0
+  %offsets1019 = getelementptr inbounds %struct.regexp* %234, i64 0, i32 7
+  %235 = load i32** %offsets1019, align 8, !tbaa !0
+  %arrayidx1020 = getelementptr inbounds i32* %235, i64 %sub1017
+  store i32 %conv1010, i32* %arrayidx1020, align 4, !tbaa !3
+  br label %if.end1022
+
+if.end1022:                                       ; preds = %if.then997, %if.else1003
+  %.pr1680 = phi %struct.regnode* [ %.pr1680.pre, %if.then997 ], [ %230, %if.else1003 ]
+  %cmp1024 = icmp eq %struct.regnode* %.pr1680, @PL_regdummy
+  br i1 %cmp1024, label %sw.epilog1058, label %if.then1026
+
+if.then1026:                                      ; preds = %if.end1022
+  %236 = load %struct.regnode** %emit_start990, align 8, !tbaa !0
+  %sub.ptr.rhs.cast1029 = ptrtoint %struct.regnode* %236 to i64
+  %sub.ptr.sub1030 = sub i64 %sub.ptr.lhs.cast991, %sub.ptr.rhs.cast1029
+  %cmp1032 = icmp slt i64 %sub.ptr.sub1030, 0
+  br i1 %cmp1032, label %if.then1034, label %if.else1040
+
+if.then1034:                                      ; preds = %if.then1026
+  %sub.ptr.div1031 = ashr exact i64 %sub.ptr.sub1030, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div1031) #8
+  br label %sw.epilog1058
+
+if.else1040:                                      ; preds = %if.then1026
+  %mul1046 = ashr exact i64 %sub.ptr.sub1030, 1
+  %rx1047 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %237 = load %struct.regexp** %rx1047, align 8, !tbaa !0
+  %offsets1048 = getelementptr inbounds %struct.regexp* %237, i64 0, i32 7
+  %238 = load i32** %offsets1048, align 8, !tbaa !0
+  %arrayidx1049 = getelementptr inbounds i32* %238, i64 %mul1046
+  store i32 1, i32* %arrayidx1049, align 4, !tbaa !3
+  br label %sw.epilog1058
+
+sw.bb1052:                                        ; preds = %if.then981, %if.then981, %if.then981, %if.then981
+  %and1053 = and i32 %229, -2
+  store i32 %and1053, i32* %flagp, align 4, !tbaa !3
+  br label %sw.bb1054
+
+sw.bb1054:                                        ; preds = %if.then981, %sw.bb1052
+  %call1055 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 1) #9
+  br label %sw.epilog1058
+
+sw.bb1056:                                        ; preds = %if.then981
+  %call1057 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 0) #9
+  br label %sw.epilog1058
+
+sw.epilog1058:                                    ; preds = %sw.bb984, %if.end1022, %if.else1040, %if.then1034, %if.then981, %sw.bb1056, %sw.bb1054, %sw.bb982
+  %ender.2 = phi %struct.regnode* [ %ender.0.lcssa, %if.then981 ], [ %call1057, %sw.bb1056 ], [ %call1055, %sw.bb1054 ], [ %call985, %if.end1022 ], [ %call985, %if.then1034 ], [ %call985, %if.else1040 ], [ %call983, %sw.bb982 ], [ %call985, %sw.bb984 ]
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %lastbr.1.lcssa, %struct.regnode* %ender.2) #9
+  %tobool977.not1728 = xor i1 %tobool977, true
+  %cmp10611686 = icmp eq %struct.regnode* %ret.2, null
+  %or.cond1729 = or i1 %cmp10611686, %tobool977.not1728
+  br i1 %or.cond1729, label %if.end1065, label %lor.lhs.false.i.lr.ph
+
+lor.lhs.false.i.lr.ph:                            ; preds = %sw.epilog1058
+  %emit.i = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  br label %lor.lhs.false.i
+
+lor.lhs.false.i:                                  ; preds = %S_regoptail.exit, %lor.lhs.false.i.lr.ph
+  %br.11687 = phi %struct.regnode* [ %ret.2, %lor.lhs.false.i.lr.ph ], [ %call1063, %S_regoptail.exit ]
+  %239 = load %struct.regnode** %emit.i, align 8, !tbaa !0
+  %cmp1.i = icmp eq %struct.regnode* %239, @PL_regdummy
+  br i1 %cmp1.i, label %S_regoptail.exit, label %if.end.i
+
+if.end.i:                                         ; preds = %lor.lhs.false.i
+  %type.i = getelementptr inbounds %struct.regnode* %br.11687, i64 0, i32 1
+  %240 = load i8* %type.i, align 1, !tbaa !1
+  %cmp2.i = icmp eq i8 %240, 31
+  br i1 %cmp2.i, label %if.then4.i, label %if.else.i
+
+if.then4.i:                                       ; preds = %if.end.i
+  %add.ptr.i = getelementptr inbounds %struct.regnode* %br.11687, i64 1
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %add.ptr.i, %struct.regnode* %ender.2) #8
+  br label %S_regoptail.exit
+
+if.else.i:                                        ; preds = %if.end.i
+  %idxprom.i = zext i8 %240 to i64
+  %241 = lshr i64 1241867597247414272, %idxprom.i
+  %242 = and i64 %241, 1
+  %cmp9.i = icmp eq i64 %242, 0
+  br i1 %cmp9.i, label %S_regoptail.exit, label %if.then11.i
+
+if.then11.i:                                      ; preds = %if.else.i
+  %add.ptr13.i = getelementptr inbounds %struct.regnode* %br.11687, i64 2
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %add.ptr13.i, %struct.regnode* %ender.2) #8
+  br label %S_regoptail.exit
+
+S_regoptail.exit:                                 ; preds = %lor.lhs.false.i, %if.then4.i, %if.else.i, %if.then11.i
+  %call1063 = call %struct.regnode* @Perl_regnext(%struct.regnode* %br.11687) #9
+  %cmp1061 = icmp eq %struct.regnode* %call1063, null
+  br i1 %cmp1061, label %if.end1065, label %lor.lhs.false.i
+
+if.end1065:                                       ; preds = %sw.epilog1058, %S_regoptail.exit, %while.end976
+  %tobool1066 = icmp eq i32 %paren.addr.2, 0
+  br i1 %tobool1066, label %land.lhs.true1192, label %land.lhs.true1067
+
+land.lhs.true1067:                                ; preds = %if.end1065
+  %call1068 = call i8* @strchr(i8* getelementptr inbounds ([6 x i8]* @S_reg.parens, i64 0, i64 0), i32 %paren.addr.2) #8
+  %tobool1069 = icmp eq i8* %call1068, null
+  br i1 %tobool1069, label %if.then1160, label %if.then1070
+
+if.then1070:                                      ; preds = %land.lhs.true1067
+  %sub.ptr.lhs.cast1071 = ptrtoint i8* %call1068 to i64
+  %sub.ptr.sub1072 = sub i64 %sub.ptr.lhs.cast1071, ptrtoint ([6 x i8]* @S_reg.parens to i64)
+  %rem1658 = and i64 %sub.ptr.sub1072, 1
+  %tobool1073 = icmp ne i64 %rem1658, 0
+  %conv1075 = select i1 %tobool1073, i8 51, i8 50
+  %cmp1079 = icmp sgt i64 %sub.ptr.sub1072, 1
+  %conv1080 = zext i1 %cmp1079 to i8
+  %cmp1081 = icmp eq i32 %paren.addr.2, 62
+  %.conv1075 = select i1 %cmp1081, i8 52, i8 %conv1075
+  %.conv1080 = select i1 %cmp1081, i8 0, i8 %conv1080
+  call fastcc void @S_reginsert(%struct.RExC_state_t* %pRExC_state, i8 zeroext %.conv1075, %struct.regnode* %ret.2) #9
+  %emit1085 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %243 = load %struct.regnode** %emit1085, align 8, !tbaa !0
+  %cmp1086 = icmp eq %struct.regnode* %243, @PL_regdummy
+  br i1 %cmp1086, label %if.end1158.if.then1160_crit_edge, label %if.then1088
+
+if.then1088:                                      ; preds = %if.then1070
+  %emit_start1089 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 7
+  %244 = load %struct.regnode** %emit_start1089, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1090 = ptrtoint %struct.regnode* %ret.2 to i64
+  %sub.ptr.rhs.cast1091 = ptrtoint %struct.regnode* %244 to i64
+  %sub.ptr.sub1092 = sub i64 %sub.ptr.lhs.cast1090, %sub.ptr.rhs.cast1091
+  %cmp1094 = icmp slt i64 %sub.ptr.sub1092, 0
+  br i1 %cmp1094, label %if.then1096, label %if.else1102
+
+if.then1096:                                      ; preds = %if.then1088
+  %sub.ptr.div1093 = ashr exact i64 %sub.ptr.sub1092, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str20, i64 0, i64 0), i64 %sub.ptr.div1093) #8
+  %.pr1682.pre = load %struct.regnode** %emit1085, align 8, !tbaa !0
+  br label %if.end1118
+
+if.else1102:                                      ; preds = %if.then1088
+  %245 = load i8** %parse, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1104 = ptrtoint i8* %245 to i64
+  %sub.ptr.rhs.cast1105 = ptrtoint i8* %202 to i64
+  %sub.ptr.sub1106 = sub i64 %sub.ptr.lhs.cast1104, %sub.ptr.rhs.cast1105
+  %conv1107 = trunc i64 %sub.ptr.sub1106 to i32
+  %mul1113 = ashr exact i64 %sub.ptr.sub1092, 1
+  %rx1114 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %246 = load %struct.regexp** %rx1114, align 8, !tbaa !0
+  %offsets1115 = getelementptr inbounds %struct.regexp* %246, i64 0, i32 7
+  %247 = load i32** %offsets1115, align 8, !tbaa !0
+  %arrayidx1116 = getelementptr inbounds i32* %247, i64 %mul1113
+  store i32 %conv1107, i32* %arrayidx1116, align 4, !tbaa !3
+  br label %if.end1118
+
+if.end1118:                                       ; preds = %if.then1096, %if.else1102
+  %.pr1682 = phi %struct.regnode* [ %.pr1682.pre, %if.then1096 ], [ %243, %if.else1102 ]
+  %cmp1120 = icmp eq %struct.regnode* %.pr1682, @PL_regdummy
+  br i1 %cmp1120, label %if.end1158.if.then1160_crit_edge, label %if.then1122
+
+if.then1122:                                      ; preds = %if.end1118
+  %248 = load %struct.regnode** %emit_start1089, align 8, !tbaa !0
+  %sub.ptr.rhs.cast1125 = ptrtoint %struct.regnode* %248 to i64
+  %sub.ptr.sub1126 = sub i64 %sub.ptr.lhs.cast1090, %sub.ptr.rhs.cast1125
+  %cmp1128 = icmp slt i64 %sub.ptr.sub1126, 0
+  br i1 %cmp1128, label %if.then1130, label %if.else1136
+
+if.then1130:                                      ; preds = %if.then1122
+  %sub.ptr.div1127 = ashr exact i64 %sub.ptr.sub1126, 2
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([36 x i8]* @.str21, i64 0, i64 0), i64 %sub.ptr.div1127) #8
+  br label %if.end1158.if.then1160_crit_edge
+
+if.else1136:                                      ; preds = %if.then1122
+  %add.ptr1137 = getelementptr inbounds i8* %202, i64 1
+  %start1138 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 3
+  %249 = load i8** %start1138, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1139 = ptrtoint i8* %add.ptr1137 to i64
+  %sub.ptr.rhs.cast1140 = ptrtoint i8* %249 to i64
+  %sub.ptr.sub1141 = sub i64 %sub.ptr.lhs.cast1139, %sub.ptr.rhs.cast1140
+  %conv1142 = trunc i64 %sub.ptr.sub1141 to i32
+  %mul1148 = ashr exact i64 %sub.ptr.sub1126, 1
+  %sub1149 = add nsw i64 %mul1148, -1
+  %rx1150 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %250 = load %struct.regexp** %rx1150, align 8, !tbaa !0
+  %offsets1151 = getelementptr inbounds %struct.regexp* %250, i64 0, i32 7
+  %251 = load i32** %offsets1151, align 8, !tbaa !0
+  %arrayidx1152 = getelementptr inbounds i32* %251, i64 %sub1149
+  store i32 %conv1142, i32* %arrayidx1152, align 4, !tbaa !3
+  br label %if.end1158.if.then1160_crit_edge
+
+if.end1158.if.then1160_crit_edge:                 ; preds = %if.then1130, %if.else1136, %if.end1118, %if.then1070
+  %flags1156 = getelementptr inbounds %struct.regnode* %ret.2, i64 0, i32 0
+  store i8 %.conv1080, i8* %flags1156, align 1, !tbaa !1
+  %call1157 = call fastcc %struct.regnode* @S_reg_node(%struct.RExC_state_t* %pRExC_state, i8 zeroext 37) #9
+  call fastcc void @S_regtail(%struct.RExC_state_t* %pRExC_state, %struct.regnode* %ret.2, %struct.regnode* %call1157) #9
+  br label %if.then1160
+
+if.then1160:                                      ; preds = %land.lhs.true1067, %if.end1158.if.then1160_crit_edge
+  store i32 %0, i32* %flags1, align 4, !tbaa !3
+  %252 = load i8** %parse, align 8, !tbaa !0
+  %end1163 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 4
+  %253 = load i8** %end1163, align 8, !tbaa !0
+  %cmp1164 = icmp ult i8* %252, %253
+  br i1 %cmp1164, label %lor.lhs.false1166, label %if.then1171
+
+lor.lhs.false1166:                                ; preds = %if.then1160
+  %call1167 = call fastcc i8* @S_nextchar(%struct.RExC_state_t* %pRExC_state) #9
+  %254 = load i8* %call1167, align 1, !tbaa !1
+  %cmp1169 = icmp eq i8 %254, 41
+  br i1 %cmp1169, label %return, label %if.then1171
+
+if.then1171:                                      ; preds = %lor.lhs.false1166, %if.then1160
+  store i8* %1, i8** %parse, align 8, !tbaa !0
+  %emit1173 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %255 = load %struct.regnode** %emit1173, align 8, !tbaa !0
+  %cmp1174 = icmp eq %struct.regnode* %255, @PL_regdummy
+  br i1 %cmp1174, label %if.end1178, label %if.then1176
+
+if.then1176:                                      ; preds = %if.then1171
+  %rx1177 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %256 = load %struct.regexp** %rx1177, align 8, !tbaa !0
+  %257 = bitcast %struct.regexp* %256 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %257) #8
+  %.pre = load i8** %parse, align 8, !tbaa !0
+  br label %if.end1178
+
+if.end1178:                                       ; preds = %if.then1176, %if.then1171
+  %258 = phi i8* [ %.pre, %if.then1176 ], [ %1, %if.then1171 ]
+  %precomp1181 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %259 = load i8** %precomp1181, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1182 = ptrtoint i8* %258 to i64
+  %sub.ptr.rhs.cast1183 = ptrtoint i8* %259 to i64
+  %sub.ptr.sub1184 = sub i64 %sub.ptr.lhs.cast1182, %sub.ptr.rhs.cast1183
+  %conv1185 = trunc i64 %sub.ptr.sub1184 to i32
+  %add.ptr1188 = getelementptr inbounds i8* %259, i64 %sub.ptr.sub1184
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str33, i64 0, i64 0), i32 %conv1185, i8* %259, i8* %add.ptr1188) #8
+  br label %return
+
+land.lhs.true1192:                                ; preds = %if.end1065
+  %260 = load i8** %parse, align 8, !tbaa !0
+  %end1194 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 4
+  %261 = load i8** %end1194, align 8, !tbaa !0
+  %cmp1195 = icmp ult i8* %260, %261
+  br i1 %cmp1195, label %if.then1197, label %return
+
+if.then1197:                                      ; preds = %land.lhs.true1192
+  %262 = load i8* %260, align 1, !tbaa !1
+  %cmp1200 = icmp eq i8 %262, 41
+  br i1 %cmp1200, label %if.then1202, label %if.else1221
+
+if.then1202:                                      ; preds = %if.then1197
+  %incdec.ptr1204 = getelementptr inbounds i8* %260, i64 1
+  store i8* %incdec.ptr1204, i8** %parse, align 8, !tbaa !0
+  %emit1205 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %263 = load %struct.regnode** %emit1205, align 8, !tbaa !0
+  %cmp1206 = icmp eq %struct.regnode* %263, @PL_regdummy
+  br i1 %cmp1206, label %if.end1210, label %if.then1208
+
+if.then1208:                                      ; preds = %if.then1202
+  %rx1209 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %264 = load %struct.regexp** %rx1209, align 8, !tbaa !0
+  %265 = bitcast %struct.regexp* %264 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %265) #8
+  %.pre1707 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end1210
+
+if.end1210:                                       ; preds = %if.then1208, %if.then1202
+  %266 = phi i8* [ %.pre1707, %if.then1208 ], [ %incdec.ptr1204, %if.then1202 ]
+  %precomp1213 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %267 = load i8** %precomp1213, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1214 = ptrtoint i8* %266 to i64
+  %sub.ptr.rhs.cast1215 = ptrtoint i8* %267 to i64
+  %sub.ptr.sub1216 = sub i64 %sub.ptr.lhs.cast1214, %sub.ptr.rhs.cast1215
+  %conv1217 = trunc i64 %sub.ptr.sub1216 to i32
+  %add.ptr1220 = getelementptr inbounds i8* %267, i64 %sub.ptr.sub1216
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str34, i64 0, i64 0), i32 %conv1217, i8* %267, i8* %add.ptr1220) #8
+  br label %return
+
+if.else1221:                                      ; preds = %if.then1197
+  %precomp1225 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %268 = load i8** %precomp1225, align 8, !tbaa !0
+  %sub.ptr.lhs.cast1226 = ptrtoint i8* %261 to i64
+  %sub.ptr.rhs.cast1227 = ptrtoint i8* %268 to i64
+  %sub.ptr.sub1228 = sub i64 %sub.ptr.lhs.cast1226, %sub.ptr.rhs.cast1227
+  %emit1229 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %269 = load %struct.regnode** %emit1229, align 8, !tbaa !0
+  %cmp1230 = icmp eq %struct.regnode* %269, @PL_regdummy
+  br i1 %cmp1230, label %if.end1234, label %if.then1232
+
+if.then1232:                                      ; preds = %if.else1221
+  %rx1233 = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %270 = load %struct.regexp** %rx1233, align 8, !tbaa !0
+  %271 = bitcast %struct.regexp* %270 to i8*
+  call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %271) #8
+  %.pre1708 = load i8** %precomp1225, align 8, !tbaa !0
+  br label %if.end1234
+
+if.end1234:                                       ; preds = %if.then1232, %if.else1221
+  %272 = phi i8* [ %.pre1708, %if.then1232 ], [ %268, %if.else1221 ]
+  %cmp1235 = icmp sgt i64 %sub.ptr.sub1228, 127
+  %.1667 = select i1 %cmp1235, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  %273 = trunc i64 %sub.ptr.sub1228 to i32
+  %conv1239 = select i1 %cmp1235, i32 117, i32 %273
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str35, i64 0, i64 0), i32 %conv1239, i8* %272, i8* %.1667) #8
+  br label %return
+
+return:                                           ; preds = %if.end962, %if.end297, %if.end1178, %if.end1210, %if.end1234, %land.lhs.true1192, %lor.lhs.false1166, %if.end828, %if.then509, %if.else512, %if.end329, %if.else347, %if.then341, %if.end755, %if.end295, %if.end70
+  %retval.0 = phi %struct.regnode* [ null, %if.end755 ], [ %call289, %if.end295 ], [ null, %if.end70 ], [ %call298, %if.then341 ], [ %call298, %if.else347 ], [ %call298, %if.end329 ], [ %ret.0, %if.else512 ], [ %ret.0, %if.then509 ], [ null, %if.end828 ], [ %ret.2, %lor.lhs.false1166 ], [ %ret.2, %land.lhs.true1192 ], [ %ret.2, %if.end1234 ], [ %ret.2, %if.end1210 ], [ %ret.2, %if.end1178 ], [ %call298, %if.end297 ], [ null, %if.end962 ]
+  ret %struct.regnode* %retval.0
+}

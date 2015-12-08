@@ -1,0 +1,53 @@
+define internal fastcc void @S_missingterm(i8* %s) #0 {
+entry:
+  %tmpbuf = alloca [3 x i8], align 1
+  %tobool = icmp eq i8* %s, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call = call i8* @strrchr(i8* %s, i32 10) #6
+  %tobool1 = icmp eq i8* %call, null
+  br i1 %tobool1, label %if.end15, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  store i8 0, i8* %call, align 1, !tbaa !1
+  br label %if.end15
+
+if.else:                                          ; preds = %entry
+  %0 = load i32* @PL_multi_close, align 4, !tbaa !3
+  %cmp = icmp slt i32 %0, 32
+  %cmp3 = icmp eq i32 %0, 127
+  %or.cond = or i1 %cmp, %cmp3
+  br i1 %or.cond, label %if.then4, label %if.else9
+
+if.then4:                                         ; preds = %if.else
+  %arraydecay = getelementptr inbounds [3 x i8]* %tmpbuf, i64 0, i64 0
+  store i8 94, i8* %arraydecay, align 1, !tbaa !1
+  %.off = add i32 %0, -97
+  %1 = icmp ult i32 %.off, 26
+  %sub = add nsw i32 %0, 224
+  %cond = select i1 %1, i32 %sub, i32 %0
+  %xor = xor i32 %cond, 64
+  %conv = trunc i32 %xor to i8
+  %arrayidx = getelementptr inbounds [3 x i8]* %tmpbuf, i64 0, i64 1
+  store i8 %conv, i8* %arrayidx, align 1, !tbaa !1
+  %arrayidx7 = getelementptr inbounds [3 x i8]* %tmpbuf, i64 0, i64 2
+  store i8 0, i8* %arrayidx7, align 1, !tbaa !1
+  br label %if.end15
+
+if.else9:                                         ; preds = %if.else
+  %conv10 = trunc i32 %0 to i8
+  %arraydecay11 = getelementptr inbounds [3 x i8]* %tmpbuf, i64 0, i64 0
+  store i8 %conv10, i8* %arraydecay11, align 1, !tbaa !1
+  %arrayidx12 = getelementptr inbounds [3 x i8]* %tmpbuf, i64 0, i64 1
+  store i8 0, i8* %arrayidx12, align 1, !tbaa !1
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then, %if.then4, %if.else9, %if.then2
+  %s.addr.0 = phi i8* [ %s, %if.then2 ], [ %s, %if.then ], [ %arraydecay, %if.then4 ], [ %arraydecay11, %if.else9 ]
+  %call16 = call i8* @strchr(i8* %s.addr.0, i32 34) #6
+  %tobool17 = icmp ne i8* %call16, null
+  %conv20 = select i1 %tobool17, i32 39, i32 34
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([56 x i8]* @.str197, i64 0, i64 0), i32 %conv20, i8* %s.addr.0, i32 %conv20) #6
+  ret void
+}

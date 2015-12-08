@@ -1,0 +1,116 @@
+define internal fastcc i8* @S_nextchar(%struct.RExC_state_t* nocapture %pRExC_state) #0 {
+entry:
+  %parse = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 5
+  %0 = load i8** %parse, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i8* %0, i64 1
+  store i8* %incdec.ptr, i8** %parse, align 8, !tbaa !0
+  %end = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 4
+  %precomp = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 1
+  %emit = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %rx = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 2
+  %flags = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 0
+  br label %for.cond
+
+for.cond:                                         ; preds = %if.then62, %while.end, %while.body75, %while.cond70, %entry
+  %1 = phi i8* [ %incdec.ptr, %entry ], [ %incdec.ptr36, %while.end ], [ %incdec.ptr64, %if.then62 ], [ %incdec.ptr77, %while.body75 ], [ %16, %while.cond70 ]
+  %2 = load i8* %1, align 1, !tbaa !1
+  %cmp = icmp eq i8 %2, 40
+  br i1 %cmp, label %land.lhs.true, label %if.end37
+
+land.lhs.true:                                    ; preds = %for.cond
+  %arrayidx = getelementptr inbounds i8* %1, i64 1
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %cmp6 = icmp eq i8 %3, 63
+  br i1 %cmp6, label %land.lhs.true8, label %if.end37
+
+land.lhs.true8:                                   ; preds = %land.lhs.true
+  %arrayidx10 = getelementptr inbounds i8* %1, i64 2
+  %4 = load i8* %arrayidx10, align 1, !tbaa !1
+  %cmp12 = icmp eq i8 %4, 35
+  br i1 %cmp12, label %while.body, label %if.end37
+
+while.body:                                       ; preds = %if.end32, %land.lhs.true8
+  %5 = phi i8* [ %1, %land.lhs.true8 ], [ %incdec.ptr34, %if.end32 ]
+  %6 = load i8** %end, align 8, !tbaa !0
+  %cmp19 = icmp eq i8* %5, %6
+  br i1 %cmp19, label %if.then21, label %if.end32
+
+if.then21:                                        ; preds = %while.body
+  %7 = load i8** %precomp, align 8, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %5 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %7 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %8 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp23 = icmp eq %struct.regnode* %8, @PL_regdummy
+  br i1 %cmp23, label %if.end, label %if.then25
+
+if.then25:                                        ; preds = %if.then21
+  %9 = load %struct.regexp** %rx, align 8, !tbaa !0
+  %10 = bitcast %struct.regexp* %9 to i8*
+  tail call void @Perl_save_destructor_x(void (i8*)* @clear_re, i8* %10) #8
+  %.pre = load i8** %precomp, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then25, %if.then21
+  %11 = phi i8* [ %.pre, %if.then25 ], [ %7, %if.then21 ]
+  %cmp26 = icmp sgt i64 %sub.ptr.sub, 127
+  %. = select i1 %cmp26, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str1, i64 0, i64 0)
+  %12 = trunc i64 %sub.ptr.sub to i32
+  %conv30 = select i1 %cmp26, i32 117, i32 %12
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([22 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([31 x i8]* @.str12, i64 0, i64 0), i32 %conv30, i8* %11, i8* %.) #8
+  %.pre112 = load i8** %parse, align 8, !tbaa !0
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.end, %while.body
+  %13 = phi i8* [ %.pre112, %if.end ], [ %5, %while.body ]
+  %incdec.ptr34 = getelementptr inbounds i8* %13, i64 1
+  store i8* %incdec.ptr34, i8** %parse, align 8, !tbaa !0
+  %14 = load i8* %incdec.ptr34, align 1, !tbaa !1
+  %cmp16 = icmp eq i8 %14, 41
+  br i1 %cmp16, label %while.end, label %while.body
+
+while.end:                                        ; preds = %if.end32
+  %incdec.ptr36 = getelementptr inbounds i8* %13, i64 2
+  store i8* %incdec.ptr36, i8** %parse, align 8, !tbaa !0
+  br label %for.cond
+
+if.end37:                                         ; preds = %land.lhs.true8, %land.lhs.true, %for.cond
+  %15 = load i32* %flags, align 4, !tbaa !3
+  %and = and i32 %15, 32768
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end86, label %if.then38
+
+if.then38:                                        ; preds = %if.end37
+  switch i8 %2, label %if.end86 [
+    i8 32, label %if.then62
+    i8 9, label %if.then62
+    i8 10, label %if.then62
+    i8 13, label %if.then62
+    i8 12, label %if.then62
+    i8 35, label %while.cond70.preheader
+  ]
+
+while.cond70.preheader:                           ; preds = %if.then38
+  %.pre113 = load i8** %end, align 8, !tbaa !0
+  br label %while.cond70
+
+if.then62:                                        ; preds = %if.then38, %if.then38, %if.then38, %if.then38, %if.then38
+  %incdec.ptr64 = getelementptr inbounds i8* %1, i64 1
+  store i8* %incdec.ptr64, i8** %parse, align 8, !tbaa !0
+  br label %for.cond
+
+while.cond70:                                     ; preds = %while.cond70.preheader, %while.body75
+  %16 = phi i8* [ %1, %while.cond70.preheader ], [ %incdec.ptr77, %while.body75 ]
+  %cmp73 = icmp ult i8* %16, %.pre113
+  br i1 %cmp73, label %while.body75, label %for.cond
+
+while.body75:                                     ; preds = %while.cond70
+  %incdec.ptr77 = getelementptr inbounds i8* %16, i64 1
+  store i8* %incdec.ptr77, i8** %parse, align 8, !tbaa !0
+  %17 = load i8* %16, align 1, !tbaa !1
+  %cmp79 = icmp eq i8 %17, 10
+  br i1 %cmp79, label %for.cond, label %while.cond70
+
+if.end86:                                         ; preds = %if.then38, %if.end37
+  ret i8* %0
+}

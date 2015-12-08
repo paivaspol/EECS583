@@ -1,0 +1,29 @@
+define i32 @BKL_greyCodeDomain(%struct._BKL* %bkl, i32 %count) #0 {
+entry:
+  %cmp = icmp eq %struct._BKL* %bkl, null
+  br i1 %cmp, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %rem7 = srem i32 %count, 2
+  %cmp18 = icmp eq i32 %rem7, 1
+  br i1 %cmp18, label %if.then2, label %for.inc
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str6, i64 0, i64 0), %struct._BKL* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.then2:                                         ; preds = %for.inc, %for.cond.preheader
+  %idom.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %inc, %for.inc ]
+  ret i32 %idom.0.lcssa
+
+for.inc:                                          ; preds = %for.cond.preheader, %for.inc
+  %idom.010 = phi i32 [ %inc, %for.inc ], [ 0, %for.cond.preheader ]
+  %chk.09 = phi i32 [ %mul, %for.inc ], [ 2, %for.cond.preheader ]
+  %inc = add nsw i32 %idom.010, 1
+  %mul = shl nsw i32 %chk.09, 1
+  %rem = srem i32 %count, %mul
+  %cmp1 = icmp eq i32 %rem, %chk.09
+  br i1 %cmp1, label %if.then2, label %for.inc
+}

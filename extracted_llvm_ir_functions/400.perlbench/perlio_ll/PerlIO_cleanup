@@ -1,0 +1,46 @@
+define void @PerlIO_cleanup() #1 {
+entry:
+  tail call void (i8*, ...)* @PerlIO_debug(i8* undef) #10
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %i.016 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
+  tail call void @PerlIOUnix_refcnt_inc(i32 %i.016) #10
+  %inc = add nsw i32 %i.016, 1
+  %exitcond17 = icmp eq i32 %inc, 3
+  br i1 %exitcond17, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  tail call void @PerlIO_cleantable(%struct._PerlIO*** @PL_perlio) #10
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.end
+  %i.115 = phi i32 [ 0, %for.end ], [ %inc5, %for.body3 ]
+  %call = tail call i32 @PerlIOUnix_refcnt_dec(i32 %i.115) #10
+  %inc5 = add nsw i32 %i.115, 1
+  %exitcond = icmp eq i32 %inc5, 3
+  br i1 %exitcond, label %for.end6, label %for.body3
+
+for.end6:                                         ; preds = %for.body3
+  %0 = load %struct.PerlIO_list_s** @PL_known_layers, align 8, !tbaa !3
+  %tobool = icmp eq %struct.PerlIO_list_s* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %for.end6
+  tail call void @PerlIO_list_free(%struct.PerlIO_list_s* %0) #10
+  store %struct.PerlIO_list_s* null, %struct.PerlIO_list_s** @PL_known_layers, align 8, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %for.end6, %if.then
+  %1 = load %struct.PerlIO_list_s** @PL_def_layerlist, align 8, !tbaa !3
+  %tobool7 = icmp eq %struct.PerlIO_list_s* %1, null
+  br i1 %tobool7, label %if.end9, label %if.then8
+
+if.then8:                                         ; preds = %if.end
+  tail call void @PerlIO_list_free(%struct.PerlIO_list_s* %1) #10
+  store %struct.PerlIO_list_s* null, %struct.PerlIO_list_s** @PL_def_layerlist, align 8, !tbaa !3
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end, %if.then8
+  ret void
+}

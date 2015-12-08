@@ -1,0 +1,14 @@
+define void @free_picture(%struct.Picture* %pic) #0 {
+entry:
+  %cmp = icmp eq %struct.Picture* %pic, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void @free_slice_list(%struct.Picture* %pic) #6
+  %0 = bitcast %struct.Picture* %pic to i8*
+  tail call void @free(i8* %0) #6
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

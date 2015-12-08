@@ -1,0 +1,102 @@
+define void @set_MB_parameters(i32 %mb_addr) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  store i32 %mb_addr, i32* %current_mb_nr, align 4, !tbaa !3
+  %mb_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 29
+  %mb_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 30
+  tail call void @get_mb_block_pos(i32 %mb_addr, i32* %mb_x, i32* %mb_y) #7
+  %1 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %mb_x1 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 29
+  %2 = load i32* %mb_x1, align 4, !tbaa !3
+  %shl = shl i32 %2, 2
+  %block_x = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 31
+  store i32 %shl, i32* %block_x, align 4, !tbaa !3
+  %mb_y2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 30
+  %3 = load i32* %mb_y2, align 4, !tbaa !3
+  %shl3 = shl i32 %3, 2
+  %block_y = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 32
+  store i32 %shl3, i32* %block_y, align 4, !tbaa !3
+  %shl5 = shl i32 %2, 4
+  %pix_x = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 33
+  store i32 %shl5, i32* %pix_x, align 4, !tbaa !3
+  %shl7 = shl i32 %3, 4
+  %pix_y = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 34
+  store i32 %shl7, i32* %pix_y, align 4, !tbaa !3
+  %opix_x = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 37
+  store i32 %shl5, i32* %opix_x, align 4, !tbaa !3
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 90
+  %4 = load i32* %MbaffFrameFlag, align 4, !tbaa !3
+  %tobool = icmp eq i32 %4, 0
+  br i1 %tobool, label %if.else23, label %if.then
+
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %mb_addr to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 51
+  %5 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %mb_field = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 22
+  %6 = load i32* %mb_field, align 4, !tbaa !3
+  %tobool9 = icmp eq i32 %6, 0
+  br i1 %tobool9, label %if.else, label %if.then10
+
+if.then10:                                        ; preds = %if.then
+  %rem47 = and i32 %mb_addr, 1
+  %tobool11 = icmp ne i32 %rem47, 0
+  %7 = load i16*** @imgY_org_bot, align 8, !tbaa !0
+  %8 = load i16*** @imgY_org_top, align 8, !tbaa !0
+  %cond = select i1 %tobool11, i16** %7, i16** %8
+  store i16** %cond, i16*** @imgY_org, align 8, !tbaa !0
+  %9 = load i16**** @imgUV_org_bot, align 8, !tbaa !0
+  %10 = load i16**** @imgUV_org_top, align 8, !tbaa !0
+  %cond17 = select i1 %tobool11, i16*** %9, i16*** %10
+  store i16*** %cond17, i16**** @imgUV_org, align 8, !tbaa !0
+  %shr48 = lshr i32 %3, 1
+  %shl19 = shl i32 %shr48, 4
+  %opix_y = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 38
+  store i32 %shl19, i32* %opix_y, align 4, !tbaa !3
+  br label %if.end27
+
+if.else:                                          ; preds = %if.then
+  %11 = load i16*** @imgY_org_frm, align 8, !tbaa !0
+  store i16** %11, i16*** @imgY_org, align 8, !tbaa !0
+  %12 = load i16**** @imgUV_org_frm, align 8, !tbaa !0
+  store i16*** %12, i16**** @imgUV_org, align 8, !tbaa !0
+  %opix_y22 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 38
+  store i32 %shl7, i32* %opix_y22, align 4, !tbaa !3
+  br label %if.end27
+
+if.else23:                                        ; preds = %entry
+  %opix_y26 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 38
+  store i32 %shl7, i32* %opix_y26, align 4, !tbaa !3
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then10, %if.else, %if.else23
+  %13 = phi i32 [ %shl19, %if.then10 ], [ %shl7, %if.else ], [ %shl7, %if.else23 ]
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 159
+  %14 = load i32* %yuv_format, align 4, !tbaa !3
+  %cmp = icmp eq i32 %14, 0
+  br i1 %cmp, label %if.end42, label %if.then28
+
+if.then28:                                        ; preds = %if.end27
+  %mb_cr_size_x = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 161
+  %15 = load i32* %mb_cr_size_x, align 4, !tbaa !3
+  %div = sdiv i32 16, %15
+  %div30 = sdiv i32 %shl5, %div
+  %pix_c_x = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 35
+  store i32 %div30, i32* %pix_c_x, align 4, !tbaa !3
+  %mb_cr_size_y = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 162
+  %16 = load i32* %mb_cr_size_y, align 4, !tbaa !3
+  %div32 = sdiv i32 16, %16
+  %div33 = sdiv i32 %shl7, %div32
+  %pix_c_y = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 36
+  store i32 %div33, i32* %pix_c_y, align 4, !tbaa !3
+  %opix_c_x = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 39
+  store i32 %div30, i32* %opix_c_x, align 4, !tbaa !3
+  %div41 = sdiv i32 %13, %div32
+  %opix_c_y = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 40
+  store i32 %div41, i32* %opix_c_y, align 4, !tbaa !3
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.end27, %if.then28
+  ret void
+}

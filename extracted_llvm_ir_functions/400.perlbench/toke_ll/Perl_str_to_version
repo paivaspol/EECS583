@@ -1,0 +1,73 @@
+define double @Perl_str_to_version(%struct.sv* %sv) #0 {
+entry:
+  %len = alloca i64, align 8
+  %skip = alloca i64, align 8
+  store %struct.sv* %sv, %struct.sv** @PL_Sv, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %0, 262144
+  %cmp = icmp eq i32 %and, 0
+  br i1 %cmp, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %1 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %1, i64 8
+  %2 = bitcast i8* %xpv_cur to i64*
+  %3 = load i64* %2, align 8, !tbaa !4
+  store i64 %3, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %1 to i8**
+  %4 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %entry
+  %call = call i8* @Perl_sv_2pv_flags(%struct.sv* %sv, i64* %len, i32 2) #6
+  %.pre = load i64* %len, align 8, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %5 = phi i64 [ %3, %cond.true ], [ %.pre, %cond.false ]
+  %cond = phi i8* [ %4, %cond.true ], [ %call, %cond.false ]
+  %add.ptr = getelementptr inbounds i8* %cond, i64 %5
+  %cmp619 = icmp sgt i64 %5, 0
+  br i1 %cmp619, label %while.body.lr.ph, label %while.end
+
+while.body.lr.ph:                                 ; preds = %cond.end
+  %6 = load i32* %sv_flags, align 4, !tbaa !3
+  %conv = and i32 %6, 536870912
+  %tobool8 = icmp eq i32 %conv, 0
+  br label %while.body
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end
+  %retval1.022 = phi double [ 0.000000e+00, %while.body.lr.ph ], [ %add, %if.end ]
+  %nshift.021 = phi double [ 1.000000e+00, %while.body.lr.ph ], [ %mul, %if.end ]
+  %start.020 = phi i8* [ %cond, %while.body.lr.ph ], [ %add.ptr12, %if.end ]
+  br i1 %tobool8, label %if.else, label %if.then
+
+if.then:                                          ; preds = %while.body
+  %7 = load i64* %len, align 8, !tbaa !4
+  %call9 = call i64 @Perl_utf8n_to_uvuni(i8* %start.020, i64 %7, i64* %skip, i32 0) #6
+  %.pre23 = load i64* %skip, align 8, !tbaa !4
+  br label %if.end
+
+if.else:                                          ; preds = %while.body
+  %8 = load i8* %start.020, align 1, !tbaa !1
+  %conv10 = zext i8 %8 to i64
+  store i64 1, i64* %skip, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %9 = phi i64 [ %.pre23, %if.then ], [ 1, %if.else ]
+  %n.0 = phi i64 [ %call9, %if.then ], [ %conv10, %if.else ]
+  %conv11 = uitofp i64 %n.0 to double
+  %div = fdiv double %conv11, %nshift.021
+  %add = fadd double %retval1.022, %div
+  %add.ptr12 = getelementptr inbounds i8* %start.020, i64 %9
+  %mul = fmul double %nshift.021, 1.000000e+03
+  %cmp6 = icmp ult i8* %add.ptr12, %add.ptr
+  br i1 %cmp6, label %while.body, label %while.end
+
+while.end:                                        ; preds = %if.end, %cond.end
+  %retval1.0.lcssa = phi double [ 0.000000e+00, %cond.end ], [ %add, %if.end ]
+  ret double %retval1.0.lcssa
+}

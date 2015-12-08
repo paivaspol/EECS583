@@ -1,0 +1,50 @@
+define void @InpMtx_inputComplexMatrix(%struct._InpMtx* %inpmtx, i32 %nrow, i32 %ncol, i32 %rowstride, i32 %colstride, i32* %rowind, i32* %colind, double* %mtxent) #0 {
+entry:
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
+  %cmp1 = icmp slt i32 %nrow, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %ncol, 0
+  %or.cond50 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp slt i32 %rowstride, 1
+  %or.cond51 = or i1 %or.cond50, %cmp5
+  %cmp7 = icmp slt i32 %colstride, 1
+  %or.cond52 = or i1 %or.cond51, %cmp7
+  %cmp9 = icmp eq i32* %rowind, null
+  %or.cond53 = or i1 %or.cond52, %cmp9
+  %cmp11 = icmp eq i32* %colind, null
+  %or.cond54 = or i1 %or.cond53, %cmp11
+  %cmp13 = icmp eq double* %mtxent, null
+  %or.cond55 = or i1 %or.cond54, %cmp13
+  br i1 %or.cond55, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([80 x i8]* @.str31, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %nrow, i32 %ncol, i32 %rowstride, i32 %colstride, i32* %rowind, i32* %colind, double* %mtxent) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
+  %1 = load i32* %inputMode, align 4, !tbaa !3
+  %cmp14 = icmp eq i32 %1, 2
+  br i1 %cmp14, label %if.end17, label %if.then15
+
+if.then15:                                        ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([104 x i8]* @.str32, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %nrow, i32 %ncol, i32 %rowstride, i32 %colstride, i32* %rowind, i32* %colind, double* %mtxent) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end17:                                         ; preds = %if.end
+  %cmp18 = icmp eq i32 %nrow, 0
+  %cmp20 = icmp eq i32 %ncol, 0
+  %or.cond56 = or i1 %cmp18, %cmp20
+  br i1 %or.cond56, label %return, label %if.end22
+
+if.end22:                                         ; preds = %if.end17
+  tail call fastcc void @inputMatrix(%struct._InpMtx* %inpmtx, i32 %nrow, i32 %ncol, i32 %rowstride, i32 %colstride, i32* %rowind, i32* %colind, double* %mtxent) #6
+  br label %return
+
+return:                                           ; preds = %if.end17, %if.end22
+  ret void
+}

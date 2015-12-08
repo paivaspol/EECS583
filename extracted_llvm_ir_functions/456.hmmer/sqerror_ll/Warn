@@ -1,0 +1,17 @@
+define void @Warn(i8* nocapture %format, ...) #4 {
+entry:
+  %argp = alloca [1 x %struct.__va_list_tag], align 16
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %1 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %0)
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %argp, i64 0, i64 0
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %argp to i8*
+  call void @llvm.va_start(i8* %arraydecay1)
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call3 = call i32 @vfprintf(%struct._IO_FILE* %2, i8* %format, %struct.__va_list_tag* %arraydecay) #5
+  call void @llvm.va_end(i8* %arraydecay1)
+  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %3)
+  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = call i32 @fflush(%struct._IO_FILE* %4) #5
+  ret void
+}

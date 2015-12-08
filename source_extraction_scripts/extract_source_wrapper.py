@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 import os
 import subprocess
 
+
 directories = ['400.perlbench'
         ,'401.bzip2'
         ,'403.gcc'
@@ -34,7 +35,6 @@ directories = ['400.perlbench'
         ,'483.xalancbmk'
         ,'998.specrand'
         ,'999.specrand']
-
 def extract_sources(root_dir, retval_type_list, copy_dir):
     for path, dirs, filenames in os.walk(root_dir):
         benchmark = check_directory(path)

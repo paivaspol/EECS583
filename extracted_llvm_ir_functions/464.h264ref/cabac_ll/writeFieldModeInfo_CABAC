@@ -1,0 +1,63 @@
+define void @writeFieldModeInfo_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
+  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
+  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7
+  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %3 = load i32* %current_mb_nr, align 4, !tbaa !0
+  %idxprom = sext i32 %3 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %4 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
+  %5 = load i32* %value1, align 4, !tbaa !0
+  %mbAvailA = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 27
+  %6 = load i32* %mbAvailA, align 4, !tbaa !0
+  %tobool = icmp eq i32 %6, 0
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %mbAddrA = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 23
+  %7 = load i32* %mbAddrA, align 4, !tbaa !0
+  %idxprom1 = sext i32 %7 to i64
+  %mb_field4 = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom1, i32 22
+  %8 = load i32* %mb_field4, align 4, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %a.0 = phi i32 [ %8, %if.then ], [ 0, %entry ]
+  %mbAvailB = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 28
+  %9 = load i32* %mbAvailB, align 4, !tbaa !0
+  %tobool5 = icmp eq i32 %9, 0
+  br i1 %tobool5, label %if.end12, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %mbAddrB = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 24
+  %10 = load i32* %mbAddrB, align 4, !tbaa !0
+  %idxprom7 = sext i32 %10 to i64
+  %mb_field10 = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom7, i32 22
+  %11 = load i32* %mb_field10, align 4, !tbaa !0
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %if.then6
+  %b.0 = phi i32 [ %11, %if.then6 ], [ 0, %if.end ]
+  %add = add nsw i32 %b.0, %a.0
+  %cmp = icmp eq i32 %5, 0
+  %idxprom14 = sext i32 %add to i64
+  %arrayidx15 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 5, i64 %idxprom14
+  br i1 %cmp, label %if.then13, label %if.else16
+
+if.then13:                                        ; preds = %if.end12
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arrayidx15) #5
+  br label %if.end20
+
+if.else16:                                        ; preds = %if.end12
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arrayidx15) #5
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.else16, %if.then13
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
+  store i32 %add, i32* %context, align 4, !tbaa !0
+  ret void
+}

@@ -1,0 +1,27 @@
+define void @clear_su3mat(%struct.su3_matrix* nocapture %dest) #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc11, %entry
+  %indvars.iv23 = phi i64 [ 0, %entry ], [ %indvars.iv.next24, %for.inc11 ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %real = getelementptr inbounds %struct.su3_matrix* %dest, i64 0, i32 0, i64 %indvars.iv23, i64 %indvars.iv, i32 0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  %0 = bitcast double* %real to i8*
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 8, i1 false)
+  br i1 %exitcond, label %for.inc11, label %for.body3
+
+for.inc11:                                        ; preds = %for.body3
+  %indvars.iv.next24 = add i64 %indvars.iv23, 1
+  %lftr.wideiv25 = trunc i64 %indvars.iv.next24 to i32
+  %exitcond26 = icmp eq i32 %lftr.wideiv25, 3
+  br i1 %exitcond26, label %for.end13, label %for.cond1.preheader
+
+for.end13:                                        ; preds = %for.inc11
+  ret void
+}

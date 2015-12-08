@@ -1,0 +1,42 @@
+define i32 @Perl_magic_freeovrld(%struct.sv* nocapture %sv, %struct.magic* nocapture %mg) #0 {
+entry:
+  %mg_ptr = getelementptr inbounds %struct.magic* %mg, i64 0, i32 6
+  %0 = load i8** %mg_ptr, align 8, !tbaa !3
+  %tobool = icmp eq i8* %0, null
+  br i1 %tobool, label %if.end7, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %flags = getelementptr inbounds i8* %0, i64 16
+  %1 = bitcast i8* %flags to i32*
+  %2 = load i32* %1, align 4, !tbaa !0
+  %and = and i32 %2, 1
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end7, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %land.lhs.true
+  %table = getelementptr inbounds i8* %0, i64 24
+  %3 = bitcast i8* %table to [66 x %struct.cv*]*
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc, %for.cond.preheader
+  %indvars.iv = phi i64 [ 1, %for.cond.preheader ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds [66 x %struct.cv*]* %3, i64 0, i64 %indvars.iv
+  %4 = load %struct.cv** %arrayidx, align 8, !tbaa !3
+  %cmp2 = icmp eq %struct.cv* %4, null
+  br i1 %cmp2, label %for.inc, label %if.then3
+
+if.then3:                                         ; preds = %for.body
+  %5 = bitcast %struct.cv* %4 to %struct.sv*
+  tail call void @Perl_sv_free(%struct.sv* %5) #6
+  store %struct.cv* null, %struct.cv** %arrayidx, align 8, !tbaa !3
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 66
+  br i1 %exitcond, label %if.end7, label %for.body
+
+if.end7:                                          ; preds = %for.inc, %land.lhs.true, %entry
+  ret i32 0
+}

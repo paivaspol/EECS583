@@ -1,0 +1,61 @@
+define %struct.op* @Perl_scalarseq(%struct.op* %o) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %if.else, label %if.then
+
+if.then:                                          ; preds = %entry
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  switch i16 %0, label %if.end21 [
+    i16 173, label %if.then16
+    i16 179, label %if.then16
+    i16 178, label %if.then16
+    i16 314, label %if.then16
+  ]
+
+if.then16:                                        ; preds = %if.then, %if.then, %if.then, %if.then
+  %1 = getelementptr inbounds %struct.op* %o, i64 1, i32 0
+  %kid.044 = load %struct.op** %1, align 8
+  %tobool1745 = icmp eq %struct.op* %kid.044, null
+  br i1 %tobool1745, label %for.end, label %for.body
+
+for.body:                                         ; preds = %if.then16, %for.cond.backedge
+  %kid.046 = phi %struct.op* [ %kid.0.pre, %for.cond.backedge ], [ %kid.044, %if.then16 ]
+  %op_sibling = getelementptr inbounds %struct.op* %kid.046, i64 0, i32 1
+  %2 = load %struct.op** %op_sibling, align 8, !tbaa !3
+  %tobool18 = icmp eq %struct.op* %2, null
+  br i1 %tobool18, label %for.end, label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %for.body
+  %call = tail call %struct.op* @Perl_scalarvoid(%struct.op* %kid.046) #8
+  %kid.0.pre = load %struct.op** %op_sibling, align 8
+  %tobool17 = icmp eq %struct.op* %kid.0.pre, null
+  br i1 %tobool17, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.backedge, %if.then16
+  store volatile %struct.cop* @PL_compiling, %struct.cop** @PL_curcop, align 8, !tbaa !3
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.then, %for.end
+  %op_flags = getelementptr inbounds %struct.op* %o, i64 0, i32 6
+  %3 = load i8* %op_flags, align 1, !tbaa !1
+  %and = and i8 %3, -9
+  store i8 %and, i8* %op_flags, align 1, !tbaa !1
+  %4 = load i32* @PL_hints, align 4, !tbaa !0
+  %and24 = and i32 %4, 256
+  %tobool25 = icmp eq i32 %and24, 0
+  br i1 %tobool25, label %if.end32, label %if.then26
+
+if.then26:                                        ; preds = %if.end21
+  %or = or i8 %3, 8
+  store i8 %or, i8* %op_flags, align 1, !tbaa !1
+  br label %if.end32
+
+if.else:                                          ; preds = %entry
+  %call31 = tail call %struct.op* @Perl_newOP(i32 1, i32 0) #8
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.end21, %if.then26, %if.else
+  %o.addr.0 = phi %struct.op* [ %o, %if.then26 ], [ %o, %if.end21 ], [ %call31, %if.else ]
+  ret %struct.op* %o.addr.0
+}

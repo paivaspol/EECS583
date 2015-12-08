@@ -1,0 +1,78 @@
+define internal void @S_re_croak2(i8* nocapture %pat1, ...) #0 {
+entry:
+  %args = alloca [1 x %struct.__va_list_tag], align 16
+  %l1 = alloca i64, align 8
+  %buf = alloca [512 x i8], align 16
+  %call = call i64 @strlen(i8* %pat1) #8
+  store i64 %call, i64* %l1, align 8, !tbaa !5
+  %0 = getelementptr inbounds [512 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 512, i8* %0) #3
+  %cmp = icmp ugt i64 %call, 510
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i64 510, i64* %l1, align 8, !tbaa !5
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = phi i64 [ 510, %if.then ], [ %call, %entry ]
+  %add = add i64 %1, 52
+  %cmp2 = icmp ugt i64 %add, 510
+  %sub = sub i64 510, %1
+  %sub. = select i1 %cmp2, i64 %sub, i64 52
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %pat1, i64 %1, i32 1, i1 false)
+  %add.ptr = getelementptr inbounds [512 x i8]* %buf, i64 0, i64 %1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* getelementptr inbounds ([53 x i8]* @.str11, i64 0, i64 0), i64 %sub., i32 1, i1 false)
+  %add7 = add i64 %1, %sub.
+  %arrayidx = getelementptr inbounds [512 x i8]* %buf, i64 0, i64 %add7
+  store i8 10, i8* %arrayidx, align 1, !tbaa !1
+  %add8 = add i64 %sub., 1
+  %add9 = add i64 %add8, %1
+  %arrayidx10 = getelementptr inbounds [512 x i8]* %buf, i64 0, i64 %add9
+  store i8 0, i8* %arrayidx10, align 1, !tbaa !1
+  %arraydecay1112 = bitcast [1 x %struct.__va_list_tag]* %args to i8*
+  call void @llvm.va_start(i8* %arraydecay1112)
+  %call14 = call %struct.sv* @Perl_vmess(i8* %0, [1 x %struct.__va_list_tag]* %args) #8
+  call void @llvm.va_end(i8* %arraydecay1112)
+  %sv_flags = getelementptr inbounds %struct.sv* %call14, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 262144
+  %cmp17 = icmp eq i32 %and, 0
+  br i1 %cmp17, label %cond.false, label %cond.true
+
+cond.true:                                        ; preds = %if.end
+  %sv_any = getelementptr inbounds %struct.sv* %call14, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %3, i64 8
+  %4 = bitcast i8* %xpv_cur to i64*
+  %5 = load i64* %4, align 8, !tbaa !5
+  store i64 %5, i64* %l1, align 8, !tbaa !5
+  %xpv_pv = bitcast i8* %3 to i8**
+  %6 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %if.end
+  %call19 = call i8* @Perl_sv_2pv_flags(%struct.sv* %call14, i64* %l1, i32 2) #8
+  %.pr = load i64* %l1, align 8, !tbaa !5
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %7 = phi i64 [ %.pr, %cond.false ], [ %5, %cond.true ]
+  %cond = phi i8* [ %call19, %cond.false ], [ %6, %cond.true ]
+  %cmp20 = icmp ugt i64 %7, 512
+  br i1 %cmp20, label %if.then21, label %if.end22
+
+if.then21:                                        ; preds = %cond.end
+  store i64 512, i64* %l1, align 8, !tbaa !5
+  br label %if.end22
+
+if.end22:                                         ; preds = %if.then21, %cond.end
+  %8 = phi i64 [ 512, %if.then21 ], [ %7, %cond.end ]
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %cond, i64 %8, i32 1, i1 false)
+  %sub25 = add i64 %8, -1
+  %arrayidx26 = getelementptr inbounds [512 x i8]* %buf, i64 0, i64 %sub25
+  store i8 0, i8* %arrayidx26, align 1, !tbaa !1
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([3 x i8]* @.str94, i64 0, i64 0), i8* %0) #8
+  call void @llvm.lifetime.end(i64 512, i8* %0) #3
+  ret void
+}

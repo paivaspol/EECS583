@@ -1,0 +1,44 @@
+define void @DVperm(i32 %size, double* %y, i32* %index) #0 {
+entry:
+  %cmp = icmp sgt i32 %size, 0
+  br i1 %cmp, label %if.then, label %if.end10
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null
+  %cmp2 = icmp eq i32* %index, null
+  %or.cond = or i1 %cmp1, %cmp2
+  br i1 %or.cond, label %if.then3, label %for.body.lr.ph
+
+if.then3:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str24, i64 0, i64 0), i32 %size, double* %y, i32* %index) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %call4 = tail call double* @DVinit2(i32 %size) #7
+  tail call void @DVcopy(i32 %size, double* %call4, double* %y) #7
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv
+  %1 = load i32* %arrayidx, align 4, !tbaa !4
+  %idxprom6 = sext i32 %1 to i64
+  %arrayidx7 = getelementptr inbounds double* %call4, i64 %idxprom6
+  %2 = load double* %arrayidx7, align 8, !tbaa !3
+  %arrayidx9 = getelementptr inbounds double* %y, i64 %indvars.iv
+  store double %2, double* %arrayidx9, align 8, !tbaa !3
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %if.then2.i, label %for.body
+
+if.then2.i:                                       ; preds = %for.body
+  %3 = bitcast double* %call4 to i8*
+  tail call void @free(i8* %3) #5
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.then2.i, %entry
+  ret void
+}

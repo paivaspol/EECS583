@@ -1,0 +1,53 @@
+define void @IVL_init3(%struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32* %sizes) #0 {
+entry:
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %type.off = add i32 %type, -1
+  %0 = icmp ugt i32 %type.off, 1
+  %cmp4 = icmp slt i32 %maxnlist, 0
+  %or.cond = or i1 %0, %cmp4
+  %cmp6 = icmp eq i32* %sizes, null
+  %or.cond30 = or i1 %or.cond, %cmp6
+  br i1 %or.cond30, label %if.then, label %if.end
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32* %sizes) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %lor.lhs.false
+  switch i32 %type, label %for.cond.preheader [
+    i32 2, label %sw.bb
+    i32 1, label %sw.bb7
+  ]
+
+sw.bb:                                            ; preds = %if.end
+  tail call void @IVL_init1(%struct._IVL* %ivl, i32 2, i32 %maxnlist) #6
+  br label %for.cond.preheader
+
+sw.bb7:                                           ; preds = %if.end
+  %call8 = tail call i32 @IVsum(i32 %maxnlist, i32* %sizes) #4
+  tail call void @IVL_init2(%struct._IVL* %ivl, i32 1, i32 %maxnlist, i32 %call8) #6
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.end, %sw.bb7, %sw.bb
+  %cmp931 = icmp sgt i32 %maxnlist, 0
+  br i1 %cmp931, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i32* %sizes, i64 %indvars.iv
+  %2 = load i32* %arrayidx, align 4, !tbaa !3
+  %3 = trunc i64 %indvars.iv to i32
+  tail call void @IVL_setList(%struct._IVL* %ivl, i32 %3, i32 %2, i32* null) #4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %maxnlist
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void
+}

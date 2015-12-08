@@ -1,0 +1,83 @@
+define void @XS_Digest__MD5_add(%struct.cv* nocapture %cv) #0 {
+entry:
+  %len = alloca i64, align 8
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %2 = load i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %incdec.ptr = getelementptr inbounds i32* %2, i64 -1
+  store i32* %incdec.ptr, i32** @PL_markstack_ptr, align 8, !tbaa !0
+  %3 = load i32* %2, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr = getelementptr inbounds %struct.sv** %1, i64 %idx.ext
+  %sub.ptr.lhs.cast = ptrtoint %struct.sv** %add.ptr to i64
+  %add = add nsw i64 %idx.ext, 1
+  %sub.ptr.lhs.cast1 = ptrtoint %struct.sv** %0 to i64
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.lhs.cast
+  %sub.ptr.div444 = lshr exact i64 %sub.ptr.sub3, 3
+  %conv5 = trunc i64 %sub.ptr.div444 to i32
+  %cmp = icmp slt i32 %conv5, 1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([35 x i8]* @.str3, i64 0, i64 0)) #4
+  %.pre = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %4 = phi %struct.sv** [ %.pre, %if.then ], [ %1, %entry ]
+  %sext = shl i64 %add, 32
+  %idxprom = ashr exact i64 %sext, 32
+  %arrayidx = getelementptr inbounds %struct.sv** %4, i64 %idxprom
+  %5 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %call = call fastcc %struct.MD5_CTX* @get_md5_ctx(%struct.sv* %5) #5
+  %cmp1045 = icmp sgt i32 %conv5, 1
+  br i1 %cmp1045, label %for.body.lr.ph, label %for.end
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %sext49 = shl i64 %add, 32
+  %6 = ashr exact i64 %sext49, 32
+  br label %for.body
+
+for.body:                                         ; preds = %cond.end, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end ]
+  %7 = add nsw i64 %indvars.iv, %6
+  %8 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %arrayidx14 = getelementptr inbounds %struct.sv** %8, i64 %7
+  %9 = load %struct.sv** %arrayidx14, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %9, i64 0, i32 2
+  %10 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %10, 537133056
+  %cmp15 = icmp eq i32 %and, 262144
+  br i1 %cmp15, label %cond.true, label %cond.false
+
+cond.true:                                        ; preds = %for.body
+  %sv_any = getelementptr inbounds %struct.sv* %9, i64 0, i32 0
+  %11 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %11, i64 8
+  %12 = bitcast i8* %xpv_cur to i64*
+  %13 = load i64* %12, align 8, !tbaa !4
+  store i64 %13, i64* %len, align 8, !tbaa !4
+  %xpv_pv = bitcast i8* %11 to i8**
+  %14 = load i8** %xpv_pv, align 8, !tbaa !0
+  br label %cond.end
+
+cond.false:                                       ; preds = %for.body
+  %call27 = call i8* @Perl_sv_2pvbyte(%struct.sv* %9, i64* %len) #4
+  %.pre48 = load i64* %len, align 8, !tbaa !4
+  br label %cond.end
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %15 = phi i64 [ %13, %cond.true ], [ %.pre48, %cond.false ]
+  %cond = phi i8* [ %14, %cond.true ], [ %call27, %cond.false ]
+  call fastcc void @MD5Update(%struct.MD5_CTX* %call, i8* %cond, i64 %15) #5
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %conv5
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %cond.end, %if.end
+  %16 = load %struct.sv*** @PL_stack_base, align 8, !tbaa !0
+  %add.ptr29 = getelementptr inbounds %struct.sv** %16, i64 %idxprom
+  store %struct.sv** %add.ptr29, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  ret void
+}

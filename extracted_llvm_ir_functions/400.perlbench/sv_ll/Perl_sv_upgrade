@@ -1,0 +1,1131 @@
+define signext i8 @Perl_sv_upgrade(%struct.sv* %sv, i32 %mt) #0 {
+entry:
+  %cmp = icmp eq i32 %mt, 4
+  %sv_flags5.pre = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  br i1 %cmp, label %if.end, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load i32* %sv_flags5.pre, align 4, !tbaa !3
+  %1 = and i32 %0, 9437184
+  %2 = icmp eq i32 %1, 9437184
+  br i1 %2, label %if.then, label %if.end
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @Perl_sv_force_normal_flags(%struct.sv* %sv, i32 0) #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %3 = load i32* %sv_flags5.pre, align 4, !tbaa !3
+  %and6 = and i32 %3, 255
+  %cmp7 = icmp eq i32 %and6, %mt
+  br i1 %cmp7, label %return, label %if.end9
+
+if.end9:                                          ; preds = %if.end
+  %cmp10 = icmp ult i32 %mt, 5
+  br i1 %cmp10, label %if.then11, label %if.end16
+
+if.then11:                                        ; preds = %if.end9
+  %and13 = and i32 %3, 2097152
+  %tobool14 = icmp eq i32 %and13, 0
+  br i1 %tobool14, label %if.end16, label %land.rhs
+
+land.rhs:                                         ; preds = %if.then11
+  %call = tail call i32 @Perl_sv_backoff(%struct.sv* %sv) #7
+  %.pre = load i32* %sv_flags5.pre, align 4, !tbaa !3
+  br label %if.end16
+
+if.end16:                                         ; preds = %land.rhs, %if.then11, %if.end9
+  %4 = phi i32 [ %.pre, %land.rhs ], [ %3, %if.then11 ], [ %3, %if.end9 ]
+  %and18 = and i32 %4, 255
+  switch i32 %and18, label %sw.default [
+    i32 0, label %sw.epilog
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb26
+    i32 3, label %sw.bb32
+    i32 4, label %sw.bb35
+    i32 5, label %sw.bb50
+    i32 6, label %sw.bb62
+    i32 7, label %sw.bb76
+  ]
+
+sw.bb:                                            ; preds = %if.end16
+  %sv_any = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %5 = load i8** %sv_any, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %5, i64 24
+  %6 = bitcast i8* %xiv_iv to i64*
+  %7 = load i64* %6, align 8, !tbaa !5
+  %8 = load i64** @PL_xiv_root, align 8, !tbaa !0
+  %.c.i = ptrtoint i64* %8 to i64
+  store i64 %.c.i, i64* %6, align 8, !tbaa !0
+  store i64* %6, i64** @PL_xiv_root, align 8, !tbaa !0
+  %cmp20 = icmp eq i32 %mt, 2
+  br i1 %cmp20, label %sw.bb148, label %if.else
+
+if.else:                                          ; preds = %sw.bb
+  %.mt = select i1 %cmp10, i32 5, i32 %mt
+  br label %sw.epilog
+
+sw.bb26:                                          ; preds = %if.end16
+  %sv_any27 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %9 = load i8** %sv_any27, align 8, !tbaa !0
+  %xnv_nv = getelementptr inbounds i8* %9, i64 32
+  %10 = bitcast i8* %xnv_nv to double*
+  %11 = load double* %10, align 8, !tbaa !6
+  %12 = load double** @PL_xnv_root, align 8, !tbaa !0
+  %13 = bitcast i8* %xnv_nv to double**
+  store double* %12, double** %13, align 8, !tbaa !0
+  store double* %10, double** @PL_xnv_root, align 8, !tbaa !0
+  %cmp29 = icmp ult i32 %mt, 6
+  %.mt591 = select i1 %cmp29, i32 6, i32 %mt
+  br label %sw.epilog
+
+sw.bb32:                                          ; preds = %if.end16
+  %sv_any33 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %14 = load i8** %sv_any33, align 8, !tbaa !0
+  %15 = bitcast i8* %14 to %struct.xrv*
+  %xrv_rv = bitcast i8* %14 to %struct.sv**
+  %16 = load %struct.sv** %xrv_rv, align 8, !tbaa !0
+  %17 = bitcast %struct.sv* %16 to i8*
+  %18 = load %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  %19 = bitcast %struct.xrv* %18 to %struct.sv*
+  store %struct.sv* %19, %struct.sv** %xrv_rv, align 8, !tbaa !0
+  store %struct.xrv* %15, %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb35:                                          ; preds = %if.end16
+  %sv_any36 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %20 = load i8** %sv_any36, align 8, !tbaa !0
+  %21 = bitcast i8* %20 to %struct.xpv*
+  %xpv_pv = bitcast i8* %20 to i8**
+  %22 = load i8** %xpv_pv, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %20, i64 8
+  %23 = bitcast i8* %xpv_cur to i64*
+  %24 = load i64* %23, align 8, !tbaa !5
+  %conv = trunc i64 %24 to i32
+  %xpv_len = getelementptr inbounds i8* %20, i64 16
+  %25 = bitcast i8* %xpv_len to i64*
+  %26 = load i64* %25, align 8, !tbaa !5
+  %conv39 = trunc i64 %26 to i32
+  %27 = load %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  %28 = bitcast %struct.xpv* %27 to i8*
+  store i8* %28, i8** %xpv_pv, align 8, !tbaa !0
+  store %struct.xpv* %21, %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  %cmp41 = icmp ult i32 %mt, 2
+  br i1 %cmp41, label %sw.bb119, label %if.else44
+
+if.else44:                                        ; preds = %sw.bb35
+  %cmp45 = icmp eq i32 %mt, 2
+  %.mt592 = select i1 %cmp45, i32 6, i32 %mt
+  br label %sw.epilog
+
+sw.bb50:                                          ; preds = %if.end16
+  %sv_any51 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %29 = load i8** %sv_any51, align 8, !tbaa !0
+  %xpv_pv52 = bitcast i8* %29 to i8**
+  %30 = load i8** %xpv_pv52, align 8, !tbaa !0
+  %xpv_cur54 = getelementptr inbounds i8* %29, i64 8
+  %31 = bitcast i8* %xpv_cur54 to i64*
+  %32 = load i64* %31, align 8, !tbaa !5
+  %conv55 = trunc i64 %32 to i32
+  %xpv_len57 = getelementptr inbounds i8* %29, i64 16
+  %33 = bitcast i8* %xpv_len57 to i64*
+  %34 = load i64* %33, align 8, !tbaa !5
+  %conv58 = trunc i64 %34 to i32
+  %35 = bitcast i8* %29 to %struct.xpviv*
+  %xiv_iv60 = getelementptr inbounds i8* %29, i64 24
+  %36 = bitcast i8* %xiv_iv60 to i64*
+  %37 = load i64* %36, align 8, !tbaa !5
+  %38 = load %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  %39 = bitcast %struct.xpviv* %38 to i8*
+  store i8* %39, i8** %xpv_pv52, align 8, !tbaa !0
+  store %struct.xpviv* %35, %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb62:                                          ; preds = %if.end16
+  %sv_any63 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %40 = load i8** %sv_any63, align 8, !tbaa !0
+  %xpv_pv64 = bitcast i8* %40 to i8**
+  %41 = load i8** %xpv_pv64, align 8, !tbaa !0
+  %xpv_cur66 = getelementptr inbounds i8* %40, i64 8
+  %42 = bitcast i8* %xpv_cur66 to i64*
+  %43 = load i64* %42, align 8, !tbaa !5
+  %conv67 = trunc i64 %43 to i32
+  %xpv_len69 = getelementptr inbounds i8* %40, i64 16
+  %44 = bitcast i8* %xpv_len69 to i64*
+  %45 = load i64* %44, align 8, !tbaa !5
+  %conv70 = trunc i64 %45 to i32
+  %xiv_iv72 = getelementptr inbounds i8* %40, i64 24
+  %46 = bitcast i8* %xiv_iv72 to i64*
+  %47 = load i64* %46, align 8, !tbaa !5
+  %48 = bitcast i8* %40 to %struct.xpvnv*
+  %xnv_nv74 = getelementptr inbounds i8* %40, i64 32
+  %49 = bitcast i8* %xnv_nv74 to double*
+  %50 = load double* %49, align 8, !tbaa !6
+  %51 = load %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  %52 = bitcast %struct.xpvnv* %51 to i8*
+  store i8* %52, i8** %xpv_pv64, align 8, !tbaa !0
+  store %struct.xpvnv* %48, %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.bb76:                                          ; preds = %if.end16
+  %sv_any77 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  %53 = load i8** %sv_any77, align 8, !tbaa !0
+  %xpv_pv78 = bitcast i8* %53 to i8**
+  %54 = load i8** %xpv_pv78, align 8, !tbaa !0
+  %xpv_cur80 = getelementptr inbounds i8* %53, i64 8
+  %55 = bitcast i8* %xpv_cur80 to i64*
+  %56 = load i64* %55, align 8, !tbaa !5
+  %conv81 = trunc i64 %56 to i32
+  %xpv_len83 = getelementptr inbounds i8* %53, i64 16
+  %57 = bitcast i8* %xpv_len83 to i64*
+  %58 = load i64* %57, align 8, !tbaa !5
+  %conv84 = trunc i64 %58 to i32
+  %xiv_iv86 = getelementptr inbounds i8* %53, i64 24
+  %59 = bitcast i8* %xiv_iv86 to i64*
+  %60 = load i64* %59, align 8, !tbaa !5
+  %xnv_nv88 = getelementptr inbounds i8* %53, i64 32
+  %61 = bitcast i8* %xnv_nv88 to double*
+  %62 = load double* %61, align 8, !tbaa !6
+  %63 = bitcast i8* %53 to %struct.xpvmg*
+  %xmg_magic = getelementptr inbounds i8* %53, i64 40
+  %64 = bitcast i8* %xmg_magic to %struct.magic**
+  %65 = load %struct.magic** %64, align 8, !tbaa !0
+  %xmg_stash = getelementptr inbounds i8* %53, i64 48
+  %66 = bitcast i8* %xmg_stash to %struct.hv**
+  %67 = load %struct.hv** %66, align 8, !tbaa !0
+  %68 = load %struct.xpvmg** @PL_xpvmg_root, align 8, !tbaa !0
+  %69 = bitcast %struct.xpvmg* %68 to i8*
+  store i8* %69, i8** %xpv_pv78, align 8, !tbaa !0
+  store %struct.xpvmg* %63, %struct.xpvmg** @PL_xpvmg_root, align 8, !tbaa !0
+  br label %sw.epilog
+
+sw.default:                                       ; preds = %if.end16
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0)) #8
+  br label %sw.epilog
+
+sw.epilog:                                        ; preds = %if.else44, %sw.bb26, %if.else, %sw.default, %sw.bb76, %sw.bb62, %sw.bb50, %sw.bb32, %if.end16
+  %mt.addr.0 = phi i32 [ %mt, %sw.default ], [ %mt, %sw.bb76 ], [ %mt, %sw.bb62 ], [ %mt, %sw.bb50 ], [ %mt, %sw.bb32 ], [ %mt, %if.end16 ], [ %.mt, %if.else ], [ %.mt591, %sw.bb26 ], [ %.mt592, %if.else44 ]
+  %pv.0 = phi i8* [ null, %sw.default ], [ %54, %sw.bb76 ], [ %41, %sw.bb62 ], [ %30, %sw.bb50 ], [ %17, %sw.bb32 ], [ null, %if.end16 ], [ null, %if.else ], [ null, %sw.bb26 ], [ %22, %if.else44 ]
+  %cur.0 = phi i32 [ 0, %sw.default ], [ %conv81, %sw.bb76 ], [ %conv67, %sw.bb62 ], [ %conv55, %sw.bb50 ], [ 0, %sw.bb32 ], [ 0, %if.end16 ], [ 0, %if.else ], [ 0, %sw.bb26 ], [ %conv, %if.else44 ]
+  %len.0 = phi i32 [ 0, %sw.default ], [ %conv84, %sw.bb76 ], [ %conv70, %sw.bb62 ], [ %conv58, %sw.bb50 ], [ 0, %sw.bb32 ], [ 0, %if.end16 ], [ 0, %if.else ], [ 0, %sw.bb26 ], [ %conv39, %if.else44 ]
+  %iv.0 = phi i64 [ 0, %sw.default ], [ %60, %sw.bb76 ], [ %47, %sw.bb62 ], [ %37, %sw.bb50 ], [ 0, %sw.bb32 ], [ 0, %if.end16 ], [ %7, %if.else ], [ 0, %sw.bb26 ], [ 0, %if.else44 ]
+  %nv.0 = phi double [ 0.000000e+00, %sw.default ], [ %62, %sw.bb76 ], [ %50, %sw.bb62 ], [ 0.000000e+00, %sw.bb50 ], [ 0.000000e+00, %sw.bb32 ], [ 0.000000e+00, %if.end16 ], [ 0.000000e+00, %if.else ], [ %11, %sw.bb26 ], [ 0.000000e+00, %if.else44 ]
+  %magic.0 = phi %struct.magic* [ null, %sw.default ], [ %65, %sw.bb76 ], [ null, %sw.bb62 ], [ null, %sw.bb50 ], [ null, %sw.bb32 ], [ null, %if.end16 ], [ null, %if.else ], [ null, %sw.bb26 ], [ null, %if.else44 ]
+  %stash.0 = phi %struct.hv* [ null, %sw.default ], [ %67, %sw.bb76 ], [ null, %sw.bb62 ], [ null, %sw.bb50 ], [ null, %sw.bb32 ], [ null, %if.end16 ], [ null, %if.else ], [ null, %sw.bb26 ], [ null, %if.else44 ]
+  switch i32 %mt.addr.0, label %sw.epilog354 [
+    i32 0, label %sw.bb92
+    i32 1, label %sw.bb93
+    i32 2, label %sw.bb98
+    i32 3, label %sw.bb103
+    i32 4, label %sw.bb108
+    i32 5, label %sw.bb119
+    i32 6, label %sw.bb148
+    i32 7, label %sw.bb163
+    i32 9, label %sw.bb182
+    i32 10, label %sw.bb205
+    i32 11, label %sw.bb226
+    i32 12, label %sw.bb247
+    i32 13, label %sw.bb267
+    i32 8, label %sw.bb291
+    i32 14, label %sw.bb313
+    i32 15, label %sw.bb333
+  ]
+
+sw.bb92:                                          ; preds = %sw.epilog
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([23 x i8]* @.str3, i64 0, i64 0)) #8
+  br label %sw.bb93
+
+sw.bb93:                                          ; preds = %sw.epilog, %sw.bb92
+  %70 = load i64** @PL_xiv_root, align 8, !tbaa !0
+  %tobool.i = icmp eq i64* %70, null
+  br i1 %tobool.i, label %if.then.i, label %S_new_xiv.exit
+
+if.then.i:                                        ; preds = %sw.bb93
+  %call.i.i = tail call i8* @Perl_safesysmalloc(i64 4080) #8
+  %71 = bitcast i8* %call.i.i to %struct.xpv*
+  %72 = load %struct.xpv** @PL_xiv_arenaroot, align 8, !tbaa !0
+  %73 = bitcast %struct.xpv* %72 to i8*
+  %xpv_pv.i.i = bitcast i8* %call.i.i to i8**
+  store i8* %73, i8** %xpv_pv.i.i, align 8, !tbaa !0
+  store %struct.xpv* %71, %struct.xpv** @PL_xiv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i = getelementptr inbounds i8* %call.i.i, i64 4072
+  %74 = bitcast i8* %arrayidx.i.i to i64*
+  %add.ptr.i.i = getelementptr inbounds i8* %call.i.i, i64 24
+  %75 = bitcast i8* %add.ptr.i.i to i64*
+  store i64* %75, i64** @PL_xiv_root, align 8, !tbaa !0
+  br label %while.body.i.i
+
+while.body.i.i:                                   ; preds = %while.body.i.i, %if.then.i
+  %xiv.011.i.i = phi i64* [ %75, %if.then.i ], [ %add.ptr1.i.i, %while.body.i.i ]
+  %add.ptr1.i.i = getelementptr inbounds i64* %xiv.011.i.i, i64 1
+  %add.ptr1.c.i.i = ptrtoint i64* %add.ptr1.i.i to i64
+  store i64 %add.ptr1.c.i.i, i64* %xiv.011.i.i, align 8, !tbaa !0
+  %cmp.i.i = icmp ult i64* %add.ptr1.i.i, %74
+  br i1 %cmp.i.i, label %while.body.i.i, label %S_more_xiv.exit.i
+
+S_more_xiv.exit.i:                                ; preds = %while.body.i.i
+  store i64 0, i64* %add.ptr1.i.i, align 8, !tbaa !0
+  %.pre.i = load i64** @PL_xiv_root, align 8, !tbaa !0
+  br label %S_new_xiv.exit
+
+S_new_xiv.exit:                                   ; preds = %sw.bb93, %S_more_xiv.exit.i
+  %76 = phi i64* [ %70, %sw.bb93 ], [ %.pre.i, %S_more_xiv.exit.i ]
+  %77 = bitcast i64* %76 to i64**
+  %78 = load i64** %77, align 8, !tbaa !0
+  store i64* %78, i64** @PL_xiv_root, align 8, !tbaa !0
+  %add.ptr2.i = getelementptr inbounds i64* %76, i64 -3
+  %79 = bitcast i64* %add.ptr2.i to i8*
+  %sv_any95 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %79, i8** %sv_any95, align 8, !tbaa !0
+  store i64 %iv.0, i64* %76, align 8, !tbaa !5
+  br label %sw.epilog354
+
+sw.bb98:                                          ; preds = %sw.epilog
+  %80 = load double** @PL_xnv_root, align 8, !tbaa !0
+  %tobool.i597 = icmp eq double* %80, null
+  br i1 %tobool.i597, label %if.then.i602, label %S_new_xnv.exit
+
+if.then.i602:                                     ; preds = %sw.bb98
+  %call.i.i598 = tail call i8* @Perl_safesysmalloc(i64 4080) #8
+  %81 = bitcast i8* %call.i.i598 to %struct.xpv*
+  %82 = load %struct.xpv** @PL_xnv_arenaroot, align 8, !tbaa !0
+  %83 = bitcast %struct.xpv* %82 to i8*
+  %xpv_pv.i.i599 = bitcast i8* %call.i.i598 to i8**
+  store i8* %83, i8** %xpv_pv.i.i599, align 8, !tbaa !0
+  store %struct.xpv* %81, %struct.xpv** @PL_xnv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i600 = getelementptr inbounds i8* %call.i.i598, i64 4072
+  %84 = bitcast i8* %arrayidx.i.i600 to double*
+  %add.ptr.i.i601 = getelementptr inbounds i8* %call.i.i598, i64 32
+  %85 = bitcast i8* %add.ptr.i.i601 to double*
+  store double* %85, double** @PL_xnv_root, align 8, !tbaa !0
+  br label %while.body.i.i605
+
+while.body.i.i605:                                ; preds = %while.body.i.i605, %if.then.i602
+  %xnv.011.i.i = phi double* [ %85, %if.then.i602 ], [ %add.ptr1.i.i603, %while.body.i.i605 ]
+  %add.ptr1.i.i603 = getelementptr inbounds double* %xnv.011.i.i, i64 1
+  %86 = bitcast double* %xnv.011.i.i to double**
+  store double* %add.ptr1.i.i603, double** %86, align 8, !tbaa !0
+  %cmp.i.i604 = icmp ult double* %add.ptr1.i.i603, %84
+  br i1 %cmp.i.i604, label %while.body.i.i605, label %S_more_xnv.exit.i
+
+S_more_xnv.exit.i:                                ; preds = %while.body.i.i605
+  %87 = bitcast double* %add.ptr1.i.i603 to double**
+  store double* null, double** %87, align 8, !tbaa !0
+  %.pre.i606 = load double** @PL_xnv_root, align 8, !tbaa !0
+  br label %S_new_xnv.exit
+
+S_new_xnv.exit:                                   ; preds = %sw.bb98, %S_more_xnv.exit.i
+  %88 = phi double* [ %80, %sw.bb98 ], [ %.pre.i606, %S_more_xnv.exit.i ]
+  %89 = bitcast double* %88 to double**
+  %90 = load double** %89, align 8, !tbaa !0
+  store double* %90, double** @PL_xnv_root, align 8, !tbaa !0
+  %add.ptr2.i607 = getelementptr inbounds double* %88, i64 -4
+  %91 = bitcast double* %add.ptr2.i607 to i8*
+  %sv_any100 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %91, i8** %sv_any100, align 8, !tbaa !0
+  store double %nv.0, double* %88, align 8, !tbaa !6
+  br label %sw.epilog354
+
+sw.bb103:                                         ; preds = %sw.epilog
+  %92 = load %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  %tobool.i608 = icmp eq %struct.xrv* %92, null
+  br i1 %tobool.i608, label %if.then.i613, label %S_new_xrv.exit
+
+if.then.i613:                                     ; preds = %sw.bb103
+  %call.i.i609 = tail call i8* @Perl_safesysmalloc(i64 4080) #8
+  %93 = bitcast i8* %call.i.i609 to %struct.xpv*
+  %94 = load %struct.xpv** @PL_xrv_arenaroot, align 8, !tbaa !0
+  %95 = bitcast %struct.xpv* %94 to i8*
+  %xpv_pv.i.i610 = bitcast i8* %call.i.i609 to i8**
+  store i8* %95, i8** %xpv_pv.i.i610, align 8, !tbaa !0
+  store %struct.xpv* %93, %struct.xpv** @PL_xrv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i611 = getelementptr inbounds i8* %call.i.i609, i64 4072
+  %96 = bitcast i8* %arrayidx.i.i611 to %struct.xrv*
+  %add.ptr.i.i612 = getelementptr inbounds i8* %call.i.i609, i64 24
+  %97 = bitcast i8* %add.ptr.i.i612 to %struct.xrv*
+  store %struct.xrv* %97, %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  br label %while.body.i.i616
+
+while.body.i.i616:                                ; preds = %while.body.i.i616, %if.then.i613
+  %xrv.012.i.i = phi %struct.xrv* [ %97, %if.then.i613 ], [ %add.ptr1.i.i614, %while.body.i.i616 ]
+  %add.ptr1.i.i614 = getelementptr inbounds %struct.xrv* %xrv.012.i.i, i64 1
+  %98 = bitcast %struct.xrv* %add.ptr1.i.i614 to %struct.sv*
+  %xrv_rv.i.i = getelementptr inbounds %struct.xrv* %xrv.012.i.i, i64 0, i32 0
+  store %struct.sv* %98, %struct.sv** %xrv_rv.i.i, align 8, !tbaa !0
+  %cmp.i.i615 = icmp ult %struct.xrv* %add.ptr1.i.i614, %96
+  br i1 %cmp.i.i615, label %while.body.i.i616, label %S_more_xrv.exit.i
+
+S_more_xrv.exit.i:                                ; preds = %while.body.i.i616
+  %xrv_rv2.i.i = getelementptr inbounds %struct.xrv* %add.ptr1.i.i614, i64 0, i32 0
+  store %struct.sv* null, %struct.sv** %xrv_rv2.i.i, align 8, !tbaa !0
+  %.pre.i617 = load %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  br label %S_new_xrv.exit
+
+S_new_xrv.exit:                                   ; preds = %sw.bb103, %S_more_xrv.exit.i
+  %99 = phi %struct.xrv* [ %92, %sw.bb103 ], [ %.pre.i617, %S_more_xrv.exit.i ]
+  %xrv_rv.i618 = getelementptr inbounds %struct.xrv* %99, i64 0, i32 0
+  %100 = load %struct.sv** %xrv_rv.i618, align 8, !tbaa !0
+  %101 = bitcast %struct.sv* %100 to %struct.xrv*
+  store %struct.xrv* %101, %struct.xrv** @PL_xrv_root, align 8, !tbaa !0
+  %102 = bitcast %struct.xrv* %99 to i8*
+  %sv_any105 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %102, i8** %sv_any105, align 8, !tbaa !0
+  %103 = bitcast i8* %pv.0 to %struct.sv*
+  store %struct.sv* %103, %struct.sv** %xrv_rv.i618, align 8, !tbaa !0
+  br label %sw.epilog354
+
+sw.bb108:                                         ; preds = %sw.epilog
+  %104 = load %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  %tobool.i619 = icmp eq %struct.xpv* %104, null
+  br i1 %tobool.i619, label %if.then.i623, label %S_new_xpv.exit
+
+if.then.i623:                                     ; preds = %sw.bb108
+  %call.i.i620 = tail call i8* @Perl_safesysmalloc(i64 4080) #8
+  %105 = bitcast i8* %call.i.i620 to %struct.xpv*
+  %106 = load %struct.xpv** @PL_xpv_arenaroot, align 8, !tbaa !0
+  %107 = bitcast %struct.xpv* %106 to i8*
+  %xpv_pv.i.i621 = bitcast i8* %call.i.i620 to i8**
+  store i8* %107, i8** %xpv_pv.i.i621, align 8, !tbaa !0
+  store %struct.xpv* %105, %struct.xpv** @PL_xpv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i622 = getelementptr inbounds i8* %call.i.i620, i64 4056
+  %108 = bitcast i8* %arrayidx.i.i622 to %struct.xpv*
+  %incdec.ptr.i.i = getelementptr inbounds i8* %call.i.i620, i64 24
+  %109 = bitcast i8* %incdec.ptr.i.i to %struct.xpv*
+  store %struct.xpv* %109, %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  br label %while.body.i.i626
+
+while.body.i.i626:                                ; preds = %while.body.i.i626, %if.then.i623
+  %xpv.012.i.i = phi %struct.xpv* [ %109, %if.then.i623 ], [ %add.ptr.i.i624, %while.body.i.i626 ]
+  %add.ptr.i.i624 = getelementptr inbounds %struct.xpv* %xpv.012.i.i, i64 1
+  %110 = bitcast %struct.xpv* %add.ptr.i.i624 to i8*
+  %xpv_pv1.i.i = getelementptr inbounds %struct.xpv* %xpv.012.i.i, i64 0, i32 0
+  store i8* %110, i8** %xpv_pv1.i.i, align 8, !tbaa !0
+  %cmp.i.i625 = icmp ult %struct.xpv* %add.ptr.i.i624, %108
+  br i1 %cmp.i.i625, label %while.body.i.i626, label %S_more_xpv.exit.i
+
+S_more_xpv.exit.i:                                ; preds = %while.body.i.i626
+  %xpv_pv3.i.i = getelementptr inbounds %struct.xpv* %add.ptr.i.i624, i64 0, i32 0
+  store i8* null, i8** %xpv_pv3.i.i, align 8, !tbaa !0
+  %.pre.i627 = load %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  br label %S_new_xpv.exit
+
+S_new_xpv.exit:                                   ; preds = %sw.bb108, %S_more_xpv.exit.i
+  %111 = phi %struct.xpv* [ %104, %sw.bb108 ], [ %.pre.i627, %S_more_xpv.exit.i ]
+  %xpv_pv.i628 = getelementptr inbounds %struct.xpv* %111, i64 0, i32 0
+  %112 = load i8** %xpv_pv.i628, align 8, !tbaa !0
+  %113 = bitcast i8* %112 to %struct.xpv*
+  store %struct.xpv* %113, %struct.xpv** @PL_xpv_root, align 8, !tbaa !0
+  %114 = bitcast %struct.xpv* %111 to i8*
+  %sv_any110 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %114, i8** %sv_any110, align 8, !tbaa !0
+  store i8* %pv.0, i8** %xpv_pv.i628, align 8, !tbaa !0
+  %conv113 = zext i32 %cur.0 to i64
+  %115 = load i8** %sv_any110, align 8, !tbaa !0
+  %xpv_cur115 = getelementptr inbounds i8* %115, i64 8
+  %116 = bitcast i8* %xpv_cur115 to i64*
+  store i64 %conv113, i64* %116, align 8, !tbaa !5
+  %conv116 = zext i32 %len.0 to i64
+  %xpv_len118 = getelementptr inbounds i8* %115, i64 16
+  %117 = bitcast i8* %xpv_len118 to i64*
+  store i64 %conv116, i64* %117, align 8, !tbaa !5
+  br label %sw.epilog354
+
+sw.bb119:                                         ; preds = %sw.epilog, %sw.bb35
+  %iv.0717 = phi i64 [ 0, %sw.bb35 ], [ %iv.0, %sw.epilog ]
+  %len.0716 = phi i32 [ %conv39, %sw.bb35 ], [ %len.0, %sw.epilog ]
+  %cur.0715 = phi i32 [ %conv, %sw.bb35 ], [ %cur.0, %sw.epilog ]
+  %pv.0714 = phi i8* [ %22, %sw.bb35 ], [ %pv.0, %sw.epilog ]
+  %118 = load %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  %tobool.i629 = icmp eq %struct.xpviv* %118, null
+  br i1 %tobool.i629, label %if.then.i634, label %S_new_xpviv.exit
+
+if.then.i634:                                     ; preds = %sw.bb119
+  %call.i.i630 = tail call i8* @Perl_safesysmalloc(i64 4064) #8
+  %119 = bitcast i8* %call.i.i630 to %struct.xpviv*
+  %120 = load %struct.xpviv** @PL_xpviv_arenaroot, align 8, !tbaa !0
+  %121 = bitcast %struct.xpviv* %120 to i8*
+  %xpv_pv.i.i631 = bitcast i8* %call.i.i630 to i8**
+  store i8* %121, i8** %xpv_pv.i.i631, align 8, !tbaa !0
+  store %struct.xpviv* %119, %struct.xpviv** @PL_xpviv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i632 = getelementptr inbounds i8* %call.i.i630, i64 4032
+  %122 = bitcast i8* %arrayidx.i.i632 to %struct.xpviv*
+  %incdec.ptr.i.i633 = getelementptr inbounds i8* %call.i.i630, i64 32
+  %123 = bitcast i8* %incdec.ptr.i.i633 to %struct.xpviv*
+  store %struct.xpviv* %123, %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  br label %while.body.i.i638
+
+while.body.i.i638:                                ; preds = %while.body.i.i638, %if.then.i634
+  %xpviv.012.i.i = phi %struct.xpviv* [ %123, %if.then.i634 ], [ %add.ptr.i.i635, %while.body.i.i638 ]
+  %add.ptr.i.i635 = getelementptr inbounds %struct.xpviv* %xpviv.012.i.i, i64 1
+  %124 = bitcast %struct.xpviv* %add.ptr.i.i635 to i8*
+  %xpv_pv1.i.i636 = getelementptr inbounds %struct.xpviv* %xpviv.012.i.i, i64 0, i32 0
+  store i8* %124, i8** %xpv_pv1.i.i636, align 8, !tbaa !0
+  %cmp.i.i637 = icmp ult %struct.xpviv* %add.ptr.i.i635, %122
+  br i1 %cmp.i.i637, label %while.body.i.i638, label %S_more_xpviv.exit.i
+
+S_more_xpviv.exit.i:                              ; preds = %while.body.i.i638
+  %xpv_pv3.i.i639 = getelementptr inbounds %struct.xpviv* %add.ptr.i.i635, i64 0, i32 0
+  store i8* null, i8** %xpv_pv3.i.i639, align 8, !tbaa !0
+  %.pre.i640 = load %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  br label %S_new_xpviv.exit
+
+S_new_xpviv.exit:                                 ; preds = %sw.bb119, %S_more_xpviv.exit.i
+  %125 = phi %struct.xpviv* [ %.pre.i640, %S_more_xpviv.exit.i ], [ %118, %sw.bb119 ]
+  %xpv_pv.i641 = getelementptr inbounds %struct.xpviv* %125, i64 0, i32 0
+  %126 = load i8** %xpv_pv.i641, align 8, !tbaa !0
+  %127 = bitcast i8* %126 to %struct.xpviv*
+  store %struct.xpviv* %127, %struct.xpviv** @PL_xpviv_root, align 8, !tbaa !0
+  %128 = bitcast %struct.xpviv* %125 to i8*
+  %sv_any121 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %128, i8** %sv_any121, align 8, !tbaa !0
+  store i8* %pv.0714, i8** %xpv_pv.i641, align 8, !tbaa !0
+  %conv124 = zext i32 %cur.0715 to i64
+  %129 = load i8** %sv_any121, align 8, !tbaa !0
+  %xpv_cur126 = getelementptr inbounds i8* %129, i64 8
+  %130 = bitcast i8* %xpv_cur126 to i64*
+  store i64 %conv124, i64* %130, align 8, !tbaa !5
+  %conv127 = zext i32 %len.0716 to i64
+  %xpv_len129 = getelementptr inbounds i8* %129, i64 16
+  %131 = bitcast i8* %xpv_len129 to i64*
+  store i64 %conv127, i64* %131, align 8, !tbaa !5
+  %xiv_iv131 = getelementptr inbounds i8* %129, i64 24
+  %132 = bitcast i8* %xiv_iv131 to i64*
+  store i64 %iv.0717, i64* %132, align 8, !tbaa !5
+  %133 = load i32* %sv_flags5.pre, align 4, !tbaa !3
+  %and133 = and i32 %133, 196608
+  %tobool134 = icmp eq i32 %and133, 0
+  br i1 %tobool134, label %if.end145, label %if.then135
+
+if.then135:                                       ; preds = %S_new_xpviv.exit
+  %and137 = and i32 %133, 2097152
+  %tobool138 = icmp eq i32 %and137, 0
+  br i1 %tobool138, label %land.end142, label %land.rhs139
+
+land.rhs139:                                      ; preds = %if.then135
+  %call140 = tail call i32 @Perl_sv_backoff(%struct.sv* %sv) #7
+  %.pre727 = load i32* %sv_flags5.pre, align 4, !tbaa !3
+  br label %land.end142
+
+land.end142:                                      ; preds = %if.then135, %land.rhs139
+  %134 = phi i32 [ %133, %if.then135 ], [ %.pre727, %land.rhs139 ]
+  %or = or i32 %134, 16842752
+  store i32 %or, i32* %sv_flags5.pre, align 4, !tbaa !3
+  br label %if.end145
+
+if.end145:                                        ; preds = %S_new_xpviv.exit, %land.end142
+  %135 = phi i32 [ %133, %S_new_xpviv.exit ], [ %or, %land.end142 ]
+  %and147 = and i32 %135, -33685505
+  store i32 %and147, i32* %sv_flags5.pre, align 4, !tbaa !3
+  br label %sw.epilog354
+
+sw.bb148:                                         ; preds = %sw.epilog, %sw.bb
+  %nv.0724 = phi double [ 0.000000e+00, %sw.bb ], [ %nv.0, %sw.epilog ]
+  %iv.0723 = phi i64 [ %7, %sw.bb ], [ %iv.0, %sw.epilog ]
+  %len.0722 = phi i32 [ 0, %sw.bb ], [ %len.0, %sw.epilog ]
+  %cur.0721 = phi i32 [ 0, %sw.bb ], [ %cur.0, %sw.epilog ]
+  %pv.0720 = phi i8* [ null, %sw.bb ], [ %pv.0, %sw.epilog ]
+  %136 = load %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  %tobool.i642 = icmp eq %struct.xpvnv* %136, null
+  br i1 %tobool.i642, label %if.then.i647, label %S_new_xpvnv.exit
+
+if.then.i647:                                     ; preds = %sw.bb148
+  %call.i.i643 = tail call i8* @Perl_safesysmalloc(i64 4080) #8
+  %137 = bitcast i8* %call.i.i643 to %struct.xpvnv*
+  %138 = load %struct.xpvnv** @PL_xpvnv_arenaroot, align 8, !tbaa !0
+  %139 = bitcast %struct.xpvnv* %138 to i8*
+  %xpv_pv.i.i644 = bitcast i8* %call.i.i643 to i8**
+  store i8* %139, i8** %xpv_pv.i.i644, align 8, !tbaa !0
+  store %struct.xpvnv* %137, %struct.xpvnv** @PL_xpvnv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i645 = getelementptr inbounds i8* %call.i.i643, i64 4040
+  %140 = bitcast i8* %arrayidx.i.i645 to %struct.xpvnv*
+  %incdec.ptr.i.i646 = getelementptr inbounds i8* %call.i.i643, i64 40
+  %141 = bitcast i8* %incdec.ptr.i.i646 to %struct.xpvnv*
+  store %struct.xpvnv* %141, %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  br label %while.body.i.i651
+
+while.body.i.i651:                                ; preds = %while.body.i.i651, %if.then.i647
+  %xpvnv.012.i.i = phi %struct.xpvnv* [ %141, %if.then.i647 ], [ %add.ptr.i.i648, %while.body.i.i651 ]
+  %add.ptr.i.i648 = getelementptr inbounds %struct.xpvnv* %xpvnv.012.i.i, i64 1
+  %142 = bitcast %struct.xpvnv* %add.ptr.i.i648 to i8*
+  %xpv_pv1.i.i649 = getelementptr inbounds %struct.xpvnv* %xpvnv.012.i.i, i64 0, i32 0
+  store i8* %142, i8** %xpv_pv1.i.i649, align 8, !tbaa !0
+  %cmp.i.i650 = icmp ult %struct.xpvnv* %add.ptr.i.i648, %140
+  br i1 %cmp.i.i650, label %while.body.i.i651, label %S_more_xpvnv.exit.i
+
+S_more_xpvnv.exit.i:                              ; preds = %while.body.i.i651
+  %xpv_pv3.i.i652 = getelementptr inbounds %struct.xpvnv* %add.ptr.i.i648, i64 0, i32 0
+  store i8* null, i8** %xpv_pv3.i.i652, align 8, !tbaa !0
+  %.pre.i653 = load %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  br label %S_new_xpvnv.exit
+
+S_new_xpvnv.exit:                                 ; preds = %sw.bb148, %S_more_xpvnv.exit.i
+  %143 = phi %struct.xpvnv* [ %136, %sw.bb148 ], [ %.pre.i653, %S_more_xpvnv.exit.i ]
+  %xpv_pv.i654 = getelementptr inbounds %struct.xpvnv* %143, i64 0, i32 0
+  %144 = load i8** %xpv_pv.i654, align 8, !tbaa !0
+  %145 = bitcast i8* %144 to %struct.xpvnv*
+  store %struct.xpvnv* %145, %struct.xpvnv** @PL_xpvnv_root, align 8, !tbaa !0
+  %146 = bitcast %struct.xpvnv* %143 to i8*
+  %sv_any150 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %146, i8** %sv_any150, align 8, !tbaa !0
+  store i8* %pv.0720, i8** %xpv_pv.i654, align 8, !tbaa !0
+  %conv153 = zext i32 %cur.0721 to i64
+  %147 = load i8** %sv_any150, align 8, !tbaa !0
+  %xpv_cur155 = getelementptr inbounds i8* %147, i64 8
+  %148 = bitcast i8* %xpv_cur155 to i64*
+  store i64 %conv153, i64* %148, align 8, !tbaa !5
+  %conv156 = zext i32 %len.0722 to i64
+  %xpv_len158 = getelementptr inbounds i8* %147, i64 16
+  %149 = bitcast i8* %xpv_len158 to i64*
+  store i64 %conv156, i64* %149, align 8, !tbaa !5
+  %xiv_iv160 = getelementptr inbounds i8* %147, i64 24
+  %150 = bitcast i8* %xiv_iv160 to i64*
+  store i64 %iv.0723, i64* %150, align 8, !tbaa !5
+  %xnv_nv162 = getelementptr inbounds i8* %147, i64 32
+  %151 = bitcast i8* %xnv_nv162 to double*
+  store double %nv.0724, double* %151, align 8, !tbaa !6
+  br label %sw.epilog354
+
+sw.bb163:                                         ; preds = %sw.epilog
+  %call164 = tail call fastcc %struct.xpvmg* @S_new_xpvmg() #7
+  %152 = bitcast %struct.xpvmg* %call164 to i8*
+  %sv_any165 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %152, i8** %sv_any165, align 8, !tbaa !0
+  %xpv_pv167 = getelementptr inbounds %struct.xpvmg* %call164, i64 0, i32 0
+  store i8* %pv.0, i8** %xpv_pv167, align 8, !tbaa !0
+  %conv168 = zext i32 %cur.0 to i64
+  %153 = load i8** %sv_any165, align 8, !tbaa !0
+  %xpv_cur170 = getelementptr inbounds i8* %153, i64 8
+  %154 = bitcast i8* %xpv_cur170 to i64*
+  store i64 %conv168, i64* %154, align 8, !tbaa !5
+  %conv171 = zext i32 %len.0 to i64
+  %xpv_len173 = getelementptr inbounds i8* %153, i64 16
+  %155 = bitcast i8* %xpv_len173 to i64*
+  store i64 %conv171, i64* %155, align 8, !tbaa !5
+  %xiv_iv175 = getelementptr inbounds i8* %153, i64 24
+  %156 = bitcast i8* %xiv_iv175 to i64*
+  store i64 %iv.0, i64* %156, align 8, !tbaa !5
+  %xnv_nv177 = getelementptr inbounds i8* %153, i64 32
+  %157 = bitcast i8* %xnv_nv177 to double*
+  store double %nv.0, double* %157, align 8, !tbaa !6
+  %xmg_magic179 = getelementptr inbounds i8* %153, i64 40
+  %158 = bitcast i8* %xmg_magic179 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %158, align 8, !tbaa !0
+  %159 = load i8** %sv_any165, align 8, !tbaa !0
+  %xmg_stash181 = getelementptr inbounds i8* %159, i64 48
+  %160 = bitcast i8* %xmg_stash181 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %160, align 8, !tbaa !0
+  br label %sw.epilog354
+
+sw.bb182:                                         ; preds = %sw.epilog
+  %161 = load %struct.xpvlv** @PL_xpvlv_root, align 8, !tbaa !0
+  %tobool.i655 = icmp eq %struct.xpvlv* %161, null
+  br i1 %tobool.i655, label %if.then.i660, label %S_new_xpvlv.exit
+
+if.then.i660:                                     ; preds = %sw.bb182
+  %call.i.i656 = tail call i8* @Perl_safesysmalloc(i64 4048) #8
+  %162 = bitcast i8* %call.i.i656 to %struct.xpvlv*
+  %163 = load %struct.xpvlv** @PL_xpvlv_arenaroot, align 8, !tbaa !0
+  %164 = bitcast %struct.xpvlv* %163 to i8*
+  %xpv_pv.i.i657 = bitcast i8* %call.i.i656 to i8**
+  store i8* %164, i8** %xpv_pv.i.i657, align 8, !tbaa !0
+  store %struct.xpvlv* %162, %struct.xpvlv** @PL_xpvlv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i658 = getelementptr inbounds i8* %call.i.i656, i64 3960
+  %165 = bitcast i8* %arrayidx.i.i658 to %struct.xpvlv*
+  %incdec.ptr.i.i659 = getelementptr inbounds i8* %call.i.i656, i64 88
+  %166 = bitcast i8* %incdec.ptr.i.i659 to %struct.xpvlv*
+  store %struct.xpvlv* %166, %struct.xpvlv** @PL_xpvlv_root, align 8, !tbaa !0
+  br label %while.body.i.i664
+
+while.body.i.i664:                                ; preds = %while.body.i.i664, %if.then.i660
+  %xpvlv.012.i.i = phi %struct.xpvlv* [ %166, %if.then.i660 ], [ %add.ptr.i.i661, %while.body.i.i664 ]
+  %add.ptr.i.i661 = getelementptr inbounds %struct.xpvlv* %xpvlv.012.i.i, i64 1
+  %167 = bitcast %struct.xpvlv* %add.ptr.i.i661 to i8*
+  %xpv_pv1.i.i662 = getelementptr inbounds %struct.xpvlv* %xpvlv.012.i.i, i64 0, i32 0
+  store i8* %167, i8** %xpv_pv1.i.i662, align 8, !tbaa !0
+  %cmp.i.i663 = icmp ult %struct.xpvlv* %add.ptr.i.i661, %165
+  br i1 %cmp.i.i663, label %while.body.i.i664, label %S_more_xpvlv.exit.i
+
+S_more_xpvlv.exit.i:                              ; preds = %while.body.i.i664
+  %xpv_pv3.i.i665 = getelementptr inbounds %struct.xpvlv* %add.ptr.i.i661, i64 0, i32 0
+  store i8* null, i8** %xpv_pv3.i.i665, align 8, !tbaa !0
+  %.pre.i666 = load %struct.xpvlv** @PL_xpvlv_root, align 8, !tbaa !0
+  br label %S_new_xpvlv.exit
+
+S_new_xpvlv.exit:                                 ; preds = %sw.bb182, %S_more_xpvlv.exit.i
+  %168 = phi %struct.xpvlv* [ %161, %sw.bb182 ], [ %.pre.i666, %S_more_xpvlv.exit.i ]
+  %xpv_pv.i667 = getelementptr inbounds %struct.xpvlv* %168, i64 0, i32 0
+  %169 = load i8** %xpv_pv.i667, align 8, !tbaa !0
+  %170 = bitcast i8* %169 to %struct.xpvlv*
+  store %struct.xpvlv* %170, %struct.xpvlv** @PL_xpvlv_root, align 8, !tbaa !0
+  %171 = bitcast %struct.xpvlv* %168 to i8*
+  %sv_any184 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %171, i8** %sv_any184, align 8, !tbaa !0
+  store i8* %pv.0, i8** %xpv_pv.i667, align 8, !tbaa !0
+  %conv187 = zext i32 %cur.0 to i64
+  %172 = load i8** %sv_any184, align 8, !tbaa !0
+  %xpv_cur189 = getelementptr inbounds i8* %172, i64 8
+  %173 = bitcast i8* %xpv_cur189 to i64*
+  store i64 %conv187, i64* %173, align 8, !tbaa !5
+  %conv190 = zext i32 %len.0 to i64
+  %xpv_len192 = getelementptr inbounds i8* %172, i64 16
+  %174 = bitcast i8* %xpv_len192 to i64*
+  store i64 %conv190, i64* %174, align 8, !tbaa !5
+  %xiv_iv194 = getelementptr inbounds i8* %172, i64 24
+  %175 = bitcast i8* %xiv_iv194 to i64*
+  store i64 %iv.0, i64* %175, align 8, !tbaa !5
+  %xnv_nv196 = getelementptr inbounds i8* %172, i64 32
+  %176 = bitcast i8* %xnv_nv196 to double*
+  store double %nv.0, double* %176, align 8, !tbaa !6
+  %xmg_magic198 = getelementptr inbounds i8* %172, i64 40
+  %177 = bitcast i8* %xmg_magic198 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %177, align 8, !tbaa !0
+  %178 = load i8** %sv_any184, align 8, !tbaa !0
+  %xmg_stash200 = getelementptr inbounds i8* %178, i64 48
+  %179 = bitcast i8* %xmg_stash200 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %179, align 8, !tbaa !0
+  %180 = load i8** %sv_any184, align 8, !tbaa !0
+  %xlv_targoff = getelementptr inbounds i8* %180, i64 56
+  call void @llvm.memset.p0i8.i64(i8* %xlv_targoff, i8 0, i64 24, i32 8, i1 false)
+  %181 = load i8** %sv_any184, align 8, !tbaa !0
+  %182 = getelementptr inbounds i8* %181, i64 80
+  store i8 0, i8* %182, align 1, !tbaa !1
+  br label %sw.epilog354
+
+sw.bb205:                                         ; preds = %sw.epilog
+  %183 = load %struct.xpvav** @PL_xpvav_root, align 8, !tbaa !0
+  %tobool.i668 = icmp eq %struct.xpvav* %183, null
+  br i1 %tobool.i668, label %if.then.i672, label %S_new_xpvav.exit
+
+if.then.i672:                                     ; preds = %sw.bb205
+  %call.i.i669 = tail call i8* @Perl_safesysmalloc(i64 4080) #8
+  %184 = bitcast i8* %call.i.i669 to %struct.xpvav*
+  %185 = load %struct.xpvav** @PL_xpvav_arenaroot, align 8, !tbaa !0
+  %186 = bitcast %struct.xpvav* %185 to i8*
+  %xav_array.i.i = bitcast i8* %call.i.i669 to i8**
+  store i8* %186, i8** %xav_array.i.i, align 8, !tbaa !0
+  store %struct.xpvav* %184, %struct.xpvav** @PL_xpvav_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i670 = getelementptr inbounds i8* %call.i.i669, i64 4000
+  %187 = bitcast i8* %arrayidx.i.i670 to %struct.xpvav*
+  %incdec.ptr.i.i671 = getelementptr inbounds i8* %call.i.i669, i64 80
+  %188 = bitcast i8* %incdec.ptr.i.i671 to %struct.xpvav*
+  store %struct.xpvav* %188, %struct.xpvav** @PL_xpvav_root, align 8, !tbaa !0
+  br label %while.body.i.i675
+
+while.body.i.i675:                                ; preds = %while.body.i.i675, %if.then.i672
+  %xpvav.012.i.i = phi %struct.xpvav* [ %188, %if.then.i672 ], [ %add.ptr.i.i673, %while.body.i.i675 ]
+  %add.ptr.i.i673 = getelementptr inbounds %struct.xpvav* %xpvav.012.i.i, i64 1
+  %189 = bitcast %struct.xpvav* %add.ptr.i.i673 to i8*
+  %xav_array1.i.i = getelementptr inbounds %struct.xpvav* %xpvav.012.i.i, i64 0, i32 0
+  store i8* %189, i8** %xav_array1.i.i, align 8, !tbaa !0
+  %cmp.i.i674 = icmp ult %struct.xpvav* %add.ptr.i.i673, %187
+  br i1 %cmp.i.i674, label %while.body.i.i675, label %S_more_xpvav.exit.i
+
+S_more_xpvav.exit.i:                              ; preds = %while.body.i.i675
+  %xav_array3.i.i = getelementptr inbounds %struct.xpvav* %add.ptr.i.i673, i64 0, i32 0
+  store i8* null, i8** %xav_array3.i.i, align 8, !tbaa !0
+  %.pre.i676 = load %struct.xpvav** @PL_xpvav_root, align 8, !tbaa !0
+  br label %S_new_xpvav.exit
+
+S_new_xpvav.exit:                                 ; preds = %sw.bb205, %S_more_xpvav.exit.i
+  %190 = phi %struct.xpvav* [ %183, %sw.bb205 ], [ %.pre.i676, %S_more_xpvav.exit.i ]
+  %xav_array.i = getelementptr inbounds %struct.xpvav* %190, i64 0, i32 0
+  %191 = load i8** %xav_array.i, align 8, !tbaa !0
+  %192 = bitcast i8* %191 to %struct.xpvav*
+  store %struct.xpvav* %192, %struct.xpvav** @PL_xpvav_root, align 8, !tbaa !0
+  %193 = bitcast %struct.xpvav* %190 to i8*
+  %sv_any207 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %193, i8** %sv_any207, align 8, !tbaa !0
+  %tobool208 = icmp eq i8* %pv.0, null
+  br i1 %tobool208, label %if.end210, label %if.then209
+
+if.then209:                                       ; preds = %S_new_xpvav.exit
+  tail call void @Perl_safesysfree(i8* %pv.0) #8
+  %.pre725 = load i8** %sv_any207, align 8, !tbaa !0
+  br label %if.end210
+
+if.end210:                                        ; preds = %S_new_xpvav.exit, %if.then209
+  %194 = phi i8* [ %193, %S_new_xpvav.exit ], [ %.pre725, %if.then209 ]
+  %xpv_pv212 = bitcast i8* %194 to i8**
+  store i8* null, i8** %xpv_pv212, align 8, !tbaa !0
+  %195 = load i8** %sv_any207, align 8, !tbaa !0
+  %xav_fill = getelementptr inbounds i8* %195, i64 8
+  %xiv_iv216 = getelementptr inbounds i8* %195, i64 24
+  call void @llvm.memset.p0i8.i64(i8* %xav_fill, i8 -1, i64 16, i32 8, i1 false)
+  %xmg_magic220 = getelementptr inbounds i8* %195, i64 40
+  %196 = bitcast i8* %xmg_magic220 to %struct.magic**
+  call void @llvm.memset.p0i8.i64(i8* %xiv_iv216, i8 0, i64 16, i32 8, i1 false)
+  store %struct.magic* %magic.0, %struct.magic** %196, align 8, !tbaa !0
+  %197 = load i8** %sv_any207, align 8, !tbaa !0
+  %xmg_stash222 = getelementptr inbounds i8* %197, i64 48
+  %198 = bitcast i8* %xmg_stash222 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %198, align 8, !tbaa !0
+  %199 = load i8** %sv_any207, align 8, !tbaa !0
+  %xav_alloc = getelementptr inbounds i8* %199, i64 56
+  %200 = bitcast i8* %xav_alloc to %struct.sv***
+  store %struct.sv** null, %struct.sv*** %200, align 8, !tbaa !0
+  %201 = load i8** %sv_any207, align 8, !tbaa !0
+  %xav_arylen = getelementptr inbounds i8* %201, i64 64
+  %202 = bitcast i8* %xav_arylen to %struct.sv**
+  store %struct.sv* null, %struct.sv** %202, align 8, !tbaa !0
+  %203 = load i8** %sv_any207, align 8, !tbaa !0
+  %204 = getelementptr inbounds i8* %203, i64 72
+  store i8 1, i8* %204, align 1, !tbaa !1
+  br label %sw.epilog354
+
+sw.bb226:                                         ; preds = %sw.epilog
+  %205 = load %struct.xpvhv** @PL_xpvhv_root, align 8, !tbaa !0
+  %tobool.i677 = icmp eq %struct.xpvhv* %205, null
+  br i1 %tobool.i677, label %if.then.i681, label %S_new_xpvhv.exit
+
+if.then.i681:                                     ; preds = %sw.bb226
+  %call.i.i678 = tail call i8* @Perl_safesysmalloc(i64 4048) #8
+  %206 = bitcast i8* %call.i.i678 to %struct.xpvhv*
+  %207 = load %struct.xpvhv** @PL_xpvhv_arenaroot, align 8, !tbaa !0
+  %208 = bitcast %struct.xpvhv* %207 to i8*
+  %xhv_array.i.i = bitcast i8* %call.i.i678 to i8**
+  store i8* %208, i8** %xhv_array.i.i, align 8, !tbaa !0
+  store %struct.xpvhv* %206, %struct.xpvhv** @PL_xpvhv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i679 = getelementptr inbounds i8* %call.i.i678, i64 3960
+  %209 = bitcast i8* %arrayidx.i.i679 to %struct.xpvhv*
+  %incdec.ptr.i.i680 = getelementptr inbounds i8* %call.i.i678, i64 88
+  %210 = bitcast i8* %incdec.ptr.i.i680 to %struct.xpvhv*
+  store %struct.xpvhv* %210, %struct.xpvhv** @PL_xpvhv_root, align 8, !tbaa !0
+  br label %while.body.i.i684
+
+while.body.i.i684:                                ; preds = %while.body.i.i684, %if.then.i681
+  %xpvhv.012.i.i = phi %struct.xpvhv* [ %210, %if.then.i681 ], [ %add.ptr.i.i682, %while.body.i.i684 ]
+  %add.ptr.i.i682 = getelementptr inbounds %struct.xpvhv* %xpvhv.012.i.i, i64 1
+  %211 = bitcast %struct.xpvhv* %add.ptr.i.i682 to i8*
+  %xhv_array1.i.i = getelementptr inbounds %struct.xpvhv* %xpvhv.012.i.i, i64 0, i32 0
+  store i8* %211, i8** %xhv_array1.i.i, align 8, !tbaa !0
+  %cmp.i.i683 = icmp ult %struct.xpvhv* %add.ptr.i.i682, %209
+  br i1 %cmp.i.i683, label %while.body.i.i684, label %S_more_xpvhv.exit.i
+
+S_more_xpvhv.exit.i:                              ; preds = %while.body.i.i684
+  %xhv_array3.i.i = getelementptr inbounds %struct.xpvhv* %add.ptr.i.i682, i64 0, i32 0
+  store i8* null, i8** %xhv_array3.i.i, align 8, !tbaa !0
+  %.pre.i685 = load %struct.xpvhv** @PL_xpvhv_root, align 8, !tbaa !0
+  br label %S_new_xpvhv.exit
+
+S_new_xpvhv.exit:                                 ; preds = %sw.bb226, %S_more_xpvhv.exit.i
+  %212 = phi %struct.xpvhv* [ %205, %sw.bb226 ], [ %.pre.i685, %S_more_xpvhv.exit.i ]
+  %xhv_array.i = getelementptr inbounds %struct.xpvhv* %212, i64 0, i32 0
+  %213 = load i8** %xhv_array.i, align 8, !tbaa !0
+  %214 = bitcast i8* %213 to %struct.xpvhv*
+  store %struct.xpvhv* %214, %struct.xpvhv** @PL_xpvhv_root, align 8, !tbaa !0
+  %215 = bitcast %struct.xpvhv* %212 to i8*
+  %sv_any228 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %215, i8** %sv_any228, align 8, !tbaa !0
+  %tobool229 = icmp eq i8* %pv.0, null
+  br i1 %tobool229, label %if.end231, label %if.then230
+
+if.then230:                                       ; preds = %S_new_xpvhv.exit
+  tail call void @Perl_safesysfree(i8* %pv.0) #8
+  %.pre726 = load i8** %sv_any228, align 8, !tbaa !0
+  br label %if.end231
+
+if.end231:                                        ; preds = %S_new_xpvhv.exit, %if.then230
+  %216 = phi i8* [ %215, %S_new_xpvhv.exit ], [ %.pre726, %if.then230 ]
+  %xpv_pv233 = bitcast i8* %216 to i8**
+  store i8* null, i8** %xpv_pv233, align 8, !tbaa !0
+  %217 = load i8** %sv_any228, align 8, !tbaa !0
+  %xhv_fill = getelementptr inbounds i8* %217, i64 8
+  %xmg_magic240 = getelementptr inbounds i8* %217, i64 40
+  %218 = bitcast i8* %xmg_magic240 to %struct.magic**
+  call void @llvm.memset.p0i8.i64(i8* %xhv_fill, i8 0, i64 32, i32 8, i1 false)
+  store %struct.magic* %magic.0, %struct.magic** %218, align 8, !tbaa !0
+  %219 = load i8** %sv_any228, align 8, !tbaa !0
+  %xmg_stash242 = getelementptr inbounds i8* %219, i64 48
+  %220 = bitcast i8* %xmg_stash242 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %220, align 8, !tbaa !0
+  %221 = load i8** %sv_any228, align 8, !tbaa !0
+  %xhv_riter = getelementptr inbounds i8* %221, i64 56
+  %222 = bitcast i8* %xhv_riter to i32*
+  store i32 0, i32* %222, align 4, !tbaa !3
+  %xhv_eiter = getelementptr inbounds i8* %221, i64 64
+  %223 = bitcast i8* %xhv_eiter to %struct.he**
+  store %struct.he* null, %struct.he** %223, align 8, !tbaa !0
+  %224 = load i8** %sv_any228, align 8, !tbaa !0
+  %xhv_pmroot = getelementptr inbounds i8* %224, i64 72
+  %225 = bitcast i8* %xhv_pmroot to %struct.pmop**
+  store %struct.pmop* null, %struct.pmop** %225, align 8, !tbaa !0
+  %226 = load i8** %sv_any228, align 8, !tbaa !0
+  %xhv_name = getelementptr inbounds i8* %226, i64 80
+  %227 = bitcast i8* %xhv_name to i8**
+  store i8* null, i8** %227, align 8, !tbaa !0
+  br label %sw.epilog354
+
+sw.bb247:                                         ; preds = %sw.epilog
+  %228 = load %struct.xpvcv** @PL_xpvcv_root, align 8, !tbaa !0
+  %tobool.i686 = icmp eq %struct.xpvcv* %228, null
+  br i1 %tobool.i686, label %if.then.i691, label %S_new_xpvcv.exit
+
+if.then.i691:                                     ; preds = %sw.bb247
+  %call.i.i687 = tail call i8* @Perl_safesysmalloc(i64 4032) #8
+  %229 = bitcast i8* %call.i.i687 to %struct.xpvcv*
+  %230 = load %struct.xpvcv** @PL_xpvcv_arenaroot, align 8, !tbaa !0
+  %231 = bitcast %struct.xpvcv* %230 to i8*
+  %xpv_pv.i.i688 = bitcast i8* %call.i.i687 to i8**
+  store i8* %231, i8** %xpv_pv.i.i688, align 8, !tbaa !0
+  store %struct.xpvcv* %229, %struct.xpvcv** @PL_xpvcv_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i689 = getelementptr inbounds i8* %call.i.i687, i64 3888
+  %232 = bitcast i8* %arrayidx.i.i689 to %struct.xpvcv*
+  %incdec.ptr.i.i690 = getelementptr inbounds i8* %call.i.i687, i64 144
+  %233 = bitcast i8* %incdec.ptr.i.i690 to %struct.xpvcv*
+  store %struct.xpvcv* %233, %struct.xpvcv** @PL_xpvcv_root, align 8, !tbaa !0
+  br label %while.body.i.i695
+
+while.body.i.i695:                                ; preds = %while.body.i.i695, %if.then.i691
+  %xpvcv.012.i.i = phi %struct.xpvcv* [ %233, %if.then.i691 ], [ %add.ptr.i.i692, %while.body.i.i695 ]
+  %add.ptr.i.i692 = getelementptr inbounds %struct.xpvcv* %xpvcv.012.i.i, i64 1
+  %234 = bitcast %struct.xpvcv* %add.ptr.i.i692 to i8*
+  %xpv_pv1.i.i693 = getelementptr inbounds %struct.xpvcv* %xpvcv.012.i.i, i64 0, i32 0
+  store i8* %234, i8** %xpv_pv1.i.i693, align 8, !tbaa !0
+  %cmp.i.i694 = icmp ult %struct.xpvcv* %add.ptr.i.i692, %232
+  br i1 %cmp.i.i694, label %while.body.i.i695, label %S_more_xpvcv.exit.i
+
+S_more_xpvcv.exit.i:                              ; preds = %while.body.i.i695
+  %xpv_pv3.i.i696 = getelementptr inbounds %struct.xpvcv* %add.ptr.i.i692, i64 0, i32 0
+  store i8* null, i8** %xpv_pv3.i.i696, align 8, !tbaa !0
+  %.pre.i697 = load %struct.xpvcv** @PL_xpvcv_root, align 8, !tbaa !0
+  br label %S_new_xpvcv.exit
+
+S_new_xpvcv.exit:                                 ; preds = %sw.bb247, %S_more_xpvcv.exit.i
+  %235 = phi %struct.xpvcv* [ %228, %sw.bb247 ], [ %.pre.i697, %S_more_xpvcv.exit.i ]
+  %xpv_pv.i698 = getelementptr inbounds %struct.xpvcv* %235, i64 0, i32 0
+  %236 = load i8** %xpv_pv.i698, align 8, !tbaa !0
+  %237 = bitcast i8* %236 to %struct.xpvcv*
+  store %struct.xpvcv* %237, %struct.xpvcv** @PL_xpvcv_root, align 8, !tbaa !0
+  %238 = bitcast %struct.xpvcv* %235 to i8*
+  %sv_any249 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %238, i8** %sv_any249, align 8, !tbaa !0
+  tail call void @llvm.memset.p0i8.i64(i8* %238, i8 0, i64 144, i32 1, i1 false)
+  %239 = load i8** %sv_any249, align 8, !tbaa !0
+  %xpv_pv252 = bitcast i8* %239 to i8**
+  store i8* %pv.0, i8** %xpv_pv252, align 8, !tbaa !0
+  %conv253 = zext i32 %cur.0 to i64
+  %240 = load i8** %sv_any249, align 8, !tbaa !0
+  %xpv_cur255 = getelementptr inbounds i8* %240, i64 8
+  %241 = bitcast i8* %xpv_cur255 to i64*
+  store i64 %conv253, i64* %241, align 8, !tbaa !5
+  %conv256 = zext i32 %len.0 to i64
+  %xpv_len258 = getelementptr inbounds i8* %240, i64 16
+  %242 = bitcast i8* %xpv_len258 to i64*
+  store i64 %conv256, i64* %242, align 8, !tbaa !5
+  %xiv_iv260 = getelementptr inbounds i8* %240, i64 24
+  %243 = bitcast i8* %xiv_iv260 to i64*
+  store i64 %iv.0, i64* %243, align 8, !tbaa !5
+  %xnv_nv262 = getelementptr inbounds i8* %240, i64 32
+  %244 = bitcast i8* %xnv_nv262 to double*
+  store double %nv.0, double* %244, align 8, !tbaa !6
+  %xmg_magic264 = getelementptr inbounds i8* %240, i64 40
+  %245 = bitcast i8* %xmg_magic264 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %245, align 8, !tbaa !0
+  %246 = load i8** %sv_any249, align 8, !tbaa !0
+  %xmg_stash266 = getelementptr inbounds i8* %246, i64 48
+  %247 = bitcast i8* %xmg_stash266 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %247, align 8, !tbaa !0
+  br label %sw.epilog354
+
+sw.bb267:                                         ; preds = %sw.epilog
+  %call268 = tail call i8* @Perl_safesysmalloc(i64 96) #8
+  %sv_any269 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %call268, i8** %sv_any269, align 8, !tbaa !0
+  %xpv_pv271 = bitcast i8* %call268 to i8**
+  store i8* %pv.0, i8** %xpv_pv271, align 8, !tbaa !0
+  %conv272 = zext i32 %cur.0 to i64
+  %248 = load i8** %sv_any269, align 8, !tbaa !0
+  %xpv_cur274 = getelementptr inbounds i8* %248, i64 8
+  %249 = bitcast i8* %xpv_cur274 to i64*
+  store i64 %conv272, i64* %249, align 8, !tbaa !5
+  %conv275 = zext i32 %len.0 to i64
+  %xpv_len277 = getelementptr inbounds i8* %248, i64 16
+  %250 = bitcast i8* %xpv_len277 to i64*
+  store i64 %conv275, i64* %250, align 8, !tbaa !5
+  %xiv_iv279 = getelementptr inbounds i8* %248, i64 24
+  %251 = bitcast i8* %xiv_iv279 to i64*
+  store i64 %iv.0, i64* %251, align 8, !tbaa !5
+  %xnv_nv281 = getelementptr inbounds i8* %248, i64 32
+  %252 = bitcast i8* %xnv_nv281 to double*
+  store double %nv.0, double* %252, align 8, !tbaa !6
+  %xmg_magic283 = getelementptr inbounds i8* %248, i64 40
+  %253 = bitcast i8* %xmg_magic283 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %253, align 8, !tbaa !0
+  %254 = load i8** %sv_any269, align 8, !tbaa !0
+  %xmg_stash285 = getelementptr inbounds i8* %254, i64 48
+  %255 = bitcast i8* %xmg_stash285 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %255, align 8, !tbaa !0
+  %256 = load i8** %sv_any269, align 8, !tbaa !0
+  %xgv_gp = getelementptr inbounds i8* %256, i64 56
+  %257 = bitcast i8* %xgv_gp to %struct.gp**
+  store %struct.gp* null, %struct.gp** %257, align 8, !tbaa !0
+  %258 = load i8** %sv_any269, align 8, !tbaa !0
+  %xgv_name = getelementptr inbounds i8* %258, i64 64
+  %259 = bitcast i8* %xgv_name to i8**
+  store i8* null, i8** %259, align 8, !tbaa !0
+  %260 = load i8** %sv_any269, align 8, !tbaa !0
+  %xgv_namelen = getelementptr inbounds i8* %260, i64 72
+  call void @llvm.memset.p0i8.i64(i8* %xgv_namelen, i8 0, i64 16, i32 8, i1 false)
+  %261 = load i8** %sv_any269, align 8, !tbaa !0
+  %262 = getelementptr inbounds i8* %261, i64 88
+  store i8 0, i8* %262, align 1, !tbaa !1
+  br label %sw.epilog354
+
+sw.bb291:                                         ; preds = %sw.epilog
+  %263 = load %struct.xpvbm** @PL_xpvbm_root, align 8, !tbaa !0
+  %tobool.i699 = icmp eq %struct.xpvbm* %263, null
+  br i1 %tobool.i699, label %if.then.i704, label %S_new_xpvbm.exit
+
+if.then.i704:                                     ; preds = %sw.bb291
+  %call.i.i700 = tail call i8* @Perl_safesysmalloc(i64 4032) #8
+  %264 = bitcast i8* %call.i.i700 to %struct.xpvbm*
+  %265 = load %struct.xpvbm** @PL_xpvbm_arenaroot, align 8, !tbaa !0
+  %266 = bitcast %struct.xpvbm* %265 to i8*
+  %xpv_pv.i.i701 = bitcast i8* %call.i.i700 to i8**
+  store i8* %266, i8** %xpv_pv.i.i701, align 8, !tbaa !0
+  store %struct.xpvbm* %264, %struct.xpvbm** @PL_xpvbm_arenaroot, align 8, !tbaa !0
+  %arrayidx.i.i702 = getelementptr inbounds i8* %call.i.i700, i64 3968
+  %267 = bitcast i8* %arrayidx.i.i702 to %struct.xpvbm*
+  %incdec.ptr.i.i703 = getelementptr inbounds i8* %call.i.i700, i64 64
+  %268 = bitcast i8* %incdec.ptr.i.i703 to %struct.xpvbm*
+  store %struct.xpvbm* %268, %struct.xpvbm** @PL_xpvbm_root, align 8, !tbaa !0
+  br label %while.body.i.i708
+
+while.body.i.i708:                                ; preds = %while.body.i.i708, %if.then.i704
+  %xpvbm.012.i.i = phi %struct.xpvbm* [ %268, %if.then.i704 ], [ %add.ptr.i.i705, %while.body.i.i708 ]
+  %add.ptr.i.i705 = getelementptr inbounds %struct.xpvbm* %xpvbm.012.i.i, i64 1
+  %269 = bitcast %struct.xpvbm* %add.ptr.i.i705 to i8*
+  %xpv_pv1.i.i706 = getelementptr inbounds %struct.xpvbm* %xpvbm.012.i.i, i64 0, i32 0
+  store i8* %269, i8** %xpv_pv1.i.i706, align 8, !tbaa !0
+  %cmp.i.i707 = icmp ult %struct.xpvbm* %add.ptr.i.i705, %267
+  br i1 %cmp.i.i707, label %while.body.i.i708, label %S_more_xpvbm.exit.i
+
+S_more_xpvbm.exit.i:                              ; preds = %while.body.i.i708
+  %xpv_pv3.i.i709 = getelementptr inbounds %struct.xpvbm* %add.ptr.i.i705, i64 0, i32 0
+  store i8* null, i8** %xpv_pv3.i.i709, align 8, !tbaa !0
+  %.pre.i710 = load %struct.xpvbm** @PL_xpvbm_root, align 8, !tbaa !0
+  br label %S_new_xpvbm.exit
+
+S_new_xpvbm.exit:                                 ; preds = %sw.bb291, %S_more_xpvbm.exit.i
+  %270 = phi %struct.xpvbm* [ %263, %sw.bb291 ], [ %.pre.i710, %S_more_xpvbm.exit.i ]
+  %xpv_pv.i711 = getelementptr inbounds %struct.xpvbm* %270, i64 0, i32 0
+  %271 = load i8** %xpv_pv.i711, align 8, !tbaa !0
+  %272 = bitcast i8* %271 to %struct.xpvbm*
+  store %struct.xpvbm* %272, %struct.xpvbm** @PL_xpvbm_root, align 8, !tbaa !0
+  %273 = bitcast %struct.xpvbm* %270 to i8*
+  %sv_any293 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %273, i8** %sv_any293, align 8, !tbaa !0
+  store i8* %pv.0, i8** %xpv_pv.i711, align 8, !tbaa !0
+  %conv296 = zext i32 %cur.0 to i64
+  %274 = load i8** %sv_any293, align 8, !tbaa !0
+  %xpv_cur298 = getelementptr inbounds i8* %274, i64 8
+  %275 = bitcast i8* %xpv_cur298 to i64*
+  store i64 %conv296, i64* %275, align 8, !tbaa !5
+  %conv299 = zext i32 %len.0 to i64
+  %xpv_len301 = getelementptr inbounds i8* %274, i64 16
+  %276 = bitcast i8* %xpv_len301 to i64*
+  store i64 %conv299, i64* %276, align 8, !tbaa !5
+  %xiv_iv303 = getelementptr inbounds i8* %274, i64 24
+  %277 = bitcast i8* %xiv_iv303 to i64*
+  store i64 %iv.0, i64* %277, align 8, !tbaa !5
+  %xnv_nv305 = getelementptr inbounds i8* %274, i64 32
+  %278 = bitcast i8* %xnv_nv305 to double*
+  store double %nv.0, double* %278, align 8, !tbaa !6
+  %xmg_magic307 = getelementptr inbounds i8* %274, i64 40
+  %279 = bitcast i8* %xmg_magic307 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %279, align 8, !tbaa !0
+  %280 = load i8** %sv_any293, align 8, !tbaa !0
+  %xmg_stash309 = getelementptr inbounds i8* %280, i64 48
+  %281 = bitcast i8* %xmg_stash309 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %281, align 8, !tbaa !0
+  %282 = load i8** %sv_any293, align 8, !tbaa !0
+  %283 = getelementptr inbounds i8* %282, i64 62
+  store i8 0, i8* %283, align 1, !tbaa !1
+  %284 = load i8** %sv_any293, align 8, !tbaa !0
+  %xbm_useful = getelementptr inbounds i8* %284, i64 56
+  %285 = bitcast i8* %xbm_useful to i32*
+  store i32 0, i32* %285, align 4, !tbaa !3
+  %xbm_previous = getelementptr inbounds i8* %284, i64 60
+  %286 = bitcast i8* %xbm_previous to i16*
+  store i16 0, i16* %286, align 2, !tbaa !4
+  br label %sw.epilog354
+
+sw.bb313:                                         ; preds = %sw.epilog
+  %call314 = tail call i8* @Perl_safesysmalloc(i64 152) #8
+  %sv_any315 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %call314, i8** %sv_any315, align 8, !tbaa !0
+  tail call void @llvm.memset.p0i8.i64(i8* %call314, i8 0, i64 152, i32 1, i1 false)
+  %287 = load i8** %sv_any315, align 8, !tbaa !0
+  %xpv_pv318 = bitcast i8* %287 to i8**
+  store i8* %pv.0, i8** %xpv_pv318, align 8, !tbaa !0
+  %conv319 = zext i32 %cur.0 to i64
+  %288 = load i8** %sv_any315, align 8, !tbaa !0
+  %xpv_cur321 = getelementptr inbounds i8* %288, i64 8
+  %289 = bitcast i8* %xpv_cur321 to i64*
+  store i64 %conv319, i64* %289, align 8, !tbaa !5
+  %conv322 = zext i32 %len.0 to i64
+  %xpv_len324 = getelementptr inbounds i8* %288, i64 16
+  %290 = bitcast i8* %xpv_len324 to i64*
+  store i64 %conv322, i64* %290, align 8, !tbaa !5
+  %xiv_iv326 = getelementptr inbounds i8* %288, i64 24
+  %291 = bitcast i8* %xiv_iv326 to i64*
+  store i64 %iv.0, i64* %291, align 8, !tbaa !5
+  %xnv_nv328 = getelementptr inbounds i8* %288, i64 32
+  %292 = bitcast i8* %xnv_nv328 to double*
+  store double %nv.0, double* %292, align 8, !tbaa !6
+  %xmg_magic330 = getelementptr inbounds i8* %288, i64 40
+  %293 = bitcast i8* %xmg_magic330 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %293, align 8, !tbaa !0
+  %294 = load i8** %sv_any315, align 8, !tbaa !0
+  %xmg_stash332 = getelementptr inbounds i8* %294, i64 48
+  %295 = bitcast i8* %xmg_stash332 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %295, align 8, !tbaa !0
+  br label %sw.epilog354
+
+sw.bb333:                                         ; preds = %sw.epilog
+  %call334 = tail call i8* @Perl_safesysmalloc(i64 168) #8
+  %sv_any335 = getelementptr inbounds %struct.sv* %sv, i64 0, i32 0
+  store i8* %call334, i8** %sv_any335, align 8, !tbaa !0
+  tail call void @llvm.memset.p0i8.i64(i8* %call334, i8 0, i64 168, i32 1, i1 false)
+  %296 = load i8** %sv_any335, align 8, !tbaa !0
+  %xpv_pv338 = bitcast i8* %296 to i8**
+  store i8* %pv.0, i8** %xpv_pv338, align 8, !tbaa !0
+  %conv339 = zext i32 %cur.0 to i64
+  %297 = load i8** %sv_any335, align 8, !tbaa !0
+  %xpv_cur341 = getelementptr inbounds i8* %297, i64 8
+  %298 = bitcast i8* %xpv_cur341 to i64*
+  store i64 %conv339, i64* %298, align 8, !tbaa !5
+  %conv342 = zext i32 %len.0 to i64
+  %xpv_len344 = getelementptr inbounds i8* %297, i64 16
+  %299 = bitcast i8* %xpv_len344 to i64*
+  store i64 %conv342, i64* %299, align 8, !tbaa !5
+  %xiv_iv346 = getelementptr inbounds i8* %297, i64 24
+  %300 = bitcast i8* %xiv_iv346 to i64*
+  store i64 %iv.0, i64* %300, align 8, !tbaa !5
+  %xnv_nv348 = getelementptr inbounds i8* %297, i64 32
+  %301 = bitcast i8* %xnv_nv348 to double*
+  store double %nv.0, double* %301, align 8, !tbaa !6
+  %xmg_magic350 = getelementptr inbounds i8* %297, i64 40
+  %302 = bitcast i8* %xmg_magic350 to %struct.magic**
+  store %struct.magic* %magic.0, %struct.magic** %302, align 8, !tbaa !0
+  %303 = load i8** %sv_any335, align 8, !tbaa !0
+  %xmg_stash352 = getelementptr inbounds i8* %303, i64 48
+  %304 = bitcast i8* %xmg_stash352 to %struct.hv**
+  store %struct.hv* %stash.0, %struct.hv** %304, align 8, !tbaa !0
+  %305 = load i8** %sv_any335, align 8, !tbaa !0
+  %xio_page_len = getelementptr inbounds i8* %305, i64 96
+  %306 = bitcast i8* %xio_page_len to i64*
+  store i64 60, i64* %306, align 8, !tbaa !5
+  br label %sw.epilog354
+
+sw.epilog354:                                     ; preds = %sw.epilog, %sw.bb333, %sw.bb313, %S_new_xpvbm.exit, %sw.bb267, %S_new_xpvcv.exit, %if.end231, %if.end210, %S_new_xpvlv.exit, %sw.bb163, %S_new_xpvnv.exit, %if.end145, %S_new_xpv.exit, %S_new_xrv.exit, %S_new_xnv.exit, %S_new_xiv.exit
+  %mt.addr.0713 = phi i32 [ 15, %sw.bb333 ], [ 14, %sw.bb313 ], [ 8, %S_new_xpvbm.exit ], [ 13, %sw.bb267 ], [ 12, %S_new_xpvcv.exit ], [ 11, %if.end231 ], [ 10, %if.end210 ], [ 9, %S_new_xpvlv.exit ], [ 7, %sw.bb163 ], [ 6, %S_new_xpvnv.exit ], [ 5, %if.end145 ], [ 4, %S_new_xpv.exit ], [ 3, %S_new_xrv.exit ], [ 2, %S_new_xnv.exit ], [ %mt.addr.0, %S_new_xiv.exit ], [ %mt.addr.0, %sw.epilog ]
+  %307 = load i32* %sv_flags5.pre, align 4, !tbaa !3
+  %and356 = and i32 %307, -256
+  %or358 = or i32 %and356, %mt.addr.0713
+  store i32 %or358, i32* %sv_flags5.pre, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end, %sw.epilog354
+  ret i8 1
+}

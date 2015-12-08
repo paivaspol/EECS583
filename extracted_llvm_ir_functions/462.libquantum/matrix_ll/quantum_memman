@@ -1,0 +1,16 @@
+define i64 @quantum_memman(i64 %change) #0 {
+entry:
+  %0 = load i64* @quantum_memman.mem, align 8, !tbaa !0
+  %add = add nsw i64 %0, %change
+  store i64 %add, i64* @quantum_memman.mem, align 8, !tbaa !0
+  %1 = load i64* @quantum_memman.max, align 8, !tbaa !0
+  %cmp = icmp sgt i64 %add, %1
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  store i64 %add, i64* @quantum_memman.max, align 8, !tbaa !0
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  ret i64 %add
+}

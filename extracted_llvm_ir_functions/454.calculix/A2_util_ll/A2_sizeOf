@@ -1,0 +1,48 @@
+define i32 @A2_sizeOf(%struct._A2* %mtx) #0 {
+entry:
+  %cmp = icmp eq %struct._A2* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str, i64 0, i64 0), %struct._A2* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  %.off = add i32 %1, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %if.end7, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([86 x i8]* @.str1, i64 0, i64 0), %struct._A2* %mtx, i32 %1) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end7:                                          ; preds = %if.end
+  switch i32 %1, label %if.end23 [
+    i32 1, label %if.then10
+    i32 2, label %if.then15
+  ]
+
+if.then10:                                        ; preds = %if.end7
+  %nowned = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5
+  %3 = load i32* %nowned, align 4, !tbaa !3
+  %mul = shl i32 %3, 3
+  %add = add i32 %mul, 32
+  br label %if.end23
+
+if.then15:                                        ; preds = %if.end7
+  %nowned16 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5
+  %4 = load i32* %nowned16, align 4, !tbaa !3
+  %mul17 = shl i32 %4, 4
+  %add20 = add i32 %mul17, 32
+  br label %if.end23
+
+if.end23:                                         ; preds = %if.end7, %if.then15, %if.then10
+  %nbytes.0 = phi i32 [ %add, %if.then10 ], [ %add20, %if.then15 ], [ undef, %if.end7 ]
+  ret i32 %nbytes.0
+}

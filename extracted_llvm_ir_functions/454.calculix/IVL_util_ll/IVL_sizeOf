@@ -1,0 +1,56 @@
+define i32 @IVL_sizeOf(%struct._IVL* %ivl) #0 {
+entry:
+  %cmp = icmp eq %struct._IVL* %ivl, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), %struct._IVL* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
+  %1 = load i32* %nlist, align 4, !tbaa !3
+  %cmp1 = icmp sgt i32 %1, 0
+  br i1 %cmp1, label %if.then2, label %if.end26
+
+if.then2:                                         ; preds = %if.end
+  %mul = mul i32 %1, 12
+  %add = add i32 %mul, 48
+  %type = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0
+  %2 = load i32* %type, align 4, !tbaa !3
+  %cmp6 = icmp eq i32 %2, 2
+  br i1 %cmp6, label %if.then8, label %if.else
+
+if.then8:                                         ; preds = %if.then2
+  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4
+  %3 = load i32** %sizes, align 8, !tbaa !0
+  %call10 = tail call i32 @IVsum(i32 %1, i32* %3) #4
+  %mul12 = shl i32 %call10, 2
+  %add14 = add i32 %mul12, %add
+  br label %if.end26
+
+if.else:                                          ; preds = %if.then2
+  %chunk16 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7
+  %chunk.040 = load %struct._Ichunk** %chunk16, align 8
+  %cmp1741 = icmp eq %struct._Ichunk* %chunk.040, null
+  br i1 %cmp1741, label %if.end26, label %for.body
+
+for.body:                                         ; preds = %if.else, %for.body
+  %chunk.043 = phi %struct._Ichunk* [ %chunk.0, %for.body ], [ %chunk.040, %if.else ]
+  %nbytes.042 = phi i32 [ %add23, %for.body ], [ %add, %if.else ]
+  %size = getelementptr inbounds %struct._Ichunk* %chunk.043, i64 0, i32 0
+  %4 = load i32* %size, align 4, !tbaa !3
+  %mul20 = shl i32 %4, 2
+  %add21 = add i32 %nbytes.042, 24
+  %add23 = add i32 %add21, %mul20
+  %next = getelementptr inbounds %struct._Ichunk* %chunk.043, i64 0, i32 3
+  %chunk.0 = load %struct._Ichunk** %next, align 8
+  %cmp17 = icmp eq %struct._Ichunk* %chunk.0, null
+  br i1 %cmp17, label %if.end26, label %for.body
+
+if.end26:                                         ; preds = %if.else, %for.body, %if.then8, %if.end
+  %nbytes.1 = phi i32 [ %add14, %if.then8 ], [ 48, %if.end ], [ %add, %if.else ], [ %add23, %for.body ]
+  ret i32 %nbytes.1
+}

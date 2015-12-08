@@ -1,0 +1,113 @@
+define %struct._IV* @Graph_componentMap(%struct._Graph* %g) #0 {
+entry:
+  %usize = alloca i32, align 4
+  %uadj = alloca i32*, align 8
+  %cmp = icmp eq %struct._Graph* %g, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), %struct._Graph* null) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %nvtx1 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
+  %1 = load i32* %nvtx1, align 4, !tbaa !0
+  %cmp2 = icmp slt i32 %1, 1
+  br i1 %cmp2, label %return, label %for.body.lr.ph
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %call5 = call %struct._IV* @IV_new() #4
+  call void @IV_init(%struct._IV* %call5, i32 %1, i32* null) #4
+  %call6 = call i32* @IV_entries(%struct._IV* %call5) #4
+  %call7 = call i32* @IVinit(i32 %1, i32 -1) #4
+  br label %for.body
+
+for.body:                                         ; preds = %for.inc35, %for.body.lr.ph
+  %indvars.iv73 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next74, %for.inc35 ]
+  %ncomp.070 = phi i32 [ 0, %for.body.lr.ph ], [ %ncomp.1, %for.inc35 ]
+  %arrayidx = getelementptr inbounds i32* %call6, i64 %indvars.iv73
+  %2 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp9 = icmp eq i32 %2, -1
+  br i1 %cmp9, label %if.then10, label %for.inc35
+
+if.then10:                                        ; preds = %for.body
+  store i32 %ncomp.070, i32* %arrayidx, align 4, !tbaa !0
+  %3 = trunc i64 %indvars.iv73 to i32
+  store i32 %3, i32* %call7, align 4, !tbaa !0
+  br label %while.body
+
+while.cond.loopexit:                              ; preds = %for.inc, %while.body
+  %last.1.lcssa = phi i32 [ %last.067, %while.body ], [ %last.2, %for.inc ]
+  %4 = trunc i64 %indvars.iv71 to i32
+  %cmp14 = icmp slt i32 %4, %last.1.lcssa
+  br i1 %cmp14, label %while.cond.loopexit.while.body_crit_edge, label %while.end
+
+while.cond.loopexit.while.body_crit_edge:         ; preds = %while.cond.loopexit
+  %arrayidx16.phi.trans.insert = getelementptr inbounds i32* %call7, i64 %indvars.iv.next72
+  %.pre75 = load i32* %arrayidx16.phi.trans.insert, align 4, !tbaa !0
+  br label %while.body
+
+while.body:                                       ; preds = %while.cond.loopexit.while.body_crit_edge, %if.then10
+  %5 = phi i32 [ %.pre75, %while.cond.loopexit.while.body_crit_edge ], [ %3, %if.then10 ]
+  %indvars.iv71 = phi i64 [ %indvars.iv.next72, %while.cond.loopexit.while.body_crit_edge ], [ 0, %if.then10 ]
+  %last.067 = phi i32 [ %last.1.lcssa, %while.cond.loopexit.while.body_crit_edge ], [ 0, %if.then10 ]
+  %indvars.iv.next72 = add i64 %indvars.iv71, 1
+  call void @Graph_adjAndSize(%struct._Graph* %g, i32 %5, i32* %usize, i32** %uadj) #6
+  %6 = load i32* %usize, align 4, !tbaa !0
+  %cmp1863 = icmp sgt i32 %6, 0
+  br i1 %cmp1863, label %for.body19.lr.ph, label %while.cond.loopexit
+
+for.body19.lr.ph:                                 ; preds = %while.body
+  %7 = load i32** %uadj, align 8, !tbaa !3
+  br label %for.body19
+
+for.body19:                                       ; preds = %for.body19.lr.ph, %for.inc
+  %8 = phi i32 [ %6, %for.body19.lr.ph ], [ %11, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.body19.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %last.164 = phi i32 [ %last.067, %for.body19.lr.ph ], [ %last.2, %for.inc ]
+  %arrayidx21 = getelementptr inbounds i32* %7, i64 %indvars.iv
+  %9 = load i32* %arrayidx21, align 4, !tbaa !0
+  %idxprom22 = sext i32 %9 to i64
+  %arrayidx23 = getelementptr inbounds i32* %call6, i64 %idxprom22
+  %10 = load i32* %arrayidx23, align 4, !tbaa !0
+  %cmp24 = icmp eq i32 %10, -1
+  br i1 %cmp24, label %if.then25, label %for.inc
+
+if.then25:                                        ; preds = %for.body19
+  %inc26 = add nsw i32 %last.164, 1
+  %idxprom27 = sext i32 %inc26 to i64
+  %arrayidx28 = getelementptr inbounds i32* %call7, i64 %idxprom27
+  store i32 %9, i32* %arrayidx28, align 4, !tbaa !0
+  store i32 %ncomp.070, i32* %arrayidx23, align 4, !tbaa !0
+  %.pre = load i32* %usize, align 4, !tbaa !0
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body19, %if.then25
+  %11 = phi i32 [ %.pre, %if.then25 ], [ %8, %for.body19 ]
+  %last.2 = phi i32 [ %inc26, %if.then25 ], [ %last.164, %for.body19 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp18 = icmp slt i32 %12, %11
+  br i1 %cmp18, label %for.body19, label %while.cond.loopexit
+
+while.end:                                        ; preds = %while.cond.loopexit
+  %inc33 = add nsw i32 %ncomp.070, 1
+  br label %for.inc35
+
+for.inc35:                                        ; preds = %for.body, %while.end
+  %ncomp.1 = phi i32 [ %inc33, %while.end ], [ %ncomp.070, %for.body ]
+  %indvars.iv.next74 = add i64 %indvars.iv73, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next74 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %1
+  br i1 %exitcond, label %for.end37, label %for.body
+
+for.end37:                                        ; preds = %for.inc35
+  call void @IVfree(i32* %call7) #4
+  br label %return
+
+return:                                           ; preds = %if.end, %for.end37
+  %retval.0 = phi %struct._IV* [ %call5, %for.end37 ], [ null, %if.end ]
+  ret %struct._IV* %retval.0
+}

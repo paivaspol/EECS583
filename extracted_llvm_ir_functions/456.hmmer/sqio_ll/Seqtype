@@ -1,0 +1,122 @@
+define i32 @Seqtype(i8* nocapture %seq) #0 {
+entry:
+  %0 = load i8* %seq, align 1, !tbaa !1
+  %cmp101 = icmp eq i8 %0, 0
+  br i1 %cmp101, label %return, label %for.body
+
+for.body:                                         ; preds = %entry, %for.inc
+  %1 = phi i8 [ %4, %for.inc ], [ %0, %entry ]
+  %no.0109 = phi i32 [ %no.2, %for.inc ], [ 0, %entry ]
+  %aa.0108 = phi i32 [ %aa.2, %for.inc ], [ 0, %entry ]
+  %na.0107 = phi i32 [ %na.2, %for.inc ], [ 0, %entry ]
+  %nu.0106 = phi i32 [ %nu.2, %for.inc ], [ 0, %entry ]
+  %nt.0105 = phi i32 [ %nt.2, %for.inc ], [ 0, %entry ]
+  %po.0104 = phi i32 [ %po.2, %for.inc ], [ 0, %entry ]
+  %saw.0103 = phi i32 [ %saw.1, %for.inc ], [ 0, %entry ]
+  %seq.addr.0102 = phi i8* [ %incdec.ptr, %for.inc ], [ %seq, %entry ]
+  %conv = sext i8 %1 to i32
+  %call = tail call i32 @sre_toupper(i32 %conv) #8
+  %sext = shl i32 %call, 24
+  %conv6 = ashr exact i32 %sext, 24
+  switch i32 %conv6, label %if.then [
+    i32 32, label %for.inc
+    i32 46, label %for.inc
+    i32 95, label %for.inc
+    i32 45, label %for.inc
+    i32 126, label %for.inc
+  ]
+
+if.then:                                          ; preds = %for.body
+  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([7 x i8]* @.str112, i64 0, i64 0), i32 %conv6, i64 7)
+  %tobool = icmp eq i8* %memchr, null
+  br i1 %tobool, label %if.else, label %if.then26
+
+if.then26:                                        ; preds = %if.then
+  %inc = add nsw i32 %po.0104, 1
+  br label %if.end60
+
+if.else:                                          ; preds = %if.then
+  %memchr98 = tail call i8* @memchr(i8* getelementptr inbounds ([7 x i8]* @.str111, i64 0, i64 0), i32 %conv6, i64 7)
+  %tobool29 = icmp eq i8* %memchr98, null
+  br i1 %tobool29, label %if.else44, label %if.then30
+
+if.then30:                                        ; preds = %if.else
+  %inc31 = add nsw i32 %na.0107, 1
+  switch i32 %conv6, label %if.end60 [
+    i32 84, label %if.then35
+    i32 85, label %if.then41
+  ]
+
+if.then35:                                        ; preds = %if.then30
+  %inc36 = add nsw i32 %nt.0105, 1
+  br label %if.end60
+
+if.then41:                                        ; preds = %if.then30
+  %inc42 = add nsw i32 %nu.0106, 1
+  br label %if.end60
+
+if.else44:                                        ; preds = %if.else
+  %memchr99 = tail call i8* @memchr(i8* getelementptr inbounds ([25 x i8]* @.str110, i64 0, i64 0), i32 %conv6, i64 25)
+  %tobool47 = icmp eq i8* %memchr99, null
+  br i1 %tobool47, label %if.else50, label %if.then48
+
+if.then48:                                        ; preds = %if.else44
+  %inc49 = add nsw i32 %aa.0108, 1
+  br label %if.end60
+
+if.else50:                                        ; preds = %if.else44
+  %idxprom = sext i32 %conv6 to i64
+  %call52 = tail call i16** @__ctype_b_loc() #10
+  %2 = load i16** %call52, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds i16* %2, i64 %idxprom
+  %3 = load i16* %arrayidx, align 2, !tbaa !4
+  %and = lshr i16 %3, 10
+  %and.lobit = and i16 %and, 1
+  %inc56 = zext i16 %and.lobit to i32
+  %no.0.inc56 = add nsw i32 %inc56, %no.0109
+  br label %if.end60
+
+if.end60:                                         ; preds = %if.else50, %if.then30, %if.then41, %if.then35, %if.then48, %if.then26
+  %po.1 = phi i32 [ %inc, %if.then26 ], [ %po.0104, %if.then35 ], [ %po.0104, %if.then41 ], [ %po.0104, %if.then48 ], [ %po.0104, %if.then30 ], [ %po.0104, %if.else50 ]
+  %nt.1 = phi i32 [ %nt.0105, %if.then26 ], [ %inc36, %if.then35 ], [ %nt.0105, %if.then41 ], [ %nt.0105, %if.then48 ], [ %nt.0105, %if.then30 ], [ %nt.0105, %if.else50 ]
+  %nu.1 = phi i32 [ %nu.0106, %if.then26 ], [ %nu.0106, %if.then35 ], [ %inc42, %if.then41 ], [ %nu.0106, %if.then48 ], [ %nu.0106, %if.then30 ], [ %nu.0106, %if.else50 ]
+  %na.1 = phi i32 [ %na.0107, %if.then26 ], [ %inc31, %if.then35 ], [ %inc31, %if.then41 ], [ %na.0107, %if.then48 ], [ %inc31, %if.then30 ], [ %na.0107, %if.else50 ]
+  %aa.1 = phi i32 [ %aa.0108, %if.then26 ], [ %aa.0108, %if.then35 ], [ %aa.0108, %if.then41 ], [ %inc49, %if.then48 ], [ %aa.0108, %if.then30 ], [ %aa.0108, %if.else50 ]
+  %no.1 = phi i32 [ %no.0109, %if.then26 ], [ %no.0109, %if.then35 ], [ %no.0109, %if.then41 ], [ %no.0109, %if.then48 ], [ %no.0109, %if.then30 ], [ %no.0.inc56, %if.else50 ]
+  %inc61 = add nsw i32 %saw.0103, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body, %if.end60
+  %saw.1 = phi i32 [ %saw.0103, %for.body ], [ %inc61, %if.end60 ], [ %saw.0103, %for.body ], [ %saw.0103, %for.body ], [ %saw.0103, %for.body ], [ %saw.0103, %for.body ]
+  %po.2 = phi i32 [ %po.0104, %for.body ], [ %po.1, %if.end60 ], [ %po.0104, %for.body ], [ %po.0104, %for.body ], [ %po.0104, %for.body ], [ %po.0104, %for.body ]
+  %nt.2 = phi i32 [ %nt.0105, %for.body ], [ %nt.1, %if.end60 ], [ %nt.0105, %for.body ], [ %nt.0105, %for.body ], [ %nt.0105, %for.body ], [ %nt.0105, %for.body ]
+  %nu.2 = phi i32 [ %nu.0106, %for.body ], [ %nu.1, %if.end60 ], [ %nu.0106, %for.body ], [ %nu.0106, %for.body ], [ %nu.0106, %for.body ], [ %nu.0106, %for.body ]
+  %na.2 = phi i32 [ %na.0107, %for.body ], [ %na.1, %if.end60 ], [ %na.0107, %for.body ], [ %na.0107, %for.body ], [ %na.0107, %for.body ], [ %na.0107, %for.body ]
+  %aa.2 = phi i32 [ %aa.0108, %for.body ], [ %aa.1, %if.end60 ], [ %aa.0108, %for.body ], [ %aa.0108, %for.body ], [ %aa.0108, %for.body ], [ %aa.0108, %for.body ]
+  %no.2 = phi i32 [ %no.0109, %for.body ], [ %no.1, %if.end60 ], [ %no.0109, %for.body ], [ %no.0109, %for.body ], [ %no.0109, %for.body ], [ %no.0109, %for.body ]
+  %incdec.ptr = getelementptr inbounds i8* %seq.addr.0102, i64 1
+  %4 = load i8* %incdec.ptr, align 1, !tbaa !1
+  %cmp = icmp ne i8 %4, 0
+  %cmp2 = icmp slt i32 %saw.1, 300
+  %or.cond = and i1 %cmp, %cmp2
+  br i1 %or.cond, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  %cmp63 = icmp sgt i32 %no.2, 0
+  br i1 %cmp63, label %return, label %if.else66
+
+if.else66:                                        ; preds = %for.end
+  %cmp67 = icmp slt i32 %po.2, 1
+  %cmp71 = icmp sgt i32 %na.2, %aa.2
+  %or.cond100 = and i1 %cmp67, %cmp71
+  br i1 %or.cond100, label %if.then73, label %return
+
+if.then73:                                        ; preds = %if.else66
+  %cmp74 = icmp sgt i32 %nu.2, %nt.2
+  %. = select i1 %cmp74, i32 2, i32 1
+  br label %return
+
+return:                                           ; preds = %entry, %if.else66, %if.then73, %for.end
+  %retval.0 = phi i32 [ 0, %for.end ], [ 3, %if.else66 ], [ %., %if.then73 ], [ 3, %entry ]
+  ret i32 %retval.0
+}

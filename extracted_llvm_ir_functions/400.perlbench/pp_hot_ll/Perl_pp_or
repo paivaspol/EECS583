@@ -1,0 +1,91 @@
+define %struct.op* @Perl_pp_or() #0 {
+entry:
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.sv** %0, align 8, !tbaa !0
+  %tobool = icmp eq %struct.sv* %1, null
+  br i1 %tobool, label %if.else, label %cond.false
+
+cond.false:                                       ; preds = %entry
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 262144
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %cond.false11, label %cond.true2
+
+cond.true2:                                       ; preds = %cond.false
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %4 = bitcast i8* %3 to %struct.xpv*
+  store %struct.xpv* %4, %struct.xpv** @PL_Xpv, align 8, !tbaa !0
+  %tobool3 = icmp eq i8* %3, null
+  br i1 %tobool3, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %cond.true2
+  %xpv_cur = getelementptr inbounds i8* %3, i64 8
+  %5 = bitcast i8* %xpv_cur to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  %cmp = icmp ugt i64 %6, 1
+  br i1 %cmp, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %tobool5 = icmp eq i64 %6, 0
+  br i1 %tobool5, label %if.else, label %land.lhs.true6
+
+land.lhs.true6:                                   ; preds = %lor.lhs.false
+  %xpv_pv = bitcast i8* %3 to i8**
+  %7 = load i8** %xpv_pv, align 8, !tbaa !0
+  %8 = load i8* %7, align 1, !tbaa !1
+  %cmp7 = icmp eq i8 %8, 48
+  br i1 %cmp7, label %if.else, label %if.then
+
+cond.false11:                                     ; preds = %cond.false
+  %and13 = and i32 %2, 65536
+  %tobool14 = icmp eq i32 %and13, 0
+  br i1 %tobool14, label %cond.false19, label %cond.true15
+
+cond.true15:                                      ; preds = %cond.false11
+  %sv_any16 = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %9 = load i8** %sv_any16, align 8, !tbaa !0
+  %xiv_iv = getelementptr inbounds i8* %9, i64 24
+  %10 = bitcast i8* %xiv_iv to i64*
+  %11 = load i64* %10, align 8, !tbaa !4
+  %cmp17 = icmp eq i64 %11, 0
+  br i1 %cmp17, label %if.else, label %if.then
+
+cond.false19:                                     ; preds = %cond.false11
+  %and21 = and i32 %2, 131072
+  %tobool22 = icmp eq i32 %and21, 0
+  br i1 %tobool22, label %cond.false27, label %cond.true23
+
+cond.true23:                                      ; preds = %cond.false19
+  %sv_any24 = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %12 = load i8** %sv_any24, align 8, !tbaa !0
+  %xnv_nv = getelementptr inbounds i8* %12, i64 32
+  %13 = bitcast i8* %xnv_nv to double*
+  %14 = load double* %13, align 8, !tbaa !5
+  %cmp25 = fcmp une double %14, 0.000000e+00
+  br i1 %cmp25, label %if.then, label %if.else
+
+cond.false27:                                     ; preds = %cond.false19
+  %call = tail call signext i8 @Perl_sv_2bool(%struct.sv* %1) #8
+  %tobool29 = icmp eq i8 %call, 0
+  br i1 %tobool29, label %if.else, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true6, %cond.true15, %cond.false27, %land.lhs.true, %cond.true23
+  store %struct.sv** %0, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %15 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %15, i64 0, i32 0
+  br label %return
+
+if.else:                                          ; preds = %land.lhs.true6, %lor.lhs.false, %cond.true2, %cond.true15, %cond.false27, %entry, %cond.true23
+  %incdec.ptr = getelementptr inbounds %struct.sv** %0, i64 -1
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %16 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %17 = getelementptr inbounds %struct.op* %16, i64 1, i32 1
+  br label %return
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0.in = phi %struct.op** [ %op_next, %if.then ], [ %17, %if.else ]
+  %retval.0 = load %struct.op** %retval.0.in, align 8
+  ret %struct.op* %retval.0
+}

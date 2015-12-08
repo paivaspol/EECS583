@@ -1,0 +1,119 @@
+define i64 @Perl_pad_findmy(i8* %name) #0 {
+entry:
+  %0 = load %struct.av** @PL_comppad_name, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.av* %0, i64 0, i32 0
+  %1 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_array = getelementptr inbounds %struct.xpvav* %1, i64 0, i32 0
+  %2 = load i8** %xav_array, align 8, !tbaa !3
+  %3 = bitcast i8* %2 to %struct.sv**
+  %4 = load i32* @PL_cop_seqmax, align 4, !tbaa !0
+  %xav_fill = getelementptr inbounds %struct.xpvav* %1, i64 0, i32 1
+  %5 = load i64* %xav_fill, align 8, !tbaa !4
+  %conv = trunc i64 %5 to i32
+  %cmp68 = icmp sgt i32 %conv, 0
+  br i1 %cmp68, label %for.body.lr.ph, label %if.end37
+
+for.body.lr.ph:                                   ; preds = %entry
+  %sext75 = shl i64 %5, 32
+  %6 = ashr exact i64 %sext75, 32
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %6, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %fake_off.070 = phi i32 [ 0, %for.body.lr.ph ], [ %fake_off.1, %for.inc ]
+  %our_off.069 = phi i32 [ 0, %for.body.lr.ph ], [ %our_off.1, %for.inc ]
+  %arrayidx = getelementptr inbounds %struct.sv** %3, i64 %indvars.iv
+  %7 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %tobool = icmp eq %struct.sv* %7, null
+  %cmp3 = icmp eq %struct.sv* %7, @PL_sv_undef
+  %or.cond = or i1 %tobool, %cmp3
+  br i1 %or.cond, label %for.inc, label %lor.lhs.false5
+
+lor.lhs.false5:                                   ; preds = %for.body
+  %sv_any6 = getelementptr inbounds %struct.sv* %7, i64 0, i32 0
+  %8 = load i8** %sv_any6, align 8, !tbaa !3
+  %xpv_pv = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv, align 8, !tbaa !3
+  %call = tail call i32 @strcmp(i8* %9, i8* %name) #3
+  %tobool7 = icmp eq i32 %call, 0
+  br i1 %tobool7, label %if.end, label %for.inc
+
+if.end:                                           ; preds = %lor.lhs.false5
+  %sv_flags = getelementptr inbounds %struct.sv* %7, i64 0, i32 2
+  %10 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %10, 1048576
+  %tobool8 = icmp eq i32 %and, 0
+  %11 = trunc i64 %indvars.iv to i32
+  br i1 %tobool8, label %if.else, label %for.inc
+
+if.else:                                          ; preds = %if.end
+  %xnv_nv = getelementptr inbounds i8* %8, i64 32
+  %12 = bitcast i8* %xnv_nv to double*
+  %13 = load double* %12, align 8, !tbaa !6
+  %call11 = tail call i32 @Perl_cast_ulong(double %13) #3
+  %cmp12 = icmp ugt i32 %4, %call11
+  br i1 %cmp12, label %land.lhs.true, label %if.else20
+
+land.lhs.true:                                    ; preds = %if.else
+  %14 = load i8** %sv_any6, align 8, !tbaa !3
+  %xiv_iv = getelementptr inbounds i8* %14, i64 24
+  %15 = bitcast i8* %xiv_iv to i64*
+  %16 = load i64* %15, align 8, !tbaa !4
+  %conv15 = trunc i64 %16 to i32
+  %cmp16 = icmp ugt i32 %4, %conv15
+  br i1 %cmp16, label %if.else20, label %return
+
+if.else20:                                        ; preds = %land.lhs.true, %if.else
+  %17 = load i32* %sv_flags, align 4, !tbaa !0
+  %tobool23 = icmp slt i32 %17, 0
+  br i1 %tobool23, label %land.lhs.true24, label %for.inc
+
+land.lhs.true24:                                  ; preds = %if.else20
+  %18 = load i8** %sv_any6, align 8, !tbaa !3
+  %xnv_nv26 = getelementptr inbounds i8* %18, i64 32
+  %19 = bitcast i8* %xnv_nv26 to double*
+  %20 = load double* %19, align 8, !tbaa !6
+  %call27 = tail call i32 @Perl_cast_ulong(double %20) #3
+  %cmp28 = icmp eq i32 %call27, 999999999
+  %off.0.our_off.0 = select i1 %cmp28, i32 %11, i32 %our_off.069
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true24, %if.end, %lor.lhs.false5, %if.else20, %for.body
+  %our_off.1 = phi i32 [ %our_off.069, %for.body ], [ %our_off.069, %lor.lhs.false5 ], [ %our_off.069, %if.else20 ], [ %our_off.069, %if.end ], [ %off.0.our_off.0, %land.lhs.true24 ]
+  %fake_off.1 = phi i32 [ %fake_off.070, %for.body ], [ %fake_off.070, %lor.lhs.false5 ], [ %fake_off.070, %if.else20 ], [ %11, %if.end ], [ %fake_off.070, %land.lhs.true24 ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %21 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp sgt i32 %21, 0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  %tobool34 = icmp eq i32 %fake_off.1, 0
+  br i1 %tobool34, label %if.end37, label %if.then35
+
+if.then35:                                        ; preds = %for.end
+  %conv36 = sext i32 %fake_off.1 to i64
+  br label %return
+
+if.end37:                                         ; preds = %entry, %for.end
+  %our_off.0.lcssa77 = phi i32 [ %our_off.1, %for.end ], [ 0, %entry ]
+  %22 = load %struct.cv** @PL_compcv, align 8, !tbaa !3
+  %call38 = tail call fastcc i64 @S_pad_findlex(i8* %name, i64 0, %struct.cv* %22) #4
+  %conv39 = trunc i64 %call38 to i32
+  %tobool40 = icmp eq i32 %conv39, 0
+  br i1 %tobool40, label %if.end43, label %if.then41
+
+if.then41:                                        ; preds = %if.end37
+  %sext = shl i64 %call38, 32
+  %conv42 = ashr exact i64 %sext, 32
+  br label %return
+
+if.end43:                                         ; preds = %if.end37
+  %tobool44 = icmp eq i32 %our_off.0.lcssa77, 0
+  %conv46 = sext i32 %our_off.0.lcssa77 to i64
+  %.conv46 = select i1 %tobool44, i64 -1, i64 %conv46
+  ret i64 %.conv46
+
+return:                                           ; preds = %land.lhs.true, %if.then41, %if.then35
+  %retval.0 = phi i64 [ %conv36, %if.then35 ], [ %conv42, %if.then41 ], [ %indvars.iv, %land.lhs.true ]
+  ret i64 %retval.0
+}

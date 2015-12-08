@@ -1,0 +1,14 @@
+define void @xexit(i32 %code) #0 {
+entry:
+  %0 = load void ()** @_xexit_cleanup, align 8, !tbaa !0
+  %cmp = icmp eq void ()* %0, null
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  tail call void %0() #2
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  tail call void @exit(i32 %code) #3
+  unreachable
+}

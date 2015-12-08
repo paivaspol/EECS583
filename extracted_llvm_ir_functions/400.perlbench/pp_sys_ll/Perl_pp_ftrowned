@@ -1,0 +1,47 @@
+define %struct.op* @Perl_pp_ftrowned() #0 {
+entry:
+  %call = tail call i32 @Perl_my_stat() #6
+  %0 = load %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %cmp = icmp slt i32 %call, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %incdec.ptr = getelementptr inbounds %struct.sv** %0, i64 1
+  store %struct.sv* @PL_sv_undef, %struct.sv** %incdec.ptr, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %1 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next = getelementptr inbounds %struct.op* %1, i64 0, i32 0
+  br label %return
+
+if.end:                                           ; preds = %entry
+  %2 = load i32* getelementptr inbounds (%struct.stat* @PL_statcache, i64 0, i32 4), align 4, !tbaa !4
+  %3 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_type = getelementptr inbounds %struct.op* %3, i64 0, i32 4
+  %4 = load i16* %op_type, align 2, !tbaa !5
+  %cmp1 = icmp eq i16 %4, 243
+  %5 = load i32* @PL_euid, align 4, !tbaa !4
+  %6 = load i32* @PL_uid, align 4, !tbaa !4
+  %cond = select i1 %cmp1, i32 %5, i32 %6
+  %cmp3 = icmp eq i32 %2, %cond
+  %incdec.ptr6 = getelementptr inbounds %struct.sv** %0, i64 1
+  br i1 %cmp3, label %if.then5, label %if.end8
+
+if.then5:                                         ; preds = %if.end
+  store %struct.sv* @PL_sv_yes, %struct.sv** %incdec.ptr6, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr6, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %7 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next7 = getelementptr inbounds %struct.op* %7, i64 0, i32 0
+  br label %return
+
+if.end8:                                          ; preds = %if.end
+  store %struct.sv* @PL_sv_no, %struct.sv** %incdec.ptr6, align 8, !tbaa !0
+  store %struct.sv** %incdec.ptr6, %struct.sv*** @PL_stack_sp, align 8, !tbaa !0
+  %8 = load %struct.op** @PL_op, align 8, !tbaa !0
+  %op_next10 = getelementptr inbounds %struct.op* %8, i64 0, i32 0
+  br label %return
+
+return:                                           ; preds = %if.end8, %if.then5, %if.then
+  %retval.0.in = phi %struct.op** [ %op_next, %if.then ], [ %op_next7, %if.then5 ], [ %op_next10, %if.end8 ]
+  %retval.0 = load %struct.op** %retval.0.in, align 8
+  ret %struct.op* %retval.0
+}

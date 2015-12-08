@@ -1,0 +1,141 @@
+define internal fastcc i32 @S_regrepeat_hard(%struct.regnode* %p, i32 %max, i32* nocapture %lp) #0 {
+entry:
+  %0 = load i8** @PL_regeol, align 8, !tbaa !3
+  %tobool = icmp eq i32 %max, 0
+  br i1 %tobool, label %return, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load i8** @PL_reginput, align 8, !tbaa !3
+  %2 = load i8* @PL_reg_match_utf8, align 1, !tbaa !1
+  %tobool1 = icmp eq i8 %2, 0
+  br i1 %tobool1, label %while.cond20.preheader, label %while.cond
+
+while.cond20.preheader:                           ; preds = %if.end
+  %sub.ptr.rhs.cast = ptrtoint i8* %1 to i64
+  %cmp32 = icmp eq i32 %max, 32767
+  br label %while.cond20.outer
+
+while.cond:                                       ; preds = %if.end, %if.end14.while.cond_crit_edge
+  %3 = phi i8* [ %.pre122, %if.end14.while.cond_crit_edge ], [ %1, %if.end ]
+  %scan.0 = phi i8* [ %3, %if.end14.while.cond_crit_edge ], [ null, %if.end ]
+  %start.0 = phi i8* [ %start.2, %if.end14.while.cond_crit_edge ], [ %1, %if.end ]
+  %count.0 = phi i32 [ %inc, %if.end14.while.cond_crit_edge ], [ 0, %if.end ]
+  %res.0 = phi i32 [ %call, %if.end14.while.cond_crit_edge ], [ 1, %if.end ]
+  %cmp = icmp ult i8* %3, %0
+  br i1 %cmp, label %land.rhs, label %if.end51
+
+land.rhs:                                         ; preds = %while.cond
+  %call = tail call fastcc i32 @S_regmatch(%struct.regnode* %p) #5
+  %tobool3 = icmp eq i32 %call, 0
+  br i1 %tobool3, label %if.then53, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %inc = add nsw i32 %count.0, 1
+  %tobool4 = icmp eq i32 %count.0, 0
+  br i1 %tobool4, label %while.cond6.preheader, label %if.end14
+
+while.cond6.preheader:                            ; preds = %while.body
+  %4 = load i8** @PL_reginput, align 8, !tbaa !3
+  %cmp790 = icmp ult i8* %start.0, %4
+  br i1 %cmp790, label %while.body8, label %while.end.thread
+
+while.end.thread:                                 ; preds = %while.cond6.preheader
+  store i32 0, i32* %lp, align 4, !tbaa !0
+  br label %return
+
+while.body8:                                      ; preds = %while.cond6.preheader, %while.body8
+  %l.092 = phi i32 [ %inc9, %while.body8 ], [ 0, %while.cond6.preheader ]
+  %start.191 = phi i8* [ %add.ptr, %while.body8 ], [ %start.0, %while.cond6.preheader ]
+  %inc9 = add nsw i32 %l.092, 1
+  %5 = load i8* %start.191, align 1, !tbaa !1
+  %idxprom = zext i8 %5 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %6 = load i8* %arrayidx, align 1, !tbaa !1
+  %idx.ext = zext i8 %6 to i64
+  %add.ptr = getelementptr inbounds i8* %start.191, i64 %idx.ext
+  %cmp7 = icmp ult i8* %add.ptr, %4
+  br i1 %cmp7, label %while.body8, label %while.end
+
+while.end:                                        ; preds = %while.body8
+  store i32 %inc9, i32* %lp, align 4, !tbaa !0
+  %cmp10 = icmp eq i32 %inc9, 0
+  br i1 %cmp10, label %return, label %if.end14
+
+if.end14:                                         ; preds = %while.body, %while.end
+  %start.2 = phi i8* [ %start.0, %while.body ], [ %add.ptr, %while.end ]
+  %cmp15 = icmp eq i32 %inc, %max
+  br i1 %cmp15, label %return, label %if.end14.while.cond_crit_edge
+
+if.end14.while.cond_crit_edge:                    ; preds = %if.end14
+  %.pre122 = load i8** @PL_reginput, align 8, !tbaa !3
+  br label %while.cond
+
+while.cond20:                                     ; preds = %while.body27, %while.cond20.outer
+  %7 = phi i8* [ %9, %while.cond20.outer ], [ %8, %while.body27 ]
+  %scan.1 = phi i8* [ %scan.1.ph, %while.cond20.outer ], [ %7, %while.body27 ]
+  %count.1 = phi i32 [ %count.1.ph, %while.cond20.outer ], [ %inc28, %while.body27 ]
+  %res.1 = phi i32 [ %res.1.ph, %while.cond20.outer ], [ %call24, %while.body27 ]
+  %cmp21 = icmp ult i8* %7, %loceol.0.ph
+  br i1 %cmp21, label %land.rhs23, label %if.end51
+
+land.rhs23:                                       ; preds = %while.cond20
+  %call24 = tail call fastcc i32 @S_regmatch(%struct.regnode* %p) #5
+  %tobool25 = icmp eq i32 %call24, 0
+  br i1 %tobool25, label %if.then53, label %while.body27
+
+while.body27:                                     ; preds = %land.rhs23
+  %inc28 = add nsw i32 %count.1, 1
+  %tobool29 = icmp eq i32 %count.1, 0
+  %8 = load i8** @PL_reginput, align 8, !tbaa !3
+  br i1 %tobool29, label %if.then30, label %while.cond20
+
+if.then30:                                        ; preds = %while.body27
+  %sub.ptr.lhs.cast = ptrtoint i8* %8 to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  %conv31 = trunc i64 %sub.ptr.sub to i32
+  store i32 %conv31, i32* %lp, align 4, !tbaa !0
+  br i1 %cmp32, label %if.end44, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then30
+  %mul = mul nsw i32 %conv31, %max
+  %conv34 = sext i32 %mul to i64
+  %sub.ptr.lhs.cast35 = ptrtoint i8* %loceol.0.ph to i64
+  %sub.ptr.rhs.cast36 = ptrtoint i8* %7 to i64
+  %sub.ptr.sub37 = sub i64 %sub.ptr.lhs.cast35, %sub.ptr.rhs.cast36
+  %cmp38 = icmp slt i64 %conv34, %sub.ptr.sub37
+  br i1 %cmp38, label %if.then40, label %if.end44
+
+if.then40:                                        ; preds = %land.lhs.true
+  %add.ptr43 = getelementptr inbounds i8* %7, i64 %conv34
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.then30, %if.then40, %land.lhs.true
+  %loceol.1 = phi i8* [ %add.ptr43, %if.then40 ], [ %loceol.0.ph, %land.lhs.true ], [ %loceol.0.ph, %if.then30 ]
+  %cmp45 = icmp eq i32 %conv31, 0
+  br i1 %cmp45, label %return, label %while.cond20.outer
+
+while.cond20.outer:                               ; preds = %while.cond20.preheader, %if.end44
+  %9 = phi i8* [ %8, %if.end44 ], [ %1, %while.cond20.preheader ]
+  %scan.1.ph = phi i8* [ %7, %if.end44 ], [ null, %while.cond20.preheader ]
+  %loceol.0.ph = phi i8* [ %loceol.1, %if.end44 ], [ %0, %while.cond20.preheader ]
+  %count.1.ph = phi i32 [ %inc28, %if.end44 ], [ 0, %while.cond20.preheader ]
+  %res.1.ph = phi i32 [ %call24, %if.end44 ], [ 1, %while.cond20.preheader ]
+  br label %while.cond20
+
+if.end51:                                         ; preds = %while.cond, %while.cond20
+  %scan.2 = phi i8* [ %scan.1, %while.cond20 ], [ %scan.0, %while.cond ]
+  %count.2 = phi i32 [ %count.1, %while.cond20 ], [ %count.0, %while.cond ]
+  %res.2 = phi i32 [ %res.1, %while.cond20 ], [ %res.0, %while.cond ]
+  %tobool52 = icmp eq i32 %res.2, 0
+  br i1 %tobool52, label %if.then53, label %return
+
+if.then53:                                        ; preds = %land.rhs, %land.rhs23, %if.end51
+  %count.280 = phi i32 [ %count.2, %if.end51 ], [ %count.1, %land.rhs23 ], [ %count.0, %land.rhs ]
+  %scan.279 = phi i8* [ %scan.2, %if.end51 ], [ %7, %land.rhs23 ], [ %3, %land.rhs ]
+  store i8* %scan.279, i8** @PL_reginput, align 8, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %if.end14, %while.end, %while.end.thread, %if.end44, %if.then53, %if.end51, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ %count.2, %if.end51 ], [ %count.280, %if.then53 ], [ %max, %if.end44 ], [ %max, %while.end.thread ], [ %max, %while.end ], [ %max, %if.end14 ]
+  ret i32 %retval.0
+}

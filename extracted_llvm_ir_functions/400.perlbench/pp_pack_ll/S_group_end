@@ -1,0 +1,67 @@
+define internal fastcc i8* @S_group_end(i8* %patptr, i8* %patend, i8 signext %ender) #0 {
+entry:
+  %cmp77 = icmp ult i8* %patptr, %patend
+  br i1 %cmp77, label %while.body, label %while.end53
+
+while.body:                                       ; preds = %while.cond.backedge, %entry
+  %patptr.addr.078 = phi i8* [ %patptr, %entry ], [ %patptr.addr.0.be, %while.cond.backedge ]
+  %incdec.ptr = getelementptr inbounds i8* %patptr.addr.078, i64 1
+  %0 = load i8* %patptr.addr.078, align 1, !tbaa !1
+  switch i8 %0, label %if.else [
+    i8 32, label %while.cond.backedge
+    i8 9, label %while.cond.backedge
+    i8 10, label %while.cond.backedge
+    i8 13, label %while.cond.backedge
+    i8 12, label %while.cond.backedge
+  ]
+
+if.else:                                          ; preds = %while.body
+  %cmp20 = icmp eq i8 %0, %ender
+  br i1 %cmp20, label %return, label %if.else23
+
+if.else23:                                        ; preds = %if.else
+  switch i8 %0, label %while.cond.backedge [
+    i8 35, label %while.cond28.preheader
+    i8 40, label %if.then40
+    i8 91, label %if.then46
+  ]
+
+while.cond28.preheader:                           ; preds = %if.else23
+  %cmp2974 = icmp ult i8* %incdec.ptr, %patend
+  br i1 %cmp2974, label %land.rhs, label %while.cond.backedge
+
+while.cond28:                                     ; preds = %land.rhs
+  %cmp29 = icmp ult i8* %incdec.ptr35, %patend
+  br i1 %cmp29, label %land.rhs, label %while.cond.backedge
+
+land.rhs:                                         ; preds = %while.cond28.preheader, %while.cond28
+  %patptr.addr.175 = phi i8* [ %incdec.ptr35, %while.cond28 ], [ %incdec.ptr, %while.cond28.preheader ]
+  %1 = load i8* %patptr.addr.175, align 1, !tbaa !1
+  %cmp32 = icmp eq i8 %1, 10
+  %incdec.ptr35 = getelementptr inbounds i8* %patptr.addr.175, i64 1
+  br i1 %cmp32, label %while.cond.backedge, label %while.cond28
+
+if.then40:                                        ; preds = %if.else23
+  %call = tail call fastcc i8* @S_group_end(i8* %incdec.ptr, i8* %patend, i8 signext 41) #7
+  %add.ptr41 = getelementptr inbounds i8* %call, i64 1
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %while.cond28.preheader, %land.rhs, %while.cond28, %if.then40, %if.then46, %while.body, %while.body, %while.body, %while.body, %while.body, %if.else23
+  %patptr.addr.0.be = phi i8* [ %incdec.ptr, %while.body ], [ %add.ptr41, %if.then40 ], [ %add.ptr48, %if.then46 ], [ %incdec.ptr, %while.body ], [ %incdec.ptr, %while.body ], [ %incdec.ptr, %while.body ], [ %incdec.ptr, %while.body ], [ %incdec.ptr, %if.else23 ], [ %incdec.ptr, %while.cond28.preheader ], [ %patptr.addr.175, %land.rhs ], [ %incdec.ptr35, %while.cond28 ]
+  %cmp = icmp ult i8* %patptr.addr.0.be, %patend
+  br i1 %cmp, label %while.body, label %while.end53
+
+if.then46:                                        ; preds = %if.else23
+  %call47 = tail call fastcc i8* @S_group_end(i8* %incdec.ptr, i8* %patend, i8 signext 93) #7
+  %add.ptr48 = getelementptr inbounds i8* %call47, i64 1
+  br label %while.cond.backedge
+
+while.end53:                                      ; preds = %while.cond.backedge, %entry
+  %conv54 = sext i8 %ender to i32
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([49 x i8]* @.str31, i64 0, i64 0), i32 %conv54) #8
+  br label %return
+
+return:                                           ; preds = %if.else, %while.end53
+  %retval.0 = phi i8* [ null, %while.end53 ], [ %patptr.addr.078, %if.else ]
+  ret i8* %retval.0
+}

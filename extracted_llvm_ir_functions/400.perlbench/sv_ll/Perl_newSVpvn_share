@@ -1,0 +1,119 @@
+define %struct.sv* @Perl_newSVpvn_share(i8* %src, i32 %len, i32 %hash) #0 {
+entry:
+  %is_utf8 = alloca i8, align 1
+  %tmplen = alloca i64, align 8
+  store i8 0, i8* %is_utf8, align 1, !tbaa !1
+  %cmp = icmp slt i32 %len, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %sub = sub nsw i32 0, %len
+  %conv = sext i32 %sub to i64
+  store i64 %conv, i64* %tmplen, align 8, !tbaa !5
+  store i8 1, i8* %is_utf8, align 1, !tbaa !1
+  %call = call i8* @Perl_bytes_from_utf8(i8* %src, i64* %tmplen, i8* %is_utf8) #8
+  %0 = load i64* %tmplen, align 8, !tbaa !5
+  %conv1 = trunc i64 %0 to i32
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %len.addr.0 = phi i32 [ %conv1, %if.then ], [ %len, %entry ]
+  %src.addr.0 = phi i8* [ %call, %if.then ], [ %src, %entry ]
+  %tobool = icmp eq i32 %hash, 0
+  br i1 %tobool, label %while.cond.preheader, label %if.end12
+
+while.cond.preheader:                             ; preds = %if.end
+  %tobool370 = icmp eq i32 %len.addr.0, 0
+  br i1 %tobool370, label %while.end, label %while.body
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %hash_PeRlHaSh.073 = phi i32 [ %xor, %while.body ], [ 0, %while.cond.preheader ]
+  %i_PeRlHaSh.072 = phi i32 [ %dec, %while.body ], [ %len.addr.0, %while.cond.preheader ]
+  %s_PeRlHaSh.071 = phi i8* [ %incdec.ptr, %while.body ], [ %src.addr.0, %while.cond.preheader ]
+  %dec = add nsw i32 %i_PeRlHaSh.072, -1
+  %incdec.ptr = getelementptr inbounds i8* %s_PeRlHaSh.071, i64 1
+  %1 = load i8* %s_PeRlHaSh.071, align 1, !tbaa !1
+  %conv4 = zext i8 %1 to i32
+  %add = add i32 %conv4, %hash_PeRlHaSh.073
+  %add5 = mul i32 %add, 1025
+  %shr = lshr i32 %add5, 6
+  %xor = xor i32 %shr, %add5
+  %tobool3 = icmp eq i32 %dec, 0
+  br i1 %tobool3, label %while.cond.while.end_crit_edge, label %while.body
+
+while.cond.while.end_crit_edge:                   ; preds = %while.body
+  %phitmp = mul i32 %xor, 9
+  br label %while.end
+
+while.end:                                        ; preds = %while.cond.while.end_crit_edge, %while.cond.preheader
+  %hash_PeRlHaSh.0.lcssa = phi i32 [ %phitmp, %while.cond.while.end_crit_edge ], [ 0, %while.cond.preheader ]
+  %shr8 = lshr i32 %hash_PeRlHaSh.0.lcssa, 11
+  %xor9 = xor i32 %shr8, %hash_PeRlHaSh.0.lcssa
+  %add11 = mul i32 %xor9, 32769
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end, %while.end
+  %hash.addr.0 = phi i32 [ %hash, %if.end ], [ %add11, %while.end ]
+  %2 = load %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %tobool13 = icmp eq %struct.sv* %2, null
+  br i1 %tobool13, label %if.else, label %if.then14
+
+if.then14:                                        ; preds = %if.end12
+  %sv_any = getelementptr inbounds %struct.sv* %2, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !0
+  %4 = bitcast i8* %3 to %struct.sv*
+  store %struct.sv* %4, %struct.sv** @PL_sv_root, align 8, !tbaa !0
+  %5 = load i32* @PL_sv_count, align 4, !tbaa !3
+  %inc = add nsw i32 %5, 1
+  store i32 %inc, i32* @PL_sv_count, align 4, !tbaa !3
+  br label %if.end16
+
+if.else:                                          ; preds = %if.end12
+  %call15 = call fastcc %struct.sv* @S_more_sv() #7
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else, %if.then14
+  %sv.0 = phi %struct.sv* [ %2, %if.then14 ], [ %call15, %if.else ]
+  %sv_any17 = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 0
+  store i8* null, i8** %sv_any17, align 8, !tbaa !0
+  %sv_refcnt = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 1
+  store i32 1, i32* %sv_refcnt, align 4, !tbaa !3
+  %sv_flags = getelementptr inbounds %struct.sv* %sv.0, i64 0, i32 2
+  store i32 0, i32* %sv_flags, align 4, !tbaa !3
+  %call18 = call signext i8 @Perl_sv_upgrade(%struct.sv* %sv.0, i32 5) #7
+  %6 = load i8* %is_utf8, align 1, !tbaa !1
+  %tobool20 = icmp ne i8 %6, 0
+  %sub21 = sub nsw i32 0, %len.addr.0
+  %cond = select i1 %tobool20, i32 %sub21, i32 %len.addr.0
+  %call22 = call %struct.hek* @Perl_share_hek(i8* %src.addr.0, i32 %cond, i32 %hash.addr.0) #8
+  %arraydecay = getelementptr inbounds %struct.hek* %call22, i64 0, i32 2, i64 0
+  %7 = load i8** %sv_any17, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %7 to i8**
+  store i8* %arraydecay, i8** %xpv_pv, align 8, !tbaa !0
+  %conv24 = sext i32 %len.addr.0 to i64
+  %8 = load i8** %sv_any17, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %8, i64 8
+  %9 = bitcast i8* %xpv_cur to i64*
+  store i64 %conv24, i64* %9, align 8, !tbaa !5
+  %conv26 = zext i32 %hash.addr.0 to i64
+  %xuv_uv = getelementptr inbounds i8* %8, i64 24
+  %10 = bitcast i8* %xuv_uv to i64*
+  store i64 %conv26, i64* %10, align 8, !tbaa !5
+  %xpv_len = getelementptr inbounds i8* %8, i64 16
+  %11 = bitcast i8* %xpv_len to i64*
+  store i64 0, i64* %11, align 8, !tbaa !5
+  %12 = load i32* %sv_flags, align 4, !tbaa !3
+  %or33 = or i32 %12, 76808192
+  store i32 %or33, i32* %sv_flags, align 4, !tbaa !3
+  %13 = load i8* %is_utf8, align 1, !tbaa !1
+  %tobool34 = icmp eq i8 %13, 0
+  br i1 %tobool34, label %if.end38, label %if.then35
+
+if.then35:                                        ; preds = %if.end16
+  %or37 = or i32 %12, 613679104
+  store i32 %or37, i32* %sv_flags, align 4, !tbaa !3
+  br label %if.end38
+
+if.end38:                                         ; preds = %if.end16, %if.then35
+  ret %struct.sv* %sv.0
+}

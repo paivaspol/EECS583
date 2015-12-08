@@ -1,0 +1,27 @@
+define void @PerlIOBase_clearerr(%struct._PerlIO** %f) #1 {
+entry:
+  %tobool = icmp eq %struct._PerlIO** %f, null
+  br i1 %tobool, label %if.end6, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %0 = load %struct._PerlIO** %f, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %0, null
+  br i1 %tobool1, label %if.end6, label %if.then
+
+if.then:                                          ; preds = %land.lhs.true
+  %next = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 0
+  %flags = getelementptr inbounds %struct._PerlIO* %0, i64 0, i32 2
+  %1 = load i32* %flags, align 4, !tbaa !0
+  %and = and i32 %1, -2305
+  store i32 %and, i32* %flags, align 4, !tbaa !0
+  %2 = load %struct._PerlIO** %next, align 8, !tbaa !3
+  %tobool4 = icmp eq %struct._PerlIO* %2, null
+  br i1 %tobool4, label %if.end6, label %if.then5
+
+if.then5:                                         ; preds = %if.then
+  tail call void @Perl_PerlIO_clearerr(%struct._PerlIO** %next) #10
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.then, %land.lhs.true, %entry, %if.then5
+  ret void
+}

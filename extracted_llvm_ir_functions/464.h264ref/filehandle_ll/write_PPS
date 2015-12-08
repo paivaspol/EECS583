@@ -1,0 +1,9 @@
+define i32 @write_PPS(i32 %len, i32 %PPS_id) #4 {
+entry:
+  %call = tail call %struct.NALU_t* @GeneratePic_parameter_set_NALU(i32 %PPS_id) #5
+  %0 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !tbaa !0
+  %call1 = tail call i32 %0(%struct.NALU_t* %call) #5
+  %add = add nsw i32 %call1, %len
+  tail call void @FreeNALU(%struct.NALU_t* %call) #5
+  ret i32 %add
+}

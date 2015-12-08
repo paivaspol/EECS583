@@ -1,0 +1,26 @@
+define double* @DV_first(%struct._DV* %dv) #0 {
+entry:
+  %cmp = icmp eq %struct._DV* %dv, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str10, i64 0, i64 0), %struct._DV* null) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
+  %1 = load i32* %size, align 4, !tbaa !3
+  %cmp1 = icmp eq i32 %1, 0
+  br i1 %cmp1, label %if.end3, label %if.else
+
+if.else:                                          ; preds = %if.end
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
+  %2 = load double** %vec, align 8, !tbaa !0
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.else
+  %pd.0 = phi double* [ %2, %if.else ], [ null, %if.end ]
+  ret double* %pd.0
+}

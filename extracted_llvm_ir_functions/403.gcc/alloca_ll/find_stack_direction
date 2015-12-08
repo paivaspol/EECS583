@@ -1,0 +1,27 @@
+define internal fastcc void @find_stack_direction() #0 {
+entry:
+  %dummy = alloca i8, align 1
+  %0 = load i8** @find_stack_direction.addr, align 8, !tbaa !3
+  %cmp = icmp eq i8* %0, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  store i8* %dummy, i8** @find_stack_direction.addr, align 8, !tbaa !3
+  call fastcc void @find_stack_direction() #4
+  br label %if.end4
+
+if.else:                                          ; preds = %entry
+  %cmp1 = icmp ugt i8* %dummy, %0
+  br i1 %cmp1, label %if.then2, label %if.else3
+
+if.then2:                                         ; preds = %if.else
+  store i32 1, i32* @stack_dir, align 4, !tbaa !0
+  br label %if.end4
+
+if.else3:                                         ; preds = %if.else
+  store i32 -1, i32* @stack_dir, align 4, !tbaa !0
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.then2, %if.else3, %if.then
+  ret void
+}

@@ -1,0 +1,49 @@
+define void @AlignmentHomogenousGapsym(i8** nocapture %aseq, i32 %nseq, i32 %alen, i8 signext %gapsym) #0 {
+entry:
+  %cmp67 = icmp sgt i32 %nseq, 0
+  br i1 %cmp67, label %for.cond1.preheader.lr.ph, label %for.end45
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp265 = icmp sgt i32 %alen, 0
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc43, %for.cond1.preheader.lr.ph
+  %indvars.iv69 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next70, %for.inc43 ]
+  br i1 %cmp265, label %for.body3.lr.ph, label %for.inc43
+
+for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
+  %arrayidx = getelementptr inbounds i8** %aseq, i64 %indvars.iv69
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.inc, %for.body3.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %0 = load i8** %arrayidx, align 8, !tbaa !3
+  %arrayidx5 = getelementptr inbounds i8* %0, i64 %indvars.iv
+  %1 = load i8* %arrayidx5, align 1, !tbaa !1
+  switch i8 %1, label %for.inc [
+    i8 32, label %if.then
+    i8 46, label %if.then
+    i8 95, label %if.then
+    i8 45, label %if.then
+    i8 126, label %if.then
+  ]
+
+if.then:                                          ; preds = %for.body3, %for.body3, %for.body3, %for.body3, %for.body3
+  store i8 %gapsym, i8* %arrayidx5, align 1, !tbaa !1
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body3, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %alen
+  br i1 %exitcond, label %for.inc43, label %for.body3
+
+for.inc43:                                        ; preds = %for.inc, %for.cond1.preheader
+  %indvars.iv.next70 = add i64 %indvars.iv69, 1
+  %lftr.wideiv71 = trunc i64 %indvars.iv.next70 to i32
+  %exitcond72 = icmp eq i32 %lftr.wideiv71, %nseq
+  br i1 %exitcond72, label %for.end45, label %for.cond1.preheader
+
+for.end45:                                        ; preds = %for.inc43, %entry
+  ret void
+}

@@ -1,0 +1,114 @@
+define i32 @IsSELEXFormat(i8* nocapture %filename) #0 {
+entry:
+  %buffer = alloca [4096 x i8], align 16
+  %0 = getelementptr inbounds [4096 x i8]* %buffer, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #1
+  %call = call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str32, i64 0, i64 0)) #6
+  %cmp = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp, label %if.then, label %land.rhs
+
+if.then:                                          ; preds = %entry
+  store i32 4, i32* @squid_errno, align 4, !tbaa !3
+  br label %cleanup
+
+land.rhs:                                         ; preds = %entry, %while.cond.backedge
+  %linenum.095 = phi i32 [ %inc, %while.cond.backedge ], [ 0, %entry ]
+  %call2 = call i8* @fgets(i8* %0, i32 4096, %struct._IO_FILE* %call) #6
+  %cmp3 = icmp eq i8* %call2, null
+  br i1 %cmp3, label %DONE, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %inc = add nsw i32 %linenum.095, 1
+  %call5 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str8, i64 0, i64 0), i64 4) #7
+  %cmp6 = icmp eq i32 %call5, 0
+  br i1 %cmp6, label %DONE, label %if.else
+
+if.else:                                          ; preds = %while.body
+  %call9 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str10, i64 0, i64 0), i64 4) #7
+  %cmp10 = icmp eq i32 %call9, 0
+  br i1 %cmp10, label %DONE, label %if.else12
+
+if.else12:                                        ; preds = %if.else
+  %call14 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str11, i64 0, i64 0), i64 4) #7
+  %cmp15 = icmp eq i32 %call14, 0
+  br i1 %cmp15, label %DONE, label %if.else17
+
+if.else17:                                        ; preds = %if.else12
+  %call19 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str12, i64 0, i64 0), i64 4) #7
+  %cmp20 = icmp eq i32 %call19, 0
+  br i1 %cmp20, label %DONE, label %if.else22
+
+if.else22:                                        ; preds = %if.else17
+  %call24 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str13, i64 0, i64 0), i64 4) #7
+  %cmp25 = icmp eq i32 %call24, 0
+  br i1 %cmp25, label %DONE, label %if.else27
+
+if.else27:                                        ; preds = %if.else22
+  %call29 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str15, i64 0, i64 0), i64 4) #7
+  %cmp30 = icmp eq i32 %call29, 0
+  br i1 %cmp30, label %DONE, label %if.else32
+
+if.else32:                                        ; preds = %if.else27
+  %call34 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i64 4) #7
+  %cmp35 = icmp eq i32 %call34, 0
+  br i1 %cmp35, label %DONE, label %if.else37
+
+if.else37:                                        ; preds = %if.else32
+  %call39 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i64 4) #7
+  %cmp40 = icmp eq i32 %call39, 0
+  br i1 %cmp40, label %DONE, label %if.else42
+
+if.else42:                                        ; preds = %if.else37
+  %call44 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i64 4) #7
+  %cmp45 = icmp eq i32 %call44, 0
+  br i1 %cmp45, label %DONE, label %if.else47
+
+if.else47:                                        ; preds = %if.else42
+  %call49 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i64 4) #7
+  %cmp50 = icmp eq i32 %call49, 0
+  br i1 %cmp50, label %DONE, label %if.else52
+
+if.else52:                                        ; preds = %if.else47
+  %call54 = call i32 @strncmp(i8* %0, i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 4) #7
+  %cmp55 = icmp eq i32 %call54, 0
+  br i1 %cmp55, label %DONE, label %if.end67
+
+if.end67:                                         ; preds = %if.else52
+  %1 = load i8* %0, align 16, !tbaa !1
+  %conv = sext i8 %1 to i32
+  %call69 = call i8* @strchr(i8* getelementptr inbounds ([3 x i8]* @commentsyms, i64 0, i64 0), i32 %conv) #7
+  %cmp70 = icmp eq i8* %call69, null
+  br i1 %cmp70, label %if.end73, label %while.cond.backedge
+
+if.end73:                                         ; preds = %if.end67
+  %call75 = call i8* @strtok(i8* %0, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0)) #6
+  %cmp76 = icmp eq i8* %call75, null
+  br i1 %cmp76, label %while.cond.backedge, label %if.end79
+
+while.cond.backedge:                              ; preds = %if.end73, %if.end79, %if.end84, %if.end67
+  %cmp1 = icmp slt i32 %inc, 500
+  br i1 %cmp1, label %land.rhs, label %DONE
+
+if.end79:                                         ; preds = %if.end73
+  %call80 = call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0)) #6
+  %cmp81 = icmp eq i8* %call80, null
+  br i1 %cmp81, label %while.cond.backedge, label %if.end84
+
+if.end84:                                         ; preds = %if.end79
+  %call85 = call i32 @Seqtype(i8* %call80) #6
+  %cmp86 = icmp eq i32 %call85, 0
+  br i1 %cmp86, label %if.then88, label %while.cond.backedge
+
+if.then88:                                        ; preds = %if.end84
+  %call89 = call i32 @fclose(%struct._IO_FILE* %call) #6
+  br label %cleanup
+
+DONE:                                             ; preds = %land.rhs, %while.cond.backedge, %if.else52, %if.else47, %if.else42, %if.else37, %if.else32, %if.else27, %if.else22, %if.else17, %if.else12, %if.else, %while.body
+  %call91 = call i32 @fclose(%struct._IO_FILE* %call) #6
+  br label %cleanup
+
+cleanup:                                          ; preds = %DONE, %if.then88, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ 1, %DONE ], [ 0, %if.then88 ]
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #1
+  ret i32 %retval.0
+}

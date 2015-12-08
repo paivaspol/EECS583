@@ -1,0 +1,19 @@
+define void @LBM_allocateGrid(double** nocapture %ptr) #0 {
+entry:
+  %call = tail call noalias i8* @malloc(i64 214400000) #4
+  %0 = bitcast i8* %call to double*
+  store double* %0, double** %ptr, align 8, !tbaa !0
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), double 0x40698EF800000000) #4
+  tail call void @exit(i32 1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %add.ptr = getelementptr inbounds i8* %call, i64 3200000
+  %1 = bitcast i8* %add.ptr to double*
+  store double* %1, double** %ptr, align 8, !tbaa !0
+  ret void
+}

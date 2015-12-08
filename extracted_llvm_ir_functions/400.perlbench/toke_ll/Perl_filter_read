@@ -1,0 +1,133 @@
+define i32 @Perl_filter_read(i32 %idx, %struct.sv* %buf_sv, i32 %maxlen) #0 {
+entry:
+  %0 = load %struct.av** @PL_rsfp_filters, align 8, !tbaa !0
+  %tobool80 = icmp eq %struct.av* %0, null
+  br i1 %tobool80, label %return, label %if.end.lr.ph
+
+if.end.lr.ph:                                     ; preds = %entry
+  %1 = sext i32 %idx to i64
+  %sv_any.phi.trans.insert = getelementptr inbounds %struct.av* %0, i64 0, i32 0
+  %.pre = load %struct.xpvav** %sv_any.phi.trans.insert, align 8, !tbaa !0
+  %xav_fill.phi.trans.insert = getelementptr inbounds %struct.xpvav* %.pre, i64 0, i32 1
+  %.pre85 = load i64* %xav_fill.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end
+
+tailrecurse:                                      ; preds = %if.end47
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %add52 = add nsw i32 %idx.tr81, 1
+  br label %if.end
+
+if.end:                                           ; preds = %tailrecurse, %if.end.lr.ph
+  %indvars.iv = phi i64 [ %1, %if.end.lr.ph ], [ %indvars.iv.next, %tailrecurse ]
+  %idx.tr81 = phi i32 [ %idx, %if.end.lr.ph ], [ %add52, %tailrecurse ]
+  %cmp = icmp sgt i64 %indvars.iv, %.pre85
+  br i1 %cmp, label %if.then2, label %if.end47
+
+if.then2:                                         ; preds = %if.end
+  %tobool3 = icmp eq i32 %maxlen, 0
+  br i1 %tobool3, label %if.else30, label %if.then4
+
+if.then4:                                         ; preds = %if.then2
+  %sv_any5 = getelementptr inbounds %struct.sv* %buf_sv, i64 0, i32 0
+  %2 = load i8** %sv_any5, align 8, !tbaa !0
+  %xpv_cur = getelementptr inbounds i8* %2, i64 8
+  %3 = bitcast i8* %xpv_cur to i64*
+  %4 = load i64* %3, align 8, !tbaa !4
+  %conv6 = trunc i64 %4 to i32
+  %xpv_len = getelementptr inbounds i8* %2, i64 16
+  %5 = bitcast i8* %xpv_len to i64*
+  %6 = load i64* %5, align 8, !tbaa !4
+  %add = add nsw i32 %conv6, %maxlen
+  %conv8 = sext i32 %add to i64
+  %cmp9 = icmp ult i64 %6, %conv8
+  br i1 %cmp9, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %if.then4
+  %call = tail call i8* @Perl_sv_grow(%struct.sv* %buf_sv, i64 %conv8) #6
+  br label %cond.end
+
+cond.end:                                         ; preds = %if.then4, %cond.true
+  %7 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %8 = load i8** %sv_any5, align 8, !tbaa !0
+  %xpv_pv15 = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv15, align 8, !tbaa !0
+  %sext = shl i64 %4, 32
+  %idx.ext = ashr exact i64 %sext, 32
+  %add.ptr = getelementptr inbounds i8* %9, i64 %idx.ext
+  %conv16 = sext i32 %maxlen to i64
+  %call17 = tail call i64 @Perl_PerlIO_read(%struct._PerlIO** %7, i8* %add.ptr, i64 %conv16) #6
+  %conv18 = trunc i64 %call17 to i32
+  %cmp19 = icmp slt i32 %conv18, 1
+  br i1 %cmp19, label %if.then21, label %if.end25
+
+if.then21:                                        ; preds = %cond.end
+  %10 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %call22 = tail call i32 @Perl_PerlIO_error(%struct._PerlIO** %10) #6
+  %not.tobool23 = icmp ne i32 %call22, 0
+  %. = sext i1 %not.tobool23 to i32
+  br label %return
+
+if.end25:                                         ; preds = %cond.end
+  %add26 = add i64 %call17, %4
+  %sext76 = shl i64 %add26, 32
+  %conv27 = ashr exact i64 %sext76, 32
+  %11 = load i8** %sv_any5, align 8, !tbaa !0
+  %xpv_cur29 = getelementptr inbounds i8* %11, i64 8
+  %12 = bitcast i8* %xpv_cur29 to i64*
+  store i64 %conv27, i64* %12, align 8, !tbaa !4
+  br label %if.end43
+
+if.else30:                                        ; preds = %if.then2
+  %13 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %sv_any31 = getelementptr inbounds %struct.sv* %buf_sv, i64 0, i32 0
+  %14 = load i8** %sv_any31, align 8, !tbaa !0
+  %xpv_cur32 = getelementptr inbounds i8* %14, i64 8
+  %15 = bitcast i8* %xpv_cur32 to i64*
+  %16 = load i64* %15, align 8, !tbaa !4
+  %conv33 = trunc i64 %16 to i32
+  %call34 = tail call i8* @Perl_sv_gets(%struct.sv* %buf_sv, %struct._PerlIO** %13, i32 %conv33) #6
+  %cmp35 = icmp eq i8* %call34, null
+  br i1 %cmp35, label %if.then37, label %if.else30.if.end43_crit_edge
+
+if.else30.if.end43_crit_edge:                     ; preds = %if.else30
+  %.pre86 = load i8** %sv_any31, align 8, !tbaa !0
+  %xpv_cur45.phi.trans.insert = getelementptr inbounds i8* %.pre86, i64 8
+  %.phi.trans.insert = bitcast i8* %xpv_cur45.phi.trans.insert to i64*
+  %.pre87 = load i64* %.phi.trans.insert, align 8, !tbaa !4
+  br label %if.end43
+
+if.then37:                                        ; preds = %if.else30
+  %17 = load volatile %struct._PerlIO*** @PL_rsfp, align 8, !tbaa !0
+  %call38 = tail call i32 @Perl_PerlIO_error(%struct._PerlIO** %17) #6
+  %not.tobool39 = icmp ne i32 %call38, 0
+  %.77 = sext i1 %not.tobool39 to i32
+  br label %return
+
+if.end43:                                         ; preds = %if.else30.if.end43_crit_edge, %if.end25
+  %18 = phi i64 [ %.pre87, %if.else30.if.end43_crit_edge ], [ %conv27, %if.end25 ]
+  %conv46 = trunc i64 %18 to i32
+  br label %return
+
+if.end47:                                         ; preds = %if.end
+  %xav_array = getelementptr inbounds %struct.xpvav* %.pre, i64 0, i32 0
+  %19 = load i8** %xav_array, align 8, !tbaa !0
+  %20 = bitcast i8* %19 to %struct.sv**
+  %arrayidx = getelementptr inbounds %struct.sv** %20, i64 %indvars.iv
+  %21 = load %struct.sv** %arrayidx, align 8, !tbaa !0
+  %cmp49 = icmp eq %struct.sv* %21, @PL_sv_undef
+  br i1 %cmp49, label %tailrecurse, label %if.end54
+
+if.end54:                                         ; preds = %if.end47
+  %sv_any55 = getelementptr inbounds %struct.sv* %21, i64 0, i32 0
+  %22 = load i8** %sv_any55, align 8, !tbaa !0
+  %xio_dirpu = getelementptr inbounds i8* %22, i64 72
+  %xiou_any = bitcast i8* %xio_dirpu to i8**
+  %23 = load i8** %xiou_any, align 8, !tbaa !0
+  %24 = bitcast i8* %23 to i32 (i32, %struct.sv*, i32)*
+  %call56 = tail call i32 %24(i32 %idx.tr81, %struct.sv* %buf_sv, i32 %maxlen) #6
+  br label %return
+
+return:                                           ; preds = %entry, %if.then37, %if.then21, %if.end54, %if.end43
+  %retval.0 = phi i32 [ %conv46, %if.end43 ], [ %call56, %if.end54 ], [ %., %if.then21 ], [ %.77, %if.then37 ], [ -1, %entry ]
+  ret i32 %retval.0
+}

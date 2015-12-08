@@ -1,0 +1,33 @@
+define void @Perl_sv_setuv_mg(%struct.sv* %sv, i64 %u) #0 {
+entry:
+  %cmp = icmp sgt i64 %u, -1
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  tail call void @Perl_sv_setiv(%struct.sv* %sv, i64 %u) #7
+  %sv_flags1.pre = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  br label %if.end
+
+if.else:                                          ; preds = %entry
+  tail call void @Perl_sv_setiv(%struct.sv* %sv, i64 0) #7
+  %sv_flags = getelementptr inbounds %struct.sv* %sv, i64 0, i32 2
+  %0 = load i32* %sv_flags, align 4, !tbaa !3
+  %or = or i32 %0, -2147483648
+  store i32 %or, i32* %sv_flags, align 4, !tbaa !3
+  tail call void @Perl_sv_setuv(%struct.sv* %sv, i64 %u) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %sv_flags1.pre-phi = phi i32* [ %sv_flags, %if.else ], [ %sv_flags1.pre, %if.then ]
+  %1 = load i32* %sv_flags1.pre-phi, align 4, !tbaa !3
+  %and = and i32 %1, 16384
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %if.end3, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  %call = tail call i32 @Perl_mg_set(%struct.sv* %sv) #8
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %if.then2
+  ret void
+}

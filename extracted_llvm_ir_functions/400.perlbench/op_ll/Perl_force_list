@@ -1,0 +1,20 @@
+define %struct.op* @Perl_force_list(%struct.op* %o) #0 {
+entry:
+  %tobool = icmp eq %struct.op* %o, null
+  br i1 %tobool, label %if.then, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %entry
+  %op_type = getelementptr inbounds %struct.op* %o, i64 0, i32 4
+  %0 = load i16* %op_type, align 2, !tbaa !4
+  %cmp = icmp eq i16 %0, 141
+  br i1 %cmp, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %call = tail call %struct.op* @Perl_newLISTOP(i32 141, i32 0, %struct.op* %o, %struct.op* null) #8
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false, %if.then
+  %o.addr.0 = phi %struct.op* [ %call, %if.then ], [ %o, %lor.lhs.false ]
+  tail call void @Perl_op_null(%struct.op* %o.addr.0) #8
+  ret %struct.op* %o.addr.0
+}

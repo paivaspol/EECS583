@@ -1,0 +1,42 @@
+define void @IntraChromaPrediction4x4(i32 %uv, i32 %block_x, i32 %block_y) #0 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
+  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
+  %idxprom = sext i32 %1 to i64
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
+  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
+  %c_ipred_mode = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 20
+  %3 = load i32* %c_ipred_mode, align 4, !tbaa !3
+  %idxprom7 = sext i32 %3 to i64
+  %idxprom8 = sext i32 %uv to i64
+  %4 = sext i32 %block_x to i64
+  %5 = sext i32 %block_y to i64
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %entry, %for.inc17
+  %indvars.iv29 = phi i64 [ %5, %entry ], [ %indvars.iv.next30, %for.inc17 ]
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.cond1.preheader, %for.body4
+  %indvars.iv = phi i64 [ %4, %for.cond1.preheader ], [ %indvars.iv.next, %for.body4 ]
+  %arrayidx12 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 44, i64 %idxprom8, i64 %idxprom7, i64 %indvars.iv, i64 %indvars.iv29
+  %6 = load i16* %arrayidx12, align 2, !tbaa !4
+  %arrayidx16 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 45, i64 %indvars.iv, i64 %indvars.iv29
+  store i16 %6, i16* %arrayidx16, align 2, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %7 = add nsw i32 %block_x, 3
+  %8 = trunc i64 %indvars.iv to i32
+  %cmp3 = icmp slt i32 %8, %7
+  br i1 %cmp3, label %for.body4, label %for.inc17
+
+for.inc17:                                        ; preds = %for.body4
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1
+  %9 = add nsw i32 %block_y, 3
+  %10 = trunc i64 %indvars.iv29 to i32
+  %cmp = icmp slt i32 %10, %9
+  br i1 %cmp, label %for.cond1.preheader, label %for.end19
+
+for.end19:                                        ; preds = %for.inc17
+  ret void
+}

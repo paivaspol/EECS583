@@ -1,0 +1,28 @@
+define i32 @show_sgf_tree(%struct.SGFNode_t* nocapture %node) #0 {
+entry:
+  %call = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #7
+  %child = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2
+  %0 = load %struct.SGFNode_t** %child, align 8, !tbaa !0
+  %tobool = icmp eq %struct.SGFNode_t* %0, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %0) #7
+  %add = add nsw i32 %call2, 1
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %n.0 = phi i32 [ %add, %if.then ], [ 1, %entry ]
+  %next = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3
+  %1 = load %struct.SGFNode_t** %next, align 8, !tbaa !0
+  %tobool3 = icmp eq %struct.SGFNode_t* %1, null
+  br i1 %tobool3, label %if.end8, label %if.then4
+
+if.then4:                                         ; preds = %if.end
+  %call6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %1) #7
+  %add7 = add nsw i32 %call6, %n.0
+  ret i32 %add7
+
+if.end8:                                          ; preds = %if.end
+  ret i32 %n.0
+}

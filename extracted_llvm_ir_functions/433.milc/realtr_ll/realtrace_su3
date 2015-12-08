@@ -1,0 +1,38 @@
+define double @realtrace_su3(%struct.su3_matrix* nocapture %a, %struct.su3_matrix* nocapture %b) #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc25, %entry
+  %indvars.iv45 = phi i64 [ 0, %entry ], [ %indvars.iv.next46, %for.inc25 ]
+  %sum.044 = phi double [ 0.000000e+00, %entry ], [ %add24, %for.inc25 ]
+  br label %for.body3
+
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %sum.142 = phi double [ %sum.044, %for.cond1.preheader ], [ %add24, %for.body3 ]
+  %real = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 %indvars.iv45, i64 %indvars.iv, i32 0
+  %0 = load double* %real, align 8, !tbaa !0
+  %real11 = getelementptr inbounds %struct.su3_matrix* %b, i64 0, i32 0, i64 %indvars.iv45, i64 %indvars.iv, i32 0
+  %1 = load double* %real11, align 8, !tbaa !0
+  %mul = fmul double %0, %1
+  %imag = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 %indvars.iv45, i64 %indvars.iv, i32 1
+  %2 = load double* %imag, align 8, !tbaa !0
+  %imag22 = getelementptr inbounds %struct.su3_matrix* %b, i64 0, i32 0, i64 %indvars.iv45, i64 %indvars.iv, i32 1
+  %3 = load double* %imag22, align 8, !tbaa !0
+  %mul23 = fmul double %2, %3
+  %add = fadd double %mul, %mul23
+  %add24 = fadd double %sum.142, %add
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 3
+  br i1 %exitcond, label %for.inc25, label %for.body3
+
+for.inc25:                                        ; preds = %for.body3
+  %indvars.iv.next46 = add i64 %indvars.iv45, 1
+  %lftr.wideiv47 = trunc i64 %indvars.iv.next46 to i32
+  %exitcond48 = icmp eq i32 %lftr.wideiv47, 3
+  br i1 %exitcond48, label %for.end27, label %for.cond1.preheader
+
+for.end27:                                        ; preds = %for.inc25
+  ret double %add24
+}

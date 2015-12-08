@@ -1,0 +1,50 @@
+define %struct.av* @Perl_av_fake(i32 %size, %struct.sv** nocapture %strp) #0 {
+entry:
+  %call = tail call %struct.sv* @Perl_newSV(i64 0) #3
+  %0 = bitcast %struct.sv* %call to %struct.av*
+  %call1 = tail call signext i8 @Perl_sv_upgrade(%struct.sv* %call, i32 10) #3
+  %add = add nsw i32 %size, 1
+  %conv = sext i32 %add to i64
+  %mul = shl nsw i64 %conv, 3
+  %call2 = tail call i8* @Perl_safesysmalloc(i64 %mul) #3
+  %1 = bitcast i8* %call2 to %struct.sv**
+  %sv_any = bitcast %struct.sv* %call to %struct.xpvav**
+  %2 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_alloc = getelementptr inbounds %struct.xpvav* %2, i64 0, i32 7
+  store %struct.sv** %1, %struct.sv*** %xav_alloc, align 8, !tbaa !0
+  %3 = bitcast %struct.sv** %strp to i8*
+  %conv3 = sext i32 %size to i64
+  %mul4 = shl nsw i64 %conv3, 3
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call2, i8* %3, i64 %mul4, i32 1, i1 false)
+  %4 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_flags = getelementptr inbounds %struct.xpvav* %4, i64 0, i32 9
+  store i8 2, i8* %xav_flags, align 1, !tbaa !1
+  %5 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xpv_pv = getelementptr inbounds %struct.xpvav* %5, i64 0, i32 0
+  store i8* %call2, i8** %xpv_pv, align 8, !tbaa !0
+  %sub = add nsw i32 %size, -1
+  %conv7 = sext i32 %sub to i64
+  %6 = load %struct.xpvav** %sv_any, align 8, !tbaa !0
+  %xav_fill = getelementptr inbounds %struct.xpvav* %6, i64 0, i32 1
+  store i64 %conv7, i64* %xav_fill, align 8, !tbaa !3
+  %xav_max = getelementptr inbounds %struct.xpvav* %6, i64 0, i32 2
+  store i64 %conv7, i64* %xav_max, align 8, !tbaa !3
+  %tobool26 = icmp eq i32 %size, 0
+  br i1 %tobool26, label %while.end, label %while.body
+
+while.body:                                       ; preds = %entry, %while.body
+  %size.addr.028 = phi i32 [ %dec, %while.body ], [ %size, %entry ]
+  %strp.addr.027 = phi %struct.sv** [ %incdec.ptr, %while.body ], [ %strp, %entry ]
+  %dec = add nsw i32 %size.addr.028, -1
+  %7 = load %struct.sv** %strp.addr.027, align 8, !tbaa !0
+  %sv_flags = getelementptr inbounds %struct.sv* %7, i64 0, i32 2
+  %8 = load i32* %sv_flags, align 4, !tbaa !4
+  %and = and i32 %8, -2049
+  store i32 %and, i32* %sv_flags, align 4, !tbaa !4
+  %incdec.ptr = getelementptr inbounds %struct.sv** %strp.addr.027, i64 1
+  %tobool = icmp eq i32 %dec, 0
+  br i1 %tobool, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %entry
+  ret %struct.av* %0
+}

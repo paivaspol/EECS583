@@ -1,0 +1,62 @@
+define i32 @Perl_is_lvalue_sub() #2 {
+entry:
+  %0 = load %struct.stackinfo** @PL_curstackinfo, align 8, !tbaa !0
+  %si_cxix = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 2
+  %1 = load i32* %si_cxix, align 4, !tbaa !3
+  %si_cxstack.i = getelementptr inbounds %struct.stackinfo* %0, i64 0, i32 1
+  %2 = load %struct.context** %si_cxstack.i, align 8, !tbaa !0
+  %cmp4.i.i = icmp sgt i32 %1, -1
+  br i1 %cmp4.i.i, label %for.body.lr.ph.i.i, label %S_dopoptosub.exit
+
+for.body.lr.ph.i.i:                               ; preds = %entry
+  %3 = sext i32 %1 to i64
+  br label %for.body.i.i
+
+for.body.i.i:                                     ; preds = %for.inc.i.i, %for.body.lr.ph.i.i
+  %indvars.iv.i.i = phi i64 [ %3, %for.body.lr.ph.i.i ], [ %indvars.iv.next.i.i, %for.inc.i.i ]
+  %i.05.i.i = phi i32 [ %1, %for.body.lr.ph.i.i ], [ %dec.i.i, %for.inc.i.i ]
+  %cx_type.i.i = getelementptr inbounds %struct.context* %2, i64 %indvars.iv.i.i, i32 0
+  %4 = load i32* %cx_type.i.i, align 4, !tbaa !3
+  %and.i.i = and i32 %4, 255
+  switch i32 %and.i.i, label %for.inc.i.i [
+    i32 2, label %S_dopoptosub.exit
+    i32 1, label %S_dopoptosub.exit
+    i32 6, label %S_dopoptosub.exit
+  ]
+
+for.inc.i.i:                                      ; preds = %for.body.i.i
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, -1
+  %dec.i.i = add nsw i32 %i.05.i.i, -1
+  %5 = trunc i64 %indvars.iv.i.i to i32
+  %cmp.i.i = icmp sgt i32 %5, 0
+  br i1 %cmp.i.i, label %for.body.i.i, label %S_dopoptosub.exit
+
+S_dopoptosub.exit:                                ; preds = %for.body.i.i, %for.body.i.i, %for.body.i.i, %for.inc.i.i, %entry
+  %i.0.lcssa.i.i = phi i32 [ %1, %entry ], [ %i.05.i.i, %for.body.i.i ], [ %i.05.i.i, %for.body.i.i ], [ %i.05.i.i, %for.body.i.i ], [ %dec.i.i, %for.inc.i.i ]
+  %idxprom = sext i32 %i.0.lcssa.i.i to i64
+  %blk_u = getelementptr inbounds %struct.context* %2, i64 %idxprom, i32 1, i32 0, i32 7
+  %blku_sub = bitcast %union.anon.1* %blk_u to %struct.block_sub*
+  %lval = getelementptr inbounds %struct.block_sub* %blku_sub, i64 0, i32 7
+  %6 = load i8* %lval, align 1, !tbaa !1
+  %tobool = icmp eq i8 %6, 0
+  br i1 %tobool, label %if.else, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %S_dopoptosub.exit
+  %conv = zext i8 %6 to i32
+  %cv = bitcast %union.anon.1* %blk_u to %struct.cv**
+  %7 = load %struct.cv** %cv, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.cv* %7, i64 0, i32 0
+  %8 = load %struct.xpvcv** %sv_any, align 8, !tbaa !0
+  %xcv_flags = getelementptr inbounds %struct.xpvcv* %8, i64 0, i32 17
+  %9 = load i16* %xcv_flags, align 2, !tbaa !6
+  %and = and i16 %9, 256
+  %tobool9 = icmp eq i16 %and, 0
+  br i1 %tobool9, label %if.else, label %return
+
+if.else:                                          ; preds = %land.lhs.true, %S_dopoptosub.exit
+  br label %return
+
+return:                                           ; preds = %land.lhs.true, %if.else
+  %retval.0 = phi i32 [ 0, %if.else ], [ %conv, %land.lhs.true ]
+  ret i32 %retval.0
+}

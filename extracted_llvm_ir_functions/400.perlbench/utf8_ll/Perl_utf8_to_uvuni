@@ -1,0 +1,55 @@
+define i64 @Perl_utf8_to_uvuni(i8* %s, i64* %retlen) #0 {
+entry:
+  %0 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings = getelementptr inbounds %struct.cop* %0, i64 0, i32 14
+  %1 = load %struct.sv** %cop_warnings, align 8, !tbaa !0
+  %cmp = icmp eq %struct.sv* %1, null
+  br i1 %cmp, label %lor.rhs, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %entry
+  %2 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings1 = getelementptr inbounds %struct.cop* %2, i64 0, i32 14
+  %3 = load %struct.sv** %cop_warnings1, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct.sv* %3, inttoptr (i64 32 to %struct.sv*)
+  br i1 %cmp2, label %lor.rhs, label %land.lhs.true3
+
+land.lhs.true3:                                   ; preds = %land.lhs.true
+  %4 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings4 = getelementptr inbounds %struct.cop* %4, i64 0, i32 14
+  %5 = load %struct.sv** %cop_warnings4, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct.sv* %5, inttoptr (i64 16 to %struct.sv*)
+  br i1 %cmp5, label %lor.end, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true3
+  %6 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings6 = getelementptr inbounds %struct.cop* %6, i64 0, i32 14
+  %7 = load %struct.sv** %cop_warnings6, align 8, !tbaa !0
+  %sv_any = getelementptr inbounds %struct.sv* %7, i64 0, i32 0
+  %8 = load i8** %sv_any, align 8, !tbaa !0
+  %xpv_pv = bitcast i8* %8 to i8**
+  %9 = load i8** %xpv_pv, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8* %9, i64 11
+  %10 = load i8* %arrayidx, align 1, !tbaa !1
+  %and = and i8 %10, 1
+  %tobool = icmp eq i8 %and, 0
+  br i1 %tobool, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %lor.lhs.false, %land.lhs.true, %entry
+  %11 = load volatile %struct.cop** @PL_curcop, align 8, !tbaa !0
+  %cop_warnings7 = getelementptr inbounds %struct.cop* %11, i64 0, i32 14
+  %12 = load %struct.sv** %cop_warnings7, align 8, !tbaa !0
+  %cmp8 = icmp eq %struct.sv* %12, null
+  br i1 %cmp8, label %land.rhs, label %lor.end
+
+land.rhs:                                         ; preds = %lor.rhs
+  %13 = load i8* @PL_dowarn, align 1, !tbaa !1
+  %and11 = and i8 %13, 1
+  %tobool12 = icmp ne i8 %and11, 0
+  %phitmp = select i1 %tobool12, i32 0, i32 255
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.lhs.false, %lor.rhs, %land.rhs, %land.lhs.true3
+  %14 = phi i32 [ 0, %lor.lhs.false ], [ 0, %land.lhs.true3 ], [ 255, %lor.rhs ], [ %phitmp, %land.rhs ]
+  %call = tail call i64 @Perl_utf8n_to_uvuni(i8* %s, i64 13, i64* %retlen, i32 %14) #6
+  ret i64 %call
+}

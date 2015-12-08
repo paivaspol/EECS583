@@ -1,0 +1,135 @@
+define void @MSAAppendGR(%struct.msa_struct* nocapture %msa, i8* %tag, i32 %sqidx, i8* %value) #0 {
+entry:
+  %gr_tag = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 35
+  %0 = load i8*** %gr_tag, align 8, !tbaa !0
+  %cmp = icmp eq i8** %0, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 601, i64 8) #6
+  %1 = bitcast i8* %call to i8**
+  store i8** %1, i8*** %gr_tag, align 8, !tbaa !0
+  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 602, i64 8) #6
+  %2 = bitcast i8* %call2 to i8***
+  %gr = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 36
+  store i8*** %2, i8**** %gr, align 8, !tbaa !0
+  %nseqalloc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 40
+  %3 = load i32* %nseqalloc, align 4, !tbaa !3
+  %conv = sext i32 %3 to i64
+  %mul = shl nsw i64 %conv, 3
+  %call3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 603, i64 %mul) #6
+  %4 = bitcast i8* %call3 to i8**
+  %5 = load i8**** %gr, align 8, !tbaa !0
+  store i8** %4, i8*** %5, align 8, !tbaa !0
+  %6 = load i32* %nseqalloc, align 4, !tbaa !3
+  %cmp6110 = icmp sgt i32 %6, 0
+  br i1 %cmp6110, label %for.body, label %for.end
+
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %7 = load i8**** %gr, align 8, !tbaa !0
+  %8 = load i8*** %7, align 8, !tbaa !0
+  %arrayidx10 = getelementptr inbounds i8** %8, i64 %indvars.iv
+  store i8* null, i8** %arrayidx10, align 8, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %9 = trunc i64 %indvars.iv.next to i32
+  %cmp6 = icmp slt i32 %9, %6
+  br i1 %cmp6, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %if.then
+  %call11 = tail call %struct.GKI* @GKIInit() #6
+  %gr_idx = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 37
+  store %struct.GKI* %call11, %struct.GKI** %gr_idx, align 8, !tbaa !0
+  %call13 = tail call i32 @GKIStoreKey(%struct.GKI* %call11, i8* %tag) #6
+  br label %if.end55
+
+if.else:                                          ; preds = %entry
+  %gr_idx14 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 37
+  %10 = load %struct.GKI** %gr_idx14, align 8, !tbaa !0
+  %call15 = tail call i32 @GKIKeyIndex(%struct.GKI* %10, i8* %tag) #6
+  %cmp16 = icmp slt i32 %call15, 0
+  br i1 %cmp16, label %if.then18, label %if.end55
+
+if.then18:                                        ; preds = %if.else
+  %11 = load %struct.GKI** %gr_idx14, align 8, !tbaa !0
+  %call20 = tail call i32 @GKIStoreKey(%struct.GKI* %11, i8* %tag) #6
+  %12 = load i8*** %gr_tag, align 8, !tbaa !0
+  %13 = bitcast i8** %12 to i8*
+  %ngr = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 38
+  %14 = load i32* %ngr, align 4, !tbaa !3
+  %add = add nsw i32 %14, 1
+  %conv22 = sext i32 %add to i64
+  %mul23 = shl nsw i64 %conv22, 3
+  %call24 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 620, i8* %13, i64 %mul23) #6
+  %15 = bitcast i8* %call24 to i8**
+  store i8** %15, i8*** %gr_tag, align 8, !tbaa !0
+  %gr26 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 36
+  %16 = load i8**** %gr26, align 8, !tbaa !0
+  %17 = bitcast i8*** %16 to i8*
+  %18 = load i32* %ngr, align 4, !tbaa !3
+  %add28 = add nsw i32 %18, 1
+  %conv29 = sext i32 %add28 to i64
+  %mul30 = shl nsw i64 %conv29, 3
+  %call31 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 621, i8* %17, i64 %mul30) #6
+  %19 = bitcast i8* %call31 to i8***
+  store i8*** %19, i8**** %gr26, align 8, !tbaa !0
+  %nseqalloc33 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 40
+  %20 = load i32* %nseqalloc33, align 4, !tbaa !3
+  %conv34 = sext i32 %20 to i64
+  %mul35 = shl nsw i64 %conv34, 3
+  %call36 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 622, i64 %mul35) #6
+  %21 = bitcast i8* %call36 to i8**
+  %22 = load i32* %ngr, align 4, !tbaa !3
+  %idxprom38 = sext i32 %22 to i64
+  %23 = load i8**** %gr26, align 8, !tbaa !0
+  %arrayidx40 = getelementptr inbounds i8*** %23, i64 %idxprom38
+  store i8** %21, i8*** %arrayidx40, align 8, !tbaa !0
+  %24 = load i32* %nseqalloc33, align 4, !tbaa !3
+  %cmp43112 = icmp sgt i32 %24, 0
+  br i1 %cmp43112, label %for.body45, label %if.end55
+
+for.body45:                                       ; preds = %if.then18, %for.body45
+  %indvars.iv114 = phi i64 [ %indvars.iv.next115, %for.body45 ], [ 0, %if.then18 ]
+  %25 = load i8**** %gr26, align 8, !tbaa !0
+  %arrayidx50 = getelementptr inbounds i8*** %25, i64 %idxprom38
+  %26 = load i8*** %arrayidx50, align 8, !tbaa !0
+  %arrayidx51 = getelementptr inbounds i8** %26, i64 %indvars.iv114
+  store i8* null, i8** %arrayidx51, align 8, !tbaa !0
+  %indvars.iv.next115 = add i64 %indvars.iv114, 1
+  %27 = trunc i64 %indvars.iv.next115 to i32
+  %cmp43 = icmp slt i32 %27, %24
+  br i1 %cmp43, label %for.body45, label %if.end55
+
+if.end55:                                         ; preds = %if.then18, %for.body45, %if.else, %for.end
+  %tagidx.0 = phi i32 [ %call13, %for.end ], [ %call15, %if.else ], [ %call20, %for.body45 ], [ %call20, %if.then18 ]
+  %ngr56 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 38
+  %28 = load i32* %ngr56, align 4, !tbaa !3
+  %cmp57 = icmp eq i32 %tagidx.0, %28
+  br i1 %cmp57, label %if.then59, label %if.end55.if.end66_crit_edge
+
+if.end55.if.end66_crit_edge:                      ; preds = %if.end55
+  %idxprom68.pre = sext i32 %tagidx.0 to i64
+  br label %if.end66
+
+if.then59:                                        ; preds = %if.end55
+  %call60 = tail call i8* @sre_strdup(i8* %tag, i32 -1) #6
+  %idxprom61 = sext i32 %tagidx.0 to i64
+  %29 = load i8*** %gr_tag, align 8, !tbaa !0
+  %arrayidx63 = getelementptr inbounds i8** %29, i64 %idxprom61
+  store i8* %call60, i8** %arrayidx63, align 8, !tbaa !0
+  %30 = load i32* %ngr56, align 4, !tbaa !3
+  %inc65 = add nsw i32 %30, 1
+  store i32 %inc65, i32* %ngr56, align 4, !tbaa !3
+  br label %if.end66
+
+if.end66:                                         ; preds = %if.end55.if.end66_crit_edge, %if.then59
+  %idxprom68.pre-phi = phi i64 [ %idxprom68.pre, %if.end55.if.end66_crit_edge ], [ %idxprom61, %if.then59 ]
+  %idxprom67 = sext i32 %sqidx to i64
+  %gr69 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 36
+  %31 = load i8**** %gr69, align 8, !tbaa !0
+  %arrayidx70 = getelementptr inbounds i8*** %31, i64 %idxprom68.pre-phi
+  %32 = load i8*** %arrayidx70, align 8, !tbaa !0
+  %arrayidx71 = getelementptr inbounds i8** %32, i64 %idxprom67
+  %call72 = tail call i32 @sre_strcat(i8** %arrayidx71, i32 -1, i8* %value, i32 -1) #6
+  ret void
+}

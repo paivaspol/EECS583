@@ -1,0 +1,71 @@
+define i32 @gtp_decode_coord(i8* nocapture %s, i32* %i, i32* %j) #0 {
+entry:
+  %column = alloca i8, align 1
+  %row = alloca i32, align 4
+  %n = alloca i32, align 4
+  %call = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %s, i8* getelementptr inbounds ([8 x i8]* @.str18, i64 0, i64 0), i8* %column, i32* %row, i32* %n) #4
+  %cmp = icmp eq i32 %call, 2
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %0 = load i8* %column, align 1, !tbaa !0
+  %conv = sext i8 %0 to i32
+  %call1 = call i32 @tolower(i32 %conv) #4
+  %cmp2 = icmp eq i32 %call1, 105
+  br i1 %cmp2, label %return, label %if.end5
+
+if.end5:                                          ; preds = %if.end
+  %1 = load i8* %column, align 1, !tbaa !0
+  %conv7 = sext i8 %1 to i32
+  %call8 = call i32 @tolower(i32 %conv7) #4
+  %sub = add nsw i32 %call8, -97
+  store i32 %sub, i32* %j, align 4, !tbaa !2
+  %2 = load i8* %column, align 1, !tbaa !0
+  %conv10 = sext i8 %2 to i32
+  %call11 = call i32 @tolower(i32 %conv10) #4
+  %cmp12 = icmp sgt i32 %call11, 105
+  br i1 %cmp12, label %if.then14, label %if.end15
+
+if.then14:                                        ; preds = %if.end5
+  %3 = load i32* %j, align 4, !tbaa !2
+  %dec = add nsw i32 %3, -1
+  store i32 %dec, i32* %j, align 4, !tbaa !2
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then14, %if.end5
+  %4 = load i32* @gtp_boardsize, align 4, !tbaa !2
+  %5 = load i32* %row, align 4, !tbaa !2
+  %sub16 = sub nsw i32 %4, %5
+  store i32 %sub16, i32* %i, align 4, !tbaa !2
+  %cmp17 = icmp slt i32 %sub16, 0
+  br i1 %cmp17, label %return, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %if.end15
+  %6 = load i32* @gtp_boardsize, align 4, !tbaa !2
+  %cmp19 = icmp slt i32 %sub16, %6
+  br i1 %cmp19, label %lor.lhs.false21, label %return
+
+lor.lhs.false21:                                  ; preds = %lor.lhs.false
+  %7 = load i32* %j, align 4, !tbaa !2
+  %cmp22 = icmp sgt i32 %7, -1
+  %cmp25 = icmp slt i32 %7, %6
+  %or.cond = and i1 %cmp22, %cmp25
+  br i1 %or.cond, label %if.end28, label %return
+
+if.end28:                                         ; preds = %lor.lhs.false21
+  %8 = load void (i32, i32, i32*, i32*)** @vertex_transform_input_hook, align 8, !tbaa !3
+  %cmp29 = icmp eq void (i32, i32, i32*, i32*)* %8, null
+  br i1 %cmp29, label %if.end32, label %if.then31
+
+if.then31:                                        ; preds = %if.end28
+  call void %8(i32 %sub16, i32 %7, i32* %i, i32* %j) #4
+  br label %if.end32
+
+if.end32:                                         ; preds = %if.end28, %if.then31
+  %9 = load i32* %n, align 4, !tbaa !2
+  br label %return
+
+return:                                           ; preds = %if.end15, %lor.lhs.false, %lor.lhs.false21, %if.end, %entry, %if.end32
+  %retval.0 = phi i32 [ %9, %if.end32 ], [ 0, %entry ], [ 0, %if.end ], [ 0, %lor.lhs.false21 ], [ 0, %lor.lhs.false ], [ 0, %if.end15 ]
+  ret i32 %retval.0
+}

@@ -1,0 +1,34 @@
+define i32 @FmoGetFirstMBOfSliceGroup(i32 %SliceGroupID) #2 {
+entry:
+  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
+  %PicSizeInMbs7 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
+  %1 = load i32* %PicSizeInMbs7, align 4, !tbaa !0
+  %cmp8 = icmp sgt i32 %1, 0
+  br i1 %cmp8, label %land.rhs.lr.ph, label %while.end
+
+land.rhs.lr.ph:                                   ; preds = %entry
+  %2 = load i8** @MBAmap, align 8, !tbaa !3
+  br label %land.rhs
+
+while.cond:                                       ; preds = %land.rhs
+  %3 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp slt i32 %3, %1
+  br i1 %cmp, label %land.rhs, label %while.end
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
+  %indvars.iv = phi i64 [ 0, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
+  %i.09 = phi i32 [ 0, %land.rhs.lr.ph ], [ %inc, %while.cond ]
+  %arrayidx.i = getelementptr inbounds i8* %2, i64 %indvars.iv
+  %4 = load i8* %arrayidx.i, align 1, !tbaa !1
+  %conv.i = zext i8 %4 to i32
+  %cmp1 = icmp eq i32 %conv.i, %SliceGroupID
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.09, 1
+  br i1 %cmp1, label %while.end, label %while.cond
+
+while.end:                                        ; preds = %while.cond, %land.rhs, %entry
+  %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.09, %land.rhs ], [ %inc, %while.cond ]
+  %cmp3 = icmp slt i32 %i.0.lcssa, %1
+  %i.0. = select i1 %cmp3, i32 %i.0.lcssa, i32 -1
+  ret i32 %i.0.
+}

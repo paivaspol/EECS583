@@ -1,0 +1,17 @@
+define internal i32 @endIG(i8* %s, i32* nocapture %addend) #0 {
+entry:
+  store i32 1, i32* %addend, align 4, !tbaa !0
+  %call = tail call i8* @strchr(i8* %s, i32 49) #9
+  %cmp = icmp eq i8* %call, null
+  br i1 %cmp, label %lor.rhs, label %lor.end
+
+lor.rhs:                                          ; preds = %entry
+  %call1 = tail call i8* @strchr(i8* %s, i32 50) #9
+  %cmp2 = icmp ne i8* %call1, null
+  br label %lor.end
+
+lor.end:                                          ; preds = %entry, %lor.rhs
+  %0 = phi i1 [ true, %entry ], [ %cmp2, %lor.rhs ]
+  %lor.ext = zext i1 %0 to i32
+  ret i32 %lor.ext
+}

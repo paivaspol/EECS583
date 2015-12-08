@@ -1,0 +1,51 @@
+define void @Clear_Motion_Search_Module() #0 {
+entry:
+  %0 = load i32* @max_mvd, align 4, !tbaa !3
+  %1 = load i32** @mvbits, align 8, !tbaa !0
+  %idx.ext = sext i32 %0 to i64
+  %idx.neg = sub i64 0, %idx.ext
+  %add.ptr = getelementptr inbounds i32* %1, i64 %idx.neg
+  store i32* %add.ptr, i32** @mvbits, align 8, !tbaa !0
+  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !0
+  %max_imgpel_value = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 155
+  %3 = load i32* %max_imgpel_value, align 4, !tbaa !3
+  %max_imgpel_value_uv = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 156
+  %4 = load i32* %max_imgpel_value_uv, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %3, %4
+  %. = select i1 %cmp, i32 %3, i32 %4
+  %add = add nsw i32 %., 1
+  %5 = load i32** @byte_abs, align 8, !tbaa !0
+  %idx.ext4 = sext i32 %add to i64
+  %idx.neg5 = sub i64 0, %idx.ext4
+  %add.ptr6 = getelementptr inbounds i32* %5, i64 %idx.neg5
+  store i32* %add.ptr6, i32** @byte_abs, align 8, !tbaa !0
+  %6 = load i32** @spiral_search_x, align 8, !tbaa !0
+  %7 = bitcast i32* %6 to i8*
+  tail call void @free(i8* %7) #7
+  %8 = load i32** @spiral_search_y, align 8, !tbaa !0
+  %9 = bitcast i32* %8 to i8*
+  tail call void @free(i8* %9) #7
+  %10 = load i32** @mvbits, align 8, !tbaa !0
+  %11 = bitcast i32* %10 to i8*
+  tail call void @free(i8* %11) #7
+  %12 = load i32** @refbits, align 8, !tbaa !0
+  %13 = bitcast i32* %12 to i8*
+  tail call void @free(i8* %13) #7
+  %14 = load i32** @byte_abs, align 8, !tbaa !0
+  %15 = bitcast i32* %14 to i8*
+  tail call void @free(i8* %15) #7
+  %16 = load i32***** @motion_cost, align 8, !tbaa !0
+  tail call void @free_mem4Dint(i32**** %16, i32 8, i32 2) #7
+  %17 = load %struct.InputParameters** @input, align 8, !tbaa !0
+  %FMEnable = getelementptr inbounds %struct.InputParameters* %17, i64 0, i32 134
+  %18 = load i32* %FMEnable, align 4, !tbaa !3
+  %tobool = icmp eq i32 %18, 0
+  br i1 %tobool, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void @ClearFastFullIntegerSearch() #8
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void
+}

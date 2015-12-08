@@ -1,0 +1,74 @@
+define i32 @GuessAlignmentSeqtype(i8** nocapture %aseq, i32 %nseq) #0 {
+entry:
+  %cmp29 = icmp sgt i32 %nseq, 0
+  br i1 %cmp29, label %for.body, label %if.end
+
+for.body:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %nother.034 = phi i32 [ %nother.1, %for.inc ], [ 0, %entry ]
+  %namino.033 = phi i32 [ %namino.1, %for.inc ], [ 0, %entry ]
+  %ndna.032 = phi i32 [ %ndna.1, %for.inc ], [ 0, %entry ]
+  %nrna.031 = phi i32 [ %nrna.1, %for.inc ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8** %aseq, i64 %indvars.iv
+  %0 = load i8** %arrayidx, align 8, !tbaa !3
+  %call = tail call i32 @Seqtype(i8* %0) #7
+  switch i32 %call, label %sw.default [
+    i32 2, label %sw.bb
+    i32 1, label %sw.bb1
+    i32 3, label %sw.bb3
+  ]
+
+sw.bb:                                            ; preds = %for.body
+  %inc = add nsw i32 %nrna.031, 1
+  br label %for.inc
+
+sw.bb1:                                           ; preds = %for.body
+  %inc2 = add nsw i32 %ndna.032, 1
+  br label %for.inc
+
+sw.bb3:                                           ; preds = %for.body
+  %inc4 = add nsw i32 %namino.033, 1
+  br label %for.inc
+
+sw.default:                                       ; preds = %for.body
+  %inc5 = add nsw i32 %nother.034, 1
+  br label %for.inc
+
+for.inc:                                          ; preds = %sw.bb, %sw.bb1, %sw.bb3, %sw.default
+  %nrna.1 = phi i32 [ %nrna.031, %sw.default ], [ %nrna.031, %sw.bb3 ], [ %nrna.031, %sw.bb1 ], [ %inc, %sw.bb ]
+  %ndna.1 = phi i32 [ %ndna.032, %sw.default ], [ %ndna.032, %sw.bb3 ], [ %inc2, %sw.bb1 ], [ %ndna.032, %sw.bb ]
+  %namino.1 = phi i32 [ %namino.033, %sw.default ], [ %inc4, %sw.bb3 ], [ %namino.033, %sw.bb1 ], [ %namino.033, %sw.bb ]
+  %nother.1 = phi i32 [ %inc5, %sw.default ], [ %nother.034, %sw.bb3 ], [ %nother.034, %sw.bb1 ], [ %nother.034, %sw.bb ]
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %tobool = icmp eq i32 %nother.1, 0
+  br i1 %tobool, label %if.end, label %return
+
+if.end:                                           ; preds = %entry, %for.end
+  %nrna.0.lcssa41 = phi i32 [ %nrna.1, %for.end ], [ 0, %entry ]
+  %ndna.0.lcssa40 = phi i32 [ %ndna.1, %for.end ], [ 0, %entry ]
+  %namino.0.lcssa39 = phi i32 [ %namino.1, %for.end ], [ 0, %entry ]
+  %cmp7 = icmp eq i32 %namino.0.lcssa39, %nseq
+  br i1 %cmp7, label %return, label %if.end9
+
+if.end9:                                          ; preds = %if.end
+  %cmp10 = icmp eq i32 %ndna.0.lcssa40, %nseq
+  br i1 %cmp10, label %return, label %if.end12
+
+if.end12:                                         ; preds = %if.end9
+  %cmp13 = icmp eq i32 %nrna.0.lcssa41, %nseq
+  br i1 %cmp13, label %return, label %if.end15
+
+if.end15:                                         ; preds = %if.end12
+  %cmp16 = icmp eq i32 %namino.0.lcssa39, 0
+  %. = select i1 %cmp16, i32 2, i32 3
+  br label %return
+
+return:                                           ; preds = %if.end15, %if.end12, %if.end9, %if.end, %for.end
+  %retval.0 = phi i32 [ 0, %for.end ], [ 3, %if.end ], [ 1, %if.end9 ], [ 2, %if.end12 ], [ %., %if.end15 ]
+  ret i32 %retval.0
+}

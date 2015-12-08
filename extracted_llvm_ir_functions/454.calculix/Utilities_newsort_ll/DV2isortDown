@@ -1,0 +1,41 @@
+define void @DV2isortDown(i32 %n, double* nocapture %dvec1, double* nocapture %dvec2) #1 {
+entry:
+  %cmp53 = icmp sgt i32 %n, 1
+  br i1 %cmp53, label %land.rhs.lr.ph, label %for.end28
+
+land.rhs.lr.ph:                                   ; preds = %for.inc27, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc27 ], [ 1, %entry ]
+  br label %land.rhs
+
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body6
+  %indvars.iv55 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next56, %for.body6 ]
+  %indvars.iv.next56 = add i64 %indvars.iv55, -1
+  %arrayidx = getelementptr inbounds double* %dvec1, i64 %indvars.iv.next56
+  %0 = load double* %arrayidx, align 8, !tbaa !3
+  %arrayidx4 = getelementptr inbounds double* %dvec1, i64 %indvars.iv55
+  %1 = load double* %arrayidx4, align 8, !tbaa !3
+  %cmp5 = fcmp olt double %0, %1
+  br i1 %cmp5, label %for.body6, label %for.inc27
+
+for.body6:                                        ; preds = %land.rhs
+  store double %1, double* %arrayidx, align 8, !tbaa !3
+  store double %0, double* %arrayidx4, align 8, !tbaa !3
+  %arrayidx19 = getelementptr inbounds double* %dvec2, i64 %indvars.iv.next56
+  %2 = load double* %arrayidx19, align 8, !tbaa !3
+  %arrayidx21 = getelementptr inbounds double* %dvec2, i64 %indvars.iv55
+  %3 = load double* %arrayidx21, align 8, !tbaa !3
+  store double %3, double* %arrayidx19, align 8, !tbaa !3
+  store double %2, double* %arrayidx21, align 8, !tbaa !3
+  %4 = trunc i64 %indvars.iv.next56 to i32
+  %cmp2 = icmp sgt i32 %4, 0
+  br i1 %cmp2, label %land.rhs, label %for.inc27
+
+for.inc27:                                        ; preds = %for.body6, %land.rhs
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end28, label %land.rhs.lr.ph
+
+for.end28:                                        ; preds = %for.inc27, %entry
+  ret void
+}

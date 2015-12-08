@@ -1,0 +1,21 @@
+define i32 @Strinsert(i8* nocapture %s1, i8 signext %c, i32 %pos) #0 {
+entry:
+  %idx.ext = sext i32 %pos to i64
+  %add.ptr = getelementptr inbounds i8* %s1, i64 %idx.ext
+  %tobool4 = icmp eq i8 %c, 0
+  br i1 %tobool4, label %for.end, label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %s.06 = phi i8* [ %incdec.ptr, %for.body ], [ %add.ptr, %entry ]
+  %c.addr.05 = phi i8 [ %0, %for.body ], [ %c, %entry ]
+  %0 = load i8* %s.06, align 1, !tbaa !1
+  store i8 %c.addr.05, i8* %s.06, align 1, !tbaa !1
+  %incdec.ptr = getelementptr inbounds i8* %s.06, i64 1
+  %tobool = icmp eq i8 %0, 0
+  br i1 %tobool, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %s.0.lcssa = phi i8* [ %add.ptr, %entry ], [ %incdec.ptr, %for.body ]
+  store i8 0, i8* %s.0.lcssa, align 1, !tbaa !1
+  ret i32 1
+}

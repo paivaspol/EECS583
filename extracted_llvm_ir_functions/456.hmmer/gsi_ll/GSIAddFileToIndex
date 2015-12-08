@@ -1,0 +1,53 @@
+define void @GSIAddFileToIndex(%struct.gsiindex_s* nocapture %g, i8* %filename, i32 %fmt) #0 {
+entry:
+  %call = tail call i64 @strlen(i8* %filename) #7
+  %conv = trunc i64 %call to i32
+  %cmp = icmp sgt i32 %conv, 31
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0)) #6
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %call2 = tail call i8* @sre_strdup(i8* %filename, i32 %conv) #6
+  %nfiles = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2
+  %0 = load i16* %nfiles, align 2, !tbaa !4
+  %idxprom = zext i16 %0 to i64
+  %filenames = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0
+  %1 = load i8*** %filenames, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom
+  store i8* %call2, i8** %arrayidx, align 8, !tbaa !0
+  %fmt5 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1
+  %2 = load i32** %fmt5, align 8, !tbaa !0
+  %arrayidx6 = getelementptr inbounds i32* %2, i64 %idxprom
+  store i32 %fmt, i32* %arrayidx6, align 4, !tbaa !3
+  %inc = add i16 %0, 1
+  store i16 %inc, i16* %nfiles, align 2, !tbaa !4
+  %3 = urem i16 %inc, 10
+  %cmp10 = icmp eq i16 %3, 0
+  br i1 %cmp10, label %if.then12, label %if.end27
+
+if.then12:                                        ; preds = %if.end
+  %conv9 = zext i16 %inc to i64
+  %4 = load i8*** %filenames, align 8, !tbaa !0
+  %5 = bitcast i8** %4 to i8*
+  %add = shl nuw nsw i64 %conv9, 3
+  %mul = add i64 %add, 80
+  %call17 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 229, i8* %5, i64 %mul) #6
+  %6 = bitcast i8* %call17 to i8**
+  store i8** %6, i8*** %filenames, align 8, !tbaa !0
+  %7 = load i32** %fmt5, align 8, !tbaa !0
+  %8 = bitcast i32* %7 to i8*
+  %9 = load i16* %nfiles, align 2, !tbaa !4
+  %conv21 = zext i16 %9 to i64
+  %add22 = shl nuw nsw i64 %conv21, 2
+  %mul24 = add i64 %add22, 40
+  %call25 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 230, i8* %8, i64 %mul24) #6
+  %10 = bitcast i8* %call25 to i32*
+  store i32* %10, i32** %fmt5, align 8, !tbaa !0
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.then12, %if.end
+  ret void
+}

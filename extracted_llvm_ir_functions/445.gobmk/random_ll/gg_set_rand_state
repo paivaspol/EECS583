@@ -1,0 +1,21 @@
+define void @gg_set_rand_state(%struct.gg_rand_state* nocapture %state) #0 {
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv
+  %0 = load i32* %arrayidx, align 4, !tbaa !0
+  %arrayidx2 = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv
+  store i32 %0, i32* %arrayidx2, align 4, !tbaa !0
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 25
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body
+  %k = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1
+  %1 = load i32* %k, align 4, !tbaa !0
+  store i32 %1, i32* @k, align 4, !tbaa !0
+  ret void
+}

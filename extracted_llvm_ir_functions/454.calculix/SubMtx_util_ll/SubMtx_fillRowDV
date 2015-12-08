@@ -1,0 +1,584 @@
+define void @SubMtx_fillRowDV(%struct._SubMtx* %mtx, i32 %irow, %struct._DV* %rowDV) #0 {
+entry:
+  %entries = alloca double*, align 8
+  %inc1 = alloca i32, align 4
+  %inc2 = alloca i32, align 4
+  %ncol11 = alloca i32, align 4
+  %nrow = alloca i32, align 4
+  %entries17 = alloca double*, align 8
+  %nent = alloca i32, align 4
+  %nrow18 = alloca i32, align 4
+  %indices = alloca i32*, align 8
+  %sizes = alloca i32*, align 8
+  %entries44 = alloca double*, align 8
+  %nent48 = alloca i32, align 4
+  %ncol49 = alloca i32, align 4
+  %indices51 = alloca i32*, align 8
+  %sizes52 = alloca i32*, align 8
+  %entries81 = alloca double*, align 8
+  %nent83 = alloca i32, align 4
+  %colids = alloca i32*, align 8
+  %rowids = alloca i32*, align 8
+  %entries102 = alloca double*, align 8
+  %nent106 = alloca i32, align 4
+  %nrow107 = alloca i32, align 4
+  %firstlocs = alloca i32*, align 8
+  %sizes109 = alloca i32*, align 8
+  %entries141 = alloca double*, align 8
+  %nent146 = alloca i32, align 4
+  %ncol147 = alloca i32, align 4
+  %firstlocs149 = alloca i32*, align 8
+  %sizes150 = alloca i32*, align 8
+  %entries182 = alloca double*, align 8
+  %nent183 = alloca i32, align 4
+  %entries189 = alloca double*, align 8
+  %nrow193 = alloca i32, align 4
+  %nent194 = alloca i32, align 4
+  %pivotsizes = alloca i32*, align 8
+  %entries240 = alloca double*, align 8
+  %nrow246 = alloca i32, align 4
+  %nent247 = alloca i32, align 4
+  %pivotsizes249 = alloca i32*, align 8
+  %cmp = icmp eq %struct._SubMtx* %mtx, null
+  %cmp1 = icmp slt i32 %irow, 0
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq %struct._DV* %rowDV, null
+  %or.cond435 = or i1 %or.cond, %cmp3
+  br i1 %or.cond435, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), %struct._SubMtx* %mtx, i32 %irow, %struct._DV* %rowDV) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0
+  %1 = load i32* %type, align 4, !tbaa !3
+  %cmp4 = icmp eq i32 %1, 1
+  br i1 %cmp4, label %if.end8, label %if.then5
+
+if.then5:                                         ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), %struct._SubMtx* %mtx, i32 %irow, %struct._DV* %rowDV, i32 %1) #4
+  call void @exit(i32 -1) #5
+  unreachable
+
+if.end8:                                          ; preds = %if.end
+  %ncol = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 5
+  %3 = load i32* %ncol, align 4, !tbaa !3
+  call void @DV_setSize(%struct._DV* %rowDV, i32 %3) #4
+  %call9 = call double* @DV_entries(%struct._DV* %rowDV) #4
+  %4 = load i32* %ncol, align 4, !tbaa !3
+  call void @DVzero(i32 %4, double* %call9) #4
+  %mode = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 1
+  %5 = load i32* %mode, align 4, !tbaa !3
+  switch i32 %5, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb16
+    i32 3, label %sw.bb43
+    i32 4, label %sw.bb80
+    i32 5, label %sw.bb101
+    i32 6, label %sw.bb140
+    i32 7, label %sw.bb181
+    i32 8, label %for.body197.lr.ph
+    i32 9, label %for.body252.lr.ph
+  ]
+
+sw.bb:                                            ; preds = %if.end8, %if.end8
+  call void @SubMtx_denseInfo(%struct._SubMtx* %mtx, i32* %nrow, i32* %ncol11, i32* %inc1, i32* %inc2, double** %entries) #4
+  %6 = load i32* %ncol11, align 4, !tbaa !3
+  %cmp12436 = icmp sgt i32 %6, 0
+  br i1 %cmp12436, label %for.body.lr.ph, label %sw.epilog
+
+for.body.lr.ph:                                   ; preds = %sw.bb
+  %7 = load i32* %inc1, align 4, !tbaa !3
+  %mul = mul nsw i32 %7, %irow
+  %8 = load i32* %inc2, align 4, !tbaa !3
+  %9 = load double** %entries, align 8, !tbaa !0
+  br label %for.body
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %10 = trunc i64 %indvars.iv to i32
+  %mul13 = mul nsw i32 %8, %10
+  %add = add nsw i32 %mul13, %mul
+  %idxprom = sext i32 %add to i64
+  %arrayidx = getelementptr inbounds double* %9, i64 %idxprom
+  %11 = load double* %arrayidx, align 8, !tbaa !4
+  %arrayidx15 = getelementptr inbounds double* %call9, i64 %indvars.iv
+  store double %11, double* %arrayidx15, align 8, !tbaa !4
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %12 = trunc i64 %indvars.iv.next to i32
+  %cmp12 = icmp slt i32 %12, %6
+  br i1 %cmp12, label %for.body, label %sw.epilog
+
+sw.bb16:                                          ; preds = %if.end8
+  call void @SubMtx_sparseRowsInfo(%struct._SubMtx* %mtx, i32* %nrow18, i32* %nent, i32** %sizes, i32** %indices, double** %entries17) #4
+  %cmp20443 = icmp sgt i32 %irow, 0
+  %13 = load i32** %sizes, align 8, !tbaa !0
+  br i1 %cmp20443, label %for.body21, label %for.cond28.preheader
+
+for.cond19.for.cond28.preheader_crit_edge:        ; preds = %for.body21
+  %phitmp549 = sext i32 %add24 to i64
+  br label %for.cond28.preheader
+
+for.cond28.preheader:                             ; preds = %sw.bb16, %for.cond19.for.cond28.preheader_crit_edge
+  %offset.0.lcssa = phi i64 [ %phitmp549, %for.cond19.for.cond28.preheader_crit_edge ], [ 0, %sw.bb16 ]
+  %idxprom29 = sext i32 %irow to i64
+  %arrayidx30439 = getelementptr inbounds i32* %13, i64 %idxprom29
+  %14 = load i32* %arrayidx30439, align 4, !tbaa !3
+  %cmp31440 = icmp sgt i32 %14, 0
+  br i1 %cmp31440, label %for.body32.lr.ph, label %sw.epilog
+
+for.body32.lr.ph:                                 ; preds = %for.cond28.preheader
+  %15 = load double** %entries17, align 8, !tbaa !0
+  %16 = load i32** %indices, align 8, !tbaa !0
+  br label %for.body32
+
+for.body21:                                       ; preds = %sw.bb16, %for.body21
+  %indvars.iv506 = phi i64 [ %indvars.iv.next507, %for.body21 ], [ 0, %sw.bb16 ]
+  %offset.0444 = phi i32 [ %add24, %for.body21 ], [ 0, %sw.bb16 ]
+  %arrayidx23 = getelementptr inbounds i32* %13, i64 %indvars.iv506
+  %17 = load i32* %arrayidx23, align 4, !tbaa !3
+  %add24 = add nsw i32 %17, %offset.0444
+  %indvars.iv.next507 = add i64 %indvars.iv506, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next507 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %irow
+  br i1 %exitcond, label %for.cond19.for.cond28.preheader_crit_edge, label %for.body21
+
+for.body32:                                       ; preds = %for.body32.lr.ph, %for.body32
+  %indvars.iv504 = phi i64 [ %offset.0.lcssa, %for.body32.lr.ph ], [ %indvars.iv.next505, %for.body32 ]
+  %ii.0442 = phi i32 [ 0, %for.body32.lr.ph ], [ %inc40, %for.body32 ]
+  %arrayidx34 = getelementptr inbounds double* %15, i64 %indvars.iv504
+  %18 = load double* %arrayidx34, align 8, !tbaa !4
+  %arrayidx36 = getelementptr inbounds i32* %16, i64 %indvars.iv504
+  %19 = load i32* %arrayidx36, align 4, !tbaa !3
+  %idxprom37 = sext i32 %19 to i64
+  %arrayidx38 = getelementptr inbounds double* %call9, i64 %idxprom37
+  store double %18, double* %arrayidx38, align 8, !tbaa !4
+  %inc40 = add nsw i32 %ii.0442, 1
+  %indvars.iv.next505 = add i64 %indvars.iv504, 1
+  %cmp31 = icmp slt i32 %inc40, %14
+  br i1 %cmp31, label %for.body32, label %sw.epilog
+
+sw.bb43:                                          ; preds = %if.end8
+  call void @SubMtx_sparseColumnsInfo(%struct._SubMtx* %mtx, i32* %ncol49, i32* %nent48, i32** %sizes52, i32** %indices51, double** %entries44) #4
+  %20 = load i32* %ncol49, align 4, !tbaa !3
+  %cmp54454 = icmp sgt i32 %20, 0
+  br i1 %cmp54454, label %for.cond56.preheader.lr.ph, label %sw.epilog
+
+for.cond56.preheader.lr.ph:                       ; preds = %sw.bb43
+  %21 = load i32** %sizes52, align 8, !tbaa !0
+  %22 = load i32** %indices51, align 8, !tbaa !0
+  %23 = load double** %entries44, align 8, !tbaa !0
+  br label %for.cond56.preheader
+
+for.cond56.preheader:                             ; preds = %for.cond56.preheader.lr.ph, %for.end73
+  %indvars.iv511 = phi i64 [ 0, %for.cond56.preheader.lr.ph ], [ %indvars.iv.next512, %for.end73 ]
+  %offset50.0455 = phi i32 [ 0, %for.cond56.preheader.lr.ph ], [ %add76, %for.end73 ]
+  %arrayidx58448 = getelementptr inbounds i32* %21, i64 %indvars.iv511
+  %24 = load i32* %arrayidx58448, align 4, !tbaa !3
+  %cmp59449 = icmp sgt i32 %24, 0
+  br i1 %cmp59449, label %for.body60.lr.ph, label %for.end73
+
+for.body60.lr.ph:                                 ; preds = %for.cond56.preheader
+  %25 = sext i32 %offset50.0455 to i64
+  br label %for.body60
+
+for.body60:                                       ; preds = %for.body60.lr.ph, %for.inc70
+  %indvars.iv509 = phi i64 [ %25, %for.body60.lr.ph ], [ %indvars.iv.next510, %for.inc70 ]
+  %ii45.0451 = phi i32 [ 0, %for.body60.lr.ph ], [ %inc71, %for.inc70 ]
+  %arrayidx62 = getelementptr inbounds i32* %22, i64 %indvars.iv509
+  %26 = load i32* %arrayidx62, align 4, !tbaa !3
+  %cmp63 = icmp eq i32 %26, %irow
+  br i1 %cmp63, label %if.then64, label %for.inc70
+
+if.then64:                                        ; preds = %for.body60
+  %arrayidx66 = getelementptr inbounds double* %23, i64 %indvars.iv509
+  %27 = load double* %arrayidx66, align 8, !tbaa !4
+  %arrayidx68 = getelementptr inbounds double* %call9, i64 %indvars.iv511
+  store double %27, double* %arrayidx68, align 8, !tbaa !4
+  br label %for.end73
+
+for.inc70:                                        ; preds = %for.body60
+  %inc71 = add nsw i32 %ii45.0451, 1
+  %indvars.iv.next510 = add i64 %indvars.iv509, 1
+  %cmp59 = icmp slt i32 %inc71, %24
+  br i1 %cmp59, label %for.body60, label %for.end73
+
+for.end73:                                        ; preds = %for.cond56.preheader, %for.inc70, %if.then64
+  %add76 = add nsw i32 %24, %offset50.0455
+  %indvars.iv.next512 = add i64 %indvars.iv511, 1
+  %28 = trunc i64 %indvars.iv.next512 to i32
+  %cmp54 = icmp slt i32 %28, %20
+  br i1 %cmp54, label %for.cond56.preheader, label %sw.epilog
+
+sw.bb80:                                          ; preds = %if.end8
+  call void @SubMtx_sparseTriplesInfo(%struct._SubMtx* %mtx, i32* %nent83, i32** %rowids, i32** %colids, double** %entries81) #4
+  %29 = load i32* %nent83, align 4, !tbaa !3
+  %cmp85458 = icmp sgt i32 %29, 0
+  br i1 %cmp85458, label %for.body86.lr.ph, label %sw.epilog
+
+for.body86.lr.ph:                                 ; preds = %sw.bb80
+  %30 = load i32** %rowids, align 8, !tbaa !0
+  %31 = load double** %entries81, align 8, !tbaa !0
+  %32 = load i32** %colids, align 8, !tbaa !0
+  br label %for.body86
+
+for.body86:                                       ; preds = %for.body86.lr.ph, %for.inc98
+  %indvars.iv513 = phi i64 [ 0, %for.body86.lr.ph ], [ %indvars.iv.next514, %for.inc98 ]
+  %arrayidx88 = getelementptr inbounds i32* %30, i64 %indvars.iv513
+  %33 = load i32* %arrayidx88, align 4, !tbaa !3
+  %cmp89 = icmp eq i32 %33, %irow
+  br i1 %cmp89, label %if.then90, label %for.inc98
+
+if.then90:                                        ; preds = %for.body86
+  %arrayidx92 = getelementptr inbounds double* %31, i64 %indvars.iv513
+  %34 = load double* %arrayidx92, align 8, !tbaa !4
+  %arrayidx94 = getelementptr inbounds i32* %32, i64 %indvars.iv513
+  %35 = load i32* %arrayidx94, align 4, !tbaa !3
+  %idxprom95 = sext i32 %35 to i64
+  %arrayidx96 = getelementptr inbounds double* %call9, i64 %idxprom95
+  store double %34, double* %arrayidx96, align 8, !tbaa !4
+  br label %for.inc98
+
+for.inc98:                                        ; preds = %for.body86, %if.then90
+  %indvars.iv.next514 = add i64 %indvars.iv513, 1
+  %36 = trunc i64 %indvars.iv.next514 to i32
+  %cmp85 = icmp slt i32 %36, %29
+  br i1 %cmp85, label %for.body86, label %sw.epilog
+
+sw.bb101:                                         ; preds = %if.end8
+  call void @SubMtx_denseSubrowsInfo(%struct._SubMtx* %mtx, i32* %nrow107, i32* %nent106, i32** %firstlocs, i32** %sizes109, double** %entries102) #4
+  %cmp111464 = icmp sgt i32 %irow, 0
+  %37 = load i32** %sizes109, align 8, !tbaa !0
+  br i1 %cmp111464, label %for.body112, label %for.end118
+
+for.body112:                                      ; preds = %sw.bb101, %for.body112
+  %indvars.iv520 = phi i64 [ %indvars.iv.next521, %for.body112 ], [ 0, %sw.bb101 ]
+  %offset108.0466 = phi i32 [ %add115, %for.body112 ], [ 0, %sw.bb101 ]
+  %arrayidx114 = getelementptr inbounds i32* %37, i64 %indvars.iv520
+  %38 = load i32* %arrayidx114, align 4, !tbaa !3
+  %add115 = add nsw i32 %38, %offset108.0466
+  %indvars.iv.next521 = add i64 %indvars.iv520, 1
+  %lftr.wideiv522 = trunc i64 %indvars.iv.next521 to i32
+  %exitcond523 = icmp eq i32 %lftr.wideiv522, %irow
+  br i1 %exitcond523, label %for.cond110.for.end118_crit_edge, label %for.body112
+
+for.cond110.for.end118_crit_edge:                 ; preds = %for.body112
+  %phitmp = sext i32 %add115 to i64
+  br label %for.end118
+
+for.end118:                                       ; preds = %sw.bb101, %for.cond110.for.end118_crit_edge
+  %offset108.0.lcssa = phi i64 [ %phitmp, %for.cond110.for.end118_crit_edge ], [ 0, %sw.bb101 ]
+  %idxprom119 = sext i32 %irow to i64
+  %arrayidx120 = getelementptr inbounds i32* %37, i64 %idxprom119
+  %39 = load i32* %arrayidx120, align 4, !tbaa !3
+  %cmp121 = icmp sgt i32 %39, 0
+  br i1 %cmp121, label %if.then122, label %sw.epilog
+
+if.then122:                                       ; preds = %for.end118
+  %40 = load i32** %firstlocs, align 8, !tbaa !0
+  %arrayidx124 = getelementptr inbounds i32* %40, i64 %idxprom119
+  %41 = load i32* %arrayidx124, align 4, !tbaa !3
+  %add127 = add i32 %39, -1
+  %sub = add i32 %add127, %41
+  %cmp129461 = icmp sgt i32 %41, %sub
+  br i1 %cmp129461, label %sw.epilog, label %for.body130.lr.ph
+
+for.body130.lr.ph:                                ; preds = %if.then122
+  %42 = load double** %entries102, align 8, !tbaa !0
+  %43 = sext i32 %41 to i64
+  br label %for.body130
+
+for.body130:                                      ; preds = %for.body130, %for.body130.lr.ph
+  %indvars.iv517 = phi i64 [ %indvars.iv.next518, %for.body130 ], [ %offset108.0.lcssa, %for.body130.lr.ph ]
+  %indvars.iv515 = phi i64 [ %indvars.iv.next516, %for.body130 ], [ %43, %for.body130.lr.ph ]
+  %arrayidx132 = getelementptr inbounds double* %42, i64 %indvars.iv517
+  %44 = load double* %arrayidx132, align 8, !tbaa !4
+  %arrayidx134 = getelementptr inbounds double* %call9, i64 %indvars.iv515
+  store double %44, double* %arrayidx134, align 8, !tbaa !4
+  %indvars.iv.next516 = add i64 %indvars.iv515, 1
+  %indvars.iv.next518 = add i64 %indvars.iv517, 1
+  %45 = trunc i64 %indvars.iv515 to i32
+  %cmp129 = icmp slt i32 %45, %sub
+  br i1 %cmp129, label %for.body130, label %sw.epilog
+
+sw.bb140:                                         ; preds = %if.end8
+  call void @SubMtx_denseSubcolumnsInfo(%struct._SubMtx* %mtx, i32* %ncol147, i32* %nent146, i32** %firstlocs149, i32** %sizes150, double** %entries141) #4
+  %46 = load i32* %ncol147, align 4, !tbaa !3
+  %cmp152469 = icmp sgt i32 %46, 0
+  br i1 %cmp152469, label %for.body153.lr.ph, label %sw.epilog
+
+for.body153.lr.ph:                                ; preds = %sw.bb140
+  %47 = load i32** %sizes150, align 8, !tbaa !0
+  %48 = load i32** %firstlocs149, align 8, !tbaa !0
+  %49 = load double** %entries141, align 8, !tbaa !0
+  br label %for.body153
+
+for.body153:                                      ; preds = %for.body153.lr.ph, %for.inc178
+  %indvars.iv524 = phi i64 [ 0, %for.body153.lr.ph ], [ %indvars.iv.next525, %for.inc178 ]
+  %offset148.0471 = phi i32 [ 0, %for.body153.lr.ph ], [ %offset148.1, %for.inc178 ]
+  %arrayidx155 = getelementptr inbounds i32* %47, i64 %indvars.iv524
+  %50 = load i32* %arrayidx155, align 4, !tbaa !3
+  %cmp156 = icmp sgt i32 %50, 0
+  br i1 %cmp156, label %if.then157, label %for.inc178
+
+if.then157:                                       ; preds = %for.body153
+  %arrayidx159 = getelementptr inbounds i32* %48, i64 %indvars.iv524
+  %51 = load i32* %arrayidx159, align 4, !tbaa !3
+  %cmp164 = icmp sgt i32 %51, %irow
+  br i1 %cmp164, label %if.end173, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %if.then157
+  %add162 = add nsw i32 %51, %50
+  %cmp165 = icmp sgt i32 %add162, %irow
+  br i1 %cmp165, label %if.then166, label %if.end173
+
+if.then166:                                       ; preds = %land.lhs.true
+  %add167 = add nsw i32 %offset148.0471, %irow
+  %sub168 = sub i32 %add167, %51
+  %idxprom169 = sext i32 %sub168 to i64
+  %arrayidx170 = getelementptr inbounds double* %49, i64 %idxprom169
+  %52 = load double* %arrayidx170, align 8, !tbaa !4
+  %arrayidx172 = getelementptr inbounds double* %call9, i64 %indvars.iv524
+  store double %52, double* %arrayidx172, align 8, !tbaa !4
+  br label %if.end173
+
+if.end173:                                        ; preds = %if.then157, %if.then166, %land.lhs.true
+  %add176 = add nsw i32 %50, %offset148.0471
+  br label %for.inc178
+
+for.inc178:                                       ; preds = %for.body153, %if.end173
+  %offset148.1 = phi i32 [ %add176, %if.end173 ], [ %offset148.0471, %for.body153 ]
+  %indvars.iv.next525 = add i64 %indvars.iv524, 1
+  %53 = trunc i64 %indvars.iv.next525 to i32
+  %cmp152 = icmp slt i32 %53, %46
+  br i1 %cmp152, label %for.body153, label %sw.epilog
+
+sw.bb181:                                         ; preds = %if.end8
+  call void @SubMtx_diagonalInfo(%struct._SubMtx* %mtx, i32* %nent183, double** %entries182) #4
+  %idxprom184 = sext i32 %irow to i64
+  %54 = load double** %entries182, align 8, !tbaa !0
+  %arrayidx185 = getelementptr inbounds double* %54, i64 %idxprom184
+  %55 = load double* %arrayidx185, align 8, !tbaa !4
+  %arrayidx187 = getelementptr inbounds double* %call9, i64 %idxprom184
+  store double %55, double* %arrayidx187, align 8, !tbaa !4
+  br label %sw.epilog
+
+for.body197.lr.ph:                                ; preds = %if.end8
+  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow193, i32* %nent194, i32** %pivotsizes, double** %entries189) #4
+  %56 = load i32** %pivotsizes, align 8, !tbaa !0
+  %57 = load double** %entries189, align 8, !tbaa !0
+  %58 = add i32 %irow, -1
+  br label %for.body197
+
+for.body197:                                      ; preds = %if.end234.thread, %for.body197.lr.ph, %if.end234
+  %indvars.iv535 = phi i64 [ 0, %for.body197.lr.ph ], [ %indvars.iv.next536, %if.end234 ], [ %indvars.iv.next536550, %if.end234.thread ]
+  %kk192.0487 = phi i32 [ 0, %for.body197.lr.ph ], [ %kk192.3, %if.end234 ], [ %add233, %if.end234.thread ]
+  %jrow191.0486 = phi i32 [ 0, %for.body197.lr.ph ], [ %add202, %if.end234 ], [ %add202, %if.end234.thread ]
+  %arrayidx199 = getelementptr inbounds i32* %56, i64 %indvars.iv535
+  %59 = load i32* %arrayidx199, align 4, !tbaa !3
+  %add202 = add nsw i32 %59, %jrow191.0486
+  %cmp203 = icmp sgt i32 %add202, %irow
+  br i1 %cmp203, label %if.then204, label %if.end234.thread
+
+if.then204:                                       ; preds = %for.body197
+  %sub206 = sub i32 %irow, %jrow191.0486
+  %add207 = add nsw i32 %sub206, %kk192.0487
+  %cmp209473 = icmp sgt i32 %jrow191.0486, %irow
+  br i1 %cmp209473, label %for.cond219.loopexit, label %for.body210.lr.ph
+
+for.body210.lr.ph:                                ; preds = %if.then204
+  %60 = sext i32 %59 to i64
+  %61 = sext i32 %jrow191.0486 to i64
+  %62 = add i32 %58, %kk192.0487
+  %63 = add i32 %62, %59
+  %64 = add i32 %59, -2
+  %65 = mul i32 %sub206, %64
+  %66 = add i32 %63, %65
+  %67 = zext i32 %sub206 to i33
+  %68 = sub i32 %58, %jrow191.0486
+  %69 = zext i32 %68 to i33
+  %70 = mul i33 %67, %69
+  %71 = lshr i33 %70, 1
+  %72 = trunc i33 %71 to i32
+  br label %for.body210
+
+for.body210:                                      ; preds = %for.body210, %for.body210.lr.ph
+  %indvars.iv528 = phi i64 [ %indvars.iv.next529, %for.body210 ], [ %61, %for.body210.lr.ph ]
+  %indvars.iv526 = phi i64 [ %indvars.iv.next527, %for.body210 ], [ %60, %for.body210.lr.ph ]
+  %kk192.1475 = phi i32 [ %add215, %for.body210 ], [ %add207, %for.body210.lr.ph ]
+  %indvars.iv.next527 = add i64 %indvars.iv526, -1
+  %idxprom211 = sext i32 %kk192.1475 to i64
+  %arrayidx212 = getelementptr inbounds double* %57, i64 %idxprom211
+  %73 = load double* %arrayidx212, align 8, !tbaa !4
+  %arrayidx214 = getelementptr inbounds double* %call9, i64 %indvars.iv528
+  store double %73, double* %arrayidx214, align 8, !tbaa !4
+  %74 = trunc i64 %indvars.iv.next527 to i32
+  %add215 = add nsw i32 %74, %kk192.1475
+  %indvars.iv.next529 = add i64 %indvars.iv528, 1
+  %75 = trunc i64 %indvars.iv528 to i32
+  %cmp209 = icmp slt i32 %75, %irow
+  br i1 %cmp209, label %for.body210, label %for.cond208.for.cond219.loopexit_crit_edge
+
+for.cond208.for.cond219.loopexit_crit_edge:       ; preds = %for.body210
+  %76 = add i32 %irow, 1
+  %77 = sub i32 %66, %jrow191.0486
+  %78 = sub i32 %77, %72
+  br label %for.cond219.loopexit
+
+for.cond219.loopexit:                             ; preds = %for.cond208.for.cond219.loopexit_crit_edge, %if.then204
+  %kk192.1.lcssa = phi i32 [ %78, %for.cond208.for.cond219.loopexit_crit_edge ], [ %add207, %if.then204 ]
+  %ii190.0.lcssa = phi i32 [ %76, %for.cond208.for.cond219.loopexit_crit_edge ], [ %jrow191.0486, %if.then204 ]
+  %cmp221479 = icmp slt i32 %ii190.0.lcssa, %add202
+  br i1 %cmp221479, label %for.body222.lr.ph, label %if.end234
+
+for.body222.lr.ph:                                ; preds = %for.cond219.loopexit
+  %79 = sext i32 %kk192.1.lcssa to i64
+  %80 = sext i32 %ii190.0.lcssa to i64
+  %81 = add i32 %jrow191.0486, %kk192.1.lcssa
+  %82 = add i32 %81, %59
+  br label %for.body222
+
+for.body222:                                      ; preds = %for.body222.lr.ph, %for.body222
+  %indvars.iv532 = phi i64 [ %80, %for.body222.lr.ph ], [ %indvars.iv.next533, %for.body222 ]
+  %indvars.iv530 = phi i64 [ %79, %for.body222.lr.ph ], [ %indvars.iv.next531, %for.body222 ]
+  %arrayidx224 = getelementptr inbounds double* %57, i64 %indvars.iv530
+  %83 = load double* %arrayidx224, align 8, !tbaa !4
+  %arrayidx226 = getelementptr inbounds double* %call9, i64 %indvars.iv532
+  store double %83, double* %arrayidx226, align 8, !tbaa !4
+  %indvars.iv.next531 = add i64 %indvars.iv530, 1
+  %indvars.iv.next533 = add i64 %indvars.iv532, 1
+  %84 = trunc i64 %indvars.iv.next533 to i32
+  %cmp221 = icmp slt i32 %84, %add202
+  br i1 %cmp221, label %for.body222, label %for.cond219.if.end234.loopexit_crit_edge
+
+if.end234.thread:                                 ; preds = %for.body197
+  %add231 = add nsw i32 %59, 1
+  %mul232 = mul nsw i32 %add231, %59
+  %div = sdiv i32 %mul232, 2
+  %add233 = add nsw i32 %div, %kk192.0487
+  %indvars.iv.next536550 = add i64 %indvars.iv535, 1
+  br label %for.body197
+
+for.cond219.if.end234.loopexit_crit_edge:         ; preds = %for.body222
+  %85 = sub i32 %82, %ii190.0.lcssa
+  br label %if.end234
+
+if.end234:                                        ; preds = %for.cond219.loopexit, %for.cond219.if.end234.loopexit_crit_edge
+  %kk192.3 = phi i32 [ %85, %for.cond219.if.end234.loopexit_crit_edge ], [ %kk192.1.lcssa, %for.cond219.loopexit ]
+  %indvars.iv.next536 = add i64 %indvars.iv535, 1
+  br i1 %cmp203, label %sw.epilog, label %for.body197
+
+for.body252.lr.ph:                                ; preds = %if.end8
+  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow246, i32* %nent247, i32** %pivotsizes249, double** %entries240) #4
+  %86 = load i32** %pivotsizes249, align 8, !tbaa !0
+  %87 = load double** %entries240, align 8, !tbaa !0
+  %88 = add i32 %irow, -1
+  %89 = add i32 %irow, -2
+  br label %for.body252
+
+for.body252:                                      ; preds = %if.end292.thread, %for.body252.lr.ph, %if.end292
+  %indvars.iv546 = phi i64 [ 0, %for.body252.lr.ph ], [ %indvars.iv.next547, %if.end292 ], [ %indvars.iv.next547551, %if.end292.thread ]
+  %kk244.0503 = phi i32 [ 0, %for.body252.lr.ph ], [ %kk244.3, %if.end292 ], [ %add291, %if.end292.thread ]
+  %jrow243.0502 = phi i32 [ 0, %for.body252.lr.ph ], [ %add257, %if.end292 ], [ %add257, %if.end292.thread ]
+  %arrayidx254 = getelementptr inbounds i32* %86, i64 %indvars.iv546
+  %90 = load i32* %arrayidx254, align 4, !tbaa !3
+  %add257 = add nsw i32 %90, %jrow243.0502
+  %cmp258 = icmp sgt i32 %add257, %irow
+  br i1 %cmp258, label %if.then259, label %if.end292.thread
+
+if.then259:                                       ; preds = %for.body252
+  %sub261 = sub i32 %irow, %jrow243.0502
+  %add262 = add nsw i32 %sub261, %kk244.0503
+  %cmp264489 = icmp slt i32 %jrow243.0502, %irow
+  br i1 %cmp264489, label %for.body265.lr.ph, label %for.cond275.loopexit
+
+for.body265.lr.ph:                                ; preds = %if.then259
+  %91 = sext i32 %90 to i64
+  %92 = sext i32 %jrow243.0502 to i64
+  %93 = add i32 %88, %kk244.0503
+  %94 = add i32 %93, %90
+  %95 = sub i32 %88, %jrow243.0502
+  %96 = add i32 %90, -2
+  %97 = mul i32 %95, %96
+  %98 = add i32 %94, %97
+  %99 = zext i32 %95 to i33
+  %100 = sub i32 %89, %jrow243.0502
+  %101 = zext i32 %100 to i33
+  %102 = mul i33 %99, %101
+  %103 = lshr i33 %102, 1
+  %104 = trunc i33 %103 to i32
+  br label %for.body265
+
+for.body265:                                      ; preds = %for.body265.lr.ph, %for.body265
+  %indvars.iv539 = phi i64 [ %92, %for.body265.lr.ph ], [ %indvars.iv.next540, %for.body265 ]
+  %indvars.iv537 = phi i64 [ %91, %for.body265.lr.ph ], [ %indvars.iv.next538, %for.body265 ]
+  %kk244.1491 = phi i32 [ %add262, %for.body265.lr.ph ], [ %add271, %for.body265 ]
+  %indvars.iv.next538 = add i64 %indvars.iv537, -1
+  %idxprom266 = sext i32 %kk244.1491 to i64
+  %arrayidx267 = getelementptr inbounds double* %87, i64 %idxprom266
+  %105 = load double* %arrayidx267, align 8, !tbaa !4
+  %arrayidx269 = getelementptr inbounds double* %call9, i64 %indvars.iv539
+  store double %105, double* %arrayidx269, align 8, !tbaa !4
+  %106 = trunc i64 %indvars.iv.next538 to i32
+  %add271 = add nsw i32 %106, %kk244.1491
+  %indvars.iv.next540 = add i64 %indvars.iv539, 1
+  %107 = trunc i64 %indvars.iv.next540 to i32
+  %cmp264 = icmp slt i32 %107, %irow
+  br i1 %cmp264, label %for.body265, label %for.cond263.for.cond275.loopexit_crit_edge
+
+for.cond263.for.cond275.loopexit_crit_edge:       ; preds = %for.body265
+  %108 = sub i32 %98, %jrow243.0502
+  %109 = sub i32 %108, %104
+  br label %for.cond275.loopexit
+
+for.cond275.loopexit:                             ; preds = %for.cond263.for.cond275.loopexit_crit_edge, %if.then259
+  %kk244.1.lcssa = phi i32 [ %109, %for.cond263.for.cond275.loopexit_crit_edge ], [ %add262, %if.then259 ]
+  %ii241.0.lcssa = phi i32 [ %irow, %for.cond263.for.cond275.loopexit_crit_edge ], [ %jrow243.0502, %if.then259 ]
+  %cmp277495 = icmp slt i32 %ii241.0.lcssa, %add257
+  br i1 %cmp277495, label %for.body278.lr.ph, label %if.end292
+
+for.body278.lr.ph:                                ; preds = %for.cond275.loopexit
+  %110 = sext i32 %kk244.1.lcssa to i64
+  %111 = sext i32 %ii241.0.lcssa to i64
+  %112 = add i32 %jrow243.0502, %kk244.1.lcssa
+  %113 = add i32 %112, %90
+  br label %for.body278
+
+for.body278:                                      ; preds = %for.body278.lr.ph, %for.body278
+  %indvars.iv543 = phi i64 [ %111, %for.body278.lr.ph ], [ %indvars.iv.next544, %for.body278 ]
+  %indvars.iv541 = phi i64 [ %110, %for.body278.lr.ph ], [ %indvars.iv.next542, %for.body278 ]
+  %arrayidx280 = getelementptr inbounds double* %87, i64 %indvars.iv541
+  %114 = load double* %arrayidx280, align 8, !tbaa !4
+  %arrayidx282 = getelementptr inbounds double* %call9, i64 %indvars.iv543
+  store double %114, double* %arrayidx282, align 8, !tbaa !4
+  %indvars.iv.next542 = add i64 %indvars.iv541, 1
+  %indvars.iv.next544 = add i64 %indvars.iv543, 1
+  %115 = trunc i64 %indvars.iv.next544 to i32
+  %cmp277 = icmp slt i32 %115, %add257
+  br i1 %cmp277, label %for.body278, label %for.cond275.if.end292.loopexit_crit_edge
+
+if.end292.thread:                                 ; preds = %for.body252
+  %add288 = add nsw i32 %90, 1
+  %mul289 = mul nsw i32 %add288, %90
+  %div290 = sdiv i32 %mul289, 2
+  %add291 = add nsw i32 %div290, %kk244.0503
+  %indvars.iv.next547551 = add i64 %indvars.iv546, 1
+  br label %for.body252
+
+for.cond275.if.end292.loopexit_crit_edge:         ; preds = %for.body278
+  %116 = sub i32 %113, %ii241.0.lcssa
+  br label %if.end292
+
+if.end292:                                        ; preds = %for.cond275.loopexit, %for.cond275.if.end292.loopexit_crit_edge
+  %kk244.3 = phi i32 [ %116, %for.cond275.if.end292.loopexit_crit_edge ], [ %kk244.1.lcssa, %for.cond275.loopexit ]
+  %indvars.iv.next547 = add i64 %indvars.iv546, 1
+  br i1 %cmp258, label %sw.epilog, label %for.body252
+
+sw.epilog:                                        ; preds = %if.end292, %if.end234, %sw.bb140, %for.inc178, %if.then122, %for.body130, %sw.bb80, %for.inc98, %sw.bb43, %for.end73, %for.cond28.preheader, %for.body32, %sw.bb, %for.body, %if.end8, %for.end118, %sw.bb181
+  ret void
+}

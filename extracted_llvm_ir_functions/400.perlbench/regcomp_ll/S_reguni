@@ -1,0 +1,48 @@
+define internal fastcc void @S_reguni(%struct.RExC_state_t* nocapture %pRExC_state, i64 %uv, i8* %s, i64* nocapture %lenp) #0 {
+entry:
+  %emit = getelementptr inbounds %struct.RExC_state_t* %pRExC_state, i64 0, i32 8
+  %0 = load %struct.regnode** %emit, align 8, !tbaa !0
+  %cmp = icmp eq %struct.regnode* %0, @PL_regdummy
+  br i1 %cmp, label %cond.true, label %cond.false30
+
+cond.true:                                        ; preds = %entry
+  %cmp1 = icmp ult i64 %uv, 128
+  br i1 %cmp1, label %cond.end31, label %cond.false
+
+cond.false:                                       ; preds = %cond.true
+  %cmp3 = icmp ult i64 %uv, 2048
+  br i1 %cmp3, label %cond.end31, label %cond.false5
+
+cond.false5:                                      ; preds = %cond.false
+  %cmp6 = icmp ult i64 %uv, 65536
+  br i1 %cmp6, label %cond.end31, label %cond.false8
+
+cond.false8:                                      ; preds = %cond.false5
+  %cmp9 = icmp ult i64 %uv, 2097152
+  br i1 %cmp9, label %cond.end31, label %cond.false11
+
+cond.false11:                                     ; preds = %cond.false8
+  %cmp12 = icmp ult i64 %uv, 67108864
+  br i1 %cmp12, label %cond.end31, label %cond.false14
+
+cond.false14:                                     ; preds = %cond.false11
+  %cmp15 = icmp ult i64 %uv, 2147483648
+  br i1 %cmp15, label %cond.end31, label %cond.false17
+
+cond.false17:                                     ; preds = %cond.false14
+  %cmp18 = icmp ult i64 %uv, 68719476736
+  %phitmp = select i1 %cmp18, i64 7, i64 13
+  br label %cond.end31
+
+cond.false30:                                     ; preds = %entry
+  %call = tail call i8* @Perl_uvuni_to_utf8(i8* %s, i64 %uv) #8
+  %sub.ptr.lhs.cast = ptrtoint i8* %call to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %s to i64
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
+  br label %cond.end31
+
+cond.end31:                                       ; preds = %cond.true, %cond.false5, %cond.false11, %cond.false14, %cond.false17, %cond.false8, %cond.false, %cond.false30
+  %cond32 = phi i64 [ %sub.ptr.sub, %cond.false30 ], [ 1, %cond.true ], [ 2, %cond.false ], [ 3, %cond.false5 ], [ 4, %cond.false8 ], [ 5, %cond.false11 ], [ %phitmp, %cond.false17 ], [ 6, %cond.false14 ]
+  store i64 %cond32, i64* %lenp, align 8, !tbaa !5
+  ret void
+}

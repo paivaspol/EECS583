@@ -1,0 +1,67 @@
+define internal fastcc void @rightjustify(i8* nocapture %s, i32 %n) #0 {
+entry:
+  %sub = add nsw i32 %n, -1
+  %cmp6165 = icmp sgt i32 %n, 0
+  br i1 %cmp6165, label %while.body.lr.ph.lr.ph, label %while.cond33.preheader
+
+while.body.lr.ph.lr.ph:                           ; preds = %entry
+  %0 = sext i32 %n to i64
+  br label %while.body.lr.ph
+
+while.body.lr.ph:                                 ; preds = %while.body.lr.ph.lr.ph, %if.else
+  %indvars.iv73.in = phi i64 [ %0, %while.body.lr.ph.lr.ph ], [ %indvars.iv73, %if.else ]
+  %opos.0.ph67 = phi i32 [ %sub, %while.body.lr.ph.lr.ph ], [ %dec27, %if.else ]
+  %npos.0.ph66 = phi i32 [ %sub, %while.body.lr.ph.lr.ph ], [ %dec30, %if.else ]
+  %indvars.iv73 = add i64 %indvars.iv73.in, -1
+  %1 = sext i32 %opos.0.ph67 to i64
+  br label %while.body
+
+while.cond33.preheader:                           ; preds = %entry, %if.else, %if.then
+  %npos.0.ph64 = phi i32 [ %npos.0.ph66, %if.then ], [ %sub, %entry ], [ %dec30, %if.else ]
+  %cmp3458 = icmp sgt i32 %npos.0.ph64, -1
+  br i1 %cmp3458, label %while.body36.lr.ph, label %while.end40
+
+while.body36.lr.ph:                               ; preds = %while.cond33.preheader
+  %2 = sext i32 %npos.0.ph64 to i64
+  br label %while.body36
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.then
+  %indvars.iv70 = phi i64 [ %1, %while.body.lr.ph ], [ %indvars.iv.next71, %if.then ]
+  %opos.062 = phi i32 [ %opos.0.ph67, %while.body.lr.ph ], [ %dec, %if.then ]
+  %arrayidx = getelementptr inbounds i8* %s, i64 %indvars.iv70
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  switch i8 %3, label %if.else [
+    i8 32, label %if.then
+    i8 46, label %if.then
+    i8 95, label %if.then
+    i8 45, label %if.then
+    i8 126, label %if.then
+  ]
+
+if.then:                                          ; preds = %while.body, %while.body, %while.body, %while.body, %while.body
+  %indvars.iv.next71 = add i64 %indvars.iv70, -1
+  %dec = add nsw i32 %opos.062, -1
+  %4 = trunc i64 %indvars.iv70 to i32
+  %cmp = icmp sgt i32 %4, 0
+  br i1 %cmp, label %while.body, label %while.cond33.preheader
+
+if.else:                                          ; preds = %while.body
+  %dec27 = add nsw i32 %opos.062, -1
+  %dec30 = add nsw i32 %npos.0.ph66, -1
+  %arrayidx32 = getelementptr inbounds i8* %s, i64 %indvars.iv73
+  store i8 %3, i8* %arrayidx32, align 1, !tbaa !1
+  %cmp61 = icmp sgt i32 %opos.062, 0
+  br i1 %cmp61, label %while.body.lr.ph, label %while.cond33.preheader
+
+while.body36:                                     ; preds = %while.body36.lr.ph, %while.body36
+  %indvars.iv = phi i64 [ %2, %while.body36.lr.ph ], [ %indvars.iv.next, %while.body36 ]
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %arrayidx39 = getelementptr inbounds i8* %s, i64 %indvars.iv
+  store i8 46, i8* %arrayidx39, align 1, !tbaa !1
+  %5 = trunc i64 %indvars.iv to i32
+  %cmp34 = icmp sgt i32 %5, 0
+  br i1 %cmp34, label %while.body36, label %while.end40
+
+while.end40:                                      ; preds = %while.body36, %while.cond33.preheader
+  ret void
+}

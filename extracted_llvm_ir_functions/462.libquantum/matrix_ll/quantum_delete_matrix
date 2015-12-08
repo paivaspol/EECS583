@@ -1,0 +1,29 @@
+define void @quantum_delete_matrix(%struct.quantum_matrix_struct* nocapture %m) #0 {
+entry:
+  %t = getelementptr inbounds %struct.quantum_matrix_struct* %m, i64 0, i32 2
+  %0 = load { float, float }** %t, align 8, !tbaa !3
+  %1 = bitcast { float, float }* %0 to i8*
+  tail call void @free(i8* %1) #4
+  %cols = getelementptr inbounds %struct.quantum_matrix_struct* %m, i64 0, i32 1
+  %2 = load i32* %cols, align 4, !tbaa !4
+  %conv = sext i32 %2 to i64
+  %mul = mul i64 %conv, -8
+  %rows = getelementptr inbounds %struct.quantum_matrix_struct* %m, i64 0, i32 0
+  %3 = load i32* %rows, align 4, !tbaa !4
+  %conv1 = sext i32 %3 to i64
+  %mul2 = mul i64 %mul, %conv1
+  %4 = load i64* @quantum_memman.mem, align 8, !tbaa !0
+  %add.i = add nsw i64 %mul2, %4
+  store i64 %add.i, i64* @quantum_memman.mem, align 8, !tbaa !0
+  %5 = load i64* @quantum_memman.max, align 8, !tbaa !0
+  %cmp.i = icmp sgt i64 %add.i, %5
+  br i1 %cmp.i, label %if.then.i, label %quantum_memman.exit
+
+if.then.i:                                        ; preds = %entry
+  store i64 %add.i, i64* @quantum_memman.max, align 8, !tbaa !0
+  br label %quantum_memman.exit
+
+quantum_memman.exit:                              ; preds = %entry, %if.then.i
+  store { float, float }* null, { float, float }** %t, align 8, !tbaa !3
+  ret void
+}

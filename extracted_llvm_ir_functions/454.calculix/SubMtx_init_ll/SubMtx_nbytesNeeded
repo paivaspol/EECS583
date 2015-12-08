@@ -1,0 +1,89 @@
+define i32 @SubMtx_nbytesNeeded(i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #0 {
+entry:
+  %cmp = icmp slt i32 %nrow, 1
+  %cmp1 = icmp slt i32 %ncol, 1
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %nent, 0
+  %or.cond76 = or i1 %or.cond, %cmp3
+  br i1 %or.cond76, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %.off = add i32 %type, -1
+  %switch = icmp ult i32 %.off, 2
+  br i1 %switch, label %sw.epilog, label %sw.default
+
+sw.default:                                       ; preds = %if.end
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+sw.epilog:                                        ; preds = %if.end
+  %switch39 = icmp ult i32 %mode, 10
+  br i1 %switch39, label %sw.epilog8, label %sw.default6
+
+sw.default6:                                      ; preds = %sw.epilog
+  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 %type, i32 %mode, i32 %nrow, i32 %ncol, i32 %nent) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+sw.epilog8:                                       ; preds = %sw.epilog
+  %add = add nsw i32 %nrow, 7
+  %add9 = add nsw i32 %add, %ncol
+  %not.cmp10 = icmp ne i32 %type, 1
+  %mul = zext i1 %not.cmp10 to i32
+  %nent.mul = shl nsw i32 %nent, %mul
+  switch i32 %mode, label %sw.epilog34 [
+    i32 2, label %sw.bb16
+    i32 3, label %sw.bb19
+    i32 4, label %sw.bb22
+    i32 5, label %sw.bb25
+    i32 6, label %sw.bb28
+    i32 9, label %sw.bb31
+    i32 8, label %sw.bb31
+  ]
+
+sw.bb16:                                          ; preds = %sw.epilog8
+  %add17 = add nsw i32 %nent, %nrow
+  %add18 = add nsw i32 %add17, %add9
+  br label %sw.epilog34
+
+sw.bb19:                                          ; preds = %sw.epilog8
+  %add20 = add nsw i32 %nent, %ncol
+  %add21 = add nsw i32 %add20, %add9
+  br label %sw.epilog34
+
+sw.bb22:                                          ; preds = %sw.epilog8
+  %mul23 = shl i32 %nent, 1
+  %add24 = add nsw i32 %mul23, %add9
+  br label %sw.epilog34
+
+sw.bb25:                                          ; preds = %sw.epilog8
+  %mul26 = shl i32 %nrow, 1
+  %add27 = add nsw i32 %add9, %mul26
+  br label %sw.epilog34
+
+sw.bb28:                                          ; preds = %sw.epilog8
+  %mul29 = shl i32 %ncol, 1
+  %add30 = add nsw i32 %add9, %mul29
+  br label %sw.epilog34
+
+sw.bb31:                                          ; preds = %sw.epilog8, %sw.epilog8
+  %add32 = add nsw i32 %add9, %ncol
+  br label %sw.epilog34
+
+sw.epilog34:                                      ; preds = %sw.epilog8, %sw.bb31, %sw.bb28, %sw.bb25, %sw.bb22, %sw.bb19, %sw.bb16
+  %nint.0 = phi i32 [ %add9, %sw.epilog8 ], [ %add32, %sw.bb31 ], [ %add30, %sw.bb28 ], [ %add27, %sw.bb25 ], [ %add24, %sw.bb22 ], [ %add21, %sw.bb19 ], [ %add18, %sw.bb16 ]
+  %add35 = add nsw i32 %nint.0, 1
+  %div = sdiv i32 %add35, 2
+  %add36 = add nsw i32 %div, %nent.mul
+  %mul37 = shl i32 %add36, 3
+  ret i32 %mul37
+}

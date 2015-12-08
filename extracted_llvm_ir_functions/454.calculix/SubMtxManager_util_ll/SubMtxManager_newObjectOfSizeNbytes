@@ -1,0 +1,109 @@
+define %struct._SubMtx* @SubMtxManager_newObjectOfSizeNbytes(%struct._SubMtxManager* %manager, i32 %nbytesNeeded) #0 {
+entry:
+  %cmp = icmp eq %struct._SubMtxManager* %manager, null
+  %cmp1 = icmp slt i32 %nbytesNeeded, 1
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), %struct._SubMtxManager* %manager, i32 %nbytesNeeded) #4
+  tail call void @exit(i32 -1) #5
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1
+  %1 = load %struct._Lock** %lock, align 8, !tbaa !0
+  %cmp2 = icmp eq %struct._Lock* %1, null
+  br i1 %cmp2, label %if.end5, label %if.then3
+
+if.then3:                                         ; preds = %if.end
+  tail call void @Lock_lock(%struct._Lock* %1) #4
+  %nlocks = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 9
+  %2 = load i32* %nlocks, align 4, !tbaa !3
+  %inc = add nsw i32 %2, 1
+  store i32 %inc, i32* %nlocks, align 4, !tbaa !3
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end, %if.then3
+  %head = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0
+  %mtx.072 = load %struct._SubMtx** %head, align 8
+  %cmp673 = icmp eq %struct._SubMtx* %mtx.072, null
+  br i1 %cmp673, label %if.then26, label %for.body
+
+for.cond:                                         ; preds = %for.body
+  %next = getelementptr inbounds %struct._SubMtx* %mtx.075, i64 0, i32 9
+  %mtx.0 = load %struct._SubMtx** %next, align 8
+  %cmp6 = icmp eq %struct._SubMtx* %mtx.0, null
+  br i1 %cmp6, label %if.then26, label %for.body
+
+for.body:                                         ; preds = %if.end5, %for.cond
+  %mtx.075 = phi %struct._SubMtx* [ %mtx.0, %for.cond ], [ %mtx.072, %if.end5 ]
+  %prev.074 = phi %struct._SubMtx* [ %mtx.075, %for.cond ], [ null, %if.end5 ]
+  %call7 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx.075) #4
+  %cmp8 = icmp slt i32 %call7, %nbytesNeeded
+  br i1 %cmp8, label %for.cond, label %if.then12
+
+if.then12:                                        ; preds = %for.body
+  %cmp13 = icmp eq %struct._SubMtx* %prev.074, null
+  %next15 = getelementptr inbounds %struct._SubMtx* %mtx.075, i64 0, i32 9
+  %3 = load %struct._SubMtx** %next15, align 8, !tbaa !0
+  br i1 %cmp13, label %if.then14, label %if.else
+
+if.then14:                                        ; preds = %if.then12
+  store %struct._SubMtx* %3, %struct._SubMtx** %head, align 8, !tbaa !0
+  br label %if.end28
+
+if.else:                                          ; preds = %if.then12
+  %next18 = getelementptr inbounds %struct._SubMtx* %prev.074, i64 0, i32 9
+  store %struct._SubMtx* %3, %struct._SubMtx** %next18, align 8, !tbaa !0
+  br label %if.end28
+
+if.then26:                                        ; preds = %for.cond, %if.end5
+  %call21 = tail call %struct._SubMtx* @SubMtx_new() #4
+  %wrkDV = getelementptr inbounds %struct._SubMtx* %call21, i64 0, i32 8
+  %conv = sext i32 %nbytesNeeded to i64
+  %div = lshr i64 %conv, 3
+  %conv22 = trunc i64 %div to i32
+  tail call void @DV_setSize(%struct._DV* %wrkDV, i32 %conv22) #4
+  %call27 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %call21) #4
+  %nbytesalloc = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 6
+  %4 = load i32* %nbytesalloc, align 4, !tbaa !3
+  %add = add nsw i32 %4, %call27
+  store i32 %add, i32* %nbytesalloc, align 4, !tbaa !3
+  br label %if.end28
+
+if.end28:                                         ; preds = %if.then14, %if.else, %if.then26
+  %mtx.169 = phi %struct._SubMtx* [ %call21, %if.then26 ], [ %mtx.075, %if.else ], [ %mtx.075, %if.then14 ]
+  %nactive = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 3
+  %5 = load i32* %nactive, align 4, !tbaa !3
+  %inc29 = add nsw i32 %5, 1
+  store i32 %inc29, i32* %nactive, align 4, !tbaa !3
+  %call30 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx.169) #4
+  %nbytesactive = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 4
+  %6 = load i32* %nbytesactive, align 4, !tbaa !3
+  %add31 = add nsw i32 %6, %call30
+  store i32 %add31, i32* %nbytesactive, align 4, !tbaa !3
+  %nbytesrequested = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 5
+  %7 = load i32* %nbytesrequested, align 4, !tbaa !3
+  %add32 = add nsw i32 %7, %nbytesNeeded
+  store i32 %add32, i32* %nbytesrequested, align 4, !tbaa !3
+  %nrequests = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 7
+  %8 = load i32* %nrequests, align 4, !tbaa !3
+  %inc33 = add nsw i32 %8, 1
+  store i32 %inc33, i32* %nrequests, align 4, !tbaa !3
+  %9 = load %struct._Lock** %lock, align 8, !tbaa !0
+  %cmp35 = icmp eq %struct._Lock* %9, null
+  br i1 %cmp35, label %if.end40, label %if.then37
+
+if.then37:                                        ; preds = %if.end28
+  %nunlocks = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 10
+  %10 = load i32* %nunlocks, align 4, !tbaa !3
+  %inc38 = add nsw i32 %10, 1
+  store i32 %inc38, i32* %nunlocks, align 4, !tbaa !3
+  tail call void @Lock_unlock(%struct._Lock* %9) #4
+  br label %if.end40
+
+if.end40:                                         ; preds = %if.end28, %if.then37
+  ret %struct._SubMtx* %mtx.169
+}

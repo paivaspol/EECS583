@@ -1,0 +1,144 @@
+define i32 @SSIGetSubseqOffset(%struct.ssifile_s* nocapture %sfp, i8* nocapture %key, i32 %requested_start, i32* nocapture %ret_fh, %struct.ssioffset_s* nocapture %record_offset, %struct.ssioffset_s* nocapture %data_offset, i32* nocapture %ret_actual_start) #0 {
+entry:
+  %len = alloca i32, align 4
+  %call = call i32 @SSIGetOffsetByName(%struct.ssifile_s* %sfp, i8* %key, i32* %ret_fh, %struct.ssioffset_s* %record_offset) #9
+  %cmp = icmp eq i32 %call, 0
+  br i1 %cmp, label %if.end, label %return
+
+if.end:                                           ; preds = %entry
+  %0 = load i32* %ret_fh, align 4, !tbaa !4
+  %idxprom = sext i32 %0 to i64
+  %fileflags = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 18
+  %1 = load i32** %fileflags, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom
+  %2 = load i32* %arrayidx, align 4, !tbaa !4
+  %and = and i32 %2, 1
+  %tobool = icmp eq i32 %and, 0
+  br i1 %tobool, label %return, label %if.end2
+
+if.end2:                                          ; preds = %if.end
+  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
+  %3 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15
+  %4 = load i8* %smode, align 1, !tbaa !1
+  %call3 = call fastcc i32 @read_offset(%struct._IO_FILE* %3, i8 signext %4, %struct.ssioffset_s* %data_offset) #9
+  %tobool4 = icmp eq i32 %call3, 0
+  br i1 %tobool4, label %return, label %if.end6
+
+if.end6:                                          ; preds = %if.end2
+  %5 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
+  %call8 = call fastcc i32 @read_i32(%struct._IO_FILE* %5, i32* %len) #9
+  %tobool9 = icmp eq i32 %call8, 0
+  br i1 %tobool9, label %return, label %if.end11
+
+if.end11:                                         ; preds = %if.end6
+  %6 = load i32* %ret_fh, align 4, !tbaa !4
+  %idxprom12 = sext i32 %6 to i64
+  %rpl = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 20
+  %7 = load i32** %rpl, align 8, !tbaa !0
+  %arrayidx13 = getelementptr inbounds i32* %7, i64 %idxprom12
+  %8 = load i32* %arrayidx13, align 4, !tbaa !4
+  %bpl = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 19
+  %9 = load i32** %bpl, align 8, !tbaa !0
+  %arrayidx15 = getelementptr inbounds i32* %9, i64 %idxprom12
+  %10 = load i32* %arrayidx15, align 4, !tbaa !4
+  %sub = add nsw i32 %requested_start, -1
+  %div = sdiv i32 %sub, %8
+  %cmp16 = icmp eq i32 %8, 0
+  %cmp17 = icmp eq i32 %10, 0
+  %or.cond = or i1 %cmp16, %cmp17
+  br i1 %or.cond, label %return, label %if.end19
+
+if.end19:                                         ; preds = %if.end11
+  %cmp20 = icmp slt i32 %requested_start, 0
+  br i1 %cmp20, label %return, label %lor.lhs.false21
+
+lor.lhs.false21:                                  ; preds = %if.end19
+  %11 = load i32* %len, align 4, !tbaa !4
+  %cmp22 = icmp ult i32 %11, %requested_start
+  br i1 %cmp22, label %return, label %if.end24
+
+if.end24:                                         ; preds = %lor.lhs.false21
+  %add = add nsw i32 %8, 1
+  %cmp25 = icmp eq i32 %10, %add
+  %12 = load i8* %smode, align 1, !tbaa !1
+  %cmp28 = icmp eq i8 %12, 0
+  br i1 %cmp25, label %if.then26, label %if.else54
+
+if.then26:                                        ; preds = %if.end24
+  br i1 %cmp28, label %if.then30, label %if.else
+
+if.then30:                                        ; preds = %if.then26
+  %mode = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
+  store i8 0, i8* %mode, align 1, !tbaa !1
+  %off = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1
+  %i32 = bitcast %union.anon* %off to i32*
+  %13 = load i32* %i32, align 4, !tbaa !4
+  %mul = mul nsw i32 %div, %10
+  %add31 = add i32 %13, %mul
+  %rem = srem i32 %sub, %8
+  %add33 = add i32 %add31, %rem
+  store i32 %add33, i32* %i32, align 4, !tbaa !4
+  br label %if.end85
+
+if.else:                                          ; preds = %if.then26
+  %cmp38 = icmp eq i8 %12, 1
+  br i1 %cmp38, label %if.then40, label %if.end85
+
+if.then40:                                        ; preds = %if.else
+  %mode41 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
+  store i8 1, i8* %mode41, align 1, !tbaa !1
+  %i64 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, i32 0
+  %14 = load i64* %i64, align 8, !tbaa !5
+  %mul43 = mul nsw i32 %div, %10
+  %conv44 = sext i32 %mul43 to i64
+  %add45 = add i64 %14, %conv44
+  %rem47 = srem i32 %sub, %8
+  %conv48 = sext i32 %rem47 to i64
+  %add49 = add i64 %add45, %conv48
+  store i64 %add49, i64* %i64, align 8, !tbaa !5
+  br label %if.end85
+
+if.else54:                                        ; preds = %if.end24
+  br i1 %cmp28, label %if.then59, label %if.else67
+
+if.then59:                                        ; preds = %if.else54
+  %mode60 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
+  store i8 0, i8* %mode60, align 1, !tbaa !1
+  %off61 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1
+  %i3262 = bitcast %union.anon* %off61 to i32*
+  %15 = load i32* %i3262, align 4, !tbaa !4
+  %mul63 = mul nsw i32 %div, %10
+  %add64 = add i32 %15, %mul63
+  store i32 %add64, i32* %i3262, align 4, !tbaa !4
+  br label %if.end82
+
+if.else67:                                        ; preds = %if.else54
+  %cmp70 = icmp eq i8 %12, 1
+  br i1 %cmp70, label %if.then72, label %if.end82
+
+if.then72:                                        ; preds = %if.else67
+  %mode73 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
+  store i8 1, i8* %mode73, align 1, !tbaa !1
+  %i6475 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, i32 0
+  %16 = load i64* %i6475, align 8, !tbaa !5
+  %mul76 = mul nsw i32 %div, %10
+  %conv77 = sext i32 %mul76 to i64
+  %add78 = add i64 %16, %conv77
+  store i64 %add78, i64* %i6475, align 8, !tbaa !5
+  br label %if.end82
+
+if.end82:                                         ; preds = %if.else67, %if.then72, %if.then59
+  %mul83 = mul nsw i32 %div, %8
+  %add84 = add nsw i32 %mul83, 1
+  br label %if.end85
+
+if.end85:                                         ; preds = %if.then30, %if.then40, %if.else, %if.end82
+  %storemerge = phi i32 [ %add84, %if.end82 ], [ %requested_start, %if.else ], [ %requested_start, %if.then40 ], [ %requested_start, %if.then30 ]
+  store i32 %storemerge, i32* %ret_actual_start, align 4, !tbaa !4
+  br label %return
+
+return:                                           ; preds = %if.end19, %lor.lhs.false21, %if.end11, %if.end6, %if.end2, %if.end, %entry, %if.end85
+  %retval.0 = phi i32 [ 0, %if.end85 ], [ %call, %entry ], [ 10, %if.end ], [ 1, %if.end2 ], [ 1, %if.end6 ], [ 10, %if.end11 ], [ 11, %lor.lhs.false21 ], [ 11, %if.end19 ]
+  ret i32 %retval.0
+}

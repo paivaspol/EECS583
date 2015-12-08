@@ -1,0 +1,91 @@
+define void @display_board(%struct._IO_FILE* nocapture %stream, i32 %color) #0 {
+entry:
+  %rem71 = and i32 %color, 1
+  %tobool = icmp eq i32 %rem71, 0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([6 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str20, i64 0, i64 0)) #12
+  br i1 %tobool, label %for.body21, label %for.body
+
+for.body:                                         ; preds = %entry, %for.end
+  %indvars.iv88 = phi i64 [ %indvars.iv.next89, %for.end ], [ 1, %entry ]
+  %0 = sub nsw i64 9, %indvars.iv88
+  %1 = trunc i64 %0 to i32
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([5 x i8]* @.str36, i64 0, i64 0), i32 %1) #12
+  %2 = mul i64 %indvars.iv88, -12
+  %3 = add i64 %2, 120
+  br label %for.body4
+
+for.body4:                                        ; preds = %for.inc, %for.body
+  %indvars.iv83 = phi i64 [ 0, %for.body ], [ %indvars.iv.next84, %for.inc ]
+  %4 = add nsw i64 %3, %indvars.iv83
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %4
+  %5 = load i32* %arrayidx, align 4, !tbaa !0
+  %cmp6 = icmp eq i32 %5, 0
+  br i1 %cmp6, label %for.inc, label %if.then7
+
+if.then7:                                         ; preds = %for.body4
+  %idxprom10 = sext i32 %5 to i64
+  %arrayidx11 = getelementptr inbounds [14 x i8*]* @display_board.piece_rep, i64 0, i64 %idxprom10
+  %6 = load i8** %arrayidx11, align 8, !tbaa !3
+  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([6 x i8]* @.str37, i64 0, i64 0), i8* %6) #12
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body4, %if.then7
+  %indvars.iv.next84 = add i64 %indvars.iv83, 1
+  %lftr.wideiv86 = trunc i64 %indvars.iv.next84 to i32
+  %exitcond87 = icmp eq i32 %lftr.wideiv86, 12
+  br i1 %exitcond87, label %for.end, label %for.body4
+
+for.end:                                          ; preds = %for.inc
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([7 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str20, i64 0, i64 0)) #12
+  %indvars.iv.next89 = add i64 %indvars.iv88, 1
+  %lftr.wideiv92 = trunc i64 %indvars.iv.next89 to i32
+  %exitcond93 = icmp eq i32 %lftr.wideiv92, 9
+  br i1 %exitcond93, label %for.end16, label %for.body
+
+for.end16:                                        ; preds = %for.end
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([45 x i8]* @.str39, i64 0, i64 0), i64 44, i64 1, %struct._IO_FILE* %stream)
+  br label %if.end47
+
+for.body21:                                       ; preds = %entry, %for.end41
+  %indvars.iv77 = phi i64 [ %indvars.iv.next78, %for.end41 ], [ 1, %entry ]
+  %8 = trunc i64 %indvars.iv77 to i32
+  %call22 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([5 x i8]* @.str36, i64 0, i64 0), i32 %8) #12
+  %9 = mul nsw i64 %indvars.iv77, 12
+  %10 = add nsw i64 %9, 24
+  br label %for.body25
+
+for.body25:                                       ; preds = %for.inc39, %for.body21
+  %indvars.iv = phi i64 [ 0, %for.body21 ], [ %indvars.iv.next, %for.inc39 ]
+  %11 = sub i64 %10, %indvars.iv
+  %arrayidx30 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %11
+  %12 = load i32* %arrayidx30, align 4, !tbaa !0
+  %cmp31 = icmp eq i32 %12, 0
+  br i1 %cmp31, label %for.inc39, label %if.then32
+
+if.then32:                                        ; preds = %for.body25
+  %idxprom35 = sext i32 %12 to i64
+  %arrayidx36 = getelementptr inbounds [14 x i8*]* @display_board.piece_rep, i64 0, i64 %idxprom35
+  %13 = load i8** %arrayidx36, align 8, !tbaa !3
+  %call37 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([6 x i8]* @.str37, i64 0, i64 0), i8* %13) #12
+  br label %for.inc39
+
+for.inc39:                                        ; preds = %for.body25, %if.then32
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 12
+  br i1 %exitcond, label %for.end41, label %for.body25
+
+for.end41:                                        ; preds = %for.inc39
+  %call42 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %stream, i8* getelementptr inbounds ([7 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str20, i64 0, i64 0)) #12
+  %indvars.iv.next78 = add i64 %indvars.iv77, 1
+  %lftr.wideiv81 = trunc i64 %indvars.iv.next78 to i32
+  %exitcond82 = icmp eq i32 %lftr.wideiv81, 9
+  br i1 %exitcond82, label %for.end45, label %for.body21
+
+for.end45:                                        ; preds = %for.end41
+  %14 = tail call i64 @fwrite(i8* getelementptr inbounds ([45 x i8]* @.str40, i64 0, i64 0), i64 44, i64 1, %struct._IO_FILE* %stream)
+  br label %if.end47
+
+if.end47:                                         ; preds = %for.end45, %for.end16
+  ret void
+}

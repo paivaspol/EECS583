@@ -1,0 +1,65 @@
+define double @DVminabs(i32 %size, double* %y, i32* %ploc) #0 {
+entry:
+  %cmp = icmp sgt i32 %size, 0
+  br i1 %cmp, label %if.then, label %if.end21
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq double* %y, null
+  br i1 %cmp1, label %if.then2, label %if.else
+
+if.then2:                                         ; preds = %if.then
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), i32 %size, double* null, i32* %ploc) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.else:                                          ; preds = %if.then
+  %1 = load double* %y, align 8, !tbaa !3
+  %cmp3 = fcmp ult double %1, 0.000000e+00
+  br i1 %cmp3, label %cond.false, label %for.cond.preheader
+
+cond.false:                                       ; preds = %if.else
+  %sub = fsub double -0.000000e+00, %1
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else, %cond.false
+  %minval.0.ph = phi double [ %sub, %cond.false ], [ %1, %if.else ]
+  %cmp638 = icmp sgt i32 %size, 1
+  br i1 %cmp638, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %cond.end16
+  %indvars.iv = phi i64 [ %indvars.iv.next, %cond.end16 ], [ 1, %for.cond.preheader ]
+  %minval.041 = phi double [ %minval.1, %cond.end16 ], [ %minval.0.ph, %for.cond.preheader ]
+  %loc.039 = phi i32 [ %loc.1, %cond.end16 ], [ 0, %for.cond.preheader ]
+  %arrayidx7 = getelementptr inbounds double* %y, i64 %indvars.iv
+  %2 = load double* %arrayidx7, align 8, !tbaa !3
+  %cmp8 = fcmp ult double %2, 0.000000e+00
+  br i1 %cmp8, label %cond.false12, label %cond.end16
+
+cond.false12:                                     ; preds = %for.body
+  %sub15 = fsub double -0.000000e+00, %2
+  br label %cond.end16
+
+cond.end16:                                       ; preds = %for.body, %cond.false12
+  %cond17 = phi double [ %sub15, %cond.false12 ], [ %2, %for.body ]
+  %cmp18 = fcmp ogt double %minval.041, %cond17
+  %3 = trunc i64 %indvars.iv to i32
+  %loc.1 = select i1 %cmp18, i32 %3, i32 %loc.039
+  %minval.1 = select i1 %cmp18, double %cond17, double %minval.041
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %size
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %cond.end16, %for.cond.preheader
+  %minval.0.lcssa = phi double [ %minval.0.ph, %for.cond.preheader ], [ %minval.1, %cond.end16 ]
+  %loc.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %loc.1, %cond.end16 ]
+  store i32 %loc.0.lcssa, i32* %ploc, align 4, !tbaa !4
+  br label %if.end21
+
+if.end21:                                         ; preds = %for.end, %entry
+  %loc.2 = phi i32 [ %loc.0.lcssa, %for.end ], [ -1, %entry ]
+  %minval.2 = phi double [ %minval.0.lcssa, %for.end ], [ 0.000000e+00, %entry ]
+  store i32 %loc.2, i32* %ploc, align 4, !tbaa !4
+  ret double %minval.2
+}

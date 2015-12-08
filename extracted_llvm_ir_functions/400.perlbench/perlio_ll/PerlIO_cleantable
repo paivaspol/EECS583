@@ -1,0 +1,37 @@
+define void @PerlIO_cleantable(%struct._PerlIO*** nocapture %tablep) #1 {
+entry:
+  %0 = load %struct._PerlIO*** %tablep, align 8, !tbaa !3
+  %tobool = icmp eq %struct._PerlIO** %0, null
+  br i1 %tobool, label %if.end3, label %if.then
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %struct._PerlIO** %0 to %struct._PerlIO***
+  tail call void @PerlIO_cleantable(%struct._PerlIO*** %1) #10
+  br label %for.body
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %indvars.iv = phi i64 [ 63, %if.then ], [ %indvars.iv.next, %for.inc ]
+  %add.ptr = getelementptr inbounds %struct._PerlIO** %0, i64 %indvars.iv
+  %2 = load %struct._PerlIO** %add.ptr, align 8, !tbaa !3
+  %tobool1 = icmp eq %struct._PerlIO* %2, null
+  br i1 %tobool1, label %for.inc, label %if.then2
+
+if.then2:                                         ; preds = %for.body
+  %call = tail call i32 @Perl_PerlIO_close(%struct._PerlIO** %add.ptr) #10
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.then2
+  %indvars.iv.next = add i64 %indvars.iv, -1
+  %3 = trunc i64 %indvars.iv.next to i32
+  %cmp = icmp sgt i32 %3, 0
+  br i1 %cmp, label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.inc
+  %4 = bitcast %struct._PerlIO** %0 to i8*
+  tail call void @Perl_safesysfree(i8* %4) #9
+  store %struct._PerlIO** null, %struct._PerlIO*** %tablep, align 8, !tbaa !3
+  br label %if.end3
+
+if.end3:                                          ; preds = %entry, %for.end
+  ret void
+}

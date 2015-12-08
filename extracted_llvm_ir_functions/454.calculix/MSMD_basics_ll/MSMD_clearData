@@ -1,0 +1,102 @@
+define void @MSMD_clearData(%struct._MSMD* %msmd) #0 {
+entry:
+  %cmp = icmp eq %struct._MSMD* %msmd, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), %struct._MSMD* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %heap = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 1
+  %1 = load %struct._IIheap** %heap, align 8, !tbaa !0
+  %cmp1 = icmp eq %struct._IIheap* %1, null
+  br i1 %cmp1, label %if.end4, label %if.then2
+
+if.then2:                                         ; preds = %if.end
+  tail call void @IIheap_free(%struct._IIheap* %1) #5
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.end, %if.then2
+  %vertices = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 5
+  %2 = load %struct._MSMDvtx** %vertices, align 8, !tbaa !0
+  %cmp5 = icmp eq %struct._MSMDvtx* %2, null
+  br i1 %cmp5, label %if.end24, label %if.then6
+
+if.then6:                                         ; preds = %if.end4
+  %nvtx = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 0
+  %3 = load i32* %nvtx, align 4, !tbaa !3
+  %idx.ext = sext i32 %3 to i64
+  %add.ptr.sum = add i64 %idx.ext, -1
+  %add.ptr8 = getelementptr inbounds %struct._MSMDvtx* %2, i64 %add.ptr.sum
+  %cmp949 = icmp slt i64 %add.ptr.sum, 0
+  br i1 %cmp949, label %if.then20, label %for.body
+
+for.body:                                         ; preds = %if.then6, %for.inc
+  %v.050 = phi %struct._MSMDvtx* [ %incdec.ptr, %for.inc ], [ %2, %if.then6 ]
+  %status = getelementptr inbounds %struct._MSMDvtx* %v.050, i64 0, i32 2
+  %4 = load i8* %status, align 1, !tbaa !1
+  %cmp10 = icmp eq i8 %4, 69
+  br i1 %cmp10, label %land.lhs.true, label %for.inc
+
+land.lhs.true:                                    ; preds = %for.body
+  %adj = getelementptr inbounds %struct._MSMDvtx* %v.050, i64 0, i32 6
+  %5 = load i32** %adj, align 8, !tbaa !0
+  %cmp12 = icmp eq i32* %5, null
+  br i1 %cmp12, label %for.inc, label %if.then14
+
+if.then14:                                        ; preds = %land.lhs.true
+  tail call void @IVfree(i32* %5) #5
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then14
+  %incdec.ptr = getelementptr inbounds %struct._MSMDvtx* %v.050, i64 1
+  %cmp9 = icmp ugt %struct._MSMDvtx* %incdec.ptr, %add.ptr8
+  br i1 %cmp9, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.inc
+  %.pre = load %struct._MSMDvtx** %vertices, align 8, !tbaa !0
+  %cmp18 = icmp eq %struct._MSMDvtx* %.pre, null
+  br i1 %cmp18, label %if.end24, label %if.then20
+
+if.then20:                                        ; preds = %if.then6, %for.end
+  %6 = phi %struct._MSMDvtx* [ %.pre, %for.end ], [ %2, %if.then6 ]
+  %7 = bitcast %struct._MSMDvtx* %6 to i8*
+  tail call void @free(i8* %7) #5
+  store %struct._MSMDvtx* null, %struct._MSMDvtx** %vertices, align 8, !tbaa !0
+  br label %if.end24
+
+if.end24:                                         ; preds = %for.end, %if.end4, %if.then20
+  %ivtmpIV = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 6
+  tail call void @IV_clearData(%struct._IV* %ivtmpIV) #5
+  %reachIV = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 7
+  tail call void @IV_clearData(%struct._IV* %reachIV) #5
+  %baseIP = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 3
+  %8 = load %struct._IP** %baseIP, align 8, !tbaa !0
+  %cmp2548 = icmp eq %struct._IP* %8, null
+  br i1 %cmp2548, label %while.end, label %while.body
+
+while.body:                                       ; preds = %if.end24, %while.body
+  %9 = phi %struct._IP* [ %11, %while.body ], [ %8, %if.end24 ]
+  %next = getelementptr inbounds %struct._IP* %9, i64 0, i32 1
+  %10 = load %struct._IP** %next, align 8, !tbaa !0
+  store %struct._IP* %10, %struct._IP** %baseIP, align 8, !tbaa !0
+  tail call void @IP_free(%struct._IP* %9) #5
+  %11 = load %struct._IP** %baseIP, align 8, !tbaa !0
+  %cmp25 = icmp eq %struct._IP* %11, null
+  br i1 %cmp25, label %while.end, label %while.body
+
+while.end:                                        ; preds = %while.body, %if.end24
+  %nvtx.i = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 0
+  store i32 0, i32* %nvtx.i, align 4, !tbaa !3
+  store %struct._IIheap* null, %struct._IIheap** %heap, align 8, !tbaa !0
+  %incrIP.i = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 2
+  store i32 0, i32* %incrIP.i, align 4, !tbaa !3
+  %12 = bitcast %struct._IP** %baseIP to i8*
+  tail call void @llvm.memset.p0i8.i64(i8* %12, i8 0, i64 24, i32 8, i1 false) #4
+  tail call void @IV_setDefaultFields(%struct._IV* %ivtmpIV) #5
+  tail call void @IV_setDefaultFields(%struct._IV* %reachIV) #5
+  ret void
+}

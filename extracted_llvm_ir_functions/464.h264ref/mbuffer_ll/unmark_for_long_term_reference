@@ -1,0 +1,81 @@
+define internal fastcc void @unmark_for_long_term_reference(%struct.frame_store* nocapture %fs) #1 {
+entry:
+  %0 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
+  %frame_mbs_only_flag = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %0, i64 0, i32 25
+  %1 = load i32* %frame_mbs_only_flag, align 4, !tbaa !1
+  %tobool = icmp eq i32 %1, 0
+  %is_used = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0
+  br i1 %tobool, label %if.then, label %if.end12
+
+if.then:                                          ; preds = %entry
+  %2 = load i32* %is_used, align 4, !tbaa !3
+  %and = and i32 %2, 1
+  %tobool1 = icmp eq i32 %and, 0
+  br i1 %tobool1, label %if.end, label %if.then2
+
+if.then2:                                         ; preds = %if.then
+  %top_field = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11
+  %3 = load %struct.storable_picture** %top_field, align 8, !tbaa !0
+  %used_for_reference = getelementptr inbounds %struct.storable_picture* %3, i64 0, i32 15
+  store i32 0, i32* %used_for_reference, align 4, !tbaa !3
+  %is_long_term = getelementptr inbounds %struct.storable_picture* %3, i64 0, i32 14
+  store i32 0, i32* %is_long_term, align 4, !tbaa !3
+  %.pre = load i32* %is_used, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %if.then2
+  %4 = phi i32 [ %2, %if.then ], [ %.pre, %if.then2 ]
+  %and5 = and i32 %4, 2
+  %tobool6 = icmp eq i32 %and5, 0
+  br i1 %tobool6, label %if.end12, label %if.then7
+
+if.then7:                                         ; preds = %if.end
+  %bottom_field = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12
+  %5 = load %struct.storable_picture** %bottom_field, align 8, !tbaa !0
+  %used_for_reference8 = getelementptr inbounds %struct.storable_picture* %5, i64 0, i32 15
+  store i32 0, i32* %used_for_reference8, align 4, !tbaa !3
+  %is_long_term10 = getelementptr inbounds %struct.storable_picture* %5, i64 0, i32 14
+  store i32 0, i32* %is_long_term10, align 4, !tbaa !3
+  br label %if.end12
+
+if.end12:                                         ; preds = %entry, %if.end, %if.then7
+  %6 = load i32* %is_used, align 4, !tbaa !3
+  %cmp = icmp eq i32 %6, 3
+  br i1 %cmp, label %if.then14, label %if.end30
+
+if.then14:                                        ; preds = %if.end12
+  %7 = load i32* %frame_mbs_only_flag, align 4, !tbaa !1
+  %tobool16 = icmp eq i32 %7, 0
+  br i1 %tobool16, label %if.then17, label %if.end26
+
+if.then17:                                        ; preds = %if.then14
+  %top_field18 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 11
+  %8 = load %struct.storable_picture** %top_field18, align 8, !tbaa !0
+  %used_for_reference19 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 15
+  store i32 0, i32* %used_for_reference19, align 4, !tbaa !3
+  %is_long_term21 = getelementptr inbounds %struct.storable_picture* %8, i64 0, i32 14
+  store i32 0, i32* %is_long_term21, align 4, !tbaa !3
+  %bottom_field22 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 12
+  %9 = load %struct.storable_picture** %bottom_field22, align 8, !tbaa !0
+  %used_for_reference23 = getelementptr inbounds %struct.storable_picture* %9, i64 0, i32 15
+  store i32 0, i32* %used_for_reference23, align 4, !tbaa !3
+  %is_long_term25 = getelementptr inbounds %struct.storable_picture* %9, i64 0, i32 14
+  store i32 0, i32* %is_long_term25, align 4, !tbaa !3
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.then14, %if.then17
+  %frame = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10
+  %10 = load %struct.storable_picture** %frame, align 8, !tbaa !0
+  %used_for_reference27 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 15
+  store i32 0, i32* %used_for_reference27, align 4, !tbaa !3
+  %is_long_term29 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 14
+  store i32 0, i32* %is_long_term29, align 4, !tbaa !3
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end26, %if.end12
+  %is_reference = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 1
+  store i32 0, i32* %is_reference, align 4, !tbaa !3
+  %is_long_term31 = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 2
+  store i32 0, i32* %is_long_term31, align 4, !tbaa !3
+  ret void
+}

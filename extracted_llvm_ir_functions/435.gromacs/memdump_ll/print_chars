@@ -1,0 +1,36 @@
+define internal fastcc void @print_chars(%struct._IO_FILE* %fp, i8* %s, i32 %len) #0 {
+entry:
+  %tobool = icmp eq i32 %len, 0
+  br i1 %tobool, label %if.end7, label %if.then
+
+if.then:                                          ; preds = %entry
+  %tobool1 = icmp eq %struct._IO_FILE* %fp, null
+  br i1 %tobool1, label %if.end7.critedge, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.then
+  %cmp15 = icmp slt i32 %len, 16
+  br i1 %cmp15, label %for.body, label %if.then4
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %i.016 = phi i32 [ %inc, %for.body ], [ %len, %for.cond.preheader ]
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %fp)
+  %inc = add nsw i32 %i.016, 1
+  %exitcond = icmp eq i32 %inc, 16
+  br i1 %exitcond, label %if.then4, label %for.body
+
+if.then4:                                         ; preds = %for.cond.preheader, %for.body
+  %idxprom = sext i32 %len to i64
+  %arrayidx = getelementptr inbounds i8* %s, i64 %idxprom
+  store i8 0, i8* %arrayidx, align 1, !tbaa !0
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* %s) #3
+  br label %if.end7
+
+if.end7.critedge:                                 ; preds = %if.then
+  %idxprom.c = sext i32 %len to i64
+  %arrayidx.c = getelementptr inbounds i8* %s, i64 %idxprom.c
+  store i8 0, i8* %arrayidx.c, align 1, !tbaa !0
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.end7.critedge, %entry, %if.then4
+  ret void
+}

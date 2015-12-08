@@ -1,0 +1,63 @@
+define void @WeightedLinefit(float* nocapture %x, float* nocapture %y, float* nocapture %var, i32 %N, float* nocapture %ret_m, float* nocapture %ret_b) #0 {
+entry:
+  %cmp79 = icmp sgt i32 %N, 0
+  br i1 %cmp79, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %s.084 = phi double [ %add, %for.body ], [ 0.000000e+00, %entry ]
+  %sx.083 = phi double [ %add7, %for.body ], [ 0.000000e+00, %entry ]
+  %sxy.082 = phi double [ %add33, %for.body ], [ 0.000000e+00, %entry ]
+  %sxx.081 = phi double [ %add23, %for.body ], [ 0.000000e+00, %entry ]
+  %sy.080 = phi double [ %add14, %for.body ], [ 0.000000e+00, %entry ]
+  %arrayidx = getelementptr inbounds float* %var, i64 %indvars.iv
+  %0 = load float* %arrayidx, align 4, !tbaa !0
+  %conv = fpext float %0 to double
+  %div = fdiv double 1.000000e+00, %conv
+  %add = fadd double %s.084, %div
+  %arrayidx2 = getelementptr inbounds float* %x, i64 %indvars.iv
+  %1 = load float* %arrayidx2, align 4, !tbaa !0
+  %div5 = fdiv float %1, %0
+  %conv6 = fpext float %div5 to double
+  %add7 = fadd double %sx.083, %conv6
+  %arrayidx9 = getelementptr inbounds float* %y, i64 %indvars.iv
+  %2 = load float* %arrayidx9, align 4, !tbaa !0
+  %div12 = fdiv float %2, %0
+  %conv13 = fpext float %div12 to double
+  %add14 = fadd double %sy.080, %conv13
+  %mul = fmul float %1, %1
+  %div21 = fdiv float %mul, %0
+  %conv22 = fpext float %div21 to double
+  %add23 = fadd double %sxx.081, %conv22
+  %mul28 = fmul float %1, %2
+  %div31 = fdiv float %mul28, %0
+  %conv32 = fpext float %div31 to double
+  %add33 = fadd double %sxy.082, %conv32
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %N
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %entry
+  %s.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add, %for.body ]
+  %sx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add7, %for.body ]
+  %sxy.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add33, %for.body ]
+  %sxx.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add23, %for.body ]
+  %sy.0.lcssa = phi double [ 0.000000e+00, %entry ], [ %add14, %for.body ]
+  %mul34 = fmul double %sxx.0.lcssa, %s.0.lcssa
+  %mul35 = fmul double %sx.0.lcssa, %sx.0.lcssa
+  %sub = fsub double %mul34, %mul35
+  %mul36 = fmul double %sy.0.lcssa, %sxx.0.lcssa
+  %mul37 = fmul double %sxy.0.lcssa, %sx.0.lcssa
+  %sub38 = fsub double %mul36, %mul37
+  %div39 = fdiv double %sub38, %sub
+  %mul40 = fmul double %sxy.0.lcssa, %s.0.lcssa
+  %mul41 = fmul double %sy.0.lcssa, %sx.0.lcssa
+  %sub42 = fsub double %mul40, %mul41
+  %div43 = fdiv double %sub42, %sub
+  %conv44 = fptrunc double %div43 to float
+  store float %conv44, float* %ret_m, align 4, !tbaa !0
+  %conv45 = fptrunc double %div39 to float
+  store float %conv45, float* %ret_b, align 4, !tbaa !0
+  ret void
+}

@@ -1,0 +1,59 @@
+define void @Perl_pad_free(i64 %po) #0 {
+entry:
+  %0 = load %struct.sv*** @PL_curpad, align 8, !tbaa !3
+  %tobool = icmp eq %struct.sv** %0, null
+  br i1 %tobool, label %if.end16, label %if.end
+
+if.end:                                           ; preds = %entry
+  %1 = load %struct.av** @PL_comppad, align 8, !tbaa !3
+  %sv_any = getelementptr inbounds %struct.av* %1, i64 0, i32 0
+  %2 = load %struct.xpvav** %sv_any, align 8, !tbaa !3
+  %xav_array = getelementptr inbounds %struct.xpvav* %2, i64 0, i32 0
+  %3 = load i8** %xav_array, align 8, !tbaa !3
+  %4 = bitcast i8* %3 to %struct.sv**
+  %cmp = icmp eq %struct.sv** %4, %0
+  br i1 %cmp, label %if.end2, label %if.then1
+
+if.then1:                                         ; preds = %if.end
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([23 x i8]* @.str13, i64 0, i64 0)) #3
+  br label %if.end2
+
+if.end2:                                          ; preds = %if.end, %if.then1
+  %tobool3 = icmp eq i64 %po, 0
+  br i1 %tobool3, label %if.then4, label %if.end5
+
+if.then4:                                         ; preds = %if.end2
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([19 x i8]* @.str14, i64 0, i64 0)) #3
+  br label %if.end5
+
+if.end5:                                          ; preds = %if.end2, %if.then4
+  %5 = load %struct.sv*** @PL_curpad, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.sv** %5, i64 %po
+  %6 = load %struct.sv** %arrayidx, align 8, !tbaa !3
+  %tobool6 = icmp eq %struct.sv* %6, null
+  %cmp8 = icmp eq %struct.sv* %6, @PL_sv_undef
+  %or.cond = or i1 %tobool6, %cmp8
+  br i1 %or.cond, label %if.end11, label %if.then9
+
+if.then9:                                         ; preds = %if.end5
+  %sv_flags = getelementptr inbounds %struct.sv* %6, i64 0, i32 2
+  %7 = load i32* %sv_flags, align 4, !tbaa !0
+  %and = and i32 %7, -513
+  store i32 %and, i32* %sv_flags, align 4, !tbaa !0
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.end5, %if.then9
+  %conv = trunc i64 %po to i32
+  %8 = load i32* @PL_padix, align 4, !tbaa !0
+  %cmp12 = icmp slt i32 %conv, %8
+  br i1 %cmp12, label %if.then14, label %if.end16
+
+if.then14:                                        ; preds = %if.end11
+  %sub = add i64 %po, 4294967295
+  %conv15 = trunc i64 %sub to i32
+  store i32 %conv15, i32* @PL_padix, align 4, !tbaa !0
+  br label %if.end16
+
+if.end16:                                         ; preds = %entry, %if.then14, %if.end11
+  ret void
+}

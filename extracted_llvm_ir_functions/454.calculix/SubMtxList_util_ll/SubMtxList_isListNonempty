@@ -1,0 +1,28 @@
+define i32 @SubMtxList_isListNonempty(%struct._SubMtxList* %list, i32 %ilist) #0 {
+entry:
+  %cmp = icmp eq %struct._SubMtxList* %list, null
+  %cmp1 = icmp slt i32 %ilist, 0
+  %or.cond = or i1 %cmp, %cmp1
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+
+lor.lhs.false2:                                   ; preds = %entry
+  %nlist = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 0
+  %0 = load i32* %nlist, align 4, !tbaa !0
+  %cmp3 = icmp sgt i32 %0, %ilist
+  br i1 %cmp3, label %if.end, label %if.then
+
+if.then:                                          ; preds = %lor.lhs.false2, %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), %struct._SubMtxList* %list, i32 %ilist) #4
+  br label %if.end
+
+if.end:                                           ; preds = %lor.lhs.false2, %if.then
+  %idxprom = sext i32 %ilist to i64
+  %heads = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 1
+  %2 = load %struct._SubMtx*** %heads, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct._SubMtx** %2, i64 %idxprom
+  %3 = load %struct._SubMtx** %arrayidx, align 8, !tbaa !3
+  %cmp4 = icmp ne %struct._SubMtx* %3, null
+  %conv = zext i1 %cmp4 to i32
+  ret i32 %conv
+}

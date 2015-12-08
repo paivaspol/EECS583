@@ -1,0 +1,426 @@
+define i32 @writeHB_mat_char(i8* %filename, i32 %M, i32 %N, i32 %nz, i32* nocapture %colptr, i32* nocapture %rowind, i8* %val, i32 %Nrhs, i8* %rhs, i8* %guess, i8* %exact, i8* %Title, i8* %Key, i8* %Type, i8* %Ptrfmt, i8* %Indfmt, i8* %Valfmt, i8* %Rhsfmt, i8* %Rhstype) #0 {
+entry:
+  %Ptrperline = alloca i32, align 4
+  %Ptrwidth = alloca i32, align 4
+  %Indperline = alloca i32, align 4
+  %Indwidth = alloca i32, align 4
+  %Rhsperline = alloca i32, align 4
+  %Rhswidth = alloca i32, align 4
+  %Rhsprec = alloca i32, align 4
+  %Rhsflag = alloca i32, align 4
+  %Valperline = alloca i32, align 4
+  %Valwidth = alloca i32, align 4
+  %Valprec = alloca i32, align 4
+  %Valflag = alloca i32, align 4
+  %pformat = alloca [16 x i8], align 16
+  %iformat = alloca [16 x i8], align 16
+  %vformat = alloca [19 x i8], align 16
+  %rformat = alloca [19 x i8], align 16
+  %0 = load i8* %Type, align 1, !tbaa !1
+  %cmp = icmp eq i8 %0, 67
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %mul = shl nsw i32 %nz, 1
+  %mul3 = shl nsw i32 %M, 1
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  %nvalentries.0 = phi i32 [ %mul, %if.then ], [ %nz, %entry ]
+  %nrhsentries.0 = phi i32 [ %mul3, %if.then ], [ %M, %entry ]
+  %cmp4 = icmp eq i8* %filename, null
+  br i1 %cmp4, label %if.else12, label %if.then6
+
+if.then6:                                         ; preds = %if.end
+  %call = call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #8
+  %cmp7 = icmp eq %struct._IO_FILE* %call, null
+  br i1 %cmp7, label %if.then9, label %if.end13
+
+if.then9:                                         ; preds = %if.then6
+  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call10 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), i8* %filename) #8
+  br label %return
+
+if.else12:                                        ; preds = %if.end
+  %2 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
+  br label %if.end13
+
+if.end13:                                         ; preds = %if.then6, %if.else12
+  %out_file.0 = phi %struct._IO_FILE* [ %call, %if.then6 ], [ %2, %if.else12 ]
+  %cmp14 = icmp eq i8* %Ptrfmt, null
+  %.Ptrfmt = select i1 %cmp14, i8* getelementptr inbounds ([7 x i8]* @.str44, i64 0, i64 0), i8* %Ptrfmt
+  call fastcc void @ParseIfmt(i8* %.Ptrfmt, i32* %Ptrperline, i32* %Ptrwidth) #9
+  %arraydecay = getelementptr inbounds [16 x i8]* %pformat, i64 0, i64 0
+  %3 = load i32* %Ptrwidth, align 4, !tbaa !3
+  %call19 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([6 x i8]* @.str45, i64 0, i64 0), i32 %3) #8
+  %cmp20 = icmp eq i8* %Indfmt, null
+  %Indfmt.addr.0 = select i1 %cmp20, i8* %.Ptrfmt, i8* %Indfmt
+  call fastcc void @ParseIfmt(i8* %Indfmt.addr.0, i32* %Indperline, i32* %Indwidth) #9
+  %arraydecay25 = getelementptr inbounds [16 x i8]* %iformat, i64 0, i64 0
+  %4 = load i32* %Indwidth, align 4, !tbaa !3
+  %call26 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay25, i8* getelementptr inbounds ([6 x i8]* @.str45, i64 0, i64 0), i32 %4) #8
+  %5 = load i8* %Type, align 1, !tbaa !1
+  %cmp29 = icmp eq i8 %5, 80
+  br i1 %cmp29, label %if.end39, label %if.then31
+
+if.then31:                                        ; preds = %if.end13
+  %cmp32 = icmp eq i8* %Valfmt, null
+  %.Valfmt = select i1 %cmp32, i8* getelementptr inbounds ([10 x i8]* @.str46, i64 0, i64 0), i8* %Valfmt
+  call fastcc void @ParseRfmt(i8* %.Valfmt, i32* %Valperline, i32* %Valwidth, i32* %Valprec, i32* %Valflag) #9
+  %arraydecay37 = getelementptr inbounds [19 x i8]* %vformat, i64 0, i64 0
+  %6 = load i32* %Valwidth, align 4, !tbaa !3
+  %call38 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay37, i8* getelementptr inbounds ([6 x i8]* @.str59, i64 0, i64 0), i32 %6) #8
+  %.pre = load i32* %Valperline, align 4, !tbaa !3
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end13, %if.then31
+  %7 = phi i32 [ %6, %if.then31 ], [ undef, %if.end13 ]
+  %8 = phi i32 [ %.pre, %if.then31 ], [ undef, %if.end13 ]
+  %Valfmt.addr.1 = phi i8* [ %.Valfmt, %if.then31 ], [ %Valfmt, %if.end13 ]
+  %add = add nsw i32 %N, 1
+  %9 = load i32* %Ptrperline, align 4, !tbaa !3
+  %div = sdiv i32 %add, %9
+  %rem = srem i32 %add, %9
+  %not.cmp41 = icmp ne i32 %rem, 0
+  %inc = zext i1 %not.cmp41 to i32
+  %div.inc = add nsw i32 %inc, %div
+  %10 = load i32* %Indperline, align 4, !tbaa !3
+  %div45 = sdiv i32 %nz, %10
+  %rem46 = srem i32 %nz, %10
+  %not.cmp47 = icmp ne i32 %rem46, 0
+  %inc50 = zext i1 %not.cmp47 to i32
+  %indcrd.0 = add nsw i32 %inc50, %div45
+  %div52 = sdiv i32 %nvalentries.0, %8
+  %rem53 = srem i32 %nvalentries.0, %8
+  %not.cmp54 = icmp ne i32 %rem53, 0
+  %inc57 = zext i1 %not.cmp54 to i32
+  %div52.inc57 = add nsw i32 %inc57, %div52
+  %cmp59 = icmp sgt i32 %Nrhs, 0
+  br i1 %cmp59, label %if.then61, label %if.end92
+
+if.then61:                                        ; preds = %if.end39
+  %cmp62 = icmp eq i8* %Rhsfmt, null
+  %Valfmt.addr.1.Rhsfmt = select i1 %cmp62, i8* %Valfmt.addr.1, i8* %Rhsfmt
+  call fastcc void @ParseRfmt(i8* %Valfmt.addr.1.Rhsfmt, i32* %Rhsperline, i32* %Rhswidth, i32* %Rhsprec, i32* %Rhsflag) #9
+  %arraydecay67 = getelementptr inbounds [19 x i8]* %rformat, i64 0, i64 0
+  %11 = load i32* %Rhswidth, align 4, !tbaa !3
+  %call68 = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay67, i8* getelementptr inbounds ([6 x i8]* @.str59, i64 0, i64 0), i32 %11) #8
+  %12 = load i32* %Rhsperline, align 4, !tbaa !3
+  %div69 = sdiv i32 %nrhsentries.0, %12
+  %rem70 = srem i32 %nrhsentries.0, %12
+  %not.cmp71 = icmp ne i32 %rem70, 0
+  %inc74 = zext i1 %not.cmp71 to i32
+  %rhscrd.0 = add nsw i32 %inc74, %div69
+  %arrayidx76 = getelementptr inbounds i8* %Rhstype, i64 1
+  %13 = load i8* %arrayidx76, align 1, !tbaa !1
+  %cmp78 = icmp eq i8 %13, 71
+  %add81 = zext i1 %cmp78 to i32
+  %add81.rhscrd.0 = shl nsw i32 %rhscrd.0, %add81
+  %arrayidx83 = getelementptr inbounds i8* %Rhstype, i64 2
+  %14 = load i8* %arrayidx83, align 1, !tbaa !1
+  %cmp85 = icmp eq i8 %14, 88
+  %add88 = zext i1 %cmp85 to i32
+  %rhscrd.2 = shl nsw i32 %add81.rhscrd.0, %add88
+  %mul90 = mul nsw i32 %rhscrd.2, %Nrhs
+  br label %if.end92
+
+if.end92:                                         ; preds = %if.end39, %if.then61
+  %15 = phi i32 [ %11, %if.then61 ], [ undef, %if.end39 ]
+  %16 = phi i32 [ %12, %if.then61 ], [ undef, %if.end39 ]
+  %Rhsfmt.addr.1 = phi i8* [ %Valfmt.addr.1.Rhsfmt, %if.then61 ], [ %Rhsfmt, %if.end39 ]
+  %rhscrd.3 = phi i32 [ %mul90, %if.then61 ], [ 0, %if.end39 ]
+  %add93 = add nsw i32 %div.inc, 4
+  %add94 = add nsw i32 %add93, %indcrd.0
+  %add95 = add nsw i32 %add94, %div52.inc57
+  %add96 = add nsw i32 %add95, %rhscrd.3
+  %call97 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* getelementptr inbounds ([32 x i8]* @.str49, i64 0, i64 0), i8* %Title, i8* %Key, i32 %add96, i32 %div.inc, i32 %indcrd.0, i32 %div52.inc57, i32 %rhscrd.3) #8
+  %call98 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* getelementptr inbounds ([21 x i8]* @.str50, i64 0, i64 0), i8* %Type, i8* getelementptr inbounds ([11 x i8]* @.str51, i64 0, i64 0), i32 %M, i32 %N, i32 %nz) #8
+  %call99 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* getelementptr inbounds ([16 x i8]* @.str52, i64 0, i64 0), i8* %.Ptrfmt, i8* %Indfmt.addr.0, i8* %Valfmt.addr.1) #8
+  %cmp100 = icmp eq i32 %Nrhs, 0
+  br i1 %cmp100, label %if.else104, label %if.then102
+
+if.then102:                                       ; preds = %if.end92
+  %call103 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* getelementptr inbounds ([15 x i8]* @.str53, i64 0, i64 0), i8* %Rhsfmt.addr.1, i8* %Rhstype, i32 %Nrhs) #8
+  br label %for.cond.preheader
+
+if.else104:                                       ; preds = %if.end92
+  %fputc440 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else104, %if.then102
+  %cmp108460 = icmp sgt i32 %N, -1
+  br i1 %cmp108460, label %for.body, label %for.end
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond.backedge
+  %indvars.iv479 = phi i64 [ %indvars.iv.next480, %for.cond.backedge ], [ 0, %for.cond.preheader ]
+  %arrayidx110 = getelementptr inbounds i32* %colptr, i64 %indvars.iv479
+  %17 = load i32* %arrayidx110, align 4, !tbaa !3
+  %call113 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* %arraydecay, i32 %17) #8
+  %indvars.iv.next480 = add i64 %indvars.iv479, 1
+  %18 = trunc i64 %indvars.iv.next480 to i32
+  %rem115 = srem i32 %18, %9
+  %cmp116 = icmp eq i32 %rem115, 0
+  br i1 %cmp116, label %if.then118, label %for.cond.backedge
+
+for.cond.backedge:                                ; preds = %for.body, %if.then118
+  %cmp108 = icmp slt i32 %18, %add
+  br i1 %cmp108, label %for.body, label %for.end
+
+if.then118:                                       ; preds = %for.body
+  %fputc437 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.cond.backedge
+
+for.end:                                          ; preds = %for.cond.backedge, %for.cond.preheader
+  %cmp124 = icmp eq i32 %rem, 0
+  br i1 %cmp124, label %for.cond129.preheader, label %if.then126
+
+if.then126:                                       ; preds = %for.end
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.cond129.preheader
+
+for.cond129.preheader:                            ; preds = %for.end, %if.then126
+  %cmp130458 = icmp sgt i32 %nz, 0
+  br i1 %cmp130458, label %for.body132, label %for.end147
+
+for.body132:                                      ; preds = %for.cond129.preheader, %for.cond129.backedge
+  %indvars.iv475 = phi i64 [ %indvars.iv.next476, %for.cond129.backedge ], [ 0, %for.cond129.preheader ]
+  %arrayidx134 = getelementptr inbounds i32* %rowind, i64 %indvars.iv475
+  %19 = load i32* %arrayidx134, align 4, !tbaa !3
+  %call137 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* %arraydecay25, i32 %19) #8
+  %indvars.iv.next476 = add i64 %indvars.iv475, 1
+  %20 = trunc i64 %indvars.iv.next476 to i32
+  %rem139 = srem i32 %20, %10
+  %cmp140 = icmp eq i32 %rem139, 0
+  br i1 %cmp140, label %if.then142, label %for.cond129.backedge
+
+for.cond129.backedge:                             ; preds = %for.body132, %if.then142
+  %exitcond478 = icmp eq i32 %20, %nz
+  br i1 %exitcond478, label %for.end147, label %for.body132
+
+if.then142:                                       ; preds = %for.body132
+  %fputc434 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.cond129.backedge
+
+for.end147:                                       ; preds = %for.cond129.backedge, %for.cond129.preheader
+  %cmp149 = icmp eq i32 %rem46, 0
+  br i1 %cmp149, label %if.end153, label %if.then151
+
+if.then151:                                       ; preds = %for.end147
+  %fputc407 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %if.end153
+
+if.end153:                                        ; preds = %for.end147, %if.then151
+  %21 = load i8* %Type, align 1, !tbaa !1
+  %cmp156 = icmp eq i8 %21, 80
+  br i1 %cmp156, label %if.end285, label %for.cond159.preheader
+
+for.cond159.preheader:                            ; preds = %if.end153
+  %cmp160456 = icmp sgt i32 %nvalentries.0, 0
+  br i1 %cmp160456, label %for.body162.lr.ph, label %for.end175
+
+for.body162.lr.ph:                                ; preds = %for.cond159.preheader
+  %arraydecay163 = getelementptr inbounds [19 x i8]* %vformat, i64 0, i64 0
+  br label %for.body162
+
+for.body162:                                      ; preds = %for.cond159.backedge, %for.body162.lr.ph
+  %indvars.iv471 = phi i64 [ 0, %for.body162.lr.ph ], [ %indvars.iv.next472, %for.cond159.backedge ]
+  %22 = trunc i64 %indvars.iv471 to i32
+  %mul164 = mul nsw i32 %7, %22
+  %idx.ext = sext i32 %mul164 to i64
+  %add.ptr = getelementptr inbounds i8* %val, i64 %idx.ext
+  %call165 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* %arraydecay163, i8* %add.ptr) #8
+  %indvars.iv.next472 = add i64 %indvars.iv471, 1
+  %23 = trunc i64 %indvars.iv.next472 to i32
+  %rem167 = srem i32 %23, %8
+  %cmp168 = icmp eq i32 %rem167, 0
+  br i1 %cmp168, label %if.then170, label %for.cond159.backedge
+
+for.cond159.backedge:                             ; preds = %for.body162, %if.then170
+  %exitcond474 = icmp eq i32 %23, %nvalentries.0
+  br i1 %exitcond474, label %for.end175, label %for.body162
+
+if.then170:                                       ; preds = %for.body162
+  %fputc431 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.cond159.backedge
+
+for.end175:                                       ; preds = %for.cond159.backedge, %for.cond159.preheader
+  %cmp177 = icmp eq i32 %rem53, 0
+  br i1 %cmp177, label %if.end181, label %if.then179
+
+if.then179:                                       ; preds = %for.end175
+  %fputc410 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %if.end181
+
+if.end181:                                        ; preds = %for.end175, %if.then179
+  br i1 %cmp59, label %for.cond189.preheader.lr.ph, label %if.end285
+
+for.cond189.preheader.lr.ph:                      ; preds = %if.end181
+  %cmp190441 = icmp sgt i32 %nrhsentries.0, 0
+  %arrayidx215 = getelementptr inbounds i8* %Rhstype, i64 1
+  %arrayidx248 = getelementptr inbounds i8* %Rhstype, i64 2
+  %arraydecay257 = getelementptr inbounds [19 x i8]* %rformat, i64 0, i64 0
+  br label %for.cond189.preheader
+
+for.cond189.preheader:                            ; preds = %for.inc281, %for.cond189.preheader.lr.ph
+  %linemod.0455 = phi i32 [ 0, %for.cond189.preheader.lr.ph ], [ %linemod.3, %for.inc281 ]
+  %acount.0454 = phi i32 [ 1, %for.cond189.preheader.lr.ph ], [ %acount.5, %for.inc281 ]
+  %j.0453 = phi i32 [ 0, %for.cond189.preheader.lr.ph ], [ %inc282, %for.inc281 ]
+  br i1 %cmp190441, label %for.body192, label %for.end207
+
+for.body192:                                      ; preds = %for.cond189.preheader, %for.inc205
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc205 ], [ 0, %for.cond189.preheader ]
+  %acount.1443 = phi i32 [ %inc198, %for.inc205 ], [ %acount.0454, %for.cond189.preheader ]
+  %24 = trunc i64 %indvars.iv to i32
+  %mul194 = mul nsw i32 %15, %24
+  %idx.ext195 = sext i32 %mul194 to i64
+  %add.ptr196 = getelementptr inbounds i8* %rhs, i64 %idx.ext195
+  %call197 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* %arraydecay257, i8* %add.ptr196) #8
+  %inc198 = add nsw i32 %acount.1443, 1
+  %rem199 = srem i32 %acount.1443, %16
+  %cmp200 = icmp eq i32 %rem199, %linemod.0455
+  br i1 %cmp200, label %if.then202, label %for.inc205
+
+if.then202:                                       ; preds = %for.body192
+  %fputc428 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.inc205
+
+for.inc205:                                       ; preds = %for.body192, %if.then202
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %nrhsentries.0
+  br i1 %exitcond, label %for.cond189.for.end207_crit_edge, label %for.body192
+
+for.cond189.for.end207_crit_edge:                 ; preds = %for.inc205
+  %25 = add i32 %nrhsentries.0, %acount.0454
+  br label %for.end207
+
+for.end207:                                       ; preds = %for.cond189.for.end207_crit_edge, %for.cond189.preheader
+  %acount.1.lcssa = phi i32 [ %25, %for.cond189.for.end207_crit_edge ], [ %acount.0454, %for.cond189.preheader ]
+  %rem208 = srem i32 %acount.1.lcssa, %16
+  %cmp209 = icmp eq i32 %rem208, %linemod.0455
+  br i1 %cmp209, label %if.end214, label %if.then211
+
+if.then211:                                       ; preds = %for.end207
+  %fputc413 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  %sub = add nsw i32 %acount.1.lcssa, -1
+  %rem213 = srem i32 %sub, %16
+  br label %if.end214
+
+if.end214:                                        ; preds = %for.end207, %if.then211
+  %linemod.1 = phi i32 [ %rem213, %if.then211 ], [ %linemod.0455, %for.end207 ]
+  %26 = load i8* %arrayidx215, align 1, !tbaa !1
+  %cmp217 = icmp eq i8 %26, 71
+  br i1 %cmp217, label %for.cond220.preheader, label %if.end247
+
+for.cond220.preheader:                            ; preds = %if.end214
+  br i1 %cmp190441, label %for.body223, label %for.end238
+
+for.body223:                                      ; preds = %for.cond220.preheader, %for.inc236
+  %indvars.iv462 = phi i64 [ %indvars.iv.next463, %for.inc236 ], [ 0, %for.cond220.preheader ]
+  %acount.2446 = phi i32 [ %inc229, %for.inc236 ], [ %acount.1.lcssa, %for.cond220.preheader ]
+  %27 = trunc i64 %indvars.iv462 to i32
+  %mul225 = mul nsw i32 %15, %27
+  %idx.ext226 = sext i32 %mul225 to i64
+  %add.ptr227 = getelementptr inbounds i8* %guess, i64 %idx.ext226
+  %call228 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* %arraydecay257, i8* %add.ptr227) #8
+  %inc229 = add nsw i32 %acount.2446, 1
+  %rem230 = srem i32 %acount.2446, %16
+  %cmp231 = icmp eq i32 %rem230, %linemod.1
+  br i1 %cmp231, label %if.then233, label %for.inc236
+
+if.then233:                                       ; preds = %for.body223
+  %fputc425 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.inc236
+
+for.inc236:                                       ; preds = %for.body223, %if.then233
+  %indvars.iv.next463 = add i64 %indvars.iv462, 1
+  %lftr.wideiv464 = trunc i64 %indvars.iv.next463 to i32
+  %exitcond465 = icmp eq i32 %lftr.wideiv464, %nrhsentries.0
+  br i1 %exitcond465, label %for.cond220.for.end238_crit_edge, label %for.body223
+
+for.cond220.for.end238_crit_edge:                 ; preds = %for.inc236
+  %28 = add i32 %nrhsentries.0, %acount.1.lcssa
+  br label %for.end238
+
+for.end238:                                       ; preds = %for.cond220.for.end238_crit_edge, %for.cond220.preheader
+  %acount.2.lcssa = phi i32 [ %28, %for.cond220.for.end238_crit_edge ], [ %acount.1.lcssa, %for.cond220.preheader ]
+  %rem239 = srem i32 %acount.2.lcssa, %16
+  %cmp240 = icmp eq i32 %rem239, %linemod.1
+  br i1 %cmp240, label %if.end247, label %if.then242
+
+if.then242:                                       ; preds = %for.end238
+  %fputc422 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  %sub244 = add nsw i32 %acount.2.lcssa, -1
+  %rem245 = srem i32 %sub244, %16
+  br label %if.end247
+
+if.end247:                                        ; preds = %for.end238, %if.end214, %if.then242
+  %acount.3 = phi i32 [ %acount.2.lcssa, %if.then242 ], [ %acount.1.lcssa, %if.end214 ], [ %acount.2.lcssa, %for.end238 ]
+  %linemod.2 = phi i32 [ %rem245, %if.then242 ], [ %linemod.1, %if.end214 ], [ %linemod.1, %for.end238 ]
+  %29 = load i8* %arrayidx248, align 1, !tbaa !1
+  %cmp250 = icmp eq i8 %29, 88
+  br i1 %cmp250, label %for.cond253.preheader, label %for.inc281
+
+for.cond253.preheader:                            ; preds = %if.end247
+  br i1 %cmp190441, label %for.body256, label %for.end271
+
+for.body256:                                      ; preds = %for.cond253.preheader, %for.inc269
+  %indvars.iv466 = phi i64 [ %indvars.iv.next467, %for.inc269 ], [ 0, %for.cond253.preheader ]
+  %acount.4450 = phi i32 [ %inc262, %for.inc269 ], [ %acount.3, %for.cond253.preheader ]
+  %30 = trunc i64 %indvars.iv466 to i32
+  %mul258 = mul nsw i32 %15, %30
+  %idx.ext259 = sext i32 %mul258 to i64
+  %add.ptr260 = getelementptr inbounds i8* %exact, i64 %idx.ext259
+  %call261 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out_file.0, i8* %arraydecay257, i8* %add.ptr260) #8
+  %inc262 = add nsw i32 %acount.4450, 1
+  %rem263 = srem i32 %acount.4450, %16
+  %cmp264 = icmp eq i32 %rem263, %linemod.2
+  br i1 %cmp264, label %if.then266, label %for.inc269
+
+if.then266:                                       ; preds = %for.body256
+  %fputc419 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  br label %for.inc269
+
+for.inc269:                                       ; preds = %for.body256, %if.then266
+  %indvars.iv.next467 = add i64 %indvars.iv466, 1
+  %lftr.wideiv468 = trunc i64 %indvars.iv.next467 to i32
+  %exitcond469 = icmp eq i32 %lftr.wideiv468, %nrhsentries.0
+  br i1 %exitcond469, label %for.cond253.for.end271_crit_edge, label %for.body256
+
+for.cond253.for.end271_crit_edge:                 ; preds = %for.inc269
+  %31 = add i32 %nrhsentries.0, %acount.3
+  br label %for.end271
+
+for.end271:                                       ; preds = %for.cond253.for.end271_crit_edge, %for.cond253.preheader
+  %acount.4.lcssa = phi i32 [ %31, %for.cond253.for.end271_crit_edge ], [ %acount.3, %for.cond253.preheader ]
+  %rem272 = srem i32 %acount.4.lcssa, %16
+  %cmp273 = icmp eq i32 %rem272, %linemod.2
+  br i1 %cmp273, label %for.inc281, label %if.then275
+
+if.then275:                                       ; preds = %for.end271
+  %fputc416 = call i32 @fputc(i32 10, %struct._IO_FILE* %out_file.0)
+  %sub277 = add nsw i32 %acount.4.lcssa, -1
+  %rem278 = srem i32 %sub277, %16
+  br label %for.inc281
+
+for.inc281:                                       ; preds = %for.end271, %if.end247, %if.then275
+  %acount.5 = phi i32 [ %acount.4.lcssa, %if.then275 ], [ %acount.4.lcssa, %for.end271 ], [ %acount.3, %if.end247 ]
+  %linemod.3 = phi i32 [ %rem278, %if.then275 ], [ %linemod.2, %for.end271 ], [ %linemod.2, %if.end247 ]
+  %inc282 = add nsw i32 %j.0453, 1
+  %exitcond470 = icmp eq i32 %inc282, %Nrhs
+  br i1 %exitcond470, label %if.end285, label %for.cond189.preheader
+
+if.end285:                                        ; preds = %for.inc281, %if.end153, %if.end181
+  %call286 = call i32 @fclose(%struct._IO_FILE* %out_file.0) #8
+  %cmp287 = icmp eq i32 %call286, 0
+  br i1 %cmp287, label %return, label %if.then289
+
+if.then289:                                       ; preds = %if.end285
+  %32 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %33 = call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str60, i64 0, i64 0), i64 42, i64 1, %struct._IO_FILE* %32)
+  br label %return
+
+return:                                           ; preds = %if.end285, %if.then289, %if.then9
+  %retval.0 = phi i32 [ 0, %if.then9 ], [ 0, %if.then289 ], [ 1, %if.end285 ]
+  ret i32 %retval.0
+}

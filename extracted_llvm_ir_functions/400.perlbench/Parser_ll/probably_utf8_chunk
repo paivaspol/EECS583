@@ -1,0 +1,68 @@
+define internal fastcc signext i8 @probably_utf8_chunk(i8* %s, i64 %len) #0 {
+entry:
+  %add.ptr = getelementptr inbounds i8* %s, i64 %len
+  br label %while.cond
+
+while.cond:                                       ; preds = %land.rhs, %entry
+  %e.0 = phi i8* [ %add.ptr, %entry ], [ %add.ptr1, %land.rhs ]
+  %cmp = icmp ugt i8* %e.0, %s
+  br i1 %cmp, label %land.rhs, label %if.end
+
+land.rhs:                                         ; preds = %while.cond
+  %add.ptr1 = getelementptr inbounds i8* %e.0, i64 -1
+  %0 = load i8* %add.ptr1, align 1, !tbaa !1
+  %cmp2 = icmp slt i8 %0, 0
+  %cmp7 = icmp ult i8 %0, -64
+  %or.cond = and i1 %cmp2, %cmp7
+  br i1 %or.cond, label %while.cond, label %land.lhs.true
+
+land.lhs.true:                                    ; preds = %land.rhs
+  %.off = add i8 %0, 64
+  %1 = icmp ult i8 %.off, 62
+  %incdec.ptr21.e.0 = select i1 %1, i8* %add.ptr1, i8* %e.0
+  br label %if.end
+
+if.end:                                           ; preds = %while.cond, %land.lhs.true
+  %e.1 = phi i8* [ %incdec.ptr21.e.0, %land.lhs.true ], [ %e.0, %while.cond ]
+  %sub.ptr.lhs.cast = ptrtoint i8* %e.1 to i64
+  %sub.ptr.rhs.cast = ptrtoint i8* %s to i64
+  %sub.ptr.sub58 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.lhs.cast
+  %sub = add i64 %sub.ptr.sub58, %len
+  %tobool = icmp eq i64 %sub, 0
+  br i1 %tobool, label %if.end28, label %land.lhs.true22
+
+land.lhs.true22:                                  ; preds = %if.end
+  %2 = load i8* %e.1, align 1, !tbaa !1
+  %idxprom = zext i8 %2 to i64
+  %arrayidx = getelementptr inbounds [0 x i8]* @PL_utf8skip, i64 0, i64 %idxprom
+  %3 = load i8* %arrayidx, align 1, !tbaa !1
+  %conv23 = zext i8 %3 to i64
+  %cmp24 = icmp eq i64 %conv23, %sub
+  %add.ptr.e.1 = select i1 %cmp24, i8* %add.ptr, i8* %e.1
+  br label %if.end28
+
+if.end28:                                         ; preds = %land.lhs.true22, %if.end
+  %e.2 = phi i8* [ %e.1, %if.end ], [ %add.ptr.e.1, %land.lhs.true22 ]
+  br label %while.cond.i
+
+while.cond.i:                                     ; preds = %while.body.i, %if.end28
+  %s.addr.0.i = phi i8* [ %s, %if.end28 ], [ %incdec.ptr.i, %while.body.i ]
+  %cmp.i = icmp ult i8* %s.addr.0.i, %e.2
+  br i1 %cmp.i, label %while.body.i, label %return
+
+while.body.i:                                     ; preds = %while.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %s.addr.0.i, i64 1
+  %4 = load i8* %s.addr.0.i, align 1, !tbaa !1
+  %cmp1.i = icmp sgt i8 %4, -1
+  br i1 %cmp1.i, label %while.cond.i, label %if.end31
+
+if.end31:                                         ; preds = %while.body.i
+  %sub.ptr.lhs.cast32 = ptrtoint i8* %e.2 to i64
+  %sub.ptr.sub34 = sub i64 %sub.ptr.lhs.cast32, %sub.ptr.rhs.cast
+  %call35 = tail call signext i8 @Perl_is_utf8_string(i8* %s, i64 %sub.ptr.sub34) #6
+  br label %return
+
+return:                                           ; preds = %while.cond.i, %if.end31
+  %retval.0 = phi i8 [ %call35, %if.end31 ], [ 0, %while.cond.i ]
+  ret i8 %retval.0
+}

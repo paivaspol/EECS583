@@ -1,0 +1,17 @@
+define i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx) #0 {
+entry:
+  %cmp = icmp eq %struct._SubMtx* %mtx, null
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str5, i64 0, i64 0), %struct._SubMtx* null) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %wrkDV = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 8
+  %call1 = tail call i32 @DV_maxsize(%struct._DV* %wrkDV) #5
+  %mul = shl i32 %call1, 3
+  ret i32 %mul
+}

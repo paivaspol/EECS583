@@ -1,0 +1,92 @@
+define void @LBM_initializeSpecialCellsForLDC(double* nocapture %grid) #0 {
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:                              ; preds = %for.inc48, %entry
+  %indvars.iv98 = phi i64 [ -2, %entry ], [ %indvars.iv.next99, %for.inc48 ]
+  %0 = mul i64 %indvars.iv98, 10000
+  br label %for.cond4.preheader
+
+for.cond4.preheader:                              ; preds = %for.inc45, %for.cond1.preheader
+  %indvars.iv89 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next90, %for.inc45 ]
+  %1 = add i64 %indvars.iv89, 4294967294
+  %2 = trunc i64 %1 to i32
+  %3 = mul nsw i64 %indvars.iv89, 100
+  %4 = add i64 %3, %0
+  br label %for.body6
+
+for.body6:                                        ; preds = %for.inc, %for.cond4.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.inc ]
+  %5 = trunc i64 %indvars.iv to i32
+  switch i32 %5, label %lor.lhs.false9 [
+    i32 99, label %if.then
+    i32 0, label %if.then
+  ]
+
+lor.lhs.false9:                                   ; preds = %for.body6
+  %6 = trunc i64 %indvars.iv89 to i32
+  switch i32 %6, label %lor.lhs.false13 [
+    i32 99, label %if.then
+    i32 0, label %if.then
+  ]
+
+lor.lhs.false13:                                  ; preds = %lor.lhs.false9
+  %7 = trunc i64 %indvars.iv98 to i32
+  switch i32 %7, label %for.inc [
+    i32 129, label %if.then
+    i32 0, label %if.then
+    i32 128, label %land.lhs.true
+    i32 1, label %land.lhs.true
+  ]
+
+if.then:                                          ; preds = %lor.lhs.false13, %lor.lhs.false13, %lor.lhs.false9, %lor.lhs.false9, %for.body6, %for.body6
+  %8 = add i64 %4, %indvars.iv
+  %9 = mul nsw i64 %8, 20
+  %10 = add nsw i64 %9, 19
+  %arrayidx = getelementptr inbounds double* %grid, i64 %10
+  %11 = bitcast double* %arrayidx to i32*
+  %12 = load i32* %11, align 4, !tbaa !4
+  %or = or i32 %12, 1
+  store i32 %or, i32* %11, align 4, !tbaa !4
+  br label %for.inc
+
+land.lhs.true:                                    ; preds = %lor.lhs.false13, %lor.lhs.false13
+  %13 = add i64 %indvars.iv, 4294967294
+  %14 = trunc i64 %13 to i32
+  %.not = icmp ugt i32 %14, 95
+  %.not104 = icmp ugt i32 %2, 95
+  %brmerge = or i1 %.not, %.not104
+  br i1 %brmerge, label %for.inc, label %if.then32
+
+if.then32:                                        ; preds = %land.lhs.true
+  %15 = add i64 %4, %indvars.iv
+  %16 = mul nsw i64 %15, 20
+  %17 = add nsw i64 %16, 19
+  %arrayidx42 = getelementptr inbounds double* %grid, i64 %17
+  %18 = bitcast double* %arrayidx42 to i32*
+  %19 = load i32* %18, align 4, !tbaa !4
+  %or43 = or i32 %19, 2
+  store i32 %or43, i32* %18, align 4, !tbaa !4
+  br label %for.inc
+
+for.inc:                                          ; preds = %land.lhs.true, %lor.lhs.false13, %if.then, %if.then32
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 100
+  br i1 %exitcond, label %for.inc45, label %for.body6
+
+for.inc45:                                        ; preds = %for.inc
+  %indvars.iv.next90 = add i64 %indvars.iv89, 1
+  %lftr.wideiv96 = trunc i64 %indvars.iv.next90 to i32
+  %exitcond97 = icmp eq i32 %lftr.wideiv96, 100
+  br i1 %exitcond97, label %for.inc48, label %for.cond4.preheader
+
+for.inc48:                                        ; preds = %for.inc45
+  %indvars.iv.next99 = add i64 %indvars.iv98, 1
+  %lftr.wideiv102 = trunc i64 %indvars.iv.next99 to i32
+  %exitcond103 = icmp eq i32 %lftr.wideiv102, 132
+  br i1 %exitcond103, label %for.end50, label %for.cond1.preheader
+
+for.end50:                                        ; preds = %for.inc48
+  ret void
+}

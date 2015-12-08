@@ -1,0 +1,14 @@
+define double* @DVinit(i32 %size, double %dval) #0 {
+entry:
+  %cmp = icmp sgt i32 %size, 0
+  br i1 %cmp, label %if.then, label %if.end
+
+if.then:                                          ; preds = %entry
+  %call = tail call double* @DVinit2(i32 %size) #7
+  tail call void @DVfill(i32 %size, double* %call, double %dval) #7
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %entry
+  %y.0 = phi double* [ %call, %if.then ], [ null, %entry ]
+  ret double* %y.0
+}

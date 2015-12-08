@@ -1,0 +1,64 @@
+define void @DVdot22(i32 %n, double* %row0, double* %row1, double* %col0, double* %col1, double* %sums) #0 {
+entry:
+  %cmp = icmp eq double* %sums, null
+  %cmp1 = icmp eq double* %row0, null
+  %or.cond = or i1 %cmp, %cmp1
+  %cmp3 = icmp eq double* %row1, null
+  %or.cond52 = or i1 %or.cond, %cmp3
+  %cmp5 = icmp eq double* %col0, null
+  %or.cond53 = or i1 %or.cond52, %cmp5
+  %cmp7 = icmp eq double* %col1, null
+  %or.cond54 = or i1 %or.cond53, %cmp7
+  br i1 %or.cond54, label %if.then, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp855 = icmp sgt i32 %n, 0
+  br i1 %cmp855, label %for.body, label %for.end
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str43, i64 0, i64 0), i32 %n, double* %row0, double* %row1, double* %col0, double* %col1, double* %sums) #5
+  tail call void @exit(i32 -1) #6
+  unreachable
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %s00.060 = phi double [ %add, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %s01.059 = phi double [ %add16, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %s10.058 = phi double [ %add18, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %s11.057 = phi double [ %add20, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds double* %row0, i64 %indvars.iv
+  %1 = load double* %arrayidx, align 8, !tbaa !3
+  %arrayidx10 = getelementptr inbounds double* %row1, i64 %indvars.iv
+  %2 = load double* %arrayidx10, align 8, !tbaa !3
+  %arrayidx12 = getelementptr inbounds double* %col0, i64 %indvars.iv
+  %3 = load double* %arrayidx12, align 8, !tbaa !3
+  %arrayidx14 = getelementptr inbounds double* %col1, i64 %indvars.iv
+  %4 = load double* %arrayidx14, align 8, !tbaa !3
+  %mul = fmul double %1, %3
+  %add = fadd double %s00.060, %mul
+  %mul15 = fmul double %1, %4
+  %add16 = fadd double %s01.059, %mul15
+  %mul17 = fmul double %2, %3
+  %add18 = fadd double %s10.058, %mul17
+  %mul19 = fmul double %2, %4
+  %add20 = fadd double %s11.057, %mul19
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %n
+  br i1 %exitcond, label %for.end, label %for.body
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %s00.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add, %for.body ]
+  %s01.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add16, %for.body ]
+  %s10.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add18, %for.body ]
+  %s11.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add20, %for.body ]
+  store double %s00.0.lcssa, double* %sums, align 8, !tbaa !3
+  %arrayidx22 = getelementptr inbounds double* %sums, i64 1
+  store double %s01.0.lcssa, double* %arrayidx22, align 8, !tbaa !3
+  %arrayidx23 = getelementptr inbounds double* %sums, i64 2
+  store double %s10.0.lcssa, double* %arrayidx23, align 8, !tbaa !3
+  %arrayidx24 = getelementptr inbounds double* %sums, i64 3
+  store double %s11.0.lcssa, double* %arrayidx24, align 8, !tbaa !3
+  ret void
+}
